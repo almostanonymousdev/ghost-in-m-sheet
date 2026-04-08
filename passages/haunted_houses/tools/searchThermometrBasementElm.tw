@@ -2,7 +2,7 @@
 <<nobr>>
 <span id="elmBasementTemperatureButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;T@@hermometer">><<addclass ".cardlink" "disabled-link">>
 <span id="elmBasementTemperature">
-<<showmeter  'searchBasementTemperature' ` $currentsearchBasement.temperature / $equipment.thermometer`>>
+<<showmeter  'searchBasementTemperature' ` $currentsearchBasement.temperature / $equipment.temperature`>>
 </span>
 
 <<repeat `$timerToolsDecreased`>>
@@ -10,7 +10,7 @@
 <<if $basement.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
 
 <<include "add1">>
-<<if $currentsearchBasement.temperature neq $equipment.thermometer>><<if $cursedHuntActive eq 1>>
+<<if $currentsearchBasement.temperature neq $equipment.temperature>><<if $cursedHuntActive eq 1>>
 <<else>>
 <<include "lightPassageGhost">><<include "event">>
 <<if _eventTriggered is false>>
@@ -20,10 +20,10 @@
 <<include "huntStart">>
 <</if>><</if>><</if>>
 
-<<if $currentsearchBasement.temperature lte ($equipment.thermometer - 1)>> 
+<<if $currentsearchBasement.temperature lte ($equipment.temperature - 1)>> 
 <<set $currentsearchBasement.temperature += 1>>
-<<updatemeter 'searchBasementTemperature' ` $currentsearchBasement.temperature / $equipment.thermometer`>>
-<<elseif $currentsearchBasement.temperature gte $equipment.thermometer>> 
+<<updatemeter 'searchBasementTemperature' ` $currentsearchBasement.temperature / $equipment.temperature`>>
+<<elseif $currentsearchBasement.temperature gte $equipment.temperature>> 
 <<replace "#elmBasementTemperature">><<include "temperatureHigh">><</replace>>
 <<set $currentsearchBasement.temperature to 0>> <<removeclass ".cardlink" "disabled-link">>
 <<stop>>

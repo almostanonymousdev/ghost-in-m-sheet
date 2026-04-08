@@ -2,14 +2,14 @@
 <<nobr>>
 <span id="elmBedroomTemperatureButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;T@@hermometer">><<addclass ".cardlink" "disabled-link">>
 <span id="elmBedroomTemperature">
-<<showmeter  'searchBedroomTemperature' ` $currentsearchBedroom.temperature / $equipment.thermometer`>>
+<<showmeter  'searchBedroomTemperature' ` $currentsearchBedroom.temperature / $equipment.temperature`>>
 </span>
 <<repeat `$timerToolsDecreased`>>
 <<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
 <<if $bedroom.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
 
 <<include "add1">>
-<<if $currentsearchBedroom.temperature neq $equipment.thermometer>><<if $cursedHuntActive eq 1>>
+<<if $currentsearchBedroom.temperature neq $equipment.temperature>><<if $cursedHuntActive eq 1>>
 <<else>>
 <<include "lightPassageGhost">><<include "event">>
 <<if _eventTriggered is false>>
@@ -19,10 +19,10 @@
 <<include "huntStart">>
 <</if>><</if>><</if>>
 
-<<if $currentsearchBedroom.temperature lte ($equipment.thermometer - 1)>> 
+<<if $currentsearchBedroom.temperature lte ($equipment.temperature - 1)>> 
 <<set $currentsearchBedroom.temperature += 1>>
-<<updatemeter 'searchBedroomTemperature' ` $currentsearchBedroom.temperature / $equipment.thermometer`>>
-<<elseif $currentsearchBedroom.temperature gte $equipment.thermometer>> 
+<<updatemeter 'searchBedroomTemperature' ` $currentsearchBedroom.temperature / $equipment.temperature`>>
+<<elseif $currentsearchBedroom.temperature gte $equipment.temperature>> 
 <<replace "#elmBedroomTemperature">><<include "temperatureHigh">><</replace>>
 <<set $currentsearchBedroom.temperature to 0>><<removeclass ".cardlink" "disabled-link">>
 <<stop>>

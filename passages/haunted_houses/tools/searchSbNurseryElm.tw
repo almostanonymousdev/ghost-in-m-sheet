@@ -6,14 +6,14 @@
 I need to turn off the light first</div><</replace>>
 <<else>><<addclass ".cardlink" "disabled-link">>
 <span id="elmNurserySpiritbox">
-<<showmeter  'searchNurserySpiritbox' ` $currentsearchNursery.spiritbox / $equipment.sb`>>
+<<showmeter  'searchNurserySpiritbox' ` $currentsearchNursery.spiritbox / $equipment.spiritbox`>>
 </span>
 <<repeat `$timerToolsDecreased`>>
 <<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
 <<if $nursery.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
 
 <<include "add1">>
-<<if $currentsearchNursery.spiritbox neq $equipment.sb>><<if $cursedHuntActive eq 1>>
+<<if $currentsearchNursery.spiritbox neq $equipment.spiritbox>><<if $cursedHuntActive eq 1>>
 <<else>>
 <<include "lightPassageGhost">><<include "event">>
 <<if _eventTriggered is false>>
@@ -23,10 +23,10 @@ I need to turn off the light first</div><</replace>>
 <<include "huntStart">>
 <</if>><</if>><</if>>
 
-<<if $currentsearchNursery.spiritbox lte ($equipment.sb - 1)>> 
+<<if $currentsearchNursery.spiritbox lte ($equipment.spiritbox - 1)>> 
 <<set $currentsearchNursery.spiritbox += 1>>
-<<updatemeter 'searchNurserySpiritbox' ` $currentsearchNursery.spiritbox / $equipment.sb`>>
-<<elseif $currentsearchNursery.spiritbox gte $equipment.sb>>
+<<updatemeter 'searchNurserySpiritbox' ` $currentsearchNursery.spiritbox / $equipment.spiritbox`>>
+<<elseif $currentsearchNursery.spiritbox gte $equipment.spiritbox>>
 <<replace "#actionNurseryElm">><<include "SpiritboxCheck">><</replace>> 
 <<replace "#elmNurserySpiritbox">><</replace>>
 <<set $currentsearchNursery.spiritbox to 0>><<removeclass ".cardlink" "disabled-link">><<stop>>

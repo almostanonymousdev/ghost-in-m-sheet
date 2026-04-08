@@ -53,7 +53,7 @@
 		($ghostRoom.name === "Kitchen" and (passage() === "IroncladKitchen")) or
 		($ghostRoom.name === "Hallway" and (passage() === "IroncladHallway"))
     >>
-        <<if _spiritboxChance lte 15 and $equipment.sb eq 5>>
+        <<if _spiritboxChance lte 15 and $equipment.spiritbox eq 5>>
             <<set _questions = ["Where are you?", "Are you here?", "What do you want?"]>>
             <<set _answers = ["I am hiding.", "I am here.", "I want revenge."]>> 
             <<set _currentQuestion = random(_questions.length - 1)>>
@@ -63,7 +63,7 @@
             </div>
             <<set $EmfActivated to 1>>
             <<set $EmfActivationTime = $hours * 60 + $minutes>>
-        <<elseif _spiritboxChance lte 25 and $equipment.sb eq 4>>
+        <<elseif _spiritboxChance lte 25 and $equipment.spiritbox eq 4>>
             <<set _questions = ["Where are you?", "Are you here?", "What do you want?"]>>
             <<set _answers = ["I am hiding.", "I am here.", "I want revenge."]>> 
             <<set _currentQuestion = random(_questions.length - 1)>>
@@ -73,7 +73,7 @@
             </div>
             <<set $EmfActivated to 1>>
             <<set $EmfActivationTime = $hours * 60 + $minutes>>
-        <<elseif _spiritboxChance lte 35 and $equipment.sb eq 3>>
+        <<elseif _spiritboxChance lte 35 and $equipment.spiritbox eq 3>>
             <<set _questions = ["Where are you?", "Are you here?", "What do you want?"]>>
             <<set _answers = ["I am hiding.", "I am here.", "I want revenge."]>> 
             <<set _currentQuestion = random(_questions.length - 1)>>

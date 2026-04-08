@@ -2,19 +2,19 @@
 <<nobr>>
 <span id="enigmaRoomBTemperatureButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;T@@hermometer">><<addclass ".cardlink" "disabled-link">>
 <span id="enigmaRoomBTemperature">
-<<showmeter  'searchRoomBTemperature' ` $currentsearchRoomB.temperature / $equipment.thermometer`>>
+<<showmeter  'searchRoomBTemperature' ` $currentsearchRoomB.temperature / $equipment.temperature`>>
 </span>
 <<repeat `$timerToolsDecreased`>>
 <<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
 <<if $roomB.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
 
 <<include "add1">>
-<<if $currentsearchRoomB.temperature neq $equipment.thermometer>><<include "lightPassageGhost">><<include "eventArt">><</if>>
+<<if $currentsearchRoomB.temperature neq $equipment.temperature>><<include "lightPassageGhost">><<include "eventArt">><</if>>
 
-<<if $currentsearchRoomB.temperature lte ($equipment.thermometer - 1)>> 
+<<if $currentsearchRoomB.temperature lte ($equipment.temperature - 1)>> 
 <<set $currentsearchRoomB.temperature += 1>>
-<<updatemeter 'searchRoomBTemperature' ` $currentsearchRoomB.temperature / $equipment.thermometer`>>
-<<elseif $currentsearchRoomB.temperature gte $equipment.thermometer>> 
+<<updatemeter 'searchRoomBTemperature' ` $currentsearchRoomB.temperature / $equipment.temperature`>>
+<<elseif $currentsearchRoomB.temperature gte $equipment.temperature>> 
 <<replace "#enigmaRoomBTemperature">><<include "temperatureHigh">><</replace>>
 <<set $currentsearchRoomB.temperature to 0>> <<removeclass ".cardlink" "disabled-link">>
 <<stop>>

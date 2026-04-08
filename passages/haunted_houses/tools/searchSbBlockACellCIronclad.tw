@@ -6,14 +6,14 @@
 I need to turn off the light first</div><</replace>>
 <<else>><<addclass ".cardlink" "disabled-link">>
 <span id="ironcladBlockACellCSpiritbox">
-<<showmeter  'searchBlockACellCIroncladSpiritbox' ` $currentsearchBlockACellCIronclad.spiritbox / $equipment.sb`>>
+<<showmeter  'searchBlockACellCIroncladSpiritbox' ` $currentsearchBlockACellCIronclad.spiritbox / $equipment.spiritbox`>>
 </span>
 <<repeat `$timerToolsDecreased`>>
 <<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
 <<if $BlockACellC.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
 
 <<include "add1">>
-<<if $currentsearchBlockACellCIronclad.spiritbox neq $equipment.sb>><<if $cursedHuntActive eq 1>>
+<<if $currentsearchBlockACellCIronclad.spiritbox neq $equipment.spiritbox>><<if $cursedHuntActive eq 1>>
 <<else>>
 <<include "lightPassageGhost">><<include "event">>
 <<if _eventTriggered is false>>
@@ -21,10 +21,10 @@ I need to turn off the light first</div><</replace>>
 <</if>><</if>><</if>>
 
 
-<<if $currentsearchBlockACellCIronclad.spiritbox lte ($equipment.sb - 1)>> 
+<<if $currentsearchBlockACellCIronclad.spiritbox lte ($equipment.spiritbox - 1)>> 
 <<set $currentsearchBlockACellCIronclad.spiritbox += 1>>
-<<updatemeter 'searchBlockACellCIroncladSpiritbox' ` $currentsearchBlockACellCIronclad.spiritbox / $equipment.sb`>>
-<<elseif $currentsearchBlockACellCIronclad.spiritbox gte $equipment.sb>>
+<<updatemeter 'searchBlockACellCIroncladSpiritbox' ` $currentsearchBlockACellCIronclad.spiritbox / $equipment.spiritbox`>>
+<<elseif $currentsearchBlockACellCIronclad.spiritbox gte $equipment.spiritbox>>
 <<replace "#actionironcladBlockACellC">><<include "SpiritboxCheck">><</replace>> 
 <<replace "#ironcladBlockACellCSpiritbox">><</replace>>
 <<set $currentsearchBlockACellCIronclad.spiritbox to 0>> <<removeclass ".cardlink" "disabled-link">><<stop>>

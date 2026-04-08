@@ -2,16 +2,16 @@
 <<nobr>>
 <span id="addsearchThermometrKitchenButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;T@@hermometr">><<addclass ".cardlink" "disabled-link">>
 <div id="owaissaK">
-<<showmeter 'searchKitchenTemperature' `$currentsearchKitchen.temperature / $equipment.thermometer`>>
+<<showmeter 'searchKitchenTemperature' `$currentsearchKitchen.temperature / $equipment.temperature`>>
 </div>
 <<repeat `$timerToolsDecreased`>>
-<<if $currentsearchKitchen.temperature lte $equipment.thermometer>>
+<<if $currentsearchKitchen.temperature lte $equipment.temperature>>
 
 <<include "add1">>
 <<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
 <<if $kitchen.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
 
-<<if $currentsearchKitchen.temperature neq $equipment.thermometer>>
+<<if $currentsearchKitchen.temperature neq $equipment.temperature>>
 <<if $cursedHuntActive eq 1>>
 <<else>>
 <<include "lightPassageGhost">><<include "event">>
@@ -22,9 +22,9 @@
 <<include "huntStart">>
 <</if>><</if>><</if>>
 
-<<if $currentsearchKitchen.temperature lte ($equipment.thermometer - 1)>>
+<<if $currentsearchKitchen.temperature lte ($equipment.temperature - 1)>>
 <<set $currentsearchKitchen.temperature += 1>>
-<<updatemeter 'searchKitchenTemperature' `$currentsearchKitchen.temperature / $equipment.thermometer`>><<elseif $currentsearchKitchen.temperature gte $equipment.thermometer>> 
+<<updatemeter 'searchKitchenTemperature' `$currentsearchKitchen.temperature / $equipment.temperature`>><<elseif $currentsearchKitchen.temperature gte $equipment.temperature>> 
 <<replace "#owaissaK">><<include "temperatureHigh">><</replace>>
 <<set $currentsearchKitchen.temperature to 0>><<removeclass ".cardlink" "disabled-link">>
 <<stop>>

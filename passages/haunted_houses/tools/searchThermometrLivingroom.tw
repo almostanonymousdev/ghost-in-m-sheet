@@ -2,10 +2,10 @@
 <<nobr>>
 <span id="addsearchThermometrLivingroomButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;T@@hermometr">><<addclass ".cardlink" "disabled-link">>
 <div id="owaissaLivingroom">
-<<showmeter 'searchLivingroomTemperature' `$currentsearchLivingroom.temperature / $equipment.thermometer`>>
+<<showmeter 'searchLivingroomTemperature' `$currentsearchLivingroom.temperature / $equipment.temperature`>>
 </div>
 <<repeat `$timerToolsDecreased`>>
-<<if $currentsearchLivingroom.temperature lte $equipment.thermometer>>
+<<if $currentsearchLivingroom.temperature lte $equipment.temperature>>
 
 <<if $hotAct eq 1>>
 <<set $mc.sanity -= $sanityIfHot>>
@@ -16,7 +16,7 @@
 
 <<include "add1">>
 
-<<if $currentsearchLivingroom.temperature neq $equipment.thermometer>>
+<<if $currentsearchLivingroom.temperature neq $equipment.temperature>>
   <<if $cursedHuntActive eq 1>>
   <<else>>
     <<include "lightPassageGhost">>
@@ -30,10 +30,10 @@
   <</if>>
 <</if>>
 
-<<if $currentsearchLivingroom.temperature lte ($equipment.thermometer - 1)>>
+<<if $currentsearchLivingroom.temperature lte ($equipment.temperature - 1)>>
   <<set $currentsearchLivingroom.temperature += 1>>
-  <<updatemeter 'searchLivingroomTemperature' `$currentsearchLivingroom.temperature / $equipment.thermometer`>>
-<<elseif $currentsearchLivingroom.temperature gte $equipment.thermometer>>
+  <<updatemeter 'searchLivingroomTemperature' `$currentsearchLivingroom.temperature / $equipment.temperature`>>
+<<elseif $currentsearchLivingroom.temperature gte $equipment.temperature>>
 
 <<replace "#owaissaLivingroom">>
 <<include "temperatureHigh">>

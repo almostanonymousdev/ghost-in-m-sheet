@@ -6,14 +6,14 @@
 I need to turn off the light first</div><</replace>>
 <<else>><<addclass ".cardlink" "disabled-link">>
 <span id="ironcladHallwaySpiritbox">
-<<showmeter  'searchHallwayIroncladSpiritbox' ` $currentsearchHallwayIronclad.spiritbox / $equipment.sb`>>
+<<showmeter  'searchHallwayIroncladSpiritbox' ` $currentsearchHallwayIronclad.spiritbox / $equipment.spiritbox`>>
 </span>
 <<repeat `$timerToolsDecreased`>>
 <<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
 <<if $hallway.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
 
 <<include "add1">>
-<<if $currentsearchHallwayIronclad.spiritbox neq $equipment.sb>><<if $cursedHuntActive eq 1>>
+<<if $currentsearchHallwayIronclad.spiritbox neq $equipment.spiritbox>><<if $cursedHuntActive eq 1>>
 <<else>>
 <<include "lightPassageGhost">><<include "event">>
 <<if _eventTriggered is false>>
@@ -21,10 +21,10 @@ I need to turn off the light first</div><</replace>>
 <</if>><</if>><</if>>
 
 
-<<if $currentsearchHallwayIronclad.spiritbox lte ($equipment.sb - 1)>> 
+<<if $currentsearchHallwayIronclad.spiritbox lte ($equipment.spiritbox - 1)>> 
 <<set $currentsearchHallwayIronclad.spiritbox += 1>>
-<<updatemeter 'searchHallwayIroncladSpiritbox' ` $currentsearchHallwayIronclad.spiritbox / $equipment.sb`>>
-<<elseif $currentsearchHallwayIronclad.spiritbox gte $equipment.sb>>
+<<updatemeter 'searchHallwayIroncladSpiritbox' ` $currentsearchHallwayIronclad.spiritbox / $equipment.spiritbox`>>
+<<elseif $currentsearchHallwayIronclad.spiritbox gte $equipment.spiritbox>>
 <<replace "#actionironcladHallway">><<include "SpiritboxCheck">><</replace>> 
 <<replace "#ironcladHallwaySpiritbox">><</replace>>
 <<set $currentsearchHallwayIronclad.spiritbox to 0>> <<removeclass ".cardlink" "disabled-link">><<stop>>

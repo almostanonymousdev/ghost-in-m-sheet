@@ -37,24 +37,24 @@
 <</if>>
 </div>
 <div class="housecard">
-<<if $equipment.thermometer eq 5>>
+<<if $equipment.temperature eq 5>>
 <img src="assets/img/thermometr.png" class="iconPx"><br>
 <span class="priceAmount">100$</span><br>
 <<if $mc.money gte 100>>
 @@.buyItemLink;<<link "Buy (lvl 2)" "witchSale">>
-<<set $equipment.thermometer to 4>>
+<<set $equipment.temperature to 4>>
 <<set $mc.money -= 100>>
 <</link>>@@<br>
 <<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
 <</if>>
 </div>
 <div class="housecard">
-<<if $equipment.sb eq 5>>
+<<if $equipment.spiritbox eq 5>>
 <img src="assets/img/spiritbox.png" class="iconPx"><br>
 <span class="priceAmount">500$</span><br>
 <<if $mc.money gte 500>>
 @@.buyItemLink;<<link "Buy (lvl 2)" "witchSale">>
-<<set $equipment.sb to 4>>
+<<set $equipment.spiritbox to 4>>
 <<set $mc.money -= 500>>
 <</link>>@@<br>
 <<else>>@@.mc-thoughts; I don't have enough money@@<</if>>

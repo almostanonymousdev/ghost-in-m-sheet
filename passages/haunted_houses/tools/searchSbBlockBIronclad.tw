@@ -6,14 +6,14 @@
 I need to turn off the light first</div><</replace>>
 <<else>><<addclass ".cardlink" "disabled-link">>
 <span id="ironcladBlockBSpiritbox">
-<<showmeter  'searchBlockBIroncladSpiritbox' ` $currentsearchBlockBIronclad.spiritbox / $equipment.sb`>>
+<<showmeter  'searchBlockBIroncladSpiritbox' ` $currentsearchBlockBIronclad.spiritbox / $equipment.spiritbox`>>
 </span>
 <<repeat `$timerToolsDecreased`>>
 <<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
 <<if $BlockB.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
 
 <<include "add1">>
-<<if $currentsearchBlockBIronclad.spiritbox neq $equipment.sb>><<if $cursedHuntActive eq 1>>
+<<if $currentsearchBlockBIronclad.spiritbox neq $equipment.spiritbox>><<if $cursedHuntActive eq 1>>
 <<else>>
 <<include "lightPassageGhost">><<include "event">>
 <<if _eventTriggered is false>>
@@ -21,10 +21,10 @@ I need to turn off the light first</div><</replace>>
 <</if>><</if>><</if>>
 
 
-<<if $currentsearchBlockBIronclad.spiritbox lte ($equipment.sb - 1)>> 
+<<if $currentsearchBlockBIronclad.spiritbox lte ($equipment.spiritbox - 1)>> 
 <<set $currentsearchBlockBIronclad.spiritbox += 1>>
-<<updatemeter 'searchBlockBIroncladSpiritbox' ` $currentsearchBlockBIronclad.spiritbox / $equipment.sb`>>
-<<elseif $currentsearchBlockBIronclad.spiritbox gte $equipment.sb>>
+<<updatemeter 'searchBlockBIroncladSpiritbox' ` $currentsearchBlockBIronclad.spiritbox / $equipment.spiritbox`>>
+<<elseif $currentsearchBlockBIronclad.spiritbox gte $equipment.spiritbox>>
 <<replace "#actionironcladBlockB">><<include "SpiritboxCheck">><</replace>> 
 <<replace "#ironcladBlockBSpiritbox">><</replace>>
 <<set $currentsearchBlockBIronclad.spiritbox to 0>> <<removeclass ".cardlink" "disabled-link">><<stop>>

@@ -28,11 +28,11 @@
 <<set $jobMoneyFailed to 3>>
 <<set $equipment to {
 	emf:5,
-    sb:5,
+    spiritbox:5,
     gwb:5,
     glass:5,
-    thermometer:5,
-    uvl:5, 
+    temperature:5,
+    uvl:5,
 }>>
 <<set $mc to {
 name: "",
@@ -56,74 +56,84 @@ beauty: 30,
 <<set $braState to "worn">>
 <<set $skirtState to "not bought">>
 
+/*EVIDENCE TYPE ENUM*/
+<<set $EvidenceType to {
+    EMF:         "emf",
+    SPIRITBOX:   "spiritbox",
+    GWB:         "gwb",
+    GLASS:       "glass",
+    TEMPERATURE: "temperature",
+    UVL:         "uvl",
+}>>
+
 <<set $ghost1 to {
 name: "Shade",
-evidence: ["emf", "gwb", "temperature"],
+evidence: [$EvidenceType.EMF, $EvidenceType.GWB, $EvidenceType.TEMPERATURE],
 }>>
 
 <<set $ghost2 to {
 name: "Spirit",
-evidence: ["emf", "spiritbox", "gwb"],
+evidence: [$EvidenceType.EMF, $EvidenceType.SPIRITBOX, $EvidenceType.GWB],
 }>>
 
 <<set $ghost3 to {
 name: "Poltergeist",
-evidence: ["spiritbox", "gwb", "uvl"],
+evidence: [$EvidenceType.SPIRITBOX, $EvidenceType.GWB, $EvidenceType.UVL],
 }>>
 
 <<set $ghost4 to {
 name: "Phantom",
-evidence: ["glass", "uvl", "spiritbox"],
+evidence: [$EvidenceType.GLASS, $EvidenceType.UVL, $EvidenceType.SPIRITBOX],
 }>>
 
 <<set $ghost5 to {
 name: "Goryo",
-evidence: ["glass", "uvl", "emf"],
+evidence: [$EvidenceType.GLASS, $EvidenceType.UVL, $EvidenceType.EMF],
 }>>
 
 <<set $ghost6 to {
 name: "Demon",
-evidence: ["gwb", "uvl", "temperature"],
+evidence: [$EvidenceType.GWB, $EvidenceType.UVL, $EvidenceType.TEMPERATURE],
 }>>
 
 <<set $ghost7 to {
 name: "Deogen",
-evidence: ["glass", "gwb", "spiritbox"],
+evidence: [$EvidenceType.GLASS, $EvidenceType.GWB, $EvidenceType.SPIRITBOX],
 }>>
 
 <<set $ghost8 to {
 name: "Jinn",
-evidence: ["emf", "uvl", "temperature"],
+evidence: [$EvidenceType.EMF, $EvidenceType.UVL, $EvidenceType.TEMPERATURE],
 }>>
 
 <<set $ghost9 to {
 name: "Moroi",
-evidence: ["gwb", "temperature", "spiritbox"],
+evidence: [$EvidenceType.GWB, $EvidenceType.TEMPERATURE, $EvidenceType.SPIRITBOX],
 }>>
 
 <<set $ghost10 to {
 name: "Myling",
-evidence: ["gwb", "emf", "uvl"],
+evidence: [$EvidenceType.GWB, $EvidenceType.EMF, $EvidenceType.UVL],
 }>>
 
 <<set $ghost11 to {
 name: "Oni",
-evidence: ["glass", "emf", "temperature"],
+evidence: [$EvidenceType.GLASS, $EvidenceType.EMF, $EvidenceType.TEMPERATURE],
 }>>
 
 <<set $ghost12 to {
 name: "Mimic",
-evidence: ["uvl", "temperature", "spiritbox"],
+evidence: [$EvidenceType.UVL, $EvidenceType.TEMPERATURE, $EvidenceType.SPIRITBOX],
 }>>
 
 <<set $ghost13 to {
 name: "The Twins",
-evidence: ["emf", "temperature", "spiritbox"],
+evidence: [$EvidenceType.EMF, $EvidenceType.TEMPERATURE, $EvidenceType.SPIRITBOX],
 }>>
 
 <<set $ghost14 to {
 name: "Wraith",
-evidence: ["glass", "emf", "spiritbox"],
+evidence: [$EvidenceType.GLASS, $EvidenceType.EMF, $EvidenceType.SPIRITBOX],
 }>>
 
 ----------------------------------------------------------------------------------------

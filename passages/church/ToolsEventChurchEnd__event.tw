@@ -8,7 +8,7 @@
  <<if $eventToolsOneStart eq 0>>
  @@.notmc-speech; I think you deserve it, here you go. If you want, you can come to me sometimes for special confessions@@<br>
 @@.mc-speech; Thanks, i'll think about that@@<br>
- <<set $equipment.thermometer to 3>>
+ <<set $equipment.temperature to 3>>
 @@.mc-action; You get a lvl 3 Thermometr @@<img src="assets/img/thermometr.png" style="max-width:5%">
 <br>
 <br>

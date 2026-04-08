@@ -2,7 +2,7 @@
 <<nobr>>
 <span id="ironcladBlockACellBTemperatureButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;T@@hermometer">><<addclass ".cardlink" "disabled-link">>
 <span id="ironcladBlockACellBTemperature">
-<<showmeter  'searchBlockACellBIroncladTemperature' ` $currentsearchBlockACellBIronclad.temperature / $equipment.thermometer`>>
+<<showmeter  'searchBlockACellBIroncladTemperature' ` $currentsearchBlockACellBIronclad.temperature / $equipment.temperature`>>
 </span>
 
 <<repeat `$timerToolsDecreased`>>
@@ -10,17 +10,17 @@
 <<if $BlockACellB.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
 
 <<include "add1">>
-<<if $currentsearchBlockACellBIronclad.temperature neq $equipment.thermometer>><<if $cursedHuntActive eq 1>>
+<<if $currentsearchBlockACellBIronclad.temperature neq $equipment.temperature>><<if $cursedHuntActive eq 1>>
 <<else>>
 <<include "lightPassageGhost">><<include "event">>
 <<if _eventTriggered is false>>
 <<include "huntStart">>
 <</if>><</if>><</if>>
 
-<<if $currentsearchBlockACellBIronclad.temperature lte ($equipment.thermometer - 1)>> 
+<<if $currentsearchBlockACellBIronclad.temperature lte ($equipment.temperature - 1)>> 
 <<set $currentsearchBlockACellBIronclad.temperature += 1>>
-<<updatemeter 'searchBlockACellBIroncladTemperature' ` $currentsearchBlockACellBIronclad.temperature / $equipment.thermometer`>>
-<<elseif $currentsearchBlockACellBIronclad.temperature gte $equipment.thermometer>> 
+<<updatemeter 'searchBlockACellBIroncladTemperature' ` $currentsearchBlockACellBIronclad.temperature / $equipment.temperature`>>
+<<elseif $currentsearchBlockACellBIronclad.temperature gte $equipment.temperature>> 
 <<replace "#ironcladBlockACellBTemperature">><<include "temperatureHigh">><</replace>>
 <<set $currentsearchBlockACellBIronclad.temperature to 0>> <<removeclass ".cardlink" "disabled-link">>
 <<stop>>

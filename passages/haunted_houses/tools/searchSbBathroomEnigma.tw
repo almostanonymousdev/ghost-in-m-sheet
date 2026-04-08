@@ -6,19 +6,19 @@
 I need to turn off the light first</div><</replace>>
 <<else>><<addclass ".cardlink" "disabled-link">>
 <span id="enigmaBathroomSpiritbox">
-<<showmeter  'searchBathroomSpiritbox' ` $currentsearchBathroom.spiritbox / $equipment.sb`>>
+<<showmeter  'searchBathroomSpiritbox' ` $currentsearchBathroom.spiritbox / $equipment.spiritbox`>>
 </span>
 <<repeat `$timerToolsDecreased`>>
 <<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
 <<if $bathroom.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
 <<include "add1">>
-<<if $currentsearchBathroom.spiritbox neq $equipment.sb>><<include "lightPassageGhost">><<include "eventArt">>
+<<if $currentsearchBathroom.spiritbox neq $equipment.spiritbox>><<include "lightPassageGhost">><<include "eventArt">>
 <</if>>
 
-<<if $currentsearchBathroom.spiritbox lte ($equipment.sb - 1)>> 
+<<if $currentsearchBathroom.spiritbox lte ($equipment.spiritbox - 1)>> 
 <<set $currentsearchBathroom.spiritbox += 1>>
-<<updatemeter 'searchBathroomSpiritbox' ` $currentsearchBathroom.spiritbox / $equipment.sb`>>
-<<elseif $currentsearchBathroom.spiritbox gte $equipment.sb>>
+<<updatemeter 'searchBathroomSpiritbox' ` $currentsearchBathroom.spiritbox / $equipment.spiritbox`>>
+<<elseif $currentsearchBathroom.spiritbox gte $equipment.spiritbox>>
 <<replace "#actionBathroomEnigma">><<include "SpiritboxCheck">><</replace>> 
 <<replace "#enigmaBathroomSpiritbox">><</replace>>
 <<set $currentsearchBathroom.spiritbox to 0>> <<removeclass ".cardlink" "disabled-link">>

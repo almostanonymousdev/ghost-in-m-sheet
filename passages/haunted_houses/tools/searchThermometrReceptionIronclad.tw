@@ -2,7 +2,7 @@
 <<nobr>>
 <span id="ironcladReceptionTemperatureButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;T@@hermometer">><<addclass ".cardlink" "disabled-link">>
 <span id="ironcladReceptionTemperature">
-<<showmeter  'searchReceptionIroncladTemperature' ` $currentsearchReceptionIronclad.temperature / $equipment.thermometer`>>
+<<showmeter  'searchReceptionIroncladTemperature' ` $currentsearchReceptionIronclad.temperature / $equipment.temperature`>>
 </span>
 
 <<repeat `$timerToolsDecreased`>>
@@ -10,17 +10,17 @@
 <<if $reception.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
 
 <<include "add1">>
-<<if $currentsearchReceptionIronclad.temperature neq $equipment.thermometer>><<if $cursedHuntActive eq 1>>
+<<if $currentsearchReceptionIronclad.temperature neq $equipment.temperature>><<if $cursedHuntActive eq 1>>
 <<else>>
 <<include "lightPassageGhost">><<include "event">>
 <<if _eventTriggered is false>>
 <<include "huntStart">>
 <</if>><</if>><</if>>
 
-<<if $currentsearchReceptionIronclad.temperature lte ($equipment.thermometer - 1)>> 
+<<if $currentsearchReceptionIronclad.temperature lte ($equipment.temperature - 1)>> 
 <<set $currentsearchReceptionIronclad.temperature += 1>>
-<<updatemeter 'searchReceptionIroncladTemperature' ` $currentsearchReceptionIronclad.temperature / $equipment.thermometer`>>
-<<elseif $currentsearchReceptionIronclad.temperature gte $equipment.thermometer>> 
+<<updatemeter 'searchReceptionIroncladTemperature' ` $currentsearchReceptionIronclad.temperature / $equipment.temperature`>>
+<<elseif $currentsearchReceptionIronclad.temperature gte $equipment.temperature>> 
 <<replace "#ironcladReceptionTemperature">><<include "temperatureHigh">><</replace>>
 <<set $currentsearchReceptionIronclad.temperature to 0>> <<removeclass ".cardlink" "disabled-link">>
 <<stop>>

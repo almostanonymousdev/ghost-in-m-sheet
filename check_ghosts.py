@@ -19,16 +19,40 @@ VALID_EVIDENCE = {"emf", "gwb", "temperature", "glass", "spiritbox", "uvl"}
 EXPECTED_GHOST_COUNT = 18
 EVIDENCE_PER_GHOST = 3
 
+# Mirrors the $EvidenceType enum defined in StoryInit.tw
+EVIDENCE_TYPE_ENUM = {
+    "EMF":         "emf",
+    "SPIRITBOX":   "spiritbox",
+    "GWB":         "gwb",
+    "GLASS":       "glass",
+    "TEMPERATURE": "temperature",
+    "UVL":         "uvl",
+}
+
 # Matches:  <<set $ghostN to {  ... evidence: ["a", "b", "c"] ... }>>
 # We parse this in two passes: find the ghost number and evidence list separately.
 GHOST_SET = re.compile(r'<<set\s+\$ghost(\d+)\s+to\s+\{')
 EVIDENCE_LIST = re.compile(r'evidence:\s*\[([^\]]+)\]')
+# Matches $EvidenceType.KEY references
+EVIDENCE_TYPE_REF = re.compile(r'\$EvidenceType\.([A-Z_]+)')
 # Matches random(1,N) in GhostRandomize
 RANDOM_CALL = re.compile(r'random\s*\(\s*1\s*,\s*(\d+)\s*\)')
 
 
 def extract_strings(bracketed: str) -> list[str]:
-    """Pull all quoted strings out of a JS-style array literal."""
+    """
+    Pull evidence values out of a JS-style array literal.
+    Handles both legacy quoted strings ("emf") and enum references ($EvidenceType.EMF).
+    """
+    # Resolve $EvidenceType.KEY references
+    enum_values = [
+        EVIDENCE_TYPE_ENUM[m.group(1)]
+        for m in EVIDENCE_TYPE_REF.finditer(bracketed)
+        if m.group(1) in EVIDENCE_TYPE_ENUM
+    ]
+    if enum_values:
+        return enum_values
+    # Fall back to quoted string literals for any legacy definitions
     return re.findall(r'["\']([^"\']+)["\']', bracketed)
 
 

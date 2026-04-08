@@ -2,7 +2,7 @@
 <<nobr>>
 <span id="ironcladBlockATemperatureButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;T@@hermometer">><<addclass ".cardlink" "disabled-link">>
 <span id="ironcladBlockATemperature">
-<<showmeter  'searchBlockAIroncladTemperature' ` $currentsearchBlockAIronclad.temperature / $equipment.thermometer`>>
+<<showmeter  'searchBlockAIroncladTemperature' ` $currentsearchBlockAIronclad.temperature / $equipment.temperature`>>
 </span>
 
 <<repeat `$timerToolsDecreased`>>
@@ -10,17 +10,17 @@
 <<if $BlockA.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
 
 <<include "add1">>
-<<if $currentsearchBlockAIronclad.temperature neq $equipment.thermometer>><<if $cursedHuntActive eq 1>>
+<<if $currentsearchBlockAIronclad.temperature neq $equipment.temperature>><<if $cursedHuntActive eq 1>>
 <<else>>
 <<include "lightPassageGhost">><<include "event">>
 <<if _eventTriggered is false>>
 <<include "huntStart">>
 <</if>><</if>><</if>>
 
-<<if $currentsearchBlockAIronclad.temperature lte ($equipment.thermometer - 1)>> 
+<<if $currentsearchBlockAIronclad.temperature lte ($equipment.temperature - 1)>> 
 <<set $currentsearchBlockAIronclad.temperature += 1>>
-<<updatemeter 'searchBlockAIroncladTemperature' ` $currentsearchBlockAIronclad.temperature / $equipment.thermometer`>>
-<<elseif $currentsearchBlockAIronclad.temperature gte $equipment.thermometer>> 
+<<updatemeter 'searchBlockAIroncladTemperature' ` $currentsearchBlockAIronclad.temperature / $equipment.temperature`>>
+<<elseif $currentsearchBlockAIronclad.temperature gte $equipment.temperature>> 
 <<replace "#ironcladBlockATemperature">><<include "temperatureHigh">><</replace>>
 <<set $currentsearchBlockAIronclad.temperature to 0>> <<removeclass ".cardlink" "disabled-link">>
 <<stop>>

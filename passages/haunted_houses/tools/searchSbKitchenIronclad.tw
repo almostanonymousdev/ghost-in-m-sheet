@@ -6,14 +6,14 @@
 I need to turn off the light first</div><</replace>>
 <<else>><<addclass ".cardlink" "disabled-link">>
 <span id="ironcladKitchenSpiritbox">
-<<showmeter  'searchKitchenIroncladSpiritbox' ` $currentsearchKitchenIronclad.spiritbox / $equipment.sb`>>
+<<showmeter  'searchKitchenIroncladSpiritbox' ` $currentsearchKitchenIronclad.spiritbox / $equipment.spiritbox`>>
 </span>
 <<repeat `$timerToolsDecreased`>>
 <<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
 <<if $kitchen.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
 
 <<include "add1">>
-<<if $currentsearchKitchenIronclad.spiritbox neq $equipment.sb>><<if $cursedHuntActive eq 1>>
+<<if $currentsearchKitchenIronclad.spiritbox neq $equipment.spiritbox>><<if $cursedHuntActive eq 1>>
 <<else>>
 <<include "lightPassageGhost">><<include "event">>
 <<if _eventTriggered is false>>
@@ -21,10 +21,10 @@ I need to turn off the light first</div><</replace>>
 <</if>><</if>><</if>>
 
 
-<<if $currentsearchKitchenIronclad.spiritbox lte ($equipment.sb - 1)>> 
+<<if $currentsearchKitchenIronclad.spiritbox lte ($equipment.spiritbox - 1)>> 
 <<set $currentsearchKitchenIronclad.spiritbox += 1>>
-<<updatemeter 'searchKitchenIroncladSpiritbox' ` $currentsearchKitchenIronclad.spiritbox / $equipment.sb`>>
-<<elseif $currentsearchKitchenIronclad.spiritbox gte $equipment.sb>>
+<<updatemeter 'searchKitchenIroncladSpiritbox' ` $currentsearchKitchenIronclad.spiritbox / $equipment.spiritbox`>>
+<<elseif $currentsearchKitchenIronclad.spiritbox gte $equipment.spiritbox>>
 <<replace "#actionironcladKitchen">><<include "SpiritboxCheck">><</replace>> 
 <<replace "#ironcladKitchenSpiritbox">><</replace>>
 <<set $currentsearchKitchenIronclad.spiritbox to 0>> <<removeclass ".cardlink" "disabled-link">><<stop>>

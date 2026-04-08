@@ -7,14 +7,14 @@ I need to turn off the light first</div><</replace>>
 <<else>><<addclass ".cardlink" "disabled-link">>
 <div id="owaissaLivingroomSpiritbox">
 
-<<showmeter 'searchLivingroomSpiritbox' `$currentsearchLivingroom.spiritbox / $equipment.sb`>></div> 
+<<showmeter 'searchLivingroomSpiritbox' `$currentsearchLivingroom.spiritbox / $equipment.spiritbox`>></div> 
 <<repeat `$timerToolsDecreased`>>
-<<if $currentsearchLivingroom.spiritbox lte $equipment.sb>> 
+<<if $currentsearchLivingroom.spiritbox lte $equipment.spiritbox>> 
 <<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
 <<if $livingroom.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
 
 <<include "add1">>
-<<if $currentsearchLivingroom.spiritbox neq $equipment.sb>><<if $cursedHuntActive eq 1>>
+<<if $currentsearchLivingroom.spiritbox neq $equipment.spiritbox>><<if $cursedHuntActive eq 1>>
 <<else>>
 <<include "lightPassageGhost">><<include "event">>
 <<if _eventTriggered is false>>
@@ -24,9 +24,9 @@ I need to turn off the light first</div><</replace>>
 <<include "huntStart">>
 <</if>><</if>><</if>>
 
-<<if $currentsearchLivingroom.spiritbox lte ($equipment.sb - 1)>> 
+<<if $currentsearchLivingroom.spiritbox lte ($equipment.spiritbox - 1)>> 
 <<set $currentsearchLivingroom.spiritbox += 1>> 
-<<updatemeter 'searchLivingroomSpiritbox' `$currentsearchLivingroom.spiritbox / $equipment.sb`>><<elseif $currentsearchLivingroom.spiritbox gte $equipment.sb>> 
+<<updatemeter 'searchLivingroomSpiritbox' `$currentsearchLivingroom.spiritbox / $equipment.spiritbox`>><<elseif $currentsearchLivingroom.spiritbox gte $equipment.spiritbox>> 
 <<replace "#actionLivingroom">><<include "SpiritboxCheck">><</replace>> 
 <<replace "#owaissaLivingroomSpiritbox">><</replace>> 
 <<set $currentsearchLivingroom.spiritbox to 0>> <<removeclass ".cardlink" "disabled-link">>

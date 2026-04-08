@@ -6,7 +6,7 @@
 I need to turn off the light first</div><</replace>>
 <<else>><<addclass ".cardlink" "disabled-link">>
 <span id="elmBedroomSpiritbox">
-<<showmeter  'searchBedroomSpiritbox' ` $currentsearchBedroom.spiritbox / $equipment.sb`>>
+<<showmeter  'searchBedroomSpiritbox' ` $currentsearchBedroom.spiritbox / $equipment.spiritbox`>>
 </span>
 
 <<repeat `$timerToolsDecreased`>>
@@ -14,7 +14,7 @@ I need to turn off the light first</div><</replace>>
 <<if $bedroom.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
 
 <<include "add1">>
-<<if $currentsearchBedroom.spiritbox neq $equipment.sb>><<if $cursedHuntActive eq 1>>
+<<if $currentsearchBedroom.spiritbox neq $equipment.spiritbox>><<if $cursedHuntActive eq 1>>
 <<else>>
 <<include "lightPassageGhost">><<include "event">>
 <<if _eventTriggered is false>>
@@ -24,10 +24,10 @@ I need to turn off the light first</div><</replace>>
 <<include "huntStart">>
 <</if>><</if>><</if>>
 
-<<if $currentsearchBedroom.spiritbox lte ($equipment.sb - 1)>> 
+<<if $currentsearchBedroom.spiritbox lte ($equipment.spiritbox - 1)>> 
 <<set $currentsearchBedroom.spiritbox += 1>>
-<<updatemeter 'searchBedroomSpiritbox' ` $currentsearchBedroom.spiritbox / $equipment.sb`>>
-<<elseif $currentsearchBedroom.spiritbox gte $equipment.sb>>
+<<updatemeter 'searchBedroomSpiritbox' ` $currentsearchBedroom.spiritbox / $equipment.spiritbox`>>
+<<elseif $currentsearchBedroom.spiritbox gte $equipment.spiritbox>>
 <<replace "#actionBedroomElm">><<include "SpiritboxCheck">><</replace>> 
 <<replace "#elmBedroomSpiritbox">><</replace>>
 <<set $currentsearchBedroom.spiritbox to 0>> <<removeclass ".cardlink" "disabled-link">><<stop>>

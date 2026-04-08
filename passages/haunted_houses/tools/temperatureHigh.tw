@@ -31,19 +31,19 @@
 <<if _validPassages[$ghostRoom.name] && _validPassages[$ghostRoom.name].includes(passage())>>
     <<if $ghost.evidence.includes("temperature")>>
         <span class="toolsTextCentered boldText">
-<<if $equipment.thermometer eq 5>>
+<<if $equipment.temperature eq 5>>
 <<if $ghost.name eq "Raiju" and _checkRaiju eq 8>>
 <<print random(0, 50)>>
 <<else>>
 <<print random(13, 16) + $temperature + 8>>
 <</if>>
-<<elseif $equipment.thermometer eq 4>>
+<<elseif $equipment.temperature eq 4>>
 <<if $ghost.name eq "Raiju" and _checkRaiju eq 8>>
 @@color:red;<<print random(0, 50)>>@@
 <<else>>
 @@color:red;<<print random(13, 16) + $temperature + 8>>@@
 <</if>>
-<<elseif $equipment.thermometer eq 3>>
+<<elseif $equipment.temperature eq 3>>
 <<if $ghost.name eq "Raiju" and _checkRaiju eq 8>>
 @@color:red;<<print random(0, 50)>>@@
 <<else>>
@@ -51,19 +51,19 @@
 <</if>></span>
     <<else>>
     <span class="toolsTextCentered boldText">
-<<if $equipment.thermometer eq 5>>
+<<if $equipment.temperature eq 5>>
 <<if $ghost.name eq "Raiju" and _checkRaiju eq 8>>
 <<print random(0, 50)>>
 <<else>>
 <<print random(13, 16) + $temperature + 5>>
 <</if>>
-<<elseif $equipment.thermometer eq 4>>
+<<elseif $equipment.temperature eq 4>>
 <<if $ghost.name eq "Raiju" and _checkRaiju eq 8>>
 @@color:red;<<print random(0, 50)>>@@
 <<else>>
 @@color:red;<<print random(13, 16) + 5>>@@
 <</if>>
-<<elseif $equipment.thermometer eq 3>>
+<<elseif $equipment.temperature eq 3>>
 <<if $ghost.name eq "Raiju" and _checkRaiju eq 8>>
 @@color:yellow;<<print random(0, 50)>>@@
 <<else>>
@@ -72,18 +72,18 @@
     <</if>>
 <<else>>
     <span class="toolsTextCentered boldText">
-    <<if $equipment.thermometer eq 5>>
+    <<if $equipment.temperature eq 5>>
 <<if $ghost.name eq "Raiju" and _checkRaiju eq 8>>
 <<print random(0, 50)>>
 <<else>>
     <<print random(13, 16) + $temperature>>
     <</if>>
-<<elseif $equipment.thermometer eq 4>>
+<<elseif $equipment.temperature eq 4>>
 <<if $ghost.name eq "Raiju" and _checkRaiju eq 8>>
 @@color:green;<<print random(0, 50)>>@@
 <<else>>
 @@color:green;<<print random(13, 16) + $temperature>>@@<</if>>
-<<elseif $equipment.thermometer eq 3>>
+<<elseif $equipment.temperature eq 3>>
 <<if $ghost.name eq "Raiju" and _checkRaiju eq 8>>
 @@color:green;<<print random(0, 50)>>@@
 <<else>>
