@@ -1,0 +1,222 @@
+sugarcube-2:
+  macros:
+    updatemeter:
+      name: updatemeter
+      description: "Updates a named meter's value without re-rendering it. If the
+        meter is currently on the page it updates in place with animation. Args:
+        meterName (string), value (number, 0-1)."
+    eventRandomizer1:
+      name: eventRandomizer1
+      description: Triggers a ghost interaction event at intensity level 1 (lowest).
+        Sets $argForRandomizer to 1 and _eventTriggered to true. Selects a video
+        based on current clothing state and active haunted house.
+    eventRandomizer2:
+      name: eventRandomizer2
+      description: Triggers a ghost interaction event at intensity level 2. Sets
+        $argForRandomizer to 2 and _eventTriggered to true. Selects a video
+        based on current clothing state and active haunted house.
+    eventRandomizer3:
+      name: eventRandomizer3
+      description: Triggers a ghost interaction event at intensity level 3. Sets
+        $argForRandomizer to 3 and _eventTriggered to true. Selects a video
+        based on current clothing state and active haunted house.
+    eventRandomizer4:
+      name: eventRandomizer4
+      description: Triggers a ghost interaction event at intensity level 4. Sets
+        $argForRandomizer to 4 and _eventTriggered to true. Selects a video
+        based on current clothing state and active haunted house.
+    eventRandomizer5:
+      name: eventRandomizer5
+      description: Triggers a ghost interaction event at intensity level 5. Sets
+        $argForRandomizer to 5 and _eventTriggered to true. Selects a video
+        based on current clothing state and active haunted house.
+    eventRandomizer6:
+      name: eventRandomizer6
+      description: Triggers a ghost interaction event at intensity level 6. Sets
+        $argForRandomizer to 6 and _eventTriggered to true. Selects a video
+        based on current clothing state and active haunted house.
+    eventRandomizer7:
+      name: eventRandomizer7
+      description: Triggers a ghost interaction event at intensity level 7 (highest).
+        Sets $argForRandomizer to 7 and _eventTriggered to true. Selects a video
+        based on current clothing state and active haunted house.
+    eventRandomizerText:
+      name: eventRandomizerText
+      description: Displays the text and stat changes for the current ghost
+        interaction event. Uses $argForRandomizer to determine which event
+        tier's dialogue and effects to show.
+    CompExp:
+      name: CompExp
+      description: "Adds experience points to the active companion ($companion).
+        Checks $companion.name and applies the given amount to the matching
+        companion object (e.g. $brook.exp). Does nothing if the companion is
+        already at max level (5). Args: amount (number)."
+    compLinks:
+      name: compLinks
+      description: Renders the active companion's portrait as a clickable link to
+        their main hub passage. Uses $companion.name to select the correct image
+        and passage.
+    compLinksSuccess:
+      name: compLinksSuccess
+      description: Renders the active companion's portrait as a link to the
+        'succeededComp' passage. Uses $companion.name to select the correct
+        image.
+    CompanionTextcompEvent1:
+      name: CompanionTextcompEvent1
+      description: Displays companion-specific dialogue and applies stat changes for
+        ghost encounter event type 1. Adjusts $companion.sanity and
+        $companion.lust. Handles trans-companion transformation stage 1 for
+        Alex/Taylor/Casey.
+    CompanionTextcompEvent2:
+      name: CompanionTextcompEvent2
+      description: Displays companion-specific dialogue and applies stat changes for
+        ghost encounter event type 2. Adjusts $companion.sanity and
+        $companion.lust, and grants +15 MC lust. Handles trans-companion
+        transformation for Alex/Taylor/Casey.
+    CompanionTextcompEvent3:
+      name: CompanionTextcompEvent3
+      description: Displays companion-specific dialogue and applies stat changes for
+        ghost encounter event type 3. Adjusts $companion.sanity and
+        $companion.lust, and grants +15 MC lust. Handles trans-companion
+        transformation for Alex/Taylor/Casey.
+    CompanionTextcompEvent4:
+      name: CompanionTextcompEvent4
+      description: Displays companion-specific dialogue and applies stat changes for
+        ghost encounter event type 4. Adjusts $companion.sanity and
+        $companion.lust, and grants +15 MC lust. Handles trans-companion
+        transformation for Alex/Taylor/Casey.
+    isCompanionContinue:
+      name: isCompanionContinue
+      description: 'Renders a linkappend asking whether the companion can continue the
+        hunt. Evaluates companion level and sanity against the given thresholds.
+        On success may trigger <<include "CompResult">> and calls <<CompExp 2>>.
+        Args: companionLevel (number), levelThreshold (number), sanityMin
+        (number), sanityMax (number).'
+    AliceLustHighEvent:
+      name: AliceLustHighEvent
+      description: "Renders an extra action button shown when Alice's lust is high
+        enough. The button reduces $companion.sanity by 3 and replaces
+        #eventVideo with <<include \"AliceHelp\">>."
+    includeTimeEventClothesHunt:
+      name: includeTimeEventClothesHunt
+      description: Advances time by 1 hour, runs the event check, then attempts a
+        clothes-steal event. Falls through to huntStart if no event fires. Does
+        nothing during an active cursed hunt ($cursedHuntActive eq 1).
+    includeTimeEventHunt:
+      name: includeTimeEventHunt
+      description: Advances time by 1 hour, runs the event check, then falls through
+        to huntStart if no event fires. Does nothing during an active cursed
+        hunt ($cursedHuntActive eq 1).
+    includeStyle:
+      name: includeStyle
+      description: Injects CSS background-image for the current room based on
+        previous() and the room's $*.background variable. Covers all rooms in
+        the Owaissa and Elm Street haunted houses.
+    includeStyle2:
+      name: includeStyle2
+      description: Extended version of <<includeStyle>> covering additional rooms and
+        background variants. Injects CSS for the current room based on passage
+        context and background variables.
+    includeStyleEventMC:
+      name: includeStyleEventMC
+      description: "Applies a CSS filter (brightness/contrast/grayscale) to the
+        #eventVideo element, used during MC-focused events to create a stylised
+        visual effect."
+    cthulionAbility:
+      name: cthulionAbility
+      description: "Sets _videoList to the video pool for a specific Cthulion ghost
+        ability tier (1-4). Used before rendering the event video for
+        Cthulion-specific scenes. Args: tier (number, 1-4)."
+    minigameVideo:
+      name: minigameVideo
+      description: Renders the media (image or video) for the current minigame state.
+        Uses $minigameVideo and $ghostOrgasmMeter to select content from
+        _videoList.
+    minigameMenu:
+      name: minigameMenu
+      description: Renders the interactive action buttons for the seduction minigame.
+        Button choices depend on $minigameVideo state and current stats.
+    minigameText:
+      name: minigameText
+      description: Renders the dialogue and stat feedback text for the current
+        seduction minigame state.
+    ghostRoom:
+      name: ghostRoom
+      description: Prints the human-readable display name of the ghost's current
+        favourite room. Maps $ghostRoom.name internal keys (e.g. "bedroomTwo")
+        to display strings.
+    activity:
+      name: activity
+      description: "Monkey Paw wish: replaces .MonkeyPawShow with a random
+        cursed-possessions video. Costs 1 wish, decreases sanity by 15, and
+        increases MC lust by 15."
+    traptheghost:
+      name: traptheghost
+      description: "Monkey Paw wish: spends 1 wish and sets $ghostIsTrapped to 1,
+        preventing the ghost from changing its favourite room. Decreases sanity
+        by 15."
+    sanity:
+      name: sanity
+      description: "Monkey Paw wish: spends 1 wish and resets $mc.sanity to 50,
+        updating the sanity meter display."
+    leave:
+      name: leave
+      description: "Monkey Paw wish: spends 1 wish, ends the cursed hunt
+        ($cursedHuntActive to 0), and sends the player back to the haunted house
+        street passage (Elm Street or Owaissa Street)."
+    knowledge:
+      name: knowledge
+      description: 'Monkey Paw wish: spends 1 wish (once per hunt via $knowledgeUsed)
+        to eliminate a random non-ghost evidence from the diary. After a
+        2-second delay, triggers a ghost hunt event via <<goto
+        "ghostHuntEvent">>.'
+    dawn:
+      name: dawn
+      description: "Monkey Paw wish: spends 1 wish, skips time to 6:00 AM ($hours to
+        6), ends the cursed hunt, and goes to the HuntOverTime passage."
+    anything:
+      name: anything
+      description: "Monkey Paw wish: rolls a random number (1-6) into _check. The
+        result is used by the calling passage to determine a random outcome."
+    webcamEvent:
+      name: webcamEvent
+      description: Runs the webcam show for the current $webcamEvent type ("tease",
+        "masturbate", "toypussy", "toyanal", "fingeranal"). Grants +60 lust and
+        money, +0.2 corruption (if below 10), and sets $webcamShowCD to 1.
+    showmeter:
+      name: showmeter
+      description: "Renders a named meter to the page at the current location. Optionally
+        sets its value at the same time. The element receives the id
+        \"meter-<slugified-name>\". Args: meterName (string), [value (number, 0-1)]."
+    hovertip:
+      name: hovertip
+      container: true
+      description: "Container macro that wraps its contents with a tooltip. On hover
+        or focus, shows the tooltip text above the element, repositioned
+        automatically to stay on-screen. Args: tooltipText (string), [maxWidth
+        (number, px)]."
+    newmeter:
+      name: newmeter
+      container: true
+      description: "Defines a new named meter. Must be called in StoryInit. Supports
+        child tags: <<colors>>, <<sizing>>, <<animation>>, <<label>>. Args:
+        meterName (string), [startingValue (number, 0-1)]."
+    sizing:
+      name: sizing
+      description: "Child tag of <<newmeter>>. Sets the meter's dimensions. Args:
+        width (CSS value), [height (CSS value)]."
+    colors:
+      name: colors
+      description: "Child tag of <<newmeter>>. Sets the meter's fill, empty, and
+        background colors. With 1 arg sets a solid color; with 2 sets full+empty;
+        with 3 sets full+empty+backing. Args: full (color), [empty (color)],
+        [backing (color)]."
+    label:
+      name: label
+      description: "Child tag of <<newmeter>>. Adds a text label to the meter. Args:
+        labelText (string), [textColor (CSS color)], [alignment (string)]."
+    animation:
+      name: animation
+      description: "Child tag of <<newmeter>>. Configures the fill animation. Pass
+        false to disable or a CSS time value (e.g. \"0.4s\") to set duration.
+        Args: timeOrBool (CSS time string | false), [easing (\"swing\" | \"linear\")]."
