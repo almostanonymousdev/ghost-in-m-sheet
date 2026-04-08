@@ -2,32 +2,29 @@
 
 Ghost possession is a dangerous mechanic that can occur during hunts. When possessed, your character's behavior and appearance change, and you may experience hallucinations or other supernatural effects. The possession system includes multiple stages and can lead to special events depending on the ghost type and your actions. Some companions have specific responses to possession events, and there are mechanics for treating or recovering from possession. The possession plotline adds tension and risk to the ghost hunting experience.
 
-* **Possession triggers** - Possession can occur during hunts, especially when your sanity is low, you're in high-corruption areas, or when interacting with certain ghost types. Some companions are more resistant to possession.
-  * [[possession/trigger.tw|trigger]] - Possession trigger mechanics
-  * [[possession/riskFactors.tw|riskFactors]] - Risk factor analysis
-  * [[possession/possessionResist.tw|possessionResist]] - Possession resistance mechanics
+* **Core possession mechanics** - The main possession system that handles becoming possessed and the resulting state.
+  * [possessed__nobr.tw](../passages/posession/possessed__nobr.tw) - Main possession state and effects
 
-* **Possession stages** - Possession progresses through multiple stages, each with increasing severity of effects. Early stages may only cause minor hallucinations, while later stages can lead to complete loss of control.
-  * [[possession/stages/stage1.tw|stage1]] - First stage possession effects
-  * [[possession/stages/stage2.tw|stage2]] - Second stage possession effects
-  * [[possession/stages/stage3.tw|stage3]] - Third stage possession effects
-  * [[possession/stages/stage4.tw|stage4]] - Fourth stage possession effects
+* **Possession locations** - Possession events that trigger based on where the player is during a hunt.
+  * [possessedLocation__nobr.tw](../passages/posession/possessedLocation__nobr.tw) - Location-based possession event entry
+  * [possessedLocation1__nobr.tw](../passages/posession/possessedLocation1__nobr.tw) - First stage location possession
+  * [possessedLocation2__nobr.tw](../passages/posession/possessedLocation2__nobr.tw) - Second stage location possession
 
-* **Ghost-specific possession** - Different ghost types cause unique possession effects. For example, the Mare causes sleep paralysis, while the Myling may force you to cry out. Some possessions have sexual or sensual components.
-  * [[possession/ghostSpecific/mare.tw|mare]] - Mare possession mechanics
-  * [[possession/ghostSpecific/myling.tw|myling]] - Myling possession mechanics
-  * [[possession/ghostSpecific/wraith.tw|wraith]] - Wraith possession mechanics
-  * [[possession/ghostSpecific/tvSpirit.tw|tvSpirit]] - TV Spirit possession mechanics
+* **Companion-specific possession** - Brook has unique possession scenarios, including one that occurs at the church.
+  * [possessedBrooke__nobr.tw](../passages/posession/possessedBrooke__nobr.tw) - Brook's possession event during hunts
+  * [possessedBrookeChurch__nobr.tw](../passages/posession/possessedBrookeChurch__nobr.tw) - Brook's possession event at the church
 
-* **Companion responses** - Companions react differently to possession events. Some try to help you recover, others may be frightened or even attracted to the possessed state. Certain companions can help break possession.
-  * [[possession/companionResponse.tw|companionResponse]] - Companion possession responses
-  * [[possession/companionHelp.tw|companionHelp]] - Companion assistance during possession
+* **Possession during rescue** - Missing women can be possessed during rescue missions, requiring specific handling to save them. See [missing-women.md](missing-women.md) for the full list of rescue possession passages.
+  * [rescuePossessed__nobr.tw](../passages/missing_women/rescuePossessed__nobr.tw) - General rescue possession mechanics
 
-* **Recovery and treatment** - Possession can be broken through various means: companions, specific items, rituals, or simply waiting it out. Recovery may require rest, medical attention, or spiritual cleansing.
-  * [[possession/recovery.tw|recovery]] - Possession recovery mechanics
-  * [[possession/treatment.tw|treatment]] - Treatment options
-  * [[possession/recoveryEffects.tw|recoveryEffects]] - Recovery after-effects
+* **City map while possessed** - The city map changes appearance when the player is in a possessed state.
+  * [CityMapPossessed__city.tw](../passages/CityMapPossessed__city.tw) - City navigation while possessed
 
-* **Long-term effects** - Repeated possession can lead to permanent changes in your character, including increased susceptibility, new abilities, or personality shifts. Some effects may be beneficial, while others are dangerous.
-  * [[possession/longTerm.tw|longTerm]] - Long-term possession effects
-  * [[possession/possessionAddiction.tw|possessionAddiction]] - Possession addiction mechanics
+* **Summoning possession at home** - The player can summon spirits at home that cause possession-adjacent events.
+  * [summoning__nobr.tw](../passages/home/summoning/summoning__nobr.tw) - Home summoning ritual
+  * [summoningStart__nobr.tw](../passages/home/summoning/summoningStart__nobr.tw) - Starting the summoning ritual
+  * [summonMare__nobr.tw](../passages/home/summoning/summonMare__nobr.tw) - Summoning the Mare
+  * [summonSpirit__nobr.tw](../passages/home/summoning/summonSpirit__nobr.tw) - Summoning a spirit
+  * [summonTentacles__nobr.tw](../passages/home/summoning/summonTentacles__nobr.tw) - Summoning tentacles
+  * [summonTwins__nobr.tw](../passages/home/summoning/summonTwins__nobr.tw) - Summoning the twins
+  * [succubusChoice__nobr.tw](../passages/home/summoning/succubusChoice__nobr.tw) - Succubus summoning choices
