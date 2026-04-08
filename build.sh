@@ -45,13 +45,27 @@ if [ -z "$(ls -A "$PASSAGES_DIR"/*.tw 2>/dev/null)" ]; then
     exit 1
 fi
 
-# Check passage links before building
-echo -e "${GREEN}Checking passage links...${NC}"
+# Run all passage checks before building
+echo -e "${GREEN}Checking passage links and duplicates...${NC}"
 if ! python3 "$SCRIPT_DIR/check_links.py"; then
-    echo -e "${RED}Error: Broken links detected. Fix them before building.${NC}"
+    echo -e "${RED}Error: Passage link/duplicate check failed.${NC}"
     exit 1
 fi
 echo -e "${GREEN}Link check passed.${NC}"
+
+echo -e "${GREEN}Checking asset references...${NC}"
+if ! python3 "$SCRIPT_DIR/check_assets.py"; then
+    echo -e "${RED}Error: Missing asset files detected.${NC}"
+    exit 1
+fi
+echo -e "${GREEN}Asset check passed.${NC}"
+
+echo -e "${GREEN}Checking ghost data integrity...${NC}"
+if ! python3 "$SCRIPT_DIR/check_ghosts.py"; then
+    echo -e "${RED}Error: Ghost data integrity check failed.${NC}"
+    exit 1
+fi
+echo -e "${GREEN}Ghost check passed.${NC}"
 
 # Build the story
 echo -e "${GREEN}Building story from $PASSAGES_DIR to $OUTPUT_FILE...${NC}"

@@ -56,16 +56,18 @@ def is_dynamic(target: str) -> bool:
     return False
 
 
-def collect_passages(passages_dir: Path) -> dict[str, Path]:
-    """Return a mapping of passage name -> file path for every passage defined."""
-    passages: dict[str, Path] = {}
+def collect_passages(passages_dir: Path) -> tuple[dict[str, Path], list[tuple[str, list[Path]]]]:
+    """Return (name->file mapping, list of (name, [files]) for duplicates)."""
+    seen: dict[str, list[Path]] = {}
     for tw_file in sorted(passages_dir.rglob("*.tw")):
         for line in tw_file.read_text(encoding="utf-8", errors="replace").splitlines():
             m = PASSAGE_HEADER.match(line)
             if m:
                 name = m.group(1).strip()
-                passages[name] = tw_file
-    return passages
+                seen.setdefault(name, []).append(tw_file)
+    passages = {name: files[0] for name, files in seen.items()}
+    duplicates = [(name, files) for name, files in seen.items() if len(files) > 1]
+    return passages, duplicates
 
 
 def collect_links(passages_dir: Path) -> list[tuple[str, int, str]]:
@@ -94,7 +96,7 @@ def main():
         print(f"ERROR: passages directory not found at {passages_dir}", file=sys.stderr)
         sys.exit(1)
 
-    passages = collect_passages(passages_dir)
+    passages, duplicates = collect_passages(passages_dir)
     all_known = set(passages.keys()) | SUGARCUBE_BUILTINS
 
     links = collect_links(passages_dir)
@@ -105,39 +107,52 @@ def main():
             broken.append((file_path, lineno, target))
 
     # Deduplicate while preserving order
-    seen: set[tuple[str, str]] = set()
+    dedup_seen: set[tuple[str, str]] = set()
     unique_broken: list[tuple[str, int, str]] = []
     for file_path, lineno, target in broken:
         key = (file_path, target)
-        if key not in seen:
-            seen.add(key)
+        if key not in dedup_seen:
+            dedup_seen.add(key)
             unique_broken.append((file_path, lineno, target))
 
     print(f"Passages found : {len(passages)}")
     print(f"Links checked  : {len(links)}")
 
-    if not unique_broken:
-        print("No broken links found.")
-        sys.exit(0)
+    failed = False
 
-    print(f"\nBROKEN LINKS ({len(unique_broken)} unique targets):\n")
-    # Group by missing target for readability
-    by_target: dict[str, list[tuple[str, int]]] = {}
-    for file_path, lineno, target in unique_broken:
-        by_target.setdefault(target, []).append((file_path, lineno))
+    if duplicates:
+        failed = True
+        print(f"\nDUPLICATE PASSAGE NAMES ({len(duplicates)}):\n")
+        for name, files in sorted(duplicates):
+            print(f'  "{name}" defined in:')
+            for f in files:
+                try:
+                    rel = f.relative_to(repo_root)
+                except ValueError:
+                    rel = f
+                print(f"      {rel}")
 
-    for target in sorted(by_target):
-        refs = by_target[target]
-        print(f'  "{target}"  — referenced in:')
-        for file_path, lineno in refs:
-            # Show path relative to repo root for brevity
-            try:
-                rel = Path(file_path).relative_to(repo_root)
-            except ValueError:
-                rel = file_path
-            print(f"      {rel}:{lineno}")
+    if unique_broken:
+        failed = True
+        print(f"\nBROKEN LINKS ({len(unique_broken)} unique targets):\n")
+        by_target: dict[str, list[tuple[str, int]]] = {}
+        for file_path, lineno, target in unique_broken:
+            by_target.setdefault(target, []).append((file_path, lineno))
 
-    sys.exit(1)
+        for target in sorted(by_target):
+            refs = by_target[target]
+            print(f'  "{target}"  — referenced in:')
+            for file_path, lineno in refs:
+                try:
+                    rel = Path(file_path).relative_to(repo_root)
+                except ValueError:
+                    rel = file_path
+                print(f"      {rel}:{lineno}")
+
+    if not failed:
+        print("No broken links or duplicate passages found.")
+
+    sys.exit(1 if failed else 0)
 
 
 if __name__ == "__main__":
