@@ -1,13 +1,13 @@
 {
-  "name": "the-ghost-hunter-fork",
+  "name": "ghost-in-msheet",
   "version": "1.0.0",
-  "description": "An attempt at continuing Trykowka's 'The Ghost Hunter'",
+  "description": "An attempt at continuing Trykowka's 'The Ghost Hunter', now as Ghost in M'Sheet",
   "main": "index.html",
   "scripts": {
     "build": "./build.sh",
     "start": "./start.sh",
     "watch": "while inotifywait -e modify -e create -e delete passages/*.tw; do ./build.sh; done",
-    "clean": "rm -f tgh-fork.html",
+    "clean": "rm -f ghost-in-msheet.html",
     "rebuild": "npm run clean && npm run build"
   },
   "keywords": [

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Start script for The Ghost Hunter Fork
+# Start script for Ghost in M'Sheet
 # This script builds the story and opens it in the default browser
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -12,7 +12,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-OUTPUT_FILE="tgh-fork.html"
+OUTPUT_FILE="ghost-in-msheet.html"
 
 # Build the story first
 echo -e "${YELLOW}Building story...${NC}"

@@ -1,4 +1,4 @@
-# The Ghost Hunter Fork
+# Ghost in M'Sheet
 
 An attempt at continuing Trykowka's "The Ghost Hunter".
 
@@ -11,7 +11,7 @@ This fork is maintained independently and the original author, Trykowka, is not 
 ### Prerequisites
 
 - Tweego (Twee/Twine compiler)
-  - Download from: https://github.com/tmedwards/tweego
+  - Download from: <https://github.com/tmedwards/tweego>
   - Or use the automated setup script below
 
 ### Setup
@@ -28,7 +28,7 @@ Run the setup script to automatically download and install Tweego:
 
 If you prefer to set up Tweego manually:
 
-1. Download Tweego from: https://github.com/tmedwards/tweego/releases
+1. Download Tweego from: <https://github.com/tmedwards/tweego/releases>
 2. Extract the archive to the project root
 3. Ensure the path in `build.sh` matches your Tweego location:
    - Default: `../tweego-2.1.1-linux-x64/tweego`
@@ -54,7 +54,7 @@ If you prefer to set up Tweego manually:
 ./start.sh
 
 # Clean build artifacts
-rm -f tgh-fork.html
+rm -f ghost-in-msheet.html
 
 # Rebuild
 ./build.sh
@@ -138,7 +138,7 @@ npm run rebuild
 
 ## Output
 
-The build process creates `tgh-fork.html` in the project root directory, which can be:
+The build process creates `ghost-in-msheet.html` in the project root directory, which can be:
 
 - Opened directly in a web browser
 - Served using a local development server

@@ -1,6 +1,6 @@
 # Game Plotlines Overview
 
-This document provides high-level overviews of all the plotlines in The Ghost Hunter.
+This document provides high-level overviews of all the plotlines in Ghost in M'Sheet.
 
 ## [Companion/Relationship Plotlines](companions.md)
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Passage link checker for Better Ghost Hunter (Twine/SugarCube).
+Passage link checker for Ghost in M'Sheet (Twine/SugarCube).
 
 Finds broken links: references to passage names that don't exist.
 """

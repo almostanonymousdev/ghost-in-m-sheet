@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# Build script for The Ghost Hunter Fork
+# Build script for Ghost in M'Sheet
 # This script builds the Twee/Twine story into an HTML file
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$SCRIPT_DIR"
 
 # Configuration
-OUTPUT_FILE="tgh-fork.html"
+OUTPUT_FILE="ghost-in-msheet.html"
 PASSAGES_DIR="passages"
 TWEEGO_PATH="tweego-2.1.1-linux-x64/tweego"
 

@@ -1,9 +1,9 @@
-# Setup Guide for The Ghost Hunter Fork
+# Setup Guide for Ghost in M'Sheet
 
 ## Prerequisites
 
 - Tweego (Twee/Twine compiler)
-  - Download from: https://github.com/tmedwards/tweego
+  - Download from: <https://github.com/tmedwards/tweego>
   - Or use the automated setup script below
 
 ## Quick Setup
@@ -26,7 +26,7 @@ This will:
 
 If you prefer to set up Tweego manually:
 
-1. Download Tweego from: https://github.com/tmedwards/tweego/releases
+1. Download Tweego from: <https://github.com/tmedwards/tweego/releases>
 2. Extract the archive to the project root
 3. Ensure the path in `build.sh` matches your Tweego location:
    - Default: `../tweego-2.1.1-linux-x64/tweego`

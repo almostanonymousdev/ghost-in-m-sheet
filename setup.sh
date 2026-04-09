@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Setup script for The Ghost Hunter Fork
+# Setup script for Ghost in M'Sheet
 # This script downloads and sets up Tweego and SugarCube if needed
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -23,7 +23,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-echo -e "${GREEN}Setting up The Ghost Hunter Fork...${NC}"
+echo -e "${GREEN}Setting up Ghost in M'Sheet...${NC}"
 
 # Check if Tweego already exists
 if [ -f "$TWEEGO_PATH" ]; then

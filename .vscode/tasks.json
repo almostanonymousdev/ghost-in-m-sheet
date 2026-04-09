@@ -18,14 +18,14 @@
       "command": "./start.sh",
       "group": "test",
       "problemMatcher": [],
-      "detail": "Build the story and open tgh-fork.html in the default browser"
+      "detail": "Build the story and open ghost-in-msheet.html in the default browser"
     },
     {
       "label": "Clean Build Artifacts",
       "type": "shell",
       "command": "rm",
-      "args": ["-f", "tgh-fork.html"],
-      "group": "clean",
+      "args": ["-f", "ghost-in-msheet.html"],
+      "group": "none",
       "problemMatcher": [],
       "detail": "Remove the generated HTML file"
     },

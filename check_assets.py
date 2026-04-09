@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Asset reference checker for Better Ghost Hunter (Twine/SugarCube).
+Asset reference checker for Ghost in M'Sheet (Twine/SugarCube).
 
 Finds asset references in passage files that point to files not present on disk.
 Supports both legacy src="assets/..." and the setup.ImagePath variable patterns.

@@ -1,9 +1,9 @@
-# Build Instructions for The Ghost Hunter Fork
+# Build Instructions for Ghost in M'Sheet
 
 ## Prerequisites
 
 - Tweego (Twee/Twine compiler)
-  - Download from: https://github.com/tmedwards/tweego
+  - Download from: <https://github.com/tmedwards/tweego>
   - Place in the root directory as `tweego-2.1.1-linux-x64/tweego` (or update the path in build.sh)
   - Or install system-wide and ensure `tweego` is in your PATH
 
@@ -125,4 +125,5 @@ You can customize the build process by editing:
 - `start.sh`: Development server startup script
 - `.vscode/tasks.json`: VS Code task definitions
 - `.vscode/launch.json`: VS Code debug configurations
+
 ```

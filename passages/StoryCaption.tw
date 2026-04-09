@@ -66,7 +66,7 @@ All body parts are now at maximum sensitivity!
 <</linkreplace>>
 <</linkreplace>>@@
 
-<br>The GhostHunter 0.4.8
+<br>Ghost in M'Sheet 0.4.8
 <a class="linkselector" data-passage="ChangeLog">ChangeLog</a><br>
 <span class="debug"><<link "@@color:red;Fix Light/Exit Issue@@" `passage()`>><<set $cursedHuntActive to 0>><</link>></span><br>
 <<linkreplace "@@color:red;<em>Change Tools Timer</em>@@">>

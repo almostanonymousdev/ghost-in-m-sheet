@@ -5,7 +5,7 @@
       "name": "Open in Chrome",
       "type": "chrome",
       "request": "launch",
-      "file": "${workspaceFolder}/tgh-fork.html",
+      "file": "${workspaceFolder}/ghost-in-msheet.html",
       "webRoot": "${workspaceFolder}",
       "preLaunchTask": "Build Story"
     },
@@ -13,7 +13,7 @@
       "name": "Open in Firefox",
       "type": "firefox",
       "request": "launch",
-      "file": "${workspaceFolder}/tgh-fork.html",
+      "file": "${workspaceFolder}/ghost-in-msheet.html",
       "webRoot": "${workspaceFolder}",
       "preLaunchTask": "Build Story"
     }
