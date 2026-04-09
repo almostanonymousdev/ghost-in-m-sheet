@@ -19,24 +19,24 @@
         ($ghostRoom.name === "roomC" and (passage() === "enigmaRoomC")) or
         ($ghostRoom.name === "basement" and (passage() === "enigmaBasement")) 
     )>>
-        <<if _check eq 1>><img src="assets/gwb/1.jpg" class="evidenceImgs"><</if>>
-        <<if _check eq 2>><img src="assets/gwb/2.jpg" class="evidenceImgs"><</if>>
-        <<if _check eq 3>><img src="assets/gwb/3.jpg" class="evidenceImgs"><</if>>
-        <<if _check eq 4>><img src="assets/gwb/4.jpg" class="evidenceImgs"><</if>>
-        <<if _check eq 5>><img src="assets/gwb/5.jpg" class="evidenceImgs"><</if>>
-        <<if _check eq 6>><img src="assets/gwb/6.jpg" class="evidenceImgs"><</if>>
-        <<if _check eq 7>><img src="assets/gwb/7.jpg" class="evidenceImgs"><</if>>
-        <<if _check eq 8>><img src="assets/gwb/8.jpg" class="evidenceImgs"><</if>>
-        <<if _check eq 9>><img src="assets/gwb/9.jpg" class="evidenceImgs"><</if>>
-        <<if _check eq 10>><img src="assets/gwb/10.jpg" class="evidenceImgs"><</if>>
-        <<if _check eq 11>><img src="assets/gwb/11.jpg" class="evidenceImgs"><</if>>
-        <<if _check eq 12>><img src="assets/gwb/12.jpg" class="evidenceImgs"><</if>>
-        <<if _check eq 13>><img src="assets/gwb/13.jpg" class="evidenceImgs"><</if>>
-        <<if _check eq 14>><img src="assets/gwb/14.jpg" class="evidenceImgs"><</if>>
-        <<if _check eq 15>><img src="assets/gwb/15.jpg" class="evidenceImgs"><</if>>
-        <<if _check eq 16>><img src="assets/gwb/16.jpg" class="evidenceImgs"><</if>>
-        <<if _check eq 17>><img src="assets/gwb/17.jpg" class="evidenceImgs"><</if>>
-        <<if _check eq 18>><img src="assets/gwb/18.jpg" class="evidenceImgs"><</if>>
+        <<if _check eq 1>><img @src="setup.ImagePath + '/gwb/1.jpg'" class="evidenceImgs"><</if>>
+        <<if _check eq 2>><img @src="setup.ImagePath + '/gwb/2.jpg'" class="evidenceImgs"><</if>>
+        <<if _check eq 3>><img @src="setup.ImagePath + '/gwb/3.jpg'" class="evidenceImgs"><</if>>
+        <<if _check eq 4>><img @src="setup.ImagePath + '/gwb/4.jpg'" class="evidenceImgs"><</if>>
+        <<if _check eq 5>><img @src="setup.ImagePath + '/gwb/5.jpg'" class="evidenceImgs"><</if>>
+        <<if _check eq 6>><img @src="setup.ImagePath + '/gwb/6.jpg'" class="evidenceImgs"><</if>>
+        <<if _check eq 7>><img @src="setup.ImagePath + '/gwb/7.jpg'" class="evidenceImgs"><</if>>
+        <<if _check eq 8>><img @src="setup.ImagePath + '/gwb/8.jpg'" class="evidenceImgs"><</if>>
+        <<if _check eq 9>><img @src="setup.ImagePath + '/gwb/9.jpg'" class="evidenceImgs"><</if>>
+        <<if _check eq 10>><img @src="setup.ImagePath + '/gwb/10.jpg'" class="evidenceImgs"><</if>>
+        <<if _check eq 11>><img @src="setup.ImagePath + '/gwb/11.jpg'" class="evidenceImgs"><</if>>
+        <<if _check eq 12>><img @src="setup.ImagePath + '/gwb/12.jpg'" class="evidenceImgs"><</if>>
+        <<if _check eq 13>><img @src="setup.ImagePath + '/gwb/13.jpg'" class="evidenceImgs"><</if>>
+        <<if _check eq 14>><img @src="setup.ImagePath + '/gwb/14.jpg'" class="evidenceImgs"><</if>>
+        <<if _check eq 15>><img @src="setup.ImagePath + '/gwb/15.jpg'" class="evidenceImgs"><</if>>
+        <<if _check eq 16>><img @src="setup.ImagePath + '/gwb/16.jpg'" class="evidenceImgs"><</if>>
+        <<if _check eq 17>><img @src="setup.ImagePath + '/gwb/17.jpg'" class="evidenceImgs"><</if>>
+        <<if _check eq 18>><img @src="setup.ImagePath + '/gwb/18.jpg'" class="evidenceImgs"><</if>>
         <<set $EmfActivated to 1>>
 		<<set $EmfActivationTime = $hours * 60 + $minutes>>
         @@.evidenceshadowtext; <span class="evidenceshadowtext"> Ohh... what is this...? Nevertheless, one more piece of evidence</span>@@

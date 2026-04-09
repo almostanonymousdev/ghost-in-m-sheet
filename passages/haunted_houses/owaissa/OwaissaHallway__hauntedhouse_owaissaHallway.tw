@@ -8,24 +8,24 @@
           	</div>
         </div>
         <div class="furnitureSearch">
-             <span id="hallway_carpet"><<link [img[assets/img/furniture/carpet.png][furnitureSearch]]>><<set $currentFurniture to "hallway_carpet">><<includeTimeEventClothesHunt>><</link>></span>
-			 <span id="hallway_wardrobe"><<link [img[assets/img/furniture/wardrobe.png][furnitureSearch]]>><<set $currentFurniture to "hallway_wardrobe">><<includeTimeEventClothesHunt>><</link>></span>
-			 <span id="hallway_coatrack"><<link [img[assets/img/furniture/coatrack.png][furnitureSearch]]>><<set $currentFurniture to "hallway_coatrack">><<includeTimeEventClothesHunt>><</link>></span>
+             <span id="hallway_carpet"><<link "<img @src='setup.ImagePath + \"/img/furniture/carpet.png\"'>" "furnitureSearch">><<set $currentFurniture to "hallway_carpet">><<includeTimeEventClothesHunt>><</link>></span>
+			 <span id="hallway_wardrobe"><<link "<img @src='setup.ImagePath + \"/img/furniture/wardrobe.png\"'>" "furnitureSearch">><<set $currentFurniture to "hallway_wardrobe">><<includeTimeEventClothesHunt>><</link>></span>
+			 <span id="hallway_coatrack"><<link "<img @src='setup.ImagePath + \"/img/furniture/coatrack.png\"'>" "furnitureSearch">><<set $currentFurniture to "hallway_coatrack">><<includeTimeEventClothesHunt>><</link>></span>
         </div>
 		<div class="footer">
         	<div class="footertools">
-         	<<toolCard "assets/img/emf.png" "owaissaHallwayPicEMF" "searchEmfHallway">>
-         	<<toolCard "assets/img/glass.png" "owaissaHallwayPicPlasm" "searchPlasmHallway">>
-         	<<toolCard "assets/img/gwb.png" "owaissaHallwayPicGWB" "searchGwbHallway">>
-         	<<toolCard "assets/img/spiritbox.png" "owaissaHallwayPicSB" "searchSbHallway">>
-         	<<toolCard "assets/img/thermometr.png" "owaissaHallwayPicThermometr" "searchThermometrHallway">>
-         	<<toolCard "assets/img/uvl.png" "owaissaHallwayPicUVL" "searchUVLHallway">>
+         	<<toolCard "img/emf.png" "owaissaHallwayPicEMF" "searchEmfHallway">>
+         	<<toolCard "img/glass.png" "owaissaHallwayPicPlasm" "searchPlasmHallway">>
+         	<<toolCard "img/gwb.png" "owaissaHallwayPicGWB" "searchGwbHallway">>
+         	<<toolCard "img/spiritbox.png" "owaissaHallwayPicSB" "searchSbHallway">>
+         	<<toolCard "img/thermometr.png" "owaissaHallwayPicThermometr" "searchThermometrHallway">>
+         	<<toolCard "img/uvl.png" "owaissaHallwayPicUVL" "searchUVLHallway">>
             <<companionCard>>
             <div class="footer-card footer-light">
-<span class="cursedHuntLinkDisable"><<link [img[assets/img/lighton.png][OwaissaHallway]]>><<set $hallway.background to 1>><</link>>
-<<link [img[assets/img/lightoff.png][OwaissaHallway]]>><<set $hallway.background to 2>><</link>>
+<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "OwaissaHallway">><<set $hallway.background to 1>><</link>>
+<<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" "OwaissaHallway">><<set $hallway.background to 2>><</link>>
 			<<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>> 
-<<link [img[assets/img/hearth.png][minigame]]>>
+<<link "<img @src='setup.ImagePath + \"/img/hearth.png\"'>" "minigame">>
 <<set $minigameVideo to "start">>
 <<set $ghostOrgasmMeter to 0>>
 <<set $mcOrgasmMeter to 0>><</link>>

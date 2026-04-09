@@ -1,10 +1,10 @@
 :: ghostSpecialEventNapSpirit1 {"position":"350,2550","size":"100,100"}
 <video autoplay controls muted loop>
-<source src="assets/ghosts/specials/spirit2.2.mp4" type="video/mp4">
+<source @src="setup.ImagePath + '/ghosts/specials/spirit2.2.mp4'" type="video/mp4">
 </video>
 @@.mc-thoughts; You open your eyes and notice a dick next to your face. Thoughts race through your mind—could this be real? As you try to process what’s happening, it ends up@@ <<linkappend "@@.usebtn; in your mouth.@@">> 
 <video autoplay controls muted loop>
-<source src="assets/ghosts/specials/spirit2.3.mp4" type="video/mp4">
+<source @src="setup.ImagePath + '/ghosts/specials/spirit2.3.mp4'" type="video/mp4">
 </video>
 @@.mc-speech; Someone is fucking my mouth!@@
 @@.mc-thoughts;  It takes you a while to fully grasp what’s happening. You decide to stop it, but the mysterious figure vanishes as suddenly as it appeared. You’re left in @@@@.usebtn; [[shock and confusion|Bedroom]]@@, @@.mc-thoughts;  with your mouth full of sperm.@@<br>

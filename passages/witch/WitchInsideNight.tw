@@ -1,6 +1,6 @@
 :: WitchInsideNight {"position":"1450,150","size":"100,100"}
 <<nobr>>
-<img src="assets/witch/witchMain.png" width="100%">
+<img @src="setup.ImagePath + '/witch/witchMain.png'" width="100%">
 <br>
 
 <<if hasVisited("WitchBedroom")>>

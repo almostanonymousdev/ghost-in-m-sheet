@@ -2,19 +2,19 @@
 <<nobr>>
 <<if $pantiesState eq "worn" and $braState eq "worn">>
 <video autoplay controls muted loop>
- <source src="assets/mc/underwearOn.webm" type="video/webm">
+ <source @src="setup.ImagePath + '/mc/underwearOn.webm'" type="video/webm">
  </video><</if>>
  <<if $pantiesState eq "worn" and $braState eq "not worn">>
  <video autoplay width="40%" muted loop>
- <source src="assets/mc/braOff.webm" type="video/webm">
+ <source @src="setup.ImagePath + '/mc/braOff.webm'" type="video/webm">
  </video><</if>>
  <<if $pantiesState eq "not worn" and $braState eq "worn">>
  <video autoplay controls muted loop>
- <source src="assets/mc/braOn.webm" type="video/webm">
+ <source @src="setup.ImagePath + '/mc/braOn.webm'" type="video/webm">
  </video><</if>>
  <<if $pantiesState eq "not worn" and $braState eq "not worn">>
  <video autoplay width="40%" muted loop>
- <source src="assets/mc/underwearOff.webm" type="video/webm">
+ <source @src="setup.ImagePath + '/mc/underwearOff.webm'" type="video/webm">
  </video><</if>>
  <<set $hotAct to 0>>
 <<if $rememberBottomOuter eq "jeans0">>

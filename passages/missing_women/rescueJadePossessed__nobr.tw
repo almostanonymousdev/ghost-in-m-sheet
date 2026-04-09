@@ -2,15 +2,15 @@
 <<set _check to random(1,3)>>
 <<if _check eq 1>>
 <video autoplay controls muted loop>
- <source src="assets/rescue/Jade/1.0.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Jade/1.0.mp4'" type="video/mp4">
  </video>
 <</if>>
 <<if _check eq 2>><video autoplay controls muted loop>
- <source src="assets/rescue/Jade/2.0.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Jade/2.0.mp4'" type="video/mp4">
  </video>
 <</if>>
 <<if _check eq 3>>
-<img src="assets/rescue/Jade/3.0.jpg" width="100%">
+<img @src="setup.ImagePath + '/rescue/Jade/3.0.jpg'" width="100%">
 <</if>>
 @@.mc-thoughts; You slowly regain consciousness, your head throbbing with pain, and the first thing you feel is the tight ropes binding your wrists. You try to move, but your hands and legs are tied up. Flashes of memory come back to you: you came here to save $currentRescueGirl. But something went wrong. <br>
 You sense someone nearby. A wave of anxiety builds in your chest. Suddenly, you hear a voice@@<br>
@@ -23,7 +23,7 @@ You realize it's not Jade anymore. Whoever’s standing in front of you, it’s 
 @@.notmc-speech; Of course, I’ll let you go... but not before we <<linkappend "have a little fun first. ">>
 <<if _check eq 1>>
 <video autoplay controls muted loop>
- <source src="assets/rescue/Jade/1.1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Jade/1.1.mp4'" type="video/mp4">
  </video>
 @@.mc-thoughts; She started to rub your pussy at a furious pace. Your moans began to spread throughout the house, but she didn’t show you any mercy.@@<br>
 @@.mc-speech; OH~ Fuck~ I'm going to...@@<br>
@@ -34,12 +34,12 @@ You realize it's not Jade anymore. Whoever’s standing in front of you, it’s 
 <<set _checkR to random(1,2)>>
 <<if _checkR eq 1>>
 <video autoplay controls muted loop>
- <source src="assets/rescue/Jade/2.1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Jade/2.1.mp4'" type="video/mp4">
  </video>
 <</if>>
 <<if _checkR eq 2>>
 <video autoplay controls muted loop>
- <source src="assets/rescue/Jade/2.2.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Jade/2.2.mp4'" type="video/mp4">
  </video>
 <</if>>
 @@.notmc-speech; Oh~ we're going to have so much fun together.@@<br>
@@ -52,17 +52,17 @@ You realize it's not Jade anymore. Whoever’s standing in front of you, it’s 
 <<set _checkR to random(1,3)>>
 <<if _checkR eq 1>>
 <video autoplay controls muted loop>
- <source src="assets/rescue/Jade/3.1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Jade/3.1.mp4'" type="video/mp4">
  </video>
 <</if>>
 <<if _checkR eq 2>>
 <video autoplay controls muted loop>
- <source src="assets/rescue/Jade/3.2.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Jade/3.2.mp4'" type="video/mp4">
  </video>
 <</if>>
 <<if _checkR eq 3>>
 <video autoplay controls muted loop>
- <source src="assets/rescue/Jade/3.3.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Jade/3.3.mp4'" type="video/mp4">
  </video>
 <</if>>
  @@.notmc-speech; Oh~ we're going to have so much fun together.@@<br>

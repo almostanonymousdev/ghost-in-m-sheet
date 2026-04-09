@@ -1,7 +1,7 @@
 :: Bedroom {"position":"600,900","size":"100,100"}
 <<nobr>>
 
-<img src="assets/img/bedroom.jpg" width="100%"><br>
+<img @src="setup.ImagePath + '/img/bedroom.jpg'" width="100%"><br>
 @@.location; Bedroom@@<br>
 <br>
 <<if $succubusChoiceEventText eq 1>>
@@ -50,9 +50,9 @@
 <<if previous(2) eq "HuntOverSanity" or previous(2) eq "huntEnd">>
 @@.mc-speech; Am I home? I don't remember how I got back here. My whole body aches and is <<linkappend "covered with something">>
 <<set _check to random(1,3)>>
-<<if _check eq 1>><img src="assets/mc/1.webp" width="40%"><</if>>
-<<if _check eq 2>><img src="assets/mc/2.webp" width="40%"><</if>>
-<<if _check eq 3>><img src="assets/mc/3.webp" width="40%"><</if>><br>
+<<if _check eq 1>><img @src="setup.ImagePath + '/mc/1.webp'" width="40%"><</if>>
+<<if _check eq 2>><img @src="setup.ImagePath + '/mc/2.webp'" width="40%"><</if>>
+<<if _check eq 3>><img @src="setup.ImagePath + '/mc/3.webp'" width="40%"><</if>><br>
 It seems like I'm starting to remember... I lost the battle, but not the war. Next time, I'll be more careful. <br>
 I don't feel well, my whole body aches... I need to buy some medicine from the store, as hunting ghosts will be much harder without it. <br>
 But for now, I need to go to the [[bathroom|Bathroom]].
@@ -65,9 +65,9 @@ But for now, I need to go to the [[bathroom|Bathroom]].
 <<elseif previous(2) eq "ghostSpecialEventMareEnd">>
 @@.mc-thoughts; You wake up and see the@@ <<linkappend "@@.mc-thoughtsLink;aftermath of last night on yourself...@@">><br>
 <<set _check to random(1,3)>>
-<<if _check eq 1>><img src="assets/mc/4.webp" width="40%"><</if>>
-<<if _check eq 2>><img src="assets/mc/5.webp" width="40%"><</if>>
-<<if _check eq 3>><img src="assets/mc/6.webp" width="40%"><</if>><br>
+<<if _check eq 1>><img @src="setup.ImagePath + '/mc/4.webp'" width="40%"><</if>>
+<<if _check eq 2>><img @src="setup.ImagePath + '/mc/5.webp'" width="40%"><</if>>
+<<if _check eq 3>><img @src="setup.ImagePath + '/mc/6.webp'" width="40%"><</if>><br>
 <<set $isPenaltyOn to 0>>
 @@.mc-speech; Weirdly enough, I feel great, maybe even a bit better than usual, hehe. I suppose I should still head to the [[bathroom|Bathroom]].@@<</linkappend>>
 
@@ -106,7 +106,7 @@ But for now, I need to go to the [[bathroom|Bathroom]].
 <<elseif $gotCursedItem eq 1 and $gotCursedItemEventCD gte 2>>
 <<goto "tentaclesEventNap">>
 <</if>>
-<</link>>@@<span><img src="assets/img/energy.png" style="position: relative; top: 0.375em; width:3%;"></span><br>
+<</link>>@@<span><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span><br>
 <<if $holyWaterIsCollected eq 1 and $ghostMareEventStart gte 1>>
 <<linkreplace "@@.usebtn; Use holy water@@">><<set $ghostMareEventStart to 0>>
 <<set $holyWaterIsCollected to 0>>

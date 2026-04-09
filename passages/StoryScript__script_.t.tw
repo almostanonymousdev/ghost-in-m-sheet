@@ -1200,6 +1200,29 @@ $(document).on(':passagestart', function (ev) {
 	}
 });
 
+// Rewrite CSS url() asset paths using setup.ImagePath
+$(document).on(':passagerender', function (ev) {
+	$(ev.content).find('style').each(function () {
+		this.textContent = this.textContent.replace(
+			/url\((['"]?)assets\//g,
+			'url($1' + setup.ImagePath + '/'
+		);
+	});
+});
+
+// Rewrite StoryStylesheet asset paths on startup
+$(document).one(':storyready', function () {
+	var styles = document.querySelectorAll('style');
+	styles.forEach(function (style) {
+		if (style.textContent.indexOf('assets/') !== -1) {
+			style.textContent = style.textContent.replace(
+				/url\((['"]?)assets\//g,
+				'url($1' + setup.ImagePath + '/'
+			);
+		}
+	});
+});
+
 
 
 

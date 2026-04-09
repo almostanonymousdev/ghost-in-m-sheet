@@ -1,6 +1,6 @@
 :: Internet {"position":"400,800","size":"100,100"}
 <<nobr>>
-<img src="assets/img/browserSearch.png" width="100%"><br>
+<img @src="setup.ImagePath + '/img/browserSearch.png'" width="100%"><br>
 @@.mc-speech; What should I look for on the internet?@@<br>
 <br>
 
@@ -8,7 +8,7 @@
 <b>Someone responded to your offer:</b>
 <div class="flexwrapper">
 <div class="housecard">
-<img src="assets/trans/alex.jpg" width="100px"><br>
+<img @src="setup.ImagePath + '/trans/alex.jpg'" width="100px"><br>
 </div>
 <div>
 <b>$alex.name</b>:<br>
@@ -39,7 +39,7 @@
 
 <<if $prefssubscribers gte 5>><div class="flexwrapper">
 <div class="housecard">
-<img src="assets/trans/taylor.jpg" width="100px"><br>
+<img @src="setup.ImagePath + '/trans/taylor.jpg'" width="100px"><br>
 </div>
 <div>
 <b>$taylor.name</b>:<br>
@@ -70,7 +70,7 @@
 
 <<if $prefssubscribers gte 10>><div class="flexwrapper">
 <div class="housecard">
-<img src="assets/trans/casey.jpg" width="100px"><br>
+<img @src="setup.ImagePath + '/trans/casey.jpg'" width="100px"><br>
 </div>
 <div>
 <b>$casey.name</b>:<br>

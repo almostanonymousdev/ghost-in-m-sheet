@@ -3,7 +3,7 @@
 <<set $deliveryPackageEvent to 1>>
 <<include "add15lust">>
 <video autoplay controls muted loop>
- <source src="assets/deliveryhub/packageevent/1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/deliveryhub/packageevent/1.mp4'" type="video/mp4">
  </video>
  @@.notmc-speech; You're better off doing something else instead of delivering crap@@<br>
  @@.mc-speech; Maybe you are right~AH~@@<br>
@@ -12,16 +12,16 @@
 <<set _check to random(1,2)>>
 <<if _check eq 1>>
 <video autoplay controls muted loop>
- <source src="assets/deliveryhub/packageevent/2.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/deliveryhub/packageevent/2.mp4'" type="video/mp4">
  </video><</if>>
  <<if _check eq 2>>
 <video autoplay controls muted loop>
- <source src="assets/deliveryhub/packageevent/5.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/deliveryhub/packageevent/5.mp4'" type="video/mp4">
  </video><</if>>
  @@.notmc-speech; You're good at it@@<br>
  @@.mc-speech; ~Hmng~ulrp~@@<br>
  <<if $mc.lust lte 49>>
-  @@.mc-thoughts; I suck dick for money, what happened to me?@@ @@.warningtext; (Req. <img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 50)@@<br>
+  @@.mc-thoughts; I suck dick for money, what happened to me?@@ @@.warningtext; (Req. <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 50)@@<br>
   @@.mc-speech; [[He's cumming|DeliveryPackageEventEnd2]]@@<br>
   <<else>>
   @@.mc-speech; Mm~ my pussy is so wet, please [[fuck me~|DeliveryPackageEvent1]] @@<br>

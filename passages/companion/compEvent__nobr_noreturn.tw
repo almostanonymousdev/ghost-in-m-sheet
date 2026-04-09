@@ -386,14 +386,14 @@
 
 <<if _selectedVideo.type == "video">>
 <video autoplay controls muted loop>
- <source @src="`assets/`+$videoEventCompanion" type="video/mp4">
+ <source @src="setup.ImagePath+`/`+$videoEventCompanion" type="video/mp4">
  </video>
  <<else>>
  <<if $companion.name eq "Alex" or $companion.name eq "Taylor" or $companion.name eq "Casey">>
- <img @src="`assets/`+$videoEventCompanion" alt="Image" class="displayCentredImgs"><br>
+ <img @src="setup.ImagePath+`/`+$videoEventCompanion" alt="Image" class="displayCentredImgs"><br>
   
  <<else>>
- <img @src="`assets/`+$videoEventCompanion" alt="Image" width="100%"><br>
+ <img @src="setup.ImagePath+`/`+$videoEventCompanion" alt="Image" width="100%"><br>
  <</if>>
 <</if>>
 <<if $companion.sanity gte 75>>

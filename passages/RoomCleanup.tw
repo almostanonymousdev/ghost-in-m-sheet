@@ -30,11 +30,11 @@ $(document).on(':passageend', function() {
 <<nobr>>
 <<set $cleanedUp to false>>
 <div class="room-container">
-  <img id="trash1" class="trash" src="assets/img/trash1.png" onclick="window.messyRoom.removeTrash('#trash1')" />
-  <img id="trash2" class="trash" src="assets/img/trash2.png" onclick="window.messyRoom.removeTrash('#trash2')" />
-  <img id="trash3" class="trash" src="assets/img/trash3.png" onclick="window.messyRoom.removeTrash('#trash3')" />
-  <img id="trash4" class="trash" src="assets/img/trash4.png" onclick="window.messyRoom.removeTrash('#trash4')" />
-  <img id="trash5" class="trash" src="assets/img/trash5.png" onclick="window.messyRoom.removeTrash('#trash5')" />
+  <img id="trash1" class="trash" @src="setup.ImagePath + '/img/trash1.png'" onclick="window.messyRoom.removeTrash('#trash1')" />
+  <img id="trash2" class="trash" @src="setup.ImagePath + '/img/trash2.png'" onclick="window.messyRoom.removeTrash('#trash2')" />
+  <img id="trash3" class="trash" @src="setup.ImagePath + '/img/trash3.png'" onclick="window.messyRoom.removeTrash('#trash3')" />
+  <img id="trash4" class="trash" @src="setup.ImagePath + '/img/trash4.png'" onclick="window.messyRoom.removeTrash('#trash4')" />
+  <img id="trash5" class="trash" @src="setup.ImagePath + '/img/trash5.png'" onclick="window.messyRoom.removeTrash('#trash5')" />
 </div>
 <div id="cleanup-message" style="display: none;">Done!</div>
 <</nobr>>

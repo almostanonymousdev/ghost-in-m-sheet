@@ -2,16 +2,34 @@
 """
 Asset reference checker for Better Ghost Hunter (Twine/SugarCube).
 
-Finds src="assets/..." and href="assets/..." references in passage files
-that point to files not present on disk.
+Finds asset references in passage files that point to files not present on disk.
+Supports both legacy src="assets/..." and the setup.ImagePath variable patterns.
 """
 
 import re
 import sys
 from pathlib import Path
 
-# Match src or href values that start with assets/
-ASSET_REF = re.compile(r"""(?:src|href)=["'](assets/[^"']+)["']""")
+# Parse ASSET_BASE from StoryInit's setup.ImagePath assignment
+_STORY_INIT = Path(__file__).parent / "passages" / "StoryInit.tw"
+_IMAGE_PATH_RE = re.compile(r'''setup\.ImagePath\s*=\s*["']([^"']+)["']''')
+ASSET_BASE = "assets"  # fallback
+if _STORY_INIT.is_file():
+    _match = _IMAGE_PATH_RE.search(_STORY_INIT.read_text(encoding="utf-8", errors="replace"))
+    if _match:
+        ASSET_BASE = _match.group(1)
+
+# Patterns that reference assets:
+# 1. @src="setup.ImagePath + '/PATH'" (static img/source tags)
+# 2. @src='setup.ImagePath + "/PATH"' (inside <<link>> macros)
+# 3. Legacy src="assets/..." or href="assets/..." (if any remain)
+# 4. url('assets/...') in CSS
+ASSET_PATTERNS = [
+    re.compile(r"""@src=["']setup\.ImagePath\s*\+\s*'(/[^']+)'["']"""),
+    re.compile(r"""@src='setup\.ImagePath\s*\+\s*\\"/([^\\]+)\\"'"""),
+    re.compile(r"""(?:src|href)=["'](assets/[^"']+)["']"""),
+    re.compile(r"""url\(['"]?(assets/[^"')]+)['"]?\)"""),
+]
 
 
 def main():
@@ -28,8 +46,17 @@ def main():
         for lineno, line in enumerate(
             tw_file.read_text(encoding="utf-8", errors="replace").splitlines(), 1
         ):
-            for m in ASSET_REF.finditer(line):
-                refs.append((m.group(1), tw_file, lineno))
+            for pattern in ASSET_PATTERNS:
+                for m in pattern.finditer(line):
+                    raw = m.group(1)
+                    # Normalise: strip leading / and prepend asset base if needed
+                    if raw.startswith("/"):
+                        asset_path = ASSET_BASE + raw
+                    elif not raw.startswith(ASSET_BASE + "/"):
+                        asset_path = ASSET_BASE + "/" + raw
+                    else:
+                        asset_path = raw
+                    refs.append((asset_path, tw_file, lineno))
 
     missing: list[tuple[str, Path, int]] = [
         (asset_path, tw_file, lineno)

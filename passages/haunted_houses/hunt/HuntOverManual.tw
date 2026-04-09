@@ -9,7 +9,7 @@
 @@.mc-speech;I am leaving this accursed house. It seems I've done everything I could.@@<br>
 
 <<if $isClothesStolen eq 1>>
-<img src="assets/img/confusedImg.jpg" class="displayCentredImgs">
+<img @src="setup.ImagePath + '/img/confusedImg.jpg'" class="displayCentredImgs">
 @@.mc-speech; Damn! It looks like that disgusting ghost took my clothes... Maybe I should go back and look for it? Though I really don’t want to return to that cursed house.@@<br>
 <<set $isClothesStolen to 0>>
 @@.movebtn; <<back "Return to the house">>@@<br>

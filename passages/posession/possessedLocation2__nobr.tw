@@ -2,18 +2,18 @@
 <<if $checkChoosenLocation eq "library">>
 <span id ="possessedLocationLibrary1">
 <video autoplay controls muted loop>
- <source src="assets/possessed/1.7.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/possessed/1.7.mp4'" type="video/mp4">
  </video></span>
 @@.mc-thoughts; They cum all over your face,@@ <<link "@@.usebtn; one after the other@@">>
 <<set _videoToggle to !_videoToggle>>
 <<replace "#possessedLocationLibrary1">>
 <<if _videoToggle>>
             <video autoplay controls muted loop>
-                <source src="assets/possessed/1.8.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/possessed/1.8.mp4'" type="video/mp4">
             </video>
         <<else>>
             <video autoplay controls muted loop>
-                <source src="assets/possessed/1.7.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/possessed/1.7.mp4'" type="video/mp4">
             </video>
   <</if>>
 <</replace>><</link>>

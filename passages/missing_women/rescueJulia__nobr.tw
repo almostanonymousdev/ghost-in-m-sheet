@@ -25,7 +25,7 @@
 
 <div id="videoContainer">
 	<video autoplay controls muted loop>
-		<source @src="`assets/`+$videoRescueEvent" type="video/mp4">
+		<source @src="setup.ImagePath+`/`+$videoRescueEvent" type="video/mp4">
 	</video>
 </div>
 
@@ -47,7 +47,7 @@ I could watch a little longer and then help her... but I might get noticed. @@<b
 <br>
 <span class="rescueStayCorruptionCheck">
 @@.mc-speech;Or...@@  @@.usebtn;[[Stay|rescueStay][$hasQuestForRescue to 2]]@@.@@.mc-speech; I guess I’m already used to losing...@@</span>
-<<if $mc.corruption lt 6>>@@.warningtext; (Req. <img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 6)@@<</if>>
+<<if $mc.corruption lt 6>>@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 6)@@<</if>>
 
 <br><br>
 <br>
@@ -65,7 +65,7 @@ I could watch a little longer and then help her... but I might get noticed. @@<b
 		<</if>>
 		<<replace "#videoContainer">>
 			<video autoplay controls muted loop>
-				<source @src="`assets/`+$videoRescueEvent" type="video/mp4">
+				<source @src="setup.ImagePath+`/`+$videoRescueEvent" type="video/mp4">
 			</video>
 		<</replace>>
 	<</if>>
@@ -79,7 +79,7 @@ I could watch a little longer and then help her... but I might get noticed. @@<b
 		<<set _usedVideos.push($videoRescueEvent)>>
 		<<replace "#videoContainer">>
 			<video autoplay controls muted loop>
-				<source @src="`assets/`+$videoRescueEvent" type="video/mp4">
+				<source @src="setup.ImagePath+`/`+$videoRescueEvent" type="video/mp4">
 			</video>
 		<</replace>>
 	<</if>>

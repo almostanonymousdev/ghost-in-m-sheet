@@ -3,7 +3,7 @@
    <<if ndef $deliveryPappersEvent>>
    <<set $deliveryPappersEvent to 0>><</if>>
  <<set $earnedMoney += $jobMoneySuccessed>>
-  <img src="assets/deliveryhub/papersevent/1.jpg" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
+  <img @src="setup.ImagePath + '/deliveryhub/papersevent/1.jpg'" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
 <<if $deliveryPappersEvent is 1>>
     @@.notmc-speech; Great, thank you so much!@@<br>
     <br>
@@ -12,11 +12,11 @@
     @@.notmc-speech; Yes, put them on the sofa@@<br>
    @@.mc-speech;<<linkreplace "Sure, no problem">>
    <<include "add15lust">>
-    <img src="assets/deliveryhub/papersevent/2.jpg" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
+    <img @src="setup.ImagePath + '/deliveryhub/papersevent/2.jpg'" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
 @@.mc-thoughts; I think he's staring at my butt, what a pervert@@<br>
-+15 <img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:3%;"><br>
++15 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"><br>
 <<if $mc.lust lt 30>>
-@@.mc-speech; Done. I have to go, bye.@@ @@.warningtext; (Req. <img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 30)@@<br><br>
+@@.mc-speech; Done. I have to go, bye.@@ @@.warningtext; (Req. <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 30)@@<br><br>
 @@.backbtn;[[Back|DeliveryMap]]@@<br>
 <<else>>
 @@.mc-speech; Do you like it?@@<br>

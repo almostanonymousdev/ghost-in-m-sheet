@@ -2,19 +2,19 @@
 <<nobr>>
 <<if $jeansState eq "worn" or $shortsState eq "worn">>
 <video autoplay controls muted loop>
- <source src="assets/library/1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/library/1.mp4'" type="video/mp4">
  </video>
 <<elseif $skirtState eq "worn">>
 <video autoplay controls muted loop>
- <source src="assets/library/2.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/library/2.mp4'" type="video/mp4">
  </video>
 <</if>>
 You were examining the books in search of something useful when a guy approached from behind and started groping you.<br>
 @@.mc-speech; Oh~ Hey! What do you think you’re doing?!@@<br>
 @@.mc-thoughts; But he continues to touch you.@@<br>
-+ 15 <img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br>
++ 15 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br>
 <<if $mc.corruption lt 1>>
-@@.mc-speech; [[Stop it right now, or I’ll scream|LibraryInside]]@@ @@.warningtext; (Req. <img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 1)@@<<else>>
+@@.mc-speech; [[Stop it right now, or I’ll scream|LibraryInside]]@@ @@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 1)@@<<else>>
 @@.mc-thoughts; Maybe I should [[stay silent|libraryGuy1]]. Perhaps he’ll leave me alone on his own...@@<</if>>
 <<include "add15lust">>
 <<done>>

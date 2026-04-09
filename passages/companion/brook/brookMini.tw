@@ -2,10 +2,10 @@
 <<nobr>>
 <<if def $chosenPlan and $ghostHuntingMode eq 2 and ($isOwaissa eq 1 or $isElm eq 1)>>
 <div class="containerMini">
-		<img src="assets/brook/brook.png">
+		<img @src="setup.ImagePath + '/brook/brook.png'">
         <div class="scaleMini">
-<img src="assets/img/sanity.png" style="position: relative; top: 0.375em; width:13%;">Brook's Sanity: <<showmeter 'companionsanity' `$companion.sanity / $companion.sanityMax`>><br>
-		 <img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:13%;">
+<img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:13%;">Brook's Sanity: <<showmeter 'companionsanity' `$companion.sanity / $companion.sanityMax`>><br>
+		 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:13%;">
         Brook's Lust: <<showmeter 'companionlust' `$companion.lust / 100`>>
         </div>
 

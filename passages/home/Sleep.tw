@@ -1,6 +1,6 @@
 :: Sleep {"position":"700,1000","size":"100,100"}
 <<nobr>>
-<img src="assets/img/sleeping.jpg" width="100%">
+<img @src="setup.ImagePath + '/img/sleeping.jpg'" width="100%">
 <br>
 <br>
 <<if $gotCursedItem eq 1 and $gotCursedItemEventCD gte 1 and previous() is "Bedroom" and $hours gte 18 and $hours lte 23>>

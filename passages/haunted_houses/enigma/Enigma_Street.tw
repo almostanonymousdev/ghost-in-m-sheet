@@ -1,6 +1,6 @@
 :: Enigma Street {"position":"2000,200","size":"100,100"}
 <<nobr>>
-<img src="assets/img/enigmaHouse.jpg" width="90%"><br>
+<img @src="setup.ImagePath + '/img/enigmaHouse.jpg'" width="90%"><br>
 @@.location; Enigma Street@@<br>
 @@.mc-thoughts; Enigma Street? Quite a peculiar name for a street. Or perhaps it's not just a name, but a warning that here reality and illusion intertwine, creating their own rules of existence.@@<br>
 <br>

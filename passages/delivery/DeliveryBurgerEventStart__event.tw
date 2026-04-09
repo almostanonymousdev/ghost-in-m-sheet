@@ -5,11 +5,11 @@
  <<set _randomIndex to random(1,2)>>
 <<if _randomIndex is 1>>
 <video autoplay controls muted loop>
- <source src="assets/deliveryhub/burgerevent/1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/deliveryhub/burgerevent/1.mp4'" type="video/mp4">
  </video>
  <<elseif _randomIndex is 2>>
  <video autoplay controls muted loop>
- <source src="assets/deliveryhub/burgerevent/2.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/deliveryhub/burgerevent/2.mp4'" type="video/mp4">
  </video>
  <</if>>
  @@.mc-thoughts; It seems that I will cum just from the dick in my mouth, why does it feel so good@@<br>
@@ -18,11 +18,11 @@
  <<set _check to random(1,2)>>
 <<if _check eq 1>>
 <video autoplay controls muted loop>
- <source src="assets/deliveryhub/burgerevent/3.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/deliveryhub/burgerevent/3.mp4'" type="video/mp4">
  </video><</if>>
  <<if _check eq 2>>
 <video autoplay controls muted loop>
- <source src="assets/deliveryhub/burgerevent/4.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/deliveryhub/burgerevent/4.mp4'" type="video/mp4">
  </video><</if>>
 @@.mc-speech; ~Mm~ my pussy is all yours@@<br>
 @@.notmc-speech; Ha~ i know, suck a little more baby@@<br>

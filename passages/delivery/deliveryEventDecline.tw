@@ -1,7 +1,7 @@
 :: deliveryEventDecline {"position":"600,1600","size":"100,100"}
 <<nobr>>
 <<set _randomIndex to either(0, 1, 2)>>
- <img src="assets/img/deliverygirlhappy.jpg" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
+ <img @src="setup.ImagePath + '/img/deliverygirlhappy.jpg'" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
 <<set $earnedMoney += $jobMoneySuccessed>>
 <<if _randomIndex is 0>>
     @@.notmc-speech; Great, thank you so much!@@

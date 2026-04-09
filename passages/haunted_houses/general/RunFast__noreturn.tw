@@ -4,7 +4,7 @@
 <<else>>
 <<if $pantiesState eq "worn">>
 <video autoplay controls muted loop>
- <source src="assets/hunting/run.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/hunting/run.mp4'" type="video/mp4">
  </video>
  <</if>>
  <</if>>
@@ -30,7 +30,7 @@ Cold air surrounds you, and you feel an icy hand reaching for you. You have a li
 <<addclass ".checkForCorruptionHunt" "disabled-link">>
 <</if>><</done>>
 <span class="checkForCorruptionHunt">
-@@.usebtn;[[not to resist...|huntEnd]]@@ <<if $mc.corruption lte 4>>@@.warningtext; (Req. <img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 5)@@<</if>></span>
+@@.usebtn;[[not to resist...|huntEnd]]@@ <<if $mc.corruption lte 4>>@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 5)@@<</if>></span>
 <<else>>
 use the Crucifix, but unfortunately, @@.enterbtn;[[you don’t have it...|huntEnd]]@@
 <</if>>

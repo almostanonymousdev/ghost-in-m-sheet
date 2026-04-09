@@ -1,7 +1,7 @@
 :: tentaclesEventSleep [nobr] {"position":"600,4300","size":"100,100"}
 <<set $gotCursedItemEventCD to 0>>
 <video autoplay controls muted loop>
- <source src="assets/tentacles/sleep1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/tentacles/sleep1.mp4'" type="video/mp4">
 </video>
 @@.mc-thoughts;Through your sleep, you feel something's off, like something is close to you.@@<br>
 <<linkappend "@@.usebtn; Wake up@@">>
@@ -10,7 +10,7 @@
   <<set $tentaclesTextAfterSleep to 1>>
   <<goto "Bedroom">>
   <<else>>
-<img src="assets/tentacles/sleep2.jpg" width="100%"><br>
+<img @src="setup.ImagePath + '/tentacles/sleep2.jpg'" width="100%"><br>
   @@.mc-thoughts;You wake up in a gloomy room, nothing around but darkness.@@<br>
   @@.mc-speech;What the fuck? Where am I?@@<br>
   @@.mc-thoughts;You notice several tentacles crawling towards you.@@<br>
@@ -23,7 +23,7 @@
     <<else>>
     <span id ="tentaclesEventSleep">
     <video autoplay controls muted loop>
-     <source src="assets/tentacles/sleep3.mp4" type="video/mp4">
+     <source @src="setup.ImagePath + '/tentacles/sleep3.mp4'" type="video/mp4">
      </video></span>
     <<set _videoIndex to 3>>
     @@.mc-thoughts;Wrapping around your arms and legs, one tentacle freely penetrated your hot, wet pussy and started to fuck you hard.@@<br>
@@ -34,7 +34,7 @@
     <<replace "#tentaclesEventSleep">>
 
     <video autoplay controls muted loop>
-    <source @src="`assets/tentacles/sleep`+_videoIndex+`.mp4`" type="video/mp4">
+    <source @src="setup.ImagePath+`/tentacles/sleep`+_videoIndex+`.mp4`" type="video/mp4">
     </video>
     <</replace>><</link>>
 	@@.mc-thoughts; , making your body shiver with pleasure.@@<br>
@@ -43,7 +43,7 @@
     @@.mc-thoughts;You felt the tentacle inside your pussy tense up, then it started to cum, flooding you with warm, white fluid, @@
       <<linkappend "@@.usebtn; pushing you over the edge.@@">>
        <video autoplay controls muted loop>
-       <source src="assets/tentacles/sleep5.mp4" type="video/mp4">
+       <source @src="setup.ImagePath + '/tentacles/sleep5.mp4'" type="video/mp4">
        </video>
 	  @@.mc-speech;Aahhh ~fuck@@ 
         <<linkappend "@@.usebtn; I'm c-cumming@@">>

@@ -97,7 +97,7 @@ If you have a level 2 or 3 thermometer -  color is added. (See the guide).<</lin
 <<link "refresh" "Notebook">><</link>>
 <</linkreplace>>@@
 </div>
-		<a data-passage="Ghostopedia"><img src="assets/img/ghostopedia.png" class=" iconPC"><br></a>
+		<a data-passage="Ghostopedia"><img @src="setup.ImagePath + '/img/ghostopedia.png'" class=" iconPC"><br></a>
 </div>
 <br>
 <div class="journal-container">

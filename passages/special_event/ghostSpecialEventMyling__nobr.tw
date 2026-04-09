@@ -9,7 +9,7 @@
 
 
 <video autoplay controls muted loop>
-<source @src="`assets/`+$videoEventSpecialMyling" type="video/mp4">
+<source @src="setup.ImagePath+`/`+$videoEventSpecialMyling" type="video/mp4">
 </video>
 
 @@.mc-thoughts; You walk down the street, heading home after yet another ghost hunt. The city has its own kind of life at this hour: groups of people leaving late-night bars, couples wandering after long dinners, and the occasional car driving by. But as you keep walking, you start to notice something strange. People are staring. Almost everyone you pass glances your way. Some smile, others turn their heads for a second look, and one man even whistles, as if something about you has really caught his eye.@@<br>

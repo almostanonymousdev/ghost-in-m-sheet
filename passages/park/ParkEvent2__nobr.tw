@@ -1,7 +1,7 @@
 :: ParkEvent2 [nobr] {"position":"3000,1600","size":"100,100"}
 <span id ="parkEvent2Vids">
 <video autoplay controls muted loop>
- <source src="assets/mc/parkeventsex1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/mc/parkeventsex1.mp4'" type="video/mp4">
  </video></span>
 <<set _videoIndex to 1>>
 @@.mc-thoughts; With a cloth in your mouth, you can only moan as she thrusts the dildo into your pussy, each hard push making you@@ <<link "@@.usebtn; tremble with a mix of pain and pleasure.@@">> 
@@ -9,7 +9,7 @@
 <<replace "#parkEvent2Vids">>
 
 <video autoplay controls muted loop>
-<source @src="`assets/mc/parkeventsex`+_videoIndex+`.mp4`" type="video/mp4">
+<source @src="setup.ImagePath+`/mc/parkeventsex`+_videoIndex+`.mp4`" type="video/mp4">
 </video>
 
 <</replace>><</link>><br>
@@ -17,7 +17,7 @@
 @@.notmc-speech;You're loving this, aren't you?@@<br>
 <<linkappend "@@.usebtn; No! Fuck you!@@">>
 <video autoplay controls muted loop>
- <source src="assets/mc/eventend.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/mc/eventend.mp4'" type="video/mp4">
  </video>
 @@.mc-thoughts;She relentlessly fucks your pussy with the dildo, each thrust more invasive than the last, until she suddenly grabs your hair, pulling you up onto your knees. She shoves the dildo, now slick with your own juices, back into your mouth, making you taste your pussy mixed with her dominance over you. Her words sound like a promise or a threat @@<br>
 @@.notmc-speech; Maybe we'll meet again, baby.@@<br>

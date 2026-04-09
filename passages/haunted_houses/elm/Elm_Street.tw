@@ -6,7 +6,7 @@
 <<set $isCompChosenAlex to 0>>
 <<set $isCompChosenTaylor to 0>>
 <<set $isCompChosenCasey to 0>>
-<img src="assets/img/ElmHouse.jpg" width="90%"><br>
+<img @src="setup.ImagePath + '/img/ElmHouse.jpg'" width="90%"><br>
 @@.location; Elm Street@@<br>
 @@.mc-thoughts;Elm Street - quite a creepy place. It must be teeming with ghosts. Although, because of such locations, I'll always have a job@@<br>
 <br>

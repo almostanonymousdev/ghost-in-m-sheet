@@ -182,7 +182,7 @@ th:last-child, td:last-child {
     </tr>
     <tr>
         <td>
-            <img src="assets/img/emf.png" class="iconPx">
+            <img @src="setup.ImagePath + '/img/emf.png'" class="iconPx">
         </td>
         <th>
             EMF 5
@@ -196,7 +196,7 @@ th:last-child, td:last-child {
     </tr>
     <tr>
         <td>
-            <img src="assets/img/glass.png" class="iconPx">
+            <img @src="setup.ImagePath + '/img/glass.png'" class="iconPx">
         </td>
         <th>
             Ectoplasm glass
@@ -210,7 +210,7 @@ th:last-child, td:last-child {
     </tr>
     <tr>
         <td>
-            <img src="assets/img/gwb.png" class="iconPx">
+            <img @src="setup.ImagePath + '/img/gwb.png'" class="iconPx">
         </td>
         <th>
             Ghost writing Book (GWB)
@@ -224,7 +224,7 @@ th:last-child, td:last-child {
     </tr>
     <tr>
         <td>
-            <img src="assets/img/spiritbox.png" class="iconPx">
+            <img @src="setup.ImagePath + '/img/spiritbox.png'" class="iconPx">
         </td>
         <th>
             Spiritbox
@@ -238,7 +238,7 @@ th:last-child, td:last-child {
     </tr>
     <tr>
         <td>
-            <img src="assets/img/thermometr.png" class="iconPx">
+            <img @src="setup.ImagePath + '/img/thermometr.png'" class="iconPx">
         </td>
         <th>
             High temperature
@@ -254,7 +254,7 @@ th:last-child, td:last-child {
     </tr>
     <tr>
         <td>
-            <img src="assets/img/uvl.png" class="iconPx">
+            <img @src="setup.ImagePath + '/img/uvl.png'" class="iconPx">
         </td>
         <th>
             Ultraviolet light

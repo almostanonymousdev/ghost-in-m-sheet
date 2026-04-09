@@ -1,24 +1,24 @@
 :: Use PC {"position":"400,900","size":"100,100"}
 <<nobr>>
 <div class="wrapperPC">
-		<img src="assets/img/pc.jpg" id="bgPC"><br>
+		<img @src="setup.ImagePath + '/img/pc.jpg'" id="bgPC"><br>
   		<div class="iconContainer">
-		<a data-passage="Ghostopedia"><img src="assets/img/ghostopedia.png" class=" iconPC"><br></a><br>
-    	<a data-passage="Evidence"><img src="assets/img/evidenceIcon.jpg" class=" iconPC"><br></a>
-        <a data-passage="PornCore"><img src="assets/img/pornLab.jpg" class="iconPC"></a>
-        <a data-passage="Internet"><img src="assets/img/browser.png" class="iconPC"></a>
-<a data-passage="Contacts"><img src="assets/img/contacts.jpg" class="iconPC"></a>
-<<if $aliceWorkDone eq 1>><a data-passage="DocumentsForAlice"><img src="assets/img/documents.jpg" class="iconPC"></a><</if>>
+		<a data-passage="Ghostopedia"><img @src="setup.ImagePath + '/img/ghostopedia.png'" class=" iconPC"><br></a><br>
+    	<a data-passage="Evidence"><img @src="setup.ImagePath + '/img/evidenceIcon.jpg'" class=" iconPC"><br></a>
+        <a data-passage="PornCore"><img @src="setup.ImagePath + '/img/pornLab.jpg'" class="iconPC"></a>
+        <a data-passage="Internet"><img @src="setup.ImagePath + '/img/browser.png'" class="iconPC"></a>
+<a data-passage="Contacts"><img @src="setup.ImagePath + '/img/contacts.jpg'" class="iconPC"></a>
+<<if $aliceWorkDone eq 1>><a data-passage="DocumentsForAlice"><img @src="setup.ImagePath + '/img/documents.jpg'" class="iconPC"></a><</if>>
         <<if $isCameraBought eq 1 and $mcSleptWithCameraOn eq 1>>
         <<if $ghostMareEventStart gte 2>>
         <<if $ghostMareEventStage lte 2>>
-        <a data-passage="ghostSpecialEventMare" onclick="$.wiki('<<set $ghostMareEventStart to 4>>')"><img src="assets/img/webcamera.png" class="iconPC"></a>
+        <a data-passage="ghostSpecialEventMare" onclick="$.wiki('<<set $ghostMareEventStart to 4>>')"><img @src="setup.ImagePath + '/img/webcamera.png'" class="iconPC"></a>
 <<else>>
-        <a data-passage="ghostSpecialEvent1Mare" onclick="$.wiki('<<set $ghostMareEventStart to 4>>')"><img src="assets/img/webcamera.png" class="iconPC"></a><</if>>
+        <a data-passage="ghostSpecialEvent1Mare" onclick="$.wiki('<<set $ghostMareEventStart to 4>>')"><img @src="setup.ImagePath + '/img/webcamera.png'" class="iconPC"></a><</if>>
         <<else>>
-      <a data-passage="ghostSpecialEventMare0"><img src="assets/img/webcamera.png" class="iconPC"></a><</if>> 
+      <a data-passage="ghostSpecialEventMare0"><img @src="setup.ImagePath + '/img/webcamera.png'" class="iconPC"></a><</if>> 
         <</if>>
-       <<if $webcamAccountCreated eq 1>><a data-passage="WebcamShow"><img src="assets/img/wb.jpg" class="iconPC"></a> <</if>>
+       <<if $webcamAccountCreated eq 1>><a data-passage="WebcamShow"><img @src="setup.ImagePath + '/img/wb.jpg'" class="iconPC"></a> <</if>>
     </div>
  </div>
  <br>

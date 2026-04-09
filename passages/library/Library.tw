@@ -1,6 +1,6 @@
 :: Library {"position":"2500,1700","size":"100,100"}
 <<nobr>>
-<img src="assets/img/library.jpg" width="100%">
+<img @src="setup.ImagePath + '/img/library.jpg'" width="100%">
 <br>
 @@.location; Library@@<br>
 @@.mc-thoughts; This library boasts a diverse collection of books, including both modern publications and rare antique editions. Although most people prefer to search for information online, a few still visit, perhaps in search of more unusual and unique insights.@@<br>

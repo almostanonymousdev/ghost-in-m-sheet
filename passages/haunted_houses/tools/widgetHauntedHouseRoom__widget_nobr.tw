@@ -22,7 +22,7 @@ setup.roomToolHandlersByPrefix = function(prefix) {
 <<widget "toolCard">>
 <div class="footer-card">
 <div class="cardimg">
-<img @src="_args[0]" class="icon" @id="_args[1]">
+<img @src="setup.ImagePath + '/' + _args[0]" class="icon" @id="_args[1]">
 </div>
 <div class="cardlink">
 <<include `_args[2]`>>
@@ -41,7 +41,7 @@ setup.roomToolHandlersByPrefix = function(prefix) {
 <div class="footer-card">
 <div class="cardimg">
 <a data-passage="failedComp">
-<img src="assets/img/questionMark.png" class="companion-image"> </a>
+<img @src="setup.ImagePath + '/img/questionMark.png'" class="companion-image"> </a>
 </div>
 </div>
 <<elseif $showComp eq 3>>

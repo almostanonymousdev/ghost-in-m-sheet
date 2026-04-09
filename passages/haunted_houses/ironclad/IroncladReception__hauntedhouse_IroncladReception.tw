@@ -10,18 +10,18 @@
         
 		<div class="footer">
         	<div class="footertools">
-         	<<toolCard "assets/img/emf.png" "ironcladReceptionPicEMF" "searchEMFReceptionIronclad">>
-         	<<toolCard "assets/img/glass.png" "actionironcladReceptionPicPlasm" "searchPlasmReceptionIronclad">>
-         	<<toolCard "assets/img/gwb.png" "actionironcladReceptionPicGWB" "searchGwbReceptionIronclad">>
-         	<<toolCard "assets/img/spiritbox.png" "actionironcladReceptionPicSB" "searchSbReceptionIronclad">>
-         	<<toolCard "assets/img/thermometr.png" "actionironcladReceptionPicThermometr" "searchThermometrReceptionIronclad">>
-         	<<toolCard "assets/img/uvl.png" "actionironcladReceptionPicUVL" "searchUvlReceptionIronclad">>
+         	<<toolCard "img/emf.png" "ironcladReceptionPicEMF" "searchEMFReceptionIronclad">>
+         	<<toolCard "img/glass.png" "actionironcladReceptionPicPlasm" "searchPlasmReceptionIronclad">>
+         	<<toolCard "img/gwb.png" "actionironcladReceptionPicGWB" "searchGwbReceptionIronclad">>
+         	<<toolCard "img/spiritbox.png" "actionironcladReceptionPicSB" "searchSbReceptionIronclad">>
+         	<<toolCard "img/thermometr.png" "actionironcladReceptionPicThermometr" "searchThermometrReceptionIronclad">>
+         	<<toolCard "img/uvl.png" "actionironcladReceptionPicUVL" "searchUvlReceptionIronclad">>
             <<companionCard>>
             <div class="footer-card footer-light">
-            	<span class="cursedHuntLinkDisable"><<link [img[assets/img/lighton.png][IroncladReception]]>><<set $reception.background to 1>><</link>>
-             <<link [img[assets/img/lightoff.png][IroncladReception]]>><<set $reception.background to 2>><</link>>
+            	<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "IroncladReception">><<set $reception.background to 1>><</link>>
+             <<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" "IroncladReception">><<set $reception.background to 2>><</link>>
 			<<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>> 
-<<link [img[assets/img/hearth.png][minigame]]>>
+<<link "<img @src='setup.ImagePath + \"/img/hearth.png\"'>" "minigame">>
 <<set $minigameVideo to "start">>
 <<set $ghostOrgasmMeter to 0>>
 <<set $mcOrgasmMeter to 0>><</link>>

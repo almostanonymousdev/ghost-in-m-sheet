@@ -19,7 +19,7 @@
 
 <<if _selectedVideo>>
 <video autoplay muted controls loop class="displayCentredImgs">
- <source @src="`assets/`+$webcamVideo" type="video/mp4">
+ <source @src="setup.ImagePath+`/`+$webcamVideo" type="video/mp4">
  </video>
 <</if>>
 <br>

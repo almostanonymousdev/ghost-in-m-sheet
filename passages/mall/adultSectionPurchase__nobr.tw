@@ -2,7 +2,7 @@
 <div class="flexwrapper backgroundForText">
 <div class="housecard">
 <<if ndef $dildoPurchased or $dildoPurchased eq 0>>
-<img src="assets/img/dildo.jpg" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/dildo.jpg'" class="iconPx"><br>
 <span class="priceAmount">30$</span><br>
 <<if $mc.corruption gte 3>>
 <<if $mc.money gte 30>>
@@ -11,11 +11,11 @@
 <<set $dildoPurchased to 1>>
 <</link>>@@<br>
 <<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<<else>>@@.mc-thoughts; Don't think I need it@@@@.warningtext; (Req. <img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:20%; display: inline; margin: 0;"> ≥ 3)@@<</if>><</if>>
+<<else>>@@.mc-thoughts; Don't think I need it@@@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:20%; display: inline; margin: 0;"> ≥ 3)@@<</if>><</if>>
 </div>
 <div class="housecard">
 <<if $wardenClothesStage eq 1>>
-<img src="assets/img/wardrobe/warden.webp" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/wardrobe/warden.webp'" class="iconPx"><br>
 <span class="priceAmount">500$</span><br>
 <<if $mc.corruption gte 3>>
 <<if $mc.money gte 500>>
@@ -24,7 +24,7 @@
 <<set $wardenClothesStage to 2>>
 <</link>>@@<br>
 <<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<<else>>@@.mc-thoughts; I don't think I can wear this...@@@@.warningtext; (Req. <img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:20%; display: inline; margin: 0;"> ≥ 3)@@<</if>><</if>>
+<<else>>@@.mc-thoughts; I don't think I can wear this...@@@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:20%; display: inline; margin: 0;"> ≥ 3)@@<</if>><</if>>
 </div>
 <div class="housecard">
 

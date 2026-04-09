@@ -1,6 +1,6 @@
 :: libraryTipsBook {"position":"2925,2100","size":"100,100"}
 <<nobr>>
-<img src="assets/library/book.jpg" class="libraryTipsBookImg"><br>
+<img @src="setup.ImagePath + '/library/book.jpg'" class="libraryTipsBookImg"><br>
 @@.mc-thoughts;You pull out a book titled "A Brief Guide to Ghost Hunting".@@ <br>
 <<set $foundTips to 1>>
 <<set _check to random(1,3)>>

@@ -3,12 +3,12 @@
 
 
 <<if $isBrookePossessed eq 1>>
-<img src="assets/img/libraryInside.jpg" width="100%">
+<img @src="setup.ImagePath + '/img/libraryInside.jpg'" width="100%">
 @@.mc-speech; She’s not there... strange...@@<br><br>
 @@.backbtn; [[Leave|LibraryInside]] @@<br>
 <<else>>
 <<if $isBrookePossessedCD lte 2>>
-<img src="assets/img/libraryInside.jpg" width="100%">
+<img @src="setup.ImagePath + '/img/libraryInside.jpg'" width="100%">
 @@.mc-thoughts;She’s probably still with Rain. Maybe it’s worth waiting a couple of days. @@<br><br>
 @@.backbtn; [[Leave|LibraryInside]] @@<br>
 <<else>>
@@ -32,7 +32,7 @@
 <<set $chanceToSuccessAloneOwaissaBrook to 70>>
 <<set $chanceToSuccessAloneElmBrook to 55>>
 <</if>>
-<img src="assets/brook/brookLibrary.jpg" width="30%">
+<img @src="setup.ImagePath + '/brook/brookLibrary.jpg'" width="30%">
 <br>
 <<if ndef $meetBrook>>
 <<set $meetBrook to 1>>

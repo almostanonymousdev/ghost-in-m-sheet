@@ -1,12 +1,12 @@
 :: rescueVictoriaPossessed1 [nobr] {"position":"2025,2200","size":"100,100"}
 <<if $rescueVictoriaPossessed eq 1>>
 <video autoplay controls muted loop>
- <source src="assets/rescue/Victoria/1.2.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Victoria/1.2.mp4'" type="video/mp4">
  </video>
  @@.mc-speech; What are you going to do? ~OH~ fuck~ my butthole@@<br>
  @@.notmc-speech; Seems like your sweet little hole is ready for@@ <<linkappend "@@.notmc-speechLink; something more...@@">>
  <video autoplay controls muted loop>
- <source src="assets/rescue/Victoria/1.3.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Victoria/1.3.mp4'" type="video/mp4">
  </video>
 @@.notmc-speech; Ha, your hole swallowed that dildo right away<br>
 How many dicks have been in your ass already?@@<br>
@@ -14,12 +14,12 @@ How many dicks have been in your ass already?@@<br>
 <</if>>
 <<if $rescueVictoriaPossessed eq 2>>
 <video autoplay controls muted loop>
- <source src="assets/rescue/Victoria/2.2.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Victoria/2.2.mp4'" type="video/mp4">
  </video>
 @@.mc-speech; Oh~you're gonna tear my ass, please be gentle@@<br>
 @@.notmc-speech; What a tight ass you have, don't worry,@@ <<linkappend "@@.notmc-speechLink; I'll fix it@@">>
   <video autoplay controls muted loop>
- <source src="assets/rescue/Victoria/2.3.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Victoria/2.3.mp4'" type="video/mp4">
  </video>
 @@.notmc-speech; Do you want me to stop? Answer me, whore@@<br>
 @@.mc-speech; Oh my god, I can't take it anymore, I'm 
@@ -28,12 +28,12 @@ How many dicks have been in your ass already?@@<br>
 <</if>>
 <<if $rescueVictoriaPossessed eq 3>>
 <video autoplay controls muted loop>
- <source src="assets/rescue/Victoria/3.2.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Victoria/3.2.mp4'" type="video/mp4">
  </video>
  @@.mc-speech; Oh~you're gonna tear my ass, please be gentle@@<br>
 @@.notmc-speech; What a tight ass you have, don't worry,@@ <<linkappend "@@.notmc-speechLink; I'll fix it@@">>
    <video autoplay controls muted loop>
- <source src="assets/rescue/Victoria/3.3.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Victoria/3.3.mp4'" type="video/mp4">
  </video>
 @@.notmc-speech; Do you want me to stop? Answer me, whore@@<br>
 @@.mc-speech; Oh my god, I can't take it anymore, I'm 

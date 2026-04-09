@@ -1,7 +1,7 @@
 :: tentaclesEventPC [nobr] {"position":"800,4300","size":"100,100"}
 <<set $gotCursedItemEventCD to 0>>
 <video autoplay controls muted loop>
- <source src="assets/tentacles/pc1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/tentacles/pc1.mp4'" type="video/mp4">
 </video>
 @@.mc-thoughts; You're masturbating, caressing your wet pussy. Suddenly, a tentacle crawls across the screen, slowly approaching you like a snake.@@<br>
 @@.mc-speech; Fuck, what the hell is this?!@@<br><br>
@@ -12,7 +12,7 @@
 
     <span id ="tentaclesEventPc">
     <video autoplay controls muted loop>
-     <source src="assets/tentacles/pc3.mp4" type="video/mp4">
+     <source @src="setup.ImagePath + '/tentacles/pc3.mp4'" type="video/mp4">
      </video></span>
     <<set _videoIndex to 1>>
     @@.mc-thoughts; The tentacle doesn't scare you anymore. It ignites a craving for something new, forbidden. You touch it with your tongue - it's slick, tasty, and that makes your pussy start to pulse.@@<br>
@@ -22,13 +22,13 @@
     <<replace "#tentaclesEventPc">>
 
     <video autoplay controls muted loop>
-    <source @src="`assets/tentacles/pc`+_videoIndex+`.mp4`" type="video/mp4">
+    <source @src="setup.ImagePath+`/tentacles/pc`+_videoIndex+`.mp4`" type="video/mp4">
     </video>
     <</replace>><</link>>
 	@@.mc-thoughts; licking them as if you're sucking the juiciest cock, feeling your cunt start to@@ 
     <<linkappend "@@.usebtn; drip with anticipation@@">>
     <video autoplay controls muted loop>
-     <source src="assets/tentacles/pc4.mp4" type="video/mp4">
+     <source @src="setup.ImagePath + '/tentacles/pc4.mp4'" type="video/mp4">
      </video>
     @@.mc-thoughts; They cum on you, covering you with thick, warm semen@@<br>
     <<if $tentaclesEventStageAll gte 4>>

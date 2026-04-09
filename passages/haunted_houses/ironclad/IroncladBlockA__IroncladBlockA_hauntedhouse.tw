@@ -10,18 +10,18 @@
         
 		<div class="footer">
         	<div class="footertools">
-         	<<toolCard "assets/img/emf.png" "ironcladBlockAPicEMF" "searchEMFBlockAIronclad">>
-         	<<toolCard "assets/img/glass.png" "actionironcladBlockAPicPlasm" "searchPlasmBlockAIronclad">>
-         	<<toolCard "assets/img/gwb.png" "actionironcladBlockAPicGWB" "searchGwbBlockAIronclad">>
-         	<<toolCard "assets/img/spiritbox.png" "actionironcladBlockAPicSB" "searchSbBlockAIronclad">>
-         	<<toolCard "assets/img/thermometr.png" "actionironcladBlockAPicThermometr" "searchThermometrBlockAIronclad">>
-         	<<toolCard "assets/img/uvl.png" "actionironcladBlockAPicUVL" "searchUvlBlockAIronclad">>
+         	<<toolCard "img/emf.png" "ironcladBlockAPicEMF" "searchEMFBlockAIronclad">>
+         	<<toolCard "img/glass.png" "actionironcladBlockAPicPlasm" "searchPlasmBlockAIronclad">>
+         	<<toolCard "img/gwb.png" "actionironcladBlockAPicGWB" "searchGwbBlockAIronclad">>
+         	<<toolCard "img/spiritbox.png" "actionironcladBlockAPicSB" "searchSbBlockAIronclad">>
+         	<<toolCard "img/thermometr.png" "actionironcladBlockAPicThermometr" "searchThermometrBlockAIronclad">>
+         	<<toolCard "img/uvl.png" "actionironcladBlockAPicUVL" "searchUvlBlockAIronclad">>
             <<companionCard>>
             <div class="footer-card footer-light">
-            	<span class="cursedHuntLinkDisable"><<link [img[assets/img/lighton.png][IroncladBlockA]]>><<set $BlockA.background to 1>><</link>>
-             <<link [img[assets/img/lightoff.png][IroncladBlockA]]>><<set $BlockA.background to 2>><</link>>
+            	<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "IroncladBlockA">><<set $BlockA.background to 1>><</link>>
+             <<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" "IroncladBlockA">><<set $BlockA.background to 2>><</link>>
 			<<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>> 
-<<link [img[assets/img/hearth.png][minigame]]>>
+<<link "<img @src='setup.ImagePath + \"/img/hearth.png\"'>" "minigame">>
 <<set $minigameVideo to "start">>
 <<set $ghostOrgasmMeter to 0>>
 <<set $mcOrgasmMeter to 0>><</link>>

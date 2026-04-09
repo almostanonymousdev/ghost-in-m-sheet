@@ -1,14 +1,14 @@
 :: CityMap [city] {"position":"1125,300","size":"100,100"}
 <div class="flexwrapper">
 <div class="housecard">
-<img src="assets/img/gymIcon.png" class="icon">
+<img @src="setup.ImagePath + '/img/gymIcon.png'" class="icon">
 @@.icontextcity; [[Gym|Gym]]@@
 </div>
 <div class="housecard">
 
 </div>
 <div class="housecard">
-<img src="assets/img/home.png" class="icon">
+<img @src="setup.ImagePath + '/img/home.png'" class="icon">
 @@.icontextcity; [[Home|Home]]@@
 </div>
 <div class="housecard">
@@ -18,7 +18,7 @@
 
 </div>
 <div class="housecard">
-<img src="assets/img/mall.png" class="icon">
+<img @src="setup.ImagePath + '/img/mall.png'" class="icon">
 @@.icontextcity; [[Mall|Mall]]@@
 </div>
 <div class="housecard">
@@ -28,7 +28,7 @@
 
 </div>
 <div class="housecard">
-<img src="assets/img/witchhouse.png" class="icon">
+<img @src="setup.ImagePath + '/img/witchhouse.png'" class="icon">
 @@.icontextcity; [[Witch's House|Witch]]@@
 </div>
 <div class="housecard">
@@ -38,21 +38,21 @@
 
 </div>
 <div class="housecard">
-<img src="assets/img/libraryIcon.png" class="icon">
+<img @src="setup.ImagePath + '/img/libraryIcon.png'" class="icon">
 @@.icontextcity; [[Library|Library]]@@
 </div>
 <div class="housecard">
 
 </div>
 <div class="housecard">
-<img src="assets/img/park.png" class="icon">
+<img @src="setup.ImagePath + '/img/park.png'" class="icon">
 @@.icontextcity; [[Park|Park]]@@
 </div>
 <div class="housecard">
 
 </div>
 <div class="housecard">
-<img src="assets/img/churchIco.png" class="icon">
+<img @src="setup.ImagePath + '/img/churchIco.png'" class="icon">
 @@.icontextcity; [[Church|Church]]@@
 </div>
 <div class="housecard">
@@ -62,7 +62,7 @@
 
 </div>
 <div class="housecard">
-<img src="assets/img/deliveryhub.png" class="icon">
+<img @src="setup.ImagePath + '/img/deliveryhub.png'" class="icon">
 @@.icontextcity; [[Delivery Hub|DeliveryHub]]@@
 </div>
 <div class="housecard">
@@ -70,14 +70,14 @@
 <div class="housecard">
 </div>
 <div class="housecard">
-<img src="assets/img/beautySalon.png" class="icon">
+<img @src="setup.ImagePath + '/img/beautySalon.png'" class="icon">
 @@.icontextcity; [[Beauty Salon |BeautySalon]]@@
 </div>
 <div class="housecard">
 </div>
 <div class="housecard">
 </div>
-<<if $hasQuestForRescue eq 1>><img src="assets/rescue/down.png" class="downPointer clickable" onclick="SugarCube.Engine.play('rescueMap');"><</if>>
+<<if $hasQuestForRescue eq 1>><img @src="setup.ImagePath + '/rescue/down.png'" class="downPointer clickable" onclick="SugarCube.Engine.play('rescueMap');"><</if>>
 </div>
 
 

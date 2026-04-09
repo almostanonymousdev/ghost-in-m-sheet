@@ -2,12 +2,12 @@
 <<set _check to random(1,2)>>
 <<if _check eq 1>>
 <video autoplay controls muted loop>
- <source src="assets/rescue/Julia/1.5.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Julia/1.5.mp4'" type="video/mp4">
  </video>
 <</if>>
 <<if _check eq 2>>
 <video autoplay controls muted loop>
- <source src="assets/rescue/Julia/1.6.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Julia/1.6.mp4'" type="video/mp4">
  </video>
 <</if>>
 @@.mc-thoughts;But she came back with a huge dildo between her legs @@<br>
@@ -19,12 +19,12 @@ The room filled with slurping sounds coming from your dripping pussy@@<br>
 <<set _checkV to random(1,2)>>
 <<if _checkV eq 1>>
 <video autoplay controls muted loop>
- <source src="assets/rescue/Julia/1.7.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Julia/1.7.mp4'" type="video/mp4">
  </video>
 <</if>>
 <<if _checkV eq 2>>
 <video autoplay controls muted loop>
- <source src="assets/rescue/Julia/1.8.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Julia/1.8.mp4'" type="video/mp4">
  </video>
 <</if>>
 @@.mc-speech; Oh fuck! It feels so good... don't stop, I'm almost...@@<br>

@@ -1,68 +1,68 @@
 :: rescueMap {"position":"2175,1600","size":"100,100"}
-<img src="assets/rescue/down.png" class="upPointer clickable" onclick="SugarCube.Engine.play('CityMap');">
+<img @src="setup.ImagePath + '/rescue/down.png'" class="upPointer clickable" onclick="SugarCube.Engine.play('CityMap');">
 <div class="flexwrapper">
 <div class="housecard rescuehousecard">
-<img src="assets/rescue/house/1.jpg" class="iconRescuePx">
+<img @src="setup.ImagePath + '/rescue/house/1.jpg'" class="iconRescuePx">
 @@.icontextcity; [[Move|rescueHouse][$rescueHouse to 1]]@@
 </div>
 <div class="housecard rescuehousecard">
-<img src="assets/rescue/house/2.jpg" class="iconRescuePx">
+<img @src="setup.ImagePath + '/rescue/house/2.jpg'" class="iconRescuePx">
 @@.icontextcity; [[Move|rescueHouse][$rescueHouse to 2]]@@
 </div>
 <div class="housecard rescuehousecard">
-<img src="assets/rescue/house/3.jpg" class="iconRescuePx">
+<img @src="setup.ImagePath + '/rescue/house/3.jpg'" class="iconRescuePx">
 @@.icontextcity; [[Move|rescueHouse][$rescueHouse to 3]]@@
 </div>
 <div class="housecard rescuehousecard">
-<img src="assets/rescue/house/4.jpg" class="iconRescuePx">
+<img @src="setup.ImagePath + '/rescue/house/4.jpg'" class="iconRescuePx">
 @@.icontextcity; [[Move|rescueHouse][$rescueHouse to 4]]@@
 </div>
 <div class="housecard rescuehousecard">
-<img src="assets/rescue/house/5.jpg" class="iconRescuePx">
+<img @src="setup.ImagePath + '/rescue/house/5.jpg'" class="iconRescuePx">
 @@.icontextcity; [[Move|rescueHouse][$rescueHouse to 5]]@@
 </div>
 <div class="housecard rescuehousecard">
-<img src="assets/rescue/house/6.jpg" class="iconRescuePx">
+<img @src="setup.ImagePath + '/rescue/house/6.jpg'" class="iconRescuePx">
 @@.icontextcity; [[Move|rescueHouse][$rescueHouse to 6]]@@
 </div>
 <div class="housecard rescuehousecard">
-<img src="assets/rescue/house/7.jpg" class="iconRescuePx">
+<img @src="setup.ImagePath + '/rescue/house/7.jpg'" class="iconRescuePx">
 @@.icontextcity; [[Move|rescueHouse][$rescueHouse to 7]]@@
 </div>
 <div class="housecard rescuehousecard">
-<img src="assets/rescue/house/8.jpg" class="iconRescuePx">
+<img @src="setup.ImagePath + '/rescue/house/8.jpg'" class="iconRescuePx">
 @@.icontextcity; [[Move|rescueHouse][$rescueHouse to 8]]@@
 </div>
 <div class="housecard rescuehousecard">
-<img src="assets/rescue/house/9.jpg" class="iconRescuePx">
+<img @src="setup.ImagePath + '/rescue/house/9.jpg'" class="iconRescuePx">
 @@.icontextcity; [[Move|rescueHouse][$rescueHouse to 9]]@@
 </div>
 <div class="housecard rescuehousecard">
-<img src="assets/rescue/house/10.jpg" class="iconRescuePx">
+<img @src="setup.ImagePath + '/rescue/house/10.jpg'" class="iconRescuePx">
 @@.icontextcity; [[Move|rescueHouse][$rescueHouse to 10]]@@
 </div>
 <div class="housecard rescuehousecard">
-<img src="assets/rescue/house/11.jpg" class="iconRescuePx">
+<img @src="setup.ImagePath + '/rescue/house/11.jpg'" class="iconRescuePx">
 @@.icontextcity; [[Move|rescueHouse][$rescueHouse to 11]]@@
 </div>
 <div class="housecard rescuehousecard">
-<img src="assets/rescue/house/12.jpg" class="iconRescuePx">
+<img @src="setup.ImagePath + '/rescue/house/12.jpg'" class="iconRescuePx">
 @@.icontextcity; [[Move|rescueHouse][$rescueHouse to 12]]@@
 </div>
 <div class="housecard rescuehousecard">
-<img src="assets/rescue/house/13.jpg" class="iconRescuePx">
+<img @src="setup.ImagePath + '/rescue/house/13.jpg'" class="iconRescuePx">
 @@.icontextcity; [[Move|rescueHouse][$rescueHouse to 13]]@@
 </div>
 <div class="housecard rescuehousecard">
-<img src="assets/rescue/house/14.jpg" class="iconRescuePx">
+<img @src="setup.ImagePath + '/rescue/house/14.jpg'" class="iconRescuePx">
 @@.icontextcity; [[Move|rescueHouse][$rescueHouse to 14]]@@
 </div>
 <div class="housecard rescuehousecard">
-<img src="assets/rescue/house/15.jpg" class="iconRescuePx">
+<img @src="setup.ImagePath + '/rescue/house/15.jpg'" class="iconRescuePx">
 @@.icontextcity; [[Move|rescueHouse][$rescueHouse to 15]]@@
 </div>
 <div class="housecard rescuehousecard">
-<img src="assets/rescue/house/16.jpg" class="iconRescuePx">
+<img @src="setup.ImagePath + '/rescue/house/16.jpg'" class="iconRescuePx">
 @@.icontextcity; [[Move|rescueHouse][$rescueHouse to 16]]@@
 </div>
 </div>

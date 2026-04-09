@@ -1,5 +1,5 @@
 :: RainHelps [nobr] {"position":"1275,3200","size":"100,100"}
-<img src="assets/rescue/Rain.jpg" width="50%" class="displayCentredImgs"><br>
+<img @src="setup.ImagePath + '/rescue/Rain.jpg'" width="50%" class="displayCentredImgs"><br>
 @@.mc-thoughts; Rain looks at Brooke and calmly says@@<br>
 @@.notmc-speech; Don’t worry, I’ll help her. Everything will be fine. But you should go home and get some rest. @@<br>
 @@.mc-thoughts; She leads Brooke behind the church. @@<Br>

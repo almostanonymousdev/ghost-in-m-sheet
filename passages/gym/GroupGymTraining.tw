@@ -4,18 +4,18 @@
 <<set _check to random(1,2)>>
 <<if _check eq 1>>
 <video autoplay controls muted loop>
- <source src="assets/gym/group.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/gym/group.mp4'" type="video/mp4">
  </video><</if>>
  <<if _check eq 2>>
  <video autoplay controls muted loop>
- <source src="assets/gym/group1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/gym/group1.mp4'" type="video/mp4">
  </video><</if>>
  You spent about an hour at the gym, diligently working on improving your physical fitness. Each workout makes you stronger and more resilient, helping you reach new heights.<br>
 <<if $mc.beauty gte 50>>
 @@.mc-thoughts; Suddenly, you were@@ <<linkappend "@@.mc-thoughtsLink; surrounded by all the members of the group class@@.">><br>
 
 <video autoplay controls muted loop>
- <source src="assets/gym/grouptraining1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/gym/grouptraining1.mp4'" type="video/mp4">
  </video>
  <<include "add15lust">>
  @@.notmc-speech;The class is almost over, and now we want to relax a bit. You’ll help us out, won’t you, sweetheart?@@<br>
@@ -24,10 +24,10 @@
 @@.mc-speech; I'm so horny...and they start rubbing my pussy right now....<br>
 Oooh, [[I can't resist|gymGroupEvent1Start]]@@<br>
 <<else>>
-@@.mc-speech; No, sorry I'm [[not in the mood.|GymInside]]@@<br>@@.warningtext; (Req. <img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 50)@@
+@@.mc-speech; No, sorry I'm [[not in the mood.|GymInside]]@@<br>@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 50)@@
 <</if>><</linkappend>>
 <br>
-<<else>>@@.warningtext; (Req. <img src="assets/img/beauty.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 50)@@<br><br>@@.backbtn;[[Back|GymInside]] @@<br>
+<<else>>@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/beauty.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 50)@@<br><br>@@.backbtn;[[Back|GymInside]] @@<br>
 <</if>>
 
 <<set $previousFit = $mc.fit>>
@@ -35,7 +35,7 @@ Oooh, [[I can't resist|gymGroupEvent1Start]]@@<br>
 <<set $beautyIncrease = Math.floor($mc.fit / 5) - Math.floor($previousFit / 5)>>
 <<if $beautyIncrease > 0>>
 <<set $mc.beauty += $beautyIncrease>>
-@@.mc-speech; <span class="evidenceText">Your <img src="assets/img/beauty.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> has improved (+1): $mc.beauty now!</span>@@<br>
+@@.mc-speech; <span class="evidenceText">Your <img @src="setup.ImagePath + '/img/beauty.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> has improved (+1): $mc.beauty now!</span>@@<br>
 <</if>>
 
 <<if !$mc.energyPoints>>
@@ -48,7 +48,7 @@ Oooh, [[I can't resist|gymGroupEvent1Start]]@@<br>
 <<if _currentEnergyPoints > _previousEnergyPoints>>
   <<set $mc.energyMax += (_currentEnergyPoints - _previousEnergyPoints)>>
   <<set $mc.energyPoints = _currentEnergyPoints>>  
-  @@.mc-speech; <span class="evidenceText">Your <img src="assets/img/energy.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> has increased (+<<=_currentEnergyPoints - _previousEnergyPoints>>): $mc.energyMax now!</span>@@<br>
+  @@.mc-speech; <span class="evidenceText">Your <img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> has increased (+<<=_currentEnergyPoints - _previousEnergyPoints>>): $mc.energyMax now!</span>@@<br>
 <</if>>
 
 
@@ -62,7 +62,7 @@ Oooh, [[I can't resist|gymGroupEvent1Start]]@@<br>
 <<if $mc.fit eq 100>>
  <<if $mc.energyMax < 20>> 
     <<set $mc.energyMax = 20>>  
-    @@.mc-speech; <span class="evidenceText">Your <img src="assets/img/energy.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> has reached the maximum of 20!</span>@@<br>
+    @@.mc-speech; <span class="evidenceText">Your <img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> has reached the maximum of 20!</span>@@<br>
   <</if>>
 @@.mc-speech; <span class="evidenceText">Your fitness level is perfect - 100</span>@@<<else>>
  @@.mc-speech; <span class="evidenceText">Your fitness level has improved (+2): $mc.fit now!</span>@@<</if>>

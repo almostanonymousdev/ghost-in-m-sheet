@@ -1,6 +1,6 @@
 :: rescueNadiaPossessed1 [nobr] {"position":"2225,2200","size":"100,100"}
 <video autoplay controls muted loop>
- <source src="assets/rescue/Nadia/1.2.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Nadia/1.2.mp4'" type="video/mp4">
  </video>
 @@.notmc-speech;Mmm, your nipples are already so hard. Relax, baby, lie down on the bed.@@<br>
 @@.mc-thoughts; Mm~ No, something's not right.@@<br>
@@ -8,12 +8,12 @@
 <<set _check to random(1,2)>>
 <<if _check eq 1>>
 <video autoplay controls muted loop>
- <source src="assets/rescue/Nadia/1.3.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Nadia/1.3.mp4'" type="video/mp4">
  </video>
 <</if>>
 <<if _check eq 2>>
 <video autoplay controls muted loop>
- <source src="assets/rescue/Nadia/1.4.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Nadia/1.4.mp4'" type="video/mp4">
  </video>
 <</if>>
  @@.mc-thoughts; I'm god, my whole body is on fire, how is she doing this?@@<br>

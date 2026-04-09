@@ -15,7 +15,7 @@
 <<set $foundTips to 1>>
 <<elseif _selectedResult is "comics">>
 <<set $foundComics to 1>>
-<img src="assets/library/comicsFound.jpg" width="100%"><br>
+<img @src="setup.ImagePath + '/library/comicsFound.jpg'" width="100%"><br>
 @@.mc-speech; What’s this? Erotic comics? It looks interesting… I wonder how it ended up here.@@<br>
 @@.enterbtn;[[Read comics|comics]]<br>@@
 <br>

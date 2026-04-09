@@ -8,23 +8,23 @@
           	</div>
         </div>
         <div class="furnitureSearch">
-             <span id="basement_table"><<link [img[assets/img/furniture/table.png][furnitureSearch]]>><<set $currentFurniture to "basement_table">><<includeTimeEventClothesHunt>><</link>></span>
-			 <span id="basement_shelves"><<link [img[assets/img/furniture/shelves.png][furnitureSearch]]>><<set $currentFurniture to "basement_shelves">><<includeTimeEventClothesHunt>><</link>></span>
+             <span id="basement_table"><<link "<img @src='setup.ImagePath + \"/img/furniture/table.png\"'>" "furnitureSearch">><<set $currentFurniture to "basement_table">><<includeTimeEventClothesHunt>><</link>></span>
+			 <span id="basement_shelves"><<link "<img @src='setup.ImagePath + \"/img/furniture/shelves.png\"'>" "furnitureSearch">><<set $currentFurniture to "basement_shelves">><<includeTimeEventClothesHunt>><</link>></span>
         </div>
 		<div class="footer">
         	<div class="footertools">
-         	<<toolCard "assets/img/emf.png" "elmBasementPicEMF" "searchEMFBasement">>
-         	<<toolCard "assets/img/glass.png" "elmBasementPicPlasm" "searchPlasmBasement">>
-         	<<toolCard "assets/img/gwb.png" "elmBasementPicGWB" "searchGwbBasement">>
-         	<<toolCard "assets/img/spiritbox.png" "elmBasementPicSB" "searchSbBasement">>
-         	<<toolCard "assets/img/thermometr.png" "elmBasementPicThermometr" "searchThermometrBasementElm">>
-         	<<toolCard "assets/img/uvl.png" "elmBasementPicUVL" "searchUVLBasement">>
+         	<<toolCard "img/emf.png" "elmBasementPicEMF" "searchEMFBasement">>
+         	<<toolCard "img/glass.png" "elmBasementPicPlasm" "searchPlasmBasement">>
+         	<<toolCard "img/gwb.png" "elmBasementPicGWB" "searchGwbBasement">>
+         	<<toolCard "img/spiritbox.png" "elmBasementPicSB" "searchSbBasement">>
+         	<<toolCard "img/thermometr.png" "elmBasementPicThermometr" "searchThermometrBasementElm">>
+         	<<toolCard "img/uvl.png" "elmBasementPicUVL" "searchUVLBasement">>
             <<companionCard>>
             <div class="footer-card footer-light">
-            	<span class="cursedHuntLinkDisable"><<link [img[assets/img/lighton.png][elmBasement]]>><<set $basement.background to 1>><</link>>
-             <<link [img[assets/img/lightoff.png][elmBasement]]>><<set $basement.background to 2>><</link>>
+            	<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "elmBasement">><<set $basement.background to 1>><</link>>
+             <<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" "elmBasement">><<set $basement.background to 2>><</link>>
 			<<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>> 
-<<link [img[assets/img/hearth.png][minigame]]>>
+<<link "<img @src='setup.ImagePath + \"/img/hearth.png\"'>" "minigame">>
 <<set $minigameVideo to "start">>
 <<set $ghostOrgasmMeter to 0>>
 <<set $mcOrgasmMeter to 0>><</link>>

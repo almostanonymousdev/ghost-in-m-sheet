@@ -1,8 +1,8 @@
 :: Bath {"position":"600,1100","size":"100,100"}
 <<nobr>>
 <<set _check to random(1,2)>>
-<<if _check eq 1>><img src="assets/bath/1.jpg" width="60%"><</if>>
-<<if _check eq 2>><img src="assets/bath/2.jpg" width="60%"><</if>><br>
+<<if _check eq 1>><img @src="setup.ImagePath + '/bath/1.jpg'" width="60%"><</if>>
+<<if _check eq 2>><img @src="setup.ImagePath + '/bath/2.jpg'" width="60%"><</if>><br>
 
 <<set $mc.dirty to 0>>
 <<if $mc.makeupImg eq 1>><<set $mc.beauty  -= 5>>

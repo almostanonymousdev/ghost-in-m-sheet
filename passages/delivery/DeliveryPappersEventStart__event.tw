@@ -2,12 +2,12 @@
 <<nobr>>
 <<include "add15lust">>
 <video autoplay controls muted loop>
- <source src="assets/deliveryhub/papersevent/1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/deliveryhub/papersevent/1.mp4'" type="video/mp4">
  </video>
  @@.notmc-speech; How about staying with me for a while? I think the work can wait, and I’ll write a good review for your work?@@<br>
-+15 <img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:3%;"><br>
++15 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"><br>
 <<if $mc.corruption lte 3>>
-+0.1 <img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:3%;">
++0.1 <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%;">
 <<set $mc.corruption += 0.1>><br><</if>>
  <<if $mc.corruption gte 3>>
  <<if $mc.lust gte 40>>
@@ -18,24 +18,24 @@
  <<set _check to random(1,2)>>
 <<if _check eq 1>>
 <video autoplay controls muted loop>
- <source src="assets/deliveryhub/papersevent/2.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/deliveryhub/papersevent/2.mp4'" type="video/mp4">
  </video><</if>>
  <<if _check eq 2>>
 <video autoplay controls muted loop>
- <source src="assets/deliveryhub/papersevent/3.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/deliveryhub/papersevent/3.mp4'" type="video/mp4">
  </video><br><</if>>
- +30 <img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:3%;"><br>
+ +30 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"><br>
 @@.mc-speech; ~Hmng~ulrp~ It's too big to fit in my mouth@@<br>
 @@.notmc-speech; Oh~ I think it will fit in your pussy, I'm sure you're all wet@@<br>
 @@.mc-thoughts; He is right. I can not stand it any longer@@<br>
 @@.notmc-speech; Sit on my dick with your [[wet pussy|DeliveryPappersEvent1]]@@<br>
 <</linkappend>>@@
  <<else>>
- @@.mc-speech; Nah, I better get back to work, bye@@ @@.warningtext; (Req. <img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 40)@@<br>
+ @@.mc-speech; Nah, I better get back to work, bye@@ @@.warningtext; (Req. <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 40)@@<br>
  @@.backbtn;[[Leave|DeliveryMap]] @@<br>
  <</if>>
  <<else>>
- @@.mc-speech; What? I'm not some cheap whore, I'm leaving@@ @@.warningtext; (Req. <img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 3)@@<br><br>
+ @@.mc-speech; What? I'm not some cheap whore, I'm leaving@@ @@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 3)@@<br><br>
 @@.backbtn;[[Leave|DeliveryMap]] @@<br>
 <</if>>
 <</nobr>>

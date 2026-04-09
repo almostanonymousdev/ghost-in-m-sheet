@@ -1,11 +1,11 @@
 :: ghostSpecialEventTVSpirit1 {"position":"500,2550","size":"100,100"}
 <<set $ghostSpiritEventStage to 1>>
 <video autoplay controls muted loop>
-<source src="assets/ghosts/specials/spirit1.2.mp4" type="video/mp4">
+<source @src="setup.ImagePath + '/ghosts/specials/spirit1.2.mp4'" type="video/mp4">
 </video>
 @@.mc-thoughts; This goes on for a while — someone is fucking your sweet mouth. If he were to tell you to present your ass right now, you would do it without hesitation. The thought makes your pussy@@ <<linkappend "@@.usebtn; even wetter.@@">>
 <video autoplay controls muted loop>
-<source src="assets/ghosts/specials/spirit1.3.mp4" type="video/mp4">
+<source @src="setup.ImagePath + '/ghosts/specials/spirit1.3.mp4'" type="video/mp4">
 </video>
 @@.mc-thoughts; But suddenly it stops. He cums in your mouth, and you feel it spilling out. Only now do you realize what just happened—someone was fucking your mouth, and you did nothing to stop it; instead, you gave him a blowjob and ended up soaked like a slut. You want to get up and destroy this audacious intruder, but to your surprise, he's gone. Shocked by the situation, you @@@@.usebtn; [[stand up and walk away|Livingroom]]@@, @@.mc-thoughts;still trying to process what just occurred.@@<br>
 <br>

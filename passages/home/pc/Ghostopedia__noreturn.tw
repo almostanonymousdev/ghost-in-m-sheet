@@ -5,7 +5,7 @@
       <div class="evidenceWrapper">
           <div class="evidenceCardIcon">
               Demon<br>
-              <img src="assets/ghosts/Demon.webp" class="iconPx">
+              <img @src="setup.ImagePath + '/ghosts/Demon.webp'" class="iconPx">
           </div>
           <div class="evidenceDesc">
           <<if ndef $ghostDemonInfoCollected>>
@@ -16,7 +16,7 @@
       <div class="evidenceWrapper">
       <div class="evidenceCardIcon">
          Deogen<br>
-          <img src="assets/ghosts/Deogen.webp" class="iconPx">
+          <img @src="setup.ImagePath + '/ghosts/Deogen.webp'" class="iconPx">
       </div>
           <div class="evidenceDesc">
            <<if $ghostDeogenInfoCollected eq 1>>
@@ -29,7 +29,7 @@
     <div class="evidenceWrapper">
     <div class="evidenceCardIcon">
       Goryo<br>
-      <img src="assets/ghosts/Goryo.webp" class="iconPx">
+      <img @src="setup.ImagePath + '/ghosts/Goryo.webp'" class="iconPx">
       </div> 
           <div class="evidenceDesc">
           <<if $ghostGoryoInfoCollected eq 1>>
@@ -42,7 +42,7 @@ There is no information yet<</if>>
     <div class="evidenceWrapper">
     <div class="evidenceCardIcon">
     Jinn<br>
-      <img src="assets/ghosts/Jinn.webp" class="iconPx">
+      <img @src="setup.ImagePath + '/ghosts/Jinn.webp'" class="iconPx">
       </div>
           <div class="evidenceDesc">
           <<if $ghostJinnInfoCollected eq 1>>
@@ -55,7 +55,7 @@ There is no information yet<</if>>
     <div class="evidenceWrapper">
     <div class="evidenceCardIcon">
       Moroi<br>
-      <img src="assets/ghosts/Moroi.webp" class="iconPx">
+      <img @src="setup.ImagePath + '/ghosts/Moroi.webp'" class="iconPx">
       </div>
           <div class="evidenceDesc">
           <<if $ghostMoroiInfoCollected eq 1>>
@@ -68,7 +68,7 @@ There is no information yet<</if>>
     <div class="evidenceWrapper">
     <div class="evidenceCardIcon">
       Myling<br>
-      <img src="assets/ghosts/Myling.webp" class="iconPx">
+      <img @src="setup.ImagePath + '/ghosts/Myling.webp'" class="iconPx">
       </div>
           <div class="evidenceDesc">
           <<if $ghostMylingInfoCollected eq 1>>
@@ -82,7 +82,7 @@ There is no information yet<</if>>
       <div class="evidenceWrapper">
           <div class="evidenceCardIcon">
               Oni<br>
-              <img src="assets/ghosts/Oni.webp" class="iconPx">
+              <img @src="setup.ImagePath + '/ghosts/Oni.webp'" class="iconPx">
           </div>
           <div class="evidenceDesc">
           <<if $ghostOniInfoCollected eq 1>>
@@ -95,7 +95,7 @@ There is no information yet<</if>>
         <div class="evidenceWrapper">
           <div class="evidenceCardIcon">
               Phantom<br>
-              <img src="assets/ghosts/Phantom.webp" class="iconPx">
+              <img @src="setup.ImagePath + '/ghosts/Phantom.webp'" class="iconPx">
           </div>
           <div class="evidenceDesc">
           <<if $ghostPhantomInfoCollected eq 1>>
@@ -108,7 +108,7 @@ There is no information yet<</if>>
         <div class="evidenceWrapper">
           <div class="evidenceCardIcon">
               Poltergeist<br>
-              <img src="assets/ghosts/Poltergeist.webp" class="iconPx">
+              <img @src="setup.ImagePath + '/ghosts/Poltergeist.webp'" class="iconPx">
           </div>
           <div class="evidenceDesc">
           There is no information yet
@@ -117,7 +117,7 @@ There is no information yet<</if>>
         <div class="evidenceWrapper">
           <div class="evidenceCardIcon">
               Mimic<br>
-              <img src="assets/ghosts/Mimic.webp" class="iconPx">
+              <img @src="setup.ImagePath + '/ghosts/Mimic.webp'" class="iconPx">
           </div>
           <div class="evidenceDesc">
           <<if $ghostMimicInfoCollected eq 1>>
@@ -130,7 +130,7 @@ There is no information yet<</if>>
         <div class="evidenceWrapper">
           <div class="evidenceCardIcon">
               Shade<br>
-              <img src="assets/ghosts/Shade.webp" class="iconPx">
+              <img @src="setup.ImagePath + '/ghosts/Shade.webp'" class="iconPx">
           </div>
           <div class="evidenceDesc">
           <<if $ghostShadeInfoCollected eq 1>>
@@ -143,7 +143,7 @@ There is no information yet<</if>>
         <div class="evidenceWrapper">
           <div class="evidenceCardIcon">
               Spirit<br>
-              <img src="assets/ghosts/Spirit.webp" class="iconPx">
+              <img @src="setup.ImagePath + '/ghosts/Spirit.webp'" class="iconPx">
           </div>
           <div class="evidenceDesc">
           <<if $ghostSpiritInfoCollected eq 1>>
@@ -157,7 +157,7 @@ There is no information yet<</if>>
       <div class="evidenceWrapper">
           <div class="evidenceCardIcon">
               Mare<br>
-              <img src="assets/ghosts/Mare.webp" class="iconPx">
+              <img @src="setup.ImagePath + '/ghosts/Mare.webp'" class="iconPx">
           </div>
           <div class="evidenceDesc">
           <<if $ghostMareInfoCollected eq 1>>
@@ -170,7 +170,7 @@ There is no information yet<</if>>
          <div class="evidenceWrapper">
          <div class="evidenceCardIcon">
               Cthulion<br>
-              <img src="assets/ghosts/Cthulion.webp" class="iconPx">
+              <img @src="setup.ImagePath + '/ghosts/Cthulion.webp'" class="iconPx">
           </div>
           <div class="evidenceDesc">
           <<if $ghostCthulionInfoCollected eq 1>>
@@ -184,7 +184,7 @@ There is no information yet<</if>>
         <div class="evidenceWrapper">
           <div class="evidenceCardIcon">
               The Twins<br>
-              <img src="assets/ghosts/The_Twins.webp" class="iconPx">
+              <img @src="setup.ImagePath + '/ghosts/The_Twins.webp'" class="iconPx">
           </div>
           <div class="evidenceDesc">
           There is no information yet
@@ -193,7 +193,7 @@ There is no information yet<</if>>
         <div class="evidenceWrapper">
           <div class="evidenceCardIcon">
               Wraith<br>
-              <img src="assets/ghosts/Wraith.webp" class="iconPx">
+              <img @src="setup.ImagePath + '/ghosts/Wraith.webp'" class="iconPx">
           </div>
           <div class="evidenceDesc">
           <<if $ghostWraithInfoCollected eq 1>>
@@ -206,7 +206,7 @@ This is quite a dangerous ghost. If it catches me or I lose sanity during the gh
         <div class="evidenceWrapper">
           <div class="evidenceCardIcon">
               Banshee<br>
-              <img src="assets/ghosts/Banshee.webp" class="iconPx">
+              <img @src="setup.ImagePath + '/ghosts/Banshee.webp'" class="iconPx">
              
           </div>
           <div class="evidenceDesc">
@@ -224,7 +224,7 @@ This is quite a dangerous ghost. If it catches me or I lose sanity during the gh
             <div class="evidenceWrapper">
           <div class="evidenceCardIcon">
               Raiju<br>
-              <img src="assets/ghosts/Raiju.webp" class="iconPx">
+              <img @src="setup.ImagePath + '/ghosts/Raiju.webp'" class="iconPx">
              
           </div>
           <div class="evidenceDesc">

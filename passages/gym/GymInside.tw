@@ -6,29 +6,29 @@
 <<set $trainingCost to 15>>
 <<elseif $hours >= 17 && $hours < 23>>
 <<if ndef $trainer3CoachingCost>><<set $trainingCost to 15>><<else>><<set $trainingCost to 0>><</if>><</if>>
-<img src="assets/img/gymInside.jpg" width="100%">
+<img @src="setup.ImagePath + '/img/gymInside.jpg'" width="100%">
 <br>
 <<if $hours lte 7 or $hours gte 22>>
 @@.mc-thoughts; It's time to go, there's no one here<br><<else>>
 <<if def $sportswear>> 
-<<if $mc.energy gte 5>><span class="movebtn">[[Train solo|GymTraining][$mc.energy -= 5]]</span><span><img src="assets/img/energy.png" style="position: relative; top: 0.375em; width:3%;"></span><<else>>
+<<if $mc.energy gte 5>><span class="movebtn">[[Train solo|GymTraining][$mc.energy -= 5]]</span><span><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span><<else>>
 @@.mc-thoughts; I'm too tired to train solo@@
-<span><img src="assets/img/energy.png" style="position: relative; top: 0.375em; filter: grayscale(1); width:3%;"></span><</if>><br>
+<span><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; filter: grayscale(1); width:3%;"></span><</if>><br>
 
 <<if $mc.energy gte 5>>
 <<if $mc.money gte $trainingCost>>
-<span class="movebtn">[[Train with a coach|GymTrainingTrainer][$mc.energy -= 5]]</span><span><img src="assets/img/energy.png" style="position: relative; top: 0.375em; width:3%;"></span>
+<span class="movebtn">[[Train with a coach|GymTrainingTrainer][$mc.energy -= 5]]</span><span><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span>
 <span class="priceAmount">-$trainingCost $</span>
 <<else>>
 @@.mc-thoughts; I don't have enough money for a training session with a coach@@<</if>>
 <<else>>
 @@.mc-thoughts; I'm too tired to train with a coach@@
-<span><img src="assets/img/energy.png" style="position: relative; top: 0.375em; filter: grayscale(1); width:3%;"></span><</if>><br>
+<span><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; filter: grayscale(1); width:3%;"></span><</if>><br>
 
 <<if $hours gte 12 and $hours lte 13>>
-<<if $mc.energy gte 5>><span class="movebtn">[[Group fitness classes|GroupGymTraining][$mc.energy -= 5]]</span><span><img src="assets/img/energy.png" style="position: relative; top: 0.375em; width:3%;"></span>
+<<if $mc.energy gte 5>><span class="movebtn">[[Group fitness classes|GroupGymTraining][$mc.energy -= 5]]</span><span><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span>
 <<else>>
-@@.mc-thoughts; I'm too tired to train@@<span><img src="assets/img/energy.png" style="position: relative; top: 0.375em; filter: grayscale(1); width:3%;"></span>
+@@.mc-thoughts; I'm too tired to train@@<span><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; filter: grayscale(1); width:3%;"></span>
 <</if>>
 <</if>>
 <br>

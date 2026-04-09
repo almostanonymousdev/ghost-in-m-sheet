@@ -7,11 +7,11 @@
 <<set _check to random(1,2)>>
 <<if _check eq 1>>
 <video autoplay controls muted loop>
- <source src="assets/deliveryhub/packageevent/3.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/deliveryhub/packageevent/3.mp4'" type="video/mp4">
  </video><</if>>
  <<if _check eq 2>>
 <video autoplay controls muted loop>
- <source src="assets/deliveryhub/packageevent/4.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/deliveryhub/packageevent/4.mp4'" type="video/mp4">
  </video><</if>>
  @@.notmc-speech; Do you like it, slut?@@<br>
  @@.mc-speech; Oh~Please don't stop~Your cock is so good~@@<br>
@@ -22,7 +22,7 @@
  <<set $mc.lust to 0>>
  <</if>>
  <video autoplay controls muted loop>
- <source src="assets/deliveryhub/packageevent/6.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/deliveryhub/packageevent/6.mp4'" type="video/mp4">
  </video>
 @@.mc-speech; Oh~it feels amazing@@<br>
 @@.mc-speechLink; [[He's cumming|DeliveryPackageEventEnd1]]@@

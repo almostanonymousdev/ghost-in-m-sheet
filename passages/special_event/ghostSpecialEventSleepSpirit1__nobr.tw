@@ -1,11 +1,11 @@
 :: ghostSpecialEventSleepSpirit1 [nobr] {"position":"650,2550","size":"100,100"}
 <<set $ghostSpiritEventStage to 1>>
 <video autoplay controls muted loop>
-<source src="assets/ghosts/specials/spirit3.2.mp4" type="video/mp4">
+<source @src="setup.ImagePath + '/ghosts/specials/spirit3.2.mp4'" type="video/mp4">
 </video>
 @@.mc-thoughts; When he finally enters you, you realize this is not just a dream, but the passion consumes you entirely. Your hips instinctively move towards him, offering yourself, feeling your body arching into a submissive position. The pleasure is so overwhelming that you no longer want@@ <<linkappend "@@.usebtn; it to end.@@">><br>
 <video autoplay controls muted loop>
-<source src="assets/ghosts/specials/spirit3.3.mp4" type="video/mp4">
+<source @src="setup.ImagePath + '/ghosts/specials/spirit3.3.mp4'" type="video/mp4">
 </video>
 @@.mc-thoughts; But suddenly, everything stops. You feel something warm and sticky on your body. It spreads across your skin like a heated liquid. You run your hands over it, rubbing it in before bringing it to your lips, tasting it. Exhaustion overtakes you, and you drift back into@@ @@.movebtn; [[sleep|Sleep]]@@ <br>
 <</linkappend>>

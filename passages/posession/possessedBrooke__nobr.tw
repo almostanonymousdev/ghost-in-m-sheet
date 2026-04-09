@@ -2,11 +2,11 @@
 <<set _check to random(1,2)>>
 <<if _check eq 1>>
 <video autoplay controls muted loop>
- <source src="assets/brook/possessed/1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/brook/possessed/1.mp4'" type="video/mp4">
  </video>
 <<elseif _check eq 2>>
 <video autoplay controls muted loop>
- <source src="assets/brook/possessed/2.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/brook/possessed/2.mp4'" type="video/mp4">
  </video>
 <</if>>
 @@.mc-thoughts; You notice a girl with a man...<br>@@
@@ -21,12 +21,12 @@
 <<linkappend "@@.usebtn; black out@@">>
 <<set $hours to $hours + random(2,6)>>
 <video autoplay controls muted loop>
- <source src="assets/brook/possessed/3.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/brook/possessed/3.mp4'" type="video/mp4">
  </video>
  @@.mc-thoughts; You wake up from a strange sensation: something warm and wet is trying to penetrate your anus.@@<br>
 @@.notmc-speech; That's enough. Now I'll check how well you lubed her @@ <<linkappend "@@.usebtn; hole@@">>
 <video autoplay controls muted loop>
- <source src="assets/brook/possessed/4.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/brook/possessed/4.mp4'" type="video/mp4">
  </video>
 @@.mc-thoughts; While you are trying to remember what happened and how you ended up in this position, the man climbed on top of you and started fucking you in the ass.@@<br>
 <<if $sensualBodyPart.anal gte 5>>

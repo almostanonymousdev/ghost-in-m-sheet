@@ -2,7 +2,7 @@
 <<if $mc.energy gte 4>>
 <<set $mc.energy to 0>>
 <video autoplay controls muted loop>
- <source src="assets/mc/parkrunend.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/mc/parkrunend.mp4'" type="video/mp4">
  </video>
 @@.mc-thoughts;You skillfully slip away from her grasping hands, leaving her behind with her unsatisfied lust.@@<br>
 @@.mc-speech;FUCK! I barely got away from her, I need to be more careful around here.@@<br><br>
@@ -10,12 +10,12 @@
  <<else>>
  <<set $mc.energy to 0>>
  <video autoplay controls muted loop>
- <source src="assets/mc/parkeventcaught.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/mc/parkeventcaught.mp4'" type="video/mp4">
  </video>
  @@.mc-thoughts;She catches up to you, her hot breath on your neck. She calms you, saying she just wants to enjoy your beautiful body before letting you go, filling the air with promises of passion.@@<br>
  <<linkreplace "@@.usebtn; She puts you on your knees in front of her.@@">>
 <video autoplay controls muted loop>
- <source src="assets/mc/parkeventbj.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/mc/parkeventbj.mp4'" type="video/mp4">
  </video>
 @@.mc-thoughts;She straps on a dildo, pinning you down, and begins to mercilessly fuck your mouth, making you take her deep, feeling her control over you. She lightly slaps your face, treating you like her personal slut.@@<br>
 @@.mc-speech;Ugh, you're such a bitch...@@<br>

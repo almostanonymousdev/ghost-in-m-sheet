@@ -1,6 +1,6 @@
 :: summonMare [nobr] {"position":"600,2900","size":"100,100"}
 <video autoplay controls muted loop>
-<source src="assets/exorcism/mare1.mp4" type="video/mp4">
+<source @src="setup.ImagePath + '/exorcism/mare1.mp4'" type="video/mp4">
 </video>
 @@.mc-thoughts; Through your sleep, you sense someone.@@
 <<linkappend "@@.usebtn; watching you@@">>
@@ -8,7 +8,7 @@
 
  <span id ="summonMare">
 <video autoplay controls muted loop>
-<source src="assets/exorcism/mare2.mp4" type="video/mp4">
+<source @src="setup.ImagePath + '/exorcism/mare2.mp4'" type="video/mp4">
 </video></span>
 <<set _videoIndex to 2>>
 @@.mc-thoughts; You wake up to the exquisite feeling of a tongue gently and insistently @@
@@ -16,7 +16,7 @@
     <<set _videoIndex to (_videoIndex) % 3 +2>>
     <<replace "#summonMare">>
     <video autoplay controls muted loop>
-    <source @src="`assets/exorcism/mare`+_videoIndex+`.mp4`" type="video/mp4">
+    <source @src="setup.ImagePath+`/exorcism/mare`+_videoIndex+`.mp4`" type="video/mp4">
     </video>
     <</replace>><</link>>
 
@@ -24,7 +24,7 @@
 @@.mc-speech; More... oh, God, more~@@<br>
 @@.mc-thoughts; Your voice breaking with desire as the tongue masterfully teases you. The sensation is maddening, pushing you@@ <<linkappend "@@.usebtn; closer and closer to the edge@@">>
 <video autoplay controls muted loop>
-<source src="assets/exorcism/mare5.mp4" type="video/mp4">
+<source @src="setup.ImagePath + '/exorcism/mare5.mp4'" type="video/mp4">
 </video>
 @@.mc-thoughts; Your body is rocked by an orgasm, and you pass out, falling back into sleep.@@<br><br>
 @@.backbtn; [[You pass out|CityMapPossessed][$ghostMareEventStart to 0]]@@<br>

@@ -3,11 +3,11 @@
  <<set _randomIndex to random(1,2)>>
 <<if _randomIndex is 1>>
 <video autoplay controls muted loop>
- <source src="assets/deliveryhub/burgerevent/5.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/deliveryhub/burgerevent/5.mp4'" type="video/mp4">
  </video>
  <<elseif _randomIndex is 2>>
  <video autoplay controls muted loop>
- <source src="assets/deliveryhub/burgerevent/6.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/deliveryhub/burgerevent/6.mp4'" type="video/mp4">
  </video>
  <</if>>
  @@.notmc-speech; Now I'll fuck you, slut@@<br>
@@ -15,11 +15,11 @@
  <<set _check to random(1,2)>>
 <<if _check eq 1>>
 <video autoplay controls muted loop>
- <source src="assets/deliveryhub/burgerevent/7.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/deliveryhub/burgerevent/7.mp4'" type="video/mp4">
  </video><</if>>
  <<if _check eq 2>>
 <video autoplay controls muted loop>
- <source src="assets/deliveryhub/burgerevent/8.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/deliveryhub/burgerevent/8.mp4'" type="video/mp4">
  </video><</if>>
 @@.mc-speech; ~God~ Don't stop please, I'm cumming@@<br>
 @@.notmc-speech; I'm cumming too@@<br>

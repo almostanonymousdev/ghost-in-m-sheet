@@ -18,19 +18,19 @@
 <</if>><</if>>
 <br>
 <span id="time"><<print ($hours < 10 ? '0' + $hours : $hours) + ":" + (Math.floor($minutes) < 10 ? '0' + Math.floor($minutes) : Math.floor($minutes))>></span><br>
-<b><img src="assets/img/energy.png" style="position: relative; top: 0.375em; width:10%;">Energy:</b> <<showmeter 'energy' `$mc.energy / $mc.energyMax`>>
+<b><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:10%;">Energy:</b> <<showmeter 'energy' `$mc.energy / $mc.energyMax`>>
 <<set $mc.sanityUp to $mc.sanity.toFixed(2)>>
-<b><img src="assets/img/sanity.png" style="position: relative; top: 0.375em; width:10%;">Sanity:</b> <<showmeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
-<b><img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:10%;">Lust:</b><<showmeter 'mclust' `$mc.lust.toFixed(2) / 100`>>
-<b><img src="assets/img/icons/money.png" style="position: relative; top: 0.375em; width:13%; display: inline; margin: 0;">$mc.money </b>
-<b><img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:13%; display: inline; margin: 0;">
+<b><img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:10%;">Sanity:</b> <<showmeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
+<b><img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:10%;">Lust:</b><<showmeter 'mclust' `$mc.lust.toFixed(2) / 100`>>
+<b><img @src="setup.ImagePath + '/img/icons/money.png'" style="position: relative; top: 0.375em; width:13%; display: inline; margin: 0;">$mc.money </b>
+<b><img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:13%; display: inline; margin: 0;">
 <<= $mc.corruption.toFixed(2)>> 
-<b><img src="assets/img/beauty.png" style="position: relative; top: 0.375em; width:11%; display: inline; margin: 0;">$mc.beauty</b>
-<b><img src="assets/img/icons/lvl.png" style="position: relative; top: 0.375em; width:11%; display: inline; margin: 0;">$mc.lvl</b> <br>
-<a class="linkselector" data-passage="Bag"><img src="assets/img/bag.png" width="30%"></a><a class="linkselector" data-passage="Notebook"><img src="assets/img/notebook.png" width="30%"></a><a class="linkselector" data-passage="Evidence"><img src="assets/img/evidenceIcon.png" width="30%"></a><br>
-<<if def $isPhoneBought>><a class="linkselector" data-passage="Phone"><img src="assets/img/phone.png" width="30%"></a><</if>>
+<b><img @src="setup.ImagePath + '/img/beauty.png'" style="position: relative; top: 0.375em; width:11%; display: inline; margin: 0;">$mc.beauty</b>
+<b><img @src="setup.ImagePath + '/img/icons/lvl.png'" style="position: relative; top: 0.375em; width:11%; display: inline; margin: 0;">$mc.lvl</b> <br>
+<a class="linkselector" data-passage="Bag"><img @src="setup.ImagePath + '/img/bag.png'" width="30%"></a><a class="linkselector" data-passage="Notebook"><img @src="setup.ImagePath + '/img/notebook.png'" width="30%"></a><a class="linkselector" data-passage="Evidence"><img @src="setup.ImagePath + '/img/evidenceIcon.png'" width="30%"></a><br>
+<<if def $isPhoneBought>><a class="linkselector" data-passage="Phone"><img @src="setup.ImagePath + '/img/phone.png'" width="30%"></a><</if>>
 <div class="linkselector enterbtn"> Game [[Guide|guide]] </div><br>
-<a class="linkselector enterbtn" data-passage="patreon"><img src="assets/img/patreon.jpg" width="50%"></a>
+<a class="linkselector enterbtn" data-passage="patreon"><img @src="setup.ImagePath + '/img/patreon.jpg'" width="50%"></a>
 <br>@@.usebtn;<<linkreplace "Cheats">>
 <<if $ghostHuntingMode eq 2>><<link "take pills(cheats)">><<set $mc.sanity +=30>><</link>>
 <br><<linkreplace "possession Card">>

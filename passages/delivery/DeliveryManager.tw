@@ -1,6 +1,6 @@
 :: DeliveryManager {"position":"1100,1200","size":"100,100"}
 <<nobr>>
-<img src="assets/img/John.jpg" width="70%"><br>
+<img @src="setup.ImagePath + '/img/John.jpg'" width="70%"><br>
 <<if $firstVisitDeliveryHub>>
   @@.mc-thoughts; You enter the manager's office and notice a man around forty. There's nothing particularly remarkable about him. As you make your presence known, he carefully assesses you, momentarily pausing his gaze on your chest. Nevertheless, you gather the courage to initiate the conversation.@@<br>
   <br>
@@ -47,7 +47,7 @@ If you forgot, you can work here from 08:00 to 20:00. Take orders and go ahead. 
 <<if $mc.beauty lt 45>>
 @@.notmc-speech; Um... <i>He looked at me but quickly lowered his head and started flipping through his papers</i><br> I think you just need to work more<br>@@
 @@.mc-thoughts; I need to catch his attention somehow<br>@@
-@@.warningtext; (Req. <img src="assets/img/beauty.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 45)@@
+@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/beauty.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 45)@@
 <<else>>
 <<if hasVisited("DeliveryManagerEventStart")>>
 @@.notmc-speech;Of course, $mc.name, I think you know how I can help you@@<br>
@@ -59,7 +59,7 @@ I don't think I can do it. But I could offer some part-time work for such a beau
 <<if $mc.corruption gte 2>>
 @@.usebtn;[[Give him a blowjob|DeliveryManagerEventStart]]@@<br>
 <<else>>@@.mc-thoughts; Is he asking me to suck him off? No fucking way!<br>@@
-@@.warningtext; (Req. <img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 2)@@
+@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 2)@@
 @@.mc-speech;No, I'd better go<br>@@
 <</if>>
 <</if>>

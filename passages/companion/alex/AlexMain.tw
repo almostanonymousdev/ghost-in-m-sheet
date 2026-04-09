@@ -2,7 +2,7 @@
 <<nobr>>
 <div class="flexwrapperCompanionMain">
 <div class="companionImageMain">
-<img @src="`assets/trans/`+$transPicture+`.jpg`" width=100% >
+<img @src="setup.ImagePath+`/trans/`+$transPicture+`.jpg`" width=100% >
 </div>
 <div class="companionTextMain">
 <span style="color: yellow; font-weight: bold; font-size: 1.2em;">$alex.name :</span><br>

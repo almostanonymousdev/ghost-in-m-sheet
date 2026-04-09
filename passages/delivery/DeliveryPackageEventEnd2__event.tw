@@ -5,7 +5,7 @@
  <<set $mc.lust to 0>>
  <</if>>
 <video autoplay controls muted loop>
- <source src="assets/deliveryhub/packageevent/7.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/deliveryhub/packageevent/7.mp4'" type="video/mp4">
  </video>
  @@.notmc-speech; Yea~ that's it, you're a good girl. Here you go, you've earned it@@<br>
  @@.mc-thoughts; It's finally over@@<br>
@@ -13,7 +13,7 @@
  <<set $mc.money += 10>>
  <<if $mc.corruption lt 10>>
 <<set $mc.corruption += 0.2>>
-+0.2 <img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br>
++0.2 <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br>
 <</if>>
 <br>
 @@.backbtn;[[Leave|DeliveryMap]]@@<br>

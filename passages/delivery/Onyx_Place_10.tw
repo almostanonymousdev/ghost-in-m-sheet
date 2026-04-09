@@ -1,6 +1,6 @@
 :: Onyx Place 10 {"position":"700,1400","size":"100,100"}
 <<nobr>>
-<img src="assets/img/house2.jpg"  width="90%"><br>
+<img @src="setup.ImagePath + '/img/house2.jpg'"  width="90%"><br>
 
 @@.location; Onyx Place, 10@@<br>
 <br>
@@ -8,15 +8,15 @@
 <br>
 <div class=deliverywrapper>
   <div class="itemAvailableOne"> 
-    <img @src="`assets/`+$order1.image" class="iconPx"><br>
+    <img @src="setup.ImagePath+`/`+$order1.image" class="iconPx"><br>
     	@@.usebtn;[[Deliver the order|deliveryEvent1]]@@<br>
   </div>
   <div class="itemAvailableTwo"> 
-    <img @src="`assets/`+$order2.image" class="iconPx"><br>
+    <img @src="setup.ImagePath+`/`+$order2.image" class="iconPx"><br>
     	@@.usebtn;[[Deliver the order|deliveryEvent2]]@@<br>
   </div>
   <div class="itemAvailableThree"> 
-    <img @src="`assets/`+$order3.image" class="iconPx"><br>
+    <img @src="setup.ImagePath+`/`+$order3.image" class="iconPx"><br>
     	@@.usebtn;[[Deliver the order|deliveryEvent3]]@@<br>
   </div>
 </div>

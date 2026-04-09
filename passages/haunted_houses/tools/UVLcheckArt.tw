@@ -10,62 +10,62 @@
     <<if _chanceInside gt 1>>
       <<if $jeansState is "worn">>
       <<set _check to random(1,3)>>
-            <<if _check eq 1>><img src="assets/art/uvl/1.1.png" class="evidenceImgs"><</if>>
-            <<if _check eq 2>><img src="assets/art/uvl/1.2.png" class="evidenceImgs"><</if>>
-            <<if _check eq 3>><img src="assets/art/uvl/1.3.png" class="evidenceImgs"><</if>>
+            <<if _check eq 1>><img @src="setup.ImagePath + '/art/uvl/1.1.png'" class="evidenceImgs"><</if>>
+            <<if _check eq 2>><img @src="setup.ImagePath + '/art/uvl/1.2.png'" class="evidenceImgs"><</if>>
+            <<if _check eq 3>><img @src="setup.ImagePath + '/art/uvl/1.3.png'" class="evidenceImgs"><</if>>
             <<elseif $shortsState is "worn">>
       		<<set _check to random(1,2)>>
-            <<if _check eq 1>><img src="assets/art/uvl/2.1.png" class="evidenceImgs"><</if>>
-            <<if _check eq 2>><img src="assets/art/uvl/2.2.png" class="evidenceImgs"><</if>>
+            <<if _check eq 1>><img @src="setup.ImagePath + '/art/uvl/2.1.png'" class="evidenceImgs"><</if>>
+            <<if _check eq 2>><img @src="setup.ImagePath + '/art/uvl/2.2.png'" class="evidenceImgs"><</if>>
             <<elseif $skirtState is "worn">>
       		<<if $pantiesState is "worn">>
       		<<set _check to random(1,4)>>
-            <<if _check eq 1>><img src="assets/art/uvl/3.1.png" class="evidenceImgs"><</if>>
-            <<if _check eq 2>><img src="assets/art/uvl/3.2.png" class="evidenceImgs"><</if>>
-            <<if _check eq 3>><img src="assets/art/uvl/3.3.png" class="evidenceImgs"><</if>>
-            <<if _check eq 4>><img src="assets/art/uvl/3.4.png" class="evidenceImgs"><</if>>
+            <<if _check eq 1>><img @src="setup.ImagePath + '/art/uvl/3.1.png'" class="evidenceImgs"><</if>>
+            <<if _check eq 2>><img @src="setup.ImagePath + '/art/uvl/3.2.png'" class="evidenceImgs"><</if>>
+            <<if _check eq 3>><img @src="setup.ImagePath + '/art/uvl/3.3.png'" class="evidenceImgs"><</if>>
+            <<if _check eq 4>><img @src="setup.ImagePath + '/art/uvl/3.4.png'" class="evidenceImgs"><</if>>
             <<else>>
             <<set _check to random(1,3)>>
-            <<if _check eq 1>><img src="assets/art/uvl/4.1.png" class="evidenceImgs"><</if>>
-            <<if _check eq 2>><img src="assets/art/uvl/4.2.png" class="evidenceImgs"><</if>>
-            <<if _check eq 3>><img src="assets/art/uvl/4.3.png" class="evidenceImgs"><</if>>
+            <<if _check eq 1>><img @src="setup.ImagePath + '/art/uvl/4.1.png'" class="evidenceImgs"><</if>>
+            <<if _check eq 2>><img @src="setup.ImagePath + '/art/uvl/4.2.png'" class="evidenceImgs"><</if>>
+            <<if _check eq 3>><img @src="setup.ImagePath + '/art/uvl/4.3.png'" class="evidenceImgs"><</if>>
             <</if>>
       <<elseif $jeansState is "not worn">>
          <<if $pantiesState is "worn">>
          	<<set _check to random(1,4)>>
-            <<if _check eq 1>><img src="assets/art/uvl/5.1.png" class="evidenceImgs"><</if>>
-            <<if _check eq 2>><img src="assets/art/uvl/5.2.png" class="evidenceImgs"><</if>>
-            <<if _check eq 3>><img src="assets/art/uvl/5.3.png" class="evidenceImgs"><</if>>
-            <<if _check eq 4>><img src="assets/art/uvl/5.4.png" class="evidenceImgs"><</if>>
+            <<if _check eq 1>><img @src="setup.ImagePath + '/art/uvl/5.1.png'" class="evidenceImgs"><</if>>
+            <<if _check eq 2>><img @src="setup.ImagePath + '/art/uvl/5.2.png'" class="evidenceImgs"><</if>>
+            <<if _check eq 3>><img @src="setup.ImagePath + '/art/uvl/5.3.png'" class="evidenceImgs"><</if>>
+            <<if _check eq 4>><img @src="setup.ImagePath + '/art/uvl/5.4.png'" class="evidenceImgs"><</if>>
          <<elseif $pantiesState is "not worn">>
          <<set _check to random(1,4)>>
-            <<if _check eq 2>><img src="assets/art/uvl/6.1.png" class="evidenceImgs"><</if>>
-            <<if _check eq 3>><img src="assets/art/uvl/6.2.png" class="evidenceImgs"><</if>>
-            <<if _check eq 4>><img src="assets/art/uvl/6.3.png" class="evidenceImgs"><</if>>
-            <<if _check eq 5>><img src="assets/art/uvl/6.4.png" class="evidenceImgs"><</if>>
+            <<if _check eq 2>><img @src="setup.ImagePath + '/art/uvl/6.1.png'" class="evidenceImgs"><</if>>
+            <<if _check eq 3>><img @src="setup.ImagePath + '/art/uvl/6.2.png'" class="evidenceImgs"><</if>>
+            <<if _check eq 4>><img @src="setup.ImagePath + '/art/uvl/6.3.png'" class="evidenceImgs"><</if>>
+            <<if _check eq 5>><img @src="setup.ImagePath + '/art/uvl/6.4.png'" class="evidenceImgs"><</if>>
             <</if>>
       <<elseif $jeansState is "ripped">>
       <</if>>
 <<elseif _chanceInside eq 1>>
 <<if $tshirtState is "worn">>
 			<<set _check to random(1,4)>>
-            <<if _check eq 1>><img src="assets/art/uvl/7.1.png" class="evidenceImgs"><</if>>
-            <<if _check eq 2>><img src="assets/art/uvl/7.2.png" class="evidenceImgs"><</if>>
-            <<if _check eq 3>><img src="assets/art/uvl/7.3.png" class="evidenceImgs"><</if>>
-            <<if _check eq 4>><img src="assets/art/uvl/7.4.png" class="evidenceImgs"><</if>>
+            <<if _check eq 1>><img @src="setup.ImagePath + '/art/uvl/7.1.png'" class="evidenceImgs"><</if>>
+            <<if _check eq 2>><img @src="setup.ImagePath + '/art/uvl/7.2.png'" class="evidenceImgs"><</if>>
+            <<if _check eq 3>><img @src="setup.ImagePath + '/art/uvl/7.3.png'" class="evidenceImgs"><</if>>
+            <<if _check eq 4>><img @src="setup.ImagePath + '/art/uvl/7.4.png'" class="evidenceImgs"><</if>>
 <<elseif $tshirtState is "not worn">>
 <<if $braState is "worn">>
 			<<set _check to random(1,4)>>
-            <<if _check eq 1>><img src="assets/art/uvl/7.1.png" class="evidenceImgs"><</if>>
-            <<if _check eq 2>><img src="assets/art/uvl/7.2.png" class="evidenceImgs"><</if>>
-            <<if _check eq 3>><img src="assets/art/uvl/7.3.png" class="evidenceImgs"><</if>>
-            <<if _check eq 4>><img src="assets/art/uvl/7.4.png" class="evidenceImgs"><</if>>
+            <<if _check eq 1>><img @src="setup.ImagePath + '/art/uvl/7.1.png'" class="evidenceImgs"><</if>>
+            <<if _check eq 2>><img @src="setup.ImagePath + '/art/uvl/7.2.png'" class="evidenceImgs"><</if>>
+            <<if _check eq 3>><img @src="setup.ImagePath + '/art/uvl/7.3.png'" class="evidenceImgs"><</if>>
+            <<if _check eq 4>><img @src="setup.ImagePath + '/art/uvl/7.4.png'" class="evidenceImgs"><</if>>
  <<elseif $braState is "not worn">>
  			<<set _check to random(1,4)>>
-            <<if _check eq 1>><img src="assets/art/uvl/7.1.png" class="evidenceImgs"><</if>>
-            <<if _check eq 2>><img src="assets/art/uvl/7.2.png" class="evidenceImgs"><</if>>
-            <<if _check eq 3>><img src="assets/art/uvl/7.3.png" class="evidenceImgs"><</if>>
-            <<if _check eq 4>><img src="assets/art/uvl/7.4.png" class="evidenceImgs"><</if>>
+            <<if _check eq 1>><img @src="setup.ImagePath + '/art/uvl/7.1.png'" class="evidenceImgs"><</if>>
+            <<if _check eq 2>><img @src="setup.ImagePath + '/art/uvl/7.2.png'" class="evidenceImgs"><</if>>
+            <<if _check eq 3>><img @src="setup.ImagePath + '/art/uvl/7.3.png'" class="evidenceImgs"><</if>>
+            <<if _check eq 4>><img @src="setup.ImagePath + '/art/uvl/7.4.png'" class="evidenceImgs"><</if>>
 <</if>>
 <</if>><</if>>@@.evidenceshadowtext; <span class="evidenceshadowtext"> It seems I found fingerprints... one more piece of evidence</span>@@<br><<else>>
 <div class="notFound-container"><div class="mc-thoughts">I didn't find any fingerprints</div></div><</if>><<else>><<set $uvlActivated to 0>><<set $uvlActivationTime to 0>><<set $elapsedTimeUvl to 0>>

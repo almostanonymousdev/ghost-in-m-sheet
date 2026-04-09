@@ -2,7 +2,7 @@
  <<nobr>>
 <<if ndef $deliveryPizzaEvent>>
 <<set $deliveryPizzaEvent to 0>><</if>>
-  <img src="assets/deliveryhub/pizzaevent/1.jpg" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
+  <img @src="setup.ImagePath + '/deliveryhub/pizzaevent/1.jpg'" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
   <<if $deliveryPizzaEvent eq 1>>
     @@.notmc-speech; Great, thank you so much!@@<br>
     <<set $earnedMoney += $jobMoneySuccessed>>
@@ -11,10 +11,10 @@
 <<elseif $deliveryPizzaEvent eq 0>>
     @@.notmc-speech; The pizza box looks dented... Please, open it, I want to make sure everything is okay.@@<br>
    @@.mc-speech;<<linkreplace " Umm... yeah sure">>
-    <img src="assets/deliveryhub/pizzaevent/failed.jpg" style="max-width: 100%; height: auto; display: block; margin: 0 auto;"><br>
+    <img @src="setup.ImagePath + '/deliveryhub/pizzaevent/failed.jpg'" style="max-width: 100%; height: auto; display: block; margin: 0 auto;"><br>
     @@.notmc-speech; Ah-ha! I knew it. I'm not going to pay for it.@@<br>
 <<if $mc.corruption lt 3>>
-@@.mc-thoughts; She's right, it's my fault. I guess I was unlucky@@ @@.warningtext; (Req. <img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 3)@@<br><br>
+@@.mc-thoughts; She's right, it's my fault. I guess I was unlucky@@ @@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 3)@@<br><br>
 @@.backbtn;[[Back|DeliveryMap]]@@<<else>>
 @@.mc-thoughts; Fuck! I really need the money. Maybe she'll take pity on me and still pay?@@<br>
 @@.mc-speech;[[Tell her that you need money|DeliveryPizzaEventStart]]@@ or @@.mc-speech;[[Nah, Just say sorry and leave|DeliveryMap]]@@<br>

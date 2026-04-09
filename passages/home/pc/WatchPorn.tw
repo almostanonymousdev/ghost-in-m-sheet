@@ -5,7 +5,7 @@
 <<set $currentVideoIndex to 0>>
 <div id="video-container">
     <video autoplay controls muted loop>
- 				<source @src="`assets/`+$videos[$currentVideoIndex]" type="video/mp4">
+ 				<source @src="setup.ImagePath+`/`+$videos[$currentVideoIndex]" type="video/mp4">
  				</video>
 </div>
 
@@ -20,7 +20,7 @@
     <<set $currentVideoIndex to ($currentVideoIndex + 1) % $videos.length>>
     <<replace "#video-container">>
                 <video autoplay controls muted loop>
- 				<source @src="`assets/`+$videos[$currentVideoIndex]" type="video/mp4">
+ 				<source @src="setup.ImagePath+`/`+$videos[$currentVideoIndex]" type="video/mp4">
  				</video>
     <</replace>>
 <</link>>@@

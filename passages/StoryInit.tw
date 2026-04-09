@@ -1,4 +1,5 @@
 :: StoryInit {"position":"100,100","size":"100,100"}
+<<run setup.ImagePath = "assets">>
 <<set $sanityIfHot to 0.3>>
 <<set $sanityInTheDark to 0.5>>
 <<set $tempCorr to 0>>

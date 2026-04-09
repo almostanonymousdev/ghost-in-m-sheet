@@ -1,11 +1,11 @@
 :: ghostSpecialEvent1Mare {"position":"1100,2550","size":"100,100"}
 <<nobr>>
 <video autoplay controls muted loop>
- <source src="assets/ghosts/specials/mare2.1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/ghosts/specials/mare2.1.mp4'" type="video/mp4">
  </video>
 @@.mc-speech;Something touches me while I sleep.@@ <<linkappend "@@.mc-speechLink;Watch more.@@">>
  <video autoplay controls muted loop>
- <source src="assets/ghosts/specials/mare2.2.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/ghosts/specials/mare2.2.mp4'" type="video/mp4">
  </video>
  
 @@.mc-thoughts; You barely hear the whisper, but it's clearly @@<<linkappend "@@.mc-thoughtsLink; not your voice@@">><br>

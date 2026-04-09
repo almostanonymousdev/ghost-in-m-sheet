@@ -2,28 +2,28 @@
 <<nobr>>
 <<if $jeansState eq "worn" or $shortsState eq "worn">>
 <video autoplay controls muted loop>
- <source src="assets/library/1.1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/library/1.1.mp4'" type="video/mp4">
  </video>
  @@.mc-thoughts; He took off your clothes and started touching your butt.@@<br>
  <<if $mc.corruption lt 2>><<set $mc.corruption += 0.1>>
-+ 0.1 <img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br><</if>>
-+ 30 <img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br>
++ 0.1 <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br><</if>>
++ 30 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br>
 <<include "add30lust">>
 
 
 @@.mc-speech; We have to stop! Someone might see what we’re doing here. @@<br>
 @@.notmc-speech; Come on, suck me off real quick, no one will catch us. @@<br>
 <<if $mc.corruption lte 3>>
- @@.mc-speech; Ha~, [[no way.|LibraryInside]]@@ @@.warningtext; (Req. <img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 4)@@<br>
+ @@.mc-speech; Ha~, [[no way.|LibraryInside]]@@ @@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 4)@@<br>
  <<else>>
   @@.mc-speech; Well, okay, but keep an eye out to make sure <<linkappend "no one sees us.">>
 <video autoplay controls muted loop>
- <source src="assets/library/1.2.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/library/1.2.mp4'" type="video/mp4">
  </video>
  @@.mc-speech; Slurp~Slurlp~ If someone sees us... Fuck! This thought makes my pussy even wetter, am I really such a slut?@@<br>
- + 30 <img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br>
+ + 30 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br>
  <<if $mc.corruption lte 6>><<set $mc.corruption += 0.2>>
-+ 0.2 <img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br><</if>>
++ 0.2 <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br><</if>>
 <<include "add30lust">>
  @@.notmc-speech; Oh~ you're such a bad girl.<br>
 See, no one noticed us, let's have a quick fuck right here@@<br>
@@ -36,32 +36,32 @@ See, no one noticed us, let's have a quick fuck right here@@<br>
 
 <<elseif $skirtState eq "worn">>
 <video autoplay controls muted loop>
- <source src="assets/library/2.1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/library/2.1.mp4'" type="video/mp4">
  </video>
  @@.mc-speech; Ah~ you know how to please a woman. @@<br>
  @@.notmc-speech; What about you? I see that you like it, maybe you can help me now too.@@<br>
 
 <<if $mc.corruption lt 2>><<set $mc.corruption += 0.1>>
-+ 0.1 <img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br><</if>>
-+ 30 <img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br>
++ 0.1 <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br><</if>>
++ 30 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br>
 <<include "add30lust">>
 
  
  <<if $mc.corruption lte 3>>
- @@.mc-speech; Ha~, [[no way.|LibraryInside]]@@ @@.warningtext; (Req. <img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 4)@@<br>
+ @@.mc-speech; Ha~, [[no way.|LibraryInside]]@@ @@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 4)@@<br>
  <<else>>
  @@.mc-speech; Alright, you can consider yourself deserving of <<linkappend "this.">>
  <<set _check to random(1,2)>>
  <<if _check eq 1>><video autoplay controls muted loop>
- <source src="assets/library/2.2.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/library/2.2.mp4'" type="video/mp4">
  </video><</if>>
  <<if _check eq 2>><video autoplay controls muted loop>
- <source src="assets/library/2.3.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/library/2.3.mp4'" type="video/mp4">
  </video><</if>>
  @@.mc-speech; Why am I doing this? Fuck, my pussy is so wet ❤️@@<br>
- + 30 <img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br>
+ + 30 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br>
  <<if $mc.corruption lte 6>><<set $mc.corruption += 0.2>>
-+ 0.2 <img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br><</if>>
++ 0.2 <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br><</if>>
 <<include "add30lust">>
  @@.notmc-speech; Oh~ You're really good at this...<br> How about a quickie? <br>@@
  @@.mc-speech; No! I have [[to go|LibraryInside]]@@<br>

@@ -3,430 +3,430 @@
 
 <<if $minigameVideo eq "start">>
 <<if $mc.makeupImg eq 0>>
-<<set _videoList to [{type: "image", src: "assets/img/mc.jpg"}]>>
+<<set _videoList to [{type: "image", src: "img/mc.jpg"}]>>
 <<elseif $mc.makeupImg eq 1>>
-<<set _videoList to [{type: "image", src: "assets/img/makeup1.jpg"}]>>
+<<set _videoList to [{type: "image", src: "img/makeup1.jpg"}]>>
 <<elseif $mc.makeupImg eq 2>>
-<<set _videoList to [{type: "image", src: "assets/img/makeup2.jpg"}]>>
+<<set _videoList to [{type: "image", src: "img/makeup2.jpg"}]>>
 <<elseif $mc.makeupImg eq 3>>
-<<set _videoList to [{type: "image", src: "assets/img/makeup3.jpg"}]>>
+<<set _videoList to [{type: "image", src: "img/makeup3.jpg"}]>>
 <</if>>
 
 <<elseif $minigameVideo eq "seduceFailed">>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/tease/1.webp"},
-	{type: "video", src: "assets/minigame/tease/1.mp4"},
-	{type: "video", src: "assets/minigame/tease/2.mp4"},
-	{type: "video", src: "assets/minigame/tease/3.mp4"},
-	{type: "image", src: "assets/minigame/tease/4.webp"},
-	{type: "video", src: "assets/minigame/tease/5.mp4"},
-	{type: "video", src: "assets/minigame/tease/6.mp4"},
-	{type: "video", src: "assets/minigame/tease/7.mp4"},
-	{type: "video", src: "assets/minigame/tease/8.mp4"},
-	{type: "video", src: "assets/minigame/tease/9.mp4"},
-	{type: "image", src: "assets/minigame/tease/10.webp"}]>>
+	{type: "image", src: "minigame/tease/1.webp"},
+	{type: "video", src: "minigame/tease/1.mp4"},
+	{type: "video", src: "minigame/tease/2.mp4"},
+	{type: "video", src: "minigame/tease/3.mp4"},
+	{type: "image", src: "minigame/tease/4.webp"},
+	{type: "video", src: "minigame/tease/5.mp4"},
+	{type: "video", src: "minigame/tease/6.mp4"},
+	{type: "video", src: "minigame/tease/7.mp4"},
+	{type: "video", src: "minigame/tease/8.mp4"},
+	{type: "video", src: "minigame/tease/9.mp4"},
+	{type: "image", src: "minigame/tease/10.webp"}]>>
     
 <<elseif $minigameVideo eq "seduce" and $ghostOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/tease/slapend1.webp"},
-	{type: "image", src: "assets/minigame/tease/slapend2.webp"},
-	{type: "image", src: "assets/minigame/tease/end4.webp"},
-	{type: "image", src: "assets/minigame/tease/end5.webp"},
-	{type: "image", src: "assets/minigame/tease/end6.webp"},
-	{type: "image", src: "assets/minigame/tease/end7.webp"}]>>
+	{type: "image", src: "minigame/tease/slapend1.webp"},
+	{type: "image", src: "minigame/tease/slapend2.webp"},
+	{type: "image", src: "minigame/tease/end4.webp"},
+	{type: "image", src: "minigame/tease/end5.webp"},
+	{type: "image", src: "minigame/tease/end6.webp"},
+	{type: "image", src: "minigame/tease/end7.webp"}]>>
 <<elseif $minigameVideo eq "seduce" and $mcOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/tease/end1.webp"},
-	{type: "image", src: "assets/minigame/tease/end2.webp"},
-	{type: "video", src: "assets/minigame/tease/end9.mp4"}]>>
+	{type: "image", src: "minigame/tease/end1.webp"},
+	{type: "image", src: "minigame/tease/end2.webp"},
+	{type: "video", src: "minigame/tease/end9.mp4"}]>>
 <<elseif $minigameVideo eq "seduce">>
 
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/tease/1.webp"},
-	{type: "video", src: "assets/minigame/tease/1.mp4"},
-	{type: "video", src: "assets/minigame/tease/2.mp4"},
-	{type: "video", src: "assets/minigame/tease/3.mp4"},
-	{type: "image", src: "assets/minigame/tease/4.webp"},
-	{type: "video", src: "assets/minigame/tease/5.mp4"},
-	{type: "video", src: "assets/minigame/tease/6.mp4"},
-	{type: "video", src: "assets/minigame/tease/7.mp4"},
-	{type: "video", src: "assets/minigame/tease/8.mp4"},
-	{type: "video", src: "assets/minigame/tease/9.mp4"},
-	{type: "image", src: "assets/minigame/tease/10.webp"}]>>
+	{type: "image", src: "minigame/tease/1.webp"},
+	{type: "video", src: "minigame/tease/1.mp4"},
+	{type: "video", src: "minigame/tease/2.mp4"},
+	{type: "video", src: "minigame/tease/3.mp4"},
+	{type: "image", src: "minigame/tease/4.webp"},
+	{type: "video", src: "minigame/tease/5.mp4"},
+	{type: "video", src: "minigame/tease/6.mp4"},
+	{type: "video", src: "minigame/tease/7.mp4"},
+	{type: "video", src: "minigame/tease/8.mp4"},
+	{type: "video", src: "minigame/tease/9.mp4"},
+	{type: "image", src: "minigame/tease/10.webp"}]>>
     
 <<elseif $minigameVideo eq "slapface">>
 <<if $ghostOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/tease/slapend1.webp"},
-	{type: "image", src: "assets/minigame/tease/slapend2.webp"}]>>
+	{type: "image", src: "minigame/tease/slapend1.webp"},
+	{type: "image", src: "minigame/tease/slapend2.webp"}]>>
 <<elseif $mcOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/tease/end1.webp"},
-	{type: "image", src: "assets/minigame/tease/end2.webp"},
-	{type: "video", src: "assets/minigame/tease/end9.mp4"}]>>
+	{type: "image", src: "minigame/tease/end1.webp"},
+	{type: "image", src: "minigame/tease/end2.webp"},
+	{type: "video", src: "minigame/tease/end9.mp4"}]>>
 <<else>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/tease/70.webp"},
-	{type: "image", src: "assets/minigame/tease/71.webp"},
-	{type: "image", src: "assets/minigame/tease/72.webp"},
-	{type: "image", src: "assets/minigame/tease/73.webp"},
-	{type: "image", src: "assets/minigame/tease/74.webp"},
-	{type: "image", src: "assets/minigame/tease/75.webp"},
-	{type: "image", src: "assets/minigame/tease/76.webp"},
-	{type: "image", src: "assets/minigame/tease/77.webp"}]>>
+	{type: "image", src: "minigame/tease/70.webp"},
+	{type: "image", src: "minigame/tease/71.webp"},
+	{type: "image", src: "minigame/tease/72.webp"},
+	{type: "image", src: "minigame/tease/73.webp"},
+	{type: "image", src: "minigame/tease/74.webp"},
+	{type: "image", src: "minigame/tease/75.webp"},
+	{type: "image", src: "minigame/tease/76.webp"},
+	{type: "image", src: "minigame/tease/77.webp"}]>>
 <</if>>
 <<elseif $minigameVideo eq "subdueslapface">>
 <<if $ghostOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/tease/slapend3.webp"},
-	{type: "image", src: "assets/minigame/tease/slapend4.webp"}]>>
+	{type: "image", src: "minigame/tease/slapend3.webp"},
+	{type: "image", src: "minigame/tease/slapend4.webp"}]>>
 <<elseif $mcOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/tease/end1.webp"},
-	{type: "image", src: "assets/minigame/tease/end2.webp"},
-	{type: "video", src: "assets/minigame/tease/end9.mp4"}]>>
+	{type: "image", src: "minigame/tease/end1.webp"},
+	{type: "image", src: "minigame/tease/end2.webp"},
+	{type: "video", src: "minigame/tease/end9.mp4"}]>>
 <<else>>
 
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/tease/80.webp"},
-	{type: "image", src: "assets/minigame/tease/81.webp"},
-	{type: "image", src: "assets/minigame/tease/82.webp"},
-	{type: "image", src: "assets/minigame/tease/83.webp"},
-	{type: "image", src: "assets/minigame/tease/84.webp"}]>>
+	{type: "image", src: "minigame/tease/80.webp"},
+	{type: "image", src: "minigame/tease/81.webp"},
+	{type: "image", src: "minigame/tease/82.webp"},
+	{type: "image", src: "minigame/tease/83.webp"},
+	{type: "image", src: "minigame/tease/84.webp"}]>>
     <</if>>
 <<elseif $minigameVideo eq "assjob">>
 <<if $ghostOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/tease/end4.webp"},
-	{type: "image", src: "assets/minigame/tease/end6.webp"},
-	{type: "image", src: "assets/minigame/tease/end7.webp"}]>>
+	{type: "image", src: "minigame/tease/end4.webp"},
+	{type: "image", src: "minigame/tease/end6.webp"},
+	{type: "image", src: "minigame/tease/end7.webp"}]>>
 <<elseif $mcOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/tease/end3.webp"},
-	{type: "image", src: "assets/minigame/tease/end2.webp"},
-	{type: "image", src: "assets/minigame/tease/end5.webp"}],
-	{type: "video", src: "assets/minigame/tease/end9.mp4"}>>
+	{type: "image", src: "minigame/tease/end3.webp"},
+	{type: "image", src: "minigame/tease/end2.webp"},
+	{type: "image", src: "minigame/tease/end5.webp"}],
+	{type: "video", src: "minigame/tease/end9.mp4"}>>
 <<else>>
 
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/tease/11.webp"},
-	{type: "video", src: "assets/minigame/tease/12.mp4"},
-	{type: "video", src: "assets/minigame/tease/13.mp4"},
-	{type: "video", src: "assets/minigame/tease/14.mp4"},
-	{type: "video", src: "assets/minigame/tease/15.mp4"},
-	{type: "video", src: "assets/minigame/tease/16.mp4"},
-	{type: "image", src: "assets/minigame/tease/17.webp"},
-	{type: "image", src: "assets/minigame/tease/18.webp"},
-	{type: "video", src: "assets/minigame/tease/19.mp4"}]>>
+	{type: "image", src: "minigame/tease/11.webp"},
+	{type: "video", src: "minigame/tease/12.mp4"},
+	{type: "video", src: "minigame/tease/13.mp4"},
+	{type: "video", src: "minigame/tease/14.mp4"},
+	{type: "video", src: "minigame/tease/15.mp4"},
+	{type: "video", src: "minigame/tease/16.mp4"},
+	{type: "image", src: "minigame/tease/17.webp"},
+	{type: "image", src: "minigame/tease/18.webp"},
+	{type: "video", src: "minigame/tease/19.mp4"}]>>
     <</if>>
 <<elseif $minigameVideo eq "subdueassjob">>
 <<if $ghostOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/tease/end6.webp"},
-	{type: "image", src: "assets/minigame/tease/end7.webp"},
-	{type: "image", src: "assets/minigame/tease/end8.webp"}]>>
+	{type: "image", src: "minigame/tease/end6.webp"},
+	{type: "image", src: "minigame/tease/end7.webp"},
+	{type: "image", src: "minigame/tease/end8.webp"}]>>
 <<elseif $mcOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/tease/end3.webp"},
-	{type: "image", src: "assets/minigame/tease/end2.webp"},
-	{type: "image", src: "assets/minigame/tease/end5.webp"},
-	{type: "video", src: "assets/minigame/tease/end9.mp4"}]>>
+	{type: "image", src: "minigame/tease/end3.webp"},
+	{type: "image", src: "minigame/tease/end2.webp"},
+	{type: "image", src: "minigame/tease/end5.webp"},
+	{type: "video", src: "minigame/tease/end9.mp4"}]>>
 <<else>>
 
 
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/tease/20.webp"},
-	{type: "video", src: "assets/minigame/tease/21.webm"},
-	{type: "image", src: "assets/minigame/tease/22.webp"},
-	{type: "image", src: "assets/minigame/tease/23.webp"},
-	{type: "video", src: "assets/minigame/tease/24.mp4"},
-	{type: "image", src: "assets/minigame/tease/25.webp"},
-	{type: "image", src: "assets/minigame/tease/26.webp"},
-	{type: "video", src: "assets/minigame/tease/27.mp4"}]>>
+	{type: "image", src: "minigame/tease/20.webp"},
+	{type: "video", src: "minigame/tease/21.webm"},
+	{type: "image", src: "minigame/tease/22.webp"},
+	{type: "image", src: "minigame/tease/23.webp"},
+	{type: "video", src: "minigame/tease/24.mp4"},
+	{type: "image", src: "minigame/tease/25.webp"},
+	{type: "image", src: "minigame/tease/26.webp"},
+	{type: "video", src: "minigame/tease/27.mp4"}]>>
 <</if>>
 
 <<elseif $minigameVideo eq "titjob">>
 <<if $ghostOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/tease/30end1.webp"},
-	{type: "image", src: "assets/minigame/tease/30end2.webp"}]>>
+	{type: "image", src: "minigame/tease/30end1.webp"},
+	{type: "image", src: "minigame/tease/30end2.webp"}]>>
 <<elseif $mcOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/tease/end2.webp"},
-	{type: "image", src: "assets/minigame/tease/end1.webp"},
-	{type: "video", src: "assets/minigame/tease/end9.mp4"}]>>
+	{type: "image", src: "minigame/tease/end2.webp"},
+	{type: "image", src: "minigame/tease/end1.webp"},
+	{type: "video", src: "minigame/tease/end9.mp4"}]>>
 <<else>>
 
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/tease/30.webp"},
-	{type: "image", src: "assets/minigame/tease/31.webp"},
-	{type: "image", src: "assets/minigame/tease/32.webp"},
-	{type: "image", src: "assets/minigame/tease/33.webp"},
-	{type: "image", src: "assets/minigame/tease/34.webp"},
-	{type: "image", src: "assets/minigame/tease/35.webp"},
-	{type: "image", src: "assets/minigame/tease/36.webp"},
-	{type: "image", src: "assets/minigame/tease/37.webp"},
-	{type: "image", src: "assets/minigame/tease/38.webp"}]>>
+	{type: "image", src: "minigame/tease/30.webp"},
+	{type: "image", src: "minigame/tease/31.webp"},
+	{type: "image", src: "minigame/tease/32.webp"},
+	{type: "image", src: "minigame/tease/33.webp"},
+	{type: "image", src: "minigame/tease/34.webp"},
+	{type: "image", src: "minigame/tease/35.webp"},
+	{type: "image", src: "minigame/tease/36.webp"},
+	{type: "image", src: "minigame/tease/37.webp"},
+	{type: "image", src: "minigame/tease/38.webp"}]>>
     <</if>>
 <<elseif $minigameVideo eq "subduetitjob">>
 <<if $ghostOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/tease/30end3.webp"},
-	{type: "image", src: "assets/minigame/tease/30end4.webp"},
-	{type: "image", src: "assets/minigame/tease/30end5.webp"}]>>
+	{type: "image", src: "minigame/tease/30end3.webp"},
+	{type: "image", src: "minigame/tease/30end4.webp"},
+	{type: "image", src: "minigame/tease/30end5.webp"}]>>
 <<elseif $mcOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/tease/end2.webp"},
-	{type: "image", src: "assets/minigame/tease/end1.webp"},
-	{type: "video", src: "assets/minigame/tease/end9.mp4"}]>>
+	{type: "image", src: "minigame/tease/end2.webp"},
+	{type: "image", src: "minigame/tease/end1.webp"},
+	{type: "video", src: "minigame/tease/end9.mp4"}]>>
 <<else>>
 
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/tease/40.webp"},
-	{type: "image", src: "assets/minigame/tease/41.webp"},
-	{type: "image", src: "assets/minigame/tease/42.webp"},
-	{type: "image", src: "assets/minigame/tease/43.webp"},
-	{type: "image", src: "assets/minigame/tease/44.webp"},
-	{type: "image", src: "assets/minigame/tease/45.webp"},
-	{type: "image", src: "assets/minigame/tease/46.webp"},
-	{type: "image", src: "assets/minigame/tease/47.webp"},
-	{type: "image", src: "assets/minigame/tease/48.webp"},
-	{type: "image", src: "assets/minigame/tease/49.webp"}]>>
+	{type: "image", src: "minigame/tease/40.webp"},
+	{type: "image", src: "minigame/tease/41.webp"},
+	{type: "image", src: "minigame/tease/42.webp"},
+	{type: "image", src: "minigame/tease/43.webp"},
+	{type: "image", src: "minigame/tease/44.webp"},
+	{type: "image", src: "minigame/tease/45.webp"},
+	{type: "image", src: "minigame/tease/46.webp"},
+	{type: "image", src: "minigame/tease/47.webp"},
+	{type: "image", src: "minigame/tease/48.webp"},
+	{type: "image", src: "minigame/tease/49.webp"}]>>
     <</if>>
 <<elseif $minigameVideo eq "rimjob">>
 <<if $ghostOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/tease/60end1.webp"}]>>
+	{type: "image", src: "minigame/tease/60end1.webp"}]>>
 <<elseif $mcOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/tease/end2.webp"},
-	{type: "image", src: "assets/minigame/tease/end1.webp"},
-	{type: "video", src: "assets/minigame/tease/end9.mp4"}]>>
+	{type: "image", src: "minigame/tease/end2.webp"},
+	{type: "image", src: "minigame/tease/end1.webp"},
+	{type: "video", src: "minigame/tease/end9.mp4"}]>>
 <<else>>
 
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/tease/50.webp"},
-	{type: "image", src: "assets/minigame/tease/51.webp"},
-	{type: "image", src: "assets/minigame/tease/52.webp"},
-	{type: "image", src: "assets/minigame/tease/53.webp"},
-	{type: "image", src: "assets/minigame/tease/54.webp"},
-	{type: "image", src: "assets/minigame/tease/55.webp"},
-	{type: "image", src: "assets/minigame/tease/56.webp"}]>>
+	{type: "image", src: "minigame/tease/50.webp"},
+	{type: "image", src: "minigame/tease/51.webp"},
+	{type: "image", src: "minigame/tease/52.webp"},
+	{type: "image", src: "minigame/tease/53.webp"},
+	{type: "image", src: "minigame/tease/54.webp"},
+	{type: "image", src: "minigame/tease/55.webp"},
+	{type: "image", src: "minigame/tease/56.webp"}]>>
  <</if>>
 <<elseif $minigameVideo eq "subduerimjob">>
 <<if $ghostOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/tease/60end1.webp"}]>>
+	{type: "image", src: "minigame/tease/60end1.webp"}]>>
 <<elseif $mcOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/tease/end2.webp"},
-	{type: "image", src: "assets/minigame/tease/end1.webp"},
-	{type: "video", src: "assets/minigame/tease/end9.mp4"}]>>
+	{type: "image", src: "minigame/tease/end2.webp"},
+	{type: "image", src: "minigame/tease/end1.webp"},
+	{type: "video", src: "minigame/tease/end9.mp4"}]>>
 <<else>>
 
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/tease/60.webp"},
-	{type: "image", src: "assets/minigame/tease/61.webp"},
-	{type: "image", src: "assets/minigame/tease/62.webp"},
-	{type: "image", src: "assets/minigame/tease/63.webp"},
-	{type: "image", src: "assets/minigame/tease/64.webp"},
-	{type: "image", src: "assets/minigame/tease/65.webp"}]>>
+	{type: "image", src: "minigame/tease/60.webp"},
+	{type: "image", src: "minigame/tease/61.webp"},
+	{type: "image", src: "minigame/tease/62.webp"},
+	{type: "image", src: "minigame/tease/63.webp"},
+	{type: "image", src: "minigame/tease/64.webp"},
+	{type: "image", src: "minigame/tease/65.webp"}]>>
     
  <</if>>   
 <<elseif $minigameVideo eq "blowjob">>
 <<if $ghostOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "video", src: "assets/minigame/blowjob/bjend5.mp4"},
-	{type: "video", src: "assets/minigame/blowjob/bjend6.mp4"},	
-    {type: "image", src: "assets/minigame/blowjob/bjend7.webp"},
-    {type: "image", src: "assets/minigame/blowjob/bjend8.webp"},]>>
+	{type: "video", src: "minigame/blowjob/bjend5.mp4"},
+	{type: "video", src: "minigame/blowjob/bjend6.mp4"},	
+    {type: "image", src: "minigame/blowjob/bjend7.webp"},
+    {type: "image", src: "minigame/blowjob/bjend8.webp"},]>>
 <<elseif $mcOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/blowjob/bjend10.webp"},
-	{type: "image", src: "assets/minigame/blowjob/bjend11.webp"},
-	{type: "image", src: "assets/minigame/blowjob/bjend12.webp"},
-	{type: "image", src: "assets/minigame/blowjob/bjend13.webp"}]>>
+	{type: "image", src: "minigame/blowjob/bjend10.webp"},
+	{type: "image", src: "minigame/blowjob/bjend11.webp"},
+	{type: "image", src: "minigame/blowjob/bjend12.webp"},
+	{type: "image", src: "minigame/blowjob/bjend13.webp"}]>>
 <<else>>
 
 
 
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/blowjob/30.webp"},
-	{type: "image", src: "assets/minigame/blowjob/31.webp"},
-	{type: "image", src: "assets/minigame/blowjob/32.webp"},
-	{type: "image", src: "assets/minigame/blowjob/33.webp"},
-	{type: "image", src: "assets/minigame/blowjob/34.webp"},
-	{type: "image", src: "assets/minigame/blowjob/35.webp"},
-	{type: "image", src: "assets/minigame/blowjob/36.webp"},
-	{type: "image", src: "assets/minigame/blowjob/37.webp"},
-	{type: "image", src: "assets/minigame/blowjob/38.webp"},
-	{type: "image", src: "assets/minigame/blowjob/39.webp"},	
-    {type: "image", src: "assets/minigame/blowjob/40.webp"},
-	{type: "image", src: "assets/minigame/blowjob/41.webp"},
-	{type: "video", src: "assets/minigame/blowjob/42.mp4"},
-	{type: "video", src: "assets/minigame/blowjob/43.mp4"},
-	{type: "video", src: "assets/minigame/blowjob/44.mp4"},
-	{type: "video", src: "assets/minigame/blowjob/45.mp4"},
-	{type: "video", src: "assets/minigame/blowjob/46.mp4"},
-	{type: "video", src: "assets/minigame/blowjob/47.mp4"}]>>
+	{type: "image", src: "minigame/blowjob/30.webp"},
+	{type: "image", src: "minigame/blowjob/31.webp"},
+	{type: "image", src: "minigame/blowjob/32.webp"},
+	{type: "image", src: "minigame/blowjob/33.webp"},
+	{type: "image", src: "minigame/blowjob/34.webp"},
+	{type: "image", src: "minigame/blowjob/35.webp"},
+	{type: "image", src: "minigame/blowjob/36.webp"},
+	{type: "image", src: "minigame/blowjob/37.webp"},
+	{type: "image", src: "minigame/blowjob/38.webp"},
+	{type: "image", src: "minigame/blowjob/39.webp"},	
+    {type: "image", src: "minigame/blowjob/40.webp"},
+	{type: "image", src: "minigame/blowjob/41.webp"},
+	{type: "video", src: "minigame/blowjob/42.mp4"},
+	{type: "video", src: "minigame/blowjob/43.mp4"},
+	{type: "video", src: "minigame/blowjob/44.mp4"},
+	{type: "video", src: "minigame/blowjob/45.mp4"},
+	{type: "video", src: "minigame/blowjob/46.mp4"},
+	{type: "video", src: "minigame/blowjob/47.mp4"}]>>
     
     <</if>>
 <<elseif $minigameVideo eq "subdueblowjob">>
 <<if $ghostOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/blowjob/bjend1.webp"},
-	{type: "image", src: "assets/minigame/blowjob/bjend2.webp"},	
-    {type: "image", src: "assets/minigame/blowjob/bjend3.webp"}]>>
+	{type: "image", src: "minigame/blowjob/bjend1.webp"},
+	{type: "image", src: "minigame/blowjob/bjend2.webp"},	
+    {type: "image", src: "minigame/blowjob/bjend3.webp"}]>>
 <<elseif $mcOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/blowjob/bjend10.webp"},
-	{type: "image", src: "assets/minigame/blowjob/bjend11.webp"},
-	{type: "image", src: "assets/minigame/blowjob/bjend12.webp"},
-	{type: "image", src: "assets/minigame/blowjob/bjend13.webp"}]>>
+	{type: "image", src: "minigame/blowjob/bjend10.webp"},
+	{type: "image", src: "minigame/blowjob/bjend11.webp"},
+	{type: "image", src: "minigame/blowjob/bjend12.webp"},
+	{type: "image", src: "minigame/blowjob/bjend13.webp"}]>>
 <<else>>
 
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/blowjob/50.webp"},
-	{type: "image", src: "assets/minigame/blowjob/51.webp"},
-	{type: "image", src: "assets/minigame/blowjob/52.webp"},
-	{type: "image", src: "assets/minigame/blowjob/53.webp"},
-	{type: "image", src: "assets/minigame/blowjob/54.webp"},
-	{type: "image", src: "assets/minigame/blowjob/55.webp"},
-	{type: "image", src: "assets/minigame/blowjob/56.webp"},
-	{type: "image", src: "assets/minigame/blowjob/57.webp"},
-	{type: "image", src: "assets/minigame/blowjob/58.webp"},
-	{type: "video", src: "assets/minigame/blowjob/59.mp4"}]>>
+	{type: "image", src: "minigame/blowjob/50.webp"},
+	{type: "image", src: "minigame/blowjob/51.webp"},
+	{type: "image", src: "minigame/blowjob/52.webp"},
+	{type: "image", src: "minigame/blowjob/53.webp"},
+	{type: "image", src: "minigame/blowjob/54.webp"},
+	{type: "image", src: "minigame/blowjob/55.webp"},
+	{type: "image", src: "minigame/blowjob/56.webp"},
+	{type: "image", src: "minigame/blowjob/57.webp"},
+	{type: "image", src: "minigame/blowjob/58.webp"},
+	{type: "video", src: "minigame/blowjob/59.mp4"}]>>
     <</if>>
     
 <<elseif $minigameVideo eq "penetratepussy">>
 <<if $ghostOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/penetrate/end1.webp"},
-	{type: "image", src: "assets/minigame/penetrate/end2.webp"},	
-    {type: "image", src: "assets/minigame/penetrate/end5.webp"}]>>
+	{type: "image", src: "minigame/penetrate/end1.webp"},
+	{type: "image", src: "minigame/penetrate/end2.webp"},	
+    {type: "image", src: "minigame/penetrate/end5.webp"}]>>
 <<elseif $mcOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/penetrate/end3.webp"},
-	{type: "image", src: "assets/minigame/penetrate/end4.webp"}]>>
+	{type: "image", src: "minigame/penetrate/end3.webp"},
+	{type: "image", src: "minigame/penetrate/end4.webp"}]>>
 <<else>>
 
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/penetrate/1.webp"},
-	{type: "image", src: "assets/minigame/penetrate/2.webp"},
-	{type: "image", src: "assets/minigame/penetrate/3.webp"},
-	{type: "image", src: "assets/minigame/penetrate/4.webp"},
-	{type: "image", src: "assets/minigame/penetrate/5.webp"},
-	{type: "image", src: "assets/minigame/penetrate/6.webp"},
-	{type: "video", src: "assets/minigame/penetrate/7.mp4"},
-	{type: "video", src: "assets/minigame/penetrate/8.mp4"},
-	{type: "video", src: "assets/minigame/penetrate/9.mp4"},	
-    {type: "video", src: "assets/minigame/penetrate/10.mp4"},
-	{type: "video", src: "assets/minigame/penetrate/11.mp4"},
-	{type: "video", src: "assets/minigame/penetrate/12.mp4"},
-	{type: "video", src: "assets/minigame/penetrate/13.mp4"},
-	{type: "video", src: "assets/minigame/penetrate/14.mp4"}]>>
+	{type: "image", src: "minigame/penetrate/1.webp"},
+	{type: "image", src: "minigame/penetrate/2.webp"},
+	{type: "image", src: "minigame/penetrate/3.webp"},
+	{type: "image", src: "minigame/penetrate/4.webp"},
+	{type: "image", src: "minigame/penetrate/5.webp"},
+	{type: "image", src: "minigame/penetrate/6.webp"},
+	{type: "video", src: "minigame/penetrate/7.mp4"},
+	{type: "video", src: "minigame/penetrate/8.mp4"},
+	{type: "video", src: "minigame/penetrate/9.mp4"},	
+    {type: "video", src: "minigame/penetrate/10.mp4"},
+	{type: "video", src: "minigame/penetrate/11.mp4"},
+	{type: "video", src: "minigame/penetrate/12.mp4"},
+	{type: "video", src: "minigame/penetrate/13.mp4"},
+	{type: "video", src: "minigame/penetrate/14.mp4"}]>>
 <</if>>
 <<elseif $minigameVideo eq "penetrateanal">>
 <<if $ghostOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/penetrate/end8.webp"},
-	{type: "image", src: "assets/minigame/penetrate/end9.webp"},
-    {type: "video", src: "assets/minigame/penetrate/end11.mp4"}]>>
+	{type: "image", src: "minigame/penetrate/end8.webp"},
+	{type: "image", src: "minigame/penetrate/end9.webp"},
+    {type: "video", src: "minigame/penetrate/end11.mp4"}]>>
 <<elseif $mcOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/penetrate/end6.webp"},
-	{type: "image", src: "assets/minigame/penetrate/end7.webp"},
-    {type: "image", src: "assets/minigame/penetrate/end10.webp"},]>>
+	{type: "image", src: "minigame/penetrate/end6.webp"},
+	{type: "image", src: "minigame/penetrate/end7.webp"},
+    {type: "image", src: "minigame/penetrate/end10.webp"},]>>
 <<else>>
 
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/penetrate/20.webp"},
-	{type: "image", src: "assets/minigame/penetrate/21.webp"},
-	{type: "image", src: "assets/minigame/penetrate/22.webp"},
-	{type: "image", src: "assets/minigame/penetrate/23.webp"},
-	{type: "image", src: "assets/minigame/penetrate/24.webp"},
-	{type: "image", src: "assets/minigame/penetrate/25.webp"},
-	{type: "video", src: "assets/minigame/penetrate/26.mp4"},
-	{type: "image", src: "assets/minigame/penetrate/27.webp"},
-	{type: "image", src: "assets/minigame/penetrate/28.webp"},	
-    {type: "image", src: "assets/minigame/penetrate/29.webp"},
-	{type: "image", src: "assets/minigame/penetrate/30.webp"},
-	{type: "image", src: "assets/minigame/penetrate/31.webp"}]>>
+	{type: "image", src: "minigame/penetrate/20.webp"},
+	{type: "image", src: "minigame/penetrate/21.webp"},
+	{type: "image", src: "minigame/penetrate/22.webp"},
+	{type: "image", src: "minigame/penetrate/23.webp"},
+	{type: "image", src: "minigame/penetrate/24.webp"},
+	{type: "image", src: "minigame/penetrate/25.webp"},
+	{type: "video", src: "minigame/penetrate/26.mp4"},
+	{type: "image", src: "minigame/penetrate/27.webp"},
+	{type: "image", src: "minigame/penetrate/28.webp"},	
+    {type: "image", src: "minigame/penetrate/29.webp"},
+	{type: "image", src: "minigame/penetrate/30.webp"},
+	{type: "image", src: "minigame/penetrate/31.webp"}]>>
     <</if>>
 
 <<elseif $minigameVideo eq "fuckpussy">>
 <<if $ghostOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/sex/end5.webp"},
-	{type: "image", src: "assets/minigame/sex/end6.webp"},
-    {type: "image", src: "assets/minigame/sex/end7.webp"},
-    {type: "image", src: "assets/minigame/sex/end9.webp"}]>>
+	{type: "image", src: "minigame/sex/end5.webp"},
+	{type: "image", src: "minigame/sex/end6.webp"},
+    {type: "image", src: "minigame/sex/end7.webp"},
+    {type: "image", src: "minigame/sex/end9.webp"}]>>
 <<elseif $mcOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/sex/end1.webp"},
-	{type: "image", src: "assets/minigame/sex/end2.webp"},
-    {type: "image", src: "assets/minigame/sex/end3.webp"},
-    {type: "image", src: "assets/minigame/sex/end4.webp"}]>>
+	{type: "image", src: "minigame/sex/end1.webp"},
+	{type: "image", src: "minigame/sex/end2.webp"},
+    {type: "image", src: "minigame/sex/end3.webp"},
+    {type: "image", src: "minigame/sex/end4.webp"}]>>
 <<else>>
 
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/sex/1.webp"},
-	{type: "image", src: "assets/minigame/sex/2.webp"},
-	{type: "image", src: "assets/minigame/sex/3.webp"},
-	{type: "image", src: "assets/minigame/sex/4.webp"},
-	{type: "image", src: "assets/minigame/sex/5.webp"},
-	{type: "image", src: "assets/minigame/sex/6.webp"},
-	{type: "image", src: "assets/minigame/sex/7.webp"},
-	{type: "image", src: "assets/minigame/sex/8.webp"},
-	{type: "image", src: "assets/minigame/sex/9.webp"},	
-    {type: "image", src: "assets/minigame/sex/10.webp"},
-	{type: "video", src: "assets/minigame/sex/11.mp4"},
-	{type: "video", src: "assets/minigame/sex/12.mp4"},
-	{type: "video", src: "assets/minigame/sex/13.mp4"},
-	{type: "video", src: "assets/minigame/sex/14.mp4"},
-	{type: "video", src: "assets/minigame/sex/15.mp4"},
-	{type: "video", src: "assets/minigame/sex/16.mp4"},
-	{type: "video", src: "assets/minigame/sex/17.mp4"}]>>
+	{type: "image", src: "minigame/sex/1.webp"},
+	{type: "image", src: "minigame/sex/2.webp"},
+	{type: "image", src: "minigame/sex/3.webp"},
+	{type: "image", src: "minigame/sex/4.webp"},
+	{type: "image", src: "minigame/sex/5.webp"},
+	{type: "image", src: "minigame/sex/6.webp"},
+	{type: "image", src: "minigame/sex/7.webp"},
+	{type: "image", src: "minigame/sex/8.webp"},
+	{type: "image", src: "minigame/sex/9.webp"},	
+    {type: "image", src: "minigame/sex/10.webp"},
+	{type: "video", src: "minigame/sex/11.mp4"},
+	{type: "video", src: "minigame/sex/12.mp4"},
+	{type: "video", src: "minigame/sex/13.mp4"},
+	{type: "video", src: "minigame/sex/14.mp4"},
+	{type: "video", src: "minigame/sex/15.mp4"},
+	{type: "video", src: "minigame/sex/16.mp4"},
+	{type: "video", src: "minigame/sex/17.mp4"}]>>
     <</if>>
     
 <<elseif $minigameVideo eq "fuckanal">>
 <<if $ghostOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/sex/end17.webp"},
-	{type: "image", src: "assets/minigame/sex/end18.webp"},
-    {type: "image", src: "assets/minigame/sex/end19.webp"},
-    {type: "image", src: "assets/minigame/sex/end20.webp"},
-    {type: "image", src: "assets/minigame/sex/end21.webp"},
-    {type: "image", src: "assets/minigame/sex/end22.webp"}]>>
+	{type: "image", src: "minigame/sex/end17.webp"},
+	{type: "image", src: "minigame/sex/end18.webp"},
+    {type: "image", src: "minigame/sex/end19.webp"},
+    {type: "image", src: "minigame/sex/end20.webp"},
+    {type: "image", src: "minigame/sex/end21.webp"},
+    {type: "image", src: "minigame/sex/end22.webp"}]>>
 <<elseif $mcOrgasmMeter gte 100>>
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/sex/end10.webp"},
-    {type: "image", src: "assets/minigame/sex/end11.webp"},
-	{type: "image", src: "assets/minigame/sex/end12.webp"},
-    {type: "image", src: "assets/minigame/sex/end13.webp"},
-    {type: "image", src: "assets/minigame/sex/end14.webp"},
-    {type: "image", src: "assets/minigame/sex/end15.webp"},
-    {type: "image", src: "assets/minigame/sex/end16.webp"}]>>
+	{type: "image", src: "minigame/sex/end10.webp"},
+    {type: "image", src: "minigame/sex/end11.webp"},
+	{type: "image", src: "minigame/sex/end12.webp"},
+    {type: "image", src: "minigame/sex/end13.webp"},
+    {type: "image", src: "minigame/sex/end14.webp"},
+    {type: "image", src: "minigame/sex/end15.webp"},
+    {type: "image", src: "minigame/sex/end16.webp"}]>>
 <<else>>
 
 <<set _videoList to [
-	{type: "image", src: "assets/minigame/sex/20.webp"},
-	{type: "image", src: "assets/minigame/sex/21.webp"},
-	{type: "image", src: "assets/minigame/sex/22.webp"},
-	{type: "image", src: "assets/minigame/sex/23.webp"},
-	{type: "image", src: "assets/minigame/sex/24.webp"},
-	{type: "image", src: "assets/minigame/sex/25.webp"},
-	{type: "image", src: "assets/minigame/sex/26.webp"},
-	{type: "image", src: "assets/minigame/sex/27.webp"},
-	{type: "image", src: "assets/minigame/sex/28.webp"},	
-    {type: "image", src: "assets/minigame/sex/29.webp"},
-	{type: "image", src: "assets/minigame/sex/30.webp"},
-	{type: "image", src: "assets/minigame/sex/31.webp"},
-	{type: "image", src: "assets/minigame/sex/32.webp"},
-	{type: "image", src: "assets/minigame/sex/33.webp"},
-	{type: "image", src: "assets/minigame/sex/34.webp"},
-	{type: "image", src: "assets/minigame/sex/35.webp"},
-	{type: "image", src: "assets/minigame/sex/36.webp"}]>>
+	{type: "image", src: "minigame/sex/20.webp"},
+	{type: "image", src: "minigame/sex/21.webp"},
+	{type: "image", src: "minigame/sex/22.webp"},
+	{type: "image", src: "minigame/sex/23.webp"},
+	{type: "image", src: "minigame/sex/24.webp"},
+	{type: "image", src: "minigame/sex/25.webp"},
+	{type: "image", src: "minigame/sex/26.webp"},
+	{type: "image", src: "minigame/sex/27.webp"},
+	{type: "image", src: "minigame/sex/28.webp"},	
+    {type: "image", src: "minigame/sex/29.webp"},
+	{type: "image", src: "minigame/sex/30.webp"},
+	{type: "image", src: "minigame/sex/31.webp"},
+	{type: "image", src: "minigame/sex/32.webp"},
+	{type: "image", src: "minigame/sex/33.webp"},
+	{type: "image", src: "minigame/sex/34.webp"},
+	{type: "image", src: "minigame/sex/35.webp"},
+	{type: "image", src: "minigame/sex/36.webp"}]>>
     <</if>>
 <</if>>
 <<set _randomIndex to random(0, _videoList.length - 1)>>
@@ -434,10 +434,10 @@
 
 <<if _selectedVideo.type == "video">>
 <video autoplay controls muted loop class="displayCentredImgs">
- <source @src="_selectedVideo.src" type="video/mp4">
+ <source @src="setup.ImagePath + '/' + _selectedVideo.src" type="video/mp4">
  </video>
  <<else>>
- <img @src="_selectedVideo.src" alt="Image" class="displayCentredImgs"><br>
+ <img @src="setup.ImagePath + '/' + _selectedVideo.src" alt="Image" class="displayCentredImgs"><br>
 <</if>>
 <</widget>>
 
@@ -483,7 +483,7 @@ Beauty: $mc.beauty<br>
       	<<set  $minigameVideo to "titjob">>
       <</if>>
       <</if>>
-<</link>><b><img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:25px;"></b> | 
+<</link>><b><img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:25px;"></b> | 
 <<link "@@color:red; Try to leave@@" "minigame">>
 <<set _check to random(1,2)>>
 <<if _check eq 1>>
@@ -553,7 +553,7 @@ Beauty: $mc.beauty<br>
 <<set $minigameVideo to "assjob">>
 <<set $minigameEventFailed to 1>>
 <</if>>
-<</link>><</if>><b><img src="assets/img/energy.png" style="position: relative; top: 0.375em; width:25px;"></b> | 
+<</link>><</if>><b><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:25px;"></b> | 
 
 <<link "Submit" "minigame">>
 <<set $mc.energy += 0.2>>
@@ -576,7 +576,7 @@ Beauty: $mc.beauty<br>
 <<elseif _check eq 4>>
 <<set $minigameVideo to "penetrateanal">>
 <</if>><</if>>
-<</link>><b><img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:25px;"></b> | 
+<</link>><b><img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:25px;"></b> | 
 
 <<if $mc.energy lt 1>>
 @@.mc-thoughts; Not enough energy@@
@@ -623,7 +623,7 @@ Beauty: $mc.beauty<br>
 <<set $minigameEventFailed to 1>>
 <<set $minigameVideo to "assjob">>
 <</if>>
-<</link>><</if>><b><img src="assets/img/energy.png" style="position: relative; top: 0.375em; width:25px;"></b> | 
+<</link>><</if>><b><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:25px;"></b> | 
 
 
 <<link "Submit" "minigame">>
@@ -647,7 +647,7 @@ Beauty: $mc.beauty<br>
 <<elseif _check eq 4>>
 <<set $minigameVideo to "penetrateanal">>
 <</if>><</if>>
-<</link>> <b><img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:25px;"></b> | 
+<</link>> <b><img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:25px;"></b> | 
 
 <<if $mc.energy lt 1>>
 @@.mc-thoughts; Not enough energy@@
@@ -691,7 +691,7 @@ Beauty: $mc.beauty<br>
 <<set $minigameVideo to "assjob">>
 <<set $minigameEventFailed to 1>>
 <</if>>
-<</link>> <</if>><b><img src="assets/img/energy.png" style="position: relative; top: 0.375em; width:25px;"></b> | 
+<</link>> <</if>><b><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:25px;"></b> | 
 
 <<link "Submit" "minigame">>
 <<set $mc.energy += 0.2>>
@@ -714,7 +714,7 @@ Beauty: $mc.beauty<br>
 <<elseif _check eq 4>>
 <<set $minigameVideo to "penetrateanal">>
 <</if>><</if>>
-<</link>> <b><img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:25px;"></b> | 
+<</link>> <b><img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:25px;"></b> | 
 
 <<if $mc.energy lt 1>>
 @@.mc-thoughts; Not enough energy@@
@@ -756,7 +756,7 @@ Beauty: $mc.beauty<br>
 <<set $minigameEventFailed to 1>>
 <<set $minigameVideo to "assjob">>
 <</if>>
-<</link>> <</if>><b><img src="assets/img/energy.png" style="position: relative; top: 0.375em; width:25px;"></b> | 
+<</link>> <</if>><b><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:25px;"></b> | 
 
 <<link "Submit" "minigame">>
 <<set $mc.energy += 0.2>>
@@ -779,7 +779,7 @@ Beauty: $mc.beauty<br>
 <<elseif _check eq 4>>
 <<set $minigameVideo to "penetrateanal">>
 <</if>><</if>>
-<</link>> <b><img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:25px;"></b> | 
+<</link>> <b><img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:25px;"></b> | 
 
 <<if $mc.energy lt 1>>
 @@.mc-thoughts; Not enough energy@@
@@ -821,7 +821,7 @@ Beauty: $mc.beauty<br>
 <<set $minigameEventFailed to 1>>
 <<set $minigameVideo to "assjob">>
 <</if>>
-<</link>> <</if>><b><img src="assets/img/energy.png" style="position: relative; top: 0.375em; width:25px;"></b> | 
+<</link>> <</if>><b><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:25px;"></b> | 
 
 <<link "Submit" "minigame">>
 <<set $mc.energy += 0.2>>
@@ -844,7 +844,7 @@ Beauty: $mc.beauty<br>
 <<elseif _check eq 4>>
 <<set $minigameVideo to "penetrateanal">>
 <</if>><</if>>
-<</link>> <b><img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:25px;"></b> | 
+<</link>> <b><img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:25px;"></b> | 
 
 <<if $mc.energy lt 1>>
 @@.mc-thoughts; Not enough energy@@
@@ -886,7 +886,7 @@ Beauty: $mc.beauty<br>
 <<set $minigameEventFailed to 1>>
 <<set $minigameVideo to "assjob">>
 <</if>>
-<</link>> <</if>><b><img src="assets/img/energy.png" style="position: relative; top: 0.375em; width:25px;"></b> | 
+<</link>> <</if>><b><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:25px;"></b> | 
 
 <<link "Submit" "minigame">>
 <<set $mc.energy += 0.2>>
@@ -909,7 +909,7 @@ Beauty: $mc.beauty<br>
 <<elseif _check eq 4>>
 <<set $minigameVideo to "penetrateanal">>
 <</if>><</if>>
-<</link>> <b><img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:25px;"></b> | 
+<</link>> <b><img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:25px;"></b> | 
 
 <<if $mc.energy lt 1>>
 @@.mc-thoughts; Not enough energy@@
@@ -960,7 +960,7 @@ Beauty: $mc.beauty<br>
 <<set $minigameEventFailed to 1>>
 <<set $minigameVideo to "blowjob">>
 <</if>>
-<</link>> <</if>><b><img src="assets/img/energy.png" style="position: relative; top: 0.375em; width:25px;"></b> | 
+<</link>> <</if>><b><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:25px;"></b> | 
 
 <<link "Submit" "minigame">>
 <<set $mc.energy += 0.2>>
@@ -979,7 +979,7 @@ Beauty: $mc.beauty<br>
 <<elseif _check eq 2>>
 <<set $minigameVideo to "penetrateanal">>
 <</if>><</if>>
-<</link>> <b><img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:25px;"></b> | 
+<</link>> <b><img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:25px;"></b> | 
 
 <<if $mc.energy lt 1>>
 @@.mc-thoughts; Not enough energy@@
@@ -1030,7 +1030,7 @@ Beauty: $mc.beauty<br>
 <<set $minigameEventFailed to 1>>
 <<set $minigameVideo to "blowjob">>
 <</if>>
-<</link>> <</if>><b><img src="assets/img/energy.png" style="position: relative; top: 0.375em; width:25px;"></b> | 
+<</link>> <</if>><b><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:25px;"></b> | 
 
 <<link "Submit" "minigame">>
 <<set $mc.energy += 0.2>>
@@ -1049,7 +1049,7 @@ Beauty: $mc.beauty<br>
 <<elseif _check eq 2>>
 <<set $minigameVideo to "penetrateanal">>
 <</if>><</if>>
-<</link>> <b><img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:25px;"></b> | 
+<</link>> <b><img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:25px;"></b> | 
 
 <<if $mc.energy lt 1>>
 @@.mc-thoughts; Not enough energy@@
@@ -1100,7 +1100,7 @@ Beauty: $mc.beauty<br>
 <<set $minigameVideo to "blowjob">>
 <<set $minigameEventFailed to 1>>
 <</if>>
-<</link>> <</if>><b><img src="assets/img/energy.png" style="position: relative; top: 0.375em; width:25px;"></b> | 
+<</link>> <</if>><b><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:25px;"></b> | 
 
 <<link "Submit" "minigame">>
 <<set $mc.energy += 0.2>>
@@ -1119,7 +1119,7 @@ Beauty: $mc.beauty<br>
 <<elseif _check eq 2>>
 <<set $minigameVideo to "penetrateanal">>
 <</if>><</if>>
-<</link>> <b><img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:25px;"></b> | 
+<</link>> <b><img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:25px;"></b> | 
 
 <<if $mc.energy lt 1>>
 @@.mc-thoughts; Not enough energy@@
@@ -1170,7 +1170,7 @@ Beauty: $mc.beauty<br>
 <<set $minigameVideo to "blowjob">>
 <<set $minigameEventFailed to 1>>
 <</if>>
-<</link>> <</if>><b><img src="assets/img/energy.png" style="position: relative; top: 0.375em; width:25px;"></b> | 
+<</link>> <</if>><b><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:25px;"></b> | 
 
 <<link "Submit" "minigame">>
 <<set $mc.energy += 0.2>>
@@ -1189,7 +1189,7 @@ Beauty: $mc.beauty<br>
 <<elseif _check eq 2>>
 <<set $minigameVideo to "penetrateanal">>
 <</if>><</if>>
-<</link>> <b><img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:25px;"></b> | 
+<</link>> <b><img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:25px;"></b> | 
 
 <<if $mc.energy lt 1>>
 @@.mc-thoughts; Not enough energy@@
@@ -1246,7 +1246,7 @@ Beauty: $mc.beauty<br>
 <<set $minigameVideo to "penetrateanal">>
 <<set $minigameEventFailed to 1>>
 <</if>>
-<</link>> <</if>><b><img src="assets/img/energy.png" style="position: relative; top: 0.375em; width:25px;"></b> | 
+<</link>> <</if>><b><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:25px;"></b> | 
 
 <<link "Submit" "minigame">>
 <<set $mc.energy += 0.2>>
@@ -1265,7 +1265,7 @@ Beauty: $mc.beauty<br>
 <<elseif _check eq 2>>
 <<set $minigameVideo to "penetrateanal">>
 <</if>><</if>>
-<</link>> <b><img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:25px;"></b>
+<</link>> <b><img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:25px;"></b>
 
 <<elseif $minigameVideo eq "penetrateanal">>
 
@@ -1302,7 +1302,7 @@ Beauty: $mc.beauty<br>
 <<set $minigameVideo to "penetrateanal">>
 <<set $minigameEventFailed to 1>>
 <</if>>
-<</link>> <</if>><b><img src="assets/img/energy.png" style="position: relative; top: 0.375em; width:25px;"></b> | 
+<</link>> <</if>><b><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:25px;"></b> | 
 
 <<link "Submit" "minigame">>
 <<set $mc.energy += 0.2>>
@@ -1321,7 +1321,7 @@ Beauty: $mc.beauty<br>
 <<elseif _check eq 2>>
 <<set $minigameVideo to "penetratepussy">>
 <</if>><</if>>
-<</link>> <b><img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:25px;"></b>
+<</link>> <b><img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:25px;"></b>
 
 <<elseif $minigameVideo eq "fuckpussy">>
 
@@ -1361,7 +1361,7 @@ Beauty: $mc.beauty<br>
 <<set $minigameVideo to "fuckpussy">>
 <<set $minigameEventFailed to 1>>
 <</if>>
-<</link>> <</if>><b><img src="assets/img/energy.png" style="position: relative; top: 0.375em; width:25px;"></b> | 
+<</link>> <</if>><b><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:25px;"></b> | 
  
 <<link "Submit" "minigame">>
 <<set $mc.energy += 0.2>>
@@ -1384,7 +1384,7 @@ Beauty: $mc.beauty<br>
 <<elseif _check eq 4>>
 <<set $minigameVideo to "fuckpussy">>
 <</if>><</if>>
-<</link>> <b><img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:25px;"></b>
+<</link>> <b><img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:25px;"></b>
 
 
 <<elseif $minigameVideo eq "fuckanal">>
@@ -1425,7 +1425,7 @@ Beauty: $mc.beauty<br>
 <<set $minigameVideo to "fuckanal">>
 <<set $minigameEventFailed to 1>>
 <</if>> 
-<</link>> <</if>><b><img src="assets/img/energy.png" style="position: relative; top: 0.375em; width:25px;"></b> | 
+<</link>> <</if>><b><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:25px;"></b> | 
 
 <<link "Submit" "minigame">>
 <<set $mc.energy += 0.2>>
@@ -1448,7 +1448,7 @@ Beauty: $mc.beauty<br>
 <<elseif _check eq 4>>
 <<set $minigameVideo to "fuckanal">>
 <</if>><</if>>
-<</link>> <b><img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:25px;"></b> 
+<</link>> <b><img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:25px;"></b> 
 
 <</if>>
 <<set $mc.energy to parseFloat($mc.energy.toFixed(2))>>

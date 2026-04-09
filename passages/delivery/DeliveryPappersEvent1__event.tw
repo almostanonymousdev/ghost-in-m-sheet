@@ -5,17 +5,17 @@
 <<set _check to random(1,2)>>
 <<if _check eq 1>>
 <video autoplay controls muted loop>
- <source src="assets/deliveryhub/papersevent/4.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/deliveryhub/papersevent/4.mp4'" type="video/mp4">
  </video><</if>>
  <<if _check eq 2>>
 <video autoplay controls muted loop>
- <source src="assets/deliveryhub/papersevent/5.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/deliveryhub/papersevent/5.mp4'" type="video/mp4">
  </video><</if>>
- +45 <img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:3%;"><br>
+ +45 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"><br>
  @@.mc-speech; Oh~i'm cumming~@@<br>
  @@.notmc-speech; On your knees bitch,@@ <<linkappend "@@.notmc-speechLink; quickly@@">><br>
  <video autoplay controls muted loop>
- <source src="assets/deliveryhub/papersevent/6.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/deliveryhub/papersevent/6.mp4'" type="video/mp4">
  </video>
 @@.mc-speech; Oh~so much cum@@<br>
 @@.notmc-speech; Wow, you are the best. I think you deserve a little bonus@@<br>
@@ -25,7 +25,7 @@ You earned an extra $15<br>
 <<set $mc.money += 15>>
 <<if $mc.corruption lt 10>>
 <<set $mc.corruption += 0.2>>
-+0.2 <img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br>
++0.2 <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br>
 <</if>>
 <br>
 @@.backbtn;[[Leave|DeliveryMap]]@@ <br>

@@ -1,5 +1,5 @@
 :: adultSectionBlake [nobr] {"position":"3000,1750","size":"100,100"}
-<img src="assets/blake/blakeShop.jpg" class="displayCentredImgs" width="50%"><br>
+<img @src="setup.ImagePath + '/blake/blakeShop.jpg'" class="displayCentredImgs" width="50%"><br>
 
 
 <<if $alice.lvl gte 2 >>

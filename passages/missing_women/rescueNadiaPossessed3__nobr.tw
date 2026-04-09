@@ -2,12 +2,12 @@
 <<set _check to random(1,2)>>
 <<if _check eq 1>>
 <video autoplay controls muted loop>
- <source src="assets/rescue/Nadia/1.11.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Nadia/1.11.mp4'" type="video/mp4">
  </video>
 <</if>>
 <<if _check eq 2>>
 <video autoplay controls muted loop>
- <source src="assets/rescue/Nadia/1.12.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Nadia/1.12.mp4'" type="video/mp4">
  </video>
 <</if>>
 @@.notmc-speech; Mm~ What a tight little hole<br>

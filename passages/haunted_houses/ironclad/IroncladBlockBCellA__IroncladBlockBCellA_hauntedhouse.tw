@@ -10,18 +10,18 @@
         
 		<div class="footer">
         	<div class="footertools">
-         	<<toolCard "assets/img/emf.png" "ironcladBlockBCellAPicEMF" "searchEMFBlockBCellAIronclad">>
-         	<<toolCard "assets/img/glass.png" "actionironcladBlockBCellAPicPlasm" "searchPlasmBlockBCellAIronclad">>
-         	<<toolCard "assets/img/gwb.png" "actionironcladBlockBCellAPicGWB" "searchGwbBlockBCellAIronclad">>
-         	<<toolCard "assets/img/spiritbox.png" "actionironcladBlockBCellAPicSB" "searchSbBlockBCellAIronclad">>
-         	<<toolCard "assets/img/thermometr.png" "actionironcladBlockBCellAPicThermometr" "searchThermometrBlockBCellAIronclad">>
-         	<<toolCard "assets/img/uvl.png" "actionironcladBlockBCellAPicUVL" "searchUvlBlockBCellAIronclad">>
+         	<<toolCard "img/emf.png" "ironcladBlockBCellAPicEMF" "searchEMFBlockBCellAIronclad">>
+         	<<toolCard "img/glass.png" "actionironcladBlockBCellAPicPlasm" "searchPlasmBlockBCellAIronclad">>
+         	<<toolCard "img/gwb.png" "actionironcladBlockBCellAPicGWB" "searchGwbBlockBCellAIronclad">>
+         	<<toolCard "img/spiritbox.png" "actionironcladBlockBCellAPicSB" "searchSbBlockBCellAIronclad">>
+         	<<toolCard "img/thermometr.png" "actionironcladBlockBCellAPicThermometr" "searchThermometrBlockBCellAIronclad">>
+         	<<toolCard "img/uvl.png" "actionironcladBlockBCellAPicUVL" "searchUvlBlockBCellAIronclad">>
             <<companionCard>>
             <div class="footer-card footer-light">
-            	<span class="cursedHuntLinkDisable"><<link [img[assets/img/lighton.png][IroncladBlockBCellA]]>><<set $BlockBCellA.background to 1>><</link>>
-             <<link [img[assets/img/lightoff.png][IroncladBlockBCellA]]>><<set $BlockBCellA.background to 2>><</link>>
+            	<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "IroncladBlockBCellA">><<set $BlockBCellA.background to 1>><</link>>
+             <<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" "IroncladBlockBCellA">><<set $BlockBCellA.background to 2>><</link>>
 			<<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>> 
-<<link [img[assets/img/hearth.png][minigame]]>>
+<<link "<img @src='setup.ImagePath + \"/img/hearth.png\"'>" "minigame">>
 <<set $minigameVideo to "start">>
 <<set $ghostOrgasmMeter to 0>>
 <<set $mcOrgasmMeter to 0>><</link>>

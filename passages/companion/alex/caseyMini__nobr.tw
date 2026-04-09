@@ -1,10 +1,10 @@
 :: caseyMini [nobr] {"position":"2800,3800","size":"100,100"}
 <<if def $chosenPlan and $ghostHuntingMode eq 2 and ($isOwaissa eq 1 or $isElm eq 1)>>
 <div class="containerMini">
-		<img @src="`assets/trans/`+$transPicture+`.jpg`">
+		<img @src="setup.ImagePath+`/trans/`+$transPicture+`.jpg`">
         <div class="scaleMini">
-<img src="assets/img/sanity.png" style="position: relative; top: 0.375em; width:13%;">Casey's Sanity: <<showmeter 'companionsanity' `$companion.sanity / $companion.sanityMax`>>
-		 <img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:13%;">
+<img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:13%;">Casey's Sanity: <<showmeter 'companionsanity' `$companion.sanity / $companion.sanityMax`>>
+		 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:13%;">
         Casey's Lust: <<showmeter 'companionlust' `$companion.lust / 100`>>
         </div>
 

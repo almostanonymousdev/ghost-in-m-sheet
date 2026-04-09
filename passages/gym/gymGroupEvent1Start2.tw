@@ -4,15 +4,15 @@
 <<include "add60">>
 <<set _check to random(1,2)>>
 <<if _check eq 1>><video autoplay controls muted loop>
-    <source src="assets/gym/grouptraining1.5.mp4" type="video/mp4">
+    <source @src="setup.ImagePath + '/gym/grouptraining1.5.mp4'" type="video/mp4">
   </video><</if>>
 <<if _check eq 2>><video autoplay controls muted loop>
-    <source src="assets/gym/grouptraining1.6.mp4" type="video/mp4">
+    <source @src="setup.ImagePath + '/gym/grouptraining1.6.mp4'" type="video/mp4">
   </video><</if>>
 @@.mc-thoughts; First someone fucked you, then you started fucking someone else with a toy.<br>
 Eventually everyone @@<<linkappend "@@.mc-thoughtsLink; gathered around you again.@@">>  <br> 
 <video autoplay controls muted loop>
-    <source src="assets/gym/grouptraining1end.mp4" type="video/mp4">
+    <source @src="setup.ImagePath + '/gym/grouptraining1end.mp4'" type="video/mp4">
   </video>
 @@.notmc-speech; Yes~Finger your juicy pussy.@@ <br>
 @@.mc-speech; Fuck~ i'm about to~@@<br>

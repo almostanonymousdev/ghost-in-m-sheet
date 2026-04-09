@@ -12,14 +12,14 @@
 <<set _randomIndex to random(0, _videoList.length - 1)>>
 <<set _selectedVideo to _videoList[_randomIndex]>>
 <video autoplay muted controls loop class="displayCentredImgs">
- <source @src="`assets/`+_selectedVideo" type="video/mp4">
+ <source @src="setup.ImagePath+`/`+_selectedVideo" type="video/mp4">
  </video>
 @@.mc-speech; Shit! I shouldn't have asked this....@@<br>
 <<set $wishesCount -=1>>
 <<include "minus15sanity">>
 <<include "add15lust">>
-@@.mc-thoughts; Lust increased: +15 <img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
-@@.mc-thoughts; Sanity decreased: -15 <img src="assets/img/sanity.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
+@@.mc-thoughts; Lust increased: +15 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
+@@.mc-thoughts; Sanity decreased: -15 <img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
 <br><br>
 @@.backbtn;<<link "Return" `passage()`>><</link>>@@
 <</replace>>
@@ -34,7 +34,7 @@
 @@.mc-speech; Now the ghost can't change its favorite room.<br>
 With each wish, I feel worse and worse.@@<br>
 <<include "minus15sanity">>
-<b>@@.mc-thoughts; Sanity decreased: -15 <img src="assets/img/sanity.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@</b><br>
+<b>@@.mc-thoughts; Sanity decreased: -15 <img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@</b><br>
 <br>
 @@.backbtn;<<link "Return" `passage()`>><</link>>@@
 <</replace>>
@@ -46,7 +46,7 @@ With each wish, I feel worse and worse.@@<br>
 <<replace "#wishesCount">>
 <<set $wishesCount -=1>>
 @@.mc-thoughts; $wishesCount wishes left...@@<br><br>
-<b>@@.mc-thoughts; Sanity changed: 50 <img src="assets/img/sanity.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">  now!@@</b><br>
+<b>@@.mc-thoughts; Sanity changed: 50 <img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">  now!@@</b><br>
 @@.mc-speech; I shouldn't have expected anything better...@@
 <<set $mc.sanity to 50>>
 <<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>

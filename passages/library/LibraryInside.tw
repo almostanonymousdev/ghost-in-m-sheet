@@ -1,10 +1,10 @@
 :: LibraryInside {"position":"2500,1800","size":"100,100"}
 <<nobr>>
-<img src="assets/img/libraryInside.jpg" width="100%">
+<img @src="setup.ImagePath + '/img/libraryInside.jpg'" width="100%">
 <br>
 <<if $mc.energy gte 1>>
-@@.usebtn; [[Search for information about ghosts in books|LibrarySearchResult][$mc.energy -= 1]] @@<img src="assets/img/energy.png" style="position: relative; top: 0.375em; width:3%;"><<else>>@@.mc-thoughts; I'm too tired@@
-<span><img src="assets/img/energy.png" style="position: relative; top: 0.375em; filter: grayscale(1); width:3%;"></span><</if>>
+@@.usebtn; [[Search for information about ghosts in books|LibrarySearchResult][$mc.energy -= 1]] @@<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"><<else>>@@.mc-thoughts; I'm too tired@@
+<span><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; filter: grayscale(1); width:3%;"></span><</if>>
 <br>
 <<if hasVisited("comics")>>
 @@.enterbtn; [[Read porn comics|comics]]@@<br>

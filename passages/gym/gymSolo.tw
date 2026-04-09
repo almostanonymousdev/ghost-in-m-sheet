@@ -2,19 +2,19 @@
 <<nobr>>
 <<if $hours >= 8 && $hours < 13>>
   <video autoplay controls muted loop>
-    <source src="assets/gym/solo1.mp4" type="video/mp4">
+    <source @src="setup.ImagePath + '/gym/solo1.mp4'" type="video/mp4">
   </video>
 You spent about an hour at the gym, diligently working on improving your physical fitness. Each workout makes you stronger and more resilient, helping you reach new heights.<br><br>
 
 <<elseif $hours >= 13 && $hours < 18>>
   <video autoplay controls muted loop>
-    <source src="assets/gym/solo2.mp4" type="video/mp4">
+    <source @src="setup.ImagePath + '/gym/solo2.mp4'" type="video/mp4">
   </video>
 You spent about an hour at the gym, diligently working on improving your physical fitness. Each workout makes you stronger and more resilient, helping you reach new heights.<br><br>
 
 <<elseif $hours >= 18 && $hours < 23>>
   <video autoplay controls muted loop>
-    <source src="assets/gym/solo3.mp4" type="video/mp4">
+    <source @src="setup.ImagePath + '/gym/solo3.mp4'" type="video/mp4">
   </video>
   You spent about an hour at the gym, diligently working on improving your physical fitness. Each workout makes you stronger and more resilient, helping you reach new heights.<br><br>
  <<if ndef $relationEmily>>

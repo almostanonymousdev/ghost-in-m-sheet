@@ -1,5 +1,5 @@
 :: SleepTwins [nobr] {"position":"600,3100","size":"100,100"}
-<img src="assets/exorcism/thetwinsend.jpg" class="displayCentredImgs">
+<img @src="setup.ImagePath + '/exorcism/thetwinsend.jpg'" class="displayCentredImgs">
 @@.mc-thoughts; You wake up, feeling the sticky liquid on your face.@@<br>
 @@.mc-speech; THIS WASN'T A DREAM? FUCK@@<br>
 <<if $summonText eq 1>>

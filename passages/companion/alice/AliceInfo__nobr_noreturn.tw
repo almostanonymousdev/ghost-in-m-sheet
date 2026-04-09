@@ -15,7 +15,7 @@
 <</if>>
 <div class="flexwrapperCompanionMainInfo">
   <div class="companionImageMain">
-  <img src="assets/alice/alice.png">
+  <img @src="setup.ImagePath + '/alice/alice.png'">
   </div>
 <div class="companionTextMain">
 <span style="color: yellow; font-weight: bold; font-size: 1.2em;">$alice.name :</span> $alice.lvl lvl <<if $alice.lvl gte 5>> (max. lvl)<<else>>($alice.exp / $alice.expForNextLvl)<</if>><br>

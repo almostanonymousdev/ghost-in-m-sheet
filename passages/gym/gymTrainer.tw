@@ -3,7 +3,7 @@
 <<include "add15lust">>
 <<if $hours >= 8 && $hours < 13>>
   <video autoplay controls muted loop>
-    <source src="assets/gym/trainer1.mp4" type="video/mp4">
+    <source @src="setup.ImagePath + '/gym/trainer1.mp4'" type="video/mp4">
   </video>
  You spent about an hour at the gym, diligently working on improving your physical fitness. Each workout makes you stronger and more resilient, helping you reach new heights.<br><br>
 <<if $trainer1TipReceived eq 1>>
@@ -20,7 +20,7 @@
 <</if>>
 <<elseif $hours >= 13 && $hours < 18>>
   <video autoplay controls muted loop>
-    <source src="assets/gym/trainer2.mp4" type="video/mp4">
+    <source @src="setup.ImagePath + '/gym/trainer2.mp4'" type="video/mp4">
   </video>
  You spent about an hour at the gym, diligently working on improving your physical fitness. Each workout makes you stronger and more resilient, helping you reach new heights.<br><br>
 <<if $mc.fit gte 30>>
@@ -34,7 +34,7 @@
 <</if>>
 <<elseif $hours >= 18 && $hours < 23>>
   <video autoplay controls muted loop>
-    <source src="assets/gym/trainer3.mp4" type="video/mp4">
+    <source @src="setup.ImagePath + '/gym/trainer3.mp4'" type="video/mp4">
   </video>
 You spent about an hour at the gym, diligently working on improving your physical fitness. Each workout makes you stronger and more resilient, helping you reach new heights.<br><br>
 

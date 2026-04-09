@@ -1,7 +1,7 @@
 :: DeliveryManagerEventStart [event] {"position":"1200,1300","size":"100,100"}
 <<nobr>>
 <video autoplay controls muted loop>
- <source src="assets/deliveryhub/manager/bj.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/deliveryhub/manager/bj.mp4'" type="video/mp4">
  </video><br>
 @@.notmc-speech;  Perhaps this job is more suitable for you? Ha-ha@@<br>
 @@.mc-thoughts; Shut up~ You wanted to say, but instead all you could say was:<br>@@
@@ -16,7 +16,7 @@
 <span>Experience: +10 exp</span><br>
 <<if $mc.corruption lt 10>>
 <<set $mc.corruption += 0.5>>
-<span><img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">: +0.5 </span>
+<span><img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">: +0.5 </span>
 <</if>>
 <span class="reachedNewLvl"></span><br>
 </div>

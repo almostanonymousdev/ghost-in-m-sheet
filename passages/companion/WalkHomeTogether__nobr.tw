@@ -1,7 +1,7 @@
 :: WalkHomeTogether [nobr] {"position":"2450,3550","size":"100,100"}
 <<set _videoToggle to true>>
 <<if $ghost.name eq "Spirit">>
-<img src="assets/img/mchouse.jpg" width="100%">
+<img @src="setup.ImagePath + '/img/mchouse.jpg'" width="100%">
 @@.notmc-speech; I have a strange feeling. Like something is following us...@@<br>
 @@.mc-speech;I didn't see anyone. Maybe you should stay at my place then?@@<br>
 @@.notmc-speech; Yes, if you don't mind.@@<br><br>
@@ -10,7 +10,7 @@
 <<if $companion.name eq "Brook">>
 <<if $companion.lust gte 50>>
 <video autoplay controls muted loop>
- <source src="assets/brook/home/1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/brook/home/1.mp4'" type="video/mp4">
  </video>
 @@.mc-thoughts;As soon as you walked in, she pounced on you and started kissing you@@<br>
 @@.notmc-speech; I’m so turned on, $mc.name. I want you right now.@@<br>
@@ -20,7 +20,7 @@
 <<linkappend "@@.notmc-speechLink; this strap-on.@@">><br>
 <span id ="walkhomebrook">
 <video autoplay controls muted loop>
- <source src="assets/brook/home/2.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/brook/home/2.mp4'" type="video/mp4">
  </video></span>
 @@.mc-thoughts; You took turns pleasuring 
 <<link "@@.usebtn;each other@@">>
@@ -28,11 +28,11 @@
 <<replace "#walkhomebrook">>
 <<if _videoToggle>>
             <video autoplay controls muted loop>
-                <source src="assets/brook/home/2.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/brook/home/2.mp4'" type="video/mp4">
             </video>
         <<else>>
             <video autoplay controls muted loop>
-                <source src="assets/brook/home/3.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/brook/home/3.mp4'" type="video/mp4">
             </video>
   <</if>>
 <</replace>>
@@ -44,16 +44,16 @@ with the strap-on until you were both completely spent.@@<br>
 @@.mc-speech;Alright, bye.@@<br>
 <<if $mc.corruption lt 10>>
 <<set $mc.corruption += 0.1>>
-+0.1 <img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br><br>
++0.1 <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br><br>
 <</if>>
 <br>
 @@.backbtn; [[Sleep]]@@<br> 
 <</linkappend>>
 <<else>>
-<img src="assets/img/mchouse.jpg" width="100%">
+<img @src="setup.ImagePath + '/img/mchouse.jpg'" width="100%">
 @@.mc-speech; We made it to my place. Thanks for walking me back@@<br>
 @@.notmc-speech; No problem, hope we meet again. Bye.@@<br>
-@@.warningtext; (Req. $companion.name's <img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 50)@@
+@@.warningtext; (Req. $companion.name's <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 50)@@
 <br><br>
 @@.backbtn; [[Sleep]]@@<br> 
 <</if>>
@@ -62,7 +62,7 @@ with the strap-on until you were both completely spent.@@<br>
 <<elseif $companion.name eq "Alice">>
 <<if $companion.lust gte 50>>
 <video autoplay controls muted loop>
- <source src="assets/alice/home/1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/alice/home/1.mp4'" type="video/mp4">
  </video>
 @@.mc-thoughts;As soon as you walked in, she pounced on you and started kissing you@@<br>
 @@.notmc-speech; I’m so turned on, $mc.name. I want you right now.@@<br>
@@ -70,7 +70,7 @@ with the strap-on until you were both completely spent.@@<br>
 @@.mc-speech; Yes~ @@<<linkappend "@@.mc-speechLink; let’s do it. @@">>
 <span id ="walkhomealice">
 <video autoplay controls muted loop>
- <source src="assets/alice/home/2.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/alice/home/2.mp4'" type="video/mp4">
  </video></span>
 @@.mc-thoughts; You took turns pleasuring 
 <<link "@@.usebtn;each other@@">>
@@ -78,11 +78,11 @@ with the strap-on until you were both completely spent.@@<br>
 <<replace "#walkhomealice">>
 <<if _videoToggle>>
             <video autoplay controls muted loop>
-                <source src="assets/alice/home/2.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/alice/home/2.mp4'" type="video/mp4">
             </video>
         <<else>>
             <video autoplay controls muted loop>
-                <source src="assets/alice/home/3.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/alice/home/3.mp4'" type="video/mp4">
             </video>
   <</if>>
 <</replace>>
@@ -91,23 +91,23 @@ until you were both completely spent.@@<br>
 @@.notmc-speech; That was amazing.@@<br>
 <<if $mc.corruption lt 10>>
 <<set $mc.corruption += 0.1>>
-+0.1 <img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">
++0.1 <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">
 <</if>><br>
 @@.mc-speech;Yeah~Do you want to [[take a shower|aliceContinue]] with me?@@<br> <b>or</b> <br>
 @@.mc-speech; I'm really tired already. I think I need to get some [[sleep|Sleep]].@@<br>
 <</linkappend>>
 <<else>>
-<img src="assets/img/mchouse.jpg" width="100%">
+<img @src="setup.ImagePath + '/img/mchouse.jpg'" width="100%">
 @@.mc-speech; We made it to my place. Thanks for walking me back@@<br>
 @@.notmc-speech; No problem, hope we meet again. Bye.@@<br>
-@@.warningtext; (Req. $companion.name's <img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 50)@@
+@@.warningtext; (Req. $companion.name's <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 50)@@
 <br><br>
 @@.backbtn; [[Sleep]]@@<br> 
 <</if>>
 <<elseif $companion.name eq "Blake">>
 <<if $companion.lust gte 50>>
 <video autoplay controls muted loop>
- <source src="assets/blake/home/1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/blake/home/1.mp4'" type="video/mp4">
  </video>
 @@.mc-thoughts;As soon as you walked in, she pounced on you and started kissing you@@<br>
 @@.notmc-speech; I’m so turned on, $mc.name. I want you right now.@@<br>
@@ -115,7 +115,7 @@ until you were both completely spent.@@<br>
 @@.mc-speech; Yes~ @@<<linkappend "@@.mc-speechLink; let’s do it. @@">>
 <span id ="walkhomeblake">
 <video autoplay controls muted loop>
- <source src="assets/blake/home/2.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/blake/home/2.mp4'" type="video/mp4">
  </video></span>
 @@.mc-thoughts; You took turns pleasuring 
 <<link "@@.usebtn;each other@@">>
@@ -123,11 +123,11 @@ until you were both completely spent.@@<br>
 <<replace "#walkhomeblake">>
 <<if _videoToggle>>
             <video autoplay controls muted loop>
-                <source src="assets/blake/home/2.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/blake/home/2.mp4'" type="video/mp4">
             </video>
         <<else>>
             <video autoplay controls muted loop>
-                <source src="assets/blake/home/3.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/blake/home/3.mp4'" type="video/mp4">
             </video>
   <</if>>
 <</replace>>
@@ -135,10 +135,10 @@ until you were both completely spent.@@<br>
 until you both [[cum at the same time.|blakeContinue]]@@<br>
 <</linkappend>>
 <<else>>
-<img src="assets/img/mchouse.jpg" width="100%">
+<img @src="setup.ImagePath + '/img/mchouse.jpg'" width="100%">
 @@.mc-speech; We made it to my place. Thanks for walking me back@@<br>
 @@.notmc-speech; No problem, hope we meet again. Bye.@@<br>
-@@.warningtext; (Req. $companion.name's <img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 50)@@
+@@.warningtext; (Req. $companion.name's <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 50)@@
 <br><br>
 @@.backbtn; [[Sleep]]@@<br> 
 <</if>>

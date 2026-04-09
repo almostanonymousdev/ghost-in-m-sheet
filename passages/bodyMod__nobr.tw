@@ -2,30 +2,30 @@
 <div id="statusContainerPiercing">
   <div id="statusPiercingEars">
   <<if $earsPiercing eq "worn">>
-	<<hovertip "Pierced ears">><img src="assets/img/icons/ears.png"><</hovertip>>
+	<<hovertip "Pierced ears">><img @src="setup.ImagePath + '/img/icons/ears.png'"><</hovertip>>
 	<</if>>
   </div>
   <div id="statusPiercingNose">
   <<if $nosePiercing eq "worn">>
-  	<<hovertip "Pierced nose">><img src="assets/img/icons/nose.png"><</hovertip>>
+  	<<hovertip "Pierced nose">><img @src="setup.ImagePath + '/img/icons/nose.png'"><</hovertip>>
 	<</if>>
   </div>
   <div id="statusPiercingTongue">
 <<if $tonguePiercing eq "worn">>
-  	<<hovertip "Pierced tongue">><img src="assets/img/icons/tongue.png">
+  	<<hovertip "Pierced tongue">><img @src="setup.ImagePath + '/img/icons/tongue.png'">
     <<set $addLustPiercingTongue to 1>>
     <</hovertip>>
 <</if>>
   </div>
   <div id="statusPiercingTits">
 <<if $titsPiercing eq "worn">>
-  	<<hovertip "Pierced nipples">><img src="assets/img/icons/tits.png"><</hovertip>>
+  	<<hovertip "Pierced nipples">><img @src="setup.ImagePath + '/img/icons/tits.png'"><</hovertip>>
     <<set $addLustPiercingTits to 1>>
 <</if>>
   </div>
   <div id="statusPiercingPussy">
 <<if $pussyPiercing eq "worn">>
-  	<<hovertip "Pierced pussy">><img src="assets/img/icons/vagina.png"><</hovertip>>
+  	<<hovertip "Pierced pussy">><img @src="setup.ImagePath + '/img/icons/vagina.png'"><</hovertip>>
     <<set $addLustPiercingPussy to 1>>
 <</if>>
   </div>

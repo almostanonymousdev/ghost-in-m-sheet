@@ -9,31 +9,31 @@
 <span id="endShift" class="btnendshift btnendcolor clickable">End the shift</span>\
 <div class="flexwrapper">
 <div class="housecard">
-<img src="assets/img/delivery1.png" class="iconsOnMap">
+<img @src="setup.ImagePath + '/img/delivery1.png'" class="iconsOnMap">
 @@.icontextdelivery; [[Honeywood Court, 3|Honeywood Court 3]]@@
 </div>
 <div class="housecard">
 </div>
 <div class="housecard">
-<img src="assets/img/delivery1.png" class="iconsOnMap">
+<img @src="setup.ImagePath + '/img/delivery1.png'" class="iconsOnMap">
 @@.icontextdelivery; [[Onyx Place, 10|Onyx Place 10]]@@
 </div>
 <div class="housecard">
 
 </div>
 <div class="housecard">
-<img src="assets/img/delivery1.png" class="iconsOnMap">
+<img @src="setup.ImagePath + '/img/delivery1.png'" class="iconsOnMap">
 @@.icontextdelivery; [[Star Street, 25|Star Street 25]]@@
 </div>
 <div class="housecard">
 
 </div>
 <div class="housecard">
-<img src="assets/img/delivery1.png" class="iconsOnMap">
+<img @src="setup.ImagePath + '/img/delivery1.png'" class="iconsOnMap">
 @@.icontextdelivery; [[Lilac Lane, 72|Lilac Lane 72]]@@
 </div>
 <div class="housecard">
-<img src="assets/img/delivery1.png" class="iconsOnMap">
+<img @src="setup.ImagePath + '/img/delivery1.png'" class="iconsOnMap">
 @@.icontextdelivery; [[Emerald Street, 17|Emerald Street 17]]@@
 </div>
 <div class="housecard">
@@ -46,29 +46,29 @@
 
 </div>
 <div class="housecard">
-<img src="assets/img/delivery1.png" class="iconsOnMap">
+<img @src="setup.ImagePath + '/img/delivery1.png'" class="iconsOnMap">
 @@.icontextdelivery; [[Cascade Avenue, 56|Cascade Avenue 56]]@@
 </div>
 <div class="housecard">
 
 </div>
 <div class="housecard">
-<img src="assets/img/delivery1.png" class="iconsOnMap">
+<img @src="setup.ImagePath + '/img/delivery1.png'" class="iconsOnMap">
 @@.icontextdelivery; [[Jasmine Lane, 89|Jasmine Lane 89]]@@
 </div>
 <div class="housecard">
-<img src="assets/img/delivery1.png" class="iconsOnMap">
+<img @src="setup.ImagePath + '/img/delivery1.png'" class="iconsOnMap">
 @@.icontextdelivery; [[Golden Road, 34|Golden Road 34]]@@
 </div>
 <div class="housecard">
-<img src="assets/img/delivery1.png" class="iconsOnMap">
+<img @src="setup.ImagePath + '/img/delivery1.png'" class="iconsOnMap">
 @@.icontextdelivery; [[Twilight Boulevard, 61|Twilight Boulevard 61]]@@
 </div>
 <div class="housecard">
 
 </div>
 <div class="housecard">
-<img src="assets/img/delivery1.png" class="iconsOnMap">
+<img @src="setup.ImagePath + '/img/delivery1.png'" class="iconsOnMap">
 @@.icontextdelivery; [[Amethyst Street, 42|Amethyst Street 42]]@@
 </div>
 <div class="housecard">

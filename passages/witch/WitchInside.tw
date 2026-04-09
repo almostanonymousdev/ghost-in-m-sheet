@@ -1,6 +1,6 @@
 :: WitchInside {"position":"1350,25","size":"100,100"}
 <<nobr>>
-<img src="assets/img/witchGirl.jpg" width="100%">
+<img @src="setup.ImagePath + '/img/witchGirl.jpg'" width="100%">
 <br>
 
 <<if $firstVisitWitchShop is true>>
@@ -99,7 +99,7 @@ In every house with a ghost, there is a cursed object. It could be in any room. 
 <<set $isCIHDildo to 0>>
 <<if  $equipment.gwb neq 3>>
  <<set $equipment.gwb to 3>>
-@@.mc-action; You get a lvl 3 Ghost Writing Book @@<img src="assets/img/gwb.png" style="max-width:5%"><br>
+@@.mc-action; You get a lvl 3 Ghost Writing Book @@<img @src="setup.ImagePath + '/img/gwb.png'" style="max-width:5%"><br>
 <br>
 @@.mc-speech; But why do you need them?@@<br>
 @@.notmc-speech; It’s a powerful magical artifact. I think you felt just how potent it is yourself.@@ @@.mc-thoughts;<br> She ran her tongue over the toy and smiled slightly@@<br>

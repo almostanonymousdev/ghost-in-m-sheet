@@ -51,10 +51,10 @@
 
 <<if _selectedVideo.type == "video">>
 <video autoplay controls muted loop>
- <source @src="`assets/`+$videoEventNaked" type="video/mp4">
+ <source @src="setup.ImagePath+`/`+$videoEventNaked" type="video/mp4">
  </video>
  <<else>>
- <img @src="`assets/`+$videoEventNaked" alt="Image" class="displayCentredImgs"><br>
+ <img @src="setup.ImagePath+`/`+$videoEventNaked" alt="Image" class="displayCentredImgs"><br>
 <</if>>
 
  

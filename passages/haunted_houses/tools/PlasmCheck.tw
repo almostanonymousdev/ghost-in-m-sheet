@@ -34,31 +34,31 @@
         <<set _checkR to random(1, 2)>>
         <<if _checkR eq 1>>
         <<set _check to random(1, 6)>>
-<<if _check eq 1>><img src="assets/plasm/1.png" class="displayCentredImgs"><</if>>
-<<if _check eq 2>><img src="assets/plasm/2.png" class="displayCentredImgs"><</if>>
-<<if _check eq 3>><img src="assets/plasm/3.png" class="displayCentredImgs"><</if>>
-<<if _check eq 4>><img src="assets/plasm/4.png" class="displayCentredImgs"><</if>>
-<<if _check eq 5>><img src="assets/plasm/5.png" class="displayCentredImgs"><</if>>
-<<if _check eq 6>><img src="assets/plasm/6.png" class="displayCentredImgs"><</if>><br>
+<<if _check eq 1>><img @src="setup.ImagePath + '/plasm/1.png'" class="displayCentredImgs"><</if>>
+<<if _check eq 2>><img @src="setup.ImagePath + '/plasm/2.png'" class="displayCentredImgs"><</if>>
+<<if _check eq 3>><img @src="setup.ImagePath + '/plasm/3.png'" class="displayCentredImgs"><</if>>
+<<if _check eq 4>><img @src="setup.ImagePath + '/plasm/4.png'" class="displayCentredImgs"><</if>>
+<<if _check eq 5>><img @src="setup.ImagePath + '/plasm/5.png'" class="displayCentredImgs"><</if>>
+<<if _check eq 6>><img @src="setup.ImagePath + '/plasm/6.png'" class="displayCentredImgs"><</if>><br>
       @@.evidenceshadowtext;  It seems I found ectoplasm... one more piece of evidence@@<br><<else>>
 <<if $tshirtState is "worn">>
 <<set _check to random(1,7)>>
-<<if _check eq 1>><img src="assets/plasm/mess/1.png" class="displayCentredImgs"><</if>>
-<<if _check eq 2>><img src="assets/plasm/mess/2.png" class="displayCentredImgs"><</if>>
-<<if _check eq 3>><img src="assets/plasm/mess/3.png" class="displayCentredImgs"><</if>>
-<<if _check eq 4>><img src="assets/plasm/mess/4.png" class="displayCentredImgs"><</if>>
-<<if _check eq 5>><img src="assets/plasm/mess/5.png" class="displayCentredImgs"><</if>>
-<<if _check eq 6>><img src="assets/plasm/mess/6.png" class="displayCentredImgs"><</if>>
-<<if _check eq 7>><img src="assets/plasm/mess/7.png" class="displayCentredImgs"><</if>>
+<<if _check eq 1>><img @src="setup.ImagePath + '/plasm/mess/1.png'" class="displayCentredImgs"><</if>>
+<<if _check eq 2>><img @src="setup.ImagePath + '/plasm/mess/2.png'" class="displayCentredImgs"><</if>>
+<<if _check eq 3>><img @src="setup.ImagePath + '/plasm/mess/3.png'" class="displayCentredImgs"><</if>>
+<<if _check eq 4>><img @src="setup.ImagePath + '/plasm/mess/4.png'" class="displayCentredImgs"><</if>>
+<<if _check eq 5>><img @src="setup.ImagePath + '/plasm/mess/5.png'" class="displayCentredImgs"><</if>>
+<<if _check eq 6>><img @src="setup.ImagePath + '/plasm/mess/6.png'" class="displayCentredImgs"><</if>>
+<<if _check eq 7>><img @src="setup.ImagePath + '/plasm/mess/7.png'" class="displayCentredImgs"><</if>>
 <<elseif $tshirtState is "not worn">>
 <<set _check to random(1,7)>>
-<<if _check eq 1>><img src="assets/plasm/mess/8.png" class="displayCentredImgs"><</if>>
-<<if _check eq 2>><img src="assets/plasm/mess/9.png" class="displayCentredImgs"><</if>>
-<<if _check eq 3>><img src="assets/plasm/mess/10.png" class="displayCentredImgs"><</if>>
-<<if _check eq 4>><img src="assets/plasm/mess/11.png" class="displayCentredImgs"><</if>>
-<<if _check eq 5>><img src="assets/plasm/mess/12.png" class="displayCentredImgs"><</if>>
-<<if _check eq 6>><img src="assets/plasm/mess/13.png" class="displayCentredImgs"><</if>>
-<<if _check eq 7>><img src="assets/plasm/mess/14.png" class="displayCentredImgs"><</if>>
+<<if _check eq 1>><img @src="setup.ImagePath + '/plasm/mess/8.png'" class="displayCentredImgs"><</if>>
+<<if _check eq 2>><img @src="setup.ImagePath + '/plasm/mess/9.png'" class="displayCentredImgs"><</if>>
+<<if _check eq 3>><img @src="setup.ImagePath + '/plasm/mess/10.png'" class="displayCentredImgs"><</if>>
+<<if _check eq 4>><img @src="setup.ImagePath + '/plasm/mess/11.png'" class="displayCentredImgs"><</if>>
+<<if _check eq 5>><img @src="setup.ImagePath + '/plasm/mess/12.png'" class="displayCentredImgs"><</if>>
+<<if _check eq 6>><img @src="setup.ImagePath + '/plasm/mess/13.png'" class="displayCentredImgs"><</if>>
+<<if _check eq 7>><img @src="setup.ImagePath + '/plasm/mess/14.png'" class="displayCentredImgs"><</if>>
 <</if>>
         @@.evidenceshadowtext; It seems I've found ectoplasm... Except somehow I managed to get myself completely covered in this mysterious substance. I don't even remember how it happened. Oh well, at least I've found another piece of evidence..@@<br>
       <</if>>

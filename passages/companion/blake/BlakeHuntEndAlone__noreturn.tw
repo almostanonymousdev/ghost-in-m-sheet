@@ -41,23 +41,23 @@ At first, things went well, of course, sometimes the ghost tried to...@@<<linkap
 <<set _checkR to random(1,5)>>
         <<if _checkR eq 1>>
             <video autoplay controls muted loop>
-                <source src="assets/blake/2.0.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/blake/2.0.mp4'" type="video/mp4">
             </video>
         <<elseif _checkR eq 2>>
             <video autoplay controls muted loop>
-                <source src="assets/blake/2.2.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/blake/2.2.mp4'" type="video/mp4">
             </video>
          <<elseif _checkR eq 3>>
             <video autoplay controls muted loop>
-                <source src="assets/blake/2.3.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/blake/2.3.mp4'" type="video/mp4">
             </video>
          <<elseif _checkR eq 4>>
             <video autoplay controls muted loop>
-                <source src="assets/blake/2.4.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/blake/2.4.mp4'" type="video/mp4">
             </video>
                      <<elseif _checkR eq 5>>
             <video autoplay controls muted loop>
-                <source src="assets/blake/2.5.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/blake/2.5.mp4'" type="video/mp4">
             </video>
         <</if>>
 @@.notmc-speech;But I'm not easily frightened! <br>
@@ -66,35 +66,35 @@ The ghost became more aggressive... Sometimes it tried to @@<<linkappend "@@.not
 <<set _checkR to random(1,8)>>
         <<if _checkR eq 1>>
             <video autoplay controls muted loop>
-                <source src="assets/blake/alone2.1.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/blake/alone2.1.mp4'" type="video/mp4">
             </video>
         <<elseif _checkR eq 2>>
             <video autoplay controls muted loop>
-                <source src="assets/blake/alone2.2.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/blake/alone2.2.mp4'" type="video/mp4">
             </video>
         <<elseif _checkR eq 3>>
             <video autoplay controls muted loop>
-                <source src="assets/blake/alone2.3.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/blake/alone2.3.mp4'" type="video/mp4">
             </video>
          <<elseif _checkR eq 4>>
             <video autoplay controls muted loop>
-                <source src="assets/blake/3.0.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/blake/3.0.mp4'" type="video/mp4">
             </video>
                      <<elseif _checkR eq 5>>
             <video autoplay controls muted loop>
-                <source src="assets/blake/3.1.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/blake/3.1.mp4'" type="video/mp4">
             </video>
                      <<elseif _checkR eq 6>>
             <video autoplay controls muted loop>
-                <source src="assets/blake/3.2.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/blake/3.2.mp4'" type="video/mp4">
             </video>
                      <<elseif _checkR eq 7>>
             <video autoplay controls muted loop>
-                <source src="assets/blake/3.3.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/blake/3.3.mp4'" type="video/mp4">
             </video>
                      <<elseif _checkR eq 8>>
             <video autoplay controls muted loop>
-                <source src="assets/blake/3.4.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/blake/3.4.mp4'" type="video/mp4">
             </video>
         <</if>>
 @@.notmc-speech;But I was stronger than it...<br>
@@ -103,27 +103,27 @@ I was about to find the last piece of evidence when suddenly@@ <<linkappend
  <<set _checkR to random(1,6)>>
         <<if _checkR eq 1>>
             <video autoplay controls muted loop>
-                <source src="assets/blake/alone3.1.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/blake/alone3.1.mp4'" type="video/mp4">
             </video>
         <<elseif _checkR eq 2>>
             <video autoplay controls muted loop>
-                <source src="assets/blake/alone3.2.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/blake/alone3.2.mp4'" type="video/mp4">
             </video>
         <<elseif _checkR eq 3>>
             <video autoplay controls muted loop>
-                <source src="assets/blake/alone3.3.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/blake/alone3.3.mp4'" type="video/mp4">
             </video>
             <<elseif _checkR eq 4>>
             <video autoplay controls muted loop>
-                <source src="assets/blake/alone3.4.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/blake/alone3.4.mp4'" type="video/mp4">
             </video>
                      <<elseif _checkR eq 5>>
             <video autoplay controls muted loop>
-                <source src="assets/blake/alone3.5.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/blake/alone3.5.mp4'" type="video/mp4">
             </video>
                      <<elseif _checkR eq 6>>
             <video autoplay controls muted loop>
-                <source src="assets/blake/alone3.6.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/blake/alone3.6.mp4'" type="video/mp4">
             </video>
         <</if>>
 @@.notmc-speech;I lost control... and I might have given it what it had been after from the beginning...@@<br>

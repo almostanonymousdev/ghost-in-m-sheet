@@ -1,6 +1,6 @@
 :: Gym {"position":"3050,1225","size":"100,100"}
 <<nobr>>
-<img src="assets/img/gym.jpg" width="85%">
+<img @src="setup.ImagePath + '/img/gym.jpg'" width="85%">
 <br>
 @@.location; Gym@@<br>
 @@.mc-thoughts; This gym is the only one in the city. It is well-equipped and suitable for both beginners and professionals. Overall, it has everything needed to achieve a fit and athletic body.

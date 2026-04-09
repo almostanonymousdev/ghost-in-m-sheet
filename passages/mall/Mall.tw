@@ -1,7 +1,7 @@
 :: Mall {"position":"2800,1700","size":"100,100"}
 <<nobr>>
 
-<img src="assets/img/mall.jpg" width="100%">
+<img @src="setup.ImagePath + '/img/mall.jpg'" width="100%">
 @@.location; Mall@@<br>
 @@.mc-thoughts; This mall is a fantastic place for purchases. I believe I won't find any items related to my profession here, but there's plenty of everything else.
 @@<br>

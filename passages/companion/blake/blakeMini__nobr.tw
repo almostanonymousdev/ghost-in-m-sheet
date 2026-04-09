@@ -1,10 +1,10 @@
 :: blakeMini [nobr] {"position":"1950,3875","size":"100,100"}
 <<if def $chosenPlan and $ghostHuntingMode eq 2 and ($isOwaissa eq 1 or $isElm eq 1)>>
 <div class="containerMini">
-		<img src="assets/blake/blake.png">
+		<img @src="setup.ImagePath + '/blake/blake.png'">
         <div class="scaleMini">
-<img src="assets/img/sanity.png" style="position: relative; top: 0.375em; width:13%;">Blake's Sanity: <<showmeter 'companionsanity' `$companion.sanity / $companion.sanityMax`>>
-		 <img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:13%;">
+<img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:13%;">Blake's Sanity: <<showmeter 'companionsanity' `$companion.sanity / $companion.sanityMax`>>
+		 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:13%;">
         Blake's Lust: <<showmeter 'companionlust' `$companion.lust / 100`>>
         </div>
 

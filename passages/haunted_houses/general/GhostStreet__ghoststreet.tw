@@ -1,7 +1,7 @@
 :: GhostStreet [ghoststreet] {"position":"1950,350","size":"100,100"}
 <div class="flexwrapper">
 <div class="housecard">
-<img src="assets/img/OwaissaHouse.jpg" class="iconPx">
+<img @src="setup.ImagePath + '/img/OwaissaHouse.jpg'" class="iconPx">
 <<nobr>>
 @@.icontext;<<link "Owaissa Street" "Owaissa Street">>
 <<if $deleteThirdEvidence eq 1>>
@@ -34,7 +34,7 @@
 <div class="housecard">
 </div>
 <div class="housecard">
-<img src="assets/room/ironclad/ironclad.webp" class="iconPx">
+<img @src="setup.ImagePath + '/room/ironclad/ironclad.webp'" class="iconPx">
 <<nobr>>
 <<if $mc.lvl gte 4>>@@.icontext;<<link "Prison Ironclad" "Ironclad Prison">>
 <<if $deleteThirdEvidence eq 1>>
@@ -75,7 +75,7 @@
 
 </div>
 <div class="housecard">
-<img src="assets/img/ElmHouse.jpg" class="iconPx">
+<img @src="setup.ImagePath + '/img/ElmHouse.jpg'" class="iconPx">
 <<nobr>>
 <<if $mc.lvl gte 3>>@@.icontext;<<link "Elm Street" "Elm Street">>
 <<if $deleteThirdEvidence eq 1>>
@@ -115,7 +115,7 @@
 <div class="housecard">
 </div>
 <div class="housecard">
-<img src="assets/img/enigmaHouse.jpg" class="iconPx">
+<img @src="setup.ImagePath + '/img/enigmaHouse.jpg'" class="iconPx">
 <<nobr>>
 <<if $mc.lvl gte 2>>@@.icontext;<<link "Enigma Street" "Enigma Street">>
 <<if $deleteThirdEvidence eq 1>>

@@ -8,24 +8,24 @@
           	</div>
         </div>
         <div class="furnitureSearch">
-             <span id="bedroomTwo_table"><<link [img[assets/img/furniture/table.png][furnitureSearch]]>><<set $currentFurniture to "bedroomTwo_table">><<includeTimeEventClothesHunt>><</link>></span>
-			 <span id="bedroomTwo_bed2"><<link [img[assets/img/furniture/bed2.png][furnitureSearch]]>><<set $currentFurniture to "bedroomTwo_bed2">><<includeTimeEventClothesHunt>><</link>></span>
-			 <span id="bedroomTwo_shelves"><<link [img[assets/img/furniture/shelves.png][furnitureSearch]]>><<set $currentFurniture to "bedroomTwo_shelves">><<includeTimeEventClothesHunt>><</link>></span>
+             <span id="bedroomTwo_table"><<link "<img @src='setup.ImagePath + \"/img/furniture/table.png\"'>" "furnitureSearch">><<set $currentFurniture to "bedroomTwo_table">><<includeTimeEventClothesHunt>><</link>></span>
+			 <span id="bedroomTwo_bed2"><<link "<img @src='setup.ImagePath + \"/img/furniture/bed2.png\"'>" "furnitureSearch">><<set $currentFurniture to "bedroomTwo_bed2">><<includeTimeEventClothesHunt>><</link>></span>
+			 <span id="bedroomTwo_shelves"><<link "<img @src='setup.ImagePath + \"/img/furniture/shelves.png\"'>" "furnitureSearch">><<set $currentFurniture to "bedroomTwo_shelves">><<includeTimeEventClothesHunt>><</link>></span>
         </div>
 		<div class="footer">
         	<div class="footertools">
-         	<<toolCard "assets/img/emf.png" "elmBedroomTwoPicEMF" "searchEMFBedroomTwoElm">>
-         	<<toolCard "assets/img/glass.png" "elmBedroomTwoPicPlasm" "searchPlasmBedroomTwoElm">>
-         	<<toolCard "assets/img/gwb.png" "elmBedroomTwoPicGWB" "searchGwbBedroomTwoElm">>
-         	<<toolCard "assets/img/spiritbox.png" "elmBedroomTwoPicSB" "searchSbBedroomTwoElm">>
-         	<<toolCard "assets/img/thermometr.png" "elmBedroomTwoPicThermometr" "searchThermometrBedroomTwoElm">>
-         	<<toolCard "assets/img/uvl.png" "elmBedroomTwoPicUVL" "searchUVLBedroomTwoElm">>
+         	<<toolCard "img/emf.png" "elmBedroomTwoPicEMF" "searchEMFBedroomTwoElm">>
+         	<<toolCard "img/glass.png" "elmBedroomTwoPicPlasm" "searchPlasmBedroomTwoElm">>
+         	<<toolCard "img/gwb.png" "elmBedroomTwoPicGWB" "searchGwbBedroomTwoElm">>
+         	<<toolCard "img/spiritbox.png" "elmBedroomTwoPicSB" "searchSbBedroomTwoElm">>
+         	<<toolCard "img/thermometr.png" "elmBedroomTwoPicThermometr" "searchThermometrBedroomTwoElm">>
+         	<<toolCard "img/uvl.png" "elmBedroomTwoPicUVL" "searchUVLBedroomTwoElm">>
             <<companionCard>>
             <div class="footer-card footer-light">
-            	<span class="cursedHuntLinkDisable"><<link [img[assets/img/lighton.png][elmBedroomTwo]]>><<set $bedroomTwo.background to 1>><</link>>
-             <<link [img[assets/img/lightoff.png][elmBedroomTwo]]>><<set $bedroomTwo.background to 2>><</link>>
+            	<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "elmBedroomTwo">><<set $bedroomTwo.background to 1>><</link>>
+             <<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" "elmBedroomTwo">><<set $bedroomTwo.background to 2>><</link>>
 			<<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>> 
-<<link [img[assets/img/hearth.png][minigame]]>>
+<<link "<img @src='setup.ImagePath + \"/img/hearth.png\"'>" "minigame">>
 <<set $minigameVideo to "start">>
 <<set $ghostOrgasmMeter to 0>>
 <<set $mcOrgasmMeter to 0>><</link>>

@@ -6,7 +6,7 @@
 <<if $ghost.name eq "Spirit">>
 <<set $ghostSpiritEventStage to 0>>
 <</if>>
-<img src="assets/img/dawn.jpg" width="100%">
+<img @src="setup.ImagePath + '/img/dawn.jpg'" width="100%">
 <br>
 @@.mc-thoughts; Ah, dawn. The ghostly activity has ceased. I need to summarize the gathered information and identify the type of ghost.@@<br>
 <<if $isClothesStolen eq 1>>

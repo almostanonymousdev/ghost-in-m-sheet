@@ -5,7 +5,7 @@
 <div class="flexwrapper backgroundForText">
 <div class="housecard">
 <<if $jeansState1 eq "not bought">>
-<img src="assets/img/wardrobe/jeans1.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/wardrobe/jeans1.png'" class="iconPx"><br>
 <span class="mc-thoughts">+5 beauty</span><br>
 <span class="priceAmount">30$</span><br>
 <<if $mc.money gte 30>>
@@ -18,7 +18,7 @@
 </div>
 <div class="housecard">
 <<if $jeansState2 eq "not bought">>
-<img src="assets/img/wardrobe/jeans2.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/wardrobe/jeans2.png'" class="iconPx"><br>
 <span class="mc-thoughts">+8 beauty</span><br>
 <span class="priceAmount">40$</span><br>
 <<if $mc.money gte 40>>
@@ -31,7 +31,7 @@
 </div>
 <div class="housecard">
 <<if $jeansState3 eq "not bought">>
-<img src="assets/img/wardrobe/jeans3.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/wardrobe/jeans3.png'" class="iconPx"><br>
 <span class="mc-thoughts">+11 beauty</span><br>
 <span class="priceAmount">50$</span><br>
 <<if $mc.money gte 50>>
@@ -44,7 +44,7 @@
 </div>
 <div class="housecard">
 <<if $shortsState1 eq "not bought">>
-<img src="assets/img/wardrobe/shorts1.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/wardrobe/shorts1.png'" class="iconPx"><br>
 <span class="mc-thoughts">+6 beauty</span><br>
 <span class="priceAmount">35$</span><br>
 <<if $mc.money gte 35>>
@@ -57,7 +57,7 @@
 </div>
 <div class="housecard">
 <<if $shortsState2 eq "not bought">>
-<img src="assets/img/wardrobe/Shorts2.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/wardrobe/Shorts2.png'" class="iconPx"><br>
 <span class="mc-thoughts">+9 beauty</span><br>
 <span class="priceAmount">45$</span><br>
 <<if $mc.money gte 45>>
@@ -70,7 +70,7 @@
 </div>
 <div class="housecard">
 <<if $shortsState3 eq "not bought">>
-<img src="assets/img/wardrobe/Shorts3.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/wardrobe/Shorts3.png'" class="iconPx"><br>
 <span class="mc-thoughts">+12 beauty</span><br>
 <span class="priceAmount">55$</span><br>
 <<if $mc.money gte 55>>
@@ -84,7 +84,7 @@
 
 <div class="housecard">
 <<if $skirtState1 eq "not bought">>
-<img src="assets/img/wardrobe/skirt1.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/wardrobe/skirt1.png'" class="iconPx"><br>
 <span class="mc-thoughts">+7 beauty</span><br>
 <span class="priceAmount">40$</span><br>
 <<if $mc.money gte 40>>
@@ -97,7 +97,7 @@
 </div>
 <div class="housecard">
 <<if $skirtState2 eq "not bought">>
-<img src="assets/img/wardrobe/skirt2.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/wardrobe/skirt2.png'" class="iconPx"><br>
 <span class="mc-thoughts">+10 beauty</span><br>
 <span class="priceAmount">50$</span><br>
 <<if $mc.money gte 50>>
@@ -110,7 +110,7 @@
 </div>
 <div class="housecard">
 <<if $skirtState3 eq "not bought">>
-<img src="assets/img/wardrobe/skirt3.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/wardrobe/skirt3.png'" class="iconPx"><br>
 <span class="mc-thoughts">+13 beauty</span><br>
 <span class="priceAmount">60$</span><br>
 <<if $mc.money gte 60>>
@@ -124,7 +124,7 @@
 
 <div class="housecard">
 <<if $tshirtState1 eq "not bought">>
-<img src="assets/img/wardrobe/tshirt1.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/wardrobe/tshirt1.png'" class="iconPx"><br>
 <span class="mc-thoughts">+5 beauty</span><br>
 <span class="priceAmount">30$</span><br>
 <<if $mc.money gte 30>>
@@ -137,7 +137,7 @@
 </div>
 <div class="housecard">
 <<if $tshirtState2 eq "not bought">>
-<img src="assets/img/wardrobe/tshirt2.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/wardrobe/tshirt2.png'" class="iconPx"><br>
 <span class="mc-thoughts">+8 beauty</span><br>
 <span class="priceAmount">40$</span><br>
 <<if $mc.money gte 40>>
@@ -150,7 +150,7 @@
 </div>
 <div class="housecard">
 <<if $tshirtState3 eq "not bought">>
-<img src="assets/img/wardrobe/tshirt3.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/wardrobe/tshirt3.png'" class="iconPx"><br>
 <span class="mc-thoughts">+11 beauty</span><br>
 <span class="priceAmount">50$</span><br>
 <<if $mc.money gte 50>>
@@ -163,7 +163,7 @@
 </div>
 <div class="housecard">
 <<if $braState1 eq "not bought">>
-<img src="assets/img/wardrobe/slip2.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/wardrobe/slip2.png'" class="iconPx"><br>
 <span class="mc-thoughts">+2 beauty</span><br>
 <span class="priceAmount">20$</span><br>
 <<if $mc.money gte 20>>
@@ -176,7 +176,7 @@
 </div>
 <div class="housecard">
 <<if $braState2 eq "not bought">>
-<img src="assets/img/wardrobe/slip3.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/wardrobe/slip3.png'" class="iconPx"><br>
 <span class="mc-thoughts">+4 beauty</span><br>
 <span class="priceAmount">30$</span><br>
 <<if $mc.money gte 30>>
@@ -189,7 +189,7 @@
 </div>
 <div class="housecard">
 <<if $braState3 eq "not bought">>
-<img src="assets/img/wardrobe/slip4.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/wardrobe/slip4.png'" class="iconPx"><br>
 <span class="mc-thoughts">+6 beauty</span><br>
 <span class="priceAmount">40$</span><br>
 <<if $mc.money gte 40>>
@@ -203,7 +203,7 @@
 
 <div class="housecard">
 <<if $pantiesState1 eq "not bought">>
-<img src="assets/img/wardrobe/short2.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/wardrobe/short2.png'" class="iconPx"><br>
 <span class="mc-thoughts">+2 beauty</span><br>
 <span class="priceAmount">25$</span><br>
 <<if $mc.money gte 25>>
@@ -216,7 +216,7 @@
 </div>
 <div class="housecard">
 <<if $pantiesState2 eq "not bought">>
-<img src="assets/img/wardrobe/short3.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/wardrobe/short3.png'" class="iconPx"><br>
 <span class="mc-thoughts">+4 beauty</span><br>
 <span class="priceAmount">35$</span><br>
 <<if $mc.money gte 35>>
@@ -229,7 +229,7 @@
 </div>
 <div class="housecard">
 <<if $pantiesState3 eq "not bought">>
-<img src="assets/img/wardrobe/short4.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/wardrobe/short4.png'" class="iconPx"><br>
 <span class="mc-thoughts">+6 beauty</span><br>
 <span class="priceAmount">45$</span><br>
 <<if $mc.money gte 45>>
@@ -243,7 +243,7 @@
 
 <div class="housecard">
 <<if $stockingsState1 eq "not bought">>
-<img src="assets/img/wardrobe/Stockings1.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/wardrobe/Stockings1.png'" class="iconPx"><br>
 <span class="mc-thoughts">+2 beauty</span><br>
 <span class="priceAmount">30$</span><br>
 <<if $mc.money gte 30>>
@@ -256,7 +256,7 @@
 </div>
 <div class="housecard">
 <<if $stockingsState2 eq "not bought">>
-<img src="assets/img/wardrobe/Stockings2.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/wardrobe/Stockings2.png'" class="iconPx"><br>
 <span class="mc-thoughts">+4 beauty</span><br>
 <span class="priceAmount">60$</span><br>
 <<if $mc.money gte 60>>
@@ -269,7 +269,7 @@
 </div>
 <div class="housecard">
 <<if $stockingsState3 eq "not bought">>
-<img src="assets/img/wardrobe/Stockings3.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/wardrobe/Stockings3.png'" class="iconPx"><br>
 <span class="mc-thoughts">+6 beauty</span><br>
 <span class="priceAmount">120$</span><br>
 <<if $mc.money gte 120>>
@@ -284,7 +284,7 @@
 </div>
 <div class="housecard">
 <<if ndef $sportswear>>
-<img src="assets/img/wardrobe/sportswear.jpg" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/wardrobe/sportswear.jpg'" class="iconPx"><br>
 <span class="priceAmount">100$</span><br>
 <<if $mc.money gte 100>>
 @@.buyItemLink;<<link "Buy" "clothingSection">>
@@ -303,7 +303,7 @@
 <div class="housecard">
 <<if $mc.corruption gte 2>>
 <<if ndef $neckChokerState1>>
-<img src="assets/img/wardrobe/neckChoker1.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/wardrobe/neckChoker1.png'" class="iconPx"><br>
 <span class="mc-thoughts">+15 lust</span><br>
 <span class="priceAmount">100$</span><br>
 <<if $mc.money gte 100>>

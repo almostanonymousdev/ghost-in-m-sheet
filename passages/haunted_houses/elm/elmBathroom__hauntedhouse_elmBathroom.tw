@@ -8,24 +8,24 @@
           	</div>
         </div>
         <div class="furnitureSearch">
-             <span id="bathroom_sink"><<link [img[assets/img/furniture/sink.png][furnitureSearch]]>><<set $currentFurniture to "bathroom_sink">><<includeTimeEventClothesHunt>><</link>></span>
-			 <span id="bathroom_bathtub"><<link [img[assets/img/furniture/bathtub.png][furnitureSearch]]>><<set $currentFurniture to "bathroom_bathtub">><<includeTimeEventClothesHunt>><</link>></span>
-			 <span id="bathroom_wmachine"><<link [img[assets/img/furniture/wmachine.png][furnitureSearch]]>><<set $currentFurniture to "bathroom_wmachine">><<includeTimeEventClothesHunt>><</link>></span>
+             <span id="bathroom_sink"><<link "<img @src='setup.ImagePath + \"/img/furniture/sink.png\"'>" "furnitureSearch">><<set $currentFurniture to "bathroom_sink">><<includeTimeEventClothesHunt>><</link>></span>
+			 <span id="bathroom_bathtub"><<link "<img @src='setup.ImagePath + \"/img/furniture/bathtub.png\"'>" "furnitureSearch">><<set $currentFurniture to "bathroom_bathtub">><<includeTimeEventClothesHunt>><</link>></span>
+			 <span id="bathroom_wmachine"><<link "<img @src='setup.ImagePath + \"/img/furniture/wmachine.png\"'>" "furnitureSearch">><<set $currentFurniture to "bathroom_wmachine">><<includeTimeEventClothesHunt>><</link>></span>
         </div>
 		<div class="footer">
         	<div class="footertools">
-         	<<toolCard "assets/img/emf.png" "elmBathroomPicEMF" "searchEMFBathroomElm">>
-         	<<toolCard "assets/img/glass.png" "elmBathroomPicPlasm" "searchPlasmBathroomElm">>
-         	<<toolCard "assets/img/gwb.png" "elmBathroomPicGWB" "searchGwbBathroomElm">>
-         	<<toolCard "assets/img/spiritbox.png" "elmBathroomPicSB" "searchSbBathroomElm">>
-         	<<toolCard "assets/img/thermometr.png" "elmBathroomPicThermometr" "searchThermometrBathroomElm">>
-         	<<toolCard "assets/img/uvl.png" "elmBathroomPicUVL" "searchUVLBathroomElm">>
+         	<<toolCard "img/emf.png" "elmBathroomPicEMF" "searchEMFBathroomElm">>
+         	<<toolCard "img/glass.png" "elmBathroomPicPlasm" "searchPlasmBathroomElm">>
+         	<<toolCard "img/gwb.png" "elmBathroomPicGWB" "searchGwbBathroomElm">>
+         	<<toolCard "img/spiritbox.png" "elmBathroomPicSB" "searchSbBathroomElm">>
+         	<<toolCard "img/thermometr.png" "elmBathroomPicThermometr" "searchThermometrBathroomElm">>
+         	<<toolCard "img/uvl.png" "elmBathroomPicUVL" "searchUVLBathroomElm">>
             <<companionCard>>
             <div class="footer-card footer-light">
-            	<span class="cursedHuntLinkDisable"><<link [img[assets/img/lighton.png][elmBathroom]]>><<set $bathroom.background to 1>><</link>>
-             <<link [img[assets/img/lightoff.png][elmBathroom]]>><<set $bathroom.background to 2>><</link>>
+            	<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "elmBathroom">><<set $bathroom.background to 1>><</link>>
+             <<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" "elmBathroom">><<set $bathroom.background to 2>><</link>>
 			<<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>> 
-<<link [img[assets/img/hearth.png][minigame]]>>
+<<link "<img @src='setup.ImagePath + \"/img/hearth.png\"'>" "minigame">>
 <<set $minigameVideo to "start">>
 <<set $ghostOrgasmMeter to 0>>
 <<set $mcOrgasmMeter to 0>><</link>>

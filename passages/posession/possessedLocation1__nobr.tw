@@ -1,7 +1,7 @@
 :: possessedLocation1 [nobr] {"position":"1125,500","size":"100,100"}
 <<if $checkChoosenLocation eq "library">>
 <video autoplay controls muted loop>
- <source src="assets/possessed/1.3.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/possessed/1.3.mp4'" type="video/mp4">
  </video>
 @@.mc-thoughts; You didn't even notice how he bent you over, but his cock quickly made you realize what was happening. He started fucking you. You felt every movement of his hot cock with your wet pussy, every slap on your ass.<br>
 You're completely losing it.<br>@@
@@ -10,7 +10,7 @@ You're completely losing it.<br>@@
 @@.mc-thoughts; And, of course, @@
 <<linkappend "@@.mc-thoughtsLink; this had to happen@@">>
 <video autoplay controls muted loop>
- <source src="assets/possessed/1.4.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/possessed/1.4.mp4'" type="video/mp4">
  </video>
 @@.notmc-speech; What the hell are you doing here?@@<br>
 @@.mc-thoughts; You both tried to hide what you were doing.@@<br>
@@ -22,7 +22,7 @@ You're completely losing it.<br>@@
 
 <span id ="possessedLocationLibrary">
 <video autoplay controls muted loop>
- <source src="assets/possessed/1.5.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/possessed/1.5.mp4'" type="video/mp4">
  </video></span>
 
 @@.mc-thoughts; He dragged you to the other library visitors. They quickly figured out what was expected of them.<br>
@@ -31,11 +31,11 @@ They started fucking you in all holes at the same time, sometimes@@ <<link "@@.u
 <<set _videoToggle to !_videoToggle>>
 <<if _videoToggle>>
             <video autoplay controls muted loop>
-                <source src="assets/possessed/1.6.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/possessed/1.6.mp4'" type="video/mp4">
             </video>
         <<else>>
             <video autoplay controls muted loop>
-                <source src="assets/possessed/1.5.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/possessed/1.5.mp4'" type="video/mp4">
             </video>
   <</if>>
 <</replace>><</link>>
@@ -59,7 +59,7 @@ They started fucking you in all holes at the same time, sometimes@@ <<link "@@.u
 <<elseif $checkChoosenLocation eq "home">>
 <span id ="possessedLocationHome">
 <video autoplay controls muted loop>
- <source src="assets/possessed/2.2.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/possessed/2.2.mp4'" type="video/mp4">
  </video></span>
 @@.mc-thoughts; But instead of running away, you sat on your knees and started sucking their cocks, jerking off the rest with your hands.<br>
 You couldn't even imagine that you could feel so good just from a blowjob, even though you sucked off@@ <<link "@@.usebtn; a whole crowd@@">>
@@ -67,11 +67,11 @@ You couldn't even imagine that you could feel so good just from a blowjob, even 
 <<set _videoToggle to !_videoToggle>>
 <<if _videoToggle>>
             <video autoplay controls muted loop>
-                <source src="assets/possessed/2.3.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/possessed/2.3.mp4'" type="video/mp4">
             </video>
         <<else>>
             <video autoplay controls muted loop>
-                <source src="assets/possessed/2.2.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/possessed/2.2.mp4'" type="video/mp4">
             </video>
   <</if>>
 <</replace>><</link>>
@@ -80,18 +80,18 @@ You couldn't even imagine that you could feel so good just from a blowjob, even 
 @@.mc-thoughts; After a while they started@@ <<linkappend "@@.usebtn; cumming@@">>
 <span id ="possessedLocationHome1">
 <video autoplay controls muted loop>
- <source src="assets/possessed/2.4.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/possessed/2.4.mp4'" type="video/mp4">
  </video></span>
 @@.mc-thoughts; They cum all over your face,@@ <<link "@@.usebtn; one after the other@@">>
 <<set _videoToggle to !_videoToggle>>
 <<replace "#possessedLocationHome1">>
 <<if _videoToggle>>
             <video autoplay controls muted loop>
-                <source src="assets/possessed/2.5.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/possessed/2.5.mp4'" type="video/mp4">
             </video>
         <<else>>
             <video autoplay controls muted loop>
-                <source src="assets/possessed/2.4.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/possessed/2.4.mp4'" type="video/mp4">
             </video>
   <</if>>
 <</replace>><</link>><br>
@@ -103,7 +103,7 @@ You couldn't even imagine that you could feel so good just from a blowjob, even 
 
 <span id ="possessedLocationGym">
 <video autoplay controls muted loop>
- <source src="assets/possessed/3.3.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/possessed/3.3.mp4'" type="video/mp4">
  </video></span>
 @@.mc-thoughts; But instead of running away, you sat on your knees and started sucking their cocks<br>
 You couldn't even imagine that you could feel so good just from a blowjob, so you kept enjoying them@@ <<link "@@.usebtn; one by one@@">>
@@ -111,11 +111,11 @@ You couldn't even imagine that you could feel so good just from a blowjob, so yo
 <<set _videoToggle to !_videoToggle>>
 <<if _videoToggle>>
             <video autoplay controls muted loop>
-                <source src="assets/possessed/3.4.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/possessed/3.4.mp4'" type="video/mp4">
             </video>
         <<else>>
             <video autoplay controls muted loop>
-                <source src="assets/possessed/3.3.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/possessed/3.3.mp4'" type="video/mp4">
             </video>
   <</if>>
 <</replace>><</link>>
@@ -128,18 +128,18 @@ You couldn't even imagine that you could feel so good just from a blowjob, so yo
 @@.mc-speech; Fuck, it doesn't work@@<br>
 <span id ="possessedLocationGym1">
 <video autoplay controls muted loop>
- <source src="assets/possessed/3.5.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/possessed/3.5.mp4'" type="video/mp4">
  </video></span>
 @@.mc-thoughts; They fucked fast and hard,@@ <<link "@@.usebtn; taking turns@@">>
 <<set _videoToggle to !_videoToggle>>
 <<replace "#possessedLocationGym1">>
 <<if _videoToggle>>
             <video autoplay controls muted loop>
-                <source src="assets/possessed/3.6.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/possessed/3.6.mp4'" type="video/mp4">
             </video>
         <<else>>
             <video autoplay controls muted loop>
-                <source src="assets/possessed/3.5.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/possessed/3.5.mp4'" type="video/mp4">
             </video>
   <</if>>
 <</replace>><</link>> 
@@ -160,7 +160,7 @@ You couldn't even imagine that you could feel so good just from a blowjob, so yo
 <<elseif $checkChoosenLocation eq "church">>
 <span id ="possessedLocationChurch1">
 <video autoplay controls muted loop>
- <source src="assets/possessed/4.6.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/possessed/4.6.mp4'" type="video/mp4">
  </video></span>
 <<set _videoIndex to 6>>
 @@.mc-thoughts; You started to rape her anus using your @@ <<link "@@.usebtn; hand or dildos@@">>
@@ -168,7 +168,7 @@ You couldn't even imagine that you could feel so good just from a blowjob, so yo
 <<replace "#possessedLocationChurch1">>
 
 <video autoplay controls muted loop>
-<source @src="`assets/possessed/4.`+_videoIndex+`.mp4`" type="video/mp4">
+<source @src="setup.ImagePath+`/possessed/4.`+_videoIndex+`.mp4`" type="video/mp4">
 </video>
 <</replace>><</link>><br>
 @@.notmc-speech; Nooo~ this is not right.. <br>
@@ -178,7 +178,7 @@ You couldn't even imagine that you could feel so good just from a blowjob, so yo
 @@.mc-thoughts; She can't resist anymore and you continue to stretch her asshole [[again and again....|possessed]]@@<br>
 <<elseif $checkChoosenLocation eq "park">>
 <video autoplay controls muted loop>
-<source src="assets/possessed/5.2.mp4" type="video/mp4">
+<source @src="setup.ImagePath + '/possessed/5.2.mp4'" type="video/mp4">
 </video>
 @@.mc-thoughts; You enter his home, where he's already sprawled out on the couch, waiting. Your body, as if not your own, immediately kneels before him, and you start sucking his enormous cock, which barely fits in your mouth. With one hand, he starts spanking and caressing your ass, occasionally brushing against your wet pussy, making you moan with unexpected pleasure.@@<br>
 @@.notmc-speech;Yeah, just like that, baby, show me what you can do.@@<br>
@@ -189,7 +189,7 @@ You couldn't even imagine that you could feel so good just from a blowjob, so yo
 <<if $mcpossession gte 7>>
 <span id ="possessedLocationPark1">
 <video autoplay controls muted loop>
- <source src="assets/possessed/5.4.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/possessed/5.4.mp4'" type="video/mp4">
  </video></span>
 <<set _videoIndex to 4>>
 @@.mc-thoughts;He takes you, sliding his cock into your already throbbing with desire pussy. You feel each thrust making you lose control, @@
@@ -199,7 +199,7 @@ You couldn't even imagine that you could feel so good just from a blowjob, so yo
 <<replace "#possessedLocationPark1">>
 
 <video autoplay controls muted loop>
-<source @src="`assets/possessed/5.`+_videoIndex+`.mp4`" type="video/mp4">
+<source @src="setup.ImagePath+`/possessed/5.`+_videoIndex+`.mp4`" type="video/mp4">
 </video>
 <</replace>><</link>><br>
 
@@ -208,7 +208,7 @@ You couldn't even imagine that you could feel so good just from a blowjob, so yo
 @@.mc-speech;Oh God... @@
 <<linkappend "@@.mc-speechLink; I can't...@@">>
 <video autoplay controls muted loop>
- <source src="assets/possessed/5.6.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/possessed/5.6.mp4'" type="video/mp4">
  </video>
 @@.mc-thoughts;You're sitting in front of him, your face covered in sweat, as he erupts, cumming on your tongue, making you taste his seed.@@<br>
 @@.mc-thoughts;That wasn't me... the ghost made me do it...@@<br>

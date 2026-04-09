@@ -3,7 +3,7 @@
 <<include "add15lust">>
 <<set $trainer2SexCD to 1>>
 <video autoplay controls muted loop>
-    <source src="assets/gym/trainer2event2end.mp4" type="video/mp4">
+    <source @src="setup.ImagePath + '/gym/trainer2event2end.mp4'" type="video/mp4">
   </video>
 @@.notmc-speech; Phew~ thanks for the "help". I guess we can do that again sometimes.@@
 <br>

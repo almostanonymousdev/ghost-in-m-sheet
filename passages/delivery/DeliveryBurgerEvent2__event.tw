@@ -3,7 +3,7 @@
 <<set $deliveryBurgerEvent to 1>>
 <<set $mc.lust to 0>>
 <video autoplay controls muted loop>
- <source src="assets/deliveryhub/burgerevent/9.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/deliveryhub/burgerevent/9.mp4'" type="video/mp4">
  </video>
 @@.mc-speech; Ah~ Did you cum inside me?@@<br>
 @@.notmc-speech; I haven't fucked like this for a long time, you're a great slut, I hope to see you again sometime@@<br>
@@ -13,7 +13,7 @@
 You earned an extra $5<br>
 <<if $mc.corruption lt 10>>
 <<set $mc.corruption += 0.2>>
-+0.2 <img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br>
++0.2 <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br>
 <</if>>
 <br>
 @@.backbtn;[[Take a shower and leave|DeliveryMap]]@@<br>

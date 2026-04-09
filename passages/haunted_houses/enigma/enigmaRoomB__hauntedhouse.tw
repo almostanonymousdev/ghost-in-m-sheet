@@ -9,15 +9,15 @@
         </div>
 		<div class="footer">
         	<div class="footertools">
-         	<<toolCard "assets/img/emf.png" "enigmaRoomBPicEMF" "searchEMFRoomBEnigma">>
-         	<<toolCard "assets/img/glass.png" "enigmaRoomBPicPlasm" "searchPlasmRoomBEnigma">>
-         	<<toolCard "assets/img/gwb.png" "enigmaRoomBPicGWB" "searchGwbRoomBEnigma">>
-         	<<toolCard "assets/img/spiritbox.png" "enigmaRoomBPicSB" "searchSbRoomBEnigma">>
-         	<<toolCard "assets/img/thermometr.png" "enigmaRoomBPicThermometr" "searchThermometrRoomBEnigma">>
-         	<<toolCard "assets/img/uvl.png" "enigmaRoomBPicUVL" "searchUVLRoomBEnigma">>
+         	<<toolCard "img/emf.png" "enigmaRoomBPicEMF" "searchEMFRoomBEnigma">>
+         	<<toolCard "img/glass.png" "enigmaRoomBPicPlasm" "searchPlasmRoomBEnigma">>
+         	<<toolCard "img/gwb.png" "enigmaRoomBPicGWB" "searchGwbRoomBEnigma">>
+         	<<toolCard "img/spiritbox.png" "enigmaRoomBPicSB" "searchSbRoomBEnigma">>
+         	<<toolCard "img/thermometr.png" "enigmaRoomBPicThermometr" "searchThermometrRoomBEnigma">>
+         	<<toolCard "img/uvl.png" "enigmaRoomBPicUVL" "searchUVLRoomBEnigma">>
             <div class="footer-card footer-light">
-            	<<link [img[assets/img/lighton.png][enigmaRoomB]]>><<set $roomB.background to 1>><</link>>
-             <<link [img[assets/img/lightoff.png][enigmaRoomB]]>><<set $roomB.background to 2>><</link>>
+            	<<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "enigmaRoomB">><<set $roomB.background to 1>><</link>>
+             <<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" "enigmaRoomB">><<set $roomB.background to 2>><</link>>
              
             </div>
          </div>

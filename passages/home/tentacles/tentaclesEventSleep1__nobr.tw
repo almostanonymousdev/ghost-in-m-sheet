@@ -1,18 +1,18 @@
 :: tentaclesEventSleep1 [nobr] {"position":"700,4300","size":"100,100"}
 <video autoplay controls muted loop>
- <source src="assets/tentacles/sleep6.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/tentacles/sleep6.mp4'" type="video/mp4">
 </video>
 @@.mc-thoughts;But the tentacles didn't retreat; they turned you over and started @@
 <<linkappend "@@.usebtn; fucking you again@@">>
 <video autoplay controls muted loop>
- <source src="assets/tentacles/sleep7.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/tentacles/sleep7.mp4'" type="video/mp4">
 </video>
 @@.mc-thoughts;Without noticing the tentacle in front of your face, it invaded your mouth while you moaned from your pussy being pounded.@@<br>
 @@.mc-speech;Mgrm~ Mmm~@@<br>
 @@.mc-thoughts;One tentacle inside your pussy, another in your mouth. They violate your body simultaneously, making you feel orgasm building up, you're@@
 	<<linkappend "@@.usebtn; about to cum...@@">>
       <video autoplay controls muted loop>
-       <source src="assets/tentacles/sleep8.mp4" type="video/mp4">
+       <source @src="setup.ImagePath + '/tentacles/sleep8.mp4'" type="video/mp4">
       </video>
       @@.mc-thoughts;They cum inside you, drenching your flesh with their thick, warm semen.@@  
         <<linkreplace "@@.usebtn; Try to stand up@@">>
@@ -22,18 +22,18 @@
           <<goto "Bedroom">>
           <<else>>
           <video autoplay controls muted loop>
-           <source src="assets/tentacles/sleep9.mp4" type="video/mp4">
+           <source @src="setup.ImagePath + '/tentacles/sleep9.mp4'" type="video/mp4">
           </video>
           @@.mc-thoughts;Instantly, small tentacles penetrate your ears, paralyzing you,@@
           <<linkappend "@@.usebtn; turning you into their puppet.@@">>
             <video autoplay controls muted loop>
-             <source src="assets/tentacles/sleep10.mp4" type="video/mp4">
+             <source @src="setup.ImagePath + '/tentacles/sleep10.mp4'" type="video/mp4">
             </video>
             @@.mc-thoughts;What follows is just blurred memories: you start to satisfy them, taking them into your mouth, guiding them into your craving pussy, seeking deep penetration.@@<br>
             @@.mc-thoughts;Your breasts become their toys: tentacles suck on your nipples, sending@@
               <<linkappend "@@.usebtn; waves of pleasure through you.@@">>
                 <video autoplay controls muted loop>
-                 <source src="assets/tentacles/sleep11.mp4" type="video/mp4">
+                 <source @src="setup.ImagePath + '/tentacles/sleep11.mp4'" type="video/mp4">
                 </video>
                 @@.mc-thoughts;They reach orgasm together, covering you with semen, filling your pussy, leaving marks all over your skin, everywhere.@@<br>
                 <<if ndef $tentaclesEventStageAll>>

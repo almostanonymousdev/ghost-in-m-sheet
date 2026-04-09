@@ -1,7 +1,7 @@
 :: ToolsEventChurchEnd [event] {"position":"1975,1800","size":"100,100"}
 <<nobr>>
 <video autoplay controls muted loop>
- <source src="assets/church/8.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/church/8.mp4'" type="video/mp4">
  </video>
  @@.mc-speech; Holy~ so much cum@@<br>
  
@@ -9,7 +9,7 @@
  @@.notmc-speech; I think you deserve it, here you go. If you want, you can come to me sometimes for special confessions@@<br>
 @@.mc-speech; Thanks, i'll think about that@@<br>
  <<set $equipment.temperature to 3>>
-@@.mc-action; You get a lvl 3 Thermometr @@<img src="assets/img/thermometr.png" style="max-width:5%">
+@@.mc-action; You get a lvl 3 Thermometr @@<img @src="setup.ImagePath + '/img/thermometr.png'" style="max-width:5%">
 <br>
 <br>
 <<set $eventToolsOneStart to 1>>
@@ -29,7 +29,7 @@
 <span>Experience: +10 exp</span><br>
 <<if $mc.corruption lt 10>>
 <<set $mc.corruption += 0.5>>
-<span><img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">: +0.5 </span>
+<span><img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">: +0.5 </span>
 <</if>>
 <span class="reachedNewLvl"></span><br>
 </div>

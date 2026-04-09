@@ -1,6 +1,6 @@
 :: tentaclesEventPC1 [nobr] {"position":"800,4400","size":"100,100"}
 <video autoplay controls muted loop>
- <source src="assets/tentacles/pc5.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/tentacles/pc5.mp4'" type="video/mp4">
 </video>
 @@.mc-thoughts; They cum on you, but it's not enough. You take them in your hands and guide them to your hungry, pulsing pussy.@@<br>
 @@.mc-speech; Come on, boys, I want you to fuck me so bad@@<br>
@@ -10,13 +10,13 @@
 <<linkappend "@@.usebtn; explore your asshole.@@">>
 
     <video autoplay controls muted loop>
-     <source src="assets/tentacles/pc6.mp4" type="video/mp4">
+     <source @src="setup.ImagePath + '/tentacles/pc6.mp4'" type="video/mp4">
      </video>
     @@.mc-thoughts; More tentacles appear, greedily attacking your asshole,each trying to go deeper, getting in each other's way, creating a chaos of pleasure.You feel each thrust making your body shake, your pussy clench, complaining about the lack of attention@@ <br>
     @@.mc-speech; Oh I I~ can’t~ I'm@@ 
     <<linkappend "@@.usebtn; c-cumming@@">>
     <video autoplay controls muted loop>
-     <source src="assets/tentacles/pc7.mp4" type="video/mp4">
+     <source @src="setup.ImagePath + '/tentacles/pc7.mp4'" type="video/mp4">
     </video>
     @@.mc-thoughts; You cum from this wild ass fucking. An orgasm rises from deep within you, tearing you apart. As you try to catch your breath, each tentacle starts to cum on you, covering you with sticky, hot semen before disappearing@@<br>
     @@.mc-speech; Ohhh how nice. Maybe they're not so bad after all...@@<br><br>

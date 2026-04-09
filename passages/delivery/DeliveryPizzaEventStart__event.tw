@@ -1,14 +1,14 @@
 :: DeliveryPizzaEventStart [event] {"position":"1100,1750","size":"100,100"}
 <<nobr>>
 <video autoplay controls muted loop>
- <source src="assets/deliveryhub/pizzaevent/1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/deliveryhub/pizzaevent/1.mp4'" type="video/mp4">
  </video>
  @@.notmc-speech; So you need money but you don't want to work?@@<br>
  @@.mc-speech; Well, not exactly like that...@@<br>
  @@.notmc-speech; Of course, I'll pay you, but you'll have to do something for me.@@<br>
  @@.mc-speech; Hmm, okay... <<linkappend "Ouch">><br>
  <video autoplay controls muted loop>
- <source src="assets/deliveryhub/pizzaevent/2.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/deliveryhub/pizzaevent/2.mp4'" type="video/mp4">
  </video>
  @@.mc-speech; Ah~ It hurts@@<br>
  @@.notmc-speech; Take off your clothes, now!@@<br>

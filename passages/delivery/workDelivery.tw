@@ -45,7 +45,7 @@
 <br>
 <<for _i to 2; _i >= 0; _i-->>
 <div class="order-container">
-  <span class="address-item">$shuffledOrders[_i].address —</span> <img @src="`assets/`+$shuffledOrders[_i].image" class="iconPx">
+  <span class="address-item">$shuffledOrders[_i].address —</span> <img @src="setup.ImagePath+`/`+$shuffledOrders[_i].image" class="iconPx">
   	</div><br>
 <</for>>
 <<set $order1 = $orders[0]>>

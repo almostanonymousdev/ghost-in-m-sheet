@@ -1,16 +1,16 @@
 :: ghostSpecialEventTVSpirit [nobr] {"position":"500,2450","size":"100,100"}
 <<set $ghostSpecialEventSpiritCD to 1>>
 <video autoplay controls muted loop>
-<source src="assets/ghosts/specials/spirit1.0.mp4" type="video/mp4">
+<source @src="setup.ImagePath + '/ghosts/specials/spirit1.0.mp4'" type="video/mp4">
 </video>
 @@.mc-thoughts; You settled in front of the TV and soon fell asleep. But something strange disrupts your peace—an almost imperceptible feeling of someone’s presence nearby. You sense gentle hands gliding over your body, exploring every curve and contour. These touches send shivers and excitement through you. Your sleep isn’t too deep, and you gradually wake up, opening your eyes and realizing that something @@ 
 <<linkappend "@@.usebtn; unusual is happening...@@">>
 <video autoplay controls muted loop>
-<source src="assets/ghosts/specials/spirit1.1.mp4" type="video/mp4">
+<source @src="setup.ImagePath + '/ghosts/specials/spirit1.1.mp4'" type="video/mp4">
 </video>
 <<if $mc.corruption lt 3>>
 @@.mc-thoughts;You open your eyes to find a dick right next to your face. In an instant, it's in your mouth. You react in shock, jumping up, but the ghost has already vanished, leaving you bewildered @@<br>
-@@.warningtext; (Req. <img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 3)@@<br>
+@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 3)@@<br>
 <br>
 @@.backbtn; [[Get up|Livingroom]]@@<br>
 <<else>>

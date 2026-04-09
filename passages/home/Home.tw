@@ -1,6 +1,6 @@
 :: Home {"position":"600,800","size":"100,100"}
 <<nobr>>
-<img src="assets/img/mchouse.jpg" width="100%">
+<img @src="setup.ImagePath + '/img/mchouse.jpg'" width="100%">
 <br>
 @@.location; My home@@<br>
 @@.mc-thoughts; Home, sweet home@@<br>

@@ -11,7 +11,7 @@
     { name: "highpriestess", chance: 2, image: "cursedpossessions/tarotCards/highpriestess.jpg" },     
     { name: "fool", chance: 19, image: "cursedpossessions/tarotCards/fool.jpg" }
 ]>>
-<div id="tarotCard"><img src="assets/cursedpossessions/tarotCards/tarot.png" class="displayCentredImgs"></div>
+<div id="tarotCard"><img @src="setup.ImagePath + '/cursedpossessions/tarotCards/tarot.png'" class="displayCentredImgs"></div>
 
 
 <div id="tarotCardsEnd" class="tarotCardHidden"><<link "@@.usebtn;Pull a card@@">>
@@ -35,7 +35,7 @@
 	<<set _tempCard to $tarotDeck[_randomIndex]>>
     
     <div class="fadeInScale">
-    <img @src="`assets/`+_tempCard.image" class="displayCentredImgs fadeInScale"></div>
+    <img @src="setup.ImagePath+`/`+_tempCard.image" class="displayCentredImgs fadeInScale"></div>
 @@.mc-speech; Oh... something's about to happen… but what...@@
    	<<done>>
 <<addclass ".fadeInScale" "tarotCardsShow">>
@@ -43,7 +43,7 @@
 	<</done>>
 	 <<timed 1s>>
 <<replace #tarotCard>>
- <img @src="`assets/`+$chosenCard.image" class="displayCentredImgs fadeInScaleFool">
+ <img @src="setup.ImagePath+`/`+$chosenCard.image" class="displayCentredImgs fadeInScaleFool">
  @@.mc-speech; Um, did it just... change? Is this supposed to be a joke? @@
 <</replace>>
    	<<done>>
@@ -55,7 +55,7 @@
 
 <<else>>
 		<div class="fadeInScale">
-        <img @src="`assets/`+$chosenCard.image" class="displayCentredImgs" >
+        <img @src="setup.ImagePath+`/`+$chosenCard.image" class="displayCentredImgs" >
 		</div>
 @@.mc-speech; Oh... something's about to happen… but what...?@@<br>
 	   <<done>>
@@ -77,24 +77,24 @@
 <<set _check to random(1,4)>>
 <<if _check eq 1>>
 <video autoplay muted controls loop class="displayCentredImgs">
- <source src="assets/cursedpossessions/passion1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/cursedpossessions/passion1.mp4'" type="video/mp4">
  </video>
 <<elseif _check eq 2>>
 <video autoplay muted controls loop class="displayCentredImgs">
- <source src="assets/cursedpossessions/passion2.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/cursedpossessions/passion2.mp4'" type="video/mp4">
  </video>
  <<elseif _check eq 3>>
 <video autoplay muted controls loop class="displayCentredImgs">
- <source src="assets/cursedpossessions/passion3.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/cursedpossessions/passion3.mp4'" type="video/mp4">
  </video>
   <<elseif _check eq 4>>
 <video autoplay muted controls loop class="displayCentredImgs">
- <source src="assets/cursedpossessions/passion4.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/cursedpossessions/passion4.mp4'" type="video/mp4">
  </video>
 <</if>>
 @@.mc-speech; Ah~ I'm getting so wet down there... mmm. @@<br>
-@@.mc-thoughts; Lust increased: +15 <img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
-@@.mc-thoughts; Sanity decreased: -15 <img src="assets/img/sanity.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
+@@.mc-thoughts; Lust increased: +15 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
+@@.mc-thoughts; Sanity decreased: -15 <img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
 <<include "minus15sanity">>
 <<include "add15lust">>
 <<run setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 50)>>
@@ -107,25 +107,25 @@
 <<set _check to random(1,4)>>
 <<if _check eq 1>>
 <video autoplay muted controls loop class="displayCentredImgs">
- <source src="assets/cursedpossessions/pulse1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/cursedpossessions/pulse1.mp4'" type="video/mp4">
  </video>
 <<elseif _check eq 2>>
 <video autoplay muted controls loop class="displayCentredImgs">
- <source src="assets/cursedpossessions/pulse2.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/cursedpossessions/pulse2.mp4'" type="video/mp4">
  </video>
  <<elseif _check eq 3>>
 <video autoplay muted controls loop class="displayCentredImgs">
- <source src="assets/cursedpossessions/pulse3.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/cursedpossessions/pulse3.mp4'" type="video/mp4">
  </video>
   <<elseif _check eq 4>>
 <video autoplay muted controls loop class="displayCentredImgs">
- <source src="assets/cursedpossessions/pulse4.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/cursedpossessions/pulse4.mp4'" type="video/mp4">
  </video>
 <</if>>
 @@.mc-speech; My... oh~ my little asshole is pulsating so hard… <br>
 Somehow, I feel much better after that...@@<br>
-@@.mc-thoughts; Lust decreased: -15 <img src="assets/img/hearth.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
-@@.mc-thoughts; Sanity increased: +15 <img src="assets/img/sanity.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
+@@.mc-thoughts; Lust decreased: -15 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
+@@.mc-thoughts; Sanity increased: +15 <img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
 <<include "add15sanity">>
 <<include "minus15lust">>
 <<run setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 50)>>
@@ -153,20 +153,20 @@ Somehow, I feel much better after that...@@<br>
 <<set _check to random(1,3)>>
 <<if _check eq 1>>
 <video autoplay muted controls loop class="displayCentredImgs">
- <source src="assets/cursedpossessions/power1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/cursedpossessions/power1.mp4'" type="video/mp4">
  </video>
 <<elseif _check eq 2>>
 <video autoplay muted controls loop class="displayCentredImgs">
- <source src="assets/cursedpossessions/power2.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/cursedpossessions/power2.mp4'" type="video/mp4">
  </video>
  <<elseif _check eq 3>>
 <video autoplay muted controls loop class="displayCentredImgs">
- <source src="assets/cursedpossessions/power3.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/cursedpossessions/power3.mp4'" type="video/mp4">
  </video>
 <</if>>
 <<run setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 50)>>
 @@.mc-speech; Wow, I can feel power surging through me! Oh, I’m ready to take on anything! @@<br>
-@@.mc-thoughts; Energy increased: +5 <img src="assets/img/energy.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
+@@.mc-thoughts; Energy increased: +5 <img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
 <<include "add5energy">>
 <<include "addFitnessPoint">>
 
@@ -177,31 +177,31 @@ Somehow, I feel much better after that...@@<br>
 <<set _check to random(1,6)>>
 <<if _check eq 1>>
 <video autoplay muted controls loop class="displayCentredImgs">
- <source src="assets/cursedpossessions/whore1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/cursedpossessions/whore1.mp4'" type="video/mp4">
  </video>
 <<elseif _check eq 2>>
 <video autoplay muted controls loop class="displayCentredImgs">
- <source src="assets/cursedpossessions/whore2.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/cursedpossessions/whore2.mp4'" type="video/mp4">
  </video>
  <<elseif _check eq 3>>
 <video autoplay muted controls loop class="displayCentredImgs">
- <source src="assets/cursedpossessions/whore3.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/cursedpossessions/whore3.mp4'" type="video/mp4">
  </video>
   <<elseif _check eq 4>>
 <video autoplay muted controls loop class="displayCentredImgs">
- <source src="assets/cursedpossessions/whore4.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/cursedpossessions/whore4.mp4'" type="video/mp4">
  </video>
   <<elseif _check eq 5>>
 <video autoplay muted controls loop class="displayCentredImgs">
- <source src="assets/cursedpossessions/whore5.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/cursedpossessions/whore5.mp4'" type="video/mp4">
  </video>
   <<elseif _check eq 6>>
 <video autoplay muted controls loop class="displayCentredImgs">
- <source src="assets/cursedpossessions/whore6.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/cursedpossessions/whore6.mp4'" type="video/mp4">
  </video>
 <</if>>
 @@.mc-speech; Damn, I can feel this affecting my body… everything’s so sensitive, and some parts feel... bigger… @@<br>
-@@.mc-thoughts; Corruption increased: +0.3 <img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
+@@.mc-thoughts; Corruption increased: +0.3 <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
 <<set $mc.corruption += 0.3>>
 <<run setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 50)>>
 		<</timed>>

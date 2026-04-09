@@ -2,7 +2,7 @@
 <<set _check to random(1,2)>>
 <<if _check eq 1>>
 <video autoplay controls muted loop>
- <source src="assets/rescue/Ash/1.0.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Ash/1.0.mp4'" type="video/mp4">
  </video>
 @@.mc-thoughts; You slowly start to regain consciousness. Your head hurts, and on top of that, someone is licking you@@<br>
 @@.mc-speech; It's Ash! Ah~ that hurts~@@<br>
@@ -10,13 +10,13 @@
 @@.mc-speech; Oh no, what have I done~@@<br>
 @@.mc-thoughts; You have no strength left to try to escape, so you decide@@ <<linkappend "@@.usebtn;  to submit.@@">>
 <video autoplay controls muted loop>
- <source src="assets/rescue/Ash/1.1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Ash/1.1.mp4'" type="video/mp4">
  </video>
 @@.mc-speech; Ohhhhh fuck~ My pussy! You finger it too hard.@@<br>
 @@.mc-thoughts; She took out a strapon and started @@
 <<linkappend "@@.mc-thoughtsLink; fucking your mouth with it.@@">>
 <video autoplay controls muted loop>
- <source src="assets/rescue/Ash/1.2.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Ash/1.2.mp4'" type="video/mp4">
  </video>
 @@.mc-speech; Uhhng~ Glp Gulp~@@<br>
 @@.notmc-speech; Now your ass, fast!@@<br>
@@ -25,13 +25,13 @@
 <</linkappend>>
 <<elseif _check eq 2>>
 <video autoplay controls muted loop>
- <source src="assets/rescue/Ash/2.0.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Ash/2.0.mp4'" type="video/mp4">
  </video>
  @@.mc-thoughts; You slowly start to regain consciousness. Your head hurts, and on top of that, someone is licking you@@<br>
 @@.mc-speech; Mm~ what are you doing...@@<br>
 @@.mc-thoughts; But she didn't answer. She started playing with your ass, @@<<linkappend "@@.usebtn; spanking it@@">>
 <video autoplay controls muted loop>
- <source src="assets/rescue/Ash/2.1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Ash/2.1.mp4'" type="video/mp4">
  </video>
 @@.notmc-speech; I think you'll join us today.@@<br>
 @@.mc-speech; Wha... What?@@<br>

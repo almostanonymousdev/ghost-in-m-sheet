@@ -10,23 +10,23 @@
 <<set _check to random(1,5)>>
 <<if _check eq 1>>
 <video autoplay controls muted loop>
-<source src="assets/tentacles/2.0.mp4" type="video/mp4">
+<source @src="setup.ImagePath + '/tentacles/2.0.mp4'" type="video/mp4">
 </video>
 <<elseif _check eq 2>>
 <video autoplay controls muted loop>
-<source src="assets/tentacles/1.2.mp4" type="video/mp4">
+<source @src="setup.ImagePath + '/tentacles/1.2.mp4'" type="video/mp4">
 </video>
 <<elseif _check eq 3>>
 <video autoplay controls muted loop>
-<source src="assets/tentacles/2.2.mp4" type="video/mp4">
+<source @src="setup.ImagePath + '/tentacles/2.2.mp4'" type="video/mp4">
 </video>
 <<elseif _check eq 4>>
 <video autoplay controls muted loop>
-<source src="assets/tentacles/2.3.mp4" type="video/mp4">
+<source @src="setup.ImagePath + '/tentacles/2.3.mp4'" type="video/mp4">
 </video>
 <<elseif _check eq 5>>
 <video autoplay controls muted loop>
-<source src="assets/tentacles/2.1.mp4" type="video/mp4">
+<source @src="setup.ImagePath + '/tentacles/2.1.mp4'" type="video/mp4">
 </video>
 <</if>>
 
@@ -34,40 +34,40 @@
 <<set _check to random(1,3)>>
 <<if _check eq 1>>
 <video autoplay controls muted loop>
-<source src="assets/prison/sanity1.mp4" type="video/mp4">
+<source @src="setup.ImagePath + '/prison/sanity1.mp4'" type="video/mp4">
 </video>
 <<elseif _check eq 2>>
 <video autoplay controls muted loop>
-<source src="assets/prison/sanity2.mp4" type="video/mp4">
+<source @src="setup.ImagePath + '/prison/sanity2.mp4'" type="video/mp4">
 </video>
 <<elseif _check eq 3>>
 <video autoplay controls muted loop>
-<source src="assets/prison/sanity3.mp4" type="video/mp4">
+<source @src="setup.ImagePath + '/prison/sanity3.mp4'" type="video/mp4">
 </video>
 <</if>>
 
 <<else>>
 <<set _check to random(1,7)>>
   		<<if _check eq 1>><video autoplay controls muted loop>
- <source src="assets/sanityover/1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/sanityover/1.mp4'" type="video/mp4">
  </video><</if>>
         <<if _check eq 2>><video autoplay controls muted loop>
- <source src="assets/sanityover/2.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/sanityover/2.mp4'" type="video/mp4">
  </video><</if>>
 		<<if _check eq 3>><video autoplay controls muted loop>
- <source src="assets/sanityover/3.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/sanityover/3.mp4'" type="video/mp4">
  </video><</if>>
         <<if _check eq 4>><video autoplay controls muted loop>
- <source src="assets/sanityover/4.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/sanityover/4.mp4'" type="video/mp4">
  </video><</if>>
         <<if _check eq 5>><video autoplay controls muted loop>
- <source src="assets/sanityover/5.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/sanityover/5.mp4'" type="video/mp4">
  </video><</if>>
         <<if _check eq 6>><video autoplay controls muted loop>
- <source src="assets/sanityover/6.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/sanityover/6.mp4'" type="video/mp4">
  </video><</if>>
   		<<if _check eq 7>><video autoplay controls muted loop>
- <source src="assets/sanityover/7.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/sanityover/7.mp4'" type="video/mp4">
  </video><</if>>
 <</if>>
 <<else>>
@@ -75,60 +75,60 @@
 <<set _check to random(1,6)>>
 <<if _check eq 1>>
 <video autoplay controls muted loop>
-<source src="assets/animated/tentacles/1.mp4" type="video/mp4">
+<source @src="setup.ImagePath + '/animated/tentacles/1.mp4'" type="video/mp4">
 </video>
 <<elseif _check eq 2>>
 <video autoplay controls muted loop>
-<source src="assets/animated/tentacles/2.mp4" type="video/mp4">
+<source @src="setup.ImagePath + '/animated/tentacles/2.mp4'" type="video/mp4">
 </video>
 <<elseif _check eq 3>>
 <video autoplay controls muted loop>
-<source src="assets/animated/tentacles/3.mp4" type="video/mp4">
+<source @src="setup.ImagePath + '/animated/tentacles/3.mp4'" type="video/mp4">
 </video>
 <<elseif _check eq 4>>
 <video autoplay controls muted loop>
-<source src="assets/animated/tentacles/4.mp4" type="video/mp4">
+<source @src="setup.ImagePath + '/animated/tentacles/4.mp4'" type="video/mp4">
 </video>
 <<elseif _check eq 5>>
 <video autoplay controls muted loop>
-<source src="assets/animated/tentacles/5.mp4" type="video/mp4">
+<source @src="setup.ImagePath + '/animated/tentacles/5.mp4'" type="video/mp4">
 </video>
 <<elseif _check eq 6>>
 <video autoplay controls muted loop>
-<source src="assets/animated/tentacles/6.mp4" type="video/mp4">
+<source @src="setup.ImagePath + '/animated/tentacles/6.mp4'" type="video/mp4">
 </video>
 <</if>>
 <<else>>
 <<set _check to random(1,10)>>
 		<<if _check eq 1>><video autoplay controls muted loop>
- <source src="assets/sanityover/art/1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/sanityover/art/1.mp4'" type="video/mp4">
  </video><</if>>
         <<if _check eq 2>><video autoplay controls muted loop>
- <source src="assets/sanityover/art/2.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/sanityover/art/2.mp4'" type="video/mp4">
  </video><</if>>
 		<<if _check eq 3>><video autoplay controls muted loop>
- <source src="assets/sanityover/art/3.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/sanityover/art/3.mp4'" type="video/mp4">
  </video><</if>>
   		<<if _check eq 4>><video autoplay controls muted loop>
- <source src="assets/sanityover/art/4.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/sanityover/art/4.mp4'" type="video/mp4">
  </video><</if>>
         <<if _check eq 5>><video autoplay controls muted loop>
- <source src="assets/sanityover/art/5.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/sanityover/art/5.mp4'" type="video/mp4">
  </video><</if>>
 		<<if _check eq 6>><video autoplay controls muted loop>
- <source src="assets/sanityover/art/6.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/sanityover/art/6.mp4'" type="video/mp4">
  </video><</if>>
         <<if _check eq 7>><video autoplay controls muted loop>
- <source src="assets/sanityover/art/7.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/sanityover/art/7.mp4'" type="video/mp4">
  </video><</if>>
         <<if _check eq 8>><video autoplay controls muted loop>
- <source src="assets/sanityover/art/8.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/sanityover/art/8.mp4'" type="video/mp4">
  </video><</if>>
         <<if _check eq 9>><video autoplay controls muted loop>
- <source src="assets/sanityover/art/9.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/sanityover/art/9.mp4'" type="video/mp4">
  </video><</if>>
   		<<if _check eq 10>><video autoplay controls muted loop>
- <source src="assets/sanityover/art/10.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/sanityover/art/10.mp4'" type="video/mp4">
  </video><</if>>
 <</if>>
 <</if>>

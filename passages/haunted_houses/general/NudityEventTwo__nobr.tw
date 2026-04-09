@@ -8,7 +8,7 @@
 <<set _randomIndex to random(0, _videoList.length - 1)>>
 <<set _selectedVideo to _videoList[_randomIndex]>>
 <video autoplay controls muted loop>
- <source @src="`assets/`+_selectedVideo" type="video/mp4">
+ <source @src="setup.ImagePath+`/`+_selectedVideo" type="video/mp4">
  </video>
 @@.mc-thoughts; You’re walking home together. A gentle breeze tickles your bodies, and only a bathrobe offers a bit of cover from complete nudity@@<br>
 @@.notmc-speech; Oh~ $mc.name, this is weird, but I’m actually starting to like it. <br>

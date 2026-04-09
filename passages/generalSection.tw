@@ -2,7 +2,7 @@
 <<nobr>>
 <div class="flexwrapper backgroundForText">
 <div class="housecard">
-<img src="assets/img/energyDrink.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/energyDrink.png'" class="iconPx"><br>
 <span class="priceAmount">5$</span><br>
 <<if $mc.money gte 5>>
 @@.buyItemLink;<<link "Buy" "generalSection">>
@@ -13,7 +13,7 @@
 <span class="subtitleAmount">@@.mc-thoughts; You have $energyDrinkAmount energy drinks@@</span>
 </div>
 <div class="housecard">
-<img src="assets/img/cosmetics.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/cosmetics.png'" class="iconPx"><br>
 <span class="priceAmount">10$</span><br>
 <<if $mc.money gte 10>>
 @@.buyItemLink;<<link "Buy" "generalSection">>
@@ -24,7 +24,7 @@
 <span class="subtitleAmount">@@.mc-thoughts; You have $makeupAmount makeup charges left@@</span>
 </div>
 <div class="housecard">
-<img src="assets/img/medicine.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/medicine.png'" class="iconPx"><br>
 <span class="priceAmount">30$</span><br>
 <<if $mc.money gte 30>>
 @@.buyItemLink;<<link "Buy" "generalSection">>
@@ -35,7 +35,7 @@
 <span class="subtitleAmount">@@.mc-thoughts; You have $medicineAmount pill<<if $medicineAmount  gt 1>><<print "s">><</if>> remaining@@</span>
 </div>
 <div class="housecard">
-<img src="assets/img/spray.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/spray.png'" class="iconPx"><br>
 <<if ndef $hasPSpray or $hasPSpray eq 0>>
 <span class="priceAmount">10$</span><br>
 <<if $mc.money gte 10>>

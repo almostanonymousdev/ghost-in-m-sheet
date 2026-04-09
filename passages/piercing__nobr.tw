@@ -1,24 +1,24 @@
 :: piercing [nobr] {"position":"600,300","size":"100,100"}
 <<switch $earsPiercing>>
 	<<case "worn">>
-    	<<replace "#currentPiercingEars">><<link [img[assets/img/piercing/earspiercing.jpg][wardrobe]]>><<set $earsPiercing to "not worn">>
+    	<<replace "#currentPiercingEars">><<link "<img @src='setup.ImagePath + \"/img/piercing/earspiercing.jpg\"'>" "wardrobe">><<set $earsPiercing to "not worn">>
         <<set $mc.beauty -= 2>>
         <</link>><</replace>>
 	<<case "not worn">>
 <<append "#availablePiercing">>
-<<link [img[assets/img/piercing/earspiercing.jpg][wardrobe]]>><<set $earsPiercing to "worn">>
+<<link "<img @src='setup.ImagePath + \"/img/piercing/earspiercing.jpg\"'>" "wardrobe">><<set $earsPiercing to "worn">>
 <<set $mc.beauty += 2>>
 <</link>><</append>>
 <</switch>>
 
 <<switch $nosePiercing>>
 	<<case "worn">>
-    	<<replace "#currentPiercingNose">><<link [img[assets/img/piercing/nosepiercing.jpg][wardrobe]]>><<set $nosePiercing to "not worn">>
+    	<<replace "#currentPiercingNose">><<link "<img @src='setup.ImagePath + \"/img/piercing/nosepiercing.jpg\"'>" "wardrobe">><<set $nosePiercing to "not worn">>
         <<set $mc.beauty -= 3>>
         <</link>><</replace>>
 	<<case "not worn">>
 <<append "#availablePiercing">>
-<<link [img[assets/img/piercing/nosepiercing.jpg][wardrobe]]>><<set $nosePiercing to "worn">>
+<<link "<img @src='setup.ImagePath + \"/img/piercing/nosepiercing.jpg\"'>" "wardrobe">><<set $nosePiercing to "worn">>
 <<set $mc.beauty += 3>>
 <</link>><</append>>
 <</switch>>
@@ -26,27 +26,27 @@
 
 <<switch $tonguePiercing>>
 	<<case "worn">>
-    	<<replace "#currentPiercingTongue">><<link [img[assets/img/piercing/tonguepiercing.jpg][wardrobe]]>><<set $tonguePiercing to "not worn">>
+    	<<replace "#currentPiercingTongue">><<link "<img @src='setup.ImagePath + \"/img/piercing/tonguepiercing.jpg\"'>" "wardrobe">><<set $tonguePiercing to "not worn">>
         <<set $piercingTongueAddSens to 0>>
         <<set $addLustPiercingTongue to 0>>
         <</link>><</replace>>
 	<<case "not worn">>
 <<append "#availablePiercing">>
-<<link [img[assets/img/piercing/tonguepiercing.jpg][wardrobe]]>><<set $tonguePiercing to "worn">>
+<<link "<img @src='setup.ImagePath + \"/img/piercing/tonguepiercing.jpg\"'>" "wardrobe">><<set $tonguePiercing to "worn">>
 <<set $piercingTongueAddSens to 0.1>>
 <</link>><</append>>
 <</switch>>
 
 <<switch $titsPiercing>>
 	<<case "worn">>
-    	<<replace "#currentPiercingTits">><<link [img[assets/img/piercing/titspiercing.jpg][wardrobe]]>>
+    	<<replace "#currentPiercingTits">><<link "<img @src='setup.ImagePath + \"/img/piercing/titspiercing.jpg\"'>" "wardrobe">>
         <<set $titsPiercing to "not worn">>
         <<set $piercingTitsAddSens to 0>>
         <<set $addLustPiercingTits to 0>>
         <</link>><</replace>>
 	<<case "not worn">>
 <<append "#availablePiercing">>
-<<link [img[assets/img/piercing/titspiercing.jpg][wardrobe]]>>
+<<link "<img @src='setup.ImagePath + \"/img/piercing/titspiercing.jpg\"'>" "wardrobe">>
 <<set $titsPiercing to "worn">>	
 <<set $piercingTitsAddSens to 0.1>>
 <</link>><</append>>
@@ -54,14 +54,14 @@
 
 <<switch $pussyPiercing>>
 	<<case "worn">>
-    	<<replace "#currentPiercingPussy">><<link [img[assets/img/piercing/pussypiercing.jpg][wardrobe]]>>
+    	<<replace "#currentPiercingPussy">><<link "<img @src='setup.ImagePath + \"/img/piercing/pussypiercing.jpg\"'>" "wardrobe">>
         <<set $pussyPiercing to "not worn">>
         <<set $piercingPussyAddSens to 0>>
         <<set $addLustPiercingPussy to 0>>
         <</link>><</replace>>
 	<<case "not worn">>
 <<append "#availablePiercing">>
-<<link [img[assets/img/piercing/pussypiercing.jpg][wardrobe]]>>
+<<link "<img @src='setup.ImagePath + \"/img/piercing/pussypiercing.jpg\"'>" "wardrobe">>
 <<set $pussyPiercing to "worn">>	
 <<set $piercingPussyAddSens to 0.1>>
 <</link>><</append>>

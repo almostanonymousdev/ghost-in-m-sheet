@@ -3,7 +3,7 @@
 <<include "add15lust">>
 <<set $trainer1SexCD to 1>>
 <video autoplay controls muted loop>
-    <source src="assets/gym/trainer1event1end.mp4" type="video/mp4">
+    <source @src="setup.ImagePath + '/gym/trainer1event1end.mp4'" type="video/mp4">
   </video>
 <<if ndef $isDiscountTrainer1>>
 @@.notmc-speech; Oh, it's been a while since I've had this... You know what, you can come train with me for free. And... don't forget to bring your sexy underwear, we can do this again.@@

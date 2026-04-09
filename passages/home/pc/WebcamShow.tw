@@ -1,6 +1,6 @@
 :: WebcamShow {"position":"400,1100","size":"100,100"}
 <<nobr>>
-<img src="assets/webcam/workplace.jpg" width="100%">
+<img @src="setup.ImagePath + '/webcam/workplace.jpg'" width="100%">
 @@.mc-speech; Looks like I'm ready for my webcam show. What should I do today?@@<br>
 Subscribers: <<if ndef $prefssubscribers>>0<<else>>$prefssubscribers<</if>><br>
 
@@ -15,11 +15,11 @@ Subscribers: <<if ndef $prefssubscribers>>0<<else>>$prefssubscribers<</if>><br>
 @@.usebtn; [[Tease|WebcamShowStart][$webcamEvent to "tease"]]@@<br></span>
 <span class="webcamShowMasturbate">
 @@.usebtn; [[Masturbate|WebcamShowStart][$webcamEvent to "masturbate"]]@@
-<<if $mc.corruption lt 2>>@@.warningtext; (Req. <img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 2)@@<</if>>
+<<if $mc.corruption lt 2>>@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 2)@@<</if>>
 <br></span>
 <span class="webcamShowFingerAnal">
 @@.usebtn; [[Anal fingering|WebcamShowStart][$webcamEvent to "fingeranal"]]@@
-<<if $mc.corruption lt 3>>@@.warningtext; (Req. <img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 3)@@<</if>>
+<<if $mc.corruption lt 3>>@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 3)@@<</if>>
 <br></span>
 <<if $dildoPurchased eq 1>>
 <<done>>
@@ -30,11 +30,11 @@ Subscribers: <<if ndef $prefssubscribers>>0<<else>>$prefssubscribers<</if>><br>
 <</done>>
 <span class="webcamShowToyPussy">
 @@.usebtn; [[Play with pussy (toy)|WebcamShowStart][$webcamEvent to "toypussy"]]@@
-<<if $mc.corruption lt 3>>@@.warningtext; (Req. <img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 3)@@<</if>>
+<<if $mc.corruption lt 3>>@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 3)@@<</if>>
 <br></span>
 <span class="webcamShowToyAnal">
 @@.usebtn; [[Play with ass (toy)|WebcamShowStart][$webcamEvent to "toyanal"]]@@
-<<if $mc.corruption lt 4>>@@.warningtext; (Req. <img src="assets/img/corruption.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 4)@@<</if>>
+<<if $mc.corruption lt 4>>@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 4)@@<</if>>
 <br></span><</if>>
 <<else>>
 @@.mc-speech; Enough for today.@@<br>

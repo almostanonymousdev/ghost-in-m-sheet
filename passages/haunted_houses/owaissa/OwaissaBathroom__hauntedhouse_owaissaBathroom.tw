@@ -8,25 +8,25 @@
           	</div>
         </div>
         <div class="furnitureSearch">
-             <span id="bathroom_bathtub"><<link [img[assets/img/furniture/bathtub.png][furnitureSearch]]>><<set $currentFurniture to "bathroom_bathtub">><<includeTimeEventClothesHunt>><</link>></span>
-			 <span id="bathroom_carpet"><<link [img[assets/img/furniture/carpet.png][furnitureSearch]]>><<set $currentFurniture to "bathroom_carpet">><<includeTimeEventClothesHunt>><</link>></span>
-			 <span id="bathroom_sink"><<link [img[assets/img/furniture/sink.png][furnitureSearch]]>><<set $currentFurniture to "bathroom_sink">><<includeTimeEventClothesHunt>><</link>></span>
-			 <span id="bathroom_wmachine"><<link [img[assets/img/furniture/wmachine.png][furnitureSearch]]>><<set $currentFurniture to "bathroom_wmachine">><<includeTimeEventClothesHunt>><</link>></span>
+             <span id="bathroom_bathtub"><<link "<img @src='setup.ImagePath + \"/img/furniture/bathtub.png\"'>" "furnitureSearch">><<set $currentFurniture to "bathroom_bathtub">><<includeTimeEventClothesHunt>><</link>></span>
+			 <span id="bathroom_carpet"><<link "<img @src='setup.ImagePath + \"/img/furniture/carpet.png\"'>" "furnitureSearch">><<set $currentFurniture to "bathroom_carpet">><<includeTimeEventClothesHunt>><</link>></span>
+			 <span id="bathroom_sink"><<link "<img @src='setup.ImagePath + \"/img/furniture/sink.png\"'>" "furnitureSearch">><<set $currentFurniture to "bathroom_sink">><<includeTimeEventClothesHunt>><</link>></span>
+			 <span id="bathroom_wmachine"><<link "<img @src='setup.ImagePath + \"/img/furniture/wmachine.png\"'>" "furnitureSearch">><<set $currentFurniture to "bathroom_wmachine">><<includeTimeEventClothesHunt>><</link>></span>
         </div>
 		<div class="footer">
         	<div class="footertools">
-         	<<toolCard "assets/img/emf.png" "owaissaBathroomPicEMF" "searchEmfBathroom">>
-         	<<toolCard "assets/img/glass.png" "owaissaBathroomPicPlasm" "searchPlasmBathroom">>
-         	<<toolCard "assets/img/gwb.png" "owaissaBathroomPicGWB" "searchGwbBathroom">>
-         	<<toolCard "assets/img/spiritbox.png" "owaissaBathroomPicSB" "searchSbBathroom">>
-         	<<toolCard "assets/img/thermometr.png" "owaissaBathroomPicThermometr" "searchThermometrBathroom">>
-         	<<toolCard "assets/img/uvl.png" "owaissaBathroomPicUVL" "searchUVLBathroom">>
+         	<<toolCard "img/emf.png" "owaissaBathroomPicEMF" "searchEmfBathroom">>
+         	<<toolCard "img/glass.png" "owaissaBathroomPicPlasm" "searchPlasmBathroom">>
+         	<<toolCard "img/gwb.png" "owaissaBathroomPicGWB" "searchGwbBathroom">>
+         	<<toolCard "img/spiritbox.png" "owaissaBathroomPicSB" "searchSbBathroom">>
+         	<<toolCard "img/thermometr.png" "owaissaBathroomPicThermometr" "searchThermometrBathroom">>
+         	<<toolCard "img/uvl.png" "owaissaBathroomPicUVL" "searchUVLBathroom">>
             <<companionCard>>
             <div class="footer-card footer-light">
-            	<span class="cursedHuntLinkDisable"><<link [img[assets/img/lighton.png][OwaissaBathroom]]>><<set $bathroom.background to 1>><</link>>
-             <<link [img[assets/img/lightoff.png][OwaissaBathroom]]>><<set $bathroom.background to 2>><</link>>
+            	<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "OwaissaBathroom">><<set $bathroom.background to 1>><</link>>
+             <<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" "OwaissaBathroom">><<set $bathroom.background to 2>><</link>>
 			<<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>> 
-<<link [img[assets/img/hearth.png][minigame]]>>
+<<link "<img @src='setup.ImagePath + \"/img/hearth.png\"'>" "minigame">>
 <<set $minigameVideo to "start">>
 <<set $ghostOrgasmMeter to 0>>
 <<set $mcOrgasmMeter to 0>><</link>>

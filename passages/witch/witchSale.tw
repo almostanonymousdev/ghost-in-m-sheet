@@ -2,7 +2,7 @@
 <<nobr>>
 <div class="flexwrapper">
 <div class="housecard">
-<img src="assets/img/sanityPills.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/sanityPills.png'" class="iconPx"><br>
 <span class="priceAmount">10$</span><br>
 <<if $mc.money gte 10>>
 @@.buyItemLink;<<link "Buy" "witchSale">>
@@ -14,7 +14,7 @@
 </div>
 <div class="housecard">
 <<if ndef $crucifixAmount>><<set $crucifixAmount to 0>><</if>>
-<img src="assets/img/crucifix.webp" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/crucifix.webp'" class="iconPx"><br>
 <span class="priceAmount">10$</span><br>
 <<if $mc.money gte 10>>
 @@.buyItemLink;<<link "Buy" "witchSale">>
@@ -26,7 +26,7 @@
 </div>
 <div class="housecard">
 <<if $equipment.emf eq 5>>
-<img src="assets/img/emf.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/emf.png'" class="iconPx"><br>
 <span class="priceAmount">200$</span><br>
 <<if $mc.money gte 200>>
 @@.buyItemLink;<<link "Buy (lvl 2)" "witchSale">>
@@ -38,7 +38,7 @@
 </div>
 <div class="housecard">
 <<if $equipment.temperature eq 5>>
-<img src="assets/img/thermometr.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/thermometr.png'" class="iconPx"><br>
 <span class="priceAmount">100$</span><br>
 <<if $mc.money gte 100>>
 @@.buyItemLink;<<link "Buy (lvl 2)" "witchSale">>
@@ -50,7 +50,7 @@
 </div>
 <div class="housecard">
 <<if $equipment.spiritbox eq 5>>
-<img src="assets/img/spiritbox.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/spiritbox.png'" class="iconPx"><br>
 <span class="priceAmount">500$</span><br>
 <<if $mc.money gte 500>>
 @@.buyItemLink;<<link "Buy (lvl 2)" "witchSale">>
@@ -62,7 +62,7 @@
 </div>
 <div class="housecard">
 <<if $equipment.gwb eq 5>>
-<img src="assets/img/gwb.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/gwb.png'" class="iconPx"><br>
 <span class="priceAmount">400$</span><br>
 <<if $mc.money gte 400>>
 @@.buyItemLink;<<link "Buy (lvl 2)" "witchSale">>
@@ -74,7 +74,7 @@
 </div>
 <div class="housecard">
 <<if $equipment.glass eq 5>>
-<img src="assets/img/glass.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/glass.png'" class="iconPx"><br>
 <span class="priceAmount">300$</span><br>
 <<if $mc.money gte 300>>
 @@.buyItemLink;<<link "Buy (lvl 2)" "witchSale">>
@@ -86,7 +86,7 @@
 </div>
 <div class="housecard">
 <<if $equipment.uvl eq 5>>
-<img src="assets/img/uvl.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/uvl.png'" class="iconPx"><br>
 <span class="priceAmount">400$</span><br>
 <<if $mc.money gte 400>>
 @@.buyItemLink;<<link "Buy (lvl 2)" "witchSale">>
@@ -98,7 +98,7 @@
 </div>
 <div class="housecard">
 <<if $boughtMonkeyPawGuide eq 1>>
-<img src="assets/cursedpossessions/monkeyPaw/monkeypawPage.jpg" class="iconPx"><br>
+<img @src="setup.ImagePath + '/cursedpossessions/monkeyPaw/monkeypawPage.jpg'" class="iconPx"><br>
 <span class="priceAmount">400$</span><br>
 <<if $mc.money gte 400>>
 @@.buyItemLink;<<link "Buy" "witchSale">>
@@ -117,7 +117,7 @@
 </div>
 <div class="housecard">
 <<if ndef $boughtDetector>>
-<img src="assets/img/detector.png" class="iconPx"><br>
+<img @src="setup.ImagePath + '/img/detector.png'" class="iconPx"><br>
 <span class="priceAmount">200$</span><br>
 <<if $mc.money gte 200>>
 @@.buyItemLink;<<link "Buy" "witchSale">>
@@ -135,7 +135,7 @@
 </div>
 <div class="housecard">
 <<if $ghostJinnInfoCollected neq 1>>
-<img src="assets/ghosts/Jinn.webp" class="iconPx">
+<img @src="setup.ImagePath + '/ghosts/Jinn.webp'" class="iconPx">
 @@.mc-thoughts; Information about Jinn@@<br>
 <span class="priceAmount">200$</span><br>
 <<if $mc.money gte 200>>
@@ -148,7 +148,7 @@
 </div>
 <div class="housecard">
 <<if $ghostDeogenInfoCollected neq 1>>
-<img src="assets/ghosts/Deogen.webp" class="iconPx">
+<img @src="setup.ImagePath + '/ghosts/Deogen.webp'" class="iconPx">
 @@.mc-thoughts; Information about Deogen@@<br>
 <span class="priceAmount">200$</span><br>
 <<if $mc.money gte 200>>
@@ -161,7 +161,7 @@
 </div>
 <div class="housecard">
 <<if $ghostDemonInfoCollected neq 1>>
-<img src="assets/ghosts/Demon.webp" class="iconPx">
+<img @src="setup.ImagePath + '/ghosts/Demon.webp'" class="iconPx">
 @@.mc-thoughts; Information about Demon@@<br>
 <span class="priceAmount">200$</span><br>
 <<if $mc.money gte 200>>
@@ -174,7 +174,7 @@
 </div>
 <div class="housecard">
 <<if $ghostPhantomInfoCollected neq 1>>
-<img src="assets/ghosts/Phantom.webp" class="iconPx">
+<img @src="setup.ImagePath + '/ghosts/Phantom.webp'" class="iconPx">
 @@.mc-thoughts; Information about Phantom@@<br>
 <span class="priceAmount">200$</span><br>
 <<if $mc.money gte 200>>
@@ -187,7 +187,7 @@
 </div>
 <div class="housecard">
 <<if $ghostShadeInfoCollected neq 1>>
-<img src="assets/ghosts/Shade.webp" class="iconPx">
+<img @src="setup.ImagePath + '/ghosts/Shade.webp'" class="iconPx">
 @@.mc-thoughts; Information about Shade@@<br>
 <span class="priceAmount">200$</span><br>
 <<if $mc.money gte 200>>
@@ -200,7 +200,7 @@
 </div>
 <div class="housecard">
 <<if $ghostGoryoInfoCollected neq 1>>
-<img src="assets/ghosts/Goryo.webp" class="iconPx">
+<img @src="setup.ImagePath + '/ghosts/Goryo.webp'" class="iconPx">
 @@.mc-thoughts; Information about Goryo@@<br>
 <span class="priceAmount">200$</span><br>
 <<if $mc.money gte 200>>
@@ -213,7 +213,7 @@
 </div>
 <div class="housecard">
 <<if $ghostOniInfoCollected neq 1>>
-<img src="assets/ghosts/Oni.webp" class="iconPx">
+<img @src="setup.ImagePath + '/ghosts/Oni.webp'" class="iconPx">
 @@.mc-thoughts; Information about Oni@@<br>
 <span class="priceAmount">200$</span><br>
 <<if $mc.money gte 200>>
@@ -226,7 +226,7 @@
 </div>
 <div class="housecard">
 <<if $ghostMylingInfoCollected neq 1>>
-<img src="assets/ghosts/Myling.webp" class="iconPx">
+<img @src="setup.ImagePath + '/ghosts/Myling.webp'" class="iconPx">
 @@.mc-thoughts; Information about Myling@@<br>
 <span class="priceAmount">200$</span><br>
 <<if $mc.money gte 200>>
@@ -239,7 +239,7 @@
 </div>
 <div class="housecard">
 <<if $ghostSpiritInfoCollected neq 1>>
-<img src="assets/ghosts/Spirit.webp" class="iconPx">
+<img @src="setup.ImagePath + '/ghosts/Spirit.webp'" class="iconPx">
 @@.mc-thoughts; Information about Spirit@@<br>
 <span class="priceAmount">200$</span><br>
 <<if $mc.money gte 200>>
@@ -252,7 +252,7 @@
 </div>
 <div class="housecard">
 <<if $ghostCthulionInfoCollected neq 1>>
-<img src="assets/ghosts/Cthulion.webp" class="iconPx">
+<img @src="setup.ImagePath + '/ghosts/Cthulion.webp'" class="iconPx">
 @@.mc-thoughts; Information about Cthulion@@<br>
 <span class="priceAmount">200$</span><br>
 <<if $mc.money gte 200>>
@@ -265,7 +265,7 @@
 </div>
 <div class="housecard">
 <<if $ghostBansheeInfoCollected neq 1>>
-<img src="assets/ghosts/Banshee.webp" class="iconPx">
+<img @src="setup.ImagePath + '/ghosts/Banshee.webp'" class="iconPx">
 @@.mc-thoughts; Information about Banshee@@<br>
 <span class="priceAmount">200$</span><br>
 <<if $mc.money gte 200>>
@@ -278,7 +278,7 @@
 </div>
 <div class="housecard">
 <<if $ghostMoroiInfoCollected neq 1>>
-<img src="assets/ghosts/Moroi.webp" class="iconPx">
+<img @src="setup.ImagePath + '/ghosts/Moroi.webp'" class="iconPx">
 @@.mc-thoughts; Information about Moroi@@<br>
 <span class="priceAmount">200$</span><br>
 <<if $mc.money gte 200>>
@@ -291,7 +291,7 @@
 </div>
 <div class="housecard">
 <<if $ghostWraithInfoCollected neq 1>>
-<img src="assets/ghosts/Wraith.webp" class="iconPx">
+<img @src="setup.ImagePath + '/ghosts/Wraith.webp'" class="iconPx">
 @@.mc-thoughts; Information about Wraith@@<br>
 <span class="priceAmount">200$</span><br>
 <<if $mc.money gte 200>>
@@ -304,7 +304,7 @@
 </div>
 <div class="housecard">
 <<if $ghostRaijuInfoCollected neq 1>>
-<img src="assets/ghosts/Raiju.webp" class="iconPx">
+<img @src="setup.ImagePath + '/ghosts/Raiju.webp'" class="iconPx">
 @@.mc-thoughts; Information about Raiju@@<br>
 <span class="priceAmount">200$</span><br>
 <<if $mc.money gte 200>>

@@ -2,7 +2,7 @@
 <<set _check to random(1,2)>>
 <<if _check eq 1>>
 <video autoplay controls muted loop>
- <source src="assets/rescue/Julia/1.0.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Julia/1.0.mp4'" type="video/mp4">
  </video>
  @@.mc-thoughts; As soon as you got close to her, she wrapped her arms around you and started touching your ass.@@<br>
 @@.mc-speech; Hey, what are you doing...@@<br>
@@ -10,7 +10,7 @@
 @@.mc-speech;What?...@@<br>
 @@.mc-thoughts; With a strong push, she <<linkappend "shoved you down onto the bed.">>
 <video autoplay controls muted loop>
- <source src="assets/rescue/Julia/1.1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Julia/1.1.mp4'" type="video/mp4">
  </video>
  @@.mc-thoughts; Every time you tried to get up, she slapped your ass hard.@@<br>
 @@.mc-speech; Stop it, $currentRescueGirl. Why are you doing this~Ah!@@<br>
@@ -18,12 +18,12 @@
 You started moaning with every slap on your ass. Noticing this, Julia [[took off your panties.|rescueJuliaPossessed1]]@@<br>
 <</linkappend>>@@
 <<elseif _check eq 2>>
-<img src="assets/rescue/Julia/2.0.jpg" width="100%">
+<img @src="setup.ImagePath + '/rescue/Julia/2.0.jpg'" width="100%">
  @@.mc-thoughts; You slowly regain consciousness, your head throbbing with pain, and the first thing you feel is the tight ropes binding your wrists. You try to move, but your hands and legs are tied up. Flashes of memory come back to you: you came here to save $currentRescueGirl. But something went wrong. <br>@@
 @@.mc-speech; $currentRescueGirl! What the fuck...@@<br>
 @@.mc-thoughts; She came up to you and started slapping@@ <<linkappend "@@.usebtn; your pussy@@">>
 <video autoplay controls muted loop>
- <source src="assets/rescue/Julia/2.1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Julia/2.1.mp4'" type="video/mp4">
  </video>
 @@.mc-speech;AHhh~ no~ don't do that@@<br>
 @@.notmc-speech;Of course, I'm sorry, I won't@@<br>
@@ -31,7 +31,7 @@ You started moaning with every slap on your ass. Noticing this, Julia [[took off
 <<linkappend "@@.usebtn; Oh fuck@@">>
 <span id="rescueJuliaPossessed">
 <video autoplay controls muted loop>
-<source src="assets/rescue/Julia/2.2.mp4" type="video/mp4">
+<source @src="setup.ImagePath + '/rescue/Julia/2.2.mp4'" type="video/mp4">
 </video></span>
 @@.mc-thoughts; She started fucking @@
 <<link "@@.usebtn; your pussy.@@">>
@@ -39,18 +39,18 @@ You started moaning with every slap on your ass. Noticing this, Julia [[took off
 <<set _videoToggle to !_videoToggle>>
 <<if _videoToggle>>
             <video autoplay controls muted loop>
-                <source src="assets/rescue/Julia/2.3.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/rescue/Julia/2.3.mp4'" type="video/mp4">
             </video>
         <<else>>
             <video autoplay controls muted loop>
-                <source src="assets/rescue/Julia/2.2.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/rescue/Julia/2.2.mp4'" type="video/mp4">
             </video>
   <</if>>
 <</replace>><</link>><br>
 @@.mc-speech; Oh... im dripping wet right noooow<br>
 Uuuuwhhh..@@<<linkappend "@@.usebtn; Im about  to...@@">>
             <video autoplay controls muted loop>
-                <source src="assets/rescue/Julia/2.4.mp4" type="video/mp4">
+                <source @src="setup.ImagePath + '/rescue/Julia/2.4.mp4'" type="video/mp4">
             </video>
 
 @@.mc-thoughts; You moan loudly and cum.@@<br>

@@ -6,7 +6,7 @@
 <<if def $meetBrook>>
 @@.notmc-speech; $brook.name @@<br>
 $brook.lvl lvl <<if $brook.lvl gte 5>> (max. lvl)<<else>>($brook.exp / $brook.expForNextLvl)<</if>><br>
-<img src="assets/brook/brook.png" class="contactsImages"><br>
+<img @src="setup.ImagePath + '/brook/brook.png'" class="contactsImages"><br>
 <<if $hours lte 7>>
 <<if $isBrookGoingForHuntingAlone eq 2>>
 @@.mc-thoughts; She is currently on a ghost hunt.@@
@@ -27,7 +27,7 @@ $brook.lvl lvl <<if $brook.lvl gte 5>> (max. lvl)<<else>>($brook.exp / $brook.ex
 <<else>>
 
 @@.mc-thoughts; Need to search in the library@@<br>
-<img src="assets/img/questionMark.png" class="contactsImages">
+<img @src="setup.ImagePath + '/img/questionMark.png'" class="contactsImages">
 <</if>>
 </div>
 
@@ -35,7 +35,7 @@ $brook.lvl lvl <<if $brook.lvl gte 5>> (max. lvl)<<else>>($brook.exp / $brook.ex
 <<if def $meetAlice>>
 @@.notmc-speech; $alice.name @@<br>
 $alice.lvl lvl <<if $alice.lvl gte 5>> (max. lvl)<<else>>($alice.exp / $alice.expForNextLvl)<</if>><br>
-<img src="assets/alice/alice.png" class="contactsImages"><br>
+<img @src="setup.ImagePath + '/alice/alice.png'" class="contactsImages"><br>
 <<if $hours lte 7>>
 <<if $isAliceGoingForHuntingAlone eq 2>>
 @@.mc-thoughts; She is currently on a ghost hunt.@@
@@ -46,7 +46,7 @@ $alice.lvl lvl <<if $alice.lvl gte 5>> (max. lvl)<<else>>($alice.exp / $alice.ex
 <<else>>
 
 @@.mc-thoughts; Deliver books to the correct address@@<br>
-<img src="assets/img/questionMark.png" class="contactsImages">
+<img @src="setup.ImagePath + '/img/questionMark.png'" class="contactsImages">
 <</if>>
 </div>
 
@@ -54,7 +54,7 @@ $alice.lvl lvl <<if $alice.lvl gte 5>> (max. lvl)<<else>>($alice.exp / $alice.ex
 <<if $relationshipBlake gte 5>>
 @@.notmc-speech; $blake.name @@<br>
 $blake.lvl lvl <<if $blake.lvl gte 5>> (max. lvl)<<else>>($blake.exp / $blake.expForNextLvl)<</if>><br>
-<img src="assets/blake/blake.png" class="contactsImages"><br>
+<img @src="setup.ImagePath + '/blake/blake.png'" class="contactsImages"><br>
 <<if $hours lte 7>>
 <<if $isBlakeGoingForHuntingAlone eq 2>>
 @@.mc-thoughts; She is currently on a ghost hunt.@@
@@ -65,7 +65,7 @@ $blake.lvl lvl <<if $blake.lvl gte 5>> (max. lvl)<<else>>($blake.exp / $blake.ex
 <<else>>
 
 @@.mc-thoughts; Befriend the assistant at the sex shop <br>(Relationship 5+)@@<br>
-<img src="assets/img/questionMark.png" class="contactsImages">
+<img @src="setup.ImagePath + '/img/questionMark.png'" class="contactsImages">
 <</if>>
 </div>
 

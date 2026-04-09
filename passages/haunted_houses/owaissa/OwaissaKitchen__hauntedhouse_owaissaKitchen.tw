@@ -9,24 +9,24 @@
           	</div>
         </div>
         <div class="furnitureSearch">
-             <span id="kitchen_desk"><<link [img[assets/img/furniture/desk.png][furnitureSearch]]>><<set $currentFurniture to "kitchen_desk">><<includeTimeEventClothesHunt>><</link>></span>
-			 <span id="kitchen_table"><<link [img[assets/img/furniture/table.png][furnitureSearch]]>><<set $currentFurniture to "kitchen_table">><<includeTimeEventClothesHunt>><</link>></span>
-			 <span id="kitchen_sink1"><<link [img[assets/img/furniture/sink1.png][furnitureSearch]]>><<set $currentFurniture to "kitchen_sink1">><<includeTimeEventClothesHunt>><</link>></span>
+             <span id="kitchen_desk"><<link "<img @src='setup.ImagePath + \"/img/furniture/desk.png\"'>" "furnitureSearch">><<set $currentFurniture to "kitchen_desk">><<includeTimeEventClothesHunt>><</link>></span>
+			 <span id="kitchen_table"><<link "<img @src='setup.ImagePath + \"/img/furniture/table.png\"'>" "furnitureSearch">><<set $currentFurniture to "kitchen_table">><<includeTimeEventClothesHunt>><</link>></span>
+			 <span id="kitchen_sink1"><<link "<img @src='setup.ImagePath + \"/img/furniture/sink1.png\"'>" "furnitureSearch">><<set $currentFurniture to "kitchen_sink1">><<includeTimeEventClothesHunt>><</link>></span>
         </div>
 		<div class="footer">
         	<div class="footertools">
-         	<<toolCard "assets/img/emf.png" "owaissaKitchenPicEMF" "searchEmfKitchen">>
-         	<<toolCard "assets/img/glass.png" "owaissaKitchenPicPlasm" "searchPlasmKitchen">>
-         	<<toolCard "assets/img/gwb.png" "owaissaKitchenPicGWB" "searchGwbKitchen">>
-         	<<toolCard "assets/img/spiritbox.png" "owaissaKitchenPicSB" "searchSbKitchen">>
-         	<<toolCard "assets/img/thermometr.png" "owaissaKitchenPicThermometr" "searchThermometrKitchen">>
-         	<<toolCard "assets/img/uvl.png" "owaissaKitchenPicUVL" "searchUVLKitchen">>
+         	<<toolCard "img/emf.png" "owaissaKitchenPicEMF" "searchEmfKitchen">>
+         	<<toolCard "img/glass.png" "owaissaKitchenPicPlasm" "searchPlasmKitchen">>
+         	<<toolCard "img/gwb.png" "owaissaKitchenPicGWB" "searchGwbKitchen">>
+         	<<toolCard "img/spiritbox.png" "owaissaKitchenPicSB" "searchSbKitchen">>
+         	<<toolCard "img/thermometr.png" "owaissaKitchenPicThermometr" "searchThermometrKitchen">>
+         	<<toolCard "img/uvl.png" "owaissaKitchenPicUVL" "searchUVLKitchen">>
             <<companionCard>>
             <div class="footer-card footer-light">
-            <span class="cursedHuntLinkDisable"><<link [img[assets/img/lighton.png][OwaissaKitchen]]>><<set $kitchen.background to 1>><</link>>
-             <<link [img[assets/img/lightoff.png][OwaissaKitchen]]>><<set $kitchen.background to 2>><</link>>
+            <span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "OwaissaKitchen">><<set $kitchen.background to 1>><</link>>
+             <<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" "OwaissaKitchen">><<set $kitchen.background to 2>><</link>>
 			<<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>> 
-<<link [img[assets/img/hearth.png][minigame]]>>
+<<link "<img @src='setup.ImagePath + \"/img/hearth.png\"'>" "minigame">>
 <<set $minigameVideo to "start">>
 <<set $ghostOrgasmMeter to 0>>
 <<set $mcOrgasmMeter to 0>><</link>>

@@ -8,23 +8,23 @@
           	</div>
         </div>
         <div class="furnitureSearch">
-             <span id="hallwayUpstairs_carpet"><<link [img[assets/img/furniture/carpet.png][furnitureSearch]]>><<set $currentFurniture to "hallwayUpstairs_carpet">><<includeTimeEventClothesHunt>><</link>></span>
-			 <span id="hallwayUpstairs_shelves"><<link [img[assets/img/furniture/shelves.png][furnitureSearch]]>><<set $currentFurniture to "hallwayUpstairs_shelves">><<includeTimeEventClothesHunt>><</link>></span>
+             <span id="hallwayUpstairs_carpet"><<link "<img @src='setup.ImagePath + \"/img/furniture/carpet.png\"'>" "furnitureSearch">><<set $currentFurniture to "hallwayUpstairs_carpet">><<includeTimeEventClothesHunt>><</link>></span>
+			 <span id="hallwayUpstairs_shelves"><<link "<img @src='setup.ImagePath + \"/img/furniture/shelves.png\"'>" "furnitureSearch">><<set $currentFurniture to "hallwayUpstairs_shelves">><<includeTimeEventClothesHunt>><</link>></span>
         </div>
 		<div class="footer">
         	<div class="footertools">
-         	<<toolCard "assets/img/emf.png" "elmHallwayUpstairsPicEMF" "searchEMFHallwayUpstairsElm">>
-         	<<toolCard "assets/img/glass.png" "elmHallwayUpstairsPicPlasm" "searchPlasmHallwayUpstairsElm">>
-         	<<toolCard "assets/img/gwb.png" "elmHallwayUpstairsPicGWB" "searchGwbHallwayUpstairsElm">>
-         	<<toolCard "assets/img/spiritbox.png" "elmHallwayUpstairsPicSB" "searchSbHallwayUpstairsElm">>
-         	<<toolCard "assets/img/thermometr.png" "elmHallwayUpstairsPicThermometr" "searchThermometrHallwayUpstairsElm">>
-         	<<toolCard "assets/img/uvl.png" "elmHallwayUpstairsPicUVL" "searchUVLHallwayUpstairsElm">>
+         	<<toolCard "img/emf.png" "elmHallwayUpstairsPicEMF" "searchEMFHallwayUpstairsElm">>
+         	<<toolCard "img/glass.png" "elmHallwayUpstairsPicPlasm" "searchPlasmHallwayUpstairsElm">>
+         	<<toolCard "img/gwb.png" "elmHallwayUpstairsPicGWB" "searchGwbHallwayUpstairsElm">>
+         	<<toolCard "img/spiritbox.png" "elmHallwayUpstairsPicSB" "searchSbHallwayUpstairsElm">>
+         	<<toolCard "img/thermometr.png" "elmHallwayUpstairsPicThermometr" "searchThermometrHallwayUpstairsElm">>
+         	<<toolCard "img/uvl.png" "elmHallwayUpstairsPicUVL" "searchUVLHallwayUpstairsElm">>
             <<companionCard>>
             <div class="footer-card footer-light">
-            	<span class="cursedHuntLinkDisable"><<link [img[assets/img/lighton.png][elmHallwayUpstairs]]>><<set $hallwayUpstairs.background to 1>><</link>>
-             <<link [img[assets/img/lightoff.png][elmHallwayUpstairs]]>><<set $hallwayUpstairs.background to 2>><</link>>
+            	<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "elmHallwayUpstairs">><<set $hallwayUpstairs.background to 1>><</link>>
+             <<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" "elmHallwayUpstairs">><<set $hallwayUpstairs.background to 2>><</link>>
 			<<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>> 
-<<link [img[assets/img/hearth.png][minigame]]>>
+<<link "<img @src='setup.ImagePath + \"/img/hearth.png\"'>" "minigame">>
 <<set $minigameVideo to "start">>
 <<set $ghostOrgasmMeter to 0>>
 <<set $mcOrgasmMeter to 0>><</link>>

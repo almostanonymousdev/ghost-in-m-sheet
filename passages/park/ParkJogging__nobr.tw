@@ -1,7 +1,7 @@
 :: ParkJogging [nobr] {"position":"2900,1550","size":"100,100"}
 <<set $joggingCD to 1>>
 <video autoplay controls muted loop>
- <source src="assets/mc/parkevent1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/mc/parkevent1.mp4'" type="video/mp4">
  </video>
 @@.mc-thoughts;You're jogging through the park, stopping now and then to catch your breath, sweat glistening on your skin. You notice the same girl too often, as if she craves you, watching your every move.@@<br>
 
@@ -12,7 +12,7 @@
 <<set $beautyIncrease = Math.floor($mc.fit / 5) - Math.floor($previousFit / 5)>>
 <<if $beautyIncrease > 0>>
 <<set $mc.beauty += $beautyIncrease>>
-@@.mc-speech; <span class="evidenceText">Your <img src="assets/img/beauty.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> has improved (+1): $mc.beauty now!</span>@@<br>
+@@.mc-speech; <span class="evidenceText">Your <img @src="setup.ImagePath + '/img/beauty.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> has improved (+1): $mc.beauty now!</span>@@<br>
 <</if>>
 
 <<if !$mc.energyPoints>>
@@ -25,7 +25,7 @@
 <<if _currentEnergyPoints > _previousEnergyPoints>>
   <<set $mc.energyMax += (_currentEnergyPoints - _previousEnergyPoints)>>
   <<set $mc.energyPoints = _currentEnergyPoints>>  
-  @@.mc-speech; <span class="evidenceText">Your <img src="assets/img/energy.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> has increased (+<<=_currentEnergyPoints - _previousEnergyPoints>>): $mc.energyMax now!</span>@@<br>
+  @@.mc-speech; <span class="evidenceText">Your <img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> has increased (+<<=_currentEnergyPoints - _previousEnergyPoints>>): $mc.energyMax now!</span>@@<br>
 <</if>>
 
 
@@ -39,7 +39,7 @@
 <<if $mc.fit eq 100>>
   <<if $mc.energyMax < 20>> 
     <<set $mc.energyMax = 20>>  
-    @@.mc-speech; <span class="evidenceText">Your <img src="assets/img/energy.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> has reached the maximum of 20!</span>@@<br>
+    @@.mc-speech; <span class="evidenceText">Your <img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> has reached the maximum of 20!</span>@@<br>
   <</if>>
 @@.mc-speech; <span class="evidenceText">Your fitness level is perfect - 100</span>@@<<else>>
 @@.mc-speech; <span class="evidenceText">Your fitness level has improved (+1): $mc.fit now!</span>@@<</if>>
@@ -49,16 +49,16 @@
 <br>
 
 <<if $mc.energy gte 2>>
-<<linkreplace 'Continue jogging <img src="assets/img/energy.png" style="position: relative; top: 0.375em; width:3%;">'>>
+<<linkreplace 'Continue jogging <img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;">'>>
 <<set _check to random(30,110)>>
 <<if _check lte $mc.beauty>>
 <video autoplay controls muted loop>
- <source src="assets/mc/parkevent2.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/mc/parkevent2.mp4'" type="video/mp4">
  </video>
  @@.mc-thoughts;She bursts out from the bushes, her eyes burning with desire, and begins to chase you. Frightened, you try to [[run away from her|ParkEvent1]]@@
 <<else>>
 <video autoplay controls muted loop>
- <source src="assets/mc/parkend.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/mc/parkend.mp4'" type="video/mp4">
  </video>
 @@.mc-thoughts;You keep jogging, enjoying the nature around you. That girl seems to have lost interest in you.@@<br>
 @@.mc-speech;Maybe I'm not hot enough for her? Haha@@<br>
@@ -68,7 +68,7 @@
 <<set $beautyIncrease = Math.floor($mc.fit / 5) - Math.floor($previousFit / 5)>>
 <<if $beautyIncrease > 0>>
 <<set $mc.beauty += $beautyIncrease>>
-@@.mc-speech; <span class="evidenceText">Your <img src="assets/img/beauty.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> has improved (+1): $mc.beauty now!</span>@@<br>
+@@.mc-speech; <span class="evidenceText">Your <img @src="setup.ImagePath + '/img/beauty.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> has improved (+1): $mc.beauty now!</span>@@<br>
 <</if>>
 
 <<if !$mc.energyPoints>>
@@ -81,7 +81,7 @@
 <<if _currentEnergyPoints > _previousEnergyPoints>>
   <<set $mc.energyMax += (_currentEnergyPoints - _previousEnergyPoints)>>
   <<set $mc.energyPoints = _currentEnergyPoints>>  
-  @@.mc-speech; <span class="evidenceText">Your <img src="assets/img/energy.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> has increased (+<<=_currentEnergyPoints - _previousEnergyPoints>>): $mc.energyMax now!</span>@@<br>
+  @@.mc-speech; <span class="evidenceText">Your <img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> has increased (+<<=_currentEnergyPoints - _previousEnergyPoints>>): $mc.energyMax now!</span>@@<br>
 <</if>>
 
 
@@ -95,7 +95,7 @@
 <<if $mc.fit eq 100>>
   <<if $mc.energyMax < 20>> 
     <<set $mc.energyMax = 20>>  
-    @@.mc-speech; <span class="evidenceText">Your <img src="assets/img/energy.png" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> has reached the maximum of 20!</span>@@<br>
+    @@.mc-speech; <span class="evidenceText">Your <img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> has reached the maximum of 20!</span>@@<br>
   <</if>>
 @@.mc-speech; <span class="evidenceText">Your fitness level is perfect - 100</span>@@<<else>>
 @@.mc-speech; <span class="evidenceText">Your fitness level has improved (+1): $mc.fit now!</span>@@<</if>>

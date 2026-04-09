@@ -1,6 +1,6 @@
 :: PornCore {"position":"300,1000","size":"100,100"}
 <<nobr>>
-<img src="assets/img/pornLabIn.jpg" width="100%">
+<img @src="setup.ImagePath + '/img/pornLabIn.jpg'" width="100%">
 @@.location; PornCore@@<br>
 @@.mc-thoughts; I don't think it's worth explaining what this is for. Here I can relax a little@@<br>
 

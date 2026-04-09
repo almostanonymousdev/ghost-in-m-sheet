@@ -9,7 +9,7 @@ Your instincts screamed that this place was dangerous, and you found yourself to
 <<set $hasQuestForRescue to 2>>
 <<if $currentRescueGirl eq "Victoria">>
 <video autoplay controls muted loop>
- <source src="assets/rescue/Victoria/Victoriapossessed.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Victoria/Victoriapossessed.mp4'" type="video/mp4">
  </video>
 @@.mc-speech; Oh my god, are you okay?@@<br>
 @@.notmc-speech; Hmm~ what are you doing here?@@<br>
@@ -19,7 +19,7 @@ Your instincts screamed that this place was dangerous, and you found yourself to
 @@.notmc-speech; A sharp pain shot through your head, making you collapse to the floor. The last thing you saw before passing out was her walking towards you...@@<br><br>
 @@.backbtn; <<link "Wake up " "rescueVictoriaPossessed">><</link>>@@
 <<elseif $currentRescueGirl eq "Jade">>
-<img src="assets/rescue/Jade/jadepossessed.png" class="displayCentredImgs">
+<img @src="setup.ImagePath + '/rescue/Jade/jadepossessed.png'" class="displayCentredImgs">
 @@.mc-speech; Oh my god, are you okay?@@<br>
 @@.notmc-speech; Hmm~ what are you doing here?@@<br>
 @@.mc-speech; $currentRescueGirl, let's get out of here, I came to save you.@@<br>
@@ -28,7 +28,7 @@ Your instincts screamed that this place was dangerous, and you found yourself to
 @@.notmc-speech; A sharp pain shot through your head, making you collapse to the floor. The last thing you saw before passing out was her walking towards you...@@<br><br>
 @@.backbtn;<<link "Wake up" "rescueJadePossessed">><</link>>@@
 <<elseif $currentRescueGirl eq "Julia">>
-<img src="assets/rescue/Julia/juliapossessed.jpg" width="35%" class="displayCentredImgs"><br>
+<img @src="setup.ImagePath + '/rescue/Julia/juliapossessed.jpg'" width="35%" class="displayCentredImgs"><br>
 @@.mc-speech; Oh my god, are you okay?@@<br>
 @@.notmc-speech; Hmm~ what are you doing here?@@<br>
 @@.mc-speech; $currentRescueGirl, let's get out of here, I came to save you.@@<br>
@@ -36,7 +36,7 @@ Your instincts screamed that this place was dangerous, and you found yourself to
 @@.usebtn; <<link "Come closer to her." "rescueJuliaPossessed">><</link>>@@<br>
 <<elseif $currentRescueGirl eq  "Nadia">>
 <video autoplay controls muted loop>
- <source src="assets/rescue/Nadia/Nadiapossessed.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/rescue/Nadia/Nadiapossessed.mp4'" type="video/mp4">
  </video>
 @@.mc-speech; Oh my god, are you okay?@@<br>
 @@.notmc-speech; Hmm~ what are you doing here?@@<br>
@@ -45,7 +45,7 @@ Your instincts screamed that this place was dangerous, and you found yourself to
 @@.mc-speech; Just be quick.@@<br>
 @@.notmc-speech; Of course, <<link "follow me" "rescueNadiaPossessed">><</link>>.@@<br>
 <<elseif $currentRescueGirl eq  "Ash">>
-<img src="assets/rescue/Ash/ashpossessed.jpg" width="35%" class="displayCentredImgs"><br>
+<img @src="setup.ImagePath + '/rescue/Ash/ashpossessed.jpg'" width="35%" class="displayCentredImgs"><br>
 @@.mc-speech; Oh my god, are you okay?@@<br>
 @@.notmc-speech; Hmm~ what are you doing here?@@<br>
 @@.mc-speech; $currentRescueGirl, let's get out of here, I came to save you.@@<br>

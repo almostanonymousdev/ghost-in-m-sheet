@@ -3,7 +3,7 @@
 <<set _checkBeauty to random(30,100)>>
 <<if $thetwinsevent eq 1 and _checkBeauty gt $mc.beauty and $thetwinseventCD eq 0>>
 <video autoplay controls muted loop>
- <source src="assets/ghosts/specials/twins1.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/ghosts/specials/twins1.mp4'" type="video/mp4">
  </video>
 @@.mc-thoughts;You're looking in the mirror, admiring your reflection, when suddenly two strangers appear, observing you. They assess every curve of your body @@
 <<linkappend "@@.mc-thoughtsLink; through the glass@@">>
@@ -14,11 +14,11 @@
 <</linkappend>>
 <<elseif $thetwinsevent eq 1 and _checkBeauty lte $mc.beauty and $thetwinseventCD eq 0>>
 <video autoplay controls muted loop>
- <source src="assets/ghosts/specials/twins.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/ghosts/specials/twins.mp4'" type="video/mp4">
  </video>
 @@.mc-thoughts;You're looking in the mirror, admiring your reflection, when suddenly two strangers appear, observing you. They assess every curve of your body @@<<linkappend "@@.mc-thoughtsLink; through the glass@@">>
 <video autoplay controls muted loop>
- <source src="assets/ghosts/specials/twins2.mp4" type="video/mp4">
+ <source @src="setup.ImagePath + '/ghosts/specials/twins2.mp4'" type="video/mp4">
  </video>
 @@.mc-thoughts;But they don't disappear. They're here, in reality. They approach closer, and you feel their breath on your skin. Their hands start to caress you, stripping off your clothes, their fingers lightly touching your nipples, making you shiver with desire.@@<br>
 @@.mc-speech;Oh... this is so... mmm...@@<br>
@@ -27,7 +27,7 @@
 <</linkappend>>
 
 <<else>>
-<span id="mirrorImage"><img src="assets/img/mc.jpg"></span><br>
+<span id="mirrorImage"><img @src="setup.ImagePath + '/img/mc.jpg'"></span><br>
 
 @@.mc-speech; Looking pretty good. I'm ready to take on the world!@@<br>
 <b>Beauty: </b> $mc.beauty
