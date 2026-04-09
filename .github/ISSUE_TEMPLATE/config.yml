@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: General Discussion & Ideas
+    url: https://github.com/almostanonymousdev/ghost-in-m-sheet/discussions
+    about: Have a general idea, question, or want to chat with the community? Start a Discussion!
+  - name: F95zone Thread
+    url: https://f95zone.to/threads/the-ghost-hunter-v0-4-8-trykowka.222490/
+    about: Visit the original F95zone thread for community discussion and game history
