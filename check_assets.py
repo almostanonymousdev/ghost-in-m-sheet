@@ -49,8 +49,12 @@ def main():
             for pattern in ASSET_PATTERNS:
                 for m in pattern.finditer(line):
                     raw = m.group(1)
-                    # Normalise: strip leading / and prepend asset base if needed
-                    if raw.startswith("/"):
+                    # Normalise: map every reference to ASSET_BASE/…
+                    if raw.startswith("assets/"):
+                        # CSS url() and legacy src= use literal "assets/";
+                        # the runtime JS rewriter swaps that prefix for ASSET_BASE
+                        asset_path = ASSET_BASE + raw[len("assets"):]
+                    elif raw.startswith("/"):
                         asset_path = ASSET_BASE + raw
                     elif not raw.startswith(ASSET_BASE + "/"):
                         asset_path = ASSET_BASE + "/" + raw
