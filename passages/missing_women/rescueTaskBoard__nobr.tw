@@ -32,7 +32,7 @@
     <img @src="setup.ImagePath+`/`+_girl.img" class="contactsImages">
     <<print _girl.name>><br>
     @@.usebtn; <<link "Take" "Church">>
-<<set$currentRescueGirl to _girl.name>>
+<<set $currentRescueGirl to _girl.name>>
 <<set $hasQuestForRescue to 1>>
 <<set $rescueStage to 0>>
 <<include "randomizeRescueHouse">><</link>>@@

@@ -252,7 +252,6 @@ gwb:0,
 <<unset $highpriestess>>
 <<unset $ghostIsTrapped>>
 <<unset $cursedHuntActive>>
-<<unset $isWeakenedGhost>>
 <<unset $isWeakenGhost>>
 <<unset $moneyFromWeakenTheGhost>>
 <<set $temperature to 0>>

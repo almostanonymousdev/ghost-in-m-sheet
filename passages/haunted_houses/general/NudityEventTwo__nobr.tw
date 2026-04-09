@@ -4,7 +4,7 @@
 <<set $thetwinsevent to 1>>
 <</if>>
 <<set _videoList to []>>
-<<set _videoList to ["naked/duo1.mp4", "naked/duo2.mp4", "naked/duo3.mp4", "naked/duo4.mp4", "naked/duo5.mp4"]>>
+<<set _videoList to ["naked/Duo1.mp4", "naked/Duo2.mp4", "naked/Duo3.mp4", "naked/Duo4.mp4", "naked/Duo5.mp4"]>>
 <<set _randomIndex to random(0, _videoList.length - 1)>>
 <<set _selectedVideo to _videoList[_randomIndex]>>
 <video autoplay controls muted loop>

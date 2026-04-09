@@ -9,7 +9,7 @@
 @@.notmc-speech; Oh, too bad you're not submissive enough. I would've taken over you, but maybe one day I’ll get the chance...@@<br>
 @@.mc-thoughts; She kisses you again, and everything goes black.@@<br>
 <</if>>
-<<if$rescueVictoriaPossessed eq 2>>
+<<if $rescueVictoriaPossessed eq 2>>
   <video autoplay controls muted loop>
  <source @src="setup.ImagePath + '/rescue/Victoria/3.4.mp4'" type="video/mp4">
  </video>

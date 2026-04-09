@@ -84,7 +84,7 @@ stage4: 3,
               <<if $isOwaissa eq 1>>  
 	<<set _videoList to ["np1/1.mp4", "np1/2.mp4", "np1/3.mp4", "np1/4.mp4", "np1/5.mp4", "np1/6.mp4", "np1/7.mp4", "np1/8.mp4"]>>
     			<<elseif $isElm eq 1>>
-		<<set _videoList to ["np1/20.mp4", "np1/21.mp4", "np1/22.mp4", "np1/23.mp4", "np1/24.mp4", "np1/25.mp4", "np1/26.mp4", "np1/27.mp4"]>>
+		<<set _videoList to ["np1/20.mp4", "np1/21.mp4", "np1/22.mp4", "np1/23.mp4", "np1/24.mp4", "np1/25.mp4", "np1/26.mp4"]>>
 				<</if>>
                  <</if>>
             

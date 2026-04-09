@@ -40,7 +40,7 @@
 	{type: "video", src: "naked/20.mp4"},
 	{type: "video", src: "naked/21.mp4"},
 	{type: "video", src: "naked/22.mp4"}]>>
-<<elseif $shirtState eq "worn" and ($jeansState eq "worn" or $skirtState eq "worn" or $shortsState eq "worn")>>
+<<elseif $tshirtState eq "worn" and ($jeansState eq "worn" or $skirtState eq "worn" or $shortsState eq "worn")>>
 <<goto "Livingroom">>
     <</if>>
     

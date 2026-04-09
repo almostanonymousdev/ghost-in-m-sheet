@@ -78,13 +78,13 @@ I could watch a little longer and then help her... but I might get noticed. @@<b
 <</if>>
 	<<if _clickCount == 4>>
 		<<if _chosenList is _videoList10>>
-			<<set $videoRescueEvent to "rescue/Victoria/10end.mp4">>
+			<<set $videoRescueEvent to "rescue/Victoria/10End.mp4">>
 		<<elseif _chosenList is _videoList11>>
-			<<set $videoRescueEvent to "rescue/Victoria/11end.mp4">>
+			<<set $videoRescueEvent to "rescue/Victoria/11End.mp4">>
 		<<elseif _chosenList is _videoList12>>
-			<<set $videoRescueEvent to "rescue/Victoria/12end.mp4">>
+			<<set $videoRescueEvent to "rescue/Victoria/12End.mp4">>
 		<<elseif _chosenList is _videoList13>>
-			<<set $videoRescueEvent to "rescue/Victoria/13end.mp4">>
+			<<set $videoRescueEvent to "rescue/Victoria/13End.mp4">>
 		<</if>>
 		<<replace "#videoContainer">>
 			<video autoplay controls muted loop>

@@ -30,7 +30,6 @@
 <</link>>@@<br>
 @@.enterbtn;[[Use PC]]@@<br>
 @@.enterbtn;<<link "Bedroom" "Bedroom">><<include "add1">><</link>>@@<br>
-/*[[Kitchen]]<br>*/
 <<if $hours <= 22 and $hours >= 12>>
 @@.usebtn;<<link "Skip time till midnight" "Livingroom">><<set $hours to 23>><<set $minutes to 0>>@@
 <<replace "#time">><<print ($hours < 10 ? '0' + $hours : $hours) + ":" + ($minutes < 10 ? '0' + $minutes : $minutes)>><</replace>>

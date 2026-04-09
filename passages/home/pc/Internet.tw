@@ -17,7 +17,7 @@
 <em>Chance to find the ghost's favorite room</em>: $alex.chanceOfSuccessGR: <br>
 </div>
 <div style="display:flex; align-items: center;">
-<<link"@@.usebtn; Choose Alex@@">>
+<<link "@@.usebtn; Choose Alex@@">>
 <<set $companion to clone($alex)>>
 <<set $isCompChosenBrook to 0>>
 <<set $isCompChosenAlice to 0>>
@@ -49,7 +49,6 @@
 </div>
 <div style="display:flex; align-items: center;">
 <<link "@@.usebtn; Choose Taylor@@">><<set $companion to clone($taylor)>>
-<<set $companion to clone($taylor)>>
 <<set $isCompChosenBrook to 0>>
 <<set $isCompChosenAlice to 0>>
 <<set $isCompChosenBlake to 0>>
@@ -80,7 +79,6 @@
 </div>
 <div style="display:flex; align-items: center;">
 <<link "@@.usebtn; Choose Casey@@">><<set $companion to clone($casey)>>
-<<set $companion to clone($casey)>>
 <<set $isCompChosenBrook to 0>>
 <<set $isCompChosenAlice to 0>>
 <<set $isCompChosenBlake to 0>>
