@@ -12,7 +12,7 @@
 <span><<link '<img @src="setup.ImagePath + \'/img/furniture/bed1.png\'" class="highlighted-furniture">' "elmBedroom">>
 <<replace ".room-wrapper">><<set $isInHideSpot to 1>><img @src="setup.ImagePath + '/hunting/hid1.jpg'" width="80%" class="fadeInScale"><br>
 <<done>>
-<<addclass ".fadeInScale" "tarotCardsShow">><</done>>
+<<run $(".fadeInScale").addClass("tarotCardsShow")>><</done>>
 @@.mc-thoughts;You press yourself against the cold floor, feeling your heart racing in your chest. The screams and rustling outside make you hold your breath. The ghost, filled with rage, prowls the room, and each of its steps echoes dully in your ears.<br>
 
 All you can do now is wait and hope it doesn’t find you.@@

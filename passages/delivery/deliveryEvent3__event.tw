@@ -1,64 +1,6 @@
 :: deliveryEvent3 [event] {"position":"900,1600","size":"100,100"}
 <<nobr>>
-<<set _randomIndex to either(0, 1, 2)>>
-<<set _localIsAddressFound3 = false>>
-<<set _localIsItemFound3 = false>>
-
-<<set _previous = previous()>>
-
-<<for _i to 0; _i < $orders.length; _i++>>
-  <<if $orders[_i].address === _previous and $orders[_i].item is $order3.item>>
-    <<set _localIsAddressFound3 = true>>
-    <<set _localIsItemFound3 = true>>
-    <<break>> 
-  <</if>>
-<</for>>
-
-<<if _localIsAddressFound3 and _localIsItemFound3>>
- <<if $order3.item eq "pizza">>
-<<include "DeliveryPizzaEventChoose">>
-<<elseif $order3.item eq "package">>
-<<include "DeliveryPackageEventChoose">>
- <<elseif $order3.item eq "burgers">>
-<<include "DeliveryBurgerEventChoose">>
-<<elseif $order3.item eq "newspapers">>
-<<include "DeliveryPappersEventChoose">>
-<<elseif $order3.item eq "books" and ndef $meetAlice >>
-<<include "meetAlice">>
-<<else>>
- <img @src="setup.ImagePath + '/img/deliverygirlhappy.jpg'" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
-<<set $earnedMoney += $jobMoneySuccessed>>
-<<if _randomIndex is 0>>
-    @@.notmc-speech; Great, thank you so much!@@
-<<elseif _randomIndex is 1>>
-    @@.notmc-speech; Awesome! Thank you very much.@@
-<<else>>
-    @@.notmc-speech; Just in time, thank you!@@
-<</if>>
-    <br>
-    <br>
-  @@.backbtn;  [[Back|DeliveryMap]] @@
-<</if>>
-<<else>>
-  <img @src="setup.ImagePath + '/img/deliverygirlsad.jpg'" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
-  <<set $earnedMoney += $jobMoneyFailed>>
-  <<if _randomIndex is 0>>
-    @@.notmc-speech; Sorry, but I think you made a mistake.@@
-<<elseif _randomIndex is 1>>
-    @@.notmc-speech; Apologies, but I believe there might be a mistake.@@
-<<else>>
-    @@.notmc-speech; Sorry, but I think there might be an error.@@
-<</if>><br>
-@@.mc-speech; Damn, I must have made a mistake.@@<br>
-<br>
-<br>
-@@.backbtn;[[Back|DeliveryMap]] @@
-<</if>>
-<<set $deliveryActiveIcon3 to false>>
-<br>
-<br>
-
-<<include "add30">>
+<<deliveryEventCheck 3>>
 <</nobr>>
 
 

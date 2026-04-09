@@ -38,7 +38,7 @@
     <img @src="setup.ImagePath+`/`+_tempCard.image" class="displayCentredImgs fadeInScale"></div>
 @@.mc-speech; Oh... something's about to happen… but what...@@
    	<<done>>
-<<addclass ".fadeInScale" "tarotCardsShow">>
+<<run $(".fadeInScale").addClass("tarotCardsShow")>>
 <<addclass ".tarotCardHidden" "disabled-link">>
 	<</done>>
 	 <<timed 1s>>
@@ -47,7 +47,7 @@
  @@.mc-speech; Um, did it just... change? Is this supposed to be a joke? @@
 <</replace>>
    	<<done>>
-<<addclass ".fadeInScaleFool" "tarotCardsShow">>
+<<run $(".fadeInScaleFool").addClass("tarotCardsShow")>>
 <<removeclass ".tarotCardHidden" "disabled-link">>
 	<</done>>
 
@@ -59,7 +59,7 @@
 		</div>
 @@.mc-speech; Oh... something's about to happen… but what...?@@<br>
 	   <<done>>
-       <<addclass ".fadeInScale" "tarotCardsShow">>
+       <<run $(".fadeInScale").addClass("tarotCardsShow")>>
        <<addclass ".tarotCardHidden" "disabled-link">>
 		<</done>>
          <<timed 2s>>

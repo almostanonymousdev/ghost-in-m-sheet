@@ -1,0 +1,30 @@
+:: widgetHome [widget nobr] {"position":"600,800","size":"100,100"}
+
+<<widget "randomImage">>
+<<set _ri to random(1, _args.length - 2)>>
+<<set _riPath to _args[_ri]>>
+<<set _riWidth to _args[_args.length - 1]>>
+<img @src="setup.ImagePath + '/' + _riPath" @width="_riWidth">
+<</widget>>
+
+<<widget "removeMakeup">>
+<<set _penalty to _args[0]>>
+<<if $mc.makeupImg eq 1>><<set $mc.beauty -= _penalty>>
+<<elseif $mc.makeupImg eq 2>><<set $mc.beauty -= (_penalty + 5)>>
+<<elseif $mc.makeupImg eq 3>><<set $mc.beauty -= (_penalty + 10)>><</if>>
+<<set $makeupApplied to 0>>
+<<set $mc.makeupImg to 0>>
+<</widget>>
+
+<<widget "washClean">>
+<<set _imgWidth to _args[0]>>
+<<set _beautyPenalty to _args[1]>>
+<<set $mc.dirty to 0>>
+<<removeMakeup _beautyPenalty>>
+@@.mc-speech; Nice and clean again@@<br>
+<br>
+@@.backbtn;[[Back|Bathroom]]@@
+<<done>>
+<<addclass ".linkselector" "disabled-link">>
+<</done>>
+<</widget>>

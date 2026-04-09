@@ -11,29 +11,10 @@ Your instincts screamed that this place was dangerous, and you found yourself to
 @@.mc-thoughts; You're walking down the hallway of the old house when you hear some weird slurping sounds that catch your attention. You stop for a moment, listening, then carefully move closer to where it’s coming from.<br>
 As you peek through a half-open door, you spot 
 <<if $rescueStage eq 0>>
-<<if $currentRescueGirl eq "Victoria">>
-[[$currentRescueGirl|rescueVictoria]]
-<<elseif $currentRescueGirl eq "Jade">>
-[[$currentRescueGirl|rescueJade]]
-<<elseif $currentRescueGirl eq "Julia">>
-[[$currentRescueGirl|rescueJulia]]
-<<elseif $currentRescueGirl eq  "Nadia">>
-[[$currentRescueGirl|rescueNadia]]
-<<elseif $currentRescueGirl eq  "Ash">>
-[[$currentRescueGirl|rescueAsh]]
-<</if>>
+<<rescueGirlLink>>
 <<elseif $rescueStage eq 1 and $hours lt 18>>
-<<if $currentRescueGirl eq "Victoria">>
-[[$currentRescueGirl|rescueVictoria]]
-<<elseif $currentRescueGirl eq "Jade">>
-[[$currentRescueGirl|rescueJade]]
-<<elseif $currentRescueGirl eq "Julia">>
-[[$currentRescueGirl|rescueJulia]]
-<<elseif $currentRescueGirl eq  "Nadia">>
-[[$currentRescueGirl|rescueNadia]]
-<<elseif $currentRescueGirl eq  "Ash">>
-[[$currentRescueGirl|rescueAsh]]
-<</if>><</if>>@@
+<<rescueGirlLink>>
+<</if>>@@
 <</linkreplace>>
 
 

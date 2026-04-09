@@ -1,31 +1,8 @@
 :: electronicsSection {"position":"2800,1800","size":"100,100"}
 <<nobr>>
 <div class="flexwrapper backgroundForText">
-<div class="housecard">
-<<if ndef $isCameraBought and $ghostMareEventStart eq 3>>
-<img @src="setup.ImagePath + '/img/webcamera.png'" class="iconPx"><br>
-<span class="priceAmount">100$</span><br>
-<<if $mc.money gte 100>>
-@@.buyItemLink;<<link "Buy" "electronicsSection">>
-<<set $isCameraBought to 1>>
-<<set $mc.money -= 100>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>><<else>>
-@@.mc-thoughts; I don't think I need to buy anything here right now@@<</if>>
-</div>
-<div class="housecard">
-<<if ndef $isPhoneBought>>
-<img @src="setup.ImagePath + '/img/phone.png'" class="iconPx"><br>
-<span class="priceAmount">200$</span><br>
-<<if $mc.money gte 200>>
-@@.buyItemLink;<<link "Buy" "electronicsSection">>
-<<set $isPhoneBought to 1>>
-<<set $mc.money -= 200>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>><</if>>
-
-
-</div>
+<<shopCardConditional `ndef $isCameraBought and $ghostMareEventStart eq 3` "isCameraBought" "img/webcamera.png" 100 "electronicsSection" 1>>
+<<shopCard "isPhoneBought" "img/phone.png" 200 "electronicsSection" "" 1>>
 <div class="housecard">
 
 </div>

@@ -27,21 +27,11 @@ Sometimes, you still gave in to the pleasure: at that moment, you began to push 
 <<if $mcpossession gte 7>>
 <<goto "possessedLocation1">>
 <<else>>
-@@.mc-thoughts; Life and awareness return to you in an instant, and with all the strength you have left, you break free.@@ <br>
-<<if $mcpossession lte 6>>
-<<set $mcpossession += 1>>
-<b>Surrender to possession</b> is increased: $mcpossession now!<br>
-<</if>>
-@@.enterbtn; [[Next|possessed]]@@<br>
+<<breakFreePossession 6>>
 <</if>>
 <</linkreplace>>
 <<else>>
-@@.mc-thoughts; Life and awareness return to you in an instant, and with all the strength you have left, you break free.@@ <br>
-<<if $mcpossession lte 3>>
-<<set $mcpossession += 1>>
-<b>Surrender to possession</b> is increased: $mcpossession now!<br>
-<</if>>
-@@.enterbtn; [[Next|possessed]]@@<br>
+<<breakFreePossession 3>>
 <</if>>
 <</linkreplace>>
 <</linkreplace>>
@@ -71,12 +61,7 @@ They started undressing you, touching your most intimate places. Yet you didn’
 <<if $mcpossession gte 7>>
 <<goto "possessedLocation1">>
 <<else>>
-@@.mc-thoughts; Life and awareness return to you in an instant, and with all the strength you have left, you break free.@@ <br>
-<<if $mcpossession lte 6>>
-<<set $mcpossession += 1>>
-<b>Surrender to possession</b> is increased: $mcpossession now!<br>
-<</if>>
-@@.enterbtn; [[Next|possessed]]@@<br>
+<<breakFreePossession 6>>
 <</if>>
 <</linkreplace>>
 
@@ -85,12 +70,7 @@ They started undressing you, touching your most intimate places. Yet you didn’
 
 
 <<else>>
-@@.mc-thoughts; Life and awareness return to you in an instant, and with all the strength you have left, you break free.@@ <br>
-<<if $mcpossession lte 3>>
-<<set $mcpossession += 1>>
-<b>Surrender to possession</b> is increased: $mcpossession now!<br>
-<</if>>
-@@.enterbtn; [[Next|possessed]]@@<br>
+<<breakFreePossession 3>>
 <</if>>
 <</linkreplace>>
 
@@ -121,21 +101,11 @@ They came closer and started touching your butt.<br>@@
 <<if $mcpossession gte 7>>
 <<goto "possessedLocation1">>
 <<else>>
-@@.mc-thoughts; Life and awareness return to you in an instant, and with all the strength you have left, you break free.@@ <br>
-<<if $mcpossession lte 6>>
-<<set $mcpossession += 1>>
-<b>Surrender to possession</b> is increased: $mcpossession now!<br>
-<</if>>
-@@.enterbtn; [[Next|possessed]]@@<br>
+<<breakFreePossession 6>>
 <</if>>
 <</linkreplace>>
 <<else>>
-@@.mc-thoughts; Life and awareness return to you in an instant, and with all the strength you have left, you break free.@@ <br>
-<<if $mcpossession lte 3>>
-<<set $mcpossession += 1>>
-<b>Surrender to possession</b> is increased: $mcpossession now!<br>
-<</if>>
-@@.enterbtn; [[Next|possessed]]@@<br>
+<<breakFreePossession 3>>
 <</if>>
 <</linkreplace>>
 <</linkreplace>>
@@ -209,12 +179,7 @@ So that means... oh~ I think I...i~ <<linkreplace "@@.usebtn; commiiiing~@@">>
 <<if $mcpossession gte 4>>
 <<goto "possessedLocation1">>
 <<else>>
-@@.mc-thoughts; Life and awareness return to you in an instant, and with all the strength you have left, you break free.@@ <br>
-@@.enterbtn; [[Next|possessed]]@@<br>
-<<if $mcpossession lte 3>>
-<<set $mcpossession += 1>>
-<b>Surrender to possession</b> is increased: $mcpossession now!<br>
-<</if>>
+<<breakFreePossession 3>>
 <</if>>
 <</linkreplace>>
 <</linkappend>>

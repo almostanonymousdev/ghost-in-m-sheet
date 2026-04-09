@@ -1,27 +1,11 @@
 :: ToolsEventChurch1 [event] {"position":"1975,1700","size":"100,100"}
 <<nobr>>
 <<include "add15lust">>
-<<set _check to random(1,2)>>
-<<if _check eq 1>>
-<video autoplay controls muted loop>
- <source @src="setup.ImagePath + '/church/4.mp4'" type="video/mp4">
- </video><</if>>
- <<if _check eq 2>>
-<video autoplay controls muted loop>
- <source @src="setup.ImagePath + '/church/5.mp4'" type="video/mp4">
- </video><</if>>
+<<randomVideo "church/4.mp4" "church/5.mp4">>
  @@.notmc-speech; Oh~ you're so hot, I'm going to cum soon@@<br>
  <<if $mc.lust gte 85>>
 @@.mc-speech; Nooo, wait, I feel like I'm going to cum, fuck me <<linkappend "in the ass, please">>
-<<set _checkA to random(1,2)>>
-<<if _checkA eq 1>>
-<video autoplay controls muted loop>
- <source @src="setup.ImagePath + '/church/6.mp4'" type="video/mp4">
- </video><</if>>
- <<if _checkA eq 2>>
-<video autoplay controls muted loop>
- <source @src="setup.ImagePath + '/church/7.mp4'" type="video/mp4">
- </video><</if>>
+<<randomVideo "church/6.mp4" "church/7.mp4">>
 @@.mc-speech; Fuck ~I can feel every millimeter of your huge dick in my ass, so good~@@<br>
 @@.notmc-speech; Oh god~ your asshole is so tight, I'm [[cumming|ToolsEventChurchEnd]]@@
  <<include "add15lust">>

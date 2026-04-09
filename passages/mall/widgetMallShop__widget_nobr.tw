@@ -1,0 +1,77 @@
+:: widgetMallShop [widget nobr] {"position":"2700,1600","size":"100,100"}
+<<script>>
+setup.notPurchased = function(varName) {
+    var val = State.variables[varName];
+    return val === undefined || val === "not bought" || val === 0;
+};
+<</script>>
+
+<<widget "shopCard">>
+<<set _varName to _args[0]>>
+<<set _img to _args[1]>>
+<<set _price to _args[2]>>
+<<set _returnPassage to _args[3]>>
+<<set _bonus to _args[4]>>
+<<set _boughtValue to (typeof _args[5] !== "undefined") ? _args[5] : "not worn">>
+<div class="housecard">
+<<if setup.notPurchased(_varName)>>
+<img @src="setup.ImagePath + '/' + _img" class="iconPx"><br>
+<<if _bonus>><span class="mc-thoughts">_bonus</span><br><</if>>
+<span class="priceAmount"><<= _price>>$</span><br>
+<<if $mc.money gte _price>>
+@@.buyItemLink;<<link "Buy" `_returnPassage`>>
+<<run State.variables[_args[0]] = _args[5] !== undefined ? _args[5] : "not worn">>
+<<set $mc.money -= _price>>
+<</link>>@@<br>
+<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
+<</if>>
+</div>
+<</widget>>
+
+<<widget "shopCardCorruption">>
+<<set _varName to _args[0]>>
+<<set _img to _args[1]>>
+<<set _price to _args[2]>>
+<<set _returnPassage to _args[3]>>
+<<set _reqCorruption to _args[4]>>
+<<set _boughtValue to (typeof _args[5] !== "undefined") ? _args[5] : 1>>
+<<set _noNeedText to (typeof _args[6] !== "undefined") ? _args[6] : "Don't think I need it">>
+<div class="housecard">
+<<if setup.notPurchased(_varName)>>
+<img @src="setup.ImagePath + '/' + _img" class="iconPx"><br>
+<span class="priceAmount"><<= _price>>$</span><br>
+<<if $mc.corruption gte _reqCorruption>>
+<<if $mc.money gte _price>>
+@@.buyItemLink;<<link "Buy" `_returnPassage`>>
+<<run State.variables[_args[0]] = _boughtValue>>
+<<set $mc.money -= _price>>
+<</link>>@@<br>
+<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
+<<else>>@@.mc-thoughts; _noNeedText@@@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:20%; display: inline; margin: 0;"> ≥ _reqCorruption)@@<</if>>
+<</if>>
+</div>
+<</widget>>
+
+<<widget "shopCardConditional">>
+<<set _condition to _args[0]>>
+<<set _varName to _args[1]>>
+<<set _img to _args[2]>>
+<<set _price to _args[3]>>
+<<set _returnPassage to _args[4]>>
+<<set _boughtValue to (typeof _args[5] !== "undefined") ? _args[5] : 1>>
+<div class="housecard">
+<<if _condition>>
+<<if setup.notPurchased(_varName)>>
+<img @src="setup.ImagePath + '/' + _img" class="iconPx"><br>
+<span class="priceAmount"><<= _price>>$</span><br>
+<<if $mc.money gte _price>>
+@@.buyItemLink;<<link "Buy" `_returnPassage`>>
+<<run State.variables[_args[1]] = _boughtValue>>
+<<set $mc.money -= _price>>
+<</link>>@@<br>
+<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
+<<else>>
+@@.mc-thoughts; I don't think I need to buy anything here right now@@<</if>>
+<</if>>
+</div>
+<</widget>>

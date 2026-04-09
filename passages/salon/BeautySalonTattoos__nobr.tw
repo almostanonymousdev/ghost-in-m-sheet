@@ -1,104 +1,11 @@
 :: BeautySalonTattoos [nobr] {"position":"2600,2200","size":"100,100"}
 <div class="flexwrapper backgroundForText">
-<div class="housecard">
-<<if ndef $tattooFace>>
-<img @src="setup.ImagePath + '/img/tattoos/tattooFace.jpg'" class="iconPx"><br>
-<span class="priceAmount">100$</span><br>
-<span class="mc-thoughts">+2 <img @src="setup.ImagePath + '/img/beauty.png'" style="position: relative; top: 0.375em; width:30px; display: inline; margin: 0;"></span><br>
-<<if $mc.money gte 100>>
-@@.buyItemLink;<<link "Buy" "BeautySalonTattoos">>
-<<set $tattooFace to "worn">>
-<<set $mc.beauty += 2>>
-<<set $mc.money -= 100>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>><</if>>
-</div>
-<div class="housecard">
-<<if ndef $tattooNeck>>
-<img @src="setup.ImagePath + '/img/tattoos/tattooNeck.webp'" class="iconPx"><br>
-<span class="priceAmount">80$</span><br>
-<span class="mc-thoughts">+2 <img @src="setup.ImagePath + '/img/beauty.png'" style="position: relative; top: 0.375em; width:30px; display: inline; margin: 0;"></span><br>
-<<if $mc.money gte 80>>
-@@.buyItemLink;<<link "Buy" "BeautySalonTattoos">>
-<<set $tattooNeck to "worn">>
-<<set $mc.beauty += 2>>
-<<set $mc.money -= 80>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>><</if>>
-</div>
-<div class="housecard">
-<<if ndef $tattooHand>>
-<img @src="setup.ImagePath + '/img/tattoos/tattooHand.jpg'" class="iconPx">
-<span class="priceAmount">50$</span><br>
-<span class="mc-thoughts">+1 <img @src="setup.ImagePath + '/img/beauty.png'" style="position: relative; top: 0.375em; width:30px; display: inline; margin: 0;"></span><br>
-<<if $mc.money gte 50>>
-@@.buyItemLink;<<link "Buy" "BeautySalonTattoos">>
-<<set $tattooHand to "worn">>
-<<set $mc.beauty += 1>>
-<<set $mc.money -= 50>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>><</if>>
-</div>
-<div class="housecard">
-<<if ndef $tattooChest>>
-<img @src="setup.ImagePath + '/img/tattoos/tattooChest.jpg'" class="iconPx"><br>
-<<if $mc.corruption gte 5>>
-<span class="priceAmount">150$</span><br>
-<span class="mc-thoughts">+3 <img @src="setup.ImagePath + '/img/beauty.png'" style="position: relative; top: 0.375em; width:30px; display: inline; margin: 0;"></span><br>
-<<if $mc.money gte 150>>
-@@.buyItemLink;<<link "Buy" "BeautySalonTattoos">>
-<<set $tattooChest to "worn">>
-<<set $mc.money -= 150>>
-<<set $mc.beauty += 3>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<<else>>
-@@.warningtext; Req. 5+ <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:30px; display: inline; margin: 0;">@@<br>
-<</if>>
-<</if>>
-
-</div>
-<div class="housecard">
-<<if ndef $tattooPussy>>
-
-<img @src="setup.ImagePath + '/img/tattoos/tattooPussy.webp'" class="iconPx"><br>
-<<if $mc.corruption gte 5>>
-<span class="priceAmount">200$</span><br>
-<span class="mc-thoughts">+3 <img @src="setup.ImagePath + '/img/beauty.png'" style="position: relative; top: 0.375em; width:30px; display: inline; margin: 0;"></span><br>
-<<if $mc.money gte 200>>
-@@.buyItemLink;<<link "Buy" "BeautySalonTattoos">>
-<<set $tattooPussy to "worn">>
-<<set $mc.money -= 200>>
-<<set $mc.beauty += 3>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<<else>>
-@@.warningtext; Req. 5+ <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:30px; display: inline; margin: 0;">@@<br>
-<</if>>
-<</if>>
-
-</div>
-
-<div class="housecard">
-<<if ndef $tattooAss>>
-
-<img @src="setup.ImagePath + '/img/tattoos/tattooAss.jpg'" class="iconPx"><br>
-<<if $mc.corruption gte 5>>
-<span class="priceAmount">350$</span><br>
-<span class="mc-thoughts">+3 <img @src="setup.ImagePath + '/img/beauty.png'" style="position: relative; top: 0.375em; width:30px; display: inline; margin: 0;"></span><br>
-<<if $mc.money gte 350>>
-@@.buyItemLink;<<link "Buy" "BeautySalonTattoos">>
-<<set $tattooAss to "worn">>
-<<set $mc.money -= 350>>
-<<set $mc.beauty += 3>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<<else>>
-@@.warningtext; Req. 5+ <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:30px; display: inline; margin: 0;">@@<br>
-<</if>>
-<</if>>
-</div>
-
+<<salonItem "tattooFace" "img/tattoos/tattooFace.jpg" 100 "BeautySalonTattoos" "+2 beauty" "mc.beauty" `$mc.beauty + 2`>>
+<<salonItem "tattooNeck" "img/tattoos/tattooNeck.webp" 80 "BeautySalonTattoos" "+2 beauty" "mc.beauty" `$mc.beauty + 2`>>
+<<salonItem "tattooHand" "img/tattoos/tattooHand.jpg" 50 "BeautySalonTattoos" "+1 beauty" "mc.beauty" `$mc.beauty + 1`>>
+<<salonItemCorruption "tattooChest" "img/tattoos/tattooChest.jpg" 150 "BeautySalonTattoos" "+3 beauty" 5>>
+<<salonItemCorruption "tattooPussy" "img/tattoos/tattooPussy.webp" 200 "BeautySalonTattoos" "+3 beauty" 5>>
+<<salonItemCorruption "tattooAss" "img/tattoos/tattooAss.jpg" 350 "BeautySalonTattoos" "+3 beauty" 5>>
 
 </div>
 <br>

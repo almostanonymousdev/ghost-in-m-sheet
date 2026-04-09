@@ -1,7 +1,6 @@
 :: Evidence {"position":"300,900","size":"100,100"}
 <<nobr>>
 
-<html>
 <style>
 #guide b {
     font-size: 1em;
@@ -90,7 +89,6 @@ th:last-child, td:last-child {
         As you interact with the supernatural your grip on reality will loosen. <b>If you lose too much of your sanity
         you black out and faint.</b> A rescue team will be dispatched for you in the morning*.
         </p>
-        <div>
         <div style="font-size: 6px">
             * - WoMan co. is not responsible for the safety of ghost hunters and will not reimburse any medical
             expenses that the subject might incur.
@@ -141,7 +139,7 @@ th:last-child, td:last-child {
     <li>Every ghost can produce three pieces of evidence. Some will produce more.</li>
     <li><b>Mark every evidence you find in your journal!</b></li>
     <li>Once you have found all the evidence you should be able to identify the ghost type. Mistakes are common.</li>
-</li>
+</ul>
 </section>
 
 <section>
@@ -304,7 +302,6 @@ th:last-child, td:last-child {
 
 </section>
 </div>
-</html>
 
 <<if (previous() eq "WitchEndContract") or (tags(previous()).includes("event"))>>
 @@.backbtn;<<back>>@@<br>

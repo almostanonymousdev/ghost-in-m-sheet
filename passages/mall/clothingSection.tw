@@ -3,297 +3,34 @@
 
 <<nobr>>
 <div class="flexwrapper backgroundForText">
-<div class="housecard">
-<<if $jeansState1 eq "not bought">>
-<img @src="setup.ImagePath + '/img/wardrobe/jeans1.png'" class="iconPx"><br>
-<span class="mc-thoughts">+5 beauty</span><br>
-<span class="priceAmount">30$</span><br>
-<<if $mc.money gte 30>>
-@@.buyItemLink;<<link "Buy" "clothingSection">>
-<<set $jeansState1 to "not worn">>
-<<set $mc.money -= 30>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<</if>>
-</div>
-<div class="housecard">
-<<if $jeansState2 eq "not bought">>
-<img @src="setup.ImagePath + '/img/wardrobe/jeans2.png'" class="iconPx"><br>
-<span class="mc-thoughts">+8 beauty</span><br>
-<span class="priceAmount">40$</span><br>
-<<if $mc.money gte 40>>
-@@.buyItemLink;<<link "Buy" "clothingSection">>
-<<set $jeansState2 to "not worn">>
-<<set $mc.money -= 40>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<</if>>
-</div>
-<div class="housecard">
-<<if $jeansState3 eq "not bought">>
-<img @src="setup.ImagePath + '/img/wardrobe/jeans3.png'" class="iconPx"><br>
-<span class="mc-thoughts">+11 beauty</span><br>
-<span class="priceAmount">50$</span><br>
-<<if $mc.money gte 50>>
-@@.buyItemLink;<<link "Buy" "clothingSection">>
-<<set $jeansState3 to "not worn">>
-<<set $mc.money -= 50>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<</if>>
-</div>
-<div class="housecard">
-<<if $shortsState1 eq "not bought">>
-<img @src="setup.ImagePath + '/img/wardrobe/shorts1.png'" class="iconPx"><br>
-<span class="mc-thoughts">+6 beauty</span><br>
-<span class="priceAmount">35$</span><br>
-<<if $mc.money gte 35>>
-@@.buyItemLink;<<link "Buy" "clothingSection">>
-<<set $shortsState1 to "not worn">>
-<<set $mc.money -= 35>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<</if>>
-</div>
-<div class="housecard">
-<<if $shortsState2 eq "not bought">>
-<img @src="setup.ImagePath + '/img/wardrobe/Shorts2.png'" class="iconPx"><br>
-<span class="mc-thoughts">+9 beauty</span><br>
-<span class="priceAmount">45$</span><br>
-<<if $mc.money gte 45>>
-@@.buyItemLink;<<link "Buy" "clothingSection">>
-<<set $shortsState2 to "not worn">>
-<<set $mc.money -= 45>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<</if>>
-</div>
-<div class="housecard">
-<<if $shortsState3 eq "not bought">>
-<img @src="setup.ImagePath + '/img/wardrobe/Shorts3.png'" class="iconPx"><br>
-<span class="mc-thoughts">+12 beauty</span><br>
-<span class="priceAmount">55$</span><br>
-<<if $mc.money gte 55>>
-@@.buyItemLink;<<link "Buy" "clothingSection">>
-<<set $shortsState3 to "not worn">>
-<<set $mc.money -= 55>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<</if>>
-</div>
+<<shopCard "jeansState1" "img/wardrobe/jeans1.png" 30 "clothingSection" "+5 beauty">>
+<<shopCard "jeansState2" "img/wardrobe/jeans2.png" 40 "clothingSection" "+8 beauty">>
+<<shopCard "jeansState3" "img/wardrobe/jeans3.png" 50 "clothingSection" "+11 beauty">>
+<<shopCard "shortsState1" "img/wardrobe/shorts1.png" 35 "clothingSection" "+6 beauty">>
+<<shopCard "shortsState2" "img/wardrobe/Shorts2.png" 45 "clothingSection" "+9 beauty">>
+<<shopCard "shortsState3" "img/wardrobe/Shorts3.png" 55 "clothingSection" "+12 beauty">>
 
-<div class="housecard">
-<<if $skirtState1 eq "not bought">>
-<img @src="setup.ImagePath + '/img/wardrobe/skirt1.png'" class="iconPx"><br>
-<span class="mc-thoughts">+7 beauty</span><br>
-<span class="priceAmount">40$</span><br>
-<<if $mc.money gte 40>>
-@@.buyItemLink;<<link "Buy" "clothingSection">>
-<<set $skirtState1 to "not worn">>
-<<set $mc.money -= 40>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<</if>>
-</div>
-<div class="housecard">
-<<if $skirtState2 eq "not bought">>
-<img @src="setup.ImagePath + '/img/wardrobe/skirt2.png'" class="iconPx"><br>
-<span class="mc-thoughts">+10 beauty</span><br>
-<span class="priceAmount">50$</span><br>
-<<if $mc.money gte 50>>
-@@.buyItemLink;<<link "Buy" "clothingSection">>
-<<set $skirtState2 to "not worn">>
-<<set $mc.money -= 50>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<</if>>
-</div>
-<div class="housecard">
-<<if $skirtState3 eq "not bought">>
-<img @src="setup.ImagePath + '/img/wardrobe/skirt3.png'" class="iconPx"><br>
-<span class="mc-thoughts">+13 beauty</span><br>
-<span class="priceAmount">60$</span><br>
-<<if $mc.money gte 60>>
-@@.buyItemLink;<<link "Buy" "clothingSection">>
-<<set $skirtState3 to "not worn">>
-<<set $mc.money -= 60>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<</if>>
-</div>
+<<shopCard "skirtState1" "img/wardrobe/skirt1.png" 40 "clothingSection" "+7 beauty">>
+<<shopCard "skirtState2" "img/wardrobe/skirt2.png" 50 "clothingSection" "+10 beauty">>
+<<shopCard "skirtState3" "img/wardrobe/skirt3.png" 60 "clothingSection" "+13 beauty">>
 
-<div class="housecard">
-<<if $tshirtState1 eq "not bought">>
-<img @src="setup.ImagePath + '/img/wardrobe/tshirt1.png'" class="iconPx"><br>
-<span class="mc-thoughts">+5 beauty</span><br>
-<span class="priceAmount">30$</span><br>
-<<if $mc.money gte 30>>
-@@.buyItemLink;<<link "Buy" "clothingSection">>
-<<set $tshirtState1 to "not worn">>
-<<set $mc.money -= 30>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<</if>>
-</div>
-<div class="housecard">
-<<if $tshirtState2 eq "not bought">>
-<img @src="setup.ImagePath + '/img/wardrobe/tshirt2.png'" class="iconPx"><br>
-<span class="mc-thoughts">+8 beauty</span><br>
-<span class="priceAmount">40$</span><br>
-<<if $mc.money gte 40>>
-@@.buyItemLink;<<link "Buy" "clothingSection">>
-<<set $tshirtState2 to "not worn">>
-<<set $mc.money -= 40>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<</if>>
-</div>
-<div class="housecard">
-<<if $tshirtState3 eq "not bought">>
-<img @src="setup.ImagePath + '/img/wardrobe/tshirt3.png'" class="iconPx"><br>
-<span class="mc-thoughts">+11 beauty</span><br>
-<span class="priceAmount">50$</span><br>
-<<if $mc.money gte 50>>
-@@.buyItemLink;<<link "Buy" "clothingSection">>
-<<set $tshirtState3 to "not worn">>
-<<set $mc.money -= 50>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<</if>>
-</div>
-<div class="housecard">
-<<if $braState1 eq "not bought">>
-<img @src="setup.ImagePath + '/img/wardrobe/slip2.png'" class="iconPx"><br>
-<span class="mc-thoughts">+2 beauty</span><br>
-<span class="priceAmount">20$</span><br>
-<<if $mc.money gte 20>>
-@@.buyItemLink;<<link "Buy" "clothingSection">>
-<<set $braState1 to "not worn">>
-<<set $mc.money -= 20>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<</if>>
-</div>
-<div class="housecard">
-<<if $braState2 eq "not bought">>
-<img @src="setup.ImagePath + '/img/wardrobe/slip3.png'" class="iconPx"><br>
-<span class="mc-thoughts">+4 beauty</span><br>
-<span class="priceAmount">30$</span><br>
-<<if $mc.money gte 30>>
-@@.buyItemLink;<<link "Buy" "clothingSection">>
-<<set $braState2 to "not worn">>
-<<set $mc.money -= 30>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<</if>>
-</div>
-<div class="housecard">
-<<if $braState3 eq "not bought">>
-<img @src="setup.ImagePath + '/img/wardrobe/slip4.png'" class="iconPx"><br>
-<span class="mc-thoughts">+6 beauty</span><br>
-<span class="priceAmount">40$</span><br>
-<<if $mc.money gte 40>>
-@@.buyItemLink;<<link "Buy" "clothingSection">>
-<<set $braState3 to "not worn">>
-<<set $mc.money -= 40>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<</if>>
-</div>
+<<shopCard "tshirtState1" "img/wardrobe/tshirt1.png" 30 "clothingSection" "+5 beauty">>
+<<shopCard "tshirtState2" "img/wardrobe/tshirt2.png" 40 "clothingSection" "+8 beauty">>
+<<shopCard "tshirtState3" "img/wardrobe/tshirt3.png" 50 "clothingSection" "+11 beauty">>
+<<shopCard "braState1" "img/wardrobe/slip2.png" 20 "clothingSection" "+2 beauty">>
+<<shopCard "braState2" "img/wardrobe/slip3.png" 30 "clothingSection" "+4 beauty">>
+<<shopCard "braState3" "img/wardrobe/slip4.png" 40 "clothingSection" "+6 beauty">>
 
-<div class="housecard">
-<<if $pantiesState1 eq "not bought">>
-<img @src="setup.ImagePath + '/img/wardrobe/short2.png'" class="iconPx"><br>
-<span class="mc-thoughts">+2 beauty</span><br>
-<span class="priceAmount">25$</span><br>
-<<if $mc.money gte 25>>
-@@.buyItemLink;<<link "Buy" "clothingSection">>
-<<set $pantiesState1 to "not worn">>
-<<set $mc.money -= 25>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<</if>>
-</div>
-<div class="housecard">
-<<if $pantiesState2 eq "not bought">>
-<img @src="setup.ImagePath + '/img/wardrobe/short3.png'" class="iconPx"><br>
-<span class="mc-thoughts">+4 beauty</span><br>
-<span class="priceAmount">35$</span><br>
-<<if $mc.money gte 35>>
-@@.buyItemLink;<<link "Buy" "clothingSection">>
-<<set $pantiesState2 to "not worn">>
-<<set $mc.money -= 35>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<</if>>
-</div>
-<div class="housecard">
-<<if $pantiesState3 eq "not bought">>
-<img @src="setup.ImagePath + '/img/wardrobe/short4.png'" class="iconPx"><br>
-<span class="mc-thoughts">+6 beauty</span><br>
-<span class="priceAmount">45$</span><br>
-<<if $mc.money gte 45>>
-@@.buyItemLink;<<link "Buy" "clothingSection">>
-<<set $pantiesState3 to "not worn">>
-<<set $mc.money -= 45>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<</if>>
-</div>
+<<shopCard "pantiesState1" "img/wardrobe/short2.png" 25 "clothingSection" "+2 beauty">>
+<<shopCard "pantiesState2" "img/wardrobe/short3.png" 35 "clothingSection" "+4 beauty">>
+<<shopCard "pantiesState3" "img/wardrobe/short4.png" 45 "clothingSection" "+6 beauty">>
 
-<div class="housecard">
-<<if $stockingsState1 eq "not bought">>
-<img @src="setup.ImagePath + '/img/wardrobe/Stockings1.png'" class="iconPx"><br>
-<span class="mc-thoughts">+2 beauty</span><br>
-<span class="priceAmount">30$</span><br>
-<<if $mc.money gte 30>>
-@@.buyItemLink;<<link "Buy" "clothingSection">>
-<<set $stockingsState1 to "not worn">>
-<<set $mc.money -= 30>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<</if>>
-</div>
-<div class="housecard">
-<<if $stockingsState2 eq "not bought">>
-<img @src="setup.ImagePath + '/img/wardrobe/Stockings2.png'" class="iconPx"><br>
-<span class="mc-thoughts">+4 beauty</span><br>
-<span class="priceAmount">60$</span><br>
-<<if $mc.money gte 60>>
-@@.buyItemLink;<<link "Buy" "clothingSection">>
-<<set $stockingsState2 to "not worn">>
-<<set $mc.money -= 60>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<</if>>
-</div>
-<div class="housecard">
-<<if $stockingsState3 eq "not bought">>
-<img @src="setup.ImagePath + '/img/wardrobe/Stockings3.png'" class="iconPx"><br>
-<span class="mc-thoughts">+6 beauty</span><br>
-<span class="priceAmount">120$</span><br>
-<<if $mc.money gte 120>>
-@@.buyItemLink;<<link "Buy" "clothingSection">>
-<<set $stockingsState3 to "not worn">>
-<<set $mc.money -= 120>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<</if>>
-</div>
+<<shopCard "stockingsState1" "img/wardrobe/Stockings1.png" 30 "clothingSection" "+2 beauty">>
+<<shopCard "stockingsState2" "img/wardrobe/Stockings2.png" 60 "clothingSection" "+4 beauty">>
+<<shopCard "stockingsState3" "img/wardrobe/Stockings3.png" 120 "clothingSection" "+6 beauty">>
 <div class="housecard">
 </div>
-<div class="housecard">
-<<if ndef $sportswear>>
-<img @src="setup.ImagePath + '/img/wardrobe/sportswear.jpg'" class="iconPx"><br>
-<span class="priceAmount">100$</span><br>
-<<if $mc.money gte 100>>
-@@.buyItemLink;<<link "Buy" "clothingSection">>
-<<set $sportswear to "not worn">>
-<<set $mc.money -= 100>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<</if>>
-</div>
+<<shopCard "sportswear" "img/wardrobe/sportswear.jpg" 100 "clothingSection">>
 <div>
 </div>
 <div>
@@ -302,17 +39,7 @@
 </div>
 <div class="housecard">
 <<if $mc.corruption gte 2>>
-<<if ndef $neckChokerState1>>
-<img @src="setup.ImagePath + '/img/wardrobe/neckChoker1.png'" class="iconPx"><br>
-<span class="mc-thoughts">+15 lust</span><br>
-<span class="priceAmount">100$</span><br>
-<<if $mc.money gte 100>>
-@@.buyItemLink;<<link "Buy" "clothingSection">>
-<<set $neckChokerState1 to "not worn">>
-<<set $mc.money -= 100>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<</if>>
+<<shopCard "neckChokerState1" "img/wardrobe/neckChoker1.png" 100 "clothingSection" "+15 lust">>
 <</if>>
 </div>
 </div>

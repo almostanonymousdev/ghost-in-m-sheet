@@ -1,11 +1,6 @@
 :: add3 {"position":"0,2100","size":"100,100"}
 <<nobr>>
-<<set $minutes += 3>>
-<<if $minutes >= 60>><<set $minutes -= 60>><<set $hours += 1>><</if>>
-<<if $hours >=24>><<set $hours -=24>><<include "resetCD">><</if>>
-<<done>>
-<<replace "#time">><<print ($hours < 10 ? '0' + $hours : $hours) + ":" + (Math.floor($minutes) < 10 ? '0' + Math.floor($minutes) : Math.floor($minutes))>><</replace>>
-<</done>>
+<<addTime 3>>
 <</nobr>>
 
 

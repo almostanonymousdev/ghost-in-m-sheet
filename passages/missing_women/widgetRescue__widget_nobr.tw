@@ -1,0 +1,31 @@
+:: widgetRescue [widget nobr] {"position":"2275,1700","size":"100,100"}
+<<script>>
+setup.rescueGirlPassages = {
+    "Victoria": "rescueVictoria",
+    "Jade": "rescueJade",
+    "Julia": "rescueJulia",
+    "Nadia": "rescueNadia",
+    "Ash": "rescueAsh"
+};
+<</script>>
+
+<<widget "rescueGirlLink">>
+<<set _passage to setup.rescueGirlPassages[$currentRescueGirl]>>
+<<link $currentRescueGirl _passage>><</link>>
+<</widget>>
+
+<<widget "videoToggle">>
+<<set _toggleId to _args[0]>>
+<<set _video1 to _args[1]>>
+<<set _video2 to _args[2]>>
+<<set _videoToggle to !_videoToggle>>
+<<if _videoToggle>>
+<video autoplay controls muted loop>
+ <source @src="setup.ImagePath + '/' + _video1" type="video/mp4">
+ </video>
+<<else>>
+<video autoplay controls muted loop>
+ <source @src="setup.ImagePath + '/' + _video2" type="video/mp4">
+ </video>
+<</if>>
+<</widget>>

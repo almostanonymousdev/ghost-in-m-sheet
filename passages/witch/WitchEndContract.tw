@@ -23,44 +23,13 @@
 <<if ($ghost.name == $ghostTypeSelected)>>
 @@.notmc-speech; Yes, you're right, good girl@@<br>
 
-<div class="wrapperGain">
-<span>You gain:</span><br>
-<span> Money: +$moneyFromContract $ </span><br>
-<span>Experience: +$expFromContract exp</span><br>
-<span><<if $weakenTheGhostQuest eq 1>> Extra money for completing the task: weaken the ghost: + $moneyFromWeakenTheGhost $<</if>></span>
-<span class="reachedNewLvl"></span><br>
-</div>
-
-<span id="expBar"><<showmeter 'xpBar'>></span><br>
-<<set $mc.exp += $expFromContract>><<set $percentageOfLevel to Math.floor(($mc.exp / $neededForNextLevel) *100)>><<updatemeter 'xpBar' `$mc.exp / $neededForNextLevel`>><<set $mc.money += $moneyFromContract + $moneyFromWeakenTheGhost>>
-<<if $mc.exp gte $neededForNextLevel>>
-<<done>><<replace ".reachedNewLvl">>You reached a new level - $mc.lvl !<</replace>><</done>>
-<<set $mc.exp to $mc.exp - $neededForNextLevel>>
- <<set $mc.lvl += 1>>
- <<set $percentageOfLevel -= 100>>
- <<set $neededForNextLevel += Math.ceil(0.3 * $neededForNextLevel)>>
-<<updatemeter 'xpBar' `$mc.exp / $neededForNextLevel`>><</if>>
+<<set $mc.money += $moneyFromContract + $moneyFromWeakenTheGhost>>
+<<gainXP $expFromContract>>
 
 @@.backbtn;[[Back|WitchInside]]@@ <<else>> @@.notmc-speech;No, you are wrong. Maybe you'll get it right next time.@@<br>
 
-<div class="wrapperGain">
-<span>You gain:</span><br>
-<span> Money: +0$ </span><br>
-<span>Experience: +10 exp</span><br>
-<span><<if $weakenTheGhostQuest eq 1>> Extra money for completing the task: weaken the ghost: + $moneyFromWeakenTheGhost $<</if>></span>
-<span class="reachedNewLvl"></span><br>
-</div>
-
-<span id="expBar"><<showmeter 'xpBar'>></span><br>
-
-<<set $mc.exp += 10>><<set $percentageOfLevel to Math.floor(($mc.exp / $neededForNextLevel) *100)>><<updatemeter 'xpBar' `$mc.exp / $neededForNextLevel`>><<set $mc.money += 0 + $moneyFromWeakenTheGhost>>
-<<if $mc.exp gte $neededForNextLevel>>
-<<done>><<replace ".reachedNewLvl">>You reached a new level - $mc.lvl !<</replace>><</done>>
-<<set $mc.exp to $mc.exp - $neededForNextLevel>>
- <<set $mc.lvl += 1>>
- <<set $percentageOfLevel -= 100>>
- <<set $neededForNextLevel += Math.ceil(0.3 * $neededForNextLevel)>>
-<<updatemeter 'xpBar' `$mc.exp / $neededForNextLevel`>><</if>>
+<<set $mc.money += 0 + $moneyFromWeakenTheGhost>>
+<<gainXP 10>>
 
 @@.backbtn;[[Back|WitchInside]]@@<</if>>
 <<set $ghostHuntingMode to 0>>

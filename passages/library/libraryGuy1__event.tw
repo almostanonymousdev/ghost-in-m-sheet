@@ -51,13 +51,7 @@ See, no one noticed us, let's have a quick fuck right here@@<br>
  @@.mc-speech; Ha~, [[no way.|LibraryInside]]@@ @@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 4)@@<br>
  <<else>>
  @@.mc-speech; Alright, you can consider yourself deserving of <<linkappend "this.">>
- <<set _check to random(1,2)>>
- <<if _check eq 1>><video autoplay controls muted loop>
- <source @src="setup.ImagePath + '/library/2.2.mp4'" type="video/mp4">
- </video><</if>>
- <<if _check eq 2>><video autoplay controls muted loop>
- <source @src="setup.ImagePath + '/library/2.3.mp4'" type="video/mp4">
- </video><</if>>
+ <<randomVideo "library/2.2.mp4" "library/2.3.mp4">>
  @@.mc-speech; Why am I doing this? Fuck, my pussy is so wet ❤️@@<br>
  + 30 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br>
  <<if $mc.corruption lte 6>><<set $mc.corruption += 0.2>>

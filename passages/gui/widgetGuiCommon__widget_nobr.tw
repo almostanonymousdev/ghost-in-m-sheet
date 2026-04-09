@@ -1,0 +1,39 @@
+:: widgetGuiCommon [widget nobr] {"position":"0,1900","size":"100,100"}
+<<script>>
+setup.addTime = function(mins) {
+    var sv = State.variables;
+    sv.minutes += mins;
+    if (sv.minutes >= 60) { sv.minutes -= 60; sv.hours += 1; }
+    if (sv.hours >= 24) { sv.hours -= 24; return true; }
+    return false;
+};
+
+setup.updateTimeDisplay = function() {
+    var sv = State.variables;
+    var h = sv.hours < 10 ? '0' + sv.hours : sv.hours;
+    var m = Math.floor(sv.minutes) < 10 ? '0' + Math.floor(sv.minutes) : Math.floor(sv.minutes);
+    return h + ":" + m;
+};
+
+setup.addLust = function(amount) {
+    var sv = State.variables;
+    sv.mc.lust += amount;
+    if (sv.mc.lust >= 100) { sv.mc.lust = 100; }
+    sv.mc.lust = Number(sv.mc.lust.toFixed(2));
+};
+<</script>>
+
+<<widget "addTime">>
+<<set _mins to _args[0]>>
+<<set _crossedMidnight to setup.addTime(_mins)>>
+<<if _crossedMidnight>><<include "resetCD">><</if>>
+<<done>>
+<<replace "#time">><<= setup.updateTimeDisplay()>><</replace>>
+<</done>>
+<</widget>>
+
+<<widget "addLust">>
+<<set _amount to _args[0]>>
+<<run setup.addLust(_amount)>>
+<<updatemeter 'mclust' `$mc.lust / 100`>>
+<</widget>>

@@ -102,94 +102,58 @@ If you have a level 2 or 3 thermometer -  color is added. (See the guide).<</lin
 <br>
 <div class="journal-container">
 <span class="emf spiritbox gwb" id="Spirit">
-<<hovertip "<b>EMF5, GhostWritingBook, SpiritBox</b><br>">>
-<<if def $ghostSpiritInfoCollected>>
-<em>If it doesn't achieve its goal, it will relentlessly follow its victim.</em><</if>>">>Spirit<</hovertip>></span>
+<<hovertip "<b>EMF5, GhostWritingBook, SpiritBox</b><br><<if def $ghostSpiritInfoCollected>><em>If it doesn't achieve its goal, it will relentlessly follow its victim.</em><</if>>">>Spirit<</hovertip>></span>
 
 <span class="emf gwb temperature" id="Shade">
-<<hovertip "<b>EMF5, GhostWritingBook, High Temperature</b><br>">>
-<<if def $ghostShadeInfoCollected>>
-<em>The lower your sanity, the less likely the Shade is to show interest in you.</em><</if>>">>Shade<</hovertip>></span>
+<<hovertip "<b>EMF5, GhostWritingBook, High Temperature</b><br><<if def $ghostShadeInfoCollected>><em>The lower your sanity, the less likely the Shade is to show interest in you.</em><</if>>">>Shade<</hovertip>></span>
 
 <span class="spiritbox gwb uvl" id="Poltergeist">
-<<hovertip "<b>SpiritBox, GhostWritingBook, UVLight</b><br>">>
-<<if def $ghostPoltergeistInfoCollected>>
-<em></em><</if>>">>Poltergeist<</hovertip>></span>
+<<hovertip "<b>SpiritBox, GhostWritingBook, UVLight</b><br><<if def $ghostPoltergeistInfoCollected>><em></em><</if>>">>Poltergeist<</hovertip>></span>
 
 <span class="glass uvl spiritbox" id="Phantom">
-<<hovertip "<b>Ectoplasm, SpiritBox, UVLight</b><br>">>
-<<if def $ghostPhantomInfoCollected>>
-<em>This type of ghost cannot turn off the lights.</em><</if>>">>Phantom<</hovertip>></span>
+<<hovertip "<b>Ectoplasm, SpiritBox, UVLight</b><br><<if def $ghostPhantomInfoCollected>><em>This type of ghost cannot turn off the lights.</em><</if>>">>Phantom<</hovertip>></span>
 
 <span class="glass uvl emf" id="Goryo">
-<<hovertip "<b>EMF5, Ectoplasm, UVLight </b><br>">>
-<<if def $ghostGoryoInfoCollected>>
-<em>Goryo is known for its attachment to a single room and cannot change it like other ghosts do.</em><</if>>">>Goryo<</hovertip>></span>
+<<hovertip "<b>EMF5, Ectoplasm, UVLight </b><br><<if def $ghostGoryoInfoCollected>><em>Goryo is known for its attachment to a single room and cannot change it like other ghosts do.</em><</if>>">>Goryo<</hovertip>></span>
 
 <span class="gwb uvl temperature" id="Demon">
-<<hovertip "<b>HighTemperature, GhostWritingBook, UVLight</b><br>">>
-<<if def $ghostDemonInfoCollected>>
-<em>Demon can start a hunt earlier than other ghosts</em><</if>>">>Demon<</hovertip>></span>
+<<hovertip "<b>HighTemperature, GhostWritingBook, UVLight</b><br><<if def $ghostDemonInfoCollected>><em>Demon can start a hunt earlier than other ghosts</em><</if>>">>Demon<</hovertip>></span>
 
 <span class="glass gwb spiritbox" id="Deogen">
-<<hovertip "<b>Ectoplasm, GhostWritingBook, SpiritBox</b><br>">>
-<<if def $ghostDeogenInfoCollected>>
-<em>When it starts its hunt, hiding won't help, as the Deogen relentlessly searches for you</em><</if>>">>Deogen<</hovertip>></span>
+<<hovertip "<b>Ectoplasm, GhostWritingBook, SpiritBox</b><br><<if def $ghostDeogenInfoCollected>><em>When it starts its hunt, hiding won't help, as the Deogen relentlessly searches for you</em><</if>>">>Deogen<</hovertip>></span>
 
 <span class="emf uvl temperature" id="Jinn">
-<<hovertip "<b>EMF5, HighTemperature, UVLight</b><br>">>
-<<if def $ghostJinnInfoCollected>>
-<em>You can't escape from the Jinn by running, as it is incredibly fast.</em><</if>>">>Jinn<</hovertip>></span>
+<<hovertip "<b>EMF5, HighTemperature, UVLight</b><br><<if def $ghostJinnInfoCollected>><em>You can't escape from the Jinn by running, as it is incredibly fast.</em><</if>>">>Jinn<</hovertip>></span>
 
 <span class="gwb temperature spiritbox" id="Moroi">
-<<hovertip "<b>SpiritBox, GhostWritingBook, HighTemperature</b><br>">>
-<<if def $ghostMoroiInfoCollected>>
-<em></em><</if>>">>Moroi<</hovertip>></span>
+<<hovertip "<b>SpiritBox, GhostWritingBook, HighTemperature</b><br><<if def $ghostMoroiInfoCollected>><em></em><</if>>">>Moroi<</hovertip>></span>
 
 <span class="gwb emf uvl" id="Myling">
-<<hovertip "<b>EMF5, GhostWritingBook, UVLight</b><br>">>
-<<if def $ghostMylingInfoCollected>>
-<em>Once you leave its presence, strange things begin to happen: those around you start seeing you in unusual clothing or even completely naked.</em><</if>>">>Myling<</hovertip>></span>
+<<hovertip "<b>EMF5, GhostWritingBook, UVLight</b><br><<if def $ghostMylingInfoCollected>><em>Once you leave its presence, strange things begin to happen: those around you start seeing you in unusual clothing or even completely naked.</em><</if>>">>Myling<</hovertip>></span>
 
 <span class="glass emf temperature" id="Oni">
-<<hovertip "<b>EMF5, HighTemperature, Ectoplasm</b><br>">>
-<<if def $ghostOniInfoCollected>>
-<em>Encountering this ghost causes sanity to drop faster than with other ghosts.</em><</if>>">>Oni<</hovertip>></span>
+<<hovertip "<b>EMF5, HighTemperature, Ectoplasm</b><br><<if def $ghostOniInfoCollected>><em>Encountering this ghost causes sanity to drop faster than with other ghosts.</em><</if>>">>Oni<</hovertip>></span>
 
 <span class="uvl temperature spiritbox" id="Mimic">
-<<hovertip "<b>SpiritBox, HighTemperature, UVLight</b><br>">>
-<<if def $ghostMimicInfoCollected>>
-<em>Mimic always has an extra evidence — ectoplasm</em><</if>>">>Mimic<</hovertip>></span>
+<<hovertip "<b>SpiritBox, HighTemperature, UVLight</b><br><<if def $ghostMimicInfoCollected>><em>Mimic always has an extra evidence — ectoplasm</em><</if>>">>Mimic<</hovertip>></span>
 
 <span class="emf temperature spiritbox" id="TheTwins">
-<<hovertip "<b>EMF5, HighTemperature, SpiritBox</b><br>">>
-<<if def $ghostTheTwinsInfoCollected>>
-<em></em><</if>>">>TheTwins<</hovertip>></span>
+<<hovertip "<b>EMF5, HighTemperature, SpiritBox</b><br><<if def $ghostTheTwinsInfoCollected>><em></em><</if>>">>TheTwins<</hovertip>></span>
 
 <span class="glass emf spiritbox" id="Wraith">
-<<hovertip "<b>EMF5, Ectoplasm, SpiritBox</b><br>">>
-<<if def $ghostWraithInfoCollected>>
-<em>If caught or if sanity runs out during the ghost hunt, you'll wake up somewhere other than home.</em><</if>>">>Wraith<</hovertip>></span>
+<<hovertip "<b>EMF5, Ectoplasm, SpiritBox</b><br><<if def $ghostWraithInfoCollected>><em>If caught or if sanity runs out during the ghost hunt, you'll wake up somewhere other than home.</em><</if>>">>Wraith<</hovertip>></span>
 
 <span class="glass gwb temperature" id="Mare">
-<<hovertip "<b>Ectoplasm, GhostWritingBook, HighTemperature</b><br>">>
-<<if def $ghostMareInfoCollected>>
-<em>Mare visits your house while you sleep</em><</if>>">>Mare<</hovertip>></span>
+<<hovertip "<b>Ectoplasm, GhostWritingBook, HighTemperature</b><br><<if def $ghostMareInfoCollected>><em>Mare visits your house while you sleep</em><</if>>">>Mare<</hovertip>></span>
 
 <span class="spiritbox glass temperature" id="Cthulion">
-<<hovertip "<b>SpiritBox, Ectoplasm, HighTemperature</b><br>">>
-<<if def $ghostCthulionInfoCollected>>
-<em>Cthulion rarely reveals its true form, preferring to take on a human appearance. But when it needs to interact with its victims, it's not above using its tentacles.</em><</if>>">>Cthulion<</hovertip>></span>
+<<hovertip "<b>SpiritBox, Ectoplasm, HighTemperature</b><br><<if def $ghostCthulionInfoCollected>><em>Cthulion rarely reveals its true form, preferring to take on a human appearance. But when it needs to interact with its victims, it's not above using its tentacles.</em><</if>>">>Cthulion<</hovertip>></span>
 
 <span class="glass gwb uvl" id="Banshee">
-<<hovertip "<b>Ectoplasm, GhostWritingBook, UVLight</b><br>">>
-<<if def $ghostBansheeInfoCollected>>
-<em>The Banshee has a unique ability called the 'Kiss of the Banshee,' which reduces sanity by 10 points.</em><</if>>">>Banshee<</hovertip>></span>
+<<hovertip "<b>Ectoplasm, GhostWritingBook, UVLight</b><br><<if def $ghostBansheeInfoCollected>><em>The Banshee has a unique ability called the 'Kiss of the Banshee,' which reduces sanity by 10 points.</em><</if>>">>Banshee<</hovertip>></span>
 
 <span class="emf spiritbox uvl" id="Raiju">
-<<hovertip "<b>EMF5, SpiritBox, UVLight</b><br>">>
-<<if def $ghostRaijuInfoCollected>>
-<em>Raiju is a mysterious entity that occasionally exerts influence over electrical devices, causing them to display incorrect readings. This spectral presence can manipulate the behavior of electronics, leading to unpredictable and sometimes inexplicable malfunctions.</em><</if>>">>Raiju<</hovertip>></span><br>
+<<hovertip "<b>EMF5, SpiritBox, UVLight</b><br><<if def $ghostRaijuInfoCollected>><em>Raiju is a mysterious entity that occasionally exerts influence over electrical devices, causing them to display incorrect readings. This spectral presence can manipulate the behavior of electronics, leading to unpredictable and sometimes inexplicable malfunctions.</em><</if>>">>Raiju<</hovertip>></span><br>
 
 <<if (previous() eq "WitchEndContract") or (tags(previous()).includes("event"))>>
 @@.backbtn;<<back>>@@<br>

@@ -24,12 +24,7 @@
 <<set _resultAliceAlone to 0>>
 <</if>>
 <br>
-<<if $alice.lvl gte 5>>
-Alice is already at the maximum level!
-<<else>>
-Alice's exp: +10
-<<set $alice.exp += 10>>
-<</if>>
+<<companionExpGain "Alice" "alice">>
 <br>
 <<linkappend "@@.mc-speechLink;Tell me more about how it went.@@">>
 <br>

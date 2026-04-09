@@ -24,12 +24,7 @@
 <<set _resultBrookAlone to 0>>
 <</if>>
 <br>
-<<if $brook.lvl gte 5>>
-Brook is already at the maximum level!
-<<else>>
-Brook's exp: +10
-<<set $brook.exp += 10>>
-<</if>>
+<<companionExpGain "Brook" "brook">>
 <br>
 <<linkappend "@@.mc-speechLink;Tell me more about how it went.@@">>
 <br>

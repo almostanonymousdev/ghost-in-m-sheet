@@ -226,3 +226,49 @@ sugarcube-2:
       name: toolCard
     companionCard:
       name: companionCard
+    randomVideo:
+      name: randomVideo
+    gainXP:
+      name: gainXP
+    companionMini:
+      name: companionMini
+    companionExpGain:
+      name: companionExpGain
+    sanityPills:
+      name: sanityPills
+    deliveryLocation:
+      name: deliveryLocation
+    deliveryEventCheck:
+      name: deliveryEventCheck
+    addTime:
+      name: addTime
+    addLust:
+      name: addLust
+    gymFitnessGain:
+      name: gymFitnessGain
+    randomImage:
+      name: randomImage
+    washClean:
+      name: washClean
+    removeMakeup:
+      name: removeMakeup
+    shopCardCorruption:
+      name: shopCardCorruption
+    shopCard:
+      name: shopCard
+    shopCardConditional:
+      name: shopCardConditional
+    videoToggle:
+      name: videoToggle
+    rescueGirlLink:
+      name: rescueGirlLink
+    breakFreePossession:
+      name: breakFreePossession
+    salonItem:
+      name: salonItem
+    salonItemCorruption:
+      name: salonItemCorruption
+    randomVideoFromList:
+      name: randomVideoFromList
+    ghostInfoCard:
+      name: ghostInfoCard

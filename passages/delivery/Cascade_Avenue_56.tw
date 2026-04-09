@@ -1,28 +1,6 @@
 :: Cascade Avenue 56 {"position":"600,1500","size":"100,100"}
 <<nobr>>
-
-<img @src="setup.ImagePath + '/img/house6.jpg'"  width="90%"><br>
-
-@@.location; Cascade Avenue, 56@@<br>
-<br>
-@@.mc-thoughts;What should I deliver here?@@<br>
-<br>
-<div class=deliverywrapper>
-  <div class="itemAvailableOne"> 
-    <img @src="setup.ImagePath+`/`+$order1.image" class="iconPx"><br>
-    	@@.usebtn;[[Deliver the order|deliveryEvent1]]@@<br>
-  </div>
-  <div class="itemAvailableTwo"> 
-    <img @src="setup.ImagePath+`/`+$order2.image" class="iconPx"><br>
-    	@@.usebtn;[[Deliver the order|deliveryEvent2]]@@<br>
-  </div>
-  <div class="itemAvailableThree"> 
-    <img @src="setup.ImagePath+`/`+$order3.image" class="iconPx"><br>
-    	@@.usebtn;[[Deliver the order|deliveryEvent3]]@@<br>
-  </div>
-</div>
-<br>
-@@.backbtn;[[Leave|DeliveryMap]] @@
+<<deliveryLocation "house6.jpg" "Cascade Avenue, 56">>
 <</nobr>>
 
 

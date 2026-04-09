@@ -1,73 +1,10 @@
 :: BeautySalonPiercing [nobr] {"position":"2700,2200","size":"100,100"}
 <div class="flexwrapper backgroundForText">
-<div class="housecard">
-<<if ndef $earsPiercing>>
-<img @src="setup.ImagePath + '/img/piercing/earspiercing.jpg'" class="iconPx"><br>
-<span class="priceAmount">50$</span><br>
-<span class="mc-thoughts">+2 <img @src="setup.ImagePath + '/img/beauty.png'" style="position: relative; top: 0.375em; width:30px; display: inline; margin: 0;"></span><br>
-<<if $mc.money gte 50>>
-@@.buyItemLink;<<link "Buy" "BeautySalonPiercing">>
-<<set $earsPiercing to "worn">>
-<<set $mc.beauty += 2>>
-<<set $mc.money -= 50>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>><</if>>
-</div>
-<div class="housecard">
-<<if ndef $nosePiercing>>
-<img @src="setup.ImagePath + '/img/piercing/nosepiercing.jpg'" class="iconPx"><br>
-<span class="priceAmount">70$</span><br>
-<span class="mc-thoughts">+3 <img @src="setup.ImagePath + '/img/beauty.png'" style="position: relative; top: 0.375em; width:30px; display: inline; margin: 0;"></span><br>
-<<if $mc.money gte 70>>
-@@.buyItemLink;<<link "Buy" "BeautySalonPiercing">>
-<<set $nosePiercing to "worn">>
-<<set $mc.beauty += 3>>
-<<set $mc.money -= 70>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>><</if>>
-</div>
-<div class="housecard">
-<<if ndef $tonguePiercing>>
-<img @src="setup.ImagePath + '/img/piercing/tonguepiercing.jpg'" class="iconPx"><br>
-<span class="priceAmount">100$</span><br>
-<span class="mc-thoughts">Becomes more sensitive</span><br>
-<<if $mc.money gte 100>>
-@@.buyItemLink;<<link "Buy" "BeautySalonPiercing">>
-<<set $tonguePiercing to "worn">>
-<<set $mc.money -= 100>>
-<<set $piercingTongueAddSens to 0.1>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>><</if>>
-
-</div>
-<div class="housecard">
-<<if ndef $titsPiercing>>
-<img @src="setup.ImagePath + '/img/piercing/titspiercing.jpg'" class="iconPx"><br>
-<span class="priceAmount">130$</span><br>
-<span class="mc-thoughts">Becomes more sensitive</span><br>
-<<if $mc.money gte 130>>
-@@.buyItemLink;<<link "Buy" "BeautySalonPiercing">>
-<<set $titsPiercing to "worn">>
-<<set $mc.money -= 130>>
-<<set $piercingTitsAddSens to 0.1>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>><</if>>
-
-</div>
-
-<div class="housecard">
-<<if ndef $pussyPiercing>>
-<img @src="setup.ImagePath + '/img/piercing/pussypiercing.jpg'" class="iconPx">
-<span class="priceAmount">150$</span><br>
-<span class="mc-thoughts">Becomes more sensitive</span><br>
-<<if $mc.money gte 150>>
-@@.buyItemLink;<<link "Buy" "BeautySalonPiercing">>
-<<set $pussyPiercing to "worn">>
-<<set $mc.money -= 150>>
-<<set $piercingPussyAddSens to 0.1>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>><</if>>
-</div>
+<<salonItem "earsPiercing" "img/piercing/earspiercing.jpg" 50 "BeautySalonPiercing" "+2 beauty" "mc.beauty" `$mc.beauty + 2`>>
+<<salonItem "nosePiercing" "img/piercing/nosepiercing.jpg" 70 "BeautySalonPiercing" "+3 beauty" "mc.beauty" `$mc.beauty + 3`>>
+<<salonItem "tonguePiercing" "img/piercing/tonguepiercing.jpg" 100 "BeautySalonPiercing" "Becomes more sensitive" "piercingTongueAddSens" 0.1>>
+<<salonItem "titsPiercing" "img/piercing/titspiercing.jpg" 130 "BeautySalonPiercing" "Becomes more sensitive" "piercingTitsAddSens" 0.1>>
+<<salonItem "pussyPiercing" "img/piercing/pussypiercing.jpg" 150 "BeautySalonPiercing" "Becomes more sensitive" "piercingPussyAddSens" 0.1>>
 </div>
 <br>
 

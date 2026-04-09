@@ -1,15 +1,7 @@
 :: GroupGymTraining {"position":"2950,1425","size":"100,100"}
 <<nobr>>
 <<include "add60">>
-<<set _check to random(1,2)>>
-<<if _check eq 1>>
-<video autoplay controls muted loop>
- <source @src="setup.ImagePath + '/gym/group.mp4'" type="video/mp4">
- </video><</if>>
- <<if _check eq 2>>
- <video autoplay controls muted loop>
- <source @src="setup.ImagePath + '/gym/group1.mp4'" type="video/mp4">
- </video><</if>>
+<<randomVideo "gym/group.mp4" "gym/group1.mp4">>
  You spent about an hour at the gym, diligently working on improving your physical fitness. Each workout makes you stronger and more resilient, helping you reach new heights.<br>
 <<if $mc.beauty gte 50>>
 @@.mc-thoughts; Suddenly, you were@@ <<linkappend "@@.mc-thoughtsLink; surrounded by all the members of the group class@@.">><br>
@@ -30,42 +22,7 @@ Oooh, [[I can't resist|gymGroupEvent1Start]]@@<br>
 <<else>>@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/beauty.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 50)@@<br><br>@@.backbtn;[[Back|GymInside]] @@<br>
 <</if>>
 
-<<set $previousFit = $mc.fit>>
-<<set $mc.fit += 2>>
-<<set $beautyIncrease = Math.floor($mc.fit / 5) - Math.floor($previousFit / 5)>>
-<<if $beautyIncrease > 0>>
-<<set $mc.beauty += $beautyIncrease>>
-@@.mc-speech; <span class="evidenceText">Your <img @src="setup.ImagePath + '/img/beauty.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> has improved (+1): $mc.beauty now!</span>@@<br>
-<</if>>
-
-<<if !$mc.energyPoints>>
-  <<set $mc.energyPoints = Math.floor($previousFit / 10)>>
-<</if>>
-
-<<set _previousEnergyPoints = $mc.energyPoints>>
-<<set _currentEnergyPoints = Math.floor($mc.fit / 10)>>
-
-<<if _currentEnergyPoints > _previousEnergyPoints>>
-  <<set $mc.energyMax += (_currentEnergyPoints - _previousEnergyPoints)>>
-  <<set $mc.energyPoints = _currentEnergyPoints>>  
-  @@.mc-speech; <span class="evidenceText">Your <img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> has increased (+<<=_currentEnergyPoints - _previousEnergyPoints>>): $mc.energyMax now!</span>@@<br>
-<</if>>
-
-
-<<if $previousFit >= 5 && ($previousFit - 1) % 5 == 0 && $mc.fit < 5>>
-<<set $mc.beauty -= 1>>
-<</if>>
-<<set $mc.fit = Math.max(0, $mc.fit)>>
-<<set $mc.fit = Math.min(100, $mc.fit)>>
-<<set $mc.beauty = Math.max(0, $mc.beauty)>>
-<<set $previousFit = $mc.fit>>
-<<if $mc.fit eq 100>>
- <<if $mc.energyMax < 20>> 
-    <<set $mc.energyMax = 20>>  
-    @@.mc-speech; <span class="evidenceText">Your <img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> has reached the maximum of 20!</span>@@<br>
-  <</if>>
-@@.mc-speech; <span class="evidenceText">Your fitness level is perfect - 100</span>@@<<else>>
- @@.mc-speech; <span class="evidenceText">Your fitness level has improved (+2): $mc.fit now!</span>@@<</if>>
+<<gymFitnessGain 2>>
  <<done>>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>

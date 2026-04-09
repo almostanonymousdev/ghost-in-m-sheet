@@ -7,17 +7,8 @@
 @@.mc-thoughts; You don't even try to resist.@@<br>
 @@.mc-speech; Let it be what it will be.@@<br>
 @@.mc-thoughts; The ghost dragged you to the missing girl and began to have fun with you, using <<link "@@.usebtn; one after the other@@">>.
-<<set _videoToggle to !_videoToggle>>
 <<replace "#rescueStayNadia">>
-<<if _videoToggle>>
-            <video autoplay controls muted loop>
-                <source @src="setup.ImagePath + '/rescue/Nadia/Nadiaboth2.mp4'" type="video/mp4">
-            </video>
-        <<else>>
-            <video autoplay controls muted loop>
-                <source @src="setup.ImagePath + '/rescue/Nadia/Nadiaboth1.mp4'" type="video/mp4">
-            </video>
-  <</if>>
+<<videoToggle "rescueStayNadia" "rescue/Nadia/Nadiaboth2.mp4" "rescue/Nadia/Nadiaboth1.mp4">>
 <</replace>><</link>>
 His cock, hot and huge, beat inside you, taking up all your attention. You did not pay attention to the fact that $currentRescueGirl sometimes licked your tits and pussy. But all this soon@@ <<linkappend "@@.enterbtn; ended@@">><br>
             <video autoplay controls muted loop>
@@ -37,17 +28,8 @@ His cock, hot and huge, beat inside you, taking up all your attention. You did n
 @@.mc-thoughts; You don't even try to resist.@@<br>
 @@.mc-speech; Let it be what it will be.@@<br>
 @@.mc-thoughts; The ghost dragged you to the missing girl and began to have fun with you, using <<link "@@.usebtn; one after the other@@">>.
-<<set _videoToggle to !_videoToggle>>
 <<replace "#rescueStayJulia">>
-<<if _videoToggle>>
-            <video autoplay controls muted loop>
-                <source @src="setup.ImagePath + '/rescue/Julia/Juliaboth2.mp4'" type="video/mp4">
-            </video>
-        <<else>>
-            <video autoplay controls muted loop>
-                <source @src="setup.ImagePath + '/rescue/Julia/Juliaboth1.mp4'" type="video/mp4">
-            </video>
-  <</if>>
+<<videoToggle "rescueStayJulia" "rescue/Julia/Juliaboth2.mp4" "rescue/Julia/Juliaboth1.mp4">>
 <</replace>><</link>>
 His cock, hot and huge, beat inside you, taking up all your attention. You did not pay attention to the fact that $currentRescueGirl sometimes licked your tits and pussy. But all this soon@@ <<linkappend "@@.enterbtn; ended@@">><br>
             <video autoplay controls muted loop>
@@ -65,17 +47,8 @@ His cock, hot and huge, beat inside you, taking up all your attention. You did n
 @@.mc-thoughts; You don't even try to resist.@@<br>
 @@.mc-speech; Let it be what it will be.@@<br>
 @@.mc-thoughts; The ghost dragged you to the missing girl and began to have fun with you, using <<link "@@.usebtn; one after the other@@">>.
-<<set _videoToggle to !_videoToggle>>
 <<replace "#rescueStayVictoria">>
-<<if _videoToggle>>
-            <video autoplay controls muted loop>
-                <source @src="setup.ImagePath + '/rescue/Victoria/Victoriaboth2.mp4'" type="video/mp4">
-            </video>
-        <<else>>
-            <video autoplay controls muted loop>
-                <source @src="setup.ImagePath + '/rescue/Victoria/Victoriaboth1.mp4'" type="video/mp4">
-            </video>
-  <</if>>
+<<videoToggle "rescueStayVictoria" "rescue/Victoria/Victoriaboth2.mp4" "rescue/Victoria/Victoriaboth1.mp4">>
 <</replace>><</link>>
 His cock, hot and huge, beat inside you, taking up all your attention. You did not pay attention to the fact that $currentRescueGirl sometimes licked your tits and pussy. But all this soon@@ <<linkappend "@@.enterbtn; ended@@">><br>
             <video autoplay controls muted loop>
@@ -93,17 +66,8 @@ His cock, hot and huge, beat inside you, taking up all your attention. You did n
 @@.mc-thoughts; You don't even try to resist.@@<br>
 @@.mc-speech; Let it be what it will be.@@<br>
 @@.mc-thoughts; The ghost dragged you to the missing girl and began to have fun with you, using <<link "@@.usebtn; one after the other@@">>.
-<<set _videoToggle to !_videoToggle>>
 <<replace "#rescueStayJade">>
-<<if _videoToggle>>
-            <video autoplay controls muted loop>
-                <source @src="setup.ImagePath + '/rescue/Jade/Jadeboth2.mp4'" type="video/mp4">
-            </video>
-        <<else>>
-            <video autoplay controls muted loop>
-                <source @src="setup.ImagePath + '/rescue/Jade/Jadeboth1.mp4'" type="video/mp4">
-            </video>
-  <</if>>
+<<videoToggle "rescueStayJade" "rescue/Jade/Jadeboth2.mp4" "rescue/Jade/Jadeboth1.mp4">>
 <</replace>><</link>>
 His cock, hot and huge, beat inside you, taking up all your attention. You did not pay attention to the fact that $currentRescueGirl sometimes licked your tits and pussy. But all this soon@@ <<linkappend "@@.enterbtn; ended@@">><br>
             <video autoplay controls muted loop>

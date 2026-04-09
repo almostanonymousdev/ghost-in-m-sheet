@@ -1,21 +1,7 @@
 :: Bath {"position":"600,1100","size":"100,100"}
 <<nobr>>
-<<set _check to random(1,2)>>
-<<if _check eq 1>><img @src="setup.ImagePath + '/bath/1.jpg'" width="60%"><</if>>
-<<if _check eq 2>><img @src="setup.ImagePath + '/bath/2.jpg'" width="60%"><</if>><br>
-
-<<set $mc.dirty to 0>>
-<<if $mc.makeupImg eq 1>><<set $mc.beauty  -= 5>>
-<<elseif $mc.makeupImg eq 2>><<set $mc.beauty  -= 10>>
-<<elseif $mc.makeupImg eq 3>><<set $mc.beauty  -= 15>><</if>>
-<<set $makeupApplied to 0>>
-<<set $mc.makeupImg to 0>>
-@@.mc-speech; Nice and clean again@@<br>
-<br>
-@@.backbtn;[[Back|Bathroom]]@@
-<<done>>
-<<addclass ".linkselector" "disabled-link">>
-<</done>>
+<<randomImage "bath/1.jpg" "bath/2.jpg" "60%">><br>
+<<washClean "60%" 5>>
 <</nobr>>
 
 

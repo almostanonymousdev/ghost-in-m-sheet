@@ -1,14 +1,6 @@
 :: WitchInsideMast {"position":"1250,150","size":"100,100"}
 <<nobr>>
-<<set _check to random(1,2)>>
-<<if _check eq 1>>
-<video autoplay controls muted loop>
- <source @src="setup.ImagePath + '/witch/1.mp4'" type="video/mp4">
- </video><</if>>
- <<if _check eq 2>>
-<video autoplay controls muted loop>
- <source @src="setup.ImagePath + '/witch/2.mp4'" type="video/mp4">
- </video><</if>>
+<<randomVideo "witch/1.mp4" "witch/2.mp4">>
  @@.mc-speech;Oops, she seems a little busy, I'd better come back later@@<br>
  @@.mc-thoughts; She's so hot though@@<br>
 <<if ndef $gotKeyFromWitch>>

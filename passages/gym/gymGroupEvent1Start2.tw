@@ -2,13 +2,7 @@
 <<nobr>>
 <<include "add15lust">>
 <<include "add60">>
-<<set _check to random(1,2)>>
-<<if _check eq 1>><video autoplay controls muted loop>
-    <source @src="setup.ImagePath + '/gym/grouptraining1.5.mp4'" type="video/mp4">
-  </video><</if>>
-<<if _check eq 2>><video autoplay controls muted loop>
-    <source @src="setup.ImagePath + '/gym/grouptraining1.6.mp4'" type="video/mp4">
-  </video><</if>>
+<<randomVideo "gym/grouptraining1.5.mp4" "gym/grouptraining1.6.mp4">>
 @@.mc-thoughts; First someone fucked you, then you started fucking someone else with a toy.<br>
 Eventually everyone @@<<linkappend "@@.mc-thoughtsLink; gathered around you again.@@">>  <br> 
 <video autoplay controls muted loop>
@@ -21,24 +15,7 @@ Eventually everyone @@<<linkappend "@@.mc-thoughtsLink; gathered around you agai
 <<nobr>>
 <<set $mc.lust to 0>>
 <<updatemeter 'mclust' `$mc.lust.toFixed(2) / 100`>><</nobr>>
-<div class="wrapperGain">
-<span>You gain:</span><br>
-<span>Experience: +10 exp</span><br>
-<<if $mc.corruption lt 10>>
-<<set $mc.corruption += 0.5>>
-<span>Corruption: +0.5 </span>
-<</if>>
-<span class="reachedNewLvl"></span><br>
-</div>
-<span id="expBar"><<showmeter 'xpBar'>></span><br>
-<<set $mc.exp += 10>><<set $percentageOfLevel to Math.floor(($mc.exp / $neededForNextLevel) *100)>><<updatemeter 'xpBar' `$mc.exp / $neededForNextLevel`>>
-<<if $mc.exp gte $neededForNextLevel>>
-<<done>><<replace ".reachedNewLvl">>You reached a new level - $mc.lvl !<</replace>><</done>>
-<<set $mc.exp to $mc.exp - $neededForNextLevel>>
- <<set $mc.lvl += 1>>
- <<set $percentageOfLevel -= 100>>
- <<set $neededForNextLevel += Math.ceil(0.3 * $neededForNextLevel)>>
-<<updatemeter 'xpBar' `$mc.exp / $neededForNextLevel`>><</if>>
+<<gainXP 10 0.5>>
 @@.backbtn;[[Leave|GymInside]] @@
 <</linkappend>>
 <<done>>

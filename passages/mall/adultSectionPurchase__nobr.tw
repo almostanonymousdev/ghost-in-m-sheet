@@ -1,18 +1,6 @@
 :: adultSectionPurchase [nobr] {"position":"3000,1850","size":"100,100"}
 <div class="flexwrapper backgroundForText">
-<div class="housecard">
-<<if ndef $dildoPurchased or $dildoPurchased eq 0>>
-<img @src="setup.ImagePath + '/img/dildo.jpg'" class="iconPx"><br>
-<span class="priceAmount">30$</span><br>
-<<if $mc.corruption gte 3>>
-<<if $mc.money gte 30>>
-@@.buyItemLink;<<link "Buy" "adultSectionPurchase">>
-<<set $mc.money -= 30>>
-<<set $dildoPurchased to 1>>
-<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<<else>>@@.mc-thoughts; Don't think I need it@@@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:20%; display: inline; margin: 0;"> ≥ 3)@@<</if>><</if>>
-</div>
+<<shopCardCorruption "dildoPurchased" "img/dildo.jpg" 30 "adultSectionPurchase" 3 1>>
 <div class="housecard">
 <<if $wardenClothesStage eq 1>>
 <img @src="setup.ImagePath + '/img/wardrobe/warden.webp'" class="iconPx"><br>

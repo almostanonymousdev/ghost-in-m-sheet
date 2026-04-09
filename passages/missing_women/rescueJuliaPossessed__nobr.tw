@@ -36,16 +36,7 @@ You started moaning with every slap on your ass. Noticing this, Julia [[took off
 @@.mc-thoughts; She started fucking @@
 <<link "@@.usebtn; your pussy.@@">>
 <<replace "#rescueJuliaPossessed">>
-<<set _videoToggle to !_videoToggle>>
-<<if _videoToggle>>
-            <video autoplay controls muted loop>
-                <source @src="setup.ImagePath + '/rescue/Julia/2.3.mp4'" type="video/mp4">
-            </video>
-        <<else>>
-            <video autoplay controls muted loop>
-                <source @src="setup.ImagePath + '/rescue/Julia/2.2.mp4'" type="video/mp4">
-            </video>
-  <</if>>
+<<videoToggle "rescueJuliaPossessed" "rescue/Julia/2.3.mp4" "rescue/Julia/2.2.mp4">>
 <</replace>><</link>><br>
 @@.mc-speech; Oh... im dripping wet right noooow<br>
 Uuuuwhhh..@@<<linkappend "@@.usebtn; Im about  to...@@">>

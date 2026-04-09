@@ -1,12 +1,7 @@
 :: libraryGirl {"position":"2925,2000","size":"100,100"}
 <<nobr>>
 You wander from shelf to shelf, searching for something interesting. Suddenly, you notice a beautiful girl.
-<<set _checkComic to random(1,5)>>
-<<if _checkComic eq 1>><img @src="setup.ImagePath + '/library/woman1.jpg'" class="libraryGirlImg"><</if>>
-<<if _checkComic eq 2>><img @src="setup.ImagePath + '/library/woman2.jpg'" class="libraryGirlImg"><</if>>
-<<if _checkComic eq 3>><img @src="setup.ImagePath + '/library/woman3.jpg'" class="libraryGirlImg"><</if>>
-<<if _checkComic eq 4>><img @src="setup.ImagePath + '/library/woman4.jpg'" class="libraryGirlImg"><</if>>
-<<if _checkComic eq 5>><img @src="setup.ImagePath + '/library/woman5.jpg'" class="libraryGirlImg"><</if>><br>
+<<randomImage "library/woman1.jpg" "library/woman2.jpg" "library/woman3.jpg" "library/woman4.jpg" "library/woman5.jpg" "50%">><br>
 @@.mc-thoughts;All your attention is focused on her. @@<br>
 @@.mc-speech; You watch until she leaves.@@<br>
 <<include "add30lust">>

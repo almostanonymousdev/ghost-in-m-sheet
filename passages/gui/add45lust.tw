@@ -1,10 +1,6 @@
 :: add45lust {"position":"650,2000","size":"100,100"}
 <<nobr>>
-<<set $mc.lust += 45>>
- <<if $mc.lust gte 100>>
- <<set $mc.lust to 100>>
- <</if>> <<set $mc.lust to Number($mc.lust.toFixed(2))>>
-<<updatemeter 'mclust' `$mc.lust / 100`>>
- <</nobr>>
+<<addLust 45>>
+<</nobr>>
 
 

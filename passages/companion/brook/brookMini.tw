@@ -1,30 +1,6 @@
 :: brookMini {"position":"1850,3225","size":"100,100"}
 <<nobr>>
-<<if def $chosenPlan and $ghostHuntingMode eq 2 and ($isOwaissa eq 1 or $isElm eq 1)>>
-<div class="containerMini">
-		<img @src="setup.ImagePath + '/brook/brook.png'">
-        <div class="scaleMini">
-<img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:13%;">Brook's Sanity: <<showmeter 'companionsanity' `$companion.sanity / $companion.sanityMax`>><br>
-		 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:13%;">
-        Brook's Lust: <<showmeter 'companionlust' `$companion.lust / 100`>>
-        </div>
-
-    </div>
-<</if>>
-
-
-
-
-<style>
-        .containerMini {
-            display: flex;
-            align-items: center; 
-        }
-        .containerMini img {
-           width: 30%;
-           margin-right: 5%;
-        }
-    </style>
-    <</nobr>>
+<<companionMini "brook/brook.png" "Brook">>
+<</nobr>>
 
 

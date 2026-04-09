@@ -42,10 +42,6 @@
 <</if>>
 <<if $isCameraBought eq 1>><<set $mcSleptWithCameraOn to 1>><</if>>
 <</nobr>>
-<<if $mc.makeupImg eq 1>><<set $mc.beauty  -= 5>>
-<<elseif $mc.makeupImg eq 2>><<set $mc.beauty  -= 10>>
-<<elseif $mc.makeupImg eq 3>><<set $mc.beauty  -= 15>><</if>>
-<<set $makeupApplied to 0>>
-<<set $mc.makeupImg to 0>> 
+<<removeMakeup 5>>
 
 

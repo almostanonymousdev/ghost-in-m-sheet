@@ -1,0 +1,50 @@
+:: widgetSalon [widget nobr] {"position":"2600,2000","size":"100,100"}
+
+<<widget "salonItem">>
+<<set _varName to _args[0]>>
+<<set _img to _args[1]>>
+<<set _price to _args[2]>>
+<<set _returnPassage to _args[3]>>
+<<set _bonusText to _args[4]>>
+<<set _extraVar to (typeof _args[5] !== "undefined") ? _args[5] : "">>
+<<set _extraVal to (typeof _args[6] !== "undefined") ? _args[6] : 0>>
+<div class="housecard">
+<<if ndef State.variables[_varName]>>
+<img @src="setup.ImagePath + '/' + _img" class="iconPx"><br>
+<span class="priceAmount"><<= _price>>$</span><br>
+<span class="mc-thoughts">_bonusText</span><br>
+<<if $mc.money gte _price>>
+@@.buyItemLink;<<link "Buy" `_returnPassage`>>
+<<run State.variables[_args[0]] = "worn">>
+<<set $mc.money -= _price>>
+<<if _extraVar>><<run State.variables[_args[5]] = _args[6]>><</if>>
+<</link>>@@<br>
+<<else>>@@.mc-thoughts; I don't have enough money@@<</if>><</if>>
+</div>
+<</widget>>
+
+<<widget "salonItemCorruption">>
+<<set _varName to _args[0]>>
+<<set _img to _args[1]>>
+<<set _price to _args[2]>>
+<<set _returnPassage to _args[3]>>
+<<set _bonusText to _args[4]>>
+<<set _reqCorruption to _args[5]>>
+<div class="housecard">
+<<if ndef State.variables[_varName]>>
+<img @src="setup.ImagePath + '/' + _img" class="iconPx"><br>
+<<if $mc.corruption gte _reqCorruption>>
+<span class="priceAmount"><<= _price>>$</span><br>
+<span class="mc-thoughts">_bonusText</span><br>
+<<if $mc.money gte _price>>
+@@.buyItemLink;<<link "Buy" `_returnPassage`>>
+<<run State.variables[_args[0]] = "worn">>
+<<set $mc.money -= _price>>
+<</link>>@@<br>
+<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
+<<else>>
+@@.warningtext; Req. _reqCorruption+ <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:30px; display: inline; margin: 0;">@@<br>
+<</if>>
+<</if>>
+</div>
+<</widget>>

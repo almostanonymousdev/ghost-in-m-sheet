@@ -1,13 +1,6 @@
 :: ghostSpecialEventWraithStart {"position":"950,2550","size":"100,100"}
 <<nobr>>
-<<set _check to random(1,2)>>
-<<if _check eq 1>>
-<video autoplay controls muted loop>
- <source @src="setup.ImagePath + '/ghosts/specials/wraith3.mp4'" type="video/mp4">
- </video><<else>>
- <video autoplay controls muted loop>
- <source @src="setup.ImagePath + '/ghosts/specials/wraith4.mp4'" type="video/mp4">
- </video><</if>>
+<<randomVideo "ghosts/specials/wraith3.mp4" "ghosts/specials/wraith4.mp4">>
 @@.notmc-speech;Do you like it, slut? I don't understand what you're moaning about.@@ <br>
 @@.notmc-speech;I think it's time to free@@ <<linkappend "@@.notmc-speechLink;your mouth from those rags.@@">>
 <video autoplay controls muted loop>

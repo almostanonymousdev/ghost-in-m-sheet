@@ -1,14 +1,7 @@
 :: ghostSpecialEventWraith {"position":"950,2450","size":"100,100"}
 <<nobr>>
 @@.mc-thoughts; You slowly regain consciousness, feeling a dull ache in your head. Opening your eyes, you find yourself lying on the ground in a forest. Panic sets in as you realize your hands are tightly bound with rough rope.@@<br>
-<<set _check to random(1,2)>>
-<<if _check eq 1>>
-<video autoplay controls muted loop>
- <source @src="setup.ImagePath + '/ghosts/specials/wraith1.mp4'" type="video/mp4">
- </video><<else>>
- <video autoplay controls muted loop>
- <source @src="setup.ImagePath + '/ghosts/specials/wraith2.mp4'" type="video/mp4">
- </video><</if>>
+<<randomVideo "ghosts/specials/wraith1.mp4" "ghosts/specials/wraith2.mp4">>
  
 <<if $mc.energy gte 1>>
 @@.mc-speech; I must try to free myself from these ropes while I still have the strength, or I could be in serious trouble.@@<br>

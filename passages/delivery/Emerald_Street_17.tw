@@ -1,27 +1,6 @@
 :: Emerald Street 17 {"position":"1000,1400","size":"100,100"}
 <<nobr>>
-<img @src="setup.ImagePath + '/img/house5.jpg'"  width="90%"><br>
-
-@@.location; Emerald Street, 17@@<br>
-<br>
-@@.mc-thoughts;What should I deliver here?@@<br>
-<br>
-<div class=deliverywrapper>
-  <div class="itemAvailableOne"> 
-    <img @src="setup.ImagePath+`/`+$order1.image" class="iconPx"><br>
-    	@@.usebtn;[[Deliver the order|deliveryEvent1]]@@<br>
-  </div>
-  <div class="itemAvailableTwo"> 
-    <img @src="setup.ImagePath+`/`+$order2.image" class="iconPx"><br>
-    	@@.usebtn;[[Deliver the order|deliveryEvent2]]@@<br>
-  </div>
-  <div class="itemAvailableThree"> 
-    <img @src="setup.ImagePath+`/`+$order3.image" class="iconPx"><br>
-    	@@.usebtn;[[Deliver the order|deliveryEvent3]]@@<br>
-  </div>
-</div>
-<br>
-@@.backbtn;[[Leave|DeliveryMap]] @@
+<<deliveryLocation "house5.jpg" "Emerald Street, 17">>
 <</nobr>>
 
 

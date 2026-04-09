@@ -8,16 +8,7 @@
 
 <<link "@@.usebtn; penetrating every hole of yours.@@">>
 <<replace "#rescueAshPossessed2">>
-<<set _videoToggle to !_videoToggle>>
-<<if _videoToggle>>
-            <video autoplay controls muted loop>
-                <source @src="setup.ImagePath + '/rescue/Ash/2.3.mp4'" type="video/mp4">
-            </video>
-        <<else>>
-            <video autoplay controls muted loop>
-                <source @src="setup.ImagePath + '/rescue/Ash/2.2.mp4'" type="video/mp4">
-            </video>
-  <</if>>
+<<videoToggle "rescueAshPossessed2" "rescue/Ash/2.3.mp4" "rescue/Ash/2.2.mp4">>
 <</replace>><</link>><br>
 @@.mc-speech; This is so nasty...@@<br>
 @@.mc-thoughts; Having played with your body, they hugged you and @@<<linkappend "@@.usebtn; started kissing@@">>

@@ -1,0 +1,92 @@
+:: widgetDelivery [widget nobr] {"position":"1100,1200","size":"100,100"}
+
+<<widget "deliveryLocation">>
+<<set _img to _args[0]>>
+<<set _address to _args[1]>>
+<img @src="setup.ImagePath + '/img/' + _img" width="90%"><br>
+
+@@.location; _address@@<br>
+<br>
+@@.mc-thoughts;What should I deliver here?@@<br>
+<br>
+<div class=deliverywrapper>
+  <div class="itemAvailableOne">
+    <img @src="setup.ImagePath+`/`+$order1.image" class="iconPx"><br>
+    	@@.usebtn;[[Deliver the order|deliveryEvent1]]@@<br>
+  </div>
+  <div class="itemAvailableTwo">
+    <img @src="setup.ImagePath+`/`+$order2.image" class="iconPx"><br>
+    	@@.usebtn;[[Deliver the order|deliveryEvent2]]@@<br>
+  </div>
+  <div class="itemAvailableThree">
+    <img @src="setup.ImagePath+`/`+$order3.image" class="iconPx"><br>
+    	@@.usebtn;[[Deliver the order|deliveryEvent3]]@@<br>
+  </div>
+</div>
+<br>
+@@.backbtn;[[Leave|DeliveryMap]] @@
+<</widget>>
+
+<<widget "deliveryEventCheck">>
+<<set _orderNum to _args[0]>>
+<<set _order to (_orderNum eq 1) ? $order1 : (_orderNum eq 2) ? $order2 : $order3>>
+<<set _iconVar to "deliveryActiveIcon" + _orderNum>>
+<<set _randomIndex to either(0, 1, 2)>>
+<<set _localIsAddressFound = false>>
+<<set _localIsItemFound = false>>
+
+<<set _previous = previous()>>
+
+<<for _i to 0; _i < $orders.length; _i++>>
+  <<if $orders[_i].address === _previous and $orders[_i].item is _order.item>>
+    <<set _localIsAddressFound = true>>
+    <<set _localIsItemFound = true>>
+    <<break>>
+  <</if>>
+<</for>>
+
+<<if _localIsAddressFound and _localIsItemFound>>
+ <<if _order.item eq "pizza">>
+<<include "DeliveryPizzaEventChoose">>
+<<elseif _order.item eq "package">>
+<<include "DeliveryPackageEventChoose">>
+ <<elseif _order.item eq "burgers">>
+<<include "DeliveryBurgerEventChoose">>
+<<elseif _order.item eq "newspapers">>
+<<include "DeliveryPappersEventChoose">>
+<<elseif _order.item eq "books" and ndef $meetAlice >>
+<<include "meetAlice">>
+<<else>>
+ <img @src="setup.ImagePath + '/img/deliverygirlhappy.jpg'" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
+<<set $earnedMoney += $jobMoneySuccessed>>
+<<if _randomIndex is 0>>
+    @@.notmc-speech; Great, thank you so much!@@
+<<elseif _randomIndex is 1>>
+    @@.notmc-speech; Awesome! Thank you very much.@@
+<<else>>
+    @@.notmc-speech; Just in time, thank you!@@
+<</if>>
+    <br><br>
+   @@.backbtn; [[Back|DeliveryMap]] @@
+<</if>>
+<<else>>
+  <img @src="setup.ImagePath + '/img/deliverygirlsad.jpg'" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
+  <<set $earnedMoney += $jobMoneyFailed>>
+  <<if _randomIndex is 0>>
+    @@.notmc-speech; Sorry, but I think you made a mistake.@@
+<<elseif _randomIndex is 1>>
+    @@.notmc-speech; Apologies, but I believe there might be a mistake.@@
+<<else>>
+    @@.notmc-speech; Sorry, but I think there might be an error.@@
+<</if>><br>
+@@.mc-speech; Damn, I must have made a mistake.@@<br>
+<br>
+<br>
+@@.backbtn;[[Back|DeliveryMap]] @@
+<</if>>
+<<run State.variables[_iconVar] = false>>
+<br>
+<br>
+
+<<include "add30">>
+<</widget>>

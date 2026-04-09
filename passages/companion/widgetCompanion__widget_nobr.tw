@@ -1,0 +1,63 @@
+:: widgetCompanion [widget nobr] {"position":"1850,3100","size":"100,100"}
+
+<<widget "companionMini">>
+<<set _compImg to _args[0]>>
+<<set _compName to _args[1]>>
+<<if def $chosenPlan and $ghostHuntingMode eq 2 and ($isOwaissa eq 1 or $isElm eq 1)>>
+<div class="containerMini">
+		<img @src="setup.ImagePath + '/' + _compImg">
+        <div class="scaleMini">
+<img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:13%;">_compName's Sanity: <<showmeter 'companionsanity' `$companion.sanity / $companion.sanityMax`>>
+		 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:13%;">
+        _compName's Lust: <<showmeter 'companionlust' `$companion.lust / 100`>>
+        </div>
+
+    </div>
+<</if>>
+
+<style>
+        .containerMini {
+            display: flex;
+            align-items: center;
+        }
+        .containerMini img {
+           width: 30%;
+           margin-right: 5%;
+        }
+    </style>
+<</widget>>
+
+<<widget "sanityPills">>
+<<linkreplace "@@.usebtn; Give her the sanity pills.@@">>
+<<if $sanityPillsAmount gte 1>>
+<<if $companion.sanity lt 100>>
+@@.mc-speech; I want you to take these sanity pills. Don't worry, they will help you.@@<br>
+@@.notmc-speech; Thank you, I feel a bit better.@@<br>
+<<set $sanityPillsAmount -= 1>>
+<b>-1 sanity pills</b><br>
+<b>$companion.name's sanity has increased by 30!</b><br>
+<<set $companion.sanity += 30>>
+<<if $companion.sanity gte 100>>
+<<set $companion.sanity to 100>>
+<</if>>
+<<else>>
+@@.mc-thoughts; She doesn't need the pills right now.@@
+<</if>>
+<<else>>
+@@.mc-thoughts; I don't have those pills.@@
+<</if>>
+<</linkreplace>>
+<</widget>>
+
+<<widget "companionExpGain">>
+<<set _compName to _args[0]>>
+<<set _compVarName to _args[1]>>
+<<set _expAmount to (typeof _args[2] !== "undefined") ? _args[2] : 10>>
+<<set _comp to State.variables[_compVarName]>>
+<<if _comp.lvl gte 5>>
+_compName is already at the maximum level!
+<<else>>
+_compName's exp: +_expAmount
+<<set _comp.exp += _expAmount>>
+<</if>>
+<</widget>>

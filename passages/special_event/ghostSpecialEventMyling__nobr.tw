@@ -1,16 +1,8 @@
 :: ghostSpecialEventMyling [nobr] {"position":"1400,2450","size":"100,100"}
-<<set _videoList to []>>
 <<set _videoList to ["myling/1.mp4", "myling/2.mp4", "myling/3.mp4", "myling/4.mp4", "myling/5.mp4", "myling/6.mp4", "myling/7.mp4", "myling/8.mp4", "myling/9.mp4", "myling/10.mp4", "myling/11.mp4"]>>
-
 <<set _randomIndex to random(0, _videoList.length - 1)>>
-<<set _selectedVideo to _videoList[_randomIndex]>>
-<<set $videoEventSpecialMyling to _selectedVideo>>
-
-
-
-<video autoplay controls muted loop>
-<source @src="setup.ImagePath+`/`+$videoEventSpecialMyling" type="video/mp4">
-</video>
+<<set $videoEventSpecialMyling to _videoList[_randomIndex]>>
+<<randomVideoFromList _videoList>>
 
 @@.mc-thoughts; You walk down the street, heading home after yet another ghost hunt. The city has its own kind of life at this hour: groups of people leaving late-night bars, couples wandering after long dinners, and the occasional car driving by. But as you keep walking, you start to notice something strange. People are staring. Almost everyone you pass glances your way. Some smile, others turn their heads for a second look, and one man even whistles, as if something about you has really caught his eye.@@<br>
 

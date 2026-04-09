@@ -53,6 +53,9 @@ def is_dynamic(target: str) -> bool:
     # Variable references
     if t.startswith("$") or t.startswith("_"):
         return True
+    # SugarCube backtick expressions (e.g. `_passage`, `_args[3]`)
+    if t.startswith("`") or t.endswith("`"):
+        return True
     return False
 
 

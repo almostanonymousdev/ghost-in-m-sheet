@@ -20,25 +20,7 @@ I don't think I can influence her. For now...@@<br>
 @@.notmc-speech; Oh~, I'm feeling a bit nervous. What's our plan?@@<br>
 
 <br>
-<<linkreplace "@@.usebtn; Give her the sanity pills.@@">>
-<<if $sanityPillsAmount gte 1>>
-<<if $companion.sanity lt 100>>
-@@.mc-speech; I want you to take these sanity pills. Don't worry, they will help you.@@<br>
-@@.notmc-speech; Thank you, I feel a bit better.@@<br>
-<<set $sanityPillsAmount -= 1>>
-<b>-1 sanity pills</b><br>
-<b>$companion.name's sanity has increased by 30!</b><br>
-<<set $companion.sanity += 30>>
-<<if $companion.sanity gte 100>>
-<<set $companion.sanity to 100>>
-<</if>>
-<<else>>
-@@.mc-thoughts; She doesn't need the pills right now.@@
-<</if>>
-<<else>>
-@@.mc-thoughts; I don't have those pills.@@
-<</if>>
-<</linkreplace>>
+<<sanityPills>>
 <br>
 @@.usebtn;<<link "Let's stick together for now">> 
 <<set $chosenPlan to "Plan1">>
