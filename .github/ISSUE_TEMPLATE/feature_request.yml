@@ -1,0 +1,71 @@
+name: Feature Request
+description: Suggest a new mechanic, system, ghost type, location, or gameplay element
+title: "[Feature] "
+labels: ["feature", "needs-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Admins will review your request and add it to the roadmap if approved.
+        Please be as detailed as possible so we can evaluate your idea fairly.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Feature Summary
+      description: In one or two sentences, what is your feature idea?
+      placeholder: "e.g. Add a new ghost type that haunts the park location"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: What best describes this feature?
+      options:
+        - New Ghost Type
+        - New Location
+        - New NPC / Companion
+        - Gameplay Mechanic
+        - Corruption / Progression System
+        - Ghost Hunting System
+        - UI / Quality of Life
+        - Economy / Contracts
+        - Sound / Music
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Detailed Description
+      description: Describe the feature in detail. How would it work? What would the player experience?
+      placeholder: Describe the feature thoroughly...
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation / Why This?
+      description: Why would this improve the game? What gap does it fill?
+      placeholder: "e.g. Currently there's no way to engage with the park location after the initial quest..."
+
+  - type: textarea
+    id: references
+    attributes:
+      label: References or Examples
+      description: Any inspiration from other games, community threads, or existing content?
+      placeholder: Optional - link to F95zone posts, similar games, etc.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Before Submitting
+      options:
+        - label: I searched existing issues and this hasn't been suggested before
+          required: true
+        - label: I understand this is a suggestion and admins decide what gets added to the roadmap
+          required: true
