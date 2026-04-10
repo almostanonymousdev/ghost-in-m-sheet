@@ -222,6 +222,46 @@ sugarcube-2:
         false to disable or a CSS time value (e.g. "0.4s") to set duration.
         Args: timeOrBool (CSS time string | false), [easing ("swing" |
         "linear")].'
+    roomShell:
+      name: roomShell
+      container: true
+      description: "Container widget that wraps a haunted-house room with the
+        standard .room/.room-wrapper/.content/.action scaffolding. Sets shared
+        _shell* temp vars consumed by the inner <<roomFooter>> widget. Args:
+        passage (string, e.g. 'elmBedroom' or 'IroncladHallway'), bgRoomVar
+        (string, the room state variable whose .background is toggled, e.g.
+        'bedroom' or 'BlockACellA'), [variant (string, 'basic' for enigma's
+        simple light + no companion; default = full)]. Inner content should
+        be an optional <<furnitureRow>> followed by a <<roomFooter>>."
+    furnitureRow:
+      name: furnitureRow
+      container: true
+      description: "Container widget that wraps its contents in
+        <div class=\"furnitureSearch\">. Use inside <<roomShell>> for the small
+        set of <<furnitureItem>>/<<hideSpot>> calls a room exposes; omit
+        entirely for rooms with no furniture."
+    roomFooter:
+      name: roomFooter
+      container: true
+      description: "Container widget that emits the .footer block for a
+        haunted-house room: a .footertools div with <<roomToolBar>> + the
+        appropriate light widget, plus a .footeraction div whose body comes
+        from the inner content (the per-room navigation links). Reads the
+        _shell* temp vars set by the enclosing <<roomShell>> for passage,
+        bgRoomVar, and variant."
+    navLink:
+      name: navLink
+      description: "Renders an @@.adaptiveLink;<<link>>...<</link>>@@
+        navigation link that fires the appropriate include-time-event chain
+        and increments $stepCount. Args: label (string), targetPassage
+        (string), [mode (string, 'hunt' for ironclad's includeTimeEventHunt;
+        default = elm/owaissa includeTimeEventClothesHunt)]."
+    leaveLink:
+      name: leaveLink
+      description: "Wraps a plain @@.adaptiveLink;<<link>> in the
+        .cursedHuntLinkDisable span used by the elm and owaissa hallways'
+        leave/Outside exits. No event chain or step increment. Args: label
+        (string), targetPassage (string)."
     roomToolCard:
       name: roomToolCard
       description: "Renders one tool slot inside <<roomToolBar>>. Derives the

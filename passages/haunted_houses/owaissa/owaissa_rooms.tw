@@ -1,0 +1,67 @@
+:: OwaissaBathroom [hauntedhouse owaissaBathroom] {"position":"1750,550","size":"100,100"}
+<<nobr>><<roomShell "OwaissaBathroom" "bathroom">>
+<<furnitureRow>>
+<<furnitureItem "bathtub.png" "bathroom_bathtub">>
+<<furnitureItem "carpet.png" "bathroom_carpet">>
+<<furnitureItem "sink.png" "bathroom_sink">>
+<<furnitureItem "wmachine.png" "bathroom_wmachine">>
+<</furnitureRow>>
+<<roomFooter>>
+<<navLink "Hallway" "OwaissaHallway">>
+<</roomFooter>>
+<</roomShell>><</nobr>>
+
+
+:: OwaissaBedroom [hauntedhouse owaissaBedroom] {"position":"1750,650","size":"100,100"}
+<<nobr>><<roomShell "OwaissaBedroom" "bedroom">>
+<<furnitureRow>>
+<<hideSpot "OwaissaBedroom" "bed2.png" "bedroom_bed2">>
+<<furnitureItem "table.png" "bedroom_table">>
+<<furnitureItem "wardrobe1.png" "bedroom_wardrobe1">>
+<</furnitureRow>>
+<<roomFooter>>
+<<navLink "Hallway" "OwaissaHallway">>
+<</roomFooter>>
+<</roomShell>><</nobr>>
+
+
+:: OwaissaHallway [hauntedhouse owaissaHallway] {"position":"1650,450","size":"100,100"}
+<<nobr>><<roomShell "OwaissaHallway" "hallway">>
+<<furnitureRow>>
+<<furnitureItem "carpet.png" "hallway_carpet">>
+<<furnitureItem "wardrobe.png" "hallway_wardrobe">>
+<<furnitureItem "coatrack.png" "hallway_coatrack">>
+<</furnitureRow>>
+<<roomFooter>>
+<<navLink "Kitchen" "OwaissaKitchen">>
+<<navLink "Bedroom" "OwaissaBedroom">>
+<<navLink "Bathroom" "OwaissaBathroom">>
+<<leaveLink "Outside" "Owaissa Street">>
+<</roomFooter>>
+<</roomShell>><</nobr>>
+
+
+:: OwaissaKitchen [hauntedhouse owaissaKitchen] {"position":"1650,550","size":"100,100"}
+<<nobr>><<roomShell "OwaissaKitchen" "kitchen">>
+<<furnitureRow>>
+<<furnitureItem "desk.png" "kitchen_desk">>
+<<furnitureItem "table.png" "kitchen_table">>
+<<furnitureItem "sink1.png" "kitchen_sink1">>
+<</furnitureRow>>
+<<roomFooter>>
+<<navLink "Hallway" "OwaissaHallway">>
+<<navLink "Livingroom" "OwaissaLivingroom">>
+<</roomFooter>>
+<</roomShell>><</nobr>>
+
+
+:: OwaissaLivingroom [hauntedhouse owaissaLivingroom] {"position":"1750,450","size":"100,100"}
+<<nobr>><<roomShell "OwaissaLivingroom" "livingroom">>
+<<furnitureRow>>
+<<furnitureItem "table.png" "livingroom_table">>
+<<furnitureItem "sofa.png" "livingroom_sofa">>
+<</furnitureRow>>
+<<roomFooter>>
+<<navLink "Kitchen" "OwaissaKitchen">>
+<</roomFooter>>
+<</roomShell>><</nobr>>

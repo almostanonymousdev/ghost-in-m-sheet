@@ -1,4 +1,72 @@
 :: widgetHauntedHouseRoom [widget nobr] {"position":"7000,100","size":"100,100"}
+/* roomShell — container widget. Args:
+     0: passage name (e.g. "elmBedroom" or "IroncladHallway")
+     1: bgRoom state-variable name (e.g. "bedroom", "BlockACellA")
+     2: light variant — "basic" (enigma: simple light, no companion)
+        or omitted/anything else (full: cursedHuntDisable + minigame heart + companion).
+   Sets shared _shell* temp vars consumed by the inner roomFooter widget,
+   then renders the standard outer .room/.room-wrapper/.content/.action
+   scaffolding and wikifies its contents (which should include an optional
+   <<furnitureRow>> followed by a <<roomFooter>> block). */
+<<widget "roomShell" container>>
+<<set _shellPassage to _args[0]>>
+<<set _shellBgVar  to _args[1]>>
+<<set _shellVariant to (_args.length gt 2 ? _args[2] : "full")>>
+<<set _shellPrefix to _args[0].charAt(0).toLowerCase() + _args[0].slice(1)>>
+<div class="room">
+<div class="room-wrapper">
+<div class="content">
+<div @id="_shellPrefix + 'Action'" class="action"></div>
+</div>
+<<= _contents>>
+</div>
+</div>
+<</widget>>
+
+/* furnitureRow — container widget. Wraps its contents in
+   <div class="furnitureSearch">. Use it inside <<roomShell>> for the small
+   set of <<furnitureItem>>/<<hideSpot>> calls each room exposes. Omit it
+   entirely for rooms with no furniture (e.g. enigma). */
+<<widget "furnitureRow" container>>
+<div class="furnitureSearch"><<= _contents>></div>
+<</widget>>
+
+/* roomFooter — container widget. Reads the _shell* temp vars set by the
+   enclosing <<roomShell>> and emits the full .footer block: a .footertools
+   div with <<roomToolBar>> + the appropriate light widget, plus a
+   .footeraction div whose body comes from _contents (the per-room links).
+   Picks roomFooterLight vs roomFooterLightBasic and toggles companion
+   visibility based on _shellVariant. */
+<<widget "roomFooter" container>>
+<div class="footer">
+<div class="footertools">
+<<if _shellVariant eq "basic">>
+<<roomToolBar _shellPrefix "noCompanion">>
+<<roomFooterLightBasic _shellPassage _shellBgVar>>
+<<else>>
+<<roomToolBar _shellPrefix>>
+<<roomFooterLight _shellPassage _shellBgVar>>
+<</if>>
+</div>
+<div class="footeraction"><<= _contents>></div>
+</div>
+<</widget>>
+
+/* navLink — args: label, target passage, optional mode ("hunt" for the
+   ironclad-style includeTimeEventHunt; default is includeTimeEventClothesHunt
+   used by elm and owaissa). Always increments $stepCount, since every
+   non-enigma navigation link in the haunted houses does. */
+<<widget "navLink">>
+@@.adaptiveLink;<<link _args[0] _args[1]>><<if _args.length gt 2 and _args[2] eq "hunt">><<includeTimeEventHunt>><<else>><<includeTimeEventClothesHunt>><</if>><<set $stepCount += 1>><</link>>@@
+<</widget>>
+
+/* leaveLink — args: label, target passage. Wraps a plain @@.adaptiveLink;
+   <<link>> in the .cursedHuntLinkDisable span used by the elm and owaissa
+   hallways' "leave / Outside" exits. No event chain or step increment. */
+<<widget "leaveLink">>
+<span class="cursedHuntLinkDisable">@@.adaptiveLink;<<link _args[0] _args[1]>><</link>>@@</span>
+<</widget>>
+
 /* roomToolCard — args: tool key (e.g. "emf"), room prefix (e.g. "elmBedroom").
    Renders one tool slot using metadata from setup.searchToolDefs and
    setup.searchPrefixIndex, with the searchTool macro inlined directly. */
