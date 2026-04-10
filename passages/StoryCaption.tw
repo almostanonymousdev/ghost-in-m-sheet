@@ -40,6 +40,11 @@
 <<link "Decreasefollower's sanity(-10)(cheats)">><<set $companion.sanity -=10>><<updatemeter 'companionsanity' `$companion.sanity / 100`>><</link>>
 <</if>><br>
 <<linkreplace "ghostname(cheat)">>$ghost.name<<if $saveMimic eq 1>>(Mimic)<</if>><</linkreplace>><br>
+<<if $ghostHuntingMode gte 1>><<linkreplace "choose ghost type(cheat)">>
+<<for _gi to 1; _gi lte setup.GHOST_SLOT_COUNT; _gi++>>
+<<capture _gi>><<link `"set to " + State.variables["ghost" + _gi].name`>><<set $ghost to clone(State.variables["ghost" + _gi])>><</link>><</capture>><br>
+<</for>>
+<</linkreplace>><br><</if>>
 <<linkreplace "ghostroom(cheat)">>$ghostRoom.name<</linkreplace>><br>
 <<link "lust(cheat)">><<set $mc.lust += 100>><</link>><br>
 <<link "money(cheat)">><<set $mc.money += 100>><</link>><br>
