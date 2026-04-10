@@ -1,27 +1,4 @@
 :: searchPlasmKitchenEnigma {"position":"4725,1200","size":"100,100"}
 <<nobr>>
-<span id="enigmaKitchenPlasmButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;E@@ctoglass">><<addclass ".cardlink" "disabled-link">>
-<span id="enigmaKitchenPlasm">
-<<showmeter  'searchKitchenPlasm' ` $currentsearchKitchen.plasm / $equipment.glass`>>
-</span>
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $kitchen.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-<<include "add1">>
-<<if $currentsearchKitchen.plasm neq $equipment.glass>><<include "lightPassageGhost">><<include "eventArt">>
-<</if>>
-
-<<if $currentsearchKitchen.plasm lte ($equipment.glass - 1)>> 
-<<set $currentsearchKitchen.plasm += 1>>
-<<updatemeter 'searchKitchenPlasm' ` $currentsearchKitchen.plasm / $equipment.glass`>>
-<<elseif $currentsearchKitchen.plasm gte $equipment.glass>>
-<<replace "#actionKitchenEnigma">><<include "PlasmCheckArt">><</replace>> 
-<<replace "#enigmaKitchenPlasm">><</replace>>
-<<set $currentsearchKitchen.plasm to 0>><<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"plasm","room":"Kitchen","bgRoom":"kitchen","buttonId":"enigmaKitchenPlasmButton","meterId":"enigmaKitchenPlasm","meterTag":"span","eventChain":"enigma","replaceMode":"double","actionSel":"actionKitchenEnigma"}`>>
 <</nobr>>
-
-

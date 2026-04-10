@@ -1,32 +1,4 @@
 :: searchEMFKitchenIronclad {"position":"6600,225","size":"100,100"}
 <<nobr>>
-<span id="ironcladKitchenEmfButton">@@.adaptiveLink;<<linkreplace "Use EM@@color:yellow;F">><<addclass ".cardlink" "disabled-link">>
-<span id="ironcladKitchenEmf">
-<<showmeter  'searchKitchenIroncladEmf' ` $currentsearchKitchenIronclad.emf / $equipment.emf`>>
-</span>
-
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $kitchen.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchKitchenIronclad.emf neq $equipment.emf>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchKitchenIronclad.emf lte ($equipment.emf - 1)>> 
-<<set $currentsearchKitchenIronclad.emf += 1>>
-<<updatemeter 'searchKitchenIroncladEmf' ` $currentsearchKitchenIronclad.emf / $equipment.emf`>>
-<<elseif $currentsearchKitchenIronclad.emf gte $equipment.emf>> 
-<<replace "#ironcladKitchenEmf">><<include "EMFcheck">><</replace>>
-<<set $currentsearchKitchenIronclad.emf to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@
+<<searchTool `{"tool":"emf","room":"KitchenIronclad","bgRoom":"kitchen","buttonId":"ironcladKitchenEmfButton","meterId":"ironcladKitchenEmf","meterTag":"span","eventChain":"ironclad","replaceMode":"single"}`>>
 <</nobr>>
-
-

@@ -1,36 +1,4 @@
 :: searchUVLBedroom {"position":"4125,425","size":"100,100"}
 <<nobr>>
-<span id="searchUvlBButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;U@@VL">><<addclass ".cardlink" "disabled-link">>
-<div id="owaissaBUVL">
-
-<<showmeter 'searchBedroomUvl' `$currentsearchBedroom.uvl / $equipment.uvl`>></div>
-<<repeat `$timerToolsDecreased`>>
-<<if $currentsearchBedroom.uvl lte $equipment.uvl>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $bedroom.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchBedroom.uvl neq $equipment.uvl>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "stealClothesEvent">>
-<</if>>
-<<if _stealClothesTriggered is false and _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchBedroom.uvl lte ($equipment.uvl - 1)>>
-<<set $currentsearchBedroom.uvl +=1>>
-<<updatemeter 'searchBedroomUvl' `$currentsearchBedroom.uvl / $equipment.uvl`>><<elseif $currentsearchBedroom.uvl gte $equipment.uvl>> 
-<<replace "#actionBedroom">><<include "UVLcheck">><</replace>>
-<<replace "#owaissaBUVL">><</replace>>
-<<set $currentsearchBedroom.uvl to 0>><<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"uvl","room":"Bedroom","bgRoom":"bedroom","buttonId":"searchUvlBButton","meterId":"owaissaBUVL","meterTag":"div","eventChain":"standard","replaceMode":"double","actionSel":"actionBedroom"}`>>
 <</nobr>>
-
-

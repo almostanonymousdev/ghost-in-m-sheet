@@ -1,32 +1,4 @@
 :: searchThermometrBlockBCellCIronclad {"position":"6300,125","size":"100,100"}
 <<nobr>>
-<span id="ironcladBlockBCellCTemperatureButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;T@@hermometer">><<addclass ".cardlink" "disabled-link">>
-<span id="ironcladBlockBCellCTemperature">
-<<showmeter  'searchBlockBCellCIroncladTemperature' ` $currentsearchBlockBCellCIronclad.temperature / $equipment.temperature`>>
-</span>
-
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $BlockBCellC.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchBlockBCellCIronclad.temperature neq $equipment.temperature>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchBlockBCellCIronclad.temperature lte ($equipment.temperature - 1)>> 
-<<set $currentsearchBlockBCellCIronclad.temperature += 1>>
-<<updatemeter 'searchBlockBCellCIroncladTemperature' ` $currentsearchBlockBCellCIronclad.temperature / $equipment.temperature`>>
-<<elseif $currentsearchBlockBCellCIronclad.temperature gte $equipment.temperature>> 
-<<replace "#ironcladBlockBCellCTemperature">><<include "temperatureHigh">><</replace>>
-<<set $currentsearchBlockBCellCIronclad.temperature to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@
+<<searchTool `{"tool":"temperature","room":"BlockBCellCIronclad","bgRoom":"BlockBCellC","buttonId":"ironcladBlockBCellCTemperatureButton","meterId":"ironcladBlockBCellCTemperature","meterTag":"span","eventChain":"ironclad","replaceMode":"single"}`>>
 <</nobr>>
-
-

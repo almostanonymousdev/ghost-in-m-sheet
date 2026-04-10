@@ -1,35 +1,4 @@
 :: searchEMFHallwayElm {"position":"5125,225","size":"100,100"}
 <<nobr>>
-<span id="elmHallwayEMFButton">@@.adaptiveLink;<<linkreplace "Use EM@@color:yellow;F@@">><<addclass ".cardlink" "disabled-link">>
-<span id="elmHallwayEMF">
-<<showmeter  'searchHallwayEmf' ` $currentsearchHallway.emf / $equipment.emf`>>
-</span>
-
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $hallway.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchHallway.emf neq $equipment.emf>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "stealClothesEvent">>
-<</if>>
-<<if _stealClothesTriggered is false and _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchHallway.emf lte ($equipment.emf - 1)>> 
-<<set $currentsearchHallway.emf += 1>>
-<<updatemeter 'searchHallwayEmf' ` $currentsearchHallway.emf / $equipment.emf`>>
-<<elseif $currentsearchHallway.emf gte $equipment.emf>> 
-<<replace "#elmHallwayEMF">><<include "EMFcheck">><</replace>>
-<<set $currentsearchHallway.emf to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"emf","room":"Hallway","bgRoom":"hallway","buttonId":"elmHallwayEMFButton","meterId":"elmHallwayEMF","meterTag":"span","eventChain":"standard","replaceMode":"single"}`>>
 <</nobr>>
-
-

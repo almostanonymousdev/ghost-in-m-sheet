@@ -1,27 +1,4 @@
 :: searchGwbRoomBEnigma {"position":"5125,1000","size":"100,100"}
 <<nobr>>
-<span id="enigmaRoomBGWBButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;G@@WB">><<addclass ".cardlink" "disabled-link">>
-<span id="enigmaRoomBGWB">
-<<showmeter  'searchRoomBGwb' ` $currentsearchRoomB.gwb / $equipment.gwb`>>
-</span>
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $roomB.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-<<include "add1">>
-<<if $currentsearchRoomB.gwb neq $equipment.gwb>><<include "lightPassageGhost">><<include "eventArt">>
-<</if>>
-
-<<if $currentsearchRoomB.gwb lte ($equipment.gwb - 1)>> 
-<<set $currentsearchRoomB.gwb += 1>>
-<<updatemeter 'searchRoomBGwb' ` $currentsearchRoomB.gwb / $equipment.gwb`>>
-<<elseif $currentsearchRoomB.gwb gte $equipment.gwb>>
-<<replace "#actionRoomBEnigma">><<include "GWBcheckArt">><</replace>> 
-<<replace "#enigmaRoomBGWB">><</replace>>
-<<set $currentsearchRoomB.gwb to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"gwb","room":"RoomB","bgRoom":"roomB","buttonId":"enigmaRoomBGWBButton","meterId":"enigmaRoomBGWB","meterTag":"span","eventChain":"enigma","replaceMode":"double","actionSel":"actionRoomBEnigma"}`>>
 <</nobr>>
-
-

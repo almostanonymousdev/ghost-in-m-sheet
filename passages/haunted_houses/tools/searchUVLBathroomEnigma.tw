@@ -1,27 +1,4 @@
 :: searchUVLBathroomEnigma {"position":"4825,1100","size":"100,100"}
 <<nobr>>
-<span id="enigmaBathroomUVLButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;U@@VL">><<addclass ".cardlink" "disabled-link">>
-<span id="enigmaBathroomUVL">
-<<showmeter  'searchBathroomUvl' ` $currentsearchBathroom.uvl / $equipment.uvl`>>
-</span>
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $bathroom.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-<<include "add1">>
-<<if $currentsearchBathroom.uvl neq $equipment.uvl>><<include "lightPassageGhost">><<include "eventArt">>
-<</if>>
-
-<<if $currentsearchBathroom.uvl lte ($equipment.uvl - 1)>> 
-<<set $currentsearchBathroom.uvl += 1>>
-<<updatemeter 'searchBathroomUvl' ` $currentsearchBathroom.uvl / $equipment.uvl`>>
-<<elseif $currentsearchBathroom.uvl gte $equipment.uvl>>
-<<replace "#actionBathroomEnigma">><<include "UVLcheckArt">><</replace>> 
-<<replace "#enigmaBathroomUVL">><</replace>>
-<<set $currentsearchBathroom.uvl to 0>><<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"uvl","room":"Bathroom","bgRoom":"bathroom","buttonId":"enigmaBathroomUVLButton","meterId":"enigmaBathroomUVL","meterTag":"span","eventChain":"enigma","replaceMode":"double","actionSel":"actionBathroomEnigma"}`>>
 <</nobr>>
-
-

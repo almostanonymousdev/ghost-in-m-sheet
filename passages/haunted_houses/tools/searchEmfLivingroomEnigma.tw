@@ -1,26 +1,4 @@
 :: searchEmfLivingroomEnigma {"position":"4925,900","size":"100,100"}
 <<nobr>>
-<span id="enigmaLivingroomEMFButton">@@.adaptiveLink;<<linkreplace "Use EM@@color:yellow;F@@">><<addclass ".cardlink" "disabled-link">>
-<span id="enigmaLivingroomEMF">
-<<showmeter  'searchLivingroomEmf' ` $currentsearchLivingroom.emf / $equipment.emf`>>
-</span>
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $livingroom.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-<<include "add1">>
-<<if $currentsearchLivingroom.emf neq $equipment.emf>><<include "lightPassageGhost">><<include "eventArt">>
-<</if>>
-
-<<if $currentsearchLivingroom.emf lte ($equipment.emf - 1)>> 
-<<set $currentsearchLivingroom.emf += 1>>
-<<updatemeter 'searchLivingroomEmf' ` $currentsearchLivingroom.emf / $equipment.emf`>>
-<<elseif $currentsearchLivingroom.emf gte $equipment.emf>> 
-<<replace "#enigmaLivingroomEMF">><<include "EMFcheck">><</replace>>
-<<set $currentsearchLivingroom.emf to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"emf","room":"Livingroom","bgRoom":"livingroom","buttonId":"enigmaLivingroomEMFButton","meterId":"enigmaLivingroomEMF","meterTag":"span","eventChain":"enigma","replaceMode":"single"}`>>
 <</nobr>>
-
-

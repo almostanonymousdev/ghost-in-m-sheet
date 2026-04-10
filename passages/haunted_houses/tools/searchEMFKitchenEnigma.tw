@@ -1,26 +1,4 @@
 :: searchEMFKitchenEnigma {"position":"4725,900","size":"100,100"}
 <<nobr>>
-<span id="enigmaKitchenEMFButton">@@.adaptiveLink;<<linkreplace "Use EM@@color:yellow;F@@">><<addclass ".cardlink" "disabled-link">>
-<span id="enigmaKitchenEMF">
-<<showmeter  'searchKitchenEmf' ` $currentsearchKitchen.emf / $equipment.emf`>>
-</span>
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $kitchen.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-<<include "add1">>
-<<if $currentsearchKitchen.emf neq $equipment.emf>><<include "lightPassageGhost">><<include "eventArt">>
-<</if>>
-
-<<if $currentsearchKitchen.emf lte ($equipment.emf - 1)>> 
-<<set $currentsearchKitchen.emf += 1>>
-<<updatemeter 'searchKitchenEmf' ` $currentsearchKitchen.emf / $equipment.emf`>>
-<<elseif $currentsearchKitchen.emf gte $equipment.emf>> 
-<<replace "#enigmaKitchenEMF">><<include "EMFcheck">><</replace>>
-<<set $currentsearchKitchen.emf to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"emf","room":"Kitchen","bgRoom":"kitchen","buttonId":"enigmaKitchenEMFButton","meterId":"enigmaKitchenEMF","meterTag":"span","eventChain":"enigma","replaceMode":"single"}`>>
 <</nobr>>
-
-

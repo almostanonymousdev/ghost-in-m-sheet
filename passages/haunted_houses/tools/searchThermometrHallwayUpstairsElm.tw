@@ -1,35 +1,4 @@
 :: searchThermometrHallwayUpstairsElm {"position":"5225,125","size":"100,100"}
 <<nobr>>
-<span id="elmHallwayUpstairsTemperatureButton">
-@@.adaptiveLink;<<linkreplace "Use @@color:yellow;T@@thermometer">><<addclass ".cardlink" "disabled-link">>
-<span id="elmHallwayUpstairsTemperature">
-<<showmeter 'searchHallwayUpstairsTemperature' ` $currentsearchHallwayUpstairs.temperature / $equipment.temperature`>>
-</span>
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $hallwayUpstairs.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchHallwayUpstairs.temperature neq $equipment.temperature>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "stealClothesEvent">>
-<</if>>
-<<if _stealClothesTriggered is false and _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchHallwayUpstairs.temperature lte ($equipment.temperature - 1)>> 
-<<set $currentsearchHallwayUpstairs.temperature += 1>>
-<<updatemeter 'searchHallwayUpstairsTemperature' ` $currentsearchHallwayUpstairs.temperature / $equipment.temperature`>>
-<<elseif $currentsearchHallwayUpstairs.temperature gte $equipment.temperature>> 
-<<replace "#elmHallwayUpstairsTemperature">><<include "temperatureHigh">><</replace>>
-<<set $currentsearchHallwayUpstairs.temperature to 0>><<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"temperature","room":"HallwayUpstairs","bgRoom":"hallwayUpstairs","buttonId":"elmHallwayUpstairsTemperatureButton","meterId":"elmHallwayUpstairsTemperature","meterTag":"span","eventChain":"standard","replaceMode":"single"}`>>
 <</nobr>>
-
-

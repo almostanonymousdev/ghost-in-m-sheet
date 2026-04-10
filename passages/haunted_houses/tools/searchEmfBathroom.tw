@@ -1,38 +1,4 @@
 :: searchEmfBathroom {"position":"4025,225","size":"100,100"}
 <<nobr>>
-<span id="searchEmfBathButton">@@.adaptiveLink;<<linkreplace "Use EM@@color:yellow;F@@">><<addclass ".cardlink" "disabled-link">>
-<div id="owaissaBEMF">
-
-<<showmeter 'searchBathroomEmf' `$currentsearchBathroom.emf / $equipment.emf`>></div>
-<<repeat `$timerToolsDecreased`>>
-<<if $currentsearchBathroom.emf lte $equipment.emf>>
-
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $bathroom.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchBathroom.emf neq $equipment.emf>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "stealClothesEvent">>
-<</if>>
-<<if _stealClothesTriggered is false and _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchBathroom.emf lte ($equipment.emf - 1)>>
-<<set $currentsearchBathroom.emf += 1>>
-<<updatemeter 'searchBathroomEmf' `$currentsearchBathroom.emf / $equipment.emf`>><<elseif $currentsearchBathroom.emf gte $equipment.emf>> 
-<<replace "#owaissaBEMF">><<include "EMFcheck">><</replace>>
-<<set $currentsearchBathroom.emf to 0>>
-<<removeclass ".cardlink" "disabled-link">><<stop>>
-<</if>>
-
-
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"emf","room":"Bathroom","bgRoom":"bathroom","buttonId":"searchEmfBathButton","meterId":"owaissaBEMF","meterTag":"div","eventChain":"standard","replaceMode":"single"}`>>
 <</nobr>>
-
-

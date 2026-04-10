@@ -1,26 +1,4 @@
 :: searchThermometrKitchenEnigma {"position":"4725,800","size":"100,100"}
 <<nobr>>
-<span id="enigmaKitchenTemperatureButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;T@@hermometer">><<addclass ".cardlink" "disabled-link">>
-<span id="enigmaKitchenTemperature">
-<<showmeter  'searchKitchenTemperature' ` $currentsearchKitchen.temperature / $equipment.temperature`>>
-</span>
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $kitchen.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchKitchen.temperature neq $equipment.temperature>><<include "lightPassageGhost">><<include "eventArt">><</if>>
-
-<<if $currentsearchKitchen.temperature lte ($equipment.temperature - 1)>> 
-<<set $currentsearchKitchen.temperature += 1>>
-<<updatemeter 'searchKitchenTemperature' ` $currentsearchKitchen.temperature / $equipment.temperature`>>
-<<elseif $currentsearchKitchen.temperature gte $equipment.temperature>> 
-<<replace "#enigmaKitchenTemperature">><<include "temperatureHigh">><</replace>>
-<<set $currentsearchKitchen.temperature to 0>><<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"temperature","room":"Kitchen","bgRoom":"kitchen","buttonId":"enigmaKitchenTemperatureButton","meterId":"enigmaKitchenTemperature","meterTag":"span","eventChain":"enigma","replaceMode":"single"}`>>
 <</nobr>>
-
-

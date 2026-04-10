@@ -1,27 +1,4 @@
 :: searchPlasmBasementEnigma {"position":"4525,1200","size":"100,100"}
 <<nobr>>
-<span id="enigmaBasementPlasmButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;E@@ctoglass">><<addclass ".cardlink" "disabled-link">>
-<span id="enigmaBasementPlasm">
-<<showmeter  'searchBasementPlasm' ` $currentsearchBasement.plasm / $equipment.glass`>>
-</span>
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $basement.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-<<include "add1">>
-<<if $currentsearchBasement.plasm neq $equipment.glass>><<include "lightPassageGhost">><<include "eventArt">>
-<</if>>
-
-<<if $currentsearchBasement.plasm lte ($equipment.glass - 1)>> 
-<<set $currentsearchBasement.plasm += 1>>
-<<updatemeter 'searchBasementPlasm' ` $currentsearchBasement.plasm / $equipment.glass`>>
-<<elseif $currentsearchBasement.plasm gte $equipment.glass>>
-<<replace "#actionBasementEnigma">><<include "PlasmCheckArt">><</replace>> 
-<<replace "#enigmaBasementPlasm">><</replace>>
-<<set $currentsearchBasement.plasm to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"plasm","room":"Basement","bgRoom":"basement","buttonId":"enigmaBasementPlasmButton","meterId":"enigmaBasementPlasm","meterTag":"span","eventChain":"enigma","replaceMode":"double","actionSel":"actionBasementEnigma"}`>>
 <</nobr>>
-
-

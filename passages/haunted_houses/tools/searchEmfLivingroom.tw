@@ -1,37 +1,4 @@
 :: searchEmfLivingroom {"position":"4225,225","size":"100,100"}
 <<nobr>>
-<span id="searchEmfLButton">@@.adaptiveLink;<<linkreplace "Use EM@@color:yellow;F@@">><<addclass ".cardlink" "disabled-link">>
-<div id="owaissaLEMF">
-
-<<showmeter 'searchLivingroomEmf' `$currentsearchLivingroom.emf / $equipment.emf`>></div>
-<<repeat `$timerToolsDecreased`>>
-<<if $currentsearchLivingroom.emf lte $equipment.emf>>
-
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $livingroom.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchLivingroom.emf neq $equipment.emf>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "stealClothesEvent">>
-<</if>>
-<<if _stealClothesTriggered is false and _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchLivingroom.emf lte ($equipment.emf - 1)>>
-<<set $currentsearchLivingroom.emf += 1>>
-<<updatemeter 'searchLivingroomEmf' `$currentsearchLivingroom.emf / $equipment.emf`>><<elseif $currentsearchLivingroom.emf gte $equipment.emf>> 
-<<replace "#owaissaLEMF">><<include "EMFcheck">><</replace>>
-<<set $currentsearchLivingroom.emf to 0>><<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"emf","room":"Livingroom","bgRoom":"livingroom","buttonId":"searchEmfLButton","meterId":"owaissaLEMF","meterTag":"div","eventChain":"standard","replaceMode":"single"}`>>
 <</nobr>>
-
-

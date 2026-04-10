@@ -1,28 +1,4 @@
 :: searchUVLRoomAEnigma {"position":"5025,1100","size":"100,100"}
 <<nobr>>
-<span id="enigmaRoomAUVLButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;U@@VL">><<addclass ".cardlink" "disabled-link">>
-<span id="enigmaRoomAUVL">
-<<showmeter  'searchRoomAUvl' ` $currentsearchRoomA.uvl / $equipment.uvl`>>
-</span>
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $roomA.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-<<include "add1">>
-<<if $currentsearchRoomA.uvl neq $equipment.uvl>><<include "lightPassageGhost">><<include "eventArt">>
-<</if>>
-
-
-<<if $currentsearchRoomA.uvl lte ($equipment.uvl - 1)>> 
-<<set $currentsearchRoomA.uvl += 1>>
-<<updatemeter 'searchRoomAUvl' ` $currentsearchRoomA.uvl / $equipment.uvl`>>
-<<elseif $currentsearchRoomA.uvl gte $equipment.uvl>>
-<<replace "#actionRoomAEnigma">><<include "UVLcheckArt">><</replace>> 
-<<replace "#enigmaRoomAUVL">><</replace>>
-<<set $currentsearchRoomA.uvl to 0>><<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"uvl","room":"RoomA","bgRoom":"roomA","buttonId":"enigmaRoomAUVLButton","meterId":"enigmaRoomAUVL","meterTag":"span","eventChain":"enigma","replaceMode":"double","actionSel":"actionRoomAEnigma"}`>>
 <</nobr>>
-
-

@@ -1,33 +1,4 @@
 :: searchPlasmKitchenIronclad {"position":"6600,525","size":"100,100"}
 <<nobr>>
-<span id="ironcladKitchenPlasmButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;E@@ctoglass">><<addclass ".cardlink" "disabled-link">>
-<span id="ironcladKitchenPlasm">
-<<showmeter  'searchKitchenIroncladPlasm' ` $currentsearchKitchenIronclad.plasm / $equipment.glass`>>
-</span>
-
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $kitchen.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchKitchenIronclad.plasm neq $equipment.glass>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchKitchenIronclad.plasm lte ($equipment.glass - 1)>> 
-<<set $currentsearchKitchenIronclad.plasm += 1>>
-<<updatemeter 'searchKitchenIroncladPlasm' ` $currentsearchKitchenIronclad.plasm / $equipment.glass`>>
-<<elseif $currentsearchKitchenIronclad.plasm gte $equipment.glass>> 
-<<replace "#actionironcladKitchen">><<include "PlasmCheck">><</replace>> 
-<<replace "#ironcladKitchenPlasm">><</replace>>
-<<set $currentsearchKitchenIronclad.plasm to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@
+<<searchTool `{"tool":"plasm","room":"KitchenIronclad","bgRoom":"kitchen","buttonId":"ironcladKitchenPlasmButton","meterId":"ironcladKitchenPlasm","meterTag":"span","eventChain":"ironclad","replaceMode":"double","actionSel":"actionironcladKitchen"}`>>
 <</nobr>>
-
-

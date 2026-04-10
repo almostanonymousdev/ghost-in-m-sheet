@@ -1,32 +1,4 @@
 :: searchEMFBlockBCellBIronclad {"position":"6200,225","size":"100,100"}
 <<nobr>>
-<span id="ironcladBlockBCellBEmfButton">@@.adaptiveLink;<<linkreplace "Use EM@@color:yellow;F">><<addclass ".cardlink" "disabled-link">>
-<span id="ironcladBlockBCellBEmf">
-<<showmeter  'searchBlockBCellBIroncladEmf' ` $currentsearchBlockBCellBIronclad.emf / $equipment.emf`>>
-</span>
-
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $BlockBCellB.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchBlockBCellBIronclad.emf neq $equipment.emf>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchBlockBCellBIronclad.emf lte ($equipment.emf - 1)>> 
-<<set $currentsearchBlockBCellBIronclad.emf += 1>>
-<<updatemeter 'searchBlockBCellBIroncladEmf' ` $currentsearchBlockBCellBIronclad.emf / $equipment.emf`>>
-<<elseif $currentsearchBlockBCellBIronclad.emf gte $equipment.emf>> 
-<<replace "#ironcladBlockBCellBEmf">><<include "EMFcheck">><</replace>>
-<<set $currentsearchBlockBCellBIronclad.emf to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@
+<<searchTool `{"tool":"emf","room":"BlockBCellBIronclad","bgRoom":"BlockBCellB","buttonId":"ironcladBlockBCellBEmfButton","meterId":"ironcladBlockBCellBEmf","meterTag":"span","eventChain":"ironclad","replaceMode":"single"}`>>
 <</nobr>>
-
-

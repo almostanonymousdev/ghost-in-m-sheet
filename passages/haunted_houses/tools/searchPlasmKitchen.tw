@@ -1,36 +1,4 @@
 :: searchPlasmKitchen {"position":"3925,525","size":"100,100"}
 <<nobr>>
-<span id="searchPlasmKitchenButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;E@@ctoglass">><<addclass ".cardlink" "disabled-link">>
-<div id="owaissaKPlasm">
-
-<<showmeter 'searchKitchenPlasm' `$currentsearchKitchen.plasm / $equipment.glass`>></div> 
-<<repeat `$timerToolsDecreased`>>
-<<if $currentsearchKitchen.plasm lte $equipment.glass>> 
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $kitchen.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchKitchen.plasm neq $equipment.glass>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "stealClothesEvent">>
-<</if>>
-<<if _stealClothesTriggered is false and _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchKitchen.plasm lte ($equipment.glass - 1)>> 
-<<set $currentsearchKitchen.plasm += 1>> 
-<<updatemeter 'searchKitchenPlasm' `$currentsearchKitchen.plasm / $equipment.glass`>><<elseif $currentsearchKitchen.plasm gte $equipment.glass>> 
-<<replace "#actionKitchen">><<include "PlasmCheck">><</replace>> 
-<<replace "#owaissaKPlasm">><</replace>> 
-<<set $currentsearchKitchen.plasm to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"plasm","room":"Kitchen","bgRoom":"kitchen","buttonId":"searchPlasmKitchenButton","meterId":"owaissaKPlasm","meterTag":"div","eventChain":"standard","replaceMode":"double","actionSel":"actionKitchen"}`>>
 <</nobr>>
-
-

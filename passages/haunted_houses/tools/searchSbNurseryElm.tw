@@ -1,39 +1,4 @@
 :: searchSbNurseryElm {"position":"4725,625","size":"100,100"}
 <<nobr>>
-<span id="elmNurserySpiritboxButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;S@@piritbox">>
-<<if $nursery.background eq 1>>
-<<replace "#actionNurseryElm">><div class="spiritbox-container mc-thoughts">
-I need to turn off the light first</div><</replace>>
-<<else>><<addclass ".cardlink" "disabled-link">>
-<span id="elmNurserySpiritbox">
-<<showmeter  'searchNurserySpiritbox' ` $currentsearchNursery.spiritbox / $equipment.spiritbox`>>
-</span>
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $nursery.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchNursery.spiritbox neq $equipment.spiritbox>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "stealClothesEvent">>
-<</if>>
-<<if _stealClothesTriggered is false and _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchNursery.spiritbox lte ($equipment.spiritbox - 1)>> 
-<<set $currentsearchNursery.spiritbox += 1>>
-<<updatemeter 'searchNurserySpiritbox' ` $currentsearchNursery.spiritbox / $equipment.spiritbox`>>
-<<elseif $currentsearchNursery.spiritbox gte $equipment.spiritbox>>
-<<replace "#actionNurseryElm">><<include "SpiritboxCheck">><</replace>> 
-<<replace "#elmNurserySpiritbox">><</replace>>
-<<set $currentsearchNursery.spiritbox to 0>><<removeclass ".cardlink" "disabled-link">><<stop>>
-<</if>>
-<</repeat>>
-<</if>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"spiritbox","room":"Nursery","bgRoom":"nursery","buttonId":"elmNurserySpiritboxButton","meterId":"elmNurserySpiritbox","meterTag":"span","eventChain":"standard","replaceMode":"double","actionSel":"actionNurseryElm","needsLightCheck":true}`>>
 <</nobr>>
-
-

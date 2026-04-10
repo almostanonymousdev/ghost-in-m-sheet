@@ -1,37 +1,4 @@
 :: searchEmfKitchen {"position":"3925,225","size":"100,100"}
 <<nobr>>
-<span id="searchEmfKButton">@@.adaptiveLink;<<linkreplace "Use EM@@color:yellow;F@@">><<addclass ".cardlink" "disabled-link">>
-<div id="owaissaKEMF">
-<<showmeter 'searchKitchenEmf' `$currentsearchKitchen.emf / $equipment.emf`>></div>
-<<repeat `$timerToolsDecreased`>>
-<<if $currentsearchKitchen.emf lte $equipment.emf>>
-
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $kitchen.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchKitchen.emf neq $equipment.emf>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "stealClothesEvent">>
-<</if>>
-<<if _stealClothesTriggered is false and _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchKitchen.emf lte ($equipment.emf - 1)>>
-<<set $currentsearchKitchen.emf += 1>>
-<<updatemeter 'searchKitchenEmf' `$currentsearchKitchen.emf / $equipment.emf`>><<elseif $currentsearchKitchen.emf gte $equipment.emf>> 
-<<replace "#owaissaKEMF">><<include "EMFcheck">><</replace>>
-<<set $currentsearchKitchen.emf to 0>>
-<<removeclass ".cardlink" "disabled-link">><<stop>>
-<</if>>
-
-
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"emf","room":"Kitchen","bgRoom":"kitchen","buttonId":"searchEmfKButton","meterId":"owaissaKEMF","meterTag":"div","eventChain":"standard","replaceMode":"single"}`>>
 <</nobr>>
-
-

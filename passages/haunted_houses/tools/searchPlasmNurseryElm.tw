@@ -1,35 +1,4 @@
 :: searchPlasmNurseryElm {"position":"4725,525","size":"100,100"}
 <<nobr>>
-<span id="elmNurseryPlasmButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;E@@ctoglass">><<addclass ".cardlink" "disabled-link">>
-<span id="elmNurseryPlasm">
-<<showmeter  'searchNurseryPlasm' ` $currentsearchNursery.plasm / $equipment.glass`>>
-</span>
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $nursery.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchNursery.plasm neq $equipment.glass>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "stealClothesEvent">>
-<</if>>
-<<if _stealClothesTriggered is false and _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchNursery.plasm lte ($equipment.glass - 1)>> 
-<<set $currentsearchNursery.plasm += 1>>
-<<updatemeter 'searchNurseryPlasm' ` $currentsearchNursery.plasm / $equipment.glass`>>
-<<elseif $currentsearchNursery.plasm gte $equipment.glass>>
-<<replace "#actionNurseryElm">><<include "PlasmCheck">><</replace>> 
-<<replace "#elmNurseryPlasm">><</replace>>
-<<set $currentsearchNursery.plasm to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"plasm","room":"Nursery","bgRoom":"nursery","buttonId":"elmNurseryPlasmButton","meterId":"elmNurseryPlasm","meterTag":"span","eventChain":"standard","replaceMode":"double","actionSel":"actionNurseryElm"}`>>
 <</nobr>>
-
-

@@ -1,32 +1,4 @@
 :: searchSbBedroomEnigma {"position":"4625,1300","size":"100,100"}
 <<nobr>>
-<span id="enigmaBedroomSpiritboxButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;S@@piritbox">>
-<<if $bedroom.background eq 1>>
-<<replace "#actionBedroomEnigma">><div class="spiritbox-container mc-thoughts">
-I need to turn off the light first</div><</replace>>
-<<else>><<addclass ".cardlink" "disabled-link">>
-<span id="enigmaBedroomSpiritbox">
-<<showmeter  'searchBedroomSpiritbox' ` $currentsearchBedroom.spiritbox / $equipment.spiritbox`>>
-</span>
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $bedroom.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-<<include "add1">>
-<<if $currentsearchBedroom.spiritbox neq $equipment.spiritbox>><<include "lightPassageGhost">><<include "eventArt">>
-<</if>>
-
-<<if $currentsearchBedroom.spiritbox lte ($equipment.spiritbox - 1)>> 
-<<set $currentsearchBedroom.spiritbox += 1>>
-<<updatemeter 'searchBedroomSpiritbox' ` $currentsearchBedroom.spiritbox / $equipment.spiritbox`>>
-<<elseif $currentsearchBedroom.spiritbox gte $equipment.spiritbox>>
-<<replace "#actionBedroomEnigma">><<include "SpiritboxCheck">><</replace>> 
-<<replace "#enigmaBedroomSpiritbox">><</replace>>
-<<set $currentsearchBedroom.spiritbox to 0>><<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</if>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"spiritbox","room":"Bedroom","bgRoom":"bedroom","buttonId":"enigmaBedroomSpiritboxButton","meterId":"enigmaBedroomSpiritbox","meterTag":"span","eventChain":"enigma","replaceMode":"double","actionSel":"actionBedroomEnigma","needsLightCheck":true}`>>
 <</nobr>>
-
-

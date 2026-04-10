@@ -1,34 +1,4 @@
 :: searchGwbBlockAIronclad {"position":"5600,325","size":"100,100"}
 <<nobr>>
-<span id="ironcladBlockAGwbButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;G@@WB">><<addclass ".cardlink" "disabled-link">>
-<span id="ironcladBlockAGwb">
-<<showmeter  'searchBlockAIroncladGwb' ` $currentsearchBlockAIronclad.gwb / $equipment.gwb`>>
-</span>
-
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $BlockA.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchBlockAIronclad.gwb neq $equipment.gwb>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchBlockAIronclad.gwb lte ($equipment.gwb - 1)>> 
-<<set $currentsearchBlockAIronclad.gwb += 1>>
-<<updatemeter 'searchBlockAIroncladGwb' ` $currentsearchBlockAIronclad.gwb / $equipment.gwb`>>
-<<elseif $currentsearchBlockAIronclad.gwb gte $equipment.gwb>> 
-<<replace "#actionironcladBlockA">><<include "GWBcheck">><</replace>> 
-<<replace "#ironcladBlockAGwb">><</replace>>
-<<set $currentsearchBlockAIronclad.gwb to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@
+<<searchTool `{"tool":"gwb","room":"BlockAIronclad","bgRoom":"BlockA","buttonId":"ironcladBlockAGwbButton","meterId":"ironcladBlockAGwb","meterTag":"span","eventChain":"ironclad","replaceMode":"double","actionSel":"actionironcladBlockA"}`>>
 <</nobr>>
-
-
-

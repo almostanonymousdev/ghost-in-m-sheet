@@ -1,35 +1,4 @@
 :: searchGwbBedroomTwoElm {"position":"4625,325","size":"100,100"}
 <<nobr>>
-<span id="elmBedroomTwoGWBButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;G@@WB">><<addclass ".cardlink" "disabled-link">>
-<span id="elmBedroomTwoGWB">
-<<showmeter  'searchBedroomTwoGwb' `$currentsearchBedroomTwo.gwb / $equipment.gwb`>>
-</span>
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $bedroomTwo.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchBedroomTwo.gwb neq $equipment.gwb>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "stealClothesEvent">>
-<</if>>
-<<if _stealClothesTriggered is false and _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchBedroomTwo.gwb lte ($equipment.gwb - 1)>> 
-<<set $currentsearchBedroomTwo.gwb += 1>>
-<<updatemeter 'searchBedroomTwoGwb' `$currentsearchBedroomTwo.gwb / $equipment.gwb`>>
-<<elseif $currentsearchBedroomTwo.gwb gte $equipment.gwb>>
-<<replace "#actionBedroomTwoElm">><<include "GWBcheck">><</replace>> 
-<<replace "#elmBedroomTwoGWB">><</replace>>
-<<set $currentsearchBedroomTwo.gwb to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"gwb","room":"BedroomTwo","bgRoom":"bedroomTwo","buttonId":"elmBedroomTwoGWBButton","meterId":"elmBedroomTwoGWB","meterTag":"span","eventChain":"standard","replaceMode":"double","actionSel":"actionBedroomTwoElm"}`>>
 <</nobr>>
-
-

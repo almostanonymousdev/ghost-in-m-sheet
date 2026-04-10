@@ -1,41 +1,4 @@
 :: searchSbLivingroom {"position":"4225,625","size":"100,100"}
 <<nobr>>
-<span id="searchSpiritboxLivingroomButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;S@@piritbox">>
-<<if $livingroom.background eq 1>>
-<<replace "#actionLivingroom">><div class="spiritbox-container mc-thoughts">
-I need to turn off the light first</div><</replace>>
-<<else>><<addclass ".cardlink" "disabled-link">>
-<div id="owaissaLivingroomSpiritbox">
-
-<<showmeter 'searchLivingroomSpiritbox' `$currentsearchLivingroom.spiritbox / $equipment.spiritbox`>></div> 
-<<repeat `$timerToolsDecreased`>>
-<<if $currentsearchLivingroom.spiritbox lte $equipment.spiritbox>> 
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $livingroom.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchLivingroom.spiritbox neq $equipment.spiritbox>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "stealClothesEvent">>
-<</if>>
-<<if _stealClothesTriggered is false and _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchLivingroom.spiritbox lte ($equipment.spiritbox - 1)>> 
-<<set $currentsearchLivingroom.spiritbox += 1>> 
-<<updatemeter 'searchLivingroomSpiritbox' `$currentsearchLivingroom.spiritbox / $equipment.spiritbox`>><<elseif $currentsearchLivingroom.spiritbox gte $equipment.spiritbox>> 
-<<replace "#actionLivingroom">><<include "SpiritboxCheck">><</replace>> 
-<<replace "#owaissaLivingroomSpiritbox">><</replace>> 
-<<set $currentsearchLivingroom.spiritbox to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</if>>
-<</repeat>>
-<</if>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"spiritbox","room":"Livingroom","bgRoom":"livingroom","buttonId":"searchSpiritboxLivingroomButton","meterId":"owaissaLivingroomSpiritbox","meterTag":"div","eventChain":"standard","replaceMode":"double","actionSel":"actionLivingroom","needsLightCheck":true}`>>
 <</nobr>>
-
-

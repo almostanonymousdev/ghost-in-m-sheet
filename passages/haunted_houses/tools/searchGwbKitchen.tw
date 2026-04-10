@@ -1,36 +1,4 @@
 :: searchGwbKitchen {"position":"3925,325","size":"100,100"}
 <<nobr>>
-<span id="searchGwbKButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;G@@WB">><<addclass ".cardlink" "disabled-link">>
-<div id="owaissaKGWB">
-<<showmeter 'searchKitchenGwb' `$currentsearchKitchen.gwb / $equipment.gwb`>></div> 
-<<repeat `$timerToolsDecreased`>>
-<<if $currentsearchKitchen.gwb lte $equipment.gwb>> 
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $kitchen.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchKitchen.gwb neq $equipment.gwb>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "stealClothesEvent">>
-<</if>>
-<<if _stealClothesTriggered is false and _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-
-<<if $currentsearchKitchen.gwb lte ($equipment.gwb - 1)>> 
-<<set $currentsearchKitchen.gwb += 1>> 
-<<updatemeter 'searchKitchenGwb' `$currentsearchKitchen.gwb / $equipment.gwb`>><<elseif $currentsearchKitchen.gwb gte $equipment.gwb>> 
-<<replace "#actionKitchen">><<include "GWBcheck">><</replace>> 
-<<replace "#owaissaKGWB">><</replace>> 
-<<set $currentsearchKitchen.gwb to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"gwb","room":"Kitchen","bgRoom":"kitchen","buttonId":"searchGwbKButton","meterId":"owaissaKGWB","meterTag":"div","eventChain":"standard","replaceMode":"double","actionSel":"actionKitchen"}`>>
 <</nobr>>
-
-

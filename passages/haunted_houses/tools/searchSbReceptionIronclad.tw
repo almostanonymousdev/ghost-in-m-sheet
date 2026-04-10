@@ -1,37 +1,4 @@
 :: searchSbReceptionIronclad {"position":"6500,625","size":"100,100"}
 <<nobr>>
-<span id="ironcladReceptionSpiritboxButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;S@@piritbox">>
-<<if $reception.background eq 1>>
-<<replace "#actionironcladReception">><div class="spiritbox-container mc-thoughts">
-I need to turn off the light first</div><</replace>>
-<<else>><<addclass ".cardlink" "disabled-link">>
-<span id="ironcladReceptionSpiritbox">
-<<showmeter  'searchReceptionIroncladSpiritbox' ` $currentsearchReceptionIronclad.spiritbox / $equipment.spiritbox`>>
-</span>
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $reception.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchReceptionIronclad.spiritbox neq $equipment.spiritbox>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-
-<<if $currentsearchReceptionIronclad.spiritbox lte ($equipment.spiritbox - 1)>> 
-<<set $currentsearchReceptionIronclad.spiritbox += 1>>
-<<updatemeter 'searchReceptionIroncladSpiritbox' ` $currentsearchReceptionIronclad.spiritbox / $equipment.spiritbox`>>
-<<elseif $currentsearchReceptionIronclad.spiritbox gte $equipment.spiritbox>>
-<<replace "#actionironcladReception">><<include "SpiritboxCheck">><</replace>> 
-<<replace "#ironcladReceptionSpiritbox">><</replace>>
-<<set $currentsearchReceptionIronclad.spiritbox to 0>> <<removeclass ".cardlink" "disabled-link">><<stop>>
-<</if>>
-<</repeat>>
-<</if>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"spiritbox","room":"ReceptionIronclad","bgRoom":"reception","buttonId":"ironcladReceptionSpiritboxButton","meterId":"ironcladReceptionSpiritbox","meterTag":"span","eventChain":"ironclad","replaceMode":"double","actionSel":"actionironcladReception","needsLightCheck":true}`>>
 <</nobr>>
-
-

@@ -1,37 +1,4 @@
 :: searchSbBlockACellAIronclad {"position":"5800,625","size":"100,100"}
 <<nobr>>
-<span id="ironcladBlockACellASpiritboxButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;S@@piritbox">>
-<<if $BlockACellA.background eq 1>>
-<<replace "#actionironcladBlockACellA">><div class="spiritbox-container mc-thoughts">
-I need to turn off the light first</div><</replace>>
-<<else>><<addclass ".cardlink" "disabled-link">>
-<span id="ironcladBlockACellASpiritbox">
-<<showmeter  'searchBlockACellAIroncladSpiritbox' ` $currentsearchBlockACellAIronclad.spiritbox / $equipment.spiritbox`>>
-</span>
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $BlockACellA.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchBlockACellAIronclad.spiritbox neq $equipment.spiritbox>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-
-<<if $currentsearchBlockACellAIronclad.spiritbox lte ($equipment.spiritbox - 1)>> 
-<<set $currentsearchBlockACellAIronclad.spiritbox += 1>>
-<<updatemeter 'searchBlockACellAIroncladSpiritbox' ` $currentsearchBlockACellAIronclad.spiritbox / $equipment.spiritbox`>>
-<<elseif $currentsearchBlockACellAIronclad.spiritbox gte $equipment.spiritbox>>
-<<replace "#actionironcladBlockACellA">><<include "SpiritboxCheck">><</replace>> 
-<<replace "#ironcladBlockACellASpiritbox">><</replace>>
-<<set $currentsearchBlockACellAIronclad.spiritbox to 0>> <<removeclass ".cardlink" "disabled-link">><<stop>>
-<</if>>
-<</repeat>>
-<</if>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"spiritbox","room":"BlockACellAIronclad","bgRoom":"BlockACellA","buttonId":"ironcladBlockACellASpiritboxButton","meterId":"ironcladBlockACellASpiritbox","meterTag":"span","eventChain":"ironclad","replaceMode":"double","actionSel":"actionironcladBlockACellA","needsLightCheck":true}`>>
 <</nobr>>
-
-

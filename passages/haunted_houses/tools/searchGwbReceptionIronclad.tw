@@ -1,34 +1,4 @@
 :: searchGwbReceptionIronclad {"position":"6500,325","size":"100,100"}
 <<nobr>>
-<span id="ironcladReceptionGwbButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;G@@WB">><<addclass ".cardlink" "disabled-link">>
-<span id="ironcladReceptionGwb">
-<<showmeter  'searchReceptionIroncladGwb' ` $currentsearchReceptionIronclad.gwb / $equipment.gwb`>>
-</span>
-
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $reception.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchReceptionIronclad.gwb neq $equipment.gwb>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchReceptionIronclad.gwb lte ($equipment.gwb - 1)>> 
-<<set $currentsearchReceptionIronclad.gwb += 1>>
-<<updatemeter 'searchReceptionIroncladGwb' ` $currentsearchReceptionIronclad.gwb / $equipment.gwb`>>
-<<elseif $currentsearchReceptionIronclad.gwb gte $equipment.gwb>> 
-<<replace "#actionironcladReception">><<include "GWBcheck">><</replace>> 
-<<replace "#ironcladReceptionGwb">><</replace>>
-<<set $currentsearchReceptionIronclad.gwb to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@
+<<searchTool `{"tool":"gwb","room":"ReceptionIronclad","bgRoom":"reception","buttonId":"ironcladReceptionGwbButton","meterId":"ironcladReceptionGwb","meterTag":"span","eventChain":"ironclad","replaceMode":"double","actionSel":"actionironcladReception"}`>>
 <</nobr>>
-
-
-

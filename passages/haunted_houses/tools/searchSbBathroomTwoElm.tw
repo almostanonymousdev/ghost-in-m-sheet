@@ -1,40 +1,4 @@
 :: searchSbBathroomTwoElm {"position":"5025,625","size":"100,100"}
 <<nobr>>
-<span id="elmBathroomTwoSpiritboxButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;S@@piritbox">>
-<<if $bathroomTwo.background eq 1>>
-<<replace "#actionBathroomTwoElm">><div class="spiritbox-container mc-thoughts">
-I need to turn off the light first</div><</replace>>
-<<else>><<addclass ".cardlink" "disabled-link">>
-<span id="elmBathroomTwoSpiritbox">
-<<showmeter  'searchBathroomTwoSpiritbox' ` $currentsearchBathroomTwo.spiritbox / $equipment.spiritbox`>>
-</span>
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $bathroomTwo.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchBathroomTwo.spiritbox neq $equipment.spiritbox>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "stealClothesEvent">>
-<</if>>
-<<if _stealClothesTriggered is false and _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchBathroomTwo.spiritbox lte ($equipment.spiritbox - 1)>> 
-<<set $currentsearchBathroomTwo.spiritbox += 1>>
-<<updatemeter 'searchBathroomTwoSpiritbox' ` $currentsearchBathroomTwo.spiritbox / $equipment.spiritbox`>>
-<<elseif $currentsearchBathroomTwo.spiritbox gte $equipment.spiritbox>>
-<<replace "#actionBathroomTwoElm">><<include "SpiritboxCheck">><</replace>> 
-<<replace "#elmBathroomTwoSpiritbox">><</replace>>
-<<set $currentsearchBathroomTwo.spiritbox to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</if>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"spiritbox","room":"BathroomTwo","bgRoom":"bathroomTwo","buttonId":"elmBathroomTwoSpiritboxButton","meterId":"elmBathroomTwoSpiritbox","meterTag":"span","eventChain":"standard","replaceMode":"double","actionSel":"actionBathroomTwoElm","needsLightCheck":true}`>>
 <</nobr>>
-
-

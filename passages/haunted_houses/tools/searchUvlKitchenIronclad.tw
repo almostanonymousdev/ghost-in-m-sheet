@@ -1,33 +1,4 @@
 :: searchUvlKitchenIronclad {"position":"6600,425","size":"100,100"}
 <<nobr>>
-<span id="ironcladKitchenUvlButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;U@@VL">><<addclass ".cardlink" "disabled-link">>
-<span id="ironcladKitchenUvl">
-<<showmeter  'searchKitchenIroncladUvl' ` $currentsearchKitchenIronclad.uvl / $equipment.uvl`>>
-</span>
-
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $kitchen.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchKitchenIronclad.uvl neq $equipment.uvl>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchKitchenIronclad.uvl lte ($equipment.uvl - 1)>> 
-<<set $currentsearchKitchenIronclad.uvl += 1>>
-<<updatemeter 'searchKitchenIroncladUvl' ` $currentsearchKitchenIronclad.uvl / $equipment.uvl`>>
-<<elseif $currentsearchKitchenIronclad.uvl gte $equipment.uvl>> 
-<<replace "#actionironcladKitchen">><<include "UVLcheck">><</replace>> 
-<<replace "#ironcladKitchenUvl">><</replace>>
-<<set $currentsearchKitchenIronclad.uvl to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@
+<<searchTool `{"tool":"uvl","room":"KitchenIronclad","bgRoom":"kitchen","buttonId":"ironcladKitchenUvlButton","meterId":"ironcladKitchenUvl","meterTag":"span","eventChain":"ironclad","replaceMode":"double","actionSel":"actionironcladKitchen"}`>>
 <</nobr>>
-
-

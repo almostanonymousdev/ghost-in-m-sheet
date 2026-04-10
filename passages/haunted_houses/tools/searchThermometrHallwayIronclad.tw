@@ -1,32 +1,4 @@
 :: searchThermometrHallwayIronclad {"position":"6400,125","size":"100,100"}
 <<nobr>>
-<span id="ironcladHallwayTemperatureButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;T@@hermometer">><<addclass ".cardlink" "disabled-link">>
-<span id="ironcladHallwayTemperature">
-<<showmeter  'searchHallwayIroncladTemperature' ` $currentsearchHallwayIronclad.temperature / $equipment.temperature`>>
-</span>
-
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $hallway.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchHallwayIronclad.temperature neq $equipment.temperature>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchHallwayIronclad.temperature lte ($equipment.temperature - 1)>> 
-<<set $currentsearchHallwayIronclad.temperature += 1>>
-<<updatemeter 'searchHallwayIroncladTemperature' ` $currentsearchHallwayIronclad.temperature / $equipment.temperature`>>
-<<elseif $currentsearchHallwayIronclad.temperature gte $equipment.temperature>> 
-<<replace "#ironcladHallwayTemperature">><<include "temperatureHigh">><</replace>>
-<<set $currentsearchHallwayIronclad.temperature to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@
+<<searchTool `{"tool":"temperature","room":"HallwayIronclad","bgRoom":"hallway","buttonId":"ironcladHallwayTemperatureButton","meterId":"ironcladHallwayTemperature","meterTag":"span","eventChain":"ironclad","replaceMode":"single"}`>>
 <</nobr>>
-
-

@@ -1,40 +1,4 @@
 :: searchGwbHallway {"position":"3825,325","size":"100,100"}
 <<nobr>>
-<span id="searchGwbHButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;G@@WB">><<addclass ".cardlink" "disabled-link">>
-<div id="owaissaHGWB">
-<<showmeter 'searchHallwayGwb' `$currentsearchHallway.gwb / $equipment.gwb`>></div> 
-
-<<repeat `$timerToolsDecreased`>>
-<<if $currentsearchHallway.gwb lte $equipment.gwb>> 
-
-<<include "add1">>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $hallway.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<if $currentsearchHallway.gwb neq $equipment.gwb>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "stealClothesEvent">>
-<</if>>
-<<if _stealClothesTriggered is false and _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-
-
-<<if $currentsearchHallway.gwb lte ($equipment.gwb - 1)>> 
-<<set $currentsearchHallway.gwb += 1>> 
-<<updatemeter 'searchHallwayGwb' `$currentsearchHallway.gwb / $equipment.gwb`>><<elseif $currentsearchHallway.gwb gte $equipment.gwb>> 
-<<replace "#actionHallway">><<include "GWBcheck">><</replace>> 
-<<replace "#owaissaHGWB">><</replace>> 
-<<set $currentsearchHallway.gwb to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@
-</span>
+<<searchTool `{"tool":"gwb","room":"Hallway","bgRoom":"hallway","buttonId":"searchGwbHButton","meterId":"owaissaHGWB","meterTag":"div","eventChain":"standard","replaceMode":"double","actionSel":"actionHallway"}`>>
 <</nobr>>
-
-

@@ -1,36 +1,4 @@
 :: searchEMFBasement {"position":"4425,225","size":"100,100"}
 <<nobr>>
-<span id="elmBEMFButton">
-@@.adaptiveLink;<<linkreplace "Use EM@@color:yellow;F@@">><<addclass ".cardlink" "disabled-link">>
-<span id="elmBEMF">
-<<showmeter 'searchBasementEmf' ` $currentsearchBasement.emf / $equipment.emf`>>
-</span>
-
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $basement.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchBasement.emf neq $equipment.emf>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "stealClothesEvent">>
-<</if>>
-<<if _stealClothesTriggered is false and _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchBasement.emf lte ($equipment.emf - 1)>> 
-<<set $currentsearchBasement.emf += 1>>
-<<updatemeter 'searchBasementEmf' ` $currentsearchBasement.emf / $equipment.emf`>>
-<<elseif $currentsearchBasement.emf gte $equipment.emf>> 
-<<replace "#elmBEMF">><<include "EMFcheck">><</replace>>
-<<set $currentsearchBasement.emf to 0>><<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"emf","room":"Basement","bgRoom":"basement","buttonId":"elmBEMFButton","meterId":"elmBEMF","meterTag":"span","eventChain":"standard","replaceMode":"single"}`>>
 <</nobr>>
-
-

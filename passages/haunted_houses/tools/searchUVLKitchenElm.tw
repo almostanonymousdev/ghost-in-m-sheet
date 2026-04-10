@@ -1,35 +1,4 @@
 :: searchUVLKitchenElm {"position":"4825,425","size":"100,100"}
 <<nobr>>
-<span id="elmKitchenUVLButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;U@@VL">><<addclass ".cardlink" "disabled-link">>
-<span id="elmKitchenUVL">
-<<showmeter 'searchKitchenUvl' `$currentsearchKitchen.uvl / $equipment.uvl`>>
-</span>
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $kitchen.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchKitchen.uvl neq $equipment.uvl>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "stealClothesEvent">>
-<</if>>
-<<if _stealClothesTriggered is false and _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchKitchen.uvl lte ($equipment.uvl - 1)>> 
-<<set $currentsearchKitchen.uvl += 1>>
-<<updatemeter 'searchKitchenUvl' `$currentsearchKitchen.uvl / $equipment.uvl`>>
-<<elseif $currentsearchKitchen.uvl gte $equipment.uvl>>
-<<replace "#actionKitchenElm">><<include "UVLcheck">><</replace>> 
-<<replace "#elmKitchenUVL">><</replace>>
-<<set $currentsearchKitchen.uvl to 0>><<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"uvl","room":"Kitchen","bgRoom":"kitchen","buttonId":"elmKitchenUVLButton","meterId":"elmKitchenUVL","meterTag":"span","eventChain":"standard","replaceMode":"double","actionSel":"actionKitchenElm"}`>>
 <</nobr>>
-
-

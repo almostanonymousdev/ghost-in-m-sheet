@@ -1,33 +1,4 @@
 :: searchGwbKitchenIronclad {"position":"6600,325","size":"100,100"}
 <<nobr>>
-<span id="ironcladKitchenGwbButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;G@@WB">><<addclass ".cardlink" "disabled-link">>
-<span id="ironcladKitchenGwb">
-<<showmeter  'searchKitchenIroncladGwb' ` $currentsearchKitchenIronclad.gwb / $equipment.gwb`>>
-</span>
-
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $kitchen.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchKitchenIronclad.gwb neq $equipment.gwb>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchKitchenIronclad.gwb lte ($equipment.gwb - 1)>> 
-<<set $currentsearchKitchenIronclad.gwb += 1>>
-<<updatemeter 'searchKitchenIroncladGwb' ` $currentsearchKitchenIronclad.gwb / $equipment.gwb`>>
-<<elseif $currentsearchKitchenIronclad.gwb gte $equipment.gwb>> 
-<<replace "#actionironcladKitchen">><<include "GWBcheck">><</replace>> 
-<<replace "#ironcladKitchenGwb">><</replace>>
-<<set $currentsearchKitchenIronclad.gwb to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@
+<<searchTool `{"tool":"gwb","room":"KitchenIronclad","bgRoom":"kitchen","buttonId":"ironcladKitchenGwbButton","meterId":"ironcladKitchenGwb","meterTag":"span","eventChain":"ironclad","replaceMode":"double","actionSel":"actionironcladKitchen"}`>>
 <</nobr>>
-
-

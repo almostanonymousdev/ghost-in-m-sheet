@@ -1,35 +1,4 @@
 :: searchUVLHallwayUpstairsElm {"position":"5225,425","size":"100,100"}
 <<nobr>>
-<span id="elmHallwayUpstairsUVLButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;U@@VL">><<addclass ".cardlink" "disabled-link">>
-<span id="elmHallwayUpstairsUVL">
-<<showmeter 'searchHallwayUpstairsUvl' `$currentsearchHallwayUpstairs.uvl / $equipment.uvl`>>
-</span>
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $hallwayUpstairs.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchHallwayUpstairs.uvl neq $equipment.uvl>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "stealClothesEvent">>
-<</if>>
-<<if _stealClothesTriggered is false and _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchHallwayUpstairs.uvl lte ($equipment.uvl - 1)>> 
-<<set $currentsearchHallwayUpstairs.uvl += 1>>
-<<updatemeter 'searchHallwayUpstairsUvl' `$currentsearchHallwayUpstairs.uvl / $equipment.uvl`>>
-<<elseif $currentsearchHallwayUpstairs.uvl gte $equipment.uvl>>
-<<replace "#actionHallwayUpstairsElm">><<include "UVLcheck">><</replace>> 
-<<replace "#elmHallwayUpstairsUVL">><</replace>>
-<<set $currentsearchHallwayUpstairs.uvl to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"uvl","room":"HallwayUpstairs","bgRoom":"hallwayUpstairs","buttonId":"elmHallwayUpstairsUVLButton","meterId":"elmHallwayUpstairsUVL","meterTag":"span","eventChain":"standard","replaceMode":"double","actionSel":"actionHallwayUpstairsElm"}`>>
 <</nobr>>
-
-

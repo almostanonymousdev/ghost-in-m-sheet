@@ -1,39 +1,4 @@
 :: searchSbKitchenElm {"position":"4825,625","size":"100,100"}
 <<nobr>>
-<span id="elmKitchenSpiritboxButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;S@@piritbox">>
-<<if $kitchen.background eq 1>>
-<<replace "#actionKitchenElm">><div class="spiritbox-container mc-thoughts">
-I need to turn off the light first</div><</replace>>
-<<else>><<addclass ".cardlink" "disabled-link">>
-<span id="elmKitchenSpiritbox">
-<<showmeter  'searchKitchenSpiritbox' ` $currentsearchKitchen.spiritbox / $equipment.spiritbox`>>
-</span>
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $kitchen.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchKitchen.spiritbox neq $equipment.spiritbox>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "stealClothesEvent">>
-<</if>>
-<<if _stealClothesTriggered is false and _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchKitchen.spiritbox lte ($equipment.spiritbox - 1)>> 
-<<set $currentsearchKitchen.spiritbox += 1>>
-<<updatemeter 'searchKitchenSpiritbox' ` $currentsearchKitchen.spiritbox / $equipment.spiritbox`>>
-<<elseif $currentsearchKitchen.spiritbox gte $equipment.spiritbox>>
-<<replace "#actionKitchenElm">><<include "SpiritboxCheck">><</replace>> 
-<<replace "#elmKitchenSpiritbox">><</replace>>
-<<set $currentsearchKitchen.spiritbox to 0>> <<removeclass ".cardlink" "disabled-link">><<stop>>
-<</if>>
-<</repeat>>
-<</if>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"spiritbox","room":"Kitchen","bgRoom":"kitchen","buttonId":"elmKitchenSpiritboxButton","meterId":"elmKitchenSpiritbox","meterTag":"span","eventChain":"standard","replaceMode":"double","actionSel":"actionKitchenElm","needsLightCheck":true}`>>
 <</nobr>>
-
-

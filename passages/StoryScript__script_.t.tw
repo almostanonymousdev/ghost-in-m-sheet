@@ -1412,6 +1412,200 @@ setup.makeEmptySearchState = function () {
     };
 };
 
+/* Per-tool metadata for the <<searchTool>> macro. The label/checkPassage
+ * fields used to be hand-duplicated across ~200 search passages. */
+setup.searchToolDefs = {
+    emf: {
+        meterField:      "Emf",
+        equipField:      "emf",
+        label:           "Use EM@@color:yellow;F@@",
+        checkPassage:    "EMFcheck",
+        artCheckPassage: "EMFcheck"
+    },
+    gwb: {
+        meterField:      "Gwb",
+        equipField:      "gwb",
+        label:           "Use @@color:yellow;G@@WB",
+        checkPassage:    "GWBcheck",
+        artCheckPassage: "GWBcheckArt"
+    },
+    spiritbox: {
+        meterField:      "Spiritbox",
+        equipField:      "spiritbox",
+        label:           "Use @@color:yellow;S@@piritbox",
+        checkPassage:    "SpiritboxCheck",
+        artCheckPassage: "SpiritboxCheck"
+    },
+    plasm: {
+        meterField:      "Plasm",
+        equipField:      "glass",
+        label:           "Use @@color:yellow;E@@ctoglass",
+        checkPassage:    "PlasmCheck",
+        artCheckPassage: "PlasmCheckArt"
+    },
+    temperature: {
+        meterField:      "Temperature",
+        equipField:      "temperature",
+        label:           "Use @@color:yellow;T@@hermometr",
+        checkPassage:    "temperatureHigh",
+        artCheckPassage: "temperatureHigh"
+    },
+    uvl: {
+        meterField:      "Uvl",
+        equipField:      "uvl",
+        label:           "Use @@color:yellow;U@@VL",
+        checkPassage:    "UVLcheck",
+        artCheckPassage: "UVLcheckArt"
+    }
+};
+
+/* Build the markup for one tool slot. Called by the <<searchTool>> macro
+ * with a config object whose required fields are:
+ *   tool        — key into setup.searchToolDefs
+ *   room        — bag suffix, e.g. "Bedroom" or "KitchenIronclad"
+ *                 (the search bag is $currentsearch<Room>; meter is search<Room><Tool>)
+ *   bgRoom      — variable name of the room state object whose .background field
+ *                 controls the dark/lights checks (e.g. "bedroom" or "kitchen")
+ *   buttonId    — id of the wrapping button span (preserved verbatim so parent
+ *                 passages keep their existing CSS hooks)
+ *   meterId     — id of the meter container element
+ *   meterTag    — "span" or "div" — original passages mixed both
+ *   eventChain  — "standard" | "ironclad" | "enigma"
+ *   replaceMode — "single" (replace meterId with check passage)
+ *               | "double" (replace actionSel with check passage AND clear meterId)
+ * Optional fields:
+ *   actionSel   — required when replaceMode === "double"
+ *   needsLightCheck — true for spiritbox; wraps body in lights-off guard
+ *   lightOffSel — selector for the lights-off message (defaults to "#" + actionSel)
+ */
+setup.searchToolMarkup = function (cfg) {
+    var def = setup.searchToolDefs[cfg.tool];
+    if (!def) {
+        throw new Error("searchTool: unknown tool '" + cfg.tool + "'");
+    }
+    if (!cfg.room || !cfg.bgRoom || !cfg.buttonId || !cfg.meterId) {
+        throw new Error("searchTool: missing required field");
+    }
+    if (cfg.replaceMode === "double" && !cfg.actionSel) {
+        throw new Error("searchTool: replaceMode=double requires actionSel");
+    }
+
+    var meterTag    = cfg.meterTag || "span";
+    var bag         = "$currentsearch" + cfg.room;
+    var bgRoom      = "$" + cfg.bgRoom;
+    var equip       = "$equipment." + def.equipField;
+    var field       = bag + "." + cfg.tool;
+    var meterName   = "search" + cfg.room + def.meterField;
+    var meterExpr   = "`" + field + " / " + equip + "`";
+
+    var checkPassage = (cfg.eventChain === "enigma")
+        ? def.artCheckPassage
+        : def.checkPassage;
+
+    // Event chain — what happens when an iteration ticks WITHOUT completing.
+    var eventChain;
+    if (cfg.eventChain === "enigma") {
+        eventChain = '<<include "lightPassageGhost">><<include "eventArt">>';
+    } else if (cfg.eventChain === "ironclad") {
+        eventChain =
+            '<<if $cursedHuntActive eq 1>><<else>>' +
+                '<<include "lightPassageGhost">><<include "event">>' +
+                '<<if _eventTriggered is false>>' +
+                    '<<include "huntStart">>' +
+                '<</if>>' +
+            '<</if>>';
+    } else {
+        // standard (default + Elm + Owaissa)
+        eventChain =
+            '<<if $cursedHuntActive eq 1>><<else>>' +
+                '<<include "lightPassageGhost">><<include "event">>' +
+                '<<if _eventTriggered is false>>' +
+                    '<<include "stealClothesEvent">>' +
+                '<</if>>' +
+                '<<if _stealClothesTriggered is false and _eventTriggered is false>>' +
+                    '<<include "huntStart">>' +
+                '<</if>>' +
+            '<</if>>';
+    }
+
+    // Completion replace — what happens when the meter fills.
+    var completionReplace;
+    if (cfg.replaceMode === "double") {
+        completionReplace =
+            '<<replace "#' + cfg.actionSel + '">><<include "' + checkPassage + '">><</replace>>' +
+            '<<replace "#' + cfg.meterId + '">><</replace>>';
+    } else {
+        completionReplace =
+            '<<replace "#' + cfg.meterId + '">><<include "' + checkPassage + '">><</replace>>';
+    }
+
+    // Body of the <<repeat>> loop.
+    var repeatBody = [
+        '<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>',
+        '<<if ' + bgRoom + '.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>',
+        '<<include "add1">>',
+        '<<if ' + field + ' neq ' + equip + '>>',
+            eventChain,
+        '<</if>>',
+        '<<if ' + field + ' lte (' + equip + ' - 1)>>',
+            '<<set ' + field + ' += 1>>',
+            '<<updatemeter \'' + meterName + '\' ' + meterExpr + '>>',
+        '<<elseif ' + field + ' gte ' + equip + '>>',
+            completionReplace,
+            '<<set ' + field + ' to 0>>',
+            '<<removeclass ".cardlink" "disabled-link">>',
+            '<<stop>>',
+        '<</if>>'
+    ].join('\n');
+
+    var coreBody = [
+        '<' + meterTag + ' id="' + cfg.meterId + '">',
+        '<<showmeter \'' + meterName + '\' ' + meterExpr + '>>',
+        '</' + meterTag + '>',
+        '<<repeat `$timerToolsDecreased`>>',
+        repeatBody,
+        '<</repeat>>'
+    ].join('\n');
+
+    // Spiritbox-style lights-off guard wraps the meter + repeat in an
+    // <<if bgRoom.background eq 1>>...<<else>>...<</if>> branch.
+    var inner;
+    if (cfg.needsLightCheck) {
+        var lightOffSel = cfg.lightOffSel || ('#' + cfg.actionSel);
+        inner =
+            '<<if ' + bgRoom + '.background eq 1>>' +
+                '<<replace "' + lightOffSel + '">>' +
+                    '<div class="spiritbox-container mc-thoughts">\nI need to turn off the light first</div>' +
+                '<</replace>>' +
+            '<<else>>' +
+                '<<addclass ".cardlink" "disabled-link">>\n' +
+                coreBody + '\n' +
+            '<</if>>';
+    } else {
+        inner = '<<addclass ".cardlink" "disabled-link">>\n' + coreBody;
+    }
+
+    return [
+        '<span id="' + cfg.buttonId + '">@@.adaptiveLink;<<linkreplace "' + def.label + '">>',
+        inner,
+        '<</linkreplace>>@@</span>'
+    ].join('\n');
+};
+
+Macro.add("searchTool", {
+    handler: function () {
+        try {
+            var cfg = this.args[0];
+            if (typeof cfg !== "object" || cfg === null) {
+                return this.error("searchTool: expected a config object");
+            }
+            $(this.output).wiki(setup.searchToolMarkup(cfg));
+        } catch (e) {
+            return this.error(e.message);
+        }
+    }
+});
+
 /* Wardrobe state enum + initialiser. The string values are part of the
  * save format (existing passages compare against the literals), so don't
  * change them — use the constants in new code instead. */

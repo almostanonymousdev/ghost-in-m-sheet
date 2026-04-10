@@ -1,34 +1,4 @@
 :: searchUvlReceptionIronclad {"position":"6500,425","size":"100,100"}
 <<nobr>>
-<span id="ironcladReceptionUvlButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;U@@VL">><<addclass ".cardlink" "disabled-link">>
-<span id="ironcladReceptionUvl">
-<<showmeter  'searchReceptionIroncladUvl' ` $currentsearchReceptionIronclad.uvl / $equipment.uvl`>>
-</span>
-
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $reception.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchReceptionIronclad.uvl neq $equipment.uvl>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchReceptionIronclad.uvl lte ($equipment.uvl - 1)>> 
-<<set $currentsearchReceptionIronclad.uvl += 1>>
-<<updatemeter 'searchReceptionIroncladUvl' ` $currentsearchReceptionIronclad.uvl / $equipment.uvl`>>
-<<elseif $currentsearchReceptionIronclad.uvl gte $equipment.uvl>> 
-<<replace "#actionironcladReception">><<include "UVLcheck">><</replace>> 
-<<replace "#ironcladReceptionUvl">><</replace>>
-<<set $currentsearchReceptionIronclad.uvl to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@
+<<searchTool `{"tool":"uvl","room":"ReceptionIronclad","bgRoom":"reception","buttonId":"ironcladReceptionUvlButton","meterId":"ironcladReceptionUvl","meterTag":"span","eventChain":"ironclad","replaceMode":"double","actionSel":"actionironcladReception"}`>>
 <</nobr>>
-
-
-

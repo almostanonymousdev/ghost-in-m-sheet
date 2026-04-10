@@ -1,35 +1,4 @@
 :: searchPlasmHallwayUpstairsElm {"position":"5225,525","size":"100,100"}
 <<nobr>>
-<span id="elmHallwayUpstairsPlasmButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;E@@ctoglass">><<addclass ".cardlink" "disabled-link">>
-<span id="elmHallwayUpstairsPlasm">
-<<showmeter 'searchHallwayUpstairsPlasm' `$currentsearchHallwayUpstairs.plasm / $equipment.glass`>>
-</span>
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $hallwayUpstairs.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchHallwayUpstairs.plasm neq $equipment.glass>>
-<<if $cursedHuntActive eq 1>><<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "stealClothesEvent">>
-<</if>>
-<<if _stealClothesTriggered is false and _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchHallwayUpstairs.plasm lte ($equipment.glass - 1)>>
-<<set $currentsearchHallwayUpstairs.plasm += 1>>
-    <<updatemeter 'searchHallwayUpstairsPlasm' `$currentsearchHallwayUpstairs.plasm / $equipment.glass`>>
-<<elseif $currentsearchHallwayUpstairs.plasm gte $equipment.glass>>
-    <<replace "#actionHallwayUpstairsElm">><<include "PlasmCheck">><</replace>> 
-    <<replace "#elmHallwayUpstairsPlasm">><</replace>>
-    <<set $currentsearchHallwayUpstairs.plasm to 0>><<removeclass ".cardlink" "disabled-link">>
-    <<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"plasm","room":"HallwayUpstairs","bgRoom":"hallwayUpstairs","buttonId":"elmHallwayUpstairsPlasmButton","meterId":"elmHallwayUpstairsPlasm","meterTag":"span","eventChain":"standard","replaceMode":"double","actionSel":"actionHallwayUpstairsElm"}`>>
 <</nobr>>
-
-

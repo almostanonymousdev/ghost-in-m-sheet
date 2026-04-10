@@ -1,27 +1,4 @@
 :: searchPlasmHallwayEnigma {"position":"4425,1200","size":"100,100"}
 <<nobr>>
-<span id="enigmaHallwayPlasmButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;E@@ctoglass">><<addclass ".cardlink" "disabled-link">>
-<span id="enigmaHallwayPlasm">
-<<showmeter  'searchHallwayPlasm' ` $currentsearchHallway.plasm / $equipment.glass`>>
-</span>
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $hallway.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-<<include "add1">>
-<<if $currentsearchHallway.plasm neq $equipment.glass>><<include "lightPassageGhost">><<include "eventArt">>
-<</if>>
-
-<<if $currentsearchHallway.plasm lte ($equipment.glass - 1)>> 
-<<set $currentsearchHallway.plasm += 1>>
-<<updatemeter 'searchHallwayPlasm' ` $currentsearchHallway.plasm / $equipment.glass`>>
-<<elseif $currentsearchHallway.plasm gte $equipment.glass>>
-<<replace "#actionHallwayEnigma">><<include "PlasmCheckArt">><</replace>> 
-<<replace "#enigmaHallwayPlasm">><</replace>>
-<<set $currentsearchHallway.plasm to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"plasm","room":"Hallway","bgRoom":"hallway","buttonId":"enigmaHallwayPlasmButton","meterId":"enigmaHallwayPlasm","meterTag":"span","eventChain":"enigma","replaceMode":"double","actionSel":"actionHallwayEnigma"}`>>
 <</nobr>>
-
-

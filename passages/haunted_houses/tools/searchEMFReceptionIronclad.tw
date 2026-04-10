@@ -1,32 +1,4 @@
 :: searchEMFReceptionIronclad {"position":"6500,225","size":"100,100"}
 <<nobr>>
-<span id="ironcladReceptionEmfButton">@@.adaptiveLink;<<linkreplace "Use EM@@color:yellow;F">><<addclass ".cardlink" "disabled-link">>
-<span id="ironcladReceptionEmf">
-<<showmeter  'searchReceptionIroncladEmf' ` $currentsearchReceptionIronclad.emf / $equipment.emf`>>
-</span>
-
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $reception.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchReceptionIronclad.emf neq $equipment.emf>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchReceptionIronclad.emf lte ($equipment.emf - 1)>> 
-<<set $currentsearchReceptionIronclad.emf += 1>>
-<<updatemeter 'searchReceptionIroncladEmf' ` $currentsearchReceptionIronclad.emf / $equipment.emf`>>
-<<elseif $currentsearchReceptionIronclad.emf gte $equipment.emf>> 
-<<replace "#ironcladReceptionEmf">><<include "EMFcheck">><</replace>>
-<<set $currentsearchReceptionIronclad.emf to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@
+<<searchTool `{"tool":"emf","room":"ReceptionIronclad","bgRoom":"reception","buttonId":"ironcladReceptionEmfButton","meterId":"ironcladReceptionEmf","meterTag":"span","eventChain":"ironclad","replaceMode":"single"}`>>
 <</nobr>>
-
-

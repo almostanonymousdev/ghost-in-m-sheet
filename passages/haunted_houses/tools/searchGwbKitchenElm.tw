@@ -1,35 +1,4 @@
 :: searchGwbKitchenElm {"position":"4825,325","size":"100,100"}
 <<nobr>>
-<span id="elmKitchenGWBButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;G@@WB">><<addclass ".cardlink" "disabled-link">>
-<span id="elmKitchenGWB">
-<<showmeter 'searchKitchenGwb' `$currentsearchKitchen.gwb / $equipment.gwb`>>
-</span>
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $kitchen.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchKitchen.gwb neq $equipment.gwb>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "stealClothesEvent">>
-<</if>>
-<<if _stealClothesTriggered is false and _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchKitchen.gwb lte ($equipment.gwb - 1)>> 
-<<set $currentsearchKitchen.gwb += 1>>
-<<updatemeter 'searchKitchenGwb' `$currentsearchKitchen.gwb / $equipment.gwb`>>
-<<elseif $currentsearchKitchen.gwb gte $equipment.gwb>>
-<<replace "#actionKitchenElm">><<include "GWBcheck">><</replace>> 
-<<replace "#elmKitchenGWB">><</replace>>
-<<set $currentsearchKitchen.gwb to 0>><<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"gwb","room":"Kitchen","bgRoom":"kitchen","buttonId":"elmKitchenGWBButton","meterId":"elmKitchenGWB","meterTag":"span","eventChain":"standard","replaceMode":"double","actionSel":"actionKitchenElm"}`>>
 <</nobr>>
-
-

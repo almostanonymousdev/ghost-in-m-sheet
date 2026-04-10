@@ -1,34 +1,4 @@
 :: searchUvlHallwayIronclad {"position":"6400,425","size":"100,100"}
 <<nobr>>
-<span id="ironcladHallwayUvlButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;U@@VL">><<addclass ".cardlink" "disabled-link">>
-<span id="ironcladHallwayUvl">
-<<showmeter  'searchHallwayIroncladUvl' ` $currentsearchHallwayIronclad.uvl / $equipment.uvl`>>
-</span>
-
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $hallway.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchHallwayIronclad.uvl neq $equipment.uvl>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchHallwayIronclad.uvl lte ($equipment.uvl - 1)>> 
-<<set $currentsearchHallwayIronclad.uvl += 1>>
-<<updatemeter 'searchHallwayIroncladUvl' ` $currentsearchHallwayIronclad.uvl / $equipment.uvl`>>
-<<elseif $currentsearchHallwayIronclad.uvl gte $equipment.uvl>> 
-<<replace "#actionironcladHallway">><<include "UVLcheck">><</replace>> 
-<<replace "#ironcladHallwayUvl">><</replace>>
-<<set $currentsearchHallwayIronclad.uvl to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@
+<<searchTool `{"tool":"uvl","room":"HallwayIronclad","bgRoom":"hallway","buttonId":"ironcladHallwayUvlButton","meterId":"ironcladHallwayUvl","meterTag":"span","eventChain":"ironclad","replaceMode":"double","actionSel":"actionironcladHallway"}`>>
 <</nobr>>
-
-
-

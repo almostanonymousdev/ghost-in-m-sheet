@@ -272,3 +272,12 @@ sugarcube-2:
       name: randomVideoFromList
     ghostInfoCard:
       name: ghostInfoCard
+    searchTool:
+      name: searchTool
+      description: "Renders a per-room evidence-tool button (EMF, GWB, Spiritbox,
+        Ectoplasm, Thermometer, UVL). Builds the meter, repeat loop, event
+        chain, and completion replace from a single config object. Args:
+        cfg (object) — required keys: tool, room, bgRoom, buttonId, meterId,
+        meterTag, eventChain ('standard'|'ironclad'|'enigma'),
+        replaceMode ('single'|'double'); optional: actionSel (required when
+        replaceMode='double'), needsLightCheck, lightOffSel."

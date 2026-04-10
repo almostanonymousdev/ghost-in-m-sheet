@@ -1,35 +1,4 @@
 :: searchGwbNurseryElm {"position":"4725,325","size":"100,100"}
 <<nobr>>
-<span id="elmNurseryGWBButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;G@@WB">><<addclass ".cardlink" "disabled-link">>
-<span id="elmNurseryGWB">
-<<showmeter  'searchNurseryGwb' `$currentsearchNursery.gwb / $equipment.gwb`>>
-</span>
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $nursery.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchNursery.gwb neq $equipment.gwb>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "stealClothesEvent">>
-<</if>>
-<<if _stealClothesTriggered is false and _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchNursery.gwb lte ($equipment.gwb - 1)>> 
-<<set $currentsearchNursery.gwb += 1>>
-<<updatemeter 'searchNurseryGwb' `$currentsearchNursery.gwb / $equipment.gwb`>>
-<<elseif $currentsearchNursery.gwb gte $equipment.gwb>>
-<<replace "#actionNurseryElm">><<include "GWBcheck">><</replace>> 
-<<replace "#elmNurseryGWB">><</replace>>
-<<set $currentsearchNursery.gwb to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"gwb","room":"Nursery","bgRoom":"nursery","buttonId":"elmNurseryGWBButton","meterId":"elmNurseryGWB","meterTag":"span","eventChain":"standard","replaceMode":"double","actionSel":"actionNurseryElm"}`>>
 <</nobr>>
-
-

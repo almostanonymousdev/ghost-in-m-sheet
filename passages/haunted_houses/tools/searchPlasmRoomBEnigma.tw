@@ -1,27 +1,4 @@
 :: searchPlasmRoomBEnigma {"position":"5125,1200","size":"100,100"}
 <<nobr>>
-<span id="enigmaRoomBPlasmButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;E@@ctoglass">><<addclass ".cardlink" "disabled-link">>
-<span id="enigmaRoomBPlasm">
-<<showmeter  'searchRoomBPlasm' ` $currentsearchRoomB.plasm / $equipment.glass`>>
-</span>
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $roomB.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-<<include "add1">>
-<<if $currentsearchRoomB.plasm neq $equipment.glass>><<include "lightPassageGhost">><<include "eventArt">>
-<</if>>
-
-<<if $currentsearchRoomB.plasm lte ($equipment.glass - 1)>> 
-<<set $currentsearchRoomB.plasm += 1>>
-<<updatemeter 'searchRoomBPlasm' ` $currentsearchRoomB.plasm / $equipment.glass`>>
-<<elseif $currentsearchRoomB.plasm gte $equipment.glass>>
-<<replace "#actionRoomBEnigma">><<include "PlasmCheckArt">><</replace>> 
-<<replace "#enigmaRoomBPlasm">><</replace>>
-<<set $currentsearchRoomB.plasm to 0>><<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"plasm","room":"RoomB","bgRoom":"roomB","buttonId":"enigmaRoomBPlasmButton","meterId":"enigmaRoomBPlasm","meterTag":"span","eventChain":"enigma","replaceMode":"double","actionSel":"actionRoomBEnigma"}`>>
 <</nobr>>
-
-

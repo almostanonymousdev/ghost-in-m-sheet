@@ -1,34 +1,4 @@
 :: searchPlasmBlockBCellAIronclad {"position":"6100,525","size":"100,100"}
 <<nobr>>
-<span id="ironcladBlockBCellAPlasmButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;E@@ctoglass">><<addclass ".cardlink" "disabled-link">>
-<span id="ironcladBlockBCellAPlasm">
-<<showmeter  'searchBlockBCellAIroncladPlasm' ` $currentsearchBlockBCellAIronclad.plasm / $equipment.glass`>>
-</span>
-
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $BlockBCellA.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchBlockBCellAIronclad.plasm neq $equipment.glass>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchBlockBCellAIronclad.plasm lte ($equipment.glass - 1)>> 
-<<set $currentsearchBlockBCellAIronclad.plasm += 1>>
-<<updatemeter 'searchBlockBCellAIroncladPlasm' ` $currentsearchBlockBCellAIronclad.plasm / $equipment.glass`>>
-<<elseif $currentsearchBlockBCellAIronclad.plasm gte $equipment.glass>> 
-<<replace "#actionironcladBlockBCellA">><<include "PlasmCheck">><</replace>> 
-<<replace "#ironcladBlockBCellAPlasm">><</replace>>
-<<set $currentsearchBlockBCellAIronclad.plasm to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@
+<<searchTool `{"tool":"plasm","room":"BlockBCellAIronclad","bgRoom":"BlockBCellA","buttonId":"ironcladBlockBCellAPlasmButton","meterId":"ironcladBlockBCellAPlasm","meterTag":"span","eventChain":"ironclad","replaceMode":"double","actionSel":"actionironcladBlockBCellA"}`>>
 <</nobr>>
-
-
-

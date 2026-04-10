@@ -1,36 +1,4 @@
 :: searchPlasmBedroomTwoElm {"position":"4625,525","size":"100,100"}
 <<nobr>>
-<span id="elmBedroomTwoPlasmButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;E@@ctoglass">><<addclass ".cardlink" "disabled-link">>
-<span id="elmBedroomTwoPlasm">
-<<showmeter 'searchBedroomTwoPlasm' `$currentsearchBedroomTwo.plasm / $equipment.glass`>>
-</span>
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $bedroomTwo.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchBedroomTwo.plasm neq $equipment.glass>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "stealClothesEvent">>
-<</if>>
-<<if _stealClothesTriggered is false and _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchBedroomTwo.plasm lte ($equipment.glass - 1)>>
-<<set $currentsearchBedroomTwo.plasm += 1>>
-<<updatemeter 'searchBedroomTwoPlasm' `$currentsearchBedroomTwo.plasm / $equipment.glass`>>
-<<elseif $currentsearchBedroomTwo.plasm gte $equipment.glass>>
-<<replace "#actionBedroomTwoElm">><<include "PlasmCheck">><</replace>>
-<<replace "#elmBedroomTwoPlasm">><</replace>>
-<<set $currentsearchBedroomTwo.plasm to 0>>
-<<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"plasm","room":"BedroomTwo","bgRoom":"bedroomTwo","buttonId":"elmBedroomTwoPlasmButton","meterId":"elmBedroomTwoPlasm","meterTag":"span","eventChain":"standard","replaceMode":"double","actionSel":"actionBedroomTwoElm"}`>>
 <</nobr>>
-
-

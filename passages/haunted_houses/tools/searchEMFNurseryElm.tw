@@ -1,35 +1,4 @@
 :: searchEMFNurseryElm {"position":"4725,225","size":"100,100"}
 <<nobr>>
-<span id="elmNurseryEMFButton">@@.adaptiveLink;<<linkreplace "Use EM@@color:yellow;F@@">><<addclass ".cardlink" "disabled-link">>
-<span id="elmNurseryEMF">
-<<showmeter  'searchNurseryEmf' ` $currentsearchNursery.emf / $equipment.emf`>>
-</span>
-
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $nursery.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchNursery.emf neq $equipment.emf>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "stealClothesEvent">>
-<</if>>
-<<if _stealClothesTriggered is false and _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchNursery.emf lte ($equipment.emf - 1)>> 
-<<set $currentsearchNursery.emf += 1>>
-<<updatemeter 'searchNurseryEmf' ` $currentsearchNursery.emf / $equipment.emf`>>
-<<elseif $currentsearchNursery.emf gte $equipment.emf>> 
-<<replace "#elmNurseryEMF">><<include "EMFcheck">><</replace>>
-<<set $currentsearchNursery.emf to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"emf","room":"Nursery","bgRoom":"nursery","buttonId":"elmNurseryEMFButton","meterId":"elmNurseryEMF","meterTag":"span","eventChain":"standard","replaceMode":"single"}`>>
 <</nobr>>
-
-

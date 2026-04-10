@@ -1,35 +1,4 @@
 :: searchUVLNurseryElm {"position":"4725,425","size":"100,100"}
 <<nobr>>
-<span id="elmNurseryUVLButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;U@@VL">><<addclass ".cardlink" "disabled-link">>
-<span id="elmNurseryUVL">
-<<showmeter 'searchNurseryUvl' `$currentsearchNursery.uvl / $equipment.uvl`>>
-</span>
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $nursery.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchNursery.uvl neq $equipment.uvl>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "stealClothesEvent">>
-<</if>>
-<<if _stealClothesTriggered is false and _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchNursery.uvl lte ($equipment.uvl - 1)>> 
-<<set $currentsearchNursery.uvl += 1>>
-<<updatemeter 'searchNurseryUvl' `$currentsearchNursery.uvl / $equipment.uvl`>>
-<<elseif $currentsearchNursery.uvl gte $equipment.uvl>>
-<<replace "#actionNurseryElm">><<include "UVLcheck">><</replace>> 
-<<replace "#elmNurseryUVL">><</replace>>
-<<set $currentsearchNursery.uvl to 0>><<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"uvl","room":"Nursery","bgRoom":"nursery","buttonId":"elmNurseryUVLButton","meterId":"elmNurseryUVL","meterTag":"span","eventChain":"standard","replaceMode":"double","actionSel":"actionNurseryElm"}`>>
 <</nobr>>
-
-

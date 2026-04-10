@@ -1,34 +1,4 @@
 :: searchUvlBlockACellBIronclad {"position":"5900,425","size":"100,100"}
 <<nobr>>
-<span id="ironcladBlockACellBUvlButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;U@@VL">><<addclass ".cardlink" "disabled-link">>
-<span id="ironcladBlockACellBUvl">
-<<showmeter  'searchBlockACellBIroncladUvl' ` $currentsearchBlockACellBIronclad.uvl / $equipment.uvl`>>
-</span>
-
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $BlockACellB.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchBlockACellBIronclad.uvl neq $equipment.uvl>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchBlockACellBIronclad.uvl lte ($equipment.uvl - 1)>> 
-<<set $currentsearchBlockACellBIronclad.uvl += 1>>
-<<updatemeter 'searchBlockACellBIroncladUvl' ` $currentsearchBlockACellBIronclad.uvl / $equipment.uvl`>>
-<<elseif $currentsearchBlockACellBIronclad.uvl gte $equipment.uvl>> 
-<<replace "#actionironcladBlockACellB">><<include "UVLcheck">><</replace>> 
-<<replace "#ironcladBlockACellBUvl">><</replace>>
-<<set $currentsearchBlockACellBIronclad.uvl to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@
+<<searchTool `{"tool":"uvl","room":"BlockACellBIronclad","bgRoom":"BlockACellB","buttonId":"ironcladBlockACellBUvlButton","meterId":"ironcladBlockACellBUvl","meterTag":"span","eventChain":"ironclad","replaceMode":"double","actionSel":"actionironcladBlockACellB"}`>>
 <</nobr>>
-
-
-

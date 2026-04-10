@@ -1,34 +1,4 @@
 :: searchThermometrNurseryElm {"position":"4725,125","size":"100,100"}
 <<nobr>>
-<span id="elmNurseryTemperatureButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;T@@hermometer">><<addclass ".cardlink" "disabled-link">>
-<span id="elmNurseryTemperature">
-<<showmeter 'searchNurseryTemperature' ` $currentsearchNursery.temperature / $equipment.temperature`>>
-</span>
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $nursery.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchNursery.temperature neq $equipment.temperature>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "stealClothesEvent">>
-<</if>>
-<<if _stealClothesTriggered is false and _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchNursery.temperature lte ($equipment.temperature - 1)>> 
-<<set $currentsearchNursery.temperature += 1>>
-<<updatemeter 'searchNurseryTemperature' ` $currentsearchNursery.temperature / $equipment.temperature`>>
-<<elseif $currentsearchNursery.temperature gte $equipment.temperature>> 
-<<replace "#elmNurseryTemperature">><<include "temperatureHigh">><</replace>>
-<<set $currentsearchNursery.temperature to 0>><<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"temperature","room":"Nursery","bgRoom":"nursery","buttonId":"elmNurseryTemperatureButton","meterId":"elmNurseryTemperature","meterTag":"span","eventChain":"standard","replaceMode":"single"}`>>
 <</nobr>>
-
-

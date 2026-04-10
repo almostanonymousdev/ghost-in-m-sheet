@@ -1,35 +1,4 @@
 :: searchGwbBasement {"position":"4425,325","size":"100,100"}
 <<nobr>>
-<span id="elmBGWBButton">@@.adaptiveLink;<<linkreplace "Use @@color:yellow;G@@WB">><<addclass ".cardlink" "disabled-link">>
-<span id="elmBGWB">
-<<showmeter  'searchBasementGwb' ` $currentsearchBasement.gwb / $equipment.gwb`>>
-</span>
-<<repeat `$timerToolsDecreased`>>
-<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>
-<<if $basement.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>
-
-<<include "add1">>
-<<if $currentsearchBasement.gwb neq $equipment.gwb>><<if $cursedHuntActive eq 1>>
-<<else>>
-<<include "lightPassageGhost">><<include "event">>
-<<if _eventTriggered is false>>
-<<include "stealClothesEvent">>
-<</if>>
-<<if _stealClothesTriggered is false and _eventTriggered is false>>
-<<include "huntStart">>
-<</if>><</if>><</if>>
-
-<<if $currentsearchBasement.gwb lte ($equipment.gwb - 1)>> 
-<<set $currentsearchBasement.gwb += 1>>
-<<updatemeter 'searchBasementGwb' ` $currentsearchBasement.gwb / $equipment.gwb`>>
-<<elseif $currentsearchBasement.gwb gte $equipment.gwb>>
-<<replace "#actionBasement">><<include "GWBcheck">><</replace>> 
-<<replace "#elmBGWB">><</replace>>
-<<set $currentsearchBasement.gwb to 0>> <<removeclass ".cardlink" "disabled-link">>
-<<stop>>
-<</if>>
-<</repeat>>
-<</linkreplace>>@@</span>
+<<searchTool `{"tool":"gwb","room":"Basement","bgRoom":"basement","buttonId":"elmBGWBButton","meterId":"elmBGWB","meterTag":"span","eventChain":"standard","replaceMode":"double","actionSel":"actionBasement"}`>>
 <</nobr>>
-
-
