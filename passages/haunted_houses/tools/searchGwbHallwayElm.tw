@@ -1,4 +1,4 @@
 :: searchGwbHallwayElm {"position":"5125,325","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"gwb","room":"Hallway","bgRoom":"hallway","buttonId":"elmHallwayGWBButton","meterId":"elmHallwayGWB","meterTag":"span","eventChain":"standard","replaceMode":"double","actionSel":"actionHallwayElm"}`>>
+<<searchTool `{"tool":"gwb","room":"Hallway","bgRoom":"hallway","prefix":"elmHallway","eventChain":"standard","replaceMode":"double"}`>>
 <</nobr>>

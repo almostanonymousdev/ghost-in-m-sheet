@@ -1,4 +1,4 @@
 :: searchSbBedroomEnigma {"position":"4625,1300","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"spiritbox","room":"Bedroom","bgRoom":"bedroom","buttonId":"enigmaBedroomSpiritboxButton","meterId":"enigmaBedroomSpiritbox","meterTag":"span","eventChain":"enigma","replaceMode":"double","actionSel":"actionBedroomEnigma","needsLightCheck":true}`>>
+<<searchTool `{"tool":"spiritbox","room":"Bedroom","bgRoom":"bedroom","prefix":"enigmaBedroom","eventChain":"enigma","replaceMode":"double","needsLightCheck":true}`>>
 <</nobr>>

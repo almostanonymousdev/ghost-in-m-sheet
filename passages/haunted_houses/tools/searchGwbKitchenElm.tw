@@ -1,4 +1,4 @@
 :: searchGwbKitchenElm {"position":"4825,325","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"gwb","room":"Kitchen","bgRoom":"kitchen","buttonId":"elmKitchenGWBButton","meterId":"elmKitchenGWB","meterTag":"span","eventChain":"standard","replaceMode":"double","actionSel":"actionKitchenElm"}`>>
+<<searchTool `{"tool":"gwb","room":"Kitchen","bgRoom":"kitchen","prefix":"elmKitchen","eventChain":"standard","replaceMode":"double"}`>>
 <</nobr>>

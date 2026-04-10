@@ -3,7 +3,7 @@
 <div class="room">
 	<div class="room-wrapper">
 		<div class="content">
-          	<div id="actionHallwayEnigma" class="action">
+          	<div id="enigmaHallwayAction" class="action">
 
           	</div>
         </div>
@@ -36,7 +36,9 @@
 <</nobr>>
 
 <<script>>
-$(document).ready(function() { setup.roomToolHandlersByPrefix('enigmaHallway'); });
+$(document).ready(function() {
+    setup.roomToolHandlersByPrefix('enigmaHallway');
+});
 <</script>>
 
 

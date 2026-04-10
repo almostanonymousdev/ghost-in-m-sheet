@@ -1,4 +1,4 @@
 :: searchEMFHallwayIronclad {"position":"6400,225","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"emf","room":"HallwayIronclad","bgRoom":"hallway","buttonId":"ironcladHallwayEmfButton","meterId":"ironcladHallwayEmf","meterTag":"span","eventChain":"ironclad","replaceMode":"single"}`>>
+<<searchTool `{"tool":"emf","room":"HallwayIronclad","bgRoom":"hallway","prefix":"ironcladHallway","eventChain":"ironclad","replaceMode":"single"}`>>
 <</nobr>>

@@ -1,4 +1,4 @@
 :: searchGwbBasement {"position":"4425,325","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"gwb","room":"Basement","bgRoom":"basement","buttonId":"elmBGWBButton","meterId":"elmBGWB","meterTag":"span","eventChain":"standard","replaceMode":"double","actionSel":"actionBasement"}`>>
+<<searchTool `{"tool":"gwb","room":"Basement","bgRoom":"basement","prefix":"elmBasement","eventChain":"standard","replaceMode":"double"}`>>
 <</nobr>>

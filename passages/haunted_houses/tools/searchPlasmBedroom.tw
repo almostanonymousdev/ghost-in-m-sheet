@@ -1,4 +1,4 @@
 :: searchPlasmBedroom {"position":"4125,525","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"plasm","room":"Bedroom","bgRoom":"bedroom","buttonId":"searchPlasmBedroomButton","meterId":"owaissaBedroomPlasm","meterTag":"div","eventChain":"standard","replaceMode":"double","actionSel":"actionBedroom"}`>>
+<<searchTool `{"tool":"plasm","room":"Bedroom","bgRoom":"bedroom","prefix":"owaissaBedroom","eventChain":"standard","replaceMode":"double","meterTag":"div"}`>>
 <</nobr>>

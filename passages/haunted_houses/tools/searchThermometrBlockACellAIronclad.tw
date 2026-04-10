@@ -1,4 +1,4 @@
 :: searchThermometrBlockACellAIronclad {"position":"5800,125","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"temperature","room":"BlockACellAIronclad","bgRoom":"BlockACellA","buttonId":"ironcladBlockACellATemperatureButton","meterId":"ironcladBlockACellATemperature","meterTag":"span","eventChain":"ironclad","replaceMode":"single"}`>>
+<<searchTool `{"tool":"temperature","room":"BlockACellAIronclad","bgRoom":"BlockACellA","prefix":"ironcladBlockACellA","eventChain":"ironclad","replaceMode":"single"}`>>
 <</nobr>>

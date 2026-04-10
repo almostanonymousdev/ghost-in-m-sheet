@@ -1,4 +1,4 @@
 :: searchEMFRoomBEnigma {"position":"5125,900","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"emf","room":"RoomB","bgRoom":"roomB","buttonId":"enigmaRoomBEMFButton","meterId":"enigmaRoomBEMF","meterTag":"span","eventChain":"enigma","replaceMode":"single"}`>>
+<<searchTool `{"tool":"emf","room":"RoomB","bgRoom":"roomB","prefix":"enigmaRoomB","eventChain":"enigma","replaceMode":"single"}`>>
 <</nobr>>

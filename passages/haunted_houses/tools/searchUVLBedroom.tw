@@ -1,4 +1,4 @@
 :: searchUVLBedroom {"position":"4125,425","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"uvl","room":"Bedroom","bgRoom":"bedroom","buttonId":"searchUvlBButton","meterId":"owaissaBUVL","meterTag":"div","eventChain":"standard","replaceMode":"double","actionSel":"actionBedroom"}`>>
+<<searchTool `{"tool":"uvl","room":"Bedroom","bgRoom":"bedroom","prefix":"owaissaBedroom","eventChain":"standard","replaceMode":"double","meterTag":"div"}`>>
 <</nobr>>

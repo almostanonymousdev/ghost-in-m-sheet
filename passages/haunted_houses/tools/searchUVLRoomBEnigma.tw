@@ -1,4 +1,4 @@
 :: searchUVLRoomBEnigma {"position":"5125,1100","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"uvl","room":"RoomB","bgRoom":"roomB","buttonId":"enigmaRoomBUVLButton","meterId":"enigmaRoomBUVL","meterTag":"span","eventChain":"enigma","replaceMode":"double","actionSel":"actionRoomBEnigma"}`>>
+<<searchTool `{"tool":"uvl","room":"RoomB","bgRoom":"roomB","prefix":"enigmaRoomB","eventChain":"enigma","replaceMode":"double"}`>>
 <</nobr>>

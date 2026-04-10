@@ -1,4 +1,4 @@
 :: searchThermometrKitchenElm {"position":"4825,125","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"temperature","room":"Kitchen","bgRoom":"kitchen","buttonId":"elmKitchenTemperatureButton","meterId":"elmKitchenTemperature","meterTag":"span","eventChain":"standard","replaceMode":"single"}`>>
+<<searchTool `{"tool":"temperature","room":"Kitchen","bgRoom":"kitchen","prefix":"elmKitchen","eventChain":"standard","replaceMode":"single"}`>>
 <</nobr>>

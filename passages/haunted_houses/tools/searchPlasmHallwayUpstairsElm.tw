@@ -1,4 +1,4 @@
 :: searchPlasmHallwayUpstairsElm {"position":"5225,525","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"plasm","room":"HallwayUpstairs","bgRoom":"hallwayUpstairs","buttonId":"elmHallwayUpstairsPlasmButton","meterId":"elmHallwayUpstairsPlasm","meterTag":"span","eventChain":"standard","replaceMode":"double","actionSel":"actionHallwayUpstairsElm"}`>>
+<<searchTool `{"tool":"plasm","room":"HallwayUpstairs","bgRoom":"hallwayUpstairs","prefix":"elmHallwayUpstairs","eventChain":"standard","replaceMode":"double"}`>>
 <</nobr>>

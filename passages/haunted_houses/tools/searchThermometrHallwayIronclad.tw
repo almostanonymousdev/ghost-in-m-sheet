@@ -1,4 +1,4 @@
 :: searchThermometrHallwayIronclad {"position":"6400,125","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"temperature","room":"HallwayIronclad","bgRoom":"hallway","buttonId":"ironcladHallwayTemperatureButton","meterId":"ironcladHallwayTemperature","meterTag":"span","eventChain":"ironclad","replaceMode":"single"}`>>
+<<searchTool `{"tool":"temperature","room":"HallwayIronclad","bgRoom":"hallway","prefix":"ironcladHallway","eventChain":"ironclad","replaceMode":"single"}`>>
 <</nobr>>

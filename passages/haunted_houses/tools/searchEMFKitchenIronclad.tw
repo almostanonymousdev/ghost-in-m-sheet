@@ -1,4 +1,4 @@
 :: searchEMFKitchenIronclad {"position":"6600,225","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"emf","room":"KitchenIronclad","bgRoom":"kitchen","buttonId":"ironcladKitchenEmfButton","meterId":"ironcladKitchenEmf","meterTag":"span","eventChain":"ironclad","replaceMode":"single"}`>>
+<<searchTool `{"tool":"emf","room":"KitchenIronclad","bgRoom":"kitchen","prefix":"ironcladKitchen","eventChain":"ironclad","replaceMode":"single"}`>>
 <</nobr>>

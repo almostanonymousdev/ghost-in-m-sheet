@@ -1,4 +1,4 @@
 :: searchThermometrLivingroom {"position":"4225,125","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"temperature","room":"Livingroom","bgRoom":"livingroom","buttonId":"addsearchThermometrLivingroomButton","meterId":"owaissaLivingroom","meterTag":"div","eventChain":"standard","replaceMode":"single"}`>>
+<<searchTool `{"tool":"temperature","room":"Livingroom","bgRoom":"livingroom","prefix":"owaissaLivingroom","eventChain":"standard","replaceMode":"single","meterTag":"div"}`>>
 <</nobr>>

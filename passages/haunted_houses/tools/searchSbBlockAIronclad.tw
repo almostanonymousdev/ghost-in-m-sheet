@@ -1,4 +1,4 @@
 :: searchSbBlockAIronclad {"position":"5600,625","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"spiritbox","room":"BlockAIronclad","bgRoom":"BlockA","buttonId":"ironcladBlockASpiritboxButton","meterId":"ironcladBlockASpiritbox","meterTag":"span","eventChain":"ironclad","replaceMode":"double","actionSel":"actionironcladBlockA","needsLightCheck":true}`>>
+<<searchTool `{"tool":"spiritbox","room":"BlockAIronclad","bgRoom":"BlockA","prefix":"ironcladBlockA","eventChain":"ironclad","replaceMode":"double","needsLightCheck":true}`>>
 <</nobr>>

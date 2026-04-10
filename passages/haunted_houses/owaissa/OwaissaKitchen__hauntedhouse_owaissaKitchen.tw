@@ -4,7 +4,7 @@
 	<div class="room-wrapper">
 		<div class="content">
 
-          	<div id="actionKitchen" class="action">
+          	<div id="owaissaKitchenAction" class="action">
            
           	</div>
         </div>
@@ -43,14 +43,7 @@
 <</nobr>>
 <<script>>
 $(document).ready(function() {
-    setup.roomToolHandlers([
-        ['owaissaKitchenPicEMF', 'searchEmfK'],
-        ['owaissaKitchenPicPlasm', 'searchPlasmKitchen'],
-        ['owaissaKitchenPicGWB', 'searchGwbK'],
-        ['owaissaKitchenPicSB', 'searchSpiritboxK'],
-        ['owaissaKitchenPicThermometr', 'addsearchThermometrKitchen'],
-        ['owaissaKitchenPicUVL', 'searchUvlK'],
-    ]);
+    setup.roomToolHandlersByPrefix('owaissaKitchen');
 });
 <</script>>
 

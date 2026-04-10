@@ -1,4 +1,4 @@
 :: searchGwbRoomAEnigma {"position":"5025,1000","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"gwb","room":"RoomA","bgRoom":"roomA","buttonId":"enigmaRoomAGWBButton","meterId":"enigmaRoomAGWB","meterTag":"span","eventChain":"enigma","replaceMode":"double","actionSel":"actionRoomAEnigma"}`>>
+<<searchTool `{"tool":"gwb","room":"RoomA","bgRoom":"roomA","prefix":"enigmaRoomA","eventChain":"enigma","replaceMode":"double"}`>>
 <</nobr>>

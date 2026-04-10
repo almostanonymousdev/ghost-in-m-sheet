@@ -1,4 +1,4 @@
 :: searchPlasmBasementEnigma {"position":"4525,1200","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"plasm","room":"Basement","bgRoom":"basement","buttonId":"enigmaBasementPlasmButton","meterId":"enigmaBasementPlasm","meterTag":"span","eventChain":"enigma","replaceMode":"double","actionSel":"actionBasementEnigma"}`>>
+<<searchTool `{"tool":"plasm","room":"Basement","bgRoom":"basement","prefix":"enigmaBasement","eventChain":"enigma","replaceMode":"double"}`>>
 <</nobr>>

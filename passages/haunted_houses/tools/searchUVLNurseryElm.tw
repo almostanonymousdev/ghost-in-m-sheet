@@ -1,4 +1,4 @@
 :: searchUVLNurseryElm {"position":"4725,425","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"uvl","room":"Nursery","bgRoom":"nursery","buttonId":"elmNurseryUVLButton","meterId":"elmNurseryUVL","meterTag":"span","eventChain":"standard","replaceMode":"double","actionSel":"actionNurseryElm"}`>>
+<<searchTool `{"tool":"uvl","room":"Nursery","bgRoom":"nursery","prefix":"elmNursery","eventChain":"standard","replaceMode":"double"}`>>
 <</nobr>>

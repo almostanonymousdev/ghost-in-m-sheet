@@ -1,4 +1,4 @@
 :: searchEMFKitchenEnigma {"position":"4725,900","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"emf","room":"Kitchen","bgRoom":"kitchen","buttonId":"enigmaKitchenEMFButton","meterId":"enigmaKitchenEMF","meterTag":"span","eventChain":"enigma","replaceMode":"single"}`>>
+<<searchTool `{"tool":"emf","room":"Kitchen","bgRoom":"kitchen","prefix":"enigmaKitchen","eventChain":"enigma","replaceMode":"single"}`>>
 <</nobr>>

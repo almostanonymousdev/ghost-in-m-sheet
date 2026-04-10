@@ -3,7 +3,7 @@
 <div class="room">
 	<div class="room-wrapper">
 		<div class="content">
-          	<div id="actionBasement" class="action">
+          	<div id="elmBasementAction" class="action">
 				
           	</div>
         </div>
@@ -42,14 +42,7 @@
 
 <<script>>
 $(document).ready(function() {
-    setup.roomToolHandlers([
-        ['elmBasementPicEMF', 'elmBEMF'],
-        ['elmBasementPicPlasm', 'elmBasementPlasm'],
-        ['elmBasementPicGWB', 'elmBGWB'],
-        ['elmBasementPicSB', 'elmBasementSpiritbox'],
-        ['elmBasementPicThermometr', 'elmBasementTemperature'],
-        ['elmBasementPicUVL', 'elmBasementUVL'],
-    ]);
+    setup.roomToolHandlersByPrefix('elmBasement');
 });
 <</script>>
 

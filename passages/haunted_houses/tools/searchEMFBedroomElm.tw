@@ -1,4 +1,4 @@
 :: searchEMFBedroomElm {"position":"4525,225","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"emf","room":"Bedroom","bgRoom":"bedroom","buttonId":"elmBedroomEMFButton","meterId":"elmBedroomEMF","meterTag":"span","eventChain":"standard","replaceMode":"single"}`>>
+<<searchTool `{"tool":"emf","room":"Bedroom","bgRoom":"bedroom","prefix":"elmBedroom","eventChain":"standard","replaceMode":"single"}`>>
 <</nobr>>

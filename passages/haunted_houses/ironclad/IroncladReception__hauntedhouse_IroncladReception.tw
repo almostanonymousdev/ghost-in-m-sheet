@@ -3,7 +3,7 @@
 <div class="room">
 	<div class="room-wrapper">
 		<div class="content">
-          	<div id="actionironcladReception" class="action">
+          	<div id="ironcladReceptionAction" class="action">
 				
           	</div>
         </div>
@@ -11,11 +11,11 @@
 		<div class="footer">
         	<div class="footertools">
          	<<toolCard "img/emf.png" "ironcladReceptionPicEMF" "searchEMFReceptionIronclad">>
-         	<<toolCard "img/glass.png" "actionironcladReceptionPicPlasm" "searchPlasmReceptionIronclad">>
-         	<<toolCard "img/gwb.png" "actionironcladReceptionPicGWB" "searchGwbReceptionIronclad">>
-         	<<toolCard "img/spiritbox.png" "actionironcladReceptionPicSB" "searchSbReceptionIronclad">>
-         	<<toolCard "img/thermometr.png" "actionironcladReceptionPicThermometr" "searchThermometrReceptionIronclad">>
-         	<<toolCard "img/uvl.png" "actionironcladReceptionPicUVL" "searchUvlReceptionIronclad">>
+         	<<toolCard "img/glass.png" "ironcladReceptionPicPlasm" "searchPlasmReceptionIronclad">>
+         	<<toolCard "img/gwb.png" "ironcladReceptionPicGWB" "searchGwbReceptionIronclad">>
+         	<<toolCard "img/spiritbox.png" "ironcladReceptionPicSB" "searchSbReceptionIronclad">>
+         	<<toolCard "img/thermometr.png" "ironcladReceptionPicThermometr" "searchThermometrReceptionIronclad">>
+         	<<toolCard "img/uvl.png" "ironcladReceptionPicUVL" "searchUvlReceptionIronclad">>
             <<companionCard>>
             <div class="footer-card footer-light">
             	<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "IroncladReception">><<set $reception.background to 1>><</link>>
@@ -38,4 +38,8 @@
 </div>
 <</nobr>>
 
-
+<<script>>
+$(document).ready(function() {
+    setup.roomToolHandlersByPrefix('ironcladReception');
+});
+<</script>>

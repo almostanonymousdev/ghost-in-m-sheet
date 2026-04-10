@@ -1,4 +1,4 @@
 :: searchGwbHallwayUpstairsElm {"position":"5225,325","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"gwb","room":"HallwayUpstairs","bgRoom":"hallwayUpstairs","buttonId":"elmHallwayUpstairsGWBButton","meterId":"elmHallwayUpstairsGWB","meterTag":"span","eventChain":"standard","replaceMode":"double","actionSel":"actionHallwayUpstairsElm"}`>>
+<<searchTool `{"tool":"gwb","room":"HallwayUpstairs","bgRoom":"hallwayUpstairs","prefix":"elmHallwayUpstairs","eventChain":"standard","replaceMode":"double"}`>>
 <</nobr>>

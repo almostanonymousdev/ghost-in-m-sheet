@@ -1,4 +1,4 @@
 :: searchSbLivingroomEnigma {"position":"4925,1300","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"spiritbox","room":"Livingroom","bgRoom":"livingroom","buttonId":"enigmaLivingroomSpiritboxButton","meterId":"enigmaLivingroomSpiritbox","meterTag":"span","eventChain":"enigma","replaceMode":"double","actionSel":"actionLivingroomEnigma","needsLightCheck":true}`>>
+<<searchTool `{"tool":"spiritbox","room":"Livingroom","bgRoom":"livingroom","prefix":"enigmaLivingroom","eventChain":"enigma","replaceMode":"double","needsLightCheck":true}`>>
 <</nobr>>

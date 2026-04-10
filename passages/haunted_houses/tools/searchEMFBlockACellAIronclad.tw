@@ -1,4 +1,4 @@
 :: searchEMFBlockACellAIronclad {"position":"5800,225","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"emf","room":"BlockACellAIronclad","bgRoom":"BlockACellA","buttonId":"ironcladBlockACellAEmfButton","meterId":"ironcladBlockACellAEmf","meterTag":"span","eventChain":"ironclad","replaceMode":"single"}`>>
+<<searchTool `{"tool":"emf","room":"BlockACellAIronclad","bgRoom":"BlockACellA","prefix":"ironcladBlockACellA","eventChain":"ironclad","replaceMode":"single"}`>>
 <</nobr>>

@@ -1,4 +1,4 @@
 :: searchPlasmLivingroomEnigma {"position":"4925,1200","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"plasm","room":"Livingroom","bgRoom":"livingroom","buttonId":"enigmaLivingroomPlasmButton","meterId":"enigmaLivingroomPlasm","meterTag":"span","eventChain":"enigma","replaceMode":"double","actionSel":"actionLivingroomEnigma"}`>>
+<<searchTool `{"tool":"plasm","room":"Livingroom","bgRoom":"livingroom","prefix":"enigmaLivingroom","eventChain":"enigma","replaceMode":"double"}`>>
 <</nobr>>

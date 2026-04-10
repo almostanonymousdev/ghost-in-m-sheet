@@ -1,4 +1,4 @@
 :: searchSbBlockACellBIronclad {"position":"5900,625","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"spiritbox","room":"BlockACellBIronclad","bgRoom":"BlockACellB","buttonId":"ironcladBlockACellBSpiritboxButton","meterId":"ironcladBlockACellBSpiritbox","meterTag":"span","eventChain":"ironclad","replaceMode":"double","actionSel":"actionironcladBlockACellB","needsLightCheck":true}`>>
+<<searchTool `{"tool":"spiritbox","room":"BlockACellBIronclad","bgRoom":"BlockACellB","prefix":"ironcladBlockACellB","eventChain":"ironclad","replaceMode":"double","needsLightCheck":true}`>>
 <</nobr>>

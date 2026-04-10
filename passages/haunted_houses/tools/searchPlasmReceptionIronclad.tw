@@ -1,4 +1,4 @@
 :: searchPlasmReceptionIronclad {"position":"6500,525","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"plasm","room":"ReceptionIronclad","bgRoom":"reception","buttonId":"ironcladReceptionPlasmButton","meterId":"ironcladReceptionPlasm","meterTag":"span","eventChain":"ironclad","replaceMode":"double","actionSel":"actionironcladReception"}`>>
+<<searchTool `{"tool":"plasm","room":"ReceptionIronclad","bgRoom":"reception","prefix":"ironcladReception","eventChain":"ironclad","replaceMode":"double"}`>>
 <</nobr>>

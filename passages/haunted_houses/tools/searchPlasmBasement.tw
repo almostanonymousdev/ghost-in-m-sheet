@@ -1,4 +1,4 @@
 :: searchPlasmBasement {"position":"4425,525","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"plasm","room":"Basement","bgRoom":"basement","buttonId":"elmBasementPlasmButton","meterId":"elmBasementPlasm","meterTag":"span","eventChain":"standard","replaceMode":"double","actionSel":"actionBasement"}`>>
+<<searchTool `{"tool":"plasm","room":"Basement","bgRoom":"basement","prefix":"elmBasement","eventChain":"standard","replaceMode":"double"}`>>
 <</nobr>>

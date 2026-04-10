@@ -1,4 +1,4 @@
 :: searchUVLBedroomEnigma {"position":"4625,1100","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"uvl","room":"Bedroom","bgRoom":"bedroom","buttonId":"enigmaBedroomUVLButton","meterId":"enigmaBedroomUVL","meterTag":"span","eventChain":"enigma","replaceMode":"double","actionSel":"actionBedroomEnigma"}`>>
+<<searchTool `{"tool":"uvl","room":"Bedroom","bgRoom":"bedroom","prefix":"enigmaBedroom","eventChain":"enigma","replaceMode":"double"}`>>
 <</nobr>>

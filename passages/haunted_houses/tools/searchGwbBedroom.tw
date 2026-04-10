@@ -1,4 +1,4 @@
 :: searchGwbBedroom {"position":"4125,325","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"gwb","room":"Bedroom","bgRoom":"bedroom","buttonId":"searchGwbBedroomButton","meterId":"owaissaBedroomGWB","meterTag":"div","eventChain":"standard","replaceMode":"double","actionSel":"actionBedroom"}`>>
+<<searchTool `{"tool":"gwb","room":"Bedroom","bgRoom":"bedroom","prefix":"owaissaBedroom","eventChain":"standard","replaceMode":"double","meterTag":"div"}`>>
 <</nobr>>

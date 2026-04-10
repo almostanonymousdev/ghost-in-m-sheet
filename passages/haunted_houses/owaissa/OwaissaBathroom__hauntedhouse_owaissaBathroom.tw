@@ -3,7 +3,7 @@
 <div class="room">
 	<div class="room-wrapper">
 		<div class="content">
-          	<div id="actionBathroom" class="action">
+          	<div id="owaissaBathroomAction" class="action">
            
           	</div>
         </div>
@@ -42,14 +42,7 @@
 <</nobr>>
 <<script>>
 $(document).ready(function() {
-    setup.roomToolHandlers([
-        ['owaissaBathroomPicEMF', 'searchEmfBath'],
-        ['owaissaBathroomPicPlasm', 'searchPlasmBathroom'],
-        ['owaissaBathroomPicGWB', 'searchGwbBathroom'],
-        ['owaissaBathroomPicSB', 'searchSpiritboxBathroom'],
-        ['owaissaBathroomPicThermometr', 'addsearchThermometrBathroom'],
-        ['owaissaBathroomPicUVL', 'searchUvlBath'],
-    ]);
+    setup.roomToolHandlersByPrefix('owaissaBathroom');
 });
 <</script>>
 

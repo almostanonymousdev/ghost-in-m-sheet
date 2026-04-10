@@ -1,4 +1,4 @@
 :: searchSbKitchenEnigma {"position":"4725,1300","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"spiritbox","room":"Kitchen","bgRoom":"kitchen","buttonId":"enigmaKitchenSpiritboxButton","meterId":"enigmaKitchenSpiritbox","meterTag":"span","eventChain":"enigma","replaceMode":"double","actionSel":"actionKitchenEnigma","needsLightCheck":true}`>>
+<<searchTool `{"tool":"spiritbox","room":"Kitchen","bgRoom":"kitchen","prefix":"enigmaKitchen","eventChain":"enigma","replaceMode":"double","needsLightCheck":true}`>>
 <</nobr>>

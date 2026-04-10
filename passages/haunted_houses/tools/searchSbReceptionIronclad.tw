@@ -1,4 +1,4 @@
 :: searchSbReceptionIronclad {"position":"6500,625","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"spiritbox","room":"ReceptionIronclad","bgRoom":"reception","buttonId":"ironcladReceptionSpiritboxButton","meterId":"ironcladReceptionSpiritbox","meterTag":"span","eventChain":"ironclad","replaceMode":"double","actionSel":"actionironcladReception","needsLightCheck":true}`>>
+<<searchTool `{"tool":"spiritbox","room":"ReceptionIronclad","bgRoom":"reception","prefix":"ironcladReception","eventChain":"ironclad","replaceMode":"double","needsLightCheck":true}`>>
 <</nobr>>

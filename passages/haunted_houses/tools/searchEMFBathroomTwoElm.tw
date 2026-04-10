@@ -1,4 +1,4 @@
 :: searchEMFBathroomTwoElm {"position":"5025,225","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"emf","room":"BathroomTwo","bgRoom":"bathroomTwo","buttonId":"elmBathroomTwoEMFButton","meterId":"elmBathroomTwoEMF","meterTag":"span","eventChain":"standard","replaceMode":"single"}`>>
+<<searchTool `{"tool":"emf","room":"BathroomTwo","bgRoom":"bathroomTwo","prefix":"elmBathroomTwo","eventChain":"standard","replaceMode":"single"}`>>
 <</nobr>>

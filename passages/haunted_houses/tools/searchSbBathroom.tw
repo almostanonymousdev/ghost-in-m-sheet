@@ -1,4 +1,4 @@
 :: searchSbBathroom {"position":"4025,625","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"spiritbox","room":"Bathroom","bgRoom":"bathroom","buttonId":"searchSpiritboxBathroomButton","meterId":"owaissaBathroomSpiritbox","meterTag":"div","eventChain":"standard","replaceMode":"double","actionSel":"actionBathroom","needsLightCheck":true}`>>
+<<searchTool `{"tool":"spiritbox","room":"Bathroom","bgRoom":"bathroom","prefix":"owaissaBathroom","eventChain":"standard","replaceMode":"double","meterTag":"div","needsLightCheck":true}`>>
 <</nobr>>

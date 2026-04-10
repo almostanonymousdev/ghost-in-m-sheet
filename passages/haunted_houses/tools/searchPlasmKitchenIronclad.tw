@@ -1,4 +1,4 @@
 :: searchPlasmKitchenIronclad {"position":"6600,525","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"plasm","room":"KitchenIronclad","bgRoom":"kitchen","buttonId":"ironcladKitchenPlasmButton","meterId":"ironcladKitchenPlasm","meterTag":"span","eventChain":"ironclad","replaceMode":"double","actionSel":"actionironcladKitchen"}`>>
+<<searchTool `{"tool":"plasm","room":"KitchenIronclad","bgRoom":"kitchen","prefix":"ironcladKitchen","eventChain":"ironclad","replaceMode":"double"}`>>
 <</nobr>>

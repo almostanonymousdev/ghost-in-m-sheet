@@ -1,4 +1,4 @@
 :: searchUVLBathroomElm {"position":"4925,425","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"uvl","room":"Bathroom","bgRoom":"bathroom","buttonId":"elmBathroomUVLButton","meterId":"elmBathroomUVL","meterTag":"span","eventChain":"standard","replaceMode":"double","actionSel":"actionBathroomElm"}`>>
+<<searchTool `{"tool":"uvl","room":"Bathroom","bgRoom":"bathroom","prefix":"elmBathroom","eventChain":"standard","replaceMode":"double"}`>>
 <</nobr>>

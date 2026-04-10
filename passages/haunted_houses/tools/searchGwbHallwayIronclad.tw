@@ -1,4 +1,4 @@
 :: searchGwbHallwayIronclad {"position":"6400,325","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"gwb","room":"HallwayIronclad","bgRoom":"hallway","buttonId":"ironcladHallwayGwbButton","meterId":"ironcladHallwayGwb","meterTag":"span","eventChain":"ironclad","replaceMode":"double","actionSel":"actionironcladHallway"}`>>
+<<searchTool `{"tool":"gwb","room":"HallwayIronclad","bgRoom":"hallway","prefix":"ironcladHallway","eventChain":"ironclad","replaceMode":"double"}`>>
 <</nobr>>

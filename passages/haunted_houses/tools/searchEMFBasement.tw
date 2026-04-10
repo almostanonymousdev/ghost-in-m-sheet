@@ -1,4 +1,4 @@
 :: searchEMFBasement {"position":"4425,225","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"emf","room":"Basement","bgRoom":"basement","buttonId":"elmBEMFButton","meterId":"elmBEMF","meterTag":"span","eventChain":"standard","replaceMode":"single"}`>>
+<<searchTool `{"tool":"emf","room":"Basement","bgRoom":"basement","prefix":"elmBasement","eventChain":"standard","replaceMode":"single"}`>>
 <</nobr>>

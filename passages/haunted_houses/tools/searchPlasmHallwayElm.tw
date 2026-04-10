@@ -1,4 +1,4 @@
 :: searchPlasmHallwayElm {"position":"5125,525","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"plasm","room":"Hallway","bgRoom":"hallway","buttonId":"elmHallwayPlasmButton","meterId":"elmHallwayPlasm","meterTag":"span","eventChain":"standard","replaceMode":"double","actionSel":"actionHallwayElm"}`>>
+<<searchTool `{"tool":"plasm","room":"Hallway","bgRoom":"hallway","prefix":"elmHallway","eventChain":"standard","replaceMode":"double"}`>>
 <</nobr>>

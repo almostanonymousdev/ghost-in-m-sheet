@@ -1,4 +1,4 @@
 :: searchPlasmBlockACellAIronclad {"position":"5800,525","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"plasm","room":"BlockACellAIronclad","bgRoom":"BlockACellA","buttonId":"ironcladBlockACellAPlasmButton","meterId":"ironcladBlockACellAPlasm","meterTag":"span","eventChain":"ironclad","replaceMode":"double","actionSel":"actionironcladBlockACellA"}`>>
+<<searchTool `{"tool":"plasm","room":"BlockACellAIronclad","bgRoom":"BlockACellA","prefix":"ironcladBlockACellA","eventChain":"ironclad","replaceMode":"double"}`>>
 <</nobr>>

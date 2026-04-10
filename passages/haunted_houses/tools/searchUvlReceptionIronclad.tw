@@ -1,4 +1,4 @@
 :: searchUvlReceptionIronclad {"position":"6500,425","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"uvl","room":"ReceptionIronclad","bgRoom":"reception","buttonId":"ironcladReceptionUvlButton","meterId":"ironcladReceptionUvl","meterTag":"span","eventChain":"ironclad","replaceMode":"double","actionSel":"actionironcladReception"}`>>
+<<searchTool `{"tool":"uvl","room":"ReceptionIronclad","bgRoom":"reception","prefix":"ironcladReception","eventChain":"ironclad","replaceMode":"double"}`>>
 <</nobr>>

@@ -1,4 +1,4 @@
 :: searchThermometrNurseryElm {"position":"4725,125","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"temperature","room":"Nursery","bgRoom":"nursery","buttonId":"elmNurseryTemperatureButton","meterId":"elmNurseryTemperature","meterTag":"span","eventChain":"standard","replaceMode":"single"}`>>
+<<searchTool `{"tool":"temperature","room":"Nursery","bgRoom":"nursery","prefix":"elmNursery","eventChain":"standard","replaceMode":"single"}`>>
 <</nobr>>

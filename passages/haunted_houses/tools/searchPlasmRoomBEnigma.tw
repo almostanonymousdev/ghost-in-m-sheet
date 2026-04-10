@@ -1,4 +1,4 @@
 :: searchPlasmRoomBEnigma {"position":"5125,1200","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"plasm","room":"RoomB","bgRoom":"roomB","buttonId":"enigmaRoomBPlasmButton","meterId":"enigmaRoomBPlasm","meterTag":"span","eventChain":"enigma","replaceMode":"double","actionSel":"actionRoomBEnigma"}`>>
+<<searchTool `{"tool":"plasm","room":"RoomB","bgRoom":"roomB","prefix":"enigmaRoomB","eventChain":"enigma","replaceMode":"double"}`>>
 <</nobr>>

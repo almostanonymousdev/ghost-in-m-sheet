@@ -1,4 +1,4 @@
 :: searchSbBathroomTwoElm {"position":"5025,625","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"spiritbox","room":"BathroomTwo","bgRoom":"bathroomTwo","buttonId":"elmBathroomTwoSpiritboxButton","meterId":"elmBathroomTwoSpiritbox","meterTag":"span","eventChain":"standard","replaceMode":"double","actionSel":"actionBathroomTwoElm","needsLightCheck":true}`>>
+<<searchTool `{"tool":"spiritbox","room":"BathroomTwo","bgRoom":"bathroomTwo","prefix":"elmBathroomTwo","eventChain":"standard","replaceMode":"double","needsLightCheck":true}`>>
 <</nobr>>

@@ -1,4 +1,4 @@
 :: searchThermometrHallwayUpstairsElm {"position":"5225,125","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"temperature","room":"HallwayUpstairs","bgRoom":"hallwayUpstairs","buttonId":"elmHallwayUpstairsTemperatureButton","meterId":"elmHallwayUpstairsTemperature","meterTag":"span","eventChain":"standard","replaceMode":"single"}`>>
+<<searchTool `{"tool":"temperature","room":"HallwayUpstairs","bgRoom":"hallwayUpstairs","prefix":"elmHallwayUpstairs","eventChain":"standard","replaceMode":"single"}`>>
 <</nobr>>

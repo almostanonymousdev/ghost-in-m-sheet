@@ -1,4 +1,4 @@
 :: searchGwbBathroom {"position":"4025,325","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"gwb","room":"Bathroom","bgRoom":"kitchen","buttonId":"searchGwbBathroomButton","meterId":"owaissaBathGWB","meterTag":"div","eventChain":"standard","replaceMode":"double","actionSel":"actionBathroom"}`>>
+<<searchTool `{"tool":"gwb","room":"Bathroom","bgRoom":"bathroom","prefix":"owaissaBathroom","eventChain":"standard","replaceMode":"double","meterTag":"div"}`>>
 <</nobr>>

@@ -1,4 +1,4 @@
 :: searchEmfKitchen {"position":"3925,225","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"emf","room":"Kitchen","bgRoom":"kitchen","buttonId":"searchEmfKButton","meterId":"owaissaKEMF","meterTag":"div","eventChain":"standard","replaceMode":"single"}`>>
+<<searchTool `{"tool":"emf","room":"Kitchen","bgRoom":"kitchen","prefix":"owaissaKitchen","eventChain":"standard","replaceMode":"single","meterTag":"div"}`>>
 <</nobr>>

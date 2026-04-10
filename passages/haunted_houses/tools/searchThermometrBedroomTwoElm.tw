@@ -1,4 +1,4 @@
 :: searchThermometrBedroomTwoElm {"position":"4625,125","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"temperature","room":"BedroomTwo","bgRoom":"bedroomTwo","buttonId":"elmBedroomTwoTemperatureButton","meterId":"elmBedroomTwoTemperature","meterTag":"span","eventChain":"standard","replaceMode":"single"}`>>
+<<searchTool `{"tool":"temperature","room":"BedroomTwo","bgRoom":"bedroomTwo","prefix":"elmBedroomTwo","eventChain":"standard","replaceMode":"single"}`>>
 <</nobr>>

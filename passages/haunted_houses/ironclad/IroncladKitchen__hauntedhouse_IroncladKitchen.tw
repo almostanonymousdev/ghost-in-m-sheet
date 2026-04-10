@@ -3,7 +3,7 @@
 <div class="room">
 	<div class="room-wrapper">
 		<div class="content">
-          	<div id="actionironcladKitchen" class="action">
+          	<div id="ironcladKitchenAction" class="action">
 				
           	</div>
         </div>
@@ -11,11 +11,11 @@
 		<div class="footer">
         	<div class="footertools">
          	<<toolCard "img/emf.png" "ironcladKitchenPicEMF" "searchEMFKitchenIronclad">>
-         	<<toolCard "img/glass.png" "actionironcladKitchenPicPlasm" "searchPlasmKitchenIronclad">>
-         	<<toolCard "img/gwb.png" "actionironcladKitchenPicGWB" "searchGwbKitchenIronclad">>
-         	<<toolCard "img/spiritbox.png" "actionironcladKitchenPicSB" "searchSbKitchenIronclad">>
-         	<<toolCard "img/thermometr.png" "actionironcladKitchenPicThermometr" "searchThermometrKitchenIronclad">>
-         	<<toolCard "img/uvl.png" "actionironcladKitchenPicUVL" "searchUvlKitchenIronclad">>
+         	<<toolCard "img/glass.png" "ironcladKitchenPicPlasm" "searchPlasmKitchenIronclad">>
+         	<<toolCard "img/gwb.png" "ironcladKitchenPicGWB" "searchGwbKitchenIronclad">>
+         	<<toolCard "img/spiritbox.png" "ironcladKitchenPicSB" "searchSbKitchenIronclad">>
+         	<<toolCard "img/thermometr.png" "ironcladKitchenPicThermometr" "searchThermometrKitchenIronclad">>
+         	<<toolCard "img/uvl.png" "ironcladKitchenPicUVL" "searchUvlKitchenIronclad">>
             <<companionCard>>
             <div class="footer-card footer-light">
             	<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "IroncladKitchen">><<set $kitchen.background to 1>><</link>>
@@ -37,4 +37,8 @@
 </div>
 <</nobr>>
 
-
+<<script>>
+$(document).ready(function() {
+    setup.roomToolHandlersByPrefix('ironcladKitchen');
+});
+<</script>>

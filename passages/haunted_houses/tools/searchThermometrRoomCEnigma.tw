@@ -1,4 +1,4 @@
 :: searchThermometrRoomCEnigma {"position":"5225,800","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"temperature","room":"RoomC","bgRoom":"roomC","buttonId":"enigmaRoomCTemperatureButton","meterId":"enigmaRoomCTemperature","meterTag":"span","eventChain":"enigma","replaceMode":"single"}`>>
+<<searchTool `{"tool":"temperature","room":"RoomC","bgRoom":"roomC","prefix":"enigmaRoomC","eventChain":"enigma","replaceMode":"single"}`>>
 <</nobr>>

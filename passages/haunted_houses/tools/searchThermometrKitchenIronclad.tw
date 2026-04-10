@@ -1,4 +1,4 @@
 :: searchThermometrKitchenIronclad {"position":"6600,125","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"temperature","room":"KitchenIronclad","bgRoom":"kitchen","buttonId":"ironcladKitchenTemperatureButton","meterId":"ironcladKitchenTemperature","meterTag":"span","eventChain":"ironclad","replaceMode":"single"}`>>
+<<searchTool `{"tool":"temperature","room":"KitchenIronclad","bgRoom":"kitchen","prefix":"ironcladKitchen","eventChain":"ironclad","replaceMode":"single"}`>>
 <</nobr>>

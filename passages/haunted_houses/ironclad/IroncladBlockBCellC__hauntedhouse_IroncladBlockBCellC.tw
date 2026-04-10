@@ -3,7 +3,7 @@
 <div class="room">
 	<div class="room-wrapper">
 		<div class="content">
-          	<div id="actionironcladBlockBCellC" class="action">
+          	<div id="ironcladBlockBCellCAction" class="action">
 				
           	</div>
         </div>
@@ -11,11 +11,11 @@
 		<div class="footer">
         	<div class="footertools">
          	<<toolCard "img/emf.png" "ironcladBlockBCellCPicEMF" "searchEMFBlockBCellCIronclad">>
-         	<<toolCard "img/glass.png" "actionironcladBlockBCellCPicPlasm" "searchPlasmBlockBCellCIronclad">>
-         	<<toolCard "img/gwb.png" "actionironcladBlockBCellCPicGWB" "searchGwbBlockBCellCIronclad">>
-         	<<toolCard "img/spiritbox.png" "actionironcladBlockBCellCPicSB" "searchSbBlockBCellCIronclad">>
-         	<<toolCard "img/thermometr.png" "actionironcladBlockBCellCPicThermometr" "searchThermometrBlockBCellCIronclad">>
-         	<<toolCard "img/uvl.png" "actionironcladBlockBCellCPicUVL" "searchUvlBlockBCellCIronclad">>
+         	<<toolCard "img/glass.png" "ironcladBlockBCellCPicPlasm" "searchPlasmBlockBCellCIronclad">>
+         	<<toolCard "img/gwb.png" "ironcladBlockBCellCPicGWB" "searchGwbBlockBCellCIronclad">>
+         	<<toolCard "img/spiritbox.png" "ironcladBlockBCellCPicSB" "searchSbBlockBCellCIronclad">>
+         	<<toolCard "img/thermometr.png" "ironcladBlockBCellCPicThermometr" "searchThermometrBlockBCellCIronclad">>
+         	<<toolCard "img/uvl.png" "ironcladBlockBCellCPicUVL" "searchUvlBlockBCellCIronclad">>
             <<companionCard>>
             <div class="footer-card footer-light">
             	<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "IroncladBlockBCellC">><<set $BlockBCellC.background to 1>><</link>>
@@ -38,4 +38,8 @@
 </div>
 <</nobr>>
 
-
+<<script>>
+$(document).ready(function() {
+    setup.roomToolHandlersByPrefix('ironcladBlockBCellC');
+});
+<</script>>

@@ -3,7 +3,7 @@
 <div class="room">
 	<div class="room-wrapper">
 		<div class="content">
-          	<div id="actionBathroomEnigma" class="action">
+          	<div id="enigmaBathroomAction" class="action">
 
           	</div>
         </div>
@@ -30,7 +30,9 @@
 <</nobr>>
 
 <<script>>
-$(document).ready(function() { setup.roomToolHandlersByPrefix('enigmaBathroom'); });
+$(document).ready(function() {
+    setup.roomToolHandlersByPrefix('enigmaBathroom');
+});
 <</script>>
 
 

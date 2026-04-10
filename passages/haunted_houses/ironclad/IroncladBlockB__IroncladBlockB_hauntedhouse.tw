@@ -3,7 +3,7 @@
 <div class="room">
 	<div class="room-wrapper">
 		<div class="content">
-          	<div id="actionironcladBlockB" class="action">
+          	<div id="ironcladBlockBAction" class="action">
 				
           	</div>
         </div>
@@ -11,11 +11,11 @@
 		<div class="footer">
         	<div class="footertools">
          	<<toolCard "img/emf.png" "ironcladBlockBPicEMF" "searchEMFBlockBIronclad">>
-         	<<toolCard "img/glass.png" "actionironcladBlockBPicPlasm" "searchPlasmBlockBIronclad">>
-         	<<toolCard "img/gwb.png" "actionironcladBlockBPicGWB" "searchGwbBlockBIronclad">>
-         	<<toolCard "img/spiritbox.png" "actionironcladBlockBPicSB" "searchSbBlockBIronclad">>
-         	<<toolCard "img/thermometr.png" "actionironcladBlockBPicThermometr" "searchThermometrBlockBIronclad">>
-         	<<toolCard "img/uvl.png" "actionironcladBlockBPicUVL" "searchUvlBlockBIronclad">>
+         	<<toolCard "img/glass.png" "ironcladBlockBPicPlasm" "searchPlasmBlockBIronclad">>
+         	<<toolCard "img/gwb.png" "ironcladBlockBPicGWB" "searchGwbBlockBIronclad">>
+         	<<toolCard "img/spiritbox.png" "ironcladBlockBPicSB" "searchSbBlockBIronclad">>
+         	<<toolCard "img/thermometr.png" "ironcladBlockBPicThermometr" "searchThermometrBlockBIronclad">>
+         	<<toolCard "img/uvl.png" "ironcladBlockBPicUVL" "searchUvlBlockBIronclad">>
             <<companionCard>>
             <div class="footer-card footer-light">
             	<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "IroncladBlockB">><<set $BlockB.background to 1>><</link>>
@@ -43,4 +43,8 @@
 </div>
 <</nobr>>
 
-
+<<script>>
+$(document).ready(function() {
+    setup.roomToolHandlersByPrefix('ironcladBlockB');
+});
+<</script>>

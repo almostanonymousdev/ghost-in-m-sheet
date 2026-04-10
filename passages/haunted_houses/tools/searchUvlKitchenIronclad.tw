@@ -1,4 +1,4 @@
 :: searchUvlKitchenIronclad {"position":"6600,425","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"uvl","room":"KitchenIronclad","bgRoom":"kitchen","buttonId":"ironcladKitchenUvlButton","meterId":"ironcladKitchenUvl","meterTag":"span","eventChain":"ironclad","replaceMode":"double","actionSel":"actionironcladKitchen"}`>>
+<<searchTool `{"tool":"uvl","room":"KitchenIronclad","bgRoom":"kitchen","prefix":"ironcladKitchen","eventChain":"ironclad","replaceMode":"double"}`>>
 <</nobr>>

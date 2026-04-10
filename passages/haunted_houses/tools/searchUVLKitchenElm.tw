@@ -1,4 +1,4 @@
 :: searchUVLKitchenElm {"position":"4825,425","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"uvl","room":"Kitchen","bgRoom":"kitchen","buttonId":"elmKitchenUVLButton","meterId":"elmKitchenUVL","meterTag":"span","eventChain":"standard","replaceMode":"double","actionSel":"actionKitchenElm"}`>>
+<<searchTool `{"tool":"uvl","room":"Kitchen","bgRoom":"kitchen","prefix":"elmKitchen","eventChain":"standard","replaceMode":"double"}`>>
 <</nobr>>

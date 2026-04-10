@@ -3,7 +3,7 @@
 <div class="room">
 	<div class="room-wrapper">
 		<div class="content">
-          	<div id="actionHallway" class="action">
+          	<div id="owaissaHallwayAction" class="action">
 
           	</div>
         </div>
@@ -47,14 +47,7 @@
 
 <<script>>
 $(document).ready(function() {
-    setup.roomToolHandlers([
-        ['owaissaHallwayPicEMF', 'searchEmfH'],
-        ['owaissaHallwayPicPlasm', 'searchGlassH'],
-        ['owaissaHallwayPicGWB', 'searchGwbH'],
-        ['owaissaHallwayPicSB', 'searchSpiritboxH'],
-        ['owaissaHallwayPicThermometr', 'addsearchThermometrHallway'],
-        ['owaissaHallwayPicUVL', 'searchUvlH'],
-    ]);
+    setup.roomToolHandlersByPrefix('owaissaHallway');
 });
 <</script>>
 

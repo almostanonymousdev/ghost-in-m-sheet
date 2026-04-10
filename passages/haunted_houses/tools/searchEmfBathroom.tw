@@ -1,4 +1,4 @@
 :: searchEmfBathroom {"position":"4025,225","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"emf","room":"Bathroom","bgRoom":"bathroom","buttonId":"searchEmfBathButton","meterId":"owaissaBEMF","meterTag":"div","eventChain":"standard","replaceMode":"single"}`>>
+<<searchTool `{"tool":"emf","room":"Bathroom","bgRoom":"bathroom","prefix":"owaissaBathroom","eventChain":"standard","replaceMode":"single","meterTag":"div"}`>>
 <</nobr>>

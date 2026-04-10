@@ -1,4 +1,4 @@
 :: searchUVLBathroomTwoElm {"position":"5025,425","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"uvl","room":"BathroomTwo","bgRoom":"bathroomTwo","buttonId":"elmBathroomTwoUVLButton","meterId":"elmBathroomTwoUVL","meterTag":"span","eventChain":"standard","replaceMode":"double","actionSel":"actionBathroomTwoElm"}`>>
+<<searchTool `{"tool":"uvl","room":"BathroomTwo","bgRoom":"bathroomTwo","prefix":"elmBathroomTwo","eventChain":"standard","replaceMode":"double"}`>>
 <</nobr>>

@@ -1,4 +1,4 @@
 :: searchUVLLivingroomEnigma {"position":"4925,1100","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"uvl","room":"Livingroom","bgRoom":"livingroom","buttonId":"enigmaLivingroomUVLButton","meterId":"enigmaLivingroomUVL","meterTag":"span","eventChain":"enigma","replaceMode":"double","actionSel":"actionLivingroomEnigma"}`>>
+<<searchTool `{"tool":"uvl","room":"Livingroom","bgRoom":"livingroom","prefix":"enigmaLivingroom","eventChain":"enigma","replaceMode":"double"}`>>
 <</nobr>>

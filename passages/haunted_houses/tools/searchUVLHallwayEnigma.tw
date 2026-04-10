@@ -1,4 +1,4 @@
 :: searchUVLHallwayEnigma {"position":"4425,1100","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"uvl","room":"Hallway","bgRoom":"hallway","buttonId":"enigmaHallwayUVLButton","meterId":"enigmaHallwayUVL","meterTag":"span","eventChain":"enigma","replaceMode":"double","actionSel":"actionHallwayEnigma"}`>>
+<<searchTool `{"tool":"uvl","room":"Hallway","bgRoom":"hallway","prefix":"enigmaHallway","eventChain":"enigma","replaceMode":"double"}`>>
 <</nobr>>

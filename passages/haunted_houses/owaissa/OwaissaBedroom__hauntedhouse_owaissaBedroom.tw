@@ -4,7 +4,7 @@
 	<div class="room-wrapper">
 		<div class="content">
 
-          	<div id="actionBedroom" class="action">
+          	<div id="owaissaBedroomAction" class="action">
                    
           	</div>
         </div>
@@ -54,13 +54,6 @@ All you can do now is wait and hope it doesn’t find you.@@
 <</nobr>>
 <<script>>
 $(document).ready(function() {
-    setup.roomToolHandlers([
-        ['owaissaBedroomPicEMF', 'searchEmfB'],
-        ['owaissaBedroomPicPlasm', 'searchPlasmBedroom'],
-        ['owaissaBedroomPicGWB', 'searchGwbBedroom'],
-        ['owaissaBedroomPicSB', 'searchSpiritboxBedroom'],
-        ['owaissaBedroomPicThermometr', 'addsearchThermometrBedroom'],
-        ['owaissaBedroomPicUVL', 'searchUvlB'],
-    ]);
+    setup.roomToolHandlersByPrefix('owaissaBedroom');
 });
 <</script>>

@@ -1,4 +1,4 @@
 :: searchEMFHallwayUpstairsElm {"position":"5225,225","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"emf","room":"HallwayUpstairs","bgRoom":"hallwayUpstairs","buttonId":"elmHallwayUpstairsEMFButton","meterId":"elmHallwayUpstairsEMF","meterTag":"span","eventChain":"standard","replaceMode":"single"}`>>
+<<searchTool `{"tool":"emf","room":"HallwayUpstairs","bgRoom":"hallwayUpstairs","prefix":"elmHallwayUpstairs","eventChain":"standard","replaceMode":"single"}`>>
 <</nobr>>

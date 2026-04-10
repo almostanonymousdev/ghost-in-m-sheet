@@ -3,7 +3,7 @@
 <div class="room">
 	<div class="room-wrapper">
 		<div class="content">
-          	<div id="actionBedroomElm" class="action">
+          	<div id="elmBedroomAction" class="action">
 
           	</div>
         </div>
@@ -55,5 +55,7 @@ All you can do now is wait and hope it doesn’t find you.@@
 <</nobr>>
 
 <<script>>
-$(document).ready(function() { setup.roomToolHandlersByPrefix('elmBedroom'); });
+$(document).ready(function() {
+    setup.roomToolHandlersByPrefix('elmBedroom');
+});
 <</script>>

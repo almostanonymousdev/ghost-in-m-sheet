@@ -3,7 +3,7 @@
 <div class="room">
 	<div class="room-wrapper">
 		<div class="content">
-          	<div id="actionHallwayElm" class="action">
+          	<div id="elmHallwayAction" class="action">
 
           	</div>
         </div>
@@ -54,7 +54,9 @@
 <</nobr>>
 
 <<script>>
-$(document).ready(function() { setup.roomToolHandlersByPrefix('elmHallway'); });
+$(document).ready(function() {
+    setup.roomToolHandlersByPrefix('elmHallway');
+});
 <</script>>
 
 

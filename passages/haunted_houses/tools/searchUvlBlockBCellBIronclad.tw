@@ -1,4 +1,4 @@
 :: searchUvlBlockBCellBIronclad {"position":"6200,425","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"uvl","room":"BlockBCellBIronclad","bgRoom":"BlockBCellB","buttonId":"ironcladBlockBCellBUvlButton","meterId":"ironcladBlockBCellBUvl","meterTag":"span","eventChain":"ironclad","replaceMode":"double","actionSel":"actionironcladBlockBCellB"}`>>
+<<searchTool `{"tool":"uvl","room":"BlockBCellBIronclad","bgRoom":"BlockBCellB","prefix":"ironcladBlockBCellB","eventChain":"ironclad","replaceMode":"double"}`>>
 <</nobr>>

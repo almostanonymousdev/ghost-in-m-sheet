@@ -3,7 +3,7 @@
 <div class="room">
 	<div class="room-wrapper">
 		<div class="content">
-          	<div id="actionBasementEnigma" class="action">
+          	<div id="enigmaBasementAction" class="action">
 
           	</div>
         </div>
@@ -34,14 +34,7 @@
 
 <<script>>
 $(document).ready(function() {
-    setup.roomToolHandlers([
-        ['enigmaBasementPicEMF', 'enigmaBEMF'],
-        ['enigmaBasementPicPlasm', 'enigmaBasementPlasm'],
-        ['enigmaBasementPicGWB', 'enigmaBGWB'],
-        ['enigmaBasementPicSB', 'enigmaBasementSpiritbox'],
-        ['enigmaBasementPicThermometr', 'enigmaBasementTemperature'],
-        ['enigmaBasementPicUVL', 'enigmaBasementUVL'],
-    ]);
+    setup.roomToolHandlersByPrefix('enigmaBasement');
 });
 <</script>>
 

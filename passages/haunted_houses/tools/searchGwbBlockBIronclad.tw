@@ -1,4 +1,4 @@
 :: searchGwbBlockBIronclad {"position":"5700,325","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"gwb","room":"BlockBIronclad","bgRoom":"BlockB","buttonId":"ironcladBlockBGwbButton","meterId":"ironcladBlockBGwb","meterTag":"span","eventChain":"ironclad","replaceMode":"double","actionSel":"actionironcladBlockB"}`>>
+<<searchTool `{"tool":"gwb","room":"BlockBIronclad","bgRoom":"BlockB","prefix":"ironcladBlockB","eventChain":"ironclad","replaceMode":"double"}`>>
 <</nobr>>

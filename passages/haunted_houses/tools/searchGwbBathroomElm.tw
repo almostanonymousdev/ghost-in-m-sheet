@@ -1,4 +1,4 @@
 :: searchGwbBathroomElm {"position":"4925,325","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"gwb","room":"Bathroom","bgRoom":"bathroom","buttonId":"elmBathroomGWBButton","meterId":"elmBathroomGWB","meterTag":"span","eventChain":"standard","replaceMode":"double","actionSel":"actionBathroomElm"}`>>
+<<searchTool `{"tool":"gwb","room":"Bathroom","bgRoom":"bathroom","prefix":"elmBathroom","eventChain":"standard","replaceMode":"double"}`>>
 <</nobr>>

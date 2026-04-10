@@ -1,4 +1,4 @@
 :: searchGwbHallway {"position":"3825,325","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"gwb","room":"Hallway","bgRoom":"hallway","buttonId":"searchGwbHButton","meterId":"owaissaHGWB","meterTag":"div","eventChain":"standard","replaceMode":"double","actionSel":"actionHallway"}`>>
+<<searchTool `{"tool":"gwb","room":"Hallway","bgRoom":"hallway","prefix":"owaissaHallway","eventChain":"standard","replaceMode":"double","meterTag":"div"}`>>
 <</nobr>>

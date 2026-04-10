@@ -1,4 +1,4 @@
 :: searchUVLBasementEnigma {"position":"4525,1100","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"uvl","room":"Basement","bgRoom":"basement","buttonId":"enigmaBasementUVLButton","meterId":"enigmaBasementUVL","meterTag":"span","eventChain":"enigma","replaceMode":"double","actionSel":"actionBasementEnigma"}`>>
+<<searchTool `{"tool":"uvl","room":"Basement","bgRoom":"basement","prefix":"enigmaBasement","eventChain":"enigma","replaceMode":"double"}`>>
 <</nobr>>

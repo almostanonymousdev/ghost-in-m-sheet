@@ -954,244 +954,29 @@ function debounce(func, wait) {
     };
 }
 
+// Keyboard shortcut: map each key to the tool it activates, then click the
+// canonical button for every room in setup.searchRoomPrefixes.
+setup.searchToolKeyMap = {
+    t: "temperature",
+    f: "emf",
+    g: "gwb",
+    u: "uvl",
+    e: "plasm",
+    s: "spiritbox"
+};
+
+setup.clickAllSearchTools = function (tool) {
+    var def = setup.searchToolDefs[tool];
+    if (!def) return;
+    var suffix = def.widgetSuffix;
+    setup.searchRoomPrefixes.forEach(function (entry) {
+        $('#' + entry.prefix + suffix + 'Button a').click();
+    });
+};
+
 $(document).off('keydown').on('keydown', debounce(function(event) {
-    switch (event.key) {
-        case 't':
-$('#addsearchThermometrHallway a, #addsearchThermometrHallwayButton a').click();
-$('#addsearchThermometrKitchen a, #addsearchThermometrKitchenButton a').click();
-$('#addsearchThermometrBathroom a, #addsearchThermometrBathroomButton a').click();
-$('#addsearchThermometrBedroom a, #addsearchThermometrBedroomButton a').click();
-$('#addsearchThermometrLivingroom a, #addsearchThermometrLivingroomButton a').click();
-
-$('#elmBasementTemperature a, #elmBasementTemperatureButton a').click();
-$('#elmBedroomTemperature a, #elmBedroomTemperatureButton a').click();
-$('#elmBedroomTwoTemperature a, #elmBedroomTwoTemperatureButton a').click();
-$('#elmNurseryTemperature a, #elmNurseryTemperatureButton a').click();
-$('#elmKitchenTemperature a, #elmKitchenTemperatureButton a').click();	   
-$('#elmBathroomTemperature a, #elmBathroomTemperatureButton a').click();
-$('#elmBathroomTwoTemperature a, #elmBathroomTwoTemperatureButton a').click();
-$('#elmHallwayTemperature a, #elmHallwayTemperatureButton a').click();
-$('#elmHallwayUpstairsTemperature a, #elmHallwayUpstairsTemperatureButton a').click();
-
-$('#enigmaHallwayTemperature a, #enigmaHallwayTemperatureButton a').click();
-$('#enigmaBasementTemperature a, #enigmaBasementTemperatureButton a').click();
-$('#enigmaBedroomTemperature a, #enigmaBedroomTemperatureButton a').click();
-$('#enigmaKitchenTemperature a, #enigmaKitchenTemperatureButton a').click();
-$('#enigmaBathroomTemperature a, #enigmaBathroomTemperatureButton a').click();
-$('#enigmaLivingroomTemperature a, #enigmaLivingroomTemperatureButton a').click();
-$('#enigmaRoomATemperature a, #enigmaRoomATemperatureButton a').click();
-$('#enigmaRoomBTemperature a, #enigmaRoomBTemperatureButton a').click();
-$('#enigmaRoomCTemperature a, #enigmaRoomCTemperatureButton a').click();
-        
-$('#ironcladBlockATemperatureButton a').click();
-$('#ironcladBlockBTemperatureButton a').click();
-$('#ironcladBlockACellATemperatureButton a').click();
-$('#ironcladBlockACellBTemperatureButton a').click();
-$('#ironcladBlockACellCTemperatureButton a').click();
-$('#ironcladBlockBCellATemperatureButton a').click();
-$('#ironcladBlockBCellBTemperatureButton a').click();
-$('#ironcladBlockBCellCTemperatureButton a').click();
-$('#ironcladHallwayTemperatureButton a').click();
-$('#ironcladReceptionTemperatureButton a').click();
-$('#ironcladKitchenTemperatureButton a').click();
-
-                break;
-            case 'f':
-$('#searchEmfH a, #searchEmfHButton a').click();
-$('#searchEmfK a, #searchEmfKButton a').click();
-$('#searchEmfBath a, #searchEmfBathButton a').click();
-$('#searchEmfB a, #searchEmfBButton a').click();
-$('#searchEmfL a, #searchEmfLButton a').click();
-
-$('#elmBEMF a, #elmBEMFButton a').click();
-$('#elmBedroomEMF a, #elmBedroomEMFButton a').click();
-$('#elmBedroomTwoEMF a, #elmBedroomTwoEMFButton a').click();
-$('#elmNurseryEMF a, #elmNurseryEMFButton a').click();
-$('#elmKitchenEMF a, #elmKitchenEMFButton a').click();
-$('#elmBathroomEMF a, #elmBathroomEMFButton a').click();
-$('#elmBathroomTwoEMF a, #elmBathroomTwoEMFButton a').click();
-$('#elmHallwayEMF a, #elmHallwayEMFButton a').click();
-$('#elmHallwayUpstairsEMF a, #elmHallwayUpstairsEMFButton a').click();
-
-$('#enigmaHallwayEMF a, #enigmaHallwayEMFButton a').click();
-$('#enigmaBEMF a, #enigmaBEMFButton a').click();
-$('#enigmaBedroomEMF a, #enigmaBedroomEMFButton a').click();
-$('#enigmaKitchenEMF a, #enigmaKitchenEMFButton a').click();
-$('#enigmaBathroomEMF a, #enigmaBathroomEMFButton a').click();
-$('#enigmaLivingroomEMF a, #enigmaLivingroomEMFButton a').click();
-$('#enigmaRoomAEMF a, #enigmaRoomAEMFButton a').click();
-$('#enigmaRoomBEMF a, #enigmaRoomBEMFButton a').click();
-$('#enigmaRoomCEMF a, #enigmaRoomCEMFButton a').click();
-        
-$('#ironcladBlockAEmfButton a').click();
-$('#ironcladBlockBEmfButton a').click();
-$('#ironcladBlockACellAEmfButton a').click();
-$('#ironcladBlockACellBEmfButton a').click();
-$('#ironcladBlockACellCEmfButton a').click();
-$('#ironcladBlockBCellAEmfButton a').click();
-$('#ironcladBlockBCellBEmfButton a').click();
-$('#ironcladBlockBCellCEmfButton a').click();
-$('#ironcladHallwayEmfButton a').click();
-$('#ironcladReceptionEmfButton a').click();
-$('#ironcladKitchenEmfButton a').click();
-                break;
-            case 'g':
-$('#searchGwbH a, #searchGwbHButton a').click();
-$('#searchGwbK a, #searchGwbKButton a').click();
-$('#searchGwbBathroom a, #searchGwbBathroomButton a').click();
-$('#searchGwbBedroom a, #searchGwbBedroomButton a').click();
-$('#searchGwbLivingroom a, #searchGwbLivingroomButton a').click();
-
-$('#elmBGWB a, #elmBGWBButton a').click();
-$('#elmBedroomGWB a, #elmBedroomGWBButton a').click();
-$('#elmBedroomTwoGWB a, #elmBedroomTwoGWBButton a').click();
-$('#elmNurseryGWB a, #elmNurseryGWBButton a').click();
-$('#elmKitchenGWB a, #elmKitchenGWBButton a').click();
-$('#elmBathroomGWB a, #elmBathroomGWBButton a').click();
-$('#elmBathroomTwoGWB a, #elmBathroomTwoGWBButton a').click();
-$('#elmHallwayGWB a, #elmHallwayGWBButton a').click();
-$('#elmHallwayUpstairsGWB a, #elmHallwayUpstairsGWBButton a').click();
-
-$('#enigmaHallwayGWB a, #enigmaHallwayGWBButton a').click();
-$('#enigmaBGWB a, #enigmaBGWBButton a').click();
-$('#enigmaBedroomGWB a, #enigmaBedroomGWBButton a').click();
-$('#enigmaKitchenGWB a, #enigmaKitchenGWBButton a').click();
-$('#enigmaBathroomGWB a, #enigmaBathroomGWBButton a').click();
-$('#enigmaLivingroomGWB a, #enigmaLivingroomGWBButton a').click();
-$('#enigmaRoomAGWB a, #enigmaRoomAGWBButton a').click();
-$('#enigmaRoomBGWB a, #enigmaRoomBGWBButton a').click();
-$('#enigmaRoomCGWB a, #enigmaRoomCGWBButton a').click();
-
-$('#ironcladBlockAGwbButton a').click();
-$('#ironcladBlockBGwbButton a').click();
-$('#ironcladBlockACellAGwbButton a').click();
-$('#ironcladBlockACellBGwbButton a').click();
-$('#ironcladBlockACellCGwbButton a').click();
-$('#ironcladBlockBCellAGwbButton a').click();
-$('#ironcladBlockBCellBGwbButton a').click();
-$('#ironcladBlockBCellCGwbButton a').click();
-$('#ironcladHallwayGwbButton a').click();
-$('#ironcladReceptionGwbButton a').click();
-$('#ironcladKitchenGwbButton a').click();
-                break;
-            case 'u':
-$('#searchUvlH a, #searchUvlHButton a').click();
-$('#searchUvlK a, #searchUvlKButton a').click();
-$('#searchUvlBath a, #searchUvlBathButton a').click();
-$('#searchUvlB a, #searchUvlBButton a').click();
-$('#searchUvlL a, #searchUvlLButton a').click();
-
-$('#elmBasementUVL a, #elmBasementUVLButton a').click();
-$('#elmBedroomUVL a, #elmBedroomUVLButton a').click();
-$('#elmBedroomTwoUVL a, #elmBedroomTwoUVLButton a').click();
-$('#elmNurseryUVL a, #elmNurseryUVLButton a').click();
-$('#elmKitchenUVL a, #elmKitchenUVLButton a').click();
-$('#elmBathroomUVL a, #elmBathroomUVLButton a').click();
-$('#elmBathroomTwoUVL a, #elmBathroomTwoUVLButton a').click();
-$('#elmHallwayUVL a, #elmHallwayUVLButton a').click();
-$('#elmHallwayUpstairsUVL a, #elmHallwayUpstairsUVLButton a').click();
-
-$('#enigmaHallwayUVL a, #enigmaHallwayUVLButton a').click();
-$('#enigmaBasementUVL a, #enigmaBasementUVLButton a').click();
-$('#enigmaBedroomUVL a, #enigmaBedroomUVLButton a').click();
-$('#enigmaKitchenUVL a, #enigmaKitchenUVLButton a').click();
-$('#enigmaBathroomUVL a, #enigmaBathroomUVLButton a').click();
-$('#enigmaLivingroomUVL a, #enigmaLivingroomUVLButton a').click();
-$('#enigmaRoomAUVL a, #enigmaRoomAUVLButton a').click();
-$('#enigmaRoomBUVL a, #enigmaRoomBUVLButton a').click();
-$('#enigmaRoomCUVL a, #enigmaRoomCUVLButton a').click();
-
-$('#ironcladBlockAUvlButton a').click();
-$('#ironcladBlockBUvlButton a').click();
-$('#ironcladBlockACellAUvlButton a').click();
-$('#ironcladBlockACellBUvlButton a').click();
-$('#ironcladBlockACellCUvlButton a').click();
-$('#ironcladBlockBCellAUvlButton a').click();
-$('#ironcladBlockBCellBUvlButton a').click();
-$('#ironcladBlockBCellCUvlButton a').click();
-$('#ironcladHallwayUvlButton a').click();
-$('#ironcladReceptionUvlButton a').click();
-$('#ironcladKitchenUvlButton a').click();
-                break;
-            case 'e':
-$('#searchGlassH a, #searchGlassHButton a').click();
-$('#searchPlasmKitchen a, #searchPlasmKitchenButton a').click();
-$('#searchPlasmBathroom a, #searchPlasmBathroomButton a').click();
-$('#searchPlasmBedroom a, #searchPlasmBedroomButton a').click();
-$('#searchPlasmLivingroom a, #searchPlasmLivingroomButton a').click();
-
-$('#elmBasementPlasm a, #elmBasementPlasmButton a').click();
-$('#elmBedroomPlasm a, #elmBedroomPlasmButton a').click();
-$('#elmBedroomTwoPlasm a, #elmBedroomTwoPlasmButton a').click();
-$('#elmNurseryPlasm a, #elmNurseryPlasmButton a').click();
-$('#elmKitchenPlasm a, #elmKitchenPlasmButton a').click();
-$('#elmBathroomPlasm a, #elmBathroomPlasmButton a').click();
-$('#elmBathroomTwoPlasm a, #elmBathroomTwoPlasmButton a').click();
-$('#elmHallwayPlasm a, #elmHallwayPlasmButton a').click();
-$('#elmHallwayUpstairsPlasm a, #elmHallwayUpstairsPlasmButton a').click();
-
-$('#enigmaHallwayPlasm a, #enigmaHallwayPlasmButton a').click();
-$('#enigmaBasementPlasm a, #enigmaBasementPlasmButton a').click();
-$('#enigmaBedroomPlasm a, #enigmaBedroomPlasmButton a').click();
-$('#enigmaKitchenPlasm a, #enigmaKitchenPlasmButton a').click();
-$('#enigmaBathroomPlasm a, #enigmaBathroomPlasmButton a').click();
-$('#enigmaLivingroomPlasm a, #enigmaLivingroomPlasmButton a').click();
-$('#enigmaRoomAPlasm a, #enigmaRoomAPlasmButton a').click();
-$('#enigmaRoomBPlasm a, #enigmaRoomBPlasmButton a').click();
-$('#enigmaRoomCPlasm a, #enigmaRoomCPlasmButton a').click();
-
-$('#ironcladBlockAPlasmButton a').click();
-$('#ironcladBlockBPlasmButton a').click();
-$('#ironcladBlockACellAPlasmButton a').click();
-$('#ironcladBlockACellBPlasmButton a').click();
-$('#ironcladBlockACellCPlasmButton a').click();
-$('#ironcladBlockBCellAPlasmButton a').click();
-$('#ironcladBlockBCellBPlasmButton a').click();
-$('#ironcladBlockBCellCPlasmButton a').click();
-$('#ironcladHallwayPlasmButton a').click();
-$('#ironcladReceptionPlasmButton a').click();
-$('#ironcladKitchenPlasmButton a').click();
-                break;     
-            case 's':
-$('#searchSpiritboxH a, #searchSpiritboxHButton a').click();
-$('#searchSpiritboxK a, #searchSpiritboxKButton a').click();
-$('#searchSpiritboxBathroom a, #searchSpiritboxBathroomButton a').click();
-$('#searchSpiritboxBedroom a, #searchSpiritboxBedroomButton a').click();
-$('#searchSpiritboxLivingroom a, #searchSpiritboxLivingroomButton a').click();
-
-$('#elmBasementSpiritbox a, #elmBasementSpiritboxButton a').click();
-$('#elmBedroomSpiritbox a, #elmBedroomSpiritboxButton a').click();
-$('#elmBedroomTwoSpiritbox a, #elmBedroomTwoSpiritboxButton a').click();
-$('#elmNurserySpiritbox a, #elmNurserySpiritboxButton a').click();
-$('#elmKitchenSpiritbox a, #elmKitchenSpiritboxButton a').click();
-$('#elmBathroomSpiritbox a, #elmBathroomSpiritboxButton a').click();
-$('#elmBathroomTwoSpiritbox a, #elmBathroomTwoSpiritboxButton a').click();
-$('#elmHallwaySpiritbox a, #elmHallwaySpiritboxButton a').click();
-$('#elmHallwayUpstairsSpiritbox a, #elmHallwayUpstairsSpiritboxButton a').click();
-
-$('#enigmaHallwaySpiritbox a, #enigmaHallwaySpiritboxButton a').click();
-$('#enigmaBasementSpiritbox a, #enigmaBasementSpiritboxButton a').click();
-$('#enigmaBedroomSpiritbox a, #enigmaBedroomSpiritboxButton a').click();
-$('#enigmaKitchenSpiritbox a, #enigmaKitchenSpiritboxButton a').click();
-$('#enigmaBathroomSpiritbox a, #enigmaBathroomSpiritboxButton a').click();
-$('#enigmaLivingroomSpiritbox a, #enigmaLivingroomSpiritboxButton a').click();
-$('#enigmaRoomASpiritbox a, #enigmaRoomASpiritboxButton a').click();
-$('#enigmaRoomBSpiritbox a, #enigmaRoomBSpiritboxButton a').click();
-$('#enigmaRoomCSpiritbox a, #enigmaRoomCSpiritboxButton a').click();
-
-$('#ironcladBlockASpiritboxButton a').click();
-$('#ironcladBlockBSpiritboxButton a').click();
-$('#ironcladBlockACellASpiritboxButton a').click();
-$('#ironcladBlockACellBSpiritboxButton a').click();
-$('#ironcladBlockACellCSpiritboxButton a').click();
-$('#ironcladBlockBCellASpiritboxButton a').click();
-$('#ironcladBlockBCellBSpiritboxButton a').click();
-$('#ironcladBlockBCellCSpiritboxButton a').click();
-$('#ironcladHallwaySpiritboxButton a').click();
-$('#ironcladReceptionSpiritboxButton a').click();
-$('#ironcladKitchenSpiritboxButton a').click();
-                break;
-         }
+    var tool = setup.searchToolKeyMap[event.key];
+    if (tool) setup.clickAllSearchTools(tool);
 }, 50));
 
 $(document).on(':passagestart', function (ev) {
@@ -1412,12 +1197,17 @@ setup.makeEmptySearchState = function () {
     };
 };
 
-/* Per-tool metadata for the <<searchTool>> macro. The label/checkPassage
- * fields used to be hand-duplicated across ~200 search passages. */
+/* Per-tool metadata for the <<searchTool>> macro. widgetSuffix is used to
+ * build the canonical button/meter ids (<prefix><widgetSuffix>[Button]);
+ * picSuffix matches the parent-passage toolCard Pic id convention. The two
+ * diverge for spiritbox (PicSB vs widgetSuffix Spiritbox) and temperature
+ * (PicThermometr vs Temperature) — that asymmetry predates this refactor. */
 setup.searchToolDefs = {
     emf: {
         meterField:      "Emf",
         equipField:      "emf",
+        widgetSuffix:    "EMF",
+        picSuffix:       "PicEMF",
         label:           "Use EM@@color:yellow;F@@",
         checkPassage:    "EMFcheck",
         artCheckPassage: "EMFcheck"
@@ -1425,6 +1215,8 @@ setup.searchToolDefs = {
     gwb: {
         meterField:      "Gwb",
         equipField:      "gwb",
+        widgetSuffix:    "GWB",
+        picSuffix:       "PicGWB",
         label:           "Use @@color:yellow;G@@WB",
         checkPassage:    "GWBcheck",
         artCheckPassage: "GWBcheckArt"
@@ -1432,6 +1224,8 @@ setup.searchToolDefs = {
     spiritbox: {
         meterField:      "Spiritbox",
         equipField:      "spiritbox",
+        widgetSuffix:    "Spiritbox",
+        picSuffix:       "PicSB",
         label:           "Use @@color:yellow;S@@piritbox",
         checkPassage:    "SpiritboxCheck",
         artCheckPassage: "SpiritboxCheck"
@@ -1439,6 +1233,8 @@ setup.searchToolDefs = {
     plasm: {
         meterField:      "Plasm",
         equipField:      "glass",
+        widgetSuffix:    "Plasm",
+        picSuffix:       "PicPlasm",
         label:           "Use @@color:yellow;E@@ctoglass",
         checkPassage:    "PlasmCheck",
         artCheckPassage: "PlasmCheckArt"
@@ -1446,6 +1242,8 @@ setup.searchToolDefs = {
     temperature: {
         meterField:      "Temperature",
         equipField:      "temperature",
+        widgetSuffix:    "Temperature",
+        picSuffix:       "PicThermometr",
         label:           "Use @@color:yellow;T@@hermometr",
         checkPassage:    "temperatureHigh",
         artCheckPassage: "temperatureHigh"
@@ -1453,11 +1251,59 @@ setup.searchToolDefs = {
     uvl: {
         meterField:      "Uvl",
         equipField:      "uvl",
+        widgetSuffix:    "UVL",
+        picSuffix:       "PicUVL",
         label:           "Use @@color:yellow;U@@VL",
         checkPassage:    "UVLcheck",
         artCheckPassage: "UVLcheckArt"
     }
 };
+
+/* Canonical per-haunted-house-room prefix list used by both the
+ * <<searchTool>> macro (for id derivation) and the keyboard shortcut
+ * handler at the bottom of this file. Each entry pairs the prefix that
+ * search passages/parent passages use with the room name inside the bag
+ * variable ($currentsearch<bagRoom>). */
+setup.searchRoomPrefixes = [
+    // Owaissa
+    { prefix: "owaissaBedroom",        bagRoom: "Bedroom"        },
+    { prefix: "owaissaBathroom",       bagRoom: "Bathroom"       },
+    { prefix: "owaissaKitchen",        bagRoom: "Kitchen"        },
+    { prefix: "owaissaHallway",        bagRoom: "Hallway"        },
+    { prefix: "owaissaLivingroom",     bagRoom: "Livingroom"     },
+    // Elm Street
+    { prefix: "elmBasement",           bagRoom: "Basement"       },
+    { prefix: "elmBedroom",            bagRoom: "Bedroom"        },
+    { prefix: "elmBedroomTwo",         bagRoom: "BedroomTwo"     },
+    { prefix: "elmBathroom",           bagRoom: "Bathroom"       },
+    { prefix: "elmBathroomTwo",        bagRoom: "BathroomTwo"    },
+    { prefix: "elmKitchen",            bagRoom: "Kitchen"        },
+    { prefix: "elmHallway",            bagRoom: "Hallway"        },
+    { prefix: "elmHallwayUpstairs",    bagRoom: "HallwayUpstairs"},
+    { prefix: "elmNursery",            bagRoom: "Nursery"        },
+    // Enigma
+    { prefix: "enigmaBasement",        bagRoom: "Basement"       },
+    { prefix: "enigmaBedroom",         bagRoom: "Bedroom"        },
+    { prefix: "enigmaBathroom",        bagRoom: "Bathroom"       },
+    { prefix: "enigmaKitchen",         bagRoom: "Kitchen"        },
+    { prefix: "enigmaHallway",         bagRoom: "Hallway"        },
+    { prefix: "enigmaLivingroom",      bagRoom: "Livingroom"     },
+    { prefix: "enigmaRoomA",           bagRoom: "RoomA"          },
+    { prefix: "enigmaRoomB",           bagRoom: "RoomB"          },
+    { prefix: "enigmaRoomC",           bagRoom: "RoomC"          },
+    // Ironclad — bag names already carry an "Ironclad" suffix, prefix does not
+    { prefix: "ironcladHallway",       bagRoom: "HallwayIronclad"      },
+    { prefix: "ironcladReception",     bagRoom: "ReceptionIronclad"    },
+    { prefix: "ironcladKitchen",       bagRoom: "KitchenIronclad"      },
+    { prefix: "ironcladBlockA",        bagRoom: "BlockAIronclad"       },
+    { prefix: "ironcladBlockB",        bagRoom: "BlockBIronclad"       },
+    { prefix: "ironcladBlockACellA",   bagRoom: "BlockACellAIronclad"  },
+    { prefix: "ironcladBlockACellB",   bagRoom: "BlockACellBIronclad"  },
+    { prefix: "ironcladBlockACellC",   bagRoom: "BlockACellCIronclad"  },
+    { prefix: "ironcladBlockBCellA",   bagRoom: "BlockBCellAIronclad"  },
+    { prefix: "ironcladBlockBCellB",   bagRoom: "BlockBCellBIronclad"  },
+    { prefix: "ironcladBlockBCellC",   bagRoom: "BlockBCellCIronclad"  }
+];
 
 /* Build the markup for one tool slot. Called by the <<searchTool>> macro
  * with a config object whose required fields are:
@@ -1466,15 +1312,15 @@ setup.searchToolDefs = {
  *                 (the search bag is $currentsearch<Room>; meter is search<Room><Tool>)
  *   bgRoom      — variable name of the room state object whose .background field
  *                 controls the dark/lights checks (e.g. "bedroom" or "kitchen")
- *   buttonId    — id of the wrapping button span (preserved verbatim so parent
- *                 passages keep their existing CSS hooks)
- *   meterId     — id of the meter container element
- *   meterTag    — "span" or "div" — original passages mixed both
+ *   prefix      — canonical per-haunted-house-room prefix (e.g. "owaissaBedroom",
+ *                 "elmBasement", "ironcladKitchen"). Button/meter/action ids are
+ *                 derived from this + the tool's widgetSuffix.
  *   eventChain  — "standard" | "ironclad" | "enigma"
  *   replaceMode — "single" (replace meterId with check passage)
  *               | "double" (replace actionSel with check passage AND clear meterId)
- * Optional fields:
- *   actionSel   — required when replaceMode === "double"
+ * Optional overrides:
+ *   buttonId / meterId / actionSel — only when the derived default doesn't fit
+ *   meterTag    — "span" (default) or "div"
  *   needsLightCheck — true for spiritbox; wraps body in lights-off guard
  *   lightOffSel — selector for the lights-off message (defaults to "#" + actionSel)
  */
@@ -1483,10 +1329,15 @@ setup.searchToolMarkup = function (cfg) {
     if (!def) {
         throw new Error("searchTool: unknown tool '" + cfg.tool + "'");
     }
-    if (!cfg.room || !cfg.bgRoom || !cfg.buttonId || !cfg.meterId) {
-        throw new Error("searchTool: missing required field");
+    if (!cfg.room || !cfg.bgRoom || !cfg.prefix) {
+        throw new Error("searchTool: missing required field (room/bgRoom/prefix)");
     }
-    if (cfg.replaceMode === "double" && !cfg.actionSel) {
+
+    var buttonId  = cfg.buttonId  || (cfg.prefix + def.widgetSuffix + "Button");
+    var meterId   = cfg.meterId   || (cfg.prefix + def.widgetSuffix);
+    var actionSel = cfg.actionSel || (cfg.prefix + "Action");
+
+    if (cfg.replaceMode === "double" && !actionSel) {
         throw new Error("searchTool: replaceMode=double requires actionSel");
     }
 
@@ -1532,11 +1383,11 @@ setup.searchToolMarkup = function (cfg) {
     var completionReplace;
     if (cfg.replaceMode === "double") {
         completionReplace =
-            '<<replace "#' + cfg.actionSel + '">><<include "' + checkPassage + '">><</replace>>' +
-            '<<replace "#' + cfg.meterId + '">><</replace>>';
+            '<<replace "#' + actionSel + '">><<include "' + checkPassage + '">><</replace>>' +
+            '<<replace "#' + meterId + '">><</replace>>';
     } else {
         completionReplace =
-            '<<replace "#' + cfg.meterId + '">><<include "' + checkPassage + '">><</replace>>';
+            '<<replace "#' + meterId + '">><<include "' + checkPassage + '">><</replace>>';
     }
 
     // Body of the <<repeat>> loop.
@@ -1559,7 +1410,7 @@ setup.searchToolMarkup = function (cfg) {
     ].join('\n');
 
     var coreBody = [
-        '<' + meterTag + ' id="' + cfg.meterId + '">',
+        '<' + meterTag + ' id="' + meterId + '">',
         '<<showmeter \'' + meterName + '\' ' + meterExpr + '>>',
         '</' + meterTag + '>',
         '<<repeat `$timerToolsDecreased`>>',
@@ -1571,7 +1422,7 @@ setup.searchToolMarkup = function (cfg) {
     // <<if bgRoom.background eq 1>>...<<else>>...<</if>> branch.
     var inner;
     if (cfg.needsLightCheck) {
-        var lightOffSel = cfg.lightOffSel || ('#' + cfg.actionSel);
+        var lightOffSel = cfg.lightOffSel || ('#' + actionSel);
         inner =
             '<<if ' + bgRoom + '.background eq 1>>' +
                 '<<replace "' + lightOffSel + '">>' +
@@ -1586,7 +1437,7 @@ setup.searchToolMarkup = function (cfg) {
     }
 
     return [
-        '<span id="' + cfg.buttonId + '">@@.adaptiveLink;<<linkreplace "' + def.label + '">>',
+        '<span id="' + buttonId + '">@@.adaptiveLink;<<linkreplace "' + def.label + '">>',
         inner,
         '<</linkreplace>>@@</span>'
     ].join('\n');

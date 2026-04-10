@@ -1,4 +1,4 @@
 :: searchSbHallwayIronclad {"position":"6400,625","size":"100,100"}
 <<nobr>>
-<<searchTool `{"tool":"spiritbox","room":"HallwayIronclad","bgRoom":"hallway","buttonId":"ironcladHallwaySpiritboxButton","meterId":"ironcladHallwaySpiritbox","meterTag":"span","eventChain":"ironclad","replaceMode":"double","actionSel":"actionironcladHallway","needsLightCheck":true}`>>
+<<searchTool `{"tool":"spiritbox","room":"HallwayIronclad","bgRoom":"hallway","prefix":"ironcladHallway","eventChain":"ironclad","replaceMode":"double","needsLightCheck":true}`>>
 <</nobr>>
