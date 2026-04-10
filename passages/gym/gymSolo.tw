@@ -19,10 +19,10 @@ You spent about an hour at the gym, diligently working on improving your physica
   You spent about an hour at the gym, diligently working on improving your physical fitness. Each workout makes you stronger and more resilient, helping you reach new heights.<br><br>
  <<if ndef $relationEmily>>
  You see the girl who works out here almost every evening.<br>
-@@.mc-speech; Maybe I should [[talk to her?|text1]]. I’d like to chat with someone, and she might have something interesting to share.@@<br>
+@@.mc-speech; Maybe I should [[talk to her?|EmilyTalk]]. I’d like to chat with someone, and she might have something interesting to share.@@<br>
  <<else>> 
 
-You see @@.mc-speech;Emily@@. @@.mc-speech;[[Go talk to her|text1]]@@ after the workout.<br><br>
+You see @@.mc-speech;Emily@@. @@.mc-speech;[[Go talk to her|EmilyTalk]]@@ after the workout.<br><br>
 <</if>>
 <</if>>
 <<done>>

@@ -1,70 +1,30 @@
 :: Hot1 {"position":"1525,1150","size":"100,100"}
 <<nobr>>
-<<if $pantiesState eq "worn" and $braState eq "worn">>
+<<switch $pantiesState + "," + $braState>>
+<<case "worn,worn">>
 <video autoplay controls muted loop>
- <source @src="setup.ImagePath + '/mc/underwearOn.webm'" type="video/webm">
- </video><</if>>
- <<if $pantiesState eq "worn" and $braState eq "not worn">>
- <video autoplay width="40%" muted loop>
- <source @src="setup.ImagePath + '/mc/braOff.webm'" type="video/webm">
- </video><</if>>
- <<if $pantiesState eq "not worn" and $braState eq "worn">>
- <video autoplay controls muted loop>
- <source @src="setup.ImagePath + '/mc/braOn.webm'" type="video/webm">
- </video><</if>>
- <<if $pantiesState eq "not worn" and $braState eq "not worn">>
- <video autoplay width="40%" muted loop>
- <source @src="setup.ImagePath + '/mc/underwearOff.webm'" type="video/webm">
- </video><</if>>
- <<set $hotAct to 0>>
-<<if $rememberBottomOuter eq "jeans0">>
-<<set $jeansState0 to "not worn">>
-<<elseif $rememberBottomOuter eq "jeans1">>
-<<set $jeansState1 to "not worn">>
-<<elseif $rememberBottomOuter eq "jeans2">>
-<<set $jeansState2 to "not worn">>
-<<elseif $rememberBottomOuter eq "jeans3">>
-<<set $jeansState3 to "not worn">>
-<</if>>
-
-<<if $rememberBottomOuter eq "shorts0">>
-<<set $shortsState0 to "not worn">>
-<<elseif $rememberBottomOuter eq "shorts1">>
-<<set $shortsState1 to "not worn">>
-<<elseif $rememberBottomOuter eq "shorts2">>
-<<set $shortsState2 to "not worn">>
-<<elseif $rememberBottomOuter eq "shorts3">>
-<<set $shortsState3 to "not worn">>
-<</if>>
-
-<<if $rememberBottomOuter eq "skirt0">>
-<<set $skirtState0 to "not worn">>
-<<elseif $rememberBottomOuter eq "skirt1">>
-<<set $skirtState1 to "not worn">>
-<<elseif $rememberBottomOuter eq "skirt2">>
-<<set $skirtState2 to "not worn">>
-<<elseif $rememberBottomOuter eq "skirt3">>
-<<set $skirtState3 to "not worn">>
-<</if>>
-
-
-
-
-
-
-<<if $rememberTopOuter eq "tshirt0">>
-<<set $tshirtState0 to "not worn">>
-<<elseif $rememberTopOuter eq "tshirt1">>
-<<set $tshirtState1 to "not worn">>
-<<elseif $rememberTopOuter eq "tshirt2">>
-<<set $tshirtState2 to "not worn">>
-<<elseif $rememberTopOuter eq "tshirt3">>
-<<set $tshirtState3 to "not worn">>
-<</if>>
+<source @src="setup.ImagePath + '/mc/underwearOn.webm'" type="video/webm">
+</video>
+<<case "worn,not worn">>
+<video autoplay width="40%" muted loop>
+<source @src="setup.ImagePath + '/mc/braOff.webm'" type="video/webm">
+</video>
+<<case "not worn,worn">>
+<video autoplay controls muted loop>
+<source @src="setup.ImagePath + '/mc/braOn.webm'" type="video/webm">
+</video>
+<<case "not worn,not worn">>
+<video autoplay width="40%" muted loop>
+<source @src="setup.ImagePath + '/mc/underwearOff.webm'" type="video/webm">
+</video>
+<</switch>>
+<<set $hotAct to 0>>
+<<run ["rememberBottomOuter", "rememberTopOuter"].forEach(function(k) {
+	var v = State.variables[k];
+	if (v) State.variables[v.replace(/(\d+)$/, "State$1")] = "not worn";
+})>>
 <br>
 @@.mc-speech;Am I not beautiful? Who could harm such a cutie?
  It feels much better, I am ready to [[continue|previous(2)]]@@
 <<set $addtemptorealhouse to 0>>
 <</nobr>>
-
-

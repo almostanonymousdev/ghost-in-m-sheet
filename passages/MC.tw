@@ -1,65 +1,62 @@
 :: MC [nobr] {"position":"400,300","size":"100,100"}
 <div id="statusContainer">
-   <div id="inPainImg">
-   <<hovertip "Need to buy medicine">><<if $isPenaltyOn eq 1>>
-   <img @src="setup.ImagePath + '/img/icons/pain.jpg'">
-<</if>><</hovertip>>
+	<div id="inPainImg">
+	<<hovertip "Need to buy medicine">><<if $isPenaltyOn eq 1>>
+	<img @src="setup.ImagePath + '/img/icons/pain.jpg'">
+	<</if>><</hovertip>>
 	</div>
-    <<if $isIronclad eq 1 and $ghostHuntingMode eq 2>>
-    <<hovertip "Wearing a sexy warden costume">><img @src="setup.ImagePath + '/img/icons/warden1.png'"><</hovertip>>
-
-    <<else>>
-  <div id="statusOuterTop">
-  <<if $tshirtState eq "worn">>
-	<<hovertip "Wearing t-shirt">><img @src="setup.ImagePath + '/img/icons/top.jpg'"><</hovertip>>
-    <<else>>
-		  	<img @src="setup.ImagePath + '/img/icons/empty.jpg'">
+	<<if $isIronclad eq 1 and $ghostHuntingMode eq 2>>
+	<<hovertip "Wearing a sexy warden costume">><img @src="setup.ImagePath + '/img/icons/warden1.png'"><</hovertip>>
+	<<else>>
+	<div id="statusOuterTop">
+	<<if $tshirtState eq "worn">>
+		<<hovertip "Wearing t-shirt">><img @src="setup.ImagePath + '/img/icons/top.jpg'"><</hovertip>>
+	<<else>>
+		<img @src="setup.ImagePath + '/img/icons/empty.jpg'">
 	<</if>>
-  </div>
-  <div id="statusOuterBottom">
-  <<if $jeansState eq "worn">>
-  	<<hovertip "Wearing jeans">><img @src="setup.ImagePath + '/img/icons/jeans.jpg'"><</hovertip>>
-    <<elseif $shortsState eq "worn">>
-  	<<hovertip "Wearing shorts">><img @src="setup.ImagePath + '/img/icons/shorts.jpg'"><</hovertip>>
-    <<elseif $skirtState eq "worn">>
-  	<<hovertip "Wearing skirt">><img @src="setup.ImagePath + '/img/icons/skirt.jpg'"><</hovertip>>
-    <<else>>
-		  	<img @src="setup.ImagePath + '/img/icons/empty.jpg'">
+	</div>
+	<div id="statusOuterBottom">
+	<<set _bottom to [
+		{ state: $jeansState,  tip: "Wearing jeans",  icon: "jeans.jpg" },
+		{ state: $shortsState, tip: "Wearing shorts", icon: "shorts.jpg" },
+		{ state: $skirtState,  tip: "Wearing skirt",  icon: "skirt.jpg" }
+	].find(b => b.state === "worn")>>
+	<<if _bottom>>
+		<<hovertip _bottom.tip>><img @src="setup.ImagePath + '/img/icons/' + _bottom.icon"><</hovertip>>
+	<<else>>
+		<img @src="setup.ImagePath + '/img/icons/empty.jpg'">
 	<</if>>
-  </div>
-  <div id="statusUnderTop">
-<<if $braState eq "worn">>
-  	<<hovertip "Wearing bra.">><img @src="setup.ImagePath + '/img/icons/bra.jpg'"><</hovertip>>
-<<else>>
-	<<hovertip "No bra on!">><img @src="setup.ImagePath + '/img/icons/tits.jpg'"><</hovertip>>
-<</if>>
-  </div>
-  <div id="statusUnderBottom">
-<<if $pantiesState eq "worn">>
-  	<<hovertip "Wearing panties">><img @src="setup.ImagePath + '/img/icons/panties.jpg'"><</hovertip>>
-<<else>>
-	 <<hovertip "No panties on!">><img @src="setup.ImagePath + '/img/icons/nude.jpg'"><</hovertip>>
-<</if>>
-  </div>
-  <</if>>
+	</div>
+	<div id="statusUnderTop">
+	<<if $braState eq "worn">>
+		<<hovertip "Wearing bra.">><img @src="setup.ImagePath + '/img/icons/bra.jpg'"><</hovertip>>
+	<<else>>
+		<<hovertip "No bra on!">><img @src="setup.ImagePath + '/img/icons/tits.jpg'"><</hovertip>>
+	<</if>>
+	</div>
+	<div id="statusUnderBottom">
+	<<if $pantiesState eq "worn">>
+		<<hovertip "Wearing panties">><img @src="setup.ImagePath + '/img/icons/panties.jpg'"><</hovertip>>
+	<<else>>
+		<<hovertip "No panties on!">><img @src="setup.ImagePath + '/img/icons/nude.jpg'"><</hovertip>>
+	<</if>>
+	</div>
+	<</if>>
 </div>
 
 <style>
 #statusContainer {
- 	display: flex;
-    align-items: center;
-
-    gap: 5%;
-    justify-content: center;
+	display: flex;
+	align-items: center;
+	gap: 5%;
+	justify-content: center;
 }
 #statusContainer div {
-  text-align: center;
+	text-align: center;
 }
 #statusContainer img {
-  display: block;
-  max-width: 100%;
-  height: auto; 
+	display: block;
+	max-width: 100%;
+	height: auto;
 }
 </style>
-
-

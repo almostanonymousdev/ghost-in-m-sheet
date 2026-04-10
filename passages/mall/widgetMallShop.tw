@@ -6,6 +6,26 @@ setup.notPurchased = function(varName) {
 };
 <</script>>
 
+<<widget "consumableCard">>
+<<set _varName to _args[0]>>
+<<set _img to _args[1]>>
+<<set _price to _args[2]>>
+<<set _returnPassage to _args[3]>>
+<<set _delta to _args[4]>>
+<<set _ownedText to _args[5]>>
+<div class="housecard">
+<img @src="setup.ImagePath + '/' + _img" class="iconPx"><br>
+<span class="priceAmount"><<= _price>>$</span><br>
+<<if $mc.money gte _price>>
+@@.buyItemLink;<<link "Buy" `_returnPassage`>>
+<<run State.variables[_args[0]] = (State.variables[_args[0]] || 0) + _args[4]>>
+<<set $mc.money -= _price>>
+<</link>>@@<br>
+<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
+<span class="subtitleAmount">@@.mc-thoughts; <<= _ownedText.replace("{n}", State.variables[_varName] || 0)>>@@</span>
+</div>
+<</widget>>
+
 <<widget "shopCard">>
 <<set _varName to _args[0]>>
 <<set _img to _args[1]>>

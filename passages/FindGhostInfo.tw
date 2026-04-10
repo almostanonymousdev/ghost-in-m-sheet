@@ -1,0 +1,24 @@
+:: FindGhostInfo {"position":"950,125","size":"100,100"}
+<<if $findGhostInfoCD eq 1>>
+@@.mc-speech; I already searched for information today. I think it's better to try again tomorrow.@@
+<<else>>
+<<linkreplace "Find information about ghosts">>
+<<set $findGhostInfoCD to 1>>
+<<addTime 60>>
+<<set _available to setup.ghostInfoEntries.filter(e => State.variables[e.flag] !== 1)>>
+<<if _available.length gt 0>>
+	<<if random(1, 100) lte 50>>
+		<<set _entry to _available.random()>>
+		&emsp;&emsp;As you scroll through the information about ghosts, you come across details about @@.mc-speech;the _entry.name!@@<br>
+		&emsp;&emsp;<<= _entry.text>><br>
+		&emsp;&emsp; @@.mc-speech;Information about the _entry.name has been added to the Ghostpedia (ghost icon on the screen).@@
+		<<run State.variables[_entry.flag] = 1>>
+	<<else>>
+		@@.mc-thoughts; You search for ghost information online for an hour but find nothing useful.@@<br>
+		@@.mc-speech; That's enough for today. Maybe i'll get lucky and find something tomorrow.@@<br>
+	<</if>>
+<<else>>
+	@@.mc-thoughts;You scrolled the internet for an hour, but didn’t find any new information. It seems like you won’t be able to find anything else here.@@
+<</if>>
+<</linkreplace>>
+<</if>>

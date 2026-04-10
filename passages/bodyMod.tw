@@ -1,51 +1,27 @@
 :: bodyMod [nobr] {"position":"500,400","size":"100,100"}
 <div id="statusContainerPiercing">
-  <div id="statusPiercingEars">
-  <<if $earsPiercing eq "worn">>
-	<<hovertip "Pierced ears">><img @src="setup.ImagePath + '/img/icons/ears.png'"><</hovertip>>
+<<for _p range setup.piercingList>>
+	<div @id="'statusPiercing' + _p.target">
+	<<if State.variables[_p.var] eq "worn">>
+		<<hovertip _p.tip>><img @src="setup.ImagePath + '/img/icons/' + _p.icon"><</hovertip>>
+		<<if _p.lustVar>><<run State.variables[_p.lustVar] = 1>><</if>>
 	<</if>>
-  </div>
-  <div id="statusPiercingNose">
-  <<if $nosePiercing eq "worn">>
-  	<<hovertip "Pierced nose">><img @src="setup.ImagePath + '/img/icons/nose.png'"><</hovertip>>
-	<</if>>
-  </div>
-  <div id="statusPiercingTongue">
-<<if $tonguePiercing eq "worn">>
-  	<<hovertip "Pierced tongue">><img @src="setup.ImagePath + '/img/icons/tongue.png'">
-    <<set $addLustPiercingTongue to 1>>
-    <</hovertip>>
-<</if>>
-  </div>
-  <div id="statusPiercingTits">
-<<if $titsPiercing eq "worn">>
-  	<<hovertip "Pierced nipples">><img @src="setup.ImagePath + '/img/icons/tits.png'"><</hovertip>>
-    <<set $addLustPiercingTits to 1>>
-<</if>>
-  </div>
-  <div id="statusPiercingPussy">
-<<if $pussyPiercing eq "worn">>
-  	<<hovertip "Pierced pussy">><img @src="setup.ImagePath + '/img/icons/vagina.png'"><</hovertip>>
-    <<set $addLustPiercingPussy to 1>>
-<</if>>
-  </div>
+	</div>
+<</for>>
 </div>
 <style>
 #statusContainerPiercing {
- 	display: flex;
-    align-items: center;
-
-    gap: 5%;
-    justify-content: center;
+	display: flex;
+	align-items: center;
+	gap: 5%;
+	justify-content: center;
 }
 #statusContainerPiercing div {
-  text-align: center;
+	text-align: center;
 }
 #statusContainerPiercing img {
-  display: block;
-  max-width: 100%;
-  height: auto; 
+	display: block;
+	max-width: 100%;
+	height: auto;
 }
 </style>
-
-

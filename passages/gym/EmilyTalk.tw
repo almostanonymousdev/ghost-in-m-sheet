@@ -1,4 +1,4 @@
-:: text1 {"position":"3325,1600","size":"100,100"}
+:: EmilyTalk {"position":"3325,1600","size":"100,100"}
 <<nobr>>
 <img @src="setup.ImagePath + '/gym/EmilyTalks.jpg'" width="100%"><br>
 <<if ndef $relationEmily>>

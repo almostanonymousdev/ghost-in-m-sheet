@@ -409,6 +409,8 @@ sugarcube-2:
       name: shopCardCorruption
     shopCard:
       name: shopCard
+    consumableCard:
+      name: consumableCard
     shopCardConditional:
       name: shopCardConditional
     videoToggle:

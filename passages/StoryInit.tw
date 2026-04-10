@@ -47,6 +47,35 @@
 	burger:  { varName: "deliveryBurgerEvent",  img: "burgerevent/1.jpg",  payMode: "always" },
 	papers:  { varName: "deliveryPappersEvent", img: "papersevent/1.jpg",  payMode: "always" }
 }>>
+<<run setup.ghostInfoEntries = [
+	{
+		name: "Oni",
+		flag: "ghostOniInfoCollected",
+		text: "The mythical entity Oni brings not only fear but also rapid psychological devastation. Those who have encountered it report that @@.notmc-speech;Oni causes a sharp and intense decline in sanity@@, significantly accelerating this process compared to other ghosts. If you come face-to-face with Oni, be prepared for a swift and severe assault on your mental health."
+	},
+	{
+		name: "Jinn",
+		flag: "ghostJinnInfoCollected",
+		text: "Some ghost hunters have reported that when encountering a Jinn, they tried to run but always failed because the ghost is too fast. However, when they found a hiding spot—even if it was right in front of the Jinn—he often passed by without noticing them. This indicates that hiding from a Jinn is much easier than trying to escape."
+	},
+	{
+		name: "Deogen",
+		flag: "ghostDeogenInfoCollected",
+		text: "The Deogen is described as a particularly frightening ghost that will always find you, even if you try to hide. Once it starts its hunt, hiding won’t help, as the Deogen relentlessly searches for its prey. However, since the Deogen is extremely slow, there’s a chance to escape if you still have the strength to run."
+	},
+	{
+		name: "Demon",
+		flag: "ghostDemonInfoCollected",
+		text: "Some sources report that the Demon is a unique ghost that can begin hunting you regardless of your current sanity or lust. Unlike other ghosts that only become active when your mental state declines or your desire increases, the Demon does not consider your present condition and can initiate its pursuit at any time."
+	}
+]>>
+<<run setup.piercingList = [
+	{ var: "earsPiercing",   img: "earspiercing.jpg",   target: "Ears",   tip: "Pierced ears",    icon: "ears.png",   beauty: 2 },
+	{ var: "nosePiercing",   img: "nosepiercing.jpg",   target: "Nose",   tip: "Pierced nose",    icon: "nose.png",   beauty: 3 },
+	{ var: "tonguePiercing", img: "tonguepiercing.jpg", target: "Tongue", tip: "Pierced tongue",  icon: "tongue.png", sensVar: "piercingTongueAddSens", lustVar: "addLustPiercingTongue" },
+	{ var: "titsPiercing",   img: "titspiercing.jpg",   target: "Tits",   tip: "Pierced nipples", icon: "tits.png",   sensVar: "piercingTitsAddSens",   lustVar: "addLustPiercingTits" },
+	{ var: "pussyPiercing",  img: "pussypiercing.jpg",  target: "Pussy",  tip: "Pierced pussy",   icon: "vagina.png", sensVar: "piercingPussyAddSens",  lustVar: "addLustPiercingPussy" }
+]>>
 <<run setup.deliveryMapLayout = [
 	"Honeywood Court 3", "",                  "Onyx Place 10",      "",                    "Star Street 25",
 	"",                  "Lilac Lane 72",     "Emerald Street 17",  "",                    "",
@@ -168,60 +197,13 @@ evidence: [$EvidenceType.GLASS, $EvidenceType.EMF, $EvidenceType.SPIRITBOX],
 
 ----------
 
-<<set $kitchen to {
-name:"kitchen",
-emf:"",
-glass:"",
-uvl:"",
-temperature:"",
-spiritbox:"",
-gwb:"",
-background: 2,
-}>>
-
-<<set $bathroom to {
-name:"bathroom",
-emf:"",
-glass:"",
-uvl:"",
-temperature:"",
-spiritbox:"",
-gwb:"",
-background: 2,
-}>>
-
-<<set $bedroom to {
-name:"bedroom",
-emf:"",
-glass:"",
-uvl:"",
-temperature:"",
-spiritbox:"",
-gwb:"",
-background: 2,
-}>>
-
-<<set $hallway to {
-name:"hallway",
-emf:"",
-glass:"",
-uvl:"",
-temperature:"",
-spiritbox:"",
-gwb:"",
-background: 2,
-}>>
-
-<<set $livingroom to {
-name:"livingroom",
-emf:"",
-glass:"",
-uvl:"",
-temperature:"",
-spiritbox:"",
-gwb:"",
-background: 2,
-}>>
+<<run ["kitchen", "bathroom", "bedroom", "hallway", "livingroom"].forEach(function(name) {
+	State.variables[name] = {
+		name: name,
+		emf: "", glass: "", uvl: "", temperature: "", spiritbox: "", gwb: "",
+		background: 2
+	};
+})>>
 
 
 <<newmeter 'energy'>>
@@ -235,162 +217,15 @@ background: 2,
     <<label '$mc.sanityUp'>>
  <</newmeter>>
  ------------------------------------------------------------
- /*Tools meters (kitchen)*/
-<<newmeter 'searchKitchenEmf'>>
+ /*Tools meters (one per room × tool)*/
+<<for _room range ["Kitchen", "Hallway", "Bathroom", "Livingroom", "Bedroom"]>>
+<<for _tool range ["Emf", "Plasm", "Uvl", "Temperature", "Gwb", "Spiritbox"]>>
+<<newmeter `"search" + _room + _tool`>>
 <<sizing '50%'>>
-<<label '$currentsearchKitchen.emf'>>
+<<label `"$currentsearch" + _room + "." + _tool.toLowerCase()`>>
 <</newmeter>>
-
-<<newmeter 'searchKitchenPlasm'>>
-<<sizing '50%'>>
-<<label '$currentsearchKitchen.plasm'>>
-<</newmeter>>
-
-<<newmeter 'searchKitchenUvl'>>
-<<sizing '50%'>>
-<<label '$currentsearchKitchen.uvl'>>
-<</newmeter>>
-
-<<newmeter 'searchKitchenTemperature'>>
-<<sizing '50%'>>
-<<label '$currentsearchKitchen.temperature'>>
-<</newmeter>>
-
-<<newmeter 'searchKitchenGwb'>>
-<<sizing '50%'>>
-<<label '$currentsearchKitchen.gwb'>>
-<</newmeter>>
-
-<<newmeter 'searchKitchenSpiritbox'>>
-<<sizing '50%'>>
-<<label '$currentsearchKitchen.spiritbox'>>
-<</newmeter>>
-
-
-<<newmeter 'searchHallwayEmf'>>
-<<sizing '50%'>>
-<<label '$currentsearchHallway.emf'>>
-<</newmeter>>
-
-<<newmeter 'searchHallwayPlasm'>>
-<<sizing '50%'>>
-<<label '$currentsearchHallway.plasm'>>
-<</newmeter>>
-
-<<newmeter 'searchHallwayUvl'>>
-<<sizing '50%'>>
-<<label '$currentsearchHallway.uvl'>>
-<</newmeter>>
-
-<<newmeter 'searchHallwayTemperature'>>
-<<sizing '50%'>>
-<<label '$currentsearchHallway.temperature'>>
-<</newmeter>>
-
-<<newmeter 'searchHallwayGwb'>>
-<<sizing '50%'>>
-<<label '$currentsearchHallway.gwb'>>
-<</newmeter>>
-
-<<newmeter 'searchHallwaySpiritbox'>>
-<<sizing '50%'>>
-<<label '$currentsearchHallway.spiritbox'>>
-<</newmeter>>
-
-
-<<newmeter 'searchBathroomEmf'>>
-<<sizing '50%'>>
-<<label '$currentsearchBathroom.emf'>>
-<</newmeter>>
-
-<<newmeter 'searchBathroomPlasm'>>
-<<sizing '50%'>>
-<<label '$currentsearchBathroom.plasm'>>
-<</newmeter>>
-
-<<newmeter 'searchBathroomUvl'>>
-<<sizing '50%'>>
-<<label '$currentsearchBathroom.uvl'>>
-<</newmeter>>
-
-<<newmeter 'searchBathroomTemperature'>>
-<<sizing '50%'>>
-<<label '$currentsearchBathroom.temperature'>>
-<</newmeter>>
-
-<<newmeter 'searchBathroomGwb'>>
-<<sizing '50%'>>
-<<label '$currentsearchBathroom.gwb'>>
-<</newmeter>>
-
-<<newmeter 'searchBathroomSpiritbox'>>
-<<sizing '50%'>>
-<<label '$currentsearchBathroom.spiritbox'>>
-<</newmeter>>
-
-
-
-<<newmeter 'searchLivingroomEmf'>>
-<<sizing '50%'>>
-<<label '$currentsearchLivingroom.emf'>>
-<</newmeter>>
-
-<<newmeter 'searchLivingroomPlasm'>>
-<<sizing '50%'>>
-<<label '$currentsearchLivingroom.plasm'>>
-<</newmeter>>
-
-<<newmeter 'searchLivingroomUvl'>>
-<<sizing '50%'>>
-<<label '$currentsearchLivingroom.uvl'>>
-<</newmeter>>
-
-<<newmeter 'searchLivingroomTemperature'>>
-<<sizing '50%'>>
-<<label '$currentsearchLivingroom.temperature'>>
-<</newmeter>>
-
-<<newmeter 'searchLivingroomGwb'>>
-<<sizing '50%'>>
-<<label '$currentsearchLivingroom.gwb'>>
-<</newmeter>>
-
-<<newmeter 'searchLivingroomSpiritbox'>>
-<<sizing '50%'>>
-<<label '$currentsearchLivingroom.spiritbox'>>
-<</newmeter>>
-
-
-
-<<newmeter 'searchBedroomEmf'>>
-<<sizing '50%'>>
-<<label '$currentsearchBedroom.emf'>>
-<</newmeter>>
-
-<<newmeter 'searchBedroomPlasm'>>
-<<sizing '50%'>>
-<<label '$currentsearchBedroom.plasm'>>
-<</newmeter>>
-
-<<newmeter 'searchBedroomUvl'>>
-<<sizing '50%'>>
-<<label '$currentsearchBedroom.uvl'>>
-<</newmeter>>
-
-<<newmeter 'searchBedroomTemperature'>>
-<<sizing '50%'>>
-<<label '$currentsearchBedroom.temperature'>>
-<</newmeter>>
-
-<<newmeter 'searchBedroomGwb'>>
-<<sizing '50%'>>
-<<label '$currentsearchBedroom.gwb'>>
-<</newmeter>>
-
-<<newmeter 'searchBedroomSpiritbox'>>
-<<sizing '50%'>>
-<<label '$currentsearchBedroom.spiritbox'>>
-<</newmeter>>
+<</for>>
+<</for>>
 
 <<newmeter 'xpBar' $mc.exp>>
     <<label '$percentageOfLevel %'>>
