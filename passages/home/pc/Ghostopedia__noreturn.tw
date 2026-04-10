@@ -11,7 +11,8 @@
         <div class="evidenceDesc">
           <<if setup.ghostInfoCollected(_g.id) and _g.description neq "">>
             <<= _g.description>>
-            <<if _g.huntConditionText neq "">><br>@@.notmc-speech;<<= _g.huntConditionText>>@@<</if>>
+            <<set _hct = setup.ghostHuntConditionText(_g)>>
+            <<if _hct neq "">><br>@@.notmc-speech;<<= _hct>>@@<</if>>
           <<else>>
             There is no information yet
           <</if>>

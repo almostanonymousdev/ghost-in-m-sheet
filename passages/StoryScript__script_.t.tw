@@ -1014,126 +1014,126 @@ setup.ghosts = [
         evidence: ["emf", "gwb", "spiritbox"],
         hint: "If it doesn't achieve its goal, it will relentlessly follow its victim.",
         description: "Spirit is a rather shy ghost. Unlike others, if it doesn't achieve its goal, it will relentlessly follow its victim. However, once it gets what it wants, it will vanish and cease to disturb, leaving its target in peace.",
-        huntConditionText: "Can start a hunt if you have \u2265 50 lust"
+        huntCondition: { stat: "lust", op: "gte", value: 50 }
     },
     {
         id: "Shade", name: "Shade", image: "Shade.webp",
         evidence: ["emf", "gwb", "temperature"],
         hint: "The lower your sanity, the less likely the Shade is to show interest in you.",
         description: "Shade \u2014 one of the oldest types of ghosts. The main feature of the Shade is that the lower your sanity, the less likely the Shade is to show interest in you.",
-        huntConditionText: "Can start a hunt if you have \u2264 50 sanity"
+        huntCondition: { stat: "sanity", op: "lte", value: 35 }
     },
     {
         id: "Poltergeist", name: "Poltergeist", image: "Poltergeist.webp",
         evidence: ["spiritbox", "gwb", "uvl"],
         hint: "",
         description: "",
-        huntConditionText: ""
+        huntCondition: { stat: "sanity", op: "lte", value: 50 }
     },
     {
         id: "Phantom", name: "Phantom", image: "Phantom.webp",
         evidence: ["glass", "spiritbox", "uvl"],
         hint: "This type of ghost cannot turn off the lights.",
         description: "This type of ghost cannot turn off the lights.",
-        huntConditionText: "Can start a hunt if you have \u2264 50 sanity"
+        huntCondition: { stat: "sanity", op: "lte", value: 50 }
     },
     {
         id: "Goryo", name: "Goryo", image: "Goryo.webp",
         evidence: ["emf", "glass", "uvl"],
         hint: "Goryo is known for its attachment to a single room and cannot change it like other ghosts do.",
         description: "Goryo is known for its attachment to a single room and cannot change it like other ghosts do. If you notice that the ghost's activity is focused exclusively in one area, you are likely dealing with a Goryo.",
-        huntConditionText: "Can start a hunt if you have \u2265 50 lust"
+        huntCondition: { stat: "lust", op: "gte", value: 50 }
     },
     {
         id: "Demon", name: "Demon", image: "Demon.webp",
         evidence: ["temperature", "gwb", "uvl"],
         hint: "Demon can start a hunt earlier than other ghosts",
         description: "Ghosts can start hunting if my sanity is low or my lust level is high, but this ghost is different. It's more aggressive than the others, and it can start hunting regardless of my condition... I think it\u2019s worth having a few more crucifixes.",
-        huntConditionText: ""
+        huntCondition: { stat: "sanity", op: "lte", value: 70 }
     },
     {
         id: "Deogen", name: "Deogen", image: "Deogen.webp",
         evidence: ["glass", "gwb", "spiritbox"],
         hint: "When it starts its hunt, hiding won't help, as the Deogen relentlessly searches for you",
         description: "The Deogen is a particularly frightening ghost that will always find you, even if you try to hide. When it starts its hunt, hiding won\u2019t help, as the Deogen relentlessly searches for you. However, since the Deogen is extremely slow, you have a chance to escape if you still have the strength to run.",
-        huntConditionText: "Can start a hunt if you have \u2264 50 sanity"
+        huntCondition: { stat: "sanity", op: "lte", value: 50 }
     },
     {
         id: "Jinn", name: "Jinn", image: "Jinn.webp",
         evidence: ["emf", "temperature", "uvl"],
         hint: "You can't escape from the Jinn by running, as it is incredibly fast.",
         description: "The Jinn is a ghost with a unique ability. Unlike other ghosts, you cannot escape from the Jinn by running, as it is incredibly fast. However, hiding from it is much easier because the Jinn has difficulty detecting you when you find a good hiding spot. This makes the strategy of hiding more effective when encountering it.",
-        huntConditionText: "Can start a hunt if you have \u2264 50 sanity"
+        huntCondition: { stat: "sanity", op: "lte", value: 50 }
     },
     {
         id: "Moroi", name: "Moroi", image: "Moroi.webp",
         evidence: ["spiritbox", "gwb", "temperature"],
         hint: "",
         description: "The Moroi can invade the minds of weak-willed victims when using the Spirit Box. Be cautious when communicating, as this ghost may possess you.",
-        huntConditionText: ""
+        huntCondition: { stat: "sanity", op: "lte", value: 50 }
     },
     {
         id: "Myling", name: "Myling", image: "Myling.webp",
         evidence: ["emf", "gwb", "uvl"],
         hint: "Once you leave its presence, strange things begin to happen: those around you start seeing you in unusual clothing or even completely naked.",
         description: "Myling is a ghost that doesn\u2019t reveal itself directly upon encounter. However, once you leave its presence, strange things begin to happen: those around you start seeing you in unusual clothing or even completely naked.",
-        huntConditionText: "Can start a hunt if you have \u2265 50 lust"
+        huntCondition: { stat: "lust", op: "gte", value: 50 }
     },
     {
         id: "Oni", name: "Oni", image: "Oni.webp",
         evidence: ["emf", "temperature", "glass"],
         hint: "Encountering this ghost causes sanity to drop faster than with other ghosts.",
         description: "Someone mentioned that encountering this ghost causes sanity to drop faster than with other ghosts (1-5 sanity for any ghost, 3-8 for an Oni). Fortunately, the witch sells sanity pills that I can use...",
-        huntConditionText: "Can start a hunt if you have \u2265 50 lust"
+        huntCondition: { stat: "lust", op: "gte", value: 50 }
     },
     {
         id: "Mimic", name: "Mimic", image: "Mimic.webp",
         evidence: ["spiritbox", "temperature", "uvl"],
         hint: "Mimic always has an extra evidence \u2014 ectoplasm",
         description: "Mimic is a ghost that can mimic nearly all the abilities of other ghosts, making it extremely unpredictable and difficult to identify. Additionally, The Mimic always has an extra evidence \u2014 ectoplasm. Although ectoplasm is not considered evidence for identifying the ghost, its presence can aid in its identification.",
-        huntConditionText: "The hunt may begin depending on the type of ghost that the Mimic has chosen to imitate."
+        huntCondition: { stat: "sanity", op: "lte", value: 50 }
     },
     {
         id: "TheTwins", name: "The Twins", image: "The_Twins.webp",
         evidence: ["emf", "temperature", "spiritbox"],
         hint: "",
         description: "",
-        huntConditionText: ""
+        huntCondition: { stat: "lust", op: "gte", value: 50 }
     },
     {
         id: "Wraith", name: "Wraith", image: "Wraith.webp",
         evidence: ["emf", "glass", "spiritbox"],
         hint: "If caught or if sanity runs out during the ghost hunt, you'll wake up somewhere other than home.",
         description: "This is quite a dangerous ghost. If it catches me or I lose sanity during the ghost hunt... Ending up in the forest with my hands tied is not something I want, so I need to be very careful. But even if things don't go as planned, it's better to conserve my energy to have a chance to escape.",
-        huntConditionText: "Can start a hunt if you have \u2265 50 lust"
+        huntCondition: { stat: "lust", op: "gte", value: 50 }
     },
     {
         id: "Mare", name: "Mare", image: "Mare.webp",
         evidence: ["glass", "gwb", "temperature"],
         hint: "Mare visits your house while you sleep",
         description: "Mare visits my house while I sleep. It's quite easy to get rid of; I just need to sprinkle holy water in the room where I sleep. It becomes more aggressive each day, so it's best not to delay. Although, someone online mentioned that it might stop haunting after a few days.",
-        huntConditionText: "Can start a hunt if you have \u2265 50 lust"
+        huntCondition: { stat: "lust", op: "gte", value: 50 }
     },
     {
         id: "Cthulion", name: "Cthulion", image: "Cthulion.webp",
         evidence: ["spiritbox", "glass", "temperature"],
         hint: "Cthulion rarely reveals its true form, preferring to take on a human appearance. But when it needs to interact with its victims, it's not above using its tentacles.",
         description: "Cthulion is one of the oldest beings, with a history stretching far back before the dawn of humanity. Its true form is so alien to the human mind that most who encounter it can only describe it as \"unspeakable.\" However, Cthulion rarely reveals its true form, preferring to take on a human appearance. But when it needs to interact with its victims, it\u2019s not above using its tentacles.",
-        huntConditionText: "Can start a hunt if you have \u2264 50 sanity"
+        huntCondition: { stat: "sanity", op: "lte", value: 50 }
     },
     {
         id: "Banshee", name: "Banshee", image: "Banshee.webp",
         evidence: ["glass", "gwb", "uvl"],
         hint: "The Banshee has a unique ability called the 'Kiss of the Banshee,' which reduces sanity by 10 points.",
         description: "The Banshee has a unique ability called the \"Kiss of the Banshee,\" which reduces sanity by 10 points.",
-        huntConditionText: "Can start a hunt if you have \u2265 50 lust"
+        huntCondition: { stat: "lust", op: "gte", value: 50 }
     },
     {
         id: "Raiju", name: "Raiju", image: "Raiju.webp",
         evidence: ["emf", "spiritbox", "uvl"],
         hint: "Raiju is a mysterious entity that occasionally exerts influence over electrical devices, causing them to display incorrect readings. This spectral presence can manipulate the behavior of electronics, leading to unpredictable and sometimes inexplicable malfunctions.",
         description: "Raiju is a mysterious entity that occasionally exerts influence over electrical devices, causing them to display incorrect readings. This spectral presence can manipulate the behavior of electronics, leading to unpredictable and sometimes inexplicable malfunctions.",
-        huntConditionText: "Can start a hunt if you have \u2264 50 sanity"
+        huntCondition: { stat: "sanity", op: "lte", value: 50 }
     }
 ];
 
@@ -1142,6 +1142,29 @@ setup.getGhost = function (id) {
         if (setup.ghosts[i].id === id) return setup.ghosts[i];
     }
     return null;
+};
+
+setup.getGhostByName = function (name) {
+    for (var i = 0; i < setup.ghosts.length; i++) {
+        if (setup.ghosts[i].name === name) return setup.ghosts[i];
+    }
+    return null;
+};
+
+setup.ghostHuntConditionMet = function (g, mc) {
+    if (!g || !g.huntCondition) return false;
+    var c = g.huntCondition;
+    var v = mc[c.stat];
+    if (c.op === "lte") return v <= c.value;
+    if (c.op === "gte") return v >= c.value;
+    return false;
+};
+
+setup.ghostHuntConditionText = function (g) {
+    if (!g || !g.huntCondition) return "";
+    var c = g.huntCondition;
+    var sym = c.op === "lte" ? "\u2264" : "\u2265";
+    return "Can start a hunt if you have " + sym + " " + c.value + " " + c.stat;
 };
 
 setup.ghostEvidenceClasses = function (g) {
