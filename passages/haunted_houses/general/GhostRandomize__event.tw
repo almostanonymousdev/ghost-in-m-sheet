@@ -2,236 +2,19 @@
 <<nobr>>
 <img @src="setup.ImagePath + '/img/witchGirl.jpg'" width="100%">
 <br>
-<<set _check to random(1,18)>>
-<<if _check eq 1>><<set $ghost to clone($ghost1)>><</if>> 
-<<if _check eq 2>><<set $ghost to clone($ghost2)>><</if>> 
-<<if _check eq 3>><<set $ghost to clone($ghost3)>><</if>> 
-<<if _check eq 4>><<set $ghost to clone($ghost4)>><</if>> 
-<<if _check eq 5>><<set $ghost to clone($ghost5)>><</if>> 
-<<if _check eq 6>><<set $ghost to clone($ghost6)>><</if>> 
-<<if _check eq 7>><<set $ghost to clone($ghost7)>><</if>> 
-<<if _check eq 8>><<set $ghost to clone($ghost8)>><</if>> 
-<<if _check eq 9>><<set $ghost to clone($ghost9)>><</if>> 
-<<if _check eq 10>><<set $ghost to clone($ghost10)>><</if>> 
-<<if _check eq 11>><<set $ghost to clone($ghost11)>><</if>> 
-<<if _check eq 12>><<set $ghost to clone($ghost12)>><</if>> 
-<<if _check eq 13>><<set $ghost to clone($ghost13)>><</if>> 
-<<if _check eq 14>><<set $ghost to clone($ghost14)>><</if>> 
-<<if _check eq 15>><<set $ghost to clone($ghost15)>><</if>> 
-<<if _check eq 16>><<set $ghost to clone($ghost16)>><</if>>
-<<if _check eq 17>><<set $ghost to clone($ghost17)>><</if>>
-<<if _check eq 18>><<set $ghost to clone($ghost18)>><</if>>
-<<set $currentsearchKitchen to {
-emf:0,
-plasm:0,
-uvl:0,
-temperature: 0,
-spiritbox:0,
-gwb:0,
-}>>
+<<run
+    var _idx = random(1, setup.GHOST_SLOT_COUNT);
+    State.variables.ghost = clone(State.variables["ghost" + _idx]);
 
-<<set $currentsearchHallway to {
-emf:0,
-plasm:0,
-uvl:0,
-temperature: 0,
-spiritbox:0,
-gwb:0,
-}>>
+    setup.searchableRooms.forEach(function (room) {
+        State.variables["currentsearch" + room] = setup.makeEmptySearchState();
+    });
 
-<<set $currentsearchLivingroom to {
-emf:0,
-plasm:0,
-uvl:0,
-temperature: 0,
-spiritbox:0,
-gwb:0,
-}>>
-
-<<set $currentsearchBedroom to {
-emf:0,
-plasm:0,
-uvl:0,
-temperature: 0,
-spiritbox:0,
-gwb:0,
-}>>
-
-<<set $currentsearchBathroom to {
-emf:0,
-plasm:0,
-uvl:0,
-temperature: 0,
-spiritbox:0,
-gwb:0,
-}>>
-
-<<set $currentsearchBasement to {
-emf:0,
-plasm:0,
-uvl:0,
-temperature: 0,
-spiritbox:0,
-gwb:0,
-}>>
-
-<<set $currentsearchBedroomTwo to {
-emf:0,
-plasm:0,
-uvl:0,
-temperature: 0,
-spiritbox:0,
-gwb:0,
-}>>
-
-<<set $currentsearchNursery to {
-emf:0,
-plasm:0,
-uvl:0,
-temperature: 0,
-spiritbox:0,
-gwb:0,
-}>>
-
-<<set $currentsearchBathroomTwo to {
-emf:0,
-plasm:0,
-uvl:0,
-temperature: 0,
-spiritbox:0,
-gwb:0,
-}>>
-
-<<set $currentsearchHallwayUpstairs to {
-emf:0,
-plasm:0,
-uvl:0,
-temperature: 0,
-spiritbox:0,
-gwb:0,
-}>>
-
-<<set $currentsearchRoomA to {
-emf:0,
-plasm:0,
-uvl:0,
-temperature: 0,
-spiritbox:0,
-gwb:0,
-}>>
-
-<<set $currentsearchRoomB to {
-emf:0,
-plasm:0,
-uvl:0,
-temperature: 0,
-spiritbox:0,
-gwb:0,
-}>>
-
-<<set $currentsearchRoomC to {
-emf:0,
-plasm:0,
-uvl:0,
-temperature: 0,
-spiritbox:0,
-gwb:0,
-}>>
-
-<<set $currentsearchHallwayIronclad to {
-emf:0,
-plasm:0,
-uvl:0,
-temperature:0,
-spiritbox:0,
-gwb:0,
-}>>
-<<set $currentsearchReceptionIronclad to {
-emf:0,
-plasm:0,
-uvl:0,
-temperature:0,
-spiritbox:0,
-gwb:0,
-}>>
-<<set $currentsearchKitchenIronclad to {
-emf:0,
-plasm:0,
-uvl:0,
-temperature:0,
-spiritbox:0,
-gwb:0,
-}>>
-<<set $currentsearchBlockAIronclad to {
-emf:0,
-plasm:0,
-uvl:0,
-temperature:0,
-spiritbox:0,
-gwb:0,
-}>>
-<<set $currentsearchBlockBIronclad to {
-emf:0,
-plasm:0,
-uvl:0,
-temperature:0,
-spiritbox:0,
-gwb:0,
-}>>
-<<set $currentsearchBlockACellAIronclad to {
-emf:0,
-plasm:0,
-uvl:0,
-temperature:0,
-spiritbox:0,
-gwb:0,
-}>>
-<<set $currentsearchBlockACellBIronclad to {
-emf:0,
-plasm:0,
-uvl:0,
-temperature:0,
-spiritbox:0,
-gwb:0,
-}>>
-<<set $currentsearchBlockACellCIronclad to {
-emf:0,
-plasm:0,
-uvl:0,
-temperature:0,
-spiritbox:0,
-gwb:0,
-}>>
-<<set $currentsearchBlockBCellAIronclad to {
-emf:0,
-plasm:0,
-uvl:0,
-temperature:0,
-spiritbox:0,
-gwb:0,
-}>>
-<<set $currentsearchBlockBCellBIronclad to {
-emf:0,
-plasm:0,
-uvl:0,
-temperature:0,
-spiritbox:0,
-gwb:0,
-}>>
-<<set $currentsearchBlockBCellCIronclad to {
-emf:0,
-plasm:0,
-uvl:0,
-temperature:0,
-spiritbox:0,
-gwb:0,
-}>>
-
-
-
-
-
-
+    setup.huntableRoomVars.forEach(function (name) {
+        var room = State.variables[name];
+        if (room) room.background = 2;
+    });
+>>
 
 
 
@@ -255,21 +38,6 @@ gwb:0,
 <<unset $isWeakenGhost>>
 <<unset $moneyFromWeakenTheGhost>>
 <<set $temperature to 0>>
-<<set $kitchen.background to 2>>
-<<set $bathroom.background to 2>>
-<<set $bedroom.background to 2>>
-<<set $hallway.background to 2>>
-<<set $livingroom.background to 2>>
-<<set $basement.background to 2>>
-<<set $BlockA.background to 2>>
-<<set $BlockB.background to 2>>
-<<set $BlockACellA.background to 2>>
-<<set $BlockACellB.background to 2>>
-<<set $BlockACellC.background to 2>>
-<<set $BlockBCellA.background to 2>>
-<<set $BlockBCellB.background to 2>>
-<<set $BlockBCellC.background to 2>>
-<<set $reception.background to 2>>
 
 <<set $EMF5Check to false>>
 <<set $EctoglassCheck to false>>

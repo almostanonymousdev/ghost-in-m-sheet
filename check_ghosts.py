@@ -35,8 +35,10 @@ GHOST_SET = re.compile(r'<<set\s+\$ghost(\d+)\s+to\s+\{')
 EVIDENCE_LIST = re.compile(r'evidence:\s*\[([^\]]+)\]')
 # Matches $EvidenceType.KEY references
 EVIDENCE_TYPE_REF = re.compile(r'\$EvidenceType\.([A-Z_]+)')
-# Matches random(1,N) in GhostRandomize
-RANDOM_CALL = re.compile(r'random\s*\(\s*1\s*,\s*(\d+)\s*\)')
+# Matches random(1,N) in GhostRandomize. N is either a numeric literal
+# or the setup.GHOST_SLOT_COUNT constant defined in StoryScript.
+RANDOM_CALL = re.compile(r'random\s*\(\s*1\s*,\s*([\w\.]+)\s*\)')
+GHOST_SLOT_CONST = re.compile(r'setup\.GHOST_SLOT_COUNT\s*=\s*(\d+)')
 
 
 def extract_strings(bracketed: str) -> list[str]:
@@ -97,7 +99,18 @@ def parse_randomizer_max(passages_dir: Path) -> int | None:
         return None
     text = randomize_file.read_text(encoding="utf-8", errors="replace")
     m = RANDOM_CALL.search(text)
-    return int(m.group(1)) if m else None
+    if not m:
+        return None
+    raw = m.group(1)
+    if raw.isdigit():
+        return int(raw)
+    if raw == "setup.GHOST_SLOT_COUNT":
+        story_script = passages_dir / "StoryScript__script_.t.tw"
+        if story_script.exists():
+            cm = GHOST_SLOT_CONST.search(story_script.read_text(encoding="utf-8", errors="replace"))
+            if cm:
+                return int(cm.group(1))
+    return None
 
 
 def main():

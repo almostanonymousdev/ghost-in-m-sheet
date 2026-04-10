@@ -1371,6 +1371,81 @@ setup.ghostInfoCollected = function (id) {
     return !!State.variables["ghost" + id + "InfoCollected"];
 };
 
+/* Number of $ghost1..$ghostN save-state slots GhostRandomize draws from. */
+setup.GHOST_SLOT_COUNT = 18;
+
+/* Every room id that gets a per-hunt $currentsearch<Room> bag.
+ * The variable name is always "currentsearch" + room. */
+setup.searchableRooms = [
+    // standard houses
+    "Kitchen", "Hallway", "Livingroom", "Bedroom", "Bathroom", "Basement",
+    // Elm Street upstairs
+    "BedroomTwo", "Nursery", "BathroomTwo", "HallwayUpstairs",
+    // Enigma rooms
+    "RoomA", "RoomB", "RoomC",
+    // Ironclad
+    "HallwayIronclad", "ReceptionIronclad", "KitchenIronclad",
+    "BlockAIronclad", "BlockBIronclad",
+    "BlockACellAIronclad", "BlockACellBIronclad", "BlockACellCIronclad",
+    "BlockBCellAIronclad", "BlockBCellBIronclad", "BlockBCellCIronclad"
+];
+
+/* $-variable names of every room object that has a `.background` field
+ * reset between hunts. Some are camelCase (BlockACellA), others lowercase
+ * (kitchen) — kept as a list rather than computed from searchableRooms. */
+setup.huntableRoomVars = [
+    "kitchen", "bathroom", "bedroom", "hallway", "livingroom", "basement",
+    "BlockA", "BlockB",
+    "BlockACellA", "BlockACellB", "BlockACellC",
+    "BlockBCellA", "BlockBCellB", "BlockBCellC",
+    "reception"
+];
+
+setup.makeEmptySearchState = function () {
+    return {
+        emf:         0,
+        plasm:       0,
+        uvl:         0,
+        temperature: 0,
+        spiritbox:   0,
+        gwb:         0
+    };
+};
+
+/* Wardrobe state enum + initialiser. The string values are part of the
+ * save format (existing passages compare against the literals), so don't
+ * change them — use the constants in new code instead. */
+setup.ClothingState = {
+    NOT_BOUGHT: "not bought",
+    NOT_WORN:   "not worn",
+    WORN:       "worn"
+};
+
+/* Wardrobe slots: slot 0 starts as the default outfit, slots 1..3 are
+ * unlocked through purchases. shortsState is special — slot 0 is unused
+ * (the unsuffixed alias is the "default" slot used by older saves). */
+setup.WARDROBE_CATEGORIES = ["tshirt", "jeans", "bra", "panties"];
+setup.WARDROBE_PURCHASE_ONLY = ["shorts", "skirt"];
+setup.WARDROBE_SLOTS_PER_CATEGORY = 4;
+
+setup.initWardrobe = function (vars) {
+    var CS = setup.ClothingState;
+
+    setup.WARDROBE_CATEGORIES.forEach(function (cat) {
+        for (var i = 0; i < setup.WARDROBE_SLOTS_PER_CATEGORY; i++) {
+            vars[cat + "State" + i] = (i === 0) ? CS.WORN : CS.NOT_BOUGHT;
+        }
+    });
+
+    setup.WARDROBE_PURCHASE_ONLY.forEach(function (cat) {
+        // Unsuffixed alias kept for save-file backwards compatibility.
+        if (cat === "shorts") vars[cat + "State"] = CS.NOT_BOUGHT;
+        for (var i = 1; i < setup.WARDROBE_SLOTS_PER_CATEGORY; i++) {
+            vars[cat + "State" + i] = CS.NOT_BOUGHT;
+        }
+    });
+};
+
 setup.ghostHoverHtml = function (id) {
     var g = setup.getGhost(id);
     if (!g) return "";

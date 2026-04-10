@@ -45,35 +45,7 @@ evidence: ["glass", "gwb", "temperature"],
 }>>
 
 
-<<set $shortsState to "not bought">>
-<<set $shortsState1 to "not bought">>
-<<set $shortsState2 to "not bought">>
-<<set $shortsState3 to "not bought">>
-
-<<set $skirtState1 to "not bought">>
-<<set $skirtState2 to "not bought">>
-<<set $skirtState3 to "not bought">>
-
-
-<<set $tshirtState0 to "worn">>
-<<set $tshirtState1 to "not bought">>
-<<set $tshirtState2 to "not bought">>
-<<set $tshirtState3 to "not bought">>
-
-<<set $jeansState0 to "worn">>
-<<set $jeansState1 to "not bought">>
-<<set $jeansState2 to "not bought">>
-<<set $jeansState3 to "not bought">>
-
-<<set $braState0 to "worn">>
-<<set $braState1 to "not bought">>
-<<set $braState2 to "not bought">>
-<<set $braState3 to "not bought">>
-
-<<set $pantiesState0 to "worn">>
-<<set $pantiesState1 to "not bought">>
-<<set $pantiesState2 to "not bought">>
-<<set $pantiesState3 to "not bought">>
+<<run setup.initWardrobe(State.variables)>>
 
 <<set $huntActivated to 0>>
 <<set $rememberTopOuter to "tshirt0">>
