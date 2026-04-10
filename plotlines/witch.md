@@ -16,9 +16,9 @@ The witch is a mysterious character who offers contracts and special items. You 
 * **Intimate events** - The witch has unique personal events that unlock as your relationship develops.
   * [WitchBedroom.tw](../passages/witch/WitchBedroom.tw) - Witch bedroom events
   * [WitchInsideMast.tw](../passages/witch/WitchInsideMast.tw) - Witch inside events
-  * [witchTentaclesEvent__nobr.tw](../passages/witch/witchTentaclesEvent__nobr.tw) - Witch tentacle summoning event
+  * [witchTentaclesEvent.tw](../passages/witch/witchTentaclesEvent.tw) - Witch tentacle summoning event
 
 * **Cursed hunt** - The witch can initiate cursed hunt scenarios through items purchased from her shop.
-  * [CursedHunt__nobr.tw](../passages/haunted_houses/tools/CursedHunt__nobr.tw) - Cursed hunt mechanics triggered by witch items
-  * [cursedHuntStart__nobr_noreturn.tw](../passages/haunted_houses/general/cursedHuntStart__nobr_noreturn.tw) - Starting a cursed hunt
+  * [CursedHunt.tw](../passages/haunted_houses/tools/CursedHunt.tw) - Cursed hunt mechanics triggered by witch items
+  * [cursedHuntStart.tw](../passages/haunted_houses/general/cursedHuntStart.tw) - Starting a cursed hunt
   * [UseCursedItem.tw](../passages/haunted_houses/general/UseCursedItem.tw) - Using cursed items during hunts

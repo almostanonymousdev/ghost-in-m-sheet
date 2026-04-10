@@ -9,20 +9,20 @@ Specific ghost types have unique special events that occur under certain conditi
   * [ghostSpecialEventMareEnd.tw](../passages/special_event/ghostSpecialEventMareEnd.tw) - Mare event conclusion
 
 * **Myling events** - The Myling cries for help, often leading you to dangerous situations. The crying can be heard from different locations and may lead to traps or ghost encounters.
-  * [ghostSpecialEventMyling__nobr.tw](../passages/special_event/ghostSpecialEventMyling__nobr.tw) - Myling crying event
-  * [ghostSpecialEventMylingTwo__nobr.tw](../passages/special_event/ghostSpecialEventMylingTwo__nobr.tw) - Myling second stage / follow-up event
+  * [ghostSpecialEventMyling.tw](../passages/special_event/ghostSpecialEventMyling.tw) - Myling crying event
+  * [ghostSpecialEventMylingTwo.tw](../passages/special_event/ghostSpecialEventMylingTwo.tw) - Myling second stage / follow-up event
 
 * **Nap Spirit events** - The Nap Spirit drains your energy, causing fatigue and hallucinations. Events involve falling asleep during hunts and experiencing dream sequences.
-  * [ghostSpecialEventNapSpirit__nobr.tw](../passages/special_event/ghostSpecialEventNapSpirit__nobr.tw) - Nap Spirit energy drain event
+  * [ghostSpecialEventNapSpirit.tw](../passages/special_event/ghostSpecialEventNapSpirit.tw) - Nap Spirit energy drain event
   * [ghostSpecialEventNapSpirit1.tw](../passages/special_event/ghostSpecialEventNapSpirit1.tw) - Nap Spirit event stage 1 / dream sequence
 
 * **Sleep Spirit events** - Sleep Spirit puts you to sleep and takes control of your body. Events involve waking up in strange locations or positions, with possible sexual or sensual content.
-  * [ghostSpecialEventSleepSpirit__nobr.tw](../passages/special_event/ghostSpecialEventSleepSpirit__nobr.tw) - Sleep Spirit sleep event entry
-  * [ghostSpecialEventSleepSpirit1__nobr.tw](../passages/special_event/ghostSpecialEventSleepSpirit1__nobr.tw) - Sleep Spirit stage 1
-  * [ghostSpecialEventSleepSpirit2__nobr.tw](../passages/special_event/ghostSpecialEventSleepSpirit2__nobr.tw) - Sleep Spirit stage 2
+  * [ghostSpecialEventSleepSpirit.tw](../passages/special_event/ghostSpecialEventSleepSpirit.tw) - Sleep Spirit sleep event entry
+  * [ghostSpecialEventSleepSpirit1.tw](../passages/special_event/ghostSpecialEventSleepSpirit1.tw) - Sleep Spirit stage 1
+  * [ghostSpecialEventSleepSpirit2.tw](../passages/special_event/ghostSpecialEventSleepSpirit2.tw) - Sleep Spirit stage 2
 
 * **TV Spirit events** - TV Spirit appears on screens and can transport you to different locations. Events involve strange broadcasts and potential dimensional shifts.
-  * [ghostSpecialEventTVSpirit__nobr.tw](../passages/special_event/ghostSpecialEventTVSpirit__nobr.tw) - TV Spirit screen event entry
+  * [ghostSpecialEventTVSpirit.tw](../passages/special_event/ghostSpecialEventTVSpirit.tw) - TV Spirit screen event entry
   * [ghostSpecialEventTVSpirit1.tw](../passages/special_event/ghostSpecialEventTVSpirit1.tw) - TV Spirit stage 1
 
 * **Wraith events** - Wraiths can phase through walls and cause sudden temperature drops. Events involve sudden appearances and disappearances with potential for intense ghost encounters.
@@ -31,19 +31,19 @@ Specific ghost types have unique special events that occur under certain conditi
   * [ghostSpecialEventWraithEnd.tw](../passages/special_event/ghostSpecialEventWraithEnd.tw) - Wraith event conclusion
 
 * **The Twins events** - The Twins can interact with the player during sleep at home. These events involve dual-entity encounters with unique mechanics.
-  * [TheTwinsEvent__nobr.tw](../passages/home/TheTwinsEvent__nobr.tw) - The Twins home event
-  * [SleepTwins__nobr.tw](../passages/home/SleepTwins__nobr.tw) - Sleeping encounter with The Twins
+  * [TheTwinsEvent.tw](../passages/home/TheTwinsEvent.tw) - The Twins home event
+  * [SleepTwins.tw](../passages/home/SleepTwins.tw) - Sleeping encounter with The Twins
 
 * **General spirit event** - Shared event logic used by multiple ghost types.
-  * [ghostSpecialEventSpirit__nobr.tw](../passages/special_event/ghostSpecialEventSpirit__nobr.tw) - Generic spirit event handler
+  * [ghostSpecialEventSpirit.tw](../passages/special_event/ghostSpecialEventSpirit.tw) - Generic spirit event handler
 
 * **Home summoning events** - Some ghost types can be summoned at home, triggering possession-adjacent special events.
-  * [succubusEventTV__nobr.tw](../passages/home/summoning/succubusEventTV__nobr.tw) - Succubus TV event
-  * [succubusPCEvent__nobr.tw](../passages/home/summoning/succubusPCEvent__nobr.tw) - Succubus PC event
-  * [tentaclesEventSleep__nobr.tw](../passages/home/tentacles/tentaclesEventSleep__nobr.tw) - Tentacles sleep event
-  * [tentaclesEventSleep1__nobr.tw](../passages/home/tentacles/tentaclesEventSleep1__nobr.tw) - Tentacles sleep event stage 2
-  * [tentaclesEventTV__nobr.tw](../passages/home/tentacles/tentaclesEventTV__nobr.tw) - Tentacles TV event
-  * [tentaclesEventTV1__nobr.tw](../passages/home/tentacles/tentaclesEventTV1__nobr.tw) - Tentacles TV event stage 2
-  * [tentaclesEventNap__nobr.tw](../passages/home/tentacles/tentaclesEventNap__nobr.tw) - Tentacles nap event
-  * [tentaclesEventPC__nobr.tw](../passages/home/tentacles/tentaclesEventPC__nobr.tw) - Tentacles PC event
-  * [tentaclesEventPC1__nobr.tw](../passages/home/tentacles/tentaclesEventPC1__nobr.tw) - Tentacles PC event stage 2
+  * [succubusEventTV.tw](../passages/home/summoning/succubusEventTV.tw) - Succubus TV event
+  * [succubusPCEvent.tw](../passages/home/summoning/succubusPCEvent.tw) - Succubus PC event
+  * [tentaclesEventSleep.tw](../passages/home/tentacles/tentaclesEventSleep.tw) - Tentacles sleep event
+  * [tentaclesEventSleep1.tw](../passages/home/tentacles/tentaclesEventSleep1.tw) - Tentacles sleep event stage 2
+  * [tentaclesEventTV.tw](../passages/home/tentacles/tentaclesEventTV.tw) - Tentacles TV event
+  * [tentaclesEventTV1.tw](../passages/home/tentacles/tentaclesEventTV1.tw) - Tentacles TV event stage 2
+  * [tentaclesEventNap.tw](../passages/home/tentacles/tentaclesEventNap.tw) - Tentacles nap event
+  * [tentaclesEventPC.tw](../passages/home/tentacles/tentaclesEventPC.tw) - Tentacles PC event
+  * [tentaclesEventPC1.tw](../passages/home/tentacles/tentaclesEventPC1.tw) - Tentacles PC event stage 2

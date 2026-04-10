@@ -4,12 +4,12 @@ The game features multiple companion characters (Alice, Blake, Brook, Alex, Case
 
 * **Alice** - A nervous but determined companion who can become more confident as your relationship progresses. She's particularly useful for finding cursed items and has unique interactions during ghost hunts and at home, including intimate moments when her anxiety is soothed.
   * [AliceInit.tw](../passages/companion/alice/AliceInit.tw) - Alice's initialization and stats setup
-  * [AliceMain__nobr.tw](../passages/companion/alice/AliceMain__nobr.tw) - Alice's main interaction screen during hunts
-  * [AliceHelp__nobr_noreturn.tw](../passages/companion/alice/AliceHelp__nobr_noreturn.tw) - Alice's assistance during hunts
-  * [AliceInfo__nobr_noreturn.tw](../passages/companion/alice/AliceInfo__nobr_noreturn.tw) - Information about Alice
+  * [AliceMain.tw](../passages/companion/alice/AliceMain.tw) - Alice's main interaction screen during hunts
+  * [AliceHelp.tw](../passages/companion/alice/AliceHelp.tw) - Alice's assistance during hunts
+  * [AliceInfo.tw](../passages/companion/alice/AliceInfo.tw) - Information about Alice
   * [AliceHuntEndAlone__noreturn.tw](../passages/companion/alice/AliceHuntEndAlone__noreturn.tw) - Alice's ending if you hunt alone
-  * [aliceContinue__nobr.tw](../passages/companion/alice/aliceContinue__nobr.tw) - Alice's continuation options
-  * [aliceMini__nobr.tw](../passages/companion/alice/aliceMini__nobr.tw) - Alice's mini-events
+  * [aliceContinue.tw](../passages/companion/alice/aliceContinue.tw) - Alice's continuation options
+  * [aliceMini.tw](../passages/companion/alice/aliceMini.tw) - Alice's mini-events
 
 * **Blake** - A more experienced hunter who provides solid support during investigations. Has unique endings depending on your choices and can help with various hunting strategies, with potential for romantic/sexual tension during dangerous situations.
   * [BlakeInit.tw](../passages/companion/blake/BlakeInit.tw) - Blake's initialization and stats setup
@@ -17,8 +17,8 @@ The game features multiple companion characters (Alice, Blake, Brook, Alex, Case
   * [BlakeHelp__noreturn.tw](../passages/companion/blake/BlakeHelp__noreturn.tw) - Blake's assistance during hunts
   * [BlakeInfo__noreturn.tw](../passages/companion/blake/BlakeInfo__noreturn.tw) - Information about Blake
   * [BlakeHuntEndAlone__noreturn.tw](../passages/companion/blake/BlakeHuntEndAlone__noreturn.tw) - Blake's ending if you hunt alone
-  * [blakeContinue__nobr.tw](../passages/companion/blake/blakeContinue__nobr.tw) - Blake's continuation options
-  * [blakeMini__nobr.tw](../passages/companion/blake/blakeMini__nobr.tw) - Blake's mini-events
+  * [blakeContinue.tw](../passages/companion/blake/blakeContinue.tw) - Blake's continuation options
+  * [blakeMini.tw](../passages/companion/blake/blakeMini.tw) - Blake's mini-events
 
 * **Brook** - A companion with specific skills for ghost hunting, including higher chances of success with certain evidence types. Has unique home interaction scenarios that can include sensual or sexual content.
   * [BrookInit.tw](../passages/companion/brook/BrookInit.tw) - Brook's initialization and stats setup
@@ -32,14 +32,14 @@ The game features multiple companion characters (Alice, Blake, Brook, Alex, Case
   * [AlexMain.tw](../passages/companion/alex/AlexMain.tw) - Alex's main interaction screen
   * [CaseyMain.tw](../passages/companion/alex/CaseyMain.tw) - Casey's main interaction screen
   * [TaylorMain.tw](../passages/companion/alex/TaylorMain.tw) - Taylor's main interaction screen
-  * [alexMini__nobr.tw](../passages/companion/alex/alexMini__nobr.tw) - Alex's mini-events
-  * [caseyMini__nobr.tw](../passages/companion/alex/caseyMini__nobr.tw) - Casey's mini-events
-  * [taylorMini__nobr.tw](../passages/companion/alex/taylorMini__nobr.tw) - Taylor's mini-events
+  * [alexMini.tw](../passages/companion/alex/alexMini.tw) - Alex's mini-events
+  * [caseyMini.tw](../passages/companion/alex/caseyMini.tw) - Casey's mini-events
+  * [taylorMini.tw](../passages/companion/alex/taylorMini.tw) - Taylor's mini-events
   * [transInit.tw](../passages/companion/alex/transInit.tw) - Transformation initialization
 
 * **Relationship mechanics** - Your choices during hunts, how you treat your companions, and shared experiences affect their loyalty and effectiveness. Companions may develop romantic or sexual feelings for you, leading to intimate encounters during hunts, at home, or when walking home together.
-  * [compEvent__nobr_noreturn.tw](../passages/companion/compEvent__nobr_noreturn.tw) - Companion event triggers
-  * [WalkHomeTogether__nobr.tw](../passages/companion/WalkHomeTogether__nobr.tw) - Walking home together with companions
+  * [compEvent.tw](../passages/companion/compEvent.tw) - Companion event triggers
+  * [WalkHomeTogether.tw](../passages/companion/WalkHomeTogether.tw) - Walking home together with companions
   * [CompanionLeaving__noreturn.tw](../passages/companion/CompanionLeaving__noreturn.tw) - Companion leaving scenarios
   * [succeededComp__noreturn.tw](../passages/companion/succeededComp__noreturn.tw) - Successful companion mission outcomes
   * [failedComp__noreturn.tw](../passages/failedComp__noreturn.tw) - Failed companion mission outcomes

@@ -10,7 +10,7 @@ The game world includes several city locations the player can visit between hunt
   * [workDelivery.tw](../passages/delivery/workDelivery.tw) - Working a delivery shift
   * [endShiftDelivery.tw](../passages/delivery/endShiftDelivery.tw) - Ending a delivery shift
   * [deliveryActiveIcon.tw](../passages/delivery/deliveryActiveIcon.tw) - Active delivery route icons
-  * [meetAlice__nobr.tw](../passages/delivery/meetAlice__nobr.tw) - Meeting Alice during deliveries
+  * [meetAlice.tw](../passages/delivery/meetAlice.tw) - Meeting Alice during deliveries
   * [deliveryEvent1__event.tw](../passages/delivery/deliveryEvent1__event.tw) - Delivery encounter event 1
   * [deliveryEvent2__event.tw](../passages/delivery/deliveryEvent2__event.tw) - Delivery encounter event 2
   * [deliveryEvent3__event.tw](../passages/delivery/deliveryEvent3__event.tw) - Delivery encounter event 3
@@ -49,18 +49,18 @@ The game world includes several city locations the player can visit between hunt
   * [libraryGuy1__event.tw](../passages/library/libraryGuy1__event.tw) - Guy resident event chain
 
 * **Park** - Outdoor location with jogging activities and park encounter events.
-  * [Park__nobr.tw](../passages/park/Park__nobr.tw) - Park entry and activities
-  * [ParkJogging__nobr.tw](../passages/park/ParkJogging__nobr.tw) - Jogging activity
-  * [ParkEvent1__nobr.tw](../passages/park/ParkEvent1__nobr.tw) - Park encounter event 1
-  * [ParkEvent2__nobr.tw](../passages/park/ParkEvent2__nobr.tw) - Park encounter event 2
+  * [Park.tw](../passages/park/Park.tw) - Park entry and activities
+  * [ParkJogging.tw](../passages/park/ParkJogging.tw) - Jogging activity
+  * [ParkEvent1.tw](../passages/park/ParkEvent1.tw) - Park encounter event 1
+  * [ParkEvent2.tw](../passages/park/ParkEvent2.tw) - Park encounter event 2
 
 * **Church** - Central hub for the rescue quest task board, prayer mechanics, a nun quest, basement access, and exorcism events (Rain storyline). Also hosts church-specific tool events.
   * [Church.tw](../passages/church/Church.tw) - Church exterior and entry
   * [ChurchPray.tw](../passages/church/ChurchPray.tw) - Prayer mechanics
-  * [ChurchNunQuest__nobr.tw](../passages/church/ChurchNunQuest__nobr.tw) - Nun quest storyline
-  * [churchBasementEnt__nobr.tw](../passages/church/churchBasementEnt__nobr.tw) - Church basement access
-  * [RainExorcism__nobr.tw](../passages/church/RainExorcism__nobr.tw) - Rain exorcism event
-  * [RainHelps__nobr.tw](../passages/church/RainHelps__nobr.tw) - Rain assistance event
+  * [ChurchNunQuest.tw](../passages/church/ChurchNunQuest.tw) - Nun quest storyline
+  * [churchBasementEnt.tw](../passages/church/churchBasementEnt.tw) - Church basement access
+  * [RainExorcism.tw](../passages/church/RainExorcism.tw) - Rain exorcism event
+  * [RainHelps.tw](../passages/church/RainHelps.tw) - Rain assistance event
   * [ToolsEventChurch__event.tw](../passages/church/ToolsEventChurch__event.tw) - Church tool event
   * [ToolsEventChurch1__event.tw](../passages/church/ToolsEventChurch1__event.tw) - Church tool event stage 1
   * [ToolsEventChurchEnd__event.tw](../passages/church/ToolsEventChurchEnd__event.tw) - Church tool event conclusion
@@ -69,6 +69,6 @@ The game world includes several city locations the player can visit between hunt
   * [Mall.tw](../passages/mall/Mall.tw) - Mall exterior and entry
   * [clothingSection.tw](../passages/mall/clothingSection.tw) - Clothing store
   * [electronicsSection.tw](../passages/mall/electronicsSection.tw) - Electronics store (equipment purchases)
-  * [adultSection__nobr.tw](../passages/mall/adultSection__nobr.tw) - Adult section
-  * [adultSectionPurchase__nobr.tw](../passages/mall/adultSectionPurchase__nobr.tw) - Adult section purchases
-  * [adultSectionBlake__nobr.tw](../passages/mall/adultSectionBlake__nobr.tw) - Blake-specific adult section content
+  * [adultSection.tw](../passages/mall/adultSection.tw) - Adult section
+  * [adultSectionPurchase.tw](../passages/mall/adultSectionPurchase.tw) - Adult section purchases
+  * [adultSectionBlake.tw](../passages/mall/adultSectionBlake.tw) - Blake-specific adult section content
