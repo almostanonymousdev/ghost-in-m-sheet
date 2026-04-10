@@ -1,4 +1,0 @@
-:: searchPlasmLivingroom {"position":"4225,525","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"plasm","room":"Livingroom","bgRoom":"livingroom","prefix":"owaissaLivingroom","eventChain":"standard","replaceMode":"double","meterTag":"div"}`>>
-<</nobr>>

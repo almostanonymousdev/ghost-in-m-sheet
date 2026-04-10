@@ -1,4 +1,0 @@
-:: searchSbBasement {"position":"4425,625","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"spiritbox","room":"Basement","bgRoom":"basement","prefix":"elmBasement","eventChain":"standard","replaceMode":"double","needsLightCheck":true}`>>
-<</nobr>>

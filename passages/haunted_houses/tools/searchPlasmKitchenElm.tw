@@ -1,4 +1,0 @@
-:: searchPlasmKitchenElm {"position":"4825,525","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"plasm","room":"Kitchen","bgRoom":"kitchen","prefix":"elmKitchen","eventChain":"standard","replaceMode":"double"}`>>
-<</nobr>>

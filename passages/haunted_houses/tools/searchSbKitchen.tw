@@ -1,4 +1,0 @@
-:: searchSbKitchen {"position":"3925,625","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"spiritbox","room":"Kitchen","bgRoom":"kitchen","prefix":"owaissaKitchen","eventChain":"standard","replaceMode":"double","meterTag":"div","needsLightCheck":true}`>>
-<</nobr>>

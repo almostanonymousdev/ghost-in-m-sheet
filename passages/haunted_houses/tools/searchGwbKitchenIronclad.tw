@@ -1,4 +1,0 @@
-:: searchGwbKitchenIronclad {"position":"6600,325","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"gwb","room":"KitchenIronclad","bgRoom":"kitchen","prefix":"ironcladKitchen","eventChain":"ironclad","replaceMode":"double"}`>>
-<</nobr>>

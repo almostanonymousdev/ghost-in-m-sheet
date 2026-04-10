@@ -4,42 +4,21 @@
 	<div class="room-wrapper">
 		<div class="content">
           	<div id="ironcladBlockBCellCAction" class="action">
-				
+
           	</div>
         </div>
-        
+
 		<div class="footer">
         	<div class="footertools">
-         	<<toolCard "img/emf.png" "ironcladBlockBCellCPicEMF" "searchEMFBlockBCellCIronclad">>
-         	<<toolCard "img/glass.png" "ironcladBlockBCellCPicPlasm" "searchPlasmBlockBCellCIronclad">>
-         	<<toolCard "img/gwb.png" "ironcladBlockBCellCPicGWB" "searchGwbBlockBCellCIronclad">>
-         	<<toolCard "img/spiritbox.png" "ironcladBlockBCellCPicSB" "searchSbBlockBCellCIronclad">>
-         	<<toolCard "img/thermometr.png" "ironcladBlockBCellCPicThermometr" "searchThermometrBlockBCellCIronclad">>
-         	<<toolCard "img/uvl.png" "ironcladBlockBCellCPicUVL" "searchUvlBlockBCellCIronclad">>
-            <<companionCard>>
-            <div class="footer-card footer-light">
-            	<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "IroncladBlockBCellC">><<set $BlockBCellC.background to 1>><</link>>
-             <<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" "IroncladBlockBCellC">><<set $BlockBCellC.background to 2>><</link>>
-			<<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>> 
-<<link "<img @src='setup.ImagePath + \"/img/hearth.png\"'>" "minigame">>
-<<set $minigameVideo to "start">>
-<<set $ghostOrgasmMeter to 0>>
-<<set $mcOrgasmMeter to 0>><</link>>
-<</if>></span>
-            </div>
+         	<<roomToolBar "ironcladBlockBCellC">>
+            <<roomFooterLight "IroncladBlockBCellC" "BlockBCellC">>
          </div>
          <div class="footeraction">
 			@@.adaptiveLink;<<link "BlockB" "IroncladBlockB">>
-<<includeTimeEventHunt>><<set $stepCount += 1>><</link>>@@   
+<<includeTimeEventHunt>><<set $stepCount += 1>><</link>>@@
 
 		 </div>
 		</div>
 	</div>
 </div>
 <</nobr>>
-
-<<script>>
-$(document).ready(function() {
-    setup.roomToolHandlersByPrefix('ironcladBlockBCellC');
-});
-<</script>>

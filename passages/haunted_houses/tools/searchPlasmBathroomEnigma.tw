@@ -1,4 +1,0 @@
-:: searchPlasmBathroomEnigma {"position":"4825,1200","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"plasm","room":"Bathroom","bgRoom":"bathroom","prefix":"enigmaBathroom","eventChain":"enigma","replaceMode":"double"}`>>
-<</nobr>>

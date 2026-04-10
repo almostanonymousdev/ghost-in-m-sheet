@@ -1,4 +1,0 @@
-:: searchPlasmHallwayIronclad {"position":"6400,525","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"plasm","room":"HallwayIronclad","bgRoom":"hallway","prefix":"ironcladHallway","eventChain":"ironclad","replaceMode":"double"}`>>
-<</nobr>>

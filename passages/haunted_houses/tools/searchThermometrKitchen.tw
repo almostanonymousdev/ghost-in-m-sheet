@@ -1,4 +1,0 @@
-:: searchThermometrKitchen {"position":"3925,125","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"temperature","room":"Kitchen","bgRoom":"kitchen","prefix":"owaissaKitchen","eventChain":"standard","replaceMode":"single","meterTag":"div"}`>>
-<</nobr>>

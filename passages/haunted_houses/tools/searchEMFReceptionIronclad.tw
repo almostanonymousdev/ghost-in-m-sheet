@@ -1,4 +1,0 @@
-:: searchEMFReceptionIronclad {"position":"6500,225","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"emf","room":"ReceptionIronclad","bgRoom":"reception","prefix":"ironcladReception","eventChain":"ironclad","replaceMode":"single"}`>>
-<</nobr>>

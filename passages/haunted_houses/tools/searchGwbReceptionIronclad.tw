@@ -1,4 +1,0 @@
-:: searchGwbReceptionIronclad {"position":"6500,325","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"gwb","room":"ReceptionIronclad","bgRoom":"reception","prefix":"ironcladReception","eventChain":"ironclad","replaceMode":"double"}`>>
-<</nobr>>

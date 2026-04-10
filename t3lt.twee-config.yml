@@ -222,8 +222,45 @@ sugarcube-2:
         false to disable or a CSS time value (e.g. "0.4s") to set duration.
         Args: timeOrBool (CSS time string | false), [easing ("swing" |
         "linear")].'
-    toolCard:
-      name: toolCard
+    roomToolCard:
+      name: roomToolCard
+      description: "Renders one tool slot inside <<roomToolBar>>. Derives the
+        image, picture id, and searchTool config from setup.searchToolDefs and
+        setup.searchPrefixIndex. Args: tool (string, key into searchToolDefs),
+        prefix (string, room prefix from searchRoomPrefixes)."
+    roomToolBar:
+      name: roomToolBar
+      description: "Emits the canonical six tool slots (EMF, Ectoplasm, GWB,
+        Spiritbox, Thermometer, UVL) for one haunted-house room, plus the
+        companion card. Args: prefix (string, room prefix from
+        searchRoomPrefixes), [noCompanion (string, pass 'noCompanion' to
+        suppress the companion card — used by enigma rooms)]."
+    roomFooterLight:
+      name: roomFooterLight
+      description: "Renders the lights-on/off + heart minigame block for elm,
+        owaissa, and ironclad rooms (cursedHuntLinkDisable wrapper, plus the
+        seduction minigame trigger when $mc.lust gte 80). Args: passage
+        (string, link target — usually the current passage name), bgRoomVar
+        (string, name of the room state variable whose .background is
+        toggled, e.g. 'bedroom' or 'BlockACellA')."
+    roomFooterLightBasic:
+      name: roomFooterLightBasic
+      description: "Enigma's simpler lights-only footer block: no
+        cursedHuntLinkDisable wrapper, no minigame trigger. Args: passage
+        (string), bgRoomVar (string)."
+    hideSpot:
+      name: hideSpot
+      description: "Furniture item that doubles as a hide spot during cursed
+        hunts. When $cursedHuntActive is 1 the image highlights and clicking
+        replaces the room with the hide-spot scene; otherwise it acts as a
+        normal furniture span. Args: passage (string, link target), imageFile
+        (string, filename under img/furniture/), id (string, span id, e.g.
+        'bedroom_bed1')."
+    furnitureItem:
+      name: furnitureItem
+      description: "Plain furniture span that opens furnitureSearch on click.
+        Args: imageFile (string, filename under img/furniture/), id (string,
+        span id and $currentFurniture value, e.g. 'bedroom_table')."
     companionCard:
       name: companionCard
     randomVideo:
@@ -276,8 +313,8 @@ sugarcube-2:
       name: searchTool
       description: "Renders a per-room evidence-tool button (EMF, GWB, Spiritbox,
         Ectoplasm, Thermometer, UVL). Builds the meter, repeat loop, event
-        chain, and completion replace from a single config object. Args:
-        cfg (object) — required keys: tool, room, bgRoom, buttonId, meterId,
-        meterTag, eventChain ('standard'|'ironclad'|'enigma'),
-        replaceMode ('single'|'double'); optional: actionSel (required when
-        replaceMode='double'), needsLightCheck, lightOffSel."
+        chain, and completion replace. Two call forms: (1) <<searchTool tool
+        prefix>> — derives the full config from setup.searchToolDefs and
+        setup.searchPrefixIndex (this is the form used by <<roomToolCard>>);
+        (2) <<searchTool cfgObject>> — pass a fully-built config object for
+        manual control of buttonId/meterId/actionSel/etc."

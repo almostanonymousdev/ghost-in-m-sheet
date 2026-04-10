@@ -1,4 +1,0 @@
-:: searchEMFHallwayEnigma {"position":"4425,900","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"emf","room":"Hallway","bgRoom":"hallway","prefix":"enigmaHallway","eventChain":"enigma","replaceMode":"single"}`>>
-<</nobr>>

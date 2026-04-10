@@ -1,4 +1,0 @@
-:: searchUvlBlockBIronclad {"position":"5700,425","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"uvl","room":"BlockBIronclad","bgRoom":"BlockB","prefix":"ironcladBlockB","eventChain":"ironclad","replaceMode":"double"}`>>
-<</nobr>>

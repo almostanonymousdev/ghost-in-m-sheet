@@ -1,4 +1,0 @@
-:: searchSbBathroom {"position":"4025,625","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"spiritbox","room":"Bathroom","bgRoom":"bathroom","prefix":"owaissaBathroom","eventChain":"standard","replaceMode":"double","meterTag":"div","needsLightCheck":true}`>>
-<</nobr>>

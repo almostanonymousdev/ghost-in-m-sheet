@@ -1,4 +1,0 @@
-:: searchPlasmBedroomTwoElm {"position":"4625,525","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"plasm","room":"BedroomTwo","bgRoom":"bedroomTwo","prefix":"elmBedroomTwo","eventChain":"standard","replaceMode":"double"}`>>
-<</nobr>>

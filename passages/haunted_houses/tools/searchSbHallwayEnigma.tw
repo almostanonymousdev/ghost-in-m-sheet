@@ -1,4 +1,0 @@
-:: searchSbHallwayEnigma {"position":"4425,1300","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"spiritbox","room":"Hallway","bgRoom":"hallway","prefix":"enigmaHallway","eventChain":"enigma","replaceMode":"double","needsLightCheck":true}`>>
-<</nobr>>

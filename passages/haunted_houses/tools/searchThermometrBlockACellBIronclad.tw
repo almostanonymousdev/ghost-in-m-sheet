@@ -1,4 +1,0 @@
-:: searchThermometrBlockACellBIronclad {"position":"5900,125","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"temperature","room":"BlockACellBIronclad","bgRoom":"BlockACellB","prefix":"ironcladBlockACellB","eventChain":"ironclad","replaceMode":"single"}`>>
-<</nobr>>

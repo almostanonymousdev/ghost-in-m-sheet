@@ -9,17 +9,8 @@
         </div>
 		<div class="footer">
         	<div class="footertools">
-         	<<toolCard "img/emf.png" "enigmaKitchenPicEMF" "searchEMFKitchenEnigma">>
-         	<<toolCard "img/glass.png" "enigmaKitchenPicPlasm" "searchPlasmKitchenEnigma">>
-         	<<toolCard "img/gwb.png" "enigmaKitchenPicGWB" "searchGwbKitchenEnigma">>
-         	<<toolCard "img/spiritbox.png" "enigmaKitchenPicSB" "searchSbKitchenEnigma">>
-         	<<toolCard "img/thermometr.png" "enigmaKitchenPicThermometr" "searchThermometrKitchenEnigma">>
-         	<<toolCard "img/uvl.png" "enigmaKitchenPicUVL" "searchUVLKitchenEnigma">>
-            <div class="footer-card footer-light">
-            	<<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "enigmaKitchen">><<set $kitchen.background to 1>><</link>>
-             <<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" "enigmaKitchen">><<set $kitchen.background to 2>><</link>>
-             
-            </div>
+         	<<roomToolBar "enigmaKitchen" "noCompanion">>
+            <<roomFooterLightBasic "enigmaKitchen" "kitchen">>
          </div>
          <div class="footeraction">
          	@@.adaptiveLink;[[hallway|enigmaHallway]]@@
@@ -28,11 +19,3 @@
 	</div>
 </div>
 <</nobr>>
-
-<<script>>
-$(document).ready(function() {
-    setup.roomToolHandlersByPrefix('enigmaKitchen');
-});
-<</script>>
-
-

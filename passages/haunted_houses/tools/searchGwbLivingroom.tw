@@ -1,4 +1,0 @@
-:: searchGwbLivingroom {"position":"4225,325","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"gwb","room":"Livingroom","bgRoom":"livingroom","prefix":"owaissaLivingroom","eventChain":"standard","replaceMode":"double","meterTag":"div"}`>>
-<</nobr>>

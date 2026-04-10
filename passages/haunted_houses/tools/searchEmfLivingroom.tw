@@ -1,4 +1,0 @@
-:: searchEmfLivingroom {"position":"4225,225","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"emf","room":"Livingroom","bgRoom":"livingroom","prefix":"owaissaLivingroom","eventChain":"standard","replaceMode":"single","meterTag":"div"}`>>
-<</nobr>>

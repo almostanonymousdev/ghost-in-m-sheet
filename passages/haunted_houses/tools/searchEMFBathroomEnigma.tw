@@ -1,4 +1,0 @@
-:: searchEMFBathroomEnigma {"position":"4825,900","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"emf","room":"Bathroom","bgRoom":"bathroom","prefix":"enigmaBathroom","eventChain":"enigma","replaceMode":"single"}`>>
-<</nobr>>

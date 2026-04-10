@@ -8,56 +8,20 @@
           	</div>
         </div>
         <div class="furnitureSearch">
-             <span id="nursery_desk"><<link "<img @src='setup.ImagePath + \"/img/furniture/desk.png\"'>" "furnitureSearch">><<set $currentFurniture to "nursery_desk">><<includeTimeEventClothesHunt>><</link>></span>
-			 <span id="nursery_table"><<link "<img @src='setup.ImagePath + \"/img/furniture/table.png\"'>" "furnitureSearch">><<set $currentFurniture to "nursery_table">><<includeTimeEventClothesHunt>><</link>></span>
-              <<if $cursedHuntActive eq 1>>
-<span><<link '<img @src="setup.ImagePath + \"/img/furniture/bed.png\"" class="highlighted-furniture">'>>
-<<replace ".room-wrapper">><<set $isInHideSpot to 1>><img @src="setup.ImagePath + '/hunting/hid1.jpg'" width="80%" class="fadeInScale"><br>
-<<done>>
-<<run $(".fadeInScale").addClass("tarotCardsShow")>><</done>>
-@@.mc-thoughts;You press yourself against the cold floor, feeling your heart racing in your chest. The screams and rustling outside make you hold your breath. The ghost, filled with rage, prowls the room, and each of its steps echoes dully in your ears.<br>
-
-All you can do now is wait and hope it doesn’t find you.@@
-<br><br>
-@@.backbtn; [[Leave|elmNursery][$isInHideSpot to 0]]@@<br>
-<</replace>><</link>></span>
-            <<else>>
-			 <span id="nursery_bed"><<link "<img @src='setup.ImagePath + \"/img/furniture/bed.png\"'>" "furnitureSearch">><<set $currentFurniture to "nursery_bed">><<includeTimeEventClothesHunt>><</link>></span>
-<</if>>
+            <<furnitureItem "desk.png" "nursery_desk">>
+			<<furnitureItem "table.png" "nursery_table">>
+			<<hideSpot "elmNursery" "bed.png" "nursery_bed">>
         </div>
 		<div class="footer">
         	<div class="footertools">
-         	<<toolCard "img/emf.png" "elmNurseryPicEMF" "searchEMFNurseryElm">>
-         	<<toolCard "img/glass.png" "elmNurseryPicPlasm" "searchPlasmNurseryElm">>
-         	<<toolCard "img/gwb.png" "elmNurseryPicGWB" "searchGwbNurseryElm">>
-         	<<toolCard "img/spiritbox.png" "elmNurseryPicSB" "searchSbNurseryElm">>
-         	<<toolCard "img/thermometr.png" "elmNurseryPicThermometr" "searchThermometrNurseryElm">>
-         	<<toolCard "img/uvl.png" "elmNurseryPicUVL" "searchUVLNurseryElm">>
-            <<companionCard>>
-            <div class="footer-card footer-light">
-            	<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "elmNursery">><<set $nursery.background to 1>><</link>>
-             <<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" "elmNursery">><<set $nursery.background to 2>><</link>>
-			<<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>> 
-<<link "<img @src='setup.ImagePath + \"/img/hearth.png\"'>" "minigame">>
-<<set $minigameVideo to "start">>
-<<set $ghostOrgasmMeter to 0>>
-<<set $mcOrgasmMeter to 0>><</link>>
-<</if>></span>
-            </div>
+         	<<roomToolBar "elmNursery">>
+            <<roomFooterLight "elmNursery" "nursery">>
          </div>
          <div class="footeraction">
 			@@.adaptiveLink;<<link "hallway" "elmHallwayUpstairs">>
-<<includeTimeEventClothesHunt>><<set $stepCount += 1>><</link>>@@ 
+<<includeTimeEventClothesHunt>><<set $stepCount += 1>><</link>>@@
          </div>
 		</div>
 	</div>
 </div>
 <</nobr>>
-
-<<script>>
-$(document).ready(function() {
-    setup.roomToolHandlersByPrefix('elmNursery');
-});
-<</script>>
-
-

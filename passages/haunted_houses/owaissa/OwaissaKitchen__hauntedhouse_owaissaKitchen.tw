@@ -5,47 +5,24 @@
 		<div class="content">
 
           	<div id="owaissaKitchenAction" class="action">
-           
+
           	</div>
         </div>
         <div class="furnitureSearch">
-             <span id="kitchen_desk"><<link "<img @src='setup.ImagePath + \"/img/furniture/desk.png\"'>" "furnitureSearch">><<set $currentFurniture to "kitchen_desk">><<includeTimeEventClothesHunt>><</link>></span>
-			 <span id="kitchen_table"><<link "<img @src='setup.ImagePath + \"/img/furniture/table.png\"'>" "furnitureSearch">><<set $currentFurniture to "kitchen_table">><<includeTimeEventClothesHunt>><</link>></span>
-			 <span id="kitchen_sink1"><<link "<img @src='setup.ImagePath + \"/img/furniture/sink1.png\"'>" "furnitureSearch">><<set $currentFurniture to "kitchen_sink1">><<includeTimeEventClothesHunt>><</link>></span>
+            <<furnitureItem "desk.png" "kitchen_desk">>
+			<<furnitureItem "table.png" "kitchen_table">>
+			<<furnitureItem "sink1.png" "kitchen_sink1">>
         </div>
 		<div class="footer">
         	<div class="footertools">
-         	<<toolCard "img/emf.png" "owaissaKitchenPicEMF" "searchEmfKitchen">>
-         	<<toolCard "img/glass.png" "owaissaKitchenPicPlasm" "searchPlasmKitchen">>
-         	<<toolCard "img/gwb.png" "owaissaKitchenPicGWB" "searchGwbKitchen">>
-         	<<toolCard "img/spiritbox.png" "owaissaKitchenPicSB" "searchSbKitchen">>
-         	<<toolCard "img/thermometr.png" "owaissaKitchenPicThermometr" "searchThermometrKitchen">>
-         	<<toolCard "img/uvl.png" "owaissaKitchenPicUVL" "searchUVLKitchen">>
-            <<companionCard>>
-            <div class="footer-card footer-light">
-            <span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "OwaissaKitchen">><<set $kitchen.background to 1>><</link>>
-             <<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" "OwaissaKitchen">><<set $kitchen.background to 2>><</link>>
-			<<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>> 
-<<link "<img @src='setup.ImagePath + \"/img/hearth.png\"'>" "minigame">>
-<<set $minigameVideo to "start">>
-<<set $ghostOrgasmMeter to 0>>
-<<set $mcOrgasmMeter to 0>><</link>>
-<</if>></span>
-            </div>
+         	<<roomToolBar "owaissaKitchen">>
+            <<roomFooterLight "OwaissaKitchen" "kitchen">>
          </div>
          <div class="footeraction">
-			@@.adaptiveLink;<<link "Hallway" "OwaissaHallway">><<includeTimeEventClothesHunt>><<set $stepCount += 1>><</link>>@@			
-			@@.adaptiveLink;<<link "Livingroom" "OwaissaLivingroom">><<includeTimeEventClothesHunt>><<set $stepCount += 1>><</link>>@@         
+			@@.adaptiveLink;<<link "Hallway" "OwaissaHallway">><<includeTimeEventClothesHunt>><<set $stepCount += 1>><</link>>@@
+			@@.adaptiveLink;<<link "Livingroom" "OwaissaLivingroom">><<includeTimeEventClothesHunt>><<set $stepCount += 1>><</link>>@@
 		</div>
 		</div>
 	</div>
 </div>
 <</nobr>>
-<<script>>
-$(document).ready(function() {
-    setup.roomToolHandlersByPrefix('owaissaKitchen');
-});
-<</script>>
-
-
-

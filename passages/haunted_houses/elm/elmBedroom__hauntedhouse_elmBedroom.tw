@@ -8,54 +8,21 @@
           	</div>
         </div>
         <div class="furnitureSearch">
-        <<if $cursedHuntActive eq 1>>
-<span><<link '<img @src="setup.ImagePath + \'/img/furniture/bed1.png\'" class="highlighted-furniture">' "elmBedroom">>
-<<replace ".room-wrapper">><<set $isInHideSpot to 1>><img @src="setup.ImagePath + '/hunting/hid1.jpg'" width="80%" class="fadeInScale"><br>
-<<done>>
-<<run $(".fadeInScale").addClass("tarotCardsShow")>><</done>>
-@@.mc-thoughts;You press yourself against the cold floor, feeling your heart racing in your chest. The screams and rustling outside make you hold your breath. The ghost, filled with rage, prowls the room, and each of its steps echoes dully in your ears.<br>
-
-All you can do now is wait and hope it doesn’t find you.@@
-<br><br>
-@@.backbtn; [[Leave|elmBedroom][$isInHideSpot to 0]]@@<br>
-<</replace>><</link>></span>
-            <<else>>
-             <span id="bedroom_bed1"><<link "<img @src='setup.ImagePath + \"/img/furniture/bed1.png\"'>" "furnitureSearch">><<set $currentFurniture to "bedroom_bed1">><<includeTimeEventClothesHunt>><</link>></span><</if>>
-			 <span id="bedroom_table"><<link "<img @src='setup.ImagePath + \"/img/furniture/table.png\"'>" "furnitureSearch">><<set $currentFurniture to "bedroom_table">><<includeTimeEventClothesHunt>><</link>></span>
-			 <span id="bedroom_wardrobe1"><<link "<img @src='setup.ImagePath + \"/img/furniture/wardrobe1.png\"'>" "furnitureSearch">><<set $currentFurniture to "bedroom_wardrobe1">><<includeTimeEventClothesHunt>><</link>></span>
+            <<hideSpot "elmBedroom" "bed1.png" "bedroom_bed1">>
+			<<furnitureItem "table.png" "bedroom_table">>
+			<<furnitureItem "wardrobe1.png" "bedroom_wardrobe1">>
         </div>
 		<div class="footer">
         	<div class="footertools">
-         	<<toolCard "img/emf.png" "elmBedroomPicEMF" "searchEMFBedroomElm">>
-         	<<toolCard "img/glass.png" "elmBedroomPicPlasm" "searchPlasmBedroomElm">>
-         	<<toolCard "img/gwb.png" "elmBedroomPicGWB" "searchGwbBedroomElm">>
-         	<<toolCard "img/spiritbox.png" "elmBedroomPicSB" "searchSbBedroomElm">>
-         	<<toolCard "img/thermometr.png" "elmBedroomPicThermometr" "searchThermometrBedroomElm">>
-         	<<toolCard "img/uvl.png" "elmBedroomPicUVL" "searchUVLBedroomElm">>
-            <<companionCard>>
-            <div class="footer-card footer-light">
-            	<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "elmBedroom">><<set $bedroom.background to 1>><</link>>
-             <<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" "elmBedroom">><<set $bedroom.background to 2>><</link>>
-			<<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>> 
-<<link "<img @src='setup.ImagePath + \"/img/hearth.png\"'>" "minigame">>
-<<set $minigameVideo to "start">>
-<<set $ghostOrgasmMeter to 0>>
-<<set $mcOrgasmMeter to 0>><</link>>
-<</if>></span>
-            </div>
+         	<<roomToolBar "elmBedroom">>
+            <<roomFooterLight "elmBedroom" "bedroom">>
          </div>
          <div class="footeraction">
 			@@.adaptiveLink;<<link "hallway" "elmHallway">>
 <<includeTimeEventClothesHunt>>
-<<set $stepCount += 1>><</link>>@@  
+<<set $stepCount += 1>><</link>>@@
          </div>
 		</div>
 	</div>
 </div>
 <</nobr>>
-
-<<script>>
-$(document).ready(function() {
-    setup.roomToolHandlersByPrefix('elmBedroom');
-});
-<</script>>

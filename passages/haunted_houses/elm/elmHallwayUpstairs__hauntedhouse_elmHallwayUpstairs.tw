@@ -8,28 +8,13 @@
           	</div>
         </div>
         <div class="furnitureSearch">
-             <span id="hallwayUpstairs_carpet"><<link "<img @src='setup.ImagePath + \"/img/furniture/carpet.png\"'>" "furnitureSearch">><<set $currentFurniture to "hallwayUpstairs_carpet">><<includeTimeEventClothesHunt>><</link>></span>
-			 <span id="hallwayUpstairs_shelves"><<link "<img @src='setup.ImagePath + \"/img/furniture/shelves.png\"'>" "furnitureSearch">><<set $currentFurniture to "hallwayUpstairs_shelves">><<includeTimeEventClothesHunt>><</link>></span>
+            <<furnitureItem "carpet.png" "hallwayUpstairs_carpet">>
+			<<furnitureItem "shelves.png" "hallwayUpstairs_shelves">>
         </div>
 		<div class="footer">
         	<div class="footertools">
-         	<<toolCard "img/emf.png" "elmHallwayUpstairsPicEMF" "searchEMFHallwayUpstairsElm">>
-         	<<toolCard "img/glass.png" "elmHallwayUpstairsPicPlasm" "searchPlasmHallwayUpstairsElm">>
-         	<<toolCard "img/gwb.png" "elmHallwayUpstairsPicGWB" "searchGwbHallwayUpstairsElm">>
-         	<<toolCard "img/spiritbox.png" "elmHallwayUpstairsPicSB" "searchSbHallwayUpstairsElm">>
-         	<<toolCard "img/thermometr.png" "elmHallwayUpstairsPicThermometr" "searchThermometrHallwayUpstairsElm">>
-         	<<toolCard "img/uvl.png" "elmHallwayUpstairsPicUVL" "searchUVLHallwayUpstairsElm">>
-            <<companionCard>>
-            <div class="footer-card footer-light">
-            	<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "elmHallwayUpstairs">><<set $hallwayUpstairs.background to 1>><</link>>
-             <<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" "elmHallwayUpstairs">><<set $hallwayUpstairs.background to 2>><</link>>
-			<<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>> 
-<<link "<img @src='setup.ImagePath + \"/img/hearth.png\"'>" "minigame">>
-<<set $minigameVideo to "start">>
-<<set $ghostOrgasmMeter to 0>>
-<<set $mcOrgasmMeter to 0>><</link>>
-<</if>></span>
-            </div>
+         	<<roomToolBar "elmHallwayUpstairs">>
+            <<roomFooterLight "elmHallwayUpstairs" "hallwayUpstairs">>
          </div>
          <div class="footeraction">
          	@@.adaptiveLink;<<link "downstairs" "elmHallway">>
@@ -45,11 +30,3 @@
 	</div>
 </div>
 <</nobr>>
-
-<<script>>
-$(document).ready(function() {
-    setup.roomToolHandlersByPrefix('elmHallwayUpstairs');
-});
-<</script>>
-
-

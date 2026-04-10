@@ -1,4 +1,0 @@
-:: searchThermometrBathroomElm {"position":"4925,125","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"temperature","room":"Bathroom","bgRoom":"bathroom","prefix":"elmBathroom","eventChain":"standard","replaceMode":"single"}`>>
-<</nobr>>

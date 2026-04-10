@@ -1,4 +1,0 @@
-:: searchUVLBathroom {"position":"4025,425","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"uvl","room":"Bathroom","bgRoom":"bathroom","prefix":"owaissaBathroom","eventChain":"standard","replaceMode":"double","meterTag":"div"}`>>
-<</nobr>>

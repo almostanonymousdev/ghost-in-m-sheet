@@ -1,4 +1,0 @@
-:: searchThermometrBasementElm {"position":"4425,125","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"temperature","room":"Basement","bgRoom":"basement","prefix":"elmBasement","eventChain":"standard","replaceMode":"single"}`>>
-<</nobr>>

@@ -1,4 +1,0 @@
-:: searchThermometrLivingroomEnigma {"position":"4925,800","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"temperature","room":"Livingroom","bgRoom":"livingroom","prefix":"enigmaLivingroom","eventChain":"enigma","replaceMode":"single"}`>>
-<</nobr>>

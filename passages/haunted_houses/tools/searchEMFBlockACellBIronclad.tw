@@ -1,4 +1,0 @@
-:: searchEMFBlockACellBIronclad {"position":"5900,225","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"emf","room":"BlockACellBIronclad","bgRoom":"BlockACellB","prefix":"ironcladBlockACellB","eventChain":"ironclad","replaceMode":"single"}`>>
-<</nobr>>

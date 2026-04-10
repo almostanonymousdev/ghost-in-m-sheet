@@ -1,4 +1,0 @@
-:: searchSbRoomCEnigma {"position":"5225,1300","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"spiritbox","room":"RoomC","bgRoom":"roomC","prefix":"enigmaRoomC","eventChain":"enigma","replaceMode":"double","needsLightCheck":true}`>>
-<</nobr>>

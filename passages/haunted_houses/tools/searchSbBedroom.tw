@@ -1,4 +1,0 @@
-:: searchSbBedroom {"position":"4125,625","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"spiritbox","room":"Bedroom","bgRoom":"bedroom","prefix":"owaissaBedroom","eventChain":"standard","replaceMode":"double","meterTag":"div","needsLightCheck":true}`>>
-<</nobr>>

@@ -4,41 +4,20 @@
 	<div class="room-wrapper">
 		<div class="content">
           	<div id="ironcladKitchenAction" class="action">
-				
+
           	</div>
         </div>
-        
+
 		<div class="footer">
         	<div class="footertools">
-         	<<toolCard "img/emf.png" "ironcladKitchenPicEMF" "searchEMFKitchenIronclad">>
-         	<<toolCard "img/glass.png" "ironcladKitchenPicPlasm" "searchPlasmKitchenIronclad">>
-         	<<toolCard "img/gwb.png" "ironcladKitchenPicGWB" "searchGwbKitchenIronclad">>
-         	<<toolCard "img/spiritbox.png" "ironcladKitchenPicSB" "searchSbKitchenIronclad">>
-         	<<toolCard "img/thermometr.png" "ironcladKitchenPicThermometr" "searchThermometrKitchenIronclad">>
-         	<<toolCard "img/uvl.png" "ironcladKitchenPicUVL" "searchUvlKitchenIronclad">>
-            <<companionCard>>
-            <div class="footer-card footer-light">
-            	<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "IroncladKitchen">><<set $kitchen.background to 1>><</link>>
-             <<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" "IroncladKitchen">><<set $kitchen.background to 2>><</link>>
-			<<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>> 
-<<link "<img @src='setup.ImagePath + \"/img/hearth.png\"'>" "minigame">>
-<<set $minigameVideo to "start">>
-<<set $ghostOrgasmMeter to 0>>
-<<set $mcOrgasmMeter to 0>><</link>>
-<</if>></span>
-            </div>
+         	<<roomToolBar "ironcladKitchen">>
+            <<roomFooterLight "IroncladKitchen" "kitchen">>
          </div>
          <div class="footeraction"><br><br><br>
 			@@.adaptiveLink;<<link "Entrance" "IroncladHallway">>
-<<includeTimeEventHunt>><<set $stepCount += 1>><</link>>@@        
+<<includeTimeEventHunt>><<set $stepCount += 1>><</link>>@@
 		 </div>
 		</div>
 	</div>
 </div>
 <</nobr>>
-
-<<script>>
-$(document).ready(function() {
-    setup.roomToolHandlersByPrefix('ironcladKitchen');
-});
-<</script>>

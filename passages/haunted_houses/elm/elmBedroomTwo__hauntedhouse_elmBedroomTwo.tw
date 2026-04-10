@@ -8,43 +8,20 @@
           	</div>
         </div>
         <div class="furnitureSearch">
-             <span id="bedroomTwo_table"><<link "<img @src='setup.ImagePath + \"/img/furniture/table.png\"'>" "furnitureSearch">><<set $currentFurniture to "bedroomTwo_table">><<includeTimeEventClothesHunt>><</link>></span>
-			 <span id="bedroomTwo_bed2"><<link "<img @src='setup.ImagePath + \"/img/furniture/bed2.png\"'>" "furnitureSearch">><<set $currentFurniture to "bedroomTwo_bed2">><<includeTimeEventClothesHunt>><</link>></span>
-			 <span id="bedroomTwo_shelves"><<link "<img @src='setup.ImagePath + \"/img/furniture/shelves.png\"'>" "furnitureSearch">><<set $currentFurniture to "bedroomTwo_shelves">><<includeTimeEventClothesHunt>><</link>></span>
+            <<furnitureItem "table.png" "bedroomTwo_table">>
+			<<furnitureItem "bed2.png" "bedroomTwo_bed2">>
+			<<furnitureItem "shelves.png" "bedroomTwo_shelves">>
         </div>
 		<div class="footer">
         	<div class="footertools">
-         	<<toolCard "img/emf.png" "elmBedroomTwoPicEMF" "searchEMFBedroomTwoElm">>
-         	<<toolCard "img/glass.png" "elmBedroomTwoPicPlasm" "searchPlasmBedroomTwoElm">>
-         	<<toolCard "img/gwb.png" "elmBedroomTwoPicGWB" "searchGwbBedroomTwoElm">>
-         	<<toolCard "img/spiritbox.png" "elmBedroomTwoPicSB" "searchSbBedroomTwoElm">>
-         	<<toolCard "img/thermometr.png" "elmBedroomTwoPicThermometr" "searchThermometrBedroomTwoElm">>
-         	<<toolCard "img/uvl.png" "elmBedroomTwoPicUVL" "searchUVLBedroomTwoElm">>
-            <<companionCard>>
-            <div class="footer-card footer-light">
-            	<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "elmBedroomTwo">><<set $bedroomTwo.background to 1>><</link>>
-             <<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" "elmBedroomTwo">><<set $bedroomTwo.background to 2>><</link>>
-			<<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>> 
-<<link "<img @src='setup.ImagePath + \"/img/hearth.png\"'>" "minigame">>
-<<set $minigameVideo to "start">>
-<<set $ghostOrgasmMeter to 0>>
-<<set $mcOrgasmMeter to 0>><</link>>
-<</if>></span>
-            </div>
+         	<<roomToolBar "elmBedroomTwo">>
+            <<roomFooterLight "elmBedroomTwo" "bedroomTwo">>
          </div>
          <div class="footeraction">
 			@@.adaptiveLink;<<link "hallway" "elmHallwayUpstairs">>
-<<includeTimeEventClothesHunt>><<set $stepCount += 1>><</link>>@@  
+<<includeTimeEventClothesHunt>><<set $stepCount += 1>><</link>>@@
          </div>
 		</div>
 	</div>
 </div>
 <</nobr>>
-
-<<script>>
-$(document).ready(function() {
-    setup.roomToolHandlersByPrefix('elmBedroomTwo');
-});
-<</script>>
-
-

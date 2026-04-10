@@ -4,41 +4,20 @@
 	<div class="room-wrapper">
 		<div class="content">
           	<div id="ironcladBlockBCellBAction" class="action">
-				
+
           	</div>
         </div>
-        
+
 		<div class="footer">
         	<div class="footertools">
-         	<<toolCard "img/emf.png" "ironcladBlockBCellBPicEMF" "searchEMFBlockBCellBIronclad">>
-         	<<toolCard "img/glass.png" "ironcladBlockBCellBPicPlasm" "searchPlasmBlockBCellBIronclad">>
-         	<<toolCard "img/gwb.png" "ironcladBlockBCellBPicGWB" "searchGwbBlockBCellBIronclad">>
-         	<<toolCard "img/spiritbox.png" "ironcladBlockBCellBPicSB" "searchSbBlockBCellBIronclad">>
-         	<<toolCard "img/thermometr.png" "ironcladBlockBCellBPicThermometr" "searchThermometrBlockBCellBIronclad">>
-         	<<toolCard "img/uvl.png" "ironcladBlockBCellBPicUVL" "searchUvlBlockBCellBIronclad">>
-            <<companionCard>>
-            <div class="footer-card footer-light">
-            	<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "IroncladBlockBCellB">><<set $BlockBCellB.background to 1>><</link>>
-             <<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" "IroncladBlockBCellB">><<set $BlockBCellB.background to 2>><</link>>
-			<<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>> 
-<<link "<img @src='setup.ImagePath + \"/img/hearth.png\"'>" "minigame">>
-<<set $minigameVideo to "start">>
-<<set $ghostOrgasmMeter to 0>>
-<<set $mcOrgasmMeter to 0>><</link>>
-<</if>></span>
-            </div>
+         	<<roomToolBar "ironcladBlockBCellB">>
+            <<roomFooterLight "IroncladBlockBCellB" "BlockBCellB">>
          </div>
          <div class="footeraction">
 			@@.adaptiveLink;<<link "BlockB" "IroncladBlockB">>
-<<includeTimeEventHunt>><<set $stepCount += 1>><</link>>@@   
+<<includeTimeEventHunt>><<set $stepCount += 1>><</link>>@@
 		 </div>
 		</div>
 	</div>
 </div>
 <</nobr>>
-
-<<script>>
-$(document).ready(function() {
-    setup.roomToolHandlersByPrefix('ironcladBlockBCellB');
-});
-<</script>>

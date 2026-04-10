@@ -1,4 +1,0 @@
-:: searchSbLivingroom {"position":"4225,625","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"spiritbox","room":"Livingroom","bgRoom":"livingroom","prefix":"owaissaLivingroom","eventChain":"standard","replaceMode":"double","meterTag":"div","needsLightCheck":true}`>>
-<</nobr>>

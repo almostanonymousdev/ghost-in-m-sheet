@@ -1,2 +1,0 @@
-:: searchUVLHallway [nobr] {"position":"3825,425","size":"100,100"}
-<<searchTool `{"tool":"uvl","room":"Hallway","bgRoom":"hallway","prefix":"owaissaHallway","eventChain":"standard","replaceMode":"double","meterTag":"div"}`>>

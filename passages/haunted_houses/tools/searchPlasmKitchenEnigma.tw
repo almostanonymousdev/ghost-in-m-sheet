@@ -1,4 +1,0 @@
-:: searchPlasmKitchenEnigma {"position":"4725,1200","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"plasm","room":"Kitchen","bgRoom":"kitchen","prefix":"enigmaKitchen","eventChain":"enigma","replaceMode":"double"}`>>
-<</nobr>>

@@ -8,28 +8,13 @@
           	</div>
         </div>
         <div class="furnitureSearch">
-             <span id="hallway_carpet"><<link "<img @src='setup.ImagePath + \"/img/furniture/carpet.png\"'>" "furnitureSearch">><<set $currentFurniture to "hallway_carpet">><<includeTimeEventClothesHunt>><</link>></span>
-			 <span id="hallway_coatrack"><<link "<img @src='setup.ImagePath + \"/img/furniture/coatrack.png\"'>" "furnitureSearch">><<set $currentFurniture to "hallway_coatrack">><<includeTimeEventClothesHunt>><</link>></span>
+            <<furnitureItem "carpet.png" "hallway_carpet">>
+			<<furnitureItem "coatrack.png" "hallway_coatrack">>
         </div>
 		<div class="footer">
         	<div class="footertools">
-         	<<toolCard "img/emf.png" "elmHallwayPicEMF" "searchEMFHallwayElm">>
-         	<<toolCard "img/glass.png" "elmHallwayPicPlasm" "searchPlasmHallwayElm">>
-         	<<toolCard "img/gwb.png" "elmHallwayPicGWB" "searchGwbHallwayElm">>
-         	<<toolCard "img/spiritbox.png" "elmHallwayPicSB" "searchSbHallwayElm">>
-         	<<toolCard "img/thermometr.png" "elmHallwayPicThermometr" "searchThermometrHallwayElm">>
-         	<<toolCard "img/uvl.png" "elmHallwayPicUVL" "searchUVLHallwayElm">>
-            <<companionCard>>
-            <div class="footer-card footer-light">
-            	<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "elmHallway">><<set $hallway.background to 1>><</link>>
-             <<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" "elmHallway">><<set $hallway.background to 2>><</link>>
-			<<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>> 
-<<link "<img @src='setup.ImagePath + \"/img/hearth.png\"'>" "minigame">>
-<<set $minigameVideo to "start">>
-<<set $ghostOrgasmMeter to 0>>
-<<set $mcOrgasmMeter to 0>><</link>>
-<</if>></span>
-            </div>
+         	<<roomToolBar "elmHallway">>
+            <<roomFooterLight "elmHallway" "hallway">>
          </div>
          <div class="footeraction">
          	@@.adaptiveLink;<<link "bedroom" "elmBedroom">>
@@ -52,11 +37,3 @@
 	</div>
 </div>
 <</nobr>>
-
-<<script>>
-$(document).ready(function() {
-    setup.roomToolHandlersByPrefix('elmHallway');
-});
-<</script>>
-
-

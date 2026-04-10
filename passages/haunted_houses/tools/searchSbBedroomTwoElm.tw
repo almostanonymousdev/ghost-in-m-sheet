@@ -1,4 +1,0 @@
-:: searchSbBedroomTwoElm {"position":"4625,625","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"spiritbox","room":"BedroomTwo","bgRoom":"bedroomTwo","prefix":"elmBedroomTwo","eventChain":"standard","replaceMode":"double","needsLightCheck":true}`>>
-<</nobr>>

@@ -1,4 +1,0 @@
-:: searchThermometrBedroomEnigma {"position":"4625,800","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"temperature","room":"Bedroom","bgRoom":"bedroom","prefix":"enigmaBedroom","eventChain":"enigma","replaceMode":"single"}`>>
-<</nobr>>

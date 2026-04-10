@@ -1,4 +1,0 @@
-:: searchUVLBasement {"position":"4425,425","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"uvl","room":"Basement","bgRoom":"basement","prefix":"elmBasement","eventChain":"standard","replaceMode":"double"}`>>
-<</nobr>>

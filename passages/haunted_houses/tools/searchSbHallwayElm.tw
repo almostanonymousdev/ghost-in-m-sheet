@@ -1,4 +1,0 @@
-:: searchSbHallwayElm {"position":"5125,625","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"spiritbox","room":"Hallway","bgRoom":"hallway","prefix":"elmHallway","eventChain":"standard","replaceMode":"double","needsLightCheck":true}`>>
-<</nobr>>

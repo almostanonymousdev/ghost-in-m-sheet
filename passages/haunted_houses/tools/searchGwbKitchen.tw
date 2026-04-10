@@ -1,4 +1,0 @@
-:: searchGwbKitchen {"position":"3925,325","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"gwb","room":"Kitchen","bgRoom":"kitchen","prefix":"owaissaKitchen","eventChain":"standard","replaceMode":"double","meterTag":"div"}`>>
-<</nobr>>

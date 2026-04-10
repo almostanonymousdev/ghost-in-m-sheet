@@ -4,46 +4,23 @@
 	<div class="room-wrapper">
 		<div class="content">
           	<div id="elmBasementAction" class="action">
-				
+
           	</div>
         </div>
         <div class="furnitureSearch">
-             <span id="basement_table"><<link "<img @src='setup.ImagePath + \"/img/furniture/table.png\"'>" "furnitureSearch">><<set $currentFurniture to "basement_table">><<includeTimeEventClothesHunt>><</link>></span>
-			 <span id="basement_shelves"><<link "<img @src='setup.ImagePath + \"/img/furniture/shelves.png\"'>" "furnitureSearch">><<set $currentFurniture to "basement_shelves">><<includeTimeEventClothesHunt>><</link>></span>
+            <<furnitureItem "table.png" "basement_table">>
+			<<furnitureItem "shelves.png" "basement_shelves">>
         </div>
 		<div class="footer">
         	<div class="footertools">
-         	<<toolCard "img/emf.png" "elmBasementPicEMF" "searchEMFBasement">>
-         	<<toolCard "img/glass.png" "elmBasementPicPlasm" "searchPlasmBasement">>
-         	<<toolCard "img/gwb.png" "elmBasementPicGWB" "searchGwbBasement">>
-         	<<toolCard "img/spiritbox.png" "elmBasementPicSB" "searchSbBasement">>
-         	<<toolCard "img/thermometr.png" "elmBasementPicThermometr" "searchThermometrBasementElm">>
-         	<<toolCard "img/uvl.png" "elmBasementPicUVL" "searchUVLBasement">>
-            <<companionCard>>
-            <div class="footer-card footer-light">
-            	<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "elmBasement">><<set $basement.background to 1>><</link>>
-             <<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" "elmBasement">><<set $basement.background to 2>><</link>>
-			<<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>> 
-<<link "<img @src='setup.ImagePath + \"/img/hearth.png\"'>" "minigame">>
-<<set $minigameVideo to "start">>
-<<set $ghostOrgasmMeter to 0>>
-<<set $mcOrgasmMeter to 0>><</link>>
-<</if>></span>
-            </div>
+         	<<roomToolBar "elmBasement">>
+            <<roomFooterLight "elmBasement" "basement">>
          </div>
          <div class="footeraction">
 			@@.adaptiveLink;<<link "hallway" "elmHallway">>
-<<includeTimeEventClothesHunt>><<set $stepCount += 1>><</link>>@@        
+<<includeTimeEventClothesHunt>><<set $stepCount += 1>><</link>>@@
 		 </div>
 		</div>
 	</div>
 </div>
 <</nobr>>
-
-<<script>>
-$(document).ready(function() {
-    setup.roomToolHandlersByPrefix('elmBasement');
-});
-<</script>>
-
-

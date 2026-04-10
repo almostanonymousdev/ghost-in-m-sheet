@@ -1,4 +1,0 @@
-:: searchUVLRoomCEnigma {"position":"5225,1100","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"uvl","room":"RoomC","bgRoom":"roomC","prefix":"enigmaRoomC","eventChain":"enigma","replaceMode":"double"}`>>
-<</nobr>>

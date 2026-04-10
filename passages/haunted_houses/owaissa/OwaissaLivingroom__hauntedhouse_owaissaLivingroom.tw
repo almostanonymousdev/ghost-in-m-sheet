@@ -8,28 +8,13 @@
           	</div>
         </div>
         <div class="furnitureSearch">
-            <span id="livingroom_table"><<link "<img @src='setup.ImagePath + \"/img/furniture/table.png\"'>" "furnitureSearch">><<set $currentFurniture to "livingroom_table">><<includeTimeEventClothesHunt>><</link>></span>
-			 <span id="livingroom_sofa"><<link "<img @src='setup.ImagePath + \"/img/furniture/sofa.png\"'>" "furnitureSearch">><<set $currentFurniture to "livingroom_sofa">><<includeTimeEventClothesHunt>><</link>></span>
+            <<furnitureItem "table.png" "livingroom_table">>
+			<<furnitureItem "sofa.png" "livingroom_sofa">>
         </div>
 		<div class="footer">
         	<div class="footertools">
-         	<<toolCard "img/emf.png" "owaissaLivingroomPicEMF" "searchEmfLivingroom">>
-         	<<toolCard "img/glass.png" "owaissaLivingroomPicPlasm" "searchPlasmLivingroom">>
-         	<<toolCard "img/gwb.png" "owaissaLivingroomPicGWB" "searchGwbLivingroom">>
-         	<<toolCard "img/spiritbox.png" "owaissaLivingroomPicSB" "searchSbLivingroom">>
-         	<<toolCard "img/thermometr.png" "owaissaLivingroomPicThermometr" "searchThermometrLivingroom">>
-         	<<toolCard "img/uvl.png" "owaissaLivingroomPicUVL" "searchUVLLivingroom">>
-            <<companionCard>>
-            <div class="footer-card footer-light">
-           <span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "OwaissaLivingroom">><<set $livingroom.background to 1>><</link>>
-             <<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" "OwaissaLivingroom">><<set $livingroom.background to 2>><</link>>
-			<<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>> 
-<<link "<img @src='setup.ImagePath + \"/img/hearth.png\"'>" "minigame">>
-<<set $minigameVideo to "start">>
-<<set $ghostOrgasmMeter to 0>>
-<<set $mcOrgasmMeter to 0>><</link>>
-<</if>></span>
-            </div>
+         	<<roomToolBar "owaissaLivingroom">>
+            <<roomFooterLight "OwaissaLivingroom" "livingroom">>
          </div>
          <div class="footeraction">
 			@@.adaptiveLink;<<link "Kitchen" "OwaissaKitchen">><<includeTimeEventClothesHunt>><<set $stepCount += 1>><</link>>@@
@@ -38,11 +23,3 @@
 	</div>
 </div>
 <</nobr>>
-<<script>>
-$(document).ready(function() {
-    setup.roomToolHandlersByPrefix('owaissaLivingroom');
-});
-<</script>>
-
-
-

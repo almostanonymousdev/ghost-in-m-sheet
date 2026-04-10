@@ -1,4 +1,0 @@
-:: searchUVLLivingroom {"position":"4225,425","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"uvl","room":"Livingroom","bgRoom":"livingroom","prefix":"owaissaLivingroom","eventChain":"standard","replaceMode":"double","meterTag":"div"}`>>
-<</nobr>>

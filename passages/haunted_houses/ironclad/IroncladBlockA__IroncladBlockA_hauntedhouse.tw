@@ -4,47 +4,26 @@
 	<div class="room-wrapper">
 		<div class="content">
           	<div id="ironcladBlockAAction" class="action">
-				
+
           	</div>
         </div>
-        
+
 		<div class="footer">
         	<div class="footertools">
-         	<<toolCard "img/emf.png" "ironcladBlockAPicEMF" "searchEMFBlockAIronclad">>
-         	<<toolCard "img/glass.png" "ironcladBlockAPicPlasm" "searchPlasmBlockAIronclad">>
-         	<<toolCard "img/gwb.png" "ironcladBlockAPicGWB" "searchGwbBlockAIronclad">>
-         	<<toolCard "img/spiritbox.png" "ironcladBlockAPicSB" "searchSbBlockAIronclad">>
-         	<<toolCard "img/thermometr.png" "ironcladBlockAPicThermometr" "searchThermometrBlockAIronclad">>
-         	<<toolCard "img/uvl.png" "ironcladBlockAPicUVL" "searchUvlBlockAIronclad">>
-            <<companionCard>>
-            <div class="footer-card footer-light">
-            	<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "IroncladBlockA">><<set $BlockA.background to 1>><</link>>
-             <<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" "IroncladBlockA">><<set $BlockA.background to 2>><</link>>
-			<<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>> 
-<<link "<img @src='setup.ImagePath + \"/img/hearth.png\"'>" "minigame">>
-<<set $minigameVideo to "start">>
-<<set $ghostOrgasmMeter to 0>>
-<<set $mcOrgasmMeter to 0>><</link>>
-<</if>></span>
-            </div>
+         	<<roomToolBar "ironcladBlockA">>
+            <<roomFooterLight "IroncladBlockA" "BlockA">>
          </div>
          <div class="footeraction">
 			@@.adaptiveLink;<<link "CellA" "IroncladBlockACellA">>
-<<includeTimeEventHunt>><<set $stepCount += 1>><</link>>@@   
+<<includeTimeEventHunt>><<set $stepCount += 1>><</link>>@@
 			@@.adaptiveLink;<<link "CellB" "IroncladBlockACellB">>
-<<includeTimeEventHunt>><<set $stepCount += 1>><</link>>@@  
+<<includeTimeEventHunt>><<set $stepCount += 1>><</link>>@@
 			@@.adaptiveLink;<<link "CellC" "IroncladBlockACellC">>
-<<includeTimeEventHunt>><<set $stepCount += 1>><</link>>@@  
+<<includeTimeEventHunt>><<set $stepCount += 1>><</link>>@@
 			@@.adaptiveLink;<<link "Entrance" "IroncladHallway">>
-<<includeTimeEventHunt>><<set $stepCount += 1>><</link>>@@  
+<<includeTimeEventHunt>><<set $stepCount += 1>><</link>>@@
 		 </div>
 		</div>
 	</div>
 </div>
 <</nobr>>
-
-<<script>>
-$(document).ready(function() {
-    setup.roomToolHandlersByPrefix('ironcladBlockA');
-});
-<</script>>

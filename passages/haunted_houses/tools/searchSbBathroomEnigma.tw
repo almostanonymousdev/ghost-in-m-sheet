@@ -1,4 +1,0 @@
-:: searchSbBathroomEnigma {"position":"4825,1300","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"spiritbox","room":"Bathroom","bgRoom":"bathroom","prefix":"enigmaBathroom","eventChain":"enigma","replaceMode":"double","needsLightCheck":true}`>>
-<</nobr>>

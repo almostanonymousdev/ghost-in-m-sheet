@@ -1,4 +1,0 @@
-:: searchGwbHallwayEnigma {"position":"4425,1000","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"gwb","room":"Hallway","bgRoom":"hallway","prefix":"enigmaHallway","eventChain":"enigma","replaceMode":"double"}`>>
-<</nobr>>

@@ -1,4 +1,0 @@
-:: searchPlasmRoomCEnigma {"position":"5225,1200","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"plasm","room":"RoomC","bgRoom":"roomC","prefix":"enigmaRoomC","eventChain":"enigma","replaceMode":"double"}`>>
-<</nobr>>

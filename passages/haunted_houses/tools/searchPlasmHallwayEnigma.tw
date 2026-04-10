@@ -1,4 +1,0 @@
-:: searchPlasmHallwayEnigma {"position":"4425,1200","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"plasm","room":"Hallway","bgRoom":"hallway","prefix":"enigmaHallway","eventChain":"enigma","replaceMode":"double"}`>>
-<</nobr>>

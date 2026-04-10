@@ -4,42 +4,21 @@
 	<div class="room-wrapper">
 		<div class="content">
           	<div id="ironcladBlockACellAAction" class="action">
-				
+
           	</div>
         </div>
-        
+
 		<div class="footer">
         	<div class="footertools">
-         	<<toolCard "img/emf.png" "ironcladBlockACellAPicEMF" "searchEMFBlockACellAIronclad">>
-         	<<toolCard "img/glass.png" "ironcladBlockACellAPicPlasm" "searchPlasmBlockACellAIronclad">>
-         	<<toolCard "img/gwb.png" "ironcladBlockACellAPicGWB" "searchGwbBlockACellAIronclad">>
-         	<<toolCard "img/spiritbox.png" "ironcladBlockACellAPicSB" "searchSbBlockACellAIronclad">>
-         	<<toolCard "img/thermometr.png" "ironcladBlockACellAPicThermometr" "searchThermometrBlockACellAIronclad">>
-         	<<toolCard "img/uvl.png" "ironcladBlockACellAPicUVL" "searchUvlBlockACellAIronclad">>
-            <<companionCard>>
-            <div class="footer-card footer-light">
-            	<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "IroncladBlockACellA">><<set $BlockACellA.background to 1>><</link>>
-             <<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" "IroncladBlockACellA">><<set $BlockACellA.background to 2>><</link>>
-			<<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>> 
-<<link "<img @src='setup.ImagePath + \"/img/hearth.png\"'>" "minigame">>
-<<set $minigameVideo to "start">>
-<<set $ghostOrgasmMeter to 0>>
-<<set $mcOrgasmMeter to 0>><</link>>
-<</if>></span>
-            </div>
+         	<<roomToolBar "ironcladBlockACellA">>
+            <<roomFooterLight "IroncladBlockACellA" "BlockACellA">>
          </div>
          <div class="footeraction">
 			@@.adaptiveLink;<<link "BlockA" "IroncladBlockA">>
-<<includeTimeEventHunt>><<set $stepCount += 1>><</link>>@@   
-			
+<<includeTimeEventHunt>><<set $stepCount += 1>><</link>>@@
+
 		 </div>
 		</div>
 	</div>
 </div>
 <</nobr>>
-
-<<script>>
-$(document).ready(function() {
-    setup.roomToolHandlersByPrefix('ironcladBlockACellA');
-});
-<</script>>

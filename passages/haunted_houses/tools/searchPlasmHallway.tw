@@ -1,4 +1,0 @@
-:: searchPlasmHallway {"position":"3825,525","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"plasm","room":"Hallway","bgRoom":"hallway","prefix":"owaissaHallway","eventChain":"standard","replaceMode":"double","meterTag":"div"}`>>
-<</nobr>>

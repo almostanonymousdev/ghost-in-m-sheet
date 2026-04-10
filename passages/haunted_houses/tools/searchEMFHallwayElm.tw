@@ -1,4 +1,0 @@
-:: searchEMFHallwayElm {"position":"5125,225","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"emf","room":"Hallway","bgRoom":"hallway","prefix":"elmHallway","eventChain":"standard","replaceMode":"single"}`>>
-<</nobr>>

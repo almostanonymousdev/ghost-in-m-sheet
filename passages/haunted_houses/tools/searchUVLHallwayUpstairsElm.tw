@@ -1,4 +1,0 @@
-:: searchUVLHallwayUpstairsElm {"position":"5225,425","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"uvl","room":"HallwayUpstairs","bgRoom":"hallwayUpstairs","prefix":"elmHallwayUpstairs","eventChain":"standard","replaceMode":"double"}`>>
-<</nobr>>

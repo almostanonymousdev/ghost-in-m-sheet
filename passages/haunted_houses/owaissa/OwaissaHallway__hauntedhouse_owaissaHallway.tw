@@ -8,29 +8,14 @@
           	</div>
         </div>
         <div class="furnitureSearch">
-             <span id="hallway_carpet"><<link "<img @src='setup.ImagePath + \"/img/furniture/carpet.png\"'>" "furnitureSearch">><<set $currentFurniture to "hallway_carpet">><<includeTimeEventClothesHunt>><</link>></span>
-			 <span id="hallway_wardrobe"><<link "<img @src='setup.ImagePath + \"/img/furniture/wardrobe.png\"'>" "furnitureSearch">><<set $currentFurniture to "hallway_wardrobe">><<includeTimeEventClothesHunt>><</link>></span>
-			 <span id="hallway_coatrack"><<link "<img @src='setup.ImagePath + \"/img/furniture/coatrack.png\"'>" "furnitureSearch">><<set $currentFurniture to "hallway_coatrack">><<includeTimeEventClothesHunt>><</link>></span>
+            <<furnitureItem "carpet.png" "hallway_carpet">>
+			<<furnitureItem "wardrobe.png" "hallway_wardrobe">>
+			<<furnitureItem "coatrack.png" "hallway_coatrack">>
         </div>
 		<div class="footer">
         	<div class="footertools">
-         	<<toolCard "img/emf.png" "owaissaHallwayPicEMF" "searchEmfHallway">>
-         	<<toolCard "img/glass.png" "owaissaHallwayPicPlasm" "searchPlasmHallway">>
-         	<<toolCard "img/gwb.png" "owaissaHallwayPicGWB" "searchGwbHallway">>
-         	<<toolCard "img/spiritbox.png" "owaissaHallwayPicSB" "searchSbHallway">>
-         	<<toolCard "img/thermometr.png" "owaissaHallwayPicThermometr" "searchThermometrHallway">>
-         	<<toolCard "img/uvl.png" "owaissaHallwayPicUVL" "searchUVLHallway">>
-            <<companionCard>>
-            <div class="footer-card footer-light">
-<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "OwaissaHallway">><<set $hallway.background to 1>><</link>>
-<<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" "OwaissaHallway">><<set $hallway.background to 2>><</link>>
-			<<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>> 
-<<link "<img @src='setup.ImagePath + \"/img/hearth.png\"'>" "minigame">>
-<<set $minigameVideo to "start">>
-<<set $ghostOrgasmMeter to 0>>
-<<set $mcOrgasmMeter to 0>><</link>>
-<</if>></span>
-            </div>
+         	<<roomToolBar "owaissaHallway">>
+            <<roomFooterLight "OwaissaHallway" "hallway">>
          </div>
          <div class="footeraction">
          	@@.adaptiveLink;<<link "Kitchen" "OwaissaKitchen">><<includeTimeEventClothesHunt>><<set $stepCount += 1>><</link>>@@
@@ -41,14 +26,4 @@
 		</div>
 	</div>
 </div>
-
-
 <</nobr>>
-
-<<script>>
-$(document).ready(function() {
-    setup.roomToolHandlersByPrefix('owaissaHallway');
-});
-<</script>>
-
-

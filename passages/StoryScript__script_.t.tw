@@ -1197,26 +1197,47 @@ setup.makeEmptySearchState = function () {
     };
 };
 
-/* Per-tool metadata for the <<searchTool>> macro. widgetSuffix is used to
- * build the canonical button/meter ids (<prefix><widgetSuffix>[Button]);
- * picSuffix matches the parent-passage toolCard Pic id convention. The two
- * diverge for spiritbox (PicSB vs widgetSuffix Spiritbox) and temperature
- * (PicThermometr vs Temperature) — that asymmetry predates this refactor. */
+/* Per-tool metadata for the <<searchTool>> macro and <<roomToolCard>> widget.
+ * widgetSuffix builds the canonical button/meter ids (<prefix><widgetSuffix>
+ * [Button]); picSuffix matches the toolCard image id convention used by the
+ * global click-delegation handler below. The two diverge for spiritbox
+ * (PicSB vs widgetSuffix Spiritbox) and temperature (PicThermometr vs
+ * Temperature) — that asymmetry predates this refactor. iconFile is the
+ * toolCard image filename under setup.ImagePath + "/img/". replaceMode and
+ * needsLightCheck are tool-wide constants: emf and temperature are simple
+ * "single" replacements; gwb/plasm/uvl/spiritbox use "double" (clear meter +
+ * drop check passage into the action slot); only spiritbox needs the
+ * lights-off guard. */
 setup.searchToolDefs = {
     emf: {
         meterField:      "Emf",
         equipField:      "emf",
         widgetSuffix:    "EMF",
         picSuffix:       "PicEMF",
+        iconFile:        "emf.png",
+        replaceMode:     "single",
         label:           "Use EM@@color:yellow;F@@",
         checkPassage:    "EMFcheck",
         artCheckPassage: "EMFcheck"
+    },
+    plasm: {
+        meterField:      "Plasm",
+        equipField:      "glass",
+        widgetSuffix:    "Plasm",
+        picSuffix:       "PicPlasm",
+        iconFile:        "glass.png",
+        replaceMode:     "double",
+        label:           "Use @@color:yellow;E@@ctoglass",
+        checkPassage:    "PlasmCheck",
+        artCheckPassage: "PlasmCheckArt"
     },
     gwb: {
         meterField:      "Gwb",
         equipField:      "gwb",
         widgetSuffix:    "GWB",
         picSuffix:       "PicGWB",
+        iconFile:        "gwb.png",
+        replaceMode:     "double",
         label:           "Use @@color:yellow;G@@WB",
         checkPassage:    "GWBcheck",
         artCheckPassage: "GWBcheckArt"
@@ -1226,24 +1247,20 @@ setup.searchToolDefs = {
         equipField:      "spiritbox",
         widgetSuffix:    "Spiritbox",
         picSuffix:       "PicSB",
+        iconFile:        "spiritbox.png",
+        replaceMode:     "double",
+        needsLightCheck: true,
         label:           "Use @@color:yellow;S@@piritbox",
         checkPassage:    "SpiritboxCheck",
         artCheckPassage: "SpiritboxCheck"
-    },
-    plasm: {
-        meterField:      "Plasm",
-        equipField:      "glass",
-        widgetSuffix:    "Plasm",
-        picSuffix:       "PicPlasm",
-        label:           "Use @@color:yellow;E@@ctoglass",
-        checkPassage:    "PlasmCheck",
-        artCheckPassage: "PlasmCheckArt"
     },
     temperature: {
         meterField:      "Temperature",
         equipField:      "temperature",
         widgetSuffix:    "Temperature",
         picSuffix:       "PicThermometr",
+        iconFile:        "thermometr.png",
+        replaceMode:     "single",
         label:           "Use @@color:yellow;T@@hermometr",
         checkPassage:    "temperatureHigh",
         artCheckPassage: "temperatureHigh"
@@ -1253,57 +1270,97 @@ setup.searchToolDefs = {
         equipField:      "uvl",
         widgetSuffix:    "UVL",
         picSuffix:       "PicUVL",
+        iconFile:        "uvl.png",
+        replaceMode:     "double",
         label:           "Use @@color:yellow;U@@VL",
         checkPassage:    "UVLcheck",
         artCheckPassage: "UVLcheckArt"
     }
 };
 
-/* Canonical per-haunted-house-room prefix list used by both the
- * <<searchTool>> macro (for id derivation) and the keyboard shortcut
- * handler at the bottom of this file. Each entry pairs the prefix that
- * search passages/parent passages use with the room name inside the bag
- * variable ($currentsearch<bagRoom>). */
+/* Tool slots are emitted in this canonical order by the <<roomToolBar>>
+ * widget — every haunted-house room shows the same six in the same order. */
+setup.searchToolOrder = ["emf", "plasm", "gwb", "spiritbox", "temperature", "uvl"];
+
+/* Canonical per-haunted-house-room prefix list used by the <<searchTool>>
+ * macro (for id + config derivation), the keyboard shortcut handler, and
+ * the <<roomToolBar>> widget. Each entry holds:
+ *   prefix     — the canonical id-prefix used by search/parent passages
+ *   bagRoom    — bag name suffix; the search bag is $currentsearch<bagRoom>
+ *   bgRoom     — name of the room state object whose .background field
+ *                gates dark/lights checks (e.g. "bedroom" or "BlockACellA")
+ *   eventChain — "standard" (default), "enigma", or "ironclad"
+ *   meterTag   — "div" overrides the default "span" (Owaissa rooms only)
+ */
 setup.searchRoomPrefixes = [
-    // Owaissa
-    { prefix: "owaissaBedroom",        bagRoom: "Bedroom"        },
-    { prefix: "owaissaBathroom",       bagRoom: "Bathroom"       },
-    { prefix: "owaissaKitchen",        bagRoom: "Kitchen"        },
-    { prefix: "owaissaHallway",        bagRoom: "Hallway"        },
-    { prefix: "owaissaLivingroom",     bagRoom: "Livingroom"     },
+    // Owaissa — meterTag div
+    { prefix: "owaissaBedroom",      bagRoom: "Bedroom",     bgRoom: "bedroom",    meterTag: "div" },
+    { prefix: "owaissaBathroom",     bagRoom: "Bathroom",    bgRoom: "bathroom",   meterTag: "div" },
+    { prefix: "owaissaKitchen",      bagRoom: "Kitchen",     bgRoom: "kitchen",    meterTag: "div" },
+    { prefix: "owaissaHallway",      bagRoom: "Hallway",     bgRoom: "hallway",    meterTag: "div" },
+    { prefix: "owaissaLivingroom",   bagRoom: "Livingroom",  bgRoom: "livingroom", meterTag: "div" },
     // Elm Street
-    { prefix: "elmBasement",           bagRoom: "Basement"       },
-    { prefix: "elmBedroom",            bagRoom: "Bedroom"        },
-    { prefix: "elmBedroomTwo",         bagRoom: "BedroomTwo"     },
-    { prefix: "elmBathroom",           bagRoom: "Bathroom"       },
-    { prefix: "elmBathroomTwo",        bagRoom: "BathroomTwo"    },
-    { prefix: "elmKitchen",            bagRoom: "Kitchen"        },
-    { prefix: "elmHallway",            bagRoom: "Hallway"        },
-    { prefix: "elmHallwayUpstairs",    bagRoom: "HallwayUpstairs"},
-    { prefix: "elmNursery",            bagRoom: "Nursery"        },
-    // Enigma
-    { prefix: "enigmaBasement",        bagRoom: "Basement"       },
-    { prefix: "enigmaBedroom",         bagRoom: "Bedroom"        },
-    { prefix: "enigmaBathroom",        bagRoom: "Bathroom"       },
-    { prefix: "enigmaKitchen",         bagRoom: "Kitchen"        },
-    { prefix: "enigmaHallway",         bagRoom: "Hallway"        },
-    { prefix: "enigmaLivingroom",      bagRoom: "Livingroom"     },
-    { prefix: "enigmaRoomA",           bagRoom: "RoomA"          },
-    { prefix: "enigmaRoomB",           bagRoom: "RoomB"          },
-    { prefix: "enigmaRoomC",           bagRoom: "RoomC"          },
-    // Ironclad — bag names already carry an "Ironclad" suffix, prefix does not
-    { prefix: "ironcladHallway",       bagRoom: "HallwayIronclad"      },
-    { prefix: "ironcladReception",     bagRoom: "ReceptionIronclad"    },
-    { prefix: "ironcladKitchen",       bagRoom: "KitchenIronclad"      },
-    { prefix: "ironcladBlockA",        bagRoom: "BlockAIronclad"       },
-    { prefix: "ironcladBlockB",        bagRoom: "BlockBIronclad"       },
-    { prefix: "ironcladBlockACellA",   bagRoom: "BlockACellAIronclad"  },
-    { prefix: "ironcladBlockACellB",   bagRoom: "BlockACellBIronclad"  },
-    { prefix: "ironcladBlockACellC",   bagRoom: "BlockACellCIronclad"  },
-    { prefix: "ironcladBlockBCellA",   bagRoom: "BlockBCellAIronclad"  },
-    { prefix: "ironcladBlockBCellB",   bagRoom: "BlockBCellBIronclad"  },
-    { prefix: "ironcladBlockBCellC",   bagRoom: "BlockBCellCIronclad"  }
+    { prefix: "elmBasement",         bagRoom: "Basement",        bgRoom: "basement"        },
+    { prefix: "elmBedroom",          bagRoom: "Bedroom",         bgRoom: "bedroom"         },
+    { prefix: "elmBedroomTwo",       bagRoom: "BedroomTwo",      bgRoom: "bedroomTwo"      },
+    { prefix: "elmBathroom",         bagRoom: "Bathroom",        bgRoom: "bathroom"        },
+    { prefix: "elmBathroomTwo",      bagRoom: "BathroomTwo",     bgRoom: "bathroomTwo"     },
+    { prefix: "elmKitchen",          bagRoom: "Kitchen",         bgRoom: "kitchen"         },
+    { prefix: "elmHallway",          bagRoom: "Hallway",         bgRoom: "hallway"         },
+    { prefix: "elmHallwayUpstairs",  bagRoom: "HallwayUpstairs", bgRoom: "hallwayUpstairs" },
+    { prefix: "elmNursery",          bagRoom: "Nursery",         bgRoom: "nursery"         },
+    // Enigma — eventChain enigma
+    { prefix: "enigmaBasement",      bagRoom: "Basement",   bgRoom: "basement",   eventChain: "enigma" },
+    { prefix: "enigmaBedroom",       bagRoom: "Bedroom",    bgRoom: "bedroom",    eventChain: "enigma" },
+    { prefix: "enigmaBathroom",      bagRoom: "Bathroom",   bgRoom: "bathroom",   eventChain: "enigma" },
+    { prefix: "enigmaKitchen",       bagRoom: "Kitchen",    bgRoom: "kitchen",    eventChain: "enigma" },
+    { prefix: "enigmaHallway",       bagRoom: "Hallway",    bgRoom: "hallway",    eventChain: "enigma" },
+    { prefix: "enigmaLivingroom",    bagRoom: "Livingroom", bgRoom: "livingroom", eventChain: "enigma" },
+    { prefix: "enigmaRoomA",         bagRoom: "RoomA",      bgRoom: "roomA",      eventChain: "enigma" },
+    { prefix: "enigmaRoomB",         bagRoom: "RoomB",      bgRoom: "roomB",      eventChain: "enigma" },
+    { prefix: "enigmaRoomC",         bagRoom: "RoomC",      bgRoom: "roomC",      eventChain: "enigma" },
+    // Ironclad — eventChain ironclad; bag names carry an "Ironclad" suffix that the prefix does not
+    { prefix: "ironcladHallway",     bagRoom: "HallwayIronclad",     bgRoom: "hallway",     eventChain: "ironclad" },
+    { prefix: "ironcladReception",   bagRoom: "ReceptionIronclad",   bgRoom: "reception",   eventChain: "ironclad" },
+    { prefix: "ironcladKitchen",     bagRoom: "KitchenIronclad",     bgRoom: "kitchen",     eventChain: "ironclad" },
+    { prefix: "ironcladBlockA",      bagRoom: "BlockAIronclad",      bgRoom: "BlockA",      eventChain: "ironclad" },
+    { prefix: "ironcladBlockB",      bagRoom: "BlockBIronclad",      bgRoom: "BlockB",      eventChain: "ironclad" },
+    { prefix: "ironcladBlockACellA", bagRoom: "BlockACellAIronclad", bgRoom: "BlockACellA", eventChain: "ironclad" },
+    { prefix: "ironcladBlockACellB", bagRoom: "BlockACellBIronclad", bgRoom: "BlockACellB", eventChain: "ironclad" },
+    { prefix: "ironcladBlockACellC", bagRoom: "BlockACellCIronclad", bgRoom: "BlockACellC", eventChain: "ironclad" },
+    { prefix: "ironcladBlockBCellA", bagRoom: "BlockBCellAIronclad", bgRoom: "BlockBCellA", eventChain: "ironclad" },
+    { prefix: "ironcladBlockBCellB", bagRoom: "BlockBCellBIronclad", bgRoom: "BlockBCellB", eventChain: "ironclad" },
+    { prefix: "ironcladBlockBCellC", bagRoom: "BlockBCellCIronclad", bgRoom: "BlockBCellC", eventChain: "ironclad" }
 ];
+
+setup.searchPrefixIndex = (function () {
+    var idx = {};
+    setup.searchRoomPrefixes.forEach(function (e) { idx[e.prefix] = e; });
+    return idx;
+}());
+
+/* Build the full <<searchTool>> config from a (tool, prefix) pair by
+ * pulling per-tool defaults out of setup.searchToolDefs and per-prefix
+ * defaults out of setup.searchRoomPrefixes. This is what the room-level
+ * <<roomToolBar>> widget calls — there's no need for the 200+ thin search
+ * passage wrappers that previously hard-coded each combination. */
+setup.searchToolConfigFor = function (tool, prefix) {
+    var entry = setup.searchPrefixIndex[prefix];
+    if (!entry) throw new Error("searchTool: unknown prefix '" + prefix + "'");
+    var def = setup.searchToolDefs[tool];
+    if (!def) throw new Error("searchTool: unknown tool '" + tool + "'");
+    var cfg = {
+        tool:        tool,
+        prefix:      prefix,
+        room:        entry.bagRoom,
+        bgRoom:      entry.bgRoom,
+        eventChain:  entry.eventChain || "standard",
+        replaceMode: def.replaceMode
+    };
+    if (entry.meterTag)      cfg.meterTag        = entry.meterTag;
+    if (def.needsLightCheck) cfg.needsLightCheck = true;
+    return cfg;
+};
 
 /* Build the markup for one tool slot. Called by the <<searchTool>> macro
  * with a config object whose required fields are:
@@ -1446,13 +1503,37 @@ setup.searchToolMarkup = function (cfg) {
 Macro.add("searchTool", {
     handler: function () {
         try {
-            var cfg = this.args[0];
-            if (typeof cfg !== "object" || cfg === null) {
-                return this.error("searchTool: expected a config object");
+            var first = this.args[0];
+            var cfg;
+            if (typeof first === "string") {
+                cfg = setup.searchToolConfigFor(first, this.args[1]);
+            } else if (typeof first === "object" && first !== null) {
+                cfg = first;
+            } else {
+                return this.error("searchTool: expected (tool, prefix) or a config object");
             }
             $(this.output).wiki(setup.searchToolMarkup(cfg));
         } catch (e) {
             return this.error(e.message);
+        }
+    }
+});
+
+/* Global delegation: when any toolCard image is clicked, dispatch the click
+ * to the matching searchTool anchor. The id convention <prefix><picSuffix>
+ * uniquely identifies both the prefix and the tool, so one handler covers
+ * every haunted-house room without per-room script blocks. */
+$(document).on('click.searchToolPic', '.footer-card .cardimg img.icon[id]', function () {
+    var picId = this.id;
+    var defs  = setup.searchToolDefs;
+    for (var key in defs) {
+        if (!defs.hasOwnProperty(key)) continue;
+        var d = defs[key];
+        if (picId.length > d.picSuffix.length &&
+            picId.slice(-d.picSuffix.length) === d.picSuffix) {
+            var prefix = picId.slice(0, -d.picSuffix.length);
+            $('#' + prefix + d.widgetSuffix + ' a').trigger('click');
+            return;
         }
     }
 });

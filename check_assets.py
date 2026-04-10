@@ -24,12 +24,22 @@ if _STORY_INIT.is_file():
 # 2. @src='setup.ImagePath + "/PATH"' (inside <<link>> macros)
 # 3. Legacy src="assets/..." or href="assets/..." (if any remain)
 # 4. url('assets/...') in CSS
+# 5. <<furnitureItem "FILE.png" "id">> — first arg is a filename under
+#    img/furniture/ (the haunted-house furniture widget)
+# 6. <<hideSpot "passage" "FILE.png" "id">> — second arg is a filename under
+#    img/furniture/ (the cursed-hunt hide-spot widget)
 ASSET_PATTERNS = [
     re.compile(r"""@src=["']setup\.ImagePath\s*\+\s*'(/[^']+)'["']"""),
     re.compile(r"""@src='setup\.ImagePath\s*\+\s*\\"/([^\\]+)\\"'"""),
     re.compile(r"""(?:src|href)=["'](assets/[^"']+)["']"""),
     re.compile(r"""url\(['"]?(assets/[^"')]+)['"]?\)"""),
+    re.compile(r"""<<furnitureItem\s+["']([^"']+)["']"""),
+    re.compile(r"""<<hideSpot\s+["'][^"']+["']\s+["']([^"']+)["']"""),
 ]
+
+# Patterns above whose captured group is just a furniture filename and needs
+# the "/img/furniture/" prefix prepended before lookup.
+FURNITURE_WIDGET_PATTERN_INDICES = {4, 5}
 
 
 def main():
@@ -46,9 +56,11 @@ def main():
         for lineno, line in enumerate(
             tw_file.read_text(encoding="utf-8", errors="replace").splitlines(), 1
         ):
-            for pattern in ASSET_PATTERNS:
+            for pi, pattern in enumerate(ASSET_PATTERNS):
                 for m in pattern.finditer(line):
                     raw = m.group(1)
+                    if pi in FURNITURE_WIDGET_PATTERN_INDICES:
+                        raw = "/img/furniture/" + raw
                     # Normalise: map every reference to ASSET_BASE/…
                     if raw.startswith("assets/"):
                         # CSS url() and legacy src= use literal "assets/";

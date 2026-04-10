@@ -1,4 +1,0 @@
-:: searchPlasmBathroomElm {"position":"4925,525","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"plasm","room":"Bathroom","bgRoom":"bathroom","prefix":"elmBathroom","eventChain":"standard","replaceMode":"double"}`>>
-<</nobr>>

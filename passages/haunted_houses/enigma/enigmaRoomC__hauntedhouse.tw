@@ -9,17 +9,8 @@
         </div>
 		<div class="footer">
         	<div class="footertools">
-         	<<toolCard "img/emf.png" "enigmaRoomCPicEMF" "searchEMFRoomCEnigma">>
-         	<<toolCard "img/glass.png" "enigmaRoomCPicPlasm" "searchPlasmRoomCEnigma">>
-         	<<toolCard "img/gwb.png" "enigmaRoomCPicGWB" "searchGwbRoomCEnigma">>
-         	<<toolCard "img/spiritbox.png" "enigmaRoomCPicSB" "searchSbRoomCEnigma">>
-         	<<toolCard "img/thermometr.png" "enigmaRoomCPicThermometr" "searchThermometrRoomCEnigma">>
-         	<<toolCard "img/uvl.png" "enigmaRoomCPicUVL" "searchUVLRoomCEnigma">>
-            <div class="footer-card footer-light">
-            	<<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" "enigmaRoomC">><<set $roomC.background to 1>><</link>>
-             <<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" "enigmaRoomC">><<set $roomC.background to 2>><</link>>
-             
-            </div>
+         	<<roomToolBar "enigmaRoomC" "noCompanion">>
+            <<roomFooterLightBasic "enigmaRoomC" "roomC">>
          </div>
          <div class="footeraction">
          	@@.adaptiveLink;[[basement|enigmaBasement]]@@
@@ -28,11 +19,3 @@
 	</div>
 </div>
 <</nobr>>
-
-<<script>>
-$(document).ready(function() {
-    setup.roomToolHandlersByPrefix('enigmaRoomC');
-});
-<</script>>
-
-

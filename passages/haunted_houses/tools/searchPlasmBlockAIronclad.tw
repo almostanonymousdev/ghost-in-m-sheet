@@ -1,4 +1,0 @@
-:: searchPlasmBlockAIronclad {"position":"5600,525","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"plasm","room":"BlockAIronclad","bgRoom":"BlockA","prefix":"ironcladBlockA","eventChain":"ironclad","replaceMode":"double"}`>>
-<</nobr>>

@@ -1,4 +1,0 @@
-:: searchSbKitchenIronclad {"position":"6600,625","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"spiritbox","room":"KitchenIronclad","bgRoom":"kitchen","prefix":"ironcladKitchen","eventChain":"ironclad","replaceMode":"double","needsLightCheck":true}`>>
-<</nobr>>

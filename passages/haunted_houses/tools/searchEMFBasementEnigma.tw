@@ -1,4 +1,0 @@
-:: searchEMFBasementEnigma {"position":"4525,900","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"emf","room":"Basement","bgRoom":"basement","prefix":"enigmaBasement","eventChain":"enigma","replaceMode":"single"}`>>
-<</nobr>>

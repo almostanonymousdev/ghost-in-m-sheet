@@ -1,4 +1,0 @@
-:: searchGwbRoomCEnigma {"position":"5225,1000","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"gwb","room":"RoomC","bgRoom":"roomC","prefix":"enigmaRoomC","eventChain":"enigma","replaceMode":"double"}`>>
-<</nobr>>

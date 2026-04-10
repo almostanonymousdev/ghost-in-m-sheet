@@ -1,4 +1,0 @@
-:: searchPlasmKitchen {"position":"3925,525","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"plasm","room":"Kitchen","bgRoom":"kitchen","prefix":"owaissaKitchen","eventChain":"standard","replaceMode":"double","meterTag":"div"}`>>
-<</nobr>>

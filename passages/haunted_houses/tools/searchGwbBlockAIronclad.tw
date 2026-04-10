@@ -1,4 +1,0 @@
-:: searchGwbBlockAIronclad {"position":"5600,325","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"gwb","room":"BlockAIronclad","bgRoom":"BlockA","prefix":"ironcladBlockA","eventChain":"ironclad","replaceMode":"double"}`>>
-<</nobr>>

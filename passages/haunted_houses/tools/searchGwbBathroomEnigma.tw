@@ -1,4 +1,0 @@
-:: searchGwbBathroomEnigma {"position":"4825,1000","size":"100,100"}
-<<nobr>>
-<<searchTool `{"tool":"gwb","room":"Bathroom","bgRoom":"bathroom","prefix":"enigmaBathroom","eventChain":"enigma","replaceMode":"double"}`>>
-<</nobr>>

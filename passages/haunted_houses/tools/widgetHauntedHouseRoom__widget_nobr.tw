@@ -1,33 +1,87 @@
 :: widgetHauntedHouseRoom [widget nobr] {"position":"7000,100","size":"100,100"}
-<<script>>
-setup.roomToolHandlers = function(handlers) {
-    handlers.forEach(function(pair) {
-        $('#' + pair[0]).on('click', function() {
-            $('#' + pair[1] + ' a').click();
-        });
-    });
-};
-setup.roomToolHandlersByPrefix = function(prefix) {
-    setup.roomToolHandlers([
-        [prefix + 'PicEMF', prefix + 'EMF'],
-        [prefix + 'PicPlasm', prefix + 'Plasm'],
-        [prefix + 'PicGWB', prefix + 'GWB'],
-        [prefix + 'PicSB', prefix + 'Spiritbox'],
-        [prefix + 'PicThermometr', prefix + 'Temperature'],
-        [prefix + 'PicUVL', prefix + 'UVL']
-    ]);
-};
-<</script>>
-
-<<widget "toolCard">>
+/* roomToolCard — args: tool key (e.g. "emf"), room prefix (e.g. "elmBedroom").
+   Renders one tool slot using metadata from setup.searchToolDefs and
+   setup.searchPrefixIndex, with the searchTool macro inlined directly. */
+<<widget "roomToolCard">>
 <div class="footer-card">
 <div class="cardimg">
-<img @src="setup.ImagePath + '/' + _args[0]" class="icon" @id="_args[1]">
+<img @src="setup.ImagePath + '/img/' + setup.searchToolDefs[_args[0]].iconFile" class="icon" @id="_args[1] + setup.searchToolDefs[_args[0]].picSuffix">
 </div>
 <div class="cardlink">
-<<include `_args[2]`>>
+<<searchTool _args[0] _args[1]>>
 </div>
 </div>
+<</widget>>
+
+/* roomToolBar — arg: room prefix. Emits the canonical six tool slots in
+   the order setup.searchToolOrder, plus the companion card. Replaces the
+   six per-tool <<toolCard>> calls (and the per-room <<script>>) that every
+   haunted-house room used to repeat. */
+<<widget "roomToolBar">>
+<<for _t range setup.searchToolOrder>>
+<<roomToolCard _t _args[0]>>
+<</for>>
+<<if _args[1] neq "noCompanion">><<companionCard>><</if>>
+<</widget>>
+
+/* roomFooterLight — args: passage name (link target), bgRoom state-variable
+   name (e.g. "bedroom" or "BlockACellA"). The cursedHuntLinkDisable wrapper
+   prevents the lights from being toggled while a hunt is active, and the
+   conditional heart link launches the seduction minigame. Used by elm,
+   owaissa, and ironclad rooms. */
+<<widget "roomFooterLight">>
+<div class="footer-card footer-light">
+<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" _args[0]>><<set State.variables[_args[1]].background = 1>><</link>>
+<<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" _args[0]>><<set State.variables[_args[1]].background = 2>><</link>>
+<<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>>
+<<link "<img @src='setup.ImagePath + \"/img/hearth.png\"'>" "minigame">>
+<<set $minigameVideo to "start">>
+<<set $ghostOrgasmMeter to 0>>
+<<set $mcOrgasmMeter to 0>><</link>>
+<</if>></span>
+</div>
+<</widget>>
+
+/* roomFooterLightBasic — args: passage name, bgRoom state-variable name.
+   Enigma's simpler lights-only variant: no cursedHuntLinkDisable wrapper,
+   no minigame trigger. */
+<<widget "roomFooterLightBasic">>
+<div class="footer-card footer-light">
+<<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" _args[0]>><<set State.variables[_args[1]].background = 1>><</link>>
+<<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" _args[0]>><<set State.variables[_args[1]].background = 2>><</link>>
+</div>
+<</widget>>
+
+/* hideSpot — args: passage name (link target), furniture image filename
+   under img/furniture/, furniture span id (e.g. "bedroom_bed1").
+   Renders one furniture item that doubles as a hide spot during cursed
+   hunts: when $cursedHuntActive is 1 the image highlights and clicking it
+   replaces the room with the hide-spot scene; otherwise it behaves as a
+   normal furniture span that opens furnitureSearch. */
+<<widget "hideSpot">>
+<<set _imgSrc to setup.ImagePath + '/img/furniture/' + _args[1]>>
+<<if $cursedHuntActive eq 1>>
+<span><<link `'<img src="' + _imgSrc + '" class="highlighted-furniture">'` _args[0]>>
+<<replace ".room-wrapper">><<set $isInHideSpot to 1>><img @src="setup.ImagePath + '/hunting/hid1.jpg'" width="80%" class="fadeInScale"><br>
+<<done>>
+<<run $(".fadeInScale").addClass("tarotCardsShow")>><</done>>
+@@.mc-thoughts;You press yourself against the cold floor, feeling your heart racing in your chest. The screams and rustling outside make you hold your breath. The ghost, filled with rage, prowls the room, and each of its steps echoes dully in your ears.<br>
+
+All you can do now is wait and hope it doesn’t find you.@@
+<br><br>
+@@.backbtn;<<link "Leave" _args[0]>><<set $isInHideSpot to 0>><</link>>@@<br>
+<</replace>><</link>></span>
+<<else>>
+<span @id="_args[2]"><<link `'<img src="' + _imgSrc + '">'` "furnitureSearch">><<set $currentFurniture to _args[2]>><<includeTimeEventClothesHunt>><</link>></span>
+<</if>>
+<</widget>>
+
+/* furnitureItem — args: furniture image filename under img/furniture/,
+   furniture span id (e.g. "bedroom_table"). The image span that opens
+   furnitureSearch on click. */
+<<widget "furnitureItem">>
+<<set _imgSrc to setup.ImagePath + '/img/furniture/' + _args[0]>>
+<span @id="_args[1]"><<link `'<img src="' + _imgSrc + '">'` "furnitureSearch">><<set $currentFurniture to _args[1]>><<includeTimeEventClothesHunt>><</link>></span>
 <</widget>>
 
 <<widget "companionCard">>
