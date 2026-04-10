@@ -10,8 +10,8 @@
 </div>
 
 @@.usebtn;<<link "Watch porn" >>
-<<include "add3">>
-<<include "add15lust">>
+<<addTime 3>>
+<<addLust 15>>
 <<if $mc.lust gte 60>>
 <<replace "#watch-pornID">>
 @@.usebtn;[[Masturbate]]@@

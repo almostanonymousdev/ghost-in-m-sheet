@@ -88,5 +88,5 @@
 <br>
 <br>
 
-<<include "add30">>
+<<addTime 30>>
 <</widget>>

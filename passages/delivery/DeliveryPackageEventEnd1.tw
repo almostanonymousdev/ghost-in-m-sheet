@@ -1,6 +1,6 @@
 :: DeliveryPackageEventEnd1 [event] {"position":"1200,1950","size":"100,100"}
 <<nobr>>
-<<include "add15lust">>
+<<addLust 15>>
 <video autoplay controls muted loop>
  <source @src="setup.ImagePath + '/deliveryhub/packageevent/7.mp4'" type="video/mp4">
  </video>

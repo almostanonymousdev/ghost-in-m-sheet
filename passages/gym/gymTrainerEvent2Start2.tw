@@ -1,6 +1,6 @@
 :: gymTrainerEvent2Start2 {"position":"3275,1800","size":"100,100"}
 <<nobr>>
-<<include "add15lust">>
+<<addLust 15>>
 <<set $trainer2SexCD to 1>>
 <video autoplay controls muted loop>
     <source @src="setup.ImagePath + '/gym/trainer2event2end.mp4'" type="video/mp4">

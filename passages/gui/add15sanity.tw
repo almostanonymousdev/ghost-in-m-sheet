@@ -1,8 +1,0 @@
-:: add15sanity [nobr] {"position":"525,2200","size":"100,100"}
-<<set $mc.sanity += 15>>
- <<if $mc.sanity gte $mc.sanityMax>>
- <<set $mc.sanity to $mc.sanityMax>>
- <</if>>
- <<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
-
-

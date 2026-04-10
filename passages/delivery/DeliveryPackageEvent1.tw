@@ -1,6 +1,6 @@
 :: DeliveryPackageEvent1 [event] {"position":"1250,1850","size":"100,100"}
 <<nobr>>
-<<include "add45lust">>
+<<addLust 45>>
  <<if $mc.lust gte 100>>
  <<set $mc.lust to 0>>
  <</if>>
@@ -17,7 +17,7 @@
  @@.mc-speech; Oh~Please don't stop~Your cock is so good~@@<br>
  
 <<linkreplace "@@.mc-speechLink;Continue@@">>
-<<include "add45lust">>
+<<addLust 45>>
  <<if $mc.lust gte 100>>
  <<set $mc.lust to 0>>
  <</if>>

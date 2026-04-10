@@ -21,15 +21,15 @@
 <<goto "ghostSpecialEventTVSpirit">>
 <<elseif $succubus eq 1 and $succubusEventCD eq 0 and $hours gte 18 and $hours lte 23>>
 <<goto "succubusEventTV">>
-<<include "add30">>
+<<addTime 30>>
 <<elseif $gotCursedItem eq 1 and $gotCursedItemEventCD gte 3>>
 <<goto "tentaclesEventTV">>
-<<include "add30">>
+<<addTime 30>>
 <</if>>
-<<include "add30">>
+<<addTime 30>>
 <</link>>@@<br>
 @@.enterbtn;[[Use PC]]@@<br>
-@@.enterbtn;<<link "Bedroom" "Bedroom">><<include "add1">><</link>>@@<br>
+@@.enterbtn;<<link "Bedroom" "Bedroom">><<addTime 0.5>><</link>>@@<br>
 <<if $hours <= 22 and $hours >= 12>>
 @@.usebtn;<<link "Skip time till midnight" "Livingroom">><<set $hours to 23>><<set $minutes to 0>>@@
 <<replace "#time">><<print ($hours < 10 ? '0' + $hours : $hours) + ":" + ($minutes < 10 ? '0' + $minutes : $minutes)>><</replace>>
@@ -70,7 +70,7 @@
 <</if>>
 /*[[RoomCleanup]]*/
 <<if previous() is "ghostSpecialEventWraithStart">>
-<<include "add60">>
+<<addTime 60>>
 <</if>>
 <</nobr>>
 

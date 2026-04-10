@@ -1,6 +1,6 @@
 :: gymTrainerEvent2Start {"position":"3275,1700","size":"100,100"}
 <<nobr>>
-<<include "add15lust">>
+<<addLust 15>>
 <<set _check to random(1,2)>>
 <<if _check eq 1>><video autoplay controls muted loop>
     <source @src="setup.ImagePath + '/gym/trainer2event2.1.mp4'" type="video/mp4">
@@ -11,7 +11,7 @@
 @@.notmc-speech; Yes~ suck it, you are such a slut @@<br>
 @@.mc-speech; Gulp~guulp~AGH~@@<br>
  @@.notmc-speech; Now I'm going to fuck you@@ <<linkappend "@@.notmc-speechLink;in the ass@@">>
- <<include "add30lust">>
+ <<addLust 30>>
 <<set _check to random(1,3)>>
 <<if _check eq 1>><video autoplay controls muted loop>
     <source @src="setup.ImagePath + '/gym/trainer2event2.3.mp4'" type="video/mp4">

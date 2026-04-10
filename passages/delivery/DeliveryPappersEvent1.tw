@@ -1,7 +1,7 @@
 :: DeliveryPappersEvent1 [event] {"position":"1550,1850","size":"100,100"}
 <<nobr>>
 <<set $deliveryPappersEvent to 1>>
-<<include "add45lust">>
+<<addLust 45>>
 <<set _check to random(1,2)>>
 <<if _check eq 1>>
 <video autoplay controls muted loop>

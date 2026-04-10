@@ -1,7 +1,7 @@
 :: GymTrainingTrainer {"position":"2950,1325","size":"100,100"}
 <<nobr>>
 <<set $mc.money -= $trainingCost>>
-<<include "add60">>
+<<addTime 60>>
 <<include "gymTrainer">>
 
 

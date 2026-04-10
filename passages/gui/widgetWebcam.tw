@@ -5,8 +5,8 @@
 @@.mc-thoughts; You start your webcam show. For an hour, you show yourself in various poses.@@<br>
 @@.mc-speech; Do you guys like this? Oh~ I'm so wet. I wish someone would lick my juicy pussy. @@<br>
 +60 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"> <br>
-<<include "add60lust">>
-<<include "add60">>
+<<addLust 60>>
+<<addTime 60>>
 
 <<if $mc.corruption lt 10>>
 <<set $mc.corruption += 0.2>>
@@ -16,8 +16,8 @@
     @@.mc-thoughts; You start your webcam show. For an hour, you show yourself in various poses, masturbating your pussy.@@<br>
 @@.mc-speech; ~Ahh~I'm cu... ~Ohhhh fuck~ that was awesome. I hope you guys enjoyed the show too@@<br>
 +60 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"> <br>
-<<include "add60lust">>
-<<include "add60">>
+<<addLust 60>>
+<<addTime 60>>
 
 <<if $mc.corruption lt 10>>
 <<set $mc.corruption += 0.2>>
@@ -28,8 +28,8 @@
 @@.mc-thoughts; You start your webcam show. For an hour, you show yourself in various poses, fucking your pussy with a toy.@@<br>
 @@.mc-speech; ~Ahh~I'm cu... ~Ohhhh fuck~ that was awesome. I hope you guys enjoyed the show too@@<br>
 +60 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"> <br>
-<<include "add60lust">>
-<<include "add60">>
+<<addLust 60>>
+<<addTime 60>>
 
 <<if $mc.corruption lt 10>>
 <<set $mc.corruption += 0.2>>
@@ -40,8 +40,8 @@
 @@.mc-thoughts; You start your webcam show. For an hour, you show yourself in various poses, fucking your ass with a toy.@@<br>
 @@.mc-speech; ~Ahh~I'm cu... ~Ohhhh fuck~ that was awesome. I hope you guys enjoyed the show too@@<br>
 +60 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"> <br>
-<<include "add60lust">>
-<<include "add60">>
+<<addLust 60>>
+<<addTime 60>>
 
 <<if $mc.corruption lt 10>>
 <<set $mc.corruption += 0.2>>
@@ -52,8 +52,8 @@
 @@.mc-thoughts; You start your webcam show. For an hour, you show yourself in various poses, fingering your asshole.@@<br>
 @@.mc-speech; ~Ahh~I'm cu... ~Ohhhh fuck~ that was awesome. I hope you guys enjoyed the show too@@<br>
 +60 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"> <br>
-<<include "add60lust">>
-<<include "add60">>
+<<addLust 60>>
+<<addTime 60>>
 
 <<if $mc.corruption lt 10>>
 <<set $mc.corruption += 0.2>>

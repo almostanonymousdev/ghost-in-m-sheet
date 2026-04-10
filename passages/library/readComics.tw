@@ -482,7 +482,7 @@
 
 </script>
 <br>
-<<include "add30lust">>
+<<addLust 30>>
 + 30 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br>
 <br>
 <<done>>

@@ -19,6 +19,7 @@ setup.addLust = function(amount) {
     var sv = State.variables;
     sv.mc.lust += amount;
     if (sv.mc.lust >= 100) { sv.mc.lust = 100; }
+    if (sv.mc.lust <= 0) { sv.mc.lust = 0; }
     sv.mc.lust = Number(sv.mc.lust.toFixed(2));
 };
 <</script>>
@@ -36,4 +37,94 @@ setup.addLust = function(amount) {
 <<set _amount to _args[0]>>
 <<run setup.addLust(_amount)>>
 <<updatemeter 'mclust' `$mc.lust / 100`>>
+<</widget>>
+
+<<widget "addLustTits">>
+<<run setup.addLust(_args[0] + $addLustPiercingTits)>>
+<<updatemeter 'mclust' `$mc.lust / 100`>>
+<</widget>>
+
+<<widget "addLustPussy">>
+<<run setup.addLust(_args[0] + $addLustPiercingPussy)>>
+<<updatemeter 'mclust' `$mc.lust / 100`>>
+<</widget>>
+
+<<widget "addLustByPart">>
+<<set _base to _args[0] !== undefined ? _args[0] : 2>>
+<<switch $argForRandomizer>>
+<<case 1>>
+<<set $sensualBodyPart.brain += 0.02>>
+<<run setup.addLust(_base + $sensualBodyPart.brain)>>
+<<case 2>>
+<<set $sensualBodyPart.tits += 0.02 + $piercingTitsAddSens>>
+<<run setup.addLust(_base + $sensualBodyPart.tits)>>
+<<case 3>>
+<<set $sensualBodyPart.ass += 0.02>>
+<<run setup.addLust(_base + $sensualBodyPart.ass)>>
+<<case 4>>
+<<set $sensualBodyPart.bottom += 0.02>>
+<<set $sensualBodyPart.ass += 0.01>>
+<<set $sensualBodyPart.pussy += 0.01 + $piercingPussyAddSens>>
+<<set $sensualBodyPart.anal += 0.01>>
+<<run setup.addLust(_base + $sensualBodyPart.bottom)>>
+<<case 5>>
+<<set $sensualBodyPart.mouth += 0.02 + $piercingTongueAddSens>>
+<<run setup.addLust(_base + $sensualBodyPart.mouth)>>
+<<case 6>>
+<<set $sensualBodyPart.pussy += 0.02 + $piercingPussyAddSens>>
+<<run setup.addLust(_base + $sensualBodyPart.pussy)>>
+<<case 7>>
+<<set $sensualBodyPart.anal += 0.02>>
+<<run setup.addLust(_base + $sensualBodyPart.anal)>>
+<</switch>>
+<<updatemeter 'mclust' `$mc.lust / 100`>>
+<</widget>>
+
+<<widget "addSanity">>
+<<set $mc.sanity += _args[0]>>
+<<if $mc.sanity gte $mc.sanityMax>><<set $mc.sanity to $mc.sanityMax>><</if>>
+<<if $mc.sanity lte 1>><<set $mc.sanity to 1>><</if>>
+<<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
+<</widget>>
+
+<<widget "addEnergy">>
+<<set $mc.energy += _args[0]>>
+<<if $mc.energy gte $mc.energyMax>><<set $mc.energy to $mc.energyMax>><</if>>
+<<if $mc.energy lte 0>><<set $mc.energy to 0>><</if>>
+<<updatemeter 'energy' `$mc.energy / $mc.energyMax`>>
+<</widget>>
+
+<<widget "addFit">>
+<<set _delta to _args[0]>>
+<<set $previousFit = $mc.fit>>
+<<set $mc.fit += _delta>>
+<<set _beautyIncrease to Math.floor($mc.fit / 5) - Math.floor($previousFit / 5)>>
+<<if _beautyIncrease gt 0>>
+<<set $mc.beauty += _beautyIncrease>>
+@@.mc-speech; <span class="evidenceText">Your <img @src="setup.ImagePath + '/img/beauty.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> has improved (+1): $mc.beauty now!</span>@@<br>
+<</if>>
+<<if !$mc.energyPoints>>
+<<set $mc.energyPoints = Math.floor($previousFit / 10)>>
+<</if>>
+<<set _previousEnergyPoints to $mc.energyPoints>>
+<<set _currentEnergyPoints to Math.floor($mc.fit / 10)>>
+<<if _currentEnergyPoints gt _previousEnergyPoints>>
+<<set $mc.energyMax += (_currentEnergyPoints - _previousEnergyPoints)>>
+<<set $mc.energyPoints = _currentEnergyPoints>>
+@@.mc-speech; <span class="evidenceText">Your <img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> has increased (+<<=_currentEnergyPoints - _previousEnergyPoints>>): $mc.energyMax now!</span>@@<br>
+<</if>>
+<<if $previousFit gte 5 and ($previousFit - 1) % 5 eq 0 and $mc.fit lt 5>>
+<<set $mc.beauty -= 1>>
+<</if>>
+<<set $mc.fit = Math.max(0, $mc.fit)>>
+<<set $mc.fit = Math.min(100, $mc.fit)>>
+<<set $mc.beauty = Math.max(0, $mc.beauty)>>
+<<set $previousFit = $mc.fit>>
+<<if $mc.fit eq 100>>
+<<if $mc.energyMax lt 20>>
+<<set $mc.energyMax = 20>>
+@@.mc-thoughts; <span class="evidenceText">Your <img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> has reached the maximum of 20!</span>@@<br>
+<</if>>
+@@.mc-thoughts; <span class="evidenceText">Your fitness level is perfect - 100</span>@@<<else>>
+@@.mc-thoughts; <span class="evidenceText">Your fitness level has improved (+1): $mc.fit now!</span>@@<</if>>
 <</widget>>

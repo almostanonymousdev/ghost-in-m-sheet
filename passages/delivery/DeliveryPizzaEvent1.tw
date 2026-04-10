@@ -1,6 +1,6 @@
 :: DeliveryPizzaEvent1 [event] {"position":"1100,1850","size":"100,100"}
 <<nobr>>
-<<include "add45lust">>
+<<addLust 45>>
 <video autoplay controls muted loop>
  <source @src="setup.ImagePath + '/deliveryhub/pizzaevent/3.mp4'" type="video/mp4">
  </video>

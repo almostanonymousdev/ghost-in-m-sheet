@@ -1,6 +1,6 @@
 :: DeliveryPappersEventStart [event] {"position":"1550,1750","size":"100,100"}
 <<nobr>>
-<<include "add15lust">>
+<<addLust 15>>
 <video autoplay controls muted loop>
  <source @src="setup.ImagePath + '/deliveryhub/papersevent/1.mp4'" type="video/mp4">
  </video>
@@ -14,7 +14,7 @@
  @@.mc-thoughts; I'm so turned on, I need to relax a little@@<br>
  @@.mc-speech; Maybe you are right~AH~, work can wait@@<br>
  @@.notmc-speech; Get on <<linkappend "your knees">><br>
- <<include "add30lust">>
+ <<addLust 30>>
  <<set _check to random(1,2)>>
 <<if _check eq 1>>
 <video autoplay controls muted loop>

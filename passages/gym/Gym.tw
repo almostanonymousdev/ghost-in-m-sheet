@@ -14,9 +14,9 @@
 <br>
 <br>
 @@.backbtn;[[Leave|CityMap]]@@ <br>
-<<if previous(2) is "Gym">><<include "add1">>
-<<elseif previous() is "CityMap">><<include "add20">>
-<<else>><<include "add1">><</if>>
+<<if previous(2) is "Gym">><<addTime 0.5>>
+<<elseif previous() is "CityMap">><<addTime 20>>
+<<else>><<addTime 0.5>><</if>>
 
 <</nobr>>
 

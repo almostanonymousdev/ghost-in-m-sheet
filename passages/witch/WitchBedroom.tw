@@ -2,10 +2,10 @@
 <<nobr>>
 <img @src="setup.ImagePath + '/witch/sleeping.jpg'" width="65%"><br>
 @@.mc-thoughts; The witch is lying on the bed. Her breathing is deep and calm. The blanket doesn't fully cover her body, revealing her round, juicy ass. <br>Your thoughts take over: you imagine kissing her, gently running your tongue over her wet pussy, biting her perfect ass.@@<br>
-<<include "add30lust">>
+<<addLust 30>>
 +30 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"><br>
 <<linkreplace "@@.mc-speechLink; Lick her@@">>
-<<include "add30">>
+<<addTime 30>>
 <<set $witchNightCD to 1>>
 <<if $hours lte 5>>
 <video autoplay controls muted loop>
@@ -24,7 +24,7 @@ Before you go, you hear her say in a quiet, satisfied voice: @@<br>
 Before you go, you hear her say in a quiet, satisfied voice: @@<br>
 @@.notmc-speech; Thank you, $mc.name.@@<br>
 <</if>>
-<<include "add60lust">>
+<<addLust 60>>
 +60 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"><br>
 <<if $mc.corruption lt 10>>
 +0.2 <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%;">

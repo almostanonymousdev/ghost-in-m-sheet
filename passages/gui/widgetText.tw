@@ -16,8 +16,8 @@
  </video>
 @@.mc-speech; Shit! I shouldn't have asked this....@@<br>
 <<set $wishesCount -=1>>
-<<include "minus15sanity">>
-<<include "add15lust">>
+<<addSanity -15>>
+<<addLust 15>>
 @@.mc-thoughts; Lust increased: +15 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
 @@.mc-thoughts; Sanity decreased: -15 <img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
 <br><br>
@@ -33,7 +33,7 @@
 <<set $ghostIsTrapped to 1>>
 @@.mc-speech; Now the ghost can't change its favorite room.<br>
 With each wish, I feel worse and worse.@@<br>
-<<include "minus15sanity">>
+<<addSanity -15>>
 <b>@@.mc-thoughts; Sanity decreased: -15 <img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@</b><br>
 <br>
 @@.backbtn;<<link "Return" `passage()`>><</link>>@@

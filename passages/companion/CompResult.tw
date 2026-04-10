@@ -22,7 +22,7 @@
 <br>@@.mc-speech; Well, we’ll have to take this to the witch.@@<br>
 @@.mc-thoughts; She definitely took longer than expected finding that item... I think I know what kept her for so long...<br>
 As soon as I thought about it, I started to feel more... aroused<br>@@
-+30 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"><br><<include "add30lust">>
++30 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"><br><<addLust 30>>
 <br>
 @@.mc-action; $companion.name found the cursed item!@@<br>
 <<set $gotCursedItem to 1>>

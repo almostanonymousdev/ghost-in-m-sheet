@@ -1,6 +1,6 @@
 :: DeliveryPackageEventEnd2 [event] {"position":"1300,1950","size":"100,100"}
 <<nobr>>
-<<include "add15lust">>
+<<addLust 15>>
 <<if $mc.lust gte 100>>
  <<set $mc.lust to 0>>
  <</if>>

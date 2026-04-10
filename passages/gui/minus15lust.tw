@@ -1,9 +1,0 @@
-:: minus15lust [nobr] {"position":"625,2300","size":"100,100"}
-<<set $mc.lust -= 15>>
- <<if $mc.lust lte 0>>
- <<set $mc.lust to 0>>
- <</if>>
- <<set $mc.lust to Number($mc.lust.toFixed(2))>>
-<<updatemeter 'mclust' `$mc.lust / 100`>>
-
-

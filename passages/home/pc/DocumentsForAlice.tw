@@ -6,8 +6,8 @@
 
 <<set $aliceWorkDone to 2>>
 <<set $mc.energy -= 3>>
-<<include "add60">>
-<<include "add60">>
+<<addTime 60>>
+<<addTime 60>>
 <br>
 @@.backbtn; [[Finish the work and send the documents to Alice|Use PC]]@@<br>
 

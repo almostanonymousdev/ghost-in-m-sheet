@@ -1,6 +1,6 @@
 :: gymTrainer {"position":"3225,1600","size":"100,100"}
 <<nobr>>
-<<include "add15lust">>
+<<addLust 15>>
 <<if $hours >= 8 && $hours < 13>>
   <video autoplay controls muted loop>
     <source @src="setup.ImagePath + '/gym/trainer1.mp4'" type="video/mp4">

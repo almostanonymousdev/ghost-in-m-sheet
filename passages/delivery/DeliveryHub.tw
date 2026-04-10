@@ -15,9 +15,9 @@
 <br>
 <br>
 @@.backbtn;[[Leave|CityMap]]@@
-<<if previous(2) is "DeliveryHub">><<include "add3">>
-<<elseif previous() is "CityMap">><<include "add20">>
-<<else>><<include "add3">>
+<<if previous(2) is "DeliveryHub">><<addTime 3>>
+<<elseif previous() is "CityMap">><<addTime 20>>
+<<else>><<addTime 3>>
 <</if>>
 <</nobr>>
 

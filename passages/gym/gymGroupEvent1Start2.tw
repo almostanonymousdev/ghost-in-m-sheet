@@ -1,7 +1,7 @@
 :: gymGroupEvent1Start2 {"position":"3375,1800","size":"100,100"}
 <<nobr>>
-<<include "add15lust">>
-<<include "add60">>
+<<addLust 15>>
+<<addTime 60>>
 <<randomVideo "gym/grouptraining1.5.mp4" "gym/grouptraining1.6.mp4">>
 @@.mc-thoughts; First someone fucked you, then you started fucking someone else with a toy.<br>
 Eventually everyone @@<<linkappend "@@.mc-thoughtsLink; gathered around you again.@@">>  <br> 

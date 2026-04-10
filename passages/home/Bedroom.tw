@@ -92,7 +92,7 @@ But for now, I need to go to the [[bathroom|Bathroom]].
 @@.enterbtn;[[Bathroom]]@@<br>
 @@.usebtn;[[Sleep (8 hours)|Sleep]]@@<br>
 @@.usebtn;<<link "Take a nap(1 hour)" "Bedroom">>
-<<include "add60">>
+<<addTime 60>>
 <<if $mc.energy lt $mc.energyMax>>
 <<set $mc.energy += 1>><</if>>
 <<if $ghostSpiritEventStage eq 0 and $ghostSpecialEventSpiritCD eq 0>>

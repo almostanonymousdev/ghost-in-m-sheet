@@ -3,7 +3,7 @@
 @@.mc-speech; I already searched for information today. I think it's better to try again tomorrow.@@<<else>>
 <<linkreplace "Find information about ghosts">>
 <<set $findGhostInfoCD to 1>>
-<<include "add60">>
+<<addTime 60>>
     <<set _chance to random(1, 100)>>
     <<set _ghosts to []>>
     

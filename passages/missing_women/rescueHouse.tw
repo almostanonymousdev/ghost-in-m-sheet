@@ -48,7 +48,7 @@
 <</if>>
 <</linkreplace>><br>
 <</if>>
-<<include "add20">>
+<<addTime 20>>
 <<if $hasQuestForRescue eq 2>>
 @@.mc-speech; The nun said that after 6 p.m. it's pointless to keep searching. It seems I’m too late. I should go back to her and tell her I failed.@@<br>
 <<else>>
@@ -57,7 +57,7 @@
 <<set $mc.energy -=1>>
 <<if $randomRescuePhotoNumber neq $rescueHouse>>
 @@.mc-thoughts; You search the house for 30 minutes, but find no one.@@
-<<include "add30">>
+<<addTime 30>>
 <<elseif $rescueStage lt 2 and $randomRescuePhotoNumber eq $rescueHouse and $hasQuestForRescue eq 1>>
 <<goto "rescueEvent">>
 <<elseif $hasQuestForRescue eq 2>>

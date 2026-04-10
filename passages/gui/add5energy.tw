@@ -1,8 +1,0 @@
-:: add5energy [nobr] {"position":"525,2300","size":"100,100"}
-<<set $mc.energy += 5>>
- <<if $mc.energy gte $mc.energyMax>>
- <<set $mc.energy to $mc.energyMax>>
- <</if>>
- <<updatemeter 'energy' `$mc.energy / $mc.energyMax`>>
-
-

@@ -173,7 +173,7 @@ Seeing you, the ghost vanishes, leaving $companion.name panting and disheveled, 
 $companion.name's lust: + _companionLustIncreased <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"><br>
 $companion.name's sanity: - $companion.decreaseSanity<img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%;"><br>
 Your <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"> +15<br>
-<<include "add15lust">>
+<<addLust 15>>
 <</widget>>
 
 
@@ -219,7 +219,7 @@ $companion.name eq "Casey">>
 $companion.name's lust: + _companionLustIncreased <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"><br>
 $companion.name's sanity: - $companion.decreaseSanity<img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%;"><br>
 Your <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"> +15<br>
-<<include "add15lust">>
+<<addLust 15>>
 <</widget>>
 
 <<widget "CompanionTextcompEvent4">>
@@ -262,7 +262,7 @@ $companion.name eq "Casey">>
 $companion.name's lust: + _companionLustIncreased <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"><br>
 $companion.name's sanity: - $companion.decreaseSanity<img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%;"><br>
 Your <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"> +15<br>
-<<include "add15lust">>
+<<addLust 15>>
 <</widget>>
 
 

@@ -9,7 +9,7 @@
 @@.mc-thoughts; A big hot dick fills your entire mouth, making your pussy wet. <br>Another 10 minutes pass until he cums in your mouth@@<br>
 @@.notmc-speech; Ooof, you sucked the last out of me. Enough for today. You may go now@@<br>
 <br>
-<<include "add30lust">>
+<<addLust 30>>
 <div class="wrapperGain">
 <span>You gain:</span><br>
 <span> Money: +10$ </span><br>

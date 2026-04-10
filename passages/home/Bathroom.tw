@@ -3,8 +3,8 @@
 <img @src="setup.ImagePath + '/img/mcbathroom.jpg'" width="100%"><br>
 @@.location; Bathroom@@<br>
 
-@@.usebtn;<<link "Take a bath (30 min)" "Bath">><<include "add30">><</link>><br>@@
-@@.usebtn;<<link "Take a shower (5 min)" "Shower">><<include "add5">><</link>><br>@@
+@@.usebtn;<<link "Take a bath (30 min)" "Bath">><<addTime 30>><</link>><br>@@
+@@.usebtn;<<link "Take a shower (5 min)" "Shower">><<addTime 5>><</link>><br>@@
 @@.enterbtn;[[Look in the mirror|Mirror]]<br>@@
 @@.enterbtn;[[Wash your face|WashFace]]<br>@@
 <br>

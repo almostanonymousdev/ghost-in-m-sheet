@@ -8,7 +8,7 @@
  <<if $mc.corruption lt 2>><<set $mc.corruption += 0.1>>
 + 0.1 <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br><</if>>
 + 30 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br>
-<<include "add30lust">>
+<<addLust 30>>
 
 
 @@.mc-speech; We have to stop! Someone might see what we’re doing here. @@<br>
@@ -24,7 +24,7 @@
  + 30 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br>
  <<if $mc.corruption lte 6>><<set $mc.corruption += 0.2>>
 + 0.2 <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br><</if>>
-<<include "add30lust">>
+<<addLust 30>>
  @@.notmc-speech; Oh~ you're such a bad girl.<br>
 See, no one noticed us, let's have a quick fuck right here@@<br>
 @@.mc-speech; No! I have [[to go|LibraryInside]]@@<br>
@@ -44,7 +44,7 @@ See, no one noticed us, let's have a quick fuck right here@@<br>
 <<if $mc.corruption lt 2>><<set $mc.corruption += 0.1>>
 + 0.1 <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br><</if>>
 + 30 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br>
-<<include "add30lust">>
+<<addLust 30>>
 
  
  <<if $mc.corruption lte 3>>
@@ -56,7 +56,7 @@ See, no one noticed us, let's have a quick fuck right here@@<br>
  + 30 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br>
  <<if $mc.corruption lte 6>><<set $mc.corruption += 0.2>>
 + 0.2 <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br><</if>>
-<<include "add30lust">>
+<<addLust 30>>
  @@.notmc-speech; Oh~ You're really good at this...<br> How about a quickie? <br>@@
  @@.mc-speech; No! I have [[to go|LibraryInside]]@@<br>
  <</linkappend>>@@

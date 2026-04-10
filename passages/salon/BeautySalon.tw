@@ -11,9 +11,9 @@
 <</if>>
 <br>
 <span class="backbtn">[[Leave|CityMap]]</span><br>
-<<if previous(2) is "Beauty Salon">><<include "add3">>
-<<elseif previous() is "CityMap">><<include "add20">>
-<<else>><<include "add3">>
+<<if previous(2) is "Beauty Salon">><<addTime 3>>
+<<elseif previous() is "CityMap">><<addTime 20>>
+<<else>><<addTime 3>>
 <</if>>
 
 

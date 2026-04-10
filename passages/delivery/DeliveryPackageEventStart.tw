@@ -1,14 +1,14 @@
 :: DeliveryPackageEventStart [event] {"position":"1250,1750","size":"100,100"}
 <<nobr>>
 <<set $deliveryPackageEvent to 1>>
-<<include "add15lust">>
+<<addLust 15>>
 <video autoplay controls muted loop>
  <source @src="setup.ImagePath + '/deliveryhub/packageevent/1.mp4'" type="video/mp4">
  </video>
  @@.notmc-speech; You're better off doing something else instead of delivering crap@@<br>
  @@.mc-speech; Maybe you are right~AH~@@<br>
  @@.notmc-speech; For example: sit down and @@<<linkappend "@@.notmc-speechLink; suck me off@@">><br>
- <<include "add30lust">>
+ <<addLust 30>>
 <<set _check to random(1,2)>>
 <<if _check eq 1>>
 <video autoplay controls muted loop>

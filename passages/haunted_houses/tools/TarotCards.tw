@@ -78,8 +78,8 @@
 @@.mc-speech; Ah~ I'm getting so wet down there... mmm. @@<br>
 @@.mc-thoughts; Lust increased: +15 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
 @@.mc-thoughts; Sanity decreased: -15 <img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
-<<include "minus15sanity">>
-<<include "add15lust">>
+<<addSanity -15>>
+<<addLust 15>>
 <<run setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 50)>>
 
 		<</timed>>
@@ -92,8 +92,8 @@
 Somehow, I feel much better after that...@@<br>
 @@.mc-thoughts; Lust decreased: -15 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
 @@.mc-thoughts; Sanity increased: +15 <img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
-<<include "add15sanity">>
-<<include "minus15lust">>
+<<addSanity 15>>
+<<addLust -15>>
 <<run setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 50)>>
 		<</timed>>
         
@@ -120,8 +120,8 @@ Somehow, I feel much better after that...@@<br>
 <<run setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 50)>>
 @@.mc-speech; Wow, I can feel power surging through me! Oh, I’m ready to take on anything! @@<br>
 @@.mc-thoughts; Energy increased: +5 <img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
-<<include "add5energy">>
-<<include "addFitnessPoint">>
+<<addEnergy 5>>
+<<addFit 1>>
 
 		<</timed>>
         <<elseif $chosenCard.name eq "whore">>

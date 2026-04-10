@@ -17,7 +17,7 @@
 <</if>>
  <br>
 <br>
-<<include "add15lust">>
+<<addLust 15>>
 @@.backbtn;[[Leave|Witch]] @@
 <</nobr>>
 

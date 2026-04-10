@@ -1,6 +1,6 @@
 :: ToolsEventChurch1 [event] {"position":"1975,1700","size":"100,100"}
 <<nobr>>
-<<include "add15lust">>
+<<addLust 15>>
 <<randomVideo "church/4.mp4" "church/5.mp4">>
  @@.notmc-speech; Oh~ you're so hot, I'm going to cum soon@@<br>
  <<if $mc.lust gte 85>>
@@ -8,7 +8,7 @@
 <<randomVideo "church/6.mp4" "church/7.mp4">>
 @@.mc-speech; Fuck ~I can feel every millimeter of your huge dick in my ass, so good~@@<br>
 @@.notmc-speech; Oh god~ your asshole is so tight, I'm [[cumming|ToolsEventChurchEnd]]@@
- <<include "add15lust">>
+ <<addLust 15>>
  <</linkappend>>@@
  <<else>>
 @@.mc-speech; Fuck~AH~ cum [[on my face|ToolsEventChurchEnd]]@@<br>

@@ -105,14 +105,14 @@
 @@.mc-thoughts; You find many articles about bad habits, congenital diseases, all stages of cancer, etc. But that's not what you need. After some time, something more interesting appears. Someone suggests that you should check how you sleep. It might be a good idea to buy a video camera and record your sleep.@@<br>
 @@.mc-speech; This sounds strange, what could be happening to me during sleep? Although, a camera might come in handy in the future. So, I need to go to the store and buy a video camera.@@
 <<set $ghostMareEventStart to 3>>
-<<include "add30">>
+<<addTime 30>>
 <</linkreplace>>
 <<elseif $ghostMareEventStart eq 4>>
 <br><<linkreplace "Someone's whisper during sleep">>
 @@.mc-thoughts; I found information explaining what’s happening. It turns out that this behavior is @@@@.notmc-speech; caused by a Mare.@@ @@.mc-speech;To get rid of it, I just need to sprinkle some holy water in the room.@@ @@.mc-thoughts; It's best to do this as soon as possible, or the ghost will become more persistent with each passing night. However, there's also some information suggesting that I don’t have to do anything at all—the ghost might leave on its own.@@
 <<set $ghostMareInfoCollected to 1>>
 <</linkreplace>>
-<<include "add30">>
+<<addTime 30>>
 <</if>>
 <br>
 <br>

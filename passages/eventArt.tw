@@ -25,7 +25,7 @@ stage4: 3,
 		<<elseif $skirtState is "worn">>
           <<set _artList to ["art/skirt/first/1.png", "art/skirt/first/2.png", "art/skirt/first/3.png", "art/skirt/first/4.png", "art/skirt/first/5.png", "art/skirt/first/6.png", "art/skirt/first/7.png", "art/skirt/first/8.png", "art/skirt/first/9.png"]>>
           <</if>>
-<<include "add3lust">>
+<<addLustByPart>>
 <<set $tempCorr += 0.01>>
 
 <<elseif ($mc.sanity >= 80 and $mc.sanity < 90) and _chance <= $decreasingSanity.stage2>>
@@ -36,7 +36,7 @@ stage4: 3,
 		<<elseif $skirtState is "worn">>
           <<set _artList to ["art/skirt/second/1.png", "art/skirt/second/2.png", "art/skirt/second/3.png", "art/skirt/second/4.png", "art/skirt/second/5.png", "art/skirt/second/6.png", "art/skirt/second/7.png", "art/skirt/second/8.png", "art/skirt/second/9.png", "art/skirt/second/10.png"]>>
           <</if>>
-<<include "add5lust">>
+<<addLust 5>>
 <<set $tempCorr += 0.02>>
 
 <<elseif ($mc.sanity >= 70 and $mc.sanity < 80) and _chance <= $decreasingSanity.stage2>>
@@ -47,7 +47,7 @@ stage4: 3,
 		<<elseif $skirtState is "worn">>
           <<set _artList to ["art/skirt/third/1.png", "art/skirt/third/2.png", "art/skirt/third/3.png", "art/skirt/third/4.png", "art/skirt/third/5.png", "art/skirt/third/6.png", "art/skirt/third/7.png", "art/skirt/third/8.png", "art/skirt/third/9.png"]>>
           <</if>>
-<<include "add5lust">>
+<<addLust 5>>
 <<set $tempCorr += 0.03>>
 
 <<elseif ($mc.sanity >= 50 and $mc.sanity < 70) and _chance <= $decreasingSanity.stage3>>
@@ -56,7 +56,7 @@ stage4: 3,
 <<else>>
  <<set _artList to ["art/naked/1.png", "art/naked/2.png", "art/naked/3.png", "art/naked/4.png", "art/naked/5.png", "art/naked/6.png", "art/naked/7.png", "art/naked/8.png", "art/naked/9.png", "art/naked/10.png", "art/naked/11.png", "art/naked/12.png", "art/naked/13.png", "art/naked/14.png"]>>
 <</if>>
-<<include "add5lust">>
+<<addLust 5>>
 <<set $tempCorr += 0.03>>
 
 <<elseif ($mc.sanity >= 1 and $mc.sanity < 50) and _chance <= $decreasingSanity.stage4>>
@@ -78,7 +78,7 @@ stage4: 3,
 	<<set _artListVids to ["animated/all/1.mp4", "animated/all/2.mp4", "animated/all/3.mp4", "animated/all/4.mp4", "animated/all/5.mp4", "animated/all/6.mp4", "animated/all/7.mp4", "animated/all/8.mp4", "animated/all/9.mp4", "animated/all/10.mp4", "animated/all/11.mp4", "animated/all/12.mp4", "animated/all/13.mp4", "animated/all/14.mp4", "animated/all/15.mp4", "animated/all/16.mp4", "animated/all/17.mp4", "animated/all/18.mp4", "animated/all/19.mp4", "animated/all/20.mp4", "animated/all/21.mp4", "animated/all/22.mp4", "animated/all/23.mp4", "animated/all/24.mp4", "animated/basement/1.mp4", "animated/basement/2.mp4", "animated/basement/3.mp4", "animated/basement/4.mp4", "animated/basement/5.mp4", "animated/basement/6.mp4", "animated/basement/7.mp4", "animated/basement/8.mp4", "animated/basement/9.mp4", "animated/basement/10.mp4", "animated/basement/11.mp4", "animated/basement/12.mp4", "animated/basement/13.mp4", "animated/basement/14.mp4"]>>
             <</if>>
  
- <<include "add9lust">>
+ <<addLustPussy 9>>
 <<set $tempCorr += 0.05>>
 <</if>>
 <<set _randomIndex to random(0, _artList.length - 1)>>

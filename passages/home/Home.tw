@@ -9,9 +9,9 @@
 <<if $isBrookePossessed eq 1>>@@.usebtn; [[Go find Brooke|possessedBrooke]]@@<br><</if>>
 <br>
 <span class="backbtn">[[Leave|CityMap]]</span><br>
-<<if previous(2) is "Home">><<include "add3">>
-<<elseif previous() is "CityMap">><<include "add20">>
-<<else>><<include "add3">>
+<<if previous(2) is "Home">><<addTime 3>>
+<<elseif previous() is "CityMap">><<addTime 20>>
+<<else>><<addTime 3>>
 <</if>>
 <</nobr>>
 

@@ -16,7 +16,7 @@
 <<set $mc.lust to 0>>
 <br>
 @@.backbtn;[[Rest and leave|Livingroom]]@@<br>
-<<include "add20">>
+<<addTime 20>>
 <</nobr>>
 
 

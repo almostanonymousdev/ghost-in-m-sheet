@@ -1,7 +1,7 @@
 :: DeliveryPizzaEvent2 [event] {"position":"1100,1950","size":"100,100"}
 <<nobr>>
 <<set $deliveryPizzaEvent to 1>>
-<<include "add60lust">>
+<<addLust 60>>
 <video autoplay controls muted loop>
  <source @src="setup.ImagePath + '/deliveryhub/pizzaevent/5.mp4'" type="video/mp4">
  </video>
