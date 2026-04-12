@@ -8,7 +8,8 @@
     "start": "./start.sh",
     "watch": "while inotifywait -e modify -e create -e delete passages/*.tw; do ./build.sh; done",
     "clean": "rm -f ghost-in-msheet.html",
-    "rebuild": "npm run clean && npm run build"
+    "rebuild": "npm run clean && npm run build",
+    "test": "npx playwright test"
   },
   "keywords": [
     "twine",
@@ -17,8 +18,9 @@
     "game"
   ],
   "author": "",
-  "license": "MIT",
+  "license": "GPLv3",
   "devDependencies": {
+    "@playwright/test": "^1.59.1",
     "serve": "^14.0.0"
   }
 }

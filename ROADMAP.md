@@ -1,4 +1,4 @@
-# Roadmap - Ghost in M's Sheet
+# Roadmap - Ghost in M'Sheet
 
 This roadmap is driven by the community. Anyone can suggest features, bugfixes, plotlines, and more by [opening an issue](https://github.com/almostanonymousdev/ghost-in-m-sheet/issues/new/choose). Admins review suggestions and move approved items into active development.
 

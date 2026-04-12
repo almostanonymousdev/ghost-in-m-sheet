@@ -27,3 +27,7 @@ tgh-fork.html
 
 # Node modules (if using npm)
 node_modules/
+
+# Playwright
+test-results/
+playwright-report/
