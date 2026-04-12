@@ -3,28 +3,23 @@
 <img @src="setup.ImagePath + '/church/1.jpg'" width="100%"><br>
 
 @@.notmc-speech; Bless you, my daughter. How may I assist you?@@<br>
-<<if $exorcismQuestStage eq 0 and def $relationshipWithRain>>
+<<if setup.Church.canRequestExorcism()>>
 @@.enterbtn; [[I need to talk to Rain|RainExorcism]]@@<br>
 <</if>>
-<<if $hasQuestForRescue eq 2 or $hasQuestForRescue eq 3>>
+<<if setup.Church.shouldRedirectToNunQuest()>>
 <<goto "ChurchNunQuest">>
 <</if>>
-<<if $mc.lust gte 40>>
-<<if $eventToolsOneStart eq 1>>
+<<if setup.Church.canFlirtWithPriest()>>
 <<linkreplace "@@.usebtn;Flirt with him@@">>
-<<if $churchSexCD eq 1>>
+<<if setup.Church.priestSexOnCooldown()>>
 @@.notmc-speech; Enough for today, come to me tomorrow @@
-<<else>>
-<<if $mc.beauty gte 45>>
+<<elseif setup.Church.meetsBeautyForFlirt()>>
 @@.mc-speech; I didn't come for a confession...I want to feel your [[big hard cock inside me|ToolsEventChurch]]@@<br>
 <<else>>
 @@.notmc-speech; I have a lot to do...maybe later@@<br>
 @@.warningtext; (Req. <img @src="setup.ImagePath + '/img/beauty.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 45)@@
 <</if>>
-<</if>>
 <</linkreplace>><br>
-<</if>>
-<<else>>
 <</if>>
 <<linkreplace "@@.usebtn;Start confession with a priest@@">>
 @@.mc-speech; Bless me, father. I feel that I haven't always been fair and kind to others. Sometimes I've harbored anger and resentment@@<br>
@@ -37,11 +32,11 @@ Your <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; 
 
 <</linkreplace>>
 <br>
-<<if $eventToolsOneStart eq 0>>
+<<if setup.Church.canAskAboutLevel3Tools()>>
 <<linkreplace "@@.usebtn;Ask about level 3 tools@@">>
 @@.mc-speech;I wanted to ask you something. I was told that you have one of the level 3 tools for detecting ghosts. I would really like to get it, I really need it@@<br>
-<<if $mc.beauty gte 45>>
-<<if $mc.corruption gte 4>>
+<<if setup.Church.meetsBeautyForLevel3Tools()>>
+<<if setup.Church.priestWillTradeToolForSex()>>
 @@.notmc-speech;Yes, I have a level 3 thermometer. Of course, I understand that this item is very valuable. This thing is for real professionals. I could give it to you, but I'd like to get something [[in return...|ToolsEventChurch]]@@<br>
 <<else>>
 @@.notmc-speech;Yes, i have a level 3 thermometer. Of course, I understand that this item is very valuable. This thing is for real professionals. It's not often that beautiful girls like you come here. I could give it to you, but I'd like to get something in return...@@<br>

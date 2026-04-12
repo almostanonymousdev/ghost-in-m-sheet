@@ -1,7 +1,7 @@
 :: RainExorcism [nobr] {"position":"2175,1500","size":"100,100"}
 <img @src="setup.ImagePath + '/rescue/Rain.jpg'" width="50%" class="displayCentredImgs"><br>
 @@.mc-speech; Hi, Rain. A witch told me you could help me...@@<br>
-<<if $relationshipWithRain gte 5>>
+<<if setup.Church.rainTrustsForExorcism()>>
 @@.notmc-speech; Yes, of course. You've helped me before, and I'm ready to assist you. What's the matter?@@<br>
 @@.mc-speech; There's some kind of ghost or entity in my house. It's been there for a while, unlike the others, which would leave... once they got what they wanted.@@<br>
 @@.notmc-speech; If it doesn't leave, it's more complicated. Holy water won't help...<br>
@@ -21,7 +21,7 @@ I think an exorcism is necessary. Here's what we can do: I'll give you a book th
 @@.notmc-speech; I'm sorry, I'm swamped right now - I need to find some missing nuns. If you help me with this, I'll be glad to assist you in return. You know what to do, so come back to me once you've helped me find a few of my girls.@@<br>
 
 @@.mc-speech; Alright.@@<br>
-@@.mc-thoughts; I need to help her <<print 5 - $relationshipWithRain>> more times.@@<br>
+@@.mc-thoughts; I need to help her <<print setup.Church.rescuesNeededForExorcism()>> more times.@@<br>
 <</if>>
 <br>
 @@.backbtn; [[Leave|Church]] @@<br>

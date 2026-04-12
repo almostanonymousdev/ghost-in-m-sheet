@@ -4,24 +4,23 @@
 @@.location; Church@@<br>
 @@.mc-thoughts; You are standing in front of an old church. Near the entrance, there is a fountain with crystal-clear water. The church is a place of tranquility and humility. Here, one can find solace and peace, achieve inner harmony and worship. Perhaps I should visit here more often.@@<br>
 <br>
-<<if $hours lte 5 or $hours gte 22>>
+<<if not setup.Church.isOpen()>>
   @@.mc-thoughts; I came at an inappropriate time (open from 6 AM to 10 PM)@@<br>
 <<else>>
-<<if $hasQuestForRescue eq 0 and ndef $relationshipWithRain>>
+<<if setup.Church.canStartNunQuest()>>
 @@.enterbtn;<<link "Confess your sins" "ChurchNunQuest">><<set $hasQuestForRescue to 0>><</link>>@@
 <<else>>
 @@.enterbtn;[[Confess your sins|ChurchPray]]@@<br><</if>>
 <</if>>
-<<if def $hasQuestForRescue and def $relationshipWithRain>>
+<<if setup.Church.showMissingPersonsBoard()>>
 @@.enterbtn; [[Missing persons board|rescueTaskBoard]]@@<br>
 <</if>>
 <br>
-<<if $ghostMareInfoCollected eq 1 or def $relationshipWithRain>>
-<<if $holyWaterIsCollected neq 1>>
+<<if setup.Church.holyWaterAvailable()>>
 @@.usebtn; <<linkreplace "Take holy water">>
-<<set $holyWaterIsCollected to 1>>
+<<run setup.Church.collectHolyWater()>>
 @@.mc-thoughts; Now you have holy water in your bag.@@
-<</linkreplace>>@@<</if>><</if>>
+<</linkreplace>>@@<</if>>
 <br>
 <br>
 @@.backbtn;[[Leave|CityMap]] @@

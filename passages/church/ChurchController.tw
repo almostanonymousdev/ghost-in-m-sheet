@@ -1,0 +1,80 @@
+:: ChurchController [script]
+/*
+ * Centralized state queries and mutations for the church location.
+ * Passages should call into setup.Church instead of testing the
+ * underlying $variables directly, so the conditions live in one place.
+ */
+setup.Church = (function () {
+	function v(name) { return State.variables[name]; }
+	function mc() { return State.variables.mc; }
+
+	return {
+		// --- Hours -------------------------------------------------
+		isOpen: function () {
+			var h = v('hours');
+			return h > 5 && h < 22;
+		},
+
+		// --- Rescue / Rain quest line -----------------------------
+		hasMetRain: function () {
+			return v('relationshipWithRain') !== undefined;
+		},
+		canStartNunQuest: function () {
+			return v('hasQuestForRescue') === 0 && !this.hasMetRain();
+		},
+		showMissingPersonsBoard: function () {
+			return v('hasQuestForRescue') !== undefined && this.hasMetRain();
+		},
+		shouldRedirectToNunQuest: function () {
+			var stage = v('hasQuestForRescue');
+			return stage === 2 || stage === 3;
+		},
+
+		// --- Holy water -------------------------------------------
+		knowsAboutHolyWater: function () {
+			return v('ghostMareInfoCollected') === 1 || this.hasMetRain();
+		},
+		holyWaterAvailable: function () {
+			return this.knowsAboutHolyWater() && v('holyWaterIsCollected') !== 1;
+		},
+		collectHolyWater: function () {
+			State.variables.holyWaterIsCollected = 1;
+		},
+
+		// --- Exorcism --------------------------------------------
+		canRequestExorcism: function () {
+			return v('exorcismQuestStage') === 0 && this.hasMetRain();
+		},
+		rainTrustsForExorcism: function () {
+			return (v('relationshipWithRain') || 0) >= 5;
+		},
+		rescuesNeededForExorcism: function () {
+			return Math.max(0, 5 - (v('relationshipWithRain') || 0));
+		},
+
+		// --- Priest: flirt / sex ---------------------------------
+		priestRoutesUnlocked: function () {
+			return v('eventToolsOneStart') === 1;
+		},
+		canFlirtWithPriest: function () {
+			return mc().lust >= 40 && this.priestRoutesUnlocked();
+		},
+		priestSexOnCooldown: function () {
+			return v('churchSexCD') === 1;
+		},
+		meetsBeautyForFlirt: function () {
+			return mc().beauty >= 45;
+		},
+
+		// --- Priest: level 3 tool quest --------------------------
+		canAskAboutLevel3Tools: function () {
+			return v('eventToolsOneStart') === 0;
+		},
+		meetsBeautyForLevel3Tools: function () {
+			return mc().beauty >= 45;
+		},
+		priestWillTradeToolForSex: function () {
+			return mc().corruption >= 4;
+		}
+	};
+})();
