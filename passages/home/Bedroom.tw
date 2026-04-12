@@ -16,12 +16,10 @@
 @@.mc-speech; Oh fuck... apparently I summoned the wrong ghost... next time I need to pay attention to the amulet.@@<br>
 <<unset $summonText>>
 <</if>>
-<<if $exorcismQuestStage eq 1 and $exorcismCD eq 0>>
+<<if setup.Home.canSummonForExorcism()>>
 @@.enterbtn; [[Summon the ghost|summoning]]@@<br>
-<<elseif $exorcismQuestStage eq 1 and $exorcismCD eq 1>>
+<<elseif setup.Home.exorcismOnCooldown()>>
 @@.mc-thoughts; Enough for today...@@<br>
-<<elseif $exorcismQuestStage eq 2 and $exorcismCD eq 0>>
-@@.enterbtn; [[Summon the ghost|summoning]]@@<br>
 <</if>>
 <<if $succubusTVText eq 1>>
 @@.mc-speech; WHAT the fuck just happened... I hope this ghost doesn't bother me anymore. Maybe I should ask how to get rid of it if it keeps haunting me.@@<br>
@@ -47,7 +45,7 @@
 <<unset $tentaclesTextAfterSleep>>
 <<set $mc.lust to 100>>
 <</if>>
-<<if previous(2) eq "HuntOverSanity" or previous(2) eq "huntEnd">>
+<<if setup.Home.returningFromHuntDefeat()>>
 @@.mc-speech; Am I home? I don't remember how I got back here. My whole body aches and is <<linkappend "covered with something">>
 <<randomImage "mc/1.webp" "mc/2.webp" "mc/3.webp" "40%">><br>
 It seems like I'm starting to remember... I lost the battle, but not the war. Next time, I'll be more careful. <br>
@@ -59,7 +57,7 @@ But for now, I need to go to the [[bathroom|Bathroom]].
 <<set $mc.lust to random(30,60)>>
 <</linkappend>>@@
 
-<<elseif previous(2) eq "ghostSpecialEventMareEnd">>
+<<elseif setup.Home.returningFromMareEnd()>>
 @@.mc-thoughts; You wake up and see the@@ <<linkappend "@@.mc-thoughtsLink;aftermath of last night on yourself...@@">><br>
 <<randomImage "mc/4.webp" "mc/5.webp" "mc/6.webp" "40%">><br>
 <<set $isPenaltyOn to 0>>
@@ -68,10 +66,10 @@ But for now, I need to go to the [[bathroom|Bathroom]].
 <<else>>
 
 
-<<if previous() eq "Sleep" and $ghostMareEventStart gte 1 and (previous(2) neq "HuntOverSanity" or previous(2) neq "huntEnd")>>
+<<if setup.Home.justSleptFromBedroom() and (previous(2) neq "HuntOverSanity" or previous(2) neq "huntEnd")>>
 <<if $ghostMareEventStart eq 1>>
 <<set $ghostMareEventStart to 2>><</if>>
-<<if $ghostMareEventStage lte 2>>
+<<if setup.Home.mareStageIsLow()>>
 <<set $mc.sanityMax to 70>>
 <<set $mc.sanity to random(50,70)>>
 <<set $mc.energy to $mc.energyMax>>
@@ -95,16 +93,14 @@ But for now, I need to go to the [[bathroom|Bathroom]].
 <<addTime 60>>
 <<if $mc.energy lt $mc.energyMax>>
 <<set $mc.energy += 1>><</if>>
-<<if $ghostSpiritEventStage eq 0 and $ghostSpecialEventSpiritCD eq 0>>
+<<if setup.Home.spiritNapEventReady()>>
 <<goto "ghostSpecialEventNapSpirit">>
-<<elseif $gotCursedItem eq 1 and $gotCursedItemEventCD gte 2>>
+<<elseif setup.Home.tentaclesNapEventReady()>>
 <<goto "tentaclesEventNap">>
 <</if>>
 <</link>>@@<span><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span><br>
-<<if $holyWaterIsCollected eq 1 and $ghostMareEventStart gte 1>>
-<<linkreplace "@@.usebtn; Use holy water@@">><<set $ghostMareEventStart to 0>>
-<<set $holyWaterIsCollected to 0>>
-<<set $ghostMareEventStage to 0>>
+<<if setup.Home.canUseHolyWaterOnMare()>>
+<<linkreplace "@@.usebtn; Use holy water@@">><<run setup.Home.useHolyWaterOnMare()>>
 @@.mc-speech; This should help. Now I can sleep peacefully.@@<</linkreplace>><</if>>
 <br>
 <br>

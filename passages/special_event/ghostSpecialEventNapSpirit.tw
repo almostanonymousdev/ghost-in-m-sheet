@@ -1,6 +1,5 @@
 :: ghostSpecialEventNapSpirit [nobr] {"position":"350,2450","size":"100,100"}
-<<set $ghostSpiritEventStage to 1>>
-<<set $ghostSpecialEventSpiritCD to 1>>
+<<run setup.SpecialEvent.markSpiritEventSeen()>>
 <video autoplay controls muted loop>
 <source @src="setup.ImagePath + '/ghosts/specials/spirit2.0.mp4'" type="video/mp4">
 </video>

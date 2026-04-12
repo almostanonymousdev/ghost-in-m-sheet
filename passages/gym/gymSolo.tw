@@ -1,23 +1,23 @@
 :: gymSolo {"position":"3225,1500","size":"100,100"}
 <<nobr>>
-<<if $hours >= 8 && $hours < 13>>
+<<if setup.Gym.soloSlotMorning()>>
   <video autoplay controls muted loop>
     <source @src="setup.ImagePath + '/gym/solo1.mp4'" type="video/mp4">
   </video>
 You spent about an hour at the gym, diligently working on improving your physical fitness. Each workout makes you stronger and more resilient, helping you reach new heights.<br><br>
 
-<<elseif $hours >= 13 && $hours < 18>>
+<<elseif setup.Gym.soloSlotAfternoon()>>
   <video autoplay controls muted loop>
     <source @src="setup.ImagePath + '/gym/solo2.mp4'" type="video/mp4">
   </video>
 You spent about an hour at the gym, diligently working on improving your physical fitness. Each workout makes you stronger and more resilient, helping you reach new heights.<br><br>
 
-<<elseif $hours >= 18 && $hours < 23>>
+<<elseif setup.Gym.soloSlotEvening()>>
   <video autoplay controls muted loop>
     <source @src="setup.ImagePath + '/gym/solo3.mp4'" type="video/mp4">
   </video>
   You spent about an hour at the gym, diligently working on improving your physical fitness. Each workout makes you stronger and more resilient, helping you reach new heights.<br><br>
- <<if ndef $relationEmily>>
+ <<if not setup.Gym.hasMetEmily()>>
  You see the girl who works out here almost every evening.<br>
 @@.mc-speech; Maybe I should [[talk to her?|EmilyTalk]]. I’d like to chat with someone, and she might have something interesting to share.@@<br>
  <<else>> 

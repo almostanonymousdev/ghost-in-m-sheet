@@ -1,6 +1,6 @@
 :: ghostSpecialEventSleepSpirit [nobr] {"position":"700,2450","size":"100,100"}
 <<set $ghostSpecialEventSpiritCD to 1>>
-<<if $mc.energy gte 5>>
+<<if setup.SpecialEvent.hasEnergyForSleepSpirit()>>
 <video autoplay controls muted loop>
 <source @src="setup.ImagePath + '/ghosts/specials/spirit3.0.mp4'" type="video/mp4">
 </video>
@@ -10,7 +10,7 @@
 <video autoplay controls muted loop>
 <source @src="setup.ImagePath + '/ghosts/specials/spirit3.1.mp4'" type="video/mp4">
 </video>
-<<if $mc.corruption lt 5>>
+<<if not setup.SpecialEvent.hasMinCorruptionForSleepSpirit()>>
 @@.mc-thoughts; But the touches grow bolder. Invisible hands seem to glide across your skin, slowly exploring your body. You feel fingers gently slipping between your thighs, teasing your most sensitive spot. Occasionally, fingers brush your lips, and instinctively, you part them, letting your tongue flicker over the tips, tasting the sensation. The feeling is strange, but you remain lost in the haze of sleep, @@ 
 
 <<linkappend "@@.usebtn; convinced  it's only a dream@@">><br>

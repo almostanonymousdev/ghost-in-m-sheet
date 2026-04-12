@@ -3,7 +3,7 @@
 <img @src="setup.ImagePath + '/img/witchGirl.jpg'" width="100%">
 <br>
 
-<<if $firstVisitWitchShop is true>>
+<<if setup.Witch.isFirstVisit()>>
 &emsp;@@.notmc-speech;Hello, sweetheart, got lost? @@<br>
 
 @@.mc-speech;Hi, I'm $mc.name. I was told I could get a contract here... for ghosts@@<br>
@@ -28,7 +28,7 @@ Okay, here I can get a ghost contract. It costs money. I receive a key to the ho
 <<set $firstVisitWitchShop to false>>
 <<elseif $firstVisitWitchShop eq false>>
 @@.notmc-speech; Hey $mc.name, how are you?@@<br>
-<<if def $succubus and (hasVisited("succubusEventTV") or hasVisited("succubusPCEvent")) and (ndef $exorcismQuestStage or $exorcismQuestStage eq 0)>>
+<<if setup.Witch.hasSuccubusEncounter() and (hasVisited("succubusEventTV") or hasVisited("succubusPCEvent")) and setup.Witch.exorcismQuestNotStarted()>>
 <<linkreplace "@@.usebtn; Ask about a ghost in the house@@">>
 @@.mc-speech; I am disturbed by someone or something in my own home! <br>
 Something is living in my house, sometimes it seems to possess me. This has been going on for some time.<br>
@@ -43,7 +43,7 @@ I thought it would leave me alone after a while, like other ghosts, but it's not
 <<addclass ".rescueGirlsDisabled" "disabled-link">>
 <</if>>
 <</done>>
-<<if ndef $hasQuestForRescue>><span class="rescueGirlsDisabled">
+<<if setup.Witch.canOfferRescueQuest()>><span class="rescueGirlsDisabled">
 <<linkreplace "@@.usebtn; Missing girls@@">>
 <<set $hasQuestForRescue to 0>>
 @@.notmc-speech; Oh, $mc.name, you’ve come at just the right time. I can see you're getting more and more experienced with each passing day, and I’ve got an important task for you. My old friend, a nun named Rain from the church, needs some help<br>
@@ -54,7 +54,7 @@ She told me that recently, her girls — who, like you, are also ghost hunters�
 @@.mc-action; You need to talk to Sister Rain at the church.@@<br>
 <</linkreplace>><<if $mc.lvl lt 4>>@@.warningtext; (Req. lvl 4+)@@<</if>><br></span><</if>>
 <<if $ghostHuntingMode eq 0>>
-<<if $mc.money gte 35>>
+<<if setup.Witch.canAffordContract()>>
 @@.usebtn;[[I want to get a contract|GhostRandomize]]@@<br>
 <br>
 @@.usebtn; [[I want to get a challenging contract(Ghost will hide one piece of evidence)|GhostRandomize][$deleteOneEvidence to 1]]@@<br>
@@ -74,7 +74,7 @@ She told me that recently, her girls — who, like you, are also ghost hunters�
 @@.warningtext; (Req. lvl 2+)@@<br>
 <<else>>
 <<if $mc.lvl gte 2>>
-<<if ndef $gotCursedItem>>
+<<if setup.Witch.canOfferCursedItemQuest()>>
 <<linkreplace "@@.usebtn;I have a small task for you.@@">>
 <<set $gotCursedItem to 0>>	
 @@.notmc-speech; It seems you’ve gained some experience and are ready for new challenges. So listen:<br>
@@ -85,9 +85,9 @@ In every house with a ghost, there is a cursed object. It could be in any room. 
 @@.mc-action; I need to search the haunted house for the cursed object. It could be in any room.@@
 <br>
 <</linkreplace>>
-<<elseif $gotCursedItem eq  0>>
+<<elseif setup.Witch.cursedItemQuestActive()>>
 @@.mc-thoughts; I need to bring the witch a cursed object. It could be in any room.<br>
-<<elseif $gotCursedItem eq 1>>
+<<elseif setup.Witch.hasCursedItemToTurnIn()>>
 <<linkreplace "@@.usebtn; I found the cursed object.@@">>
 @@.notmc-speech;Oh, thank you. Here is your reward. @@<br>
 <span> Money: +$30 $ </span><br>
@@ -97,7 +97,7 @@ In every house with a ghost, there is a cursed object. It could be in any room. 
 <<set $isCIButtplug to 0>>
 <<set $isCIBeads to 0>>
 <<set $isCIHDildo to 0>>
-<<if  $equipment.gwb neq 3>>
+<<if setup.Witch.shouldAwardGwb3OnTurnIn()>>
  <<set $equipment.gwb to 3>>
 @@.mc-action; You get a lvl 3 Ghost Writing Book @@<img @src="setup.ImagePath + '/img/gwb.png'" style="max-width:5%"><br>
 <br>
@@ -121,13 +121,13 @@ In every house with a ghost, there is a cursed object. It could be in any room. 
 @@.mc-speech;<<linkreplace "Do you have anything for sale?">>
 <<goto "witchSale">>
 <</linkreplace>>@@<br>
-<<if ndef $eventToolsOneStart or $eventToolsOneStart eq 0>>
+<<if setup.Witch.canAskAboutLevel3Tools()>>
 @@.mc-speech;<<linkreplace "Do you sell level 3 tools?">>
-@@.notmc-speech; <<if $equipment.gwb eq 3>><<else>>I only have a level 3 ghostwriting book, but I'm not planning to sell it yet. Also, <</if>>I know that the priest has some level 3 tool. Ask him about it@@
+@@.notmc-speech; <<if setup.Witch.ownsLevel3Gwb()>><<else>>I only have a level 3 ghostwriting book, but I'm not planning to sell it yet. Also, <</if>>I know that the priest has some level 3 tool. Ask him about it@@
 <<set $eventToolsOneStart to 0>>
 <</linkreplace>>@@<br><</if>>
 <</if>>
-<<if $boughtMonkeyPawGuide eq 0>>
+<<if setup.Witch.canAskAboutMonkeyPaw()>>
 <<linkreplace "@@.usebtn; Ask about Monkey Paw@@">>
 @@.notmc-speech; Oh, I see you found that in the haunted house. If you’d like to know what kinds of wishes the monkey paw can grant, I can sell you a little guide. Let’s say... for $400. @@<br>
 @@.mc-speech; That's so expensive!!!@@<br>
@@ -138,7 +138,7 @@ In every house with a ghost, there is a cursed object. It could be in any room. 
 <</linkreplace>><br>
 
 <</if>>
-<<if $wardenClothesStage eq 0 or $wardenClothesStage eq 1>>
+<<if setup.Witch.canAskAboutIronclad()>>
 <<linkreplace "@@.usebtn; Ask about Prison 'Ironclad'@@">>
 @@.mc-speech; I went there, but I didn’t find any paranormal activity. @@<br>
 @@.notmc-speech; The thing is, some places have a special influence on ghosts. This includes the "Ironclad" prison. You won't be able to catch their attention unless you... fit in with the place. Perhaps you should think about how to become a part of this environment, how to make them notice you.@@<br>
@@ -146,7 +146,7 @@ In every house with a ghost, there is a cursed object. It could be in any room. 
 <<set $wardenClothesStage to 1>>
 <</linkreplace>>
 <</if>><br>
-<<if $mc.lvl gte 5 and ndef $weakenTheGhostQuest>>
+<<if setup.Witch.canOfferWeakenQuest()>>
 <<linkreplace "@@.usebtn; Weaken the Ghost@@">>
 @@.notmc-speech;Now that you've gained experience, I'm ready to give you an extra task. I want you not only to identify the ghost but also to weaken him...@@<br>
 @@.mc-speech;And how do I do that?@@<br>

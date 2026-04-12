@@ -3,12 +3,12 @@
 <<deliveryVideo "papersevent" 1>>
 @@.notmc-speech; How about staying with me for a while? I think the work can wait, and I'll write a good review for your work?@@<br>
 +15 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"><br>
-<<if $mc.corruption lte 3>>
+<<if setup.Delivery.pappersStillCorruptible()>>
 +0.1 <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%;">
 <<set $mc.corruption += 0.1>><br>
 <</if>>
-<<if $mc.corruption gte 3>>
-<<if $mc.lust gte 40>>
+<<if setup.Delivery.canAcceptPappersFlirt()>>
+<<if setup.Delivery.pappersLustHighEnough()>>
 @@.mc-thoughts; I'm so turned on, I need to relax a little@@<br>
 @@.mc-speech; Maybe you are right~AH~, work can wait@@<br>
 @@.notmc-speech; Get on <<linkappend "your knees">><br>

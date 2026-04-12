@@ -1,0 +1,81 @@
+:: LibraryController [script]
+/*
+ * Centralized state queries for the city library location.
+ * Opening hours, Brook-meeting availability, and the random-find
+ * pool are exposed through setup.Library so passages don't have to
+ * inline the underlying $variable checks.
+ */
+setup.Library = (function () {
+	function v(name) { return State.variables[name]; }
+	function mc() { return State.variables.mc; }
+
+	return {
+		// --- Hours ------------------------------------------------
+		isOpen: function () {
+			var h = v('hours');
+			return h > 7 && h < 22;
+		},
+		hasEnergyToSearch: function () {
+			return mc().energy >= 1;
+		},
+
+		// --- Brook / library-search encounter pool ---------------
+		hasMetBrook: function () {
+			return v('meetBrook') !== undefined;
+		},
+		brookIsPossessed: function () {
+			return v('isBrookePossessed') === 1;
+		},
+		brookIsWithRain: function () {
+			return (v('isBrookePossessedCD') || 0) <= 2;
+		},
+		canMeetBrookAtLibrary: function () {
+			return !this.brookIsPossessed() && !this.brookIsWithRain();
+		},
+
+		// --- Discovered content (used to enable menu entries) ----
+		hasFoundTipsBook: function () { return v('foundTips') !== undefined; },
+		hasFoundComics: function () { return v('foundComics') !== undefined; },
+		hasFoundBrook: function () { return v('foundBrook') !== undefined; },
+		hasFoundGirl: function () { return v('foundGirl') !== undefined; },
+		hasFoundGuy: function () { return v('foundGuy') !== undefined; },
+
+		availableSearchResults: function () {
+			var out = [];
+			if (!this.hasFoundTipsBook()) out.push('book');
+			if (!this.hasFoundComics()) out.push('comics');
+			if (!this.hasFoundGirl()) out.push('girl');
+			if (!this.hasFoundGuy()) out.push('guy');
+			if (!this.hasFoundBrook()) out.push('brook');
+			return out;
+		},
+
+		// --- libraryGuy clothing branch --------------------------
+		/* Library groping event uses pants/shorts vs skirt to pick
+		 * the pose; unified here for reuse. */
+		wearingPants: function () {
+			return v('jeansState') === 'worn' || v('shortsState') === 'worn';
+		},
+		wearingSkirt: function () {
+			return v('skirtState') === 'worn';
+		},
+
+		// --- Brook solo-hunt chances (duplicated in BrookInfo) --
+		brookSoloOwaissaChance: function () {
+			var lvl = (v('brook') || {}).lvl || 0;
+			if (lvl >= 5) return 70;
+			if (lvl === 4) return 55;
+			if (lvl === 3) return 40;
+			if (lvl === 2) return 25;
+			return 0;
+		},
+		brookSoloElmChance: function () {
+			var lvl = (v('brook') || {}).lvl || 0;
+			if (lvl >= 5) return 55;
+			if (lvl === 4) return 40;
+			if (lvl === 3) return 25;
+			if (lvl === 2) return 10;
+			return 0;
+		}
+	};
+})();

@@ -1,0 +1,17 @@
+:: SalonController [script]
+/*
+ * Centralized state queries for the beauty salon.
+ * Passages should call into setup.Salon instead of testing the
+ * underlying $variables directly, so the conditions live in one place.
+ */
+setup.Salon = (function () {
+	function v(name) { return State.variables[name]; }
+
+	return {
+		// --- Hours -----------------------------------------------
+		isOpen: function () {
+			var h = v('hours');
+			return h > 7 && h < 22;
+		}
+	};
+})();

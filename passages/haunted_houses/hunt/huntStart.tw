@@ -1,6 +1,6 @@
 :: huntStart [noreturn] {"position":"2500,1100","size":"100,100"}
 <<nobr>>
-<<if $huntActivated eq 0 and $elapsedTimeHunt gte $huntTimeRemain>>
+<<if setup.HauntedHouses.canStartRandomHunt()>>
 <<if random(0, 100) lte 6>>
     <<set _g = setup.getGhostByName($ghost.name)>>
     <<if setup.ghostHuntConditionMet(_g, $mc)>>

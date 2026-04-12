@@ -6,7 +6,7 @@
 <<consumableCard "medicineAmount"    "img/medicine.png"    30 "generalSection" 1  "You have {n} pill(s) remaining">>
 <div class="housecard">
 <img @src="setup.ImagePath + '/img/spray.png'" class="iconPx"><br>
-<<if ndef $hasPSpray or $hasPSpray eq 0>>
+<<if setup.Mall.needsPepperSpray()>>
 <span class="priceAmount">10$</span><br>
 <<if $mc.money gte 10>>
 @@.buyItemLink;<<link "Buy" "generalSection">>

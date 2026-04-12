@@ -1,7 +1,7 @@
 :: EmilyTalk {"position":"3325,1600","size":"100,100"}
 <<nobr>>
 <img @src="setup.ImagePath + '/gym/EmilyTalks.jpg'" width="100%"><br>
-<<if ndef $relationEmily>>
+<<if not setup.Gym.hasMetEmily()>>
 
 @@.mc-speech; Hi, you look really fit. You must work out a lot. Oh, I forgot to introduce myself: I'm $mc.name.@@<br>
 @@.notmc-speech; Hey $mc.name. I'm Emily. Yes, you're right@@<br>

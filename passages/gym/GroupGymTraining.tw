@@ -3,7 +3,7 @@
 <<addTime 60>>
 <<randomVideo "gym/group.mp4" "gym/group1.mp4">>
  You spent about an hour at the gym, diligently working on improving your physical fitness. Each workout makes you stronger and more resilient, helping you reach new heights.<br>
-<<if $mc.beauty gte 50>>
+<<if setup.Gym.meetsBeautyForGroupEvent()>>
 @@.mc-thoughts; Suddenly, you were@@ <<linkappend "@@.mc-thoughtsLink; surrounded by all the members of the group class@@.">><br>
 
 <video autoplay controls muted loop>
@@ -12,7 +12,7 @@
  <<addLust 15>>
  @@.notmc-speech;The class is almost over, and now we want to relax a bit. You’ll help us out, won’t you, sweetheart?@@<br>
 @@.mc-thoughts; With these words they began to lightly touch your body, kissing and biting your tits and pussy @@<br>
-<<if $mc.lust gte 50>>
+<<if setup.Gym.canJoinGroupOrgy()>>
 @@.mc-speech; I'm so horny...and they start rubbing my pussy right now....<br>
 Oooh, [[I can't resist|gymGroupEvent1Start]]@@<br>
 <<else>>

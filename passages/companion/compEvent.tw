@@ -389,7 +389,7 @@
  <source @src="setup.ImagePath+`/`+$videoEventCompanion" type="video/mp4">
  </video>
  <<else>>
- <<if $companion.name eq "Alex" or $companion.name eq "Taylor" or $companion.name eq "Casey">>
+ <<if setup.Companion.isTransCompanion()>>
  <img @src="setup.ImagePath+`/`+$videoEventCompanion" alt="Image" class="displayCentredImgs"><br>
   
  <<else>>

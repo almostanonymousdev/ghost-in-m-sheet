@@ -4,11 +4,11 @@
 @@.location; The Witch's House@@<br>
 @@.mc-thoughts; Doesn't look as scary as it sounds@@<br>
 <br>
-<<if $hours lte 9 or $hours gt 23>>
-<<if ndef $gotKeyFromWitch>>
-@@.mc-thoughts;I don't think it's worth going to her now. I'll check in later (from 10 in the morning to midnight)@@
-<<else>>
+<<if not setup.Witch.isDayTime()>>
+<<if setup.Witch.canSneakInAtNight()>>
 @@.enterbtn; [[Use the stolen key to sneak into the house|WitchInsideNight]]@@
+<<else>>
+@@.mc-thoughts;I don't think it's worth going to her now. I'll check in later (from 10 in the morning to midnight)@@
 <</if>>
 <<else>>
 <<set _check to random(1,7)>>

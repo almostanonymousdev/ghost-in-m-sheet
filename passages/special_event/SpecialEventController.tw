@@ -1,0 +1,74 @@
+:: SpecialEventController [script]
+/*
+ * Centralized state queries and mutations for the ghost-encounter
+ * special events. Most passages in this directory are mostly CG, so
+ * this controller mainly captures the branching predicates (corruption
+ * thresholds, companion identity, mare progression, wraith escape).
+ */
+setup.SpecialEvent = (function () {
+	function v(name) { return State.variables[name]; }
+	function mc() { return State.variables.mc; }
+	function companion() { return State.variables.companion || {}; }
+
+	return {
+		// --- Mare info gating ------------------------------
+		knowsAboutMare: function () {
+			return v('ghostMareInfoCollected') === 1;
+		},
+
+		// --- Spirit branch thresholds ---------------------
+		hasMinCorruptionForTVSpirit: function () {
+			return mc().corruption >= 3;
+		},
+		hasMinCorruptionForSleepSpirit: function () {
+			return mc().corruption >= 5;
+		},
+		hasEnergyForSleepSpirit: function () {
+			return mc().energy >= 5;
+		},
+
+		// --- Spirit / mare side effects -------------------
+		markSpiritEventSeen: function () {
+			State.variables.ghostSpiritEventStage = 1;
+			State.variables.ghostSpecialEventSpiritCD = 1;
+		},
+		clearMareEvent: function () {
+			State.variables.ghostMareEventStart = 0;
+			State.variables.ghostMareEventStage = 0;
+		},
+
+		// --- Companion -------------------------------------
+		companionIs: function (name) {
+			return companion().name === name;
+		},
+		hasCompanion: function () {
+			return !!companion().name;
+		},
+
+		// --- Wraith escape ---------------------------------
+		canTryEscape: function () {
+			return mc().energy >= 1;
+		},
+		rollEscapeSuccess: function () {
+			var chance = Math.floor(Math.random() * 100) + 1;
+			return chance <= mc().energy * 5;
+		},
+		spendEscapeEnergy: function () {
+			State.variables.mc.energy = 0;
+		},
+
+		// --- Myling companion reset ------------------------
+		resetHuntPlansAfterMyling: function () {
+			var sv = State.variables;
+			sv.chosenPlan = 0;
+			sv.chosenPlanActivated = 0;
+			sv.randomGhostPassage = 0;
+			sv.isCompRoomChosen = 0;
+			sv.showComp = 0;
+			sv.isCompChosen = 0;
+			if (this.companionIs('Alice') && sv.isAliceGoingForHuntingAlone === 0) {
+				sv.aliceWorkDone = 0;
+			}
+		}
+	};
+})();

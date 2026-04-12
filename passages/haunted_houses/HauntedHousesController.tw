@@ -1,0 +1,88 @@
+:: HauntedHousesController [script]
+/*
+ * Centralized state queries and mutations for the haunted-houses
+ * subsystem: hunt mode, clothing state, stolen-clothes tracking,
+ * and the shared hunt-end cleanup. Passages call into
+ * setup.HauntedHouses instead of inlining the underlying checks.
+ */
+setup.HauntedHouses = (function () {
+	function v(name) { return State.variables[name]; }
+	function mc() { return State.variables.mc; }
+
+	return {
+		// --- Hunt mode -------------------------------------------
+		isContractMode: function () { return v('ghostHuntingMode') === 1; },
+		isInsideHouse: function () { return v('ghostHuntingMode') === 2; },
+		isHuntOver: function () { return v('ghostHuntingMode') === 3; },
+		endHunt: function () { State.variables.ghostHuntingMode = 3; },
+
+		// --- Which house are we in? -----------------------------
+		isOwaissa: function () { return v('isOwaissa') === 1; },
+		isElm: function () { return v('isElm') === 1; },
+		isEnigma: function () { return v('isEnigma') === 1; },
+		isIronclad: function () { return v('isIronclad') === 1; },
+		isRealHouse: function () { return v('isrealhouse') === 1; },
+
+		// --- Clothing aggregation -------------------------------
+		hasBottomWorn: function () {
+			return v('jeansState') === 'worn'
+				|| v('skirtState') === 'worn'
+				|| v('shortsState') === 'worn';
+		},
+		hasTopWorn: function () { return v('tshirtState') === 'worn'; },
+		isFullyDressed: function () {
+			return this.hasTopWorn() && this.hasBottomWorn();
+		},
+		isFullyNude: function () {
+			return v('tshirtState') === 'not worn'
+				&& v('pantiesState') === 'not worn'
+				&& !this.hasBottomWorn();
+		},
+		isTopless: function () {
+			return v('tshirtState') === 'not worn' && this.hasBottomWorn();
+		},
+
+		// --- Stolen clothes -------------------------------------
+		hasClothesStolen: function () { return v('isClothesStolen') === 1; },
+		clearStolenClothesFlag: function () {
+			State.variables.isClothesStolen = 0;
+		},
+
+		// --- Timed tool activations -----------------------------
+		resetToolTimers: function () {
+			var s = State.variables;
+			s.EmfActivationTime = 0;
+			s.uvlActivationTime = 0;
+			s.EmfActivated = 0;
+			s.uvlActivated = 0;
+		},
+
+		// --- Corruption accumulator used at hunt end ------------
+		commitTempCorruption: function () {
+			var s = State.variables;
+			if ((s.tempCorr || 0) >= 1) s.tempCorr = 1;
+			s.mc.corruption += (s.tempCorr || 0);
+			var amount = s.tempCorr || 0;
+			s.tempCorr = 0;
+			return amount;
+		},
+
+		// --- Hunt triggers --------------------------------------
+		canStartRandomHunt: function () {
+			return v('huntActivated') === 0
+				&& (v('elapsedTimeHunt') || 0) >= (v('huntTimeRemain') || 0);
+		},
+
+		// --- NudityEvent branch helpers -------------------------
+		nudityNakedNoBottoms: function () {
+			return v('tshirtState') === 'not worn'
+				&& v('pantiesState') === 'not worn'
+				&& !this.hasBottomWorn();
+		},
+		nudityToplessWithPanties: function () {
+			return v('tshirtState') === 'not worn'
+				&& v('pantiesState') === 'worn'
+				&& !this.hasBottomWorn();
+		}
+	};
+})();

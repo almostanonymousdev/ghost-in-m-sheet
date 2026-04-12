@@ -146,26 +146,14 @@
 Corruption is increased (+ <<= $tempCorr.toFixed(2)>>) : <<= $mc.corruption.toFixed(2)>><br>
 <<set $tempCorr to 0>>
 <<set $mc.dirty to 1>>
-<<set $EmfActivationTime to 0>>
-<<set $uvlActivationTime to 0>>
-<<set $EmfActivated to 0>>
-<<set $uvlActivated to 0>>
+<<run setup.HauntedHouses.resetToolTimers()>>
 <<include "lostClothes">>
 <<done>>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
-<<if $companion.name eq "Alice" and $isAliceGoingForHuntingAlone eq 0>>
-<<set $aliceWorkDone to 0>>
-<</if>>
-<<if $isCompChosen eq 1 and $companion.name eq "Blake" and $gotCursedItem eq 1>>
-<<set $gotCursedItem to 0>>
-<</if>>
-<<set $chosenPlan to 0>>
-<<set $chosenPlanActivated to 0>>
-<<set $randomGhostPassage to 0>>
-<<set $isCompRoomChosen to 0>>
-<<set $showComp to 0>>
-<<set $isCompChosen to 0>>
+<<run setup.Companion.resetAliceWorkIfNeeded()>>
+<<run setup.Companion.clearBlakeCursedItem()>>
+<<run setup.Companion.resetHuntState()>>
 @@.movebtn;[[Next|Sleep]]@@
 
 

@@ -38,10 +38,10 @@
 <</if>>
 </div>
 
-<<if $hasRescueClue eq 1>>
+<<if setup.MissingWomen.hasRescueClue()>>
 <<linkreplace "@@.usebtn;Compare the house with the photo@@">>
 <<removeclass "#rescueHouseHidden" "hideRescueHouse">>
-<<if $randomRescuePhotoNumber eq $rescueHouse>>
+<<if setup.MissingWomen.isCorrectHouse()>>
 @@.mc-speech; It seems like this is the house.@@
 <<else>>
 @@.mc-speech; No, doesn't really look like it.@@
@@ -49,18 +49,18 @@
 <</linkreplace>><br>
 <</if>>
 <<addTime 20>>
-<<if $hasQuestForRescue eq 2>>
+<<if setup.MissingWomen.searchTooLate()>>
 @@.mc-speech; The nun said that after 6 p.m. it's pointless to keep searching. It seems I’m too late. I should go back to her and tell her I failed.@@<br>
 <<else>>
-<<if $mc.energy gte 1>>
+<<if setup.MissingWomen.canSearchHouse()>>
 <<linkreplace "@@.usebtn; Search the house @@ <img @src='setup.ImagePath + \"/img/energy.png\"' style='position: relative; top: 0.375em; width:3%; display: inline; margin: 0;'>">>
 <<set $mc.energy -=1>>
-<<if $randomRescuePhotoNumber neq $rescueHouse>>
+<<if not setup.MissingWomen.isCorrectHouse()>>
 @@.mc-thoughts; You search the house for 30 minutes, but find no one.@@
 <<addTime 30>>
-<<elseif $rescueStage lt 2 and $randomRescuePhotoNumber eq $rescueHouse and $hasQuestForRescue eq 1>>
+<<elseif setup.MissingWomen.canResolveRescue()>>
 <<goto "rescueEvent">>
-<<elseif $hasQuestForRescue eq 2>>
+<<elseif setup.MissingWomen.questFailed()>>
 @@.mc-speech; The nun said that after 6 p.m. it's pointless to keep searching. It seems I’m too late. I should go back to her and tell her I failed.@@<br>
 <</if>>
 <</linkreplace>><<else>>

@@ -89,7 +89,7 @@ Completely naked? You're lucky I like you, $mc.name.
     @@.notmc-speech;Good, I'll stay close to you.@@<</replace>>
 <</link>>@@<br>
 <span id="checkQuestForCursedItem">@@.usebtn;<<link "I need you to find the cursed item @@.warningtext; ($companion.chanceOfSuccessCI %, $companion.plan2TimeReq min)@@" >>
-<<if $gotCursedItem eq 0>>
+<<if not setup.Companion.hasCursedItem()>>
 <<set $chosenPlan to "Plan2">>
 <<set $chanceToSuccess to $companion.chanceOfSuccessCI>>
 <<set $showComp to 0>>
@@ -102,7 +102,7 @@ Completely naked? You're lucky I like you, $mc.name.
 <<replace "#compResponse">>
     @@.notmc-speech; We already have a cursed item.@@<</replace>>
 <</if>>
-<</link>>@@</span> <<if ndef $gotCursedItem>>@@.warningtext; Req. quest from the witch@@<</if>><br>
+<</link>>@@</span> <<if not setup.Companion.cursedItemQuestUnlocked()>>@@.warningtext; Req. quest from the witch@@<</if>><br>
 @@.usebtn;<<link "I want you to look for any ghost evidence @@.warningtext; ($companion.chanceOfSuccessAnyEvidence %, $companion.plan3TimeReq min@@)">>
 <<set $chosenPlan to "Plan3">>
 <<set $chanceToSuccess to $companion.chanceOfSuccessAnyEvidence>>
@@ -130,7 +130,7 @@ Completely naked? You're lucky I like you, $mc.name.
 
 <<done>>
 <<addclass ".linkselector" "disabled-link">>
-<<if ndef $gotCursedItem>>
+<<if not setup.Companion.cursedItemQuestUnlocked()>>
 <<addclass "#checkQuestForCursedItem" "disabled-link">>
 <</if>>
 <<if $taylor.lvl lt 1>>

@@ -12,7 +12,7 @@
 @@.mc-thoughts; You notice a girl with a man...<br>@@
 @@.mc-speech; This is Brooke! I have to help her!@@<br>
 
-<<if $hasPSpray eq 1 and $hasPSprayCharges gte 1>>
+<<if setup.Posession.canPepperSprayBrookeAttacker()>>
 @@.mc-thoughts; He notices you but doesn’t even try to run away. Luckily, you have a pepper spray in your bag. You quickly pull it out and use it. The man flees.@@<br>
 @@.mc-thoughts;  You take her hand and drag her along with you [[the church|RainHelps]]@@
 <<set $hasPSprayCharges -= 1>>
@@ -29,11 +29,11 @@
  <source @src="setup.ImagePath + '/brook/possessed/4.mp4'" type="video/mp4">
  </video>
 @@.mc-thoughts; While you are trying to remember what happened and how you ended up in this position, the man climbed on top of you and started fucking you in the ass.@@<br>
-<<if $sensualBodyPart.anal gte 5>>
+<<if setup.Posession.analIsVeryLoose()>>
 @@.mc-thoughts; Your anus easily accepted his cock.@@<br>
 @@.mc-speech; Ah~ Ah fuck ~Yeah~~@@<br>
 @@.mc-thoughts; He didn't expect you to enjoy being fucked in the ass, which is why he started to pound his dick harder into you until he spilled all his cum inside you@@<br>
-<<elseif $sensualBodyPart.anal gte 3>>
+<<elseif setup.Posession.analIsTrained()>>
 @@.mc-thoughts; He quickly penetrated your ass with his hot cock almost without resistance@@<br>
 @@.mc-speech; Ahh~ not so rough~ ahhh@@<br>
 @@.mc-thoughts;But that didn't stop him. He continued to rape your ass until he came inside you.@@<br>

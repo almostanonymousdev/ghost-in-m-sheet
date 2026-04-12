@@ -60,7 +60,7 @@ You’re safe now; I think you can go home and rest.@@<br>
 
 <<if $ghostHuntingMode neq 2>>
 <<else>>
-<<if $isCompChosen eq 1 and $companion.name eq "Blake" and $gotCursedItem eq 1>>
+<<if setup.Posession.isBlakeHuntWithCursedItem()>>
 <<set $gotCursedItem to 0>>
 <</if>>
 <<if $tempCorr gte 1>><<set $tempCorr to 1>><</if>>

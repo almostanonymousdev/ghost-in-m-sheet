@@ -1,0 +1,44 @@
+:: PosessionController [script]
+/*
+ * Centralized state queries for the possession event sequence.
+ * Passages should call into setup.Posession instead of testing the
+ * underlying $variables directly, so the conditions live in one place.
+ */
+setup.Posession = (function () {
+	function v(name) { return State.variables[name]; }
+	function mc() { return State.variables.mc; }
+
+	// Stages at which the player can resist a given tier of scene.
+	// Naming follows the existing breakFreePossession widget threshold:
+	// higher $mcpossession means the player has surrendered further and
+	// will follow through to harder scenes.
+	return {
+		canResistFirstAttempt: function () {
+			return v('mcpossession') >= 4;
+		},
+		canResistSecondAttempt: function () {
+			return v('mcpossession') >= 7;
+		},
+		canResistFinalAttempt: function () {
+			return v('mcpossession') >= 11;
+		},
+
+		// --- Brooke rescue ---------------------------------------
+		canPepperSprayBrookeAttacker: function () {
+			return v('hasPSpray') === 1 && v('hasPSprayCharges') >= 1;
+		},
+		analIsVeryLoose: function () {
+			return v('sensualBodyPart').anal >= 5;
+		},
+		analIsTrained: function () {
+			return v('sensualBodyPart').anal >= 3;
+		},
+
+		// --- Post-possession hunt cleanup ------------------------
+		isBlakeHuntWithCursedItem: function () {
+			return v('isCompChosen') === 1 &&
+				v('companion').name === 'Blake' &&
+				v('gotCursedItem') === 1;
+		}
+	};
+})();

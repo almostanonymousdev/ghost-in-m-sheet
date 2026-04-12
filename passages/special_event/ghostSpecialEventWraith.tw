@@ -3,14 +3,14 @@
 @@.mc-thoughts; You slowly regain consciousness, feeling a dull ache in your head. Opening your eyes, you find yourself lying on the ground in a forest. Panic sets in as you realize your hands are tightly bound with rough rope.@@<br>
 <<randomVideo "ghosts/specials/wraith1.mp4" "ghosts/specials/wraith2.mp4">>
  
-<<if $mc.energy gte 1>>
+<<if setup.SpecialEvent.canTryEscape()>>
 @@.mc-speech; I must try to free myself from these ropes while I still have the strength, or I could be in serious trouble.@@<br>
 <div id="divSpecialEventReplace">@@.mc-thoughts; Every point of <img @src="setup.ImagePath + '/img/energy.png'" style='position: relative; top: 0.375em; width:3%;'> + 5% to escape@@<br><<linkreplace "@@.usebtn;Try to free myself@@ ">>
 
 
-<<set _chance to random(1,100)>>
-<<if _chance lte ($mc.energy * 5)>>
-<<set $mc.energy to 0>>
+<<set _escapeOk to setup.SpecialEvent.rollEscapeSuccess()>>
+<<if _escapeOk>>
+<<run setup.SpecialEvent.spendEscapeEnergy()>>
 <<updatemeter 'energy' `$mc.energy / $mc.energyMax`>>
 <<replace "#divSpecialEventReplace">>
 @@.mc-speech; I did it! I need to get dressed and [[go sleep home.|Sleep]]@@

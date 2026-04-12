@@ -1,0 +1,108 @@
+:: WitchController [script]
+/*
+ * Centralized state queries and mutations for the witch's house.
+ * Passages should call into setup.Witch instead of testing the
+ * underlying $variables directly, so the conditions live in one place.
+ */
+setup.Witch = (function () {
+	function v(name) { return State.variables[name]; }
+	function mc() { return State.variables.mc; }
+
+	return {
+		// --- Hours / access --------------------------------------
+		isDayTime: function () {
+			var h = v('hours');
+			return h > 9 && h <= 23;
+		},
+		hasStolenKey: function () {
+			return v('gotKeyFromWitch') !== undefined;
+		},
+		canSneakInAtNight: function () {
+			return !this.isDayTime() && this.hasStolenKey();
+		},
+
+		// --- Contracts -------------------------------------------
+		isFirstVisit: function () {
+			return v('firstVisitWitchShop') === true;
+		},
+		canAffordContract: function () {
+			return mc().money >= 35;
+		},
+		hasActiveContract: function () {
+			return v('ghostHuntingMode') === 1;
+		},
+		contractReadyToEnd: function () {
+			return v('ghostHuntingMode') === 3;
+		},
+
+		// --- Exorcism referral -----------------------------------
+		hasSuccubusEncounter: function () {
+			return v('succubus') !== undefined;
+		},
+		exorcismQuestNotStarted: function () {
+			var s = v('exorcismQuestStage');
+			return s === undefined || s === 0;
+		},
+
+		// --- Missing-girls / rescue quest ------------------------
+		canOfferRescueQuest: function () {
+			return v('hasQuestForRescue') === undefined;
+		},
+		rescueQuestUnlocked: function () {
+			return mc().lvl >= 4;
+		},
+
+		// --- Cursed-object side quest ----------------------------
+		canOfferCursedItemQuest: function () {
+			return mc().lvl >= 2 && v('gotCursedItem') === undefined;
+		},
+		cursedItemQuestActive: function () {
+			return v('gotCursedItem') === 0;
+		},
+		hasCursedItemToTurnIn: function () {
+			return v('gotCursedItem') === 1;
+		},
+		shouldAwardGwb3OnTurnIn: function () {
+			return v('equipment').gwb !== 3;
+		},
+
+		// --- Level 3 tools referral ------------------------------
+		canAskAboutLevel3Tools: function () {
+			var s = v('eventToolsOneStart');
+			return s === undefined || s === 0;
+		},
+		ownsLevel3Gwb: function () {
+			return v('equipment').gwb === 3;
+		},
+
+		// --- Monkey paw guide ------------------------------------
+		canAskAboutMonkeyPaw: function () {
+			return v('boughtMonkeyPawGuide') === 0;
+		},
+
+		// --- Warden/Ironclad hint --------------------------------
+		canAskAboutIronclad: function () {
+			var s = v('wardenClothesStage');
+			return s === 0 || s === 1;
+		},
+
+		// --- Weaken-the-ghost quest ------------------------------
+		canOfferWeakenQuest: function () {
+			return mc().lvl >= 5 && v('weakenTheGhostQuest') === undefined;
+		},
+
+		// --- Night exploration -----------------------------------
+		canStealItemsFromWitch: function () {
+			var cd = v('stealItemsFromWitchCD');
+			return cd === undefined || cd === 0;
+		},
+		canVisitWitchBedroomNight: function () {
+			return v('witchNightCD') !== 1;
+		},
+
+		// --- Mast (masturbation) event ---------------------------
+		canStealKeyFromWitch: function () {
+			return !this.hasStolenKey() && mc().corruption >= 3;
+		}
+	};
+})();

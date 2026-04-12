@@ -3,7 +3,7 @@
 <img @src="setup.ImagePath + '/img/sleeping.jpg'" width="100%">
 <br>
 <br>
-<<if $gotCursedItem eq 1 and $gotCursedItemEventCD gte 1 and previous() is "Bedroom" and $hours gte 18 and $hours lte 23>>
+<<if setup.Home.tentaclesSleepEventReady() and previous() is "Bedroom">>
 <<set $hours +=8>><<if $hours >=24>><<set $hours -=24>><<include "resetCD">><</if>>
 <<goto "tentaclesEventSleep">>
 
@@ -20,7 +20,7 @@
 
 <<elseif $ghostMareEventStage gte 4>>
 @@.backbtn;<<link "Wake up" "ghostSpecialEventMareEnd">><<set $hours +=3>><<if $hours >=24>><<set $hours -=24>><<include "resetCD">><</if>><</link>>@@
-<<elseif $ghostSpiritEventStage eq 0 and $ghostSpecialEventSpiritCD eq 0>>
+<<elseif setup.Home.spiritNapEventReady()>>
 @@.backbtn;<<link "Wake up" "ghostSpecialEventSleepSpirit">><<set $hours +=3>><<if $hours >=24>><<set $hours -=24>><<include "resetCD">><</if>><</link>>@@
 <<else>>
 @@.backbtn;<<link "Wake up" "Bedroom">><<set $hours +=8>><<if $hours >=24>><<set $hours -=24>><<include "resetCD">><</if>><</link>>@@

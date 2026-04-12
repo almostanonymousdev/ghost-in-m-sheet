@@ -12,7 +12,7 @@
 </video>
 @@.notmc-speech; You're good at it@@<br>
 @@.mc-speech; ~Hmng~ulrp~@@<br>
-<<if $mc.lust lte 49>>
+<<if not setup.Delivery.packageLustHighEnough()>>
 @@.mc-thoughts; I suck dick for money, what happened to me?@@ <<deliveryLustReq 50>><br>
 @@.mc-speech; [[He's cumming|DeliveryPackageEventEnd2]]@@<br>
 <<else>>

@@ -1,12 +1,6 @@
 :: LibrarySearchResult {"position":"2500,1900","size":"100,100"}
 <<nobr>>
-<<set _foundLibrary to []>>
-
-<<if ndef $foundTips>> <<set _foundLibrary.push("book")>><</if>>
-<<if ndef $foundComics>> <<set _foundLibrary.push("comics")>><</if>>
-<<if ndef $foundGirl>> <<set _foundLibrary.push("girl")>><</if>>
-<<if ndef $foundGuy>><<set _foundLibrary.push("guy")>><</if>>
-<<if ndef $foundBrook>><<set _foundLibrary.push("brook")>><</if>>
+<<set _foundLibrary to setup.Library.availableSearchResults()>>
 
 <<set _selectedResult to _foundLibrary[random(0, _foundLibrary.length - 1)]>>
             

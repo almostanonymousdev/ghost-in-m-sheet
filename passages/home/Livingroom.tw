@@ -17,12 +17,12 @@
 <<unset $tentaclesEventTVText>>
 <</if>>
 @@.usebtn;<<link "Watch tv (30 min)" "Livingroom">>
-<<if $ghostSpiritEventStage eq 0 and $ghostSpecialEventSpiritCD eq 0>>
+<<if setup.Home.spiritNapEventReady()>>
 <<goto "ghostSpecialEventTVSpirit">>
-<<elseif $succubus eq 1 and $succubusEventCD eq 0 and $hours gte 18 and $hours lte 23>>
+<<elseif setup.Home.succubusTVEventReady()>>
 <<goto "succubusEventTV">>
 <<addTime 30>>
-<<elseif $gotCursedItem eq 1 and $gotCursedItemEventCD gte 3>>
+<<elseif setup.Home.tentaclesTVEventReady()>>
 <<goto "tentaclesEventTV">>
 <<addTime 30>>
 <</if>>
@@ -36,7 +36,7 @@
 <</link>><br>
 <</if>>
 
-<<if $hours gte 18 and $hours lte 20 and $mc.corruption gte 6 and ndef $succubus>>
+<<if setup.Home.succubusCanKnock()>>
 <<linkreplace "@@.usebtn; Someone is gently knocking on the door@@">>
 <<set $succubus to 1>>
 @@.mc-thoughts; You open the door — no one is there. A light breeze brushes against your face and fades away.@@<br>
@@ -44,29 +44,29 @@
 <</linkreplace>><br>
 <</if>>
 
-<<if $hours >= 23>>
-<<if $ghostHuntingMode eq 0>>
+<<if setup.Home.isNightForHunt()>>
+<<if not setup.Home.hasHuntContract() and not setup.Home.needsWitch() and $ghostHuntingMode eq 0>>
 @@.mc-thoughts; I don't have a contract@@
-<<elseif $ghostHuntingMode eq 1>>
+<<elseif setup.Home.hasHuntContract()>>
 
-<<if ($tshirtState == "not worn") or (($jeansState == "not worn") and (($shortsState == "not worn") or ($shortsState == "not bought")) and (($skirtState == "not worn") or ($skirtState == "not bought")))>>
+<<if not setup.Home.isDressedForStreet()>>
 @@.mc-thoughts; I can't go outside naked @@
 
-<<elseif $mc.dirty eq 1>>
+<<elseif setup.Home.isDirty()>>
 @@.mc-thoughts; I need to go to the bathroom first@@
-<<elseif ($mc.corruption gte 10)>>@@.movebtn;[[Ghost hunting|GhostStreet]]@@
-<<elseif ($braState == "not worn") or ($pantiesState == "not worn")>>@@.mc-thoughts; I can't go outside without underwear @@
+<<elseif setup.Home.isCorruptEnoughToSkipUnderwear()>>@@.movebtn;[[Ghost hunting|GhostStreet]]@@
+<<elseif not setup.Home.isWearingUnderwear()>>@@.mc-thoughts; I can't go outside without underwear @@
 <<else>>@@.movebtn;[[Ghost hunting|GhostStreet]]@@<</if>>
-<<elseif $ghostHuntingMode eq 3>>@@.mc-thoughts; I need to go to the witch first@@<</if>>
+<<elseif setup.Home.needsWitch()>>@@.mc-thoughts; I need to go to the witch first@@<</if>>
 <<else>> @@.mc-thoughts;Not appropriate time for ghost hunting@@<</if>>
 <br>
 <br>
-<<if ($tshirtState == "not worn") or (($jeansState == "not worn") and (($shortsState == "not worn") or ($shortsState == "not bought")) and (($skirtState == "not worn") or ($skirtState == "not bought")))>>
+<<if not setup.Home.isDressedForStreet()>>
 @@.mc-thoughts; I can't go outside naked @@
 
-<<elseif $mc.dirty eq 1>>@@.mc-thoughts; I need to go to the bathroom first@@
-<<elseif ($mc.corruption gte 10)>>@@.backbtn;[[Leave|Home]]@@
-<<elseif ($braState == "not worn") or ($pantiesState == "not worn")>>@@.mc-thoughts; I can't go outside without underwear @@<<else>>@@.backbtn;[[Leave|Home]]@@
+<<elseif setup.Home.isDirty()>>@@.mc-thoughts; I need to go to the bathroom first@@
+<<elseif setup.Home.isCorruptEnoughToSkipUnderwear()>>@@.backbtn;[[Leave|Home]]@@
+<<elseif not setup.Home.isWearingUnderwear()>>@@.mc-thoughts; I can't go outside without underwear @@<<else>>@@.backbtn;[[Leave|Home]]@@
 <</if>>
 /*[[RoomCleanup]]*/
 <<if previous() is "ghostSpecialEventWraithStart">>

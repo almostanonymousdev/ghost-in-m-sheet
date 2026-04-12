@@ -1,0 +1,128 @@
+:: GymController [script]
+/*
+ * Centralized state queries and mutations for the gym location.
+ * Passages should call into setup.Gym instead of testing the
+ * underlying $variables directly, so the conditions live in one place.
+ */
+setup.Gym = (function () {
+	function v(name) { return State.variables[name]; }
+	function mc() { return State.variables.mc; }
+
+	var TRAIN_COST = 5;
+	var DEFAULT_TRAINING_PRICE = 15;
+
+	return {
+		// --- Hours / open state --------------------------------
+		isOpen: function () {
+			var h = v('hours');
+			return h > 7 && h < 22;
+		},
+		isMorning: function () {
+			var h = v('hours');
+			return h >= 8 && h < 12;
+		},
+		isAfternoon: function () {
+			var h = v('hours');
+			return h >= 12 && h < 17;
+		},
+		isEvening: function () {
+			var h = v('hours');
+			return h >= 17 && h < 23;
+		},
+		isGroupClassTime: function () {
+			var h = v('hours');
+			return h >= 12 && h <= 13;
+		},
+
+		// --- Solo video buckets (keyed slightly differently) --
+		soloSlotMorning: function () {
+			var h = v('hours');
+			return h >= 8 && h < 13;
+		},
+		soloSlotAfternoon: function () {
+			var h = v('hours');
+			return h >= 13 && h < 18;
+		},
+		soloSlotEvening: function () {
+			var h = v('hours');
+			return h >= 18 && h < 23;
+		},
+
+		// --- Training cost (depends on time + discounts) -----
+		computeTrainingCost: function () {
+			var h = v('hours');
+			if (h >= 8 && h < 12) {
+				return v('trainer1CoachingCost') === undefined ? DEFAULT_TRAINING_PRICE : 0;
+			}
+			if (h >= 12 && h < 17) {
+				return DEFAULT_TRAINING_PRICE;
+			}
+			if (h >= 17 && h < 23) {
+				return v('trainer3CoachingCost') === undefined ? DEFAULT_TRAINING_PRICE : 0;
+			}
+			return DEFAULT_TRAINING_PRICE;
+		},
+
+		// --- Player capability checks ------------------------
+		hasSportswear: function () {
+			return v('sportswear') !== undefined;
+		},
+		hasEnergyToTrain: function () {
+			return mc().energy >= TRAIN_COST;
+		},
+		canAffordCoach: function () {
+			return mc().money >= v('trainingCost');
+		},
+		canTrainSolo: function () {
+			return this.hasSportswear() && this.hasEnergyToTrain();
+		},
+		canTrainWithCoach: function () {
+			return this.hasSportswear() && this.hasEnergyToTrain() && this.canAffordCoach();
+		},
+
+		// --- Trainer 1 (morning) event conditions -----------
+		trainer1OnCooldown: function () {
+			return v('trainer1SexCD') === 1;
+		},
+		hasSexyLingerieForTrainer1: function () {
+			var bs = v('rememberBottomStockings');
+			var tu = v('rememberTopUnder');
+			var bu = v('rememberBottomUnder');
+			return (bs === 'stockings2' || bs === 'stockings3') &&
+				(tu === 'bra2' || tu === 'bra3') &&
+				(bu === 'panties2' || bu === 'panties3');
+		},
+		canTriggerTrainer1Event: function () {
+			return v('trainer1TipReceived') === 1 &&
+				!this.trainer1OnCooldown() &&
+				this.hasSexyLingerieForTrainer1();
+		},
+		trainer1GaveTip: function () {
+			return v('trainer1TipReceived') === 1;
+		},
+
+		// --- Trainer 2 (afternoon) event conditions ---------
+		trainer2OnCooldown: function () {
+			return v('trainer2SexCD') === 1;
+		},
+		meetsFitForTrainer2Event: function () {
+			return mc().fit >= 30;
+		},
+
+		// --- Group class -----------------------------------
+		meetsBeautyForGroupEvent: function () {
+			return mc().beauty >= 50;
+		},
+		canJoinGroupOrgy: function () {
+			return mc().lust >= 50;
+		},
+
+		// --- Emily ----------------------------------------
+		hasMetEmily: function () {
+			return v('relationEmily') !== undefined;
+		},
+		emilyRelationshipStage: function () {
+			return v('relationEmily') || 0;
+		}
+	};
+})();

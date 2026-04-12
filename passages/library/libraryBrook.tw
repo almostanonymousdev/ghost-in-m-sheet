@@ -2,12 +2,12 @@
 <<nobr>>
 
 
-<<if $isBrookePossessed eq 1>>
+<<if setup.Library.brookIsPossessed()>>
 <img @src="setup.ImagePath + '/img/libraryInside.jpg'" width="100%">
 @@.mc-speech; She’s not there... strange...@@<br><br>
 @@.backbtn; [[Leave|LibraryInside]] @@<br>
 <<else>>
-<<if $isBrookePossessedCD lte 2>>
+<<if setup.Library.brookIsWithRain()>>
 <img @src="setup.ImagePath + '/img/libraryInside.jpg'" width="100%">
 @@.mc-thoughts;She’s probably still with Rain. Maybe it’s worth waiting a couple of days. @@<br><br>
 @@.backbtn; [[Leave|LibraryInside]] @@<br>

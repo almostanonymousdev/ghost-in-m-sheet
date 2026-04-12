@@ -1,7 +1,7 @@
 :: DeliveryManager {"position":"1100,1200","size":"100,100"}
 <<nobr>>
 <img @src="setup.ImagePath + '/img/John.jpg'" width="70%"><br>
-<<if $firstVisitDeliveryHub>>
+<<if setup.Delivery.isFirstVisit()>>
   @@.mc-thoughts; You enter the manager's office and notice a man around forty. There's nothing particularly remarkable about him. As you make your presence known, he carefully assesses you, momentarily pausing his gaze on your chest. Nevertheless, you gather the courage to initiate the conversation.@@<br>
   <br>
 @@.mc-speech;Hello, my name is $mc.name, and I'm looking for a job. Perhaps you have something suitable for me?@@<br>
@@ -32,9 +32,9 @@ It turned out to be quite simple. So, I just need to come here any day from 08:0
 @@.mc-action; Now you can work as a courier.@@
 <br>
   <<set $firstVisitDeliveryHub = false>>
-  <<elseif $firstVisitDeliveryHub eq false and previous() isnot "DeliveryMap">>
+  <<elseif not setup.Delivery.isFirstVisit() and previous() isnot "DeliveryMap">>
   <br>
-  <<if hasVisited("DeliveryManagerEventStart")>>
+  <<if setup.Delivery.hasMetManagerEvent()>>
   @@.notmc-speech; Oh, $mc.name, come in, don't be shy. What do you want to talk about?@@<<else>>
   @@.notmc-speech; 
 Hello, you're like umm... Susan? Milana? Doesn't matter, I'm a bit busy right now, let's talk later.
@@ -42,21 +42,21 @@ If you forgot, you can work here from 08:00 to 20:00. Take orders and go ahead. 
 <br>
 
 <<linkreplace "@@.usebtn;Ask about payment@@">>
-<<if $deliveryBJCD neq 1>>
+<<if not setup.Delivery.managerBJOnCooldown()>>
 @@.mc-speech;I wanted to talk about payment. Is there a way to increase it somehow?<br>@@
-<<if $mc.beauty lt 45>>
+<<if not setup.Delivery.meetsBeautyForManagerFlirt()>>
 @@.notmc-speech; Um... <i>He looked at me but quickly lowered his head and started flipping through his papers</i><br> I think you just need to work more<br>@@
 @@.mc-thoughts; I need to catch his attention somehow<br>@@
 @@.warningtext; (Req. <img @src="setup.ImagePath + '/img/beauty.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 45)@@
 <<else>>
-<<if hasVisited("DeliveryManagerEventStart")>>
+<<if setup.Delivery.hasMetManagerEvent()>>
 @@.notmc-speech;Of course, $mc.name, I think you know how I can help you@@<br>
 <<else>>
 @@.notmc-speech; Hm...<br>
 <i>He looked at me and thought about something</i>. <br>
 I don't think I can do it. But I could offer some part-time work for such a beautiful girl<br><i>He smiled and adjusted his belt</i><br>@@
 <</if>>
-<<if $mc.corruption gte 2>>
+<<if setup.Delivery.managerWillPayExtra()>>
 @@.usebtn;[[Give him a blowjob|DeliveryManagerEventStart]]@@<br>
 <<else>>@@.mc-thoughts; Is he asking me to suck him off? No fucking way!<br>@@
 @@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 2)@@

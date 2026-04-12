@@ -22,32 +22,20 @@ There's no escaping such rage, and you immediately submit to your fate. He begin
 <<if $highpriestess eq 1>>
 @@.backbtn; [[You black out|$return][$highpriestess to 0; $mc.sanity to 25]]@@
 <<else>>
-<<if $isCompChosen eq 1 and $companion.name eq "Blake" and $gotCursedItem eq 1>>
-<<set $gotCursedItem to 0>>
-<</if>>
+<<run setup.Companion.clearBlakeCursedItem()>>
 <<if $tempCorr gte 1>><<set $tempCorr to 1>><</if>>
 <<set $mc.corruption += $tempCorr>>
 Corruption is increased (+ <<= $tempCorr.toFixed(2)>>) : <<= $mc.corruption.toFixed(2)>><br>
 <<set $mc.dirty to 1>>
 <<set $tempCorr to 0>>
-<<set $EmfActivationTime to 0>>
-<<set $uvlActivationTime to 0>>
-<<set $EmfActivated to 0>>
-<<set $uvlActivated to 0>>
+<<run setup.HauntedHouses.resetToolTimers()>>
 
-<<set $ghostHuntingMode to 3>>
+<<run setup.HauntedHouses.endHunt()>>
 <<include "lostClothes">>
 
 
-<<set $chosenPlan to 0>>
-<<set $chosenPlanActivated to 0>>
-<<set $randomGhostPassage to 0>>
-<<set $isCompRoomChosen to 0>>
-<<set $showComp to 0>>
-<<set $isCompChosen to 0>>
-<<if $companion.name eq "Alice" and $isAliceGoingForHuntingAlone eq 0>>
-<<set $aliceWorkDone to 0>>
-<</if>>
+<<run setup.Companion.resetHuntState()>>
+<<run setup.Companion.resetAliceWorkIfNeeded()>>
 
 <br>
 @@.backbtn; [[You black out|Sleep]]@@<br>

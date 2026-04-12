@@ -166,7 +166,7 @@
 <<set $isElm to 0>>
 <<set $isEnigma to 0>>
 <<set $isIronclad to 0>>
-<<if $isCompChosenBrook eq 1 or $isCompChosenAlice eq 1 or $isCompChosenBlake eq 1 or $isCompChosenAlex eq 1 or $isCompChosenTaylor eq 1 or $isCompChosenCasey eq 1>><<set $isCompChosen to 1>><</if>>
+<<if setup.Companion.anyCompanionSelected()>><<set $isCompChosen to 1>><</if>>
 
 <</nobr>>
 

@@ -1,7 +1,7 @@
 :: ghostSpecialEventSpirit [nobr] {"position":"1625,2450","size":"100,100"}
 <<set $ghostSpiritEventStage to 1>>
 <<set _videoToggle to true>>
-<<if $companion.name eq "Brook">>
+<<if setup.SpecialEvent.companionIs("Brook")>>
 @@.mc-thoughts; You both wake up to a noise nearby. Next to you, you notice a vague figure with a hard cock near your face. Not fully realizing what's happening, you try to focus on the stranger, but your attention is completely drawn to the big dick, almost pressing against your mouth.@@<br>
 <<linkappend "@@.mc-speechLink; What the~@@">>
 <span id ="walkhomebrookspirit">
@@ -57,7 +57,7 @@ He starts playing with you like dolls, using your mouths
 <</linkappend>>
 
 
-<<elseif $companion.name eq "Alice">>
+<<elseif setup.SpecialEvent.companionIs("Alice")>>
 @@.mc-thoughts; You both wake up to a noise nearby. Next to you, you notice a vague figure with a hard cock near your face. Not fully realizing what's happening, you try to focus on the stranger, but your attention is completely drawn to the big dick, almost pressing against your mouth.@@<br>
 <<linkappend "@@.mc-speechLink; What the~@@">>
 <video autoplay controls muted loop>
@@ -98,7 +98,7 @@ He starts playing with you like dolls, using your mouths
 <</linkappend>>
 
 
-<<elseif $companion.name eq "Blake">>
+<<elseif setup.SpecialEvent.companionIs("Blake")>>
 <span id ="walkhomeblakespirit">
 <video autoplay controls muted loop>
  <source @src="setup.ImagePath + '/ghosts/specials/spiritblake1.0.mp4'" type="video/mp4">

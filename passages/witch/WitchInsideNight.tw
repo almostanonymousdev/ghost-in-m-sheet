@@ -10,7 +10,7 @@
 Your attention is drawn to a slightly open door at the back of the room. It looks like a bedroom. A faint sound of breathing comes from behind the door. She's probably asleep.@@
 <</if>>
 <br>
-<<if ndef $stealItemsFromWitchCD or $stealItemsFromWitchCD eq 0>>
+<<if setup.Witch.canStealItemsFromWitch()>>
 <<linkreplace "@@.usebtn;Look for something useful@@">>
 <<set $stealItemsFromWitchCD to 1>>
 <<set _check to random(1,5)>>
@@ -44,7 +44,7 @@ You found a crusifix!
 
 
 <br>
-<<if $witchNightCD eq 1>>
+<<if not setup.Witch.canVisitWitchBedroomNight()>>
 @@.mc-speech; Enough for today.@@
 <<else>>
 @@.enterbtn; [[Bedroom|WitchBedroom]]@@

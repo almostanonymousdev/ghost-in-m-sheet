@@ -1,0 +1,62 @@
+:: MallController [script]
+/*
+ * Centralized state queries for the mall and its sections.
+ * Passages should call into setup.Mall instead of testing the
+ * underlying $variables directly, so the conditions live in one place.
+ */
+setup.Mall = (function () {
+	function v(name) { return State.variables[name]; }
+	function mc() { return State.variables.mc; }
+
+	return {
+		// --- Hours -----------------------------------------------
+		isOpen: function () {
+			var h = v('hours');
+			return h > 7 && h < 22;
+		},
+
+		// --- Blake / adult shop ----------------------------------
+		blakeUnlocked: function () {
+			return v('alice').lvl >= 2;
+		},
+		blakeFirstMeeting: function () {
+			return v('dialogBlake') === undefined;
+		},
+		blakeCanIntroduceCursedItemBuyback: function () {
+			return v('gotCursedItem') !== undefined && v('dialogBlake') !== 1;
+		},
+		blakeHasCursedItemToSell: function () {
+			return v('gotCursedItem') === 1 && v('dialogBlake') === 1;
+		},
+		canRaiseBlakeRelationship: function () {
+			return v('relationshipBlake') <= 4;
+		},
+		blakeIsCompanionCandidate: function () {
+			return v('relationshipBlake') >= 5;
+		},
+		blakeHuntFinishedAlone: function () {
+			return v('isBlakeGoingForHuntingAlone') === 2;
+		},
+		canPayForBlakeSoloHunt: function () {
+			var paid = v('payForHuntAloneBlake');
+			return (paid === undefined || paid === 0) && mc().money >= 20;
+		},
+		cannotAffordBlakeSoloHunt: function () {
+			return mc().money < 20;
+		},
+
+		// --- Warden outfit purchase ------------------------------
+		canBuyWardenOutfit: function () {
+			return v('wardenClothesStage') === 1;
+		},
+		meetsCorruptionForWarden: function () {
+			return mc().corruption >= 3;
+		},
+
+		// --- General shop: pepper spray --------------------------
+		needsPepperSpray: function () {
+			var s = v('hasPSpray');
+			return s === undefined || s === 0;
+		}
+	};
+})();

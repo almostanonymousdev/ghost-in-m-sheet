@@ -1,0 +1,164 @@
+:: HomeController [script]
+/*
+ * Centralized state queries and mutations for the home / indoor
+ * locations (bedroom, livingroom, bathroom, etc.).
+ * Passages should call into setup.Home instead of testing the
+ * underlying $variables directly, so the conditions live in one place.
+ */
+setup.Home = (function () {
+	function v(name) { return State.variables[name]; }
+	function mc() { return State.variables.mc; }
+
+	return {
+		// --- Outside / clothing gating ----------------------
+		isDressedForStreet: function () {
+			var top = v('tshirtState') !== 'not worn';
+			var bot = v('jeansState') !== 'not worn' ||
+				(v('shortsState') !== 'not worn' && v('shortsState') !== 'not bought') ||
+				(v('skirtState') !== 'not worn' && v('skirtState') !== 'not bought');
+			return top && bot;
+		},
+		isWearingUnderwear: function () {
+			return v('braState') !== 'not worn' && v('pantiesState') !== 'not worn';
+		},
+		isDirty: function () {
+			return mc().dirty === 1;
+		},
+		isCorruptEnoughToSkipUnderwear: function () {
+			return mc().corruption >= 10;
+		},
+		canLeaveHome: function () {
+			if (!this.isDressedForStreet()) { return false; }
+			if (this.isDirty()) { return false; }
+			if (this.isCorruptEnoughToSkipUnderwear()) { return true; }
+			return this.isWearingUnderwear();
+		},
+		leaveBlockerReason: function () {
+			if (!this.isDressedForStreet()) { return 'naked'; }
+			if (this.isDirty()) { return 'dirty'; }
+			if (!this.isCorruptEnoughToSkipUnderwear() && !this.isWearingUnderwear()) {
+				return 'underwear';
+			}
+			return null;
+		},
+
+		// --- Ghost hunting eligibility ----------------------
+		isNightForHunt: function () {
+			return v('hours') >= 23;
+		},
+		hasHuntContract: function () {
+			return v('ghostHuntingMode') === 1;
+		},
+		needsWitch: function () {
+			return v('ghostHuntingMode') === 3;
+		},
+		canGoHunting: function () {
+			return this.hasHuntContract() && this.canLeaveHome();
+		},
+
+		// --- Brooke -----------------------------------------
+		isBrookePossessed: function () {
+			return v('isBrookePossessed') === 1;
+		},
+
+		// --- Succubus / door knocking -----------------------
+		succubusCanKnock: function () {
+			var h = v('hours');
+			return h >= 18 && h <= 20 && mc().corruption >= 6 && v('succubus') === undefined;
+		},
+		succubusTVEventReady: function () {
+			var h = v('hours');
+			return v('succubus') === 1 && v('succubusEventCD') === 0 && h >= 18 && h <= 23;
+		},
+
+		// --- Sleep / nap ghost hooks ------------------------
+		spiritNapEventReady: function () {
+			return v('ghostSpiritEventStage') === 0 && v('ghostSpecialEventSpiritCD') === 0;
+		},
+		tentaclesNapEventReady: function () {
+			return v('gotCursedItem') === 1 && v('gotCursedItemEventCD') >= 2;
+		},
+		tentaclesTVEventReady: function () {
+			return v('gotCursedItem') === 1 && v('gotCursedItemEventCD') >= 3;
+		},
+		tentaclesSleepEventReady: function () {
+			var h = v('hours');
+			return v('gotCursedItem') === 1 && v('gotCursedItemEventCD') >= 1 &&
+				h >= 18 && h <= 23;
+		},
+
+		// --- Mare / exorcism --------------------------------
+		canSummonForExorcism: function () {
+			var stage = v('exorcismQuestStage');
+			var cd = v('exorcismCD');
+			if (stage === 1 && cd === 0) { return true; }
+			if (stage === 2 && cd === 0) { return true; }
+			return false;
+		},
+		exorcismOnCooldown: function () {
+			return v('exorcismQuestStage') === 1 && v('exorcismCD') === 1;
+		},
+		mareEventActive: function () {
+			return v('ghostMareEventStart') >= 1;
+		},
+		mareStageIsLow: function () {
+			return v('ghostMareEventStage') <= 2;
+		},
+		canUseHolyWaterOnMare: function () {
+			return v('holyWaterIsCollected') === 1 && this.mareEventActive();
+		},
+		useHolyWaterOnMare: function () {
+			State.variables.ghostMareEventStart = 0;
+			State.variables.holyWaterIsCollected = 0;
+			State.variables.ghostMareEventStage = 0;
+		},
+		returningFromHuntDefeat: function () {
+			var p2 = previous(2);
+			return p2 === 'HuntOverSanity' || p2 === 'huntEnd';
+		},
+		returningFromMareEnd: function () {
+			return previous(2) === 'ghostSpecialEventMareEnd';
+		},
+		justSleptFromBedroom: function () {
+			return previous() === 'Sleep' && this.mareEventActive() &&
+				!this.returningFromHuntDefeat();
+		},
+
+		// --- Wake-up consequences --------------------------
+		applySleepPenalty: function () {
+			var m = mc();
+			m.sanityMax = 70;
+			m.sanity = 40 + Math.floor(Math.random() * 31); // 40..70
+			m.energy = m.energyMax;
+			m.lust = 30 + Math.floor(Math.random() * 31);
+		},
+		applyFullRest: function () {
+			var m = mc();
+			m.sanityMax = 100;
+			m.sanity = m.sanityMax;
+			m.energy = m.energyMax;
+			m.lust = 0;
+		},
+		applyMareLateWake: function () {
+			var m = mc();
+			m.sanityMax = 50;
+			m.sanity = 30 + Math.floor(Math.random() * 20); // 30..49
+			m.energy = m.energyMax;
+			m.lust = 60 + Math.floor(Math.random() * 31);
+		},
+
+		// --- Twins mirror event ---------------------------
+		twinsEventAvailable: function () {
+			return v('thetwinsevent') === 1 && v('thetwinseventCD') === 0;
+		},
+		twinsEventTriggered: function (beautyRoll) {
+			// ghost only materialises fully if MC is beautiful enough
+			return beautyRoll <= mc().beauty;
+		},
+
+		// --- Makeup -------------------------------------
+		canApplyMakeup: function (charges) {
+			return v('makeupApplied') === 0 && v('makeupAmount') >= charges;
+		}
+	};
+})();

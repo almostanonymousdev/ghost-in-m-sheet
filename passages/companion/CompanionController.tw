@@ -1,0 +1,155 @@
+:: CompanionController [script]
+/*
+ * Centralized state queries and mutations for the companion system
+ * (Brook, Alice, Blake, Alex, Taylor, Casey). Passages should call
+ * into setup.Companion instead of testing the underlying companion
+ * $variables directly.
+ */
+setup.Companion = (function () {
+	function v(name) { return State.variables[name]; }
+	function mc() { return State.variables.mc; }
+	function comp() { return State.variables.companion; }
+
+	var TRANS_NAMES = ["Alex", "Taylor", "Casey"];
+
+	function isName(n) { var c = comp(); return c && c.name === n; }
+	function isTrans(n) { return TRANS_NAMES.indexOf(n) !== -1; }
+
+	return {
+		// --- Identity ---------------------------------------------
+		name: function () { var c = comp(); return c && c.name; },
+		isTransCompanion: function () { return isTrans(this.name()); },
+		isName: isName,
+
+		// --- Selection ("isCompChosen*" flags) --------------------
+		anyCompanionSelected: function () {
+			return v('isCompChosenBrook') === 1
+				|| v('isCompChosenAlice') === 1
+				|| v('isCompChosenBlake') === 1
+				|| v('isCompChosenAlex') === 1
+				|| v('isCompChosenTaylor') === 1
+				|| v('isCompChosenCasey') === 1;
+		},
+		clearCompanionSelection: function () {
+			var s = State.variables;
+			s.isCompChosenBrook = 0;
+			s.isCompChosenAlice = 0;
+			s.isCompChosenBlake = 0;
+			s.isCompChosenAlex = 0;
+			s.isCompChosenTaylor = 0;
+			s.isCompChosenCasey = 0;
+		},
+		selectCompanion: function (name) {
+			this.clearCompanionSelection();
+			State.variables["isCompChosen" + name] = 1;
+		},
+
+		// --- Sanity / lust tiers used by compEvent / *Help / Init -
+		sanityTier: function () {
+			var c = comp(); if (!c) return "none";
+			var s = c.sanity;
+			if (s >= 75) return "high";
+			if (s >= 50) return "mid";
+			if (s >= 25) return "low";
+			return "critical";
+		},
+		isLustHigh: function () {
+			var c = comp();
+			return c && c.lust >= 50;
+		},
+
+		// --- Walk-home eligibility --------------------------------
+		hasBottomWorn: function () {
+			return v('jeansState') === 'worn'
+				|| v('skirtState') === 'worn'
+				|| v('shortsState') === 'worn';
+		},
+		canWalkHomeWithCompanion: function () {
+			return this.hasBottomWorn();
+		},
+
+		// --- Hunt plans -------------------------------------------
+		cursedItemQuestUnlocked: function () {
+			return v('gotCursedItem') !== undefined;
+		},
+		hasCursedItem: function () {
+			return v('gotCursedItem') === 1;
+		},
+
+		// --- Sanity pills -----------------------------------------
+		hasSanityPills: function () {
+			return (v('sanityPillsAmount') || 0) >= 1;
+		},
+		companionNeedsSanity: function () {
+			var c = comp();
+			return c && c.sanity < 100;
+		},
+		giveSanityPill: function () {
+			var s = State.variables;
+			if (!this.hasSanityPills() || !this.companionNeedsSanity()) return false;
+			s.sanityPillsAmount -= 1;
+			s.companion.sanity += 30;
+			if (s.companion.sanity > 100) s.companion.sanity = 100;
+			return true;
+		},
+
+		// --- Solo hunt --------------------------------------------
+		canAffordSoloContract: function () {
+			return mc().money >= 20;
+		},
+		payForSoloContract: function (prefix) {
+			var s = State.variables;
+			var key = "payForHuntAlone" + prefix;
+			if ((s[key] === undefined || s[key] === 0) && mc().money >= 20) {
+				s.mc.money -= 20;
+				s[key] = 1;
+			}
+		},
+		isSoloHuntReporting: function (prefix) {
+			return v("is" + prefix + "GoingForHuntingAlone") === 2;
+		},
+
+		// --- Hunt-end cleanup (shared across huntEnd / HuntOver*) --
+		/* Blake drops the cursed item on a bad hunt-end. */
+		blakeDropsCursedItem: function () {
+			return isName("Blake") && v('isCompChosen') === 1 && v('gotCursedItem') === 1;
+		},
+		clearBlakeCursedItem: function () {
+			if (this.blakeDropsCursedItem()) State.variables.gotCursedItem = 0;
+		},
+		aliceResetsWork: function () {
+			return isName("Alice") && v('isAliceGoingForHuntingAlone') === 0;
+		},
+		resetAliceWorkIfNeeded: function () {
+			if (this.aliceResetsWork()) State.variables.aliceWorkDone = 0;
+		},
+		resetHuntState: function () {
+			var s = State.variables;
+			s.chosenPlan = 0;
+			s.chosenPlanActivated = 0;
+			s.randomGhostPassage = 0;
+			s.isCompRoomChosen = 0;
+			s.showComp = 0;
+			s.isCompChosen = 0;
+		},
+
+		// --- House / room / street helpers -----------------------
+		inHauntedHouseLocation: function () {
+			return v('isOwaissa') === 1 || v('isElm') === 1;
+		},
+		canShowCompanionMiniPanel: function () {
+			return v('chosenPlan') !== undefined
+				&& v('ghostHuntingMode') === 2
+				&& this.inHauntedHouseLocation();
+		},
+
+		// --- Street-passage "see your companion" test ------------
+		companionAtStreet: function () {
+			return v('isCompChosen') === 1
+				&& v('chosenPlan') !== 'Plan1'
+				&& v('chosenPlan') !== 'Plan2'
+				&& v('chosenPlan') !== 'Plan3'
+				&& v('chosenPlan') !== 'Plan4';
+		}
+	};
+})();

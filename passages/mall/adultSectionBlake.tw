@@ -2,12 +2,12 @@
 <img @src="setup.ImagePath + '/blake/blakeShop.jpg'" class="displayCentredImgs" width="50%"><br>
 
 
-<<if $alice.lvl gte 2 >>
-<<if ndef $dialogBlake>> 
+<<if setup.Mall.blakeUnlocked()>>
+<<if setup.Mall.blakeFirstMeeting()>>
 @@.notmc-speech; Hey, you're not $mc.name by any chance, are you? Alice told me you went ghost hunting together.@@<br>
 @@.mc-speech;Yeah, that's right.@@<br>
 <<set $dialogBlake to 0>>
-<<if def $gotCursedItem and $dialogBlake neq 1>>
+<<if setup.Mall.blakeCanIntroduceCursedItemBuyback()>>
  @@.notmc-speech;Alice mentioned that sometimes you come across… hmm, let's say, "something special." Some toys with, well, "a magical aura"?@@<br>
 @@.mc-speech;Yeah, you're right. But I usually give them to the witch in exchange for a fee.@@<br>
 @@.notmc-speech;How about selling them to me instead? I'll pay you more than the witch@@<br>
@@ -22,7 +22,7 @@
 <</if>>
 <<else>>
 @@.notmc-speech; Hi $mc.name, need any help?@@<br>
-<<if $gotCursedItem eq 1 and $dialogBlake eq 1>>
+<<if setup.Mall.blakeHasCursedItemToSell()>>
 <<linkreplace "@@.usebtn;Give her the cursed item@@">>
 @@.notmc-speech; Wow, thanks. Here's your money. Feel free to bring more, I'll gladly buy them from you.@@<br>
 Money: +60 $ <br>
@@ -33,14 +33,14 @@ Money: +60 $ <br>
 <<set $isCIBeads to 0>>
 <<set $isCIHDildo to 0>>
 <<set $mc.money += 60>>
-<<if $relationshipBlake lte 4>>
+<<if setup.Mall.canRaiseBlakeRelationship()>>
 <<set $relationshipBlake += 1>>
 @@.mc-speech; Relationship with Blake increased: now $relationshipBlake!@@
 <</if>>
 <</linkreplace>>
 <<else>>
 <</if>>
-<<if def $gotCursedItem and $dialogBlake neq 1>>
+<<if setup.Mall.blakeCanIntroduceCursedItemBuyback()>>
 @@.notmc-speech;Alice mentioned that sometimes you come across… hmm, let's say, "something special." Some toys with, well, "a magical aura"?@@<br>
 @@.mc-speech;Yeah, you're right. But I usually give them to the witch in exchange for a fee.@@<br>
 @@.notmc-speech;How about selling them to me instead? I'll pay you more than the witch@@<br>
@@ -63,8 +63,8 @@ Money: +60 $ <br>
 
 
 
-<<if $relationshipBlake gte 5>>
-<<if $isBlakeGoingForHuntingAlone eq 2>>
+<<if setup.Mall.blakeIsCompanionCandidate()>>
+<<if setup.Mall.blakeHuntFinishedAlone()>>
 @@.mc-speech; [[Ask her how her ghost hunt went.|BlakeHuntEndAlone]]@@<br>
 <<else>>
 @@.mc-speech;<<link "Ask Blake to join you for ghost hunting tonight.">>

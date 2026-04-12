@@ -11,14 +11,6 @@ But as you keep walking, you start to notice something strange. People are stari
 @@.mc-speech; Why are they looking at us like that?@@<br>
 @@.notmc-speech;I don’t know. Let’s get home quickly.@@<br><br>
 @@.backbtn;[[You’re finally home|WalkHomeTogether][$hours += 1]]@@<br>
-<<set $chosenPlan to 0>>
-<<set $chosenPlanActivated to 0>>
-<<set $randomGhostPassage to 0>>
-<<set $isCompRoomChosen to 0>>
-<<set $showComp to 0>>
-<<set $isCompChosen to 0>>
-<<if $companion.name eq "Alice" and $isAliceGoingForHuntingAlone eq 0>>
-<<set $aliceWorkDone to 0>>
-<</if>>
+<<run setup.SpecialEvent.resetHuntPlansAfterMyling()>>
 
 

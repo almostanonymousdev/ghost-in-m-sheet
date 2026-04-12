@@ -13,7 +13,7 @@
 @@color:red; <em>Don’t resist. Just give in to the pleasure</em>@@ - @@.mc-thoughts; A second voice echoes in your mind.@@<br>
 
 <<linkreplace "@@.usebtn;Try to resist@@">>
-<<if $mcpossession gte 4>>
+<<if setup.Posession.canResistFirstAttempt()>>
 <video autoplay controls muted loop>
  <source @src="setup.ImagePath + '/possessed/1.2.mp4'" type="video/mp4">
  </video>
@@ -24,7 +24,7 @@ Sometimes, you still gave in to the pleasure: at that moment, you began to push 
 @@.mc-speech; I have to resist, otherwise this could end badly.@@<br>
 
 <<linkreplace "@@.usebtn;Try to resist again@@">>
-<<if $mcpossession gte 7>>
+<<if setup.Posession.canResistSecondAttempt()>>
 <<goto "possessedLocation1">>
 <<else>>
 <<breakFreePossession 6>>
@@ -47,7 +47,7 @@ Sometimes, you still gave in to the pleasure: at that moment, you began to push 
 @@color:red; <em>Don’t resist. Just give in to the pleasure</em>@@ - @@.mc-thoughts; A second voice echoes in your mind.@@<br>
 
 <<linkreplace "@@.usebtn;Try to resist@@">>
-<<if $mcpossession gte 4>>
+<<if setup.Posession.canResistFirstAttempt()>>
 <video autoplay controls muted loop>
  <source @src="setup.ImagePath + '/possessed/2.1.mp4'" type="video/mp4">
  </video>
@@ -58,7 +58,7 @@ They started undressing you, touching your most intimate places. Yet you didn’
 
 
 <<linkreplace "@@.usebtn;Try to resist again@@">>
-<<if $mcpossession gte 7>>
+<<if setup.Posession.canResistSecondAttempt()>>
 <<goto "possessedLocation1">>
 <<else>>
 <<breakFreePossession 6>>
@@ -89,7 +89,7 @@ They started undressing you, touching your most intimate places. Yet you didn’
 @@.mc-thoughts; They watch you with hungry eyes.@@<br>
 @@.mc-speech; Oh no, how shameful! I need to stop this.@@<br>
 <<linkreplace "@@.usebtn;Try to resist@@">>
-<<if $mcpossession gte 4>>
+<<if setup.Posession.canResistFirstAttempt()>>
 <video autoplay controls muted loop>
  <source @src="setup.ImagePath + '/possessed/3.2.mp4'" type="video/mp4">
  </video>
@@ -98,7 +98,7 @@ They came closer and started touching your butt.<br>@@
 @@color:red; Don’t be shy, I’m all yours today.@@<br>
 @@.mc-speech; SHIT! I need to do something quickly, or this will end really badly for me.@@<br>
 <<linkreplace "@@.usebtn;Try to resist again@@">>
-<<if $mcpossession gte 7>>
+<<if setup.Posession.canResistSecondAttempt()>>
 <<goto "possessedLocation1">>
 <<else>>
 <<breakFreePossession 6>>
@@ -131,7 +131,7 @@ They came closer and started touching your butt.<br>@@
 </video>
 <</replace>><</link>><br>
 
-<<if $mcpossession gte 11>>
+<<if setup.Posession.canResistFinalAttempt()>>
 @@color:red; Haa~, fuck that ass, shove it deeper@@<br>
 @@.mc-speech; Something's wrong...<br>
 HAaA~ I think I...i~ <<linkreplace "@@.usebtn; commiiiing~@@">>
@@ -176,7 +176,7 @@ So that means... oh~ I think I...i~ <<linkreplace "@@.usebtn; commiiiing~@@">>
 @@.mc-speech;Fuck, what's happening, why can't I control my body?@@<br>
 @@color:red;Because I'm here, baby. You're mine now.@@<br>
 <<linkreplace "@@.usebtn; Try to resist@@">>
-<<if $mcpossession gte 4>>
+<<if setup.Posession.canResistFirstAttempt()>>
 <<goto "possessedLocation1">>
 <<else>>
 <<breakFreePossession 3>>

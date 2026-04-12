@@ -1,6 +1,6 @@
 :: libraryGuy1 [event] {"position":"3125,2000","size":"100,100"}
 <<nobr>>
-<<if $jeansState eq "worn" or $shortsState eq "worn">>
+<<if setup.Library.wearingPants()>>
 <video autoplay controls muted loop>
  <source @src="setup.ImagePath + '/library/1.1.mp4'" type="video/mp4">
  </video>
@@ -34,7 +34,7 @@ See, no one noticed us, let's have a quick fuck right here@@<br>
  
  
 
-<<elseif $skirtState eq "worn">>
+<<elseif setup.Library.wearingSkirt()>>
 <video autoplay controls muted loop>
  <source @src="setup.ImagePath + '/library/2.1.mp4'" type="video/mp4">
  </video>

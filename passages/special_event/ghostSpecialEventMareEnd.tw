@@ -13,8 +13,7 @@ Something is getting into your pussy but you can't look back. You try to resist,
 @@.mc-thoughts; With each penetration it sends shivers of pleasure throughout your body, making you moan. Lust begins to consume your thoughts. 
 Your eyelids grow heavy, and your mind becomes foggy. 
 Before losing consciousness, a wave of pleasure washes over your entire body, and you completely surrender to the ghost's power.@@
-<<set $ghostMareEventStart to 0>>
-<<set $ghostMareEventStage to 0>>
+<<run setup.SpecialEvent.clearMareEvent()>>
 <<set $mc.dirty to 1>>
 <br>
 <br>

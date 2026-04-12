@@ -77,7 +77,7 @@ Fine, he's going to get to my pussy anyway.
     @@.notmc-speech;Good, I'll stay close to you.@@<</replace>>
 <</link>>@@<br>
 <span id="checkQuestForCursedItem">@@.usebtn;<<link "I need you to find the cursed item @@.warningtext; ($companion.chanceOfSuccessCI %, $companion.plan2TimeReq min)@@" >>
-<<if $gotCursedItem eq 0>>
+<<if not setup.Companion.hasCursedItem()>>
 <<set $chosenPlan to "Plan2">>
 <<set $chanceToSuccess to $companion.chanceOfSuccessCI>>
 <<set $showComp to 0>>
@@ -90,7 +90,7 @@ Fine, he's going to get to my pussy anyway.
 <<replace "#compResponse">>
     @@.notmc-speech; We already have a cursed item.@@<</replace>>
 <</if>>
-<</link>>@@</span> <<if ndef $gotCursedItem>>@@.warningtext; Req. quest from the witch@@<</if>><br>
+<</link>>@@</span> <<if not setup.Companion.cursedItemQuestUnlocked()>>@@.warningtext; Req. quest from the witch@@<</if>><br>
 @@.usebtn;<<link "I want you to look for any ghost evidence @@.warningtext; ($brook.chanceOfSuccessAnyEvidence %, $companion.plan3TimeReq min@@)">>
 <<set $chosenPlan to "Plan3">>
 <<set $chanceToSuccess to $companion.chanceOfSuccessAnyEvidence>>
@@ -115,7 +115,7 @@ Fine, he's going to get to my pussy anyway.
 
 <<replace "#compResponse">>
 @@.mc-speech; I think that's enough. Can you walk me home, please?@@<br>
-<<if ($jeansState eq "worn" or $skirtState eq "worn" or $shortsState eq "worn")>>
+<<if setup.Companion.canWalkHomeWithCompanion()>>
 @@.notmc-speech; Of course. Are you sure you want to leave now?@@<br>
 <<if $ghost.name eq "Myling" and $ghostHuntingMode eq 2>>
 @@.mc-speech; Yes, [[let's go together|ghostSpecialEventMylingTwo]] @@<<else>>
@@ -157,7 +157,7 @@ Come on! Let's go naked together.You'll like it.<br>@@
 
 <<done>>
 <<addclass ".linkselector" "disabled-link">>
-<<if ndef $gotCursedItem>>
+<<if not setup.Companion.cursedItemQuestUnlocked()>>
 <<addclass "#checkQuestForCursedItem" "disabled-link">>
 <</if>>
 <<if $brook.lvl lt 1>>

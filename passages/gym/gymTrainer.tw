@@ -1,44 +1,41 @@
 :: gymTrainer {"position":"3225,1600","size":"100,100"}
 <<nobr>>
 <<addLust 15>>
-<<if $hours >= 8 && $hours < 13>>
+<<if setup.Gym.soloSlotMorning()>>
   <video autoplay controls muted loop>
     <source @src="setup.ImagePath + '/gym/trainer1.mp4'" type="video/mp4">
   </video>
  You spent about an hour at the gym, diligently working on improving your physical fitness. Each workout makes you stronger and more resilient, helping you reach new heights.<br><br>
-<<if $trainer1TipReceived eq 1>>
+<<if setup.Gym.trainer1GaveTip()>>
 @@.mc-thoughts; Emily said that he likes girls in sexy lingerie...@@<br>
 <</if>>
-<<if $trainer1SexCD eq 1>>
+<<if setup.Gym.trainer1OnCooldown()>>
 @@.mc-thoughts; Enough for today.@@<br>
 
-<<elseif $trainer1TipReceived eq 1 and (
-
-
-($rememberBottomStockings eq "stockings2" or $rememberBottomStockings eq "stockings3") and ($rememberTopUnder eq "bra2" or $rememberTopUnder eq "bra3") and ($rememberBottomUnder eq "panties2" or $rememberBottomUnder eq "panties3"))>>
+<<elseif setup.Gym.canTriggerTrainer1Event()>>
 @@.mc-speech;[[Go to him in sexy lingerie|gymTrainerEvent1Start]]@@
 <</if>>
-<<elseif $hours >= 13 && $hours < 18>>
+<<elseif setup.Gym.soloSlotAfternoon()>>
   <video autoplay controls muted loop>
     <source @src="setup.ImagePath + '/gym/trainer2.mp4'" type="video/mp4">
   </video>
  You spent about an hour at the gym, diligently working on improving your physical fitness. Each workout makes you stronger and more resilient, helping you reach new heights.<br><br>
-<<if $mc.fit gte 30>>
+<<if setup.Gym.meetsFitForTrainer2Event()>>
 @@.mc-thoughts; While you're squatting with him, you feel his cock pressing directly@@ <<linkappend "@@.mc-thoughtsLink;  into your butt.@@">><br>
 @@.mc-speech; It seems like I can feel that you enjoy working out with me.@@<br>
 @@.notmc-speech; Oh, sorry, we can stop if you want...@@<br>
-<<if $trainer2SexCD eq 1>>
+<<if setup.Gym.trainer2OnCooldown()>>
 @@.mc-speech; Yes, I'm [[not in the mood.|GymInside]]@@<br>@@.mc-thoughts; Enough for today.@@<br><<else>>
 @@.mc-speech; No, let me [[help you.|gymTrainerEvent2Start]]@@ or @@.mc-speech; Yes, I'm [[not in the mood.|GymInside]]@@<br>
 <</if>><</linkappend>>
 <</if>>
-<<elseif $hours >= 18 && $hours < 23>>
+<<elseif setup.Gym.soloSlotEvening()>>
   <video autoplay controls muted loop>
     <source @src="setup.ImagePath + '/gym/trainer3.mp4'" type="video/mp4">
   </video>
 You spent about an hour at the gym, diligently working on improving your physical fitness. Each workout makes you stronger and more resilient, helping you reach new heights.<br><br>
 
- <<if ndef $relationEmily>>
+ <<if not setup.Gym.hasMetEmily()>>
  You see the girl who works out here almost every evening.<br>
 @@.mc-speech; Maybe I should [[talk to her?|EmilyTalk]]. I’d like to chat with someone, and she might have something interesting to share.@@<br>
  <<else>> 

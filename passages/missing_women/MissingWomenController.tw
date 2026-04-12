@@ -1,0 +1,99 @@
+:: MissingWomenController [script]
+/*
+ * Centralized state queries and mutations for the missing-women /
+ * rescue quest line. Passages should call into setup.MissingWomen
+ * instead of testing the underlying $variables directly, so the
+ * conditions live in one place.
+ */
+setup.MissingWomen = (function () {
+	function v(name) { return State.variables[name]; }
+	function mc() { return State.variables.mc; }
+
+	return {
+		// --- Holy water -------------------------------------------
+		hasHolyWater: function () {
+			return v('holyWaterIsCollected') === 1;
+		},
+		useHolyWater: function () {
+			State.variables.holyWaterIsCollected = 0;
+		},
+
+		// --- Quest stage predicates --------------------------------
+		isQuestAvailable: function () {
+			return v('hasQuestForRescue') === 0;
+		},
+		hasActiveQuest: function () {
+			return v('hasQuestForRescue') === 1;
+		},
+		questFailed: function () {
+			return v('hasQuestForRescue') === 2;
+		},
+		questSucceeded: function () {
+			return v('hasQuestForRescue') === 3;
+		},
+		mustReturnToNun: function () {
+			var s = v('hasQuestForRescue');
+			return s === 2 || s === 3;
+		},
+
+		// --- Task board timing ------------------------------------
+		boardPostingsOutToday: function () {
+			var h = v('hours');
+			return h >= 18 && h < 24;
+		},
+		boardOnCooldown: function () {
+			return v('rescueQuestCD') !== 0;
+		},
+
+		// --- Stay / corruption gate -------------------------------
+		canStaySubmissive: function () {
+			return mc().corruption >= 6;
+		},
+
+		// --- House search ------------------------------------------
+		canSearchHouse: function () {
+			return mc().energy >= 1;
+		},
+		searchTooLate: function () {
+			// Mirrors legacy "after 6 p.m. it's pointless" check on
+			// rescueHouse, driven by the failed-quest state.
+			return this.questFailed();
+		},
+		isCorrectHouse: function () {
+			return v('randomRescuePhotoNumber') === v('rescueHouse');
+		},
+		canResolveRescue: function () {
+			return v('rescueStage') < 2 && this.isCorrectHouse() && this.hasActiveQuest();
+		},
+		hasRescueClue: function () {
+			return v('hasRescueClue') === 1;
+		},
+
+		// --- Rescue event outcome ---------------------------------
+		rescueEventAuto: function () {
+			return v('rescueStage') === 0;
+		},
+		rescueEventRolls: function () {
+			return v('rescueStage') === 1 && v('hours') < 18;
+		},
+		rollRescueSuccess: function () {
+			var chance = 100 - (v('hours') * 100 / 18);
+			return random(1, 100) <= chance;
+		},
+
+		// --- Girl-specific dispatch --------------------------------
+		possessedPassageFor: function (girl) {
+			switch (girl) {
+				case 'Victoria': return 'rescueVictoriaPossessed';
+				case 'Jade':     return 'rescueJadePossessed';
+				case 'Julia':    return 'rescueJuliaPossessed';
+				case 'Nadia':    return 'rescueNadiaPossessed';
+				case 'Ash':      return 'rescueAshPossessed';
+				default:         return null;
+			}
+		},
+		rescuePassageFor: function (girl) {
+			return (setup.rescueGirlPassages || {})[girl] || null;
+		}
+	};
+})();

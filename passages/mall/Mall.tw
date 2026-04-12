@@ -6,7 +6,7 @@
 @@.mc-thoughts; This mall is a fantastic place for purchases. I believe I won't find any items related to my profession here, but there's plenty of everything else.
 @@<br>
 <br>
-<<if $hours lte 7 or $hours gte 22>>
+<<if not setup.Mall.isOpen()>>
 @@.mc-thoughts;The mall is not open right now (open from 8 AM to 10 PM)@@
 <<else>>
 @@.enterbtn;[[Clothing section|clothingSection]]@@<br>

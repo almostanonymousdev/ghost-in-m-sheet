@@ -1,5 +1,5 @@
 :: ParkEvent1 [nobr] {"position":"2900,1650","size":"100,100"}
-<<if $mc.energy gte 4>>
+<<if setup.Park.canEscapeParkEvent()>>
 <<set $mc.energy to 0>>
 <video autoplay controls muted loop>
  <source @src="setup.ImagePath + '/mc/parkrunend.mp4'" type="video/mp4">

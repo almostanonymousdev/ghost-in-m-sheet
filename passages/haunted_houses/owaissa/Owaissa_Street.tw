@@ -1,17 +1,11 @@
 :: Owaissa Street {"position":"1850,450","size":"100,100"}
 <<nobr>>
-<<set $isCompChosenBrook to 0>>
-<<set $isCompChosenAlice to 0>>
-<<set $isCompChosenBlake to 0>>
-<<set $isCompChosenAlex to 0>>
-<<set $isCompChosenTaylor to 0>>
-<<set $isCompChosenCasey to 0>>
+<<run setup.Companion.clearCompanionSelection()>>
 <img @src="setup.ImagePath + '/img/OwaissaHouse.jpg'" width="90%"><br>
 @@.location; Owaissa Street@@<br>
 @@.mc-thoughts;Owaissa Street - quite a creepy place. It must be teeming with ghosts. Although, because of such locations, I'll always have a job@@<br>
 <br>
-<<if $isCompChosen eq 1 and ($chosenPlan neq "Plan1" and $chosenPlan neq 
-"Plan2" and $chosenPlan neq "Plan3" and $chosenPlan neq "Plan4")>>
+<<if setup.Companion.companionAtStreet()>>
 You see $companion.name. 
 
 <<if $companion.name eq "Brook">>

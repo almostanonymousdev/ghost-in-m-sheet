@@ -1,0 +1,68 @@
+:: EventsController [script]
+/*
+ * Centralized state queries for the haunting event passages.
+ * Passages should call into setup.Events instead of testing the
+ * underlying $variables directly, so the conditions live in one place.
+ */
+setup.Events = (function () {
+	function v(name) { return State.variables[name]; }
+	function mc() { return State.variables.mc; }
+	function companion() { return State.variables.companion; }
+
+	function between(val, lo, hi) {
+		return val >= lo && val < hi;
+	}
+
+	return {
+		// --- Companion state -------------------------------------
+		hasCompanionOnPlan1: function () {
+			return v('isCompChosen') === 1 && v('chosenPlan') === 'Plan1';
+		},
+		companionIsAroused: function () {
+			return companion().lust >= 60;
+		},
+		companionIs: function (name) {
+			return companion().name === name;
+		},
+		companionIsInlineFriend: function () {
+			var n = companion().name;
+			return n === 'Alex' || n === 'Taylor' || n === 'Casey';
+		},
+
+		// --- Lust tiers ------------------------------------------
+		lustTier: function () {
+			var l = mc().lust;
+			if (l >= 90) return 7;
+			if (l >= 75) return 6;
+			if (l >= 60) return 5;
+			if (l >= 45) return 4;
+			if (l >= 30) return 3;
+			if (l >= 15) return 2;
+			return 1;
+		},
+
+		// --- Sanity tiers ----------------------------------------
+		sanityTierArt: function () {
+			var s = mc().sanity;
+			if (s >= 90) return 1;
+			if (s >= 80) return 2;
+			if (s >= 70) return 3;
+			if (s >= 50) return 4;
+			if (s >= 1)  return 5;
+			return 0;
+		},
+		sanityTierSaveEvent: function () {
+			var s = mc().sanity;
+			if (s >= 75) return 1;
+			if (s >= 50) return 2;
+			if (s >= 30) return 3;
+			if (s >= 1)  return 4;
+			return 0;
+		},
+
+		// --- MC energy / escape ----------------------------------
+		hasEnergyToRunAway: function () {
+			return mc().energy >= 1;
+		}
+	};
+})();

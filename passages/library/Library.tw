@@ -5,8 +5,7 @@
 @@.location; Library@@<br>
 @@.mc-thoughts; This library boasts a diverse collection of books, including both modern publications and rare antique editions. Although most people prefer to search for information online, a few still visit, perhaps in search of more unusual and unique insights.@@<br>
 <br>
-<<if $hours lte 7 or $hours gte 22>>
-<<else>>
+<<if setup.Library.isOpen()>>
 @@.enterbtn;[[Enter the library|LibraryInside]]@@
 <</if>>
 <br>

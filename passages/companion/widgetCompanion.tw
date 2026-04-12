@@ -3,7 +3,7 @@
 <<widget "companionMini">>
 <<set _compImg to _args[0]>>
 <<set _compName to _args[1]>>
-<<if def $chosenPlan and $ghostHuntingMode eq 2 and ($isOwaissa eq 1 or $isElm eq 1)>>
+<<if setup.Companion.canShowCompanionMiniPanel()>>
 <div class="containerMini">
 		<img @src="setup.ImagePath + '/' + _compImg">
         <div class="scaleMini">
@@ -29,22 +29,16 @@
 
 <<widget "sanityPills">>
 <<linkreplace "@@.usebtn; Give her the sanity pills.@@">>
-<<if $sanityPillsAmount gte 1>>
-<<if $companion.sanity lt 100>>
+<<if not setup.Companion.hasSanityPills()>>
+@@.mc-thoughts; I don't have those pills.@@
+<<elseif not setup.Companion.companionNeedsSanity()>>
+@@.mc-thoughts; She doesn't need the pills right now.@@
+<<else>>
 @@.mc-speech; I want you to take these sanity pills. Don't worry, they will help you.@@<br>
 @@.notmc-speech; Thank you, I feel a bit better.@@<br>
-<<set $sanityPillsAmount -= 1>>
+<<run setup.Companion.giveSanityPill()>>
 <b>-1 sanity pills</b><br>
 <b>$companion.name's sanity has increased by 30!</b><br>
-<<set $companion.sanity += 30>>
-<<if $companion.sanity gte 100>>
-<<set $companion.sanity to 100>>
-<</if>>
-<<else>>
-@@.mc-thoughts; She doesn't need the pills right now.@@
-<</if>>
-<<else>>
-@@.mc-thoughts; I don't have those pills.@@
 <</if>>
 <</linkreplace>>
 <</widget>>

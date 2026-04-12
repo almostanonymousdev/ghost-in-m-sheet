@@ -1,0 +1,41 @@
+:: ParkController [script]
+/*
+ * Centralized state queries for the park location.
+ * Passages should call into setup.Park instead of testing the
+ * underlying $variables directly, so the conditions live in one place.
+ */
+setup.Park = (function () {
+	function v(name) { return State.variables[name]; }
+	function mc() { return State.variables.mc; }
+
+	return {
+		// --- Hours / access --------------------------------------
+		isOpen: function () {
+			var h = v('hours');
+			return h > 5 && h < 22;
+		},
+		hasSportswear: function () {
+			return !!v('sportswear');
+		},
+
+		// --- Jogging ---------------------------------------------
+		joggingOnCooldown: function () {
+			return v('joggingCD') === 1;
+		},
+		hasEnergyToJog: function () {
+			return mc().energy >= 2;
+		},
+		canJogNow: function () {
+			return this.hasSportswear() && this.isOpen() &&
+				!this.joggingOnCooldown() && this.hasEnergyToJog();
+		},
+		canContinueJogging: function () {
+			return mc().energy >= 2;
+		},
+
+		// --- Park event ------------------------------------------
+		canEscapeParkEvent: function () {
+			return mc().energy >= 4;
+		}
+	};
+})();

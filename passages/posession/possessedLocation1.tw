@@ -14,7 +14,7 @@ You're completely losing it.<br>@@
  </video>
 @@.notmc-speech; What the hell are you doing here?@@<br>
 @@.mc-thoughts; You both tried to hide what you were doing.@@<br>
-<<if $mcpossession gte 11>>
+<<if setup.Posession.canResistFinalAttempt()>>
 @@.mc-thoughts; But you almost started yelling at him@@<br>
 @@color:red; What, are you spying? Maybe you can help him, because one dick is not enough for me@@<br>
 @@.mc-speech; Oh no@@<br>
@@ -122,7 +122,7 @@ You couldn't even imagine that you could feel so good just from a blowjob, so yo
 <br>
 @@.mc-thoughts; Your knees could no longer come together, and you felt wetness gathering at your crotch.@@<br>
 <<linkreplace "@@.usebtn;Try to resist again@@">>
-<<if $mcpossession gte 11>>
+<<if setup.Posession.canResistFinalAttempt()>>
 
 @@color:red; So which one of you will fuck me first?@@<br>
 @@.mc-speech; Fuck, it doesn't work@@<br>
@@ -186,7 +186,7 @@ You couldn't even imagine that you could feel so good just from a blowjob, so yo
 
 
 <<linkreplace "@@.usebtn; Try to resist again@@">>
-<<if $mcpossession gte 7>>
+<<if setup.Posession.canResistSecondAttempt()>>
 <span id ="possessedLocationPark1">
 <video autoplay controls muted loop>
  <source @src="setup.ImagePath + '/possessed/5.4.mp4'" type="video/mp4">

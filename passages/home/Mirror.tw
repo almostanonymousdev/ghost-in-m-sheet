@@ -1,7 +1,7 @@
 :: Mirror {"position":"700,1200","size":"100,100"}
 <<nobr>>
 <<set _checkBeauty to random(30,100)>>
-<<if $thetwinsevent eq 1 and _checkBeauty gt $mc.beauty and $thetwinseventCD eq 0>>
+<<if setup.Home.twinsEventAvailable() and _checkBeauty gt $mc.beauty>>
 <video autoplay controls muted loop>
  <source @src="setup.ImagePath + '/ghosts/specials/twins1.mp4'" type="video/mp4">
  </video>
@@ -12,7 +12,7 @@
 @@.backbtn;[[Back|Bathroom]] @@<br>
 <<set $thetwinseventCD to 1>>
 <</linkappend>>
-<<elseif $thetwinsevent eq 1 and _checkBeauty lte $mc.beauty and $thetwinseventCD eq 0>>
+<<elseif setup.Home.twinsEventAvailable() and _checkBeauty lte $mc.beauty>>
 <video autoplay controls muted loop>
  <source @src="setup.ImagePath + '/ghosts/specials/twins.mp4'" type="video/mp4">
  </video>

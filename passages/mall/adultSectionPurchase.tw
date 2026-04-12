@@ -2,10 +2,10 @@
 <div class="flexwrapper backgroundForText">
 <<shopCardCorruption "dildoPurchased" "img/dildo.jpg" 30 "adultSectionPurchase" 3 1>>
 <div class="housecard">
-<<if $wardenClothesStage eq 1>>
+<<if setup.Mall.canBuyWardenOutfit()>>
 <img @src="setup.ImagePath + '/img/wardrobe/warden.webp'" class="iconPx"><br>
 <span class="priceAmount">500$</span><br>
-<<if $mc.corruption gte 3>>
+<<if setup.Mall.meetsCorruptionForWarden()>>
 <<if $mc.money gte 500>>
 @@.buyItemLink;<<link "Buy" "adultSectionPurchase">>
 <<set $mc.money -= 500>>

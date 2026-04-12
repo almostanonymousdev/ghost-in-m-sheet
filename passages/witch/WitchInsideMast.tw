@@ -3,9 +3,9 @@
 <<randomVideo "witch/1.mp4" "witch/2.mp4">>
  @@.mc-speech;Oops, she seems a little busy, I'd better come back later@@<br>
  @@.mc-thoughts; She's so hot though@@<br>
-<<if ndef $gotKeyFromWitch>>
-@@.mc-thoughts; You see a key lying nearby, it looks like it might be for her house...@@<br> 
-<<if $mc.corruption gte 3>>
+<<if not setup.Witch.hasStolenKey()>>
+@@.mc-thoughts; You see a key lying nearby, it looks like it might be for her house...@@<br>
+<<if setup.Witch.canStealKeyFromWitch()>>
 @@.usebtn;<<linkreplace "Steal the key">>
 <<set $gotKeyFromWitch to 1>>
 @@.mc-thoughts; Now i can enter the witch's house at night@@

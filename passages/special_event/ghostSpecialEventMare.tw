@@ -3,7 +3,7 @@
 <video autoplay controls muted loop>
  <source @src="setup.ImagePath + '/ghosts/specials/mare1.1.mp4'" type="video/mp4">
  </video>
- <<if $ghostMareInfoCollected neq 1>>
+ <<if not setup.SpecialEvent.knowsAboutMare()>>
 @@.mc-speech;Am I touching myself in my sleep? Strange...I need to @@<<else>>
 @@.mc-speech; Is this really happening again? I need to@@<</if>>
 <<linkappend "@@.mc-speechLink;watch more.@@">>
@@ -13,7 +13,7 @@
  
 @@.mc-thoughts; You barely hear the whisper, but it's clearly @@<<linkappend "@@.mc-thoughtsLink; not your voice@@">><br>
  @@.notmc-speech;You can never escape from me... I am always here... Always watching...@@<br>
-<<if $ghostMareInfoCollected neq 1>>
+<<if not setup.SpecialEvent.knowsAboutMare()>>
 @@.mc-speech;What is this? Whose voice is that? And what should I do about it? I need to do something urgently. I think I should check the internet again.@@
 <<else>>
 @@.mc-speech;Yes, it's definitely the ghost Mare. But now I know what to do; I just need to use the holy water in the bedroom and it will disappear immediately. Although, judging by the video, this is only the initial stage, which means I still have some time.@@

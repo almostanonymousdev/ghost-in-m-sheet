@@ -13,7 +13,7 @@
 <</done>>
 <br>
 
-<<if $mc.energy gte 2>>
+<<if setup.Park.canContinueJogging()>>
 <<linkreplace 'Continue jogging <img @src="setup.ImagePath + \'/img/energy.png\'" style="position: relative; top: 0.375em; width:3%;">'>>
 <<set _check to random(30,110)>>
 <<if _check lte $mc.beauty>>

@@ -3,7 +3,7 @@
 <<if $ghost.name eq "The Twins">>
 <<set $thetwinsevent to 1>>
 <</if>>
-<<if $tshirtState eq "not worn" and $pantiesState eq "not worn" and ($jeansState neq "worn" and $skirtState neq "worn" and $shortsState neq "worn")>>
+<<if setup.HauntedHouses.nudityNakedNoBottoms()>>
 <<if $mc.exhib lte 4>>
 <<set _videoList to [
 	{type: "video", src: "naked/1.mp4"},
@@ -17,7 +17,7 @@
     {type: "video", src: "naked/14.mp4"},
 	{type: "video", src: "naked/15.mp4"}]>>
 <</if>>
-<<elseif $tshirtState eq "not worn" and $pantiesState eq "worn" and ($jeansState neq "worn" and $skirtState neq "worn" and $shortsState neq "worn")>>
+<<elseif setup.HauntedHouses.nudityToplessWithPanties()>>
 <<if $mc.exhib lte 4>>
 <<if $braState eq "worn">>
 <<set _videoList to [
@@ -35,12 +35,12 @@
 	{type: "video", src: "naked/31.mp4"},
 	{type: "video", src: "naked/32.mp4"}]>>
 <</if>>
-<<elseif $tshirtState eq "not worn" and ($jeansState eq "worn" or $skirtState eq "worn" or $shortsState eq "worn")>>
+<<elseif setup.HauntedHouses.isTopless()>>
 <<set _videoList to [
 	{type: "video", src: "naked/20.mp4"},
 	{type: "video", src: "naked/21.mp4"},
 	{type: "video", src: "naked/22.mp4"}]>>
-<<elseif $tshirtState eq "worn" and ($jeansState eq "worn" or $skirtState eq "worn" or $shortsState eq "worn")>>
+<<elseif setup.HauntedHouses.isFullyDressed()>>
 <<goto "Livingroom">>
     <</if>>
     

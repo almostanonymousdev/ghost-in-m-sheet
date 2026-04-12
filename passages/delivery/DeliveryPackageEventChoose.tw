@@ -3,7 +3,7 @@
 @@.notmc-speech; You are late@@<br>
 <<linkreplace "@@.usebtn;Try to apologize@@">>
 @@.notmc-speech; I understand, no problem. Here's the money for the delivery. Listen, maybe you want to earn a little more money?@@<br>
-<<if $mc.corruption lt 3>>
+<<if not setup.Delivery.canAcceptPackageDeal()>>
 @@.mc-speech; That sounds strange, I'd rather decline@@ <<deliveryCorrReq 3>><br><br>
 @@.backbtn;[[Back|DeliveryMap]]@@
 <<else>>

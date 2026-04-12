@@ -38,14 +38,14 @@ She glides toward you, her movements almost hypnotic. When her lips touch yours,
 
 <<if $mc.lust >= 90>>
 <<eventRandomizerText $argForRandomizer>><br>
-<<if $mc.energy gte 1>>
+<<if setup.Events.hasEnergyToRunAway()>>
 @@.usebtn;[[Run away|$return][$mc.energy -= 1]]@@<span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span>
 <<else>>
 @@.mc-thoughts; I'm too tired@@
 <span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; filter: grayscale(1); width:3%;"></span><</if>>
  or @@.usebtn; [[Stay|$return][$mc.sanity -= $ghostSanityEventDecreased]]@@ <span>-<img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%;"></span>
-<<if $isCompChosen eq 1 and $chosenPlan eq "Plan1">>
- <<if $companion.lust gte 60>>
+<<if setup.Events.hasCompanionOnPlan1()>>
+ <<if setup.Events.companionIsAroused()>>
  <<if $companion.name eq "Brook">>
 or @@.usebtn;<<link `$companion.name + " helps you"`>><<set $companion.sanity -= 3>><<set $companion.lust += 10>>
 <<replace "#videoContainer">><<include "BrookHelp">><</replace>>
@@ -70,12 +70,12 @@ or @@.usebtn; [["Call "+$companion.name + " for help"|$return][$companion.sanity
 <<elseif ($mc.lust >= 75 and $mc.lust < 90)>>
 <<eventRandomizerText $argForRandomizer>><br>
 
-<<if $mc.energy gte 1>>@@.usebtn; [[Run away|$return][$mc.energy -= 1]]@@<span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span> <<else>>
+<<if setup.Events.hasEnergyToRunAway()>>@@.usebtn; [[Run away|$return][$mc.energy -= 1]]@@<span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span> <<else>>
 @@.mc-thoughts; I'm too tired@@
 <span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; filter: grayscale(1); width:3%;"></span><</if>>
 or @@.usebtn; [[Stay|$return][$mc.sanity -= $ghostSanityEventDecreased]] @@<span>-<img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%;"></span>
-<<if $isCompChosen eq 1 and $chosenPlan eq "Plan1">>
- <<if $companion.lust gte 60>>
+<<if setup.Events.hasCompanionOnPlan1()>>
+ <<if setup.Events.companionIsAroused()>>
  <<if $companion.name eq "Brook">>
 or @@.usebtn;<<link `$companion.name + " helps you"`>><<set $companion.sanity -= 3>><<set $companion.lust += 10>>
 <<replace "#videoContainer">><<include "BrookHelp">><</replace>>
@@ -99,12 +99,12 @@ or @@.usebtn; [["Call "+$companion.name + " for help"|$return][$companion.sanity
 <<elseif ($mc.lust >= 60 and $mc.lust < 75)>>
 <<eventRandomizerText $argForRandomizer>><br>
 
-<<if $mc.energy gte 1>>@@.usebtn; [[Run away|$return][$mc.energy -= 1]]@@<span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span><<else>>
+<<if setup.Events.hasEnergyToRunAway()>>@@.usebtn; [[Run away|$return][$mc.energy -= 1]]@@<span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span><<else>>
 @@.mc-thoughts; I'm too tired@@
 <span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; filter: grayscale(1); width:3%;"></span><</if>>
  or@@.usebtn;  [[Stay|$return][$mc.sanity -= $ghostSanityEventDecreased]]@@ <span>-<img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%;"></span>
-<<if $isCompChosen eq 1 and $chosenPlan eq "Plan1">>
- <<if $companion.lust gte 60>>
+<<if setup.Events.hasCompanionOnPlan1()>>
+ <<if setup.Events.companionIsAroused()>>
  <<if $companion.name eq "Brook">>
 or @@.usebtn;<<link `$companion.name + " helps you"`>><<set $companion.sanity -= 3>><<set $companion.lust += 10>>
 <<replace "#videoContainer">><<include "BrookHelp">><</replace>>
@@ -129,12 +129,12 @@ or @@.usebtn; [["Call "+$companion.name + " for help"|$return][$companion.sanity
 <<elseif ($mc.lust >= 45 and $mc.lust < 60)>>
 <<eventRandomizerText $argForRandomizer>><br>
 
-<<if $mc.energy gte 1>>@@.usebtn; [[Run away|$return][$mc.energy -= 1]]@@<span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span><<else>>
+<<if setup.Events.hasEnergyToRunAway()>>@@.usebtn; [[Run away|$return][$mc.energy -= 1]]@@<span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span><<else>>
 @@.mc-thoughts; I'm too tired@@
 <span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; filter: grayscale(1); width:3%;"></span><</if>>
 or @@.usebtn; [[Stay |$return][$mc.sanity -=$ghostSanityEventDecreased]]@@ <span>-<img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%;"></span>
-<<if $isCompChosen eq 1 and $chosenPlan eq "Plan1">>
- <<if $companion.lust gte 60>>
+<<if setup.Events.hasCompanionOnPlan1()>>
+ <<if setup.Events.companionIsAroused()>>
  <<if $companion.name eq "Brook">>
 or @@.usebtn;<<link `$companion.name + " helps you"`>><<set $companion.sanity -= 3>><<set $companion.lust += 10>>
 <<replace "#videoContainer">><<include "BrookHelp">><</replace>>
@@ -158,12 +158,12 @@ or @@.usebtn; [["Call "+$companion.name + " for help"|$return][$companion.sanity
 <<elseif ($mc.lust >= 30 and $mc.lust < 45)>>
 <<eventRandomizerText $argForRandomizer>><br>
 
-<<if $mc.energy gte 1>>@@.usebtn; [[Run away|$return][$mc.energy -= 1]]@@<span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span> <<else>>
+<<if setup.Events.hasEnergyToRunAway()>>@@.usebtn; [[Run away|$return][$mc.energy -= 1]]@@<span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span> <<else>>
 @@.mc-thoughts; I'm too tired@@
 <span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; filter: grayscale(1); width:3%;"></span><</if>>
 or @@.usebtn; [[Stay|$return][$mc.sanity -= $ghostSanityEventDecreased]] @@<span>-<img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%;"></span>
-<<if $isCompChosen eq 1 and $chosenPlan eq "Plan1">>
- <<if $companion.lust gte 60>>
+<<if setup.Events.hasCompanionOnPlan1()>>
+ <<if setup.Events.companionIsAroused()>>
  <<if $companion.name eq "Brook">>
 or @@.usebtn;<<link `$companion.name + " helps you"`>><<set $companion.sanity -= 3>><<set $companion.lust += 10>>
 <<replace "#videoContainer">><<include "BrookHelp">><</replace>>
@@ -188,12 +188,12 @@ or @@.usebtn; [["Call "+$companion.name + " for help"|$return][$companion.sanity
 <<elseif ($mc.lust >= 15 and $mc.lust < 30)>>
 <<eventRandomizerText $argForRandomizer>><br>
 
-<<if $mc.energy gte 1>>@@.usebtn; [[Run away|$return][$mc.energy -= 1]]@@<span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span> <<else>>
+<<if setup.Events.hasEnergyToRunAway()>>@@.usebtn; [[Run away|$return][$mc.energy -= 1]]@@<span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span> <<else>>
 @@.mc-thoughts; I'm too tired@@
 <span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; filter: grayscale(1); width:3%;"></span><</if>>
 or @@.usebtn; [[Stay|$return][$mc.sanity -= $ghostSanityEventDecreased]] @@<span>-<img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%;"></span>
-<<if $isCompChosen eq 1 and $chosenPlan eq "Plan1">>
- <<if $companion.lust gte 60>>
+<<if setup.Events.hasCompanionOnPlan1()>>
+ <<if setup.Events.companionIsAroused()>>
  <<if $companion.name eq "Brook">>
 or @@.usebtn;<<link `$companion.name + " helps you"`>><<set $companion.sanity -= 3>><<set $companion.lust += 10>>
 <<replace "#videoContainer">><<include "BrookHelp">><</replace>>
@@ -219,12 +219,12 @@ or @@.usebtn; [["Call "+$companion.name + " for help"|$return][$companion.sanity
 <<elseif ($mc.lust >= 0 and $mc.lust < 15)>>
 <<eventRandomizerText $argForRandomizer>><br>
 
-<<if $mc.energy gte 1>>@@.usebtn; [[Run away|$return][$mc.energy -= 1]]@@<span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span> <<else>>
+<<if setup.Events.hasEnergyToRunAway()>>@@.usebtn; [[Run away|$return][$mc.energy -= 1]]@@<span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span> <<else>>
 @@.mc-thoughts; I'm too tired@@
 <span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; filter: grayscale(1); width:3%;"></span><</if>>
 or @@.usebtn; [[Stay|$return][$mc.sanity -= $ghostSanityEventDecreased]] @@<span>-<img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%;"></span>
-<<if $isCompChosen eq 1 and $chosenPlan eq "Plan1">>
- <<if $companion.lust gte 60>>
+<<if setup.Events.hasCompanionOnPlan1()>>
+ <<if setup.Events.companionIsAroused()>>
  <<if $companion.name eq "Brook">>
 or @@.usebtn;<<link `$companion.name + " helps you"`>><<set $companion.sanity -= 3>><<set $companion.lust += 10>>
 <<replace "#videoContainer">><<include "BrookHelp">><</replace>>

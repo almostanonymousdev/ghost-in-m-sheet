@@ -169,19 +169,10 @@ until you both [[cum at the same time.|blakeContinue]]@@<br>
 <<set $EmfActivated to 0>>
 <<set $uvlActivated to 0>>
 
-<<if $isCompChosen eq 1 and $companion.name eq "Blake" and $gotCursedItem eq 1>>
-<<set $gotCursedItem to 0>>
-<</if>>
+<<run setup.Companion.clearBlakeCursedItem()>>
 
-<<set $chosenPlan to 0>>
-<<set $chosenPlanActivated to 0>>
-<<set $randomGhostPassage to 0>>
-<<set $isCompRoomChosen to 0>>
-<<set $showComp to 0>>
-<<set $isCompChosen to 0>>
+<<run setup.Companion.resetHuntState()>>
 
-<<if $companion.name eq "Alice" and $isAliceGoingForHuntingAlone eq 0>>
-<<set $aliceWorkDone to 0>>
-<</if>>
+<<run setup.Companion.resetAliceWorkIfNeeded()>>
 
 

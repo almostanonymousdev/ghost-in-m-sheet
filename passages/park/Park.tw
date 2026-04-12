@@ -3,22 +3,16 @@
 @@.location; Park@@<br>
 @@.mc-thoughts; This park, where green plantings seamlessly transition into forest, offers solitude and a connection to nature, providing a space for relaxation and outdoor activities.
 @@<br>
-<<if $sportswear>>
-<<if $hours lte 5 or $hours gte 22>>
+<<if not setup.Park.hasSportswear()>>
+@@.mc-speech; I need to buy sportswear.@@<br>
+<<elseif not setup.Park.isOpen()>>
 @@.mc-thoughts; Not the best time for training.@@<br>
-<<else>>
-<<if $joggingCD eq 1>>
+<<elseif setup.Park.joggingOnCooldown()>>
 @@.mc-speech; Enough for today...@@<br>
-<<else>>
-<<if $mc.energy gte 2>>
+<<elseif setup.Park.hasEnergyToJog()>>
 @@.enterbtn; [[Jogging|ParkJogging][$mc.energy -= 2]]<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:20px;"> @@<br>
 <<else>>
 @@.mc-speech; Not enough energy@@ <img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"><br>
-<</if>>
-<</if>>
-<</if>>
-<<else>>
-@@.mc-speech; I need to buy sportswear.@@<br>
 <</if>>
 
 <br>

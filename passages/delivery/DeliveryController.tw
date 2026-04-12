@@ -1,0 +1,71 @@
+:: DeliveryController [script]
+/*
+ * Centralized state queries and mutations for the delivery hub.
+ * Passages should call into setup.Delivery instead of testing the
+ * underlying $variables directly, so the conditions live in one place.
+ */
+setup.Delivery = (function () {
+	function v(name) { return State.variables[name]; }
+	function mc() { return State.variables.mc; }
+
+	return {
+		// --- Hub hours / shift eligibility -----------------------
+		isOpen: function () {
+			var h = v('hours');
+			return h > 7 && h < 20;
+		},
+		isFirstVisit: function () {
+			return v('firstVisitDeliveryHub') !== false;
+		},
+		hasEnergyForShift: function () {
+			return mc().energy >= 2;
+		},
+		canStartShift: function () {
+			return !this.isFirstVisit() && this.isOpen() && this.hasEnergyForShift();
+		},
+		tooTiredForShift: function () {
+			return !this.isFirstVisit() && this.isOpen() && !this.hasEnergyForShift();
+		},
+
+		// --- Manager: flirt / BJ quest ---------------------------
+		managerBJOnCooldown: function () {
+			return v('deliveryBJCD') === 1;
+		},
+		meetsBeautyForManagerFlirt: function () {
+			return mc().beauty >= 45;
+		},
+		managerWillPayExtra: function () {
+			return mc().corruption >= 2;
+		},
+		hasMetManagerEvent: function () {
+			return State.hasVisited('DeliveryManagerEventStart');
+		},
+
+		// --- Pizza / Package / Burger / Papers gate checks -------
+		canAcceptPizzaDeal: function () {
+			return mc().corruption >= 3;
+		},
+		canAcceptPackageDeal: function () {
+			return mc().corruption >= 3;
+		},
+		canAcceptBurgerWeed: function () {
+			return mc().corruption >= 4;
+		},
+		canAcceptPappersFlirt: function () {
+			return mc().corruption >= 3;
+		},
+		pappersLustHighEnough: function () {
+			return mc().lust >= 40;
+		},
+		pappersStillCorruptible: function () {
+			return mc().corruption <= 3;
+		},
+		pappersInitialLustHighEnough: function () {
+			return mc().lust >= 30;
+		},
+		packageLustHighEnough: function () {
+			// Drives which branch is shown in DeliveryPackageEventStart
+			return mc().lust > 49;
+		}
+	};
+})();

@@ -48,13 +48,13 @@ I could watch a little longer and then help her... but I might get noticed. @@<b
 @@.mc-speech; FUCK! They noticed me. I won’t have time to take out the holy water, but I could@@
 @@.usebtn; [[Run|Church][$hasQuestForRescue to 2]]@@
  
-<<done>><<if $mc.corruption lt 6>>
+<<done>><<if not setup.MissingWomen.canStaySubmissive()>>
 <<addclass ".rescueStayCorruptionCheck" "disabled-link">>
 <</if>><</done>>
 <br>
 <span class="rescueStayCorruptionCheck">
 @@.mc-speech;Or...@@  @@.usebtn;[[Stay|rescueStay][$hasQuestForRescue to 2]]@@.@@.mc-speech; I guess I’m already used to losing...@@</span>
-<<if $mc.corruption lt 6>>@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 6)@@<</if>>
+<<if not setup.MissingWomen.canStaySubmissive()>>@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 6)@@<</if>>
 
 <br><br>
 <br>
@@ -93,13 +93,13 @@ I could watch a little longer and then help her... but I might get noticed. @@<b
 		<</replace>>
 	<</if>>
 <</link>></span><br>
-<span class="useHolyWaterButton"><<if $holyWaterIsCollected neq 1>>
+<span class="useHolyWaterButton"><<if not setup.MissingWomen.hasHolyWater()>>
 @@.mc-thoughts; Fuck! I didn’t bring any holy water... I can't do much without it...@@<br><br>
 @@.backbtn; [[Leave|rescueMap]]@@<br>
 <<else>>
 <<linkreplace "@@.usebtn;Use holywater@@">>
 <<replace ".rescueWatchButton">><</replace>>
-<<set $holyWaterIsCollected to 0>>
+<<run setup.MissingWomen.useHolyWater()>>
 @@.mc-thoughts;But there's no time to waste! You quickly start throwing holy water toward the ghost. <br>
 It lets out a loud hiss, like the water's burning it from the inside. The ghost pulls away from $currentRescueGirl and disappears.@@<br>
 @@.mc-speech;Let's get out of here before it comes back!@@<br>

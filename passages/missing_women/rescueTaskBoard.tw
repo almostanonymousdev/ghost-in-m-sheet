@@ -12,7 +12,7 @@
   {name: "Nadia", img: "rescue/Nadia.jpg"},
   {name: "Ash", img: "rescue/Ash.jpg"},
 ]>>
-<<if $rescueQuestCD eq 0>>
+<<if not setup.MissingWomen.boardOnCooldown()>>
 <<if $rescueCD eq 0>>
 <<set $rescueCD to 1>>
 <<set $rescueRandomGirls to []>>
@@ -24,7 +24,7 @@
 <<set _girl2 to _remainingGirls[_index2]>>
 <<set $rescueRandomGirls.push(_girl2)>>
 <</if>>
-<<if $hours >= 18 and $hours < 24 and $hasQuestForRescue eq 0>>
+<<if setup.MissingWomen.boardPostingsOutToday() and setup.MissingWomen.isQuestAvailable()>>
 <div class="flexwrapper addGap5">
 <<for _girl range $rescueRandomGirls>>
     <<capture _girl>>
@@ -40,11 +40,11 @@
 <</capture>>
 <</for>>
 </div>
-<<elseif $hasQuestForRescue eq 1>>
+<<elseif setup.MissingWomen.hasActiveQuest()>>
 @@.mc-speech; I've already taken the missing poster for $currentRescueGirl, I need to find her first.@@<br>
-<<elseif $hasQuestForRescue eq 0>>
+<<elseif setup.MissingWomen.isQuestAvailable()>>
 @@.mc-speech; The nun said that the missing posters appear in the evening, around 6 PM.@@<br>
-<<elseif $hasQuestForRescue eq 2 or $hasQuestForRescue eq 3>>
+<<elseif setup.MissingWomen.mustReturnToNun()>>
 @@.mc-speech;First, I need to go see the nun. She should be at the church. @@
 <</if>>
 <<else>>

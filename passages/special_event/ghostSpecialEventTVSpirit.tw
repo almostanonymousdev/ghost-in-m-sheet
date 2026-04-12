@@ -8,7 +8,7 @@
 <video autoplay controls muted loop>
 <source @src="setup.ImagePath + '/ghosts/specials/spirit1.1.mp4'" type="video/mp4">
 </video>
-<<if $mc.corruption lt 3>>
+<<if not setup.SpecialEvent.hasMinCorruptionForTVSpirit()>>
 @@.mc-thoughts;You open your eyes to find a dick right next to your face. In an instant, it's in your mouth. You react in shock, jumping up, but the ghost has already vanished, leaving you bewildered @@<br>
 @@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 3)@@<br>
 <br>
