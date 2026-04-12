@@ -32,6 +32,8 @@
 <<set _returnPassage to _args[3]>>
 <<set _bonusText to _args[4]>>
 <<set _reqCorruption to _args[5]>>
+<<set _extraVar to (typeof _args[6] !== "undefined") ? _args[6] : "">>
+<<set _extraVal to (typeof _args[7] !== "undefined") ? _args[7] : 0>>
 <div class="housecard">
 <<if ndef State.variables[_varName]>>
 <img @src="setup.ImagePath + '/' + _img" class="iconPx"><br>
@@ -39,10 +41,11 @@
 <span class="priceAmount"><<= _price>>$</span><br>
 <span class="mc-thoughts">_bonusText</span><br>
 <<if $mc.money gte _price>>
-<<capture _varName, _price, _returnPassage>>
+<<capture _varName, _price, _returnPassage, _extraVar, _extraVal>>
 @@.buyItemLink;<<link "Buy" _returnPassage>>
 <<run State.variables[_varName] = "worn">>
 <<set $mc.money -= _price>>
+<<if _extraVar>><<run State.variables[_extraVar] = _extraVal>><</if>>
 <</link>>@@<br>
 <</capture>>
 <<else>>@@.mc-thoughts; I don't have enough money@@<</if>>

@@ -3,9 +3,9 @@
 <<salonItem "tattooFace" "img/tattoos/tattooFace.jpg" 100 "BeautySalonTattoos" "+2 beauty" "mc.beauty" `$mc.beauty + 2`>>
 <<salonItem "tattooNeck" "img/tattoos/tattooNeck.webp" 80 "BeautySalonTattoos" "+2 beauty" "mc.beauty" `$mc.beauty + 2`>>
 <<salonItem "tattooHand" "img/tattoos/tattooHand.jpg" 50 "BeautySalonTattoos" "+1 beauty" "mc.beauty" `$mc.beauty + 1`>>
-<<salonItemCorruption "tattooChest" "img/tattoos/tattooChest.jpg" 150 "BeautySalonTattoos" "+3 beauty" 5>>
-<<salonItemCorruption "tattooPussy" "img/tattoos/tattooPussy.webp" 200 "BeautySalonTattoos" "+3 beauty" 5>>
-<<salonItemCorruption "tattooAss" "img/tattoos/tattooAss.jpg" 350 "BeautySalonTattoos" "+3 beauty" 5>>
+<<salonItemCorruption "tattooChest" "img/tattoos/tattooChest.jpg" 150 "BeautySalonTattoos" "+3 beauty" 5 "mc.beauty" `$mc.beauty + 3`>>
+<<salonItemCorruption "tattooPussy" "img/tattoos/tattooPussy.webp" 200 "BeautySalonTattoos" "+3 beauty" 5 "mc.beauty" `$mc.beauty + 3`>>
+<<salonItemCorruption "tattooAss" "img/tattoos/tattooAss.jpg" 350 "BeautySalonTattoos" "+3 beauty" 5 "mc.beauty" `$mc.beauty + 3`>>
 
 </div>
 <br>
