@@ -118,6 +118,13 @@ evidence: ["emf", "spiritbox", "uvl"],
 <<set $updatePiercingBodyPartSens to 1>>
 <</if>>
 
+/* addLustPiercing* are read by addLustTits/addLustPussy widgets; if a piercing
+   was never bought they're undefined, which makes the lust delta NaN and
+   silently corrupts $mc.lust. Default to 0 here as a safety net. */
+<<if ndef $addLustPiercingTits>><<set $addLustPiercingTits to 0>><</if>>
+<<if ndef $addLustPiercingPussy>><<set $addLustPiercingPussy to 0>><</if>>
+<<if ndef $addLustPiercingTongue>><<set $addLustPiercingTongue to 0>><</if>>
+
 
 <<if $updateIronclad neq 2>>
 <<include "updateIronclad">>

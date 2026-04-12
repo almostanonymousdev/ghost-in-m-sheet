@@ -53,8 +53,11 @@
 		moneyFromWeakenTheGhost:    function () { return 0; },
 		tentaclesEventStageSleep:   function () { return 0; },
 		piercingTitsAddSens:        function () { return 0; },
-		piercingTonguedAddSens:     function () { return 0; },
+		piercingTongueAddSens:      function () { return 0; },
 		piercingPussyAddSens:       function () { return 0; },
+		addLustPiercingTits:        function () { return 0; },
+		addLustPiercingTongue:      function () { return 0; },
+		addLustPiercingPussy:       function () { return 0; },
 		updatePiercingBodyPartSens: function () { return 1; },
 		fixSave:                    function () { return 1; }
 	};
