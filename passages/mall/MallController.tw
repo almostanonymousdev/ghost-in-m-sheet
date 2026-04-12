@@ -31,6 +31,24 @@ setup.Mall = (function () {
 		canRaiseBlakeRelationship: function () {
 			return v('relationshipBlake') <= 4;
 		},
+		sellCursedItemToBlake: function () {
+			var s = State.variables;
+			s.gotCursedItem = 0;
+			s.isCIDildo = 0;
+			s.isCIButtplug = 0;
+			s.isCIBeads = 0;
+			s.isCIHDildo = 0;
+			s.mc.money += 60;
+		},
+		pickBlakeForHunt: function () {
+			var s = State.variables;
+			s.companion = clone(s.blake);
+			setup.Companion.selectCompanion('Blake');
+			s.chosenPlan = 0;
+			s.isBlakeGoingForHuntingAlone = 0;
+			s.blakeChooseOwaissa = 0;
+			s.blakeChooseElm = 0;
+		},
 		blakeIsCompanionCandidate: function () {
 			return v('relationshipBlake') >= 5;
 		},

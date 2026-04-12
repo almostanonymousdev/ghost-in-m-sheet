@@ -90,12 +90,7 @@ In every house with a ghost, there is a cursed object. It could be in any room. 
 <<linkreplace "@@.usebtn; I found the cursed object.@@">>
 @@.notmc-speech;Oh, thank you. Here is your reward. @@<br>
 <span> Money: +$30 $ </span><br>
-<<set $mc.money += 30>>
-<<set $gotCursedItem to 0>>
-<<set $isCIDildo to 0>>
-<<set $isCIButtplug to 0>>
-<<set $isCIBeads to 0>>
-<<set $isCIHDildo to 0>>
+<<run setup.Witch.collectCursedItemReward()>>
 <<if setup.Witch.shouldAwardGwb3OnTurnIn()>>
  <<set $equipment.gwb to 3>>
 @@.mc-action; You get a lvl 3 Ghost Writing Book @@<img @src="setup.ImagePath + '/img/gwb.png'" style="max-width:5%"><br>

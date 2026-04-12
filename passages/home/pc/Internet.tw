@@ -18,17 +18,7 @@
 </div>
 <div style="display:flex; align-items: center;">
 <<link "@@.usebtn; Choose Alex@@">>
-<<set $companion to clone($alex)>>
-<<set $isCompChosenBrook to 0>>
-<<set $isCompChosenAlice to 0>>
-<<set $isCompChosenBlake to 0>>
-<<set $isCompChosenAlex to 1>>
-<<set $isCompChosenTaylor to 0>>
-<<set $isCompChosenCasey to 0>>
-<<set $chosenPlan to 0>>
-<<set $transStart to 0>>
-<<set $transPicture to 0>>
-<<unset $transFirstStage>>
+<<run setup.Companion.pickTransCompanion("Alex")>>
 <<replace "#internetConfirm">>
 @@.mc-speech; Okay, I think I've found a partner for the next ghost hunt@@ - @@color:red;<b>$companion.name </b>@@. @@.mc-speech; He said he would wait for me at the haunted house.@@
 <</replace>>
@@ -48,17 +38,8 @@
 <em>Chance to find the ghost's favorite room</em>: $taylor.chanceOfSuccessGR: <br>
 </div>
 <div style="display:flex; align-items: center;">
-<<link "@@.usebtn; Choose Taylor@@">><<set $companion to clone($taylor)>>
-<<set $isCompChosenBrook to 0>>
-<<set $isCompChosenAlice to 0>>
-<<set $isCompChosenBlake to 0>>
-<<set $isCompChosenAlex to 0>>
-<<set $isCompChosenTaylor to 1>>
-<<set $isCompChosenCasey to 0>>
-<<set $chosenPlan to 0>>
-<<set $transStart to 0>>
-<<set $transPicture to 0>>
-<<unset $transFirstStage>>
+<<link "@@.usebtn; Choose Taylor@@">>
+<<run setup.Companion.pickTransCompanion("Taylor")>>
 <<replace "#internetConfirm">>
 @@.mc-speech; Okay, I think I've found a partner for the next ghost hunt@@ - @@color:red;<b>$companion.name </b>@@. @@.mc-speech; He said he would wait for me at the haunted house.@@
 <</replace>>
@@ -78,17 +59,8 @@
 <em>Chance to find the ghost's favorite room</em>: $casey.chanceOfSuccessGR: <br>
 </div>
 <div style="display:flex; align-items: center;">
-<<link "@@.usebtn; Choose Casey@@">><<set $companion to clone($casey)>>
-<<set $isCompChosenBrook to 0>>
-<<set $isCompChosenAlice to 0>>
-<<set $isCompChosenBlake to 0>>
-<<set $isCompChosenAlex to 0>>
-<<set $isCompChosenTaylor to 0>>
-<<set $isCompChosenCasey to 1>>
-<<set $chosenPlan to 0>>
-<<set $transStart to 0>>
-<<set $transPicture to 0>>
-<<unset $transFirstStage>>
+<<link "@@.usebtn; Choose Casey@@">>
+<<run setup.Companion.pickTransCompanion("Casey")>>
 <<replace "#internetConfirm">>
 @@.mc-speech; Okay, I think I've found a partner for the next ghost hunt@@ - @@color:red;<b>$companion.name </b>@@. @@.mc-speech; He said he would wait for me at the haunted house.@@
 <</replace>>

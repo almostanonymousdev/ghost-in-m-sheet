@@ -102,15 +102,7 @@
 <span class="priceAmount">400$</span><br>
 <<if $mc.money gte 400>>
 @@.buyItemLink;<<link "Buy" "witchSale">>
-<<set $boughtMonkeyPawGuide to 2>>
-<<set $wishActivity to 1>>
-<<set $wishTraptheghost to 1>>
-<<set $wishSanity to 1>>
-<<set $wishLeave to 1>>
-<<set $wishKnowledge to 1>>
-<<set $wishDawn to 1>>
-<<set $wishAnything to 1>>
-<<set $mc.money -= 400>>
+<<run setup.Witch.unlockMonkeyPawWishes()>>
 <</link>>@@<br>
 <<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
 <</if>>

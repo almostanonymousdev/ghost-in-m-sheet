@@ -42,12 +42,7 @@
 <<unset $moneyFromWeakenTheGhost>>
 <<set $temperature to 0>>
 
-<<set $EMF5Check to false>>
-<<set $EctoglassCheck to false>>
-<<set $GWBCheck to false>>
-<<set $SpiritboxCheck to false>>
-<<set $TemperatureCheck to false>>
-<<set $UVLCheck to false>>
+<<run setup.HauntedHouses.resetEvidenceChecks()>>
 
 <<if $deleteOneEvidence eq 1>>
 <<include "DeleteEvidence">>

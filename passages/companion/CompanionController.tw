@@ -43,6 +43,19 @@ setup.Companion = (function () {
 			this.clearCompanionSelection();
 			State.variables["isCompChosen" + name] = 1;
 		},
+		pickTransCompanion: function (name) {
+			// Used by the Internet passage when choosing a trans companion
+			// (Alex / Taylor / Casey). Clones the source NPC object onto
+			// $companion, toggles the selection flags, and resets the
+			// per-hunt trans-event bookkeeping.
+			var s = State.variables;
+			s.companion = clone(s[name.toLowerCase()]);
+			this.selectCompanion(name);
+			s.chosenPlan = 0;
+			s.transStart = 0;
+			s.transPicture = 0;
+			delete s.transFirstStage;
+		},
 
 		// --- Sanity / lust tiers used by compEvent / *Help / Init -
 		sanityTier: function () {

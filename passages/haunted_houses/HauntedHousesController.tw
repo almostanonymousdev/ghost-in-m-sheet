@@ -56,6 +56,15 @@ setup.HauntedHouses = (function () {
 			s.EmfActivated = 0;
 			s.uvlActivated = 0;
 		},
+		resetEvidenceChecks: function () {
+			var s = State.variables;
+			s.EMF5Check = false;
+			s.EctoglassCheck = false;
+			s.GWBCheck = false;
+			s.SpiritboxCheck = false;
+			s.TemperatureCheck = false;
+			s.UVLCheck = false;
+		},
 
 		// --- Corruption accumulator used at hunt end ------------
 		commitTempCorruption: function () {

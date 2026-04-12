@@ -27,9 +27,7 @@
 @@.mc-speech; What a bitch, I hope we never cross paths again.@@<br><br>
 @@.backbtn; [[Leave|CityMap]] @@<br>
 <<set $isPenaltyOn to 1>>
-<<set $mc.sanityMax to 70>>
-<<set $mc.sanity to random(40,70)>>
-<<set $mc.lust to random(30,60)>>
+<<run setup.Home.applyAssaultDebuff()>>
 <</linkappend>>
 
 

@@ -8,12 +8,7 @@
 @@.mc-thoughts; $companion.name leaves the house.@@ <<if $companion.sanity lte 0>><<else>>@@.warningtext; Req. higher level of $companion.name .@@<</if>><br>
 @@.mc-speech; Well, I'm alone now...@@<br>
 <br>
-<<set $chosenPlan to 0>>
-<<set $chosenPlanActivated to 0>>
-<<set $randomPassageOwaissa to 0>>
-<<set $showComp to 0>>
-<<set $isCompRoomChosen to 0>>
-<<set $isCompChosen to 0>>
+<<run setup.Companion.resetHuntState()>>
 @@.backbtn; [[Continue|$return]]@@<br>
 <<done>>
 <<addclass ".linkselector" "disabled-link">>

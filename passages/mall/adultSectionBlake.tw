@@ -27,16 +27,11 @@
 @@.notmc-speech; Wow, thanks. Here's your money. Feel free to bring more, I'll gladly buy them from you.@@<br>
 Money: +60 $ <br>
 
-<<set $gotCursedItem to 0>>
-<<set $isCIDildo to 0>>
-<<set $isCIButtplug to 0>>
-<<set $isCIBeads to 0>>
-<<set $isCIHDildo to 0>>
-<<set $mc.money += 60>>
 <<if setup.Mall.canRaiseBlakeRelationship()>>
 <<set $relationshipBlake += 1>>
 @@.mc-speech; Relationship with Blake increased: now $relationshipBlake!@@
 <</if>>
+<<run setup.Mall.sellCursedItemToBlake()>>
 <</linkreplace>>
 <<else>>
 <</if>>
@@ -68,14 +63,7 @@ Money: +60 $ <br>
 @@.mc-speech; [[Ask her how her ghost hunt went.|BlakeHuntEndAlone]]@@<br>
 <<else>>
 @@.mc-speech;<<link "Ask Blake to join you for ghost hunting tonight.">>
-<<set $companion to clone($blake)>>
-<<set $isCompChosenBlake to 1>>
-<<set $isCompChosenAlice to 0>>
-<<set $isCompChosenBrook to 0>>
-<<set $chosenPlan to 0>>
-<<set $isBlakeGoingForHuntingAlone to 0>>
-<<set $blakeChooseOwaissa to 0>>
-<<set $blakeChooseElm to 0>>
+<<run setup.Mall.pickBlakeForHunt()>>
 <<replace "#blakeInfoAnswer">>@@.mc-speech; I want you to join me for ghost hunting today@@<br>
 @@.notmc-speech; Yes, of course. I'll be ready. Let's meet by the entrance to the haunted house. <br>
 But if we find the cursed item, I'll keep it, okay?@@<br>
