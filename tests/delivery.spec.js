@@ -322,14 +322,14 @@ test.describe('Delivery Controller', () => {
     expect(atGate).toBe(true);
   });
 
-  test('canAcceptPappersFlirt requires corruption >= 3', async () => {
+  test('canAcceptPapersFlirt requires corruption >= 3', async () => {
     // arrange
     await setVar(page, 'mc.corruption', 2);
 
     // act
-    const belowGate = await callSetup(page, 'setup.Delivery.canAcceptPappersFlirt()');
+    const belowGate = await callSetup(page, 'setup.Delivery.canAcceptPapersFlirt()');
     await setVar(page, 'mc.corruption', 3);
-    const atGate = await callSetup(page, 'setup.Delivery.canAcceptPappersFlirt()');
+    const atGate = await callSetup(page, 'setup.Delivery.canAcceptPapersFlirt()');
 
     // assert
     expect(belowGate).toBe(false);
@@ -338,28 +338,28 @@ test.describe('Delivery Controller', () => {
 
   // --- Lust gates ---
 
-  test('pappersLustHighEnough requires lust >= 40', async () => {
+  test('papersLustHighEnough requires lust >= 40', async () => {
     // arrange
     await setVar(page, 'mc.lust', 39);
 
     // act
-    const belowGate = await callSetup(page, 'setup.Delivery.pappersLustHighEnough()');
+    const belowGate = await callSetup(page, 'setup.Delivery.papersLustHighEnough()');
     await setVar(page, 'mc.lust', 40);
-    const atGate = await callSetup(page, 'setup.Delivery.pappersLustHighEnough()');
+    const atGate = await callSetup(page, 'setup.Delivery.papersLustHighEnough()');
 
     // assert
     expect(belowGate).toBe(false);
     expect(atGate).toBe(true);
   });
 
-  test('pappersInitialLustHighEnough requires lust >= 30', async () => {
+  test('papersInitialLustHighEnough requires lust >= 30', async () => {
     // arrange
     await setVar(page, 'mc.lust', 29);
 
     // act
-    const belowGate = await callSetup(page, 'setup.Delivery.pappersInitialLustHighEnough()');
+    const belowGate = await callSetup(page, 'setup.Delivery.papersInitialLustHighEnough()');
     await setVar(page, 'mc.lust', 30);
-    const atGate = await callSetup(page, 'setup.Delivery.pappersInitialLustHighEnough()');
+    const atGate = await callSetup(page, 'setup.Delivery.papersInitialLustHighEnough()');
 
     // assert
     expect(belowGate).toBe(false);
@@ -380,14 +380,14 @@ test.describe('Delivery Controller', () => {
     expect(atGate).toBe(true);
   });
 
-  test('pappersStillCorruptible requires corruption <= 3', async () => {
+  test('papersStillCorruptible requires corruption <= 3', async () => {
     // arrange
     await setVar(page, 'mc.corruption', 3);
 
     // act
-    const atLimit = await callSetup(page, 'setup.Delivery.pappersStillCorruptible()');
+    const atLimit = await callSetup(page, 'setup.Delivery.papersStillCorruptible()');
     await setVar(page, 'mc.corruption', 4);
-    const pastLimit = await callSetup(page, 'setup.Delivery.pappersStillCorruptible()');
+    const pastLimit = await callSetup(page, 'setup.Delivery.papersStillCorruptible()');
 
     // assert
     expect(atLimit).toBe(true);

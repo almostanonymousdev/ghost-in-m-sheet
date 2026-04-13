@@ -1,14 +1,14 @@
-:: DeliveryPappersEventStart [event nobr] {"position":"1550,1750","size":"100,100"}
+:: DeliveryPapersEventStart [event nobr] {"position":"1550,1750","size":"100,100"}
 <<addLust 15>>
 <<deliveryVideo "papersevent" 1>>
 @@.notmc-speech; How about staying with me for a while? I think the work can wait, and I'll write a good review for your work?@@<br>
 +15 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"><br>
-<<if setup.Delivery.pappersStillCorruptible()>>
+<<if setup.Delivery.papersStillCorruptible()>>
 +0.1 <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%;">
 <<set $mc.corruption += 0.1>><br>
 <</if>>
-<<if setup.Delivery.canAcceptPappersFlirt()>>
-<<if setup.Delivery.pappersLustHighEnough()>>
+<<if setup.Delivery.canAcceptPapersFlirt()>>
+<<if setup.Delivery.papersLustHighEnough()>>
 @@.mc-thoughts; I'm so turned on, I need to relax a little@@<br>
 @@.mc-speech; Maybe you are right~AH~, work can wait@@<br>
 @@.notmc-speech; Get on <<linkappend "your knees">><br>
@@ -18,7 +18,7 @@
 @@.mc-speech; ~Hmng~ulrp~ It's too big to fit in my mouth@@<br>
 @@.notmc-speech; Oh~ I think it will fit in your pussy, I'm sure you're all wet@@<br>
 @@.mc-thoughts; He is right. I can not stand it any longer@@<br>
-@@.notmc-speech; Sit on my dick with your [[wet pussy|DeliveryPappersEvent1]]@@<br>
+@@.notmc-speech; Sit on my dick with your [[wet pussy|DeliveryPapersEvent1]]@@<br>
 <</linkappend>>@@
 <<else>>
 @@.mc-speech; Nah, I better get back to work, bye@@ <<deliveryLustReq 40>><br>

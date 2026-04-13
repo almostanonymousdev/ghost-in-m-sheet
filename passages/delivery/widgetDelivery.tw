@@ -143,7 +143,7 @@ You earned an extra $<<= _amt>><br>
 <<case "pizza">><<include "DeliveryPizzaEventChoose">>
 <<case "package">><<include "DeliveryPackageEventChoose">>
 <<case "burgers">><<include "DeliveryBurgerEventChoose">>
-<<case "newspapers">><<include "DeliveryPappersEventChoose">>
+<<case "newspapers">><<include "DeliveryPapersEventChoose">>
 <<case "books">><<if ndef $meetAlice>><<include "meetAlice">><<else>><<deliveryGenericSuccess>><</if>>
 <<default>><<deliveryGenericSuccess>>
 <</switch>>

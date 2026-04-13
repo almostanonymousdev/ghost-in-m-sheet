@@ -51,16 +51,16 @@ setup.Delivery = (function () {
 		canAcceptBurgerWeed: function () {
 			return mc().corruption >= 4;
 		},
-		canAcceptPappersFlirt: function () {
+		canAcceptPapersFlirt: function () {
 			return mc().corruption >= 3;
 		},
-		pappersLustHighEnough: function () {
+		papersLustHighEnough: function () {
 			return mc().lust >= 40;
 		},
-		pappersStillCorruptible: function () {
+		papersStillCorruptible: function () {
 			return mc().corruption <= 3;
 		},
-		pappersInitialLustHighEnough: function () {
+		papersInitialLustHighEnough: function () {
 			return mc().lust >= 30;
 		},
 		packageLustHighEnough: function () {

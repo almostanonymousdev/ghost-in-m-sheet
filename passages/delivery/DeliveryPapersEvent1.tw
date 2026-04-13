@@ -1,5 +1,5 @@
-:: DeliveryPappersEvent1 [event nobr] {"position":"1550,1850","size":"100,100"}
-<<set $deliveryPappersEvent to 1>>
+:: DeliveryPapersEvent1 [event nobr] {"position":"1550,1850","size":"100,100"}
+<<set $deliveryPapersEvent to 1>>
 <<addLust 45>>
 <<deliveryVideo "papersevent" 4 5>>
 +45 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"><br>
