@@ -32,6 +32,3 @@
 <<updatemeter 'xpBar' `$mc.exp / $neededForNextLevel`>><</if>>
 @@.backbtn;[[Leave|DeliveryHub]] @@
 <<set $deliveryBJCD to 1>>
- <</nobr>>
-
-

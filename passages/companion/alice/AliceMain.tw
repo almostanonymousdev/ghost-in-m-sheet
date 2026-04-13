@@ -1,4 +1,4 @@
-:: AliceMain [nobr nobr] {"position":"2050,3550","size":"100,100"}
+:: AliceMain [nobr] {"position":"2050,3550","size":"100,100"}
 <<if ndef $chanceToAttackAlice>><<set $chanceToAttackAlice to 25>><</if>>
 <div class="flexwrapperCompanionMain">
 <div class="companionImageMain">

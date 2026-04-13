@@ -1,5 +1,4 @@
-:: Bathroom {"position":"700,1100","size":"100,100"}
-<<nobr>>
+:: Bathroom [nobr] {"position":"700,1100","size":"100,100"}
 <img @src="setup.ImagePath + '/img/mcbathroom.jpg'" width="100%"><br>
 @@.location; Bathroom@@<br>
 
@@ -9,18 +8,13 @@
 @@.enterbtn;[[Wash your face|WashFace]]<br>@@
 <br>
 @@.backbtn;[[Bedroom]]<br>@@
-<</nobr>>
 
-:: Bath {"position":"600,1100","size":"100,100"}
-<<nobr>>
+:: Bath [nobr] {"position":"600,1100","size":"100,100"}
 <<randomImage "bath/1.jpg" "bath/2.jpg" "60%">><br>
 <<washClean "60%" 5>>
-<</nobr>>
 
-:: Shower {"position":"800,1100","size":"100,100"}
-<<nobr>>
+:: Shower [nobr] {"position":"800,1100","size":"100,100"}
 <<randomImage "shower/1.jpg" "shower/2.jpg" "50%">><br>
 <<washClean "50%" 10>>
-<</nobr>>
 
 

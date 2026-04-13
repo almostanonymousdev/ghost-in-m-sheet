@@ -94,6 +94,4 @@ stage4: 3,
 <<if _selectedVids>>
 <<goto "artEventVids">>
 <</if>>
-<</nobr>>	
-
 

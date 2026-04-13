@@ -1,5 +1,4 @@
-:: GWBcheck {"position":"3725,325","size":"100,100"}
-<<nobr>>
+:: GWBcheck [nobr] {"position":"3725,325","size":"100,100"}
 <<set _gwbChance to random(1, 100)>>
 <<if $ghost.evidence.includes("gwb") and setup.chanceByTier($equipment.gwb, _gwbChance) and setup.isGhostHere(["elm", "owaissa", "ironclad"])>>
 	<<randRangeImg "gwb/" 1 18 ".jpg">>
@@ -9,10 +8,8 @@
 <<else>>
 	<<notFound "I didn't find anything">>
 <</if>>
-<</nobr>>
 
-:: GWBcheckArt {"position":"3625,325","size":"100,100"}
-<<nobr>>
+:: GWBcheckArt [nobr] {"position":"3625,325","size":"100,100"}
 <<set _gwbChance to random(1, 100)>>
 <<if $ghost.evidence.includes("gwb") and setup.chanceByTier($equipment.gwb, _gwbChance) and setup.isGhostHere(["enigma"])>>
 	<<randRangeImg "gwb/" 1 18 ".jpg">>
@@ -22,10 +19,8 @@
 <<else>>
 	<<notFound "I didn't find anything">>
 <</if>>
-<</nobr>>
 
-:: PlasmCheckArt {"position":"3625,525","size":"100,100"}
-<<nobr>>
+:: PlasmCheckArt [nobr] {"position":"3625,525","size":"100,100"}
 <<set _glassChance to random(1, 100)>>
 <<if ($ghost.evidence.includes("glass") or $saveMimic eq 1) and setup.chanceByTier($equipment.glass, _glassChance) and setup.isGhostHere(["enigma"])>>
 	<<randRangeImg "art/plasm/" 1 14 ".png" "displayCentredImgs">><br>
@@ -33,4 +28,3 @@
 <<else>>
 	<<notFound "I didn't find any ectoplasm stains">>
 <</if>>
-<</nobr>>

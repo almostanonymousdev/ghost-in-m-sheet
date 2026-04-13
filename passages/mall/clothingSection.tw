@@ -1,7 +1,4 @@
-:: clothingSection {"position":"2700,1700","size":"100,100"}
-<<nobr>>
-
-<<nobr>>
+:: clothingSection [nobr] {"position":"2700,1700","size":"100,100"}
 <div class="flexwrapper backgroundForText">
 <<shopCard "jeansState1" "img/wardrobe/jeans1.png" 30 "clothingSection" "+5 beauty">>
 <<shopCard "jeansState2" "img/wardrobe/jeans2.png" 40 "clothingSection" "+8 beauty">>
@@ -45,7 +42,6 @@
 </div>
 <br>
 @@.backbtn;[[Leave|Mall]] @@
-<</nobr>>
 <style>
 body {
     background-image: url('assets/img/clothingSection.jpg');
@@ -53,6 +49,3 @@ body {
     background-repeat: no-repeat;
 }
 </style>
-<</nobr>>
-
-

@@ -1,10 +1,9 @@
-:: gymGroupEvent1Start2 {"position":"3375,1800","size":"100,100"}
-<<nobr>>
+:: gymGroupEvent1Start2 [nobr] {"position":"3375,1800","size":"100,100"}
 <<addLust 15>>
 <<addTime 60>>
 <<randomVideo "gym/grouptraining1.5.mp4" "gym/grouptraining1.6.mp4">>
 @@.mc-thoughts; First someone fucked you, then you started fucking someone else with a toy.<br>
-Eventually everyone @@<<linkappend "@@.mc-thoughtsLink; gathered around you again.@@">>  <br> 
+Eventually everyone @@<<linkappend "@@.mc-thoughtsLink; gathered around you again.@@">>  <br>
 <video autoplay controls muted loop>
     <source @src="setup.ImagePath + '/gym/grouptraining1end.mp4'" type="video/mp4">
   </video>
@@ -12,9 +11,8 @@ Eventually everyone @@<<linkappend "@@.mc-thoughtsLink; gathered around you agai
 @@.mc-speech; Fuck~ i'm about to~@@<br>
 @@.mc-thoughts; You're squirting, almost losing consciousness from the overwhelming pleasure.@@<br>
 @@.mc-speech; Oh, thank you girls, I will try to come to you more often@@<br>
-<<nobr>>
 <<set $mc.lust to 0>>
-<<updatemeter 'mclust' `$mc.lust.toFixed(2) / 100`>><</nobr>>
+<<updatemeter 'mclust' `$mc.lust.toFixed(2) / 100`>>
 <<gainXP 10 0.5>>
 @@.backbtn;[[Leave|GymInside]] @@
 <</linkappend>>
@@ -22,6 +20,5 @@ Eventually everyone @@<<linkappend "@@.mc-thoughtsLink; gathered around you agai
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
 <br>
-<</nobr>>
 
 
