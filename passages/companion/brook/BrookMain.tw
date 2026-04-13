@@ -1,5 +1,4 @@
-:: BrookMain {"position":"1950,3225","size":"100,100"}
-<<nobr>>
+:: BrookMain [nobr] {"position":"1950,3225","size":"100,100"}
 <<if ndef $chanceToAttackBrook>>
 <<set $chanceToAttackBrook to 25>><</if>>
 <div class="flexwrapperCompanionMain">
@@ -176,6 +175,5 @@ Come on! Let's go naked together.You'll like it.<br>@@
 <<addclass ".brookLvlCheck4" "disabled-link">>
 <</if>>
 <</done>>
-<</nobr>>
 
 

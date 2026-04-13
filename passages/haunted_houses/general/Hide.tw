@@ -1,5 +1,4 @@
-:: Hide [noreturn] {"position":"2600,1225","size":"100,100"}
-<<nobr>>
+:: Hide [noreturn nobr] {"position":"2600,1225","size":"100,100"}
 <<set _check to random(1,2)>>
 <<if _check eq 1>>
 <img @src="setup.ImagePath + '/hunting/hid1.jpg'" width="100%"><br>
@@ -50,6 +49,5 @@ use the Crucifix, but unfortunately, @@.enterbtn;[[you don't have it...|huntEnd]
 <<done>>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
-<</nobr>>
 
 

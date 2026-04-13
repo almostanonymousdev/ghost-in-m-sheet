@@ -1,5 +1,4 @@
-:: AliceInfo [nobr noreturn] {"position":"2000,3750","size":"100,100"}
-<<nobr>>
+:: AliceInfo [nobr noreturn nobr] {"position":"2000,3750","size":"100,100"}
 <<if $alice.lvl eq 2>>
 <<set $chanceToSuccessAloneOwaissaAlice to 20>>
 <<set $chanceToSuccessAloneElmAlice to 10>>
@@ -111,6 +110,5 @@
 </div>
 <br>
 @@.backbtn; [[Return|$return]] @@<br>
-<</nobr>>
 
 

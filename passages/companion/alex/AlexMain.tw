@@ -1,5 +1,4 @@
-:: AlexMain {"position":"2900,3600","size":"100,100"}
-<<nobr>>
+:: AlexMain [nobr] {"position":"2900,3600","size":"100,100"}
 <<if ndef $chanceToAttackAlex>><<set $chanceToAttackAlex to 25>><</if>>
 <div class="flexwrapperCompanionMain">
 <div class="companionImageMain">
@@ -149,6 +148,5 @@ Completely naked? You owe me one, $mc.name.
 <<addclass ".alexLvlCheck4" "disabled-link">>
 <</if>>
 <</done>>
-<</nobr>>
 
 

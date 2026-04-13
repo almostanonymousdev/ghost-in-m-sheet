@@ -1,5 +1,4 @@
-:: GymInside {"position":"3050,1325","size":"100,100"}
-<<nobr>>
+:: GymInside [nobr] {"position":"3050,1325","size":"100,100"}
 <<set $trainingCost to setup.Gym.computeTrainingCost()>>
 <img @src="setup.ImagePath + '/img/gymInside.jpg'" width="100%">
 <br>
@@ -35,6 +34,5 @@
 <br>
 @@.backbtn;[[Leave|CityMap]] @@<br>
 <br>
-<</nobr>>
 
 

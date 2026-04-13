@@ -1,11 +1,9 @@
-:: ghostSpecialEventMare0 {"position":"1250,2450","size":"100,100"}
-<<nobr>>
+:: ghostSpecialEventMare0 [nobr] {"position":"1250,2450","size":"100,100"}
 <video autoplay controls muted loop>
  <source @src="setup.ImagePath + '/ghosts/specials/mare0.mp4'" type="video/mp4">
  </video>
 @@.mc-speech;Nothing happens@@<br>
 <br>
 @@.backbtn; [[Back|Use PC]] @@
-<</nobr>>
 
 

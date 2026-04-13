@@ -1,5 +1,4 @@
-:: Internet {"position":"400,800","size":"100,100"}
-<<nobr>>
+:: Internet [nobr] {"position":"400,800","size":"100,100"}
 <img @src="setup.ImagePath + '/img/browserSearch.png'" width="100%"><br>
 @@.mc-speech; What should I look for on the internet?@@<br>
 <br>

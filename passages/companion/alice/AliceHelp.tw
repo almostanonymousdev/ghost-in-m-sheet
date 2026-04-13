@@ -1,5 +1,4 @@
-:: AliceHelp [nobr noreturn] {"position":"2150,3550","size":"100,100"}
-<<nobr>>
+:: AliceHelp [nobr noreturn nobr] {"position":"2150,3550","size":"100,100"}
 <<set _checkRandomCthulion to random(1,3)>>
 <<set _videoList to []>>
 
@@ -90,6 +89,5 @@ $companion.name's lust <img @src="setup.ImagePath + '/img/hearth.png'" style="po
 @@.mc-speech; Yeah, you're right.@@<br><br>
 @@.backbtn; [[Continue|previous()]]@@<br>
      <</if>><</if>>
-<</nobr>>
 
 

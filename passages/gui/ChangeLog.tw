@@ -1,5 +1,4 @@
-:: ChangeLog {"position":"100,700","size":"100,100"}
-<<nobr>>
+:: ChangeLog [nobr] {"position":"100,700","size":"100,100"}
 v.0.4.8<br>
 - Added a task for summoning the succubus<br>
 - Added events for summoning the succubus<br>
@@ -178,7 +177,6 @@ New department in the store (electronics): you can buy a webcamera <<linkreplace
 <<done>>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
-<</nobr>>
 
 
 

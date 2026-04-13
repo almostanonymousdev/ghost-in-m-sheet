@@ -1,5 +1,4 @@
-:: gymTrainer {"position":"3225,1600","size":"100,100"}
-<<nobr>>
+:: gymTrainer [nobr] {"position":"3225,1600","size":"100,100"}
 <<addLust 15>>
 <<if setup.Gym.soloSlotMorning()>>
   <video autoplay controls muted loop>
@@ -46,6 +45,5 @@ You see @@.mc-speech;Emily@@. @@.mc-speech;[[Go talk to her|EmilyTalk]]@@ after 
 <<done>>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
-<</nobr>>
 
 

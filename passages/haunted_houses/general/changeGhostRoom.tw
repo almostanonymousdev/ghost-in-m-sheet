@@ -1,5 +1,4 @@
-:: changeGhostRoom {"position":"500,300","size":"100,100"}
-<<nobr>>
+:: changeGhostRoom [nobr] {"position":"500,300","size":"100,100"}
 <<if $isOwaissa eq 1>>
 <<set _ghostRoom = ["hallway", "livingroom", "kitchen", "bathroom", "bedroom"]>><</if>>
 <<if $isElm eq 1>>
@@ -43,7 +42,6 @@
     <</if>>
   <</if>>
 <</if>>
-<</nobr>>
 
 
 

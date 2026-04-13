@@ -1,5 +1,4 @@
-:: EmilyTalk {"position":"3325,1600","size":"100,100"}
-<<nobr>>
+:: EmilyTalk [nobr] {"position":"3325,1600","size":"100,100"}
 <img @src="setup.ImagePath + '/gym/EmilyTalks.jpg'" width="100%"><br>
 <<if not setup.Gym.hasMetEmily()>>
 
@@ -58,6 +57,5 @@ Relation with @@.mc-speech;Emily@@ improved: $relationEmily now!<br><</if>>
 <<done>>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
-<</nobr>>
 
 

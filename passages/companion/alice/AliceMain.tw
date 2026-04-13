@@ -1,5 +1,4 @@
-:: AliceMain [nobr] {"position":"2050,3550","size":"100,100"}
-<<nobr>>
+:: AliceMain [nobr nobr] {"position":"2050,3550","size":"100,100"}
 <<if ndef $chanceToAttackAlice>><<set $chanceToAttackAlice to 25>><</if>>
 <div class="flexwrapperCompanionMain">
 <div class="companionImageMain">
@@ -169,6 +168,5 @@ Come on! Let's go naked together.You'll like it.<br>@@
 <<addclass ".aliceLvlCheck4" "disabled-link">>
 <</if>>
 <</done>>
-<</nobr>>
 
 

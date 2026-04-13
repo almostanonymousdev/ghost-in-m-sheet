@@ -1,5 +1,4 @@
-:: transInit {"position":"2800,3475","size":"100,100"}
-<<nobr>>
+:: transInit [nobr] {"position":"2800,3475","size":"100,100"}
 <<set $alex to {
 name: "Alex",
 sanity:100,
@@ -45,6 +44,5 @@ chanceOfSuccessAnyEvidence: 50,
 chanceOfSuccessGR: 50,
 }>>
 <<set $addedTransInit to 1>>
-<</nobr>>
 
 

@@ -1,5 +1,4 @@
-:: WatchPorn {"position":"300,1100","size":"100,100"}
-<<nobr>>
+:: WatchPorn [nobr] {"position":"300,1100","size":"100,100"}
 <<set $masturbationCD to 1>>
 <<set $videos to ["porn/1.mp4", "porn/2.mp4", "porn/3.mp4", "porn/4.mp4", "porn/5.mp4", "porn/6.mp4", "porn/7.mp4"]>>
 <<set $currentVideoIndex to 0>>
@@ -27,7 +26,6 @@
 <div id="watch-pornID"></div>
 <br>
 @@.backbtn;[[Stop|PornCore]]@@
-<</nobr>>
 
 
 

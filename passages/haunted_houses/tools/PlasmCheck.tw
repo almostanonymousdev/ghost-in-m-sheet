@@ -1,5 +1,4 @@
-:: PlasmCheck {"position":"3725,525","size":"100,100"}
-<<nobr>>
+:: PlasmCheck [nobr] {"position":"3725,525","size":"100,100"}
 <<set _glassChance to random(1, 100)>>
 <<if ($ghost.evidence.includes("glass") or $saveMimic eq 1) and setup.chanceByTier($equipment.glass, _glassChance) and setup.isGhostHere(["elm", "owaissa", "ironclad"])>>
 	<<if random(1, 2) eq 1>>
@@ -16,4 +15,3 @@
 <<else>>
 	<<notFound "I didn't find any ectoplasm stains">>
 <</if>>
-<</nobr>>

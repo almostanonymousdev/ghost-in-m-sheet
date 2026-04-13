@@ -1,5 +1,4 @@
-:: HuntOverSanity [noreturn] {"position":"1400,1350","size":"100,100"}
-<<nobr>>
+:: HuntOverSanity [noreturn nobr] {"position":"1400,1350","size":"100,100"}
 <<if $ghost.name eq "The Twins">>
 <<set $thetwinsevent to 1>>
 <</if>>
@@ -168,6 +167,5 @@ Corruption is increased (+ <<= $tempCorr.toFixed(2)>>) : <<= $mc.corruption.toFi
 
 
 
-<</nobr>>
 
 

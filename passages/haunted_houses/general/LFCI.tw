@@ -1,5 +1,4 @@
-:: LFCI {"position":"2200,1150","size":"100,100"}
-<<nobr>>
+:: LFCI [nobr] {"position":"2200,1150","size":"100,100"}
 @@.mc-thoughts; You try to find something, but it seems like nothing is there. Suddenly, you feel an unusual warmth emanating from one of the objects. As you get closer and touch it, the warmth intensifies, spreading throughout your body like an internal heat. Only when you bring the object closer to yourself do you realize that @@@@.mc-speech;<<linkappend "it is a ">><br>
 <<set _check to random(1,4)>>
 <<if _check eq 1>>@@.mc-speech; Dildo???@@<br><img @src="setup.ImagePath + '/curseditems/dildo.png'" width="30%">
@@ -21,6 +20,5 @@ Damn, as soon as I picked up this item, I immediately felt more... aroused.<br>
 <<done>>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
-<</nobr>>
 
 

@@ -1,5 +1,4 @@
-:: DeliveryHub {"position":"1000,1200","size":"100,100"}
-<<nobr>>
+:: DeliveryHub [nobr] {"position":"1000,1200","size":"100,100"}
 <img @src="setup.ImagePath + '/img/deliverybuilding.jpg'" width="90%"><br>
 @@.location; Delivery hub@@<br>
 
@@ -18,6 +17,5 @@
 <<elseif previous() is "CityMap">><<addTime 20>>
 <<else>><<addTime 3>>
 <</if>>
-<</nobr>>
 
 

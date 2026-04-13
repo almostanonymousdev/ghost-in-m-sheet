@@ -1,5 +1,4 @@
-:: AliceInit {"position":"1850,3550","size":"100,100"}
-<<nobr>>
+:: AliceInit [nobr] {"position":"1850,3550","size":"100,100"}
 <<set $alice to {
 name: "Alice",
 sanity:100,
@@ -24,6 +23,5 @@ chanceOfSuccessGR: 50,
 chanceOfSuccessAnyEvidence: 25,
 }>>
 <<set $addedAlice to 1>>
-<</nobr>>
 
 

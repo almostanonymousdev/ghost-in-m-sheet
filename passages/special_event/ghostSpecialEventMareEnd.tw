@@ -1,5 +1,4 @@
-:: ghostSpecialEventMareEnd {"position":"1100,2650","size":"100,100"}
-<<nobr>>
+:: ghostSpecialEventMareEnd [nobr] {"position":"1100,2650","size":"100,100"}
 <video autoplay controls muted loop>
  <source @src="setup.ImagePath + '/ghosts/specials/mare3.1.mp4'" type="video/mp4">
  </video>
@@ -19,6 +18,5 @@ Before losing consciousness, a wave of pleasure washes over your entire body, an
 <br>
 @@.backbtn; [[You black out|Sleep]] @@
  <</linkappend>>
-<</nobr>>
 
 

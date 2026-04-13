@@ -1,5 +1,4 @@
-:: UVLcheckArt {"position":"3625,425","size":"100,100"}
-<<nobr>>
+:: UVLcheckArt [nobr] {"position":"3625,425","size":"100,100"}
 <<set $uvlTimeRemain to setup.toolTimeRemain($equipment.uvl)>>
 
 <<if $uvlActivated neq 1>>
@@ -39,4 +38,3 @@
 		@@.evidenceshadowtext; <span class="evidenceshadowtext"> It seems I found fingerprints... one more piece of evidence</span>@@<br>
 	<</if>>
 <</if>>
-<</nobr>>

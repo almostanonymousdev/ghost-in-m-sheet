@@ -1,5 +1,4 @@
-:: Mirror {"position":"700,1200","size":"100,100"}
-<<nobr>>
+:: Mirror [nobr] {"position":"700,1200","size":"100,100"}
 <<set _checkBeauty to random(30,100)>>
 <<if setup.Home.twinsEventAvailable() and _checkBeauty gt $mc.beauty>>
 <video autoplay controls muted loop>
@@ -50,7 +49,6 @@
 <<done>>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
-<</nobr>>
 
 
 

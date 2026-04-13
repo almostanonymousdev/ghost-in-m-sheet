@@ -1,5 +1,4 @@
-:: succeededComp [noreturn] {"position":"2150,3125","size":"100,100"}
-<<nobr>>
+:: succeededComp [noreturn nobr] {"position":"2150,3125","size":"100,100"}
 <<set _checkChance to random(1,100)>>
 <<if _checkChance gte $chanceToSuccess>>
 <<if $companion.name eq "Brook">>
@@ -49,7 +48,6 @@
 <<done>>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
-<</nobr>>
 
 
 

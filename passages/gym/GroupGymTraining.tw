@@ -1,5 +1,4 @@
-:: GroupGymTraining {"position":"2950,1425","size":"100,100"}
-<<nobr>>
+:: GroupGymTraining [nobr] {"position":"2950,1425","size":"100,100"}
 <<addTime 60>>
 <<randomVideo "gym/group.mp4" "gym/group1.mp4">>
  You spent about an hour at the gym, diligently working on improving your physical fitness. Each workout makes you stronger and more resilient, helping you reach new heights.<br>
@@ -26,6 +25,5 @@ Oooh, [[I can't resist|gymGroupEvent1Start]]@@<br>
  <<done>>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
-<</nobr>>
 
 

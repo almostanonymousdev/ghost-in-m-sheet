@@ -1,5 +1,4 @@
-:: LibrarySearchResult {"position":"2500,1900","size":"100,100"}
-<<nobr>>
+:: LibrarySearchResult [nobr] {"position":"2500,1900","size":"100,100"}
 <<set _foundLibrary to setup.Library.availableSearchResults()>>
 
 <<set _selectedResult to _foundLibrary[random(0, _foundLibrary.length - 1)]>>
@@ -25,7 +24,6 @@
 <<done>>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
-<</nobr>>
 
 
 

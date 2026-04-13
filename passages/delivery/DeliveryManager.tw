@@ -1,5 +1,4 @@
-:: DeliveryManager {"position":"1100,1200","size":"100,100"}
-<<nobr>>
+:: DeliveryManager [nobr] {"position":"1100,1200","size":"100,100"}
 <img @src="setup.ImagePath + '/img/John.jpg'" width="70%"><br>
 <<if setup.Delivery.isFirstVisit()>>
   @@.mc-thoughts; You enter the manager's office and notice a man around forty. There's nothing particularly remarkable about him. As you make your presence known, he carefully assesses you, momentarily pausing his gaze on your chest. Nevertheless, you gather the courage to initiate the conversation.@@<br>
@@ -75,6 +74,5 @@ I don't think I can do it. But I could offer some part-time work for such a beau
 <br>
 <br>
 @@.backbtn;[[Leave|DeliveryHub]] @@
-<</nobr>>
 
 

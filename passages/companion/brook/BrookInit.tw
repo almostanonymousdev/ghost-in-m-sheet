@@ -1,5 +1,4 @@
-:: BrookInit {"position":"1750,3225","size":"100,100"}
-<<nobr>>
+:: BrookInit [nobr] {"position":"1750,3225","size":"100,100"}
 <<set $brook to {
 name: "Brook",
 sanity:100,
@@ -24,6 +23,5 @@ chanceOfSuccessGR: 30,
 chanceOfSuccessAnyEvidence: 25,
 }>>
 <<set $addedBrook to 1>>
-<</nobr>>
 
 

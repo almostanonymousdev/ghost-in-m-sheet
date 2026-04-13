@@ -1,5 +1,4 @@
-:: AliceHuntEndAlone [noreturn] {"position":"2000,3650","size":"100,100"}
-<<nobr>>
+:: AliceHuntEndAlone [noreturn nobr] {"position":"2000,3650","size":"100,100"}
 <<set $payForHuntAloneAlice to 0>>
 <<set $isAliceGoingForHuntingAlone to 0>>
 @@.mc-speech; How did your ghost hunt go?@@<br>
@@ -173,6 +172,5 @@ That's it.@@<br>
 <</done>>
 <<set $aliceWorkDone to 0>>
 @@.backbtn; [[Back|previous()][$aliceChooseOwaissa to 0; $aliceChooseElm to 0]]
-<</nobr>>
 
 

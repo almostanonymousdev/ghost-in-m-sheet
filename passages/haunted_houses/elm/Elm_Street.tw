@@ -1,5 +1,4 @@
-:: Elm Street {"position":"2050,450","size":"100,100"}
-<<nobr>>
+:: Elm Street [nobr] {"position":"2050,450","size":"100,100"}
 <<run setup.Companion.clearCompanionSelection()>>
 <img @src="setup.ImagePath + '/img/ElmHouse.jpg'" width="90%"><br>
 @@.location; Elm Street@@<br>
@@ -26,7 +25,6 @@ You see $companion.name.
 <br>
 <br>
 <<if $ghostHuntingMode eq 2>><span class="movebtn">[[End the hunt|HuntOverManual][$ghostHuntingMode to 3]]</span><<else>><</if>>
-<</nobr>>
 
 
 

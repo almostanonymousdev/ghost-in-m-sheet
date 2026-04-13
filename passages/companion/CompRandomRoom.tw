@@ -1,5 +1,4 @@
-:: CompRandomRoom [noreturn] {"position":"2150,3225","size":"100,100"}
-<<nobr>>
+:: CompRandomRoom [noreturn nobr] {"position":"2150,3225","size":"100,100"}
 <<if ndef $isCompRoomChosen or $isCompRoomChosen eq 0>>
 <<set $isCompRoomChosen to 1>>
 <<if $isOwaissa eq 1>>
@@ -14,6 +13,5 @@
 <<set $filteredGhostPassages to _GhostPassages.filter(passage => passage !== $currentGhostPassage)>>
 <<set $randomGhostPassage to $filteredGhostPassages[Math.floor(Math.random() * $filteredGhostPassages.length)]>>
 <</if>>
-<</nobr>>
 
 

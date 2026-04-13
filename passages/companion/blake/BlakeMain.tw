@@ -1,5 +1,4 @@
-:: BlakeMain {"position":"2050,3875","size":"100,100"}
-<<nobr>>
+:: BlakeMain [nobr] {"position":"2050,3875","size":"100,100"}
 <<if ndef $chanceToAttackBlake>><<set $chanceToAttackBlake to 25>><</if>>
 <div class="flexwrapperCompanionMain">
 <div class="companionImageMain">
@@ -169,6 +168,5 @@ Come on! Let's go naked together.You'll like it.<br>@@
 <<addclass ".blakeLvlCheck4" "disabled-link">>
 <</if>>
 <</done>>
-<</nobr>>
 
 

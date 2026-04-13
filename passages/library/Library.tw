@@ -1,5 +1,4 @@
-:: Library {"position":"2500,1700","size":"100,100"}
-<<nobr>>
+:: Library [nobr] {"position":"2500,1700","size":"100,100"}
 <img @src="setup.ImagePath + '/img/library.jpg'" width="100%">
 <br>
 @@.location; Library@@<br>
@@ -14,6 +13,5 @@
 <<if previous(2) is "Library">><<addTime 0.5>>
 <<elseif previous() is "CityMap">><<addTime 20>>
 <<else>><<addTime 0.5>><</if>>
-<</nobr>>
 
 

@@ -1,5 +1,4 @@
-:: saveEventPassage {"position":"1700,1150","size":"100,100"}
-<<nobr>>
+:: saveEventPassage [nobr] {"position":"1700,1150","size":"100,100"}
 <<set _videoList to []>>
 <<if $ghost.name neq "Shade">>
 <<set $decreasingSanity to {

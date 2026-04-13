@@ -1,5 +1,4 @@
-:: widgetNames [widget] {"position":"300,1600","size":"100,100"}
-<<nobr>>
+:: widgetNames [widget nobr] {"position":"300,1600","size":"100,100"}
 <<widget "ghostRoom">>
 <<if $ghostRoom.name eq "basement">>
 <b><<print "basement">></b>
@@ -29,7 +28,6 @@
 <b><<print "livingroom">></b>
 <</if>>
 <</widget>>
-<</nobr>>
 
 
 

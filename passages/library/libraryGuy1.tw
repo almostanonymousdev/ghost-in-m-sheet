@@ -1,5 +1,4 @@
-:: libraryGuy1 [event] {"position":"3125,2000","size":"100,100"}
-<<nobr>>
+:: libraryGuy1 [event nobr] {"position":"3125,2000","size":"100,100"}
 <<if setup.Library.wearingPants()>>
 <video autoplay controls muted loop>
  <source @src="setup.ImagePath + '/library/1.1.mp4'" type="video/mp4">
@@ -64,6 +63,5 @@ See, no one noticed us, let's have a quick fuck right here@@<br>
  
  
 <</if>>
-<</nobr>>
 
 

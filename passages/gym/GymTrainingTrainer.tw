@@ -1,5 +1,4 @@
-:: GymTrainingTrainer {"position":"2950,1325","size":"100,100"}
-<<nobr>>
+:: GymTrainingTrainer [nobr] {"position":"2950,1325","size":"100,100"}
 <<set $mc.money -= $trainingCost>>
 <<addTime 60>>
 <<include "gymTrainer">>
@@ -12,6 +11,5 @@
 <<done>>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
-<</nobr>>
 
 

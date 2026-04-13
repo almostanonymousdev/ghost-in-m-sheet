@@ -1,5 +1,4 @@
-:: CompResult [noreturn] {"position":"2250,3125","size":"100,100"}
-<<nobr>>
+:: CompResult [noreturn nobr] {"position":"2250,3125","size":"100,100"}
 <<if $chosenPlan eq "Plan2">>
 <<if $gotCursedItem eq 1>>
 @@.notmc-speech; It seems you managed to find the cursed object faster than me, well done.@@<br>
@@ -133,6 +132,5 @@ As soon as I thought about it, I started to feel more... aroused<br>@@
 <<done>>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
-<</nobr>>
 
 

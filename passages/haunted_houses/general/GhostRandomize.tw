@@ -1,5 +1,4 @@
-:: GhostRandomize [event] {"position":"1550,25","size":"100,100"}
-<<nobr>>
+:: GhostRandomize [event nobr] {"position":"1550,25","size":"100,100"}
 <img @src="setup.ImagePath + '/img/witchGirl.jpg'" width="100%">
 <br>
 <<script>>
@@ -58,6 +57,5 @@ Money: -35 $<br>
 <<set $ghostHuntingMode to 1>><br>
 <br>
 @@.backbtn;[[Back|WitchInside]] @@<br>
-<</nobr>>
 
 

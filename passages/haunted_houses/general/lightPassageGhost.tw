@@ -1,5 +1,4 @@
-:: lightPassageGhost {"position":"1700,1500","size":"100,100"}
-<<nobr>>
+:: lightPassageGhost [nobr] {"position":"1700,1500","size":"100,100"}
 <<if $ghost.name neq "Phantom">>
 <<set _lightOff to random(1,65)>>
 <<if (_lightOff eq 1)>>
@@ -168,6 +167,5 @@
 <</if>>
 <</if>>
 <</if>>
-<</nobr>>
 
 

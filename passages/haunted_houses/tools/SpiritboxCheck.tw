@@ -1,5 +1,4 @@
-:: SpiritboxCheck {"position":"3725,625","size":"100,100"}
-<<nobr>>
+:: SpiritboxCheck [nobr] {"position":"3725,625","size":"100,100"}
 <<set _spiritboxChance to random(1, 100)>>
 <<if $ghost.name eq "Moroi" and _spiritboxChance lte 30>>
 	<<if $companion.name eq "Brook" and $brook.lvl gte 2 and $isCompChosen eq 1>>
@@ -32,4 +31,3 @@
 		<span class="spiritbox-no-response">No one responds. Silence...</span>
 	</div>
 <</if>>
-<</nobr>>

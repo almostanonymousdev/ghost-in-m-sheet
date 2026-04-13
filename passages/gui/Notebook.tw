@@ -1,5 +1,4 @@
-:: Notebook [noreturn] {"position":"100,300","size":"100,100"}
-<<nobr>>
+:: Notebook [noreturn nobr] {"position":"100,300","size":"100,100"}
 <<if $knowledgeUsed eq 1>>
 <<done>>
 <<= '<<addclass ".' + $chosenEvidence + '" "blackColor">>'>>
@@ -166,4 +165,3 @@ body {
 <<done>>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
-<</nobr>>

@@ -1,5 +1,4 @@
-:: CaseyMain {"position":"2900,3800","size":"100,100"}
-<<nobr>>
+:: CaseyMain [nobr] {"position":"2900,3800","size":"100,100"}
 <<if ndef $chanceToAttackCasey>><<set $chanceToAttackCasey to 25>><</if>>
 <div class="flexwrapperCompanionMain">
 <div class="companionImageMain">
@@ -149,6 +148,5 @@ Completely naked? You're really pushing it, $mc.name.
 <<addclass ".caseyLvlCheck4" "disabled-link">>
 <</if>>
 <</done>>
-<</nobr>>
 
 

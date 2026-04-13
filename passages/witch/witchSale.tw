@@ -1,5 +1,4 @@
-:: witchSale {"position":"1350,150","size":"100,100"}
-<<nobr>>
+:: witchSale [nobr] {"position":"1350,150","size":"100,100"}
 <div class="flexwrapper">
 <div class="housecard">
 <img @src="setup.ImagePath + '/img/sanityPills.png'" class="iconPx"><br>
@@ -142,6 +141,5 @@
 </div>
 <br>
 @@.backbtn;[[Back|WitchInside]]@@ <br>
-<</nobr>>
 
 

@@ -1,5 +1,4 @@
-:: DeliveryManagerEventStart [event] {"position":"1200,1300","size":"100,100"}
-<<nobr>>
+:: DeliveryManagerEventStart [event nobr] {"position":"1200,1300","size":"100,100"}
 <video autoplay controls muted loop>
  <source @src="setup.ImagePath + '/deliveryhub/manager/bj.mp4'" type="video/mp4">
  </video><br>

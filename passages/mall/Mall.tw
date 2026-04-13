@@ -1,5 +1,4 @@
-:: Mall {"position":"2800,1700","size":"100,100"}
-<<nobr>>
+:: Mall [nobr] {"position":"2800,1700","size":"100,100"}
 
 <img @src="setup.ImagePath + '/img/mall.jpg'" width="100%">
 @@.location; Mall@@<br>
@@ -21,6 +20,5 @@
 <<elseif previous() is "CityMap">><<addTime 20>>
 <<else>><<addTime 0.5>>
 <</if>>
-<</nobr>>
 
 

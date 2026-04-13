@@ -1,5 +1,4 @@
-:: ToolsEventChurch1 [event] {"position":"1975,1700","size":"100,100"}
-<<nobr>>
+:: ToolsEventChurch1 [event nobr] {"position":"1975,1700","size":"100,100"}
 <<addLust 15>>
 <<randomVideo "church/4.mp4" "church/5.mp4">>
  @@.notmc-speech; Oh~ you're so hot, I'm going to cum soon@@<br>
@@ -13,7 +12,6 @@
  <<else>>
 @@.mc-speech; Fuck~AH~ cum [[on my face|ToolsEventChurchEnd]]@@<br>
 <</if>>
-<</nobr>>
 
 
 

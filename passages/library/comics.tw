@@ -1,5 +1,4 @@
-:: comics {"position":"2925,2200","size":"100,100"}
-<<nobr>>
+:: comics [nobr] {"position":"2925,2200","size":"100,100"}
 <div class="flexwrapper gap">
 <div class="housecardComics">
 <img @src="setup.ImagePath + '/library/getting-in-shape-001.jpg'" class="comic-cover"><br>
@@ -34,6 +33,5 @@
 <<done>>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
-<</nobr>>
 
 

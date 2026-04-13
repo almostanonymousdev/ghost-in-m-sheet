@@ -1,5 +1,4 @@
-:: readComics {"position":"3025,2200","size":"100,100"}
-<<nobr>>
+:: readComics [nobr] {"position":"3025,2200","size":"100,100"}
 <<if $comics1 eq 1>>
 <<set $comics1 to 0>>
 <<set $comics2 to 0>>
@@ -489,6 +488,5 @@
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
 @@.backbtn; [[Back|comics]] @@
-<</nobr>>
 
 

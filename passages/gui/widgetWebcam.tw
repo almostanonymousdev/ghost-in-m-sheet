@@ -1,5 +1,4 @@
-:: widgetWebcam [widget] {"position":"300,1400","size":"100,100"}
-<<nobr>>
+:: widgetWebcam [widget nobr] {"position":"300,1400","size":"100,100"}
 <<widget "webcamEvent">>
 <<if $webcamEvent eq "tease">>
 @@.mc-thoughts; You start your webcam show. For an hour, you show yourself in various poses.@@<br>
@@ -63,6 +62,5 @@
 <</if>>
 <<set $webcamShowCD to 1>>
 <</widget>>
-<</nobr>>
 
 

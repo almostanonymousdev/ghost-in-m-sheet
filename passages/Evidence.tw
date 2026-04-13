@@ -1,5 +1,4 @@
-:: Evidence {"position":"300,900","size":"100,100"}
-<<nobr>>
+:: Evidence [nobr] {"position":"300,900","size":"100,100"}
 
 <style>
 #guide b {
@@ -310,7 +309,6 @@ th:last-child, td:last-child {
 <<done>>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
-<</nobr>>
 
 
 

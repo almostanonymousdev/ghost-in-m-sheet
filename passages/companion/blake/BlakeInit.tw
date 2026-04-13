@@ -1,5 +1,4 @@
-:: BlakeInit {"position":"1850,3875","size":"100,100"}
-<<nobr>>
+:: BlakeInit [nobr] {"position":"1850,3875","size":"100,100"}
 <<set $blake to {
 name: "Blake",
 sanity:100,
@@ -24,6 +23,5 @@ chanceOfSuccessGR: 20,
 chanceOfSuccessAnyEvidence: 15,
 }>>
 <<set $addedBlake to 1>>
-<</nobr>>
 
 

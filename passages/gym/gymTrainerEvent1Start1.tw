@@ -1,5 +1,4 @@
-:: gymTrainerEvent1Start1 {"position":"3175,1800","size":"100,100"}
-<<nobr>>
+:: gymTrainerEvent1Start1 [nobr] {"position":"3175,1800","size":"100,100"}
 <<addLust 30>>
 <<set _check to random(1,2)>>
 <<if _check eq 1>><video autoplay controls muted loop>
@@ -27,6 +26,5 @@
 
 <br>
 <<set $trainer1CoachingCost to 1>>
-<</nobr>>
 
 

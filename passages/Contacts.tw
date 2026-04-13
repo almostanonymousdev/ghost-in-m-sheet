@@ -1,5 +1,4 @@
-:: Contacts {"position":"400,1000","size":"100,100"}
-<<nobr>>
+:: Contacts [nobr] {"position":"400,1000","size":"100,100"}
 <div class="flexwrapper addGap5">
 
 <div class="housecard">
@@ -73,6 +72,5 @@ $blake.lvl lvl <<if $blake.lvl gte 5>> (max. lvl)<<else>>($blake.exp / $blake.ex
 <br>
 @@.backbtn; [[Back|Use PC]]@@<br>
 
-<</nobr>>
 
 

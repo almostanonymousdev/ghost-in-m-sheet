@@ -1,5 +1,4 @@
-:: BrookInfo [noreturn] {"position":"1875,3325","size":"100,100"}
-<<nobr>>
+:: BrookInfo [noreturn nobr] {"position":"1875,3325","size":"100,100"}
 <<if $brook.lvl eq 2>>
 <<set $chanceToSuccessAloneOwaissaBrook to 25>>
 <<set $chanceToSuccessAloneElmBrook to 10>>
@@ -91,6 +90,5 @@
 <</done>>
 <</if>>
 @@.backbtn; [[Return|$return]] @@<br>
-<</nobr>>
 
 

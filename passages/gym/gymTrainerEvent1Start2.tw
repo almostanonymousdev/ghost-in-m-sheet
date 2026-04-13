@@ -1,5 +1,4 @@
-:: gymTrainerEvent1Start2 {"position":"3225,1900","size":"100,100"}
-<<nobr>>
+:: gymTrainerEvent1Start2 [nobr] {"position":"3225,1900","size":"100,100"}
 <<addLust 15>>
 <<set $trainer1SexCD to 1>>
 <video autoplay controls muted loop>
@@ -17,6 +16,5 @@
 <<done>>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
-<</nobr>>
 
 

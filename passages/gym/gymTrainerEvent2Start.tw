@@ -1,5 +1,4 @@
-:: gymTrainerEvent2Start {"position":"3275,1700","size":"100,100"}
-<<nobr>>
+:: gymTrainerEvent2Start [nobr] {"position":"3275,1700","size":"100,100"}
 <<addLust 15>>
 <<set _check to random(1,2)>>
 <<if _check eq 1>><video autoplay controls muted loop>
@@ -30,7 +29,6 @@
 
 
 <br>
-<</nobr>>
 
 
 

@@ -1,5 +1,4 @@
-:: ghostSpecialEvent1Mare {"position":"1100,2550","size":"100,100"}
-<<nobr>>
+:: ghostSpecialEvent1Mare [nobr] {"position":"1100,2550","size":"100,100"}
 <video autoplay controls muted loop>
  <source @src="setup.ImagePath + '/ghosts/specials/mare2.1.mp4'" type="video/mp4">
  </video>
@@ -14,6 +13,5 @@
 <br>
 @@.backbtn; [[Back|Use PC]] @@
  <</linkappend>><</linkappend>>
-<</nobr>>
 
 

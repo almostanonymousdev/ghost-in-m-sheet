@@ -1,5 +1,4 @@
-:: StoryCaption {"position":"100,200","size":"100,100"}
-<<nobr>>
+:: StoryCaption [nobr] {"position":"100,200","size":"100,100"}
 <<include "MC">>
 <<include "bodyMod">><br>
 <<if $showComp eq 1 or $showComp eq 3>>
@@ -92,6 +91,5 @@ Timer changed: $timerToolsDecreased now!<</linkreplace>><br>
 <<linkreplace "100ms">><<set $changeToolsActivated to 0>><<set $timerToolsDecreased to "100ms">>
 Timer changed: $timerToolsDecreased now!<</linkreplace>><br>
 <</linkreplace>>
-<</nobr>>
 
 

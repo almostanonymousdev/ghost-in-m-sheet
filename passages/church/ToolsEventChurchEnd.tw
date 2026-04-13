@@ -1,5 +1,4 @@
-:: ToolsEventChurchEnd [event] {"position":"1975,1800","size":"100,100"}
-<<nobr>>
+:: ToolsEventChurchEnd [event nobr] {"position":"1975,1800","size":"100,100"}
 <video autoplay controls muted loop>
  <source @src="setup.ImagePath + '/church/8.mp4'" type="video/mp4">
  </video>

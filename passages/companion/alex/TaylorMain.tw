@@ -1,5 +1,4 @@
-:: TaylorMain {"position":"2900,3700","size":"100,100"}
-<<nobr>>
+:: TaylorMain [nobr] {"position":"2900,3700","size":"100,100"}
 <<if ndef $chanceToAttackTaylor>><<set $chanceToAttackTaylor to 25>><</if>>
 <div class="flexwrapperCompanionMain">
 <div class="companionImageMain">
@@ -149,6 +148,5 @@ Completely naked? You're lucky I like you, $mc.name.
 <<addclass ".taylorLvlCheck4" "disabled-link">>
 <</if>>
 <</done>>
-<</nobr>>
 
 

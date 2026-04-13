@@ -1,5 +1,4 @@
-:: BlakeInfo [noreturn] {"position":"2000,4075","size":"100,100"}
-<<nobr>>
+:: BlakeInfo [noreturn nobr] {"position":"2000,4075","size":"100,100"}
 <<if $blake.lvl eq 2>>
 <<set $chanceToSuccessAloneOwaissaBlake to 25>>
 <<set $chanceToSuccessAloneElmBlake to 10>>
@@ -95,6 +94,5 @@
 <</done>>
 <</if>>
 @@.backbtn; [[Return|$return]] @@<br>
-<</nobr>>
 
 

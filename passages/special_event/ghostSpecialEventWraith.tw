@@ -1,5 +1,4 @@
-:: ghostSpecialEventWraith {"position":"950,2450","size":"100,100"}
-<<nobr>>
+:: ghostSpecialEventWraith [nobr] {"position":"950,2450","size":"100,100"}
 @@.mc-thoughts; You slowly regain consciousness, feeling a dull ache in your head. Opening your eyes, you find yourself lying on the ground in a forest. Panic sets in as you realize your hands are tightly bound with rough rope.@@<br>
 <<randomVideo "ghosts/specials/wraith1.mp4" "ghosts/specials/wraith2.mp4">>
  
@@ -44,6 +43,5 @@
 <<done>>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
-<</nobr>>
 
 

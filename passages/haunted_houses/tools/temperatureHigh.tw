@@ -1,5 +1,4 @@
-:: temperatureHigh {"position":"3725,125","size":"100,100"}
-<<nobr>>
+:: temperatureHigh [nobr] {"position":"3725,125","size":"100,100"}
 /* Baseline offset added to the room temperature:
      +8 when the player is in the ghost's room AND evidence says temperature,
      +5 when in the ghost's room without that evidence,
@@ -27,4 +26,3 @@
 <<set _reading to _raijuGlitch ? random(0, 50) : (random(13, 16) + $temperature + _offset)>>
 
 <span class="toolsTextCentered boldText"><<coloredText _color _reading>></span>
-<</nobr>>

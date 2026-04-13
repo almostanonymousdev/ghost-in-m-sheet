@@ -1,5 +1,4 @@
-:: LibraryInside {"position":"2500,1800","size":"100,100"}
-<<nobr>>
+:: LibraryInside [nobr] {"position":"2500,1800","size":"100,100"}
 <img @src="setup.ImagePath + '/img/libraryInside.jpg'" width="100%">
 <br>
 <<if setup.Library.hasEnergyToSearch()>>
@@ -17,6 +16,5 @@
 <</if>>
 <br>
 @@.backbtn; [[Leave|Library]]@@<br>
-<</nobr>>
 
 

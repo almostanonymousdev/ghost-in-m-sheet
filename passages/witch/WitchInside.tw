@@ -1,5 +1,4 @@
-:: WitchInside {"position":"1350,25","size":"100,100"}
-<<nobr>>
+:: WitchInside [nobr] {"position":"1350,25","size":"100,100"}
 <img @src="setup.ImagePath + '/img/witchGirl.jpg'" width="100%">
 <br>
 
@@ -154,6 +153,5 @@ In every house with a ghost, there is a cursed object. It could be in any room. 
 <br><br>
 @@.backbtn;[[Leave|Witch]] <br>
 
-<</nobr>>
 
 

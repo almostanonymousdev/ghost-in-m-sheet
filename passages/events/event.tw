@@ -1,5 +1,4 @@
-:: event [noreturn] {"position":"1400,1050","size":"100,100"}
-<<nobr>>
+:: event [noreturn nobr] {"position":"1400,1050","size":"100,100"}
 <<set _videoList to []>>
 <<set _chance to random(0, 100)>>
 <<set _bansheeRoll to random(1, 10)>>
@@ -36,4 +35,3 @@
 	<<goto "eventMC">>
 <</if>>
 
-<</nobr>>

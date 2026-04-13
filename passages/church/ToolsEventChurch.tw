@@ -1,5 +1,4 @@
-:: ToolsEventChurch [event] {"position":"1975,1600","size":"100,100"}
-<<nobr>>
+:: ToolsEventChurch [event nobr] {"position":"1975,1600","size":"100,100"}
 <video autoplay controls muted loop>
  <source @src="setup.ImagePath + '/church/1.mp4'" type="video/mp4">
  </video>
@@ -12,6 +11,5 @@
 @@.notmc-speech; Come on my girl, get up, I want to [[fuck you|ToolsEventChurch1]]@@<br>
 <</linkappend>>@@
 <<addLust 15>>
-<</nobr>>
 
 

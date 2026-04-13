@@ -1,5 +1,4 @@
-:: Mimic {"position":"825,2450","size":"100,100"}
-<<nobr>>
+:: Mimic [nobr] {"position":"825,2450","size":"100,100"}
 
 <<if $saveMimic eq "1" and $ghostHuntingMode eq 2>>
 <<set _ghostTypes = ["Shade", "Spirit", "Poltergeist", "Phantom", "Goryo", "Demon", "Deogen", "Jinn", "Moroi", "Myling", "Oni", "The Twins", "Wraith", "Cthulion", 
@@ -11,6 +10,5 @@
   <<set $lastChangeIntervalMimic to $currentIntervalMimic>>
 <</if>>
 <</if>>
-<</nobr>>
 
 

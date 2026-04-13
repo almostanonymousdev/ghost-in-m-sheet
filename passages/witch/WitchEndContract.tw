@@ -1,5 +1,4 @@
-:: WitchEndContract {"position":"1450,25","size":"100,100"}
-<<nobr>>
+:: WitchEndContract [nobr] {"position":"1450,25","size":"100,100"}
 <img @src="setup.ImagePath + '/img/witchGirl.jpg'" width="100%">
 <br>
 @@.notmc-speech;Tell me the type of ghost:@@<br>
@@ -41,6 +40,5 @@
 <<unset $deleteOneEvidence>>
 <</timed>>
 <</linkreplace>>
-<</nobr>>
 
 

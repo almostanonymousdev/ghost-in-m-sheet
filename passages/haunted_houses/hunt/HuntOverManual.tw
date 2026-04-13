@@ -1,5 +1,4 @@
-:: HuntOverManual {"position":"1600,1350","size":"100,100"}
-<<nobr>>
+:: HuntOverManual [nobr] {"position":"1600,1350","size":"100,100"}
 <<if $ghost.name eq "The Twins">>
 <<set $thetwinsevent to 1>>
 <</if>>
@@ -48,6 +47,5 @@ Corruption is increased (+ <<= $tempCorr.toFixed(2)>>) : <<= $mc.corruption.toFi
 <<done>>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
-<</nobr>>
 
 

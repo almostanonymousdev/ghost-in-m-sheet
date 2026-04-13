@@ -1,5 +1,4 @@
-:: BlakeHuntEndAlone [noreturn] {"position":"2000,3975","size":"100,100"}
-<<nobr>>
+:: BlakeHuntEndAlone [noreturn nobr] {"position":"2000,3975","size":"100,100"}
 <<set $payForHuntAloneBlake to 0>>
 <<set $isBlakeGoingForHuntingAlone to 0>>
 @@.mc-speech; How did your ghost hunt go?@@<br>
@@ -140,6 +139,5 @@ That's it.@@<br>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
 @@.backbtn; [[Back|previous()][$blakeChooseOwaissa to 0; $blakeChooseElm to 0]]
-<</nobr>>
 
 

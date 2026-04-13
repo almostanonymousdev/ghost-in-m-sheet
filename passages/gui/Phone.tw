@@ -1,5 +1,4 @@
-:: Phone [nobr noreturn] {"position":"200,925","size":"100,100"}
-<<nobr>>
+:: Phone [nobr noreturn nobr] {"position":"200,925","size":"100,100"}
 <div class="flexwrapper addGap5">
 
 <div class="housecard">
@@ -91,6 +90,5 @@ $blake.lvl lvl <<if $blake.lvl gte 5>> (max. lvl)<<else>>($blake.exp / $blake.ex
 <<done>>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
-<</nobr>>
 
 

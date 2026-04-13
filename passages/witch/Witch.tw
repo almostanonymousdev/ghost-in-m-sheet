@@ -1,5 +1,4 @@
-:: Witch {"position":"1250,25","size":"100,100"}
-<<nobr>>
+:: Witch [nobr] {"position":"1250,25","size":"100,100"}
 <img @src="setup.ImagePath + '/img/witchhouse.jpg'" width="85%"><br>
 @@.location; The Witch's House@@<br>
 @@.mc-thoughts; Doesn't look as scary as it sounds@@<br>
@@ -25,6 +24,5 @@
 <<if previous(2) is "Witch">><<addTime 0.5>>
 <<elseif previous() is "CityMap">><<addTime 20>>
 <<else>><<addTime 0.5>><</if>>
-<</nobr>>
 
 

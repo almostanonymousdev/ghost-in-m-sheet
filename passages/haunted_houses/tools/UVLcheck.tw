@@ -1,5 +1,4 @@
-:: UVLcheck {"position":"3725,425","size":"100,100"}
-<<nobr>>
+:: UVLcheck [nobr] {"position":"3725,425","size":"100,100"}
 <<set $uvlTimeRemain to setup.toolTimeRemain($equipment.uvl)>>
 
 <<if $uvlActivated neq 1>>
@@ -49,4 +48,3 @@
 		@@.mc-speech; <span class="evidenceshadowtext"> It seems I found fingerprints... one more piece of evidence</span>@@<br>
 	<</if>>
 <</if>>
-<</nobr>>

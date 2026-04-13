@@ -1,5 +1,4 @@
-:: libraryBrook {"position":"3125,2100","size":"100,100"}
-<<nobr>>
+:: libraryBrook [nobr] {"position":"3125,2100","size":"100,100"}
 
 
 <<if setup.Library.brookIsPossessed()>>
@@ -125,7 +124,6 @@ By the way, I found some information about a rare ghost here in the library. @@<
 <</done>>
 @@.backbtn; [[Leave|LibraryInside]] @@<br>
 <</if>><</if>>
-<</nobr>>
 
 
 

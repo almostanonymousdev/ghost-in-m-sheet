@@ -1,5 +1,4 @@
-:: Intro {"position":"700,0","size":"100,100"}
-<<nobr>>
+:: Intro [nobr] {"position":"700,0","size":"100,100"}
 Ghost in M'Sheet<br>
 <br>
 <b>What's your extra sensitive spot?</b><br>
@@ -20,7 +19,6 @@ Or just click @@.enterbtn;<<link "here" "Intro1">><<set $mc.name to "Mary">><</l
 @@.mc-thoughts;This game is similar to games like Phasmophobia, Demonologist, etc., so if you've played such games, there shouldn't be any difficulties. Nevertheless, here's a brief guide to the game:@@
 <br>
 @@.enterbtn;[[Player guide -> Evidence]]@@ 
-<</nobr>>
 
 
 

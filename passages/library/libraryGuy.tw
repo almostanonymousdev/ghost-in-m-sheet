@@ -1,5 +1,4 @@
-:: libraryGuy {"position":"3025,2000","size":"100,100"}
-<<nobr>>
+:: libraryGuy [nobr] {"position":"3025,2000","size":"100,100"}
 <<if setup.Library.wearingPants()>>
 <video autoplay controls muted loop>
  <source @src="setup.ImagePath + '/library/1.mp4'" type="video/mp4">
@@ -20,6 +19,5 @@ You were examining the books in search of something useful when a guy approached
 <<done>>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
-<</nobr>>
 
 

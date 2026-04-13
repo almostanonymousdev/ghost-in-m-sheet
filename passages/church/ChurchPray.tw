@@ -1,5 +1,4 @@
-:: ChurchPray {"position":"1975,1500","size":"100,100"}
-<<nobr>>
+:: ChurchPray [nobr] {"position":"1975,1500","size":"100,100"}
 <img @src="setup.ImagePath + '/church/1.jpg'" width="100%"><br>
 
 @@.notmc-speech; Bless you, my daughter. How may I assist you?@@<br>
@@ -53,6 +52,5 @@ Your <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; 
 <br>
 <br>
 @@.backbtn;[[Leave|CityMap]] @@<br>
-<</nobr>>
 
 

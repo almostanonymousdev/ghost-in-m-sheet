@@ -1,5 +1,4 @@
-:: UseCursedItem {"position":"2200,1250","size":"100,100"}
-<<nobr>>
+:: UseCursedItem [nobr] {"position":"2200,1250","size":"100,100"}
 <<set _videoList to []>>
 
 <<if $isCIDildo eq 1>>
@@ -47,6 +46,5 @@ height: 500px;
 <<done>>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
-<</nobr>>
 
 

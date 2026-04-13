@@ -1,5 +1,4 @@
-:: Hot1 {"position":"1525,1150","size":"100,100"}
-<<nobr>>
+:: Hot1 [nobr] {"position":"1525,1150","size":"100,100"}
 <<switch $pantiesState + "," + $braState>>
 <<case "worn,worn">>
 <video autoplay controls muted loop>
@@ -27,4 +26,3 @@
 @@.mc-speech;Am I not beautiful? Who could harm such a cutie?
  It feels much better, I am ready to [[continue|previous(2)]]@@
 <<set $addtemptorealhouse to 0>>
-<</nobr>>

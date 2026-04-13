@@ -1,5 +1,4 @@
-:: WashFace {"position":"600,1200","size":"100,100"}
-<<nobr>>
+:: WashFace [nobr] {"position":"600,1200","size":"100,100"}
 <img @src="setup.ImagePath + '/img/washface.jpg'" width="70%"><br>
 
 @@.mc-speech; Ah, that feels refreshing@@<br>
@@ -13,7 +12,6 @@
 <<done>>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
-<</nobr>>
 
 
 

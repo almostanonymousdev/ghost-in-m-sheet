@@ -1,5 +1,4 @@
-:: WebcamShow {"position":"400,1100","size":"100,100"}
-<<nobr>>
+:: WebcamShow [nobr] {"position":"400,1100","size":"100,100"}
 <img @src="setup.ImagePath + '/webcam/workplace.jpg'" width="100%">
 @@.mc-speech; Looks like I'm ready for my webcam show. What should I do today?@@<br>
 Subscribers: <<if ndef $prefssubscribers>>0<<else>>$prefssubscribers<</if>><br>
@@ -49,7 +48,6 @@ Subscribers: <<if ndef $prefssubscribers>>0<<else>>$prefssubscribers<</if>><br>
 
 <br>
 @@.backbtn;[[Back|Use PC]] @@<br>
-<</nobr>>
 
 
 

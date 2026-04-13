@@ -1,5 +1,4 @@
-:: BrookHuntEndAlone [noreturn] {"position":"1875,3425","size":"100,100"}
-<<nobr>>
+:: BrookHuntEndAlone [noreturn nobr] {"position":"1875,3425","size":"100,100"}
 <<set $payForHuntAloneBrook to 0>>
 <<set $isBrookGoingForHuntingAlone to 0>>
 @@.mc-speech; How did your ghost hunt go?@@<br>
@@ -88,6 +87,5 @@ That's it.@@<br>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
 @@.backbtn; [[Back|previous()][$brookChooseOwaissa to 0; $brookChooseElm to 0]]
-<</nobr>>
 
 

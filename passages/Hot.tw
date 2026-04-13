@@ -1,5 +1,4 @@
-:: Hot {"position":"1525,1050","size":"100,100"}
-<<nobr>>
+:: Hot [nobr] {"position":"1525,1050","size":"100,100"}
 @@.mc-speech;It seems to have gotten quite warm in the house. Maybe if I take off my outer clothes, I'll feel better?@@<br>
 <br>
 @@.mc-thoughts; If your sanity gets lower, you start feeling worse. It begins to seem too warm. From this point, your sanity will decrease despite the presence of lighting in the rooms. This can be prevented by increasing sanity with pills or by taking off your upper clothes . However, being without clothes in the house can be more dangerous...@@<br>
@@ -8,6 +7,5 @@
 <<goto "Hot1">><</linkreplace>>
 Or @@.usebtn;[[Nah, too risky|previous()]]@@<br>
 
-<</nobr>>
 
 

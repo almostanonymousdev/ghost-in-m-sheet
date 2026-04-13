@@ -1,5 +1,4 @@
-:: CompanionLeaving [noreturn] {"position":"2350,3125","size":"100,100"}
-<<nobr>>
+:: CompanionLeaving [noreturn nobr] {"position":"2350,3125","size":"100,100"}
 @@.notmc-speech; $mc.name, wait, I don't feel well... This place is driving me crazy, I don't feel like myself."@@<br>
 @@.mc-thoughts; She nervously looks around, as if afraid the ghost might return at any moment.@@<br>
 @@.notmc-speech; I'm sorry, but I can't stay with you. I have to get out of here, or I'll break...@@<br>
@@ -13,6 +12,5 @@
 <<done>>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
-<</nobr>>
 
 

@@ -1,5 +1,4 @@
-:: BrookHelp [noreturn] {"position":"2350,3225","size":"100,100"}
-<<nobr>>
+:: BrookHelp [noreturn nobr] {"position":"2350,3225","size":"100,100"}
 <<set _checkRandomCthulion to random(1,3)>>
 <<set _videoList to []>>
 
@@ -69,6 +68,5 @@ Brook's lust <img @src="setup.ImagePath + '/img/hearth.png'" style="position: re
 @@.backbtn; [[Continue|previous()]]@@<br>
      <</if>>
 	<</if>>
-<</nobr>>
 
 

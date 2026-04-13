@@ -1,5 +1,4 @@
-:: Bedroom {"position":"600,900","size":"100,100"}
-<<nobr>>
+:: Bedroom [nobr] {"position":"600,900","size":"100,100"}
 
 <img @src="setup.ImagePath + '/img/bedroom.jpg'" width="100%"><br>
 @@.location; Bedroom@@<br>
@@ -92,7 +91,6 @@ But for now, I need to go to the [[bathroom|Bathroom]].
 <br>
 <br>
 @@.backbtn;[[Livingroom][$minutes +=1]]@@<br><</if>>
-<</nobr>>
 
 
 
