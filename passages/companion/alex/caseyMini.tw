@@ -1,4 +1,0 @@
-:: caseyMini [nobr] {"position":"2800,3800","size":"100,100"}
-<<companionMini `"trans/" + $transPicture + ".jpg"` "Casey">>
-
-

@@ -65,35 +65,6 @@ You earned an extra $<<= _amt>><br>
 <</if>>
 <</widget>>
 
-/* deliveryLocation -- the house view shown inside the shared
-   deliveryHouse passage. Reads $currentHouse (set by the DeliveryMap
-   links) and derives the image + address from setup.deliveryHouses. */
-<<widget "deliveryLocation">>
-<<set _house to $currentHouse>>
-<<set _img to setup.deliveryHouses[_house]>>
-<<set _sp to _house.lastIndexOf(" ")>>
-<<set _address to _house.substr(0, _sp) + ", " + _house.substr(_sp + 1)>>
-<img @src="setup.ImagePath + '/img/' + _img" width="90%"><br>
-@@.location; _address@@<br>
-<br>
-@@.mc-thoughts;What should I deliver here?@@<br>
-<br>
-<div class=deliverywrapper>
-<<for _slot to 1; _slot lte 3; _slot++>>
-<<capture _slot>>
-<<set _order to State.variables["order" + _slot]>>
-<<set _slotClass to (_slot eq 1 ? "itemAvailableOne" : (_slot eq 2 ? "itemAvailableTwo" : "itemAvailableThree"))>>
-<div @class="_slotClass">
-<img @src="setup.ImagePath + '/' + _order.image" class="iconPx"><br>
-@@.usebtn;<<link "Deliver the order">><<set $currentOrder to _slot>><<goto "deliveryEvent">><</link>>@@<br>
-</div>
-<</capture>>
-<</for>>
-</div>
-<br>
-@@.backbtn;[[Leave|DeliveryMap]] @@
-<</widget>>
-
 /* deliveryEventChoose -- container widget for the shared gate of each
    first-contact delivery encounter (pizza, package, burger, papers).
    Handles the init-if-ndef, header image, earnedMoney accounting, and
@@ -126,44 +97,8 @@ You earned an extra $<<= _amt>><br>
 @@.warningtext; (Req. <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ <<= _args[0]>>)@@
 <</widget>>
 
-/* deliveryEventCheck -- called once per delivery attempt. Matches the
-   current street passage (previous()) against the active orders, and
-   either routes into the matching encounter Choose passage or shows a
-   generic success/failure. */
-<<widget "deliveryEventCheck">>
-<<set _orderNum to _args[0]>>
-<<set _order to State.variables["order" + _orderNum]>>
-<<set _iconVar to "deliveryActiveIcon" + _orderNum>>
-<<set _match to false>>
-<<for _o range $orders>>
-<<if _o.address === $currentHouse and _o.item is _order.item>><<set _match to true>><<break>><</if>>
-<</for>>
-<<if _match>>
-<<switch _order.item>>
-<<case "pizza">><<include "DeliveryPizzaEventChoose">>
-<<case "package">><<include "DeliveryPackageEventChoose">>
-<<case "burgers">><<include "DeliveryBurgerEventChoose">>
-<<case "newspapers">><<include "DeliveryPapersEventChoose">>
-<<case "books">><<if ndef $meetAlice>><<include "meetAlice">><<else>><<deliveryGenericSuccess>><</if>>
-<<default>><<deliveryGenericSuccess>>
-<</switch>>
-<<else>>
-<img @src="setup.ImagePath + '/img/deliverygirlsad.jpg'" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
-<<set $earnedMoney += $jobMoneyFailed>>
-<<deliverySorry>><br>
-@@.mc-speech; Damn, I must have made a mistake.@@<br>
-<br>
-<br>
-@@.backbtn;[[Back|DeliveryMap]] @@
-<</if>>
-<<run State.variables[_iconVar] = false>>
-<br>
-<br>
-<<addTime 30>>
-<</widget>>
-
 /* Generic successful-delivery block: used when the matched item has no
-   custom encounter, and by deliveryEventDecline. */
+   custom encounter. */
 <<widget "deliveryGenericSuccess">>
 <img @src="setup.ImagePath + '/img/deliverygirlhappy.jpg'" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
 <<set $earnedMoney += $jobMoneySuccessed>>

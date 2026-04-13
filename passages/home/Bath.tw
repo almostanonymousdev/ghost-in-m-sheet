@@ -1,7 +1,0 @@
-:: Bath {"position":"600,1100","size":"100,100"}
-<<nobr>>
-<<randomImage "bath/1.jpg" "bath/2.jpg" "60%">><br>
-<<washClean "60%" 5>>
-<</nobr>>
-
-

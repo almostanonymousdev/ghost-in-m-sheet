@@ -4,17 +4,17 @@
 <<include "bodyMod">><br>
 <<if $showComp eq 1 or $showComp eq 3>>
 <<if $companion.name eq "Brook">>
-<<include "brookMini">>
+<<companionMini "brook/brook.png" "Brook">>
 <<elseif $companion.name eq "Alice">>
-<<include "aliceMini">>
+<<companionMini "alice/alice.png" "Alice">>
 <<elseif $companion.name eq "Blake">>
-<<include "blakeMini">>
+<<companionMini "blake/blake.png" "Blake">>
 <<elseif $companion.name eq "Alex">>
-<<include "alexMini">>
+<<companionMini `"trans/" + $transPicture + ".jpg"` "Alex">>
 <<elseif $companion.name eq "Taylor">>
-<<include "taylorMini">>
+<<companionMini `"trans/" + $transPicture + ".jpg"` "Taylor">>
 <<elseif $companion.name eq "Casey">>
-<<include "caseyMini">>
+<<companionMini `"trans/" + $transPicture + ".jpg"` "Casey">>
 <</if>><</if>>
 <br>
 <span id="time"><<print ($hours < 10 ? '0' + $hours : $hours) + ":" + (Math.floor($minutes) < 10 ? '0' + Math.floor($minutes) : Math.floor($minutes))>></span><br>

@@ -11,4 +11,16 @@
 @@.backbtn;[[Bedroom]]<br>@@
 <</nobr>>
 
+:: Bath {"position":"600,1100","size":"100,100"}
+<<nobr>>
+<<randomImage "bath/1.jpg" "bath/2.jpg" "60%">><br>
+<<washClean "60%" 5>>
+<</nobr>>
+
+:: Shower {"position":"800,1100","size":"100,100"}
+<<nobr>>
+<<randomImage "shower/1.jpg" "shower/2.jpg" "50%">><br>
+<<washClean "50%" 10>>
+<</nobr>>
+
 

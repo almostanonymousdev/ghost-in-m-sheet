@@ -31,3 +31,12 @@
  <<set $neededForNextLevel += Math.ceil(0.3 * $neededForNextLevel)>>
 <<updatemeter 'xpBar' `$mc.exp / $neededForNextLevel`>><</if>>
 <</widget>>
+
+<<widget "randomVideoFromList">>
+<<set _rvList to _args[0]>>
+<<set _rvIdx to random(0, _rvList.length - 1)>>
+<<set _rvSelected to _rvList[_rvIdx]>>
+<video autoplay controls muted loop>
+<source @src="setup.ImagePath + '/' + _rvSelected" type="video/mp4">
+</video>
+<</widget>>

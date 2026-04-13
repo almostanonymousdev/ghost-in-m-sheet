@@ -9,7 +9,7 @@ The game features multiple companion characters (Alice, Blake, Brook, Alex, Case
   * [AliceInfo.tw](../passages/companion/alice/AliceInfo.tw) - Information about Alice
   * [AliceHuntEndAlone.tw](../passages/companion/alice/AliceHuntEndAlone.tw) - Alice's ending if you hunt alone
   * [aliceContinue.tw](../passages/companion/alice/aliceContinue.tw) - Alice's continuation options
-  * [aliceMini.tw](../passages/companion/alice/aliceMini.tw) - Alice's mini-events
+  * Alice's mini panel is inlined in [StoryCaption.tw](../passages/StoryCaption.tw)
 
 * **Blake** - A more experienced hunter who provides solid support during investigations. Has unique endings depending on your choices and can help with various hunting strategies, with potential for romantic/sexual tension during dangerous situations.
   * [BlakeInit.tw](../passages/companion/blake/BlakeInit.tw) - Blake's initialization and stats setup
@@ -18,7 +18,7 @@ The game features multiple companion characters (Alice, Blake, Brook, Alex, Case
   * [BlakeInfo.tw](../passages/companion/blake/BlakeInfo.tw) - Information about Blake
   * [BlakeHuntEndAlone.tw](../passages/companion/blake/BlakeHuntEndAlone.tw) - Blake's ending if you hunt alone
   * [blakeContinue.tw](../passages/companion/blake/blakeContinue.tw) - Blake's continuation options
-  * [blakeMini.tw](../passages/companion/blake/blakeMini.tw) - Blake's mini-events
+  * Blake's mini panel is inlined in [StoryCaption.tw](../passages/StoryCaption.tw)
 
 * **Brook** - A companion with specific skills for ghost hunting, including higher chances of success with certain evidence types. Has unique home interaction scenarios that can include sensual or sexual content.
   * [BrookInit.tw](../passages/companion/brook/BrookInit.tw) - Brook's initialization and stats setup
@@ -26,15 +26,13 @@ The game features multiple companion characters (Alice, Blake, Brook, Alex, Case
   * [BrookHelp.tw](../passages/companion/brook/BrookHelp.tw) - Brook's assistance during hunts
   * [BrookInfo.tw](../passages/companion/brook/BrookInfo.tw) - Information about Brook
   * [BrookHuntEndAlone.tw](../passages/companion/brook/BrookHuntEndAlone.tw) - Brook's ending if you hunt alone
-  * [brookMini.tw](../passages/companion/brook/brookMini.tw) - Brook's mini-events
+  * Brook's mini panel is inlined in [StoryCaption.tw](../passages/StoryCaption.tw)
 
 * **Alex, Casey, and Taylor** - Additional companions with their own unique personalities and hunting specialties, each bringing different dynamics to your ghost hunting team and potential for intimate encounters.
   * [AlexMain.tw](../passages/companion/alex/AlexMain.tw) - Alex's main interaction screen
   * [CaseyMain.tw](../passages/companion/alex/CaseyMain.tw) - Casey's main interaction screen
   * [TaylorMain.tw](../passages/companion/alex/TaylorMain.tw) - Taylor's main interaction screen
-  * [alexMini.tw](../passages/companion/alex/alexMini.tw) - Alex's mini-events
-  * [caseyMini.tw](../passages/companion/alex/caseyMini.tw) - Casey's mini-events
-  * [taylorMini.tw](../passages/companion/alex/taylorMini.tw) - Taylor's mini-events
+  * Alex/Casey/Taylor mini panels are inlined in [StoryCaption.tw](../passages/StoryCaption.tw)
   * [transInit.tw](../passages/companion/alex/transInit.tw) - Transformation initialization
 
 * **Relationship mechanics** - Your choices during hunts, how you treat your companions, and shared experiences affect their loyalty and effectiveness. Companions may develop romantic or sexual feelings for you, leading to intimate encounters during hunts, at home, or when walking home together.

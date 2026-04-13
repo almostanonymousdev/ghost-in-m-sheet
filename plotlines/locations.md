@@ -8,13 +8,11 @@ The game world includes several city locations the player can visit between hunt
   * [DeliveryManagerEventStart.tw](../passages/delivery/DeliveryManagerEventStart.tw) - Manager event chain
   * [DeliveryMap.tw](../passages/delivery/DeliveryMap.tw) - Delivery route map
   * [workDelivery.tw](../passages/delivery/workDelivery.tw) - Working a delivery shift
-  * [endShiftDelivery.tw](../passages/delivery/endShiftDelivery.tw) - Ending a delivery shift
-  * [deliveryActiveIcon.tw](../passages/delivery/deliveryActiveIcon.tw) - Active delivery route icons
+  * [deliverySmallPassages.tw](../passages/delivery/deliverySmallPassages.tw) - Delivery routing passages (deliveryHouse, deliveryEvent, deliveryActiveIcon, endShiftDelivery)
   * [meetAlice.tw](../passages/delivery/meetAlice.tw) - Meeting Alice during deliveries
   * [deliveryEvent1.tw](../passages/delivery/deliveryEvent1.tw) - Delivery encounter event 1
   * [deliveryEvent2.tw](../passages/delivery/deliveryEvent2.tw) - Delivery encounter event 2
   * [deliveryEvent3.tw](../passages/delivery/deliveryEvent3.tw) - Delivery encounter event 3
-  * [deliveryEventDecline.tw](../passages/delivery/deliveryEventDecline.tw) - Declining a delivery event
   * Delivery types: Burger (4 files), Package (5 files), Papers (3 files), Pizza (4 files) - each with start, choose, and stage passages
   * Delivery addresses: Amethyst Street 42, Cascade Avenue 56, Emerald Street 17, Golden Road 34, Honeywood Court 3, Jasmine Lane 89, Lilac Lane 72, Onyx Place 10, Twilight Boulevard 61
 

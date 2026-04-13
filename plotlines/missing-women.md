@@ -6,7 +6,7 @@ This plotline involves rescuing missing women (Victoria, Julia, Jade, Nadia, and
   * [rescueTaskBoard.tw](../passages/missing_women/rescueTaskBoard.tw) - Task board where you take missing posters
   * [rescueMap.tw](../passages/missing_women/rescueMap.tw) - Map for rescue missions
   * [rescueHouse.tw](../passages/missing_women/rescueHouse.tw) - Rescue house locations
-  * [randomizeRescueHouse.tw](../passages/randomizeRescueHouse.tw) - Random rescue house generation
+  * randomizeRescueHouse passage is now in [widgetRescue.tw](../passages/missing_women/widgetRescue.tw)
 
 * **Multi-stage rescue process** - Each rescue involves finding the haunted location, investigating the ghost, completing specific objectives, and surviving ghost encounters. Some rescues have multiple stages with possession events and dangerous situations.
   * [rescueAsh.tw](../passages/missing_women/rescueAsh.tw) - Ash's rescue mission

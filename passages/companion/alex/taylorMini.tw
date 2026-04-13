@@ -1,4 +1,0 @@
-:: taylorMini [nobr] {"position":"2800,3700","size":"100,100"}
-<<companionMini `"trans/" + $transPicture + ".jpg"` "Taylor">>
-
-

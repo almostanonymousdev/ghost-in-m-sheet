@@ -12,7 +12,7 @@ Ghost possession is a dangerous mechanic that can occur during hunts. When posse
 
 * **Companion-specific possession** - Brook has unique possession scenarios, including one that occurs at the church.
   * [possessedBrooke.tw](../passages/posession/possessedBrooke.tw) - Brook's possession event during hunts
-  * [possessedBrookeChurch.tw](../passages/posession/possessedBrookeChurch.tw) - Brook's possession event at the church
+  * [possessedBrookeChurch.tw](../passages/posession/possessedBrookeChurch.tw) - Brook's possession event at the church (unused)
 
 * **Possession during rescue** - Missing women can be possessed during rescue missions, requiring specific handling to save them. See [missing-women.md](missing-women.md) for the full list of rescue possession passages.
   * [rescuePossessed.tw](../passages/missing_women/rescuePossessed.tw) - General rescue possession mechanics

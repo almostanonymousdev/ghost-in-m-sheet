@@ -1,9 +1,0 @@
-:: update3 {"position":"300,0","size":"100,100"}
-<<set $jobMoneySuccessed to 8>>
-<<set $jobMoneyFailed to 3>>
-<<set $companion to {
-	name:false
-}>>
-<<set $update0909 to 1>>
-
-

@@ -306,18 +306,6 @@ sugarcube-2:
       name: companionExpGain
     sanityPills:
       name: sanityPills
-    deliveryLocation:
-      name: deliveryLocation
-      description: "Renders the house view for a street passage: image, address, and
-        the three 'Deliver the order' slots. With no args, derives the image
-        file from setup.deliveryHouses[passage()] and formats the address by
-        splitting the passage name's last space. Legacy args (imageFile,
-        addressText) remain supported."
-    deliveryEventCheck:
-      name: deliveryEventCheck
-      description: "Routes a delivery attempt from the street passage into the
-        matching EventChoose passage, falling back to a generic success/failure
-        block. Args: orderNum (1-3)."
     deliveryEventChoose:
       name: deliveryEventChoose
       container: true

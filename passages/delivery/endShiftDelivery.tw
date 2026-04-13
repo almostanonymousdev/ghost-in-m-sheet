@@ -1,8 +1,0 @@
-:: endShiftDelivery [nobr] {"position":"1200,1200","size":"100,100"}
-<<for _i to 1; _i lte 3; _i++>>
-<<set State.variables["deliveryActiveIcon" + _i] to true>>
-<</for>>
-Earned during the shift: $earnedMoney $
-<<set $mc.money += $earnedMoney>>
-<<set $mc.energy -= 2>>
-<<set $earnedMoney to 0>>
