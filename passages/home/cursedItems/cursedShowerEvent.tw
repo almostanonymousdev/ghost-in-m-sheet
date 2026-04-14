@@ -1,24 +1,37 @@
 :: cursedShowerEvent [nobr] {"position":"1100,4900","size":"100,100"}
-<img @src="setup.ImagePath + '/cursedHome/shower1.jpg'" width="100%"><br>
+<video autoplay controls muted loop>
+<source @src="setup.ImagePath + '/cursedHome/shower1.webm'" type="video/webm">
+</video><br>
 @@.location; Bathroom -- Shower@@<br>
 <br>
-@@.mc-thoughts; You step into the shower. The water runs hot, then suddenly ice cold, then scalding again. Steam thickens around you until you can barely see@@<br><br>
-<<linkreplace "@@.usebtn; Keep showering@@">>
-	<img @src="setup.ImagePath + '/cursedHome/shower2.jpg'" width="100%"><br>
-	@@.mc-thoughts; Shapes form in the steam -- hands, many hands, reaching for you. Before you can scream, spectral fingers press against your lips. Others slide across your wet skin, cupping your breasts, squeezing, pinching your nipples under the cascading water.@@<br>
-	@@.mc-speech; Mmph~!@@<br><br>
-	@@.mc-thoughts; The ghostly hands are everywhere at once. They spread your legs apart, and you feel something press against your entrance -- not solid, but warm and insistent, like concentrated pressure. It pushes inside you as the water streams down your body, and your knees nearly buckle.@@<br>
-	<<linkappend "@@.usebtn; You brace against the wall@@">>
-		<img @src="setup.ImagePath + '/cursedHome/shower3.jpg'" width="100%"><br>
-		@@.mc-thoughts; The presence fucks you against the shower wall, spectral hands holding your hips while the invisible force thrusts into you with a relentless rhythm. Water runs down your arched back as you moan openly, the sound echoing off the tiles. The steam swirls tighter, the hands grip harder, and the pleasure crests violently.@@<br>
-		@@.mc-speech; Ah~ ah~ yes... f-fuck... I'm cumming~!@@<br><br>
-		@@.mc-thoughts; Your orgasm rips through you and you slide down the wall, sitting under the shower spray, trembling and gasping. The steam clears. The hands are gone. The water is warm and steady again, as if nothing happened.@@<br>
+@@.mc-thoughts; You step into the shower and reach for the faucet, but something catches your eye. Sitting on the shelf where your shampoo should be is a dildo -- thick, smooth, and glistening as if it's been waiting for you. You've never seen it before.@@<br>
+@@.mc-speech; Where did that come from...?@@<br>
+@@.mc-thoughts; You should be alarmed, but instead your hand reaches for it on its own. The moment your fingers wrap around the shaft, a jolt of heat rushes through your body straight to your core. Your eyes glaze over, lips parting slightly. It feels perfect in your grip -- warm, heavy, pulsing faintly with something unnatural.@@<br><br>
+<<linkreplace "@@.usebtn; You can't let go@@">>
+	<video autoplay controls muted loop>
+	<source @src="setup.ImagePath + '/cursedHome/shower2.webm'" type="video/webm">
+	</video><br>
+	@@.mc-thoughts; The lust hits you like a wave. Your knees buckle and the dildo slips from your fingers, landing back on the shower shelf above you -- tantalizingly close but just out of reach from the floor. You sink down, water cascading over your naked body. It doesn't matter -- your hand slides between your legs on its own.@@<br>
+	@@.mc-speech; Fuck... I need... I need to...@@<br><br>
+	@@.mc-thoughts; You rub your clit frantically, fingers slipping through your folds as the warm water streams down your back. Your first orgasm hits fast -- your thighs clamp together and you cry out, back arching against the tile. But it's not enough. Not even close. A second orgasm follows on its heels, then a third, each one leaving you more desperate than the last.@@<br>
+	@@.mc-speech; Ahh~ ah~ oh god... why can't I stop... I need more~@@<br><br>
+	@@.mc-thoughts; Your eyes drift back to the dildo in your hand. It seems bigger now, throbbing gently, and the sight of it makes your pussy clench with desperate hunger.@@<br>
+	<<linkappend "@@.usebtn; You need it inside you@@">>
+		<video autoplay controls muted loop>
+		<source @src="setup.ImagePath + '/cursedHome/shower3.webm'" type="video/webm">
+		</video><br>
+		@@.mc-thoughts; You press the dildo against the glass shower door and it sticks -- held by some invisible force. You turn around, line yourself up, and sink onto it with a long, shuddering moan. It fills you completely, stretching you in all the right ways.@@<br>
+		@@.mc-speech; Oh fuck~ oh fuck yes~ it's so deep...@@<br><br>
+		@@.mc-thoughts; You slam your hips back against the door, fucking yourself senseless. The wet slap of your ass against the glass echoes through the bathroom as water runs down your body. Orgasm after orgasm tears through you -- you lose count, your legs shaking, mascara running, drool on your chin.@@<br><br>
+		@@.mc-thoughts; When you finally pull yourself off, trembling and barely able to stand, you turn and look at the dildo still stuck to the glass. Something warm and grateful swells in your chest.@@<br>
+		@@.mc-speech; That was... you were incredible...@@<br><br>
+		@@.mc-thoughts; You drop to your knees, take the dildo into your mouth, and suck it -- slowly, lovingly, tasting yourself on it. You deepthroat it with a satisfied hum, your tongue swirling around the shaft as if thanking it for everything it gave you. As your lips slide off with a soft pop, the dildo shimmers, flickers, and fades into nothing -- like it was never there at all.@@<br>
 		<<set $mc.sanity -= 15>>
 		<<set $mc.corruption += 0.5>>
 		<<set $mc.lust to 100>>
 		<<run setup.CursedItems.clearCurse()>>
 		<br>
-		@@.mc-speech; I... oh god... I can still feel them on me...@@<br>
+		@@.mc-speech; It's gone... but I can still feel it. Everywhere.@@<br>
 		Sanity decreased. Corruption slightly increased.<br>
 		<br>
 		@@.backbtn;[[Back|Bathroom]]@@
