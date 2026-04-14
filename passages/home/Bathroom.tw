@@ -12,11 +12,7 @@
 <<else>>
 	@@.usebtn;<<link "Take a shower (5 min)" "Shower">><<addTime 5>><</link>><br>@@
 <</if>>
-<<if setup.CursedItems.isItemCursed("mirror")>>
-	@@.enterbtn;<<link "Look in the mirror" "cursedMirrorEvent">><</link>><br>@@
-<<else>>
-	@@.enterbtn;[[Look in the mirror|Mirror]]<br>@@
-<</if>>
+@@.enterbtn;[[Look in the mirror|Mirror]]<br>@@
 @@.enterbtn;[[Wash your face|WashFace]]<br>@@
 <br>
 @@.backbtn;[[Bedroom]]<br>@@

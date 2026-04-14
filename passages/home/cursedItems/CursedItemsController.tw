@@ -7,7 +7,7 @@
  * Using that item triggers its cursed event.
  */
 setup.CursedItems = (function () {
-	var ITEMS = ["tv", "pc", "bed", "mirror", "shower", "bath"];
+	var ITEMS = ["tv", "pc", "bed", "shower", "bath"];
 
 	function v(name) { return State.variables[name]; }
 
@@ -36,7 +36,7 @@ setup.CursedItems = (function () {
 		cursedItemLabel: function () {
 			var labels = {
 				tv: "TV", pc: "Computer", bed: "Bed",
-				mirror: "Bathroom Mirror", shower: "Shower", bath: "Bathtub"
+				shower: "Shower", bath: "Bathtub"
 			};
 			return labels[v('cursedHomeItem')] || "";
 		}
