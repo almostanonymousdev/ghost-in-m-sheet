@@ -1,24 +1,37 @@
 :: cursedBathEvent [nobr] {"position":"1100,5000","size":"100,100"}
-<img @src="setup.ImagePath + '/cursedHome/bath1.jpg'" width="100%"><br>
+<video autoplay controls muted loop>
+<source @src="setup.ImagePath + '/cursedHome/bath1.webm'" type="video/webm">
+</video><br>
 @@.location; Bathroom -- Bath@@<br>
 <br>
-@@.mc-thoughts; You sink into the warm bathwater. Bubbles rise from the bottom on their own. The water darkens, turning inky black despite the clean tub@@<br><br>
-<<linkreplace "@@.usebtn; Stay in@@">>
-	<img @src="setup.ImagePath + '/cursedHome/bath2.jpg'" width="100%"><br>
-	@@.mc-thoughts; Something coils around your ankles beneath the surface. Smooth, slick tendrils -- not tentacles, but currents of ghostly energy given form. They wrap around your thighs and gently pull them apart. The water itself seems to caress you, lapping against your most intimate places with unnatural precision.@@<br>
-	@@.mc-speech; Something's... touching me... under the water...@@<br><br>
-	@@.mc-thoughts; A spectral form rises from the dark water -- translucent, beautiful, and hungry. It settles between your legs, its ghostly mouth finding your pussy beneath the surface. An otherworldly tongue slides between your folds, licking you slowly, teasingly, while the water-tendrils hold you spread open.@@<br>
-	<<linkappend "@@.usebtn; You grip the edge of the tub@@">>
-		<img @src="setup.ImagePath + '/cursedHome/bath3.jpg'" width="100%"><br>
-		@@.mc-thoughts; The ghost eats you with devastating skill, its tongue swirling around your clit before plunging inside you. The warm water amplifies every sensation tenfold. Your moans bounce off the bathroom tiles as your hips buck against the spectral mouth, chasing the building crescendo.@@<br>
-		@@.mc-speech; Oh fuck~ oh god~ don't stop... please don't-- aahh~!@@<br><br>
-		@@.mc-thoughts; You cum hard, water sloshing over the edge of the tub as your body convulses. The entity drinks in your pleasure, then dissolves back into the water, which clears instantly to its normal warmth. You sit there, chest heaving, thighs quivering.@@<br>
+@@.mc-thoughts; You sink into the warm bathwater, letting the heat soak into your aching muscles. For a moment, everything is peaceful. Then the water darkens -- not dirty, but black, as if the bottom of the tub has dropped into an abyss.@@<br>
+@@.mc-speech; What the--@@<br>
+@@.mc-thoughts; Something wraps around your ankles and yanks. You barely manage a gasp before your head plunges beneath the surface. You thrash, but the grip is iron. The black water swallows you whole -- your bathroom, the tub, the ceiling lights -- all of it fading to nothing.@@<br><br>
+<<linkreplace "@@.usebtn; ...@@">>
+	<video autoplay controls muted loop>
+	<source @src="setup.ImagePath + '/cursedHome/bath2.webm'" type="video/webm">
+	</video><br>
+	@@.mc-thoughts; You open your eyes. There is nothing -- an infinite black void in every direction. You're floating, weightless, naked. The bathwater is gone. There is no up or down. Just darkness and silence.@@<br>
+	@@.mc-speech; Where am I?! Hello?!@@<br><br>
+	@@.mc-thoughts; Tentacles emerge from the void -- slick, thick, and glowing faintly. They coil around your wrists and wrench your arms above your head. More wrap your thighs, spreading your legs wide. You're pinned, suspended in the emptiness like a puppet on strings.@@<br>
+	@@.mc-speech; No-- let go of me! Please!@@<br><br>
+	@@.mc-thoughts; A massive tentacle presses against your entrance, slick with something warm. It pushes inside without hesitation, stretching you open, filling you completely. You scream, but the sound dissolves into the void. Another tentacle forces its way into your mouth, muffling your cries as the creature begins to fuck you from both ends with a merciless, rhythmic pace.@@<br>
+	<<linkappend "@@.usebtn; You can't escape@@">>
+		<video autoplay controls muted loop>
+		<source @src="setup.ImagePath + '/cursedHome/bath3.webm'" type="video/webm">
+		</video><br>
+		@@.mc-thoughts; The tentacles pound into you harder, faster, driving you toward a peak you can't resist. Your body betrays you -- your pussy clenches around the tentacle inside you as the first orgasm rips through you, violent and uncontrollable.@@<br>
+		@@.mc-speech; MMPH~! Mmhh~!!@@<br><br>
+		@@.mc-thoughts; But it doesn't stop. A second orgasm crashes into the first, then a third. The tentacle buried in your pussy swells and erupts, flooding you with thick, hot cum. You feel it filling you -- too much, impossibly much. Your belly stretches painfully, distending as the creature pumps load after load into you.@@<br>
+		@@.mc-speech; Ah-- ahh~ it hurts... s-stop... too much...!@@<br><br>
+		@@.mc-thoughts; The creature finally pulls out, and cum gushes from your pussy in a torrent. At the same time, the tentacle withdraws from your mouth and thick ropes of cum pour from your lips, dripping down your chin and chest. The release triggers one final, devastating orgasm -- your whole body convulses as you squirt violently, cum and your own juices spraying into the void.@@<br><br>
+		@@.mc-thoughts; The darkness dissolves. You're back in the bathtub, gasping, gripping the porcelain edges. The water is warm and clear. Your body is trembling, your thighs pressed together, an ache deep in your core. The bathroom looks exactly as it did before.@@<br>
 		<<set $mc.sanity -= 15>>
 		<<set $mc.corruption += 0.5>>
 		<<set $mc.lust to 100>>
 		<<run setup.CursedItems.clearCurse()>>
 		<br>
-		@@.mc-speech; The water's clean again... was that real? My body says yes...@@<br>
+		@@.mc-speech; Oh god... oh fuck... was that... I can still feel it inside me...@@<br>
 		Sanity decreased. Corruption slightly increased.<br>
 		<br>
 		@@.backbtn;[[Back|Bathroom]]@@
