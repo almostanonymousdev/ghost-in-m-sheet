@@ -72,6 +72,7 @@
 		<<set $sensualBodyPart.pussy to 6>>
 		<<set $sensualBodyPart.anal to 6>>
 	<</linkreplace>>
+		<br><<link "Toggle Back/Forward buttons(cheat)">><<if $cheatBackForward>><<set $cheatBackForward to false>><<run $("body").removeClass("show-history")>><<else>><<set $cheatBackForward to true>><<run $("body").addClass("show-history")>><</if>><</link>>
 <</linkreplace>>@@
 
 <br>Ghost in M'Sheet 0.5.0

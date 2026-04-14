@@ -70,6 +70,13 @@ video {
 }
 /* hovertip v2.0 - End */
 
+#ui-bar-history {
+	display: none;
+}
+body.show-history #ui-bar-history {
+	display: block;
+}
+
 body.ghoststreet {
   background-image: url('assets/img/ghoststreet.jpg');
   background-size: cover;

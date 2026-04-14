@@ -13,6 +13,7 @@
 <<set $EmfActivated = 0>>
 <<set $EmfActivationTime = 0>>
 <<set $ghostHuntingMode to 0>>
+<<set $cheatBackForward to false>>
 <<set $temperature to 0>>
 <<set $meridiem to "AM">>
 <<set $hours to 12>>
