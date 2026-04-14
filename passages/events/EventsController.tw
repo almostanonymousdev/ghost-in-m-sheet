@@ -339,13 +339,11 @@ setup.Events = (function () {
 
 			var parts      = bodyPartKeys.slice(0, tier);
 			var bp         = State.variables.sensualBodyPart;
-			var multiplier = 3;
 			var weights    = [];
 			var totalWeight = 0;
 
 			for (var i = 0; i < parts.length; i++) {
 				var w = bp[parts[i]] || 0;
-				if (i === parts.length - 1) w *= multiplier;
 				weights.push(w);
 				totalWeight += w;
 			}
