@@ -4,7 +4,9 @@
 @@.notmc-speech; I'm sorry, but I can't stay with you. I have to get out of here, or I'll break...@@<br>
 @@.mc-speech; Yes, of course, I understand.@@<br>
 <br>
-@@.mc-thoughts; $companion.name leaves the house.@@ <<if $companion.sanity lte 0>><<else>>@@.warningtext; Req. higher level of $companion.name .@@<</if>><br>
+@@.mc-thoughts; $companion.name leaves the house.@@ <<if $companion.sanity lte 0>>
+<<else>>@@.warningtext; Req. higher level of $companion.name .@@
+<</if>><br>
 @@.mc-speech; Well, I'm alone now...@@<br>
 <br>
 <<run setup.Companion.resetHuntState()>>

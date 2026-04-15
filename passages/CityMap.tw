@@ -71,13 +71,14 @@
 </div>
 <div class="housecard">
 <img @src="setup.ImagePath + '/img/beautySalon.png'" class="icon">
-@@.icontextcity; [[Beauty Salon |BeautySalon]]@@
+@@.icontextcity; [[Beauty Salon|BeautySalon]]@@
 </div>
 <div class="housecard">
 </div>
 <div class="housecard">
 </div>
-<<if $hasQuestForRescue eq 1>><img @src="setup.ImagePath + '/rescue/down.png'" class="downPointer clickable" onclick="SugarCube.Engine.play('rescueMap');"><</if>>
+<<if $hasQuestForRescue eq 1>><img @src="setup.ImagePath + '/rescue/down.png'" class="downPointer clickable" onclick="SugarCube.Engine.play('rescueMap');">
+<</if>>
 </div>
 
 <<nobr>>
@@ -98,5 +99,5 @@
     z-index: 1;
  }
  </style>
- 		<</if>>
+		<</if>>
 <</nobr>>

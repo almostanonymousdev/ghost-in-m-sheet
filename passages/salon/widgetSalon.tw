@@ -51,7 +51,8 @@
 						<<if _extraVar>><<run State.variables[_extraVar] = _extraVal>><</if>>
 					<</link>>@@<br>
 				<</capture>>
-			<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
+			<<else>>@@.mc-thoughts; I don't have enough money@@
+			<</if>>
 		<<else>>
 			@@.warningtext; Req. _reqCorruption+ <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:30px; display: inline; margin: 0;">@@<br>
 		<</if>>

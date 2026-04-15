@@ -11,7 +11,8 @@ Ghost in M'Sheet<br>
 <label><<radiobutton "$sensualBodyPart.anal" 3 autocheck>> Anus</label><br>
 Enter your name here: <<textbox "$mc.name" "Mary" "Intro1">>and press "Enter".
 <br>
-Or just click @@.enterbtn;<<link "here" "Intro1">><<set $mc.name to "Mary">><</link>>@@
+Or just click @@.enterbtn;<<link "here" "Intro1">><<set $mc.name to "Mary">>
+<</link>>@@
 
 <br>
 <br>

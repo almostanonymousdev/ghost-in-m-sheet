@@ -18,10 +18,12 @@
 	<<elseif $companion.name eq "Taylor">>
 		@@.usebtn; [[Talk to him|TaylorMain]]@@<br>
 	<<elseif $companion.name eq "Casey">>
-		@@.usebtn; [[Talk to him|CaseyMain]]@@<br><</if>>
+		@@.usebtn; [[Talk to him|CaseyMain]]@@<br>
+	<</if>>
 <<else>>
 	@@.movebtn;[[Go inside|elmHallway][$ghostHuntingMode to 2]]@@<br>
 <</if>>
 <br>
 <br>
-<<if $ghostHuntingMode eq 2>><span class="movebtn">[[End the hunt|HuntOverManual][$ghostHuntingMode to 3]]</span><<else>><</if>>
+<<if $ghostHuntingMode eq 2>><span class="movebtn">[[End the hunt|HuntOverManual][$ghostHuntingMode to 3]]</span><<else>>
+<</if>>

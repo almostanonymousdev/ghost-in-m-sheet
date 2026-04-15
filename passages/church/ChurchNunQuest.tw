@@ -34,7 +34,8 @@
 		@@.notmc-speech;I hope you'll be able to keep helping us. <br>
 		I don't have anything to give you in return for your help right now, but maybe I can repay you somehow later.@@<br>
 		<<set $equipment.spiritbox to 3>>
-		@@.mc-action; You get a lvl 3 Spiritbox @@<img @src="setup.ImagePath + '/img/spiritbox.png'" style="max-width:5%"><br><br><</if>>
+		@@.mc-action; You get a lvl 3 Spiritbox @@<img @src="setup.ImagePath + '/img/spiritbox.png'" style="max-width:5%"><br><br>
+	<</if>>
 	<<set $relationshipWithRain += 1>>
 	@@.mc-thoughts; Your relationship with Rain has increased - $relationshipWithRain now!@@<br>
 <</if>>

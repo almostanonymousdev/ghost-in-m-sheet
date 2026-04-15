@@ -17,11 +17,13 @@
 	<<if $wishActivity eq 1>>
 		<<linkreplace "@@.usebtn; I wish for activity@@">>
 			<<activity>>
-		<</linkreplace>><br><</if>>
+		<</linkreplace>><br>
+	<</if>>
 	<<if $wishTraptheghost eq 1>>
 		<<linkreplace "@@.usebtn; I wish to trap the ghost@@">>
 			<<traptheghost>>
-		<</linkreplace>><br><</if>>
+		<</linkreplace>><br>
+	<</if>>
 	<<if $wishSanity eq 1>>
 		<<linkreplace "@@.usebtn; I wish to be sane@@">>
 			<<sanity>>

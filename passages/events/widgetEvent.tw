@@ -243,11 +243,17 @@
 	<<if setup.Events.hasCompanionOnPlan1()>>
 		<<if setup.Events.companionIsAroused()>>
 			<<if $companion.name eq "Brook">>
-				or @@.usebtn;<<link `$companion.name + " helps you"`>><<set $companion.sanity -= 3>><<set $companion.lust += 10>><<replace "#videoContainer">><<include "BrookHelp">><</replace>><</link>> @@
+				or @@.usebtn;<<link `$companion.name + " helps you"`>><<set $companion.sanity -= 3>><<set $companion.lust += 10>><<replace "#videoContainer">><<include "BrookHelp">>
+				<</replace>>
+				<</link>>
 			<<elseif $companion.name eq "Alice">>
-				or @@.usebtn;<<link `$companion.name + " helps you"`>><<set $companion.sanity -= 3>><<set $companion.lust += 10>><<replace "#videoContainer">><<include "AliceHelp">><</replace>><</link>> @@
+				or @@.usebtn;<<link `$companion.name + " helps you"`>><<set $companion.sanity -= 3>><<set $companion.lust += 10>><<replace "#videoContainer">><<include "AliceHelp">>
+				<</replace>>
+				<</link>>
 			<<elseif $companion.name eq "Blake">>
-				or @@.usebtn;<<link `$companion.name + " helps you"`>><<set $companion.sanity -= 3>><<set $companion.lust += 10>><<replace "#videoContainer">><<include "BlakeHelp">><</replace>><</link>> @@
+				or @@.usebtn;<<link `$companion.name + " helps you"`>><<set $companion.sanity -= 3>><<set $companion.lust += 10>><<replace "#videoContainer">><<include "BlakeHelp">>
+				<</replace>>
+				<</link>>
 			<<elseif setup.Events.companionIsInlineFriend()>>
 				or @@.usebtn; [["Call "+$companion.name + " for help"|$return][$companion.sanity -= 3; $companion.lust += 10]]@@
 			<</if>>

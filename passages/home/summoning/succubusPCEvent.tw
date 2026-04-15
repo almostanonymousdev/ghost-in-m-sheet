@@ -75,7 +75,8 @@
 										<video autoplay controls muted loop>
 										<source @src="setup.ImagePath+`/succubus/pc`+_videoIndex+`.mp4`" type="video/mp4">
 										</video>
-									<</replace>><</link>>
+									<</replace>>
+								<</link>>
 
 								@@.mc-thoughts; each movement bringing new sensations, penetrating you with such force and sensuality that you lose yourself. Each thrust brings a new wave of pleasure; you feel an@@
 								<<linkappend "@@.usebtn; orgasm approaching.@@">>

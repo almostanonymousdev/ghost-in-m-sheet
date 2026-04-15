@@ -52,7 +52,7 @@ setup.Library = (function () {
 
 		// --- libraryGuy clothing branch --------------------------
 		/* Library groping event uses pants/shorts vs skirt to pick
-		 * the pose; unified here for reuse. */
+		* the pose; unified here for reuse. */
 		wearingPants: function () {
 			return v('jeansState') === 'worn' || v('shortsState') === 'worn';
 		},

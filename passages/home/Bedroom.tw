@@ -63,7 +63,8 @@
 	@@.mc-thoughts; You wake up and see the@@ <<linkappend "@@.mc-thoughtsLink;aftermath of last night on yourself...@@">><br>
 		<<randomImage "mc/4.webp" "mc/5.webp" "mc/6.webp" "40%">><br>
 		<<set $isPenaltyOn to 0>>
-		@@.mc-speech; Weirdly enough, I feel great, maybe even a bit better than usual, hehe. I suppose I should still head to the [[bathroom|Bathroom]].@@<</linkappend>>
+		@@.mc-speech; Weirdly enough, I feel great, maybe even a bit better than usual, hehe. I suppose I should still head to the [[bathroom|Bathroom]].@@
+	<</linkappend>>
 
 <<else>>
 
@@ -77,7 +78,8 @@
 	@@.enterbtn;[[Wardrobe|wardrobe]]@@ <br>
 	@@.enterbtn;[[Bathroom]]@@<br>
 	<<if setup.CursedItems.isItemCursed("bed")>>
-		@@.usebtn;<<link "Sleep (8 hours)" "cursedBedEvent">><</link>>@@<br>
+		@@.usebtn;<<link "Sleep (8 hours)" "cursedBedEvent">>
+		<</link>>@@<br>
 	<<else>>
 		@@.usebtn;[[Sleep (8 hours)|Sleep]]@@<br>
 	<</if>>
@@ -93,7 +95,10 @@
 	<</link>>@@<span><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span><br>
 	<<if setup.Home.canUseHolyWaterOnMare()>>
 		<<linkreplace "@@.usebtn; Use holy water@@">><<run setup.Home.useHolyWaterOnMare()>>
-			@@.mc-speech; This should help. Now I can sleep peacefully.@@<</linkreplace>><</if>>
+			@@.mc-speech; This should help. Now I can sleep peacefully.@@
+		<</linkreplace>>
+	<</if>>
 	<br>
 	<br>
-	@@.backbtn;[[Livingroom][$minutes +=1]]@@<br><</if>>
+	@@.backbtn;[[Livingroom][$minutes +=1]]@@<br>
+<</if>>

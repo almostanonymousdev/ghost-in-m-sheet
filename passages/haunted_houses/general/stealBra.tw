@@ -4,7 +4,8 @@
 	<<if _check eq 1>>
 		<video autoplay muted controls loop class="displayCentredImgs">
 		<source @src="setup.ImagePath + '/stealClothes/3.mp4'" type="video/mp4">
-		</video><</if>>
+		</video>
+	<</if>>
 	<<if _check eq 2>><video autoplay muted controls loop class="displayCentredImgs">
 		<source @src="setup.ImagePath + '/stealClothes/4.mp4'" type="video/mp4">
 		</video>
@@ -13,7 +14,8 @@
 	<<if _check eq 1>>
 		<video autoplay muted controls loop class="displayCentredImgs">
 		<source @src="setup.ImagePath + '/stealClothes/1.mp4'" type="video/mp4">
-		</video><</if>>
+		</video>
+	<</if>>
 	<<if _check eq 2>><video autoplay muted controls loop class="displayCentredImgs">
 		<source @src="setup.ImagePath + '/stealClothes/2.mp4'" type="video/mp4">
 		</video>

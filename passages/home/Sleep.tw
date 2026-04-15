@@ -4,7 +4,8 @@
 <br>
 <br>
 <<if setup.Home.tentaclesSleepEventReady() and previous() is "Bedroom">>
-<<set $hours +=8>><<if $hours >=24>><<set $hours -=24>><<include "resetCD">><</if>>
+<<set $hours +=8>><<if $hours >=24>><<set $hours -=24>><<include "resetCD">>
+<</if>>
 <<goto "tentaclesEventSleep">>
 
 <</if>>
@@ -14,16 +15,24 @@
 
 <<if (previous() is "HuntOverSanity" or previous() is "huntEnd" or previous() is "cursedHuntStart") and $ghost.name eq "Wraith">>
 <<set $isPenaltyOn to 1>>
-@@.backbtn;<<link "Wake up" "ghostSpecialEventWraith">><<set $hours +=3>><<if $hours >=24>><<set $hours -=24>><<include "resetCD">><</if>><</link>>@@
+@@.backbtn;<<link "Wake up" "ghostSpecialEventWraith">><<set $hours +=3>><<if $hours >=24>><<set $hours -=24>><<include "resetCD">>
+<</if>>
+<</link>>
 <<set $mc.sanity to 40>>
 <<set $mc.lust to 0>>
 
 <<elseif $ghostMareEventStage gte 4>>
-@@.backbtn;<<link "Wake up" "ghostSpecialEventMareEnd">><<set $hours +=3>><<if $hours >=24>><<set $hours -=24>><<include "resetCD">><</if>><</link>>@@
+@@.backbtn;<<link "Wake up" "ghostSpecialEventMareEnd">><<set $hours +=3>><<if $hours >=24>><<set $hours -=24>><<include "resetCD">>
+<</if>>
+<</link>>
 <<elseif setup.Home.spiritNapEventReady()>>
-@@.backbtn;<<link "Wake up" "ghostSpecialEventSleepSpirit">><<set $hours +=3>><<if $hours >=24>><<set $hours -=24>><<include "resetCD">><</if>><</link>>@@
+@@.backbtn;<<link "Wake up" "ghostSpecialEventSleepSpirit">><<set $hours +=3>><<if $hours >=24>><<set $hours -=24>><<include "resetCD">>
+<</if>>
+<</link>>
 <<else>>
-@@.backbtn;<<link "Wake up" "Bedroom">><<set $hours +=8>><<if $hours >=24>><<set $hours -=24>><<include "resetCD">><</if>><</link>>@@
+@@.backbtn;<<link "Wake up" "Bedroom">><<set $hours +=8>><<if $hours >=24>><<set $hours -=24>><<include "resetCD">>
+<</if>>
+<</link>>
 <<if $isPenaltyOn eq 1>>
 <<run setup.Home.applySleepPenalty()>>
 <<else>>

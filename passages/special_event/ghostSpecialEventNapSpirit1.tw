@@ -2,7 +2,7 @@
 <video autoplay controls muted loop>
 <source @src="setup.ImagePath + '/ghosts/specials/spirit2.2.mp4'" type="video/mp4">
 </video>
-@@.mc-thoughts; You open your eyes and notice a dick next to your face. Thoughts race through your mind--could this be real? As you try to process what's happening, it ends up@@ <<linkappend "@@.usebtn; in your mouth.@@">> 
+@@.mc-thoughts; You open your eyes and notice a dick next to your face. Thoughts race through your mind--could this be real? As you try to process what's happening, it ends up@@ <<linkappend "@@.usebtn; in your mouth.@@">>
 <video autoplay controls muted loop>
 <source @src="setup.ImagePath + '/ghosts/specials/spirit2.3.mp4'" type="video/mp4">
 </video>

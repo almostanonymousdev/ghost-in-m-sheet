@@ -1,6 +1,7 @@
 :: artEventImgs [nobr] {"position":"1525,950","size":"100,100"}
 <<if $ghost.name eq "Oni">>
-<<set $ghostSanityEventDecreased to random(3,8)>><<else>>
+	<<set $ghostSanityEventDecreased to random(3,8)>>
+<<else>>
 <<set $ghostSanityEventDecreased to random(1,5)>><</if>>
 <<if previous() is "enigmaHallway" or previous() is "Notebook" or previous() is "Bag" or previous() is "guide">>
 	<<if $hallway.background eq 1>>

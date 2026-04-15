@@ -2,8 +2,10 @@
 <div id="minigame_mainvideo">
 <<seduceGhostMinigameVideo>>
 
-<b> <<if $ghostOrgasmMeter lte 0>><<set $ghostOrgasmMeter to 0>><</if>>
-Ghost's Arousal: $ghostOrgasmMeter |  <<if $mcOrgasmMeter lte 0>><<set $mcOrgasmMeter to 0>><</if>>Your Arousal:  $mcOrgasmMeter <br> </b>
+<b> <<if $ghostOrgasmMeter lte 0>><<set $ghostOrgasmMeter to 0>>
+<</if>>
+Ghost's Arousal: $ghostOrgasmMeter |  <<if $mcOrgasmMeter lte 0>><<set $mcOrgasmMeter to 0>>
+<</if>>Your Arousal:  $mcOrgasmMeter <br> </b>
 </div>
 <div id="minigame_text">
 <<if $minigameEventFailed eq 1>>

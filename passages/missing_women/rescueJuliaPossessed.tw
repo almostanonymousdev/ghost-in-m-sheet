@@ -37,7 +37,8 @@
 			<<link "@@.usebtn; your pussy.@@">>
 				<<replace "#rescueJuliaPossessed">>
 					<<videoToggle "rescueJuliaPossessed" "rescue/Julia/2.3.mp4" "rescue/Julia/2.2.mp4">>
-				<</replace>><</link>><br>
+				<</replace>>
+			<</link>>
 			@@.mc-speech; Oh... im dripping wet right noooow<br>
 			Uuuuwhhh..@@<<linkappend "@@.usebtn; Im about  to...@@">>
 				<video autoplay controls muted loop>

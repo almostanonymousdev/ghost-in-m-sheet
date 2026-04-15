@@ -13,8 +13,10 @@ You were examining the books in search of something useful when a guy approached
 @@.mc-thoughts; But he continues to touch you.@@<br>
 + 15 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br>
 <<if $mc.corruption lt 1>>
-	@@.mc-speech; [[Stop it right now, or I'll scream|LibraryInside]]@@ @@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 1)@@<<else>>
-	@@.mc-thoughts; Maybe I should [[stay silent|libraryGuy1]]. Perhaps he'll leave me alone on his own...@@<</if>>
+	@@.mc-speech; [[Stop it right now, or I'll scream|LibraryInside]]@@ @@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 1)@@
+<<else>>
+	@@.mc-thoughts; Maybe I should [[stay silent|libraryGuy1]]. Perhaps he'll leave me alone on his own...@@
+<</if>>
 <<addLust 15>>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>

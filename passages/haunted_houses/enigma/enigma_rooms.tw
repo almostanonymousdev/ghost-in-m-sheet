@@ -6,21 +6,24 @@
 @@.adaptiveLink;[[room B|enigmaRoomB]]@@
 @@.adaptiveLink;[[room C|enigmaRoomC]]@@
 <</roomFooter>>
-<</roomShell>><</nobr>>
+<</roomShell>>
+<</nobr>>
 
 :: enigmaBathroom [hauntedhouse] {"position":"2200,300","size":"100,100"}
 <<nobr>><<roomShell "enigmaBathroom" "bathroom" "basic">>
 <<roomFooter>>
 @@.adaptiveLink;[[hallway|enigmaHallway]]@@
 <</roomFooter>>
-<</roomShell>><</nobr>>
+<</roomShell>>
+<</nobr>>
 
 :: enigmaBedroom [hauntedhouse] {"position":"2100,300","size":"100,100"}
 <<nobr>><<roomShell "enigmaBedroom" "bedroom" "basic">>
 <<roomFooter>>
 @@.adaptiveLink;[[hallway|enigmaHallway]]@@
 <</roomFooter>>
-<</roomShell>><</nobr>>
+<</roomShell>>
+<</nobr>>
 
 :: enigmaHallway [hauntedhouse] {"position":"2300,300","size":"100,100"}
 <<nobr>><<roomShell "enigmaHallway" "hallway" "basic">>
@@ -33,39 +36,45 @@
 <br>
 @@.adaptiveLink;[[leave|Enigma Street]]@@
 <</roomFooter>>
-<</roomShell>><</nobr>>
+<</roomShell>>
+<</nobr>>
 
 :: enigmaKitchen [hauntedhouse] {"position":"2100,200","size":"100,100"}
 <<nobr>><<roomShell "enigmaKitchen" "kitchen" "basic">>
 <<roomFooter>>
 @@.adaptiveLink;[[hallway|enigmaHallway]]@@
 <</roomFooter>>
-<</roomShell>><</nobr>>
+<</roomShell>>
+<</nobr>>
 
 :: enigmaLivingroom [hauntedhouse] {"position":"2200,200","size":"100,100"}
 <<nobr>><<roomShell "enigmaLivingroom" "livingroom" "basic">>
 <<roomFooter>>
 @@.adaptiveLink;[[hallway|enigmaHallway]]@@
 <</roomFooter>>
-<</roomShell>><</nobr>>
+<</roomShell>>
+<</nobr>>
 
 :: enigmaRoomA [hauntedhouse] {"position":"2200,100","size":"100,100"}
 <<nobr>><<roomShell "enigmaRoomA" "roomA" "basic">>
 <<roomFooter>>
 @@.adaptiveLink;[[basement|enigmaBasement]]@@
 <</roomFooter>>
-<</roomShell>><</nobr>>
+<</roomShell>>
+<</nobr>>
 
 :: enigmaRoomB [hauntedhouse] {"position":"2100,0","size":"100,100"}
 <<nobr>><<roomShell "enigmaRoomB" "roomB" "basic">>
 <<roomFooter>>
 @@.adaptiveLink;[[basement|enigmaBasement]]@@
 <</roomFooter>>
-<</roomShell>><</nobr>>
+<</roomShell>>
+<</nobr>>
 
 :: enigmaRoomC [hauntedhouse] {"position":"2200,0","size":"100,100"}
 <<nobr>><<roomShell "enigmaRoomC" "roomC" "basic">>
 <<roomFooter>>
 @@.adaptiveLink;[[basement|enigmaBasement]]@@
 <</roomFooter>>
-<</roomShell>><</nobr>>
+<</roomShell>>
+<</nobr>>

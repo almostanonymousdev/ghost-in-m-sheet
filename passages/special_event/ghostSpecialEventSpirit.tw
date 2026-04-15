@@ -22,7 +22,8 @@
 					<source @src="setup.ImagePath + '/ghosts/specials/spiritbrooke1.mp4'" type="video/mp4">
 					</video>
 				<</if>>
-			<</replace>><</link>>@@<br>
+			<</replace>>
+		<</link>>
 		@@.notmc-speech; Mm~slurp~slurp~@@<br>
 		@@.mc-thoughts; Slurping sounds are heard throughout the room. You feel yourself beginning to give in to passionate desire, allowing this stranger@@ <<linkappend "@@.mc-thoughtsLink; to do whatever he wants.@@">><br>
 			<span id ="walkhomebrookspirit1">
@@ -41,7 +42,8 @@
 						<source @src="setup.ImagePath + '/ghosts/specials/spiritbrooke4.mp4'" type="video/mp4">
 						</video>
 					<</if>>
-				<</replace>><</link>>
+				<</replace>>
+			<</link>>
 			@@.mc-thoughts; Eventually, the mysterious figure can't stand your passion and @@<<linkappend "@@.mc-thoughtsLink; cums on you.@@">>
 				<video autoplay controls muted loop>
 				<source @src="setup.ImagePath + '/ghosts/specials/spiritbrooke5.mp4'" type="video/mp4">
@@ -81,7 +83,8 @@
 						<source @src="setup.ImagePath + '/ghosts/specials/spiritalice3.mp4'" type="video/mp4">
 						</video>
 					<</if>>
-				<</replace>><</link>>
+				<</replace>>
+			<</link>>
 			@@.mc-thoughts; You feel that the stranger is about to cum and press against his penis, trying to catch @@<<linkappend "@@.mc-thoughtsLink; every drop of his sperm.@@">>
 				<video autoplay controls muted loop>
 				<source @src="setup.ImagePath + '/ghosts/specials/spiritalice4.mp4'" type="video/mp4">
@@ -115,7 +118,8 @@
 				<source @src="setup.ImagePath + '/ghosts/specials/spiritblake1.1.mp4'" type="video/mp4">
 				</video>
 			<</if>>
-		<</replace>><</link>><br>
+		<</replace>>
+	<</link>>
 
 	@@.mc-thoughts; You both wake up to see a blurry figure in front of you. Next to you, you notice a vague figure with a hard cock near your face. Not fully realizing what's happening, you try to focus on the stranger, but your attention is completely drawn to the big dick, almost pressing against your mouth.@@<br>
 	<<linkappend "@@.mc-speechLink; What the~@@">>
@@ -137,7 +141,8 @@
 					<source @src="setup.ImagePath + '/ghosts/specials/spiritblake2.0.mp4'" type="video/mp4">
 					</video>
 				<</if>>
-			<</replace>><</link>>@@<br>
+			<</replace>>
+		<</link>>
 		@@.notmc-speech; Mm~slurp~slurp~@@<br>
 		@@.mc-thoughts; Slurping sounds are heard throughout the room. You feel yourself beginning to give in to passionate desire, allowing this stranger@@ <<linkappend "@@.mc-thoughtsLink; to do whatever he wants.@@">><br>
 			<span id ="walkhomeblakespirit2">
@@ -156,7 +161,8 @@
 						<source @src="setup.ImagePath + '/ghosts/specials/spiritblake4.mp4'" type="video/mp4">
 						</video>
 					<</if>>
-				<</replace>><</link>>
+				<</replace>>
+			<</link>>
 			@@.mc-thoughts; But he didn't stop there. He put you on top of $companion.name  so that your pussy was right next to her mouth and started [[fucking you|spiritBlake]] @@
 		<</linkappend>>
 	<</linkappend>>

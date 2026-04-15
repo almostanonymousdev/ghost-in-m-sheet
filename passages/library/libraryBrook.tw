@@ -57,7 +57,8 @@
 					<<set $companion to clone($brook)>><<set $isCompChosenBrook to 1>><<set $isCompChosenAlice to 0>><<set $chosenPlan to 0>><<set $isBrookGoingForHuntingAlone to 0>><<set $brookChooseOwaissa to 0>><<set $brookChooseElm to 0>>
 					<<replace "#brookInfoAnswer">>@@.mc-speech; I want you to join me for ghost hunting today@@<br>
 						@@.notmc-speech; Yes, of course. I'll be ready. Let's meet by the entrance to the haunted house, okay?@@<br>
-						@@.mc-speech; Yeah, let's do that.@@<</replace>>
+						@@.mc-speech; Yeah, let's do that.@@
+					<</replace>>
 				<</link>>@@<br>
 
 				<span class="CompanionInfoAskForHuntAlone">
@@ -70,17 +71,24 @@
 							<<if (ndef $payForHuntAloneBrook or $payForHuntAloneBrook eq 0) and $mc.money gte 20>><<set $mc.money -= 20>><<set $payForHuntAloneBrook to 1>><</if>>
 
 							<<if $mc.money lt 20>>
-								<<replace "#brookInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@<</replace>>
+								<<replace "#brookInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@
+								<</replace>>
 							<<else>>
-							<<replace "#brookInfoAnswerTwo">>@@.notmc-speech;Owaissa Street? Hmm... Yes, of course. I think I can handle it.@@<</replace>><</if>><</link>>@@@@color: green; <b>-20$</b>@@<br>
+								<<replace "#brookInfoAnswerTwo">>@@.notmc-speech;Owaissa Street? Hmm... Yes, of course. I think I can handle it.@@
+								<</replace>>
+							<</if>>
+						<</link>>
 
 						@@.enterbtn;<<link "Elm Street - $chanceToSuccessAloneElmBrook %">>
 							<<set $brookChooseOwaissa to 0>><<set $brookChooseElm to 1>><<set $isBrookGoingForHuntingAlone to 1>>
 							<<if (ndef $payForHuntAloneBrook or $payForHuntAloneBrook eq 0) and $mc.money gte 20>><<set $mc.money -= 20>><<set $payForHuntAloneBrook to 1>><</if>>
 							<<if $mc.money lt 20>>
-								<<replace "#brookInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@<</replace>>
+								<<replace "#brookInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@
+								<</replace>>
 							<<else>>
-							<<replace "#brookInfoAnswerTwo">>@@.notmc-speech;Elm Street? Hmm... Yes, of course. I think I can handle it.@@<</replace>><</if>>
+								<<replace "#brookInfoAnswerTwo">>@@.notmc-speech;Elm Street? Hmm... Yes, of course. I think I can handle it.@@
+								<</replace>>
+							<</if>>
 						<</link>>@@@@color: green; <b>-20$</b>@@<br>
 
 						<span id="brookInfoAnswerTwo">
@@ -111,4 +119,5 @@
 			<<addclass ".linkselector" "disabled-link">>
 		<</done>>
 		@@.backbtn; [[Leave|LibraryInside]] @@<br>
-	<</if>><</if>>
+	<</if>>
+<</if>>

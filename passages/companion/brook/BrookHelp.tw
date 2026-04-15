@@ -24,11 +24,13 @@
 		<<if _check eq 1>>
 			<video autoplay controls muted loop>
 			<source @src="setup.ImagePath + '/brook/both1.1.mp4'" type="video/mp4">
-			</video><</if>>
+			</video>
+		<</if>>
 		<<if _check eq 2>>
 			<video autoplay controls muted loop>
 			<source @src="setup.ImagePath + '/brook/both1.2.mp4'" type="video/mp4">
-			</video><</if>>
+			</video>
+		<</if>>
 		@@.mc-thoughts; You rely on your friend. Brook tries to help you, but the ghost's malevolent entity, fueled by her lust, proves too powerful. The force is overwhelming, and for a moment, reality itself seems to distort. You feel an odd sensation, as if you've slipped out of this world--suddenly, you see yourself as a cheap whore, clad in fishnet lingerie.<br>
 		The ghost shoves its cock into your mouths alternately, almost as if it's mocking you. This goes on for a while before it vanishes.<br>
 
@@ -48,11 +50,13 @@
 		<<if _check eq 1>>
 			<video autoplay controls muted loop>
 			<source @src="setup.ImagePath + '/brook/both2.1.mp4'" type="video/mp4">
-			</video><</if>>
+			</video>
+		<</if>>
 		<<if _check eq 2>>
 			<video autoplay controls muted loop>
 			<source @src="setup.ImagePath + '/brook/both2.2.mp4'" type="video/mp4">
-			</video><</if>>
+			</video>
+		<</if>>
 		@@.mc-thoughts; You rely on your friend. Brook tries to help you, but the ghost's malevolent entity, fueled by her lust, proves too powerful. The force is overwhelming, and for a moment, reality itself seems to distort. You feel an odd sensation, as if you've slipped out of this world--suddenly, you see yourself as a cheap whore, clad in fishnet lingerie.<br>
 		The ghost fucks you and Brook alternately.This goes on for a while before it vanishes.<br>
 		You look at Brook, but to your surprise, her face only shows satisfaction.@@<br>

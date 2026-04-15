@@ -19,9 +19,13 @@
 				<<if (ndef State.variables["payForHuntAlone" + _compVarPrefix] or State.variables["payForHuntAlone" + _compVarPrefix] eq 0) and $mc.money gte 20>><<set $mc.money -= 20>><<run State.variables["payForHuntAlone" + _compVarPrefix] = 1>><</if>>
 
 				<<if $mc.money lt 20>>
-					<<replace `"#" + _answerTwoId`>>@@.warningtext; I don't have enough money to buy her a contract @@<</replace>>
+					<<replace `"#" + _answerTwoId`>>@@.warningtext; I don't have enough money to buy her a contract @@
+					<</replace>>
 				<<else>>
-				<<replace `"#" + _answerTwoId`>>@@.notmc-speech;Owaissa Street? Hmm... Yes, of course. I think I can handle it.@@<</replace>><</if>><</link>>@@@@color: green; <b>-20$</b>@@<br>
+					<<replace `"#" + _answerTwoId`>>@@.notmc-speech;Owaissa Street? Hmm... Yes, of course. I think I can handle it.@@
+					<</replace>>
+				<</if>>
+			<</link>>
 
 			@@.enterbtn;<<link `"Elm Street - " + _elmChance + " %"`>>
 				<<run State.variables[_compVarPrefix.toLowerCase() + "ChooseOwaissa"] = 0>>
@@ -29,9 +33,12 @@
 				<<run State.variables["is" + _compVarPrefix + "GoingForHuntingAlone"] = 1>>
 				<<if (ndef State.variables["payForHuntAlone" + _compVarPrefix] or State.variables["payForHuntAlone" + _compVarPrefix] eq 0) and $mc.money gte 20>><<set $mc.money -= 20>><<run State.variables["payForHuntAlone" + _compVarPrefix] = 1>><</if>>
 				<<if $mc.money lt 20>>
-					<<replace `"#" + _answerTwoId`>>@@.warningtext; I don't have enough money to buy her a contract @@<</replace>>
+					<<replace `"#" + _answerTwoId`>>@@.warningtext; I don't have enough money to buy her a contract @@
+					<</replace>>
 				<<else>>
-				<<replace `"#" + _answerTwoId`>>@@.notmc-speech;Elm Street? Hmm... Yes, of course. I think I can handle it.@@<</replace>><</if>>
+					<<replace `"#" + _answerTwoId`>>@@.notmc-speech;Elm Street? Hmm... Yes, of course. I think I can handle it.@@
+					<</replace>>
+				<</if>>
 			<</link>>@@@@color: green; <b>-20$</b>@@<br>
 
 			<span @id="_answerTwoId">

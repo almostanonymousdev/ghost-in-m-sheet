@@ -21,7 +21,8 @@
 		@@.mc-thoughts; Lust increased: +15 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
 		@@.mc-thoughts; Sanity decreased: -15 <img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
 		<br><br>
-		@@.backbtn;<<link "Return" `passage()`>><</link>>@@
+		@@.backbtn;<<link "Return" `passage()`>>
+		<</link>>@@
 	<</replace>>
 <</widget>>
 
@@ -35,7 +36,8 @@
 		<<addSanity -15>>
 		<b>@@.mc-thoughts; Sanity decreased: -15 <img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@</b><br>
 		<br>
-		@@.backbtn;<<link "Return" `passage()`>><</link>>@@
+		@@.backbtn;<<link "Return" `passage()`>>
+		<</link>>@@
 	<</replace>>
 <</widget>>
 
@@ -49,7 +51,8 @@
 		<<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
 		<br>
 		<br>
-		@@.backbtn;<<link "Return" `passage()`>><</link>>@@
+		@@.backbtn;<<link "Return" `passage()`>>
+		<</link>>@@
 	<</replace>>
 <</widget>>
 
@@ -80,7 +83,8 @@
 			<</timed>>
 		<<else>>
 			@@.mc-speech; Nothing happened... I probably won't be able to remove more than one piece of evidence@@<br><br><br>
-			@@.backbtn;<<link "Return" `passage()`>><</link>>@@
+			@@.backbtn;<<link "Return" `passage()`>>
+			<</link>>@@
 		<</if>>
 	<</replace>>
 <</widget>>

@@ -59,7 +59,9 @@ non-enigma navigation link in the haunted houses does. */
 <<widget "navLink">>
 	<<set _navMode to (_args.length gt 2 ? _args[2] : "")>>
 	<<capture _navMode>>
-		@@.adaptiveLink;<<link _args[0] _args[1]>><<if _navMode eq "hunt">><<includeTimeEventHunt>><<else>><<includeTimeEventClothesHunt>><</if>><<set $stepCount += 1>><</link>>@@
+		@@.adaptiveLink;<<link _args[0] _args[1]>><<if _navMode eq "hunt">><<includeTimeEventHunt>>
+		<<else>><<includeTimeEventClothesHunt>>
+		<</if>><<set $stepCount += 1>><</link>>@@
 	<</capture>>
 <</widget>>
 
@@ -67,7 +69,8 @@ non-enigma navigation link in the haunted houses does. */
 <<link>> in the .cursedHuntLinkDisable span used by the elm and owaissa
 	hallways' "leave / Outside" exits. No event chain or step increment. */
 	<<widget "leaveLink">>
-		<span class="cursedHuntLinkDisable">@@.adaptiveLink;<<link _args[0] _args[1]>><</link>>@@</span>
+		<span class="cursedHuntLinkDisable">@@.adaptiveLink;<<link _args[0] _args[1]>>
+		<</link>>@@</span>
 	<</widget>>
 
 	/* roomToolCard -- args: tool key (e.g. "emf"), room prefix (e.g. "elmBedroom").
@@ -102,8 +105,10 @@ non-enigma navigation link in the haunted houses does. */
    owaissa, and ironclad rooms. */
 <<widget "roomFooterLight">>
 <div class="footer-card footer-light">
-<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" _args[0]>><<set State.variables[_args[1]].background = 1>><</link>>
-<<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" _args[0]>><<set State.variables[_args[1]].background = 2>><</link>>
+<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" _args[0]>><<set State.variables[_args[1]].background = 1>>
+<</link>>
+<<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" _args[0]>><<set State.variables[_args[1]].background = 2>>
+<</link>>
 <<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>>
 <<link "<img @src='setup.ImagePath + \"/img/hearth.png\"'>" "seduceGhostMinigame">>
 <<run setup.SeduceGhostMinigame.init()>><</link>>
@@ -116,8 +121,10 @@ non-enigma navigation link in the haunted houses does. */
    no minigame trigger. */
 <<widget "roomFooterLightBasic">>
 <div class="footer-card footer-light">
-<<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" _args[0]>><<set State.variables[_args[1]].background = 1>><</link>>
-<<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" _args[0]>><<set State.variables[_args[1]].background = 2>><</link>>
+<<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" _args[0]>><<set State.variables[_args[1]].background = 1>>
+<</link>>
+<<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" _args[0]>><<set State.variables[_args[1]].background = 2>>
+<</link>>
 </div>
 <</widget>>
 
@@ -141,12 +148,15 @@ non-enigma navigation link in the haunted houses does. */
 
 All you can do now is wait and hope it doesn't find you.@@
 <br><br>
-@@.backbtn;<<link "Leave" _hideTarget>><<set $isInHideSpot to 0>><</link>>@@<br>
-<</replace>><</link>></span>
+@@.backbtn;<<link "Leave" _hideTarget>><<set $isInHideSpot to 0>>
+<</link>>@@<br>
+<</replace>>
+<</link>>
 <</capture>>
 <<else>>
 <<capture _hideId>>
-<span @id="_hideId"><<link `'<img src="' + _imgSrc + '">'` "furnitureSearch">><<set $currentFurniture to _hideId>><<includeTimeEventClothesHunt>><</link>></span>
+<span @id="_hideId"><<link `'<img src="' + _imgSrc + '">'` "furnitureSearch">><<set $currentFurniture to _hideId>><<includeTimeEventClothesHunt>>
+<</link>></span>
 <</capture>>
 <</if>>
 <</widget>>
@@ -158,7 +168,8 @@ All you can do now is wait and hope it doesn't find you.@@
 <<set _imgSrc to setup.ImagePath + '/img/furniture/' + _args[0]>>
 <<set _furnId to _args[1]>>
 <<capture _furnId>>
-<span @id="_furnId"><<link `'<img src="' + _imgSrc + '">'` "furnitureSearch">><<set $currentFurniture to _furnId>><<includeTimeEventClothesHunt>><</link>></span>
+<span @id="_furnId"><<link `'<img src="' + _imgSrc + '">'` "furnitureSearch">><<set $currentFurniture to _furnId>><<includeTimeEventClothesHunt>>
+<</link>></span>
 <</capture>>
 <</widget>>
 

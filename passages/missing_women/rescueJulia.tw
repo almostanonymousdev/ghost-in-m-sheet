@@ -32,7 +32,8 @@
 @@.mc-speech; Oh wow~ it's $currentRescueGirl, and it looks like she's... in trouble.<br>
 I can help her if I use holy water.... or<br>
 I could watch a little longer and then help her... but I might get noticed. @@<br>
-@@.warningtext; The chance of being noticed - <<do tag "chanceRescue">>_caughtChance<</do>>@@<br>
+@@.warningtext; The chance of being noticed - <<do tag "chanceRescue">>_caughtChance
+<</do>>@@<br>
 <span class="rescueWatchButton"><<link "@@.usebtn;Watch@@">>
 	<<set _clickCount += 1>>
 	<<if _clickCount lte 4>>
@@ -44,11 +45,13 @@ I could watch a little longer and then help her... but I might get noticed. @@<b
 				<<done>>
 					<<if not setup.MissingWomen.canStaySubmissive()>>
 						<<addclass ".rescueStayCorruptionCheck" "disabled-link">>
-					<</if>><</done>>
+					<</if>>
+				<</done>>
 				<br>
 				<span class="rescueStayCorruptionCheck">
 				@@.mc-speech;Or...@@  @@.usebtn;[[Stay|rescueStay][$hasQuestForRescue to 2]]@@.@@.mc-speech; I guess I'm already used to losing...@@</span>
-				<<if not setup.MissingWomen.canStaySubmissive()>>@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 6)@@<</if>>
+				<<if not setup.MissingWomen.canStaySubmissive()>>@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 6)@@
+				<</if>>
 
 				<br><br>
 				<br>

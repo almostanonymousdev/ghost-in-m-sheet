@@ -51,7 +51,9 @@
 			@@.notmc-speech; Great! I'll let her know you're on board. Head to the church -- I'm sure she'll find you and explain what to do next.@@<br>
 			<br>
 			@@.mc-action; You need to talk to Sister Rain at the church.@@<br>
-		<</linkreplace>><<if $mc.lvl lt 4>>@@.warningtext; (Req. lvl 4+)@@<</if>><br></span><</if>>
+		<</linkreplace>><<if $mc.lvl lt 4>>@@.warningtext; (Req. lvl 4+)@@
+		<</if>><br></span>
+	<</if>>
 	<<if $ghostHuntingMode eq 0>>
 		<<if setup.Witch.canAffordContract()>>
 			@@.usebtn;[[I want to get a contract|GhostRandomize]]@@<br>
@@ -62,9 +64,11 @@
 
 			@@.usebtn; [[I want to get a challenging contract(No evidence)|GhostRandomize][$deleteOneEvidence to 1; $deleteSecondEvidence to 1; $deleteThirdEvidence to 1]]@@<br>
 
-		<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
+		<<else>>@@.mc-thoughts; I don't have enough money@@
+		<</if>>
 	<<elseif $ghostHuntingMode eq 1>>@@.mc-thoughts; I already have a contract@@
-	<<elseif $ghostHuntingMode eq 3>>@@.usebtn;[[End the contract|WitchEndContract]]@@<</if>><br>
+	<<elseif $ghostHuntingMode eq 3>>@@.usebtn;[[End the contract|WitchEndContract]]@@
+	<</if>><br>
 
 	<<if $mc.lvl lte 1>>
 		@@.mc-speech; I just need to correctly identify the ghost, right?@@<br>
@@ -112,9 +116,12 @@
 	<</linkreplace>>@@<br>
 	<<if setup.Witch.canAskAboutLevel3Tools()>>
 		@@.mc-speech;<<linkreplace "Do you sell level 3 tools?">>
-			@@.notmc-speech; <<if setup.Witch.ownsLevel3Gwb()>><<else>>I only have a level 3 ghostwriting book, but I'm not planning to sell it yet. Also, <</if>>I know that the priest has some level 3 tool. Ask him about it@@
+			@@.notmc-speech; <<if setup.Witch.ownsLevel3Gwb()>>
+			<<else>>I only have a level 3 ghostwriting book, but I'm not planning to sell it yet. Also,
+			<</if>>I know that the priest has some level 3 tool. Ask him about it@@
 			<<set $eventToolsOneStart to 0>>
-		<</linkreplace>>@@<br><</if>>
+		<</linkreplace>>@@<br>
+	<</if>>
 <</if>>
 <<if setup.Witch.canAskAboutMonkeyPaw()>>
 	<<linkreplace "@@.usebtn; Ask about Monkey Paw@@">>

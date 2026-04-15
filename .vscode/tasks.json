@@ -2,6 +2,66 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "Twee Lint (watch)",
+      "type": "shell",
+      "command": "python3",
+      "args": ["check_format.py", "--vscode", "--watch"],
+      "isBackground": true,
+      "runOptions": {
+        "runOn": "folderOpen"
+      },
+      "group": "none",
+      "presentation": {
+        "reveal": "never",
+        "echo": false,
+        "panel": "dedicated",
+        "close": true
+      },
+      "problemMatcher": {
+        "owner": "twee-lint",
+        "fileLocation": ["relative", "${workspaceFolder}"],
+        "pattern": {
+          "regexp": "^(.+):(\\d+):(\\d+): (warning) (TW\\d+): (.+)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "code": 5,
+          "message": 6
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^>>> twee-lint start$",
+          "endsPattern": "^>>> twee-lint end$"
+        }
+      },
+      "detail": "Background Twee formatting linter — shows warnings in Problems panel"
+    },
+    {
+      "label": "Twee Lint (all files)",
+      "type": "shell",
+      "command": "python3",
+      "args": ["check_format.py", "--vscode"],
+      "group": "none",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": {
+        "owner": "twee-lint-once",
+        "fileLocation": ["relative", "${workspaceFolder}"],
+        "pattern": {
+          "regexp": "^(.+):(\\d+):(\\d+): (warning) (TW\\d+): (.+)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "code": 5,
+          "message": 6
+        }
+      },
+      "detail": "Run Twee formatting linter once on all .tw files"
+    },
+    {
       "label": "Build Story",
       "type": "shell",
       "command": "./build.sh",

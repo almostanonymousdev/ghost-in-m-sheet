@@ -9,7 +9,8 @@
 <<roomFooter>>
 <<navLink "Hallway" "OwaissaHallway">>
 <</roomFooter>>
-<</roomShell>><</nobr>>
+<</roomShell>>
+<</nobr>>
 
 :: OwaissaBedroom [hauntedhouse owaissaBedroom] {"position":"1750,650","size":"100,100"}
 <<nobr>><<roomShell "OwaissaBedroom" "bedroom">>
@@ -21,7 +22,8 @@
 <<roomFooter>>
 <<navLink "Hallway" "OwaissaHallway">>
 <</roomFooter>>
-<</roomShell>><</nobr>>
+<</roomShell>>
+<</nobr>>
 
 :: OwaissaHallway [hauntedhouse owaissaHallway] {"position":"1650,450","size":"100,100"}
 <<nobr>><<roomShell "OwaissaHallway" "hallway">>
@@ -36,7 +38,8 @@
 <<navLink "Bathroom" "OwaissaBathroom">>
 <<leaveLink "Outside" "Owaissa Street">>
 <</roomFooter>>
-<</roomShell>><</nobr>>
+<</roomShell>>
+<</nobr>>
 
 :: OwaissaKitchen [hauntedhouse owaissaKitchen] {"position":"1650,550","size":"100,100"}
 <<nobr>><<roomShell "OwaissaKitchen" "kitchen">>
@@ -49,7 +52,8 @@
 <<navLink "Hallway" "OwaissaHallway">>
 <<navLink "Livingroom" "OwaissaLivingroom">>
 <</roomFooter>>
-<</roomShell>><</nobr>>
+<</roomShell>>
+<</nobr>>
 
 :: OwaissaLivingroom [hauntedhouse owaissaLivingroom] {"position":"1750,450","size":"100,100"}
 <<nobr>><<roomShell "OwaissaLivingroom" "livingroom">>
@@ -60,4 +64,5 @@
 <<roomFooter>>
 <<navLink "Kitchen" "OwaissaKitchen">>
 <</roomFooter>>
-<</roomShell>><</nobr>>
+<</roomShell>>
+<</nobr>>

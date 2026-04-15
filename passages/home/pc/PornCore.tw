@@ -20,7 +20,8 @@
 		<<set $webcamAccountCreated to 1>>
 		<br>
 		@@.mc-action; Now you can do live webcam shows.@@<br>
-	<</linkreplace>>@@<br><</if>>
+	<</linkreplace>>@@<br>
+<</if>>
 <br>
 <br>
 @@.backbtn;[[Livingroom|Livingroom]]@@

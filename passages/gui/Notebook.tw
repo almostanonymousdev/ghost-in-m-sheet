@@ -13,7 +13,8 @@
 * <span class="emf"><<checkbox "$EMF5Check" false true autocheck>>EMF 5 </span><<linkreplace "Tips:">><br>
 	<span style="color: red; font-weight: bold;  -webkit-text-stroke: 1px black;">Red</span> means evidence<br>
 	<span style="color: yellow; font-weight: bold;  -webkit-text-stroke: 1px black;">Yellow</span> means it's not evidence.<br>
-	<span style="color: green; font-weight: bold;  -webkit-text-stroke: 1px black;">Green</span> means nothing happened *try again*.<</linkreplace>>
+	<span style="color: green; font-weight: bold;  -webkit-text-stroke: 1px black;">Green</span> means nothing happened *try again*.
+<</linkreplace>>
 <br>* <span class="glass"><<checkbox "$EctoglassCheck" false true autocheck>> Ectoplasm</span><br>
 * <span class="gwb"><<checkbox "$GWBCheck" false true autocheck>> Ghost writing book</span><br>
 * <span class="spiritbox"><<checkbox "$SpiritboxCheck" false true autocheck>> Spiritbox</span><br>
@@ -21,7 +22,8 @@
 	Normal temperature: 13 - 16.<br>
 	Ghost's favorite room: 16 - 21.<br>
 	Evidence "High temperature": 19 - 24.<br>
-	If you have a level 2 or 3 thermometer -  color is added. (See the guide).<</linkreplace>>
+	If you have a level 2 or 3 thermometer -  color is added. (See the guide).
+<</linkreplace>>
 <br>* <span class="uvl"><<checkbox "$UVLCheck" false true autocheck>> UVL Fingerprints</span><br>
 </b>
 @@.movebtn;<<linkreplace "RESULT">>
@@ -101,21 +103,23 @@
 <br>
 <div class="journal-container">
 <<for _g range setup.ghosts>>
-	<span @class="setup.ghostEvidenceClasses(_g)" @id="_g.id"><<hovertip setup.ghostHoverHtml(_g.id)>><<= _g.name>><</hovertip>></span>
+	<span @class="setup.ghostEvidenceClasses(_g)" @id="_g.id"><<hovertip setup.ghostHoverHtml(_g.id)>><<= _g.name>>
+	<</hovertip>></span>
 <</for>><br>
 
 <<if (previous() eq "WitchEndContract") or (tags(previous()).includes("event"))>>
 	@@.backbtn;<<back>>@@<br>
 <<else>>
-	@@.backbtn;<<return>>@@<br><</if>>
+	@@.backbtn;<<return>>@@<br>
+<</if>>
 </div>
 
 <style>
 body {
     background-image: url('assets/img/journalInside.webp');
     background-size: cover;
-    background-position: center; 
-    background-repeat: no-repeat; 
+    background-position: center;
+    background-repeat: no-repeat;
     margin: 0;
 }
 
@@ -136,7 +140,7 @@ body {
 .journal-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 10px; 
+    gap: 10px;
     background-color: rgba(0, 0, 0, 0.3);
     padding: 20px;
     border-radius: 10px;

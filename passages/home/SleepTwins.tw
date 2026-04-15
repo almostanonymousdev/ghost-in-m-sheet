@@ -7,4 +7,5 @@
 	<<unset $summonText>>
 <</if>><br><br>
 @@.backbtn; [[Bathroom|Bathroom]]@@<br>
-<<set $hours +=8>><<if $hours >=24>><<set $hours -=24>><<include "resetCD">><</if>>
+<<set $hours +=8>><<if $hours >=24>><<set $hours -=24>><<include "resetCD">>
+<</if>>

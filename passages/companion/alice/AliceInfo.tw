@@ -17,7 +17,9 @@
 <img @src="setup.ImagePath + '/alice/alice.png'">
 </div>
 <div class="companionTextMain">
-<span style="color: yellow; font-weight: bold; font-size: 1.2em;">$alice.name :</span> $alice.lvl lvl <<if $alice.lvl gte 5>> (max. lvl)<<else>>($alice.exp / $alice.expForNextLvl)<</if>><br>
+<span style="color: yellow; font-weight: bold; font-size: 1.2em;">$alice.name :</span> $alice.lvl lvl <<if $alice.lvl gte 5>> (max. lvl)
+<<else>>($alice.exp / $alice.expForNextLvl)
+<</if>><br>
 
 <<if ndef $aliceWorkDone or $aliceWorkDone eq 0>>
 	<<linkreplace "@@.usebtn;Help her with the work@@">>
@@ -30,7 +32,8 @@
 	@@.mc-speech; I need to help Alice with her work before asking her to join the ghost hunt.@@<br>
 <<elseif $aliceWorkDone eq 2>>
 	<<if $isAliceGoingForHuntingAlone neq 2>>
-		@@.notmc-speech; Thanks a lot, now I'm free and ready to join you on the ghost hunt!@@<br><</if>>
+		@@.notmc-speech; Thanks a lot, now I'm free and ready to join you on the ghost hunt!@@<br>
+	<</if>>
 
 	<<if $isAliceGoingForHuntingAlone eq 2>>
 		@@.mc-speech; [[Ask her how her ghost hunt went.|AliceHuntEndAlone]]@@<br>
@@ -49,13 +52,15 @@
 			<<set $aliceChooseElm to 0>>
 			<<replace "#aliceInfoAnswer">>@@.mc-speech; I want you to join me for ghost hunting today@@<br>
 				@@.notmc-speech; Yes, of course. I'll be ready. Let's meet by the entrance to the haunted house, okay?@@<br>
-				@@.mc-speech; Yeah, let's do that.@@<</replace>>
+				@@.mc-speech; Yeah, let's do that.@@
+			<</replace>>
 		<</link>>@@<br>
 
 		<<done>>
 			<<if $alice.lvl lt 2>>
 				<<addclass ".CompanionInfoAskForHuntAlone" "disabled-link">>
-			<</if>><</done>>
+			<</if>>
+		<</done>>
 		<span class="CompanionInfoAskForHuntAlone">
 		@@.mc-speech;<<link "I'd like you to go ghost hunting alone.">>
 			<<set $isCompChosenAlice to 0>>
@@ -67,19 +72,25 @@
 					<<if (ndef $payForHuntAloneAlice or $payForHuntAloneAlice eq 0) and $mc.money gte 20>><<set $mc.money -= 20>><<set $payForHuntAloneAlice to 1>><</if>>
 
 					<<if $mc.money lt 20>>
-						<<replace "#aliceInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@<</replace>>
+						<<replace "#aliceInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@
+						<</replace>>
 					<<else>>
-					<<replace "#aliceInfoAnswerTwo">>@@.notmc-speech;Owaissa Street? Hmm... Yes, of course. I think I can handle it.@@<</replace>><</if>><</link>>@@@@color: green; <b>-20$</b>@@<br>
+						<<replace "#aliceInfoAnswerTwo">>@@.notmc-speech;Owaissa Street? Hmm... Yes, of course. I think I can handle it.@@
+						<</replace>>
+					<</if>>
+				<</link>>
 
 				@@.enterbtn;<<link "Elm Street - $chanceToSuccessAloneElmAlice %">>
 					<<set $aliceChooseOwaissa to 0>><<set $aliceChooseElm to 1>><<set $isAliceGoingForHuntingAlone to 1>>
 					<<if (ndef $payForHuntAloneAlice or $payForHuntAloneAlice eq 0) and $mc.money gte 20>><<set $mc.money -= 20>><<set $payForHuntAloneAlice to 1>><</if>>
 
 					<<if $mc.money lt 20>>
-						<<replace "#aliceInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@<</replace>>
+						<<replace "#aliceInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@
+						<</replace>>
 					<<else>>
-
-					<<replace "#aliceInfoAnswerTwo">>@@.notmc-speech;Elm Street? Hmm... Yes, of course. I think I can handle it.@@<</replace>><</if>>
+						<<replace "#aliceInfoAnswerTwo">>@@.notmc-speech;Elm Street? Hmm... Yes, of course. I think I can handle it.@@
+						<</replace>>
+					<</if>>
 				<</link>>@@@@color: green; <b>-20$</b>@@<br>
 
 				<span id="aliceInfoAnswerTwo">

@@ -17,7 +17,9 @@
 <img @src="setup.ImagePath + '/brook/brook.png'">
 </div>
 <div class="companionTextMain">
-<span style="color: yellow; font-weight: bold; font-size: 1.2em;">$brook.name :</span> $brook.lvl lvl <<if $brook.lvl gte 5>> (max. lvl)<<else>>($brook.exp / $brook.expForNextLvl)<</if>><br>
+<span style="color: yellow; font-weight: bold; font-size: 1.2em;">$brook.name :</span> $brook.lvl lvl <<if $brook.lvl gte 5>> (max. lvl)
+<<else>>($brook.exp / $brook.expForNextLvl)
+<</if>><br>
 <<if $isBrookGoingForHuntingAlone eq 2>>
 	@@.mc-speech; [[Ask her how her ghost hunt went.|BrookHuntEndAlone]]@@<br>
 <<else>>
@@ -35,7 +37,8 @@
 		<<set $brookChooseElm to 0>>
 		<<replace "#brookInfoAnswer">>@@.mc-speech; I want you to join me for ghost hunting today@@<br>
 			@@.notmc-speech; Yes, of course. I'll be ready. Let's meet by the entrance to the haunted house, okay?@@<br>
-			@@.mc-speech; Yeah, let's do that.@@<</replace>>
+			@@.mc-speech; Yeah, let's do that.@@
+		<</replace>>
 	<</link>>@@<br>
 
 	<span class="CompanionInfoAskForHuntAlone">
@@ -48,17 +51,24 @@
 				<<if (ndef $payForHuntAloneBrook or $payForHuntAloneBrook eq 0) and $mc.money gte 20>><<set $mc.money -= 20>><<set $payForHuntAloneBrook to 1>><</if>>
 
 				<<if $mc.money lt 20>>
-					<<replace "#brookInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@<</replace>>
+					<<replace "#brookInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@
+					<</replace>>
 				<<else>>
-				<<replace "#brookInfoAnswerTwo">>@@.notmc-speech;Owaissa Street? Hmm... Yes, of course. I think I can handle it.@@<</replace>><</if>><</link>>@@@@color: green; <b>-20$</b>@@<br>
+					<<replace "#brookInfoAnswerTwo">>@@.notmc-speech;Owaissa Street? Hmm... Yes, of course. I think I can handle it.@@
+					<</replace>>
+				<</if>>
+			<</link>>
 
 			@@.enterbtn;<<link "Elm Street - $chanceToSuccessAloneElmBrook %">>
 				<<set $brookChooseOwaissa to 0>><<set $brookChooseElm to 1>><<set $isBrookGoingForHuntingAlone to 1>>
 				<<if (ndef $payForHuntAloneBrook or $payForHuntAloneBrook eq 0) and $mc.money gte 20>><<set $mc.money -= 20>><<set $payForHuntAloneBrook to 1>><</if>>
 				<<if $mc.money lt 20>>
-					<<replace "#brookInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@<</replace>>
+					<<replace "#brookInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@
+					<</replace>>
 				<<else>>
-				<<replace "#brookInfoAnswerTwo">>@@.notmc-speech;Elm Street? Hmm... Yes, of course. I think I can handle it.@@<</replace>><</if>>
+					<<replace "#brookInfoAnswerTwo">>@@.notmc-speech;Elm Street? Hmm... Yes, of course. I think I can handle it.@@
+					<</replace>>
+				<</if>>
 			<</link>>@@@@color: green; <b>-20$</b>@@<br>
 
 			<span id="brookInfoAnswerTwo">

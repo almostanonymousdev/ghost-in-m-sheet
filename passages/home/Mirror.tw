@@ -33,16 +33,26 @@
 	<br>
 	<<if $makeupApplied eq 0>>
 		<<if $makeupAmount gte 1>>
-			@@.usebtn;<<link "Apply regular makeup (1 charge)" "Mirror">><<set $mc.makeupImg to 1>><<set $makeupApplied to 1>><<set $mc.beauty += 5>><<set $makeupAmount -= 1>><</link>>@@<br><<else>>@@.mc-speech;I don't have enough makeup@@<br><</if>>
+			@@.usebtn;<<link "Apply regular makeup (1 charge)" "Mirror">><<set $mc.makeupImg to 1>><<set $makeupApplied to 1>><<set $mc.beauty += 5>><<set $makeupAmount -= 1>>
+			<</link>>@@<br>
+		<<else>>@@.mc-speech;I don't have enough makeup@@<br>
+		<</if>>
 		<<if $makeupAmount gte 2>>
-			@@.usebtn;<<link "Apply stylish makeup (2 charges)" "Mirror">><<set $mc.makeupImg to 2>><<set $makeupApplied to 1>><<set $makeupAmount -= 2>><<set $mc.beauty += 10>><</link>>@@<br>
-		<<else>>@@.mc-speech;I don't have enough makeup@@<br><</if>>
+			@@.usebtn;<<link "Apply stylish makeup (2 charges)" "Mirror">><<set $mc.makeupImg to 2>><<set $makeupApplied to 1>><<set $makeupAmount -= 2>><<set $mc.beauty += 10>>
+			<</link>>@@<br>
+		<<else>>@@.mc-speech;I don't have enough makeup@@<br>
+		<</if>>
 		<<if $makeupAmount gte 3>>
 			<<if $mc.corruption gte 10>>
-				@@.usebtn;<<link "Apply slutty makeup (3 charges)" "Mirror">><<set $mc.makeupImg to 3>><<set $makeupApplied to 1>><<set $makeupAmount -= 3>><<set $mc.beauty += 15>><</link>>@@<br>
-			<<else>>@@.usebtn;<<linkreplace "Apply slutty makeup (3 charges)">>@@.mc-speech; Why should I do this makeup?@@<</linkreplace>>@@<br><</if>>
-		<<else>>@@.mc-speech;I don't have enough makeup@@<br><</if>>
-	<<else>>@@.mc-thoughts; I need to remove my makeup first<</if>>
+				@@.usebtn;<<link "Apply slutty makeup (3 charges)" "Mirror">><<set $mc.makeupImg to 3>><<set $makeupApplied to 1>><<set $makeupAmount -= 3>><<set $mc.beauty += 15>>
+				<</link>>@@<br>
+			<<else>>@@.usebtn;<<linkreplace "Apply slutty makeup (3 charges)">>@@.mc-speech; Why should I do this makeup?@@
+			<</linkreplace>>@@<br>
+			<</if>>
+		<<else>>@@.mc-speech;I don't have enough makeup@@<br>
+		<</if>>
+	<<else>>@@.mc-thoughts; I need to remove my makeup first
+	<</if>>
 	<br>
 	@@.backbtn;[[Back|Bathroom]] @@<br>
 <</if>>

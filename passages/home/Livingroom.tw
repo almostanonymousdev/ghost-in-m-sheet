@@ -28,11 +28,13 @@
 	<</if>>
 <</link>>@@<br>
 <<if setup.CursedItems.isItemCursed("pc")>>
-	@@.enterbtn;<<link "Use PC" "cursedPCEvent">><</link>>@@<br>
+	@@.enterbtn;<<link "Use PC" "cursedPCEvent">>
+	<</link>>@@<br>
 <<else>>
 	@@.enterbtn;[[Use PC]]@@<br>
 <</if>>
-@@.enterbtn;<<link "Bedroom" "Bedroom">><<addTime 0.5>><</link>>@@<br>
+@@.enterbtn;<<link "Bedroom" "Bedroom">><<addTime 0.5>>
+<</link>>@@<br>
 <<if $hours <= 22 and $hours >= 12>>
 	@@.usebtn;<<link "Skip time till midnight" "Livingroom">><<set $hours to 23>><<set $minutes to 0>>@@
 		<<replace "#time">><<print ($hours < 10 ? '0' + $hours : $hours) + ":" + ($minutes < 10 ? '0' + $minutes : $minutes)>><</replace>>
@@ -59,9 +61,12 @@
 			@@.mc-thoughts; I need to go to the bathroom first@@
 		<<elseif setup.Home.isCorruptEnoughToSkipUnderwear()>>@@.movebtn;[[Ghost hunting|GhostStreet]]@@
 		<<elseif not setup.Home.isWearingUnderwear()>>@@.mc-thoughts; I can't go outside without underwear @@
-		<<else>>@@.movebtn;[[Ghost hunting|GhostStreet]]@@<</if>>
-	<<elseif setup.Home.needsWitch()>>@@.mc-thoughts; I need to go to the witch first@@<</if>>
-<<else>> @@.mc-thoughts;Not appropriate time for ghost hunting@@<</if>>
+		<<else>>@@.movebtn;[[Ghost hunting|GhostStreet]]@@
+		<</if>>
+	<<elseif setup.Home.needsWitch()>>@@.mc-thoughts; I need to go to the witch first@@
+	<</if>>
+<<else>> @@.mc-thoughts;Not appropriate time for ghost hunting@@
+<</if>>
 <br>
 <br>
 <<if not setup.Home.isDressedForStreet()>>

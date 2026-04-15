@@ -5,7 +5,8 @@
 <<capture _h>>
 <div @class="'housecard rescuehousecard' + ($cheatRescueHouseHighlight && _h === $randomRescuePhotoNumber ? ' cheatRescueHighlight' : '')">
 <img @src="setup.ImagePath + '/rescue/house/' + _h + '.jpg'" class="iconRescuePx">
-@@.icontextcity;<<link "Move" "rescueHouse">><<set $rescueHouse to _h>><</link>>@@
+@@.icontextcity;<<link "Move" "rescueHouse">><<set $rescueHouse to _h>>
+<</link>>@@
 </div>
 <</capture>>
 <</for>>
@@ -55,4 +56,4 @@
     z-index: 1;
  }
  </style>
- 		<</if>>
+		<</if>>

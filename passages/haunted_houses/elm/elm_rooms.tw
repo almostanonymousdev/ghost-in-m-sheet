@@ -7,7 +7,8 @@
 <<roomFooter>>
 <<navLink "hallway" "elmHallway">>
 <</roomFooter>>
-<</roomShell>><</nobr>>
+<</roomShell>>
+<</nobr>>
 
 :: elmBathroom [hauntedhouse elmBathroom] {"position":"2150,550","size":"100,100"}
 <<nobr>><<roomShell "elmBathroom" "bathroom">>
@@ -19,7 +20,8 @@
 <<roomFooter>>
 <<navLink "hallway" "elmHallway">>
 <</roomFooter>>
-<</roomShell>><</nobr>>
+<</roomShell>>
+<</nobr>>
 
 :: elmBathroomTwo [hauntedhouse elmBathroomTwo] {"position":"2250,550","size":"100,100"}
 <<nobr>><<roomShell "elmBathroomTwo" "bathroomTwo">>
@@ -30,7 +32,8 @@
 <<roomFooter>>
 <<navLink "hallway" "elmHallwayUpstairs">>
 <</roomFooter>>
-<</roomShell>><</nobr>>
+<</roomShell>>
+<</nobr>>
 
 :: elmBedroom [hauntedhouse elmBedroom] {"position":"2150,650","size":"100,100"}
 <<nobr>><<roomShell "elmBedroom" "bedroom">>
@@ -42,7 +45,8 @@
 <<roomFooter>>
 <<navLink "hallway" "elmHallway">>
 <</roomFooter>>
-<</roomShell>><</nobr>>
+<</roomShell>>
+<</nobr>>
 
 :: elmBedroomTwo [hauntedhouse elmBedroomTwo] {"position":"2250,650","size":"100,100"}
 <<nobr>><<roomShell "elmBedroomTwo" "bedroomTwo">>
@@ -54,7 +58,8 @@
 <<roomFooter>>
 <<navLink "hallway" "elmHallwayUpstairs">>
 <</roomFooter>>
-<</roomShell>><</nobr>>
+<</roomShell>>
+<</nobr>>
 
 :: elmHallway [hauntedhouse elmHallway] {"position":"2250,750","size":"100,100"}
 <<nobr>><<roomShell "elmHallway" "hallway">>
@@ -71,7 +76,8 @@
 <br>
 <<leaveLink "leave" "Elm Street">>
 <</roomFooter>>
-<</roomShell>><</nobr>>
+<</roomShell>>
+<</nobr>>
 
 :: elmHallwayUpstairs [hauntedhouse elmHallwayUpstairs] {"position":"2150,850","size":"100,100"}
 <<nobr>><<roomShell "elmHallwayUpstairs" "hallwayUpstairs">>
@@ -85,7 +91,8 @@
 <<navLink "bedroom" "elmBedroomTwo">>
 <<navLink "nursery" "elmNursery">>
 <</roomFooter>>
-<</roomShell>><</nobr>>
+<</roomShell>>
+<</nobr>>
 
 :: elmKitchen [hauntedhouse elmKitchen] {"position":"2250,450","size":"100,100"}
 <<nobr>><<roomShell "elmKitchen" "kitchen">>
@@ -97,7 +104,8 @@
 <<roomFooter>>
 <<navLink "hallway" "elmHallway">>
 <</roomFooter>>
-<</roomShell>><</nobr>>
+<</roomShell>>
+<</nobr>>
 
 :: elmNursery [hauntedhouse elmNursery] {"position":"2150,750","size":"100,100"}
 <<nobr>><<roomShell "elmNursery" "nursery">>
@@ -109,4 +117,5 @@
 <<roomFooter>>
 <<navLink "hallway" "elmHallwayUpstairs">>
 <</roomFooter>>
-<</roomShell>><</nobr>>
+<</roomShell>>
+<</nobr>>

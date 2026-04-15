@@ -3,8 +3,10 @@
 <source @src="setup.ImagePath + '/ghosts/specials/mare1.1.mp4'" type="video/mp4">
 </video>
 <<if not setup.SpecialEvent.knowsAboutMare()>>
-	@@.mc-speech;Am I touching myself in my sleep? Strange...I need to @@<<else>>
-	@@.mc-speech; Is this really happening again? I need to@@<</if>>
+	@@.mc-speech;Am I touching myself in my sleep? Strange...I need to @@
+<<else>>
+	@@.mc-speech; Is this really happening again? I need to@@
+<</if>>
 <<linkappend "@@.mc-speechLink;watch more.@@">>
 	<video autoplay controls muted loop>
 	<source @src="setup.ImagePath + '/ghosts/specials/mare1.2.mp4'" type="video/mp4">
@@ -20,4 +22,5 @@
 		<br>
 		<br>
 		@@.backbtn; [[Back|Use PC]] @@
-	<</linkappend>><</linkappend>>
+	<</linkappend>>
+<</linkappend>>

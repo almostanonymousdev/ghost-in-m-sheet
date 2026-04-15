@@ -16,7 +16,8 @@ You spent about an hour at the gym, diligently working on improving your physica
 			Oooh, [[I can't resist|gymGroupEvent1Start]]@@<br>
 		<<else>>
 			@@.mc-speech; No, sorry I'm [[not in the mood.|GymInside]]@@<br>@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 50)@@
-		<</if>><</linkappend>>
+		<</if>>
+	<</linkappend>>
 	<br>
 <<else>>@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/beauty.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 50)@@<br><br>@@.backbtn;[[Back|GymInside]] @@<br>
 <</if>>

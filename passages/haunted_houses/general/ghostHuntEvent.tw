@@ -1,31 +1,35 @@
-:: ghostHuntEvent [noreturn] {"position":"2600,1100","size":"100,100"}
-<<nobr>>
+:: ghostHuntEvent [noreturn nobr] {"position":"2600,1100","size":"100,100"}
 <<set $huntActivationTime = $hours * 60 + $minutes>>
 <<set $elapsedTimeHunt to 0>>
 <<set _check to random(1,3)>>
 <<if _check eq 1>>
-<video autoplay muted>
- <source @src="setup.ImagePath + '/hunting/1.mp4'" type="video/mp4">
- </video><</if>>
- <<if _check eq 2>>
-<video autoplay muted>
- <source @src="setup.ImagePath + '/hunting/2.mp4'" type="video/mp4">
- </video><</if>>
- <<if _check eq 3>>
-<video autoplay muted>
- <source @src="setup.ImagePath + '/hunting/3.mp4'" type="video/mp4">
- </video><</if>>
+	<video autoplay muted>
+		<source @src="setup.ImagePath + '/hunting/1.mp4'" type="video/mp4">
+	</video>
+<</if>>
+<<if _check eq 2>>
+	<video autoplay muted>
+		<source @src="setup.ImagePath + '/hunting/2.mp4'" type="video/mp4">
+	</video>
+<</if>>
+<<if _check eq 3>>
+	<video autoplay muted>
+		<source @src="setup.ImagePath + '/hunting/3.mp4'" type="video/mp4">
+	</video>
+<</if>>
 @@.mc-thoughts; Suddenly, you hear the dull sound of footsteps approaching you. It's starting. The ghost is on the hunt. Time is running out. Looking around, you see shadows closing in on you. It's time to act before it's too late.@@<br>
 
-<<if $mc.energy gte 1>>@@.usebtn; [[Run away|RunFast][$mc.energy -= 1]]@@<span><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span><<else>>
-@@.mc-thoughts; I'm too tired to run@@
-<span><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; filter: grayscale(1); width:3%;"></span><</if>>
- or @@.usebtn; [[Try to hide|Hide]]@@ <span><img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%;"></span>
- <<if $succubusEventTimer gte 1>>
- or @@.usebtn; [[Summon the succubus|huntEventSuccubus]]@@<br>
- <</if>>
+<<if $mc.energy gte 1>>
+	@@.usebtn; [[Run away|RunFast][$mc.energy -= 1]]@@<span><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span>
+<<else>>
+	@@.mc-thoughts; I'm too tired to run@@
+	<span><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; filter: grayscale(1); width:3%;"></span>
+<</if>>
+or @@.usebtn; [[Try to hide|Hide]]@@ <span><img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%;"></span>
+<<if $succubusEventTimer gte 1>>
+	or @@.usebtn; [[Summon the succubus|huntEventSuccubus]]@@<br>
+<</if>>
 <<done>>
-<<addclass ".linkselector" "disabled-link">>
+	<<addclass ".linkselector" "disabled-link">>
 <</done>>
-<</nobr>>
 <<set $huntActivated to 1>>

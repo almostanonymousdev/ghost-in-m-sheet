@@ -72,10 +72,12 @@ v.0.5.1
 <</linkreplace>>
 <<linkreplace "v.0.4.0">>
 	Added:
-	- New ghost: Banshee! (Ability)<<linkreplace "Spoiler">>During the ghost hunting, she may use her ability (it doesn't depend on anything, just a small chance of appearance)(There's currently no way to learn about her ability anywhere.)<</linkreplace>>
+	- New ghost: Banshee! (Ability)<<linkreplace "Spoiler">>During the ghost hunting, she may use her ability (it doesn't depend on anything, just a small chance of appearance)(There's currently no way to learn about her ability anywhere.)
+	<</linkreplace>>
 	- The ability for Cthulion to appear during ghost hunting has been added.
 	- Now the bra can be stolen.
-	- Now the follower can walk home with you. <<linkreplace "Spoiler">>The Spirit ghost may follow you<</linkreplace>>
+	- Now the follower can walk home with you. <<linkreplace "Spoiler">>The Spirit ghost may follow you
+	<</linkreplace>>
 	- Now, clicking the button opens the tool bar\
 <</linkreplace>>
 <<linkreplace "v.0.3.9">>
@@ -84,7 +86,8 @@ v.0.5.1
 	- New Quest: Missing Girls. <<linkreplace "Spoiler">>\
 		There are currently 4 missing girls. The quest begins at the witch's house and continues at the church.
 		After speaking with the nun, a board displaying information about the missing girls appears. The board updates daily, and you can accept a quest from it after 6:00 PM.
-		You must complete the quest by 6:00 PM the following day. If the quest is not completed by 12:00 PM the next day, the girl will become possessed and can no longer be saved.<</linkreplace>>
+		You must complete the quest by 6:00 PM the following day. If the quest is not completed by 12:00 PM the next day, the girl will become possessed and can no longer be saved.
+		<</linkreplace>>
 	- You can give sanity pills to your follower.
 	- Furniture has been added to haunted houses, where stolen clothes or cursed items can now be hidden.
 	- When moving between rooms or searching furniture, there's a chance for an event to occur (similar to when using tools).\
@@ -104,11 +107,14 @@ v.0.5.1
 	- Some videos have been added, which are displayed during the interaction between the ghost and mc
 	- The style of any video changes slightly if the light is off in any room during a ghost hunt
 	- New ghost: Cthulion (Unique ability (event))<<linkreplace "Spoiler">>\
-		An event will occur if you lose (0 sanity) or if Cthulion catches you during the hunt.<</linkreplace>>
+		An event will occur if you lose (0 sanity) or if Cthulion catches you during the hunt.
+		<</linkreplace>>
 	- Unique ability of the Spirit has been added. (event)<<linkreplace "Spoiler">>\
-		It follows the MC home (3 possible events during: watching TV/sleeping/taking a nap).<</linkreplace>>
+		It follows the MC home (3 possible events during: watching TV/sleeping/taking a nap).
+		<</linkreplace>>
 	- Unique ability of the Myling has been added. (event)<<linkreplace "Spoiler">>\
-		After the ghost hunt, when returning home with clothes on, an event will occur<</linkreplace>>
+		After the ghost hunt, when returning home with clothes on, an event will occur
+		<</linkreplace>>
 	- Instead of temperature rising, ghosts can now steal clothes (for now: outerwear or panties.)
 	- Changed:
 	- Prices for clothing have been reduced
@@ -164,9 +170,11 @@ v.0.5.1
 	- If you choose the "stay" option during the event (ghost hunt), sanity decreases randomly (by 1 to 5)
 	Added:
 	- New ghost: Mare.
-	New department in the store (electronics): you can buy a webcamera <<linkreplace "spoiler">> (available only after the event with the Mare ghost and after researching information about this ghost on the internet).<</linkreplace>>
+	New department in the store (electronics): you can buy a webcamera <<linkreplace "spoiler">> (available only after the event with the Mare ghost and after researching information about this ghost on the internet).
+	<</linkreplace>>
 	- New items in the clothing store.
-	- New item (holy water) <<linkreplace "spoiler">>(currently only needed for the event with the Mare ghost, obtained for free at the church).<</linkreplace>>
+	- New item (holy water) <<linkreplace "spoiler">>(currently only needed for the event with the Mare ghost, obtained for free at the church).
+	<</linkreplace>>
 	- Item descriptions have been added (increasing beauty).
 	- Special abilities for some ghosts: Mare (event), Wraith (event), Demon, Deogen, Oni, Jinn.
 	- Use the internet to search for information about ghosts (random).

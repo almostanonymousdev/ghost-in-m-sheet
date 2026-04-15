@@ -8,7 +8,8 @@
 	@@.mc-thoughts;The delivery hub is not open right now (open from 8 AM to 8 PM)@@
 <<else>>
 	@@.enterbtn;[[Go to the manager|DeliveryManager]]@@<br>
-<<if setup.Delivery.canStartShift()>>@@.usebtn;[[Take orders|workDelivery]]@@<<elseif setup.Delivery.tooTiredForShift()>>@@.mc-thoughts; I'm too tired<</if>>
+	<<if setup.Delivery.canStartShift()>>@@.usebtn;[[Take orders|workDelivery]]@@<<elseif setup.Delivery.tooTiredForShift()>>@@.mc-thoughts; I'm too tired
+	<</if>>
 <</if>>
 <br>
 <br>

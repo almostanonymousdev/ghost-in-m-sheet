@@ -15,7 +15,8 @@
 		<<set _slotClass to (_slot eq 1 ? "itemAvailableOne" : (_slot eq 2 ? "itemAvailableTwo" : "itemAvailableThree"))>>
 		<div @class="_slotClass">
 		<img @src="setup.ImagePath + '/' + _order.image" class="iconPx"><br>
-		@@.usebtn;<<link "Deliver the order">><<set $currentOrder to _slot>><<goto "deliveryEvent">><</link>>@@<br>
+		@@.usebtn;<<link "Deliver the order">><<set $currentOrder to _slot>><<goto "deliveryEvent">>
+		<</link>>@@<br>
 		</div>
 	<</capture>>
 <</for>>
@@ -37,7 +38,8 @@
 	<<case "package">><<include "DeliveryPackageEventChoose">>
 	<<case "burgers">><<include "DeliveryBurgerEventChoose">>
 	<<case "newspapers">><<include "DeliveryPapersEventChoose">>
-	<<case "books">><<if ndef $meetAlice>><<include "meetAlice">><<else>><<deliveryGenericSuccess>><</if>>
+	<<case "books">><<if ndef $meetAlice>><<include "meetAlice">>
+	<<else>><<deliveryGenericSuccess>><</if>>
 	<<default>><<deliveryGenericSuccess>>
 	<</switch>>
 <<else>>

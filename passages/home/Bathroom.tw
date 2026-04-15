@@ -3,14 +3,18 @@
 @@.location; Bathroom@@<br>
 
 <<if setup.CursedItems.isItemCursed("bath")>>
-	@@.usebtn;<<link "Take a bath (30 min)" "cursedBathEvent">><<addTime 30>><</link>><br>@@
+	@@.usebtn;<<link "Take a bath (30 min)" "cursedBathEvent">><<addTime 30>>
+	<</link>><br>@@
 <<else>>
-	@@.usebtn;<<link "Take a bath (30 min)" "Bath">><<addTime 30>><</link>><br>@@
+	@@.usebtn;<<link "Take a bath (30 min)" "Bath">><<addTime 30>>
+	<</link>><br>@@
 <</if>>
 <<if setup.CursedItems.isItemCursed("shower")>>
-	@@.usebtn;<<link "Take a shower (5 min)" "cursedShowerEvent">><<addTime 5>><</link>><br>@@
+	@@.usebtn;<<link "Take a shower (5 min)" "cursedShowerEvent">><<addTime 5>>
+	<</link>><br>@@
 <<else>>
-	@@.usebtn;<<link "Take a shower (5 min)" "Shower">><<addTime 5>><</link>><br>@@
+	@@.usebtn;<<link "Take a shower (5 min)" "Shower">><<addTime 5>>
+	<</link>><br>@@
 <</if>>
 @@.enterbtn;[[Look in the mirror|Mirror]]<br>@@
 @@.enterbtn;[[Wash your face|WashFace]]<br>@@

@@ -23,7 +23,8 @@ setup.notPurchased = function(varName) {
 				<<set $mc.money -= _price>>
 			<</link>>@@<br>
 		<</capture>>
-	<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
+	<<else>>@@.mc-thoughts; I don't have enough money@@
+	<</if>>
 	<span class="subtitleAmount">@@.mc-thoughts; <<= _ownedText.replace("{n}", State.variables[_varName] || 0)>>@@</span>
 	</div>
 <</widget>>
@@ -38,7 +39,8 @@ setup.notPurchased = function(varName) {
 	<div class="housecard">
 	<<if setup.notPurchased(_varName)>>
 		<img @src="setup.ImagePath + '/' + _img" class="iconPx"><br>
-		<<if _bonus>><span class="mc-thoughts">_bonus</span><br><</if>>
+		<<if _bonus>><span class="mc-thoughts">_bonus</span><br>
+		<</if>>
 		<span class="priceAmount"><<= _price>>$</span><br>
 		<<if $mc.money gte _price>>
 			<<capture _varName, _price, _boughtValue, _returnPassage>>
@@ -47,7 +49,8 @@ setup.notPurchased = function(varName) {
 					<<set $mc.money -= _price>>
 				<</link>>@@<br>
 			<</capture>>
-		<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
+		<<else>>@@.mc-thoughts; I don't have enough money@@
+		<</if>>
 	<</if>>
 	</div>
 <</widget>>
@@ -72,8 +75,10 @@ setup.notPurchased = function(varName) {
 						<<set $mc.money -= _price>>
 					<</link>>@@<br>
 				<</capture>>
-			<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-		<<else>>@@.mc-thoughts; _noNeedText@@@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:20%; display: inline; margin: 0;"> ≥ _reqCorruption)@@<</if>>
+			<<else>>@@.mc-thoughts; I don't have enough money@@
+			<</if>>
+		<<else>>@@.mc-thoughts; _noNeedText@@@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:20%; display: inline; margin: 0;"> ≥ _reqCorruption)@@
+		<</if>>
 	<</if>>
 	</div>
 <</widget>>
@@ -97,9 +102,11 @@ setup.notPurchased = function(varName) {
 						<<set $mc.money -= _price>>
 					<</link>>@@<br>
 				<</capture>>
-			<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
+			<<else>>@@.mc-thoughts; I don't have enough money@@
+			<</if>>
 		<<else>>
-			@@.mc-thoughts; I don't think I need to buy anything here right now@@<</if>>
+			@@.mc-thoughts; I don't think I need to buy anything here right now@@
+		<</if>>
 	<</if>>
 	</div>
 <</widget>>

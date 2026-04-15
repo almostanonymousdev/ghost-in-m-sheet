@@ -38,7 +38,8 @@
 							<source @src="setup.ImagePath + '/possessed/1.5.mp4'" type="video/mp4">
 							</video>
 						<</if>>
-					<</replace>><</link>>
+					<</replace>>
+				<</link>>
 				@@.mc-thoughts; The sounds of slaps, some wet sounds and moans... Fragments of phrases - about how great it is to fuck you. Everything was mixed and blossomed with sensations.@@<br>
 				@@.mc-thoughts; After a while they put you on your knees and started [[cumming|possessedLocation2]]@@<br>
 
@@ -72,7 +73,8 @@
 				<source @src="setup.ImagePath + '/possessed/2.2.mp4'" type="video/mp4">
 				</video>
 			<</if>>
-		<</replace>><</link>>
+		<</replace>>
+	<</link>>
 	<br>
 	@@.mc-thoughts; Your knees could no longer come together, and you felt wetness gathering at your crotch.@@
 	@@.mc-thoughts; After a while they started@@ <<linkappend "@@.usebtn; cumming@@">>
@@ -92,7 +94,8 @@
 					<source @src="setup.ImagePath + '/possessed/2.4.mp4'" type="video/mp4">
 					</video>
 				<</if>>
-			<</replace>><</link>><br>
+			<</replace>>
+		<</link>>
 		@@color:red; Well, we've only just started. I think we'll go somewhere else now that we're done here. @@<br>
 		@@.mc-speech; Oh, damn@@<br>
 		@@.enterbtn; [[Next|possessed]]@@<br>
@@ -116,7 +119,8 @@
 				<source @src="setup.ImagePath + '/possessed/3.3.mp4'" type="video/mp4">
 				</video>
 			<</if>>
-		<</replace>><</link>>
+		<</replace>>
+	<</link>>
 	<br>
 	@@.mc-thoughts; Your knees could no longer come together, and you felt wetness gathering at your crotch.@@<br>
 	<<linkreplace "@@.usebtn;Try to resist again@@">>
@@ -140,7 +144,8 @@
 						<source @src="setup.ImagePath + '/possessed/3.5.mp4'" type="video/mp4">
 						</video>
 					<</if>>
-				<</replace>><</link>>
+				<</replace>>
+			<</link>>
 			@@.mc-thoughts; not giving you time to rest.@@ <br>
 			@@.mc-thoughts; But they heard someone enter the gym and they decided to run away@@<br>
 			@@color:red; Fuck! I'm not done, but okay, we'll think of something, right, $mc.name? @@<br>
@@ -168,7 +173,8 @@
 			<video autoplay controls muted loop>
 			<source @src="setup.ImagePath+`/possessed/4.`+_videoIndex+`.mp4`" type="video/mp4">
 			</video>
-		<</replace>><</link>><br>
+		<</replace>>
+	<</link>>
 	@@.notmc-speech; Nooo~ this is not right.. <br>
 	~Uuuuwhhh ~You're penetrating me too deep@@<br>
 	@@color:red; I'll make you cum, buttslut@@<br>
@@ -198,7 +204,8 @@
 					<video autoplay controls muted loop>
 					<source @src="setup.ImagePath+`/possessed/5.`+_videoIndex+`.mp4`" type="video/mp4">
 					</video>
-				<</replace>><</link>><br>
+				<</replace>>
+			<</link>>
 
 			@@color:red;Enjoy this, I've waited so long to use a body like yours.@@<br>
 			@@.notmc-speech;You're so tight, seems like you enjoy this more than you let on.@@<br>

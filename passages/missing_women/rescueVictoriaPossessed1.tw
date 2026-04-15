@@ -10,7 +10,8 @@
 		</video>
 		@@.notmc-speech; Ha, your hole swallowed that dildo right away<br>
 		How many dicks have been in your ass already?@@<br>
-		@@.mc-speech; Fuck, I'm [[cumming|rescueVictoriaPossessed2][$rescueVictoriaPossessed to 1]]@@<br><</linkappend>>
+		@@.mc-speech; Fuck, I'm [[cumming|rescueVictoriaPossessed2][$rescueVictoriaPossessed to 1]]@@<br>
+	<</linkappend>>
 <</if>>
 <<if $rescueVictoriaPossessed eq 2>>
 	<video autoplay controls muted loop>

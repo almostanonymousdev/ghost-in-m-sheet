@@ -1,6 +1,7 @@
 :: eventMC [noreturn nobr] {"position":"1400,1150","size":"100,100"}
 <<if $ghost.name eq "Oni">>
-<<set $ghostSanityEventDecreased to random(3,8)>><<else>>
+	<<set $ghostSanityEventDecreased to random(3,8)>>
+<<else>>
 <<set $ghostSanityEventDecreased to random(1,5)>><</if>>
 
 <<includeStyle>>

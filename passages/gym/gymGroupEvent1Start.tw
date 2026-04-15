@@ -9,13 +9,16 @@
 	<<set _check to random(1,3)>>
 	<<if _check eq 1>><video autoplay controls muted loop>
 		<source @src="setup.ImagePath + '/gym/grouptraining1.2.mp4'" type="video/mp4">
-		</video><</if>>
+		</video>
+	<</if>>
 	<<if _check eq 2>><video autoplay controls muted loop>
 		<source @src="setup.ImagePath + '/gym/grouptraining1.3.mp4'" type="video/mp4">
-		</video><</if>>
+		</video>
+	<</if>>
 	<<if _check eq 3>><video autoplay controls muted loop>
 		<source @src="setup.ImagePath + '/gym/grouptraining1.4.mp4'" type="video/mp4">
-		</video><</if>>
+		</video>
+	<</if>>
 	@@.mc-speech; It's amazing~ Keep going, please~@@<br>
 	@@.mc-thoughts; The group sports session turned into an  [[orgy|gymGroupEvent1Start2]]@@<br>
 

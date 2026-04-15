@@ -14,9 +14,11 @@
 	@@.movebtn; <<back "Return to the house">>@@<br>
 	Or<br>
 	<<if $tshirtState eq "worn" and setup.Companion.hasBottomWorn()>>
-		@@.movebtn;<<link "Leave without taking your clothes" "Livingroom">><<include "lostClothes">><</link>>@@
+		@@.movebtn;<<link "Leave without taking your clothes" "Livingroom">><<include "lostClothes">>
+		<</link>>@@
 	<<else>>
-		@@.movebtn;<<link "Leave without taking your clothes" "NudityEvent">><<include "lostClothes">><</link>>@@
+		@@.movebtn;<<link "Leave without taking your clothes" "NudityEvent">><<include "lostClothes">>
+		<</link>>@@
 	<</if>>
 <<else>>
 	<<if $ghost.name eq "Myling">>

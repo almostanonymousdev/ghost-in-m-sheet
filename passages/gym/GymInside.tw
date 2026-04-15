@@ -3,21 +3,25 @@
 <img @src="setup.ImagePath + '/img/gymInside.jpg'" width="100%">
 <br>
 <<if not setup.Gym.isOpen()>>
-	@@.mc-thoughts; It's time to go, there's no one here<br><<else>>
+	@@.mc-thoughts; It's time to go, there's no one here<br>
+<<else>>
 	<<if setup.Gym.hasSportswear()>>
 		<<if setup.Gym.hasEnergyToTrain()>><span class="movebtn">[[Train solo|GymTraining][$mc.energy -= 5]]</span><span><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span><<else>>
 			@@.mc-thoughts; I'm too tired to train solo@@
-			<span><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; filter: grayscale(1); width:3%;"></span><</if>><br>
+			<span><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; filter: grayscale(1); width:3%;"></span>
+		<</if>><br>
 
 		<<if setup.Gym.hasEnergyToTrain()>>
 			<<if setup.Gym.canAffordCoach()>>
 				<span class="movebtn">[[Train with a coach|GymTrainingTrainer][$mc.energy -= 5]]</span><span><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span>
 				<span class="priceAmount">-$trainingCost $</span>
 			<<else>>
-				@@.mc-thoughts; I don't have enough money for a training session with a coach@@<</if>>
+				@@.mc-thoughts; I don't have enough money for a training session with a coach@@
+			<</if>>
 		<<else>>
 			@@.mc-thoughts; I'm too tired to train with a coach@@
-			<span><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; filter: grayscale(1); width:3%;"></span><</if>><br>
+			<span><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; filter: grayscale(1); width:3%;"></span>
+		<</if>><br>
 
 		<<if setup.Gym.isGroupClassTime()>>
 			<<if $mc.energy gte 5>><span class="movebtn">[[Group fitness classes|GroupGymTraining][$mc.energy -= 5]]</span><span><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span>

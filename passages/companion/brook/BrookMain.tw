@@ -18,23 +18,29 @@
 <</do>>
 </div>
 <div>
-<span style="color: yellow; font-weight: bold; font-size: 1.2em;">$brook.name :</span> $brook.lvl lvl <<if $brook.lvl gte 5>> (max. lvl)<<else>>($brook.exp / $brook.expForNextLvl)<</if>><br>
+<span style="color: yellow; font-weight: bold; font-size: 1.2em;">$brook.name :</span> $brook.lvl lvl <<if $brook.lvl gte 5>> (max. lvl)
+<<else>>($brook.exp / $brook.expForNextLvl)
+<</if>><br>
 
 @@.mc-thoughts; I could ask her to take off some of her clothes. Maybe that way I could distract the ghost by drawing its attention to her. Plus, it would make it easier for her to move and stay less distracted...@@<br>
 @@.mc-speech;
 <br>
 <<link "You'll be more comfortable in your regular clothes.">><<set $chanceToAttackBrook to 25>><<redo "companionAnswers">><<redo>><</link>><br>
 <div class="brookLvlCheck1">
-<<link "You can take off your top, it'll make it easier for you to move.">><<set $chanceToAttackBrook to 40>><<redo>><</link>><<if $brook.lvl lt 1>>@@.warningtext; (Req. lvl 1+)@@<</if>><br>
+<<link "You can take off your top, it'll make it easier for you to move.">><<set $chanceToAttackBrook to 40>><<redo>><</link>><<if $brook.lvl lt 1>>@@.warningtext; (Req. lvl 1+)@@
+<</if>><br>
 </div>
 <div class="brookLvlCheck2">
-<<link "Stay in just your underwear, it might help us get through this.">><<set $chanceToAttackBrook to 55>><<redo>><</link>><<if $brook.lvl lt 2>>@@.warningtext; (Req. lvl 2+)@@<</if>><br>
+<<link "Stay in just your underwear, it might help us get through this.">><<set $chanceToAttackBrook to 55>><<redo>><</link>><<if $brook.lvl lt 2>>@@.warningtext; (Req. lvl 2+)@@
+<</if>><br>
 </div>
 <div class="brookLvlCheck3">
-<<link "Just keep your panties on, it'll be easier for both of us.">><<set $chanceToAttackBrook to 70>><<redo>><</link>><<if $brook.lvl lt 3>>@@.warningtext; (Req. lvl 3+)@@<</if>><br>
+<<link "Just keep your panties on, it'll be easier for both of us.">><<set $chanceToAttackBrook to 70>><<redo>><</link>><<if $brook.lvl lt 3>>@@.warningtext; (Req. lvl 3+)@@
+<</if>><br>
 </div>
 <div class="brookLvlCheck4">
-<<link "Take everything off, I think it'll distract the ghost and give us an advantage.">><<set $chanceToAttackBrook to 90>><<redo>><</link>><<if $brook.lvl lt 4>>@@.warningtext; (Req. lvl 4+)@@<</if>><br>
+<<link "Take everything off, I think it'll distract the ghost and give us an advantage.">><<set $chanceToAttackBrook to 90>><<redo>><</link>><<if $brook.lvl lt 4>>@@.warningtext; (Req. lvl 4+)@@
+<</if>><br>
 </div>
 @@
 <br>
@@ -43,16 +49,19 @@
 <<if $chanceToAttackBrook eq 25>>
 	Let's just focus on the task
 <<elseif $chanceToAttackBrook eq 40>>
-	It'll be easier to move if I take off my top? How exactly? Well, alright, if you say so...<<elseif $chanceToAttackBrook eq 55>>
+	It'll be easier to move if I take off my top? How exactly? Well, alright, if you say so...
+<<elseif $chanceToAttackBrook eq 55>>
 	I actually feel better wearing just my underwear.
 <<elseif $chanceToAttackBrook eq 70>>
 	I feel like I'm making things easier for the ghost, but I don't really mind...
 <<elseif $chanceToAttackBrook eq 90>>
 	Fine, he's going to get to my pussy anyway.
 <</if>>
-@@<</do>><br>
+@@
+<</do>><br>
 <<set $chanceToAttack to $chanceToAttackBrook>>
-@@.warningtext; Chance of ghost encounter: <<do>>$chanceToAttackBrook %<</do>>@@<br>
+@@.warningtext; Chance of ghost encounter: <<do>>$chanceToAttackBrook %
+<</do>>@@<br>
 <br>
 </div>
 </div>
@@ -66,7 +75,8 @@
 	<<set $showComp to 1>>
 	<<set $chosenPlanActivated to 0>>
 	<<replace "#compResponse">>
-		@@.notmc-speech;Good, I'll stay close to you.@@<</replace>>
+		@@.notmc-speech;Good, I'll stay close to you.@@
+	<</replace>>
 <</link>>@@<br>
 <span id="checkQuestForCursedItem">@@.usebtn;<<link "I need you to find the cursed item @@.warningtext; ($companion.chanceOfSuccessCI %, $companion.plan2TimeReq min)@@" >>
 	<<if not setup.Companion.hasCursedItem()>>
@@ -77,12 +87,15 @@
 		<<set $chosenPlanActivatedTime = $hours * 60 + $minutes + $companion.plan2TimeReq>>
 
 		<<replace "#compResponse">>
-			@@.notmc-speech;Alright, I'll look for the cursed item.@@<</replace>>
+			@@.notmc-speech;Alright, I'll look for the cursed item.@@
+		<</replace>>
 	<<else>>
 		<<replace "#compResponse">>
-			@@.notmc-speech; We already have a cursed item.@@<</replace>>
+			@@.notmc-speech; We already have a cursed item.@@
+		<</replace>>
 	<</if>>
-<</link>>@@</span> <<if not setup.Companion.cursedItemQuestUnlocked()>>@@.warningtext; Req. quest from the witch@@<</if>><br>
+<</link>>@@</span> <<if not setup.Companion.cursedItemQuestUnlocked()>>@@.warningtext; Req. quest from the witch@@
+<</if>><br>
 @@.usebtn;<<link "I want you to look for any ghost evidence @@.warningtext; ($brook.chanceOfSuccessAnyEvidence %, $companion.plan3TimeReq min@@)">>
 	<<set $chosenPlan to "Plan3">>
 	<<set $chanceToSuccess to $companion.chanceOfSuccessAnyEvidence>>
@@ -90,7 +103,8 @@
 	<<set $chosenPlanActivated to 1>>
 	<<set $chosenPlanActivatedTime = $hours * 60 + $minutes + $companion.plan3TimeReq>>
 	<<replace "#compResponse">>
-		@@.notmc-speech;Sure, I'll search for any ghost evidence.@@<</replace>>
+		@@.notmc-speech;Sure, I'll search for any ghost evidence.@@
+	<</replace>>
 <</link>>@@<br>
 @@.usebtn;<<link "It would be nice if you found the ghost's favorite room @@.warningtext; ($brook.chanceOfSuccessGR %, $companion.plan4TimeReq min@@)">>
 	<<set $chosenPlan to "Plan4">>
@@ -99,7 +113,8 @@
 	<<set $chosenPlanActivated to 1>>
 	<<set $chosenPlanActivatedTime = $hours * 60 + $minutes + $companion.plan4TimeReq>>
 	<<replace "#compResponse">>
-		@@.notmc-speech; Got it, I'll try to find the ghost's favorite room.@@<</replace>>
+		@@.notmc-speech; Got it, I'll try to find the ghost's favorite room.@@
+	<</replace>>
 <</link>>@@<br>
 
 <<if $ghostHuntingMode eq 2>>
@@ -110,14 +125,17 @@
 			<<if setup.Companion.canWalkHomeWithCompanion()>>
 				@@.notmc-speech; Of course. Are you sure you want to leave now?@@<br>
 				<<if $ghost.name eq "Myling" and $ghostHuntingMode eq 2>>
-					@@.mc-speech; Yes, [[let's go together|ghostSpecialEventMylingTwo]] @@<<else>>
-					@@.mc-speech; Yes, [[let's go together|WalkHomeTogether]] @@<</if>> <b>or </b>
+					@@.mc-speech; Yes, [[let's go together|ghostSpecialEventMylingTwo]] @@
+				<<else>>
+					@@.mc-speech; Yes, [[let's go together|WalkHomeTogether]] @@
+				<</if>> <b>or </b>
 				<<linkreplace "@@.mc-speechLink; Not yet@@">>
 					@@.notmc-speech; Alright, so what should we do?@@
 				<</linkreplace>><br>
 			<<else>>
 				@@.notmc-speech;Um... Well, maybe you should find your clothes first...?@@<br>
-				<<if $mc.exhib lte 4 or ndef $mc.exhib>>@@.mc-speech; Yeah, you're right.@@@@.warningtext; (She'll go with you if you're dressed) or Req. Exhibitionism Level 5+@@<</if>>
+				<<if $mc.exhib lte 4 or ndef $mc.exhib>>@@.mc-speech; Yeah, you're right.@@@@.warningtext; (She'll go with you if you're dressed) or Req. Exhibitionism Level 5+@@
+				<</if>>
 				<<if $mc.exhib gte 5>>
 					<<linkreplace "@@.mc-speechLink; I don't care@@">>
 						<<if hasVisited("NudityEventTwo")>>
@@ -139,7 +157,8 @@
 				<</if>>
 			<</if>>
 		<</replace>>
-	<</link>>@@<</if>><br>
+	<</link>>@@
+<</if>><br>
 
 <span id="compResponse"></span>
 <br>

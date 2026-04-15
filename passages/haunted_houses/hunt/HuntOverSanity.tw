@@ -49,25 +49,32 @@
 			<<set _check to random(1,7)>>
 			<<if _check eq 1>><video autoplay controls muted loop>
 				<source @src="setup.ImagePath + '/sanityover/1.mp4'" type="video/mp4">
-				</video><</if>>
+				</video>
+			<</if>>
 			<<if _check eq 2>><video autoplay controls muted loop>
 				<source @src="setup.ImagePath + '/sanityover/2.mp4'" type="video/mp4">
-				</video><</if>>
+				</video>
+			<</if>>
 			<<if _check eq 3>><video autoplay controls muted loop>
 				<source @src="setup.ImagePath + '/sanityover/3.mp4'" type="video/mp4">
-				</video><</if>>
+				</video>
+			<</if>>
 			<<if _check eq 4>><video autoplay controls muted loop>
 				<source @src="setup.ImagePath + '/sanityover/4.mp4'" type="video/mp4">
-				</video><</if>>
+				</video>
+			<</if>>
 			<<if _check eq 5>><video autoplay controls muted loop>
 				<source @src="setup.ImagePath + '/sanityover/5.mp4'" type="video/mp4">
-				</video><</if>>
+				</video>
+			<</if>>
 			<<if _check eq 6>><video autoplay controls muted loop>
 				<source @src="setup.ImagePath + '/sanityover/6.mp4'" type="video/mp4">
-				</video><</if>>
+				</video>
+			<</if>>
 			<<if _check eq 7>><video autoplay controls muted loop>
 				<source @src="setup.ImagePath + '/sanityover/7.mp4'" type="video/mp4">
-				</video><</if>>
+				</video>
+			<</if>>
 		<</if>>
 	<<else>>
 		<<if $ghost.name eq "Cthulion">>
@@ -101,34 +108,44 @@
 			<<set _check to random(1,10)>>
 			<<if _check eq 1>><video autoplay controls muted loop>
 				<source @src="setup.ImagePath + '/sanityover/art/1.mp4'" type="video/mp4">
-				</video><</if>>
+				</video>
+			<</if>>
 			<<if _check eq 2>><video autoplay controls muted loop>
 				<source @src="setup.ImagePath + '/sanityover/art/2.mp4'" type="video/mp4">
-				</video><</if>>
+				</video>
+			<</if>>
 			<<if _check eq 3>><video autoplay controls muted loop>
 				<source @src="setup.ImagePath + '/sanityover/art/3.mp4'" type="video/mp4">
-				</video><</if>>
+				</video>
+			<</if>>
 			<<if _check eq 4>><video autoplay controls muted loop>
 				<source @src="setup.ImagePath + '/sanityover/art/4.mp4'" type="video/mp4">
-				</video><</if>>
+				</video>
+			<</if>>
 			<<if _check eq 5>><video autoplay controls muted loop>
 				<source @src="setup.ImagePath + '/sanityover/art/5.mp4'" type="video/mp4">
-				</video><</if>>
+				</video>
+			<</if>>
 			<<if _check eq 6>><video autoplay controls muted loop>
 				<source @src="setup.ImagePath + '/sanityover/art/6.mp4'" type="video/mp4">
-				</video><</if>>
+				</video>
+			<</if>>
 			<<if _check eq 7>><video autoplay controls muted loop>
 				<source @src="setup.ImagePath + '/sanityover/art/7.mp4'" type="video/mp4">
-				</video><</if>>
+				</video>
+			<</if>>
 			<<if _check eq 8>><video autoplay controls muted loop>
 				<source @src="setup.ImagePath + '/sanityover/art/8.mp4'" type="video/mp4">
-				</video><</if>>
+				</video>
+			<</if>>
 			<<if _check eq 9>><video autoplay controls muted loop>
 				<source @src="setup.ImagePath + '/sanityover/art/9.mp4'" type="video/mp4">
-				</video><</if>>
+				</video>
+			<</if>>
 			<<if _check eq 10>><video autoplay controls muted loop>
 				<source @src="setup.ImagePath + '/sanityover/art/10.mp4'" type="video/mp4">
-				</video><</if>>
+				</video>
+			<</if>>
 		<</if>>
 	<</if>>
 	<br>

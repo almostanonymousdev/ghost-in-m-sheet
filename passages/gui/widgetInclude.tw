@@ -8,8 +8,9 @@
 			<<include "stealClothesEvent">>
 		<</if>>
 		<<if _stealClothesTriggered is false and _eventTriggered is false>>
-			<<include "huntStart">>
-		<</if>><</if>>
+			<<include "checkHuntStart">>
+		<</if>>
+	<</if>>
 <</widget>>
 
 <<widget "includeTimeEventHunt">>
@@ -18,8 +19,9 @@
 		<<addTime 0.5>>
 		<<include "event">>
 		<<if _eventTriggered is false>>
-			<<include "huntStart">>
-		<</if>><</if>>
+			<<include "checkHuntStart">>
+		<</if>>
+	<</if>>
 <</widget>>
 
 <<widget "includeStyle">>
@@ -993,7 +995,8 @@
            filter: brightness(0.8) contrast(1.1) grayscale(0.95);
         }
     </style>
-		<</if>><</if>>
+		<</if>>
+	<</if>>
 <</widget>>
 
 <<widget "cthulionAbility">>

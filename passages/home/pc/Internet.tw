@@ -64,7 +64,8 @@
 			<</replace>>
 		<</link>>
 		</div>
-		</div><</if>>
+		</div>
+	<</if>>
 	<span id="internetConfirm"></span>
 
 <</linkreplace>>

@@ -2,7 +2,7 @@
 	<b>Welcome to the game!</b>
 This game is similar to titles like Phasmophobia and Demonologist. If you are familiar with them, you will find it easy to get the hang of things. Here's a brief guide:
 
-@@.enterbtn;[[Player guide -> Evidence]]@@ 
+@@.enterbtn;[[Player guide -> Evidence]]@@
 
 <<nobr>>
 <<linkreplace "CURSED HUNT OPTION (Replacing the cursed hunt with a regular hunt)">>
@@ -30,7 +30,8 @@ This game is similar to titles like Phasmophobia and Demonologist. If you are fa
 <<if (previous() eq "WitchEndContract") or (tags(previous()).includes("event"))>>
 @@.backbtn;<<back>>@@<br>
 <<else>>
-@@.backbtn;<<return>>@@<br><</if>>
+@@.backbtn;<<return>>@@<br>
+<</if>>
 <<done>>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>

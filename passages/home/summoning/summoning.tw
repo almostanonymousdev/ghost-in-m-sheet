@@ -6,7 +6,8 @@
 <</if>>
 @@.mc-speech; Rain talked about the amulet and how it reacts to the presence of ghosts... <br>
 <<if $exorcismQuestStage eq 2>>
-	@@.mc-thoughts; $succubusEventTimer days left...@@<br><</if>>
+	@@.mc-thoughts; $succubusEventTimer days left...@@<br>
+<</if>>
 I've got everything set up: the book with the incantation is open before me, the words waiting to be spoken. All I need to do now is to begin the summoning ritual...<br>@@
 @@.usebtn; [[Begin the summoning ritual|summoningStart][$exorcismCD to 1]]@@<br>
 <br>

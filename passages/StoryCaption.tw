@@ -28,7 +28,8 @@
 <b><img @src="setup.ImagePath + '/img/beauty.png'" style="position: relative; top: 0.375em; width:11%; display: inline; margin: 0;">$mc.beauty</b>
 <b><img @src="setup.ImagePath + '/img/icons/lvl.png'" style="position: relative; top: 0.375em; width:11%; display: inline; margin: 0;">$mc.lvl</b> <br>
 <a class="linkselector" data-passage="Bag"><img @src="setup.ImagePath + '/img/bag.png'" width="30%"></a><a class="linkselector" data-passage="Notebook"><img @src="setup.ImagePath + '/img/notebook.png'" width="30%"></a><a class="linkselector" data-passage="Evidence"><img @src="setup.ImagePath + '/img/evidenceIcon.png'" width="30%"></a><br>
-<<if def $isPhoneBought>><a class="linkselector" data-passage="Phone"><img @src="setup.ImagePath + '/img/phone.png'" width="30%"></a><</if>>
+<<if def $isPhoneBought>><a class="linkselector" data-passage="Phone"><img @src="setup.ImagePath + '/img/phone.png'" width="30%"></a>
+<</if>>
 <div class="linkselector enterbtn"> Game [[Guide|guide]] </div><br>
 
 <br>@@.usebtn;<<linkreplace "Cheats">>
@@ -39,29 +40,44 @@
 		<<goto "CityMapPossessed">><</linkreplace>><br>
 		<<link "Decreasefollower's sanity(-10)(cheats)">><<set $companion.sanity -=10>><<updatemeter 'companionsanity' `$companion.sanity / 100`>><</link>>
 	<</if>><br>
-	<<linkreplace "ghostname(cheat)">>$ghost.name<<if $saveMimic eq 1>>(Mimic)<</if>><</linkreplace>><br>
+	<<linkreplace "ghostname(cheat)">>$ghost.name<<if $saveMimic eq 1>>(Mimic)
+	<</if>>
+	<</linkreplace>>
 	<<if $ghostHuntingMode gte 1>>
 		<<linkreplace "choose ghost type(cheat)">>
 			<<for _gi to 1; _gi lte setup.GHOST_SLOT_COUNT; _gi++>>
-				<<capture _gi>><<link `"set to " + State.variables["ghost" + _gi].name`>><<set $ghost to clone(State.variables["ghost" + _gi])>><</link>><</capture>><br>
+				<<capture _gi>><<link `"set to " + State.variables["ghost" + _gi].name`>><<set $ghost to clone(State.variables["ghost" + _gi])>>
+				<</link>>
+				<</capture>>
 			<</for>>
 		<</linkreplace>><br>
 	<</if>>
-	<<linkreplace "ghostroom(cheat)">>$ghostRoom.name<</linkreplace>><br>
+	<<linkreplace "ghostroom(cheat)">>$ghostRoom.name
+	<</linkreplace>><br>
 	<<link "lust(cheat)">><<set $mc.lust += 100>><</link>><br>
 	<<link "money(cheat)">><<set $mc.money += 100>><</link>><br>
 	<<link "lvlup(cheat)">><<set $mc.lvl += 1>><</link>><br>
 	<<link "corruptionUp(cheat)">><<set $mc.corruption += 1>><</link>><br>
-	<<linkreplace "curseditem room(cheat)">>$ghostRoomCI.name<</linkreplace>>
-	<br><<linkreplace "highlight rescue house(cheat)">><<set $cheatRescueHouseHighlight to 1>>Rescue house $randomRescuePhotoNumber highlighted on map<</linkreplace>>
-	<br><<linkreplace "lvlup Brook(cheat)">><<set $brook.lvl to 5>>Brook is lvl5 now<</linkreplace>>
-	<br><<linkreplace "lvlup Alice(cheat)">><<set $alice.lvl to 5>>Alice is lvl5 now<</linkreplace>>
-	<br><<linkreplace "lvlup Blake(cheat)">><<set $blake.lvl to 5>>Blake is lvl5 now<</linkreplace>>
-	<br><<linkreplace "Relationship Blake">><<set $relationshipBlake to 5>>Best Friends!<</linkreplace>>
-	<br><<linkreplace "fitUp(cheat)">><<set $mc.fit to 100>>perfect body<</linkreplace>>
-	<br><<linkreplace "lustCurrentFriend(cheat)">><<set $companion.lust += 100>>$companion.name's lust +100<</linkreplace>>
-	<br><<linkreplace "Exhib5">><<set $mc.exhib to 5>>Exhib5<</linkreplace>>
-	<br><<linkreplace "IncreaseSurrenderToPossession">><<set $mcpossession to 11>>Surrender to Possession is increased: $mcpossession now!<</linkreplace>>
+	<<linkreplace "curseditem room(cheat)">>$ghostRoomCI.name
+	<</linkreplace>>
+	<br><<linkreplace "highlight rescue house(cheat)">><<set $cheatRescueHouseHighlight to 1>>Rescue house $randomRescuePhotoNumber highlighted on map
+	<</linkreplace>>
+	<br><<linkreplace "lvlup Brook(cheat)">><<set $brook.lvl to 5>>Brook is lvl5 now
+	<</linkreplace>>
+	<br><<linkreplace "lvlup Alice(cheat)">><<set $alice.lvl to 5>>Alice is lvl5 now
+	<</linkreplace>>
+	<br><<linkreplace "lvlup Blake(cheat)">><<set $blake.lvl to 5>>Blake is lvl5 now
+	<</linkreplace>>
+	<br><<linkreplace "Relationship Blake">><<set $relationshipBlake to 5>>Best Friends!
+	<</linkreplace>>
+	<br><<linkreplace "fitUp(cheat)">><<set $mc.fit to 100>>perfect body
+	<</linkreplace>>
+	<br><<linkreplace "lustCurrentFriend(cheat)">><<set $companion.lust += 100>>$companion.name's lust +100
+	<</linkreplace>>
+	<br><<linkreplace "Exhib5">><<set $mc.exhib to 5>>Exhib5
+	<</linkreplace>>
+	<br><<linkreplace "IncreaseSurrenderToPossession">><<set $mcpossession to 11>>Surrender to Possession is increased: $mcpossession now!
+	<</linkreplace>>
 	<<linkreplace "Maximize body part sensitivity">>
 		All body parts are now at maximum sensitivity!
 		<<set $sensualBodyPart.brain to 6>>
@@ -72,7 +88,10 @@
 		<<set $sensualBodyPart.pussy to 6>>
 		<<set $sensualBodyPart.anal to 6>>
 	<</linkreplace>>
-		<br><<link "Toggle Back/Forward buttons(cheat)">><<if $cheatBackForward>><<set $cheatBackForward to false>><<run $("body").removeClass("show-history")>><<else>><<set $cheatBackForward to true>><<run $("body").addClass("show-history")>><</if>><</link>>
+		<br><<link "Toggle Back/Forward buttons(cheat)">><<if $cheatBackForward>><<set $cheatBackForward to false>><<run $("body").removeClass("show-history")>>
+		<<else>><<set $cheatBackForward to true>><<run $("body").addClass("show-history")>>
+		<</if>>
+		<</link>>
 <</linkreplace>>@@
 
 <br>Ghost in M'Sheet 0.5.0
@@ -82,15 +101,21 @@
 		<<set $changeToolsActivated to 1>>
 	<</linkreplace>><br>
 	<<linkreplace "1000ms">><<set $changeToolsActivated to 0>><<set $timerToolsDecreased to "1s">>
-		Timer changed: $timerToolsDecreased now!<</linkreplace>><br>
+		Timer changed: $timerToolsDecreased now!
+	<</linkreplace>><br>
 	<<linkreplace "800ms">><<set $changeToolsActivated to 0>><<set $timerToolsDecreased to "800ms">>
-		Timer changed: $timerToolsDecreased now!<</linkreplace>><br>
+		Timer changed: $timerToolsDecreased now!
+	<</linkreplace>><br>
 	<<linkreplace "600ms">><<set $changeToolsActivated to 0>><<set $timerToolsDecreased to "600ms">>
-		Timer changed: $timerToolsDecreased now!<</linkreplace>><br>
+		Timer changed: $timerToolsDecreased now!
+	<</linkreplace>><br>
 	<<linkreplace "400ms">><<set $changeToolsActivated to 0>><<set $timerToolsDecreased to "400ms">>
-		Timer changed: $timerToolsDecreased now!<</linkreplace>><br>
+		Timer changed: $timerToolsDecreased now!
+	<</linkreplace>><br>
 	<<linkreplace "200ms">><<set $changeToolsActivated to 0>><<set $timerToolsDecreased to "200ms">>
-		Timer changed: $timerToolsDecreased now!<</linkreplace>><br>
+		Timer changed: $timerToolsDecreased now!
+	<</linkreplace>><br>
 	<<linkreplace "100ms">><<set $changeToolsActivated to 0>><<set $timerToolsDecreased to "100ms">>
-		Timer changed: $timerToolsDecreased now!<</linkreplace>><br>
+		Timer changed: $timerToolsDecreased now!
+	<</linkreplace>><br>
 <</linkreplace>>

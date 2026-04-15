@@ -7,21 +7,26 @@
 <a data-passage="PornCore"><img @src="setup.ImagePath + '/img/pornLab.jpg'" class="iconPC"></a>
 <a data-passage="Internet"><img @src="setup.ImagePath + '/img/browser.png'" class="iconPC"></a>
 <a data-passage="Contacts"><img @src="setup.ImagePath + '/img/contacts.jpg'" class="iconPC"></a>
-<<if $aliceWorkDone eq 1>><a data-passage="DocumentsForAlice"><img @src="setup.ImagePath + '/img/documents.jpg'" class="iconPC"></a><</if>>
+<<if $aliceWorkDone eq 1>><a data-passage="DocumentsForAlice"><img @src="setup.ImagePath + '/img/documents.jpg'" class="iconPC"></a>
+<</if>>
 <<if $isCameraBought eq 1 and $mcSleptWithCameraOn eq 1>>
 	<<if $ghostMareEventStart gte 2>>
 		<<if $ghostMareEventStage lte 2>>
 			<a data-passage="ghostSpecialEventMare" onclick="$.wiki('<<set $ghostMareEventStart to 4>>')"><img @src="setup.ImagePath + '/img/webcamera.png'" class="iconPC"></a>
 		<<else>>
-			<a data-passage="ghostSpecialEvent1Mare" onclick="$.wiki('<<set $ghostMareEventStart to 4>>')"><img @src="setup.ImagePath + '/img/webcamera.png'" class="iconPC"></a><</if>>
+			<a data-passage="ghostSpecialEvent1Mare" onclick="$.wiki('<<set $ghostMareEventStart to 4>>')"><img @src="setup.ImagePath + '/img/webcamera.png'" class="iconPC"></a>
+		<</if>>
 	<<else>>
-		<a data-passage="ghostSpecialEventMare0"><img @src="setup.ImagePath + '/img/webcamera.png'" class="iconPC"></a><</if>>
+		<a data-passage="ghostSpecialEventMare0"><img @src="setup.ImagePath + '/img/webcamera.png'" class="iconPC"></a>
+	<</if>>
 <</if>>
-<<if $webcamAccountCreated eq 1>><a data-passage="WebcamShow"><img @src="setup.ImagePath + '/img/wb.jpg'" class="iconPC"></a> <</if>>
+<<if $webcamAccountCreated eq 1>><a data-passage="WebcamShow"><img @src="setup.ImagePath + '/img/wb.jpg'" class="iconPC"></a>
+<</if>>
 </div>
 </div>
 <br>
 <<if $succubus eq 1 and $succubusEventCD eq 0 or $succubusEventCD eq 2 and $hours gte 18 and $hours lte 23>>
 	@@.backbtn;[[Back|succubusPCEvent]]<br>
 <<else>>
-	@@.backbtn;[[Back|Livingroom]]@@<br><</if>>
+	@@.backbtn;[[Back|Livingroom]]@@<br>
+<</if>>

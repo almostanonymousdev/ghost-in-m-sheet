@@ -34,7 +34,8 @@
 				<</if>>
 			<</done>>
 			<span class="checkForCorruptionHunt">
-			@@.usebtn;[[not to resist...|huntEnd]]@@ <<if $mc.corruption lte 4>>@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 5)@@<</if>></span>
+			@@.usebtn;[[not to resist...|huntEnd]]@@ <<if $mc.corruption lte 4>>@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 5)@@
+			<</if>></span>
 		<<else>>
 			use the Crucifix, but unfortunately, @@.enterbtn;[[you don't have it...|huntEnd]]@@
 		<</if>>

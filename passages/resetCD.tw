@@ -27,7 +27,8 @@
 <</if>>
 
 <<if $ghostMareEventStart gte 1>>
-<<set $ghostMareEventStage += 1>><<else>>
+<<set $ghostMareEventStage += 1>>
+<<else>>
 <<set $ghostMareEventStage to 0>>
 <</if>>
 

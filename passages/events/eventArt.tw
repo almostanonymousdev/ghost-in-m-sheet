@@ -12,7 +12,8 @@
 	stage2: 7,
 	stage3: 5,
 	stage4: 3,
-	}>><</if>>
+	}>>
+<</if>>
 <<set _artListVids to []>>
 <<set _artList to []>>
 <<set _chance = random(0, 100)>>

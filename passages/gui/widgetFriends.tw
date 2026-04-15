@@ -301,7 +301,8 @@
 				<br>
 
 			<</if>>
-			@@.mc-speech; Alright, then I'll [[continue|$return][$showComp to 0; $isCompChosen to 0; $chosenPlan to 0]] on my own...@@ <<if _args[0] lte 4>>@@.warningtext; Req. higher lvl@@<</if>><br>
+			@@.mc-speech; Alright, then I'll [[continue|$return][$showComp to 0; $isCompChosen to 0; $chosenPlan to 0]] on my own...@@ <<if _args[0] lte 4>>@@.warningtext; Req. higher lvl@@
+			<</if>><br>
 		<</if>>
 	<</linkappend>>
 <</widget>>

@@ -20,7 +20,8 @@
 		<<else>>
 			<<link "@@.usebtn; Try to attract a ghost@@ " "seduceGhostMinigame">>
 				<<run setup.SeduceGhostMinigame.tryAttract()>>
-			<</link>><</if>> |
+			<</link>>
+		<</if>>
 		<<link "@@color:red; Leave@@" `$return`>><<run setup.SeduceGhostMinigame.leave()>><</link>>
 
 	<<elseif $minigameVideo eq "seduceFailed">>
@@ -30,7 +31,8 @@
 		<<else>>
 			<<link "@@.usebtn; Try again@@ " "seduceGhostMinigame">>
 				<<run setup.SeduceGhostMinigame.tryAgain()>>
-			<</link>><</if>> |
+			<</link>>
+		<</if>>
 		<<link "@@color:red; Leave@@ " `$return`>><<run setup.SeduceGhostMinigame.leave()>><</link>>
 
 	<<elseif $minigameVideo eq "seduce">>
@@ -48,7 +50,8 @@
 		<<else>>
 			<<link "Resist" "seduceGhostMinigame">>
 				<<run setup.SeduceGhostMinigame.resist()>>
-			<</link>><</if>><b><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:25px;"></b> |
+			<</link>>
+		<</if>>
 		<<link "Submit" "seduceGhostMinigame">>
 			<<run setup.SeduceGhostMinigame.submit()>>
 		<</link>> <b><img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:25px;"></b> |
@@ -57,7 +60,8 @@
 		<<else>>
 			<<link "Subdue" "seduceGhostMinigame">>
 				<<run setup.SeduceGhostMinigame.subdue()>>
-			<</link>><</if>>
+			<</link>>
+		<</if>>
 
 	<<else>>
 		<<if $mc.energy lt 1>>
@@ -65,7 +69,8 @@
 		<<else>>
 			<<link "Resist" "seduceGhostMinigame">>
 				<<run setup.SeduceGhostMinigame.resist()>>
-			<</link>> <</if>><b><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:25px;"></b> |
+			<</link>>
+		<</if>>
 		<<link "Submit" "seduceGhostMinigame">>
 			<<run setup.SeduceGhostMinigame.submit()>>
 		<</link>> <b><img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:25px;"></b>

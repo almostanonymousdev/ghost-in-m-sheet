@@ -16,7 +16,8 @@
 				<source @src="setup.ImagePath + '/possessed/1.7.mp4'" type="video/mp4">
 				</video>
 			<</if>>
-		<</replace>><</link>>
+		<</replace>>
+	<</link>>
 	<br>@@color:red; Well, we've only just started. I think we'll go somewhere else now that we're done here. @@<br>
 	@@.mc-speech; Oh, damn@@<br>
 	@@.enterbtn; [[Next|possessed]]@@<br>

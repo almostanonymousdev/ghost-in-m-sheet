@@ -183,5 +183,6 @@
 
 	<</linkappend>>
 <</if>>
-<<set $hours +=4>><<if $hours >=24>><<set $hours -=24>><<include "resetCD">><</if>>
+<<set $hours +=4>><<if $hours >=24>><<set $hours -=24>><<include "resetCD">>
+<</if>>
 <<set $succubusEventTimer to 6>>

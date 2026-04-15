@@ -11,7 +11,8 @@
 			<<set _sp to _cell.lastIndexOf(" ")>>
 			<<set _label to _cell.substr(0, _sp) + ", " + _cell.substr(_sp + 1)>>
 			<img @src="setup.ImagePath + '/img/delivery1.png'" class="iconsOnMap">
-			@@.icontextdelivery;<<link _label "deliveryHouse">><<set $currentHouse to _cell>><</link>>@@
+			@@.icontextdelivery;<<link _label "deliveryHouse">><<set $currentHouse to _cell>>
+			<</link>>@@
 		<</if>>
 		</div>
 	<</capture>>

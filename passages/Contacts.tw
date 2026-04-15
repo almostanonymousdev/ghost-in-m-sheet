@@ -4,16 +4,20 @@
 <div class="housecard">
 <<if def $meetBrook>>
 	@@.notmc-speech; $brook.name @@<br>
-	$brook.lvl lvl <<if $brook.lvl gte 5>> (max. lvl)<<else>>($brook.exp / $brook.expForNextLvl)<</if>><br>
+	$brook.lvl lvl <<if $brook.lvl gte 5>> (max. lvl)
+	<<else>>($brook.exp / $brook.expForNextLvl)
+	<</if>><br>
 	<img @src="setup.ImagePath + '/brook/brook.png'" class="contactsImages"><br>
 	<<if $hours lte 5>>
 		<<if $isBrookGoingForHuntingAlone eq 2>>
 			@@.mc-thoughts; She is currently on a ghost hunt.@@
 		<<else>>
-			@@.mc-thoughts; She's sleeping@@<br><</if>>
+			@@.mc-thoughts; She's sleeping@@<br>
+		<</if>>
 	<<else>>
 		<<if $isBrookePossessed eq 1>>
-			<<linkreplace "@@.enterbtn;Text her@@">>She's not answering... Strange, she usually responds right away...<</linkreplace>>
+			<<linkreplace "@@.enterbtn;Text her@@">>She's not answering... Strange, she usually responds right away...
+			<</linkreplace>>
 		<<else>>
 			<<if $isBrookePossessedCD lte 2>>
 				@@.mc-thoughts;She's probably still with Rain. Maybe it's worth waiting a couple of days. @@
@@ -33,15 +37,19 @@
 <div class="housecard">
 <<if def $meetAlice>>
 	@@.notmc-speech; $alice.name @@<br>
-	$alice.lvl lvl <<if $alice.lvl gte 5>> (max. lvl)<<else>>($alice.exp / $alice.expForNextLvl)<</if>><br>
+	$alice.lvl lvl <<if $alice.lvl gte 5>> (max. lvl)
+	<<else>>($alice.exp / $alice.expForNextLvl)
+	<</if>><br>
 	<img @src="setup.ImagePath + '/alice/alice.png'" class="contactsImages"><br>
 	<<if $hours lte 5>>
 		<<if $isAliceGoingForHuntingAlone eq 2>>
 			@@.mc-thoughts; She is currently on a ghost hunt.@@
 		<<else>>
-			@@.mc-thoughts; She's sleeping@@<br><</if>>
+			@@.mc-thoughts; She's sleeping@@<br>
+		<</if>>
 	<<else>>
-		@@.enterbtn;[[Text her|AliceInfo]]@@<br><</if>>
+		@@.enterbtn;[[Text her|AliceInfo]]@@<br>
+	<</if>>
 <<else>>
 
 	@@.mc-thoughts; Deliver books to the correct address@@<br>
@@ -52,15 +60,19 @@
 <div class="housecard">
 <<if $relationshipBlake gte 5>>
 	@@.notmc-speech; $blake.name @@<br>
-	$blake.lvl lvl <<if $blake.lvl gte 5>> (max. lvl)<<else>>($blake.exp / $blake.expForNextLvl)<</if>><br>
+	$blake.lvl lvl <<if $blake.lvl gte 5>> (max. lvl)
+	<<else>>($blake.exp / $blake.expForNextLvl)
+	<</if>><br>
 	<img @src="setup.ImagePath + '/blake/blake.png'" class="contactsImages"><br>
 	<<if $hours lte 5>>
 		<<if $isBlakeGoingForHuntingAlone eq 2>>
 			@@.mc-thoughts; She is currently on a ghost hunt.@@
 		<<else>>
-			@@.mc-thoughts; She's sleeping@@<br><</if>>
+			@@.mc-thoughts; She's sleeping@@<br>
+		<</if>>
 	<<else>>
-		@@.enterbtn;[[Text her|BlakeInfo]]@@<br><</if>>
+		@@.enterbtn;[[Text her|BlakeInfo]]@@<br>
+	<</if>>
 <<else>>
 
 	@@.mc-thoughts; Befriend the assistant at the sex shop <br>(Relationship 5+)@@<br>

@@ -26,13 +26,13 @@
 	setup.SAVE_VERSION = SAVE_VERSION;
 
 	/*
-	 * Central place for default values of variables that are allowed to be
-	 * missing on old saves. Anything initialised in StoryInit that a later
-	 * version depends on should be listed here with its default.
-	 *
-	 * Values are functions so each save gets its own fresh object / array and
-	 * two saves can't end up aliasing the same reference after migration.
-	 */
+	* Central place for default values of variables that are allowed to be
+	* missing on old saves. Anything initialised in StoryInit that a later
+	* version depends on should be listed here with its default.
+	*
+	* Values are functions so each save gets its own fresh object / array and
+	* two saves can't end up aliasing the same reference after migration.
+	*/
 	var DEFAULTS = {
 		ghost16: function () {
 			return { name: 'Cthulion', evidence: ['spiritbox', 'glass', 'temperature'] };
@@ -115,11 +115,11 @@
 	setup.applySaveDefaults = applyDefaults;
 
 	/*
-	 * Strip values that can't survive a JSON round-trip. These show up when
-	 * someone accidentally does `<<set $foo to $('#bar')>>` or stashes a
-	 * function on a variable. SugarCube's own clone() will usually drop them
-	 * silently, but leaving them in place can cause reload exceptions.
-	 */
+	* Strip values that can't survive a JSON round-trip. These show up when
+	* someone accidentally does `<<set $foo to $('#bar')>>` or stashes a
+	* function on a variable. SugarCube's own clone() will usually drop them
+	* silently, but leaving them in place can cause reload exceptions.
+	*/
 	function scrubNonSerialisable (obj, seen) {
 		if (obj === null || typeof obj !== 'object') {
 			return;

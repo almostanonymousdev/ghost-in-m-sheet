@@ -13,7 +13,7 @@ setup.CursedItems = (function () {
 
 	return {
 		/* Roll for a cursed item after a hunt failure.
-		 * 20% chance; picks one item at random. */
+		* 20% chance; picks one item at random. */
 		rollForCursedItem: function () {
 			if (Math.random() < 0.4) {
 				State.variables.cursedHomeItem = ITEMS[Math.floor(Math.random() * ITEMS.length)];

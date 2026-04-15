@@ -2,19 +2,23 @@
 <div class="flexwrapper gap">
 <div class="housecardComics">
 <img @src="setup.ImagePath + '/library/getting-in-shape-001.jpg'" class="comic-cover"><br>
-@@.enterbtn;<<link "read" "readComics">><<set $comics1 to 1>><</link>>@@
+@@.enterbtn;<<link "read" "readComics">><<set $comics1 to 1>>
+<</link>>@@
 </div>
 <div class="housecardComics">
 <img @src="setup.ImagePath + '/library/closed-investigation-journal-colorized-001.jpg'"  class="comic-cover"><br>
-@@.enterbtn;<<link "read" "readComics">><<set $comics2 to 1>><</link>>@@
+@@.enterbtn;<<link "read" "readComics">><<set $comics2 to 1>>
+<</link>>@@
 </div>
 <div class="housecardComics">
 <img @src="setup.ImagePath + '/library/the-naughty-in-law-1-zero-001.jpg'" class="comic-cover"><br>
-@@.enterbtn;<<link "read" "readComics">><<set $comics3 to 1>><</link>>@@
+@@.enterbtn;<<link "read" "readComics">><<set $comics3 to 1>>
+<</link>>@@
 </div>
 <div class="housecardComics">
 <img @src="setup.ImagePath + '/library/a-dumb-comic-001.jpg'" class="comic-cover"><br>
-@@.enterbtn;<<link "read" "readComics">><<set $comics4 to 1>><</link>>@@
+@@.enterbtn;<<link "read" "readComics">><<set $comics4 to 1>>
+<</link>>@@
 </div>
 </div>
 <br>

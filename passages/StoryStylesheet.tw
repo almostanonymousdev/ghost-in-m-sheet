@@ -14,7 +14,7 @@ video {
 	display: inline-block;
 	top: 4px;
 	border-width: 0px;
-   
+
 }
 .hoverTipTxt {
 	position: relative;
@@ -41,11 +41,11 @@ video {
 	background-color: black;
 	border: #7f7f7f solid 2px;
 	-webkit-border-radius: 6px;
-	   -moz-border-radius: 6px;
-	        border-radius: 6px;
+		-moz-border-radius: 6px;
+			border-radius: 6px;
 	-webkit-box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.75);
-	   -moz-box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.75);
-	        box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.75);
+		-moz-box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.75);
+			box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.75);
 	z-index: 100;
 }
 .hoverTail::after {
@@ -61,9 +61,9 @@ video {
 }
 .hoverBox a {
 	-webkit-transition-duration: unset;
-	   -moz-transition-duration: unset;
-	     -o-transition-duration: unset;
-	        transition-duration: unset;
+		-moz-transition-duration: unset;
+		-o-transition-duration: unset;
+			transition-duration: unset;
 }
 #ui-bar .hoverBox {
 	max-width: 230px;
@@ -88,13 +88,13 @@ body.city {
 }
 
 .deliverywrapper {
-  	display: flex;
+	display: flex;
     flex-direction: row;
-  	gap: 5%;
+	gap: 5%;
 }
 
 .itemAvailableOne{
-	
+
 }
 
 .icontext {
@@ -105,7 +105,7 @@ body.city {
 .icontextcity {
 	font-family: 'Amatic SC', sans-serif;
 	font-size: 25px;
-  	font-weight: bold;
+	font-weight: bold;
 }
 
 .icontextcity a {
@@ -114,22 +114,22 @@ body.city {
 
 .icontext a {
 	color:#8FBC8F;
-  	text-decoration: none;
+	text-decoration: none;
 }
 
 .icontextdelivery {
 	font-family: 'Cormorant', serif;
-  	font-size: 21px;
-  	
+	font-size: 21px;
+
 }
 
 .icontextdelivery a {
-  	color:#643069;
-  	text-decoration: none;
+	color:#643069;
+	text-decoration: none;
 }
 
 .icontextdelivery a:hover {
-  	transition: all .4s ease;
+	transition: all .4s ease;
 	-webkit-transition: all .4s ease;
     color: #d01de0;
 }
@@ -143,38 +143,38 @@ body.city {
 .icon {
 	max-width: 50%;
 	height: auto;
-  	border-radius: 30%;
+	border-radius: 30%;
 }
 
 .iconsOnMap {
 	max-width: 50%;
     max-height: 90%;
-  	border-radius: 30%;
+	border-radius: 30%;
 }
 
 .iconPx {
 	width: 90px;
     height: 90px;
-  	border-radius: 30%;
+	border-radius: 30%;
 }
 
 #endShift {
-	
+
 }
 
 .btnendshift {
 	position: fixed;
-  	top: 2%;
-  	right: 2%;
+	top: 2%;
+	right: 2%;
 }
 
 .btnendcolor {
-  	background-color: #ff6666;
+	background-color: #ff6666;
 	color: #333333;
-  	padding: 15px;
-  	border-radius: 5px;
-  	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  	font-weight: bold;
+	padding: 15px;
+	border-radius: 5px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	font-weight: bold;
 }
 
 .clickable {
@@ -185,118 +185,118 @@ body.city {
 	transition: all .4s ease;
 	-webkit-transition: all .4s ease;
     color: #595959;
-  	background-color: #ff9999;
+	background-color: #ff9999;
 }
 
 .flexwrapper {
 	display: flex;
-  	flex-wrap: wrap;
-  	align-content: space-around;
-  	height: 100%;
-  	row-gap: 10px;
+	flex-wrap: wrap;
+	align-content: space-around;
+	height: 100%;
+	row-gap: 10px;
 }
 
 .housecard {
-  	width: 16.5%;
-  	text-align:center;
-  	z-index: 2;
-  	line-height: 1.3;
+	width: 16.5%;
+	text-align:center;
+	z-index: 2;
+	line-height: 1.3;
 }
 
 .owaissaKitchenDark {
-  	background-image: url('assets/room/kitchen-dark.jpg');
-  	background-repeat: no-repeat;
-  	background-size: cover;
-  	z-index: 1;
-  	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
-  	transition: filter 1s ease;
+	background-image: url('assets/room/kitchen-dark.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	z-index: 1;
+	overflow: hidden;
+	height: 100vh;
+	background-position: center;
+	transition: filter 1s ease;
 }
 
 .owaissaKitchenLight {
-  	background-image: url('assets/room/kitchen.jpg');
-  	background-repeat: no-repeat;
-  	background-size: cover;
-  	z-index: 1;
-  	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
-  	transition: filter 1s ease;
+	background-image: url('assets/room/kitchen.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	z-index: 1;
+	overflow: hidden;
+	height: 100vh;
+	background-position: center;
+	transition: filter 1s ease;
 }
 
 .owaissaHallwayLight {
-  	background-image: url('assets/room/hallway.jpg');
-  	background-repeat: no-repeat;
-  	background-size: cover;
-  	z-index: 1;
-  	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
+	background-image: url('assets/room/hallway.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	z-index: 1;
+	overflow: hidden;
+	height: 100vh;
+	background-position: center;
 }
 
 .owaissaHallwayDark {
-  	background-image: url('assets/room/hallway-dark.jpg');
-  	background-repeat: no-repeat;
-  	background-size: cover;
-  	z-index: 1;
-  	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
+	background-image: url('assets/room/hallway-dark.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	z-index: 1;
+	overflow: hidden;
+	height: 100vh;
+	background-position: center;
 }
 .owaissaLivingroomLight {
-  	background-image: url('assets/room/livingroom.jpg');
-  	background-repeat: no-repeat;
-  	background-size: cover;
-  	z-index: 1;
-  	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
+	background-image: url('assets/room/livingroom.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	z-index: 1;
+	overflow: hidden;
+	height: 100vh;
+	background-position: center;
 }
 .owaissaLivingroomDark {
-  	background-image: url('assets/room/livingroom-dark.jpg');
-  	background-repeat: no-repeat;
-  	background-size: cover;
-  	z-index: 1;
-  	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
+	background-image: url('assets/room/livingroom-dark.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	z-index: 1;
+	overflow: hidden;
+	height: 100vh;
+	background-position: center;
 }
 .owaissaBedroomLight {
-  	background-image: url('assets/room/bedroom.jpg');
-  	background-repeat: no-repeat;
-  	background-size: cover;
-  	z-index: 1;
-  	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
+	background-image: url('assets/room/bedroom.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	z-index: 1;
+	overflow: hidden;
+	height: 100vh;
+	background-position: center;
 }
 .owaissaBedroomDark {
-  	background-image: url('assets/room/bedroom-dark.jpg');
-  	background-repeat: no-repeat;
-  	background-size: cover;
-  	z-index: 1;
-  	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
+	background-image: url('assets/room/bedroom-dark.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	z-index: 1;
+	overflow: hidden;
+	height: 100vh;
+	background-position: center;
 }
 .owaissaBathroomLight {
-  	background-image: url('assets/room/bathroom.jpg');
-  	background-repeat: no-repeat;
-  	background-size: cover;
-  	z-index: 1;
-  	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
+	background-image: url('assets/room/bathroom.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	z-index: 1;
+	overflow: hidden;
+	height: 100vh;
+	background-position: center;
 }
 .owaissaBathroomDark {
-  	background-image: url('assets/room/bathroom-dark.jpg');
-  	background-repeat: no-repeat;
-  	background-size: cover;
-  	z-index: 1;
-  	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
+	background-image: url('assets/room/bathroom-dark.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	z-index: 1;
+	overflow: hidden;
+	height: 100vh;
+	background-position: center;
 }
 
 .elmBasementLight {
@@ -304,9 +304,9 @@ body.city {
     background-size: cover;
     background-repeat: no-repeat;
     z-index: 1;
-  	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
+	overflow: hidden;
+	height: 100vh;
+	background-position: center;
 }
 
 .elmBasementDark {
@@ -314,9 +314,9 @@ body.city {
     background-size: cover;
     background-repeat: no-repeat;
     z-index: 1;
-  	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
+	overflow: hidden;
+	height: 100vh;
+	background-position: center;
 }
 
 .elmKitchenLight {
@@ -324,9 +324,9 @@ body.city {
     background-size: cover;
     background-repeat: no-repeat;
     z-index: 1;
-  	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
+	overflow: hidden;
+	height: 100vh;
+	background-position: center;
 }
 
 .elmKitchenDark {
@@ -334,9 +334,9 @@ body.city {
     background-size: cover;
     background-repeat: no-repeat;
     z-index: 1;
-  	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
+	overflow: hidden;
+	height: 100vh;
+	background-position: center;
 }
 
 .elmBathroomLight {
@@ -344,9 +344,9 @@ body.city {
     background-size: cover;
     background-repeat: no-repeat;
     z-index: 1;
-  	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
+	overflow: hidden;
+	height: 100vh;
+	background-position: center;
 }
 
 .elmBathroomDark {
@@ -354,9 +354,9 @@ body.city {
     background-size: cover;
     background-repeat: no-repeat;
     z-index: 1;
-  	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
+	overflow: hidden;
+	height: 100vh;
+	background-position: center;
 }
 
 .elmBathroomTwoLight {
@@ -364,9 +364,9 @@ body.city {
     background-size: cover;
     background-repeat: no-repeat;
     z-index: 1;
-  	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
+	overflow: hidden;
+	height: 100vh;
+	background-position: center;
 }
 
 .elmBathroomTwoDark {
@@ -374,9 +374,9 @@ body.city {
     background-size: cover;
     background-repeat: no-repeat;
     z-index: 1;
-  	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
+	overflow: hidden;
+	height: 100vh;
+	background-position: center;
 }
 
 .elmBedroomLight {
@@ -384,9 +384,9 @@ body.city {
     background-size: cover;
     background-repeat: no-repeat;
     z-index: 1;
-  	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
+	overflow: hidden;
+	height: 100vh;
+	background-position: center;
 }
 
 .elmBedroomDark {
@@ -395,8 +395,8 @@ body.city {
     background-repeat: no-repeat;
     z-index: 1;
 	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
+	height: 100vh;
+	background-position: center;
 }
 
 .elmBedroomTwoLight {
@@ -405,8 +405,8 @@ body.city {
     background-repeat: no-repeat;
     z-index: 1;
 	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
+	height: 100vh;
+	background-position: center;
 }
 
 .elmBedroomTwoDark {
@@ -415,8 +415,8 @@ body.city {
     background-repeat: no-repeat;
     z-index: 1;
 	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
+	height: 100vh;
+	background-position: center;
 }
 
 .elmNurseryLight {
@@ -425,8 +425,8 @@ body.city {
     background-repeat: no-repeat;
     z-index: 1;
 	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
+	height: 100vh;
+	background-position: center;
 }
 
 .elmNurseryDark {
@@ -435,8 +435,8 @@ body.city {
     background-repeat: no-repeat;
     z-index: 1;
 	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
+	height: 100vh;
+	background-position: center;
 }
 
 .elmHallwayLight {
@@ -445,8 +445,8 @@ body.city {
     background-repeat: no-repeat;
     z-index: 1;
 	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
+	height: 100vh;
+	background-position: center;
 }
 
 .elmHallwayDark {
@@ -455,8 +455,8 @@ body.city {
     background-repeat: no-repeat;
     z-index: 1;
 	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
+	height: 100vh;
+	background-position: center;
 }
 
 .elmHallwayTwoLight {
@@ -465,8 +465,8 @@ body.city {
     background-repeat: no-repeat;
     z-index: 1;
 	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
+	height: 100vh;
+	background-position: center;
 }
 
 .elmHallwayTwoDark {
@@ -475,8 +475,8 @@ body.city {
     background-repeat: no-repeat;
     z-index: 1;
 	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
+	height: 100vh;
+	background-position: center;
 }
 
 .enigmaBasementLight {
@@ -592,16 +592,16 @@ body.city {
 }
 
 .enigmaLivingroomLight {
-  	background-image: url('assets/room/enigma/livingroom.jpg');
-  	background-repeat: no-repeat;
-  	background-size: cover;
-  	z-index: 1;
+	background-image: url('assets/room/enigma/livingroom.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	z-index: 1;
 }
 .enigmaLivingroomDark {
-  	background-image: url('assets/room/enigma/livingroom-dark.jpg');
-  	background-repeat: no-repeat;
-  	background-size: cover;
-  	z-index: 1;
+	background-image: url('assets/room/enigma/livingroom-dark.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	z-index: 1;
 }
 
 .IroncladReceptionLight {
@@ -612,7 +612,7 @@ body.city {
 }
 
 .IroncladReceptionDark {
-    
+
 	background-image: url('assets/room/ironclad/reception-dark.webp');
     background-size: cover;
     background-repeat: no-repeat;
@@ -760,40 +760,40 @@ body.city {
 }
 
 .right {
-  	display: inline-block;
+	display: inline-block;
 	background-color: green;
-  	border-radius: 30%;
+	border-radius: 30%;
 }
 
 .room {
-   	position: absolute;
+	position: absolute;
     top: 0;
-  	height: 100vh;
+	height: 100vh;
 	overflow-x: hidden;
 	display: flex;
 }
 .room-wrapper {
     line-height: 1;
-  	width: 100%;
-  	display: flex;
-  	position: relative;
-  	flex-direction: column;
-  	box-sizing: border-box;
- 	padding-bottom: 5%;
+	width: 100%;
+	display: flex;
+	position: relative;
+	flex-direction: column;
+	box-sizing: border-box;
+	padding-bottom: 5%;
 }
 
 .content {
 	height: calc(100%/1.25);
     max-width: 80%;
-  	overflow: hidden;
+	overflow: hidden;
     box-sizing: border-box;
-  	padding: 0;
+	padding: 0;
 }
 
 .footer {
 	display:flex;
-  	align-items: flex-end;
-  	max-height: 20%;
+	align-items: flex-end;
+	max-height: 20%;
 }
 
 .footer-card {
@@ -805,22 +805,22 @@ body.city {
 
 .footertools {
 	display:flex;
-  	width: 80%;
-  	align-items: center;
+	width: 80%;
+	align-items: center;
 
 }
 
 .footeraction {
-  	line-height: 1.6;
-  	width: 20%;
+	line-height: 1.6;
+	width: 20%;
 	display: flex;
     flex-direction: column;
 }
 
 .cardlink {
 	line-height: 1;
-  	height: 30px;
-  	font-size: 80%;
+	height: 30px;
+	font-size: 80%;
 }
 
 .hidden {
@@ -832,15 +832,15 @@ body.city {
 }
 
 .UVLimg {
-  	max-width: 100%;
-    height: auto; 
-  	display: block;
+	max-width: 100%;
+    height: auto;
+	display: block;
 }
 
 .action {
 	display:flex;
-  	flex-direction: column;
-  	 align-items: center;
+	flex-direction: column;
+	align-items: center;
 }
 
 .GWBimgs {
@@ -848,84 +848,84 @@ body.city {
 }
 
 .mc-action {
-        background-color: #ffe6f2; 
-        padding: 10px; 
-        border-radius: 10px; 
-        border: 2px solid #ff66b2; 
-        font-family: 'Arial', sans-serif; 
-        font-size: 18px; 
-        color: #99004d; 
-        text-align: center; 
+        background-color: #ffe6f2;
+        padding: 10px;
+        border-radius: 10px;
+        border: 2px solid #ff66b2;
+        font-family: 'Arial', sans-serif;
+        font-size: 18px;
+        color: #99004d;
+        text-align: center;
     }
 
-.spiritbox-container { 
+.spiritbox-container {
     padding: 10px;
     border-radius: 10px;
-    border: 2px solid #333; 
+    border: 2px solid #333;
     margin-bottom: 10px;
     display: flex;
     flex-direction: column;
-  	font-weight: bold;
+	font-weight: bold;
 }
 
 .spiritbox-question {
     font-weight: bold;
-    color: #ff3366; 
+    color: #ff3366;
 }
 
 .spiritbox-answer {
     font-style: italic;
-    color: #3399ff; 
+    color: #3399ff;
     margin-top: 5px;
 }
 
 .spiritbox-no-response {
-    color: white; 
+    color: white;
     font-style: italic;
 }
 
 .location {
 	font-size: 1.5em;
-  	font-style: italic;
-  	color: #f2f5f7;
-  	text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+	font-style: italic;
+	color: #f2f5f7;
+	text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .mc-speech {
 	color:#ff99dd;
-  	text-decoration: none;
-  	  text-shadow:-1px -1px 0 #000,  1px -1px 0 #000,-1px  1px 0 #000,1px  1px 0 #000;
+	text-decoration: none;
+		text-shadow:-1px -1px 0 #000,  1px -1px 0 #000,-1px  1px 0 #000,1px  1px 0 #000;
 }
 
 .mc-speech:hover {
-	
-  	text-decoration: none;
-  	text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+
+	text-decoration: none;
+	text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
 }
 
 .mc-speech a {
 	color:#FF1493;
-  	font-style: italic;
-  	text-decoration: none;
+	font-style: italic;
+	text-decoration: none;
 }
 
 .mc-speech a:hover {
 	color:#f663b2;
-  	font-style: italic;
-  	text-decoration: none;
-  	text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+	font-style: italic;
+	text-decoration: none;
+	text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
 }
 
 .mc-speechLink a {
 	color:#FF1493;
-  	font-style: italic;
-  	text-decoration: none;
+	font-style: italic;
+	text-decoration: none;
 }
 
 .mc-speechLink {
 	color:#FF1493;
-  	font-style: italic;
-  	text-decoration: none;
+	font-style: italic;
+	text-decoration: none;
 }
 
 .mc-thoughts {
@@ -933,7 +933,7 @@ body.city {
   font-style: italic;
   text-decoration: none;
   text-shadow:-1px -1px 0 #000,  1px -1px 0 #000,-1px  1px 0 #000,1px  1px 0 #000;
-  
+
 }
 
 .mc-thoughts a {
@@ -950,8 +950,8 @@ body.city {
 
 .notmc-speech {
 	color: #3486eb;
-  	text-decoration: none;
-  	  text-shadow:-1px -1px 0 #000,  1px -1px 0 #000,-1px  1px 0 #000,1px  1px 0 #000;
+	text-decoration: none;
+		text-shadow:-1px -1px 0 #000,  1px -1px 0 #000,-1px  1px 0 #000,1px  1px 0 #000;
 }
 .notmc-speech a {
   font-size:1.1em;
@@ -974,24 +974,24 @@ body.city {
 .priceAmount {
   font-weight: bold;
 	color:#17B169;
-  	font-size:1.7em;
+	font-size:1.7em;
   -webkit-text-stroke: 1px black;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
   vertical-align: middle;
- 
+
 }
 
 .buyItemLink a {
- 	color: black;
-  	background-color: #f0f0f0;
-  	padding: 1px 15px;
-  	border-radius: 30%;
+	color: black;
+	background-color: #f0f0f0;
+	padding: 1px 15px;
+	border-radius: 30%;
 }
 
 .address-item {
 	font-size: 1.4em;
-  	font-style: italic;
- 	font-weight: bold;
+	font-style: italic;
+	font-weight: bold;
 }
 
 .order-container {
@@ -1001,7 +1001,7 @@ body.city {
 }
 
 .adaptiveLink a {
-  	font-weight: bold;
+	font-weight: bold;
 	color: #3498db;
     text-decoration: none;
     transition: color 0.3s, border-color 0.3s;
@@ -1010,24 +1010,24 @@ body.city {
 }
 
 .movebtn a {
-  	font-size: 1.2em;
-  	font-weight: bold;
+	font-size: 1.2em;
+	font-weight: bold;
 	color: #3498db;
     text-decoration: none;
     transition: color 0.3s, border-color 0.3s;
 	-webkit-text-stroke: 1px black;
-  	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .movebtn a:hover {
 	color: #91a5c2;
 	transition: color 0.3s, border-color 0.3s;
 	-webkit-text-stroke: 1px black;
-  	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .itemwrapper {
-  	display: flex;
+	display: flex;
     flex-wrap: wrap;
     gap: 5%;
 }
@@ -1035,7 +1035,7 @@ body.city {
 .footer-light img {
 	width: 30%;
 
-	margin: 1px;	
+	margin: 1px;
 }
 .footer-light {
   display: inline-block;
@@ -1047,7 +1047,7 @@ body.city {
     color: #333;
     background-color: #eee;
     padding: 10px;
-  	width: 100px;
+	width: 100px;
     border-radius: 5px;
     display: inline-block;
     text-align: center;
@@ -1063,10 +1063,10 @@ body.city {
     max-height: 67vh;
 }
 
-.notFound-container { 
+.notFound-container {
     padding: 10px;
     border-radius: 10px;
-    border: 2px solid white; 
+    border: 2px solid white;
     margin-bottom: 10px;
     display: flex;
     flex-direction: column;
@@ -1082,19 +1082,19 @@ body.city {
 
 .evidenceFlex {
 	display:flex;
-  	flex-direction: column;
+	flex-direction: column;
 }
 
 .evidenceWrapper {
 	display:flex;
 	border: 2px solid #000;
-  	padding: 10px;
-  	
+	padding: 10px;
+
 }
 
 .evidenceDesc {
 	align-self:center;
-  	flex-basis: 70%;
+	flex-basis: 70%;
 }
 
 .evidenceCardIcon {
@@ -1112,14 +1112,14 @@ body.city {
   top: 25%;
   left: 30%;
   transform: translate(-30%, -25%);
-  width: calc(100% - 40px); 
-  height: calc(100% - 40px); 
+  width: calc(100% - 40px);
+  height: calc(100% - 40px);
   display: flex;
-  flex-wrap: wrap; 
+  flex-wrap: wrap;
   gap: 10px;
   box-sizing: border-box;
   padding: 20px;
-  justify-content: flex-start; 
+  justify-content: flex-start;
   align-items: flex-start;
 }
 
@@ -1128,15 +1128,15 @@ body.city {
   align-items: center;
   justify-content: center;
   width: calc(20% - 10px);
-  max-width: 100px; 
-  height: auto; 
+  max-width: 100px;
+  height: auto;
 }
 
 .iconContainer img {
-  width: 100%; 
-  height: auto; 
-  max-width: 100%; 
-  max-height: 100%; 
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
   display: block;
   border-radius:50%;
 }
@@ -1145,22 +1145,22 @@ body.city {
   position: relative;
   width: 100%;
   max-width: 1000px;
-  overflow: hidden; 
+  overflow: hidden;
 }
 
 .iconPC {
   border-radius:50%;
-  margin-bottom: 1%; 
+  margin-bottom: 1%;
 }
 
  .room-container {
     position: relative;
-   	padding-bottom: 66.67%;
+	padding-bottom: 66.67%;
     width: 100%;
     background-image: url('assets/img/hotelRoom.jpeg');
     background-size: cover;
-   	background-position: center;
-   	overflow: hidden;
+	background-position: center;
+	overflow: hidden;
   }
   .trash {
     position: absolute;
@@ -1192,46 +1192,46 @@ body.city {
 }
 
 .backbtn a {
-  	border-radius: 5px;
-  	padding: 10px; 
-  	background-color: rgba(255, 255, 255, 0.8);
-  	font-size: 1.2em;
-  	font-weight: bold;
+	border-radius: 5px;
+	padding: 10px;
+	background-color: rgba(255, 255, 255, 0.8);
+	font-size: 1.2em;
+	font-weight: bold;
 	color: #428ec2;
     text-decoration: none;
     transition: color 0.3s, border-color 0.3s;
 	-webkit-text-stroke: 0.7px black;
-  	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .backbtn a:hover {
 	color: #5dade2;
 	transition: color 0.3s, border-color 0.3s;
 	-webkit-text-stroke: 1px black;
-  	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .enterbtn a {
-  	font-size: 1.1em;
-  	font-weight: bold;
+	font-size: 1.1em;
+	font-weight: bold;
 	color: #84a0e4;
     text-decoration: none;
     transition: color 0.3s, border-color 0.3s;
 	-webkit-text-stroke: 0.3px black;
-  	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .enterbtn a:hover {
 	color: #1882c4;
 	transition: color 0.3s, border-color 0.3s;
 	-webkit-text-stroke: 0.3px black;
-  	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .usebtn a {
-  	font-style: italic;
-  	font-size: 1.05em;
-  	font-weight: bold;
+	font-style: italic;
+	font-size: 1.05em;
+	font-weight: bold;
 	color: #c2cc51;
     transition: color 0.3s, border-color 0.3s;
 	-webkit-text-stroke: 0.2px black;
@@ -1239,28 +1239,28 @@ body.city {
 }
 
 .usebtn {
-  	font-style: italic;
-  	font-size: 1.05em;
-  	font-weight: bold;
+	font-style: italic;
+	font-size: 1.05em;
+	font-weight: bold;
 	color: #c2cc51;
     text-decoration: none;
     transition: color 0.3s, border-color 0.3s;
 	-webkit-text-stroke: 0.2px black;
-  	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .usebtn a:hover {
 	color: #d9ddad;
 	transition: color 0.3s, border-color 0.3s;
 	-webkit-text-stroke: 0.3px black;
-  	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .usebtn:hover {
 	color: #d9ddad;
 	transition: color 0.3s, border-color 0.3s;
 	-webkit-text-stroke: 0.3px black;
-  	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .disabled-link {
@@ -1270,15 +1270,15 @@ body.city {
 
 .evidenceshadowtext {
 	color:#ff99dd;
-  	text-decoration: none;
-  	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-  	-webkit-text-stroke: 0.5px pink;
+	text-decoration: none;
+	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+	-webkit-text-stroke: 0.5px pink;
 }
 
 .backgroundForText {
 	background-color: rgba(0, 0, 0, 0.5);
-  	border-radius: 10%;
-  	padding: 5%;
+	border-radius: 10%;
+	padding: 5%;
 }
 
 a:hover {
@@ -1287,25 +1287,25 @@ text-decoration: none;
 
 .comic-cover {
 	width:100%;
-  	height: 90%;
+	height: 90%;
 }
 
 .warningtext {
 	color: red;
-  	font-style: italic;
+	font-style: italic;
 }
 
 .companion-image {
-  	width: 70%;
-    border: 3px solid #007BFF; 
-    border-radius: 8px; 
-    padding: 5px; 
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
-    cursor: pointer; 
+	width: 70%;
+    border: 3px solid #007BFF;
+    border-radius: 8px;
+    padding: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
     transition: all 0.3s ease;
  }
 .companion-image:hover {
-    border-color: #0056b3; 
+    border-color: #0056b3;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 .companion-imageSucceeded {
@@ -1319,13 +1319,13 @@ text-decoration: none;
 }
 
 .companion-imageSucceeded:hover {
-    border-color: #FF1493; 
+    border-color: #FF1493;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 .toolsTextCentered {
 	margin-left: 15%;
-  	 -webkit-text-stroke: 1px black;
+	-webkit-text-stroke: 1px black;
 }
 
 .flexwrapperCompanionMain {
@@ -1344,8 +1344,8 @@ text-decoration: none;
 .companionTextMain {
 	flex: 1;
 	min-width: 40%;
-  	margin-left:5%;
-  	white-space: normal;
+	margin-left:5%;
+	white-space: normal;
 }
 
 .flexwrapperCompanionMainInfo {
@@ -1359,7 +1359,7 @@ text-decoration: none;
 .boldText {
 	font-weight: bold;
     font-size: 1.2em;
-  	user-select: none;
+	user-select: none;
 }
 
 .disabled-linkSpecial a{
@@ -1368,7 +1368,7 @@ text-decoration: none;
 
 .torn-style-1 {
 clip-path: polygon(1% 0, 50% 30%, 10% 70%, 0 30%);
-      box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.5), 
+      box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.5),
                 -5px -5px 10px rgba(255, 255, 255, 0.5) inset;
 }
 
@@ -1413,7 +1413,7 @@ clip-path: polygon(20% 1%, 67% 44%, 50% 100%, 30% 50%);
 
 .rescueClueStyle {
 	width: 10px;
-  	height: 10px;
+	height: 10px;
 }
 
 .furnitureSearch a{
@@ -1422,7 +1422,7 @@ clip-path: polygon(20% 1%, 67% 44%, 50% 100%, 30% 50%);
 
 .furnitureSearch img{
 	max-width: 40%;
-  	height: auto;
+	height: auto;
     background-color: rgba(169, 169, 169, 0.5);
 }
 
@@ -1430,24 +1430,24 @@ clip-path: polygon(20% 1%, 67% 44%, 50% 100%, 30% 50%);
 	display: flex;
     justify-content: center;
     gap: 10%;
-  	margin-left: -20%;
-}	
+	margin-left: -20%;
+}
 .downPointer {
     position: fixed;
     right: 2%;
-  	bottom:2%;
-  	z-index: 10;
-  	width: 50px;
+	bottom:2%;
+	z-index: 10;
+	width: 50px;
     height: 50px;
     border-radius: 30%;
 }
 
 .upPointer {
     position: fixed;
-  	top: 2%;
+	top: 2%;
     right: 2%;
-  	transform: rotate(180deg);
-  	z-index: 10;
+	transform: rotate(180deg);
+	z-index: 10;
     width: 50px;
     height: 50px;
     border-radius: 30%;
@@ -1469,10 +1469,10 @@ clip-path: polygon(20% 1%, 67% 44%, 50% 100%, 30% 50%);
 }
 
 .hauntedhouse {
-  	background-attachment: fixed;
+	background-attachment: fixed;
 	overflow: hidden;
-  	height: 100vh;
-  	background-position: center;
+	height: 100vh;
+	background-position: center;
 }
 
 .noreturn {
@@ -1480,7 +1480,7 @@ clip-path: polygon(20% 1%, 67% 44%, 50% 100%, 30% 50%);
 }
 
 .highlighted-furniture {
-    border: 2px solid pink; 
+    border: 2px solid pink;
 }
 
 .fadeInScale {
@@ -1515,17 +1515,17 @@ clip-path: polygon(20% 1%, 67% 44%, 50% 100%, 30% 50%);
 }
 
 .furnitureSearch span a {
-  display: block; 
+  display: block;
 }
 
 .furnitureSearch span img {
-  display: block; 
+  display: block;
   max-width: 100%;
   height: auto;
 }
 
 .highlighted-furnitureDetector {
-    border: 2px solid green; 
+    border: 2px solid green;
 }
 
 #ui-bar-body {

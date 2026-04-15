@@ -25,12 +25,14 @@
 			<<set $mc.money += $moneyFromContract + $moneyFromWeakenTheGhost>>
 			<<gainXP $expFromContract>>
 
-			@@.backbtn;[[Back|WitchInside]]@@ <<else>> @@.notmc-speech;No, you are wrong. Maybe you'll get it right next time.@@<br>
+			@@.backbtn;[[Back|WitchInside]]@@
+		<<else>> @@.notmc-speech;No, you are wrong. Maybe you'll get it right next time.@@<br>
 
 			<<set $mc.money += 0 + $moneyFromWeakenTheGhost>>
 			<<gainXP 10>>
 
-			@@.backbtn;[[Back|WitchInside]]@@<</if>>
+			@@.backbtn;[[Back|WitchInside]]@@
+		<</if>>
 		<<set $ghostHuntingMode to 0>>
 		<<unset $hiddenEvidence>>
 		<<unset $hiddenEvidence1>>

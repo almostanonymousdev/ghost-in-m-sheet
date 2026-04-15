@@ -4,10 +4,12 @@
   <div class="itemwrapperWardrobe">
   <div>
       <div id="currentOuterwearTop">
-        <<link "<img @src='setup.ImagePath + \"/img/wardrobe/tshirt0.png\"'>" "wardrobe">><<set $tshirtState0 to "not worn">><</link>>
+        <<link "<img @src='setup.ImagePath + \"/img/wardrobe/tshirt0.png\"'>" "wardrobe">><<set $tshirtState0 to "not worn">>
+        <</link>>
       </div>
       <div id="currentOuterwearBottom">
-        <<link "<img @src='setup.ImagePath + \"/img/wardrobe/jeans0.png\"'>" "wardrobe">><<set $jeansState0 to "not worn">><</link>>
+        <<link "<img @src='setup.ImagePath + \"/img/wardrobe/jeans0.png\"'>" "wardrobe">><<set $jeansState0 to "not worn">>
+        <</link>>
       </div>
     </div>
     <div id="wardrobeBG">
@@ -15,10 +17,12 @@
     </div>
   <div>
       <div id="currentUnderwearTop">
-        <<link "<img @src='setup.ImagePath + \"/img/wardrobe/Slip1.png\"'>" "wardrobe">><<set $braState0 to "not worn">><</link>>
+        <<link "<img @src='setup.ImagePath + \"/img/wardrobe/Slip1.png\"'>" "wardrobe">><<set $braState0 to "not worn">>
+        <</link>>
       </div>
       <div id="currentUnderwearBottom">
-        <<link "<img @src='setup.ImagePath + \"/img/wardrobe/short1.png\"'>" "wardrobe">><<set $pantiesState0 to "not worn">><</link>>
+        <<link "<img @src='setup.ImagePath + \"/img/wardrobe/short1.png\"'>" "wardrobe">><<set $pantiesState0 to "not worn">>
+        <</link>>
       </div>
       <div id="currentUnderwearStockings">
         <img @src="setup.ImagePath + '/img/wardrobe/Stocking0.png'">
@@ -26,24 +30,24 @@
   </div>
   <div id="wardrobeAccessories">
   <div id="currentNeck">
- 		<img @src="setup.ImagePath + '/img/wardrobe/neck0.png'">
+		<img @src="setup.ImagePath + '/img/wardrobe/neck0.png'">
   </div>
   </div>
   <div id="wardrobePiercing">
   <div id="currentPiercingEars">
- 		<img @src="setup.ImagePath + '/img/wardrobe/ear.png'">
+		<img @src="setup.ImagePath + '/img/wardrobe/ear.png'">
   </div>
     <div id="currentPiercingNose">
- 		<img @src="setup.ImagePath + '/img/wardrobe/nose.png'">
+		<img @src="setup.ImagePath + '/img/wardrobe/nose.png'">
   </div>
     <div id="currentPiercingTongue">
- 		<img @src="setup.ImagePath + '/img/wardrobe/tongue.png'">
+		<img @src="setup.ImagePath + '/img/wardrobe/tongue.png'">
   </div>
     <div id="currentPiercingTits">
- 		<img @src="setup.ImagePath + '/img/wardrobe/tits.png'">
+		<img @src="setup.ImagePath + '/img/wardrobe/tits.png'">
   </div>
     <div id="currentPiercingPussy">
- 		<img @src="setup.ImagePath + '/img/wardrobe/pussy.png'">
+		<img @src="setup.ImagePath + '/img/wardrobe/pussy.png'">
   </div>
   </div>
   </div>
@@ -66,11 +70,11 @@
   #currentOuterwearBottom img,
   #currentUnderwearTop img,
   #currentUnderwearBottom img {
-    width: 100px; 
+    width: 100px;
     height: 100px;
     margin: 1%;
   }
-  
+
   .itemwrapperWardrobe {
   	display: flex;
     gap: 1%;

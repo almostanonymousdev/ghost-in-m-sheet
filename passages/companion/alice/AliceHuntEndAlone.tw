@@ -154,11 +154,13 @@
 					<</if>>
 					@@.notmc-speech;I lost control... and I might have given it what it had been after from the beginning...@@<br>
 					<<if _resultAliceAlone eq 1>>@@.notmc-speech; After it cu... weakened, I ran away. That's it. @@<br>
-						@@.mc-speech; I knew you would succeed! Great job!@@<<elseif _resultAliceAlone eq 0>>
+						@@.mc-speech; I knew you would succeed! Great job!@@
+					<<elseif _resultAliceAlone eq 0>>
 						@@.notmc-speech;It seems I just passed out.. I woke up when it was already morning. <br>
 						That's it.@@<br>
 						@@.mc-speech; It's okay, you'll definitely succeed next time!@@<br>
-						@@.notmc-speech;You're right, I need to teach it a lesson for what it did to me...@@<</if>>
+						@@.notmc-speech;You're right, I need to teach it a lesson for what it did to me...@@
+					<</if>>
 
 				<</linkappend>>
 			<</linkappend>>

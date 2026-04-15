@@ -78,12 +78,12 @@ sugarcube-2:
     includeTimeEventClothesHunt:
       name: includeTimeEventClothesHunt
       description: Advances time by 1 hour, runs the event check, then attempts a
-        clothes-steal event. Falls through to huntStart if no event fires. Does
+        clothes-steal event. Falls through to checkHuntStart if no event fires. Does
         nothing during an active cursed hunt ($cursedHuntActive eq 1).
     includeTimeEventHunt:
       name: includeTimeEventHunt
       description: Advances time by 1 hour, runs the event check, then falls through
-        to huntStart if no event fires. Does nothing during an active cursed
+        to checkHuntStart if no event fires. Does nothing during an active cursed
         hunt ($cursedHuntActive eq 1).
     includeStyle:
       name: includeStyle

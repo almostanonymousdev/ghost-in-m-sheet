@@ -36,7 +36,8 @@
 						<video autoplay controls muted loop>
 						<source @src="setup.ImagePath+`/tentacles/sleep`+_videoIndex+`.mp4`" type="video/mp4">
 						</video>
-					<</replace>><</link>>
+					<</replace>>
+				<</link>>
 				@@.mc-thoughts; , making your body shiver with pleasure.@@<br>
 				@@.mc-speech;Oh not two at once@@<br>
 				@@.mc-thoughts;Time felt endless as they seemed to toy with you, speeding up and slowing down, denying you your orgasm.@@<br>

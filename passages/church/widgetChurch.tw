@@ -24,7 +24,9 @@
 	<span id="expBar"><<showmeter 'xpBar'>></span><br>
 	<<set $mc.exp += _xpAmount>><<set $percentageOfLevel to Math.floor(($mc.exp / $neededForNextLevel) *100)>><<updatemeter 'xpBar' `$mc.exp / $neededForNextLevel`>>
 	<<if $mc.exp gte $neededForNextLevel>>
-		<<done>><<replace ".reachedNewLvl">>You reached a new level - $mc.lvl !<</replace>><</done>>
+		<<done>><<replace ".reachedNewLvl">>You reached a new level - $mc.lvl !
+		<</replace>>
+		<</done>>
 		<<set $mc.exp to $mc.exp - $neededForNextLevel>>
 		<<set $mc.lvl += 1>>
 		<<set $percentageOfLevel -= 100>>

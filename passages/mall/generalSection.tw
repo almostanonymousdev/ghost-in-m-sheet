@@ -14,8 +14,10 @@
 <<set $hasPSprayCharges to 3>>
 <<set $mc.money -= 10>>
 <</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@<</if>>
-<<else>>@@.mc-thoughts;I already have pepper spray ($hasPSprayCharges charges left)@@<</if>>
+<<else>>@@.mc-thoughts; I don't have enough money@@
+<</if>>
+<<else>>@@.mc-thoughts;I already have pepper spray ($hasPSprayCharges charges left)@@
+<</if>>
 </div>
 </div>
 <br>

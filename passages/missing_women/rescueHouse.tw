@@ -65,8 +65,10 @@
 			<<else>>
 				@@.mc-thoughts; You search around but can't find anything yet. Maybe you should come back later.@@
 			<</if>>
-		<</linkreplace>><<else>>
-		@@.mc-speech;I'm too tired to search the house.@@<br><</if>>
+		<</linkreplace>>
+	<<else>>
+		@@.mc-speech;I'm too tired to search the house.@@<br>
+	<</if>>
 <</if>><br>
 <br>
 @@.backbtn;[[Back|rescueMap]]@@<br>

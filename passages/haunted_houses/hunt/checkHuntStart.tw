@@ -1,4 +1,4 @@
-:: huntStart [noreturn nobr] {"position":"2500,1100","size":"100,100"}
+:: checkHuntStart [noreturn nobr] {"position":"2500,1100","size":"100,100"}
 <<if setup.HauntedHouses.canStartRandomHunt()>>
 	<<if random(0, 100) lte 6>>
 		<<set _g = setup.getGhostByName($ghost.name)>>

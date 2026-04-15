@@ -24,7 +24,8 @@
 				<video autoplay controls muted loop>
 				<source @src="setup.ImagePath+`/tentacles/pc`+_videoIndex+`.mp4`" type="video/mp4">
 				</video>
-			<</replace>><</link>>
+			<</replace>>
+		<</link>>
 		@@.mc-thoughts; licking them as if you're sucking the juiciest cock, feeling your cunt start to@@
 		<<linkappend "@@.usebtn; drip with anticipation@@">>
 			<video autoplay controls muted loop>

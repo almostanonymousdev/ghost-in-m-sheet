@@ -143,7 +143,7 @@
         this.$label = $label; // undocumented
 
         // mostly a reminder
-        $label.css('font-size', (parseInt($wrapper.css('height'), 10) < parseInt($('.passage').css('font-size'), 10)) ? 
+        $label.css('font-size', (parseInt($wrapper.css('height'), 10) < parseInt($('.passage').css('font-size'), 10)) ?
             $wrapper.css('height') : $('.passage').css('font-size'));
         $label.css('line-height', $wrapper.css('height'));
     }
@@ -195,7 +195,7 @@
             var self = this;
             function process () {
                 self.$label.empty().wiki(self.settings.label);
-                self.$label.css('font-size', (parseInt(self.$element.css('height'), 10) < parseInt(self.$element.parent().css('font-size'), 10)) ? 
+                self.$label.css('font-size', (parseInt(self.$element.css('height'), 10) < parseInt(self.$element.parent().css('font-size'), 10)) ?
                     self.$element.css('height') : self.$element.parent().css('font-size'));
                 self.$label.css('line-height', self.$element.css('height'));
             }
@@ -349,9 +349,9 @@
                 return this.error('The `<<newmeter>>` macro requires at least one argument: a meter name.');
             }
 
-            var meterName = this.args[0], 
-                colorsTag = null, 
-                sizeTag = null, 
+            var meterName = this.args[0],
+                colorsTag = null,
+                sizeTag = null,
                 animTag = null,
                 labelTag = null;
 
@@ -1478,7 +1478,7 @@ setup.searchToolMarkup = function (cfg) {
             '<<if $cursedHuntActive eq 1>><<else>>' +
                 '<<include "lightPassageGhost">><<include "event">>' +
                 '<<if _eventTriggered is false>>' +
-                    '<<include "huntStart">>' +
+                    '<<include "checkHuntStart">>' +
                 '<</if>>' +
             '<</if>>';
     } else {
@@ -1490,7 +1490,7 @@ setup.searchToolMarkup = function (cfg) {
                     '<<include "stealClothesEvent">>' +
                 '<</if>>' +
                 '<<if _stealClothesTriggered is false and _eventTriggered is false>>' +
-                    '<<include "huntStart">>' +
+                    '<<include "checkHuntStart">>' +
                 '<</if>>' +
             '<</if>>';
     }

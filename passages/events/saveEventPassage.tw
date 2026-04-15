@@ -13,7 +13,8 @@
 	stage2: 7,
 	stage3: 5,
 	stage4: 3,
-	}>><</if>>
+	}>>
+<</if>>
 
 <<set _chance = random(0, 100)>>
 <<set _checkRandomBanshee to random(1,6)>>
@@ -207,7 +208,8 @@
 					<<set _videoList to ["bj/120.mp4", "bj/121.mp4", "bj/122.mp4", "bj/123.mp4", "bj/124.mp4", "bj/125.mp4", "bj/126.mp4", "bj/127.mp4", "bj/128.mp4", "bj/129.mp4"]>>
 
 				<</if>>
-			<</if>><</if>>
+			<</if>>
+		<</if>>
 		<<addLust 7>>
 		<<set $tempCorr += 0.04>>
 	<<elseif ($mc.sanity >= 1 and $mc.sanity < 30) and _chance <= $decreasingSanity.stage4>>

@@ -44,24 +44,42 @@
 		@@.notmc-speech; evidence - Ghost Writing Book @@ <img @src="setup.ImagePath + '/img/gwb.png'" style="position: relative; top: 0.375em; width:5%;"><br>
 		@@.notmc-speech; Do you want to see this?@@<br>
 		<<set _check to random(1, 18)>>
-		<<if _check eq 1>><img @src="setup.ImagePath + '/gwb/1.jpg'" class="evidenceImgs"><</if>>
-		<<if _check eq 2>><img @src="setup.ImagePath + '/gwb/2.jpg'" class="evidenceImgs"><</if>>
-		<<if _check eq 3>><img @src="setup.ImagePath + '/gwb/3.jpg'" class="evidenceImgs"><</if>>
-		<<if _check eq 4>><img @src="setup.ImagePath + '/gwb/4.jpg'" class="evidenceImgs"><</if>>
-		<<if _check eq 5>><img @src="setup.ImagePath + '/gwb/5.jpg'" class="evidenceImgs"><</if>>
-		<<if _check eq 6>><img @src="setup.ImagePath + '/gwb/6.jpg'" class="evidenceImgs"><</if>>
-		<<if _check eq 7>><img @src="setup.ImagePath + '/gwb/7.jpg'" class="evidenceImgs"><</if>>
-		<<if _check eq 8>><img @src="setup.ImagePath + '/gwb/8.jpg'" class="evidenceImgs"><</if>>
-		<<if _check eq 9>><img @src="setup.ImagePath + '/gwb/9.jpg'" class="evidenceImgs"><</if>>
-		<<if _check eq 10>><img @src="setup.ImagePath + '/gwb/10.jpg'" class="evidenceImgs"><</if>>
-		<<if _check eq 11>><img @src="setup.ImagePath + '/gwb/11.jpg'" class="evidenceImgs"><</if>>
-		<<if _check eq 12>><img @src="setup.ImagePath + '/gwb/12.jpg'" class="evidenceImgs"><</if>>
-		<<if _check eq 13>><img @src="setup.ImagePath + '/gwb/13.jpg'" class="evidenceImgs"><</if>>
-		<<if _check eq 14>><img @src="setup.ImagePath + '/gwb/14.jpg'" class="evidenceImgs"><</if>>
-		<<if _check eq 15>><img @src="setup.ImagePath + '/gwb/15.jpg'" class="evidenceImgs"><</if>>
-		<<if _check eq 16>><img @src="setup.ImagePath + '/gwb/16.jpg'" class="evidenceImgs"><</if>>
-		<<if _check eq 17>><img @src="setup.ImagePath + '/gwb/17.jpg'" class="evidenceImgs"><</if>>
-		<<if _check eq 18>><img @src="setup.ImagePath + '/gwb/18.jpg'" class="evidenceImgs"><</if>>
+		<<if _check eq 1>><img @src="setup.ImagePath + '/gwb/1.jpg'" class="evidenceImgs">
+		<</if>>
+		<<if _check eq 2>><img @src="setup.ImagePath + '/gwb/2.jpg'" class="evidenceImgs">
+		<</if>>
+		<<if _check eq 3>><img @src="setup.ImagePath + '/gwb/3.jpg'" class="evidenceImgs">
+		<</if>>
+		<<if _check eq 4>><img @src="setup.ImagePath + '/gwb/4.jpg'" class="evidenceImgs">
+		<</if>>
+		<<if _check eq 5>><img @src="setup.ImagePath + '/gwb/5.jpg'" class="evidenceImgs">
+		<</if>>
+		<<if _check eq 6>><img @src="setup.ImagePath + '/gwb/6.jpg'" class="evidenceImgs">
+		<</if>>
+		<<if _check eq 7>><img @src="setup.ImagePath + '/gwb/7.jpg'" class="evidenceImgs">
+		<</if>>
+		<<if _check eq 8>><img @src="setup.ImagePath + '/gwb/8.jpg'" class="evidenceImgs">
+		<</if>>
+		<<if _check eq 9>><img @src="setup.ImagePath + '/gwb/9.jpg'" class="evidenceImgs">
+		<</if>>
+		<<if _check eq 10>><img @src="setup.ImagePath + '/gwb/10.jpg'" class="evidenceImgs">
+		<</if>>
+		<<if _check eq 11>><img @src="setup.ImagePath + '/gwb/11.jpg'" class="evidenceImgs">
+		<</if>>
+		<<if _check eq 12>><img @src="setup.ImagePath + '/gwb/12.jpg'" class="evidenceImgs">
+		<</if>>
+		<<if _check eq 13>><img @src="setup.ImagePath + '/gwb/13.jpg'" class="evidenceImgs">
+		<</if>>
+		<<if _check eq 14>><img @src="setup.ImagePath + '/gwb/14.jpg'" class="evidenceImgs">
+		<</if>>
+		<<if _check eq 15>><img @src="setup.ImagePath + '/gwb/15.jpg'" class="evidenceImgs">
+		<</if>>
+		<<if _check eq 16>><img @src="setup.ImagePath + '/gwb/16.jpg'" class="evidenceImgs">
+		<</if>>
+		<<if _check eq 17>><img @src="setup.ImagePath + '/gwb/17.jpg'" class="evidenceImgs">
+		<</if>>
+		<<if _check eq 18>><img @src="setup.ImagePath + '/gwb/18.jpg'" class="evidenceImgs">
+		<</if>>
 		<br>
 		<br>
 		@@.mc-action; $companion.name found the evidence!@@<br>

@@ -18,7 +18,8 @@
 			<video autoplay controls muted loop>
 			<source @src="setup.ImagePath+`/ghosts/specials/twins`+_videoIndex+`.mp4`" type="video/mp4">
 			</video>
-		<</replace>><</link>>, @@.mc-thoughts; their cocks filling you, giving you immense pleasure. You moan with each thrust, feeling them control your body as if@@
+		<</replace>>
+	<</link>>
 	<<linkappend "@@.mc-thoughtsLink; you're their toy.@@">>
 		<video autoplay controls muted loop>
 		<source @src="setup.ImagePath + '/ghosts/specials/twins6.mp4'" type="video/mp4">

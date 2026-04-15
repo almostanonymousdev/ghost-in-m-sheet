@@ -3,7 +3,7 @@
 window.messyRoom = {
   trashItems: ["#trash1", "#trash2", "#trash3", "#trash4", "#trash5"],
   nextPassage: "hotelEvent",
-  
+
   placeTrashRandomly: function() {
     this.trashItems.forEach(id => {
       let x = Math.random() * 90 + "%";

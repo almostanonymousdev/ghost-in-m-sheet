@@ -24,9 +24,11 @@
 			@@.mc-speech; It seems like I can feel that you enjoy working out with me.@@<br>
 			@@.notmc-speech; Oh, sorry, we can stop if you want...@@<br>
 			<<if setup.Gym.trainer2OnCooldown()>>
-				@@.mc-speech; Yes, I'm [[not in the mood.|GymInside]]@@<br>@@.mc-thoughts; Enough for today.@@<br><<else>>
+				@@.mc-speech; Yes, I'm [[not in the mood.|GymInside]]@@<br>@@.mc-thoughts; Enough for today.@@<br>
+			<<else>>
 				@@.mc-speech; No, let me [[help you.|gymTrainerEvent2Start]]@@ or @@.mc-speech; Yes, I'm [[not in the mood.|GymInside]]@@<br>
-			<</if>><</linkappend>>
+			<</if>>
+		<</linkappend>>
 	<</if>>
 <<elseif setup.Gym.soloSlotEvening()>>
 	<video autoplay controls muted loop>

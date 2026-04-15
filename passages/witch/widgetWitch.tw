@@ -14,7 +14,8 @@
 				<<run State.variables[_args[0]] = 1>>
 				<<set $mc.money -= _price>>
 			<</link>>@@<br>
-		<<else>>@@.warningtext; I don't have enough money@@<</if>>
+		<<else>>@@.warningtext; I don't have enough money@@
+		<</if>>
 	<</if>>
 	</div>
 <</widget>>

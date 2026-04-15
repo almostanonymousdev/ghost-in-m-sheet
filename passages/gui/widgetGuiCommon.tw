@@ -125,6 +125,8 @@ setup.addLust = function(amount) {
 			<<set $mc.energyMax = 20>>
 			@@.mc-thoughts; <span class="evidenceText">Your <img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> has reached the maximum of 20!</span>@@<br>
 		<</if>>
-		@@.mc-thoughts; <span class="evidenceText">Your fitness level is perfect - 100</span>@@<<else>>
-		@@.mc-thoughts; <span class="evidenceText">Your fitness level has improved (+1): $mc.fit now!</span>@@<</if>>
+		@@.mc-thoughts; <span class="evidenceText">Your fitness level is perfect - 100</span>@@
+	<<else>>
+		@@.mc-thoughts; <span class="evidenceText">Your fitness level has improved (+1): $mc.fit now!</span>@@
+	<</if>>
 <</widget>>

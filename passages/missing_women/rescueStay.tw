@@ -9,7 +9,8 @@
 	@@.mc-thoughts; The ghost dragged you to the missing girl and began to have fun with you, using <<link "@@.usebtn; one after the other@@">>.
 		<<replace "#rescueStayNadia">>
 			<<videoToggle "rescueStayNadia" "rescue/Nadia/Nadiaboth2.mp4" "rescue/Nadia/Nadiaboth1.mp4">>
-		<</replace>><</link>>
+		<</replace>>
+	<</link>>
 	His cock, hot and huge, beat inside you, taking up all your attention. You did not pay attention to the fact that $currentRescueGirl sometimes licked your tits and pussy. But all this soon@@ <<linkappend "@@.enterbtn; ended@@">><br>
 		<video autoplay controls muted loop>
 		<source @src="setup.ImagePath + '/rescue/Nadia/Nadiaend.mp4'" type="video/mp4">
@@ -28,7 +29,8 @@
 	@@.mc-thoughts; The ghost dragged you to the missing girl and began to have fun with you, using <<link "@@.usebtn; one after the other@@">>.
 		<<replace "#rescueStayJulia">>
 			<<videoToggle "rescueStayJulia" "rescue/Julia/Juliaboth2.mp4" "rescue/Julia/Juliaboth1.mp4">>
-		<</replace>><</link>>
+		<</replace>>
+	<</link>>
 	His cock, hot and huge, beat inside you, taking up all your attention. You did not pay attention to the fact that $currentRescueGirl sometimes licked your tits and pussy. But all this soon@@ <<linkappend "@@.enterbtn; ended@@">><br>
 		<video autoplay controls muted loop>
 		<source @src="setup.ImagePath + '/rescue/Julia/Juliaend.mp4'" type="video/mp4">
@@ -47,7 +49,8 @@
 	@@.mc-thoughts; The ghost dragged you to the missing girl and began to have fun with you, using <<link "@@.usebtn; one after the other@@">>.
 		<<replace "#rescueStayVictoria">>
 			<<videoToggle "rescueStayVictoria" "rescue/Victoria/Victoriaboth2.mp4" "rescue/Victoria/Victoriaboth1.mp4">>
-		<</replace>><</link>>
+		<</replace>>
+	<</link>>
 	His cock, hot and huge, beat inside you, taking up all your attention. You did not pay attention to the fact that $currentRescueGirl sometimes licked your tits and pussy. But all this soon@@ <<linkappend "@@.enterbtn; ended@@">><br>
 		<video autoplay controls muted loop>
 		<source @src="setup.ImagePath + '/rescue/Victoria/Victoriaend.mp4'" type="video/mp4">
@@ -66,7 +69,8 @@
 	@@.mc-thoughts; The ghost dragged you to the missing girl and began to have fun with you, using <<link "@@.usebtn; one after the other@@">>.
 		<<replace "#rescueStayJade">>
 			<<videoToggle "rescueStayJade" "rescue/Jade/Jadeboth2.mp4" "rescue/Jade/Jadeboth1.mp4">>
-		<</replace>><</link>>
+		<</replace>>
+	<</link>>
 	His cock, hot and huge, beat inside you, taking up all your attention. You did not pay attention to the fact that $currentRescueGirl sometimes licked your tits and pussy. But all this soon@@ <<linkappend "@@.enterbtn; ended@@">><br>
 		<video autoplay controls muted loop>
 		<source @src="setup.ImagePath + '/rescue/Jade/Jadeend.mp4'" type="video/mp4">
@@ -89,7 +93,8 @@
 			<video autoplay controls muted loop>
 			<source @src="setup.ImagePath+`/rescue/Ash/AshBoth`+_videoIndex+`.mp4`" type="video/mp4">
 			</video>
-		<</replace>><</link>>
+		<</replace>>
+	<</link>>
 	His cock, hot and huge, beat inside you, taking up all your attention. You did not pay attention to the fact that $currentRescueGirl sometimes licked your tits and pussy. But all this soon@@ <<linkappend "@@.enterbtn; ended@@">><br>
 		<video autoplay controls muted loop>
 		<source @src="setup.ImagePath + '/rescue/Ash/AshBothEnd.mp4'" type="video/mp4">

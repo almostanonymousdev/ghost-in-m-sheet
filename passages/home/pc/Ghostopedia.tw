@@ -11,7 +11,8 @@
 	<<if setup.ghostInfoCollected(_g.id) and _g.description neq "">>
 		<<= _g.description>>
 		<<set _hct = setup.ghostHuntConditionText(_g)>>
-		<<if _hct neq "">><br>@@.notmc-speech;<<= _hct>>@@<</if>>
+		<<if _hct neq "">><br>@@.notmc-speech;<<= _hct>>@@
+		<</if>>
 	<<else>>
 		There is no information yet
 	<</if>>
@@ -24,7 +25,8 @@
 <<if previous() eq "Use PC">>
 	@@.backbtn;[[Back|Use PC]]@@<br>
 <<else>>
-	@@.backbtn;<<back>>@@<</if>>
+	@@.backbtn;<<back>>@@
+<</if>>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 <</done>>

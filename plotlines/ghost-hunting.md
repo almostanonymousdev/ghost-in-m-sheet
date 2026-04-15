@@ -18,7 +18,7 @@ The core gameplay revolves around investigating haunted locations to identify an
   * [LFCI.tw](../passages/haunted_houses/general/LFCI.tw) - Look For Cursed Items mechanic
 
 * **Hunt flow** - The core loop of starting, running, and ending a ghost hunt.
-  * [huntStart.tw](../passages/haunted_houses/hunt/huntStart.tw) - Beginning a hunt
+  * [checkHuntStart.tw](../passages/haunted_houses/hunt/checkHuntStart.tw) - Beginning a hunt
   * [huntEnd.tw](../passages/haunted_houses/hunt/huntEnd.tw) - Ending a hunt normally
   * [HuntOverManual.tw](../passages/haunted_houses/hunt/HuntOverManual.tw) - Manually ending a hunt
   * [HuntOverSanity.tw](../passages/haunted_houses/hunt/HuntOverSanity.tw) - Hunt ending due to sanity loss

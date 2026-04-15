@@ -61,7 +61,8 @@
 			<<replace "#blakeInfoAnswer">>@@.mc-speech; I want you to join me for ghost hunting today@@<br>
 				@@.notmc-speech; Yes, of course. I'll be ready. Let's meet by the entrance to the haunted house. <br>
 				But if we find the cursed item, I'll keep it, okay?@@<br>
-				@@.mc-speech; Fine, let's do that.@@<</replace>>
+				@@.mc-speech; Fine, let's do that.@@
+			<</replace>>
 		<</link>>@@<br>
 
 		<span class="CompanionInfoAskForHuntAlone">
@@ -76,9 +77,13 @@
 					<<if (ndef $payForHuntAloneBlake or $payForHuntAloneBlake eq 0) and $mc.money gte 20>><<set $mc.money -= 20>><<set $payForHuntAloneBlake to 1>><</if>>
 
 					<<if $mc.money lt 20>>
-						<<replace "#blakeInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@<</replace>>
+						<<replace "#blakeInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@
+						<</replace>>
 					<<else>>
-					<<replace "#blakeInfoAnswerTwo">>@@.notmc-speech;Owaissa Street? Hmm... Yes, of course. I think I can handle it.@@<</replace>><</if>><</link>>@@@@color: green; <b>-20$</b>@@<br>
+						<<replace "#blakeInfoAnswerTwo">>@@.notmc-speech;Owaissa Street? Hmm... Yes, of course. I think I can handle it.@@
+						<</replace>>
+					<</if>>
+				<</link>>
 
 				@@.enterbtn;<<link "Elm Street - $chanceToSuccessAloneElmBlake %">>
 					<<set $blakeChooseOwaissa to 0>>
@@ -86,9 +91,12 @@
 					<<set $isBlakeGoingForHuntingAlone to 1>>
 					<<if (ndef $payForHuntAloneBlake or $payForHuntAloneBlake eq 0) and $mc.money gte 20>><<set $mc.money -= 20>><<set $payForHuntAloneBlake to 1>><</if>>
 					<<if $mc.money lt 20>>
-						<<replace "#blakeInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@<</replace>>
+						<<replace "#blakeInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@
+						<</replace>>
 					<<else>>
-					<<replace "#blakeInfoAnswerTwo">>@@.notmc-speech;Elm Street? Hmm... Yes, of course. I think I can handle it.@@<</replace>><</if>>
+						<<replace "#blakeInfoAnswerTwo">>@@.notmc-speech;Elm Street? Hmm... Yes, of course. I think I can handle it.@@
+						<</replace>>
+					<</if>>
 				<</link>>@@@@color: green; <b>-20$</b>@@<br>
 
 				<span id="blakeInfoAnswerTwo">

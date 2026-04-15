@@ -38,7 +38,8 @@
 		@@.notmc-speech; "Looks like we got lucky today..."@@<br>
 		@@.notmc-speech; What happened, darling? Are you lost? Do you like walking around naked? We see that someone has already had fun with you, now it's our turn.Consider it a reward for your release.@@<br>
 		@@.mc-thoughts; You wanted to answer that a terrible mistake had been made, but they quickly shut your mouth with your own clothes and [[started fucking you|ghostSpecialEventWraithStart]]@@
-	<</linkreplace>><</if>>
+	<</linkreplace>>
+<</if>>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 <</done>>

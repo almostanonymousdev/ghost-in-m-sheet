@@ -12,7 +12,8 @@
 		<source @src="setup.ImagePath+`/mc/parkeventsex`+_videoIndex+`.mp4`" type="video/mp4">
 		</video>
 
-	<</replace>><</link>><br>
+	<</replace>>
+<</link>>
 @@.mc-speech;Mmmph... it's too much...@@<br>
 @@.notmc-speech;You're loving this, aren't you?@@<br>
 <<linkappend "@@.usebtn; No! Fuck you!@@">>

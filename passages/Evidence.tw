@@ -300,7 +300,8 @@ TM & © 2026 WoMan Co. All rights reserved
 <<if (previous() eq "WitchEndContract") or (tags(previous()).includes("event"))>>
 	@@.backbtn;<<back>>@@<br>
 <<else>>
-	@@.backbtn;<<return>>@@<br><</if>>
+	@@.backbtn;<<return>>@@<br>
+<</if>>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 <</done>>

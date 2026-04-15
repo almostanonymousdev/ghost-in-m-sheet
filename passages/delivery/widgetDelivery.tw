@@ -5,7 +5,8 @@ address ("Amethyst Street, 42"). Last space becomes ", ". */
 <<widget "deliveryAddressFmt">>
 	<<set _src to _args[0]>>
 	<<set _i to _src.lastIndexOf(" ")>>
-<<set _out to _src.substr(0, _i) + ", " + _src.substr(_i + 1)>>_out<</widget>>
+	<<set _out to _src.substr(0, _i) + ", " + _src.substr(_i + 1)>>_out
+<</widget>>
 
 /* Random video from /deliveryhub/<subdir>/N.mp4 where N is a random
 integer in [start, end]. Replaces the 4-10 line <<if>> ladders each

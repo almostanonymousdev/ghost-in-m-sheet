@@ -16,7 +16,8 @@
 	<<set $gotCursedItem to 1>>
 	[[Continue investigating the house|previous()]] Or perhaps... <<linkreplace "Use it">>
 		<<include "UseCursedItem">>
-	<</linkreplace>><br> <</linkappend>>@@
+	<</linkreplace>><br>
+<</linkappend>>@@
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 <</done>>

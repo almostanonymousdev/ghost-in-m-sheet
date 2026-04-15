@@ -34,10 +34,12 @@
 <<elseif not setup.Delivery.isFirstVisit() and previous() isnot "DeliveryMap">>
 	<br>
 	<<if setup.Delivery.hasMetManagerEvent()>>
-		@@.notmc-speech; Oh, $mc.name, come in, don't be shy. What do you want to talk about?@@<<else>>
+		@@.notmc-speech; Oh, $mc.name, come in, don't be shy. What do you want to talk about?@@
+	<<else>>
 		@@.notmc-speech;
 		Hello, you're like umm... Susan? Milana? Doesn't matter, I'm a bit busy right now, let's talk later.
-		If you forgot, you can work here from 08:00 to 20:00. Take orders and go ahead. Good luck.@@<</if>>
+		If you forgot, you can work here from 08:00 to 20:00. Take orders and go ahead. Good luck.@@
+	<</if>>
 	<br>
 
 	<<linkreplace "@@.usebtn;Ask about payment@@">>
@@ -62,7 +64,8 @@
 					@@.mc-speech;No, I'd better go<br>@@
 				<</if>>
 			<</if>>
-		<<else>>@@.notmc-speech; Enough for today, talk to me tomorrow@@<</if>>
+		<<else>>@@.notmc-speech; Enough for today, talk to me tomorrow@@
+		<</if>>
 	<</linkreplace>>
 
 <<elseif previous() is "DeliveryMap">>
