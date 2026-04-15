@@ -6,7 +6,7 @@
       "type": "shell",
       "command": "./build.sh",
       "windows": {
-        "command": "build.bat"
+        "command": ".\\build.bat"
       },
       "group": {
         "kind": "build",
@@ -20,7 +20,7 @@
       "type": "shell",
       "command": "./start.sh",
       "windows": {
-        "command": "start.bat"
+        "command": ".\\start.bat"
       },
       "group": "test",
       "problemMatcher": [],
@@ -32,7 +32,7 @@
       "command": "./start.sh",
       "args": ["assets"],
       "windows": {
-        "command": "start.bat",
+        "command": ".\\start.bat",
         "args": ["assets"]
       },
       "group": "test",
@@ -45,7 +45,7 @@
       "command": "./start.sh",
       "args": ["debug"],
       "windows": {
-        "command": "start.bat",
+        "command": ".\\start.bat",
         "args": ["debug"]
       },
       "group": "test",
@@ -70,7 +70,7 @@
       "type": "shell",
       "command": "./build.sh",
       "windows": {
-        "command": "build.bat"
+        "command": ".\\build.bat"
       },
       "dependsOn": "Clean Build Artifacts",
       "group": "build",

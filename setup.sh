@@ -25,6 +25,58 @@ NC='\033[0m' # No Color
 
 echo -e "${GREEN}Setting up Ghost in M'Sheet...${NC}"
 
+# Check for Git
+echo -e "${GREEN}Checking for Git...${NC}"
+if command -v git >/dev/null 2>&1; then
+    echo -e "${GREEN}Git found.${NC}"
+else
+    echo -e "${YELLOW}Git not found. Attempting to install...${NC}"
+    if command -v apt-get >/dev/null 2>&1; then
+        sudo apt-get update && sudo apt-get install -y git
+    elif command -v dnf >/dev/null 2>&1; then
+        sudo dnf install -y git
+    elif command -v pacman >/dev/null 2>&1; then
+        sudo pacman -S --noconfirm git
+    elif command -v brew >/dev/null 2>&1; then
+        brew install git
+    else
+        echo -e "${RED}Error: Git is required but not installed, and no supported package manager was found.${NC}"
+        echo -e "${RED}Please install Git manually.${NC}"
+        exit 1
+    fi
+    if ! command -v git >/dev/null 2>&1; then
+        echo -e "${RED}Error: Git installation failed. Please install it manually.${NC}"
+        exit 1
+    fi
+    echo -e "${GREEN}Git installed successfully.${NC}"
+fi
+
+# Check for Python 3
+echo -e "${GREEN}Checking for Python 3...${NC}"
+if command -v python3 >/dev/null 2>&1; then
+    echo -e "${GREEN}Python 3 found.${NC}"
+else
+    echo -e "${YELLOW}Python 3 not found. Attempting to install...${NC}"
+    if command -v apt-get >/dev/null 2>&1; then
+        sudo apt-get update && sudo apt-get install -y python3
+    elif command -v dnf >/dev/null 2>&1; then
+        sudo dnf install -y python3
+    elif command -v pacman >/dev/null 2>&1; then
+        sudo pacman -S --noconfirm python
+    elif command -v brew >/dev/null 2>&1; then
+        brew install python3
+    else
+        echo -e "${RED}Error: Python 3 is required but not installed, and no supported package manager was found.${NC}"
+        echo -e "${RED}Please install Python 3 manually.${NC}"
+        exit 1
+    fi
+    if ! command -v python3 >/dev/null 2>&1; then
+        echo -e "${RED}Error: Python 3 installation failed. Please install it manually.${NC}"
+        exit 1
+    fi
+    echo -e "${GREEN}Python 3 installed successfully.${NC}"
+fi
+
 # Check if Tweego already exists
 if [ -f "$TWEEGO_PATH" ]; then
     echo -e "${GREEN}Tweego already installed at $TWEEGO_PATH${NC}"
