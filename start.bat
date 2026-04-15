@@ -29,7 +29,8 @@ if not exist "%STORY_INIT%" (
 )
 copy "%STORY_INIT%" "%STORY_INIT%.bak" >nul
 > "%TEMP%\_gims_image.ps1" echo param($f,$p)
->> "%TEMP%\_gims_image.ps1" echo (Get-Content $f) -replace 'setup\.ImagePath = \"[^\"]*\"', ('setup.ImagePath = \"' + $p + '\"') ^| Set-Content $f
+>> "%TEMP%\_gims_image.ps1" echo $r = (Get-Content $f) -replace 'setup\.ImagePath = \"[^\"]*\"', ('setup.ImagePath = \"' + $p + '\"')
+>> "%TEMP%\_gims_image.ps1" echo Set-Content $f $r
 powershell -ExecutionPolicy Bypass -File "%TEMP%\_gims_image.ps1" "%STORY_INIT%" "!IMAGE_PATH_OVERRIDE!"
 del "%TEMP%\_gims_image.ps1"
 echo Using ImagePath override: !IMAGE_PATH_OVERRIDE!
@@ -42,7 +43,8 @@ copy "%STORY_SCRIPT%" "%STORY_SCRIPT%.bak" >nul
 >> "%TEMP%\_gims_debug.ps1" echo $c = Get-Content $f -Raw
 >> "%TEMP%\_gims_debug.ps1" echo $d = "Config.debug = true;" + [char]10 + "`$(document).one(':storyready', function() { document.documentElement.removeAttribute('data-debug-view'); });"
 >> "%TEMP%\_gims_debug.ps1" echo $i = $c.IndexOf([char]10)
->> "%TEMP%\_gims_debug.ps1" echo if ($i -ge 0) { $c.Substring(0,$i+1) + $d + [char]10 + $c.Substring($i+1) } else { $c + [char]10 + $d } ^| Set-Content $f -NoNewline
+>> "%TEMP%\_gims_debug.ps1" echo $r = if ($i -ge 0) { $c.Substring(0,$i+1) + $d + [char]10 + $c.Substring($i+1) } else { $c + [char]10 + $d }
+>> "%TEMP%\_gims_debug.ps1" echo Set-Content $f $r -NoNewline
 powershell -ExecutionPolicy Bypass -File "%TEMP%\_gims_debug.ps1" "%STORY_SCRIPT%"
 del "%TEMP%\_gims_debug.ps1"
 echo SugarCube debug mode enabled
