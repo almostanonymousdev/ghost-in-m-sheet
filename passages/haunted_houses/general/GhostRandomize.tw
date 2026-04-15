@@ -29,6 +29,7 @@
 <<unset $highpriestess>>
 <<unset $ghostIsTrapped>>
 <<unset $cursedHuntActive>>
+<<unset $cursedHuntEndTime>>
 <<unset $isWeakenGhost>>
 <<unset $moneyFromWeakenTheGhost>>
 <<set $temperature to 0>>

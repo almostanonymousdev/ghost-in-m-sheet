@@ -56,6 +56,7 @@
 <<widget "leave">>
 	<<set $wishesCount -=1>>
 	<<set $cursedHuntActive to 0>>
+	<<unset $cursedHuntEndTime>>
 	<<if $isElm eq 1>>
 		<<goto "Elm Street">>
 	<<elseif $isOwaissa eq 1>>
@@ -88,6 +89,7 @@
 	<<set $wishesCount -=1>>
 	<<set $hours to 6>>
 	<<set $cursedHuntActive to 0>>
+	<<unset $cursedHuntEndTime>>
 	<<goto "HuntOverTime">>
 <</widget>>
 

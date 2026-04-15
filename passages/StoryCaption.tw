@@ -77,7 +77,6 @@
 
 <br>Ghost in M'Sheet 0.5.0
 <a class="linkselector" data-passage="ChangeLog">ChangeLog</a><br>
-<span class="debug"><<link "@@color:red;Fix Light/Exit Issue@@" `passage()`>><<set $cursedHuntActive to 0>><</link>></span><br>
 <<linkreplace "@@color:red;<em>Change Tools Timer</em>@@">>
 	<<linkreplace "Set according to the MC's level(by default)">>
 		<<set $changeToolsActivated to 1>>

@@ -46,6 +46,7 @@
 	var DURATION_MS = 20 * 1000;
 	var INTERVAL_MS = 1000;
 	var endTime = Date.now() + DURATION_MS;
+	sv.cursedHuntEndTime = endTime;
 	var cycle = 0;
 
 	function tick() {
@@ -63,6 +64,7 @@
 		var isHidden = sv.isInHideSpot === 1;
 		var isDeogen = sv.ghost.name === "Deogen";
 		sv.cursedHuntActive = 0;
+		delete sv.cursedHuntEndTime;
 		if (isDeogen === isHidden) {
 			Engine.play("cursedHuntStart");
 		}

@@ -814,9 +814,18 @@
 <</if>>
 
 <<script>>
-if (State.variables.cursedHuntActive === 1) {
-    $('.cursedHuntLinkDisable').addClass('disabled-linkSpecial');
-};
+(function () {
+    var sv = State.variables;
+    if (sv.cursedHuntActive === 1) {
+        if (sv.cursedHuntEndTime && Date.now() >= sv.cursedHuntEndTime) {
+            sv.cursedHuntActive = 0;
+            delete sv.cursedHuntEndTime;
+            $('.cursedHuntLinkDisable').removeClass('disabled-linkSpecial');
+        } else {
+            $('.cursedHuntLinkDisable').addClass('disabled-linkSpecial');
+        }
+    }
+})();
 <</script>>
 
 <<if $update4 neq 1>>
