@@ -72,7 +72,7 @@ if exist "%TWEEGO_EXE%" (
     echo Tweego not found. Downloading...
 
     :: Download Tweego using PowerShell
-    powershell -Command "Invoke-WebRequest -Uri '%TWEEGO_URL%' -OutFile 'tweego.zip'"
+    powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%TWEEGO_URL%' -OutFile 'tweego.zip' -UseBasicParsing"
     if !errorlevel! neq 0 (
         echo Error: Failed to download Tweego.
         exit /b 1
@@ -94,7 +94,7 @@ if exist "%SUGARCUBE_INSTALLED_DIR%" (
     echo SugarCube not found. Downloading...
 
     :: Download SugarCube using PowerShell
-    powershell -Command "Invoke-WebRequest -Uri '%SUGARCUBE_URL%' -OutFile 'sugarcube.zip'"
+    powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%SUGARCUBE_URL%' -OutFile 'sugarcube.zip' -UseBasicParsing"
     if !errorlevel! neq 0 (
         echo Error: Failed to download SugarCube.
         exit /b 1
