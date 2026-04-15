@@ -1,3 +1,8 @@
 {
     "twee3LanguageTools.storyformat.current": "sugarcube-2",
+    "playwright.reuseBrowser": false,
+    "playwright.showTrace": false,
+    "playwright.configs": [
+        "playwright.config.js"
+    ]
 }

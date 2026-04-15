@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, goToPassage } = require('./helpers');
+const { openGame, resetGame, setVar, getVar, goToPassage } = require('../helpers');
 
 /**
  * Click a SugarCube link whose visible text matches `linkText` and wait
