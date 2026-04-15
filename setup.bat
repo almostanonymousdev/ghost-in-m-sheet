@@ -86,11 +86,21 @@ if exist "%TWEEGO_EXE%" (
     echo Tweego installed successfully!
 )
 
-:: Check if SugarCube already exists
-if exist "%SUGARCUBE_INSTALLED_DIR%" (
-    echo SugarCube already installed at %SUGARCUBE_INSTALLED_DIR%
-    echo Skipping download...
-) else (
+:: Check if SugarCube already exists with the correct version
+set SUGARCUBE_FORMAT_JS=%SUGARCUBE_INSTALLED_DIR%\format.js
+set SUGARCUBE_NEEDS_INSTALL=1
+if exist "%SUGARCUBE_FORMAT_JS%" (
+    powershell -Command "if (Select-String -Path '%SUGARCUBE_FORMAT_JS%' -Pattern '\"version\":\"%SUGARCUBE_VERSION%\"' -Quiet) { exit 0 } else { exit 1 }"
+    if !errorlevel! equ 0 (
+        echo SugarCube %SUGARCUBE_VERSION% already installed.
+        echo Skipping download...
+        set SUGARCUBE_NEEDS_INSTALL=0
+    ) else (
+        echo SugarCube found but not version %SUGARCUBE_VERSION%. Reinstalling...
+        rmdir /s /q "%SUGARCUBE_INSTALLED_DIR%"
+    )
+)
+if !SUGARCUBE_NEEDS_INSTALL! equ 1 (
     echo SugarCube not found. Downloading...
 
     :: Download SugarCube using PowerShell

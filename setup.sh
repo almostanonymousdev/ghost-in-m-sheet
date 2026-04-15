@@ -104,10 +104,19 @@ else
     echo -e "${GREEN}Tweego installed successfully!${NC}"
 fi
 
-if [ -d "$SUGARCUBE_INSTALLED_PATH" ]; then
-    echo -e "${GREEN}SugarCube already installed at $SUGARCUBE_INSTALLED_PATH${NC}"
-    echo -e "${YELLOW}Skipping download...${NC}"
-else
+SUGARCUBE_FORMAT_JS="${SUGARCUBE_INSTALLED_PATH}/format.js"
+SUGARCUBE_NEEDS_INSTALL=true
+if [ -f "$SUGARCUBE_FORMAT_JS" ]; then
+    if grep -q "\"version\":\"${SUGARCUBE_VERSION}\"" "$SUGARCUBE_FORMAT_JS"; then
+        echo -e "${GREEN}SugarCube ${SUGARCUBE_VERSION} already installed.${NC}"
+        echo -e "${YELLOW}Skipping download...${NC}"
+        SUGARCUBE_NEEDS_INSTALL=false
+    else
+        echo -e "${YELLOW}SugarCube found but not version ${SUGARCUBE_VERSION}. Reinstalling...${NC}"
+        rm -rf "$SUGARCUBE_INSTALLED_PATH"
+    fi
+fi
+if [ "$SUGARCUBE_NEEDS_INSTALL" = true ]; then
     echo -e "${YELLOW}SugarCube not found. Downloading...${NC}"
 
     # Download SugarCube
