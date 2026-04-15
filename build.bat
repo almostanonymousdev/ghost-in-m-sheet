@@ -9,13 +9,13 @@ cd /d "%~dp0"
 :: Configuration
 set OUTPUT_FILE=ghost-in-msheet.html
 set PASSAGES_DIR=passages
-set TWEEGO_PATH=tweego-2.1.1-windows-x64\tweego.exe
+set TWEEGO_EXE=tweego-2.1.1-windows-x64\tweego.exe
 
 echo Starting build process...
 
 :: Check if Tweego exists locally
-if not exist "%TWEEGO_PATH%" (
-    echo Tweego not found at %TWEEGO_PATH%
+if not exist "%TWEEGO_EXE%" (
+    echo Tweego not found at %TWEEGO_EXE%
     echo Attempting to use system-installed tweego...
     where tweego >nul 2>&1
     if !errorlevel! neq 0 (
@@ -23,7 +23,7 @@ if not exist "%TWEEGO_PATH%" (
         echo Download from: https://github.com/tmedwards/tweego
         exit /b 1
     )
-    set TWEEGO_PATH=tweego
+    set TWEEGO_EXE=tweego
 )
 
 :: Check if passages directory exists
@@ -67,7 +67,7 @@ echo Ghost check passed.
 :: Build the story
 echo Building story from %PASSAGES_DIR% to %OUTPUT_FILE%...
 
-"%TWEEGO_PATH%" -o "%OUTPUT_FILE%" "%PASSAGES_DIR%"
+"%TWEEGO_EXE%" -o "%OUTPUT_FILE%" "%PASSAGES_DIR%"
 if !errorlevel! neq 0 (
     echo Error: Build failed
     exit /b 1
