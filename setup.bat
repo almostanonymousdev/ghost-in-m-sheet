@@ -88,36 +88,32 @@ if exist "%TWEEGO_EXE%" (
 
 :: Check if SugarCube already exists with the correct version
 set SUGARCUBE_FORMAT_JS=%SUGARCUBE_INSTALLED_DIR%\format.js
-set SUGARCUBE_NEEDS_INSTALL=1
-if exist "%SUGARCUBE_FORMAT_JS%" (
-    powershell -Command "if (Select-String -Path '%SUGARCUBE_FORMAT_JS%' -Pattern '\"version\":\"%SUGARCUBE_VERSION%\"' -Quiet) { exit 0 } else { exit 1 }"
-    if !errorlevel! equ 0 (
-        echo SugarCube %SUGARCUBE_VERSION% already installed.
-        echo Skipping download...
-        set SUGARCUBE_NEEDS_INSTALL=0
-    ) else (
-        echo SugarCube found but not version %SUGARCUBE_VERSION%. Reinstalling...
-        rmdir /s /q "%SUGARCUBE_INSTALLED_DIR%"
-    )
+if not exist "%SUGARCUBE_FORMAT_JS%" goto :install_sugarcube
+powershell -Command "if (Select-String -Path '%SUGARCUBE_FORMAT_JS%' -Pattern ('\"version\":\"' + '%SUGARCUBE_VERSION%' + '\"') -Quiet) { exit 0 } else { exit 1 }"
+if !errorlevel! equ 0 (
+    echo SugarCube %SUGARCUBE_VERSION% already installed.
+    echo Skipping download...
+    goto :sugarcube_done
 )
-if !SUGARCUBE_NEEDS_INSTALL! equ 1 (
-    echo SugarCube not found. Downloading...
+echo SugarCube found but not version %SUGARCUBE_VERSION%. Reinstalling...
+rmdir /s /q "%SUGARCUBE_INSTALLED_DIR%"
 
-    :: Download SugarCube using PowerShell
-    powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%SUGARCUBE_URL%' -OutFile 'sugarcube.zip' -UseBasicParsing"
-    if !errorlevel! neq 0 (
-        echo Error: Failed to download SugarCube.
-        exit /b 1
-    )
-
-    :: Extract SugarCube into storyformats directory
-    echo Extracting SugarCube...
-    if not exist "%SUGARCUBE_DIR%" mkdir "%SUGARCUBE_DIR%"
-    powershell -Command "Expand-Archive -Path 'sugarcube.zip' -DestinationPath '%SUGARCUBE_DIR%' -Force"
-    del sugarcube.zip
-
-    echo SugarCube %SUGARCUBE_VERSION% installed successfully!
+:install_sugarcube
+echo Downloading SugarCube %SUGARCUBE_VERSION%...
+powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%SUGARCUBE_URL%' -OutFile 'sugarcube.zip' -UseBasicParsing"
+if !errorlevel! neq 0 (
+    echo Error: Failed to download SugarCube.
+    exit /b 1
 )
+
+:: Extract SugarCube into storyformats directory
+echo Extracting SugarCube...
+if not exist "%SUGARCUBE_DIR%" mkdir "%SUGARCUBE_DIR%"
+powershell -Command "Expand-Archive -Path 'sugarcube.zip' -DestinationPath '%SUGARCUBE_DIR%' -Force"
+del sugarcube.zip
+
+echo SugarCube %SUGARCUBE_VERSION% installed successfully!
+:sugarcube_done
 
 :: Configure git to use the repo's hooks
 git config core.hooksPath .githooks
