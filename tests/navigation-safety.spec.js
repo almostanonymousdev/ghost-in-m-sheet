@@ -280,4 +280,90 @@ test.describe('navigation safety', () => {
     expect(violations, violations.join('\n')).toHaveLength(0);
   });
 
+  test('passages that disable sidebar nav and link to each other must not rely on <<return>>/<<back>>', () => {
+    // Build a map of passage name → passage data
+    const passageMap = new Map();
+    for (const p of allPassages) {
+      passageMap.set(p.name, p);
+    }
+
+    // Find passages that disable sidebar navigation
+    const disablesSidebar = (body) =>
+      /<<addclass\s+["'].linkselector["']\s+["']disabled-link["']>>/.test(body);
+
+    // Extract [[link]] targets from a passage body
+    function getLinkTargets(body) {
+      const targets = new Set();
+      // [[display->target]] or [[target]]
+      const linkRe = /\[\[(?:[^\]|]*->|[^\]|]*\|)?([^\]|]+)\]\]/g;
+      let m;
+      while ((m = linkRe.exec(body)) !== null) {
+        targets.add(m[1].trim());
+      }
+      return targets;
+    }
+
+    const violations = [];
+
+    for (const p of allPassages) {
+      if (shouldSkip(p)) continue;
+      if (!disablesSidebar(p.body)) continue;
+
+      const targets = getLinkTargets(p.body);
+      for (const targetName of targets) {
+        const target = passageMap.get(targetName);
+        if (!target) continue;
+        if (!disablesSidebar(target.body)) continue;
+
+        // Both passages disable sidebar nav and p links to target.
+        // If target only uses <<return>>/<<back>> to exit, clicking
+        // back will return to p, and the player may loop.
+        const usesOnlyReturnOrBack =
+          (/<<return>>|<<back>>/.test(target.body)) &&
+          !(/<<goto\s/.test(target.body));
+
+        if (usesOnlyReturnOrBack) {
+          violations.push(
+            `${loc(p)} "${p.name}" links to "${targetName}" — both disable ` +
+            `sidebar navigation, but "${targetName}" relies on <<return>>/<<back>> ` +
+            `which can loop between them, trapping the player`
+          );
+        }
+      }
+    }
+
+    expect(violations, violations.join('\n')).toHaveLength(0);
+  });
+
+  test('passages that disable sidebar nav must have at least one exit link', () => {
+    // Passages that are only ever <<include>>-d from other passages;
+    // exit navigation is provided by the parent passage.
+    const INCLUDED_ONLY = new Set([
+      'findStolenClothes',
+    ]);
+
+    const violations = [];
+
+    for (const p of allPassages) {
+      if (shouldSkip(p)) continue;
+      if (INCLUDED_ONLY.has(p.name)) continue;
+
+      const disables = /<<addclass\s+["'].linkselector["']\s+["']disabled-link["']>>/.test(p.body);
+      if (!disables) continue;
+
+      // Must have some form of navigation out
+      const hasExit = hasNavigation(p.body) ||
+        /<<return>>|<<back>>/.test(p.body);
+
+      if (!hasExit) {
+        violations.push(
+          `${loc(p)} "${p.name}" disables sidebar navigation but has no exit ` +
+          `link — player will be trapped`
+        );
+      }
+    }
+
+    expect(violations, violations.join('\n')).toHaveLength(0);
+  });
+
 });

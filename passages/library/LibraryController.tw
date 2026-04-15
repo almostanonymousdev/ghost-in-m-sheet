@@ -27,7 +27,7 @@ setup.Library = (function () {
 			return v('isBrookePossessed') === 1;
 		},
 		brookIsWithRain: function () {
-			return (v('isBrookePossessedCD') || 0) <= 2;
+			return v('isBrookePossessed') === 0 && (v('isBrookePossessedCD') || 0) <= 2;
 		},
 		canMeetBrookAtLibrary: function () {
 			return !this.brookIsPossessed() && !this.brookIsWithRain();

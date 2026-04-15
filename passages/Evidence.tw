@@ -297,7 +297,9 @@ TM & © 2026 WoMan Co. All rights reserved
 </section>
 </div>
 
-<<if (previous() eq "WitchEndContract") or (tags(previous()).includes("event"))>>
+<<if (previous() eq "guide") and (def $guideReturnPassage)>>
+	@@.backbtn;<<link "Back">><<goto $guideReturnPassage>><</link>>@@<br>
+<<elseif (previous() eq "WitchEndContract") or (tags(previous()).includes("event"))>>
 	@@.backbtn;<<back>>@@<br>
 <<else>>
 	@@.backbtn;<<return>>@@<br>

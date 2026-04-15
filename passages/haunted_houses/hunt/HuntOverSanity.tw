@@ -170,7 +170,6 @@
 		<<run setup.Companion.resetAliceWorkIfNeeded()>>
 		<<run setup.Companion.clearBlakeCursedItem()>>
 		<<run setup.Companion.resetHuntState()>>
-		<<run setup.CursedItems.rollForCursedItem()>>
 		@@.movebtn;[[Next|Sleep]]@@
 
 	<</if>>

@@ -791,6 +791,7 @@
 <<if ndef $update22>>
 <<include "update1">>
 <</if>>
+<<if $cheatBackForward>><<run $("body").addClass("show-history")>><</if>>
 
 <<if ndef $update0909>>
 <<include "update3">>

@@ -11,6 +11,7 @@
 <</if>>
 <<if (previous() is "HuntOverSanity" or previous() is "huntEnd" or previous() is "cursedHuntStart")>>
 <<set $isPenaltyOn to 1>>
+<<run setup.CursedItems.rollForCursedItem()>>
 <</if>>
 
 <<if (previous() is "HuntOverSanity" or previous() is "huntEnd" or previous() is "cursedHuntStart") and $ghost.name eq "Wraith">>

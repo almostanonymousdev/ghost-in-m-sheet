@@ -8,10 +8,10 @@ sugarcube-2:
     eventRandomizer:
       name: eventRandomizer
       description: "Triggers a ghost interaction event for the given body-part key.
-        Args: eventKey (string, one of 'brain', 'tits', 'ass', 'bottom', 'mouth',
-        'pussy', 'anal'). Sets $argForRandomizer to the key and _eventTriggered
-        to true. Selects a video based on current clothing state and active
-        haunted house."
+        Args: eventKey (string, one of 'brain', 'tits', 'ass', 'bottom',
+        'mouth', 'pussy', 'anal'). Sets $argForRandomizer to the key and
+        _eventTriggered to true. Selects a video based on current clothing state
+        and active haunted house."
     eventRandomizerText:
       name: eventRandomizerText
       description: "Displays the text and stat changes for the current ghost
@@ -20,9 +20,9 @@ sugarcube-2:
         which body-part dialogue and effects to show."
     companionHelpOption:
       name: companionHelpOption
-      description: "Renders the companion help button for ghost events. Shows
-        a scene-replace link for Brook/Alice/Blake if aroused, or a simple
-        passage link for other companions. No args."
+      description: Renders the companion help button for ghost events. Shows a
+        scene-replace link for Brook/Alice/Blake if aroused, or a simple passage
+        link for other companions. No args.
     CompExp:
       name: CompExp
       description: "Adds experience points to the active companion ($companion).
@@ -78,13 +78,13 @@ sugarcube-2:
     includeTimeEventClothesHunt:
       name: includeTimeEventClothesHunt
       description: Advances time by 1 hour, runs the event check, then attempts a
-        clothes-steal event. Falls through to checkHuntStart if no event fires. Does
-        nothing during an active cursed hunt ($cursedHuntActive eq 1).
+        clothes-steal event. Falls through to checkHuntStart if no event fires.
+        Does nothing during an active cursed hunt ($cursedHuntActive eq 1).
     includeTimeEventHunt:
       name: includeTimeEventHunt
       description: Advances time by 1 hour, runs the event check, then falls through
-        to checkHuntStart if no event fires. Does nothing during an active cursed
-        hunt ($cursedHuntActive eq 1).
+        to checkHuntStart if no event fires. Does nothing during an active
+        cursed hunt ($cursedHuntActive eq 1).
     includeStyle:
       name: includeStyle
       description: Injects CSS background-image for the current room based on
@@ -113,8 +113,8 @@ sugarcube-2:
     seduceGhostMinigameMenu:
       name: seduceGhostMinigameMenu
       description: Renders the interactive action buttons for the seduce-ghost
-        minigame. Button choices depend on $minigameVideo state and current stats.
-        Action logic is delegated to setup.SeduceGhostMinigame.
+        minigame. Button choices depend on $minigameVideo state and current
+        stats. Action logic is delegated to setup.SeduceGhostMinigame.
     seduceGhostMinigameText:
       name: seduceGhostMinigameText
       description: Renders the dialogue and stat feedback text for the current
@@ -412,3 +412,7 @@ sugarcube-2:
       name: addEnergy
     addFit:
       name: addFit
+    deliveryTrackCorrect:
+      name: deliveryTrackCorrect
+    deliveryTipCheck:
+      name: deliveryTipCheck

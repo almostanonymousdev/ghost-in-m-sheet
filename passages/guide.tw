@@ -1,4 +1,5 @@
 :: guide {"position":"100,600","size":"100,100"}
+<<if previous() neq "Evidence">><<set $guideReturnPassage to previous()>><</if>>
 	<b>Welcome to the game!</b>
 This game is similar to titles like Phasmophobia and Demonologist. If you are familiar with them, you will find it easy to get the hang of things. Here's a brief guide:
 
@@ -27,11 +28,7 @@ This game is similar to titles like Phasmophobia and Demonologist. If you are fa
 <</linkreplace>>
 
 <</nobr>>
-<<if (previous() eq "WitchEndContract") or (tags(previous()).includes("event"))>>
-@@.backbtn;<<back>>@@<br>
-<<else>>
-@@.backbtn;<<return>>@@<br>
-<</if>>
+@@.backbtn;<<link "Back">><<goto $guideReturnPassage>><</link>>@@<br>
 <<done>>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
