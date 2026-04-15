@@ -31,3 +31,6 @@ node_modules/
 # Playwright
 test-results/
 playwright-report/
+
+# Claude code files
+.claude/CLAUDE.local.md

@@ -14,6 +14,7 @@ This fork is maintained independently and the original author, Trykowka, is not 
   - Download from: <https://github.com/tmedwards/tweego>
   - Or use the automated setup script below
 - Python 3 (for validation checks during build)
+- **Windows users:** PowerShell 5+ (included with Windows 10/11)
 
 ### Setup
 
@@ -186,7 +187,6 @@ You can customize the build process by editing:
 ## Documentation
 
 - [Setup Guide](SETUP.md) - Detailed setup instructions
-- [Build Instructions](BUILD_INSTRUCTIONS.md) - Advanced build options
 
 ## License
 

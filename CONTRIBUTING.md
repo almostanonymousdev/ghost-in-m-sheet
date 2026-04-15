@@ -51,7 +51,7 @@ If you want to contribute code or Twee/story content directly:
 ### PR Guidelines
 
 - Keep PRs focused -- one feature or fix per PR
-- Reference the related issue (e.g. `Closes #12`) in your PR description
+- Reference the related issue (e.g. `Fixes #12`) in your PR description
 - For story/plotline content, include a brief summary of the narrative and how it fits the game
 - Asset contributions should follow the existing pattern in `asset-placeholders/`
 
@@ -86,4 +86,4 @@ If you want to contribute code or Twee/story content directly:
 
 ## Questions?
 
-If you're unsure where to start, open a [Discussion](../../discussions) and the community or an admin will help you out.
+If you're unsure where to start, open a [Discussion](../../discussions) and we'll help you out.
