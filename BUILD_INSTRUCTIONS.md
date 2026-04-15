@@ -4,8 +4,10 @@
 
 - Tweego (Twee/Twine compiler)
   - Download from: <https://github.com/tmedwards/tweego>
-  - Place in the root directory as `tweego-2.1.1-linux-x64/tweego` (or update the path in build.sh)
+  - Or run `setup.sh` (Linux/macOS) / `setup.bat` (Windows) to install automatically
   - Or install system-wide and ensure `tweego` is in your PATH
+- Python 3 (for validation checks during build)
+- **Windows users:** PowerShell 5+ (included with Windows 10/11)
 
 ## Quick Start
 
@@ -17,7 +19,11 @@
 4. Choose "Build Story" to build the project
 5. Choose "Open in Browser" to build the story and open it in your default browser
 
+VS Code tasks automatically detect your OS and run the correct script.
+
 ### Using Command Line
+
+**Linux / macOS:**
 
 ```bash
 # Build the story
@@ -27,10 +33,20 @@
 ./start.sh
 
 # Clean build artifacts
-rm -f tgh-fork.html
+rm -f ghost-in-msheet.html
+```
 
-# Rebuild
-./build.sh
+**Windows:**
+
+```cmd
+:: Build the story
+build.bat
+
+:: Build and open the story in your default browser
+start.bat
+
+:: Clean build artifacts
+del ghost-in-msheet.html
 ```
 
 ## VS Code Integration
@@ -69,19 +85,24 @@ npm run watch
 
 This will automatically rebuild the story whenever source files change.
 
-### With npm (if Node.js is available)
+### With npm (Cross-Platform)
+
+npm scripts automatically detect your OS and run the correct build script:
 
 ```bash
 # Install dependencies
 npm install
 
+# One-time setup (downloads Tweego & SugarCube)
+npm run setup
+
 # Build
 npm run build
 
-# Start server
+# Build and open in browser
 npm start
 
-# Watch for changes
+# Watch for changes (Linux only, requires inotify-tools)
 npm run watch
 
 # Clean build artifacts
@@ -111,7 +132,7 @@ npm run rebuild
 
 ## Output
 
-The build process creates `tgh-fork.html` in the project root directory, which can be:
+The build process creates `ghost-in-msheet.html` in the project root directory, which can be:
 
 - Opened directly in a web browser
 - Served using a local development server
@@ -121,7 +142,8 @@ The build process creates `tgh-fork.html` in the project root directory, which c
 
 You can customize the build process by editing:
 
-- `build.sh`: Main build script
-- `start.sh`: Build-and-open-in-browser script
-- `.vscode/tasks.json`: VS Code task definitions
+- `build.sh` / `build.bat`: Main build script (Linux+macOS / Windows)
+- `start.sh` / `start.bat`: Build-and-open-in-browser script
+- `setup.sh` / `setup.bat`: One-time setup script
+- `.vscode/tasks.json`: VS Code task definitions (auto-detects OS)
 - `.vscode/launch.json`: VS Code debug configurations
