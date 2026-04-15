@@ -67,11 +67,6 @@ if ! python3 "$SCRIPT_DIR/check_ghosts.py"; then
 fi
 echo -e "${GREEN}Ghost check passed.${NC}"
 
-echo -e "${GREEN}Checking Twee formatting...${NC}"
-if ! python3 "$SCRIPT_DIR/check_format.py"; then
-    echo -e "${YELLOW}Warning: Formatting issues detected (non-blocking).${NC}"
-fi
-
 # Build the story
 echo -e "${GREEN}Building story from $PASSAGES_DIR to $OUTPUT_FILE...${NC}"
 
