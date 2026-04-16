@@ -3,6 +3,7 @@ v.0.5.1
 - Added cursed home item events: after losing a haunted house run, there is a 40% chance a ghost curses one of your household objects (TV, computer, bed, shower, or bathtub), triggering a unique encounter when used
 - All companions can now be undressed during ghost hunts as their levels increase
 - Disabled back/forward history buttons by default (can be re-enabled via Cheats menu)
+- Adjust the delivery minigame so that it sucks less
 <<linkappend "v.0.4.8">>
 	- Added a task for summoning the succubus
 	- Added events for summoning the succubus

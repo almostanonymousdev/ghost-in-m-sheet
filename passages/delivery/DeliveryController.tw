@@ -105,7 +105,7 @@ setup.Delivery = (function () {
 			return mc().corruption >= 2;
 		},
 		hasMetManagerEvent: function () {
-			return State.hasVisited('DeliveryManagerEventStart');
+			return hasVisited('DeliveryManagerEventStart');
 		},
 
 		// --- Pizza / Package / Burger / Papers gate checks -------

@@ -278,6 +278,14 @@ test.describe('Delivery Controller', () => {
     expect(afterCD).toBe(true);
   });
 
+  test('hasMetManagerEvent does not throw', async () => {
+    // act — State.hasVisited is not a function; the correct global is hasVisited()
+    const result = await callSetup(page, 'setup.Delivery.hasMetManagerEvent()');
+
+    // assert
+    expect(result).toBe(false);
+  });
+
   // --- Corruption gates ---
 
   test('canAcceptPizzaDeal requires corruption >= 3', async () => {
