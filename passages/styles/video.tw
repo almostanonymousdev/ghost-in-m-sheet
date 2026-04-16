@@ -1,6 +1,7 @@
 :: StyleVideoHeight
 <style>
 video {
-height: 500px;
+	max-height: 500px;
+	height: auto;
 }
 </style>

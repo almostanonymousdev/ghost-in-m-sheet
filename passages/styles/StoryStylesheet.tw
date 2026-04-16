@@ -1,20 +1,48 @@
 :: StoryStylesheet [stylesheet]
-@import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Amatic+SC&family=Creepster&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Cormorant&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Amatic+SC&family=Cormorant&family=Creepster&family=Kode+Mono:wght@400..700&display=swap');
 
+/* ===== CSS Custom Properties ===== */
+:root {
+  --color-mc-pink: #ff99dd;
+  --color-mc-pink-link: #FF1493;
+  --color-mc-pink-hover: #f663b2;
+  --color-mc-thoughts: #eee;
+  --color-mc-thoughts-link: #777777;
+  --color-npc-blue: #3486eb;
+  --color-npc-blue-link: #0036ce;
+  --color-npc-blue-muted: #114d96;
+  --color-nav-blue: #3498db;
+  --color-back-blue: #428ec2;
+  --color-enter-blue: #84a0e4;
+  --color-use-yellow: #c2cc51;
+  --color-use-yellow-hover: #d9ddad;
+  --color-price-green: #17B169;
+  --color-ghost-green: #8FBC8F;
+  --color-delivery-purple: #643069;
+  --outline-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+  --btn-transition: color 0.3s, border-color 0.3s;
+  --btn-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  --btn-shadow-light: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  --hover-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+  --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  --card-shadow-hover: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* ===== Base Elements ===== */
 video {
 	display: block;
 	width: 100%;
 }
 
-/* hovertip v2.0 - Start */
+a:hover {
+	text-decoration: none;
+}
+
+/* ===== Hovertip v2.0 ===== */
 .hoverTip {
 	display: inline-block;
 	top: 4px;
 	border-width: 0px;
-
 }
 .hoverTipTxt {
 	position: relative;
@@ -30,9 +58,6 @@ video {
 }
 .hoverBox {
 	padding: 3px 10px;
-	width: intrinsic;  /* Safari/WebKit uses a non-standard name */
-	width: -webkit-max-content;  /* Chrome */
-	width: -moz-max-content;  /* Firefox/Gecko */
 	width: max-content;
 	max-width: 330px;
 	line-height: initial;
@@ -40,18 +65,14 @@ video {
 	color: white;
 	background-color: black;
 	border: #7f7f7f solid 2px;
-	-webkit-border-radius: 6px;
-		-moz-border-radius: 6px;
-			border-radius: 6px;
-	-webkit-box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.75);
-		-moz-box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.75);
-			box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.75);
+	border-radius: 6px;
+	box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.75);
 	z-index: 100;
 }
 .hoverTail::after {
 	content: "";
 	position: absolute;
-	top: 100%;  /* At the bottom of the tooltip */
+	top: 100%;
 	left: 50%;
 	margin-left: -5px;
 	border-width: 8px;
@@ -60,114 +81,317 @@ video {
 	z-index: 100;
 }
 .hoverBox a {
-	-webkit-transition-duration: unset;
-		-moz-transition-duration: unset;
-		-o-transition-duration: unset;
-			transition-duration: unset;
+	transition-duration: unset;
 }
 #ui-bar .hoverBox {
 	max-width: 230px;
 }
-/* hovertip v2.0 - End */
 
+/* ===== UI Bar ===== */
 #ui-bar-history {
 	display: none;
 }
 body.show-history #ui-bar-history {
 	display: block;
 }
+#ui-bar-body {
+	overflow-x: hidden;
+}
 
+/* ===== Page Backgrounds ===== */
 body.ghoststreet {
-  background-image: url('assets/img/ghoststreet.jpg');
-  background-size: cover;
+	background-image: url('assets/img/ghoststreet.jpg');
+	background-size: cover;
 }
-
 body.city {
-  background-image: url('assets/img/city.jpg');
-  background-size: cover;
+	background-image: url('assets/img/city.jpg');
+	background-size: cover;
 }
 
+/* ===== Room Backgrounds — Shared Base ===== */
+.owaissaKitchenDark, .owaissaKitchenLight,
+.owaissaHallwayLight, .owaissaHallwayDark,
+.owaissaLivingroomLight, .owaissaLivingroomDark,
+.owaissaBedroomLight, .owaissaBedroomDark,
+.owaissaBathroomLight, .owaissaBathroomDark,
+.elmBasementLight, .elmBasementDark,
+.elmKitchenLight, .elmKitchenDark,
+.elmBathroomLight, .elmBathroomDark,
+.elmBathroomTwoLight, .elmBathroomTwoDark,
+.elmBedroomLight, .elmBedroomDark,
+.elmBedroomTwoLight, .elmBedroomTwoDark,
+.elmNurseryLight, .elmNurseryDark,
+.elmHallwayLight, .elmHallwayDark,
+.elmHallwayTwoLight, .elmHallwayTwoDark,
+.enigmaBasementLight, .enigmaBasementDark,
+.enigmaKitchenLight, .enigmaKitchenDark,
+.enigmaBathroomLight, .enigmaBathroomDark,
+.enigmaRoomALight, .enigmaRoomADark,
+.enigmaBedroomLight, .enigmaBedroomDark,
+.enigmaRoomBLight, .enigmaRoomBDark,
+.enigmaRoomCLight, .enigmaRoomCDark,
+.enigmaHallwayLight, .enigmaHallwayDark,
+.enigmaLivingroomLight, .enigmaLivingroomDark,
+.IroncladReceptionLight, .IroncladReceptionDark,
+.IroncladKitchenLight, .IroncladKitchenDark,
+.IroncladHallwayLight, .IroncladHallwayDark,
+.IroncladBlockALight, .IroncladBlockADark,
+.IroncladBlockBLight, .IroncladBlockBDark,
+.IroncladBlockACellALight, .IroncladBlockACellADark,
+.IroncladBlockACellBLight, .IroncladBlockACellBDark,
+.IroncladBlockACellCLight, .IroncladBlockACellCDark,
+.IroncladBlockBCellALight, .IroncladBlockBCellADark,
+.IroncladBlockBCellBLight, .IroncladBlockBCellBDark,
+.IroncladBlockBCellCLight, .IroncladBlockBCellCDark {
+	background-size: cover;
+	background-repeat: no-repeat;
+	z-index: 1;
+}
+
+/* Owaissa + Elm get full viewport sizing */
+.owaissaKitchenDark, .owaissaKitchenLight,
+.owaissaHallwayLight, .owaissaHallwayDark,
+.owaissaLivingroomLight, .owaissaLivingroomDark,
+.owaissaBedroomLight, .owaissaBedroomDark,
+.owaissaBathroomLight, .owaissaBathroomDark,
+.elmBasementLight, .elmBasementDark,
+.elmKitchenLight, .elmKitchenDark,
+.elmBathroomLight, .elmBathroomDark,
+.elmBathroomTwoLight, .elmBathroomTwoDark,
+.elmBedroomLight, .elmBedroomDark,
+.elmBedroomTwoLight, .elmBedroomTwoDark,
+.elmNurseryLight, .elmNurseryDark,
+.elmHallwayLight, .elmHallwayDark,
+.elmHallwayTwoLight, .elmHallwayTwoDark {
+	overflow: hidden;
+	height: 100vh;
+	height: 100dvh;
+	background-position: center;
+}
+
+/* Owaissa kitchen transition */
+.owaissaKitchenDark, .owaissaKitchenLight {
+	transition: filter 1s ease;
+}
+
+/* Room Backgrounds — Owaissa */
+.owaissaKitchenDark   { background-image: url('assets/room/kitchen-dark.jpg'); }
+.owaissaKitchenLight  { background-image: url('assets/room/kitchen.jpg'); }
+.owaissaHallwayLight  { background-image: url('assets/room/hallway.jpg'); }
+.owaissaHallwayDark   { background-image: url('assets/room/hallway-dark.jpg'); }
+.owaissaLivingroomLight { background-image: url('assets/room/livingroom.jpg'); }
+.owaissaLivingroomDark  { background-image: url('assets/room/livingroom-dark.jpg'); }
+.owaissaBedroomLight  { background-image: url('assets/room/bedroom.jpg'); }
+.owaissaBedroomDark   { background-image: url('assets/room/bedroom-dark.jpg'); }
+.owaissaBathroomLight { background-image: url('assets/room/bathroom.jpg'); }
+.owaissaBathroomDark  { background-image: url('assets/room/bathroom-dark.jpg'); }
+
+/* Room Backgrounds — Elm */
+.elmBasementLight     { background-image: url('assets/room/elm/basement.jpg'); }
+.elmBasementDark      { background-image: url('assets/room/elm/basement-dark.jpg'); }
+.elmKitchenLight      { background-image: url('assets/room/elm/kitchen.jpg'); }
+.elmKitchenDark       { background-image: url('assets/room/elm/kitchen-dark.jpg'); }
+.elmBathroomLight     { background-image: url('assets/room/elm/bathroom.jpg'); }
+.elmBathroomDark      { background-image: url('assets/room/elm/bathroom-dark.jpg'); }
+.elmBathroomTwoLight  { background-image: url('assets/room/elm/bathroom1.jpg'); }
+.elmBathroomTwoDark   { background-image: url('assets/room/elm/bathroom1-dark.jpg'); }
+.elmBedroomLight      { background-image: url('assets/room/elm/bedroom.jpg'); }
+.elmBedroomDark       { background-image: url('assets/room/elm/bedroom-dark.jpg'); }
+.elmBedroomTwoLight   { background-image: url('assets/room/elm/bedroom1.jpg'); }
+.elmBedroomTwoDark    { background-image: url('assets/room/elm/bedroom1-dark.jpg'); }
+.elmNurseryLight      { background-image: url('assets/room/elm/nursery.jpg'); }
+.elmNurseryDark       { background-image: url('assets/room/elm/nursery-dark.jpg'); }
+.elmHallwayLight      { background-image: url('assets/room/elm/hallway.jpg'); }
+.elmHallwayDark       { background-image: url('assets/room/elm/hallway-dark.jpg'); }
+.elmHallwayTwoLight   { background-image: url('assets/room/elm/hallway1.jpg'); }
+.elmHallwayTwoDark    { background-image: url('assets/room/elm/hallway1-dark.jpg'); }
+
+/* Room Backgrounds — Enigma */
+.enigmaBasementLight    { background-image: url('assets/room/enigma/basement.jpg'); }
+.enigmaBasementDark     { background-image: url('assets/room/enigma/basement-dark.jpg'); }
+.enigmaKitchenLight     { background-image: url('assets/room/enigma/kitchen.jpg'); }
+.enigmaKitchenDark      { background-image: url('assets/room/enigma/kitchen-dark.jpg'); }
+.enigmaBathroomLight    { background-image: url('assets/room/enigma/bathroom.jpg'); }
+.enigmaBathroomDark     { background-image: url('assets/room/enigma/bathroom-dark.jpg'); }
+.enigmaRoomALight       { background-image: url('assets/room/enigma/roomA.jpg'); }
+.enigmaRoomADark        { background-image: url('assets/room/enigma/roomA-dark.jpg'); }
+.enigmaBedroomLight     { background-image: url('assets/room/enigma/bedroom.jpg'); }
+.enigmaBedroomDark      { background-image: url('assets/room/enigma/bedroom-dark.jpg'); }
+.enigmaRoomBLight       { background-image: url('assets/room/enigma/roomB.jpg'); }
+.enigmaRoomBDark        { background-image: url('assets/room/enigma/roomB-dark.jpg'); }
+.enigmaRoomCLight       { background-image: url('assets/room/enigma/roomC.jpg'); }
+.enigmaRoomCDark        { background-image: url('assets/room/enigma/roomC-dark.jpg'); }
+.enigmaHallwayLight     { background-image: url('assets/room/enigma/hallway.jpg'); }
+.enigmaHallwayDark      { background-image: url('assets/room/enigma/hallway-dark.jpg'); }
+.enigmaLivingroomLight  { background-image: url('assets/room/enigma/livingroom.jpg'); }
+.enigmaLivingroomDark   { background-image: url('assets/room/enigma/livingroom-dark.jpg'); }
+
+/* Room Backgrounds — Ironclad */
+.IroncladReceptionLight   { background-image: url('assets/room/ironclad/reception.webp'); }
+.IroncladReceptionDark    { background-image: url('assets/room/ironclad/reception-dark.webp'); }
+.IroncladKitchenLight     { background-image: url('assets/room/ironclad/kitchen.webp'); }
+.IroncladKitchenDark      { background-image: url('assets/room/ironclad/kitchen-dark.webp'); }
+.IroncladHallwayLight     { background-image: url('assets/room/ironclad/entrance.webp'); }
+.IroncladHallwayDark      { background-image: url('assets/room/ironclad/entrance-dark.webp'); }
+.IroncladBlockALight      { background-image: url('assets/room/ironclad/blockA.webp'); }
+.IroncladBlockADark       { background-image: url('assets/room/ironclad/blockA-dark.webp'); }
+.IroncladBlockBLight      { background-image: url('assets/room/ironclad/blockB.webp'); }
+.IroncladBlockBDark       { background-image: url('assets/room/ironclad/blockB-dark.webp'); }
+.IroncladBlockACellALight { background-image: url('assets/room/ironclad/blockACellA.webp'); }
+.IroncladBlockACellADark  { background-image: url('assets/room/ironclad/blockACellA-dark.webp'); }
+.IroncladBlockACellBLight { background-image: url('assets/room/ironclad/blockACellB.webp'); }
+.IroncladBlockACellBDark  { background-image: url('assets/room/ironclad/blockACellB-dark.webp'); }
+.IroncladBlockACellCLight { background-image: url('assets/room/ironclad/blockACellC.webp'); }
+.IroncladBlockACellCDark  { background-image: url('assets/room/ironclad/blockACellC-dark.webp'); }
+.IroncladBlockBCellALight { background-image: url('assets/room/ironclad/blockBCellA.webp'); }
+.IroncladBlockBCellADark  { background-image: url('assets/room/ironclad/blockBCellA-dark.webp'); }
+.IroncladBlockBCellBLight { background-image: url('assets/room/ironclad/blockBCellB.webp'); }
+.IroncladBlockBCellBDark  { background-image: url('assets/room/ironclad/blockBCellB-dark.webp'); }
+.IroncladBlockBCellCLight { background-image: url('assets/room/ironclad/blockBCellC.webp'); }
+.IroncladBlockBCellCDark  { background-image: url('assets/room/ironclad/blockBCellC-dark.webp'); }
+
+/* ===== Room Layout ===== */
+.room {
+	position: absolute;
+	top: 0;
+	height: 100vh;
+	height: 100dvh;
+	overflow-x: hidden;
+	display: flex;
+}
+.room-wrapper {
+	line-height: 1;
+	width: 100%;
+	display: flex;
+	position: relative;
+	flex-direction: column;
+	box-sizing: border-box;
+	padding-bottom: 5%;
+}
+.content {
+	height: calc(100%/1.25);
+	max-width: 80%;
+	overflow: hidden;
+	box-sizing: border-box;
+	padding: 0;
+}
+.footer {
+	display: flex;
+	align-items: flex-end;
+	max-height: 20%;
+}
+.footer-card {
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: column;
+	width: calc(100% / 7);
+}
+.footertools {
+	display: flex;
+	width: 80%;
+	align-items: center;
+}
+.footeraction {
+	line-height: 1.6;
+	width: 20%;
+	display: flex;
+	flex-direction: column;
+}
+.cardlink {
+	line-height: 1;
+	height: 30px;
+	font-size: 80%;
+}
+.footer-light {
+	display: inline-block;
+}
+.footer-light img {
+	width: 30%;
+	margin: 1px;
+}
+
+/* ===== Map / Delivery Layout ===== */
 .deliverywrapper {
 	display: flex;
-    flex-direction: row;
+	flex-direction: row;
+	gap: 5%;
+}
+.flexwrapper {
+	display: flex;
+	flex-wrap: wrap;
+	align-content: space-around;
+	height: 100%;
+	row-gap: 10px;
+}
+.housecard {
+	width: 16.5%;
+	text-align: center;
+	z-index: 2;
+	line-height: 1.3;
+}
+.itemwrapper {
+	display: flex;
+	flex-wrap: wrap;
 	gap: 5%;
 }
 
-.itemAvailableOne{
-
-}
-
-.icontext {
-  font-family: 'Creepster', cursive;
-  font-size: 25px;
-}
-
-.icontextcity {
-	font-family: 'Amatic SC', sans-serif;
-	font-size: 25px;
-	font-weight: bold;
-}
-
-.icontextcity a {
-	text-decoration: none;
-}
-
-.icontext a {
-	color:#8FBC8F;
-	text-decoration: none;
-}
-
-.icontextdelivery {
-	font-family: 'Cormorant', serif;
-	font-size: 25px;
-
-}
-
-.icontextdelivery a {
-	color:#643069;
-	text-decoration: none;
-}
-
-.icontextdelivery a:hover {
-	transition: all .4s ease;
-	-webkit-transition: all .4s ease;
-    color: #d01de0;
-}
-
-.icontext a:hover {
-	transition: all .4s ease;
-	-webkit-transition: all .4s ease;
-    color: #2E8B57;
-}
-
+/* ===== Map Icon Styles ===== */
 .icon {
 	max-width: 50%;
 	height: auto;
 	border-radius: 30%;
 }
-
 .iconsOnMap {
 	max-width: 50%;
-    max-height: 90%;
+	max-height: 90%;
 	border-radius: 30%;
 }
-
 .iconPx {
 	width: 90px;
-    height: 90px;
+	height: 90px;
 	border-radius: 30%;
 }
 
-#endShift {
-
+/* Map icon text — shared font size */
+.icontext, .icontextcity, .icontextdelivery {
+	font-size: 25px;
+}
+.icontext {
+	font-family: 'Creepster', cursive;
+}
+.icontextcity {
+	font-family: 'Amatic SC', sans-serif;
+	font-weight: bold;
+}
+.icontextcity a {
+	text-decoration: none;
+}
+.icontextdelivery {
+	font-family: 'Cormorant', serif;
+}
+.icontext a, .icontextdelivery a {
+	text-decoration: none;
+	transition: color 0.4s ease;
+}
+.icontext a {
+	color: var(--color-ghost-green);
+}
+.icontextdelivery a {
+	color: var(--color-delivery-purple);
+}
+.icontextdelivery a:hover {
+	color: #d01de0;
+}
+.icontext a:hover {
+	color: #2E8B57;
 }
 
+/* ===== End Shift / Clickable ===== */
 .btnendshift {
 	position: fixed;
 	top: 2%;
 	right: 2%;
 }
-
 .btnendcolor {
 	background-color: #ff6666;
 	color: #333333;
@@ -176,1081 +400,41 @@ body.city {
 	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 	font-weight: bold;
 }
-
 .clickable {
 	cursor: pointer;
+	transition: color 0.4s ease, background-color 0.4s ease;
 }
-
 .clickable:hover {
-	transition: all .4s ease;
-	-webkit-transition: all .4s ease;
-    color: #595959;
+	color: #595959;
 	background-color: #ff9999;
 }
 
-.flexwrapper {
-	display: flex;
-	flex-wrap: wrap;
-	align-content: space-around;
-	height: 100%;
-	row-gap: 10px;
-}
-
-.housecard {
-	width: 16.5%;
-	text-align:center;
-	z-index: 2;
-	line-height: 1.3;
-}
-
-.owaissaKitchenDark {
-	background-image: url('assets/room/kitchen-dark.jpg');
-	background-repeat: no-repeat;
-	background-size: cover;
-	z-index: 1;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-	transition: filter 1s ease;
-}
-
-.owaissaKitchenLight {
-	background-image: url('assets/room/kitchen.jpg');
-	background-repeat: no-repeat;
-	background-size: cover;
-	z-index: 1;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-	transition: filter 1s ease;
-}
-
-.owaissaHallwayLight {
-	background-image: url('assets/room/hallway.jpg');
-	background-repeat: no-repeat;
-	background-size: cover;
-	z-index: 1;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-}
-
-.owaissaHallwayDark {
-	background-image: url('assets/room/hallway-dark.jpg');
-	background-repeat: no-repeat;
-	background-size: cover;
-	z-index: 1;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-}
-.owaissaLivingroomLight {
-	background-image: url('assets/room/livingroom.jpg');
-	background-repeat: no-repeat;
-	background-size: cover;
-	z-index: 1;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-}
-.owaissaLivingroomDark {
-	background-image: url('assets/room/livingroom-dark.jpg');
-	background-repeat: no-repeat;
-	background-size: cover;
-	z-index: 1;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-}
-.owaissaBedroomLight {
-	background-image: url('assets/room/bedroom.jpg');
-	background-repeat: no-repeat;
-	background-size: cover;
-	z-index: 1;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-}
-.owaissaBedroomDark {
-	background-image: url('assets/room/bedroom-dark.jpg');
-	background-repeat: no-repeat;
-	background-size: cover;
-	z-index: 1;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-}
-.owaissaBathroomLight {
-	background-image: url('assets/room/bathroom.jpg');
-	background-repeat: no-repeat;
-	background-size: cover;
-	z-index: 1;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-}
-.owaissaBathroomDark {
-	background-image: url('assets/room/bathroom-dark.jpg');
-	background-repeat: no-repeat;
-	background-size: cover;
-	z-index: 1;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-}
-
-.elmBasementLight {
-	background-image: url('assets/room/elm/basement.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-}
-
-.elmBasementDark {
-	background-image: url('assets/room/elm/basement-dark.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-}
-
-.elmKitchenLight {
-	background-image: url('assets/room/elm/kitchen.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-}
-
-.elmKitchenDark {
-	background-image: url('assets/room/elm/kitchen-dark.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-}
-
-.elmBathroomLight {
-	background-image: url('assets/room/elm/bathroom.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-}
-
-.elmBathroomDark {
-	background-image: url('assets/room/elm/bathroom-dark.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-}
-
-.elmBathroomTwoLight {
-	background-image: url('assets/room/elm/bathroom1.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-}
-
-.elmBathroomTwoDark {
-	background-image: url('assets/room/elm/bathroom1-dark.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-}
-
-.elmBedroomLight {
-	background-image: url('assets/room/elm/bedroom.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-}
-
-.elmBedroomDark {
-	background-image: url('assets/room/elm/bedroom-dark.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-}
-
-.elmBedroomTwoLight {
-	background-image: url('assets/room/elm/bedroom1.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-}
-
-.elmBedroomTwoDark {
-	background-image: url('assets/room/elm/bedroom1-dark.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-}
-
-.elmNurseryLight {
-	background-image: url('assets/room/elm/nursery.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-}
-
-.elmNurseryDark {
-	background-image: url('assets/room/elm/nursery-dark.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-}
-
-.elmHallwayLight {
-	background-image: url('assets/room/elm/hallway.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-}
-
-.elmHallwayDark {
-	background-image: url('assets/room/elm/hallway-dark.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-}
-
-.elmHallwayTwoLight {
-	background-image: url('assets/room/elm/hallway1.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-}
-
-.elmHallwayTwoDark {
-	background-image: url('assets/room/elm/hallway1-dark.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-}
-
-.enigmaBasementLight {
-	background-image: url('assets/room/enigma/basement.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.enigmaBasementDark {
-	background-image: url('assets/room/enigma/basement-dark.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.enigmaKitchenLight {
-	background-image: url('assets/room/enigma/kitchen.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.enigmaKitchenDark {
-	background-image: url('assets/room/enigma/kitchen-dark.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.enigmaBathroomLight {
-	background-image: url('assets/room/enigma/bathroom.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.enigmaBathroomDark {
-	background-image: url('assets/room/enigma/bathroom-dark.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.enigmaRoomALight {
-	background-image: url('assets/room/enigma/roomA.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.enigmaRoomADark {
-	background-image: url('assets/room/enigma/roomA-dark.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.enigmaBedroomLight {
-	background-image: url('assets/room/enigma/bedroom.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.enigmaBedroomDark {
-	background-image: url('assets/room/enigma/bedroom-dark.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.enigmaRoomBLight {
-	background-image: url('assets/room/enigma/roomB.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.enigmaRoomBDark {
-	background-image: url('assets/room/enigma/roomB-dark.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.enigmaRoomCLight {
-	background-image: url('assets/room/enigma/roomC.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.enigmaRoomCDark {
-	background-image: url('assets/room/enigma/roomC-dark.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.enigmaHallwayLight {
-	background-image: url('assets/room/enigma/hallway.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.enigmaHallwayDark {
-	background-image: url('assets/room/enigma/hallway-dark.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.enigmaLivingroomLight {
-	background-image: url('assets/room/enigma/livingroom.jpg');
-	background-repeat: no-repeat;
-	background-size: cover;
-	z-index: 1;
-}
-.enigmaLivingroomDark {
-	background-image: url('assets/room/enigma/livingroom-dark.jpg');
-	background-repeat: no-repeat;
-	background-size: cover;
-	z-index: 1;
-}
-
-.IroncladReceptionLight {
-	background-image: url('assets/room/ironclad/reception.webp');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.IroncladReceptionDark {
-
-	background-image: url('assets/room/ironclad/reception-dark.webp');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.IroncladKitchenLight {
-	background-image: url('assets/room/ironclad/kitchen.webp');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.IroncladKitchenDark {
-	background-image: url('assets/room/ironclad/kitchen-dark.webp');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.IroncladHallwayLight {
-	background-image: url('assets/room/ironclad/entrance.webp');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.IroncladHallwayDark {
-	background-image: url('assets/room/ironclad/entrance-dark.webp');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.IroncladBlockALight {
-	background-image: url('assets/room/ironclad/blockA.webp');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.IroncladBlockADark {
-	background-image: url('assets/room/ironclad/blockA-dark.webp');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.IroncladBlockBLight {
-	background-image: url('assets/room/ironclad/blockB.webp');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.IroncladBlockBDark {
-	background-image: url('assets/room/ironclad/blockB-dark.webp');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.IroncladBlockACellALight {
-	background-image: url('assets/room/ironclad/blockACellA.webp');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.IroncladBlockACellADark {
-	background-image: url('assets/room/ironclad/blockACellA-dark.webp');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.IroncladBlockACellBLight {
-	background-image: url('assets/room/ironclad/blockACellB.webp');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.IroncladBlockACellBDark {
-	background-image: url('assets/room/ironclad/blockACellB-dark.webp');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.IroncladBlockACellCLight {
-	background-image: url('assets/room/ironclad/blockACellC.webp');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.IroncladBlockACellCDark {
-	background-image: url('assets/room/ironclad/blockACellC-dark.webp');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.IroncladBlockBCellALight {
-	background-image: url('assets/room/ironclad/blockBCellA.webp');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.IroncladBlockBCellADark {
-	background-image: url('assets/room/ironclad/blockBCellA-dark.webp');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.IroncladBlockBCellBLight {
-	background-image: url('assets/room/ironclad/blockBCellB.webp');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.IroncladBlockBCellBDark {
-	background-image: url('assets/room/ironclad/blockBCellB-dark.webp');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.IroncladBlockBCellCLight {
-	background-image: url('assets/room/ironclad/blockBCellC.webp');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.IroncladBlockBCellCDark {
-	background-image: url('assets/room/ironclad/blockBCellC-dark.webp');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 1;
-}
-
-.right {
-	display: inline-block;
-	background-color: green;
-	border-radius: 30%;
-}
-
-.room {
-	position: absolute;
-    top: 0;
-	height: 100vh;
-	overflow-x: hidden;
-	display: flex;
-}
-.room-wrapper {
-    line-height: 1;
-	width: 100%;
-	display: flex;
-	position: relative;
-	flex-direction: column;
-	box-sizing: border-box;
-	padding-bottom: 5%;
-}
-
-.content {
-	height: calc(100%/1.25);
-    max-width: 80%;
-	overflow: hidden;
-    box-sizing: border-box;
-	padding: 0;
-}
-
-.footer {
-	display:flex;
-	align-items: flex-end;
-	max-height: 20%;
-}
-
-.footer-card {
-	display: flex;
-    flex-wrap: wrap;
-    flex-direction: column;
-	width: calc(100% / 7);
-}
-
-.footertools {
-	display:flex;
-	width: 80%;
-	align-items: center;
-
-}
-
-.footeraction {
-	line-height: 1.6;
-	width: 20%;
-	display: flex;
-    flex-direction: column;
-}
-
-.cardlink {
-	line-height: 1;
-	height: 30px;
-	font-size: 80%;
-}
-
-.hidden {
-	visibility: hidden;
-}
-
-.visible {
-	visibility: visible;
-}
-
-.UVLimg {
-	max-width: 100%;
-    height: auto;
-	display: block;
-}
-
-.action {
-	display:flex;
-	flex-direction: column;
-	align-items: center;
-}
-
-.GWBimgs {
-	max-width: 50%;
-}
-
-.mc-action {
-        background-color: #ffe6f2;
-        padding: 10px;
-        border-radius: 10px;
-        border: 2px solid #ff66b2;
-        font-family: 'Arial', sans-serif;
-        font-size: 18px;
-        color: #99004d;
-        text-align: center;
-    }
-
-.spiritbox-container {
-    padding: 10px;
-    border-radius: 10px;
-    border: 2px solid #333;
-    margin-bottom: 10px;
-    display: flex;
-    flex-direction: column;
+/* ===== Navigation Buttons — Shared Base ===== */
+.adaptiveLink a,
+.movebtn a,
+.backbtn a,
+.enterbtn a,
+.usebtn a,
+.usebtn {
 	font-weight: bold;
-}
-
-.spiritbox-question {
-    font-weight: bold;
-    color: #ff3366;
-}
-
-.spiritbox-answer {
-    font-style: italic;
-    color: #3399ff;
-    margin-top: 5px;
-}
-
-.spiritbox-no-response {
-    color: white;
-    font-style: italic;
-}
-
-.location {
-	font-size: 1.5em;
-	font-style: italic;
-	color: #f2f5f7;
-	text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.mc-speech {
-	color:#ff99dd;
 	text-decoration: none;
-	font-size: 16px;
-		text-shadow:-1px -1px 0 #000,  1px -1px 0 #000,-1px  1px 0 #000,1px  1px 0 #000;
+	transition: var(--btn-transition);
 }
 
-.mc-speech:hover {
-
-	text-decoration: none;
-	text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
-}
-
-.mc-speech a {
-	color:#FF1493;
-	font-style: italic;
-	text-decoration: none;
-}
-
-.mc-speech a:hover {
-	color:#f663b2;
-	font-style: italic;
-	text-decoration: none;
-	text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
-}
-
-.mc-speechLink a {
-	color:#FF1493;
-	font-style: italic;
-	text-decoration: none;
-}
-
-.mc-speechLink {
-	color:#FF1493;
-	font-style: italic;
-	text-decoration: none;
-}
-
-.mc-thoughts {
-  color: #eee;
-  font-style: italic;
-  font-size: 16px;
-  text-decoration: none;
-  text-shadow:-1px -1px 0 #000,  1px -1px 0 #000,-1px  1px 0 #000,1px  1px 0 #000;
-
-}
-
-.mc-thoughts a {
-  color: #777777;
-  font-style: italic;
-  text-decoration: none;
-}
-
-.mc-thoughtsLink {
-  color: #777777;
-  font-style: italic;
-  text-decoration: none;
-}
-
-.notmc-speech {
-	color: #3486eb;
-	text-decoration: none;
-	font-size: 16px;
-		text-shadow:-1px -1px 0 #000,  1px -1px 0 #000,-1px  1px 0 #000,1px  1px 0 #000;
-}
-.notmc-speech a {
-  font-size:1.1em;
-  color: #0036ce;
-  font-style: italic;
-  text-decoration: none;
-}
-
-.notmc-speechLink {
-  color: #114d96;
-  font-style: italic;
-}
-
-.notmc-speechLink:hover{
-  color: #3486eb;
-  font-style: italic;
-  text-decoration: none;
-}
-
-.priceAmount {
-  font-weight: bold;
-	color:#17B169;
-	font-size:1.7em;
-  -webkit-text-stroke: 1px black;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-  vertical-align: middle;
-
-}
-
-.buyItemLink a {
-	color: black;
-	background-color: #f0f0f0;
-	padding: 1px 15px;
-	border-radius: 30%;
-}
-
-.address-item {
-	font-size: 1.4em;
-	font-style: italic;
-	font-weight: bold;
-}
-
-.order-container {
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
-}
-
-.special-order {
-  border: 2px solid gold;
-  background: rgba(255, 215, 0, 0.15);
-  padding: 5px 10px;
-  border-radius: 8px;
-}
-
-.rush-pay {
-  font-weight: bold;
-  color: gold;
-  font-size: 1.3em;
-}
-
-.rush-icon {
-  border: 2px solid gold;
-  box-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
-}
-
-.mapOrderIcons {
-  display: flex;
-  justify-content: center;
-  gap: 2px;
-  margin-top: 2px;
-}
-
-.mapOrderIcon {
-  width: 28px;
-  height: 28px;
-  border-radius: 20%;
-}
-
-.familiar-house {
-  border: 2px solid #4CAF50;
-  border-radius: 8px;
-  background: rgba(76, 175, 80, 0.1);
-}
-
-.familiar-house .iconsOnMap {
-  box-shadow: 0 0 6px #4CAF50;
-}
-
-.special-house {
-  border: 2px solid gold;
-  border-radius: 8px;
-  background: rgba(255, 215, 0, 0.1);
-}
-
-.special-house .iconsOnMap {
-  box-shadow: 0 0 8px gold;
-}
-
-.delivery-stats {
-  background: rgba(100, 48, 105, 0.2);
-  border: 1px solid #643069;
-  border-radius: 6px;
-  padding: 5px 10px;
-  display: inline-block;
-}
-
+/* Navigation Buttons — Individual Styles */
 .adaptiveLink a {
-	font-weight: bold;
-	color: #3498db;
-    text-decoration: none;
-    transition: color 0.3s, border-color 0.3s;
-
-  text-shadow:-1px -1px 0 #000,  1px -1px 0 #000,-1px  1px 0 #000,1px  1px 0 #000;
+	color: var(--color-nav-blue);
+	text-shadow: var(--outline-shadow);
 }
 
 .movebtn a {
 	font-size: 1.2em;
-	font-weight: bold;
-	color: #3498db;
-    text-decoration: none;
-    transition: color 0.3s, border-color 0.3s;
+	color: var(--color-nav-blue);
 	-webkit-text-stroke: 1px black;
-	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+	text-shadow: var(--btn-shadow);
 }
-
 .movebtn a:hover {
 	color: #91a5c2;
-	transition: color 0.3s, border-color 0.3s;
-	-webkit-text-stroke: 1px black;
-	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.itemwrapper {
-	display: flex;
-    flex-wrap: wrap;
-    gap: 5%;
-}
-
-.footer-light img {
-	width: 30%;
-
-	margin: 1px;
-}
-.footer-light {
-  display: inline-block;
-}
-
-#time {
-  font-family: "Kode Mono", sans-serif;
-    font-size: 20px;
-    color: #333;
-    background-color: #eee;
-    padding: 10px;
-	width: 100px;
-    border-radius: 5px;
-    display: inline-block;
-    text-align: center;
-    box-sizing: border-box;
-}
-
-.nightTime {
-  filter: brightness(0.7);
-}
-
-.evidenceImgs {
-    width: auto;
-    max-height: 67vh;
-}
-
-.notFound-container {
-    padding: 10px;
-    border-radius: 10px;
-    border: 2px solid white;
-    margin-bottom: 10px;
-    display: flex;
-    flex-direction: column;
-}
-
-.evidenceText {
-	font-size: 2.2vh;
-}
-
-#ghostTypeSelected {
-  overflow-y: auto;
-}
-
-.evidenceFlex {
-	display:flex;
-	flex-direction: column;
-}
-
-.evidenceWrapper {
-	display:flex;
-	border: 2px solid #000;
-	padding: 10px;
-
-}
-
-.evidenceDesc {
-	align-self:center;
-	flex-basis: 70%;
-}
-
-.evidenceCardIcon {
-	flex-basis: 20%;
-}
-
-#bgPC {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-.iconContainer {
-  position: absolute;
-  top: 25%;
-  left: 30%;
-  transform: translate(-30%, -25%);
-  width: calc(100% - 40px);
-  height: calc(100% - 40px);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  box-sizing: border-box;
-  padding: 20px;
-  justify-content: flex-start;
-  align-items: flex-start;
-}
-
-.iconContainer a {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: calc(20% - 10px);
-  max-width: 100px;
-  height: auto;
-}
-
-.iconContainer img {
-  width: 100%;
-  height: auto;
-  max-width: 100%;
-  max-height: 100%;
-  display: block;
-  border-radius:50%;
-}
-
-.wrapperPC {
-  position: relative;
-  width: 100%;
-  max-width: 1000px;
-  overflow: hidden;
-}
-
-.iconPC {
-  border-radius:50%;
-  margin-bottom: 1%;
-}
-
- .room-container {
-    position: relative;
-	padding-bottom: 66.67%;
-    width: 100%;
-    background-image: url('assets/img/hotelRoom.jpeg');
-    background-size: cover;
-	background-position: center;
-	overflow: hidden;
-  }
-  .trash {
-    position: absolute;
-    cursor: pointer;
-    width: 5%;
-    height: auto;
-  }
-  #cleanup-message {
-    display: none;
-    margin-top: 20px;
-    font-weight: bold;
-    color: green;
-  }
-
-.displayCentredImgs {
-    width: auto;
-    max-height: 70vh;
-	display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.displayCentredImgsEvent {
-    width: auto;
-    max-height: 61vh;
-	display: block;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 .backbtn a {
@@ -1258,338 +442,587 @@ body.city {
 	padding: 10px;
 	background-color: rgba(255, 255, 255, 0.8);
 	font-size: 1.2em;
-	font-weight: bold;
-	color: #428ec2;
-    text-decoration: none;
-    transition: color 0.3s, border-color 0.3s;
+	color: var(--color-back-blue);
 	-webkit-text-stroke: 0.7px black;
-	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+	text-shadow: var(--btn-shadow-light);
 }
-
 .backbtn a:hover {
 	color: #5dade2;
-	transition: color 0.3s, border-color 0.3s;
 	-webkit-text-stroke: 1px black;
-	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+	text-shadow: var(--btn-shadow);
 }
 
 .enterbtn a {
 	font-size: 1.1em;
-	font-weight: bold;
-	color: #84a0e4;
-    text-decoration: none;
-    transition: color 0.3s, border-color 0.3s;
+	color: var(--color-enter-blue);
 	-webkit-text-stroke: 0.3px black;
-	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+	text-shadow: var(--btn-shadow);
 }
-
 .enterbtn a:hover {
 	color: #1882c4;
-	transition: color 0.3s, border-color 0.3s;
-	-webkit-text-stroke: 0.3px black;
-	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
+.usebtn a, .usebtn {
+	font-style: italic;
+	font-size: 1.05em;
+	color: var(--color-use-yellow);
+	-webkit-text-stroke: 0.2px black;
+}
 .usebtn a {
-	font-style: italic;
-	font-size: 1.05em;
-	font-weight: bold;
-	color: #c2cc51;
-    transition: color 0.3s, border-color 0.3s;
-	-webkit-text-stroke: 0.2px black;
-  text-shadow:-1px -1px 0 #000,  1px -1px 0 #000,-1px  1px 0 #000,1px  1px 0 #000;
+	text-shadow: var(--outline-shadow);
 }
-
 .usebtn {
+	text-shadow: var(--btn-shadow);
+}
+.usebtn a:hover, .usebtn:hover {
+	color: var(--color-use-yellow-hover);
+	-webkit-text-stroke: 0.3px black;
+	text-shadow: var(--btn-shadow);
+}
+
+/* ===== Dialogue Text ===== */
+.location {
+	font-size: 1.5em;
 	font-style: italic;
-	font-size: 1.05em;
-	font-weight: bold;
-	color: #c2cc51;
-    text-decoration: none;
-    transition: color 0.3s, border-color 0.3s;
-	-webkit-text-stroke: 0.2px black;
-	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+	color: #f2f5f7;
+	text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-.usebtn a:hover {
-	color: #d9ddad;
-	transition: color 0.3s, border-color 0.3s;
-	-webkit-text-stroke: 0.3px black;
-	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.usebtn:hover {
-	color: #d9ddad;
-	transition: color 0.3s, border-color 0.3s;
-	-webkit-text-stroke: 0.3px black;
-	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.disabled-link {
-  pointer-events: none;
-  opacity: 0.5;
-}
-
-.evidenceshadowtext {
-	color:#ff99dd;
+/* MC speech */
+.mc-speech {
+	color: var(--color-mc-pink);
 	text-decoration: none;
-	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+	font-size: 1rem;
+	text-shadow: var(--outline-shadow);
+}
+.mc-speech:hover {
+	text-decoration: none;
+	text-shadow: var(--hover-shadow);
+}
+.mc-speech a, .mc-speechLink a, .mc-speechLink {
+	color: var(--color-mc-pink-link);
+	font-style: italic;
+	text-decoration: none;
+}
+.mc-speech a:hover {
+	color: var(--color-mc-pink-hover);
+	text-shadow: var(--hover-shadow);
+}
+
+/* MC thoughts */
+.mc-thoughts {
+	color: var(--color-mc-thoughts);
+	font-style: italic;
+	font-size: 1rem;
+	text-decoration: none;
+	text-shadow: var(--outline-shadow);
+}
+.mc-thoughts a, .mc-thoughtsLink {
+	color: var(--color-mc-thoughts-link);
+	font-style: italic;
+	text-decoration: none;
+}
+
+/* NPC speech */
+.notmc-speech {
+	color: var(--color-npc-blue);
+	text-decoration: none;
+	font-size: 1rem;
+	text-shadow: var(--outline-shadow);
+}
+.notmc-speech a {
+	font-size: 1.1em;
+	color: var(--color-npc-blue-link);
+	font-style: italic;
+	text-decoration: none;
+}
+.notmc-speechLink {
+	color: var(--color-npc-blue-muted);
+	font-style: italic;
+}
+.notmc-speechLink:hover {
+	color: var(--color-npc-blue);
+	text-decoration: none;
+}
+
+/* ===== MC Action ===== */
+.mc-action {
+	background-color: #ffe6f2;
+	padding: 10px;
+	border-radius: 10px;
+	border: 2px solid #ff66b2;
+	font-family: 'Arial', sans-serif;
+	font-size: 1.125rem;
+	color: #99004d;
+	text-align: center;
+}
+
+/* ===== Spirit Box / Info Containers — Shared Base ===== */
+.spiritbox-container, .notFound-container {
+	padding: 10px;
+	border-radius: 10px;
+	margin-bottom: 10px;
+	display: flex;
+	flex-direction: column;
+}
+.spiritbox-container {
+	border: 2px solid #333;
+	font-weight: bold;
+}
+.notFound-container {
+	border: 2px solid white;
+}
+.spiritbox-question {
+	font-weight: bold;
+	color: #ff3366;
+}
+.spiritbox-answer {
+	font-style: italic;
+	color: #3399ff;
+	margin-top: 5px;
+}
+.spiritbox-no-response {
+	color: white;
+	font-style: italic;
+}
+
+/* ===== Shop / Delivery ===== */
+.priceAmount {
+	font-weight: bold;
+	color: var(--color-price-green);
+	font-size: 1.7em;
+	-webkit-text-stroke: 1px black;
+	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+	vertical-align: middle;
+}
+.buyItemLink a {
+	color: black;
+	background-color: #f0f0f0;
+	padding: 1px 15px;
+	border-radius: 30%;
+}
+.address-item {
+	font-size: 1.4em;
+	font-style: italic;
+	font-weight: bold;
+}
+.order-container {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+}
+.special-order {
+	border: 2px solid gold;
+	background: rgba(255, 215, 0, 0.15);
+	padding: 5px 10px;
+	border-radius: 8px;
+}
+.rush-pay {
+	font-weight: bold;
+	color: gold;
+	font-size: 1.3em;
+}
+.rush-icon {
+	border: 2px solid gold;
+	box-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
+}
+.mapOrderIcons {
+	display: flex;
+	justify-content: center;
+	gap: 2px;
+	margin-top: 2px;
+}
+.mapOrderIcon {
+	width: 28px;
+	height: 28px;
+	border-radius: 20%;
+}
+.delivery-stats {
+	background: rgba(100, 48, 105, 0.2);
+	border: 1px solid var(--color-delivery-purple);
+	border-radius: 6px;
+	padding: 5px 10px;
+	display: inline-block;
+}
+
+/* ===== Highlighted Houses — Shared Base ===== */
+.familiar-house, .special-house {
+	border-radius: 8px;
+}
+.familiar-house {
+	border: 2px solid #4CAF50;
+	background: rgba(76, 175, 80, 0.1);
+}
+.familiar-house .iconsOnMap {
+	box-shadow: 0 0 6px #4CAF50;
+}
+.special-house {
+	border: 2px solid gold;
+	background: rgba(255, 215, 0, 0.1);
+}
+.special-house .iconsOnMap {
+	box-shadow: 0 0 8px gold;
+}
+
+/* ===== Visibility / Utility ===== */
+.hidden { visibility: hidden; }
+.visible { visibility: visible; }
+.disabled-link {
+	pointer-events: none;
+	opacity: 0.5;
+}
+.disabled-linkSpecial a {
+	pointer-events: none;
+	opacity: 0.5;
+}
+.nightTime {
+	filter: brightness(0.7);
+}
+.hideRescueHouse {
+	display: none;
+}
+.hideMainScreen {
+	color: rgba(255, 255, 255, 0.8);
+}
+.right {
+	display: inline-block;
+	background-color: green;
+	border-radius: 30%;
+}
+
+/* ===== Images — Centred Display (shared base) ===== */
+.displayCentredImgs, .displayCentredImgsEvent {
+	width: auto;
+	display: block;
+	margin-inline: auto;
+}
+.displayCentredImgs {
+	max-height: 70vh;
+}
+.displayCentredImgsEvent {
+	max-height: 61vh;
+}
+.UVLimg {
+	max-width: 100%;
+	height: auto;
+	display: block;
+}
+.GWBimgs {
+	max-width: 50%;
+}
+.action {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+/* ===== Evidence ===== */
+.evidenceImgs {
+	width: auto;
+	max-height: 67vh;
+}
+.evidenceText {
+	font-size: clamp(0.75rem, 2.2vh, 1rem);
+}
+#ghostTypeSelected {
+	overflow-y: auto;
+}
+.evidenceFlex {
+	display: flex;
+	flex-direction: column;
+}
+.evidenceWrapper {
+	display: flex;
+	border: 2px solid #000;
+	padding: 10px;
+}
+.evidenceDesc {
+	align-self: center;
+	flex-basis: 70%;
+}
+.evidenceCardIcon {
+	flex-basis: 20%;
+}
+.evidenceshadowtext {
+	color: var(--color-mc-pink);
+	text-decoration: none;
+	text-shadow: var(--btn-shadow);
 	-webkit-text-stroke: 0.5px pink;
 }
 
+/* ===== PC Desktop ===== */
+#bgPC {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+.wrapperPC {
+	position: relative;
+	width: 100%;
+	max-width: 1000px;
+	overflow: hidden;
+}
+.iconContainer {
+	position: absolute;
+	top: 25%;
+	left: 30%;
+	transform: translate(-30%, -25%);
+	width: calc(100% - 40px);
+	height: calc(100% - 40px);
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	box-sizing: border-box;
+	padding: 20px;
+	justify-content: flex-start;
+	align-items: flex-start;
+}
+.iconContainer a {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: calc(20% - 10px);
+	max-width: 100px;
+	height: auto;
+}
+.iconContainer img {
+	width: 100%;
+	height: auto;
+	max-width: 100%;
+	max-height: 100%;
+	display: block;
+	border-radius: 50%;
+}
+.iconPC {
+	border-radius: 50%;
+	margin-bottom: 1%;
+}
+
+/* ===== Room Cleanup Minigame ===== */
+.room-container {
+	position: relative;
+	padding-bottom: 66.67%;
+	width: 100%;
+	background-image: url('assets/img/hotelRoom.jpeg');
+	background-size: cover;
+	background-position: center;
+	overflow: hidden;
+}
+.trash {
+	position: absolute;
+	cursor: pointer;
+	width: 5%;
+	height: auto;
+}
+#cleanup-message {
+	display: none;
+	margin-top: 20px;
+	font-weight: bold;
+	color: green;
+}
+
+/* ===== Clock ===== */
+#time {
+	font-family: "Kode Mono", sans-serif;
+	font-size: 20px;
+	color: #333;
+	background-color: #eee;
+	padding: 10px;
+	width: 100px;
+	border-radius: 5px;
+	display: inline-block;
+	text-align: center;
+	box-sizing: border-box;
+}
+
+/* ===== Text Backgrounds ===== */
 .backgroundForText {
 	background-color: rgba(0, 0, 0, 0.5);
-	border-radius: 10%;
+	border-radius: 10px;
 	padding: 5%;
 }
 
-a:hover {
-text-decoration: none;
-}
-
-.comic-cover {
-	width:100%;
-	height: 90%;
-}
-
-.warningtext {
-	color: red;
-	font-style: italic;
-}
-
-.companion-image {
+/* ===== Companion Images — Shared Base ===== */
+.companion-image, .companion-imageSucceeded {
 	width: 70%;
-    border: 3px solid #007BFF;
-    border-radius: 8px;
-    padding: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    transition: all 0.3s ease;
- }
-.companion-image:hover {
-    border-color: #0056b3;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+	border-radius: 8px;
+	padding: 5px;
+	box-shadow: var(--card-shadow);
+	cursor: pointer;
+	transition: all 0.3s ease;
+	border: 3px solid #007BFF;
 }
 .companion-imageSucceeded {
-	width: 70%;
-    border: 3px solid #FF69B4;
-    border-radius: 8px;
-    padding: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    transition: all 0.3s ease;
+	border-color: #FF69B4;
 }
-
+.companion-image:hover {
+	border-color: #0056b3;
+	box-shadow: var(--card-shadow-hover);
+}
 .companion-imageSucceeded:hover {
-    border-color: #FF1493;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+	border-color: var(--color-mc-pink-link);
+	box-shadow: var(--card-shadow-hover);
 }
 
-.toolsTextCentered {
-	margin-left: 15%;
-	-webkit-text-stroke: 1px black;
+/* ===== Companion Layout — Shared Base ===== */
+.flexwrapperCompanionMain, .flexwrapperCompanionMainInfo {
+	display: flex;
+	align-content: stretch;
+	height: 100%;
+	row-gap: 10px;
+	justify-content: space-between;
 }
-
 .flexwrapperCompanionMain {
-    display: flex;
-    align-content: stretch;
-    height: 100%;
-    row-gap: 10px;
-    justify-content: space-between;
-    align-items: center;
+	align-items: center;
 }
 .companionImageMain {
 	flex: 1;
 	min-width: 40%;
 }
-
 .companionTextMain {
 	flex: 1;
 	min-width: 40%;
-	margin-left:5%;
+	margin-left: 5%;
 	white-space: normal;
 }
-
-.flexwrapperCompanionMainInfo {
-    display: flex;
-    align-content: stretch;
-    height: 100%;
-    row-gap: 10px;
-    justify-content: space-between;
+.toolsTextCentered {
+	margin-left: 15%;
+	-webkit-text-stroke: 1px black;
 }
 
+/* ===== Misc Text ===== */
 .boldText {
 	font-weight: bold;
-    font-size: 1.2em;
-	user-select: none;
+	font-size: 1.2em;
 }
-
-.disabled-linkSpecial a{
-    pointer-events: none;
+.warningtext {
+	color: red;
+	font-style: italic;
 }
-
-.torn-style-1 {
-clip-path: polygon(1% 0, 50% 30%, 10% 70%, 0 30%);
-      box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.5),
-                -5px -5px 10px rgba(255, 255, 255, 0.5) inset;
-}
-
-.torn-style-2 {
-clip-path: polygon(100% 0, 30% 40%, 10% 70%, 0 30%);
-}
-
-.torn-style-3 {
-clip-path: polygon(80% 0, 30% 80%, 30% 50%, 0 30%);
-}
-
-.torn-style-4 {
-clip-path: polygon(50% 0, 30% 40%, 30% 50%, 0 10%);
-}
-
-.torn-style-5 {
-clip-path: polygon(50% 0, 100% 80%, 50% 50%, 0 10%);
-}
-
-.torn-style-6 {
-clip-path: polygon(70% 0, 70% 10%, 50% 80%, 0 70%);
-}
-
-.torn-style-7 {
-clip-path: polygon(30% 10%, 50% 40%, 50% 70%, 0 70%);
-}
-
-.torn-style-8 {
-clip-path: polygon(78% 100%, 44% 43%, 44% 43%, 0 70%);
-}
-
-.torn-style-9 {
-clip-path: polygon(77% 1%, 67% 44%, 50% 100%, 0 50%);
-}
-.torn-style-10 {
-clip-path: polygon(20% 1%, 67% 44%, 50% 100%, 30% 50%);
-}
-
-.torn-effect {
-    filter: grayscale(100%);
-}
-
-.rescueClueStyle {
-	width: 10px;
-	height: 10px;
-}
-
-.furnitureSearch a{
-	width: 2.5vw;
-}
-
-.furnitureSearch img{
-	max-width: 40%;
-	height: auto;
-    background-color: rgba(169, 169, 169, 0.5);
-}
-
-.furnitureSearch {
-	display: flex;
-    justify-content: center;
-    gap: 10%;
-	margin-left: -20%;
-}
-.downPointer {
-    position: fixed;
-    right: 2%;
-	bottom:2%;
-	z-index: 10;
-	width: 50px;
-    height: 50px;
-    border-radius: 30%;
-}
-
-.upPointer {
-    position: fixed;
-	top: 2%;
-    right: 2%;
-	transform: rotate(180deg);
-	z-index: 10;
-    width: 50px;
-    height: 50px;
-    border-radius: 30%;
-}
-
-.hideRescueHouse {
-	display: none;
-}
-
-.contactsImages {
-  border: 4px solid #fff;
-  border-radius: 8px;
-  margin: 5px;
-  max-width: 100%;
-}
-
-.addGap5 {
-	gap: 5%;
-}
-
-.hauntedhouse {
-	background-attachment: fixed;
-	overflow: hidden;
-	height: 100vh;
-	background-position: center;
-}
-
-.noreturn {
-	background-attachment: fixed;
-}
-
-.highlighted-furniture {
-    border: 2px solid pink;
-}
-
-.fadeInScale {
-    opacity: 0;
-    transform: scale(0.8);
-    transition: opacity 3s ease, transform 1s ease;
-}
-.fadeInScaleFool {
-	opacity: 0;
-    transition: opacity 1s ease;
-}
-.tarotCardsShow {
-    opacity: 1;
-    transform: scale(1);
-}
-
-.smooth-transition {
-    transition: background-image 0.9s ease;
-}
-
-.hideMainScreen {
-	color: rgba(255, 255, 255, 0.8);
-}
-
 .debug {
 	font-size: 0.8em;
 	font-weight: bold;
 }
+.comic-cover {
+	width: 100%;
+	height: 90%;
+}
 
+/* ===== Torn Paper Effects ===== */
+.torn-style-1  { clip-path: polygon(1% 0, 50% 30%, 10% 70%, 0 30%); box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.5), -5px -5px 10px rgba(255, 255, 255, 0.5) inset; }
+.torn-style-2  { clip-path: polygon(100% 0, 30% 40%, 10% 70%, 0 30%); }
+.torn-style-3  { clip-path: polygon(80% 0, 30% 80%, 30% 50%, 0 30%); }
+.torn-style-4  { clip-path: polygon(50% 0, 30% 40%, 30% 50%, 0 10%); }
+.torn-style-5  { clip-path: polygon(50% 0, 100% 80%, 50% 50%, 0 10%); }
+.torn-style-6  { clip-path: polygon(70% 0, 70% 10%, 50% 80%, 0 70%); }
+.torn-style-7  { clip-path: polygon(30% 10%, 50% 40%, 50% 70%, 0 70%); }
+.torn-style-8  { clip-path: polygon(78% 100%, 44% 43%, 0 70%); }
+.torn-style-9  { clip-path: polygon(77% 1%, 67% 44%, 50% 100%, 0 50%); }
+.torn-style-10 { clip-path: polygon(20% 1%, 67% 44%, 50% 100%, 30% 50%); }
+.torn-effect {
+	filter: grayscale(100%);
+}
+
+/* ===== Rescue / Furniture Search ===== */
+.rescueClueStyle {
+	width: 10px;
+	height: 10px;
+}
+.furnitureSearch {
+	display: flex;
+	justify-content: center;
+	gap: 10%;
+	margin-left: -20%;
+}
+.furnitureSearch a {
+	width: 2.5vw;
+}
+.furnitureSearch img {
+	max-width: 40%;
+	height: auto;
+	background-color: rgba(169, 169, 169, 0.5);
+}
 .furnitureSearch span {
-  display: inline-block;
+	display: inline-block;
 }
-
 .furnitureSearch span a {
-  display: block;
+	display: block;
 }
-
 .furnitureSearch span img {
-  display: block;
-  max-width: 100%;
-  height: auto;
+	display: block;
+	max-width: 100%;
+	height: auto;
 }
-
+.highlighted-furniture {
+	border: 2px solid pink;
+}
 .highlighted-furnitureDetector {
-    border: 2px solid green;
+	border: 2px solid green;
 }
 
-#ui-bar-body {
-	overflow-x:hidden;
+/* ===== Navigation Pointers — Shared Base ===== */
+.downPointer, .upPointer {
+	position: fixed;
+	right: 2%;
+	z-index: 10;
+	width: 50px;
+	height: 50px;
+	border-radius: 30%;
+}
+.downPointer {
+	bottom: 2%;
+}
+.upPointer {
+	top: 2%;
+	transform: rotate(180deg);
+}
+
+/* ===== Contacts ===== */
+.contactsImages {
+	border: 4px solid #fff;
+	border-radius: 8px;
+	margin: 5px;
+	max-width: 100%;
+}
+.addGap5 {
+	gap: 5%;
+}
+
+/* ===== Haunted House ===== */
+.hauntedhouse {
+	background-attachment: fixed;
+	overflow: hidden;
+	height: 100vh;
+	height: 100dvh;
+	background-position: center;
+}
+.noreturn {
+	background-attachment: fixed;
+}
+
+/* ===== Animations ===== */
+.fadeInScale {
+	opacity: 0;
+	transform: scale(0.8);
+	transition: opacity 3s ease, transform 1s ease;
+}
+.fadeInScaleFool {
+	opacity: 0;
+	transition: opacity 1s ease;
+}
+.tarotCardsShow {
+	opacity: 1;
+	transform: scale(1);
+}
+.smooth-transition {
+	transition: background-image 0.9s ease;
+}
+
+/* ===== Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+	*, *::before, *::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
 }
