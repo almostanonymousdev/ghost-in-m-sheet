@@ -28,7 +28,9 @@ This game is similar to titles like Phasmophobia and Demonologist. If you are fa
 <</linkreplace>>
 
 <</nobr>>
-@@.backbtn;<<link "Back">><<goto $guideReturnPassage>><</link>>@@<br>
+@@.backbtn;<<link "Back">>
+	<<goto $guideReturnPassage>>
+<</link>>@@<br>
 <<done>>
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
