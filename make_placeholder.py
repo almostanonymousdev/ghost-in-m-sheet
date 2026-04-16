@@ -9,7 +9,8 @@ PATH is resolved relative to ./asset-placeholders (when not absolute) so the
 defaults line up with how build.sh swaps in real assets. The file extension
 decides the output format:
     .png / .jpg / .jpeg  -> still image (ffmpeg color source + drawtext)
-    .mp4                 -> 3-second looping video with the same label
+    .mp4                 -> 3-second looping video (H.264 + AAC)
+    .webm                -> 3-second looping video (VP8 + Opus, with audio track)
 
 Examples:
     python3 make_placeholder.py "Alice 1" alice/alice1.png 640 360
@@ -29,7 +30,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent
 DEFAULT_BASE = REPO_ROOT / "asset-placeholders"
 IMAGE_EXTS = {".png", ".jpg", ".jpeg"}
-VIDEO_EXTS = {".mp4"}
+VIDEO_EXTS = {".mp4", ".webm"}
 VIDEO_DURATION = "3"
 BG_COLOR = "gray"
 FG_COLOR = "white"
@@ -88,7 +89,7 @@ def run_ffmpeg(cmd: list[str]) -> None:
 def generate(text: str, out_path: Path, width: int, height: int) -> None:
     ext = out_path.suffix.lower()
     if ext not in IMAGE_EXTS and ext not in VIDEO_EXTS:
-        sys.exit(f"error: unsupported extension {ext!r} (use .png/.jpg/.mp4)")
+        sys.exit(f"error: unsupported extension {ext!r} (use .png/.jpg/.mp4/.webm)")
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     font = find_font()
@@ -106,6 +107,19 @@ def generate(text: str, out_path: Path, width: int, height: int) -> None:
             "-i", f"color=c={BG_COLOR}:s={width}x{height}:d=0.1",
             "-vf", vf,
             "-frames:v", "1",
+            str(out_path),
+        ]
+    elif ext == ".webm":
+        cmd = base + [
+            "-i", f"color=c={BG_COLOR}:s={width}x{height}:r=24:d={VIDEO_DURATION}",
+            "-f", "lavfi", "-i", f"anullsrc=r=48000:cl=stereo",
+            "-vf", vf,
+            "-c:v", "libvpx",
+            "-b:v", "200k",
+            "-pix_fmt", "yuv420p",
+            "-c:a", "libopus",
+            "-t", VIDEO_DURATION,
+            "-shortest",
             str(out_path),
         ]
     else:

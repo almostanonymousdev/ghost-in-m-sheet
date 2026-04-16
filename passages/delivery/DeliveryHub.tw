@@ -7,6 +7,14 @@
 <<if not setup.Delivery.isOpen()>>
 	@@.mc-thoughts;The delivery hub is not open right now (open from 8 AM to 8 PM)@@
 <<else>>
+	<<if $deliveryCompletedShifts gt 0>>
+		<div class="delivery-stats">
+		@@.mc-action; Rank: <<= setup.Delivery.getReputationLabel()>> | Streak: $deliveryStreak | Pay: $<<= $jobMoneySuccessed>>/delivery@@
+		<<if $deliveryReputationLevel gte 3>>
+			@@.mc-action;  | Fast routes unlocked@@
+		<</if>>
+		</div><br>
+	<</if>>
 	@@.enterbtn;[[Go to the manager|DeliveryManager]]@@<br>
 	<<if setup.Delivery.canStartShift()>>@@.usebtn;[[Take orders|workDelivery]]@@<<elseif setup.Delivery.tooTiredForShift()>>@@.mc-thoughts; I'm too tired
 	<</if>>

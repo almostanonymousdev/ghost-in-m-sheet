@@ -9,6 +9,73 @@ setup.Delivery = (function () {
 	function mc() { return State.variables.mc; }
 
 	return {
+		// --- Pay tiers & progression -----------------------------
+		payTiers: [
+			{ minShifts: 0,  base: 10, fail: 3 },
+			{ minShifts: 5,  base: 12, fail: 4 },
+			{ minShifts: 12, base: 15, fail: 5 },
+			{ minShifts: 25, base: 18, fail: 6 },
+			{ minShifts: 50, base: 22, fail: 7 }
+		],
+		updatePayTier: function () {
+			var shifts = v('deliveryCompletedShifts');
+			var tiers = this.payTiers;
+			var tier = 0;
+			for (var i = tiers.length - 1; i >= 0; i--) {
+				if (shifts >= tiers[i].minShifts) { tier = i; break; }
+			}
+			var repBonus = this.getReputationPayBonus();
+			State.variables.jobMoneySuccessed = tiers[tier].base + repBonus;
+			State.variables.jobMoneyFailed = tiers[tier].fail;
+		},
+
+		// --- Reputation / streaks --------------------------------
+		reputationMilestones: [
+			{ streak: 5,  level: 1, label: "Reliable",     payBonus: 2 },
+			{ streak: 10, level: 2, label: "Trusted",       payBonus: 4 },
+			{ streak: 20, level: 3, label: "Star Courier",  payBonus: 6 }
+		],
+		getReputationLevel: function () {
+			var best = v('deliveryBestStreak');
+			var milestones = this.reputationMilestones;
+			var level = 0;
+			for (var i = milestones.length - 1; i >= 0; i--) {
+				if (best >= milestones[i].streak) { level = milestones[i].level; break; }
+			}
+			return level;
+		},
+		getReputationPayBonus: function () {
+			var level = this.getReputationLevel();
+			var milestones = this.reputationMilestones;
+			for (var i = 0; i < milestones.length; i++) {
+				if (milestones[i].level === level) return milestones[i].payBonus;
+			}
+			return 0;
+		},
+		getReputationLabel: function () {
+			var level = this.getReputationLevel();
+			var milestones = this.reputationMilestones;
+			for (var i = 0; i < milestones.length; i++) {
+				if (milestones[i].level === level) return milestones[i].label;
+			}
+			return "Newbie";
+		},
+		getDeliveryTime: function () {
+			return this.getReputationLevel() >= 3 ? 20 : 30;
+		},
+
+		// --- Route familiarity -----------------------------------
+		isRouteFamiliar: function (address) {
+			var counts = v('deliveryVisitCounts');
+			return counts && counts[address] >= 3;
+		},
+		trackVisit: function (address) {
+			var counts = State.variables.deliveryVisitCounts;
+			if (!counts) { counts = {}; State.variables.deliveryVisitCounts = counts; }
+			if (!counts[address]) { counts[address] = 0; }
+			counts[address] += 1;
+		},
+
 		// --- Hub hours / shift eligibility -----------------------
 		isOpen: function () {
 			var h = v('hours');

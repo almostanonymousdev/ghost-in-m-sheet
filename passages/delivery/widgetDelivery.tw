@@ -77,11 +77,12 @@ integer in [start, end]. Replaces the 4-10 line <<if>> ladders each
 		<<set _cfg to setup.deliveryEventChooseConfig[_args[0]]>>
 		<<set _varName to _cfg.varName>>
 		<<if ndef State.variables[_varName]>><<set State.variables[_varName] to 0>><</if>>
-		<<if _cfg.payMode eq "always">><<set $earnedMoney += $jobMoneySuccessed>><</if>>
+		<<if _cfg.payMode eq "always">><<set $earnedMoney += $jobMoneySuccessed>><<deliveryTrackCorrect>><</if>>
 		<img @src="setup.ImagePath + '/deliveryhub/' + _cfg.img" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
 		<<if State.variables[_varName] eq 1>>
 			@@.notmc-speech; Great, thank you so much!@@<br>
-			<<if _cfg.payMode eq "done">><<set $earnedMoney += $jobMoneySuccessed>><</if>>
+			<<if _cfg.payMode eq "done">><<set $earnedMoney += $jobMoneySuccessed>><<deliveryTrackCorrect>><</if>>
+			<<deliveryTipCheck>>
 			<br>
 			@@.backbtn;[[Back|DeliveryMap]]@@
 		<<else>>
@@ -98,12 +99,31 @@ integer in [start, end]. Replaces the 4-10 line <<if>> ladders each
 		@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ <<= _args[0]>>)@@
 	<</widget>>
 
+	/* Random tip on correct deliveries (30% chance, $2-$5). */
+	<<widget "deliveryTipCheck">>
+		<<set _tipRoll to random(1, 100)>>
+		<<if _tipRoll lte 30>>
+			<<set _tipAmount to random(2, 5)>>
+			<<set $earnedMoney += _tipAmount>>
+			<<set $deliveryTotalTips += _tipAmount>>
+			@@.mc-action; The customer tipped you $<<= _tipAmount>>!@@<br>
+		<</if>>
+	<</widget>>
+
+	/* Track a correct delivery for perfect-shift bonus. */
+	<<widget "deliveryTrackCorrect">>
+		<<set $deliveryCorrectThisShift += 1>>
+		<<run setup.Delivery.trackVisit($currentHouse)>>
+	<</widget>>
+
 	/* Generic successful-delivery block: used when the matched item has no
 	custom encounter. */
 	<<widget "deliveryGenericSuccess">>
 		<img @src="setup.ImagePath + '/img/deliverygirlhappy.jpg'" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
 		<<set $earnedMoney += $jobMoneySuccessed>>
+		<<deliveryTrackCorrect>>
 		<<deliveryThanks>>
+		<<deliveryTipCheck>>
 		<br><br>
 		@@.backbtn; [[Back|DeliveryMap]] @@
 	<</widget>>

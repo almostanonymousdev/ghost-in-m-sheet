@@ -6,15 +6,40 @@
 <div class="flexwrapper">
 <<for _cell range setup.deliveryMapLayout>>
 	<<capture _cell>>
-		<div class="housecard">
 		<<if _cell neq "">>
+			<<set _familiar to setup.Delivery.isRouteFamiliar(_cell)>>
+			<<set _isSpecial to ($deliverySpecialOrder and _cell is $deliverySpecialOrderAddress)>>
+			<div @class="'housecard' + (_familiar ? ' familiar-house' : '') + (_isSpecial ? ' special-house' : '')">
 			<<set _sp to _cell.lastIndexOf(" ")>>
 			<<set _label to _cell.substr(0, _sp) + ", " + _cell.substr(_sp + 1)>>
 			<img @src="setup.ImagePath + '/img/delivery1.png'" class="iconsOnMap">
-			@@.icontextdelivery;<<link _label "deliveryHouse">><<set $currentHouse to _cell>>
-			<</link>>@@
+			<<if _isSpecial>>
+				@@.icontextdelivery;<<link _label "deliverySpecialEvent">><<set $currentHouse to _cell>>
+				<</link>>@@
+				<div class="mapOrderIcons"><img @src="setup.ImagePath + '/img/package.jpg'" class="mapOrderIcon rush-icon"></div>
+			<<else>>
+				@@.icontextdelivery;<<link _label "deliveryAutoDeliver">><<set $currentHouse to _cell>>
+				<</link>>@@
+				<<set _hasOrder to false>>
+				<<for _oi to 0; _oi lt 3; _oi++>>
+					<<if $orders[_oi].address is _cell and State.variables["deliveryActiveIcon" + (_oi + 1)]>>
+						<<set _hasOrder to true>>
+					<</if>>
+				<</for>>
+				<<if _hasOrder>>
+					<div class="mapOrderIcons">
+					<<for _oi to 0; _oi lt 3; _oi++>>
+						<<if $orders[_oi].address is _cell and State.variables["deliveryActiveIcon" + (_oi + 1)]>>
+							<img @src="setup.ImagePath + '/' + $orders[_oi].image" class="mapOrderIcon">
+						<</if>>
+					<</for>>
+					</div>
+				<</if>>
+			<</if>>
+			</div>
+		<<else>>
+			<div class="housecard"></div>
 		<</if>>
-		</div>
 	<</capture>>
 <</for>>
 </div>

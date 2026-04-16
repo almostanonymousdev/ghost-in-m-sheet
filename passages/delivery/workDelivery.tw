@@ -28,6 +28,17 @@
 <<set $order2 to $orders[1]>>
 <<set $order3 to $orders[2]>>
 
+<<set $deliveryCorrectThisShift to 0>>
+<<run setup.Delivery.updatePayTier()>>
+
+<<set $deliverySpecialOrder to false>>
+<<if random(1, 100) lte 25>>
+	<<set $deliverySpecialOrder to true>>
+	<<set $deliverySpecialOrderAddress to $shuffledStreets[3]>>
+	<<set $deliverySpecialOrderPay to random(20, 25)>>
+	<<set $deliverySpecialOrderType to either("safe", "unsafe")>>
+<</if>>
+
 @@.mc-action;Here are your orders for this shift: the address and associated items. Good luck!@@
 <br>
 <br>
@@ -37,5 +48,10 @@
 <span class="address-item">$shuffledOrders[_i].address --</span> <img @src="setup.ImagePath + '/' + $shuffledOrders[_i].image" class="iconPx">
 </div><br>
 <</for>>
+<<if $deliverySpecialOrder>>
+<div class="order-container special-order">
+<span class="address-item">$deliverySpecialOrderAddress -- RUSH</span> <img @src="setup.ImagePath + '/img/package.jpg'" class="iconPx"> <span class="rush-pay">$<<= $deliverySpecialOrderPay>></span>
+</div><br>
+<</if>>
 <</nobr>>
 @@.movebtn;[[Start|DeliveryMap]] @@

@@ -393,4 +393,186 @@ test.describe('Delivery Controller', () => {
     expect(atLimit).toBe(true);
     expect(pastLimit).toBe(false);
   });
+
+  // --- Pay tiers ---
+
+  test('updatePayTier sets base pay from tier table', async () => {
+    // arrange
+    await setVar(page, 'deliveryCompletedShifts', 0);
+    await setVar(page, 'deliveryBestStreak', 0);
+
+    // act
+    await callSetup(page, 'setup.Delivery.updatePayTier()');
+    const basePay = await getVar(page, 'jobMoneySuccessed');
+
+    // assert
+    expect(basePay).toBe(10);
+  });
+
+  test('updatePayTier increases pay at 5 shifts', async () => {
+    // arrange
+    await setVar(page, 'deliveryCompletedShifts', 5);
+    await setVar(page, 'deliveryBestStreak', 0);
+
+    // act
+    await callSetup(page, 'setup.Delivery.updatePayTier()');
+    const basePay = await getVar(page, 'jobMoneySuccessed');
+
+    // assert
+    expect(basePay).toBe(12);
+  });
+
+  test('updatePayTier increases pay at 12 shifts', async () => {
+    // arrange
+    await setVar(page, 'deliveryCompletedShifts', 12);
+    await setVar(page, 'deliveryBestStreak', 0);
+
+    // act
+    await callSetup(page, 'setup.Delivery.updatePayTier()');
+    const basePay = await getVar(page, 'jobMoneySuccessed');
+
+    // assert
+    expect(basePay).toBe(15);
+  });
+
+  test('updatePayTier includes reputation bonus', async () => {
+    // arrange - 25 shifts + streak of 10 = Trusted (+$4)
+    await setVar(page, 'deliveryCompletedShifts', 25);
+    await setVar(page, 'deliveryBestStreak', 10);
+
+    // act
+    await callSetup(page, 'setup.Delivery.updatePayTier()');
+    const basePay = await getVar(page, 'jobMoneySuccessed');
+
+    // assert — tier base $18 + reputation bonus $4
+    expect(basePay).toBe(22);
+  });
+
+  // --- Reputation ---
+
+  test('getReputationLevel returns 0 with no streak', async () => {
+    // arrange
+    await setVar(page, 'deliveryBestStreak', 0);
+
+    // act
+    const level = await callSetup(page, 'setup.Delivery.getReputationLevel()');
+
+    // assert
+    expect(level).toBe(0);
+  });
+
+  test('getReputationLevel returns 1 at streak 5', async () => {
+    // arrange
+    await setVar(page, 'deliveryBestStreak', 5);
+
+    // act
+    const level = await callSetup(page, 'setup.Delivery.getReputationLevel()');
+
+    // assert
+    expect(level).toBe(1);
+  });
+
+  test('getReputationLevel returns 2 at streak 10', async () => {
+    // arrange
+    await setVar(page, 'deliveryBestStreak', 10);
+
+    // act
+    const level = await callSetup(page, 'setup.Delivery.getReputationLevel()');
+
+    // assert
+    expect(level).toBe(2);
+  });
+
+  test('getReputationLevel returns 3 at streak 20', async () => {
+    // arrange
+    await setVar(page, 'deliveryBestStreak', 20);
+
+    // act
+    const level = await callSetup(page, 'setup.Delivery.getReputationLevel()');
+
+    // assert
+    expect(level).toBe(3);
+  });
+
+  test('getReputationLabel returns Newbie at level 0', async () => {
+    // arrange
+    await setVar(page, 'deliveryBestStreak', 0);
+
+    // act
+    const label = await callSetup(page, 'setup.Delivery.getReputationLabel()');
+
+    // assert
+    expect(label).toBe('Newbie');
+  });
+
+  test('getReputationLabel returns Star Courier at level 3', async () => {
+    // arrange
+    await setVar(page, 'deliveryBestStreak', 20);
+
+    // act
+    const label = await callSetup(page, 'setup.Delivery.getReputationLabel()');
+
+    // assert
+    expect(label).toBe('Star Courier');
+  });
+
+  test('getDeliveryTime returns 30 normally', async () => {
+    // arrange
+    await setVar(page, 'deliveryBestStreak', 0);
+
+    // act
+    const time = await callSetup(page, 'setup.Delivery.getDeliveryTime()');
+
+    // assert
+    expect(time).toBe(30);
+  });
+
+  test('getDeliveryTime returns 20 at reputation level 3', async () => {
+    // arrange
+    await setVar(page, 'deliveryBestStreak', 20);
+
+    // act
+    const time = await callSetup(page, 'setup.Delivery.getDeliveryTime()');
+
+    // assert
+    expect(time).toBe(20);
+  });
+
+  // --- Route familiarity ---
+
+  test('isRouteFamiliar false with no visits', async () => {
+    // arrange
+    await setVar(page, 'deliveryVisitCounts', {});
+
+    // act
+    const result = await callSetup(page, "setup.Delivery.isRouteFamiliar('Star Street 25')");
+
+    // assert
+    expect(result).toBe(false);
+  });
+
+  test('isRouteFamiliar true after 3 visits', async () => {
+    // arrange
+    await setVar(page, 'deliveryVisitCounts', { 'Star Street 25': 3 });
+
+    // act
+    const result = await callSetup(page, "setup.Delivery.isRouteFamiliar('Star Street 25')");
+
+    // assert
+    expect(result).toBe(true);
+  });
+
+  test('trackVisit increments visit count', async () => {
+    // arrange
+    await setVar(page, 'deliveryVisitCounts', {});
+    await setVar(page, 'currentHouse', 'Star Street 25');
+
+    // act
+    await callSetup(page, "setup.Delivery.trackVisit('Star Street 25')");
+    await callSetup(page, "setup.Delivery.trackVisit('Star Street 25')");
+    const counts = await getVar(page, 'deliveryVisitCounts');
+
+    // assert
+    expect(counts['Star Street 25']).toBe(2);
+  });
 });

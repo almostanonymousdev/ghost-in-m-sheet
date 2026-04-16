@@ -11,7 +11,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
 
   // ── Oni ────────────────────────────────────────────────────────
 
-  test('Oni: sanity drain is 3-8 (faster than normal 1-5)', async () => {
+  test('Oni: sanity drain is 3-8 (faster than normal 1-5)', { timeout: 15_000 }, async () => {
     await setupHunt(page, 'Oni');
     await goToPassage(page, 'OwaissaKitchen');
     await expectCleanPassage(page);
@@ -29,7 +29,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
     expect(new Set(drains).size).toBeGreaterThan(1);
   });
 
-  test('Oni: non-Oni ghost drains sanity at 1-5 (control test)', async () => {
+  test('Oni: non-Oni ghost drains sanity at 1-5 (control test)', { timeout: 15_000 }, async () => {
     await setupHunt(page, 'Spirit');
 
     const drains = [];

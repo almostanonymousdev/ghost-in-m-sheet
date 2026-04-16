@@ -119,7 +119,7 @@ body.city {
 
 .icontextdelivery {
 	font-family: 'Cormorant', serif;
-	font-size: 21px;
+	font-size: 25px;
 
 }
 
@@ -894,6 +894,7 @@ body.city {
 .mc-speech {
 	color:#ff99dd;
 	text-decoration: none;
+	font-size: 16px;
 		text-shadow:-1px -1px 0 #000,  1px -1px 0 #000,-1px  1px 0 #000,1px  1px 0 #000;
 }
 
@@ -931,6 +932,7 @@ body.city {
 .mc-thoughts {
   color: #eee;
   font-style: italic;
+  font-size: 16px;
   text-decoration: none;
   text-shadow:-1px -1px 0 #000,  1px -1px 0 #000,-1px  1px 0 #000,1px  1px 0 #000;
 
@@ -951,6 +953,7 @@ body.city {
 .notmc-speech {
 	color: #3486eb;
 	text-decoration: none;
+	font-size: 16px;
 		text-shadow:-1px -1px 0 #000,  1px -1px 0 #000,-1px  1px 0 #000,1px  1px 0 #000;
 }
 .notmc-speech a {
@@ -998,6 +1001,65 @@ body.city {
   display: flex;
   align-items: center;
   gap: 0.5em;
+}
+
+.special-order {
+  border: 2px solid gold;
+  background: rgba(255, 215, 0, 0.15);
+  padding: 5px 10px;
+  border-radius: 8px;
+}
+
+.rush-pay {
+  font-weight: bold;
+  color: gold;
+  font-size: 1.3em;
+}
+
+.rush-icon {
+  border: 2px solid gold;
+  box-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
+}
+
+.mapOrderIcons {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  margin-top: 2px;
+}
+
+.mapOrderIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 20%;
+}
+
+.familiar-house {
+  border: 2px solid #4CAF50;
+  border-radius: 8px;
+  background: rgba(76, 175, 80, 0.1);
+}
+
+.familiar-house .iconsOnMap {
+  box-shadow: 0 0 6px #4CAF50;
+}
+
+.special-house {
+  border: 2px solid gold;
+  border-radius: 8px;
+  background: rgba(255, 215, 0, 0.1);
+}
+
+.special-house .iconsOnMap {
+  box-shadow: 0 0 8px gold;
+}
+
+.delivery-stats {
+  background: rgba(100, 48, 105, 0.2);
+  border: 1px solid #643069;
+  border-radius: 6px;
+  padding: 5px 10px;
+  display: inline-block;
 }
 
 .adaptiveLink a {

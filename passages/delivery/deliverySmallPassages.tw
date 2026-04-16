@@ -54,7 +54,7 @@
 <<run State.variables[_iconVar] = false>>
 <br>
 <br>
-<<addTime 30>>
+<<addTime `setup.Delivery.getDeliveryTime()`>>
 
 :: deliveryActiveIcon {"position":"1100,1100","size":"100,100"}
 <<if passage() is "deliveryHouse">>
@@ -75,7 +75,48 @@
 <<for _i to 1; _i lte 3; _i++>>
 	<<set State.variables["deliveryActiveIcon" + _i] to true>>
 <</for>>
+<<set $deliveryCompletedShifts += 1>>
+<<if $deliveryCorrectThisShift gte 3>>
+	<<set $deliveryStreak += 1>>
+<<else>>
+	<<set $deliveryStreak to 0>>
+<</if>>
+<<if $deliveryStreak gt $deliveryBestStreak>>
+	<<set $deliveryBestStreak to $deliveryStreak>>
+<</if>>
+<<set $deliveryReputationLevel to setup.Delivery.getReputationLevel()>>
+<<run setup.Delivery.updatePayTier()>>
+<<if $deliveryCorrectThisShift gte 3>>
+	<<set _perfectBonus to random(5, 10)>>
+	<<set $earnedMoney += _perfectBonus>>
+	@@.mc-action; Perfect shift! Bonus: $<<= _perfectBonus>>@@<br>
+<</if>>
 Earned during the shift: $earnedMoney $
 <<set $mc.money += $earnedMoney>>
 <<set $mc.energy -= 2>>
 <<set $earnedMoney to 0>>
+
+:: deliveryAutoDeliver [nobr] {"position":"800,1700","size":"100,100"}
+<<set _house to $currentHouse>>
+<<set _foundOrder to false>>
+<<set _orderNum to 0>>
+<<for _i to 0; _i lt 3; _i++>>
+	<<if $orders[_i].address is _house and State.variables["deliveryActiveIcon" + (_i + 1)]>>
+		<<set _foundOrder to true>>
+		<<set _orderNum to _i + 1>>
+		<<break>>
+	<</if>>
+<</for>>
+<<if _foundOrder>>
+	<<set $currentOrder to _orderNum>>
+	<<goto "deliveryEvent">>
+<<else>>
+	<<set _img to setup.deliveryHouses[_house]>>
+	<<set _sp to _house.lastIndexOf(" ")>>
+	<<set _address to _house.substr(0, _sp) + ", " + _house.substr(_sp + 1)>>
+	<img @src="setup.ImagePath + '/img/' + _img" width="90%"><br>
+	@@.location; _address@@<br><br>
+	@@.mc-thoughts; No one here ordered anything from me.@@<br>
+	<br>
+	@@.backbtn;[[Back|DeliveryMap]]@@
+<</if>>
