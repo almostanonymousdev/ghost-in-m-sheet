@@ -2,8 +2,10 @@
 <img @src="setup.ImagePath + '/img/browserSearch.png'" width="100%"><br>
 @@.mc-speech; What should I look for on the internet?@@<br>
 <br>
+<<include "FindGhostInfo">>
+<br>
 
-<<linkreplace "@@.usebtn; Find a partner for ghost hunting@@ @@color:red; (Content with trans)@@">>
+<<linkreplace "@@.usebtn; Find a partner for ghost hunting@@ @@color:red; (trans content)@@">>
 	<b>Someone responded to your offer:</b>
 	<div class="flexwrapper">
 	<div class="housecard">
