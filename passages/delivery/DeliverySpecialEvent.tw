@@ -1,4 +1,4 @@
-:: deliverySpecialEvent [event nobr] {"position":"1500,1500","size":"100,100"}
+:: DeliverySpecialEvent [event nobr] {"position":"1500,1500","size":"100,100"}
 <<set _house to $currentHouse>>
 <<set _img to setup.deliveryHouses[_house]>>
 <<set _sp to _house.lastIndexOf(" ")>>
@@ -20,15 +20,15 @@
 	@@.notmc-speech; Finally! Get in here, I need to check the package before I pay.@@<br>
 	@@.mc-thoughts; Why can't he just check it at the door?@@<br>
 	<<if $mc.corruption gte 3>>
-		@@.mc-speech;[[Go inside|deliverySpecialUnsafe]]@@ or @@.mc-speech;[[No thanks, just pay me|deliverySpecialRefused]]@@<br>
+		@@.mc-speech;[[Go inside|DeliverySpecialUnsafe]]@@ or @@.mc-speech;[[No thanks, just pay me|DeliverySpecialRefused]]@@<br>
 	<<else>>
 		@@.mc-speech; Just pay me out here.@@<br>
-		<<goto "deliverySpecialRefused">>
+		<<goto "DeliverySpecialRefused">>
 	<</if>>
 <</if>>
 <<addTime `setup.Delivery.getDeliveryTime()`>>
 
-:: deliverySpecialRefused [event nobr] {"position":"1500,1600","size":"100,100"}
+:: DeliverySpecialRefused [event nobr] {"position":"1500,1600","size":"100,100"}
 @@.notmc-speech; No inspection, no payment. That's how it works, sweetheart.@@<br>
 <<set $deliverySpecialOrder to false>>
 @@.mc-speech; What?! But I delivered your order!@@<br>
@@ -36,7 +36,7 @@
 <br>
 @@.backbtn;[[Back|DeliveryMap]]@@
 
-:: deliverySpecialUnsafe [event nobr] {"position":"1500,1700","size":"100,100"}
+:: DeliverySpecialUnsafe [event nobr] {"position":"1500,1700","size":"100,100"}
 <<set $mc.lust += 45>>
 <img @src="setup.ImagePath + '/deliveryhub/specialevent/2.jpg'" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
 @@.mc-thoughts; He locks the door behind me. Shit.@@<br>
@@ -50,11 +50,11 @@
 		<video autoplay controls loop><source @src="setup.ImagePath + '/deliveryhub/specialevent/' + _pick + '.webm'" type="video/webm"></video>
 		@@.notmc-speech; Turn around@@<br>
 		@@.mc-speech; ~Ah~ just be quick@@<br>
-		@@.mc-speechLink;[[Let him continue|deliverySpecialUnsafe2]]@@<br>
+		@@.mc-speechLink;[[Let him continue|DeliverySpecialUnsafe2]]@@<br>
 	<</linkreplace>>
 <</linkreplace>>@@
 
-:: deliverySpecialUnsafe2 [event nobr] {"position":"1500,1800","size":"100,100"}
+:: DeliverySpecialUnsafe2 [event nobr] {"position":"1500,1800","size":"100,100"}
 <<set _pick2 to random(5, 6)>>
 <video autoplay controls loop><source @src="setup.ImagePath + '/deliveryhub/specialevent/' + _pick2 + '.webm'" type="video/webm"></video>
 @@.mc-speech; ~Ah~ God...@@<br>

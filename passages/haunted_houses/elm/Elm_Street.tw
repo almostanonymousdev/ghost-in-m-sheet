@@ -21,7 +21,7 @@
 		@@.usebtn; [[Talk to him|CaseyMain]]@@<br>
 	<</if>>
 <<else>>
-	@@.movebtn;[[Go inside|elmHallway][$ghostHuntingMode to 2]]@@<br>
+	@@.movebtn;[[Go inside|ElmHallway][$ghostHuntingMode to 2]]@@<br>
 <</if>>
 <br>
 <br>

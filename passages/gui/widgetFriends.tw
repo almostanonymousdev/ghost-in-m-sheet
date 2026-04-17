@@ -1,5 +1,5 @@
 :: widgetFriends [widget nobr noreturn] {"position":"300,1500","size":"100,100"}
-<<widget "CompExp">>
+<<widget "companionExp">>
 	<<if $companion.name eq "Brook">>
 		<<if $brook.lvl gte 5>>
 			$companion.name is already at the maximum level!
@@ -25,7 +25,7 @@
 	<</if>>
 <</widget>>
 
-<<widget "compLinks">>
+<<widget "companionLinks">>
 	<<if $companion.name eq "Brook">>
 		<a data-passage="BrookMain">
 		<img @src="setup.ImagePath + '/brook/brook.png'" class="companion-image">
@@ -54,36 +54,36 @@
 	<</if>>
 <</widget>>
 
-<<widget "compLinksSuccess">>
+<<widget "companionLinksSuccess">>
 	<<if $companion.name eq "Brook">>
-		<a data-passage="succeededComp">
+		<a data-passage="CompanionSucceeded">
 		<img @src="setup.ImagePath + '/brook/brook.png'" class="companion-imageSucceeded">
 		</a>
 	<<elseif $companion.name eq "Alice">>
-		<a data-passage="succeededComp">
+		<a data-passage="CompanionSucceeded">
 		<img @src="setup.ImagePath + '/alice/alice.png'" class="companion-imageSucceeded">
 		</a>
 	<<elseif $companion.name eq "Blake">>
-		<a data-passage="succeededComp">
+		<a data-passage="CompanionSucceeded">
 		<img @src="setup.ImagePath + '/blake/blake.png'" class="companion-imageSucceeded">
 		</a>
 	<<elseif $companion.name eq "Alex">>
-		<a data-passage="succeededComp">
+		<a data-passage="CompanionSucceeded">
 		<img @src="setup.ImagePath+`/trans/`+$transPicture+`.jpg`" class="companion-imageSucceeded">
 		</a>
 	<<elseif $companion.name eq "Taylor">>
-		<a data-passage="succeededComp">
+		<a data-passage="CompanionSucceeded">
 		<img @src="setup.ImagePath+`/trans/`+$transPicture+`.jpg`" class="companion-imageSucceeded">
 		</a>
 	<<elseif $companion.name eq "Casey">>
-		<a data-passage="succeededComp">
+		<a data-passage="CompanionSucceeded">
 		<img @src="setup.ImagePath+`/trans/`+$transPicture+`.jpg`" class="companion-imageSucceeded">
 		</a>
 
 	<</if>>
 <</widget>>
 
-<<widget "CompanionTextcompEvent1">>
+<<widget "companionTextEvent1">>
 	<<if $companion.name eq "Brook">>
 		@@.mc-thoughts; As you entered the room, you immediately saw her. She was naked and visibly shaken.@@<br>
 		@@.mc-speech; Oh God, what happened to you?@@<br>
@@ -128,7 +128,7 @@
 
 <</widget>>
 
-<<widget "CompanionTextcompEvent2">>
+<<widget "companionTextEvent2">>
 	<<if $companion.name eq "Brook">>
 		@@.mc-thoughts; As you entered the room, you immediately saw her. But she wasn't alone. Fortunately, you entered just in time, and as soon as you did, the ghost let her go and vanished@@<br>
 		@@.mc-speech; $companion.name , are you alright? I saw the ghost trying to...@@<br>
@@ -171,7 +171,7 @@
 	<<addLust 15>>
 <</widget>>
 
-<<widget "CompanionTextcompEvent3">>
+<<widget "companionTextEvent3">>
 	<<if $companion.name eq "Brook">>
 		@@.mc-thoughts; As you entered the room, you immediately saw her. But she wasn't alone. Fortunately, you entered just in time, and as soon as you did, the ghost let her go and vanished@@<br>
 		@@.mc-speech; $companion.name, are you alright? I saw what the ghost was doing to you...@@<br>
@@ -215,7 +215,7 @@
 	<<addLust 15>>
 <</widget>>
 
-<<widget "CompanionTextcompEvent4">>
+<<widget "companionTextEvent4">>
 	<<if $companion.name eq "Brook">>
 		@@.mc-thoughts; As you entered the room, you immediately saw her. But she wasn't alone. Fortunately, you entered just in time, and as soon as you did, the ghost let her go and vanished@@<br>
 		@@.mc-speech; $companion.name, are you alright? I saw what the ghost was doing to you...@@<br>
@@ -269,13 +269,13 @@
 			<<set _checkChance to random(1,100)>>
 			<<if _checkChance lte $chanceToSuccess>>
 				@@.notmc-speech; Oh, by the way, before the ghost... attacked me, I found something...@@
-				<<include "CompResult">>
+				<<include "CompanionResult">>
 				<<set $chosenPlan to "Plan1">>
 			<<else>>
 				<<set $chosenPlan to "Plan1">>
 				@@.notmc-speech; $mc.name, I'm sorry, I wasn't able to find what you asked for...@@<br>
 				@@.mc-speech; Don't worry about it, it's okay. The main thing is that you're fine@@<br>
-				<<CompExp 2>>
+				<<companionExp 2>>
 				<br>
 
 			<</if>>
@@ -290,13 +290,13 @@
 			<<set _checkChance to random(1,100)>>
 			<<if _checkChance lte $chanceToSuccess>>
 				@@.notmc-speech; Oh, by the way, before the ghost... attacked me, i found something...@@
-				<<include "CompResult">>
+				<<include "CompanionResult">>
 
 			<<else>>
 				@@.notmc-speech; $mc.name, I'm sorry, I wasn't able to find what you asked for...@@<br>
 				@@.mc-speech; Don't worry about it, it's okay. The main thing is that you're fine@@<br>
 
-				<<CompExp 2>>
+				<<companionExp 2>>
 
 				<br>
 
@@ -307,7 +307,7 @@
 	<</linkappend>>
 <</widget>>
 
-<<widget "AliceLustHighEvent">>
+<<widget "aliceLustHighEvent">>
 	or @@.usebtn;<<link `$companion.name + " helps you"`>><<set $companion.sanity -= 3>>
 		<<replace "#eventVideo">><<include "AliceHelp">><</replace>>
 	<</link>> @@ - $companion.name's <img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%;">

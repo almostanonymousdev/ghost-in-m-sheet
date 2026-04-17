@@ -1,0 +1,57 @@
+:: EventMC [noreturn nobr] {"position":"1400,1150","size":"100,100"}
+<<if $ghost.name eq "Oni">>
+	<<set $ghostSanityEventDecreased to random(3,8)>>
+<<else>>
+<<set $ghostSanityEventDecreased to random(1,5)>><</if>>
+
+<<includeStyle>>
+<<includeStyle2>>
+<div id="videoContainer">
+<div id="eventVideo">
+<<if $videoEvent.includes(".mp4")>>
+	<video id="myVideo" loop autoplay muted controls style="width: 100%; max-height: 500px;">
+	<source @src="setup.ImagePath+`/`+$videoEvent" type="video/mp4">
+	</video>
+<<else>>
+	<img @src="setup.ImagePath+`/`+$videoEvent" style="max-height: 500px;" class="
+	displayCentredImgs">
+<</if>>
+</div>
+<<set $uvlActivated to 1>>
+<<set $uvlActivationTime = $hours * 60 + $minutes>>
+
+<<if $bansheeAbility eq 1>>
+	@@.mc-thoughts; Suddenly, out of the corner of your eye, you spot a faint figure. It slowly becomes clearer -- standing in front of you is a girl with pale skin and piercing eyes. Your body freezes, and you can't move.<br>
+	She glides toward you, her movements almost hypnotic. When her lips touch yours, a fire ignites inside you. You can't resist -- your lips respond to hers. The kiss is unbelievably sweet, soft yet full of passion, sending shivers down your spine. A wave of intense pleasure washes over you, making you forget everything else. Every part of you responds, as if you're being pulled into a state of euphoria.@@<br><br>
+	@@.mc-thoughts; Can't run away from her@@
+	<span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; filter: grayscale(1); width:3%;"></span>
+	@@.usebtn; [[Stay|$return][$mc.sanity -= 10]]@@ <span>-<img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%;"></span>
+	<<unset $bansheeAbility>>
+<<elseif $cthulionAbility eq 1>>
+	@@.mc-thoughts; Tentacles creep out from the corner and begin wrapping around your body, trying to invade all your intimate areas.@@<br>
+	@@.mc-speech; N-Nooo~ What is this disgusting thing?! Get away from me!@@<br>
+	@@.mc-thoughts; Can't run away from it@@
+	<span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; filter: grayscale(1); width:3%;"></span>
+	@@.usebtn; [[Stay|$return][$mc.sanity -= 10]]@@ -<img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%;">
+	<<unset $cthulionAbility>>
+<<else>>
+	<<eventRandomizerText $argForRandomizer>><br>
+	<<if setup.Events.hasEnergyToRunAway()>>
+		@@.usebtn;[[Run away|$return][$mc.energy -= 1]]@@<span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span>
+	<<else>>
+		@@.mc-thoughts; I'm too tired@@
+		<span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; filter: grayscale(1); width:3%;"></span>
+	<</if>>
+	or @@.usebtn; [[Stay|$return][$mc.sanity -= $ghostSanityEventDecreased]]@@ <span>-<img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%;"></span>
+	<<companionHelpOption>>
+<</if>><br>
+</div>
+
+<<done>>
+	<<addclass ".linkselector" "disabled-link">>
+<</done>>
+
+<<if setup.Events.isDarkRoom(previous())>>
+	<<include "StyleEventMCDark">>
+<</if>>
+	<<includeStyleEventMC>>

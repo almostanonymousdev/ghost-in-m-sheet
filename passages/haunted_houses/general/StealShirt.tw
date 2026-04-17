@@ -1,0 +1,24 @@
+:: StealShirt [nobr] {"position":"4175,1050","size":"100,100"}
+<<if $tshirtState eq "worn">>
+	<<if $rememberTopOuter eq "tshirt0">>
+		<<set $rememberTopOuter to "notshirt0">>
+	<<set $tshirtState0 to "not worn">><</if>>
+
+	<<if $rememberTopOuter eq "tshirt1">>
+		<<set $rememberTopOuter to "notshirt1">>
+		<<set $mc.beauty -=5>>
+	<<set $tshirtState1 to "not worn">><</if>>
+
+	<<if $rememberTopOuter eq "tshirt2">>
+		<<set $rememberTopOuter to "notshirt2">>
+		<<set $mc.beauty -=8>>
+	<<set $tshirtState2 to "not worn">><</if>>
+
+	<<if $rememberTopOuter eq "tshirt3">>
+		<<set $rememberTopOuter to "notshirt3">>
+		<<set $mc.beauty -=11>>
+	<<set $tshirtState3 to "not worn">><</if>>
+
+<</if>>
+
+<<set $isShirtStolen to 1>>

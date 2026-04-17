@@ -1,0 +1,13 @@
+:: ElectronicsSection {"position":"2800,1800","size":"100,100"}
+<<nobr>>
+<div class="flexwrapper backgroundForText">
+<<shopCardConditional `ndef $isCameraBought and $ghostMareEventStart eq 3` "isCameraBought" "img/webcamera.png" 100 "ElectronicsSection" 1>>
+<<shopCard "isPhoneBought" "img/phone.png" 200 "ElectronicsSection" "" 1>>
+<div class="housecard">
+
+</div>
+</div>
+<br>
+@@.backbtn;[[Leave|Mall]] @@<br>
+<</nobr>>
+<<include "StyleMallElectronics">>

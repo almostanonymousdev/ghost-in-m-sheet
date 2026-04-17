@@ -46,8 +46,8 @@ async function setupReadyWorker(page) {
  * Returns the three orders.
  */
 async function startShiftWithKnownOrders(page) {
-  await goToPassage(page, 'workDelivery');
-  await waitForPassage(page, 'workDelivery');
+  await goToPassage(page, 'WorkDelivery');
+  await waitForPassage(page, 'WorkDelivery');
 
   // Override all order items to "package" (payMode: "always") for reliable
   // tracking and pay in tests.  Keep the randomly shuffled addresses.
@@ -305,7 +305,7 @@ test.describe('Delivery E2E — Shift initialization', () => {
 
   test('workDelivery generates 3 orders with addresses and items', async () => {
     await setupReadyWorker(page);
-    await goToPassage(page, 'workDelivery');
+    await goToPassage(page, 'WorkDelivery');
 
     const orderCount = await page.evaluate(() => SugarCube.State.variables.orders.length);
     expect(orderCount).toBe(3);
@@ -327,14 +327,14 @@ test.describe('Delivery E2E — Shift initialization', () => {
   test('workDelivery resets correct-this-shift counter', async () => {
     await setupReadyWorker(page);
     await setVar(page, 'deliveryCorrectThisShift', 5);
-    await goToPassage(page, 'workDelivery');
+    await goToPassage(page, 'WorkDelivery');
 
     expect(await getVar(page, 'deliveryCorrectThisShift')).toBe(0);
   });
 
   test('workDelivery shows order list and Start button', async () => {
     await setupReadyWorker(page);
-    await goToPassage(page, 'workDelivery');
+    await goToPassage(page, 'WorkDelivery');
 
     const text = await passageText(page);
     expect(text).toContain('Here are your orders');
@@ -346,7 +346,7 @@ test.describe('Delivery E2E — Shift initialization', () => {
 
   test('clicking Start navigates to DeliveryMap', async () => {
     await setupReadyWorker(page);
-    await goToPassage(page, 'workDelivery');
+    await goToPassage(page, 'WorkDelivery');
 
     await passage(page).locator('.movebtn a').click();
     await waitForPassage(page, 'DeliveryMap');
@@ -414,11 +414,11 @@ test.describe('Delivery E2E — Correct delivery', () => {
     const orders = await startShiftWithKnownOrders(page);
 
     // deliveryAutoDeliver uses <<goto>> which redirects synchronously,
-    // so State.passage is never 'deliveryAutoDeliver' — play and wait
+    // so State.passage is never 'DeliveryAutoDeliver' — play and wait
     // for the final passage instead.
     await setVar(page, 'currentHouse', orders[0].address);
-    await page.evaluate(() => SugarCube.Engine.play('deliveryAutoDeliver'));
-    await page.waitForFunction(() => SugarCube.State.passage === 'deliveryEvent');
+    await page.evaluate(() => SugarCube.Engine.play('DeliveryAutoDeliver'));
+    await page.waitForFunction(() => SugarCube.State.passage === 'DeliveryEvent');
 
     const earned = await getVar(page, 'earnedMoney');
     const successPay = await getVar(page, 'jobMoneySuccessed');
@@ -430,8 +430,8 @@ test.describe('Delivery E2E — Correct delivery', () => {
     const orders = await startShiftWithKnownOrders(page);
 
     await setVar(page, 'currentHouse', orders[0].address);
-    await page.evaluate(() => SugarCube.Engine.play('deliveryAutoDeliver'));
-    await page.waitForFunction(() => SugarCube.State.passage === 'deliveryEvent');
+    await page.evaluate(() => SugarCube.Engine.play('DeliveryAutoDeliver'));
+    await page.waitForFunction(() => SugarCube.State.passage === 'DeliveryEvent');
 
     expect(await getVar(page, 'deliveryCorrectThisShift')).toBeGreaterThanOrEqual(1);
   });
@@ -442,8 +442,8 @@ test.describe('Delivery E2E — Correct delivery', () => {
     const address = orders[0].address;
 
     await setVar(page, 'currentHouse', address);
-    await page.evaluate(() => SugarCube.Engine.play('deliveryAutoDeliver'));
-    await page.waitForFunction(() => SugarCube.State.passage === 'deliveryEvent');
+    await page.evaluate(() => SugarCube.Engine.play('DeliveryAutoDeliver'));
+    await page.waitForFunction(() => SugarCube.State.passage === 'DeliveryEvent');
 
     const counts = await getVar(page, 'deliveryVisitCounts');
     expect(counts[address]).toBe(1);
@@ -461,8 +461,8 @@ test.describe('Delivery E2E — Wrong delivery', () => {
 
   test('delivering wrong item shows sad image and earns fail pay', async () => {
     await setupReadyWorker(page);
-    await goToPassage(page, 'workDelivery');
-    await waitForPassage(page, 'workDelivery');
+    await goToPassage(page, 'WorkDelivery');
+    await waitForPassage(page, 'WorkDelivery');
     await setVar(page, 'deliverySpecialOrder', false);
 
     // Force order1 = pizza at address A, then visit address B with order1
@@ -476,8 +476,8 @@ test.describe('Delivery E2E — Wrong delivery', () => {
     // so the match check (address === currentHouse) fails.
     await setVar(page, 'currentHouse', orders[1].address);
     await setVar(page, 'currentOrder', 1);
-    await goToPassage(page, 'deliveryEvent');
-    await waitForPassage(page, 'deliveryEvent');
+    await goToPassage(page, 'DeliveryEvent');
+    await waitForPassage(page, 'DeliveryEvent');
 
     const text = await passageText(page);
     const earned = await getVar(page, 'earnedMoney');
@@ -508,8 +508,8 @@ test.describe('Delivery E2E — No order at address', () => {
     });
 
     await setVar(page, 'currentHouse', noOrderAddress);
-    await goToPassage(page, 'deliveryAutoDeliver');
-    await waitForPassage(page, 'deliveryAutoDeliver');
+    await goToPassage(page, 'DeliveryAutoDeliver');
+    await waitForPassage(page, 'DeliveryAutoDeliver');
 
     const text = await passageText(page);
     expect(text).toContain('No one here ordered anything');
@@ -694,7 +694,7 @@ test.describe('Delivery E2E — Full flow', () => {
     const workLink = passage(page).locator('.usebtn a');
     await expect(workLink).toHaveCount(1);
     await workLink.click();
-    await waitForPassage(page, 'workDelivery');
+    await waitForPassage(page, 'WorkDelivery');
 
     // 5. Disable special orders for predictability
     await setVar(page, 'deliverySpecialOrder', false);
@@ -754,7 +754,7 @@ test.describe('Delivery E2E — Special order', () => {
       Math.random = () => 0.1;  // random(1,100) → floor(0.1*100)+1 = 11 ≤ 25
     });
 
-    await goToPassage(page, 'workDelivery');
+    await goToPassage(page, 'WorkDelivery');
 
     // Restore Math.random
     await page.evaluate(() => { delete Math.random; });
@@ -790,7 +790,7 @@ test.describe('Delivery E2E — Special order', () => {
     await setVar(page, 'earnedMoney', 0);
 
     await setVar(page, 'currentHouse', specialAddress);
-    await goToPassage(page, 'deliverySpecialEvent');
+    await goToPassage(page, 'DeliverySpecialEvent');
 
     const text = await passageText(page);
     expect(text).toContain('lifesaver');

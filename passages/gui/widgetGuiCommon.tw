@@ -27,7 +27,7 @@ setup.addLust = function(amount) {
 <<widget "addTime">>
 	<<set _mins to _args[0]>>
 	<<set _crossedMidnight to setup.addTime(_mins)>>
-	<<if _crossedMidnight>><<include "resetCD">><</if>>
+	<<if _crossedMidnight>><<include "ResetCooldowns">><</if>>
 	<<done>>
 		<<replace "#time">><<= setup.updateTimeDisplay()>><</replace>>
 	<</done>>

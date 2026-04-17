@@ -1,80 +1,80 @@
-:: enigmaBasement [hauntedhouse] {"position":"2100,100","size":"100,100"}
-<<nobr>><<roomShell "enigmaBasement" "basement" "basic">>
+:: EnigmaBasement [hauntedhouse] {"position":"2100,100","size":"100,100"}
+<<nobr>><<roomShell "EnigmaBasement" "basement" "basic">>
 <<roomFooter>>
-@@.adaptiveLink;[[hallway|enigmaHallway]]@@
-@@.adaptiveLink;[[room A|enigmaRoomA]]@@
-@@.adaptiveLink;[[room B|enigmaRoomB]]@@
-@@.adaptiveLink;[[room C|enigmaRoomC]]@@
+@@.adaptiveLink;[[hallway|EnigmaHallway]]@@
+@@.adaptiveLink;[[room A|EnigmaRoomA]]@@
+@@.adaptiveLink;[[room B|EnigmaRoomB]]@@
+@@.adaptiveLink;[[room C|EnigmaRoomC]]@@
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
 
-:: enigmaBathroom [hauntedhouse] {"position":"2200,300","size":"100,100"}
-<<nobr>><<roomShell "enigmaBathroom" "bathroom" "basic">>
+:: EnigmaBathroom [hauntedhouse] {"position":"2200,300","size":"100,100"}
+<<nobr>><<roomShell "EnigmaBathroom" "bathroom" "basic">>
 <<roomFooter>>
-@@.adaptiveLink;[[hallway|enigmaHallway]]@@
+@@.adaptiveLink;[[hallway|EnigmaHallway]]@@
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
 
-:: enigmaBedroom [hauntedhouse] {"position":"2100,300","size":"100,100"}
-<<nobr>><<roomShell "enigmaBedroom" "bedroom" "basic">>
+:: EnigmaBedroom [hauntedhouse] {"position":"2100,300","size":"100,100"}
+<<nobr>><<roomShell "EnigmaBedroom" "bedroom" "basic">>
 <<roomFooter>>
-@@.adaptiveLink;[[hallway|enigmaHallway]]@@
+@@.adaptiveLink;[[hallway|EnigmaHallway]]@@
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
 
-:: enigmaHallway [hauntedhouse] {"position":"2300,300","size":"100,100"}
-<<nobr>><<roomShell "enigmaHallway" "hallway" "basic">>
+:: EnigmaHallway [hauntedhouse] {"position":"2300,300","size":"100,100"}
+<<nobr>><<roomShell "EnigmaHallway" "hallway" "basic">>
 <<roomFooter>>
-@@.adaptiveLink;[[livingroom|enigmaLivingroom]]@@
-@@.adaptiveLink;[[bedroom|enigmaBedroom]]@@
-@@.adaptiveLink;[[bathroom|enigmaBathroom]]@@
-@@.adaptiveLink;[[kitchen|enigmaKitchen]]@@
-@@.adaptiveLink;[[basement|enigmaBasement]]@@
+@@.adaptiveLink;[[livingroom|EnigmaLivingroom]]@@
+@@.adaptiveLink;[[bedroom|EnigmaBedroom]]@@
+@@.adaptiveLink;[[bathroom|EnigmaBathroom]]@@
+@@.adaptiveLink;[[kitchen|EnigmaKitchen]]@@
+@@.adaptiveLink;[[basement|EnigmaBasement]]@@
 <br>
 @@.adaptiveLink;[[leave|Enigma Street]]@@
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
 
-:: enigmaKitchen [hauntedhouse] {"position":"2100,200","size":"100,100"}
-<<nobr>><<roomShell "enigmaKitchen" "kitchen" "basic">>
+:: EnigmaKitchen [hauntedhouse] {"position":"2100,200","size":"100,100"}
+<<nobr>><<roomShell "EnigmaKitchen" "kitchen" "basic">>
 <<roomFooter>>
-@@.adaptiveLink;[[hallway|enigmaHallway]]@@
+@@.adaptiveLink;[[hallway|EnigmaHallway]]@@
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
 
-:: enigmaLivingroom [hauntedhouse] {"position":"2200,200","size":"100,100"}
-<<nobr>><<roomShell "enigmaLivingroom" "livingroom" "basic">>
+:: EnigmaLivingroom [hauntedhouse] {"position":"2200,200","size":"100,100"}
+<<nobr>><<roomShell "EnigmaLivingroom" "livingroom" "basic">>
 <<roomFooter>>
-@@.adaptiveLink;[[hallway|enigmaHallway]]@@
+@@.adaptiveLink;[[hallway|EnigmaHallway]]@@
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
 
-:: enigmaRoomA [hauntedhouse] {"position":"2200,100","size":"100,100"}
-<<nobr>><<roomShell "enigmaRoomA" "roomA" "basic">>
+:: EnigmaRoomA [hauntedhouse] {"position":"2200,100","size":"100,100"}
+<<nobr>><<roomShell "EnigmaRoomA" "roomA" "basic">>
 <<roomFooter>>
-@@.adaptiveLink;[[basement|enigmaBasement]]@@
+@@.adaptiveLink;[[basement|EnigmaBasement]]@@
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
 
-:: enigmaRoomB [hauntedhouse] {"position":"2100,0","size":"100,100"}
-<<nobr>><<roomShell "enigmaRoomB" "roomB" "basic">>
+:: EnigmaRoomB [hauntedhouse] {"position":"2100,0","size":"100,100"}
+<<nobr>><<roomShell "EnigmaRoomB" "roomB" "basic">>
 <<roomFooter>>
-@@.adaptiveLink;[[basement|enigmaBasement]]@@
+@@.adaptiveLink;[[basement|EnigmaBasement]]@@
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
 
-:: enigmaRoomC [hauntedhouse] {"position":"2200,0","size":"100,100"}
-<<nobr>><<roomShell "enigmaRoomC" "roomC" "basic">>
+:: EnigmaRoomC [hauntedhouse] {"position":"2200,0","size":"100,100"}
+<<nobr>><<roomShell "EnigmaRoomC" "roomC" "basic">>
 <<roomFooter>>
-@@.adaptiveLink;[[basement|enigmaBasement]]@@
+@@.adaptiveLink;[[basement|EnigmaBasement]]@@
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>

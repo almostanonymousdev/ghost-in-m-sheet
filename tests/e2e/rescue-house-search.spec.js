@@ -13,16 +13,16 @@ test.describe('Missing Women — map, house search, events, clue, nun', () => {
 
   test('rescue map renders 16 houses without errors', async () => {
     await setupActiveQuest(page, 'Victoria');
-    await goToPassage(page, 'rescueMap');
+    await goToPassage(page, 'RescueMap');
     await expectCleanPassage(page);
     expect(await page.locator('.passage .housecard').count()).toBe(16);
   });
 
   test('selecting a house sets $rescueHouse and navigates to rescueHouse', async () => {
     await setupActiveQuest(page, 'Victoria');
-    await goToPassage(page, 'rescueMap');
+    await goToPassage(page, 'RescueMap');
     await page.locator('.passage .icontextcity').first().click();
-    await page.waitForFunction(() => SugarCube.State.passage === 'rescueHouse');
+    await page.waitForFunction(() => SugarCube.State.passage === 'RescueHouse');
     expect(await getVar(page, 'rescueHouse')).toBe(1);
   });
 
@@ -34,7 +34,7 @@ test.describe('Missing Women — map, house search, events, clue, nun', () => {
     await setVar(page, 'randomRescuePhotoNumber', 5);
     await setVar(page, 'rescueHouse', 3);
 
-    await goToPassage(page, 'rescueHouse');
+    await goToPassage(page, 'RescueHouse');
     await expectCleanPassage(page);
 
     await page.locator('.passage .usebtn').first().click();
@@ -53,9 +53,9 @@ test.describe('Missing Women — map, house search, events, clue, nun', () => {
     await setVar(page, 'rescueHouse', 5);
     await setVar(page, 'rescueStage', 0);
 
-    await goToPassage(page, 'rescueHouse');
+    await goToPassage(page, 'RescueHouse');
     await page.locator('.passage .usebtn').first().click();
-    await page.waitForFunction(() => SugarCube.State.passage === 'rescueEvent');
+    await page.waitForFunction(() => SugarCube.State.passage === 'RescueEvent');
     await expectCleanPassage(page);
     expect(await page.locator('.passage').textContent()).toContain('abandoned house');
   });
@@ -67,7 +67,7 @@ test.describe('Missing Women — map, house search, events, clue, nun', () => {
     await setVar(page, 'randomRescuePhotoNumber', 5);
     await setVar(page, 'rescueHouse', 5);
 
-    await goToPassage(page, 'rescueHouse');
+    await goToPassage(page, 'RescueHouse');
     await expectCleanPassage(page);
 
     const btn = page.locator('.passage .usebtn').filter({ hasText: 'Compare the house with the photo' });
@@ -88,7 +88,7 @@ test.describe('Missing Women — map, house search, events, clue, nun', () => {
     await setVar(page, 'randomRescuePhotoNumber', 5);
     await setVar(page, 'rescueHouse', 3);
 
-    await goToPassage(page, 'rescueHouse');
+    await goToPassage(page, 'RescueHouse');
     await page.locator('.passage .usebtn').filter({ hasText: 'Compare the house with the photo' }).click();
 
     await page.waitForFunction(() => {
@@ -103,7 +103,7 @@ test.describe('Missing Women — map, house search, events, clue, nun', () => {
     await setVar(page, 'mc.energy', 0);
     await setVar(page, 'rescueHouse', 3);
 
-    await goToPassage(page, 'rescueHouse');
+    await goToPassage(page, 'RescueHouse');
     await expectCleanPassage(page);
     expect(await page.locator('.passage').textContent()).toContain('too tired');
   });
@@ -113,7 +113,7 @@ test.describe('Missing Women — map, house search, events, clue, nun', () => {
     await setVar(page, 'hasQuestForRescue', 2);
     await setVar(page, 'rescueHouse', 3);
 
-    await goToPassage(page, 'rescueHouse');
+    await goToPassage(page, 'RescueHouse');
     await expectCleanPassage(page);
     expect(await page.locator('.passage').textContent()).toContain('too late');
   });
@@ -124,7 +124,7 @@ test.describe('Missing Women — map, house search, events, clue, nun', () => {
     await setupActiveQuest(page, 'Victoria');
     await setVar(page, 'rescueStage', 0);
 
-    await goToPassage(page, 'rescueEvent');
+    await goToPassage(page, 'RescueEvent');
     await expectCleanPassage(page);
 
     const text = await page.locator('.passage').textContent();
@@ -137,7 +137,7 @@ test.describe('Missing Women — map, house search, events, clue, nun', () => {
     await setupActiveQuest(page, 'Victoria');
     await setVar(page, 'rescueStage', 2);
 
-    await goToPassage(page, 'rescueEvent');
+    await goToPassage(page, 'RescueEvent');
     await expectCleanPassage(page);
     expect(await page.locator('.passage').textContent()).toContain('abandoned house');
     expect(await getVar(page, 'rescueQuestCD')).toBe(1);
@@ -147,7 +147,7 @@ test.describe('Missing Women — map, house search, events, clue, nun', () => {
     await setupActiveQuest(page, 'Victoria');
     await setVar(page, 'rescueStage', 0);
 
-    await goToPassage(page, 'rescueEvent');
+    await goToPassage(page, 'RescueEvent');
     await expectCleanPassage(page);
 
     await expect(page.locator('.passage a').filter({ hasText: 'Leave' }).first()).toBeVisible();
@@ -162,7 +162,7 @@ test.describe('Missing Women — map, house search, events, clue, nun', () => {
     await setVar(page, 'return', 'OwaissaHallway');
     await setVar(page, 'equipment.emf', 2);
 
-    await goToPassage(page, 'rescueClueFound');
+    await goToPassage(page, 'RescueClueFound');
     await expectCleanPassage(page);
 
     await page.locator('.passage .usebtn').first().click();
@@ -176,7 +176,7 @@ test.describe('Missing Women — map, house search, events, clue, nun', () => {
     await setVar(page, 'return', 'OwaissaHallway');
     await setVar(page, 'equipment.emf', 1);
 
-    await goToPassage(page, 'rescueClueFound');
+    await goToPassage(page, 'RescueClueFound');
     await page.locator('.passage .usebtn').first().click();
     await page.waitForFunction(() => SugarCube.State.variables.equipment.emf === 3);
     expect(await getVar(page, 'equipment.emf')).toBe(3);

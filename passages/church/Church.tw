@@ -14,7 +14,7 @@
 	<</if>>
 <</if>>
 <<if setup.Church.showMissingPersonsBoard()>>
-	@@.enterbtn; [[Missing persons board|rescueTaskBoard]]@@<br>
+	@@.enterbtn; [[Missing persons board|RescueTaskBoard]]@@<br>
 <</if>>
 <br>
 <<if setup.Church.holyWaterAvailable()>>

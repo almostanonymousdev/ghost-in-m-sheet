@@ -114,17 +114,17 @@ setup.Home = (function () {
 		},
 		returningFromHuntDefeat: function () {
 			var p2 = previous(2);
-			return p2 === 'HuntOverSanity' || p2 === 'huntEnd';
+			return p2 === 'HuntOverSanity' || p2 === 'HuntEnd';
 		},
 		returningFromMareEnd: function () {
-			return previous(2) === 'ghostSpecialEventMareEnd';
+			return previous(2) === 'GhostSpecialEventMareEnd';
 		},
 		justSleptFromBedroom: function () {
 			return previous() === 'Sleep' && this.mareEventActive() &&
 				!this.returningFromHuntDefeat();
 		},
 		mareEventShouldEscalate: function () {
-			return hasVisited('ghostSpecialEventMare') &&
+			return hasVisited('GhostSpecialEventMare') &&
 				this.mareEventActive() &&
 				!this.returningFromHuntDefeat();
 		},

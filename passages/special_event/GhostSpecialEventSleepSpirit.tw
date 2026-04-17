@@ -1,0 +1,43 @@
+:: GhostSpecialEventSleepSpirit [nobr] {"position":"700,2450","size":"100,100"}
+<<set $ghostSpecialEventSpiritCD to 1>>
+<<if setup.SpecialEvent.hasEnergyForSleepSpirit()>>
+	<video autoplay controls muted loop>
+	<source @src="setup.ImagePath + '/ghosts/specials/spirit3.0.mp4'" type="video/mp4">
+	</video>
+	@@.mc-thoughts; You lie in bed, deeply asleep. But something disturbs your peace. You feel a light touch on your body -- like it's a remnant from your last hunt. You think it will pass, and you let yourself sink@@
+
+	<<linkappend "@@.usebtn; deeper into sleep.@@">><br>
+		<video autoplay controls muted loop>
+		<source @src="setup.ImagePath + '/ghosts/specials/spirit3.1.mp4'" type="video/mp4">
+		</video>
+		<<if not setup.SpecialEvent.hasMinCorruptionForSleepSpirit()>>
+			@@.mc-thoughts; But the touches grow bolder. Invisible hands seem to glide across your skin, slowly exploring your body. You feel fingers gently slipping between your thighs, teasing your most sensitive spot. Occasionally, fingers brush your lips, and instinctively, you part them, letting your tongue flicker over the tips, tasting the sensation. The feeling is strange, but you remain lost in the haze of sleep, @@
+
+			<<linkappend "@@.usebtn; convinced  it's only a dream@@">><br>
+				@@.mc-thoughts; However, the hands become more daring, and it's impossible to ignore now. <br>@@
+				<video autoplay controls muted loop>
+				<source @src="setup.ImagePath + '/ghosts/specials/spirit3.4.mp4'" type="video/mp4">
+				</video>
+				@@.mc-thoughts; Your body tenses, and suddenly, you realize -- this isn't a dream. Someone is touching you. You open your eyes and sit up abruptly. The room is empty. There's no one there, but your heart races. The lingering feeling of those touches still clings to your skin. @@<br>
+				@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 5)@@<br>
+				<br>
+				@@.backbtn; [[Sleep|Sleep]]@@<br>
+			<</linkappend>>
+		<<else>>
+			@@.mc-thoughts; However, the touches don't stop. You feel gentle hands caressing your pussy, occasionally slipping into your equally sensitive mouth. This sends a shiver down your spine and stirs a strange wave of pleasure. You can't stop the sensation, but it becomes more real with each passing second. You spread your legs, allowing the touches to go deeper, filling you with excitement. Fingers slide into your pussy, and@@ @@.usebtn; [[you can no longer resist|GhostSpecialEventSleepSpirit1]]@@
+
+		<</if>>
+	<</linkappend>>
+
+<<else>>
+	<video autoplay controls muted loop>
+	<source @src="setup.ImagePath + '/ghosts/specials/spirit4.0.mp4'" type="video/mp4">
+	</video>
+	@@.mc-thoughts; You lie in bed, deeply asleep. But something disturbs your peace. You feel a light touch on your body -- like it's a remnant from your last hunt. You think it will pass, and you let yourself sink@@
+	<<linkappend "@@.usebtn; deeper into sleep.@@">>
+		<video autoplay controls muted loop>
+		<source @src="setup.ImagePath + '/ghosts/specials/spirit4.1.mp4'" type="video/mp4">
+		</video>
+		@@.mc-thoughts; You feel something trying to slip into your tender mouth, and, exhausted after a long day, you almost unconsciously give in. Fatigue overwhelms  and you instinctively begin to suck. Your mind too drowsy to fully grasp what's happening. It sends a shiver through you and a wave of strange pleasure. You can't stop the sensation as it becomes more and more real. You spread your legs, allowing the touches to go deeper. Fingers slide over your pussy, @@ @@.usebtn;[[filling you with excitement.|GhostSpecialEventSleepSpirit2]]@@
+	<</linkappend>>
+<</if>>

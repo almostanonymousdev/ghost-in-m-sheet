@@ -19,7 +19,7 @@ test.describe('Ghost unique abilities — Phantom, Goryo, Deogen, Jinn', () => {
     await setVar(page, 'hallway.background', 1);
 
     for (let i = 0; i < 20; i++) {
-      await goToPassage(page, 'lightPassageGhost');
+      await goToPassage(page, 'LightPassageGhost');
       const bg = await getVar(page, 'hallway.background');
       expect(bg, 'Phantom turned off lights on iteration ' + i).toBe(1);
     }
@@ -48,7 +48,7 @@ test.describe('Ghost unique abilities — Phantom, Goryo, Deogen, Jinn', () => {
     for (const min of [5, 25, 45]) {
       await setVar(page, 'minutes', min);
       await setVar(page, 'lastChangeIntervalRoom', '');
-      await goToPassage(page, 'changeGhostRoom');
+      await goToPassage(page, 'ChangeGhostRoom');
 
       const room = await getVar(page, 'ghostRoom.name');
       expect(room, `Goryo room changed at minute ${min}`).toBe(initialRoom);

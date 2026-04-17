@@ -1,0 +1,41 @@
+:: CursedBedEvent [nobr] {"position":"1100,4700","size":"100,100"}
+<video autoplay controls loop>
+<source @src="setup.ImagePath + '/cursedHome/bed1.webm'" type="video/webm">
+</video><br>
+@@.location; Bedroom@@<br>
+<br>
+@@.mc-thoughts; You stir awake, groggy and disoriented. Something cool and slick is dripping down your neck. You touch it -- clear, sticky, viscous. It stretches between your fingers like slime.@@<br>
+@@.mc-speech; What the hell is this...?@@<br>
+@@.mc-thoughts; You sit up and notice something impossible. There's a hole in your mattress -- not torn, but perfectly round, glowing faintly with an eerie light from beneath. It shouldn't be there. It wasn't there before.@@<br><br>
+<<linkreplace "@@.usebtn; Peer into the hole@@">>
+	@@.mc-thoughts; You lean over the edge, squinting into the light. Before you can process what you're seeing, hands -- cold, slick, terrifyingly strong -- shoot up from under the bed and clamp around your ankles.@@<br>
+	@@.mc-speech; WHAT-- NO! LET GO!@@<br>
+	@@.mc-thoughts; You scream as you're yanked off the mattress and dragged under the bed frame. The world flips, the light swallows you, and your bedroom vanishes.@@<br><br>
+	<video autoplay controls loop>
+	<source @src="setup.ImagePath + '/cursedHome/bed2.webm'" type="video/webm">
+	</video><br>
+	@@.mc-thoughts; You're on your back, pinned to something cold and flat. Ghostly tendrils hold your wrists above your head and your legs are splayed wide. You twist your neck frantically, searching for an exit -- a seam, a crack, anything. There's nothing. Just dim, pulsing light and the wet sound of something moving closer.@@<br>
+	@@.mc-speech; Please... somebody help me...@@<br><br>
+	@@.mc-thoughts; A thick tendril presses against your pussy and pushes inside without warning. You gasp, back arching off the surface as it fills you, thrusting deep with slow, deliberate strokes. It's terrifying and overwhelming, but a small, shameful part of you breathes a sigh of relief.@@<br>
+	@@.mc-thoughts; At least it's not my ass...@@<br>
+	<<linkappend "@@.usebtn; It doesn't stop@@">>
+		<video autoplay controls loop>
+		<source @src="setup.ImagePath + '/cursedHome/bed3.webm'" type="video/webm">
+		</video><br>
+		@@.mc-thoughts; The orgasms come in waves -- one rolling into the next, each more intense, each melting away a little more of your resistance. Your eyes have gone glassy. Drool runs down your chin. You've stopped struggling.@@<br><br>
+		@@.mc-thoughts; A tendril hovers near your lips and you lunge for it, sucking it into your mouth greedily, cheeks hollowing as you drain it like you're starving. It pulses against your tongue and you moan around it, swallowing every drop of the warm, tingling fluid it feeds you.@@<br>
+		@@.mc-speech; Mmh~ more... give me more~@@<br><br>
+		@@.mc-thoughts; You spread your legs wider on your own, inviting them. The tendrils oblige -- every one of them tenses and erupts at once. Thick ropes of ghostly cum coat you from head to toe. It splatters across your face, pools between your breasts, floods your pussy and drips down your thighs. You cum so hard you black out for a second, your whole body convulsing.@@<br><br>
+		@@.mc-thoughts; ...@@<br><br>
+		@@.mc-thoughts; You wake up in your own bed. The sheets are tangled around you. The hole in the mattress is gone -- smooth, unbroken fabric. Your body is clean, dry. But your tongue runs across your lips and you taste it. Faint and electric.@@<br>
+		<<set $mc.sanity -= 15>>
+		<<set $mc.corruption += 0.5>>
+		<<set $mc.lust to 100>>
+		<<run setup.CursedItems.clearCurse()>>
+		<br>
+		@@.mc-speech; Ectoplasm... I know I can still taste it. That wasn't a dream.@@<br>
+		Sanity decreased. Corruption slightly increased.<br>
+		<br>
+		@@.backbtn;[[Back|Bedroom]]@@
+	<</linkappend>>
+<</linkreplace>>

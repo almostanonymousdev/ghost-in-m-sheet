@@ -10,7 +10,7 @@
 		@@.mc-thoughts; Information about _ghostName@@<br>
 		<span class="priceAmount"><<= _price>>$</span><br>
 		<<if $mc.money gte _price>>
-			@@.buyItemLink;<<link "Buy" "witchSale">>
+			@@.buyItemLink;<<link "Buy" "WitchSale">>
 				<<run State.variables[_args[0]] = 1>>
 				<<set $mc.money -= _price>>
 			<</link>>@@<br>

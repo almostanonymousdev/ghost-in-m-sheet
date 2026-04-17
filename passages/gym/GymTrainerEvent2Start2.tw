@@ -1,0 +1,14 @@
+:: GymTrainerEvent2Start2 [nobr] {"position":"3275,1800","size":"100,100"}
+<<addLust 15>>
+<<set $trainer2SexCD to 1>>
+<video autoplay controls muted loop>
+<source @src="setup.ImagePath + '/gym/trainer2event2end.mp4'" type="video/mp4">
+</video>
+@@.notmc-speech; Phew~ thanks for the "help". I guess we can do that again sometimes.@@
+<br>
+@@.mc-speech; Oh, sure, I'll come later.@@<br>
+<<gainXP 10 0.5>>
+@@.backbtn;[[Leave|GymInside]] @@
+<<done>>
+	<<addclass ".linkselector" "disabled-link">>
+<</done>>

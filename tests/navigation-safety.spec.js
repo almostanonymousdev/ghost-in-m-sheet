@@ -151,18 +151,18 @@ function parseIfBlocks(body) {
 // believed safe because they're only entered with valid state.
 // Remove entries from this list as they get fixed.
 const KNOWN_MISSING_ELSE = new Set([
-  'gymTrainer',
-  'lightPassageGhost',
-  'succubusPCEvent',
-  'summoningStart',
+  'GymTrainer',
+  'LightPassageGhost',
+  'SuccubusPCEvent',
+  'SummoningStart',
   'LibrarySearchResult',
-  'rescueAshPossessed',
-  'rescueJadePossessed1',
-  'rescueJadePossessed2',
-  'rescueJuliaPossessed',
-  'rescueStay',
-  'piercing',
-  'ghostSpecialEventSpirit',
+  'RescueAshPossessed',
+  'RescueJadePossessed1',
+  'RescueJadePossessed2',
+  'RescueJuliaPossessed',
+  'RescueStay',
+  'Piercing',
+  'GhostSpecialEventSpirit',
 ]);
 
 // ── collect all passages ────────────────────────────────────────
@@ -339,7 +339,7 @@ test.describe('navigation safety', () => {
     // Passages that are only ever <<include>>-d from other passages;
     // exit navigation is provided by the parent passage.
     const INCLUDED_ONLY = new Set([
-      'findStolenClothes',
+      'FindStolenClothes',
     ]);
 
     const violations = [];

@@ -1,0 +1,13 @@
+:: BodyModification [nobr] {"position":"500,400","size":"100,100"}
+<div id="statusContainerPiercing">
+<<for _p range setup.piercingList>>
+	<div @id="'statusPiercing' + _p.target">
+	<<if State.variables[_p.var] eq "worn">>
+		<<hovertip _p.tip>><img @src="setup.ImagePath + '/img/icons/' + _p.icon">
+		<</hovertip>>
+		<<if _p.lustVar>><<run State.variables[_p.lustVar] = 1>><</if>>
+	<</if>>
+	</div>
+<</for>>
+</div>
+<<include "StyleStatusContainer">>

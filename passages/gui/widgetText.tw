@@ -26,7 +26,7 @@
 	<</replace>>
 <</widget>>
 
-<<widget "traptheghost">>
+<<widget "trapTheGhost">>
 	<<replace "#wishesCount">>
 		<<set $wishesCount -=1>>
 		@@.mc-thoughts; $wishesCount wishes left...@@<br><br>
@@ -79,7 +79,7 @@
 			@@.mc-speech; It worked! One evidence has been removed from my diary!<br>
 			Wait...I hear someone's footsteps...@@
 			<<timed 2s>>
-				<<goto "ghostHuntEvent">>
+				<<goto "GhostHuntEvent">>
 			<</timed>>
 		<<else>>
 			@@.mc-speech; Nothing happened... I probably won't be able to remove more than one piece of evidence@@<br><br><br>

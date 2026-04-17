@@ -3,12 +3,12 @@
 	<<if $cursedHuntActive eq 1>>
 	<<else>>
 		<<addTime 0.5>>
-		<<include "event">>
+		<<include "Event">>
 		<<if _eventTriggered is false>>
-			<<include "stealClothesEvent">>
+			<<include "StealClothesEvent">>
 		<</if>>
 		<<if _stealClothesTriggered is false and _eventTriggered is false>>
-			<<include "checkHuntStart">>
+			<<include "CheckHuntStart">>
 		<</if>>
 	<</if>>
 <</widget>>
@@ -17,9 +17,9 @@
 	<<if $cursedHuntActive eq 1>>
 	<<else>>
 		<<addTime 0.5>>
-		<<include "event">>
+		<<include "Event">>
 		<<if _eventTriggered is false>>
-			<<include "checkHuntStart">>
+			<<include "CheckHuntStart">>
 		<</if>>
 	<</if>>
 <</widget>>

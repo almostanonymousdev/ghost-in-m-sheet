@@ -1,4 +1,4 @@
-:: possessedLocation1 [nobr] {"position":"1125,500","size":"100,100"}
+:: PossessedLocation1 [nobr] {"position":"1125,500","size":"100,100"}
 <<if $checkChoosenLocation eq "library">>
 	<video autoplay controls muted loop>
 	<source @src="setup.ImagePath + '/possessed/1.3.mp4'" type="video/mp4">
@@ -41,7 +41,7 @@
 					<</replace>>
 				<</link>>
 				@@.mc-thoughts; The sounds of slaps, some wet sounds and moans... Fragments of phrases - about how great it is to fuck you. Everything was mixed and blossomed with sensations.@@<br>
-				@@.mc-thoughts; After a while they put you on your knees and started [[cumming|possessedLocation2]]@@<br>
+				@@.mc-thoughts; After a while they put you on your knees and started [[cumming|PossessedLocation2]]@@<br>
 
 			<</linkappend>>
 		<<else>>
@@ -50,7 +50,7 @@
 				<<set $mcpossession += 1>>
 				<b>Surrender to possession</b> is increased: $mcpossession now!<br>
 			<</if>>
-			@@.enterbtn; [[Next|possessed]]@@<br>
+			@@.enterbtn; [[Next|Possessed]]@@<br>
 
 		<</if>>
 	<</linkappend>>
@@ -98,7 +98,7 @@
 		<</link>>
 		@@color:red; Well, we've only just started. I think we'll go somewhere else now that we're done here. @@<br>
 		@@.mc-speech; Oh, damn@@<br>
-		@@.enterbtn; [[Next|possessed]]@@<br>
+		@@.enterbtn; [[Next|Possessed]]@@<br>
 	<</linkappend>>
 <<elseif $checkChoosenLocation eq "gym">>
 
@@ -150,14 +150,14 @@
 			@@.mc-thoughts; But they heard someone enter the gym and they decided to run away@@<br>
 			@@color:red; Fuck! I'm not done, but okay, we'll think of something, right, $mc.name? @@<br>
 			@@.mc-speech; Oh, damn@@<br>
-			@@.enterbtn; [[Next|possessed]]@@<br>
+			@@.enterbtn; [[Next|Possessed]]@@<br>
 		<<else>>
 			@@.mc-thoughts; You managed to regain control of yourself. Gathering your strength, you ran away from there as fast as you could.@@<br>
 			<<if $mcpossession lte 10>>
 				<<set $mcpossession += 1>>
 				<b>Surrender to possession</b> is increased: $mcpossession now!<br>
 			<</if>>
-			@@.enterbtn; [[Next|possessed]]@@<br>
+			@@.enterbtn; [[Next|Possessed]]@@<br>
 		<</if>>
 	<</linkreplace>>
 <<elseif $checkChoosenLocation eq "church">>
@@ -179,7 +179,7 @@
 	~Uuuuwhhh ~You're penetrating me too deep@@<br>
 	@@color:red; I'll make you cum, buttslut@@<br>
 	@@.notmc-speech; NNRGGG ~Ah AHHHhh@@<br>
-	@@.mc-thoughts; She can't resist anymore and you continue to stretch her asshole [[again and again....|possessed]]@@<br>
+	@@.mc-thoughts; She can't resist anymore and you continue to stretch her asshole [[again and again....|Possessed]]@@<br>
 <<elseif $checkChoosenLocation eq "park">>
 	<video autoplay controls muted loop>
 	<source @src="setup.ImagePath + '/possessed/5.2.mp4'" type="video/mp4">
@@ -221,7 +221,7 @@
 				<br>
 				@@color:red; Well, we've only just started. I think we'll go somewhere else now that we're done here. @@<br>
 				@@.mc-speech; Oh, damn@@<br>
-				@@.enterbtn; [[Next|possessed]]@@<br>
+				@@.enterbtn; [[Next|Possessed]]@@<br>
 			<</linkappend>>
 
 		<<else>>
@@ -231,11 +231,11 @@
 				<b>Surrender to possession</b> is increased: $mcpossession now!<br>
 
 			<</if>>
-			@@.enterbtn; [[Next|possessed]]@@<br>
+			@@.enterbtn; [[Next|Possessed]]@@<br>
 		<</if>>
 	<</linkreplace>>
 
 <<else>>
 	@@.mc-thoughts; You feel the possession fading, your senses returning to normal.@@<br>
-	@@.enterbtn; [[Next|possessed]]@@<br>
+	@@.enterbtn; [[Next|Possessed]]@@<br>
 <</if>>

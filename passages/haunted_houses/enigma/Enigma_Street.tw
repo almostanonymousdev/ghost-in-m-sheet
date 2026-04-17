@@ -3,7 +3,7 @@
 @@.location; Enigma Street@@<br>
 @@.mc-thoughts; Enigma Street? Quite a peculiar name for a street. Or perhaps it's not just a name, but a warning that here reality and illusion intertwine, creating their own rules of existence.@@<br>
 <br>
-@@.movebtn;[[Go inside|enigmaHallway][$ghostHuntingMode to 2]]@@<br>
+@@.movebtn;[[Go inside|EnigmaHallway][$ghostHuntingMode to 2]]@@<br>
 <br>
 <br>
 <<if $ghostHuntingMode eq 2>><span class="movebtn">[[End the hunt|HuntOverManual][$ghostHuntingMode to 3]]</span><<else>>

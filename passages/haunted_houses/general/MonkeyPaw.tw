@@ -21,7 +21,7 @@
 	<</if>>
 	<<if $wishTraptheghost eq 1>>
 		<<linkreplace "@@.usebtn; I wish to trap the ghost@@">>
-			<<traptheghost>>
+			<<trapTheGhost>>
 		<</linkreplace>><br>
 	<</if>>
 	<<if $wishSanity eq 1>>
@@ -50,7 +50,7 @@
 			<<if _check eq 1>>
 				<<activity>>
 			<<elseif _check eq 2>>
-				<<traptheghost>>
+				<<trapTheGhost>>
 			<<elseif _check eq 3>>
 				<<sanity>>
 			<<elseif _check eq 4>>
@@ -71,7 +71,7 @@
 				<<activity>>
 			<<elseif $inputWish.toLowerCase() eq "trap the ghost">>
 				<<set $wishTraptheghost to 1>>
-				<<traptheghost>>
+				<<trapTheGhost>>
 			<<elseif $inputWish.toLowerCase() eq "be sane">>
 				<<set $wishSanity to 1>>
 				<<sanity>>
@@ -90,7 +90,7 @@
 				<<if _check eq 1>>
 					<<activity>>
 				<<elseif _check eq 2>>
-					<<traptheghost>>
+					<<trapTheGhost>>
 				<<elseif _check eq 3>>
 					<<sanity>>
 				<<elseif _check eq 4>>

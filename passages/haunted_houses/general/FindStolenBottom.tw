@@ -1,0 +1,51 @@
+:: FindStolenBottom [nobr] {"position":"4075,1175","size":"100,100"}
+<<if $rememberBottomOuter eq "nojeans0">>
+	<<set $rememberBottomOuter to "jeans0">>
+<<set $jeansState0 to "worn">><</if>>
+
+<<if $rememberBottomOuter eq "nojeans1">>
+	<<set $rememberBottomOuter to "jeans1">>
+	<<set $mc.beauty +=5>>
+<<set $jeansState1 to "worn">><</if>>
+
+<<if $rememberBottomOuter eq "nojeans2">>
+	<<set $rememberBottomOuter to "jeans2">>
+	<<set $mc.beauty +=8>>
+<<set $jeansState2 to "worn">><</if>>
+
+<<if $rememberBottomOuter eq "nojeans3">>
+	<<set $rememberBottomOuter to "jeans3">>
+	<<set $mc.beauty +=11>>
+<<set $jeansState3 to "worn">><</if>>
+
+<<if $rememberBottomOuter eq "noshorts1">>
+	<<set $rememberBottomOuter to "shorts1">>
+	<<set $mc.beauty +=6>>
+<<set $shortsState1 to "worn">><</if>>
+
+<<if $rememberBottomOuter eq "noshorts2">>
+	<<set $rememberBottomOuter to "shorts2">>
+	<<set $mc.beauty +=9>>
+<<set $shortsState2 to "worn">><</if>>
+
+<<if $rememberBottomOuter eq "noshorts3">>
+	<<set $rememberBottomOuter to "shorts3">>
+	<<set $mc.beauty +=12>>
+<<set $shortsState3 to "worn">><</if>>
+
+<<if $rememberBottomOuter eq "noskirt1">>
+	<<set $rememberBottomOuter to "skirt1">>
+	<<set $mc.beauty +=7>>
+<<set $skirtState1 to "worn">><</if>>
+
+<<if $rememberBottomOuter eq "noskirt2">>
+	<<set $rememberBottomOuter to "skirt2">>
+	<<set $mc.beauty +=10>>
+<<set $skirtState2 to "worn">><</if>>
+
+<<if $rememberBottomOuter eq "noskirt3">>
+	<<set $rememberBottomOuter to "skirt3">>
+	<<set $mc.beauty +=13>>
+<<set $skirtState3 to "worn">><</if>>
+
+<<set $isBottomStolen to 0>>

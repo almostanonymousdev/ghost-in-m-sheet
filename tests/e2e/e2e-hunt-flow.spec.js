@@ -146,7 +146,7 @@ test.describe('E2E: buy contract → hunt → guess', () => {
     // ------------------------------------------------------------------
     const isMyling = ghostName === 'Myling';
     if (isMyling) {
-      await clickLink(page, 'Go home', 'ghostSpecialEventMyling');
+      await clickLink(page, 'Go home', 'GhostSpecialEventMyling');
       // Navigate through to Livingroom
       await goToPassage(page, 'Livingroom');
     } else {

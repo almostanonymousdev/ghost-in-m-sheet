@@ -1,0 +1,145 @@
+:: LightPassageGhost [nobr] {"position":"1700,1500","size":"100,100"}
+<<if $ghost.name neq "Phantom">>
+	<<set _lightOff to random(1,65)>>
+	<<if (_lightOff eq 1)>>
+		<<set $EmfActivated to 1>>
+		<<set $EmfActivationTime = $hours * 60 + $minutes>>
+		<<if passage() is "OwaissaHallway" and ($hallway.background eq 1)>>
+			<<set $hallway.background to 2>>
+			<<goto "OwaissaHallway">>
+
+		<<elseif  passage() is "OwaissaKitchen" and ($kitchen.background eq 1)>>
+			<<set $kitchen.background to 2>>
+			<<goto "OwaissaKitchen">>
+
+		<<elseif  passage() is "OwaissaBathroom" and ($bathroom.background eq 1)>>
+			<<set $bathroom.background to 2>>
+			<<goto "OwaissaBathroom">>
+
+		<<elseif  passage() is "OwaissaBedroom" and ($bedroom.background eq 1)>>
+			<<set $bedroom.background to 2>>
+			<<goto "OwaissaBedroom">>
+
+		<<elseif  passage() is "OwaissaLivingroom" and ($livingroom.background eq 1)>>
+			<<set $livingroom.background to 2>>
+			<<goto "OwaissaLivingroom">>
+
+		<<elseif  passage() is "ElmBasement" and ($basement.background eq 1)>>
+			<<set $basement.background to 2>>
+			<<goto "ElmBasement">>
+
+		<<elseif  passage() is "ElmKitchen" and ($kitchen.background eq 1)>>
+			<<set $kitchen.background to 2>>
+			<<goto "ElmKitchen">>
+
+		<<elseif  passage() is "ElmBathroom" and ($bathroom.background eq 1)>>
+			<<set $bathroom.background to 2>>
+			<<goto "ElmBathroom">>
+
+		<<elseif  passage() is "ElmBathroomTwo" and ($bathroomTwo.background eq 1)>>
+			<<set $bathroomTwo.background to 2>>
+			<<goto "ElmBathroomTwo">>
+
+		<<elseif  passage() is "ElmBedroom" and ($bedroom.background eq 1)>>
+			<<set $bedroom.background to 2>>
+			<<goto "ElmBedroom">>
+
+		<<elseif  passage() is "ElmBedroomTwo" and ($bedroomTwo.background eq 1)>>
+			<<set $bedroomTwo.background to 2>>
+			<<goto "ElmBedroomTwo">>
+
+		<<elseif  passage() is "ElmNursery" and ($nursery.background eq 1)>>
+			<<set $nursery.background to 2>>
+			<<goto "ElmNursery">>
+
+		<<elseif  passage() is "ElmHallway" and ($hallway.background eq 1)>>
+			<<set $hallway.background to 2>>
+			<<goto "ElmHallway">>
+
+		<<elseif  passage() is "ElmHallwayUpstairs" and ($hallwayUpstairs.background eq 1)>>
+			<<set $hallwayUpstairs.background to 2>>
+			<<goto "ElmHallwayUpstairs">>
+
+		<<elseif  passage() is "EnigmaBasement" and ($basement.background eq 1)>>
+			<<set $basement.background to 2>>
+			<<goto "EnigmaBasement">>
+
+		<<elseif  passage() is "EnigmaKitchen" and ($kitchen.background eq 1)>>
+			<<set $kitchen.background to 2>>
+			<<goto "EnigmaKitchen">>
+
+		<<elseif  passage() is "EnigmaBathroom" and ($bathroom.background eq 1)>>
+			<<set $bathroom.background to 2>>
+			<<goto "EnigmaBathroom">>
+
+		<<elseif  passage() is "EnigmaLivingroom" and ($livingroom.background eq 1)>>
+			<<set $livingroom.background to 2>>
+			<<goto "EnigmaLivingroom">>
+
+		<<elseif  passage() is "EnigmaBedroom" and ($bedroom.background eq 1)>>
+			<<set $bedroom.background to 2>>
+			<<goto "EnigmaBedroom">>
+
+		<<elseif  passage() is "EnigmaRoomA" and ($roomA.background eq 1)>>
+			<<set $roomA.background to 2>>
+			<<goto "EnigmaRoomA">>
+
+		<<elseif  passage() is "EnigmaRoomB" and ($roomB.background eq 1)>>
+			<<set $roomB.background to 2>>
+			<<goto "EnigmaRoomB">>
+
+		<<elseif  passage() is "EnigmaHallway" and ($hallway.background eq 1)>>
+			<<set $hallway.background to 2>>
+			<<goto "EnigmaHallway">>
+
+		<<elseif  passage() is "EnigmaRoomC" and ($roomC.background eq 1)>>
+			<<set $roomC.background to 2>>
+			<<goto "EnigmaRoomC">>
+
+		<<elseif  passage() is "IroncladReception" and ($reception.background eq 1)>>
+			<<set $reception.background to 2>>
+			<<goto "IroncladReception">>
+
+		<<elseif  passage() is "IroncladHallway" and ($hallway.background eq 1)>>
+			<<set $hallway.background to 2>>
+			<<goto "IroncladHallway">>
+
+		<<elseif  passage() is "IroncladKitchen" and ($kitchen.background eq 1)>>
+			<<set $kitchen.background to 2>>
+			<<goto "IroncladKitchen">>
+
+		<<elseif  passage() is "IroncladBlockA" and ($BlockA.background eq 1)>>
+			<<set $BlockA.background to 2>>
+			<<goto "IroncladBlockA">>
+
+		<<elseif  passage() is "IroncladBlockB" and ($BlockB.background eq 1)>>
+			<<set $BlockB.background to 2>>
+			<<goto "IroncladBlockB">>
+
+		<<elseif  passage() is "IroncladBlockACellA" and ($BlockACellA.background eq 1)>>
+			<<set $BlockACellA.background to 2>>
+			<<goto "IroncladBlockACellA">>
+
+		<<elseif  passage() is "IroncladBlockACellB" and ($BlockACellB.background eq 1)>>
+			<<set $BlockACellB.background to 2>>
+			<<goto "IroncladBlockACellB">>
+
+		<<elseif  passage() is "IroncladBlockACellC" and ($BlockACellC.background eq 1)>>
+			<<set $BlockACellC.background to 2>>
+			<<goto "IroncladBlockACellC">>
+
+		<<elseif  passage() is "IroncladBlockBCellA" and ($BlockBCellA.background eq 1)>>
+			<<set $BlockBCellA.background to 2>>
+			<<goto "IroncladBlockBCellA">>
+
+		<<elseif  passage() is "IroncladBlockBCellB" and ($BlockBCellB.background eq 1)>>
+			<<set $BlockBCellB.background to 2>>
+			<<goto "IroncladBlockBCellB">>
+
+		<<elseif  passage() is "IroncladBlockBCellC" and ($BlockBCellC.background eq 1)>>
+			<<set $BlockBCellC.background to 2>>
+			<<goto "IroncladBlockBCellC">>
+
+		<</if>>
+	<</if>>
+<</if>>

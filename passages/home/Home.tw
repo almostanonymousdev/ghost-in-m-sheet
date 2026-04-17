@@ -5,7 +5,7 @@
 @@.mc-thoughts; Home, sweet home@@<br>
 <br>
 <span class="enterbtn">[[Go inside|Livingroom]]</span><br>
-<<if setup.Home.isBrookePossessed()>>@@.usebtn; [[Go find Brooke|possessedBrooke]]@@<br>
+<<if setup.Home.isBrookePossessed()>>@@.usebtn; [[Go find Brooke|PossessedBrooke]]@@<br>
 <</if>>
 <br>
 <span class="backbtn">[[Leave|CityMap]]</span><br>

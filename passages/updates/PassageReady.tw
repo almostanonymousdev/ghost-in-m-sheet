@@ -7,7 +7,7 @@
 <<set $showComp to 3>>
 <<else>>
 <<set $showComp to 2>>
-<<include "CompRandomRoom">>
+<<include "CompanionRandomRoom">>
 <<set $stepCount = 0>>
 <</if>>
 <</if>>
@@ -15,10 +15,10 @@
 <</if>>
 
 <<if passage() eq $randomGhostPassage>>
-<<goto "compEvent">>
+<<goto "CompanionEvent">>
 <</if>>
 
-<<include "changeTimer">>
+<<include "ChangeTimer">>
 
 <<set $stealChance to (1 + (Math.log(101 - $mc.sanity) / Math.log(101)) * 1) * $stealChanceMult>>
 
@@ -119,11 +119,11 @@ evidence: ["emf", "spiritbox", "uvl"],
 <<if ndef $addLustPiercingTongue>><<set $addLustPiercingTongue to 0>><</if>>
 
 <<if $updateIronclad neq 2>>
-<<include "updateIronclad">>
+<<include "UpdateIronclad">>
 <</if>>
 
 <<if ndef $mc.exhib>><<set $mc.exhib to 0>><</if>>
-<<if ndef $fixSave>><<include "fixSaveFile">><</if>>
+<<if ndef $fixSave>><<include "FixSaveFile">><</if>>
 <<if ndef $moneyFromWeakenTheGhost>>
 <<set $moneyFromWeakenTheGhost to 0>>
 <</if>>
@@ -141,5 +141,5 @@ evidence: ["emf", "spiritbox", "uvl"],
 <</if>>
 
 <<if ndef $addedTransInit>>
-<<include "transInit">>
+<<include "TransformationInit">>
 <</if>>

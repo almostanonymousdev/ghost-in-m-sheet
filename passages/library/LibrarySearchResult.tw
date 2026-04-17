@@ -4,21 +4,21 @@
 <<set _selectedResult to _foundLibrary[random(0, _foundLibrary.length - 1)]>>
 
 <<if _selectedResult is "book">>
-	<<include "libraryTipsBook">>
+	<<include "LibraryTipsBook">>
 	<<set $foundTips to 1>>
-<<elseif _selectedResult is "comics">>
+<<elseif _selectedResult is "Comics">>
 	<<set $foundComics to 1>>
 	<img @src="setup.ImagePath + '/library/comicsFound.jpg'" width="100%"><br>
 	@@.mc-speech; What's this? Erotic comics? It looks interesting... I wonder how it ended up here.@@<br>
-	@@.enterbtn;[[Read comics|comics]]<br>@@
+	@@.enterbtn;[[Read comics|Comics]]<br>@@
 	<br>
 
 <<elseif _selectedResult is "girl">>
-	<<include "libraryGirl">>
+	<<include "LibraryGirl">>
 <<elseif _selectedResult is "guy">>
-	<<include "libraryGuy">>
+	<<include "LibraryGuy">>
 <<elseif _selectedResult is "brook">>
-	<<include "libraryBrook">>
+	<<include "LibraryBrook">>
 	<<set $foundBrook to 1>>
 <</if>>
 <<done>>

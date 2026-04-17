@@ -1,0 +1,14 @@
+:: RescueJuliaPossessed1 [nobr] {"position":"2125,2200","size":"100,100"}
+<video autoplay controls muted loop>
+<source @src="setup.ImagePath + '/rescue/Julia/1.2.mp4'" type="video/mp4">
+</video>
+@@.mc-thoughts; She stuck her fingers into your hot pussy, sending a small shudder of pleasure through your body.@@<br>
+@@.notmc-speech; You're already dripping wet, and <<linkappend "I'm just getting started.">>
+	<video autoplay controls muted loop>
+	<source @src="setup.ImagePath + '/rescue/Julia/1.3.mp4'" type="video/mp4">
+	</video>
+	@@.mc-thoughts; She started to roughly rub your pussy, which made you cum instantly... @@<br>
+	@@.notmc-speech; Hey, I didn't let you cum before my command.@@<br>
+	@@.mc-thoughts;She got up and went somewhere, it seems
+	[[it's over...|RescueJuliaPossessed2]]@@<br>
+<</linkappend>>@@

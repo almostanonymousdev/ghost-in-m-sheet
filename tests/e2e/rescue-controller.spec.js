@@ -78,9 +78,9 @@ test.describe('Missing Women — controller + church integration', () => {
 
   test('isCorrectHouse compares rescueHouse to randomRescuePhotoNumber', async () => {
     await setVar(page, 'randomRescuePhotoNumber', 7);
-    await setVar(page, 'rescueHouse', 7);
+    await setVar(page, 'rescueHouse',7);
     expect(await callSetup(page, 'setup.MissingWomen.isCorrectHouse()')).toBe(true);
-    await setVar(page, 'rescueHouse', 3);
+    await setVar(page, 'rescueHouse',3);
     expect(await callSetup(page, 'setup.MissingWomen.isCorrectHouse()')).toBe(false);
   });
 
@@ -88,11 +88,11 @@ test.describe('Missing Women — controller + church integration', () => {
     await setVar(page, 'hasQuestForRescue', 1);
     await setVar(page, 'rescueStage', 0);
     await setVar(page, 'randomRescuePhotoNumber', 5);
-    await setVar(page, 'rescueHouse', 5);
+    await setVar(page, 'rescueHouse',5);
     expect(await callSetup(page, 'setup.MissingWomen.canResolveRescue()')).toBe(true);
-    await setVar(page, 'rescueHouse', 3);
+    await setVar(page, 'rescueHouse',3);
     expect(await callSetup(page, 'setup.MissingWomen.canResolveRescue()')).toBe(false);
-    await setVar(page, 'rescueHouse', 5);
+    await setVar(page, 'rescueHouse',5);
     await setVar(page, 'rescueStage', 2);
     expect(await callSetup(page, 'setup.MissingWomen.canResolveRescue()')).toBe(false);
     await setVar(page, 'rescueStage', 0);
@@ -135,7 +135,7 @@ test.describe('Missing Women — controller + church integration', () => {
   test('possessedPassageFor returns correct passage for each girl', async () => {
     for (const girl of ['Victoria', 'Jade', 'Julia', 'Nadia', 'Ash']) {
       expect(await callSetup(page, `setup.MissingWomen.possessedPassageFor("${girl}")`))
-        .toBe('rescue' + girl + 'Possessed');
+        .toBe('Rescue' + girl + 'Possessed');
     }
     expect(await callSetup(page, 'setup.MissingWomen.possessedPassageFor("Nobody")')).toBeNull();
   });
@@ -143,7 +143,7 @@ test.describe('Missing Women — controller + church integration', () => {
   test('rescuePassageFor returns correct passage for each girl', async () => {
     for (const girl of ['Victoria', 'Jade', 'Julia', 'Nadia', 'Ash']) {
       expect(await callSetup(page, `setup.MissingWomen.rescuePassageFor("${girl}")`))
-        .toBe('rescue' + girl);
+        .toBe('Rescue' + girl);
     }
   });
 

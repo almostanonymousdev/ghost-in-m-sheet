@@ -1,0 +1,70 @@
+:: ResetCooldowns {"position":"2200,1350","size":"100,100"}
+<<nobr>>
+<<set $thetwinseventCD to 0>>
+<<set $joggingCD to 0>>
+<<set $stealItemsFromWitchCD to 0>>
+<<set $ghostSpecialEventSpiritCD to 0>>
+<<set $webcamShowCD to 0>>
+<<set $deliveryPizzaEvent to 0>>
+<<set $deliveryPackageEvent to 0>>
+<<set $deliveryBurgerEvent to 0>>
+<<set $deliveryPapersEvent to 0>>
+<<set $witchNightCD to 0>>
+<<set $trainer1SexCD to 0>>
+<<set $trainer2SexCD to 0>>
+<<set $findGhostInfoCD to 0>>
+<<set $deliveryBJCD to 0>>
+<<set $churchSexCD to 0>>
+<<set $masturbationCD to 0>>
+<<if $isBrookGoingForHuntingAlone eq 1>>
+<<set $isBrookGoingForHuntingAlone to 2>>
+<</if>>
+<<if $isAliceGoingForHuntingAlone eq 1>>
+<<set $isAliceGoingForHuntingAlone to 2>>
+<</if>>
+<<if $isBlakeGoingForHuntingAlone eq 1>>
+<<set $isBlakeGoingForHuntingAlone to 2>>
+<</if>>
+
+<<if $ghostMareEventStart gte 1>>
+<<set $ghostMareEventStage += 1>>
+<<else>>
+<<set $ghostMareEventStage to 0>>
+<</if>>
+
+<<if $rescueStage eq 0 or $rescueStage eq 1>>
+<<set $rescueStage +=1>>
+<</if>>
+
+<<if $isBrookePossessed eq 0>>
+<<set $isBrookePossessedCD += 1>>
+<<if $isBrookePossessedCD gte 3>>
+<<unset $isBrookePossessedCD>>
+<<set $isBrookePossessed to "not active">>
+<</if>>
+<</if>>
+
+<<if $succubus eq 1>>
+<<if $succubusEventCD neq 0>>
+<<set $succubusEventCD += 1>>
+<</if>>
+<<if $succubusEventCD gte 3>>
+<<set $succubusEventCD to 0>>
+<</if>>
+<</if>>
+
+<<set $exorcismCD to 0>>
+<<set $rescueCD to 0>>
+<<set $rescueQuestCD to 0>>
+<</nobr>>
+
+<<if $exorcismQuestStage eq 2>>
+<<if $succubusEventTimer gte 1>>
+<<set $succubusEventTimer -= 1>>
+<</if>>
+<</if>>
+<<if $gotCursedItem eq 1>>
+<<if $gotCursedItemEventCD lt 3>>
+<<set $gotCursedItemEventCD += 1>>
+<</if>>
+<</if>>

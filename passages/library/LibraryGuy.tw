@@ -1,0 +1,23 @@
+:: LibraryGuy [nobr] {"position":"3025,2000","size":"100,100"}
+<<if setup.Library.wearingPants()>>
+	<video autoplay controls muted loop>
+	<source @src="setup.ImagePath + '/library/1.mp4'" type="video/mp4">
+	</video>
+<<elseif setup.Library.wearingSkirt()>>
+	<video autoplay controls muted loop>
+	<source @src="setup.ImagePath + '/library/2.mp4'" type="video/mp4">
+	</video>
+<</if>>
+You were examining the books in search of something useful when a guy approached from behind and started groping you.<br>
+@@.mc-speech; Oh~ Hey! What do you think you're doing?!@@<br>
+@@.mc-thoughts; But he continues to touch you.@@<br>
++ 15 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br>
+<<if $mc.corruption lt 1>>
+	@@.mc-speech; [[Stop it right now, or I'll scream|LibraryInside]]@@ @@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 1)@@
+<<else>>
+	@@.mc-thoughts; Maybe I should [[stay silent|LibraryGuy1]]. Perhaps he'll leave me alone on his own...@@
+<</if>>
+<<addLust 15>>
+<<done>>
+	<<addclass ".linkselector" "disabled-link">>
+<</done>>

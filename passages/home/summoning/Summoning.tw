@@ -1,0 +1,14 @@
+:: Summoning [nobr] {"position":"600,2700","size":"100,100"}
+<<if $ghostSpiritEventStage eq 0 or $thetwinsevent eq 1 or $ghostMareEventStart neq 0 or $gotCursedItem eq 1>>
+	<img @src="setup.ImagePath + '/img/amulet1.png'" class="displayCentredImgs">
+<<else>>
+	<img @src="setup.ImagePath + '/img/amulet0.png'" class="displayCentredImgs">
+<</if>>
+@@.mc-speech; Rain talked about the amulet and how it reacts to the presence of ghosts... <br>
+<<if $exorcismQuestStage eq 2>>
+	@@.mc-thoughts; $succubusEventTimer days left...@@<br>
+<</if>>
+I've got everything set up: the book with the incantation is open before me, the words waiting to be spoken. All I need to do now is to begin the summoning ritual...<br>@@
+@@.usebtn; [[Begin the summoning ritual|SummoningStart][$exorcismCD to 1]]@@<br>
+<br>
+@@.backbtn; [[Leave|Bedroom]]@@

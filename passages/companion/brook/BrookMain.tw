@@ -125,7 +125,7 @@
 			<<if setup.Companion.canWalkHomeWithCompanion()>>
 				@@.notmc-speech; Of course. Are you sure you want to leave now?@@<br>
 				<<if $ghost.name eq "Myling" and $ghostHuntingMode eq 2>>
-					@@.mc-speech; Yes, [[let's go together|ghostSpecialEventMylingTwo]] @@
+					@@.mc-speech; Yes, [[let's go together|GhostSpecialEventMylingTwo]] @@
 				<<else>>
 					@@.mc-speech; Yes, [[let's go together|WalkHomeTogether]] @@
 				<</if>> <b>or </b>

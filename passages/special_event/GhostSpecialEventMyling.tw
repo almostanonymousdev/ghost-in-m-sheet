@@ -1,0 +1,13 @@
+:: GhostSpecialEventMyling [nobr] {"position":"1400,2450","size":"100,100"}
+<<set _videoList to ["myling/1.mp4", "myling/2.mp4", "myling/3.mp4", "myling/4.mp4", "myling/5.mp4", "myling/6.mp4", "myling/7.mp4", "myling/8.mp4", "myling/9.mp4", "myling/10.mp4", "myling/11.mp4"]>>
+<<set _randomIndex to random(0, _videoList.length - 1)>>
+<<set $videoEventSpecialMyling to _videoList[_randomIndex]>>
+<<randomVideoFromList _videoList>>
+
+@@.mc-thoughts; You walk down the street, heading home after yet another ghost hunt. The city has its own kind of life at this hour: groups of people leaving late-night bars, couples wandering after long dinners, and the occasional car driving by. But as you keep walking, you start to notice something strange. People are staring. Almost everyone you pass glances your way. Some smile, others turn their heads for a second look, and one man even whistles, as if something about you has really caught his eye.@@<br>
+
+You feel a little uneasy. Why are they all looking at you? Your cheeks flush under their gazes. <br>
+@@.mc-speech; What's wrong?@@<br>
+@@.mc-thoughts; You quickly check yourself--your clothes are on, everything seems fine. But something feels off. Why does the attention feel so intense? They're looking at you like they see something you don't. Could it just be leftover stress from the hunt?@@<br>
+<br>
+@@.movebtn;[[You're finally home|Livingroom][$hours += 1]]@@<br>

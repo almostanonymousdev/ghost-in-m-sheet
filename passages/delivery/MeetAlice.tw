@@ -1,0 +1,20 @@
+:: MeetAlice [nobr] {"position":"1850,3675","size":"100,100"}
+<img @src="setup.ImagePath + '/alice/meetAlice.jpg'" width=100%>
+@@.notmc-speech; Just in time, thank you!<br>
+Wait... I think I've seen you before, near the witch's house.@@<br>
+@@.mc-speech; Yeah, I work for her, doing ghost identification contracts. But sometimes, I have to take on side jobs too.@@<br>
+@@.notmc-speech; Wow, that's awesome! You're lucky--you get to do something really interesting. Meanwhile, I'm stuck at home doing reports and paperwork. It's so boring... Sometimes I just wish I could do something more exciting.@@<br>
+@@.mc-speech; Well, you could come with me. Though, you know it can get dangerous...@@<br>
+@@.notmc-speech; I'd love to, but I have so much tedious work. It's exhausting...@@<br>
+@@.mc-speech; I could help you out if it's not too complicated.@@
+@@.notmc-speech; Really? If you help me with this boring stuff, then we can go together. It's not hard at all--just a couple of documents, nothing major. Here, I'll give you my contact info.@@<br>
+@@.mc-speech; That sounds perfect. By the way, I'm $mc.name. What's your name?@@<br>
+@@.notmc-speech; I'm Alice. Nice to meet you, $mc.name.@@<br>
+@@.mc-speech; Nice to meet you too, Alice. I'll get in touch with you soon.@@<br>
+@@.mc-thoughts; Having an extra hand in ghost hunting could be really helpful.@@<br>
+<br>
+@@.mc-action; You've met <b>Alice</b>. To go ghost hunting with her, you'll need to help her with her work first.@@<br>
+<br>
+<<set $earnedMoney += $jobMoneySuccessed>>
+<<set $meetAlice to 1>>
+@@.backbtn; [[Leave|DeliveryMap]]@@<br>

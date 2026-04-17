@@ -1,0 +1,63 @@
+:: Update1 {"position":"500,0","size":"100,100"}
+<<set $basement to {
+name:"basement",
+background: 2,
+}>>
+
+<<set $bedroomTwo to {
+name:"bedroomTwo",
+background: 2,
+}>>
+
+<<set $nursery to {
+name:"nursery",
+background: 2,
+}>>
+
+<<set $bathroomTwo to {
+name:"bathroomTwo",
+background: 2,
+}>>
+
+<<set $hallwayUpstairs to {
+name:"hallwayUpstairs",
+background: 2,
+}>>
+
+<<set $roomA to {
+name:"roomA",
+background: 2,
+}>>
+
+<<set $roomB to {
+name:"roomB",
+background: 2,
+}>>
+
+<<set $roomC to {
+name:"roomC",
+background: 2,
+}>>
+
+<<set $ghost15 to {
+name: "Mare",
+evidence: ["glass", "gwb", "temperature"],
+}>>
+
+<<run setup.initWardrobe(State.variables)>>
+
+<<set $huntActivated to 0>>
+<<set $rememberTopOuter to "tshirt0">>
+<<set $rememberBottomOuter to "jeans0">>
+<<set $huntTimeRemain to 60>>
+<<set $huntActivationTime to 0>>
+<<set $elapsedTimeHunt to 0>>
+
+<<set $isrealhouse to 1>>
+<<set $sanityIfHot to 0.1>>
+<<set $sanityInTheDark to 0.35>>
+<<set $mc.sanityMax to 100>>
+<<set $medicineAmount to 0>>
+<<set $ghostMareEventStart to 0>>
+<<set $ghostMareEventStage to 0>>
+<<set $update22 to 0.4>>

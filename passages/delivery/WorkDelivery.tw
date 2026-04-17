@@ -1,0 +1,57 @@
+:: WorkDelivery {"position":"900,1200","size":"100,100"}
+<<nobr>>
+<<set $itemImages = {
+	pizza:      "img/pizza.jpg",
+	package:    "img/package.jpg",
+	newspapers: "img/newspapers.jpg",
+	burgers:    "img/burger.jpg",
+	books:      "img/books.jpg"
+}>>
+<<set $items = ["pizza", "package", "newspapers", "books", "burgers"]>>
+<<set $streets to setup.deliveryStreets.slice()>>
+
+<<set $shuffledStreets to $streets.shuffle()>>
+<<set $shuffledItems to $items.shuffle()>>
+
+<<set $orders to []>>
+<<for _i to 0; _i lt 3; _i++>>
+<<set _item to $shuffledItems[_i]>>
+<<set $orders.push({
+	address: $shuffledStreets[_i],
+	item:    _item,
+	image:   $itemImages[_item]
+})>>
+<</for>>
+
+<<set $shuffledOrders to $orders.slice().shuffle()>>
+<<set $order1 to $orders[0]>>
+<<set $order2 to $orders[1]>>
+<<set $order3 to $orders[2]>>
+
+<<set $deliveryCorrectThisShift to 0>>
+<<run setup.Delivery.updatePayTier()>>
+
+<<set $deliverySpecialOrder to false>>
+<<if random(1, 100) lte 25>>
+	<<set $deliverySpecialOrder to true>>
+	<<set $deliverySpecialOrderAddress to $shuffledStreets[3]>>
+	<<set $deliverySpecialOrderPay to random(20, 25)>>
+	<<set $deliverySpecialOrderType to either("safe", "unsafe")>>
+<</if>>
+
+@@.mc-action;Here are your orders for this shift: the address and associated items. Good luck!@@
+<br>
+<br>
+<br>
+<<for _i to 2; _i gte 0; _i-->>
+<div class="order-container">
+<span class="address-item">$shuffledOrders[_i].address --</span> <img @src="setup.ImagePath + '/' + $shuffledOrders[_i].image" class="iconPx">
+</div><br>
+<</for>>
+<<if $deliverySpecialOrder>>
+<div class="order-container special-order">
+<span class="address-item">$deliverySpecialOrderAddress -- RUSH</span> <img @src="setup.ImagePath + '/img/package.jpg'" class="iconPx"> <span class="rush-pay">$<<= $deliverySpecialOrderPay>></span>
+</div><br>
+<</if>>
+<</nobr>>
+@@.movebtn;[[Start|DeliveryMap]] @@

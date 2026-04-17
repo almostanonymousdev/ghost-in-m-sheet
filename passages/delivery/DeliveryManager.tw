@@ -70,7 +70,7 @@
 
 <<elseif previous() is "DeliveryMap">>
 	@@.notmc-speech; Here are your hard-earned money for the shift. Not much, but it's something at least.@@ <br>
-	<<include "endShiftDelivery">>
+	<<include "EndShiftDelivery">>
 <</if>>
 <br>
 <br>

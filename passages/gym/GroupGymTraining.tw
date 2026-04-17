@@ -13,7 +13,7 @@ You spent about an hour at the gym, diligently working on improving your physica
 		@@.mc-thoughts; With these words they began to lightly touch your body, kissing and biting your tits and pussy @@<br>
 		<<if setup.Gym.canJoinGroupOrgy()>>
 			@@.mc-speech; I'm so horny...and they start rubbing my pussy right now....<br>
-			Oooh, [[I can't resist|gymGroupEvent1Start]]@@<br>
+			Oooh, [[I can't resist|GymGroupEvent1Start]]@@<br>
 		<<else>>
 			@@.mc-speech; No, sorry I'm [[not in the mood.|GymInside]]@@<br>@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 50)@@
 		<</if>>

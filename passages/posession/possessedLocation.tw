@@ -1,4 +1,4 @@
-:: possessedLocation [nobr] {"position":"1125,400","size":"100,100"}
+:: PossessedLocation [nobr] {"position":"1125,400","size":"100,100"}
 <<if $checkChoosenLocation eq "library">>
 	<img @src="setup.ImagePath + '/possessed/1.jpg'" width="100%"><br>
 	@@.mc-thoughts; You find yourself in a room surrounded by rows of books.@@<br>
@@ -25,7 +25,7 @@
 
 				<<linkreplace "@@.usebtn;Try to resist again@@">>
 					<<if setup.Posession.canResistSecondAttempt()>>
-						<<goto "possessedLocation1">>
+						<<goto "PossessedLocation1">>
 					<<else>>
 						<<breakFreePossession 6>>
 					<</if>>
@@ -57,7 +57,7 @@
 
 			<<linkreplace "@@.usebtn;Try to resist again@@">>
 				<<if setup.Posession.canResistSecondAttempt()>>
-					<<goto "possessedLocation1">>
+					<<goto "PossessedLocation1">>
 				<<else>>
 					<<breakFreePossession 6>>
 				<</if>>
@@ -93,7 +93,7 @@
 				@@.mc-speech; SHIT! I need to do something quickly, or this will end really badly for me.@@<br>
 				<<linkreplace "@@.usebtn;Try to resist again@@">>
 					<<if setup.Posession.canResistSecondAttempt()>>
-						<<goto "possessedLocation1">>
+						<<goto "PossessedLocation1">>
 					<<else>>
 						<<breakFreePossession 6>>
 					<</if>>
@@ -134,7 +134,7 @@
 				@@.notmc-speech; We did it@@<br>
 				@@color:red; No, we're not done.@@<br>
 				@@.notmc-speech; Whaa..?! what the ...@@<br>
-				@@color:red; I think it's [[my turn now|possessedLocation1][$]]@@<br>
+				@@color:red; I think it's [[my turn now|PossessedLocation1][$]]@@<br>
 			<</linkreplace>>
 		<<else>>
 			@@.mc-speech; AHh~You are going to break me ~@@<br>
@@ -172,7 +172,7 @@
 		@@color:red;Because I'm here, baby. You're mine now.@@<br>
 		<<linkreplace "@@.usebtn; Try to resist@@">>
 			<<if setup.Posession.canResistFirstAttempt()>>
-				<<goto "possessedLocation1">>
+				<<goto "PossessedLocation1">>
 			<<else>>
 				<<breakFreePossession 3>>
 			<</if>>
@@ -181,5 +181,5 @@
 
 <<else>>
 	@@.mc-thoughts; You feel the possession fading, your senses returning to normal.@@<br>
-	@@.enterbtn; [[Next|possessed]]@@<br>
+	@@.enterbtn; [[Next|Possessed]]@@<br>
 <</if>>

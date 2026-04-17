@@ -140,7 +140,7 @@
         }, 50);
 							<</script>>
 						<<else>>
-							<<goto "ghostHuntEvent">>
+							<<goto "GhostHuntEvent">>
 						<</if>>
 					<</timed>>
 				<<elseif $chosenCard.name eq "possession">>

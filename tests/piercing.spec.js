@@ -57,11 +57,11 @@ test.describe('Piercing — Purchase and Beauty', () => {
     await setVar(page, 'earsPiercing', 'worn');
     await setVar(page, 'mc.beauty', 32);
 
-    await goToPassage(page, 'wardrobe');
+    await goToPassage(page, 'Wardrobe');
 
     const earsPiercingLink = page.locator('#currentPiercingEars a');
     await earsPiercingLink.click();
-    await page.waitForFunction(() => SugarCube.State.passage === 'wardrobe');
+    await page.waitForFunction(() => SugarCube.State.passage === 'Wardrobe');
 
     expect(await getVar(page, 'earsPiercing')).toBe('not worn');
     expect(await getVar(page, 'mc.beauty')).toBe(30);
@@ -71,11 +71,11 @@ test.describe('Piercing — Purchase and Beauty', () => {
     await setVar(page, 'earsPiercing', 'not worn');
     await setVar(page, 'mc.beauty', 30);
 
-    await goToPassage(page, 'wardrobe');
+    await goToPassage(page, 'Wardrobe');
 
     const earsPiercingLink = page.locator('#availablePiercing a').first();
     await earsPiercingLink.click();
-    await page.waitForFunction(() => SugarCube.State.passage === 'wardrobe');
+    await page.waitForFunction(() => SugarCube.State.passage === 'Wardrobe');
 
     expect(await getVar(page, 'earsPiercing')).toBe('worn');
     expect(await getVar(page, 'mc.beauty')).toBe(32);
@@ -85,11 +85,11 @@ test.describe('Piercing — Purchase and Beauty', () => {
     await setVar(page, 'tonguePiercing', 'worn');
     await setVar(page, 'piercingTongueAddSens', 0.1);
 
-    await goToPassage(page, 'wardrobe');
+    await goToPassage(page, 'Wardrobe');
 
     const tonguePiercingLink = page.locator('#currentPiercingTongue a');
     await tonguePiercingLink.click();
-    await page.waitForFunction(() => SugarCube.State.passage === 'wardrobe');
+    await page.waitForFunction(() => SugarCube.State.passage === 'Wardrobe');
 
     expect(await getVar(page, 'tonguePiercing')).toBe('not worn');
     expect(await getVar(page, 'piercingTongueAddSens')).toBe(0);

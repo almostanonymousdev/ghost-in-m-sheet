@@ -1,0 +1,14 @@
+:: GhostSpecialEventMylingTwo [nobr] {"position":"1500,2450","size":"100,100"}
+<<set _videoList to []>>
+<<set _videoList to ["myling/duo1.mp4", "myling/duo2.mp4", "myling/duo3.mp4", "myling/duo4.mp4", "myling/duo5.mp4", "myling/duo6.mp4", "myling/duo7.mp4", "myling/duo8.mp4"]>>
+<<set _randomIndex to random(0, _videoList.length - 1)>>
+<<set _selectedVideo to _videoList[_randomIndex]>>
+<video autoplay controls muted loop>
+<source @src="setup.ImagePath+`/`+_selectedVideo" type="video/mp4">
+</video>
+@@.mc-thoughts; You walk down the street, heading home after yet another ghost hunt.
+But as you keep walking, you start to notice something strange. People are staring. Almost everyone you pass glances your way. Some smile, others turn their heads for a second look, and one man even whistles, as if something about you has really caught his eye.@@<br>
+@@.mc-speech; Why are they looking at us like that?@@<br>
+@@.notmc-speech;I don't know. Let's get home quickly.@@<br><br>
+@@.backbtn;[[You're finally home|WalkHomeTogether][$hours += 1]]@@<br>
+<<run setup.SpecialEvent.resetHuntPlansAfterMyling()>>

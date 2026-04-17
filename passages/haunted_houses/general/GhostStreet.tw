@@ -18,7 +18,7 @@
 <<set $expFromContract to 35>>
 <</if>>
 <<set $isrealhouse to 0>><<set $isOwaissa to 1>>
-<<include "furnitureCode">>
+<<include "FurnitureCode">>
 <<set _check to random (1,5)>>
 <<if _check eq 1>><<set $ghostRoom to clone($kitchen)>><</if>>
 <<if _check eq 2>><<set $ghostRoom to clone($bathroom)>><</if>>
@@ -52,7 +52,7 @@
 <</if>>
 <<set $isrealhouse to 0>>
 <<set $isIronclad to 1>>
-<<include "furnitureCode">>
+<<include "FurnitureCode">>
 <<set _check to random (1,11)>>
 <<if _check eq 1>><<set $ghostRoom to clone($BlockA)>><</if>>
 <<if _check eq 2>><<set $ghostRoom to clone($BlockB)>><</if>>
@@ -95,7 +95,7 @@
 <</if>>
 <<set $isrealhouse to 0>>
 <<set $isElm to 1>>
-<<include "furnitureCode">>
+<<include "FurnitureCode">>
 <<set _check to random (1,9)>>
 <<if _check eq 1>><<set $ghostRoom to clone($kitchen)>><</if>>
 <<if _check eq 2>><<set $ghostRoom to clone($bathroom)>><</if>>
@@ -161,11 +161,11 @@
 <<if $ghost.name eq "Mare">>
 <<if $ghostMareEventStart eq 0>>
 <<set $ghostMareEventStart to 1>>
-<<elseif hasVisited("ghostSpecialEventMare")>>
+<<elseif hasVisited("GhostSpecialEventMare")>>
 <<set $ghostMareEventStart to 4>>
 <</if>>
 <</if>>
-<<set $hours to 0>><<include "resetCD">><<set $minutes to 0>>
+<<set $hours to 0>><<include "ResetCooldowns">><<set $minutes to 0>>
 <<if $ghost.name eq "Mimic">>
 <<set $saveMimic to 1>>
 <<set $lastChangeIntervalMimic to " " >><</if>>

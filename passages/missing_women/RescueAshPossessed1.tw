@@ -1,0 +1,29 @@
+:: RescueAshPossessed1 [nobr] {"position":"2325,2200","size":"100,100"}
+<span id="RescueAshPossessed1">
+<video autoplay controls muted loop>
+<source @src="setup.ImagePath + '/rescue/Ash/1.3.mp4'" type="video/mp4">
+</video></span>
+@@.mc-thoughts; She keeps fucking you@@
+
+<<link "@@.usebtn; for a while.@@">>
+	<<replace "#rescueAshPossessed1">>
+		<<videoToggle "RescueAshPossessed1" "rescue/Ash/1.4.mp4" "rescue/Ash/1.3.mp4">>
+	<</replace>>
+<</link>>
+@@.mc-speech; Nooo this is not right...~ But feels sooo good~@@<br>
+@@.mc-thoughts; Then she grabs your hair and makes you <<linkappend "@@.usebtn; lick her pussy.@@">>
+	<video autoplay controls muted loop>
+	<source @src="setup.ImagePath + '/rescue/Ash/1.5.mp4'" type="video/mp4">
+	</video>
+	@@.notmc-speech; Now I want to cum, use your tongue, slut@@<br>
+	@@.mc-thoughts; After playing with your body, @@
+	<<linkappend "@@.usebtn; she lets you go@@">>
+		<video autoplay controls muted loop>
+		<source @src="setup.ImagePath + '/rescue/Ash/1.6.mp4'" type="video/mp4">
+		</video>
+		@@.notmc-speech; You are free, but next time you might not be so lucky@@<br>
+		@@.mc-thoughts; She kisses you again, and everything goes black.@@<br>
+		<br>
+		@@.backbtn; [[Wake up|Church][$hours += 3]]@@<br>
+	<</linkappend>>
+<</linkappend>>

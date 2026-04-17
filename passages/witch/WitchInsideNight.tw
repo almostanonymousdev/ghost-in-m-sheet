@@ -31,7 +31,7 @@
 			You found a crusifix!
 			<<set $crucifixAmount += 1>>
 		<<elseif _check eq 5>>
-			<<goto "witchTentaclesEvent">>
+			<<goto "WitchTentaclesEvent">>
 		<</if>>
 		@@
 	<</linkreplace>>

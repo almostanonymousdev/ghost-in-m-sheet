@@ -1,0 +1,29 @@
+:: Comics [nobr] {"position":"2925,2200","size":"100,100"}
+<div class="flexwrapper gap">
+<div class="housecardComics">
+<img @src="setup.ImagePath + '/library/getting-in-shape-001.jpg'" class="comic-cover"><br>
+@@.enterbtn;<<link "read" "ReadComics">><<set $comics1 to 1>>
+<</link>>@@
+</div>
+<div class="housecardComics">
+<img @src="setup.ImagePath + '/library/closed-investigation-journal-colorized-001.jpg'"  class="comic-cover"><br>
+@@.enterbtn;<<link "read" "ReadComics">><<set $comics2 to 1>>
+<</link>>@@
+</div>
+<div class="housecardComics">
+<img @src="setup.ImagePath + '/library/the-naughty-in-law-1-zero-001.jpg'" class="comic-cover"><br>
+@@.enterbtn;<<link "read" "ReadComics">><<set $comics3 to 1>>
+<</link>>@@
+</div>
+<div class="housecardComics">
+<img @src="setup.ImagePath + '/library/a-dumb-comic-001.jpg'" class="comic-cover"><br>
+@@.enterbtn;<<link "read" "ReadComics">><<set $comics4 to 1>>
+<</link>>@@
+</div>
+</div>
+<br>
+@@.backbtn;[[Leave|LibraryInside]] @@<br>
+<<include "StyleComics">>
+<<done>>
+	<<addclass ".linkselector" "disabled-link">>
+<</done>>

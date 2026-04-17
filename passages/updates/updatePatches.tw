@@ -1,4 +1,4 @@
-:: update2 {"position":"400,0","size":"100,100"}
+:: Update2 {"position":"400,0","size":"100,100"}
 <<set $stockingsState1 to "not bought">>
 <<set $stockingsState2 to "not bought">>
 <<set $stockingsState3 to "not bought">>
@@ -7,7 +7,7 @@
 <<set $footState3 to "not bought">>
 <<set $update2707 to 1>>
 
-:: update3 {"position":"300,0","size":"100,100"}
+:: Update3 {"position":"300,0","size":"100,100"}
 <<set $jobMoneySuccessed to 8>>
 <<set $jobMoneyFailed to 3>>
 <<set $companion to {
@@ -15,7 +15,7 @@
 }>>
 <<set $update0909 to 1>>
 
-:: fixSaveFile [nobr] {"position":"950,325","size":"100,100"}
+:: FixSaveFile [nobr] {"position":"950,325","size":"100,100"}
 <<run [
 "Hallway", "Reception", "Kitchen",
 "BlockA", "BlockB",

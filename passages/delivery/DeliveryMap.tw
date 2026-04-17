@@ -12,11 +12,11 @@
 			<<set _label to _cell.substr(0, _sp) + ", " + _cell.substr(_sp + 1)>>
 			<img @src="setup.ImagePath + '/img/delivery1.png'" class="iconsOnMap">
 			<<if _isSpecial>>
-				@@.icontextdelivery;<<link _label "deliverySpecialEvent">><<set $currentHouse to _cell>>
+				@@.icontextdelivery;<<link _label "DeliverySpecialEvent">><<set $currentHouse to _cell>>
 				<</link>>@@
 				<div class="mapOrderIcons"><img @src="setup.ImagePath + '/img/package.jpg'" class="mapOrderIcon rush-icon"></div>
 			<<else>>
-				@@.icontextdelivery;<<link _label "deliveryAutoDeliver">><<set $currentHouse to _cell>>
+				@@.icontextdelivery;<<link _label "DeliveryAutoDeliver">><<set $currentHouse to _cell>>
 				<</link>>@@
 				<<set _hasOrder to false>>
 				<<for _oi to 0; _oi lt 3; _oi++>>

@@ -1,0 +1,18 @@
+:: LibraryGirl {"position":"2925,2000","size":"100,100"}
+<<nobr>>
+You wander from shelf to shelf, searching for something interesting. Suddenly, you notice a beautiful girl.
+<<randomImage "library/woman1.jpg" "library/woman2.jpg" "library/woman3.jpg" "library/woman4.jpg" "library/woman5.jpg" "50%">><br>
+@@.mc-thoughts;All your attention is focused on her. @@<br>
+@@.mc-speech; You watch until she leaves.@@<br>
+<<addLust 30>>
+<<if $mc.corruption lt 3>><<set $mc.corruption += 0.1>>
++ 0.1 <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br>
+<</if>>
++ 30 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br>
+<br>
+@@.backbtn; [[Leave|LibraryInside]]@@ <br>
+<<done>>
+<<addclass ".linkselector" "disabled-link">>
+<</done>>
+<</nobr>>
+<<include "StyleLibraryCenteredImg">>

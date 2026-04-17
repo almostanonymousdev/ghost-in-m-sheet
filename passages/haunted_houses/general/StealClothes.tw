@@ -1,0 +1,52 @@
+:: StealClothes [nobr noreturn] {"position":"4125,950","size":"100,100"}
+<<if $isOwaissa eq 1>>
+	<<set $placeForClothesStolenOwaissa to $tempListOwaissa.random()>>
+<<elseif $isElm eq 1>>
+	<<set $placeForClothesStolenElm to $tempListElm.random()>>
+<</if>>
+<<set $isClothesStolen to 1>>
+@@.mc-thoughts; While focusing on your device, you suddenly felt a hard push from behind. Before you could understand what happened, the ground came veeeeery close. *Bang*@@<br>
+@@.mc-speech; Ouch! @@ @@.mc-thoughts;You tried to break the fall with your hands, but you didn't react in time. The impact was too strong, and it knocked you out for a few moments. @@
+<<set _randomNum to random(1, 100)>>
+
+<<set _stealOptions to []>>
+
+<<if $pantiesState eq "worn">>
+	<<set _stealOptions.push("panties")>>
+<</if>>
+<<if $braState eq "worn">>
+	<<set _stealOptions.push("bra")>>
+<</if>>
+<<if $tshirtState eq "worn" or $jeansState eq "worn" or $skirtState eq "worn" or $shortsState eq "worn">>
+	<<set _stealOptions.push("outerwear")>>
+<</if>>
+
+<<if _stealOptions.length > 0>>
+	<<set _stealOption to _stealOptions[random(0, _stealOptions.length - 1)]>>
+
+	<<if _stealOption == "panties">>
+		<<include "StealPanties">>
+		@@.mc-speech; Ugh... My head... Did it just push me to the ground? Wait... Where are my panties? Did it take them? What an asshole.<br><b>Maybe I can find them somewhere in the house.</b>Shit. This place is driving me crazy.@@
+
+	<<elseif _stealOption == "bra">>
+		<<include "StealBra">>
+		@@.mc-speech; Ugh... My head... Did it just push me to the ground? Wait... Where is my bra? Did it take it? What an asshole.<br><b>Maybe I can find them somewhere in the house.</b>Shit. This place is driving me crazy.@@
+
+	<<elseif _stealOption == "outerwear">>
+		<<include "StealShirt">>
+		<<include "StealBottomOuter">>
+		@@.mc-speech; Ugh... My head... Wait... Where are my clothes? Did it take them? What the hell?<br><b>Maybe I can find them somewhere in the house.</b>Shit. This place is driving me crazy.@@
+	<</if>>
+<</if>>
+
+<br>
+<br>
+@@.backbtn; [[Continue|$return]]@@<br>
+
+<<includeStyle>>
+<<includeStyle2>>
+<<include "StyleStealClothes">>
+
+<<done>>
+	<<addclass ".linkselector" "disabled-link">>
+<</done>>

@@ -1,4 +1,4 @@
-:: possessed [nobr] {"position":"1000,3200","size":"100,100"}
+:: Possessed [nobr] {"position":"1000,3200","size":"100,100"}
 @@.mc-thoughts; A strange sensation overwhelms you, and the entire world suddenly fades to black,@@ <<linkappend "@@.usebtn; vanishing as if it never existed@@">>
 	<<set _check to random(1,2)>>
 	<<if _check eq 1>>
@@ -74,7 +74,7 @@
 					<<set $mc.dirty to 1>>
 					<<run setup.HauntedHouses.resetToolTimers()>>
 					<<run setup.HauntedHouses.endHunt()>>
-					<<include "lostClothes">>
+					<<include "LostClothes">>
 
 					<<done>>
 						<<addclass ".linkselector" "disabled-link">>
@@ -96,5 +96,5 @@
 		<<set $mcpossession += 1>>
 		<b>Surrender to possession</b> is increased: $mcpossession now!<br>
 	<</if>>
-	@@.enterbtn; [[Next|possessed]]@@<br>
+	@@.enterbtn; [[Next|Possessed]]@@<br>
 <</widget>>

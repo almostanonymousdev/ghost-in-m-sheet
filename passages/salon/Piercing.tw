@@ -1,0 +1,28 @@
+:: Piercing [nobr] {"position":"600,300","size":"100,100"}
+<<for _p range setup.piercingList>>
+	<<capture _p>>
+		<<set _linkImg to '<img @src=\'setup.ImagePath + "/img/piercing/' + _p.img + '"\'>'>>
+		<<if State.variables[_p.var] eq "worn">>
+			<<replace `"#currentPiercing" + _p.target`>>
+				<<link _linkImg "Wardrobe">>
+					<<run State.variables[_p.var] = "not worn">>
+					<<if _p.beauty>><<set $mc.beauty -= _p.beauty>><</if>>
+					<<if _p.sensVar>>
+						<<run State.variables[_p.sensVar] = 0>>
+						<<run State.variables[_p.lustVar] = 0>>
+					<</if>>
+				<</link>>
+			<</replace>>
+		<<elseif State.variables[_p.var] eq "not worn">>
+			<<append "#availablePiercing">>
+				<<link _linkImg "Wardrobe">>
+					<<run State.variables[_p.var] = "worn">>
+					<<if _p.beauty>><<set $mc.beauty += _p.beauty>><</if>>
+					<<if _p.sensVar>>
+						<<run State.variables[_p.sensVar] = 0.1>>
+					<</if>>
+				<</link>>
+			<</append>>
+		<</if>>
+	<</capture>>
+<</for>>

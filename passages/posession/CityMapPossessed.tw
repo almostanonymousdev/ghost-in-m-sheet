@@ -3,7 +3,7 @@
 <div class="housecard">
 <img @src="setup.ImagePath + '/img/gymIcon.png'" class="icon">
 <<if $mc.fit gte 30>>
-@@.icontextcity; [[Gym|possessedLocation][$checkChoosenLocation to "gym"]]@@
+@@.icontextcity; [[Gym|PossessedLocation][$checkChoosenLocation to "gym"]]@@
 <<else>>
 @@.warningtext; Req. fit lvl 30+@@<br>
 <</if>>
@@ -13,7 +13,7 @@
 </div>
 <div class="housecard">
 <img @src="setup.ImagePath + '/img/home.png'" class="icon">
-@@.icontextcity; [[Home|possessedLocation][$checkChoosenLocation to "home"]]@@
+@@.icontextcity; [[Home|PossessedLocation][$checkChoosenLocation to "home"]]@@
 </div>
 <div class="housecard">
 
@@ -39,14 +39,14 @@
 </div>
 <div class="housecard">
 <img @src="setup.ImagePath + '/img/libraryIcon.png'" class="icon">
-@@.icontextcity; [[Library|possessedLocation][$checkChoosenLocation to "library"]]@@
+@@.icontextcity; [[Library|PossessedLocation][$checkChoosenLocation to "library"]]@@
 </div>
 <div class="housecard">
 
 </div>
 <div class="housecard">
 <img @src="setup.ImagePath + '/img/park.png'" class="icon">
-@@.icontextcity; [[Park|possessedLocation][$checkChoosenLocation to "park"]]@@
+@@.icontextcity; [[Park|PossessedLocation][$checkChoosenLocation to "park"]]@@
 </div>
 <div class="housecard">
 
@@ -54,7 +54,7 @@
 <div class="housecard">
 <img @src="setup.ImagePath + '/img/churchIco.png'" class="icon">
 <<if $mcpossession gte 5>>
-@@.icontextcity; [[Church|possessedLocation][$checkChoosenLocation to "church"]]@@
+@@.icontextcity; [[Church|PossessedLocation][$checkChoosenLocation to "church"]]@@
 <<else>>
 @@.warningtext; Possession 5+@@<br>
 <</if>>

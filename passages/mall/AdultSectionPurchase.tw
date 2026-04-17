@@ -1,0 +1,27 @@
+:: AdultSectionPurchase [nobr] {"position":"3000,1850","size":"100,100"}
+<div class="flexwrapper backgroundForText">
+<<shopCardCorruption "dildoPurchased" "img/dildo.jpg" 30 "AdultSectionPurchase" 3 1>>
+<div class="housecard">
+<<if setup.Mall.canBuyWardenOutfit()>>
+	<img @src="setup.ImagePath + '/img/wardrobe/warden.webp'" class="iconPx"><br>
+	<span class="priceAmount">500$</span><br>
+	<<if setup.Mall.meetsCorruptionForWarden()>>
+		<<if $mc.money gte 500>>
+			@@.buyItemLink;<<link "Buy" "AdultSectionPurchase">>
+				<<set $mc.money -= 500>>
+				<<set $wardenClothesStage to 2>>
+			<</link>>@@<br>
+		<<else>>@@.mc-thoughts; I don't have enough money@@
+		<</if>>
+	<<else>>
+		@@.mc-thoughts; I don't think I can wear this...@@@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:20%; display: inline; margin: 0;"> ≥ 3)@@
+	<</if>>
+<</if>>
+</div>
+<div class="housecard">
+
+</div>
+</div>
+<br>
+@@.backbtn;[[Leave|AdultSection]] @@<br>
+<<include "StyleMallAdult">>

@@ -1,0 +1,34 @@
+:: GymTrainerEvent2Start [nobr] {"position":"3275,1700","size":"100,100"}
+<<addLust 15>>
+<<set _check to random(1,2)>>
+<<if _check eq 1>><video autoplay controls muted loop>
+	<source @src="setup.ImagePath + '/gym/trainer2event2.1.mp4'" type="video/mp4">
+	</video>
+<</if>>
+<<if _check eq 2>><video autoplay controls muted loop>
+	<source @src="setup.ImagePath + '/gym/trainer2event2.2.mp4'" type="video/mp4">
+	</video>
+<</if>>
+@@.notmc-speech; Yes~ suck it, you are such a slut @@<br>
+@@.mc-speech; Gulp~guulp~AGH~@@<br>
+@@.notmc-speech; Now I'm going to fuck you@@ <<linkappend "@@.notmc-speechLink;in the ass@@">>
+	<<addLust 30>>
+	<<set _check to random(1,3)>>
+	<<if _check eq 1>><video autoplay controls muted loop>
+		<source @src="setup.ImagePath + '/gym/trainer2event2.3.mp4'" type="video/mp4">
+		</video>
+	<</if>>
+	<<if _check eq 2>><video autoplay controls muted loop>
+		<source @src="setup.ImagePath + '/gym/trainer2event2.4.mp4'" type="video/mp4">
+		</video>
+	<</if>>
+	<<if _check eq 3>><video autoplay controls muted loop>
+		<source @src="setup.ImagePath + '/gym/trainer2event2.5.mp4'" type="video/mp4">
+		</video>
+	<</if>>
+
+	@@.notmc-speech; Oh~ i'm cumming, open your fucking  [[mouth|GymTrainerEvent2Start2]]@@<br>
+
+<</linkappend>>
+
+<br>

@@ -3,19 +3,19 @@
 
 <<set _rooms = [
   "OwaissaKitchen",
-  "elmKitchen",
+  "ElmKitchen",
   "OwaissaBedroom",
-  "elmBedroom",
-  "elmBedroomTwo",
+  "ElmBedroom",
+  "ElmBedroomTwo",
   "OwaissaHallway",
-  "elmHallway",
-  "elmHallwayUpstairs",
+  "ElmHallway",
+  "ElmHallwayUpstairs",
   "OwaissaLivingroom",
-  "elmNursery",
+  "ElmNursery",
   "OwaissaBathroom",
-  "elmBathroom",
-  "elmBathroomTwo",
-  "elmBasement"
+  "ElmBathroom",
+  "ElmBathroomTwo",
+  "ElmBasement"
 ]>>
 
 <div class="flexwrapper">

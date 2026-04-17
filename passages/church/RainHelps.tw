@@ -6,4 +6,4 @@
 <<set $isBrookePossessed to 0>>
 <<set $isBrookePossessedCD to 0>>
 <br>
-@@.enterbtn; [[Follow her|churchBasementEnt]]@@ <b>or</b> @@.enterbtn;[[go home|Sleep]]@@<br>
+@@.enterbtn; [[Follow her|ChurchBasementEntrance]]@@ <b>or</b> @@.enterbtn;[[go home|Sleep]]@@<br>

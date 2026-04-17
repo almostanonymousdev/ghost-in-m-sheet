@@ -18,7 +18,7 @@
 		<<if $mc.energy lt 1>>
 			@@.mc-thoughts; Not enough energy@@
 		<<else>>
-			<<link "@@.usebtn; Try to attract a ghost@@ " "seduceGhostMinigame">>
+			<<link "@@.usebtn; Try to attract a ghost@@ " "SeduceGhostMinigame">>
 				<<run setup.SeduceGhostMinigame.tryAttract()>>
 			<</link>>
 		<</if>>
@@ -29,17 +29,17 @@
 		<<if $mc.energy lt 1>>
 			@@.mc-thoughts; Not enough energy@@
 		<<else>>
-			<<link "@@.usebtn; Try again@@ " "seduceGhostMinigame">>
+			<<link "@@.usebtn; Try again@@ " "SeduceGhostMinigame">>
 				<<run setup.SeduceGhostMinigame.tryAgain()>>
 			<</link>>
 		<</if>>
 		<<link "@@color:red; Leave@@ " `$return`>><<run setup.SeduceGhostMinigame.leave()>><</link>>
 
 	<<elseif $minigameVideo eq "seduce">>
-		<<link "Continue" "seduceGhostMinigame">>
+		<<link "Continue" "SeduceGhostMinigame">>
 			<<run setup.SeduceGhostMinigame.continueSeduce()>>
 		<</link>><b><img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:25px;"></b> |
-		<<link "@@color:red; Try to leave@@" "seduceGhostMinigame">>
+		<<link "@@color:red; Try to leave@@" "SeduceGhostMinigame">>
 			<<run setup.SeduceGhostMinigame.tryLeave()>>
 			<<if ndef $minigameVideo>><<goto `$return`>><</if>>
 		<</link>>
@@ -48,17 +48,17 @@
 		<<if setup.SeduceGhostMinigame.resistCostsEnergy() and $mc.energy lt 1>>
 			@@.mc-thoughts; Not enough energy@@
 		<<else>>
-			<<link "Resist" "seduceGhostMinigame">>
+			<<link "Resist" "SeduceGhostMinigame">>
 				<<run setup.SeduceGhostMinigame.resist()>>
 			<</link>>
 		<</if>>
-		<<link "Submit" "seduceGhostMinigame">>
+		<<link "Submit" "SeduceGhostMinigame">>
 			<<run setup.SeduceGhostMinigame.submit()>>
 		<</link>> <b><img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:25px;"></b> |
 		<<if $mc.energy lt 1>>
 			@@.mc-thoughts; Not enough energy@@
 		<<else>>
-			<<link "Subdue" "seduceGhostMinigame">>
+			<<link "Subdue" "SeduceGhostMinigame">>
 				<<run setup.SeduceGhostMinigame.subdue()>>
 			<</link>>
 		<</if>>
@@ -67,11 +67,11 @@
 		<<if $mc.energy lt 1>>
 			@@.mc-thoughts; Not enough energy@@
 		<<else>>
-			<<link "Resist" "seduceGhostMinigame">>
+			<<link "Resist" "SeduceGhostMinigame">>
 				<<run setup.SeduceGhostMinigame.resist()>>
 			<</link>>
 		<</if>>
-		<<link "Submit" "seduceGhostMinigame">>
+		<<link "Submit" "SeduceGhostMinigame">>
 			<<run setup.SeduceGhostMinigame.submit()>>
 		<</link>> <b><img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:25px;"></b>
 

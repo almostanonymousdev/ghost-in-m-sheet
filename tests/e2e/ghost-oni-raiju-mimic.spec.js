@@ -18,7 +18,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
 
     const drains = [];
     for (let i = 0; i < 30; i++) {
-      await goToPassage(page, 'eventMC');
+      await goToPassage(page, 'EventMC');
       drains.push(await getVar(page, 'ghostSanityEventDecreased'));
     }
 
@@ -34,7 +34,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
 
     const drains = [];
     for (let i = 0; i < 30; i++) {
-      await goToPassage(page, 'eventMC');
+      await goToPassage(page, 'EventMC');
       drains.push(await getVar(page, 'ghostSanityEventDecreased'));
     }
 
@@ -89,7 +89,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
     const readings = [];
     for (let i = 0; i < 40; i++) {
       await goToPassage(page, 'OwaissaKitchen');
-      await goToPassage(page, 'temperatureHigh');
+      await goToPassage(page, 'TemperatureHigh');
       const num = parseInt(await page.locator('.passage').textContent(), 10);
       if (!isNaN(num)) readings.push(num);
     }

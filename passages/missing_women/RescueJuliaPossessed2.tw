@@ -1,0 +1,32 @@
+:: RescueJuliaPossessed2 [nobr] {"position":"2125,2300","size":"100,100"}
+<<set _check to random(1,2)>>
+<<if _check eq 1>>
+	<video autoplay controls muted loop>
+	<source @src="setup.ImagePath + '/rescue/Julia/1.5.mp4'" type="video/mp4">
+	</video>
+<</if>>
+<<if _check eq 2>>
+	<video autoplay controls muted loop>
+	<source @src="setup.ImagePath + '/rescue/Julia/1.6.mp4'" type="video/mp4">
+	</video>
+<</if>>
+@@.mc-thoughts;But she came back with a huge dildo between her legs @@<br>
+@@.notmc-speech; We're not done with you yet@@<br>
+@@.mc-thoughts; She shoved the huge toy into your pussy, still sensitive from the recent orgasm, and started fucking you<br>
+The room filled with slurping sounds coming from your dripping pussy@@<br>
+
+@@.notmc-speech; Good girl, now let's check your  <<linkappend "other hole.">>
+	<<set _checkV to random(1,2)>>
+	<<if _checkV eq 1>>
+		<video autoplay controls muted loop>
+		<source @src="setup.ImagePath + '/rescue/Julia/1.7.mp4'" type="video/mp4">
+		</video>
+	<</if>>
+	<<if _checkV eq 2>>
+		<video autoplay controls muted loop>
+		<source @src="setup.ImagePath + '/rescue/Julia/1.8.mp4'" type="video/mp4">
+		</video>
+	<</if>>
+	@@.mc-speech; Oh fuck! It feels so good... don't stop, I'm almost...@@<br>
+	@@.notmc-speech; No! Don't cum, slut. Let's see how your pussy [[handles this vibrator|RescueJuliaPossessed3]]@@<br>
+<</linkappend>>@@

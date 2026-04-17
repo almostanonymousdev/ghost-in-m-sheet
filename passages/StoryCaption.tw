@@ -1,6 +1,6 @@
 :: StoryCaption [nobr] {"position":"100,200","size":"100,100"}
 <<include "MC">>
-<<include "bodyMod">><br>
+<<include "BodyModification">><br>
 <<if $showComp eq 1 or $showComp eq 3>>
 	<<if $companion.name eq "Brook">>
 		<<companionMini "brook/brook.png" "Brook">>
@@ -30,7 +30,7 @@
 <a class="linkselector" data-passage="Bag"><img @src="setup.ImagePath + '/img/bag.png'" width="30%"></a><a class="linkselector" data-passage="Notebook"><img @src="setup.ImagePath + '/img/notebook.png'" width="30%"></a><a class="linkselector" data-passage="Evidence"><img @src="setup.ImagePath + '/img/evidenceIcon.png'" width="30%"></a><br>
 <<if def $isPhoneBought>><a class="linkselector" data-passage="Phone"><img @src="setup.ImagePath + '/img/phone.png'" width="30%"></a>
 <</if>>
-<div class="linkselector enterbtn"> Game [[Guide|guide]] </div><br>
+<div class="linkselector enterbtn"> Game [[Guide|Guide]] </div><br>
 
 <br>@@.usebtn;<<linkreplace "Cheats">>
 	<<if $ghostHuntingMode eq 2>><<link "take pills(cheats)">><<set $mc.sanity +=30>><</link>>

@@ -19,7 +19,7 @@ test.describe('Missing Women — rescue girls, possession, stay', () => {
       await setupActiveQuest(page, girl);
       await setVar(page, 'holyWaterIsCollected', 1);
 
-      await goToPassage(page, 'rescue' + girl);
+      await goToPassage(page, 'Rescue' + girl);
       await expectCleanPassage(page);
       expect(await page.locator('.passage').textContent()).toContain(girl);
     });
@@ -29,7 +29,7 @@ test.describe('Missing Women — rescue girls, possession, stay', () => {
       await setupActiveQuest(page, girl);
       await setVar(page, 'holyWaterIsCollected', 1);
 
-      await goToPassage(page, 'rescue' + girl);
+      await goToPassage(page, 'Rescue' + girl);
       await expectCleanPassage(page);
       expect(await page.locator('.passage').textContent()).toContain('holywater');
     });
@@ -39,7 +39,7 @@ test.describe('Missing Women — rescue girls, possession, stay', () => {
       await setupActiveQuest(page, girl);
       await setVar(page, 'holyWaterIsCollected', 0);
 
-      await goToPassage(page, 'rescue' + girl);
+      await goToPassage(page, 'Rescue' + girl);
       await expectCleanPassage(page);
       expect(await page.locator('.passage').textContent()).toContain("didn't bring any holy water");
     });
@@ -53,7 +53,7 @@ test.describe('Missing Women — rescue girls, possession, stay', () => {
       await setupActiveQuest(page, girl);
       await setVar(page, 'rescueStage', 2);
 
-      await goToPassage(page, 'rescueEvent');
+      await goToPassage(page, 'RescueEvent');
       await expectCleanPassage(page);
 
       await page.locator('.passage .usebtn').filter({ hasText: 'Continue' }).first().click();
@@ -74,13 +74,13 @@ test.describe('Missing Women — rescue girls, possession, stay', () => {
     await setupActiveQuest(page, 'Victoria');
     await setVar(page, 'rescueStage', 2);
 
-    await goToPassage(page, 'rescueEvent');
+    await goToPassage(page, 'RescueEvent');
     await expectCleanPassage(page);
 
     await page.locator('.passage a').filter({ hasText: 'Leave' }).first().click();
-    await page.waitForFunction(() => SugarCube.State.passage === 'rescueMap');
+    await page.waitForFunction(() => SugarCube.State.passage === 'RescueMap');
 
-    expect(await page.evaluate(() => SugarCube.State.passage)).toBe('rescueMap');
+    expect(await page.evaluate(() => SugarCube.State.passage)).toBe('RescueMap');
     await expectCleanPassage(page);
   });
 
@@ -108,8 +108,8 @@ test.describe('Missing Women — rescue girls, possession, stay', () => {
       await setVar(page, 'mc.corruption', 10);
       await setVar(page, 'hasQuestForRescue', 2);
 
-      await goToPassage(page, 'rescue' + girl);
-      await goToPassage(page, 'rescueStay');
+      await goToPassage(page, 'Rescue' + girl);
+      await goToPassage(page, 'RescueStay');
       await expectCleanPassage(page);
     });
   }

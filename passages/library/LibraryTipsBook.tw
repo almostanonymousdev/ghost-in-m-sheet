@@ -1,0 +1,25 @@
+:: LibraryTipsBook {"position":"2925,2100","size":"100,100"}
+<<nobr>>
+<img @src="setup.ImagePath + '/library/book.jpg'" class="libraryCenteredImg"><br>
+@@.mc-thoughts;You pull out a book titled "A Brief Guide to Ghost Hunting".@@ <br>
+<<set $foundTips to 1>>
+<<set _check to random(1,3)>>
+<<if _check eq 1>>
+Favorite Room<br>
+Every ghost has a favorite room. Only in this room you can find evidence such as: High Temperature, Ghost Writing, Ectoplasm, and Spiritbox.<br>
+<</if>>
+<<if _check eq 2>>
+Temperature<br>
+A simple way to find the "favorite room" or evidence of "Increased Temperature" is to use a thermometer. If the temperature is between 13 and 16°C, it is a normal room with no ghost presence. If the temperature is between 16 and 21°C, it is a "favorite room" of the ghost, but without the evidence of "High Temperature." If the temperature ranges from 19 to 24°C, it is the "favorite room" with evidence of "High Temperature."<br>
+<</if>>
+<<if _check eq 3>>
+Hunting<br>
+Every ghost has the ability to start a hunt. Depending on the type of ghost, the hunt may begin either if your sanity is below 50, or if your lust is above 50.<br>
+<</if>>
+<br>
+@@.backbtn; [[Leave|LibraryInside]]@@ <br>
+<<done>>
+<<addclass ".linkselector" "disabled-link">>
+<</done>>
+<</nobr>>
+<<include "StyleLibraryCenteredImg">>

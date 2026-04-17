@@ -1,0 +1,17 @@
+:: BlakeContinue [nobr] {"position":"2550,3550","size":"100,100"}
+<video autoplay controls muted loop>
+<source @src="setup.ImagePath + '/blake/home/4.mp4'" type="video/mp4">
+</video>
+@@.mc-speech; Ah~ I'm almost there...@@<br>
+@@.notmc-speech; Don't stop... I'm so close@@<br>
+@@.mc-thoughts; You both grind your pussies against each other, bringing yourselves to@@ <<linkappend "@@.mc-thoughtsLink;another orgasm@@">><br>
+	<img @src="setup.ImagePath + '/blake/home/end.jpg'" width="100%"><br>
+	@@.notmc-speech; That was amazing.@@<br>
+	@@.mc-speech;Yeah~@@<br>
+	@@.notmc-speech; I'm really tired already. Do you mind if I stay the night? I'll try not to wake you in the morning.@@<br>
+	@@.mc-speech; Of course, [[sweet dreams|Sleep]].@@<br>
+	<<if $mc.corruption lt 10>>
+		<<set $mc.corruption += 0.1>>
+		+0.2 <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"><br><br>
+	<</if>>
+<</linkappend>><br>

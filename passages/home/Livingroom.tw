@@ -18,17 +18,17 @@
 @@.usebtn;<<link "Watch tv (30 min)" "Livingroom">>
 	<<addTime 30>>
 	<<if setup.CursedItems.isItemCursed("tv")>>
-		<<goto "cursedTVEvent">>
+		<<goto "CursedTVEvent">>
 	<<elseif setup.Home.spiritNapEventReady()>>
-		<<goto "ghostSpecialEventTVSpirit">>
+		<<goto "GhostSpecialEventTVSpirit">>
 	<<elseif setup.Home.succubusTVEventReady()>>
-		<<goto "succubusEventTV">>
+		<<goto "SuccubusEventTV">>
 	<<elseif setup.Home.tentaclesTVEventReady()>>
-		<<goto "tentaclesEventTV">>
+		<<goto "TentaclesEventTV">>
 	<</if>>
 <</link>>@@<br>
 <<if setup.CursedItems.isItemCursed("pc")>>
-	@@.enterbtn;<<link "Use PC" "cursedPCEvent">>
+	@@.enterbtn;<<link "Use PC" "CursedPCEvent">>
 	<</link>>@@<br>
 <<else>>
 	@@.enterbtn;[[Use PC]]@@<br>
@@ -77,6 +77,6 @@
 <<elseif not setup.Home.isWearingUnderwear()>>@@.mc-thoughts; I can't go outside without underwear @@<<else>>@@.backbtn;[[Leave|Home]]@@
 <</if>>
 /*[[RoomCleanup]]*/
-<<if previous() is "ghostSpecialEventWraithStart">>
+<<if previous() is "GhostSpecialEventWraithStart">>
 	<<addTime 60>>
 <</if>>

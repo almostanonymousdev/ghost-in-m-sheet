@@ -10,7 +10,6 @@
     "watch": "while inotifywait -e modify -e create -e delete passages/*.tw; do ./build.sh; done",
     "clean": "node -e \"try{require('fs').unlinkSync('ghost-in-msheet.html')}catch(e){}\"",
     "rebuild": "npm run clean && npm run build",
-    "pretest": "npm run build",
     "lint": "python3 check_format.py",
     "test": "python3 check_format.py && npx playwright test",
     "prepare": "git config core.hooksPath .githooks"

@@ -1,0 +1,32 @@
+:: RescueJadePossessed2 [nobr] {"position":"1925,2300","size":"100,100"}
+<<if $rescueJadePossessed eq 1>>
+	<<set _checkR to random(1,2)>>
+	<<if _checkR eq 1>>
+		<video autoplay controls muted loop>
+		<source @src="setup.ImagePath + '/rescue/Jade/1.4.mp4'" type="video/mp4">
+		</video>
+	<</if>>
+	<<if _checkR eq 2>>
+		<video autoplay controls muted loop>
+		<source @src="setup.ImagePath + '/rescue/Jade/1.5.mp4'" type="video/mp4">
+		</video>
+	<</if>>
+	@@.mc-thoughts; She started fucking you fast, making your pussy make slurping  sounds@@<br>
+	@@.mc-speech; Oh my god~ I'm going to <<linkappend "cum again~">>
+		<video autoplay controls muted loop>
+		<source @src="setup.ImagePath + '/rescue/Jade/1.6.mp4'" type="video/mp4">
+		</video>
+		@@.mc-thoughts; The orgasm hit you again, and you couldn't hold on. Falling to the floor, your body was still trembling in pleasure.@@<br>
+		@@.notmc-speech; Well, I think you've had enough, you can [[leave|Church]] if you can get up, haha@@<br>
+	<</linkappend>>@@
+<<elseif $rescueJadePossessed eq 2>>
+	<video autoplay controls muted loop>
+	<source @src="setup.ImagePath + '/rescue/Jade/2.6.mp4'" type="video/mp4">
+	</video>
+	@@.mc-thoughts; You start kissing, and the whole world slips away from you in that moment. <br>You [[pass out.|Church]]@@
+<<elseif $rescueJadePossessed eq 3>>
+	<video autoplay controls muted loop>
+	<source @src="setup.ImagePath + '/rescue/Jade/3.8.mp4'" type="video/mp4">
+	</video>
+	@@.mc-thoughts; You start kissing, and the whole world slips away from you in that moment. <br>You [[pass out.|Church][$hours += 3]]@@
+<</if>>

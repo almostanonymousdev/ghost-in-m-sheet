@@ -1,0 +1,101 @@
+:: RescueAsh [nobr] {"position":"2325,2000","size":"100,100"}
+<<set _videoList to []>>
+<<set _randomChance to random(1, 100)>>
+<<set _videoList10 to [
+{type: "video", src: "rescue/Ash/10.1.mp4"},
+{type: "video", src: "rescue/Ash/10.2.mp4"},
+{type: "video", src: "rescue/Ash/10.3.mp4"},
+{type: "video", src: "rescue/Ash/10.4.mp4"}
+]>>
+<<set _videoList11 to [
+{type: "video", src: "rescue/Ash/11.1.mp4"},
+{type: "video", src: "rescue/Ash/11.2.mp4"},
+{type: "video", src: "rescue/Ash/11.3.mp4"},
+{type: "video", src: "rescue/Ash/11.4.mp4"}
+]>>
+
+<<set _allLists to [_videoList10, _videoList11]>>
+<<set _chosenList to _allLists[random(0, _allLists.length - 1)]>>
+<<set _usedVideos to []>>
+<<set _clickCount to 0>>
+<<set _caughtChance to 0>>
+<<set $videoRescueEvent to _chosenList[random(0, _chosenList.length - 1)].src>>
+<<set _usedVideos.push($videoRescueEvent)>>
+
+<div id="videoContainer">
+<video autoplay controls muted loop>
+<source @src="setup.ImagePath+`/`+$videoRescueEvent" type="video/mp4">
+</video>
+</div>
+
+@@.mc-speech; Oh wow~ it's $currentRescueGirl, and it looks like she's... in trouble.<br>
+I can help her if I use holy water.... or<br>
+I could watch a little longer and then help her... but I might get noticed. @@<br>
+@@.warningtext; The chance of being noticed - <<do tag "chanceRescue">>_caughtChance
+<</do>>@@<br>
+<span class="rescueWatchButton"><<link "@@.usebtn;Watch@@">>
+	<<set _clickCount += 1>>
+	<<if _clickCount lte 4>>
+		<<if _caughtChance gte _randomChance>>
+			<<replace ".rescueWatchButton">>
+				@@.mc-speech; FUCK! They noticed me. I won't have time to take out the holy water, but I could@@
+				@@.usebtn; [[Run|Church][$hasQuestForRescue to 2]]@@
+
+				<<done>>
+					<<if not setup.MissingWomen.canStaySubmissive()>>
+						<<addclass ".rescueStayCorruptionCheck" "disabled-link">>
+					<</if>>
+				<</done>>
+				<br>
+				<span class="rescueStayCorruptionCheck">
+				@@.mc-speech;Or...@@  @@.usebtn;[[Stay|RescueStay][$hasQuestForRescue to 2]]@@.@@.mc-speech; I guess I'm already used to losing...@@</span>
+				<<if not setup.MissingWomen.canStaySubmissive()>>@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 6)@@
+				<</if>>
+
+				<br><br>
+				<br>
+			<</replace>>
+			<<replace ".useHolyWaterButton">><</replace>>
+		<</if>>
+		<<set _caughtChance += 20>>
+		<<redo "chanceRescue">>
+	<</if>>
+	<<if _clickCount == 4>>
+		<<set $videoRescueEvent to "rescue/Ash/11end.mp4">>
+		<<replace "#videoContainer">>
+			<video autoplay controls muted loop>
+			<source @src="setup.ImagePath+`/`+$videoRescueEvent" type="video/mp4">
+			</video>
+		<</replace>>
+	<</if>>
+	<<if _clickCount < 4>>
+		<<set _remainingVideos to _chosenList.filter(v => !_usedVideos.includes(v.src))>>
+		<<if _remainingVideos.length == 0>>
+			<<set _usedVideos = []>>
+			<<set _remainingVideos = _chosenList>>
+		<</if>>
+		<<set $videoRescueEvent to _remainingVideos[random(0, _remainingVideos.length - 1)].src>>
+		<<set _usedVideos.push($videoRescueEvent)>>
+		<<replace "#videoContainer">>
+			<video autoplay controls muted loop>
+			<source @src="setup.ImagePath+`/`+$videoRescueEvent" type="video/mp4">
+			</video>
+		<</replace>>
+	<</if>>
+<</link>></span><br>
+<span class="useHolyWaterButton"><<if not setup.MissingWomen.hasHolyWater()>>
+	@@.mc-thoughts; Fuck! I didn't bring any holy water... I can't do much without it...@@<br><br>
+	@@.backbtn; [[Leave|RescueMap]]@@<br>
+<<else>>
+	<<linkreplace "@@.usebtn;Use holywater@@">>
+		<<replace ".rescueWatchButton">><</replace>>
+		<<run setup.MissingWomen.useHolyWater()>>
+		@@.mc-thoughts;But there's no time to waste! You quickly start throwing holy water toward the ghost. <br>
+		It lets out a loud hiss, like the water's burning it from the inside. The ghost pulls away from $currentRescueGirl and disappears.@@<br>
+		@@.mc-speech;Let's get out of here before it comes back!@@<br>
+		@@.mc-thoughts; You grab her arm, and the two of you bolt out of the house.<br>
+		She thanks you for saving her and says she'll tell the nun about your help.@@<br>
+		<br><br>
+		@@.backbtn; [[Leave|Church][$hasQuestForRescue to 3]]@@<br>
+	<</linkreplace>>
+<</if>></span>

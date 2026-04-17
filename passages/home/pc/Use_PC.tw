@@ -12,12 +12,12 @@
 <<if $isCameraBought eq 1 and $mcSleptWithCameraOn eq 1>>
 	<<if $ghostMareEventStart gte 2>>
 		<<if $ghostMareEventStage lte 2>>
-			<a data-passage="ghostSpecialEventMare" onclick="$.wiki('<<set $ghostMareEventStart to 4>>')"><img @src="setup.ImagePath + '/img/webcamera.png'" class="iconPC"></a>
+			<a data-passage="GhostSpecialEventMare" onclick="$.wiki('<<set $ghostMareEventStart to 4>>')"><img @src="setup.ImagePath + '/img/webcamera.png'" class="iconPC"></a>
 		<<else>>
-			<a data-passage="ghostSpecialEvent1Mare" onclick="$.wiki('<<set $ghostMareEventStart to 4>>')"><img @src="setup.ImagePath + '/img/webcamera.png'" class="iconPC"></a>
+			<a data-passage="GhostSpecialEvent1Mare" onclick="$.wiki('<<set $ghostMareEventStart to 4>>')"><img @src="setup.ImagePath + '/img/webcamera.png'" class="iconPC"></a>
 		<</if>>
 	<<else>>
-		<a data-passage="ghostSpecialEventMare0"><img @src="setup.ImagePath + '/img/webcamera.png'" class="iconPC"></a>
+		<a data-passage="GhostSpecialEventMare0"><img @src="setup.ImagePath + '/img/webcamera.png'" class="iconPC"></a>
 	<</if>>
 <</if>>
 <<if $webcamAccountCreated eq 1>><a data-passage="WebcamShow"><img @src="setup.ImagePath + '/img/wb.jpg'" class="iconPC"></a>
@@ -26,7 +26,7 @@
 </div>
 <br>
 <<if $succubus eq 1 and $succubusEventCD eq 0 or $succubusEventCD eq 2 and $hours gte 18 and $hours lte 23>>
-	@@.backbtn;[[Back|succubusPCEvent]]<br>
+	@@.backbtn;[[Back|SuccubusPCEvent]]<br>
 <<else>>
 	@@.backbtn;[[Back|Livingroom]]@@<br>
 <</if>>

@@ -1,4 +1,4 @@
-:: randomizeRescueHouse [nobr] {"position":"2075,1800","size":"100,100"}
+:: RandomizeRescueHouse [nobr] {"position":"2075,1800","size":"100,100"}
 <<set _randomIndex to random(0, $tornStyles.length - 1)>>
 <<set $tornStyleRandom to $tornStyles[_randomIndex]>>
 <<set $randomRescuePhotoNumber to random(1,16)>>
@@ -6,11 +6,11 @@
 :: widgetRescue [widget nobr] {"position":"2275,1700","size":"100,100"}
 <<script>>
 setup.rescueGirlPassages = {
-    "Victoria": "rescueVictoria",
-    "Jade": "rescueJade",
-    "Julia": "rescueJulia",
-    "Nadia": "rescueNadia",
-    "Ash": "rescueAsh"
+    "Victoria": "RescueVictoria",
+    "Jade": "RescueJade",
+    "Julia": "RescueJulia",
+    "Nadia": "RescueNadia",
+    "Ash": "RescueAsh"
 };
 <</script>>
 

@@ -43,7 +43,7 @@ setup.Library = (function () {
 		availableSearchResults: function () {
 			var out = [];
 			if (!this.hasFoundTipsBook()) out.push('book');
-			if (!this.hasFoundComics()) out.push('comics');
+			if (!this.hasFoundComics()) out.push('Comics');
 			if (!this.hasFoundGirl()) out.push('girl');
 			if (!this.hasFoundGuy()) out.push('guy');
 			if (!this.hasFoundBrook() && this.canMeetBrookAtLibrary()) out.push('brook');

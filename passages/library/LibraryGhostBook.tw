@@ -1,0 +1,26 @@
+:: LibraryGhostBook {"position":"3025,2100","size":"100,100"}
+<<nobr>>
+@@.mc-thoughts; You slowly walk past the shelves deeper into the library, carefully examining each one. Suddenly, your gaze stops on an ancient book that stands out from the rest.@@ <br>
+<img @src="setup.ImagePath + '/library/book1.jpg'" class="libraryCenteredImg"><br>
+<<if ndef $ghostPhantomInfoCollected>>
+<<set $ghostPhantomInfoCollected to 1>>
+As you open it, you find a chapter dedicated to Phantoms.<br>
+The description reveals that Phantoms have a distinctive feature that makes them easily identifiable--they cannot turn off the lights. This means that in their presence, light sources always remain on. If you notice that the lights do not go out, it could be a sign that a Phantom is nearby.<br>
+<<elseif ndef $ghostShadeInfoCollected>>
+<<set $ghostShadeInfoCollected to 1>>
+As you open it, you find a chapter dedicated to Shades.<br>
+Shade -- one of the oldest types of ghosts. The main feature of the Shade is that the lower your sanity, the less likely the Shade is to show interest in you.<br>
+<<elseif ndef $ghostGoryoInfoCollected>>
+<<set $ghostGoryoInfoCollected to 1>>
+Goryo is known for its attachment to a single room and cannot change it like other ghosts do. If you notice that the ghost's activity is focused exclusively in one area, you are likely dealing with a Goryo.<br>
+<<else>>
+You try to find something useful in this book, but you only come across information you already know.<br>
+<</if>>
+@@.mc-thoughts;After you finish reading, fatigue overcomes you. You decide to return to the reading area, where you can rest and collect your thoughts, leaving the bookshelves and their secrets behind.@@ <br>
+<br>
+@@.backbtn; [[Leave|LibraryInside]]@@ <br>
+<<done>>
+<<addclass ".linkselector" "disabled-link">>
+<</done>>
+<</nobr>>
+<<include "StyleLibraryCenteredImg">>

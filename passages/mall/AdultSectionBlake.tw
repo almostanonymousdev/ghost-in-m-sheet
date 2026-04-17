@@ -1,0 +1,127 @@
+:: AdultSectionBlake [nobr] {"position":"3000,1750","size":"100,100"}
+<img @src="setup.ImagePath + '/blake/blakeShop.jpg'" class="displayCentredImgs" width="50%"><br>
+
+<<if setup.Mall.blakeUnlocked()>>
+	<<if setup.Mall.blakeFirstMeeting()>>
+		@@.notmc-speech; Hey, you're not $mc.name by any chance, are you? Alice told me you went ghost hunting together.@@<br>
+		@@.mc-speech;Yeah, that's right.@@<br>
+		<<set $dialogBlake to 0>>
+		<<if setup.Mall.blakeCanIntroduceCursedItemBuyback()>>
+			@@.notmc-speech;Alice mentioned that sometimes you come across... hmm, let's say, "something special." Some toys with, well, "a magical aura"?@@<br>
+			@@.mc-speech;Yeah, you're right. But I usually give them to the witch in exchange for a fee.@@<br>
+			@@.notmc-speech;How about selling them to me instead? I'll pay you more than the witch@@<br>
+			@@.mc-speech;Why do you need them?@@<br>
+			@@.notmc-speech;Well, you know, these toys aren't exactly ordinary, and I could sell them as exclusives. My shop is known for unique items, so they'll definitely find their buyer.@@<br>
+			@@.mc-speech;Hmm... I'll think about it.@@<br>
+			<br>
+			@@.mc-action;Now you can bring cursed items to the adult store and sell them for a higher price.@@<br>
+			<<set $dialogBlake to 1>>
+		<<else>>
+			@@.notmc-speech;Wow! It's amazing that you're into this stuff. Good luck!@@<br>
+		<</if>>
+	<<else>>
+		@@.notmc-speech; Hi $mc.name, need any help?@@<br>
+		<<if setup.Mall.blakeHasCursedItemToSell()>>
+			<<linkreplace "@@.usebtn;Give her the cursed item@@">>
+				@@.notmc-speech; Wow, thanks. Here's your money. Feel free to bring more, I'll gladly buy them from you.@@<br>
+				Money: +60 $ <br>
+
+				<<if setup.Mall.canRaiseBlakeRelationship()>>
+					<<set $relationshipBlake += 1>>
+					@@.mc-speech; Relationship with Blake increased: now $relationshipBlake!@@
+				<</if>>
+				<<run setup.Mall.sellCursedItemToBlake()>>
+			<</linkreplace>>
+		<<else>>
+		<</if>>
+		<<if setup.Mall.blakeCanIntroduceCursedItemBuyback()>>
+			@@.notmc-speech;Alice mentioned that sometimes you come across... hmm, let's say, "something special." Some toys with, well, "a magical aura"?@@<br>
+			@@.mc-speech;Yeah, you're right. But I usually give them to the witch in exchange for a fee.@@<br>
+			@@.notmc-speech;How about selling them to me instead? I'll pay you more than the witch@@<br>
+			@@.mc-speech;Why do you need them?@@<br>
+			@@.notmc-speech;Well, you know, these toys aren't exactly ordinary, and I could sell them as exclusives. My shop is known for unique items, so they'll definitely find their buyer.@@<br>
+			@@.mc-speech;Hmm... I'll think about it.@@<br>
+			<br>
+			@@.mc-action;Now you can bring cursed items to the adult store and sell them for a higher price.@@<br>
+			<<set $dialogBlake to 1>>
+		<</if>>
+	<</if>>
+
+<<else>>
+	@@.notmc-speech; Hi ,need any help?@@<br>
+	@@.mc-speech; No, thanks, I'm just looking around.@@<br>
+<</if>>
+
+<<if setup.Mall.blakeIsCompanionCandidate()>>
+	<<if setup.Mall.blakeHuntFinishedAlone()>>
+		@@.mc-speech; [[Ask her how her ghost hunt went.|BlakeHuntEndAlone]]@@<br>
+	<<else>>
+		@@.mc-speech;<<link "Ask Blake to join you for ghost hunting tonight.">>
+			<<run setup.Mall.pickBlakeForHunt()>>
+			<<replace "#blakeInfoAnswer">>@@.mc-speech; I want you to join me for ghost hunting today@@<br>
+				@@.notmc-speech; Yes, of course. I'll be ready. Let's meet by the entrance to the haunted house. <br>
+				But if we find the cursed item, I'll keep it, okay?@@<br>
+				@@.mc-speech; Fine, let's do that.@@
+			<</replace>>
+		<</link>>@@<br>
+
+		<span class="CompanionInfoAskForHuntAlone">
+		@@.mc-speech;<<link "I'd like you to go ghost hunting alone.">>
+			<<set $isCompChosenBlake to 0>>
+			<<replace "#blakeInfoAnswer">>@@.notmc-speech; I think I'm already experienced enough to do it on my own. Where should I go?@@<br>
+
+				@@.enterbtn;<<link "Owaissa Street - $chanceToSuccessAloneOwaissaBlake %">>
+					<<set $blakeChooseOwaissa to 1>>
+					<<set $blakeChooseElm to 0>>
+					<<set $isBlakeGoingForHuntingAlone to 1>>
+					<<if (ndef $payForHuntAloneBlake or $payForHuntAloneBlake eq 0) and $mc.money gte 20>><<set $mc.money -= 20>><<set $payForHuntAloneBlake to 1>><</if>>
+
+					<<if $mc.money lt 20>>
+						<<replace "#blakeInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@
+						<</replace>>
+					<<else>>
+						<<replace "#blakeInfoAnswerTwo">>@@.notmc-speech;Owaissa Street? Hmm... Yes, of course. I think I can handle it.@@
+						<</replace>>
+					<</if>>
+				<</link>>
+
+				@@.enterbtn;<<link "Elm Street - $chanceToSuccessAloneElmBlake %">>
+					<<set $blakeChooseOwaissa to 0>>
+					<<set $blakeChooseElm to 1>>
+					<<set $isBlakeGoingForHuntingAlone to 1>>
+					<<if (ndef $payForHuntAloneBlake or $payForHuntAloneBlake eq 0) and $mc.money gte 20>><<set $mc.money -= 20>><<set $payForHuntAloneBlake to 1>><</if>>
+					<<if $mc.money lt 20>>
+						<<replace "#blakeInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@
+						<</replace>>
+					<<else>>
+						<<replace "#blakeInfoAnswerTwo">>@@.notmc-speech;Elm Street? Hmm... Yes, of course. I think I can handle it.@@
+						<</replace>>
+					<</if>>
+				<</link>>@@@@color: green; <b>-20$</b>@@<br>
+
+				<span id="blakeInfoAnswerTwo">
+
+				</span>
+			<</replace>>
+		<</link>>@@<<if $blake.lvl lt 2>>
+			@@.warningtext; Req. Blake's lvl 2+@@
+		<</if>></span>
+
+		<br>
+		<span id="blakeInfoAnswer">
+
+		</span>
+
+	<</if>>
+
+	<br>
+
+	<<if $blake.lvl lt 2>>
+		<<done>>
+			<<addclass ".CompanionInfoAskForHuntAlone" "disabled-link">>
+		<</done>>
+	<</if>>
+<</if>>
+<br>
+<br>
+@@.backbtn; [[Back|AdultSection]]@@

@@ -2,6 +2,7 @@ const { defineConfig } = require('@playwright/test');
 
 module.exports = defineConfig({
   testDir: './tests',
+  globalSetup: require.resolve('./tests/global-setup.js'),
   timeout: 5_000,
   /* Each spec file shares a page via beforeAll, so tests within a file
      must stay serial — but files themselves are independent.  Let

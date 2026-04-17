@@ -1,4 +1,4 @@
-:: possessedLocation2 [nobr] {"position":"1125,600","size":"100,100"}
+:: PossessedLocation2 [nobr] {"position":"1125,600","size":"100,100"}
 <<if $checkChoosenLocation eq "library">>
 	<span id ="possessedLocationLibrary1">
 	<video autoplay controls muted loop>
@@ -20,8 +20,8 @@
 	<</link>>
 	<br>@@color:red; Well, we've only just started. I think we'll go somewhere else now that we're done here. @@<br>
 	@@.mc-speech; Oh, damn@@<br>
-	@@.enterbtn; [[Next|possessed]]@@<br>
+	@@.enterbtn; [[Next|Possessed]]@@<br>
 <<else>>
 	@@.mc-thoughts; You feel the possession fading, your senses returning to normal.@@<br>
-	@@.enterbtn; [[Next|possessed]]@@<br>
+	@@.enterbtn; [[Next|Possessed]]@@<br>
 <</if>>

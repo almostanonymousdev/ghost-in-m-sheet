@@ -27,7 +27,7 @@
 	<<set $firstVisitWitchShop to false>>
 <<elseif $firstVisitWitchShop eq false>>
 	@@.notmc-speech; Hey $mc.name, how are you?@@<br>
-	<<if setup.Witch.hasSuccubusEncounter() and (hasVisited("succubusEventTV") or hasVisited("succubusPCEvent")) and setup.Witch.exorcismQuestNotStarted()>>
+	<<if setup.Witch.hasSuccubusEncounter() and (hasVisited("SuccubusEventTV") or hasVisited("SuccubusPCEvent")) and setup.Witch.exorcismQuestNotStarted()>>
 		<<linkreplace "@@.usebtn; Ask about a ghost in the house@@">>
 			@@.mc-speech; I am disturbed by someone or something in my own home! <br>
 			Something is living in my house, sometimes it seems to possess me. This has been going on for some time.<br>
@@ -112,7 +112,7 @@
 
 	<br>
 	@@.mc-speech;<<linkreplace "Do you have anything for sale?">>
-		<<goto "witchSale">>
+		<<goto "WitchSale">>
 	<</linkreplace>>@@<br>
 	<<if setup.Witch.canAskAboutLevel3Tools()>>
 		@@.mc-speech;<<linkreplace "Do you sell level 3 tools?">>

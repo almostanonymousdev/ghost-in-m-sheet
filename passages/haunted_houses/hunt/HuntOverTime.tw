@@ -10,10 +10,10 @@
 @@.mc-thoughts; Ah, dawn. The ghostly activity has ceased. I need to summarize the gathered information and identify the type of ghost.@@<br>
 <<if setup.HauntedHouses.hasClothesStolen()>>
 	@@.mc-thoughts; Now that you're no longer in danger, you can retrieve your clothes. After finding them, you head away from this cursed place.@@
-	<<if $isPantiesStolen eq 1>><<include "findStolenPanties">><</if>>
-	<<if $isBottomStolen eq 1>><<include "findStolenBottom">><</if>>
-	<<if $isShirtStolen eq 1>><<include "findStolenShirt">><</if>>
-	<<if $isBraStolen eq 1>><<include "findStolenBra">><</if>>
+	<<if $isPantiesStolen eq 1>><<include "FindStolenPanties">><</if>>
+	<<if $isBottomStolen eq 1>><<include "FindStolenBottom">><</if>>
+	<<if $isShirtStolen eq 1>><<include "FindStolenShirt">><</if>>
+	<<if $isBraStolen eq 1>><<include "FindStolenBra">><</if>>
 	<<run setup.HauntedHouses.clearStolenClothesFlag()>>
 <</if>>
 

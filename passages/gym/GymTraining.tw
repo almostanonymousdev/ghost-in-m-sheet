@@ -1,6 +1,6 @@
 :: GymTraining [nobr] {"position":"2950,1225","size":"100,100"}
 <<addTime 60>>
-<<include "gymSolo">>
+<<include "GymSolo">>
 
 <<gymFitnessGain 1>>
 <br>

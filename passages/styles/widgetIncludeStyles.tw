@@ -100,7 +100,7 @@
 }
 </style>
 		<</if>>
-	<<elseif previous() is "elmBasement">>
+	<<elseif previous() is "ElmBasement">>
 		<<if $basement.background eq 1>>
 			<style>
 	body {
@@ -118,7 +118,7 @@
 }
 </style>
 		<</if>>
-	<<elseif previous() is "elmKitchen">>
+	<<elseif previous() is "ElmKitchen">>
 		<<if $kitchen.background eq 1>>
 			<style>
 	body {
@@ -136,7 +136,7 @@
 }
 </style>
 		<</if>>
-	<<elseif previous() is "elmBathroom">>
+	<<elseif previous() is "ElmBathroom">>
 		<<if $bathroom.background eq 1>>
 			<style>
 	body {
@@ -154,7 +154,7 @@
 }
 </style>
 		<</if>>
-	<<elseif previous() is "elmBathroomTwo">>
+	<<elseif previous() is "ElmBathroomTwo">>
 		<<if $bathroomTwo.background eq 1>>
 			<style>
 	body {
@@ -172,7 +172,7 @@
 }
 </style>
 		<</if>>
-	<<elseif previous() is "elmBedroom">>
+	<<elseif previous() is "ElmBedroom">>
 		<<if $bedroom.background eq 1>>
 			<style>
 	body {
@@ -190,7 +190,7 @@
 }
 </style>
 		<</if>>
-	<<elseif previous() is "elmBedroomTwo">>
+	<<elseif previous() is "ElmBedroomTwo">>
 		<<if $bedroomTwo.background eq 1>>
 			<style>
 	body {
@@ -208,7 +208,7 @@
 }
 </style>
 		<</if>>
-	<<elseif previous() is "elmNursery">>
+	<<elseif previous() is "ElmNursery">>
 		<<if $nursery.background eq 1>>
 			<style>
 	body {
@@ -226,7 +226,7 @@
 }
 </style>
 		<</if>>
-	<<elseif previous() is "elmHallway">>
+	<<elseif previous() is "ElmHallway">>
 		<<if $hallway.background eq 1>>
 			<style>
 	body {
@@ -244,7 +244,7 @@
 }
 </style>
 		<</if>>
-	<<elseif previous() is "elmHallwayUpstairs">>
+	<<elseif previous() is "ElmHallwayUpstairs">>
 		<<if $hallwayUpstairs.background eq 1>>
 			<style>
 	body {
@@ -481,7 +481,7 @@
   	background-position: center;
 }
 </style>
-	<<if previous() is "furnitureSearch">>
+	<<if previous() is "FurnitureSearch">>
 		<<if previous(2) is "OwaissaHallway">>
 			<<if $hallway.background eq 1>>
 				<style>
@@ -574,7 +574,7 @@
 }
 </style>
 			<</if>>
-		<<elseif previous(2) is "elmBasement">>
+		<<elseif previous(2) is "ElmBasement">>
 			<<if $basement.background eq 1>>
 				<style>
 	body {
@@ -592,7 +592,7 @@
 }
 </style>
 			<</if>>
-		<<elseif previous(2) is "elmKitchen">>
+		<<elseif previous(2) is "ElmKitchen">>
 			<<if $kitchen.background eq 1>>
 				<style>
 	body {
@@ -610,7 +610,7 @@
 }
 </style>
 			<</if>>
-		<<elseif previous(2) is "elmBathroom">>
+		<<elseif previous(2) is "ElmBathroom">>
 			<<if $bathroom.background eq 1>>
 				<style>
 	body {
@@ -628,7 +628,7 @@
 }
 </style>
 			<</if>>
-		<<elseif previous(2) is "elmBathroomTwo">>
+		<<elseif previous(2) is "ElmBathroomTwo">>
 			<<if $bathroomTwo.background eq 1>>
 				<style>
 	body {
@@ -646,7 +646,7 @@
 }
 </style>
 			<</if>>
-		<<elseif previous(2) is "elmBedroom">>
+		<<elseif previous(2) is "ElmBedroom">>
 			<<if $bedroom.background eq 1>>
 				<style>
 	body {
@@ -664,7 +664,7 @@
 }
 </style>
 			<</if>>
-		<<elseif previous(2) is "elmBedroomTwo">>
+		<<elseif previous(2) is "ElmBedroomTwo">>
 			<<if $bedroomTwo.background eq 1>>
 				<style>
 	body {
@@ -682,7 +682,7 @@
 }
 </style>
 			<</if>>
-		<<elseif previous(2) is "elmNursery">>
+		<<elseif previous(2) is "ElmNursery">>
 			<<if $nursery.background eq 1>>
 				<style>
 	body {
@@ -700,7 +700,7 @@
 }
 </style>
 			<</if>>
-		<<elseif previous(2) is "elmHallway">>
+		<<elseif previous(2) is "ElmHallway">>
 			<<if $hallway.background eq 1>>
 				<style>
 	body {
@@ -718,7 +718,7 @@
 }
 </style>
 			<</if>>
-		<<elseif previous(2) is "elmHallwayUpstairs">>
+		<<elseif previous(2) is "ElmHallwayUpstairs">>
 			<<if $hallwayUpstairs.background eq 1>>
 				<style>
 	body {
@@ -951,17 +951,17 @@
 <</widget>>
 
 <<widget "includeStyleEventMC">>
-	<<if previous() is "furnitureSearch">>
-		<<if ((previous(2) is "OwaissaKitchen" or previous(2) is "elmKitchen") and $kitchen.background eq 2) or
-			((previous(2) is "OwaissaBedroom" or previous(2) is "elmBedroom") and $bedroom.background eq 2) or
-			((previous(2) is "elmBedroomTwo" and $bedroomTwo.background eq 2)) or
-			((previous(2) is "OwaissaHallway" or previous(2) is "elmHallway") and $hallway.background eq 2) or
-			((previous(2) is "elmHallwayUpstairs" and $hallwayUpstairs.background eq 2)) or
+	<<if previous() is "FurnitureSearch">>
+		<<if ((previous(2) is "OwaissaKitchen" or previous(2) is "ElmKitchen") and $kitchen.background eq 2) or
+			((previous(2) is "OwaissaBedroom" or previous(2) is "ElmBedroom") and $bedroom.background eq 2) or
+			((previous(2) is "ElmBedroomTwo" and $bedroomTwo.background eq 2)) or
+			((previous(2) is "OwaissaHallway" or previous(2) is "ElmHallway") and $hallway.background eq 2) or
+			((previous(2) is "ElmHallwayUpstairs" and $hallwayUpstairs.background eq 2)) or
 			((previous(2) is "OwaissaLivingroom" and $livingroom.background eq 2)) or
-			((previous(2) is "elmNursery" and $nursery.background eq 2)) or
-			((previous(2) is "OwaissaBathroom" or previous() is "elmBathroom") and $bathroom.background eq 2) or
-			((previous(2) is "elmBathroomTwo" and $bathroomTwo.background eq 2)) or
-			((previous(2) is "elmBasement" and $basement.background eq 2))>>
+			((previous(2) is "ElmNursery" and $nursery.background eq 2)) or
+			((previous(2) is "OwaissaBathroom" or previous() is "ElmBathroom") and $bathroom.background eq 2) or
+			((previous(2) is "ElmBathroomTwo" and $bathroomTwo.background eq 2)) or
+			((previous(2) is "ElmBasement" and $basement.background eq 2))>>
 			<style>
         .eventVideo-container {
             position: relative;

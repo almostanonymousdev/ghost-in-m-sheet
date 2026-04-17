@@ -1,0 +1,153 @@
+:: WitchSale [nobr] {"position":"1350,150","size":"100,100"}
+<div class="flexwrapper">
+<div class="housecard">
+<img @src="setup.ImagePath + '/img/sanityPills.png'" class="iconPx"><br>
+<span class="priceAmount">10$</span><br>
+<<if $mc.money gte 10>>
+	@@.buyItemLink;<<link "Buy" "WitchSale">>
+		<<set $sanityPillsAmount += 1>>
+		<<set $mc.money -= 10>>
+	<</link>>@@<br>
+<<else>>@@.mc-thoughts; I don't have enough money@@
+<</if>>
+<span class="subtitleAmount">@@.mc-thoughts; You have $sanityPillsAmount sanity pills@@</span>
+</div>
+<div class="housecard">
+<<if ndef $crucifixAmount>><<set $crucifixAmount to 0>><</if>>
+<img @src="setup.ImagePath + '/img/crucifix.webp'" class="iconPx"><br>
+<span class="priceAmount">10$</span><br>
+<<if $mc.money gte 10>>
+	@@.buyItemLink;<<link "Buy" "WitchSale">>
+		<<set $crucifixAmount += 1>>
+		<<set $mc.money -= 10>>
+	<</link>>@@<br>
+<<else>>@@.mc-thoughts; I don't have enough money@@
+<</if>>
+<span class="subtitleAmount">@@.mc-thoughts; You have $crucifixAmount crucifix@@</span>
+</div>
+<div class="housecard">
+<<if $equipment.emf eq 5>>
+	<img @src="setup.ImagePath + '/img/emf.png'" class="iconPx"><br>
+	<span class="priceAmount">200$</span><br>
+	<<if $mc.money gte 200>>
+		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
+			<<set $equipment.emf to 4>>
+			<<set $mc.money -= 200>>
+		<</link>>@@<br>
+	<<else>>@@.mc-thoughts; I don't have enough money@@
+	<</if>>
+<</if>>
+</div>
+<div class="housecard">
+<<if $equipment.temperature eq 5>>
+	<img @src="setup.ImagePath + '/img/thermometr.png'" class="iconPx"><br>
+	<span class="priceAmount">100$</span><br>
+	<<if $mc.money gte 100>>
+		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
+			<<set $equipment.temperature to 4>>
+			<<set $mc.money -= 100>>
+		<</link>>@@<br>
+	<<else>>@@.mc-thoughts; I don't have enough money@@
+	<</if>>
+<</if>>
+</div>
+<div class="housecard">
+<<if $equipment.spiritbox eq 5>>
+	<img @src="setup.ImagePath + '/img/spiritbox.png'" class="iconPx"><br>
+	<span class="priceAmount">500$</span><br>
+	<<if $mc.money gte 500>>
+		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
+			<<set $equipment.spiritbox to 4>>
+			<<set $mc.money -= 500>>
+		<</link>>@@<br>
+	<<else>>@@.mc-thoughts; I don't have enough money@@
+	<</if>>
+<</if>>
+</div>
+<div class="housecard">
+<<if $equipment.gwb eq 5>>
+	<img @src="setup.ImagePath + '/img/gwb.png'" class="iconPx"><br>
+	<span class="priceAmount">400$</span><br>
+	<<if $mc.money gte 400>>
+		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
+			<<set $equipment.gwb to 4>>
+			<<set $mc.money -= 400>>
+		<</link>>@@<br>
+	<<else>>@@.mc-thoughts; I don't have enough money@@
+	<</if>>
+<</if>>
+</div>
+<div class="housecard">
+<<if $equipment.glass eq 5>>
+	<img @src="setup.ImagePath + '/img/glass.png'" class="iconPx"><br>
+	<span class="priceAmount">300$</span><br>
+	<<if $mc.money gte 300>>
+		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
+			<<set $equipment.glass to 4>>
+			<<set $mc.money -= 300>>
+		<</link>>@@<br>
+	<<else>>@@.mc-thoughts; I don't have enough money@@
+	<</if>>
+<</if>>
+</div>
+<div class="housecard">
+<<if $equipment.uvl eq 5>>
+	<img @src="setup.ImagePath + '/img/uvl.png'" class="iconPx"><br>
+	<span class="priceAmount">400$</span><br>
+	<<if $mc.money gte 400>>
+		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
+			<<set $equipment.uvl to 4>>
+			<<set $mc.money -= 400>>
+		<</link>>@@<br>
+	<<else>>@@.mc-thoughts; I don't have enough money@@
+	<</if>>
+<</if>>
+</div>
+<div class="housecard">
+<<if $boughtMonkeyPawGuide eq 1>>
+	<img @src="setup.ImagePath + '/cursedpossessions/monkeyPaw/monkeypawPage.jpg'" class="iconPx"><br>
+	<span class="priceAmount">400$</span><br>
+	<<if $mc.money gte 400>>
+		@@.buyItemLink;<<link "Buy" "WitchSale">>
+			<<run setup.Witch.unlockMonkeyPawWishes()>>
+		<</link>>@@<br>
+	<<else>>@@.mc-thoughts; I don't have enough money@@
+	<</if>>
+<</if>>
+</div>
+<div class="housecard">
+<<if ndef $boughtDetector>>
+	<img @src="setup.ImagePath + '/img/detector.png'" class="iconPx"><br>
+	<span class="priceAmount">200$</span><br>
+	<<if $mc.money gte 200>>
+		@@.buyItemLink;<<link "Buy" "WitchSale">>
+			<<set $boughtDetector to 1>>
+			<<set $mc.money -= 200>>
+		<</link>>@@<br>
+	<<else>>@@.mc-thoughts; I don't have enough money@@
+	<</if>>
+<</if>>
+</div>
+<div class="housecard">
+
+</div>
+<div class="housecard">
+
+</div>
+<<ghostInfoCard "ghostJinnInfoCollected" "Jinn">>
+<<ghostInfoCard "ghostDeogenInfoCollected" "Deogen">>
+<<ghostInfoCard "ghostDemonInfoCollected" "Demon">>
+<<ghostInfoCard "ghostPhantomInfoCollected" "Phantom">>
+<<ghostInfoCard "ghostShadeInfoCollected" "Shade">>
+<<ghostInfoCard "ghostGoryoInfoCollected" "Goryo">>
+<<ghostInfoCard "ghostOniInfoCollected" "Oni">>
+<<ghostInfoCard "ghostMylingInfoCollected" "Myling">>
+<<ghostInfoCard "ghostSpiritInfoCollected" "Spirit">>
+<<ghostInfoCard "ghostCthulionInfoCollected" "Cthulion">>
+<<ghostInfoCard "ghostBansheeInfoCollected" "Banshee">>
+<<ghostInfoCard "ghostMoroiInfoCollected" "Moroi">>
+<<ghostInfoCard "ghostWraithInfoCollected" "Wraith">>
+<<ghostInfoCard "ghostRaijuInfoCollected" "Raiju">>
+</div>
+<br>
+@@.backbtn;[[Back|WitchInside]]@@ <br>

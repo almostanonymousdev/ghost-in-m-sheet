@@ -1,0 +1,21 @@
+:: TentaclesEventTV [nobr] {"position":"1000,4300","size":"100,100"}
+<<set $gotCursedItemEventCD to 0>>
+<img @src="setup.ImagePath + '/tentacles/tv1.jpg'" width="100%"><br>
+@@.mc-thoughts; You're sitting in front of the TV, trying to kill time@@<br><br>
+<span id="tentaclesEventTVHidOpt">@@.usebtn; [[Leave|Livingroom]]@@ or </span><<linkreplace "@@.usebtn; Masturbate@@">>
+	<<replace "#tentaclesEventTVHidOpt">>
+	<</replace>>
+	<video autoplay controls muted loop>
+	<source @src="setup.ImagePath + '/tentacles/tv2.mp4'" type="video/mp4">
+	</video>
+	@@.mc-thoughts; You start rubbing your pussy with your hand, sinking into sensual pleasure, each arousing touch making you@@<br>
+	<<linkappend "@@.usebtn; moan with delight.@@">>
+		<img @src="setup.ImagePath + '/tentacles/tv3.jpg'" width="100%"><br>
+		@@.mc-thoughts;Suddenly, as if by magic, tentacles appear on you, slick and flexible, as if they've been waiting for this moment.@@<br>
+		<<if $tentaclesEventStageAll gte 2>>
+			@@.usebtn; [[Let them fuck you|TentaclesEventTV1]]@@ or @@.usebtn; [[Run away|Livingroom]]@@
+		<<else>>
+			@@.usebtn; [[Run away|Livingroom][$tentaclesEventPCText to 1]]@@<br>
+		<</if>>
+	<</linkappend>>
+<</linkreplace>>

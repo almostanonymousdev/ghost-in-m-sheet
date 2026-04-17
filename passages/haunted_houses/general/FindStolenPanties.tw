@@ -1,0 +1,21 @@
+:: FindStolenPanties [nobr] {"position":"3975,1175","size":"100,100"}
+<<if $rememberBottomUnder eq "nopanties0">>
+	<<set $rememberBottomUnder to "panties0">>
+<<set $pantiesState0 to "worn">><</if>>
+
+<<if $rememberBottomUnder eq "nopanties1">>
+	<<set $rememberBottomUnder to "panties1">>
+	<<set $mc.beauty +=2>>
+<<set $pantiesState1 to "worn">><</if>>
+
+<<if $rememberBottomUnder eq "nopanties2">>
+	<<set $rememberBottomUnder to "panties2">>
+	<<set $mc.beauty +=4>>
+<<set $pantiesState2 to "worn">><</if>>
+
+<<if $rememberBottomUnder eq "nopanties3">>
+	<<set $rememberBottomUnder to "panties3">>
+	<<set $mc.beauty +=6>>
+<<set $pantiesState3 to "worn">><</if>>
+
+<<set $isPantiesStolen to 0>>

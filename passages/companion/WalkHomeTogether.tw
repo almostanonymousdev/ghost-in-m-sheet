@@ -5,7 +5,7 @@
 	@@.notmc-speech; I have a strange feeling. Like something is following us...@@<br>
 	@@.mc-speech;I didn't see anyone. Maybe you should stay at my place then?@@<br>
 	@@.notmc-speech; Yes, if you don't mind.@@<br><br>
-	@@.backbtn; [[Sleep together|ghostSpecialEventSpirit]]@@
+	@@.backbtn; [[Sleep together|GhostSpecialEventSpirit]]@@
 <<else>>
 	<<if $companion.name eq "Brook">>
 		<<if $companion.lust gte 50>>
@@ -92,7 +92,7 @@
 					<<set $mc.corruption += 0.1>>
 					+0.1 <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">
 				<</if>><br>
-				@@.mc-speech;Yeah~Do you want to [[take a shower|aliceContinue]] with me?@@<br> <b>or</b> <br>
+				@@.mc-speech;Yeah~Do you want to [[take a shower|AliceContinue]] with me?@@<br> <b>or</b> <br>
 				@@.mc-speech; I'm really tired already. I think I need to get some [[sleep|Sleep]].@@<br>
 			<</linkappend>>
 		<<else>>
@@ -131,7 +131,7 @@
 						<</if>>
 					<</replace>>
 				<</link>>
-				until you both [[cum at the same time.|blakeContinue]]@@<br>
+				until you both [[cum at the same time.|BlakeContinue]]@@<br>
 			<</linkappend>>
 		<<else>>
 			<img @src="setup.ImagePath + '/img/mchouse.jpg'" width="100%">

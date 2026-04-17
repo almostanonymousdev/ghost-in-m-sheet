@@ -1,121 +1,121 @@
-:: elmBasement [hauntedhouse elmBasement] {"position":"2150,450","size":"100,100"}
-<<nobr>><<roomShell "elmBasement" "basement">>
+:: ElmBasement [hauntedhouse elmBasement] {"position":"2150,450","size":"100,100"}
+<<nobr>><<roomShell "ElmBasement" "basement">>
 <<furnitureRow>>
 <<furnitureItem "table.png" "basement_table">>
 <<furnitureItem "shelves.png" "basement_shelves">>
 <</furnitureRow>>
 <<roomFooter>>
-<<navLink "hallway" "elmHallway">>
+<<navLink "hallway" "ElmHallway">>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
 
-:: elmBathroom [hauntedhouse elmBathroom] {"position":"2150,550","size":"100,100"}
-<<nobr>><<roomShell "elmBathroom" "bathroom">>
+:: ElmBathroom [hauntedhouse elmBathroom] {"position":"2150,550","size":"100,100"}
+<<nobr>><<roomShell "ElmBathroom" "bathroom">>
 <<furnitureRow>>
 <<furnitureItem "sink.png" "bathroom_sink">>
 <<furnitureItem "bathtub.png" "bathroom_bathtub">>
 <<furnitureItem "wmachine.png" "bathroom_wmachine">>
 <</furnitureRow>>
 <<roomFooter>>
-<<navLink "hallway" "elmHallway">>
+<<navLink "hallway" "ElmHallway">>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
 
-:: elmBathroomTwo [hauntedhouse elmBathroomTwo] {"position":"2250,550","size":"100,100"}
-<<nobr>><<roomShell "elmBathroomTwo" "bathroomTwo">>
+:: ElmBathroomTwo [hauntedhouse elmBathroomTwo] {"position":"2250,550","size":"100,100"}
+<<nobr>><<roomShell "ElmBathroomTwo" "bathroomTwo">>
 <<furnitureRow>>
 <<furnitureItem "sink.png" "bathroomTwo_sink">>
 <<furnitureItem "carpet.png" "bathroomTwo_carpet">>
 <</furnitureRow>>
 <<roomFooter>>
-<<navLink "hallway" "elmHallwayUpstairs">>
+<<navLink "hallway" "ElmHallwayUpstairs">>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
 
-:: elmBedroom [hauntedhouse elmBedroom] {"position":"2150,650","size":"100,100"}
-<<nobr>><<roomShell "elmBedroom" "bedroom">>
+:: ElmBedroom [hauntedhouse elmBedroom] {"position":"2150,650","size":"100,100"}
+<<nobr>><<roomShell "ElmBedroom" "bedroom">>
 <<furnitureRow>>
-<<hideSpot "elmBedroom" "bed1.png" "bedroom_bed1">>
+<<hideSpot "ElmBedroom" "bed1.png" "bedroom_bed1">>
 <<furnitureItem "table.png" "bedroom_table">>
 <<furnitureItem "wardrobe1.png" "bedroom_wardrobe1">>
 <</furnitureRow>>
 <<roomFooter>>
-<<navLink "hallway" "elmHallway">>
+<<navLink "hallway" "ElmHallway">>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
 
-:: elmBedroomTwo [hauntedhouse elmBedroomTwo] {"position":"2250,650","size":"100,100"}
-<<nobr>><<roomShell "elmBedroomTwo" "bedroomTwo">>
+:: ElmBedroomTwo [hauntedhouse elmBedroomTwo] {"position":"2250,650","size":"100,100"}
+<<nobr>><<roomShell "ElmBedroomTwo" "bedroomTwo">>
 <<furnitureRow>>
 <<furnitureItem "table.png" "bedroomTwo_table">>
 <<furnitureItem "bed2.png" "bedroomTwo_bed2">>
 <<furnitureItem "shelves.png" "bedroomTwo_shelves">>
 <</furnitureRow>>
 <<roomFooter>>
-<<navLink "hallway" "elmHallwayUpstairs">>
+<<navLink "hallway" "ElmHallwayUpstairs">>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
 
-:: elmHallway [hauntedhouse elmHallway] {"position":"2250,750","size":"100,100"}
-<<nobr>><<roomShell "elmHallway" "hallway">>
+:: ElmHallway [hauntedhouse elmHallway] {"position":"2250,750","size":"100,100"}
+<<nobr>><<roomShell "ElmHallway" "hallway">>
 <<furnitureRow>>
 <<furnitureItem "carpet.png" "hallway_carpet">>
 <<furnitureItem "coatrack.png" "hallway_coatrack">>
 <</furnitureRow>>
 <<roomFooter>>
-<<navLink "bedroom" "elmBedroom">>
-<<navLink "bathroom" "elmBathroom">>
-<<navLink "kitchen" "elmKitchen">>
-<<navLink "upstairs" "elmHallwayUpstairs">>
-<<navLink "basement" "elmBasement">>
+<<navLink "bedroom" "ElmBedroom">>
+<<navLink "bathroom" "ElmBathroom">>
+<<navLink "kitchen" "ElmKitchen">>
+<<navLink "upstairs" "ElmHallwayUpstairs">>
+<<navLink "basement" "ElmBasement">>
 <br>
 <<leaveLink "leave" "Elm Street">>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
 
-:: elmHallwayUpstairs [hauntedhouse elmHallwayUpstairs] {"position":"2150,850","size":"100,100"}
-<<nobr>><<roomShell "elmHallwayUpstairs" "hallwayUpstairs">>
+:: ElmHallwayUpstairs [hauntedhouse elmHallwayUpstairs] {"position":"2150,850","size":"100,100"}
+<<nobr>><<roomShell "ElmHallwayUpstairs" "hallwayUpstairs">>
 <<furnitureRow>>
 <<furnitureItem "carpet.png" "hallwayUpstairs_carpet">>
 <<furnitureItem "shelves.png" "hallwayUpstairs_shelves">>
 <</furnitureRow>>
 <<roomFooter>>
-<<navLink "downstairs" "elmHallway">>
-<<navLink "bathroom" "elmBathroomTwo">>
-<<navLink "bedroom" "elmBedroomTwo">>
-<<navLink "nursery" "elmNursery">>
+<<navLink "downstairs" "ElmHallway">>
+<<navLink "bathroom" "ElmBathroomTwo">>
+<<navLink "bedroom" "ElmBedroomTwo">>
+<<navLink "nursery" "ElmNursery">>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
 
-:: elmKitchen [hauntedhouse elmKitchen] {"position":"2250,450","size":"100,100"}
-<<nobr>><<roomShell "elmKitchen" "kitchen">>
+:: ElmKitchen [hauntedhouse elmKitchen] {"position":"2250,450","size":"100,100"}
+<<nobr>><<roomShell "ElmKitchen" "kitchen">>
 <<furnitureRow>>
 <<furnitureItem "sink1.png" "kitchen_sink1">>
 <<furnitureItem "table.png" "kitchen_table">>
 <<furnitureItem "desk.png" "kitchen_desk">>
 <</furnitureRow>>
 <<roomFooter>>
-<<navLink "hallway" "elmHallway">>
+<<navLink "hallway" "ElmHallway">>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
 
-:: elmNursery [hauntedhouse elmNursery] {"position":"2150,750","size":"100,100"}
-<<nobr>><<roomShell "elmNursery" "nursery">>
+:: ElmNursery [hauntedhouse elmNursery] {"position":"2150,750","size":"100,100"}
+<<nobr>><<roomShell "ElmNursery" "nursery">>
 <<furnitureRow>>
 <<furnitureItem "desk.png" "nursery_desk">>
 <<furnitureItem "table.png" "nursery_table">>
-<<hideSpot "elmNursery" "bed.png" "nursery_bed">>
+<<hideSpot "ElmNursery" "bed.png" "nursery_bed">>
 <</furnitureRow>>
 <<roomFooter>>
-<<navLink "hallway" "elmHallwayUpstairs">>
+<<navLink "hallway" "ElmHallwayUpstairs">>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>

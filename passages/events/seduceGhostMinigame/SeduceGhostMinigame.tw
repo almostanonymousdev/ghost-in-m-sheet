@@ -1,0 +1,31 @@
+:: SeduceGhostMinigame [nobr noreturn] {"position":"1000,3900","size":"100,100"}
+<div id="minigame_mainvideo">
+<<seduceGhostMinigameVideo>>
+
+<b> <<if $ghostOrgasmMeter lte 0>><<set $ghostOrgasmMeter to 0>>
+<</if>>
+Ghost's Arousal: $ghostOrgasmMeter |  <<if $mcOrgasmMeter lte 0>><<set $mcOrgasmMeter to 0>>
+<</if>>Your Arousal:  $mcOrgasmMeter <br> </b>
+</div>
+<div id="minigame_text">
+<<if $minigameEventFailed eq 1>>
+	@@.warningtext; FAILED @@<br>
+<<elseif $minigameEventFailed eq 0>>
+	@@color:green; SUCCEED@@<br>
+<<else>>
+<</if>>
+
+<<seduceGhostMinigameText>>
+
+</div>
+<div id="minigame_menu">
+<<if $ghostOrgasmMeter gte 100>>
+	<br>
+	@@.usebtn; [[Continue investigating|$return][$isWeakenGhost to 1; $moneyFromWeakenTheGhost to 30]]@@
+<<elseif $mcOrgasmMeter gte 100>>
+	<br>
+	@@.usebtn; [[You're passing out|HuntEnd]]@@
+<<else>>
+	<<seduceGhostMinigameMenu>>
+<</if>>
+</div>

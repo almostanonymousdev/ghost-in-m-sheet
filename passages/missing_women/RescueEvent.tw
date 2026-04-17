@@ -1,0 +1,13 @@
+:: RescueEvent [nobr] {"position":"2175,1800","size":"100,100"}
+<<if setup.MissingWomen.rescueEventAuto()>>
+	<<include "RescueSuccess">>
+<<elseif setup.MissingWomen.rescueEventRolls()>>
+	<<if setup.MissingWomen.rollRescueSuccess()>>
+		<<include "RescueSuccess">>
+	<<else>>
+		<<include "RescuePossessed">>
+	<</if>>
+<<else>>
+	<<include "RescuePossessed">>
+<</if>>
+<<set $rescueQuestCD to 1>>

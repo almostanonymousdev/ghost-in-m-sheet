@@ -16,7 +16,7 @@
 	<<unset $summonText>>
 <</if>>
 <<if setup.Home.canSummonForExorcism()>>
-	@@.enterbtn; [[Summon the ghost|summoning]]@@<br>
+	@@.enterbtn; [[Summon the ghost|Summoning]]@@<br>
 <<elseif setup.Home.exorcismOnCooldown()>>
 	@@.mc-thoughts; Enough for today...@@<br>
 <</if>>
@@ -75,10 +75,10 @@
 			@@.mc-speech; I feel unwell... strange, I need to find out what's happening to me. In this condition, it will be much harder for me to hunt ghosts.@@<br>
 		<</if>>
 	<</if>>
-	@@.enterbtn;[[Wardrobe|wardrobe]]@@ <br>
+	@@.enterbtn;[[Wardrobe|Wardrobe]]@@ <br>
 	@@.enterbtn;[[Bathroom]]@@<br>
 	<<if setup.CursedItems.isItemCursed("bed")>>
-		@@.usebtn;<<link "Sleep (8 hours)" "cursedBedEvent">>
+		@@.usebtn;<<link "Sleep (8 hours)" "CursedBedEvent">>
 		<</link>>@@<br>
 	<<else>>
 		@@.usebtn;[[Sleep (8 hours)|Sleep]]@@<br>
@@ -88,9 +88,9 @@
 		<<if $mc.energy lt $mc.energyMax>>
 		<<set $mc.energy += 1>><</if>>
 		<<if setup.Home.spiritNapEventReady()>>
-			<<goto "ghostSpecialEventNapSpirit">>
+			<<goto "GhostSpecialEventNapSpirit">>
 		<<elseif setup.Home.tentaclesNapEventReady()>>
-			<<goto "tentaclesEventNap">>
+			<<goto "TentaclesEventNap">>
 		<</if>>
 	<</link>>@@<span><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span><br>
 	<<if setup.Home.canUseHolyWaterOnMare()>>

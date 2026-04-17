@@ -15,11 +15,11 @@ test.describe('Clothing — Purchase and Beauty', () => {
   test('purchasing jeans1 deducts $30 and sets state to "not worn"', async () => {
     await setVar(page, 'mc.money', 200);
     const startBeauty = await getVar(page, 'mc.beauty');
-    await goToPassage(page, 'clothingSection');
+    await goToPassage(page, 'ClothingSection');
     const buyLink = page.locator('.buyItemLink a').first();
 
     await buyLink.click();
-    await page.waitForFunction(() => SugarCube.State.passage === 'clothingSection');
+    await page.waitForFunction(() => SugarCube.State.passage === 'ClothingSection');
 
     expect(await getVar(page, 'mc.money')).toBe(200 - 30);
     expect(await getVar(page, 'jeansState1')).toBe('not worn');
@@ -38,11 +38,11 @@ test.describe('Clothing — Purchase and Beauty', () => {
     await setVar(page, 'skirtState2', 'not worn');
     await setVar(page, 'skirtState3', 'not worn');
 
-    await goToPassage(page, 'clothingSection');
+    await goToPassage(page, 'ClothingSection');
     const buyLink = page.locator('.buyItemLink a').first();
 
     await buyLink.click();
-    await page.waitForFunction(() => SugarCube.State.passage === 'clothingSection');
+    await page.waitForFunction(() => SugarCube.State.passage === 'ClothingSection');
 
     expect(await getVar(page, 'mc.money')).toBe(500 - 30);
     expect(await getVar(page, 'tshirtState1')).toBe('not worn');
@@ -50,7 +50,7 @@ test.describe('Clothing — Purchase and Beauty', () => {
 
   test('cannot purchase clothing when money is insufficient', async () => {
     await setVar(page, 'mc.money', 5);
-    await goToPassage(page, 'clothingSection');
+    await goToPassage(page, 'ClothingSection');
 
     const buyLinks = page.locator('.buyItemLink a');
     await expect(buyLinks).toHaveCount(0);
@@ -61,7 +61,7 @@ test.describe('Clothing — Purchase and Beauty', () => {
     await setVar(page, 'mc.money', 1000);
     await setVar(page, 'jeansState1', 'not worn');
 
-    await goToPassage(page, 'clothingSection');
+    await goToPassage(page, 'ClothingSection');
     const buyLinks = page.locator('.buyItemLink a');
     const count = await buyLinks.count();
     expect(count).toBeLessThan(22);
@@ -73,13 +73,13 @@ test.describe('Clothing — Purchase and Beauty', () => {
     await setVar(page, 'rememberBottomOuter', 'nojeans0');
     const startBeauty = await getVar(page, 'mc.beauty');
 
-    await goToPassage(page, 'wardrobe');
+    await goToPassage(page, 'Wardrobe');
 
     const jeans1Link = page.locator('#availableOuterwear a', {
       has: page.locator('img[src*="jeans1"]'),
     });
     await jeans1Link.click();
-    await page.waitForFunction(() => SugarCube.State.passage === 'wardrobe');
+    await page.waitForFunction(() => SugarCube.State.passage === 'Wardrobe');
 
     expect(await getVar(page, 'jeansState1')).toBe('worn');
     expect(await getVar(page, 'mc.beauty')).toBe(startBeauty + 5);
@@ -91,13 +91,13 @@ test.describe('Clothing — Purchase and Beauty', () => {
     await setVar(page, 'rememberTopUnder', 'nobra0');
     const startBeauty = await getVar(page, 'mc.beauty');
 
-    await goToPassage(page, 'wardrobe');
+    await goToPassage(page, 'Wardrobe');
 
     const bra1Link = page.locator('#availableClothes a', {
       has: page.locator('img[src*="slip2"]'),
     });
     await bra1Link.click();
-    await page.waitForFunction(() => SugarCube.State.passage === 'wardrobe');
+    await page.waitForFunction(() => SugarCube.State.passage === 'Wardrobe');
 
     expect(await getVar(page, 'braState1')).toBe('worn');
     expect(await getVar(page, 'mc.beauty')).toBe(startBeauty + 2);
@@ -110,13 +110,13 @@ test.describe('Clothing — Purchase and Beauty', () => {
     await setVar(page, 'rememberBottomOuter', 'jeans1');
     await setVar(page, 'mc.beauty', 35);
 
-    await goToPassage(page, 'wardrobe');
+    await goToPassage(page, 'Wardrobe');
 
     const jeans2Link = page.locator('#availableOuterwear a', {
       has: page.locator('img[src*="jeans2"]'),
     });
     await jeans2Link.click();
-    await page.waitForFunction(() => SugarCube.State.passage === 'wardrobe');
+    await page.waitForFunction(() => SugarCube.State.passage === 'Wardrobe');
 
     expect(await getVar(page, 'jeansState2')).toBe('worn');
     expect(await getVar(page, 'jeansState1')).toBe('not worn');

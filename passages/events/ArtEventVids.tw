@@ -1,0 +1,84 @@
+:: ArtEventVids [nobr] {"position":"1650,950","size":"100,100"}
+<<if $ghost.name eq "Oni">>
+	<<set $ghostSanityEventDecreased to random(3,8)>>
+<<else>>
+<<set $ghostSanityEventDecreased to random(1,5)>><</if>>
+<<if previous() is "EnigmaHallway">>
+	<<if $hallway.background eq 1>>
+		<<include "StyleEnigmaHallwayLight">>
+	<<elseif $hallway.background eq 2>>
+		<<include "StyleEnigmaHallwayDark">>
+	<</if>>
+
+<<elseif previous() is "EnigmaBedroom">>
+	<<if $bedroom.background eq 1>>
+		<<include "StyleEnigmaBedroomLight">>
+	<<elseif $bedroom.background eq 2>>
+		<<include "StyleEnigmaBedroomDark">>
+	<</if>>
+<<elseif previous() is "EnigmaLivingroom">>
+	<<if $livingroom.background eq 1>>
+		<<include "StyleEnigmaLivingroomLight">>
+	<<elseif $livingroom.background eq 2>>
+		<<include "StyleEnigmaLivingroomDark">>
+	<</if>>
+<<elseif previous() is "EnigmaKitchen">>
+	<<if $kitchen.background eq 1>>
+		<<include "StyleEnigmaKitchenLight">>
+	<<elseif $kitchen.background eq 2>>
+		<<include "StyleEnigmaKitchenDark">>
+	<</if>>
+
+<<elseif previous() is "EnigmaBathroom">>
+	<<if $bathroom.background eq 1>>
+		<<include "StyleEnigmaBathroomLight">>
+	<<elseif $bathroom.background eq 2>>
+		<<include "StyleEnigmaBathroomDark">>
+	<</if>>
+<<elseif previous() is "EnigmaBasement">>
+	<<if $basement.background eq 1>>
+		<<include "StyleEnigmaBasementLight">>
+	<<elseif $basement.background eq 2>>
+		<<include "StyleEnigmaBasementDark">>
+	<</if>>
+<<elseif previous() is "EnigmaRoomA">>
+	<<if $roomA.background eq 1>>
+		<<include "StyleEnigmaRoomALight">>
+	<<elseif $roomA.background eq 2>>
+		<<include "StyleEnigmaRoomADark">>
+	<</if>>
+<<elseif previous() is "EnigmaRoomB">>
+	<<if $roomB.background eq 1>>
+		<<include "StyleEnigmaRoomBLight">>
+	<<elseif $roomB.background eq 2>>
+		<<include "StyleEnigmaRoomBDark">>
+	<</if>>
+<<elseif previous() is "EnigmaRoomC">>
+	<<if $roomC.background eq 1>>
+		<<include "StyleEnigmaRoomCLight">>
+	<<elseif $roomC.background eq 2>>
+		<<include "StyleEnigmaRoomCDark">>
+	<</if>>
+<</if>>
+
+<video autoplay controls muted loop>
+<source @src="setup.ImagePath+`/`+$artVideoEvent" type="video/mp4">
+</video><br>
+<<set $EmfActivated to 1>>
+<<set $EmfActivationTime = $hours * 60 + $minutes>>
+<<set $uvlActivated to 1>>
+<<set $uvlActivationTime = $hours * 60 + $minutes>>
+
+<<if ($mc.sanity >= 1 and $mc.sanity < 50)>>
+	@@.mc-thoughts; Something appeared and immediately grabbed you. It happened so quickly that in a moment you already feel a huge dick inside you. All this seemed illusory, but the feelings received from penetration into your holes were more than real. <br>The ghost hunter herself became a victim of a ghost. All you can do is moan from such injustice... or from pleasure@@<br>@@.mc-speech; AHh~ You can't do this to me ~Ohh~ please...@@<br>
+
+	<<if $mc.energy gte 2>>@@.usebtn;[[Run away|previous()][$mc.energy -= 2]]@@<span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span><<else>>
+		@@.mc-thoughts; I'm too tired@@
+		<span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; filter: grayscale(1); width:3%;"></span>
+	<</if>>
+	or @@.usebtn;[[Stay|previous()][$mc.sanity -=$ghostSanityEventDecreased]]@@ <span>-<img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%;"></span>
+
+<</if>>
+<<done>>
+	<<addclass ".linkselector" "disabled-link">>
+<</done>>

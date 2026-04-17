@@ -8,10 +8,10 @@
 <<if not setup.Mall.isOpen()>>
 	@@.mc-thoughts;The mall is not open right now (open from 8 AM to 10 PM)@@
 <<else>>
-	@@.enterbtn;[[Clothing section|clothingSection]]@@<br>
-	@@.enterbtn;[[General merchandise|generalSection]]@@<br>
-	@@.enterbtn;[[Electronics section|electronicsSection]]@@<br>
-	@@.enterbtn;[[Adult section|adultSection]]@@<br>
+	@@.enterbtn;[[Clothing section|ClothingSection]]@@<br>
+	@@.enterbtn;[[General merchandise|GeneralSection]]@@<br>
+	@@.enterbtn;[[Electronics section|ElectronicsSection]]@@<br>
+	@@.enterbtn;[[Adult section|AdultSection]]@@<br>
 <</if>>
 <br>
 <br>

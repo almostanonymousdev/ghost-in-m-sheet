@@ -1,4 +1,4 @@
-:: deliveryHouse [nobr] {"position":"800,1600","size":"100,100"}
+:: DeliveryHouse [nobr] {"position":"800,1600","size":"100,100"}
 <<set _house to $currentHouse>>
 <<set _img to setup.deliveryHouses[_house]>>
 <<set _sp to _house.lastIndexOf(" ")>>
@@ -15,7 +15,7 @@
 		<<set _slotClass to (_slot eq 1 ? "itemAvailableOne" : (_slot eq 2 ? "itemAvailableTwo" : "itemAvailableThree"))>>
 		<div @class="_slotClass">
 		<img @src="setup.ImagePath + '/' + _order.image" class="iconPx"><br>
-		@@.usebtn;<<link "Deliver the order">><<set $currentOrder to _slot>><<goto "deliveryEvent">>
+		@@.usebtn;<<link "Deliver the order">><<set $currentOrder to _slot>><<goto "DeliveryEvent">>
 		<</link>>@@<br>
 		</div>
 	<</capture>>
@@ -24,7 +24,7 @@
 <br>
 @@.backbtn;[[Leave|DeliveryMap]] @@
 
-:: deliveryEvent [event nobr] {"position":"800,1600","size":"100,100"}
+:: DeliveryEvent [event nobr] {"position":"800,1600","size":"100,100"}
 <<set _orderNum to $currentOrder>>
 <<set _order to State.variables["order" + _orderNum]>>
 <<set _iconVar to "deliveryActiveIcon" + _orderNum>>
@@ -38,7 +38,7 @@
 	<<case "package">><<include "DeliveryPackageEventChoose">>
 	<<case "burgers">><<include "DeliveryBurgerEventChoose">>
 	<<case "newspapers">><<include "DeliveryPapersEventChoose">>
-	<<case "books">><<if ndef $meetAlice>><<include "meetAlice">>
+	<<case "books">><<if ndef $meetAlice>><<include "MeetAlice">>
 	<<else>><<deliveryGenericSuccess>><</if>>
 	<<default>><<deliveryGenericSuccess>>
 	<</switch>>
@@ -56,8 +56,8 @@
 <br>
 <<addTime `setup.Delivery.getDeliveryTime()`>>
 
-:: deliveryActiveIcon {"position":"1100,1100","size":"100,100"}
-<<if passage() is "deliveryHouse">>
+:: DeliveryActiveIcon {"position":"1100,1100","size":"100,100"}
+<<if passage() is "DeliveryHouse">>
 <<set _slotClasses to [".itemAvailableOne", ".itemAvailableTwo", ".itemAvailableThree"]>>
 <<for _i to 0; _i lt 3; _i++>>
 <<set _cls to _slotClasses[_i]>>
@@ -71,7 +71,7 @@
 <</for>>
 <</if>>
 
-:: endShiftDelivery [nobr] {"position":"1200,1200","size":"100,100"}
+:: EndShiftDelivery [nobr] {"position":"1200,1200","size":"100,100"}
 <<for _i to 1; _i lte 3; _i++>>
 	<<set State.variables["deliveryActiveIcon" + _i] to true>>
 <</for>>
@@ -96,7 +96,7 @@ Earned during the shift: $earnedMoney $
 <<set $mc.energy -= 2>>
 <<set $earnedMoney to 0>>
 
-:: deliveryAutoDeliver [nobr] {"position":"800,1700","size":"100,100"}
+:: DeliveryAutoDeliver [nobr] {"position":"800,1700","size":"100,100"}
 <<set _house to $currentHouse>>
 <<set _foundOrder to false>>
 <<set _orderNum to 0>>
@@ -109,7 +109,7 @@ Earned during the shift: $earnedMoney $
 <</for>>
 <<if _foundOrder>>
 	<<set $currentOrder to _orderNum>>
-	<<goto "deliveryEvent">>
+	<<goto "DeliveryEvent">>
 <<else>>
 	<<set _img to setup.deliveryHouses[_house]>>
 	<<set _sp to _house.lastIndexOf(" ")>>

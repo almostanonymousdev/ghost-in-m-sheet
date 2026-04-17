@@ -1,0 +1,55 @@
+:: RescueTaskBoard [nobr] {"position":"2075,1700","size":"100,100"}
+<<if ndef $rescueCD>>
+	<<set $rescueCD to 0>>
+<</if>>
+<<if ndef $rescueQuestCD>>
+	<<set $rescueQuestCD to 0>>
+<</if>>
+<<set $rescueGirls to [
+{name: "Victoria", img: "rescue/Victoria.jpg"},
+{name: "Julia", img: "rescue/Julia.jpg"},
+{name: "Jade", img: "rescue/Jade.jpg"},
+{name: "Nadia", img: "rescue/Nadia.jpg"},
+{name: "Ash", img: "rescue/Ash.jpg"},
+]>>
+<<if not setup.MissingWomen.boardOnCooldown()>>
+	<<if $rescueCD eq 0>>
+		<<set $rescueCD to 1>>
+		<<set $rescueRandomGirls to []>>
+		<<set _index1 to random(0, $rescueGirls.length - 1)>>
+		<<set _girl1 to $rescueGirls[_index1]>>
+		<<set $rescueRandomGirls.push(_girl1)>>
+		<<set _remainingGirls to $rescueGirls.filter((g, i) => i != _index1)>>
+		<<set _index2 to random(0, _remainingGirls.length - 1)>>
+		<<set _girl2 to _remainingGirls[_index2]>>
+		<<set $rescueRandomGirls.push(_girl2)>>
+	<</if>>
+	<<if setup.MissingWomen.boardPostingsOutToday() and setup.MissingWomen.isQuestAvailable()>>
+		<div class="flexwrapper addGap5">
+		<<for _girl range $rescueRandomGirls>>
+			<<capture _girl>>
+				<div class="housecard">
+				<img @src="setup.ImagePath+`/`+_girl.img" class="contactsImages">
+				<<print _girl.name>><br>
+				@@.usebtn; <<link "Take" "Church">>
+					<<set $currentRescueGirl to _girl.name>>
+					<<set $hasQuestForRescue to 1>>
+					<<set $rescueStage to 0>>
+				<<include "RandomizeRescueHouse">><</link>>@@
+				</div>
+			<</capture>>
+		<</for>>
+		</div>
+	<<elseif setup.MissingWomen.hasActiveQuest()>>
+		@@.mc-speech; I've already taken the missing poster for $currentRescueGirl, I need to find her first.@@<br>
+	<<elseif setup.MissingWomen.isQuestAvailable()>>
+		@@.mc-speech; The nun said that the missing posters appear in the evening, around 6 PM.@@<br>
+	<<elseif setup.MissingWomen.mustReturnToNun()>>
+		@@.mc-speech;First, I need to go see the nun. She should be at the church. @@
+	<</if>>
+<<else>>
+	@@.mc-speech; Enough for today.@@<br>
+<</if>>
+<br>
+<br>
+@@.backbtn; [[Back|Church]]@@ <br>

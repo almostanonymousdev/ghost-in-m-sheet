@@ -1,7 +1,0 @@
-:: stealClothesEvent [nobr] {"position":"4025,950","size":"100,100"}
-<<set _chanceToSteal to random(1,100)>>
-<<if _chanceToSteal lte $stealChance >>
-	<<if $braState eq "worn" or $pantiesState eq "worn" or setup.Companion.hasBottomWorn()>>
-		<<set _stealClothesTriggered = true>>
-	<<goto "stealClothes">><</if>>
-<</if>>

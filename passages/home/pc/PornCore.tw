@@ -5,7 +5,7 @@
 
 <<if $masturbationCD eq 0 or ndef $masturbationCD>>
 	<<if $gotCursedItem eq 1 and $gotCursedItemEventCD gte 2>>
-		@@.enterbtn;[[Watch porn|tentaclesEventPC]]@@<br>
+		@@.enterbtn;[[Watch porn|TentaclesEventPC]]@@<br>
 	<<else>>
 		@@.enterbtn;[[Watch porn|WatchPorn]]@@<br>
 	<</if>>

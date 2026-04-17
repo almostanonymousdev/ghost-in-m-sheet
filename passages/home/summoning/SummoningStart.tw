@@ -1,0 +1,83 @@
+:: SummoningStart [nobr] {"position":"600,2800","size":"100,100"}
+<<if $ghostSpiritEventStage eq 0>>
+	<img @src="setup.ImagePath + '/exorcism/spirit.jpg'" width="100%" class="displayCentredImgs"><br>
+	@@.mc-thoguhts; You start reading the words from the ancient book, your lips slowly forming each sound, each word like a whisper filling the room. You feel the energy growing around you, each syllable resonating in the air,@@ <<linkappend "@@.usebtn; calling something invisible@@">>
+		<img @src="setup.ImagePath + '/exorcism/spirit1.jpg'" width="100%" class="displayCentredImgs">
+		@@.mc-thoughts; You notice a figure appearing right behind you in the mirror reflection, its eyes filled with@@ @@.enterbtn;[[unnatural lust|SummonSpirit]]@@<br>
+	<</linkappend>>
+
+<<elseif $thetwinsevent eq 1>>
+	<img @src="setup.ImagePath + '/succubus/succubus.jpg'" width="100%" class="displayCentredImgs">
+	@@.mc-thoguhts; You start reading the words from the ancient book, your lips slowly forming each sound, each word like a whisper filling the room. You feel the energy growing around you, each syllable resonating in the air,@@ <<linkappend "@@.usebtn; calling something invisible@@">><br>
+		@@.mc-thoughts; But nothing happens@@<br>
+		@@.mc-speech; Did I do something wrong?@@<br>
+		@@.mc-thoughts; Suddenly, you feel a growing sense of weakness and fatigue. Barely reaching your bed, you fall into a deep@@ @@.enterbtn;[[sleep|SummonTwins]]@@
+	<</linkappend>>
+
+<<elseif $ghostMareEventStart neq 0>>
+	<img @src="setup.ImagePath + '/succubus/succubus.jpg'" width="100%" class="displayCentredImgs">
+	@@.mc-thoguhts; You start reading the words from the ancient book, your lips slowly forming each sound, each word like a whisper filling the room. You feel the energy growing around you, each syllable resonating in the air,@@ <<linkappend "@@.usebtn; calling something invisible@@">><br>
+		@@.mc-thoughts; But nothing happens@@<br>
+		@@.mc-speech; Did I do something wrong?@@<br>
+		@@.mc-thoughts; Suddenly, you feel a growing sense of weakness and fatigue. Barely reaching your bed, you fall into a deep@@ @@.enterbtn;[[sleep|SummonMare]]@@
+	<</linkappend>>
+
+<<elseif $gotCursedItem eq 1>>
+	<img @src="setup.ImagePath + '/exorcism/tentacles.jpg'" width="100%" class="displayCentredImgs">
+	@@.mc-thoguhts; You start reading the words from the ancient book, your lips slowly forming each sound, each word like a whisper filling the room. You feel the energy growing around you, each syllable resonating in the air,@@ <<linkappend "@@.usebtn; calling something invisible@@">><br>
+		@@.mc-thoughts; But nothing happens@@<br>
+		@@.mc-speech; Did I do something wrong?@@<br>
+		@@.mc-thoughts; Suddenly, you feel a growing sense of weakness and fatigue. Barely reaching your bed, you fall into a deep@@ @@.enterbtn;[[sleep|SummonTentacles]]@@
+	<</linkappend>>
+<<elseif $exorcismQuestStage eq 1>>
+	<img @src="setup.ImagePath + '/succubus/succubus0.jpg'" width="100%" class="displayCentredImgs">
+	@@.mc-thoughts; You speak the words of the summoning, and the air around you grows denser. From the darkness, the succubus emerges, her smile dripping with mockery and pleasure.@@<br>
+	@@color:red; Finally, you've reached me, my sweet. Decided to play the hunter, have you?@@<br>
+	@@.mc-thoughts; You begin to read the lines from the book, hoping to banish her, but nothing happens. The succubus just laughs, seeing your futile attempts.@@<br>
+	@@color:red; You naive thing! Do you think you can just banish me like that? You have no idea who you're dealing with, baby.@@<br>
+	@@.mc-speech; What do you think of yourself? I'll get rid of you like all the others!@@<br>
+	@@color:red; Oh, honey, you're so naive. I actually enjoy being here with you, especially when I can play with your pussy. Listen, I have a proposition: let's make a deal. I'll help you with your ghost hunts, or... I'll stay here and, trust me, I'll disrupt your life even more than before. But remember, I'll protect you from ghosts for five days after you summon me - I want to enjoy your slutty pussy and your tight ass. What do you say to that?@@<br>
+	@@.mc-speech; Why should I trust you?@@<br>
+	@@color:red; Because you have no choice, bitch. I can make your life hell or heaven, depending on your choice. And don't forget, I can fuck you whenever I want. So choose, work with me or I'll be your personal nightmare.@@<br>
+	@@.mc-speech; What if I agree?@@<br>
+	@@color:red; Then I can sometimes distract the ghosts from you during your hunts, so you don't get fucked into oblivion.@@<br>
+	@@.mc-speech; And if I don't?@@<br>
+	@@color:red; Then I'll fuck you every night until you beg for my attention. Choose, baby.@@<br><br>
+	<b>
+	<span id="succubusSummoningStartChoiceFirst">
+	<<linkreplace "@@.usebtn; Agree@@">>
+		<<replace "#succubusSummoningStartChoiceSecond">>
+		<</replace>>
+		<<replace "#summoningOr">>
+		<</replace>>
+		<<set $succubusEventTimer to 5>>
+		@@color:red; Great, just think of me when another ghost catches you and wants to fuck you. And now, I'm leaving.@@<br>
+		@@.mc-thoughts; The succubus disappeared.@@<br>
+		@@.mc-speech; I don't know... if this is the right choice...@@<br>
+		@@.mc-thoughts; The succubus will protect me from ghost attacks for 5 days during the ghost hunt. But I need to summon her to renew her "protection"@@<br><br>
+		@@.backbtn; [[Back|Bedroom][$exorcismQuestStage to 2; $succubus to 2]]@@<br>
+	<</linkreplace>>
+	</span>
+	<span id="summoningOr">or</span>
+	<span id="succubusSummoningStartChoiceSecond">
+	<<linkreplace "@@.usebtn; Disagree@@">>
+		<<replace "#succubusSummoningStartChoiceFirst">>
+		<</replace>>
+		<<replace "#summoningOr">>
+		<</replace>>
+		@@color:red; Well, sooner or later, you'll agree... So, we'll play with you for a while longer...@@<br>
+		@@.mc-thoughts; The succubus disappeared.@@<br>
+		@@.mc-speech; I don't know... if this is the right choice...@@<br><br>
+		@@.backbtn; [[Back|Bedroom]]@@<br>
+	<</linkreplace>>
+	</span>
+	</b>
+<<elseif $exorcismQuestStage eq 2>>
+	<img @src="setup.ImagePath + '/succubus/succubus0.jpg'" width="100%" class="displayCentredImgs"><br>
+	@@.mc-thoughts; You utter the spell, and the air around you begins to pulse. Out of nowhere, the succubus appears, her eyes gleaming with pleasure.@@<br>
+	@@color:red; What a good little slut you are, calling me again. Well, let's do something fun. Here's your choice: <br>@@
+	@@.usebtn; [[Change your body temporarily|SuccubusChoice][$summoningChoice to 1]]@@<br>
+	@@.usebtn; [[Possess you|SuccubusChoice][$summoningChoice to 2]]@@<br>
+	@@.usebtn; [[Strapon fuck|SuccubusChoice][$summoningChoice to 3]]@@<br>
+	@@.usebtn;  [[Something unusual? (Trans content)|SuccubusChoice][$summoningChoice to 4]]@@<br>
+<</if>>

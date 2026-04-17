@@ -23,42 +23,42 @@ sugarcube-2:
       description: Renders the companion help button for ghost events. Shows a
         scene-replace link for Brook/Alice/Blake if aroused, or a simple passage
         link for other companions. No args.
-    CompExp:
-      name: CompExp
+    companionExp:
+      name: companionExp
       description: "Adds experience points to the active companion ($companion).
         Checks $companion.name and applies the given amount to the matching
         companion object (e.g. $brook.exp). Does nothing if the companion is
         already at max level (5). Args: amount (number)."
-    compLinks:
-      name: compLinks
+    companionLinks:
+      name: companionLinks
       description: Renders the active companion's portrait as a clickable link to
         their main hub passage. Uses $companion.name to select the correct image
         and passage.
-    compLinksSuccess:
-      name: compLinksSuccess
+    companionLinksSuccess:
+      name: companionLinksSuccess
       description: Renders the active companion's portrait as a link to the
-        'succeededComp' passage. Uses $companion.name to select the correct
+        'CompanionSucceeded' passage. Uses $companion.name to select the correct
         image.
-    CompanionTextcompEvent1:
-      name: CompanionTextcompEvent1
+    companionTextEvent1:
+      name: companionTextEvent1
       description: Displays companion-specific dialogue and applies stat changes for
         ghost encounter event type 1. Adjusts $companion.sanity and
         $companion.lust. Handles trans-companion transformation stage 1 for
         Alex/Taylor/Casey.
-    CompanionTextcompEvent2:
-      name: CompanionTextcompEvent2
+    companionTextEvent2:
+      name: companionTextEvent2
       description: Displays companion-specific dialogue and applies stat changes for
         ghost encounter event type 2. Adjusts $companion.sanity and
         $companion.lust, and grants +15 MC lust. Handles trans-companion
         transformation for Alex/Taylor/Casey.
-    CompanionTextcompEvent3:
-      name: CompanionTextcompEvent3
+    companionTextEvent3:
+      name: companionTextEvent3
       description: Displays companion-specific dialogue and applies stat changes for
         ghost encounter event type 3. Adjusts $companion.sanity and
         $companion.lust, and grants +15 MC lust. Handles trans-companion
         transformation for Alex/Taylor/Casey.
-    CompanionTextcompEvent4:
-      name: CompanionTextcompEvent4
+    companionTextEvent4:
+      name: companionTextEvent4
       description: Displays companion-specific dialogue and applies stat changes for
         ghost encounter event type 4. Adjusts $companion.sanity and
         $companion.lust, and grants +15 MC lust. Handles trans-companion
@@ -67,23 +67,23 @@ sugarcube-2:
       name: isCompanionContinue
       description: 'Renders a linkappend asking whether the companion can continue the
         hunt. Evaluates companion level and sanity against the given thresholds.
-        On success may trigger <<include "CompResult">> and calls <<CompExp 2>>.
+        On success may trigger <<include "CompanionResult">> and calls <<companionExp 2>>.
         Args: companionLevel (number), levelThreshold (number), sanityMin
         (number), sanityMax (number).'
-    AliceLustHighEvent:
-      name: AliceLustHighEvent
+    aliceLustHighEvent:
+      name: aliceLustHighEvent
       description: "Renders an extra action button shown when Alice's lust is high
         enough. The button reduces $companion.sanity by 3 and replaces
         #eventVideo with <<include \"AliceHelp\">>."
     includeTimeEventClothesHunt:
       name: includeTimeEventClothesHunt
       description: Advances time by 1 hour, runs the event check, then attempts a
-        clothes-steal event. Falls through to checkHuntStart if no event fires.
+        clothes-steal event. Falls through to CheckHuntStart if no event fires.
         Does nothing during an active cursed hunt ($cursedHuntActive eq 1).
     includeTimeEventHunt:
       name: includeTimeEventHunt
       description: Advances time by 1 hour, runs the event check, then falls through
-        to checkHuntStart if no event fires. Does nothing during an active
+        to CheckHuntStart if no event fires. Does nothing during an active
         cursed hunt ($cursedHuntActive eq 1).
     includeStyle:
       name: includeStyle
@@ -129,8 +129,8 @@ sugarcube-2:
       description: "Monkey Paw wish: replaces .MonkeyPawShow with a random
         cursed-possessions video. Costs 1 wish, decreases sanity by 15, and
         increases MC lust by 15."
-    traptheghost:
-      name: traptheghost
+    trapTheGhost:
+      name: trapTheGhost
       description: "Monkey Paw wish: spends 1 wish and sets $ghostIsTrapped to 1,
         preventing the ghost from changing its favourite room. Decreases sanity
         by 15."
@@ -148,7 +148,7 @@ sugarcube-2:
       description: 'Monkey Paw wish: spends 1 wish (once per hunt via $knowledgeUsed)
         to eliminate a random non-ghost evidence from the diary. After a
         2-second delay, triggers a ghost hunt event via <<goto
-        "ghostHuntEvent">>.'
+        "GhostHuntEvent">>.'
     dawn:
       name: dawn
       description: "Monkey Paw wish: spends 1 wish, skips time to 6:00 AM ($hours to
@@ -207,7 +207,7 @@ sugarcube-2:
       description: "Container widget that wraps a haunted-house room with the standard
         .room/.room-wrapper/.content/.action scaffolding. Sets shared _shell*
         temp vars consumed by the inner <<roomFooter>> widget. Args: passage
-        (string, e.g. 'elmBedroom' or 'IroncladHallway'), bgRoomVar (string, the
+        (string, e.g. 'ElmBedroom' or 'IroncladHallway'), bgRoomVar (string, the
         room state variable whose .background is toggled, e.g. 'bedroom' or
         'BlockACellA'), [variant (string, 'basic' for enigma's simple light + no
         companion; default = full)]. Inner content should be an optional

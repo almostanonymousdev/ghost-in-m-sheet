@@ -16,7 +16,7 @@ test.describe('Missing Women — task board', () => {
     await setVar(page, 'rescueCD', 0);
     await setVar(page, 'hours', 20);
 
-    await goToPassage(page, 'rescueTaskBoard');
+    await goToPassage(page, 'RescueTaskBoard');
     await expectCleanPassage(page);
 
     const text = await page.locator('.passage').textContent();
@@ -32,7 +32,7 @@ test.describe('Missing Women — task board', () => {
     await setVar(page, 'rescueCD', 0);
     await setVar(page, 'hours', 20);
 
-    await goToPassage(page, 'rescueTaskBoard');
+    await goToPassage(page, 'RescueTaskBoard');
     await expectCleanPassage(page);
 
     const text = await page.locator('.passage').textContent();
@@ -46,7 +46,7 @@ test.describe('Missing Women — task board', () => {
     await setVar(page, 'rescueCD', 0);
     await setVar(page, 'hours', 12);
 
-    await goToPassage(page, 'rescueTaskBoard');
+    await goToPassage(page, 'RescueTaskBoard');
     await expectCleanPassage(page);
 
     expect(await page.locator('.passage').textContent()).toContain('6 PM');
@@ -59,7 +59,7 @@ test.describe('Missing Women — task board', () => {
     await setVar(page, 'rescueCD', 0);
     await setVar(page, 'hours', 20);
 
-    await goToPassage(page, 'rescueTaskBoard');
+    await goToPassage(page, 'RescueTaskBoard');
     await expectCleanPassage(page);
 
     expect(await page.locator('.passage').textContent()).toContain('Enough for today');
@@ -72,7 +72,7 @@ test.describe('Missing Women — task board', () => {
     await setVar(page, 'rescueCD', 0);
     await setVar(page, 'hours', 20);
 
-    await goToPassage(page, 'rescueTaskBoard');
+    await goToPassage(page, 'RescueTaskBoard');
     await expectCleanPassage(page);
 
     expect(await page.locator('.passage').textContent()).toContain('nun');
@@ -85,7 +85,7 @@ test.describe('Missing Women — task board', () => {
     await setVar(page, 'rescueCD', 0);
     await setVar(page, 'hours', 20);
 
-    await goToPassage(page, 'rescueTaskBoard');
+    await goToPassage(page, 'RescueTaskBoard');
     await page.locator('.passage .usebtn').first().click();
     await page.waitForFunction(() => SugarCube.State.variables.hasQuestForRescue === 1);
 
@@ -105,7 +105,7 @@ test.describe('Missing Women — task board', () => {
     await setVar(page, 'rescueCD', 0);
     await setVar(page, 'hours', 20);
 
-    await goToPassage(page, 'rescueTaskBoard');
+    await goToPassage(page, 'RescueTaskBoard');
 
     const girls = await getVar(page, 'rescueRandomGirls');
     expect(girls).toHaveLength(2);

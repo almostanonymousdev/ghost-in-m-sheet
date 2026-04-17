@@ -84,11 +84,11 @@ setup.MissingWomen = (function () {
 		// --- Girl-specific dispatch --------------------------------
 		possessedPassageFor: function (girl) {
 			switch (girl) {
-				case 'Victoria': return 'rescueVictoriaPossessed';
-				case 'Jade':     return 'rescueJadePossessed';
-				case 'Julia':    return 'rescueJuliaPossessed';
-				case 'Nadia':    return 'rescueNadiaPossessed';
-				case 'Ash':      return 'rescueAshPossessed';
+				case 'Victoria': return 'RescueVictoriaPossessed';
+				case 'Jade':     return 'RescueJadePossessed';
+				case 'Julia':    return 'RescueJuliaPossessed';
+				case 'Nadia':    return 'RescueNadiaPossessed';
+				case 'Ash':      return 'RescueAshPossessed';
 				default:         return null;
 			}
 		},

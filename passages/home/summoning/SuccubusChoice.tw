@@ -1,0 +1,188 @@
+:: SuccubusChoice [nobr] {"position":"700,3000","size":"100,100"}
+<<if $summoningChoice eq 1>>
+	<<set _check to random(1,2)>>
+	<<if _check eq 1>>
+		<img @src="setup.ImagePath + '/succubus/ass1.jpg'" class="displayCentredImgs">
+	<<elseif _check eq 2>>
+		<img @src="setup.ImagePath + '/succubus/ass2.jpg'" class="displayCentredImgs">
+	<</if>>
+	@@.mc-thoughts; The succubus, smirking, speaks an incantation, and the world around you starts to warp. You feel your body changing, becoming more voluptuous, with an enormous, seductive ass.@@<br>
+	@@color:red; Look at you, such a slut, transformed into the perfect fucktoy@@<br>
+	@@.mc-thoughts; Your reflection in the mirror shocks you: you've become the embodiment of sexual fantasies. But before you can even come to terms with it, the succubus, unable to resist, materializes a cock and begins@@
+	<<linkappend "@@.usebtn; to fuck you@@">>
+		<<if _check eq 1>>
+			<video autoplay controls muted loop class="displayCentredImgs">
+			<source @src="setup.ImagePath + '/succubus/ass1.1.mp4'" type="video/mp4">
+			</video>
+		<<elseif _check eq 2>>
+			<video autoplay controls muted loop class="displayCentredImgs">
+			<source @src="setup.ImagePath + '/succubus/ass2.1.mp4'" type="video/mp4">
+			</video>
+		<</if>>
+		@@color:red; Oh, you like it, don't you? Your body was made for this@@<br>
+		@@.mc-thoughts; Your new form eagerly responding to her dominance.@@<br>
+		@@.mc-thoughts; Her voice dripping with satisfaction as she starts to fuck you harder.@@<br>
+		@@.mc-speech; Yes... oh, yes... more...@@<br>
+		@@.mc-thoughts; The intensity builds, and you feel the overwhelming pleasure cresting. You cum, your body trembling with ecstasy, then everything fades as you pass out@@<br><br>
+		@@.backbtn; [[Pass out|Bedroom][$succubusChoiceEventText to 1]]@@<br>
+	<</linkappend>>
+
+<<elseif $summoningChoice eq 2>>
+	<<set _check to random(1,4)>>
+	<<if _check eq 1>>
+		<img @src="setup.ImagePath + '/succubus/form1.0.jpg'" class="displayCentredImgs">
+	<<elseif _check eq 2>>
+		<img @src="setup.ImagePath + '/succubus/form2.0.jpg'" class="displayCentredImgs">
+	<<elseif _check eq 3>>
+		<img @src="setup.ImagePath + '/succubus/form3.0.jpg'" class="displayCentredImgs">
+	<<elseif _check eq 4>>
+		<img @src="setup.ImagePath + '/succubus/2.jpg'" class="displayCentredImgs">
+	<</if>>
+	@@.mc-thoughts; You feel the air around you change, as if reality itself is starting to warp. Something inside you takes control, you look at your hands, but they move without your input. Your thoughts merge with another mind, full of lust and cunning. The succubus has possessed you, and now you're under her control.@@<br>
+	@@.mc-thoughts; You feel her desires becoming yours, her hands, your hands, start to explore the body that now belongs to her.@@<br>
+	@@.mc-speech; I'm no longer in control... she's inside me@@<br>
+	@@.mc-thoughts; You feel her start to play with you, using toys, making your body @@
+	<<linkappend "@@.usebtn; tremble with pleasure.@@">>
+		<<if _check eq 1>>
+			<video autoplay controls muted loop class="displayCentredImgs">
+			<source @src="setup.ImagePath + '/succubus/form1.1.mp4'" type="video/mp4">
+			</video>
+		<<elseif _check eq 2>>
+			<video autoplay controls muted loop class="displayCentredImgs">
+			<source @src="setup.ImagePath + '/succubus/form2.1.mp4'" type="video/mp4">
+			</video>
+		<<elseif _check eq 3>>
+			<<set _checkIn to random(1,2)>>
+			<<if _checkIn eq 1>>
+				<video autoplay controls muted loop class="displayCentredImgs">
+				<source @src="setup.ImagePath + '/succubus/form3.1.mp4'" type="video/mp4">
+				</video>
+			<<elseif _checkIn eq 2>>
+				<video autoplay controls muted loop class="displayCentredImgs">
+				<source @src="setup.ImagePath + '/succubus/form3.3.mp4'" type="video/mp4">
+				</video>
+			<</if>>
+		<<elseif _check eq 4>>
+			<<set _checkIn to random(1,2)>>
+			<<if _checkIn eq 1>>
+				<video autoplay controls muted loop class="displayCentredImgs">
+				<source @src="setup.ImagePath + '/succubus/2.mp4'" type="video/mp4">
+				</video>
+			<<elseif _checkIn eq 2>>
+				<video autoplay controls muted loop class="displayCentredImgs">
+				<source @src="setup.ImagePath + '/succubus/4.mp4'" type="video/mp4">
+				</video>
+			<</if>>
+		<</if>>
+		@@.mc-speech; Oh... fuck me harder... more...@@<br>
+		@@.mc-thoughts; She begins to fuck herself with wild greed, the toys sliding in and out, making you moan with each thrust. You feel the pleasure building, your body @@<<linkappend "@@.usebtn; exploding from the orgasm@@">>
+
+			<<if _check eq 1>>
+				<video autoplay controls muted loop class="displayCentredImgs">
+				<source @src="setup.ImagePath + '/succubus/form1.2.mp4'" type="video/mp4">
+				</video>
+			<<elseif _check eq 2>>
+				<video autoplay controls muted loop class="displayCentredImgs">
+				<source @src="setup.ImagePath + '/succubus/form2.2.mp4'" type="video/mp4">
+				</video>
+			<<elseif _check eq 3>>
+				<<if _checkIn eq 1>>
+					<video autoplay controls muted loop class="displayCentredImgs">
+					<source @src="setup.ImagePath + '/succubus/form3.2.mp4'" type="video/mp4">
+					</video>
+				<<elseif _checkIn eq 2>>
+					<video autoplay controls muted loop class="displayCentredImgs">
+					<source @src="setup.ImagePath + '/succubus/form3.4.mp4'" type="video/mp4">
+					</video>
+				<</if>>
+			<<elseif _check eq 4>>
+				<video autoplay controls muted loop class="displayCentredImgs">
+				<source @src="setup.ImagePath + '/succubus/3.mp4'" type="video/mp4">
+				</video>
+			<</if>>
+
+			@@.mc-speech; "I'm... I'm cumming... oh fuck!"@@<br>
+			@@.mc-thoughts; You cum, your body trembling with ecstasy, then everything fades as you pass out.@@<br><br>
+			@@.backbtn; [[Pass out|Bedroom][$succubusChoiceEventText to 1]]@@<br>
+		<</linkappend>>
+	<</linkappend>>
+<<elseif $summoningChoice eq 3>>
+	<video autoplay controls muted loop class="displayCentredImgs">
+	<source @src="setup.ImagePath + '/succubus/pc2.mp4'" type="video/mp4">
+	</video>
+	@@.mc-thoughts; The succubus leans over you, her tongue starts to caress your pussy@@<br>
+	@@color:red; Damn, you taste so sweet, I could lick you forever.@@<br>
+	@@.mc-speech; Mmm~@@<br>
+	@@color:red; Now I'm going to fuck you so hard you'll forget your name.@@<br>
+	@@.mc-thoughts; She puts on the strapon, her gaze promising a @@
+	<<linkappend "@@.usebtn; hard fuck@@">>
+		<<set _check to random(1,4)>>
+		<<if _check eq 1>>
+			<video autoplay controls muted loop class="displayCentredImgs">
+			<source @src="setup.ImagePath + '/succubus/pc4.mp4'" type="video/mp4">
+			</video>
+		<<elseif _check eq 2>>
+			<video autoplay controls muted loop class="displayCentredImgs">
+			<source @src="setup.ImagePath + '/succubus/pc6.mp4'" type="video/mp4">
+			</video>
+		<<elseif _check eq 3>>
+			<video autoplay controls muted loop class="displayCentredImgs">
+			<source @src="setup.ImagePath + '/succubus/pc7.mp4'" type="video/mp4">
+			</video>
+		<<elseif _check eq 4>>
+			<video autoplay controls muted loop class="displayCentredImgs">
+			<source @src="setup.ImagePath + '/succubus/pc8.mp4'" type="video/mp4">
+			</video>
+		<</if>>
+		@@color:red; Your pussy takes me so well@@<br>
+		@@.mc-speech; Fuck me harder... yes...@@<br>
+
+		@@.mc-thoughts; Her kiss fills you with@@
+		<<linkappend "@@.usebtn; her power@@">>
+			<video autoplay controls muted loop class="displayCentredImgs">
+			<source @src="setup.ImagePath + '/succubus/pcend1.mp4'" type="video/mp4">
+			</video>
+			@@color:red; You were such a good little slut tonight.@@<br>
+			@@.mc-thoughts; You're left alone, but her taste lingers on your lips.@@<br><br>
+			@@.backbtn; [[Pass out|Bedroom][$succubusChoiceEventText to 2]]@@
+		<</linkappend>>
+	<</linkappend>>
+
+<<elseif $summoningChoice eq 4>>
+	<video autoplay controls muted loop class="displayCentredImgs">
+	<source @src="setup.ImagePath + '/succubus/trans1.mp4'" type="video/mp4">
+	</video>
+	@@.mc-thoughts; The succubus leans over you, her tongue starts to caress your pussy@@<br>
+	@@color:red; Damn, you taste so sweet, I could lick you forever.@@<br>
+	@@.mc-speech; Mmm~@@<br>
+	@@color:red; I'm going to fuck you until you scream.@@<br>
+	@@.mc-thoughts; She reveals her cock, her eyes burning with desire for a @@
+	<<linkappend "@@.usebtn; wild, unstoppable fuck@@">>
+		<<set _check to random(1,2)>>
+		<<if _check eq 1>>
+			<video autoplay controls muted loop class="displayCentredImgs">
+			<source @src="setup.ImagePath + '/succubus/trans2.mp4'" type="video/mp4">
+			</video>
+		<<elseif _check eq 2>>
+			<video autoplay controls muted loop class="displayCentredImgs">
+			<source @src="setup.ImagePath + '/succubus/trans3.mp4'" type="video/mp4">
+			</video>
+		<</if>>
+		@@color:red; Your pussy is so hungry for me@@<br>
+		@@.mc-speech; Deeper... don't stop...@@<br>
+		@@.mc-thoughts; Her kiss leaves you with@@
+		<<linkappend "@@.usebtn; a burst of her energy@@">>
+			<video autoplay controls muted loop class="displayCentredImgs">
+			<source @src="setup.ImagePath + '/succubus/trans4.mp4'" type="video/mp4">
+			</video>
+			@@color:red; That was one hell of a ride, wasn't it?@@<br>
+			@@.mc-thoughts; Now alone, her kiss still echoes through your senses.@@<br><br>
+			@@.backbtn; [[Pass out|Bedroom][$succubusChoiceEventText to 2]]@@
+
+		<</linkappend>>
+
+	<</linkappend>>
+<</if>>
+<<set $hours +=4>><<if $hours >=24>><<set $hours -=24>><<include "ResetCooldowns">>
+<</if>>
+<<set $succubusEventTimer to 6>>

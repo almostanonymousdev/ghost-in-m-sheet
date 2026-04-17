@@ -1,0 +1,29 @@
+:: SummonTwins [nobr] {"position":"700,2900","size":"100,100"}
+<img @src="setup.ImagePath + '/exorcism/thetwins.jpg'" class="displayCentredImgs">
+@@.mc-speech; WHERE AM I?@@<br>
+@@.mc-thoughts; You see two dark figures. They've pulled out their cocks, already hard with desire, and they approach you.@@<br>
+@@.mc-speech; Oh~ I guess they're going@@
+<<linkappend "@@.usebtn; to fuck me...@@">>
+	<span id ="SummonTwins">
+	<video autoplay controls muted >
+	<source @src="setup.ImagePath + '/exorcism/thetwins1.mp4'" type="video/mp4">
+	</video></span>
+	<<set _videoIndex to 1>>
+	@@.mc-thoughts; And it really happens. You don't even try to resist - one enters your pussy, the other your mouth, both sliding in easily as if you were made for them.@@
+	<<link "@@.usebtn; They fuck you@@">>
+		<<set _videoIndex to (_videoIndex) % 2 +1>>
+		<<replace "#summonTwins">>
+			<video autoplay controls muted loop>
+			<source @src="setup.ImagePath+`/exorcism/thetwins`+_videoIndex+`.mp4`" type="video/mp4">
+			</video>
+		<</replace>>
+	<</link>>
+	@@.mc-thoughts; , one going deeper, making you gasp with his size, the other making @@
+	<<linkappend "@@.usebtn; you suck him greedily@@">>
+		<video autoplay controls muted loop>
+		<source @src="setup.ImagePath + '/exorcism/thetwins3.mp4'" type="video/mp4">
+		</video>
+		@@.mc-thoughts; You feel them picking up the pace, their movements becoming more urgent, until they come on your face, covering you with warm cum.@@<br><br>
+		@@.backbtn; [[Sleep|SleepTwins][$summonText to 1; $thetwinsevent to 0]]@@<br>
+	<</linkappend>>
+<</linkappend>>

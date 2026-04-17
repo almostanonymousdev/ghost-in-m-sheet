@@ -163,7 +163,7 @@
 		<<set $tempCorr to 0>>
 		<<set $mc.dirty to 1>>
 		<<run setup.HauntedHouses.resetToolTimers()>>
-		<<include "lostClothes">>
+		<<include "LostClothes">>
 		<<done>>
 			<<addclass ".linkselector" "disabled-link">>
 		<</done>>
