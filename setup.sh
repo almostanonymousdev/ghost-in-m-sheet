@@ -140,6 +140,18 @@ fi
 # Make scripts executable
 chmod +x build.sh start.sh .githooks/pre-commit
 
+# Install npm dependencies (Playwright, etc.) if npm is available
+if command -v npm >/dev/null 2>&1; then
+    if [ ! -d "node_modules" ]; then
+        echo -e "${YELLOW}Installing npm dependencies...${NC}"
+        npm install
+    else
+        echo -e "${GREEN}npm dependencies already installed.${NC}"
+    fi
+else
+    echo -e "${YELLOW}npm not found — skipping JS dependency install. Install Node.js if you want to run the test suite.${NC}"
+fi
+
 # Configure git to use the repo's hooks
 git config core.hooksPath .githooks
 echo -e "${GREEN}Git hooks configured.${NC}"

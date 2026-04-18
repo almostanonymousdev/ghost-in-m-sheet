@@ -4,8 +4,15 @@ SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 echo "Running build before commit..."
 bash "$SCRIPT_DIR/build.sh"
 
+cd "$SCRIPT_DIR" || exit 1
+
+if [ ! -d "node_modules/@playwright/test" ]; then
+  echo "Playwright not installed. Running npm install..."
+  npm install || { echo "npm install failed. Commit aborted."; exit 1; }
+fi
+
 echo "Running tests before commit..."
-cd "$SCRIPT_DIR" && npx playwright test
+npx playwright test
 if [ $? -ne 0 ]; then
   echo "Tests failed. Commit aborted."
   exit 1

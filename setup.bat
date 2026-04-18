@@ -115,6 +115,19 @@ del sugarcube.zip
 echo SugarCube %SUGARCUBE_VERSION% installed successfully!
 :sugarcube_done
 
+:: Install npm dependencies (Playwright, etc.) if npm is available
+where npm >nul 2>&1
+if !errorlevel! equ 0 (
+    if not exist "node_modules" (
+        echo Installing npm dependencies...
+        call npm install
+    ) else (
+        echo npm dependencies already installed.
+    )
+) else (
+    echo npm not found - skipping JS dependency install. Install Node.js if you want to run the test suite.
+)
+
 :: Configure git to use the repo's hooks
 git config core.hooksPath .githooks
 echo Git hooks configured.
