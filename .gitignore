@@ -24,6 +24,7 @@ Thumbs.db
 # Build artifacts
 tgh-fork.html
 *.html
+*.zip
 
 # Node modules (if using npm)
 node_modules/
