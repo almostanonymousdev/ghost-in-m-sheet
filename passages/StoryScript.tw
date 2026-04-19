@@ -1307,25 +1307,25 @@ setup.searchRoomPrefixes = [
     { prefix: "owaissaHallway",      bagRoom: "Hallway",     bgRoom: "hallway",    meterTag: "div" },
     { prefix: "owaissaLivingroom",   bagRoom: "Livingroom",  bgRoom: "livingroom", meterTag: "div" },
     // Elm Street
-    { prefix: "ElmBasement",         bagRoom: "Basement",        bgRoom: "basement"        },
-    { prefix: "ElmBedroom",          bagRoom: "Bedroom",         bgRoom: "bedroom"         },
-    { prefix: "ElmBedroomTwo",       bagRoom: "BedroomTwo",      bgRoom: "bedroomTwo"      },
-    { prefix: "ElmBathroom",         bagRoom: "Bathroom",        bgRoom: "bathroom"        },
-    { prefix: "ElmBathroomTwo",      bagRoom: "BathroomTwo",     bgRoom: "bathroomTwo"     },
-    { prefix: "ElmKitchen",          bagRoom: "Kitchen",         bgRoom: "kitchen"         },
-    { prefix: "ElmHallway",          bagRoom: "Hallway",         bgRoom: "hallway"         },
-    { prefix: "ElmHallwayUpstairs",  bagRoom: "HallwayUpstairs", bgRoom: "hallwayUpstairs" },
-    { prefix: "ElmNursery",          bagRoom: "Nursery",         bgRoom: "nursery"         },
+    { prefix: "elmBasement",         bagRoom: "Basement",        bgRoom: "basement"        },
+    { prefix: "elmBedroom",          bagRoom: "Bedroom",         bgRoom: "bedroom"         },
+    { prefix: "elmBedroomTwo",       bagRoom: "BedroomTwo",      bgRoom: "bedroomTwo"      },
+    { prefix: "elmBathroom",         bagRoom: "Bathroom",        bgRoom: "bathroom"        },
+    { prefix: "elmBathroomTwo",      bagRoom: "BathroomTwo",     bgRoom: "bathroomTwo"     },
+    { prefix: "elmKitchen",          bagRoom: "Kitchen",         bgRoom: "kitchen"         },
+    { prefix: "elmHallway",          bagRoom: "Hallway",         bgRoom: "hallway"         },
+    { prefix: "elmHallwayUpstairs",  bagRoom: "HallwayUpstairs", bgRoom: "hallwayUpstairs" },
+    { prefix: "elmNursery",          bagRoom: "Nursery",         bgRoom: "nursery"         },
     // Enigma -- eventChain enigma
-    { prefix: "EnigmaBasement",      bagRoom: "Basement",   bgRoom: "basement",   eventChain: "enigma" },
-    { prefix: "EnigmaBedroom",       bagRoom: "Bedroom",    bgRoom: "bedroom",    eventChain: "enigma" },
-    { prefix: "EnigmaBathroom",      bagRoom: "Bathroom",   bgRoom: "bathroom",   eventChain: "enigma" },
-    { prefix: "EnigmaKitchen",       bagRoom: "Kitchen",    bgRoom: "kitchen",    eventChain: "enigma" },
-    { prefix: "EnigmaHallway",       bagRoom: "Hallway",    bgRoom: "hallway",    eventChain: "enigma" },
-    { prefix: "EnigmaLivingroom",    bagRoom: "Livingroom", bgRoom: "livingroom", eventChain: "enigma" },
-    { prefix: "EnigmaRoomA",         bagRoom: "RoomA",      bgRoom: "roomA",      eventChain: "enigma" },
-    { prefix: "EnigmaRoomB",         bagRoom: "RoomB",      bgRoom: "roomB",      eventChain: "enigma" },
-    { prefix: "EnigmaRoomC",         bagRoom: "RoomC",      bgRoom: "roomC",      eventChain: "enigma" },
+    { prefix: "enigmaBasement",      bagRoom: "Basement",   bgRoom: "basement",   eventChain: "enigma" },
+    { prefix: "enigmaBedroom",       bagRoom: "Bedroom",    bgRoom: "bedroom",    eventChain: "enigma" },
+    { prefix: "enigmaBathroom",      bagRoom: "Bathroom",   bgRoom: "bathroom",   eventChain: "enigma" },
+    { prefix: "enigmaKitchen",       bagRoom: "Kitchen",    bgRoom: "kitchen",    eventChain: "enigma" },
+    { prefix: "enigmaHallway",       bagRoom: "Hallway",    bgRoom: "hallway",    eventChain: "enigma" },
+    { prefix: "enigmaLivingroom",    bagRoom: "Livingroom", bgRoom: "livingroom", eventChain: "enigma" },
+    { prefix: "enigmaRoomA",         bagRoom: "RoomA",      bgRoom: "roomA",      eventChain: "enigma" },
+    { prefix: "enigmaRoomB",         bagRoom: "RoomB",      bgRoom: "roomB",      eventChain: "enigma" },
+    { prefix: "enigmaRoomC",         bagRoom: "RoomC",      bgRoom: "roomC",      eventChain: "enigma" },
     // Ironclad -- eventChain ironclad; bag names carry an "Ironclad" suffix that the prefix does not
     { prefix: "ironcladHallway",     bagRoom: "HallwayIronclad",     bgRoom: "hallway",     eventChain: "ironclad" },
     { prefix: "ironcladReception",   bagRoom: "ReceptionIronclad",   bgRoom: "reception",   eventChain: "ironclad" },
@@ -1349,9 +1349,10 @@ setup.searchPrefixIndex = (function () {
 /* Haunted-house passage catalogue, derived from setup.searchRoomPrefixes.
  * Each entry maps one concrete room passage back to its house + bgRoom,
  * which is exactly the information the tool passages need to ask "is the
- * player currently standing in the ghost's room?". The Owaissa and Ironclad
- * passages capitalise the first letter of the prefix; Elm and Enigma keep
- * the prefix casing as-is. */
+ * player currently standing in the ghost's room?". Every haunted-house
+ * passage is capital-first (e.g. "ElmBasement", "OwaissaBedroom") and
+ * every prefix is camel-case (lowercase-first) so the two forms are
+ * one `charAt(0).toUpperCase()` apart. */
 setup.hauntedPassages = (function () {
     return setup.searchRoomPrefixes.map(function (e) {
         var house;
@@ -1359,10 +1360,7 @@ setup.hauntedPassages = (function () {
         else if (e.eventChain === "enigma")   house = "enigma";
         else if (e.prefix.indexOf("owaissa") === 0) house = "owaissa";
         else                                  house = "elm";
-        var capitalise = (house === "owaissa" || house === "ironclad");
-        var passage = capitalise
-            ? e.prefix.charAt(0).toUpperCase() + e.prefix.slice(1)
-            : e.prefix;
+        var passage = e.prefix.charAt(0).toUpperCase() + e.prefix.slice(1);
         return { passage: passage, bgRoom: e.bgRoom, house: house };
     });
 }());

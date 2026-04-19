@@ -60,9 +60,10 @@ async function expectCleanPassage(page) {
 }
 
 /**
- * Assign a specific ghost by name and set up the Owaissa house for hunting.
+ * Assign a specific ghost by name and set up a house for hunting.
+ * `house` is one of 'owaissa' (default), 'elm', 'enigma', 'ironclad'.
  */
-async function setupHunt(page, ghostName) {
+async function setupHunt(page, ghostName, house = 'owaissa') {
   await page.evaluate((name) => {
     const V = SugarCube.State.variables;
     for (let i = 1; i <= SugarCube.setup.GHOST_SLOT_COUNT; i++) {
@@ -78,14 +79,56 @@ async function setupHunt(page, ghostName) {
     throw new Error(`Failed to assign ghost "${ghostName}", got "${assigned}"`);
   }
 
-  await setVar(page, 'ghostHuntingMode', 2);
-  await setVar(page, 'isOwaissa', 1);
-  await setVar(page, 'isElm', 0);
-  await setVar(page, 'isEnigma', 0);
-  await setVar(page, 'isIronclad', 0);
+  const houseFlags = {
+    owaissa: { isOwaissa: 1, isElm: 0, isEnigma: 0, isIronclad: 0 },
+    elm: { isOwaissa: 0, isElm: 1, isEnigma: 0, isIronclad: 0 },
+    enigma: { isOwaissa: 0, isElm: 0, isEnigma: 1, isIronclad: 0 },
+    ironclad: { isOwaissa: 0, isElm: 0, isEnigma: 0, isIronclad: 1 },
+  };
+  const flags = houseFlags[house];
+  if (!flags) throw new Error(`Unknown house "${house}"`);
 
+  await setVar(page, 'ghostHuntingMode', 2);
+  for (const [k, v] of Object.entries(flags)) await setVar(page, k, v);
+
+  // Pick a ghost-room that actually exists in the chosen house so that
+  // light/evidence widgets that read $ghostRoom.name don't trip on a
+  // room name that isn't initialised in State.
+  const ghostRoomName = {
+    owaissa: 'kitchen',
+    elm: 'kitchen',
+    enigma: 'kitchen',
+    ironclad: 'hallway',
+  }[house];
+  await page.evaluate((n) => {
+    SugarCube.State.variables.ghostRoom = { name: n };
+  }, ghostRoomName);
+
+  if (house === 'ironclad') {
+    // Needed for the "Go inside" link on Ironclad Prison and for any
+    // passages that gate on whether the warden outfit is ready.
+    await setVar(page, 'wardenClothesStage', 2);
+  }
+
+  // Navigation links run <<includeTimeEventClothesHunt>>, which both rolls
+  // StealClothesEvent (against $stealChance) and includes <<Event>> (which
+  // can redirect to a body-part event via setup.Events.rollBodyPartEvent).
+  // Pin stealChance to 0 and zero out sensualBodyPart so neither fires —
+  // tests need deterministic room navigation. Also seed the per-house
+  // furniture lists (populated at GhostStreet time via FurnitureCode) so
+  // any stray StealClothes trigger can't crash on .random() of undefined.
+  await setVar(page, 'stealChance', 0);
   await page.evaluate(() => {
-    SugarCube.State.variables.ghostRoom = { name: 'kitchen' };
+    const V = SugarCube.State.variables;
+    V.sensualBodyPart = {
+      brain: 0, tits: 0, ass: 0, bottom: 0,
+      mouth: 0, pussy: 0, anal: 0,
+    };
+    const seed = ['hallway_carpet', 'kitchen_table', 'bedroom_table'];
+    if (!V.furnitureListOwaissa) V.furnitureListOwaissa = seed.slice();
+    if (!V.tempListOwaissa)      V.tempListOwaissa      = seed.slice();
+    if (!V.furnitureListElm)     V.furnitureListElm     = seed.slice();
+    if (!V.tempListElm)          V.tempListElm          = seed.slice();
   });
 
   await setVar(page, 'hours', 0);
