@@ -36,4 +36,12 @@ test.describe('Ghost room rendering — all Owaissa rooms', () => {
       }
     });
   }
+
+  test('OwaissaBedroom renders cleanly with $cursedHuntActive = 1 (hideSpot cursed branch)', async () => {
+    await setupHunt(page, 'Spirit');
+    await setVar(page, 'cursedHuntActive', 1);
+
+    await goToPassage(page, 'OwaissaBedroom');
+    await expectCleanPassage(page);
+  });
 });

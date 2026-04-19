@@ -152,6 +152,7 @@ All you can do now is wait and hope it doesn't find you.@@
 <</link>>@@<br>
 <</replace>>
 <</link>>
+</span>
 <</capture>>
 <<else>>
 <<capture _hideId>>

@@ -478,6 +478,62 @@ test.describe('indentation', () => {
 
 });
 
+// ── HTML tag balance ─────────────────────────────────────────────
+
+test.describe('html tag balance', () => {
+
+  /** Container tags whose opens must be matched by closes within the same passage. */
+  const CONTAINER_TAGS = [
+    'span', 'div', 'p', 'a', 'section', 'article', 'nav',
+    'header', 'footer', 'main', 'aside',
+    'table', 'tr', 'td', 'th', 'thead', 'tbody',
+    'ul', 'ol', 'li', 'label', 'form', 'button',
+    'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+  ];
+
+  /**
+   * Strip block comments, HTML comments, and quoted strings so HTML tags
+   * appearing inside <<link>> arguments, @src/@class expressions, and
+   * /* ... *\/ comments are not counted.
+   *
+   * String-stripping is constrained to a single line to keep a stray
+   * apostrophe in natural-language text (e.g. "doesn't") from pairing
+   * with a quote many lines away and eating real markup in between.
+   */
+  function stripNonMarkup(body) {
+    return body
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .replace(/<!--[\s\S]*?-->/g, '')
+      .replace(/`(?:[^`\\\n]|\\.)*`/g, '')
+      .replace(/"(?:[^"\\\n]|\\.)*"/g, '')
+      .replace(/'(?:[^'\\\n]|\\.)*'/g, '')
+      // Strip SugarCube <<macros>> so e.g. <<label '$x'>> isn't counted as an HTML <label>.
+      // Dot doesn't match newline by default, which is what we want (macros on one line).
+      .replace(/<<[^>]*?>>/g, '');
+  }
+
+  test('every opening HTML container tag has a matching closing tag within the same passage', () => {
+    const violations = [];
+    for (const p of allPassages) {
+      if (p.tags.includes('script') || p.tags.includes('stylesheet')) continue;
+      const stripped = stripNonMarkup(p.body);
+      for (const tag of CONTAINER_TAGS) {
+        const openRe = new RegExp(`<${tag}(?:\\s[^>]*)?>`, 'gi');
+        const closeRe = new RegExp(`</\\s*${tag}\\s*>`, 'gi');
+        const opens = (stripped.match(openRe) || []).length;
+        const closes = (stripped.match(closeRe) || []).length;
+        if (opens !== closes) {
+          violations.push(
+            `${loc(p)} "${p.name}" has ${opens} <${tag}> but ${closes} </${tag}>`
+          );
+        }
+      }
+    }
+    expect(violations, violations.join('\n')).toHaveLength(0);
+  });
+
+});
+
 // ── stray macro delimiters ───────────────────────────────────────
 
 test.describe('macro delimiters', () => {

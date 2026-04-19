@@ -113,6 +113,7 @@
 	@@.backbtn;<<return>>@@<br>
 <</if>>
 </div>
+</div>
 
 <<include "StyleNotebook">>
 <<done>>
