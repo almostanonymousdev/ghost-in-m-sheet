@@ -40,11 +40,11 @@
 		<<goto "CityMapPossessed">><</linkreplace>><br>
 		<<link "Decreasefollower's sanity(-10)(cheats)">><<set $companion.sanity -=10>><<updatemeter 'companionsanity' `$companion.sanity / 100`>><</link>>
 	<</if>><br>
-	<<linkreplace "ghostname(cheat)">>$ghost.name<<if $saveMimic eq 1>>(Mimic)
+	<<linkreplace "ghostname">>$ghost.name<<if $saveMimic eq 1>>(Mimic)
 	<</if>>
 	<</linkreplace>>
 	<<if $ghostHuntingMode gte 1>>
-		<<linkreplace "choose ghost type(cheat)">>
+		<<linkreplace "choose ghost type">>
 			<<for _gi to 1; _gi lte setup.GHOST_SLOT_COUNT; _gi++>>
 				<<capture _gi>><<link `"set to " + State.variables["ghost" + _gi].name`>><<set $ghost to clone(State.variables["ghost" + _gi])>>
 				<</link>>
@@ -52,27 +52,27 @@
 			<</for>>
 		<</linkreplace>><br>
 	<</if>>
-	<<linkreplace "ghostroom(cheat)">>$ghostRoom.name
+	<<linkreplace "ghostroom">>$ghostRoom.name
 	<</linkreplace>><br>
-	<<link "lust(cheat)">><<set $mc.lust += 100>><</link>><br>
-	<<link "money(cheat)">><<set $mc.money += 100>><</link>><br>
-	<<link "lvlup(cheat)">><<set $mc.lvl += 1>><</link>><br>
-	<<link "corruptionUp(cheat)">><<set $mc.corruption += 1>><</link>><br>
-	<<linkreplace "curseditem room(cheat)">>$ghostRoomCI.name
+	<<link "lust">><<set $mc.lust += 100>><</link>><br>
+	<<link "money">><<set $mc.money += 100>><</link>><br>
+	<<link "lvlup">><<set $mc.lvl += 1>><</link>><br>
+	<<link "corruptionUp">><<set $mc.corruption += 1>><</link>><br>
+	<<linkreplace "curseditem room">>$ghostRoomCI.name
 	<</linkreplace>>
-	<br><<linkreplace "highlight rescue house(cheat)">><<set $cheatRescueHouseHighlight to 1>>Rescue house $randomRescuePhotoNumber highlighted on map
+	<br><<linkreplace "highlight rescue house">><<set $cheatRescueHouseHighlight to 1>>Rescue house $randomRescuePhotoNumber highlighted on map
 	<</linkreplace>>
-	<br><<linkreplace "lvlup Brook(cheat)">><<set $brook.lvl to 5>>Brook is lvl5 now
+	<br><<linkreplace "lvlup Brook">><<set $brook.lvl to 5>>Brook is lvl5 now
 	<</linkreplace>>
-	<br><<linkreplace "lvlup Alice(cheat)">><<set $alice.lvl to 5>>Alice is lvl5 now
+	<br><<linkreplace "lvlup Alice">><<set $alice.lvl to 5>>Alice is lvl5 now
 	<</linkreplace>>
-	<br><<linkreplace "lvlup Blake(cheat)">><<set $blake.lvl to 5>>Blake is lvl5 now
+	<br><<linkreplace "lvlup Blake">><<set $blake.lvl to 5>>Blake is lvl5 now
 	<</linkreplace>>
 	<br><<linkreplace "Relationship Blake">><<set $relationshipBlake to 5>>Best Friends!
 	<</linkreplace>>
-	<br><<linkreplace "fitUp(cheat)">><<set $mc.fit to 100>>perfect body
+	<br><<linkreplace "fitUp">><<set $mc.fit to 100>>perfect body
 	<</linkreplace>>
-	<br><<linkreplace "lustCurrentFriend(cheat)">><<set $companion.lust += 100>>$companion.name's lust +100
+	<br><<linkreplace "lustCurrentFriend">><<set $companion.lust += 100>>$companion.name's lust +100
 	<</linkreplace>>
 	<br><<linkreplace "Exhib5">><<set $mc.exhib to 5>>Exhib5
 	<</linkreplace>>
@@ -88,9 +88,11 @@
 		<<set $sensualBodyPart.pussy to 6>>
 		<<set $sensualBodyPart.anal to 6>>
 	<</linkreplace>>
-		<br><<link "Toggle Back/Forward buttons(cheat)">><<if $cheatBackForward>><<set $cheatBackForward to false>><<run $("body").removeClass("show-history")>>
+		<br><<link "Toggle Back/Forward buttons">><<if $cheatBackForward>><<set $cheatBackForward to false>><<run $("body").removeClass("show-history")>>
 		<<else>><<set $cheatBackForward to true>><<run $("body").addClass("show-history")>>
 		<</if>>
+		<</link>>
+		<br><<link "Remove Tool Timers">><<set $timerToolsDecreased to "10ms">>
 		<</link>>
 <</linkreplace>>@@
 
