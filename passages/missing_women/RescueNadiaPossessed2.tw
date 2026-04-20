@@ -23,7 +23,7 @@
 @@.notmc-speech; Shh, shut your dirty little mouth with this huge dick@@<br>
 @@.mc-thoughts; What am I doing? Why can't I resist her? @@<br>
 @@.mc-speech; Mmm~ yeah.@@<br>
-@@.notmc-speech; Good girl, now turn your butt <<linkappend "towards me.">>
+@@.notmc-speech; Good girl, now turn your butt@@ <<linkappend "towards me.">>
 	<<set _checkV to random(1,2)>>
 	<<if _checkV eq 1>>
 		<video autoplay controls muted loop>

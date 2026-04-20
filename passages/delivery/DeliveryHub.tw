@@ -16,7 +16,7 @@
 		</div><br>
 	<</if>>
 	@@.enterbtn;[[Go to the manager|DeliveryManager]]@@<br>
-	<<if setup.Delivery.canStartShift()>>@@.usebtn;[[Take orders|WorkDelivery]]@@<<elseif setup.Delivery.tooTiredForShift()>>@@.mc-thoughts; I'm too tired
+	<<if setup.Delivery.canStartShift()>>@@.usebtn;[[Take orders|WorkDelivery]]@@<<elseif setup.Delivery.tooTiredForShift()>>@@.mc-thoughts; I'm too tired@@
 	<</if>>
 <</if>>
 <br>

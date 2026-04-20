@@ -40,7 +40,7 @@
 
 			@@color:red; Well, that's enough for you today.@@<br>
 			<br>
-			@@.backbtn; [[You pass out|Sleep][$succubusTVText to 1]]<br>
+			@@.backbtn; [[You pass out|Sleep][$succubusTVText to 1]]@@<br>
 
 		<</linkappend>>
 	<</linkappend>>

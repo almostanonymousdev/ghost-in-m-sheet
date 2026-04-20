@@ -88,4 +88,4 @@
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 <</done>>
-@@.backbtn; [[Back|previous()][$brookChooseOwaissa to 0; $brookChooseElm to 0]]
+@@.backbtn; [[Back|previous()][$brookChooseOwaissa to 0; $brookChooseElm to 0]]@@

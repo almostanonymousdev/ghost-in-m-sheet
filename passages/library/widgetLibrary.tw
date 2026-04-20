@@ -25,7 +25,7 @@
 					<<replace `"#" + _answerTwoId`>>@@.notmc-speech;Owaissa Street? Hmm... Yes, of course. I think I can handle it.@@
 					<</replace>>
 				<</if>>
-			<</link>>
+			<</link>>@@
 
 			@@.enterbtn;<<link `"Elm Street - " + _elmChance + " %"`>>
 				<<run State.variables[_compVarPrefix.toLowerCase() + "ChooseOwaissa"] = 0>>

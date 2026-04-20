@@ -26,5 +26,5 @@
 	<<if $tentaclesEventStageAll lt 3>>
 		<<set $tentaclesEventStageAll to 3>>
 	<</if>>
-	@@.backbtn; [[Rest|Livingroom][$tentaclesEventTVText to 1; $hours += 4]]
+	@@.backbtn; [[Rest|Livingroom][$tentaclesEventTVText to 1; $hours += 4]]@@
 <</linkappend>>

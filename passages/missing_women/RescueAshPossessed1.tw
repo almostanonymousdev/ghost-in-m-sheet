@@ -11,7 +11,7 @@
 	<</replace>>
 <</link>>
 @@.mc-speech; Nooo this is not right...~ But feels sooo good~@@<br>
-@@.mc-thoughts; Then she grabs your hair and makes you <<linkappend "@@.usebtn; lick her pussy.@@">>
+@@.mc-thoughts; Then she grabs your hair and makes you@@ <<linkappend "@@.usebtn; lick her pussy.@@">>
 	<video autoplay controls muted loop>
 	<source @src="setup.ImagePath + '/rescue/ash/1.5.mp4'" type="video/mp4">
 	</video>

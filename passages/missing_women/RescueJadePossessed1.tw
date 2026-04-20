@@ -14,7 +14,7 @@
 		@@.mc-speech; Wha~what is that...@@<br>
 		@@.notmc-speech; Get ready to find out...@@<br>
 		@@.mc-thoughts; She easily slid the huge dildo into your dripping pussy and began to [[fuck you.|RescueJadePossessed2]]@@<br>
-	<</linkappend>>
+	<</linkappend>>@@
 <<elseif $rescueJadePossessed eq 2>>
 
 	<<set _checkR to random(1,2)>>

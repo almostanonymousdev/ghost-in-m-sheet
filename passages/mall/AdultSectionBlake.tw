@@ -83,7 +83,7 @@
 						<<replace "#blakeInfoAnswerTwo">>@@.notmc-speech;Owaissa Street? Hmm... Yes, of course. I think I can handle it.@@
 						<</replace>>
 					<</if>>
-				<</link>>
+				<</link>>@@
 
 				@@.enterbtn;<<link "Elm Street - $chanceToSuccessAloneElmBlake %">>
 					<<set $blakeChooseOwaissa to 0>>

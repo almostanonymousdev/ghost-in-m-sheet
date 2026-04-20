@@ -26,7 +26,7 @@
 </div>
 <br>
 <<if $succubus eq 1 and $succubusEventCD eq 0 or $succubusEventCD eq 2 and $hours gte 18 and $hours lte 23>>
-	@@.backbtn;[[Back|SuccubusPCEvent]]<br>
+	@@.backbtn;[[Back|SuccubusPCEvent]]@@<br>
 <<else>>
 	@@.backbtn;[[Back|Livingroom]]@@<br>
 <</if>>

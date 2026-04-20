@@ -561,6 +561,174 @@ test.describe('macro delimiters', () => {
 
 });
 
+// ── @@ styled markup (SugarCube custom style markup) ────────────
+
+test.describe('styled markup (@@...@@)', () => {
+
+  /**
+   * Blank out sources of `@@` that don't reach the SugarCube styled-markup
+   * parser: `/* ... *\/` block comments and `<!-- ... -->` HTML comments
+   * are removed during parsing, so any `@@` inside them is inert.
+   * Content is replaced with same-length whitespace (newlines preserved)
+   * so line numbers and offsets remain meaningful.
+   * Quoted strings are NOT blanked because macros (linkappend, replace,
+   * etc.) can re-emit their contents to the renderer, where `@@` inside
+   * the emitted text is still parsed as styled markup.
+   */
+  function stripInertZones(body) {
+    const blank = s => s.replace(/[^\n]/g, ' ');
+    return body
+      .replace(/\/\*[\s\S]*?\*\//g, blank)
+      .replace(/<!--[\s\S]*?-->/g, blank);
+  }
+
+  /**
+   * Parse a passage body into a list of @@...@@ blocks by pairing
+   * `@@` tokens left-to-right. Returns { blocks, unpaired } where
+   * blocks is [{ start, end, inner, lineOfStart }] and unpaired is
+   * true when the final `@@` has no match.
+   */
+  function parseAtBlocks(body) {
+    const stripped = stripInertZones(body);
+    const positions = [];
+    const re = /@@/g;
+    let m;
+    while ((m = re.exec(stripped)) !== null) positions.push(m.index);
+
+    const blocks = [];
+    const pairs = Math.floor(positions.length / 2);
+    for (let i = 0; i < pairs; i++) {
+      const start = positions[i * 2];
+      const end   = positions[i * 2 + 1];
+      blocks.push({
+        start,
+        end,
+        inner: body.slice(start + 2, end),
+        lineOfStart: body.slice(0, start).split('\n').length,
+      });
+    }
+    return { blocks, unpaired: positions.length % 2 !== 0 };
+  }
+
+  /** Collect every CSS class defined in a [stylesheet] passage. */
+  function collectDefinedClasses() {
+    const classes = new Set();
+    const classRe = /\.([A-Za-z_][\w-]*)/g;
+    for (const p of allPassages) {
+      if (!p.tags.includes('stylesheet')) continue;
+      let m;
+      while ((m = classRe.exec(p.body)) !== null) classes.add(m[1]);
+    }
+    return classes;
+  }
+
+  const definedClasses = collectDefinedClasses();
+
+  test('every passage has an even number of @@ markers (no unclosed styled blocks)', () => {
+    const violations = [];
+    for (const p of allPassages) {
+      if (p.tags.includes('script') || p.tags.includes('stylesheet')) continue;
+      const { unpaired } = parseAtBlocks(p.body);
+      if (unpaired) {
+        const count = (p.body.match(/@@/g) || []).length;
+        violations.push(`${loc(p)} "${p.name}" has ${count} @@ markers (odd — at least one styled block is unclosed)`);
+      }
+    }
+    expect(violations, violations.join('\n')).toHaveLength(0);
+  });
+
+  test('no stray run of exactly three @ characters (indicates a typo or missing/extra @)', () => {
+    // Runs of 2 @s are a styled-markup marker and 4 @s is a valid
+    // back-to-back close+open.  A lone `@` is valid Twee attribute
+    // shorthand (e.g. `@src="..."`).  Exactly 3 in a row, however,
+    // cannot be produced by any legitimate combination of those forms.
+    const violations = [];
+    const strayRe = /(?<!@)@@@(?!@)/g;
+    for (const p of allPassages) {
+      if (p.tags.includes('script') || p.tags.includes('stylesheet')) continue;
+      const lines = stripInertZones(p.body).split('\n');
+      for (let i = 0; i < lines.length; i++) {
+        if (strayRe.test(lines[i])) {
+          const absLine = p.headerLine + 1 + i;
+          violations.push(`${loc(p)} "${p.name}": line ${absLine} contains @@@ — check for a missing or extra @ around a styled block`);
+        }
+      }
+    }
+    expect(violations, violations.join('\n')).toHaveLength(0);
+  });
+
+  test('@@ selector markup must have a valid identifier followed by a ; separator', () => {
+    // When a @@...@@ block begins with `.` or `#`, SugarCube parses
+    // everything before the first `;` as the style selector.  Missing
+    // the `;` means the "class" is silently treated as content, so the
+    // styling never applies — exactly the class of typo this guards.
+    const violations = [];
+    const selectorRe = /^([.#])([A-Za-z_][\w-]*(?:\.[A-Za-z_][\w-]*)*)?/;
+    for (const p of allPassages) {
+      if (p.tags.includes('script') || p.tags.includes('stylesheet')) continue;
+      const { blocks } = parseAtBlocks(p.body);
+      for (const b of blocks) {
+        if (!/^[.#]/.test(b.inner)) continue;
+        const absLine = p.headerLine + b.lineOfStart;
+        const snippet = b.inner.slice(0, 40).replace(/\n/g, ' ');
+
+        const m = b.inner.match(selectorRe);
+        if (!m || !m[2]) {
+          violations.push(`${loc(p)} "${p.name}": line ${absLine} has empty/invalid @@${m ? m[1] : ''} selector near "@@${snippet}..."`);
+          continue;
+        }
+        // Selector chain must be followed by `;`, `.`, or end-of-selector
+        // char.  The character immediately after m[0] must be `;` (to
+        // separate styles from content) or one of `;`, `:` (chained
+        // CSS rule).  If there's no `;` anywhere in the inner, the
+        // selector was swallowed into content.
+        if (!b.inner.includes(';')) {
+          violations.push(`${loc(p)} "${p.name}": line ${absLine} has @@${m[1]}${m[2]} without a ; separator — style is treated as content ("@@${snippet}...")`);
+          continue;
+        }
+        const after = b.inner.charAt(m[0].length);
+        if (after && !/[;:\s]/.test(after)) {
+          violations.push(`${loc(p)} "${p.name}": line ${absLine} has malformed selector @@${m[1]}${m[2]}${after} — expected ; or : after identifier`);
+        }
+      }
+    }
+    expect(violations, violations.join('\n')).toHaveLength(0);
+  });
+
+  test('every @@.className; references a class defined in the stylesheet', () => {
+    // Catches typos like @@.mc-thoguhts; vs @@.mc-thoughts;.
+    // Skipped if no stylesheet was parsed (e.g. running tests against
+    // a partial tree) to avoid noisy false positives.
+    if (definedClasses.size === 0) return;
+
+    const violations = [];
+    for (const p of allPassages) {
+      if (p.tags.includes('script') || p.tags.includes('stylesheet')) continue;
+      const { blocks } = parseAtBlocks(p.body);
+      for (const b of blocks) {
+        if (!b.inner.startsWith('.')) continue;
+        // Grab the selector chain up to the first `;`.
+        const semi = b.inner.indexOf(';');
+        if (semi < 0) continue; // already flagged by the previous test
+        const chain = b.inner.slice(0, semi);
+        // A chain like ".foo.bar" may reference multiple classes.
+        const names = chain.split('.').filter(Boolean);
+        for (const name of names) {
+          if (!/^[A-Za-z_][\w-]*$/.test(name)) continue; // not a plain ident, skip
+          if (definedClasses.has(name)) continue;
+          const absLine = p.headerLine + b.lineOfStart;
+          const lower = name.toLowerCase();
+          const hint = [...definedClasses].find(c => c.toLowerCase() === lower);
+          const hintMsg = hint ? ` — did you mean ".${hint}"?` : '';
+          violations.push(`${loc(p)} "${p.name}": line ${absLine} @@.${name}; references a class not defined in any [stylesheet] passage${hintMsg}`);
+        }
+      }
+    }
+    expect(violations, violations.join('\n')).toHaveLength(0);
+  });
+
+});
+
 // ── DOM-mutation selector targets ────────────────────────────────
 
 test.describe('replace/append/prepend selector targets', () => {

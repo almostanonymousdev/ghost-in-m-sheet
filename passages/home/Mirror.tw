@@ -51,7 +51,7 @@
 			<</if>>
 		<<else>>@@.mc-speech;I don't have enough makeup@@<br>
 		<</if>>
-	<<else>>@@.mc-thoughts; I need to remove my makeup first
+	<<else>>@@.mc-thoughts; I need to remove my makeup first@@
 	<</if>>
 	<br>
 	@@.backbtn;[[Back|Bathroom]] @@<br>

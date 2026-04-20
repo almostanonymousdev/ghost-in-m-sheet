@@ -3,7 +3,7 @@
 	<<if $gotCursedItem eq 1>>
 		@@.notmc-speech; It seems you managed to find the cursed object faster than me, well done.@@<br>
 		@@.notmc-speech; But why did you send me to look for it if you started searching for it yourself?@@<br>
-		@@.notmc-speech; Actually, nevermind, let's continue.<br>
+		@@.notmc-speech; Actually, nevermind, let's continue.@@<br>
 	<<else>>
 		@@.notmc-speech; I'm sure@@ <<linkappend "@@.notmc-speechLink; it's a cursed item...@@">>
 			<br>

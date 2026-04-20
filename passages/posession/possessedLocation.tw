@@ -163,7 +163,7 @@
 	</video>
 	@@.mc-thoughts;You're running, but the surroundings are completely unfamiliar.@@<br>
 
-	@@.mc-speech;Where the <<linkappend "@@.mc-speechLink; hell am I?@@">>
+	@@.mc-speech;Where the@@ <<linkappend "@@.mc-speechLink; hell am I?@@">>
 		<img @src="setup.ImagePath + '/possessed/5.1.jpg'" width="100%"><br>
 		@@.mc-thoughts;Suddenly, you notice a man looking at you with clear lust in his eyes.@@<br>
 		@@.notmc-speech;Hey, babe, want to come inside?@@<br>

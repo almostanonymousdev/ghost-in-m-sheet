@@ -11,7 +11,7 @@
 		<</linkreplace>>@@
 	<<else>>
 		@@.mc-thoughts; I can't steal the key from her, it's wrong...@@
-		@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%;"> ≥ 3)
+		@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%;"> ≥ 3)@@
 	<</if>>
 <</if>>
 <br>

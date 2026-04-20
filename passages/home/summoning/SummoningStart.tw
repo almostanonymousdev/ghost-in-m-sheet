@@ -1,14 +1,14 @@
 :: SummoningStart [nobr] {"position":"600,2800","size":"100,100"}
 <<if $ghostSpiritEventStage eq 0>>
 	<img @src="setup.ImagePath + '/exorcism/spirit.jpg'" width="100%" class="displayCentredImgs"><br>
-	@@.mc-thoguhts; You start reading the words from the ancient book, your lips slowly forming each sound, each word like a whisper filling the room. You feel the energy growing around you, each syllable resonating in the air,@@ <<linkappend "@@.usebtn; calling something invisible@@">>
+	@@.mc-thoughts; You start reading the words from the ancient book, your lips slowly forming each sound, each word like a whisper filling the room. You feel the energy growing around you, each syllable resonating in the air,@@ <<linkappend "@@.usebtn; calling something invisible@@">>
 		<img @src="setup.ImagePath + '/exorcism/spirit1.jpg'" width="100%" class="displayCentredImgs">
 		@@.mc-thoughts; You notice a figure appearing right behind you in the mirror reflection, its eyes filled with@@ @@.enterbtn;[[unnatural lust|SummonSpirit]]@@<br>
 	<</linkappend>>
 
 <<elseif $thetwinsevent eq 1>>
 	<img @src="setup.ImagePath + '/succubus/succubus.jpg'" width="100%" class="displayCentredImgs">
-	@@.mc-thoguhts; You start reading the words from the ancient book, your lips slowly forming each sound, each word like a whisper filling the room. You feel the energy growing around you, each syllable resonating in the air,@@ <<linkappend "@@.usebtn; calling something invisible@@">><br>
+	@@.mc-thoughts; You start reading the words from the ancient book, your lips slowly forming each sound, each word like a whisper filling the room. You feel the energy growing around you, each syllable resonating in the air,@@ <<linkappend "@@.usebtn; calling something invisible@@">><br>
 		@@.mc-thoughts; But nothing happens@@<br>
 		@@.mc-speech; Did I do something wrong?@@<br>
 		@@.mc-thoughts; Suddenly, you feel a growing sense of weakness and fatigue. Barely reaching your bed, you fall into a deep@@ @@.enterbtn;[[sleep|SummonTwins]]@@
@@ -16,7 +16,7 @@
 
 <<elseif $ghostMareEventStart neq 0>>
 	<img @src="setup.ImagePath + '/succubus/succubus.jpg'" width="100%" class="displayCentredImgs">
-	@@.mc-thoguhts; You start reading the words from the ancient book, your lips slowly forming each sound, each word like a whisper filling the room. You feel the energy growing around you, each syllable resonating in the air,@@ <<linkappend "@@.usebtn; calling something invisible@@">><br>
+	@@.mc-thoughts; You start reading the words from the ancient book, your lips slowly forming each sound, each word like a whisper filling the room. You feel the energy growing around you, each syllable resonating in the air,@@ <<linkappend "@@.usebtn; calling something invisible@@">><br>
 		@@.mc-thoughts; But nothing happens@@<br>
 		@@.mc-speech; Did I do something wrong?@@<br>
 		@@.mc-thoughts; Suddenly, you feel a growing sense of weakness and fatigue. Barely reaching your bed, you fall into a deep@@ @@.enterbtn;[[sleep|SummonMare]]@@
@@ -24,7 +24,7 @@
 
 <<elseif $gotCursedItem eq 1>>
 	<img @src="setup.ImagePath + '/exorcism/tentacles.jpg'" width="100%" class="displayCentredImgs">
-	@@.mc-thoguhts; You start reading the words from the ancient book, your lips slowly forming each sound, each word like a whisper filling the room. You feel the energy growing around you, each syllable resonating in the air,@@ <<linkappend "@@.usebtn; calling something invisible@@">><br>
+	@@.mc-thoughts; You start reading the words from the ancient book, your lips slowly forming each sound, each word like a whisper filling the room. You feel the energy growing around you, each syllable resonating in the air,@@ <<linkappend "@@.usebtn; calling something invisible@@">><br>
 		@@.mc-thoughts; But nothing happens@@<br>
 		@@.mc-speech; Did I do something wrong?@@<br>
 		@@.mc-thoughts; Suddenly, you feel a growing sense of weakness and fatigue. Barely reaching your bed, you fall into a deep@@ @@.enterbtn;[[sleep|SummonTentacles]]@@
