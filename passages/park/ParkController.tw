@@ -54,6 +54,16 @@ setup.Park = (function () {
 			// Used by the jogging event to test whether the stalker
 			// loses interest vs. starts chasing.
 			return threshold <= mc().beauty;
+		},
+
+		// --- Park mugging event ----------------------------------
+		// 10% chance to trigger while jogging, gated behind an
+		// exhibitionism score below 5 -- once the MC is comfortable
+		// being seen naked, the humiliation angle no longer lands.
+		shouldTriggerParkMugging: function () {
+			var exhib = mc().exhib || 0;
+			if (exhib >= 5) return false;
+			return Math.random() < 0.10;
 		}
 	};
 })();
