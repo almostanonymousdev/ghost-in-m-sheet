@@ -121,6 +121,9 @@ beauty: 30,
 <<set $cursedHomeItem to "">>
 <<set $cursedHomeItemActive to 0>>
 
+/*CURSED GYM (shower spirit bag swap)*/
+<<set $gymBagStolen to 0>>
+
 /*CLOTHES*/
 <<set $jeansState to "worn">>
 <<set $tshirtState to "worn">>

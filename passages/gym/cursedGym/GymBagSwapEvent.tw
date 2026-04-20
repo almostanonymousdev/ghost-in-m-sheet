@@ -1,0 +1,29 @@
+:: GymBagSwapEvent [nobr] {"position":"3150,1525","size":"100,100"}
+<video autoplay controls loop>
+<source @src="setup.ImagePath + '/cursed-gym/bag-swap-intro.webm'" type="video/webm">
+</video><br>
+@@.location; Gym -- Women's Locker Room@@<br>
+<br>
+@@.mc-thoughts; You sling a borrowed staff shirt on, swing past the bench on your way to the exit to grab your gym bag -- and your hand closes on empty air. You stop mid-step and look down. The bench is bare. The hook where you'd hung your street clothes is bare. The small shelf above it is bare.@@<br>
+@@.mc-speech; ...no. No no no no.@@<br>
+@@.mc-thoughts; You check the next row. And the next. And the bench by the sinks. You scan every cubby. You are in the staff shirt you snatched out of the lost-and-found box when you got out of the shower, and you're starting to understand why every stitch of your actual clothing is missing: your keys, your phone, your bra, your jeans, your panties, and the bag they were all in. Gone.@@<br><br>
+@@.mc-thoughts; Then a voice in the back of your skull, soft and amused, whispers exactly where your things went: @@<br>
+@@.notmc-speech; "Men's locker room. Last row. Bottom shelf."@@<br>
+@@.mc-speech; You. YOU did this. You fucking ghost.@@<br>
+@@.mc-thoughts; Whatever was haunting the showers apparently thought this was funny. Your bag is waiting for you one thin wall away -- and you aren't leaving this building without it.@@<br>
+<br>
+@@.mc-speech; Okay. Think. How am I getting in there without being arrested?@@<br>
+<br>
+<<if setup.CursedGym.canSneak()>>
+	@@.usebtn;[[Loiter in the corridor until it's empty, then slip in|GymBagSwapSneak]]@@<br>
+<</if>>
+<<if setup.CursedGym.canTowel()>>
+	@@.usebtn;[[Strip down to a towel and march across|GymBagSwapTowel]]@@<br>
+<<else>>
+	@@.warningtext; (Req. Exhibitionism Level <<= setup.CursedGym.towelExhib()>>+ to walk the gym halls in just a towel)@@<br>
+<</if>>
+<<if setup.CursedGym.canNude()>>
+	@@.usebtn;[[Drop the towel too and walk in wearing nothing at all|GymBagSwapNude]]@@<br>
+<<else>>
+	@@.warningtext; (Req. Exhibitionism Level <<= setup.CursedGym.nudeExhib()>>+ to march in completely naked)@@<br>
+<</if>>

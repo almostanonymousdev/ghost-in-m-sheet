@@ -1,0 +1,39 @@
+:: GymBagSwapNude [nobr] {"position":"3350,1625","size":"100,100"}
+<video autoplay controls loop>
+<source @src="setup.ImagePath + '/cursed-gym/nude1.webm'" type="video/webm">
+</video><br>
+@@.location; Gym -- Men's Locker Room@@<br>
+<br>
+@@.mc-thoughts; You don't bother with a towel. You don't bother with stealth. You peel the staff shirt off right there at the women's locker room door, ball it up, and step out into the corridor completely, unapologetically naked.@@<br>
+@@.mc-speech; My bag is in the men's room. I'm going to go get it. Anyone who wants to stare is welcome.@@<br>
+@@.mc-thoughts; A shock of silence ripples down the hallway. A guy coming out of a shower stall forgets what he was doing. A trainer drops his clipboard. You stride toward the men's locker room with your hips rolling, nipples pebbling in the air-conditioning, and a small, incendiary smile tugging at the corner of your mouth.@@<br><br>
+<<linkreplace "@@.usebtn; Push into the men's room@@">>
+	<video autoplay controls loop>
+	<source @src="setup.ImagePath + '/cursed-gym/nude2.webm'" type="video/webm">
+	</video><br>
+	@@.mc-thoughts; You shoulder the men's locker room door open and saunter inside. The room is busy -- it's the post-work rush. Five, six, seven guys in various stages of undress turn to look at you. Jaws hit the floor. A shower runs in the background, steaming up the mirrors.@@<br>
+	@@.mc-speech; Evening. Shower spirit stole my stuff. I'm here to take it back.@@<br>
+	@@.mc-thoughts; You stroll down the row of lockers like you're on a catwalk. Bag on the bottom shelf, exactly where the whisper said. You bend at the waist to pick it up -- slowly -- and hear at least two audible groans behind you.@@<br>
+	@@.mc-thoughts; When you straighten, the shower spirit is already waiting for you, grinning that infuriating grin, arms folded like he knew exactly what you'd do.@@<br>
+	@@.notmc-speech; "Show-off."@@<br>
+	@@.mc-speech; Pot. Kettle. Let's give these boys a thank-you for not calling the cops.@@<br><br>
+	<<linkappend "@@.usebtn; Climb onto the bench@@">>
+		<video autoplay controls loop>
+		<source @src="setup.ImagePath + '/cursed-gym/nude3.webm'" type="video/webm">
+		</video><br>
+		@@.mc-thoughts; You toss the bag onto the bench, then climb up after it -- on your back, legs open, one foot braced against the locker door. The spirit settles between your thighs and slides into you while half a dozen men crowd the aisle to watch. Phones come out. Nobody says a word.@@<br>
+		@@.mc-speech; Yeah -- yeah, fuck me harder, they're watching, they're all watching--@@<br>
+		@@.mc-thoughts; The spirit obliges. He pounds into you with both spectral hands pinning your knees back against your chest, and you put on a show worth every second of it. You moan loud, make eye contact with the nearest camera, lick your lips at another. Somebody behind the circle has started jerking off through his shorts. Another is unbuckling his belt and you nod at him, come closer, and take him in your mouth while the spirit keeps fucking you.@@<br><br>
+		@@.mc-thoughts; You cum first, violently, arching off the bench with a scream muffled around a mortal cock. The guy in your mouth finishes on your face seconds later, rope after rope of warm cum striping your cheeks and lips. The spirit comes last, filling you with electric warmth that you can feel pooling deep inside as he dissolves back into the steam. You sprawl on the bench, panting, smeared with cum, grinning like you've just won a trophy.@@<br>
+		@@.mc-thoughts; You sit up, swing your legs over, pop the bag open to fish out your own clothes, and get dressed at your own leisurely pace while every man in the room pretends he's not still watching. You sling the bag over your shoulder and stroll back out into the hallway. Not one person in the room has the presence of mind to stop you.@@<br>
+		<<set $mc.sanity -= 15>>
+		<<set $mc.corruption += 0.5>>
+		<<set $mc.lust to 100>>
+		<<run setup.CursedGym.clearSwap()>>
+		<br>
+		@@.mc-speech; Bag. Phone. Keys. Everything accounted for. I should lose stuff at the gym more often.@@<br>
+		Sanity decreased. Corruption slightly increased.<br>
+		<br>
+		@@.backbtn;[[Leave|CityMap]]@@
+	<</linkappend>>
+<</linkreplace>>

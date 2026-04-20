@@ -3,6 +3,9 @@
 <<include "GymSolo">>
 
 <<gymFitnessGain 1>>
+<<if not setup.CursedGym.isBagStolen()>>
+	<<run setup.CursedGym.rollForGymBagSwap()>>
+<</if>>
 <br>
 <br>
 @@.backbtn;[[Back|GymInside]] @@

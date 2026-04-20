@@ -1,0 +1,40 @@
+:: GymBagSwapTowel [nobr] {"position":"3250,1625","size":"100,100"}
+<video autoplay controls loop>
+<source @src="setup.ImagePath + '/cursed-gym/towel1.webm'" type="video/webm">
+</video><br>
+@@.location; Gym -- Hallway@@<br>
+<br>
+@@.mc-thoughts; You duck back into the women's locker room, peel off the borrowed staff shirt, and grab one of the oversized bath towels from the communal shelf. You wrap it around yourself and tuck the corner snug above your breasts. If anyone stops you, you're just a member who forgot her bag in the wrong room. Easy.@@<br>
+@@.mc-speech; Head up. Walk like you own the place.@@<br>
+@@.mc-thoughts; Your bare feet slap wet tile as you cross the corridor toward the men's locker room. Two guys passing the other way openly stare at the towel-wrapped silhouette of you -- the wet strands stuck to your collarbones, the towel riding high on your thighs. You flash them a tight smile. One of them actually walks into a door.@@<br><br>
+<<linkreplace "@@.usebtn; Keep going@@">>
+	<video autoplay controls loop>
+	<source @src="setup.ImagePath + '/cursed-gym/towel2.webm'" type="video/webm">
+	</video><br>
+	@@.mc-thoughts; You push into the men's locker room like you belong there. Two guys by the sinks freeze mid-conversation. One is still in his towel, hair dripping. The other has just pulled on boxer-briefs and nothing else.@@<br>
+	@@.notmc-speech; "Uh. Ma'am. You're--"@@<br>
+	@@.mc-speech; I know, I know. Shower spirit took my bag as a prank. Everyone says it's haunted. Last row, bottom shelf, I'll be thirty seconds.@@<br>
+	@@.mc-thoughts; You brush past them. They don't stop you. You feel their eyes glued to the back of your thighs as you walk. Your towel rides up with every step and you make absolutely no effort to tug it down.@@<br>
+	@@.mc-thoughts; Your bag is right where the whisper said. You crouch to grab it -- and the steam behind you shivers into the shape of the shower spirit, arms folded, grinning at the show you've put on for him.@@<br>
+	@@.notmc-speech; "You didn't have to come in dressed like that."@@<br>
+	@@.mc-speech; I kind of did. Blame yourself.@@<br><br>
+	<<linkappend "@@.usebtn; Tug the towel loose@@">>
+		<video autoplay controls loop>
+		<source @src="setup.ImagePath + '/cursed-gym/towel3.webm'" type="video/webm">
+		</video><br>
+		@@.mc-thoughts; You let the towel slip. It pools around your ankles just as the two guys from the sinks round the corner to check on you. Their jaws drop in perfect unison. The spirit chuckles behind you and nudges you forward -- you brace your hands on the bench, arch your back, and let him slide into you right there in the aisle.@@<br>
+		@@.mc-speech; Fuck -- oh fuck, he's cold, he's so--@@<br>
+		@@.mc-thoughts; He fucks you in slow, deliberate strokes, one ghostly hand splayed on your hip and the other stroking down your spine. The guys don't move. One of them has started filming. You don't stop him. You meet his camera with a dazed, lip-bitten smile and roll your hips back to take the spirit deeper.@@<br><br>
+		@@.mc-thoughts; You cum first -- legs buckling, a long shaky cry that echoes off the tile. The spirit finishes inside you a beat later, filling you with that warm, tingling static that you can feel leaking down your inner thigh as he dissolves. The guys have gone silent. Somebody drops his phone.@@<br>
+		@@.mc-thoughts; You pick up the towel, re-wrap it loosely around your waist this time, sling the gym bag over your shoulder, and saunter out. The guy with the phone remembers to breathe.@@<br>
+		<<set $mc.sanity -= 15>>
+		<<set $mc.corruption += 0.5>>
+		<<set $mc.lust to 100>>
+		<<run setup.CursedGym.clearSwap()>>
+		<br>
+		@@.mc-speech; I'm going to be internet famous by morning. Worth it.@@<br>
+		Sanity decreased. Corruption slightly increased.<br>
+		<br>
+		@@.backbtn;[[Leave|CityMap]]@@
+	<</linkappend>>
+<</linkreplace>>

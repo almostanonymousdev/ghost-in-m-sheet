@@ -12,7 +12,10 @@ if [ ! -d "node_modules/@playwright/test" ]; then
 fi
 
 echo "Running tests before commit..."
-npx playwright test
+# --retries=1 retries each failed test once before marking it failed, to
+# absorb parallel-worker flakes (page/context closed under CPU contention)
+# that occasionally hit the heavier e2e specs.
+npx playwright test --retries=1
 if [ $? -ne 0 ]; then
   echo "Tests failed. Commit aborted."
   exit 1

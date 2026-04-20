@@ -23,6 +23,9 @@ You spent about an hour at the gym, diligently working on improving your physica
 <</if>>
 
 <<gymFitnessGain 2>>
+<<if not setup.CursedGym.isBagStolen()>>
+	<<run setup.CursedGym.rollForGymBagSwap()>>
+<</if>>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 <</done>>

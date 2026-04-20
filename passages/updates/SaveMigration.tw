@@ -59,7 +59,8 @@
 		addLustPiercingTongue:      function () { return 0; },
 		addLustPiercingPussy:       function () { return 0; },
 		updatePiercingBodyPartSens: function () { return 1; },
-		fixSave:                    function () { return 1; }
+		fixSave:                    function () { return 1; },
+		gymBagStolen:               function () { return 0; }
 	};
 
 	// mc sub-fields added after launch -- missing on very old saves

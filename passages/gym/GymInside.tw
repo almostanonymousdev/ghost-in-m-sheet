@@ -36,5 +36,9 @@
 	<</if>>
 <</if>>
 <br>
-@@.backbtn;[[Leave|CityMap]] @@<br>
+<<if setup.CursedGym.isBagStolen()>>
+	@@.backbtn;[[Leave|GymBagSwapEvent]]@@<br>
+<<else>>
+	@@.backbtn;[[Leave|CityMap]] @@<br>
+<</if>>
 <br>

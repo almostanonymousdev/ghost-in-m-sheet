@@ -1,0 +1,59 @@
+:: CursedGymController [script]
+/*
+ * Controller for the gym shower swap plotline.
+ *
+ * While the MC is in the gym showers after training, the shower spirit has
+ * a chance to teleport her gym bag -- and every stitch of clothing in it --
+ * to the men's locker room. The swap stays dormant until she heads for
+ * the exit and goes to grab her bag off the bench, at which point she
+ * realises it's missing and has to decide how to go retrieve it before
+ * she can actually leave.
+ *
+ * Mirrors setup.CursedItems: one swap is active at a time, consumed when
+ * the retrieval event plays out. Retrieval options are gated on $mc.exhib
+ * using the canonical bands (0+/5+/8+) already used elsewhere.
+ */
+setup.CursedGym = (function () {
+	function v(name) { return State.variables[name]; }
+	function mc() { return State.variables.mc; }
+
+	var SWAP_CHANCE = 0.1;
+	var TOWEL_EXHIB = 5;
+	var NUDE_EXHIB  = 8;
+
+	return {
+		// Roll for the gym bag swap after a gym training session.
+		// 10% chance; mirrors setup.CursedItems.rollForCursedItem.
+		rollForGymBagSwap: function () {
+			if (Math.random() < SWAP_CHANCE) {
+				State.variables.gymBagStolen = 1;
+			}
+		},
+
+		// True when the shower spirit has stolen the bag and the retrieval
+		// event hasn't played yet.
+		isBagStolen: function () {
+			return v('gymBagStolen') === 1;
+		},
+
+		// Clear the swap after the retrieval event has been triggered.
+		clearSwap: function () {
+			State.variables.gymBagStolen = 0;
+		},
+
+		// Exhib-gated retrieval path availability.
+		canSneak: function () {
+			return true;
+		},
+		canTowel: function () {
+			return mc().exhib >= TOWEL_EXHIB;
+		},
+		canNude: function () {
+			return mc().exhib >= NUDE_EXHIB;
+		},
+
+		// Thresholds, exposed for UI hint text.
+		towelExhib: function () { return TOWEL_EXHIB; },
+		nudeExhib:  function () { return NUDE_EXHIB; }
+	};
+})();

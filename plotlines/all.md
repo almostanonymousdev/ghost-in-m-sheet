@@ -34,6 +34,10 @@ The game includes a body modification system that allows you to customize your c
 
 After losing a haunted house run, there is a 40% chance a ghost follows the MC home and attaches itself to a random household object (TV, computer, bed, shower, or bathtub). The cursed item remains dormant until the MC interacts with it, triggering a unique supernatural sexual encounter. Each event costs sanity and increases corruption and lust. Only one item can be cursed at a time, and the curse is consumed when the event plays out.
 
+## [Cursed Gym (Shower Spirit Bag Swap)](cursed-gym.md)
+
+An extension of the cursed-home-items pattern staged at the gym. After a training session there is a 10% chance the shower spirit teleports the MC's gym bag to the men's locker room. The swap stays dormant until the MC tries to leave the gym: when she reaches for her bag on the way out, it's gone, and she has to decide how to retrieve it before she can walk out. Three escalating retrieval options are offered, each gated on exhibitionism level: loiter in the corridor and slip in, walk across in just a towel, or march in completely naked. Each path costs sanity and raises corruption and lust, and the swap is consumed on use.
+
 ## [Locations and Activities](locations.md)
 
 The game world includes several city locations the player can visit between hunts. These include delivery jobs for earning money, a gym for physical training, a library for research and social encounters, a park for jogging, a church that serves as the rescue quest hub and exorcism storyline, and a mall for shopping. Each location has its own activities, events, and companion interactions.

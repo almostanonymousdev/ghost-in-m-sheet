@@ -1,0 +1,35 @@
+:: GymBagSwapSneak [nobr] {"position":"3150,1625","size":"100,100"}
+<video autoplay controls loop>
+<source @src="setup.ImagePath + '/cursed-gym/sneak1.webm'" type="video/webm">
+</video><br>
+@@.location; Gym -- Men's Locker Room@@<br>
+<br>
+@@.mc-thoughts; You park yourself at the vending machine in the corridor, the oversized staff shirt tugged down to your thighs, and pretend to be indecisive about snacks. Two guys wander out of the men's locker room. A third. A trainer in a polo. You stall through a full re-read of the sports-drink labels. Finally the corridor is empty. You step to the door, push it open an inch, listen. Quiet. Nothing but a dripping shower.@@<br>
+@@.mc-speech; In. Grab the bag. Out. You've got ninety seconds.@@<br><br>
+<<linkreplace "@@.usebtn; Push through the door@@">>
+	<video autoplay controls loop>
+	<source @src="setup.ImagePath + '/cursed-gym/sneak2.webm'" type="video/webm">
+	</video><br>
+	@@.mc-thoughts; The door sighs shut behind you. The locker room is steam-damp, dim, and -- you pray -- empty. You tiptoe down the last row, counting benches. Bottom shelf. There. Your gym bag. You almost sob with relief.@@<br>
+	@@.mc-thoughts; You're reaching for the strap when the steam behind you shivers into the shape of a man. Tall. Translucent. Smiling. The shower spirit.@@<br>
+	@@.notmc-speech; "Leaving so soon? I went to all this trouble."@@<br>
+	@@.mc-speech; Oh fuck -- you're--@@<br>
+	@@.mc-thoughts; He closes the distance without moving a leg. Cold spectral fingers cup your chin and tilt your face up. The fluorescent hum goes muddy in your ears. Your knees hit the bench before you've decided to sit.@@<br><br>
+	<<linkappend "@@.usebtn; You freeze@@">>
+		<video autoplay controls loop>
+		<source @src="setup.ImagePath + '/cursed-gym/sneak3.webm'" type="video/webm">
+		</video><br>
+		@@.mc-thoughts; He doesn't need you to do much. He just holds your jaw and slides his ghostly cock past your lips, one slow, deliberate inch at a time. It's cold going in, then warm, then electric -- a tingle that threads straight down your spine and plants itself between your thighs. You can still smell mens' body wash and bleach. Somewhere past the wall, a locker clangs shut.@@<br>
+		@@.mc-thoughts; You whimper around him, eyes darting toward the door. He thrusts steadily, one hand tangled in your hair, the other braced against the lockers. Your pulse is a drumbeat of don't-get-caught don't-get-caught don't-get-caught, and somehow that's what tips you over.@@<br><br>
+		@@.mc-thoughts; You cum with his cock in your mouth, shaking, muffled, knees slipping on the tile. He fills your throat with something thick and static-warm, and it dissolves before you can swallow it, leaving only the taste behind. When you blink, he's gone. The bag is in your lap. Footsteps approach from the corridor. You scramble out the back way, tugging the staff shirt down, bag clutched to your chest.@@<br>
+		<<set $mc.sanity -= 15>>
+		<<set $mc.corruption += 0.5>>
+		<<set $mc.lust to 100>>
+		<<run setup.CursedGym.clearSwap()>>
+		<br>
+		@@.mc-speech; Got it. Got the bag. I got the bag. Oh god, I'm walking home with his taste in my mouth.@@<br>
+		Sanity decreased. Corruption slightly increased.<br>
+		<br>
+		@@.backbtn;[[Leave|CityMap]]@@
+	<</linkappend>>
+<</linkreplace>>
