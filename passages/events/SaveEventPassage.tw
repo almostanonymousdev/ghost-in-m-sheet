@@ -60,7 +60,7 @@
 			<<elseif $skirtState is "worn">>
 				<<if $pantiesState is "worn">>
 					<<if $isOwaissa eq 1>>
-						<<set _videoList to ["skirt1/1.mp4", "skirt1/2.mp4", "skirt1/3.mp4", "skirt1/4.mp4", "skirt1/5.mp4", "skirt1/6.mp4", "skirt1/7.mp4", "skirt1/8.mp4", "skirt1/9.mp4", "skirt1/10.mp4", "skirt1/11.mp4", "skirt1/12.mp4", "skirt1/13.mp4", "skirt1/14.mp4", "skirt1/15.mp4"]>>
+						<<set _videoList to ["skirt1/1.mp4", "skirt1/2.mp4", "skirt1/3.mp4", "skirt1/4.mp4", "skirt1/5.mp4", "skirt1/6.mp4", "skirt1/7.mp4", "skirt1/8.mp4", "skirt1/9.mp4", "skirt1/10.mp4", "skirt1/11.mp4", "skirt1/12.mp4", "skirt1/13.mp4", "skirt1/14.mp4"]>>
 					<<elseif $isElm eq 1>>
 						<<set _videoList to ["skirt1/20.mp4", "skirt1/21.mp4", "skirt1/22.mp4", "skirt1/23.mp4", "skirt1/24.mp4", "skirt1/25.mp4", "skirt1/26.mp4", "skirt1/27.mp4", "skirt1/28.mp4", "skirt1/29.mp4", "skirt1/30.mp4"]>>
 					<</if>>
