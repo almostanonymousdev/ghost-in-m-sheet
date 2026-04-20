@@ -4,9 +4,9 @@
 <<linkreplace "@@.mc-speechLink; You see something that looks like weed in his hand. Yes, it's definitely weed.@@">>
 	<img @src="setup.ImagePath + '/img/weed.jpg'" style="max-width: 50%; height: auto; display: block; margin: 0 auto;">
 	<<if setup.Delivery.canAcceptBurgerWeed()>>
-		@@.mc-speech;[[If you don't mind|DeliveryBurgerEventStart]]@@ or @@.mc-speech;[[No, sorry, I won't mess with this|DeliveryMap]]@@<br>
+		@@.mc-speech;[[If you don't mind|DeliveryBurgerEventStart]]@@ or @@.mc-speech;[[No, sorry, I won't mess with this|SuburbMap][$suburbMapMode to "delivery"]]@@<br>
 	<<else>>
-		@@.mc-speech;[[No, sorry, I won't mess with this|DeliveryMap]]@@ <<deliveryCorrReq 5>><br>
+		@@.mc-speech;[[No, sorry, I won't mess with this|SuburbMap][$suburbMapMode to "delivery"]]@@ <<deliveryCorrReq 5>><br>
 	<</if>>
 <</linkreplace>>
 <</deliveryEventChoose>>

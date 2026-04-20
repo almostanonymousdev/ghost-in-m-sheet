@@ -13,17 +13,46 @@ test.describe('Missing Women — map, house search, events, clue, nun', () => {
 
   test('rescue map renders 16 houses without errors', async () => {
     await setupActiveQuest(page, 'Victoria');
-    await goToPassage(page, 'RescueMap');
+    await goToPassage(page, 'SuburbMap');
     await expectCleanPassage(page);
     expect(await page.locator('.passage .housecard').count()).toBe(16);
   });
 
+  test('rescue map groups houses into named streets', async () => {
+    await setupActiveQuest(page, 'Victoria');
+    await goToPassage(page, 'SuburbMap');
+    await expectCleanPassage(page);
+
+    const expectedNames = await page.evaluate(() =>
+      SugarCube.setup.rescueStreets.map(s => s.name));
+    const labels = await page.locator('.passage .rescueStreetName').allTextContents();
+    expect(labels.map(s => s.trim())).toEqual(expectedNames);
+
+    // Each street group owns its own set of house cards
+    const groups = await page.locator('.passage .rescueStreet').count();
+    expect(groups).toBe(expectedNames.length);
+  });
+
   test('selecting a house sets $rescueHouse and navigates to rescueHouse', async () => {
     await setupActiveQuest(page, 'Victoria');
-    await goToPassage(page, 'RescueMap');
+    await goToPassage(page, 'SuburbMap');
     await page.locator('.passage .icontextcity').first().click();
     await page.waitForFunction(() => SugarCube.State.passage === 'RescueHouse');
     expect(await getVar(page, 'rescueHouse')).toBe(1);
+  });
+
+  test('rescueHouse passage shows the selected house address', async () => {
+    await setupActiveQuest(page, 'Victoria');
+    await setVar(page, 'rescueHouse', 7);
+
+    await goToPassage(page, 'RescueHouse');
+    await expectCleanPassage(page);
+
+    const expected = await page.evaluate(() => {
+      const h = SugarCube.setup.rescueHouseById[7];
+      return h.street + ', ' + h.number;
+    });
+    expect(await page.locator('.passage').textContent()).toContain(expected);
   });
 
   // ── Rescue house ───────────────────────────────────────────────

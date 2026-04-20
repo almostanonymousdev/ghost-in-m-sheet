@@ -4,9 +4,11 @@ This plotline involves rescuing missing women (Victoria, Julia, Jade, Nadia, and
 
 * **Rescue system** - Starting at age 18, you can take missing posters from the church for random women from a pool of five candidates. Each rescue quest appears only once per day.
   * [rescueTaskBoard.tw](../passages/missing_women/rescueTaskBoard.tw) - Task board where you take missing posters
-  * [rescueMap.tw](../passages/missing_women/rescueMap.tw) - Map for rescue missions
-  * [rescueHouse.tw](../passages/missing_women/rescueHouse.tw) - Rescue house locations
+  * [SuburbMap.tw](../passages/gui/SuburbMap.tw) - Shared map of the suburb used by both the rescue and delivery quests; branches on `$suburbMapMode` ("rescue" or "delivery")
+  * [rescueHouse.tw](../passages/missing_women/rescueHouse.tw) - Rescue house locations (shows the selected street + house number)
   * randomizeRescueHouse passage is now in [widgetRescue.tw](../passages/missing_women/widgetRescue.tw)
+  * Rescue house roster (16 houses across 6 streets) is defined in [StoryInit.tw](../passages/StoryInit.tw) as `setup.rescueStreets`, `setup.rescueHouses`, `setup.rescueHouseById`, and `setup.rescueHouseByAddress`. The delivery hub reuses the same addresses via `setup.deliveryHouses` / `setup.deliveryStreets`.
+  * Streets: Maple Street, Oak Avenue, Pine Road, Birch Lane, Willow Court, Cedar Drive
 
 * **Multi-stage rescue process** - Each rescue involves finding the haunted location, investigating the ghost, completing specific objectives, and surviving ghost encounters. Some rescues have multiple stages with possession events and dangerous situations.
   * [rescueAsh.tw](../passages/missing_women/rescueAsh.tw) - Ash's rescue mission

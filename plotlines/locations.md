@@ -6,7 +6,7 @@ The game world includes several city locations the player can visit between hunt
   * [DeliveryHub.tw](../passages/delivery/DeliveryHub.tw) - Delivery job hub
   * [DeliveryManager.tw](../passages/delivery/DeliveryManager.tw) - Manager interactions
   * [DeliveryManagerEventStart.tw](../passages/delivery/DeliveryManagerEventStart.tw) - Manager event chain
-  * [DeliveryMap.tw](../passages/delivery/DeliveryMap.tw) - Delivery route map
+  * [SuburbMap.tw](../passages/gui/SuburbMap.tw) - Shared map of the suburb; rendered in delivery mode during a shift and in rescue mode from the church quest (branches on `$suburbMapMode`)
   * [workDelivery.tw](../passages/delivery/workDelivery.tw) - Working a delivery shift
   * [deliverySmallPassages.tw](../passages/delivery/deliverySmallPassages.tw) - Delivery routing passages (deliveryHouse, deliveryEvent, deliveryActiveIcon, endShiftDelivery)
   * [meetAlice.tw](../passages/delivery/meetAlice.tw) - Meeting Alice during deliveries
@@ -14,7 +14,7 @@ The game world includes several city locations the player can visit between hunt
   * [deliveryEvent2.tw](../passages/delivery/deliveryEvent2.tw) - Delivery encounter event 2
   * [deliveryEvent3.tw](../passages/delivery/deliveryEvent3.tw) - Delivery encounter event 3
   * Delivery types: Burger (4 files), Package (5 files), Papers (3 files), Pizza (4 files) - each with start, choose, and stage passages
-  * Delivery addresses: Amethyst Street 42, Cascade Avenue 56, Emerald Street 17, Golden Road 34, Honeywood Court 3, Jasmine Lane 89, Lilac Lane 72, Onyx Place 10, Twilight Boulevard 61
+  * Delivery addresses are the shared rescue house roster in [StoryInit.tw](../passages/StoryInit.tw): 16 houses grouped by street (Maple Street, Oak Avenue, Pine Road, Birch Lane, Willow Court, Cedar Drive). Both quests render the same street-grouped layout through the shared [SuburbMap.tw](../passages/gui/SuburbMap.tw).
 
 * **Gym** - Physical training location with solo workouts, group training sessions, and personal trainer events. Multiple trainer event chains with progression.
   * [Gym.tw](../passages/gym/Gym.tw) - Gym exterior and entry

@@ -150,6 +150,9 @@ async function setupActiveQuest(page, girlName) {
   await setVar(page, 'mc.energy', 10);
   await setVar(page, 'hours', 12);
   await setVar(page, 'minutes', 0);
+  // SuburbMap branches on $suburbMapMode; tests navigating to it need
+  // the rescue-mode chrome rather than the delivery-mode chrome.
+  await setVar(page, 'suburbMapMode', 'rescue');
   await page.evaluate(() => {
     const V = SugarCube.State.variables;
     if (!V.tornStyleRandom) {

@@ -12,6 +12,6 @@
 	<br>
 	<<deliveryBonus 15>>
 	<br>
-	@@.backbtn;[[Leave|DeliveryMap]]@@ <br>
+	@@.backbtn;[[Leave|SuburbMap][$suburbMapMode to "delivery"]]@@ <br>
 	<<deliveryLustOverflow>>
 <</linkappend>>

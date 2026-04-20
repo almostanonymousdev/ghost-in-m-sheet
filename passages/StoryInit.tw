@@ -40,19 +40,43 @@
 <<set $deliverySpecialOrderAddress to "">>
 <<set $deliverySpecialOrderPay to 0>>
 <<set $deliverySpecialOrderType to "safe">>
-<<run setup.deliveryHouses = {
-	"Honeywood Court 3":    "house1.jpg",
-	"Onyx Place 10":        "house2.jpg",
-	"Star Street 25":       "house3.jpg",
-	"Lilac Lane 72":        "house4.jpg",
-	"Emerald Street 17":    "house5.jpg",
-	"Cascade Avenue 56":    "house6.jpg",
-	"Jasmine Lane 89":      "house7.jpg",
-	"Golden Road 34":       "house8.jpg",
-	"Twilight Boulevard 61":"house9.jpg",
-	"Amethyst Street 42":   "house10.jpg"
-}>>
-<<run setup.deliveryStreets = Object.keys(setup.deliveryHouses)>>
+/* Rescue houses double as delivery addresses. Streets group the 16
+houses into named neighborhoods; each house keeps its rescue/house/N.jpg
+image, whose N matches the id used by $rescueHouse and the clue photo
+$randomRescuePhotoNumber. */
+<<run setup.rescueStreets = [
+	{ name: "Maple Street",  houses: [{id:  1, number: 12},{id:  2, number: 18},{id:  3, number: 24}] },
+	{ name: "Oak Avenue",    houses: [{id:  4, number:  5},{id:  5, number: 11}] },
+	{ name: "Pine Road",     houses: [{id:  6, number:  7},{id:  7, number: 14},{id:  8, number: 29}] },
+	{ name: "Birch Lane",    houses: [{id:  9, number:  3},{id: 10, number: 22}] },
+	{ name: "Willow Court",  houses: [{id: 11, number:  8},{id: 12, number: 16},{id: 13, number: 33}] },
+	{ name: "Cedar Drive",   houses: [{id: 14, number:  4},{id: 15, number: 19},{id: 16, number: 41}] }
+]>>
+<<run setup.rescueHouses = setup.rescueStreets.reduce(function(acc, s) {
+	s.houses.forEach(function(h) {
+		acc.push({
+			id:      h.id,
+			street:  s.name,
+			number:  h.number,
+			address: s.name + " " + h.number,
+			image:   "rescue/house/" + h.id + ".jpg"
+		});
+	});
+	return acc;
+}, [])>>
+<<run setup.rescueHouseById = setup.rescueHouses.reduce(function(acc, h) {
+	acc[h.id] = h;
+	return acc;
+}, {})>>
+<<run setup.rescueHouseByAddress = setup.rescueHouses.reduce(function(acc, h) {
+	acc[h.address] = h;
+	return acc;
+}, {})>>
+<<run setup.deliveryHouses = setup.rescueHouses.reduce(function(acc, h) {
+	acc[h.address] = h.image;
+	return acc;
+}, {})>>
+<<run setup.deliveryStreets = setup.rescueHouses.map(function(h) { return h.address; })>>
 <<run setup.deliveryEventChooseConfig = {
 	pizza:   { varName: "deliveryPizzaEvent",   img: "pizzaevent/1.jpg",   payMode: "done"   },
 	package: { varName: "deliveryPackageEvent", img: "packageevent/1.jpg", payMode: "always" },
@@ -87,12 +111,6 @@
 	{ var: "tonguePiercing", img: "tonguepiercing.jpg", target: "Tongue", tip: "Pierced tongue",  icon: "tongue.png", sensVar: "piercingTongueAddSens", lustVar: "addLustPiercingTongue" },
 	{ var: "titsPiercing",   img: "titspiercing.jpg",   target: "Tits",   tip: "Pierced nipples", icon: "tits.png",   sensVar: "piercingTitsAddSens",   lustVar: "addLustPiercingTits" },
 	{ var: "pussyPiercing",  img: "pussypiercing.jpg",  target: "Pussy",  tip: "Pierced pussy",   icon: "vagina.png", sensVar: "piercingPussyAddSens",  lustVar: "addLustPiercingPussy" }
-]>>
-<<run setup.deliveryMapLayout = [
-	"Honeywood Court 3", "",                  "Onyx Place 10",      "",                    "Star Street 25",
-	"",                  "Lilac Lane 72",     "Emerald Street 17",  "",                    "",
-	"",                  "Cascade Avenue 56", "",                   "Jasmine Lane 89",     "Golden Road 34",
-	"Twilight Boulevard 61","",               "Amethyst Street 42", "",                    ""
 ]>>
 <<set $equipment to {
 	emf:5,

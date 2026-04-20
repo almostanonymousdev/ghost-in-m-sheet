@@ -69,7 +69,7 @@ test.describe('Missing Women — rescue girls, possession, stay', () => {
     });
   }
 
-  test('rescuePossessed Leave option returns to rescueMap', async () => {
+  test('rescuePossessed Leave option returns to suburbMap', async () => {
     test.setTimeout(10_000);
     await setupActiveQuest(page, 'Victoria');
     await setVar(page, 'rescueStage', 2);
@@ -78,9 +78,9 @@ test.describe('Missing Women — rescue girls, possession, stay', () => {
     await expectCleanPassage(page);
 
     await page.locator('.passage a').filter({ hasText: 'Leave' }).first().click();
-    await page.waitForFunction(() => SugarCube.State.passage === 'RescueMap');
+    await page.waitForFunction(() => SugarCube.State.passage === 'SuburbMap');
 
-    expect(await page.evaluate(() => SugarCube.State.passage)).toBe('RescueMap');
+    expect(await page.evaluate(() => SugarCube.State.passage)).toBe('SuburbMap');
     await expectCleanPassage(page);
   });
 

@@ -112,7 +112,7 @@ I could watch a little longer and then help her... but I might get noticed. @@<b
 <</link>></span><br>
 <span class="useHolyWaterButton"><<if not setup.MissingWomen.hasHolyWater()>>
 	@@.mc-thoughts; Fuck! I didn't bring any holy water... I can't do much without it...@@<br><br>
-	@@.backbtn; [[Leave|RescueMap]]@@<br>
+	@@.backbtn; [[Leave|SuburbMap][$suburbMapMode to "rescue"]]@@<br>
 <<else>>
 	<<linkreplace "@@.usebtn;Use holywater@@">>
 		<<replace ".rescueWatchButton">><</replace>>

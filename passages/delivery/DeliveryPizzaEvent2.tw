@@ -15,6 +15,6 @@
 	@@.mc-thoughts; At least she gave me money. It seems even more than I usually earn. I could go now@@<br>
 	<br>
 	<<deliveryBonus 10 0.1>>
-	@@.backbtn;[[Leave|DeliveryMap]]@@<br>
+	@@.backbtn;[[Leave|SuburbMap][$suburbMapMode to "delivery"]]@@<br>
 	<<set $earnedMoney += $jobMoneySuccessed>>
 <</linkappend>>@@

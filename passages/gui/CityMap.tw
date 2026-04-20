@@ -77,7 +77,7 @@
 </div>
 <div class="housecard">
 </div>
-<<if $hasQuestForRescue eq 1>><img @src="setup.ImagePath + '/rescue/down.png'" class="downPointer clickable" onclick="SugarCube.Engine.play('RescueMap');">
+<<if $hasQuestForRescue eq 1>><img @src="setup.ImagePath + '/rescue/down.png'" class="downPointer clickable" onclick="SugarCube.State.variables.suburbMapMode='rescue'; SugarCube.Engine.play('SuburbMap');">
 <</if>>
 </div>
 

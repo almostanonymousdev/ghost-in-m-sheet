@@ -1,0 +1,78 @@
+:: SuburbMap [city nobr] {"position":"1400,1500","size":"100,100"}
+/* Shared street-grouped map of the suburb. Used by both the rescue
+quest (mode "rescue") and the delivery shift (mode "delivery"); the
+per-mode chrome — end-shift button vs. up-arrow, click target,
+highlight rules — branches off $suburbMapMode. */
+<<if $suburbMapMode is "delivery">>
+	<<include "StyleDeliveryMap">>
+	<span id="endShift" class="btnendshift btnendcolor clickable">End the shift</span>
+<<else>>
+	<img @src="setup.ImagePath + '/rescue/down.png'" class="upPointer clickable" onclick="SugarCube.Engine.play('CityMap');">
+<</if>>
+<div class="rescueMapStreets">
+<<for _street range setup.rescueStreets>>
+	<<capture _street>>
+		<div class="rescueStreet">
+		<div class="rescueStreetName">_street.name</div>
+		<div class="flexwrapper rescueStreetHouses">
+		<<for _h range _street.houses>>
+			<<capture _h>>
+				<<set _address to _street.name + " " + _h.number>>
+				<<if $suburbMapMode is "delivery">>
+					<<set _familiar to setup.Delivery.isRouteFamiliar(_address)>>
+					<<set _isSpecial to ($deliverySpecialOrder and _address is $deliverySpecialOrderAddress)>>
+					<div @class="'housecard' + (_familiar ? ' familiar-house' : '') + (_isSpecial ? ' special-house' : '')">
+					<img @src="setup.ImagePath + '/img/delivery1.png'" class="iconsOnMap">
+					<div class="deliveryHouseNumber">#_h.number</div>
+					<<if _isSpecial>>
+						@@.icontextdelivery;<<link _address "DeliverySpecialEvent">><<set $currentHouse to _address>>
+						<</link>>@@
+						<div class="mapOrderIcons"><img @src="setup.ImagePath + '/img/package.jpg'" class="mapOrderIcon rush-icon"></div>
+					<<else>>
+						@@.icontextdelivery;<<link _address "DeliveryAutoDeliver">><<set $currentHouse to _address>>
+						<</link>>@@
+						<<set _hasOrder to false>>
+						<<for _oi to 0; _oi lt 3; _oi++>>
+							<<if $orders[_oi].address is _address and State.variables["deliveryActiveIcon" + (_oi + 1)]>>
+								<<set _hasOrder to true>>
+							<</if>>
+						<</for>>
+						<<if _hasOrder>>
+							<div class="mapOrderIcons">
+							<<for _oi to 0; _oi lt 3; _oi++>>
+								<<if $orders[_oi].address is _address and State.variables["deliveryActiveIcon" + (_oi + 1)]>>
+									<img @src="setup.ImagePath + '/' + $orders[_oi].image" class="mapOrderIcon">
+								<</if>>
+							<</for>>
+							</div>
+						<</if>>
+					<</if>>
+					</div>
+				<<else>>
+					<div @class="'housecard rescuehousecard' + ($cheatRescueHouseHighlight && _h.id === $randomRescuePhotoNumber ? ' cheatRescueHighlight' : '')">
+					<img @src="setup.ImagePath + '/rescue/house/' + _h.id + '.jpg'" class="iconRescuePx">
+					<div class="rescueHouseNumber">#_h.number</div>
+					@@.icontextcity;<<link "Move" "RescueHouse">><<set $rescueHouse to _h.id>>
+					<</link>>@@
+					</div>
+				<</if>>
+			<</capture>>
+		<</for>>
+		</div>
+		</div>
+	<</capture>>
+<</for>>
+</div>
+<<if $suburbMapMode is "delivery">>
+	<<script>>
+	if (typeof window.endShiftHandler === 'undefined') {
+		window.endShiftHandler = function () { Engine.play('DeliveryManager'); };
+		$(document).on('click', '#endShift', window.endShiftHandler);
+	}
+	<</script>>
+<<else>>
+	<<include "StyleRescueMap">>
+	<<if ($hours gte 22) or ($hours gte 0 and $hours lte 5)>>
+		<<include "StyleRescueNightOverlay">>
+	<</if>>
+<</if>>

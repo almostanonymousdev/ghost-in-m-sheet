@@ -22,9 +22,9 @@
 		<</linkappend>>@@
 	<<else>>
 		@@.mc-speech; Nah, I better get back to work, bye@@ <<deliveryLustReq 40>><br>
-		@@.backbtn;[[Leave|DeliveryMap]] @@<br>
+		@@.backbtn;[[Leave|SuburbMap][$suburbMapMode to "delivery"]] @@<br>
 	<</if>>
 <<else>>
 	@@.mc-speech; What? I'm not some cheap whore, I'm leaving@@ <<deliveryCorrReq 3>><br><br>
-	@@.backbtn;[[Leave|DeliveryMap]] @@<br>
+	@@.backbtn;[[Leave|SuburbMap][$suburbMapMode to "delivery"]] @@<br>
 <</if>>

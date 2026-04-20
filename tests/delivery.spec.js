@@ -553,7 +553,7 @@ test.describe('Delivery Controller', () => {
     await setVar(page, 'deliveryVisitCounts', {});
 
     // act
-    const result = await callSetup(page, "setup.Delivery.isRouteFamiliar('Star Street 25')");
+    const result = await callSetup(page, "setup.Delivery.isRouteFamiliar('Maple Street 12')");
 
     // assert
     expect(result).toBe(false);
@@ -561,10 +561,10 @@ test.describe('Delivery Controller', () => {
 
   test('isRouteFamiliar true after 3 visits', async () => {
     // arrange
-    await setVar(page, 'deliveryVisitCounts', { 'Star Street 25': 3 });
+    await setVar(page, 'deliveryVisitCounts', { 'Maple Street 12': 3 });
 
     // act
-    const result = await callSetup(page, "setup.Delivery.isRouteFamiliar('Star Street 25')");
+    const result = await callSetup(page, "setup.Delivery.isRouteFamiliar('Maple Street 12')");
 
     // assert
     expect(result).toBe(true);
@@ -573,14 +573,14 @@ test.describe('Delivery Controller', () => {
   test('trackVisit increments visit count', async () => {
     // arrange
     await setVar(page, 'deliveryVisitCounts', {});
-    await setVar(page, 'currentHouse', 'Star Street 25');
+    await setVar(page, 'currentHouse', 'Maple Street 12');
 
     // act
-    await callSetup(page, "setup.Delivery.trackVisit('Star Street 25')");
-    await callSetup(page, "setup.Delivery.trackVisit('Star Street 25')");
+    await callSetup(page, "setup.Delivery.trackVisit('Maple Street 12')");
+    await callSetup(page, "setup.Delivery.trackVisit('Maple Street 12')");
     const counts = await getVar(page, 'deliveryVisitCounts');
 
     // assert
-    expect(counts['Star Street 25']).toBe(2);
+    expect(counts['Maple Street 12']).toBe(2);
   });
 });

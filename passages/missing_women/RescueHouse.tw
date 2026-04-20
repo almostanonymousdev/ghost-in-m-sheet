@@ -1,42 +1,12 @@
 :: RescueHouse [nobr] {"position":"2175,1700","size":"100,100"}
+<<set _houseInfo to setup.rescueHouseById[$rescueHouse]>>
 <div style="position: relative;">
 
 <img @src="setup.ImagePath+`/`+'rescue/house/'+$randomRescuePhotoNumber+`.jpg`" @class="$tornStyleRandom+` hideRescueHouse`" id="rescueHouseHidden" width="100%" style="position: absolute; z-index: 10;">
 
-<<if $rescueHouse eq 1>>
-	<img @src="setup.ImagePath + '/rescue/house/1.jpg'" width="100%">
-<<elseif $rescueHouse eq 2>>
-	<img @src="setup.ImagePath + '/rescue/house/2.jpg'" width="100%">
-<<elseif $rescueHouse eq 3>>
-	<img @src="setup.ImagePath + '/rescue/house/3.jpg'" width="100%">
-<<elseif $rescueHouse eq 4>>
-	<img @src="setup.ImagePath + '/rescue/house/4.jpg'" width="100%">
-<<elseif $rescueHouse eq 5>>
-	<img @src="setup.ImagePath + '/rescue/house/5.jpg'" width="100%">
-<<elseif $rescueHouse eq 6>>
-	<img @src="setup.ImagePath + '/rescue/house/6.jpg'" width="100%">
-<<elseif $rescueHouse eq 7>>
-	<img @src="setup.ImagePath + '/rescue/house/7.jpg'" width="100%">
-<<elseif $rescueHouse eq 8>>
-	<img @src="setup.ImagePath + '/rescue/house/8.jpg'" width="100%">
-<<elseif $rescueHouse eq 9>>
-	<img @src="setup.ImagePath + '/rescue/house/9.jpg'" width="100%">
-<<elseif $rescueHouse eq 10>>
-	<img @src="setup.ImagePath + '/rescue/house/10.jpg'" width="100%">
-<<elseif $rescueHouse eq 11>>
-	<img @src="setup.ImagePath + '/rescue/house/11.jpg'" width="100%">
-<<elseif $rescueHouse eq 12>>
-	<img @src="setup.ImagePath + '/rescue/house/12.jpg'" width="100%">
-<<elseif $rescueHouse eq 13>>
-	<img @src="setup.ImagePath + '/rescue/house/13.jpg'" width="100%">
-<<elseif $rescueHouse eq 14>>
-	<img @src="setup.ImagePath + '/rescue/house/14.jpg'" width="100%">
-<<elseif $rescueHouse eq 15>>
-	<img @src="setup.ImagePath + '/rescue/house/15.jpg'" width="100%">
-<<elseif $rescueHouse eq 16>>
-	<img @src="setup.ImagePath + '/rescue/house/16.jpg'" width="100%">
-<</if>>
+<img @src="setup.ImagePath + '/' + _houseInfo.image" width="100%">
 </div>
+@@.location; _houseInfo.street, _houseInfo.number@@<br>
 
 <<if setup.MissingWomen.hasRescueClue()>>
 	<<linkreplace "@@.usebtn;Compare the house with the photo@@">>
@@ -71,4 +41,4 @@
 	<</if>>
 <</if>><br>
 <br>
-@@.backbtn;[[Back|RescueMap]]@@<br>
+@@.backbtn;[[Back|SuburbMap][$suburbMapMode to "rescue"]]@@<br>

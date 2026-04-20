@@ -31,7 +31,7 @@
 	@@.mc-action; Now you can work as a courier.@@
 	<br>
 	<<set $firstVisitDeliveryHub = false>>
-<<elseif not setup.Delivery.isFirstVisit() and previous() isnot "DeliveryMap">>
+<<elseif not setup.Delivery.isFirstVisit() and previous() isnot "SuburbMap">>
 	<br>
 	<<if setup.Delivery.hasMetManagerEvent()>>
 		@@.notmc-speech; Oh, $mc.name, come in, don't be shy. What do you want to talk about?@@
@@ -68,7 +68,7 @@
 		<</if>>
 	<</linkreplace>>
 
-<<elseif previous() is "DeliveryMap">>
+<<elseif previous() is "SuburbMap">>
 	@@.notmc-speech; Here are your hard-earned money for the shift. Not much, but it's something at least.@@ <br>
 	<<include "EndShiftDelivery">>
 <</if>>

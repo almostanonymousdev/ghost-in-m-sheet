@@ -6,4 +6,4 @@
 @@.mc-thoughts; It's finally over@@<br>
 <<deliveryBonus 10>>
 <br>
-@@.backbtn;[[Leave|DeliveryMap]]@@<br>
+@@.backbtn;[[Leave|SuburbMap][$suburbMapMode to "delivery"]]@@<br>

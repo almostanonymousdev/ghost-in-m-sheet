@@ -115,6 +115,98 @@
 	setup.applySaveDefaults = applyDefaults;
 
 	/*
+	* Recover saves whose current moment points at a passage that no longer
+	* exists (because it was renamed or deleted between the version that
+	* wrote the save and the version loading it). Without this, SugarCube
+	* would try to render a missing passage and surface "Error: the passage
+	* does not exist" to the player.
+	*
+	* Strategy: rewrite the moment's title to CityMap so the player lands on
+	* a safe screen, and zero out any "in-flight" state (active hunt, live
+	* delivery shift, transient UI flags) so the recovered session isn't
+	* stuck halfway through an activity whose exit passage was also missing.
+	* Quest progression flags ($hasQuestForRescue, relationships, inventory)
+	* are preserved — we only scrub state that represents "mid-activity".
+	*/
+	var FALLBACK_PASSAGE = 'CityMap';
+
+	function clearInFlightState (vars) {
+		if (!vars || typeof vars !== 'object') {
+			return;
+		}
+		// --- Hunt state ---------------------------------------------
+		vars.ghostHuntingMode = 0;
+		vars.isOwaissa  = 0;
+		vars.isElm      = 0;
+		vars.isEnigma   = 0;
+		vars.isIronclad = 0;
+		vars.EmfActivated      = 0;
+		vars.EmfActivationTime = 0;
+		vars.uvlActivated      = 0;
+		vars.uvlActivationTime = 0;
+		['EMF5Check','EctoglassCheck','GWBCheck','SpiritboxCheck','TemperatureCheck','UVLCheck']
+			.forEach(function (k) { vars[k] = false; });
+		vars.tempCorr = 0;
+		vars.huntActivated = 0;
+
+		// --- Companion hunt-plan flags ------------------------------
+		vars.chosenPlan          = 0;
+		vars.chosenPlanActivated = 0;
+		vars.randomGhostPassage  = 0;
+		vars.isCompRoomChosen    = 0;
+		vars.showComp            = 0;
+		vars.isCompChosen        = 0;
+
+		// --- Delivery shift state -----------------------------------
+		vars.deliverySpecialOrder        = false;
+		vars.deliverySpecialOrderAddress = '';
+		vars.deliverySpecialOrderPay     = 0;
+		vars.orders                      = [];
+		vars.currentHouse                = '';
+		vars.currentOrder                = 0;
+		vars.earnedMoney                 = 0;
+		vars.deliveryCorrectThisShift    = 0;
+		vars.deliveryActiveIcon1         = true;
+		vars.deliveryActiveIcon2         = true;
+		vars.deliveryActiveIcon3         = true;
+
+		// --- Shared suburb-map mode (rescue vs delivery chrome) -----
+		vars.suburbMapMode = '';
+
+		// --- Cursed home-item event (interrupted mid-encounter) -----
+		vars.cursedHomeItemActive = 0;
+	}
+
+	function passageExists (title) {
+		if (typeof title !== 'string' || !title) {
+			return false;
+		}
+		if (typeof Story === 'undefined' || typeof Story.has !== 'function') {
+			// No Story API available — skip the check rather than
+			// mis-report every passage as missing.
+			return true;
+		}
+		return Story.has(title);
+	}
+
+	function recoverMissingPassage (moment) {
+		if (!moment || passageExists(moment.title)) {
+			return false;
+		}
+		console.warn(
+			'SaveMigration: saved passage "' + moment.title +
+			'" no longer exists; recovering to ' + FALLBACK_PASSAGE
+		);
+		moment.title = FALLBACK_PASSAGE;
+		clearInFlightState(moment.variables);
+		return true;
+	}
+
+	// Expose for tests and other load paths.
+	setup.recoverMissingPassage = recoverMissingPassage;
+	setup.clearInFlightState    = clearInFlightState;
+
+	/*
 	* Strip values that can't survive a JSON round-trip. These show up when
 	* someone accidentally does `<<set $foo to $('#bar')>>` or stashes a
 	* function on a variable. SugarCube's own clone() will usually drop them
@@ -204,6 +296,13 @@
 				var moment = save.state.history[idx];
 				if (moment && moment.variables) {
 					applyDefaults(moment.variables);
+				}
+
+				// Recover the current moment if its passage was removed in
+				// a later version. Redirect to CityMap and scrub mid-activity
+				// state so the player isn't left staring at an error page.
+				if (moment) {
+					recoverMissingPassage(moment);
 				}
 
 				// Record what version the save was loaded at, so later code

@@ -4,7 +4,7 @@ And then, everything changed. The house started shifting before your eyes. The c
 But something was off. You knew it was all fake. An illusion, a trap.<br>
 Your instincts screamed that this place was dangerous, and you found yourself torn -- should you keep searching or turn back while you still could?<br>@@
 @@.mc-speech; This has to be the right place. But should I keep going? There's something seriously wrong with this place... maybe I should leave while I can.@@<br><br>
-<span id="choiceRescuePossessed">@@.usebtn; [[Leave|RescueMap]] @@<b>or</b></span><<linkreplace "@@.usebtn; Continue@@">>
+<span id="choiceRescuePossessed">@@.usebtn; [[Leave|SuburbMap][$suburbMapMode to "rescue"]] @@<b>or</b></span><<linkreplace "@@.usebtn; Continue@@">>
 	<<replace "#choiceRescuePossessed">><</replace>>
 	<<set $hasQuestForRescue to 2>>
 	<<if $currentRescueGirl eq "Victoria">>
@@ -58,6 +58,6 @@ Your instincts screamed that this place was dangerous, and you found yourself to
 		<</link>>@@<br>
 	<<else>>
 		@@.mc-thoughts; Something feels wrong... you should leave this place.@@<br>
-		@@.backbtn; [[Leave|RescueMap]]@@
+		@@.backbtn; [[Leave|SuburbMap][$suburbMapMode to "rescue"]]@@
 	<</if>>
 <</linkreplace>>

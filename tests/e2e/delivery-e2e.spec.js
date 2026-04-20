@@ -38,6 +38,9 @@ async function setupReadyWorker(page) {
   await setVar(page, 'hours', 12);
   await setVar(page, 'mc.energy', 10);
   await setVar(page, 'mc.money', 50);
+  // SuburbMap branches on $suburbMapMode; tests that go straight to it
+  // (bypassing the WorkDelivery Start link) need the delivery chrome.
+  await setVar(page, 'suburbMapMode', 'delivery');
 }
 
 /**
@@ -77,7 +80,7 @@ async function startShiftWithKnownOrders(page) {
 }
 
 /**
- * Click the "End the shift" button on DeliveryMap.
+ * Click the "End the shift" button on the delivery-mode SuburbMap.
  * Uses dispatchEvent because the button can be overlapped by house cards.
  */
 async function clickEndShift(page) {
@@ -344,14 +347,17 @@ test.describe('Delivery E2E — Shift initialization', () => {
     expect(await startLink.innerText()).toContain('Start');
   });
 
-  test('clicking Start navigates to DeliveryMap', async () => {
+  test('clicking Start navigates to SuburbMap in delivery mode', async () => {
     await setupReadyWorker(page);
+    // Scrub the mode so we can confirm the Start link sets it
+    await setVar(page, 'suburbMapMode', '');
     await goToPassage(page, 'WorkDelivery');
 
     await passage(page).locator('.movebtn a').click();
-    await waitForPassage(page, 'DeliveryMap');
+    await waitForPassage(page, 'SuburbMap');
 
-    expect(await currentPassage(page)).toBe('DeliveryMap');
+    expect(await currentPassage(page)).toBe('SuburbMap');
+    expect(await getVar(page, 'suburbMapMode')).toBe('delivery');
   });
 });
 
@@ -369,19 +375,19 @@ test.describe('Delivery E2E — Delivery map', () => {
     await startShiftWithKnownOrders(page);
 
     await passage(page).locator('.movebtn a').click();
-    await waitForPassage(page, 'DeliveryMap');
+    await waitForPassage(page, 'SuburbMap');
 
     const houseCards = page.locator('.housecard');
     const count = await houseCards.count();
-    // 20 total cells in the grid (10 non-empty + 10 empty)
-    expect(count).toBeGreaterThanOrEqual(10);
+    // 16 rescue-house cards grouped across the named streets
+    expect(count).toBe(16);
   });
 
   test('map shows End the shift button', async () => {
     await setupReadyWorker(page);
     await startShiftWithKnownOrders(page);
     await passage(page).locator('.movebtn a').click();
-    await waitForPassage(page, 'DeliveryMap');
+    await waitForPassage(page, 'SuburbMap');
 
     const endShiftBtn = page.locator('#endShift');
     await expect(endShiftBtn).toBeVisible();
@@ -392,7 +398,7 @@ test.describe('Delivery E2E — Delivery map', () => {
     await setupReadyWorker(page);
     await startShiftWithKnownOrders(page);
     await passage(page).locator('.movebtn a').click();
-    await waitForPassage(page, 'DeliveryMap');
+    await waitForPassage(page, 'SuburbMap');
 
     const orderIcons = page.locator('.mapOrderIcon');
     const iconCount = await orderIcons.count();
@@ -529,7 +535,7 @@ test.describe('Delivery E2E — End shift', () => {
     await setupReadyWorker(page);
     await startShiftWithKnownOrders(page);
     await passage(page).locator('.movebtn a').click();
-    await waitForPassage(page, 'DeliveryMap');
+    await waitForPassage(page, 'SuburbMap');
 
     await setVar(page, 'earnedMoney', 30);
 
@@ -547,7 +553,7 @@ test.describe('Delivery E2E — End shift', () => {
 
     await startShiftWithKnownOrders(page);
     await passage(page).locator('.movebtn a').click();
-    await waitForPassage(page, 'DeliveryMap');
+    await waitForPassage(page, 'SuburbMap');
 
     await clickEndShift(page);
     await waitForPassage(page, 'DeliveryManager');
@@ -561,7 +567,7 @@ test.describe('Delivery E2E — End shift', () => {
 
     await startShiftWithKnownOrders(page);
     await passage(page).locator('.movebtn a').click();
-    await waitForPassage(page, 'DeliveryMap');
+    await waitForPassage(page, 'SuburbMap');
 
     await clickEndShift(page);
     await waitForPassage(page, 'DeliveryManager');
@@ -575,7 +581,7 @@ test.describe('Delivery E2E — End shift', () => {
 
     await startShiftWithKnownOrders(page);
     await passage(page).locator('.movebtn a').click();
-    await waitForPassage(page, 'DeliveryMap');
+    await waitForPassage(page, 'SuburbMap');
 
     await setVar(page, 'earnedMoney', 25);
 
@@ -592,7 +598,7 @@ test.describe('Delivery E2E — End shift', () => {
 
     await startShiftWithKnownOrders(page);
     await passage(page).locator('.movebtn a').click();
-    await waitForPassage(page, 'DeliveryMap');
+    await waitForPassage(page, 'SuburbMap');
 
     await setVar(page, 'deliveryCorrectThisShift', 3);
 
@@ -608,7 +614,7 @@ test.describe('Delivery E2E — End shift', () => {
 
     await startShiftWithKnownOrders(page);
     await passage(page).locator('.movebtn a').click();
-    await waitForPassage(page, 'DeliveryMap');
+    await waitForPassage(page, 'SuburbMap');
 
     await setVar(page, 'deliveryCorrectThisShift', 2);
 
@@ -623,7 +629,7 @@ test.describe('Delivery E2E — End shift', () => {
 
     await startShiftWithKnownOrders(page);
     await passage(page).locator('.movebtn a').click();
-    await waitForPassage(page, 'DeliveryMap');
+    await waitForPassage(page, 'SuburbMap');
 
     await setVar(page, 'deliveryCorrectThisShift', 3);
 
@@ -642,7 +648,7 @@ test.describe('Delivery E2E — End shift', () => {
 
     await startShiftWithKnownOrders(page);
     await passage(page).locator('.movebtn a').click();
-    await waitForPassage(page, 'DeliveryMap');
+    await waitForPassage(page, 'SuburbMap');
 
     await setVar(page, 'deliveryCorrectThisShift', 3);
 
@@ -701,7 +707,7 @@ test.describe('Delivery E2E — Full flow', () => {
 
     // 6. Click Start to go to map
     await passage(page).locator('.movebtn a').click();
-    await waitForPassage(page, 'DeliveryMap');
+    await waitForPassage(page, 'SuburbMap');
 
     // 7. End the shift (delivery itself is tested elsewhere)
     await clickEndShift(page);
@@ -722,7 +728,7 @@ test.describe('Delivery E2E — Full flow', () => {
     for (let shift = 0; shift < 2; shift++) {
       await startShiftWithKnownOrders(page);
       await passage(page).locator('.movebtn a').click();
-      await waitForPassage(page, 'DeliveryMap');
+      await waitForPassage(page, 'SuburbMap');
 
       await clickEndShift(page);
       await waitForPassage(page, 'DeliveryManager');
@@ -768,11 +774,11 @@ test.describe('Delivery E2E — Special order', () => {
     await startShiftWithKnownOrders(page);
 
     await setVar(page, 'deliverySpecialOrder', true);
-    await setVar(page, 'deliverySpecialOrderAddress', 'Golden Road 34');
+    await setVar(page, 'deliverySpecialOrderAddress', 'Cedar Drive 41');
     await setVar(page, 'deliverySpecialOrderPay', 22);
     await setVar(page, 'deliverySpecialOrderType', 'safe');
 
-    await goToPassage(page, 'DeliveryMap');
+    await goToPassage(page, 'SuburbMap');
 
     const specialHouse = page.locator('.special-house');
     await expect(specialHouse).toHaveCount(1);
@@ -782,7 +788,7 @@ test.describe('Delivery E2E — Special order', () => {
     await setupReadyWorker(page);
     await startShiftWithKnownOrders(page);
 
-    const specialAddress = 'Golden Road 34';
+    const specialAddress = 'Cedar Drive 41';
     await setVar(page, 'deliverySpecialOrder', true);
     await setVar(page, 'deliverySpecialOrderAddress', specialAddress);
     await setVar(page, 'deliverySpecialOrderPay', 22);
@@ -800,6 +806,99 @@ test.describe('Delivery E2E — Special order', () => {
   });
 });
 
+// ─── Shared rescue/delivery street map ──────────────────────────
+
+test.describe('SuburbMap — mode switching', () => {
+  let page;
+
+  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
+  test.afterAll(async () => { await page.close(); });
+  test.beforeEach(async () => { await resetGame(page); });
+
+  test('rescue mode shows the Move link on each house, not end-shift chrome', async () => {
+    await setVar(page, 'suburbMapMode', 'rescue');
+    await setVar(page, 'hasQuestForRescue', 1);
+    await goToPassage(page, 'SuburbMap');
+
+    expect(await page.locator('#endShift').count()).toBe(0);
+    expect(await page.locator('.passage .icontextcity').count()).toBe(16);
+    expect(await page.locator('.passage .icontextdelivery').count()).toBe(0);
+  });
+
+  test('delivery mode shows end-shift button and delivery links on each house', async () => {
+    await setVar(page, 'suburbMapMode', 'delivery');
+    await setVar(page, 'firstVisitDeliveryHub', false);
+    await goToPassage(page, 'WorkDelivery');
+    await goToPassage(page, 'SuburbMap');
+
+    expect(await page.locator('#endShift').count()).toBe(1);
+    expect(await page.locator('.passage .icontextdelivery').count()).toBe(16);
+    expect(await page.locator('.passage .icontextcity').count()).toBe(0);
+  });
+
+  test('both modes render the same 6 street groups', async () => {
+    await setVar(page, 'suburbMapMode', 'rescue');
+    await goToPassage(page, 'SuburbMap');
+    const rescueStreets = await page.locator('.passage .rescueStreetName').allTextContents();
+
+    await setVar(page, 'suburbMapMode', 'delivery');
+    await setVar(page, 'firstVisitDeliveryHub', false);
+    await goToPassage(page, 'WorkDelivery');
+    await goToPassage(page, 'SuburbMap');
+    const deliveryStreets = await page.locator('.passage .rescueStreetName').allTextContents();
+
+    expect(rescueStreets).toEqual(deliveryStreets);
+    expect(rescueStreets.length).toBe(6);
+  });
+});
+
+test.describe('Delivery E2E — Shared street map', () => {
+  let page;
+
+  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
+  test.afterAll(async () => { page.close(); });
+  test.beforeEach(async () => { await resetGame(page); });
+
+  test('map renders one group per rescue street with street name labels', async () => {
+    await setupReadyWorker(page);
+    await startShiftWithKnownOrders(page);
+    await passage(page).locator('.movebtn a').click();
+    await waitForPassage(page, 'SuburbMap');
+
+    const expectedNames = await page.evaluate(() =>
+      SugarCube.setup.rescueStreets.map(s => s.name));
+    const labels = await page.locator('.rescueStreetName').allTextContents();
+    expect(labels.map(s => s.trim())).toEqual(expectedNames);
+  });
+
+  test('delivery orders draw addresses from the rescue street pool', async () => {
+    await setupReadyWorker(page);
+    await startShiftWithKnownOrders(page);
+
+    const result = await page.evaluate(() => ({
+      orders: SugarCube.State.variables.orders.map(o => o.address),
+      pool: SugarCube.setup.deliveryStreets,
+      rescueAddresses: SugarCube.setup.rescueHouses.map(h => h.address),
+    }));
+
+    // Every pool entry is also an address in the rescue house list
+    expect(result.pool.sort()).toEqual(result.rescueAddresses.sort());
+    // Every delivery order address comes from the shared pool
+    for (const addr of result.orders) {
+      expect(result.pool).toContain(addr);
+    }
+  });
+
+  test('shift draws from all 16 shared houses (> original 10)', async () => {
+    await setupReadyWorker(page);
+    await startShiftWithKnownOrders(page);
+
+    const poolSize = await page.evaluate(
+      () => SugarCube.setup.deliveryStreets.length);
+    expect(poolSize).toBe(16);
+  });
+});
+
 // ─── Route familiarity on map ───────────────────────────────────
 
 test.describe('Delivery E2E — Route familiarity display', () => {
@@ -811,10 +910,10 @@ test.describe('Delivery E2E — Route familiarity display', () => {
 
   test('familiar routes get visual indicator on map', async () => {
     await setupReadyWorker(page);
-    await setVar(page, 'deliveryVisitCounts', { 'Star Street 25': 3 });
+    await setVar(page, 'deliveryVisitCounts', { 'Maple Street 12': 3 });
 
     await startShiftWithKnownOrders(page);
-    await goToPassage(page, 'DeliveryMap');
+    await goToPassage(page, 'SuburbMap');
 
     const familiarHouse = page.locator('.familiar-house');
     await expect(familiarHouse).toHaveCount(1);
@@ -825,7 +924,7 @@ test.describe('Delivery E2E — Route familiarity display', () => {
     await setVar(page, 'deliveryVisitCounts', {});
 
     await startShiftWithKnownOrders(page);
-    await goToPassage(page, 'DeliveryMap');
+    await goToPassage(page, 'SuburbMap');
 
     const familiarHouse = page.locator('.familiar-house');
     await expect(familiarHouse).toHaveCount(0);

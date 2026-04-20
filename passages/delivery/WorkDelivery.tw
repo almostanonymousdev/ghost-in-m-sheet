@@ -54,4 +54,4 @@
 </div><br>
 <</if>>
 <</nobr>>
-@@.movebtn;[[Start|DeliveryMap]] @@
+@@.movebtn;[[Start|SuburbMap][$suburbMapMode to "delivery"]] @@

@@ -8,4 +8,4 @@
 <br>
 <<deliveryBonus 5>>
 <br>
-@@.backbtn;[[Take a shower and leave|DeliveryMap]]@@<br>
+@@.backbtn;[[Take a shower and leave|SuburbMap][$suburbMapMode to "delivery"]]@@<br>

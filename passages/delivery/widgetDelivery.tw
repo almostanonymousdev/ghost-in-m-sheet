@@ -84,7 +84,7 @@ integer in [start, end]. Replaces the 4-10 line <<if>> ladders each
 			<<if _cfg.payMode eq "done">><<set $earnedMoney += $jobMoneySuccessed>><<deliveryTrackCorrect>><</if>>
 			<<deliveryTipCheck>>
 			<br>
-			@@.backbtn;[[Back|DeliveryMap]]@@
+			@@.backbtn;[[Back|SuburbMap][$suburbMapMode to "delivery"]]@@
 		<<else>>
 			<<= _contents>>
 		<</if>>
@@ -125,5 +125,5 @@ integer in [start, end]. Replaces the 4-10 line <<if>> ladders each
 		<<deliveryThanks>>
 		<<deliveryTipCheck>>
 		<br><br>
-		@@.backbtn; [[Back|DeliveryMap]] @@
+		@@.backbtn; [[Back|SuburbMap][$suburbMapMode to "delivery"]] @@
 	<</widget>>

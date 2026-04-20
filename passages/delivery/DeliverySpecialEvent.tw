@@ -1,9 +1,8 @@
 :: DeliverySpecialEvent [event nobr] {"position":"1500,1500","size":"100,100"}
 <<set _house to $currentHouse>>
-<<set _img to setup.deliveryHouses[_house]>>
-<<set _sp to _house.lastIndexOf(" ")>>
-<<set _address to _house.substr(0, _sp) + ", " + _house.substr(_sp + 1)>>
-<img @src="setup.ImagePath + '/img/' + _img" width="90%"><br>
+<<set _info to setup.rescueHouseByAddress[_house]>>
+<<set _address to _info.street + ", " + _info.number>>
+<img @src="setup.ImagePath + '/' + _info.image" width="90%"><br>
 @@.location; _address@@<br><br>
 <<if $deliverySpecialOrderType is "safe">>
 	<img @src="setup.ImagePath + '/img/deliverygirlhappy.jpg'" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
@@ -14,7 +13,7 @@
 	@@.mc-action; You earned $<<= $deliverySpecialOrderPay>> for the rush delivery!@@<br>
 	<<deliveryTipCheck>>
 	<br>
-	@@.backbtn;[[Back|DeliveryMap]]@@
+	@@.backbtn;[[Back|SuburbMap][$suburbMapMode to "delivery"]]@@
 <<else>>
 	<img @src="setup.ImagePath + '/deliveryhub/specialevent/1.jpg'" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
 	@@.notmc-speech; Finally! Get in here, I need to check the package before I pay.@@<br>
@@ -34,7 +33,7 @@
 @@.mc-speech; What?! But I delivered your order!@@<br>
 @@.mc-thoughts; What an asshole. I wasted my time for nothing.@@<br>
 <br>
-@@.backbtn;[[Back|DeliveryMap]]@@
+@@.backbtn;[[Back|SuburbMap][$suburbMapMode to "delivery"]]@@
 
 :: DeliverySpecialUnsafe [event nobr] {"position":"1500,1700","size":"100,100"}
 <<set $mc.lust += 45>>
@@ -69,5 +68,5 @@
 	<<set $deliverySpecialOrder to false>>
 	<<deliveryBonus $deliverySpecialOrderPay>>
 	<br>
-	@@.backbtn;[[Leave|DeliveryMap]]@@
+	@@.backbtn;[[Leave|SuburbMap][$suburbMapMode to "delivery"]]@@
 <</linkreplace>>

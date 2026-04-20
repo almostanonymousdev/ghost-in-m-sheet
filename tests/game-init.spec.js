@@ -142,12 +142,73 @@ test.describe('Game Initialization (StoryInit)', () => {
 
   // --- Delivery houses ---
 
-  test('deliveryStreets has 10 entries', async () => {
+  test('deliveryStreets has 16 entries (derived from rescue houses)', async () => {
     // act
     const streets = await page.evaluate(() => SugarCube.setup.deliveryStreets);
 
     // assert
-    expect(streets).toHaveLength(10);
+    expect(streets).toHaveLength(16);
+  });
+
+  test('rescueHouses has 16 entries with addresses and images', async () => {
+    // act
+    const houses = await page.evaluate(() => SugarCube.setup.rescueHouses);
+
+    // assert
+    expect(houses).toHaveLength(16);
+    for (const h of houses) {
+      expect(typeof h.id).toBe('number');
+      expect(typeof h.street).toBe('string');
+      expect(typeof h.number).toBe('number');
+      expect(h.address).toBe(h.street + ' ' + h.number);
+      expect(h.image).toBe('rescue/house/' + h.id + '.jpg');
+    }
+  });
+
+  test('rescueStreets groups the 16 houses into named neighborhoods', async () => {
+    // act
+    const streets = await page.evaluate(() => SugarCube.setup.rescueStreets);
+
+    // assert
+    const total = streets.reduce((n, s) => n + s.houses.length, 0);
+    expect(total).toBe(16);
+    // Every street has a human-readable name
+    for (const s of streets) {
+      expect(typeof s.name).toBe('string');
+      expect(s.name.length).toBeGreaterThan(0);
+      expect(s.houses.length).toBeGreaterThan(0);
+    }
+    // House ids across all streets are 1..16 unique
+    const ids = streets.flatMap(s => s.houses.map(h => h.id)).sort((a, b) => a - b);
+    expect(ids).toEqual([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]);
+  });
+
+  test('deliveryHouses uses rescue house addresses as keys', async () => {
+    // act
+    const { deliveryHouses, rescueHouses } = await page.evaluate(() => ({
+      deliveryHouses: SugarCube.setup.deliveryHouses,
+      rescueHouses: SugarCube.setup.rescueHouses,
+    }));
+
+    // assert
+    for (const h of rescueHouses) {
+      expect(deliveryHouses[h.address]).toBe(h.image);
+    }
+  });
+
+  test('rescueHouseById and rescueHouseByAddress lookups are consistent', async () => {
+    // act
+    const data = await page.evaluate(() => ({
+      byId: SugarCube.setup.rescueHouseById,
+      byAddress: SugarCube.setup.rescueHouseByAddress,
+      houses: SugarCube.setup.rescueHouses,
+    }));
+
+    // assert
+    for (const h of data.houses) {
+      expect(data.byId[h.id].address).toBe(h.address);
+      expect(data.byAddress[h.address].id).toBe(h.id);
+    }
   });
 
   test('deliveryEventChooseConfig has pizza, package, burger, papers', async () => {
