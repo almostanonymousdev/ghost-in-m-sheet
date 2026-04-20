@@ -39,11 +39,6 @@ name:"roomC",
 background: 2,
 }>>
 
-<<set $ghost15 to {
-name: "Mare",
-evidence: ["glass", "gwb", "temperature"],
-}>>
-
 <<run setup.initWardrobe(State.variables)>>
 
 <<set $huntActivated to 0>>

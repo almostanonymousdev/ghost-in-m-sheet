@@ -34,15 +34,6 @@
 	* two saves can't end up aliasing the same reference after migration.
 	*/
 	var DEFAULTS = {
-		ghost16: function () {
-			return { name: 'Cthulion', evidence: ['spiritbox', 'glass', 'temperature'] };
-		},
-		ghost17: function () {
-			return { name: 'Banshee', evidence: ['glass', 'gwb', 'uvl'] };
-		},
-		ghost18: function () {
-			return { name: 'Raiju', evidence: ['emf', 'spiritbox', 'uvl'] };
-		},
 		sensualBodyPart: function () {
 			return { brain: 1, tits: 1, ass: 1, bottom: 1, mouth: 1, pussy: 1, anal: 1 };
 		},

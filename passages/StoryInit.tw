@@ -59,28 +59,6 @@
 	burger:  { varName: "deliveryBurgerEvent",  img: "burgerevent/1.jpg",  payMode: "always" },
 	papers:  { varName: "deliveryPapersEvent", img: "papersevent/1.jpg",  payMode: "always" }
 }>>
-<<run setup.ghostInfoEntries = [
-	{
-		name: "Oni",
-		flag: "ghostOniInfoCollected",
-		text: "The mythical entity Oni brings not only fear but also rapid psychological devastation. Those who have encountered it report that @@.notmc-speech;Oni causes a sharp and intense decline in sanity@@, significantly accelerating this process compared to other ghosts. If you come face-to-face with Oni, be prepared for a swift and severe assault on your mental health."
-	},
-	{
-		name: "Jinn",
-		flag: "ghostJinnInfoCollected",
-		text: "Some ghost hunters have reported that when encountering a Jinn, they tried to run but always failed because the ghost is too fast. However, when they found a hiding spot--even if it was right in front of the Jinn--he often passed by without noticing them. This indicates that hiding from a Jinn is much easier than trying to escape."
-	},
-	{
-		name: "Deogen",
-		flag: "ghostDeogenInfoCollected",
-		text: "The Deogen is described as a particularly frightening ghost that will always find you, even if you try to hide. Once it starts its hunt, hiding won't help, as the Deogen relentlessly searches for its prey. However, since the Deogen is extremely slow, there's a chance to escape if you still have the strength to run."
-	},
-	{
-		name: "Demon",
-		flag: "ghostDemonInfoCollected",
-		text: "Some sources report that the Demon is a unique ghost that can begin hunting you regardless of your current sanity or lust. Unlike other ghosts that only become active when your mental state declines or your desire increases, the Demon does not consider your present condition and can initiate its pursuit at any time."
-	}
-]>>
 <<run setup.piercingList = [
 	{ var: "earsPiercing",   img: "earspiercing.jpg",   target: "Ears",   tip: "Pierced ears",    icon: "ears.png",   beauty: 2 },
 	{ var: "nosePiercing",   img: "nosepiercing.jpg",   target: "Nose",   tip: "Pierced nose",    icon: "nose.png",   beauty: 3 },
@@ -127,86 +105,6 @@ beauty: 30,
 <<set $pantiesState to "worn">>
 <<set $braState to "worn">>
 <<set $skirtState to "not bought">>
-
-/*EVIDENCE TYPE ENUM*/
-<<set $EvidenceType to {
-    EMF:         "emf",
-    SPIRITBOX:   "spiritbox",
-    GWB:         "gwb",
-    GLASS:       "glass",
-    TEMPERATURE: "temperature",
-    UVL:         "uvl",
-}>>
-
-<<set $ghost1 to {
-name: "Shade",
-evidence: [$EvidenceType.EMF, $EvidenceType.GWB, $EvidenceType.TEMPERATURE],
-}>>
-
-<<set $ghost2 to {
-name: "Spirit",
-evidence: [$EvidenceType.EMF, $EvidenceType.SPIRITBOX, $EvidenceType.GWB],
-}>>
-
-<<set $ghost3 to {
-name: "Poltergeist",
-evidence: [$EvidenceType.SPIRITBOX, $EvidenceType.GWB, $EvidenceType.UVL],
-}>>
-
-<<set $ghost4 to {
-name: "Phantom",
-evidence: [$EvidenceType.GLASS, $EvidenceType.UVL, $EvidenceType.SPIRITBOX],
-}>>
-
-<<set $ghost5 to {
-name: "Goryo",
-evidence: [$EvidenceType.GLASS, $EvidenceType.UVL, $EvidenceType.EMF],
-}>>
-
-<<set $ghost6 to {
-name: "Demon",
-evidence: [$EvidenceType.GWB, $EvidenceType.UVL, $EvidenceType.TEMPERATURE],
-}>>
-
-<<set $ghost7 to {
-name: "Deogen",
-evidence: [$EvidenceType.GLASS, $EvidenceType.GWB, $EvidenceType.SPIRITBOX],
-}>>
-
-<<set $ghost8 to {
-name: "Jinn",
-evidence: [$EvidenceType.EMF, $EvidenceType.UVL, $EvidenceType.TEMPERATURE],
-}>>
-
-<<set $ghost9 to {
-name: "Moroi",
-evidence: [$EvidenceType.GWB, $EvidenceType.TEMPERATURE, $EvidenceType.SPIRITBOX],
-}>>
-
-<<set $ghost10 to {
-name: "Myling",
-evidence: [$EvidenceType.GWB, $EvidenceType.EMF, $EvidenceType.UVL],
-}>>
-
-<<set $ghost11 to {
-name: "Oni",
-evidence: [$EvidenceType.GLASS, $EvidenceType.EMF, $EvidenceType.TEMPERATURE],
-}>>
-
-<<set $ghost12 to {
-name: "Mimic",
-evidence: [$EvidenceType.UVL, $EvidenceType.TEMPERATURE, $EvidenceType.SPIRITBOX],
-}>>
-
-<<set $ghost13 to {
-name: "The Twins",
-evidence: [$EvidenceType.EMF, $EvidenceType.TEMPERATURE, $EvidenceType.SPIRITBOX],
-}>>
-
-<<set $ghost14 to {
-name: "Wraith",
-evidence: [$EvidenceType.GLASS, $EvidenceType.EMF, $EvidenceType.SPIRITBOX],
-}>>
 
 ----------------------------------------------------------------------------------------
 

@@ -4,8 +4,8 @@
 <<script>>
     (function () {
         var V = State.variables;
-        var idx = 1 + Math.floor(Math.random() * setup.GHOST_SLOT_COUNT);
-        V.ghost = clone(V["ghost" + idx]);
+        var g = setup.Ghosts[Math.floor(Math.random() * setup.Ghosts.length)];
+        V.ghost = { name: g.name, evidence: g.evidence.slice() };
 
         setup.searchableRooms.forEach(function (room) {
             V["currentsearch" + room] = setup.makeEmptySearchState();

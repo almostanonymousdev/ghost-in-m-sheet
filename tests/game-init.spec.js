@@ -102,9 +102,11 @@ test.describe('Game Initialization (StoryInit)', () => {
 
   test('ghost types have correct evidence arrays', async () => {
     // act
-    const evidenceType = await getVar(page, 'EvidenceType');
-    const shade = await getVar(page, 'ghost1');
-    const spirit = await getVar(page, 'ghost2');
+    const evidenceType = await page.evaluate(() => SugarCube.setup.EvidenceType);
+    const shade = await page.evaluate(() =>
+      SugarCube.setup.Ghosts.find(g => g.name === 'Shade'));
+    const spirit = await page.evaluate(() =>
+      SugarCube.setup.Ghosts.find(g => g.name === 'Spirit'));
 
     // assert
     expect(shade.name).toBe('Shade');
@@ -115,7 +117,7 @@ test.describe('Game Initialization (StoryInit)', () => {
 
   test('evidence type enum has 6 entries', async () => {
     // act
-    const et = await getVar(page, 'EvidenceType');
+    const et = await page.evaluate(() => SugarCube.setup.EvidenceType);
 
     // assert
     expect(et.EMF).toBeDefined();

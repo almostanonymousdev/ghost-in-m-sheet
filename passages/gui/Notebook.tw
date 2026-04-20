@@ -102,7 +102,7 @@
 </div>
 <br>
 <div class="journal-container">
-<<for _g range setup.ghosts>>
+<<for _g range setup.Ghosts>>
 	<span @class="setup.ghostEvidenceClasses(_g)" @id="_g.id"><<hovertip setup.ghostHoverHtml(_g.id)>><<= _g.name>>
 	<</hovertip>></span>
 <</for>><br>

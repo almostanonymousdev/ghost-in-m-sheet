@@ -29,31 +29,6 @@
 
 <<if ndef $ghostSpecialEventSpiritCD>><<set $ghostSpecialEventSpiritCD to 0>><</if>>
 
-<<if ndef $ghost16>>
-<<set $ghost16 to {
-name: "Cthulion",
-evidence: ["spiritbox", "glass", "temperature"],
-}>>
-<</if>>
-
-/* Old versions shipped ghost17 with wrong evidence; $ghost17fixed was used as
-   a one-shot flag but the check was `neq 0`, which re-triggers on any
-   non-zero value including undefined. Use ndef so it runs exactly once. */
-<<if ndef $ghost17 or ndef $ghost17fixed>>
-<<set $ghost17 to {
-name: "Banshee",
-evidence: ["glass", "gwb", "uvl"],
-}>>
-<<set $ghost17fixed to 1>>
-<</if>>
-
-<<if ndef $ghost18>>
-<<set $ghost18 to {
-name: "Raiju",
-evidence: ["emf", "spiritbox", "uvl"],
-}>>
-<</if>>
-
 <<if ndef $relationshipBlake>><<set $relationshipBlake to 0>><</if>>
 <<if ndef $crucifixAmount>><<set $crucifixAmount to 0>><</if>>
 <<if ndef $sanityPillsAmount>><<set $sanityPillsAmount to 0>><</if>>

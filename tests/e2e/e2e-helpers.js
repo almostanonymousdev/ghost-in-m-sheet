@@ -66,11 +66,9 @@ async function expectCleanPassage(page) {
 async function setupHunt(page, ghostName, house = 'owaissa') {
   await page.evaluate((name) => {
     const V = SugarCube.State.variables;
-    for (let i = 1; i <= SugarCube.setup.GHOST_SLOT_COUNT; i++) {
-      if (V['ghost' + i] && V['ghost' + i].name === name) {
-        V.ghost = JSON.parse(JSON.stringify(V['ghost' + i]));
-        break;
-      }
+    const found = SugarCube.setup.Ghosts.find(g => g.name === name);
+    if (found) {
+      V.ghost = { name: found.name, evidence: found.evidence.slice() };
     }
   }, ghostName);
 

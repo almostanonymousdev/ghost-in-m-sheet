@@ -45,8 +45,8 @@
 	<</linkreplace>>
 	<<if $ghostHuntingMode gte 1>>
 		<<linkreplace "choose ghost type">>
-			<<for _gi to 1; _gi lte setup.GHOST_SLOT_COUNT; _gi++>>
-				<<capture _gi>><<link `"set to " + State.variables["ghost" + _gi].name`>><<set $ghost to clone(State.variables["ghost" + _gi])>>
+			<<for _g range setup.Ghosts>>
+				<<capture _g>><<link `"set to " + _g.name`>><<set $ghost to { name: _g.name, evidence: _g.evidence.slice() }>>
 				<</link>>
 				<</capture>>
 			<</for>>
