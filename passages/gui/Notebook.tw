@@ -26,77 +26,6 @@
 <</linkreplace>>
 <br>* <span class="uvl"><<checkbox "$UVLCheck" false true autocheck>> UVL Fingerprints</span><br>
 </b>
-@@.movebtn;<<linkreplace "RESULT">>
-	<<if ($EMF5Check or $SpiritboxCheck or $GWBCheck) and $EctoglassCheck eq false and $UVLCheck eq false and $TemperatureCheck eq false>>
-		<<addclass "#Spirit" "right">>
-	<</if>>
-	<<if ($EMF5Check or $GWBCheck or $TemperatureCheck) and $EctoglassCheck eq false and $UVLCheck eq false and $SpiritboxCheck eq false>>
-		<<addclass "#Shade" "right">>
-	<</if>>
-	<<if ($SpiritboxCheck or $GWBCheck or $UVLCheck) and $EMF5Check eq false and $TemperatureCheck eq false and $EctoglassCheck eq false>>
-		<<addclass "#Poltergeist" "right">>
-	<</if>>
-	<<if ($SpiritboxCheck or $EctoglassCheck or $UVLCheck) and $EMF5Check eq false and $TemperatureCheck eq false and $GWBCheck eq false>>
-		<<addclass "#Phantom" "right">>
-	<</if>>
-	<<if ($EMF5Check or $UVLCheck or $EctoglassCheck) and $SpiritboxCheck eq false and $GWBCheck eq false and $TemperatureCheck eq false>>
-		<<addclass "#Goryo" "right">>
-	<</if>>
-
-	<<if ($GWBCheck or $UVLCheck or $TemperatureCheck) and $SpiritboxCheck eq false and $EMF5Check eq false and $EctoglassCheck eq false>>
-		<<addclass "#Demon" "right">>
-	<</if>>
-
-	<<if ($EctoglassCheck or $GWBCheck or $SpiritboxCheck) and $EMF5Check eq false and $TemperatureCheck eq false and $UVLCheck eq false>>
-		<<addclass "#Deogen" "right">>
-	<</if>>
-
-	<<if ($EMF5Check or $UVLCheck or $TemperatureCheck) and $SpiritboxCheck eq false and $GWBCheck eq false and $EctoglassCheck eq false>>
-		<<addclass "#Jinn" "right">>
-	<</if>>
-
-	<<if ($GWBCheck or $TemperatureCheck or $SpiritboxCheck) and $EMF5Check eq false and $EctoglassCheck eq false and $UVLCheck eq false>>
-		<<addclass "#Moroi" "right">>
-	<</if>>
-
-	<<if ($EMF5Check or $GWBCheck or $UVLCheck) and $SpiritboxCheck eq false and $EctoglassCheck eq false and $TemperatureCheck eq false>>
-		<<addclass "#Myling" "right">>
-	<</if>>
-
-	<<if ($EctoglassCheck or $EMF5Check or $TemperatureCheck) and $SpiritboxCheck eq false and $GWBCheck eq false and $UVLCheck eq false>>
-		<<addclass "#Oni" "right">>
-	<</if>>
-
-	<<if ($UVLCheck or $TemperatureCheck or $SpiritboxCheck) and $EMF5Check eq false and $GWBCheck eq false and $EctoglassCheck eq false>>
-		<<addclass "#Mimic" "right">>
-	<</if>>
-
-	<<if ($EMF5Check or $TemperatureCheck or $SpiritboxCheck) and $GWBCheck eq false and $EctoglassCheck eq false and $UVLCheck eq false>>
-		<<addclass "#TheTwins" "right">>
-	<</if>>
-
-	<<if ($EctoglassCheck or $EMF5Check or $SpiritboxCheck) and $TemperatureCheck eq false and $GWBCheck eq false and $UVLCheck eq false>>
-		<<addclass "#Wraith" "right">>
-	<</if>>
-
-	<<if ($EctoglassCheck or $GWBCheck or $TemperatureCheck) and $UVLCheck eq false and $EMF5Check eq false and $SpiritboxCheck eq false>>
-		<<addclass "#Mare" "right">>
-	<</if>>
-
-	<<if ($EctoglassCheck or $SpiritboxCheck or $TemperatureCheck) and $UVLCheck eq false and $EMF5Check eq false and $GWBCheck eq false>>
-		<<addclass "#Cthulion" "right">>
-	<</if>>
-
-	<<if ($GWBCheck or $UVLCheck or $EctoglassCheck) and $SpiritboxCheck eq false and $EMF5Check eq false and $TemperatureCheck eq false>>
-		<<addclass "#Banshee" "right">>
-	<</if>>
-
-	<<if ($SpiritboxCheck or $EMF5Check or $UVLCheck) and $GWBCheck eq false and $TemperatureCheck eq false and $EctoglassCheck eq false>>
-		<<addclass "#Raiju" "right">>
-	<</if>>
-
-	<<link "refresh" "Notebook">><</link>>
-<</linkreplace>>@@
 </div>
 <a data-passage="Ghostopedia"><img @src="setup.ImagePath + '/img/ghostopedia.png'" class=" iconPC"><br></a>
 </div>
@@ -118,4 +47,12 @@
 <<include "StyleNotebook">>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
+	<<script>>
+		setup.updateNotebookHighlights();
+		$('.flexwrapperNotebook input[type="checkbox"]').on('change', function () {
+			/* autocheck's change handler runs first and syncs $state; defer one
+			   tick so setup.updateNotebookHighlights sees the fresh value. */
+			setTimeout(setup.updateNotebookHighlights, 0);
+		});
+	<</script>>
 <</done>>

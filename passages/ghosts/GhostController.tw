@@ -266,4 +266,48 @@
         }
         return html;
     };
+
+    /* Notebook evidence filter: a ghost is a candidate iff at least one of its
+       evidence types has been confirmed checked AND no evidence outside its
+       set has been checked. */
+    setup.ghostMatchesEvidence = function (g, checked) {
+        var myEv = g.evidence;
+        var anyMatch = false;
+        var anyMismatch = false;
+        Object.keys(setup.evidenceTypes).forEach(function (k) {
+            if (!checked[k]) return;
+            if (myEv.indexOf(k) === -1) anyMismatch = true;
+            else anyMatch = true;
+        });
+        return anyMatch && !anyMismatch;
+    };
+
+    /* Map the six Notebook checkbox state vars to evidence keys. */
+    var CHECK_VAR = {
+        emf:         "EMF5Check",
+        spiritbox:   "SpiritboxCheck",
+        gwb:         "GWBCheck",
+        glass:       "EctoglassCheck",
+        temperature: "TemperatureCheck",
+        uvl:         "UVLCheck"
+    };
+
+    setup.readEvidenceChecks = function () {
+        var V = State.variables;
+        var out = {};
+        Object.keys(CHECK_VAR).forEach(function (k) { out[k] = !!V[CHECK_VAR[k]]; });
+        return out;
+    };
+
+    /* Toggle the `right` class on each #<ghostId> element based on the current
+       checkbox state. Safe to call repeatedly; removes the class when a ghost
+       no longer matches so unchecking an evidence clears its highlight. */
+    setup.updateNotebookHighlights = function () {
+        var checked = setup.readEvidenceChecks();
+        setup.Ghosts.forEach(function (g) {
+            var el = document.getElementById(g.id);
+            if (!el) return;
+            el.classList.toggle("right", setup.ghostMatchesEvidence(g, checked));
+        });
+    };
 })();
