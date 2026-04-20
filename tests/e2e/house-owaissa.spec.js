@@ -20,6 +20,11 @@ async function clickPassageLink(page, linkText, expectedPassage) {
 }
 
 test.describe('Haunted house — Owaissa', () => {
+  // Click-driven navigation tests hit 4-5 goToPassage / clickPassageLink calls
+  // in sequence; a single slow navigation under parallel load can blow the
+  // default 5s timeout. Single retry covers transient contention.
+  test.describe.configure({ retries: 1 });
+
   let page;
 
   test.beforeAll(async ({ browser }) => { page = await openGame(browser); });

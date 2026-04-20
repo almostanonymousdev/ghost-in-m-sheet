@@ -16,13 +16,26 @@ async function waitForSugarCube(page) {
 
 /**
  * Navigate to a SugarCube passage by name and wait for it to render.
+ *
+ * Retries once if the engine fails to update `State.passage` within 3s —
+ * occasionally under heavy parallel worker load the first play() call is
+ * swallowed while the engine is still restarting. A single retry recovers
+ * without the caller having to rely on the test-level retry mechanism.
  */
 async function goToPassage(page, passageName) {
-  await page.evaluate((p) => SugarCube.Engine.play(p), passageName);
-  await page.waitForFunction(
-    (p) => SugarCube.State.passage === p,
-    passageName
-  );
+  for (let attempt = 0; attempt < 2; attempt++) {
+    await page.evaluate((p) => SugarCube.Engine.play(p), passageName);
+    try {
+      await page.waitForFunction(
+        (p) => SugarCube.State.passage === p,
+        passageName,
+        { timeout: 3000 }
+      );
+      return;
+    } catch (err) {
+      if (attempt === 1) throw err;
+    }
+  }
 }
 
 /**
@@ -60,9 +73,22 @@ function callSetup(page, expr) {
 
 /**
  * Open the game and wait for SugarCube. Returns the page.
+ *
+ * Blocks media (images/videos/audio) at the network layer. The test suite
+ * never reads pixel data, but many passages embed autoplay <video> tags whose
+ * decode/buffer pipeline saturates the browser under parallel worker load and
+ * produces "Target page has been closed" flakes. Aborting these requests
+ * keeps the DOM + SugarCube state intact while freeing those resources.
  */
 async function openGame(browser) {
   const page = await browser.newPage();
+  await page.route('**/*', (route) => {
+    const type = route.request().resourceType();
+    if (type === 'image' || type === 'media' || type === 'font') {
+      return route.abort();
+    }
+    return route.continue();
+  });
   await page.goto(GAME_URL, { waitUntil: 'load' });
   await waitForSugarCube(page);
   return page;

@@ -3,7 +3,11 @@ const { defineConfig } = require('@playwright/test');
 module.exports = defineConfig({
   testDir: './tests',
   globalSetup: require.resolve('./tests/global-setup.js'),
-  timeout: 5_000,
+  /* Unit-ish tests finish in <1s. The 10s default absorbs variance in the
+     heavier e2e specs (long loops that exercise ghost-ability RNG, or
+     passages with dozens of <<do>>/<<redo>> tags) when workers contend for
+     CPU. Tests that need more budget raise it individually. */
+  timeout: 10_000,
   /* Each spec file shares a page via beforeAll, so tests within a file
      must stay serial — but files themselves are independent.  Let
      Playwright spin up one worker per spec file (up to 75% the cores

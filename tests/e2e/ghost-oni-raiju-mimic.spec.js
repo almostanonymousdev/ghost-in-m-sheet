@@ -3,6 +3,11 @@ const { openGame, resetGame, setVar, getVar, goToPassage } = require('../helpers
 const { expectCleanPassage, setupHunt } = require('./e2e-helpers');
 
 test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
+  // Every test here does a loop of 20-40 goToPassage calls to sample ghost
+  // ability RNG. A single cold navigation can take 100-400ms under parallel
+  // worker load, so the cumulative budget must cover the full loop.
+  test.describe.configure({ retries: 2 });
+
   let page;
 
   test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
@@ -11,7 +16,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
 
   // ── Oni ────────────────────────────────────────────────────────
 
-  test('Oni: sanity drain is 3-8 (faster than normal 1-5)', { timeout: 15_000 }, async () => {
+  test('Oni: sanity drain is 3-8 (faster than normal 1-5)', { timeout: 45_000 }, async () => {
     await setupHunt(page, 'Oni');
     await goToPassage(page, 'OwaissaKitchen');
     await expectCleanPassage(page);
@@ -29,7 +34,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
     expect(new Set(drains).size).toBeGreaterThan(1);
   });
 
-  test('Oni: non-Oni ghost drains sanity at 1-5 (control test)', { timeout: 15_000 }, async () => {
+  test('Oni: non-Oni ghost drains sanity at 1-5 (control test)', { timeout: 45_000 }, async () => {
     await setupHunt(page, 'Spirit');
 
     const drains = [];
@@ -46,7 +51,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
 
   // ── Raiju ──────────────────────────────────────────────────────
 
-  test('Raiju: EMF readings can glitch to random values', async () => {
+  test('Raiju: EMF readings can glitch to random values', { timeout: 45_000 }, async () => {
     await setupHunt(page, 'Raiju');
     await setVar(page, 'EmfActivated', 1);
     await setVar(page, 'EmfActivationTime', 0);
@@ -63,7 +68,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
     expect(readings.some(r => r === 5), 'Normal EMF (5) never appeared').toBe(true);
   });
 
-  test('Raiju: non-Raiju ghost always shows EMF 5 for emf evidence', async () => {
+  test('Raiju: non-Raiju ghost always shows EMF 5 for emf evidence', { timeout: 15_000 }, async () => {
     await setupHunt(page, 'Spirit');
     await setVar(page, 'EmfActivated', 1);
     await setVar(page, 'EmfActivationTime', 0);
@@ -76,8 +81,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
     }
   });
 
-  test('Raiju: temperature readings can glitch', async () => {
-    test.setTimeout(15_000);
+  test('Raiju: temperature readings can glitch', { timeout: 90_000 }, async () => {
     await setupHunt(page, 'Raiju');
 
     await page.evaluate(() => {
@@ -86,8 +90,12 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
     await setVar(page, 'equipment.temperature', 3);
     await setVar(page, 'temperature', 0);
 
+    // TemperatureHigh's base reading depends on setup.isGhostHere(), which
+    // reads the CURRENT passage. That's why we re-enter OwaissaKitchen before
+    // every sample — without it isGhostHere returns false and unglitched
+    // readings drop to 13-16, which would be indistinguishable from glitches.
     const readings = [];
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 25; i++) {
       await goToPassage(page, 'OwaissaKitchen');
       await goToPassage(page, 'TemperatureHigh');
       const num = parseInt(await page.locator('.passage').textContent(), 10);

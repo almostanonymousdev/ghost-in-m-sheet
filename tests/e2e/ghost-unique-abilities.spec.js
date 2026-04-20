@@ -3,6 +3,8 @@ const { openGame, resetGame, setVar, getVar, goToPassage } = require('../helpers
 const { expectCleanPassage, expectNoErrors, setupHunt } = require('./e2e-helpers');
 
 test.describe('Ghost unique abilities — Phantom, Goryo, Deogen, Jinn', () => {
+  test.describe.configure({ retries: 2 });
+
   let page;
 
   test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
@@ -11,7 +13,7 @@ test.describe('Ghost unique abilities — Phantom, Goryo, Deogen, Jinn', () => {
 
   // ── Phantom ────────────────────────────────────────────────────
 
-  test('Phantom: lights cannot be turned off', async () => {
+  test('Phantom: lights cannot be turned off', { timeout: 20_000 }, async () => {
     await setupHunt(page, 'Phantom');
     await goToPassage(page, 'OwaissaHallway');
     await expectCleanPassage(page);

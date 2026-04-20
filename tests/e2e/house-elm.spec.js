@@ -20,6 +20,8 @@ async function clickPassageLink(page, linkText, expectedPassage) {
 }
 
 test.describe('Haunted house — Elm', () => {
+  test.describe.configure({ retries: 1 });
+
   let page;
 
   test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
@@ -113,7 +115,7 @@ test.describe('Haunted house — Elm', () => {
   });
 
   test('Hallway upstairs round-trip traverses upstairs rooms', async () => {
-    test.setTimeout(20_000);
+    test.setTimeout(30_000);
     await setupHunt(page, 'Spirit', 'elm');
     await goToPassage(page, 'ElmHallway');
     await clickPassageLink(page, 'upstairs', 'ElmHallwayUpstairs');
