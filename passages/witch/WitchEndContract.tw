@@ -5,7 +5,7 @@
 <<if $saveMimic eq 1>>
 	<<set $ghost.name to "Mimic">>
 <<set $saveMimic to 0>><</if>>
-<<set _ghostTypes = ["Shade", "Spirit", "Poltergeist", "Phantom", "Goryo", "Demon", "Deogen", "Jinn", "Moroi", "Myling", "Oni", "Mimic", "The Twins", "Wraith", "Mare", "Cthulion", "Banshee", "Raiju"]>>
+<<set _ghostTypes = setup.Ghosts.names()>>
 @@.mc-speech;I guess it was:@@<br>
 <<listbox "$ghostTypeSelected">>
 <<optionsfrom _ghostTypes>>

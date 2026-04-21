@@ -1,9 +1,7 @@
 :: Mimic [nobr] {"position":"825,2450","size":"100,100"}
 
 <<if $saveMimic eq "1" and $ghostHuntingMode eq 2>>
-	<<set _ghostTypes = ["Shade", "Spirit", "Poltergeist", "Phantom", "Goryo", "Demon", "Deogen", "Jinn", "Moroi", "Myling", "Oni", "The Twins", "Wraith", "Cthulion",
-	"Banshee"
-	]>>
+	<<set _ghostTypes = setup.Ghosts.names({ exclude: ["Mimic"] })>>
 	<<set $currentIntervalMimic to ($minutes >= 0 && $minutes < 30) ? "0-29" : "30-59">>
 	<<if $currentIntervalMimic != $lastChangeIntervalMimic>>
 		<<set $ghost.name to _ghostTypes.random()>>

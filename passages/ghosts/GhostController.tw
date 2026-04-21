@@ -200,6 +200,24 @@
         return ghost;
     });
 
+    /* Convenience: list of ghost names as an array. Accepts an optional
+       `{ exclude: [names] }` to drop specific ghosts (e.g. Mimic's
+       impersonation list excludes itself). Defined non-enumerably so it
+       doesn't show up in iteration over the array. */
+    Object.defineProperty(setup.Ghosts, "names", {
+        configurable: true,
+        writable: true,
+        value: function (opts) {
+            var exclude = (opts && opts.exclude) || [];
+            var names = [];
+            for (var i = 0; i < setup.Ghosts.length; i++) {
+                var n = setup.Ghosts[i].name;
+                if (exclude.indexOf(n) === -1) names.push(n);
+            }
+            return names;
+        }
+    });
+
     /* Back-compat feed for FindGhostInfo, which iterates only ghosts that have
        lore text and filters by a string flag name. Rebuilt on read so edits to
        setup.Ghosts immediately propagate. */
