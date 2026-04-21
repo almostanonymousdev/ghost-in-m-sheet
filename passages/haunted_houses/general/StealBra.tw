@@ -2,23 +2,15 @@
 <<set _check to random(1,2)>>
 <<if $tshirtState eq "worn">>
 	<<if _check eq 1>>
-		<video autoplay muted controls loop class="displayCentredImgs">
-		<source @src="setup.ImagePath + '/steal-clothes/3.mp4'" type="video/mp4">
-		</video>
+		<<video "steal-clothes/3.mp4" "displayCentredImgs">>
 	<</if>>
-	<<if _check eq 2>><video autoplay muted controls loop class="displayCentredImgs">
-		<source @src="setup.ImagePath + '/steal-clothes/4.mp4'" type="video/mp4">
-		</video>
+	<<if _check eq 2>><<video "steal-clothes/4.mp4" "displayCentredImgs">>
 	<</if>>
 <<else>>
 	<<if _check eq 1>>
-		<video autoplay muted controls loop class="displayCentredImgs">
-		<source @src="setup.ImagePath + '/steal-clothes/1.mp4'" type="video/mp4">
-		</video>
+		<<video "steal-clothes/1.mp4" "displayCentredImgs">>
 	<</if>>
-	<<if _check eq 2>><video autoplay muted controls loop class="displayCentredImgs">
-		<source @src="setup.ImagePath + '/steal-clothes/2.mp4'" type="video/mp4">
-		</video>
+	<<if _check eq 2>><<video "steal-clothes/2.mp4" "displayCentredImgs">>
 	<</if>>
 <</if>>
 

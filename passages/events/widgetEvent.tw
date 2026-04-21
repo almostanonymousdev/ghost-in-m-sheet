@@ -280,6 +280,6 @@
 		<<else>>
 			or @@.usebtn; [["Call "+$companion.name + " for help"|$return][$companion.sanity -= 3; $companion.lust += 10]]@@
 		<</if>>
-		- $companion.name's <img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%;"> and + $companion.name's <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;">
+		- $companion.name's <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>> and + $companion.name's <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>>
 	<</if>>
 <</widget>>

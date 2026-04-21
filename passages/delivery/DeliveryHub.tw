@@ -1,5 +1,5 @@
 :: DeliveryHub [nobr] {"position":"1000,1200","size":"100,100"}
-<img @src="setup.ImagePath + '/img/deliverybuilding.jpg'" width="90%"><br>
+<<image "img/deliverybuilding.jpg" { width: "90%" }>><br>
 @@.location; Delivery hub@@<br>
 
 @@.mc-thoughts; This is a small office in the city specializing in the delivery of various goods. It's one of the few places where you can earn some money@@<br>

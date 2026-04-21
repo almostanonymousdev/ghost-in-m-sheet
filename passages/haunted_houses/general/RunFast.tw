@@ -2,9 +2,7 @@
 <<if $jeansState eq "worn" or $shortsState eq "worn" or $skirtState eq "worn">>
 <<else>>
 	<<if $pantiesState eq "worn">>
-		<video autoplay controls muted loop>
-		<source @src="setup.ImagePath + '/hunting/run.mp4'" type="video/mp4">
-		</video>
+		<<video "hunting/run.mp4">>
 	<</if>>
 <</if>>
 &emsp;&emsp;You decide that your only chance to survive is to run. A surge of adrenaline fills your body, and you dash forward without looking back. Your legs carry you through corridors, dark rooms, and narrow passages.<br>
@@ -32,7 +30,7 @@
 				<</if>>
 			<</done>>
 			<span class="checkForCorruptionHunt">
-			@@.usebtn;[[not to resist...|HuntEnd]]@@ <<if $mc.corruption lte 4>>@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 5)@@
+			@@.usebtn;[[not to resist...|HuntEnd]]@@ <<if $mc.corruption lte 4>>@@.warningtext; (Req. <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 5)@@
 			<</if>></span>
 		<<else>>
 			use the Crucifix, but unfortunately, @@.enterbtn;[[you don't have it...|HuntEnd]]@@

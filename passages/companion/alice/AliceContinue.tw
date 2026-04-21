@@ -1,28 +1,20 @@
 :: AliceContinue [nobr] {"position":"2350,3550","size":"100,100"}
 <<set _videoToggle to true>>
-<video autoplay controls muted loop>
-<source @src="setup.ImagePath + '/alice/home/4.mp4'" type="video/mp4">
-</video>
+<<video "alice/home/4.mp4">>
 @@.mc-thoughts;You continued kissing in the shower@@<br>
 @@.notmc-speech; I want you again, $mc.name, I can't stop.@@<br>
 @@.mc-thoughts; The arousal surged again, and there was no turning back now.@@<br>
 @@.mc-speech; Oh~ yeah,@@ <<linkappend "@@.mc-speechLink;kiss my pussy@@">>
 	<span id ="walkhomealiceshower">
-	<video autoplay controls muted loop>
-	<source @src="setup.ImagePath + '/alice/home/5.mp4'" type="video/mp4">
-	</video></span>
+	<<video "alice/home/5.mp4">></span>
 	@@.mc-thoughts; You took turns pleasuring
 	<<link "@@.usebtn; each other@@">>
 		<<set _videoToggle to !_videoToggle>>
 		<<replace "#walkhomealiceshower">>
 			<<if _videoToggle>>
-				<video autoplay controls muted loop>
-				<source @src="setup.ImagePath + '/alice/home/5.mp4'" type="video/mp4">
-				</video>
+				<<video "alice/home/5.mp4">>
 			<<else>>
-				<video autoplay controls muted loop>
-				<source @src="setup.ImagePath + '/alice/home/6.mp4'" type="video/mp4">
-				</video>
+				<<video "alice/home/6.mp4">>
 			<</if>>
 		<</replace>>
 	<</link>>

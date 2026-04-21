@@ -1,13 +1,9 @@
 :: PossessedBrooke [nobr] {"position":"1100,3200","size":"100,100"}
 <<set _check to random(1,2)>>
 <<if _check eq 1>>
-	<video autoplay controls muted loop>
-	<source @src="setup.ImagePath + '/brook/possessed/1.mp4'" type="video/mp4">
-	</video>
+	<<video "brook/possessed/1.mp4">>
 <<elseif _check eq 2>>
-	<video autoplay controls muted loop>
-	<source @src="setup.ImagePath + '/brook/possessed/2.mp4'" type="video/mp4">
-	</video>
+	<<video "brook/possessed/2.mp4">>
 <</if>>
 @@.mc-thoughts; You notice a girl with a man...<br>@@
 @@.mc-speech; This is Brooke! I have to help her!@@<br>
@@ -20,14 +16,10 @@
 	@@.mc-thoughts; He notices you but doesn't try to flee. You have no means of defense, and you're not strong enough to fight him. With a single blow, he knocks you to the ground, and you@@
 	<<linkappend "@@.usebtn; black out@@">>
 		<<set $hours to $hours + random(2,6)>>
-		<video autoplay controls muted loop>
-		<source @src="setup.ImagePath + '/brook/possessed/3.mp4'" type="video/mp4">
-		</video>
+		<<video "brook/possessed/3.mp4">>
 		@@.mc-thoughts; You wake up from a strange sensation: something warm and wet is trying to penetrate your anus.@@<br>
 		@@.notmc-speech; That's enough. Now I'll check how well you lubed her @@ <<linkappend "@@.usebtn; hole@@">>
-			<video autoplay controls muted loop>
-			<source @src="setup.ImagePath + '/brook/possessed/4.mp4'" type="video/mp4">
-			</video>
+			<<video "brook/possessed/4.mp4">>
 			@@.mc-thoughts; While you are trying to remember what happened and how you ended up in this position, the man climbed on top of you and started fucking you in the ass.@@<br>
 			<<if setup.Posession.analIsVeryLoose()>>
 				@@.mc-thoughts; Your anus easily accepted his cock.@@<br>

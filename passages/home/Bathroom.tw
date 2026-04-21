@@ -1,5 +1,5 @@
 :: Bathroom [nobr] {"position":"700,1100","size":"100,100"}
-<img @src="setup.ImagePath + '/img/mcbathroom.jpg'" width="100%"><br>
+<<image "img/mcbathroom.jpg" { width: "100%" }>><br>
 @@.location; Bathroom@@<br>
 
 <<if setup.CursedItems.isItemCursed("bath")>>

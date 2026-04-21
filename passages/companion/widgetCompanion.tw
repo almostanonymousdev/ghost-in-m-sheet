@@ -5,10 +5,10 @@
 	<<set _compName to _args[1]>>
 	<<if setup.Companion.canShowCompanionMiniPanel()>>
 		<div class="containerMini">
-		<img @src="setup.ImagePath + '/' + _compImg">
+		<<image _compImg>>
 		<div class="scaleMini">
-		<img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:13%;">_compName's Sanity: <<showmeter 'companionsanity' `$companion.sanity / $companion.sanityMax`>>
-		<img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:13%;">
+		<<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:13%;" }>>_compName's Sanity: <<showmeter 'companionsanity' `$companion.sanity / $companion.sanityMax`>>
+		<<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:13%;" }>>
 		_compName's Lust: <<showmeter 'companionlust' `$companion.lust / 100`>>
 		</div>
 

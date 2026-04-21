@@ -29,7 +29,7 @@
 		<<for _girl range $rescueRandomGirls>>
 			<<capture _girl>>
 				<div class="housecard">
-				<img @src="setup.ImagePath+`/`+_girl.img" class="contactsImages">
+				<<image _girl.img "contactsImages">>
 				<<print _girl.name>><br>
 				@@.usebtn; <<link "Take" "Church">>
 					<<set $currentRescueGirl to _girl.name>>

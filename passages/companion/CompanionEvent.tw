@@ -366,15 +366,13 @@
 <<set $videoEventCompanion to _selectedVideo.src>>
 
 <<if _selectedVideo.type == "video">>
-	<video autoplay controls muted loop>
-	<source @src="setup.ImagePath+`/`+$videoEventCompanion" type="video/mp4">
-	</video>
+	<<video $videoEventCompanion>>
 <<else>>
 	<<if setup.Companion.isTransCompanion()>>
-		<img @src="setup.ImagePath+`/`+$videoEventCompanion" alt="Image" class="displayCentredImgs"><br>
+		<<image $videoEventCompanion { class: "displayCentredImgs", alt: "Image" }>><br>
 
 	<<else>>
-		<img @src="setup.ImagePath+`/`+$videoEventCompanion" alt="Image" width="100%"><br>
+		<<image $videoEventCompanion { width: "100%", alt: "Image" }>><br>
 	<</if>>
 <</if>>
 <<if $companion.sanity gte 75>>

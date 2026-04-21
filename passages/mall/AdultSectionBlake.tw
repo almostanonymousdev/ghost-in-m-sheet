@@ -1,5 +1,5 @@
 :: AdultSectionBlake [nobr] {"position":"3000,1750","size":"100,100"}
-<img @src="setup.ImagePath + '/blake/blake-shop.jpg'" class="displayCentredImgs" width="50%"><br>
+<<image "blake/blake-shop.jpg" { class: "displayCentredImgs", width: "50%" }>><br>
 
 <<if setup.Mall.blakeUnlocked()>>
 	<<if setup.Mall.blakeFirstMeeting()>>

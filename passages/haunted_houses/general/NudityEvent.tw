@@ -47,11 +47,9 @@
 <<set $videoEventNaked to _selectedVideo.src>>
 
 <<if _selectedVideo.type == "video">>
-	<video autoplay controls muted loop>
-	<source @src="setup.ImagePath+`/`+$videoEventNaked" type="video/mp4">
-	</video>
+	<<video $videoEventNaked>>
 <<else>>
-	<img @src="setup.ImagePath+`/`+$videoEventNaked" alt="Image" class="displayCentredImgs"><br>
+	<<image $videoEventNaked { class: "displayCentredImgs", alt: "Image" }>><br>
 <</if>>
 
 <<if $mc.exhib lte 4>>

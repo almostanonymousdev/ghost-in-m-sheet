@@ -1513,6 +1513,103 @@ setup.initWardrobe = function (vars) {
     });
 };
 
+/* <<video path [classOrOpts]>> and <<image path [classOrOpts]>>
+ *
+ * Thin wrappers that resolve `setup.ImagePath` and emit the HTML that
+ * authors would otherwise hand-write ~1300 times across the passages.
+ *
+ *   <<video "tentacles/2.0.mp4">>                  autoplay controls muted loop, mp4/webm by ext
+ *   <<video "mc/bra-off.webm" "displayCentredImgs">>   string 2nd arg = class
+ *   <<video "mc/bra-off.webm" { controls: false, width: "40%" }>>
+ *   <<image "img/corruption.png">>
+ *   <<image "alice/alice.png" "companion-image">>
+ *   <<image "img/trash1.png" { id: "trash1", class: "trash", onclick: "..." }>>
+ */
+(function () {
+    'use strict';
+
+    function escAttr(v) {
+        return String(v)
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
+    function resolveOpts(args, macroName) {
+        if (args.length < 1 || typeof args[0] !== 'string' || !args[0]) {
+            return { error: '<<' + macroName + '>> requires a non-empty path string as the first argument.' };
+        }
+        var opts = {};
+        var second = args[1];
+        if (typeof second === 'string') {
+            opts.class = second;
+        } else if (second && typeof second === 'object') {
+            opts = second;
+        }
+        return { path: args[0], opts: opts };
+    }
+
+    function resolveSrc(path) {
+        // Strip any leading slashes so we always produce exactly one between
+        // ImagePath and the author-supplied path.
+        return setup.ImagePath + '/' + String(path).replace(/^\/+/, '');
+    }
+
+    Macro.add('video', {
+        handler: function () {
+            var r = resolveOpts(this.args, 'video');
+            if (r.error) return this.error(r.error);
+
+            var opts = r.opts;
+            var autoplay = opts.autoplay !== false;
+            var controls = opts.controls !== false;
+            var muted    = opts.muted    !== false;
+            var loop     = opts.loop     !== false;
+
+            var type = opts.type;
+            if (!type) {
+                type = /\.webm$/i.test(r.path) ? 'video/webm' : 'video/mp4';
+            }
+
+            var attrs = [];
+            if (autoplay) attrs.push('autoplay');
+            if (controls) attrs.push('controls');
+            if (muted)    attrs.push('muted');
+            if (loop)     attrs.push('loop');
+            if (opts.class) attrs.push('class="' + escAttr(opts.class) + '"');
+            if (opts.id)    attrs.push('id="' + escAttr(opts.id) + '"');
+            if (opts.width) attrs.push('width="' + escAttr(opts.width) + '"');
+            if (opts.style) attrs.push('style="' + escAttr(opts.style) + '"');
+
+            var html =
+                '<video ' + attrs.join(' ') + '>' +
+                '<source src="' + escAttr(resolveSrc(r.path)) + '" type="' + escAttr(type) + '">' +
+                '</video>';
+            $(this.output).append(html);
+        }
+    });
+
+    Macro.add('image', {
+        handler: function () {
+            var r = resolveOpts(this.args, 'image');
+            if (r.error) return this.error(r.error);
+
+            var opts = r.opts;
+            var attrs = ['src="' + escAttr(resolveSrc(r.path)) + '"'];
+            if (opts.class)   attrs.push('class="' + escAttr(opts.class) + '"');
+            if (opts.id)      attrs.push('id="' + escAttr(opts.id) + '"');
+            if (opts.width)   attrs.push('width="' + escAttr(opts.width) + '"');
+            if (opts.height)  attrs.push('height="' + escAttr(opts.height) + '"');
+            if (opts.style)   attrs.push('style="' + escAttr(opts.style) + '"');
+            if (opts.alt)     attrs.push('alt="' + escAttr(opts.alt) + '"');
+            if (opts.onclick) attrs.push('onclick="' + escAttr(opts.onclick) + '"');
+
+            $(this.output).append('<img ' + attrs.join(' ') + '>');
+        }
+    });
+}());
+
 // Rewrite StoryStylesheet asset paths on startup
 $(document).one(':storyready', function () {
 	var styles = document.querySelectorAll('style');

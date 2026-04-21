@@ -4,7 +4,7 @@
 &emsp;&emsp;	You are $mc.name, a brave young woman who has devoted much of her free time to studying esoterics, mysticism, and the unexplainable. Somehow, it drew you more than anything else, perhaps because in your world, incredible creatures, from ghosts to demons, have started appearing. This has been going on for quite some time.
 &emsp;&emsp;The world has changed, and society has changed with it. People have grown accustomed to such anomalies, but there are cases when certain measures have to be taken. This led to the emergence of new professions: ghost hunters, witches, exorcists, and so on.</div>
  <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
-<img @src="setup.ImagePath + '/img/mc.jpg'" width="80%"><br>  </div>
+<<image "img/mc.jpg" { width: "80%" }>><br>  </div>
 </div>
 &emsp;&emsp;@@.mc-speech; Such professions are quite dangerous, but the risk is worth it: they pay quite well@@ - you think.
 &emsp;&emsp;And so, you have dedicated yourself to this. You are a ghost hunter. Of course, you lack experience; you have some knowledge and minimal inexpensive equipment, but you have a strong desire to start contributing to society and, well, to earn some money.

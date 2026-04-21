@@ -7,9 +7,7 @@
 @@.notmc-speech; For example: sit down and @@<<linkappend "@@.notmc-speechLink; suck me off@@">><br>
 	<<addLust 30>>
 	<<set _pick to either(2, 5)>>
-	<video autoplay controls muted loop>
-	<source @src="setup.ImagePath + '/deliveryhub/packageevent/' + _pick + '.mp4'" type="video/mp4">
-	</video>
+	<<video "deliveryhub/packageevent/' + _pick + '.mp4">>
 	@@.notmc-speech; You're good at it@@<br>
 	@@.mc-speech; ~Hmng~ulrp~@@<br>
 	<<if not setup.Delivery.packageLustHighEnough()>>

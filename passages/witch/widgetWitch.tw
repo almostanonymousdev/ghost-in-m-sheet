@@ -5,7 +5,7 @@
 	<<set _price to (typeof _args[1] !== "undefined") ? _args[1] : 200>>
 	<div class="housecard">
 	<<if not setup.Ghosts.hasDiscovered(_ghostName)>>
-		<img @src="setup.ImagePath + '/ghosts/' + _ghostName.toLowerCase() + '.webp'" class="iconPx">
+		<<image "ghosts/' + _ghostName.toLowerCase() + '.webp" "iconPx">>
 		@@.mc-thoughts; Information about _ghostName@@<br>
 		<span class="priceAmount"><<= _price>>$</span><br>
 		<<if $mc.money gte _price>>

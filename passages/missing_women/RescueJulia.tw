@@ -23,9 +23,7 @@
 <<set _usedVideos.push($videoRescueEvent)>>
 
 <div id="videoContainer">
-<video autoplay controls muted loop>
-<source @src="setup.ImagePath+`/`+$videoRescueEvent" type="video/mp4">
-</video>
+<<video $videoRescueEvent>>
 </div>
 
 @@.mc-speech; Oh wow~ it's $currentRescueGirl, and it looks like she's... in trouble.<br>
@@ -49,7 +47,7 @@ I could watch a little longer and then help her... but I might get noticed. @@<b
 				<br>
 				<span class="rescueStayCorruptionCheck">
 				@@.mc-speech;Or...@@  @@.usebtn;[[Stay|RescueStay][$hasQuestForRescue to 2]]@@.@@.mc-speech; I guess I'm already used to losing...@@</span>
-				<<if not setup.MissingWomen.canStaySubmissive()>>@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 6)@@
+				<<if not setup.MissingWomen.canStaySubmissive()>>@@.warningtext; (Req. <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 6)@@
 				<</if>>
 
 				<br><br>
@@ -67,9 +65,7 @@ I could watch a little longer and then help her... but I might get noticed. @@<b
 			<<set $videoRescueEvent to "rescue/julia/11-end.mp4">>
 		<</if>>
 		<<replace "#videoContainer">>
-			<video autoplay controls muted loop>
-			<source @src="setup.ImagePath+`/`+$videoRescueEvent" type="video/mp4">
-			</video>
+			<<video $videoRescueEvent>>
 		<</replace>>
 	<</if>>
 	<<if _clickCount < 4>>
@@ -81,9 +77,7 @@ I could watch a little longer and then help her... but I might get noticed. @@<b
 		<<set $videoRescueEvent to _remainingVideos[random(0, _remainingVideos.length - 1)].src>>
 		<<set _usedVideos.push($videoRescueEvent)>>
 		<<replace "#videoContainer">>
-			<video autoplay controls muted loop>
-			<source @src="setup.ImagePath+`/`+$videoRescueEvent" type="video/mp4">
-			</video>
+			<<video $videoRescueEvent>>
 		<</replace>>
 	<</if>>
 <</link>></span><br>

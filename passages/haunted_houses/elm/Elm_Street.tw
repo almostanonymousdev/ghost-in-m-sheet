@@ -1,6 +1,6 @@
 :: Elm Street [nobr] {"position":"2050,450","size":"100,100"}
 <<run setup.Companion.clearCompanionSelection()>>
-<img @src="setup.ImagePath + '/img/elm-house.jpg'" width="90%"><br>
+<<image "img/elm-house.jpg" { width: "90%" }>><br>
 @@.location; Elm Street@@<br>
 @@.mc-thoughts;Elm Street - quite a creepy place. It must be teeming with ghosts. Although, because of such locations, I'll always have a job@@<br>
 <br>

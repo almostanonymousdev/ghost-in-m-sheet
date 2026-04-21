@@ -5,57 +5,33 @@
 	<<set _check to random(1,4)>>
 	@@.mc-thoughts; For a moment, you black out. When you come to, a strange, unsettling feeling lingers -- like someone is close by. Suddenly, movements appear from the shadows, and you notice tentacles. They slowly coil around you, sliding across your skin. You try to resist, but their touches grow more insistent, keeping you captive.@@
 	<<if _check eq 1>>
-		<video autoplay controls muted loop>
-		<source @src="setup.ImagePath + '/tentacles/1.0.mp4'" type="video/mp4">
-		</video>
+		<<video "tentacles/1.0.mp4">>
 	<<elseif _check eq 2>>
-		<video autoplay controls muted loop>
-		<source @src="setup.ImagePath + '/tentacles/1.1.mp4'" type="video/mp4">
-		</video>
+		<<video "tentacles/1.1.mp4">>
 	<<elseif _check eq 3>>
-		<video autoplay controls muted loop>
-		<source @src="setup.ImagePath + '/tentacles/1.2.mp4'" type="video/mp4">
-		</video>
+		<<video "tentacles/1.2.mp4">>
 	<<elseif _check eq 4>>
-		<video autoplay controls muted loop>
-		<source @src="setup.ImagePath + '/tentacles/1.3.mp4'" type="video/mp4">
-		</video>
+		<<video "tentacles/1.3.mp4">>
 	<</if>>
 	@@.mc-thoughts; With each penetration, your breathing grows more uneven, waves of arousal washing over you. You let out an involuntary moan as your body begins to respond to their caresses, the tension inside you building with every second. The excitement intensifies into a pulsing desire that becomes@@ <<linkappend "@@.usebtn; harder and harder to resist.@@">>
 		<<if _check eq 1>>
-			<video autoplay controls muted loop>
-			<source @src="setup.ImagePath + '/tentacles/2.0.mp4'" type="video/mp4">
-			</video>
+			<<video "tentacles/2.0.mp4">>
 		<<elseif _check eq 2>>
-			<video autoplay controls muted loop>
-			<source @src="setup.ImagePath + '/tentacles/2.1.mp4'" type="video/mp4">
-			</video>
+			<<video "tentacles/2.1.mp4">>
 		<<elseif _check eq 3>>
-			<video autoplay controls muted loop>
-			<source @src="setup.ImagePath + '/tentacles/2.2.mp4'" type="video/mp4">
-			</video>
+			<<video "tentacles/2.2.mp4">>
 		<<elseif _check eq 4>>
-			<video autoplay controls muted loop>
-			<source @src="setup.ImagePath + '/tentacles/2.3.mp4'" type="video/mp4">
-			</video>
+			<<video "tentacles/2.3.mp4">>
 		<</if>>
 		The tentacles penetrate you more deeply, their movements growing bolder. You give in to them, feeling the white fluid they release flowing <<linkappend "@@.usebtn; out of you.@@">>
 			<<if _check eq 1>>
-				<video autoplay controls muted loop>
-				<source @src="setup.ImagePath + '/tentacles/3.0.mp4'" type="video/mp4">
-				</video>
+				<<video "tentacles/3.0.mp4">>
 			<<elseif _check eq 2>>
-				<video autoplay controls muted loop>
-				<source @src="setup.ImagePath + '/tentacles/3.1.mp4'" type="video/mp4">
-				</video>
+				<<video "tentacles/3.1.mp4">>
 			<<elseif _check eq 3>>
-				<video autoplay controls muted loop>
-				<source @src="setup.ImagePath + '/tentacles/3.2.mp4'" type="video/mp4">
-				</video>
+				<<video "tentacles/3.2.mp4">>
 			<<elseif _check eq 4>>
-				<video autoplay controls muted loop>
-				<source @src="setup.ImagePath + '/tentacles/3.3.mp4'" type="video/mp4">
-				</video>
+				<<video "tentacles/3.3.mp4">>
 			<</if>>
 			The sensations drive you wild -- hot waves of pleasure surge through your body, making you lose control. A bright, almost unbearable wave of ecstasy ignites within you, and soon your consciousness fades,
 			<<huntEndExit "plunging you into darkness">>
@@ -65,40 +41,24 @@
 <<elseif $isIronclad eq 1>>
 	<<set _randomHuntEven to random(1,4)>>
 	<<if _randomHuntEven eq 1>>
-		<video autoplay controls muted loop>
-		<source @src="setup.ImagePath + '/prison/hunt1.0.mp4'" type="video/mp4">
-		</video>
+		<<video "prison/hunt1.0.mp4">>
 	<<elseif _randomHuntEven eq 2>>
-		<video autoplay controls muted loop>
-		<source @src="setup.ImagePath + '/prison/hunt2.0.mp4'" type="video/mp4">
-		</video>
+		<<video "prison/hunt2.0.mp4">>
 	<<elseif _randomHuntEven eq 3>>
-		<video autoplay controls muted loop>
-		<source @src="setup.ImagePath + '/prison/hunt3.0.mp4'" type="video/mp4">
-		</video>
+		<<video "prison/hunt3.0.mp4">>
 	<<elseif _randomHuntEven eq 4>>
-		<video autoplay controls muted loop>
-		<source @src="setup.ImagePath + '/prison/hunt4.0.mp4'" type="video/mp4">
-		</video>
+		<<video "prison/hunt4.0.mp4">>
 	<</if>>
 	They caught you and dragged you into a dark room. There's no strength to resist. You feel yourself losing control as the ghosts begin to do whatever they want with you. You can't fight back -- all that's left is to
 	<<linkappend "@@.usebtn; submit@@">>
 		<<if _randomHuntEven eq 1>>
-			<video autoplay controls muted loop>
-			<source @src="setup.ImagePath + '/prison/hunt1.1.mp4'" type="video/mp4">
-			</video>
+			<<video "prison/hunt1.1.mp4">>
 		<<elseif _randomHuntEven eq 2>>
-			<video autoplay controls muted loop>
-			<source @src="setup.ImagePath + '/prison/hunt2.1.mp4'" type="video/mp4">
-			</video>
+			<<video "prison/hunt2.1.mp4">>
 		<<elseif _randomHuntEven eq 3>>
-			<video autoplay controls muted loop>
-			<source @src="setup.ImagePath + '/prison/hunt3.1.mp4'" type="video/mp4">
-			</video>
+			<<video "prison/hunt3.1.mp4">>
 		<<elseif _randomHuntEven eq 4>>
-			<video autoplay controls muted loop>
-			<source @src="setup.ImagePath + '/prison/hunt4.1.mp4'" type="video/mp4">
-			</video>
+			<<video "prison/hunt4.1.mp4">>
 		<</if>>
 
 		They keep fucking your holes until they cum all over your body. After a wild fuck, everything around you slowly disappears  and you @@.usebtn;[[black out|Sleep]]@@<br>
@@ -110,14 +70,10 @@
 	&emsp;&emsp;The ghost dragged you through the dark hallways of the house, and time seemed to slow down. Images blurred before your eyes, sounds became distorted and distant. Your head hung limply, and you felt your consciousness slipping away. Your thoughts grew muddled, and reality seemed distant and unclear.<br>
 
 	<<if $isCompChosen eq 1 and $companion.name eq "Alice">>
-		<video autoplay controls muted loop>
-		<source @src="setup.ImagePath + '/alice/hunt-end1.mp4'" type="video/mp4">
-		</video>
+		<<video "alice/hunt-end1.mp4">>
 		The last thing you remember is you and your friend sitting on the floor in front of the ghost, choking on his cock one after the other.<br>
 		It's unclear how long <<linkreplace "@@.usebtn; this went on@@">>
-			<video autoplay controls muted loop>
-			<source @src="setup.ImagePath + '/alice/hunt-end2.mp4'" type="video/mp4">
-			</video>
+			<<video "alice/hunt-end2.mp4">>
 			Darkness overwhelms your senses as your vision fades, and then...
 			<<huntEndExit "nothing">>
 			<br>
@@ -125,20 +81,14 @@
 	<<else>>
 
 		<<if $jeansState eq "worn">>
-			<video autoplay controls muted loop>
-			<source @src="setup.ImagePath + '/hunting/1.1.mp4'" type="video/mp4">
-			</video>
+			<<video "hunting/1.1.mp4">>
 			Ghost put you on the bed and started fucking your huge tits. After a while, having played enough with them, <<linkappend "@@.usebtn; it fucked you@@">>
 				<<set _checkScene to random (1,2)>>
 				<<if _checkScene eq 1>>
-					<video autoplay controls muted loop>
-					<source @src="setup.ImagePath + '/hunting/jeans1.1.mp4'" type="video/mp4">
-					</video>
+					<<video "hunting/jeans1.1.mp4">>
 				<</if>>
 				<<if _checkScene eq 2>>
-					<video autoplay controls muted loop>
-					<source @src="setup.ImagePath + '/hunting/jeans1.mp4'" type="video/mp4">
-					</video>
+					<<video "hunting/jeans1.mp4">>
 				<</if>>
 				&emsp;&emsp; Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 				Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
@@ -146,30 +96,20 @@
 			<</linkappend>>
 
 		<<elseif $shortsState eq "worn">>
-			<video autoplay controls muted loop>
-			<source @src="setup.ImagePath + '/hunting/shorts1.mp4'" type="video/mp4">
-			</video>
+			<<video "hunting/shorts1.mp4">>
 			The ghost has caught you, and <<linkappend "@@.usebtn; is dragging you away@@">>
 				<<set _check to random(1,4)>>
 				<<if _check eq 1>>
-					<video autoplay controls muted loop>
-					<source @src="setup.ImagePath + '/hunting/shorts1.1.mp4'" type="video/mp4">
-					</video>
+					<<video "hunting/shorts1.1.mp4">>
 				<</if>>
 				<<if _check eq 2>>
-					<video autoplay controls muted loop>
-					<source @src="setup.ImagePath + '/hunting/shorts1.2.mp4'" type="video/mp4">
-					</video>
+					<<video "hunting/shorts1.2.mp4">>
 				<</if>>
 				<<if _check eq 3>>
-					<video autoplay controls muted loop>
-					<source @src="setup.ImagePath + '/hunting/shorts1.3.mp4'" type="video/mp4">
-					</video>
+					<<video "hunting/shorts1.3.mp4">>
 				<</if>>
 				<<if _check eq 4>>
-					<video autoplay controls muted loop>
-					<source @src="setup.ImagePath + '/hunting/shorts1.4.mp4'" type="video/mp4">
-					</video>
+					<<video "hunting/shorts1.4.mp4">>
 				<</if>>
 				&emsp;&emsp; The ghost started fucking you. Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 				Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
@@ -180,30 +120,20 @@
 			<<set _check to random(1,3)>>
 
 			<<if _check eq 1>>
-				<video autoplay controls muted loop>
-				<source @src="setup.ImagePath + '/hunting/skirt1.mp4'" type="video/mp4">
-				</video>
+				<<video "hunting/skirt1.mp4">>
 				The ghost has caught you, and <<linkappend "@@.usebtn; is dragging you away@@">>
 					<<set _checkScene to random(1,4)>>
 					<<if _checkScene eq 1>>
-						<video autoplay controls muted loop>
-						<source @src="setup.ImagePath + '/hunting/skirt1.1.mp4'" type="video/mp4">
-						</video>
+						<<video "hunting/skirt1.1.mp4">>
 					<</if>>
 					<<if _checkScene eq 2>>
-						<video autoplay controls muted loop>
-						<source @src="setup.ImagePath + '/hunting/skirt1.2.mp4'" type="video/mp4">
-						</video>
+						<<video "hunting/skirt1.2.mp4">>
 					<</if>>
 					<<if _checkScene eq 3>>
-						<video autoplay controls muted loop>
-						<source @src="setup.ImagePath + '/hunting/skirt1.3.mp4'" type="video/mp4">
-						</video>
+						<<video "hunting/skirt1.3.mp4">>
 					<</if>>
 					<<if _checkScene eq 4>>
-						<video autoplay controls muted loop>
-						<source @src="setup.ImagePath + '/hunting/skirt1.4.mp4'" type="video/mp4">
-						</video>
+						<<video "hunting/skirt1.4.mp4">>
 					<</if>>
 					&emsp;&emsp; The ghost started fucking you. Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 					Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
@@ -212,13 +142,9 @@
 			<</if>>
 
 			<<if _check eq 2>>
-				<video autoplay controls muted loop>
-				<source @src="setup.ImagePath + '/hunting/skirt2.mp4'" type="video/mp4">
-				</video>
+				<<video "hunting/skirt2.mp4">>
 				It put you on your knees and started fucking your throat. But the ghost didn't stop there, <<linkappend "@@.usebtn; it needed more@@">>
-					<video autoplay controls muted loop>
-					<source @src="setup.ImagePath + '/hunting/skirt2.1.mp4'" type="video/mp4">
-					</video>
+					<<video "hunting/skirt2.1.mp4">>
 					&emsp;&emsp; The ghost started fucking you. Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 					Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
 					Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
@@ -226,14 +152,10 @@
 			<</if>>
 
 			<<if _check eq 3>>
-				<video autoplay controls muted loop>
-				<source @src="setup.ImagePath + '/hunting/skirt3.mp4'" type="video/mp4">
-				</video>
+				<<video "hunting/skirt3.mp4">>
 				It wasn't even just one ghost, but you didn't care. They fucked you and you liked it. <<linkappend "@@.usebtn; This continued for some time@@">>
 
-					<video autoplay controls muted loop>
-					<source @src="setup.ImagePath + '/hunting/skirt4.mp4'" type="video/mp4">
-					</video>
+					<<video "hunting/skirt4.mp4">>
 					&emsp;&emsp;Each touch sent shivers of pleasure throughout your body.
 					Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
 				<</linkappend>>
@@ -242,20 +164,14 @@
 			<<if $pantiesState eq "worn">>
 				<<set _check to random(1,2)>>
 				<<if _check eq 1>>
-					<video autoplay controls muted loop>
-					<source @src="setup.ImagePath + '/hunting/underwear1.mp4'" type="video/mp4">
-					</video>
+					<<video "hunting/underwear1.mp4">>
 					&emsp;&emsp;It put you on your knees and started fucking your throat. But the ghost didn't stop there, <<linkappend "@@.usebtn; it needed more@@">>
 						<<set _checkScene to random(1,2)>>
 						<<if _checkScene eq 1>>
-							<video autoplay controls muted loop>
-							<source @src="setup.ImagePath + '/hunting/underwear1.1.mp4'" type="video/mp4">
-							</video>
+							<<video "hunting/underwear1.1.mp4">>
 						<</if>>
 						<<if _checkScene eq 2>>
-							<video autoplay controls muted loop>
-							<source @src="setup.ImagePath + '/hunting/underwear1.2.mp4'" type="video/mp4">
-							</video>
+							<<video "hunting/underwear1.2.mp4">>
 						<</if>>
 						&emsp;&emsp; The ghost started fucking you. Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 						Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
@@ -263,30 +179,20 @@
 					<</linkappend>>
 				<</if>>
 				<<if _check eq 2>>
-					<video autoplay controls muted loop>
-					<source @src="setup.ImagePath + '/hunting/underwear2.mp4'" type="video/mp4">
-					</video>
+					<<video "hunting/underwear2.mp4">>
 					&emsp;&emsp;It put you on your knees and started fucking your throat. But the ghost didn't stop there, <<linkappend "@@.usebtn; it needed more@@">>
 						<<set _checkScene to random(1,4)>>
 						<<if _checkScene eq 1>>
-							<video autoplay controls muted loop>
-							<source @src="setup.ImagePath + '/hunting/underwear2.1.mp4'" type="video/mp4">
-							</video>
+							<<video "hunting/underwear2.1.mp4">>
 						<</if>>
 						<<if _checkScene eq 2>>
-							<video autoplay controls muted loop>
-							<source @src="setup.ImagePath + '/hunting/underwear2.2.mp4'" type="video/mp4">
-							</video>
+							<<video "hunting/underwear2.2.mp4">>
 						<</if>>
 						<<if _checkScene eq 3>>
-							<video autoplay controls muted loop>
-							<source @src="setup.ImagePath + '/hunting/underwear2.3.mp4'" type="video/mp4">
-							</video>
+							<<video "hunting/underwear2.3.mp4">>
 						<</if>>
 						<<if _checkScene eq 4>>
-							<video autoplay controls muted loop>
-							<source @src="setup.ImagePath + '/hunting/underwear2.4.mp4'" type="video/mp4">
-							</video>
+							<<video "hunting/underwear2.4.mp4">>
 						<</if>>
 						&emsp;&emsp; The ghost started fucking you. Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 						Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
@@ -297,13 +203,9 @@
 			<<elseif $pantiesState eq "not worn">>
 				<<set _check to random(1,3)>>
 				<<if _check eq 1>>
-					<video autoplay controls muted loop>
-					<source @src="setup.ImagePath + '/hunting/naked1.mp4'" type="video/mp4">
-					</video>
+					<<video "hunting/naked1.mp4">>
 					The ghost started fucking your ass. It seemed like <<linkappend "@@.usebtn; it would never end@@">>
-						<video autoplay controls muted loop>
-						<source @src="setup.ImagePath + '/hunting/naked1.1.mp4'" type="video/mp4">
-						</video>
+						<<video "hunting/naked1.1.mp4">>
 						&emsp;&emsp;  Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 						Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
 						Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
@@ -311,13 +213,9 @@
 				<</if>>
 
 				<<if _check eq 2>>
-					<video autoplay controls muted loop>
-					<source @src="setup.ImagePath + '/hunting/naked2.1.mp4'" type="video/mp4">
-					</video>
+					<<video "hunting/naked2.1.mp4">>
 					It started fucking your throat. But the ghost didn't stop there, <<linkappend "@@.usebtn; it needed more@@">>
-						<video autoplay controls muted loop>
-						<source @src="setup.ImagePath + '/hunting/naked2.2.mp4'" type="video/mp4">
-						</video>
+						<<video "hunting/naked2.2.mp4">>
 						&emsp;&emsp; The ghost started fucking you. Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 						Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
 						Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
@@ -327,29 +225,19 @@
 				<<if _check eq 3>>
 					<<set _checkScene to random(1,4)>>
 					<<if _checkScene eq 1>>
-						<video autoplay controls muted loop>
-						<source @src="setup.ImagePath + '/hunting/naked3.1.mp4'" type="video/mp4">
-						</video>
+						<<video "hunting/naked3.1.mp4">>
 					<</if>>
 					<<if _checkScene eq 2>>
-						<video autoplay controls muted loop>
-						<source @src="setup.ImagePath + '/hunting/naked3.2.mp4'" type="video/mp4">
-						</video>
+						<<video "hunting/naked3.2.mp4">>
 					<</if>>
 					<<if _checkScene eq 3>>
-						<video autoplay controls muted loop>
-						<source @src="setup.ImagePath + '/hunting/naked4.1.mp4'" type="video/mp4">
-						</video>
+						<<video "hunting/naked4.1.mp4">>
 					<</if>>
 					<<if _checkScene eq 4>>
-						<video autoplay controls muted loop>
-						<source @src="setup.ImagePath + '/hunting/naked4.mp4'" type="video/mp4">
-						</video>
+						<<video "hunting/naked4.mp4">>
 					<</if>>
 					It wasn't even just one ghost, but you didn't care. They fucked you and you liked it. At the end they started cumming on your pretty face, <<linkappend "@@.usebtn; covering it with their cum@@">>
-						<video autoplay controls muted loop>
-						<source @src="setup.ImagePath + '/hunting/naked4-end.mp4'" type="video/mp4">
-						</video>
+						<<video "hunting/naked4-end.mp4">>
 						Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
 					<</linkappend>>
 				<</if>>

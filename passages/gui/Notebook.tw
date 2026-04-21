@@ -27,7 +27,7 @@
 <br>* <span class="uvl"><<checkbox "$UVLCheck" false true autocheck>> UVL Fingerprints</span><br>
 </b>
 </div>
-<a data-passage="Ghostopedia"><img @src="setup.ImagePath + '/img/ghostopedia.png'" class=" iconPC"><br></a>
+<a data-passage="Ghostopedia"><<image "img/ghostopedia.png" " iconPC">><br></a>
 </div>
 <br>
 <div class="journal-container">

@@ -1,6 +1,6 @@
 :: Bedroom [nobr] {"position":"600,900","size":"100,100"}
 
-<img @src="setup.ImagePath + '/img/bedroom.jpg'" width="100%"><br>
+<<image "img/bedroom.jpg" { width: "100%" }>><br>
 @@.location; Bedroom@@<br>
 <br>
 <<if $succubusChoiceEventText eq 1>>
@@ -92,7 +92,7 @@
 		<<elseif setup.Home.tentaclesNapEventReady()>>
 			<<goto "TentaclesEventNap">>
 		<</if>>
-	<</link>>@@<span><img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span><br>
+	<</link>>@@<span><<image "img/energy.png" { style: "position: relative; top: 0.375em; width:3%;" }>></span><br>
 	<<if setup.Home.canUseHolyWaterOnMare()>>
 		<<linkreplace "@@.usebtn; Use holy water@@">><<run setup.Home.useHolyWaterOnMare()>>
 			@@.mc-speech; This should help. Now I can sleep peacefully.@@

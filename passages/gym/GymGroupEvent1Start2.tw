@@ -4,9 +4,7 @@
 <<randomVideo "gym/grouptraining1.5.mp4" "gym/grouptraining1.6.mp4">>
 @@.mc-thoughts; First someone fucked you, then you started fucking someone else with a toy.<br>
 Eventually everyone @@<<linkappend "@@.mc-thoughtsLink; gathered around you again.@@">>  <br>
-	<video autoplay controls muted loop>
-	<source @src="setup.ImagePath + '/gym/grouptraining1end.mp4'" type="video/mp4">
-	</video>
+	<<video "gym/grouptraining1end.mp4">>
 	@@.notmc-speech; Yes~Finger your juicy pussy.@@ <br>
 	@@.mc-speech; Fuck~ i'm about to~@@<br>
 	@@.mc-thoughts; You're squirting, almost losing consciousness from the overwhelming pleasure.@@<br>

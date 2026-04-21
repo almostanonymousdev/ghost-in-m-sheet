@@ -1,16 +1,12 @@
 :: GhostSpecialEventMare [nobr] {"position":"1100,2450","size":"100,100"}
-<video autoplay controls muted loop>
-<source @src="setup.ImagePath + '/ghosts/specials/mare1.1.mp4'" type="video/mp4">
-</video>
+<<video "ghosts/specials/mare1.1.mp4">>
 <<if not setup.SpecialEvent.knowsAboutMare()>>
 	@@.mc-speech;Am I touching myself in my sleep? Strange...I need to @@
 <<else>>
 	@@.mc-speech; Is this really happening again? I need to@@
 <</if>>
 <<linkappend "@@.mc-speechLink;watch more.@@">>
-	<video autoplay controls muted loop>
-	<source @src="setup.ImagePath + '/ghosts/specials/mare1.2.mp4'" type="video/mp4">
-	</video>
+	<<video "ghosts/specials/mare1.2.mp4">>
 
 	@@.mc-thoughts; You barely hear the whisper, but it's clearly @@<<linkappend "@@.mc-thoughtsLink; not your voice@@">><br>
 		@@.notmc-speech;You can never escape from me... I am always here... Always watching...@@<br>

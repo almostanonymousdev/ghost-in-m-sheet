@@ -1,6 +1,6 @@
 :: MonkeyPaw [nobr noreturn] {"position":"900,3200","size":"100,100"}
 <div class="MonkeyPawShow">
-<img @src="setup.ImagePath + '/cursedpossessions/monkey-paw/monkeypaw.jpg'" class="displayCentredImgs">
+<<image "cursedpossessions/monkey-paw/monkeypaw.jpg" "displayCentredImgs">>
 
 <span id="wishesCount">
 <<if $wishesCount lte 0>>

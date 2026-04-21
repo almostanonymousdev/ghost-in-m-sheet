@@ -1,12 +1,10 @@
 :: PossessedLocation [nobr] {"position":"1125,400","size":"100,100"}
 <<if $checkChoosenLocation eq "library">>
-	<img @src="setup.ImagePath + '/possessed/1.jpg'" width="100%"><br>
+	<<image "possessed/1.jpg" { width: "100%" }>><br>
 	@@.mc-thoughts; You find yourself in a room surrounded by rows of books.@@<br>
 	@@.mc-speech; It seems I'm in a library. But how did I get here?<br>@@
 	<<linkreplace "@@.usebtn; What's happening?@@">>
-		<video autoplay controls muted loop>
-		<source @src="setup.ImagePath + '/possessed/1.1.mp4'" type="video/mp4">
-		</video>
+		<<video "possessed/1.1.mp4">>
 		@@.mc-thoughts; You're standing and talking to someone, but you can't make sense of the conversation. The words blur together, like they're not even real. You try to move your hand, but it won't obey.@@<br>
 		@@.mc-speech; How is this possible? It feels like I've lost control of my own body.@@<br>
 		@@.mc-thoughts; Suddenly, your lips meet his. His arms wrap around you, and you feel his warmth, his touch, the tension between you. A rush of pleasure floods your senses.@@<br>
@@ -14,9 +12,7 @@
 
 		<<linkreplace "@@.usebtn;Try to resist@@">>
 			<<if setup.Posession.canResistFirstAttempt()>>
-				<video autoplay controls muted loop>
-				<source @src="setup.ImagePath + '/possessed/1.2.mp4'" type="video/mp4">
-				</video>
+				<<video "possessed/1.2.mp4">>
 				@@.mc-thoughts; You try to resist, but you can't concentrate. His touches distract you too much. A moment later, you feel the floor with your knees.@@<br>
 				@@.mc-speech; Oh no, there are people nearby@@<br>
 				@@.mc-thoughts; Seconds later, you began to suck his cock passionately, not forgetting to lick his balls. Your lips and tongue seemed to become more sensitive, the feeling of his cock in your mouth and your wet pussy clouded your mind almost completely.<br>
@@ -38,9 +34,7 @@
 
 <<elseif $checkChoosenLocation eq "home">>
 
-	<video autoplay controls muted loop>
-	<source @src="setup.ImagePath + '/possessed/2.mp4'" type="video/mp4">
-	</video>
+	<<video "possessed/2.mp4">>
 	@@.mc-thoughts; You find yourself surrounded by a crowd of nearly naked men.@@<br>
 	@@.mc-speech; What the hell? Where am I? What am I doing here, conducting an interview?<br>@@
 	@@.mc-thoughts; But your face shows only surprise and lust instead of confusion. Your hands reach out to their penises on their own.@@<br>
@@ -48,9 +42,7 @@
 
 	<<linkreplace "@@.usebtn;Try to resist@@">>
 		<<if setup.Posession.canResistFirstAttempt()>>
-			<video autoplay controls muted loop>
-			<source @src="setup.ImagePath + '/possessed/2.1.mp4'" type="video/mp4">
-			</video>
+			<<video "possessed/2.1.mp4">>
 			@@.mc-thoughts; You try to resist, but you can't concentrate. <br>
 			They started undressing you, touching your most intimate places. Yet you didn't even try to stop them, even though you wanted to. Your body wouldn't obey you.@@<br>
 			@@.mc-speech; I need to try again, or this will end badly.@@<br>
@@ -70,13 +62,11 @@
 
 <<elseif $checkChoosenLocation eq "gym">>
 
-	<img @src="setup.ImagePath + '/possessed/3.jpg'" width="100%"><br>
+	<<image "possessed/3.jpg" { width: "100%" }>><br>
 	@@.mc-thoughts; You find yourself in a gym.@@<br>
 	@@.mc-speech; I don't remember how I got here.<br>@@
 	<<linkreplace "@@.usebtn; What's happening?@@">>
-		<video autoplay controls muted loop>
-		<source @src="setup.ImagePath + '/possessed/3.1.mp4'" type="video/mp4">
-		</video>
+		<<video "possessed/3.1.mp4">>
 		@@.mc-thoughts; Suddenly, you start undressing. @@<br>
 		@@color:red; Pretty hot in here, isn't it, guys?@@<br>
 		@@.mc-speech; What? Did I just say that? No way.@@<br>
@@ -84,9 +74,7 @@
 		@@.mc-speech; Oh no, how shameful! I need to stop this.@@<br>
 		<<linkreplace "@@.usebtn;Try to resist@@">>
 			<<if setup.Posession.canResistFirstAttempt()>>
-				<video autoplay controls muted loop>
-				<source @src="setup.ImagePath + '/possessed/3.2.mp4'" type="video/mp4">
-				</video>
+				<<video "possessed/3.2.mp4">>
 				@@.mc-thoughts; You try to concentrate, but you can't. It's unsettling that you've pulled down your leggings and started working out with your bare butt, exposing your holes to two strangers.<br>
 				They came closer and started touching your butt.<br>@@
 				@@color:red; Don't be shy, I'm all yours today.@@<br>
@@ -104,7 +92,7 @@
 		<</linkreplace>>
 	<</linkreplace>>
 <<elseif $checkChoosenLocation eq "church">>
-	<img @src="setup.ImagePath + '/possessed/4.1.jpg'" width="100%"><br>
+	<<image "possessed/4.1.jpg" { width: "100%" }>><br>
 	@@.mc-thoughts; You find yourself in a church.@@<br>
 	@@.mc-speech; I don't remember how I got here.<br>@@
 	@@color:red; Ah~ nun, it seems something has possessed me, help me...@@<br>
@@ -112,17 +100,13 @@
 	@@.notmc-speech; Lie down, you must listen to me, now I will help you@@
 	<<linkreplace "@@.usebtn; get rid of the possession@@">>
 		<span id ="possessedLocationChurch">
-		<video autoplay controls muted loop>
-		<source @src="setup.ImagePath + '/possessed/4.2.mp4'" type="video/mp4">
-		</video></span>
+		<<video "possessed/4.2.mp4">></span>
 		<<set _videoIndex to 2>>
 		@@.mc-thoughts; She started to rape your anus using her @@ <<link "@@.usebtn; hand or dildos@@">>
 			<<set _videoIndex to (_videoIndex % 3) + 2>>
 			<<replace "#possessedLocationChurch">>
 
-				<video autoplay controls muted loop>
-				<source @src="setup.ImagePath+`/possessed/4.`+_videoIndex+`.mp4`" type="video/mp4">
-				</video>
+				<<video "possessed/4." + _videoIndex+`.mp4`>>
 			<</replace>>
 		<</link>>
 
@@ -130,7 +114,7 @@
 			@@color:red; Haa~, fuck that ass, shove it deeper@@<br>
 			@@.mc-speech; Something's wrong...<br>
 			HAaA~ I think I...i~ <<linkreplace "@@.usebtn; commiiiing~@@">>
-				<img @src="setup.ImagePath + '/possessed/4.5.jpg'" width="100%"><br>
+				<<image "possessed/4.5.jpg" { width: "100%" }>><br>
 				@@.notmc-speech; We did it@@<br>
 				@@color:red; No, we're not done.@@<br>
 				@@.notmc-speech; Whaa..?! what the ...@@<br>
@@ -141,9 +125,7 @@
 			@@.notmc-speech; You can handle it, it's almost over, I can feel it.@@<br>
 			@@.mc-speech; Did she hear what I said?<br>
 			So that means... oh~ I think I...i~ <<linkreplace "@@.usebtn; commiiiing~@@">>
-				<video autoplay controls muted loop>
-				<source @src="setup.ImagePath + '/possessed/4.9.mp4'" type="video/mp4">
-				</video>
+				<<video "possessed/4.9.mp4">>
 				@@.notmc-speech; We did it@@<br>
 				@@.mc-speech;Oh~ I, I... I don't remember...@@<br>
 				@@.notmc-speech; You were possessed, but it's all over now, you need to rest.@@<br>
@@ -158,13 +140,11 @@
 
 	<</linkreplace>>
 <<elseif $checkChoosenLocation eq "park">>
-	<video autoplay controls muted loop>
-	<source @src="setup.ImagePath + '/possessed/5.0.mp4'" type="video/mp4">
-	</video>
+	<<video "possessed/5.0.mp4">>
 	@@.mc-thoughts;You're running, but the surroundings are completely unfamiliar.@@<br>
 
 	@@.mc-speech;Where the@@ <<linkappend "@@.mc-speechLink; hell am I?@@">>
-		<img @src="setup.ImagePath + '/possessed/5.1.jpg'" width="100%"><br>
+		<<image "possessed/5.1.jpg" { width: "100%" }>><br>
 		@@.mc-thoughts;Suddenly, you notice a man looking at you with clear lust in his eyes.@@<br>
 		@@.notmc-speech;Hey, babe, want to come inside?@@<br>
 		@@.mc-thoughts; His massive, already hard cock protrudes from his robe. You want to say something insulting, but instead, your body starts moving towards him as if by its own accord. You feel your pussy getting wet with anticipation.@@<br>

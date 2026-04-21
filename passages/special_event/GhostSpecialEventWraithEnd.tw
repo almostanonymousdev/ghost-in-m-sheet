@@ -1,13 +1,9 @@
 :: GhostSpecialEventWraithEnd [nobr] {"position":"950,2650","size":"100,100"}
-<video autoplay controls muted loop>
-<source @src="setup.ImagePath + '/ghosts/specials/wraith6.mp4'" type="video/mp4">
-</video>
+<<video "ghosts/specials/wraith6.mp4">>
 @@.notmc-speech; Good girl, suck it, do you like the taste of your pussy? @@<br>
 @@.mc-speech; Yes...~ I love it...@@<br>
 @@.notmc-speech; Haha, you're such a slut. <br>
 Well, okay, we have to go, I think you can @@<<linkappend "@@.notmc-speechLink;handle the rest yourself.@@">>
-	<video autoplay controls muted loop>
-	<source @src="setup.ImagePath + '/ghosts/specials/wraith-end.mp4'" type="video/mp4">
-	</video>
+	<<video "ghosts/specials/wraith-end.mp4">>
 	@@.mc-thoughts; They helped you a little to untie your hands and left you naked in the forest. <br>However, now you can go [[sleep.|Sleep]] @@<br>
 <</linkappend>>

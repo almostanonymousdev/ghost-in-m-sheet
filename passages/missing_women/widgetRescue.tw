@@ -25,12 +25,8 @@ setup.rescueGirlPassages = {
 	<<set _video2 to _args[2]>>
 	<<set _videoToggle to !_videoToggle>>
 	<<if _videoToggle>>
-		<video autoplay controls muted loop>
-		<source @src="setup.ImagePath + '/' + _video1" type="video/mp4">
-		</video>
+		<<video _video1>>
 	<<else>>
-		<video autoplay controls muted loop>
-		<source @src="setup.ImagePath + '/' + _video2" type="video/mp4">
-		</video>
+		<<video _video2>>
 	<</if>>
 <</widget>>
