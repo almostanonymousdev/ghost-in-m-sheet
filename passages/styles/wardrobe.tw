@@ -12,7 +12,7 @@
   }
 
   .itemwrapperWardrobe {
-  	display: flex;
+	display: flex;
     gap: 1%;
   }
 </style>

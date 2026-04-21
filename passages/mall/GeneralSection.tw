@@ -1,9 +1,9 @@
 :: GeneralSection {"position":"2700,1800","size":"100,100"}
 <<nobr>>
 <div class="flexwrapper backgroundForText">
-<<consumableCard "energyDrinkAmount" "img/energy-drink.png" 5  "GeneralSection" 1  "You have {n} energy drinks">>
-<<consumableCard "makeupAmount"      "img/cosmetics.png"   10 "GeneralSection" 10 "You have {n} makeup charges left">>
-<<consumableCard "medicineAmount"    "img/medicine.png"    30 "GeneralSection" 1  "You have {n} pill(s) remaining">>
+<<consumableCard "energyDrinkAmount" "img/energy-drink.png" 5 "GeneralSection" 1 "You have {n} energy drinks">>
+<<consumableCard "makeupAmount" "img/cosmetics.png" 10 "GeneralSection" 10 "You have {n} makeup charges left">>
+<<consumableCard "medicineAmount" "img/medicine.png" 30 "GeneralSection" 1 "You have {n} pill(s) remaining">>
 <div class="housecard">
 <<image "img/spray.png" "iconPx">><br>
 <<if setup.Mall.needsPepperSpray()>>

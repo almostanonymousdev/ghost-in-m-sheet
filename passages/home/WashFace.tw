@@ -2,9 +2,9 @@
 <<image "img/washface.jpg" { width: "70%" }>><br>
 
 @@.mc-speech; Ah, that feels refreshing@@<br>
-<<if $mc.makeupImg eq 1>><<set $mc.beauty  -= 5>>
-<<elseif $mc.makeupImg eq 2>><<set $mc.beauty  -= 10>>
-<<elseif $mc.makeupImg eq 3>><<set $mc.beauty  -= 15>><</if>>
+<<if $mc.makeupImg eq 1>><<set $mc.beauty -= 5>>
+<<elseif $mc.makeupImg eq 2>><<set $mc.beauty -= 10>>
+<<elseif $mc.makeupImg eq 3>><<set $mc.beauty -= 15>><</if>>
 <<set $makeupApplied to 0>>
 <<set $mc.makeupImg to 0>>
 <br>

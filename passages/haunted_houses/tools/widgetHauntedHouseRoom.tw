@@ -10,7 +10,7 @@ scaffolding and wikifies its contents (which should include an optional
 <<furnitureRow>> followed by a <<roomFooter>> block). */
 <<widget "roomShell" container>>
 	<<set _shellPassage to _args[0]>>
-	<<set _shellBgVar  to _args[1]>>
+	<<set _shellBgVar to _args[1]>>
 	<<set _shellVariant to (_args.length gt 2 ? _args[2] : "full")>>
 	<<set _shellPrefix to _args[0].charAt(0).toLowerCase() + _args[0].slice(1)>>
 	<div class="room">
@@ -116,10 +116,10 @@ non-enigma navigation link in the haunted houses does. */
 	six per-tool <<toolCard>> calls (and the per-room <<script>>) that every
    haunted-house room used to repeat. */
 <<widget "roomToolBar">>
-<<for _t range setup.searchToolOrder>>
-<<roomToolCard _t _args[0]>>
-<</for>>
-<<if _args[1] neq "noCompanion">><<companionCard>><</if>>
+	<<for _t range setup.searchToolOrder>>
+		<<roomToolCard _t _args[0]>>
+	<</for>>
+	<<if _args[1] neq "noCompanion">><<companionCard>><</if>>
 <</widget>>
 
 /* roomFooterLight -- args: passage name (link target), bgRoom state-variable
@@ -128,28 +128,28 @@ non-enigma navigation link in the haunted houses does. */
    conditional heart link launches the seduction minigame. Used by elm,
    owaissa, and ironclad rooms. */
 <<widget "roomFooterLight">>
-<div class="footer-card footer-light">
-<span class="cursedHuntLinkDisable"><<link "<<image \"img/lighton.png\">>" _args[0]>><<set State.variables[_args[1]].background = 1>>
-<</link>>
-<<link "<<image \"img/lightoff.png\">>" _args[0]>><<set State.variables[_args[1]].background = 2>>
-<</link>>
-<<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>>
-<<link "<<image \"img/hearth.png\">>" "SeduceGhostMinigame">>
-<<run setup.SeduceGhostMinigame.init()>><</link>>
-<</if>></span>
-</div>
+	<div class="footer-card footer-light">
+	<span class="cursedHuntLinkDisable"><<link "<<image \"img/lighton.png\">>" _args[0]>><<set State.variables[_args[1]].background = 1>>
+	<</link>>
+	<<link "<<image \"img/lightoff.png\">>" _args[0]>><<set State.variables[_args[1]].background = 2>>
+	<</link>>
+	<<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>>
+		<<link "<<image \"img/hearth.png\">>" "SeduceGhostMinigame">>
+		<<run setup.SeduceGhostMinigame.init()>><</link>>
+	<</if>></span>
+	</div>
 <</widget>>
 
 /* roomFooterLightBasic -- args: passage name, bgRoom state-variable name.
    Enigma's simpler lights-only variant: no cursedHuntLinkDisable wrapper,
    no minigame trigger. */
 <<widget "roomFooterLightBasic">>
-<div class="footer-card footer-light">
-<<link "<<image \"img/lighton.png\">>" _args[0]>><<set State.variables[_args[1]].background = 1>>
-<</link>>
-<<link "<<image \"img/lightoff.png\">>" _args[0]>><<set State.variables[_args[1]].background = 2>>
-<</link>>
-</div>
+	<div class="footer-card footer-light">
+	<<link "<<image \"img/lighton.png\">>" _args[0]>><<set State.variables[_args[1]].background = 1>>
+	<</link>>
+	<<link "<<image \"img/lightoff.png\">>" _args[0]>><<set State.variables[_args[1]].background = 2>>
+	<</link>>
+	</div>
 <</widget>>
 
 /* hideSpot -- args: passage name (link target), furniture image filename
@@ -159,43 +159,43 @@ non-enigma navigation link in the haunted houses does. */
    replaces the room with the hide-spot scene; otherwise it behaves as a
    normal furniture span that opens furnitureSearch. */
 <<widget "hideSpot">>
-<<set _imgPath to 'img/furniture/' + _args[1]>>
-<<set _hideTarget to _args[0]>>
-<<set _hideId to _args[2]>>
-<<if $cursedHuntActive eq 1>>
-<<capture _hideTarget>>
-<span><<link `'<<image "' + _imgPath + '" "highlighted-furniture">>'` _hideTarget>>
-<<replace ".room-wrapper">><<set $isInHideSpot to 1>><<image "hunting/hid1.jpg" { class: "fadeInScale", width: "80%" }>><br>
-<<done>>
-<<run $(".fadeInScale").addClass("tarotCardsShow")>><</done>>
-@@.mc-thoughts;You press yourself against the cold floor, feeling your heart racing in your chest. The screams and rustling outside make you hold your breath. The ghost, filled with rage, prowls the room, and each of its steps echoes dully in your ears.<br>
+	<<set _imgPath to 'img/furniture/' + _args[1]>>
+	<<set _hideTarget to _args[0]>>
+	<<set _hideId to _args[2]>>
+	<<if $cursedHuntActive eq 1>>
+		<<capture _hideTarget>>
+			<span><<link `'<<image "' + _imgPath + '" "highlighted-furniture">>'` _hideTarget>>
+				<<replace ".room-wrapper">><<set $isInHideSpot to 1>><<image "hunting/hid1.jpg" { class: "fadeInScale", width: "80%" }>><br>
+					<<done>>
+					<<run $(".fadeInScale").addClass("tarotCardsShow")>><</done>>
+					@@.mc-thoughts;You press yourself against the cold floor, feeling your heart racing in your chest. The screams and rustling outside make you hold your breath. The ghost, filled with rage, prowls the room, and each of its steps echoes dully in your ears.<br>
 
-All you can do now is wait and hope it doesn't find you.@@
-<br><br>
-@@.backbtn;<<link "Leave" _hideTarget>><<set $isInHideSpot to 0>>
-<</link>>@@<br>
-<</replace>>
-<</link>>
-</span>
-<</capture>>
-<<else>>
-<<capture _hideId>>
-<span @id="_hideId"><<link `'<<image "' + _imgPath + '">>'` "FurnitureSearch">><<set $currentFurniture to _hideId>><<includeTimeEventClothesHunt>>
-<</link>></span>
-<</capture>>
-<</if>>
+					All you can do now is wait and hope it doesn't find you.@@
+					<br><br>
+					@@.backbtn;<<link "Leave" _hideTarget>><<set $isInHideSpot to 0>>
+					<</link>>@@<br>
+				<</replace>>
+			<</link>>
+			</span>
+		<</capture>>
+	<<else>>
+		<<capture _hideId>>
+			<span @id="_hideId"><<link `'<<image "' + _imgPath + '">>'` "FurnitureSearch">><<set $currentFurniture to _hideId>><<includeTimeEventClothesHunt>>
+			<</link>></span>
+		<</capture>>
+	<</if>>
 <</widget>>
 
 /* furnitureItem -- args: furniture image filename under img/furniture/,
    furniture span id (e.g. "bedroom_table"). The image span that opens
    furnitureSearch on click. */
 <<widget "furnitureItem">>
-<<set _imgPath to 'img/furniture/' + _args[0]>>
-<<set _furnId to _args[1]>>
-<<capture _furnId>>
-<span @id="_furnId"><<link `'<<image "' + _imgPath + '">>'` "FurnitureSearch">><<set $currentFurniture to _furnId>><<includeTimeEventClothesHunt>>
-<</link>></span>
-<</capture>>
+	<<set _imgPath to 'img/furniture/' + _args[0]>>
+	<<set _furnId to _args[1]>>
+	<<capture _furnId>>
+		<span @id="_furnId"><<link `'<<image "' + _imgPath + '">>'` "FurnitureSearch">><<set $currentFurniture to _furnId>><<includeTimeEventClothesHunt>>
+		<</link>></span>
+	<</capture>>
 <</widget>>
 
 /* randRangeImg -- args: pathPrefix, start, end, ext, cssClass?
@@ -204,8 +204,8 @@ All you can do now is wait and hope it doesn't find you.@@
    picked uniformly from [start..end]. Replaces the long 1..N <<if>>
    ladders that the tool check passages used to repeat for every image set. */
 <<widget "randRangeImg">>
-<<set _n to random(_args[1], _args[2])>>
-<<image _args[0] + _n + _args[3] { class: _args[4] || 'evidenceImgs' }>>
+	<<set _n to random(_args[1], _args[2])>>
+	<<image _args[0] + _n + _args[3] { class: _args[4] || 'evidenceImgs' }>>
 <</widget>>
 
 /* randRangeVideo -- args: pathPrefix, start, end, ext.
@@ -213,45 +213,45 @@ All you can do now is wait and hope it doesn't find you.@@
    autoplay/muted/loop/displayCentredImgs shell that TarotCards used to
    repeat per-card. */
 <<widget "randRangeVideo">>
-<<set _n to random(_args[1], _args[2])>>
-<<video _args[0] + _n + _args[3] "displayCentredImgs">>
+	<<set _n to random(_args[1], _args[2])>>
+	<<video _args[0] + _n + _args[3] "displayCentredImgs">>
 <</widget>>
 
 /* notFound -- args: message. Canonical "I didn't find anything" block used
    by every evidence-check passage when the roll fails or the ghost isn't
    in the current room. */
 <<widget "notFound">>
-<<set _msg to _args[0]>>
-<div class="notFound-container"><div class="mc-thoughts">_msg</div></div>
+	<<set _msg to _args[0]>>
+	<div class="notFound-container"><div class="mc-thoughts">_msg</div></div>
 <</widget>>
 
 /* coloredText -- args: color, content. Wraps content in the evidence
    "bold + stroke" text style, optionally coloured. Pass "" for no colour. */
 <<widget "coloredText">>
-<<set _ctColor to _args[0] || "inherit">>
-<<set _ctBody to _args[1]>>
-<span @style="'color: ' + _ctColor + '; font-weight: bold; -webkit-text-stroke: 1px black;'" class="boldText">_ctBody</span>
+	<<set _ctColor to _args[0] || "inherit">>
+	<<set _ctBody to _args[1]>>
+	<span @style="'color: ' + _ctColor + '; font-weight: bold; -webkit-text-stroke: 1px black;'" class="boldText">_ctBody</span>
 <</widget>>
 
 <<widget "companionCard">>
-<<if $showComp eq 1>>
-<div class="footer-card">
-<div class="cardimg">
-<<companionLinks>>
-</div>
-</div>
-<<elseif $showComp eq 2>>
-<div class="footer-card">
-<div class="cardimg">
-<a data-passage="CompanionFailed">
-<<image "img/question-mark.png" "companion-image">> </a>
-</div>
-</div>
-<<elseif $showComp eq 3>>
-<div class="footer-card">
-<div class="cardimg">
-<<companionLinksSuccess>>
-</div>
-</div>
-<</if>>
+	<<if $showComp eq 1>>
+		<div class="footer-card">
+		<div class="cardimg">
+		<<companionLinks>>
+		</div>
+		</div>
+	<<elseif $showComp eq 2>>
+		<div class="footer-card">
+		<div class="cardimg">
+		<a data-passage="CompanionFailed">
+		<<image "img/question-mark.png" "companion-image">> </a>
+		</div>
+		</div>
+	<<elseif $showComp eq 3>>
+		<div class="footer-card">
+		<div class="cardimg">
+		<<companionLinksSuccess>>
+		</div>
+		</div>
+	<</if>>
 <</widget>>

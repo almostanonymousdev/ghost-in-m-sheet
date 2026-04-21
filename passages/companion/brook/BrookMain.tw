@@ -78,7 +78,7 @@
 		@@.notmc-speech;Good, I'll stay close to you.@@
 	<</replace>>
 <</link>>@@<br>
-<span id="checkQuestForCursedItem">@@.usebtn;<<link "I need you to find the cursed item @@.warningtext; ($companion.chanceOfSuccessCI %, $companion.plan2TimeReq min)@@" >>
+<span id="checkQuestForCursedItem">@@.usebtn;<<link "I need you to find the cursed item @@.warningtext; ($companion.chanceOfSuccessCI %, $companion.plan2TimeReq min)@@">>
 	<<if not setup.Companion.hasCursedItem()>>
 		<<set $chosenPlan to "Plan2">>
 		<<set $chanceToSuccess to $companion.chanceOfSuccessCI>>

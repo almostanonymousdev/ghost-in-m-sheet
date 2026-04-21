@@ -1,5 +1,4 @@
 :: widgetWitch [widget nobr] {"position":"1350,0","size":"100,100"}
-
 <<widget "ghostInfoCard">>
 	<<set _ghostName to _args[0]>>
 	<<set _price to (typeof _args[1] !== "undefined") ? _args[1] : 200>>

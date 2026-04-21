@@ -1,5 +1,4 @@
 :: widgetLibrary [widget nobr] {"position":"2500,1600","size":"100,100"}
-
 <<widget "companionSoloHunt">>
 	<<set _compName to _args[0]>>
 	<<set _compVarPrefix to _args[1]>>

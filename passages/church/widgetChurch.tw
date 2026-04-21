@@ -1,5 +1,4 @@
 :: widgetChurch [widget nobr] {"position":"1975,1300","size":"100,100"}
-
 <<widget "randomVideo">>
 	<<set _rv to random(1, _args.length - 1)>>
 	<<set _rvPath to _args[_rv]>>

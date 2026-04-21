@@ -1,19 +1,19 @@
 :: DeliveryPapersEventChoose [event nobr] {"position":"1550,1650","size":"100,100"}
 <<deliveryEventChoose "papers">>
-@@.notmc-speech; Yes, put them on the sofa@@<br>
-@@.mc-speech;<<linkreplace "Sure, no problem">>
-	<<addLust 15>>
-	<<image "deliveryhub/papersevent/2.jpg" { style: "max-width: 100%; height: auto; display: block; margin: 0 auto;" }>>
-	@@.mc-thoughts; I think he's staring at my butt, what a pervert@@<br>
-	+15 <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
-	<<if not setup.Delivery.papersInitialLustHighEnough()>>
-		@@.mc-speech; Done. I have to go, bye.@@ <<deliveryLustReq 30>><br><br>
-		@@.backbtn;[[Back|DeliveryMap]]@@<br>
-	<<else>>
-		@@.mc-speech; Do you like it?@@<br>
-		@@.notmc-speech; Yea~I mean, I don't understand what you mean...<br>
-		Sorry, you have a nice ass, maybe I can touch it? @@<br>
-		@@.mc-speech;[[Just a touch|DeliveryPapersEventStart]]@@ or @@.mc-speech;[[Nah, i have to go|DeliveryMap]]@@<br>
-	<</if>>
-<</linkreplace>>@@
+	@@.notmc-speech; Yes, put them on the sofa@@<br>
+	@@.mc-speech;<<linkreplace "Sure, no problem">>
+		<<addLust 15>>
+		<<image "deliveryhub/papersevent/2.jpg" { style: "max-width: 100%; height: auto; display: block; margin: 0 auto;" }>>
+		@@.mc-thoughts; I think he's staring at my butt, what a pervert@@<br>
+		+15 <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+		<<if not setup.Delivery.papersInitialLustHighEnough()>>
+			@@.mc-speech; Done. I have to go, bye.@@ <<deliveryLustReq 30>><br><br>
+			@@.backbtn;[[Back|DeliveryMap]]@@<br>
+		<<else>>
+			@@.mc-speech; Do you like it?@@<br>
+			@@.notmc-speech; Yea~I mean, I don't understand what you mean...<br>
+			Sorry, you have a nice ass, maybe I can touch it? @@<br>
+			@@.mc-speech;[[Just a touch|DeliveryPapersEventStart]]@@ or @@.mc-speech;[[Nah, i have to go|DeliveryMap]]@@<br>
+		<</if>>
+	<</linkreplace>>@@
 <</deliveryEventChoose>>

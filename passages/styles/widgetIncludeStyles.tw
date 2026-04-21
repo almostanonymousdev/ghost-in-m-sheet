@@ -1,10 +1,9 @@
 :: widgetIncludeStyles [widget nobr] {"position":"300,1900","size":"100,100"}
-
 <<widget "includeStyle">>
 	<style>
-  	body {
-  	height: 100vh;
-  	background-position: center;
+	body {
+	height: 100vh;
+	background-position: center;
 
 }
 </style>
@@ -476,9 +475,9 @@
 
 <<widget "includeStyle2">>
 	<style>
-  	body {
-  	height: 100vh;
-  	background-position: center;
+	body {
+	height: 100vh;
+	background-position: center;
 }
 </style>
 	<<if previous() is "FurnitureSearch">>

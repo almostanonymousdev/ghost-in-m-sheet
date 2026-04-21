@@ -18,7 +18,7 @@
 <<set _artListVids to []>>
 <<set _artList to []>>
 <<set _chance = random(0, 100)>>
-<<if $mc.sanity >= 90 and _chance <= $decreasingSanity.stage1 >>
+<<if $mc.sanity >= 90 and _chance <= $decreasingSanity.stage1>>
 	<<if $jeansState is "worn">>
 		<<set _artList to ["art/jeans/first/1.png", "art/jeans/first/2.png", "art/jeans/first/3.png", "art/jeans/first/4.png", "art/jeans/first/5.png", "art/jeans/first/6.png", "art/jeans/first/7.png", "art/jeans/first/8.png"]>>
 	<<elseif $shortsState is "worn">>

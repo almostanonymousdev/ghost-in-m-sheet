@@ -6,7 +6,7 @@
 <<video $videos[$currentVideoIndex]>>
 </div>
 
-@@.usebtn;<<link "Watch porn" >>
+@@.usebtn;<<link "Watch porn">>
 	<<addTime 3>>
 	<<addLust 15>>
 	<<if $mc.lust gte 60>>

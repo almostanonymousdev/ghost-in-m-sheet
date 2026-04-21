@@ -1,5 +1,4 @@
 :: LibraryBrook [nobr] {"position":"3125,2100","size":"100,100"}
-
 <<if setup.Library.brookIsPossessed()>>
 	<<image "img/library-inside.jpg" { width: "100%" }>>
 	@@.mc-speech; She's not there... strange...@@<br><br>

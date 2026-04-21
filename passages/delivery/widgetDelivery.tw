@@ -1,5 +1,4 @@
 :: widgetDelivery [widget nobr] {"position":"1100,1200","size":"100,100"}
-
 /* Format a passage-name street ("Amethyst Street 42") as a display
 address ("Amethyst Street, 42"). Last space becomes ", ". */
 <<widget "deliveryAddressFmt">>

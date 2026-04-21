@@ -58,7 +58,7 @@
 		refreshHighlights();
 		$('.flexwrapperNotebook input[type="checkbox"]').on('change', function () {
 			/* autocheck's change handler runs first and syncs $state; defer one
-			   tick so we read the fresh value. */
+				tick so we read the fresh value. */
 			setTimeout(refreshHighlights, 0);
 		});
 	<</script>>

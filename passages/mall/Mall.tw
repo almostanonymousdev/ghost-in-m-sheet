@@ -1,5 +1,4 @@
 :: Mall [nobr] {"position":"2800,1700","size":"100,100"}
-
 <<image "img/mall.jpg" { width: "100%" }>>
 @@.location; Mall@@<br>
 @@.mc-thoughts; This mall is a fantastic place for purchases. I believe I won't find any items related to my profession here, but there's plenty of everything else.
