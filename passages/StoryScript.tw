@@ -1396,6 +1396,33 @@ setup.toolTimeRemain = function (tier) {
     return setup.TOOL_TIME_REMAIN[tier] || 0;
 };
 
+/* Short human-readable summary of a tool's per-check success behaviour for the
+ * hover tooltip on each <<roomToolCard>>. gwb/plasm/spiritbox roll a flat
+ * tier-based chance per check. emf/uvl are deterministic once their activation
+ * window is open (another tool's hit or a ghost event opens it, and it stays
+ * open for a tier-based number of in-game minutes). temperature is a passive
+ * reading that always produces a signal. */
+setup.toolSuccessRate = function (toolKey) {
+    var def = setup.searchToolDefs[toolKey];
+    if (!def) return "";
+    var equipment = State.variables.equipment || {};
+    var tier = equipment[def.equipField];
+    var tierLabel = (tier !== undefined) ? ("Tier " + tier) : "Unowned";
+    if (toolKey === "temperature") {
+        return tierLabel + " · 100% accuracy";
+    }
+    if (toolKey === "emf" || toolKey === "uvl") {
+        var windowMin = setup.TOOL_TIME_REMAIN[tier];
+        return windowMin !== undefined
+            ? tierLabel + " · 100% while active · Window stays open " + windowMin + " min after another tool's hit or a ghost event"
+            : tierLabel;
+    }
+    var chance = setup.TIER_CHANCE[tier];
+    return chance !== undefined
+        ? tierLabel + " · " + chance + "% per check"
+        : tierLabel;
+};
+
 /* Build the full <<searchTool>> config from a (tool, prefix) pair by
  * pulling per-tool defaults out of setup.searchToolDefs and per-prefix
  * defaults out of setup.searchRoomPrefixes. This is what the room-level

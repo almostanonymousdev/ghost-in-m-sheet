@@ -31,14 +31,33 @@ entirely for rooms with no furniture (e.g. enigma). */
 	<div class="FurnitureSearch"><<= _contents>></div>
 <</widget>>
 
+/* huntConditions -- single-row HUD above the tool bar showing the live rate
+at which each hunt-relevant stat is moving. Rates are zero today because the
+drain/gain sites were stripped during the clean-slate haunt-mechanics pass;
+the widget stays so the HUD is already in place once the new resource model
+wires real deltas back in.
+TODO(haunt-mechanics-rework): replace these literal zeros with live values
+from whatever per-tick accumulator the redesign introduces. */
+<<widget "huntConditions">>
+	<div class="hunt-conditions">
+	<img @src="setup.ImagePath + '/img/sanity.png'" class="hunt-conditions-icon"> 0/min
+	· <img @src="setup.ImagePath + '/img/hearth.png'" class="hunt-conditions-icon"> 0/min
+	· <img @src="setup.ImagePath + '/img/corruption.png'" class="hunt-conditions-icon"> 0 pending
+	· Time paused
+	</div>
+<</widget>>
+
 /* roomFooter -- container widget. Reads the _shell* temp vars set by the
-enclosing <<roomShell>> and emits the full .footer block: a .footertools
-div with <<roomToolBar>> + the appropriate light widget, plus a
-.footeraction div whose body comes from _contents (the per-room links).
-Picks roomFooterLight vs roomFooterLightBasic and toggles companion
-visibility based on _shellVariant. */
+enclosing <<roomShell>> and emits the full .footer block: a .hunt-conditions
+HUD row on top, and below it a .footer-row with a .footertools div that
+holds <<roomToolBar>> + the appropriate light widget, plus a .footeraction
+div whose body comes from _contents (the per-room links). Picks
+roomFooterLight vs roomFooterLightBasic and toggles companion visibility
+based on _shellVariant. */
 <<widget "roomFooter" container>>
 	<div class="footer">
+	<<huntConditions>>
+	<div class="footer-row">
 	<div class="footertools">
 	<<if _shellVariant eq "basic">>
 		<<roomToolBar _shellPrefix "noCompanion">>
@@ -49,6 +68,7 @@ visibility based on _shellVariant. */
 	<</if>>
 	</div>
 	<div class="footeraction"><<= _contents>></div>
+	</div>
 	</div>
 <</widget>>
 
@@ -75,8 +95,11 @@ non-enigma navigation link in the haunted houses does. */
 
 	/* roomToolCard -- args: tool key (e.g. "emf"), room prefix (e.g. "ElmBedroom").
 	Renders one tool slot using metadata from setup.searchToolDefs and
-	setup.searchPrefixIndex, with the searchTool macro inlined directly. */
+	setup.searchPrefixIndex, with the searchTool macro inlined directly. Wraps
+	the slot in <<hovertip>> so hovering surfaces the tool's current tier and
+	per-check/window success summary from setup.toolSuccessRate. */
 	<<widget "roomToolCard">>
+		<<hovertip setup.toolSuccessRate(_args[0])>>
 		<div class="footer-card">
 		<div class="cardimg">
 		<img @src="setup.ImagePath + '/img/' + setup.searchToolDefs[_args[0]].iconFile" class="icon" @id="_args[1] + setup.searchToolDefs[_args[0]].picSuffix">
@@ -85,6 +108,7 @@ non-enigma navigation link in the haunted houses does. */
 		<<searchTool _args[0] _args[1]>>
 		</div>
 		</div>
+		<</hovertip>>
 	<</widget>>
 
 	/* roomToolBar -- arg: room prefix. Emits the canonical six tool slots in

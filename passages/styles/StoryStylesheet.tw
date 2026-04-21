@@ -289,8 +289,29 @@ body.city {
 }
 .footer {
 	display: flex;
-	align-items: flex-end;
+	flex-direction: column;
 	max-height: 20%;
+}
+.footer-row {
+	display: flex;
+	align-items: flex-end;
+	flex: 1 1 auto;
+	min-height: 0;
+}
+.hunt-conditions {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 0.5em;
+	padding: 0.1em 0;
+	font-size: 80%;
+	opacity: 0.85;
+	flex: 0 0 auto;
+}
+.hunt-conditions-icon {
+	width: 14px;
+	height: 14px;
+	vertical-align: middle;
 }
 .footer-card {
 	display: flex;

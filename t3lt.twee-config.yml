@@ -226,7 +226,14 @@ sugarcube-2:
         room: a .footertools div with <<roomToolBar>> + the appropriate light
         widget, plus a .footeraction div whose body comes from the inner content
         (the per-room navigation links). Reads the _shell* temp vars set by the
-        enclosing <<roomShell>> for passage, bgRoomVar, and variant."
+        enclosing <<roomShell>> for passage, bgRoomVar, and variant. Prepends a
+        <<huntConditions>> HUD above the footer."
+    huntConditions:
+      name: huntConditions
+      description: "Renders the hunt HUD row above the tool bar showing the live
+        per-minute deltas for sanity, lust, corruption (and whether time is
+        advancing). Currently all zeros pending the haunt-mechanics rework. No
+        args."
     navLink:
       name: navLink
       description: "Renders an @@.adaptiveLink;<<link>>...<</link>>@@ navigation link
