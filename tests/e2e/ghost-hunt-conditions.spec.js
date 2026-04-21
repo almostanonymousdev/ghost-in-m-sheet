@@ -88,7 +88,7 @@ test.describe('Ghost hunt conditions', () => {
     expect(await callSetup(page,
       'setup.Ghosts.huntConditionMet(setup.Ghosts.getByName("Moroi"), SugarCube.State.variables.mc)')).toBe(true);
 
-    const evidence = await page.evaluate(() => SugarCube.State.variables.ghost.evidence);
+    const evidence = await page.evaluate(() => SugarCube.State.variables.ghostEvidence);
     expect(evidence).toContain('spiritbox');
 
     await goToPassage(page, 'OwaissaLivingroom');

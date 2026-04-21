@@ -158,7 +158,7 @@
 </div>
 </div>
 <<nobr>>
-<<if $ghost.name eq "Mare">>
+<<if $ghostName eq "Mare">>
 <<if $ghostMareEventStart eq 0>>
 <<set $ghostMareEventStart to 1>>
 <<elseif hasVisited("GhostSpecialEventMare")>>
@@ -166,7 +166,7 @@
 <</if>>
 <</if>>
 <<set $hours to 0>><<include "ResetCooldowns">><<set $minutes to 0>>
-<<if $ghost.name eq "Mimic">>
+<<if $ghostName eq "Mimic">>
 <<set $saveMimic to 1>>
 <<set $lastChangeIntervalMimic to " " >><</if>>
 <<done>>

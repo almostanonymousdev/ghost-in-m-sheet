@@ -1,11 +1,11 @@
 :: HuntOverSanity [noreturn nobr] {"position":"1400,1350","size":"100,100"}
-<<if $ghost.name eq "The Twins">>
+<<if $ghostName eq "The Twins">>
 	<<set $thetwinsevent to 1>>
 <</if>>
 &emsp;@@.mc-thoughts;Your mind succumbs to the pressure of darkness and horrors enveloping you. Everything around you merges into a black void@@<br>
 @@.enterbtn;<<linkreplace "Next">>
 	<<if $isrealhouse eq 0>>
-		<<if $ghost.name eq "Cthulion">>
+		<<if $ghostName eq "Cthulion">>
 			<<set _check to random(1,5)>>
 			<<if _check eq 1>>
 				<video autoplay controls muted loop>
@@ -77,7 +77,7 @@
 			<</if>>
 		<</if>>
 	<<else>>
-		<<if $ghost.name eq "Cthulion">>
+		<<if $ghostName eq "Cthulion">>
 			<<set _check to random(1,6)>>
 			<<if _check eq 1>>
 				<video autoplay controls muted loop>

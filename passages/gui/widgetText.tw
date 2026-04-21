@@ -2,10 +2,10 @@
 <<widget "activity">>
 	<<replace ".MonkeyPawShow">>
 		<<set _videoList to ["cursedpossessions/slap1.mp4", "cursedpossessions/slap2.mp4", "cursedpossessions/slap3.mp4", "cursedpossessions/slap4.mp4", "cursedpossessions/passion1.mp4", "cursedpossessions/passion2.mp4", "cursedpossessions/passion3.mp4", "cursedpossessions/passion4.mp4", "cursedpossessions/pulse1.mp4", "cursedpossessions/pulse2.mp4", "cursedpossessions/pulse3.mp4", "cursedpossessions/pulse4.mp4"]>>
-		<<if $ghost.name eq "Cthulion">>
+		<<if $ghostName eq "Cthulion">>
 			<<set _videoList to _videoList.concat(["ghosts/cthulion/1.0.mp4", "ghosts/cthulion/1.1.mp4", "ghosts/cthulion/1.2.mp4", "ghosts/cthulion/1.3.mp4", "ghosts/cthulion/1.4.mp4", "ghosts/cthulion/1.5.mp4", "ghosts/cthulion/1.6.mp4",
 			"ghosts/cthulion/2.0.mp4", "ghosts/cthulion/2.1.mp4", "ghosts/cthulion/2.2.mp4", "ghosts/cthulion/2.3.mp4", "ghosts/cthulion/2.4.mp4"])>>
-		<<elseif $ghost.name eq "Banshee">>
+		<<elseif $ghostName eq "Banshee">>
 			<<set _videoList to _videoList.concat(["ghosts/banshee/1.mp4", "ghosts/banshee/2.mp4", "ghosts/banshee/3.mp4", "ghosts/banshee/4.mp4", "ghosts/banshee/5.mp4", "ghosts/banshee/6.mp4", "ghosts/banshee/7.mp4", "ghosts/banshee/8.mp4", "ghosts/banshee/9.mp4", "ghosts/banshee/10.mp4"])>>
 		<</if>>
 
@@ -74,7 +74,7 @@
 			@@.mc-thoughts; $wishesCount wishes left...@@<br><br>
 			<<set $knowledgeUsed to 1>>
 			<<set _allEvidence to ["emf", "spiritbox", "gwb", "uvl", "glass", "temperature"]>>
-			<<set _missingEvidence to _allEvidence.filter(e => !$ghost.evidence.includes(e) && e !== $hiddenEvidence && e !== $hiddenEvidence1 && e !== $hiddenEvidence2)>>
+			<<set _missingEvidence to _allEvidence.filter(e => !$ghostEvidence.includes(e) && e !== $hiddenEvidence && e !== $hiddenEvidence1 && e !== $hiddenEvidence2)>>
 			<<set $chosenEvidence to _missingEvidence.random()>>
 			@@.mc-speech; It worked! One evidence has been removed from my diary!<br>
 			Wait...I hear someone's footsteps...@@

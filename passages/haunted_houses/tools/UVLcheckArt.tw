@@ -10,7 +10,7 @@
 		<<set $uvlActivationTime to 0>>
 		<<set $elapsedTimeUvl to 0>>
 		<<notFound "I didn't find any fingerprints">>
-	<<elseif not $ghost.evidence.includes("uvl")>>
+	<<elseif not $ghostEvidence.includes("uvl")>>
 		<<notFound "I didn't find any fingerprints">>
 	<<else>>
 		<<if random(1, 3) gt 1>>

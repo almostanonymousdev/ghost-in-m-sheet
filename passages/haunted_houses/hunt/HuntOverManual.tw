@@ -1,8 +1,8 @@
 :: HuntOverManual [nobr] {"position":"1600,1350","size":"100,100"}
-<<if $ghost.name eq "The Twins">>
+<<if $ghostName eq "The Twins">>
 	<<set $thetwinsevent to 1>>
 <</if>>
-<<if $ghost.name eq "Spirit">>
+<<if $ghostName eq "Spirit">>
 	<<set $ghostSpiritEventStage to 0>>
 <</if>>
 @@.mc-speech;I am leaving this accursed house. It seems I've done everything I could.@@<br>
@@ -21,7 +21,7 @@
 		<</link>>@@
 	<</if>>
 <<else>>
-	<<if $ghost.name eq "Myling">>
+	<<if $ghostName eq "Myling">>
 		@@.movebtn;<<link "Go home" "GhostSpecialEventMyling">>
 		<<include "LostClothes">><<set $hours += 1>><</link>>@@
 	<<else>>

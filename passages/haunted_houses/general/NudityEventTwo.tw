@@ -1,6 +1,6 @@
 :: NudityEventTwo [nobr] {"position":"1800,1350","size":"100,100"}
 <<set $companion.lust to 100>>
-<<if $ghost.name eq "The Twins">>
+<<if $ghostName eq "The Twins">>
 	<<set $thetwinsevent to 1>>
 <</if>>
 <<set _videoList to []>>

@@ -100,6 +100,19 @@
 		if (typeof vars.hasPSprayCharges === 'number' && vars.hasPSprayCharges <= 0) {
 			vars.hasPSpray = 0;
 		}
+
+		// Older saves stored the active hunt as $ghost = {name, evidence}.
+		// Split that into $ghostName (string) + $ghostEvidence (array) so
+		// setup.Ghosts.active() can compose it with static catalogue fields.
+		if (vars.ghost && typeof vars.ghost === 'object') {
+			if (vars.ghostName === undefined && typeof vars.ghost.name === 'string') {
+				vars.ghostName = vars.ghost.name;
+			}
+			if (vars.ghostEvidence === undefined && Array.isArray(vars.ghost.evidence)) {
+				vars.ghostEvidence = vars.ghost.evidence.slice();
+			}
+			delete vars.ghost;
+		}
 	}
 
 	// Expose for use from Twine (PassageReady belt-and-braces call).

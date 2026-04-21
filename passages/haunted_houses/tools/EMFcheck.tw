@@ -3,8 +3,8 @@
 <<if $EmfActivated eq 1>>
 	<<set $elapsedTime to ($hours * 60 + $minutes) - $EmfActivationTime>>
 	<<if $elapsedTime lte $emfTimeRemain>>
-		<<if $ghost.evidence.includes("emf")>>
-			<<if $ghost.name eq "Raiju" and random(1, 3) eq 3>>
+		<<if $ghostEvidence.includes("emf")>>
+			<<if $ghostName eq "Raiju" and random(1, 3) eq 3>>
 				<<coloredText "red" `random(0, 100)`>>
 			<<else>>
 				<<coloredText "red" 5>>

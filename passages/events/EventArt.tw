@@ -1,5 +1,5 @@
 :: EventArt [nobr] {"position":"1400,950","size":"100,100"}
-<<if $ghost.name neq "Shade">>
+<<if $ghostName neq "Shade">>
 	<<set $decreasingSanity to {
 	stage1: 3,
 	stage2: 5,

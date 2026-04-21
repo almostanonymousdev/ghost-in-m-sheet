@@ -32,7 +32,7 @@
 <br>
 <div class="journal-container">
 <<for _g range setup.Ghosts.list()>>
-	<span @class="setup.Ghosts.evidenceClasses(_g)" @id="_g.id"><<hovertip setup.Ghosts.hoverHtml(_g.id)>><<= _g.name>>
+	<span @class="setup.Ghosts.evidenceClasses(_g)" @data-ghost="_g.name"><<hovertip setup.Ghosts.hoverHtml(_g.name)>><<= _g.name>>
 	<</hovertip>></span>
 <</for>><br>
 

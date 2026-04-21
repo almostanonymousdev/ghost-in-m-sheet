@@ -68,11 +68,12 @@ async function setupHunt(page, ghostName, house = 'owaissa') {
     const V = SugarCube.State.variables;
     const found = SugarCube.setup.Ghosts.list().find(g => g.name === name);
     if (found) {
-      V.ghost = { name: found.name, evidence: found.evidence.slice() };
+      V.ghostName = found.name;
+      V.ghostEvidence = found.evidence.slice();
     }
   }, ghostName);
 
-  const assigned = await getVar(page, 'ghost.name');
+  const assigned = await getVar(page, 'ghostName');
   if (assigned !== ghostName) {
     throw new Error(`Failed to assign ghost "${ghostName}", got "${assigned}"`);
   }

@@ -3,7 +3,7 @@
 <br>
 @@.notmc-speech;Tell me the type of ghost:@@<br>
 <<if $saveMimic eq 1>>
-	<<set $ghost.name to "Mimic">>
+	<<set $ghostName to "Mimic">>
 <<set $saveMimic to 0>><</if>>
 <<set _ghostTypes = setup.Ghosts.names()>>
 @@.mc-speech;I guess it was:@@<br>
@@ -19,7 +19,7 @@
 	</video>
 	@@.notmc-speech;Let's find out, give me some time...@@
 	<<timed 6s>>
-		<<if ($ghost.name == $ghostTypeSelected)>>
+		<<if ($ghostName == $ghostTypeSelected)>>
 			@@.notmc-speech; Yes, you're right, good girl@@<br>
 
 			<<set $mc.money += $moneyFromContract + $moneyFromWeakenTheGhost>>

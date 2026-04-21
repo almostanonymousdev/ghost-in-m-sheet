@@ -35,7 +35,7 @@ test.describe('Ghost unique abilities — Phantom, Goryo, Deogen, Jinn', () => {
     await goToPassage(page, 'OwaissaHallway');
 
     const canTurnOff = await page.evaluate(() =>
-      SugarCube.State.variables.ghost.name !== 'Phantom'
+      SugarCube.State.variables.ghostName !== 'Phantom'
     );
     expect(canTurnOff).toBe(true);
     await expectCleanPassage(page);
@@ -121,13 +121,13 @@ test.describe('Ghost unique abilities — Phantom, Goryo, Deogen, Jinn', () => {
     await setupHunt(page, 'Deogen');
 
     const deogenCatchesHidden = await page.evaluate(() => {
-      const isDeogen = SugarCube.State.variables.ghost.name === 'Deogen';
+      const isDeogen = SugarCube.State.variables.ghostName === 'Deogen';
       return isDeogen === true; // isDeogen === isHidden
     });
     expect(deogenCatchesHidden).toBe(true);
 
     const deogenMissesNotHidden = await page.evaluate(() => {
-      const isDeogen = SugarCube.State.variables.ghost.name === 'Deogen';
+      const isDeogen = SugarCube.State.variables.ghostName === 'Deogen';
       return isDeogen === false; // isDeogen === isHidden
     });
     expect(deogenMissesNotHidden).toBe(false);

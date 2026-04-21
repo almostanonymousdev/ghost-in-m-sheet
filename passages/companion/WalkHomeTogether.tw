@@ -1,6 +1,6 @@
 :: WalkHomeTogether [nobr] {"position":"2450,3550","size":"100,100"}
 <<set _videoToggle to true>>
-<<if $ghost.name eq "Spirit">>
+<<if $ghostName eq "Spirit">>
 	<img @src="setup.ImagePath + '/img/mchouse.jpg'" width="100%">
 	@@.notmc-speech; I have a strange feeling. Like something is following us...@@<br>
 	@@.mc-speech;I didn't see anyone. Maybe you should stay at my place then?@@<br>

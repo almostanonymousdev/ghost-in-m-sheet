@@ -2,7 +2,7 @@
 <<set _checkRandomCthulion to random(1,3)>>
 <<set _videoList to []>>
 
-<<if $ghost.name eq "Cthulion" and _checkRandomCthulion eq 1>>
+<<if $ghostName eq "Cthulion" and _checkRandomCthulion eq 1>>
 	<<cthulionAbility 4>>
 	<<set _randomIndex to random(0, _videoList.length - 1)>>
 	<<set _selectedVideo to _videoList[_randomIndex]>>

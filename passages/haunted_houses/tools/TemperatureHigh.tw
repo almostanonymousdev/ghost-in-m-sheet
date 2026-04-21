@@ -8,7 +8,7 @@ the ghost's room, yellow when the room has no temperature evidence. Raiju
 occasionally glitches the reading to a random 0..50 value on tier <= 4
 thermometers. */
 <<set _inGhostRoom to setup.isGhostHere()>>
-<<set _hasTempEvidence to $ghost.evidence.includes("temperature")>>
+<<set _hasTempEvidence to $ghostEvidence.includes("temperature")>>
 <<set _tier to $equipment.temperature>>
 
 <<if _inGhostRoom and _hasTempEvidence>>
@@ -22,7 +22,7 @@ thermometers. */
 	<<set _color to (_tier eq 5 ? "" : "green")>>
 <</if>>
 
-<<set _raijuGlitch to ($ghost.name eq "Raiju" and random(1, 8) eq 8)>>
+<<set _raijuGlitch to ($ghostName eq "Raiju" and random(1, 8) eq 8)>>
 <<set _reading to _raijuGlitch ? random(0, 50) : (random(13, 16) + $temperature + _offset)>>
 
 <span class="toolsTextCentered boldText"><<coloredText _color _reading>></span>

@@ -9,7 +9,7 @@
 <<if $isIronclad eq 1>>
 <<set _ghostRoom = ["BlockA", "BlockB", "BlockACellA", "BlockACellB", "BlockACellC", "BlockBCellA", "BlockBCellB", "BlockBCellC", "reception", "kitchen", "hallway"]>><</if>>
 
-<<if $ghostHuntingMode eq 2 and $ghost.name neq "Goryo" and $ghostIsTrapped neq 1>>
+<<if $ghostHuntingMode eq 2 and $ghostName neq "Goryo" and $ghostIsTrapped neq 1>>
 	<<set $currentIntervalRoom to ($minutes >= 0 && $minutes < 20) ? "0-19" : ($minutes >= 20 && $minutes < 40) ? "20-39" : "40-59">>
 	<<if $currentIntervalRoom != $lastChangeIntervalRoom>>
 		<<if $currentIntervalRoom eq "0-19">>

@@ -112,7 +112,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
     await setupHunt(page, 'Mimic');
 
     expect(await page.evaluate(() =>
-      SugarCube.State.variables.ghost.name === 'Mimic'
+      SugarCube.State.variables.ghostName === 'Mimic'
     )).toBe(true);
 
     await setVar(page, 'saveMimic', 1);

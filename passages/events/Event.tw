@@ -4,12 +4,12 @@
 <<set _bansheeRoll to random(1, 10)>>
 <<set _cthulionRoll to random(1, 10)>>
 
-<<if $ghost.name eq "Banshee" and _bansheeRoll eq 1 and _chance <= 5>>
+<<if $ghostName eq "Banshee" and _bansheeRoll eq 1 and _chance <= 5>>
 	<<set $bansheeAbility to 1>>
 	<<set $tempCorr += 0.015>>
 	<<set _videoList to setup.Events.bansheeVideos()>>
 
-<<elseif $ghost.name eq "Cthulion" and _cthulionRoll eq 1 and _chance <= 5>>
+<<elseif $ghostName eq "Cthulion" and _cthulionRoll eq 1 and _chance <= 5>>
 	<<set $cthulionAbility to 1>>
 	<<set $tempCorr += 0.015>>
 	<<set _lt to setup.Events.lustTier()>>

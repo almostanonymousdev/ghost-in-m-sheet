@@ -24,48 +24,48 @@
     };
 
     /* Canonical ghost catalogue. Static fields live here; `isInfoCollected` is
-       a live accessor backed by the existing $ghost<Id>InfoCollected save flag
+       a live accessor backed by the existing $ghost<Name>InfoCollected save flag
        so existing saves stay compatible. Per-ghost data that never changes
        (descriptions, hints) sits in code instead of $state so it's not
        serialised into every save file. */
     var GHOST_CONFIG = [
         {
-            id: "Shade", name: "Shade", image: "shade.webp",
+            name: "Shade", image: "shade.webp",
             evidence: [E.EMF, E.GWB, E.TEMPERATURE],
             hint: "The lower your sanity, the less likely the Shade is to show interest in you.",
             description: "Shade -- one of the oldest types of ghosts. The main feature of the Shade is that the lower your sanity, the less likely the Shade is to show interest in you.",
             huntCondition: { stat: "sanity", op: "lte", value: 35 }
         },
         {
-            id: "Spirit", name: "Spirit", image: "spirit.webp",
+            name: "Spirit", image: "spirit.webp",
             evidence: [E.EMF, E.SPIRITBOX, E.GWB],
             hint: "If it doesn't achieve its goal, it will relentlessly follow its victim.",
             description: "Spirit is a rather shy ghost. Unlike others, if it doesn't achieve its goal, it will relentlessly follow its victim. However, once it gets what it wants, it will vanish and cease to disturb, leaving its target in peace.",
             huntCondition: { stat: "lust", op: "gte", value: 50 }
         },
         {
-            id: "Poltergeist", name: "Poltergeist", image: "poltergeist.webp",
+            name: "Poltergeist", image: "poltergeist.webp",
             evidence: [E.SPIRITBOX, E.GWB, E.UVL],
             hint: "",
             description: "",
             huntCondition: { stat: "sanity", op: "lte", value: 50 }
         },
         {
-            id: "Phantom", name: "Phantom", image: "phantom.webp",
+            name: "Phantom", image: "phantom.webp",
             evidence: [E.GLASS, E.UVL, E.SPIRITBOX],
             hint: "This type of ghost cannot turn off the lights.",
             description: "This type of ghost cannot turn off the lights.",
             huntCondition: { stat: "sanity", op: "lte", value: 50 }
         },
         {
-            id: "Goryo", name: "Goryo", image: "goryo.webp",
+            name: "Goryo", image: "goryo.webp",
             evidence: [E.GLASS, E.UVL, E.EMF],
             hint: "Goryo is known for its attachment to a single room and cannot change it like other ghosts do.",
             description: "Goryo is known for its attachment to a single room and cannot change it like other ghosts do. If you notice that the ghost's activity is focused exclusively in one area, you are likely dealing with a Goryo.",
             huntCondition: { stat: "lust", op: "gte", value: 50 }
         },
         {
-            id: "Demon", name: "Demon", image: "demon.webp",
+            name: "Demon", image: "demon.webp",
             evidence: [E.GWB, E.UVL, E.TEMPERATURE],
             hint: "Demon can start a hunt earlier than other ghosts",
             description: "Some sources report that the Demon is a unique ghost that can begin hunting you regardless of your current sanity or lust. Unlike other ghosts that only become active when your mental state declines or your desire increases, the Demon does not consider your present condition and can initiate its pursuit at any time.",
@@ -73,7 +73,7 @@
             huntCondition: { stat: "sanity", op: "lte", value: 70 }
         },
         {
-            id: "Deogen", name: "Deogen", image: "deogen.webp",
+            name: "Deogen", image: "deogen.webp",
             evidence: [E.GLASS, E.GWB, E.SPIRITBOX],
             hint: "When it starts its hunt, hiding won't help, as the Deogen relentlessly searches for you",
             description: "The Deogen is described as a particularly frightening ghost that will always find you, even if you try to hide. Once it starts its hunt, hiding won't help, as the Deogen relentlessly searches for its prey. However, since the Deogen is extremely slow, there's a chance to escape if you still have the strength to run.",
@@ -81,7 +81,7 @@
             huntCondition: { stat: "sanity", op: "lte", value: 50 }
         },
         {
-            id: "Jinn", name: "Jinn", image: "jinn.webp",
+            name: "Jinn", image: "jinn.webp",
             evidence: [E.EMF, E.UVL, E.TEMPERATURE],
             hint: "You can't escape from the Jinn by running, as it is incredibly fast.",
             description: "Some ghost hunters have reported that when encountering a Jinn, they tried to run but always failed because the ghost is too fast. However, when they found a hiding spot--even if it was right in front of the Jinn--he often passed by without noticing them. This indicates that hiding from a Jinn is much easier than trying to escape.",
@@ -89,21 +89,21 @@
             huntCondition: { stat: "sanity", op: "lte", value: 50 }
         },
         {
-            id: "Moroi", name: "Moroi", image: "moroi.webp",
+            name: "Moroi", image: "moroi.webp",
             evidence: [E.GWB, E.TEMPERATURE, E.SPIRITBOX],
             hint: "",
             description: "The Moroi can invade the minds of weak-willed victims when using the Spirit Box. Be cautious when communicating, as this ghost may possess you.",
             huntCondition: { stat: "sanity", op: "lte", value: 50 }
         },
         {
-            id: "Myling", name: "Myling", image: "myling.webp",
+            name: "Myling", image: "myling.webp",
             evidence: [E.GWB, E.EMF, E.UVL],
             hint: "Once you leave its presence, strange things begin to happen: those around you start seeing you in unusual clothing or even completely naked.",
             description: "Myling is a ghost that doesn't reveal itself directly upon encounter. However, once you leave its presence, strange things begin to happen: those around you start seeing you in unusual clothing or even completely naked.",
             huntCondition: { stat: "lust", op: "gte", value: 50 }
         },
         {
-            id: "Oni", name: "Oni", image: "oni.webp",
+            name: "Oni", image: "oni.webp",
             evidence: [E.GLASS, E.EMF, E.TEMPERATURE],
             hint: "Encountering this ghost causes sanity to drop faster than with other ghosts.",
             description: "The mythical entity Oni brings not only fear but also rapid psychological devastation. Those who have encountered it report that @@.notmc-speech;Oni causes a sharp and intense decline in sanity@@, significantly accelerating this process compared to other ghosts. If you come face-to-face with Oni, be prepared for a swift and severe assault on your mental health.",
@@ -111,49 +111,49 @@
             huntCondition: { stat: "lust", op: "gte", value: 50 }
         },
         {
-            id: "Mimic", name: "Mimic", image: "mimic.webp",
+            name: "Mimic", image: "mimic.webp",
             evidence: [E.UVL, E.TEMPERATURE, E.SPIRITBOX],
             hint: "Mimic always has an extra evidence -- ectoplasm",
             description: "Mimic is a ghost that can mimic nearly all the abilities of other ghosts, making it extremely unpredictable and difficult to identify. Additionally, The Mimic always has an extra evidence -- ectoplasm. Although ectoplasm is not considered evidence for identifying the ghost, its presence can aid in its identification.",
             huntCondition: { stat: "sanity", op: "lte", value: 50 }
         },
         {
-            id: "TheTwins", name: "The Twins", image: "the-twins.webp",
+            name: "The Twins", image: "the-twins.webp",
             evidence: [E.EMF, E.TEMPERATURE, E.SPIRITBOX],
             hint: "",
             description: "",
             huntCondition: { stat: "lust", op: "gte", value: 50 }
         },
         {
-            id: "Wraith", name: "Wraith", image: "wraith.webp",
+            name: "Wraith", image: "wraith.webp",
             evidence: [E.GLASS, E.EMF, E.SPIRITBOX],
             hint: "If caught or if sanity runs out during the ghost hunt, you'll wake up somewhere other than home.",
             description: "This is quite a dangerous ghost. If it catches me or I lose sanity during the ghost hunt... Ending up in the forest with my hands tied is not something I want, so I need to be very careful. But even if things don't go as planned, it's better to conserve my energy to have a chance to escape.",
             huntCondition: { stat: "lust", op: "gte", value: 50 }
         },
         {
-            id: "Mare", name: "Mare", image: "mare.webp",
+            name: "Mare", image: "mare.webp",
             evidence: [E.GLASS, E.GWB, E.TEMPERATURE],
             hint: "Mare visits your house while you sleep",
             description: "Mare visits my house while I sleep. It's quite easy to get rid of; I just need to sprinkle holy water in the room where I sleep. It becomes more aggressive each day, so it's best not to delay. Although, someone online mentioned that it might stop haunting after a few days.",
             huntCondition: { stat: "lust", op: "gte", value: 50 }
         },
         {
-            id: "Cthulion", name: "Cthulion", image: "cthulion.webp",
+            name: "Cthulion", image: "cthulion.webp",
             evidence: [E.SPIRITBOX, E.GLASS, E.TEMPERATURE],
             hint: "Cthulion rarely reveals its true form, preferring to take on a human appearance. But when it needs to interact with its victims, it's not above using its tentacles.",
             description: "Cthulion is one of the oldest beings, with a history stretching far back before the dawn of humanity. Its true form is so alien to the human mind that most who encounter it can only describe it as \"unspeakable.\" However, Cthulion rarely reveals its true form, preferring to take on a human appearance. But when it needs to interact with its victims, it's not above using its tentacles.",
             huntCondition: { stat: "sanity", op: "lte", value: 50 }
         },
         {
-            id: "Banshee", name: "Banshee", image: "banshee.webp",
+            name: "Banshee", image: "banshee.webp",
             evidence: [E.GLASS, E.GWB, E.UVL],
             hint: "The Banshee has a unique ability called the 'Kiss of the Banshee,' which reduces sanity by 10 points.",
             description: "The Banshee has a unique ability called the \"Kiss of the Banshee,\" which reduces sanity by 10 points.",
             huntCondition: { stat: "lust", op: "gte", value: 50 }
         },
         {
-            id: "Raiju", name: "Raiju", image: "raiju.webp",
+            name: "Raiju", image: "raiju.webp",
             evidence: [E.EMF, E.SPIRITBOX, E.UVL],
             hint: "Raiju is a mysterious entity that occasionally exerts influence over electrical devices, causing them to display incorrect readings. This spectral presence can manipulate the behavior of electronics, leading to unpredictable and sometimes inexplicable malfunctions.",
             description: "Raiju is a mysterious entity that occasionally exerts influence over electrical devices, causing them to display incorrect readings. This spectral presence can manipulate the behavior of electronics, leading to unpredictable and sometimes inexplicable malfunctions.",
@@ -161,13 +161,12 @@
         }
     ];
 
-    function infoFlagName(id) {
-        return "ghost" + id + "InfoCollected";
+    function infoFlagName(name) {
+        return "ghost" + name + "InfoCollected";
     }
 
     var GHOSTS = GHOST_CONFIG.map(function (cfg) {
         var ghost = {
-            id:             cfg.id,
             name:           cfg.name,
             image:          cfg.image,
             evidence:       cfg.evidence.slice(),
@@ -176,7 +175,7 @@
             findableOnline: !!cfg.findableOnline,
             huntCondition:  cfg.huntCondition
         };
-        var flag = infoFlagName(cfg.id);
+        var flag = infoFlagName(cfg.name);
         Object.defineProperty(ghost, "isInfoCollected", {
             enumerable: true,
             get: function () { return !!State.variables[flag]; },
@@ -207,6 +206,28 @@
             return GHOSTS;
         },
 
+        /* The ghost currently being hunted. Returns the catalogue entry
+           identified by $ghostName, with its `evidence` field overlaid with
+           the mutable per-hunt $ghostEvidence (which DeleteEvidence prunes).
+           For Mimic, $ghostName rotates so .hint/.image reflect the disguise,
+           while $ghostEvidence stays the real Mimic evidence set. Returns
+           null when no hunt is active. */
+        active: function () {
+            var V = State.variables;
+            if (!V.ghostName) return null;
+            var g = setup.Ghosts.getByName(V.ghostName);
+            if (!g) return null;
+            return {
+                name:           g.name,
+                image:          g.image,
+                hint:           g.hint,
+                description:    g.description,
+                findableOnline: g.findableOnline,
+                huntCondition:  g.huntCondition,
+                evidence:       V.ghostEvidence
+            };
+        },
+
         /* Ghost names only. Accepts `{ exclude: [names] }` to drop a subset
            (e.g. Mimic's impersonation list excludes itself). */
         names: function (opts) {
@@ -214,13 +235,6 @@
             return GHOSTS
                 .filter(function (g) { return exclude.indexOf(g.name) === -1; })
                 .map(function (g) { return g.name; });
-        },
-
-        getById: function (id) {
-            for (var i = 0; i < GHOSTS.length; i++) {
-                if (GHOSTS[i].id === id) return GHOSTS[i];
-            }
-            return null;
         },
 
         getByName: function (name) {
@@ -254,8 +268,8 @@
             return g.evidence.map(function (k) { return evidenceTypes[k].label; }).join(", ");
         },
 
-        hoverHtml: function (id) {
-            var g = setup.Ghosts.getById(id);
+        hoverHtml: function (name) {
+            var g = setup.Ghosts.getByName(name);
             if (!g) return "";
             var html = "<b>" + setup.Ghosts.evidenceLabels(g) + "</b>";
             if (g.isInfoCollected && g.hint) {
@@ -285,13 +299,15 @@
             return out;
         },
 
-        /* Toggle the `right` class on each #<ghostId> element based on the
+        /* Toggle the `right` class on each [data-ghost] element based on the
            current checkbox state. Safe to call repeatedly; removes the class
-           when a ghost no longer matches so unchecking clears highlights. */
+           when a ghost no longer matches so unchecking clears highlights.
+           Uses a data attribute rather than an element id because ghost names
+           can contain spaces ("The Twins"), which break CSS id selectors. */
         updateNotebookHighlights: function () {
             var checked = setup.Ghosts.readEvidenceChecks();
             GHOSTS.forEach(function (g) {
-                var el = document.getElementById(g.id);
+                var el = document.querySelector('[data-ghost="' + g.name + '"]');
                 if (!el) return;
                 el.classList.toggle("right", setup.Ghosts.matchesEvidence(g, checked));
             });
