@@ -69,7 +69,7 @@ async function setupHunt(page, ghostName, house = 'owaissa') {
     const found = SugarCube.setup.Ghosts.list().find(g => g.name === name);
     if (found) {
       V.ghostName = found.name;
-      V.ghostEvidence = found.evidence.slice();
+      V.ghostEvidence = found.evidence.map(e => e.id);
     }
   }, ghostName);
 

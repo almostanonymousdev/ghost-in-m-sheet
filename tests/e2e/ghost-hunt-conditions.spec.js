@@ -14,15 +14,15 @@ test.describe('Ghost hunt conditions', () => {
 
     await setVar(page, 'mc.sanity', 40);
     expect(await callSetup(page,
-      'setup.Ghosts.huntConditionMet(setup.Ghosts.getByName("Shade"), SugarCube.State.variables.mc)')).toBe(false);
+      'setup.Ghosts.getByName("Shade").canHunt(SugarCube.State.variables.mc)')).toBe(false);
 
     await setVar(page, 'mc.sanity', 35);
     expect(await callSetup(page,
-      'setup.Ghosts.huntConditionMet(setup.Ghosts.getByName("Shade"), SugarCube.State.variables.mc)')).toBe(true);
+      'setup.Ghosts.getByName("Shade").canHunt(SugarCube.State.variables.mc)')).toBe(true);
 
     await setVar(page, 'mc.sanity', 20);
     expect(await callSetup(page,
-      'setup.Ghosts.huntConditionMet(setup.Ghosts.getByName("Shade"), SugarCube.State.variables.mc)')).toBe(true);
+      'setup.Ghosts.getByName("Shade").canHunt(SugarCube.State.variables.mc)')).toBe(true);
 
     await goToPassage(page, 'OwaissaHallway');
     await expectCleanPassage(page);
@@ -33,15 +33,15 @@ test.describe('Ghost hunt conditions', () => {
 
     await setVar(page, 'mc.sanity', 75);
     expect(await callSetup(page,
-      'setup.Ghosts.huntConditionMet(setup.Ghosts.getByName("Demon"), SugarCube.State.variables.mc)')).toBe(false);
+      'setup.Ghosts.getByName("Demon").canHunt(SugarCube.State.variables.mc)')).toBe(false);
 
     await setVar(page, 'mc.sanity', 70);
     expect(await callSetup(page,
-      'setup.Ghosts.huntConditionMet(setup.Ghosts.getByName("Demon"), SugarCube.State.variables.mc)')).toBe(true);
+      'setup.Ghosts.getByName("Demon").canHunt(SugarCube.State.variables.mc)')).toBe(true);
 
     await setVar(page, 'mc.sanity', 50);
     expect(await callSetup(page,
-      'setup.Ghosts.huntConditionMet(setup.Ghosts.getByName("Demon"), SugarCube.State.variables.mc)')).toBe(true);
+      'setup.Ghosts.getByName("Demon").canHunt(SugarCube.State.variables.mc)')).toBe(true);
 
     await goToPassage(page, 'OwaissaKitchen');
     await expectCleanPassage(page);
@@ -52,11 +52,11 @@ test.describe('Ghost hunt conditions', () => {
 
     await setVar(page, 'mc.lust', 40);
     expect(await callSetup(page,
-      'setup.Ghosts.huntConditionMet(setup.Ghosts.getByName("Spirit"), SugarCube.State.variables.mc)')).toBe(false);
+      'setup.Ghosts.getByName("Spirit").canHunt(SugarCube.State.variables.mc)')).toBe(false);
 
     await setVar(page, 'mc.lust', 50);
     expect(await callSetup(page,
-      'setup.Ghosts.huntConditionMet(setup.Ghosts.getByName("Spirit"), SugarCube.State.variables.mc)')).toBe(true);
+      'setup.Ghosts.getByName("Spirit").canHunt(SugarCube.State.variables.mc)')).toBe(true);
 
     await goToPassage(page, 'OwaissaHallway');
     await expectCleanPassage(page);
@@ -67,11 +67,11 @@ test.describe('Ghost hunt conditions', () => {
 
     await setVar(page, 'mc.sanity', 55);
     expect(await callSetup(page,
-      'setup.Ghosts.huntConditionMet(setup.Ghosts.getByName("Poltergeist"), SugarCube.State.variables.mc)')).toBe(false);
+      'setup.Ghosts.getByName("Poltergeist").canHunt(SugarCube.State.variables.mc)')).toBe(false);
 
     await setVar(page, 'mc.sanity', 50);
     expect(await callSetup(page,
-      'setup.Ghosts.huntConditionMet(setup.Ghosts.getByName("Poltergeist"), SugarCube.State.variables.mc)')).toBe(true);
+      'setup.Ghosts.getByName("Poltergeist").canHunt(SugarCube.State.variables.mc)')).toBe(true);
 
     await goToPassage(page, 'OwaissaBathroom');
     await expectCleanPassage(page);
@@ -82,11 +82,11 @@ test.describe('Ghost hunt conditions', () => {
 
     await setVar(page, 'mc.sanity', 55);
     expect(await callSetup(page,
-      'setup.Ghosts.huntConditionMet(setup.Ghosts.getByName("Moroi"), SugarCube.State.variables.mc)')).toBe(false);
+      'setup.Ghosts.getByName("Moroi").canHunt(SugarCube.State.variables.mc)')).toBe(false);
 
     await setVar(page, 'mc.sanity', 50);
     expect(await callSetup(page,
-      'setup.Ghosts.huntConditionMet(setup.Ghosts.getByName("Moroi"), SugarCube.State.variables.mc)')).toBe(true);
+      'setup.Ghosts.getByName("Moroi").canHunt(SugarCube.State.variables.mc)')).toBe(true);
 
     const evidence = await page.evaluate(() => SugarCube.State.variables.ghostEvidence);
     expect(evidence).toContain('spiritbox');
@@ -100,11 +100,11 @@ test.describe('Ghost hunt conditions', () => {
 
     await setVar(page, 'mc.lust', 45);
     expect(await callSetup(page,
-      'setup.Ghosts.huntConditionMet(setup.Ghosts.getByName("Myling"), SugarCube.State.variables.mc)')).toBe(false);
+      'setup.Ghosts.getByName("Myling").canHunt(SugarCube.State.variables.mc)')).toBe(false);
 
     await setVar(page, 'mc.lust', 50);
     expect(await callSetup(page,
-      'setup.Ghosts.huntConditionMet(setup.Ghosts.getByName("Myling"), SugarCube.State.variables.mc)')).toBe(true);
+      'setup.Ghosts.getByName("Myling").canHunt(SugarCube.State.variables.mc)')).toBe(true);
 
     await goToPassage(page, 'OwaissaBedroom');
     await expectCleanPassage(page);
@@ -115,11 +115,11 @@ test.describe('Ghost hunt conditions', () => {
 
     await setVar(page, 'mc.lust', 45);
     expect(await callSetup(page,
-      'setup.Ghosts.huntConditionMet(setup.Ghosts.getByName("The Twins"), SugarCube.State.variables.mc)')).toBe(false);
+      'setup.Ghosts.getByName("The Twins").canHunt(SugarCube.State.variables.mc)')).toBe(false);
 
     await setVar(page, 'mc.lust', 50);
     expect(await callSetup(page,
-      'setup.Ghosts.huntConditionMet(setup.Ghosts.getByName("The Twins"), SugarCube.State.variables.mc)')).toBe(true);
+      'setup.Ghosts.getByName("The Twins").canHunt(SugarCube.State.variables.mc)')).toBe(true);
 
     await goToPassage(page, 'OwaissaKitchen');
     await expectCleanPassage(page);
@@ -130,11 +130,11 @@ test.describe('Ghost hunt conditions', () => {
 
     await setVar(page, 'mc.lust', 45);
     expect(await callSetup(page,
-      'setup.Ghosts.huntConditionMet(setup.Ghosts.getByName("Wraith"), SugarCube.State.variables.mc)')).toBe(false);
+      'setup.Ghosts.getByName("Wraith").canHunt(SugarCube.State.variables.mc)')).toBe(false);
 
     await setVar(page, 'mc.lust', 55);
     expect(await callSetup(page,
-      'setup.Ghosts.huntConditionMet(setup.Ghosts.getByName("Wraith"), SugarCube.State.variables.mc)')).toBe(true);
+      'setup.Ghosts.getByName("Wraith").canHunt(SugarCube.State.variables.mc)')).toBe(true);
 
     await goToPassage(page, 'OwaissaLivingroom');
     await expectCleanPassage(page);
@@ -145,11 +145,11 @@ test.describe('Ghost hunt conditions', () => {
 
     await setVar(page, 'mc.lust', 45);
     expect(await callSetup(page,
-      'setup.Ghosts.huntConditionMet(setup.Ghosts.getByName("Mare"), SugarCube.State.variables.mc)')).toBe(false);
+      'setup.Ghosts.getByName("Mare").canHunt(SugarCube.State.variables.mc)')).toBe(false);
 
     await setVar(page, 'mc.lust', 50);
     expect(await callSetup(page,
-      'setup.Ghosts.huntConditionMet(setup.Ghosts.getByName("Mare"), SugarCube.State.variables.mc)')).toBe(true);
+      'setup.Ghosts.getByName("Mare").canHunt(SugarCube.State.variables.mc)')).toBe(true);
 
     await goToPassage(page, 'OwaissaHallway');
     await expectCleanPassage(page);
@@ -160,11 +160,11 @@ test.describe('Ghost hunt conditions', () => {
 
     await setVar(page, 'mc.lust', 45);
     expect(await callSetup(page,
-      'setup.Ghosts.huntConditionMet(setup.Ghosts.getByName("Banshee"), SugarCube.State.variables.mc)')).toBe(false);
+      'setup.Ghosts.getByName("Banshee").canHunt(SugarCube.State.variables.mc)')).toBe(false);
 
     await setVar(page, 'mc.lust', 50);
     expect(await callSetup(page,
-      'setup.Ghosts.huntConditionMet(setup.Ghosts.getByName("Banshee"), SugarCube.State.variables.mc)')).toBe(true);
+      'setup.Ghosts.getByName("Banshee").canHunt(SugarCube.State.variables.mc)')).toBe(true);
 
     await goToPassage(page, 'OwaissaHallway');
     await expectCleanPassage(page);
@@ -186,11 +186,11 @@ test.describe('Ghost hunt conditions', () => {
 
     await setVar(page, 'mc.sanity', 55);
     expect(await callSetup(page,
-      'setup.Ghosts.huntConditionMet(setup.Ghosts.getByName("Cthulion"), SugarCube.State.variables.mc)')).toBe(false);
+      'setup.Ghosts.getByName("Cthulion").canHunt(SugarCube.State.variables.mc)')).toBe(false);
 
     await setVar(page, 'mc.sanity', 50);
     expect(await callSetup(page,
-      'setup.Ghosts.huntConditionMet(setup.Ghosts.getByName("Cthulion"), SugarCube.State.variables.mc)')).toBe(true);
+      'setup.Ghosts.getByName("Cthulion").canHunt(SugarCube.State.variables.mc)')).toBe(true);
 
     await goToPassage(page, 'OwaissaBedroom');
     await expectCleanPassage(page);
@@ -201,11 +201,11 @@ test.describe('Ghost hunt conditions', () => {
 
     await setVar(page, 'mc.sanity', 55);
     expect(await callSetup(page,
-      'setup.Ghosts.huntConditionMet(setup.Ghosts.getByName("Raiju"), SugarCube.State.variables.mc)')).toBe(false);
+      'setup.Ghosts.getByName("Raiju").canHunt(SugarCube.State.variables.mc)')).toBe(false);
 
     await setVar(page, 'mc.sanity', 50);
     expect(await callSetup(page,
-      'setup.Ghosts.huntConditionMet(setup.Ghosts.getByName("Raiju"), SugarCube.State.variables.mc)')).toBe(true);
+      'setup.Ghosts.getByName("Raiju").canHunt(SugarCube.State.variables.mc)')).toBe(true);
 
     await goToPassage(page, 'OwaissaHallway');
     await expectCleanPassage(page);

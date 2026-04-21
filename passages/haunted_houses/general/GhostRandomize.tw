@@ -7,7 +7,7 @@
         var ghosts = setup.Ghosts.list();
         var g = ghosts[Math.floor(Math.random() * ghosts.length)];
         V.ghostName = g.name;
-        V.ghostEvidence = g.evidence.slice();
+        V.ghostEvidence = g.evidence.map(function (e) { return e.id; });
 
         setup.searchableRooms.forEach(function (room) {
             V["currentsearch" + room] = setup.makeEmptySearchState();

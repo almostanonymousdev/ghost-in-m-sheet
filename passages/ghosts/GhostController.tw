@@ -2,26 +2,23 @@
 (function () {
     'use strict';
 
-    var EvidenceType = Object.freeze({
-        EMF:         "emf",
-        SPIRITBOX:   "spiritbox",
-        GWB:         "gwb",
-        GLASS:       "glass",
-        TEMPERATURE: "temperature",
-        UVL:         "uvl"
+    /* Unified evidence metadata. Each entry bundles the canonical id (used
+       in save state as strings) with display metadata. Exposed as
+       setup.Ghosts.Evidence. */
+    var Evidence = Object.freeze({
+        EMF:         Object.freeze({ id: "emf",         label: "EMF5",             cssClass: "emf" }),
+        SPIRITBOX:   Object.freeze({ id: "spiritbox",   label: "SpiritBox",        cssClass: "spiritbox" }),
+        GWB:         Object.freeze({ id: "gwb",         label: "GhostWritingBook", cssClass: "gwb" }),
+        GLASS:       Object.freeze({ id: "glass",       label: "Ectoplasm",        cssClass: "glass" }),
+        TEMPERATURE: Object.freeze({ id: "temperature", label: "HighTemperature",  cssClass: "temperature" }),
+        UVL:         Object.freeze({ id: "uvl",         label: "UVLight",          cssClass: "uvl" })
     });
-    var E = EvidenceType;
+    var E = Evidence;
 
-    /* Display metadata for evidence keys. Consumed by Notebook for CSS classes
-       and by Ghostopedia/hovertips for human-readable labels. */
-    var evidenceTypes = {
-        emf:         { label: "EMF5",             cssClass: "emf" },
-        gwb:         { label: "GhostWritingBook", cssClass: "gwb" },
-        spiritbox:   { label: "SpiritBox",        cssClass: "spiritbox" },
-        glass:       { label: "Ectoplasm",        cssClass: "glass" },
-        temperature: { label: "HighTemperature",  cssClass: "temperature" },
-        uvl:         { label: "UVLight",          cssClass: "uvl" }
-    };
+    /* String-id → Evidence object lookup, for converting save-state evidence
+       arrays (which store ids for serialisation safety) back into objects. */
+    var EvidenceById = {};
+    Object.keys(Evidence).forEach(function (k) { EvidenceById[Evidence[k].id] = Evidence[k]; });
 
     /* Canonical ghost catalogue. Static fields live here; `isInfoCollected` is
        a live accessor backed by the existing $ghost<Name>InfoCollected save flag
@@ -161,30 +158,78 @@
         }
     ];
 
-    function infoFlagName(name) {
-        return "ghost" + name + "InfoCollected";
+    /* Ghost is a prototype-based class so per-ghost behaviour (canHunt,
+       evidenceLabels, hoverHtml, matchesEvidence, …) lives on instances
+       rather than as setup.Ghosts.xyz(ghost, …) free functions. The save
+       flag `$ghost<Name>InfoCollected` is exposed as the `isInfoCollected`
+       accessor so callers never touch the raw state key. */
+    function Ghost(cfg) {
+        this.name           = cfg.name;
+        this.image          = cfg.image;
+        this.evidence       = cfg.evidence.slice();
+        this.hint           = cfg.hint;
+        this.description    = cfg.description;
+        this.findableOnline = !!cfg.findableOnline;
+        this.huntCondition  = cfg.huntCondition;
     }
 
-    var GHOSTS = GHOST_CONFIG.map(function (cfg) {
-        var ghost = {
-            name:           cfg.name,
-            image:          cfg.image,
-            evidence:       cfg.evidence.slice(),
-            hint:           cfg.hint,
-            description:    cfg.description,
-            findableOnline: !!cfg.findableOnline,
-            huntCondition:  cfg.huntCondition
-        };
-        var flag = infoFlagName(cfg.name);
-        Object.defineProperty(ghost, "isInfoCollected", {
-            enumerable: true,
-            get: function () { return !!State.variables[flag]; },
-            set: function (v) { State.variables[flag] = v ? 1 : 0; }
-        });
-        return ghost;
+    Object.defineProperty(Ghost.prototype, "isInfoCollected", {
+        configurable: true,
+        enumerable: true,
+        get: function () { return !!State.variables["ghost" + this.name + "InfoCollected"]; },
+        set: function (v) { State.variables["ghost" + this.name + "InfoCollected"] = v ? 1 : 0; }
     });
 
-    /* Map the six Notebook checkbox state vars to evidence keys. */
+    Ghost.prototype.canHunt = function (mc) {
+        if (!this.huntCondition) return false;
+        var c = this.huntCondition;
+        var v = mc[c.stat];
+        if (c.op === "lte") return v <= c.value;
+        if (c.op === "gte") return v >= c.value;
+        return false;
+    };
+
+    Ghost.prototype.huntConditionText = function () {
+        if (!this.huntCondition) return "";
+        var c = this.huntCondition;
+        var sym = c.op === "lte" ? "\u2264" : "\u2265";
+        return "Can start a hunt if you have " + sym + " " + c.value + " " + c.stat;
+    };
+
+    Ghost.prototype.evidenceClasses = function () {
+        return this.evidence.map(function (e) { return e.cssClass; }).join(" ");
+    };
+
+    Ghost.prototype.evidenceLabels = function () {
+        return this.evidence.map(function (e) { return e.label; }).join(", ");
+    };
+
+    /* A ghost is a candidate iff at least one of its evidence types is
+       confirmed checked AND no evidence outside its set is. `checked` is
+       a map of evidence-id → boolean. */
+    Ghost.prototype.matchesEvidence = function (checked) {
+        var myIds = this.evidence.map(function (e) { return e.id; });
+        var anyMatch = false;
+        var anyMismatch = false;
+        Object.keys(checked).forEach(function (id) {
+            if (!checked[id]) return;
+            if (myIds.indexOf(id) === -1) anyMismatch = true;
+            else anyMatch = true;
+        });
+        return anyMatch && !anyMismatch;
+    };
+
+    Ghost.prototype.hoverHtml = function () {
+        var html = "<b>" + this.evidenceLabels() + "</b>";
+        if (this.isInfoCollected && this.hint) {
+            html += "<br><em>" + this.hint + "</em>";
+        }
+        return html;
+    };
+
+    var GHOSTS = GHOST_CONFIG.map(function (cfg) { return new Ghost(cfg); });
+
+    /* Map the six Notebook checkbox state vars to evidence ids. */
     var CHECK_VAR = {
         emf:         "EMF5Check",
         spiritbox:   "SpiritboxCheck",
@@ -194,38 +239,49 @@
         uvl:         "UVLCheck"
     };
 
+    /* Turn a state-shaped evidence id array (["emf","gwb",…]) back into the
+       Evidence object array the Ghost class expects. Drops unknown ids
+       rather than throwing; DeleteEvidence legitimately shrinks the list. */
+    function rehydrateEvidence(ids) {
+        if (!Array.isArray(ids)) return [];
+        var out = [];
+        for (var i = 0; i < ids.length; i++) {
+            var e = EvidenceById[ids[i]];
+            if (e) out.push(e);
+        }
+        return out;
+    }
+
     /* The canonical ghost catalogue lives in the GHOSTS closure above;
        setup.Ghosts is the public namespace. Callers that want to iterate
-       should use setup.Ghosts.list() rather than treating setup.Ghosts as
-       an array. */
+       should use setup.Ghosts.list(). */
     setup.Ghosts = {
-        EvidenceType:  EvidenceType,
-        evidenceTypes: evidenceTypes,
+        Evidence: Evidence,
 
         list: function () {
             return GHOSTS;
         },
 
-        /* The ghost currently being hunted. Returns the catalogue entry
-           identified by $ghostName, with its `evidence` field overlaid with
-           the mutable per-hunt $ghostEvidence (which DeleteEvidence prunes).
-           For Mimic, $ghostName rotates so .hint/.image reflect the disguise,
-           while $ghostEvidence stays the real Mimic evidence set. Returns
-           null when no hunt is active. */
+        /* The ghost currently being hunted. Returns a Ghost instance whose
+           static fields come from the catalogue entry named $ghostName, but
+           whose `evidence` is rehydrated from $ghostEvidence (mutable per
+           hunt — DeleteEvidence prunes it; for Mimic, $ghostName rotates
+           while $ghostEvidence stays the real Mimic set). null when no hunt
+           is active. */
         active: function () {
             var V = State.variables;
             if (!V.ghostName) return null;
-            var g = setup.Ghosts.getByName(V.ghostName);
-            if (!g) return null;
-            return {
-                name:           g.name,
-                image:          g.image,
-                hint:           g.hint,
-                description:    g.description,
-                findableOnline: g.findableOnline,
-                huntCondition:  g.huntCondition,
-                evidence:       V.ghostEvidence
-            };
+            var catalogue = setup.Ghosts.getByName(V.ghostName);
+            if (!catalogue) return null;
+            var g = Object.create(Ghost.prototype);
+            g.name           = catalogue.name;
+            g.image          = catalogue.image;
+            g.hint           = catalogue.hint;
+            g.description    = catalogue.description;
+            g.findableOnline = catalogue.findableOnline;
+            g.huntCondition  = catalogue.huntCondition;
+            g.evidence       = rehydrateEvidence(V.ghostEvidence);
+            return g;
         },
 
         /* Ghost names only. Accepts `{ exclude: [names] }` to drop a subset
@@ -242,54 +298,6 @@
                 if (GHOSTS[i].name === name) return GHOSTS[i];
             }
             return null;
-        },
-
-        huntConditionMet: function (g, mc) {
-            if (!g || !g.huntCondition) return false;
-            var c = g.huntCondition;
-            var v = mc[c.stat];
-            if (c.op === "lte") return v <= c.value;
-            if (c.op === "gte") return v >= c.value;
-            return false;
-        },
-
-        huntConditionText: function (g) {
-            if (!g || !g.huntCondition) return "";
-            var c = g.huntCondition;
-            var sym = c.op === "lte" ? "\u2264" : "\u2265";
-            return "Can start a hunt if you have " + sym + " " + c.value + " " + c.stat;
-        },
-
-        evidenceClasses: function (g) {
-            return g.evidence.map(function (k) { return evidenceTypes[k].cssClass; }).join(" ");
-        },
-
-        evidenceLabels: function (g) {
-            return g.evidence.map(function (k) { return evidenceTypes[k].label; }).join(", ");
-        },
-
-        hoverHtml: function (name) {
-            var g = setup.Ghosts.getByName(name);
-            if (!g) return "";
-            var html = "<b>" + setup.Ghosts.evidenceLabels(g) + "</b>";
-            if (g.isInfoCollected && g.hint) {
-                html += "<br><em>" + g.hint + "</em>";
-            }
-            return html;
-        },
-
-        /* Notebook evidence filter: a ghost is a candidate iff at least one of
-           its evidence types is checked AND no evidence outside its set is. */
-        matchesEvidence: function (g, checked) {
-            var myEv = g.evidence;
-            var anyMatch = false;
-            var anyMismatch = false;
-            Object.keys(evidenceTypes).forEach(function (k) {
-                if (!checked[k]) return;
-                if (myEv.indexOf(k) === -1) anyMismatch = true;
-                else anyMatch = true;
-            });
-            return anyMatch && !anyMismatch;
         },
 
         readEvidenceChecks: function () {
@@ -309,7 +317,7 @@
             GHOSTS.forEach(function (g) {
                 var el = document.querySelector('[data-ghost="' + g.name + '"]');
                 if (!el) return;
-                el.classList.toggle("right", setup.Ghosts.matchesEvidence(g, checked));
+                el.classList.toggle("right", g.matchesEvidence(checked));
             });
         }
     };

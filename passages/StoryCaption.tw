@@ -46,7 +46,7 @@
 	<<if $ghostHuntingMode gte 1>>
 		<<linkreplace "choose ghost type">>
 			<<for _g range setup.Ghosts.list()>>
-				<<capture _g>><<link `"set to " + _g.name`>><<set $ghostName to _g.name>><<set $ghostEvidence to _g.evidence.slice()>>
+				<<capture _g>><<link `"set to " + _g.name`>><<set $ghostName to _g.name>><<set $ghostEvidence to _g.evidence.map(e => e.id)>>
 				<</link>>
 				<</capture>>
 			<</for>>

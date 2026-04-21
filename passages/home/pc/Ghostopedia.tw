@@ -10,7 +10,7 @@
 	<div class="evidenceDesc">
 	<<if _g.isInfoCollected and _g.description neq "">>
 		<<= _g.description>>
-		<<set _hct = setup.Ghosts.huntConditionText(_g)>>
+		<<set _hct = _g.huntConditionText()>>
 		<<if _hct neq "">><br>@@.notmc-speech;<<= _hct>>@@
 		<</if>>
 	<<else>>
