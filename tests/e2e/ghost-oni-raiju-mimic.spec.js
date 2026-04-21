@@ -6,7 +6,9 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
   // Every test here does a loop of 20-40 goToPassage calls to sample ghost
   // ability RNG. A single cold navigation can take 100-400ms under parallel
   // worker load, so the cumulative budget must cover the full loop.
-  test.describe.configure({ retries: 2 });
+  // NB: Playwright's per-test `{ timeout }` details arg is NOT honored
+  // (TestDetails only accepts tag/annotation). Set the budget here instead.
+  test.describe.configure({ timeout: 90_000, retries: 2 });
 
   let page;
 
@@ -16,7 +18,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
 
   // ── Oni ────────────────────────────────────────────────────────
 
-  test('Oni: sanity drain is 3-8 (faster than normal 1-5)', { timeout: 45_000 }, async () => {
+  test('Oni: sanity drain is 3-8 (faster than normal 1-5)', async () => {
     await setupHunt(page, 'Oni');
     await goToPassage(page, 'OwaissaKitchen');
     await expectCleanPassage(page);
@@ -34,7 +36,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
     expect(new Set(drains).size).toBeGreaterThan(1);
   });
 
-  test('Oni: non-Oni ghost drains sanity at 1-5 (control test)', { timeout: 45_000 }, async () => {
+  test('Oni: non-Oni ghost drains sanity at 1-5 (control test)', async () => {
     await setupHunt(page, 'Spirit');
 
     const drains = [];
@@ -51,7 +53,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
 
   // ── Raiju ──────────────────────────────────────────────────────
 
-  test('Raiju: EMF readings can glitch to random values', { timeout: 45_000 }, async () => {
+  test('Raiju: EMF readings can glitch to random values', async () => {
     await setupHunt(page, 'Raiju');
     await setVar(page, 'EmfActivated', 1);
     await setVar(page, 'EmfActivationTime', 0);
@@ -68,7 +70,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
     expect(readings.some(r => r === 5), 'Normal EMF (5) never appeared').toBe(true);
   });
 
-  test('Raiju: non-Raiju ghost always shows EMF 5 for emf evidence', { timeout: 15_000 }, async () => {
+  test('Raiju: non-Raiju ghost always shows EMF 5 for emf evidence', async () => {
     await setupHunt(page, 'Spirit');
     await setVar(page, 'EmfActivated', 1);
     await setVar(page, 'EmfActivationTime', 0);
@@ -81,7 +83,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
     }
   });
 
-  test('Raiju: temperature readings can glitch', { timeout: 90_000 }, async () => {
+  test('Raiju: temperature readings can glitch', async () => {
     await setupHunt(page, 'Raiju');
 
     await page.evaluate(() => {
