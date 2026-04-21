@@ -38,6 +38,18 @@ a:hover {
 	text-decoration: none;
 }
 
+/*
+ * SugarCube's debug mode (Config.debug = true) wraps every macro invocation in
+ * a <span class="debug">, which inserts a layout box between a flex/grid parent
+ * and its intended flex/grid items and breaks alignment (e.g. sidebar clothing
+ * icons stacking vertically). When the visible debug view is disabled, make
+ * those wrapper spans transparent to layout so children become direct items of
+ * the real parent again.
+ */
+html:not([data-debug-view]) .debug:not(.hidden) {
+	display: contents;
+}
+
 /* ===== Hovertip v2.0 ===== */
 .hoverTip {
 	display: inline-block;
@@ -898,10 +910,6 @@ body.city {
 .warningtext {
 	color: red;
 	font-style: italic;
-}
-.debug {
-	font-size: 0.8em;
-	font-weight: bold;
 }
 .comic-cover {
 	width: 100%;
