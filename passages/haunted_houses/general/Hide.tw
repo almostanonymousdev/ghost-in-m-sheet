@@ -9,10 +9,11 @@
 &emsp;&emsp;You quickly hide, holding your breath and trying not to make a sound. Your heart is pounding wildly, almost drowning out all other noises. You feel the fear tightening around your throat, but you try to stay calm.<br>
 &emsp;&emsp;Outside, you hear footsteps, heavy and menacing. The ghost is nearby. Several agonizing seconds, maybe minutes, pass as you struggle with the urge to peek out and check <<linkappend "@@.usebtn; if it has gone away.@@">><br>
 	<<set _checkH to random(1,100)>>
-	<<if $ghostName eq "Deogen">>
-		<<set _checkH to 100>>
-	<<elseif $ghostName eq "Jinn">>
+	<<set _hg to setup.Ghosts.active()>>
+	<<if _hg and _hg.hidingSucceeds eq true>>
 		<<set _checkH to 0>>
+	<<elseif _hg and _hg.hidingSucceeds eq false>>
+		<<set _checkH to 100>>
 	<</if>>
 	<<if _checkH lte 50>>
 		&emsp;&emsp;Finally, you decide to take a look. You carefully lift your head and peek out from your hiding place. The ghost's shadow has vanished, and the room is silent again. It seems

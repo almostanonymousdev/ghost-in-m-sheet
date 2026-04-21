@@ -1,5 +1,5 @@
 :: LightPassageGhost [nobr] {"position":"1700,1500","size":"100,100"}
-<<if $ghostName neq "Phantom">>
+<<if setup.Ghosts.active() and setup.Ghosts.active().canTurnOffLights>>
 	<<set _lightOff to random(1,65)>>
 	<<if (_lightOff eq 1)>>
 		<<set $EmfActivated to 1>>

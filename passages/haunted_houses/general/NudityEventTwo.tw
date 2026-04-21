@@ -1,8 +1,6 @@
 :: NudityEventTwo [nobr] {"position":"1800,1350","size":"100,100"}
 <<set $companion.lust to 100>>
-<<if $ghostName eq "The Twins">>
-	<<set $thetwinsevent to 1>>
-<</if>>
+<<run setup.Ghosts.markActiveHuntEvent()>>
 <<set _videoList to []>>
 <<set _videoList to ["naked/duo1.mp4", "naked/duo2.mp4", "naked/duo3.mp4", "naked/duo4.mp4", "naked/duo5.mp4"]>>
 <<set _randomIndex to random(0, _videoList.length - 1)>>

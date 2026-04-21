@@ -32,7 +32,8 @@
             hint: "The lower your sanity, the less likely the Shade is to show interest in you.",
             description: "Shade -- one of the oldest types of ghosts. The main feature of the Shade is that the lower your sanity, the less likely the Shade is to show interest in you.",
             huntCondition:     function (mc) { return mc.sanity <= 35; },
-            huntConditionText: "Can start a hunt if you have <= 35 sanity"
+            huntConditionText: "Can start a hunt if you have <= 35 sanity",
+            invertedSanityStages: true
         },
         {
             name: "Spirit", image: "spirit.webp",
@@ -40,7 +41,9 @@
             hint: "If it doesn't achieve its goal, it will relentlessly follow its victim.",
             description: "Spirit is a rather shy ghost. Unlike others, if it doesn't achieve its goal, it will relentlessly follow its victim. However, once it gets what it wants, it will vanish and cease to disturb, leaving its target in peace.",
             huntCondition:     function (mc) { return mc.lust >= 50; },
-            huntConditionText: "Can start a hunt if you have >= 50 lust"
+            huntConditionText: "Can start a hunt if you have >= 50 lust",
+            walkHomePassage:   "GhostSpecialEventSpirit",
+            onHuntEnd:         function () { State.variables.ghostSpiritEventStage = 0; }
         },
         {
             name: "Poltergeist", image: "poltergeist.webp",
@@ -56,7 +59,8 @@
             hint: "This type of ghost cannot turn off the lights.",
             description: "This type of ghost cannot turn off the lights.",
             huntCondition:     function (mc) { return mc.sanity <= 50; },
-            huntConditionText: "Can start a hunt if you have <= 50 sanity"
+            huntConditionText: "Can start a hunt if you have <= 50 sanity",
+            canTurnOffLights:  false
         },
         {
             name: "Goryo", image: "goryo.webp",
@@ -64,7 +68,8 @@
             hint: "Goryo is known for its attachment to a single room and cannot change it like other ghosts do.",
             description: "Goryo is known for its attachment to a single room and cannot change it like other ghosts do. If you notice that the ghost's activity is focused exclusively in one area, you are likely dealing with a Goryo.",
             huntCondition:     function (mc) { return mc.lust >= 50; },
-            huntConditionText: "Can start a hunt if you have >= 50 lust"
+            huntConditionText: "Can start a hunt if you have >= 50 lust",
+            staysInOneRoom:    true
         },
         {
             name: "Demon", image: "demon.webp",
@@ -82,7 +87,9 @@
             description: "The Deogen is described as a particularly frightening ghost that will always find you, even if you try to hide. Once it starts its hunt, hiding won't help, as the Deogen relentlessly searches for its prey. However, since the Deogen is extremely slow, there's a chance to escape if you still have the strength to run.",
             findableOnline: true,
             huntCondition:     function (mc) { return mc.sanity <= 50; },
-            huntConditionText: "Can start a hunt if you have <= 50 sanity"
+            huntConditionText: "Can start a hunt if you have <= 50 sanity",
+            hidingSucceeds:    false,   // Deogen always finds you
+            runningSucceeds:   true     // …but you can outrun it
         },
         {
             name: "Jinn", image: "jinn.webp",
@@ -91,7 +98,9 @@
             description: "Some ghost hunters have reported that when encountering a Jinn, they tried to run but always failed because the ghost is too fast. However, when they found a hiding spot--even if it was right in front of the Jinn--he often passed by without noticing them. This indicates that hiding from a Jinn is much easier than trying to escape.",
             findableOnline: true,
             huntCondition:     function (mc) { return mc.sanity <= 50; },
-            huntConditionText: "Can start a hunt if you have <= 50 sanity"
+            huntConditionText: "Can start a hunt if you have <= 50 sanity",
+            hidingSucceeds:    true,    // Jinn can be hidden from
+            runningSucceeds:   false    // …but never outrun
         },
         {
             name: "Moroi", image: "moroi.webp",
@@ -107,7 +116,9 @@
             hint: "Once you leave its presence, strange things begin to happen: those around you start seeing you in unusual clothing or even completely naked.",
             description: "Myling is a ghost that doesn't reveal itself directly upon encounter. However, once you leave its presence, strange things begin to happen: those around you start seeing you in unusual clothing or even completely naked.",
             huntCondition:     function (mc) { return mc.lust >= 50; },
-            huntConditionText: "Can start a hunt if you have >= 50 lust"
+            huntConditionText: "Can start a hunt if you have >= 50 lust",
+            goHomePassage:        "GhostSpecialEventMyling",
+            companionHuntPassage: "GhostSpecialEventMylingTwo"
         },
         {
             name: "Oni", image: "oni.webp",
@@ -116,7 +127,8 @@
             description: "The mythical entity Oni brings not only fear but also rapid psychological devastation. Those who have encountered it report that @@.notmc-speech;Oni causes a sharp and intense decline in sanity@@, significantly accelerating this process compared to other ghosts. If you come face-to-face with Oni, be prepared for a swift and severe assault on your mental health.",
             findableOnline: true,
             huntCondition:     function (mc) { return mc.lust >= 50; },
-            huntConditionText: "Can start a hunt if you have >= 50 lust"
+            huntConditionText: "Can start a hunt if you have >= 50 lust",
+            sanityEventLossRange: [3, 8]
         },
         {
             name: "Mimic", image: "mimic.webp",
@@ -132,7 +144,8 @@
             hint: "",
             description: "",
             huntCondition:     function (mc) { return mc.lust >= 50; },
-            huntConditionText: "Can start a hunt if you have >= 50 lust"
+            huntConditionText: "Can start a hunt if you have >= 50 lust",
+            huntEventFlag:     "thetwinsevent"
         },
         {
             name: "Wraith", image: "wraith.webp",
@@ -140,7 +153,8 @@
             hint: "If caught or if sanity runs out during the ghost hunt, you'll wake up somewhere other than home.",
             description: "This is quite a dangerous ghost. If it catches me or I lose sanity during the ghost hunt... Ending up in the forest with my hands tied is not something I want, so I need to be very careful. But even if things don't go as planned, it's better to conserve my energy to have a chance to escape.",
             huntCondition:     function (mc) { return mc.lust >= 50; },
-            huntConditionText: "Can start a hunt if you have >= 50 lust"
+            huntConditionText: "Can start a hunt if you have >= 50 lust",
+            sleepPassage:      "GhostSpecialEventWraith"
         },
         {
             name: "Mare", image: "mare.webp",
@@ -190,6 +204,25 @@
         this.findableOnline    = !!cfg.findableOnline;
         this.huntCondition     = cfg.huntCondition;
         this.huntConditionText = cfg.huntConditionText || "";
+
+        /* Per-ghost behaviour fields. Consumers check these instead of
+           branching on this.name; see passages/gui/Notebook, Hide, RunFast,
+           LightPassageGhost, ChangeGhostRoom, SaveEventPassage, EventMC,
+           WalkHomeTogether, Sleep, companion Main files, and the HuntOver*
+           flow for examples. */
+        this.canTurnOffLights     = cfg.canTurnOffLights !== false;     // default true
+        this.staysInOneRoom       = !!cfg.staysInOneRoom;
+        /* null = roll normally; true = always succeeds; false = never. */
+        this.hidingSucceeds       = (cfg.hidingSucceeds  !== undefined) ? cfg.hidingSucceeds  : null;
+        this.runningSucceeds      = (cfg.runningSucceeds !== undefined) ? cfg.runningSucceeds : null;
+        this.invertedSanityStages = !!cfg.invertedSanityStages;
+        this.walkHomePassage      = cfg.walkHomePassage      || null;   // Spirit: "GhostSpecialEventSpirit"
+        this.sleepPassage         = cfg.sleepPassage         || null;   // Wraith: "GhostSpecialEventWraith"
+        this.goHomePassage        = cfg.goHomePassage        || null;   // Myling: "GhostSpecialEventMyling"
+        this.companionHuntPassage = cfg.companionHuntPassage || null;   // Myling: "GhostSpecialEventMylingTwo"
+        this.sanityEventLossRange = cfg.sanityEventLossRange || [1, 5]; // Oni:    [3, 8]
+        this.huntEventFlag        = cfg.huntEventFlag        || null;   // Twins:  "thetwinsevent"
+        if (typeof cfg.onHuntEnd === "function") this.onHuntEnd = cfg.onHuntEnd;
     }
 
     Object.defineProperty(Ghost.prototype, "isInfoCollected", {
@@ -233,6 +266,24 @@
         }
         return html;
     };
+
+    /* Roll the per-ghost sanity penalty that fires during MC events
+       (EventMC / ArtEventVids / ArtEventImgs). Default 1-5; Oni 3-8. */
+    Ghost.prototype.rollEventSanityLoss = function () {
+        var r = this.sanityEventLossRange;
+        return r[0] + Math.floor(Math.random() * (r[1] - r[0] + 1));
+    };
+
+    /* If this ghost has a per-hunt-event marker flag (e.g. Twins →
+       $thetwinsevent), set it to 1. Called from HuntOver* and the
+       NudityEvent passages so the flag doesn't need inline name branching. */
+    Ghost.prototype.markHuntEvent = function () {
+        if (this.huntEventFlag) State.variables[this.huntEventFlag] = 1;
+    };
+
+    /* Default hook — Spirit overrides this to reset $ghostSpiritEventStage
+       at graceful hunt ends. */
+    Ghost.prototype.onHuntEnd = function () {};
 
     var GHOSTS = GHOST_CONFIG.map(function (cfg) { return new Ghost(cfg); });
 
@@ -281,14 +332,11 @@
             var catalogue = setup.Ghosts.getByName(V.ghostName);
             if (!catalogue) return null;
             var g = Object.create(Ghost.prototype);
-            g.name              = catalogue.name;
-            g.image             = catalogue.image;
-            g.hint              = catalogue.hint;
-            g.description       = catalogue.description;
-            g.findableOnline    = catalogue.findableOnline;
-            g.huntCondition     = catalogue.huntCondition;
-            g.huntConditionText = catalogue.huntConditionText;
-            g.evidence          = rehydrateEvidence(V.ghostEvidence);
+            /* Copy every own property from the catalogue entry (static fields
+               plus any behaviour overrides like onHuntEnd), then overlay the
+               mutable per-hunt evidence from state. */
+            Object.keys(catalogue).forEach(function (k) { g[k] = catalogue[k]; });
+            g.evidence = rehydrateEvidence(V.ghostEvidence);
             return g;
         },
 
@@ -306,6 +354,20 @@
                 if (GHOSTS[i].name === name) return GHOSTS[i];
             }
             return null;
+        },
+
+        /* Shorthand for "if a hunt is active, call markHuntEvent on the
+           ghost". Saves passages from the active()-null dance. */
+        markActiveHuntEvent: function () {
+            var g = setup.Ghosts.active();
+            if (g) g.markHuntEvent();
+        },
+        /* Fires the active ghost's onHuntEnd hook on graceful hunt exits
+           (HuntOverManual / HuntOverTime). Default is a no-op; Spirit uses
+           it to reset $ghostSpiritEventStage. */
+        fireActiveHuntEnd: function () {
+            var g = setup.Ghosts.active();
+            if (g) g.onHuntEnd();
         },
 
         /* Info-collected flag helpers. Callers should never touch the

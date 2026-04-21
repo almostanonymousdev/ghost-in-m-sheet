@@ -13,10 +13,11 @@
 
 &emsp;&emsp;Finally, after running some distance, you decide to look back. Your heart skips a beat. Did you manage to <<linkappend "@@.usebtn; escape the pursuit, or is the ghost still close behind?@@">><br>
 	<<set _check to random(1,100)>>
-	<<if $ghostName eq "Jinn">>
-		<<set _check to 0>>
-	<<elseif $ghostName eq "Deogen">>
+	<<set _hg to setup.Ghosts.active()>>
+	<<if _hg and _hg.runningSucceeds eq true>>
 		<<set _check to 100>>
+	<<elseif _hg and _hg.runningSucceeds eq false>>
+		<<set _check to 0>>
 	<</if>>
 	<<if _check lte 30>>
 

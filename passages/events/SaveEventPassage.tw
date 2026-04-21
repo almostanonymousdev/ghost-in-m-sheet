@@ -1,18 +1,19 @@
 :: SaveEventPassage [nobr] {"position":"1700,1150","size":"100,100"}
 <<set _videoList to []>>
-<<if $ghostName neq "Shade">>
-	<<set $decreasingSanity to {
-	stage1: 3,
-	stage2: 5,
-	stage3: 7,
-	stage4: 9,
-	}>>
-<<else>>
+<<set _hg to setup.Ghosts.active()>>
+<<if _hg and _hg.invertedSanityStages>>
 	<<set $decreasingSanity to {
 	stage1: 9,
 	stage2: 7,
 	stage3: 5,
 	stage4: 3,
+	}>>
+<<else>>
+	<<set $decreasingSanity to {
+	stage1: 3,
+	stage2: 5,
+	stage3: 7,
+	stage4: 9,
 	}>>
 <</if>>
 

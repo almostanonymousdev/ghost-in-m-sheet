@@ -1,8 +1,6 @@
 :: NudityEvent [nobr] {"position":"1700,1350","size":"100,100"}
 <<set _videoList to []>>
-<<if $ghostName eq "The Twins">>
-	<<set $thetwinsevent to 1>>
-<</if>>
+<<run setup.Ghosts.markActiveHuntEvent()>>
 <<if setup.HauntedHouses.nudityNakedNoBottoms()>>
 	<<if $mc.exhib lte 4>>
 		<<set _videoList to [

@@ -1,8 +1,5 @@
 :: ArtEventVids [nobr] {"position":"1650,950","size":"100,100"}
-<<if $ghostName eq "Oni">>
-	<<set $ghostSanityEventDecreased to random(3,8)>>
-<<else>>
-<<set $ghostSanityEventDecreased to random(1,5)>><</if>>
+<<set $ghostSanityEventDecreased to (setup.Ghosts.active() ? setup.Ghosts.active().rollEventSanityLoss() : 0)>>
 <<if previous() is "EnigmaHallway">>
 	<<if $hallway.background eq 1>>
 		<<include "StyleEnigmaHallwayLight">>
