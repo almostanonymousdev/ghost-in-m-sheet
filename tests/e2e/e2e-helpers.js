@@ -66,7 +66,7 @@ async function expectCleanPassage(page) {
 async function setupHunt(page, ghostName, house = 'owaissa') {
   await page.evaluate((name) => {
     const V = SugarCube.State.variables;
-    const found = SugarCube.setup.Ghosts.find(g => g.name === name);
+    const found = SugarCube.setup.Ghosts.list().find(g => g.name === name);
     if (found) {
       V.ghost = { name: found.name, evidence: found.evidence.slice() };
     }

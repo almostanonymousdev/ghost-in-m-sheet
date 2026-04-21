@@ -979,9 +979,9 @@ $(document).on(':passagerender', function (ev) {
 	});
 });
 
-/* Ghost catalogue, evidence display metadata, and ghost helpers live in
- * passages/ghosts/GhostController.tw (setup.Ghosts, setup.evidenceTypes,
- * setup.getGhost/getGhostByName/ghostHunt.../ghostEvidence...). */
+/* Ghost catalogue and helpers live in passages/ghosts/GhostController.tw
+ * under the setup.Ghosts namespace (setup.Ghosts, setup.Ghosts.EvidenceType,
+ * setup.Ghosts.getById/getByName/huntCondition.../evidence... etc.). */
 
 /* Every room id that gets a per-hunt $currentsearch<Room> bag.
  * The variable name is always "currentsearch" + room. */

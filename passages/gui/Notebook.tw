@@ -31,8 +31,8 @@
 </div>
 <br>
 <div class="journal-container">
-<<for _g range setup.Ghosts>>
-	<span @class="setup.ghostEvidenceClasses(_g)" @id="_g.id"><<hovertip setup.ghostHoverHtml(_g.id)>><<= _g.name>>
+<<for _g range setup.Ghosts.list()>>
+	<span @class="setup.Ghosts.evidenceClasses(_g)" @id="_g.id"><<hovertip setup.Ghosts.hoverHtml(_g.id)>><<= _g.name>>
 	<</hovertip>></span>
 <</for>><br>
 
@@ -48,11 +48,11 @@
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 	<<script>>
-		setup.updateNotebookHighlights();
+		setup.Ghosts.updateNotebookHighlights();
 		$('.flexwrapperNotebook input[type="checkbox"]').on('change', function () {
 			/* autocheck's change handler runs first and syncs $state; defer one
-			   tick so setup.updateNotebookHighlights sees the fresh value. */
-			setTimeout(setup.updateNotebookHighlights, 0);
+			   tick so setup.Ghosts.updateNotebookHighlights sees the fresh value. */
+			setTimeout(setup.Ghosts.updateNotebookHighlights, 0);
 		});
 	<</script>>
 <</done>>

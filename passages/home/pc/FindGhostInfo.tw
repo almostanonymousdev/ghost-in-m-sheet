@@ -5,7 +5,7 @@
 <<linkreplace "Find information about ghosts">>
 <<set $findGhostInfoCD to 1>>
 <<addTime 60>>
-<<set _available to setup.Ghosts.filter(g => g.findableOnline && !g.isInfoCollected)>>
+<<set _available to setup.Ghosts.list().filter(g => g.findableOnline && !g.isInfoCollected)>>
 <<if _available.length gt 0>>
 	<<if random(1, 100) lte 50>>
 		<<set _entry to _available.random()>>

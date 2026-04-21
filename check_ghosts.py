@@ -18,7 +18,7 @@ VALID_EVIDENCE = {"emf", "gwb", "temperature", "glass", "spiritbox", "uvl"}
 EXPECTED_GHOST_COUNT = 18
 EVIDENCE_PER_GHOST = 3
 
-# Mirrors setup.EvidenceType defined in GhostController.tw
+# Mirrors setup.Ghosts.EvidenceType defined in GhostController.tw
 EVIDENCE_TYPE_ENUM = {
     "EMF":         "emf",
     "SPIRITBOX":   "spiritbox",

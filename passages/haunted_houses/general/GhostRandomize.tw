@@ -4,7 +4,8 @@
 <<script>>
     (function () {
         var V = State.variables;
-        var g = setup.Ghosts[Math.floor(Math.random() * setup.Ghosts.length)];
+        var ghosts = setup.Ghosts.list();
+        var g = ghosts[Math.floor(Math.random() * ghosts.length)];
         V.ghost = { name: g.name, evidence: g.evidence.slice() };
 
         setup.searchableRooms.forEach(function (room) {

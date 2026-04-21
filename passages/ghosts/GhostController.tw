@@ -2,7 +2,7 @@
 (function () {
     'use strict';
 
-    setup.EvidenceType = Object.freeze({
+    var EvidenceType = Object.freeze({
         EMF:         "emf",
         SPIRITBOX:   "spiritbox",
         GWB:         "gwb",
@@ -10,12 +10,11 @@
         TEMPERATURE: "temperature",
         UVL:         "uvl"
     });
-
-    var E = setup.EvidenceType;
+    var E = EvidenceType;
 
     /* Display metadata for evidence keys. Consumed by Notebook for CSS classes
        and by Ghostopedia/hovertips for human-readable labels. */
-    setup.evidenceTypes = {
+    var evidenceTypes = {
         emf:         { label: "EMF5",             cssClass: "emf" },
         gwb:         { label: "GhostWritingBook", cssClass: "gwb" },
         spiritbox:   { label: "SpiritBox",        cssClass: "spiritbox" },
@@ -166,7 +165,7 @@
         return "ghost" + id + "InfoCollected";
     }
 
-    setup.Ghosts = GHOST_CONFIG.map(function (cfg) {
+    var GHOSTS = GHOST_CONFIG.map(function (cfg) {
         var ghost = {
             id:             cfg.id,
             name:           cfg.name,
@@ -186,91 +185,6 @@
         return ghost;
     });
 
-    /* Convenience: list of ghost names as an array. Accepts an optional
-       `{ exclude: [names] }` to drop specific ghosts (e.g. Mimic's
-       impersonation list excludes itself). Defined non-enumerably so it
-       doesn't show up in iteration over the array. */
-    Object.defineProperty(setup.Ghosts, "names", {
-        configurable: true,
-        writable: true,
-        value: function (opts) {
-            var exclude = (opts && opts.exclude) || [];
-            var names = [];
-            for (var i = 0; i < setup.Ghosts.length; i++) {
-                var n = setup.Ghosts[i].name;
-                if (exclude.indexOf(n) === -1) names.push(n);
-            }
-            return names;
-        }
-    });
-
-    setup.getGhost = function (id) {
-        for (var i = 0; i < setup.Ghosts.length; i++) {
-            if (setup.Ghosts[i].id === id) return setup.Ghosts[i];
-        }
-        return null;
-    };
-
-    setup.getGhostByName = function (name) {
-        for (var i = 0; i < setup.Ghosts.length; i++) {
-            if (setup.Ghosts[i].name === name) return setup.Ghosts[i];
-        }
-        return null;
-    };
-
-    setup.ghostHuntConditionMet = function (g, mc) {
-        if (!g || !g.huntCondition) return false;
-        var c = g.huntCondition;
-        var v = mc[c.stat];
-        if (c.op === "lte") return v <= c.value;
-        if (c.op === "gte") return v >= c.value;
-        return false;
-    };
-
-    setup.ghostHuntConditionText = function (g) {
-        if (!g || !g.huntCondition) return "";
-        var c = g.huntCondition;
-        var sym = c.op === "lte" ? "\u2264" : "\u2265";
-        return "Can start a hunt if you have " + sym + " " + c.value + " " + c.stat;
-    };
-
-    setup.ghostEvidenceClasses = function (g) {
-        return g.evidence.map(function (k) { return setup.evidenceTypes[k].cssClass; }).join(" ");
-    };
-
-    setup.ghostEvidenceLabels = function (g) {
-        return g.evidence.map(function (k) { return setup.evidenceTypes[k].label; }).join(", ");
-    };
-
-    setup.ghostInfoCollected = function (id) {
-        return !!State.variables[infoFlagName(id)];
-    };
-
-    setup.ghostHoverHtml = function (id) {
-        var g = setup.getGhost(id);
-        if (!g) return "";
-        var html = "<b>" + setup.ghostEvidenceLabels(g) + "</b>";
-        if (setup.ghostInfoCollected(id) && g.hint) {
-            html += "<br><em>" + g.hint + "</em>";
-        }
-        return html;
-    };
-
-    /* Notebook evidence filter: a ghost is a candidate iff at least one of its
-       evidence types has been confirmed checked AND no evidence outside its
-       set has been checked. */
-    setup.ghostMatchesEvidence = function (g, checked) {
-        var myEv = g.evidence;
-        var anyMatch = false;
-        var anyMismatch = false;
-        Object.keys(setup.evidenceTypes).forEach(function (k) {
-            if (!checked[k]) return;
-            if (myEv.indexOf(k) === -1) anyMismatch = true;
-            else anyMatch = true;
-        });
-        return anyMatch && !anyMismatch;
-    };
-
     /* Map the six Notebook checkbox state vars to evidence keys. */
     var CHECK_VAR = {
         emf:         "EMF5Check",
@@ -281,22 +195,106 @@
         uvl:         "UVLCheck"
     };
 
-    setup.readEvidenceChecks = function () {
-        var V = State.variables;
-        var out = {};
-        Object.keys(CHECK_VAR).forEach(function (k) { out[k] = !!V[CHECK_VAR[k]]; });
-        return out;
-    };
+    /* The canonical ghost catalogue lives in the GHOSTS closure above;
+       setup.Ghosts is the public namespace. Callers that want to iterate
+       should use setup.Ghosts.list() rather than treating setup.Ghosts as
+       an array. */
+    setup.Ghosts = {
+        EvidenceType:  EvidenceType,
+        evidenceTypes: evidenceTypes,
 
-    /* Toggle the `right` class on each #<ghostId> element based on the current
-       checkbox state. Safe to call repeatedly; removes the class when a ghost
-       no longer matches so unchecking an evidence clears its highlight. */
-    setup.updateNotebookHighlights = function () {
-        var checked = setup.readEvidenceChecks();
-        setup.Ghosts.forEach(function (g) {
-            var el = document.getElementById(g.id);
-            if (!el) return;
-            el.classList.toggle("right", setup.ghostMatchesEvidence(g, checked));
-        });
+        list: function () {
+            return GHOSTS;
+        },
+
+        /* Ghost names only. Accepts `{ exclude: [names] }` to drop a subset
+           (e.g. Mimic's impersonation list excludes itself). */
+        names: function (opts) {
+            var exclude = (opts && opts.exclude) || [];
+            return GHOSTS
+                .filter(function (g) { return exclude.indexOf(g.name) === -1; })
+                .map(function (g) { return g.name; });
+        },
+
+        getById: function (id) {
+            for (var i = 0; i < GHOSTS.length; i++) {
+                if (GHOSTS[i].id === id) return GHOSTS[i];
+            }
+            return null;
+        },
+
+        getByName: function (name) {
+            for (var i = 0; i < GHOSTS.length; i++) {
+                if (GHOSTS[i].name === name) return GHOSTS[i];
+            }
+            return null;
+        },
+
+        huntConditionMet: function (g, mc) {
+            if (!g || !g.huntCondition) return false;
+            var c = g.huntCondition;
+            var v = mc[c.stat];
+            if (c.op === "lte") return v <= c.value;
+            if (c.op === "gte") return v >= c.value;
+            return false;
+        },
+
+        huntConditionText: function (g) {
+            if (!g || !g.huntCondition) return "";
+            var c = g.huntCondition;
+            var sym = c.op === "lte" ? "\u2264" : "\u2265";
+            return "Can start a hunt if you have " + sym + " " + c.value + " " + c.stat;
+        },
+
+        evidenceClasses: function (g) {
+            return g.evidence.map(function (k) { return evidenceTypes[k].cssClass; }).join(" ");
+        },
+
+        evidenceLabels: function (g) {
+            return g.evidence.map(function (k) { return evidenceTypes[k].label; }).join(", ");
+        },
+
+        hoverHtml: function (id) {
+            var g = setup.Ghosts.getById(id);
+            if (!g) return "";
+            var html = "<b>" + setup.Ghosts.evidenceLabels(g) + "</b>";
+            if (g.isInfoCollected && g.hint) {
+                html += "<br><em>" + g.hint + "</em>";
+            }
+            return html;
+        },
+
+        /* Notebook evidence filter: a ghost is a candidate iff at least one of
+           its evidence types is checked AND no evidence outside its set is. */
+        matchesEvidence: function (g, checked) {
+            var myEv = g.evidence;
+            var anyMatch = false;
+            var anyMismatch = false;
+            Object.keys(evidenceTypes).forEach(function (k) {
+                if (!checked[k]) return;
+                if (myEv.indexOf(k) === -1) anyMismatch = true;
+                else anyMatch = true;
+            });
+            return anyMatch && !anyMismatch;
+        },
+
+        readEvidenceChecks: function () {
+            var V = State.variables;
+            var out = {};
+            Object.keys(CHECK_VAR).forEach(function (k) { out[k] = !!V[CHECK_VAR[k]]; });
+            return out;
+        },
+
+        /* Toggle the `right` class on each #<ghostId> element based on the
+           current checkbox state. Safe to call repeatedly; removes the class
+           when a ghost no longer matches so unchecking clears highlights. */
+        updateNotebookHighlights: function () {
+            var checked = setup.Ghosts.readEvidenceChecks();
+            GHOSTS.forEach(function (g) {
+                var el = document.getElementById(g.id);
+                if (!el) return;
+                el.classList.toggle("right", setup.Ghosts.matchesEvidence(g, checked));
+            });
+        }
     };
 })();

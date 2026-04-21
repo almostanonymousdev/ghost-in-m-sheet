@@ -45,7 +45,7 @@
 	<</linkreplace>>
 	<<if $ghostHuntingMode gte 1>>
 		<<linkreplace "choose ghost type">>
-			<<for _g range setup.Ghosts>>
+			<<for _g range setup.Ghosts.list()>>
 				<<capture _g>><<link `"set to " + _g.name`>><<set $ghost to { name: _g.name, evidence: _g.evidence.slice() }>>
 				<</link>>
 				<</capture>>
