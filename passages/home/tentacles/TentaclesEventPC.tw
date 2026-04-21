@@ -1,8 +1,6 @@
 :: TentaclesEventPC [nobr] {"position":"800,4300","size":"100,100"}
 <<set $gotCursedItemEventCD to 0>>
-<video autoplay controls muted loop>
-<source @src="setup.ImagePath + '/tentacles/pc1.mp4'" type="video/mp4">
-</video>
+<<video "tentacles/pc1.mp4">>
 @@.mc-thoughts; You're masturbating, caressing your wet pussy. Suddenly, a tentacle crawls across the screen, slowly approaching you like a snake.@@<br>
 @@.mc-speech; Fuck, what the hell is this?!@@<br><br>
 <<if $tentaclesEventStageAll gte 3>>
@@ -11,9 +9,7 @@
 		<</replace>>
 
 		<span id ="tentaclesEventPc">
-		<video autoplay controls muted loop>
-		<source @src="setup.ImagePath + '/tentacles/pc3.mp4'" type="video/mp4">
-		</video></span>
+		<<video "tentacles/pc3.mp4">></span>
 		<<set _videoIndex to 1>>
 		@@.mc-thoughts; The tentacle doesn't scare you anymore. It ignites a craving for something new, forbidden. You touch it with your tongue - it's slick, tasty, and that makes your pussy start to pulse.@@<br>
 		@@.mc-thoughts; Another one appears from behind, and you take them into , @@
@@ -21,16 +17,12 @@
 			<<set _videoIndex to (_videoIndex + 1) % 2 + 2>>
 			<<replace "#tentaclesEventPc">>
 
-				<video autoplay controls muted loop>
-				<source @src="setup.ImagePath+`/tentacles/pc`+_videoIndex+`.mp4`" type="video/mp4">
-				</video>
+				<<video "tentacles/pc" + _videoIndex+`.mp4`>>
 			<</replace>>
 		<</link>>
 		@@.mc-thoughts; licking them as if you're sucking the juiciest cock, feeling your cunt start to@@
 		<<linkappend "@@.usebtn; drip with anticipation@@">>
-			<video autoplay controls muted loop>
-			<source @src="setup.ImagePath + '/tentacles/pc4.mp4'" type="video/mp4">
-			</video>
+			<<video "tentacles/pc4.mp4">>
 			@@.mc-thoughts; They cum on you, covering you with thick, warm semen@@<br>
 			<<if $tentaclesEventStageAll gte 4>>
 				@@.enterbtn; [[Take them|TentaclesEventPC1]]@@ or @@.enterbtn; [[Leave|Livingroom][$tentaclesEventPCText to 2 ;$mc.lust to 100]]@@

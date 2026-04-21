@@ -1,20 +1,14 @@
 :: RescueNadiaPossessed1 [nobr] {"position":"2225,2200","size":"100,100"}
-<video autoplay controls muted loop>
-<source @src="setup.ImagePath + '/rescue/nadia/1.2.mp4'" type="video/mp4">
-</video>
+<<video "rescue/nadia/1.2.mp4">>
 @@.notmc-speech;Mmm, your nipples are already so hard. Relax, baby, lie down on the bed.@@<br>
 @@.mc-thoughts; Mm~ No, something's not right.@@<br>
 @@.mc-thoughts; Fuck! Her tongue is making me so wet,@@ <<linkappend "@@.mc-thoughtsLink; I can't resist@@">>
 	<<set _check to random(1,2)>>
 	<<if _check eq 1>>
-		<video autoplay controls muted loop>
-		<source @src="setup.ImagePath + '/rescue/nadia/1.3.mp4'" type="video/mp4">
-		</video>
+		<<video "rescue/nadia/1.3.mp4">>
 	<</if>>
 	<<if _check eq 2>>
-		<video autoplay controls muted loop>
-		<source @src="setup.ImagePath + '/rescue/nadia/1.4.mp4'" type="video/mp4">
-		</video>
+		<<video "rescue/nadia/1.4.mp4">>
 	<</if>>
 	@@.mc-thoughts; I'm god, my whole body is on fire, how is she doing this?@@<br>
 	@@.notmc-speech; You're so sweet, where does Rain find such bitches?@@<br>

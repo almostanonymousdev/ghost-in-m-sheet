@@ -1,5 +1,5 @@
 :: ChurchNunQuest [nobr] {"position":"2075,1500","size":"100,100"}
-<img @src="setup.ImagePath + '/rescue/rain.jpg'" width="50%" class="displayCentredImgs"><br>
+<<image "rescue/rain.jpg" { class: "displayCentredImgs", width: "50%" }>><br>
 <<if ndef $relationshipWithRain>>
 	<<set $relationshipWithRain to 0>>
 	@@.notmc-speech; $mc.name, hey. I'm Rain. The witch told me about you. Thanks for agreeing to help.@@<br>
@@ -34,7 +34,7 @@
 		@@.notmc-speech;I hope you'll be able to keep helping us. <br>
 		I don't have anything to give you in return for your help right now, but maybe I can repay you somehow later.@@<br>
 		<<set $equipment.spiritbox to 3>>
-		@@.mc-action; You get a lvl 3 Spiritbox @@<img @src="setup.ImagePath + '/img/spiritbox.png'" style="max-width:5%"><br><br>
+		@@.mc-action; You get a lvl 3 Spiritbox @@<<image "img/spiritbox.png" { style: "max-width:5%" }>><br><br>
 	<</if>>
 	<<set $relationshipWithRain += 1>>
 	@@.mc-thoughts; Your relationship with Rain has increased - $relationshipWithRain now!@@<br>

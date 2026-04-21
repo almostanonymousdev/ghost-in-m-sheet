@@ -2,9 +2,9 @@
 <<addLust 15>>
 <<deliveryVideo "papersevent" 1>>
 @@.notmc-speech; How about staying with me for a while? I think the work can wait, and I'll write a good review for your work?@@<br>
-+15 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"><br>
++15 <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
 <<if setup.Delivery.papersStillCorruptible()>>
-	+0.1 <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%;">
+	+0.1 <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%;" }>>
 	<<set $mc.corruption += 0.1>><br>
 <</if>>
 <<if setup.Delivery.canAcceptPapersFlirt()>>
@@ -14,7 +14,7 @@
 		@@.notmc-speech; Get on <<linkappend "your knees">><br>
 			<<addLust 30>>
 			<<deliveryVideo "papersevent" 2 3>><br>
-			+30 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"><br>
+			+30 <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
 			@@.mc-speech; ~Hmng~ulrp~ It's too big to fit in my mouth@@<br>
 			@@.notmc-speech; Oh~ I think it will fit in your pussy, I'm sure you're all wet@@<br>
 			@@.mc-thoughts; He is right. I can not stand it any longer@@<br>

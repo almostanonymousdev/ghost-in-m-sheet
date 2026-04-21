@@ -1,5 +1,5 @@
 :: Park [nobr] {"position":"2800,1600","size":"100,100"}
-<img @src="setup.ImagePath + '/img/park.jpg'" width="100%">
+<<image "img/park.jpg" { width: "100%" }>>
 @@.location; Park@@<br>
 @@.mc-thoughts; This park, where green plantings seamlessly transition into forest, offers solitude and a connection to nature, providing a space for relaxation and outdoor activities.
 @@<br>
@@ -10,9 +10,9 @@
 <<elseif setup.Park.joggingOnCooldown()>>
 	@@.mc-speech; Enough for today...@@<br>
 <<elseif setup.Park.hasEnergyToJog()>>
-	@@.enterbtn; [[Jogging|ParkJogging][$mc.energy -= 2]]<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:20px;"> @@<br>
+	@@.enterbtn; [[Jogging|ParkJogging][$mc.energy -= 2]]<<image "img/energy.png" { style: "position: relative; top: 0.375em; width:20px;" }>> @@<br>
 <<else>>
-	@@.mc-speech; Not enough energy@@ <img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"><br>
+	@@.mc-speech; Not enough energy@@ <<image "img/energy.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
 <</if>>
 
 <br>

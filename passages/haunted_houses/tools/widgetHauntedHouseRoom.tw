@@ -102,7 +102,7 @@ non-enigma navigation link in the haunted houses does. */
 		<<hovertip setup.toolSuccessRate(_args[0])>>
 		<div class="footer-card">
 		<div class="cardimg">
-		<img @src="setup.ImagePath + '/img/' + setup.searchToolDefs[_args[0]].iconFile" class="icon" @id="_args[1] + setup.searchToolDefs[_args[0]].picSuffix">
+		<<image "img/" + setup.searchToolDefs[_args[0]].iconFile { class: "icon", id: _args[1] + setup.searchToolDefs[_args[0]].picSuffix }>>
 		</div>
 		<div class="cardlink">
 		<<searchTool _args[0] _args[1]>>
@@ -129,12 +129,12 @@ non-enigma navigation link in the haunted houses does. */
    owaissa, and ironclad rooms. */
 <<widget "roomFooterLight">>
 <div class="footer-card footer-light">
-<span class="cursedHuntLinkDisable"><<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" _args[0]>><<set State.variables[_args[1]].background = 1>>
+<span class="cursedHuntLinkDisable"><<link "<<image \"img/lighton.png\">>" _args[0]>><<set State.variables[_args[1]].background = 1>>
 <</link>>
-<<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" _args[0]>><<set State.variables[_args[1]].background = 2>>
+<<link "<<image \"img/lightoff.png\">>" _args[0]>><<set State.variables[_args[1]].background = 2>>
 <</link>>
 <<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>>
-<<link "<img @src='setup.ImagePath + \"/img/hearth.png\"'>" "SeduceGhostMinigame">>
+<<link "<<image \"img/hearth.png\">>" "SeduceGhostMinigame">>
 <<run setup.SeduceGhostMinigame.init()>><</link>>
 <</if>></span>
 </div>
@@ -145,9 +145,9 @@ non-enigma navigation link in the haunted houses does. */
    no minigame trigger. */
 <<widget "roomFooterLightBasic">>
 <div class="footer-card footer-light">
-<<link "<img @src='setup.ImagePath + \"/img/lighton.png\"'>" _args[0]>><<set State.variables[_args[1]].background = 1>>
+<<link "<<image \"img/lighton.png\">>" _args[0]>><<set State.variables[_args[1]].background = 1>>
 <</link>>
-<<link "<img @src='setup.ImagePath + \"/img/lightoff.png\"'>" _args[0]>><<set State.variables[_args[1]].background = 2>>
+<<link "<<image \"img/lightoff.png\">>" _args[0]>><<set State.variables[_args[1]].background = 2>>
 <</link>>
 </div>
 <</widget>>
@@ -159,13 +159,13 @@ non-enigma navigation link in the haunted houses does. */
    replaces the room with the hide-spot scene; otherwise it behaves as a
    normal furniture span that opens furnitureSearch. */
 <<widget "hideSpot">>
-<<set _imgSrc to setup.ImagePath + '/img/furniture/' + _args[1]>>
+<<set _imgPath to 'img/furniture/' + _args[1]>>
 <<set _hideTarget to _args[0]>>
 <<set _hideId to _args[2]>>
 <<if $cursedHuntActive eq 1>>
 <<capture _hideTarget>>
-<span><<link `'<img src="' + _imgSrc + '" class="highlighted-furniture">'` _hideTarget>>
-<<replace ".room-wrapper">><<set $isInHideSpot to 1>><img @src="setup.ImagePath + '/hunting/hid1.jpg'" width="80%" class="fadeInScale"><br>
+<span><<link `'<<image "' + _imgPath + '" "highlighted-furniture">>'` _hideTarget>>
+<<replace ".room-wrapper">><<set $isInHideSpot to 1>><<image "hunting/hid1.jpg" { class: "fadeInScale", width: "80%" }>><br>
 <<done>>
 <<run $(".fadeInScale").addClass("tarotCardsShow")>><</done>>
 @@.mc-thoughts;You press yourself against the cold floor, feeling your heart racing in your chest. The screams and rustling outside make you hold your breath. The ghost, filled with rage, prowls the room, and each of its steps echoes dully in your ears.<br>
@@ -180,7 +180,7 @@ All you can do now is wait and hope it doesn't find you.@@
 <</capture>>
 <<else>>
 <<capture _hideId>>
-<span @id="_hideId"><<link `'<img src="' + _imgSrc + '">'` "FurnitureSearch">><<set $currentFurniture to _hideId>><<includeTimeEventClothesHunt>>
+<span @id="_hideId"><<link `'<<image "' + _imgPath + '">>'` "FurnitureSearch">><<set $currentFurniture to _hideId>><<includeTimeEventClothesHunt>>
 <</link>></span>
 <</capture>>
 <</if>>
@@ -190,10 +190,10 @@ All you can do now is wait and hope it doesn't find you.@@
    furniture span id (e.g. "bedroom_table"). The image span that opens
    furnitureSearch on click. */
 <<widget "furnitureItem">>
-<<set _imgSrc to setup.ImagePath + '/img/furniture/' + _args[0]>>
+<<set _imgPath to 'img/furniture/' + _args[0]>>
 <<set _furnId to _args[1]>>
 <<capture _furnId>>
-<span @id="_furnId"><<link `'<img src="' + _imgSrc + '">'` "FurnitureSearch">><<set $currentFurniture to _furnId>><<includeTimeEventClothesHunt>>
+<span @id="_furnId"><<link `'<<image "' + _imgPath + '">>'` "FurnitureSearch">><<set $currentFurniture to _furnId>><<includeTimeEventClothesHunt>>
 <</link>></span>
 <</capture>>
 <</widget>>
@@ -205,7 +205,7 @@ All you can do now is wait and hope it doesn't find you.@@
    ladders that the tool check passages used to repeat for every image set. */
 <<widget "randRangeImg">>
 <<set _n to random(_args[1], _args[2])>>
-<img @src="setup.ImagePath + '/' + _args[0] + _n + _args[3]" @class="_args[4] || 'evidenceImgs'">
+<<image _args[0] + _n + _args[3] { class: _args[4] || 'evidenceImgs' }>>
 <</widget>>
 
 /* randRangeVideo -- args: pathPrefix, start, end, ext.
@@ -214,9 +214,7 @@ All you can do now is wait and hope it doesn't find you.@@
    repeat per-card. */
 <<widget "randRangeVideo">>
 <<set _n to random(_args[1], _args[2])>>
-<video autoplay muted controls loop class="displayCentredImgs">
-<source @src="setup.ImagePath + '/' + _args[0] + _n + _args[3]" type="video/mp4">
-</video>
+<<video _args[0] + _n + _args[3] "displayCentredImgs">>
 <</widget>>
 
 /* notFound -- args: message. Canonical "I didn't find anything" block used
@@ -246,7 +244,7 @@ All you can do now is wait and hope it doesn't find you.@@
 <div class="footer-card">
 <div class="cardimg">
 <a data-passage="CompanionFailed">
-<img @src="setup.ImagePath + '/img/question-mark.png'" class="companion-image"> </a>
+<<image "img/question-mark.png" "companion-image">> </a>
 </div>
 </div>
 <<elseif $showComp eq 3>>

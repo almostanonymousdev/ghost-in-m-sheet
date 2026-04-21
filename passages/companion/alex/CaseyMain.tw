@@ -4,15 +4,15 @@
 <div class="companionImageMain">
 <<do>>
 <<if $chanceToAttackCasey eq 25>>
-	<img @src="setup.ImagePath + '/trans/casey1.png'" width=100% >
+	<<image "trans/casey1.png" { width: "100%" }>>
 <<elseif $chanceToAttackCasey eq 40>>
-	<img @src="setup.ImagePath + '/trans/casey2.png'" width=100% >
+	<<image "trans/casey2.png" { width: "100%" }>>
 <<elseif $chanceToAttackCasey eq 55>>
-	<img @src="setup.ImagePath + '/trans/casey3.png'" width=100% >
+	<<image "trans/casey3.png" { width: "100%" }>>
 <<elseif $chanceToAttackCasey eq 70>>
-	<img @src="setup.ImagePath + '/trans/casey4.png'" width=100% >
+	<<image "trans/casey4.png" { width: "100%" }>>
 <<elseif $chanceToAttackCasey eq 90>>
-	<img @src="setup.ImagePath + '/trans/casey5.png'" width=100% >
+	<<image "trans/casey5.png" { width: "100%" }>>
 <</if>><br>
 <</do>>
 </div>

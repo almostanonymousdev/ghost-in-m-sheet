@@ -1,5 +1,5 @@
 :: MeetAlice [nobr] {"position":"1850,3675","size":"100,100"}
-<img @src="setup.ImagePath + '/alice/meet-alice.jpg'" width=100%>
+<<image "alice/meet-alice.jpg" { width: "100%" }>>
 @@.notmc-speech; Just in time, thank you!<br>
 Wait... I think I've seen you before, near the witch's house.@@<br>
 @@.mc-speech; Yeah, I work for her, doing ghost identification contracts. But sometimes, I have to take on side jobs too.@@<br>

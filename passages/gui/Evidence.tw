@@ -112,7 +112,7 @@ Tool description
 </tr>
 <tr>
 <td>
-<img @src="setup.ImagePath + '/img/emf.png'" class="iconPx">
+<<image "img/emf.png" "iconPx">>
 </td>
 <th>
 EMF 5
@@ -126,7 +126,7 @@ Electromagnetic field reader. A reading of 5 counts as EMF evidence.
 </tr>
 <tr>
 <td>
-<img @src="setup.ImagePath + '/img/glass.png'" class="iconPx">
+<<image "img/glass.png" "iconPx">>
 </td>
 <th>
 Ectoplasm glass
@@ -140,7 +140,7 @@ When used, might provide ectoplasmic stains that can be used as evidence.
 </tr>
 <tr>
 <td>
-<img @src="setup.ImagePath + '/img/gwb.png'" class="iconPx">
+<<image "img/gwb.png" "iconPx">>
 </td>
 <th>
 Ghost writing Book (GWB)
@@ -154,7 +154,7 @@ When the GWB is used, a ghost might leave a writing that can be used as evidence
 </tr>
 <tr>
 <td>
-<img @src="setup.ImagePath + '/img/spiritbox.png'" class="iconPx">
+<<image "img/spiritbox.png" "iconPx">>
 </td>
 <th>
 Spiritbox
@@ -168,7 +168,7 @@ If a ghost leaves a recorded message upon usage, that can be used as evidence.
 </tr>
 <tr>
 <td>
-<img @src="setup.ImagePath + '/img/thermometr.png'" class="iconPx">
+<<image "img/thermometr.png" "iconPx">>
 </td>
 <th>
 High temperature
@@ -184,7 +184,7 @@ temperature increase.</p>
 </tr>
 <tr>
 <td>
-<img @src="setup.ImagePath + '/img/uvl.png'" class="iconPx">
+<<image "img/uvl.png" "iconPx">>
 </td>
 <th>
 Ultraviolet light

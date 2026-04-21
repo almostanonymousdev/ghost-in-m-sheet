@@ -1,29 +1,21 @@
 :: TheTwinsEvent [nobr] {"position":"1750,2450","size":"100,100"}
-<video autoplay controls muted loop>
-<source @src="setup.ImagePath + '/ghosts/specials/twins3.mp4'" type="video/mp4">
-</video>
+<<video "ghosts/specials/twins3.mp4">>
 @@.mc-thoughts;One of them enters your pussy, and the pleasure is so intense that your eyes roll back. The sensation is overwhelming, causing you to start sucking the other's cock, your moans muffled by his length. @@<br>
 @@.mc-speech;Mmm... fuck@@ <<linkappend "@@.mc-speechLink; this is too good...@@">>
 
 	<span id ="thetwinsevent">
-	<video autoplay controls muted loop>
-	<source @src="setup.ImagePath + '/ghosts/specials/twins4.mp4'" type="video/mp4">
-	</video></span>
+	<<video "ghosts/specials/twins4.mp4">></span>
 	<<set _videoIndex to 4>>
 	@@.mc-thoughts;They take you together@@ <<link "@@.usebtn; in different positions@@">>
 
 		<<set _videoIndex to (_videoIndex + 1) % 2 +4>>
 		<<replace "#thetwinsevent">>
 
-			<video autoplay controls muted loop>
-			<source @src="setup.ImagePath+`/ghosts/specials/twins`+_videoIndex+`.mp4`" type="video/mp4">
-			</video>
+			<<video "ghosts/specials/twins" + _videoIndex+`.mp4`>>
 		<</replace>>
 	<</link>>
 	<<linkappend "@@.mc-thoughtsLink; you're their toy.@@">>
-		<video autoplay controls muted loop>
-		<source @src="setup.ImagePath + '/ghosts/specials/twins6.mp4'" type="video/mp4">
-		</video>
+		<<video "ghosts/specials/twins6.mp4">>
 		@@.mc-thoughts;Their fingers penetrate your pussy, making you shudder with waves of pleasure until they bring you to another orgasm. You feel the fluid gush out of you, squirting from the intensity of the sensations.@@<br>
 		@@.mc-speech;Oh, God... I... I can't...@@<br><br>
 		@@.mc-thoughts;You lie there in the bathroom for some time, thoroughly fucked, but then you gather your thoughts and leave the bathroom.@@<br><br>

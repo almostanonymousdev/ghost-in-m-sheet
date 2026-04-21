@@ -1,14 +1,10 @@
 :: RescueNadiaPossessed3 [nobr] {"position":"2225,2400","size":"100,100"}
 <<set _check to random(1,2)>>
 <<if _check eq 1>>
-	<video autoplay controls muted loop>
-	<source @src="setup.ImagePath + '/rescue/nadia/1.11.mp4'" type="video/mp4">
-	</video>
+	<<video "rescue/nadia/1.11.mp4">>
 <</if>>
 <<if _check eq 2>>
-	<video autoplay controls muted loop>
-	<source @src="setup.ImagePath + '/rescue/nadia/1.12.mp4'" type="video/mp4">
-	</video>
+	<<video "rescue/nadia/1.12.mp4">>
 <</if>>
 @@.notmc-speech; Mm~ What a tight little hole<br>
 I can feel your anus pulsating, looks like you're ready to cum@@<br>

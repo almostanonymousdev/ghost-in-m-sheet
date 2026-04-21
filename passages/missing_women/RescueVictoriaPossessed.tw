@@ -1,49 +1,39 @@
 :: RescueVictoriaPossessed [nobr] {"position":"2025,2100","size":"100,100"}
 <<set _check to random(1,3)>>
 <<if _check eq 1>>
-	<img @src="setup.ImagePath + '/rescue/victoria/1.0.jpg'" width="100%">
+	<<image "rescue/victoria/1.0.jpg" { width: "100%" }>>
 	@@.mc-thoughts; You woke up in a dark, damp place. It seems like the basement of that same house. <br>
 	Your head still hurts, and you're struggling to come to your senses@@<br> @@.mc-speech; Ugh... my head...@@<br>
 	@@.mc-speech; Where am I? $currentRescueGirl, is  that you? Help me!@@<br> @@.notmc-speech; Hello, sweetheart. Were you trying to save your little friend? You're too late... She's under my control now, completely.@@<br>
 	@@.mc-thoughts; Fuck! It seems that ghost has taken control of her... looks like I have a problem. @@<br>
 	@@.mc-speech; Why are you doing this? Let her go and me too, we'll leave and never come back.@@<br>
 	@@.notmc-speech; Ha, no way. You don't interest me much, but I'll still <<linkappend "teach you a lesson before I let you go.">>
-		<video autoplay controls muted loop>
-		<source @src="setup.ImagePath + '/rescue/victoria/1.1.mp4'" type="video/mp4">
-		</video>
+		<<video "rescue/victoria/1.1.mp4">>
 		@@.mc-speech; Ah~ don't touch me!@@<br>
 		@@.notmc-speech; What a juicy slut I've got here. Relax, I'm just [[getting started.|RescueVictoriaPossessed1][$rescueVictoriaPossessed to 1]]@@<br>
 	<</linkappend>>@@
 <</if>>
 <<if _check eq 2>>
-	<video autoplay controls muted loop>
-	<source @src="setup.ImagePath + '/rescue/victoria/2.0.mp4'" type="video/mp4">
-	</video>
+	<<video "rescue/victoria/2.0.mp4">>
 	@@.mc-thoughts; You woke up in a dark, damp place. It seems like the basement of that same house. <br>
 	Your head still hurts, and you're struggling to come to your senses@@<br> @@.mc-speech; Ugh... my head...@@<br>
 	@@.mc-speech; Where am I? $currentRescueGirl, is  that you? Help me!@@<br> @@.notmc-speech; Hello, sweetheart. Were you trying to save your little friend? You're too late... She's under my control now, completely.@@<br>
 	@@.mc-thoughts; Fuck! It seems that ghost has taken control of her... looks like I have a problem. @@<br>
 	@@.mc-speech; Why are you doing this? Let her go and me too, we'll leave and never come back.@@<br>
 	@@.notmc-speech; Ha, no way. You don't interest me much, but I'll still <<linkappend "teach you a lesson before I let you go.">>
-		<video autoplay controls muted loop>
-		<source @src="setup.ImagePath + '/rescue/victoria/3.1.mp4'" type="video/mp4">
-		</video>
+		<<video "rescue/victoria/3.1.mp4">>
 		@@.mc-speech; Ah~ don't touch me!@@<br>
 		@@.notmc-speech; What a juicy slut I've got here. Relax, I'm just [[getting started.|RescueVictoriaPossessed1][$rescueVictoriaPossessed to 2]]@@<br>
 	<</linkappend>>@@
 <</if>>
 <<if _check eq 3>>
-	<video autoplay controls muted loop>
-	<source @src="setup.ImagePath + '/rescue/victoria/3.0.mp4'" type="video/mp4">
-	</video>
+	<<video "rescue/victoria/3.0.mp4">>
 	@@.mc-thoughts; You woke up in a dark, damp place. It seems like the basement of that same house. <br>
 	Your head still hurts, and you're struggling to come to your senses@@<br>
 	@@.mc-speech; Ugh... my head...Fuck, something is in my ass, what the fuck is going on?!@@<br>
 	@@.notmc-speech; Hello, sweetheart. Were you trying to save your little friend? You're too late... She's under my control now, completely.<br>
 	You were out for so long that I couldn't help but have a little fun with you.<br> Good thing you woke up: now we can<<linkappend " enjoy this together.">>
-		<video autoplay controls muted loop>
-		<source @src="setup.ImagePath + '/rescue/victoria/3.1.mp4'" type="video/mp4">
-		</video>
+		<<video "rescue/victoria/3.1.mp4">>
 		@@.mc-speech; Ah~ don't touch me!@@<br>
 		@@.notmc-speech; What a juicy slut I've got here. Relax, I'm just [[getting started.|RescueVictoriaPossessed1][$rescueVictoriaPossessed to 3]]@@<br>
 	<</linkappend>>@@

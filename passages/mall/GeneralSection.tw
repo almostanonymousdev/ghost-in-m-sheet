@@ -5,7 +5,7 @@
 <<consumableCard "makeupAmount"      "img/cosmetics.png"   10 "GeneralSection" 10 "You have {n} makeup charges left">>
 <<consumableCard "medicineAmount"    "img/medicine.png"    30 "GeneralSection" 1  "You have {n} pill(s) remaining">>
 <div class="housecard">
-<img @src="setup.ImagePath + '/img/spray.png'" class="iconPx"><br>
+<<image "img/spray.png" "iconPx">><br>
 <<if setup.Mall.needsPepperSpray()>>
 <span class="priceAmount">10$</span><br>
 <<if $mc.money gte 10>>

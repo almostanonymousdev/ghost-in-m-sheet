@@ -7,7 +7,7 @@
 	<<set $beautyIncrease = Math.floor($mc.fit / 5) - Math.floor($previousFit / 5)>>
 	<<if $beautyIncrease > 0>>
 		<<set $mc.beauty += $beautyIncrease>>
-		@@.mc-speech; <span class="evidenceText">Your <img @src="setup.ImagePath + '/img/beauty.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> has improved (+1): $mc.beauty now!</span>@@<br>
+		@@.mc-speech; <span class="evidenceText">Your <<image "img/beauty.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> has improved (+1): $mc.beauty now!</span>@@<br>
 	<</if>>
 
 	<<if !$mc.energyPoints>>
@@ -20,7 +20,7 @@
 	<<if _currentEnergyPoints > _previousEnergyPoints>>
 		<<set $mc.energyMax += (_currentEnergyPoints - _previousEnergyPoints)>>
 		<<set $mc.energyPoints = _currentEnergyPoints>>
-		@@.mc-speech; <span class="evidenceText">Your <img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> has increased (+<<=_currentEnergyPoints - _previousEnergyPoints>>): $mc.energyMax now!</span>@@<br>
+		@@.mc-speech; <span class="evidenceText">Your <<image "img/energy.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> has increased (+<<=_currentEnergyPoints - _previousEnergyPoints>>): $mc.energyMax now!</span>@@<br>
 	<</if>>
 
 	<<if $previousFit >= 5 && ($previousFit - 1) % 5 == 0 && $mc.fit < 5>>
@@ -33,7 +33,7 @@
 	<<if $mc.fit eq 100>>
 		<<if $mc.energyMax < 20>>
 			<<set $mc.energyMax = 20>>
-			@@.mc-speech; <span class="evidenceText">Your <img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> has reached the maximum of 20!</span>@@<br>
+			@@.mc-speech; <span class="evidenceText">Your <<image "img/energy.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> has reached the maximum of 20!</span>@@<br>
 		<</if>>
 		@@.mc-speech; <span class="evidenceText">Your fitness level is perfect - 100</span>@@
 	<<else>>

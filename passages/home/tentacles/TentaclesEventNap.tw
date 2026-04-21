@@ -1,23 +1,17 @@
 :: TentaclesEventNap [nobr] {"position":"900,4300","size":"100,100"}
 <<set $gotCursedItemEventCD to 0>>
-<video autoplay controls muted loop>
-<source @src="setup.ImagePath + '/tentacles/nap1.mp4'" type="video/mp4">
-</video>
+<<video "tentacles/nap1.mp4">>
 @@.mc-thoughts; You're about to lie down for a rest when you notice something crawling towards you across the floor. It's the tentacles you've already had the pleasure of meeting. You freeze in place, your body numb with fear and anticipation, your heart beating in time with their movements.@@<br>
 <<if $tentaclesEventStageAll gte 1>>
 	<span id="tentaclesEventNapHidOpt">@@.usebtn; [[Run away|Livingroom]]@@ or </span><<linkreplace "@@.usebtn; Stay@@">>
 		<<replace "#tentaclesEventNapHidOpt">>
 		<</replace>>
-		<video autoplay controls muted loop>
-		<source @src="setup.ImagePath + '/tentacles/nap2.mp4'" type="video/mp4">
-		</video>
+		<<video "tentacles/nap2.mp4">>
 		@@.mc-thoughts; They quickly take advantage of your hesitation, wrapping around your arms, pinning you down, and some of them are already penetrating your pussy, making you gasp@@
 		<<linkappend "@@.usebtn; from the sudden invasion@@">>
 
 			<span id ="tentaclesEventNap">
-			<video autoplay controls muted loop>
-			<source @src="setup.ImagePath + '/tentacles/nap3.mp4'" type="video/mp4">
-			</video></span>
+			<<video "tentacles/nap3.mp4">></span>
 			<<set _videoIndex to 3>>
 			@@.mc-thoughts; The tentacles try to delve deeper, each one eager to claim you entirely, jostling against each other, creating a chaotic yet incredibly arousing pleasure. Their slick, strong bodies fight for space within you, each movement sending spasms of delight through your body, as if they're trying to tear you apart with pleasure.<br>@@
 			<<link "@@.usebtn; One tentacle slides up to your face@@">>
@@ -25,16 +19,12 @@
 				<<set _videoIndex to (_videoIndex + 1) % 3 + 3>>
 				<<replace "#tentaclesEventNap">>
 
-					<video autoplay controls muted loop>
-					<source @src="setup.ImagePath+`/tentacles/nap`+_videoIndex+`.mp4`" type="video/mp4">
-					</video>
+					<<video "tentacles/nap" + _videoIndex+`.mp4`>>
 				<</replace>>
 			<</link>>
 			@@.mc-thoughts; , and unable to resist, you let it enter your mouth. You start to suck it, tasting its essence, feeling its texture, your tongue wrapping around it, inviting it deeper, and every motion in your mouth echoes through your pussy, creating a closed loop of ecstasy. You feel your body pulsating in rhythm with their movements, each tentacle seeming like an extension of yourself@@
 			<<linkappend "@@.usebtn; driving you to the brink.@@">>
-				<video autoplay controls muted loop>
-				<source @src="setup.ImagePath + '/tentacles/nap6.mp4'" type="video/mp4">
-				</video>
+				<<video "tentacles/nap6.mp4">>
 				@@.mc-thoughts;All this leads to an explosive, simultaneous orgasm - you and the tentacles reach the peak of pleasure together. You feel your muscles clench, while the tentacles, trembling, start to release their semen on you, covering you with warm, sticky fluid. The sensation of being coated in their seed, mixed with your own orgasm, creates a moment that feels endless in its intensity and pleasure. @@
 				@@.mc-speech; Oh~ fuck, I'm so fucked I can't even stand up.@@<br><br>
 				@@.backbtn; [[Rest|Bedroom][$hours += 4]]@@

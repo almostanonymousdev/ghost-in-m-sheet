@@ -1,5 +1,5 @@
 :: Church [nobr] {"position":"1975,1400","size":"100,100"}
-<img @src="setup.ImagePath + '/img/church.jpg'" width="100%">
+<<image "img/church.jpg" { width: "100%" }>>
 @@.location; Church@@<br>
 @@.mc-thoughts; You are standing in front of an old church. Near the entrance, there is a fountain with crystal-clear water. The church is a place of tranquility and humility. Here, one can find solace and peace, achieve inner harmony and worship. Perhaps I should visit here more often.@@<br>
 <br>

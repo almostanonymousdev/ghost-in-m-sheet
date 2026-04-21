@@ -1,5 +1,5 @@
 :: GhostRandomize [event nobr] {"position":"1550,25","size":"100,100"}
-<img @src="setup.ImagePath + '/img/witch-girl.jpg'" width="100%">
+<<image "img/witch-girl.jpg" { width: "100%" }>>
 <br>
 <<script>>
     (function () {

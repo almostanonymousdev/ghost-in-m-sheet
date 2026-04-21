@@ -1,8 +1,6 @@
 :: RescueVictoriaPossessed2 [nobr] {"position":"2025,2300","size":"100,100"}
 <<if $rescueVictoriaPossessed eq 1>>
-	<video autoplay controls muted loop>
-	<source @src="setup.ImagePath + '/rescue/victoria/1.4.mp4'" type="video/mp4">
-	</video>
+	<<video "rescue/victoria/1.4.mp4">>
 	@@.mc-thoughts; She kisses you, and you kiss her back.@@<br>
 	@@.notmc-speech; Did you like that?@@<br>
 	@@.mc-speech; Let me go.@@<br>
@@ -10,9 +8,7 @@
 	@@.mc-thoughts; She kisses you again, and everything goes black.@@<br>
 <</if>>
 <<if $rescueVictoriaPossessed eq 2>>
-	<video autoplay controls muted loop>
-	<source @src="setup.ImagePath + '/rescue/victoria/3.4.mp4'" type="video/mp4">
-	</video>
+	<<video "rescue/victoria/3.4.mp4">>
 	@@.mc-thoughts; She kisses you, and you kiss her back.@@<br>
 	@@.notmc-speech; Did you like that?@@<br>
 	@@.mc-speech; Let me go.@@<br>
@@ -20,9 +16,7 @@
 	@@.mc-thoughts; She kisses you again, and everything goes black.@@<br>
 <</if>>
 <<if $rescueVictoriaPossessed eq 3>>
-	<video autoplay controls muted loop>
-	<source @src="setup.ImagePath + '/rescue/victoria/3.4.mp4'" type="video/mp4">
-	</video>
+	<<video "rescue/victoria/3.4.mp4">>
 	@@.mc-thoughts; She kisses you, and you kiss her back.@@<br>
 	@@.notmc-speech; Did you like that?@@<br>
 	@@.mc-speech; Let me go.@@<br>

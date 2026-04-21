@@ -24,11 +24,12 @@
 <<set $cursedItemVide to _selectedVideoCI>>
 <br>
 <<if _selectedVideoCI>>
-	<video autoplay muted controls loop class="displayCentredImgs">
-	<source @src="setup.ImagePath+`/`+$cursedItemVide" type="video/mp4">
-	</video><br>
+	<<video $cursedItemVide "displayCentredImgs">><br>
 	@@.mc-speech; Ah~ I can't... and don't want to... stop <br>@@
 	@@.mc-thoughts; You play with yourself until you cum @@<br>@@.mc-speech; Ohh, I feel wonderful.@@<br>
+	<<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>> decreased!<br><<set $mc.lust to 0>><<updatemeter 'mclust' `$mc.lust.toFixed(2) / 100`>>
+	<<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>> +10!<br><<set $mc.sanity += 10>><<if $mc.sanity gte $mc.sanityMax>><<set $mc.sanity to $mc.sanityMax>>
+	<</if>><<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
 
 <</if>>
 <<include "StyleVideoHeight">>

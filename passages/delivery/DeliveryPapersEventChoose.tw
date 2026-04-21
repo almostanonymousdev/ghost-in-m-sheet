@@ -3,9 +3,9 @@
 @@.notmc-speech; Yes, put them on the sofa@@<br>
 @@.mc-speech;<<linkreplace "Sure, no problem">>
 	<<addLust 15>>
-	<img @src="setup.ImagePath + '/deliveryhub/papersevent/2.jpg'" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
+	<<image "deliveryhub/papersevent/2.jpg" { style: "max-width: 100%; height: auto; display: block; margin: 0 auto;" }>>
 	@@.mc-thoughts; I think he's staring at my butt, what a pervert@@<br>
-	+15 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"><br>
+	+15 <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
 	<<if not setup.Delivery.papersInitialLustHighEnough()>>
 		@@.mc-speech; Done. I have to go, bye.@@ <<deliveryLustReq 30>><br><br>
 		@@.backbtn;[[Back|DeliveryMap]]@@<br>

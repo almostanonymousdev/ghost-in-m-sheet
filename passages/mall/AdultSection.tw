@@ -1,5 +1,5 @@
 :: AdultSection [nobr] {"position":"2900,1800","size":"100,100"}
-<img @src="setup.ImagePath + '/img/adult-section.jpeg'" width="100%">
+<<image "img/adult-section.jpeg" { width: "100%" }>>
 @@.mc-thoughts; The shelves are stocked with all sorts of items -- from classic toys to those clearly meant for more experienced buyers. It's quite cozy in here.@@<br>
 
 @@.enterbtn; [[Ask the adult shop assistant|AdultSectionBlake]]@@<br>

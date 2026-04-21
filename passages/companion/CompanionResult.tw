@@ -8,20 +8,20 @@
 		@@.notmc-speech; I'm sure@@ <<linkappend "@@.notmc-speechLink; it's a cursed item...@@">>
 			<br>
 			<<set _check to random(1,4)>>
-			<<if _check eq 1>>@@.mc-speech; Dildo???@@<br><img @src="setup.ImagePath + '/curseditems/dildo.png'" width="30%">
+			<<if _check eq 1>>@@.mc-speech; Dildo???@@<br><<image "curseditems/dildo.png" { width: "30%" }>>
 			<<set $isCIDildo to 1>><</if>>
-			<<if _check eq 2>>@@.mc-speech; Buttplug???@@<br><img @src="setup.ImagePath + '/curseditems/buttplug.png'" width="30%">
+			<<if _check eq 2>>@@.mc-speech; Buttplug???@@<br><<image "curseditems/buttplug.png" { width: "30%" }>>
 			<<set $isCIButtplug to 1>><</if>>
-			<<if _check eq 3>>@@.mc-speech; Anal beads???@@<br><img @src="setup.ImagePath + '/curseditems/beads.png'" width="30%">
+			<<if _check eq 3>>@@.mc-speech; Anal beads???@@<br><<image "curseditems/beads.png" { width: "30%" }>>
 			<<set $isCIBeads to 1>><</if>>
-			<<if _check eq 4>>@@.mc-speech; Huge dildo???@@<br><img @src="setup.ImagePath + '/curseditems/monsterdildo.png'" width="30%">
+			<<if _check eq 4>>@@.mc-speech; Huge dildo???@@<br><<image "curseditems/monsterdildo.png" { width: "30%" }>>
 			<<set $isCIHDildo to 1>><</if>>
 			<br>
 		<</linkappend>>
 		<br>@@.mc-speech; Well, we'll have to take this to the witch.@@<br>
 		@@.mc-thoughts; She definitely took longer than expected finding that item... I think I know what kept her for so long...<br>
 		As soon as I thought about it, I started to feel more... aroused<br>@@
-		+30 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"><br><<addLust 30>>
+		+30 <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br><<addLust 30>>
 		<br>
 		@@.mc-action; $companion.name found the cursed item!@@<br>
 		<<set $gotCursedItem to 1>>
@@ -33,7 +33,7 @@
 <<elseif $chosenPlan eq "Plan3">>
 	<<set _randomEvidence to $hunt.evidence[random(0, $hunt.evidence.length - 1)]>>
 	<<if _randomEvidence eq "emf">>
-		@@.notmc-speech; evidence - EMF 5 @@ <img @src="setup.ImagePath + '/img/emf.png'" style="position: relative; top: 0.375em; width:5%;"><br>
+		@@.notmc-speech; evidence - EMF 5 @@ <<image "img/emf.png" { style: "position: relative; top: 0.375em; width:5%;" }>><br>
 		<br>
 		@@.mc-action; $companion.name found the evidence! @@<br>
 		<br>
@@ -41,44 +41,44 @@
 		<<companionExp 5>>
 
 	<<elseif _randomEvidence eq "gwb">>
-		@@.notmc-speech; evidence - Ghost Writing Book @@ <img @src="setup.ImagePath + '/img/gwb.png'" style="position: relative; top: 0.375em; width:5%;"><br>
+		@@.notmc-speech; evidence - Ghost Writing Book @@ <<image "img/gwb.png" { style: "position: relative; top: 0.375em; width:5%;" }>><br>
 		@@.notmc-speech; Do you want to see this?@@<br>
 		<<set _check to random(1, 18)>>
-		<<if _check eq 1>><img @src="setup.ImagePath + '/gwb/1.jpg'" class="evidenceImgs">
+		<<if _check eq 1>><<image "gwb/1.jpg" "evidenceImgs">>
 		<</if>>
-		<<if _check eq 2>><img @src="setup.ImagePath + '/gwb/2.jpg'" class="evidenceImgs">
+		<<if _check eq 2>><<image "gwb/2.jpg" "evidenceImgs">>
 		<</if>>
-		<<if _check eq 3>><img @src="setup.ImagePath + '/gwb/3.jpg'" class="evidenceImgs">
+		<<if _check eq 3>><<image "gwb/3.jpg" "evidenceImgs">>
 		<</if>>
-		<<if _check eq 4>><img @src="setup.ImagePath + '/gwb/4.jpg'" class="evidenceImgs">
+		<<if _check eq 4>><<image "gwb/4.jpg" "evidenceImgs">>
 		<</if>>
-		<<if _check eq 5>><img @src="setup.ImagePath + '/gwb/5.jpg'" class="evidenceImgs">
+		<<if _check eq 5>><<image "gwb/5.jpg" "evidenceImgs">>
 		<</if>>
-		<<if _check eq 6>><img @src="setup.ImagePath + '/gwb/6.jpg'" class="evidenceImgs">
+		<<if _check eq 6>><<image "gwb/6.jpg" "evidenceImgs">>
 		<</if>>
-		<<if _check eq 7>><img @src="setup.ImagePath + '/gwb/7.jpg'" class="evidenceImgs">
+		<<if _check eq 7>><<image "gwb/7.jpg" "evidenceImgs">>
 		<</if>>
-		<<if _check eq 8>><img @src="setup.ImagePath + '/gwb/8.jpg'" class="evidenceImgs">
+		<<if _check eq 8>><<image "gwb/8.jpg" "evidenceImgs">>
 		<</if>>
-		<<if _check eq 9>><img @src="setup.ImagePath + '/gwb/9.jpg'" class="evidenceImgs">
+		<<if _check eq 9>><<image "gwb/9.jpg" "evidenceImgs">>
 		<</if>>
-		<<if _check eq 10>><img @src="setup.ImagePath + '/gwb/10.jpg'" class="evidenceImgs">
+		<<if _check eq 10>><<image "gwb/10.jpg" "evidenceImgs">>
 		<</if>>
-		<<if _check eq 11>><img @src="setup.ImagePath + '/gwb/11.jpg'" class="evidenceImgs">
+		<<if _check eq 11>><<image "gwb/11.jpg" "evidenceImgs">>
 		<</if>>
-		<<if _check eq 12>><img @src="setup.ImagePath + '/gwb/12.jpg'" class="evidenceImgs">
+		<<if _check eq 12>><<image "gwb/12.jpg" "evidenceImgs">>
 		<</if>>
-		<<if _check eq 13>><img @src="setup.ImagePath + '/gwb/13.jpg'" class="evidenceImgs">
+		<<if _check eq 13>><<image "gwb/13.jpg" "evidenceImgs">>
 		<</if>>
-		<<if _check eq 14>><img @src="setup.ImagePath + '/gwb/14.jpg'" class="evidenceImgs">
+		<<if _check eq 14>><<image "gwb/14.jpg" "evidenceImgs">>
 		<</if>>
-		<<if _check eq 15>><img @src="setup.ImagePath + '/gwb/15.jpg'" class="evidenceImgs">
+		<<if _check eq 15>><<image "gwb/15.jpg" "evidenceImgs">>
 		<</if>>
-		<<if _check eq 16>><img @src="setup.ImagePath + '/gwb/16.jpg'" class="evidenceImgs">
+		<<if _check eq 16>><<image "gwb/16.jpg" "evidenceImgs">>
 		<</if>>
-		<<if _check eq 17>><img @src="setup.ImagePath + '/gwb/17.jpg'" class="evidenceImgs">
+		<<if _check eq 17>><<image "gwb/17.jpg" "evidenceImgs">>
 		<</if>>
-		<<if _check eq 18>><img @src="setup.ImagePath + '/gwb/18.jpg'" class="evidenceImgs">
+		<<if _check eq 18>><<image "gwb/18.jpg" "evidenceImgs">>
 		<</if>>
 		<br>
 		<br>
@@ -88,7 +88,7 @@
 		<<companionExp 5>>
 
 	<<elseif _randomEvidence eq "temperature">>
-		@@.notmc-speech; evidence - High Temperature @@ <img @src="setup.ImagePath + '/img/thermometr.png'" style="position: relative; top: 0.375em; width:5%;"><br>
+		@@.notmc-speech; evidence - High Temperature @@ <<image "img/thermometr.png" { style: "position: relative; top: 0.375em; width:5%;" }>><br>
 		<br>
 		@@.mc-action; $companion.name found the evidence!@@<br>
 		<br>
@@ -96,7 +96,7 @@
 		<<companionExp 5>>
 
 	<<elseif _randomEvidence eq "spiritbox">>
-		@@.notmc-speech; evidence - Spirit Box @@ <img @src="setup.ImagePath + '/img/spiritbox.png'" style="position: relative; top: 0.375em; width:5%;"><br>
+		@@.notmc-speech; evidence - Spirit Box @@ <<image "img/spiritbox.png" { style: "position: relative; top: 0.375em; width:5%;" }>><br>
 		<br>
 
 		@@.mc-action; $companion.name found the evidence!@@<br>
@@ -105,7 +105,7 @@
 		<<companionExp 5>>
 
 	<<elseif _randomEvidence eq "uvl">>
-		@@.notmc-speech; evidence - UVL @@ <img @src="setup.ImagePath + '/img/uvl.png'" style="position: relative; top: 0.375em; width:3%;"><br>
+		@@.notmc-speech; evidence - UVL @@ <<image "img/uvl.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
 		<br><br>
 		@@.mc-action; $companion.name found the evidence!@@<br>
 		<br>
@@ -113,7 +113,7 @@
 		<<companionExp 5>>
 
 	<<elseif _randomEvidence eq "glass">>
-		@@.notmc-speech; evidence - Ectoglass@@ <img @src="setup.ImagePath + '/img/glass.png'" style="position: relative; top: 0.375em; width:5%;"><br>
+		@@.notmc-speech; evidence - Ectoglass@@ <<image "img/glass.png" { style: "position: relative; top: 0.375em; width:5%;" }>><br>
 		<br>
 		@@.mc-action; $companion.name found the evidence!@@<br>
 		<br>

@@ -5,7 +5,7 @@
 	<div class="evidenceWrapper">
 	<div class="evidenceCardIcon">
 	<<= _g.name>><br>
-	<img @src="setup.ImagePath + '/ghosts/' + _g.image" class="iconPx">
+	<<image "ghosts/" + _g.image "iconPx">>
 	</div>
 	<div class="evidenceDesc">
 	<<if _g.isInfoCollected and _g.description neq "">>

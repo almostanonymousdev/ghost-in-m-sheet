@@ -1,7 +1,7 @@
 :: WitchSale [nobr] {"position":"1350,150","size":"100,100"}
 <div class="flexwrapper">
 <div class="housecard">
-<img @src="setup.ImagePath + '/img/sanity-pills.png'" class="iconPx"><br>
+<<image "img/sanity-pills.png" "iconPx">><br>
 <span class="priceAmount">10$</span><br>
 <<if $mc.money gte 10>>
 	@@.buyItemLink;<<link "Buy" "WitchSale">>
@@ -14,7 +14,7 @@
 </div>
 <div class="housecard">
 <<if ndef $crucifixAmount>><<set $crucifixAmount to 0>><</if>>
-<img @src="setup.ImagePath + '/img/crucifix.webp'" class="iconPx"><br>
+<<image "img/crucifix.webp" "iconPx">><br>
 <span class="priceAmount">10$</span><br>
 <<if $mc.money gte 10>>
 	@@.buyItemLink;<<link "Buy" "WitchSale">>
@@ -27,7 +27,7 @@
 </div>
 <div class="housecard">
 <<if $equipment.emf eq 5>>
-	<img @src="setup.ImagePath + '/img/emf.png'" class="iconPx"><br>
+	<<image "img/emf.png" "iconPx">><br>
 	<span class="priceAmount">200$</span><br>
 	<<if $mc.money gte 200>>
 		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
@@ -40,7 +40,7 @@
 </div>
 <div class="housecard">
 <<if $equipment.temperature eq 5>>
-	<img @src="setup.ImagePath + '/img/thermometr.png'" class="iconPx"><br>
+	<<image "img/thermometr.png" "iconPx">><br>
 	<span class="priceAmount">100$</span><br>
 	<<if $mc.money gte 100>>
 		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
@@ -53,7 +53,7 @@
 </div>
 <div class="housecard">
 <<if $equipment.spiritbox eq 5>>
-	<img @src="setup.ImagePath + '/img/spiritbox.png'" class="iconPx"><br>
+	<<image "img/spiritbox.png" "iconPx">><br>
 	<span class="priceAmount">500$</span><br>
 	<<if $mc.money gte 500>>
 		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
@@ -66,7 +66,7 @@
 </div>
 <div class="housecard">
 <<if $equipment.gwb eq 5>>
-	<img @src="setup.ImagePath + '/img/gwb.png'" class="iconPx"><br>
+	<<image "img/gwb.png" "iconPx">><br>
 	<span class="priceAmount">400$</span><br>
 	<<if $mc.money gte 400>>
 		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
@@ -79,7 +79,7 @@
 </div>
 <div class="housecard">
 <<if $equipment.glass eq 5>>
-	<img @src="setup.ImagePath + '/img/glass.png'" class="iconPx"><br>
+	<<image "img/glass.png" "iconPx">><br>
 	<span class="priceAmount">300$</span><br>
 	<<if $mc.money gte 300>>
 		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
@@ -92,7 +92,7 @@
 </div>
 <div class="housecard">
 <<if $equipment.uvl eq 5>>
-	<img @src="setup.ImagePath + '/img/uvl.png'" class="iconPx"><br>
+	<<image "img/uvl.png" "iconPx">><br>
 	<span class="priceAmount">400$</span><br>
 	<<if $mc.money gte 400>>
 		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
@@ -105,7 +105,7 @@
 </div>
 <div class="housecard">
 <<if $boughtMonkeyPawGuide eq 1>>
-	<img @src="setup.ImagePath + '/cursedpossessions/monkey-paw/monkeypaw-page.jpg'" class="iconPx"><br>
+	<<image "cursedpossessions/monkey-paw/monkeypaw-page.jpg" "iconPx">><br>
 	<span class="priceAmount">400$</span><br>
 	<<if $mc.money gte 400>>
 		@@.buyItemLink;<<link "Buy" "WitchSale">>
@@ -117,7 +117,7 @@
 </div>
 <div class="housecard">
 <<if ndef $boughtDetector>>
-	<img @src="setup.ImagePath + '/img/detector.png'" class="iconPx"><br>
+	<<image "img/detector.png" "iconPx">><br>
 	<span class="priceAmount">200$</span><br>
 	<<if $mc.money gte 200>>
 		@@.buyItemLink;<<link "Buy" "WitchSale">>

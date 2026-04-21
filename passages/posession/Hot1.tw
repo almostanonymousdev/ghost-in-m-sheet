@@ -1,21 +1,13 @@
 :: Hot1 [nobr] {"position":"1525,1150","size":"100,100"}
 <<switch $pantiesState + "," + $braState>>
 <<case "worn,worn">>
-	<video autoplay controls muted loop>
-	<source @src="setup.ImagePath + '/mc/underwear-on.webm'" type="video/webm">
-	</video>
+	<<video "mc/underwear-on.webm">>
 <<case "worn,not worn">>
-	<video autoplay width="40%" muted loop>
-	<source @src="setup.ImagePath + '/mc/bra-off.webm'" type="video/webm">
-	</video>
+	<<video "mc/bra-off.webm" { width: "40%", controls: false }>>
 <<case "not worn,worn">>
-	<video autoplay controls muted loop>
-	<source @src="setup.ImagePath + '/mc/bra-on.webm'" type="video/webm">
-	</video>
+	<<video "mc/bra-on.webm">>
 <<case "not worn,not worn">>
-	<video autoplay width="40%" muted loop>
-	<source @src="setup.ImagePath + '/mc/underwear-off.webm'" type="video/webm">
-	</video>
+	<<video "mc/underwear-off.webm" { width: "40%", controls: false }>>
 <</switch>>
 <<set $hotAct to 0>>
 <<run ["rememberBottomOuter", "rememberTopOuter"].forEach(function(k) {

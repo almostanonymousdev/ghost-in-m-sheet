@@ -1,8 +1,6 @@
 :: RescueAshPossessed2 [nobr] {"position":"2425,2200","size":"100,100"}
 <span id="rescueAshPossessed2">
-<video autoplay controls muted loop>
-<source @src="setup.ImagePath + '/rescue/ash/2.2.mp4'" type="video/mp4">
-</video></span>
+<<video "rescue/ash/2.2.mp4">></span>
 @@.mc-thoughts; They both started fucking you with strapons, @@
 
 <<link "@@.usebtn; penetrating every hole of yours.@@">>
@@ -12,9 +10,7 @@
 <</link>>
 @@.mc-speech; This is so nasty...@@<br>
 @@.mc-thoughts; Having played with your body, they hugged you and @@<<linkappend "@@.usebtn; started kissing@@">>
-	<video autoplay controls muted loop>
-	<source @src="setup.ImagePath + '/rescue/ash/2.4.mp4'" type="video/mp4">
-	</video>
+	<<video "rescue/ash/2.4.mp4">>
 	@@.notmc-speech; We'll let you go, this time. Maybe next time your ass won't be so lucky.@@<br>
 	@@.mc-thoughts; They kiss you again, and everything goes black.@@<br><br>
 	@@.backbtn; [[Wake up|Church][$hours += 3]]@@<br>

@@ -1,7 +1,5 @@
 :: CursedPCEvent [nobr] {"position":"1100,4600","size":"100,100"}
-<video autoplay controls loop>
-<source @src="setup.ImagePath + '/cursed-home/pc1.webm'" type="video/webm">
-</video><br>
+<<video "cursed-home/pc1.webm" { muted: false }>><br>
 @@.location; Livingroom -- PC@@<br>
 <br>
 @@.mc-thoughts; You sit down at the computer and reach for the mouse. Mid-click, your body locks up. Every muscle seizes -- your fingers hover over the keyboard, your back rigid in the chair. You can't blink. You can't breathe. But the world keeps going -- the screen saver drifts lazily, dust motes float through the lamplight.@@<br>
@@ -11,18 +9,14 @@
 @@.mc-thoughts; You feel it. He feels it. You both freeze -- him from shock, you from something far worse than the paralysis already gripping you. Terror locks you cold.@@<br>
 @@.mc-thoughts; He can touch me. He can touch me.@@<br><br>
 <<linkreplace "@@.usebtn; ...@@">>
-	<video autoplay controls loop>
-	<source @src="setup.ImagePath + '/cursed-home/pc2.webm'" type="video/webm">
-	</video><br>
+	<<video "cursed-home/pc2.webm" { muted: false }>><br>
 	@@.mc-thoughts; The ghost doesn't hesitate. It's as if he's been waiting years for exactly this moment. His spectral hands grip the sides of your face, tilting your frozen head back, and he slides his ghostly cock into your open mouth.@@<br>
 	@@.mc-speech; ...!@@<br><br>
 	@@.mc-thoughts; He fucks your mouth with desperate, eager thrusts -- clumsy but relentless. You can feel every inch of him, cold and tingling against your tongue. Your eyes water but you can't close them, can't gag, can't pull away. He groans -- a sound like wind through old pipes -- and cums, filling your mouth with something thick and electric that pools behind your teeth.@@<br><br>
 	@@.mc-thoughts; He pulls out and spins your chair to face the desk, positioning you like a mannequin. You're left staring at the monitor, mouth full of ectoplasm, unable to swallow, unable to spit.@@<br>
 	@@.mc-thoughts; And beneath the horror, a shameful heat -- you can feel your panties soaked through, your pussy drooling without your permission.@@<br>
 	<<linkappend "@@.usebtn; Minutes pass@@">>
-		<video autoplay controls loop>
-		<source @src="setup.ImagePath + '/cursed-home/pc3.webm'" type="video/webm">
-		</video><br>
+		<<video "cursed-home/pc3.webm" { muted: false }>><br>
 		@@.mc-thoughts; Minutes crawl by. You sit motionless, ghost cum still pooled in your mouth, staring at the screensaver. Then you feel him again -- that faint shimmer returning, drawn back like an addict to the warmth of living flesh.@@<br><br>
 		@@.mc-thoughts; Gentle hands lift you from the chair. He sits down in your place and carefully lowers you onto his lap, your back against his translucent chest. You feel his cock press against your entrance, then slide inside -- slowly, almost tenderly.@@<br>
 		@@.mc-thoughts; He begins to thrust. It's pathetic, really -- shallow, unsteady pumps with no rhythm or force. The ghost of a frail old man trying his best. It goes on for what feels like an eternity, his hips rocking beneath you with the enthusiasm of someone who hasn't felt warmth in decades.@@<br><br>

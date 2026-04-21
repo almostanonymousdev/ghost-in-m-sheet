@@ -20,17 +20,19 @@ if _STORY_INIT.is_file():
         ASSET_BASE = _match.group(1)
 
 # Patterns that reference assets:
-# 1. @src="setup.ImagePath + '/PATH'" (static img/source tags)
-# 2. @src='setup.ImagePath + "/PATH"' (inside <<link>> macros)
-# 3. Legacy src="assets/..." or href="assets/..." (if any remain)
-# 4. url('assets/...') in CSS
-# 5. <<furnitureItem "FILE.png" "id">> — first arg is a filename under
+# 1. <<video "PATH">> / <<image "PATH">> — path relative to setup.ImagePath
+# 2. Legacy src="assets/..." or href="assets/..." (if any remain)
+# 3. url('assets/...') in CSS
+# 4. <<furnitureItem "FILE.png" "id">> — first arg is a filename under
 #    img/furniture/ (the haunted-house furniture widget)
-# 6. <<hideSpot "passage" "FILE.png" "id">> — second arg is a filename under
+# 5. <<hideSpot "passage" "FILE.png" "id">> — second arg is a filename under
 #    img/furniture/ (the cursed-hunt hide-spot widget)
 ASSET_PATTERNS = [
-    re.compile(r"""@src=["']setup\.ImagePath\s*\+\s*'(/[^']+)'["']"""),
-    re.compile(r"""@src='setup\.ImagePath\s*\+\s*\\"/([^\\]+)\\"'"""),
+    # Only match when the path arg is a lone string literal — a trailing
+    # space + quote, "{" (options object) or ">>" (macro close). A trailing
+    # "+" means the path is a dynamic concatenation, which we can't resolve
+    # statically.
+    re.compile(r"""<<(?:video|image)\s+["']/?([^"'\n]+?)["'](?=\s*(?:>>|\{|["']))"""),
     re.compile(r"""(?:src|href)=["'](assets/[^"']+)["']"""),
     re.compile(r"""url\(['"]?(assets/[^"')]+)['"]?\)"""),
     re.compile(r"""<<furnitureItem\s+["']([^"']+)["']"""),
@@ -39,7 +41,7 @@ ASSET_PATTERNS = [
 
 # Patterns above whose captured group is just a furniture filename and needs
 # the "/img/furniture/" prefix prepended before lookup.
-FURNITURE_WIDGET_PATTERN_INDICES = {4, 5}
+FURNITURE_WIDGET_PATTERN_INDICES = {3, 4}
 
 
 def main():
@@ -59,6 +61,11 @@ def main():
             for pi, pattern in enumerate(ASSET_PATTERNS):
                 for m in pattern.finditer(line):
                     raw = m.group(1)
+                    # Skip paths with template-literal interpolation markers
+                    # (e.g. <<image `img/piercing/${_p.img}`>>) — these are
+                    # resolved at runtime and can't be verified statically.
+                    if "${" in raw:
+                        continue
                     if pi in FURNITURE_WIDGET_PATTERN_INDICES:
                         raw = "/img/furniture/" + raw
                     # Normalise: map every reference to ASSET_BASE/…

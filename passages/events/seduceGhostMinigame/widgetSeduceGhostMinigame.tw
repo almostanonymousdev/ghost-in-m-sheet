@@ -3,11 +3,9 @@
 	<<set _videoList to setup.SeduceGhostMinigame.getVideoList()>>
 	<<set _selected to _videoList[random(0, _videoList.length - 1)]>>
 	<<if _selected.type == "video">>
-		<video autoplay controls muted loop class="displayCentredImgs">
-		<source @src="setup.ImagePath + '/' + _selected.src" type="video/mp4">
-		</video>
+		<<video _selected.src "displayCentredImgs">>
 	<<else>>
-		<img @src="setup.ImagePath + '/' + _selected.src" alt="Image" class="displayCentredImgs"><br>
+		<<image _selected.src { class: "displayCentredImgs", alt: "Image" }>><br>
 	<</if>>
 <</widget>>
 
@@ -38,7 +36,7 @@
 	<<elseif $minigameVideo eq "seduce">>
 		<<link "Continue" "SeduceGhostMinigame">>
 			<<run setup.SeduceGhostMinigame.continueSeduce()>>
-		<</link>><b><img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:25px;"></b> |
+		<</link>><b><<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:25px;" }>></b> |
 		<<link "@@color:red; Try to leave@@" "SeduceGhostMinigame">>
 			<<run setup.SeduceGhostMinigame.tryLeave()>>
 			<<if ndef $minigameVideo>><<goto `$return`>><</if>>
@@ -54,7 +52,7 @@
 		<</if>>
 		<<link "Submit" "SeduceGhostMinigame">>
 			<<run setup.SeduceGhostMinigame.submit()>>
-		<</link>> <b><img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:25px;"></b> |
+		<</link>> <b><<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:25px;" }>></b> |
 		<<if $mc.energy lt 1>>
 			@@.mc-thoughts; Not enough energy@@
 		<<else>>
@@ -73,7 +71,7 @@
 		<</if>>
 		<<link "Submit" "SeduceGhostMinigame">>
 			<<run setup.SeduceGhostMinigame.submit()>>
-		<</link>> <b><img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:25px;"></b>
+		<</link>> <b><<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:25px;" }>></b>
 
 	<</if>>
 <</widget>>

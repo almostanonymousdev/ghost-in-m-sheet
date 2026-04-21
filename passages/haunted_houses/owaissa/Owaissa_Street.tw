@@ -1,6 +1,6 @@
 :: Owaissa Street [nobr] {"position":"1850,450","size":"100,100"}
 <<run setup.Companion.clearCompanionSelection()>>
-<img @src="setup.ImagePath + '/img/owaissa-house.jpg'" width="90%"><br>
+<<image "img/owaissa-house.jpg" { width: "90%" }>><br>
 @@.location; Owaissa Street@@<br>
 @@.mc-thoughts;Owaissa Street - quite a creepy place. It must be teeming with ghosts. Although, because of such locations, I'll always have a job@@<br>
 <br>

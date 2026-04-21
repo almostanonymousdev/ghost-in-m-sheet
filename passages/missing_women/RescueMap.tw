@@ -1,10 +1,10 @@
 :: RescueMap {"position":"2175,1600","size":"100,100"}
-<img @src="setup.ImagePath + '/rescue/down.png'" class="upPointer clickable" onclick="SugarCube.Engine.play('CityMap');">
+<<image "rescue/down.png" { class: "upPointer clickable", onclick: "SugarCube.Engine.play('CityMap');" }>>
 <div class="flexwrapper">
 <<for _h to 1; _h lte 16; _h++>>
 <<capture _h>>
 <div @class="'housecard rescuehousecard' + ($cheatRescueHouseHighlight && _h === $randomRescuePhotoNumber ? ' cheatRescueHighlight' : '')">
-<img @src="setup.ImagePath + '/rescue/house/' + _h + '.jpg'" class="iconRescuePx">
+<<image "rescue/house/' + _h + '.jpg" "iconRescuePx">>
 @@.icontextcity;<<link "Move" "RescueHouse">><<set $rescueHouse to _h>>
 <</link>>@@
 </div>

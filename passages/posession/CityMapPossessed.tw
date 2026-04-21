@@ -1,7 +1,7 @@
 :: CityMapPossessed [city] {"position":"1225,350","size":"100,100"}
 <div class="flexwrapper">
 <div class="housecard">
-<img @src="setup.ImagePath + '/img/gym-icon.png'" class="icon">
+<<image "img/gym-icon.png" "icon">>
 <<if $mc.fit gte 30>>
 @@.icontextcity; [[Gym|PossessedLocation][$checkChoosenLocation to "gym"]]@@
 <<else>>
@@ -12,7 +12,7 @@
 
 </div>
 <div class="housecard">
-<img @src="setup.ImagePath + '/img/home.png'" class="icon">
+<<image "img/home.png" "icon">>
 @@.icontextcity; [[Home|PossessedLocation][$checkChoosenLocation to "home"]]@@
 </div>
 <div class="housecard">
@@ -38,21 +38,21 @@
 
 </div>
 <div class="housecard">
-<img @src="setup.ImagePath + '/img/library-icon.png'" class="icon">
+<<image "img/library-icon.png" "icon">>
 @@.icontextcity; [[Library|PossessedLocation][$checkChoosenLocation to "library"]]@@
 </div>
 <div class="housecard">
 
 </div>
 <div class="housecard">
-<img @src="setup.ImagePath + '/img/park.png'" class="icon">
+<<image "img/park.png" "icon">>
 @@.icontextcity; [[Park|PossessedLocation][$checkChoosenLocation to "park"]]@@
 </div>
 <div class="housecard">
 
 </div>
 <div class="housecard">
-<img @src="setup.ImagePath + '/img/church-ico.png'" class="icon">
+<<image "img/church-ico.png" "icon">>
 <<if $mcpossession gte 5>>
 @@.icontextcity; [[Church|PossessedLocation][$checkChoosenLocation to "church"]]@@
 <<else>>

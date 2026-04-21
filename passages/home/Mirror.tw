@@ -1,9 +1,7 @@
 :: Mirror [nobr] {"position":"700,1200","size":"100,100"}
 <<set _checkBeauty to random(30,100)>>
 <<if setup.Home.twinsEventAvailable() and _checkBeauty gt $mc.beauty>>
-	<video autoplay controls muted loop>
-	<source @src="setup.ImagePath + '/ghosts/specials/twins1.mp4'" type="video/mp4">
-	</video>
+	<<video "ghosts/specials/twins1.mp4">>
 	@@.mc-thoughts;You're looking in the mirror, admiring your reflection, when suddenly two strangers appear, observing you. They assess every curve of your body @@
 	<<linkappend "@@.mc-thoughtsLink; through the glass@@">>
 		@@.mc-thoughts; You watch them, captivated by their sudden arrival, but they disappear just as quickly as they appeared.@@<br>
@@ -12,13 +10,9 @@
 		<<set $thetwinseventCD to 1>>
 	<</linkappend>>
 <<elseif setup.Home.twinsEventAvailable() and _checkBeauty lte $mc.beauty>>
-	<video autoplay controls muted loop>
-	<source @src="setup.ImagePath + '/ghosts/specials/twins.mp4'" type="video/mp4">
-	</video>
+	<<video "ghosts/specials/twins.mp4">>
 	@@.mc-thoughts;You're looking in the mirror, admiring your reflection, when suddenly two strangers appear, observing you. They assess every curve of your body @@<<linkappend "@@.mc-thoughtsLink; through the glass@@">>
-		<video autoplay controls muted loop>
-		<source @src="setup.ImagePath + '/ghosts/specials/twins2.mp4'" type="video/mp4">
-		</video>
+		<<video "ghosts/specials/twins2.mp4">>
 		@@.mc-thoughts;But they don't disappear. They're here, in reality. They approach closer, and you feel their breath on your skin. Their hands start to caress you, stripping off your clothes, their fingers lightly touching your nipples, making you shiver with desire.@@<br>
 		@@.mc-speech;Oh... this is so... mmm...@@<br>
 		@@.mc-thoughts;You feel your arousal building, your body responding to every touch with incredible pleasure. You can't resist, [[giving in to their desires|TheTwinsEvent]]@@<br>
@@ -26,7 +20,7 @@
 	<</linkappend>>
 
 <<else>>
-	<span id="mirrorImage"><img @src="setup.ImagePath + '/img/mc.jpg'"></span><br>
+	<span id="mirrorImage"><<image "img/mc.jpg">></span><br>
 
 	@@.mc-speech; Looking pretty good. I'm ready to take on the world!@@<br>
 	<b>Beauty: </b> $mc.beauty

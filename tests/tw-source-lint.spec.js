@@ -534,6 +534,48 @@ test.describe('html tag balance', () => {
 
 });
 
+// ── raw <video>/<img> tags are forbidden; use <<video>>/<<image>> ───
+
+test.describe('media element macros', () => {
+
+  // Matches a real opening `<video` or `<img` HTML tag — guards against
+  // false positives from `<<video …>>` macro calls and `<videoToggle …>`
+  // widget calls by requiring a space/`>` directly after the tag name.
+  const RAW_VIDEO = /(^|[^<])<video[\s>]/;
+  const RAW_IMG   = /<img[\s>]/;
+
+  test('no raw <video> tags — use the <<video>> macro', () => {
+    const violations = [];
+    for (const p of allPassages) {
+      if (p.tags.includes('script') || p.tags.includes('stylesheet')) continue;
+      const lines = p.body.split('\n');
+      for (let i = 0; i < lines.length; i++) {
+        if (RAW_VIDEO.test(lines[i])) {
+          const absLine = p.headerLine + 1 + i;
+          violations.push(`${loc(p)} "${p.name}": line ${absLine} contains a raw <video> tag — use <<video "path">> instead`);
+        }
+      }
+    }
+    expect(violations, violations.join('\n')).toHaveLength(0);
+  });
+
+  test('no raw <img> tags — use the <<image>> macro', () => {
+    const violations = [];
+    for (const p of allPassages) {
+      if (p.tags.includes('script') || p.tags.includes('stylesheet')) continue;
+      const lines = p.body.split('\n');
+      for (let i = 0; i < lines.length; i++) {
+        if (RAW_IMG.test(lines[i])) {
+          const absLine = p.headerLine + 1 + i;
+          violations.push(`${loc(p)} "${p.name}": line ${absLine} contains a raw <img> tag — use <<image "path">> instead`);
+        }
+      }
+    }
+    expect(violations, violations.join('\n')).toHaveLength(0);
+  });
+
+});
+
 // ── stray macro delimiters ───────────────────────────────────────
 
 test.describe('macro delimiters', () => {

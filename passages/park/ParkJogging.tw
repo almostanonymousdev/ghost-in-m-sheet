@@ -1,8 +1,6 @@
 :: ParkJogging [nobr] {"position":"2900,1550","size":"100,100"}
 <<set $joggingCD to 1>>
-<video autoplay controls muted loop>
-<source @src="setup.ImagePath + '/mc/parkevent1.mp4'" type="video/mp4">
-</video>
+<<video "mc/parkevent1.mp4">>
 @@.mc-thoughts;You're jogging through the park, stopping now and then to catch your breath, sweat glistening on your skin. You notice the same girl too often, as if she craves you, watching your every move.@@<br>
 
 <<addTime 60>>
@@ -13,17 +11,13 @@
 <br>
 
 <<if setup.Park.canContinueJogging()>>
-	<<linkreplace 'Continue jogging <img @src="setup.ImagePath + \'/img/energy.png\'" style="position: relative; top: 0.375em; width:3%;">'>>
+	<<linkreplace 'Continue jogging <<image \'img/energy.png\' { style: \'position: relative; top: 0.375em; width:3%;\' }>>'>>
 		<<set _check to random(30,110)>>
 		<<if _check lte $mc.beauty>>
-			<video autoplay controls muted loop>
-			<source @src="setup.ImagePath + '/mc/parkevent2.mp4'" type="video/mp4">
-			</video>
+			<<video "mc/parkevent2.mp4">>
 			@@.mc-thoughts;She bursts out from the bushes, her eyes burning with desire, and begins to chase you. Frightened, you try to [[run away from her|ParkEvent1]]@@
 		<<else>>
-			<video autoplay controls muted loop>
-			<source @src="setup.ImagePath + '/mc/parkend.mp4'" type="video/mp4">
-			</video>
+			<<video "mc/parkend.mp4">>
 			@@.mc-thoughts;You keep jogging, enjoying the nature around you. That girl seems to have lost interest in you.@@<br>
 			@@.mc-speech;Maybe I'm not hot enough for her? Haha@@<br>
 			<<addTime 60>>

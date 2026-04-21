@@ -4,15 +4,15 @@
 <div class="companionImageMain">
 <<do>>
 <<if $chanceToAttackBlake eq 25>>
-	<img @src="setup.ImagePath + '/blake/blake1.png'" width=100% >
+	<<image "blake/blake1.png" { width: "100%" }>>
 <<elseif $chanceToAttackBlake eq 40>>
-	<img @src="setup.ImagePath + '/blake/blake2.png'" width=100% >
+	<<image "blake/blake2.png" { width: "100%" }>>
 <<elseif $chanceToAttackBlake eq 55>>
-	<img @src="setup.ImagePath + '/blake/blake3.png'" width=100% >
+	<<image "blake/blake3.png" { width: "100%" }>>
 <<elseif $chanceToAttackBlake eq 70>>
-	<img @src="setup.ImagePath + '/blake/blake4.png'" width=100% >
+	<<image "blake/blake4.png" { width: "100%" }>>
 <<elseif $chanceToAttackBlake eq 90>>
-	<img @src="setup.ImagePath + '/blake/blake5.png'" width=100% >
+	<<image "blake/blake5.png" { width: "100%" }>>
 <</if>><br>
 <</do>>
 </div>
