@@ -33,7 +33,7 @@
 {type: "video", src: "rescue/victoria/13.4.mp4"}
 ]>>
 
-<<set _allLists to [_videoList10, _videoList11, _videoList12,  _videoList13]>>
+<<set _allLists to [_videoList10, _videoList11, _videoList12, _videoList13]>>
 <<set _chosenList to _allLists[random(0, _allLists.length - 1)]>>
 <<set _usedVideos to []>>
 <<set _clickCount to 0>>

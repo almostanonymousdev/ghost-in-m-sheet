@@ -8,7 +8,7 @@
 .iconRescuePx {
 	width: 80px;
     height: auto;
-  	border-radius: 30%;
+	border-radius: 30%;
 }
 .rescuehousecard {
 	display: flex;

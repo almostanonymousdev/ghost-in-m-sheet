@@ -1,5 +1,4 @@
 :: widgetGym [widget nobr] {"position":"3050,1125","size":"100,100"}
-
 <<widget "gymFitnessGain">>
 	<<set _fitGain to _args[0]>>
 	<<set $previousFit = $mc.fit>>

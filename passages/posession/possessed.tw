@@ -78,7 +78,6 @@
 <</linkappend>>
 
 :: widgetPosession [widget nobr] {"position":"1000,3100","size":"100,100"}
-
 <<widget "breakFreePossession">>
 	<<set _maxLevel to _args[0]>>
 	@@.mc-thoughts; Life and awareness return to you in an instant, and with all the strength you have left, you break free.@@ <br>

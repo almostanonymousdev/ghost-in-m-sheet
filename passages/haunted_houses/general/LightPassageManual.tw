@@ -60,7 +60,7 @@
 			<<removeclass "body.hauntedhouse" "elmBasementLight">>\
 	<</switch>>
 
-<<elseif  passage() is "ElmKitchen">>
+<<elseif passage() is "ElmKitchen">>
 	<<switch $kitchen.background>>
 		<<case 1>>
 			<<addclass "body.hauntedhouse" "elmKitchenLight">>\
@@ -150,7 +150,7 @@
 			<<removeclass "body.hauntedhouse" "enigmaBasementLight">>\
 	<</switch>>
 
-<<elseif  passage() is "EnigmaKitchen">>
+<<elseif passage() is "EnigmaKitchen">>
 	<<switch $kitchen.background>>
 		<<case 1>>
 			<<addclass "body.hauntedhouse" "enigmaKitchenLight">>\

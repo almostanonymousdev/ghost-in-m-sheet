@@ -6,8 +6,8 @@
 	if (sv.cursedHuntActive !== 1) return;
 
 	/* Cursed-hunt rooms per house. Each tuple is [bodyClass, baseClass]: the
-	 * body class identifies the current passage, and baseClass + "Dark" /
-	 * "Light" are the lighting state classes toggled during the hunt. */
+	* body class identifies the current passage, and baseClass + "Dark" /
+	* "Light" are the lighting state classes toggled during the hunt. */
 	var ROOMS_BY_HOUSE = {
 		owaissa: [
 			["owaissakitchen",    "owaissaKitchen"],
@@ -30,8 +30,8 @@
 	};
 
 	var rooms = sv.isOwaissa === 1 ? ROOMS_BY_HOUSE.owaissa
-	          : sv.isElm     === 1 ? ROOMS_BY_HOUSE.elm
-	          : [];
+				: sv.isElm     === 1 ? ROOMS_BY_HOUSE.elm
+				: [];
 
 	function applyLights(isDark) {
 		rooms.forEach(function (entry) {
@@ -59,8 +59,8 @@
 		$(".cursedHuntLinkDisable").removeClass("disabled-linkSpecial");
 
 		/* Deogen only catches hiding players; every other ghost catches
-		 * players who failed to hide. In either case, clear the active
-		 * flag and optionally launch the hunt. */
+		* players who failed to hide. In either case, clear the active
+		* flag and optionally launch the hunt. */
 		var isHidden = sv.isInHideSpot === 1;
 		var isDeogen = sv.ghost.name === "Deogen";
 		sv.cursedHuntActive = 0;

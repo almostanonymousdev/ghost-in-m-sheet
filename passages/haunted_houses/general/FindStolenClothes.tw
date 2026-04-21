@@ -17,7 +17,7 @@
 		<<elseif ($rememberBottomOuter eq "noskirt1" or $rememberBottomOuter eq "noskirt2" or $rememberBottomOuter eq "noskirt3") and ($rememberBottomUnder eq "panties0" or $rememberBottomUnder eq "panties1" or $rememberBottomUnder eq "panties2" or $rememberBottomUnder eq "panties3")
 			>>
 			<<video "mc/skirtp.mp4" "displayCentredImgs">>
-		<<elseif ($rememberBottomOuter eq "noskirt1" or $rememberBottomOuter eq "noskirt2" or $rememberBottomOuter eq "noskirt3") and ($rememberBottomUnder eq "nopanties0" or $rememberBottomUnder eq "nopanties1" or $rememberBottomUnder eq "nopanties2" or $rememberBottomUnder eq "nopanties3") >>
+		<<elseif ($rememberBottomOuter eq "noskirt1" or $rememberBottomOuter eq "noskirt2" or $rememberBottomOuter eq "noskirt3") and ($rememberBottomUnder eq "nopanties0" or $rememberBottomUnder eq "nopanties1" or $rememberBottomUnder eq "nopanties2" or $rememberBottomUnder eq "nopanties3")>>
 			<<video "mc/skirtnp.mp4" "displayCentredImgs">>
 		<</if>>
 
@@ -38,7 +38,7 @@
 	<<elseif ($rememberBottomOuter eq "noskirt1" or $rememberBottomOuter eq "noskirt2" or $rememberBottomOuter eq "noskirt3") and ($rememberBottomUnder eq "panties0" or $rememberBottomUnder eq "panties1" or $rememberBottomUnder eq "panties2" or $rememberBottomUnder eq "panties3")
 		>>
 		<<video "mc/skirtp.mp4" "displayCentredImgs">>
-	<<elseif ($rememberBottomOuter eq "noskirt1" or $rememberBottomOuter eq "noskirt2" or $rememberBottomOuter eq "noskirt3") and ($rememberBottomUnder eq "nopanties0" or $rememberBottomUnder eq "nopanties1" or $rememberBottomUnder eq "nopanties2" or $rememberBottomUnder eq "nopanties3") >>
+	<<elseif ($rememberBottomOuter eq "noskirt1" or $rememberBottomOuter eq "noskirt2" or $rememberBottomOuter eq "noskirt3") and ($rememberBottomUnder eq "nopanties0" or $rememberBottomUnder eq "nopanties1" or $rememberBottomUnder eq "nopanties2" or $rememberBottomUnder eq "nopanties3")>>
 		<<video "mc/skirtnp.mp4" "displayCentredImgs">>
 	<</if>>
 	<<if $isPantiesStolen eq 1>><<include "FindStolenPanties">><</if>>

@@ -1,5 +1,4 @@
 :: widgetSalon [widget nobr] {"position":"2600,2000","size":"100,100"}
-
 <<widget "salonItem">>
 	<<set _varName to _args[0]>>
 	<<set _img to _args[1]>>

@@ -1,14 +1,14 @@
 :: DeliveryPackageEventChoose [event nobr] {"position":"1250,1650","size":"100,100"}
 <<deliveryEventChoose "package">>
-@@.notmc-speech; You are late@@<br>
-<<linkreplace "@@.usebtn;Try to apologize@@">>
-	@@.notmc-speech; I understand, no problem. Here's the money for the delivery. Listen, maybe you want to earn a little more money?@@<br>
-	<<if not setup.Delivery.canAcceptPackageDeal()>>
-		@@.mc-speech; That sounds strange, I'd rather decline@@ <<deliveryCorrReq 3>><br><br>
-		@@.backbtn;[[Back|DeliveryMap]]@@
-	<<else>>
-		@@.mc-thoughts; He's definitely hinting at sex, should I agree?@@<br>
-		@@.mc-speech;[[Agree|DeliveryPackageEventStart]]@@ or @@.mc-speech;[[Nah, i have to go|DeliveryMap]]@@<br>
-	<</if>>
-<</linkreplace>>
+	@@.notmc-speech; You are late@@<br>
+	<<linkreplace "@@.usebtn;Try to apologize@@">>
+		@@.notmc-speech; I understand, no problem. Here's the money for the delivery. Listen, maybe you want to earn a little more money?@@<br>
+		<<if not setup.Delivery.canAcceptPackageDeal()>>
+			@@.mc-speech; That sounds strange, I'd rather decline@@ <<deliveryCorrReq 3>><br><br>
+			@@.backbtn;[[Back|DeliveryMap]]@@
+		<<else>>
+			@@.mc-thoughts; He's definitely hinting at sex, should I agree?@@<br>
+			@@.mc-speech;[[Agree|DeliveryPackageEventStart]]@@ or @@.mc-speech;[[Nah, i have to go|DeliveryMap]]@@<br>
+		<</if>>
+	<</linkreplace>>
 <</deliveryEventChoose>>
