@@ -58,9 +58,7 @@
 				</video>
 			<</if>>
 			The sensations drive you wild -- hot waves of pleasure surge through your body, making you lose control. A bright, almost unbearable wave of ecstasy ignites within you, and soon your consciousness fades,
-			<<if $highpriestess eq 1>>@@.usebtn; [[plunging you into darkness|$return][$highpriestess to 0; $mc.sanity to 25]]@@<<else>>
-				@@.usebtn; [[plunging you into darkness|Sleep]]@@
-			<</if>>
+			<<huntEndExit "plunging you into darkness">>
 		<</linkappend>>
 	<</linkappend>>
 
@@ -121,9 +119,7 @@
 			<source @src="setup.ImagePath + '/alice/hunt-end2.mp4'" type="video/mp4">
 			</video>
 			Darkness overwhelms your senses as your vision fades, and then...
-			<<if $highpriestess eq 1>>@@.usebtn; [[nothing|$return][$highpriestess to 0; $mc.sanity to 25]]@@<<else>>
-				@@.usebtn;[[nothing|Sleep]]@@
-			<</if>>
+			<<huntEndExit "nothing">>
 			<br>
 		<</linkreplace>>
 	<<else>>
@@ -146,10 +142,7 @@
 				<</if>>
 				&emsp;&emsp; Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 				Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
-				Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<if $highpriestess eq 1>>@@.usebtn; [[fading into darkness|$return][$highpriestess to 0; $mc.sanity to 25]]@@
-				<<else>>
-					@@.usebtn; [[fading into darkness|Sleep]]@@
-				<</if>><br>
+				Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
 			<</linkappend>>
 
 		<<elseif $shortsState eq "worn">>
@@ -180,10 +173,7 @@
 				<</if>>
 				&emsp;&emsp; The ghost started fucking you. Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 				Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
-				Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<if $highpriestess eq 1>>@@.usebtn; [[fading into darkness|$return][$highpriestess to 0; $mc.sanity to 25]]@@
-				<<else>>
-					$@@.usebtn; [[fading into darkness|Sleep]]@@
-				<</if>><br>
+				Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
 			<</linkappend>>
 
 		<<elseif $skirtState eq "worn">>
@@ -217,10 +207,7 @@
 					<</if>>
 					&emsp;&emsp; The ghost started fucking you. Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 					Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
-					Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<if $highpriestess eq 1>>@@.usebtn; [[fading into darkness|$return][$highpriestess to 0; $mc.sanity to 25]]@@
-					<<else>>
-						$@@.usebtn; [[fading into darkness|Sleep]]@@
-					<</if>><br>
+					Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
 				<</linkappend>>
 			<</if>>
 
@@ -234,10 +221,7 @@
 					</video>
 					&emsp;&emsp; The ghost started fucking you. Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 					Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
-					Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<if $highpriestess eq 1>>@@.usebtn; [[fading into darkness|$return][$highpriestess to 0; $mc.sanity to 25]]@@
-					<<else>>
-						$@@.usebtn; [[fading into darkness|Sleep]]@@
-					<</if>><br>
+					Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
 				<</linkappend>>
 			<</if>>
 
@@ -251,10 +235,7 @@
 					<source @src="setup.ImagePath + '/hunting/skirt4.mp4'" type="video/mp4">
 					</video>
 					&emsp;&emsp;Each touch sent shivers of pleasure throughout your body.
-					Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<if $highpriestess eq 1>>@@.usebtn; [[fading into darkness|$return][$highpriestess to 0; $mc.sanity to 25]]@@
-					<<else>>
-						$@@.usebtn; [[fading into darkness|Sleep]]@@
-					<</if>><br>
+					Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
 				<</linkappend>>
 			<</if>>
 		<<else>>
@@ -278,10 +259,7 @@
 						<</if>>
 						&emsp;&emsp; The ghost started fucking you. Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 						Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
-						Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<if $highpriestess eq 1>>@@.usebtn; [[fading into darkness|$return][$highpriestess to 0; $mc.sanity to 25]]@@
-						<<else>>
-							$@@.usebtn; [[fading into darkness|Sleep]]@@
-						<</if>><br>
+						Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
 					<</linkappend>>
 				<</if>>
 				<<if _check eq 2>>
@@ -312,10 +290,7 @@
 						<</if>>
 						&emsp;&emsp; The ghost started fucking you. Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 						Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
-						Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<if $highpriestess eq 1>>@@.usebtn; [[fading into darkness|$return][$highpriestess to 0; $mc.sanity to 25]]@@
-						<<else>>
-							$@@.usebtn; [[fading into darkness|Sleep]]@@
-						<</if>><br>
+						Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
 					<</linkappend>>
 				<</if>>
 
@@ -331,10 +306,7 @@
 						</video>
 						&emsp;&emsp;  Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 						Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
-						Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<if $highpriestess eq 1>>@@.usebtn; [[fading into darkness|$return][$highpriestess to 0; $mc.sanity to 25]]@@
-						<<else>>
-							$@@.usebtn; [[fading into darkness|Sleep]]@@
-						<</if>><br>
+						Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
 					<</linkappend>>
 				<</if>>
 
@@ -348,10 +320,7 @@
 						</video>
 						&emsp;&emsp; The ghost started fucking you. Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 						Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
-						Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<if $highpriestess eq 1>>@@.usebtn; [[fading into darkness|$return][$highpriestess to 0; $mc.sanity to 25]]@@
-						<<else>>
-							$@@.usebtn; [[fading into darkness|Sleep]]@@
-						<</if>><br>
+						Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
 					<</linkappend>>
 				<</if>>
 
@@ -381,19 +350,13 @@
 						<video autoplay controls muted loop>
 						<source @src="setup.ImagePath + '/hunting/naked4-end.mp4'" type="video/mp4">
 						</video>
-						Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<if $highpriestess eq 1>>@@.usebtn; [[fading into darkness|$return][$highpriestess to 0; $mc.sanity to 25]]@@
-						<<else>>
-							$@@.usebtn; [[fading into darkness|Sleep]]@@
-						<</if>><br>
+						Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
 					<</linkappend>>
 				<</if>>
 			<<else>>
 				&emsp;&emsp; Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 				Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
-				Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<if $highpriestess eq 1>>@@.usebtn; [[fading into darkness|$return][$highpriestess to 0; $mc.sanity to 25]]@@
-				<<else>>
-					@@.usebtn; [[fading into darkness|Sleep]]@@
-				<</if>><br>
+				Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
 			<</if>>
 
 		<</if>>

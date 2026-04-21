@@ -505,11 +505,28 @@
         },
 
         /* $hunt lifecycle. startHunt creates the object (witch contract
-           bought); endContract nulls it out (contract closed at witch).
-           Use hunt() to read it — null means "no contract". */
+           bought) and clears stale per-hunt ability flags; endContract
+           nulls it out (contract closed at witch). Use hunt() to read
+           it — null means "no contract". */
         hunt:         function ()     { return State.variables.hunt || null; },
-        startHunt:    function (name) { State.variables.hunt = buildHunt(name); },
+        startHunt:    function (name) {
+            State.variables.hunt = buildHunt(name);
+            setup.Ghosts.clearHuntFlags();
+        },
         endContract:  function ()     { State.variables.hunt = null; },
+
+        /* Wipe the per-hunt ability flags that ride alongside $hunt but
+           can't be folded into it without chasing down every consumer.
+           $highpriestess burns on use but lingers if the player saved
+           between draw and use; $bansheeAbility / $cthulionAbility are
+           event-local and cleared by EventMC, but defensive wipes at
+           hunt start keep them from leaking across contracts. */
+        clearHuntFlags: function () {
+            var V = State.variables;
+            delete V.highpriestess;
+            delete V.bansheeAbility;
+            delete V.cthulionAbility;
+        },
 
         /* Hunt-mode query/mutation helpers. Prefer these to raw
            $hunt.mode comparisons — they keep the magic ints out of

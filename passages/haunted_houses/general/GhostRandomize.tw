@@ -27,7 +27,6 @@
 <<set $drawnCards to 0>>
 <<unset $knowledgeUsed>>
 <<unset $temperatureIncreased>>
-<<unset $highpriestess>>
 <<unset $cursedHuntActive>>
 <<unset $cursedHuntEndTime>>
 <<unset $isWeakenGhost>>
