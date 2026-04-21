@@ -1,4 +1,13 @@
 :: widgetText [nobr widget] {"position":"300,1700","size":"100,100"}
+/* monkeyPawWish -- dispatcher for Monkey Paw wish effects. Takes the
+   widget name to invoke (one of "activity", "trapTheGhost", "sanity",
+   "leave", "knowledge", "dawn") and wikifies the matching
+   <<widgetName>> call. Lets MonkeyPaw.tw iterate its wish catalogue
+   and pick the effect widget by name instead of branching on the id. */
+<<widget "monkeyPawWish">>
+	<<= "<<" + _args[0] + ">>">>
+<</widget>>
+
 <<widget "activity">>
 	<<replace ".MonkeyPawShow">>
 		<<set _videoList to ["cursedpossessions/slap1.mp4", "cursedpossessions/slap2.mp4", "cursedpossessions/slap3.mp4", "cursedpossessions/slap4.mp4", "cursedpossessions/passion1.mp4", "cursedpossessions/passion2.mp4", "cursedpossessions/passion3.mp4", "cursedpossessions/passion4.mp4", "cursedpossessions/pulse1.mp4", "cursedpossessions/pulse2.mp4", "cursedpossessions/pulse3.mp4", "cursedpossessions/pulse4.mp4"]>>

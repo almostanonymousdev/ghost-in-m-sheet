@@ -1,29 +1,4 @@
 :: Owaissa Street [nobr] {"position":"1850,450","size":"100,100"}
-<<run setup.Companion.clearCompanionSelection()>>
-<<image "img/owaissa-house.jpg" { width: "90%" }>><br>
-@@.location; Owaissa Street@@<br>
-@@.mc-thoughts;Owaissa Street - quite a creepy place. It must be teeming with ghosts. Although, because of such locations, I'll always have a job@@<br>
-<br>
-<<if setup.Companion.companionAtStreet()>>
-	You see $companion.name.
-
-	<<if $companion.name eq "Brook">>
-		@@.usebtn; [[Talk to her|BrookMain]]@@<br>
-	<<elseif $companion.name eq "Alice">>
-		@@.usebtn; [[Talk to her|AliceMain]]@@<br>
-	<<elseif $companion.name eq "Blake">>
-		@@.usebtn; [[Talk to her|BlakeMain]]@@<br>
-	<<elseif $companion.name eq "Alex">>
-		@@.usebtn; [[Talk to him|AlexMain]]@@<br>
-	<<elseif $companion.name eq "Taylor">>
-		@@.usebtn; [[Talk to him|TaylorMain]]@@<br>
-	<<elseif $companion.name eq "Casey">>
-		@@.usebtn; [[Talk to him|CaseyMain]]@@<br>
-	<</if>>
-<<else>>
-	@@.movebtn;[[Go inside|OwaissaHallway][$hunt.mode to setup.Ghosts.HuntMode.ACTIVE]]@@<br>
-<</if>>
-<br>
-<br>
-<<if setup.Ghosts.isHunting()>><span class="movebtn">[[End the hunt|HuntOverManual][$hunt.mode to setup.Ghosts.HuntMode.POSSESSED]]</span><<else>>
-<</if>>
+<<huntHouseStreet "owaissa" "Owaissa Street"
+"Owaissa Street - quite a creepy place. It must be teeming with ghosts. Although, because of such locations, I'll always have a job">>
+<</huntHouseStreet>>

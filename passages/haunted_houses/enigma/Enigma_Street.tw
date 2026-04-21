@@ -1,10 +1,4 @@
 :: Enigma Street [nobr] {"position":"2000,200","size":"100,100"}
-<<image "img/enigma-house.jpg" { width: "90%" }>><br>
-@@.location; Enigma Street@@<br>
-@@.mc-thoughts; Enigma Street? Quite a peculiar name for a street. Or perhaps it's not just a name, but a warning that here reality and illusion intertwine, creating their own rules of existence.@@<br>
-<br>
-@@.movebtn;[[Go inside|EnigmaHallway][$hunt.mode to setup.Ghosts.HuntMode.ACTIVE]]@@<br>
-<br>
-<br>
-<<if setup.Ghosts.isHunting()>><span class="movebtn">[[End the hunt|HuntOverManual][$hunt.mode to setup.Ghosts.HuntMode.POSSESSED]]</span><<else>>
-<</if>>
+<<huntHouseStreet "enigma" "Enigma Street"
+"Enigma Street? Quite a peculiar name for a street. Or perhaps it's not just a name, but a warning that here reality and illusion intertwine, creating their own rules of existence.">>
+<</huntHouseStreet>>

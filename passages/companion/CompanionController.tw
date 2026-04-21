@@ -163,6 +163,13 @@ setup.Companion = (function () {
 				&& v('chosenPlan') !== 'Plan2'
 				&& v('chosenPlan') !== 'Plan3'
 				&& v('chosenPlan') !== 'Plan4';
+		},
+
+		/* "<Name>Main" passage the street-level "Talk to her/him" link
+			targets. Returns null when no companion is selected. */
+		mainPassageForActive: function () {
+			var n = this.name();
+			return n ? n + "Main" : null;
 		}
 	};
 })();

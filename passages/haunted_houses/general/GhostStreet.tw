@@ -1,161 +1,17 @@
 :: GhostStreet [ghoststreet] {"position":"1950,350","size":"100,100"}
 <div class="flexwrapper">
-<div class="housecard">
-<<image "img/owaissa-house.jpg" "iconPx">>
-<<nobr>>
-@@.icontext;<<link "Owaissa Street" "Owaissa Street">>
-<<if $deleteThirdEvidence eq 1>>
-<<set $moneyFromContract to 450>>
-<<set $expFromContract to 140>>
-<<elseif $deleteSecondEvidence eq 1>>
-<<set $moneyFromContract to 340>>
-<<set $expFromContract to 100>>
-<<elseif $deleteOneEvidence eq 1>>
-<<set $moneyFromContract to 240>>
-<<set $expFromContract to 70>>
-<<else>>
-<<set $moneyFromContract to 120>>
-<<set $expFromContract to 35>>
-<</if>>
-<<set $isrealhouse to 0>><<set $isOwaissa to 1>>
-<<include "FurnitureCode">>
-<<set _check to random (1,5)>>
-<<if _check eq 1>><<set $hunt.room to clone($kitchen)>><</if>>
-<<if _check eq 2>><<set $hunt.room to clone($bathroom)>><</if>>
-<<if _check eq 3>><<set $hunt.room to clone($bedroom)>><</if>>
-<<if _check eq 4>><<set $hunt.room to clone($livingroom)>><</if>>
-<<if _check eq 5>><<set $hunt.room to clone($hallway)>><</if>>
-<</link>>@@
-<</nobr>>
-</div>
-<div class="housecard">
-
-</div>
-<div class="housecard">
-</div>
-<div class="housecard">
-<<image "room/ironclad/ironclad.webp" "iconPx">>
-<<nobr>>
-<<if $mc.lvl gte 4>>@@.icontext;<<link "Prison Ironclad" "Ironclad Prison">>
-<<if $deleteThirdEvidence eq 1>>
-<<set $moneyFromContract to 650>>
-<<set $expFromContract to 240>>
-<<elseif $deleteSecondEvidence eq 1>>
-<<set $moneyFromContract to 440>>
-<<set $expFromContract to 150>>
-<<elseif $deleteOneEvidence eq 1>>
-<<set $moneyFromContract to 240>>
-<<set $expFromContract to 100>>
-<<else>>
-<<set $moneyFromContract to 170>>
-<<set $expFromContract to 60>>
-<</if>>
-<<set $isrealhouse to 0>>
-<<set $isIronclad to 1>>
-<<include "FurnitureCode">>
-<<set _check to random (1,11)>>
-<<if _check eq 1>><<set $hunt.room to clone($BlockA)>><</if>>
-<<if _check eq 2>><<set $hunt.room to clone($BlockB)>><</if>>
-<<if _check eq 3>><<set $hunt.room to clone($BlockACellA)>><</if>>
-<<if _check eq 4>><<set $hunt.room to clone($BlockACellB)>><</if>>
-<<if _check eq 5>><<set $hunt.room to clone($BlockACellC)>><</if>>
-<<if _check eq 6>><<set $hunt.room to clone($BlockBCellA)>><</if>>
-<<if _check eq 7>><<set $hunt.room to clone($BlockBCellB)>><</if>>
-<<if _check eq 8>><<set $hunt.room to clone($BlockBCellC)>><</if>>
-<<if _check eq 9>><<set $hunt.room to clone($reception)>><</if>>
-<<if _check eq 10>><<set $hunt.room to clone($kitchen)>><</if>>
-<<if _check eq 11>><<set $hunt.room to clone($hallway)>><</if>>
-<</link>>@@
-<<else>>@@.mc-thoughts; Level 4+ required@@
-<</if>>
-<</nobr>>
-</div>
-<div class="housecard">
-
-</div>
-<div class="housecard">
-
-</div>
-<div class="housecard">
-<<image "img/elm-house.jpg" "iconPx">>
-<<nobr>>
-<<if $mc.lvl gte 3>>@@.icontext;<<link "Elm Street" "Elm Street">>
-<<if $deleteThirdEvidence eq 1>>
-<<set $moneyFromContract to 550>>
-<<set $expFromContract to 180>>
-<<elseif $deleteSecondEvidence eq 1>>
-<<set $moneyFromContract to 440>>
-<<set $expFromContract to 150>>
-<<elseif $deleteOneEvidence eq 1>>
-<<set $moneyFromContract to 320>>
-<<set $expFromContract to 100>>
-<<else>>
-<<set $moneyFromContract to 180>>
-<<set $expFromContract to 60>>
-<</if>>
-<<set $isrealhouse to 0>>
-<<set $isElm to 1>>
-<<include "FurnitureCode">>
-<<set _check to random (1,9)>>
-<<if _check eq 1>><<set $hunt.room to clone($kitchen)>><</if>>
-<<if _check eq 2>><<set $hunt.room to clone($bathroom)>><</if>>
-<<if _check eq 3>><<set $hunt.room to clone($bedroom)>><</if>>
-<<if _check eq 4>><<set $hunt.room to clone($nursery)>><</if>>
-<<if _check eq 5>><<set $hunt.room to clone($hallway)>><</if>>
-<<if _check eq 6>><<set $hunt.room to clone($hallwayUpstairs)>><</if>>
-<<if _check eq 7>><<set $hunt.room to clone($bedroomTwo)>><</if>>
-<<if _check eq 8>><<set $hunt.room to clone($bathroomTwo)>><</if>>
-<<if _check eq 9>><<set $hunt.room to clone($basement)>><</if>>
-<</link>>@@
-<<else>>@@.mc-thoughts; Level 3+ required@@
-<</if>>
-<</nobr>>
-</div>
-<div class="housecard">
-
-</div>
-<div class="housecard">
-
-</div>
-<div class="housecard">
-</div>
-<div class="housecard">
-<<image "img/enigma-house.jpg" "iconPx">>
-<<nobr>>
-<<if $mc.lvl gte 2>>@@.icontext;<<link "Enigma Street" "Enigma Street">>
-<<if $deleteThirdEvidence eq 1>>
-<<set $moneyFromContract to 450>>
-<<set $expFromContract to 140>>
-<<elseif $deleteSecondEvidence eq 1>>
-<<set $moneyFromContract to 340>>
-<<set $expFromContract to 100>>
-<<elseif $deleteOneEvidence eq 1>>
-<<set $moneyFromContract to 240>>
-<<set $expFromContract to 70>>
-<<else>>
-<<set $moneyFromContract to 120>>
-<<set $expFromContract to 35>>
-<</if>>
-<<set $isrealhouse to 1>>
-<<set $isEnigma to 1>>
-<<set _check to random (1,9)>>
-<<if _check eq 1>><<set $hunt.room to clone($kitchen)>><</if>>
-<<if _check eq 2>><<set $hunt.room to clone($bathroom)>><</if>>
-<<if _check eq 3>><<set $hunt.room to clone($bedroom)>><</if>>
-<<if _check eq 4>><<set $hunt.room to clone($livingroom)>><</if>>
-<<if _check eq 5>><<set $hunt.room to clone($hallway)>><</if>>
-<<if _check eq 6>><<set $hunt.room to clone($roomA)>><</if>>
-<<if _check eq 7>><<set $hunt.room to clone($roomB)>><</if>>
-<<if _check eq 8>><<set $hunt.room to clone($roomC)>><</if>>
-<<if _check eq 9>><<set $hunt.room to clone($basement)>><</if>>
-<</link>>@@
-<<else>>@@.mc-thoughts; Level 2+ required@@
-<</if>>
-<</nobr>>
-</div>
-<div class="housecard">
-
-</div>
+<<huntHouseCard "owaissa">>
+<div class="housecard"></div>
+<div class="housecard"></div>
+<<huntHouseCard "ironclad">>
+<div class="housecard"></div>
+<div class="housecard"></div>
+<<huntHouseCard "elm">>
+<div class="housecard"></div>
+<div class="housecard"></div>
+<div class="housecard"></div>
+<<huntHouseCard "enigma">>
+<div class="housecard"></div>
 </div>
 <<nobr>>
 <<run setup.Ghosts.fireActiveOnEnterHouse()>>
@@ -163,10 +19,6 @@
 <<done>>
 <<replace "#time">><<print ($hours < 10 ? '0' + $hours : $hours) + ":" + ($minutes < 10 ? '0' + $minutes : $minutes)>><</replace>>
 <</done>>
-<<set $isOwaissa to 0>>
-<<set $isElm to 0>>
-<<set $isEnigma to 0>>
-<<set $isIronclad to 0>>
+<<run setup.HauntedHouses.clearHouseFlags()>>
 <<if setup.Companion.anyCompanionSelected()>><<set $isCompChosen to 1>><</if>>
-
 <</nobr>>
