@@ -25,8 +25,7 @@
 	<span class="spiritbox-question">You ask through the Spiritbox: "_questions[_currentQuestion]"</span>
 	<span class="spiritbox-answer">The ghost responds: "_answers[_currentQuestion]"</span>
 	</div>
-	<<set $EmfActivated to 1>>
-	<<set $EmfActivationTime to $hours * 60 + $minutes>>
+	<<run setup.activateTool("emf")>>
 <<else>>
 	<div class="spiritbox-container">
 	<span class="spiritbox-no-response">No one responds. Silence...</span>

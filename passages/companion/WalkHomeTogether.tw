@@ -152,10 +152,7 @@
 <<set $tempCorr to 0>>
 <<run setup.Ghosts.setHuntMode(setup.Ghosts.HuntMode.POSSESSED)>>
 
-<<set $EmfActivationTime to 0>>
-<<set $uvlActivationTime = 0>>
-<<set $EmfActivated to 0>>
-<<set $uvlActivated to 0>>
+<<run setup.resetTools()>>
 
 <<run setup.Companion.clearBlakeCursedItem()>>
 

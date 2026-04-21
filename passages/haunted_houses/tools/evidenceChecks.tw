@@ -1,8 +1,7 @@
 :: GWBcheck [nobr] {"position":"3725,325","size":"100,100"}
 <<if setup.evidenceAvailable("gwb", $equipment.gwb, ["elm", "owaissa", "ironclad"])>>
 	<<randRangeImg "gwb/" 1 18 ".jpg">>
-	<<set $EmfActivated to 1>>
-	<<set $EmfActivationTime to $hours * 60 + $minutes>>
+	<<run setup.activateTool("emf")>>
 	@@.mc-speech; <span class="evidenceshadowtext"> Ohh... what is this...? Nevertheless, one more piece of evidence</span>@@
 <<else>>
 	<<notFound "I didn't find anything">>
@@ -11,8 +10,7 @@
 :: GWBcheckArt [nobr] {"position":"3625,325","size":"100,100"}
 <<if setup.evidenceAvailable("gwb", $equipment.gwb, ["enigma"])>>
 	<<randRangeImg "gwb/" 1 18 ".jpg">>
-	<<set $EmfActivated to 1>>
-	<<set $EmfActivationTime to $hours * 60 + $minutes>>
+	<<run setup.activateTool("emf")>>
 	@@.evidenceshadowtext; <span class="evidenceshadowtext"> Ohh... what is this...? Nevertheless, one more piece of evidence</span>@@
 <<else>>
 	<<notFound "I didn't find anything">>

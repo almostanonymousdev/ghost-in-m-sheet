@@ -2,8 +2,7 @@
 <<if setup.Ghosts.active() and setup.Ghosts.active().canTurnOffLights>>
 	<<set _lightOff to random(1,65)>>
 	<<if (_lightOff eq 1)>>
-		<<set $EmfActivated to 1>>
-		<<set $EmfActivationTime = $hours * 60 + $minutes>>
+		<<run setup.activateTool("emf")>>
 		<<if passage() is "OwaissaHallway" and ($hallway.background eq 1)>>
 			<<set $hallway.background to 2>>
 			<<goto "OwaissaHallway">>

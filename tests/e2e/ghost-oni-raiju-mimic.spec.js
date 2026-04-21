@@ -55,8 +55,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
 
   test('Raiju: EMF readings can glitch to random values', async () => {
     await setupHunt(page, 'Raiju');
-    await setVar(page, 'EmfActivated', 1);
-    await setVar(page, 'EmfActivationTime', 0);
+    await setVar(page, 'tools', { emf: { activated: 1, activationTime: 0 }, uvl: { activated: 0, activationTime: 0 } });
     await setVar(page, 'equipment.emf', 3);
 
     const readings = [];
@@ -72,8 +71,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
 
   test('Raiju: non-Raiju ghost always shows EMF 5 for emf evidence', async () => {
     await setupHunt(page, 'Spirit');
-    await setVar(page, 'EmfActivated', 1);
-    await setVar(page, 'EmfActivationTime', 0);
+    await setVar(page, 'tools', { emf: { activated: 1, activationTime: 0 }, uvl: { activated: 0, activationTime: 0 } });
     await setVar(page, 'equipment.emf', 3);
 
     for (let i = 0; i < 10; i++) {

@@ -50,11 +50,7 @@ setup.HauntedHouses = (function () {
 
 		// --- Timed tool activations -----------------------------
 		resetToolTimers: function () {
-			var s = State.variables;
-			s.EmfActivationTime = 0;
-			s.uvlActivationTime = 0;
-			s.EmfActivated = 0;
-			s.uvlActivated = 0;
+			setup.resetTools();
 		},
 		resetEvidenceChecks: function () {
 			var s = State.variables;

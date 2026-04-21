@@ -65,10 +65,8 @@
 <<set $mc.sanity -= $ghostSanityEventDecreased>>
 <br>
 <span class="backbtn">[[Continue investigating|previous()]]</span>
-<<set $EmfActivated to 1>>
-<<set $EmfActivationTime = $hours * 60 + $minutes>>
-<<set $uvlActivated to 1>>
-<<set $uvlActivationTime = $hours * 60 + $minutes>>
+<<run setup.activateTool("emf")>>
+<<run setup.activateTool("uvl")>>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 <</done>>

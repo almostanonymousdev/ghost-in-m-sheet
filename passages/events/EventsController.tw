@@ -348,6 +348,32 @@ setup.Events = (function () {
 		* @param {number} chance - a value in [0, 100] (the caller's
 		*   random roll, shared with Banshee/Cthulion checks).
 		*/
+		/*
+		* SaveEventPassage sanity-stage video lookup. The stage→body-part
+		* mapping reuses eventVideos so the clothing-aware resolvers
+		* (bottomClothingVideos / topClothingVideos) stay the single
+		* source of truth.
+		*
+		*   stage 1 "touching"  → bottom: 'ass', top: 'tits' (caller picks)
+		*   stage 2 "grinding"  → 'bottom'
+		*   stage 3 "blowjob"   → 'mouth'
+		*   stage 4 "explicit"  → 'pussy' ∪ 'anal'
+		*/
+		saveEventBottomVideos: function (stage) {
+			if (stage === 1) return this.bottomClothingVideos('ass');
+			if (stage === 2) return this.bottomClothingVideos('bottom');
+			if (stage === 4) {
+				return this.bottomClothingVideos('pussy')
+					.concat(this.bottomClothingVideos('anal'));
+			}
+			return [];
+		},
+		saveEventTopVideos: function (stage) {
+			if (stage === 1) return this.topClothingVideos('tits');
+			if (stage === 3) return this.topClothingVideos('mouth');
+			return [];
+		},
+
 		rollBodyPartEvent: function (chance) {
 			var tier      = this.lustTier();
 			var threshold = sanityThresholds[tier];

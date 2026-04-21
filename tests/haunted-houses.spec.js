@@ -290,19 +290,18 @@ test.describe('Haunted Houses Controller', () => {
 
   test('resetToolTimers clears all tool activation state', async () => {
     // arrange
-    await setVar(page, 'EmfActivationTime', 500);
-    await setVar(page, 'uvlActivationTime', 300);
-    await setVar(page, 'EmfActivated', 1);
-    await setVar(page, 'uvlActivated', 1);
+    await setVar(page, 'tools', {
+      emf: { activated: 1, activationTime: 500 },
+      uvl: { activated: 1, activationTime: 300 }
+    });
 
     // act
     await page.evaluate(() => SugarCube.setup.HauntedHouses.resetToolTimers());
 
     // assert
-    expect(await getVar(page, 'EmfActivationTime')).toBe(0);
-    expect(await getVar(page, 'uvlActivationTime')).toBe(0);
-    expect(await getVar(page, 'EmfActivated')).toBe(0);
-    expect(await getVar(page, 'uvlActivated')).toBe(0);
+    const tools = await getVar(page, 'tools');
+    expect(tools.emf).toEqual({ activated: 0, activationTime: 0 });
+    expect(tools.uvl).toEqual({ activated: 0, activationTime: 0 });
   });
 
   test('resetEvidenceChecks clears all evidence check flags', async () => {

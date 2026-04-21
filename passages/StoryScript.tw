@@ -1212,21 +1212,39 @@ setup.toolTimeRemain = function (tier) {
     return setup.TOOL_TIME_REMAIN[tier] || 0;
 };
 
-/* Activation-state metadata for the two timed tools (EMF + UVL). Each
- * tool has an "activated" flag and an "activationTime" timestamp; the
- * names are kept separate because historical state uses inconsistent
- * capitalisation (EmfActivated vs uvlActivated). */
-setup.TIMED_TOOLS = {
-    emf: {
-        activated:      "EmfActivated",
-        activationTime: "EmfActivationTime",
-        tierKey:        "emf"
-    },
-    uvl: {
-        activated:      "uvlActivated",
-        activationTime: "uvlActivationTime",
-        tierKey:        "uvl"
-    }
+/* The two timed tools (EMF + UVL) track their activation state inside
+ * $tools so passage code never touches the per-tool state keys directly.
+ * Shape: $tools = { emf: { activated, activationTime }, uvl: {...} }. */
+setup.TIMED_TOOLS = ["emf", "uvl"];
+
+/* Lazily ensure $tools is initialised — covers fresh saves, older saves
+ * that predate the bundle, and test helpers that skip StoryInit. */
+setup.toolsRecord = function (tool) {
+    var V = State.variables;
+    if (!V.tools) V.tools = {};
+    if (!V.tools[tool]) V.tools[tool] = { activated: 0, activationTime: 0 };
+    return V.tools[tool];
+};
+
+/* Mark a tool as just-activated (EMF/UVL); the activationTime timestamp
+ * is used by tickTimedTool to compute the staleness window. */
+setup.activateTool = function (tool) {
+    var rec = setup.toolsRecord(tool);
+    rec.activated = 1;
+    rec.activationTime = State.variables.hours * 60 + State.variables.minutes;
+};
+
+/* Clear a tool's activation state without tripping the "expired"
+ * observer path in tickTimedTool. */
+setup.resetTool = function (tool) {
+    var rec = setup.toolsRecord(tool);
+    rec.activated = 0;
+    rec.activationTime = 0;
+};
+
+/* Reset every timed tool — used at hunt end / companion walk-home. */
+setup.resetTools = function () {
+    setup.TIMED_TOOLS.forEach(setup.resetTool);
 };
 
 /* Evaluate a timed tool's state and auto-clear it if stale. Returns
@@ -1235,15 +1253,15 @@ setup.TIMED_TOOLS = {
  * (never activated this cycle). EMFcheck / UVLcheck / UVLcheckArt share
  * this logic. */
 setup.tickTimedTool = function (tool) {
-    var meta = setup.TIMED_TOOLS[tool];
-    if (!meta) return "inactive";
+    if (setup.TIMED_TOOLS.indexOf(tool) === -1) return "inactive";
+    var rec = setup.toolsRecord(tool);
+    if (rec.activated !== 1) return "inactive";
     var V = State.variables;
-    if (V[meta.activated] !== 1) return "inactive";
-    var elapsed = (V.hours * 60 + V.minutes) - V[meta.activationTime];
-    var remain = setup.toolTimeRemain(V.equipment[meta.tierKey]);
+    var elapsed = (V.hours * 60 + V.minutes) - rec.activationTime;
+    var remain = setup.toolTimeRemain(V.equipment[tool]);
     if (elapsed > remain) {
-        V[meta.activated] = 0;
-        V[meta.activationTime] = 0;
+        rec.activated = 0;
+        rec.activationTime = 0;
         return "expired";
     }
     return "ready";

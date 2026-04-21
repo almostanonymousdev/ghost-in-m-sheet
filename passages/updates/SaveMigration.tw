@@ -136,6 +136,31 @@
 		delete vars.saveMimic;
 		delete vars.ghostActivity;
 		delete vars.ghostRoomCI;
+
+		// EMF/UVL activation state was four flat vars (EmfActivated,
+		// EmfActivationTime, uvlActivated, uvlActivationTime); the new
+		// shape bundles them under $tools so activateTool / resetTool /
+		// tickTimedTool can operate on a single record per tool.
+		if (!vars.tools || typeof vars.tools !== 'object') {
+			vars.tools = {
+				emf: {
+					activated:      vars.EmfActivated === 1 ? 1 : 0,
+					activationTime: typeof vars.EmfActivationTime === 'number' ? vars.EmfActivationTime : 0
+				},
+				uvl: {
+					activated:      vars.uvlActivated === 1 ? 1 : 0,
+					activationTime: typeof vars.uvlActivationTime === 'number' ? vars.uvlActivationTime : 0
+				}
+			};
+		}
+		delete vars.EmfActivated;
+		delete vars.EmfActivationTime;
+		delete vars.uvlActivated;
+		delete vars.uvlActivationTime;
+		delete vars.emfTimeRemain;
+		delete vars.uvlTimeRemain;
+		delete vars.elapsedTime;
+		delete vars.elapsedTimeUvl;
 	}
 
 	// Expose for use from Twine (PassageReady belt-and-braces call).
