@@ -101,18 +101,41 @@
 			vars.hasPSpray = 0;
 		}
 
-		// Older saves stored the active hunt as $ghost = {name, evidence}.
-		// Split that into $ghostName (string) + $ghostEvidence (array) so
-		// setup.Ghosts.active() can compose it with static catalogue fields.
-		if (vars.ghost && typeof vars.ghost === 'object') {
-			if (vars.ghostName === undefined && typeof vars.ghost.name === 'string') {
-				vars.ghostName = vars.ghost.name;
+		// Older saves stored hunt state as a scatter of variables
+		// ($ghost, $ghostName, $ghostEvidence, $ghostRoom, $ghostIsTrapped,
+		// $ghostHuntingMode, $saveMimic). Consolidate into $hunt so
+		// setup.Ghosts.active()/hunt() can read a single object.
+		if (vars.hunt === undefined) {
+			var legacyName = undefined;
+			var legacyEvidence = undefined;
+			if (vars.ghost && typeof vars.ghost === 'object') {
+				if (typeof vars.ghost.name === 'string') legacyName = vars.ghost.name;
+				if (Array.isArray(vars.ghost.evidence)) legacyEvidence = vars.ghost.evidence.slice();
+				delete vars.ghost;
 			}
-			if (vars.ghostEvidence === undefined && Array.isArray(vars.ghost.evidence)) {
-				vars.ghostEvidence = vars.ghost.evidence.slice();
+			if (legacyName === undefined && typeof vars.ghostName === 'string') legacyName = vars.ghostName;
+			if (legacyEvidence === undefined && Array.isArray(vars.ghostEvidence)) legacyEvidence = vars.ghostEvidence.slice();
+			if (legacyName) {
+				vars.hunt = {
+					name:     legacyName,
+					realName: vars.saveMimic === 1 ? 'Mimic' : legacyName,
+					evidence: legacyEvidence || [],
+					room:     vars.ghostRoom || null,
+					trapped:  vars.ghostIsTrapped === 1,
+					mode:     typeof vars.ghostHuntingMode === 'number' ? vars.ghostHuntingMode : 0
+				};
+			} else {
+				vars.hunt = null;
 			}
-			delete vars.ghost;
 		}
+		delete vars.ghostName;
+		delete vars.ghostEvidence;
+		delete vars.ghostRoom;
+		delete vars.ghostIsTrapped;
+		delete vars.ghostHuntingMode;
+		delete vars.saveMimic;
+		delete vars.ghostActivity;
+		delete vars.ghostRoomCI;
 	}
 
 	// Expose for use from Twine (PassageReady belt-and-braces call).

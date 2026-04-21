@@ -4,7 +4,7 @@
 <<if $EmfActivated eq 1>>
 	<<set $elapsedTime to ($hours * 60 + $minutes) - $EmfActivationTime>>
 	<<if $elapsedTime lte $emfTimeRemain>>
-		<<if $ghostEvidence.includes("emf")>>
+		<<if _hg and _hg.hasEvidence("emf")>>
 			<<if _hg and _hg.rollEmfGlitch()>>
 				<<coloredText "red" `random(0, 100)`>>
 			<<else>>

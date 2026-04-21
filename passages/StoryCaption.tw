@@ -35,31 +35,31 @@
 <br>@@.usebtn;<<linkreplace "Cheats">>
 	<<if setup.Ghosts.isHunting()>><<link "take pills(cheats)">><<set $mc.sanity +=30>><</link>>
 		<br><<linkreplace "possession Card">>
-			<<set $ghostHuntingMode to setup.Ghosts.HuntMode.POSSESSED>>
+			<<set $hunt.mode to setup.Ghosts.HuntMode.POSSESSED>>
 			<<set $hours to random(12,20)>>
 		<<goto "CityMapPossessed">><</linkreplace>><br>
 		<<link "Decreasefollower's sanity(-10)(cheats)">><<set $companion.sanity -=10>><<updatemeter 'companionsanity' `$companion.sanity / 100`>><</link>>
 	<</if>><br>
-	<<linkreplace "ghostname">>$ghostName<<if $saveMimic eq 1>>(Mimic)
+	<<linkreplace "ghostname">>$hunt.name<<if setup.Ghosts.isMimicHunt()>>(Mimic)
 	<</if>>
 	<</linkreplace>>
 	<<if setup.Ghosts.isAnyMode()>>
 		<<linkreplace "choose ghost type">>
 			<<for _g range setup.Ghosts.list()>>
-				<<capture _g>><<link `"set to " + _g.name`>><<set $ghostName to _g.name>><<set $ghostEvidence to _g.evidence.map(e => e.id)>>
+				<<capture _g>><<link `"set to " + _g.name`>><<set $hunt.name to _g.name>><<set $hunt.realName to _g.name>><<set $hunt.evidence to _g.evidence.map(e => e.id)>>
 				<</link>>
 				<</capture>>
 			<</for>>
 		<</linkreplace>><br>
 	<</if>>
-	<<linkreplace "ghostroom">>$ghostRoom.name
+	<<linkreplace "ghostroom">>
+		<<if $hunt and $hunt.room>>$hunt.room.name
+		<</if>>
 	<</linkreplace>><br>
 	<<link "lust">><<set $mc.lust += 100>><</link>><br>
 	<<link "money">><<set $mc.money += 100>><</link>><br>
 	<<link "lvlup">><<set $mc.lvl += 1>><</link>><br>
 	<<link "corruptionUp">><<set $mc.corruption += 1>><</link>><br>
-	<<linkreplace "curseditem room">>$ghostRoomCI.name
-	<</linkreplace>>
 	<br><<linkreplace "highlight rescue house">><<set $cheatRescueHouseHighlight to 1>>Rescue house $randomRescuePhotoNumber highlighted on map
 	<</linkreplace>>
 	<br><<linkreplace "lvlup Brook">><<set $brook.lvl to 5>>Brook is lvl5 now

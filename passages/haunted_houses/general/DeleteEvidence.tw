@@ -1,14 +1,14 @@
 :: DeleteEvidence [nobr] {"position":"375,2850","size":"100,100"}
-<<set _randomIndex to Math.floor(Math.random() * $ghostEvidence.length)>>
-<<set $hiddenEvidence to $ghostEvidence[_randomIndex]>>
-<<set $ghostEvidence.deleteAt(_randomIndex)>>
+<<set _randomIndex to Math.floor(Math.random() * $hunt.evidence.length)>>
+<<set $hiddenEvidence to $hunt.evidence[_randomIndex]>>
+<<set $hunt.evidence.deleteAt(_randomIndex)>>
 <<if $deleteSecondEvidence eq 1>>
-	<<set _randomIndex1 to Math.floor(Math.random() * $ghostEvidence.length)>>
-	<<set $hiddenEvidence1 to $ghostEvidence[_randomIndex1]>>
-	<<set $ghostEvidence.deleteAt(_randomIndex1)>>
+	<<set _randomIndex1 to Math.floor(Math.random() * $hunt.evidence.length)>>
+	<<set $hiddenEvidence1 to $hunt.evidence[_randomIndex1]>>
+	<<set $hunt.evidence.deleteAt(_randomIndex1)>>
 <</if>>
 <<if $deleteThirdEvidence eq 1>>
-	<<set _randomIndex2 to Math.floor(Math.random() * $ghostEvidence.length)>>
-	<<set $hiddenEvidence2 to $ghostEvidence[_randomIndex2]>>
-	<<set $ghostEvidence.deleteAt(_randomIndex2)>>
+	<<set _randomIndex2 to Math.floor(Math.random() * $hunt.evidence.length)>>
+	<<set $hiddenEvidence2 to $hunt.evidence[_randomIndex2]>>
+	<<set $hunt.evidence.deleteAt(_randomIndex2)>>
 <</if>>

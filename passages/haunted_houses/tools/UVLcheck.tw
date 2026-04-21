@@ -1,5 +1,6 @@
 :: UVLcheck [nobr] {"position":"3725,425","size":"100,100"}
 <<set $uvlTimeRemain to setup.toolTimeRemain($equipment.uvl)>>
+<<set _hg to setup.Ghosts.active()>>
 
 <<if $uvlActivated neq 1>>
 	<<notFound "I didn't find any fingerprints">>
@@ -10,7 +11,7 @@
 		<<set $uvlActivationTime to 0>>
 		<<set $elapsedTimeUvl to 0>>
 		<<notFound "I didn't find any fingerprints">>
-	<<elseif not $ghostEvidence.includes("uvl")>>
+	<<elseif not (_hg and _hg.hasEvidence("uvl"))>>
 		<<notFound "I didn't find any fingerprints">>
 	<<elseif $isIronclad eq 1>>
 		<<randRangeImg "uvl/ironclad" 1 6 ".png">>

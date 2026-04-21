@@ -10,26 +10,26 @@
 <<set _ghostRoom = ["BlockA", "BlockB", "BlockACellA", "BlockACellB", "BlockACellC", "BlockBCellA", "BlockBCellB", "BlockBCellC", "reception", "kitchen", "hallway"]>><</if>>
 
 <<set _hg to setup.Ghosts.active()>>
-<<if setup.Ghosts.isHunting() and _hg and not _hg.staysInOneRoom and $ghostIsTrapped neq 1>>
+<<if setup.Ghosts.isHunting() and _hg and not _hg.staysInOneRoom and not $hunt.trapped>>
 	<<set $currentIntervalRoom to ($minutes >= 0 && $minutes < 20) ? "0-19" : ($minutes >= 20 && $minutes < 40) ? "20-39" : "40-59">>
 	<<if $currentIntervalRoom != $lastChangeIntervalRoom>>
 		<<if $currentIntervalRoom eq "0-19">>
 			<<if Math.random() < 0.35>>
-				<<set $ghostRoom.name to _ghostRoom.random()>>
+				<<set $hunt.room.name to _ghostRoom.random()>>
 			<</if>>
 			<<set $lastChangeIntervalRoom to "0-19">>
 		<</if>>
 
 		<<if $currentIntervalRoom eq "20-39">>
 			<<if Math.random() < 0.35>>
-				<<set $ghostRoom.name to _ghostRoom.random()>>
+				<<set $hunt.room.name to _ghostRoom.random()>>
 			<</if>>
 			<<set $lastChangeIntervalRoom to "20-39">>
 		<</if>>
 
 		<<if $currentIntervalRoom eq "40-59">>
 			<<if Math.random() < 0.35>>
-				<<set $ghostRoom.name to _ghostRoom.random()>>
+				<<set $hunt.room.name to _ghostRoom.random()>>
 			<</if>>
 			<<set $lastChangeIntervalRoom to "40-59">>
 		<</if>>

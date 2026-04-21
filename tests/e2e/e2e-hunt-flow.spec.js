@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, goToPassage } = require('../helpers');
+const { openGame, resetGame, setVar, getVar, setHuntMode, getHuntMode, goToPassage } = require('../helpers');
 
 /**
  * Click a SugarCube link whose visible text matches `linkText` and wait
@@ -75,17 +75,19 @@ test.describe('E2E: buy contract → hunt → guess', () => {
     // ------------------------------------------------------------------
     // 4. Buy a contract
     // ------------------------------------------------------------------
-    expect(await getVar(page, 'ghostHuntingMode')).toBe(0);
+    expect(await getHuntMode(page)).toBe(0);
 
     await clickLink(page, 'I want to get a contract', 'GhostRandomize');
     expect(await currentPassage(page)).toBe('GhostRandomize');
 
     // Contract purchased: mode flips to 1, money decreased by 35
-    expect(await getVar(page, 'ghostHuntingMode')).toBe(1);
+    expect(await getHuntMode(page)).toBe(1);
     expect(await getVar(page, 'mc.money')).toBe(moneyBefore - 35);
 
     // A ghost was assigned
-    const ghostName = await getVar(page, 'ghostName');
+    const ghostName = await page.evaluate(() =>
+      SugarCube.State.variables.hunt.name
+    );
     expect(ghostName).toBeTruthy();
 
     // ------------------------------------------------------------------
@@ -122,7 +124,7 @@ test.describe('E2E: buy contract → hunt → guess', () => {
     // ------------------------------------------------------------------
     await clickLink(page, 'Go inside', 'OwaissaHallway');
     expect(await currentPassage(page)).toBe('OwaissaHallway');
-    expect(await getVar(page, 'ghostHuntingMode')).toBe(2);
+    expect(await getHuntMode(page)).toBe(2);
 
     // ------------------------------------------------------------------
     // 9. Immediately leave the house (click "Outside" to return to street)
@@ -130,7 +132,7 @@ test.describe('E2E: buy contract → hunt → guess', () => {
     await clickLink(page, 'Outside', 'Owaissa Street');
     expect(await currentPassage(page)).toBe('Owaissa Street');
     // Still in hunt mode 2 — we haven't ended the hunt yet
-    expect(await getVar(page, 'ghostHuntingMode')).toBe(2);
+    expect(await getHuntMode(page)).toBe(2);
 
     // ------------------------------------------------------------------
     // 10. End the hunt from the street
@@ -139,7 +141,7 @@ test.describe('E2E: buy contract → hunt → guess', () => {
     await setVar(page, 'isClothesStolen', 0);
     await clickLink(page, 'End the hunt', 'HuntOverManual');
     expect(await currentPassage(page)).toBe('HuntOverManual');
-    expect(await getVar(page, 'ghostHuntingMode')).toBe(3);
+    expect(await getHuntMode(page)).toBe(3);
 
     // ------------------------------------------------------------------
     // 11. Go home (Myling has a special redirect, so handle both cases)
@@ -204,7 +206,7 @@ test.describe('E2E: buy contract → hunt → guess', () => {
     expect(moneyAfterGuess).toBe(moneyBeforeGuess + moneyReward);
 
     // Contract is complete — hunting mode reset to 0
-    expect(await getVar(page, 'ghostHuntingMode')).toBe(0);
+    expect(await getHuntMode(page)).toBe(0);
 
     // ------------------------------------------------------------------
     // 14. Navigate back to confirm we're in a clean state

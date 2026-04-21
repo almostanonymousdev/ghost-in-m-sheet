@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, callSetup } = require('./helpers');
+const { openGame, resetGame, setVar, getVar, setHuntMode, getHuntMode, callSetup } = require('./helpers');
 
 test.describe('Home Controller', () => {
   let page;
@@ -233,7 +233,7 @@ test.describe('Home Controller', () => {
 
   test('hasHuntContract true when ghostHuntingMode is 1', async () => {
     // arrange
-    await setVar(page, 'ghostHuntingMode', 1);
+    await setHuntMode(page, 1);
 
     // act
     const result = await callSetup(page, 'setup.Home.hasHuntContract()');
@@ -244,7 +244,7 @@ test.describe('Home Controller', () => {
 
   test('needsWitch true when ghostHuntingMode is 3', async () => {
     // arrange
-    await setVar(page, 'ghostHuntingMode', 3);
+    await setHuntMode(page, 3);
 
     // act
     const result = await callSetup(page, 'setup.Home.needsWitch()');
@@ -255,7 +255,7 @@ test.describe('Home Controller', () => {
 
   test('canGoHunting requires contract and dressed', async () => {
     // arrange
-    await setVar(page, 'ghostHuntingMode', 1);
+    await setHuntMode(page, 1);
 
     // act
     const result = await callSetup(page, 'setup.Home.canGoHunting()');
@@ -266,7 +266,7 @@ test.describe('Home Controller', () => {
 
   test('canGoHunting false without contract', async () => {
     // arrange
-    await setVar(page, 'ghostHuntingMode', 0);
+    await setHuntMode(page, 0);
 
     // act
     const result = await callSetup(page, 'setup.Home.canGoHunting()');

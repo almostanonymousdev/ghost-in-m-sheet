@@ -6,8 +6,7 @@
         var V = State.variables;
         var ghosts = setup.Ghosts.list();
         var g = ghosts[Math.floor(Math.random() * ghosts.length)];
-        V.ghostName = g.name;
-        V.ghostEvidence = g.evidence.map(function (e) { return e.id; });
+        setup.Ghosts.startHunt(g.name);
 
         setup.searchableRooms.forEach(function (room) {
             V["currentsearch" + room] = setup.makeEmptySearchState();
@@ -29,7 +28,6 @@
 <<unset $knowledgeUsed>>
 <<unset $temperatureIncreased>>
 <<unset $highpriestess>>
-<<unset $ghostIsTrapped>>
 <<unset $cursedHuntActive>>
 <<unset $cursedHuntEndTime>>
 <<unset $isWeakenGhost>>
@@ -49,6 +47,5 @@ Money: -35 $<br>
 <br>
 @@.mc-action; You've received a contract to identify the type of  ghost@@
 <<set $mc.money -= 35>>
-<<set $ghostHuntingMode to setup.Ghosts.HuntMode.CONTRACT>><br>
 <br>
 @@.backbtn;[[Back|WitchInside]] @@<br>

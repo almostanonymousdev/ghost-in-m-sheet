@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, goToPassage } = require('../helpers');
+const { openGame, resetGame, setVar, getVar, setHuntMode, getHuntMode, goToPassage } = require('../helpers');
 const { expectCleanPassage, setupHunt } = require('./e2e-helpers');
 
 const ROOMS = [
@@ -30,7 +30,7 @@ test.describe('Haunted house — Elm', () => {
 
   test('Elm Street renders with a Go inside link when no companion is set', async () => {
     await setVar(page, 'isElm', 1);
-    await setVar(page, 'ghostHuntingMode', 1);
+    await setHuntMode(page, 1);
     await goToPassage(page, 'Elm Street');
     await expectCleanPassage(page);
     await expect(page.locator('.passage').getByText('Go inside', { exact: true })).toBeVisible();
@@ -40,10 +40,10 @@ test.describe('Haunted house — Elm', () => {
   test('clicking Go inside enters ElmHallway and sets huntingMode to 2', async () => {
     test.setTimeout(10_000);
     await setupHunt(page, 'Spirit', 'elm');
-    await setVar(page, 'ghostHuntingMode', 1);
+    await setHuntMode(page, 1);
     await goToPassage(page, 'Elm Street');
     await clickPassageLink(page, 'Go inside', 'ElmHallway');
-    expect(await getVar(page, 'ghostHuntingMode')).toBe(2);
+    expect(await getHuntMode(page)).toBe(2);
   });
 
   test('End the hunt link appears on street while inside hunt mode', async () => {
@@ -59,7 +59,7 @@ test.describe('Haunted house — Elm', () => {
     await setVar(page, 'isClothesStolen', 0);
     await goToPassage(page, 'Elm Street');
     await clickPassageLink(page, 'End the hunt', 'HuntOverManual');
-    expect(await getVar(page, 'ghostHuntingMode')).toBe(3);
+    expect(await getHuntMode(page)).toBe(3);
   });
 
   for (const room of ROOMS) {
@@ -141,7 +141,7 @@ test.describe('Haunted house — Elm', () => {
     await setupHunt(page, 'Spirit', 'elm');
     await goToPassage(page, 'ElmHallway');
     await clickPassageLink(page, 'leave', 'Elm Street');
-    expect(await getVar(page, 'ghostHuntingMode')).toBe(2);
+    expect(await getHuntMode(page)).toBe(2);
   });
 
   test('ElmBedroom renders cleanly with cursedHuntActive = 1 (hide-spot branch)', async () => {

@@ -28,7 +28,7 @@
 	<<replace "#wishesCount">>
 		<<set $wishesCount -=1>>
 		@@.mc-thoughts; $wishesCount wishes left...@@<br><br>
-		<<set $ghostIsTrapped to 1>>
+		<<set $hunt.trapped to true>>
 		@@.mc-speech; Now the ghost can't change its favorite room.<br>
 		With each wish, I feel worse and worse.@@<br>
 		<<addSanity -15>>
@@ -72,7 +72,7 @@
 			@@.mc-thoughts; $wishesCount wishes left...@@<br><br>
 			<<set $knowledgeUsed to 1>>
 			<<set _allEvidence to ["emf", "spiritbox", "gwb", "uvl", "glass", "temperature"]>>
-			<<set _missingEvidence to _allEvidence.filter(e => !$ghostEvidence.includes(e) && e !== $hiddenEvidence && e !== $hiddenEvidence1 && e !== $hiddenEvidence2)>>
+			<<set _missingEvidence to _allEvidence.filter(e => !$hunt.evidence.includes(e) && e !== $hiddenEvidence && e !== $hiddenEvidence1 && e !== $hiddenEvidence2)>>
 			<<set $chosenEvidence to _missingEvidence.random()>>
 			@@.mc-speech; It worked! One evidence has been removed from my diary!<br>
 			Wait...I hear someone's footsteps...@@

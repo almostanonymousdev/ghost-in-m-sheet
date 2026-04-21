@@ -2,9 +2,6 @@
 <img @src="setup.ImagePath + '/img/witch-girl.jpg'" width="100%">
 <br>
 @@.notmc-speech;Tell me the type of ghost:@@<br>
-<<if $saveMimic eq 1>>
-	<<set $ghostName to "Mimic">>
-<<set $saveMimic to 0>><</if>>
 <<set _ghostTypes = setup.Ghosts.names()>>
 @@.mc-speech;I guess it was:@@<br>
 <<listbox "$ghostTypeSelected">>
@@ -19,7 +16,7 @@
 	</video>
 	@@.notmc-speech;Let's find out, give me some time...@@
 	<<timed 6s>>
-		<<if ($ghostName == $ghostTypeSelected)>>
+		<<if $hunt and $hunt.realName eq $ghostTypeSelected>>
 			@@.notmc-speech; Yes, you're right, good girl@@<br>
 
 			<<set $mc.money += $moneyFromContract + $moneyFromWeakenTheGhost>>
@@ -33,7 +30,7 @@
 
 			@@.backbtn;[[Back|WitchInside]]@@
 		<</if>>
-		<<set $ghostHuntingMode to setup.Ghosts.HuntMode.NONE>>
+		<<run setup.Ghosts.endContract()>>
 		<<unset $hiddenEvidence>>
 		<<unset $hiddenEvidence1>>
 		<<unset $hiddenEvidence2>>

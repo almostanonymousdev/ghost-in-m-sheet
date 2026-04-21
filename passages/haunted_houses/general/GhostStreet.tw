@@ -20,11 +20,11 @@
 <<set $isrealhouse to 0>><<set $isOwaissa to 1>>
 <<include "FurnitureCode">>
 <<set _check to random (1,5)>>
-<<if _check eq 1>><<set $ghostRoom to clone($kitchen)>><</if>>
-<<if _check eq 2>><<set $ghostRoom to clone($bathroom)>><</if>>
-<<if _check eq 3>><<set $ghostRoom to clone($bedroom)>><</if>>
-<<if _check eq 4>><<set $ghostRoom to clone($livingroom)>><</if>>
-<<if _check eq 5>><<set $ghostRoom to clone($hallway)>><</if>>
+<<if _check eq 1>><<set $hunt.room to clone($kitchen)>><</if>>
+<<if _check eq 2>><<set $hunt.room to clone($bathroom)>><</if>>
+<<if _check eq 3>><<set $hunt.room to clone($bedroom)>><</if>>
+<<if _check eq 4>><<set $hunt.room to clone($livingroom)>><</if>>
+<<if _check eq 5>><<set $hunt.room to clone($hallway)>><</if>>
 <</link>>@@
 <</nobr>>
 </div>
@@ -54,17 +54,17 @@
 <<set $isIronclad to 1>>
 <<include "FurnitureCode">>
 <<set _check to random (1,11)>>
-<<if _check eq 1>><<set $ghostRoom to clone($BlockA)>><</if>>
-<<if _check eq 2>><<set $ghostRoom to clone($BlockB)>><</if>>
-<<if _check eq 3>><<set $ghostRoom to clone($BlockACellA)>><</if>>
-<<if _check eq 4>><<set $ghostRoom to clone($BlockACellB)>><</if>>
-<<if _check eq 5>><<set $ghostRoom to clone($BlockACellC)>><</if>>
-<<if _check eq 6>><<set $ghostRoom to clone($BlockBCellA)>><</if>>
-<<if _check eq 7>><<set $ghostRoom to clone($BlockBCellB)>><</if>>
-<<if _check eq 8>><<set $ghostRoom to clone($BlockBCellC)>><</if>>
-<<if _check eq 9>><<set $ghostRoom to clone($reception)>><</if>>
-<<if _check eq 10>><<set $ghostRoom to clone($kitchen)>><</if>>
-<<if _check eq 11>><<set $ghostRoom to clone($hallway)>><</if>>
+<<if _check eq 1>><<set $hunt.room to clone($BlockA)>><</if>>
+<<if _check eq 2>><<set $hunt.room to clone($BlockB)>><</if>>
+<<if _check eq 3>><<set $hunt.room to clone($BlockACellA)>><</if>>
+<<if _check eq 4>><<set $hunt.room to clone($BlockACellB)>><</if>>
+<<if _check eq 5>><<set $hunt.room to clone($BlockACellC)>><</if>>
+<<if _check eq 6>><<set $hunt.room to clone($BlockBCellA)>><</if>>
+<<if _check eq 7>><<set $hunt.room to clone($BlockBCellB)>><</if>>
+<<if _check eq 8>><<set $hunt.room to clone($BlockBCellC)>><</if>>
+<<if _check eq 9>><<set $hunt.room to clone($reception)>><</if>>
+<<if _check eq 10>><<set $hunt.room to clone($kitchen)>><</if>>
+<<if _check eq 11>><<set $hunt.room to clone($hallway)>><</if>>
 <</link>>@@
 <<else>>@@.mc-thoughts; Level 4+ required@@
 <</if>>
@@ -97,15 +97,15 @@
 <<set $isElm to 1>>
 <<include "FurnitureCode">>
 <<set _check to random (1,9)>>
-<<if _check eq 1>><<set $ghostRoom to clone($kitchen)>><</if>>
-<<if _check eq 2>><<set $ghostRoom to clone($bathroom)>><</if>>
-<<if _check eq 3>><<set $ghostRoom to clone($bedroom)>><</if>>
-<<if _check eq 4>><<set $ghostRoom to clone($nursery)>><</if>>
-<<if _check eq 5>><<set $ghostRoom to clone($hallway)>><</if>>
-<<if _check eq 6>><<set $ghostRoom to clone($hallwayUpstairs)>><</if>>
-<<if _check eq 7>><<set $ghostRoom to clone($bedroomTwo)>><</if>>
-<<if _check eq 8>><<set $ghostRoom to clone($bathroomTwo)>><</if>>
-<<if _check eq 9>><<set $ghostRoom to clone($basement)>><</if>>
+<<if _check eq 1>><<set $hunt.room to clone($kitchen)>><</if>>
+<<if _check eq 2>><<set $hunt.room to clone($bathroom)>><</if>>
+<<if _check eq 3>><<set $hunt.room to clone($bedroom)>><</if>>
+<<if _check eq 4>><<set $hunt.room to clone($nursery)>><</if>>
+<<if _check eq 5>><<set $hunt.room to clone($hallway)>><</if>>
+<<if _check eq 6>><<set $hunt.room to clone($hallwayUpstairs)>><</if>>
+<<if _check eq 7>><<set $hunt.room to clone($bedroomTwo)>><</if>>
+<<if _check eq 8>><<set $hunt.room to clone($bathroomTwo)>><</if>>
+<<if _check eq 9>><<set $hunt.room to clone($basement)>><</if>>
 <</link>>@@
 <<else>>@@.mc-thoughts; Level 3+ required@@
 <</if>>
@@ -139,15 +139,15 @@
 <<set $isrealhouse to 1>>
 <<set $isEnigma to 1>>
 <<set _check to random (1,9)>>
-<<if _check eq 1>><<set $ghostRoom to clone($kitchen)>><</if>>
-<<if _check eq 2>><<set $ghostRoom to clone($bathroom)>><</if>>
-<<if _check eq 3>><<set $ghostRoom to clone($bedroom)>><</if>>
-<<if _check eq 4>><<set $ghostRoom to clone($livingroom)>><</if>>
-<<if _check eq 5>><<set $ghostRoom to clone($hallway)>><</if>>
-<<if _check eq 6>><<set $ghostRoom to clone($roomA)>><</if>>
-<<if _check eq 7>><<set $ghostRoom to clone($roomB)>><</if>>
-<<if _check eq 8>><<set $ghostRoom to clone($roomC)>><</if>>
-<<if _check eq 9>><<set $ghostRoom to clone($basement)>><</if>>
+<<if _check eq 1>><<set $hunt.room to clone($kitchen)>><</if>>
+<<if _check eq 2>><<set $hunt.room to clone($bathroom)>><</if>>
+<<if _check eq 3>><<set $hunt.room to clone($bedroom)>><</if>>
+<<if _check eq 4>><<set $hunt.room to clone($livingroom)>><</if>>
+<<if _check eq 5>><<set $hunt.room to clone($hallway)>><</if>>
+<<if _check eq 6>><<set $hunt.room to clone($roomA)>><</if>>
+<<if _check eq 7>><<set $hunt.room to clone($roomB)>><</if>>
+<<if _check eq 8>><<set $hunt.room to clone($roomC)>><</if>>
+<<if _check eq 9>><<set $hunt.room to clone($basement)>><</if>>
 <</link>>@@
 <<else>>@@.mc-thoughts; Level 2+ required@@
 <</if>>

@@ -17,7 +17,7 @@
 <<elseif _hg and _hg.spiritboxStaticChance gt 0 and _spiritboxChance lte _hg.spiritboxStaticChance>>
 	<span class="spiritbox-question">You ask through the Spiritbox: "What do you want?"</span>
 	<span class="spiritbox-answer"><b>The response is interrupted... static and crackling in the speaker... then silence.</b></span>
-<<elseif $ghostEvidence.includes("spiritbox") and setup.chanceByTier($equipment.spiritbox, _spiritboxChance) and setup.isGhostHere()>>
+<<elseif _hg and _hg.hasEvidence("spiritbox") and setup.chanceByTier($equipment.spiritbox, _spiritboxChance) and setup.isGhostHere()>>
 	<<set _questions to ["Where are you?", "Are you here?", "What do you want?"]>>
 	<<set _answers to ["I am hiding.", "I am here.", "I want revenge."]>>
 	<<set _currentQuestion to random(_questions.length - 1)>>

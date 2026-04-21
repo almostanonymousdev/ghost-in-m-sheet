@@ -8,9 +8,9 @@ the ghost's room, yellow when the room has no temperature evidence. Ghosts
 with temperatureGlitchChance set (Raiju) occasionally glitch the reading
 to a random 0..50 value on tier <= 4 thermometers. */
 <<set _inGhostRoom to setup.isGhostHere()>>
-<<set _hasTempEvidence to $ghostEvidence.includes("temperature")>>
-<<set _tier to $equipment.temperature>>
 <<set _hg to setup.Ghosts.active()>>
+<<set _hasTempEvidence to _hg and _hg.hasEvidence("temperature")>>
+<<set _tier to $equipment.temperature>>
 
 <<if _inGhostRoom and _hasTempEvidence>>
 	<<set _offset to 8>>

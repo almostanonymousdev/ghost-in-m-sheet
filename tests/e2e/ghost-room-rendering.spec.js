@@ -26,7 +26,6 @@ test.describe('Ghost room rendering — all Owaissa rooms', () => {
       await setupHunt(page, ghostName);
 
       if (ghostName === 'Mimic') {
-        await setVar(page, 'saveMimic', 1);
         await setVar(page, 'lastChangeIntervalMimic', ' ');
       }
 

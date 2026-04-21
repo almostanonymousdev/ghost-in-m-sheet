@@ -63,6 +63,31 @@ function setVar(page, varName, value) {
 }
 
 /**
+ * Set $hunt.mode (0 = none/null-hunt, 1 = contract, 2 = active, 3 = possessed).
+ * Auto-creates a stub hunt for modes >= 1 so tests can exercise mode
+ * transitions without calling setupHunt first.
+ */
+function setHuntMode(page, mode) {
+  return page.evaluate((m) => {
+    const V = SugarCube.State.variables;
+    if (m === 0) {
+      V.hunt = null;
+      return;
+    }
+    if (!V.hunt) SugarCube.setup.Ghosts.startHunt('Shade');
+    V.hunt.mode = m;
+  }, mode);
+}
+
+/** Read $hunt.mode (0 when no hunt is active). */
+function getHuntMode(page) {
+  return page.evaluate(() => {
+    const h = SugarCube.State.variables.hunt;
+    return h ? h.mode : 0;
+  });
+}
+
+/**
  * Call a setup.* controller method and return the result.
  */
 function callSetup(page, expr) {
@@ -110,6 +135,8 @@ module.exports = {
   goToPassage,
   getVar,
   setVar,
+  setHuntMode,
+  getHuntMode,
   callSetup,
   openGame,
   resetGame,

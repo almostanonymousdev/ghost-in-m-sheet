@@ -139,9 +139,9 @@
             huntCondition:     function (mc) { return mc.sanity <= 50; },
             huntConditionText: "Can start a hunt if you have <= 50 sanity",
             onEnterHouse: function () {
-                var V = State.variables;
-                V.saveMimic = 1;
-                V.lastChangeIntervalMimic = " ";
+                /* Seed the rotation clock; realName is already "Mimic"
+                   from startHunt, so isMimicHunt() already returns true. */
+                State.variables.lastChangeIntervalMimic = " ";
             }
         },
         {
@@ -298,15 +298,15 @@
 
     /* True when this ghost exposes the given evidence type. Accepts a
        canonical id string ("glass", "emf", …) or an Evidence object.
-       Bakes in the Mimic rule: during a Mimic-disguised hunt
-       ($saveMimic === 1), ectoplasm always reads positive — reflecting
-       the "Mimic always has an extra evidence -- ectoplasm" hint. */
+       Bakes in the Mimic rule: during a Mimic hunt, ectoplasm always
+       reads positive — reflecting the "Mimic always has an extra
+       evidence -- ectoplasm" hint. */
     Ghost.prototype.hasEvidence = function (type) {
         var id = (type && typeof type === "object") ? type.id : type;
         for (var i = 0; i < this.evidence.length; i++) {
             if (this.evidence[i].id === id) return true;
         }
-        if (id === E.GLASS.id && State.variables.saveMimic === 1) return true;
+        if (id === E.GLASS.id && setup.Ghosts.isMimicHunt()) return true;
         return false;
     };
 
@@ -392,16 +392,32 @@
         return out;
     }
 
-    /* Lifecycle stages of $ghostHuntingMode. Use HuntMode.X instead of
-       magic ints, and prefer the predicate helpers (isHunting,
-       hasContract, …) to compare values. */
+    /* Lifecycle stages of $hunt.mode. Use HuntMode.X instead of magic
+       ints, and prefer the predicate helpers (isHunting, hasContract, …)
+       to compare values. */
     var HuntMode = Object.freeze({
-        NONE:      0,   // no contract bought
+        NONE:      0,   // no contract bought (represented by $hunt === null)
         CONTRACT:  1,   // contract bought, not yet entered the house
         ACTIVE:    2,   // player is inside the house, hunt in progress
         POSSESSED: 3    // hunt ended (manual exit, sanity-over, pills); witch
                         //    contract must be closed before starting another
     });
+
+    /* Build a fresh $hunt object for a new contract. All lifecycle-
+       coupled hunt state lives here so WitchEndContract can clean up with
+       a single `$hunt = null` instead of unsetting each field. */
+    function buildHunt(name) {
+        var cat = setup.Ghosts.getByName(name);
+        var evIds = cat ? cat.evidence.map(function (e) { return e.id; }) : [];
+        return {
+            name:     name,     // visible name — rotates for Mimic hunts
+            realName: name,     // true identity — never changes during a hunt
+            evidence: evIds,    // evidence ids; DeleteEvidence shrinks this
+            room:     null,     // the ghost's favorite room (set in GhostStreet)
+            trapped:  false,    // $hunt.trapped replaces $ghostIsTrapped
+            mode:     HuntMode.CONTRACT
+        };
+    }
 
     /* The canonical ghost catalogue lives in the GHOSTS closure above;
        setup.Ghosts is the public namespace. Callers that want to iterate
@@ -415,22 +431,22 @@
         },
 
         /* The ghost currently being hunted. Returns a Ghost instance whose
-           static fields come from the catalogue entry named $ghostName, but
-           whose `evidence` is rehydrated from $ghostEvidence (mutable per
-           hunt — DeleteEvidence prunes it; for Mimic, $ghostName rotates
-           while $ghostEvidence stays the real Mimic set). null when no hunt
-           is active. */
+           static fields come from the catalogue entry named $hunt.name,
+           but whose `evidence` is rehydrated from $hunt.evidence (mutable
+           per hunt — DeleteEvidence prunes it; for Mimic hunts $hunt.name
+           rotates while $hunt.evidence stays the real Mimic set). null
+           when no hunt is active. */
         active: function () {
-            var V = State.variables;
-            if (!V.ghostName) return null;
-            var catalogue = setup.Ghosts.getByName(V.ghostName);
+            var h = State.variables.hunt;
+            if (!h || !h.name) return null;
+            var catalogue = setup.Ghosts.getByName(h.name);
             if (!catalogue) return null;
             var g = Object.create(Ghost.prototype);
             /* Copy every own property from the catalogue entry (static fields
                plus any behaviour overrides like onHuntEnd), then overlay the
                mutable per-hunt evidence from state. */
             Object.keys(catalogue).forEach(function (k) { g[k] = catalogue[k]; });
-            g.evidence = rehydrateEvidence(V.ghostEvidence);
+            g.evidence = rehydrateEvidence(h.evidence);
             return g;
         },
 
@@ -472,11 +488,18 @@
             if (g) g.onEnterHouse();
         },
 
+        /* $hunt lifecycle. startHunt creates the object (witch contract
+           bought); endContract nulls it out (contract closed at witch).
+           Use hunt() to read it — null means "no contract". */
+        hunt:         function ()     { return State.variables.hunt || null; },
+        startHunt:    function (name) { State.variables.hunt = buildHunt(name); },
+        endContract:  function ()     { State.variables.hunt = null; },
+
         /* Hunt-mode query/mutation helpers. Prefer these to raw
-           $ghostHuntingMode comparisons — they keep the magic ints out of
+           $hunt.mode comparisons — they keep the magic ints out of
            passages and give each stage a readable predicate. */
-        huntMode:    function ()     { return State.variables.ghostHuntingMode; },
-        setHuntMode: function (mode) { State.variables.ghostHuntingMode = mode; },
+        huntMode:    function ()     { var h = State.variables.hunt; return h ? h.mode : HuntMode.NONE; },
+        setHuntMode: function (mode) { var h = State.variables.hunt; if (h) h.mode = mode; },
         isInactive:  function ()     { return this.huntMode() === HuntMode.NONE; },
         hasContract: function ()     { return this.huntMode() === HuntMode.CONTRACT; },
         isHunting:   function ()     { return this.huntMode() === HuntMode.ACTIVE; },
@@ -484,6 +507,14 @@
         /* True for any stage past NONE — "a contract exists, regardless of
            whether the player is pre-entry, inside, or post-hunt". */
         isAnyMode:   function ()     { return this.huntMode() !== HuntMode.NONE; },
+
+        /* True when this hunt is actually a Mimic in disguise. Replaces
+           the $saveMimic flag: the Mimic's real identity lives in
+           $hunt.realName, while $hunt.name rotates through disguises. */
+        isMimicHunt: function () {
+            var h = State.variables.hunt;
+            return !!(h && h.realName === "Mimic");
+        },
 
         /* Info-collected flag helpers. Callers should never touch the
            $ghost<Name>InfoCollected state key directly — the naming scheme

@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, getVar, callSetup } = require('./helpers');
+const { openGame, resetGame, getVar, getHuntMode, callSetup } = require('./helpers');
 
 test.describe('Game Initialization (StoryInit)', () => {
   let page;
@@ -75,7 +75,7 @@ test.describe('Game Initialization (StoryInit)', () => {
     const hours = await getVar(page, 'hours');
     const minutes = await getVar(page, 'minutes');
     const meridiem = await getVar(page, 'meridiem');
-    const mode = await getVar(page, 'ghostHuntingMode');
+    const mode = await getHuntMode(page);
 
     // assert
     expect(hours).toBe(12);

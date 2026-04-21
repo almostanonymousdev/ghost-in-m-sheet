@@ -21,9 +21,9 @@
 		@@.usebtn; [[Talk to him|CaseyMain]]@@<br>
 	<</if>>
 <<else>>
-	@@.movebtn;[[Go inside|ElmHallway][$ghostHuntingMode to setup.Ghosts.HuntMode.ACTIVE]]@@<br>
+	@@.movebtn;[[Go inside|ElmHallway][$hunt.mode to setup.Ghosts.HuntMode.ACTIVE]]@@<br>
 <</if>>
 <br>
 <br>
-<<if setup.Ghosts.isHunting()>><span class="movebtn">[[End the hunt|HuntOverManual][$ghostHuntingMode to setup.Ghosts.HuntMode.POSSESSED]]</span><<else>>
+<<if setup.Ghosts.isHunting()>><span class="movebtn">[[End the hunt|HuntOverManual][$hunt.mode to setup.Ghosts.HuntMode.POSSESSED]]</span><<else>>
 <</if>>

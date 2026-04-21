@@ -1183,17 +1183,16 @@ setup.hauntedPassages = (function () {
 }());
 
 /* setup.isGhostHere([houses]) -- true iff the current passage belongs to
- * one of the listed houses AND $ghostRoom.name matches that passage's
+ * one of the listed houses AND $hunt.room.name matches that passage's
  * bgRoom. Pass a house-filter array to scope the check (e.g. ["enigma"]
  * for the *Art tool variants). Omit the filter to accept any house. */
 setup.isGhostHere = function (houses) {
-    var sv = State.variables;
-    var ghostRoom = sv.ghostRoom;
-    if (!ghostRoom || !ghostRoom.name) return false;
+    var h = State.variables.hunt;
+    if (!h || !h.room || !h.room.name) return false;
     var cur = passage();
     return setup.hauntedPassages.some(function (e) {
         if (houses && houses.indexOf(e.house) === -1) return false;
-        return e.passage === cur && e.bgRoom === ghostRoom.name;
+        return e.passage === cur && e.bgRoom === h.room.name;
     });
 };
 

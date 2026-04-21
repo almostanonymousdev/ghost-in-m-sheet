@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, callSetup } = require('./helpers');
+const { openGame, resetGame, setVar, getVar, setHuntMode, getHuntMode, callSetup } = require('./helpers');
 
 test.describe('Haunted Houses Controller', () => {
   let page;
@@ -20,7 +20,7 @@ test.describe('Haunted Houses Controller', () => {
 
   test('isContractMode true when ghostHuntingMode is 1', async () => {
     // arrange
-    await setVar(page, 'ghostHuntingMode', 1);
+    await setHuntMode(page, 1);
 
     // act
     const result = await callSetup(page, 'setup.HauntedHouses.isContractMode()');
@@ -31,7 +31,7 @@ test.describe('Haunted Houses Controller', () => {
 
   test('isInsideHouse true when ghostHuntingMode is 2', async () => {
     // arrange
-    await setVar(page, 'ghostHuntingMode', 2);
+    await setHuntMode(page, 2);
 
     // act
     const result = await callSetup(page, 'setup.HauntedHouses.isInsideHouse()');
@@ -42,7 +42,7 @@ test.describe('Haunted Houses Controller', () => {
 
   test('isHuntOver true when ghostHuntingMode is 3', async () => {
     // arrange
-    await setVar(page, 'ghostHuntingMode', 3);
+    await setHuntMode(page, 3);
 
     // act
     const result = await callSetup(page, 'setup.HauntedHouses.isHuntOver()');
@@ -53,18 +53,18 @@ test.describe('Haunted Houses Controller', () => {
 
   test('endHunt sets ghostHuntingMode to 3', async () => {
     // arrange
-    await setVar(page, 'ghostHuntingMode', 2);
+    await setHuntMode(page, 2);
 
     // act
     await page.evaluate(() => SugarCube.setup.HauntedHouses.endHunt());
 
     // assert
-    expect(await getVar(page, 'ghostHuntingMode')).toBe(3);
+    expect(await getHuntMode(page)).toBe(3);
   });
 
   test('hunt mode states are mutually exclusive', async () => {
     // arrange
-    await setVar(page, 'ghostHuntingMode', 1);
+    await setHuntMode(page, 1);
 
     // act
     const isContract = await callSetup(page, 'setup.HauntedHouses.isContractMode()');
