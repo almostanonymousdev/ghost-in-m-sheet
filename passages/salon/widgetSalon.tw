@@ -11,7 +11,7 @@
 	<<set _extraVal to (typeof _args[7] !== "undefined") ? _args[7] : 0>>
 	<div class="housecard">
 	<<if ndef State.variables[_varName]>>
-		<img @src="setup.ImagePath + '/' + _img" class="iconPx"><br>
+		<<image _img "iconPx">><br>
 		<span class="priceAmount"><<= _price>>$</span><br>
 		<span class="mc-thoughts">_bonusText</span><br>
 		<<if $mc.money gte _price>>
@@ -42,7 +42,7 @@
 	<<set _extraVal to (typeof _args[8] !== "undefined") ? _args[8] : 0>>
 	<div class="housecard">
 	<<if ndef State.variables[_varName]>>
-		<img @src="setup.ImagePath + '/' + _img" class="iconPx"><br>
+		<<image _img "iconPx">><br>
 		<<if $mc.corruption gte _reqCorruption>>
 			<span class="priceAmount"><<= _price>>$</span><br>
 			<span class="mc-thoughts">_bonusText</span><br>
@@ -58,7 +58,7 @@
 			<<else>>@@.mc-thoughts; I don't have enough money@@
 			<</if>>
 		<<else>>
-			@@.warningtext; Req. _reqCorruption+ <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:30px; display: inline; margin: 0;">@@<br>
+			@@.warningtext; Req. _reqCorruption+ <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:30px; display: inline; margin: 0;" }>>@@<br>
 		<</if>>
 	<</if>>
 	</div>

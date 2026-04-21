@@ -1,5 +1,5 @@
 :: Livingroom [nobr] {"position":"700,800","size":"100,100"}
-<img @src="setup.ImagePath + '/img/mclivingroom.jpg'" width="100%"><br>
+<<image "img/mclivingroom.jpg" { width: "100%" }>><br>
 @@.location; Livingroom@@<br>
 <br>
 <<if $tentaclesEventPCText eq 1>>

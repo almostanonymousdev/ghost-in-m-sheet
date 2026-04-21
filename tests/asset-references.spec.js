@@ -64,6 +64,14 @@ function extractRefs(filePath) {
     for (const m of line.matchAll(/@src\s*=\s*["']setup\.ImagePath\s*\+\s*['"`]\/?([^'"`\n]+?)['"`]/g)) {
       push(m[1], lineno);
     }
+    // <<video "PATH"...>> / <<image "PATH"...>> — first arg is a static
+    // string relative to setup.ImagePath. Dynamic paths (variable concat,
+    // template literals) are skipped: the lookahead requires the closing
+    // quote be followed by end-of-macro, an options object, or a class
+    // shorthand string; anything else (e.g. `"prefix" + var`) falls through.
+    for (const m of line.matchAll(/<<(?:video|image)\s+['"]\/?([^'"\n]+?)['"](?=\s*(?:>>|\{|['"]))/g)) {
+      push(m[1], lineno);
+    }
     // src="assets/PATH" or href="assets/PATH"
     for (const m of line.matchAll(/(?:src|href)\s*=\s*["']assets\/([^"'\n]+)["']/g)) {
       push(m[1], lineno);

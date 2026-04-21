@@ -2,7 +2,7 @@
 <<deliveryEventChoose "pizza">>
 @@.notmc-speech; The pizza box looks dented... Please, open it, I want to make sure everything is okay.@@<br>
 @@.mc-speech;<<linkreplace " Umm... yeah sure">>
-	<img @src="setup.ImagePath + '/deliveryhub/pizzaevent/failed.jpg'" style="max-width: 100%; height: auto; display: block; margin: 0 auto;"><br>
+	<<image "deliveryhub/pizzaevent/failed.jpg" { style: "max-width: 100%; height: auto; display: block; margin: 0 auto;" }>><br>
 	@@.notmc-speech; Ah-ha! I knew it. I'm not going to pay for it.@@<br>
 	<<if not setup.Delivery.canAcceptPizzaDeal()>>
 		@@.mc-thoughts; She's right, it's my fault. I guess I was unlucky@@ <<deliveryCorrReq 3>><br><br>

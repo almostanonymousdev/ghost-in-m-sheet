@@ -2,20 +2,20 @@
 <div id="statusContainer">
 <div id="inPainImg">
 <<hovertip "Need to buy medicine">><<if $isPenaltyOn eq 1>>
-	<img @src="setup.ImagePath + '/img/icons/pain.jpg'">
+	<<image "img/icons/pain.jpg">>
 <</if>>
 <</hovertip>>
 </div>
 <<if $isIronclad eq 1 and setup.Ghosts.isHunting()>>
-	<<hovertip "Wearing a sexy warden costume">><img @src="setup.ImagePath + '/img/icons/warden1.png'">
+	<<hovertip "Wearing a sexy warden costume">><<image "img/icons/warden1.png">>
 	<</hovertip>>
 <<else>>
 	<div id="statusOuterTop">
 	<<if $tshirtState eq "worn">>
-		<<hovertip "Wearing t-shirt">><img @src="setup.ImagePath + '/img/icons/top.jpg'">
+		<<hovertip "Wearing t-shirt">><<image "img/icons/top.jpg">>
 		<</hovertip>>
 	<<else>>
-		<img @src="setup.ImagePath + '/img/icons/empty.jpg'">
+		<<image "img/icons/empty.jpg">>
 	<</if>>
 	</div>
 	<div id="statusOuterBottom">
@@ -25,27 +25,27 @@
 	{ state: $skirtState,  tip: "Wearing skirt",  icon: "skirt.jpg" }
 	].find(b => b.state === "worn")>>
 	<<if _bottom>>
-		<<hovertip _bottom.tip>><img @src="setup.ImagePath + '/img/icons/' + _bottom.icon">
+		<<hovertip _bottom.tip>><<image "img/icons/" + _bottom.icon>>
 		<</hovertip>>
 	<<else>>
-		<img @src="setup.ImagePath + '/img/icons/empty.jpg'">
+		<<image "img/icons/empty.jpg">>
 	<</if>>
 	</div>
 	<div id="statusUnderTop">
 	<<if $braState eq "worn">>
-		<<hovertip "Wearing bra.">><img @src="setup.ImagePath + '/img/icons/bra.jpg'">
+		<<hovertip "Wearing bra.">><<image "img/icons/bra.jpg">>
 		<</hovertip>>
 	<<else>>
-		<<hovertip "No bra on!">><img @src="setup.ImagePath + '/img/icons/tits.jpg'">
+		<<hovertip "No bra on!">><<image "img/icons/tits.jpg">>
 		<</hovertip>>
 	<</if>>
 	</div>
 	<div id="statusUnderBottom">
 	<<if $pantiesState eq "worn">>
-		<<hovertip "Wearing panties">><img @src="setup.ImagePath + '/img/icons/panties.jpg'">
+		<<hovertip "Wearing panties">><<image "img/icons/panties.jpg">>
 		<</hovertip>>
 	<<else>>
-		<<hovertip "No panties on!">><img @src="setup.ImagePath + '/img/icons/nude.jpg'">
+		<<hovertip "No panties on!">><<image "img/icons/nude.jpg">>
 		<</hovertip>>
 	<</if>>
 	</div>

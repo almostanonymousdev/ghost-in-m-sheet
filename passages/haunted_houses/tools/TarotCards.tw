@@ -11,7 +11,7 @@
 { name: "highpriestess", chance: 2, image: "cursedpossessions/tarot-cards/highpriestess.jpg" },
 { name: "fool", chance: 19, image: "cursedpossessions/tarot-cards/fool.jpg" }
 ]>>
-<div id="tarotCard"><img @src="setup.ImagePath + '/cursedpossessions/tarot-cards/tarot.png'" class="displayCentredImgs"></div>
+<div id="tarotCard"><<image "cursedpossessions/tarot-cards/tarot.png" "displayCentredImgs">></div>
 
 <div id="tarotCardsEnd" class="tarotCardHidden"><<link "@@.usebtn;Pull a card@@">>
 	<<replace "#tarotCard">>
@@ -34,7 +34,7 @@
 					<<set _tempCard to $tarotDeck[_randomIndex]>>
 
 					<div class="fadeInScale">
-					<img @src="setup.ImagePath+`/`+_tempCard.image" class="displayCentredImgs fadeInScale"></div>
+					<<image _tempCard.image "displayCentredImgs fadeInScale">></div>
 					@@.mc-speech; Oh... something's about to happen... but what...@@
 					<<done>>
 						<<run $(".fadeInScale").addClass("tarotCardsShow")>>
@@ -42,7 +42,7 @@
 					<</done>>
 					<<timed 1s>>
 						<<replace #tarotCard>>
-							<img @src="setup.ImagePath+`/`+$chosenCard.image" class="displayCentredImgs fadeInScaleFool">
+							<<image $chosenCard.image "displayCentredImgs fadeInScaleFool">>
 							@@.mc-speech; Um, did it just... change? Is this supposed to be a joke? @@
 						<</replace>>
 						<<done>>
@@ -54,7 +54,7 @@
 
 				<<else>>
 					<div class="fadeInScale">
-					<img @src="setup.ImagePath+`/`+$chosenCard.image" class="displayCentredImgs" >
+					<<image $chosenCard.image "displayCentredImgs">>
 					</div>
 					@@.mc-speech; Oh... something's about to happen... but what...?@@<br>
 					<<done>>
@@ -72,8 +72,8 @@
 					<<timed 2s>>
 						<<randRangeVideo "cursedpossessions/passion" 1 4 ".mp4">>
 						@@.mc-speech; Ah~ I'm getting so wet down there... mmm. @@<br>
-						@@.mc-thoughts; Lust increased: +15 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
-						@@.mc-thoughts; Sanity decreased: -15 <img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
+						@@.mc-thoughts; Lust increased: +15 <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
+						@@.mc-thoughts; Sanity decreased: -15 <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
 						<<addSanity -15>>
 						<<addLust 15>>
 						<<run setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 50)>>
@@ -86,8 +86,8 @@
 						<<randRangeVideo "cursedpossessions/pulse" 1 4 ".mp4">>
 						@@.mc-speech; My... oh~ my little asshole is pulsating so hard... <br>
 						Somehow, I feel much better after that...@@<br>
-						@@.mc-thoughts; Lust decreased: -15 <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
-						@@.mc-thoughts; Sanity increased: +15 <img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
+						@@.mc-thoughts; Lust decreased: -15 <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
+						@@.mc-thoughts; Sanity increased: +15 <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
 						<<addSanity 15>>
 						<<addLust -15>>
 						<<run setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 50)>>
@@ -115,7 +115,7 @@
 						<<randRangeVideo "cursedpossessions/power" 1 3 ".mp4">>
 						<<run setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 50)>>
 						@@.mc-speech; Wow, I can feel power surging through me! Oh, I'm ready to take on anything! @@<br>
-						@@.mc-thoughts; Energy increased: +5 <img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
+						@@.mc-thoughts; Energy increased: +5 <<image "img/energy.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
 						<<addEnergy 5>>
 						<<addFit 1>>
 
@@ -125,7 +125,7 @@
 
 						<<randRangeVideo "cursedpossessions/whore" 1 6 ".mp4">>
 						@@.mc-speech; Damn, I can feel this affecting my body... everything's so sensitive, and some parts feel... bigger... @@<br>
-						@@.mc-thoughts; Corruption increased: +0.3 <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;">@@<br>
+						@@.mc-thoughts; Corruption increased: +0.3 <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
 						<<set $mc.corruption += 0.3>>
 						<<run setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 50)>>
 					<</timed>>

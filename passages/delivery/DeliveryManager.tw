@@ -1,5 +1,5 @@
 :: DeliveryManager [nobr] {"position":"1100,1200","size":"100,100"}
-<img @src="setup.ImagePath + '/img/john.jpg'" width="70%"><br>
+<<image "img/john.jpg" { width: "70%" }>><br>
 <<if setup.Delivery.isFirstVisit()>>
 	@@.mc-thoughts; You enter the manager's office and notice a man around forty. There's nothing particularly remarkable about him. As you make your presence known, he carefully assesses you, momentarily pausing his gaze on your chest. Nevertheless, you gather the courage to initiate the conversation.@@<br>
 	<br>
@@ -48,7 +48,7 @@
 			<<if not setup.Delivery.meetsBeautyForManagerFlirt()>>
 				@@.notmc-speech; Um... <i>He looked at me but quickly lowered his head and started flipping through his papers</i><br> I think you just need to work more<br>@@
 				@@.mc-thoughts; I need to catch his attention somehow<br>@@
-				@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/beauty.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 45)@@
+				@@.warningtext; (Req. <<image "img/beauty.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 45)@@
 			<<else>>
 				<<if setup.Delivery.hasMetManagerEvent()>>
 					@@.notmc-speech;Of course, $mc.name, I think you know how I can help you@@<br>
@@ -60,7 +60,7 @@
 				<<if setup.Delivery.managerWillPayExtra()>>
 					@@.usebtn;[[Give him a blowjob|DeliveryManagerEventStart]]@@<br>
 				<<else>>@@.mc-thoughts; Is he asking me to suck him off? No fucking way!<br>@@
-					@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 2)@@
+					@@.warningtext; (Req. <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 2)@@
 					@@.mc-speech;No, I'd better go<br>@@
 				<</if>>
 			<</if>>

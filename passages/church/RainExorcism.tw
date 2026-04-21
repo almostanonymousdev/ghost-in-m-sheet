@@ -1,5 +1,5 @@
 :: RainExorcism [nobr] {"position":"2175,1500","size":"100,100"}
-<img @src="setup.ImagePath + '/rescue/rain.jpg'" width="50%" class="displayCentredImgs"><br>
+<<image "rescue/rain.jpg" { class: "displayCentredImgs", width: "50%" }>><br>
 @@.mc-speech; Hi, Rain. A witch told me you could help me...@@<br>
 <<if setup.Church.rainTrustsForExorcism()>>
 	@@.notmc-speech; Yes, of course. You've helped me before, and I'm ready to assist you. What's the matter?@@<br>

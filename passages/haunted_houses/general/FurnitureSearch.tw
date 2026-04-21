@@ -1,7 +1,5 @@
 :: FurnitureSearch [nobr noreturn] {"position":"1850,200","size":"100,100"}
-<video autoplay controls muted loop>
-<source @src="setup.ImagePath + '/curseditems/lfci.mp4'" type="video/mp4">
-</video>
+<<video "curseditems/lfci.mp4">>
 <<if $isOwaissa eq 1>>
 	<<if $isClothesStolen eq 1 and
 		$currentFurniture eq $placeForClothesStolenOwaissa>>
@@ -16,7 +14,7 @@
 		<<include "RescueClueFound">>
 	<<elseif $currentFurniture == $placeForTarotCardsOwaissa and $tarotCardsStage eq 0>>
 		@@.mc-thoughts; You come across a strange@@ <<linkappend "@@.usebtn; deck of cards.@@">><br>
-			<img @src="setup.ImagePath + '/cursedpossessions/tarot-cards/tarot.png'" class="displayCentredImgs">
+			<<image "cursedpossessions/tarot-cards/tarot.png" "displayCentredImgs">>
 
 			@@.mc-speech; Hmm... are these... tarot cards? <br>
 			This deck looks so unusual... They say it can predict the future.<br>
@@ -30,7 +28,7 @@
 		@@.backbtn; [[Back|$return]]@@
 	<<elseif $currentFurniture == $placeForMonkeyPawOwaissa and $MonkeyPawStage eq 0>>
 		@@.mc-thoughts; You come across a strange@@ <<linkappend "@@.usebtn; paw.@@">><br>
-			<img @src="setup.ImagePath + '/cursedpossessions/monkey-paw/monkeypaw.jpg'" class="displayCentredImgs">
+			<<image "cursedpossessions/monkey-paw/monkeypaw.jpg" "displayCentredImgs">>
 
 			@@.mc-speech; Is this... the Monkey Paw? <br>
 			I think I read something about it when I was younger.<br>
@@ -63,7 +61,7 @@
 		<<include "RescueClueFound">>
 	<<elseif $currentFurniture == $placeForTarotCardsElm and $tarotCardsStage eq 0>>
 		@@.mc-thoughts; You come across a strange@@ <<linkappend "@@.usebtn; deck of cards.@@">><br>
-			<img @src="setup.ImagePath + '/cursedpossessions/tarot-cards/tarot.png'" class="displayCentredImgs">
+			<<image "cursedpossessions/tarot-cards/tarot.png" "displayCentredImgs">>
 
 			@@.mc-speech; Hmm... are these... tarot cards? <br>
 			This deck looks so unusual... They say it can predict the future.<br>
@@ -77,7 +75,7 @@
 		@@.backbtn; [[Back|$return]]@@
 	<<elseif $currentFurniture == $placeForMonkeyPawElm and $MonkeyPawStage eq 0>>
 		@@.mc-thoughts; You come across a strange@@ <<linkappend "@@.usebtn; paw.@@">><br>
-			<img @src="setup.ImagePath + '/cursedpossessions/monkey-paw/monkeypaw.jpg'" class="displayCentredImgs">
+			<<image "cursedpossessions/monkey-paw/monkeypaw.jpg" "displayCentredImgs">>
 
 			@@.mc-speech; Is this... the Monkey Paw? <br>
 			I think I read something about it when I was younger.<br>

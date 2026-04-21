@@ -1,12 +1,8 @@
 :: spiritBlake [nobr] {"position":"1625,2550","size":"100,100"}
-<video autoplay controls muted loop>
-<source @src="setup.ImagePath + '/ghosts/specials/spiritblake5.mp4'" type="video/mp4">
-</video>
+<<video "ghosts/specials/spiritblake5.mp4">>
 @@.mc-thoughts; $companion.name licks your incredibly wet pussy, not forgetting about the stranger's balls<br>
 Unexpectedly for you, the stranger@@ <<linkappend "@@.mc-thoughtsLink; came right inside you. @@">>
-	<video autoplay controls muted loop>
-	<source @src="setup.ImagePath + '/ghosts/specials/spiritblake6.mp4'" type="video/mp4">
-	</video>
+	<<video "ghosts/specials/spiritblake6.mp4">>
 	@@.mc-thoughts;The sperm flowed out onto $companion.name, covering her face.@@<br>
 	@@.mc-thoughts; $companion.name continued to play with the cum flowing out of you and lick your pussy. When she finishes playing with it, you notice that the stranger has disappeared.@@<br>
 	@@.notmc-speech; Ahh... So this is not a dream?@@<br>

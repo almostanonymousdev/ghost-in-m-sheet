@@ -1,5 +1,5 @@
 :: ChurchBasementEntrance [nobr] {"position":"1325,3300","size":"100,100"}
-<img @src="setup.ImagePath + '/img/church-basement.jpg'" width="100%" class="displayCentredImgs"><br>
+<<image "img/church-basement.jpg" { class: "displayCentredImgs", width: "100%" }>><br>
 @@.mc-speech; I heard she went in here... but it seems the door is locked.<br>
 Well, there's nothing I can do.<br>
 Guess I'll have to [[go back home|Sleep]]<br>@@

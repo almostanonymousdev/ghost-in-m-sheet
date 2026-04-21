@@ -17,9 +17,7 @@
 <<set $webcamVideo to _selectedVideo>>
 
 <<if _selectedVideo>>
-	<video autoplay muted controls loop class="displayCentredImgs">
-	<source @src="setup.ImagePath+`/`+$webcamVideo" type="video/mp4">
-	</video>
+	<<video $webcamVideo "displayCentredImgs">>
 <</if>>
 <br>
 <<set _baseMoney = random(7,15)>>

@@ -1,12 +1,12 @@
 :: LibraryBrook [nobr] {"position":"3125,2100","size":"100,100"}
 
 <<if setup.Library.brookIsPossessed()>>
-	<img @src="setup.ImagePath + '/img/library-inside.jpg'" width="100%">
+	<<image "img/library-inside.jpg" { width: "100%" }>>
 	@@.mc-speech; She's not there... strange...@@<br><br>
 	@@.backbtn; [[Leave|LibraryInside]] @@<br>
 <<else>>
 	<<if setup.Library.brookIsWithRain()>>
-		<img @src="setup.ImagePath + '/img/library-inside.jpg'" width="100%">
+		<<image "img/library-inside.jpg" { width: "100%" }>>
 		@@.mc-thoughts;She's probably still with Rain. Maybe it's worth waiting a couple of days. @@<br><br>
 		@@.backbtn; [[Leave|LibraryInside]] @@<br>
 	<<else>>
@@ -24,7 +24,7 @@
 			<<set $chanceToSuccessAloneOwaissaBrook to 70>>
 			<<set $chanceToSuccessAloneElmBrook to 55>>
 		<</if>>
-		<img @src="setup.ImagePath + '/brook/brook-library.jpg'" width="30%">
+		<<image "brook/brook-library.jpg" { width: "30%" }>>
 		<br>
 		<<if ndef $meetBrook>>
 			<<set $meetBrook to 1>>

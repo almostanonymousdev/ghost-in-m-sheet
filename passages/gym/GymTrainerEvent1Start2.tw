@@ -1,9 +1,7 @@
 :: GymTrainerEvent1Start2 [nobr] {"position":"3225,1900","size":"100,100"}
 <<addLust 15>>
 <<set $trainer1SexCD to 1>>
-<video autoplay controls muted loop>
-<source @src="setup.ImagePath + '/gym/trainer1event1end.mp4'" type="video/mp4">
-</video>
+<<video "gym/trainer1event1end.mp4">>
 <<if ndef $isDiscountTrainer1>>
 	@@.notmc-speech; Oh, it's been a while since I've had this... You know what, you can come train with me for free. And... don't forget to bring your sexy underwear, we can do this again.@@
 	<<set $isDiscountTrainer1 to 1>><br>

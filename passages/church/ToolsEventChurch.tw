@@ -1,7 +1,5 @@
 :: ToolsEventChurch [event nobr] {"position":"1975,1600","size":"100,100"}
-<video autoplay controls muted loop>
-<source @src="setup.ImagePath + '/church/1.mp4'" type="video/mp4">
-</video>
+<<video "church/1.mp4">>
 @@.mc-speech; Do you like it?@@<br>
 @@.notmc-speech; Yes, you are perfection, show what you can do with <<linkappend  "your mouth">> <br>
 	<<addLust 15>>

@@ -45,12 +45,12 @@
 <br>
 <<for _i to 2; _i gte 0; _i-->>
 <div class="order-container">
-<span class="address-item">$shuffledOrders[_i].address --</span> <img @src="setup.ImagePath + '/' + $shuffledOrders[_i].image" class="iconPx">
+<span class="address-item">$shuffledOrders[_i].address --</span> <<image $shuffledOrders[_i].image "iconPx">>
 </div><br>
 <</for>>
 <<if $deliverySpecialOrder>>
 <div class="order-container special-order">
-<span class="address-item">$deliverySpecialOrderAddress -- RUSH</span> <img @src="setup.ImagePath + '/img/package.jpg'" class="iconPx"> <span class="rush-pay">$<<= $deliverySpecialOrderPay>></span>
+<span class="address-item">$deliverySpecialOrderAddress -- RUSH</span> <<image "img/package.jpg" "iconPx">> <span class="rush-pay">$<<= $deliverySpecialOrderPay>></span>
 </div><br>
 <</if>>
 <</nobr>>

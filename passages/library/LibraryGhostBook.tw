@@ -1,7 +1,7 @@
 :: LibraryGhostBook {"position":"3025,2100","size":"100,100"}
 <<nobr>>
 @@.mc-thoughts; You slowly walk past the shelves deeper into the library, carefully examining each one. Suddenly, your gaze stops on an ancient book that stands out from the rest.@@ <br>
-<img @src="setup.ImagePath + '/library/book1.jpg'" class="libraryCenteredImg"><br>
+<<image "library/book1.jpg" "libraryCenteredImg">><br>
 <<if not setup.Ghosts.hasDiscovered("Phantom")>>
 <<run setup.Ghosts.markDiscovered("Phantom")>>
 As you open it, you find a chapter dedicated to Phantoms.<br>

@@ -2,10 +2,10 @@
 @@.mc-thoughts; A strange sensation overwhelms you, and the entire world suddenly fades to black,@@ <<linkappend "@@.usebtn; vanishing as if it never existed@@">>
 	<<set _check to random(1,2)>>
 	<<if _check eq 1>>
-		<img @src="setup.ImagePath + '/hunting/possessed/1.0.jpg'" width="100%">
+		<<image "hunting/possessed/1.0.jpg" { width: "100%" }>>
 	<</if>>
 	<<if _check eq 2>>
-		<img @src="setup.ImagePath + '/hunting/possessed/2.0.jpg'" width="100%">
+		<<image "hunting/possessed/2.0.jpg" { width: "100%" }>>
 	<</if>>
 	@@.mc-thoughts; When you regain awareness, you realize you are tightly bound to a large wooden cross. Before you stands a nun, her gaze stern, her lips moving in silent prayer, though you can't make out a single word.@@<br>
 	@@.notmc-speech; In the name of all that is holy, leave this body, evil spirit, and do not return.@@<br>
@@ -14,36 +14,26 @@
 	@@.notmc-speech; Shut up! Leave this girl alone!<br>
 	Ah, it seems prayers won't do... I'll have to@@ <<linkappend "<b>@@.notmc-speechLink;take other measures.@@</b>">>
 		<<if _check eq 1>>
-			<video autoplay controls muted loop>
-			<source @src="setup.ImagePath + '/hunting/possessed/1.1.mp4'" type="video/mp4">
-			</video>
+			<<video "hunting/possessed/1.1.mp4">>
 			@@.mc-thoughts; She grabbed a book and started slapping you, more out of anger than to help you.@@<br>
 			@@color:red; You won't be able to help her. She's mine forever.@@<br>
 		<</if>>
 		<<if _check eq 2>>
 			<<set _checkInside to random(1,2)>>
 			<<if _checkInside eq 1>>
-				<video autoplay controls muted loop>
-				<source @src="setup.ImagePath + '/hunting/possessed/2.1.mp4'" type="video/mp4">
-				</video>
+				<<video "hunting/possessed/2.1.mp4">>
 			<<elseif _checkInside eq 2>>
-				<video autoplay controls muted loop>
-				<source @src="setup.ImagePath + '/hunting/possessed/2.2.mp4'" type="video/mp4">
-				</video>
+				<<video "hunting/possessed/2.2.mp4">>
 			<</if>>
 			@@.mc-thoughts; You see the nun pull out a strapon from somewhere and put it on.@@<br>
 			@@.mc-thoughts; I think this method is the only way@@<br>
 		<</if>>
 		@@.notmc-speech; Maybe I should be more ruthless.@@ <<linkappend "@@.notmc-speechLink; I'll save you, my child@@">>
 			<<if _check eq 1>>
-				<video autoplay controls muted loop>
-				<source @src="setup.ImagePath + '/hunting/possessed/1.2.mp4'" type="video/mp4">
-				</video>
+				<<video "hunting/possessed/1.2.mp4">>
 			<</if>>
 			<<if _check eq 2>>
-				<video autoplay controls muted loop>
-				<source @src="setup.ImagePath + '/hunting/possessed/2.3.mp4'" type="video/mp4">
-				</video>
+				<<video "hunting/possessed/2.3.mp4">>
 			<</if>>
 			@@.mc-thoughts; Although you're possessed, you feel everything happening to your body with heightened intensity -- as if the possession has sharpened all your senses.<br>
 			Each of her thrusts sends a small jolt of pleasure through your body, building up inside you.@@<br>
@@ -53,10 +43,10 @@
 			But the nun quickens her pace, and in a moment, an overwhelming wave of pleasure consumes you, forcing a wild scream out of you.@@<br>
 			<<linkappend "@@.usebtn; Some time later@@">>
 				<<if _check eq 1>>
-					<img @src="setup.ImagePath + '/hunting/possessed/1end.jpg'" width="100%">
+					<<image "hunting/possessed/1end.jpg" { width: "100%" }>>
 				<</if>>
 				<<if _check eq 2>>
-					<img @src="setup.ImagePath + '/hunting/possessed/2end.jpg'" width="100%">
+					<<image "hunting/possessed/2end.jpg" { width: "100%" }>>
 				<</if>>
 				@@.notmc-speech; You're back. Do you remember what happened?@@<br>
 				@@.mc-speech; Not entirely...@@<br>

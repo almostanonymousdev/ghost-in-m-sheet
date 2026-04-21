@@ -1,22 +1,22 @@
 :: Comics [nobr] {"position":"2925,2200","size":"100,100"}
 <div class="flexwrapper gap">
 <div class="housecardComics">
-<img @src="setup.ImagePath + '/library/getting-in-shape001.jpg'" class="comic-cover"><br>
+<<image "library/getting-in-shape001.jpg" "comic-cover">><br>
 @@.enterbtn;<<link "read" "ReadComics">><<set $comics1 to 1>>
 <</link>>@@
 </div>
 <div class="housecardComics">
-<img @src="setup.ImagePath + '/library/closed-investigation-journal-colorized001.jpg'"  class="comic-cover"><br>
+<<image "library/closed-investigation-journal-colorized001.jpg" "comic-cover">><br>
 @@.enterbtn;<<link "read" "ReadComics">><<set $comics2 to 1>>
 <</link>>@@
 </div>
 <div class="housecardComics">
-<img @src="setup.ImagePath + '/library/the-naughty-in-law-1-zero001.jpg'" class="comic-cover"><br>
+<<image "library/the-naughty-in-law-1-zero001.jpg" "comic-cover">><br>
 @@.enterbtn;<<link "read" "ReadComics">><<set $comics3 to 1>>
 <</link>>@@
 </div>
 <div class="housecardComics">
-<img @src="setup.ImagePath + '/library/a-dumb-comic001.jpg'" class="comic-cover"><br>
+<<image "library/a-dumb-comic001.jpg" "comic-cover">><br>
 @@.enterbtn;<<link "read" "ReadComics">><<set $comics4 to 1>>
 <</link>>@@
 </div>

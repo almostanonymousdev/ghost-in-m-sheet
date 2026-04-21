@@ -3,9 +3,7 @@
 <<set $videos to ["porn/1.mp4", "porn/2.mp4", "porn/3.mp4", "porn/4.mp4", "porn/5.mp4", "porn/6.mp4", "porn/7.mp4"]>>
 <<set $currentVideoIndex to 0>>
 <div id="video-container">
-<video autoplay controls muted loop>
-<source @src="setup.ImagePath+`/`+$videos[$currentVideoIndex]" type="video/mp4">
-</video>
+<<video $videos[$currentVideoIndex]>>
 </div>
 
 @@.usebtn;<<link "Watch porn" >>
@@ -18,9 +16,7 @@
 	<</if>>
 	<<set $currentVideoIndex to ($currentVideoIndex + 1) % $videos.length>>
 	<<replace "#video-container">>
-		<video autoplay controls muted loop>
-		<source @src="setup.ImagePath+`/`+$videos[$currentVideoIndex]" type="video/mp4">
-		</video>
+		<<video $videos[$currentVideoIndex]>>
 	<</replace>>
 <</link>>@@
 <div id="watch-pornID"></div>

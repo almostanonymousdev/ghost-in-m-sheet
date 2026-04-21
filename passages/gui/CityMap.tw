@@ -1,14 +1,14 @@
 :: CityMap [city] {"position":"1125,300","size":"100,100"}
 <div class="flexwrapper">
 <div class="housecard">
-<img @src="setup.ImagePath + '/img/gym-icon.png'" class="icon">
+<<image "img/gym-icon.png" "icon">>
 @@.icontextcity; [[Gym|Gym]]@@
 </div>
 <div class="housecard">
 
 </div>
 <div class="housecard">
-<img @src="setup.ImagePath + '/img/home.png'" class="icon">
+<<image "img/home.png" "icon">>
 @@.icontextcity; [[Home|Home]]@@
 </div>
 <div class="housecard">
@@ -18,7 +18,7 @@
 
 </div>
 <div class="housecard">
-<img @src="setup.ImagePath + '/img/mall.png'" class="icon">
+<<image "img/mall.png" "icon">>
 @@.icontextcity; [[Mall|Mall]]@@
 </div>
 <div class="housecard">
@@ -28,7 +28,7 @@
 
 </div>
 <div class="housecard">
-<img @src="setup.ImagePath + '/img/witchhouse.png'" class="icon">
+<<image "img/witchhouse.png" "icon">>
 @@.icontextcity; [[Witch's House|Witch]]@@
 </div>
 <div class="housecard">
@@ -38,21 +38,21 @@
 
 </div>
 <div class="housecard">
-<img @src="setup.ImagePath + '/img/library-icon.png'" class="icon">
+<<image "img/library-icon.png" "icon">>
 @@.icontextcity; [[Library|Library]]@@
 </div>
 <div class="housecard">
 
 </div>
 <div class="housecard">
-<img @src="setup.ImagePath + '/img/park.png'" class="icon">
+<<image "img/park.png" "icon">>
 @@.icontextcity; [[Park|Park]]@@
 </div>
 <div class="housecard">
 
 </div>
 <div class="housecard">
-<img @src="setup.ImagePath + '/img/church-ico.png'" class="icon">
+<<image "img/church-ico.png" "icon">>
 @@.icontextcity; [[Church|Church]]@@
 </div>
 <div class="housecard">
@@ -62,7 +62,7 @@
 
 </div>
 <div class="housecard">
-<img @src="setup.ImagePath + '/img/deliveryhub.png'" class="icon">
+<<image "img/deliveryhub.png" "icon">>
 @@.icontextcity; [[Delivery Hub|DeliveryHub]]@@
 </div>
 <div class="housecard">
@@ -70,14 +70,14 @@
 <div class="housecard">
 </div>
 <div class="housecard">
-<img @src="setup.ImagePath + '/img/beauty-salon.png'" class="icon">
+<<image "img/beauty-salon.png" "icon">>
 @@.icontextcity; [[Beauty Salon|BeautySalon]]@@
 </div>
 <div class="housecard">
 </div>
 <div class="housecard">
 </div>
-<<if $hasQuestForRescue eq 1>><img @src="setup.ImagePath + '/rescue/down.png'" class="downPointer clickable" onclick="SugarCube.Engine.play('RescueMap');">
+<<if $hasQuestForRescue eq 1>><<image "rescue/down.png" { class: "downPointer clickable", onclick: "SugarCube.Engine.play('RescueMap');" }>>
 <</if>>
 </div>
 

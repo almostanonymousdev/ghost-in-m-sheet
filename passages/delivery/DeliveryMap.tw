@@ -10,11 +10,11 @@
 			<div @class="'housecard' + (_familiar ? ' familiar-house' : '') + (_isSpecial ? ' special-house' : '')">
 			<<set _sp to _cell.lastIndexOf(" ")>>
 			<<set _label to _cell.substr(0, _sp) + ", " + _cell.substr(_sp + 1)>>
-			<img @src="setup.ImagePath + '/img/delivery1.png'" class="iconsOnMap">
+			<<image "img/delivery1.png" "iconsOnMap">>
 			<<if _isSpecial>>
 				@@.icontextdelivery;<<link _label "DeliverySpecialEvent">><<set $currentHouse to _cell>>
 				<</link>>@@
-				<div class="mapOrderIcons"><img @src="setup.ImagePath + '/img/package.jpg'" class="mapOrderIcon rush-icon"></div>
+				<div class="mapOrderIcons"><<image "img/package.jpg" "mapOrderIcon rush-icon">></div>
 			<<else>>
 				@@.icontextdelivery;<<link _label "DeliveryAutoDeliver">><<set $currentHouse to _cell>>
 				<</link>>@@
@@ -28,7 +28,7 @@
 					<div class="mapOrderIcons">
 					<<for _oi to 0; _oi lt 3; _oi++>>
 						<<if $orders[_oi].address is _cell and State.variables["deliveryActiveIcon" + (_oi + 1)]>>
-							<img @src="setup.ImagePath + '/' + $orders[_oi].image" class="mapOrderIcon">
+							<<image $orders[_oi].image "mapOrderIcon">>
 						<</if>>
 					<</for>>
 					</div>

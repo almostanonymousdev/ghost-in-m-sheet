@@ -9,26 +9,16 @@
 		<br>
 		@@.mc-action; You put on your clothes.@@<br><br>
 		<<if ($rememberBottomOuter eq "nojeans0" or $rememberBottomOuter eq "nojeans1" or $rememberBottomOuter eq "nojeans2" or $rememberBottomOuter eq "nojeans3") and ($rememberBottomUnder eq "panties0" or $rememberBottomUnder eq "panties1" or $rememberBottomUnder eq "panties2" or $rememberBottomUnder eq "panties3")>>
-			<video autoplay controls muted loop class="displayCentredImgs">
-			<source @src="setup.ImagePath + '/mc/jeansp.mp4'" type="video/mp4">
-			</video>
+			<<video "mc/jeansp.mp4" "displayCentredImgs">>
 		<<elseif ($rememberBottomOuter eq "nojeans0" or $rememberBottomOuter eq "nojeans1" or $rememberBottomOuter eq "nojeans2" or $rememberBottomOuter eq "nojeans3") and ($rememberBottomUnder eq "nopanties0" or $rememberBottomUnder eq "nopanties1" or $rememberBottomUnder eq "nopanties2" or $rememberBottomUnder eq "nopanties3")>>
-			<video autoplay controls muted loop class="displayCentredImgs">
-			<source @src="setup.ImagePath + '/mc/jeansp.mp4'" type="video/mp4">
-			</video>
+			<<video "mc/jeansp.mp4" "displayCentredImgs">>
 		<<elseif $rememberBottomOuter eq "noshorts1" or $rememberBottomOuter eq "noshorts2" or $rememberBottomOuter eq "noshorts3">>
-			<video autoplay controls muted loop class="displayCentredImgs">
-			<source @src="setup.ImagePath + '/mc/shorts.mp4'" type="video/mp4">
-			</video>
+			<<video "mc/shorts.mp4" "displayCentredImgs">>
 		<<elseif ($rememberBottomOuter eq "noskirt1" or $rememberBottomOuter eq "noskirt2" or $rememberBottomOuter eq "noskirt3") and ($rememberBottomUnder eq "panties0" or $rememberBottomUnder eq "panties1" or $rememberBottomUnder eq "panties2" or $rememberBottomUnder eq "panties3")
 			>>
-			<video autoplay controls muted loop class="displayCentredImgs">
-			<source @src="setup.ImagePath + '/mc/skirtp.mp4'" type="video/mp4">
-			</video>
+			<<video "mc/skirtp.mp4" "displayCentredImgs">>
 		<<elseif ($rememberBottomOuter eq "noskirt1" or $rememberBottomOuter eq "noskirt2" or $rememberBottomOuter eq "noskirt3") and ($rememberBottomUnder eq "nopanties0" or $rememberBottomUnder eq "nopanties1" or $rememberBottomUnder eq "nopanties2" or $rememberBottomUnder eq "nopanties3") >>
-			<video autoplay controls muted loop class="displayCentredImgs">
-			<source @src="setup.ImagePath + '/mc/skirtnp.mp4'" type="video/mp4">
-			</video>
+			<<video "mc/skirtnp.mp4" "displayCentredImgs">>
 		<</if>>
 
 		<<if $isPantiesStolen eq 1>><<include "FindStolenPanties">><</if>>
@@ -40,26 +30,16 @@
 <<else>>
 	@@.mc-action; You put on your clothes.@@<br><br>
 	<<if ($rememberBottomOuter eq "nojeans0" or $rememberBottomOuter eq "nojeans1" or $rememberBottomOuter eq "nojeans2" or $rememberBottomOuter eq "nojeans3") and ($rememberBottomUnder eq "panties0" or $rememberBottomUnder eq "panties1" or $rememberBottomUnder eq "panties2" or $rememberBottomUnder eq "panties3")>>
-		<video autoplay controls muted loop class="displayCentredImgs">
-		<source @src="setup.ImagePath + '/mc/jeansp.mp4'" type="video/mp4">
-		</video>
+		<<video "mc/jeansp.mp4" "displayCentredImgs">>
 	<<elseif ($rememberBottomOuter eq "nojeans0" or $rememberBottomOuter eq "nojeans1" or $rememberBottomOuter eq "nojeans2" or $rememberBottomOuter eq "nojeans3") and ($rememberBottomUnder eq "nopanties0" or $rememberBottomUnder eq "nopanties1" or $rememberBottomUnder eq "nopanties2" or $rememberBottomUnder eq "nopanties3")>>
-		<video autoplay controls muted loop class="displayCentredImgs">
-		<source @src="setup.ImagePath + '/mc/jeansnp.mp4'" type="video/mp4">
-		</video>
+		<<video "mc/jeansnp.mp4" "displayCentredImgs">>
 	<<elseif $rememberBottomOuter eq "noshorts1" or $rememberBottomOuter eq "noshorts2" or $rememberBottomOuter eq "noshorts3">>
-		<video autoplay controls muted loop class="displayCentredImgs">
-		<source @src="setup.ImagePath + '/mc/shorts.mp4'" type="video/mp4">
-		</video>
+		<<video "mc/shorts.mp4" "displayCentredImgs">>
 	<<elseif ($rememberBottomOuter eq "noskirt1" or $rememberBottomOuter eq "noskirt2" or $rememberBottomOuter eq "noskirt3") and ($rememberBottomUnder eq "panties0" or $rememberBottomUnder eq "panties1" or $rememberBottomUnder eq "panties2" or $rememberBottomUnder eq "panties3")
 		>>
-		<video autoplay controls muted loop class="displayCentredImgs">
-		<source @src="setup.ImagePath + '/mc/skirtp.mp4'" type="video/mp4">
-		</video>
+		<<video "mc/skirtp.mp4" "displayCentredImgs">>
 	<<elseif ($rememberBottomOuter eq "noskirt1" or $rememberBottomOuter eq "noskirt2" or $rememberBottomOuter eq "noskirt3") and ($rememberBottomUnder eq "nopanties0" or $rememberBottomUnder eq "nopanties1" or $rememberBottomUnder eq "nopanties2" or $rememberBottomUnder eq "nopanties3") >>
-		<video autoplay controls muted loop class="displayCentredImgs">
-		<source @src="setup.ImagePath + '/mc/skirtnp.mp4'" type="video/mp4">
-		</video>
+		<<video "mc/skirtnp.mp4" "displayCentredImgs">>
 	<</if>>
 	<<if $isPantiesStolen eq 1>><<include "FindStolenPanties">><</if>>
 	<<if $isBottomStolen eq 1>><<include "FindStolenBottom">><</if>>

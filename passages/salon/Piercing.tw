@@ -1,7 +1,7 @@
 :: Piercing [nobr] {"position":"600,300","size":"100,100"}
 <<for _p range setup.piercingList>>
 	<<capture _p>>
-		<<set _linkImg to '<img @src=\'setup.ImagePath + "/img/piercing/' + _p.img + '"\'>'>>
+		<<set _linkImg to `<<image "img/piercing/${_p.img}">>`>>
 		<<if State.variables[_p.var] eq "worn">>
 			<<replace `"#currentPiercing" + _p.target`>>
 				<<link _linkImg "Wardrobe">>

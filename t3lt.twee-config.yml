@@ -1,5 +1,19 @@
 sugarcube-2:
   macros:
+    video:
+      name: video
+      description: "Renders a <video> element whose src is resolved against
+        setup.ImagePath. First arg is the path (required, e.g. 'tentacles/2.0.mp4');
+        .webm picks type=video/webm, otherwise video/mp4. Optional second arg:
+        a class-name string, or an options object with any of
+        { class, id, width, style, type, autoplay, controls, muted, loop }.
+        autoplay/controls/muted/loop default to true; pass false to disable."
+    image:
+      name: image
+      description: "Renders an <img> element whose src is resolved against
+        setup.ImagePath. First arg is the path (required, e.g. 'img/corruption.png').
+        Optional second arg: a class-name string, or an options object with any
+        of { class, id, width, height, style, alt, onclick }."
     updatemeter:
       name: updatemeter
       description: "Updates a named meter's value without re-rendering it. If the

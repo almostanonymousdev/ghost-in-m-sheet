@@ -1,14 +1,12 @@
 :: ToolsEventChurchEnd [event nobr] {"position":"1975,1800","size":"100,100"}
-<video autoplay controls muted loop>
-<source @src="setup.ImagePath + '/church/8.mp4'" type="video/mp4">
-</video>
+<<video "church/8.mp4">>
 @@.mc-speech; Holy~ so much cum@@<br>
 
 <<if $eventToolsOneStart eq 0>>
 	@@.notmc-speech; I think you deserve it, here you go. If you want, you can come to me sometimes for special confessions@@<br>
 	@@.mc-speech; Thanks, i'll think about that@@<br>
 	<<set $equipment.temperature to 3>>
-	@@.mc-action; You get a lvl 3 Thermometr @@<img @src="setup.ImagePath + '/img/thermometr.png'" style="max-width:5%">
+	@@.mc-action; You get a lvl 3 Thermometr @@<<image "img/thermometr.png" { style: "max-width:5%" }>>
 	<br>
 	<br>
 	<<set $eventToolsOneStart to 1>>

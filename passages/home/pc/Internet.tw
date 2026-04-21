@@ -1,5 +1,5 @@
 :: Internet [nobr] {"position":"400,800","size":"100,100"}
-<img @src="setup.ImagePath + '/img/browser-search.png'" width="100%"><br>
+<<image "img/browser-search.png" { width: "100%" }>><br>
 @@.mc-speech; What should I look for on the internet?@@<br>
 <br>
 <<include "FindGhostInfo">>
@@ -9,7 +9,7 @@
 	<b>Someone responded to your offer:</b>
 	<div class="flexwrapper">
 	<div class="housecard">
-	<img @src="setup.ImagePath + '/trans/alex.jpg'" width="100px"><br>
+	<<image "trans/alex.jpg" { width: "100px" }>><br>
 	</div>
 	<div>
 	<b>$alex.name</b>:<br>
@@ -29,7 +29,7 @@
 
 	<<if $prefssubscribers gte 5>><div class="flexwrapper">
 		<div class="housecard">
-		<img @src="setup.ImagePath + '/trans/taylor.jpg'" width="100px"><br>
+		<<image "trans/taylor.jpg" { width: "100px" }>><br>
 		</div>
 		<div>
 		<b>$taylor.name</b>:<br>
@@ -50,7 +50,7 @@
 
 	<<if $prefssubscribers gte 10>><div class="flexwrapper">
 		<div class="housecard">
-		<img @src="setup.ImagePath + '/trans/casey.jpg'" width="100px"><br>
+		<<image "trans/casey.jpg" { width: "100px" }>><br>
 		</div>
 		<div>
 		<b>$casey.name</b>:<br>

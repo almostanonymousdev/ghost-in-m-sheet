@@ -1,17 +1,17 @@
 :: Masturbate [event nobr] {"position":"300,1200","size":"100,100"}
 <<set _check to random(1,4)>>
-<<if _check eq 1>><img @src="setup.ImagePath + '/porn/1.webp'" width="70%">
+<<if _check eq 1>><<image "porn/1.webp" { width: "70%" }>>
 <</if>>
-<<if _check eq 2>><img @src="setup.ImagePath + '/porn/2.webp'" width="40%">
+<<if _check eq 2>><<image "porn/2.webp" { width: "40%" }>>
 <</if>>
-<<if _check eq 3>><img @src="setup.ImagePath + '/porn/3.webp'" width="40%">
+<<if _check eq 3>><<image "porn/3.webp" { width: "40%" }>>
 <</if>>
-<<if _check eq 4>><img @src="setup.ImagePath + '/porn/4.webp'" width="70%">
+<<if _check eq 4>><<image "porn/4.webp" { width: "70%" }>>
 <</if>><br>
 @@.mc-thoughts; A wave of pleasure ran through you, making your body tremble with delight, taking your mind somewhere far from reality@@<br>
-<img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"> decreased! <br>
+<<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>> decreased! <br>
 <<if $mc.corruption lte 4>>
-	+0.2 <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%;">
+	+0.2 <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%;" }>>
 	<<set $mc.corruption += 0.2>><br>
 <</if>>
 

@@ -1,5 +1,5 @@
 :: WitchInside [nobr] {"position":"1350,25","size":"100,100"}
-<img @src="setup.ImagePath + '/img/witch-girl.jpg'" width="100%">
+<<image "img/witch-girl.jpg" { width: "100%" }>>
 <br>
 
 <<if setup.Witch.isFirstVisit()>>
@@ -95,7 +95,7 @@
 				<<run setup.Witch.collectCursedItemReward()>>
 				<<if setup.Witch.shouldAwardGwb3OnTurnIn()>>
 					<<set $equipment.gwb to 3>>
-					@@.mc-action; You get a lvl 3 Ghost Writing Book @@<img @src="setup.ImagePath + '/img/gwb.png'" style="max-width:5%"><br>
+					@@.mc-action; You get a lvl 3 Ghost Writing Book @@<<image "img/gwb.png" { style: "max-width:5%" }>><br>
 					<br>
 					@@.mc-speech; But why do you need them?@@<br>
 					@@.notmc-speech; It's a powerful magical artifact. I think you felt just how potent it is yourself.@@ @@.mc-thoughts;<br> She ran her tongue over the toy and smiled slightly@@<br>

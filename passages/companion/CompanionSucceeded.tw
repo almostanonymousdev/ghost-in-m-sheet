@@ -2,13 +2,13 @@
 <<set _checkChance to random(1,100)>>
 <<if _checkChance gte $chanceToSuccess>>
 	<<if $companion.name eq "Brook">>
-		<img @src="setup.ImagePath + '/brook/brook-sad.png'" width="50%"><br>
+		<<image "brook/brook-sad.png" { width: "50%" }>><br>
 	<<elseif $companion.name eq "Alice">>
-		<img @src="setup.ImagePath + '/alice/alice-sad.png'" width="50%"><br>
+		<<image "alice/alice-sad.png" { width: "50%" }>><br>
 	<<elseif $companion.name eq "Blake">>
-		<img @src="setup.ImagePath + '/blake/blake-sad.png'" width="50%"><br>
+		<<image "blake/blake-sad.png" { width: "50%" }>><br>
 	<<elseif $companion.name eq "Alex" or $companion.name eq "Taylor" or $companion.name eq "Casey">>
-		<img @src="setup.ImagePath+`/trans/`+$transPicture+`.jpg`" class="displayCentredImgs"><br>
+		<<image "trans/" + $transPicture+`.jpg` "displayCentredImgs">><br>
 	<</if>>
 	@@.notmc-speech; $mc.name, I'm sorry, I wasn't able to find what you asked for...@@<br>
 	@@.mc-speech; Don't worry about it, it's okay. The main thing is that you're alright@@<br>
@@ -17,17 +17,17 @@
 	@@.mc-speech; Let's [[keep going.|$return]]@@<br>
 <<else>>
 	<<if $companion.name eq "Brook">>
-		<img @src="setup.ImagePath + '/brook/brook-happy.png'" width="40%"><br>
+		<<image "brook/brook-happy.png" { width: "40%" }>><br>
 	<<elseif $companion.name eq "Alice">>
-		<img @src="setup.ImagePath + '/alice/alice-happy.png'" width="50%"><br>
+		<<image "alice/alice-happy.png" { width: "50%" }>><br>
 	<<elseif $companion.name eq "Blake">>
-		<img @src="setup.ImagePath + '/blake/blake-happy.png'" width="50%"><br>
+		<<image "blake/blake-happy.png" { width: "50%" }>><br>
 	<<elseif $companion.name eq "Alex">>
-		<img @src="setup.ImagePath+`/trans/`+$transPicture+`.jpg`" class="displayCentredImgs"><br>
+		<<image "trans/" + $transPicture+`.jpg` "displayCentredImgs">><br>
 	<<elseif $companion.name eq "Taylor">>
-		<img @src="setup.ImagePath+`/trans/`+$transPicture+`.jpg`" class="displayCentredImgs"><br>
+		<<image "trans/" + $transPicture+`.jpg` "displayCentredImgs">><br>
 	<<elseif $companion.name eq "Casey">>
-		<img @src="setup.ImagePath+`/trans/`+$transPicture+`.jpg`" class="displayCentredImgs"><br>
+		<<image "trans/" + $transPicture+`.jpg` "displayCentredImgs">><br>
 	<</if>>
 	<<if $chosenPlan eq "Plan2" and $gotCursedItem eq 1>>
 		<<include "CompanionResult">>

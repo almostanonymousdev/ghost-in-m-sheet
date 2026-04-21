@@ -1,10 +1,10 @@
 :: Hide [noreturn nobr] {"position":"2600,1225","size":"100,100"}
 <<set _check to random(1,2)>>
 <<if _check eq 1>>
-	<img @src="setup.ImagePath + '/hunting/hid1.jpg'" width="100%"><br>
+	<<image "hunting/hid1.jpg" { width: "100%" }>><br>
 <</if>>
 <<if _check eq 2>>
-	<img @src="setup.ImagePath + '/hunting/hid2.jpg'" width="100%"><br>
+	<<image "hunting/hid2.jpg" { width: "100%" }>><br>
 <</if>>
 &emsp;&emsp;You quickly hide, holding your breath and trying not to make a sound. Your heart is pounding wildly, almost drowning out all other noises. You feel the fear tightening around your throat, but you try to stay calm.<br>
 &emsp;&emsp;Outside, you hear footsteps, heavy and menacing. The ghost is nearby. Several agonizing seconds, maybe minutes, pass as you struggle with the urge to peek out and check <<linkappend "@@.usebtn; if it has gone away.@@">><br>
@@ -20,9 +20,7 @@
 		@@.usebtn;[[you got lucky|$return]]@@
 		Now the main thing is to act cautiously and not reveal yourself again.
 	<<else>>
-		<video autoplay muted>
-		<source @src="setup.ImagePath + '/hunting/hunt-end.mp4'" type="video/mp4">
-		</video>
+		<<video "hunting/hunt-end.mp4" { controls: false, loop: false }>>
 		&emsp;&emsp; You slowly peek out from your hiding place, hoping the ghost has left. But your eyes meet its hollow sockets.
 		A chill grips your body, and you realize you've made a fatal mistake.<br>
 		You have a little time to
@@ -35,7 +33,7 @@
 				<</if>>
 			<</done>>
 			<span class="checkForCorruptionHunt">
-			@@.usebtn;[[not to resist...|HuntEnd]]@@ <<if $mc.corruption lte 4>>@@.warningtext; (Req. <img @src="setup.ImagePath + '/img/corruption.png'" style="position: relative; top: 0.375em; width:3%; display: inline; margin: 0;"> ≥ 5)@@
+			@@.usebtn;[[not to resist...|HuntEnd]]@@ <<if $mc.corruption lte 4>>@@.warningtext; (Req. <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 5)@@
 			<</if>></span>
 		<<else>>
 			use the Crucifix, but unfortunately, @@.enterbtn;[[you don't have it...|HuntEnd]]@@

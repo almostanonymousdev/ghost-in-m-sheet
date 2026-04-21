@@ -1,5 +1,5 @@
 :: Ironclad Prison [nobr] {"position":"2700,525","size":"100,100"}
-<img @src="setup.ImagePath + '/room/ironclad/ironclad.webp'" width="90%"><br>
+<<image "room/ironclad/ironclad.webp" { width: "90%" }>><br>
 @@.location; Prison "Ironclad"@@<br>
 @@.mc-thoughts; Ironclad Prison, once a symbol of justice, now stands abandoned, its long and storied past cloaked in shadows. Whispers speak of restless spirits wandering its halls--a chilling reminder of the darkness it once held.@@<br>
 <br>

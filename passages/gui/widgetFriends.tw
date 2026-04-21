@@ -28,27 +28,27 @@
 <<widget "companionLinks">>
 	<<if $companion.name eq "Brook">>
 		<a data-passage="BrookMain">
-		<img @src="setup.ImagePath + '/brook/brook.png'" class="companion-image">
+		<<image "brook/brook.png" "companion-image">>
 		</a>
 	<<elseif $companion.name eq "Alice">>
 		<a data-passage="AliceMain">
-		<img @src="setup.ImagePath + '/alice/alice.png'" class="companion-image">
+		<<image "alice/alice.png" "companion-image">>
 		</a>
 	<<elseif $companion.name eq "Blake">>
 		<a data-passage="BlakeMain">
-		<img @src="setup.ImagePath + '/blake/blake.png'" class="companion-image">
+		<<image "blake/blake.png" "companion-image">>
 		</a>
 	<<elseif $companion.name eq "Alex">>
 		<a data-passage="AlexMain">
-		<img @src="setup.ImagePath+`/trans/`+$transPicture+`.jpg`" class="companion-image">
+		<<image "trans/" + $transPicture+`.jpg` "companion-image">>
 		</a>
 	<<elseif $companion.name eq "Taylor">>
 		<a data-passage="TaylorMain">
-		<img @src="setup.ImagePath+`/trans/`+$transPicture+`.jpg`" class="companion-image">
+		<<image "trans/" + $transPicture+`.jpg` "companion-image">>
 		</a>
 	<<elseif $companion.name eq "Casey">>
 		<a data-passage="CaseyMain">
-		<img @src="setup.ImagePath+`/trans/`+$transPicture+`.jpg`" class="companion-image">
+		<<image "trans/" + $transPicture+`.jpg` "companion-image">>
 		</a>
 
 	<</if>>
@@ -57,27 +57,27 @@
 <<widget "companionLinksSuccess">>
 	<<if $companion.name eq "Brook">>
 		<a data-passage="CompanionSucceeded">
-		<img @src="setup.ImagePath + '/brook/brook.png'" class="companion-imageSucceeded">
+		<<image "brook/brook.png" "companion-imageSucceeded">>
 		</a>
 	<<elseif $companion.name eq "Alice">>
 		<a data-passage="CompanionSucceeded">
-		<img @src="setup.ImagePath + '/alice/alice.png'" class="companion-imageSucceeded">
+		<<image "alice/alice.png" "companion-imageSucceeded">>
 		</a>
 	<<elseif $companion.name eq "Blake">>
 		<a data-passage="CompanionSucceeded">
-		<img @src="setup.ImagePath + '/blake/blake.png'" class="companion-imageSucceeded">
+		<<image "blake/blake.png" "companion-imageSucceeded">>
 		</a>
 	<<elseif $companion.name eq "Alex">>
 		<a data-passage="CompanionSucceeded">
-		<img @src="setup.ImagePath+`/trans/`+$transPicture+`.jpg`" class="companion-imageSucceeded">
+		<<image "trans/" + $transPicture+`.jpg` "companion-imageSucceeded">>
 		</a>
 	<<elseif $companion.name eq "Taylor">>
 		<a data-passage="CompanionSucceeded">
-		<img @src="setup.ImagePath+`/trans/`+$transPicture+`.jpg`" class="companion-imageSucceeded">
+		<<image "trans/" + $transPicture+`.jpg` "companion-imageSucceeded">>
 		</a>
 	<<elseif $companion.name eq "Casey">>
 		<a data-passage="CompanionSucceeded">
-		<img @src="setup.ImagePath+`/trans/`+$transPicture+`.jpg`" class="companion-imageSucceeded">
+		<<image "trans/" + $transPicture+`.jpg` "companion-imageSucceeded">>
 		</a>
 
 	<</if>>
@@ -123,8 +123,8 @@
 	<</if>>
 	<<set $companion.sanity -= $companion.decreaseSanity>>
 	<<set $companion.lust += _companionLustIncreased>>
-	$companion.name's lust: + _companionLustIncreased <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"><br>
-	$companion.name's sanity: - $companion.decreaseSanity<img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%;"><br>
+	$companion.name's lust: + _companionLustIncreased <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+	$companion.name's sanity: - $companion.decreaseSanity<<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
 
 <</widget>>
 
@@ -165,9 +165,9 @@
 	<</if>>
 	<<set $companion.sanity -= $companion.decreaseSanity>>
 	<<set $companion.lust += _companionLustIncreased>>
-	$companion.name's lust: + _companionLustIncreased <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"><br>
-	$companion.name's sanity: - $companion.decreaseSanity<img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%;"><br>
-	Your <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"> +15<br>
+	$companion.name's lust: + _companionLustIncreased <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+	$companion.name's sanity: - $companion.decreaseSanity<<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+	Your <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>> +15<br>
 	<<addLust 15>>
 <</widget>>
 
@@ -209,9 +209,9 @@
 	<</if>>
 	<<set $companion.sanity -= $companion.decreaseSanity>>
 	<<set $companion.lust += _companionLustIncreased>>
-	$companion.name's lust: + _companionLustIncreased <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"><br>
-	$companion.name's sanity: - $companion.decreaseSanity<img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%;"><br>
-	Your <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"> +15<br>
+	$companion.name's lust: + _companionLustIncreased <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+	$companion.name's sanity: - $companion.decreaseSanity<<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+	Your <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>> +15<br>
 	<<addLust 15>>
 <</widget>>
 
@@ -251,9 +251,9 @@
 	<</if>>
 	<<set $companion.sanity -= $companion.decreaseSanity>>
 	<<set $companion.lust += _companionLustIncreased>>
-	$companion.name's lust: + _companionLustIncreased <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"><br>
-	$companion.name's sanity: - $companion.decreaseSanity<img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%;"><br>
-	Your <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"> +15<br>
+	$companion.name's lust: + _companionLustIncreased <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+	$companion.name's sanity: - $companion.decreaseSanity<<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+	Your <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>> +15<br>
 	<<addLust 15>>
 <</widget>>
 
@@ -310,5 +310,5 @@
 <<widget "aliceLustHighEvent">>
 	or @@.usebtn;<<link `$companion.name + " helps you"`>><<set $companion.sanity -= 3>>
 		<<replace "#eventVideo">><<include "AliceHelp">><</replace>>
-	<</link>> @@ - $companion.name's <img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%;">
+	<</link>> @@ - $companion.name's <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>>
 <</widget>>

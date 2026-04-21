@@ -1,5 +1,5 @@
 :: BeautySalon [nobr] {"position":"2600,2100","size":"100,100"}
-<img @src="setup.ImagePath + '/img/beauty-salon.jpg'" width="100%">
+<<image "img/beauty-salon.jpg" { width: "100%" }>>
 <br>
 @@.location; Beauty Salon@@<br>
 @@.mc-thoughts; The beauty salon is a place where you can enhance your uniqueness and style. For now, only piercing services are available, but more options are promised in the future!@@<br>

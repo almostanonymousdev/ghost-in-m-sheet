@@ -1,23 +1,15 @@
 :: GymGroupEvent1Start [nobr] {"position":"3375,1700","size":"100,100"}
 <<addLust 15>>
-<video autoplay controls muted loop>
-<source @src="setup.ImagePath + '/gym/grouptraining1.1.mp4'" type="video/mp4">
-</video>
+<<video "gym/grouptraining1.1.mp4">>
 @@.mc-speech; Oh ~fuck~ this is so good~@@<br>
 @@.notmc-speech; Relax baby, we're just getting started. We have some @@ <<linkappend "@@.notmc-speechLink;toys for you@@">> <br>
 
 	<<set _check to random(1,3)>>
-	<<if _check eq 1>><video autoplay controls muted loop>
-		<source @src="setup.ImagePath + '/gym/grouptraining1.2.mp4'" type="video/mp4">
-		</video>
+	<<if _check eq 1>><<video "gym/grouptraining1.2.mp4">>
 	<</if>>
-	<<if _check eq 2>><video autoplay controls muted loop>
-		<source @src="setup.ImagePath + '/gym/grouptraining1.3.mp4'" type="video/mp4">
-		</video>
+	<<if _check eq 2>><<video "gym/grouptraining1.3.mp4">>
 	<</if>>
-	<<if _check eq 3>><video autoplay controls muted loop>
-		<source @src="setup.ImagePath + '/gym/grouptraining1.4.mp4'" type="video/mp4">
-		</video>
+	<<if _check eq 3>><<video "gym/grouptraining1.4.mp4">>
 	<</if>>
 	@@.mc-speech; It's amazing~ Keep going, please~@@<br>
 	@@.mc-thoughts; The group sports session turned into an  [[orgy|GymGroupEvent1Start2]]@@<br>
