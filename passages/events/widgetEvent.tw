@@ -1,49 +1,40 @@
 :: widgetEvent [widget nobr] {"position":"400,1800","size":"100,100"}
 <<widget "eventRandomizer">><<set _eventKey to _args[0]>><<set _videoList to setup.Events.videoListForEvent(_eventKey)>><</widget>>
 
-<<set $tempCorr += 0.05>>
-
 <<widget "eventRandomizerText">>
 	<<set _bodyPart to _args[0]>>
 	<<set _ct to setup.Events.corruptionTier()>>
 	<<if _bodyPart eq "brain">>
 		<<if _ct eq 8>>
-			<<addLustByPart>>
 			@@.mc-thoughts; You've fully surrendered to the thoughts. You picture yourself in the place of those girls and crave for it to happen to you.@@<br>
 			@@.mc-speech; I want this. Just let it happen already.@@ -- @@.mc-thoughts; you murmur, trembling as unbearable desire takes over your body.<br>
 			You can't hold back anymore. Your hand slides down to your most intimate spot, fingers teasing yourself slowly. You slip them inside and begin to touch yourself, completely lost in the overwhelming sensations@@<br>
 
 		<<elseif _ct eq 6>>
-			<<addLustByPart>>
 			@@.mc-thoughts; You've stopped resisting the images entirely, your mind completely consumed by them@@<br>
 			@@.mc-speech; I can't deny it anymore. I want to be there.@@ -- @@.mc-thoughts; you think, feeling your body burn with anticipation. You imagine yourself in the place of the girls in the images, and the desire becomes overwhelming.<br>
 			@@.mc-thoughts; You put a finger in your mouth and start licking it, making sweet moans. @@<br>
 
 		<<elseif _ct eq 4>>
-			<<addLustByPart>>
 			@@.mc-thoughts; You feel the struggle slipping away. Your thoughts are a mess, and your body is fully responding to the images@@<br>
 			@@.mc-speech; I can't hide this anymore. It's... it's taking over.@@<br>
 			@@.mc-thoughts; Your chest rises and falls with deep, heavy breaths. A tingling sensation builds in your core, and you feel wetness between your legs@@<br>
 
 		<<elseif _ct eq 3>>
-			<<addLustByPart>>
 			@@.mc-thoughts; You can no longer fully ignore the images. They push deeper into your thoughts, making your body respond.@@<br>
 			@@.mc-speech; Why am I starting to want this?@@<br>
 			@@.mc-thoughts; Your chest is a little heavier and your hands reach for your boobs, squeezing them.@@
 
 		<<elseif _ct eq 2>>
-			<<addLustByPart>>
 			@@.mc-thoughts; The images become sharper, and you feel tension building inside you.@@<br>
 			@@.mc-speech; Why is this so hard to ignore?@@<br>
 			@@.mc-thoughts; You notice your nipples hardening slightly, and your breathing deepens just a bit. A faint fluttering sensation stirs in your stomach@@<br>
 
 		<<elseif _ct eq 1>>
-			<<addLustByPart>>
 			@@.mc-thoughts; The ghost's whisper grows more persistent, and the images in your mind linger longer.@@
 			@@.mc-speech; This has no power over me. I can ignore it.@@ -- @@.mc-thoughts;  -- you think, but it takes more effort now to push the thoughts away. They start to feel heavier, but you're still managing. Your hands begin to tremble faintly, though you try to suppress it.@@
 
 		<<elseif _ct eq 0>>
-			<<addLustByPart>>
 			@@.mc-thoughts; You hear the ghost's whisper, its words creeping into your mind, but you easily shake it off.@@<br>
 			@@.mc-speech; No, this isn't happening. I'm stronger than this.@@ -- @@.mc-thoughts; you say to yourself, confidently brushing off the images that vanish as quickly as they appear. You're fully in control.@@
 
@@ -51,32 +42,26 @@
 
 	<<elseif _bodyPart eq "tits">>
 		<<if _ct eq 8>>
-			<<addLustByPart>>
 			@@.mc-thoughts; The hands firmly and insistently knead your chest, and you tremble with pleasure, giving yourself fully to the sensations. Your fingers trace along your skin, and you're consumed by overwhelming desire, wishing for this to never stop.@@<br>
 			@@.mc-speech; Yes... This is what I want. Please, don't stop...@@<br>
 
 		<<elseif _ct eq 6>>
-			<<addLustByPart>>
 			@@.mc-thoughts; You completely surrender. The spectral hands tenderly squeeze and stroke your chest, sending waves of pleasure that leave you panting. You tilt your head back, letting faint moans escape your lips as your hands begin to trail down toward your stomach.@@<br>
 			@@.mc-speech; I can't take it anymore... It's too... too good.@@<br>
 
 		<<elseif _ct eq 4>>
-			<<addLustByPart>>
 			@@.mc-thoughts; The ghostly hands become bolder, massaging your chest as your own fingers unconsciously move up to touch yourself. Your breasts feel hot, and each caress sends a new wave of pleasure coursing through you.@@<br>
 			@@.mc-speech; No... I can't fight this anymore... What's happening to me?@@<br>
 
 		<<elseif _ct eq 3>>
-			<<addLustByPart>>
 			@@.mc-thoughts; Warm, lifelike hands begin to softly squeeze your chest, drawing heavy breaths and barely stifled moans from your lips. Your nipples harden completely, and waves of heat ripple through your body.@@<br>
 			@@.mc-speech; I need to fight this... but... why does it feel so good?!@@<br>
 
 		<<elseif _ct eq 2>>
-			<<addLustByPart>>
 			@@.mc-thoughts; The touch feels warmer now, almost like someone is caressing your chest with tender but firm movements. Your heartbeat quickens, and a faint tingling sensation stirs in your lower abdomen. Despite your efforts, your body begins to react against your will.@@<br>
 			@@.mc-speech; Why... Why is this so hard to ignore? This feels so wrong...@@<br>
 
 		<<elseif _ct eq 1>>
-			<<addLustByPart>>
 			@@.mc-thoughts; The touch grows more insistent, the cold spreading across your skin, causing your nipples to stiffen. Your breathing quickens slightly, but you steady yourself, determined to resist.@@<br>
 			@@.mc-speech; This isn't real. It's just a trick. I won't let it break me.@@<br>
 
@@ -89,27 +74,22 @@
 
 	<<elseif _bodyPart eq "ass">>
 		<<if _ct eq 8>>
-			<<addLustByPart>>
 			@@.mc-thoughts; The slaps grow more insistent, each one sending jolts of pleasure through your body. You arch your back instinctively, your body fully giving in to the sensations. Your fingers trail along your thighs, teasing yourself as you moan softly, lost in desire.@@<br>
 			@@.mc-speech; Yes... I want this... Please, don't stop...@@<br>
 
 		<<elseif _ct eq 6>>
-			<<addLustByPart>>
 			@@.mc-thoughts; The ghostly touch continues, alternating between firm squeezes and teasing slaps. You gasp aloud, your body trembling as waves of warmth roll through you. Your hands grip your thighs as if to steady yourself, but your body craves more.@@<br>
 			@@.mc-speech; I can't resist anymore... I don't even want to...@@<br>
 
 		<<elseif _ct eq 4>>
-			<<addLustByPart>>
 			@@.mc-thoughts; You feel a playful slap on your ass, followed by a lingering caress. Your breath hitches, and without realizing it, your hips shift slightly, leaning into the touch.@@<br>
 			@@.mc-speech; I can't stop it... It's too much... What's wrong with me?@@<br>
 
 		<<elseif _ct eq 3>>
-			<<addLustByPart>>
 			@@.mc-thoughts; The ghostly hand grows bolder, squeezing your ass with increasing confidence. A faint gasp escapes your lips as you feel your body responding, a pulsing warmth overtaking your resistance.@@<br>
 			@@.mc-speech; You don't need to squeeze my butt so tightly...@@<br>
 
 		<<elseif _ct eq 2>>
-			<<addLustByPart>>
 			@@.mc-thoughts; The sensation turns warmer, the grip on your butt firmer. Heat creeps through your body despite your resistance, and you can't help but notice the tingling warmth spreading in your lower belly.@@<br>
 			@@.mc-speech; No... I didn't allow you to do that!@@<br>
 
@@ -127,22 +107,18 @@
 
 	<<elseif _bodyPart eq "bottom">>
 		<<if _ct eq 8>>
-			<<addLustByPart>>
 			@@.mc-thoughts; He's completely in control now, and all you want is more. It's like everything happening right now is exactly what you desire, and you can't resist anymore.@@<br>
 			@@.mc-speech; Yes... This is what I want... Don't stop...@@<br>
 
 		<<elseif _ct eq 6>>
-			<<addLustByPart>>
 			@@.mc-thoughts; His actions are becoming more daring, and you can't resist anymore. Your body completely gives in, and there's no room for resistance in your mind.@@<br>
 			@@.mc-speech; I don't want to fight it anymore... Let it continue...@@<br>
 
 		<<elseif _ct eq 4>>
-			<<addLustByPart>>
 			@@.mc-thoughts; It seems like the game is over, and now he's getting even bolder. You feel control slipping away as desire starts to take over your thoughts.@@<br>
 			@@.mc-speech; Oh~ I... I can't stop this...@@<br>
 
 		<<elseif _ct eq 3>>
-			<<addLustByPart>>
 			@@.mc-thoughts; He's getting bolder now, and you're struggling to hold back. Your body reacts to his actions, and unwanted thoughts start to creep in.@@<br>
 			@@.mc-speech; I didn't let you do this...@@<br>
 
@@ -165,18 +141,15 @@
 
 	<<elseif _bodyPart eq "mouth">>
 		<<if _ct eq 8>>
-			<<addLustByPart>>
 			@@.mc-thoughts; The ghost appears in front of you and pushes. You look up and see his cock in front of your face. There's only one thought in your head: where will he fuck you this time.<br>
 			He brings it to your mouth and you take it in your mouth yourself, capturing it with your lips so it doesn't escape.@@<br>
 			@@.mc-speech; Yeaaa~~ fuck my face, I deserve it~@@<br>
 
 		<<elseif _ct eq 6>>
-			<<addLustByPart>>
 			@@.mc-thoughts; Something pushed you. You try to get up, but the ghost stops you and shoves his cock down your throat.@@<br>
 			@@.mc-speech;  AH~ why so rough! You can be gentler with me...@@<br>
 
 		<<elseif _ct eq 4>>
-			<<addLustByPart>>
 			@@.mc-thoughts; The ghost pushes you and you fall. You already know what will happen next. Without any resistance from you, his big cock easily penetrates your wet mouth.@@<br>
 			@@.mc-speech; Ah! I must not give in so easily@@<br>
 
@@ -189,13 +162,11 @@
 
 	<<elseif _bodyPart eq "pussy">>
 		<<if _ct eq 8>>
-			<<addLustByPart>>
 			@@.mc-thoughts; The ghost appears in front of you, and it seems like he's really turned on this time.
 			You notice him, but you react fast enough and he starts fucking you in your wet pussy.@@<br>
 			@@.mc-speech; AHH~ Yeah, fuck me, I'm your slut~ be rough with me@@<br>
 
 		<<elseif _ct eq 6>>
-			<<addLustByPart>>
 			@@.mc-thoughts; The ghost appears in front of you, and it seems like he's really turned on this time.
 			You notice him, but you react fast enough and he starts fucking you in your wet pussy.@@<br>
 			@@.mc-speech;  Oh fuck, you caught me~ ah~ it feels so good@@<br>
@@ -214,7 +185,6 @@
 
 	<<elseif _bodyPart eq "anal">>
 		<<if _ct eq 8>>
-			<<addLustByPart>>
 			@@.mc-thoughts; The ghost appears in front of you, and it seems like he's really turned on this time.
 			He grabs you and shoves his dick right up your ass.@@<br>
 			@@.mc-speech; AH~ You're inside my ass, it feels so good~@@<br>
@@ -239,9 +209,6 @@
 	<</if>>
 
 	<<if setup.Events.shouldOrgasm(_bodyPart)>>
-		<<set _orgasmSanityLoss to setup.Events.orgasmSanityLoss>>
-		<<addSanity _orgasmSanityLoss>>
-		<<addLust -100>>
 		<br>
 		<<if _bodyPart eq "pussy">>
 			@@.mc-thoughts; A violent wave of pleasure crashes through your entire body. Your legs buckle and your vision blurs as an uncontrollable orgasm tears through you. Every nerve is on fire, your pussy clenching and spasming around him as you scream out, unable to stop yourself.@@<br>
@@ -263,23 +230,22 @@
 	<<if setup.Events.hasCompanionOnPlan1()>>
 		<<if setup.Events.companionIsAroused()>>
 			<<if $companion.name eq "Brook">>
-				or @@.usebtn;<<link `$companion.name + " helps you"`>><<set $companion.sanity -= 3>><<set $companion.lust += 10>><<replace "#videoContainer">><<include "BrookHelp">>
+				or @@.usebtn;<<link `$companion.name + " helps you"`>><<replace "#videoContainer">><<include "BrookHelp">>
 				<</replace>>
 				<</link>>
 			<<elseif $companion.name eq "Alice">>
-				or @@.usebtn;<<link `$companion.name + " helps you"`>><<set $companion.sanity -= 3>><<set $companion.lust += 10>><<replace "#videoContainer">><<include "AliceHelp">>
+				or @@.usebtn;<<link `$companion.name + " helps you"`>><<replace "#videoContainer">><<include "AliceHelp">>
 				<</replace>>
 				<</link>>
 			<<elseif $companion.name eq "Blake">>
-				or @@.usebtn;<<link `$companion.name + " helps you"`>><<set $companion.sanity -= 3>><<set $companion.lust += 10>><<replace "#videoContainer">><<include "BlakeHelp">>
+				or @@.usebtn;<<link `$companion.name + " helps you"`>><<replace "#videoContainer">><<include "BlakeHelp">>
 				<</replace>>
 				<</link>>
 			<<elseif setup.Events.companionIsInlineFriend()>>
-				or @@.usebtn; [["Call "+$companion.name + " for help"|$return][$companion.sanity -= 3; $companion.lust += 10]]@@
+				or @@.usebtn; [["Call "+$companion.name + " for help"|$return]]@@
 			<</if>>
 		<<else>>
-			or @@.usebtn; [["Call "+$companion.name + " for help"|$return][$companion.sanity -= 3; $companion.lust += 10]]@@
+			or @@.usebtn; [["Call "+$companion.name + " for help"|$return]]@@
 		<</if>>
-		- $companion.name's <img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%;"> and + $companion.name's <img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;">
 	<</if>>
 <</widget>>

@@ -32,12 +32,6 @@ setup.SeduceGhostMinigame = (function () {
 		return arr[random(0, arr.length - 1)];
 	}
 
-	function addEnergy(amount) {
-		var m = mc();
-		m.energy += amount;
-		if (m.energy > m.energyMax) m.energy = m.energyMax;
-	}
-
 	function clampMeters() {
 		if (v("ghostOrgasmMeter") < 0) sv("ghostOrgasmMeter", 0);
 		if (v("mcOrgasmMeter") < 0) sv("mcOrgasmMeter", 0);
@@ -306,7 +300,6 @@ setup.SeduceGhostMinigame = (function () {
 		},
 
 		tryAttract: function () {
-			mc().energy -= 1;
 			if (random(30, 100) <= mc().beauty) {
 				sv("minigameEventFailed", 0);
 				sv("minigameVideo", "seduce");
@@ -317,7 +310,6 @@ setup.SeduceGhostMinigame = (function () {
 		},
 
 		tryAgain: function () {
-			mc().energy -= 1;
 			if (random(30, 100) <= mc().beauty) {
 				sv("minigameEventFailed", 0);
 				sv("minigameVideo", pickRandom(TEASE_POOL));
@@ -328,7 +320,6 @@ setup.SeduceGhostMinigame = (function () {
 		},
 
 		continueSeduce: function () {
-			addEnergy(0.2);
 			sv("mcOrgasmMeter", v("mcOrgasmMeter") + random(4, 8));
 			sv("ghostOrgasmMeter", v("ghostOrgasmMeter") + random(2, 6));
 			if (!ghostWin() && !mcWin()) {
@@ -349,7 +340,6 @@ setup.SeduceGhostMinigame = (function () {
 		resist: function () {
 			var state = v("minigameVideo");
 			if (FREE_RESIST.indexOf(state) === -1) {
-				mc().energy -= 1;
 				sv("mcOrgasmMeter", v("mcOrgasmMeter") - random(2, 6));
 				sv("ghostOrgasmMeter", v("ghostOrgasmMeter") - random(0, 5));
 				clampMeters();
@@ -359,7 +349,6 @@ setup.SeduceGhostMinigame = (function () {
 
 		submit: function () {
 			var state = v("minigameVideo");
-			addEnergy(0.2);
 			sv("mcOrgasmMeter", v("mcOrgasmMeter") + random(4, 8));
 			var ghostInc = (state === "subduetitjob") ? random(2, 5) : random(2, 6);
 			sv("ghostOrgasmMeter", v("ghostOrgasmMeter") + ghostInc);
@@ -371,7 +360,6 @@ setup.SeduceGhostMinigame = (function () {
 
 		subdue: function () {
 			var state = v("minigameVideo");
-			mc().energy -= 1;
 			sv("mcOrgasmMeter", v("mcOrgasmMeter") + random(2, 6));
 			sv("ghostOrgasmMeter", v("ghostOrgasmMeter") + random(5, 10));
 			rollSubdue(state);

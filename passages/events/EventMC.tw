@@ -23,26 +23,17 @@
 <<if $bansheeAbility eq 1>>
 	@@.mc-thoughts; Suddenly, out of the corner of your eye, you spot a faint figure. It slowly becomes clearer -- standing in front of you is a girl with pale skin and piercing eyes. Your body freezes, and you can't move.<br>
 	She glides toward you, her movements almost hypnotic. When her lips touch yours, a fire ignites inside you. You can't resist -- your lips respond to hers. The kiss is unbelievably sweet, soft yet full of passion, sending shivers down your spine. A wave of intense pleasure washes over you, making you forget everything else. Every part of you responds, as if you're being pulled into a state of euphoria.@@<br><br>
-	@@.mc-thoughts; Can't run away from her@@
-	<span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; filter: grayscale(1); width:3%;"></span>
-	@@.usebtn; [[Stay|$return][$mc.sanity -= 10]]@@ <span>-<img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%;"></span>
+	@@.usebtn; [[Stay|$return]]@@
 	<<unset $bansheeAbility>>
 <<elseif $cthulionAbility eq 1>>
 	@@.mc-thoughts; Tentacles creep out from the corner and begin wrapping around your body, trying to invade all your intimate areas.@@<br>
 	@@.mc-speech; N-Nooo~ What is this disgusting thing?! Get away from me!@@<br>
-	@@.mc-thoughts; Can't run away from it@@
-	<span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; filter: grayscale(1); width:3%;"></span>
-	@@.usebtn; [[Stay|$return][$mc.sanity -= 10]]@@ -<img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%;">
+	@@.usebtn; [[Stay|$return]]@@
 	<<unset $cthulionAbility>>
 <<else>>
 	<<eventRandomizerText $argForRandomizer>><br>
-	<<if setup.Events.hasEnergyToRunAway()>>
-		@@.usebtn;[[Run away|$return][$mc.energy -= 1]]@@<span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; width:3%;"></span>
-	<<else>>
-		@@.mc-thoughts; I'm too tired@@
-		<span>-<img @src="setup.ImagePath + '/img/energy.png'" style="position: relative; top: 0.375em; filter: grayscale(1); width:3%;"></span>
-	<</if>>
-	or @@.usebtn; [[Stay|$return][$mc.sanity -= $ghostSanityEventDecreased]]@@ <span>-<img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%;"></span>
+	@@.usebtn;[[Run away|$return]]@@
+	or @@.usebtn; [[Stay|$return]]@@
 	<<companionHelpOption>>
 <</if>><br>
 </div>

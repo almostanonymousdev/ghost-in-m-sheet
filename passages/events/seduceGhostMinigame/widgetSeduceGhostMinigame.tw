@@ -76,7 +76,6 @@
 		<</link>> <b><img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:25px;"></b>
 
 	<</if>>
-	<<set $mc.energy to parseFloat($mc.energy.toFixed(2))>>
 <</widget>>
 
 <<widget "seduceGhostMinigameText">>

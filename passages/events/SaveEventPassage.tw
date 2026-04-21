@@ -23,8 +23,6 @@
 <<if _chance <= $decreasingSanity.stage2 and _checkRandomBanshee eq 1 and $ghost.name eq "Banshee">>
 
 	<<set $bansheeAbility to 1>>
-	<<set $tempCorr += 0.05>>
-	<<addLust 15>>
 	<<set _videoList to ["ghosts/banshee/1.mp4", "ghosts/banshee/2.mp4", "ghosts/banshee/3.mp4", "ghosts/banshee/4.mp4", "ghosts/banshee/5.mp4", "ghosts/banshee/6.mp4", "ghosts/banshee/7.mp4", "ghosts/banshee/8.mp4", "ghosts/banshee/9.mp4", "ghosts/banshee/10.mp4"]>>
 
 <<elseif _chance <= $decreasingSanity.stage2 and _checkRandomCthulion eq 1 and $ghost.name eq "Cthulion">>
@@ -42,7 +40,6 @@
 		<<set _eventTriggered = true>>
 		<<set _chanceInside = random(1,5)>>
 		<<if _chanceInside <=3>>
-			<<addLustByPart>>
 			<<if $jeansState is "worn">>
 				<<if $isOwaissa eq 1>>
 					<<set _videoList to ["jeans1/1.mp4", "jeans1/2.mp4", "jeans1/3.mp4", "jeans1/4.mp4", "jeans1/5.mp4", "jeans1/6.mp4", "jeans1/7.mp4", "jeans1/8.mp4", "jeans1/9.mp4", "jeans1/10.mp4"]>>
@@ -92,7 +89,6 @@
 			<</if>>
 
 		<<elseif _chanceInside gte 4>>
-			<<addLustTits 3>>
 			<<if $tshirtState is "worn">>
 				<<if $braState is "worn">>
 					<<if $isOwaissa eq 1>>
@@ -127,7 +123,6 @@
 			<</if>>
 		<</if>>
 
-		<<set $tempCorr += 0.01>>
 	<<elseif ($mc.sanity >= 50 and $mc.sanity < 75) and _chance <= $decreasingSanity.stage2>>
 		<<set _eventTriggered = true>>
 		<<if $jeansState is "worn">>
@@ -182,8 +177,6 @@
 			<</if>>
 		<</if>>
 
-		<<addLust 5>>
-		<<set $tempCorr += 0.02>>
 	<<elseif ($mc.sanity >= 30 and $mc.sanity < 50) and _chance <= $decreasingSanity.stage3>>
 		<<set _eventTriggered = true>>
 
@@ -210,8 +203,6 @@
 				<</if>>
 			<</if>>
 		<</if>>
-		<<addLust 7>>
-		<<set $tempCorr += 0.04>>
 	<<elseif ($mc.sanity >= 1 and $mc.sanity < 30) and _chance <= $decreasingSanity.stage4>>
 		<<set _eventTriggered = true>>
 		<<if $jeansState is "worn">>
@@ -265,8 +256,6 @@
 				<</if>>
 			<</if>>
 		<</if>>
-		<<addLustPussy 9>>
-		<<set $tempCorr += 0.05>>
 	<</if>>
 <</if>>
 
