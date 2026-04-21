@@ -1,19 +1,11 @@
 :: UVLcheck [nobr] {"position":"3725,425","size":"100,100"}
-<<set $uvlTimeRemain to setup.toolTimeRemain($equipment.uvl)>>
+<<set _state to setup.tickTimedTool("uvl")>>
 <<set _hg to setup.Ghosts.active()>>
 
-<<if $uvlActivated neq 1>>
+<<if _state neq "ready" or not (_hg and _hg.hasEvidence("uvl"))>>
 	<<notFound "I didn't find any fingerprints">>
 <<else>>
-	<<set $elapsedTimeUvl to ($hours * 60 + $minutes) - $uvlActivationTime>>
-	<<if $elapsedTimeUvl gt $uvlTimeRemain>>
-		<<set $uvlActivated to 0>>
-		<<set $uvlActivationTime to 0>>
-		<<set $elapsedTimeUvl to 0>>
-		<<notFound "I didn't find any fingerprints">>
-	<<elseif not (_hg and _hg.hasEvidence("uvl"))>>
-		<<notFound "I didn't find any fingerprints">>
-	<<elseif $isIronclad eq 1>>
+	<<if $isIronclad eq 1>>
 		<<randRangeImg "uvl/ironclad" 1 6 ".png">>
 		@@.mc-speech; <span class="evidenceshadowtext"> It seems I found fingerprints... one more piece of evidence</span>@@<br>
 	<<else>>

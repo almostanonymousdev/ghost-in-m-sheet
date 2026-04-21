@@ -419,6 +419,14 @@
         };
     }
 
+    /* Memoisation for active(): during a render it's called from every
+       evidence tool, hoverHtml, CheckHuntStart, etc. The rebuild (catalogue
+       lookup + field copy + evidence rehydrate) is cheap but happens dozens
+       of times per passage. Keying on (name, evidence-ids) invalidates the
+       cache correctly when Mimic rotates its disguise or DeleteEvidence
+       prunes evidence, without needing a separate invalidation hook. */
+    var activeCache = { key: null, ghost: null };
+
     /* The canonical ghost catalogue lives in the GHOSTS closure above;
        setup.Ghosts is the public namespace. Callers that want to iterate
        should use setup.Ghosts.list(). */
@@ -435,10 +443,16 @@
            but whose `evidence` is rehydrated from $hunt.evidence (mutable
            per hunt — DeleteEvidence prunes it; for Mimic hunts $hunt.name
            rotates while $hunt.evidence stays the real Mimic set). null
-           when no hunt is active. */
+           when no hunt is active. Cached across calls; see activeCache. */
         active: function () {
             var h = State.variables.hunt;
-            if (!h || !h.name) return null;
+            if (!h || !h.name) {
+                activeCache.key = null;
+                activeCache.ghost = null;
+                return null;
+            }
+            var key = h.name + "|" + (h.evidence ? h.evidence.join(",") : "");
+            if (activeCache.key === key) return activeCache.ghost;
             var catalogue = setup.Ghosts.getByName(h.name);
             if (!catalogue) return null;
             var g = Object.create(Ghost.prototype);
@@ -447,6 +461,8 @@
                mutable per-hunt evidence from state. */
             Object.keys(catalogue).forEach(function (k) { g[k] = catalogue[k]; });
             g.evidence = rehydrateEvidence(h.evidence);
+            activeCache.key = key;
+            activeCache.ghost = g;
             return g;
         },
 

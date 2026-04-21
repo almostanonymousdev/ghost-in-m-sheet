@@ -1212,6 +1212,56 @@ setup.toolTimeRemain = function (tier) {
     return setup.TOOL_TIME_REMAIN[tier] || 0;
 };
 
+/* Activation-state metadata for the two timed tools (EMF + UVL). Each
+ * tool has an "activated" flag and an "activationTime" timestamp; the
+ * names are kept separate because historical state uses inconsistent
+ * capitalisation (EmfActivated vs uvlActivated). */
+setup.TIMED_TOOLS = {
+    emf: {
+        activated:      "EmfActivated",
+        activationTime: "EmfActivationTime",
+        tierKey:        "emf"
+    },
+    uvl: {
+        activated:      "uvlActivated",
+        activationTime: "uvlActivationTime",
+        tierKey:        "uvl"
+    }
+};
+
+/* Evaluate a timed tool's state and auto-clear it if stale. Returns
+ * "ready" (activated, within the freshness window), "expired" (was
+ * activated but the window lapsed; flags are now cleared) or "inactive"
+ * (never activated this cycle). EMFcheck / UVLcheck / UVLcheckArt share
+ * this logic. */
+setup.tickTimedTool = function (tool) {
+    var meta = setup.TIMED_TOOLS[tool];
+    if (!meta) return "inactive";
+    var V = State.variables;
+    if (V[meta.activated] !== 1) return "inactive";
+    var elapsed = (V.hours * 60 + V.minutes) - V[meta.activationTime];
+    var remain = setup.toolTimeRemain(V.equipment[meta.tierKey]);
+    if (elapsed > remain) {
+        V[meta.activated] = 0;
+        V[meta.activationTime] = 0;
+        return "expired";
+    }
+    return "ready";
+};
+
+/* Shared predicate for the tier-gated evidence tools (GWB, Plasm,
+ * Spiritbox). True iff the active ghost exposes `id`, the equipment-
+ * tier chance passes a fresh 1..100 roll, and the player is in a
+ * haunted passage matching `houses` (or any house when `houses` is
+ * omitted). Consumers still supply their own presentation. */
+setup.evidenceAvailable = function (id, tier, houses) {
+    var g = setup.Ghosts.active();
+    if (!g || !g.hasEvidence(id)) return false;
+    var roll = Math.floor(Math.random() * 100) + 1;
+    if (!setup.chanceByTier(tier, roll)) return false;
+    return setup.isGhostHere(houses);
+};
+
 /* Build the full <<searchTool>> config from a (tool, prefix) pair by
  * pulling per-tool defaults out of setup.searchToolDefs and per-prefix
  * defaults out of setup.searchRoomPrefixes. This is what the room-level

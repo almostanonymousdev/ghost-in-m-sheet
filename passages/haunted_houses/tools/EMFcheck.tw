@@ -1,24 +1,14 @@
 :: EMFcheck [nobr] {"position":"3725,225","size":"100,100"}
-<<set $emfTimeRemain to setup.toolTimeRemain($equipment.emf)>>
+<<set _state to setup.tickTimedTool("emf")>>
 <<set _hg to setup.Ghosts.active()>>
-<<if $EmfActivated eq 1>>
-	<<set $elapsedTime to ($hours * 60 + $minutes) - $EmfActivationTime>>
-	<<if $elapsedTime lte $emfTimeRemain>>
-		<<if _hg and _hg.hasEvidence("emf")>>
-			<<if _hg and _hg.rollEmfGlitch()>>
-				<<coloredText "red" `random(0, 100)`>>
-			<<else>>
-				<<coloredText "red" 5>>
-			<</if>>
-		<<else>>
-			<<coloredText "yellow" `random(1, 4)`>>
-		<</if>>
+<<if _state eq "ready" and _hg and _hg.hasEvidence("emf")>>
+	<<if _hg.rollEmfGlitch()>>
+		<<coloredText "red" `random(0, 100)`>>
 	<<else>>
-		<<set $EmfActivated to 0>>
-		<<set $EmfActivationTime to 0>>
-		<<set $elapsedTime to 0>>
-		<<coloredText "green" 0>>
+		<<coloredText "red" 5>>
 	<</if>>
+<<elseif _state eq "ready">>
+	<<coloredText "yellow" `random(1, 4)`>>
 <<else>>
 	<<coloredText "green" 0>>
 <</if>>
