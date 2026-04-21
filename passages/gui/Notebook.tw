@@ -48,11 +48,18 @@
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 	<<script>>
-		setup.Ghosts.updateNotebookHighlights();
+		var refreshHighlights = function () {
+			var matches = setup.Ghosts.matchingNames(setup.Ghosts.readEvidenceChecks());
+			setup.Ghosts.list().forEach(function (g) {
+				var el = document.querySelector('[data-ghost="' + g.name + '"]');
+				if (el) el.classList.toggle("right", matches.has(g.name));
+			});
+		};
+		refreshHighlights();
 		$('.flexwrapperNotebook input[type="checkbox"]').on('change', function () {
 			/* autocheck's change handler runs first and syncs $state; defer one
-			   tick so setup.Ghosts.updateNotebookHighlights sees the fresh value. */
-			setTimeout(setup.Ghosts.updateNotebookHighlights, 0);
+			   tick so we read the fresh value. */
+			setTimeout(refreshHighlights, 0);
 		});
 	<</script>>
 <</done>>

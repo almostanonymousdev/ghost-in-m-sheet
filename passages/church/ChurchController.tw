@@ -32,7 +32,7 @@ setup.Church = (function () {
 
 		// --- Holy water -------------------------------------------
 		knowsAboutHolyWater: function () {
-			return v('ghostMareInfoCollected') === 1 || this.hasMetRain();
+			return setup.Ghosts.hasDiscovered('Mare') || this.hasMetRain();
 		},
 		holyWaterAvailable: function () {
 			return this.knowsAboutHolyWater() && v('holyWaterIsCollected') !== 1;

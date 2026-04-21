@@ -231,11 +231,22 @@ test.describe('Ghost hunt conditions', () => {
       'The Twins', 'Wraith', 'Mare', 'Cthulion', 'Banshee', 'Raiju',
     ];
     for (const ghostName of ALL_GHOSTS) {
-      const ghost = await callSetup(page, `setup.Ghosts.getByName("${ghostName}")`);
-      expect(ghost.huntCondition, `"${ghostName}" missing huntCondition`).toBeTruthy();
-      expect(['sanity', 'lust']).toContain(ghost.huntCondition.stat);
-      expect(['lte', 'gte']).toContain(ghost.huntCondition.op);
-      expect(ghost.huntCondition.value).toBeGreaterThan(0);
+      const result = await page.evaluate((name) => {
+        const g = SugarCube.setup.Ghosts.getByName(name);
+        if (!g) return null;
+        return {
+          predicateIsFunction: typeof g.huntCondition === 'function',
+          hasText: typeof g.huntConditionText === 'string' && g.huntConditionText.length > 0,
+          // Predicates should respond to a full-stats mc and an empty one differently.
+          triggersLow: g.canHunt({ sanity: 0,   lust: 100 }),
+          triggersHigh: g.canHunt({ sanity: 100, lust: 0 })
+        };
+      }, ghostName);
+      expect(result, `"${ghostName}" not found`).toBeTruthy();
+      expect(result.predicateIsFunction, `"${ghostName}" huntCondition must be a function`).toBe(true);
+      expect(result.hasText, `"${ghostName}" missing huntConditionText`).toBe(true);
+      expect(result.triggersLow || result.triggersHigh,
+        `"${ghostName}" predicate never returns true`).toBe(true);
     }
   });
 });

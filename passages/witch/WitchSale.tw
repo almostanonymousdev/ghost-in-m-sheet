@@ -134,20 +134,20 @@
 <div class="housecard">
 
 </div>
-<<ghostInfoCard "ghostJinnInfoCollected" "Jinn">>
-<<ghostInfoCard "ghostDeogenInfoCollected" "Deogen">>
-<<ghostInfoCard "ghostDemonInfoCollected" "Demon">>
-<<ghostInfoCard "ghostPhantomInfoCollected" "Phantom">>
-<<ghostInfoCard "ghostShadeInfoCollected" "Shade">>
-<<ghostInfoCard "ghostGoryoInfoCollected" "Goryo">>
-<<ghostInfoCard "ghostOniInfoCollected" "Oni">>
-<<ghostInfoCard "ghostMylingInfoCollected" "Myling">>
-<<ghostInfoCard "ghostSpiritInfoCollected" "Spirit">>
-<<ghostInfoCard "ghostCthulionInfoCollected" "Cthulion">>
-<<ghostInfoCard "ghostBansheeInfoCollected" "Banshee">>
-<<ghostInfoCard "ghostMoroiInfoCollected" "Moroi">>
-<<ghostInfoCard "ghostWraithInfoCollected" "Wraith">>
-<<ghostInfoCard "ghostRaijuInfoCollected" "Raiju">>
+<<ghostInfoCard "Jinn">>
+<<ghostInfoCard "Deogen">>
+<<ghostInfoCard "Demon">>
+<<ghostInfoCard "Phantom">>
+<<ghostInfoCard "Shade">>
+<<ghostInfoCard "Goryo">>
+<<ghostInfoCard "Oni">>
+<<ghostInfoCard "Myling">>
+<<ghostInfoCard "Spirit">>
+<<ghostInfoCard "Cthulion">>
+<<ghostInfoCard "Banshee">>
+<<ghostInfoCard "Moroi">>
+<<ghostInfoCard "Wraith">>
+<<ghostInfoCard "Raiju">>
 </div>
 <br>
 @@.backbtn;[[Back|WitchInside]]@@ <br>
