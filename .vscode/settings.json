@@ -4,5 +4,15 @@
     "playwright.showTrace": false,
     "playwright.configs": [
         "playwright.config.js"
-    ]
+    ],
+    // Auto-format .tw files on save via the `emeraldwalk.runonsave` extension.
+    "emeraldwalk.runonsave": {
+        "commands": [
+            {
+                "match": "\\.tw$",
+                "isAsync": false,
+                "cmd": "python3 \"${workspaceFolder}/format_twee.py\" \"${file}\""
+            }
+        ]
+    }
 }

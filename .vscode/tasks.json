@@ -38,6 +38,45 @@
       "detail": "Background Twee formatting linter — shows warnings in Problems panel"
     },
     {
+      "label": "Twee Format (current file)",
+      "type": "shell",
+      "command": "python3",
+      "args": ["format_twee.py", "${file}"],
+      "group": "none",
+      "presentation": {
+        "reveal": "silent",
+        "echo": false,
+        "panel": "shared",
+        "close": true
+      },
+      "problemMatcher": [],
+      "detail": "Run format_twee.py on the currently active .tw file"
+    },
+    {
+      "label": "Twee Format (all files)",
+      "type": "shell",
+      "command": "python3",
+      "args": ["format_twee.py"],
+      "group": "none",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": [],
+      "detail": "Run format_twee.py on every .tw file under passages/"
+    },
+    {
+      "label": "Twee Format (check)",
+      "type": "shell",
+      "command": "python3",
+      "args": ["format_twee.py", "--check"],
+      "group": "none",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": [],
+      "detail": "Exit non-zero if any .tw file is not formatted (suitable for CI)"
+    },
+    {
       "label": "Twee Lint (all files)",
       "type": "shell",
       "command": "python3",

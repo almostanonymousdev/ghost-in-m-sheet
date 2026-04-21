@@ -92,6 +92,23 @@ The build produces `ghost-in-msheet.html`, which can be opened directly in any b
 
 1. Press `F5` to build and launch the story in Chrome or Firefox
 
+### Formatting .tw files
+
+The project ships an auto-formatter — `format_twee.py` — that normalises
+whitespace, macro spacing, wiki-link pipes, and block-macro indentation.
+
+- **Format on save**: install the recommended `emeraldwalk.runonsave`
+  extension (VS Code will prompt when the project is opened). Every `.tw`
+  save then runs `python3 format_twee.py "${file}"` automatically.
+- **Format the current file**: `Ctrl+Shift+P` → *Tasks: Run Task* →
+  *Twee Format (current file)*.
+- **Format the whole project**: *Tasks: Run Task* → *Twee Format (all files)*.
+- **CI / pre-commit check**: `python3 format_twee.py --check` exits
+  non-zero if anything is unformatted. The matching task is
+  *Twee Format (check)*.
+- **Diff preview**: `python3 format_twee.py --dry-run --diff` on the
+  command line.
+
 ## Development Workflow
 
 ### With File Watching

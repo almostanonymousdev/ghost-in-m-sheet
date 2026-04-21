@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 format_twee.py --check)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(mkdir -p /tmp/fmt-onesave)",
+      "Bash(cp \"/home/dev/Downloads/Ghost in M'Sheet/passages/haunted_houses/general/GhostStreet.tw\" /tmp/fmt-onesave/test.tw)",
+      "Bash(python3 format_twee.py /tmp/fmt-onesave/test.tw)",
+      "Bash(python3 format_twee.py passages/home/Home.tw)"
+    ],
+    "additionalDirectories": [
+      "/tmp/fmt-full-test",
+      "/tmp"
+    ]
+  }
+}
