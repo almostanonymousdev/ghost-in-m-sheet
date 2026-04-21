@@ -1,11 +1,10 @@
 :: HuntOverSanity [noreturn nobr] {"position":"1400,1350","size":"100,100"}
-<<if $ghost.name eq "The Twins">>
-	<<set $thetwinsevent to 1>>
-<</if>>
+<<run setup.Ghosts.markActiveHuntEvent()>>
+<<set _hg to setup.Ghosts.active()>>
 &emsp;@@.mc-thoughts;Your mind succumbs to the pressure of darkness and horrors enveloping you. Everything around you merges into a black void@@<br>
 @@.enterbtn;<<linkreplace "Next">>
 	<<if $isrealhouse eq 0>>
-		<<if $ghost.name eq "Cthulion">>
+		<<if _hg and _hg.canTentacles>>
 			<<set _check to random(1,5)>>
 			<<if _check eq 1>>
 				<video autoplay controls muted loop>
@@ -77,7 +76,7 @@
 			<</if>>
 		<</if>>
 	<<else>>
-		<<if $ghost.name eq "Cthulion">>
+		<<if _hg and _hg.canTentacles>>
 			<<set _check to random(1,6)>>
 			<<if _check eq 1>>
 				<video autoplay controls muted loop>
@@ -152,7 +151,7 @@
 	&emsp;@@.mc-thoughts;Periodically, moments of realization break through: you are being fucked, not sparing all your holes. Your body becomes pliable, you feel like a doll. This goes on forever. However, your body reacts to all this torture; the feeling of pleasure gradually takes over. A powerful surge of enjoyment passes through it. You feel the strength leaving your body, and consciousness slips away.@@<br>
 
 	<<if $highpriestess eq 1>>
-		@@.usebtn; [[Next|$return][$highpriestess to 0; $ghostHuntingMode to 2]]@@
+		@@.usebtn; [[Next|$return][$highpriestess to 0; $hunt.mode to setup.Ghosts.HuntMode.ACTIVE]]@@
 	<<else>>
 		<<run setup.HauntedHouses.resetToolTimers()>>
 		<<include "LostClothes">>
@@ -167,4 +166,4 @@
 	<</if>>
 <</linkreplace>>@@
 
-<<set $ghostHuntingMode to 3>>
+<<set $hunt.mode to setup.Ghosts.HuntMode.POSSESSED>>

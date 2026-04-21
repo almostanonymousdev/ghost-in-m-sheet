@@ -1,17 +1,16 @@
 :: widgetWitch [widget nobr] {"position":"1350,0","size":"100,100"}
 
 <<widget "ghostInfoCard">>
-	<<set _infoVar to _args[0]>>
-	<<set _ghostName to _args[1]>>
-	<<set _price to (typeof _args[2] !== "undefined") ? _args[2] : 200>>
+	<<set _ghostName to _args[0]>>
+	<<set _price to (typeof _args[1] !== "undefined") ? _args[1] : 200>>
 	<div class="housecard">
-	<<if State.variables[_infoVar] neq 1>>
+	<<if not setup.Ghosts.hasDiscovered(_ghostName)>>
 		<img @src="setup.ImagePath + '/ghosts/' + _ghostName.toLowerCase() + '.webp'" class="iconPx">
 		@@.mc-thoughts; Information about _ghostName@@<br>
 		<span class="priceAmount"><<= _price>>$</span><br>
 		<<if $mc.money gte _price>>
 			@@.buyItemLink;<<link "Buy" "WitchSale">>
-				<<run State.variables[_args[0]] = 1>>
+				<<run setup.Ghosts.markDiscovered(_ghostName)>>
 				<<set $mc.money -= _price>>
 			<</link>>@@<br>
 		<<else>>@@.warningtext; I don't have enough money@@

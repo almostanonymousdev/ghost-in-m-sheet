@@ -31,7 +31,7 @@
 	<</if>>
 
 <<elseif $chosenPlan eq "Plan3">>
-	<<set _randomEvidence to $ghost.evidence[random(0, $ghost.evidence.length - 1)]>>
+	<<set _randomEvidence to $hunt.evidence[random(0, $hunt.evidence.length - 1)]>>
 	<<if _randomEvidence eq "emf">>
 		@@.notmc-speech; evidence - EMF 5 @@ <img @src="setup.ImagePath + '/img/emf.png'" style="position: relative; top: 0.375em; width:5%;"><br>
 		<br>

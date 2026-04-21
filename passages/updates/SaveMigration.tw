@@ -34,15 +34,6 @@
 	* two saves can't end up aliasing the same reference after migration.
 	*/
 	var DEFAULTS = {
-		ghost16: function () {
-			return { name: 'Cthulion', evidence: ['spiritbox', 'glass', 'temperature'] };
-		},
-		ghost17: function () {
-			return { name: 'Banshee', evidence: ['glass', 'gwb', 'uvl'] };
-		},
-		ghost18: function () {
-			return { name: 'Raiju', evidence: ['emf', 'spiritbox', 'uvl'] };
-		},
 		sensualBodyPart: function () {
 			return { brain: 1, tits: 1, ass: 1, bottom: 1, mouth: 1, pussy: 1, anal: 1 };
 		},
@@ -109,6 +100,67 @@
 		if (typeof vars.hasPSprayCharges === 'number' && vars.hasPSprayCharges <= 0) {
 			vars.hasPSpray = 0;
 		}
+
+		// Older saves stored hunt state as a scatter of variables
+		// ($ghost, $ghostName, $ghostEvidence, $ghostRoom, $ghostIsTrapped,
+		// $ghostHuntingMode, $saveMimic). Consolidate into $hunt so
+		// setup.Ghosts.active()/hunt() can read a single object.
+		if (vars.hunt === undefined) {
+			var legacyName = undefined;
+			var legacyEvidence = undefined;
+			if (vars.ghost && typeof vars.ghost === 'object') {
+				if (typeof vars.ghost.name === 'string') legacyName = vars.ghost.name;
+				if (Array.isArray(vars.ghost.evidence)) legacyEvidence = vars.ghost.evidence.slice();
+				delete vars.ghost;
+			}
+			if (legacyName === undefined && typeof vars.ghostName === 'string') legacyName = vars.ghostName;
+			if (legacyEvidence === undefined && Array.isArray(vars.ghostEvidence)) legacyEvidence = vars.ghostEvidence.slice();
+			if (legacyName) {
+				vars.hunt = {
+					name:     legacyName,
+					realName: vars.saveMimic === 1 ? 'Mimic' : legacyName,
+					evidence: legacyEvidence || [],
+					room:     vars.ghostRoom || null,
+					trapped:  vars.ghostIsTrapped === 1,
+					mode:     typeof vars.ghostHuntingMode === 'number' ? vars.ghostHuntingMode : 0
+				};
+			} else {
+				vars.hunt = null;
+			}
+		}
+		delete vars.ghostName;
+		delete vars.ghostEvidence;
+		delete vars.ghostRoom;
+		delete vars.ghostIsTrapped;
+		delete vars.ghostHuntingMode;
+		delete vars.saveMimic;
+		delete vars.ghostActivity;
+		delete vars.ghostRoomCI;
+
+		// EMF/UVL activation state was four flat vars (EmfActivated,
+		// EmfActivationTime, uvlActivated, uvlActivationTime); the new
+		// shape bundles them under $tools so activateTool / resetTool /
+		// tickTimedTool can operate on a single record per tool.
+		if (!vars.tools || typeof vars.tools !== 'object') {
+			vars.tools = {
+				emf: {
+					activated:      vars.EmfActivated === 1 ? 1 : 0,
+					activationTime: typeof vars.EmfActivationTime === 'number' ? vars.EmfActivationTime : 0
+				},
+				uvl: {
+					activated:      vars.uvlActivated === 1 ? 1 : 0,
+					activationTime: typeof vars.uvlActivationTime === 'number' ? vars.uvlActivationTime : 0
+				}
+			};
+		}
+		delete vars.EmfActivated;
+		delete vars.EmfActivationTime;
+		delete vars.uvlActivated;
+		delete vars.uvlActivationTime;
+		delete vars.emfTimeRemain;
+		delete vars.uvlTimeRemain;
+		delete vars.elapsedTime;
+		delete vars.elapsedTimeUvl;
 	}
 
 	// Expose for use from Twine (PassageReady belt-and-braces call).

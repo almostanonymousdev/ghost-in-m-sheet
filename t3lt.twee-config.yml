@@ -157,6 +157,14 @@ sugarcube-2:
       name: anything
       description: "Monkey Paw wish: rolls a random number (1-6) into _check. The
         result is used by the calling passage to determine a random outcome."
+    huntEndExit:
+      name: huntEndExit
+      description: "Shared exit link for HuntEnd hunt-ending scenes. Renders a
+        .usebtn link whose destination forks on $highpriestess: when set, the
+        tarot burns itself (clears the flag, restores sanity to 25) and routes
+        back to $return; otherwise, the link routes to Sleep. Args: linkText
+        (string) -- e.g. 'fading into darkness', 'plunging you into
+        darkness', 'nothing'."
     webcamEvent:
       name: webcamEvent
       description: Runs the webcam show for the current $webcamEvent type ("tease",

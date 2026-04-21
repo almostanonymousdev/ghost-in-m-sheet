@@ -26,84 +26,13 @@
 <</linkreplace>>
 <br>* <span class="uvl"><<checkbox "$UVLCheck" false true autocheck>> UVL Fingerprints</span><br>
 </b>
-@@.movebtn;<<linkreplace "RESULT">>
-	<<if ($EMF5Check or $SpiritboxCheck or $GWBCheck) and $EctoglassCheck eq false and $UVLCheck eq false and $TemperatureCheck eq false>>
-		<<addclass "#Spirit" "right">>
-	<</if>>
-	<<if ($EMF5Check or $GWBCheck or $TemperatureCheck) and $EctoglassCheck eq false and $UVLCheck eq false and $SpiritboxCheck eq false>>
-		<<addclass "#Shade" "right">>
-	<</if>>
-	<<if ($SpiritboxCheck or $GWBCheck or $UVLCheck) and $EMF5Check eq false and $TemperatureCheck eq false and $EctoglassCheck eq false>>
-		<<addclass "#Poltergeist" "right">>
-	<</if>>
-	<<if ($SpiritboxCheck or $EctoglassCheck or $UVLCheck) and $EMF5Check eq false and $TemperatureCheck eq false and $GWBCheck eq false>>
-		<<addclass "#Phantom" "right">>
-	<</if>>
-	<<if ($EMF5Check or $UVLCheck or $EctoglassCheck) and $SpiritboxCheck eq false and $GWBCheck eq false and $TemperatureCheck eq false>>
-		<<addclass "#Goryo" "right">>
-	<</if>>
-
-	<<if ($GWBCheck or $UVLCheck or $TemperatureCheck) and $SpiritboxCheck eq false and $EMF5Check eq false and $EctoglassCheck eq false>>
-		<<addclass "#Demon" "right">>
-	<</if>>
-
-	<<if ($EctoglassCheck or $GWBCheck or $SpiritboxCheck) and $EMF5Check eq false and $TemperatureCheck eq false and $UVLCheck eq false>>
-		<<addclass "#Deogen" "right">>
-	<</if>>
-
-	<<if ($EMF5Check or $UVLCheck or $TemperatureCheck) and $SpiritboxCheck eq false and $GWBCheck eq false and $EctoglassCheck eq false>>
-		<<addclass "#Jinn" "right">>
-	<</if>>
-
-	<<if ($GWBCheck or $TemperatureCheck or $SpiritboxCheck) and $EMF5Check eq false and $EctoglassCheck eq false and $UVLCheck eq false>>
-		<<addclass "#Moroi" "right">>
-	<</if>>
-
-	<<if ($EMF5Check or $GWBCheck or $UVLCheck) and $SpiritboxCheck eq false and $EctoglassCheck eq false and $TemperatureCheck eq false>>
-		<<addclass "#Myling" "right">>
-	<</if>>
-
-	<<if ($EctoglassCheck or $EMF5Check or $TemperatureCheck) and $SpiritboxCheck eq false and $GWBCheck eq false and $UVLCheck eq false>>
-		<<addclass "#Oni" "right">>
-	<</if>>
-
-	<<if ($UVLCheck or $TemperatureCheck or $SpiritboxCheck) and $EMF5Check eq false and $GWBCheck eq false and $EctoglassCheck eq false>>
-		<<addclass "#Mimic" "right">>
-	<</if>>
-
-	<<if ($EMF5Check or $TemperatureCheck or $SpiritboxCheck) and $GWBCheck eq false and $EctoglassCheck eq false and $UVLCheck eq false>>
-		<<addclass "#TheTwins" "right">>
-	<</if>>
-
-	<<if ($EctoglassCheck or $EMF5Check or $SpiritboxCheck) and $TemperatureCheck eq false and $GWBCheck eq false and $UVLCheck eq false>>
-		<<addclass "#Wraith" "right">>
-	<</if>>
-
-	<<if ($EctoglassCheck or $GWBCheck or $TemperatureCheck) and $UVLCheck eq false and $EMF5Check eq false and $SpiritboxCheck eq false>>
-		<<addclass "#Mare" "right">>
-	<</if>>
-
-	<<if ($EctoglassCheck or $SpiritboxCheck or $TemperatureCheck) and $UVLCheck eq false and $EMF5Check eq false and $GWBCheck eq false>>
-		<<addclass "#Cthulion" "right">>
-	<</if>>
-
-	<<if ($GWBCheck or $UVLCheck or $EctoglassCheck) and $SpiritboxCheck eq false and $EMF5Check eq false and $TemperatureCheck eq false>>
-		<<addclass "#Banshee" "right">>
-	<</if>>
-
-	<<if ($SpiritboxCheck or $EMF5Check or $UVLCheck) and $GWBCheck eq false and $TemperatureCheck eq false and $EctoglassCheck eq false>>
-		<<addclass "#Raiju" "right">>
-	<</if>>
-
-	<<link "refresh" "Notebook">><</link>>
-<</linkreplace>>@@
 </div>
 <a data-passage="Ghostopedia"><img @src="setup.ImagePath + '/img/ghostopedia.png'" class=" iconPC"><br></a>
 </div>
 <br>
 <div class="journal-container">
-<<for _g range setup.ghosts>>
-	<span @class="setup.ghostEvidenceClasses(_g)" @id="_g.id"><<hovertip setup.ghostHoverHtml(_g.id)>><<= _g.name>>
+<<for _g range setup.Ghosts.list()>>
+	<span @class="_g.evidenceClasses()" @data-ghost="_g.name"><<hovertip _g.hoverHtml()>><<= _g.name>>
 	<</hovertip>></span>
 <</for>><br>
 
@@ -118,4 +47,19 @@
 <<include "StyleNotebook">>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
+	<<script>>
+		var refreshHighlights = function () {
+			var matches = setup.Ghosts.matchingNames(setup.Ghosts.readEvidenceChecks());
+			setup.Ghosts.list().forEach(function (g) {
+				var el = document.querySelector('[data-ghost="' + g.name + '"]');
+				if (el) el.classList.toggle("right", matches.has(g.name));
+			});
+		};
+		refreshHighlights();
+		$('.flexwrapperNotebook input[type="checkbox"]').on('change', function () {
+			/* autocheck's change handler runs first and syncs $state; defer one
+			   tick so we read the fresh value. */
+			setTimeout(refreshHighlights, 0);
+		});
+	<</script>>
 <</done>>

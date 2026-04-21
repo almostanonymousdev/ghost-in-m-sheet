@@ -13,32 +13,30 @@ setup.Events = (function () {
 		return val >= lo && val < hi;
 	}
 
-	// Room-to-background-variable mapping for the dark/grayscale
-	// filter applied when the lights are off (background === 2).
+	// Passage-name → per-room State.variables key for the shared
+	// "lights are off" background flag (background === 2). Covers every
+	// hunt room across all four haunted houses; turnOffLightHere() and
+	// isDarkRoom() both read this map. Elm and Enigma entries use the
+	// actual passage casing (e.g. ElmKitchen, not elmKitchen), which
+	// also fixes a silent isDarkRoom miss for those houses.
 	var roomBackgrounds = {
-		OwaissaKitchen: 'kitchen',
-		ElmKitchen: 'kitchen',
-		EnigmaKitchen: 'kitchen',
-		OwaissaBedroom: 'bedroom',
-		ElmBedroom: 'bedroom',
-		EnigmaBedroom: 'bedroom',
-		ElmBedroomTwo: 'bedroomTwo',
-		OwaissaHallway: 'hallway',
-		ElmHallway: 'hallway',
-		EnigmaHallway: 'hallway',
-		ElmHallwayUpstairs: 'hallwayUpstairs',
+		// Owaissa
+		OwaissaHallway: 'hallway',   OwaissaKitchen: 'kitchen',
+		OwaissaBathroom: 'bathroom', OwaissaBedroom: 'bedroom',
 		OwaissaLivingroom: 'livingroom',
-		EnigmaLivingroom: 'livingroom',
-		ElmNursery: 'nursery',
-		OwaissaBathroom: 'bathroom',
-		ElmBathroom: 'bathroom',
-		EnigmaBathroom: 'bathroom',
-		ElmBathroomTwo: 'bathroomTwo',
-		ElmBasement: 'basement',
-		EnigmaBasement: 'basement',
-		EnigmaRoomA: 'roomA',
-		EnigmaRoomB: 'roomB',
-		EnigmaRoomC: 'roomC',
+		// Elm
+		ElmBasement: 'basement',     ElmKitchen: 'kitchen',
+		ElmBathroom: 'bathroom',     ElmBathroomTwo: 'bathroomTwo',
+		ElmBedroom: 'bedroom',       ElmBedroomTwo: 'bedroomTwo',
+		ElmNursery: 'nursery',       ElmHallway: 'hallway',
+		ElmHallwayUpstairs: 'hallwayUpstairs',
+		// Enigma
+		EnigmaBasement: 'basement',  EnigmaKitchen: 'kitchen',
+		EnigmaBathroom: 'bathroom',  EnigmaLivingroom: 'livingroom',
+		EnigmaBedroom: 'bedroom',    EnigmaRoomA: 'roomA',
+		EnigmaRoomB: 'roomB',        EnigmaRoomC: 'roomC',
+		EnigmaHallway: 'hallway',
+		// Ironclad
 		IroncladReception: 'reception',
 		IroncladKitchen: 'kitchen',
 		IroncladHallway: 'hallway',
@@ -176,6 +174,23 @@ setup.Events = (function () {
 		isDarkRoom: function (passageName) {
 			var room = roomBackgrounds[passageName];
 			return room ? (v(room) && v(room).background === 2) : false;
+		},
+
+		/*
+		* If the current passage maps to a known ghost-hunt room AND that
+		* room is currently lit (background === 1), flip it dark
+		* (background === 2) and return the passage name so the caller
+		* can <<goto>> itself to re-render with the new background.
+		* Returns null when no change is made.
+		*/
+		turnOffLightHere: function () {
+			var p = passage();
+			var room = roomBackgrounds[p];
+			if (!room) return null;
+			var r = v(room);
+			if (!r || r.background !== 1) return null;
+			r.background = 2;
+			return p;
 		},
 
 		// --- Lust tiers ------------------------------------------
@@ -361,6 +376,32 @@ setup.Events = (function () {
 		* @param {number} chance - a value in [0, 100] (the caller's
 		*   random roll, shared with Banshee/Cthulion checks).
 		*/
+		/*
+		* SaveEventPassage sanity-stage video lookup. The stage→body-part
+		* mapping reuses eventVideos so the clothing-aware resolvers
+		* (bottomClothingVideos / topClothingVideos) stay the single
+		* source of truth.
+		*
+		*   stage 1 "touching"  → bottom: 'ass', top: 'tits' (caller picks)
+		*   stage 2 "grinding"  → 'bottom'
+		*   stage 3 "blowjob"   → 'mouth'
+		*   stage 4 "explicit"  → 'pussy' ∪ 'anal'
+		*/
+		saveEventBottomVideos: function (stage) {
+			if (stage === 1) return this.bottomClothingVideos('ass');
+			if (stage === 2) return this.bottomClothingVideos('bottom');
+			if (stage === 4) {
+				return this.bottomClothingVideos('pussy')
+					.concat(this.bottomClothingVideos('anal'));
+			}
+			return [];
+		},
+		saveEventTopVideos: function (stage) {
+			if (stage === 1) return this.topClothingVideos('tits');
+			if (stage === 3) return this.topClothingVideos('mouth');
+			return [];
+		},
+
 		rollBodyPartEvent: function (chance) {
 			var tier      = this.lustTier();
 			var threshold = sanityThresholds[tier];

@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, goToPassage } = require('../helpers');
+const { openGame, resetGame, setVar, getVar, callSetup, goToPassage } = require('../helpers');
 const { expectCleanPassage, setupHunt } = require('./e2e-helpers');
 
 test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
@@ -55,8 +55,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
 
   test('Raiju: EMF readings can glitch to random values', async () => {
     await setupHunt(page, 'Raiju');
-    await setVar(page, 'EmfActivated', 1);
-    await setVar(page, 'EmfActivationTime', 0);
+    await setVar(page, 'tools', { emf: { activated: 1, activationTime: 0 }, uvl: { activated: 0, activationTime: 0 } });
     await setVar(page, 'equipment.emf', 3);
 
     const readings = [];
@@ -72,8 +71,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
 
   test('Raiju: non-Raiju ghost always shows EMF 5 for emf evidence', async () => {
     await setupHunt(page, 'Spirit');
-    await setVar(page, 'EmfActivated', 1);
-    await setVar(page, 'EmfActivationTime', 0);
+    await setVar(page, 'tools', { emf: { activated: 1, activationTime: 0 }, uvl: { activated: 0, activationTime: 0 } });
     await setVar(page, 'equipment.emf', 3);
 
     for (let i = 0; i < 10; i++) {
@@ -110,15 +108,13 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
 
   // ── Mimic ──────────────────────────────────────────────────────
 
-  test('Mimic: saveMimic flag is set when entering house', async () => {
+  test('Mimic: isMimicHunt reports true for a Mimic contract', async () => {
     await setupHunt(page, 'Mimic');
 
     expect(await page.evaluate(() =>
-      SugarCube.State.variables.ghost.name === 'Mimic'
+      SugarCube.State.variables.hunt.realName === 'Mimic'
     )).toBe(true);
-
-    await setVar(page, 'saveMimic', 1);
-    expect(await getVar(page, 'saveMimic')).toBe(1);
+    expect(await callSetup(page, 'setup.Ghosts.isMimicHunt()')).toBe(true);
 
     await goToPassage(page, 'OwaissaHallway');
     await expectCleanPassage(page);
@@ -126,13 +122,14 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
 
   test('Mimic: disguise changes at 30-minute intervals', async () => {
     await setupHunt(page, 'Mimic');
-    await setVar(page, 'saveMimic', '1');
     await setVar(page, 'lastChangeIntervalMimic', ' ');
 
     await setVar(page, 'minutes', 10);
     await goToPassage(page, 'Mimic');
     expect(await getVar(page, 'lastChangeIntervalMimic')).toBe('0-29');
-    expect(await getVar(page, 'ghost.name')).toBeTruthy();
+    expect(await page.evaluate(() =>
+      SugarCube.State.variables.hunt.name
+    )).toBeTruthy();
 
     await setVar(page, 'minutes', 35);
     await goToPassage(page, 'Mimic');
@@ -141,13 +138,14 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
 
   test('Mimic: extra ectoplasm evidence check', async () => {
     await setupHunt(page, 'Mimic');
-    await setVar(page, 'saveMimic', 1);
 
-    const evidence = await getVar(page, 'ghost.evidence');
+    const evidence = await page.evaluate(() =>
+      SugarCube.State.variables.hunt.evidence
+    );
     expect(evidence).toContain('spiritbox');
     expect(evidence).toContain('temperature');
     expect(evidence).toContain('uvl');
-    expect(await getVar(page, 'saveMimic')).toBe(1);
+    expect(await callSetup(page, 'setup.Ghosts.isMimicHunt()')).toBe(true);
 
     await goToPassage(page, 'OwaissaKitchen');
     await expectCleanPassage(page);

@@ -5,7 +5,7 @@
 <br>
 
 <<if $wardenClothesStage eq 2>>
-	@@.movebtn;[[Go inside|IroncladHallway][$ghostHuntingMode to 2]]@@<br>
+	@@.movebtn;[[Go inside|IroncladHallway][$hunt.mode to setup.Ghosts.HuntMode.ACTIVE]]@@<br>
 <<else>>
 	@@.movebtn; <<linkreplace "Go inside">>
 		<<set $wardenClothesStage to 0>>
@@ -16,5 +16,5 @@
 <</if>>
 <br>
 <br>
-<<if $ghostHuntingMode eq 2>><span class="movebtn">[[End the hunt|HuntOverManual][$ghostHuntingMode to 3]]</span><<else>>
+<<if setup.Ghosts.isHunting()>><span class="movebtn">[[End the hunt|HuntOverManual][$hunt.mode to setup.Ghosts.HuntMode.POSSESSED]]</span><<else>>
 <</if>>

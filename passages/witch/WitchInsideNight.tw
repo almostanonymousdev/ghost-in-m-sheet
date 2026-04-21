@@ -15,8 +15,8 @@
 		<<set _check to random(1,5)>>
 		@@.mc-speech;
 		<<if _check eq 1>>
-			<<if ndef $ghostMylingInfoCollected>>
-				<<set $ghostMylingInfoCollected to 1>>
+			<<if not setup.Ghosts.hasDiscovered("Myling")>>
+				<<run setup.Ghosts.markDiscovered("Myling")>>
 				You found information about the ghost Myling
 			<<else>>
 				You found 30$

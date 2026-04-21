@@ -82,7 +82,7 @@
 <<elseif $ghostMareEventStart eq 4>>
 	<br><<linkreplace "Someone's whisper during sleep">>
 		@@.mc-thoughts; I found information explaining what's happening. It turns out that this behavior is @@@@.notmc-speech; caused by a Mare.@@ @@.mc-speech;To get rid of it, I just need to sprinkle some holy water in the room.@@ @@.mc-thoughts; It's best to do this as soon as possible, or the ghost will become more persistent with each passing night. However, there's also some information suggesting that I don't have to do anything at all--the ghost might leave on its own.@@
-		<<set $ghostMareInfoCollected to 1>>
+		<<run setup.Ghosts.markDiscovered("Mare")>>
 	<</linkreplace>>
 	<<addTime 30>>
 <</if>>

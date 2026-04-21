@@ -29,10 +29,10 @@ test.describe('Special ghost events — controller', () => {
   test.afterAll(async () => { await page.close(); });
   test.beforeEach(async () => { await resetGame(page); });
 
-  test('knowsAboutMare tracks $ghostMareInfoCollected', async () => {
-    await setVar(page, 'ghostMareInfoCollected', 0);
+  test('knowsAboutMare tracks Mare discovery', async () => {
+    await page.evaluate(() => { SugarCube.setup.Ghosts.getByName('Mare').isInfoCollected = false; });
     expect(await callSetup(page, 'setup.SpecialEvent.knowsAboutMare()')).toBe(false);
-    await setVar(page, 'ghostMareInfoCollected', 1);
+    await page.evaluate(() => SugarCube.setup.Ghosts.markDiscovered('Mare'));
     expect(await callSetup(page, 'setup.SpecialEvent.knowsAboutMare()')).toBe(true);
   });
 
@@ -160,12 +160,12 @@ test.describe('Special ghost events — passage rendering', () => {
   }
 
   test('Mare event narration changes once info is collected', async () => {
-    await setVar(page, 'ghostMareInfoCollected', 0);
+    await page.evaluate(() => { SugarCube.setup.Ghosts.getByName('Mare').isInfoCollected = false; });
     await goToPassage(page, 'GhostSpecialEventMare');
     let text = await page.locator('#passages').innerText();
     expect(text).toContain('touching myself in my sleep');
 
-    await setVar(page, 'ghostMareInfoCollected', 1);
+    await page.evaluate(() => SugarCube.setup.Ghosts.markDiscovered('Mare'));
     await goToPassage(page, 'GhostSpecialEventMare');
     text = await page.locator('#passages').innerText();
     expect(text).toContain('happening again');

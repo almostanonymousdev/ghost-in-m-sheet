@@ -1,30 +1,30 @@
 :: widgetNames [widget nobr] {"position":"300,1600","size":"100,100"}
 <<widget "ghostRoom">>
-	<<if $ghostRoom.name eq "basement">>
+	<<if $hunt.room.name eq "basement">>
 		<b><<print "basement">></b>
-	<<elseif $ghostRoom.name eq "bedroomTwo">>
+	<<elseif $hunt.room.name eq "bedroomTwo">>
 		<b><<print "bedroom upstairs">></b>
-	<<elseif $ghostRoom.name eq "nursery">>
+	<<elseif $hunt.room.name eq "nursery">>
 		<b><<print "nursery">></b>
-	<<elseif $ghostRoom.name eq "bathroomTwo">>
+	<<elseif $hunt.room.name eq "bathroomTwo">>
 		<b><<print "bathroom upstairs">></b>
-	<<elseif $ghostRoom.name eq "hallwayUpstairs">>
+	<<elseif $hunt.room.name eq "hallwayUpstairs">>
 		<b><<print "hallway upstairs">></b>
-	<<elseif $ghostRoom.name eq "roomA">>
+	<<elseif $hunt.room.name eq "roomA">>
 		<b><<print "roomA in the basement">></b>
-	<<elseif $ghostRoom.name eq "roomB">>
+	<<elseif $hunt.room.name eq "roomB">>
 		<b><<print "roomB in the basement">></b>
-	<<elseif $ghostRoom.name eq "roomC">>
+	<<elseif $hunt.room.name eq "roomC">>
 		<b><<print "roomC in the basement">></b>
-	<<elseif $ghostRoom.name eq "kitchen">>
+	<<elseif $hunt.room.name eq "kitchen">>
 		<b><<print "kitchen">></b>
-	<<elseif $ghostRoom.name eq "bathroom">>
+	<<elseif $hunt.room.name eq "bathroom">>
 		<b><<print "bathroom">></b>
-	<<elseif $ghostRoom.name eq "bedroom">>
+	<<elseif $hunt.room.name eq "bedroom">>
 		<b><<print "bedroom">></b>
-	<<elseif $ghostRoom.name eq "hallway">>
+	<<elseif $hunt.room.name eq "hallway">>
 		<b><<print "hallway">></b>
-	<<elseif $ghostRoom.name eq "livingroom">>
+	<<elseif $hunt.room.name eq "livingroom">>
 		<b><<print "livingroom">></b>
 	<</if>>
 <</widget>>

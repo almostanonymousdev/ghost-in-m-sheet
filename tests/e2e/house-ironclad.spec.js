@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, goToPassage } = require('../helpers');
+const { openGame, resetGame, setVar, getVar, setHuntMode, getHuntMode, goToPassage } = require('../helpers');
 const { expectCleanPassage, setupHunt } = require('./e2e-helpers');
 
 const ROOMS = [
@@ -30,7 +30,7 @@ test.describe('Haunted house — Ironclad', () => {
 
   test('Ironclad Prison renders with a real Go inside link when the warden outfit is ready', async () => {
     await setVar(page, 'isIronclad', 1);
-    await setVar(page, 'ghostHuntingMode', 1);
+    await setHuntMode(page, 1);
     await setVar(page, 'wardenClothesStage', 2);
     await goToPassage(page, 'Ironclad Prison');
     await expectCleanPassage(page);
@@ -41,10 +41,10 @@ test.describe('Haunted house — Ironclad', () => {
   test('clicking Go inside (wardenClothesStage=2) enters IroncladHallway and sets mode 2', async () => {
     test.setTimeout(10_000);
     await setupHunt(page, 'Spirit', 'ironclad');
-    await setVar(page, 'ghostHuntingMode', 1);
+    await setHuntMode(page, 1);
     await goToPassage(page, 'Ironclad Prison');
     await clickPassageLink(page, 'Go inside', 'IroncladHallway');
-    expect(await getVar(page, 'ghostHuntingMode')).toBe(2);
+    expect(await getHuntMode(page)).toBe(2);
   });
 
   test('Ironclad Prison with wardenClothesStage != 2 shows the empty-walk-through branch', async () => {
@@ -52,7 +52,7 @@ test.describe('Haunted house — Ironclad', () => {
     await setupHunt(page, 'Spirit', 'ironclad');
     // Street is re-entered before the warden outfit is ready.
     await setVar(page, 'wardenClothesStage', 0);
-    await setVar(page, 'ghostHuntingMode', 1);
+    await setHuntMode(page, 1);
     await goToPassage(page, 'Ironclad Prison');
     await expectCleanPassage(page);
 
@@ -83,7 +83,7 @@ test.describe('Haunted house — Ironclad', () => {
     await setVar(page, 'isClothesStolen', 0);
     await goToPassage(page, 'Ironclad Prison');
     await clickPassageLink(page, 'End the hunt', 'HuntOverManual');
-    expect(await getVar(page, 'ghostHuntingMode')).toBe(3);
+    expect(await getHuntMode(page)).toBe(3);
   });
 
   for (const room of ROOMS) {
@@ -176,7 +176,7 @@ test.describe('Haunted house — Ironclad', () => {
     await setupHunt(page, 'Spirit', 'ironclad');
     await goToPassage(page, 'IroncladHallway');
     await clickPassageLink(page, 'Leave', 'Ironclad Prison');
-    expect(await getVar(page, 'ghostHuntingMode')).toBe(2);
+    expect(await getHuntMode(page)).toBe(2);
   });
 
   test('Ironclad controller flag round-trips with setupHunt', async () => {

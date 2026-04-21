@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, getVar, callSetup } = require('./helpers');
+const { openGame, resetGame, getVar, getHuntMode, callSetup } = require('./helpers');
 
 test.describe('Game Initialization (StoryInit)', () => {
   let page;
@@ -75,7 +75,7 @@ test.describe('Game Initialization (StoryInit)', () => {
     const hours = await getVar(page, 'hours');
     const minutes = await getVar(page, 'minutes');
     const meridiem = await getVar(page, 'meridiem');
-    const mode = await getVar(page, 'ghostHuntingMode');
+    const mode = await getHuntMode(page);
 
     // assert
     expect(hours).toBe(12);
@@ -102,28 +102,27 @@ test.describe('Game Initialization (StoryInit)', () => {
 
   test('ghost types have correct evidence arrays', async () => {
     // act
-    const evidenceType = await getVar(page, 'EvidenceType');
-    const shade = await getVar(page, 'ghost1');
-    const spirit = await getVar(page, 'ghost2');
+    const shadeIds = await page.evaluate(() =>
+      SugarCube.setup.Ghosts.getByName('Shade').evidence.map(e => e.id));
+    const spiritIds = await page.evaluate(() =>
+      SugarCube.setup.Ghosts.getByName('Spirit').evidence.map(e => e.id));
 
     // assert
-    expect(shade.name).toBe('Shade');
-    expect(shade.evidence).toEqual([evidenceType.EMF, evidenceType.GWB, evidenceType.TEMPERATURE]);
-    expect(spirit.name).toBe('Spirit');
-    expect(spirit.evidence).toEqual([evidenceType.EMF, evidenceType.SPIRITBOX, evidenceType.GWB]);
+    expect(shadeIds).toEqual(['emf', 'gwb', 'temperature']);
+    expect(spiritIds).toEqual(['emf', 'spiritbox', 'gwb']);
   });
 
-  test('evidence type enum has 6 entries', async () => {
+  test('Evidence table exposes all 6 types with id/label/cssClass', async () => {
     // act
-    const et = await getVar(page, 'EvidenceType');
+    const ev = await page.evaluate(() => SugarCube.setup.Ghosts.Evidence);
 
     // assert
-    expect(et.EMF).toBeDefined();
-    expect(et.SPIRITBOX).toBeDefined();
-    expect(et.GWB).toBeDefined();
-    expect(et.GLASS).toBeDefined();
-    expect(et.TEMPERATURE).toBeDefined();
-    expect(et.UVL).toBeDefined();
+    for (const key of ['EMF', 'SPIRITBOX', 'GWB', 'GLASS', 'TEMPERATURE', 'UVL']) {
+      expect(ev[key]).toBeDefined();
+      expect(typeof ev[key].id).toBe('string');
+      expect(typeof ev[key].label).toBe('string');
+      expect(typeof ev[key].cssClass).toBe('string');
+    }
   });
 
   // --- Piercing list ---

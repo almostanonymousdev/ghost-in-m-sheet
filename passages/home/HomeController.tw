@@ -47,10 +47,10 @@ setup.Home = (function () {
 			return v('hours') >= 23;
 		},
 		hasHuntContract: function () {
-			return v('ghostHuntingMode') === 1;
+			return setup.Ghosts.hasContract();
 		},
 		needsWitch: function () {
-			return v('ghostHuntingMode') === 3;
+			return setup.Ghosts.isPossessed();
 		},
 		canGoHunting: function () {
 			return this.hasHuntContract() && this.canLeaveHome();

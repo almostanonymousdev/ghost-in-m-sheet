@@ -13,7 +13,7 @@ setup.SpecialEvent = (function () {
 	return {
 		// --- Mare info gating ------------------------------
 		knowsAboutMare: function () {
-			return v('ghostMareInfoCollected') === 1;
+			return setup.Ghosts.hasDiscovered('Mare');
 		},
 
 		// --- Spirit branch thresholds ---------------------

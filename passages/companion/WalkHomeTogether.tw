@@ -1,11 +1,13 @@
 :: WalkHomeTogether [nobr] {"position":"2450,3550","size":"100,100"}
 <<set _videoToggle to true>>
-<<if $ghost.name eq "Spirit">>
+<<set _hg to setup.Ghosts.active()>>
+<<if _hg and _hg.walkHomePassage>>
 	<img @src="setup.ImagePath + '/img/mchouse.jpg'" width="100%">
 	@@.notmc-speech; I have a strange feeling. Like something is following us...@@<br>
 	@@.mc-speech;I didn't see anyone. Maybe you should stay at my place then?@@<br>
 	@@.notmc-speech; Yes, if you don't mind.@@<br><br>
-	@@.backbtn; [[Sleep together|GhostSpecialEventSpirit]]@@
+	@@.backbtn; <<link "Sleep together" `_hg.walkHomePassage`>>
+	<</link>>@@
 <<else>>
 	<<if $companion.name eq "Brook">>
 		<<if $companion.lust gte 50>>
@@ -148,12 +150,9 @@
 <<set $mc.corruption += $tempCorr>>
 
 <<set $tempCorr to 0>>
-<<set $ghostHuntingMode to 3>>
+<<run setup.Ghosts.setHuntMode(setup.Ghosts.HuntMode.POSSESSED)>>
 
-<<set $EmfActivationTime to 0>>
-<<set $uvlActivationTime = 0>>
-<<set $EmfActivated to 0>>
-<<set $uvlActivated to 0>>
+<<run setup.resetTools()>>
 
 <<run setup.Companion.clearBlakeCursedItem()>>
 

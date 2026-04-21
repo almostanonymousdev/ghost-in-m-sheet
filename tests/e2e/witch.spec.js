@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, callSetup, goToPassage } = require('../helpers');
+const { openGame, resetGame, setVar, getVar, setHuntMode, getHuntMode, callSetup, goToPassage } = require('../helpers');
 const { expectCleanPassage } = require('./e2e-helpers');
 
 test.describe('Witch — access and hours', () => {
@@ -80,12 +80,12 @@ test.describe('Witch — contract lifecycle', () => {
   });
 
   test('hasActiveContract / contractReadyToEnd track ghostHuntingMode', async () => {
-    await setVar(page, 'ghostHuntingMode', 0);
+    await setHuntMode(page, 0);
     expect(await callSetup(page, 'setup.Witch.hasActiveContract()')).toBe(false);
     expect(await callSetup(page, 'setup.Witch.contractReadyToEnd()')).toBe(false);
-    await setVar(page, 'ghostHuntingMode', 1);
+    await setHuntMode(page, 1);
     expect(await callSetup(page, 'setup.Witch.hasActiveContract()')).toBe(true);
-    await setVar(page, 'ghostHuntingMode', 3);
+    await setHuntMode(page, 3);
     expect(await callSetup(page, 'setup.Witch.contractReadyToEnd()')).toBe(true);
   });
 
@@ -93,7 +93,7 @@ test.describe('Witch — contract lifecycle', () => {
     await setVar(page, 'hours', 12);
     await setVar(page, 'mc.money', 200);
     await setVar(page, 'firstVisitWitchShop', false);
-    await setVar(page, 'ghostHuntingMode', 0);
+    await setHuntMode(page, 0);
     await goToPassage(page, 'WitchInside');
     await expectCleanPassage(page);
     const text = await page.locator('#passages').innerText();
@@ -104,7 +104,7 @@ test.describe('Witch — contract lifecycle', () => {
     await setVar(page, 'hours', 12);
     await setVar(page, 'mc.money', 5);
     await setVar(page, 'firstVisitWitchShop', false);
-    await setVar(page, 'ghostHuntingMode', 0);
+    await setHuntMode(page, 0);
     await goToPassage(page, 'WitchInside');
     const text = await page.locator('#passages').innerText();
     expect(text).toContain("don't have enough money");
@@ -115,7 +115,7 @@ test.describe('Witch — contract lifecycle', () => {
     await setVar(page, 'hours', 12);
     await setVar(page, 'mc.money', 200);
     await setVar(page, 'firstVisitWitchShop', false);
-    await setVar(page, 'ghostHuntingMode', 1);
+    await setHuntMode(page, 1);
     await goToPassage(page, 'WitchInside');
     const text = await page.locator('#passages').innerText();
     expect(text).toContain('already have a contract');
@@ -124,7 +124,7 @@ test.describe('Witch — contract lifecycle', () => {
 
   test('WitchEndContract renders the ghost-type picker when ready to turn in', async () => {
     await setVar(page, 'hours', 12);
-    await setVar(page, 'ghostHuntingMode', 3);
+    await setHuntMode(page, 3);
     await setVar(page, 'moneyFromContract', 100);
     await setVar(page, 'moneyFromWeakenTheGhost', 0);
     await goToPassage(page, 'WitchEndContract');
