@@ -108,9 +108,9 @@
 
 /* Shared exit link for every hunt-ending scene in HuntEnd.tw. Absent
    the high-priestess tarot, the MC slips into Sleep; with the tarot
-   active, the card burns itself to return the MC to $return with
-   sanity 25. `_args[0]` is the link text ("fading into darkness",
-   "plunging you into darkness", "nothing"). */
+   active, the card burns itself to return the MC to $return. `_args[0]`
+   is the link text ("fading into darkness", "plunging you into
+   darkness", "nothing"). */
 <<widget "huntEndExit">>
 	<<if $highpriestess eq 1>>
 		@@.usebtn;<<link _args[0] $return>>

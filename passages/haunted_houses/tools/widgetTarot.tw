@@ -63,8 +63,6 @@
 	<<timed 2s>>
 		<<randRangeVideo "cursedpossessions/whore" 1 6 ".mp4">>
 		@@.mc-speech; Damn, I can feel this affecting my body... everything's so sensitive, and some parts feel... bigger... @@<br>
-		@@.mc-thoughts; Corruption increased: +0.3 <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
-		<<set $mc.corruption += 0.3>>
 		<<run setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 50)>>
 	<</timed>>
 <</widget>>

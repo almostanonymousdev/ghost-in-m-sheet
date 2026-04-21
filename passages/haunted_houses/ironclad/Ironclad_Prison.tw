@@ -6,7 +6,6 @@
 	<<else>>
 		@@.movebtn; <<linkreplace "Go inside">>
 			<<set $wardenClothesStage to 0>>
-			<<set $mc.energy to 0>>
 			@@.mc-thoughts; You walk through the prison, exploring every room. But nothing happens.@@<br>
 			@@.mc-speech; Something's not right. This is definitely the place, but there are no ghosts... I guess I should ask the witch. @@<br><br>
 			@@.backbtn; [[Return home|Home][$hours += 6; $isIronclad to 0]] @@<br>
