@@ -34,8 +34,7 @@
             id: "Shade", name: "Shade", image: "shade.webp",
             evidence: [E.EMF, E.GWB, E.TEMPERATURE],
             hint: "The lower your sanity, the less likely the Shade is to show interest in you.",
-            description: "Shade \u2014 one of the oldest types of ghosts. The main feature of the Shade is that the lower your sanity, the less likely the Shade is to show interest in you.",
-            infoText: "",
+            description: "Shade -- one of the oldest types of ghosts. The main feature of the Shade is that the lower your sanity, the less likely the Shade is to show interest in you.",
             huntCondition: { stat: "sanity", op: "lte", value: 35 }
         },
         {
@@ -43,7 +42,6 @@
             evidence: [E.EMF, E.SPIRITBOX, E.GWB],
             hint: "If it doesn't achieve its goal, it will relentlessly follow its victim.",
             description: "Spirit is a rather shy ghost. Unlike others, if it doesn't achieve its goal, it will relentlessly follow its victim. However, once it gets what it wants, it will vanish and cease to disturb, leaving its target in peace.",
-            infoText: "",
             huntCondition: { stat: "lust", op: "gte", value: 50 }
         },
         {
@@ -51,7 +49,6 @@
             evidence: [E.SPIRITBOX, E.GWB, E.UVL],
             hint: "",
             description: "",
-            infoText: "",
             huntCondition: { stat: "sanity", op: "lte", value: 50 }
         },
         {
@@ -59,7 +56,6 @@
             evidence: [E.GLASS, E.UVL, E.SPIRITBOX],
             hint: "This type of ghost cannot turn off the lights.",
             description: "This type of ghost cannot turn off the lights.",
-            infoText: "",
             huntCondition: { stat: "sanity", op: "lte", value: 50 }
         },
         {
@@ -67,31 +63,30 @@
             evidence: [E.GLASS, E.UVL, E.EMF],
             hint: "Goryo is known for its attachment to a single room and cannot change it like other ghosts do.",
             description: "Goryo is known for its attachment to a single room and cannot change it like other ghosts do. If you notice that the ghost's activity is focused exclusively in one area, you are likely dealing with a Goryo.",
-            infoText: "",
             huntCondition: { stat: "lust", op: "gte", value: 50 }
         },
         {
             id: "Demon", name: "Demon", image: "demon.webp",
             evidence: [E.GWB, E.UVL, E.TEMPERATURE],
             hint: "Demon can start a hunt earlier than other ghosts",
-            description: "Ghosts can start hunting if my sanity is low or my lust level is high, but this ghost is different. It's more aggressive than the others, and it can start hunting regardless of my condition... I think it\u2019s worth having a few more crucifixes.",
-            infoText: "Some sources report that the Demon is a unique ghost that can begin hunting you regardless of your current sanity or lust. Unlike other ghosts that only become active when your mental state declines or your desire increases, the Demon does not consider your present condition and can initiate its pursuit at any time.",
+            description: "Some sources report that the Demon is a unique ghost that can begin hunting you regardless of your current sanity or lust. Unlike other ghosts that only become active when your mental state declines or your desire increases, the Demon does not consider your present condition and can initiate its pursuit at any time.",
+            findableOnline: true,
             huntCondition: { stat: "sanity", op: "lte", value: 70 }
         },
         {
             id: "Deogen", name: "Deogen", image: "deogen.webp",
             evidence: [E.GLASS, E.GWB, E.SPIRITBOX],
             hint: "When it starts its hunt, hiding won't help, as the Deogen relentlessly searches for you",
-            description: "The Deogen is a particularly frightening ghost that will always find you, even if you try to hide. When it starts its hunt, hiding won\u2019t help, as the Deogen relentlessly searches for you. However, since the Deogen is extremely slow, you have a chance to escape if you still have the strength to run.",
-            infoText: "The Deogen is described as a particularly frightening ghost that will always find you, even if you try to hide. Once it starts its hunt, hiding won't help, as the Deogen relentlessly searches for its prey. However, since the Deogen is extremely slow, there's a chance to escape if you still have the strength to run.",
+            description: "The Deogen is described as a particularly frightening ghost that will always find you, even if you try to hide. Once it starts its hunt, hiding won't help, as the Deogen relentlessly searches for its prey. However, since the Deogen is extremely slow, there's a chance to escape if you still have the strength to run.",
+            findableOnline: true,
             huntCondition: { stat: "sanity", op: "lte", value: 50 }
         },
         {
             id: "Jinn", name: "Jinn", image: "jinn.webp",
             evidence: [E.EMF, E.UVL, E.TEMPERATURE],
             hint: "You can't escape from the Jinn by running, as it is incredibly fast.",
-            description: "The Jinn is a ghost with a unique ability. Unlike other ghosts, you cannot escape from the Jinn by running, as it is incredibly fast. However, hiding from it is much easier because the Jinn has difficulty detecting you when you find a good hiding spot. This makes the strategy of hiding more effective when encountering it.",
-            infoText: "Some ghost hunters have reported that when encountering a Jinn, they tried to run but always failed because the ghost is too fast. However, when they found a hiding spot--even if it was right in front of the Jinn--he often passed by without noticing them. This indicates that hiding from a Jinn is much easier than trying to escape.",
+            description: "Some ghost hunters have reported that when encountering a Jinn, they tried to run but always failed because the ghost is too fast. However, when they found a hiding spot--even if it was right in front of the Jinn--he often passed by without noticing them. This indicates that hiding from a Jinn is much easier than trying to escape.",
+            findableOnline: true,
             huntCondition: { stat: "sanity", op: "lte", value: 50 }
         },
         {
@@ -99,31 +94,28 @@
             evidence: [E.GWB, E.TEMPERATURE, E.SPIRITBOX],
             hint: "",
             description: "The Moroi can invade the minds of weak-willed victims when using the Spirit Box. Be cautious when communicating, as this ghost may possess you.",
-            infoText: "",
             huntCondition: { stat: "sanity", op: "lte", value: 50 }
         },
         {
             id: "Myling", name: "Myling", image: "myling.webp",
             evidence: [E.GWB, E.EMF, E.UVL],
             hint: "Once you leave its presence, strange things begin to happen: those around you start seeing you in unusual clothing or even completely naked.",
-            description: "Myling is a ghost that doesn\u2019t reveal itself directly upon encounter. However, once you leave its presence, strange things begin to happen: those around you start seeing you in unusual clothing or even completely naked.",
-            infoText: "",
+            description: "Myling is a ghost that doesn't reveal itself directly upon encounter. However, once you leave its presence, strange things begin to happen: those around you start seeing you in unusual clothing or even completely naked.",
             huntCondition: { stat: "lust", op: "gte", value: 50 }
         },
         {
             id: "Oni", name: "Oni", image: "oni.webp",
             evidence: [E.GLASS, E.EMF, E.TEMPERATURE],
             hint: "Encountering this ghost causes sanity to drop faster than with other ghosts.",
-            description: "Someone mentioned that encountering this ghost causes sanity to drop faster than with other ghosts (1-5 sanity for any ghost, 3-8 for an Oni). Fortunately, the witch sells sanity pills that I can use...",
-            infoText: "The mythical entity Oni brings not only fear but also rapid psychological devastation. Those who have encountered it report that @@.notmc-speech;Oni causes a sharp and intense decline in sanity@@, significantly accelerating this process compared to other ghosts. If you come face-to-face with Oni, be prepared for a swift and severe assault on your mental health.",
+            description: "The mythical entity Oni brings not only fear but also rapid psychological devastation. Those who have encountered it report that @@.notmc-speech;Oni causes a sharp and intense decline in sanity@@, significantly accelerating this process compared to other ghosts. If you come face-to-face with Oni, be prepared for a swift and severe assault on your mental health.",
+            findableOnline: true,
             huntCondition: { stat: "lust", op: "gte", value: 50 }
         },
         {
             id: "Mimic", name: "Mimic", image: "mimic.webp",
             evidence: [E.UVL, E.TEMPERATURE, E.SPIRITBOX],
-            hint: "Mimic always has an extra evidence \u2014 ectoplasm",
-            description: "Mimic is a ghost that can mimic nearly all the abilities of other ghosts, making it extremely unpredictable and difficult to identify. Additionally, The Mimic always has an extra evidence \u2014 ectoplasm. Although ectoplasm is not considered evidence for identifying the ghost, its presence can aid in its identification.",
-            infoText: "",
+            hint: "Mimic always has an extra evidence -- ectoplasm",
+            description: "Mimic is a ghost that can mimic nearly all the abilities of other ghosts, making it extremely unpredictable and difficult to identify. Additionally, The Mimic always has an extra evidence -- ectoplasm. Although ectoplasm is not considered evidence for identifying the ghost, its presence can aid in its identification.",
             huntCondition: { stat: "sanity", op: "lte", value: 50 }
         },
         {
@@ -131,7 +123,6 @@
             evidence: [E.EMF, E.TEMPERATURE, E.SPIRITBOX],
             hint: "",
             description: "",
-            infoText: "",
             huntCondition: { stat: "lust", op: "gte", value: 50 }
         },
         {
@@ -139,7 +130,6 @@
             evidence: [E.GLASS, E.EMF, E.SPIRITBOX],
             hint: "If caught or if sanity runs out during the ghost hunt, you'll wake up somewhere other than home.",
             description: "This is quite a dangerous ghost. If it catches me or I lose sanity during the ghost hunt... Ending up in the forest with my hands tied is not something I want, so I need to be very careful. But even if things don't go as planned, it's better to conserve my energy to have a chance to escape.",
-            infoText: "",
             huntCondition: { stat: "lust", op: "gte", value: 50 }
         },
         {
@@ -147,15 +137,13 @@
             evidence: [E.GLASS, E.GWB, E.TEMPERATURE],
             hint: "Mare visits your house while you sleep",
             description: "Mare visits my house while I sleep. It's quite easy to get rid of; I just need to sprinkle holy water in the room where I sleep. It becomes more aggressive each day, so it's best not to delay. Although, someone online mentioned that it might stop haunting after a few days.",
-            infoText: "",
             huntCondition: { stat: "lust", op: "gte", value: 50 }
         },
         {
             id: "Cthulion", name: "Cthulion", image: "cthulion.webp",
             evidence: [E.SPIRITBOX, E.GLASS, E.TEMPERATURE],
             hint: "Cthulion rarely reveals its true form, preferring to take on a human appearance. But when it needs to interact with its victims, it's not above using its tentacles.",
-            description: "Cthulion is one of the oldest beings, with a history stretching far back before the dawn of humanity. Its true form is so alien to the human mind that most who encounter it can only describe it as \"unspeakable.\" However, Cthulion rarely reveals its true form, preferring to take on a human appearance. But when it needs to interact with its victims, it\u2019s not above using its tentacles.",
-            infoText: "",
+            description: "Cthulion is one of the oldest beings, with a history stretching far back before the dawn of humanity. Its true form is so alien to the human mind that most who encounter it can only describe it as \"unspeakable.\" However, Cthulion rarely reveals its true form, preferring to take on a human appearance. But when it needs to interact with its victims, it's not above using its tentacles.",
             huntCondition: { stat: "sanity", op: "lte", value: 50 }
         },
         {
@@ -163,7 +151,6 @@
             evidence: [E.GLASS, E.GWB, E.UVL],
             hint: "The Banshee has a unique ability called the 'Kiss of the Banshee,' which reduces sanity by 10 points.",
             description: "The Banshee has a unique ability called the \"Kiss of the Banshee,\" which reduces sanity by 10 points.",
-            infoText: "",
             huntCondition: { stat: "lust", op: "gte", value: 50 }
         },
         {
@@ -171,7 +158,6 @@
             evidence: [E.EMF, E.SPIRITBOX, E.UVL],
             hint: "Raiju is a mysterious entity that occasionally exerts influence over electrical devices, causing them to display incorrect readings. This spectral presence can manipulate the behavior of electronics, leading to unpredictable and sometimes inexplicable malfunctions.",
             description: "Raiju is a mysterious entity that occasionally exerts influence over electrical devices, causing them to display incorrect readings. This spectral presence can manipulate the behavior of electronics, leading to unpredictable and sometimes inexplicable malfunctions.",
-            infoText: "",
             huntCondition: { stat: "sanity", op: "lte", value: 50 }
         }
     ];
@@ -182,14 +168,14 @@
 
     setup.Ghosts = GHOST_CONFIG.map(function (cfg) {
         var ghost = {
-            id:            cfg.id,
-            name:          cfg.name,
-            image:         cfg.image,
-            evidence:      cfg.evidence.slice(),
-            hint:          cfg.hint,
-            description:   cfg.description,
-            infoText:      cfg.infoText,
-            huntCondition: cfg.huntCondition
+            id:             cfg.id,
+            name:           cfg.name,
+            image:          cfg.image,
+            evidence:       cfg.evidence.slice(),
+            hint:           cfg.hint,
+            description:    cfg.description,
+            findableOnline: !!cfg.findableOnline,
+            huntCondition:  cfg.huntCondition
         };
         var flag = infoFlagName(cfg.id);
         Object.defineProperty(ghost, "isInfoCollected", {
@@ -215,21 +201,6 @@
                 if (exclude.indexOf(n) === -1) names.push(n);
             }
             return names;
-        }
-    });
-
-    /* Back-compat feed for FindGhostInfo, which iterates only ghosts that have
-       lore text and filters by a string flag name. Rebuilt on read so edits to
-       setup.Ghosts immediately propagate. */
-    Object.defineProperty(setup, "ghostInfoEntries", {
-        configurable: true,
-        enumerable: true,
-        get: function () {
-            return setup.Ghosts
-                .filter(function (g) { return g.infoText; })
-                .map(function (g) {
-                    return { name: g.name, flag: infoFlagName(g.id), text: g.infoText };
-                });
         }
     });
 
