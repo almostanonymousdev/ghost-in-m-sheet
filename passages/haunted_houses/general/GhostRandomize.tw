@@ -49,6 +49,6 @@ Money: -35 $<br>
 <br>
 @@.mc-action; You've received a contract to identify the type of  ghost@@
 <<set $mc.money -= 35>>
-<<set $ghostHuntingMode to 1>><br>
+<<set $ghostHuntingMode to setup.Ghosts.HuntMode.CONTRACT>><br>
 <br>
 @@.backbtn;[[Back|WitchInside]] @@<br>

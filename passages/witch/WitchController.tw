@@ -29,10 +29,10 @@ setup.Witch = (function () {
 			return mc().money >= 35;
 		},
 		hasActiveContract: function () {
-			return v('ghostHuntingMode') === 1;
+			return setup.Ghosts.hasContract();
 		},
 		contractReadyToEnd: function () {
-			return v('ghostHuntingMode') === 3;
+			return setup.Ghosts.isPossessed();
 		},
 
 		// --- Exorcism referral -----------------------------------

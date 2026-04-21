@@ -10,11 +10,11 @@ setup.HauntedHouses = (function () {
 	function mc() { return State.variables.mc; }
 
 	return {
-		// --- Hunt mode -------------------------------------------
-		isContractMode: function () { return v('ghostHuntingMode') === 1; },
-		isInsideHouse: function () { return v('ghostHuntingMode') === 2; },
-		isHuntOver: function () { return v('ghostHuntingMode') === 3; },
-		endHunt: function () { State.variables.ghostHuntingMode = 3; },
+		// --- Hunt mode (forwards to setup.Ghosts) ---------------
+		isContractMode: function () { return setup.Ghosts.hasContract(); },
+		isInsideHouse: function () { return setup.Ghosts.isHunting(); },
+		isHuntOver: function () { return setup.Ghosts.isPossessed(); },
+		endHunt: function () { setup.Ghosts.setHuntMode(setup.Ghosts.HuntMode.POSSESSED); },
 
 		// --- Which house are we in? -----------------------------
 		isOwaissa: function () { return v('isOwaissa') === 1; },

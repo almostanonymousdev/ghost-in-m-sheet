@@ -152,7 +152,7 @@
 
 	<<if $highpriestess eq 1>>
 		<<set $mc.sanity to 25>>
-		@@.usebtn; [[Next|$return][$highpriestess to 0; $ghostHuntingMode to 2]]@@
+		@@.usebtn; [[Next|$return][$highpriestess to 0; $ghostHuntingMode to setup.Ghosts.HuntMode.ACTIVE]]@@
 	<<else>>
 		<<if $tempCorr gte 1>><<set $tempCorr to 1>><</if>>
 		<<set $mc.corruption += $tempCorr>>
@@ -174,4 +174,4 @@
 	<</if>>
 <</linkreplace>>@@
 
-<<set $ghostHuntingMode to 3>>
+<<set $ghostHuntingMode to setup.Ghosts.HuntMode.POSSESSED>>

@@ -117,7 +117,7 @@
 	<</replace>>
 <</link>>@@<br>
 
-<<if $ghostHuntingMode eq 2>>
+<<if setup.Ghosts.isHunting()>>
 	@@.usebtn;<<link "Ask her to walk you home.">>
 
 		<<replace "#compResponse">>
@@ -125,7 +125,7 @@
 			<<if setup.Companion.canWalkHomeWithCompanion()>>
 				@@.notmc-speech; Of course. Are you sure you want to leave now?@@<br>
 				<<set _hg to setup.Ghosts.active()>>
-				<<if _hg and _hg.companionHuntPassage and $ghostHuntingMode eq 2>>
+				<<if _hg and _hg.companionHuntPassage and setup.Ghosts.isHunting()>>
 					@@.mc-speech; Yes, <<link "let's go together" `_hg.companionHuntPassage`>>
 					<</link>> @@
 				<<else>>

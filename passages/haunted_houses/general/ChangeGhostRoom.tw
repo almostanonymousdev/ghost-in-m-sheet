@@ -10,7 +10,7 @@
 <<set _ghostRoom = ["BlockA", "BlockB", "BlockACellA", "BlockACellB", "BlockACellC", "BlockBCellA", "BlockBCellB", "BlockBCellC", "reception", "kitchen", "hallway"]>><</if>>
 
 <<set _hg to setup.Ghosts.active()>>
-<<if $ghostHuntingMode eq 2 and _hg and not _hg.staysInOneRoom and $ghostIsTrapped neq 1>>
+<<if setup.Ghosts.isHunting() and _hg and not _hg.staysInOneRoom and $ghostIsTrapped neq 1>>
 	<<set $currentIntervalRoom to ($minutes >= 0 && $minutes < 20) ? "0-19" : ($minutes >= 20 && $minutes < 40) ? "20-39" : "40-59">>
 	<<if $currentIntervalRoom != $lastChangeIntervalRoom>>
 		<<if $currentIntervalRoom eq "0-19">>

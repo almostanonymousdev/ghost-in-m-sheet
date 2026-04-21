@@ -146,7 +146,7 @@
 				<<elseif $chosenCard.name eq "possession">>
 					@@.mc-speech; Oh fuck.@@<br>
 					<<timed 2s>>
-						<<set $ghostHuntingMode to 3>>
+						<<set $ghostHuntingMode to setup.Ghosts.HuntMode.POSSESSED>>
 						<<set $hours to random(12,20)>>
 						<<goto "CityMapPossessed">>
 					<</timed>>

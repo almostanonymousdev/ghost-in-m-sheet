@@ -781,10 +781,10 @@
  <</switch>>
 <</if>>
 
-<<if $mc.sanity lte 0 and $ghostHuntingMode eq 2>>
+<<if $mc.sanity lte 0 and setup.Ghosts.isHunting()>>
 <<goto "HuntOverSanity">>
 <</if>>
-<<if $hours gte 6 and $ghostHuntingMode eq 2>>
+<<if $hours gte 6 and setup.Ghosts.isHunting()>>
 <<goto "HuntOverTime">>
 <</if>>
 

@@ -150,7 +150,7 @@
 <<set $mc.corruption += $tempCorr>>
 
 <<set $tempCorr to 0>>
-<<set $ghostHuntingMode to 3>>
+<<set $ghostHuntingMode to setup.Ghosts.HuntMode.POSSESSED>>
 
 <<set $EmfActivationTime to 0>>
 <<set $uvlActivationTime = 0>>

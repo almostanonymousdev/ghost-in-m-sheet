@@ -1,5 +1,5 @@
 :: PassageReady {"position":"200,200","size":"100,100"}
-<<if $ghostHuntingMode eq 2>>
+<<if setup.Ghosts.isHunting()>>
 
 <<if $chosenPlanActivated eq 1 and (($hours * 60 + $minutes) gte $chosenPlanActivatedTime) and $showComp neq 2 and $showComp neq 3>>
 <<set _checkChance to random(1,100)>>
@@ -46,7 +46,7 @@
     "torn-style-10 torn-effect"
 ]>>
 
-<<if $ghostHuntingMode eq 3>>
+<<if setup.Ghosts.isPossessed()>>
 <<set $tarotCardsStage to 2>>
 <<set $MonkeyPawStage to 2>>
 <</if>>

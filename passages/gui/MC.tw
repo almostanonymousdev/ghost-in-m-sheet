@@ -6,7 +6,7 @@
 <</if>>
 <</hovertip>>
 </div>
-<<if $isIronclad eq 1 and $ghostHuntingMode eq 2>>
+<<if $isIronclad eq 1 and setup.Ghosts.isHunting()>>
 	<<hovertip "Wearing a sexy warden costume">><img @src="setup.ImagePath + '/img/icons/warden1.png'">
 	<</hovertip>>
 <<else>>

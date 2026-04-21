@@ -54,7 +54,7 @@
 		<</linkreplace>><<if $mc.lvl lt 4>>@@.warningtext; (Req. lvl 4+)@@
 		<</if>><br></span>
 	<</if>>
-	<<if $ghostHuntingMode eq 0>>
+	<<if setup.Ghosts.isInactive()>>
 		<<if setup.Witch.canAffordContract()>>
 			@@.usebtn;[[I want to get a contract|GhostRandomize]]@@<br>
 			<br>
@@ -66,8 +66,8 @@
 
 		<<else>>@@.mc-thoughts; I don't have enough money@@
 		<</if>>
-	<<elseif $ghostHuntingMode eq 1>>@@.mc-thoughts; I already have a contract@@
-	<<elseif $ghostHuntingMode eq 3>>@@.usebtn;[[End the contract|WitchEndContract]]@@
+	<<elseif setup.Ghosts.hasContract()>>@@.mc-thoughts; I already have a contract@@
+	<<elseif setup.Ghosts.isPossessed()>>@@.usebtn;[[End the contract|WitchEndContract]]@@
 	<</if>><br>
 
 	<<if $mc.lvl lte 1>>

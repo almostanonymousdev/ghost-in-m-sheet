@@ -33,7 +33,7 @@
 
 			@@.backbtn;[[Back|WitchInside]]@@
 		<</if>>
-		<<set $ghostHuntingMode to 0>>
+		<<set $ghostHuntingMode to setup.Ghosts.HuntMode.NONE>>
 		<<unset $hiddenEvidence>>
 		<<unset $hiddenEvidence1>>
 		<<unset $hiddenEvidence2>>

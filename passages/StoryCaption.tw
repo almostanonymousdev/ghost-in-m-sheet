@@ -33,9 +33,9 @@
 <div class="linkselector enterbtn"> Game [[Guide|Guide]] </div><br>
 
 <br>@@.usebtn;<<linkreplace "Cheats">>
-	<<if $ghostHuntingMode eq 2>><<link "take pills(cheats)">><<set $mc.sanity +=30>><</link>>
+	<<if setup.Ghosts.isHunting()>><<link "take pills(cheats)">><<set $mc.sanity +=30>><</link>>
 		<br><<linkreplace "possession Card">>
-			<<set $ghostHuntingMode to 3>>
+			<<set $ghostHuntingMode to setup.Ghosts.HuntMode.POSSESSED>>
 			<<set $hours to random(12,20)>>
 		<<goto "CityMapPossessed">><</linkreplace>><br>
 		<<link "Decreasefollower's sanity(-10)(cheats)">><<set $companion.sanity -=10>><<updatemeter 'companionsanity' `$companion.sanity / 100`>><</link>>
@@ -43,7 +43,7 @@
 	<<linkreplace "ghostname">>$ghostName<<if $saveMimic eq 1>>(Mimic)
 	<</if>>
 	<</linkreplace>>
-	<<if $ghostHuntingMode gte 1>>
+	<<if setup.Ghosts.isAnyMode()>>
 		<<linkreplace "choose ghost type">>
 			<<for _g range setup.Ghosts.list()>>
 				<<capture _g>><<link `"set to " + _g.name`>><<set $ghostName to _g.name>><<set $ghostEvidence to _g.evidence.map(e => e.id)>>

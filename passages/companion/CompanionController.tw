@@ -152,7 +152,7 @@ setup.Companion = (function () {
 		},
 		canShowCompanionMiniPanel: function () {
 			return v('chosenPlan') !== undefined
-				&& v('ghostHuntingMode') === 2
+				&& setup.Ghosts.isHunting()
 				&& this.inHauntedHouseLocation();
 		},
 
