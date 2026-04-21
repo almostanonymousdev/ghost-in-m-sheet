@@ -130,7 +130,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
     await setVar(page, 'minutes', 10);
     await goToPassage(page, 'Mimic');
     expect(await getVar(page, 'lastChangeIntervalMimic')).toBe('0-29');
-    expect(await getVar(page, 'ghost.name')).toBeTruthy();
+    expect(await getVar(page, 'ghostName')).toBeTruthy();
 
     await setVar(page, 'minutes', 35);
     await goToPassage(page, 'Mimic');
@@ -141,7 +141,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
     await setupHunt(page, 'Mimic');
     await setVar(page, 'saveMimic', 1);
 
-    const evidence = await getVar(page, 'ghost.evidence');
+    const evidence = await getVar(page, 'ghostEvidence');
     expect(evidence).toContain('spiritbox');
     expect(evidence).toContain('temperature');
     expect(evidence).toContain('uvl');

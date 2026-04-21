@@ -65,7 +65,7 @@ test.describe('Ghost unique abilities — Phantom, Goryo, Deogen, Jinn', () => {
 
     const canChangeRoom = await page.evaluate(() => {
       const V = SugarCube.State.variables;
-      return V.ghost.name !== 'Goryo' && V.ghostIsTrapped !== 1;
+      return V.ghostName !== 'Goryo' && V.ghostIsTrapped !== 1;
     });
     expect(canChangeRoom).toBe(true);
   });

@@ -85,7 +85,7 @@ test.describe('E2E: buy contract → hunt → guess', () => {
     expect(await getVar(page, 'mc.money')).toBe(moneyBefore - 35);
 
     // A ghost was assigned
-    const ghostName = await getVar(page, 'ghost.name');
+    const ghostName = await getVar(page, 'ghostName');
     expect(ghostName).toBeTruthy();
 
     // ------------------------------------------------------------------
