@@ -36,7 +36,7 @@
 <div class="housecard">
 <img @src="setup.ImagePath + '/img/sanity-pills.png'" class="iconPx"><br>
 <<if $sanityPillsAmount gte 1>>You have $sanityPillsAmount sanity pills<br>
-<<if $ghostHuntingMode eq 2>>
+<<if setup.Ghosts.isHunting()>>
 @@.usebtn;<<link "Use sanity pills" "Bag">>
 <<set $sanityPillsAmount -= 1>>
 <<set $mc.sanity += 30>>

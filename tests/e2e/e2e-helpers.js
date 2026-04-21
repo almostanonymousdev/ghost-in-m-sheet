@@ -1,5 +1,30 @@
 const { expect } = require('@playwright/test');
-const { setVar, getVar } = require('../helpers');
+const { setVar } = require('../helpers');
+
+/**
+ * Set the hunt mode (0 = none, 1 = contract, 2 = active, 3 = possessed).
+ * Auto-creates a stub hunt for modes >= 1 so tests that haven't called
+ * setupHunt can still exercise mode transitions.
+ */
+async function setHuntMode(page, mode) {
+  await page.evaluate((m) => {
+    const V = SugarCube.State.variables;
+    if (m === 0) {
+      V.hunt = null;
+      return;
+    }
+    if (!V.hunt) SugarCube.setup.Ghosts.startHunt('Shade');
+    V.hunt.mode = m;
+  }, mode);
+}
+
+/** Read the hunt mode (0 when no hunt is active). */
+async function getHuntMode(page) {
+  return await page.evaluate(() => {
+    const h = SugarCube.State.variables.hunt;
+    return h ? h.mode : 0;
+  });
+}
 
 /**
  * Assert that no SugarCube errors are visible on the page.
@@ -65,16 +90,14 @@ async function expectCleanPassage(page) {
  */
 async function setupHunt(page, ghostName, house = 'owaissa') {
   await page.evaluate((name) => {
-    const V = SugarCube.State.variables;
-    for (let i = 1; i <= SugarCube.setup.GHOST_SLOT_COUNT; i++) {
-      if (V['ghost' + i] && V['ghost' + i].name === name) {
-        V.ghost = JSON.parse(JSON.stringify(V['ghost' + i]));
-        break;
-      }
-    }
+    SugarCube.setup.Ghosts.startHunt(name);
+    SugarCube.setup.Ghosts.setHuntMode(SugarCube.setup.Ghosts.HuntMode.ACTIVE);
   }, ghostName);
 
-  const assigned = await getVar(page, 'ghost.name');
+  const assigned = await page.evaluate(() => {
+    const h = SugarCube.State.variables.hunt;
+    return h ? h.name : null;
+  });
   if (assigned !== ghostName) {
     throw new Error(`Failed to assign ghost "${ghostName}", got "${assigned}"`);
   }
@@ -88,11 +111,10 @@ async function setupHunt(page, ghostName, house = 'owaissa') {
   const flags = houseFlags[house];
   if (!flags) throw new Error(`Unknown house "${house}"`);
 
-  await setVar(page, 'ghostHuntingMode', 2);
   for (const [k, v] of Object.entries(flags)) await setVar(page, k, v);
 
   // Pick a ghost-room that actually exists in the chosen house so that
-  // light/evidence widgets that read $ghostRoom.name don't trip on a
+  // light/evidence widgets that read $hunt.room.name don't trip on a
   // room name that isn't initialised in State.
   const ghostRoomName = {
     owaissa: 'kitchen',
@@ -101,7 +123,7 @@ async function setupHunt(page, ghostName, house = 'owaissa') {
     ironclad: 'hallway',
   }[house];
   await page.evaluate((n) => {
-    SugarCube.State.variables.ghostRoom = { name: n };
+    SugarCube.State.variables.hunt.room = { name: n };
   }, ghostRoomName);
 
   if (house === 'ironclad') {
@@ -164,4 +186,6 @@ module.exports = {
   expectCleanPassage,
   setupHunt,
   setupActiveQuest,
+  setHuntMode,
+  getHuntMode,
 };

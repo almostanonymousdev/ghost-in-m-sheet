@@ -1,10 +1,6 @@
 :: HuntOverManual [nobr] {"position":"1600,1350","size":"100,100"}
-<<if $ghost.name eq "The Twins">>
-	<<set $thetwinsevent to 1>>
-<</if>>
-<<if $ghost.name eq "Spirit">>
-	<<set $ghostSpiritEventStage to 0>>
-<</if>>
+<<run setup.Ghosts.markActiveHuntEvent()>>
+<<run setup.Ghosts.fireActiveHuntEnd()>>
 @@.mc-speech;I am leaving this accursed house. It seems I've done everything I could.@@<br>
 
 <<if setup.HauntedHouses.hasClothesStolen()>>
@@ -21,8 +17,9 @@
 		<</link>>@@
 	<</if>>
 <<else>>
-	<<if $ghost.name eq "Myling">>
-		@@.movebtn;<<link "Go home" "GhostSpecialEventMyling">>
+	<<set _hg to setup.Ghosts.active()>>
+	<<if _hg and _hg.goHomePassage>>
+		@@.movebtn;<<link "Go home" `_hg.goHomePassage`>>
 		<<include "LostClothes">><<set $hours += 1>><</link>>@@
 	<<else>>
 		@@.movebtn;[[Go home|Livingroom][$hours += 1]]@@<br>

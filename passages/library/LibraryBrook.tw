@@ -43,7 +43,7 @@
 			<br>
 			@@.mc-action; The information about the Mimic ghost has been added to your Ghostopedia.@@<br>
 			<br>
-			<<set $ghostMimicInfoCollected to 1>>
+			<<run setup.Ghosts.markDiscovered("Mimic")>>
 			@@.mc-thoughts; So now, I can go ghost hunting with my new friend, Brook. I just need to head to the library and find her.@@<br>
 			<br>
 			@@.mc-action; You can now ask Brook to join you on a ghost hunt!@@<br>

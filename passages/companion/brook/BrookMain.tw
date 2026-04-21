@@ -117,15 +117,17 @@
 	<</replace>>
 <</link>>@@<br>
 
-<<if $ghostHuntingMode eq 2>>
+<<if setup.Ghosts.isHunting()>>
 	@@.usebtn;<<link "Ask her to walk you home.">>
 
 		<<replace "#compResponse">>
 			@@.mc-speech; I think that's enough. Can you walk me home, please?@@<br>
 			<<if setup.Companion.canWalkHomeWithCompanion()>>
 				@@.notmc-speech; Of course. Are you sure you want to leave now?@@<br>
-				<<if $ghost.name eq "Myling" and $ghostHuntingMode eq 2>>
-					@@.mc-speech; Yes, [[let's go together|GhostSpecialEventMylingTwo]] @@
+				<<set _hg to setup.Ghosts.active()>>
+				<<if _hg and _hg.companionHuntPassage and setup.Ghosts.isHunting()>>
+					@@.mc-speech; Yes, <<link "let's go together" `_hg.companionHuntPassage`>>
+					<</link>> @@
 				<<else>>
 					@@.mc-speech; Yes, [[let's go together|WalkHomeTogether]] @@
 				<</if>> <b>or </b>

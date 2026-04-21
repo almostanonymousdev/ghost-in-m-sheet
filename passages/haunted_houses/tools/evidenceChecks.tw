@@ -1,28 +1,23 @@
 :: GWBcheck [nobr] {"position":"3725,325","size":"100,100"}
-<<set _gwbChance to random(1, 100)>>
-<<if $ghost.evidence.includes("gwb") and setup.chanceByTier($equipment.gwb, _gwbChance) and setup.isGhostHere(["elm", "owaissa", "ironclad"])>>
+<<if setup.evidenceAvailable("gwb", $equipment.gwb, ["elm", "owaissa", "ironclad"])>>
 	<<randRangeImg "gwb/" 1 18 ".jpg">>
-	<<set $EmfActivated to 1>>
-	<<set $EmfActivationTime to $hours * 60 + $minutes>>
+	<<run setup.activateTool("emf")>>
 	@@.mc-speech; <span class="evidenceshadowtext"> Ohh... what is this...? Nevertheless, one more piece of evidence</span>@@
 <<else>>
 	<<notFound "I didn't find anything">>
 <</if>>
 
 :: GWBcheckArt [nobr] {"position":"3625,325","size":"100,100"}
-<<set _gwbChance to random(1, 100)>>
-<<if $ghost.evidence.includes("gwb") and setup.chanceByTier($equipment.gwb, _gwbChance) and setup.isGhostHere(["enigma"])>>
+<<if setup.evidenceAvailable("gwb", $equipment.gwb, ["enigma"])>>
 	<<randRangeImg "gwb/" 1 18 ".jpg">>
-	<<set $EmfActivated to 1>>
-	<<set $EmfActivationTime to $hours * 60 + $minutes>>
+	<<run setup.activateTool("emf")>>
 	@@.evidenceshadowtext; <span class="evidenceshadowtext"> Ohh... what is this...? Nevertheless, one more piece of evidence</span>@@
 <<else>>
 	<<notFound "I didn't find anything">>
 <</if>>
 
 :: PlasmCheckArt [nobr] {"position":"3625,525","size":"100,100"}
-<<set _glassChance to random(1, 100)>>
-<<if ($ghost.evidence.includes("glass") or $saveMimic eq 1) and setup.chanceByTier($equipment.glass, _glassChance) and setup.isGhostHere(["enigma"])>>
+<<if setup.evidenceAvailable("glass", $equipment.glass, ["enigma"])>>
 	<<randRangeImg "art/plasm/" 1 14 ".png" "displayCentredImgs">><br>
 	@@.evidenceshadowtext; It seems I've found ectoplasm... Except somehow I managed to get myself completely covered in this mysterious substance. I don't even remember how it happened. Oh well, at least I've found another piece of evidence..@@<br>
 <<else>>

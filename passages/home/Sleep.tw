@@ -14,9 +14,10 @@
 <<run setup.CursedItems.rollForCursedItem()>>
 <</if>>
 
-<<if (previous() is "HuntOverSanity" or previous() is "HuntEnd" or previous() is "CursedHuntStart") and $ghost.name eq "Wraith">>
+<<set _hg to setup.Ghosts.active()>>
+<<if (previous() is "HuntOverSanity" or previous() is "HuntEnd" or previous() is "CursedHuntStart") and _hg and _hg.sleepPassage>>
 <<set $isPenaltyOn to 1>>
-@@.backbtn;<<link "Wake up" "GhostSpecialEventWraith">><<set $hours +=3>><<if $hours >=24>><<set $hours -=24>><<include "ResetCooldowns">>
+@@.backbtn;<<link "Wake up" `_hg.sleepPassage`>><<set $hours +=3>><<if $hours >=24>><<set $hours -=24>><<include "ResetCooldowns">>
 <</if>>
 <</link>>
 <<set $mc.sanity to 40>>

@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, goToPassage } = require('../helpers');
+const { openGame, resetGame, setVar, getVar, setHuntMode, getHuntMode, goToPassage } = require('../helpers');
 const { expectCleanPassage, setupHunt } = require('./e2e-helpers');
 
 const ROOMS = [
@@ -33,7 +33,7 @@ test.describe('Haunted house — Owaissa', () => {
 
   test('Owaissa Street renders with a Go inside link when no companion is set', async () => {
     await setVar(page, 'isOwaissa', 1);
-    await setVar(page, 'ghostHuntingMode', 1);
+    await setHuntMode(page, 1);
 
     await goToPassage(page, 'Owaissa Street');
     await expectCleanPassage(page);
@@ -45,12 +45,12 @@ test.describe('Haunted house — Owaissa', () => {
   test('clicking Go inside enters OwaissaHallway and sets huntingMode to 2', async () => {
     test.setTimeout(10_000);
     await setupHunt(page, 'Spirit', 'owaissa');
-    await setVar(page, 'ghostHuntingMode', 1);
+    await setHuntMode(page, 1);
 
     await goToPassage(page, 'Owaissa Street');
     await clickPassageLink(page, 'Go inside', 'OwaissaHallway');
 
-    expect(await getVar(page, 'ghostHuntingMode')).toBe(2);
+    expect(await getHuntMode(page)).toBe(2);
   });
 
   test('End the hunt link appears on street while inside hunt mode', async () => {
@@ -66,7 +66,7 @@ test.describe('Haunted house — Owaissa', () => {
     await setVar(page, 'isClothesStolen', 0);
     await goToPassage(page, 'Owaissa Street');
     await clickPassageLink(page, 'End the hunt', 'HuntOverManual');
-    expect(await getVar(page, 'ghostHuntingMode')).toBe(3);
+    expect(await getHuntMode(page)).toBe(3);
   });
 
   for (const room of ROOMS) {
@@ -127,7 +127,7 @@ test.describe('Haunted house — Owaissa', () => {
     await setupHunt(page, 'Spirit', 'owaissa');
     await goToPassage(page, 'OwaissaHallway');
     await clickPassageLink(page, 'Outside', 'Owaissa Street');
-    expect(await getVar(page, 'ghostHuntingMode')).toBe(2);
+    expect(await getHuntMode(page)).toBe(2);
   });
 
   test('OwaissaBedroom renders cleanly when cursedHuntActive is 1 (hide-spot branch)', async () => {

@@ -2,11 +2,9 @@
 <<widget "activity">>
 	<<replace ".MonkeyPawShow">>
 		<<set _videoList to ["cursedpossessions/slap1.mp4", "cursedpossessions/slap2.mp4", "cursedpossessions/slap3.mp4", "cursedpossessions/slap4.mp4", "cursedpossessions/passion1.mp4", "cursedpossessions/passion2.mp4", "cursedpossessions/passion3.mp4", "cursedpossessions/passion4.mp4", "cursedpossessions/pulse1.mp4", "cursedpossessions/pulse2.mp4", "cursedpossessions/pulse3.mp4", "cursedpossessions/pulse4.mp4"]>>
-		<<if $ghost.name eq "Cthulion">>
-			<<set _videoList to _videoList.concat(["ghosts/cthulion/1.0.mp4", "ghosts/cthulion/1.1.mp4", "ghosts/cthulion/1.2.mp4", "ghosts/cthulion/1.3.mp4", "ghosts/cthulion/1.4.mp4", "ghosts/cthulion/1.5.mp4", "ghosts/cthulion/1.6.mp4",
-			"ghosts/cthulion/2.0.mp4", "ghosts/cthulion/2.1.mp4", "ghosts/cthulion/2.2.mp4", "ghosts/cthulion/2.3.mp4", "ghosts/cthulion/2.4.mp4"])>>
-		<<elseif $ghost.name eq "Banshee">>
-			<<set _videoList to _videoList.concat(["ghosts/banshee/1.mp4", "ghosts/banshee/2.mp4", "ghosts/banshee/3.mp4", "ghosts/banshee/4.mp4", "ghosts/banshee/5.mp4", "ghosts/banshee/6.mp4", "ghosts/banshee/7.mp4", "ghosts/banshee/8.mp4", "ghosts/banshee/9.mp4", "ghosts/banshee/10.mp4"])>>
+		<<set _hg to setup.Ghosts.active()>>
+		<<if _hg and _hg.cursedActivityVideos>>
+			<<set _videoList to _videoList.concat(_hg.cursedActivityVideos)>>
 		<</if>>
 
 		<<set _randomIndex to random(0, _videoList.length - 1)>>
@@ -30,7 +28,7 @@
 	<<replace "#wishesCount">>
 		<<set $wishesCount -=1>>
 		@@.mc-thoughts; $wishesCount wishes left...@@<br><br>
-		<<set $ghostIsTrapped to 1>>
+		<<set $hunt.trapped to true>>
 		@@.mc-speech; Now the ghost can't change its favorite room.<br>
 		With each wish, I feel worse and worse.@@<br>
 		<<addSanity -15>>
@@ -74,7 +72,7 @@
 			@@.mc-thoughts; $wishesCount wishes left...@@<br><br>
 			<<set $knowledgeUsed to 1>>
 			<<set _allEvidence to ["emf", "spiritbox", "gwb", "uvl", "glass", "temperature"]>>
-			<<set _missingEvidence to _allEvidence.filter(e => !$ghost.evidence.includes(e) && e !== $hiddenEvidence && e !== $hiddenEvidence1 && e !== $hiddenEvidence2)>>
+			<<set _missingEvidence to _allEvidence.filter(e => !$hunt.evidence.includes(e) && e !== $hiddenEvidence && e !== $hiddenEvidence1 && e !== $hiddenEvidence2)>>
 			<<set $chosenEvidence to _missingEvidence.random()>>
 			@@.mc-speech; It worked! One evidence has been removed from my diary!<br>
 			Wait...I hear someone's footsteps...@@
@@ -99,4 +97,21 @@
 
 <<widget "anything">>
 	<<set _check to random(1,6)>>
+<</widget>>
+
+/* Shared exit link for every hunt-ending scene in HuntEnd.tw. Absent
+   the high-priestess tarot, the MC slips into Sleep; with the tarot
+   active, the card burns itself to return the MC to $return with
+   sanity 25. `_args[0]` is the link text ("fading into darkness",
+   "plunging you into darkness", "nothing"). */
+<<widget "huntEndExit">>
+	<<if $highpriestess eq 1>>
+		@@.usebtn;<<link _args[0] $return>>
+			<<set $highpriestess to 0>>
+			<<set $mc.sanity to 25>>
+		<</link>>@@
+	<<else>>
+		@@.usebtn;<<link _args[0] "Sleep">>
+		<</link>>@@
+	<</if>>
 <</widget>>

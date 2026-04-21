@@ -1,8 +1,5 @@
 :: ArtEventImgs [nobr] {"position":"1525,950","size":"100,100"}
-<<if $ghost.name eq "Oni">>
-	<<set $ghostSanityEventDecreased to random(3,8)>>
-<<else>>
-<<set $ghostSanityEventDecreased to random(1,5)>><</if>>
+<<set $ghostSanityEventDecreased to (setup.Ghosts.active() ? setup.Ghosts.active().rollEventSanityLoss() : 0)>>
 <<if previous() is "EnigmaHallway" or previous() is "Notebook" or previous() is "Bag" or previous() is "Guide">>
 	<<if $hallway.background eq 1>>
 		<<include "StyleEnigmaHallwayLight">>
@@ -68,10 +65,8 @@
 <<set $mc.sanity -= $ghostSanityEventDecreased>>
 <br>
 <span class="backbtn">[[Continue investigating|previous()]]</span>
-<<set $EmfActivated to 1>>
-<<set $EmfActivationTime = $hours * 60 + $minutes>>
-<<set $uvlActivated to 1>>
-<<set $uvlActivationTime = $hours * 60 + $minutes>>
+<<run setup.activateTool("emf")>>
+<<run setup.activateTool("uvl")>>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 <</done>>

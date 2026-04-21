@@ -1,18 +1,19 @@
 :: SaveEventPassage [nobr] {"position":"1700,1150","size":"100,100"}
 <<set _videoList to []>>
-<<if $ghost.name neq "Shade">>
-	<<set $decreasingSanity to {
-	stage1: 3,
-	stage2: 5,
-	stage3: 7,
-	stage4: 9,
-	}>>
-<<else>>
+<<set _hg to setup.Ghosts.active()>>
+<<if _hg and _hg.invertedSanityStages>>
 	<<set $decreasingSanity to {
 	stage1: 9,
 	stage2: 7,
 	stage3: 5,
 	stage4: 3,
+	}>>
+<<else>>
+	<<set $decreasingSanity to {
+	stage1: 3,
+	stage2: 5,
+	stage3: 7,
+	stage4: 9,
 	}>>
 <</if>>
 
@@ -20,14 +21,14 @@
 <<set _checkRandomBanshee to random(1,6)>>
 <<set _checkRandomCthulion to random(1,6)>>
 
-<<if _chance <= $decreasingSanity.stage2 and _checkRandomBanshee eq 1 and $ghost.name eq "Banshee">>
+<<if _chance <= $decreasingSanity.stage2 and _checkRandomBanshee eq 1 and _hg and _hg.canKiss>>
 
 	<<set $bansheeAbility to 1>>
 	<<set $tempCorr += 0.05>>
 	<<addLust 15>>
-	<<set _videoList to ["ghosts/banshee/1.mp4", "ghosts/banshee/2.mp4", "ghosts/banshee/3.mp4", "ghosts/banshee/4.mp4", "ghosts/banshee/5.mp4", "ghosts/banshee/6.mp4", "ghosts/banshee/7.mp4", "ghosts/banshee/8.mp4", "ghosts/banshee/9.mp4", "ghosts/banshee/10.mp4"]>>
+	<<set _videoList to setup.Events.bansheeVideos()>>
 
-<<elseif _chance <= $decreasingSanity.stage2 and _checkRandomCthulion eq 1 and $ghost.name eq "Cthulion">>
+<<elseif _chance <= $decreasingSanity.stage2 and _checkRandomCthulion eq 1 and _hg and _hg.canTentacles>>
 	<<if $mc.sanity >= 50>>
 		<<cthulionAbility 1>>
 	<<elseif ($mc.sanity >= 30 and $mc.sanity < 50)>>
@@ -36,238 +37,36 @@
 		<<cthulionAbility 3>>
 	<</if>>
 
-<<else>>
-
-	<<if $mc.sanity >= 75 and _chance <= $decreasingSanity.stage1>> /*touching and slapping*/
-		<<set _eventTriggered = true>>
-		<<set _chanceInside = random(1,5)>>
-		<<if _chanceInside <=3>>
-			<<addLustByPart>>
-			<<if $jeansState is "worn">>
-				<<if $isOwaissa eq 1>>
-					<<set _videoList to ["jeans1/1.mp4", "jeans1/2.mp4", "jeans1/3.mp4", "jeans1/4.mp4", "jeans1/5.mp4", "jeans1/6.mp4", "jeans1/7.mp4", "jeans1/8.mp4", "jeans1/9.mp4", "jeans1/10.mp4"]>>
-				<<elseif $isElm eq 1>>
-					<<set _videoList to ["jeans1/11.mp4", "jeans1/12.mp4", "jeans1/13.mp4", "jeans1/14.mp4", "jeans1/15.mp4", "jeans1/16.mp4", "jeans1/17.mp4", "jeans1/18.mp4", "jeans1/19.mp4", "jeans1/20.mp4"]>>
-				<</if>>
-
-			<<elseif $shortsState is "worn">>
-				<<if $isOwaissa eq 1>>
-					<<set _videoList to ["shorts1/1.mp4", "shorts1/2.mp4", "shorts1/3.mp4", "shorts1/4.mp4", "shorts1/5.mp4", "shorts1/6.mp4", "shorts1/7.mp4", "shorts1/8.mp4", "shorts1/9.mp4", "shorts1/10.mp4"]>>
-				<<elseif $isElm eq 1>>
-					<<set _videoList to ["shorts1/11.mp4", "shorts1/12.mp4", "shorts1/13.mp4", "shorts1/14.mp4", "shorts1/15.mp4", "shorts1/16.mp4", "shorts1/17.mp4", "shorts1/18.mp4", "shorts1/19.mp4", "shorts1/20.mp4"]>>
-				<</if>>
-
-			<<elseif $skirtState is "worn">>
-				<<if $pantiesState is "worn">>
-					<<if $isOwaissa eq 1>>
-						<<set _videoList to ["skirt1/1.mp4", "skirt1/2.mp4", "skirt1/3.mp4", "skirt1/4.mp4", "skirt1/5.mp4", "skirt1/6.mp4", "skirt1/7.mp4", "skirt1/8.mp4", "skirt1/9.mp4", "skirt1/10.mp4", "skirt1/11.mp4", "skirt1/12.mp4", "skirt1/13.mp4", "skirt1/14.mp4"]>>
-					<<elseif $isElm eq 1>>
-						<<set _videoList to ["skirt1/20.mp4", "skirt1/21.mp4", "skirt1/22.mp4", "skirt1/23.mp4", "skirt1/24.mp4", "skirt1/25.mp4", "skirt1/26.mp4", "skirt1/27.mp4", "skirt1/28.mp4", "skirt1/29.mp4", "skirt1/30.mp4"]>>
-					<</if>>
-				<<else>>
-					<<if $isOwaissa eq 1>>
-						<<set _videoList to ["skirt-np1/1.mp4", "skirt-np1/2.mp4", "skirt-np1/3.mp4", "skirt-np1/4.mp4", "skirt-np1/5.mp4", "skirt-np1/6.mp4", "skirt-np1/7.mp4", "skirt-np1/8.mp4", "skirt-np1/9.mp4", "skirt-np1/10.mp4", "skirt-np1/11.mp4", "skirt-np1/12.mp4", "skirt-np1/13.mp4"]>>
-					<<elseif $isElm eq 1>>
-						<<set _videoList to ["skirt-np1/20.mp4", "skirt-np1/21.mp4", "skirt-np1/22.mp4", "skirt-np1/23.mp4", "skirt-np1/24.mp4", "skirt-np1/25.mp4", "skirt-np1/26.mp4", "skirt-np1/27.mp4", "skirt-np1/28.mp4", "skirt-np1/29.mp4", "skirt-np1/30.mp4"]>>
-					<</if>>
-				<</if>>
-
-			<<elseif $jeansState is "not worn">>
-				<<if $pantiesState is "worn">>
-					<<if $isOwaissa eq 1>>
-						<<set _videoList to ["panties1/1.mp4", "panties1/2.mp4", "panties1/3.mp4", "panties1/4.mp4", "panties1/5.mp4", "panties1/6.mp4", "panties1/7.mp4", "panties1/8.mp4", "panties1/9.mp4", "panties1/10.mp4", "panties1/11.mp4", "panties1/12.mp4", "panties1/13.mp4", "panties1/14.mp4", "panties1/15.mp4"]>>
-					<<elseif $isElm eq 1>>
-						<<set _videoList to ["panties1/20.mp4", "panties1/21.mp4", "panties1/22.mp4", "panties1/23.mp4", "panties1/24.mp4", "panties1/25.mp4", "panties1/26.mp4", "panties1/27.mp4", "panties1/28.mp4", "panties1/29.mp4"]>>
-					<</if>>
-				<<elseif $pantiesState is "not worn">>
-					<<if $isOwaissa eq 1>>
-						<<set _videoList to ["np1/1.mp4", "np1/2.mp4", "np1/3.mp4", "np1/4.mp4", "np1/5.mp4", "np1/6.mp4", "np1/7.mp4", "np1/8.mp4"]>>
-					<<elseif $isElm eq 1>>
-						<<set _videoList to ["np1/20.mp4", "np1/21.mp4", "np1/22.mp4", "np1/23.mp4", "np1/24.mp4", "np1/25.mp4", "np1/26.mp4"]>>
-					<</if>>
-				<</if>>
-
-			<<elseif $jeansState is "ripped">>
-
-			<</if>>
-
-		<<elseif _chanceInside gte 4>>
-			<<addLustTits 3>>
-			<<if $tshirtState is "worn">>
-				<<if $braState is "worn">>
-					<<if $isOwaissa eq 1>>
-						<<set _videoList to ["tshirt/1.mp4", "tshirt/2.mp4", "tshirt/3.mp4", "tshirt/4.mp4", "tshirt/5.mp4", "tshirt/6.mp4", "tshirt/7.mp4", "tshirt/8.mp4"]>>
-					<<elseif $isElm eq 1>>
-						<<set _videoList to ["tshirt/20.mp4", "tshirt/21.mp4", "tshirt/22.mp4", "tshirt/23.mp4", "tshirt/24.mp4", "tshirt/25.mp4", "tshirt/26.mp4", "tshirt/27.mp4", "tshirt/28.mp4"]>>
-					<</if>>
-				<<elseif $braState is "not worn">>
-					<<if $isOwaissa eq 1>>
-						<<set _videoList to ["tshirtnb/1.mp4", "tshirtnb/2.mp4", "tshirtnb/3.mp4", "tshirtnb/4.mp4", "tshirtnb/5.mp4", "tshirtnb/6.mp4", "tshirtnb/7.mp4", "tshirtnb/8.mp4"]>>
-					<<elseif $isElm eq 1>>
-						<<set _videoList to ["tshirtnb/20.mp4", "tshirtnb/21.mp4", "tshirtnb/22.mp4", "tshirtnb/23.mp4", "tshirtnb/24.mp4", "tshirtnb/25.mp4", "tshirtnb/26.mp4"]>>
-					<</if>>
-				<</if>>
-
-			<<elseif $tshirtState is "not worn">>
-				<<if $braState is "worn">>
-					<<if $isOwaissa eq 1>>
-						<<set _videoList to ["bra/1.mp4", "bra/2.mp4", "bra/3.mp4", "bra/4.mp4", "bra/5.mp4", "bra/6.mp4", "bra/7.mp4", "bra/8.mp4", "bra/9.mp4", "bra/10.mp4", "bra/11.mp4", "bra/12.mp4", "bra/13.mp4"]>>
-					<<elseif $isElm eq 1>>
-						<<set _videoList to ["bra/20.mp4", "bra/21.mp4", "bra/22.mp4", "bra/23.mp4", "bra/24.mp4", "bra/25.mp4"]>>
-					<</if>>
-				<<elseif $braState is "not worn">>
-
-					<<if $isOwaissa eq 1>>
-						<<set _videoList to ["nobra/1.mp4", "nobra/2.mp4", "nobra/3.mp4", "nobra/4.mp4", "nobra/5.mp4", "nobra/6.mp4", "nobra/7.mp4", "nobra/8.mp4"]>>
-					<<elseif $isElm eq 1>>
-						<<set _videoList to ["nobra/20.mp4", "nobra/21.mp4", "nobra/22.mp4", "nobra/23.mp4", "nobra/24.mp4", "nobra/25.mp4"]>>
-
-					<</if>>
-				<</if>>
-			<</if>>
-		<</if>>
-
-		<<set $tempCorr += 0.01>>
-	<<elseif ($mc.sanity >= 50 and $mc.sanity < 75) and _chance <= $decreasingSanity.stage2>>
-		<<set _eventTriggered = true>>
-		<<if $jeansState is "worn">>
-			<<if $pantiesState eq "worn">>
-				<<if $isOwaissa eq 1>>
-					<<set _videoList to ["jeans2/1.mp4", "jeans2/2.mp4", "jeans2/3.mp4", "jeans2/4.mp4", "jeans2/5.mp4", "jeans2/6.mp4", "jeans2/7.mp4", "jeans2/8.mp4", "jeans2/9.mp4", "jeans2/10.mp4", "jeans2/11.mp4", "jeans2/12.mp4"]>>
-				<<elseif $isElm eq 1>>
-					<<set _videoList to ["jeans2/13.mp4", "jeans2/14.mp4", "jeans2/15.mp4", "jeans2/16.mp4", "jeans2/17.mp4", "jeans2/18.mp4", "jeans2/19.mp4", "jeans2/20.mp4"]>>
-				<</if>>
-			<<elseif $pantiesState eq "not worn">>
-				<<if $isOwaissa eq 1>>
-					<<set _videoList to ["jeans2/29.mp4", "jeans2/21.mp4", "jeans2/22.mp4", "jeans2/23.mp4", "jeans2/24.mp4", "jeans2/25.mp4", "jeans2/26.mp4", "jeans2/27.mp4", "jeans2/28.mp4"]>>
-				<<elseif $isElm eq 1>>
-					<<set _videoList to ["jeans2/30.mp4", "jeans2/31.mp4", "jeans2/32.mp4", "jeans2/33.mp4", "jeans2/34.mp4", "jeans2/35.mp4", "jeans2/36.mp4", "jeans2/37.mp4", "jeans2/38.mp4", "jeans2/39.mp4"]>>
-				<</if>>
-			<</if>>
-
-		<<elseif $shortsState is "worn">>
-			<<if $isOwaissa eq 1>>
-				<<set _videoList to ["shorts2/1.mp4", "shorts2/2.mp4", "shorts2/3.mp4", "shorts2/4.mp4", "shorts2/5.mp4", "shorts2/6.mp4", "shorts2/7.mp4", "shorts2/8.mp4", "shorts2/9.mp4"]>>
-			<<elseif $isElm eq 1>>
-				<<set _videoList to ["shorts2/11.mp4", "shorts2/12.mp4", "shorts2/13.mp4", "shorts2/14.mp4", "shorts2/15.mp4", "shorts2/16.mp4", "shorts2/17.mp4", "shorts2/18.mp4", "shorts2/19.mp4", "shorts2/20.mp4"]>>
-			<</if>>
-		<<elseif $skirtState is "worn">>
-			<<if $pantiesState is "worn">>
-				<<if $isOwaissa eq 1>>
-					<<set _videoList to ["skirt2/1.mp4", "skirt2/2.mp4", "skirt2/3.mp4", "skirt2/4.mp4", "skirt2/5.mp4", "skirt2/6.mp4", "skirt2/7.mp4", "skirt2/8.mp4", "skirt2/9.mp4", "skirt2/10.mp4", "skirt2/11.mp4", "skirt2/12.mp4", "skirt2/13.mp4"]>>
-				<<elseif $isElm eq 1>>
-					<<set _videoList to ["skirt2/20.mp4", "skirt2/21.mp4", "skirt2/22.mp4", "skirt2/23.mp4", "skirt2/24.mp4", "skirt2/25.mp4", "skirt2/26.mp4", "skirt2/27.mp4", "skirt2/28.mp4"]>>
-				<</if>>
-			<<else>>
-				<<if $isOwaissa eq 1>>
-					<<set _videoList to ["skirt-np2/1.mp4", "skirt-np2/2.mp4", "skirt-np2/3.mp4", "skirt-np2/4.mp4", "skirt-np2/5.mp4", "skirt-np2/6.mp4"]>>
-				<<elseif $isElm eq 1>>
-					<<set _videoList to ["skirt-np2/20.mp4", "skirt-np2/21.mp4", "skirt-np2/22.mp4", "skirt-np2/23.mp4", "skirt-np2/24.mp4", "skirt-np2/25.mp4", "skirt-np2/26.mp4", "skirt-np2/27.mp4"]>>
-				<</if>>
-			<</if>>
-
-		<<elseif $jeansState is "not worn">>
-			<<if $pantiesState is "worn">>
-				<<if $isOwaissa eq 1>>
-					<<set _videoList to ["panties2/1.mp4", "panties2/2.mp4", "panties2/3.mp4", "panties2/4.mp4", "panties2/5.mp4", "panties2/6.mp4", "panties2/7.mp4", "panties2/8.mp4", "panties2/9.mp4"]>>
-				<<elseif $isElm eq 1>>
-					<<set _videoList to ["panties2/21.mp4", "panties2/22.mp4", "panties2/23.mp4", "panties2/24.mp4", "panties2/25.mp4", "panties2/26.mp4", "panties2/27.mp4", "panties2/28.mp4", "panties2/29.mp4", "panties2/30.mp4"]>>
-				<</if>>
-			<<elseif $pantiesState is "not worn">>
-				<<if $isOwaissa eq 1>>
-					<<set _videoList to ["np2/1.mp4", "np2/2.mp4", "np2/3.mp4", "np2/4.mp4", "np2/5.mp4", "np2/6.mp4", "np2/7.mp4", "np2/8.mp4", "np2/9.mp4", "np2/10.mp4"]>>
-				<<elseif $isElm eq 1>>
-					<<set _videoList to ["np2/20.mp4", "np2/21.mp4", "np2/22.mp4", "np2/23.mp4", "np2/24.mp4", "np2/25.mp4", "np2/26.mp4", "np2/27.mp4"]>>
-				<</if>>
-			<</if>>
-		<</if>>
-
-		<<addLust 5>>
-		<<set $tempCorr += 0.02>>
-	<<elseif ($mc.sanity >= 30 and $mc.sanity < 50) and _chance <= $decreasingSanity.stage3>>
-		<<set _eventTriggered = true>>
-
-		<<if $tshirtState is "worn">>
-			<<if $isOwaissa eq 1>>
-				<<set _videoList to ["bj/1.mp4", "bj/2.mp4", "bj/3.mp4", "bj/4.mp4", "bj/5.mp4", "bj/6.mp4", "bj/7.mp4", "bj/8.mp4", "bj/9.mp4", "bj/10.mp4", "bj/11.mp4", "bj/12.mp4", "bj/13.mp4"]>>
-			<<elseif $isElm eq 1>>
-				<<set _videoList to ["bj/100.mp4", "bj/101.mp4", "bj/102.mp4", "bj/103.mp4", "bj/104.mp4", "bj/105.mp4", "bj/106.mp4", "bj/107.mp4", "bj/108.mp4", "bj/109.mp4"]>>
-			<</if>>
-		<<elseif $tshirtState is "not worn">>
-			<<if $braState is "worn">>
-				<<if $isOwaissa eq 1>>
-					<<set _videoList to ["bj/1.mp4", "bj/2.mp4", "bj/3.mp4", "bj/20.mp4", "bj/21.mp4", "bj/22.mp4", "bj/23.mp4", "bj/24.mp4", "bj/25.mp4", "bj/26.mp4", "bj/27.mp4"]>>
-				<<elseif $isElm eq 1>>
-					<<set _videoList to ["bj/110.mp4", "bj/111.mp4", "bj/112.mp4", "bj/113.mp4", "bj/114.mp4", "bj/115.mp4", "bj/116.mp4", "bj/117.mp4", "bj/118.mp4", "bj/119.mp4"]>>
-				<</if>>
-			<<elseif $braState is "not worn">>
-
-				<<if $isOwaissa eq 1>>
-					<<set _videoList to ["bj/1.mp4", "bj/2.mp4", "bj/3.mp4", "bj/40.mp4", "bj/41.mp4", "bj/42.mp4", "bj/43.mp4", "bj/44.mp4", "bj/45.mp4", "bj/46.mp4", "bj/47.mp4", "bj/48.mp4", "bj/49.mp4", "bj/50.mp4", "bj/51.mp4", "bj/52.mp4"]>>
-				<<elseif $isElm eq 1>>
-					<<set _videoList to ["bj/120.mp4", "bj/121.mp4", "bj/122.mp4", "bj/123.mp4", "bj/124.mp4", "bj/125.mp4", "bj/126.mp4", "bj/127.mp4", "bj/128.mp4", "bj/129.mp4"]>>
-
-				<</if>>
-			<</if>>
-		<</if>>
-		<<addLust 7>>
-		<<set $tempCorr += 0.04>>
-	<<elseif ($mc.sanity >= 1 and $mc.sanity < 30) and _chance <= $decreasingSanity.stage4>>
-		<<set _eventTriggered = true>>
-		<<if $jeansState is "worn">>
-			<<if $pantiesState eq "worn">>
-				<<if $isOwaissa eq 1>>
-					<<set _videoList to ["jeans3/1.mp4", "jeans3/2.mp4", "jeans3/3.mp4", "jeans3/4.mp4", "jeans3/5.mp4", "jeans3/6.mp4", "jeans3/7.mp4", "jeans3/8.mp4", "jeans3/9.mp4"]>>
-				<<elseif $isElm eq 1>>
-					<<set _videoList to ["jeans3/10.mp4", "jeans3/11.mp4", "jeans3/12.mp4", "jeans3/13.mp4", "jeans3/14.mp4", "jeans3/15.mp4", "jeans3/16.mp4", "jeans3/17.mp4"]>>
-				<</if>>
-			<<elseif $pantiesState eq "not worn">>
-				<<if $isOwaissa eq 1>>
-					<<set _videoList to ["jeans3/20.mp4", "jeans3/21.mp4", "jeans3/22.mp4", "jeans3/23.mp4", "jeans3/24.mp4", "jeans3/25.mp4", "jeans3/26.mp4"]>>
-				<<elseif $isElm eq 1>>
-					<<set _videoList to ["jeans3/30.mp4", "jeans3/31.mp4", "jeans3/32.mp4", "jeans3/33.mp4", "jeans3/34.mp4", "jeans3/35.mp4", "jeans3/36.mp4", "jeans3/37.mp4", "jeans3/38.mp4", "jeans3/39.mp4"]>>
-				<</if>>
-			<</if>>
-
-		<<elseif $shortsState is "worn">>
-			<<if $isOwaissa eq 1>>
-				<<set _videoList to ["shorts3/1.mp4", "shorts3/2.mp4", "shorts3/3.mp4", "shorts3/4.mp4", "shorts3/5.mp4", "shorts3/6.mp4", "shorts3/7.mp4", "shorts3/8.mp4", "shorts3/9.mp4", "shorts3/10.mp4"]>>
-			<<elseif $isElm eq 1>>
-				<<set _videoList to ["shorts3/11.mp4", "shorts3/12.mp4", "shorts3/13.mp4", "shorts3/14.mp4", "shorts3/15.mp4", "shorts3/16.mp4", "shorts3/17.mp4", "shorts3/18.mp4"]>>
-			<</if>>
-		<<elseif $skirtState is "worn">>
-			<<if $pantiesState is "worn">>
-				<<if $isOwaissa eq 1>>
-					<<set _videoList to ["skirt3/1.mp4", "skirt3/2.mp4", "skirt3/3.mp4", "skirt3/4.mp4", "skirt3/5.mp4", "skirt3/6.mp4", "skirt3/7.mp4", "skirt3/8.mp4", "skirt3/9.mp4", "skirt3/10.mp4", "skirt3/11.mp4", "skirt3/12.mp4", "skirt3/13.mp4", "skirt3/14.mp4", "skirt3/15.mp4", "skirt3/16.mp4", "skirt3/17.mp4", "skirt3/18.mp4"]>>
-				<<elseif $isElm eq 1>>
-					<<set _videoList to ["skirt3/20.mp4", "skirt3/21.mp4", "skirt3/22.mp4", "skirt3/23.mp4", "skirt3/24.mp4", "skirt3/25.mp4", "skirt3/26.mp4", "skirt3/27.mp4", "skirt3/28.mp4", "skirt3/29.mp4", "skirt3/30.mp4"]>>
-				<</if>>
-			<<else>>
-				<<if $isOwaissa eq 1>>
-					<<set _videoList to ["skirt-np3/1.mp4", "skirt-np3/2.mp4", "skirt-np3/3.mp4", "skirt-np3/4.mp4", "skirt-np3/5.mp4", "skirt-np3/6.mp4", "skirt-np3/7.mp4", "skirt-np3/8.mp4", "skirt-np3/9.mp4", "skirt-np3/10.mp4", "skirt-np3/11.mp4", "skirt-np3/12.mp4", "skirt-np3/13.mp4", "skirt-np3/14.mp4", "skirt-np3/15.mp4", "skirt-np3/16.mp4"]>>
-				<<elseif $isElm eq 1>>
-					<<set _videoList to ["skirt-np3/20.mp4", "skirt-np3/21.mp4", "skirt-np3/22.mp4", "skirt-np3/23.mp4", "skirt-np3/24.mp4", "skirt-np3/25.mp4", "skirt-np3/26.mp4", "skirt-np3/27.mp4", "skirt-np3/28.mp4", "skirt-np3/29.mp4", "skirt-np3/30.mp4"]>>
-				<</if>>
-			<</if>>
-
-		<<elseif $jeansState is "not worn">>
-			<<if $pantiesState is "worn">>
-				<<if $isOwaissa eq 1>>
-					<<set _videoList to ["panties3/1.mp4", "panties3/2.mp4", "panties3/3.mp4", "panties3/4.mp4", "panties3/5.mp4", "panties3/6.mp4", "panties3/7.mp4", "panties3/8.mp4", "panties3/9.mp4", "panties3/10.mp4", "panties3/11.mp4", "panties3/12.mp4", "panties3/13.mp4", "panties3/14.mp4"]>>
-				<<elseif $isElm eq 1>>
-					<<set _videoList to ["panties3/20.mp4", "panties3/21.mp4", "panties3/22.mp4", "panties3/23.mp4", "panties3/24.mp4", "panties3/25.mp4", "panties3/26.mp4", "panties3/27.mp4", "panties3/28.mp4", "panties3/29.mp4"]>>
-				<</if>>
-			<<elseif $pantiesState is "not worn">>
-				<<if $isOwaissa eq 1>>
-					<<set _videoList to ["np3/1.mp4", "np3/2.mp4", "np3/3.mp4", "np3/4.mp4", "np3/5.mp4", "np3/6.mp4", "np3/7.mp4", "np3/8.mp4", "np3/9.mp4", "np3/10.mp4", "np3/11.mp4", "np3/12.mp4", "np3/13.mp4", "np3/14.mp4", "np3/15.mp4", "np3/16.mp4", "np3/17.mp4", "np3/18.mp4", "np3/19.mp4", "np3/20.mp4", "np3/21.mp4", "np3/22.mp4", "np3/23.mp4"]>>
-				<<elseif $isElm eq 1>>
-					<<set _videoList to ["np3/30.mp4", "np3/31.mp4", "np3/32.mp4", "np3/33.mp4", "np3/34.mp4", "np3/35.mp4", "np3/36.mp4", "np3/37.mp4", "np3/38.mp4", "np3/39.mp4", "np3/40.mp4"]>>
-				<</if>>
-			<</if>>
-		<</if>>
-		<<addLustPussy 9>>
-		<<set $tempCorr += 0.05>>
+<<elseif $mc.sanity gte 75 and _chance lte $decreasingSanity.stage1>>
+	/* Stage 1 -- "touching and slapping". Roll splits top/bottom. */
+	<<set _chanceInside to random(1, 5)>>
+	<<if _chanceInside lte 3>>
+		<<addLustByPart>>
+		<<set _videoList to setup.Events.saveEventBottomVideos(1)>>
+	<<else>>
+		<<addLustTits 3>>
+		<<set _videoList to setup.Events.saveEventTopVideos(1)>>
 	<</if>>
+	<<set $tempCorr += 0.01>>
+
+<<elseif $mc.sanity gte 50 and $mc.sanity lt 75 and _chance lte $decreasingSanity.stage2>>
+	/* Stage 2 -- "grinding" -- clothing-aware bottom-body videos. */
+	<<set _videoList to setup.Events.saveEventBottomVideos(2)>>
+	<<addLust 5>>
+	<<set $tempCorr += 0.02>>
+
+<<elseif $mc.sanity gte 30 and $mc.sanity lt 50 and _chance lte $decreasingSanity.stage3>>
+	/* Stage 3 -- "blowjob" -- top-body videos by top/bra state. */
+	<<set _videoList to setup.Events.saveEventTopVideos(3)>>
+	<<addLust 7>>
+	<<set $tempCorr += 0.04>>
+
+<<elseif $mc.sanity gte 1 and $mc.sanity lt 30 and _chance lte $decreasingSanity.stage4>>
+	/* Stage 4 -- "explicit" -- pussy + anal lists combined. */
+	<<set _videoList to setup.Events.saveEventBottomVideos(4)>>
+	<<addLustPussy 9>>
+	<<set $tempCorr += 0.05>>
+
 <</if>>
 
 <<set _randomIndex to random(0, _videoList.length - 1)>>

@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, callSetup, goToPassage } = require('../helpers');
+const { openGame, resetGame, setVar, getVar, setHuntMode, getHuntMode, callSetup, goToPassage } = require('../helpers');
 const { expectCleanPassage, setupHunt } = require('./e2e-helpers');
 
 const COMPANIONS = [
@@ -95,7 +95,7 @@ test.describe('Companions — passage rendering', () => {
         await setVar(page, 'chanceToAttackBlake', 25);
         await setVar(page, 'chanceToAttackBrook', 25);
         await setVar(page, 'isCompChosen', 1);
-        await setVar(page, 'ghostHuntingMode', 2);
+        await setHuntMode(page, 2);
         await setVar(page, 'ghost', { name: 'Shade' });
         await goToPassage(page, passage);
         await expectCleanPassage(page);
@@ -126,7 +126,7 @@ test.describe('Companions — hunt-side events', () => {
 
   test('canShowCompanionMiniPanel requires chosenPlan + hunt mode + haunted house', async () => {
     await setVar(page, 'chosenPlan', 'Plan1');
-    await setVar(page, 'ghostHuntingMode', 2);
+    await setHuntMode(page, 2);
     await setVar(page, 'isOwaissa', 1);
     expect(await callSetup(page, 'setup.Companion.canShowCompanionMiniPanel()')).toBe(true);
 
@@ -137,7 +137,7 @@ test.describe('Companions — hunt-side events', () => {
     await setVar(page, 'isElm', 1);
     expect(await callSetup(page, 'setup.Companion.canShowCompanionMiniPanel()')).toBe(true);
 
-    await setVar(page, 'ghostHuntingMode', 0);
+    await setHuntMode(page, 0);
     expect(await callSetup(page, 'setup.Companion.canShowCompanionMiniPanel()')).toBe(false);
   });
 
@@ -233,14 +233,14 @@ test.describe('Companions — home/intimate events', () => {
   test('WalkHomeTogether renders cleanly for Brook with high lust', async () => {
     await selectCompanion(page, 'Brook');
     await setVar(page, 'companion.lust', 80);
-    await setVar(page, 'ghost', { name: 'Shade' });
+    await setupHunt(page, 'Shade');
     await goToPassage(page, 'WalkHomeTogether');
     await expectCleanPassage(page);
   });
 
   test('WalkHomeTogether routes to GhostSpecialEventSpirit for a Spirit ghost', async () => {
     await selectCompanion(page, 'Alice');
-    await setVar(page, 'ghost', { name: 'Spirit' });
+    await setupHunt(page, 'Spirit');
     await goToPassage(page, 'WalkHomeTogether');
     await expectCleanPassage(page);
     const text = await page.locator('#passages').innerText();

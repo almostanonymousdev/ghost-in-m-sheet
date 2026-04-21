@@ -50,7 +50,7 @@
 <</if>>
 
 <<if setup.Home.isNightForHunt()>>
-	<<if not setup.Home.hasHuntContract() and not setup.Home.needsWitch() and $ghostHuntingMode eq 0>>
+	<<if not setup.Home.hasHuntContract() and not setup.Home.needsWitch() and setup.Ghosts.isInactive()>>
 		@@.mc-thoughts; I don't have a contract@@
 	<<elseif setup.Home.hasHuntContract()>>
 
