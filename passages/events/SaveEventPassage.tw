@@ -21,14 +21,14 @@
 <<set _checkRandomBanshee to random(1,6)>>
 <<set _checkRandomCthulion to random(1,6)>>
 
-<<if _chance <= $decreasingSanity.stage2 and _checkRandomBanshee eq 1 and $ghostName eq "Banshee">>
+<<if _chance <= $decreasingSanity.stage2 and _checkRandomBanshee eq 1 and _hg and _hg.canKiss>>
 
 	<<set $bansheeAbility to 1>>
 	<<set $tempCorr += 0.05>>
 	<<addLust 15>>
-	<<set _videoList to ["ghosts/banshee/1.mp4", "ghosts/banshee/2.mp4", "ghosts/banshee/3.mp4", "ghosts/banshee/4.mp4", "ghosts/banshee/5.mp4", "ghosts/banshee/6.mp4", "ghosts/banshee/7.mp4", "ghosts/banshee/8.mp4", "ghosts/banshee/9.mp4", "ghosts/banshee/10.mp4"]>>
+	<<set _videoList to setup.Events.bansheeVideos()>>
 
-<<elseif _chance <= $decreasingSanity.stage2 and _checkRandomCthulion eq 1 and $ghostName eq "Cthulion">>
+<<elseif _chance <= $decreasingSanity.stage2 and _checkRandomCthulion eq 1 and _hg and _hg.canTentacles>>
 	<<if $mc.sanity >= 50>>
 		<<cthulionAbility 1>>
 	<<elseif ($mc.sanity >= 30 and $mc.sanity < 50)>>

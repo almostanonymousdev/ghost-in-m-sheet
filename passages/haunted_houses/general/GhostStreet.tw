@@ -158,17 +158,8 @@
 </div>
 </div>
 <<nobr>>
-<<if $ghostName eq "Mare">>
-<<if $ghostMareEventStart eq 0>>
-<<set $ghostMareEventStart to 1>>
-<<elseif hasVisited("GhostSpecialEventMare")>>
-<<set $ghostMareEventStart to 4>>
-<</if>>
-<</if>>
+<<run setup.Ghosts.fireActiveOnEnterHouse()>>
 <<set $hours to 0>><<include "ResetCooldowns">><<set $minutes to 0>>
-<<if $ghostName eq "Mimic">>
-<<set $saveMimic to 1>>
-<<set $lastChangeIntervalMimic to " " >><</if>>
 <<done>>
 <<replace "#time">><<print ($hours < 10 ? '0' + $hours : $hours) + ":" + ($minutes < 10 ? '0' + $minutes : $minutes)>><</replace>>
 <</done>>

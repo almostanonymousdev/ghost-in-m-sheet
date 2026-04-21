@@ -2,11 +2,9 @@
 <<widget "activity">>
 	<<replace ".MonkeyPawShow">>
 		<<set _videoList to ["cursedpossessions/slap1.mp4", "cursedpossessions/slap2.mp4", "cursedpossessions/slap3.mp4", "cursedpossessions/slap4.mp4", "cursedpossessions/passion1.mp4", "cursedpossessions/passion2.mp4", "cursedpossessions/passion3.mp4", "cursedpossessions/passion4.mp4", "cursedpossessions/pulse1.mp4", "cursedpossessions/pulse2.mp4", "cursedpossessions/pulse3.mp4", "cursedpossessions/pulse4.mp4"]>>
-		<<if $ghostName eq "Cthulion">>
-			<<set _videoList to _videoList.concat(["ghosts/cthulion/1.0.mp4", "ghosts/cthulion/1.1.mp4", "ghosts/cthulion/1.2.mp4", "ghosts/cthulion/1.3.mp4", "ghosts/cthulion/1.4.mp4", "ghosts/cthulion/1.5.mp4", "ghosts/cthulion/1.6.mp4",
-			"ghosts/cthulion/2.0.mp4", "ghosts/cthulion/2.1.mp4", "ghosts/cthulion/2.2.mp4", "ghosts/cthulion/2.3.mp4", "ghosts/cthulion/2.4.mp4"])>>
-		<<elseif $ghostName eq "Banshee">>
-			<<set _videoList to _videoList.concat(["ghosts/banshee/1.mp4", "ghosts/banshee/2.mp4", "ghosts/banshee/3.mp4", "ghosts/banshee/4.mp4", "ghosts/banshee/5.mp4", "ghosts/banshee/6.mp4", "ghosts/banshee/7.mp4", "ghosts/banshee/8.mp4", "ghosts/banshee/9.mp4", "ghosts/banshee/10.mp4"])>>
+		<<set _hg to setup.Ghosts.active()>>
+		<<if _hg and _hg.cursedActivityVideos>>
+			<<set _videoList to _videoList.concat(_hg.cursedActivityVideos)>>
 		<</if>>
 
 		<<set _randomIndex to random(0, _videoList.length - 1)>>

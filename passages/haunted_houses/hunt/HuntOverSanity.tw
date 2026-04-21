@@ -1,9 +1,10 @@
 :: HuntOverSanity [noreturn nobr] {"position":"1400,1350","size":"100,100"}
 <<run setup.Ghosts.markActiveHuntEvent()>>
+<<set _hg to setup.Ghosts.active()>>
 &emsp;@@.mc-thoughts;Your mind succumbs to the pressure of darkness and horrors enveloping you. Everything around you merges into a black void@@<br>
 @@.enterbtn;<<linkreplace "Next">>
 	<<if $isrealhouse eq 0>>
-		<<if $ghostName eq "Cthulion">>
+		<<if _hg and _hg.canTentacles>>
 			<<set _check to random(1,5)>>
 			<<if _check eq 1>>
 				<video autoplay controls muted loop>
@@ -75,7 +76,7 @@
 			<</if>>
 		<</if>>
 	<<else>>
-		<<if $ghostName eq "Cthulion">>
+		<<if _hg and _hg.canTentacles>>
 			<<set _check to random(1,6)>>
 			<<if _check eq 1>>
 				<video autoplay controls muted loop>

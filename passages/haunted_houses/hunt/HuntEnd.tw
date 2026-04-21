@@ -1,6 +1,7 @@
 :: HuntEnd [noreturn nobr] {"position":"2500,1350","size":"100,100"}
 <<run setup.Ghosts.markActiveHuntEvent()>>
-<<if $ghostName eq "Cthulion">>
+<<set _hg to setup.Ghosts.active()>>
+<<if _hg and _hg.canTentacles>>
 	<<set _check to random(1,4)>>
 	@@.mc-thoughts; For a moment, you black out. When you come to, a strange, unsettling feeling lingers -- like someone is close by. Suddenly, movements appear from the shadows, and you notice tentacles. They slowly coil around you, sliding across your skin. You try to resist, but their touches grow more insistent, keeping you captive.@@
 	<<if _check eq 1>>

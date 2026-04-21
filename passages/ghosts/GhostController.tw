@@ -107,8 +107,9 @@
             evidence: [E.GWB, E.TEMPERATURE, E.SPIRITBOX],
             hint: "",
             description: "The Moroi can invade the minds of weak-willed victims when using the Spirit Box. Be cautious when communicating, as this ghost may possess you.",
-            huntCondition:     function (mc) { return mc.sanity <= 50; },
-            huntConditionText: "Can start a hunt if you have <= 50 sanity"
+            huntCondition:           function (mc) { return mc.sanity <= 50; },
+            huntConditionText:       "Can start a hunt if you have <= 50 sanity",
+            spiritboxPossessionChance: 30
         },
         {
             name: "Myling", image: "myling.webp",
@@ -136,7 +137,12 @@
             hint: "Mimic always has an extra evidence -- ectoplasm",
             description: "Mimic is a ghost that can mimic nearly all the abilities of other ghosts, making it extremely unpredictable and difficult to identify. Additionally, The Mimic always has an extra evidence -- ectoplasm. Although ectoplasm is not considered evidence for identifying the ghost, its presence can aid in its identification.",
             huntCondition:     function (mc) { return mc.sanity <= 50; },
-            huntConditionText: "Can start a hunt if you have <= 50 sanity"
+            huntConditionText: "Can start a hunt if you have <= 50 sanity",
+            onEnterHouse: function () {
+                var V = State.variables;
+                V.saveMimic = 1;
+                V.lastChangeIntervalMimic = " ";
+            }
         },
         {
             name: "The Twins", image: "the-twins.webp",
@@ -162,7 +168,15 @@
             hint: "Mare visits your house while you sleep",
             description: "Mare visits my house while I sleep. It's quite easy to get rid of; I just need to sprinkle holy water in the room where I sleep. It becomes more aggressive each day, so it's best not to delay. Although, someone online mentioned that it might stop haunting after a few days.",
             huntCondition:     function (mc) { return mc.lust >= 50; },
-            huntConditionText: "Can start a hunt if you have >= 50 lust"
+            huntConditionText: "Can start a hunt if you have >= 50 lust",
+            onEnterHouse: function () {
+                var V = State.variables;
+                if (V.ghostMareEventStart === 0) {
+                    V.ghostMareEventStart = 1;
+                } else if (State.hasPlayed("GhostSpecialEventMare")) {
+                    V.ghostMareEventStart = 4;
+                }
+            }
         },
         {
             name: "Cthulion", image: "cthulion.webp",
@@ -170,7 +184,16 @@
             hint: "Cthulion rarely reveals its true form, preferring to take on a human appearance. But when it needs to interact with its victims, it's not above using its tentacles.",
             description: "Cthulion is one of the oldest beings, with a history stretching far back before the dawn of humanity. Its true form is so alien to the human mind that most who encounter it can only describe it as \"unspeakable.\" However, Cthulion rarely reveals its true form, preferring to take on a human appearance. But when it needs to interact with its victims, it's not above using its tentacles.",
             huntCondition:     function (mc) { return mc.sanity <= 50; },
-            huntConditionText: "Can start a hunt if you have <= 50 sanity"
+            huntConditionText: "Can start a hunt if you have <= 50 sanity",
+            canTentacles: true,
+            cursedActivityVideos: [
+                "ghosts/cthulion/1.0.mp4", "ghosts/cthulion/1.1.mp4",
+                "ghosts/cthulion/1.2.mp4", "ghosts/cthulion/1.3.mp4",
+                "ghosts/cthulion/1.4.mp4", "ghosts/cthulion/1.5.mp4",
+                "ghosts/cthulion/1.6.mp4", "ghosts/cthulion/2.0.mp4",
+                "ghosts/cthulion/2.1.mp4", "ghosts/cthulion/2.2.mp4",
+                "ghosts/cthulion/2.3.mp4", "ghosts/cthulion/2.4.mp4"
+            ]
         },
         {
             name: "Banshee", image: "banshee.webp",
@@ -178,15 +201,26 @@
             hint: "The Banshee has a unique ability called the 'Kiss of the Banshee,' which reduces sanity by 10 points.",
             description: "The Banshee has a unique ability called the \"Kiss of the Banshee,\" which reduces sanity by 10 points.",
             huntCondition:     function (mc) { return mc.lust >= 50; },
-            huntConditionText: "Can start a hunt if you have >= 50 lust"
+            huntConditionText: "Can start a hunt if you have >= 50 lust",
+            canKiss: true,
+            cursedActivityVideos: [
+                "ghosts/banshee/1.mp4", "ghosts/banshee/2.mp4",
+                "ghosts/banshee/3.mp4", "ghosts/banshee/4.mp4",
+                "ghosts/banshee/5.mp4", "ghosts/banshee/6.mp4",
+                "ghosts/banshee/7.mp4", "ghosts/banshee/8.mp4",
+                "ghosts/banshee/9.mp4", "ghosts/banshee/10.mp4"
+            ]
         },
         {
             name: "Raiju", image: "raiju.webp",
             evidence: [E.EMF, E.SPIRITBOX, E.UVL],
             hint: "Raiju is a mysterious entity that occasionally exerts influence over electrical devices, causing them to display incorrect readings. This spectral presence can manipulate the behavior of electronics, leading to unpredictable and sometimes inexplicable malfunctions.",
             description: "Raiju is a mysterious entity that occasionally exerts influence over electrical devices, causing them to display incorrect readings. This spectral presence can manipulate the behavior of electronics, leading to unpredictable and sometimes inexplicable malfunctions.",
-            huntCondition:     function (mc) { return mc.sanity <= 50; },
-            huntConditionText: "Can start a hunt if you have <= 50 sanity"
+            huntCondition:           function (mc) { return mc.sanity <= 50; },
+            huntConditionText:       "Can start a hunt if you have <= 50 sanity",
+            emfGlitchChance:         3,
+            temperatureGlitchChance: 8,
+            spiritboxStaticChance:   20
         }
     ];
 
@@ -222,7 +256,25 @@
         this.companionHuntPassage = cfg.companionHuntPassage || null;   // Myling: "GhostSpecialEventMylingTwo"
         this.sanityEventLossRange = cfg.sanityEventLossRange || [1, 5]; // Oni:    [3, 8]
         this.huntEventFlag        = cfg.huntEventFlag        || null;   // Twins:  "thetwinsevent"
-        if (typeof cfg.onHuntEnd === "function") this.onHuntEnd = cfg.onHuntEnd;
+
+        /* Sensor-glitch chance denominators (1/N per tool reading). */
+        this.emfGlitchChance         = cfg.emfGlitchChance         || 0; // Raiju: 3
+        this.temperatureGlitchChance = cfg.temperatureGlitchChance || 0; // Raiju: 8
+
+        /* Spiritbox special-response percentages (0-100, rolled once). */
+        this.spiritboxPossessionChance = cfg.spiritboxPossessionChance || 0; // Moroi: 30
+        this.spiritboxStaticChance     = cfg.spiritboxStaticChance     || 0; // Raiju: 20
+
+        /* Ability flags — check these instead of comparing names. */
+        this.canTentacles = !!cfg.canTentacles;  // Cthulion
+        this.canKiss      = !!cfg.canKiss;       // Banshee
+
+        /* Extra video clips this ghost contributes to the cursed-activity
+           video pool (widgetText). */
+        this.cursedActivityVideos = cfg.cursedActivityVideos || null;
+
+        if (typeof cfg.onHuntEnd    === "function") this.onHuntEnd    = cfg.onHuntEnd;
+        if (typeof cfg.onEnterHouse === "function") this.onEnterHouse = cfg.onEnterHouse;
     }
 
     Object.defineProperty(Ghost.prototype, "isInfoCollected", {
@@ -284,6 +336,22 @@
     /* Default hook — Spirit overrides this to reset $ghostSpiritEventStage
        at graceful hunt ends. */
     Ghost.prototype.onHuntEnd = function () {};
+
+    /* Default hook fired from GhostStreet when the player enters a haunted
+       house. Mare/Mimic override to advance their per-hunt progression. */
+    Ghost.prototype.onEnterHouse = function () {};
+
+    /* Sensor-glitch rolls — return true when the tool should display a
+       bogus reading this tick. Default denominators are 0 (no glitches);
+       Raiju overrides via cfg.emfGlitchChance / cfg.temperatureGlitchChance. */
+    Ghost.prototype.rollEmfGlitch = function () {
+        return this.emfGlitchChance > 0 &&
+               Math.floor(Math.random() * this.emfGlitchChance) === 0;
+    };
+    Ghost.prototype.rollTemperatureGlitch = function () {
+        return this.temperatureGlitchChance > 0 &&
+               Math.floor(Math.random() * this.temperatureGlitchChance) === 0;
+    };
 
     var GHOSTS = GHOST_CONFIG.map(function (cfg) { return new Ghost(cfg); });
 
@@ -368,6 +436,14 @@
         fireActiveHuntEnd: function () {
             var g = setup.Ghosts.active();
             if (g) g.onHuntEnd();
+        },
+
+        /* Fires the active ghost's onEnterHouse hook when the player picks a
+           house in GhostStreet. Default is a no-op; Mare/Mimic override it
+           to advance their per-hunt progression. */
+        fireActiveOnEnterHouse: function () {
+            var g = setup.Ghosts.active();
+            if (g) g.onEnterHouse();
         },
 
         /* Info-collected flag helpers. Callers should never touch the
