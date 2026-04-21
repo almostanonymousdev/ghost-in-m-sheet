@@ -44,8 +44,8 @@ body:
       label: Game Version
       description: Which version of the game are you playing?
       options:
-        - v0.4.8 (latest original)
-        - Fork / Community Build
+        - v0.5.1 (latest version)
+        - v0.4.8
         - Other
     validations:
       required: true
