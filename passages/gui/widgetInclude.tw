@@ -2,7 +2,6 @@
 <<widget "includeTimeEventClothesHunt">>
 	<<if $cursedHuntActive eq 1>>
 	<<else>>
-		<<addTime 0.5>>
 		<<include "Event">>
 		<<if _eventTriggered is false>>
 			<<include "StealClothesEvent">>
@@ -16,7 +15,6 @@
 <<widget "includeTimeEventHunt">>
 	<<if $cursedHuntActive eq 1>>
 	<<else>>
-		<<addTime 0.5>>
 		<<include "Event">>
 		<<if _eventTriggered is false>>
 			<<include "CheckHuntStart">>

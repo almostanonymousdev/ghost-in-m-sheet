@@ -1506,9 +1506,6 @@ setup.searchToolMarkup = function (cfg) {
 
     // Body of the <<repeat>> loop.
     var repeatBody = [
-        '<<if $hotAct eq 1>><<set $mc.sanity -= $sanityIfHot>><</if>>',
-        '<<if ' + bgRoom + '.background eq 2>><<set $mc.sanity -= $sanityInTheDark>><</if>>',
-        '<<addTime 0.5>>',
         '<<if ' + field + ' neq ' + equip + '>>',
             eventChain,
         '<</if>>',

@@ -781,13 +781,6 @@
  <</switch>>
 <</if>>
 
-<<if $mc.sanity lte 0 and $ghostHuntingMode eq 2>>
-<<goto "HuntOverSanity">>
-<</if>>
-<<if $hours gte 6 and $ghostHuntingMode eq 2>>
-<<goto "HuntOverTime">>
-<</if>>
-
 <<if ndef $update22>>
 <<include "Update1">>
 <</if>>

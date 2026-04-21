@@ -64,7 +64,10 @@ test.describe('Haunted house — Ironclad', () => {
     const text = await page.locator('.passage').textContent();
     expect(text).toContain('nothing happens');
     expect(text).toContain('Return home');
-    expect(await getVar(page, 'mc.energy')).toBe(0);
+    // TODO(haunt-mechanics-rework): the empty-walk-through used to drain
+    // mc.energy to 0; that write was removed while the haunt resource model is
+    // redesigned. Restore a matching assertion once the new model is in place.
+    // expect(await getVar(page, 'mc.energy')).toBe(0);
   });
 
   test('End the hunt link appears on street while inside hunt mode', async () => {

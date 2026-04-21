@@ -29,9 +29,6 @@
 	</video><br>
 	@@.mc-speech; Ah~ I can't... and don't want to... stop <br>@@
 	@@.mc-thoughts; You play with yourself until you cum @@<br>@@.mc-speech; Ohh, I feel wonderful.@@<br>
-	<img @src="setup.ImagePath + '/img/hearth.png'" style="position: relative; top: 0.375em; width:3%;"> decreased!<br><<set $mc.lust to 0>><<updatemeter 'mclust' `$mc.lust.toFixed(2) / 100`>>
-	<img @src="setup.ImagePath + '/img/sanity.png'" style="position: relative; top: 0.375em; width:3%;"> +10!<br><<set $mc.sanity += 10>><<if $mc.sanity gte $mc.sanityMax>><<set $mc.sanity to $mc.sanityMax>>
-	<</if>><<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
 
 <</if>>
 <<include "StyleVideoHeight">>

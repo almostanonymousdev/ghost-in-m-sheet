@@ -29,12 +29,6 @@
 	<</if>>
 <</if>>
 <br>
-<<if $tempCorr gte 1>><<set $tempCorr to 1>><</if>>
-<<set $mc.corruption += $tempCorr>>
-
-<br>
-Corruption is increased (+ <<= $tempCorr.toFixed(2)>>) : <<= $mc.corruption.toFixed(2)>><br>
-<<set $tempCorr to 0>>
 <<run setup.HauntedHouses.endHunt()>>
 
 <<run setup.HauntedHouses.resetToolTimers()>>

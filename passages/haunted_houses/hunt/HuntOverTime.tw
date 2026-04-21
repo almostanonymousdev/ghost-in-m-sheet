@@ -17,10 +17,6 @@
 	<<run setup.HauntedHouses.clearStolenClothesFlag()>>
 <</if>>
 
-<<set $mc.corruption += $tempCorr>>
-
-Corruption is increased (+ <<= $tempCorr.toFixed(2)>>) : <<= $mc.corruption.toFixed(2)>><br>
-<<set $tempCorr to 0>>
 <<run setup.HauntedHouses.resetToolTimers()>>
 <<run setup.HauntedHouses.endHunt()>>
 <<run setup.Companion.clearBlakeCursedItem()>>

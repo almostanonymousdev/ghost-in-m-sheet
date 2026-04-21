@@ -152,16 +152,8 @@
 	&emsp;@@.mc-thoughts;Periodically, moments of realization break through: you are being fucked, not sparing all your holes. Your body becomes pliable, you feel like a doll. This goes on forever. However, your body reacts to all this torture; the feeling of pleasure gradually takes over. A powerful surge of enjoyment passes through it. You feel the strength leaving your body, and consciousness slips away.@@<br>
 
 	<<if $highpriestess eq 1>>
-		<<set $mc.sanity to 25>>
 		@@.usebtn; [[Next|$return][$highpriestess to 0; $ghostHuntingMode to 2]]@@
 	<<else>>
-		<<if $tempCorr gte 1>><<set $tempCorr to 1>><</if>>
-		<<set $mc.corruption += $tempCorr>>
-		<br>
-
-		Corruption is increased (+ <<= $tempCorr.toFixed(2)>>) : <<= $mc.corruption.toFixed(2)>><br>
-		<<set $tempCorr to 0>>
-		<<set $mc.dirty to 1>>
 		<<run setup.HauntedHouses.resetToolTimers()>>
 		<<include "LostClothes">>
 		<<done>>

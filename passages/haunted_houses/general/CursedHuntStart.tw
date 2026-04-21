@@ -20,14 +20,9 @@
 		@@.mc-thoughts; Your strength has faded, and your attempts to stand have been in vain. It's becoming harder and harder to think, and it feels like the whole world is disappearing.@@<br>
 		<br><br>
 		<<if $highpriestess eq 1>>
-			@@.backbtn; [[You black out|$return][$highpriestess to 0; $mc.sanity to 25]]@@
+			@@.backbtn; [[You black out|$return][$highpriestess to 0]]@@
 		<<else>>
 			<<run setup.Companion.clearBlakeCursedItem()>>
-			<<if $tempCorr gte 1>><<set $tempCorr to 1>><</if>>
-			<<set $mc.corruption += $tempCorr>>
-			Corruption is increased (+ <<= $tempCorr.toFixed(2)>>) : <<= $mc.corruption.toFixed(2)>><br>
-			<<set $mc.dirty to 1>>
-			<<set $tempCorr to 0>>
 			<<run setup.HauntedHouses.resetToolTimers()>>
 
 			<<run setup.HauntedHouses.endHunt()>>
