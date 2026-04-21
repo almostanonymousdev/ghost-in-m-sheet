@@ -951,18 +951,8 @@
 <</widget>>
 
 <<widget "includeStyleEventMC">>
-	<<if previous() is "FurnitureSearch">>
-		<<if ((previous(2) is "OwaissaKitchen" or previous(2) is "ElmKitchen") and $kitchen.background eq 2) or
-			((previous(2) is "OwaissaBedroom" or previous(2) is "ElmBedroom") and $bedroom.background eq 2) or
-			((previous(2) is "ElmBedroomTwo" and $bedroomTwo.background eq 2)) or
-			((previous(2) is "OwaissaHallway" or previous(2) is "ElmHallway") and $hallway.background eq 2) or
-			((previous(2) is "ElmHallwayUpstairs" and $hallwayUpstairs.background eq 2)) or
-			((previous(2) is "OwaissaLivingroom" and $livingroom.background eq 2)) or
-			((previous(2) is "ElmNursery" and $nursery.background eq 2)) or
-			((previous(2) is "OwaissaBathroom" or previous() is "ElmBathroom") and $bathroom.background eq 2) or
-			((previous(2) is "ElmBathroomTwo" and $bathroomTwo.background eq 2)) or
-			((previous(2) is "ElmBasement" and $basement.background eq 2))>>
-			<style>
+	<<if previous() is "FurnitureSearch" and setup.Events.isDarkRoom(previous(2))>>
+		<style>
         .eventVideo-container {
             position: relative;
             overflow: hidden;
@@ -971,6 +961,5 @@
            filter: brightness(0.8) contrast(1.1) grayscale(0.95);
         }
     </style>
-		<</if>>
 	<</if>>
 <</widget>>
