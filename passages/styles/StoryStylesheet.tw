@@ -1116,3 +1116,36 @@ body.city {
 		transition-duration: 0.01ms !important;
 	}
 }
+
+/* ===== Debug-view overrides =====
+ * SugarCube debug builds (Config.debug = true, or tweego -t) wrap every
+ * macro and include in <span class="debug" ...> elements. When the
+ * wrappers sit inside a flex/grid container (e.g. the if/else wrapper
+ * around the clothing slots in MC.tw, or the for wrapper around the
+ * piercings in BodyModification.tw, or the widget wrappers inside the
+ * room footer toolbar) they become a single flex/grid item whose
+ * block-level children stack vertically instead of laying out as
+ * siblings of the flex/grid parent. Strip them from layout entirely
+ * with display:contents so debug builds render like production.
+ *
+ * These rules target .debug directly (not scoped to html[data-debug-view])
+ * because start.sh removes that attribute on :storyready to suppress the
+ * visual annotations — but the wrapper elements themselves stay in the
+ * DOM and still need to be layout-transparent. In non-debug builds the
+ * .debug class is never emitted, so the rules are inert.
+ *
+ * The ::before/::after overrides below are still scoped to
+ * html[data-debug-view], because that's the only state that activates
+ * SugarCube's label pseudo-elements in the first place — blanking them
+ * outside that state is pointless and costs specificity.
+ */
+.debug {
+	display: contents !important;
+}
+.debug.hidden {
+	display: none !important;
+}
+html[data-debug-view] .debug[data-name][data-type]::before,
+html[data-debug-view] .debug[data-name][data-type].nonvoid::after {
+	content: none !important;
+}
