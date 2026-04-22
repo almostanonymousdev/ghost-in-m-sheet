@@ -297,13 +297,14 @@ sugarcube-2:
       description: "Renders the hunt HUD row above the tool bar showing the live
         per-step deltas for sanity, lust, corruption (and whether time is
         advancing), plus a coloured badge for every active contributor
-        (darkness, clothing state, lust-as-fuel, risky tools, bait). Reads
-        setup.HauntConditions.snapshot(). No args."
+        (darkness, clothing state, lust-as-fuel, overcharged tools, bait).
+        Reads setup.HauntConditions.snapshot(). No args."
     huntActionBar:
       name: huntActionBar
       description: "Renders the spendable-resource buttons surfaced during a hunt:
-        bait the ghost (lust spend), toggle risky tools on/off. Only renders
-        when a hunt is active (setup.HauntedHouses.isInsideHouse()). No args."
+        bait the ghost (lust spend), toggle overcharged tools on/off. Only
+        renders when a hunt is active (setup.HauntedHouses.isInsideHouse()).
+        No args."
     navLink:
       name: navLink
       description: "Renders an @@.adaptiveLink;<<link>>...<</link>>@@ navigation link

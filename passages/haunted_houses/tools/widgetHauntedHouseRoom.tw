@@ -36,14 +36,16 @@ entirely for rooms with no furniture (e.g. enigma). */
 rate at which each hunt-relevant stat is moving. Numbers come from
 setup.HauntConditions.snapshot() so the HUD, the tool-card hovertip, and
 the actual tool/hunt rolls all read the same source. Each axis (darkness,
-clothing, lust, risky tools, bait) drops a badge into contributors[] so
-the HUD auto-renders a "why" chip without hardcoding per-axis branches. */
+clothing, lust, overcharged tools, bait) drops a badge into contributors[]
+so the HUD auto-renders a "why" chip without hardcoding per-axis branches.
+Renders contents only -- the .hunt-conditions wrapper lives on roomFooter
+so re-renders via <<replace ".hunt-conditions">> don't double-nest the
+wrapper class (which compounds its 80% font-size). */
 <<widget "huntConditions">>
 	<<set _hc to setup.HauntConditions.snapshot()>>
 	<<set _sanity to (_hc.sanityPerStep gt 0 ? "+" : "") + _hc.sanityPerStep>>
 	<<set _lust to (_hc.lustPerStep gt 0 ? "+" : "") + _hc.lustPerStep>>
 	<<set _corrShown to Math.round(_hc.corruptionPending * 100) / 100>>
-	<div class="hunt-conditions">
 	<<image "img/sanity.png" { class: "hunt-conditions-icon" }>> _sanity/step
 	· <<image "img/hearth.png" { class: "hunt-conditions-icon" }>> _lust/step
 	· <<image "img/corruption.png" { class: "hunt-conditions-icon" }>> <<= _corrShown>>/step
@@ -60,16 +62,16 @@ the HUD auto-renders a "why" chip without hardcoding per-axis branches. */
 			· <span @style="'color:' + _c.color + ';font-weight:bold;'" @title="_c.detail">[<<= _c.label>>]</span>
 		<</capture>>
 	<</for>>
-	</div>
 <</widget>>
 
 /* huntActionBar -- spendable-resource buttons surfaced during a hunt.
-Bait the ghost (lust spend), toggle risky tools on/off, and a mid-hunt
-sanity prayer that short-circuits the ghost without using a crucifix.
-The buttons key off setup.HauntConditions and only render in-house. */
+Bait the ghost (lust spend) and toggle overcharged tools on/off. Renders
+contents only; the .hunt-actions wrapper lives on roomFooter so re-renders
+via <<replace ".hunt-actions">> don't double-nest the wrapper class (which
+compounds its 80% font-size). The buttons key off setup.HauntConditions
+and only render in-house. */
 <<widget "huntActionBar">>
 	<<if setup.HauntedHouses.isInsideHouse()>>
-		<div class="hunt-actions">
 		<<if setup.HauntConditions.canBait()>>
 			<<link `"Bait ghost (−" + setup.HauntConditions.BAIT_LUST_COST + " lust)"`>>
 				<<run setup.HauntConditions.startBait()>>
@@ -80,20 +82,19 @@ The buttons key off setup.HauntConditions and only render in-house. */
 		<<elseif setup.HauntConditions.snapshot().baitActive>>
 			<span class="hunt-actions-note">Baiting: <<= setup.HauntConditions.snapshot().baitStepsRemain>> left</span>
 		<</if>>
-		<<if setup.HauntConditions.isRiskyMode()>>
-			<<link "Tools: Risky (click to disarm)">>
-				<<run setup.HauntConditions.toggleRiskyTools()>>
+		<<if setup.HauntConditions.isOverchargedMode()>>
+			<<link "Tools: Overcharged (click to revert)">>
+				<<run setup.HauntConditions.toggleOverchargedTools()>>
 				<<replace ".hunt-actions">><<huntActionBar>><</replace>>
 				<<replace ".hunt-conditions">><<huntConditions>><</replace>>
 			<</link>>
 		<<else>>
-			<<link "Tools: Safe (click to risk)">>
-				<<run setup.HauntConditions.toggleRiskyTools()>>
+			<<link "Tools: Standard (click to overcharge)">>
+				<<run setup.HauntConditions.toggleOverchargedTools()>>
 				<<replace ".hunt-actions">><<huntActionBar>><</replace>>
 				<<replace ".hunt-conditions">><<huntConditions>><</replace>>
 			<</link>>
 		<</if>>
-		</div>
 	<</if>>
 <</widget>>
 
@@ -106,8 +107,8 @@ roomFooterLight vs roomFooterLightBasic and toggles companion visibility
 based on _shellVariant. */
 <<widget "roomFooter" container>>
 	<div class="footer">
-	<<huntConditions>>
-	<<huntActionBar>>
+	<div class="hunt-conditions"><<huntConditions>></div>
+	<div class="hunt-actions"><<huntActionBar>></div>
 	<div class="footer-row">
 	<div class="footertools">
 	<<if _shellVariant eq "basic">>

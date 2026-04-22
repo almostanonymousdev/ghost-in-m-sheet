@@ -1193,8 +1193,8 @@ setup.hauntedPassages = (function () {
 
 /* setup.HauntConditions -- single source of truth for the hunt-mechanics
  * rework. Resolves the player's current haunted-house room from the running
- * passage, aggregates every axis (darkness, clothing, lust, risky tools,
- * bait) into one snapshot, and exposes it to:
+ * passage, aggregates every axis (darkness, clothing, lust, overcharged
+ * tools, bait) into one snapshot, and exposes it to:
  *   - huntConditions HUD (per-step stat deltas above the tool bar)
  *   - setup.toolSuccessRate (hover tooltip on each tool card)
  *   - setup.chanceByTier / setup.toolTimeRemain (actual tool rolls)
@@ -1246,8 +1246,8 @@ setup.HauntConditions = (function () {
         return "partial";
     }
 
-    function isBaitActive() { return State.variables.baitActive === 1; }
-    function isRiskyMode()  { return State.variables.riskyTools === 1; }
+    function isBaitActive()       { return State.variables.baitActive === 1; }
+    function isOverchargedMode()  { return State.variables.overchargedTools === 1; }
 
     /* Combined per-tick deltas + tool/hunt bonuses, plus a contributors
      * array used by the HUD widget to show "why". */
@@ -1256,7 +1256,7 @@ setup.HauntConditions = (function () {
         var snap = {
             dark:              false,
             clothing:          clothingState(),
-            riskyTools:        isRiskyMode(),
+            overchargedTools:  isOverchargedMode(),
             baitActive:        isBaitActive(),
             baitStepsRemain:   V.baitStepsRemain || 0,
             sanityPerStep:     0,
@@ -1315,13 +1315,13 @@ setup.HauntConditions = (function () {
             });
         }
 
-        if (snap.riskyTools) {
+        if (snap.overchargedTools) {
             snap.toolChanceBonus += 10;
             snap.toolWindowBonus += 5;
             snap.huntChanceBonus += 5;
             snap.sanityPerStep   -= 1;
             snap.contributors.push({
-                label: "Risky tools",
+                label: "Overcharged",
                 color: "#ffaa33",
                 detail: "tools +10%, +5 min · hunt +5% · sanity −1/step"
             });
@@ -1397,19 +1397,19 @@ setup.HauntConditions = (function () {
                   && V.baitActive !== 1);
     }
 
-    function toggleRiskyTools() {
+    function toggleOverchargedTools() {
         var V = State.variables;
-        V.riskyTools = V.riskyTools === 1 ? 0 : 1;
-        return V.riskyTools === 1;
+        V.overchargedTools = V.overchargedTools === 1 ? 0 : 1;
+        return V.overchargedTools === 1;
     }
 
     /* Called from HuntEnd / HuntOverManual / HuntOverTime / HuntOverSanity
      * to scrub hunt-only flags so the next contract starts clean. */
     function resetHuntFlags() {
         var V = State.variables;
-        V.baitActive      = 0;
-        V.baitStepsRemain = 0;
-        V.riskyTools      = 0;
+        V.baitActive       = 0;
+        V.baitStepsRemain  = 0;
+        V.overchargedTools = 0;
     }
 
     return {
@@ -1424,9 +1424,9 @@ setup.HauntConditions = (function () {
         applyTickEffects:    applyTickEffects,
         startBait:           startBait,
         canBait:             canBait,
-        toggleRiskyTools:    toggleRiskyTools,
-        isRiskyMode:         isRiskyMode,
-        resetHuntFlags:      resetHuntFlags
+        toggleOverchargedTools: toggleOverchargedTools,
+        isOverchargedMode:      isOverchargedMode,
+        resetHuntFlags:         resetHuntFlags
     };
 })();
 
