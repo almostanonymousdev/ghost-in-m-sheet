@@ -1,10 +1,17 @@
 :: PrayHunt [noreturn nobr] {"position":"2700,1100","size":"100,100"}
-/* Sanity-as-currency: spend 10 sanity to short-circuit the hunt without
- * burning a crucifix. The ghost loses interest; treated like a clean
- * escape (mark the event, reset the trigger timer, return to the room). */
+/* Sanity-as-currency + energy gate: spend 10 sanity AND ENERGY_COST_PRAY
+ * energy to short-circuit the hunt without burning a crucifix. The ghost
+ * loses interest; treated like a clean escape (mark the event, reset the
+ * trigger timer, return to the room). The energy spend can also exhaust
+ * the player — if so, route to HuntOverExhaustion instead of the room. */
 <<set $mc.sanity -= 10>>
 <<if $mc.sanity lt 1>>
 	<<set $mc.sanity to 1>>
+<</if>>
+<<run setup.HauntConditions.spendEnergy(setup.HauntConditions.ENERGY_COST_PRAY)>>
+<<updatemeter 'energy' `$mc.energy / $mc.energyMax`>>
+<<if $exhausted eq 1>>
+	<<goto "HuntOverExhaustion">>
 <</if>>
 <<image "img/crucifix.webp" { class: "displayCentredImgs", width: "60%" }>>
 <br>

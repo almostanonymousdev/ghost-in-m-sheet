@@ -18,8 +18,8 @@ or @@.usebtn; [[Try to hide|Hide]]@@
 <<if $succubusEventTimer gte 1>>
 	or @@.usebtn; [[Summon the succubus|HuntEventSuccubus]]@@<br>
 <</if>>
-<<if $mc.sanity gt 10>>
-	or @@.usebtn;<<link "Pray it passes (-10 sanity)" "PrayHunt">>
+<<if setup.HauntConditions.canPray()>>
+	or @@.usebtn;<<link `"Pray it passes (−10 sanity, −" + setup.HauntConditions.ENERGY_COST_PRAY + " energy)"` "PrayHunt">>
 	<</link>>@@
 <</if>>
 <<if setup.HauntedHouses.hasBottomWorn() or setup.HauntedHouses.hasTopWorn() or $pantiesState eq "worn" or $braState eq "worn">>

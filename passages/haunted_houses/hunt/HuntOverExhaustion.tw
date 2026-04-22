@@ -1,0 +1,79 @@
+:: HuntOverExhaustion [nobr] {"position":"1300,1350","size":"100,100"}
+/* Energy as the pacing gate: the per-step energy drain in
+ * setup.HauntConditions.applyTickEffects sets $exhausted = 1 when
+ * mc.energy bottoms out, and the includeTimeEvent* widgets route here.
+ * Cleans up like HuntOverManual / HuntOverTime — graceful exit, no
+ * ghost catch — so the player keeps whatever evidence they gathered.
+ * Departure from the other hunt-over branches: if any clothes were
+ * stolen earlier, the player only has the strength to grab ONE piece
+ * before stumbling out. Picking one runs that FindStolen* include and
+ * then LostClothes nukes the rest. */
+<<run setup.Ghosts.markActiveHuntEvent()>>
+<<run setup.Ghosts.fireActiveHuntEnd()>>
+<<run setup.HauntedHouses.resetToolTimers()>>
+<<run setup.HauntedHouses.endHunt()>>
+<<run setup.Companion.clearBlakeCursedItem()>>
+<<run setup.Companion.resetHuntState()>>
+<<run setup.Companion.resetAliceWorkIfNeeded()>>
+
+<<image "img/dawn.jpg" { width: "100%" }>>
+<br>
+@@.mc-thoughts; My legs are shaking. I can barely keep my eyes open. I have to leave this place — I'm running on empty.@@<br>
+
+<<if setup.HauntedHouses.hasClothesStolen()>>
+	@@.mc-thoughts; The ghost stripped me earlier; my things are scattered around. I only have the energy to grab one piece before stumbling for the exit.@@<br>
+	<span id="exhaustionGrab">
+	<<if $isPantiesStolen eq 1>>
+		@@.usebtn;<<link "Grab your panties">><<replace "#exhaustionGrab">>
+			<<include "FindStolenPanties">>
+			<<include "LostClothes">>
+			<<run setup.HauntedHouses.clearStolenClothesFlag()>>
+			@@.mc-action; You snatch your panties and stumble for the exit. The rest stays behind.@@<br>
+			@@.movebtn;[[Drag yourself home|CityMap][$hours += 1]]@@
+		<</replace>>
+		<</link>>@@<br>
+	<</if>>
+	<<if $isBottomStolen eq 1>>
+		@@.usebtn;<<link "Grab your bottoms">><<replace "#exhaustionGrab">>
+			<<include "FindStolenBottom">>
+			<<include "LostClothes">>
+			<<run setup.HauntedHouses.clearStolenClothesFlag()>>
+			@@.mc-action; You snatch your bottoms and stumble for the exit. The rest stays behind.@@<br>
+			@@.movebtn;[[Drag yourself home|CityMap][$hours += 1]]@@
+		<</replace>>
+		<</link>>@@<br>
+	<</if>>
+	<<if $isShirtStolen eq 1>>
+		@@.usebtn;<<link "Grab your shirt">><<replace "#exhaustionGrab">>
+			<<include "FindStolenShirt">>
+			<<include "LostClothes">>
+			<<run setup.HauntedHouses.clearStolenClothesFlag()>>
+			@@.mc-action; You snatch your shirt and stumble for the exit. The rest stays behind.@@<br>
+			@@.movebtn;[[Drag yourself home|CityMap][$hours += 1]]@@
+		<</replace>>
+		<</link>>@@<br>
+	<</if>>
+	<<if $isBraStolen eq 1>>
+		@@.usebtn;<<link "Grab your bra">><<replace "#exhaustionGrab">>
+			<<include "FindStolenBra">>
+			<<include "LostClothes">>
+			<<run setup.HauntedHouses.clearStolenClothesFlag()>>
+			@@.mc-action; You snatch your bra and stumble for the exit. The rest stays behind.@@<br>
+			@@.movebtn;[[Drag yourself home|CityMap][$hours += 1]]@@
+		<</replace>>
+		<</link>>@@<br>
+	<</if>>
+	@@.usebtn;<<link "Leave with nothing">><<replace "#exhaustionGrab">>
+		<<include "LostClothes">>
+		<<run setup.HauntedHouses.clearStolenClothesFlag()>>
+		@@.mc-action; You can't even manage that. You stagger for the door empty-handed.@@<br>
+		@@.movebtn;[[Drag yourself home|CityMap][$hours += 1]]@@
+	<</replace>>
+	<</link>>@@<br>
+	</span>
+<<else>>
+	@@.movebtn;[[Drag yourself home|CityMap][$hours += 1]]@@<br>
+<</if>>
+<<done>>
+	<<addclass ".linkselector" "disabled-link">>
+<</done>>

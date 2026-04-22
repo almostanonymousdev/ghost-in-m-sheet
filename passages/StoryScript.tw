@@ -1209,6 +1209,16 @@ setup.HauntConditions = (function () {
     var BAIT_LUST_COST      = 20;
     var BAIT_STEPS          = 3;    // nav ticks the ghost is pinned to you
 
+    /* Energy as the pacing gate: every nav tick inside a haunted house
+     * burns ENERGY_PER_STEP, capping the total room-search budget per
+     * contract. Spendable actions (press-through, bait, pray) charge
+     * their own energy on top of their named cost. Energy at 0 kicks the
+     * player out via HuntOverExhaustion. */
+    var ENERGY_PER_STEP    = 0.25;
+    var ENERGY_COST_PRESS  = 0.5;
+    var ENERGY_COST_BAIT   = 1;
+    var ENERGY_COST_PRAY   = 1;
+
     var passageBgIndex = null;
     function bgIndex() {
         if (!passageBgIndex) {
@@ -1253,6 +1263,7 @@ setup.HauntConditions = (function () {
      * array used by the HUD widget to show "why". */
     function snapshot() {
         var V = State.variables;
+        var inHouse = !!(setup.HauntedHouses && setup.HauntedHouses.isInsideHouse && setup.HauntedHouses.isInsideHouse());
         var snap = {
             dark:              false,
             clothing:          clothingState(),
@@ -1261,6 +1272,7 @@ setup.HauntConditions = (function () {
             baitStepsRemain:   V.baitStepsRemain || 0,
             sanityPerStep:     0,
             lustPerStep:       0,
+            energyPerStep:     inHouse ? -ENERGY_PER_STEP : 0,
             corruptionPending: 0,
             timeLabel:         "paused",
             huntChanceBonus:   0,
@@ -1343,8 +1355,10 @@ setup.HauntConditions = (function () {
 
     /* Apply per-nav-step effects. Called from includeTimeEvent* widgets so
      * tool-tick spam doesn't double-charge stats. Mutates mc.sanity /
-     * mc.lust, accrues tempCorr, and decrements bait counter when active.
-     * Corresponding meters (sanity/lust) are refreshed by the caller. */
+     * mc.lust / mc.energy, accrues tempCorr, decrements bait counter, and
+     * sets V.exhausted when energy bottoms out so the includeTimeEvent
+     * widget can route to HuntOverExhaustion. Corresponding meters
+     * (sanity / energy) are refreshed by the caller. */
     function applyTickEffects() {
         var V = State.variables;
         var mc = V.mc;
@@ -1361,6 +1375,14 @@ setup.HauntConditions = (function () {
             if (mc.lust < 0)   mc.lust = 0;
             if (mc.lust > 100) mc.lust = 100;
         }
+        if (snap.energyPerStep !== 0) {
+            mc.energy += snap.energyPerStep;
+            if (mc.energy <= 0) {
+                mc.energy = 0;
+                V.exhausted = 1;
+            }
+            if (mc.energy > (mc.energyMax || 10)) mc.energy = mc.energyMax;
+        }
         if (snap.corruptionPending !== 0) {
             V.tempCorr = (V.tempCorr || 0) + snap.corruptionPending;
         }
@@ -1373,16 +1395,35 @@ setup.HauntConditions = (function () {
         }
     }
 
-    /* Player-driven bait: spend lust, pin the ghost to the player's room
-     * for BAIT_STEPS nav ticks. Returns true when the spend fires. */
+    /* Spend ad-hoc energy for a player-driven action (press through, bait,
+     * pray). Returns true on success, false when not enough energy.
+     * Sets V.exhausted at zero so the next nav tick routes to exhaustion. */
+    function spendEnergy(amount) {
+        var V = State.variables;
+        var mc = V.mc;
+        if (!mc) return false;
+        if ((mc.energy || 0) < amount) return false;
+        mc.energy -= amount;
+        if (mc.energy <= 0) {
+            mc.energy = 0;
+            V.exhausted = 1;
+        }
+        return true;
+    }
+
+    /* Player-driven bait: spend lust + energy, pin the ghost to the
+     * player's room for BAIT_STEPS nav ticks. Returns true when the spend
+     * fires. Atomic — won't deduct lust unless the energy spend also clears. */
     function startBait() {
         var V = State.variables;
         var mc = V.mc;
         if (!mc || mc.lust < BAIT_LUST_COST) return false;
+        if ((mc.energy || 0) < ENERGY_COST_BAIT) return false;
         var bg = currentBgVar();
         if (!bg) return false;
         if (!V.hunt || !V.hunt.room) return false;
         mc.lust -= BAIT_LUST_COST;
+        spendEnergy(ENERGY_COST_BAIT);
         V.hunt.room.name = bg;
         V.baitActive = 1;
         V.baitStepsRemain = BAIT_STEPS;
@@ -1391,10 +1432,29 @@ setup.HauntConditions = (function () {
 
     function canBait() {
         var V = State.variables;
-        return !!(V.mc && V.mc.lust >= BAIT_LUST_COST
+        return !!(V.mc
+                  && V.mc.lust >= BAIT_LUST_COST
+                  && (V.mc.energy || 0) >= ENERGY_COST_BAIT
                   && V.hunt && V.hunt.room
                   && currentBgVar()
                   && V.baitActive !== 1);
+    }
+
+    /* Press-through (used by the notFound widget). Costs sanity AND
+     * energy; the widget already gates on sanity, this gates on energy. */
+    function canPressThrough() {
+        var V = State.variables;
+        return !!(V.mc
+                  && V.mc.sanity > 5
+                  && (V.mc.energy || 0) >= ENERGY_COST_PRESS);
+    }
+
+    /* Pray (used by GhostHuntEvent). Costs sanity AND energy. */
+    function canPray() {
+        var V = State.variables;
+        return !!(V.mc
+                  && V.mc.sanity > 10
+                  && (V.mc.energy || 0) >= ENERGY_COST_PRAY);
     }
 
     function toggleOverchargedTools() {
@@ -1404,12 +1464,14 @@ setup.HauntConditions = (function () {
     }
 
     /* Called from HuntEnd / HuntOverManual / HuntOverTime / HuntOverSanity
-     * to scrub hunt-only flags so the next contract starts clean. */
+     * /HuntOverExhaustion to scrub hunt-only flags so the next contract
+     * starts clean. */
     function resetHuntFlags() {
         var V = State.variables;
         V.baitActive       = 0;
         V.baitStepsRemain  = 0;
         V.overchargedTools = 0;
+        V.exhausted        = 0;
     }
 
     return {
@@ -1417,13 +1479,20 @@ setup.HauntConditions = (function () {
         LUST_FUEL_THRESHOLD: LUST_FUEL_THRESHOLD,
         BAIT_LUST_COST:      BAIT_LUST_COST,
         BAIT_STEPS:          BAIT_STEPS,
+        ENERGY_PER_STEP:     ENERGY_PER_STEP,
+        ENERGY_COST_PRESS:   ENERGY_COST_PRESS,
+        ENERGY_COST_BAIT:    ENERGY_COST_BAIT,
+        ENERGY_COST_PRAY:    ENERGY_COST_PRAY,
         currentBgVar:        currentBgVar,
         isCurrentRoomDark:   isCurrentRoomDark,
         clothingState:       clothingState,
         snapshot:            snapshot,
         applyTickEffects:    applyTickEffects,
+        spendEnergy:         spendEnergy,
         startBait:           startBait,
         canBait:             canBait,
+        canPray:             canPray,
+        canPressThrough:     canPressThrough,
         toggleOverchargedTools: toggleOverchargedTools,
         isOverchargedMode:      isOverchargedMode,
         resetHuntFlags:         resetHuntFlags

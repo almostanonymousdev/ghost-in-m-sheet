@@ -46,9 +46,11 @@ double-nest the wrapper class (which compounds its 80% font-size). */
 	<<set _hc to setup.HauntConditions.snapshot()>>
 	<<set _sanity to (_hc.sanityPerStep gt 0 ? "+" : "") + _hc.sanityPerStep>>
 	<<set _lust to (_hc.lustPerStep gt 0 ? "+" : "") + _hc.lustPerStep>>
+	<<set _energy to (_hc.energyPerStep gt 0 ? "+" : "") + _hc.energyPerStep>>
 	<<set _corrShown to Math.round(_hc.corruptionPending * 100) / 100>>
 	<<image "img/sanity.png" { class: "hunt-conditions-icon" }>> _sanity/step
 	· <<image "img/hearth.png" { class: "hunt-conditions-icon" }>> _lust/step
+	· <<image "img/energy.png" { class: "hunt-conditions-icon" }>> _energy/step
 	· <<image "img/corruption.png" { class: "hunt-conditions-icon" }>> <<= _corrShown>>/step
 	· Time <<= _hc.timeLabel>>
 	<<if _hc.toolChanceBonus gt 0 or _hc.toolWindowBonus gt 0 or _hc.huntChanceBonus gt 0>>
@@ -74,10 +76,15 @@ whole (which contains the action bar), so we only need the one
 <<widget "huntActionBar">>
 	<<if setup.HauntedHouses.isInsideHouse()>>
 		<<if setup.HauntConditions.canBait()>>
-			· @@.huntActionLink;<<link `"Bait ghost (−" + setup.HauntConditions.BAIT_LUST_COST + " lust)"`>>
+			· @@.huntActionLink;<<link `"Bait ghost (−" + setup.HauntConditions.BAIT_LUST_COST + " lust, −" + setup.HauntConditions.ENERGY_COST_BAIT + " energy)"`>>
 				<<run setup.HauntConditions.startBait()>>
 				<<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
-				<<replace ".hunt-conditions">><<huntConditions>><</replace>>
+				<<updatemeter 'energy' `$mc.energy / $mc.energyMax`>>
+				<<if $exhausted eq 1>>
+					<<goto "HuntOverExhaustion">>
+				<<else>>
+					<<replace ".hunt-conditions">><<huntConditions>><</replace>>
+				<</if>>
 			<</link>>@@
 		<<elseif setup.HauntConditions.snapshot().baitActive>>
 			· <span class="hunt-actions-note">Baiting: <<= setup.HauntConditions.snapshot().baitStepsRemain>> left</span>
@@ -268,21 +275,28 @@ non-enigma navigation link in the haunted houses does. */
 
 /* notFound -- args: message, [retryPassage].
    Canonical "I didn't find anything" block. When a retryPassage is passed
-   AND a hunt is active AND the player can afford 5 sanity, surfaces a
-   "Press through (−5 sanity)" link that re-runs the same check in place.
-   This is the sanity-as-currency axis: burn mental health to force a
-   second roll on a failed evidence attempt. */
+   AND a hunt is active AND the player can afford the press-through cost
+   (5 sanity + ENERGY_COST_PRESS energy via setup.HauntConditions), surfaces
+   a "Press through" link that re-runs the same check in place. Sanity-as-
+   currency + energy gate: burn mental health AND stamina to force a second
+   roll. The energy spend can also tip the player into HuntOverExhaustion. */
 <<widget "notFound">>
 	<<set _msg to _args[0]>>
 	<<set _retryPassage to (_args.length gt 1 ? _args[1] : "")>>
 	<div class="notFound-container">
 	<div class="mc-thoughts">_msg</div>
-	<<if _retryPassage neq "" and setup.HauntedHouses.isInsideHouse() and $mc.sanity gt 5>>
+	<<if _retryPassage neq "" and setup.HauntConditions.canPressThrough()>>
 		<<capture _retryPassage>>
-			@@.pressThroughLink;<<linkreplace "Press through (−5 sanity)">>
+			@@.pressThroughLink;<<linkreplace `"Press through (−5 sanity, −" + setup.HauntConditions.ENERGY_COST_PRESS + " energy)"`>>
 				<<set $mc.sanity -= 5>>
+				<<run setup.HauntConditions.spendEnergy(setup.HauntConditions.ENERGY_COST_PRESS)>>
 				<<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
-				<<include _retryPassage>>
+				<<updatemeter 'energy' `$mc.energy / $mc.energyMax`>>
+				<<if $exhausted eq 1>>
+					<<goto "HuntOverExhaustion">>
+				<<else>>
+					<<include _retryPassage>>
+				<</if>>
 			<</linkreplace>>@@
 		<</capture>>
 	<</if>>
