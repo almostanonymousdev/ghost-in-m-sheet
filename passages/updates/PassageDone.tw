@@ -801,18 +801,6 @@
 <<include "Update2">>
 <</if>>
 
-<<if ndef $addedBrook>>
-<<include "BrookInit">>
-<</if>>
-
-<<if ndef $addedAlice>>
-<<include "AliceInit">>
-<</if>>
-
-<<if ndef $addedBlake>>
-<<include "BlakeInit">>
-<</if>>
-
 <<if $brook.lvl lt 5>>
 <<if $brook.exp >= $brook.expForNextLvl>>
     <<set $brook.exp -= $brook.expForNextLvl>>

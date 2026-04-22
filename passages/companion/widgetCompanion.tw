@@ -18,11 +18,13 @@
 <</widget>>
 
 <<widget "sanityPills">>
-	<<linkreplace "@@.usebtn; Give her the sanity pills.@@">>
+	<<set _ac to setup.Companion.active()>>
+	<<set _obj to _ac ? _ac.pronObj : "her">>
+	<<linkreplace `"@@.usebtn; Give " + _obj + " the sanity pills.@@"`>>
 		<<if not setup.Companion.hasSanityPills()>>
 			@@.mc-thoughts; I don't have those pills.@@
 		<<elseif not setup.Companion.companionNeedsSanity()>>
-			@@.mc-thoughts; She doesn't need the pills right now.@@
+			@@.mc-thoughts; I don't think that's needed right now.@@
 		<<else>>
 			@@.mc-speech; I want you to take these sanity pills. Don't worry, they will help you.@@<br>
 			@@.notmc-speech; Thank you, I feel a bit better.@@<br>
@@ -45,3 +47,4 @@
 		<<set _comp.exp += _expAmount>>
 	<</if>>
 <</widget>>
+

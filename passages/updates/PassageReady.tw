@@ -114,7 +114,3 @@
 <<if ndef $tentaclesEventStageSleep>>
 <<set $tentaclesEventStageSleep to 0>>
 <</if>>
-
-<<if ndef $addedTransInit>>
-<<include "TransformationInit">>
-<</if>>
