@@ -332,13 +332,47 @@ test.describe('indentation', () => {
     const stack = [];      // { name, indent, line }
     const violations = [];
     let insideHtmlStyle = false;
+    let insideBlockComment = false;
 
     for (let i = 0; i < lines.length; i++) {
-      const raw   = lines[i];
-      const trimmed = raw.trim();
+      const raw = lines[i];
+
+      // Blank out `/* … */` block comments (across lines) and `// …`
+      // trailing comments so `<<link>>`/`<<if>>` mentions inside a
+      // descriptive comment don't register as real block-macro opens.
+      // Replacing with spaces preserves column positions so indent /
+      // leading-whitespace checks still line up.
+      let working = raw;
+      if (insideBlockComment) {
+        const end = working.indexOf('*/');
+        if (end === -1) continue;
+        working = ' '.repeat(end + 2) + working.slice(end + 2);
+        insideBlockComment = false;
+      }
+      for (;;) {
+        const start = working.indexOf('/*');
+        if (start === -1) break;
+        const end = working.indexOf('*/', start + 2);
+        if (end === -1) {
+          working = working.slice(0, start)
+            + ' '.repeat(working.length - start);
+          insideBlockComment = true;
+          break;
+        }
+        working = working.slice(0, start)
+          + ' '.repeat(end + 2 - start)
+          + working.slice(end + 2);
+      }
+      const lineComment = working.indexOf('//');
+      if (lineComment !== -1) {
+        working = working.slice(0, lineComment)
+          + ' '.repeat(working.length - lineComment);
+      }
+
+      const trimmed = working.trim();
       if (!trimmed) continue;
 
-      const indent  = leadingWS(raw);
+      const indent  = leadingWS(working);
       const absLine = passage.headerLine + 1 + i;
 
       // ── track <style>…</style> regions ────────────────────────

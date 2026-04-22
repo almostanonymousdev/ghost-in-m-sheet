@@ -10,7 +10,6 @@
 	<<if _hc>>
 		<div class="housecard">
 		<<image _hc.image "iconPx">>
-		<<nobr>>
 			<<if $mc.lvl gte _hc.levelGate>>
 				<<capture _hc>>
 					@@.icontext;<<link _hc.streetPassage _hc.streetPassage>>
@@ -26,7 +25,6 @@
 				<<set _hcGate to _hc.levelGate>>
 				@@.mc-thoughts; Level _hcGate+ required@@
 			<</if>>
-		<</nobr>>
 		</div>
 	<</if>>
 <</widget>>
@@ -70,16 +68,17 @@
 	<</if>>
 <</widget>>
 
-/* companionStreetTalk -- arg-less. The "@@.usebtn; [[Talk to her|XMain]]"
-   block that Owaissa_Street / Elm_Street used to inline for each of the
-   six companion names. Pulls the passage name from setup.Companion. */
+/* companionStreetTalk -- arg-less. The "@@.usebtn; Talk to her"
+   link that Owaissa_Street / Elm_Street used to inline for each of
+   the six companion names. Pulls the objective pronoun off the
+   active companion catalogue entry and routes to the shared
+   CompanionMain passage. */
 <<widget "companionStreetTalk">>
-	<<set _talkPassage to setup.Companion.mainPassageForActive()>>
-	<<set _talkPronoun to setup.Companion.isTransCompanion() ? "him" : "her">>
-	<<if _talkPassage>>
-		<<capture _talkPassage, _talkPronoun>>
-			@@.usebtn;<<link `"Talk to " + _talkPronoun` _talkPassage>>
-			<</link>>@@<br>
-		<</capture>>
+	<<set _ac to setup.Companion.active()>>
+	<<if _ac>>
+		@@.usebtn;
+			<<link `"Talk to " + _ac.pronObj` "CompanionMain">>
+			<</link>>
+		@@<br>
 	<</if>>
 <</widget>>
