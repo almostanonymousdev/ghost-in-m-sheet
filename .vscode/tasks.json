@@ -152,6 +152,19 @@
       "detail": "Build with placeholder assets and open ghost-in-msheet.html with SugarCube debug mode"
     },
     {
+      "label": "Debug with Assets in Browser",
+      "type": "shell",
+      "command": "./start.sh",
+      "args": ["debug", "assets"],
+      "windows": {
+        "command": ".\\start.bat",
+        "args": ["debug", "assets"]
+      },
+      "group": "test",
+      "problemMatcher": [],
+      "detail": "Build with the real assets folder and open ghost-in-msheet.html with SugarCube debug mode"
+    },
+    {
       "label": "Clean Build Artifacts",
       "type": "shell",
       "command": "rm",

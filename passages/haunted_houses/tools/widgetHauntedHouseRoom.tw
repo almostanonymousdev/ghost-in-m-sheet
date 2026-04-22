@@ -32,15 +32,16 @@ entirely for rooms with no furniture (e.g. enigma). */
 	<div class="furnitureSearch"><<= _contents>></div>
 <</widget>>
 
-/* huntConditions -- single-row HUD above the tool bar showing the live
-rate at which each hunt-relevant stat is moving. Numbers come from
-setup.HauntConditions.snapshot() so the HUD, the tool-card hovertip, and
-the actual tool/hunt rolls all read the same source. Each axis (darkness,
-clothing, lust, overcharged tools, bait) drops a badge into contributors[]
-so the HUD auto-renders a "why" chip without hardcoding per-axis branches.
-Renders contents only -- the .hunt-conditions wrapper lives on roomFooter
-so re-renders via <<replace ".hunt-conditions">> don't double-nest the
-wrapper class (which compounds its 80% font-size). */
+/* huntConditions -- single-row HUD above the tool bar. Renders the live
+per-step deltas, contributor chips, and the spendable-action buttons
+(bait the ghost, toggle overcharged tools) on ONE row. Originally the
+buttons were on a second row, but adding a row to the height-capped
+.footer column stole vertical space from the tool bar and shrank icons.
+Numbers come from setup.HauntConditions.snapshot() so the HUD, the
+tool-card hovertip, and the actual tool/hunt rolls all read the same
+source. Renders contents only -- the .hunt-conditions wrapper lives on
+roomFooter so re-renders via <<replace ".hunt-conditions">> don't
+double-nest the wrapper class (which compounds its 80% font-size). */
 <<widget "huntConditions">>
 	<<set _hc to setup.HauntConditions.snapshot()>>
 	<<set _sanity to (_hc.sanityPerStep gt 0 ? "+" : "") + _hc.sanityPerStep>>
@@ -62,38 +63,35 @@ wrapper class (which compounds its 80% font-size). */
 			· <span @style="'color:' + _c.color + ';font-weight:bold;'" @title="_c.detail">[<<= _c.label>>]</span>
 		<</capture>>
 	<</for>>
+	<<huntActionBar>>
 <</widget>>
 
-/* huntActionBar -- spendable-resource buttons surfaced during a hunt.
-Bait the ghost (lust spend) and toggle overcharged tools on/off. Renders
-contents only; the .hunt-actions wrapper lives on roomFooter so re-renders
-via <<replace ".hunt-actions">> don't double-nest the wrapper class (which
-compounds its 80% font-size). The buttons key off setup.HauntConditions
-and only render in-house. */
+/* huntActionBar -- spendable-resource action buttons rendered inline at
+the end of <<huntConditions>>: bait the ghost (lust spend) and toggle
+overcharged tools on/off. Each click re-renders <<huntConditions>> as a
+whole (which contains the action bar), so we only need the one
+<<replace ".hunt-conditions">> per callback. Only renders in-house. */
 <<widget "huntActionBar">>
 	<<if setup.HauntedHouses.isInsideHouse()>>
 		<<if setup.HauntConditions.canBait()>>
-			<<link `"Bait ghost (−" + setup.HauntConditions.BAIT_LUST_COST + " lust)"`>>
+			· @@.huntActionLink;<<link `"Bait ghost (−" + setup.HauntConditions.BAIT_LUST_COST + " lust)"`>>
 				<<run setup.HauntConditions.startBait()>>
 				<<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
-				<<replace ".hunt-actions">><<huntActionBar>><</replace>>
 				<<replace ".hunt-conditions">><<huntConditions>><</replace>>
-			<</link>>
+			<</link>>@@
 		<<elseif setup.HauntConditions.snapshot().baitActive>>
-			<span class="hunt-actions-note">Baiting: <<= setup.HauntConditions.snapshot().baitStepsRemain>> left</span>
+			· <span class="hunt-actions-note">Baiting: <<= setup.HauntConditions.snapshot().baitStepsRemain>> left</span>
 		<</if>>
 		<<if setup.HauntConditions.isOverchargedMode()>>
-			<<link "Tools: Overcharged (click to revert)">>
+			· @@.huntActionLink;<<link "Tools: Overcharged (revert)">>
 				<<run setup.HauntConditions.toggleOverchargedTools()>>
-				<<replace ".hunt-actions">><<huntActionBar>><</replace>>
 				<<replace ".hunt-conditions">><<huntConditions>><</replace>>
-			<</link>>
+			<</link>>@@
 		<<else>>
-			<<link "Tools: Standard (click to overcharge)">>
+			· @@.huntActionLink;<<link "Tools: Standard (overcharge)">>
 				<<run setup.HauntConditions.toggleOverchargedTools()>>
-				<<replace ".hunt-actions">><<huntActionBar>><</replace>>
 				<<replace ".hunt-conditions">><<huntConditions>><</replace>>
-			<</link>>
+			<</link>>@@
 		<</if>>
 	<</if>>
 <</widget>>
@@ -108,7 +106,6 @@ based on _shellVariant. */
 <<widget "roomFooter" container>>
 	<div class="footer">
 	<div class="hunt-conditions"><<huntConditions>></div>
-	<div class="hunt-actions"><<huntActionBar>></div>
 	<div class="footer-row">
 	<div class="footertools">
 	<<if _shellVariant eq "basic">>
