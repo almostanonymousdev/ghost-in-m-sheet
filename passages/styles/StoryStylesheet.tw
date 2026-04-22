@@ -367,16 +367,27 @@ body.city {
  * Originally the hovertip wrapper got a fixed calc(100%/7) share while
  * the bare .footer-card siblings (companion, light) used flex: 0 1 auto
  * and shrank to half-width when both were present. Switching to
- * `flex: 1 1 0` on every direct child makes the row auto-distribute
- * width to N equal slots without us hardcoding N. The hovertip macro
- * inserts a span.hoverTipTxt between .footertools and the .footer-card
- * for tool slots, so the same rule has to apply to that wrapper too. */
-.footertools > .hoverTipTxt,
-.footertools > .footer-card {
+ * `flex: 1 1 0` on every "slot" makes the row auto-distribute width to
+ * N equal slots without us hardcoding N. The hovertip macro inserts a
+ * span.hoverTipTxt between .footertools and the .footer-card for tool
+ * slots, so the same rule has to apply to that wrapper too.
+ *
+ * Descendant selectors (no `>`) on purpose: SugarCube's debug build
+ * wraps every macro/widget invocation in <span class="debug">. The
+ * styles refactor on main makes those spans `display: contents` so
+ * they're layout-transparent, but CSS selector matching is purely
+ * DOM-based -- direct-child combinators do NOT see through them. The
+ * companion/light/tool cards are widget outputs, so in debug mode
+ * `.footertools > X` never matches; descendant selectors do. There are
+ * no nested .hoverTipTxt or .footer-card inside .footertools, so this
+ * is safe (.footer-card inside .hoverTipTxt does pick up the rule too,
+ * but its parent isn't flex so the extra `flex` declaration is inert). */
+.footertools .hoverTipTxt,
+.footertools .footer-card {
 	flex: 1 1 0;
 	min-width: 0;
 }
-.footertools > .hoverTipTxt > .footer-card {
+.footertools .hoverTipTxt .footer-card {
 	width: 100%;
 }
 .footeraction {
