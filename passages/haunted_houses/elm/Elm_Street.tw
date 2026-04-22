@@ -1,21 +1,4 @@
 :: Elm Street [nobr] {"position":"2050,450","size":"100,100"}
-<<run setup.Companion.clearCompanionSelection()>>
-<<image "img/elm-house.jpg" { width: "90%" }>><br>
-@@.location; Elm Street@@<br>
-@@.mc-thoughts;Elm Street - quite a creepy place. It must be teeming with ghosts. Although, because of such locations, I'll always have a job@@<br>
-<br>
-<<if setup.Companion.companionAtStreet()>>
-	You see $companion.name.
-
-	<<set _ac to setup.Companion.active()>>
-	@@.usebtn;
-		<<link `"Talk to " + _ac.pronObj` "CompanionMain">>
-		<</link>>
-	@@<br>
-<<else>>
-	@@.movebtn;[[Go inside|ElmHallway][$hunt.mode to setup.Ghosts.HuntMode.ACTIVE]]@@<br>
-<</if>>
-<br>
-<br>
-<<if setup.Ghosts.isHunting()>><span class="movebtn">[[End the hunt|HuntOverManual][$hunt.mode to setup.Ghosts.HuntMode.POSSESSED]]</span><<else>>
-<</if>>
+<<huntHouseStreet "elm" "Elm Street"
+"Elm Street - quite a creepy place. It must be teeming with ghosts. Although, because of such locations, I'll always have a job">>
+<</huntHouseStreet>>
