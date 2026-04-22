@@ -1,19 +1,15 @@
 :: StyleRescueMap
+<<bodyBackground "assets/rescue/house/rescue-map.jpg">>
 <style>
-	body {
-    background-image: url('assets/rescue/house/rescue-map.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-}
 .iconRescuePx {
 	width: 80px;
-    height: auto;
+	height: auto;
 	border-radius: 30%;
 }
 .rescuehousecard {
 	display: flex;
-    flex-direction: column;
-    align-items: center;
+	flex-direction: column;
+	align-items: center;
 }
 .cheatRescueHighlight {
 	outline: 3px solid #ff3b3b;

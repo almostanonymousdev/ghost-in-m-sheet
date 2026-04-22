@@ -23,4 +23,4 @@
 <br>
 @@.backbtn;[[Leave|Mall]] @@<br>
 <</nobr>>
-<<include "StyleMallGeneral">>
+<<bodyBackground "assets/img/general-section.jpg">>

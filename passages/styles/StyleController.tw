@@ -1,0 +1,135 @@
+:: StyleController [script]
+/*
+ * Centralized room background data and helpers.
+ *
+ * Before this controller existed, the same per-room facts were
+ * repeated in five places: the CSS classes in StoryStylesheet.tw,
+ * the inline <style> blocks in widgetIncludeStyles.tw (twice: one
+ * chain for previous(), one for previous(2)), the standalone
+ * Style* passages in enigmaRoomBackgrounds.tw, and the
+ * <<addclass>>/<<removeclass>> switch in LightPassageManual.tw.
+ *
+ * Every widget / passage that needs a room's light/dark asset,
+ * body class, or "is this room currently dark?" flag now reads
+ * from setup.Styles. Adding a new room means one entry here.
+ */
+setup.Styles = (function () {
+	// stateKey:   State.variables[stateKey].background — 1 light, 2 dark
+	// light/dark: background-image URLs for each state
+	// cls:        base class name; "Light"/"Dark" is appended
+	var rooms = {
+		// --- Owaissa ---------------------------------------------
+		OwaissaKitchen:    { stateKey: 'kitchen',    light: 'assets/room/kitchen.jpg',    dark: 'assets/room/kitchen-dark.jpg',    cls: 'owaissaKitchen' },
+		OwaissaHallway:    { stateKey: 'hallway',    light: 'assets/room/hallway.jpg',    dark: 'assets/room/hallway-dark.jpg',    cls: 'owaissaHallway' },
+		OwaissaBathroom:   { stateKey: 'bathroom',   light: 'assets/room/bathroom.jpg',   dark: 'assets/room/bathroom-dark.jpg',   cls: 'owaissaBathroom' },
+		OwaissaBedroom:    { stateKey: 'bedroom',    light: 'assets/room/bedroom.jpg',    dark: 'assets/room/bedroom-dark.jpg',    cls: 'owaissaBedroom' },
+		OwaissaLivingroom: { stateKey: 'livingroom', light: 'assets/room/livingroom.jpg', dark: 'assets/room/livingroom-dark.jpg', cls: 'owaissaLivingroom' },
+
+		// --- Elm -------------------------------------------------
+		ElmBasement:        { stateKey: 'basement',        light: 'assets/room/elm/basement.jpg',  dark: 'assets/room/elm/basement-dark.jpg',  cls: 'elmBasement' },
+		ElmKitchen:         { stateKey: 'kitchen',         light: 'assets/room/elm/kitchen.jpg',   dark: 'assets/room/elm/kitchen-dark.jpg',   cls: 'elmKitchen' },
+		ElmBathroom:        { stateKey: 'bathroom',        light: 'assets/room/elm/bathroom.jpg',  dark: 'assets/room/elm/bathroom-dark.jpg',  cls: 'elmBathroom' },
+		ElmBathroomTwo:     { stateKey: 'bathroomTwo',     light: 'assets/room/elm/bathroom1.jpg', dark: 'assets/room/elm/bathroom1-dark.jpg', cls: 'elmBathroomTwo' },
+		ElmBedroom:         { stateKey: 'bedroom',         light: 'assets/room/elm/bedroom.jpg',   dark: 'assets/room/elm/bedroom-dark.jpg',   cls: 'elmBedroom' },
+		ElmBedroomTwo:      { stateKey: 'bedroomTwo',      light: 'assets/room/elm/bedroom1.jpg',  dark: 'assets/room/elm/bedroom1-dark.jpg',  cls: 'elmBedroomTwo' },
+		ElmNursery:         { stateKey: 'nursery',         light: 'assets/room/elm/nursery.jpg',   dark: 'assets/room/elm/nursery-dark.jpg',   cls: 'elmNursery' },
+		ElmHallway:         { stateKey: 'hallway',         light: 'assets/room/elm/hallway.jpg',   dark: 'assets/room/elm/hallway-dark.jpg',   cls: 'elmHallway' },
+		ElmHallwayUpstairs: { stateKey: 'hallwayUpstairs', light: 'assets/room/elm/hallway1.jpg',  dark: 'assets/room/elm/hallway1-dark.jpg',  cls: 'elmHallwayTwo' },
+
+		// --- Enigma ----------------------------------------------
+		EnigmaBasement:   { stateKey: 'basement',   light: 'assets/room/enigma/basement.jpg',   dark: 'assets/room/enigma/basement-dark.jpg',   cls: 'enigmaBasement' },
+		EnigmaKitchen:    { stateKey: 'kitchen',    light: 'assets/room/enigma/kitchen.jpg',    dark: 'assets/room/enigma/kitchen-dark.jpg',    cls: 'enigmaKitchen' },
+		EnigmaBathroom:   { stateKey: 'bathroom',   light: 'assets/room/enigma/bathroom.jpg',   dark: 'assets/room/enigma/bathroom-dark.jpg',   cls: 'enigmaBathroom' },
+		EnigmaLivingroom: { stateKey: 'livingroom', light: 'assets/room/enigma/livingroom.jpg', dark: 'assets/room/enigma/livingroom-dark.jpg', cls: 'enigmaLivingroom' },
+		EnigmaBedroom:    { stateKey: 'bedroom',    light: 'assets/room/enigma/bedroom.jpg',    dark: 'assets/room/enigma/bedroom-dark.jpg',    cls: 'enigmaBedroom' },
+		EnigmaRoomA:      { stateKey: 'roomA',      light: 'assets/room/enigma/room-a.jpg',     dark: 'assets/room/enigma/room-a-dark.jpg',     cls: 'enigmaRoomA' },
+		EnigmaRoomB:      { stateKey: 'roomB',      light: 'assets/room/enigma/room-b.jpg',     dark: 'assets/room/enigma/room-b-dark.jpg',     cls: 'enigmaRoomB' },
+		EnigmaRoomC:      { stateKey: 'roomC',      light: 'assets/room/enigma/room-c.jpg',     dark: 'assets/room/enigma/room-c-dark.jpg',     cls: 'enigmaRoomC' },
+		EnigmaHallway:    { stateKey: 'hallway',    light: 'assets/room/enigma/hallway.jpg',    dark: 'assets/room/enigma/hallway-dark.jpg',    cls: 'enigmaHallway' },
+
+		// --- Ironclad --------------------------------------------
+		IroncladReception:   { stateKey: 'reception',   light: 'assets/room/ironclad/reception.webp',     dark: 'assets/room/ironclad/reception-dark.webp',     cls: 'IroncladReception' },
+		IroncladKitchen:     { stateKey: 'kitchen',     light: 'assets/room/ironclad/kitchen.webp',       dark: 'assets/room/ironclad/kitchen-dark.webp',       cls: 'IroncladKitchen' },
+		IroncladHallway:     { stateKey: 'hallway',     light: 'assets/room/ironclad/entrance.webp',      dark: 'assets/room/ironclad/entrance-dark.webp',      cls: 'IroncladHallway' },
+		IroncladBlockA:      { stateKey: 'BlockA',      light: 'assets/room/ironclad/block-a.webp',       dark: 'assets/room/ironclad/block-a-dark.webp',       cls: 'IroncladBlockA' },
+		IroncladBlockB:      { stateKey: 'BlockB',      light: 'assets/room/ironclad/block-b.webp',       dark: 'assets/room/ironclad/block-b-dark.webp',       cls: 'IroncladBlockB' },
+		IroncladBlockACellA: { stateKey: 'BlockACellA', light: 'assets/room/ironclad/block-a-cell-a.webp', dark: 'assets/room/ironclad/block-a-cell-a-dark.webp', cls: 'IroncladBlockACellA' },
+		IroncladBlockACellB: { stateKey: 'BlockACellB', light: 'assets/room/ironclad/block-a-cell-b.webp', dark: 'assets/room/ironclad/block-a-cell-b-dark.webp', cls: 'IroncladBlockACellB' },
+		IroncladBlockACellC: { stateKey: 'BlockACellC', light: 'assets/room/ironclad/block-a-cell-c.webp', dark: 'assets/room/ironclad/block-a-cell-c-dark.webp', cls: 'IroncladBlockACellC' },
+		IroncladBlockBCellA: { stateKey: 'BlockBCellA', light: 'assets/room/ironclad/block-b-cell-a.webp', dark: 'assets/room/ironclad/block-b-cell-a-dark.webp', cls: 'IroncladBlockBCellA' },
+		IroncladBlockBCellB: { stateKey: 'BlockBCellB', light: 'assets/room/ironclad/block-b-cell-b.webp', dark: 'assets/room/ironclad/block-b-cell-b-dark.webp', cls: 'IroncladBlockBCellB' },
+		IroncladBlockBCellC: { stateKey: 'BlockBCellC', light: 'assets/room/ironclad/block-b-cell-c.webp', dark: 'assets/room/ironclad/block-b-cell-c-dark.webp', cls: 'IroncladBlockBCellC' }
+	};
+
+	function roomOf(passageName) {
+		return rooms[passageName] || null;
+	}
+
+	function isDark(passageName) {
+		var r = rooms[passageName];
+		if (!r) return false;
+		var s = State.variables[r.stateKey];
+		return !!(s && s.background === 2);
+	}
+
+	return {
+		rooms: rooms,
+		roomOf: roomOf,
+		isDarkRoom: isDark,
+
+		/*
+		 * Background image URL for the given room passage,
+		 * resolved against the current light/dark state.
+		 */
+		bgUrl: function (passageName) {
+			var r = rooms[passageName];
+			if (!r) return null;
+			return isDark(passageName) ? r.dark : r.light;
+		},
+
+		/*
+		 * Current body class ("owaissaKitchenLight" / "…Dark"),
+		 * paired with the class that should be removed.
+		 */
+		classesFor: function (passageName) {
+			var r = rooms[passageName];
+			if (!r) return null;
+			var dark = isDark(passageName);
+			return {
+				add:    r.cls + (dark ? 'Dark'  : 'Light'),
+				remove: r.cls + (dark ? 'Light' : 'Dark')
+			};
+		},
+
+		/*
+		 * Shared shorthand for the inline body-background style
+		 * block that the include* widgets write. Centralised here
+		 * so the CSS can be tweaked in one place.
+		 */
+		bodyBackgroundCss: function (url) {
+			return "body {"
+				+ "background-image: url('" + url + "');"
+				+ "background-size: cover;"
+				+ "background-repeat: no-repeat;"
+				+ "background-position: center;"
+				+ "height: 100vh;"
+				+ "}";
+		},
+
+		/*
+		 * If the current passage is a known hunt room AND the room
+		 * is currently lit (background === 1), flip it dark and
+		 * return the passage name so the caller can <<goto>> itself.
+		 * Returns null when no change is made.
+		 */
+		turnOffLightHere: function () {
+			var p = passage();
+			var r = rooms[p];
+			if (!r) return null;
+			var s = State.variables[r.stateKey];
+			if (!s || s.background !== 1) return null;
+			s.background = 2;
+			return p;
+		}
+	};
+})();

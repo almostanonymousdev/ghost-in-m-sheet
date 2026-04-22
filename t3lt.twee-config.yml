@@ -101,19 +101,31 @@ sugarcube-2:
         cursed hunt ($cursedHuntActive eq 1).
     includeStyle:
       name: includeStyle
-      description: Injects CSS background-image for the current room based on
-        previous() and the room's $*.background variable. Covers all rooms in
-        the Owaissa and Elm Street haunted houses.
+      description: Injects a body background-image <style> block for the room
+        in previous(), resolving light/dark via setup.Styles. No args.
     includeStyle2:
       name: includeStyle2
-      description: Extended version of <<includeStyle>> covering additional rooms and
-        background variants. Injects CSS for the current room based on passage
-        context and background variables.
+      description: Variant of <<includeStyle>> for passages reached via an
+        intermediate FurnitureSearch; uses previous(2) as the room. No args.
     includeStyleEventMC:
       name: includeStyleEventMC
       description: "Applies a CSS filter (brightness/contrast/grayscale) to the
-        #eventVideo element, used during MC-focused events to create a stylised
-        visual effect."
+        #eventVideo element when coming from a dark room via FurnitureSearch."
+    bodyBackground:
+      name: bodyBackground
+      description: "Emits a <style> block setting body.background-image to the
+        given URL, with shared cover/no-repeat/center defaults. Args: url
+        (string)."
+    roomBackground:
+      name: roomBackground
+      description: "Emits a body-background <style> block for a named hunt room,
+        resolving the image via setup.Styles.bgUrl (light/dark aware). Silently
+        no-ops for unknown rooms. Args: passageName (string)."
+    applyRoomLightClass:
+      name: applyRoomLightClass
+      description: Adds the correct body class for the current passage's room
+        ("owaissaKitchenLight" / "…Dark") and removes the opposite variant.
+        No-op outside hunt rooms. No args.
     cthulionAbility:
       name: cthulionAbility
       description: "Sets _videoList to the video pool for a specific Cthulion ghost
