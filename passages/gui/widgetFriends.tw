@@ -26,60 +26,20 @@
 <</widget>>
 
 <<widget "companionLinks">>
-	<<if $companion.name eq "Brook">>
-		<a data-passage="BrookMain">
-		<<image "brook/brook.png" "companion-image">>
+	<<set _ac to setup.Companion.active()>>
+	<<if _ac>>
+		<a data-passage="CompanionMain">
+		<<image _ac.portraitPath() "companion-image">>
 		</a>
-	<<elseif $companion.name eq "Alice">>
-		<a data-passage="AliceMain">
-		<<image "alice/alice.png" "companion-image">>
-		</a>
-	<<elseif $companion.name eq "Blake">>
-		<a data-passage="BlakeMain">
-		<<image "blake/blake.png" "companion-image">>
-		</a>
-	<<elseif $companion.name eq "Alex">>
-		<a data-passage="AlexMain">
-		<<image "trans/" + $transPicture+`.jpg` "companion-image">>
-		</a>
-	<<elseif $companion.name eq "Taylor">>
-		<a data-passage="TaylorMain">
-		<<image "trans/" + $transPicture+`.jpg` "companion-image">>
-		</a>
-	<<elseif $companion.name eq "Casey">>
-		<a data-passage="CaseyMain">
-		<<image "trans/" + $transPicture+`.jpg` "companion-image">>
-		</a>
-
 	<</if>>
 <</widget>>
 
 <<widget "companionLinksSuccess">>
-	<<if $companion.name eq "Brook">>
+	<<set _ac to setup.Companion.active()>>
+	<<if _ac>>
 		<a data-passage="CompanionSucceeded">
-		<<image "brook/brook.png" "companion-imageSucceeded">>
+		<<image _ac.portraitPath() "companion-imageSucceeded">>
 		</a>
-	<<elseif $companion.name eq "Alice">>
-		<a data-passage="CompanionSucceeded">
-		<<image "alice/alice.png" "companion-imageSucceeded">>
-		</a>
-	<<elseif $companion.name eq "Blake">>
-		<a data-passage="CompanionSucceeded">
-		<<image "blake/blake.png" "companion-imageSucceeded">>
-		</a>
-	<<elseif $companion.name eq "Alex">>
-		<a data-passage="CompanionSucceeded">
-		<<image "trans/" + $transPicture+`.jpg` "companion-imageSucceeded">>
-		</a>
-	<<elseif $companion.name eq "Taylor">>
-		<a data-passage="CompanionSucceeded">
-		<<image "trans/" + $transPicture+`.jpg` "companion-imageSucceeded">>
-		</a>
-	<<elseif $companion.name eq "Casey">>
-		<a data-passage="CompanionSucceeded">
-		<<image "trans/" + $transPicture+`.jpg` "companion-imageSucceeded">>
-		</a>
-
 	<</if>>
 <</widget>>
 
