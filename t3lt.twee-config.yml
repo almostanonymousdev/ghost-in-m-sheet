@@ -295,9 +295,15 @@ sugarcube-2:
     huntConditions:
       name: huntConditions
       description: "Renders the hunt HUD row above the tool bar showing the live
-        per-minute deltas for sanity, lust, corruption (and whether time is
-        advancing). Currently all zeros pending the haunt-mechanics rework. No
-        args."
+        per-step deltas for sanity, lust, corruption (and whether time is
+        advancing), plus a coloured badge for every active contributor
+        (darkness, clothing state, lust-as-fuel, risky tools, bait). Reads
+        setup.HauntConditions.snapshot(). No args."
+    huntActionBar:
+      name: huntActionBar
+      description: "Renders the spendable-resource buttons surfaced during a hunt:
+        bait the ghost (lust spend), toggle risky tools on/off. Only renders
+        when a hunt is active (setup.HauntedHouses.isInsideHouse()). No args."
     navLink:
       name: navLink
       description: "Renders an @@.adaptiveLink;<<link>>...<</link>>@@ navigation link
@@ -389,7 +395,9 @@ sugarcube-2:
     notFound:
       name: notFound
       description: "Canonical 'I didn't find anything' block used by the
-        evidence-check tool passages. Args: message (string)."
+        evidence-check tool passages. Args: message (string), [retryPassage
+        (string; when passed and the player can afford 5 sanity, surfaces a
+        Press through (−5 sanity) link that re-runs that check passage)]."
     coloredText:
       name: coloredText
       description: "Wraps content in the evidence bold/stroke text span. Args: color

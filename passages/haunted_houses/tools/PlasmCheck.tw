@@ -12,5 +12,5 @@
 		@@.evidenceshadowtext; It seems I've found ectoplasm... Except somehow I managed to get myself completely covered in this mysterious substance. I don't even remember how it happened. Oh well, at least I've found another piece of evidence..@@<br>
 	<</if>>
 <<else>>
-	<<notFound "I didn't find any ectoplasm stains">>
+	<<notFound "I didn't find any ectoplasm stains" "PlasmCheck">>
 <</if>>

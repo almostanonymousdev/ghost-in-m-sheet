@@ -212,6 +212,9 @@ setup.HauntedHouses = (function () {
 		// --- Timed tool activations -----------------------------
 		resetToolTimers: function () {
 			setup.resetTools();
+			if (setup.HauntConditions && setup.HauntConditions.resetHuntFlags) {
+				setup.HauntConditions.resetHuntFlags();
+			}
 		},
 		resetEvidenceChecks: function () {
 			var s = State.variables;

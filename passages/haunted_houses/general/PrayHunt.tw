@@ -1,0 +1,20 @@
+:: PrayHunt [noreturn nobr] {"position":"2700,1100","size":"100,100"}
+/* Sanity-as-currency: spend 10 sanity to short-circuit the hunt without
+ * burning a crucifix. The ghost loses interest; treated like a clean
+ * escape (mark the event, reset the trigger timer, return to the room). */
+<<set $mc.sanity -= 10>>
+<<if $mc.sanity lt 1>>
+	<<set $mc.sanity to 1>>
+<</if>>
+<<image "img/crucifix.webp" { class: "displayCentredImgs", width: "60%" }>>
+<br>
+&emsp;&emsp;You squeeze your eyes shut and pour everything you have into a silent prayer. Your thoughts fracture; the air gets heavier; for a moment you can't tell which way is up. Then the footsteps fade, and the cold pressure on your neck lifts.
+<br><br>
+@@.backbtn;[[Continue|$return]]@@
+
+<<run setup.Ghosts.markActiveHuntEvent()>>
+<<set $huntActivated to 1>>
+<<set $huntActivationTime = $hours * 60 + $minutes>>
+<<done>>
+	<<addclass ".linkselector" "disabled-link">>
+<</done>>

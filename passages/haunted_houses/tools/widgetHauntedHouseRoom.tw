@@ -35,22 +35,66 @@ entirely for rooms with no furniture (e.g. enigma). */
 /* huntConditions -- single-row HUD above the tool bar showing the live
 rate at which each hunt-relevant stat is moving. Numbers come from
 setup.HauntConditions.snapshot() so the HUD, the tool-card hovertip, and
-the actual tool/hunt rolls all read the same source. Lights-off is the
-only axis wired today; clothing, lust, etc. plug in by extending the
-snapshot. */
+the actual tool/hunt rolls all read the same source. Each axis (darkness,
+clothing, lust, risky tools, bait) drops a badge into contributors[] so
+the HUD auto-renders a "why" chip without hardcoding per-axis branches. */
 <<widget "huntConditions">>
 	<<set _hc to setup.HauntConditions.snapshot()>>
 	<<set _sanity to (_hc.sanityPerStep gt 0 ? "+" : "") + _hc.sanityPerStep>>
 	<<set _lust to (_hc.lustPerStep gt 0 ? "+" : "") + _hc.lustPerStep>>
+	<<set _corrShown to Math.round(_hc.corruptionPending * 100) / 100>>
 	<div class="hunt-conditions">
 	<<image "img/sanity.png" { class: "hunt-conditions-icon" }>> _sanity/step
 	· <<image "img/hearth.png" { class: "hunt-conditions-icon" }>> _lust/step
-	· <<image "img/corruption.png" { class: "hunt-conditions-icon" }>> <<= _hc.corruptionPending>> pending
+	· <<image "img/corruption.png" { class: "hunt-conditions-icon" }>> <<= _corrShown>>/step
 	· Time <<= _hc.timeLabel>>
-	<<if _hc.dark>>
-		· @@color:#ff7777;font-weight:bold;Lights off: tools +<<= _hc.toolChanceBonus>>%, +<<= _hc.toolWindowBonus>>min · hunt +<<= _hc.huntChanceBonus>>%@@
+	<<if _hc.toolChanceBonus gt 0 or _hc.toolWindowBonus gt 0 or _hc.huntChanceBonus gt 0>>
+		· tools +<<= _hc.toolChanceBonus>>%
+		<<if _hc.toolWindowBonus gt 0>>
+			/+<<= _hc.toolWindowBonus>>min
+		<</if>>
+		· hunt +<<= _hc.huntChanceBonus>>%
 	<</if>>
+	<<for _c range _hc.contributors>>
+		<<capture _c>>
+			· <span @style="'color:' + _c.color + ';font-weight:bold;'" @title="_c.detail">[<<= _c.label>>]</span>
+		<</capture>>
+	<</for>>
 	</div>
+<</widget>>
+
+/* huntActionBar -- spendable-resource buttons surfaced during a hunt.
+Bait the ghost (lust spend), toggle risky tools on/off, and a mid-hunt
+sanity prayer that short-circuits the ghost without using a crucifix.
+The buttons key off setup.HauntConditions and only render in-house. */
+<<widget "huntActionBar">>
+	<<if setup.HauntedHouses.isInsideHouse()>>
+		<div class="hunt-actions">
+		<<if setup.HauntConditions.canBait()>>
+			<<link `"Bait ghost (−" + setup.HauntConditions.BAIT_LUST_COST + " lust)"`>>
+				<<run setup.HauntConditions.startBait()>>
+				<<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
+				<<replace ".hunt-actions">><<huntActionBar>><</replace>>
+				<<replace ".hunt-conditions">><<huntConditions>><</replace>>
+			<</link>>
+		<<elseif setup.HauntConditions.snapshot().baitActive>>
+			<span class="hunt-actions-note">Baiting: <<= setup.HauntConditions.snapshot().baitStepsRemain>> left</span>
+		<</if>>
+		<<if setup.HauntConditions.isRiskyMode()>>
+			<<link "Tools: Risky (click to disarm)">>
+				<<run setup.HauntConditions.toggleRiskyTools()>>
+				<<replace ".hunt-actions">><<huntActionBar>><</replace>>
+				<<replace ".hunt-conditions">><<huntConditions>><</replace>>
+			<</link>>
+		<<else>>
+			<<link "Tools: Safe (click to risk)">>
+				<<run setup.HauntConditions.toggleRiskyTools()>>
+				<<replace ".hunt-actions">><<huntActionBar>><</replace>>
+				<<replace ".hunt-conditions">><<huntConditions>><</replace>>
+			<</link>>
+		<</if>>
+		</div>
+	<</if>>
 <</widget>>
 
 /* roomFooter -- container widget. Reads the _shell* temp vars set by the
@@ -63,6 +107,7 @@ based on _shellVariant. */
 <<widget "roomFooter" container>>
 	<div class="footer">
 	<<huntConditions>>
+	<<huntActionBar>>
 	<div class="footer-row">
 	<div class="footertools">
 	<<if _shellVariant eq "basic">>
@@ -223,12 +268,27 @@ non-enigma navigation link in the haunted houses does. */
 	<<video _args[0] + _n + _args[3] "displayCentredImgs">>
 <</widget>>
 
-/* notFound -- args: message. Canonical "I didn't find anything" block used
-   by every evidence-check passage when the roll fails or the ghost isn't
-   in the current room. */
+/* notFound -- args: message, [retryPassage].
+   Canonical "I didn't find anything" block. When a retryPassage is passed
+   AND a hunt is active AND the player can afford 5 sanity, surfaces a
+   "Press through (−5 sanity)" link that re-runs the same check in place.
+   This is the sanity-as-currency axis: burn mental health to force a
+   second roll on a failed evidence attempt. */
 <<widget "notFound">>
 	<<set _msg to _args[0]>>
-	<div class="notFound-container"><div class="mc-thoughts">_msg</div></div>
+	<<set _retryPassage to (_args.length gt 1 ? _args[1] : "")>>
+	<div class="notFound-container">
+	<div class="mc-thoughts">_msg</div>
+	<<if _retryPassage neq "" and setup.HauntedHouses.isInsideHouse() and $mc.sanity gt 5>>
+		<<capture _retryPassage>>
+			@@.pressThroughLink;<<linkreplace "Press through (−5 sanity)">>
+				<<set $mc.sanity -= 5>>
+				<<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
+				<<include _retryPassage>>
+			<</linkreplace>>@@
+		<</capture>>
+	<</if>>
+	</div>
 <</widget>>
 
 /* coloredText -- args: color, content. Wraps content in the evidence

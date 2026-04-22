@@ -1191,20 +1191,23 @@ setup.hauntedPassages = (function () {
     });
 }());
 
-/* setup.HauntConditions -- single source of truth for the "lights-off risk"
- * mechanic and (eventually) the rest of the hunt-mechanics rework. Resolves
- * the player's current haunted-house room from the running passage, asks
- * whether the lights are off there, and exposes a snapshot of the deltas
- * and bonuses every consumer should agree on:
+/* setup.HauntConditions -- single source of truth for the hunt-mechanics
+ * rework. Resolves the player's current haunted-house room from the running
+ * passage, aggregates every axis (darkness, clothing, lust, risky tools,
+ * bait) into one snapshot, and exposes it to:
  *   - huntConditions HUD (per-step stat deltas above the tool bar)
  *   - setup.toolSuccessRate (hover tooltip on each tool card)
  *   - setup.chanceByTier / setup.toolTimeRemain (actual tool rolls)
  *   - CheckHuntStart (random-hunt threshold)
- *   - applyTickEffects (per-nav-step sanity drain)
- * Keep new lights-off knobs HERE so the HUD numbers and the underlying
- * mechanics never drift apart. */
+ *   - applyTickEffects (per-nav-step sanity/lust/corruption drain)
+ * Each axis pushes into contributors[] so the HUD can render a badge row
+ * alongside the aggregated numbers. Keep new knobs HERE so the HUD numbers
+ * and the underlying mechanics never drift apart. */
 setup.HauntConditions = (function () {
     var DARK = 2;
+    var LUST_FUEL_THRESHOLD = 50;   // passive evidence bonus when lust >= this
+    var BAIT_LUST_COST      = 20;
+    var BAIT_STEPS          = 3;    // nav ticks the ghost is pinned to you
 
     var passageBgIndex = null;
     function bgIndex() {
@@ -1228,41 +1231,202 @@ setup.HauntConditions = (function () {
         return !!(room && room.background === DARK);
     }
 
-    /* Effective deltas/bonuses for the current tick. All knobs gate on
-     * darkness today; future axes (clothing, lust) plug in here. */
+    /* Clothing buckets. Fully dressed = tshirt + any bottom. Topless = no
+     * tshirt but a bottom. Fully nude = no tshirt, no bottom, no panties. */
+    function clothingState() {
+        var V = State.variables;
+        var topOn    = V.tshirtState === "worn";
+        var bottomOn = V.jeansState === "worn"
+                    || V.shortsState === "worn"
+                    || V.skirtState === "worn";
+        var pantiesOn = V.pantiesState === "worn";
+        if (!topOn && !bottomOn && !pantiesOn) return "nude";
+        if (!topOn && bottomOn)                return "topless";
+        if (topOn && bottomOn)                 return "dressed";
+        return "partial";
+    }
+
+    function isBaitActive() { return State.variables.baitActive === 1; }
+    function isRiskyMode()  { return State.variables.riskyTools === 1; }
+
+    /* Combined per-tick deltas + tool/hunt bonuses, plus a contributors
+     * array used by the HUD widget to show "why". */
     function snapshot() {
-        var dark = isCurrentRoomDark();
-        return {
-            dark:              dark,
-            sanityPerStep:     dark ? -1 : 0,
-            lustPerStep:        0,
-            corruptionPending:  0,
+        var V = State.variables;
+        var snap = {
+            dark:              false,
+            clothing:          clothingState(),
+            riskyTools:        isRiskyMode(),
+            baitActive:        isBaitActive(),
+            baitStepsRemain:   V.baitStepsRemain || 0,
+            sanityPerStep:     0,
+            lustPerStep:       0,
+            corruptionPending: 0,
             timeLabel:         "paused",
-            huntChanceBonus:   dark ? 6  : 0, // +6 pts on top of the base 6%
-            toolChanceBonus:   dark ? 10 : 0, // +10 pts to TIER_CHANCE rolls
-            toolWindowBonus:   dark ? 5  : 0  // +5 min to EMF/UVL window
+            huntChanceBonus:   0,
+            toolChanceBonus:   0,
+            toolWindowBonus:   0,
+            contributors:      []
         };
+
+        if (isCurrentRoomDark()) {
+            snap.dark = true;
+            snap.sanityPerStep  -= 1;
+            snap.huntChanceBonus += 6;
+            snap.toolChanceBonus += 10;
+            snap.toolWindowBonus += 5;
+            snap.contributors.push({
+                label: "Dark",
+                color: "#ff7777",
+                detail: "tools +10%, +5 min · hunt +6%"
+            });
+        }
+
+        if (snap.clothing === "topless") {
+            snap.toolChanceBonus += 5;
+            snap.lustPerStep     += 1;
+            snap.huntChanceBonus += 3;
+            snap.contributors.push({
+                label: "Topless",
+                color: "#ff99cc",
+                detail: "tools +5% · lust +1/step · hunt +3%"
+            });
+        } else if (snap.clothing === "nude") {
+            snap.toolChanceBonus     += 10;
+            snap.lustPerStep         += 2;
+            snap.corruptionPending   += 0.1;
+            snap.huntChanceBonus     += 5;
+            snap.contributors.push({
+                label: "Nude",
+                color: "#ff66aa",
+                detail: "tools +10% · lust +2/step · hunt +5% · corr banking"
+            });
+        }
+
+        var mc = V.mc;
+        if (mc && mc.lust >= LUST_FUEL_THRESHOLD) {
+            snap.toolChanceBonus   += 5;
+            snap.huntChanceBonus   += 3;
+            snap.corruptionPending += 0.05;
+            snap.contributors.push({
+                label: "Lust ≥ " + LUST_FUEL_THRESHOLD,
+                color: "#e84aa4",
+                detail: "tools +5% · hunt +3% · corr banking"
+            });
+        }
+
+        if (snap.riskyTools) {
+            snap.toolChanceBonus += 10;
+            snap.toolWindowBonus += 5;
+            snap.huntChanceBonus += 5;
+            snap.sanityPerStep   -= 1;
+            snap.contributors.push({
+                label: "Risky tools",
+                color: "#ffaa33",
+                detail: "tools +10%, +5 min · hunt +5% · sanity −1/step"
+            });
+        }
+
+        if (snap.baitActive) {
+            snap.toolChanceBonus += 20;
+            snap.huntChanceBonus += 20;
+            snap.sanityPerStep   -= 1;
+            snap.contributors.push({
+                label: "Baiting (" + snap.baitStepsRemain + ")",
+                color: "#cc66ff",
+                detail: "ghost pinned here · tools +20% · hunt +20%"
+            });
+        }
+
+        return snap;
     }
 
     /* Apply per-nav-step effects. Called from includeTimeEvent* widgets so
-     * tool-tick spam doesn't double-charge sanity. The widget refreshes the
-     * sanity meter; we only mutate the variable. */
+     * tool-tick spam doesn't double-charge stats. Mutates mc.sanity /
+     * mc.lust, accrues tempCorr, and decrements bait counter when active.
+     * Corresponding meters (sanity/lust) are refreshed by the caller. */
     function applyTickEffects() {
-        var snap = snapshot();
-        if (snap.sanityPerStep === 0) return;
-        var mc = State.variables.mc;
+        var V = State.variables;
+        var mc = V.mc;
         if (!mc) return;
-        mc.sanity += snap.sanityPerStep;
-        if (mc.sanity < 1) mc.sanity = 1;
-        if (mc.sanity > mc.sanityMax) mc.sanity = mc.sanityMax;
+        var snap = snapshot();
+
+        if (snap.sanityPerStep !== 0) {
+            mc.sanity += snap.sanityPerStep;
+            if (mc.sanity < 1) mc.sanity = 1;
+            if (mc.sanity > mc.sanityMax) mc.sanity = mc.sanityMax;
+        }
+        if (snap.lustPerStep !== 0) {
+            mc.lust += snap.lustPerStep;
+            if (mc.lust < 0)   mc.lust = 0;
+            if (mc.lust > 100) mc.lust = 100;
+        }
+        if (snap.corruptionPending !== 0) {
+            V.tempCorr = (V.tempCorr || 0) + snap.corruptionPending;
+        }
+        if (snap.baitActive) {
+            V.baitStepsRemain = Math.max(0, (V.baitStepsRemain || 0) - 1);
+            if (V.baitStepsRemain <= 0) {
+                V.baitActive = 0;
+                V.baitStepsRemain = 0;
+            }
+        }
+    }
+
+    /* Player-driven bait: spend lust, pin the ghost to the player's room
+     * for BAIT_STEPS nav ticks. Returns true when the spend fires. */
+    function startBait() {
+        var V = State.variables;
+        var mc = V.mc;
+        if (!mc || mc.lust < BAIT_LUST_COST) return false;
+        var bg = currentBgVar();
+        if (!bg) return false;
+        if (!V.hunt || !V.hunt.room) return false;
+        mc.lust -= BAIT_LUST_COST;
+        V.hunt.room.name = bg;
+        V.baitActive = 1;
+        V.baitStepsRemain = BAIT_STEPS;
+        return true;
+    }
+
+    function canBait() {
+        var V = State.variables;
+        return !!(V.mc && V.mc.lust >= BAIT_LUST_COST
+                  && V.hunt && V.hunt.room
+                  && currentBgVar()
+                  && V.baitActive !== 1);
+    }
+
+    function toggleRiskyTools() {
+        var V = State.variables;
+        V.riskyTools = V.riskyTools === 1 ? 0 : 1;
+        return V.riskyTools === 1;
+    }
+
+    /* Called from HuntEnd / HuntOverManual / HuntOverTime / HuntOverSanity
+     * to scrub hunt-only flags so the next contract starts clean. */
+    function resetHuntFlags() {
+        var V = State.variables;
+        V.baitActive      = 0;
+        V.baitStepsRemain = 0;
+        V.riskyTools      = 0;
     }
 
     return {
         DARK:                DARK,
+        LUST_FUEL_THRESHOLD: LUST_FUEL_THRESHOLD,
+        BAIT_LUST_COST:      BAIT_LUST_COST,
+        BAIT_STEPS:          BAIT_STEPS,
         currentBgVar:        currentBgVar,
         isCurrentRoomDark:   isCurrentRoomDark,
+        clothingState:       clothingState,
         snapshot:            snapshot,
-        applyTickEffects:    applyTickEffects
+        applyTickEffects:    applyTickEffects,
+        startBait:           startBait,
+        canBait:             canBait,
+        toggleRiskyTools:    toggleRiskyTools,
+        isRiskyMode:         isRiskyMode,
+        resetHuntFlags:      resetHuntFlags
     };
 })();
 
@@ -1383,23 +1547,22 @@ setup.toolSuccessRate = function (toolKey) {
     var tier = equipment[def.equipField];
     var tierLabel = (tier !== undefined) ? ("Tier " + tier) : "Unowned";
     var snap = setup.HauntConditions.snapshot();
+    var bonusNote = snap.contributors.length
+        ? " · " + snap.contributors.map(function (c) { return c.label; }).join(" + ")
+        : "";
     if (toolKey === "temperature") {
         return tierLabel + " · 100% accuracy";
     }
     if (toolKey === "emf" || toolKey === "uvl") {
         var windowMin = setup.TOOL_TIME_REMAIN[tier];
         if (windowMin === undefined) return tierLabel;
-        var line = tierLabel + " · 100% while active · Window stays open "
+        return tierLabel + " · 100% while active · Window "
             + (windowMin + snap.toolWindowBonus)
-            + " min after another tool's hit or a ghost event";
-        if (snap.toolWindowBonus > 0) line += " (+" + snap.toolWindowBonus + " min in darkness)";
-        return line;
+            + " min after another tool's hit or a ghost event" + bonusNote;
     }
     var chance = setup.TIER_CHANCE[tier];
     if (chance === undefined) return tierLabel;
-    var rateLine = tierLabel + " · " + (chance + snap.toolChanceBonus) + "% per check";
-    if (snap.toolChanceBonus > 0) rateLine += " (+" + snap.toolChanceBonus + "% in darkness)";
-    return rateLine;
+    return tierLabel + " · " + (chance + snap.toolChanceBonus) + "% per check" + bonusNote;
 };
 
 /* Build the full <<searchTool>> config from a (tool, prefix) pair by

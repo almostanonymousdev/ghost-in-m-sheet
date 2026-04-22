@@ -4,7 +4,7 @@
 	<<run setup.activateTool("emf")>>
 	@@.mc-speech; <span class="evidenceshadowtext"> Ohh... what is this...? Nevertheless, one more piece of evidence</span>@@
 <<else>>
-	<<notFound "I didn't find anything">>
+	<<notFound "I didn't find anything" "GWBcheck">>
 <</if>>
 
 :: GWBcheckArt [nobr] {"position":"3625,325","size":"100,100"}
@@ -13,7 +13,7 @@
 	<<run setup.activateTool("emf")>>
 	@@.evidenceshadowtext; <span class="evidenceshadowtext"> Ohh... what is this...? Nevertheless, one more piece of evidence</span>@@
 <<else>>
-	<<notFound "I didn't find anything">>
+	<<notFound "I didn't find anything" "GWBcheckArt">>
 <</if>>
 
 :: PlasmCheckArt [nobr] {"position":"3625,525","size":"100,100"}
@@ -21,5 +21,5 @@
 	<<randRangeImg "art/plasm/" 1 14 ".png" "displayCentredImgs">><br>
 	@@.evidenceshadowtext; It seems I've found ectoplasm... Except somehow I managed to get myself completely covered in this mysterious substance. I don't even remember how it happened. Oh well, at least I've found another piece of evidence..@@<br>
 <<else>>
-	<<notFound "I didn't find any ectoplasm stains">>
+	<<notFound "I didn't find any ectoplasm stains" "PlasmCheckArt">>
 <</if>>
