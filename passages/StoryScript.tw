@@ -555,12 +555,21 @@ window.UpdateHoverTipTxt = function (container) {
 				zindex = parseInt(zindex, 10);
 			}
 			while (parent.parent()[0] !== document) {
-				if ((parent.parent().css("z-index") !== "auto") && (parseInt(parent.parent().css("z-index"), 10) > zindex)) {
-					/* Get container rect. */
-					boxPos = parent[0].getBoundingClientRect();
+				var pp = parent.parent();
+				var higherZ = (pp.css("z-index") !== "auto") && (parseInt(pp.css("z-index"), 10) > zindex);
+				/* Also treat overflow-clipping ancestors (e.g. the tool bar's
+				   .room has overflow-x:hidden) as containing boxes, so a
+				   tooltip centered over a left-edge item doesn't vanish
+				   behind the clip. */
+				var clips =
+					pp.css("overflow-x") !== "visible" ||
+					pp.css("overflow-y") !== "visible" ||
+					pp.css("overflow")   !== "visible";
+				if (higherZ || clips) {
+					boxPos = pp[0].getBoundingClientRect();
 					break;
 				}
-				parent = parent.parent();
+				parent = pp;
 			}
 			/* Update position. */
 			element.css({ top: top, left: left });
@@ -1182,6 +1191,81 @@ setup.hauntedPassages = (function () {
     });
 }());
 
+/* setup.HauntConditions -- single source of truth for the "lights-off risk"
+ * mechanic and (eventually) the rest of the hunt-mechanics rework. Resolves
+ * the player's current haunted-house room from the running passage, asks
+ * whether the lights are off there, and exposes a snapshot of the deltas
+ * and bonuses every consumer should agree on:
+ *   - huntConditions HUD (per-step stat deltas above the tool bar)
+ *   - setup.toolSuccessRate (hover tooltip on each tool card)
+ *   - setup.chanceByTier / setup.toolTimeRemain (actual tool rolls)
+ *   - CheckHuntStart (random-hunt threshold)
+ *   - applyTickEffects (per-nav-step sanity drain)
+ * Keep new lights-off knobs HERE so the HUD numbers and the underlying
+ * mechanics never drift apart. */
+setup.HauntConditions = (function () {
+    var DARK = 2;
+
+    var passageBgIndex = null;
+    function bgIndex() {
+        if (!passageBgIndex) {
+            passageBgIndex = {};
+            setup.hauntedPassages.forEach(function (e) {
+                passageBgIndex[e.passage] = e.bgRoom;
+            });
+        }
+        return passageBgIndex;
+    }
+
+    function currentBgVar() {
+        return bgIndex()[passage()] || null;
+    }
+
+    function isCurrentRoomDark() {
+        var name = currentBgVar();
+        if (!name) return false;
+        var room = State.variables[name];
+        return !!(room && room.background === DARK);
+    }
+
+    /* Effective deltas/bonuses for the current tick. All knobs gate on
+     * darkness today; future axes (clothing, lust) plug in here. */
+    function snapshot() {
+        var dark = isCurrentRoomDark();
+        return {
+            dark:              dark,
+            sanityPerStep:     dark ? -1 : 0,
+            lustPerStep:        0,
+            corruptionPending:  0,
+            timeLabel:         "paused",
+            huntChanceBonus:   dark ? 6  : 0, // +6 pts on top of the base 6%
+            toolChanceBonus:   dark ? 10 : 0, // +10 pts to TIER_CHANCE rolls
+            toolWindowBonus:   dark ? 5  : 0  // +5 min to EMF/UVL window
+        };
+    }
+
+    /* Apply per-nav-step effects. Called from includeTimeEvent* widgets so
+     * tool-tick spam doesn't double-charge sanity. The widget refreshes the
+     * sanity meter; we only mutate the variable. */
+    function applyTickEffects() {
+        var snap = snapshot();
+        if (snap.sanityPerStep === 0) return;
+        var mc = State.variables.mc;
+        if (!mc) return;
+        mc.sanity += snap.sanityPerStep;
+        if (mc.sanity < 1) mc.sanity = 1;
+        if (mc.sanity > mc.sanityMax) mc.sanity = mc.sanityMax;
+    }
+
+    return {
+        DARK:                DARK,
+        currentBgVar:        currentBgVar,
+        isCurrentRoomDark:   isCurrentRoomDark,
+        snapshot:            snapshot,
+        applyTickEffects:    applyTickEffects
+    };
+})();
+
 /* setup.isGhostHere([houses]) -- true iff the current passage belongs to
  * one of the listed houses AND $hunt.room.name matches that passage's
  * bgRoom. Pass a house-filter array to scope the check (e.g. ["enigma"]
@@ -1198,18 +1282,24 @@ setup.isGhostHere = function (houses) {
 
 /* Shared equipment-tier chance table used by the gwb / plasm / spiritbox
  * checks: tier 5 = 15%, tier 4 = 25%, tier 3 = 35%. Returns true when the
- * (1..100) roll passes for the given tier. */
+ * (1..100) roll passes for the given tier. The lights-off bonus comes from
+ * setup.HauntConditions.snapshot().toolChanceBonus so the tooltip and the
+ * actual roll can never disagree. */
 setup.TIER_CHANCE = { 5: 15, 4: 25, 3: 35 };
 setup.chanceByTier = function (tier, roll) {
     var t = setup.TIER_CHANCE[tier];
-    return t !== undefined && roll <= t;
+    if (t === undefined) return false;
+    return roll <= (t + setup.HauntConditions.snapshot().toolChanceBonus);
 };
 
 /* Equipment upgrade → on-time window (in in-game minutes) used by the EMF
- * and UVL tools. Higher tiers stay active longer. */
+ * and UVL tools. Higher tiers stay active longer; darkness extends the
+ * window further (same source as the tooltip). */
 setup.TOOL_TIME_REMAIN = { 5: 10, 4: 15, 3: 20 };
 setup.toolTimeRemain = function (tier) {
-    return setup.TOOL_TIME_REMAIN[tier] || 0;
+    var base = setup.TOOL_TIME_REMAIN[tier];
+    if (base === undefined) return 0;
+    return base + setup.HauntConditions.snapshot().toolWindowBonus;
 };
 
 /* The two timed tools (EMF + UVL) track their activation state inside
@@ -1292,19 +1382,24 @@ setup.toolSuccessRate = function (toolKey) {
     var equipment = State.variables.equipment || {};
     var tier = equipment[def.equipField];
     var tierLabel = (tier !== undefined) ? ("Tier " + tier) : "Unowned";
+    var snap = setup.HauntConditions.snapshot();
     if (toolKey === "temperature") {
         return tierLabel + " · 100% accuracy";
     }
     if (toolKey === "emf" || toolKey === "uvl") {
         var windowMin = setup.TOOL_TIME_REMAIN[tier];
-        return windowMin !== undefined
-            ? tierLabel + " · 100% while active · Window stays open " + windowMin + " min after another tool's hit or a ghost event"
-            : tierLabel;
+        if (windowMin === undefined) return tierLabel;
+        var line = tierLabel + " · 100% while active · Window stays open "
+            + (windowMin + snap.toolWindowBonus)
+            + " min after another tool's hit or a ghost event";
+        if (snap.toolWindowBonus > 0) line += " (+" + snap.toolWindowBonus + " min in darkness)";
+        return line;
     }
     var chance = setup.TIER_CHANCE[tier];
-    return chance !== undefined
-        ? tierLabel + " · " + chance + "% per check"
-        : tierLabel;
+    if (chance === undefined) return tierLabel;
+    var rateLine = tierLabel + " · " + (chance + snap.toolChanceBonus) + "% per check";
+    if (snap.toolChanceBonus > 0) rateLine += " (+" + snap.toolChanceBonus + "% in darkness)";
+    return rateLine;
 };
 
 /* Build the full <<searchTool>> config from a (tool, prefix) pair by

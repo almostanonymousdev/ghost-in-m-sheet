@@ -307,6 +307,10 @@ body.city {
 	font-size: 80%;
 	opacity: 0.85;
 	flex: 0 0 auto;
+	/* Align with .footertools (80% left-aligned) so the HUD centers
+	   over the tool row instead of over the full footer (which
+	   includes the 20% .footeraction column on the right). */
+	width: 80%;
 }
 .hunt-conditions-icon {
 	width: 14px;
@@ -324,6 +328,19 @@ body.city {
 	width: 80%;
 	align-items: center;
 }
+/* Each tool card is wrapped by the hovertip macro, which inserts a
+ * span.hoverTipTxt between .footertools (flex container) and
+ * .footer-card. Without help that wrapper collapses to its content and
+ * the calc(100%/7) on .footer-card becomes 1/7 of "tiny", so cards end
+ * up unevenly squashed. Give the wrapper the 1/7 share itself and let
+ * the card inside fill it. */
+.footertools > .hoverTipTxt {
+	flex: 0 0 calc(100% / 7);
+	min-width: 0;
+}
+.footertools > .hoverTipTxt > .footer-card {
+	width: 100%;
+}
 .footeraction {
 	line-height: 1.6;
 	width: 20%;
@@ -336,10 +353,13 @@ body.city {
 	font-size: 80%;
 }
 .footer-light {
-	display: inline-block;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
 }
 .footer-light img {
-	width: 30%;
+	width: 40%;
 	margin: 1px;
 }
 
@@ -961,7 +981,10 @@ body.city {
 	display: flex;
 	justify-content: center;
 	gap: 10%;
-	margin-left: -20%;
+	/* Match the .footertools column (80% left-aligned) so the
+	   furniture strip sits visually over the tools instead of
+	   being centered across the whole room. */
+	width: 80%;
 }
 .furnitureSearch a {
 	width: 2.5vw;

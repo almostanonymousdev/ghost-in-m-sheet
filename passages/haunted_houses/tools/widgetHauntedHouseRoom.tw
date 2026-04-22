@@ -24,26 +24,32 @@ scaffolding and wikifies its contents (which should include an optional
 <</widget>>
 
 /* furnitureRow -- container widget. Wraps its contents in
-<div class="FurnitureSearch">. Use it inside <<roomShell>> for the small
-set of <<furnitureItem>>/<<hideSpot>> calls each room exposes. Omit it
+<div class="furnitureSearch">, which matches the sizing rules in
+StoryStylesheet. Use it inside <<roomShell>> for the small set of
+<<furnitureItem>>/<<hideSpot>> calls each room exposes. Omit it
 entirely for rooms with no furniture (e.g. enigma). */
 <<widget "furnitureRow" container>>
-	<div class="FurnitureSearch"><<= _contents>></div>
+	<div class="furnitureSearch"><<= _contents>></div>
 <</widget>>
 
-/* huntConditions -- single-row HUD above the tool bar showing the live rate
-at which each hunt-relevant stat is moving. Rates are zero today because the
-drain/gain sites were stripped during the clean-slate haunt-mechanics pass;
-the widget stays so the HUD is already in place once the new resource model
-wires real deltas back in.
-TODO(haunt-mechanics-rework): replace these literal zeros with live values
-from whatever per-tick accumulator the redesign introduces. */
+/* huntConditions -- single-row HUD above the tool bar showing the live
+rate at which each hunt-relevant stat is moving. Numbers come from
+setup.HauntConditions.snapshot() so the HUD, the tool-card hovertip, and
+the actual tool/hunt rolls all read the same source. Lights-off is the
+only axis wired today; clothing, lust, etc. plug in by extending the
+snapshot. */
 <<widget "huntConditions">>
+	<<set _hc to setup.HauntConditions.snapshot()>>
+	<<set _sanity to (_hc.sanityPerStep gt 0 ? "+" : "") + _hc.sanityPerStep>>
+	<<set _lust to (_hc.lustPerStep gt 0 ? "+" : "") + _hc.lustPerStep>>
 	<div class="hunt-conditions">
-	<<image "img/sanity.png" { class: "hunt-conditions-icon" }>> 0/min
-	· <<image "img/hearth.png" { class: "hunt-conditions-icon" }>> 0/min
-	· <<image "img/corruption.png" { class: "hunt-conditions-icon" }>> 0 pending
-	· Time paused
+	<<image "img/sanity.png" { class: "hunt-conditions-icon" }>> _sanity/step
+	· <<image "img/hearth.png" { class: "hunt-conditions-icon" }>> _lust/step
+	· <<image "img/corruption.png" { class: "hunt-conditions-icon" }>> <<= _hc.corruptionPending>> pending
+	· Time <<= _hc.timeLabel>>
+	<<if _hc.dark>>
+		· @@color:#ff7777;font-weight:bold;Lights off: tools +<<= _hc.toolChanceBonus>>%, +<<= _hc.toolWindowBonus>>min · hunt +<<= _hc.huntChanceBonus>>%@@
+	<</if>>
 	</div>
 <</widget>>
 

@@ -2,6 +2,8 @@
 <<widget "includeTimeEventClothesHunt">>
 	<<if $cursedHuntActive eq 1>>
 	<<else>>
+		<<run setup.HauntConditions.applyTickEffects()>>
+		<<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
 		<<include "Event">>
 		<<if _eventTriggered is false>>
 			<<include "StealClothesEvent">>
@@ -15,6 +17,8 @@
 <<widget "includeTimeEventHunt">>
 	<<if $cursedHuntActive eq 1>>
 	<<else>>
+		<<run setup.HauntConditions.applyTickEffects()>>
+		<<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
 		<<include "Event">>
 		<<if _eventTriggered is false>>
 			<<include "CheckHuntStart">>

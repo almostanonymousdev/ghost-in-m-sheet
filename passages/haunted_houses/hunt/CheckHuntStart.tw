@@ -1,6 +1,7 @@
 :: CheckHuntStart [noreturn nobr] {"position":"2500,1100","size":"100,100"}
 <<if setup.HauntedHouses.canStartRandomHunt()>>
-	<<if random(0, 100) lte 6>>
+	<<set _huntThreshold to 6 + setup.HauntConditions.snapshot().huntChanceBonus>>
+	<<if random(0, 100) lte _huntThreshold>>
 		<<set _g to setup.Ghosts.active()>>
 		<<if _g and _g.canHunt($mc)>>
 			<<goto "GhostHuntEvent">>
