@@ -1,62 +1,6 @@
 :: ArtEventVids [nobr] {"position":"1650,950","size":"100,100"}
 <<set $ghostSanityEventDecreased to (setup.Ghosts.active() ? setup.Ghosts.active().rollEventSanityLoss() : 0)>>
-<<if previous() is "EnigmaHallway">>
-	<<if $hallway.background eq 1>>
-		<<include "StyleEnigmaHallwayLight">>
-	<<elseif $hallway.background eq 2>>
-		<<include "StyleEnigmaHallwayDark">>
-	<</if>>
-
-<<elseif previous() is "EnigmaBedroom">>
-	<<if $bedroom.background eq 1>>
-		<<include "StyleEnigmaBedroomLight">>
-	<<elseif $bedroom.background eq 2>>
-		<<include "StyleEnigmaBedroomDark">>
-	<</if>>
-<<elseif previous() is "EnigmaLivingroom">>
-	<<if $livingroom.background eq 1>>
-		<<include "StyleEnigmaLivingroomLight">>
-	<<elseif $livingroom.background eq 2>>
-		<<include "StyleEnigmaLivingroomDark">>
-	<</if>>
-<<elseif previous() is "EnigmaKitchen">>
-	<<if $kitchen.background eq 1>>
-		<<include "StyleEnigmaKitchenLight">>
-	<<elseif $kitchen.background eq 2>>
-		<<include "StyleEnigmaKitchenDark">>
-	<</if>>
-
-<<elseif previous() is "EnigmaBathroom">>
-	<<if $bathroom.background eq 1>>
-		<<include "StyleEnigmaBathroomLight">>
-	<<elseif $bathroom.background eq 2>>
-		<<include "StyleEnigmaBathroomDark">>
-	<</if>>
-<<elseif previous() is "EnigmaBasement">>
-	<<if $basement.background eq 1>>
-		<<include "StyleEnigmaBasementLight">>
-	<<elseif $basement.background eq 2>>
-		<<include "StyleEnigmaBasementDark">>
-	<</if>>
-<<elseif previous() is "EnigmaRoomA">>
-	<<if $roomA.background eq 1>>
-		<<include "StyleEnigmaRoomALight">>
-	<<elseif $roomA.background eq 2>>
-		<<include "StyleEnigmaRoomADark">>
-	<</if>>
-<<elseif previous() is "EnigmaRoomB">>
-	<<if $roomB.background eq 1>>
-		<<include "StyleEnigmaRoomBLight">>
-	<<elseif $roomB.background eq 2>>
-		<<include "StyleEnigmaRoomBDark">>
-	<</if>>
-<<elseif previous() is "EnigmaRoomC">>
-	<<if $roomC.background eq 1>>
-		<<include "StyleEnigmaRoomCLight">>
-	<<elseif $roomC.background eq 2>>
-		<<include "StyleEnigmaRoomCDark">>
-	<</if>>
-<</if>>
+<<roomBackground `previous()`>>
 
 <<video $artVideoEvent>><br>
 <<run setup.activateTool("emf")>>
