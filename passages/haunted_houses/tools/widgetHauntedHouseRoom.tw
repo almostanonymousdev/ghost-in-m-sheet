@@ -40,9 +40,9 @@ TODO(haunt-mechanics-rework): replace these literal zeros with live values
 from whatever per-tick accumulator the redesign introduces. */
 <<widget "huntConditions">>
 	<div class="hunt-conditions">
-	<img @src="setup.ImagePath + '/img/sanity.png'" class="hunt-conditions-icon"> 0/min
-	· <img @src="setup.ImagePath + '/img/hearth.png'" class="hunt-conditions-icon"> 0/min
-	· <img @src="setup.ImagePath + '/img/corruption.png'" class="hunt-conditions-icon"> 0 pending
+	<<image "img/sanity.png" { class: "hunt-conditions-icon" }>> 0/min
+	· <<image "img/hearth.png" { class: "hunt-conditions-icon" }>> 0/min
+	· <<image "img/corruption.png" { class: "hunt-conditions-icon" }>> 0 pending
 	· Time paused
 	</div>
 <</widget>>
