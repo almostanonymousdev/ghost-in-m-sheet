@@ -66,8 +66,8 @@
 
 	// mc sub-fields added after launch -- missing on very old saves
 	var MC_DEFAULTS = {
-		fit:   0,
-		exhib: 0
+		fit:           0,
+		exhibitionism: 0
 	};
 
 	function applyDefaults (vars) {
@@ -87,6 +87,14 @@
 		});
 
 		if (vars.mc && typeof vars.mc === 'object') {
+			// One-time rename: mc.exhib -> mc.exhibitionism. Carry the old
+			// value forward when it's the only one defined, so existing
+			// saves don't reset their progress.
+			if (vars.mc.exhibitionism === undefined && vars.mc.exhib !== undefined) {
+				vars.mc.exhibitionism = vars.mc.exhib;
+			}
+			delete vars.mc.exhib;
+
 			Object.keys(MC_DEFAULTS).forEach(function (key) {
 				if (vars.mc[key] === undefined || vars.mc[key] === null) {
 					vars.mc[key] = MC_DEFAULTS[key];

@@ -158,9 +158,9 @@
 				<</linkreplace>><br>
 			<<else>>
 				@@.notmc-speech;Um... Well, maybe you should find your clothes first...?@@<br>
-				<<if $mc.exhib lte 4 or ndef $mc.exhib>>@@.mc-speech; Yeah, you're right.@@@@.warningtext; (She'll go with you if you're dressed) or Req. Exhibitionism Level 5+@@
+				<<if $mc.exhibitionism lte 4 or ndef $mc.exhibitionism>>@@.mc-speech; Yeah, you're right.@@@@.warningtext; (She'll go with you if you're dressed) or Req. Exhibitionism Level 5+@@
 				<</if>>
-				<<if $mc.exhib gte 5>>
+				<<if $mc.exhibitionism gte 5>>
 					<<linkreplace "@@.mc-speechLink; I don't care@@">>
 						<<if hasVisited("NudityEventTwo")>>
 							@@.mc-speech;Let's just leave naked, like last time...@@<br>

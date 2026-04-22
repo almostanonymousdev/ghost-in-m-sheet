@@ -74,7 +74,7 @@
 	<</linkreplace>>
 	<br><<linkreplace "lustCurrentFriend">><<set $companion.lust += 100>>$companion.name's lust +100
 	<</linkreplace>>
-	<br><<linkreplace "Exhib5">><<set $mc.exhib to 5>>Exhib5
+	<br><<linkreplace "Exhib5">><<set $mc.exhibitionism to 5>>Exhib5
 	<</linkreplace>>
 	<br><<linkreplace "IncreaseSurrenderToPossession">><<set $mcpossession to 11>>Surrender to Possession is increased: $mcpossession now!
 	<</linkreplace>>

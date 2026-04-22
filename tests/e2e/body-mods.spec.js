@@ -236,10 +236,10 @@ test.describe('Body mods — in-hunt exhibitionism events', () => {
     await setVar(page, 'skirtState', 'not bought');
     await setVar(page, 'shortsState', 'not bought');
     await setVar(page, 'braState', 'not worn');
-    await setVar(page, 'mc.exhib', exhib);
+    await setVar(page, 'mc.exhibitionism', exhib);
   }
 
-  test('NudityEvent renders the low-exhib branch when mc.exhib <= 4', async () => {
+  test('NudityEvent renders the low-exhib branch when mc.exhibitionism <= 4', async () => {
     await primeForNudityEvent(page, { exhib: 2 });
     await goToPassage(page, 'NudityEvent');
     await expectCleanPassage(page);
@@ -247,7 +247,7 @@ test.describe('Body mods — in-hunt exhibitionism events', () => {
     expect(text).toContain('Exhibitionism');
   });
 
-  test('NudityEvent renders the high-exhib branch when mc.exhib >= 5', async () => {
+  test('NudityEvent renders the high-exhib branch when mc.exhibitionism >= 5', async () => {
     await primeForNudityEvent(page, { exhib: 7 });
     await goToPassage(page, 'NudityEvent');
     await expectCleanPassage(page);

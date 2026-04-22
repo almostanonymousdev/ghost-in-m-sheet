@@ -1,7 +1,7 @@
 :: FindStolenClothes [nobr] {"position":"4225,950","size":"100,100"}
 @@.mc-thoughts; You found your stolen clothes.@@<br>
 <br>
-<<if $mc.exhib gte 5>>
+<<if $mc.exhibitionism gte 5>>
 	@@.mc-speech; Or... maybe I shouldn't put on clothes... I've kind of gotten used to being naked...<br>
 	I can pick it up later. Hopefully, it won't disappear...@@<br>
 

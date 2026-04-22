@@ -97,7 +97,7 @@
 <<include "UpdateIronclad">>
 <</if>>
 
-<<if ndef $mc.exhib>><<set $mc.exhib to 0>><</if>>
+<<if ndef $mc.exhibitionism>><<set $mc.exhibitionism to 0>><</if>>
 <<if ndef $fixSave>><<include "FixSaveFile">><</if>>
 <<if ndef $moneyFromWeakenTheGhost>>
 <<set $moneyFromWeakenTheGhost to 0>>
