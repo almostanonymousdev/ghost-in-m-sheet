@@ -7,19 +7,11 @@
 <<if setup.Companion.companionAtStreet()>>
 	You see $companion.name.
 
-	<<if $companion.name eq "Brook">>
-		@@.usebtn; [[Talk to her|BrookMain]]@@<br>
-	<<elseif $companion.name eq "Alice">>
-		@@.usebtn; [[Talk to her|AliceMain]]@@<br>
-	<<elseif $companion.name eq "Blake">>
-		@@.usebtn; [[Talk to her|BlakeMain]]@@<br>
-	<<elseif $companion.name eq "Alex">>
-		@@.usebtn; [[Talk to him|AlexMain]]@@<br>
-	<<elseif $companion.name eq "Taylor">>
-		@@.usebtn; [[Talk to him|TaylorMain]]@@<br>
-	<<elseif $companion.name eq "Casey">>
-		@@.usebtn; [[Talk to him|CaseyMain]]@@<br>
-	<</if>>
+	<<set _ac to setup.Companion.active()>>
+	@@.usebtn;
+		<<link `"Talk to " + _ac.pronObj` "CompanionMain">>
+		<</link>>
+	@@<br>
 <<else>>
 	@@.movebtn;[[Go inside|ElmHallway][$hunt.mode to setup.Ghosts.HuntMode.ACTIVE]]@@<br>
 <</if>>

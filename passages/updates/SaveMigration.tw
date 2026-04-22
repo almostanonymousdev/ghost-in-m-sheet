@@ -50,7 +50,18 @@
 		addLustPiercingTongue:      function () { return 0; },
 		addLustPiercingPussy:       function () { return 0; },
 		updatePiercingBodyPartSens: function () { return 1; },
-		fixSave:                    function () { return 1; }
+		fixSave:                    function () { return 1; },
+
+		// Companion state objects. Per-companion defaults live in
+		// COMPANION_CONFIG.initStats (see CompanionController.tw); these
+		// wrappers pull them through setup.Companion so SaveMigration
+		// doesn't need a second copy of the stat tables.
+		brook:  function () { return setup.Companion.defaultStateFor('Brook'); },
+		alice:  function () { return setup.Companion.defaultStateFor('Alice'); },
+		blake:  function () { return setup.Companion.defaultStateFor('Blake'); },
+		alex:   function () { return setup.Companion.defaultStateFor('Alex'); },
+		taylor: function () { return setup.Companion.defaultStateFor('Taylor'); },
+		casey:  function () { return setup.Companion.defaultStateFor('Casey'); }
 	};
 
 	// mc sub-fields added after launch -- missing on very old saves

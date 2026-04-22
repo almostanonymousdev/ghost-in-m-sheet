@@ -1,10 +1,8 @@
 :: CompanionController [script]
-/*
- * Centralized state queries and mutations for the companion system
- * (Brook, Alice, Blake, Alex, Taylor, Casey). Passages should call
- * into setup.Companion instead of testing the underlying companion
- * $variables directly.
- */
+// Centralized state queries and mutations for the companion system
+// (Brook, Alice, Blake, Alex, Taylor, Casey). Passages should call
+// into setup.Companion instead of testing the underlying companion
+// $variables directly.
 setup.Companion = (function () {
 	function v(name) { return State.variables[name]; }
 	function mc() { return State.variables.mc; }
@@ -15,8 +13,266 @@ setup.Companion = (function () {
 	function isName(n) { var c = comp(); return c && c.name === n; }
 	function isTrans(n) { return TRANS_NAMES.indexOf(n) !== -1; }
 
+	// Canonical companion catalogue. Static per-companion metadata lives
+	// here so the six near-identical Main passages collapse into a single
+	// <<companionMain>> dispatch. Mutable stats stay on the existing
+	// $brook / $alice / $blake / $alex / $taylor / $casey objects so saves
+	// keep working; only the display/dialogue variations moved into config.
+	var COMPANION_CONFIG = [
+		{
+			name: "Brook", key: "brook",
+			imageFolder: "brook", imagePrefix: "brook",
+			isTrans: false, canWalkHome: true, hasExpSystem: true,
+			pronObj: "her", pronPos: "her",
+			neutralResp: "Let's just focus on the task.",
+			// Per-companion stat overrides merged over CIS_BASE_STATS by
+			// Companion.prototype.defaultState(). Only the fields that
+			// differ from the shared cis defaults live here.
+			initStats: {
+				plan2TimeReq: 15, plan3TimeReq: 10, plan4TimeReq: 10,
+				chanceOfSuccessCI: 20, chanceOfSuccessGR: 30
+			},
+			clothingTiers: [
+				{ mc: "You can take off your top, it'll make it easier for you to move.",
+				resp: "It'll be easier to move if I take off my top? How exactly? Well, alright, if you say so..." },
+				{ mc: "Stay in just your underwear, it might help us get through this.",
+				resp: "I actually feel better wearing just my underwear." },
+				{ mc: "Just keep your panties on, it'll be easier for both of us.",
+				resp: "I feel like I'm making things easier for the ghost, but I don't really mind..." },
+				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
+				resp: "Fine, he's going to get to my pussy anyway." }
+			]
+		},
+		{
+			name: "Alice", key: "alice",
+			imageFolder: "alice", imagePrefix: "alice",
+			isTrans: false, canWalkHome: true, hasExpSystem: true,
+			pronObj: "her", pronPos: "her",
+			neutralResp: "Let's just focus on the task.",
+			initStats: {
+				plan2TimeReq: 15, plan3TimeReq: 15, plan4TimeReq: 10,
+				chanceOfSuccessCI: 30, chanceOfSuccessGR: 50
+			},
+			clothingTiers: [
+				{ mc: "You can take off your top, it'll make it easier for you to move.",
+				resp: "Take my top off? Well... alright, if you think it'll help." },
+				{ mc: "Stay in just your underwear, it might help us get through this.",
+				resp: "Down to my underwear? Okay, I trust you." },
+				{ mc: "Just keep your panties on, it'll be easier for both of us.",
+				resp: "Just my panties? This is so embarrassing, but fine..." },
+				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
+				resp: "Completely naked? You're lucky I like you, $mc.name." }
+			]
+		},
+		{
+			name: "Blake", key: "blake",
+			imageFolder: "blake", imagePrefix: "blake",
+			isTrans: false, canWalkHome: true, hasExpSystem: true,
+			pronObj: "her", pronPos: "her",
+			neutralResp: "Let's just focus on the task.",
+			initStats: {
+				plan2TimeReq: 10, plan3TimeReq: 15, plan4TimeReq: 10,
+				chanceOfSuccessCI: 30, chanceOfSuccessGR: 20,
+				chanceOfSuccessAnyEvidence: 15
+			},
+			clothingTiers: [
+				{ mc: "You can take off your top, it'll make it easier for you to move.",
+				resp: "Take my top off? Well... alright, if you think it'll help." },
+				{ mc: "Stay in just your underwear, it might help us get through this.",
+				resp: "Down to my underwear? Okay, I trust you." },
+				{ mc: "Just keep your panties on, it'll be easier for both of us.",
+				resp: "Just my panties? This is so embarrassing, but fine..." },
+				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
+				resp: "Completely naked? You're lucky I like you, $mc.name." }
+			]
+		},
+		{
+			name: "Alex", key: "alex",
+			imageFolder: "trans", imagePrefix: "alex",
+			isTrans: true, canWalkHome: false, hasExpSystem: false,
+			pronObj: "him", pronPos: "his",
+			neutralResp: "Let's just focus on the task.",
+			initStats: { chanceOfSuccessAnyEvidence: 25 },
+			clothingTiers: [
+				{ mc: "You can take off your shirt, it'll make it easier for you to move.",
+				resp: "Shirt off? Sure, if you say it helps." },
+				{ mc: "Stay in just your underwear, it might help us get through this.",
+				resp: "Down to my underwear? Alright, I trust you." },
+				{ mc: "Just keep your briefs on, it'll be easier for both of us.",
+				resp: "Just my briefs? This feels a bit ridiculous, but fine." },
+				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
+				resp: "Completely naked? You owe me one, $mc.name." }
+			]
+		},
+		{
+			name: "Taylor", key: "taylor",
+			imageFolder: "trans", imagePrefix: "taylor",
+			isTrans: true, canWalkHome: false, hasExpSystem: false,
+			pronObj: "her", pronPos: "her",
+			neutralResp: "Let's just focus on the task.",
+			initStats: { chanceOfSuccessAnyEvidence: 35 },
+			clothingTiers: [
+				{ mc: "You can take off your top, it'll make it easier for you to move.",
+				resp: "Top off? Alright, if you think it'll help." },
+				{ mc: "Stay in just your underwear, it might help us get through this.",
+				resp: "Down to my underwear? Okay, I trust you." },
+				{ mc: "Just keep your panties on, it'll be easier for both of us.",
+				resp: "Just my panties? Embarrassing, but fine..." },
+				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
+				resp: "Completely naked? You're lucky I like you, $mc.name." }
+			]
+		},
+		{
+			name: "Casey", key: "casey",
+			imageFolder: "trans", imagePrefix: "casey",
+			isTrans: true, canWalkHome: false, hasExpSystem: false,
+			pronObj: "them", pronPos: "their",
+			neutralResp: "Let's just focus on the task.",
+			initStats: { chanceOfSuccessAnyEvidence: 50 },
+			clothingTiers: [
+				{ mc: "You can take off your top, it'll make it easier for you to move.",
+				resp: "Top off? Alright, if you say so." },
+				{ mc: "Stay in just your underwear, it might help us get through this.",
+				resp: "Down to my underwear? Okay, I trust you." },
+				{ mc: "Just keep your underwear on, it'll be easier for both of us.",
+				resp: "Just my underwear? A bit much, but fine..." },
+				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
+				resp: "Completely naked? You're really pushing it, $mc.name." }
+			]
+		}
+	];
+
+	// Shared stat defaults baked into every fresh $brook/$alice/$blake
+	// companion state. Per-companion overrides live in COMPANION_CONFIG's
+	// initStats field. Kept out of the catalogue entries because the fields
+	// only ever differ on the handful of dials listed in initStats.
+	var CIS_BASE_STATS = {
+		sanity: 100, sanityMax: 100, corruption: 0,
+		lust: 0, lvl: 1, exp: 0, expForNextLvl: 20,
+		decreaseSanity: 10,
+		chanceOfSuccessEMF: 15, chanceOfSuccessECTO: 15,
+		chanceOfSuccessGWB: 15, chanceOfSuccessSB: 15,
+		chanceOfSuccessTEMP: 15, chanceOfSuccessUVL: 15,
+		chanceOfSuccessAnyEvidence: 25
+	};
+
+	// Shared defaults for trans companions ($alex/$taylor/$casey). No
+	// corruption / exp fields (they're locked at lvl 5 with no progression),
+	// and the plan* times are uniformly 5 minutes.
+	var TRANS_BASE_STATS = {
+		sanity: 100, sanityMax: 100,
+		lust: 0, lvl: 5,
+		plan2TimeReq: 5, plan3TimeReq: 5, plan4TimeReq: 5,
+		decreaseSanity: 10,
+		chanceOfSuccessCI: 50, chanceOfSuccessGR: 50
+	};
+
+	// The 4 non-zero attack-chance tiers, indexed the same as clothingTiers.
+	// Kept out of the per-companion config because they're shared across all
+	// six: the slider values are game-balance, not character dialogue.
+	var TIER_CHANCES = [40, 55, 70, 90];
+	var BASE_CHANCE = 25;
+
+	// Companion is a prototype-based class so per-companion behaviour
+	// (image paths, clothing responses, walk-home eligibility) lives on
+	// instances rather than as free functions. The mutable stats still
+	// live on the existing $brook/... state objects; this class reads
+	// through to them via `state()` so existing saves keep working.
+	function Companion(cfg) {
+		this.name          = cfg.name;
+		this.key           = cfg.key;
+		this.imageFolder   = cfg.imageFolder;
+		this.imagePrefix   = cfg.imagePrefix;
+		this.isTrans       = !!cfg.isTrans;
+		this.canWalkHome   = cfg.canWalkHome !== false;
+		this.hasExpSystem  = cfg.hasExpSystem !== false;
+		this.pronObj       = cfg.pronObj;
+		this.pronPos       = cfg.pronPos;
+		this.neutralResp   = cfg.neutralResp;
+		this.clothingTiers = cfg.clothingTiers;
+		this.initStats     = cfg.initStats || {};
+	}
+
+	// Fresh mutable stat object for a brand-new save. Merges the shared
+	// base (cis or trans) with this companion's initStats overrides, plus
+	// the name. Consumed by SaveMigration's DEFAULTS map so $brook/$alice/
+	// ... get populated on load without each companion needing its own
+	// {Name}Init passage.
+	Companion.prototype.defaultState = function () {
+		var base = this.isTrans ? TRANS_BASE_STATS : CIS_BASE_STATS;
+		return Object.assign({ name: this.name }, base, this.initStats);
+	};
+
+	// Live mutable stat object — the same object the rest of the game
+	// reads/writes via $brook, $alice, etc. Returning undefined is fine
+	// before the companion's Init passage has run.
+	Companion.prototype.state = function () {
+		return State.variables[this.key];
+	};
+
+	// One of the five portrait files, keyed by the current attack chance.
+	// BASE_CHANCE → tier 1 (fully dressed); TIER_CHANCES[i] → tier i+2.
+	Companion.prototype.imagePath = function (chance) {
+		var idx = TIER_CHANCES.indexOf(chance);
+		var tier = idx === -1 ? 1 : idx + 2;
+		return this.imageFolder + "/" + this.imagePrefix + tier + ".png";
+	};
+
+	// Companion response for the currently-chosen attack chance. Returns
+	// the neutral line when nothing has been asked yet (chance 25), else
+	// the clothingTiers entry for that chance. $mc.name is interpolated
+	// here because the widget outputs via <<=>>, which doesn't re-wikify.
+	Companion.prototype.responseFor = function (chance) {
+		var idx = TIER_CHANCES.indexOf(chance);
+		var raw = idx === -1 ? this.neutralResp : this.clothingTiers[idx].resp;
+		var mcVar = State.variables.mc;
+		return raw.replace(/\$mc\.name/g, (mcVar && mcVar.name) || "");
+	};
+
+	Companion.prototype.tierChance = function (idx) { return TIER_CHANCES[idx]; };
+	Companion.prototype.tierCount  = function ()    { return TIER_CHANCES.length; };
+
+	// Small thumbnail portrait (contacts list / inline companion links /
+	// success banner). Cis companions have a single {folder}/{prefix}.png;
+	// trans companions rotate through trans/{$transPicture}.jpg as the
+	// hunt-event stages advance ($transPicture is set by companionTextEvent*).
+	Companion.prototype.portraitPath = function () {
+		if (this.isTrans) {
+			return "trans/" + (State.variables.transPicture || 1) + ".jpg";
+		}
+		return this.imageFolder + "/" + this.imagePrefix + ".png";
+	};
+
+	var COMPANIONS = COMPANION_CONFIG.map(function (cfg) { return new Companion(cfg); });
+
+	function getByName(name) {
+		for (var i = 0; i < COMPANIONS.length; i++) {
+			if (COMPANIONS[i].name === name) return COMPANIONS[i];
+		}
+		return null;
+	}
+
 	return {
-		// --- Identity ---------------------------------------------
+		// --- Catalogue -------------------------------------------
+		list: function () { return COMPANIONS; },
+		getByName: getByName,
+		// The companion currently selected by the player, or null if
+		// none. Mirrors setup.Ghosts.active() in shape; used by shared
+		// widgets (sanityPills, companionMain) that need pronouns or
+		// image paths without caring which companion is active.
+		active: function () {
+			var c = comp();
+			return c ? getByName(c.name) : null;
+		},
+		// Fresh stat object for a named companion. Used by SaveMigration
+		// to seed $brook/$alice/$blake/$alex/$taylor/$casey on new games
+		// and old saves that predate the companion's introduction.
+		defaultStateFor: function (name) {
+			var c = getByName(name);
+			return c ? c.defaultState() : null;
+		},
+
+		// --- Identity --------------------------------------------
 		name: function () { var c = comp(); return c && c.name; },
 		isTransCompanion: function () { return isTrans(this.name()); },
 		isName: isName,
