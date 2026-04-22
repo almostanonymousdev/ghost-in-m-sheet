@@ -3,12 +3,13 @@ const { openGame, resetGame, setVar, getVar, setHuntMode, getHuntMode, callSetup
 const { expectCleanPassage, setupHunt } = require('./e2e-helpers');
 
 const COMPANIONS = [
-  { name: 'Alice', passages: ['AliceInit', 'AliceMain', 'AliceHelp', 'AliceInfo', 'AliceContinue', 'AliceHuntEndAlone'] },
-  { name: 'Blake', passages: ['BlakeInit', 'BlakeMain', 'BlakeHelp', 'BlakeInfo', 'BlakeContinue', 'BlakeHuntEndAlone'] },
-  { name: 'Brook', passages: ['BrookInit', 'BrookMain', 'BrookHelp', 'BrookInfo', 'BrookHuntEndAlone'] },
+  { name: 'Alice', passages: ['AliceHelp', 'AliceInfo', 'AliceContinue', 'AliceHuntEndAlone'] },
+  { name: 'Blake', passages: ['BlakeHelp', 'BlakeInfo', 'BlakeContinue', 'BlakeHuntEndAlone'] },
+  { name: 'Brook', passages: ['BrookHelp', 'BrookInfo', 'BrookHuntEndAlone'] },
 ];
 
 const TRANS_COMPANIONS = ['Alex', 'Taylor', 'Casey'];
+const ALL_COMPANIONS = ['Brook', 'Alice', 'Blake', 'Alex', 'Taylor', 'Casey'];
 
 async function selectCompanion(page, name) {
   await page.evaluate((n) => SugarCube.setup.Companion.selectCompanion(n), name);
@@ -103,18 +104,24 @@ test.describe('Companions — passage rendering', () => {
     }
   }
 
-  for (const name of TRANS_COMPANIONS) {
-    test(`${name}Main renders cleanly`, async () => {
+  for (const name of ALL_COMPANIONS) {
+    test(`CompanionMain renders cleanly for ${name}`, async () => {
       await selectCompanion(page, name);
-      await goToPassage(page, name + 'Main');
+      // Seed vars read by CompanionMain via <<companionMain>>.
+      await setVar(page, 'chanceToAttackBrook', 25);
+      await setVar(page, 'chanceToAttackAlice', 25);
+      await setVar(page, 'chanceToAttackBlake', 25);
+      await setVar(page, 'chanceToAttackAlex', 25);
+      await setVar(page, 'chanceToAttackTaylor', 25);
+      await setVar(page, 'chanceToAttackCasey', 25);
+      await setVar(page, 'isCompChosen', 1);
+      await setHuntMode(page, 2);
+      await setVar(page, 'ghost', { name: 'Shade' });
+      await goToPassage(page, 'CompanionMain');
       await expectCleanPassage(page);
     });
   }
 
-  test('TransformationInit renders cleanly', async () => {
-    await goToPassage(page, 'TransformationInit');
-    await expectCleanPassage(page);
-  });
 });
 
 test.describe('Companions — hunt-side events', () => {

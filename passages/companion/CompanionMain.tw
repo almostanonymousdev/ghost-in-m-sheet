@@ -1,65 +1,88 @@
-:: BlakeMain [nobr] {"position":"2050,3875","size":"100,100"}
-<<if ndef $chanceToAttackBlake>><<set $chanceToAttackBlake to 25>><</if>>
+:: CompanionMain [nobr] {"position":"1950,3225","size":"100,100"}
+/* Shared Main screen for all six companions: portrait, clothing-tier
+   links, plan selection, walk-home. Per-companion text, image paths,
+   and walk-home eligibility come from setup.Companion's catalogue.
+
+   Keeps the existing $chanceToAttack<Name> / $brook / $alice / ... save
+   variables untouched so saves from before the refactor still work. */
+<<set _cname to $companion.name>>
+<<set _c to setup.Companion.getByName(_cname)>>
+<<set _state to _c.state()>>
+<<set _chanceVar to "chanceToAttack" + _cname>>
+<<if State.variables[_chanceVar] === undefined>>
+	<<run State.variables[_chanceVar] = 25>>
+<</if>>
 <div class="flexwrapperCompanionMain">
 <div class="companionImageMain">
 <<do>>
-<<if $chanceToAttackBlake eq 25>>
-	<<image "blake/blake1.png" { width: "100%" }>>
-<<elseif $chanceToAttackBlake eq 40>>
-	<<image "blake/blake2.png" { width: "100%" }>>
-<<elseif $chanceToAttackBlake eq 55>>
-	<<image "blake/blake3.png" { width: "100%" }>>
-<<elseif $chanceToAttackBlake eq 70>>
-	<<image "blake/blake4.png" { width: "100%" }>>
-<<elseif $chanceToAttackBlake eq 90>>
-	<<image "blake/blake5.png" { width: "100%" }>>
-<</if>><br>
+	<<image `_c.imagePath(State.variables[_chanceVar])` { width: "100%" }>><br>
 <</do>>
 </div>
 <div class="companionTextMain">
-<span style="color: yellow; font-weight: bold; font-size: 1.2em;">$blake.name :</span> $blake.lvl lvl <<if $blake.lvl gte 5>> (max. lvl)
-<<else>>($blake.exp / $blake.expForNextLvl)
+<span style="color: yellow; font-weight: bold; font-size: 1.2em;"><<= _state.name>> :</span>
+<<if _c.hasExpSystem>>
+	<<= _state.lvl>> lvl
+	<<if _state.lvl gte 5>>
+		(max. lvl)
+	<<else>>
+		(<<= _state.exp>> / <<= _state.expForNextLvl>>)
+	<</if>>
 <</if>><br>
 
-@@.mc-thoughts; I could ask her to take off some of her clothes. Maybe that way I could distract the ghost by drawing its attention to her. Plus, it would make it easier for her to move and stay less distracted...@@<br>
+@@.mc-thoughts; I could ask <<= _c.pronObj>> to take off some of <<= _c.pronPos>> clothes. Maybe that way I could distract the ghost by drawing its attention to <<= _c.pronObj>>. Plus, it would make it easier for <<= _c.pronObj>> to move and stay less distracted...@@<br>
 @@.mc-speech;
 <br>
-<<link "You'll be more comfortable in your regular clothes.">><<set $chanceToAttackBlake to 25>><<redo "companionAnswers">><<redo>><</link>><br>
-<div class="blakeLvlCheck1">
-<<link "You can take off your top, it'll make it easier for you to move.">><<set $chanceToAttackBlake to 40>><<redo "companionAnswers">><<redo>><</link>><<if $blake.lvl lt 1>>@@.warningtext; (Req. lvl 1+)@@
-<</if>><br>
+<<link "You'll be more comfortable in your regular clothes.">>
+	<<run State.variables[_chanceVar] = 25>>
+	<<redo "companionAnswers">><<redo>>
+<</link>><br>
+<div class="companionLvlCheck1">
+	<<link `_c.clothingTiers[0].mc`>>
+		<<run State.variables[_chanceVar] = _c.tierChance(0)>>
+		<<redo "companionAnswers">><<redo>>
+	<</link>>
+	<<if _state.lvl lt 1>>
+		@@.warningtext; (Req. lvl 1+)@@
+	<</if>>
+	<br>
 </div>
-<div class="blakeLvlCheck2">
-<<link "Stay in just your underwear, it might help us get through this.">><<set $chanceToAttackBlake to 55>><<redo "companionAnswers">><<redo>><</link>><<if $blake.lvl lt 2>>@@.warningtext; (Req. lvl 2+)@@
-<</if>><br>
+<div class="companionLvlCheck2">
+	<<link `_c.clothingTiers[1].mc`>>
+		<<run State.variables[_chanceVar] = _c.tierChance(1)>>
+		<<redo "companionAnswers">><<redo>>
+	<</link>>
+	<<if _state.lvl lt 2>>
+		@@.warningtext; (Req. lvl 2+)@@
+	<</if>>
+	<br>
 </div>
-<div class="blakeLvlCheck3">
-<<link "Just keep your panties on, it'll be easier for both of us.">><<set $chanceToAttackBlake to 70>><<redo "companionAnswers">><<redo>><</link>><<if $blake.lvl lt 3>>@@.warningtext; (Req. lvl 3+)@@
-<</if>><br>
+<div class="companionLvlCheck3">
+	<<link `_c.clothingTiers[2].mc`>>
+		<<run State.variables[_chanceVar] = _c.tierChance(2)>>
+		<<redo "companionAnswers">><<redo>>
+	<</link>>
+	<<if _state.lvl lt 3>>
+		@@.warningtext; (Req. lvl 3+)@@
+	<</if>>
+	<br>
 </div>
-<div class="blakeLvlCheck4">
-<<link "Take everything off, I think it'll distract the ghost and give us an advantage.">><<set $chanceToAttackBlake to 90>><<redo "companionAnswers">><<redo>><</link>><<if $blake.lvl lt 4>>@@.warningtext; (Req. lvl 4+)@@
-<</if>><br>
+<div class="companionLvlCheck4">
+	<<link `_c.clothingTiers[3].mc`>>
+		<<run State.variables[_chanceVar] = _c.tierChance(3)>>
+		<<redo "companionAnswers">><<redo>>
+	<</link>>
+	<<if _state.lvl lt 4>>
+		@@.warningtext; (Req. lvl 4+)@@
+	<</if>>
+	<br>
 </div>
 @@
 <br>
 <<do tag "companionAnswers">>
-@@.notmc-speech;
-<<if $chanceToAttackBlake eq 25>>
-	Let's just focus on the task.
-<<elseif $chanceToAttackBlake eq 40>>
-	Take my top off? Well... alright, if you think it'll help.
-<<elseif $chanceToAttackBlake eq 55>>
-	Down to my underwear? Okay, I trust you.
-<<elseif $chanceToAttackBlake eq 70>>
-	Just my panties? This is so embarrassing, but fine...
-<<elseif $chanceToAttackBlake eq 90>>
-	Completely naked? You're lucky I like you, $mc.name.
-<</if>>
-@@
+	@@.notmc-speech;<<= setup.Companion.getByName(_cname).responseFor(State.variables[_chanceVar])>>@@
 <</do>><br>
-<<set $chanceToAttack to $chanceToAttackBlake>>
-@@.warningtext; Chance of ghost encounter: <<do>>$chanceToAttackBlake %
+<<run State.variables.chanceToAttack = State.variables[_chanceVar]>>
+@@.warningtext; Chance of ghost encounter: <<do>><<= State.variables[_chanceVar]>> %
 <</do>>@@<br>
 <br>
 </div>
@@ -71,8 +94,8 @@
 <br>
 @@.usebtn;<<link "Let's stick together for now">>
 	<<set $chosenPlan to "Plan1">>
-	<<set $chosenPlanActivated to 0>>
 	<<set $showComp to 1>>
+	<<set $chosenPlanActivated to 0>>
 	<<replace "#compResponse">>
 		@@.notmc-speech;Good, I'll stay close to you.@@
 	<</replace>>
@@ -116,8 +139,8 @@
 	<</replace>>
 <</link>>@@<br>
 
-<<if setup.Ghosts.isHunting()>>
-	@@.usebtn;<<link "Ask her to walk you home.">>
+<<if _c.canWalkHome and setup.Ghosts.isHunting()>>
+	@@.usebtn;<<link `"Ask " + _c.pronObj + " to walk you home."`>>
 
 		<<replace "#compResponse">>
 			@@.mc-speech; I think that's enough. Can you walk me home, please?@@<br>
@@ -153,8 +176,6 @@
 							@@.backbtn; [[Go home together naked|NudityEventTwo]]@@<br>
 						<</if>>
 					<</linkreplace>>
-				<<else>>
-
 				<</if>>
 			<</if>>
 		<</replace>>
@@ -171,19 +192,8 @@
 	<<if not setup.Companion.cursedItemQuestUnlocked()>>
 		<<addclass "#checkQuestForCursedItem" "disabled-link">>
 	<</if>>
-	<<if $blake.lvl lt 1>>
-		<<addclass ".blakeLvlCheck1" "disabled-link">>
-		<<addclass ".blakeLvlCheck2" "disabled-link">>
-		<<addclass ".blakeLvlCheck3" "disabled-link">>
-		<<addclass ".blakeLvlCheck4" "disabled-link">>
-	<<elseif $blake.lvl lt 2>>
-		<<addclass ".blakeLvlCheck2" "disabled-link">>
-		<<addclass ".blakeLvlCheck3" "disabled-link">>
-		<<addclass ".blakeLvlCheck4" "disabled-link">>
-	<<elseif $blake.lvl lt 3>>
-		<<addclass ".blakeLvlCheck3" "disabled-link">>
-		<<addclass ".blakeLvlCheck4" "disabled-link">>
-	<<elseif $blake.lvl lt 4>>
-		<<addclass ".blakeLvlCheck4" "disabled-link">>
-	<</if>>
+	<<set _stateLvl to setup.Companion.getByName(_cname).state().lvl>>
+	<<for _j to _stateLvl; _j lt setup.Companion.getByName(_cname).tierCount(); _j++>>
+		<<addclass `".companionLvlCheck" + (_j + 1)` "disabled-link">>
+	<</for>>
 <</done>>
