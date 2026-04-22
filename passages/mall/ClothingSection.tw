@@ -42,4 +42,4 @@
 </div>
 <br>
 @@.backbtn;[[Leave|Mall]] @@
-<<include "StyleMallClothing">>
+<<bodyBackground "assets/img/clothing-section.jpg">>

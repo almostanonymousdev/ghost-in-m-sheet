@@ -24,4 +24,4 @@
 </div>
 <br>
 @@.backbtn;[[Leave|AdultSection]] @@<br>
-<<include "StyleMallAdult">>
+<<bodyBackground "assets/img/adult-section.jpeg">>

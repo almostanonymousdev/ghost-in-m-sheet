@@ -11,4 +11,4 @@
 <br>
 
 @@.backbtn;[[Leave|BeautySalonInside]] @@<br>
-<<include "StyleSalon">>
+<<bodyBackground "assets/img/beauty-salon-inside.jpg">>
