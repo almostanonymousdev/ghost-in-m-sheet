@@ -94,6 +94,32 @@ def is_in_embedded_block(lines: list[str], idx: int) -> bool:
     return depth > 0
 
 
+def comment_line_indices(lines: list[str]) -> set[int]:
+    """0-based indices of lines whose content is comment body — lines
+    that sit inside a /* ... */ block (including the closing ` */`
+    line), plus whole-line // comments. Indent checks should skip these:
+    wrapping text under a /* opener or aligning with `* `/`// ` is not
+    the same as mixing code indentation."""
+    result: set[int] = set()
+    in_block = False
+    for i, line in enumerate(lines):
+        if in_block:
+            result.add(i)
+            if "*/" in line:
+                in_block = False
+            continue
+        stripped = line.lstrip()
+        if stripped.startswith("//"):
+            result.add(i)
+            continue
+        start = line.find("/*")
+        if start != -1 and line.find("*/", start + 2) == -1:
+            # Opens a multi-line block comment; the opening line's own
+            # indent is still at code level, so don't mark it.
+            in_block = True
+    return result
+
+
 # ---------------------------------------------------------------------------
 # Warning data class
 # ---------------------------------------------------------------------------
@@ -295,11 +321,14 @@ def lint_file(path: Path) -> list[Warning]:
             check_mixed_indent,
         ]
 
+        comment_lines = comment_line_indices(plines)
+
         for j, line in enumerate(plines):
             lineno = pstart + j
             in_embed = is_in_embedded_block(plines, j)
+            in_comment = j in comment_lines
             for check in checks:
-                if in_embed and check in (check_mixed_indent,):
+                if check is check_mixed_indent and (in_embed or in_comment):
                     continue
                 warnings.extend(check(line, lineno))
 

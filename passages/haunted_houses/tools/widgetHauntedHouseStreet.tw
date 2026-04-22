@@ -11,21 +11,21 @@
 		<div class="housecard">
 		<<image _hc.image "iconPx">>
 		<<nobr>>
-		<<if $mc.lvl gte _hc.levelGate>>
-			<<capture _hc>>
-				@@.icontext;<<link _hc.streetPassage _hc.streetPassage>>
-					<<set _reward to setup.HauntedHouses.contractReward(_hc.id)>>
-					<<set $moneyFromContract to _reward.money>>
-					<<set $expFromContract to _reward.xp>>
-					<<run setup.HauntedHouses.activate(_hc.id)>>
-					<<if _hc.runsFurnitureCode>><<include "FurnitureCode">><</if>>
-					<<set $hunt.room to setup.HauntedHouses.rollStartingRoom(_hc.id)>>
-				<</link>>@@
-			<</capture>>
-		<<else>>
-			<<set _hcGate to _hc.levelGate>>
-			@@.mc-thoughts; Level _hcGate+ required@@
-		<</if>>
+			<<if $mc.lvl gte _hc.levelGate>>
+				<<capture _hc>>
+					@@.icontext;<<link _hc.streetPassage _hc.streetPassage>>
+						<<set _reward to setup.HauntedHouses.contractReward(_hc.id)>>
+						<<set $moneyFromContract to _reward.money>>
+						<<set $expFromContract to _reward.xp>>
+						<<run setup.HauntedHouses.activate(_hc.id)>>
+						<<if _hc.runsFurnitureCode>><<include "FurnitureCode">><</if>>
+						<<set $hunt.room to setup.HauntedHouses.rollStartingRoom(_hc.id)>>
+					<</link>>@@
+				<</capture>>
+			<<else>>
+				<<set _hcGate to _hc.levelGate>>
+				@@.mc-thoughts; Level _hcGate+ required@@
+			<</if>>
 		<</nobr>>
 		</div>
 	<</if>>
