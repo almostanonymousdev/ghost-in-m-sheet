@@ -1,38 +1,46 @@
 :: TarotCards [nobr noreturn] {"position":"800,3200","size":"100,100"}
-<<set $tarotDeck to [
-{ name: "passion", chance: 20, image: "cursedpossessions/tarot-cards/passion.jpg" },
-{ name: "pulse", chance: 20, image: "cursedpossessions/tarot-cards/pulse.jpg" },
-{ name: "oblivion", chance: 1, image: "cursedpossessions/tarot-cards/oblivion.jpg" } ,
-{ name: "knowledge", chance: 10, image: "cursedpossessions/tarot-cards/knowledge.jpg" },
-{ name: "power", chance: 12, image: "cursedpossessions/tarot-cards/power.jpg" },
-{ name: "whore", chance: 10, image: "cursedpossessions/tarot-cards/whore.jpg" },
-{ name: "death", chance: 5, image: "cursedpossessions/tarot-cards/death.jpg" },
-{ name: "possession", chance: 1, image: "cursedpossessions/tarot-cards/possession.jpg" },
-{ name: "highpriestess", chance: 2, image: "cursedpossessions/tarot-cards/highpriestess.jpg" },
-{ name: "fool", chance: 19, image: "cursedpossessions/tarot-cards/fool.jpg" }
-]>>
+<<script>>
+/* Canonical tarot deck. `effect` names the widget invoked after the card
+   is drawn (defined in widgetTarot.tw); draw-time dispatch below is a
+   single line: <<= '<<' + $chosenCard.effect + '>>'>>. Fool has no
+   effect widget -- its reveal-then-swap flow is handled directly by
+   the draw logic. */
+setup.tarotDeck = setup.tarotDeck || [
+	{ name: "passion",       chance: 20, image: "cursedpossessions/tarot-cards/passion.jpg",       effect: "tarotPassion" },
+	{ name: "pulse",         chance: 20, image: "cursedpossessions/tarot-cards/pulse.jpg",         effect: "tarotPulse" },
+	{ name: "oblivion",      chance:  1, image: "cursedpossessions/tarot-cards/oblivion.jpg",      effect: "tarotOblivion" },
+	{ name: "knowledge",     chance: 10, image: "cursedpossessions/tarot-cards/knowledge.jpg",     effect: "tarotKnowledge" },
+	{ name: "power",         chance: 12, image: "cursedpossessions/tarot-cards/power.jpg",         effect: "tarotPower" },
+	{ name: "whore",         chance: 10, image: "cursedpossessions/tarot-cards/whore.jpg",         effect: "tarotWhore" },
+	{ name: "death",         chance:  5, image: "cursedpossessions/tarot-cards/death.jpg",         effect: "tarotDeath" },
+	{ name: "possession",    chance:  1, image: "cursedpossessions/tarot-cards/possession.jpg",    effect: "tarotPossession" },
+	{ name: "highpriestess", chance:  2, image: "cursedpossessions/tarot-cards/highpriestess.jpg", effect: "tarotHighpriestess" },
+	{ name: "fool",          chance: 19, image: "cursedpossessions/tarot-cards/fool.jpg" }
+];
+
+/* Weighted pick: roll once against the accumulated chances, return the
+   first card whose running total covers the roll. */
+setup.drawTarotCard = function (deck) {
+	var roll = Math.floor(Math.random() * 101);
+	var acc = 0;
+	for (var i = 0; i < deck.length; i++) {
+		acc += deck[i].chance;
+		if (roll <= acc) return deck[i];
+	}
+	return deck[deck.length - 1];
+};
+<</script>>
+<<set $tarotDeck to setup.tarotDeck>>
 <div id="tarotCard"><<image "cursedpossessions/tarot-cards/tarot.png" "displayCentredImgs">></div>
 
 <div id="tarotCardsEnd" class="tarotCardHidden"><<link "@@.usebtn;Pull a card@@">>
 	<<replace "#tarotCard">>
 		<<if $drawnCards < 10>>
-			<<set $randomNum to random(0,100)>>
-			<<set $accumulatedChance to 0>>
-			<<set $chosenCard to null>>
-
-			<<for _i, _card range $tarotDeck>>
-				<<set $accumulatedChance to $accumulatedChance + _card.chance>>
-				<<if $randomNum lte $accumulatedChance and $chosenCard is null>>
-					<<set $chosenCard to _card>>
-				<</if>>
-			<</for>>
+			<<set $chosenCard to setup.drawTarotCard($tarotDeck)>>
 
 			<<if $chosenCard>>
-
 				<<if $chosenCard.name eq "fool">>
-					<<set _randomIndex to random(0, 8)>>
-					<<set _tempCard to $tarotDeck[_randomIndex]>>
-
+					<<set _tempCard to $tarotDeck[random(0, 8)]>>
 					<div class="fadeInScale">
 					<<image _tempCard.image "displayCentredImgs fadeInScale">></div>
 					@@.mc-speech; Oh... something's about to happen... but what...@@
@@ -49,9 +57,7 @@
 							<<run $(".fadeInScaleFool").addClass("tarotCardsShow")>>
 							<<removeclass ".tarotCardHidden" "disabled-link">>
 						<</done>>
-
 					<</timed>>
-
 				<<else>>
 					<div class="fadeInScale">
 					<<image $chosenCard.image "displayCentredImgs">>
@@ -68,95 +74,9 @@
 					<</timed>>
 				<</if>>
 
-				<<if $chosenCard.name eq "passion">>
-					<<timed 2s>>
-						<<randRangeVideo "cursedpossessions/passion" 1 4 ".mp4">>
-						@@.mc-speech; Ah~ I'm getting so wet down there... mmm. @@<br>
-						@@.mc-thoughts; Lust increased: +15 <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
-						@@.mc-thoughts; Sanity decreased: -15 <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
-						<<addSanity -15>>
-						<<addLust 15>>
-						<<run setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 50)>>
-
-					<</timed>>
-
-				<<elseif $chosenCard.name eq "pulse">>
-					<<timed 2s>>
-
-						<<randRangeVideo "cursedpossessions/pulse" 1 4 ".mp4">>
-						@@.mc-speech; My... oh~ my little asshole is pulsating so hard... <br>
-						Somehow, I feel much better after that...@@<br>
-						@@.mc-thoughts; Lust decreased: -15 <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
-						@@.mc-thoughts; Sanity increased: +15 <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
-						<<addSanity 15>>
-						<<addLust -15>>
-						<<run setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 50)>>
-					<</timed>>
-
-				<<elseif $chosenCard.name eq "oblivion">>
-					@@.mc-speech; It's... all going dark... I... can't... hold on... @@
-					<<timed 2s>>
-						<<goto "HuntOverSanity">>
-					<</timed>>
-				<<elseif $chosenCard.name eq "knowledge">>
-					<<timed 2s>>
-
-						<<if $knowledgeUsed neq 1>>
-							<<set $knowledgeUsed to 1>>
-							<<set _allEvidence to ["emf", "spiritbox", "gwb", "uvl", "glass", "temperature"]>>
-							<<set _missingEvidence to _allEvidence.filter(e => !$hunt.evidence.includes(e) && e !== $hiddenEvidence && e !== $hiddenEvidence1 && e !== $hiddenEvidence2)>>
-							<<set $chosenEvidence to _missingEvidence.random()>>
-						<</if>>
-						@@.mc-speech; Knowledge? Hmm... interesting, that should be useful, right? @@<br>
-					<</timed>>
-				<<elseif $chosenCard.name eq "power">>
-					<<timed 2s>>
-
-						<<randRangeVideo "cursedpossessions/power" 1 3 ".mp4">>
-						<<run setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 50)>>
-						@@.mc-speech; Wow, I can feel power surging through me! Oh, I'm ready to take on anything! @@<br>
-						@@.mc-thoughts; Energy increased: +5 <<image "img/energy.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
-						<<addEnergy 5>>
-						<<addFit 1>>
-
-					<</timed>>
-				<<elseif $chosenCard.name eq "whore">>
-					<<timed 2s>>
-
-						<<randRangeVideo "cursedpossessions/whore" 1 6 ".mp4">>
-						@@.mc-speech; Damn, I can feel this affecting my body... everything's so sensitive, and some parts feel... bigger... @@<br>
-						@@.mc-thoughts; Corruption increased: +0.3 <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
-						<<set $mc.corruption += 0.3>>
-						<<run setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 50)>>
-					<</timed>>
-				<<elseif $chosenCard.name eq "death">>
-					@@.mc-speech; This can't be a good card. Oh no, I'm scared...I need to hide somewhere!@@
-					<<timed 2s>>
-						<<if $cursedHuntOption eq 0 or ndef $cursedHuntOption>>
-							<<include "CursedHunt">>
-							<<script>>
-        setTimeout(() => {
-            Engine.play(State.variables.return);
-        }, 50);
-							<</script>>
-						<<else>>
-							<<goto "GhostHuntEvent">>
-						<</if>>
-					<</timed>>
-				<<elseif $chosenCard.name eq "possession">>
-					@@.mc-speech; Oh fuck.@@<br>
-					<<timed 2s>>
-						<<set $hunt.mode to setup.Ghosts.HuntMode.POSSESSED>>
-						<<set $hours to random(12,20)>>
-						<<goto "CityMapPossessed">>
-					<</timed>>
-				<<elseif $chosenCard.name eq "highpriestess">>
-					<<timed 2s>>
-						@@.mc-speech; Looks like I'm still alive, and no one's about to attack me. I guess things aren't so bad. @@<br>
-						<<set $highpriestess to 1>>
-					<</timed>>
+				<<if $chosenCard.effect>>
+					<<= "<<" + $chosenCard.effect + ">>">>
 				<</if>>
-
 			<</if>>
 		<<else>>
 			<<replace "#tarotCardsEnd">>

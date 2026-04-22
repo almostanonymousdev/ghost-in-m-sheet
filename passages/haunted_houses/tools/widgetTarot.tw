@@ -1,0 +1,102 @@
+:: widgetTarot [widget nobr] {"position":"800,3300","size":"100,100"}
+/* Per-card effect widgets invoked from TarotCards.tw via the data-driven
+   dispatcher. Each widget owns the post-draw behaviour for one card
+   (video clip, stat deltas, goto) so the draw passage holds only the
+   reveal animation + dispatch -- not a 10-arm if/elseif chain. */
+
+<<widget "tarotPassion">>
+	<<timed 2s>>
+		<<randRangeVideo "cursedpossessions/passion" 1 4 ".mp4">>
+		@@.mc-speech; Ah~ I'm getting so wet down there... mmm. @@<br>
+		@@.mc-thoughts; Lust increased: +15 <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
+		@@.mc-thoughts; Sanity decreased: -15 <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
+		<<addSanity -15>>
+		<<addLust 15>>
+		<<run setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 50)>>
+	<</timed>>
+<</widget>>
+
+<<widget "tarotPulse">>
+	<<timed 2s>>
+		<<randRangeVideo "cursedpossessions/pulse" 1 4 ".mp4">>
+		@@.mc-speech; My... oh~ my little asshole is pulsating so hard... <br>
+		Somehow, I feel much better after that...@@<br>
+		@@.mc-thoughts; Lust decreased: -15 <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
+		@@.mc-thoughts; Sanity increased: +15 <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
+		<<addSanity 15>>
+		<<addLust -15>>
+		<<run setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 50)>>
+	<</timed>>
+<</widget>>
+
+<<widget "tarotOblivion">>
+	@@.mc-speech; It's... all going dark... I... can't... hold on... @@
+	<<timed 2s>>
+		<<goto "HuntOverSanity">>
+	<</timed>>
+<</widget>>
+
+<<widget "tarotKnowledge">>
+	<<timed 2s>>
+		<<if $knowledgeUsed neq 1>>
+			<<set $knowledgeUsed to 1>>
+			<<set _allEvidence to ["emf", "spiritbox", "gwb", "uvl", "glass", "temperature"]>>
+			<<set _missingEvidence to _allEvidence.filter(e => !$hunt.evidence.includes(e) && e !== $hiddenEvidence && e !== $hiddenEvidence1 && e !== $hiddenEvidence2)>>
+			<<set $chosenEvidence to _missingEvidence.random()>>
+		<</if>>
+		@@.mc-speech; Knowledge? Hmm... interesting, that should be useful, right? @@<br>
+	<</timed>>
+<</widget>>
+
+<<widget "tarotPower">>
+	<<timed 2s>>
+		<<randRangeVideo "cursedpossessions/power" 1 3 ".mp4">>
+		<<run setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 50)>>
+		@@.mc-speech; Wow, I can feel power surging through me! Oh, I'm ready to take on anything! @@<br>
+		@@.mc-thoughts; Energy increased: +5 <<image "img/energy.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
+		<<addEnergy 5>>
+		<<addFit 1>>
+	<</timed>>
+<</widget>>
+
+<<widget "tarotWhore">>
+	<<timed 2s>>
+		<<randRangeVideo "cursedpossessions/whore" 1 6 ".mp4">>
+		@@.mc-speech; Damn, I can feel this affecting my body... everything's so sensitive, and some parts feel... bigger... @@<br>
+		@@.mc-thoughts; Corruption increased: +0.3 <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
+		<<set $mc.corruption += 0.3>>
+		<<run setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 50)>>
+	<</timed>>
+<</widget>>
+
+<<widget "tarotDeath">>
+	@@.mc-speech; This can't be a good card. Oh no, I'm scared...I need to hide somewhere!@@
+	<<timed 2s>>
+		<<if $cursedHuntOption eq 0 or ndef $cursedHuntOption>>
+			<<include "CursedHunt">>
+			<<script>>
+				setTimeout(() => {
+					Engine.play(State.variables.return);
+				}, 50);
+			<</script>>
+		<<else>>
+			<<goto "GhostHuntEvent">>
+		<</if>>
+	<</timed>>
+<</widget>>
+
+<<widget "tarotPossession">>
+	@@.mc-speech; Oh fuck.@@<br>
+	<<timed 2s>>
+		<<set $hunt.mode to setup.Ghosts.HuntMode.POSSESSED>>
+		<<set $hours to random(12,20)>>
+		<<goto "CityMapPossessed">>
+	<</timed>>
+<</widget>>
+
+<<widget "tarotHighpriestess">>
+	<<timed 2s>>
+		@@.mc-speech; Looks like I'm still alive, and no one's about to attack me. I guess things aren't so bad. @@<br>
+		<<set $highpriestess to 1>>
+	<</timed>>
+<</widget>>

@@ -23,10 +23,21 @@ module.exports = defineConfig({
     video: 'off',
     trace: 'off',
   },
+  /* Lint specs (asset-filename-lint, tw-source-lint) read files straight
+     from disk — no browser needed and sub-second runtime. Putting them
+     in a dedicated `lint` project and making `chromium` depend on it
+     means the cheap static checks run first; a lint failure fails the
+     run before any e2e worker spins up. */
   projects: [
     {
+      name: 'lint',
+      testMatch: /.*-lint\.spec\.js/,
+    },
+    {
       name: 'chromium',
+      testIgnore: /.*-lint\.spec\.js/,
       use: { browserName: 'chromium' },
+      dependencies: ['lint'],
     },
   ],
 });

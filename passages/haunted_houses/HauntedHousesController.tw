@@ -4,12 +4,173 @@
  * subsystem: hunt mode, clothing state, stolen-clothes tracking,
  * and the shared hunt-end cleanup. Passages call into
  * setup.HauntedHouses instead of inlining the underlying checks.
+ *
+ * Also owns the HOUSE_CONFIG catalogue -- the per-house metadata
+ * (image, level gate, contract tiers, rooms) that GhostStreet and
+ * the per-street passages consume via the <<huntHouseCard>> /
+ * <<huntHouseStreet>> widgets.
  */
 setup.HauntedHouses = (function () {
 	function v(name) { return State.variables[name]; }
 	function mc() { return State.variables.mc; }
 
+	/* Canonical haunted-house catalogue. One entry per selectable house.
+		`flag` is the existing $is<House> state key that passages key off;
+		`rooms` is the list of room state-var names used by GhostStreet
+		(for the initial $hunt.room roll) and ChangeGhostRoom; `contract`
+		holds the four-tier money/xp reward scale driven by how many
+		evidence types the witch has hidden this contract. */
+	var HOUSE_CONFIG = [
+		{
+			id: 'owaissa',
+			flag: 'isOwaissa',
+			streetPassage: 'Owaissa Street',
+			hallwayPassage: 'OwaissaHallway',
+			image: 'img/owaissa-house.jpg',
+			levelGate: 0,
+			isRealHouse: false,
+			runsFurnitureCode: true,
+			rooms: ['kitchen', 'bathroom', 'bedroom', 'livingroom', 'hallway'],
+			contract: {
+				zero:  { money: 120, xp:  35 },
+				one:   { money: 240, xp:  70 },
+				two:   { money: 340, xp: 100 },
+				three: { money: 450, xp: 140 }
+			}
+		},
+		{
+			id: 'elm',
+			flag: 'isElm',
+			streetPassage: 'Elm Street',
+			hallwayPassage: 'ElmHallway',
+			image: 'img/elm-house.jpg',
+			levelGate: 3,
+			isRealHouse: false,
+			runsFurnitureCode: true,
+			rooms: [
+				'kitchen', 'bathroom', 'bedroom', 'nursery', 'hallway',
+				'hallwayUpstairs', 'bedroomTwo', 'bathroomTwo', 'basement'
+			],
+			contract: {
+				zero:  { money: 180, xp:  60 },
+				one:   { money: 320, xp: 100 },
+				two:   { money: 440, xp: 150 },
+				three: { money: 550, xp: 180 }
+			}
+		},
+		{
+			id: 'enigma',
+			flag: 'isEnigma',
+			streetPassage: 'Enigma Street',
+			hallwayPassage: 'EnigmaHallway',
+			image: 'img/enigma-house.jpg',
+			levelGate: 2,
+			isRealHouse: true,
+			runsFurnitureCode: false,
+			rooms: [
+				'kitchen', 'bathroom', 'bedroom', 'livingroom', 'hallway',
+				'roomA', 'roomB', 'roomC', 'basement'
+			],
+			contract: {
+				zero:  { money: 120, xp:  35 },
+				one:   { money: 240, xp:  70 },
+				two:   { money: 340, xp: 100 },
+				three: { money: 450, xp: 140 }
+			}
+		},
+		{
+			id: 'ironclad',
+			flag: 'isIronclad',
+			streetPassage: 'Ironclad Prison',
+			hallwayPassage: 'IroncladHallway',
+			image: 'room/ironclad/ironclad.webp',
+			levelGate: 4,
+			isRealHouse: false,
+			runsFurnitureCode: true,
+			rooms: [
+				'BlockA', 'BlockB',
+				'BlockACellA', 'BlockACellB', 'BlockACellC',
+				'BlockBCellA', 'BlockBCellB', 'BlockBCellC',
+				'reception', 'kitchen', 'hallway'
+			],
+			contract: {
+				zero:  { money: 170, xp:  60 },
+				one:   { money: 240, xp: 100 },
+				two:   { money: 440, xp: 150 },
+				three: { money: 650, xp: 240 }
+			}
+		}
+	];
+
+	/* Map the three $delete*Evidence flags onto a contract-tier key.
+		Third takes priority, then second, then one, else zero. */
+	function contractTier() {
+		if (v('deleteThirdEvidence') === 1)  return 'three';
+		if (v('deleteSecondEvidence') === 1) return 'two';
+		if (v('deleteOneEvidence') === 1)    return 'one';
+		return 'zero';
+	}
+
 	return {
+		// --- House catalogue ------------------------------------
+		list: function () { return HOUSE_CONFIG; },
+		byId: function (id) {
+			for (var i = 0; i < HOUSE_CONFIG.length; i++) {
+				if (HOUSE_CONFIG[i].id === id) return HOUSE_CONFIG[i];
+			}
+			return null;
+		},
+		/* Clear every $is<House> flag, then raise the one for `id`.
+			Called from GhostStreet when the player picks a house. */
+		activate: function (id) {
+			var s = State.variables;
+			HOUSE_CONFIG.forEach(function (h) { s[h.flag] = 0; });
+			s.isrealhouse = 0;
+			var h = this.byId(id);
+			if (!h) return;
+			s[h.flag] = 1;
+			s.isrealhouse = h.isRealHouse ? 1 : 0;
+		},
+		/* Reward for the current contract, driven by how many evidence
+			types the witch has hidden ($delete*Evidence flags). */
+		contractReward: function (id) {
+			var h = this.byId(id);
+			if (!h) return { money: 0, xp: 0 };
+			return h.contract[contractTier()];
+		},
+		/* Pick the ghost's starting room from the given house's room
+			list, cloned from the matching state var so the furniture-
+			search overlay stays in sync. Falls back to null when no
+			state var is present yet. */
+		rollStartingRoom: function (id) {
+			var h = this.byId(id);
+			if (!h) return null;
+			var name = h.rooms[Math.floor(Math.random() * h.rooms.length)];
+			var src = State.variables[name];
+			return src ? clone(src) : null;
+		},
+		roomsFor: function (id) {
+			var h = this.byId(id);
+			return h ? h.rooms.slice() : [];
+		},
+		/* The house that currently owns the hunt, based on the $is<House>
+			flag set by activate(). null when none is set (witch pre-hunt,
+			or after GhostStreet teardown). */
+		activeHouse: function () {
+			for (var i = 0; i < HOUSE_CONFIG.length; i++) {
+				if (v(HOUSE_CONFIG[i].flag) === 1) return HOUSE_CONFIG[i];
+			}
+			return null;
+		},
+		/* Wipe every $is<House> flag. Used after GhostStreet has placed
+			the player inside a house (the specific flag stays set via
+			the individual per-house `$is<House>`; activate() nulls the
+			rest first). */
+		clearHouseFlags: function () {
+			var s = State.variables;
+			HOUSE_CONFIG.forEach(function (h) { s[h.flag] = 0; });
+		},
+
 		// --- Hunt mode (forwards to setup.Ghosts) ---------------
 		isContractMode: function () { return setup.Ghosts.hasContract(); },
 		isInsideHouse: function () { return setup.Ghosts.isHunting(); },

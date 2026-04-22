@@ -1,20 +1,15 @@
 :: Ironclad Prison [nobr] {"position":"2700,525","size":"100,100"}
-<<image "room/ironclad/ironclad.webp" { width: "90%" }>><br>
-@@.location; Prison "Ironclad"@@<br>
-@@.mc-thoughts; Ironclad Prison, once a symbol of justice, now stands abandoned, its long and storied past cloaked in shadows. Whispers speak of restless spirits wandering its halls--a chilling reminder of the darkness it once held.@@<br>
-<br>
-
-<<if $wardenClothesStage eq 2>>
-	@@.movebtn;[[Go inside|IroncladHallway][$hunt.mode to setup.Ghosts.HuntMode.ACTIVE]]@@<br>
-<<else>>
-	@@.movebtn; <<linkreplace "Go inside">>
-		<<set $wardenClothesStage to 0>>
-		@@.mc-thoughts; You walk through the prison, exploring every room. But nothing happens.@@<br>
-		@@.mc-speech; Something's not right. This is definitely the place, but there are no ghosts... I guess I should ask the witch. @@<br><br>
-		@@.backbtn; [[Return home|Home][$hours += 6; $isIronclad to 0]] @@<br>
-	<</linkreplace>>@@
-<</if>>
-<br>
-<br>
-<<if setup.Ghosts.isHunting()>><span class="movebtn">[[End the hunt|HuntOverManual][$hunt.mode to setup.Ghosts.HuntMode.POSSESSED]]</span><<else>>
-<</if>>
+<<huntHouseStreet "ironclad" `'Prison "Ironclad"'`
+"Ironclad Prison, once a symbol of justice, now stands abandoned, its long and storied past cloaked in shadows. Whispers speak of restless spirits wandering its halls--a chilling reminder of the darkness it once held.">>
+	<<if $wardenClothesStage eq 2>>
+		@@.movebtn;[[Go inside|IroncladHallway][$hunt.mode to setup.Ghosts.HuntMode.ACTIVE]]@@<br>
+	<<else>>
+		@@.movebtn; <<linkreplace "Go inside">>
+			<<set $wardenClothesStage to 0>>
+			<<set $mc.energy to 0>>
+			@@.mc-thoughts; You walk through the prison, exploring every room. But nothing happens.@@<br>
+			@@.mc-speech; Something's not right. This is definitely the place, but there are no ghosts... I guess I should ask the witch. @@<br><br>
+			@@.backbtn; [[Return home|Home][$hours += 6; $isIronclad to 0]] @@<br>
+		<</linkreplace>>@@
+	<</if>>
+<</huntHouseStreet>>

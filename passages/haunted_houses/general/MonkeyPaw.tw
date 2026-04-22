@@ -1,4 +1,36 @@
 :: MonkeyPaw [nobr noreturn] {"position":"900,3200","size":"100,100"}
+<<script>>
+/* Canonical Monkey Paw wish catalogue. Each entry owns its unlock flag,
+   button label, text-input keyword, and the widget that applies the
+   effect (in widgetText.tw). The draw flow in this passage iterates
+   the catalogue to render guarded buttons and to route textbox input
+   to the matching effect. "anything" is a meta-wish that picks one of
+   the other six uniformly. */
+setup.MonkeyPawWishes = setup.MonkeyPawWishes || [
+	{ id: "activity",     flag: "wishActivity",     input: "activity",       label: "I wish for activity",       widget: "activity" },
+	{ id: "trapTheGhost", flag: "wishTraptheghost", input: "trap the ghost", label: "I wish to trap the ghost",  widget: "trapTheGhost" },
+	{ id: "sanity",       flag: "wishSanity",       input: "be sane",        label: "I wish to be sane",         widget: "sanity" },
+	{ id: "leave",        flag: "wishLeave",        input: "leave",          label: "I wish to leave",           widget: "leave" },
+	{ id: "knowledge",    flag: "wishKnowledge",    input: "knowledge",      label: "I wish for knowledge",      widget: "knowledge" },
+	{ id: "dawn",         flag: "wishDawn",         input: "dawn",           label: "I wish for dawn",           widget: "dawn" }
+];
+
+/* Look up a wish catalogue entry by one of its identifiers. `by` is
+   "input" for textbox matching, "id" for programmatic lookup. */
+setup.findMonkeyPawWish = function (by, value) {
+	var v = (value || "").toString().toLowerCase();
+	for (var i = 0; i < setup.MonkeyPawWishes.length; i++) {
+		if (setup.MonkeyPawWishes[i][by].toLowerCase() === v) return setup.MonkeyPawWishes[i];
+	}
+	return null;
+};
+
+/* Pick one of the six real wishes for an "anything" roll. */
+setup.rollAnythingWish = function () {
+	var deck = setup.MonkeyPawWishes;
+	return deck[Math.floor(Math.random() * deck.length)];
+};
+<</script>>
 <div class="MonkeyPawShow">
 <<image "cursedpossessions/monkey-paw/monkeypaw.jpg" "displayCentredImgs">>
 
@@ -10,96 +42,34 @@
 	<<if ndef $boughtMonkeyPawGuide>>
 		<<set $boughtMonkeyPawGuide to 0>>
 		@@.mc-speech; I need to be extremely careful... Maybe I should ask the witch how to use it? I think she could help me.@@
-
 	<</if>>
 
 	<br><br>
-	<<if $wishActivity eq 1>>
-		<<linkreplace "@@.usebtn; I wish for activity@@">>
-			<<activity>>
-		<</linkreplace>><br>
-	<</if>>
-	<<if $wishTraptheghost eq 1>>
-		<<linkreplace "@@.usebtn; I wish to trap the ghost@@">>
-			<<trapTheGhost>>
-		<</linkreplace>><br>
-	<</if>>
-	<<if $wishSanity eq 1>>
-		<<linkreplace "@@.usebtn; I wish to be sane@@">>
-			<<sanity>>
-		<</linkreplace>><br>
-	<</if>>
-	<<if $wishLeave eq 1>>
-		<<linkreplace "@@.usebtn; I wish to leave@@">>
-			<<leave>>
-		<</linkreplace>><br>
-	<</if>>
-	<<if $wishKnowledge eq 1>>
-		<<linkreplace "@@.usebtn; I wish for knowledge@@">>
-			<<knowledge>>
-		<</linkreplace>><br>
-	<</if>>
-	<<if $wishDawn eq 1>>
-		<<linkreplace "@@.usebtn; I wish for dawn@@">>
-			<<dawn>>
-		<</linkreplace>><br>
-	<</if>>
+	<<for _w range setup.MonkeyPawWishes>>
+		<<if State.variables[_w.flag] eq 1>>
+			<<capture _w>>
+				<<linkreplace `"@@.usebtn; " + _w.label + "@@"`>>
+					<<monkeyPawWish _w.widget>>
+				<</linkreplace>><br>
+			<</capture>>
+		<</if>>
+	<</for>>
 	<<if $wishAnything eq 1>>
 		<<linkreplace "@@.usebtn; I wish for anything@@">>
-			<<set _check to random(1,6)>>
-			<<if _check eq 1>>
-				<<activity>>
-			<<elseif _check eq 2>>
-				<<trapTheGhost>>
-			<<elseif _check eq 3>>
-				<<sanity>>
-			<<elseif _check eq 4>>
-				<<leave>>
-			<<elseif _check eq 5>>
-				<<knowledge>>
-			<<elseif _check eq 6>>
-				<<dawn>>
-			<</if>>
+			<<monkeyPawWish setup.rollAnythingWish().widget>>
 		<</linkreplace>><br>
 	<</if>><br>
 	<<if $boughtMonkeyPawGuide neq 2>>
 		<label><b>@@.mc-speech;I wish for/to...@@</b><<textbox "$inputWish" "">></label>
 
 		<<link "@@.usebtn; Make a Wish@@">>
-			<<if $inputWish.toLowerCase() eq "activity">>
-				<<set $wishActivity to 1>>
-				<<activity>>
-			<<elseif $inputWish.toLowerCase() eq "trap the ghost">>
-				<<set $wishTraptheghost to 1>>
-				<<trapTheGhost>>
-			<<elseif $inputWish.toLowerCase() eq "be sane">>
-				<<set $wishSanity to 1>>
-				<<sanity>>
-			<<elseif $inputWish.toLowerCase() eq "leave">>
-				<<set $wishLeave to 1>>
-				<<leave>>
-			<<elseif $inputWish.toLowerCase() eq "knowledge">>
-				<<set $wishKnowledge to 1>>
-				<<knowledge>>
-			<<elseif $inputWish.toLowerCase() eq "dawn">>
-				<<set $wishDawn to 1>>
-				<<dawn>>
+			<<set _wish to setup.findMonkeyPawWish("input", $inputWish)>>
+			<<if _wish>>
+				<<set State.variables[_wish.flag] to 1>>
+				<<monkeyPawWish _wish.widget>>
 			<<elseif $inputWish.toLowerCase() eq "anything">>
 				<<set $wishAnything to 1>>
-				<<set _check to random(1,6)>>
-				<<if _check eq 1>>
-					<<activity>>
-				<<elseif _check eq 2>>
-					<<trapTheGhost>>
-				<<elseif _check eq 3>>
-					<<sanity>>
-				<<elseif _check eq 4>>
-					<<leave>>
-				<<elseif _check eq 5>>
-					<<knowledge>>
-				<<elseif _check eq 6>>
-					<<dawn>>
-				<</if>>
+				<<monkeyPawWish setup.rollAnythingWish().widget>>
 			<<else>>
 				<<replace "#falseMonkeyPaw">>
 					@@.mc-speech; Nothing happened...@@

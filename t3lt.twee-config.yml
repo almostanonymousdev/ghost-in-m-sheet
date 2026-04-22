@@ -138,6 +138,12 @@ sugarcube-2:
       description: Prints the human-readable display name of the ghost's current
         favourite room. Maps $ghostRoom.name internal keys (e.g. "bedroomTwo")
         to display strings.
+    monkeyPawWish:
+      name: monkeyPawWish
+      description: "Dispatcher that wikifies the given wish-effect widget by
+        name. Used by MonkeyPaw.tw to iterate setup.MonkeyPawWishes without
+        an if/elseif chain. Args: widgetName (string, one of 'activity',
+        'trapTheGhost', 'sanity', 'leave', 'knowledge', 'dawn')."
     activity:
       name: activity
       description: "Monkey Paw wish: replaces .MonkeyPawShow with a random
@@ -171,6 +177,42 @@ sugarcube-2:
       name: anything
       description: "Monkey Paw wish: rolls a random number (1-6) into _check. The
         result is used by the calling passage to determine a random outcome."
+    tarotPassion:
+      name: tarotPassion
+      description: "Tarot effect widget dispatched by TarotCards when the passion
+        card is drawn: random passion video, +15 lust, -15 sanity."
+    tarotPulse:
+      name: tarotPulse
+      description: "Tarot effect widget dispatched by TarotCards when the pulse card
+        is drawn: random pulse video, -15 lust, +15 sanity."
+    tarotOblivion:
+      name: tarotOblivion
+      description: "Tarot effect widget for the oblivion card: routes the player to
+        HuntOverSanity after a 2s delay."
+    tarotKnowledge:
+      name: tarotKnowledge
+      description: "Tarot effect widget for the knowledge card: once per hunt,
+        removes a random evidence type that isn't already checked or hidden."
+    tarotPower:
+      name: tarotPower
+      description: "Tarot effect widget for the power card: random power video,
+        +5 energy, +1 fit."
+    tarotWhore:
+      name: tarotWhore
+      description: "Tarot effect widget for the whore card: random whore video,
+        +0.3 corruption."
+    tarotDeath:
+      name: tarotDeath
+      description: "Tarot effect widget for the death card: triggers the cursed hunt
+        flow or, if already opted out, jumps to GhostHuntEvent."
+    tarotPossession:
+      name: tarotPossession
+      description: "Tarot effect widget for the possession card: sets hunt mode to
+        POSSESSED, rolls $hours, routes to CityMapPossessed."
+    tarotHighpriestess:
+      name: tarotHighpriestess
+      description: "Tarot effect widget for the high priestess card: sets
+        $highpriestess to 1."
     huntEndExit:
       name: huntEndExit
       description: "Shared exit link for HuntEnd hunt-ending scenes. Renders a
@@ -310,6 +352,28 @@ sugarcube-2:
         and $currentFurniture value, e.g. 'bedroom_table')."
     companionCard:
       name: companionCard
+    huntHouseCard:
+      name: huntHouseCard
+      description: "Renders one .housecard tile on GhostStreet using the
+        setup.HauntedHouses catalogue. Handles the level gate, the street-passage
+        link, and the per-click contract/flag/furniture/room side effects. Args:
+        houseId (string, 'owaissa' | 'elm' | 'enigma' | 'ironclad')."
+    huntHouseStreet:
+      name: huntHouseStreet
+      container: true
+      description: "Shared body for the per-house street passages (Owaissa, Elm,
+        Enigma, Ironclad): header image, location/description, optional
+        companion talk branch, default Go-inside link (overridable by passing
+        inner content, as Ironclad does for the wardenClothesStage gate), and
+        the End-the-hunt link while inside a hunt. Args: houseId (string),
+        locationLabel (string, e.g. 'Owaissa Street'), description (string,
+        mc-thoughts body)."
+    companionStreetTalk:
+      name: companionStreetTalk
+      description: "Renders the '@@.usebtn; [[Talk to her/him|<Name>Main]]' link
+        block used by the per-house street passages when the player's companion
+        is standing outside. Pulls the Main passage and pronoun from
+        setup.Companion."
     randRangeImg:
       name: randRangeImg
       description: "Renders a random image from a numbered sequence. Path is
