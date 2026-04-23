@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """
-Simplistic AI that plays through an Elm Street hunt against a fixed ghost type.
+Simplistic AI that plays through a haunted-house contract against every
+ghost type in every house (Owaissa / Elm / Enigma / Ironclad), using data
+parsed from the game's own .tw sources at startup.
 
 Models the core hunt loop from Ghost in M'Sheet:
 
-  - Ghost picks a favorite room from Elm's 9-room list at contract start
-    and can switch rooms every 20 in-game minutes with 35% probability
+  - Ghost picks a favorite room from the house's room list at contract
+    start and can switch rooms every 20 in-game minutes with 35% chance
     (ChangeGhostRoom.tw / HauntedHouses.rollStartingRoom).
   - Navigating between rooms costs 0.25 energy per step (HauntConditions
     ENERGY_PER_STEP); the contract ends when energy bottoms out.
@@ -40,8 +42,12 @@ Simple AI patterns:
   3) "Respond to hunt" - on a hunt event, hide (ghost overrides aside).
 
 Usage:
-    python3 sim_ai_hunt.py                   # Phantom, 10000 runs, tier 3
-    python3 sim_ai_hunt.py Goryo 50000 4     # different ghost / trials / tier
+    python3 sim_ai_hunt.py                 # every house x every ghost
+    python3 sim_ai_hunt.py elm             # all ghosts in one house
+    python3 sim_ai_hunt.py elm Phantom     # detailed single (house, ghost)
+    python3 sim_ai_hunt.py Phantom         # one ghost across all houses
+    python3 sim_ai_hunt.py --validate-data # check parser still matches game
+Trailing positional args are [trials] [tier] on each form.
 """
 
 from __future__ import annotations
@@ -188,14 +194,15 @@ def _parse_snapshot_bonuses(src: str) -> dict[str, dict[str, float]]:
     return out
 
 
-def _parse_house_rooms(house_id: str) -> list[str]:
+def _parse_houses() -> dict[str, list[str]]:
+    """Pull every HOUSE_CONFIG entry's id + rooms out of
+    HauntedHousesController.tw. Returns {house_id: [room_var_name, ...]}."""
     src = _read("haunted_houses/HauntedHousesController.tw")
-    # Find the HOUSE_CONFIG entry whose `id: '<house_id>'` is present.
-    pat = r"id:\s*'" + re.escape(house_id) + r"'.*?rooms:\s*\[([^\]]+)\]"
-    m = re.search(pat, src, re.DOTALL)
-    if not m:
-        raise SystemExit(f"parser: HOUSE_CONFIG for {house_id!r} not found")
-    return re.findall(r"'([^']+)'", m.group(1))
+    out: dict[str, list[str]] = {}
+    for m in re.finditer(
+            r"id:\s*'([^']+)'[^{}]*?rooms:\s*\[([^\]]+)\]", src, re.DOTALL):
+        out[m.group(1)] = re.findall(r"'([^']+)'", m.group(2))
+    return out
 
 
 @dataclass
@@ -203,7 +210,7 @@ class GameData:
     ghosts: dict[str, dict]
     tier_chance: dict[int, float]            # tier -> per-roll chance (0-1)
     tool_window: dict[int, int]              # tier -> minutes
-    elm_rooms: list[str]
+    houses: dict[str, list[str]]             # house id -> room names
     ghost_move_chance: float
     hunt_base_threshold: int
     hide_success_base: float                 # 0-1
@@ -266,7 +273,7 @@ def load_game_data() -> GameData:
         ghosts=ghosts,
         tier_chance=tier_chance,
         tool_window=tool_window,
-        elm_rooms=_parse_house_rooms("elm"),
+        houses=_parse_houses(),
         ghost_move_chance=ghost_move_chance,
         hunt_base_threshold=hunt_base_threshold,
         hide_success_base=hide_pct,
@@ -330,11 +337,15 @@ def validate_game_data() -> list[str]:
     for tier, w in GD.tool_window.items():
         require(w > 0, f"TOOL_TIME_REMAIN[{tier}]={w} not positive")
 
-    # Elm rooms.
-    require(len(GD.elm_rooms) >= 2,
-            f"elm HOUSE_CONFIG.rooms too short: {GD.elm_rooms}")
-    require(len(set(GD.elm_rooms)) == len(GD.elm_rooms),
-            f"elm rooms contain duplicates: {GD.elm_rooms}")
+    # Houses.
+    expected_houses = {"elm", "owaissa", "enigma", "ironclad"}
+    missing = expected_houses - set(GD.houses)
+    require(not missing, f"HOUSE_CONFIG missing houses: {sorted(missing)}")
+    for house, rooms in GD.houses.items():
+        require(len(rooms) >= 2,
+                f"house {house!r} rooms too short: {rooms}")
+        require(len(set(rooms)) == len(rooms),
+                f"house {house!r} rooms contain duplicates: {rooms}")
 
     # Scalar constants.
     require(0 < GD.ghost_move_chance <= 1,
@@ -368,11 +379,14 @@ def validate_game_data() -> list[str]:
             require(any(v != 0 for v in d.values()),
                     f"snapshot branch {branch!r} has no nonzero deltas: {d}")
 
-    # Spot-check: a run should execute without crashing.
-    try:
-        play_hunt(next(iter(GD.ghosts)), tier=3)
-    except Exception as e:
-        errors.append(f"smoke run raised {type(e).__name__}: {e}")
+    # Spot-check: a run should execute without crashing in each house.
+    ghost = next(iter(GD.ghosts))
+    for house in GD.houses:
+        try:
+            play_hunt(ghost, house=house, tier=3)
+        except Exception as e:
+            errors.append(
+                f"smoke run in {house} raised {type(e).__name__}: {e}")
 
     return errors
 
@@ -400,8 +414,9 @@ class Mc:
 @dataclass
 class Hunt:
     ghost_name: str
+    house: str = "elm"
     tier: int = 3
-    rooms: list[str] = field(default_factory=lambda: list(GD.elm_rooms))
+    rooms: list[str] = field(default_factory=list)
     mc: Mc = field(default_factory=Mc)
     minutes: int = 0
     ghost_room: str = ""
@@ -421,6 +436,11 @@ class Hunt:
     exit_reason: str = ""
 
     def __post_init__(self) -> None:
+        if not self.rooms:
+            if self.house not in GD.houses:
+                raise SystemExit(f"Unknown house: {self.house!r}. "
+                                 f"Choose from {sorted(GD.houses)}.")
+            self.rooms = list(GD.houses[self.house])
         self.ghost_room = random.choice(self.rooms)
         self.current_room = random.choice(self.rooms)
         self.last_move_interval = self._interval()
@@ -696,11 +716,12 @@ def pattern_scan_for_evidence(hunt: Hunt, suspected: str, rounds: int = 6
     return hunt.found >= hunt.ghost_evidence, None
 
 
-def play_hunt(ghost_name: str, tier: int = 3) -> tuple[bool, set[str], str]:
+def play_hunt(ghost_name: str, house: str = "elm", tier: int = 3
+              ) -> tuple[bool, set[str], str]:
     """Run one contract with the simple AI. Returns
     (identified, evidence_seen, exit_reason). exit_reason in
     {identified, energy, sanity_zero, caught_in_hunt, search_timeout}."""
-    hunt = Hunt(ghost_name=ghost_name, tier=tier)
+    hunt = Hunt(ghost_name=ghost_name, house=house, tier=tier)
 
     while not hunt.out_of_energy() and hunt.found < hunt.ghost_evidence:
         suspected, reason = pattern_find_ghost_room(hunt)
@@ -729,6 +750,7 @@ def play_hunt(ghost_name: str, tier: int = 3) -> tuple[bool, set[str], str]:
 @dataclass
 class Result:
     ghost: str
+    house: str
     trials: int
     tier: int
     wins: int
@@ -738,10 +760,13 @@ class Result:
     missed_evidence: dict[tuple[str, ...], int]
 
 
-def simulate(ghost_name: str, trials: int, tier: int) -> Result:
+def simulate(ghost_name: str, house: str, trials: int, tier: int) -> Result:
     if ghost_name not in GD.ghosts:
         raise SystemExit(f"Unknown ghost: {ghost_name!r}. "
                          f"Choose from {sorted(GD.ghosts)} or 'all'.")
+    if house not in GD.houses:
+        raise SystemExit(f"Unknown house: {house!r}. "
+                         f"Choose from {sorted(GD.houses)} or 'all'.")
     if tier not in GD.tier_chance:
         raise SystemExit(f"Unknown tier: {tier}. "
                          f"Choose from {sorted(GD.tier_chance)}.")
@@ -756,7 +781,7 @@ def simulate(ghost_name: str, trials: int, tier: int) -> Result:
     missed_evidence: dict[tuple[str, ...], int] = {}
 
     for _ in range(trials):
-        ok, found, reason = play_hunt(ghost_name, tier=tier)
+        ok, found, reason = play_hunt(ghost_name, house=house, tier=tier)
         if ok:
             wins += 1
         else:
@@ -767,14 +792,15 @@ def simulate(ghost_name: str, trials: int, tier: int) -> Result:
             evidence_counts[e] = evidence_counts.get(e, 0) + 1
         count_by_found[min(len(found & target), 3)] += 1
 
-    return Result(ghost_name, trials, tier, wins, evidence_counts,
+    return Result(ghost_name, house, trials, tier, wins, evidence_counts,
                   count_by_found, fail_reasons, missed_evidence)
 
 
 def print_detailed(r: Result) -> None:
     target = sorted(ghost_evidence(r.ghost))
     losses = r.trials - r.wins
-    print(f"Elm Street AI hunt - {r.trials} runs vs {r.ghost} (tier {r.tier})")
+    print(f"{r.house} AI hunt - {r.trials} runs vs {r.ghost} "
+          f"(tier {r.tier}, {len(GD.houses[r.house])} rooms)")
     print(f"  target evidence: {target}")
     print(f"  identified correctly: {r.wins}/{r.trials} "
           f"({100 * r.wins / r.trials:.2f}%)")
@@ -809,51 +835,89 @@ def _top_reason(reasons: dict[str, int]) -> tuple[str, int]:
     return max(nonzero, key=lambda kv: kv[1])
 
 
-def print_summary(results: list[Result]) -> None:
-    trials = results[0].trials
-    tier = results[0].tier
-    total_runs = sum(r.trials for r in results)
-    total_wins = sum(r.wins for r in results)
-    overall_reasons: dict[str, int] = {}
+def _row_for(r: Result) -> tuple[float, str, str]:
+    """Per-result summary row: (success_pct, ghost_label, failure_blurb)."""
+    rate = 100 * r.wins / r.trials
+    fails = r.trials - r.wins
+    if not fails:
+        return (rate, r.ghost, "-")
+    reason, count = _top_reason(r.fail_reasons)
+    miss, miss_count = max(r.missed_evidence.items(), key=lambda kv: kv[1])
+    miss_label = "+".join(miss) if miss else "none"
+    return (rate, r.ghost,
+            f"{reason} {count}/{fails} (miss {miss_label} {miss_count})")
+
+
+def print_house_summary(results: list[Result], keep: int = 2) -> None:
+    """Compact per-house summary: the `keep` worst and best ghosts only."""
+    assert results, "print_house_summary called with no results"
+    house = results[0].house
+    ordered = sorted(results, key=lambda x: x.wins / x.trials)
+    trials_total = sum(r.trials for r in results)
+    wins_total = sum(r.wins for r in results)
+    fails = trials_total - wins_total
+    house_reasons: dict[str, int] = {}
     for r in results:
+        for k, v in r.fail_reasons.items():
+            house_reasons[k] = house_reasons.get(k, 0) + v
+
+    header = (f"{house} ({len(GD.houses[house])} rooms) - "
+              f"{100 * wins_total / trials_total:.2f}% overall")
+    if fails:
+        reason, count = _top_reason(house_reasons)
+        header += f" - top fail {reason} {count}/{fails}"
+    print(header)
+
+    # 2 worst, 2 best. Collapse if total ghosts <= 2*keep (would double-print).
+    if len(ordered) <= keep * 2:
+        shown = [("", r) for r in ordered]
+    else:
+        shown = ([("worst", r) for r in ordered[:keep]]
+                 + [("best", r) for r in ordered[-keep:][::-1]])
+    for label, r in shown:
+        rate, name, blurb = _row_for(r)
+        prefix = f"  [{label}]" if label else "  "
+        print(f"{prefix:<9} {name:<13} {rate:>7.2f}%   {blurb}")
+
+
+def print_overall(all_results: list[Result]) -> None:
+    """Footer across every (house, ghost) pair."""
+    total_runs = sum(r.trials for r in all_results)
+    total_wins = sum(r.wins for r in all_results)
+    overall_reasons: dict[str, int] = {}
+    for r in all_results:
         for k, v in r.fail_reasons.items():
             overall_reasons[k] = overall_reasons.get(k, 0) + v
 
-    print(f"Elm Street AI hunt - {trials} runs per ghost, tier {tier}, "
-          f"{len(results)} ghosts ({total_runs} runs total)")
     print()
-    header = f"  {'ghost':<13} {'success':>8}   {'top failure':<24}"
-    print(header)
-    print(f"  {'-' * 13} {'-' * 8}   {'-' * 24}")
-    # Worst ghosts first so the interesting ones are easy to spot.
-    for r in sorted(results, key=lambda x: x.wins / x.trials):
-        rate = 100 * r.wins / r.trials
-        fails = r.trials - r.wins
-        if fails:
-            reason, count = _top_reason(r.fail_reasons)
-            miss, miss_count = max(r.missed_evidence.items(),
-                                    key=lambda kv: kv[1])
-            miss_label = "+".join(miss) if miss else "none"
-            top = (f"{reason} {count}/{fails}"
-                   f" (miss {miss_label} {miss_count})")
-        else:
-            top = "-"
-        print(f"  {r.ghost:<13} {rate:>7.2f}%   {top:<24}")
-
-    print()
-    overall_rate = 100 * total_wins / total_runs
-    print(f"  overall success: {total_wins}/{total_runs} ({overall_rate:.2f}%)")
+    print(f"overall success: {total_wins}/{total_runs} "
+          f"({100 * total_wins / total_runs:.2f}%)")
     total_fails = total_runs - total_wins
     if total_fails:
-        top_reason, top_count = _top_reason(overall_reasons)
-        print(f"  overall top failure: {top_reason} "
-              f"({top_count}/{total_fails} fails, "
-              f"{100 * top_count / total_runs:.2f}% of runs)")
+        top_r, top_c = _top_reason(overall_reasons)
+        print(f"overall top failure: {top_r} ({top_c}/{total_fails} fails, "
+              f"{100 * top_c / total_runs:.2f}% of runs)")
         ordered = sorted(overall_reasons.items(), key=lambda kv: -kv[1])
         breakdown = ", ".join(f"{k}={v}" for k, v in ordered if v)
-        print(f"  failure breakdown: {breakdown}")
+        print(f"failure breakdown: {breakdown}")
     else:
-        print("  overall top failure: none")
+        print("overall top failure: none")
+
+
+def run_all_houses(trials: int, tier: int) -> None:
+    total_ghosts = len(GD.ghosts)
+    total_runs = total_ghosts * len(GD.houses) * trials
+    print(f"AI hunt - {trials} runs per (house, ghost), tier {tier}, "
+          f"{len(GD.houses)} houses x {total_ghosts} ghosts "
+          f"({total_runs} runs total)")
+    all_results: list[Result] = []
+    for house in GD.houses:
+        print()
+        house_results = [simulate(name, house, trials, tier)
+                         for name in GD.ghosts]
+        all_results.extend(house_results)
+        print_house_summary(house_results, keep=2)
+    print_overall(all_results)
 
 
 def main() -> None:
@@ -866,21 +930,64 @@ def main() -> None:
             for e in errors:
                 print(f"  - {e}", file=sys.stderr)
             sys.exit(1)
+        total_rooms = sum(len(v) for v in GD.houses.values())
         print(f"sim_ai_hunt.py: game-data validation OK "
-              f"({len(GD.ghosts)} ghosts, {len(GD.elm_rooms)} elm rooms, "
-              f"{len(GD.tier_chance)} tool tiers).")
+              f"({len(GD.ghosts)} ghosts, {len(GD.houses)} houses, "
+              f"{total_rooms} rooms, {len(GD.tier_chance)} tool tiers).")
         return
+
     arg = args[0] if args else "all"
     if arg == "all":
+        trials = int(args[1]) if len(args) > 1 else 3000
+        tier = int(args[2]) if len(args) > 2 else 3
+        run_all_houses(trials, tier)
+    elif arg in GD.houses:
+        # <house> [<ghost>] [trials] [tier] -- one house, either all ghosts
+        # or a specific ghost.
+        house = arg
+        if len(args) > 1 and args[1] in GD.ghosts:
+            ghost = args[1]
+            trials = int(args[2]) if len(args) > 2 else 10000
+            tier = int(args[3]) if len(args) > 3 else 3
+            print_detailed(simulate(ghost, house, trials, tier))
+        else:
+            trials = int(args[1]) if len(args) > 1 else 5000
+            tier = int(args[2]) if len(args) > 2 else 3
+            results = [simulate(name, house, trials, tier)
+                       for name in GD.ghosts]
+            print(f"AI hunt - {trials} runs per ghost in {house} (tier {tier})")
+            print()
+            # Full per-ghost listing when explicitly scoped to one house.
+            for r in sorted(results, key=lambda x: x.wins / x.trials):
+                rate, name, blurb = _row_for(r)
+                print(f"  {name:<13} {rate:>7.2f}%   {blurb}")
+            print_overall(results)
+    elif arg in GD.ghosts:
+        # <ghost>: run it in every house for comparison.
+        ghost = arg
         trials = int(args[1]) if len(args) > 1 else 5000
         tier = int(args[2]) if len(args) > 2 else 3
-        results = [simulate(name, trials, tier)
-                   for name in GD.ghosts]
-        print_summary(results)
+        print(f"AI hunt - {trials} runs vs {ghost} across "
+              f"{len(GD.houses)} houses (tier {tier})")
+        print()
+        results = [simulate(ghost, house, trials, tier)
+                   for house in GD.houses]
+        for r in sorted(results, key=lambda x: x.wins / x.trials):
+            rate = 100 * r.wins / r.trials
+            fails = r.trials - r.wins
+            if fails:
+                reason, count = _top_reason(r.fail_reasons)
+                blurb = f"{reason} {count}/{fails}"
+            else:
+                blurb = "-"
+            print(f"  {r.house:<10} ({len(GD.houses[r.house]):>2} rooms)"
+                  f"  {rate:>7.2f}%   {blurb}")
+        print_overall(results)
     else:
-        trials = int(args[1]) if len(args) > 1 else 10000
-        tier = int(args[2]) if len(args) > 2 else 3
-        print_detailed(simulate(arg, trials, tier))
+        raise SystemExit(
+            f"Unknown arg: {arg!r}. Use 'all', a house id "
+            f"({sorted(GD.houses)}), or a ghost name "
+            f"({sorted(GD.ghosts)}).")
 
 
 if __name__ == "__main__":
