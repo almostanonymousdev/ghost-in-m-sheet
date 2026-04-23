@@ -52,6 +52,7 @@ Trailing positional args are [trials] [tier] on each form.
 
 from __future__ import annotations
 
+import argparse
 import random
 import re
 import sys
@@ -920,9 +921,85 @@ def run_all_houses(trials: int, tier: int) -> None:
     print_overall(all_results)
 
 
+# ---- Experimental overrides -----------------------------------------
+#
+# Every override mutates the parsed game data in-place before any Hunt is
+# constructed. Mc's default_factory reads GD.start_* lazily, so changing
+# those values here flows through to every subsequent contract.
+
+_OVERRIDE_FIELDS: list[tuple[str, str, type, str]] = [
+    # (flag,              GD attribute,              cast, help-text fragment)
+    ("--energy",          "start_energy",            float, "starting mc.energy"),
+    ("--sanity",          "start_sanity",            float, "starting mc.sanity"),
+    ("--lust",            "start_lust",              float, "starting mc.lust"),
+    ("--energy-per-step", "energy_per_step",         float, "energy drain per nav tick"),
+    ("--ghost-move-chance", "ghost_move_chance",     float, "P(ghost relocates) per 20-min interval"),
+    ("--ghost-event-chance", "ghost_event_chance_per_step", float,
+     "P(ghost event fires) per nav tick"),
+    ("--hunt-threshold",  "hunt_base_threshold",     int,   "CheckHuntStart base threshold (0-100)"),
+    ("--hide-success",    "hide_success_base",       float, "Hide.tw baseline success rate (0-1)"),
+    ("--run-success",     "run_success_base",        float, "RunFast.tw baseline success rate (0-1)"),
+    ("--lust-fuel-threshold", "lust_fuel_threshold", int,   "lust threshold for the passive tool bonus"),
+]
+
+
+def _apply_overrides(args: argparse.Namespace) -> list[str]:
+    """Apply any --flag overrides to GD and return a list of human-readable
+    '<field>=<value>' notes so headers can flag experimental runs."""
+    notes: list[str] = []
+    for flag, attr, _cast, _help in _OVERRIDE_FIELDS:
+        dest = flag.lstrip("-").replace("-", "_")
+        v = getattr(args, dest, None)
+        if v is not None:
+            setattr(GD, attr, v)
+            notes.append(f"{attr}={v}")
+    return notes
+
+
+def _print_overrides_banner(notes: list[str]) -> None:
+    if notes:
+        print(f"[overrides active] {', '.join(notes)}")
+        print()
+
+
+def _build_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(
+        prog="sim_ai_hunt.py",
+        description="Simulate the simple AI playing haunted-house contracts. "
+                    "Mechanics are parsed live from the game's .tw source.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=(
+            "Positional TARGET forms:\n"
+            "  (omitted) / 'all'   -> every house x every ghost\n"
+            "  <house>             -> all ghosts in that house\n"
+            "  <house> <ghost>     -> detailed single combo\n"
+            "  <ghost>             -> that ghost across all houses\n"
+        ),
+    )
+    p.add_argument("target", nargs="?", default="all",
+                   help="'all' (default), a house id, or a ghost name.")
+    p.add_argument("target2", nargs="?", default=None,
+                   help="When TARGET is a house, the second arg can name "
+                        "a specific ghost for a detailed per-run report.")
+    p.add_argument("--validate-data", action="store_true",
+                   help="Check that the parser still finds every expected "
+                        "piece of game data, then exit.")
+    p.add_argument("--trials", type=int, default=None,
+                   help="Runs per (house, ghost). Default 3000 for 'all', "
+                        "5000 for single-house, 10000 for single combo.")
+    p.add_argument("--tier", type=int, default=3,
+                   help="Equipment tier for gwb/plasm/spiritbox (3/4/5). "
+                        "Default 3.")
+    for flag, _attr, cast, help_text in _OVERRIDE_FIELDS:
+        p.add_argument(flag, type=cast, default=None,
+                       help=f"Override: {help_text}.")
+    return p
+
+
 def main() -> None:
-    args = sys.argv[1:]
-    if args and args[0] == "--validate-data":
+    args = _build_parser().parse_args()
+
+    if args.validate_data:
         errors = validate_game_data()
         if errors:
             print("sim_ai_hunt.py: game-data validation FAILED "
@@ -936,41 +1013,52 @@ def main() -> None:
               f"{total_rooms} rooms, {len(GD.tier_chance)} tool tiers).")
         return
 
-    arg = args[0] if args else "all"
-    if arg == "all":
-        trials = int(args[1]) if len(args) > 1 else 3000
-        tier = int(args[2]) if len(args) > 2 else 3
-        run_all_houses(trials, tier)
-    elif arg in GD.houses:
-        # <house> [<ghost>] [trials] [tier] -- one house, either all ghosts
-        # or a specific ghost.
-        house = arg
-        if len(args) > 1 and args[1] in GD.ghosts:
-            ghost = args[1]
-            trials = int(args[2]) if len(args) > 2 else 10000
-            tier = int(args[3]) if len(args) > 3 else 3
-            print_detailed(simulate(ghost, house, trials, tier))
+    notes = _apply_overrides(args)
+    if args.tier not in GD.tier_chance:
+        raise SystemExit(f"Unknown tier: {args.tier}. "
+                         f"Choose from {sorted(GD.tier_chance)}.")
+
+    target, target2 = args.target, args.target2
+
+    if target == "all":
+        trials = args.trials if args.trials is not None else 3000
+        _print_overrides_banner(notes)
+        run_all_houses(trials, args.tier)
+    elif target in GD.houses:
+        house = target
+        if target2 is not None:
+            if target2 not in GD.ghosts:
+                raise SystemExit(
+                    f"Unknown ghost: {target2!r}. "
+                    f"Choose from {sorted(GD.ghosts)}.")
+            trials = args.trials if args.trials is not None else 10000
+            _print_overrides_banner(notes)
+            print_detailed(simulate(target2, house, trials, args.tier))
         else:
-            trials = int(args[1]) if len(args) > 1 else 5000
-            tier = int(args[2]) if len(args) > 2 else 3
-            results = [simulate(name, house, trials, tier)
-                       for name in GD.ghosts]
-            print(f"AI hunt - {trials} runs per ghost in {house} (tier {tier})")
+            trials = args.trials if args.trials is not None else 5000
+            _print_overrides_banner(notes)
+            print(f"AI hunt - {trials} runs per ghost in {house} "
+                  f"(tier {args.tier})")
             print()
-            # Full per-ghost listing when explicitly scoped to one house.
+            results = [simulate(name, house, trials, args.tier)
+                       for name in GD.ghosts]
             for r in sorted(results, key=lambda x: x.wins / x.trials):
                 rate, name, blurb = _row_for(r)
                 print(f"  {name:<13} {rate:>7.2f}%   {blurb}")
             print_overall(results)
-    elif arg in GD.ghosts:
-        # <ghost>: run it in every house for comparison.
-        ghost = arg
-        trials = int(args[1]) if len(args) > 1 else 5000
-        tier = int(args[2]) if len(args) > 2 else 3
+    elif target in GD.ghosts:
+        ghost = target
+        if target2 is not None:
+            raise SystemExit(
+                f"When TARGET is a ghost, TARGET2 isn't used (got "
+                f"{target2!r}). Put the house first: "
+                f"'sim_ai_hunt.py <house> {ghost}'.")
+        trials = args.trials if args.trials is not None else 5000
+        _print_overrides_banner(notes)
         print(f"AI hunt - {trials} runs vs {ghost} across "
-              f"{len(GD.houses)} houses (tier {tier})")
+              f"{len(GD.houses)} houses (tier {args.tier})")
         print()
-        results = [simulate(ghost, house, trials, tier)
+        results = [simulate(ghost, house, trials, args.tier)
                    for house in GD.houses]
         for r in sorted(results, key=lambda x: x.wins / x.trials):
             rate = 100 * r.wins / r.trials
@@ -985,7 +1073,7 @@ def main() -> None:
         print_overall(results)
     else:
         raise SystemExit(
-            f"Unknown arg: {arg!r}. Use 'all', a house id "
+            f"Unknown target: {target!r}. Use 'all', a house id "
             f"({sorted(GD.houses)}), or a ghost name "
             f"({sorted(GD.ghosts)}).")
 
