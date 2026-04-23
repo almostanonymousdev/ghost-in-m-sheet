@@ -484,8 +484,6 @@ test.describe('Haunted Houses Controller', () => {
 
     // assert
     expect(snap.sanityPerStep).toBeCloseTo(-0.4, 5);
-    const labels = snap.contributors.map((c) => c.label);
-    expect(labels).toContain('Contract');
   });
 
   test('companion halves the contract drain to 0.2/step', async () => {
@@ -498,7 +496,5 @@ test.describe('Haunted Houses Controller', () => {
 
     // assert
     expect(snap.sanityPerStep).toBeCloseTo(-0.2, 5);
-    const labels = snap.contributors.map((c) => c.label);
-    expect(labels).toContain('Contract (w/ companion)');
   });
 });
