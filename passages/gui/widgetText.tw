@@ -51,8 +51,8 @@
 		<<if _out.corrDelta>>
 			@@.mc-thoughts; Corruption banking: +<<= _out.corrDelta>>@@<br>
 		<</if>>
-		<<if _out.baitSteps>>
-			@@.mc-thoughts; <b>The ghost's attention is pinned on me for <<= _out.baitSteps>> steps.</b>@@<br>
+		<<if _out.drewGhost>>
+			@@.mc-thoughts; <b>The ghost is in the room with me now.</b>@@<br>
 		<</if>>
 		<<monkeyPawTail>>
 	<</replace>>

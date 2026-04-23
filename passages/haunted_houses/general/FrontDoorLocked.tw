@@ -1,0 +1,179 @@
+:: FrontDoorLocked [nobr]
+/* The front door is sealed by the Monkey Paw's trapTheGhost wish.
+   Entered from <<leaveLink>> when setup.MonkeyPaw.isFrontDoorLocked().
+   Branches on setup.MonkeyPaw.doorUnlockBy():
+   - 'dawn'       -> narrative only; the player waits or goes back
+   - 'cursedItem' -> sacrifice branch (if carrying one) or a note
+                     that the MC needs to find one.
+   The scream option belongs to the sealed-room beat from tier 3 and
+   is NOT a front-door action; see SealedRoomScream / SealedRoomCompanionFetch. */
+<<image "img/owaissa-house.jpg" "displayCentredImgs">>
+<br>
+@@.mc-thoughts; The front door won't budge. The wood feels dense and wet beneath my hand.@@<br>
+<br>
+<<if setup.MonkeyPaw.doorUnlockBy() eq "dawn">>
+	@@.mc-speech; The paw's hold on this door will break with the first grey light. I need to wait it out.@@<br>
+	@@.mc-thoughts; Current time: $hours:<<= ($minutes < 10 ? "0" : "") + $minutes>>.@@<br>
+	<br>
+	@@.backbtn; <<link "Back to the hallway" `previous()`>>
+	<</link>>@@
+<<elseif setup.MonkeyPaw.hasCursedItem()>>
+	@@.mc-speech; The door wants a cursed thing. I'm carrying one.@@<br>
+	<br>
+	<<link "@@.usebtn; Press the cursed item into the wood@@">>
+		<<run setup.MonkeyPaw.sacrificeCursedItemForDoor()>>
+		<<goto "FrontDoorSacrifice">>
+	<</link>><br>
+	<br>
+	@@.backbtn; <<link "Back to the hallway" `previous()`>>
+	<</link>>@@
+<<else>>
+	@@.mc-speech; The door wants a cursed thing. I don't have one on me.@@<br>
+	<br>
+	@@.mc-thoughts; I'll need to find a cursed item somewhere in the house.@@<br>
+	<br>
+	@@.backbtn; <<link "Back to the hallway" `previous()`>>
+	<</link>>@@
+<</if>>
+
+:: FrontDoorSacrifice [nobr]
+/* Reached from FrontDoorLocked after setup.MonkeyPaw.sacrificeCursedItemForDoor()
+   has already cleared the lock and the item flags. Narrative beat + exit. */
+<<image "img/owaissa-house.jpg" "displayCentredImgs">>
+<br>
+@@.mc-speech; The door swallows the cursed thing whole. The wood breathes out, and the latch gives.@@<br>
+@@.mc-action; You step outside.@@<br>
+<br>
+<<set _street to null>>
+<<if $isElm eq 1>>
+	<<set _street to "Elm Street">>
+<</if>>
+<<if $isOwaissa eq 1>>
+	<<set _street to "Owaissa Street">>
+<</if>>
+<<if _street>>
+	<<link "@@.usebtn; Outside@@" _street>>
+	<</link>>
+<<else>>
+	@@.backbtn; <<link "Back" `previous()`>>
+	<</link>>@@
+<</if>>
+
+:: SealedRoomSacrifice [nobr]
+/* Tier-3 sacrifice-from-sealed-room branch. Reached from the sealed
+   room's footer link when the MC is carrying a cursed item. The paw
+   accepts the offering from anywhere in the house, so there is no
+   need to walk to the front door (which is impossible anyway while
+   the navLinks are gated). Clearing the lock drops both the door
+   seal AND the room confine; we then step the MC directly to the
+   street. */
+<<image "img/owaissa-house.jpg" "displayCentredImgs">>
+<br>
+@@.mc-action; You press the cursed thing into the floorboards. The wood drinks it in.@@<br>
+@@.mc-speech; The paw is satisfied. The air unclenches.@@<br>
+<<run setup.MonkeyPaw.sacrificeCursedItemForDoor()>>
+<br>
+<<set _street to null>>
+<<if $isElm eq 1>>
+	<<set _street to "Elm Street">>
+<</if>>
+<<if $isOwaissa eq 1>>
+	<<set _street to "Owaissa Street">>
+<</if>>
+<<if _street>>
+	<<link "@@.usebtn; Step outside@@" _street>>
+	<</link>>
+<<else>>
+	@@.backbtn; <<link "Back" `previous()`>>
+	<</link>>@@
+<</if>>
+
+:: SealedRoomCompanionFetch [nobr]
+/* Tier-3 scream-with-companion branch. Reached from the sealed room's
+   scream link (rendered by <<roomFooter>> when setup.MonkeyPaw.canScreamHere()).
+   The companion goes rummaging and always returns with a cursed item;
+   the item is then sacrificed inline and the front door opens. Kept
+   synchronous (no Plan2 timer) so the flow stays one-click; the cost
+   is the sanity hit and the fact that the player burned a wish + a
+   companion turn. */
+<<image "img/owaissa-house.jpg" "displayCentredImgs">>
+<br>
+<<set _companionName to setup.Companion.active() ? setup.Companion.active().name : "your companion">>
+@@.mc-speech; <<= _companionName>>, find me something -- anything cursed. Please.@@<br>
+@@.mc-action; <<= _companionName>> disappears down the hallway. Every board groans.@@<br>
+<<addSanity -10>>
+@@.mc-thoughts; Sanity decreased: -10@@<br>
+<br>
+<<timed 2s>>
+	@@.mc-action; <<= _companionName>> returns, white-faced, holding something wrapped in a shirt. The shape beneath the cloth wriggles.@@<br>
+	<<set $gotCursedItem to 1>>
+	<<set _pick to random(1, 4)>>
+	<<if _pick eq 1>>
+		<<set $isCIDildo to 1>>
+	<<elseif _pick eq 2>>
+		<<set $isCIButtplug to 1>>
+	<<elseif _pick eq 3>>
+		<<set $isCIBeads to 1>>
+	<<else>>
+		<<set $isCIHDildo to 1>>
+	<</if>>
+	<<run setup.MonkeyPaw.sacrificeCursedItemForDoor()>>
+	<br>
+	@@.mc-speech; They took it to the door. The house let us out.<br>I owe <<= _companionName>> everything.@@<br>
+	<br>
+	<<set _street to null>>
+	<<if $isElm eq 1>>
+		<<set _street to "Elm Street">>
+	<</if>>
+	<<if $isOwaissa eq 1>>
+		<<set _street to "Owaissa Street">>
+	<</if>>
+	<<if _street>>
+		<<link "@@.usebtn; Step outside@@" _street>>
+		<</link>>
+	<<else>>
+		@@.backbtn; <<link "Back" `previous()`>>
+		<</link>>@@
+	<</if>>
+<</timed>>
+
+:: SealedRoomSubmit [nobr]
+/* Tier-3 voluntary-submission branch. Reached from the sealed room
+   when the MC has no cursed item AND no companion -- the "nothing
+   left to bargain with" state. Strips all clothing, then routes to
+   HuntOverSanity for the canonical caught-by-ghost ending (which
+   handles video selection per house, hunt-end cleanup, and the
+   Sleep transition). The paw's door lock is cleared alongside the
+   hunt possession state when retire() fires from PassageReady. */
+<<image "img/owaissa-house.jpg" "displayCentredImgs">>
+<br>
+@@.mc-speech; I can't fight it. I can't outlast it. Fine. Take it.@@<br>
+@@.mc-action; You slip out of your clothes and let them fall. The ghost is already closer than it was a moment ago.@@<br>
+<<set $tshirtState to "not worn">>
+<<set $jeansState to "not worn">>
+<<set $skirtState to "not worn">>
+<<set $shortsState to "not worn">>
+<<set $pantiesState to "not worn">>
+<<set $braState to "not worn">>
+<br>
+@@.enterbtn; <<link "Close your eyes" "HuntOverSanity">>
+<</link>>@@
+
+:: SealedRoomScream [nobr]
+/* Tier-3 scream-without-companion branch. Reached from the sealed room's
+   scream link. The scream draws the ghost and drops the player into
+   GhostHuntEvent. Door stays locked -- the scream bought the ghost's
+   attention, not an exit. Player has to survive the hunt event and
+   try another tactic afterwards. */
+<<image "img/owaissa-house.jpg" "displayCentredImgs">>
+<br>
+@@.mc-speech; HELP! SOMEBODY! ANYBODY!@@<br>
+<br>
+<<addSanity -20>>
+@@.mc-thoughts; Sanity decreased: -20@@<br>
+<<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
+@@.mc-action; Silence -- then footsteps. Heavy ones. The house heard me.@@<br>
+<br>
+<<timed 2s>>
+	<<goto "GhostHuntEvent">>
+<</timed>>

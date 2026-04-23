@@ -51,6 +51,8 @@
 <<run setup.MonkeyPaw.retire()>>
 <</if>>
 
+<<run setup.MonkeyPaw.maybeAutoUnlockAtDawn()>>
+
 <<if ndef $mc.fit>>
 <<set $mc.fit to 0>>
 <</if>>

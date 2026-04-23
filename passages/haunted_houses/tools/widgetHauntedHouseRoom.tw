@@ -123,7 +123,25 @@ based on _shellVariant. */
 		<<roomFooterLight _shellPassage _shellBgVar>>
 	<</if>>
 	</div>
-	<div class="footeraction"><<= _contents>></div>
+	<div class="footeraction">
+	<<= _contents>>
+	<<if setup.MonkeyPaw.canScreamHere()>>
+		<br>
+		<<if setup.MonkeyPaw.hasCursedItem()>>
+			@@.adaptiveLink;<<link "Press a cursed offering into the floor" "SealedRoomSacrifice">>
+			<</link>>@@
+		<<elseif setup.Companion.active()>>
+			@@.adaptiveLink;<<link "Scream for help" "SealedRoomCompanionFetch">>
+			<</link>>@@
+		<<else>>
+			@@.adaptiveLink;<<link "Scream" "SealedRoomScream">>
+			<</link>>@@
+			<br>
+			@@.adaptiveLink;<<link "Undress and submit" "SealedRoomSubmit">>
+			<</link>>@@
+		<</if>>
+	<</if>>
+	</div>
 	</div>
 	</div>
 <</widget>>
@@ -131,21 +149,33 @@ based on _shellVariant. */
 /* navLink -- args: label, target passage, optional mode ("hunt" for the
 ironclad-style includeTimeEventHunt; default is includeTimeEventClothesHunt
 used by elm and owaissa). Always increments $stepCount, since every
-non-enigma navigation link in the haunted houses does. */
+non-enigma navigation link in the haunted houses does.
+
+When the Monkey Paw's tier-3 trapTheGhost wish has sealed the player
+in their current room (setup.MonkeyPaw.canScreamHere()), the link
+renders as inert disabled text -- the MC is physically confined and
+the only ways out are the scream link or a cursed-item sacrifice. */
 <<widget "navLink">>
-	<<set _navMode to (_args.length gt 2 ? _args[2] : "")>>
-	<<capture _navMode>>
-		@@.adaptiveLink;<<link _args[0] _args[1]>><<if _navMode eq "hunt">><<includeTimeEventHunt>>
-		<<else>><<includeTimeEventClothesHunt>>
-		<</if>><<set $stepCount += 1>><</link>>@@
-	<</capture>>
+	<<if setup.MonkeyPaw.canScreamHere()>>
+		<span class="disabled-link">@@.adaptiveLink; <<= _args[0]>>@@</span>
+	<<else>>
+		<<set _navMode to (_args.length gt 2 ? _args[2] : "")>>
+		<<capture _navMode>>
+			@@.adaptiveLink;<<link _args[0] _args[1]>><<if _navMode eq "hunt">><<includeTimeEventHunt>>
+			<<else>><<includeTimeEventClothesHunt>>
+			<</if>><<set $stepCount += 1>><</link>>@@
+		<</capture>>
+	<</if>>
 <</widget>>
 
 /* leaveLink -- args: label, target passage. Wraps a plain @@.adaptiveLink;
 <<link>> in the .cursedHuntLinkDisable span used by the elm and owaissa
-	hallways' "leave / Outside" exits. No event chain or step increment. */
+	hallways' "leave / Outside" exits. No event chain or step increment.
+	When the Monkey Paw's trapTheGhost wish has sealed the front door,
+	the link routes to FrontDoorLocked instead of the street so the
+	player can see the unlock options (sacrifice, wait, scream). */
 	<<widget "leaveLink">>
-		<span class="cursedHuntLinkDisable">@@.adaptiveLink;<<link _args[0] _args[1]>>
+		<span class="cursedHuntLinkDisable">@@.adaptiveLink;<<link _args[0] `setup.MonkeyPaw.isFrontDoorLocked() ? "FrontDoorLocked" : _args[1]`>>
 		<</link>>@@</span>
 	<</widget>>
 

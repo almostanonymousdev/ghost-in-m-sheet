@@ -67,14 +67,23 @@ setup.MonkeyPaw = (function () {
 		s.tempCorr = (s.tempCorr || 0) + amount;
 	}
 
-	/* Baiting pins the ghost toward the player and raises hunt chance
-	   by +20% per tick for N steps. Used by the upper tiers of the
-	   trapTheGhost wish -- trapping the ghost with you, not just in
-	   a room. */
-	function activateBait(steps) {
-		var s = State.variables;
-		s.baitActive = 1;
-		s.baitStepsRemain = Math.max(s.baitStepsRemain || 0, steps);
+	/* Front-door lock is hunt-scoped state set by trapTheGhost. The
+	   unlockBy field drives the FrontDoorLocked passage's branching:
+	   'cursedItem' requires a sacrifice, 'dawn' waits for 6 AM.
+	   sealedRoom captures the passage the MC was in when a tier-3
+	   wish was cast -- the "stuck in one room" beat. The scream
+	   option only surfaces in that passage; it is not a front-door
+	   action. Cleared on resetHunt() and on any explicit unlock. */
+	function lockFrontDoor(unlockBy) {
+		State.variables.monkeyPawDoorLock = {
+			locked: true,
+			unlockBy: unlockBy,
+			sealedRoom: currentTier() >= 3 ? passage() : null
+		};
+	}
+
+	function doorLockState() {
+		return State.variables.monkeyPawDoorLock || null;
 	}
 
 	/* Snap the ghost's room to the player's current haunted passage.
@@ -112,6 +121,37 @@ setup.MonkeyPaw = (function () {
 		if (s.isElm === 1) return 'Elm Street';
 		if (s.isOwaissa === 1) return 'Owaissa Street';
 		return null;
+	}
+
+	var CURSED_ITEM_TYPE_FLAGS = ['isCIDildo', 'isCIButtplug', 'isCIBeads', 'isCIHDildo'];
+
+	function hasCursedItem() {
+		return State.variables.gotCursedItem === 1;
+	}
+
+	/* Consume the cursed item the player is carrying: clears the
+	   witch-quest flag and whichever type flag is set. Used by the
+	   FrontDoorLocked sacrifice branch. Safe to call when the player
+	   has no item (no-op). Returns the type flag that was cleared,
+	   or null, for flavor. */
+	function consumeCursedItem() {
+		var s = State.variables;
+		if (!hasCursedItem()) return null;
+		var cleared = null;
+		for (var i = 0; i < CURSED_ITEM_TYPE_FLAGS.length; i++) {
+			var flag = CURSED_ITEM_TYPE_FLAGS[i];
+			if (s[flag] === 1) {
+				s[flag] = 0;
+				cleared = flag;
+				break;
+			}
+		}
+		s.gotCursedItem = 0;
+		return cleared;
+	}
+
+	function dawnHasBroken() {
+		return (State.variables.hours || 0) >= 6;
 	}
 
 	function learnedMap() {
@@ -170,35 +210,44 @@ setup.MonkeyPaw = (function () {
 			input: 'trap the ghost',
 			label: 'I wish to trap the ghost',
 			widget: 'trapTheGhost',
-			description: "The ghost is bound to one room. The house grows heavier around you.",
-			/* Scaling:
-			   t1: trap, -15 sanity
-			   t2: trap, -25 sanity, +0.2 tempCorr, bait 5 steps
-			   t3: trap, -40 sanity, +0.4 tempCorr, bait 10 steps */
+			description: "The ghost is bound to one room -- and the front door seals behind the wish.",
+			/* Scaling (all tiers pin the ghost to one room and lock the
+			   front door; unlock condition and ghost placement escalate):
+			   t1: -15 sanity, door unlocks only for a cursed-item sacrifice
+			   t2: -25 sanity, +0.2 tempCorr, door unlocks at dawn
+			   t3: -40 sanity, +0.4 tempCorr, ghost snapped to player's room,
+			       door wants a cursed item but the player can also scream
+			       for help (companion fetches, or noise draws the ghost) */
 			activate: function () {
 				var t = currentTier();
 				var s = State.variables;
 				var sanity = -[15, 25, 40][t - 1];
 				var corr   = [0, 0.2, 0.4][t - 1];
-				var bait   = [0, 5, 10][t - 1];
+				var unlockBy = t === 2 ? 'dawn' : 'cursedItem';
 
 				if (s.hunt) s.hunt.trapped = true;
 				applySanity(sanity);
 				if (corr) addTempCorr(corr);
-				if (bait) activateBait(bait);
+				lockFrontDoor(unlockBy);
+				var drewGhost = false;
+				if (t >= 3) {
+					snapHuntRoomToCurrent();
+					drewGhost = true;
+				}
 
 				spendWish();
 
 				return {
 					tier: t,
 					narrative: [
-						"Now the ghost can't change its favorite room.<br>With each wish, I feel worse and worse.",
-						"The ghost is pinned, and now its attention is on me. I can feel it.",
-						"I've nailed it in place and hung myself out like meat. It is coming."
+						"The ghost is pinned to one room.<br>The front door seals itself behind the wish -- only a cursed offering will open it.",
+						"The ghost is bound. The front door sinks into the frame until dawn.<br>I'll have to wait out the dark.",
+						"I nailed the ghost in place -- here, with me. The front door drinks itself shut.<br>I'll need a cursed offering, or a loud voice."
 					][t - 1],
 					sanityDelta: sanity,
 					corrDelta: corr,
-					baitSteps: bait
+					doorUnlockBy: unlockBy,
+					drewGhost: drewGhost
 				};
 			}
 		},
@@ -386,6 +435,7 @@ setup.MonkeyPaw = (function () {
 			s.MonkeyPawStage = 0;
 			s.wishesCount = 3;
 			s.knowledgeUsed = undefined;
+			s.monkeyPawDoorLock = null;
 		},
 		/* Furniture search calls this when the paw is discovered. */
 		markFound: function () { State.variables.MonkeyPawStage = 1; },
@@ -411,6 +461,52 @@ setup.MonkeyPaw = (function () {
 		/* Severity tier the next activate() would use, for UIs that
 		   want to warn the player before they click. */
 		tier: currentTier,
+
+		// --- Front-door lock (trapTheGhost wish side effect) -----
+		isFrontDoorLocked: function () {
+			var lock = doorLockState();
+			return !!(lock && lock.locked);
+		},
+		doorUnlockBy: function () {
+			var lock = doorLockState();
+			return lock ? lock.unlockBy : null;
+		},
+		/* True iff the current passage is the room the MC was in when
+		   a tier-3 trapTheGhost wish was cast, and the lock is still
+		   active. The <<roomFooter>> widget uses this to decide
+		   whether to render the scream link. */
+		canScreamHere: function () {
+			var lock = doorLockState();
+			if (!lock || !lock.locked || !lock.sealedRoom) return false;
+			return passage() === lock.sealedRoom;
+		},
+		sealedRoom: function () {
+			var lock = doorLockState();
+			return lock ? lock.sealedRoom : null;
+		},
+		unlockFrontDoor: function () {
+			State.variables.monkeyPawDoorLock = null;
+		},
+		hasCursedItem: hasCursedItem,
+		/* Sacrifice the player's carried cursed item to unlock the
+		   door. Returns the cleared type flag for flavor text, or
+		   null if the player had no item (in which case the door
+		   stays locked and the caller should show the alternate
+		   branch). */
+		sacrificeCursedItemForDoor: function () {
+			var cleared = consumeCursedItem();
+			if (cleared) this.unlockFrontDoor();
+			return cleared;
+		},
+		/* Called from PassageReady after time advances. Clears a
+		   dawn-conditioned lock once $hours >= 6. No-op otherwise. */
+		maybeAutoUnlockAtDawn: function () {
+			var lock = doorLockState();
+			if (!lock || !lock.locked) return;
+			if (lock.unlockBy === 'dawn' && dawnHasBroken()) {
+				this.unlockFrontDoor();
+			}
+		},
 
 		// --- Learned state ----------------------------------------
 		isLearned: function (id) { return learnedMap()[id] === true; },
