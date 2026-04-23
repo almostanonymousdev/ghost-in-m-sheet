@@ -154,6 +154,40 @@ setup.MonkeyPaw = (function () {
 		return (State.variables.hours || 0) >= 6;
 	}
 
+	/* Force-strip every piece of clothing AND raise the hunt-scoped
+	   $isClothesStolen flag so the downstream stolen-clothes recovery
+	   flow (FurnitureSearch highlights, LostClothes teardown) behaves
+	   as if the ghost tore them off. Used by the "leave" wish. */
+	function stripAllClothes() {
+		var s = State.variables;
+		s.isClothesStolen = 1;
+		s.tshirtState = 'not worn';
+		s.jeansState = 'not worn';
+		s.skirtState = 'not worn';
+		s.shortsState = 'not worn';
+		s.pantiesState = 'not worn';
+		s.braState = 'not worn';
+	}
+
+	function bannedHouses() {
+		var s = State.variables;
+		if (!Array.isArray(s.monkeyPawBannedHouses)) s.monkeyPawBannedHouses = [];
+		return s.monkeyPawBannedHouses;
+	}
+
+	/* Ban the currently-active haunted house from re-entry for the
+	   remainder of this contract. Cleared on resetHunt(). No-op if
+	   no house is active (defensive; the leave wish is always used
+	   from inside a house). */
+	function banActiveHouse() {
+		var h = setup.HauntedHouses && setup.HauntedHouses.activeHouse
+			? setup.HauntedHouses.activeHouse() : null;
+		if (!h || !h.id) return null;
+		var list = bannedHouses();
+		if (list.indexOf(h.id) === -1) list.push(h.id);
+		return h.id;
+	}
+
 	function learnedMap() {
 		var s = State.variables;
 		if (!s.monkeyPawLearned) s.monkeyPawLearned = {};
@@ -290,29 +324,33 @@ setup.MonkeyPaw = (function () {
 			input: 'leave',
 			label: 'I wish to leave',
 			widget: 'leave',
-			description: "You are cast out of the house. The night is not over.",
-			/* Scaling:
-			   t1: exit
-			   t2: exit, -15 energy
-			   t3: exit, -30 energy, +0.3 tempCorr */
+			description: "You are cast out of the house -- but not the way you came in.",
+			/* Scaling (every tier strips clothes and sets
+			   $isClothesStolen = 1):
+			   t1: exit + clothes stolen
+			   t2: exit + clothes stolen + guaranteed cursed home item
+			   t3: exit + clothes stolen + cursed home item
+			       + this haunted house is sealed for the rest of the contract */
 			activate: function () {
 				var t = currentTier();
-				var s = State.variables;
-				var energy = [0, -15, -30][t - 1];
-				var corr   = [0, 0, 0.3][t - 1];
+				var cursedItem = null;
+				var bannedHouse = null;
 
-				s.cursedHuntActive = 0;
-				delete s.cursedHuntEndTime;
-				if (energy) applyEnergy(energy);
-				if (corr) addTempCorr(corr);
+				stripAllClothes();
+				if (t >= 2) cursedItem = setup.CursedItems.forceCursedItem();
+				if (t >= 3) bannedHouse = banActiveHouse();
+
+				State.variables.cursedHuntActive = 0;
+				delete State.variables.cursedHuntEndTime;
 
 				spendWish();
 
 				return {
 					tier: t,
 					goto: streetPassageForCurrentHunt(),
-					energyDelta: energy,
-					corrDelta: corr
+					clothesStolen: true,
+					cursedItem: cursedItem,
+					bannedHouse: bannedHouse
 				};
 			}
 		},
@@ -436,6 +474,7 @@ setup.MonkeyPaw = (function () {
 			s.wishesCount = 3;
 			s.knowledgeUsed = undefined;
 			s.monkeyPawDoorLock = null;
+			s.monkeyPawBannedHouses = [];
 		},
 		/* Furniture search calls this when the paw is discovered. */
 		markFound: function () { State.variables.MonkeyPawStage = 1; },
@@ -483,6 +522,14 @@ setup.MonkeyPaw = (function () {
 		sealedRoom: function () {
 			var lock = doorLockState();
 			return lock ? lock.sealedRoom : null;
+		},
+
+		// --- Paw-banned houses (leave wish, tier 3) --------------
+		/* True iff the "leave" wish at tier 3 has sealed this house
+		   against re-entry for the current contract. Cleared by
+		   resetHunt() when the witch hands out a new contract. */
+		isHouseBanned: function (id) {
+			return bannedHouses().indexOf(id) !== -1;
 		},
 		unlockFrontDoor: function () {
 			State.variables.monkeyPawDoorLock = null;

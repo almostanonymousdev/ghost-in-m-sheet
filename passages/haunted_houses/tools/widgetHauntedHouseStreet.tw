@@ -52,6 +52,8 @@
 		<<if setup.Companion.companionAtStreet()>>
 			You see $companion.name.
 			<<companionStreetTalk>>
+		<<elseif setup.MonkeyPaw.isHouseBanned(_hs.id)>>
+			@@.mc-thoughts; The front door won't open. The paw's price was one contract's worth of this house.@@<br>
 		<<elseif _streetBody neq "">>
 			<<= _contents>>
 		<<else>>

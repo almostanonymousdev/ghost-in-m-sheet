@@ -21,6 +21,16 @@ setup.CursedItems = (function () {
 			}
 		},
 
+		/* Guaranteed grant of a random cursed item -- used by the
+		Monkey Paw's "leave" wish at tiers 2+ where the penalty is
+		deterministic, not probabilistic. Returns the item key. */
+		forceCursedItem: function () {
+			var pick = ITEMS[Math.floor(Math.random() * ITEMS.length)];
+			State.variables.cursedHomeItem = pick;
+			State.variables.cursedHomeItemActive = 1;
+			return pick;
+		},
+
 		/* Check whether a specific item is currently cursed. */
 		isItemCursed: function (itemKey) {
 			return v('cursedHomeItemActive') === 1 && v('cursedHomeItem') === itemKey;
