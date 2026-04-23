@@ -83,8 +83,13 @@ setup.addLust = function(amount) {
 <<widget "addSanity">>
 	<<set $mc.sanity += _args[0]>>
 	<<if $mc.sanity gte $mc.sanityMax>><<set $mc.sanity to $mc.sanityMax>><</if>>
-	<<if $mc.sanity lte 1>><<set $mc.sanity to 1>><</if>>
-	<<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
+	<<if $mc.sanity lt 0>>
+		<<set $mc.sanity to 0>>
+		<<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
+		<<goto "HuntOverSanity">>
+	<<else>>
+		<<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
+	<</if>>
 <</widget>>
 
 <<widget "addEnergy">>

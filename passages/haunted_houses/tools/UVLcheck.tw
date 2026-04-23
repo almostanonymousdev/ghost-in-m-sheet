@@ -3,7 +3,7 @@
 <<set _hg to setup.Ghosts.active()>>
 
 <<if _state neq "ready" or not (_hg and _hg.hasEvidence("uvl"))>>
-	<<notFound "I didn't find any fingerprints" "UVLcheck">>
+	<<notFound "I didn't find any fingerprints">>
 <<else>>
 	<<if $isIronclad eq 1>>
 		<<randRangeImg "uvl/ironclad" 1 6 ".png">>

@@ -417,9 +417,7 @@ sugarcube-2:
     notFound:
       name: notFound
       description: "Canonical 'I didn't find anything' block used by the
-        evidence-check tool passages. Args: message (string), [retryPassage
-        (string; when passed and the player can afford 5 sanity, surfaces a
-        Press through (−5 sanity) link that re-runs that check passage)]."
+        evidence-check tool passages. Args: message (string)."
     coloredText:
       name: coloredText
       description: "Wraps content in the evidence bold/stroke text span. Args: color

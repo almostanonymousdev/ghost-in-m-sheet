@@ -303,33 +303,13 @@ the only ways out are the scream link or a cursed-item sacrifice. */
 	<<video _args[0] + _n + _args[3] "displayCentredImgs">>
 <</widget>>
 
-/* notFound -- args: message, [retryPassage].
-   Canonical "I didn't find anything" block. When a retryPassage is passed
-   AND a hunt is active AND the player can afford the press-through cost
-   (5 sanity + ENERGY_COST_PRESS energy via setup.HauntConditions), surfaces
-   a "Press through" link that re-runs the same check in place. Sanity-as-
-   currency + energy gate: burn mental health AND stamina to force a second
-   roll. The energy spend can also tip the player into HuntOverExhaustion. */
+/* notFound -- args: message.
+   Canonical "I didn't find anything" block for tool checks that came up
+   empty. */
 <<widget "notFound">>
 	<<set _msg to _args[0]>>
-	<<set _retryPassage to (_args.length gt 1 ? _args[1] : "")>>
 	<div class="notFound-container">
 	<div class="mc-thoughts">_msg</div>
-	<<if _retryPassage neq "" and setup.HauntConditions.canPressThrough()>>
-		<<capture _retryPassage>>
-			@@.pressThroughLink;<<linkreplace `"Press through (−5 sanity, −" + setup.HauntConditions.ENERGY_COST_PRESS + " energy)"`>>
-				<<set $mc.sanity -= 5>>
-				<<run setup.HauntConditions.spendEnergy(setup.HauntConditions.ENERGY_COST_PRESS)>>
-				<<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
-				<<updatemeter 'energy' `$mc.energy / $mc.energyMax`>>
-				<<if $exhausted eq 1>>
-					<<goto "HuntOverExhaustion">>
-				<<else>>
-					<<include _retryPassage>>
-				<</if>>
-			<</linkreplace>>@@
-		<</capture>>
-	<</if>>
 	</div>
 <</widget>>
 

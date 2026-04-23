@@ -3,50 +3,49 @@
  * clothing item + a bank of tempCorr and returns "free evidence" for
  * whichever timed tool was active — EMF/UVL get their window popped open
  * so the next tick auto-reads, mirroring how a ghost event normally opens
- * those windows. */
+ * those windows. With nothing left to give, the ghost takes the player
+ * instead and routes to HuntOverSanity. Strips via the canonical Steal*
+ * passages so wardrobe variant state + rememberTopOuter/rememberBottomOuter
+ * stay consistent (just flipping $<slot>State leaves the variants worn,
+ * and PassageDone's ClothesChanges re-derives the parent back to "worn"). */
 <<script>>
 (function () {
 	var V = State.variables;
 	var slots = [];
-	if (V.tshirtState === "worn") slots.push("tshirt");
-	if (V.jeansState  === "worn") slots.push("jeans");
-	if (V.shortsState === "worn") slots.push("shorts");
-	if (V.skirtState  === "worn") slots.push("skirt");
+	if (V.tshirtState === "worn") slots.push("top");
+	if (V.jeansState === "worn" || V.shortsState === "worn" || V.skirtState === "worn") slots.push("bottom");
 	if (V.pantiesState === "worn") slots.push("panties");
-	if (V.braState    === "worn") slots.push("bra");
-	State.temporary._freezeSlot = slots.length ? slots[Math.floor(Math.random() * slots.length)] : "";
+	if (V.braState === "worn") slots.push("bra");
+	State.temporary.freezeSlot = slots.length ? slots[Math.floor(Math.random() * slots.length)] : "";
 })();
 <</script>>
-<<switch _freezeSlot>>
-<<case "tshirt">><<set $tshirtState to "not worn">>
-<<case "jeans">><<set $jeansState to "not worn">>
-<<case "shorts">><<set $shortsState to "not worn">>
-<<case "skirt">><<set $skirtState to "not worn">>
-<<case "panties">><<set $pantiesState to "not worn">>
-<<case "bra">><<set $braState to "not worn">>
-<</switch>>
-<<set $tempCorr to ($tempCorr || 0) + 0.5>>
-<<run setup.activateTool("emf")>>
-<<run setup.activateTool("uvl")>>
-<<image "hunting/hid1.jpg" { width: "100%" }>>
-<br>
-&emsp;&emsp;You don't run. You don't hide. You hold perfectly still and let it pass THROUGH you. Icy fingers slide over you; the ghost pauses, curious — and tears a garment loose before drifting on. Your skin crawls, but you can feel the residue it left behind. Every tool you were carrying picks up the trail.
-<br>
-<<switch _freezeSlot>>
-<<case "tshirt">>@@.mc-action; Your tshirt is gone.@@
-<<case "jeans">>@@.mc-action; Your jeans are gone.@@
-<<case "shorts">>@@.mc-action; Your shorts are gone.@@
-<<case "skirt">>@@.mc-action; Your skirt is gone.@@
-<<case "panties">>@@.mc-action; Your panties are gone.@@
-<<case "bra">>@@.mc-action; Your bra is gone.@@
-<<default>>@@.mc-thoughts; You have nothing left for it to take.@@
-<</switch>>
-<br><br>
-@@.backbtn;[[Continue|$return]]@@
+<<if _freezeSlot eq "">>
+	&emsp;&emsp;You don't run. You don't hide. You hold perfectly still and let it pass THROUGH you. Icy fingers slide over bare skin — and find nothing left to tear away. The ghost pauses. Then, curious and patient, it decides to take you instead.<br>
+	@@.mc-thoughts;You feel the cold close around you and pull. There is nothing left to give but yourself.@@
+	<<set $huntActivated to 1>>
+	<<set $huntActivationTime = $hours * 60 + $minutes>>
+	<<timed 2s>>
+		<<goto "HuntOverSanity">>
+	<</timed>>
+<<else>>
+	<<set $tempCorr to ($tempCorr || 0) + 0.5>>
+	<<run setup.activateTool("emf")>>
+	<<run setup.activateTool("uvl")>>
+	&emsp;&emsp;You don't run. You don't hide. You hold perfectly still and let it pass THROUGH you. Icy fingers slide over you; the ghost pauses, curious — and tears a garment loose before drifting on. Your skin crawls, but you can feel the residue it left behind. Every tool you were carrying picks up the trail.
+	<br>
+	<<switch _freezeSlot>>
+	<<case "top">><<include "StealShirt">>@@.mc-action; Your top is gone.@@
+	<<case "bottom">><<include "StealBottomOuter">>@@.mc-action; Your bottoms are gone.@@
+	<<case "panties">><<include "StealPanties">>@@.mc-action; Your panties are gone.@@
+	<<case "bra">><<include "StealBra">>@@.mc-action; Your bra is gone.@@
+	<</switch>>
+	<br><br>
+	@@.backbtn;[[Continue|$return]]@@
 
-<<run setup.Ghosts.markActiveHuntEvent()>>
-<<set $huntActivated to 1>>
-<<set $huntActivationTime = $hours * 60 + $minutes>>
-<<done>>
-	<<addclass ".linkselector" "disabled-link">>
-<</done>>
+	<<run setup.Ghosts.markActiveHuntEvent()>>
+	<<set $huntActivated to 1>>
+	<<set $huntActivationTime = $hours * 60 + $minutes>>
+	<<done>>
+		<<addclass ".linkselector" "disabled-link">>
+	<</done>>
+<</if>>

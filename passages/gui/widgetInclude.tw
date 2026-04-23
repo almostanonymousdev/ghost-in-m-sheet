@@ -5,7 +5,9 @@
 		<<run setup.HauntConditions.applyTickEffects()>>
 		<<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
 		<<updatemeter 'energy' `$mc.energy / $mc.energyMax`>>
-		<<if $exhausted eq 1>>
+		<<if $sanityCollapse eq 1>>
+			<<goto "HuntOverSanity">>
+		<<elseif $exhausted eq 1>>
 			<<goto "HuntOverExhaustion">>
 		<<else>>
 			<<include "Event">>
@@ -20,11 +22,11 @@
 <</widget>>
 
 <<widget "toolTick">>
-	/* Tools burn 1 in-game minute per activation. Applied once per tool
-	click (added to coreBody in setup.searchToolMarkup, before the repeat
-	loop) so multi-iteration meter fills don't over-tick. Updates the
-	clock display (linkreplace doesn't trigger StoryCaption re-render)
-	and routes to HuntOverTime if the click pushed dawn past 6am. */
+	/* Tools burn 1 in-game minute per tick. Fired from inside the
+	<<repeat>> loop in setup.searchToolMarkup so every meter increment
+	advances the clock. Updates the clock display (linkreplace doesn't
+	trigger StoryCaption re-render) and routes to HuntOverTime if the
+	tick pushed dawn past 6am. */
 	<<run setup.addTime(1)>>
 	<<replace "#time">><<= setup.updateTimeDisplay()>><</replace>>
 	<<if $hours gte 6 and setup.Ghosts.isHunting()>>
@@ -38,7 +40,9 @@
 		<<run setup.HauntConditions.applyTickEffects()>>
 		<<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
 		<<updatemeter 'energy' `$mc.energy / $mc.energyMax`>>
-		<<if $exhausted eq 1>>
+		<<if $sanityCollapse eq 1>>
+			<<goto "HuntOverSanity">>
+		<<elseif $exhausted eq 1>>
 			<<goto "HuntOverExhaustion">>
 		<<else>>
 			<<include "Event">>

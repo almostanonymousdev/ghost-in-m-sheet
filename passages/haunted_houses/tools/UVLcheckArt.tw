@@ -3,7 +3,7 @@
 <<set _hg to setup.Ghosts.active()>>
 
 <<if _state neq "ready" or not (_hg and _hg.hasEvidence("uvl"))>>
-	<<notFound "I didn't find any fingerprints" "UVLcheckArt">>
+	<<notFound "I didn't find any fingerprints">>
 <<else>>
 	<<if random(1, 3) gt 1>>
 		<<if $jeansState is "worn">>

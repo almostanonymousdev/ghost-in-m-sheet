@@ -5,12 +5,13 @@
  * trigger timer, return to the room). The energy spend can also exhaust
  * the player — if so, route to HuntOverExhaustion instead of the room. */
 <<set $mc.sanity -= 10>>
-<<if $mc.sanity lt 1>>
-	<<set $mc.sanity to 1>>
-<</if>>
 <<run setup.HauntConditions.spendEnergy(setup.HauntConditions.ENERGY_COST_PRAY)>>
 <<updatemeter 'energy' `$mc.energy / $mc.energyMax`>>
-<<if $exhausted eq 1>>
+<<if $mc.sanity lt 0>>
+	<<set $mc.sanity to 0>>
+	<<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
+	<<goto "HuntOverSanity">>
+<<elseif $exhausted eq 1>>
 	<<goto "HuntOverExhaustion">>
 <</if>>
 <<image "img/crucifix.webp" { class: "displayCentredImgs", width: "60%" }>>

@@ -25,6 +25,9 @@ or @@.usebtn; [[Try to hide|Hide]]@@
 <<if setup.HauntedHouses.hasBottomWorn() or setup.HauntedHouses.hasTopWorn() or $pantiesState eq "worn" or $braState eq "worn">>
 	or @@.usebtn;<<link "Freeze and let it pass (lose a garment)" "FreezeHunt">>
 	<</link>>@@
+<<else>>
+	or @@.usebtn;<<link "Freeze and let it pass (nothing left to give)" "FreezeHunt">>
+	<</link>>@@
 <</if>>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>

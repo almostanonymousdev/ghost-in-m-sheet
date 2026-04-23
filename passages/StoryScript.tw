@@ -1211,11 +1211,10 @@ setup.HauntConditions = (function () {
 
     /* Energy as the pacing gate: every nav tick inside a haunted house
      * burns ENERGY_PER_STEP, capping the total room-search budget per
-     * contract. Spendable actions (press-through, bait, pray) charge
-     * their own energy on top of their named cost. Energy at 0 kicks the
-     * player out via HuntOverExhaustion. */
+     * contract. Spendable actions (bait, pray) charge their own energy
+     * on top of their named cost. Energy at 0 kicks the player out via
+     * HuntOverExhaustion. */
     var ENERGY_PER_STEP    = 0.25;
-    var ENERGY_COST_PRESS  = 0.5;
     var ENERGY_COST_BAIT   = 1;
     var ENERGY_COST_PRAY   = 1;
 
@@ -1392,9 +1391,10 @@ setup.HauntConditions = (function () {
     /* Apply per-nav-step effects. Called from includeTimeEvent* widgets so
      * tool-tick spam doesn't double-charge stats. Mutates mc.sanity /
      * mc.lust / mc.energy, accrues tempCorr, decrements bait counter, and
-     * sets V.exhausted when energy bottoms out so the includeTimeEvent
-     * widget can route to HuntOverExhaustion. Corresponding meters
-     * (sanity / energy) are refreshed by the caller. */
+     * sets V.exhausted when energy bottoms out (or V.sanityCollapse when
+     * sanity bottoms out) so the includeTimeEvent widget can route to
+     * HuntOverExhaustion / HuntOverSanity. Corresponding meters (sanity /
+     * energy) are refreshed by the caller. */
     function applyTickEffects() {
         var V = State.variables;
         var mc = V.mc;
@@ -1404,7 +1404,10 @@ setup.HauntConditions = (function () {
 
         if (snap.sanityPerStep !== 0) {
             mc.sanity += snap.sanityPerStep;
-            if (mc.sanity < 1) mc.sanity = 1;
+            if (mc.sanity < 0) {
+                mc.sanity = 0;
+                V.sanityCollapse = 1;
+            }
             if (mc.sanity > mc.sanityMax) mc.sanity = mc.sanityMax;
         }
         if (snap.lustPerStep !== 0) {
@@ -1439,9 +1442,9 @@ setup.HauntConditions = (function () {
         }
     }
 
-    /* Spend ad-hoc energy for a player-driven action (press through, bait,
-     * pray). Returns true on success, false when not enough energy.
-     * Sets V.exhausted at zero so the next nav tick routes to exhaustion. */
+    /* Spend ad-hoc energy for a player-driven action (bait, pray).
+     * Returns true on success, false when not enough energy. Sets
+     * V.exhausted at zero so the next nav tick routes to exhaustion. */
     function spendEnergy(amount) {
         var V = State.variables;
         var mc = V.mc;
@@ -1484,15 +1487,6 @@ setup.HauntConditions = (function () {
                   && V.baitActive !== 1);
     }
 
-    /* Press-through (used by the notFound widget). Costs sanity AND
-     * energy; the widget already gates on sanity, this gates on energy. */
-    function canPressThrough() {
-        var V = State.variables;
-        return !!(V.mc
-                  && V.mc.sanity > 5
-                  && (V.mc.energy || 0) >= ENERGY_COST_PRESS);
-    }
-
     /* Pray (used by GhostHuntEvent). Costs sanity AND energy. */
     function canPray() {
         var V = State.variables;
@@ -1527,6 +1521,7 @@ setup.HauntConditions = (function () {
         V.baitStepsRemain    = 0;
         V.overchargedTools   = 0;
         V.exhausted          = 0;
+        V.sanityCollapse     = 0;
         V.orgasmCooldownSteps = 0;
     }
 
@@ -1536,7 +1531,6 @@ setup.HauntConditions = (function () {
         BAIT_LUST_COST:      BAIT_LUST_COST,
         BAIT_STEPS:          BAIT_STEPS,
         ENERGY_PER_STEP:     ENERGY_PER_STEP,
-        ENERGY_COST_PRESS:   ENERGY_COST_PRESS,
         ENERGY_COST_BAIT:    ENERGY_COST_BAIT,
         ENERGY_COST_PRAY:    ENERGY_COST_PRAY,
         currentBgVar:        currentBgVar,
@@ -1548,7 +1542,6 @@ setup.HauntConditions = (function () {
         startBait:           startBait,
         canBait:             canBait,
         canPray:             canPray,
-        canPressThrough:     canPressThrough,
         toggleOverchargedTools: toggleOverchargedTools,
         isOverchargedMode:      isOverchargedMode,
         eventSanityMultiplier:  eventSanityMultiplier,
@@ -1799,12 +1792,14 @@ setup.searchToolMarkup = function (cfg) {
             '<<replace "#' + meterId + '">><<include "' + checkPassage + '">><</replace>>';
     }
 
-    // Body of the <<repeat>> loop.
+    // Body of the <<repeat>> loop. Each iteration is one tool tick and
+    // burns one in-game minute via <<toolTick>>.
     var repeatBody = [
         '<<if ' + field + ' neq ' + equip + '>>',
             eventChain,
         '<</if>>',
         '<<if ' + field + ' lte (' + equip + ' - 1)>>',
+            '<<toolTick>>',
             '<<set ' + field + ' += 1>>',
             '<<updatemeter \'' + meterName + '\' ' + meterExpr + '>>',
         '<<elseif ' + field + ' gte ' + equip + '>>',
@@ -1816,7 +1811,6 @@ setup.searchToolMarkup = function (cfg) {
     ].join('\n');
 
     var coreBody = [
-        '<<toolTick>>',
         '<' + meterTag + ' id="' + meterId + '">',
         '<<showmeter \'' + meterName + '\' ' + meterExpr + '>>',
         '</' + meterTag + '>',
