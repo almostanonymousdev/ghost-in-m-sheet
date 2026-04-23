@@ -1281,6 +1281,17 @@ setup.HauntConditions = (function () {
             contributors:      []
         };
 
+        if (inHouse) {
+            var hasCompanion = V.isCompChosen === 1;
+            var contractDrain = hasCompanion ? 0.2 : 0.4;
+            snap.sanityPerStep -= contractDrain;
+            snap.contributors.push({
+                label: hasCompanion ? "Contract (w/ companion)" : "Contract",
+                color: "#cc8866",
+                detail: "sanity −" + contractDrain + "/step"
+            });
+        }
+
         if (isCurrentRoomDark()) {
             snap.dark = true;
             snap.sanityPerStep  -= 1;
