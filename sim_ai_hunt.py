@@ -47,106 +47,361 @@ Usage:
 from __future__ import annotations
 
 import random
+import re
 import sys
 from dataclasses import dataclass, field
+from pathlib import Path
 
 
-ELM_ROOMS = [
-    "kitchen", "bathroom", "bedroom", "nursery", "hallway",
-    "hallwayUpstairs", "bedroomTwo", "bathroomTwo", "basement",
-]
+# ---- Game-data loader ------------------------------------------------
+#
+# Everything in this section parses numbers/flags straight from the game's
+# .tw source. The AI below consumes these values; nothing that affects
+# mechanics is hardcoded.
 
-# Evidence triples from GhostController.tw. Mimic's "extra glass" bonus is
-# ignored here (the simulation identifies by the canonical triple).
-GHOST_EVIDENCE: dict[str, frozenset[str]] = {
-    "Shade":       frozenset({"emf", "gwb", "temperature"}),
-    "Spirit":      frozenset({"emf", "spiritbox", "gwb"}),
-    "Poltergeist": frozenset({"spiritbox", "gwb", "uvl"}),
-    "Phantom":     frozenset({"glass", "uvl", "spiritbox"}),
-    "Goryo":       frozenset({"glass", "uvl", "emf"}),
-    "Demon":       frozenset({"gwb", "uvl", "temperature"}),
-    "Deogen":      frozenset({"glass", "gwb", "spiritbox"}),
-    "Jinn":        frozenset({"emf", "uvl", "temperature"}),
-    "Moroi":       frozenset({"gwb", "temperature", "spiritbox"}),
-    "Myling":      frozenset({"gwb", "emf", "uvl"}),
-    "Oni":         frozenset({"glass", "emf", "temperature"}),
-    "Mimic":       frozenset({"uvl", "temperature", "spiritbox"}),
-    "The Twins":   frozenset({"emf", "temperature", "spiritbox"}),
-    "Wraith":      frozenset({"glass", "emf", "spiritbox"}),
-    "Mare":        frozenset({"glass", "gwb", "temperature"}),
-    "Cthulion":    frozenset({"spiritbox", "glass", "temperature"}),
-    "Banshee":     frozenset({"glass", "gwb", "uvl"}),
-    "Raiju":       frozenset({"emf", "spiritbox", "uvl"}),
+
+REPO_ROOT = Path(__file__).resolve().parent
+PASSAGES = REPO_ROOT / "passages"
+
+EVIDENCE_ENUM = {
+    "EMF": "emf", "SPIRITBOX": "spiritbox", "GWB": "gwb",
+    "GLASS": "glass", "TEMPERATURE": "temperature", "UVL": "uvl",
 }
 
-# Per-ghost hunt conditions (GhostController.tw huntCondition). Lambdas over
-# the mc state. Only the ones used by this sim are included.
-# ("sanity_max", T) fires when sanity <= T; ("lust_min", T) when lust >= T.
-GHOST_HUNT_COND: dict[str, tuple[str, int]] = {
-    "Shade":       ("sanity_max", 35),
-    "Spirit":      ("lust_min",   50),
-    "Poltergeist": ("sanity_max", 50),
-    "Phantom":     ("sanity_max", 50),
-    "Goryo":       ("lust_min",   50),
-    "Demon":       ("sanity_max", 70),
-    "Deogen":      ("sanity_max", 50),
-    "Jinn":        ("sanity_max", 50),
-    "Moroi":       ("sanity_max", 50),
-    "Myling":      ("lust_min",   50),
-    "Oni":         ("lust_min",   50),
-    "Mimic":       ("sanity_max", 50),
-    "The Twins":   ("lust_min",   50),
-    "Wraith":      ("lust_min",   50),
-    "Mare":        ("lust_min",   50),
-    "Cthulion":    ("sanity_max", 50),
-    "Banshee":     ("lust_min",   50),
-    "Raiju":       ("sanity_max", 50),
-}
+
+def _read(rel: str) -> str:
+    return (PASSAGES / rel).read_text(encoding="utf-8", errors="replace")
+
+
+def _find_num(pattern: str, text: str, cast=float) -> float:
+    m = re.search(pattern, text)
+    if not m:
+        raise SystemExit(f"parser: couldn't match {pattern!r}")
+    return cast(m.group(1))
+
+
+def _need(m: re.Match | None, what: str) -> re.Match:
+    if m is None:
+        raise SystemExit(f"parser: couldn't find {what}")
+    return m
+
+
+def _parse_ghost_block(block: str) -> dict:
+    name = _need(re.search(r'name:\s*"([^"]+)"', block), "ghost name").group(1)
+    ev_match = _need(re.search(r'evidence:\s*\[([^\]]+)\]', block),
+                     "ghost evidence")
+    evidence = frozenset(
+        EVIDENCE_ENUM[k] for k in re.findall(r'\bE\.([A-Z]+)', ev_match.group(1))
+    )
+    # huntCondition is either `mc.sanity <= N` or `mc.lust >= N`.
+    hc = _need(re.search(
+        r'huntCondition:[^,]*?mc\.(sanity|lust)\s*(<=|>=)\s*(\d+)', block),
+        f"huntCondition for {name}")
+    kind = ("sanity_max" if hc.group(1) == "sanity" else "lust_min")
+    hunt_cond = (kind, int(hc.group(3)))
+    hide = running = None
+    m = re.search(r'hidingSucceeds:\s*(true|false)', block)
+    if m: hide = (m.group(1) == "true")
+    m = re.search(r'runningSucceeds:\s*(true|false)', block)
+    if m: running = (m.group(1) == "true")
+    lo, hi = 1, 5
+    m = re.search(r'sanityEventLossRange:\s*\[(\d+),\s*(\d+)\]', block)
+    if m: lo, hi = int(m.group(1)), int(m.group(2))
+    return {
+        "name": name, "evidence": evidence, "hunt_cond": hunt_cond,
+        "hide": hide, "run": running, "sanity_loss": (lo, hi),
+    }
+
+
+def _load_ghosts() -> list[dict]:
+    src = _read("ghosts/GhostController.tw")
+    gc_start = src.index("var GHOST_CONFIG")
+    # brace-balance the ghost config list; each entry is a `{...}` object
+    list_start = src.index("[", gc_start)
+    i = list_start + 1
+    depth = 0
+    starts: list[int] = []
+    ends: list[int] = []
+    while i < len(src):
+        c = src[i]
+        if c == "[":
+            depth += 1
+        elif c == "]" and depth == 0:
+            break
+        elif c == "]":
+            depth -= 1
+        elif c == "{" and depth == 0:
+            # balance this object literal
+            j = i + 1
+            d = 1
+            while j < len(src) and d > 0:
+                if src[j] == "{": d += 1
+                elif src[j] == "}": d -= 1
+                j += 1
+            starts.append(i)
+            ends.append(j)
+            i = j
+            continue
+        i += 1
+    return [_parse_ghost_block(src[s:e]) for s, e in zip(starts, ends)]
+
+
+def _parse_int_map(text: str, varname: str) -> dict[int, int]:
+    m = re.search(varname + r'\s*=\s*\{([^}]+)\}', text)
+    if not m:
+        raise SystemExit(f"parser: couldn't find {varname}")
+    return {int(k): int(v)
+            for k, v in re.findall(r'(\d+)\s*:\s*(\d+)', m.group(1))}
+
+
+def _parse_snapshot_bonuses(src: str) -> dict[str, dict[str, float]]:
+    """Pull the per-condition snap.X += N lines from setup.HauntConditions
+    .snapshot(). Returns {condition: {field: delta}} for dark / topless /
+    nude / lust_fuel / overcharged."""
+    branches = {
+        "dark":        r'if \(isCurrentRoomDark\(\)\)\s*\{([^}]+)\}',
+        "topless":     r'if \(snap\.clothing === "topless"\)\s*\{([^}]+)\}',
+        "nude":        r'else if \(snap\.clothing === "nude"\)\s*\{([^}]+)\}',
+        "lust_fuel":   r'if \(mc && mc\.lust >= LUST_FUEL_THRESHOLD\)\s*\{([^}]+)\}',
+        "overcharged": r'if \(snap\.overchargedTools\)\s*\{([^}]+)\}',
+    }
+    fields = {
+        "sanity_per_step":  r'snap\.sanityPerStep\s*([+\-])=\s*(\d+)',
+        "lust_per_step":    r'snap\.lustPerStep\s*([+\-])=\s*(\d+)',
+        "tool_chance":      r'snap\.toolChanceBonus\s*([+\-])=\s*(\d+)',
+        "tool_window":      r'snap\.toolWindowBonus\s*([+\-])=\s*(\d+)',
+        "hunt_chance":      r'snap\.huntChanceBonus\s*([+\-])=\s*(\d+)',
+    }
+    out: dict[str, dict[str, float]] = {}
+    for name, block_re in branches.items():
+        m = re.search(block_re, src)
+        if not m:
+            raise SystemExit(f"parser: snapshot branch {name} not found")
+        body = m.group(1)
+        deltas: dict[str, float] = {}
+        for f, pat in fields.items():
+            fm = re.search(pat, body)
+            if fm:
+                sign = 1 if fm.group(1) == "+" else -1
+                deltas[f] = sign * int(fm.group(2))
+        out[name] = deltas
+    return out
+
+
+def _parse_house_rooms(house_id: str) -> list[str]:
+    src = _read("haunted_houses/HauntedHousesController.tw")
+    # Find the HOUSE_CONFIG entry whose `id: '<house_id>'` is present.
+    pat = r"id:\s*'" + re.escape(house_id) + r"'.*?rooms:\s*\[([^\]]+)\]"
+    m = re.search(pat, src, re.DOTALL)
+    if not m:
+        raise SystemExit(f"parser: HOUSE_CONFIG for {house_id!r} not found")
+    return re.findall(r"'([^']+)'", m.group(1))
+
+
+@dataclass
+class GameData:
+    ghosts: dict[str, dict]
+    tier_chance: dict[int, float]            # tier -> per-roll chance (0-1)
+    tool_window: dict[int, int]              # tier -> minutes
+    elm_rooms: list[str]
+    ghost_move_chance: float
+    hunt_base_threshold: int
+    hide_success_base: float                 # 0-1
+    run_success_base: float                  # 0-1
+    energy_per_step: float
+    start_energy: float
+    start_sanity: float
+    start_lust: float
+    lust_fuel_threshold: int
+    dark_bg: int
+    snapshot_bonuses: dict[str, dict[str, float]]
+    ghost_event_chance_per_step: float = 0.05  # not encoded as a single
+                                               # constant in-game; keeps the
+                                               # ArtEvent/EventMC/Freeze
+                                               # activation rate tunable.
+
+
+def load_game_data() -> GameData:
+    story_script = _read("StoryScript.tw")
+    story_init = _read("StoryInit.tw")
+    change_room = _read("haunted_houses/general/ChangeGhostRoom.tw")
+    check_hunt = _read("haunted_houses/hunt/CheckHuntStart.tw")
+    hide_tw = _read("haunted_houses/general/Hide.tw")
+    run_tw = _read("haunted_houses/general/RunFast.tw")
+
+    ghosts = {g["name"]: g for g in _load_ghosts()}
+
+    tier_chance_raw = _parse_int_map(story_script, r"setup\.TIER_CHANCE")
+    tier_chance = {k: v / 100.0 for k, v in tier_chance_raw.items()}
+    tool_window = _parse_int_map(story_script, r"setup\.TOOL_TIME_REMAIN")
+
+    # HauntConditions constants.
+    energy_per_step = _find_num(r"var\s+ENERGY_PER_STEP\s*=\s*([\d.]+)",
+                                story_script)
+    lust_fuel = int(_find_num(r"var\s+LUST_FUEL_THRESHOLD\s*=\s*(\d+)",
+                              story_script))
+    dark_bg = int(_find_num(r"var\s+DARK\s*=\s*(\d+)", story_script))
+    snapshot_bonuses = _parse_snapshot_bonuses(story_script)
+
+    # mc starting stats (StoryInit.tw).
+    start_sanity = _find_num(r"sanity\s*:\s*(\d+)", story_init)
+    start_lust   = _find_num(r"lust\s*:\s*(\d+)",   story_init)
+    start_energy = _find_num(r"energy\s*:\s*(\d+)", story_init)
+
+    # ChangeGhostRoom.tw: Math.random() < 0.35
+    ghost_move_chance = _find_num(r"Math\.random\(\)\s*<\s*([\d.]+)",
+                                   change_room)
+
+    # CheckHuntStart.tw: _huntThreshold to N + setup.HauntConditions...
+    hunt_base_threshold = int(_find_num(r"_huntThreshold\s+to\s+(\d+)",
+                                         check_hunt))
+
+    # Hide.tw: `if _checkH lte 50` -> success (swap: player lucky)
+    hide_pct = _find_num(r"_checkH\s+lte\s+(\d+)", hide_tw) / 100.0
+
+    # RunFast.tw: `if _check lte 30` -> caught; success = 1 - that.
+    run_caught = _find_num(r"_check\s+lte\s+(\d+)", run_tw) / 100.0
+
+    return GameData(
+        ghosts=ghosts,
+        tier_chance=tier_chance,
+        tool_window=tool_window,
+        elm_rooms=_parse_house_rooms("elm"),
+        ghost_move_chance=ghost_move_chance,
+        hunt_base_threshold=hunt_base_threshold,
+        hide_success_base=hide_pct,
+        run_success_base=1.0 - run_caught,
+        energy_per_step=energy_per_step,
+        start_energy=start_energy,
+        start_sanity=start_sanity,
+        start_lust=start_lust,
+        lust_fuel_threshold=lust_fuel,
+        dark_bg=dark_bg,
+        snapshot_bonuses=snapshot_bonuses,
+    )
+
+
+GD = load_game_data()
+
+STEP_MINUTES = 1                 # one nav tick = one in-game minute
+HUNT_EVENT_SANITY_LOSS_DEFAULT = (1, 5)  # Ghost.rollEventSanityLoss default
+
+
+def validate_game_data() -> list[str]:
+    """Assert every piece of game data the simulator depends on is actually
+    present and well-formed. Returns a list of error strings; empty list
+    means the game sources still match the parser's expectations."""
+    errors: list[str] = []
+
+    def require(cond: bool, msg: str) -> None:
+        if not cond:
+            errors.append(msg)
+
+    # Ghosts.
+    expected_ghost_count = 18
+    require(len(GD.ghosts) == expected_ghost_count,
+            f"expected {expected_ghost_count} ghosts, got {len(GD.ghosts)}: "
+            f"{sorted(GD.ghosts)}")
+    valid_evidence = set(EVIDENCE_ENUM.values())
+    for name, g in GD.ghosts.items():
+        require(len(g["evidence"]) == 3,
+                f"ghost {name}: expected 3 evidence types, got "
+                f"{sorted(g['evidence'])}")
+        bad = g["evidence"] - valid_evidence
+        require(not bad, f"ghost {name}: unknown evidence {sorted(bad)}")
+        kind, threshold = g["hunt_cond"]
+        require(kind in ("sanity_max", "lust_min"),
+                f"ghost {name}: bad huntCondition kind {kind!r}")
+        require(0 < threshold <= 100,
+                f"ghost {name}: huntCondition threshold {threshold} "
+                f"out of range")
+        lo, hi = g["sanity_loss"]
+        require(0 < lo <= hi,
+                f"ghost {name}: sanityEventLossRange {g['sanity_loss']} bad")
+
+    # Tier-gated tools.
+    for tier in (3, 4, 5):
+        require(tier in GD.tier_chance,
+                f"TIER_CHANCE missing tier {tier}; got {GD.tier_chance}")
+        require(tier in GD.tool_window,
+                f"TOOL_TIME_REMAIN missing tier {tier}; got {GD.tool_window}")
+    for tier, p in GD.tier_chance.items():
+        require(0 < p <= 1, f"TIER_CHANCE[{tier}]={p} out of (0,1]")
+    for tier, w in GD.tool_window.items():
+        require(w > 0, f"TOOL_TIME_REMAIN[{tier}]={w} not positive")
+
+    # Elm rooms.
+    require(len(GD.elm_rooms) >= 2,
+            f"elm HOUSE_CONFIG.rooms too short: {GD.elm_rooms}")
+    require(len(set(GD.elm_rooms)) == len(GD.elm_rooms),
+            f"elm rooms contain duplicates: {GD.elm_rooms}")
+
+    # Scalar constants.
+    require(0 < GD.ghost_move_chance <= 1,
+            f"ChangeGhostRoom Math.random() threshold "
+            f"{GD.ghost_move_chance} out of (0,1]")
+    require(0 <= GD.hunt_base_threshold <= 100,
+            f"CheckHuntStart base threshold {GD.hunt_base_threshold} bad")
+    require(0 < GD.hide_success_base < 1,
+            f"Hide.tw success base {GD.hide_success_base} bad")
+    require(0 < GD.run_success_base < 1,
+            f"RunFast.tw success base {GD.run_success_base} bad")
+    require(GD.energy_per_step > 0,
+            f"ENERGY_PER_STEP {GD.energy_per_step} not positive")
+    require(GD.start_energy > 0,
+            f"starting energy {GD.start_energy} not positive")
+    require(GD.start_sanity > 0,
+            f"starting sanity {GD.start_sanity} not positive")
+    require(GD.start_lust >= 0,
+            f"starting lust {GD.start_lust} negative")
+    require(GD.lust_fuel_threshold > 0,
+            f"LUST_FUEL_THRESHOLD {GD.lust_fuel_threshold} not positive")
+    require(GD.dark_bg != 1,
+            f"DARK constant collides with LIGHT_ON: {GD.dark_bg}")
+
+    # Snapshot bonuses: every branch we rely on must exist, and at least
+    # one numeric delta within it.
+    for branch in ("dark", "topless", "nude", "lust_fuel", "overcharged"):
+        d = GD.snapshot_bonuses.get(branch)
+        require(bool(d), f"snapshot branch {branch!r} missing from parser")
+        if d:
+            require(any(v != 0 for v in d.values()),
+                    f"snapshot branch {branch!r} has no nonzero deltas: {d}")
+
+    # Spot-check: a run should execute without crashing.
+    try:
+        play_hunt(next(iter(GD.ghosts)), tier=3)
+    except Exception as e:
+        errors.append(f"smoke run raised {type(e).__name__}: {e}")
+
+    return errors
 
 
 def can_hunt(name: str, sanity: float, lust: float) -> bool:
-    kind, threshold = GHOST_HUNT_COND[name]
+    kind, threshold = GD.ghosts[name]["hunt_cond"]
     return sanity <= threshold if kind == "sanity_max" else lust >= threshold
 
-# Ghost override rules for Hide.tw / RunFast.tw. None = default 50/50 roll.
-GHOST_HIDE_SUCCESS = {"Deogen": False, "Jinn": True}
-GHOST_RUN_SUCCESS  = {"Deogen": True,  "Jinn": False}
 
-# setup.TIER_CHANCE (per-roll success for gwb / plasm / spiritbox).
-TIER_CHANCE = {5: 0.15, 4: 0.25, 3: 0.35}
+def ghost_evidence(name: str) -> frozenset[str]:
+    return GD.ghosts[name]["evidence"]
 
-# setup.TOOL_TIME_REMAIN (in-game minutes the emf / uvl window stays open).
-TOOL_WINDOW = {5: 10, 4: 15, 3: 20}
 
-# HauntConditions constants.
-ENERGY_PER_STEP = 0.25
-START_ENERGY = 10.0
-START_SANITY = 100
-START_LUST = 0
-STEP_MINUTES = 1
-GHOST_MOVE_CHANCE = 0.35
-GHOST_EVENT_CHANCE_PER_STEP = 0.05  # approximates ArtEvent* / EventMC etc.
-HUNT_BASE_THRESHOLD = 6             # CheckHuntStart.tw: 6 + huntChanceBonus
-HUNT_EVENT_SANITY_LOSS = (1, 5)     # Ghost.rollEventSanityLoss default
-HIDE_SUCCESS_BASE = 0.50            # Hide.tw threshold (checkH <= 50)
-RUN_SUCCESS_BASE  = 0.70            # RunFast.tw threshold (check > 30)
-
-# Dark = room.background === 2 (lights off).
-LIGHT_ON, LIGHT_OFF = 1, 2
+LIGHT_ON = 1
+LIGHT_OFF = GD.dark_bg
 
 
 @dataclass
 class Mc:
-    sanity: float = START_SANITY
-    lust: float = START_LUST
-    energy: float = START_ENERGY
+    sanity: float = field(default_factory=lambda: GD.start_sanity)
+    lust: float = field(default_factory=lambda: GD.start_lust)
+    energy: float = field(default_factory=lambda: GD.start_energy)
 
 
 @dataclass
 class Hunt:
     ghost_name: str
     tier: int = 3
-    rooms: list[str] = field(default_factory=lambda: list(ELM_ROOMS))
+    rooms: list[str] = field(default_factory=lambda: list(GD.elm_rooms))
     mc: Mc = field(default_factory=Mc)
     minutes: int = 0
     ghost_room: str = ""
@@ -174,7 +429,7 @@ class Hunt:
     # --- snapshots / state queries ------------------------------------
     @property
     def ghost_evidence(self) -> frozenset[str]:
-        return GHOST_EVIDENCE[self.ghost_name]
+        return ghost_evidence(self.ghost_name)
 
     @property
     def clothing(self) -> str:
@@ -191,32 +446,40 @@ class Hunt:
         return self.lights.get(self.current_room, LIGHT_ON) == LIGHT_OFF
 
     def snapshot(self) -> dict:
-        """Mirror of setup.HauntConditions.snapshot()."""
-        snap = dict(sanity_per_step=0, lust_per_step=0,
-                    tool_chance_bonus=0.0, tool_window_bonus=0,
-                    hunt_chance_bonus=0)
+        """Mirror of setup.HauntConditions.snapshot() - pulls per-branch
+        deltas from GD.snapshot_bonuses, which is parsed from StoryScript.tw."""
+        snap = dict(sanity_per_step=0.0, lust_per_step=0.0,
+                    tool_chance_bonus=0.0, tool_window_bonus=0.0,
+                    hunt_chance_bonus=0.0)
+        active: list[str] = []
         if self.dark:
-            snap["sanity_per_step"] -= 1
-            snap["tool_chance_bonus"] += 0.10
-            snap["tool_window_bonus"] += 5
-            snap["hunt_chance_bonus"] += 6
+            active.append("dark")
         c = self.clothing
         if c == "topless":
-            snap["tool_chance_bonus"] += 0.05
-            snap["lust_per_step"]     += 1
-            snap["hunt_chance_bonus"] += 3
+            active.append("topless")
         elif c == "nude":
-            snap["tool_chance_bonus"] += 0.10
-            snap["lust_per_step"]     += 2
-            snap["hunt_chance_bonus"] += 5
-        if self.mc.lust >= 50:
-            snap["tool_chance_bonus"] += 0.05
-            snap["hunt_chance_bonus"] += 3
+            active.append("nude")
+        if self.mc.lust >= GD.lust_fuel_threshold:
+            active.append("lust_fuel")
         if self.overcharged:
-            snap["tool_chance_bonus"] += 0.10
-            snap["tool_window_bonus"] += 5
-            snap["hunt_chance_bonus"] += 5
-            snap["sanity_per_step"]   -= 1
+            active.append("overcharged")
+        for branch in active:
+            for k, v in GD.snapshot_bonuses[branch].items():
+                # tool_chance / hunt_chance are percent points in the
+                # game; the tier-chance table is decimal (0-1). Scale the
+                # tool-chance bonus into 0-1, leave hunt-chance as
+                # percent points (CheckHuntStart.tw compares vs a 0-100
+                # roll).
+                if k == "tool_chance":
+                    snap["tool_chance_bonus"] += v / 100.0
+                elif k == "hunt_chance":
+                    snap["hunt_chance_bonus"] += v
+                elif k == "tool_window":
+                    snap["tool_window_bonus"] += v
+                elif k == "sanity_per_step":
+                    snap["sanity_per_step"] += v
+                elif k == "lust_per_step":
+                    snap["lust_per_step"] += v
         return snap
 
     # --- time / ghost bookkeeping -------------------------------------
@@ -227,7 +490,7 @@ class Hunt:
     def _maybe_move_ghost(self) -> None:
         i = self._interval()
         if i != self.last_move_interval:
-            if random.random() < GHOST_MOVE_CHANCE:
+            if random.random() < GD.ghost_move_chance:
                 self.ghost_room = random.choice(self.rooms)
             self.last_move_interval = i
 
@@ -242,26 +505,27 @@ class Hunt:
         else None."""
         self.current_room = room
         self.minutes += STEP_MINUTES
-        self.mc.energy -= ENERGY_PER_STEP
+        self.mc.energy -= GD.energy_per_step
         self._maybe_move_ghost()
 
         # Per-step tick effects (HauntConditions.applyTickEffects).
         snap = self.snapshot()
-        self.mc.sanity = clamp(self.mc.sanity + snap["sanity_per_step"], 1, START_SANITY)
+        self.mc.sanity = clamp(self.mc.sanity + snap["sanity_per_step"],
+                               1, GD.start_sanity)
         self.mc.lust   = clamp(self.mc.lust + snap["lust_per_step"], 0, 100)
         # Sanity never hits 0 via natural drain (min clamp 1); the hunt-over
         # -sanity exit comes from GhostHuntEvent's rollEventSanityLoss. We
         # still surface sanity_zero if some future sink drives it below 1.
 
         # Ghost event (activates tools).
-        if random.random() < GHOST_EVENT_CHANCE_PER_STEP:
+        if random.random() < GD.ghost_event_chance_per_step:
             self._activate("uvl")
             self._activate("emf")
 
         # Random ghost-hunt roll (CheckHuntStart.tw).
         if not self.hunt_active_flag and can_hunt(
                 self.ghost_name, self.mc.sanity, self.mc.lust):
-            threshold = HUNT_BASE_THRESHOLD + snap["hunt_chance_bonus"]
+            threshold = GD.hunt_base_threshold + snap["hunt_chance_bonus"]
             if random.randint(0, 100) <= threshold:
                 reason = self._resolve_hunt_event()
                 if reason:
@@ -272,20 +536,22 @@ class Hunt:
         """GhostHuntEvent.tw: AI hides. Returns exit reason if caught,
         else None (hunt passed, event marker set)."""
         self.hunt_active_flag = True
-        # Sanity event loss on hunt start.
-        lo, hi = HUNT_EVENT_SANITY_LOSS
+        # Sanity event loss on hunt start - ghost-specific range when set,
+        # else the Ghost.rollEventSanityLoss default.
+        lo, hi = GD.ghosts[self.ghost_name].get(
+            "sanity_loss", HUNT_EVENT_SANITY_LOSS_DEFAULT)
         self.mc.sanity -= random.randint(lo, hi)
         if self.mc.sanity < 1:
             self.mc.sanity = 0
             return "sanity_zero"
         # Hide (AI's default). Ghost override beats the roll.
-        override = GHOST_HIDE_SUCCESS.get(self.ghost_name)
+        override = GD.ghosts[self.ghost_name].get("hide")
         if override is True:
             survived = True
         elif override is False:
             survived = False
         else:
-            survived = random.random() < HIDE_SUCCESS_BASE
+            survived = random.random() < GD.hide_success_base
         if not survived:
             return "caught_in_hunt"
         # Survived - ghost event bumps both timed tools (like FreezeHunt).
@@ -300,8 +566,8 @@ class Hunt:
 
     # --- tool rolls ----------------------------------------------------
     def _activate(self, tool: str) -> None:
-        window = TOOL_WINDOW[self.tier] + self.snapshot()["tool_window_bonus"]
-        until = self.minutes + window
+        window = GD.tool_window[self.tier] + self.snapshot()["tool_window_bonus"]
+        until = self.minutes + int(window)
         if tool == "emf":
             self.emf_until = max(self.emf_until, until)
         else:
@@ -309,7 +575,7 @@ class Hunt:
 
     def _roll_tier(self) -> bool:
         bonus = self.snapshot()["tool_chance_bonus"]
-        return random.random() < TIER_CHANCE[self.tier] + bonus
+        return random.random() < GD.tier_chance[self.tier] + bonus
 
     def temperature_scan(self) -> int:
         base = random.randint(13, 16)
@@ -473,15 +739,16 @@ class Result:
 
 
 def simulate(ghost_name: str, trials: int, tier: int) -> Result:
-    if ghost_name not in GHOST_EVIDENCE:
+    if ghost_name not in GD.ghosts:
         raise SystemExit(f"Unknown ghost: {ghost_name!r}. "
-                         f"Choose from {sorted(GHOST_EVIDENCE)} or 'all'.")
-    if tier not in TIER_CHANCE:
-        raise SystemExit(f"Unknown tier: {tier}. Choose 3, 4, or 5.")
+                         f"Choose from {sorted(GD.ghosts)} or 'all'.")
+    if tier not in GD.tier_chance:
+        raise SystemExit(f"Unknown tier: {tier}. "
+                         f"Choose from {sorted(GD.tier_chance)}.")
 
+    target = ghost_evidence(ghost_name)
     wins = 0
-    evidence_counts = {e: 0 for e in {"emf", "gwb", "glass",
-                                       "spiritbox", "temperature", "uvl"}}
+    evidence_counts = {e: 0 for e in EVIDENCE_ENUM.values()}
     count_by_found = [0] * 4
     fail_reasons: dict[str, int] = {
         "energy": 0, "sanity_zero": 0, "caught_in_hunt": 0, "search_timeout": 0,
@@ -494,18 +761,18 @@ def simulate(ghost_name: str, trials: int, tier: int) -> Result:
             wins += 1
         else:
             fail_reasons[reason] = fail_reasons.get(reason, 0) + 1
-            missing = tuple(sorted(GHOST_EVIDENCE[ghost_name] - found))
+            missing = tuple(sorted(target - found))
             missed_evidence[missing] = missed_evidence.get(missing, 0) + 1
         for e in found:
-            evidence_counts[e] += 1
-        count_by_found[min(len(found & GHOST_EVIDENCE[ghost_name]), 3)] += 1
+            evidence_counts[e] = evidence_counts.get(e, 0) + 1
+        count_by_found[min(len(found & target), 3)] += 1
 
     return Result(ghost_name, trials, tier, wins, evidence_counts,
                   count_by_found, fail_reasons, missed_evidence)
 
 
 def print_detailed(r: Result) -> None:
-    target = sorted(GHOST_EVIDENCE[r.ghost])
+    target = sorted(ghost_evidence(r.ghost))
     losses = r.trials - r.wins
     print(f"Elm Street AI hunt - {r.trials} runs vs {r.ghost} (tier {r.tier})")
     print(f"  target evidence: {target}")
@@ -590,16 +857,29 @@ def print_summary(results: list[Result]) -> None:
 
 
 def main() -> None:
-    arg = sys.argv[1] if len(sys.argv) > 1 else "all"
+    args = sys.argv[1:]
+    if args and args[0] == "--validate-data":
+        errors = validate_game_data()
+        if errors:
+            print("sim_ai_hunt.py: game-data validation FAILED "
+                  f"({len(errors)} issue(s)):", file=sys.stderr)
+            for e in errors:
+                print(f"  - {e}", file=sys.stderr)
+            sys.exit(1)
+        print(f"sim_ai_hunt.py: game-data validation OK "
+              f"({len(GD.ghosts)} ghosts, {len(GD.elm_rooms)} elm rooms, "
+              f"{len(GD.tier_chance)} tool tiers).")
+        return
+    arg = args[0] if args else "all"
     if arg == "all":
-        trials = int(sys.argv[2]) if len(sys.argv) > 2 else 5000
-        tier = int(sys.argv[3]) if len(sys.argv) > 3 else 3
+        trials = int(args[1]) if len(args) > 1 else 5000
+        tier = int(args[2]) if len(args) > 2 else 3
         results = [simulate(name, trials, tier)
-                   for name in GHOST_EVIDENCE]
+                   for name in GD.ghosts]
         print_summary(results)
     else:
-        trials = int(sys.argv[2]) if len(sys.argv) > 2 else 10000
-        tier = int(sys.argv[3]) if len(sys.argv) > 3 else 3
+        trials = int(args[1]) if len(args) > 1 else 10000
+        tier = int(args[2]) if len(args) > 2 else 3
         print_detailed(simulate(arg, trials, tier))
 
 
