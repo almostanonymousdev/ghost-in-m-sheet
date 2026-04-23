@@ -48,7 +48,7 @@
 
 <<if setup.Ghosts.isPossessed()>>
 <<set $tarotCardsStage to 2>>
-<<set $MonkeyPawStage to 2>>
+<<run setup.MonkeyPaw.retire()>>
 <</if>>
 
 <<if ndef $mc.fit>>

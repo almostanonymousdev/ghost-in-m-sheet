@@ -26,7 +26,7 @@
 		<</linkappend>>
 		<br><br>
 		@@.backbtn; [[Back|$return]]@@
-	<<elseif $currentFurniture == $placeForMonkeyPawOwaissa and $MonkeyPawStage eq 0>>
+	<<elseif $currentFurniture == $placeForMonkeyPawOwaissa and setup.MonkeyPaw.isDiscoverable()>>
 		@@.mc-thoughts; You come across a strange@@ <<linkappend "@@.usebtn; paw.@@">><br>
 			<<image "cursedpossessions/monkey-paw/monkeypaw.jpg" "displayCentredImgs">>
 
@@ -37,7 +37,7 @@
 			I think I'll take the monkey paw with me. It might be useful.@@<br>
 			<br>
 			@@.mc-action; You put monkey paw in your bag@@<br>
-			<<set $MonkeyPawStage to 1>>
+			<<run setup.MonkeyPaw.markFound()>>
 		<</linkappend>>
 		<br><br>
 		@@.backbtn; [[Back|$return]]@@
@@ -73,7 +73,7 @@
 		<</linkappend>>
 		<br><br>
 		@@.backbtn; [[Back|$return]]@@
-	<<elseif $currentFurniture == $placeForMonkeyPawElm and $MonkeyPawStage eq 0>>
+	<<elseif $currentFurniture == $placeForMonkeyPawElm and setup.MonkeyPaw.isDiscoverable()>>
 		@@.mc-thoughts; You come across a strange@@ <<linkappend "@@.usebtn; paw.@@">><br>
 			<<image "cursedpossessions/monkey-paw/monkeypaw.jpg" "displayCentredImgs">>
 
@@ -84,7 +84,7 @@
 			I think I'll take the monkey paw with me. It might be useful.@@<br>
 			<br>
 			@@.mc-action; You put monkey paw in your bag@@<br>
-			<<set $MonkeyPawStage to 1>>
+			<<run setup.MonkeyPaw.markFound()>>
 		<</linkappend>>
 		<br><br>
 		@@.backbtn; [[Back|$return]]@@

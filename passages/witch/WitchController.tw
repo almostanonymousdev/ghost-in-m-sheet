@@ -75,16 +75,8 @@ setup.Witch = (function () {
 			s.isCIHDildo = 0;
 		},
 		unlockMonkeyPawWishes: function () {
-			var s = State.variables;
-			s.boughtMonkeyPawGuide = 2;
-			s.wishActivity = 1;
-			s.wishTraptheghost = 1;
-			s.wishSanity = 1;
-			s.wishLeave = 1;
-			s.wishKnowledge = 1;
-			s.wishDawn = 1;
-			s.wishAnything = 1;
-			s.mc.money -= 400;
+			setup.MonkeyPaw.purchaseGuide();
+			State.variables.mc.money -= 400;
 		},
 
 		// --- Level 3 tools referral ------------------------------
@@ -98,7 +90,7 @@ setup.Witch = (function () {
 
 		// --- Monkey paw guide ------------------------------------
 		canAskAboutMonkeyPaw: function () {
-			return v('boughtMonkeyPawGuide') === 0;
+			return setup.MonkeyPaw.guideStage() === 0;
 		},
 
 		// --- Warden/Ironclad hint --------------------------------

@@ -172,7 +172,7 @@ if (State.variables.isElm === 1) {
   addHighlightClass(State.variables.placeForCursedItemElm, State.variables.gotCursedItem !== 1 && typeof State.variables.gotCursedItem !== 'undefined');
   addHighlightClass(State.variables.placeForRescueClueElm, State.variables.hasRescueClue !== 1 && State.variables.hasQuestForRescue === 1);
   addHighlightClass(State.variables.placeForTarotCardsElm, State.variables.tarotCardsStage !== 1);
-  addHighlightClass(State.variables.placeForMonkeyPawElm, State.variables.MonkeyPawStage !== 1);
+  addHighlightClass(State.variables.placeForMonkeyPawElm, setup.MonkeyPaw.isDiscoverable());
   addHighlightClass(State.variables.placeForClothesStolenElm, State.variables.isClothesStolen === 1);
 }
 
@@ -180,7 +180,7 @@ else if (State.variables.isOwaissa === 1) {
   addHighlightClass(State.variables.placeForCursedItemOwaissa, State.variables.gotCursedItem !== 1 && typeof State.variables.gotCursedItem !== 'undefined');
   addHighlightClass(State.variables.placeForRescueClueOwaissa, State.variables.hasRescueClue !== 1 && State.variables.hasQuestForRescue === 1);
   addHighlightClass(State.variables.placeForTarotCardsOwaissa, State.variables.tarotCardsStage !== 1);
-  addHighlightClass(State.variables.placeForMonkeyPawOwaissa, State.variables.MonkeyPawStage !== 1);
+  addHighlightClass(State.variables.placeForMonkeyPawOwaissa, setup.MonkeyPaw.isDiscoverable());
   addHighlightClass(State.variables.placeForClothesStolenOwaissa, State.variables.isClothesStolen === 1);
 }
 }

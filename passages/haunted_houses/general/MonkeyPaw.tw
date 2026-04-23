@@ -1,75 +1,44 @@
 :: MonkeyPaw [nobr noreturn] {"position":"900,3200","size":"100,100"}
-<<script>>
-/* Canonical Monkey Paw wish catalogue. Each entry owns its unlock flag,
-   button label, text-input keyword, and the widget that applies the
-   effect (in widgetText.tw). The draw flow in this passage iterates
-   the catalogue to render guarded buttons and to route textbox input
-   to the matching effect. "anything" is a meta-wish that picks one of
-   the other six uniformly. */
-setup.MonkeyPawWishes = setup.MonkeyPawWishes || [
-	{ id: "activity",     flag: "wishActivity",     input: "activity",       label: "I wish for activity",       widget: "activity" },
-	{ id: "trapTheGhost", flag: "wishTraptheghost", input: "trap the ghost", label: "I wish to trap the ghost",  widget: "trapTheGhost" },
-	{ id: "sanity",       flag: "wishSanity",       input: "be sane",        label: "I wish to be sane",         widget: "sanity" },
-	{ id: "leave",        flag: "wishLeave",        input: "leave",          label: "I wish to leave",           widget: "leave" },
-	{ id: "knowledge",    flag: "wishKnowledge",    input: "knowledge",      label: "I wish for knowledge",      widget: "knowledge" },
-	{ id: "dawn",         flag: "wishDawn",         input: "dawn",           label: "I wish for dawn",           widget: "dawn" }
-];
-
-/* Look up a wish catalogue entry by one of its identifiers. `by` is
-   "input" for textbox matching, "id" for programmatic lookup. */
-setup.findMonkeyPawWish = function (by, value) {
-	var v = (value || "").toString().toLowerCase();
-	for (var i = 0; i < setup.MonkeyPawWishes.length; i++) {
-		if (setup.MonkeyPawWishes[i][by].toLowerCase() === v) return setup.MonkeyPawWishes[i];
-	}
-	return null;
-};
-
-/* Pick one of the six real wishes for an "anything" roll. */
-setup.rollAnythingWish = function () {
-	var deck = setup.MonkeyPawWishes;
-	return deck[Math.floor(Math.random() * deck.length)];
-};
-<</script>>
+<<run setup.MonkeyPaw.ensureGuideInit()>>
 <div class="MonkeyPawShow">
 <<image "cursedpossessions/monkey-paw/monkeypaw.jpg" "displayCentredImgs">>
 
 <span id="wishesCount">
-<<if $wishesCount lte 0>>
+<<if not setup.MonkeyPaw.hasWishes()>>
 	@@.mc-speech; It seems that I have no more wishes left...@@<br>
 <<else>>
-	@@.mc-thoughts; <b>Hmm...What should I wish for?</b> <br>$wishesCount wishes left...@@<br>
-	<<if ndef $boughtMonkeyPawGuide>>
-		<<set $boughtMonkeyPawGuide to 0>>
+	@@.mc-thoughts; <b>Hmm...What should I wish for?</b> <br><<= setup.MonkeyPaw.wishesLeft()>> wishes left...@@<br>
+	<<if setup.MonkeyPaw.guideStage() eq 0>>
 		@@.mc-speech; I need to be extremely careful... Maybe I should ask the witch how to use it? I think she could help me.@@
 	<</if>>
 
 	<br><br>
-	<<for _w range setup.MonkeyPawWishes>>
-		<<if State.variables[_w.flag] eq 1>>
+	<<for _w range setup.MonkeyPaw.list()>>
+		<<if setup.MonkeyPaw.isLearned(_w.id)>>
 			<<capture _w>>
 				<<linkreplace `"@@.usebtn; " + _w.label + "@@"`>>
 					<<monkeyPawWish _w.widget>>
-				<</linkreplace>><br>
+				<</linkreplace>>
+				@@.mc-thoughts; <<= setup.MonkeyPaw.describe(_w.id)>>@@<br>
 			<</capture>>
 		<</if>>
 	<</for>>
-	<<if $wishAnything eq 1>>
+	<<if setup.MonkeyPaw.hasAnything()>>
 		<<linkreplace "@@.usebtn; I wish for anything@@">>
-			<<monkeyPawWish setup.rollAnythingWish().widget>>
+			<<monkeyPawWish setup.MonkeyPaw.rollAnything().widget>>
 		<</linkreplace>><br>
 	<</if>><br>
-	<<if $boughtMonkeyPawGuide neq 2>>
+	<<if not setup.MonkeyPaw.hasGuide()>>
 		<label><b>@@.mc-speech;I wish for/to...@@</b><<textbox "$inputWish" "">></label>
 
 		<<link "@@.usebtn; Make a Wish@@">>
-			<<set _wish to setup.findMonkeyPawWish("input", $inputWish)>>
+			<<set _wish to setup.MonkeyPaw.byInput($inputWish)>>
 			<<if _wish>>
-				<<set State.variables[_wish.flag] to 1>>
+				<<run setup.MonkeyPaw.markLearned(_wish.id)>>
 				<<monkeyPawWish _wish.widget>>
-			<<elseif $inputWish.toLowerCase() eq "anything">>
-				<<set $wishAnything to 1>>
-				<<monkeyPawWish setup.rollAnythingWish().widget>>
+			<<elseif $inputWish.toLowerCase().trim() eq "anything">>
+				<<run setup.MonkeyPaw.grantAnything()>>
+				<<monkeyPawWish setup.MonkeyPaw.rollAnything().widget>>
 			<<else>>
 				<<replace "#falseMonkeyPaw">>
 					@@.mc-speech; Nothing happened...@@

@@ -209,15 +209,20 @@ test.describe('Witch — side quests', () => {
     expect(await callSetup(page, 'setup.Witch.canAskAboutMonkeyPaw()')).toBe(false);
   });
 
-  test('unlockMonkeyPawWishes grants all wish flags and deducts $400', async () => {
+  test('unlockMonkeyPawWishes marks every wish learned and deducts $400', async () => {
     await setVar(page, 'mc.money', 500);
     await setVar(page, 'boughtMonkeyPawGuide', 1);
+    await page.evaluate(() => { delete SugarCube.State.variables.monkeyPawLearned; });
+    await page.evaluate(() => { delete SugarCube.State.variables.wishAnything; });
     await page.evaluate(() => SugarCube.setup.Witch.unlockMonkeyPawWishes());
     expect(await getVar(page, 'mc.money')).toBe(100);
     expect(await getVar(page, 'boughtMonkeyPawGuide')).toBe(2);
-    for (const wish of ['wishActivity','wishTraptheghost','wishSanity',
-                        'wishLeave','wishKnowledge','wishDawn','wishAnything']) {
-      expect(await getVar(page, wish)).toBe(1);
+    expect(await callSetup(page, 'setup.MonkeyPaw.hasGuide()')).toBe(true);
+    expect(await callSetup(page, 'setup.MonkeyPaw.hasAnything()')).toBe(true);
+    const wishIds = await page.evaluate(() =>
+      SugarCube.setup.MonkeyPaw.list().map(w => w.id));
+    for (const id of wishIds) {
+      expect(await callSetup(page, `setup.MonkeyPaw.isLearned('${id}')`)).toBe(true);
     }
   });
 

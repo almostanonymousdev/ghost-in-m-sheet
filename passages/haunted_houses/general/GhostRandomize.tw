@@ -22,10 +22,8 @@
 <<set $isIronclad to 0>>
 
 <<set $tarotCardsStage to 0>>
-<<set $MonkeyPawStage to 0>>
-<<set $wishesCount to 3>>
+<<run setup.MonkeyPaw.resetHunt()>>
 <<set $drawnCards to 0>>
-<<unset $knowledgeUsed>>
 <<unset $temperatureIncreased>>
 <<unset $cursedHuntActive>>
 <<unset $cursedHuntEndTime>>

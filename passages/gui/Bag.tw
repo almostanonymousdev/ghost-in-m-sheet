@@ -87,7 +87,7 @@
 <</if>>
 </div>
 <div class="housecard">
-<<if $MonkeyPawStage eq 1 and (previous(1) neq "Owaissa Street" and previous(1) neq "Elm Street")>>
+<<if setup.MonkeyPaw.isCarrying()>>
 <<image "cursedpossessions/monkey-paw/monkeypaw.jpg" "icon">><br>
 <<link "@@.usebtn; Look at the paw@@" "MonkeyPaw">><</link>>
 <</if>>

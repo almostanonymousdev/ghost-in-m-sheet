@@ -20,7 +20,7 @@
 		<<set _selectedVideo to _videoList[_randomIndex]>>
 		<<video _selectedVideo "displayCentredImgs">>
 		@@.mc-speech; Shit! I shouldn't have asked this....@@<br>
-		<<set $wishesCount -=1>>
+		<<run setup.MonkeyPaw.spendWish()>>
 		<<addSanity -15>>
 		<<addLust 15>>
 		@@.mc-thoughts; Lust increased: +15 <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
@@ -33,8 +33,8 @@
 
 <<widget "trapTheGhost">>
 	<<replace "#wishesCount">>
-		<<set $wishesCount -=1>>
-		@@.mc-thoughts; $wishesCount wishes left...@@<br><br>
+		<<run setup.MonkeyPaw.spendWish()>>
+		@@.mc-thoughts; <<= setup.MonkeyPaw.wishesLeft()>> wishes left...@@<br><br>
 		<<set $hunt.trapped to true>>
 		@@.mc-speech; Now the ghost can't change its favorite room.<br>
 		With each wish, I feel worse and worse.@@<br>
@@ -48,8 +48,8 @@
 
 <<widget "sanity">>
 	<<replace "#wishesCount">>
-		<<set $wishesCount -=1>>
-		@@.mc-thoughts; $wishesCount wishes left...@@<br><br>
+		<<run setup.MonkeyPaw.spendWish()>>
+		@@.mc-thoughts; <<= setup.MonkeyPaw.wishesLeft()>> wishes left...@@<br><br>
 		<b>@@.mc-thoughts; Sanity changed: 50 <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>  now!@@</b><br>
 		@@.mc-speech; I shouldn't have expected anything better...@@
 		<<set $mc.sanity to 50>>
@@ -62,7 +62,7 @@
 <</widget>>
 
 <<widget "leave">>
-	<<set $wishesCount -=1>>
+	<<run setup.MonkeyPaw.spendWish()>>
 	<<set $cursedHuntActive to 0>>
 	<<unset $cursedHuntEndTime>>
 	<<if $isElm eq 1>>
@@ -75,8 +75,8 @@
 <<widget "knowledge">>
 	<<replace "#wishesCount">>
 		<<if $knowledgeUsed neq 1>>
-			<<set $wishesCount -=1>>
-			@@.mc-thoughts; $wishesCount wishes left...@@<br><br>
+			<<run setup.MonkeyPaw.spendWish()>>
+			@@.mc-thoughts; <<= setup.MonkeyPaw.wishesLeft()>> wishes left...@@<br><br>
 			<<set $knowledgeUsed to 1>>
 			<<set _allEvidence to ["emf", "spiritbox", "gwb", "uvl", "glass", "temperature"]>>
 			<<set _missingEvidence to _allEvidence.filter(e => !$hunt.evidence.includes(e) && e !== $hiddenEvidence && e !== $hiddenEvidence1 && e !== $hiddenEvidence2)>>
@@ -95,7 +95,7 @@
 <</widget>>
 
 <<widget "dawn">>
-	<<set $wishesCount -=1>>
+	<<run setup.MonkeyPaw.spendWish()>>
 	<<set $hours to 6>>
 	<<set $cursedHuntActive to 0>>
 	<<unset $cursedHuntEndTime>>

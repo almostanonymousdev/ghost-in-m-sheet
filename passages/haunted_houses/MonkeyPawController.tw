@@ -1,0 +1,182 @@
+:: MonkeyPawController [script]
+/*
+ * Centralized state and behavior for the Monkey Paw cursed item.
+ * Passages call into setup.MonkeyPaw instead of poking the underlying
+ * $MonkeyPawStage / $wishesCount / $wish* flags directly, so the
+ * invariants live in one place.
+ *
+ * Owns the canonical wish catalogue (WISHES) -- each entry declares
+ * its id, the keyword that matches textbox input, the button label,
+ * the effect widget name (in widgetText.tw), and a short description
+ * of the outcome shown only once the player has "learned" the wish.
+ *
+ * Design note on hidden effects: by default a wish is unknown -- the
+ * player sees nothing in the menu except what they can type into the
+ * textbox. Firing a wish (either by typing its keyword or via the
+ * witch's guide) flips its `learned` bit, which unlocks both a button
+ * and the description for subsequent visits. This is what makes the
+ * 400-coin guide actually valuable: it buys the spoilers up front
+ * rather than just a UI shortcut.
+ */
+setup.MonkeyPaw = (function () {
+	function v(name) { return State.variables[name]; }
+
+	var WISHES = [
+		{
+			id: 'activity',
+			input: 'activity',
+			label: 'I wish for activity',
+			widget: 'activity',
+			description: "The paw grants motion -- not the kind you wanted. Sanity falls, lust climbs."
+		},
+		{
+			id: 'trapTheGhost',
+			input: 'trap the ghost',
+			label: 'I wish to trap the ghost',
+			widget: 'trapTheGhost',
+			description: "The ghost is bound to one room. The house grows heavier around you."
+		},
+		{
+			id: 'sanity',
+			input: 'be sane',
+			label: 'I wish to be sane',
+			widget: 'sanity',
+			description: "Your mind is set to exactly fifty. No higher. No lower."
+		},
+		{
+			id: 'leave',
+			input: 'leave',
+			label: 'I wish to leave',
+			widget: 'leave',
+			description: "You are cast out of the house. The night is not over."
+		},
+		{
+			id: 'knowledge',
+			input: 'knowledge',
+			label: 'I wish for knowledge',
+			widget: 'knowledge',
+			description: "One entry is struck from your diary. Once only -- and something hears."
+		},
+		{
+			id: 'dawn',
+			input: 'dawn',
+			label: 'I wish for dawn',
+			widget: 'dawn',
+			description: "Morning comes, ready or not. The hunt ends."
+		}
+	];
+
+	/* Per-wish learned state lives in a single object on $variables
+	   instead of one flag per wish. Lazily initialized. */
+	function learnedMap() {
+		var s = State.variables;
+		if (!s.monkeyPawLearned) s.monkeyPawLearned = {};
+		return s.monkeyPawLearned;
+	}
+
+	return {
+		// --- Catalogue --------------------------------------------
+		list: function () { return WISHES.slice(); },
+		byId: function (id) {
+			for (var i = 0; i < WISHES.length; i++) {
+				if (WISHES[i].id === id) return WISHES[i];
+			}
+			return null;
+		},
+		/* Match a textbox entry to a canonical wish by keyword.
+		   Case- and whitespace-insensitive. Returns null on miss. */
+		byInput: function (text) {
+			var q = (text || '').toString().toLowerCase().trim();
+			for (var i = 0; i < WISHES.length; i++) {
+				if (WISHES[i].input === q) return WISHES[i];
+			}
+			return null;
+		},
+		/* Pick one of the real wishes uniformly -- used by the
+		   "I wish for anything" meta-button. */
+		rollAnything: function () {
+			return WISHES[Math.floor(Math.random() * WISHES.length)];
+		},
+
+		// --- Hunt-scoped lifecycle --------------------------------
+		/* Reset hunt-scoped paw state. Called from GhostRandomize at
+		   the start of every new contract. Does NOT touch `learned`
+		   or guide flags -- those persist across hunts. */
+		resetHunt: function () {
+			var s = State.variables;
+			s.MonkeyPawStage = 0;
+			s.wishesCount = 3;
+			s.knowledgeUsed = undefined;
+		},
+		/* Furniture search calls this when the paw is discovered. */
+		markFound: function () { State.variables.MonkeyPawStage = 1; },
+		/* Hunt-end cleanup. The paw is consumed for the session. */
+		retire: function () { State.variables.MonkeyPawStage = 2; },
+		isFound: function () { return v('MonkeyPawStage') === 1; },
+		/* Stage 0: paw is still sitting in a furniture slot waiting
+		   to be discovered this hunt. FurnitureSearch and the map
+		   highlight logic gate on this. */
+		isDiscoverable: function () { return (v('MonkeyPawStage') || 0) === 0; },
+		/* The Bag icon shows only when carrying the paw AND not on a
+		   street (the player must be inside the house to use it). */
+		isCarrying: function () {
+			if (!this.isFound()) return false;
+			var prev = previous(1);
+			return prev !== 'Owaissa Street' && prev !== 'Elm Street';
+		},
+
+		// --- Wish economy -----------------------------------------
+		wishesLeft: function () { return v('wishesCount') || 0; },
+		hasWishes: function () { return this.wishesLeft() > 0; },
+		/* Decrement the remaining-wish counter. Widgets call this
+		   instead of setting $wishesCount directly so any future cost
+		   modifiers live in one place. */
+		spendWish: function () {
+			var s = State.variables;
+			s.wishesCount = (s.wishesCount || 0) - 1;
+			if (s.wishesCount < 0) s.wishesCount = 0;
+		},
+
+		// --- Learned state ----------------------------------------
+		isLearned: function (id) { return learnedMap()[id] === true; },
+		markLearned: function (id) { learnedMap()[id] = true; },
+		learnAll: function () {
+			for (var i = 0; i < WISHES.length; i++) {
+				learnedMap()[WISHES[i].id] = true;
+			}
+		},
+		/* Short description of what a wish does, or null when the
+		   player hasn't learned it yet. Menu code renders the
+		   description next to the button iff this returns non-null. */
+		describe: function (id) {
+			if (!this.isLearned(id)) return null;
+			var w = this.byId(id);
+			return w ? w.description : null;
+		},
+
+		// --- "Anything" meta-wish ---------------------------------
+		hasAnything: function () { return v('wishAnything') === 1; },
+		grantAnything: function () { State.variables.wishAnything = 1; },
+
+		// --- Witch's guide ----------------------------------------
+		/* Guide states: undefined/0 = not asked, 1 = asked about but
+		   not bought, 2 = purchased (everything revealed). */
+		guideStage: function () {
+			var g = v('boughtMonkeyPawGuide');
+			return g === undefined ? 0 : g;
+		},
+		ensureGuideInit: function () {
+			if (State.variables.boughtMonkeyPawGuide === undefined) {
+				State.variables.boughtMonkeyPawGuide = 0;
+			}
+		},
+		hasGuide: function () { return this.guideStage() === 2; },
+		/* Witch-side purchase effect: reveal everything. Money is
+		   deducted by the caller (WitchSale). */
+		purchaseGuide: function () {
+			State.variables.boughtMonkeyPawGuide = 2;
+			this.learnAll();
+			this.grantAnything();
+		}
+	};
+})();
