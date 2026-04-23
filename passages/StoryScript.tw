@@ -1282,13 +1282,14 @@ setup.HauntConditions = (function () {
         };
 
         if (inHouse) {
+            snap.timeLabel = "+1 min/step";
             var hasCompanion = V.isCompChosen === 1;
             var contractDrain = hasCompanion ? 0.2 : 0.4;
             snap.sanityPerStep -= contractDrain;
             snap.contributors.push({
                 label: hasCompanion ? "Contract (w/ companion)" : "Contract",
                 color: "#cc8866",
-                detail: "sanity −" + contractDrain + "/step"
+                detail: "sanity -" + contractDrain + "/step"
             });
         }
 
@@ -1331,10 +1332,39 @@ setup.HauntConditions = (function () {
             snap.toolChanceBonus   += 5;
             snap.huntChanceBonus   += 3;
             snap.corruptionPending += 0.05;
+            snap.sanityPerStep     -= 0.2;
             snap.contributors.push({
                 label: "Lust ≥ " + LUST_FUEL_THRESHOLD,
                 color: "#e84aa4",
-                detail: "tools +5% · hunt +3% · corr banking"
+                detail: "tools +5% · hunt +3% · sanity -0.2/step · corr banking"
+            });
+        }
+
+        /* Orgasm-primed: at max lust the MC is on the edge. Hard sanity
+         * bleed + corruption banking; the actual orgasm trigger lives in
+         * widgetEvent.tw (shouldOrgasm), which also seeds the aftershock
+         * cooldown below. */
+        if (mc && mc.lust >= 100) {
+            snap.sanityPerStep     -= 1;
+            snap.corruptionPending += 0.05;
+            snap.contributors.push({
+                label: "OrgasmRisk",
+                color: "#ff3366",
+                detail: "sanity -1/step · corr banking"
+            });
+        }
+
+        /* Orgasm aftershock: N steps of extra drain seeded by the orgasm
+         * trigger in widgetEvent.tw. Counter is decremented in
+         * applyTickEffects so the chip naturally clears. */
+        var cooldown = V.orgasmCooldownSteps || 0;
+        if (cooldown > 0) {
+            snap.sanityPerStep -= 1;
+            snap.energyPerStep -= 0.25;
+            snap.contributors.push({
+                label: "Aftershock (" + cooldown + ")",
+                color: "#aa4477",
+                detail: "sanity -1/step · energy -0.25/step"
             });
         }
 
@@ -1346,7 +1376,7 @@ setup.HauntConditions = (function () {
             snap.contributors.push({
                 label: "Overcharged",
                 color: "#ffaa33",
-                detail: "tools +10%, +5 min · hunt +5% · sanity −1/step"
+                detail: "tools +10%, +5 min · hunt +5% · sanity -1/step"
             });
         }
 
@@ -1374,6 +1404,7 @@ setup.HauntConditions = (function () {
         var V = State.variables;
         var mc = V.mc;
         if (!mc) return;
+        var inHouse = !!(setup.HauntedHouses && setup.HauntedHouses.isInsideHouse && setup.HauntedHouses.isInsideHouse());
         var snap = snapshot();
 
         if (snap.sanityPerStep !== 0) {
@@ -1403,6 +1434,13 @@ setup.HauntConditions = (function () {
                 V.baitActive = 0;
                 V.baitStepsRemain = 0;
             }
+        }
+        if ((V.orgasmCooldownSteps || 0) > 0) {
+            V.orgasmCooldownSteps -= 1;
+            if (V.orgasmCooldownSteps < 0) V.orgasmCooldownSteps = 0;
+        }
+        if (inHouse && typeof setup.addTime === 'function') {
+            setup.addTime(1);
         }
     }
 
@@ -1474,15 +1512,27 @@ setup.HauntConditions = (function () {
         return V.overchargedTools === 1;
     }
 
+    /* Point-of-event sanity multiplier. Used by ArtEvent / EventMC "embrace"
+     * drains so the same active axes the HUD already shows (dark,
+     * overcharged) also scale fixed event drains. Keeps the two worlds
+     * reading the same state. */
+    function eventSanityMultiplier() {
+        var mult = 1;
+        if (isCurrentRoomDark())    mult += 0.5;
+        if (isOverchargedMode())    mult += 0.25;
+        return mult;
+    }
+
     /* Called from HuntEnd / HuntOverManual / HuntOverTime / HuntOverSanity
      * /HuntOverExhaustion to scrub hunt-only flags so the next contract
      * starts clean. */
     function resetHuntFlags() {
         var V = State.variables;
-        V.baitActive       = 0;
-        V.baitStepsRemain  = 0;
-        V.overchargedTools = 0;
-        V.exhausted        = 0;
+        V.baitActive         = 0;
+        V.baitStepsRemain    = 0;
+        V.overchargedTools   = 0;
+        V.exhausted          = 0;
+        V.orgasmCooldownSteps = 0;
     }
 
     return {
@@ -1506,6 +1556,7 @@ setup.HauntConditions = (function () {
         canPressThrough:     canPressThrough,
         toggleOverchargedTools: toggleOverchargedTools,
         isOverchargedMode:      isOverchargedMode,
+        eventSanityMultiplier:  eventSanityMultiplier,
         resetHuntFlags:         resetHuntFlags
     };
 })();
@@ -1770,6 +1821,7 @@ setup.searchToolMarkup = function (cfg) {
     ].join('\n');
 
     var coreBody = [
+        '<<toolTick>>',
         '<' + meterTag + ' id="' + meterId + '">',
         '<<showmeter \'' + meterName + '\' ' + meterExpr + '>>',
         '</' + meterTag + '>',

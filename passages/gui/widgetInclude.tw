@@ -19,6 +19,19 @@
 	<</if>>
 <</widget>>
 
+<<widget "toolTick">>
+	/* Tools burn 1 in-game minute per activation. Applied once per tool
+	click (added to coreBody in setup.searchToolMarkup, before the repeat
+	loop) so multi-iteration meter fills don't over-tick. Updates the
+	clock display (linkreplace doesn't trigger StoryCaption re-render)
+	and routes to HuntOverTime if the click pushed dawn past 6am. */
+	<<run setup.addTime(1)>>
+	<<replace "#time">><<= setup.updateTimeDisplay()>><</replace>>
+	<<if $hours gte 6 and setup.Ghosts.isHunting()>>
+		<<goto "HuntOverTime">>
+	<</if>>
+<</widget>>
+
 <<widget "includeTimeEventHunt">>
 	<<if $cursedHuntActive eq 1>>
 	<<else>>

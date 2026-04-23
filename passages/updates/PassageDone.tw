@@ -26,6 +26,10 @@
  <</switch>>
 <</if>>
 
+<<if $hours gte 6 and setup.Ghosts.isHunting()>>
+<<goto "HuntOverTime">>
+<</if>>
+
 <<if ndef $update22>>
 <<include "Update1">>
 <</if>>

@@ -164,17 +164,23 @@ def _parse_int_map(text: str, varname: str) -> dict[int, int]:
 def _parse_snapshot_bonuses(src: str) -> dict[str, dict[str, float]]:
     """Pull the per-condition snap.X += N lines from setup.HauntConditions
     .snapshot(). Returns {condition: {field: delta}} for dark / topless /
-    nude / lust_fuel / overcharged."""
+    nude / lust_fuel / lust_100 / overcharged / orgasm_cooldown.
+    The [^}]+ capture stops at the first `}`, which is fine because every
+    branch's stat assignments precede its snap.contributors.push({...})
+    call; the assignments we care about are inside the truncated body."""
     branches = {
-        "dark":        r'if \(isCurrentRoomDark\(\)\)\s*\{([^}]+)\}',
-        "topless":     r'if \(snap\.clothing === "topless"\)\s*\{([^}]+)\}',
-        "nude":        r'else if \(snap\.clothing === "nude"\)\s*\{([^}]+)\}',
-        "lust_fuel":   r'if \(mc && mc\.lust >= LUST_FUEL_THRESHOLD\)\s*\{([^}]+)\}',
-        "overcharged": r'if \(snap\.overchargedTools\)\s*\{([^}]+)\}',
+        "dark":            r'if \(isCurrentRoomDark\(\)\)\s*\{([^}]+)\}',
+        "topless":         r'if \(snap\.clothing === "topless"\)\s*\{([^}]+)\}',
+        "nude":            r'else if \(snap\.clothing === "nude"\)\s*\{([^}]+)\}',
+        "lust_fuel":       r'if \(mc && mc\.lust >= LUST_FUEL_THRESHOLD\)\s*\{([^}]+)\}',
+        "lust_100":        r'if \(mc && mc\.lust >= 100\)\s*\{([^}]+)\}',
+        "overcharged":     r'if \(snap\.overchargedTools\)\s*\{([^}]+)\}',
+        "orgasm_cooldown": r'if \(cooldown > 0\)\s*\{([^}]+)\}',
     }
     fields = {
         "sanity_per_step":  r'snap\.sanityPerStep\s*([+\-])=\s*([\d.]+)',
         "lust_per_step":    r'snap\.lustPerStep\s*([+\-])=\s*([\d.]+)',
+        "energy_per_step":  r'snap\.energyPerStep\s*([+\-])=\s*([\d.]+)',
         "tool_chance":      r'snap\.toolChanceBonus\s*([+\-])=\s*([\d.]+)',
         "tool_window":      r'snap\.toolWindowBonus\s*([+\-])=\s*([\d.]+)',
         "hunt_chance":      r'snap\.huntChanceBonus\s*([+\-])=\s*([\d.]+)',
@@ -193,6 +199,62 @@ def _parse_snapshot_bonuses(src: str) -> dict[str, dict[str, float]]:
                 deltas[f] = sign * float(fm.group(2))
         out[name] = deltas
     return out
+
+
+def _parse_orgasm_spend(widget_src: str) -> dict[str, float]:
+    """Pull the widgetEvent.tw `shouldOrgasm` spend block: -N sanity, -M lust,
+    cooldown=K. These values also live in PS2-style passage code so we parse
+    them rather than hardcode, matching how every other mechanics constant
+    flows through the loader."""
+    sanity_m = re.search(r'<<addSanity\s+-(\d+)>>', widget_src)
+    lust_m   = re.search(r'<<addLust\s+-(\d+)>>',   widget_src)
+    cd_m     = re.search(r'\$orgasmCooldownSteps\s+to\s+(\d+)', widget_src)
+    if not (sanity_m and lust_m and cd_m):
+        raise SystemExit(
+            "parser: widgetEvent.tw orgasm spend block not found "
+            "(addSanity / addLust / orgasmCooldownSteps)")
+    return {
+        "sanity_loss":   float(sanity_m.group(1)),
+        "lust_drop":     float(lust_m.group(1)),
+        "cooldown_steps": int(cd_m.group(1)),
+    }
+
+
+def _parse_orgasm_body_part_ratio(events_src: str) -> float:
+    """Count body parts that can orgasm vs total. setup.Events.shouldOrgasm
+    returns true for a subset of body parts; the total bodypart set is
+    EventsController.tw's bodyPartKeys array."""
+    # shouldOrgasm has two return statements; we want the `return bodyPart
+    # === 'x' || bodyPart === 'y' ...` one, not the `return false` guard.
+    gate_m = re.search(
+        r"return\s+(bodyPart\s*===\s*'\w+'(?:\s*\|\|\s*bodyPart\s*===\s*'\w+')*)",
+        events_src)
+    all_m  = re.search(r'bodyPartKeys\s*=\s*\[([^\]]+)\]', events_src)
+    if not (gate_m and all_m):
+        raise SystemExit("parser: shouldOrgasm / bodyPartKeys not found")
+    orgasm_parts = re.findall(r"'(\w+)'", gate_m.group(1))
+    all_parts    = re.findall(r"'(\w+)'", all_m.group(1))
+    if not (orgasm_parts and all_parts):
+        raise SystemExit("parser: couldn't extract body-part lists")
+    return len(orgasm_parts) / len(all_parts)
+
+
+def _parse_event_choice_costs(event_mc_src: str) -> dict[str, float]:
+    """Pull the Run / Embrace inline expressions from EventMC.tw so the sim
+    picks up whatever the passage currently charges for each choice."""
+    run_m = re.search(
+        r"Run away[^\[]*\[\$mc\.energy\s*-=\s*(\d+)\]", event_mc_src)
+    embrace_m = re.search(
+        r"Embrace it[^\[]*\[\$mc\.sanity\s*-=\s*(\d+);\s*"
+        r"setup\.addLust\((\d+)\)\]",
+        event_mc_src)
+    if not (run_m and embrace_m):
+        raise SystemExit("parser: EventMC.tw Run/Embrace cost block not found")
+    return {
+        "run_energy":    float(run_m.group(1)),
+        "embrace_sanity": float(embrace_m.group(1)),
+        "embrace_lust":  float(embrace_m.group(2)),
+    }
 
 
 def _parse_contract_drain(src: str) -> tuple[float, float]:
@@ -237,6 +299,15 @@ class GameData:
     snapshot_bonuses: dict[str, dict[str, float]]
     contract_sanity_drain: float             # baseline sanity -= /step in-house
     contract_sanity_drain_with_companion: float
+    dawn_minutes: int                        # HuntOverTime fires at $hours >= 6
+    orgasm_sanity_loss: float                # widgetEvent.tw shouldOrgasm spend
+    orgasm_lust_drop: float
+    orgasm_cooldown_steps: int
+    orgasm_lust_threshold: int               # shouldOrgasm gate
+    orgasm_body_part_ratio: float            # P(event body-part triggers orgasm)
+    event_run_energy: float                  # EventMC Run away cost
+    event_embrace_sanity: float              # EventMC Embrace it cost
+    event_embrace_lust: float                # EventMC Embrace it gain
     ghost_event_chance_per_step: float = 0.05  # not encoded as a single
                                                # constant in-game; keeps the
                                                # ArtEvent/EventMC/Freeze
@@ -250,6 +321,10 @@ def load_game_data() -> GameData:
     check_hunt = _read("haunted_houses/hunt/CheckHuntStart.tw")
     hide_tw = _read("haunted_houses/general/Hide.tw")
     run_tw = _read("haunted_houses/general/RunFast.tw")
+    widget_event = _read("events/widgetEvent.tw")
+    events_ctl = _read("events/EventsController.tw")
+    event_mc = _read("events/EventMC.tw")
+    passage_done = _read("updates/PassageDone.tw")
 
     ghosts = {g["name"]: g for g in _load_ghosts()}
 
@@ -285,6 +360,20 @@ def load_game_data() -> GameData:
     # RunFast.tw: `if _check lte 30` -> caught; success = 1 - that.
     run_caught = _find_num(r"_check\s+lte\s+(\d+)", run_tw) / 100.0
 
+    # PassageDone.tw: `$hours gte N and setup.Ghosts.isHunting()` -> dawn.
+    dawn_hours = int(_find_num(r"\$hours\s+gte\s+(\d+)[^\n]*isHunting",
+                               passage_done))
+
+    # widgetEvent.tw + EventsController.tw: orgasm spend + gate
+    orgasm = _parse_orgasm_spend(widget_event)
+    orgasm_threshold = int(_find_num(
+        r'shouldOrgasm:\s*function[^{]*\{[^}]*?lust\s*<\s*(\d+)',
+        events_ctl + "\n"))
+    orgasm_ratio = _parse_orgasm_body_part_ratio(events_ctl)
+
+    # EventMC.tw: Run / Embrace costs
+    event_costs = _parse_event_choice_costs(event_mc)
+
     return GameData(
         ghosts=ghosts,
         tier_chance=tier_chance,
@@ -303,6 +392,15 @@ def load_game_data() -> GameData:
         snapshot_bonuses=snapshot_bonuses,
         contract_sanity_drain=contract_drain,
         contract_sanity_drain_with_companion=companion_drain,
+        dawn_minutes=dawn_hours * 60,
+        orgasm_sanity_loss=orgasm["sanity_loss"],
+        orgasm_lust_drop=orgasm["lust_drop"],
+        orgasm_cooldown_steps=orgasm["cooldown_steps"],
+        orgasm_lust_threshold=orgasm_threshold,
+        orgasm_body_part_ratio=orgasm_ratio,
+        event_run_energy=event_costs["run_energy"],
+        event_embrace_sanity=event_costs["embrace_sanity"],
+        event_embrace_lust=event_costs["embrace_lust"],
     )
 
 
@@ -390,12 +488,33 @@ def validate_game_data() -> list[str]:
 
     # Snapshot bonuses: every branch we rely on must exist, and at least
     # one numeric delta within it.
-    for branch in ("dark", "topless", "nude", "lust_fuel", "overcharged"):
+    for branch in ("dark", "topless", "nude", "lust_fuel", "lust_100",
+                   "overcharged", "orgasm_cooldown"):
         d = GD.snapshot_bonuses.get(branch)
         require(bool(d), f"snapshot branch {branch!r} missing from parser")
         if d:
             require(any(v != 0 for v in d.values()),
                     f"snapshot branch {branch!r} has no nonzero deltas: {d}")
+
+    # Orgasm spend + event-choice constants.
+    require(GD.orgasm_sanity_loss > 0,
+            f"orgasm sanity loss {GD.orgasm_sanity_loss} must be > 0")
+    require(GD.orgasm_lust_drop > 0,
+            f"orgasm lust drop {GD.orgasm_lust_drop} must be > 0")
+    require(GD.orgasm_cooldown_steps > 0,
+            f"orgasm cooldown steps {GD.orgasm_cooldown_steps} must be > 0")
+    require(0 < GD.orgasm_lust_threshold <= 100,
+            f"orgasm lust threshold {GD.orgasm_lust_threshold} out of (0,100]")
+    require(0 < GD.orgasm_body_part_ratio <= 1,
+            f"orgasm body-part ratio {GD.orgasm_body_part_ratio} out of (0,1]")
+    require(GD.event_run_energy > 0,
+            f"event run energy {GD.event_run_energy} must be > 0")
+    require(GD.event_embrace_sanity > 0,
+            f"event embrace sanity {GD.event_embrace_sanity} must be > 0")
+    require(GD.event_embrace_lust > 0,
+            f"event embrace lust {GD.event_embrace_lust} must be > 0")
+    require(GD.dawn_minutes > 0,
+            f"dawn minutes {GD.dawn_minutes} must be > 0")
 
     # Contract-drain ternary: companion arm must be no worse than the
     # no-companion arm (the whole point of the companion bonus), and both
@@ -467,6 +586,7 @@ class Hunt:
     panties: bool = True
     overcharged: bool = False
     hunt_active_flag: bool = False   # $huntActivated
+    orgasm_cooldown: int = 0  # $orgasmCooldownSteps
     exit_reason: str = ""
 
     def __post_init__(self) -> None:
@@ -503,6 +623,7 @@ class Hunt:
         """Mirror of setup.HauntConditions.snapshot() - pulls per-branch
         deltas from GD.snapshot_bonuses, which is parsed from StoryScript.tw."""
         snap = dict(sanity_per_step=0.0, lust_per_step=0.0,
+                    energy_per_step=0.0,
                     tool_chance_bonus=0.0, tool_window_bonus=0.0,
                     hunt_chance_bonus=0.0)
         # Contract-drain branch: always active inside a hunt (Hunt is the
@@ -520,8 +641,12 @@ class Hunt:
             active.append("nude")
         if self.mc.lust >= GD.lust_fuel_threshold:
             active.append("lust_fuel")
+        if self.mc.lust >= 100:
+            active.append("lust_100")
         if self.overcharged:
             active.append("overcharged")
+        if self.orgasm_cooldown > 0:
+            active.append("orgasm_cooldown")
         for branch in active:
             for k, v in GD.snapshot_bonuses[branch].items():
                 # tool_chance / hunt_chance are percent points in the
@@ -539,6 +664,8 @@ class Hunt:
                     snap["sanity_per_step"] += v
                 elif k == "lust_per_step":
                     snap["lust_per_step"] += v
+                elif k == "energy_per_step":
+                    snap["energy_per_step"] += v
         return snap
 
     # --- time / ghost bookkeeping -------------------------------------
@@ -560,26 +687,35 @@ class Hunt:
     def move_to(self, room: str) -> str | None:
         """Walk to a room, paying energy/time, applying tick effects,
         rolling for ghost events and random hunts. Returns an exit-reason
-        string if the hunt ends this tick ("sanity_zero", "caught_in_hunt"),
-        else None."""
+        string if the hunt ends this tick ("sanity_zero", "caught_in_hunt",
+        "dawn", "energy"), else None."""
         self.current_room = room
         self.minutes += STEP_MINUTES
         self.mc.energy -= GD.energy_per_step
         self._maybe_move_ghost()
 
-        # Per-step tick effects (HauntConditions.applyTickEffects).
+        # Per-step tick effects (HauntConditions.applyTickEffects). The
+        # energy drain here is on top of the nav-step drain above (matches
+        # the snapshot's energyPerStep contributor — used by the orgasm
+        # cooldown axis).
         snap = self.snapshot()
         self.mc.sanity = clamp(self.mc.sanity + snap["sanity_per_step"],
                                1, GD.start_sanity)
         self.mc.lust   = clamp(self.mc.lust + snap["lust_per_step"], 0, 100)
+        self.mc.energy += snap["energy_per_step"]
         # Sanity never hits 0 via natural drain (min clamp 1); the hunt-over
         # -sanity exit comes from GhostHuntEvent's rollEventSanityLoss. We
         # still surface sanity_zero if some future sink drives it below 1.
 
-        # Ghost event (activates tools).
+        if self.orgasm_cooldown > 0:
+            self.orgasm_cooldown -= 1
+
+        # Ghost event (activates tools, may trigger orgasm, forces
+        # Run/Embrace choice).
         if random.random() < GD.ghost_event_chance_per_step:
-            self._activate("uvl")
-            self._activate("emf")
+            reason = self._resolve_ghost_event()
+            if reason:
+                return reason
 
         # Random ghost-hunt roll (CheckHuntStart.tw).
         if not self.hunt_active_flag and can_hunt(
@@ -589,6 +725,47 @@ class Hunt:
                 reason = self._resolve_hunt_event()
                 if reason:
                     return reason
+
+        if self.minutes >= GD.dawn_minutes:
+            return "dawn"
+        if self.mc.energy <= 0:
+            return "energy"
+        return None
+
+    def _resolve_ghost_event(self) -> str | None:
+        """widgetEvent.tw + EventMC.tw: tools activate, orgasm may fire if
+        lust is at threshold, then the player picks Run (energy) or
+        Embrace (sanity/lust). AI runs whenever it can afford to -- energy
+        is the stricter resource than sanity under the current balance."""
+        self._activate("uvl")
+        self._activate("emf")
+
+        # shouldOrgasm: lust at threshold AND the event body-part is one
+        # of the orgasm-capable ones. Applied BEFORE the player choice,
+        # matching widgetEvent.tw's inline spend above the EventMC link block.
+        if (self.mc.lust >= GD.orgasm_lust_threshold
+                and random.random() < GD.orgasm_body_part_ratio):
+            self.mc.sanity -= GD.orgasm_sanity_loss
+            self.mc.lust   -= GD.orgasm_lust_drop
+            if self.mc.lust < 0:   self.mc.lust = 0
+            self.orgasm_cooldown = GD.orgasm_cooldown_steps
+            if self.mc.sanity < 1:
+                self.mc.sanity = 0
+                return "sanity_zero"
+
+        # Player choice. Run preserves sanity but burns a full energy
+        # point; Embrace is sanity-negative but costs no energy.
+        if self.mc.energy >= GD.event_run_energy:
+            self.mc.energy -= GD.event_run_energy
+            if self.mc.energy <= 0:
+                return "energy"
+        else:
+            self.mc.sanity -= GD.event_embrace_sanity
+            self.mc.lust   += GD.event_embrace_lust
+            if self.mc.lust > 100: self.mc.lust = 100
+            if self.mc.sanity < 1:
+                self.mc.sanity = 0
+                return "sanity_zero"
         return None
 
     def _resolve_hunt_event(self) -> str | None:
@@ -635,6 +812,17 @@ class Hunt:
     def _roll_tier(self) -> bool:
         bonus = self.snapshot()["tool_chance_bonus"]
         return random.random() < GD.tier_chance[self.tier] + bonus
+
+    def tool_tick(self) -> str | None:
+        """widgetInclude.tw `<<toolTick>>`: each tool click burns one
+        in-game minute and routes to HuntOverTime if dawn just broke. No
+        stat drain -- HauntConditions.applyTickEffects is gated to nav
+        steps so the HUD and the underlying drain don't drift. Returns
+        'dawn' exit reason when the click pushed the clock past 6am."""
+        self.minutes += STEP_MINUTES
+        if self.minutes >= GD.dawn_minutes:
+            return "dawn"
+        return None
 
     def temperature_scan(self) -> int:
         base = random.randint(13, 16)
@@ -704,7 +892,8 @@ LUST_DANGER   = 45            # below the 50 threshold - AI keeps clothes on
 def pattern_find_ghost_room(hunt: Hunt) -> tuple[str | None, str]:
     """Walk rooms with lights ON (safer). Elevated temperature means the
     ghost's room. Returns (room, reason) where reason is one of
-    'found' / 'energy' / 'sanity_zero' / 'caught_in_hunt' / 'search_timeout'."""
+    'found' / 'energy' / 'sanity_zero' / 'caught_in_hunt' / 'dawn'
+    / 'search_timeout'."""
     seen_cold: set[str] = set()
     tried = 0
     while tried < len(hunt.rooms) * 2:
@@ -721,6 +910,9 @@ def pattern_find_ghost_room(hunt: Hunt) -> tuple[str | None, str]:
         if exit_reason:
             return None, exit_reason
         reading = hunt.temperature_scan()
+        tick_reason = hunt.tool_tick()
+        if tick_reason:
+            return None, tick_reason
         if reading >= 18:
             return dest, "found"
         seen_cold.add(dest)
@@ -730,9 +922,18 @@ def pattern_find_ghost_room(hunt: Hunt) -> tuple[str | None, str]:
 
 def pattern_scan_for_evidence(hunt: Hunt, suspected: str, rounds: int = 6
                               ) -> tuple[bool, str | None]:
-    """Scan every tool each round. Turns lights off for the tool bonus
+    """Scan every tool each round. Each tool click burns 1 in-game minute
+    (widgetInclude.tw `<<toolTick>>`), so a full round is 1 nav + 6 tool
+    clicks = 7 in-game minutes. Turns lights off for the tool bonus
     unless sanity is already below SANITY_DANGER. Returns (complete,
     exit_reason). complete=True when the evidence set is fully confirmed."""
+    # GWB / Spiritbox roll before EMF so their hits can open the EMF window
+    # in the same pass; temperature runs first to match the
+    # pattern_find_ghost_room cadence.
+    scans = [
+        hunt.temperature_scan, hunt.gwb_scan, hunt.spiritbox_scan,
+        hunt.plasm_scan,       hunt.emf_scan, hunt.uvl_scan,
+    ]
     for _ in range(rounds):
         if hunt.out_of_energy():
             return hunt.found >= hunt.ghost_evidence, "energy"
@@ -742,14 +943,11 @@ def pattern_scan_for_evidence(hunt: Hunt, suspected: str, rounds: int = 6
         exit_reason = hunt.move_to(suspected)
         if exit_reason:
             return hunt.found >= hunt.ghost_evidence, exit_reason
-        # Tool pass. GWB / Spiritbox roll before EMF so their hits can
-        # open the EMF window in the same pass.
-        hunt.temperature_scan()
-        hunt.gwb_scan()
-        hunt.spiritbox_scan()
-        hunt.plasm_scan()
-        hunt.emf_scan()
-        hunt.uvl_scan()
+        for scan in scans:
+            scan()
+            tick_reason = hunt.tool_tick()
+            if tick_reason:
+                return hunt.found >= hunt.ghost_evidence, tick_reason
         if hunt.found >= hunt.ghost_evidence:
             return True, None
     return hunt.found >= hunt.ghost_evidence, None
@@ -825,7 +1023,8 @@ def simulate(ghost_name: str, house: str, trials: int, tier: int,
     evidence_counts = {e: 0 for e in EVIDENCE_ENUM.values()}
     count_by_found = [0] * 4
     fail_reasons: dict[str, int] = {
-        "energy": 0, "sanity_zero": 0, "caught_in_hunt": 0, "search_timeout": 0,
+        "energy": 0, "sanity_zero": 0, "caught_in_hunt": 0,
+        "dawn": 0, "search_timeout": 0,
     }
     missed_evidence: dict[tuple[str, ...], int] = {}
 

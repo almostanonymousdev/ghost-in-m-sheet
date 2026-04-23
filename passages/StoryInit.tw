@@ -2,6 +2,7 @@
 <<run setup.ImagePath = "asset-placeholders">>
 <<set $sanityIfHot to 0.3>>
 <<set $sanityInTheDark to 0.5>>
+<<set $orgasmCooldownSteps to 0>>
 <<set $tempCorr to 0>>
 <<set $percentageOfLevel to 0>>
 <<set $neededForNextLevel to 100>>

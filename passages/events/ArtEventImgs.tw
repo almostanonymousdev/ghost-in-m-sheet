@@ -5,6 +5,8 @@
 <<image $artImgEvent "displayCentredImgsEvent">><br>
 @@.mc-thoughts; The sense of reality begins to shift. You feel something invisible and sinister slowly creeping into your mind, blurring the lines between reality and illusion. The longer you stay in this house, the more your connection to the familiar world weakens.<br>@@
 @@.mc-speech;I feel very strange. It seems like the lower my sanity, the more this place changes me, but I won't be scared so easily@@<br>
+<<addSanity `-$ghostSanityEventDecreased * setup.HauntConditions.eventSanityMultiplier()`>>
+<span>Your <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>> is decreased!</span><br>
 <br>
 <span class="backbtn">[[Continue investigating|previous()]]</span>
 <<run setup.activateTool("emf")>>
