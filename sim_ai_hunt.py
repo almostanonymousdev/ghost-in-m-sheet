@@ -173,11 +173,11 @@ def _parse_snapshot_bonuses(src: str) -> dict[str, dict[str, float]]:
         "overcharged": r'if \(snap\.overchargedTools\)\s*\{([^}]+)\}',
     }
     fields = {
-        "sanity_per_step":  r'snap\.sanityPerStep\s*([+\-])=\s*(\d+)',
-        "lust_per_step":    r'snap\.lustPerStep\s*([+\-])=\s*(\d+)',
-        "tool_chance":      r'snap\.toolChanceBonus\s*([+\-])=\s*(\d+)',
-        "tool_window":      r'snap\.toolWindowBonus\s*([+\-])=\s*(\d+)',
-        "hunt_chance":      r'snap\.huntChanceBonus\s*([+\-])=\s*(\d+)',
+        "sanity_per_step":  r'snap\.sanityPerStep\s*([+\-])=\s*([\d.]+)',
+        "lust_per_step":    r'snap\.lustPerStep\s*([+\-])=\s*([\d.]+)',
+        "tool_chance":      r'snap\.toolChanceBonus\s*([+\-])=\s*([\d.]+)',
+        "tool_window":      r'snap\.toolWindowBonus\s*([+\-])=\s*([\d.]+)',
+        "hunt_chance":      r'snap\.huntChanceBonus\s*([+\-])=\s*([\d.]+)',
     }
     out: dict[str, dict[str, float]] = {}
     for name, block_re in branches.items():
@@ -190,9 +190,21 @@ def _parse_snapshot_bonuses(src: str) -> dict[str, dict[str, float]]:
             fm = re.search(pat, body)
             if fm:
                 sign = 1 if fm.group(1) == "+" else -1
-                deltas[f] = sign * int(fm.group(2))
+                deltas[f] = sign * float(fm.group(2))
         out[name] = deltas
     return out
+
+
+def _parse_contract_drain(src: str) -> tuple[float, float]:
+    """Pull the `hasCompanion ? X : Y` ternary out of the contract-drain
+    block in HauntConditions.snapshot(). Returns (base_drain, companion_drain)
+    so the no-companion case is always first."""
+    m = re.search(
+        r"hasCompanion\s*\?\s*([\d.]+)\s*:\s*([\d.]+)\s*;", src)
+    if not m:
+        raise SystemExit("parser: contract drain ternary not found")
+    companion_drain, base_drain = float(m.group(1)), float(m.group(2))
+    return base_drain, companion_drain
 
 
 def _parse_houses() -> dict[str, list[str]]:
@@ -223,6 +235,8 @@ class GameData:
     lust_fuel_threshold: int
     dark_bg: int
     snapshot_bonuses: dict[str, dict[str, float]]
+    contract_sanity_drain: float             # baseline sanity -= /step in-house
+    contract_sanity_drain_with_companion: float
     ghost_event_chance_per_step: float = 0.05  # not encoded as a single
                                                # constant in-game; keeps the
                                                # ArtEvent/EventMC/Freeze
@@ -250,6 +264,7 @@ def load_game_data() -> GameData:
                               story_script))
     dark_bg = int(_find_num(r"var\s+DARK\s*=\s*(\d+)", story_script))
     snapshot_bonuses = _parse_snapshot_bonuses(story_script)
+    contract_drain, companion_drain = _parse_contract_drain(story_script)
 
     # mc starting stats (StoryInit.tw).
     start_sanity = _find_num(r"sanity\s*:\s*(\d+)", story_init)
@@ -286,6 +301,8 @@ def load_game_data() -> GameData:
         lust_fuel_threshold=lust_fuel,
         dark_bg=dark_bg,
         snapshot_bonuses=snapshot_bonuses,
+        contract_sanity_drain=contract_drain,
+        contract_sanity_drain_with_companion=companion_drain,
     )
 
 
@@ -380,14 +397,29 @@ def validate_game_data() -> list[str]:
             require(any(v != 0 for v in d.values()),
                     f"snapshot branch {branch!r} has no nonzero deltas: {d}")
 
-    # Spot-check: a run should execute without crashing in each house.
+    # Contract-drain ternary: companion arm must be no worse than the
+    # no-companion arm (the whole point of the companion bonus), and both
+    # must be positive - zero drain would silently defeat the gate-opening
+    # mechanic that landed this whole change.
+    require(GD.contract_sanity_drain > 0,
+            f"contract sanity drain {GD.contract_sanity_drain} must be > 0")
+    require(0 < GD.contract_sanity_drain_with_companion
+            <= GD.contract_sanity_drain,
+            f"companion contract drain "
+            f"{GD.contract_sanity_drain_with_companion} must be in "
+            f"(0, {GD.contract_sanity_drain}]")
+
+    # Spot-check: a run should execute without crashing in each house,
+    # with and without a companion.
     ghost = next(iter(GD.ghosts))
     for house in GD.houses:
-        try:
-            play_hunt(ghost, house=house, tier=3)
-        except Exception as e:
-            errors.append(
-                f"smoke run in {house} raised {type(e).__name__}: {e}")
+        for companion in (False, True):
+            try:
+                play_hunt(ghost, house=house, tier=3, companion=companion)
+            except Exception as e:
+                errors.append(
+                    f"smoke run in {house} (companion={companion}) raised "
+                    f"{type(e).__name__}: {e}")
 
     return errors
 
@@ -417,6 +449,7 @@ class Hunt:
     ghost_name: str
     house: str = "elm"
     tier: int = 3
+    companion: bool = False
     rooms: list[str] = field(default_factory=list)
     mc: Mc = field(default_factory=Mc)
     minutes: int = 0
@@ -472,6 +505,11 @@ class Hunt:
         snap = dict(sanity_per_step=0.0, lust_per_step=0.0,
                     tool_chance_bonus=0.0, tool_window_bonus=0.0,
                     hunt_chance_bonus=0.0)
+        # Contract-drain branch: always active inside a hunt (Hunt is the
+        # in-house context). Companion halves the drain.
+        snap["sanity_per_step"] -= (GD.contract_sanity_drain_with_companion
+                                    if self.companion
+                                    else GD.contract_sanity_drain)
         active: list[str] = []
         if self.dark:
             active.append("dark")
@@ -717,12 +755,14 @@ def pattern_scan_for_evidence(hunt: Hunt, suspected: str, rounds: int = 6
     return hunt.found >= hunt.ghost_evidence, None
 
 
-def play_hunt(ghost_name: str, house: str = "elm", tier: int = 3
+def play_hunt(ghost_name: str, house: str = "elm", tier: int = 3,
+              companion: bool = False
               ) -> tuple[bool, set[str], str]:
     """Run one contract with the simple AI. Returns
     (identified, evidence_seen, exit_reason). exit_reason in
     {identified, energy, sanity_zero, caught_in_hunt, search_timeout}."""
-    hunt = Hunt(ghost_name=ghost_name, house=house, tier=tier)
+    hunt = Hunt(ghost_name=ghost_name, house=house, tier=tier,
+                companion=companion)
 
     while not hunt.out_of_energy() and hunt.found < hunt.ghost_evidence:
         suspected, reason = pattern_find_ghost_room(hunt)
@@ -754,6 +794,7 @@ class Result:
     house: str
     trials: int
     tier: int
+    companion: bool
     wins: int
     evidence_counts: dict[str, int]
     count_by_found: list[int]
@@ -761,7 +802,13 @@ class Result:
     missed_evidence: dict[tuple[str, ...], int]
 
 
-def simulate(ghost_name: str, house: str, trials: int, tier: int) -> Result:
+# Sim-scoped flag flipped by --companion. Used as the default for every
+# subsequent `simulate()` call; avoids threading it through every CLI branch.
+SIM_COMPANION = False
+
+
+def simulate(ghost_name: str, house: str, trials: int, tier: int,
+             companion: bool | None = None) -> Result:
     if ghost_name not in GD.ghosts:
         raise SystemExit(f"Unknown ghost: {ghost_name!r}. "
                          f"Choose from {sorted(GD.ghosts)} or 'all'.")
@@ -772,6 +819,7 @@ def simulate(ghost_name: str, house: str, trials: int, tier: int) -> Result:
         raise SystemExit(f"Unknown tier: {tier}. "
                          f"Choose from {sorted(GD.tier_chance)}.")
 
+    comp: bool = SIM_COMPANION if companion is None else companion
     target = ghost_evidence(ghost_name)
     wins = 0
     evidence_counts = {e: 0 for e in EVIDENCE_ENUM.values()}
@@ -782,7 +830,8 @@ def simulate(ghost_name: str, house: str, trials: int, tier: int) -> Result:
     missed_evidence: dict[tuple[str, ...], int] = {}
 
     for _ in range(trials):
-        ok, found, reason = play_hunt(ghost_name, house=house, tier=tier)
+        ok, found, reason = play_hunt(ghost_name, house=house, tier=tier,
+                                       companion=comp)
         if ok:
             wins += 1
         else:
@@ -793,8 +842,9 @@ def simulate(ghost_name: str, house: str, trials: int, tier: int) -> Result:
             evidence_counts[e] = evidence_counts.get(e, 0) + 1
         count_by_found[min(len(found & target), 3)] += 1
 
-    return Result(ghost_name, house, trials, tier, wins, evidence_counts,
-                  count_by_found, fail_reasons, missed_evidence)
+    return Result(ghost_name, house, trials, tier, comp, wins,
+                  evidence_counts, count_by_found, fail_reasons,
+                  missed_evidence)
 
 
 def print_detailed(r: Result) -> None:
@@ -990,6 +1040,9 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--tier", type=int, default=3,
                    help="Equipment tier for gwb/plasm/spiritbox (3/4/5). "
                         "Default 3.")
+    p.add_argument("--companion", action="store_true",
+                   help="Model the AI with a companion along. Halves the "
+                        "baseline contract sanity drain per nav tick.")
     for flag, _attr, cast, help_text in _OVERRIDE_FIELDS:
         p.add_argument(flag, type=cast, default=None,
                        help=f"Override: {help_text}.")
@@ -1014,6 +1067,10 @@ def main() -> None:
         return
 
     notes = _apply_overrides(args)
+    global SIM_COMPANION
+    SIM_COMPANION = args.companion
+    if args.companion:
+        notes.append("companion=True")
     if args.tier not in GD.tier_chance:
         raise SystemExit(f"Unknown tier: {args.tier}. "
                          f"Choose from {sorted(GD.tier_chance)}.")

@@ -31,8 +31,8 @@
             evidence: [E.EMF, E.GWB, E.TEMPERATURE],
             hint: "The lower your sanity, the less likely the Shade is to show interest in you.",
             description: "Shade -- one of the oldest types of ghosts. The main feature of the Shade is that the lower your sanity, the less likely the Shade is to show interest in you.",
-            huntCondition:     function (mc) { return mc.sanity <= 35; },
-            huntConditionText: "Can start a hunt if you have <= 35 sanity",
+            huntCondition:     function (mc) { return mc.sanity <= 55; },
+            huntConditionText: "Can start a hunt if you have <= 55 sanity",
             invertedSanityStages: true
         },
         {
@@ -40,8 +40,8 @@
             evidence: [E.EMF, E.SPIRITBOX, E.GWB],
             hint: "If it doesn't achieve its goal, it will relentlessly follow its victim.",
             description: "Spirit is a rather shy ghost. Unlike others, if it doesn't achieve its goal, it will relentlessly follow its victim. However, once it gets what it wants, it will vanish and cease to disturb, leaving its target in peace.",
-            huntCondition:     function (mc) { return mc.lust >= 50; },
-            huntConditionText: "Can start a hunt if you have >= 50 lust",
+            huntCondition:     function (mc) { return mc.lust >= 30; },
+            huntConditionText: "Can start a hunt if you have >= 30 lust",
             walkHomePassage:   "GhostSpecialEventSpirit",
             onHuntEnd:         function () { State.variables.ghostSpiritEventStage = 0; }
         },
@@ -50,16 +50,16 @@
             evidence: [E.SPIRITBOX, E.GWB, E.UVL],
             hint: "",
             description: "",
-            huntCondition:     function (mc) { return mc.sanity <= 50; },
-            huntConditionText: "Can start a hunt if you have <= 50 sanity"
+            huntCondition:     function (mc) { return mc.sanity <= 70; },
+            huntConditionText: "Can start a hunt if you have <= 70 sanity"
         },
         {
             name: "Phantom", image: "phantom.webp",
             evidence: [E.GLASS, E.UVL, E.SPIRITBOX],
             hint: "This type of ghost cannot turn off the lights.",
             description: "This type of ghost cannot turn off the lights.",
-            huntCondition:     function (mc) { return mc.sanity <= 50; },
-            huntConditionText: "Can start a hunt if you have <= 50 sanity",
+            huntCondition:     function (mc) { return mc.sanity <= 70; },
+            huntConditionText: "Can start a hunt if you have <= 70 sanity",
             canTurnOffLights:  false
         },
         {
@@ -67,18 +67,18 @@
             evidence: [E.GLASS, E.UVL, E.EMF],
             hint: "Goryo is known for its attachment to a single room and cannot change it like other ghosts do.",
             description: "Goryo is known for its attachment to a single room and cannot change it like other ghosts do. If you notice that the ghost's activity is focused exclusively in one area, you are likely dealing with a Goryo.",
-            huntCondition:     function (mc) { return mc.lust >= 50; },
-            huntConditionText: "Can start a hunt if you have >= 50 lust",
+            huntCondition:     function (mc) { return mc.lust >= 30; },
+            huntConditionText: "Can start a hunt if you have >= 30 lust",
             staysInOneRoom:    true
         },
         {
             name: "Demon", image: "demon.webp",
             evidence: [E.GWB, E.UVL, E.TEMPERATURE],
             hint: "Demon can start a hunt earlier than other ghosts",
-            description: "Some sources report that the Demon is a unique ghost that can begin hunting you regardless of your current sanity or lust. Unlike other ghosts that only become active when your mental state declines or your desire increases, the Demon does not consider your present condition and can initiate its pursuit at any time.",
+            description: "Some sources report that the Demon is a unique ghost that can begin hunting you regardless of your current sanity or lust. Unlike other ghosts that only become active when your mental state declines or your desire increases, the Demon does not so strongly consider your present condition and can initiate its pursuit at nearly any time.",
             findableOnline: true,
-            huntCondition:     function (mc) { return mc.sanity <= 70; },
-            huntConditionText: "Can start a hunt if you have <= 70 sanity"
+            huntCondition:     function (mc) { return mc.sanity <= 90; },
+            huntConditionText: "Can start a hunt if you have <= 90 sanity"
         },
         {
             name: "Deogen", image: "deogen.webp",
@@ -86,8 +86,8 @@
             hint: "When it starts its hunt, hiding won't help, as the Deogen relentlessly searches for you",
             description: "The Deogen is described as a particularly frightening ghost that will always find you, even if you try to hide. Once it starts its hunt, hiding won't help, as the Deogen relentlessly searches for its prey. However, since the Deogen is extremely slow, there's a chance to escape if you still have the strength to run.",
             findableOnline: true,
-            huntCondition:     function (mc) { return mc.sanity <= 50; },
-            huntConditionText: "Can start a hunt if you have <= 50 sanity",
+            huntCondition:     function (mc) { return mc.sanity <= 70; },
+            huntConditionText: "Can start a hunt if you have <= 70 sanity",
             hidingSucceeds:    false,   // Deogen always finds you
             runningSucceeds:   true     // …but you can outrun it
         },
@@ -97,8 +97,8 @@
             hint: "You can't escape from the Jinn by running, as it is incredibly fast.",
             description: "Some ghost hunters have reported that when encountering a Jinn, they tried to run but always failed because the ghost is too fast. However, when they found a hiding spot--even if it was right in front of the Jinn--he often passed by without noticing them. This indicates that hiding from a Jinn is much easier than trying to escape.",
             findableOnline: true,
-            huntCondition:     function (mc) { return mc.sanity <= 50; },
-            huntConditionText: "Can start a hunt if you have <= 50 sanity",
+            huntCondition:     function (mc) { return mc.sanity <= 70; },
+            huntConditionText: "Can start a hunt if you have <= 70 sanity",
             hidingSucceeds:    true,    // Jinn can be hidden from
             runningSucceeds:   false    // …but never outrun
         },
@@ -107,8 +107,8 @@
             evidence: [E.GWB, E.TEMPERATURE, E.SPIRITBOX],
             hint: "",
             description: "The Moroi can invade the minds of weak-willed victims when using the Spirit Box. Be cautious when communicating, as this ghost may possess you.",
-            huntCondition:           function (mc) { return mc.sanity <= 50; },
-            huntConditionText:       "Can start a hunt if you have <= 50 sanity",
+            huntCondition:           function (mc) { return mc.sanity <= 70; },
+            huntConditionText:       "Can start a hunt if you have <= 70 sanity",
             spiritboxPossessionChance: 30
         },
         {
@@ -116,8 +116,8 @@
             evidence: [E.GWB, E.EMF, E.UVL],
             hint: "Once you leave its presence, strange things begin to happen: those around you start seeing you in unusual clothing or even completely naked.",
             description: "Myling is a ghost that doesn't reveal itself directly upon encounter. However, once you leave its presence, strange things begin to happen: those around you start seeing you in unusual clothing or even completely naked.",
-            huntCondition:     function (mc) { return mc.lust >= 50; },
-            huntConditionText: "Can start a hunt if you have >= 50 lust",
+            huntCondition:     function (mc) { return mc.lust >= 30; },
+            huntConditionText: "Can start a hunt if you have >= 30 lust",
             goHomePassage:        "GhostSpecialEventMyling",
             companionHuntPassage: "GhostSpecialEventMylingTwo"
         },
@@ -127,8 +127,8 @@
             hint: "Encountering this ghost causes sanity to drop faster than with other ghosts.",
             description: "The mythical entity Oni brings not only fear but also rapid psychological devastation. Those who have encountered it report that @@.notmc-speech;Oni causes a sharp and intense decline in sanity@@, significantly accelerating this process compared to other ghosts. If you come face-to-face with Oni, be prepared for a swift and severe assault on your mental health.",
             findableOnline: true,
-            huntCondition:     function (mc) { return mc.lust >= 50; },
-            huntConditionText: "Can start a hunt if you have >= 50 lust",
+            huntCondition:     function (mc) { return mc.lust >= 30; },
+            huntConditionText: "Can start a hunt if you have >= 30 lust",
             sanityEventLossRange: [3, 8]
         },
         {
@@ -136,8 +136,8 @@
             evidence: [E.UVL, E.TEMPERATURE, E.SPIRITBOX],
             hint: "Mimic always has an extra evidence -- ectoplasm",
             description: "Mimic is a ghost that can mimic nearly all the abilities of other ghosts, making it extremely unpredictable and difficult to identify. Additionally, The Mimic always has an extra evidence -- ectoplasm. Although ectoplasm is not considered evidence for identifying the ghost, its presence can aid in its identification.",
-            huntCondition:     function (mc) { return mc.sanity <= 50; },
-            huntConditionText: "Can start a hunt if you have <= 50 sanity",
+            huntCondition:     function (mc) { return mc.sanity <= 70; },
+            huntConditionText: "Can start a hunt if you have <= 70 sanity",
             onEnterHouse: function () {
                 /* Seed the rotation clock; realName is already "Mimic"
                    from startHunt, so isMimicHunt() already returns true. */
@@ -149,8 +149,8 @@
             evidence: [E.EMF, E.TEMPERATURE, E.SPIRITBOX],
             hint: "",
             description: "",
-            huntCondition:     function (mc) { return mc.lust >= 50; },
-            huntConditionText: "Can start a hunt if you have >= 50 lust",
+            huntCondition:     function (mc) { return mc.lust >= 30; },
+            huntConditionText: "Can start a hunt if you have >= 30 lust",
             huntEventFlag:     "thetwinsevent"
         },
         {
@@ -158,8 +158,8 @@
             evidence: [E.GLASS, E.EMF, E.SPIRITBOX],
             hint: "If caught or if sanity runs out during the ghost hunt, you'll wake up somewhere other than home.",
             description: "This is quite a dangerous ghost. If it catches me or I lose sanity during the ghost hunt... Ending up in the forest with my hands tied is not something I want, so I need to be very careful. But even if things don't go as planned, it's better to conserve my energy to have a chance to escape.",
-            huntCondition:     function (mc) { return mc.lust >= 50; },
-            huntConditionText: "Can start a hunt if you have >= 50 lust",
+            huntCondition:     function (mc) { return mc.lust >= 30; },
+            huntConditionText: "Can start a hunt if you have >= 30 lust",
             sleepPassage:      "GhostSpecialEventWraith"
         },
         {
@@ -167,8 +167,8 @@
             evidence: [E.GLASS, E.GWB, E.TEMPERATURE],
             hint: "Mare visits your house while you sleep",
             description: "Mare visits my house while I sleep. It's quite easy to get rid of; I just need to sprinkle holy water in the room where I sleep. It becomes more aggressive each day, so it's best not to delay. Although, someone online mentioned that it might stop haunting after a few days.",
-            huntCondition:     function (mc) { return mc.lust >= 50; },
-            huntConditionText: "Can start a hunt if you have >= 50 lust",
+            huntCondition:     function (mc) { return mc.lust >= 30; },
+            huntConditionText: "Can start a hunt if you have >= 30 lust",
             onEnterHouse: function () {
                 var V = State.variables;
                 if (V.ghostMareEventStart === 0) {
@@ -183,8 +183,8 @@
             evidence: [E.SPIRITBOX, E.GLASS, E.TEMPERATURE],
             hint: "Cthulion rarely reveals its true form, preferring to take on a human appearance. But when it needs to interact with its victims, it's not above using its tentacles.",
             description: "Cthulion is one of the oldest beings, with a history stretching far back before the dawn of humanity. Its true form is so alien to the human mind that most who encounter it can only describe it as \"unspeakable.\" However, Cthulion rarely reveals its true form, preferring to take on a human appearance. But when it needs to interact with its victims, it's not above using its tentacles.",
-            huntCondition:     function (mc) { return mc.sanity <= 50; },
-            huntConditionText: "Can start a hunt if you have <= 50 sanity",
+            huntCondition:     function (mc) { return mc.sanity <= 70; },
+            huntConditionText: "Can start a hunt if you have <= 70 sanity",
             canTentacles: true,
             cursedActivityVideos: [
                 "ghosts/cthulion/1.0.mp4", "ghosts/cthulion/1.1.mp4",
@@ -200,8 +200,8 @@
             evidence: [E.GLASS, E.GWB, E.UVL],
             hint: "The Banshee has a unique ability called the 'Kiss of the Banshee,' which reduces sanity by 10 points.",
             description: "The Banshee has a unique ability called the \"Kiss of the Banshee,\" which reduces sanity by 10 points.",
-            huntCondition:     function (mc) { return mc.lust >= 50; },
-            huntConditionText: "Can start a hunt if you have >= 50 lust",
+            huntCondition:     function (mc) { return mc.lust >= 30; },
+            huntConditionText: "Can start a hunt if you have >= 30 lust",
             canKiss: true,
             cursedActivityVideos: [
                 "ghosts/banshee/1.mp4", "ghosts/banshee/2.mp4",
@@ -216,8 +216,8 @@
             evidence: [E.EMF, E.SPIRITBOX, E.UVL],
             hint: "Raiju is a mysterious entity that occasionally exerts influence over electrical devices, causing them to display incorrect readings. This spectral presence can manipulate the behavior of electronics, leading to unpredictable and sometimes inexplicable malfunctions.",
             description: "Raiju is a mysterious entity that occasionally exerts influence over electrical devices, causing them to display incorrect readings. This spectral presence can manipulate the behavior of electronics, leading to unpredictable and sometimes inexplicable malfunctions.",
-            huntCondition:           function (mc) { return mc.sanity <= 50; },
-            huntConditionText:       "Can start a hunt if you have <= 50 sanity",
+            huntCondition:           function (mc) { return mc.sanity <= 70; },
+            huntConditionText:       "Can start a hunt if you have <= 70 sanity",
             emfGlitchChance:         3,
             temperatureGlitchChance: 8,
             spiritboxStaticChance:   20

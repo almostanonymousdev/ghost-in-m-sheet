@@ -412,4 +412,93 @@ test.describe('Haunted Houses Controller', () => {
     // assert
     expect(result).toBe(false);
   });
+
+  // --- Hunt gates (huntCondition thresholds) ---
+  //
+  // The catalogue-wide gate widening lives in GhostController.tw: every
+  // huntCondition threshold was shifted 20 points toward "fires sooner"
+  // (sanity-gated: +20, lust-gated: -20). These tests pin each ghost's
+  // canHunt(mc) boundary so an accidental revert to the pre-change values
+  // fails here instead of silently re-tightening the gates.
+
+  const canHunt = (ghostName, sanity, lust) =>
+    callSetup(
+      page,
+      `setup.Ghosts.getByName(${JSON.stringify(ghostName)})` +
+        `.canHunt({ sanity: ${sanity}, lust: ${lust} })`,
+    );
+
+  test('Shade canHunt gate is sanity <= 55 (widened from 35)', async () => {
+    expect(await canHunt('Shade', 55, 0)).toBe(true);
+    expect(await canHunt('Shade', 56, 0)).toBe(false);
+  });
+
+  test('Demon canHunt gate is sanity <= 90 (widened from 70)', async () => {
+    expect(await canHunt('Demon', 90, 0)).toBe(true);
+    expect(await canHunt('Demon', 91, 0)).toBe(false);
+  });
+
+  test('Phantom canHunt gate is sanity <= 70 (widened from 50)', async () => {
+    expect(await canHunt('Phantom', 70, 0)).toBe(true);
+    expect(await canHunt('Phantom', 71, 0)).toBe(false);
+  });
+
+  test('Spirit canHunt gate is lust >= 30 (widened from 50)', async () => {
+    expect(await canHunt('Spirit', 100, 30)).toBe(true);
+    expect(await canHunt('Spirit', 100, 29)).toBe(false);
+  });
+
+  test('Banshee canHunt gate is lust >= 30 (widened from 50)', async () => {
+    expect(await canHunt('Banshee', 100, 30)).toBe(true);
+    expect(await canHunt('Banshee', 100, 29)).toBe(false);
+  });
+
+  // --- HauntConditions contract drain ---
+  //
+  // A contract is now mechanically costly: every nav tick inside a house
+  // drains sanity at 0.4/step, or 0.2/step when a companion is along.
+  // These tests lock the numbers in as a direct read of the snapshot;
+  // without them a regression silently weakens the hunt-gate pressure.
+
+  test('snapshot has no contract drain outside a house', async () => {
+    // arrange - no active hunt means isInsideHouse() returns false
+    await setHuntMode(page, 0);
+
+    // act
+    const drain = await callSetup(
+      page,
+      'setup.HauntConditions.snapshot().sanityPerStep',
+    );
+
+    // assert
+    expect(drain).toBe(0);
+  });
+
+  test('snapshot applies 0.4/step contract drain in-house without companion', async () => {
+    // arrange
+    await setHuntMode(page, 2); // inside a house
+    await setVar(page, 'isCompChosen', 0);
+
+    // act
+    const snap = await callSetup(page, 'setup.HauntConditions.snapshot()');
+
+    // assert
+    expect(snap.sanityPerStep).toBeCloseTo(-0.4, 5);
+    const labels = snap.contributors.map((c) => c.label);
+    expect(labels).toContain('Contract');
+  });
+
+  test('companion halves the contract drain to 0.2/step', async () => {
+    // arrange
+    await setHuntMode(page, 2);
+    await setVar(page, 'isCompChosen', 1);
+
+    // act
+    const snap = await callSetup(page, 'setup.HauntConditions.snapshot()');
+
+    // assert
+    expect(snap.sanityPerStep).toBeCloseTo(-0.2, 5);
+    const labels = snap.contributors.map((c) => c.label);
+    expect(labels).toContain('Contract (w/ companion)');
+  });
 });
