@@ -14,7 +14,7 @@
 	if (V.skirtState  === "worn") slots.push("skirt");
 	if (V.pantiesState === "worn") slots.push("panties");
 	if (V.braState    === "worn") slots.push("bra");
-	T._freezeSlot = slots.length ? slots[Math.floor(Math.random() * slots.length)] : "";
+	State.temporary._freezeSlot = slots.length ? slots[Math.floor(Math.random() * slots.length)] : "";
 })();
 <</script>>
 <<switch _freezeSlot>>

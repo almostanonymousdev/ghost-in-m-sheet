@@ -250,6 +250,72 @@ test.describe('special passages and tags', () => {
 
 });
 
+// ── JavaScript inside <<script>> / [script] ──────────────────────
+
+test.describe('script-block JS hygiene', () => {
+
+  /** Blank strings/comments so tokens inside them don't register as code. */
+  function stripStringsAndComments(js) {
+    return js
+      .replace(/\/\/.*$/gm, '')
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .replace(/'(?:[^'\\]|\\.)*'/g, "''")
+      .replace(/"(?:[^"\\]|\\.)*"/g, '""')
+      .replace(/`(?:[^`\\]|\\.)*`/g, '``');
+  }
+
+  /**
+   * Yield every chunk of JavaScript found in a passage:
+   *   - the full body of a [script]-tagged passage, or
+   *   - each <<script>>…<</script>> span inside a regular passage.
+   * Each chunk carries the absolute line number of its first line so
+   * violation messages can point at the offending source.
+   */
+  function* scriptChunks(passage) {
+    if (passage.tags.includes('script')) {
+      yield { code: passage.body, startLine: passage.headerLine + 1 };
+      return;
+    }
+    const re = /<<script>>([\s\S]*?)<<\/script>>/g;
+    let m;
+    while ((m = re.exec(passage.body)) !== null) {
+      const before = passage.body.slice(0, m.index);
+      const openLineOffset = before.split('\n').length; // 1-based within body
+      yield {
+        code: m[1],
+        startLine: passage.headerLine + openLineOffset, // line of <<script>>
+      };
+    }
+  }
+
+  test('no references to bare `T` — SugarCube 2 has no T shorthand; use State.temporary', () => {
+    // `T` is a SugarCube 3 / Snowman-ism. In SugarCube 2 it's undefined,
+    // so `T.foo = ...` throws ReferenceError at runtime and the surrounding
+    // macro logic silently falls through. The bug that prompted this test
+    // was FreezeHunt.tw writing to T._freezeSlot and then <<switch _freezeSlot>>
+    // always hitting <<default>>. Matches `T` as a standalone identifier
+    // (not preceded by a word char or `$`) immediately followed by `.` or `[`.
+    const badRefRe = /(?<![A-Za-z0-9_$.])T\s*[.\[]/;
+    const violations = [];
+    for (const p of allPassages) {
+      for (const { code, startLine } of scriptChunks(p)) {
+        const lines = stripStringsAndComments(code).split('\n');
+        for (let i = 0; i < lines.length; i++) {
+          if (badRefRe.test(lines[i])) {
+            const absLine = startLine + i;
+            violations.push(
+              `${rel(p.file)}:${absLine} "${p.name}": script references bare \`T\` — ` +
+              `SugarCube 2 has no T shorthand, use \`State.temporary\` instead`
+            );
+          }
+        }
+      }
+    }
+    expect(violations, violations.join('\n')).toHaveLength(0);
+  });
+
+});
+
 // ── indentation (nobr passages only — whitespace is cosmetic) ───
 
 test.describe('indentation', () => {
