@@ -3,103 +3,114 @@
    widget name to invoke (one of "activity", "trapTheGhost", "sanity",
    "leave", "knowledge", "dawn") and wikifies the matching
    <<widgetName>> call. Lets MonkeyPaw.tw iterate its wish catalogue
-   and pick the effect widget by name instead of branching on the id. */
+   and pick the effect widget by name instead of branching on the id.
+
+   Each effect widget below is a thin view layer: it calls
+   setup.MonkeyPaw.activate(id), which does all state mutations and
+   wish-count bookkeeping, and then renders off the returned hints
+   (video, narrative, goto, stat deltas). Severity scaling lives in
+   the controller; these widgets only know how to paint the result. */
 <<widget "monkeyPawWish">>
 	<<= "<<" + _args[0] + ">>">>
 <</widget>>
 
+/* Shared tail: meter refresh + Return button. Used by the in-place
+   wish widgets (activity, trapTheGhost, sanity). */
+<<widget "monkeyPawTail">>
+	<<updatemeter 'mclust' `$mc.lust / 100`>>
+	<<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
+	<br>
+	@@.backbtn;<<link "Return" `passage()`>>
+	<</link>>@@
+<</widget>>
+
 <<widget "activity">>
 	<<replace ".MonkeyPawShow">>
-		<<set _videoList to ["cursedpossessions/slap1.mp4", "cursedpossessions/slap2.mp4", "cursedpossessions/slap3.mp4", "cursedpossessions/slap4.mp4", "cursedpossessions/passion1.mp4", "cursedpossessions/passion2.mp4", "cursedpossessions/passion3.mp4", "cursedpossessions/passion4.mp4", "cursedpossessions/pulse1.mp4", "cursedpossessions/pulse2.mp4", "cursedpossessions/pulse3.mp4", "cursedpossessions/pulse4.mp4"]>>
-		<<set _hg to setup.Ghosts.active()>>
-		<<if _hg and _hg.cursedActivityVideos>>
-			<<set _videoList to _videoList.concat(_hg.cursedActivityVideos)>>
+		<<set _out to setup.MonkeyPaw.activate("activity")>>
+		<<video _out.video "displayCentredImgs">>
+		@@.mc-speech; <<= _out.narrative>>@@<br>
+		@@.mc-thoughts; Lust increased: +<<= _out.lustDelta>> <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
+		@@.mc-thoughts; Sanity decreased: <<= _out.sanityDelta>> <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
+		<<if _out.corrDelta>>
+			@@.mc-thoughts; Corruption banking: +<<= _out.corrDelta>>@@<br>
 		<</if>>
-
-		<<set _randomIndex to random(0, _videoList.length - 1)>>
-		<<set _selectedVideo to _videoList[_randomIndex]>>
-		<<video _selectedVideo "displayCentredImgs">>
-		@@.mc-speech; Shit! I shouldn't have asked this....@@<br>
-		<<run setup.MonkeyPaw.spendWish()>>
-		<<addSanity -15>>
-		<<addLust 15>>
-		@@.mc-thoughts; Lust increased: +15 <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
-		@@.mc-thoughts; Sanity decreased: -15 <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
-		<br><br>
-		@@.backbtn;<<link "Return" `passage()`>>
-		<</link>>@@
+		<<if _out.drewGhost>>
+			@@.mc-thoughts; <b>Something is in the room with me now.</b>@@<br>
+		<</if>>
+		<br>
+		<<monkeyPawTail>>
 	<</replace>>
 <</widget>>
 
 <<widget "trapTheGhost">>
 	<<replace "#wishesCount">>
-		<<run setup.MonkeyPaw.spendWish()>>
+		<<set _out to setup.MonkeyPaw.activate("trapTheGhost")>>
 		@@.mc-thoughts; <<= setup.MonkeyPaw.wishesLeft()>> wishes left...@@<br><br>
-		<<set $hunt.trapped to true>>
-		@@.mc-speech; Now the ghost can't change its favorite room.<br>
-		With each wish, I feel worse and worse.@@<br>
-		<<addSanity -15>>
-		<b>@@.mc-thoughts; Sanity decreased: -15 <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@</b><br>
-		<br>
-		@@.backbtn;<<link "Return" `passage()`>>
-		<</link>>@@
+		@@.mc-speech; <<= _out.narrative>>@@<br>
+		<b>@@.mc-thoughts; Sanity decreased: <<= _out.sanityDelta>> <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@</b><br>
+		<<if _out.corrDelta>>
+			@@.mc-thoughts; Corruption banking: +<<= _out.corrDelta>>@@<br>
+		<</if>>
+		<<if _out.baitSteps>>
+			@@.mc-thoughts; <b>The ghost's attention is pinned on me for <<= _out.baitSteps>> steps.</b>@@<br>
+		<</if>>
+		<<monkeyPawTail>>
 	<</replace>>
 <</widget>>
 
 <<widget "sanity">>
 	<<replace "#wishesCount">>
-		<<run setup.MonkeyPaw.spendWish()>>
+		<<set _out to setup.MonkeyPaw.activate("sanity")>>
 		@@.mc-thoughts; <<= setup.MonkeyPaw.wishesLeft()>> wishes left...@@<br><br>
-		<b>@@.mc-thoughts; Sanity changed: 50 <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>  now!@@</b><br>
-		@@.mc-speech; I shouldn't have expected anything better...@@
-		<<set $mc.sanity to 50>>
-		<<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
-		<br>
-		<br>
-		@@.backbtn;<<link "Return" `passage()`>>
-		<</link>>@@
+		<b>@@.mc-thoughts; Sanity set to <<= _out.sanitySet>> <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> now!@@</b><br>
+		@@.mc-speech; <<= _out.narrative>>@@<br>
+		<<if _out.lustDelta>>
+			@@.mc-thoughts; Lust increased: +<<= _out.lustDelta>> <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
+		<</if>>
+		<<if _out.corrDelta>>
+			@@.mc-thoughts; Corruption banking: +<<= _out.corrDelta>>@@<br>
+		<</if>>
+		<<monkeyPawTail>>
 	<</replace>>
 <</widget>>
 
 <<widget "leave">>
-	<<run setup.MonkeyPaw.spendWish()>>
-	<<set $cursedHuntActive to 0>>
-	<<unset $cursedHuntEndTime>>
-	<<if $isElm eq 1>>
-		<<goto "Elm Street">>
-	<<elseif $isOwaissa eq 1>>
-		<<goto "Owaissa Street">>
+	<<set _out to setup.MonkeyPaw.activate("leave")>>
+	<<if _out.goto>>
+		<<goto _out.goto>>
 	<</if>>
 <</widget>>
 
 <<widget "knowledge">>
 	<<replace "#wishesCount">>
-		<<if $knowledgeUsed neq 1>>
-			<<run setup.MonkeyPaw.spendWish()>>
-			@@.mc-thoughts; <<= setup.MonkeyPaw.wishesLeft()>> wishes left...@@<br><br>
-			<<set $knowledgeUsed to 1>>
-			<<set _allEvidence to ["emf", "spiritbox", "gwb", "uvl", "glass", "temperature"]>>
-			<<set _missingEvidence to _allEvidence.filter(e => !$hunt.evidence.includes(e) && e !== $hiddenEvidence && e !== $hiddenEvidence1 && e !== $hiddenEvidence2)>>
-			<<set $chosenEvidence to _missingEvidence.random()>>
-			@@.mc-speech; It worked! One evidence has been removed from my diary!<br>
-			Wait...I hear someone's footsteps...@@
-			<<timed 2s>>
-				<<goto "GhostHuntEvent">>
-			<</timed>>
-		<<else>>
+		<<set _out to setup.MonkeyPaw.activate("knowledge")>>
+		<<if _out.alreadyUsed>>
 			@@.mc-speech; Nothing happened... I probably won't be able to remove more than one piece of evidence@@<br><br><br>
 			@@.backbtn;<<link "Return" `passage()`>>
 			<</link>>@@
+		<<else>>
+			@@.mc-thoughts; <<= setup.MonkeyPaw.wishesLeft()>> wishes left...@@<br><br>
+			@@.mc-speech; <<= _out.narrative>>@@
+			<<if _out.sanityDelta>>
+				<br>@@.mc-thoughts; Sanity decreased: <<= _out.sanityDelta>> <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@
+				<<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
+			<</if>>
+			<<if _out.gotoDelay gt 0>>
+				<<timed `_out.gotoDelay + "s"`>>
+					<<goto _out.goto>>
+				<</timed>>
+			<<else>>
+				<<goto _out.goto>>
+			<</if>>
 		<</if>>
 	<</replace>>
 <</widget>>
 
 <<widget "dawn">>
-	<<run setup.MonkeyPaw.spendWish()>>
-	<<set $hours to 6>>
-	<<set $cursedHuntActive to 0>>
-	<<unset $cursedHuntEndTime>>
-	<<goto "HuntOverTime">>
+	<<set _out to setup.MonkeyPaw.activate("dawn")>>
+	<<if _out.goto>>
+		<<goto _out.goto>>
+	<</if>>
 <</widget>>
 
 <<widget "anything">>

@@ -7,8 +7,18 @@
  *
  * Owns the canonical wish catalogue (WISHES) -- each entry declares
  * its id, the keyword that matches textbox input, the button label,
- * the effect widget name (in widgetText.tw), and a short description
- * of the outcome shown only once the player has "learned" the wish.
+ * the effect widget name (in widgetText.tw), a description shown
+ * once the player has "learned" the wish, and an activate() function
+ * that applies the gameplay state mutations and returns presentation
+ * hints for the calling widget to render.
+ *
+ * Severity scaling: activate() reads $wishesCount BEFORE spending and
+ * derives a tier in [1..3] -- tier 1 with 3 wishes left is the
+ * baseline cost, tier 3 with 1 wish left is the catastrophic finale.
+ * Each wish's escalation is defined inline in its activate(); the
+ * shape of the return is { tier, video?, narrative?, goto?,
+ * gotoDelay?, <statDelta>?, alreadyUsed? } and the widget renders
+ * off those hints.
  *
  * Design note on hidden effects: by default a wish is unknown -- the
  * player sees nothing in the menu except what they can type into the
@@ -21,58 +31,320 @@
 setup.MonkeyPaw = (function () {
 	function v(name) { return State.variables[name]; }
 
+	// --- Private state mutators (shared by activate() and the
+	// public API so there is exactly one implementation per op). ---
+
+	function spendWish() {
+		var s = State.variables;
+		s.wishesCount = (s.wishesCount || 0) - 1;
+		if (s.wishesCount < 0) s.wishesCount = 0;
+	}
+
+	function wishesLeft() { return State.variables.wishesCount || 0; }
+
+	/* Severity tier derived from wishes-remaining before activation.
+	   3 left -> tier 1 (baseline), 2 -> 2 (bite), 1 -> 3 (catastrophe).
+	   Clamped so unexpected state (e.g. cheats) still returns a valid
+	   tier and never indexes out of the per-tier tables below. */
+	function currentTier() {
+		return Math.max(1, Math.min(3, 4 - wishesLeft()));
+	}
+
+	function applySanity(delta) {
+		var mc = State.variables.mc;
+		var max = mc.sanityMax || 100;
+		mc.sanity = Math.max(1, Math.min(max, mc.sanity + delta));
+	}
+
+	function applyEnergy(delta) {
+		var mc = State.variables.mc;
+		var max = mc.energyMax || 100;
+		mc.energy = Math.max(0, Math.min(max, mc.energy + delta));
+	}
+
+	function addTempCorr(amount) {
+		var s = State.variables;
+		s.tempCorr = (s.tempCorr || 0) + amount;
+	}
+
+	/* Baiting pins the ghost toward the player and raises hunt chance
+	   by +20% per tick for N steps. Used by the upper tiers of the
+	   trapTheGhost wish -- trapping the ghost with you, not just in
+	   a room. */
+	function activateBait(steps) {
+		var s = State.variables;
+		s.baitActive = 1;
+		s.baitStepsRemain = Math.max(s.baitStepsRemain || 0, steps);
+	}
+
+	/* Snap the ghost's room to the player's current haunted passage.
+	   No-op if the player isn't on a registered haunted passage -- the
+	   activity wish just wasted its draw in that case. */
+	function snapHuntRoomToCurrent() {
+		var s = State.variables;
+		if (!s.hunt || !s.hunt.room) return;
+		var current = passage();
+		var hp = setup.hauntedPassages || [];
+		for (var i = 0; i < hp.length; i++) {
+			if (hp[i].passage === current) {
+				s.hunt.room.name = hp[i].bgRoom;
+				return;
+			}
+		}
+	}
+
+	function pickActivityVideo() {
+		var base = [
+			'cursedpossessions/slap1.mp4', 'cursedpossessions/slap2.mp4',
+			'cursedpossessions/slap3.mp4', 'cursedpossessions/slap4.mp4',
+			'cursedpossessions/passion1.mp4', 'cursedpossessions/passion2.mp4',
+			'cursedpossessions/passion3.mp4', 'cursedpossessions/passion4.mp4',
+			'cursedpossessions/pulse1.mp4', 'cursedpossessions/pulse2.mp4',
+			'cursedpossessions/pulse3.mp4', 'cursedpossessions/pulse4.mp4'
+		];
+		var g = setup.Ghosts && setup.Ghosts.active && setup.Ghosts.active();
+		if (g && g.cursedActivityVideos) base = base.concat(g.cursedActivityVideos);
+		return base[Math.floor(Math.random() * base.length)];
+	}
+
+	function streetPassageForCurrentHunt() {
+		var s = State.variables;
+		if (s.isElm === 1) return 'Elm Street';
+		if (s.isOwaissa === 1) return 'Owaissa Street';
+		return null;
+	}
+
+	function learnedMap() {
+		var s = State.variables;
+		if (!s.monkeyPawLearned) s.monkeyPawLearned = {};
+		return s.monkeyPawLearned;
+	}
+
+	// --- Wish catalogue -------------------------------------------
+
 	var WISHES = [
 		{
 			id: 'activity',
 			input: 'activity',
 			label: 'I wish for activity',
 			widget: 'activity',
-			description: "The paw grants motion -- not the kind you wanted. Sanity falls, lust climbs."
+			description: "The paw grants motion -- not the kind you wanted. Sanity falls, lust climbs.",
+			/* Scaling:
+			   t1: +15 lust, -15 sanity
+			   t2: +25 lust, -25 sanity, +0.2 tempCorr
+			   t3: +40 lust, -40 sanity, +0.4 tempCorr, ghost lands on you */
+			activate: function () {
+				var t = currentTier();
+				var lust   = [15, 25, 40][t - 1];
+				var sanity = -[15, 25, 40][t - 1];
+				var corr   = [0, 0.2, 0.4][t - 1];
+
+				setup.addLust(lust);
+				applySanity(sanity);
+				if (corr) addTempCorr(corr);
+				var drewGhost = false;
+				if (t >= 3) {
+					snapHuntRoomToCurrent();
+					drewGhost = true;
+				}
+
+				spendWish();
+
+				return {
+					tier: t,
+					video: pickActivityVideo(),
+					narrative: [
+						"Shit! I shouldn't have asked this....",
+						"God, it's even worse this time. I shouldn't have asked again....",
+						"Something in the room just... noticed me. It's here. It's here."
+					][t - 1],
+					lustDelta: lust,
+					sanityDelta: sanity,
+					corrDelta: corr,
+					drewGhost: drewGhost
+				};
+			}
 		},
 		{
 			id: 'trapTheGhost',
 			input: 'trap the ghost',
 			label: 'I wish to trap the ghost',
 			widget: 'trapTheGhost',
-			description: "The ghost is bound to one room. The house grows heavier around you."
+			description: "The ghost is bound to one room. The house grows heavier around you.",
+			/* Scaling:
+			   t1: trap, -15 sanity
+			   t2: trap, -25 sanity, +0.2 tempCorr, bait 5 steps
+			   t3: trap, -40 sanity, +0.4 tempCorr, bait 10 steps */
+			activate: function () {
+				var t = currentTier();
+				var s = State.variables;
+				var sanity = -[15, 25, 40][t - 1];
+				var corr   = [0, 0.2, 0.4][t - 1];
+				var bait   = [0, 5, 10][t - 1];
+
+				if (s.hunt) s.hunt.trapped = true;
+				applySanity(sanity);
+				if (corr) addTempCorr(corr);
+				if (bait) activateBait(bait);
+
+				spendWish();
+
+				return {
+					tier: t,
+					narrative: [
+						"Now the ghost can't change its favorite room.<br>With each wish, I feel worse and worse.",
+						"The ghost is pinned, and now its attention is on me. I can feel it.",
+						"I've nailed it in place and hung myself out like meat. It is coming."
+					][t - 1],
+					sanityDelta: sanity,
+					corrDelta: corr,
+					baitSteps: bait
+				};
+			}
 		},
 		{
 			id: 'sanity',
 			input: 'be sane',
 			label: 'I wish to be sane',
 			widget: 'sanity',
-			description: "Your mind is set to exactly fifty. No higher. No lower."
+			description: "Your mind is set to exactly fifty. No higher. No lower.",
+			/* Scaling:
+			   t1: sanity = 50
+			   t2: sanity = 50, +10 lust, +0.2 tempCorr
+			   t3: sanity = 50, +20 lust, +0.4 tempCorr */
+			activate: function () {
+				var t = currentTier();
+				var lust = [0, 10, 20][t - 1];
+				var corr = [0, 0.2, 0.4][t - 1];
+
+				State.variables.mc.sanity = 50;
+				if (lust) setup.addLust(lust);
+				if (corr) addTempCorr(corr);
+
+				spendWish();
+
+				return {
+					tier: t,
+					narrative: [
+						"I shouldn't have expected anything better...",
+						"My mind is quiet. Too quiet. My body isn't.",
+						"Clarity, bought in full. Something else in me is paying it down."
+					][t - 1],
+					sanitySet: 50,
+					lustDelta: lust,
+					corrDelta: corr
+				};
+			}
 		},
 		{
 			id: 'leave',
 			input: 'leave',
 			label: 'I wish to leave',
 			widget: 'leave',
-			description: "You are cast out of the house. The night is not over."
+			description: "You are cast out of the house. The night is not over.",
+			/* Scaling:
+			   t1: exit
+			   t2: exit, -15 energy
+			   t3: exit, -30 energy, +0.3 tempCorr */
+			activate: function () {
+				var t = currentTier();
+				var s = State.variables;
+				var energy = [0, -15, -30][t - 1];
+				var corr   = [0, 0, 0.3][t - 1];
+
+				s.cursedHuntActive = 0;
+				delete s.cursedHuntEndTime;
+				if (energy) applyEnergy(energy);
+				if (corr) addTempCorr(corr);
+
+				spendWish();
+
+				return {
+					tier: t,
+					goto: streetPassageForCurrentHunt(),
+					energyDelta: energy,
+					corrDelta: corr
+				};
+			}
 		},
 		{
 			id: 'knowledge',
 			input: 'knowledge',
 			label: 'I wish for knowledge',
 			widget: 'knowledge',
-			description: "One entry is struck from your diary. Once only -- and something hears."
+			description: "One entry is struck from your diary. Once only -- and something hears.",
+			/* Scaling:
+			   t1: remove evidence, delayed ghost event (2s)
+			   t2: remove evidence, immediate ghost event, -15 sanity
+			   t3: remove evidence, immediate ghost event, -30 sanity
+			   No-ops if the wish has already been used this hunt. */
+			activate: function () {
+				var s = State.variables;
+				if (s.knowledgeUsed === 1) {
+					return { tier: 0, alreadyUsed: true };
+				}
+
+				var t = currentTier();
+				var sanity = [0, -15, -30][t - 1];
+
+				var all = ['emf', 'spiritbox', 'gwb', 'uvl', 'glass', 'temperature'];
+				var missing = all.filter(function (e) {
+					return s.hunt && !s.hunt.evidence.includes(e)
+						&& e !== s.hiddenEvidence
+						&& e !== s.hiddenEvidence1
+						&& e !== s.hiddenEvidence2;
+				});
+				s.chosenEvidence = missing.length
+					? missing[Math.floor(Math.random() * missing.length)]
+					: null;
+				s.knowledgeUsed = 1;
+				if (sanity) applySanity(sanity);
+
+				spendWish();
+
+				return {
+					tier: t,
+					narrative: [
+						"It worked! One evidence has been removed from my diary!<br>Wait...I hear someone's footsteps...",
+						"The knowledge comes with a voice. It's already in the hallway.",
+						"The paw takes my memory and gives me its tenant in trade."
+					][t - 1],
+					sanityDelta: sanity,
+					goto: 'GhostHuntEvent',
+					gotoDelay: t === 1 ? 2 : 0
+				};
+			}
 		},
 		{
 			id: 'dawn',
 			input: 'dawn',
 			label: 'I wish for dawn',
 			widget: 'dawn',
-			description: "Morning comes, ready or not. The hunt ends."
+			description: "Morning comes, ready or not. The hunt ends.",
+			/* Scaling:
+			   t1: jump to 6 AM, end hunt
+			   t2: jump to 6 AM, end hunt, +0.2 tempCorr
+			   t3: jump to 6 AM, end hunt, +0.4 tempCorr */
+			activate: function () {
+				var t = currentTier();
+				var s = State.variables;
+				var corr = [0, 0.2, 0.4][t - 1];
+
+				s.hours = 6;
+				s.cursedHuntActive = 0;
+				delete s.cursedHuntEndTime;
+				if (corr) addTempCorr(corr);
+
+				spendWish();
+
+				return {
+					tier: t,
+					goto: 'HuntOverTime',
+					corrDelta: corr
+				};
+			}
 		}
 	];
-
-	/* Per-wish learned state lives in a single object on $variables
-	   instead of one flag per wish. Lazily initialized. */
-	function learnedMap() {
-		var s = State.variables;
-		if (!s.monkeyPawLearned) s.monkeyPawLearned = {};
-		return s.monkeyPawLearned;
-	}
 
 	return {
 		// --- Catalogue --------------------------------------------
@@ -96,6 +368,13 @@ setup.MonkeyPaw = (function () {
 		   "I wish for anything" meta-button. */
 		rollAnything: function () {
 			return WISHES[Math.floor(Math.random() * WISHES.length)];
+		},
+		/* Apply a wish's effect by id and return the presentation
+		   hints for the widget to render. Convenience wrapper around
+		   byId(id).activate() so callers don't need to null-check. */
+		activate: function (id) {
+			var w = this.byId(id);
+			return w && w.activate ? w.activate() : null;
 		},
 
 		// --- Hunt-scoped lifecycle --------------------------------
@@ -126,16 +405,12 @@ setup.MonkeyPaw = (function () {
 		},
 
 		// --- Wish economy -----------------------------------------
-		wishesLeft: function () { return v('wishesCount') || 0; },
-		hasWishes: function () { return this.wishesLeft() > 0; },
-		/* Decrement the remaining-wish counter. Widgets call this
-		   instead of setting $wishesCount directly so any future cost
-		   modifiers live in one place. */
-		spendWish: function () {
-			var s = State.variables;
-			s.wishesCount = (s.wishesCount || 0) - 1;
-			if (s.wishesCount < 0) s.wishesCount = 0;
-		},
+		wishesLeft: wishesLeft,
+		hasWishes: function () { return wishesLeft() > 0; },
+		spendWish: spendWish,
+		/* Severity tier the next activate() would use, for UIs that
+		   want to warn the player before they click. */
+		tier: currentTier,
 
 		// --- Learned state ----------------------------------------
 		isLearned: function (id) { return learnedMap()[id] === true; },

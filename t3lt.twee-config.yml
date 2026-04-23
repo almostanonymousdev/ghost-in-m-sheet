@@ -153,38 +153,47 @@ sugarcube-2:
     monkeyPawWish:
       name: monkeyPawWish
       description: "Dispatcher that wikifies the given wish-effect widget by
-        name. Used by MonkeyPaw.tw to iterate setup.MonkeyPawWishes without
+        name. Used by MonkeyPaw.tw to iterate setup.MonkeyPaw.list() without
         an if/elseif chain. Args: widgetName (string, one of 'activity',
         'trapTheGhost', 'sanity', 'leave', 'knowledge', 'dawn')."
+    monkeyPawTail:
+      name: monkeyPawTail
+      description: "Shared render tail for in-place wish widgets (activity,
+        trapTheGhost, sanity): refreshes the lust and sanity meters and
+        renders the Return link. No args."
     activity:
       name: activity
-      description: "Monkey Paw wish: replaces .MonkeyPawShow with a random
-        cursed-possessions video. Costs 1 wish, decreases sanity by 15, and
-        increases MC lust by 15."
+      description: "Monkey Paw wish view widget. Calls
+        setup.MonkeyPaw.activate('activity'), then renders the returned
+        video + narrative + stat deltas. Severity scales with wishes-left."
     trapTheGhost:
       name: trapTheGhost
-      description: "Monkey Paw wish: spends 1 wish and sets $ghostIsTrapped to 1,
-        preventing the ghost from changing its favourite room. Decreases sanity
-        by 15."
+      description: "Monkey Paw wish view widget. Calls
+        setup.MonkeyPaw.activate('trapTheGhost'), then renders the returned
+        narrative + stat deltas. Higher tiers also bait the ghost toward the
+        player."
     sanity:
       name: sanity
-      description: "Monkey Paw wish: spends 1 wish and resets $mc.sanity to 50,
-        updating the sanity meter display."
+      description: "Monkey Paw wish view widget. Calls
+        setup.MonkeyPaw.activate('sanity'), which sets sanity to 50 and
+        (at higher tiers) adds lust / banking corruption. Renders deltas."
     leave:
       name: leave
-      description: "Monkey Paw wish: spends 1 wish, ends the cursed hunt
-        ($cursedHuntActive to 0), and sends the player back to the haunted house
-        street passage (Elm Street or Owaissa Street)."
+      description: "Monkey Paw wish view widget. Calls
+        setup.MonkeyPaw.activate('leave') and <<goto>>s the returned street
+        passage. Higher tiers drain energy / bank corruption on exit."
     knowledge:
       name: knowledge
-      description: 'Monkey Paw wish: spends 1 wish (once per hunt via $knowledgeUsed)
-        to eliminate a random non-ghost evidence from the diary. After a
-        2-second delay, triggers a ghost hunt event via <<goto
-        "GhostHuntEvent">>.'
+      description: "Monkey Paw wish view widget. Calls
+        setup.MonkeyPaw.activate('knowledge') which removes one unchecked
+        evidence and queues a ghost event. One-shot per hunt (renders a
+        'nothing happened' branch on repeat). Higher tiers arrive without
+        the 2-second delay and drain sanity."
     dawn:
       name: dawn
-      description: "Monkey Paw wish: spends 1 wish, skips time to 6:00 AM ($hours to
-        6), ends the cursed hunt, and goes to the HuntOverTime passage."
+      description: "Monkey Paw wish view widget. Calls
+        setup.MonkeyPaw.activate('dawn') which jumps to 6 AM, ends the cursed
+        hunt, and <<goto>>s HuntOverTime. Higher tiers bank corruption."
     anything:
       name: anything
       description: "Monkey Paw wish: rolls a random number (1-6) into _check. The
