@@ -15,7 +15,7 @@
 <div class="flexwrapperCompanionMain">
 <div class="companionImageMain">
 <<do>>
-	<<image `_c.imagePath(State.variables[_chanceVar])` { width: "100%" }>><br>
+	<<image _c.imagePath(State.variables[_chanceVar]) { width: "100%" }>><br>
 <</do>>
 </div>
 <div class="companionTextMain">

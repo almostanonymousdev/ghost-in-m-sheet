@@ -14,7 +14,7 @@
 			<<if _state eq "not worn">>
 				<<if _item.slot eq 0 and def _grp.bareImage>>
 					<<replace _grp.replaceTarget>>
-						<<image `"img/wardrobe/" + _grp.bareImage`>>
+						<<image "img/wardrobe/" + _grp.bareImage>>
 					<</replace>>
 				<</if>>
 				<<append _grp.appendTarget>>
