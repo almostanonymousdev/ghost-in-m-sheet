@@ -311,15 +311,13 @@ body.city {
 	   over the tool row instead of over the full footer (which
 	   includes the 20% .footeraction column on the right). */
 	width: 80%;
-	/* Keep the HUD on a single line so it can never grow tall enough
-	   to steal vertical space from the .footer-row holding the tool
-	   cards. Excess badges scroll horizontally instead of wrapping
-	   and pushing the toolbar down. */
-	flex-wrap: nowrap;
-	white-space: nowrap;
-	overflow-x: auto;
-	overflow-y: hidden;
-	scrollbar-width: thin;
+	/* Allow badges to overflow into additional rows when the HUD gets
+	   too long to fit on one line. The .footer's max-height: 20% cap
+	   still bounds total footer growth, so the tool row gets squeezed
+	   slightly rather than pushed off-screen. */
+	flex-wrap: wrap;
+	white-space: normal;
+	row-gap: 0.15em;
 }
 .hunt-conditions-icon {
 	width: 14px;
