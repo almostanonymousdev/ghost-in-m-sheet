@@ -798,6 +798,48 @@ test.describe('Delivery E2E — Special order', () => {
     const earned = await getVar(page, 'earnedMoney');
     expect(earned).toBeGreaterThanOrEqual(22);
   });
+
+  test('unsafe special order with low corruption coerces MC inside then forces decline', async () => {
+    await setupReadyWorker(page);
+    await startShiftWithKnownOrders(page);
+
+    const specialAddress = 'Golden Road 34';
+    await setVar(page, 'deliverySpecialOrder', true);
+    await setVar(page, 'deliverySpecialOrderAddress', specialAddress);
+    await setVar(page, 'deliverySpecialOrderPay', 22);
+    await setVar(page, 'deliverySpecialOrderType', 'unsafe');
+    await setVar(page, 'mc.corruption', 0);
+    await setVar(page, 'earnedMoney', 0);
+
+    await setVar(page, 'currentHouse', specialAddress);
+    await goToPassage(page, 'DeliverySpecialEvent');
+
+    // The old bug: low corruption auto-<<goto>>'d to DeliverySpecialRefused,
+    // skipping the coerced-inside scene. We must still be on the event page
+    // with a "Step inside" link — not already refused.
+    expect(await currentPassage(page)).toBe('DeliverySpecialEvent');
+    const eventText = await passageText(page);
+    expect(eventText).not.toContain('No inspection, no payment');
+
+    await passage(page).getByText('Step inside').click();
+    await waitForPassage(page, 'DeliverySpecialCoerced');
+
+    // Inside: door locks, MC is forced to decline (no "accept" link).
+    const coercedText = await passageText(page);
+    expect(coercedText).toContain('locks the door');
+    const coercedPassage = passage(page);
+    await expect(coercedPassage.getByText('Earn it')).toBeVisible();
+    await expect(coercedPassage.getByText('Push past him')).toBeVisible();
+
+    await coercedPassage.getByText('Push past him').click();
+    await waitForPassage(page, 'DeliverySpecialRefused');
+
+    // No payment awarded.
+    const earned = await getVar(page, 'earnedMoney');
+    expect(earned).toBe(0);
+    const specialStillActive = await getVar(page, 'deliverySpecialOrder');
+    expect(specialStillActive).toBe(false);
+  });
 });
 
 // ─── Route familiarity on map ───────────────────────────────────
