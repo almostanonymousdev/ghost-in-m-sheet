@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, setHuntMode, getHuntMode, callSetup } = require('./helpers');
+const { openGame, resetGame, setVar, getVar, setHuntMode, getHuntMode, callSetup, goToPassage } = require('./helpers');
 
 test.describe('Home Controller', () => {
   let page;
@@ -587,6 +587,23 @@ test.describe('Home Controller', () => {
 
     // assert
     expect(result).toBe(false);
+  });
+
+  test('weak Mirror branch clears thetwinsevent so it does not re-fire daily', async () => {
+    // Regression: the Mirror passage's weak branch (beauty roll beats MC) used
+    // to set only $thetwinseventCD, leaving $thetwinsevent=1. ResetCooldowns
+    // zeros the CD on every day-wrap, so the event re-fired every morning —
+    // an infinite loop players can only escape by eventually rolling the full
+    // event (TheTwinsEvent, which does clear both flags).
+    await setVar(page, 'thetwinsevent', 1);
+    await setVar(page, 'thetwinseventCD', 0);
+    await setVar(page, 'mc.beauty', 10); // random(30,100) always beats this → weak branch
+    await goToPassage(page, 'Mirror');
+    await page.locator('.passage .macro-linkappend').filter({ hasText: 'through the glass' }).first().click();
+    await page.waitForTimeout(100);
+
+    expect(await getVar(page, 'thetwinsevent')).toBe(0);
+    expect(await getVar(page, 'thetwinseventCD')).toBe(1);
   });
 
   test('twinsEventTriggered true when beauty roll <= mc beauty', async () => {

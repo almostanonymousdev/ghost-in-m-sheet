@@ -21,11 +21,21 @@
 	<<if setup.Mc.corruption() gte 3>>
 		@@.mc-speech;[[Go inside|DeliverySpecialUnsafe]]@@ or @@.mc-speech;[[No thanks, just pay me|DeliverySpecialRefused]]@@<br>
 	<<else>>
-		@@.mc-speech; Just pay me out here.@@<br>
-		<<goto "DeliverySpecialRefused">>
+		@@.mc-speech; Uh... fine, but make it quick.@@<br>
+		@@.mc-thoughts; I just want the tip. Maybe he really does just need to check it.@@<br>
+		@@.mc-speechLink;[[Step inside|DeliverySpecialCoerced]]@@<br>
 	<</if>>
 <</if>>
 <<addTime `setup.Delivery.getDeliveryTime()`>>
+
+:: DeliverySpecialCoerced [event nobr] {"position":"1500,1650","size":"100,100"}
+<<image "deliveryhub/specialevent/2.jpg" { style: "max-width: 100%; height: auto; display: block; margin: 0 auto;" }>>
+@@.mc-thoughts; He locks the door behind me. Shit.@@<br>
+@@.notmc-speech; You want to get paid? Earn it.@@<br>
+@@.mc-thoughts; Oh fuck. No. I'm not doing that — not for a few bucks.@@<br>
+@@.mc-speech; Forget it. Keep the package — I'm leaving.@@<br>
+<br>
+[[Push past him|DeliverySpecialRefused]]
 
 :: DeliverySpecialRefused [event nobr] {"position":"1500,1600","size":"100,100"}
 @@.notmc-speech; No inspection, no payment. That's how it works, sweetheart.@@<br>
