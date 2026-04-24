@@ -221,7 +221,7 @@
                 return '<div class="spiritbox-container">\n'
                      + '<b>Something\'s wrong, I think I\'m losing consciousness...</b>\n'
                      + '</div>\n'
-                     + '<<timed 2s>><<goto "CityMapPossessed">><</timed>>';
+                     + '<br>@@.enterbtn;<<link "Close your eyes" "CityMapPossessed">><</link>>@@';
             }
             return '<span class="spiritbox-question">You ask through the Spiritbox: "What do you want?"</span>\n'
                  + '<span class="spiritbox-answer"><b>I will be able to subdue you... sooner or later, but you will surrender.</b></span>';

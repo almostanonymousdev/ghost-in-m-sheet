@@ -635,6 +635,8 @@ body.city {
 
 /* ===== MC Action ===== */
 .mc-action {
+	display: inline-block;
+	margin: 0.5em 0;
 	background-color: #ffe6f2;
 	padding: 10px;
 	border-radius: 10px;

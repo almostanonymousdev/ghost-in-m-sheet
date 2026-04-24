@@ -162,9 +162,10 @@
 :: SealedRoomScream [nobr]
 /* Tier-3 scream-without-companion branch. Reached from the sealed room's
    scream link. The scream draws the ghost and drops the player into
-   GhostHuntEvent. Door stays locked -- the scream bought the ghost's
-   attention, not an exit. Player has to survive the hunt event and
-   try another tactic afterwards. */
+   GhostHuntEvent on the player's click -- no auto-advance, so the MC
+   gets to sit with the beat before the hunt lands. Door stays locked
+   -- the scream bought the ghost's attention, not an exit. Player has
+   to survive the hunt event and try another tactic afterwards. */
 <<image "img/owaissa-house.jpg" "displayCentredImgs">>
 <br>
 @@.mc-speech; HELP! SOMEBODY! ANYBODY!@@<br>
@@ -174,6 +175,5 @@
 <<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
 @@.mc-action; Silence -- then footsteps. Heavy ones. The house heard me.@@<br>
 <br>
-<<timed 2s>>
-	<<goto "GhostHuntEvent">>
-<</timed>>
+@@.enterbtn; <<link "Brace yourself" "GhostHuntEvent">>
+<</link>>@@

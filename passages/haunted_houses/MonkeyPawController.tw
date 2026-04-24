@@ -67,6 +67,16 @@ setup.MonkeyPaw = (function () {
 		s.tempCorr = (s.tempCorr || 0) + amount;
 	}
 
+	/* The MC's actual room when a wish fires. The wish widgets run
+	   inside the MonkeyPaw menu passage (and the player reaches it
+	   via Bag), both tagged `noreturn`, so passage() here returns
+	   "MonkeyPaw" -- useless for gating room exits. $return is
+	   updated on every :passagestart for non-noreturn passages, so
+	   it holds the last real haunted-house room the MC stood in. */
+	function currentRoomPassage() {
+		return State.variables.return || passage();
+	}
+
 	/* Front-door lock is hunt-scoped state set by trapTheGhost. The
 	   unlockBy field drives the FrontDoorLocked passage's branching:
 	   'cursedItem' requires a sacrifice, 'dawn' waits for 6 AM.
@@ -78,7 +88,7 @@ setup.MonkeyPaw = (function () {
 		State.variables.monkeyPawDoorLock = {
 			locked: true,
 			unlockBy: unlockBy,
-			sealedRoom: currentTier() >= 3 ? passage() : null
+			sealedRoom: currentTier() >= 3 ? currentRoomPassage() : null
 		};
 	}
 
@@ -92,7 +102,7 @@ setup.MonkeyPaw = (function () {
 	function snapHuntRoomToCurrent() {
 		var s = State.variables;
 		if (!s.hunt || !s.hunt.room) return;
-		var current = passage();
+		var current = currentRoomPassage();
 		var hp = setup.hauntedPassages || [];
 		for (var i = 0; i < hp.length; i++) {
 			if (hp[i].passage === current) {
@@ -154,22 +164,7 @@ setup.MonkeyPaw = (function () {
 		return (State.variables.hours || 0) >= 6;
 	}
 
-	/* Force-strip every piece of clothing AND raise the hunt-scoped
-	   $isClothesStolen flag so the downstream stolen-clothes recovery
-	   flow (FurnitureSearch highlights, LostClothes teardown) behaves
-	   as if the ghost tore them off. Used by the "leave" wish. */
-	function stripAllClothes() {
-		var s = State.variables;
-		s.isClothesStolen = 1;
-		s.tshirtState = 'not worn';
-		s.jeansState = 'not worn';
-		s.skirtState = 'not worn';
-		s.shortsState = 'not worn';
-		s.pantiesState = 'not worn';
-		s.braState = 'not worn';
-	}
-
-	function bannedHouses() {
+function bannedHouses() {
 		var s = State.variables;
 		if (!Array.isArray(s.monkeyPawBannedHouses)) s.monkeyPawBannedHouses = [];
 		return s.monkeyPawBannedHouses;
@@ -325,8 +320,10 @@ setup.MonkeyPaw = (function () {
 			label: 'I wish to leave',
 			widget: 'leave',
 			description: "You are cast out of the house -- but not the way you came in.",
-			/* Scaling (every tier strips clothes and sets
-			   $isClothesStolen = 1):
+			/* Scaling (every tier strips clothes via the leave widget,
+			   which <<include>>s the canonical Steal* passages so the
+			   $is*Stolen flags, numbered sub-states, and $remember*
+			   markers all line up with a normal theft):
 			   t1: exit + clothes stolen
 			   t2: exit + clothes stolen + guaranteed cursed home item
 			   t3: exit + clothes stolen + cursed home item
@@ -336,7 +333,6 @@ setup.MonkeyPaw = (function () {
 				var cursedItem = null;
 				var bannedHouse = null;
 
-				stripAllClothes();
 				if (t >= 2) cursedItem = setup.CursedItems.forceCursedItem();
 				if (t >= 3) bannedHouse = banActiveHouse();
 
@@ -361,9 +357,9 @@ setup.MonkeyPaw = (function () {
 			widget: 'knowledge',
 			description: "One entry is struck from your diary. Once only -- and something hears.",
 			/* Scaling:
-			   t1: remove evidence, delayed ghost event (2s)
-			   t2: remove evidence, immediate ghost event, -15 sanity
-			   t3: remove evidence, immediate ghost event, -30 sanity
+			   t1: remove evidence, ghost event on click
+			   t2: remove evidence, ghost event on click, -15 sanity
+			   t3: remove evidence, ghost event on click, -30 sanity
 			   No-ops if the wish has already been used this hunt. */
 			activate: function () {
 				var s = State.variables;
@@ -397,8 +393,7 @@ setup.MonkeyPaw = (function () {
 						"The paw takes my memory and gives me its tenant in trade."
 					][t - 1],
 					sanityDelta: sanity,
-					goto: 'GhostHuntEvent',
-					gotoDelay: t === 1 ? 2 : 0
+					goto: 'GhostHuntEvent'
 				};
 			}
 		},

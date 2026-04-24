@@ -30,10 +30,9 @@
 <</widget>>
 
 <<widget "tarotOblivion">>
-	@@.mc-speech; It's... all going dark... I... can't... hold on... @@
-	<<timed 2s>>
-		<<goto "HuntOverSanity">>
-	<</timed>>
+	@@.mc-speech; It's... all going dark... I... can't... hold on... @@<br>
+	@@.enterbtn; <<link "Let go" "HuntOverSanity">>
+	<</link>>@@
 <</widget>>
 
 <<widget "tarotKnowledge">>
@@ -68,8 +67,8 @@
 <</widget>>
 
 <<widget "tarotDeath">>
-	@@.mc-speech; This can't be a good card. Oh no, I'm scared...I need to hide somewhere!@@
-	<<timed 2s>>
+	@@.mc-speech; This can't be a good card. Oh no, I'm scared...I need to hide somewhere!@@<br>
+	@@.enterbtn; <<link "Hide">>
 		<<if $cursedHuntOption eq 0 or ndef $cursedHuntOption>>
 			<<include "CursedHunt">>
 			<<script>>
@@ -80,16 +79,15 @@
 		<<else>>
 			<<goto "GhostHuntEvent">>
 		<</if>>
-	<</timed>>
+	<</link>>@@
 <</widget>>
 
 <<widget "tarotPossession">>
 	@@.mc-speech; Oh fuck.@@<br>
-	<<timed 2s>>
+	@@.enterbtn; <<link "Give in" "CityMapPossessed">>
 		<<set $hunt.mode to setup.Ghosts.HuntMode.POSSESSED>>
 		<<set $hours to random(12,20)>>
-		<<goto "CityMapPossessed">>
-	<</timed>>
+	<</link>>@@
 <</widget>>
 
 <<widget "tarotHighpriestess">>

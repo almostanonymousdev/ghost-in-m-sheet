@@ -76,6 +76,15 @@
 
 <<widget "leave">>
 	<<set _out to setup.MonkeyPaw.activate("leave")>>
+	<<if _out.clothesStolen>>
+		<<set $isClothesStolen to 1>>
+		<<if $tshirtState eq "worn">><<include "StealShirt">><</if>>
+		<<if $braState eq "worn">><<include "StealBra">><</if>>
+		<<if $jeansState eq "worn" or $shortsState eq "worn" or $skirtState eq "worn">>
+			<<include "StealBottomOuter">>
+		<</if>>
+		<<if $pantiesState eq "worn">><<include "StealPanties">><</if>>
+	<</if>>
 	<<if _out.goto>>
 		<<goto _out.goto>>
 	<</if>>
@@ -95,12 +104,9 @@
 				<br>@@.mc-thoughts; Sanity decreased: <<= _out.sanityDelta>> <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@
 				<<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
 			<</if>>
-			<<if _out.gotoDelay gt 0>>
-				<<timed `_out.gotoDelay + "s"`>>
-					<<goto _out.goto>>
-				<</timed>>
-			<<else>>
-				<<goto _out.goto>>
+			<<if _out.goto>>
+				<br>@@.enterbtn;<<link "Brace yourself" _out.goto>>
+				<</link>>@@
 			<</if>>
 		<</if>>
 	<</replace>>
