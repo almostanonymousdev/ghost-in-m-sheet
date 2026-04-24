@@ -197,6 +197,147 @@
         skirtWorn: function () {
             return State.variables.skirtState === "worn";
         },
+        /* Permanently discard whatever garment the ghost stole
+         * (mark as "not bought"). Fired when the MC leaves the
+         * hunt without recovering her clothes. Works on every
+         * rememberVar's "no<key>" marker. Resets all the stolen
+         * flags. */
+        loseAllStolen: function () {
+            var V = State.variables;
+            function discardFromGroup(groupName) {
+                var group = setup.WARDROBE_GROUPS.find(function (g) { return g.name === groupName; });
+                if (!group || !group.rememberVar) return;
+                var key = V[group.rememberVar];
+                if (typeof key !== "string" || key.indexOf("no") !== 0) return;
+                var originalKey = key.slice(2);
+                group.items.forEach(function (item) {
+                    if (item.key === originalKey && item.slot !== 0) {
+                        V[item.var] = setup.ClothingState.NOT_BOUGHT;
+                    }
+                });
+            }
+            if (V.isPantiesStolen === 1) discardFromGroup("panties");
+            if (V.isBottomStolen  === 1) discardFromGroup("bottomOuter");
+            if (V.isShirtStolen   === 1) discardFromGroup("tshirt");
+            if (V.isBraStolen     === 1) discardFromGroup("bra");
+            V.isClothesStolen = 0;
+            V.isPantiesStolen = 0;
+            V.isBottomStolen = 0;
+            V.isShirtStolen = 0;
+            V.isBraStolen = 0;
+        },
+
+        /* Symmetric inverse of stealWornInGroup: restore the
+         * "no<key>" marker back to "<key>", flip the backing slot
+         * flag to "worn", and re-add the beauty delta. Used by
+         * FindStolen<Garment>. */
+        restoreStolenInGroup: function (groupName, stolenMarkerKey) {
+            var V = State.variables;
+            var group = setup.WARDROBE_GROUPS.find(function (g) { return g.name === groupName; });
+            if (!group || !group.rememberVar) { return false; }
+            var key = V[group.rememberVar];
+            if (typeof key !== "string" || key.indexOf("no") !== 0) { return false; }
+            var originalKey = key.slice(2);
+            group.items.forEach(function (item) {
+                if (item.key === originalKey) {
+                    V[item.var] = setup.ClothingState.WORN;
+                    if (item.beauty) { V.mc.beauty += item.beauty; }
+                    V[group.rememberVar] = originalKey;
+                }
+            });
+            if (stolenMarkerKey) { V[stolenMarkerKey] = 0; }
+            return true;
+        },
+
+        /* Steal the currently-worn garment in a given group.
+         * Looks at the rememberVar (e.g. rememberTopOuter holds
+         * the key of the currently-worn tshirt variant), flips
+         * that slot to "not worn", refunds its beauty delta, and
+         * stamps the "no<key>" marker so the next equip is clean.
+         * Used by the StealShirt / StealBra / StealPanties /
+         * StealBottomOuter hunt-event passages. Returns true if
+         * anything was actually stolen (the item group was worn). */
+        stealWornInGroup: function (groupName, wornFlagKey, stolenMarkerKey) {
+            var V = State.variables;
+            if (V[wornFlagKey] !== "worn") { return false; }
+            var group = setup.WARDROBE_GROUPS.find(function (g) { return g.name === groupName; });
+            if (!group || !group.rememberVar) { return false; }
+            var key = V[group.rememberVar];
+            group.items.forEach(function (item) {
+                if (item.key === key) {
+                    V[item.var] = setup.ClothingState.NOT_WORN;
+                    if (item.beauty) { V.mc.beauty -= item.beauty; }
+                    V[group.rememberVar] = "no" + item.key;
+                }
+            });
+            if (stolenMarkerKey) { V[stolenMarkerKey] = 1; }
+            return true;
+        },
+        /* Bottom-outer is the ugly case: the group holds jeans,
+         * shorts, and skirts in a single rememberVar. The steal
+         * path just picks whichever item matches the remembered
+         * key. Returns the category that was actually stolen
+         * ("jeans"/"shorts"/"skirt") or null. */
+        stealBottomOuter: function () {
+            var V = State.variables;
+            var group = setup.WARDROBE_GROUPS.find(function (g) { return g.name === "bottomOuter"; });
+            if (!group) return null;
+            var key = V[group.rememberVar];
+            if (!key) return null;
+            var stolenCategory = null;
+            group.items.forEach(function (item) {
+                if (item.key === key) {
+                    V[item.var] = setup.ClothingState.NOT_WORN;
+                    if (item.beauty) { V.mc.beauty -= item.beauty; }
+                    V[group.rememberVar] = "no" + item.key;
+                    if (item.key.indexOf("jeans")  === 0) stolenCategory = "jeans";
+                    else if (item.key.indexOf("shorts") === 0) stolenCategory = "shorts";
+                    else if (item.key.indexOf("skirt")  === 0) stolenCategory = "skirt";
+                }
+            });
+            if (stolenCategory === "jeans")  V.isJeansStolen  = 1;
+            if (stolenCategory === "shorts") V.isShortsStolen = 1;
+            if (stolenCategory === "skirt")  V.isSkirtStolen  = 1;
+            return stolenCategory;
+        },
+
+        /* Remove a single slot-0 item from the MC -- used by the
+         * Wardrobe screen's "take off your default bottom / top /
+         * bra / panties" links. `slot0Key` is the exact save-file
+         * var name for the slot-0 variant (e.g. "tshirtState0"). */
+        takeOffSlotZero: function (slot0Key) {
+            State.variables[slot0Key] = "not worn";
+        },
+        /* One-off legacy-save normalisation: older saves stored
+         * "tshirt" / "jeans" in the rememberOuterXxx slot, but the
+         * current Wardrobe UI expects the "tshirt0" / "jeans0"
+         * tokens that collide with the slot-0 keys. Called on
+         * Wardrobe entry to upgrade in place. */
+        normalizeOuterRememberTokens: function () {
+            var V = State.variables;
+            if (V.rememberTopOuter === "tshirt")    { V.rememberTopOuter = "tshirt0"; }
+            if (V.rememberBottomOuter === "jeans")  { V.rememberBottomOuter = "jeans0"; }
+        },
+        /* Aggregate the per-slot $<item>State0..3 values into the
+         * legacy top-level $<item>State flag (worn / not worn). The
+         * aggregate flag is what most other passages read, so this
+         * has to be refreshed after any tier-slot change. Called by
+         * ClothesChanges on re-entry. */
+        refreshAggregateStates: function () {
+            var V = State.variables;
+            function rollup(slotKeys, targetKey) {
+                var anyWorn = slotKeys.some(function (k) { return V[k] === "worn"; });
+                if (anyWorn) { V[targetKey] = "worn"; return; }
+                var anyNotWorn = slotKeys.some(function (k) { return V[k] === "not worn"; });
+                if (anyNotWorn) { V[targetKey] = "not worn"; }
+            }
+            rollup(["shortsState1", "shortsState2", "shortsState3"], "shortsState");
+            rollup(["tshirtState0", "tshirtState1", "tshirtState2", "tshirtState3"], "tshirtState");
+            rollup(["skirtState1", "skirtState2", "skirtState3"], "skirtState");
+            rollup(["jeansState0", "jeansState1", "jeansState2", "jeansState3"], "jeansState");
+            rollup(["braState0", "braState1", "braState2", "braState3"], "braState");
+            rollup(["pantiesState0", "pantiesState1", "pantiesState2", "pantiesState3"], "pantiesState");
+        },
         /* MC HUD: pick the currently-worn outer-bottom garment and
          * return its descriptor ({state, tip, icon}) or null. */
         currentBottomDescriptor: function () {

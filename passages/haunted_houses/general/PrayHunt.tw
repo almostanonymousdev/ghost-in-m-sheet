@@ -4,14 +4,14 @@
  * loses interest; treated like a clean escape (mark the event, reset the
  * trigger timer, return to the room). The energy spend can also exhaust
  * the player — if so, route to HuntOverExhaustion instead of the room. */
-<<set $mc.sanity -= 10>>
+<<run setup.Mc.spendSanity(10)>>
 <<run setup.HauntConditions.spendEnergy(setup.HauntConditions.ENERGY_COST_PRAY)>>
-<<updatemeter 'energy' `$mc.energy / $mc.energyMax`>>
-<<if $mc.sanity lt 0>>
-	<<set $mc.sanity to 0>>
-	<<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
+<<updatemeter 'energy' `setup.Mc.energyPct()`>>
+<<if setup.Mc.sanity() lt 0>>
+	<<run setup.Mc.setSanity(0)>>
+	<<updatemeter 'sanity' `setup.Mc.sanityPct()`>>
 	<<goto "HuntOverSanity">>
-<<elseif $exhausted eq 1>>
+<<elseif setup.Mc.isExhausted()>>
 	<<goto "HuntOverExhaustion">>
 <</if>>
 <<image "img/crucifix.webp" { class: "displayCentredImgs", width: "60%" }>>
@@ -21,8 +21,7 @@
 @@.backbtn;[[Continue|$return]]@@
 
 <<run setup.Ghosts.markActiveHuntEvent()>>
-<<set $huntActivated to 1>>
-<<set $huntActivationTime = $hours * 60 + $minutes>>
+<<run setup.HauntedHouses.rearmHuntTimer()>>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 <</done>>

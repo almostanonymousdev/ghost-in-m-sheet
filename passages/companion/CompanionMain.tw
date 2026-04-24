@@ -5,17 +5,14 @@
 
    Keeps the existing $chanceToAttack<Name> / $brook / $alice / ... save
    variables untouched so saves from before the refactor still work. */
-<<set _cname to $companion.name>>
+<<set _cname to setup.Companion.name()>>
 <<set _c to setup.Companion.getByName(_cname)>>
 <<set _state to _c.state()>>
-<<set _chanceVar to "chanceToAttack" + _cname>>
-<<if State.variables[_chanceVar] === undefined>>
-	<<run State.variables[_chanceVar] = 25>>
-<</if>>
+<<run setup.Companion.ensureChanceToAttack()>>
 <div class="flexwrapperCompanionMain">
 <div class="companionImageMain">
 <<do>>
-	<<image _c.imagePath(State.variables[_chanceVar]) { width: "100%" }>><br>
+	<<image _c.imagePath(setup.Companion.chanceToAttack()) { width: "100%" }>><br>
 <</do>>
 </div>
 <div class="companionTextMain">
@@ -33,12 +30,12 @@
 @@.mc-speech;
 <br>
 <<link "You'll be more comfortable in your regular clothes.">>
-	<<run State.variables[_chanceVar] = 25>>
+	<<run setup.Companion.setChanceToAttack(25)>>
 	<<redo "companionAnswers">><<redo>>
 <</link>><br>
 <div class="companionLvlCheck1">
 	<<link `_c.clothingTiers[0].mc`>>
-		<<run State.variables[_chanceVar] = _c.tierChance(0)>>
+		<<run setup.Companion.setChanceToAttack(_c.tierChance(0))>>
 		<<redo "companionAnswers">><<redo>>
 	<</link>>
 	<<if _state.lvl lt 1>>
@@ -48,7 +45,7 @@
 </div>
 <div class="companionLvlCheck2">
 	<<link `_c.clothingTiers[1].mc`>>
-		<<run State.variables[_chanceVar] = _c.tierChance(1)>>
+		<<run setup.Companion.setChanceToAttack(_c.tierChance(1))>>
 		<<redo "companionAnswers">><<redo>>
 	<</link>>
 	<<if _state.lvl lt 2>>
@@ -58,7 +55,7 @@
 </div>
 <div class="companionLvlCheck3">
 	<<link `_c.clothingTiers[2].mc`>>
-		<<run State.variables[_chanceVar] = _c.tierChance(2)>>
+		<<run setup.Companion.setChanceToAttack(_c.tierChance(2))>>
 		<<redo "companionAnswers">><<redo>>
 	<</link>>
 	<<if _state.lvl lt 3>>
@@ -68,7 +65,7 @@
 </div>
 <div class="companionLvlCheck4">
 	<<link `_c.clothingTiers[3].mc`>>
-		<<run State.variables[_chanceVar] = _c.tierChance(3)>>
+		<<run setup.Companion.setChanceToAttack(_c.tierChance(3))>>
 		<<redo "companionAnswers">><<redo>>
 	<</link>>
 	<<if _state.lvl lt 4>>
@@ -79,10 +76,9 @@
 @@
 <br>
 <<do tag "companionAnswers">>
-	@@.notmc-speech;<<= setup.Companion.getByName(_cname).responseFor(State.variables[_chanceVar])>>@@
+	@@.notmc-speech;<<= setup.Companion.getByName(_cname).responseFor(setup.Companion.chanceToAttack())>>@@
 <</do>><br>
-<<run State.variables.chanceToAttack = State.variables[_chanceVar]>>
-@@.warningtext; Chance of ghost encounter: <<do>><<= State.variables[_chanceVar]>> %
+@@.warningtext; Chance of ghost encounter: <<do>><<= setup.Companion.chanceToAttack()>> %
 <</do>>@@<br>
 <br>
 </div>
@@ -93,21 +89,14 @@
 <<sanityPills>>
 <br>
 @@.usebtn;<<link "Let's stick together for now">>
-	<<set $chosenPlan to "Plan1">>
-	<<set $showComp to 1>>
-	<<set $chosenPlanActivated to 0>>
+	<<run setup.Companion.setStayTogetherPlan()>>
 	<<replace "#compResponse">>
 		@@.notmc-speech;Good, I'll stay close to you.@@
 	<</replace>>
 <</link>>@@<br>
-<span id="checkQuestForCursedItem">@@.usebtn;<<link "I need you to find the cursed item @@.warningtext; ($companion.chanceOfSuccessCI %, $companion.plan2TimeReq min)@@">>
+<span id="checkQuestForCursedItem">@@.usebtn;<<link `"I need you to find the cursed item @@.warningtext; (" + State.variables.companion.chanceOfSuccessCI + " %, " + State.variables.companion.plan2TimeReq + " min)@@"`>>
 	<<if not setup.Companion.hasCursedItem()>>
-		<<set $chosenPlan to "Plan2">>
-		<<set $chanceToSuccess to $companion.chanceOfSuccessCI>>
-		<<set $showComp to 0>>
-		<<set $chosenPlanActivated to 1>>
-		<<set $chosenPlanActivatedTime = $hours * 60 + $minutes + $companion.plan2TimeReq>>
-
+		<<run setup.Companion.setHuntPlan("Plan2", State.variables.companion.chanceOfSuccessCI, State.variables.companion.plan2TimeReq)>>
 		<<replace "#compResponse">>
 			@@.notmc-speech;Alright, I'll look for the cursed item.@@
 		<</replace>>
@@ -118,22 +107,14 @@
 	<</if>>
 <</link>>@@</span> <<if not setup.Companion.cursedItemQuestUnlocked()>>@@.warningtext; Req. quest from the witch@@
 <</if>><br>
-@@.usebtn;<<link "I want you to look for any ghost evidence @@.warningtext; ($companion.chanceOfSuccessAnyEvidence %, $companion.plan3TimeReq min@@)">>
-	<<set $chosenPlan to "Plan3">>
-	<<set $chanceToSuccess to $companion.chanceOfSuccessAnyEvidence>>
-	<<set $showComp to 0>>
-	<<set $chosenPlanActivated to 1>>
-	<<set $chosenPlanActivatedTime = $hours * 60 + $minutes + $companion.plan3TimeReq>>
+@@.usebtn;<<link `"I want you to look for any ghost evidence @@.warningtext; (" + State.variables.companion.chanceOfSuccessAnyEvidence + " %, " + State.variables.companion.plan3TimeReq + " min@@)"`>>
+	<<run setup.Companion.setHuntPlan("Plan3", State.variables.companion.chanceOfSuccessAnyEvidence, State.variables.companion.plan3TimeReq)>>
 	<<replace "#compResponse">>
 		@@.notmc-speech;Sure, I'll search for any ghost evidence.@@
 	<</replace>>
 <</link>>@@<br>
-@@.usebtn;<<link "It would be nice if you found the ghost's favorite room @@.warningtext; ($companion.chanceOfSuccessGR %, $companion.plan4TimeReq min@@)">>
-	<<set $chosenPlan to "Plan4">>
-	<<set $chanceToSuccess to $companion.chanceOfSuccessGR>>
-	<<set $showComp to 0>>
-	<<set $chosenPlanActivated to 1>>
-	<<set $chosenPlanActivatedTime = $hours * 60 + $minutes + $companion.plan4TimeReq>>
+@@.usebtn;<<link `"It would be nice if you found the ghost's favorite room @@.warningtext; (" + State.variables.companion.chanceOfSuccessGR + " %, " + State.variables.companion.plan4TimeReq + " min@@)"`>>
+	<<run setup.Companion.setHuntPlan("Plan4", State.variables.companion.chanceOfSuccessGR, State.variables.companion.plan4TimeReq)>>
 	<<replace "#compResponse">>
 		@@.notmc-speech; Got it, I'll try to find the ghost's favorite room.@@
 	<</replace>>
@@ -158,9 +139,9 @@
 				<</linkreplace>><br>
 			<<else>>
 				@@.notmc-speech;Um... Well, maybe you should find your clothes first...?@@<br>
-				<<if $mc.exhibitionism lte 4 or ndef $mc.exhibitionism>>@@.mc-speech; Yeah, you're right.@@@@.warningtext; (She'll go with you if you're dressed) or Req. Exhibitionism Level 5+@@
+				<<if setup.Mc.exhibitionism() lte 4 or setup.Mc.exhibitionism() is undefined>>@@.mc-speech; Yeah, you're right.@@@@.warningtext; (She'll go with you if you're dressed) or Req. Exhibitionism Level 5+@@
 				<</if>>
-				<<if $mc.exhibitionism gte 5>>
+				<<if setup.Mc.exhibitionism() gte 5>>
 					<<linkreplace "@@.mc-speechLink; I don't care@@">>
 						<<if hasVisited("NudityEventTwo")>>
 							@@.mc-speech;Let's just leave naked, like last time...@@<br>

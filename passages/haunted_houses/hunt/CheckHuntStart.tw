@@ -3,7 +3,7 @@
 	<<set _huntThreshold to 6 + setup.HauntConditions.snapshot().huntChanceBonus>>
 	<<if random(0, 100) lte _huntThreshold>>
 		<<set _g to setup.Ghosts.active()>>
-		<<if _g and _g.canHunt($mc)>>
+		<<if _g and _g.canHunt(setup.Mc.mc())>>
 			<<goto "GhostHuntEvent">>
 		<</if>>
 	<</if>>

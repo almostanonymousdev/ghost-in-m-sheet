@@ -10,9 +10,9 @@
 		<<video "tentacles/sleep8.mp4">>
 		@@.mc-thoughts;They cum inside you, drenching your flesh with their thick, warm semen.@@
 		<<linkreplace "@@.usebtn; Try to stand up@@">>
-			<<if $tentaclesEventStageSleep eq 3>>
-				<<set $tentaclesEventStageSleep to 4>>
-				<<set $tentaclesTextAfterSleep to 4>>
+			<<if setup.Home.tentaclesStageSleep() eq 3>>
+				<<run setup.Home.setTentaclesStageSleep(4)>>
+				<<run setup.Home.setTentaclesAfterSleepText(4)>>
 				<<goto "Bedroom">>
 			<<else>>
 				<<video "tentacles/sleep9.mp4">>
@@ -24,10 +24,10 @@
 					<<linkappend "@@.usebtn; waves of pleasure through you.@@">>
 						<<video "tentacles/sleep11.mp4">>
 						@@.mc-thoughts;They reach orgasm together, covering you with semen, filling your pussy, leaving marks all over your skin, everywhere.@@<br>
-						<<if ndef $tentaclesEventStageAll>>
-							<<set $tentaclesEventStageAll to 1>>
+						<<if setup.Home.tentaclesStageAll() eq 0>>
+							<<run setup.Home.setTentaclesStageAll(1)>>
 						<</if>>
-						@@.enterbtn; [[Wake up|Bedroom][$tentaclesEventStageSleep to 5; $tentaclesTextAfterSleep to 5]]@@<br>
+						@@.enterbtn; [[Wake up|Bedroom][setup.Home.setTentaclesStageSleep(5); setup.Home.setTentaclesAfterSleepText(5)]]@@<br>
 					<</linkappend>>
 				<</linkappend>>
 			<</if>>

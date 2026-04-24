@@ -15,10 +15,10 @@
 </div>
 <<nobr>>
 <<run setup.Ghosts.fireActiveOnEnterHouse()>>
-<<set $hours to 0>><<include "ResetCooldowns">><<set $minutes to 0>>
+<<run setup.Time.resetToMidnight()>><<include "ResetCooldowns">>
 <<done>>
-<<replace "#time">><<print ($hours < 10 ? '0' + $hours : $hours) + ":" + ($minutes < 10 ? '0' + $minutes : $minutes)>><</replace>>
+<<replace "#time">><<= setup.Time.display()>><</replace>>
 <</done>>
 <<run setup.HauntedHouses.clearHouseFlags()>>
-<<if setup.Companion.anyCompanionSelected()>><<set $isCompChosen to 1>><</if>>
+<<if setup.Companion.anyCompanionSelected()>><<run setup.Companion.markCompanionFlagActive()>><</if>>
 <</nobr>>

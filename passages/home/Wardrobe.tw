@@ -4,11 +4,11 @@
   <div class="itemwrapperWardrobe">
   <div>
       <div id="currentOuterwearTop">
-        <<link "<<image \"img/wardrobe/tshirt0.png\">>" "Wardrobe">><<set $tshirtState0 to "not worn">>
+        <<link "<<image \"img/wardrobe/tshirt0.png\">>" "Wardrobe">><<run setup.Wardrobe.takeOffSlotZero("tshirtState0")>>
         <</link>>
       </div>
       <div id="currentOuterwearBottom">
-        <<link "<<image \"img/wardrobe/jeans0.png\">>" "Wardrobe">><<set $jeansState0 to "not worn">>
+        <<link "<<image \"img/wardrobe/jeans0.png\">>" "Wardrobe">><<run setup.Wardrobe.takeOffSlotZero("jeansState0")>>
         <</link>>
       </div>
     </div>
@@ -17,11 +17,11 @@
     </div>
   <div>
       <div id="currentUnderwearTop">
-        <<link "<<image \"img/wardrobe/slip1.png\">>" "Wardrobe">><<set $braState0 to "not worn">>
+        <<link "<<image \"img/wardrobe/slip1.png\">>" "Wardrobe">><<run setup.Wardrobe.takeOffSlotZero("braState0")>>
         <</link>>
       </div>
       <div id="currentUnderwearBottom">
-        <<link "<<image \"img/wardrobe/short1.png\">>" "Wardrobe">><<set $pantiesState0 to "not worn">>
+        <<link "<<image \"img/wardrobe/short1.png\">>" "Wardrobe">><<run setup.Wardrobe.takeOffSlotZero("pantiesState0")>>
         <</link>>
       </div>
       <div id="currentUnderwearStockings">
@@ -60,8 +60,7 @@
 <div id="availableAccessories"></div><br>
 <div id="availablePiercing"></div><br>
 
-<<if $rememberTopOuter eq "tshirt">><<set $rememberTopOuter to "tshirt0">><</if>>
-<<if $rememberBottomOuter eq "jeans">><<set $rememberBottomOuter to "jeans0">><</if>>
+<<run setup.Wardrobe.normalizeOuterRememberTokens()>>
 
 <<include "StyleWardrobe">>
 <</nobr>>

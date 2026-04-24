@@ -24,16 +24,16 @@
 		&emsp;&emsp; You slowly peek out from your hiding place, hoping the ghost has left. But your eyes meet its hollow sockets.
 		A chill grips your body, and you realize you've made a fatal mistake.<br>
 		You have a little time to
-		<<if $crucifixAmount gte 1>>
+		<<if setup.HauntedHouses.crucifixAmount() gte 1>>
 			@@.usebtn; [[use the Crucifix|Crucifix]]@@
 			. Or perhaps, it might be best
 			<<done>>
-				<<if $mc.corruption lte 4>>
+				<<if setup.Mc.corruption() lte 4>>
 					<<addclass ".checkForCorruptionHunt" "disabled-link">>
 				<</if>>
 			<</done>>
 			<span class="checkForCorruptionHunt">
-			@@.usebtn;[[not to resist...|HuntEnd]]@@ <<if $mc.corruption lte 4>>@@.warningtext; (Req. <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 5)@@
+			@@.usebtn;[[not to resist...|HuntEnd]]@@ <<if setup.Mc.corruption() lte 4>>@@.warningtext; (Req. <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 5)@@
 			<</if>></span>
 		<<else>>
 			use the Crucifix, but unfortunately, @@.enterbtn;[[you don't have it...|HuntEnd]]@@

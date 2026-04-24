@@ -1,25 +1,19 @@
 :: BlakeHuntEndAlone [noreturn nobr] {"position":"2000,3975","size":"100,100"}
-<<set $payForHuntAloneBlake to 0>>
-<<set $isBlakeGoingForHuntingAlone to 0>>
+<<run setup.Companion.acknowledgeSoloHuntEnd("Blake")>>
 @@.mc-speech; How did your ghost hunt go?@@<br>
-<<if $blakeChooseOwaissa eq 1>>
-	<<set _stateChance to $chanceToSuccessAloneOwaissaBlake>>
-<<elseif $blakeChooseElm eq 1>>
-	<<set _stateChance to $chanceToSuccessAloneElmBlake>>
+<<if setup.Companion.companionChoseOwaissa("Blake")>>
+	<<set _stateChance to setup.Companion.soloOdds("Blake", "Owaissa")>>
+<<elseif setup.Companion.companionChoseElm("Blake")>>
+	<<set _stateChance to setup.Companion.soloOdds("Blake", "Elm")>>
 <</if>>
 <<set _check to random(1,100)>>
 <<if _stateChance gte _check>>
-	@@.notmc-speech; $mc.name, I did it! I correctly identified the ghost!@@<br>
+	@@.notmc-speech; <<= setup.Mc.name()>>, I did it! I correctly identified the ghost!@@<br>
 	<<set _resultBlakeAlone to 1>>
-	<<if $blakeChooseOwaissa eq 1>>
-		<span> Money: +$50 $ </span><br>
-		<<set $mc.money += 50>>
-	<<elseif $blakeChooseElm eq 1>>
-		<span> Money: +$100 $ </span><br>
-		<<set $mc.money += 100>>
-	<</if>>
+	<<set _reward to setup.Companion.payoutSoloHunt("Blake")>>
+	<span> Money: +$<<= _reward>> $ </span><br>
 <<else>>
-	@@.notmc-speech; $mc.name, I didn't succeed... But I gained valuable experience and I'll be better prepared next time!@@
+	@@.notmc-speech; <<= setup.Mc.name()>>, I didn't succeed... But I gained valuable experience and I'll be better prepared next time!@@
 	<<set _resultBlakeAlone to 0>>
 <</if>>
 <br>
@@ -27,7 +21,7 @@
 <br>
 <<linkappend "@@.mc-speechLink;Tell me more about how it went.@@">>
 	<br>
-	<<if $blake.lvl lt 3>>
+	<<if setup.Companion.companionLvl("Blake") lt 3>>
 		@@.notmc-speech; I don't want to talk about it...@@ @@.warningtext; Req. Blake's lvl ≥ 3@@
 	<<else>>
 		@@.notmc-speech;Well, listen...<br>
@@ -102,4 +96,4 @@
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 <</done>>
-@@.backbtn; [[Back|previous()][$blakeChooseOwaissa to 0; $blakeChooseElm to 0]]@@
+@@.backbtn; [[Back|previous()][setup.Companion.clearSoloHuntStreet("Blake")]]@@

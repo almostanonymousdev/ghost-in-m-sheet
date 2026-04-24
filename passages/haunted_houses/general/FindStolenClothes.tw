@@ -1,52 +1,36 @@
 :: FindStolenClothes [nobr] {"position":"4225,950","size":"100,100"}
 @@.mc-thoughts; You found your stolen clothes.@@<br>
 <br>
-<<if $mc.exhibitionism gte 5>>
+<<if setup.Mc.exhibitionism() gte 5>>
 	@@.mc-speech; Or... maybe I shouldn't put on clothes... I've kind of gotten used to being naked...<br>
 	I can pick it up later. Hopefully, it won't disappear...@@<br>
 
 	<<linkreplace "@@.mc-speechLink; Nah... I should get dressed@@">>
 		<br>
 		@@.mc-action; You put on your clothes.@@<br><br>
-		<<if ($rememberBottomOuter eq "nojeans0" or $rememberBottomOuter eq "nojeans1" or $rememberBottomOuter eq "nojeans2" or $rememberBottomOuter eq "nojeans3") and ($rememberBottomUnder eq "panties0" or $rememberBottomUnder eq "panties1" or $rememberBottomUnder eq "panties2" or $rememberBottomUnder eq "panties3")>>
-			<<video "mc/jeansp.mp4" "displayCentredImgs">>
-		<<elseif ($rememberBottomOuter eq "nojeans0" or $rememberBottomOuter eq "nojeans1" or $rememberBottomOuter eq "nojeans2" or $rememberBottomOuter eq "nojeans3") and ($rememberBottomUnder eq "nopanties0" or $rememberBottomUnder eq "nopanties1" or $rememberBottomUnder eq "nopanties2" or $rememberBottomUnder eq "nopanties3")>>
-			<<video "mc/jeansp.mp4" "displayCentredImgs">>
-		<<elseif $rememberBottomOuter eq "noshorts1" or $rememberBottomOuter eq "noshorts2" or $rememberBottomOuter eq "noshorts3">>
-			<<video "mc/shorts.mp4" "displayCentredImgs">>
-		<<elseif ($rememberBottomOuter eq "noskirt1" or $rememberBottomOuter eq "noskirt2" or $rememberBottomOuter eq "noskirt3") and ($rememberBottomUnder eq "panties0" or $rememberBottomUnder eq "panties1" or $rememberBottomUnder eq "panties2" or $rememberBottomUnder eq "panties3")
-			>>
-			<<video "mc/skirtp.mp4" "displayCentredImgs">>
-		<<elseif ($rememberBottomOuter eq "noskirt1" or $rememberBottomOuter eq "noskirt2" or $rememberBottomOuter eq "noskirt3") and ($rememberBottomUnder eq "nopanties0" or $rememberBottomUnder eq "nopanties1" or $rememberBottomUnder eq "nopanties2" or $rememberBottomUnder eq "nopanties3")>>
-			<<video "mc/skirtnp.mp4" "displayCentredImgs">>
+		<<set _vid to setup.HauntedHouses.findStolenDressupVideo()>>
+		<<if _vid>>
+			<<video _vid "displayCentredImgs">>
 		<</if>>
 
-		<<if $isPantiesStolen eq 1>><<include "FindStolenPanties">><</if>>
-		<<if $isBottomStolen eq 1>><<include "FindStolenBottom">><</if>>
-		<<if $isShirtStolen eq 1>><<include "FindStolenShirt">><</if>>
-		<<if $isBraStolen eq 1>><<include "FindStolenBra">><</if>>
-		<<set $isClothesStolen to 0>>
+		<<if setup.HauntedHouses.isPantiesStolen()>><<run setup.Wardrobe.restoreStolenInGroup("panties", "isPantiesStolen")>><</if>>
+		<<if setup.HauntedHouses.isBottomStolen()>><<run setup.Wardrobe.restoreStolenInGroup("bottomOuter")>><<run State.variables.isBottomStolen = 0>><<run State.variables.isJeansStolen = 0>><<run State.variables.isShortsStolen = 0>><<run State.variables.isSkirtStolen = 0>><</if>>
+		<<if setup.HauntedHouses.isShirtStolen()>><<run setup.Wardrobe.restoreStolenInGroup("tshirt", "isShirtStolen")>><</if>>
+		<<if setup.HauntedHouses.isBraStolen()>><<run setup.Wardrobe.restoreStolenInGroup("bra", "isBraStolen")>><</if>>
+		<<run setup.HauntedHouses.clearClothesStolenFlag()>>
 	<</linkreplace>>
 <<else>>
 	@@.mc-action; You put on your clothes.@@<br><br>
-	<<if ($rememberBottomOuter eq "nojeans0" or $rememberBottomOuter eq "nojeans1" or $rememberBottomOuter eq "nojeans2" or $rememberBottomOuter eq "nojeans3") and ($rememberBottomUnder eq "panties0" or $rememberBottomUnder eq "panties1" or $rememberBottomUnder eq "panties2" or $rememberBottomUnder eq "panties3")>>
-		<<video "mc/jeansp.mp4" "displayCentredImgs">>
-	<<elseif ($rememberBottomOuter eq "nojeans0" or $rememberBottomOuter eq "nojeans1" or $rememberBottomOuter eq "nojeans2" or $rememberBottomOuter eq "nojeans3") and ($rememberBottomUnder eq "nopanties0" or $rememberBottomUnder eq "nopanties1" or $rememberBottomUnder eq "nopanties2" or $rememberBottomUnder eq "nopanties3")>>
-		<<video "mc/jeansnp.mp4" "displayCentredImgs">>
-	<<elseif $rememberBottomOuter eq "noshorts1" or $rememberBottomOuter eq "noshorts2" or $rememberBottomOuter eq "noshorts3">>
-		<<video "mc/shorts.mp4" "displayCentredImgs">>
-	<<elseif ($rememberBottomOuter eq "noskirt1" or $rememberBottomOuter eq "noskirt2" or $rememberBottomOuter eq "noskirt3") and ($rememberBottomUnder eq "panties0" or $rememberBottomUnder eq "panties1" or $rememberBottomUnder eq "panties2" or $rememberBottomUnder eq "panties3")
-		>>
-		<<video "mc/skirtp.mp4" "displayCentredImgs">>
-	<<elseif ($rememberBottomOuter eq "noskirt1" or $rememberBottomOuter eq "noskirt2" or $rememberBottomOuter eq "noskirt3") and ($rememberBottomUnder eq "nopanties0" or $rememberBottomUnder eq "nopanties1" or $rememberBottomUnder eq "nopanties2" or $rememberBottomUnder eq "nopanties3")>>
-		<<video "mc/skirtnp.mp4" "displayCentredImgs">>
+	<<set _vid to setup.HauntedHouses.findStolenDressupVideo()>>
+	<<if _vid>>
+		<<video _vid "displayCentredImgs">>
 	<</if>>
-	<<if $isPantiesStolen eq 1>><<include "FindStolenPanties">><</if>>
-	<<if $isBottomStolen eq 1>><<include "FindStolenBottom">><</if>>
-	<<if $isShirtStolen eq 1>><<include "FindStolenShirt">><</if>>
-	<<if $isBraStolen eq 1>><<include "FindStolenBra">><</if>>
+	<<if setup.HauntedHouses.isPantiesStolen()>><<run setup.Wardrobe.restoreStolenInGroup("panties", "isPantiesStolen")>><</if>>
+	<<if setup.HauntedHouses.isBottomStolen()>><<run setup.Wardrobe.restoreStolenInGroup("bottomOuter")>><<run State.variables.isBottomStolen = 0>><<run State.variables.isJeansStolen = 0>><<run State.variables.isShortsStolen = 0>><<run State.variables.isSkirtStolen = 0>><</if>>
+	<<if setup.HauntedHouses.isShirtStolen()>><<run setup.Wardrobe.restoreStolenInGroup("tshirt", "isShirtStolen")>><</if>>
+	<<if setup.HauntedHouses.isBraStolen()>><<run setup.Wardrobe.restoreStolenInGroup("bra", "isBraStolen")>><</if>>
 
-	<<set $isClothesStolen to 0>>
+	<<run setup.HauntedHouses.clearClothesStolenFlag()>>
 <</if>>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>

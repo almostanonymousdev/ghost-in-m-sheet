@@ -1,11 +1,11 @@
 :: DocumentsForAlice [nobr event] {"position":"200,825","size":"100,100"}
 <<image "img/documents-working.jpg" { width: "100%" }>>
-<<if $mc.energy gte 3>>
+<<if setup.Mc.energy() gte 3>>
 	@@.mc-thoughts; As you sit down to fill out the documents online, you realize just how tedious and time-consuming this task is. The forms are repetitive and the information required seems endless. Hours seem to drag on as you painstakingly input each detail, checking and rechecking your work to ensure accuracy. Two hours later, you finally complete the task, feeling both relieved and exhausted from the monotonous work.@@<br>
 	<b>- 3</b> <<image "img/energy.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
 
-	<<set $aliceWorkDone to 2>>
-	<<set $mc.energy -= 3>>
+	<<run setup.Home.setAliceWorkState(2)>>
+	<<run setup.Mc.spendEnergy(3)>>
 	<<addTime 60>>
 	<<addTime 60>>
 	<br>

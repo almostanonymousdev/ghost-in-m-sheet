@@ -217,6 +217,13 @@ setup.Witch = (function () {
 				return true;
 			}
 			return false;
-		}
+		},
+		hasWeakenTheGhostQuest: function () {
+			return State.variables.weakenTheGhostQuest === 1;
+		},
+		isGhostWeakened: function () {
+			return State.variables.isWeakenGhost === 1;
+		},
+		markGhostWeakened: function () { State.variables.isWeakenGhost = 1; }
 	};
 })();

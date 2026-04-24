@@ -38,7 +38,7 @@
 		<</linkappend>>
 	<</linkappend>>
 
-<<elseif $isIronclad eq 1>>
+<<elseif setup.HauntedHouses.isIronclad()>>
 	<<set _randomHuntEven to random(1,4)>>
 	<<if _randomHuntEven eq 1>>
 		<<video "prison/hunt1.0.mp4">>
@@ -69,7 +69,7 @@
 	&emsp;&emsp; It grabbed you, and you felt its icy fingers tighten around your body. In the next moment, you were lifted onto its shoulders, the cold seeping into your bones. You tried to struggle, but your strength was quickly fading.<br>
 	&emsp;&emsp;The ghost dragged you through the dark hallways of the house, and time seemed to slow down. Images blurred before your eyes, sounds became distorted and distant. Your head hung limply, and you felt your consciousness slipping away. Your thoughts grew muddled, and reality seemed distant and unclear.<br>
 
-	<<if $isCompChosen eq 1 and $companion.name eq "Alice">>
+	<<if setup.Companion.isCompanionFlagActive() and setup.Companion.name() eq "Alice">>
 		<<video "alice/hunt-end1.mp4">>
 		The last thing you remember is you and your friend sitting on the floor in front of the ghost, choking on his cock one after the other.<br>
 		It's unclear how long <<linkreplace "@@.usebtn; this went on@@">>
@@ -80,7 +80,7 @@
 		<</linkreplace>>
 	<<else>>
 
-		<<if $jeansState eq "worn">>
+		<<if setup.Wardrobe.jeansWorn()>>
 			<<video "hunting/1.1.mp4">>
 			Ghost put you on the bed and started fucking your huge tits. After a while, having played enough with them, <<linkappend "@@.usebtn; it fucked you@@">>
 				<<set _checkScene to random (1,2)>>
@@ -95,7 +95,7 @@
 				Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
 			<</linkappend>>
 
-		<<elseif $shortsState eq "worn">>
+		<<elseif setup.Wardrobe.shortsWorn()>>
 			<<video "hunting/shorts1.mp4">>
 			The ghost has caught you, and <<linkappend "@@.usebtn; is dragging you away@@">>
 				<<set _check to random(1,4)>>
@@ -116,7 +116,7 @@
 				Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
 			<</linkappend>>
 
-		<<elseif $skirtState eq "worn">>
+		<<elseif setup.Wardrobe.skirtWorn()>>
 			<<set _check to random(1,3)>>
 
 			<<if _check eq 1>>
@@ -161,7 +161,7 @@
 				<</linkappend>>
 			<</if>>
 		<<else>>
-			<<if $pantiesState eq "worn">>
+			<<if setup.Wardrobe.pantiesWorn()>>
 				<<set _check to random(1,2)>>
 				<<if _check eq 1>>
 					<<video "hunting/underwear1.mp4">>
@@ -200,7 +200,7 @@
 					<</linkappend>>
 				<</if>>
 
-			<<elseif $pantiesState eq "not worn">>
+			<<elseif not setup.Wardrobe.pantiesWorn()>>
 				<<set _check to random(1,3)>>
 				<<if _check eq 1>>
 					<<video "hunting/naked1.mp4">>
@@ -253,13 +253,13 @@
 
 <</if>> /*tentacle*/
 
-<<if $highpriestess eq 1>>
+<<if setup.HauntedHouses.hasHighPriestess()>>
 <<else>>
 	<<run setup.Companion.clearBlakeCursedItem()>>
 	<<run setup.HauntedHouses.resetToolTimers()>>
 
 	<<run setup.HauntedHouses.endHunt()>>
-	<<include "LostClothes">>
+	<<run setup.Wardrobe.loseAllStolen()>>
 
 	<<done>>
 		<<addclass ".linkselector" "disabled-link">>

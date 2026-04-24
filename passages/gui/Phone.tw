@@ -1,10 +1,10 @@
 :: Phone [nobr noreturn] {"position":"200,925","size":"100,100"}
 <div class="flexwrapper addGap5">
-<<for _slot range setup.Gui.phoneContacts()>>
-	<<set _stats to State.variables[_slot.stateKey]>>
+<<for _contact range setup.Gui.phoneContacts()>>
+	<<set _stats to State.variables[_contact.stateKey]>>
 	<div class="housecard">
-	<<if !_slot.isUnlocked()>>
-		@@.mc-thoughts; _slot.lockedHint @@<br>
+	<<if !_contact.isUnlocked()>>
+		@@.mc-thoughts; _contact.lockedHint @@<br>
 		<<image "img/question-mark.png" "contactsImages">>
 	<<else>>
 		@@.notmc-speech; _stats.name @@<br>
@@ -14,21 +14,21 @@
 		<<else>>
 			(_stats.exp / _stats.expForNextLvl)
 		<</if>><br>
-		<<image _slot.portrait "contactsImages">><br>
-		<<if $hours lte 7>>
-			<<if _slot.isHuntingAlone()>>
+		<<image _contact.portrait "contactsImages">><br>
+		<<if setup.Time.hours() lte 7>>
+			<<if _contact.isHuntingAlone()>>
 				@@.mc-thoughts; She is currently on a ghost hunt.@@
 			<<else>>
 				@@.mc-thoughts; She's sleeping/busy@@<br>
 			<</if>>
-		<<elseif _slot.isPossessed()>>
+		<<elseif _contact.isPossessed()>>
 			<<linkreplace "@@.enterbtn;Text her@@">>
-				_slot.possessedHint
+				_contact.possessedHint
 			<</linkreplace>>
-		<<elseif _slot.isWithRain()>>
-			@@.mc-thoughts; _slot.withRainHint @@
+		<<elseif _contact.isWithRain()>>
+			@@.mc-thoughts; _contact.withRainHint @@
 		<<else>>
-			@@.enterbtn;<<link "Text her" _slot.infoPassage>>
+			@@.enterbtn;<<link "Text her" _contact.infoPassage>>
 			<</link>>@@<br>
 		<</if>>
 	<</if>>

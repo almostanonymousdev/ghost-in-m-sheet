@@ -68,6 +68,12 @@ setup.SpecialEvent = (function () {
 			State.variables.mc.energy = 0;
 		},
 
+		// --- Mare stage ------------------------------------
+		mareStage: function () { return v('ghostMareEventStage'); },
+		mareStageAtLeast: function (n) {
+			return (v('ghostMareEventStage') || 0) >= n;
+		},
+
 		// --- Myling companion reset ------------------------
 		resetHuntPlansAfterMyling: function () {
 			var sv = State.variables;

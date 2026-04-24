@@ -1,9 +1,9 @@
 :: PassageDone {"position":"200,100","size":"100,100"}
-<<include "LightPassageManual">>
+<<applyRoomLightClass>>
 <<include "DeliveryActiveIcon">>
-<<include "ClothesChanges">>
+<<run setup.Wardrobe.refreshAggregateStates()>>
 <<include "Mimic">>
-<<include "ChangeGhostRoom">>
+<<run setup.HauntedHouses.shuffleGhostRoom()>>
 <<if passage() is "Wardrobe">>
 <<include "Piercing">>
 <<include "WardrobeSlots">>
@@ -62,5 +62,5 @@
 <</if>>
 
 <<if not setup.Updates.timerToolsInitialized()>>
-<<include "ChangeTimer">>
+<<run setup.Gui.refreshToolTimer()>>
 <</if>>

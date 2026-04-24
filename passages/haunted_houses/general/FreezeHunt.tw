@@ -4,10 +4,10 @@
  * whichever timed tool was active — EMF/UVL get their window popped open
  * so the next tick auto-reads, mirroring how a ghost event normally opens
  * those windows. With nothing left to give, the ghost takes the player
- * instead and routes to HuntOverSanity. Strips via the canonical Steal*
+ * instead and routes to HuntOverSanity. Strips via the canonical
+ * Wardrobe.stealWornInGroup / StealBottomOuter / StealPanties / StealBra
  * passages so wardrobe variant state + rememberTopOuter/rememberBottomOuter
- * stay consistent (just flipping $<slot>State leaves the variants worn,
- * and PassageDone's ClothesChanges re-derives the parent back to "worn"). */
+ * stay consistent. */
 <<script>>
 (function () {
 	var V = State.variables;
@@ -22,18 +22,17 @@
 <<if _freezeSlot eq "">>
 	&emsp;&emsp;You don't run. You don't hide. You hold perfectly still and let it pass THROUGH you. Icy fingers slide over bare skin — and find nothing left to tear away. The ghost pauses. Then, curious and patient, it decides to take you instead.<br>
 	@@.mc-thoughts;You feel the cold close around you and pull. There is nothing left to give but yourself.@@
-	<<set $huntActivated to 1>>
-	<<set $huntActivationTime = $hours * 60 + $minutes>>
+	<<run setup.HauntedHouses.rearmHuntTimer()>>
 	<br><br>
 	@@.usebtn;[[Surrender to the cold|HuntOverSanity]]@@
 <<else>>
-	<<set $tempCorr to ($tempCorr || 0) + 0.5>>
+	<<run setup.Mc.addTempCorr(0.5)>>
 	<<run setup.activateTool("emf")>>
 	<<run setup.activateTool("uvl")>>
 	&emsp;&emsp;You don't run. You don't hide. You hold perfectly still and let it pass THROUGH you. Icy fingers slide over you; the ghost pauses, curious — and tears a garment loose before drifting on. Your skin crawls, but you can feel the residue it left behind. Every tool you were carrying picks up the trail.
 	<br>
 	<<switch _freezeSlot>>
-	<<case "top">><<include "StealShirt">>@@.mc-action; Your top is gone.@@
+	<<case "top">><<run setup.Wardrobe.stealWornInGroup("tshirt", "tshirtState", "isShirtStolen")>>@@.mc-action; Your top is gone.@@
 	<<case "bottom">><<include "StealBottomOuter">>@@.mc-action; Your bottoms are gone.@@
 	<<case "panties">><<include "StealPanties">>@@.mc-action; Your panties are gone.@@
 	<<case "bra">><<include "StealBra">>@@.mc-action; Your bra is gone.@@
@@ -42,8 +41,7 @@
 	@@.backbtn;[[Continue|$return]]@@
 
 	<<run setup.Ghosts.markActiveHuntEvent()>>
-	<<set $huntActivated to 1>>
-	<<set $huntActivationTime = $hours * 60 + $minutes>>
+	<<run setup.HauntedHouses.rearmHuntTimer()>>
 	<<done>>
 		<<addclass ".linkselector" "disabled-link">>
 	<</done>>

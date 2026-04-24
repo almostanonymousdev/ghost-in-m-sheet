@@ -1,21 +1,16 @@
 :: CompanionResult [noreturn nobr] {"position":"2250,3125","size":"100,100"}
-<<if $chosenPlan eq "Plan2">>
-	<<if $gotCursedItem eq 1>>
+<<set _cName to setup.Companion.name()>>
+<<if State.variables.chosenPlan eq "Plan2">>
+	<<if setup.Companion.hasCursedItem()>>
 		@@.notmc-speech; It seems you managed to find the cursed object faster than me, well done.@@<br>
 		@@.notmc-speech; But why did you send me to look for it if you started searching for it yourself?@@<br>
 		@@.notmc-speech; Actually, nevermind, let's continue.@@<br>
 	<<else>>
 		@@.notmc-speech; I'm sure@@ <<linkappend "@@.notmc-speechLink; it's a cursed item...@@">>
 			<br>
-			<<set _check to random(1,4)>>
-			<<if _check eq 1>>@@.mc-speech; Dildo???@@<br><<image "curseditems/dildo.png" { width: "30%" }>>
-			<<set $isCIDildo to 1>><</if>>
-			<<if _check eq 2>>@@.mc-speech; Buttplug???@@<br><<image "curseditems/buttplug.png" { width: "30%" }>>
-			<<set $isCIButtplug to 1>><</if>>
-			<<if _check eq 3>>@@.mc-speech; Anal beads???@@<br><<image "curseditems/beads.png" { width: "30%" }>>
-			<<set $isCIBeads to 1>><</if>>
-			<<if _check eq 4>>@@.mc-speech; Huge dildo???@@<br><<image "curseditems/monsterdildo.png" { width: "30%" }>>
-			<<set $isCIHDildo to 1>><</if>>
+			<<set _found to setup.Companion.rollFoundCursedItem()>>
+			@@.mc-speech; <<= _found.speech>>@@<br>
+			<<image _found.img { width: "30%" }>>
 			<br>
 		<</linkappend>>
 		<br>@@.mc-speech; Well, we'll have to take this to the witch.@@<br>
@@ -23,19 +18,18 @@
 		As soon as I thought about it, I started to feel more... aroused<br>@@
 		+30 <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br><<addLust 30>>
 		<br>
-		@@.mc-action; $companion.name found the cursed item!@@<br>
-		<<set $gotCursedItem to 1>>
+		@@.mc-action; <<= _cName>> found the cursed item!@@<br>
 		<br>
 
 		<<companionExp 10>>
 	<</if>>
 
-<<elseif $chosenPlan eq "Plan3">>
-	<<set _randomEvidence to $hunt.evidence[random(0, $hunt.evidence.length - 1)]>>
+<<elseif State.variables.chosenPlan eq "Plan3">>
+	<<set _randomEvidence to setup.Companion.pickRandomHuntEvidence()>>
 	<<if _randomEvidence eq "emf">>
 		@@.notmc-speech; evidence - EMF 5 @@ <<image "img/emf.png" { style: "position: relative; top: 0.375em; width:5%;" }>><br>
 		<br>
-		@@.mc-action; $companion.name found the evidence! @@<br>
+		@@.mc-action; <<= _cName>> found the evidence! @@<br>
 		<br>
 
 		<<companionExp 5>>
@@ -43,46 +37,10 @@
 	<<elseif _randomEvidence eq "gwb">>
 		@@.notmc-speech; evidence - Ghost Writing Book @@ <<image "img/gwb.png" { style: "position: relative; top: 0.375em; width:5%;" }>><br>
 		@@.notmc-speech; Do you want to see this?@@<br>
-		<<set _check to random(1, 18)>>
-		<<if _check eq 1>><<image "gwb/1.jpg" "evidenceImgs">>
-		<</if>>
-		<<if _check eq 2>><<image "gwb/2.jpg" "evidenceImgs">>
-		<</if>>
-		<<if _check eq 3>><<image "gwb/3.jpg" "evidenceImgs">>
-		<</if>>
-		<<if _check eq 4>><<image "gwb/4.jpg" "evidenceImgs">>
-		<</if>>
-		<<if _check eq 5>><<image "gwb/5.jpg" "evidenceImgs">>
-		<</if>>
-		<<if _check eq 6>><<image "gwb/6.jpg" "evidenceImgs">>
-		<</if>>
-		<<if _check eq 7>><<image "gwb/7.jpg" "evidenceImgs">>
-		<</if>>
-		<<if _check eq 8>><<image "gwb/8.jpg" "evidenceImgs">>
-		<</if>>
-		<<if _check eq 9>><<image "gwb/9.jpg" "evidenceImgs">>
-		<</if>>
-		<<if _check eq 10>><<image "gwb/10.jpg" "evidenceImgs">>
-		<</if>>
-		<<if _check eq 11>><<image "gwb/11.jpg" "evidenceImgs">>
-		<</if>>
-		<<if _check eq 12>><<image "gwb/12.jpg" "evidenceImgs">>
-		<</if>>
-		<<if _check eq 13>><<image "gwb/13.jpg" "evidenceImgs">>
-		<</if>>
-		<<if _check eq 14>><<image "gwb/14.jpg" "evidenceImgs">>
-		<</if>>
-		<<if _check eq 15>><<image "gwb/15.jpg" "evidenceImgs">>
-		<</if>>
-		<<if _check eq 16>><<image "gwb/16.jpg" "evidenceImgs">>
-		<</if>>
-		<<if _check eq 17>><<image "gwb/17.jpg" "evidenceImgs">>
-		<</if>>
-		<<if _check eq 18>><<image "gwb/18.jpg" "evidenceImgs">>
-		<</if>>
+		<<image setup.Companion.pickGwbImage() "evidenceImgs">>
 		<br>
 		<br>
-		@@.mc-action; $companion.name found the evidence!@@<br>
+		@@.mc-action; <<= _cName>> found the evidence!@@<br>
 		<br>
 
 		<<companionExp 5>>
@@ -90,7 +48,7 @@
 	<<elseif _randomEvidence eq "temperature">>
 		@@.notmc-speech; evidence - High Temperature @@ <<image "img/thermometr.png" { style: "position: relative; top: 0.375em; width:5%;" }>><br>
 		<br>
-		@@.mc-action; $companion.name found the evidence!@@<br>
+		@@.mc-action; <<= _cName>> found the evidence!@@<br>
 		<br>
 
 		<<companionExp 5>>
@@ -99,7 +57,7 @@
 		@@.notmc-speech; evidence - Spirit Box @@ <<image "img/spiritbox.png" { style: "position: relative; top: 0.375em; width:5%;" }>><br>
 		<br>
 
-		@@.mc-action; $companion.name found the evidence!@@<br>
+		@@.mc-action; <<= _cName>> found the evidence!@@<br>
 		<br>
 
 		<<companionExp 5>>
@@ -107,7 +65,7 @@
 	<<elseif _randomEvidence eq "uvl">>
 		@@.notmc-speech; evidence - UVL @@ <<image "img/uvl.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
 		<br><br>
-		@@.mc-action; $companion.name found the evidence!@@<br>
+		@@.mc-action; <<= _cName>> found the evidence!@@<br>
 		<br>
 
 		<<companionExp 5>>
@@ -115,15 +73,15 @@
 	<<elseif _randomEvidence eq "glass">>
 		@@.notmc-speech; evidence - Ectoglass@@ <<image "img/glass.png" { style: "position: relative; top: 0.375em; width:5%;" }>><br>
 		<br>
-		@@.mc-action; $companion.name found the evidence!@@<br>
+		@@.mc-action; <<= _cName>> found the evidence!@@<br>
 		<br>
 		<<companionExp 5>>
 	<</if>>
 
-<<elseif $chosenPlan eq "Plan4">>
+<<elseif State.variables.chosenPlan eq "Plan4">>
 	@@.notmc-speech;  the ghost's favorite room -- it's <<ghostRoom>>@@<br>
 	<br>
-	@@.mc-action; $companion.name found the ghost's favorite room!@@<br>
+	@@.mc-action; <<= _cName>> found the ghost's favorite room!@@<br>
 	<br>
 
 	<<companionExp 5>>

@@ -7,8 +7,8 @@ parsed from the game's own .tw sources at startup.
 Models the core hunt loop from Ghost in M'Sheet:
 
   - Ghost picks a favorite room from the house's room list at contract
-    start and can switch rooms every 20 in-game minutes with 35% chance
-    (ChangeGhostRoom.tw / HauntedHouses.rollStartingRoom).
+    start and can switch rooms every 20 in-game minutes with 45% chance
+    (HauntedHouses.shuffleGhostRoom / HauntedHouses.rollStartingRoom).
   - Navigating between rooms costs 0.25 energy per step (HauntConditions
     ENERGY_PER_STEP); the contract ends when energy bottoms out.
   - Evidence detection uses the same tier-based chance table as the game:
@@ -263,7 +263,8 @@ def _parse_temperature(src: str) -> dict[str, int]:
     """Pull base range + ghost-room offsets from TemperatureHigh.tw. Shape:
     {base_lo, base_hi, offset_with_temp, offset_no_temp}. Lets the AI's
     room-detection threshold track the game's reading distribution."""
-    base = re.search(r'random\((\d+),\s*(\d+)\)\s*\+\s*\$temperature', src)
+    base = re.search(
+        r'random\((\d+),\s*(\d+)\)\s*\+\s*setup\.Time\.temperature\(\)', src)
     with_temp = re.search(
         r'_inGhostRoom\s+and\s+_hasTempEvidence>>\s*'
         r'<<set\s+_offset\s+to\s+(\d+)', src)
@@ -343,7 +344,7 @@ class GameData:
 def load_game_data() -> GameData:
     story_script = _read("StoryScript.tw")
     story_init = _read("mc/GameInit.tw")
-    change_room = _read("haunted_houses/general/ChangeGhostRoom.tw")
+    hh_controller = _read("haunted_houses/HauntedHousesController.tw")
     check_hunt = _read("haunted_houses/hunt/CheckHuntStart.tw")
     hide_tw = _read("haunted_houses/general/Hide.tw")
     run_tw = _read("haunted_houses/general/RunFast.tw")
@@ -374,9 +375,10 @@ def load_game_data() -> GameData:
     start_lust   = _find_num(r"lust\s*:\s*(\d+)",   story_init)
     start_energy = _find_num(r"energy\s*:\s*(\d+)", story_init)
 
-    # ChangeGhostRoom.tw: Math.random() < 0.35
-    ghost_move_chance = _find_num(r"Math\.random\(\)\s*<\s*([\d.]+)",
-                                   change_room)
+    # HauntedHousesController.tw shuffleGhostRoom(): Math.random() < 0.45
+    ghost_move_chance = _find_num(
+        r"shuffleGhostRoom:[^}]*?Math\.random\(\)\s*<\s*([\d.]+)",
+        hh_controller)
 
     # CheckHuntStart.tw: _huntThreshold to N + setup.HauntConditions...
     hunt_base_threshold = int(_find_num(r"_huntThreshold\s+to\s+(\d+)",
@@ -506,7 +508,7 @@ def validate_game_data() -> list[str]:
 
     # Scalar constants.
     require(0 < GD.ghost_move_chance <= 1,
-            f"ChangeGhostRoom Math.random() threshold "
+            f"shuffleGhostRoom Math.random() threshold "
             f"{GD.ghost_move_chance} out of (0,1]")
     require(0 <= GD.hunt_base_threshold <= 100,
             f"CheckHuntStart base threshold {GD.hunt_base_threshold} bad")

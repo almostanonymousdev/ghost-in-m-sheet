@@ -1,7 +1,7 @@
 :: RunFast [noreturn nobr] {"position":"2500,1225","size":"100,100"}
-<<if $jeansState eq "worn" or $shortsState eq "worn" or $skirtState eq "worn">>
+<<if setup.Wardrobe.jeansWorn() or setup.Wardrobe.shortsWorn() or setup.Wardrobe.skirtWorn()>>
 <<else>>
-	<<if $pantiesState eq "worn">>
+	<<if setup.Wardrobe.pantiesWorn()>>
 		<<video "hunting/run.mp4">>
 	<</if>>
 <</if>>
@@ -21,16 +21,16 @@
 
 		You decide to look back, and your heart freezes with terror. The ghost is still there, closer than you thought.
 		Cold air surrounds you, and you feel an icy hand reaching for you. You have a little time to
-		<<if $crucifixAmount gte 1>>
+		<<if setup.HauntedHouses.crucifixAmount() gte 1>>
 			@@.usebtn; [[use the Crucifix|Crucifix]]@@
 			. Or perhaps, it might be best
 			<<done>>
-				<<if $mc.corruption lte 4>>
+				<<if setup.Mc.corruption() lte 4>>
 					<<addclass ".checkForCorruptionHunt" "disabled-link">>
 				<</if>>
 			<</done>>
 			<span class="checkForCorruptionHunt">
-			@@.usebtn;[[not to resist...|HuntEnd]]@@ <<if $mc.corruption lte 4>>@@.warningtext; (Req. <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 5)@@
+			@@.usebtn;[[not to resist...|HuntEnd]]@@ <<if setup.Mc.corruption() lte 4>>@@.warningtext; (Req. <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 5)@@
 			<</if>></span>
 		<<else>>
 			use the Crucifix, but unfortunately, @@.enterbtn;[[you don't have it...|HuntEnd]]@@

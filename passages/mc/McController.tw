@@ -52,6 +52,7 @@ setup.Mc = (function () {
 		spendMoney:       function (n) { mc().money -= n; },
 		setSanity:        function (v) { mc().sanity = v; },
 		addSanity:        function (n) { mc().sanity += n; },
+		spendSanity:      function (n) { mc().sanity -= n; },
 		setSanityMax:     function (v) { mc().sanityMax = v; },
 		setSanityUp:      function (v) { mc().sanityUp = v; },
 		setEnergy:        function (v) { mc().energy = v; },
@@ -301,5 +302,21 @@ setup.Mc = (function () {
 			}
 		}
 	};
+	/* Stamp whatever-is-banked $tempCorr into $mc.corruption,
+	   capping at 1 so a single walk-home can't spike corruption
+	   more than a point, then reset the bank. */
+	api.bankTempCorruption = function () {
+		var s = sv();
+		if ((s.tempCorr || 0) >= 1) { s.tempCorr = 1; }
+		s.mc.corruption += (s.tempCorr || 0);
+		s.tempCorr = 0;
+	};
+	api.isSanityCollapsed = function () { return sv().sanityCollapse === 1; };
+	api.clearSanityCollapse = function () { sv().sanityCollapse = 0; };
+	api.isExhausted = function () { return sv().exhausted === 1; };
+	api.clearExhausted = function () { sv().exhausted = 0; };
+	api.lustPct = function () { return mc().lust / 100; };
+	api.sanityPct = function () { return mc().sanity / mc().sanityMax; };
+	api.energyPct = function () { return mc().energy / mc().energyMax; };
 	return api;
 })();

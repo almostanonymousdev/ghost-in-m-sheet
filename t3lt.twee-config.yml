@@ -562,3 +562,17 @@ sugarcube-2:
       name: mcNameTextbox
       description: "Intro form textbox bound to $mc.name. Args: defaultName
         (string), nextPassage (string)."
+    evidenceCheckbox:
+      name: evidenceCheckbox
+      description: "Notebook evidence row checkbox bound to $<key>Check. Args:
+        stateKey (string, e.g. 'EMF5Check')."
+    monkeyPawWishInput:
+      name: monkeyPawWishInput
+      description: "Textbox bound to $inputWish for the free-form Monkey Paw
+        wish field. No args."
+    cisCompanionSoloPicker:
+      name: cisCompanionSoloPicker
+      description: "Shared Info-card body for Brook/Alice/Blake: pick the
+        companion for a hunt or send her solo to Owaissa/Elm Street. Args:
+        companionName (string, 'Brook'/'Alice'/'Blake'), possessivePronoun
+        (string, e.g. 'her')."

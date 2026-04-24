@@ -1,22 +1,23 @@
 :: WatchPorn [nobr] {"position":"300,1100","size":"100,100"}
-<<set $masturbationCD to 1>>
-<<set $videos to ["porn/1.mp4", "porn/2.mp4", "porn/3.mp4", "porn/4.mp4", "porn/5.mp4", "porn/6.mp4", "porn/7.mp4"]>>
-<<set $currentVideoIndex to 0>>
+<<run setup.Home.setMasturbationCooldown(1)>>
+<<set _videoIndex to 0>>
+<<set _videoPath to setup.Home.PORN_VIDEOS[0]>>
 <div id="video-container">
-<<video $videos[$currentVideoIndex]>>
+<<video _videoPath>>
 </div>
 
 @@.usebtn;<<link "Watch porn">>
 	<<addTime 3>>
 	<<addLust 15>>
-	<<if $mc.lust gte 60>>
+	<<if setup.Mc.lust() gte 60>>
 		<<replace "#watch-pornID">>
 			@@.usebtn;[[Masturbate]]@@
 		<</replace>>
 	<</if>>
-	<<set $currentVideoIndex to ($currentVideoIndex + 1) % $videos.length>>
+	<<set _step to setup.Home.nextPornVideo(_videoIndex)>>
+	<<set _videoIndex to _step.index>>
 	<<replace "#video-container">>
-		<<video $videos[$currentVideoIndex]>>
+		<<video _step.video>>
 	<</replace>>
 <</link>>@@
 <div id="watch-pornID"></div>

@@ -10,15 +10,14 @@
 	<<if _hc>>
 		<div class="housecard">
 		<<image _hc.image "iconPx">>
-			<<if $mc.lvl gte _hc.levelGate>>
+			<<if setup.Mc.lvl() gte _hc.levelGate>>
 				<<capture _hc>>
 					@@.icontext;<<link _hc.streetPassage _hc.streetPassage>>
 						<<set _reward to setup.HauntedHouses.contractReward(_hc.id)>>
-						<<set $moneyFromContract to _reward.money>>
-						<<set $expFromContract to _reward.xp>>
+						<<run setup.HauntedHouses.setContractReward(_reward.money, _reward.xp)>>
 						<<run setup.HauntedHouses.activate(_hc.id)>>
-						<<if _hc.runsFurnitureCode>><<include "FurnitureCode">><</if>>
-						<<set $hunt.room to setup.HauntedHouses.rollStartingRoom(_hc.id)>>
+						<<if _hc.runsFurnitureCode>><<run setup.HauntedHouses.distributeFurnitureStashes()>><</if>>
+						<<run setup.HauntedHouses.setHuntRoom(setup.HauntedHouses.rollStartingRoom(_hc.id))>>
 					<</link>>@@
 				<</capture>>
 			<<else>>
@@ -40,7 +39,7 @@
 	<<set _hs to setup.HauntedHouses.byId(_args[0])>>
 	<<set _hsLabel to _args[1]>>
 	<<set _hsDescription to _args[2]>>
-	<<if _hs and $companion and setup.Companion.companionAtStreet()>>
+	<<if _hs and setup.Companion.active() and setup.Companion.companionAtStreet()>>
 		<<run setup.Companion.clearCompanionSelection()>>
 	<</if>>
 	<<if _hs>>
@@ -50,7 +49,7 @@
 		<br>
 		<<set _streetBody to _contents ? _contents.trim() : "">>
 		<<if setup.Companion.companionAtStreet()>>
-			You see $companion.name.
+			You see <<= setup.Companion.name()>>.
 			<<companionStreetTalk>>
 		<<elseif setup.MonkeyPaw.isHouseBanned(_hs.id)>>
 			@@.mc-thoughts; The front door won't open. The paw's price was one contract's worth of this house.@@<br>
@@ -59,13 +58,13 @@
 		<<else>>
 			<<capture _hs>>
 				@@.movebtn;<<link "Go inside" _hs.hallwayPassage>>
-					<<set $hunt.mode to setup.Ghosts.HuntMode.ACTIVE>>
+					<<run setup.HauntedHouses.setHuntMode(setup.Ghosts.HuntMode.ACTIVE)>>
 				<</link>>@@<br>
 			<</capture>>
 		<</if>>
 		<br><br>
 		<<if setup.Ghosts.isHunting()>>
-			<span class="movebtn">[[End the hunt|HuntOverManual][$hunt.mode to setup.Ghosts.HuntMode.POSSESSED]]</span>
+			<span class="movebtn">[[End the hunt|HuntOverManual][setup.HauntedHouses.setHuntMode(setup.Ghosts.HuntMode.POSSESSED)]]</span>
 		<</if>>
 	<</if>>
 <</widget>>

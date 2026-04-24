@@ -64,7 +64,7 @@
 					<<run setup.Mc.setDirty(1)>>
 					<<run setup.HauntedHouses.resetToolTimers()>>
 					<<run setup.HauntedHouses.endHunt()>>
-					<<include "LostClothes">>
+					<<run setup.Wardrobe.loseAllStolen()>>
 
 					<<done>>
 						<<addclass ".linkselector" "disabled-link">>

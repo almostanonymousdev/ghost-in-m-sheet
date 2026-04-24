@@ -1,11 +1,11 @@
 :: CompanionLeaving [noreturn nobr] {"position":"2350,3125","size":"100,100"}
-@@.notmc-speech; $mc.name, wait, I don't feel well... This place is driving me crazy, I don't feel like myself."@@<br>
+@@.notmc-speech; <<= setup.Mc.name()>>, wait, I don't feel well... This place is driving me crazy, I don't feel like myself."@@<br>
 @@.mc-thoughts; She nervously looks around, as if afraid the ghost might return at any moment.@@<br>
 @@.notmc-speech; I'm sorry, but I can't stay with you. I have to get out of here, or I'll break...@@<br>
 @@.mc-speech; Yes, of course, I understand.@@<br>
 <br>
-@@.mc-thoughts; $companion.name leaves the house.@@ <<if $companion.sanity lte 0>>
-<<else>>@@.warningtext; Req. higher level of $companion.name .@@
+@@.mc-thoughts; <<= setup.Companion.name()>> leaves the house.@@ <<if setup.Companion.sanity() lte 0>>
+<<else>>@@.warningtext; Req. higher level of <<= setup.Companion.name()>> .@@
 <</if>><br>
 @@.mc-speech; Well, I'm alone now...@@<br>
 <br>

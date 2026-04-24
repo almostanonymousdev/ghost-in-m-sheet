@@ -49,6 +49,18 @@ setup.Time = (function () {
 		resetToMidnight: function () {
 			sv().hours = 0;
 			sv().minutes = 0;
+		},
+		// Advance the clock by `n` hours and wrap at 24, then run
+		// the daily-cooldowns widget if a rollover happened. Used
+		// by sleep/wake paths — centralised here so each caller
+		// doesn't re-implement the wrap+reset dance.
+		sleepAdvanceHours: function (n) {
+			sv().hours += n;
+			if (sv().hours >= 24) {
+				sv().hours -= 24;
+				return true;
+			}
+			return false;
 		}
 	};
 })();

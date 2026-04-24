@@ -4,47 +4,47 @@
 <br>
 <br>
 <<if setup.Home.tentaclesSleepEventReady() and previous() is "Bedroom">>
-<<set $hours +=8>><<if $hours >=24>><<set $hours -=24>><<include "ResetCooldowns">>
+<<if setup.Time.sleepAdvanceHours(8)>><<include "ResetCooldowns">>
 <</if>>
 <<goto "TentaclesEventSleep">>
 
 <</if>>
 <<if (previous() is "HuntOverSanity" or previous() is "HuntEnd" or previous() is "CursedHuntStart")>>
-<<set $isPenaltyOn to 1>>
+<<run setup.Mc.setPenalized(true)>>
 <<run setup.CursedItems.rollForCursedItem()>>
 <</if>>
 
 <<set _hg to setup.Ghosts.active()>>
 <<if (previous() is "HuntOverSanity" or previous() is "HuntEnd" or previous() is "CursedHuntStart") and _hg and _hg.sleepPassage>>
-<<set $isPenaltyOn to 1>>
-@@.backbtn;<<link "Wake up" `_hg.sleepPassage`>><<set $hours +=3>><<if $hours >=24>><<set $hours -=24>><<include "ResetCooldowns">>
+<<run setup.Mc.setPenalized(true)>>
+@@.backbtn;<<link "Wake up" `_hg.sleepPassage`>><<if setup.Time.sleepAdvanceHours(3)>><<include "ResetCooldowns">>
 <</if>>
 <</link>>
-<<set $mc.sanity to 40>>
-<<set $mc.lust to 0>>
+<<run setup.Mc.setSanity(40)>>
+<<run setup.Mc.setLust(0)>>
 
-<<elseif $ghostMareEventStage gte 4>>
-@@.backbtn;<<link "Wake up" "GhostSpecialEventMareEnd">><<set $hours +=3>><<if $hours >=24>><<set $hours -=24>><<include "ResetCooldowns">>
+<<elseif setup.SpecialEvent.mareStageAtLeast(4)>>
+@@.backbtn;<<link "Wake up" "GhostSpecialEventMareEnd">><<if setup.Time.sleepAdvanceHours(3)>><<include "ResetCooldowns">>
 <</if>>
 <</link>>
 <<elseif setup.Home.spiritNapEventReady()>>
-@@.backbtn;<<link "Wake up" "GhostSpecialEventSleepSpirit">><<set $hours +=3>><<if $hours >=24>><<set $hours -=24>><<include "ResetCooldowns">>
+@@.backbtn;<<link "Wake up" "GhostSpecialEventSleepSpirit">><<if setup.Time.sleepAdvanceHours(3)>><<include "ResetCooldowns">>
 <</if>>
 <</link>>
 <<else>>
-@@.backbtn;<<link "Wake up" "Bedroom">><<set $hours +=8>><<if $hours >=24>><<set $hours -=24>><<include "ResetCooldowns">>
+@@.backbtn;<<link "Wake up" "Bedroom">><<if setup.Time.sleepAdvanceHours(8)>><<include "ResetCooldowns">>
 <</if>>
 <</link>>
-<<if $isPenaltyOn eq 1>>
+<<if setup.Mc.isPenalized()>>
 <<run setup.Home.applySleepPenalty()>>
 <<else>>
 <<run setup.Home.applyFullRest()>>
 <</if>>
 
 <<if previous() eq "GhostSpecialEventMareEnd">>
-<<set $mc.energy to 30>>
+<<run setup.Mc.setEnergy(30)>>
 <</if>>
 <</if>>
-<<if $isCameraBought eq 1>><<set $mcSleptWithCameraOn to 1>><</if>>
+<<if setup.Home.cameraBought()>><<run setup.Home.markSleptWithCameraOn()>><</if>>
 <</nobr>>
 <<removeMakeup 5>>

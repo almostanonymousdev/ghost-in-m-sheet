@@ -1,15 +1,15 @@
 :: Mirror [nobr] {"position":"700,1200","size":"100,100"}
 <<set _checkBeauty to random(30,100)>>
-<<if setup.Home.twinsEventAvailable() and _checkBeauty gt $mc.beauty>>
+<<if setup.Home.twinsEventAvailable() and _checkBeauty gt setup.Mc.beauty()>>
 	<<video "ghosts/specials/twins1.mp4">>
 	@@.mc-thoughts;You're looking in the mirror, admiring your reflection, when suddenly two strangers appear, observing you. They assess every curve of your body @@
 	<<linkappend "@@.mc-thoughtsLink; through the glass@@">>
 		@@.mc-thoughts; You watch them, captivated by their sudden arrival, but they disappear just as quickly as they appeared.@@<br>
 		@@.mc-speech; It was... strange @@<br><br>
 		@@.backbtn;[[Back|Bathroom]] @@<br>
-		<<set $thetwinseventCD to 1>>
+		<<run setup.Home.setTwinsEventCooldown(1)>>
 	<</linkappend>>
-<<elseif setup.Home.twinsEventAvailable() and _checkBeauty lte $mc.beauty>>
+<<elseif setup.Home.twinsEventAvailable() and _checkBeauty lte setup.Mc.beauty()>>
 	<<video "ghosts/specials/twins.mp4">>
 	@@.mc-thoughts;You're looking in the mirror, admiring your reflection, when suddenly two strangers appear, observing you. They assess every curve of your body @@<<linkappend "@@.mc-thoughtsLink; through the glass@@">>
 		<<video "ghosts/specials/twins2.mp4">>
@@ -23,22 +23,22 @@
 	<span id="mirrorImage"><<image "img/mc.jpg">></span><br>
 
 	@@.mc-speech; Looking pretty good. I'm ready to take on the world!@@<br>
-	<b>Beauty: </b> $mc.beauty
+	<b>Beauty: </b> <<= setup.Mc.beauty()>>
 	<br>
-	<<if $makeupApplied eq 0>>
-		<<if $makeupAmount gte 1>>
-			@@.usebtn;<<link "Apply regular makeup (1 charge)" "Mirror">><<set $mc.makeupImg to 1>><<set $makeupApplied to 1>><<set $mc.beauty += 5>><<set $makeupAmount -= 1>>
+	<<if setup.Mc.makeupApplied() eq 0>>
+		<<if setup.Mc.makeupAmount() gte 1>>
+			@@.usebtn;<<link "Apply regular makeup (1 charge)" "Mirror">><<run setup.Home.applyMakeupTier(1)>>
 			<</link>>@@<br>
 		<<else>>@@.mc-speech;I don't have enough makeup@@<br>
 		<</if>>
-		<<if $makeupAmount gte 2>>
-			@@.usebtn;<<link "Apply stylish makeup (2 charges)" "Mirror">><<set $mc.makeupImg to 2>><<set $makeupApplied to 1>><<set $makeupAmount -= 2>><<set $mc.beauty += 10>>
+		<<if setup.Mc.makeupAmount() gte 2>>
+			@@.usebtn;<<link "Apply stylish makeup (2 charges)" "Mirror">><<run setup.Home.applyMakeupTier(2)>>
 			<</link>>@@<br>
 		<<else>>@@.mc-speech;I don't have enough makeup@@<br>
 		<</if>>
-		<<if $makeupAmount gte 3>>
-			<<if $mc.corruption gte 10>>
-				@@.usebtn;<<link "Apply slutty makeup (3 charges)" "Mirror">><<set $mc.makeupImg to 3>><<set $makeupApplied to 1>><<set $makeupAmount -= 3>><<set $mc.beauty += 15>>
+		<<if setup.Mc.makeupAmount() gte 3>>
+			<<if setup.Mc.corruption() gte 10>>
+				@@.usebtn;<<link "Apply slutty makeup (3 charges)" "Mirror">><<run setup.Home.applyMakeupTier(3)>>
 				<</link>>@@<br>
 			<<else>>@@.usebtn;<<linkreplace "Apply slutty makeup (3 charges)">>@@.mc-speech; Why should I do this makeup?@@
 			<</linkreplace>>@@<br>

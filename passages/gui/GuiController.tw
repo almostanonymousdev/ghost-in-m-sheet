@@ -92,12 +92,48 @@ setup.Gui = (function () {
 		return h >= 22 || (h >= 0 && h <= 5);
 	}
 
+	// --- Guide return-to passage ---------------------------------
+	// Guide/Evidence pages need to remember which passage opened them
+	// so the Back button can jump there. Stored in $guideReturnPassage.
+	function guideReturnPassage() { return State.variables.guideReturnPassage; }
+	function setGuideReturnPassage(n) { State.variables.guideReturnPassage = n; }
+
+	// --- Cursed hunt toggle --------------------------------------
+	function cursedHuntOptionOff() { return State.variables.cursedHuntOption === 1; }
+	function isCursedHuntOptionOn() {
+		var v = State.variables.cursedHuntOption;
+		return v === 0 || v === undefined;
+	}
+	function setCursedHuntOption(v) { State.variables.cursedHuntOption = v; }
+
+	// --- Tool speed (based on MC lvl) ----------------------------
+	// $timerToolsDecreased is the "tick" duration passed to the
+	// <<repeat>> macros that drive tool meters; it shortens as the
+	// player levels up. Writing here centralises the lookup so the
+	// scaling table lives in one place.
+	var TOOL_TIMER_BY_LVL = {
+		0: "1s", 1: "900ms", 2: "800ms", 3: "650ms",
+		4: "500ms", 5: "350ms", 6: "200ms"
+	};
+	function refreshToolTimer() {
+		var lvl = setup.Mc.lvl();
+		var t = TOOL_TIMER_BY_LVL[lvl];
+		State.variables.timerToolsDecreased = t || "150ms";
+	}
+
 	return {
 		useBackInsteadOfReturn:  useBackInsteadOfReturn,
 		phoneContacts:           phoneContacts,
 		isCityNightOverlayActive: isCityNightOverlayActive,
 		phoneBought: function () {
 			return State.variables.isPhoneBought !== undefined;
-		}
+		},
+		guideReturnPassage: guideReturnPassage,
+		setGuideReturnPassage: setGuideReturnPassage,
+		cursedHuntOptionOff: cursedHuntOptionOff,
+		isCursedHuntOptionOn: isCursedHuntOptionOn,
+		setCursedHuntOption: setCursedHuntOption,
+		refreshToolTimer: refreshToolTimer,
+		monkeyPawWishInput: function () { return State.variables.inputWish; }
 	};
 })();

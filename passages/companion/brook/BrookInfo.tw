@@ -1,95 +1,20 @@
 :: BrookInfo [noreturn nobr] {"position":"1875,3325","size":"100,100"}
-<<if $brook.lvl eq 2>>
-	<<set $chanceToSuccessAloneOwaissaBrook to 25>>
-	<<set $chanceToSuccessAloneElmBrook to 10>>
-<<elseif $brook.lvl eq 3>>
-	<<set $chanceToSuccessAloneOwaissaBrook to 40>>
-	<<set $chanceToSuccessAloneElmBrook to 25>>
-<<elseif $brook.lvl eq 4>>
-	<<set $chanceToSuccessAloneOwaissaBrook to 55>>
-	<<set $chanceToSuccessAloneElmBrook to 40>>
-<<elseif $brook.lvl gte 5>>
-	<<set $chanceToSuccessAloneOwaissaBrook to 70>>
-	<<set $chanceToSuccessAloneElmBrook to 55>>
-<</if>>
+<<run setup.Companion.refreshSoloOdds("Brook")>>
+<<set _brook to setup.Companion.stateFor("brook")>>
 <div class="flexwrapperCompanionMainInfo">
 <div class="companionImageMain">
 <<image "brook/brook.png">>
 </div>
 <div class="companionTextMain">
-<span style="color: yellow; font-weight: bold; font-size: 1.2em;">$brook.name :</span> $brook.lvl lvl <<if $brook.lvl gte 5>> (max. lvl)
-<<else>>($brook.exp / $brook.expForNextLvl)
+<span style="color: yellow; font-weight: bold; font-size: 1.2em;"><<= _brook.name>> :</span> <<= _brook.lvl>> lvl <<if _brook.lvl gte 5>> (max. lvl)
+<<else>>(<<= _brook.exp>> / <<= _brook.expForNextLvl>>)
 <</if>><br>
-<<if $isBrookGoingForHuntingAlone eq 2>>
-	@@.mc-speech; [[Ask her how her ghost hunt went.|BrookHuntEndAlone]]@@<br>
-<<else>>
-	@@.mc-speech;<<link "Ask Brooke to join you for ghost hunting tonight.">>
-		<<set $companion to clone($brook)>>
-		<<set $isCompChosenBrook to 1>>
-		<<set $isCompChosenAlice to 0>>
-		<<set $isCompChosenBlake to 0>>
-		<<set $isCompChosenAlex to 0>>
-		<<set $isCompChosenTaylor to 0>>
-		<<set $isCompChosenCasey to 0>>
-		<<set $chosenPlan to 0>>
-		<<set $isBrookGoingForHuntingAlone to 0>>
-		<<set $brookChooseOwaissa to 0>>
-		<<set $brookChooseElm to 0>>
-		<<replace "#brookInfoAnswer">>@@.mc-speech; I want you to join me for ghost hunting today@@<br>
-			@@.notmc-speech; Yes, of course. I'll be ready. Let's meet by the entrance to the haunted house, okay?@@<br>
-			@@.mc-speech; Yeah, let's do that.@@
-		<</replace>>
-	<</link>>@@<br>
-
-	<span class="CompanionInfoAskForHuntAlone">
-	@@.mc-speech;<<link "I'd like you to go ghost hunting alone.">>
-		<<set $isCompChosenBrook to 0>>
-		<<replace "#brookInfoAnswer">>@@.notmc-speech; I think I'm already experienced enough to do it on my own. Where should I go?@@<br>
-
-			@@.enterbtn;<<link "Owaissa Street - $chanceToSuccessAloneOwaissaBrook %">>
-				<<set $brookChooseOwaissa to 1>><<set $brookChooseElm to 0>><<set $isBrookGoingForHuntingAlone to 1>>
-				<<if (ndef $payForHuntAloneBrook or $payForHuntAloneBrook eq 0) and $mc.money gte 20>><<set $mc.money -= 20>><<set $payForHuntAloneBrook to 1>><</if>>
-
-				<<if $mc.money lt 20>>
-					<<replace "#brookInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@
-					<</replace>>
-				<<else>>
-					<<replace "#brookInfoAnswerTwo">>@@.notmc-speech;Owaissa Street? Hmm... Yes, of course. I think I can handle it.@@
-					<</replace>>
-				<</if>>
-			<</link>>@@
-
-			@@.enterbtn;<<link "Elm Street - $chanceToSuccessAloneElmBrook %">>
-				<<set $brookChooseOwaissa to 0>><<set $brookChooseElm to 1>><<set $isBrookGoingForHuntingAlone to 1>>
-				<<if (ndef $payForHuntAloneBrook or $payForHuntAloneBrook eq 0) and $mc.money gte 20>><<set $mc.money -= 20>><<set $payForHuntAloneBrook to 1>><</if>>
-				<<if $mc.money lt 20>>
-					<<replace "#brookInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@
-					<</replace>>
-				<<else>>
-					<<replace "#brookInfoAnswerTwo">>@@.notmc-speech;Elm Street? Hmm... Yes, of course. I think I can handle it.@@
-					<</replace>>
-				<</if>>
-			<</link>>@@@@color: green; <b>-20$</b>@@<br>
-
-			<span id="brookInfoAnswerTwo">
-
-			</span>
-		<</replace>>
-	<</link>>@@<<if $brook.lvl lt 2>>
-		@@.warningtext; Req. Brook's lvl 2+@@
-	<</if>></span>
-
-	<br>
-	<span id="brookInfoAnswer">
-
-	</span>
-
-<</if>>
+<<cisCompanionSoloPicker "Brook" "her">>
 </div>
 </div>
 <br>
 
-<<if $brook.lvl lt 2>>
+<<if _brook.lvl lt 2>>
 	<<done>>
 		<<addclass ".CompanionInfoAskForHuntAlone" "disabled-link">>
 	<</done>>

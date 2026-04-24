@@ -2,46 +2,46 @@
 <<image "img/bedroom.jpg" { width: "100%" }>><br>
 @@.location; Bedroom@@<br>
 <br>
-<<if $succubusChoiceEventText eq 1>>
-	<<unset $succubusChoiceEventText>>
+<<if setup.Home.succubusChoiceText() eq 1>>
+	<<run setup.Home.clearSuccubusChoiceText()>>
 	@@.mc-thoughts; You wake up, back in your original form@@<br>
 	@@.mc-speech; That was... oh... the main thing is that now I have her protection for 5 days.@@<br>
-<<elseif $succubusChoiceEventText eq 2>>
-	<<unset $succubusChoiceEventText>>
+<<elseif setup.Home.succubusChoiceText() eq 2>>
+	<<run setup.Home.clearSuccubusChoiceText()>>
 	@@.mc-speech; That was... oh... the main thing is that now I have her protection for 5 days.@@<br>
 <</if>>
-<<if $summonText eq 1>>
+<<if setup.Home.summonText() eq 1>>
 	@@.mc-speech; Oh fuck... apparently I summoned the wrong ghost... next time I need to pay attention to the amulet.@@<br>
-	<<unset $summonText>>
+	<<run setup.Home.clearSummonText()>>
 <</if>>
 <<if setup.Home.canSummonForExorcism()>>
 	@@.enterbtn; [[Summon the ghost|Summoning]]@@<br>
 <<elseif setup.Home.exorcismOnCooldown()>>
 	@@.mc-thoughts; Enough for today...@@<br>
 <</if>>
-<<if $succubusTVText eq 1>>
+<<if setup.Home.succubusTVText() eq 1>>
 	@@.mc-speech; WHAT the fuck just happened... I hope this ghost doesn't bother me anymore. Maybe I should ask how to get rid of it if it keeps haunting me.@@<br>
-	<<unset $succubusTVText>><br>
+	<<run setup.Home.clearSuccubusTVText()>><br>
 <</if>>
-<<if $tentaclesTextAfterSleep eq 1>>
+<<if setup.Home.tentaclesAfterSleepText() eq 1>>
 	@@.mc-speech;Oh, that was a weird dream, like something was trying to get into my head... Brrr, horrible.@@<br>
-	<<unset $tentaclesTextAfterSleep>>
-<<elseif $tentaclesTextAfterSleep eq 2>>
+	<<run setup.Home.clearTentaclesAfterSleepText()>>
+<<elseif setup.Home.tentaclesAfterSleepText() eq 2>>
 	@@.mc-speech;Thank God it was just a nightmare.@@<br>
-	<<unset $tentaclesTextAfterSleep>>
-<<elseif $tentaclesTextAfterSleep eq 3>>
+	<<run setup.Home.clearTentaclesAfterSleepText()>>
+<<elseif setup.Home.tentaclesAfterSleepText() eq 3>>
 	@@.mc-thoughts;You woke up. It was just a dream. But the aftermath lingered - your pussy was soaked through, craving more.@@<br>
 	@@.mc-speech;Phew~ why is this happening? I'm so turned on right now...@@<br>
-	<<unset $tentaclesTextAfterSleep>>
-	<<set $mc.lust to 100>>
-<<elseif $tentaclesTextAfterSleep eq 4>>
+	<<run setup.Home.clearTentaclesAfterSleepText()>>
+	<<run setup.Mc.setLust(100)>>
+<<elseif setup.Home.tentaclesAfterSleepText() eq 4>>
 	@@.mc-speech;That was... oh~ I still feel it. I think I came in my sleep...@@<br>
-	<<unset $tentaclesTextAfterSleep>>
-	<<set $mc.lust to 100>>
-<<elseif $tentaclesTextAfterSleep eq 5>>
+	<<run setup.Home.clearTentaclesAfterSleepText()>>
+	<<run setup.Mc.setLust(100)>>
+<<elseif setup.Home.tentaclesAfterSleepText() eq 5>>
 	@@.mc-speech;That was... oh~ I still feel it. I think I came in my sleep, not just once...@@<br>
-	<<unset $tentaclesTextAfterSleep>>
-	<<set $mc.lust to 100>>
+	<<run setup.Home.clearTentaclesAfterSleepText()>>
+	<<run setup.Mc.setLust(100)>>
 <</if>>
 <<if setup.Home.returningFromHuntDefeat()>>
 	@@.mc-speech; Am I home? I don't remember how I got back here. My whole body aches and is <<linkappend "covered with something">>
@@ -52,16 +52,13 @@
 			@@.mc-thoughts; Something feels off... as you stir awake, you sense a small, lingering ghostly presence in your home. It's faint, but unmistakable -- like something followed you back.@@<br>
 		<</if>>
 		But for now, I need to go to the [[bathroom|Bathroom]].
-		<<set $mc.sanityMax to 70>>
-		<<set $mc.sanity to random(40,70)>>
-		<<set $mc.energy to $mc.energyMax>>
-		<<set $mc.lust to random(30,60)>>
+		<<run setup.Home.applyHuntDefeatWake()>>
 	<</linkappend>>@@
 
 <<elseif setup.Home.returningFromMareEnd()>>
 	@@.mc-thoughts; You wake up and see the@@ <<linkappend "@@.mc-thoughtsLink;aftermath of last night on yourself...@@">><br>
 		<<randomImage "mc/4.webp" "mc/5.webp" "mc/6.webp" "40%">><br>
-		<<set $isPenaltyOn to 0>>
+		<<run setup.Home.clearPenaltyOnMareWake()>>
 		@@.mc-speech; Weirdly enough, I feel great, maybe even a bit better than usual, hehe. I suppose I should still head to the [[bathroom|Bathroom]].@@
 	<</linkappend>>
 
@@ -70,7 +67,7 @@
 	<<if setup.Home.justSleptFromBedroom()>>
 		<<run setup.Home.applyMareWake()>>
 		<<run setup.Home.advanceMareStageOnWake()>>
-		<<if $isPenaltyOn neq 1>>
+		<<if not setup.Mc.isPenalized()>>
 			@@.mc-speech; I feel unwell... strange, I need to find out what's happening to me. In this condition, it will be much harder for me to hunt ghosts.@@<br>
 		<</if>>
 	<</if>>
@@ -84,8 +81,8 @@
 	<</if>>
 	@@.usebtn;<<link "Take a nap(1 hour)" "Bedroom">>
 		<<addTime 60>>
-		<<if $mc.energy lt $mc.energyMax>>
-		<<set $mc.energy += 1>><</if>>
+		<<if setup.Mc.energy() lt setup.Mc.energyMax()>>
+		<<run setup.Mc.addEnergy(1)>><</if>>
 		<<if setup.Home.spiritNapEventReady()>>
 			<<goto "GhostSpecialEventNapSpirit">>
 		<<elseif setup.Home.tentaclesNapEventReady()>>
@@ -99,5 +96,5 @@
 	<</if>>
 	<br>
 	<br>
-	@@.backbtn;[[Livingroom][$minutes +=1]]@@<br>
+	@@.backbtn;[[Livingroom][setup.Time.addMinutes(1)]]@@<br>
 <</if>>

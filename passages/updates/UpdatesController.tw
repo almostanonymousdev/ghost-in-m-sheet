@@ -437,6 +437,10 @@ setup.Updates = (function () {
 			State.variables.cheatBackForward = !State.variables.cheatBackForward;
 			return State.variables.cheatBackForward;
 		},
-		setTimerToolsDecreased:   function (v) { State.variables.timerToolsDecreased = v; }
+		setTimerToolsDecreased:   function (v) { State.variables.timerToolsDecreased = v; },
+		stepCount: function () { return State.variables.stepCount || 0; },
+		incrementStepCount: function () {
+			State.variables.stepCount = (State.variables.stepCount || 0) + 1;
+		}
 	};
 })();

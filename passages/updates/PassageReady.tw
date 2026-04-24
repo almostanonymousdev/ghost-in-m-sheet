@@ -11,7 +11,7 @@
 <<goto "CompanionEvent">>
 <</if>>
 
-<<include "ChangeTimer">>
+<<run setup.Gui.refreshToolTimer()>>
 
 <<run setup.Updates.recomputeStealChance()>>
 
@@ -36,7 +36,7 @@
 <<run setup.Updates.applyPiercingSensitivityPatch()>>
 
 <<if setup.Updates.ironcladPatchNeeded()>>
-<<include "UpdateIronclad">>
+<<run setup.HauntedHouses.migrateIroncladRooms()>>
 <</if>>
 
 <<if setup.Updates.saveFixNeeded()>><<include "FixSaveFile">><</if>>

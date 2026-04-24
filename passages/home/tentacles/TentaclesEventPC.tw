@@ -1,9 +1,9 @@
 :: TentaclesEventPC [nobr] {"position":"800,4300","size":"100,100"}
-<<set $gotCursedItemEventCD to 0>>
+<<run setup.Home.resetTentaclesCooldown()>>
 <<video "tentacles/pc1.mp4">>
 @@.mc-thoughts; You're masturbating, caressing your wet pussy. Suddenly, a tentacle crawls across the screen, slowly approaching you like a snake.@@<br>
 @@.mc-speech; Fuck, what the hell is this?!@@<br><br>
-<<if $tentaclesEventStageAll gte 3>>
+<<if setup.Home.tentaclesStageAll() gte 3>>
 	<span id="tentaclesPCHideOpt">@@.usebtn; [[Run away|Livingroom]]@@ or </span><<linkreplace "@@.usebtn; Stay@@">>
 		<<replace "#tentaclesPCHideOpt">>
 		<</replace>>
@@ -24,17 +24,17 @@
 		<<linkappend "@@.usebtn; drip with anticipation@@">>
 			<<video "tentacles/pc4.mp4">>
 			@@.mc-thoughts; They cum on you, covering you with thick, warm semen@@<br>
-			<<if $tentaclesEventStageAll gte 4>>
-				@@.enterbtn; [[Take them|TentaclesEventPC1]]@@ or @@.enterbtn; [[Leave|Livingroom][$tentaclesEventPCText to 2 ;$mc.lust to 100]]@@
+			<<if setup.Home.tentaclesStageAll() gte 4>>
+				@@.enterbtn; [[Take them|TentaclesEventPC1]]@@ or @@.enterbtn; [[Leave|Livingroom][setup.Home.setTentaclesPCText(2) ;setup.Mc.setLust(100)]]@@
 			<<else>>
-				<<if $tentaclesEventStageAll lt 4>>
-					<<set $tentaclesEventStageAll to 4>>
+				<<if setup.Home.tentaclesStageAll() lt 4>>
+					<<run setup.Home.setTentaclesStageAll(4)>>
 				<</if>>
-				@@.enterbtn; [[Leave|Livingroom][$tentaclesEventPCText to 3; $mc.lust to 100]]@@
+				@@.enterbtn; [[Leave|Livingroom][setup.Home.setTentaclesPCText(3); setup.Mc.setLust(100)]]@@
 			<</if>>
 		<</linkappend>>
 
 	<</linkreplace>>
 <<else>>
-	@@.backbtn; [[Run away|Livingroom][$tentaclesEventPCText to 1]]@@<br>
+	@@.backbtn; [[Run away|Livingroom][setup.Home.setTentaclesPCText(1)]]@@<br>
 <</if>>

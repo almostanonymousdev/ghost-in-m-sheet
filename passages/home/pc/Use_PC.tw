@@ -7,25 +7,25 @@
 <a data-passage="PornCore"><<image "img/porn-lab.jpg" "iconPC">></a>
 <a data-passage="Internet"><<image "img/browser.png" "iconPC">></a>
 <a data-passage="Contacts"><<image "img/contacts.jpg" "iconPC">></a>
-<<if $aliceWorkDone eq 1>><a data-passage="DocumentsForAlice"><<image "img/documents.jpg" "iconPC">></a>
+<<if setup.Home.aliceWorkDone()>><a data-passage="DocumentsForAlice"><<image "img/documents.jpg" "iconPC">></a>
 <</if>>
-<<if $isCameraBought eq 1 and $mcSleptWithCameraOn eq 1>>
-	<<if $ghostMareEventStart gte 2>>
-		<<if $ghostMareEventStage lte 2>>
-			<a data-passage="GhostSpecialEventMare" onclick="$.wiki('<<set $ghostMareEventStart to 4>>')"><<image "img/webcamera.png" "iconPC">></a>
+<<if setup.Home.cameraBought() and setup.Home.sleptWithCameraOn()>>
+	<<if setup.Home.mareEventStart() gte 2>>
+		<<if setup.Home.mareStageLow()>>
+			<a data-passage="GhostSpecialEventMare" onclick="$.wiki('<<run setup.Home.setMareStart(4)>>')"><<image "img/webcamera.png" "iconPC">></a>
 		<<else>>
-			<a data-passage="GhostSpecialEvent1Mare" onclick="$.wiki('<<set $ghostMareEventStart to 4>>')"><<image "img/webcamera.png" "iconPC">></a>
+			<a data-passage="GhostSpecialEvent1Mare" onclick="$.wiki('<<run setup.Home.setMareStart(4)>>')"><<image "img/webcamera.png" "iconPC">></a>
 		<</if>>
 	<<else>>
 		<a data-passage="GhostSpecialEventMare0"><<image "img/webcamera.png" "iconPC">></a>
 	<</if>>
 <</if>>
-<<if $webcamAccountCreated eq 1>><a data-passage="WebcamShow"><<image "img/wb.jpg" "iconPC">></a>
+<<if setup.Home.webcamAccountCreated()>><a data-passage="WebcamShow"><<image "img/wb.jpg" "iconPC">></a>
 <</if>>
 </div>
 </div>
 <br>
-<<if $succubus eq 1 and $succubusEventCD eq 0 or $succubusEventCD eq 2 and $hours gte 18 and $hours lte 23>>
+<<if setup.Home.isSuccubusPCEventReady()>>
 	@@.backbtn;[[Back|SuccubusPCEvent]]@@<br>
 <<else>>
 	@@.backbtn;[[Back|Livingroom]]@@<br>

@@ -7,18 +7,13 @@
 <</widget>>
 
 <<widget "removeMakeup">>
-	<<set _penalty to _args[0]>>
-	<<if $mc.makeupImg eq 1>><<set $mc.beauty -= _penalty>>
-	<<elseif $mc.makeupImg eq 2>><<set $mc.beauty -= (_penalty + 5)>>
-	<<elseif $mc.makeupImg eq 3>><<set $mc.beauty -= (_penalty + 10)>><</if>>
-	<<set $makeupApplied to 0>>
-	<<set $mc.makeupImg to 0>>
+	<<run setup.Home.removeMakeupWithPenalty(_args[0])>>
 <</widget>>
 
 <<widget "washClean">>
 	<<set _imgWidth to _args[0]>>
 	<<set _beautyPenalty to _args[1]>>
-	<<set $mc.dirty to 0>>
+	<<run setup.Mc.setDirty(0)>>
 	<<removeMakeup _beautyPenalty>>
 	@@.mc-speech; Nice and clean again@@<br>
 	<br>

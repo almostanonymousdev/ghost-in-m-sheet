@@ -2,24 +2,25 @@
 <div class="flexwrapper addGap5">
 
 <div class="housecard">
-<<if def $meetBrook>>
-	@@.notmc-speech; $brook.name @@<br>
-	$brook.lvl lvl <<if $brook.lvl gte 5>> (max. lvl)
-	<<else>>($brook.exp / $brook.expForNextLvl)
+<<if setup.Companion.hasMetBrook()>>
+	<<set _brook to setup.Companion.stateFor("brook")>>
+	@@.notmc-speech; <<= _brook.name>> @@<br>
+	<<= _brook.lvl>> lvl <<if _brook.lvl gte 5>> (max. lvl)
+	<<else>>(<<= _brook.exp>> / <<= _brook.expForNextLvl>>)
 	<</if>><br>
 	<<image "brook/brook.png" "contactsImages">><br>
-	<<if $hours lte 5>>
-		<<if $isBrookGoingForHuntingAlone eq 2>>
+	<<if setup.Time.hours() lte 5>>
+		<<if setup.Companion.isCompanionFinishedSoloHunting("Brook")>>
 			@@.mc-thoughts; She is currently on a ghost hunt.@@
 		<<else>>
 			@@.mc-thoughts; She's sleeping@@<br>
 		<</if>>
 	<<else>>
-		<<if $isBrookePossessed eq 1>>
+		<<if setup.Library.brookIsPossessed()>>
 			<<linkreplace "@@.enterbtn;Text her@@">>She's not answering... Strange, she usually responds right away...
 			<</linkreplace>>
 		<<else>>
-			<<if $isBrookePossessedCD lte 2>>
+			<<if setup.Companion.isBrookeCurrentlyUnavailable()>>
 				@@.mc-thoughts;She's probably still with Rain. Maybe it's worth waiting a couple of days. @@
 			<<else>>
 				@@.enterbtn;[[Text her|BrookInfo]]@@<br>
@@ -35,14 +36,15 @@
 </div>
 
 <div class="housecard">
-<<if def $meetAlice>>
-	@@.notmc-speech; $alice.name @@<br>
-	$alice.lvl lvl <<if $alice.lvl gte 5>> (max. lvl)
-	<<else>>($alice.exp / $alice.expForNextLvl)
+<<if setup.Companion.hasMetAlice()>>
+	<<set _alice to setup.Companion.stateFor("alice")>>
+	@@.notmc-speech; <<= _alice.name>> @@<br>
+	<<= _alice.lvl>> lvl <<if _alice.lvl gte 5>> (max. lvl)
+	<<else>>(<<= _alice.exp>> / <<= _alice.expForNextLvl>>)
 	<</if>><br>
 	<<image "alice/alice.png" "contactsImages">><br>
-	<<if $hours lte 5>>
-		<<if $isAliceGoingForHuntingAlone eq 2>>
+	<<if setup.Time.hours() lte 5>>
+		<<if setup.Companion.isCompanionFinishedSoloHunting("Alice")>>
 			@@.mc-thoughts; She is currently on a ghost hunt.@@
 		<<else>>
 			@@.mc-thoughts; She's sleeping@@<br>
@@ -58,14 +60,15 @@
 </div>
 
 <div class="housecard">
-<<if $relationshipBlake gte 5>>
-	@@.notmc-speech; $blake.name @@<br>
-	$blake.lvl lvl <<if $blake.lvl gte 5>> (max. lvl)
-	<<else>>($blake.exp / $blake.expForNextLvl)
+<<if setup.Companion.blakeUnlocked()>>
+	<<set _blake to setup.Companion.stateFor("blake")>>
+	@@.notmc-speech; <<= _blake.name>> @@<br>
+	<<= _blake.lvl>> lvl <<if _blake.lvl gte 5>> (max. lvl)
+	<<else>>(<<= _blake.exp>> / <<= _blake.expForNextLvl>>)
 	<</if>><br>
 	<<image "blake/blake.png" "contactsImages">><br>
-	<<if $hours lte 5>>
-		<<if $isBlakeGoingForHuntingAlone eq 2>>
+	<<if setup.Time.hours() lte 5>>
+		<<if setup.Companion.isCompanionFinishedSoloHunting("Blake")>>
 			@@.mc-thoughts; She is currently on a ghost hunt.@@
 		<<else>>
 			@@.mc-thoughts; She's sleeping@@<br>

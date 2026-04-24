@@ -2,7 +2,7 @@
 <<set _videoList to []>>
 <<run setup.Ghosts.markActiveHuntEvent()>>
 <<if setup.HauntedHouses.nudityNakedNoBottoms()>>
-	<<if $mc.exhibitionism lte 4>>
+	<<if setup.Mc.exhibitionism() lte 4>>
 		<<set _videoList to [
 		{type: "video", src: "naked/1.mp4"},
 		{type: "image", src: "naked/2.png"}]>>
@@ -16,8 +16,8 @@
 		{type: "video", src: "naked/15.mp4"}]>>
 	<</if>>
 <<elseif setup.HauntedHouses.nudityToplessWithPanties()>>
-	<<if $mc.exhibitionism lte 4>>
-		<<if $braState eq "worn">>
+	<<if setup.Mc.exhibitionism() lte 4>>
+		<<if setup.Wardrobe.braWorn()>>
 			<<set _videoList to [
 			{type: "image", src: "naked/5.png"},
 			{type: "image", src: "naked/6.png"},
@@ -42,17 +42,15 @@
 	<<goto "Livingroom">>
 <</if>>
 
-<<set _randomIndex to random(0, _videoList.length - 1)>>
-<<set _selectedVideo to _videoList[_randomIndex]>>
-<<set $videoEventNaked to _selectedVideo.src>>
+<<set _selectedVideo to _videoList.random()>>
 
-<<if _selectedVideo.type == "video">>
-	<<video $videoEventNaked>>
+<<if _selectedVideo.type is "video">>
+	<<video _selectedVideo.src>>
 <<else>>
-	<<image $videoEventNaked { class: "displayCentredImgs", alt: "Image" }>><br>
+	<<image _selectedVideo.src { class: "displayCentredImgs", alt: "Image" }>><br>
 <</if>>
 
-<<if $mc.exhibitionism lte 4>>
+<<if setup.Mc.exhibitionism() lte 4>>
 	@@.mc-thoughts; You hurry through the dark streets, trying to stay hidden in the shadows. Your heart races so fast, it feels like it's echoing through the empty night. Every breath catches in your throat as the cool breeze teases your bare skin, making you shiver in embarrassment. @@<br>
 	@@.mc-speech; Why didn't I just go back and grab my clothes? How did I let this happen?@@<br>
 	@@.mc-thoughts; Every time a car passes, your body tenses, and you glance around nervously, praying they didn't see you. The air brushing against your bare skin only heightens the feeling of vulnerability.@@<br>
@@ -60,9 +58,9 @@
 	@@.mc-speech; If someone sees me like this, I'll want to disappear into the ground.@@<br>
 	@@.mc-thoughts; You dart forward, eyes scanning the street for anyone nearby, silently begging that this night will remain your little secret.@@<br>
 	<br>
-	<<if $mc.exhibitionism lte 9>>
-		<<set $mc.exhibitionism += 1>>
-		@@.mc-speech; Exhibitionism increased: $mc.exhibitionism now!@@<br>
+	<<if setup.Mc.exhibitionism() lte 9>>
+		<<run setup.Mc.addExhibitionism(1)>>
+		@@.mc-speech; Exhibitionism increased: <<= setup.Mc.exhibitionism()>> now!@@<br>
 	<</if>>
 <<else>>
 
@@ -71,9 +69,9 @@
 	@@.mc-speech; I like this @@<br>
 	@@.mc-thoughts; You enjoy every glance from a passerby who catches a glimpse of your naked body. Smiling to yourself, you feel the slow, rising wave of arousal wash over you.@@<br>
 	<br>
-	<<if $mc.exhibitionism lte 9>>
-		<<set $mc.exhibitionism += 1>>
-		@@.mc-speech; Exhibitionism increased: $mc.exhibitionism now!@@<br>
+	<<if setup.Mc.exhibitionism() lte 9>>
+		<<run setup.Mc.addExhibitionism(1)>>
+		@@.mc-speech; Exhibitionism increased: <<= setup.Mc.exhibitionism()>> now!@@<br>
 	<</if>>
 <</if>>
 <br>

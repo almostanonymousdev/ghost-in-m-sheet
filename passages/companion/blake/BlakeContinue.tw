@@ -8,8 +8,8 @@
 	@@.mc-speech;Yeah~@@<br>
 	@@.notmc-speech; I'm really tired already. Do you mind if I stay the night? I'll try not to wake you in the morning.@@<br>
 	@@.mc-speech; Of course, [[sweet dreams|Sleep]].@@<br>
-	<<if $mc.corruption lt 10>>
-		<<set $mc.corruption += 0.1>>
+	<<if setup.Mc.corruption() lt 10>>
+		<<run setup.Mc.addCorruption(0.1)>>
 		+0.2 <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>><br><br>
 	<</if>>
 <</linkappend>><br>

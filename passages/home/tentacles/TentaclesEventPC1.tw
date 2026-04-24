@@ -14,6 +14,6 @@
 		<<video "tentacles/pc7.mp4">>
 		@@.mc-thoughts; You cum from this wild ass fucking. An orgasm rises from deep within you, tearing you apart. As you try to catch your breath, each tentacle starts to cum on you, covering you with sticky, hot semen before disappearing@@<br>
 		@@.mc-speech; Ohhh how nice. Maybe they're not so bad after all...@@<br><br>
-		@@.backbtn; [[Rest|Bedroom][$hours +=3]]@@<br>
+		@@.backbtn; [[Rest|Bedroom][setup.Home.restForHours(3)]]@@<br>
 	<</linkappend>>
 <</linkappend>>

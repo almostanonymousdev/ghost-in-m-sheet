@@ -22,7 +22,8 @@
 <div class="housecard">
 <<image "img/energy-drink.png" "icon">><br>
 <<if setup.Mc.energyDrinkAmount() gte 1>>
-@@.usebtn;<<link `"Drink (+3 energy) - " + setup.Mc.energyDrinkAmount() + " left"` "Bag">><<run setup.Mc.useEnergyDrink()>><</link>>@@
+@@.usebtn;<<link `"Drink (+3 energy) - " + setup.Mc.energyDrinkAmount() + " left"` "Bag">><<run setup.Mc.useEnergyDrink()>>
+<</link>>@@
 <<else>>You don't have energy drink
 <</if>>
 </div>

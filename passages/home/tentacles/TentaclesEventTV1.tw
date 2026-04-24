@@ -17,8 +17,8 @@
 <<linkappend "@@.usebtn; bringing you to the edge@@">>
 	<<video "tentacles/tv6.mp4">>
 	@@.mc-thoughts; They cum on you, covering you with warm, sticky semen, and at that moment, you also reach your orgasm, feeling waves of pleasure wash over you, mingling with their seed. You cum together with them, your body shaking from the bright, repeating flashes of pleasure, as if you're dissolving into this moment, completely surrendering to it.@@<br><br>
-	<<if $tentaclesEventStageAll lt 3>>
-		<<set $tentaclesEventStageAll to 3>>
+	<<if setup.Home.tentaclesStageAll() lt 3>>
+		<<run setup.Home.setTentaclesStageAll(3)>>
 	<</if>>
-	@@.backbtn; [[Rest|Livingroom][$tentaclesEventTVText to 1; $hours += 4]]@@
+	@@.backbtn; [[Rest|Livingroom][setup.Home.setTentaclesTVText(1); setup.Home.restForHours(4)]]@@
 <</linkappend>>

@@ -1,9 +1,9 @@
 :: FindGhostInfo {"position":"950,125","size":"100,100"}
-<<if $findGhostInfoCD eq 1>>
+<<if setup.Home.ghostInfoSearchedToday()>>
 @@.mc-speech; I already searched for information today. I think it's better to try again tomorrow.@@
 <<else>>
 <<linkreplace "Find information about ghosts">>
-<<set $findGhostInfoCD to 1>>
+<<run setup.Home.markGhostInfoSearched()>>
 <<addTime 60>>
 <<set _available to setup.Ghosts.list().filter(g => g.findableOnline && !g.isInfoCollected)>>
 <<if _available.length gt 0>>
