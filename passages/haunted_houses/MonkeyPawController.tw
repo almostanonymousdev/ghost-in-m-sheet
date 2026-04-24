@@ -276,7 +276,7 @@ setup.MonkeyPaw = (function () {
 					narrative: [
 						"The ghost is pinned to one room.<br>The front door seals itself behind the wish -- only a cursed offering will open it.",
 						"The ghost is bound. The front door sinks into the frame until dawn.<br>I'll have to wait out the dark.",
-						"I nailed the ghost in place -- here, with me. The front door drinks itself shut.<br>I'll need a cursed offering, or a loud voice."
+						"I nailed the ghost in place -- here, with me. The doors around me thunk shut.<br>I'll need a cursed offering, or a loud voice."
 					][t - 1],
 					sanityDelta: sanity,
 					corrDelta: corr,
