@@ -6,7 +6,7 @@
 <<if setup.Ghosts.isHunting() and _hg and not _hg.staysInOneRoom and not $hunt.trapped and _ghostRoom.length gt 0>>
 	<<set $currentIntervalRoom to ($minutes >= 0 && $minutes < 20) ? "0-19" : ($minutes >= 20 && $minutes < 40) ? "20-39" : "40-59">>
 	<<if $currentIntervalRoom != $lastChangeIntervalRoom>>
-		<<if Math.random() < 0.35>>
+		<<if Math.random() < 0.45>>
 			<<set $hunt.room.name to _ghostRoom.random()>>
 		<</if>>
 		<<set $lastChangeIntervalRoom to $currentIntervalRoom>>

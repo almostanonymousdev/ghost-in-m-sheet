@@ -19,9 +19,9 @@
 * <span class="gwb"><<checkbox "$GWBCheck" false true autocheck>> Ghost writing book</span><br>
 * <span class="spiritbox"><<checkbox "$SpiritboxCheck" false true autocheck>> Spiritbox</span><br>
 * <span class="temperature"><<checkbox "$TemperatureCheck" false true autocheck>> High temperature </span><<linkreplace "Tips:">><br>
-	Normal temperature: 13 - 16.<br>
-	Ghost's favorite room: 16 - 21.<br>
-	Evidence "High temperature": 19 - 24.<br>
+	Normal temperature: 13 - 18.<br>
+	Ghost's favorite room: 18 - 23.<br>
+	Evidence "High temperature": 21 - 26.<br>
 	If you have a level 2 or 3 thermometer -  color is added. (See the guide).
 <</linkreplace>>
 <br>* <span class="uvl"><<checkbox "$UVLCheck" false true autocheck>> UVL Fingerprints</span><br>
