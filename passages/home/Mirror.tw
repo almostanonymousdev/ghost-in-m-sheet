@@ -7,6 +7,7 @@
 		@@.mc-thoughts; You watch them, captivated by their sudden arrival, but they disappear just as quickly as they appeared.@@<br>
 		@@.mc-speech; It was... strange @@<br><br>
 		@@.backbtn;[[Back|Bathroom]] @@<br>
+		<<set $thetwinsevent to 0>>
 		<<set $thetwinseventCD to 1>>
 	<</linkappend>>
 <<elseif setup.Home.twinsEventAvailable() and _checkBeauty lte $mc.beauty>>
