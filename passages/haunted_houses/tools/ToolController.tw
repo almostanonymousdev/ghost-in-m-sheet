@@ -1,0 +1,298 @@
+:: ToolController [script]
+(function () {
+    'use strict';
+
+    /* setup.ToolController -- single source of truth for the haunted-house
+       tool check passages (EMFcheck, GWBcheck[Art], PlasmCheck[Art],
+       SpiritboxCheck, TemperatureHigh, UVLcheck[Art]). Each passage used
+       to inline its own roll/branch/render ladder; now the controller owns
+       the shared scaffolding and the passage is a one-line `<<toolCheck>>`
+       call. See setup.searchToolDefs (StoryScript.tw) for the metadata the
+       controller augments.
+
+       Rendering strategy: build a markup string and wikify it from the
+       `<<toolCheck>>` macro handler -- same pattern as setup.searchToolMarkup.
+       Image packs, hit messages, and not-found copy are data on the def so
+       new tools or art variants only need to add a descriptor. */
+
+    /* Hit-message library. `standardCss` targets .mc-speech (used in
+       Owaissa/Elm/Ironclad rooms); `artCss` targets .evidenceshadowtext
+       directly (used in Enigma's art variants). The two share copy and
+       differ only in the outer CSS class. */
+    var MESSAGES = {
+        gwb: {
+            standard: '@@.mc-speech; <span class="evidenceshadowtext"> Ohh... what is this...? Nevertheless, one more piece of evidence</span>@@',
+            art:      '@@.evidenceshadowtext; <span class="evidenceshadowtext"> Ohh... what is this...? Nevertheless, one more piece of evidence</span>@@'
+        },
+        uvl: {
+            standard: '@@.mc-speech; <span class="evidenceshadowtext"> It seems I found fingerprints... one more piece of evidence</span>@@',
+            art:      '@@.evidenceshadowtext; <span class="evidenceshadowtext"> It seems I found fingerprints... one more piece of evidence</span>@@'
+        },
+        plasmClean: '@@.evidenceshadowtext; It seems I found ectoplasm... one more piece of evidence@@',
+        plasmMess:  "@@.evidenceshadowtext; It seems I've found ectoplasm... Except somehow I managed to get myself completely covered in this mysterious substance. I don't even remember how it happened. Oh well, at least I've found another piece of evidence..@@"
+    };
+
+    var NOT_FOUND_COPY = {
+        uvl:   "I didn't find any fingerprints",
+        plasm: "I didn't find any ectoplasm stains",
+        gwb:   "I didn't find anything"
+    };
+
+    /* Houses each variant covers -- "standard" is the shared elm/owaissa/
+       ironclad art path, "art" is Enigma's stylised variant. */
+    var EVIDENCE_HOUSES = {
+        standard: ["elm", "owaissa", "ironclad"],
+        art:      ["enigma"]
+    };
+
+    function randInt(lo, hi) {
+        return Math.floor(Math.random() * (hi - lo + 1)) + lo;
+    }
+
+    /* Render helpers that emit canonical Twine markup so the output path
+       matches what the passages used to write by hand. */
+
+    function packMarkup(pack) {
+        var args = ['"' + pack.prefix + '"', pack.start, pack.end, '"' + pack.ext + '"'];
+        if (pack.cssClass) args.push('"' + pack.cssClass + '"');
+        return '<<randRangeImg ' + args.join(' ') + '>>';
+    }
+
+    function notFoundMarkup(toolKey) {
+        return '<<notFound "' + NOT_FOUND_COPY[toolKey] + '">>';
+    }
+
+    /* EMF: timed activation window + glitch roll. Colour/number emit a
+       <<coloredText>> call so the widget's text styling stays the one knob. */
+    function renderEmf() {
+        var state = setup.tickTimedTool("emf");
+        var g     = setup.Ghosts.active();
+        if (state === "ready" && g && g.hasEvidence("emf")) {
+            return g.rollEmfGlitch()
+                ? '<<coloredText "red" ' + randInt(0, 100) + '>>'
+                : '<<coloredText "red" 5>>';
+        }
+        if (state === "ready") return '<<coloredText "yellow" ' + randInt(1, 4) + '>>';
+        return '<<coloredText "green" 0>>';
+    }
+
+    /* GWB: shared tier-gated evidence check. "standard" variant also opens
+       the EMF window -- the art variant historically did too, so both keep
+       that side effect. */
+    function renderGwb(variant) {
+        var houses = EVIDENCE_HOUSES[variant];
+        if (!setup.evidenceAvailable("gwb", State.variables.equipment.gwb, houses)) {
+            return notFoundMarkup("gwb");
+        }
+        setup.activateTool("emf");
+        return packMarkup({ prefix: "gwb/", start: 1, end: 18, ext: ".jpg" })
+            + '\n' + MESSAGES.gwb[variant];
+    }
+
+    /* Plasm ("standard"): 50/50 clean vs mess. Mess image range keys off
+       whether the t-shirt is currently worn; the art variant uses a single
+       combined set and always uses the "mess" copy. */
+    function plasmPack(variant) {
+        if (variant === "art") {
+            return {
+                pack:    { prefix: "art/plasm/", start: 1, end: 14, ext: ".png", cssClass: "displayCentredImgs" },
+                message: MESSAGES.plasmMess
+            };
+        }
+        if (randInt(1, 2) === 1) {
+            return {
+                pack:    { prefix: "plasm/", start: 1, end: 6, ext: ".png", cssClass: "displayCentredImgs" },
+                message: MESSAGES.plasmClean
+            };
+        }
+        var V = State.variables;
+        var range = (V.tshirtState === "worn") ? [1, 7] : [8, 14];
+        return {
+            pack:    { prefix: "plasm/mess/", start: range[0], end: range[1], ext: ".png", cssClass: "displayCentredImgs" },
+            message: MESSAGES.plasmMess
+        };
+    }
+
+    function renderPlasm(variant) {
+        var houses = EVIDENCE_HOUSES[variant];
+        if (!setup.evidenceAvailable("glass", State.variables.equipment.glass, houses)) {
+            return notFoundMarkup("plasm");
+        }
+        var r = plasmPack(variant);
+        return packMarkup(r.pack) + '<br>\n' + r.message + '<br>';
+    }
+
+    /* UVL image packs: standard/art each have a lower-body clothing ladder
+       and an upper-body fallback. Returning the pack lets a single renderer
+       handle both variants. Standard in Ironclad has a dedicated set that
+       bypasses the clothing branch entirely. */
+    function uvlLowerPack(variant) {
+        var V = State.variables;
+        if (variant === "art") {
+            if (V.jeansState  === "worn")     return { prefix: "art/uvl/1.", start: 1, end: 3, ext: ".png" };
+            if (V.shortsState === "worn")     return { prefix: "art/uvl/2.", start: 1, end: 2, ext: ".png" };
+            if (V.skirtState  === "worn") {
+                return V.pantiesState === "worn"
+                    ? { prefix: "art/uvl/3.", start: 1, end: 4, ext: ".png" }
+                    : { prefix: "art/uvl/4.", start: 1, end: 3, ext: ".png" };
+            }
+            if (V.jeansState === "not worn") {
+                return V.pantiesState === "worn"
+                    ? { prefix: "art/uvl/5.", start: 1, end: 4, ext: ".png" }
+                    : { prefix: "art/uvl/6.", start: 1, end: 4, ext: ".png" };
+            }
+            return null;
+        }
+        if (V.jeansState  === "worn")     return { prefix: "uvl/1.", start: 1, end: 4, ext: ".png" };
+        if (V.shortsState === "worn")     return { prefix: "uvl/3.", start: 1, end: 6, ext: ".png" };
+        if (V.skirtState  === "worn") {
+            return V.pantiesState === "worn"
+                ? { prefix: "uvl/4.", start: 1, end: 5, ext: ".png" }
+                : { prefix: "uvl/4.", start: 6, end: 9, ext: ".png" };
+        }
+        if (V.jeansState === "not worn") {
+            return V.pantiesState === "worn"
+                ? { prefix: "uvl/2.", start: 1, end: 6, ext: ".png" }
+                : { prefix: "uvl/5.", start: 0, end: 4, ext: ".png" };
+        }
+        return null;
+    }
+
+    function uvlUpperPack(variant) {
+        if (variant === "art") {
+            return { prefix: "art/uvl/7.", start: 1, end: 4, ext: ".png" };
+        }
+        var V = State.variables;
+        if (V.tshirtState === "worn")     return { prefix: "uvl/1.", start: 5, end:  7, ext: ".png" };
+        if (V.braState    === "worn")     return { prefix: "uvl/2.", start: 7, end: 12, ext: ".png" };
+        if (V.braState    === "not worn") return { prefix: "uvl/6.", start: 0, end:  4, ext: ".png" };
+        return null;
+    }
+
+    function renderUvl(variant) {
+        var state = setup.tickTimedTool("uvl");
+        var g     = setup.Ghosts.active();
+        if (state !== "ready" || !(g && g.hasEvidence("uvl"))) {
+            return notFoundMarkup("uvl");
+        }
+        if (variant !== "art" && State.variables.isIronclad === 1) {
+            return packMarkup({ prefix: "uvl/ironclad", start: 1, end: 6, ext: ".png" })
+                + '\n' + MESSAGES.uvl.standard + '<br>';
+        }
+        /* Upper-vs-lower weighting matches the pre-refactor passages:
+           standard = 50/50 (random 1..2); art = 2/3 lower (random 1..3 > 1). */
+        var useLower = (variant === "art") ? (randInt(1, 3) > 1) : (randInt(1, 2) === 1);
+        var pack = useLower ? uvlLowerPack(variant) : uvlUpperPack(variant);
+        if (!pack) return notFoundMarkup("uvl");
+        return packMarkup(pack) + '\n' + MESSAGES.uvl[variant] + '<br>';
+    }
+
+    /* Spiritbox: four mutually exclusive branches rolled off one d100.
+       - possession (brain >= 3): dramatic goto CityMapPossessed
+       - possession (brain <  3): menacing one-liner in place
+       - static: interrupted response
+       - hit: random Q/A + opens the EMF window
+       - none: silent fallback
+       The Brook possession side effect is set whenever the possession roll
+       fires, matching the old passage's unconditional set. */
+    var SPIRITBOX_QA = [
+        { q: "Where are you?",   a: "I am hiding." },
+        { q: "Are you here?",    a: "I am here." },
+        { q: "What do you want?", a: "I want revenge." }
+    ];
+
+    function maybeSetBrookPossessed() {
+        var V = State.variables;
+        if (V.companion && V.companion.name === "Brook"
+            && V.brook && V.brook.lvl >= 2
+            && V.isCompChosen === 1) {
+            V.isBrookePossessed = 1;
+        }
+    }
+
+    function renderSpiritbox() {
+        var V    = State.variables;
+        var roll = randInt(1, 100);
+        var g    = setup.Ghosts.active();
+
+        if (g && g.spiritboxPossessionChance > 0 && roll <= g.spiritboxPossessionChance) {
+            maybeSetBrookPossessed();
+            if (V.sensualBodyPart && V.sensualBodyPart.brain >= 3) {
+                return '<div class="spiritbox-container">\n'
+                     + '<b>Something\'s wrong, I think I\'m losing consciousness...</b>\n'
+                     + '</div>\n'
+                     + '<<timed 2s>><<goto "CityMapPossessed">><</timed>>';
+            }
+            return '<span class="spiritbox-question">You ask through the Spiritbox: "What do you want?"</span>\n'
+                 + '<span class="spiritbox-answer"><b>I will be able to subdue you... sooner or later, but you will surrender.</b></span>';
+        }
+
+        if (g && g.spiritboxStaticChance > 0 && roll <= g.spiritboxStaticChance) {
+            return '<span class="spiritbox-question">You ask through the Spiritbox: "What do you want?"</span>\n'
+                 + '<span class="spiritbox-answer"><b>The response is interrupted... static and crackling in the speaker... then silence.</b></span>';
+        }
+
+        if (g && g.hasEvidence("spiritbox")
+            && setup.chanceByTier(V.equipment.spiritbox, roll)
+            && setup.isGhostHere()) {
+            setup.activateTool("emf");
+            var qa = SPIRITBOX_QA[randInt(0, SPIRITBOX_QA.length - 1)];
+            return '<div class="spiritbox-container">\n'
+                 + '<span class="spiritbox-question">You ask through the Spiritbox: "' + qa.q + '"</span>\n'
+                 + '<span class="spiritbox-answer">The ghost responds: "' + qa.a + '"</span>\n'
+                 + '</div>';
+        }
+
+        return '<div class="spiritbox-container">\n'
+             + '<span class="spiritbox-no-response">No one responds. Silence...</span>\n'
+             + '</div>';
+    }
+
+    /* Dispatch table. Keeping it a lookup makes adding a new tool a
+       one-line registration instead of touching a switch ladder. */
+    var RENDERERS = {
+        emf:       function (_v) { return renderEmf(); },
+        gwb:       renderGwb,
+        plasm:     renderPlasm,
+        uvl:       renderUvl,
+        spiritbox: function (_v) { return renderSpiritbox(); }
+    };
+
+    function render(toolKey, variant) {
+        var render = RENDERERS[toolKey];
+        if (!render) throw new Error("toolCheck: unknown tool '" + toolKey + "'");
+        var v = (variant === "art") ? "art" : "standard";
+        return render(v);
+    }
+
+    setup.ToolController = {
+        Messages:       MESSAGES,
+        NotFoundCopy:   NOT_FOUND_COPY,
+        EvidenceHouses: EVIDENCE_HOUSES,
+        render:         render,
+
+        /* Crucifix consume: one shared place for the decrement + hunt-start
+           trio so the passage is pure presentation. */
+        consumeCrucifix: function () {
+            var V = State.variables;
+            V.crucifixAmount -= 1;
+            V.huntActivated     = 1;
+            V.huntActivationTime = V.hours * 60 + V.minutes;
+        }
+    };
+
+    /* <<toolCheck tool [variant]>> -- thin macro that delegates to the
+       controller and wikifies the resulting markup. Mirrors the
+       setup.searchToolMarkup / <<searchTool>> pairing in StoryScript.tw. */
+    Macro.add("toolCheck", {
+        handler: function () {
+            try {
+                var toolKey = this.args[0];
+                var variant = this.args[1];
+                $(this.output).wiki(setup.ToolController.render(toolKey, variant));
+            } catch (e) {
+                return this.error(e.message);
+            }
+        }
+    });
+}());

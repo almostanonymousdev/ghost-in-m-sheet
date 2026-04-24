@@ -53,17 +53,27 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
 
   // ── Raiju ──────────────────────────────────────────────────────
 
+  // EMF reading comes out of setup.ToolController.render('emf'), which
+  // returns a <<coloredText "<color>" <N>>> markup string. Sampling the
+  // controller directly avoids a per-iteration passage navigation (and
+  // doesn't need a dedicated EMFcheck passage to exist).
+  async function sampleEmfReadings(page, count) {
+    const rx = /<<coloredText\s+"[^"]*"\s+(-?\d+)/;
+    const readings = [];
+    for (let i = 0; i < count; i++) {
+      const markup = await page.evaluate(() => SugarCube.setup.ToolController.render('emf'));
+      const m = markup.match(rx);
+      if (m) readings.push(parseInt(m[1], 10));
+    }
+    return readings;
+  }
+
   test('Raiju: EMF readings can glitch to random values', async () => {
     await setupHunt(page, 'Raiju');
     await setVar(page, 'tools', { emf: { activated: 1, activationTime: 0 }, uvl: { activated: 0, activationTime: 0 } });
     await setVar(page, 'equipment.emf', 3);
 
-    const readings = [];
-    for (let i = 0; i < 30; i++) {
-      await goToPassage(page, 'EMFcheck');
-      const num = parseInt(await page.locator('.passage').textContent(), 10);
-      if (!isNaN(num)) readings.push(num);
-    }
+    const readings = await sampleEmfReadings(page, 30);
 
     expect(readings.some(r => r !== 5), 'Raiju never glitched EMF').toBe(true);
     expect(readings.some(r => r === 5), 'Normal EMF (5) never appeared').toBe(true);
@@ -74,11 +84,8 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
     await setVar(page, 'tools', { emf: { activated: 1, activationTime: 0 }, uvl: { activated: 0, activationTime: 0 } });
     await setVar(page, 'equipment.emf', 3);
 
-    for (let i = 0; i < 10; i++) {
-      await goToPassage(page, 'EMFcheck');
-      const num = parseInt(await page.locator('.passage').textContent(), 10);
-      if (!isNaN(num)) expect(num).toBe(5);
-    }
+    const readings = await sampleEmfReadings(page, 10);
+    for (const num of readings) expect(num).toBe(5);
   });
 
   test('Raiju: temperature readings can glitch', async () => {

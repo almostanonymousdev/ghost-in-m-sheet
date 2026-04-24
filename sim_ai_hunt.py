@@ -37,8 +37,10 @@ Simple AI patterns:
      take temperature readings; elevated reading (>= 18) means ghost room.
   2) "Scan for evidence in the ghost's room" - turn lights off for the
      tool bonus, scan every tool each round, revert lights if sanity gets
-     dangerous. If evidence is still incomplete and the ghost relocates,
-     drop back to pattern 1.
+     dangerous. As soon as any evidence reads positive (the room is
+     confirmed), force EMF/UVL windows open so the timed-tool scans
+     succeed this pass instead of waiting for a ghost event. If evidence
+     is still incomplete and the ghost relocates, drop back to pattern 1.
   3) "Respond to hunt" - on a hunt event, hide (ghost overrides aside).
 
 Usage:
@@ -257,6 +259,26 @@ def _parse_event_choice_costs(event_mc_src: str) -> dict[str, float]:
     }
 
 
+def _parse_temperature(src: str) -> dict[str, int]:
+    """Pull base range + ghost-room offsets from TemperatureHigh.tw. Shape:
+    {base_lo, base_hi, offset_with_temp, offset_no_temp}. Lets the AI's
+    room-detection threshold track the game's reading distribution."""
+    base = re.search(r'random\((\d+),\s*(\d+)\)\s*\+\s*\$temperature', src)
+    with_temp = re.search(
+        r'_inGhostRoom\s+and\s+_hasTempEvidence>>\s*'
+        r'<<set\s+_offset\s+to\s+(\d+)', src)
+    no_temp = re.search(
+        r'<<elseif\s+_inGhostRoom>>\s*<<set\s+_offset\s+to\s+(\d+)', src)
+    if not (base and with_temp and no_temp):
+        raise SystemExit("parser: TemperatureHigh.tw constants not found")
+    return {
+        "base_lo": int(base.group(1)),
+        "base_hi": int(base.group(2)),
+        "offset_with_temp": int(with_temp.group(1)),
+        "offset_no_temp": int(no_temp.group(1)),
+    }
+
+
 def _parse_contract_drain(src: str) -> tuple[float, float]:
     """Pull the `hasCompanion ? X : Y` ternary out of the contract-drain
     block in HauntConditions.snapshot(). Returns (base_drain, companion_drain)
@@ -296,6 +318,10 @@ class GameData:
     start_lust: float
     lust_fuel_threshold: int
     dark_bg: int
+    temp_base_lo: int                        # TemperatureHigh.tw random(lo,hi)
+    temp_base_hi: int
+    temp_offset_with_temp: int               # ghost room + temp evidence
+    temp_offset_no_temp: int                 # ghost room without temp evidence
     snapshot_bonuses: dict[str, dict[str, float]]
     contract_sanity_drain: float             # baseline sanity -= /step in-house
     contract_sanity_drain_with_companion: float
@@ -321,6 +347,7 @@ def load_game_data() -> GameData:
     check_hunt = _read("haunted_houses/hunt/CheckHuntStart.tw")
     hide_tw = _read("haunted_houses/general/Hide.tw")
     run_tw = _read("haunted_houses/general/RunFast.tw")
+    temp_tw = _read("haunted_houses/tools/TemperatureHigh.tw")
     widget_event = _read("events/widgetEvent.tw")
     events_ctl = _read("events/EventsController.tw")
     event_mc = _read("events/EventMC.tw")
@@ -340,6 +367,7 @@ def load_game_data() -> GameData:
     dark_bg = int(_find_num(r"var\s+DARK\s*=\s*(\d+)", story_script))
     snapshot_bonuses = _parse_snapshot_bonuses(story_script)
     contract_drain, companion_drain = _parse_contract_drain(story_script)
+    temp_cfg = _parse_temperature(temp_tw)
 
     # mc starting stats (StoryInit.tw).
     start_sanity = _find_num(r"sanity\s*:\s*(\d+)", story_init)
@@ -389,6 +417,10 @@ def load_game_data() -> GameData:
         start_lust=start_lust,
         lust_fuel_threshold=lust_fuel,
         dark_bg=dark_bg,
+        temp_base_lo=temp_cfg["base_lo"],
+        temp_base_hi=temp_cfg["base_hi"],
+        temp_offset_with_temp=temp_cfg["offset_with_temp"],
+        temp_offset_no_temp=temp_cfg["offset_no_temp"],
         snapshot_bonuses=snapshot_bonuses,
         contract_sanity_drain=contract_drain,
         contract_sanity_drain_with_companion=companion_drain,
@@ -408,6 +440,14 @@ GD = load_game_data()
 
 STEP_MINUTES = 1                 # one nav tick = one in-game minute
 HUNT_EVENT_SANITY_LOSS_DEFAULT = (1, 5)  # Ghost.rollEventSanityLoss default
+
+# Temperature detection threshold used by the AI. This is a simulator-side
+# policy, not a game constant; the game displays the reading in red/yellow/
+# green so a human doesn't threshold the number directly. Keep this at the
+# game's historic "unambiguous" value so raising temp_base_hi or lowering
+# temp_offset_no_temp in the game source creates false positives / negatives
+# around the AI's fixed rule. Overridable via --temp-ai-threshold.
+TEMP_AI_THRESHOLD = 18
 
 
 def validate_game_data() -> list[str]:
@@ -825,11 +865,15 @@ class Hunt:
         return None
 
     def temperature_scan(self) -> int:
-        base = random.randint(13, 16)
+        base = random.randint(GD.temp_base_lo, GD.temp_base_hi)
         offset = 0
         if self.current_room == self.ghost_room:
-            offset = 8 if "temperature" in self.ghost_evidence else 5
-            if "temperature" in self.ghost_evidence:
+            has_temp = "temperature" in self.ghost_evidence
+            offset = GD.temp_offset_with_temp if has_temp else GD.temp_offset_no_temp
+            # Temperature evidence only registers when the reading actually
+            # beats the AI's detection threshold; otherwise it reads cold and
+            # the AI can't confirm temp as one of the three evidences.
+            if has_temp and base + offset >= TEMP_AI_THRESHOLD:
                 self.found.add("temperature")
         return base + offset
 
@@ -913,7 +957,7 @@ def pattern_find_ghost_room(hunt: Hunt) -> tuple[str | None, str]:
         tick_reason = hunt.tool_tick()
         if tick_reason:
             return None, tick_reason
-        if reading >= 18:
+        if reading >= TEMP_AI_THRESHOLD:
             return dest, "found"
         seen_cold.add(dest)
         tried += 1
@@ -930,9 +974,13 @@ def pattern_scan_for_evidence(hunt: Hunt, suspected: str, rounds: int = 6
     # GWB / Spiritbox roll before EMF so their hits can open the EMF window
     # in the same pass; temperature runs first to match the
     # pattern_find_ghost_room cadence.
-    scans = [
-        hunt.temperature_scan, hunt.gwb_scan, hunt.spiritbox_scan,
-        hunt.plasm_scan,       hunt.emf_scan, hunt.uvl_scan,
+    # Each entry pairs a scan callable with the timed-tool name it fronts
+    # ("" for non-timed scans). Keeping the tag alongside the callable
+    # avoids fragile bound-method identity checks in the activation step.
+    scans: list[tuple[callable, str]] = [
+        (hunt.temperature_scan, ""), (hunt.gwb_scan,       ""),
+        (hunt.spiritbox_scan,   ""), (hunt.plasm_scan,     ""),
+        (hunt.emf_scan,      "emf"), (hunt.uvl_scan,    "uvl"),
     ]
     for _ in range(rounds):
         if hunt.out_of_energy():
@@ -943,7 +991,12 @@ def pattern_scan_for_evidence(hunt: Hunt, suspected: str, rounds: int = 6
         exit_reason = hunt.move_to(suspected)
         if exit_reason:
             return hunt.found >= hunt.ghost_evidence, exit_reason
-        for scan in scans:
+        for scan, timed_tool in scans:
+            # Once any evidence has confirmed the ghost's room, force the
+            # EMF/UVL windows open so those timed-tool scans read positive
+            # this pass instead of waiting on a ghost event to activate them.
+            if timed_tool and hunt.found:
+                hunt._activate(timed_tool)
             scan()
             tick_reason = hunt.tool_tick()
             if tick_reason:
@@ -1189,6 +1242,10 @@ _OVERRIDE_FIELDS: list[tuple[str, str, type, str]] = [
     ("--hide-success",    "hide_success_base",       float, "Hide.tw baseline success rate (0-1)"),
     ("--run-success",     "run_success_base",        float, "RunFast.tw baseline success rate (0-1)"),
     ("--lust-fuel-threshold", "lust_fuel_threshold", int,   "lust threshold for the passive tool bonus"),
+    ("--temp-base-lo",    "temp_base_lo",            int,   "lower bound of normal-room temperature roll"),
+    ("--temp-base-hi",    "temp_base_hi",            int,   "upper bound of normal-room temperature roll (raise for false positives)"),
+    ("--temp-offset-with-temp", "temp_offset_with_temp", int, "offset added in ghost's room when the ghost has temp evidence"),
+    ("--temp-offset-no-temp",   "temp_offset_no_temp",   int, "offset added in ghost's room when the ghost lacks temp evidence (lower for false negatives)"),
 ]
 
 
@@ -1245,6 +1302,9 @@ def _build_parser() -> argparse.ArgumentParser:
     for flag, _attr, cast, help_text in _OVERRIDE_FIELDS:
         p.add_argument(flag, type=cast, default=None,
                        help=f"Override: {help_text}.")
+    p.add_argument("--temp-ai-threshold", type=int, default=None,
+                   help=f"Override: AI temperature-detection threshold "
+                        f"(default {TEMP_AI_THRESHOLD}).")
     return p
 
 
@@ -1266,10 +1326,13 @@ def main() -> None:
         return
 
     notes = _apply_overrides(args)
-    global SIM_COMPANION
+    global SIM_COMPANION, TEMP_AI_THRESHOLD
     SIM_COMPANION = args.companion
     if args.companion:
         notes.append("companion=True")
+    if args.temp_ai_threshold is not None:
+        TEMP_AI_THRESHOLD = args.temp_ai_threshold
+        notes.append(f"TEMP_AI_THRESHOLD={TEMP_AI_THRESHOLD}")
     if args.tier not in GD.tier_chance:
         raise SystemExit(f"Unknown tier: {args.tier}. "
                          f"Choose from {sorted(GD.tier_chance)}.")

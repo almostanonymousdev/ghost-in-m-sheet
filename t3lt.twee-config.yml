@@ -521,6 +521,12 @@ sugarcube-2:
         setup.searchPrefixIndex (this is the form used by <<roomToolCard>>); (2)
         <<searchTool cfgObject>> — pass a fully-built config object for manual
         control of buttonId/meterId/actionSel/etc."
+    toolCheck:
+      name: toolCheck
+      description: "Renders a tool check result (EMFcheck, GWBcheck[Art],
+        PlasmCheck[Art], SpiritboxCheck, TemperatureHigh, UVLcheck[Art]) via
+        setup.ToolController. Args: tool (key into setup.searchToolDefs),
+        optional variant (\"standard\" or \"art\")."
     addLustPussy:
       name: addLustPussy
     addLustByPart:

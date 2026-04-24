@@ -24,9 +24,8 @@
 	@@.mc-thoughts;You feel the cold close around you and pull. There is nothing left to give but yourself.@@
 	<<set $huntActivated to 1>>
 	<<set $huntActivationTime = $hours * 60 + $minutes>>
-	<<timed 2s>>
-		<<goto "HuntOverSanity">>
-	<</timed>>
+	<br><br>
+	@@.usebtn;[[Surrender to the cold|HuntOverSanity]]@@
 <<else>>
 	<<set $tempCorr to ($tempCorr || 0) + 0.5>>
 	<<run setup.activateTool("emf")>>

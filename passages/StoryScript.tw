@@ -1049,9 +1049,7 @@ setup.searchToolDefs = {
         picSuffix:       "PicEMF",
         iconFile:        "emf.png",
         replaceMode:     "single",
-        label:           "Use EM@@color:yellow;F@@",
-        checkPassage:    "EMFcheck",
-        artCheckPassage: "EMFcheck"
+        label:           "Use EM@@color:yellow;F@@"
     },
     plasm: {
         meterField:      "Plasm",
@@ -1060,9 +1058,7 @@ setup.searchToolDefs = {
         picSuffix:       "PicPlasm",
         iconFile:        "glass.png",
         replaceMode:     "double",
-        label:           "Use @@color:yellow;E@@ctoglass",
-        checkPassage:    "PlasmCheck",
-        artCheckPassage: "PlasmCheckArt"
+        label:           "Use @@color:yellow;E@@ctoglass"
     },
     gwb: {
         meterField:      "Gwb",
@@ -1071,9 +1067,7 @@ setup.searchToolDefs = {
         picSuffix:       "PicGWB",
         iconFile:        "gwb.png",
         replaceMode:     "double",
-        label:           "Use @@color:yellow;G@@WB",
-        checkPassage:    "GWBcheck",
-        artCheckPassage: "GWBcheckArt"
+        label:           "Use @@color:yellow;G@@WB"
     },
     spiritbox: {
         meterField:      "Spiritbox",
@@ -1083,9 +1077,7 @@ setup.searchToolDefs = {
         iconFile:        "spiritbox.png",
         replaceMode:     "double",
         needsLightCheck: true,
-        label:           "Use @@color:yellow;S@@piritbox",
-        checkPassage:    "SpiritboxCheck",
-        artCheckPassage: "SpiritboxCheck"
+        label:           "Use @@color:yellow;S@@piritbox"
     },
     temperature: {
         meterField:      "Temperature",
@@ -1105,9 +1097,7 @@ setup.searchToolDefs = {
         picSuffix:       "PicUVL",
         iconFile:        "uvl.png",
         replaceMode:     "double",
-        label:           "Use @@color:yellow;U@@VL",
-        checkPassage:    "UVLcheck",
-        artCheckPassage: "UVLcheckArt"
+        label:           "Use @@color:yellow;U@@VL"
     }
 };
 
@@ -1623,8 +1613,8 @@ setup.resetTools = function () {
 /* Evaluate a timed tool's state and auto-clear it if stale. Returns
  * "ready" (activated, within the freshness window), "expired" (was
  * activated but the window lapsed; flags are now cleared) or "inactive"
- * (never activated this cycle). EMFcheck / UVLcheck / UVLcheckArt share
- * this logic. */
+ * (never activated this cycle). setup.ToolController's emf/uvl
+ * renderers share this logic. */
 setup.tickTimedTool = function (tool) {
     if (setup.TIMED_TOOLS.indexOf(tool) === -1) return "inactive";
     var rec = setup.toolsRecord(tool);
@@ -1751,9 +1741,19 @@ setup.searchToolMarkup = function (cfg) {
     var meterName   = "search" + cfg.room + def.meterField;
     var meterExpr   = "`" + field + " / " + equip + "`";
 
-    var checkPassage = (cfg.eventChain === "enigma")
-        ? def.artCheckPassage
-        : def.checkPassage;
+    /* Emit either a <<toolCheck>> call (controller-owned check) or an
+       <<include>> into a still-inline check passage (temperature). The
+       enigma chain uses the art variant; everything else uses standard. */
+    var variant = (cfg.eventChain === "enigma") ? "art" : "standard";
+    var checkMarkup;
+    if (def.checkPassage) {
+        var checkPassage = (cfg.eventChain === "enigma")
+            ? def.artCheckPassage
+            : def.checkPassage;
+        checkMarkup = '<<include "' + checkPassage + '">>';
+    } else {
+        checkMarkup = '<<toolCheck "' + cfg.tool + '" "' + variant + '">>';
+    }
 
     // Event chain -- what happens when an iteration ticks WITHOUT completing.
     var eventChain;
@@ -1785,11 +1785,11 @@ setup.searchToolMarkup = function (cfg) {
     var completionReplace;
     if (cfg.replaceMode === "double") {
         completionReplace =
-            '<<replace "#' + actionSel + '">><<include "' + checkPassage + '">><</replace>>' +
+            '<<replace "#' + actionSel + '">>' + checkMarkup + '<</replace>>' +
             '<<replace "#' + meterId + '">><</replace>>';
     } else {
         completionReplace =
-            '<<replace "#' + meterId + '">><<include "' + checkPassage + '">><</replace>>';
+            '<<replace "#' + meterId + '">>' + checkMarkup + '<</replace>>';
     }
 
     // Body of the <<repeat>> loop. Each iteration is one tool tick and
