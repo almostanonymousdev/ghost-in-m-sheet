@@ -482,6 +482,12 @@ sugarcube-2:
       name: addTime
     addLust:
       name: addLust
+    backOrReturn:
+      name: backOrReturn
+      description: "Renders the persistent overlay back button (.backbtn) as
+        either <<back>> (when previous() is tagged 'event') or <<return>>.
+        Replaces the if/else block that used to be repeated in every GUI
+        overlay (Notebook, Phone, Bag, Evidence, ChangeLog). No args."
     gymFitnessGain:
       name: gymFitnessGain
     randomImage:

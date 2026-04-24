@@ -24,6 +24,14 @@ setup.addLust = function(amount) {
 };
 <</script>>
 
+<<widget "backOrReturn">>
+	<<if setup.Gui.useBackInsteadOfReturn()>>
+		@@.backbtn;<<back>>@@<br>
+	<<else>>
+		@@.backbtn;<<return>>@@<br>
+	<</if>>
+<</widget>>
+
 <<widget "addTime">>
 	<<set _mins to _args[0]>>
 	<<set _crossedMidnight to setup.addTime(_mins)>>

@@ -142,6 +142,19 @@ setup.Companion = (function () {
 		}
 	];
 
+	// Sanity threshold below which the active companion leaves you mid-event
+	// for a given level. Index by companion lvl (1..5+). Was duplicated three
+	// times in PassageDone (one block per cis companion) and once more inline
+	// for trans companions (always 0); centralised here so adding a new tier
+	// is a single edit. lvl >= 5 is "no floor": trust is total.
+	var SANITY_CAP_BY_LEVEL = [75, 75, 50, 25, 0, 0];
+
+	function sanityCapForLevel(lvl) {
+		if (typeof lvl !== 'number' || lvl < 1) return SANITY_CAP_BY_LEVEL[0];
+		if (lvl >= SANITY_CAP_BY_LEVEL.length) return 0;
+		return SANITY_CAP_BY_LEVEL[lvl];
+	}
+
 	// Shared stat defaults baked into every fresh $brook/$alice/$blake
 	// companion state. Per-companion overrides live in COMPANION_CONFIG's
 	// initStats field. Kept out of the catalogue entries because the fields
@@ -410,6 +423,43 @@ setup.Companion = (function () {
 			return v('chosenPlan') !== undefined
 				&& setup.Ghosts.isHunting()
 				&& this.inHauntedHouseLocation();
+		},
+
+		// --- Per-tick progression (called from PassageDone) -------
+		/* For each cis companion (hasExpSystem true) with stat object on
+		   $<key>, roll any banked exp into level-ups while lvl < 5, then
+		   refresh maxSanityCap from the new level. Trans companions are
+		   already at lvl 5 with no exp track and use a flat 0 cap. */
+		tickAllCompanionProgression: function () {
+			COMPANIONS.forEach(function (c) {
+				if (!c.hasExpSystem) return;
+				var stats = c.state();
+				if (!stats) return;
+				while (stats.lvl < 5 && stats.exp >= stats.expForNextLvl) {
+					stats.exp -= stats.expForNextLvl;
+					stats.lvl += 1;
+					stats.expForNextLvl = 20 + stats.lvl * 20;
+				}
+				stats.maxSanityCap = sanityCapForLevel(stats.lvl);
+			});
+		},
+		sanityCapForLevel: sanityCapForLevel,
+		/* Sanity cap that triggers "companion leaves" mid-event. Cis
+		   companions key off their own lvl; trans companions tolerate
+		   any non-zero sanity. */
+		activeCompanionSanityCap: function () {
+			var c = this.active();
+			if (!c) return 0;
+			if (!c.hasExpSystem) return 0;
+			var stats = c.state();
+			return stats ? sanityCapForLevel(stats.lvl) : 0;
+		},
+		activeCompanionShouldLeave: function () {
+			var c = this.active();
+			if (!c) return false;
+			var live = State.variables.companion;
+			if (!live || typeof live.sanity !== 'number') return false;
+			return live.sanity <= this.activeCompanionSanityCap();
 		},
 
 		// --- Street-passage "see your companion" test ------------

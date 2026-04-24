@@ -36,11 +36,7 @@
 	<</hovertip>></span>
 <</for>><br>
 
-<<if (previous() eq "WitchEndContract") or (tags(previous()).includes("event"))>>
-	@@.backbtn;<<back>>@@<br>
-<<else>>
-	@@.backbtn;<<return>>@@<br>
-<</if>>
+<<backOrReturn>>
 </div>
 </div>
 

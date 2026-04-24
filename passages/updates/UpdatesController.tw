@@ -1,0 +1,164 @@
+:: UpdatesController [script]
+/*
+ * Per-tick maintenance helpers, called from :: PassageDone (and a
+ * few from :: ResetCooldowns). PassageDone used to host all of this
+ * logic inline as <<if>> chains and <<script>> blocks, with the same
+ * patches re-derived in different shapes for each entity. The body
+ * of PassageDone is a critical hot path -- it runs after every
+ * passage transition -- so keeping the logic here lets us reason
+ * about it as code rather than as twee, and lets new gameplay
+ * systems hook into the tick without editing PassageDone itself.
+ */
+setup.Updates = (function () {
+	function v(name) { return State.variables[name]; }
+
+	// --- Cursed hunt timer ---------------------------------------
+	/* The cursed-hunt window is wall-clock real-time, not in-game time:
+	   when a cursed possession is interacted with, $cursedHuntEndTime is
+	   stamped Date.now()+window. Expire it lazily on each tick rather
+	   than wiring up a setTimeout (which wouldn't survive save/load).
+	   The DOM toggle re-enables the link selectors that were greyed out
+	   while the hunt was active. */
+	function tickCursedHuntTimer() {
+		var sv = State.variables;
+		if (sv.cursedHuntActive !== 1) return;
+		if (sv.cursedHuntEndTime && Date.now() >= sv.cursedHuntEndTime) {
+			sv.cursedHuntActive = 0;
+			delete sv.cursedHuntEndTime;
+			$('.cursedHuntLinkDisable').removeClass('disabled-linkSpecial');
+		} else {
+			$('.cursedHuntLinkDisable').addClass('disabled-linkSpecial');
+		}
+	}
+
+	// --- Detector highlights -------------------------------------
+	/* When the player owns the furniture-detector ($boughtDetector), the
+	   target room flashes a highlight class on every passage so it stays
+	   visible as the player moves between rooms. */
+	var DETECTOR_TARGETS = [
+		{ houseFlag: 'isElm', suffix: 'Elm' },
+		{ houseFlag: 'isOwaissa', suffix: 'Owaissa' }
+	];
+	var DETECTOR_RULES = [
+		{ slotKey: 'placeForCursedItem',    test: function (sv) {
+			return sv.gotCursedItem !== 1 && typeof sv.gotCursedItem !== 'undefined';
+		}},
+		{ slotKey: 'placeForRescueClue',    test: function (sv) {
+			return sv.hasRescueClue !== 1 && sv.hasQuestForRescue === 1;
+		}},
+		{ slotKey: 'placeForTarotCards',    test: function (sv) {
+			return sv.tarotCardsStage !== 1;
+		}},
+		{ slotKey: 'placeForMonkeyPaw',     test: function () {
+			return setup.MonkeyPaw && setup.MonkeyPaw.isDiscoverable
+				? setup.MonkeyPaw.isDiscoverable() : false;
+		}},
+		{ slotKey: 'placeForClothesStolen', test: function (sv) {
+			return sv.isClothesStolen === 1;
+		}}
+	];
+	function highlightIf(elementId, condition) {
+		if (!condition) return;
+		var el = document.getElementById(elementId);
+		if (el) el.classList.add('highlighted-furnitureDetector');
+	}
+	function applyDetectorHighlights() {
+		var sv = State.variables;
+		if (sv.boughtDetector !== 1) return;
+		DETECTOR_TARGETS.forEach(function (target) {
+			if (sv[target.houseFlag] !== 1) return;
+			DETECTOR_RULES.forEach(function (rule) {
+				highlightIf(sv[rule.slotKey + target.suffix], rule.test(sv));
+			});
+		});
+	}
+
+	// --- Rescue quest expiry --------------------------------------
+	/* When the rescue quest is active ($hasQuestForRescue === 1) and the
+	   player either ran out of stages or let the day slip past 5 PM, fail
+	   the quest by bumping it to stage 2 and reset the per-attempt vars. */
+	function tickRescueQuestExpiry() {
+		var sv = State.variables;
+		if (sv.hasQuestForRescue !== 1) return;
+		var ranOut = sv.rescueStage >= 2 || (sv.rescueStage === 1 && sv.hours > 17);
+		if (!ranOut) return;
+		sv.hasQuestForRescue = 2;
+		sv.rescueStage = 0;
+		sv.hasRescueClue = 0;
+	}
+
+	// --- $update4 one-time patch ---------------------------------
+	/* Older saves had wrong default plan*TimeReq values; this patch
+	   normalises them and stamps $update4 so it doesn't run again. */
+	function applyOneTimeUpdate4() {
+		var sv = State.variables;
+		if (sv.update4 === 1) return;
+		if (sv.blake) sv.blake.plan2TimeReq = 10;
+		if (sv.alice) {
+			sv.alice.plan2TimeReq = 15;
+			sv.alice.plan3TimeReq = 15;
+			sv.alice.plan4TimeReq = 10;
+		}
+		if (sv.brook) {
+			sv.brook.plan2TimeReq = 15;
+			sv.brook.plan3TimeReq = 10;
+		}
+		sv.update4 = 1;
+	}
+
+	// --- Choker lust floor ---------------------------------------
+	/* The collar/choker keeps lust at >=15 while worn. Returns true
+	   if it pushed lust up so callers can refresh the meter. */
+	function applyChokerLustFloor() {
+		var sv = State.variables;
+		if (sv.neckChokerState1 !== 'worn') return false;
+		if (!sv.mc || sv.mc.lust > 15) return false;
+		sv.mc.lust = 15;
+		return true;
+	}
+
+	// --- Companion leave check -----------------------------------
+	/* Returns true when the player just finished an MC-only event with
+	   a companion on Plan1 whose sanity has fallen below their level
+	   floor; PassageDone routes those cases to CompanionLeaving. */
+	function justFinishedSharedEvent() {
+		var sv = State.variables;
+		return previous() === 'EventMC'
+			&& sv.chosenPlan === 'Plan1'
+			&& sv.isCompChosen === 1;
+	}
+	function activeCompanionShouldLeaveAfterEvent() {
+		if (!justFinishedSharedEvent()) return false;
+		return setup.Companion.activeCompanionShouldLeave();
+	}
+
+	// --- Underwear-memory defaults -------------------------------
+	function ensureUnderwearMemory() {
+		var sv = State.variables;
+		if (sv.rememberTopUnder === undefined || sv.rememberBottomUnder === undefined) {
+			sv.rememberTopUnder    = 'bra0';
+			sv.rememberBottomUnder = 'panties0';
+		}
+	}
+
+	// --- Hunt timer accounting -----------------------------------
+	function tickHuntTimer() {
+		var sv = State.variables;
+		if (sv.elapsedTimeHunt > sv.huntTimeRemain) {
+			sv.huntActivated = 0;
+		} else {
+			sv.elapsedTimeHunt = (sv.hours * 60 + sv.minutes) - sv.huntActivationTime;
+		}
+	}
+
+	return {
+		tickCursedHuntTimer:                  tickCursedHuntTimer,
+		applyDetectorHighlights:              applyDetectorHighlights,
+		tickRescueQuestExpiry:                tickRescueQuestExpiry,
+		applyOneTimeUpdate4:                  applyOneTimeUpdate4,
+		applyChokerLustFloor:                 applyChokerLustFloor,
+		activeCompanionShouldLeaveAfterEvent: activeCompanionShouldLeaveAfterEvent,
+		ensureUnderwearMemory:                ensureUnderwearMemory,
+		tickHuntTimer:                        tickHuntTimer
+	};
+})();

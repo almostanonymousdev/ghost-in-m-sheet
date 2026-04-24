@@ -1,4 +1,4 @@
-:: WitchEndContract [nobr] {"position":"1450,25","size":"100,100"}
+:: WitchEndContract [nobr event] {"position":"1450,25","size":"100,100"}
 <<image "img/witch-girl.jpg" { width: "100%" }>>
 <br>
 @@.notmc-speech;Tell me the type of ghost:@@<br>

@@ -137,8 +137,4 @@ Pepper spray ($hasPSprayCharges charges left)
 <<addclass ".linkselector" "disabled-link">>
 <</done>>
 <</nobr>>
-<<if (previous() eq "WitchEndContract") or (tags(previous()).includes("event"))>>
-@@.backbtn;<<back>>@@<br>
-<<else>>
-@@.backbtn;<<return>>@@<br>
-<</if>>
+<<backOrReturn>>

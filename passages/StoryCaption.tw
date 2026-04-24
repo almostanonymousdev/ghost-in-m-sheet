@@ -42,7 +42,7 @@
 	<</if>><br>
 	<<linkreplace "ghostname">>$hunt.name<<if setup.Ghosts.isMimicHunt()>>(Mimic)
 	<</if>>
-	<</linkreplace>>
+	<</linkreplace>><br>
 	<<if setup.Ghosts.isAnyMode()>>
 		<<linkreplace "choose ghost type">>
 			<<for _g range setup.Ghosts.list()>>
@@ -80,13 +80,7 @@
 	<</linkreplace>>
 	<<linkreplace "Maximize body part sensitivity">>
 		All body parts are now at maximum sensitivity!
-		<<set $sensualBodyPart.brain to 6>>
-		<<set $sensualBodyPart.tits to 6>>
-		<<set $sensualBodyPart.ass to 6>>
-		<<set $sensualBodyPart.bottom to 6>>
-		<<set $sensualBodyPart.mouth to 6>>
-		<<set $sensualBodyPart.pussy to 6>>
-		<<set $sensualBodyPart.anal to 6>>
+		<<run setup.Intro.maximizeSensualBodyParts($sensualBodyPart)>>
 	<</linkreplace>>
 		<br><<link "Toggle Back/Forward buttons">><<if $cheatBackForward>><<set $cheatBackForward to false>><<run $("body").removeClass("show-history")>>
 		<<else>><<set $cheatBackForward to true>><<run $("body").addClass("show-history")>>

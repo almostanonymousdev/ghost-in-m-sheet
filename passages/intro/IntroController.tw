@@ -1,0 +1,67 @@
+:: IntroController [script]
+/*
+ * Centralized helpers for the intro / character-creation flow.
+ *
+ * The $sensualBodyPart map is set up in :: Intro by the radio
+ * buttons, lazily defaulted in PassageReady, defaulted again by
+ * SaveMigration, and clamped to a max of 6 in two places. Before
+ * this controller existed those constants ('brain', 'tits', ...,
+ * the base of 1 and the cap of 6) lived in four files. Anything
+ * that needs to seed, clamp, or enumerate the body parts now
+ * reads from setup.Intro.
+ */
+setup.Intro = (function () {
+	var BODY_PARTS         = ['brain', 'tits', 'ass', 'bottom', 'mouth', 'pussy', 'anal'];
+	var BASE_SENSITIVITY   = 1;
+	var MAX_SENSITIVITY    = 6;
+	var CHOSEN_SENSITIVITY = 3;
+
+	function defaultSensualBodyParts() {
+		var out = {};
+		for (var i = 0; i < BODY_PARTS.length; i++) {
+			out[BODY_PARTS[i]] = BASE_SENSITIVITY;
+		}
+		return out;
+	}
+
+	function clampSensualBodyParts(obj) {
+		if (!obj || typeof obj !== 'object') { return; }
+		for (var i = 0; i < BODY_PARTS.length; i++) {
+			var p = BODY_PARTS[i];
+			var n = Number(obj[p]);
+			if (!Number.isFinite(n)) {
+				obj[p] = BASE_SENSITIVITY;
+			} else if (n > MAX_SENSITIVITY) {
+				obj[p] = MAX_SENSITIVITY;
+			}
+		}
+	}
+
+	function maximizeSensualBodyParts(obj) {
+		// Cheat-menu helper (StoryCaption "Maximize body part sensitivity").
+		if (!obj || typeof obj !== 'object') { return; }
+		for (var i = 0; i < BODY_PARTS.length; i++) {
+			obj[BODY_PARTS[i]] = MAX_SENSITIVITY;
+		}
+	}
+
+	function ensureSensualBodyParts() {
+		// Lazy seed for very old saves / brand-new games where
+		// SaveMigration hasn't run (no save loaded yet).
+		var sv = State.variables;
+		if (!sv.sensualBodyPart || typeof sv.sensualBodyPart !== 'object') {
+			sv.sensualBodyPart = defaultSensualBodyParts();
+		}
+	}
+
+	return {
+		BODY_PARTS:               BODY_PARTS,
+		BASE_SENSITIVITY:         BASE_SENSITIVITY,
+		MAX_SENSITIVITY:          MAX_SENSITIVITY,
+		CHOSEN_SENSITIVITY:       CHOSEN_SENSITIVITY,
+		defaultSensualBodyParts:  defaultSensualBodyParts,
+		clampSensualBodyParts:    clampSensualBodyParts,
+		maximizeSensualBodyParts: maximizeSensualBodyParts,
+		ensureSensualBodyParts:   ensureSensualBodyParts
+	};
+})();

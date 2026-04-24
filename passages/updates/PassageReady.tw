@@ -57,25 +57,8 @@
 <<set $mc.fit to 0>>
 <</if>>
 
-<<if ndef $sensualBodyPart>>
-<<set $sensualBodyPart to {
-	brain:1,
-    tits:1,
-    ass:1,
-    bottom:1,
-    mouth:1,
-    pussy:1,
-    anal:1,
-}>>
-<</if>>
-
-<<if $sensualBodyPart.brain gte 6>><<set $sensualBodyPart.brain to 6>><</if>>
-<<if $sensualBodyPart.tits gte 6>><<set $sensualBodyPart.tits to 6>><</if>>
-<<if $sensualBodyPart.ass gte 6>><<set $sensualBodyPart.ass to 6>><</if>>
-<<if $sensualBodyPart.bottom gte 6>><<set $sensualBodyPart.bottom to 6>><</if>>
-<<if $sensualBodyPart.mouth gte 6>><<set $sensualBodyPart.mouth to 6>><</if>>
-<<if $sensualBodyPart.pussy gte 6>><<set $sensualBodyPart.pussy to 6>><</if>>
-<<if $sensualBodyPart.anal gte 6>><<set $sensualBodyPart.anal to 6>><</if>>
+<<run setup.Intro.ensureSensualBodyParts()>>
+<<run setup.Intro.clampSensualBodyParts($sensualBodyPart)>>
 
 <<if $hasPSprayCharges lte 0>>
 <<set $hasPSpray to 0>>

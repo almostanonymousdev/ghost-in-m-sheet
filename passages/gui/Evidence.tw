@@ -237,10 +237,8 @@ TM & © 2026 WoMan Co. All rights reserved
 	@@.backbtn;<<link "Back">>
 		<<goto $guideReturnPassage>>
 	<</link>>@@<br>
-<<elseif (previous() eq "WitchEndContract") or (tags(previous()).includes("event"))>>
-	@@.backbtn;<<back>>@@<br>
 <<else>>
-	@@.backbtn;<<return>>@@<br>
+	<<backOrReturn>>
 <</if>>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
