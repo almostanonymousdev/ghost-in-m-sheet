@@ -5,12 +5,15 @@
 		<<run setup.HauntConditions.applyTickEffects()>>
 		<<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
 		<<updatemeter 'energy' `$mc.energy / $mc.energyMax`>>
-		<<if $sanityCollapse eq 1>>
+		<<if $sanityCollapse eq 1 or $mc.sanity lte 0>>
 			<<goto "HuntOverSanity">>
 		<<elseif $exhausted eq 1>>
 			<<goto "HuntOverExhaustion">>
 		<<else>>
 			<<include "Event">>
+			<<if $mc.sanity lte 0>>
+				<<goto "HuntOverSanity">>
+			<</if>>
 			<<if _eventTriggered is false>>
 				<<include "StealClothesEvent">>
 			<</if>>
@@ -40,12 +43,15 @@
 		<<run setup.HauntConditions.applyTickEffects()>>
 		<<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
 		<<updatemeter 'energy' `$mc.energy / $mc.energyMax`>>
-		<<if $sanityCollapse eq 1>>
+		<<if $sanityCollapse eq 1 or $mc.sanity lte 0>>
 			<<goto "HuntOverSanity">>
 		<<elseif $exhausted eq 1>>
 			<<goto "HuntOverExhaustion">>
 		<<else>>
 			<<include "Event">>
+			<<if $mc.sanity lte 0>>
+				<<goto "HuntOverSanity">>
+			<</if>>
 			<<if _eventTriggered is false>>
 				<<include "CheckHuntStart">>
 			<</if>>

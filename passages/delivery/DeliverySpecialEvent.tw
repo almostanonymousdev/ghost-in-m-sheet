@@ -47,7 +47,7 @@
 	@@.mc-speech; ~Mm~@@<br>
 	<<linkreplace "@@.mc-speechLink; Get on your knees@@">>
 		<<set _pick to random(2, 4)>>
-		<<video "deliveryhub/specialevent/' + _pick + '.webm" { muted: false }>>
+		<<video "deliveryhub/specialevent/" + _pick + ".webm" { muted: false }>>
 		@@.notmc-speech; Turn around@@<br>
 		@@.mc-speech; ~Ah~ just be quick@@<br>
 		@@.mc-speechLink;[[Let him continue|DeliverySpecialUnsafe2]]@@<br>
@@ -56,12 +56,12 @@
 
 :: DeliverySpecialUnsafe2 [event nobr] {"position":"1500,1800","size":"100,100"}
 <<set _pick2 to random(5, 6)>>
-<<video "deliveryhub/specialevent/' + _pick2 + '.webm" { muted: false }>>
+<<video "deliveryhub/specialevent/" + _pick2 + ".webm" { muted: false }>>
 @@.mc-speech; ~Ah~ God...@@<br>
 @@.notmc-speech; Fuck, you're tight. I'm going to cum@@<br>
 <<linkreplace "@@.mc-speechLink; Please not inside...@@">>
 	<<set _pick3 to random(7, 8)>>
-	<<video "deliveryhub/specialevent/' + _pick3 + '.webm" { muted: false }>>
+	<<video "deliveryhub/specialevent/" + _pick3 + ".webm" { muted: false }>>
 	<<set $mc.lust to 0>>
 	@@.notmc-speech; Too late for that. Here's your money, now get out.@@<br>
 	@@.mc-thoughts; Fuck... I can feel it dripping out of me@@<br>

@@ -17,7 +17,7 @@ integer in [start, end]. Replaces the 4-10 line <<if>> ladders each
 		<<set _start to _args[1]>>
 		<<set _end to (_args.length gt 2 ? _args[2] : _args[1])>>
 		<<set _n to random(_start, _end)>>
-		<<video "deliveryhub/' + _args[0] + '/' + _n + '.mp4">>
+		<<video "deliveryhub/" + _args[0] + "/" + _n + ".mp4">>
 	<</widget>>
 
 	/* Shared "thank-you" randomised one-liner for successful deliveries. */

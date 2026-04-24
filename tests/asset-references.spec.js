@@ -134,6 +134,42 @@ function relFile(file) {
   return path.relative(REPO_ROOT, file);
 }
 
+// Detect the class of typo where an author migrating from raw
+// `<img @src="setup.ImagePath + '/foo/' + _v + '/bar.png'">` to the
+// `<<image>>/<<video>>` macro preserves the inner single-quoted concat
+// inside the outer double-quoted macro argument, e.g.
+//   <<image "ghosts/' + _ghostName + '.webp" "iconPx">>
+// SugarCube reads this as the single literal string
+// "ghosts/' + _ghostName + '.webp", so the URL resolves to a missing
+// asset. Real asset paths never contain "+", so any "+" inside the
+// first-arg string literal of <<image>>/<<video>> is a bug marker.
+// The correct form is a JS concat across separate string literals:
+//   <<image "ghosts/" + _ghostName + ".webp" "iconPx">>
+function extractBrokenConcatRefs(filePath) {
+  const bad = [];
+  const content = fs.readFileSync(filePath, 'utf-8');
+  const lines = content.split('\n');
+  const patterns = [
+    /<<(?:image|video)\s+"([^"\n]*\+[^"\n]*)"/g,
+    /<<(?:image|video)\s+'([^'\n]*\+[^'\n]*)'/g,
+  ];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    for (const re of patterns) {
+      for (const m of line.matchAll(re)) {
+        // Skip matches embedded inside a backtick template literal (e.g.
+        // `<<link \`'<<image "' + _path + '">>'\` "target">>`, which builds
+        // markup dynamically -- the concat is correct JS, not a typo).
+        const before = line.slice(0, m.index);
+        const backtickCount = (before.match(/`/g) || []).length;
+        if (backtickCount % 2 === 1) continue;
+        bad.push({ file: filePath, lineno: i + 1, text: m[0] });
+      }
+    }
+  }
+  return bad;
+}
+
 test.describe('asset references', () => {
   // Gather once — reused across the per-root assertions below.
   const allFiles = collectTwFiles(PASSAGES_DIR);
@@ -163,4 +199,16 @@ test.describe('asset references', () => {
       ).toHaveLength(0);
     });
   }
+
+  test('no broken-concat typos in <<image>>/<<video>> first argument', () => {
+    const bad = allFiles.flatMap(extractBrokenConcatRefs);
+    const report = bad.map(b => `  ${relFile(b.file)}:${b.lineno}  ${b.text}`);
+    expect(
+      bad,
+      `${bad.length} <<image>>/<<video>> call(s) have "+" inside the quoted ` +
+      `first argument — this is almost certainly a concat typo like ` +
+      `<<image "foo/' + _v + '.png">> (rewrite as "foo/" + _v + ".png"):\n` +
+      report.join('\n')
+    ).toHaveLength(0);
+  });
 });

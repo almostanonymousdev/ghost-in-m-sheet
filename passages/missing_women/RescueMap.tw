@@ -4,7 +4,7 @@
 <<for _h to 1; _h lte 16; _h++>>
 <<capture _h>>
 <div @class="'housecard rescuehousecard' + ($cheatRescueHouseHighlight && _h === $randomRescuePhotoNumber ? ' cheatRescueHighlight' : '')">
-<<image "rescue/house/' + _h + '.jpg" "iconRescuePx">>
+<<image "rescue/house/" + _h + ".jpg" "iconRescuePx">>
 @@.icontextcity;<<link "Move" "RescueHouse">><<set $rescueHouse to _h>>
 <</link>>@@
 </div>
