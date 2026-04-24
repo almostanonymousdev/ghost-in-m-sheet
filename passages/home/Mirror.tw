@@ -7,7 +7,7 @@
 		@@.mc-thoughts; You watch them, captivated by their sudden arrival, but they disappear just as quickly as they appeared.@@<br>
 		@@.mc-speech; It was... strange @@<br><br>
 		@@.backbtn;[[Back|Bathroom]] @@<br>
-		<<run setup.Home.setTwinsEventCooldown(1)>>
+		<<run setup.Home.consumeTwinsEvent()>>
 	<</linkappend>>
 <<elseif setup.Home.twinsEventAvailable() and _checkBeauty lte setup.Mc.beauty()>>
 	<<video "ghosts/specials/twins.mp4">>

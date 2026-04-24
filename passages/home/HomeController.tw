@@ -311,7 +311,6 @@ setup.Home = (function () {
 		markSuccubusArrived: function () { State.variables.succubus = 1; },
 
 		// --- Mirror / twins event ------------------------
-		setTwinsEventCooldown: function (n) { State.variables.thetwinseventCD = n; },
 		consumeTwinsEvent: function () {
 			State.variables.thetwinsevent = 0;
 			State.variables.thetwinseventCD = 1;
