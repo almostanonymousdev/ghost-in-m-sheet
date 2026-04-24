@@ -6,14 +6,14 @@ The game features multiple companion characters (Alice, Blake, Brook, Alex, Case
   * [AliceHelp.tw](../passages/companion/alice/AliceHelp.tw) - Alice's assistance during hunts
   * [AliceInfo.tw](../passages/companion/alice/AliceInfo.tw) - Information about Alice
   * [AliceHuntEndAlone.tw](../passages/companion/alice/AliceHuntEndAlone.tw) - Alice's ending if you hunt alone
-  * [aliceContinue.tw](../passages/companion/alice/aliceContinue.tw) - Alice's continuation options
+  * [AliceContinue.tw](../passages/companion/alice/AliceContinue.tw) - Alice's continuation options
   * Alice's mini panel is inlined in [StoryCaption.tw](../passages/StoryCaption.tw)
 
 * **Blake** - A more experienced hunter who provides solid support during investigations. Has unique endings depending on your choices and can help with various hunting strategies, with potential for romantic/sexual tension during dangerous situations.
   * [BlakeHelp.tw](../passages/companion/blake/BlakeHelp.tw) - Blake's assistance during hunts
   * [BlakeInfo.tw](../passages/companion/blake/BlakeInfo.tw) - Information about Blake
   * [BlakeHuntEndAlone.tw](../passages/companion/blake/BlakeHuntEndAlone.tw) - Blake's ending if you hunt alone
-  * [blakeContinue.tw](../passages/companion/blake/blakeContinue.tw) - Blake's continuation options
+  * [BlakeContinue.tw](../passages/companion/blake/BlakeContinue.tw) - Blake's continuation options
   * Blake's mini panel is inlined in [StoryCaption.tw](../passages/StoryCaption.tw)
 
 * **Brook** - A companion with specific skills for ghost hunting, including higher chances of success with certain evidence types. Has unique home interaction scenarios that can include sensual or sexual content.
@@ -28,12 +28,14 @@ The game features multiple companion characters (Alice, Blake, Brook, Alex, Case
 * **Companion data & main screen** - Per-companion metadata (pronouns, images, clothing tier text, stat defaults) lives in the `COMPANION_CONFIG` catalogue in [CompanionController.tw](../passages/companion/CompanionController.tw). The shared per-hunt interaction screen (portrait, clothing tiers, plan selection, walk-home) is rendered by [CompanionMain.tw](../passages/companion/CompanionMain.tw). Fresh `$brook/$alice/$blake/$alex/$taylor/$casey` stat objects are seeded by [SaveMigration.tw](../passages/updates/SaveMigration.tw)'s `DEFAULTS` map via `setup.Companion.defaultStateFor(name)` — no per-companion Init passages are needed.
 
 * **Relationship mechanics** - Your choices during hunts, how you treat your companions, and shared experiences affect their loyalty and effectiveness. Companions may develop romantic or sexual feelings for you, leading to intimate encounters during hunts, at home, or when walking home together.
-  * [compEvent.tw](../passages/companion/compEvent.tw) - Companion event triggers
+  * [CompanionEvent.tw](../passages/companion/CompanionEvent.tw) - Companion event triggers
   * [WalkHomeTogether.tw](../passages/companion/WalkHomeTogether.tw) - Walking home together with companions
   * [CompanionLeaving.tw](../passages/companion/CompanionLeaving.tw) - Companion leaving scenarios
-  * [succeededComp.tw](../passages/companion/succeededComp.tw) - Successful companion mission outcomes
-  * [failedComp.tw](../passages/failedComp.tw) - Failed companion mission outcomes
+  * [CompanionSucceeded.tw](../passages/companion/CompanionSucceeded.tw) - Successful companion mission outcomes
+  * [CompanionFailed.tw](../passages/companion/CompanionFailed.tw) - Failed companion mission outcomes
+  * [Contacts.tw](../passages/companion/Contacts.tw) - Companion contact list and per-companion invite flow
+  * [widgetCompanion.tw](../passages/companion/widgetCompanion.tw) - Shared companion widgets
 
 * **Companion events** - Special scenes occur during hunts, at home, and when walking home together that can include nudity, intimate touching, and sexual content depending on your relationship progress and character choices. Some companions have specific requirements for intimate events (exhibitionism level, clothing state, etc.).
-  * [CompResult.tw](../passages/companion/CompResult.tw) - Companion result outcomes
-  * [CompRandomRoom.tw](../passages/companion/CompRandomRoom.tw) - Random companion room events
+  * [CompanionResult.tw](../passages/companion/CompanionResult.tw) - Companion result outcomes
+  * [CompanionRandomRoom.tw](../passages/companion/CompanionRandomRoom.tw) - Random companion room events

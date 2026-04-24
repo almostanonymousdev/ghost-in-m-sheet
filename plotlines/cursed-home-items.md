@@ -17,19 +17,19 @@ After losing a haunted house run (passing out from sanity loss), there is a 40% 
 ## Events
 
 - **Cursed TV** — MC is watching TV when it cuts to static, then shows a video of herself on her own couch. She suddenly finds herself on her knees blowing a spectral presence. When the ghost finishes in her mouth, she's rocked by an intense orgasm before the room fades back to normal.
-  - [cursedTVEvent.tw](../passages/home/cursedItems/cursedTVEvent.tw)
+  - [CursedTVEvent.tw](../passages/home/cursedItems/CursedTVEvent.tw)
 
 - **Cursed PC** — The screen glitches and a ghostly presence materializes behind MC at the desk, caressing her through her clothes before bringing her to climax.
-  - [cursedPCEvent.tw](../passages/home/cursedItems/cursedPCEvent.tw)
+  - [CursedPCEvent.tw](../passages/home/cursedItems/CursedPCEvent.tw)
 
 - **Cursed Bed** — MC wakes to find a sticky substance on her neck and a glowing hole in the mattress. Upon investigating, she is pulled under the bed into a void where tendrils pin and violate her. She eventually gives in, draining the tendrils and inviting them to cover her in cum before blacking out and waking in her normal bed.
-  - [cursedBedEvent.tw](../passages/home/cursedItems/cursedBedEvent.tw)
+  - [CursedBedEvent.tw](../passages/home/cursedItems/CursedBedEvent.tw)
 
 - **Cursed Shower** — MC discovers a mysterious dildo in the shower that compels irresistible lust. She masturbates on the shower floor, then mounts the dildo on the shower door and fucks herself senseless. She deepthroats it as a "thank you" before it fades out of existence.
-  - [cursedShowerEvent.tw](../passages/home/cursedItems/cursedShowerEvent.tw)
+  - [CursedShowerEvent.tw](../passages/home/cursedItems/CursedShowerEvent.tw)
 
 - **Cursed Bathtub** — MC is relaxing in the bath when she is dragged underwater into an infinite black void. Tentacles pin and fuck her relentlessly, filling her with cum until her belly inflates. As the creature retreats, cum gushes from her mouth and pussy, causing her to squirt in ecstasy before she blacks out and wakes in the normal tub.
-  - [cursedBathEvent.tw](../passages/home/cursedItems/cursedBathEvent.tw)
+  - [CursedBathEvent.tw](../passages/home/cursedItems/CursedBathEvent.tw)
 
 ## Home passage hooks
 
@@ -41,7 +41,7 @@ The following passages check for cursed items and redirect to the corresponding 
 
 ## Variables
 
-| Variable | Type | Description |
-|----------|------|-------------|
-| `$cursedHomeItem` | string | Which item is cursed (`"tv"`, `"pc"`, `"bed"`, `"shower"`, `"bath"`, or `""`) |
-| `$cursedHomeItemActive` | int | `1` if a cursed item is present, `0` otherwise |
+| Variable                | Type   | Description                                                                |
+|-------------------------|--------|----------------------------------------------------------------------------|
+| `$cursedHomeItem`       | string | Which item is cursed (`"tv"`, `"pc"`, `"bed"`, `"shower"`, `"bath"`, `""`) |
+| `$cursedHomeItemActive` | int    | `1` if a cursed item is present, `0` otherwise                             |
