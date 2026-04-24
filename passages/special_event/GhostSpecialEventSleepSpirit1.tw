@@ -1,5 +1,5 @@
 :: GhostSpecialEventSleepSpirit1 [nobr] {"position":"650,2550","size":"100,100"}
-<<set $ghostSpiritEventStage to 1>>
+<<run setup.SpecialEvent.markSpiritEventStage()>>
 <<video "ghosts/specials/spirit3.2.mp4">>
 @@.mc-thoughts; When he finally enters you, you realize this is not just a dream, but the passion consumes you entirely. Your hips instinctively move towards him, offering yourself, feeling your body arching into a submissive position. The pleasure is so overwhelming that you no longer want@@ <<linkappend "@@.usebtn; it to end.@@">><br>
 	<<video "ghosts/specials/spirit3.3.mp4">>

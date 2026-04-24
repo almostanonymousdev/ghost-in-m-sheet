@@ -1,5 +1,5 @@
 :: DeliveryHouse [nobr] {"position":"800,1600","size":"100,100"}
-<<set _house to $currentHouse>>
+<<set _house to setup.Delivery.currentHouse()>>
 <<set _img to setup.deliveryHouses[_house]>>
 <<set _sp to _house.lastIndexOf(" ")>>
 <<set _address to _house.substr(0, _sp) + ", " + _house.substr(_sp + 1)>>
@@ -15,7 +15,7 @@
 		<<set _slotClass to (_slot eq 1 ? "itemAvailableOne" : (_slot eq 2 ? "itemAvailableTwo" : "itemAvailableThree"))>>
 		<div @class="_slotClass">
 		<<image _order.image "iconPx">><br>
-		@@.usebtn;<<link "Deliver the order">><<set $currentOrder to _slot>><<goto "DeliveryEvent">>
+		@@.usebtn;<<link "Deliver the order">><<run setup.Delivery.setCurrentOrder(_slot)>><<goto "DeliveryEvent">>
 		<</link>>@@<br>
 		</div>
 	<</capture>>
@@ -25,12 +25,12 @@
 @@.backbtn;[[Leave|DeliveryMap]] @@
 
 :: DeliveryEvent [event nobr] {"position":"800,1600","size":"100,100"}
-<<set _orderNum to $currentOrder>>
+<<set _orderNum to setup.Delivery.currentOrder()>>
 <<set _order to State.variables["order" + _orderNum]>>
 <<set _iconVar to "deliveryActiveIcon" + _orderNum>>
 <<set _match to false>>
-<<for _o range $orders>>
-	<<if _o.address === $currentHouse and _o.item is _order.item>><<set _match to true>><<break>><</if>>
+<<for _o range setup.Delivery.orders()>>
+	<<if _o.address === setup.Delivery.currentHouse() and _o.item is _order.item>><<set _match to true>><<break>><</if>>
 <</for>>
 <<if _match>>
 	<<switch _order.item>>
@@ -38,13 +38,13 @@
 	<<case "package">><<include "DeliveryPackageEventChoose">>
 	<<case "burgers">><<include "DeliveryBurgerEventChoose">>
 	<<case "newspapers">><<include "DeliveryPapersEventChoose">>
-	<<case "books">><<if ndef $meetAlice>><<include "MeetAlice">>
+	<<case "books">><<if not setup.Delivery.hasMetAlice()>><<include "MeetAlice">>
 	<<else>><<deliveryGenericSuccess>><</if>>
 	<<default>><<deliveryGenericSuccess>>
 	<</switch>>
 <<else>>
 	<<image "img/deliverygirlsad.jpg" { style: "max-width: 100%; height: auto; display: block; margin: 0 auto;" }>>
-	<<set $earnedMoney += $jobMoneyFailed>>
+	<<run setup.Delivery.addJobFailEarnings()>>
 	<<deliverySorry>><br>
 	@@.mc-speech; Damn, I must have made a mistake.@@<br>
 	<br>
@@ -61,7 +61,7 @@
 <<set _slotClasses to [".itemAvailableOne", ".itemAvailableTwo", ".itemAvailableThree"]>>
 <<for _i to 0; _i lt 3; _i++>>
 <<set _cls to _slotClasses[_i]>>
-<<if State.variables["deliveryActiveIcon" + (_i + 1)]>>
+<<if setup.Delivery.activeIcon(_i + 1)>>
 <<addclass _cls "visible">>
 <<removeclass _cls "hidden">>
 <<else>>
@@ -73,42 +73,23 @@
 
 :: EndShiftDelivery [nobr] {"position":"1200,1200","size":"100,100"}
 <<for _i to 1; _i lte 3; _i++>>
-	<<set State.variables["deliveryActiveIcon" + _i] to true>>
+	<<run setup.Delivery.setActiveIcon(_i, true)>>
 <</for>>
-<<set $deliveryCompletedShifts += 1>>
-<<if $deliveryCorrectThisShift gte 3>>
-	<<set $deliveryStreak += 1>>
-<<else>>
-	<<set $deliveryStreak to 0>>
-<</if>>
-<<if $deliveryStreak gt $deliveryBestStreak>>
-	<<set $deliveryBestStreak to $deliveryStreak>>
-<</if>>
-<<set $deliveryReputationLevel to setup.Delivery.getReputationLevel()>>
+<<run setup.Delivery.endShift()>>
 <<run setup.Delivery.updatePayTier()>>
-<<if $deliveryCorrectThisShift gte 3>>
+<<if setup.Delivery.correctThisShift() gte 3>>
 	<<set _perfectBonus to random(5, 10)>>
-	<<set $earnedMoney += _perfectBonus>>
+	<<run setup.Delivery.grantPerfectShiftBonus(_perfectBonus)>>
 	@@.mc-action; Perfect shift! Bonus: $<<= _perfectBonus>>@@<br>
 <</if>>
-Earned during the shift: $earnedMoney $
-<<set $mc.money += $earnedMoney>>
-<<set $mc.energy -= 2>>
-<<set $earnedMoney to 0>>
+Earned during the shift: <<= setup.Delivery.earnedMoney()>> $
+<<run setup.Delivery.bankEarnedMoney()>>
 
 :: DeliveryAutoDeliver [nobr] {"position":"800,1700","size":"100,100"}
-<<set _house to $currentHouse>>
-<<set _foundOrder to false>>
-<<set _orderNum to 0>>
-<<for _i to 0; _i lt 3; _i++>>
-	<<if $orders[_i].address is _house and State.variables["deliveryActiveIcon" + (_i + 1)]>>
-		<<set _foundOrder to true>>
-		<<set _orderNum to _i + 1>>
-		<<break>>
-	<</if>>
-<</for>>
-<<if _foundOrder>>
-	<<set $currentOrder to _orderNum>>
+<<set _house to setup.Delivery.currentHouse()>>
+<<set _orderNum to setup.Delivery.orderSlotForHouse(_house) + 1>>
+<<if _orderNum gt 0>>
+	<<run setup.Delivery.setCurrentOrder(_orderNum)>>
 	<<goto "DeliveryEvent">>
 <<else>>
 	<<set _img to setup.deliveryHouses[_house]>>

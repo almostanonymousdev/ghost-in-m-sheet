@@ -1,0 +1,19 @@
+:: widgetIntro [widget nobr] {"position":"800,0","size":"100,100"}
+/*
+ * UI bindings for the character-creation form. SugarCube's
+ * <<radiobutton>> and <<textbox>> macros require the backing
+ * variable as a literal "$name.path" string, so the $ref has
+ * to live somewhere -- we corral all of them into this widget
+ * passage (which sits next to IntroController) so the Intro
+ * passages themselves never name a global directly.
+ */
+
+<<widget "bodyPartRadio">>
+	/* _args[0] = body-part key, _args[1] = display label */
+	<label><<radiobutton `"$sensualBodyPart." + _args[0]` setup.Intro.CHOSEN_SENSITIVITY autocheck>> _args[1]</label><br>
+<</widget>>
+
+<<widget "mcNameTextbox">>
+	/* _args[0] = default name, _args[1] = passage to advance to */
+	<<textbox "$mc.name" _args[0] _args[1]>>
+<</widget>>

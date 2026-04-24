@@ -577,6 +577,37 @@
                 if (g.matchesEvidence(checked)) matches.add(g.name);
             });
             return matches;
+        },
+
+        /* Challenging-contract flag setters. Witch side-quests schedule
+           1-3 evidence types to hide from the next hunt. */
+        scheduleHideEvidence: function (count) {
+            var s = State.variables;
+            s.deleteOneEvidence = 1;
+            if (count >= 2) s.deleteSecondEvidence = 1;
+            if (count >= 3) s.deleteThirdEvidence = 1;
+        },
+
+        /* Cheat-menu helpers (StoryCaption) */
+        setHuntMode: function (mode) {
+            var h = State.variables.hunt;
+            if (h) { h.mode = mode; }
+        },
+        forceHuntGhost: function (g) {
+            var h = State.variables.hunt;
+            if (!h || !g) return;
+            h.name     = g.name;
+            h.realName = g.name;
+            h.evidence = g.evidence.map(function (e) { return e.id; });
+        },
+        huntName: function () {
+            var h = State.variables.hunt;
+            return h ? h.name : '';
+        },
+        huntRoomName: function () {
+            var h = State.variables.hunt;
+            if (h && h.room && h.room.name) { return h.room.name; }
+            return '';
         }
     };
 })();

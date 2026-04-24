@@ -1,6 +1,6 @@
 :: GymTrainerEvent2Start2 [nobr] {"position":"3275,1800","size":"100,100"}
 <<addLust 15>>
-<<set $trainer2SexCD to 1>>
+<<run setup.Gym.startTrainer2SexCooldown()>>
 <<video "gym/trainer2event2end.mp4">>
 @@.notmc-speech; Phew~ thanks for the "help". I guess we can do that again sometimes.@@
 <br>

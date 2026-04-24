@@ -62,6 +62,15 @@ setup.Intro = (function () {
 		defaultSensualBodyParts:  defaultSensualBodyParts,
 		clampSensualBodyParts:    clampSensualBodyParts,
 		maximizeSensualBodyParts: maximizeSensualBodyParts,
-		ensureSensualBodyParts:   ensureSensualBodyParts
+		ensureSensualBodyParts:   ensureSensualBodyParts,
+		currentSensualBodyPart:   function () { return State.variables.sensualBodyPart; },
+		bodyPart:                 function (part) {
+			var sv = State.variables.sensualBodyPart;
+			return sv ? sv[part] : 0;
+		},
+		adjustBodyPart:           function (part, delta) {
+			var sv = State.variables.sensualBodyPart;
+			if (sv) { sv[part] += delta; }
+		}
 	};
 })();

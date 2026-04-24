@@ -21,26 +21,24 @@
 <div class="flexwrapper">
 <div class="housecard">
 <<image "img/energy-drink.png" "icon">><br>
-<<if $energyDrinkAmount gte 1>>
-@@.usebtn;<<link "Drink (+3 energy) - $energyDrinkAmount left" "Bag">><<set $mc.energy += 3>><<if $mc.energy gt $mc.energyMax>><<set $mc.energy to $mc.energyMax>>
-<</if>><<set $energyDrinkAmount -= 1>><</link>>@@
+<<if setup.Mc.energyDrinkAmount() gte 1>>
+@@.usebtn;<<link `"Drink (+3 energy) - " + setup.Mc.energyDrinkAmount() + " left"` "Bag">><<run setup.Mc.useEnergyDrink()>><</link>>@@
 <<else>>You don't have energy drink
 <</if>>
 </div>
 <div class="housecard">
 <<image "img/cosmetics.png" "iconPx">><br>
-<<if $makeupAmount gte 1>>You have $makeupAmount makeup charges left.
+<<if setup.Mc.makeupAmount() gte 1>>You have <<= setup.Mc.makeupAmount()>> makeup charges left.
 <<else>>You don't have cosmetics
 <</if>>
 </div>
 <div class="housecard">
 <<image "img/sanity-pills.png" "iconPx">><br>
-<<if $sanityPillsAmount gte 1>>You have $sanityPillsAmount sanity pills<br>
+<<if setup.Mc.sanityPillsAmount() gte 1>>You have <<= setup.Mc.sanityPillsAmount()>> sanity pills<br>
 <<if setup.Ghosts.isHunting()>>
 @@.usebtn;<<link "Use sanity pills" "Bag">>
-<<set $sanityPillsAmount -= 1>>
-<<set $mc.sanity += 30>>
-<<if $mc.sanity gte $mc.sanityMax>><<set $mc.sanity to $mc.sanityMax>><</if>>
+<<run setup.Mc.useSanityPill()>>
+<<run setup.Mc.applySanityDelta(30)>>
 <</link>>@@
 <</if>>
 <<else>>You don't have sanity pills
@@ -48,40 +46,40 @@
 </div>
 <div class="housecard">
 <<image "img/crucifix.webp" "iconPx">><br>
-<<if $crucifixAmount gte 1>>You have $crucifixAmount crucifix.
+<<if setup.Witch.crucifixAmount() gte 1>>You have <<= setup.Witch.crucifixAmount()>> crucifix.
 <<else>>You don't have a crucifix
 <</if>>
 </div>
 <div class="housecard">
 <<image "img/medicine.png" "iconPx">><br>
-<<if $medicineAmount gte 1>>You have $medicineAmount health pill<<if $medicineAmount gte 1>><<print "s">>
+<<if setup.Mc.medicineAmount() gte 1>>You have <<= setup.Mc.medicineAmount()>> health pill<<if setup.Mc.medicineAmount() gte 1>><<print "s">>
 <</if>><br>
-<<if $isPenaltyOn eq 1>>
+<<if setup.Mc.isPenalized()>>
 @@.usebtn;<<link "Use health pills" "Bag">>
-<<set $medicineAmount -= 1>>
-<<set $isPenaltyOn to 0>>
+<<run setup.Mc.useMedicine()>>
+<<run setup.Mc.clearPenalty()>>
 <</link>>@@
 <</if>>
-<<else>>You have $medicineAmount health pill<<if $medicineAmount gte 1>><<print "s">>
+<<else>>You have <<= setup.Mc.medicineAmount()>> health pill<<if setup.Mc.medicineAmount() gte 1>><<print "s">>
 <</if>>
 <</if>>
 </div>
 <div class="housecard">
 <<image "img/holywater.png" "iconPx">><br>
-<<if $holyWaterIsCollected eq 1>>You have holy water
+<<if setup.MissingWomen.hasHolyWater()>>You have holy water
 <<else>>You don't have holy water
 <</if>>
 </div>
 <div class="housecard">
-<<if $hasRescueClue eq 1>>
+<<if setup.MissingWomen.hasRescueClue()>>
 <<image "rescue/rescue-clue.png" "iconPx">><br>
-<<link "@@.usebtn;Look at the photo@@">><<replace ".flexwrapper">><<image 'rescue/house/'+$randomRescuePhotoNumber+`.jpg` { class: $tornStyleRandom, width: "100%" }>>
+<<link "@@.usebtn;Look at the photo@@">><<replace ".flexwrapper">><<image 'rescue/house/' + setup.MissingWomen.randomRescuePhotoNumber() + '.jpg' { class: setup.MissingWomen.tornStyleRandom(), width: "100%" }>>
 <</replace>>
 <</link>>
 <</if>>
 </div>
 <div class="housecard">
-<<if $tarotCardsStage eq 1 and (previous(1) neq "Owaissa Street" and previous(1) neq "Elm Street")>>
+<<if setup.MonkeyPaw.tarotCarryStage() eq 1 and (previous(1) neq "Owaissa Street" and previous(1) neq "Elm Street")>>
 <<image "cursedpossessions/tarot-cards/tarot.png" "iconsOnMap">><br>
 <<link "@@.usebtn; Look at the deck@@" "TarotCards">><</link>>
 <</if>>
@@ -93,16 +91,16 @@
 <</if>>
 </div>
 <div class="housecard">
-<<if $hasPSpray eq 1>>
+<<if setup.Mall.hasPepperSpray()>>
 <<image "img/spray.png" "iconPx">><br>
-Pepper spray ($hasPSprayCharges charges left)
+Pepper spray (<<= setup.Mall.pepperSprayCharges()>> charges left)
 <</if>>
 </div>
 <div class="housecard">
 
 </div>
 <div class="housecard">
-<<if $boughtMonkeyPawGuide eq 2>>
+<<if setup.MonkeyPaw.guideStage() eq 2>>
 <<image "cursedpossessions/monkey-paw/monkeypaw-page.jpg" "icon">><br>
 <<link "@@.usebtn;Inspect@@">><<replace ".flexwrapper">><<image "cursedpossessions/monkey-paw/monkeypaw-page.jpg" "displayCentredImgs">>
 <</replace>>

@@ -77,13 +77,13 @@
 </div>
 <div class="housecard">
 </div>
-<<if $hasQuestForRescue eq 1>><<image "rescue/down.png" { class: "downPointer clickable", onclick: "SugarCube.Engine.play('RescueMap');" }>>
+<<if setup.MissingWomen.hasActiveQuest()>><<image "rescue/down.png" { class: "downPointer clickable", onclick: "SugarCube.Engine.play('RescueMap');" }>>
 <</if>>
 </div>
 
 <<nobr>>
 
-<<if ($hours gte 22) or ($hours gte 0 and $hours lte 5)>>
+<<if setup.Gui.isCityNightOverlayActive()>>
 <<include "StyleCityNightOverlay">>
 		<</if>>
 <</nobr>>

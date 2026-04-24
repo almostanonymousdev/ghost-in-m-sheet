@@ -1,7 +1,5 @@
 :: RandomizeRescueHouse [nobr] {"position":"2075,1800","size":"100,100"}
-<<set _randomIndex to random(0, $tornStyles.length - 1)>>
-<<set $tornStyleRandom to $tornStyles[_randomIndex]>>
-<<set $randomRescuePhotoNumber to random(1,16)>>
+<<run setup.MissingWomen.seedTornStyle()>>
 
 :: widgetRescue [widget nobr] {"position":"2275,1700","size":"100,100"}
 <<script>>
@@ -15,8 +13,9 @@ setup.rescueGirlPassages = {
 <</script>>
 
 <<widget "rescueGirlLink">>
-	<<set _passage to setup.rescueGirlPassages[$currentRescueGirl]>>
-	<<link $currentRescueGirl _passage>><</link>>
+	<<set _girlName to setup.MissingWomen.currentRescueGirl()>>
+	<<set _passage to setup.rescueGirlPassages[_girlName]>>
+	<<link _girlName _passage>><</link>>
 <</widget>>
 
 <<widget "videoToggle">>

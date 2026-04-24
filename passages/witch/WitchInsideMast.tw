@@ -6,7 +6,7 @@
 	@@.mc-thoughts; You see a key lying nearby, it looks like it might be for her house...@@<br>
 	<<if setup.Witch.canStealKeyFromWitch()>>
 		@@.usebtn;<<linkreplace "Steal the key">>
-			<<set $gotKeyFromWitch to 1>>
+			<<run setup.Witch.markKeyFromWitchStolen()>>
 			@@.mc-thoughts; Now i can enter the witch's house at night@@
 		<</linkreplace>>@@
 	<<else>>

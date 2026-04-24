@@ -1,41 +1,19 @@
 :: widgetGym [widget nobr] {"position":"3050,1125","size":"100,100"}
 <<widget "gymFitnessGain">>
 	<<set _fitGain to _args[0]>>
-	<<set $previousFit = $mc.fit>>
-	<<set $mc.fit += _fitGain>>
-	<<set $beautyIncrease = Math.floor($mc.fit / 5) - Math.floor($previousFit / 5)>>
-	<<if $beautyIncrease > 0>>
-		<<set $mc.beauty += $beautyIncrease>>
-		@@.mc-speech; <span class="evidenceText">Your <<image "img/beauty.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> has improved (+1): $mc.beauty now!</span>@@<br>
+	<<set _gymDelta to setup.Gym.applyFitnessGain(_fitGain)>>
+	<<if _gymDelta.beautyIncrease gt 0>>
+		@@.mc-speech; <span class="evidenceText">Your <<image "img/beauty.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> has improved (+1): <<= _gymDelta.beauty>> now!</span>@@<br>
 	<</if>>
-
-	<<if !$mc.energyPoints>>
-		<<set $mc.energyPoints = Math.floor($previousFit / 10)>>
+	<<if _gymDelta.energyMaxDelta gt 0 and not _gymDelta.hitEnergyCap>>
+		@@.mc-speech; <span class="evidenceText">Your <<image "img/energy.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> has increased (+<<= _gymDelta.energyMaxDelta>>): <<= _gymDelta.energyMax>> now!</span>@@<br>
 	<</if>>
-
-	<<set _previousEnergyPoints = $mc.energyPoints>>
-	<<set _currentEnergyPoints = Math.floor($mc.fit / 10)>>
-
-	<<if _currentEnergyPoints > _previousEnergyPoints>>
-		<<set $mc.energyMax += (_currentEnergyPoints - _previousEnergyPoints)>>
-		<<set $mc.energyPoints = _currentEnergyPoints>>
-		@@.mc-speech; <span class="evidenceText">Your <<image "img/energy.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> has increased (+<<=_currentEnergyPoints - _previousEnergyPoints>>): $mc.energyMax now!</span>@@<br>
+	<<if _gymDelta.hitEnergyCap>>
+		@@.mc-speech; <span class="evidenceText">Your <<image "img/energy.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> has reached the maximum of 20!</span>@@<br>
 	<</if>>
-
-	<<if $previousFit >= 5 && ($previousFit - 1) % 5 == 0 && $mc.fit < 5>>
-		<<set $mc.beauty -= 1>>
-	<</if>>
-	<<set $mc.fit = Math.max(0, $mc.fit)>>
-	<<set $mc.fit = Math.min(100, $mc.fit)>>
-	<<set $mc.beauty = Math.max(0, $mc.beauty)>>
-	<<set $previousFit = $mc.fit>>
-	<<if $mc.fit eq 100>>
-		<<if $mc.energyMax < 20>>
-			<<set $mc.energyMax = 20>>
-			@@.mc-speech; <span class="evidenceText">Your <<image "img/energy.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> has reached the maximum of 20!</span>@@<br>
-		<</if>>
+	<<if _gymDelta.reachedFitCap>>
 		@@.mc-speech; <span class="evidenceText">Your fitness level is perfect - 100</span>@@
 	<<else>>
-		@@.mc-speech; <span class="evidenceText">Your fitness level has improved (+_fitGain): $mc.fit now!</span>@@
+		@@.mc-speech; <span class="evidenceText">Your fitness level has improved (+_fitGain): <<= _gymDelta.fit>> now!</span>@@
 	<</if>>
 <</widget>>

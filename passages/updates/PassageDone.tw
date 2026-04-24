@@ -9,37 +9,30 @@
 <<include "WardrobeSlots">>
 <</if>>
 
-<<if passage() eq "Mirror" and $thetwinsevent neq 1>>
-<<switch $mc.makeupImg>>
-	<<case 0>>
-<<replace "#mirrorImage">><<image "img/mc.jpg">>
-<</replace>>
-	<<case 1>>
-    <<replace "#mirrorImage">><<image "img/makeup1.jpg" { width: "70%" }>>
-    <</replace>>
-    <<case 2>>
-    <<replace "#mirrorImage">><<image "img/makeup2.jpg" { width: "70%" }>>
-    <</replace>>
-    <<case 3>>
-    <<replace "#mirrorImage">><<image "img/makeup3.jpg" { width: "70%" }>>
-    <</replace>>
- <</switch>>
+<<if passage() eq "Mirror" and not setup.Updates.twinsEventFired()>>
+<<if setup.Updates.mirrorMakeupHasWidth()>>
+	<<replace "#mirrorImage">><<image setup.Updates.mirrorMakeupImagePath() { width: "70%" }>>
+	<</replace>>
+<<else>>
+	<<replace "#mirrorImage">><<image setup.Updates.mirrorMakeupImagePath()>>
+	<</replace>>
+<</if>>
 <</if>>
 
-<<if $hours gte 6 and setup.Ghosts.isHunting()>>
+<<if setup.Time.isMorningPlus() and setup.Ghosts.isHunting()>>
 <<goto "HuntOverTime">>
 <</if>>
 
-<<if ndef $update22>>
+<<if not setup.Updates.update22Applied()>>
 <<include "Update1">>
 <</if>>
-<<if $cheatBackForward>><<run $("body").addClass("show-history")>><</if>>
+<<if setup.Updates.cheatBackForwardActive()>><<run $("body").addClass("show-history")>><</if>>
 
-<<if ndef $update0909>>
+<<if not setup.Updates.update0909Applied()>>
 <<include "Update3">>
 <</if>>
 
-<<if ndef $update2707>>
+<<if not setup.Updates.update2707Applied()>>
 <<include "Update2">>
 <</if>>
 
@@ -51,7 +44,7 @@
 
 <<run setup.Updates.ensureUnderwearMemory()>>
 
-<<set $stealChanceMult to 1.1>>
+<<run setup.Updates.initTick()>>
 
 <<set _eventTriggered = false>>
 <<set _stealClothesTriggered = false>>
@@ -62,14 +55,12 @@
 <<run setup.Updates.applyOneTimeUpdate4()>>
 <<run setup.Updates.applyDetectorHighlights()>>
 
-<<if ndef $mcpossession>>
-<<set $mcpossession to 0>>
-<</if>>
+<<run setup.Mc.ensurePossession()>>
 
 <<if setup.Updates.applyChokerLustFloor()>>
-<<updatemeter 'mclust' `$mc.lust.toFixed(2) / 100`>>
+<<updatemeter 'mclust' `setup.Mc.lust().toFixed(2) / 100`>>
 <</if>>
 
-<<if ndef $timerToolsDecreased>>
+<<if not setup.Updates.timerToolsInitialized()>>
 <<include "ChangeTimer">>
 <</if>>

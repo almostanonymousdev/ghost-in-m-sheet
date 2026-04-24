@@ -1,5 +1,5 @@
 :: GhostSpecialEventTVSpirit1 {"position":"500,2550","size":"100,100"}
-<<set $ghostSpiritEventStage to 1>>
+<<run setup.SpecialEvent.markSpiritEventStage()>>
 <<video "ghosts/specials/spirit1.2.mp4">>
 @@.mc-thoughts; This goes on for a while -- someone is fucking your sweet mouth. If he were to tell you to present your ass right now, you would do it without hesitation. The thought makes your pussy@@ <<linkappend "@@.usebtn; even wetter.@@">>
 <<video "ghosts/specials/spirit1.3.mp4">>

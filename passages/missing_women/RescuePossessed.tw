@@ -6,49 +6,50 @@ Your instincts screamed that this place was dangerous, and you found yourself to
 @@.mc-speech; This has to be the right place. But should I keep going? There's something seriously wrong with this place... maybe I should leave while I can.@@<br><br>
 <span id="choiceRescuePossessed">@@.usebtn; [[Leave|RescueMap]] @@<b>or</b></span><<linkreplace "@@.usebtn; Continue@@">>
 	<<replace "#choiceRescuePossessed">><</replace>>
-	<<set $hasQuestForRescue to 2>>
-	<<if $currentRescueGirl eq "Victoria">>
+	<<run setup.MissingWomen.setQuestStage(2)>>
+	<<set _girl to setup.MissingWomen.currentRescueGirl()>>
+	<<if _girl eq "Victoria">>
 		<<video "rescue/victoria/victoriapossessed.mp4">>
 		@@.mc-speech; Oh my god, are you okay?@@<br>
 		@@.notmc-speech; Hmm~ what are you doing here?@@<br>
-		@@.mc-speech; $currentRescueGirl, let's get out of here, I came to save you.@@<br>
+		@@.mc-speech; <<= setup.MissingWomen.currentRescueGirl()>>, let's get out of here, I came to save you.@@<br>
 		@@.notmc-speech; No, I don't need help. It's you who will probably need it@@<br>
 		@@.mc-speech;What? Ah~ what's happening...@@<br>
 		@@.notmc-speech; A sharp pain shot through your head, making you collapse to the floor. The last thing you saw before passing out was her walking towards you...@@<br><br>
 		@@.backbtn; <<link "Wake up " "RescueVictoriaPossessed">>
 		<</link>>@@
-	<<elseif $currentRescueGirl eq "Jade">>
+	<<elseif _girl eq "Jade">>
 		<<image "rescue/jade/jadepossessed.png" "displayCentredImgs">>
 		@@.mc-speech; Oh my god, are you okay?@@<br>
 		@@.notmc-speech; Hmm~ what are you doing here?@@<br>
-		@@.mc-speech; $currentRescueGirl, let's get out of here, I came to save you.@@<br>
+		@@.mc-speech; <<= setup.MissingWomen.currentRescueGirl()>>, let's get out of here, I came to save you.@@<br>
 		@@.notmc-speech; No, I don't need help. It's you who will probably need it@@<br>
 		@@.mc-speech;What? Ah~ what's happening...@@<br>
 		@@.notmc-speech; A sharp pain shot through your head, making you collapse to the floor. The last thing you saw before passing out was her walking towards you...@@<br><br>
 		@@.backbtn;<<link "Wake up" "RescueJadePossessed">>
 		<</link>>@@
-	<<elseif $currentRescueGirl eq "Julia">>
+	<<elseif _girl eq "Julia">>
 		<<image "rescue/julia/juliapossessed.jpg" { class: "displayCentredImgs", width: "35%" }>><br>
 		@@.mc-speech; Oh my god, are you okay?@@<br>
 		@@.notmc-speech; Hmm~ what are you doing here?@@<br>
-		@@.mc-speech; $currentRescueGirl, let's get out of here, I came to save you.@@<br>
+		@@.mc-speech; <<= setup.MissingWomen.currentRescueGirl()>>, let's get out of here, I came to save you.@@<br>
 		@@.notmc-speech;Save me... of course, let's get out of here. Help me get up...@@<br>
 		@@.usebtn; <<link "Come closer to her." "RescueJuliaPossessed">>
 		<</link>>@@<br>
-	<<elseif $currentRescueGirl eq "Nadia">>
+	<<elseif _girl eq "Nadia">>
 		<<video "rescue/nadia/nadiapossessed.mp4">>
 		@@.mc-speech; Oh my god, are you okay?@@<br>
 		@@.notmc-speech; Hmm~ what are you doing here?@@<br>
-		@@.mc-speech; $currentRescueGirl, let's get out of here, I came to save you.@@<br>
+		@@.mc-speech; <<= setup.MissingWomen.currentRescueGirl()>>, let's get out of here, I came to save you.@@<br>
 		@@.notmc-speech;Save me... of course, let's get out of here. But I need to get dressed and find a few things.@@<br>
 		@@.mc-speech; Just be quick.@@<br>
 		@@.notmc-speech; Of course, <<link "follow me" "RescueNadiaPossessed">>
 		<</link>>.@@<br>
-	<<elseif $currentRescueGirl eq "Ash">>
+	<<elseif _girl eq "Ash">>
 		<<image "rescue/ash/ashpossessed.jpg" { class: "displayCentredImgs", width: "35%" }>><br>
 		@@.mc-speech; Oh my god, are you okay?@@<br>
 		@@.notmc-speech; Hmm~ what are you doing here?@@<br>
-		@@.mc-speech; $currentRescueGirl, let's get out of here, I came to save you.@@<br>
+		@@.mc-speech; <<= setup.MissingWomen.currentRescueGirl()>>, let's get out of here, I came to save you.@@<br>
 		@@.notmc-speech;Save me... of course, let's get out of here. Help me get up...@@<br>
 		@@.usebtn; <<link "Come closer to her." "RescueAshPossessed">>
 		<</link>>@@<br>

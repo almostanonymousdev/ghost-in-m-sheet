@@ -28,7 +28,7 @@ $(document).one(':passageend', function() {
 });
 <</script>>
 <<nobr>>
-<<set $cleanedUp to false>>
+<<run setup.Events.setCleanedUp(false)>>
 <div class="room-container">
   <<image "img/trash1.png" { class: "trash", id: "trash1", onclick: "window.messyRoom.removeTrash('#trash1')" }>>
   <<image "img/trash2.png" { class: "trash", id: "trash2", onclick: "window.messyRoom.removeTrash('#trash2')" }>>

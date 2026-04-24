@@ -1,5 +1,5 @@
 :: PossessedLocation [nobr] {"position":"1125,400","size":"100,100"}
-<<if $checkChoosenLocation eq "library">>
+<<if setup.Posession.locationChoice() eq "library">>
 	<<image "possessed/1.jpg" { width: "100%" }>><br>
 	@@.mc-thoughts; You find yourself in a room surrounded by rows of books.@@<br>
 	@@.mc-speech; It seems I'm in a library. But how did I get here?<br>@@
@@ -32,7 +32,7 @@
 		<</linkreplace>>
 	<</linkreplace>>
 
-<<elseif $checkChoosenLocation eq "home">>
+<<elseif setup.Posession.locationChoice() eq "home">>
 
 	<<video "possessed/2.mp4">>
 	@@.mc-thoughts; You find yourself surrounded by a crowd of nearly naked men.@@<br>
@@ -60,7 +60,7 @@
 		<</if>>
 	<</linkreplace>>
 
-<<elseif $checkChoosenLocation eq "gym">>
+<<elseif setup.Posession.locationChoice() eq "gym">>
 
 	<<image "possessed/3.jpg" { width: "100%" }>><br>
 	@@.mc-thoughts; You find yourself in a gym.@@<br>
@@ -91,7 +91,7 @@
 			<</if>>
 		<</linkreplace>>
 	<</linkreplace>>
-<<elseif $checkChoosenLocation eq "church">>
+<<elseif setup.Posession.locationChoice() eq "church">>
 	<<image "possessed/4.1.jpg" { width: "100%" }>><br>
 	@@.mc-thoughts; You find yourself in a church.@@<br>
 	@@.mc-speech; I don't remember how I got here.<br>@@
@@ -118,7 +118,7 @@
 				@@.notmc-speech; We did it@@<br>
 				@@color:red; No, we're not done.@@<br>
 				@@.notmc-speech; Whaa..?! what the ...@@<br>
-				@@color:red; I think it's [[my turn now|PossessedLocation1][$]]@@<br>
+				@@color:red; I think it's [[my turn now|PossessedLocation1]]@@<br>
 			<</linkreplace>>
 		<<else>>
 			@@.mc-speech; AHh~You are going to break me ~@@<br>
@@ -131,15 +131,14 @@
 				@@.notmc-speech; You were possessed, but it's all over now, you need to rest.@@<br>
 				@@.mc-thoughts; She kisses you gently on the lips, and you drift into [[sleep|Sleep]]
 				@@<br>
-				<<if $mcpossession lte 10>>
-					<<set $mcpossession += 1>>
-					<b>Surrender to possession</b> is increased: $mcpossession now!<br>
+				<<if setup.Posession.raiseMeter(10)>>
+					<b>Surrender to possession</b> is increased: <<= setup.Posession.meter()>> now!<br>
 				<</if>>
 			<</linkreplace>>
 		<</if>>
 
 	<</linkreplace>>
-<<elseif $checkChoosenLocation eq "park">>
+<<elseif setup.Posession.locationChoice() eq "park">>
 	<<video "possessed/5.0.mp4">>
 	@@.mc-thoughts;You're running, but the surroundings are completely unfamiliar.@@<br>
 

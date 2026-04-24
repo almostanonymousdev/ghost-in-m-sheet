@@ -9,14 +9,14 @@
 	@@.mc-thoughts; With a strong push, she <<linkappend "shoved you down onto the bed.">>
 		<<video "rescue/julia/1.1.mp4">>
 		@@.mc-thoughts; Every time you tried to get up, she slapped your ass hard.@@<br>
-		@@.mc-speech; Stop it, $currentRescueGirl. Why are you doing this~Ah!@@<br>
+		@@.mc-speech; Stop it, <<= setup.MissingWomen.currentRescueGirl()>>. Why are you doing this~Ah!@@<br>
 		@@.mc-thoughts; She didn't stop spanking you, even after you gave up trying to get free.<br>
 		You started moaning with every slap on your ass. Noticing this, Julia [[took off your panties.|RescueJuliaPossessed1]]@@<br>
 	<</linkappend>>@@
 <<elseif _check eq 2>>
 	<<image "rescue/julia/2.0.jpg" { width: "100%" }>>
-	@@.mc-thoughts; You slowly regain consciousness, your head throbbing with pain, and the first thing you feel is the tight ropes binding your wrists. You try to move, but your hands and legs are tied up. Flashes of memory come back to you: you came here to save $currentRescueGirl. But something went wrong. <br>@@
-	@@.mc-speech; $currentRescueGirl! What the fuck...@@<br>
+	@@.mc-thoughts; You slowly regain consciousness, your head throbbing with pain, and the first thing you feel is the tight ropes binding your wrists. You try to move, but your hands and legs are tied up. Flashes of memory come back to you: you came here to save <<= setup.MissingWomen.currentRescueGirl()>>. But something went wrong. <br>@@
+	@@.mc-speech; <<= setup.MissingWomen.currentRescueGirl()>>! What the fuck...@@<br>
 	@@.mc-thoughts; She came up to you and started slapping@@ <<linkappend "@@.usebtn; your pussy@@">>
 		<<video "rescue/julia/2.1.mp4">>
 		@@.mc-speech;AHhh~ no~ don't do that@@<br>
@@ -38,7 +38,7 @@
 				@@.mc-thoughts; You moan loudly and cum.@@<br>
 				@@.mc-speech; The pleasure is hitting me directly in the head@@<br>
 				@@.mc-thoughts; The world before your eyes begins to disappear and you fall asleep.@@<br><br>
-				@@.backbtn; [[Wake up|Church][$hours += 6]]@@<br>
+				@@.backbtn; [[Wake up|Church][setup.Time.addHours(6)]]@@<br>
 			<</linkappend>>
 		<</linkappend>>
 	<</linkappend>>

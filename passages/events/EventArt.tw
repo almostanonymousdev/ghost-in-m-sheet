@@ -1,58 +1,49 @@
 :: EventArt [nobr] {"position":"1400,950","size":"100,100"}
 <<set _hg to setup.Ghosts.active()>>
 <<if _hg and _hg.invertedSanityStages>>
-	<<set $decreasingSanity to {
-	stage1: 9,
-	stage2: 7,
-	stage3: 5,
-	stage4: 3,
-	}>>
+	<<run setup.Events.setDecreasingSanity({ stage1: 9, stage2: 7, stage3: 5, stage4: 3 })>>
 <<else>>
-	<<set $decreasingSanity to {
-	stage1: 3,
-	stage2: 5,
-	stage3: 7,
-	stage4: 9,
-	}>>
+	<<run setup.Events.setDecreasingSanity({ stage1: 3, stage2: 5, stage3: 7, stage4: 9 })>>
 <</if>>
+<<set _ds to setup.Events.decreasingSanity()>>
 <<set _artListVids to []>>
 <<set _artList to []>>
 <<set _chance = random(0, 100)>>
-<<if $mc.sanity >= 90 and _chance <= $decreasingSanity.stage1>>
-	<<if $jeansState is "worn">>
+<<if setup.Mc.sanity() >= 90 and _chance <= _ds.stage1>>
+	<<if setup.Events.jeansWorn()>>
 		<<set _artList to ["art/jeans/first/1.png", "art/jeans/first/2.png", "art/jeans/first/3.png", "art/jeans/first/4.png", "art/jeans/first/5.png", "art/jeans/first/6.png", "art/jeans/first/7.png", "art/jeans/first/8.png"]>>
-	<<elseif $shortsState is "worn">>
+	<<elseif setup.Events.shortsWorn()>>
 		<<set _artList to ["art/shorts/first/1.png", "art/shorts/first/2.png", "art/shorts/first/3.png", "art/shorts/first/4.png", "art/shorts/first/5.png", "art/shorts/first/6.png", "art/shorts/first/7.png", "art/shorts/first/8.png", "art/shorts/first/9.png"]>>
-	<<elseif $skirtState is "worn">>
+	<<elseif setup.Events.skirtWorn()>>
 		<<set _artList to ["art/skirt/first/1.png", "art/skirt/first/2.png", "art/skirt/first/3.png", "art/skirt/first/4.png", "art/skirt/first/5.png", "art/skirt/first/6.png", "art/skirt/first/7.png", "art/skirt/first/8.png", "art/skirt/first/9.png"]>>
 	<</if>>
 
-<<elseif ($mc.sanity >= 80 and $mc.sanity < 90) and _chance <= $decreasingSanity.stage2>>
-	<<if $jeansState is "worn">>
+<<elseif (setup.Mc.sanity() >= 80 and setup.Mc.sanity() < 90) and _chance <= _ds.stage2>>
+	<<if setup.Events.jeansWorn()>>
 		<<set _artList to ["art/jeans/second/1.png", "art/jeans/second/2.png", "art/jeans/second/3.png", "art/jeans/second/4.png", "art/jeans/second/5.png", "art/jeans/second/6.png", "art/jeans/second/7.png", "art/jeans/second/8.png", "art/jeans/second/9.png", "art/jeans/second/10.png"]>>
-	<<elseif $shortsState is "worn">>
+	<<elseif setup.Events.shortsWorn()>>
 		<<set _artList to ["art/shorts/second/1.png", "art/shorts/second/2.png", "art/shorts/second/3.png", "art/shorts/second/4.png", "art/shorts/second/5.png", "art/shorts/second/6.png", "art/shorts/second/7.png", "art/shorts/second/8.png", "art/shorts/second/9.png"]>>
-	<<elseif $skirtState is "worn">>
+	<<elseif setup.Events.skirtWorn()>>
 		<<set _artList to ["art/skirt/second/1.png", "art/skirt/second/2.png", "art/skirt/second/3.png", "art/skirt/second/4.png", "art/skirt/second/5.png", "art/skirt/second/6.png", "art/skirt/second/7.png", "art/skirt/second/8.png", "art/skirt/second/9.png", "art/skirt/second/10.png"]>>
 	<</if>>
 
-<<elseif ($mc.sanity >= 70 and $mc.sanity < 80) and _chance <= $decreasingSanity.stage2>>
-	<<if $jeansState is "worn">>
+<<elseif (setup.Mc.sanity() >= 70 and setup.Mc.sanity() < 80) and _chance <= _ds.stage2>>
+	<<if setup.Events.jeansWorn()>>
 		<<set _artList to ["art/jeans/third/1.png", "art/jeans/third/2.png", "art/jeans/third/3.png", "art/jeans/third/4.png", "art/jeans/third/5.png", "art/jeans/third/6.png", "art/jeans/third/7.png", "art/jeans/third/8.png", "art/jeans/third/9.png", "art/jeans/third/10.png"]>>
-	<<elseif $shortsState is "worn">>
+	<<elseif setup.Events.shortsWorn()>>
 		<<set _artList to ["art/shorts/third/1.png", "art/shorts/third/2.png", "art/shorts/third/3.png", "art/shorts/third/4.png", "art/shorts/third/5.png", "art/shorts/third/6.png", "art/shorts/third/7.png", "art/shorts/third/8.png", "art/shorts/third/9.png", "art/shorts/third/10.png"]>>
-	<<elseif $skirtState is "worn">>
+	<<elseif setup.Events.skirtWorn()>>
 		<<set _artList to ["art/skirt/third/1.png", "art/skirt/third/2.png", "art/skirt/third/3.png", "art/skirt/third/4.png", "art/skirt/third/5.png", "art/skirt/third/6.png", "art/skirt/third/7.png", "art/skirt/third/8.png", "art/skirt/third/9.png"]>>
 	<</if>>
 
-<<elseif ($mc.sanity >= 50 and $mc.sanity < 70) and _chance <= $decreasingSanity.stage3>>
-	<<if $pantiesState is "worn">>
+<<elseif (setup.Mc.sanity() >= 50 and setup.Mc.sanity() < 70) and _chance <= _ds.stage3>>
+	<<if setup.Events.pantiesWorn()>>
 		<<set _artList to ["art/underwear/1.png", "art/underwear/2.png", "art/underwear/3.png", "art/underwear/4.png", "art/underwear/5.png", "art/underwear/6.png", "art/underwear/7.png", "art/underwear/8.png", "art/underwear/9.png", "art/underwear/10.png", "art/underwear/11.png"]>>
 	<<else>>
 		<<set _artList to ["art/naked/1.png", "art/naked/2.png", "art/naked/3.png", "art/naked/4.png", "art/naked/5.png", "art/naked/6.png", "art/naked/7.png", "art/naked/8.png", "art/naked/9.png", "art/naked/10.png", "art/naked/11.png", "art/naked/12.png", "art/naked/13.png", "art/naked/14.png"]>>
 	<</if>>
 
-<<elseif ($mc.sanity >= 1 and $mc.sanity < 50) and _chance <= $decreasingSanity.stage4>>
+<<elseif (setup.Mc.sanity() >= 1 and setup.Mc.sanity() < 50) and _chance <= _ds.stage4>>
 
 	<<if passage() is "EnigmaKitchen">>
 		<<set _artListVids to ["animated/all/1.mp4", "animated/all/2.mp4", "animated/all/3.mp4", "animated/all/4.mp4", "animated/all/5.mp4", "animated/all/6.mp4", "animated/all/7.mp4", "animated/all/8.mp4", "animated/all/9.mp4", "animated/all/10.mp4", "animated/all/11.mp4", "animated/all/12.mp4", "animated/all/13.mp4", "animated/all/14.mp4", "animated/all/15.mp4", "animated/all/16.mp4", "animated/all/17.mp4", "animated/all/18.mp4", "animated/all/19.mp4", "animated/all/20.mp4", "animated/all/21.mp4", "animated/all/22.mp4", "animated/all/23.mp4", "animated/all/24.mp4", "animated/kitchen/1.mp4", "animated/kitchen/2.mp4"]>>
@@ -75,8 +66,8 @@
 <<set _randomIndexVids to random(0, _artListVids.length - 1)>>
 <<set _selectedImg to _artList[_randomIndex]>>
 <<set _selectedVids to _artListVids[_randomIndexVids]>>
-<<set $artImgEvent to _selectedImg>>
-<<set $artVideoEvent to _selectedVids>>
+<<run setup.Events.setArtImgEvent(_selectedImg)>>
+<<run setup.Events.setArtVideoEvent(_selectedVids)>>
 
 <<if _selectedImg>>
 	<<goto "ArtEventImgs">>

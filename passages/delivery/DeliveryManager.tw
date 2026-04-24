@@ -3,7 +3,7 @@
 <<if setup.Delivery.isFirstVisit()>>
 	@@.mc-thoughts; You enter the manager's office and notice a man around forty. There's nothing particularly remarkable about him. As you make your presence known, he carefully assesses you, momentarily pausing his gaze on your chest. Nevertheless, you gather the courage to initiate the conversation.@@<br>
 	<br>
-	@@.mc-speech;Hello, my name is $mc.name, and I'm looking for a job. Perhaps you have something suitable for me?@@<br>
+	@@.mc-speech;Hello, my name is <<= setup.Mc.name()>>, and I'm looking for a job. Perhaps you have something suitable for me?@@<br>
 	@@.notmc-speech; Hello, I'm John. We happen to need couriers, and I think you could be a good fit for the job.@@<br>
 	@@.mc-speech;
 	"Thank you! I'm ready to start working. What do I need to do for that?@@<br>
@@ -18,7 +18,7 @@
 	@@.mc-speech;
 	"Got it. How much will I be paid for each order?@@<br>
 
-	@@.notmc-speech; For each correctly delivered item, you'll receive $<<= $jobMoneySuccessed>>. Not bad, right? But remember, if you make a mistake, you'll only get $<<= $jobMoneyFailed>> for that delivery.@@<br>
+	@@.notmc-speech; For each correctly delivered item, you'll receive $<<= setup.Delivery.jobMoneySuccessed()>>. Not bad, right? But remember, if you make a mistake, you'll only get $<<= setup.Delivery.jobMoneyFailed()>> for that delivery.@@<br>
 
 	@@.mc-speech;
 	I'll do my best not to make mistakes. Ready to start working!@@<br>
@@ -30,11 +30,11 @@
 	<br>
 	@@.mc-action; Now you can work as a courier.@@
 	<br>
-	<<set $firstVisitDeliveryHub = false>>
+	<<run setup.Delivery.markFirstVisited()>>
 <<elseif not setup.Delivery.isFirstVisit() and previous() isnot "DeliveryMap">>
 	<br>
 	<<if setup.Delivery.hasMetManagerEvent()>>
-		@@.notmc-speech; Oh, $mc.name, come in, don't be shy. What do you want to talk about?@@
+		@@.notmc-speech; Oh, <<= setup.Mc.name()>>, come in, don't be shy. What do you want to talk about?@@
 	<<else>>
 		@@.notmc-speech;
 		Hello, you're like umm... Susan? Milana? Doesn't matter, I'm a bit busy right now, let's talk later.
@@ -51,7 +51,7 @@
 				@@.warningtext; (Req. <<image "img/beauty.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 45)@@
 			<<else>>
 				<<if setup.Delivery.hasMetManagerEvent()>>
-					@@.notmc-speech;Of course, $mc.name, I think you know how I can help you@@<br>
+					@@.notmc-speech;Of course, <<= setup.Mc.name()>>, I think you know how I can help you@@<br>
 				<<else>>
 					@@.notmc-speech; Hm...<br>
 					<i>He looked at me and thought about something</i>. <br>

@@ -5,25 +5,25 @@
 +30 <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
 <<linkreplace "@@.mc-speechLink; Lick her@@">>
 	<<addTime 30>>
-	<<set $witchNightCD to 1>>
-	<<if $hours lte 5>>
+	<<run setup.Witch.startWitchNightCooldown()>>
+	<<if setup.Witch.witchLateNightHour()>>
 		<<video "witch/lick-sleeping2.mp4">>
 		@@.mc-thoughts; You can no longer restrain yourself. <br>You pressed your face to her juicy peach and begin to gently lick her pussy and ass.@@<br>
-		@@.notmc-speech; Ah~$mc.name, don't stop... @@<br>
+		@@.notmc-speech; Ah~<<= setup.Mc.name()>>, don't stop... @@<br>
 		@@.mc-thoughts; Her pussy becomes wet, and sighs are heavy. After playing with her sweet butt, you prepare to leave. <br>
 		Before you go, you hear her say in a quiet, satisfied voice: @@<br>
-		@@.notmc-speech; Thank you, $mc.name.@@<br>
+		@@.notmc-speech; Thank you, <<= setup.Mc.name()>>.@@<br>
 	<<else>>
 		<<video "witch/lick-sleeping1.mp4">>
 		@@.mc-thoughts; You can no longer restrain yourself. <br>You pressed your face to her juicy peach and begin to gently lick her pussy and ass. Her pussy becomes wet, and sighs are heavy. After playing with her sweet butt, you prepare to leave. <br>
 		Before you go, you hear her say in a quiet, satisfied voice: @@<br>
-		@@.notmc-speech; Thank you, $mc.name.@@<br>
+		@@.notmc-speech; Thank you, <<= setup.Mc.name()>>.@@<br>
 	<</if>>
 	<<addLust 60>>
 	+60 <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
-	<<if $mc.corruption lt 10>>
+	<<if setup.Mc.corruption() lt 10>>
 		+0.2 <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%;" }>>
-		<<set $mc.corruption += 0.2>><br>
+		<<run setup.Mc.addCorruption(0.2)>><br>
 	<</if>>
 <</linkreplace>>
 <br>

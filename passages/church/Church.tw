@@ -7,7 +7,7 @@
 	@@.mc-thoughts; I came at an inappropriate time (open from 6 AM to 10 PM)@@<br>
 <<else>>
 	<<if setup.Church.canStartNunQuest()>>
-		@@.enterbtn;<<link "Confess your sins" "ChurchNunQuest">><<set $hasQuestForRescue to 0>>
+		@@.enterbtn;<<link "Confess your sins" "ChurchNunQuest">><<run setup.Church.clearRescueQuest()>>
 		<</link>>@@
 	<<else>>
 		@@.enterbtn;[[Confess your sins|ChurchPray]]@@<br>

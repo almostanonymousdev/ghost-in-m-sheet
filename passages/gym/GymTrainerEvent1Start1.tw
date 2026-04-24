@@ -19,4 +19,4 @@
 <</linkappend>>
 
 <br>
-<<set $trainer1CoachingCost to 1>>
+<<run setup.Gym.markTrainer1Coaching()>>

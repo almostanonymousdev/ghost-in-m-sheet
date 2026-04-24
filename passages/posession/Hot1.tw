@@ -1,5 +1,5 @@
 :: Hot1 [nobr] {"position":"1525,1150","size":"100,100"}
-<<switch $pantiesState + "," + $braState>>
+<<switch setup.Posession.pantiesState() + "," + setup.Posession.braState()>>
 <<case "worn,worn">>
 	<<video "mc/underwear-on.webm">>
 <<case "worn,not worn">>
@@ -9,7 +9,6 @@
 <<case "not worn,not worn">>
 	<<video "mc/underwear-off.webm" { width: "40%", controls: false }>>
 <</switch>>
-<<set $hotAct to 0>>
 <<run ["rememberBottomOuter", "rememberTopOuter"].forEach(function(k) {
 var v = State.variables[k];
 if (v) State.variables[v.replace(/(\d+)$/, "State$1")] = "not worn";
@@ -17,4 +16,4 @@ if (v) State.variables[v.replace(/(\d+)$/, "State$1")] = "not worn";
 <br>
 @@.mc-speech;Am I not beautiful? Who could harm such a cutie?
 It feels much better, I am ready to [[continue|previous(2)]]@@
-<<set $addtemptorealhouse to 0>>
+<<run setup.Posession.clearHotFlags()>>

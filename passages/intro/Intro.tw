@@ -3,15 +3,15 @@ Ghost in M'Sheet<br>
 <br>
 <b>What's your extra sensitive spot?</b><br>
 <em>The chosen one will occur more frequently during the ghost hunt than the other body parts, bringing more lust.</em><br>
-<label><<radiobutton "$sensualBodyPart.brain" 3 autocheck>> Mind</label><br>
-<label><<radiobutton "$sensualBodyPart.tits" 3 autocheck>> Boobs</label><br>
-<label><<radiobutton "$sensualBodyPart.ass" 3 autocheck>> Ass</label><br>
-<label><<radiobutton "$sensualBodyPart.mouth" 3 autocheck>> Tongue</label><br>
-<label><<radiobutton "$sensualBodyPart.pussy" 3 autocheck>> Pussy</label><br>
-<label><<radiobutton "$sensualBodyPart.anal" 3 autocheck>> Anus</label><br>
-Enter your name here: <<textbox "$mc.name" "Mary" "Intro1">>and press "Enter".
+<<bodyPartRadio "brain"  "Mind">>
+<<bodyPartRadio "tits"   "Boobs">>
+<<bodyPartRadio "ass"    "Ass">>
+<<bodyPartRadio "mouth"  "Tongue">>
+<<bodyPartRadio "pussy"  "Pussy">>
+<<bodyPartRadio "anal"   "Anus">>
+Enter your name here: <<mcNameTextbox "Mary" "Intro1">>and press "Enter".
 <br>
-Or just click @@.enterbtn;<<link "here" "Intro1">><<set $mc.name to "Mary">>
+Or just click @@.enterbtn;<<link "here" "Intro1">><<run setup.Mc.setName("Mary")>>
 <</link>>@@
 
 <br>

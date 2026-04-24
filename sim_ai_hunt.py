@@ -210,7 +210,7 @@ def _parse_orgasm_spend(widget_src: str) -> dict[str, float]:
     flows through the loader."""
     sanity_m = re.search(r'<<addSanity\s+-(\d+)>>', widget_src)
     lust_m   = re.search(r'<<addLust\s+-(\d+)>>',   widget_src)
-    cd_m     = re.search(r'\$orgasmCooldownSteps\s+to\s+(\d+)', widget_src)
+    cd_m     = re.search(r'setOrgasmCooldown\s*\(\s*(\d+)\s*\)', widget_src)
     if not (sanity_m and lust_m and cd_m):
         raise SystemExit(
             "parser: widgetEvent.tw orgasm spend block not found "
@@ -245,9 +245,9 @@ def _parse_event_choice_costs(event_mc_src: str) -> dict[str, float]:
     """Pull the Run / Embrace inline expressions from EventMC.tw so the sim
     picks up whatever the passage currently charges for each choice."""
     run_m = re.search(
-        r"Run away[^\[]*\[\$mc\.energy\s*-=\s*(\d+)\]", event_mc_src)
+        r"Run away[^\[]*\[setup\.Mc\.addEnergy\(-(\d+)\)\]", event_mc_src)
     embrace_m = re.search(
-        r"Embrace it[^\[]*\[\$mc\.sanity\s*-=\s*(\d+);\s*"
+        r"Embrace it[^\[]*\[setup\.Mc\.addSanity\(-(\d+)\);\s*"
         r"setup\.addLust\((\d+)\)\]",
         event_mc_src)
     if not (run_m and embrace_m):
@@ -342,7 +342,7 @@ class GameData:
 
 def load_game_data() -> GameData:
     story_script = _read("StoryScript.tw")
-    story_init = _read("StoryInit.tw")
+    story_init = _read("mc/GameInit.tw")
     change_room = _read("haunted_houses/general/ChangeGhostRoom.tw")
     check_hunt = _read("haunted_houses/hunt/CheckHuntStart.tw")
     hide_tw = _read("haunted_houses/general/Hide.tw")
@@ -351,7 +351,7 @@ def load_game_data() -> GameData:
     widget_event = _read("events/widgetEvent.tw")
     events_ctl = _read("events/EventsController.tw")
     event_mc = _read("events/EventMC.tw")
-    passage_done = _read("updates/PassageDone.tw")
+    time_ctl = _read("time/TimeController.tw")
 
     ghosts = {g["name"]: g for g in _load_ghosts()}
 
@@ -369,7 +369,7 @@ def load_game_data() -> GameData:
     contract_drain, companion_drain = _parse_contract_drain(story_script)
     temp_cfg = _parse_temperature(temp_tw)
 
-    # mc starting stats (StoryInit.tw).
+    # mc starting stats (mc/GameInit.tw).
     start_sanity = _find_num(r"sanity\s*:\s*(\d+)", story_init)
     start_lust   = _find_num(r"lust\s*:\s*(\d+)",   story_init)
     start_energy = _find_num(r"energy\s*:\s*(\d+)", story_init)
@@ -388,9 +388,10 @@ def load_game_data() -> GameData:
     # RunFast.tw: `if _check lte 30` -> caught; success = 1 - that.
     run_caught = _find_num(r"_check\s+lte\s+(\d+)", run_tw) / 100.0
 
-    # PassageDone.tw: `$hours gte N and setup.Ghosts.isHunting()` -> dawn.
-    dawn_hours = int(_find_num(r"\$hours\s+gte\s+(\d+)[^\n]*isHunting",
-                               passage_done))
+    # TimeController.tw: `isMorningPlus: function () { return sv().hours >= N; }`
+    # PassageDone gates dawn via setup.Time.isMorningPlus(), which reads this.
+    dawn_hours = int(_find_num(r"isMorningPlus:[^}]*?hours\s*>=\s*(\d+)",
+                               time_ctl))
 
     # widgetEvent.tw + EventsController.tw: orgasm spend + gate
     orgasm = _parse_orgasm_spend(widget_event)

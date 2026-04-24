@@ -1,31 +1,31 @@
 :: RescueVictoriaPossessed1 [nobr] {"position":"2025,2200","size":"100,100"}
-<<if $rescueVictoriaPossessed eq 1>>
+<<if setup.MissingWomen.victoriaPossessedStage() eq 1>>
 	<<video "rescue/victoria/1.2.mp4">>
 	@@.mc-speech; What are you going to do? ~OH~ fuck~ my butthole@@<br>
 	@@.notmc-speech; Seems like your sweet little hole is ready for@@ <<linkappend "@@.notmc-speechLink; something more...@@">>
 		<<video "rescue/victoria/1.3.mp4">>
 		@@.notmc-speech; Ha, your hole swallowed that dildo right away<br>
 		How many dicks have been in your ass already?@@<br>
-		@@.mc-speech; Fuck, I'm [[cumming|RescueVictoriaPossessed2][$rescueVictoriaPossessed to 1]]@@<br>
+		@@.mc-speech; Fuck, I'm [[cumming|RescueVictoriaPossessed2][setup.MissingWomen.setVictoriaPossessedStage(1)]]@@<br>
 	<</linkappend>>
 <</if>>
-<<if $rescueVictoriaPossessed eq 2>>
+<<if setup.MissingWomen.victoriaPossessedStage() eq 2>>
 	<<video "rescue/victoria/2.2.mp4">>
 	@@.mc-speech; Oh~you're gonna tear my ass, please be gentle@@<br>
 	@@.notmc-speech; What a tight ass you have, don't worry,@@ <<linkappend "@@.notmc-speechLink; I'll fix it@@">>
 		<<video "rescue/victoria/2.3.mp4">>
 		@@.notmc-speech; Do you want me to stop? Answer me, whore@@<br>
 		@@.mc-speech; Oh my god, I can't take it anymore, I'm
-		[[cumming|RescueVictoriaPossessed2][$rescueVictoriaPossessed to 2]]@@<br>
+		[[cumming|RescueVictoriaPossessed2][setup.MissingWomen.setVictoriaPossessedStage(2)]]@@<br>
 	<</linkappend>>
 <</if>>
-<<if $rescueVictoriaPossessed eq 3>>
+<<if setup.MissingWomen.victoriaPossessedStage() eq 3>>
 	<<video "rescue/victoria/3.2.mp4">>
 	@@.mc-speech; Oh~you're gonna tear my ass, please be gentle@@<br>
 	@@.notmc-speech; What a tight ass you have, don't worry,@@ <<linkappend "@@.notmc-speechLink; I'll fix it@@">>
 		<<video "rescue/victoria/3.3.mp4">>
 		@@.notmc-speech; Do you want me to stop? Answer me, whore@@<br>
 		@@.mc-speech; Oh my god, I can't take it anymore, I'm
-		[[cumming|RescueVictoriaPossessed2][$rescueVictoriaPossessed to 3]]@@<br>
+		[[cumming|RescueVictoriaPossessed2][setup.MissingWomen.setVictoriaPossessedStage(3)]]@@<br>
 	<</linkappend>>
 <</if>>

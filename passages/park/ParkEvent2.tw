@@ -21,6 +21,6 @@
 	@@.mc-thoughts; She left you fucked, sitting on the ground, as she walked away into the distance. Your body aches a bit, your pussy is red and sore. @@<br>
 	@@.mc-speech; What a bitch, I hope we never cross paths again.@@<br><br>
 	@@.backbtn; [[Leave|CityMap]] @@<br>
-	<<set $isPenaltyOn to 1>>
+	<<run setup.Mc.setPenalized(true)>>
 	<<run setup.Home.applyAssaultDebuff()>>
 <</linkappend>>

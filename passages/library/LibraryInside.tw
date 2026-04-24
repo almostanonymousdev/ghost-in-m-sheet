@@ -2,7 +2,7 @@
 <<image "img/library-inside.jpg" { width: "100%" }>>
 <br>
 <<if setup.Library.hasEnergyToSearch()>>
-	@@.usebtn; [[Search for information about ghosts in books|LibrarySearchResult][$mc.energy -= 1]] @@<<image "img/energy.png" { style: "position: relative; top: 0.375em; width:3%;" }>>
+	@@.usebtn; [[Search for information about ghosts in books|LibrarySearchResult][setup.Library.spendEnergyToSearch()]] @@<<image "img/energy.png" { style: "position: relative; top: 0.375em; width:3%;" }>>
 <<else>>@@.mc-thoughts; I'm too tired@@
 	<span><<image "img/energy.png" { style: "position: relative; top: 0.375em; filter: grayscale(1); width:3%;" }>></span>
 <</if>>

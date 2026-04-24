@@ -6,7 +6,7 @@
 			<<replace `"#currentPiercing" + _p.target`>>
 				<<link _linkImg "Wardrobe">>
 					<<run State.variables[_p.var] = "not worn">>
-					<<if _p.beauty>><<set $mc.beauty -= _p.beauty>><</if>>
+					<<if _p.beauty>><<run setup.Mc.addBeauty(-_p.beauty)>><</if>>
 					<<if _p.sensVar>>
 						<<run State.variables[_p.sensVar] = 0>>
 						<<run State.variables[_p.lustVar] = 0>>
@@ -17,7 +17,7 @@
 			<<append "#availablePiercing">>
 				<<link _linkImg "Wardrobe">>
 					<<run State.variables[_p.var] = "worn">>
-					<<if _p.beauty>><<set $mc.beauty += _p.beauty>><</if>>
+					<<if _p.beauty>><<run setup.Mc.addBeauty(_p.beauty)>><</if>>
 					<<if _p.sensVar>>
 						<<run State.variables[_p.sensVar] = 0.1>>
 					<</if>>

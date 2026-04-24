@@ -8,15 +8,13 @@
 <<image "img/spray.png" "iconPx">><br>
 <<if setup.Mall.needsPepperSpray()>>
 <span class="priceAmount">10$</span><br>
-<<if $mc.money gte 10>>
+<<if setup.Mc.money() gte 10>>
 @@.buyItemLink;<<link "Buy" "GeneralSection">>
-<<set $hasPSpray to 1>>
-<<set $hasPSprayCharges to 3>>
-<<set $mc.money -= 10>>
+<<run setup.Mall.buyPepperSpray()>>
 <</link>>@@<br>
 <<else>>@@.mc-thoughts; I don't have enough money@@
 <</if>>
-<<else>>@@.mc-thoughts;I already have pepper spray ($hasPSprayCharges charges left)@@
+<<else>>@@.mc-thoughts;I already have pepper spray (<<= setup.Mall.pepperSprayCharges()>> charges left)@@
 <</if>>
 </div>
 </div>

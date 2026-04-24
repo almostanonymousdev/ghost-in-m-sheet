@@ -1,6 +1,6 @@
 :: DeliveryBurgerEvent2 [event nobr] {"position":"1425,1950","size":"100,100"}
-<<set $deliveryBurgerEvent to 1>>
-<<set $mc.lust to 0>>
+<<run setup.Delivery.markBurgerEvent()>>
+<<run setup.Delivery.clearLust()>>
 <<deliveryVideo "burgerevent" 9>>
 @@.mc-speech; Ah~ Did you cum inside me?@@<br>
 @@.notmc-speech; I haven't fucked like this for a long time, you're a great slut, I hope to see you again sometime@@<br>

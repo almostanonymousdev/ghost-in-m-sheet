@@ -2,11 +2,8 @@
 <<image "img/witch-girl.jpg" { width: "100%" }>>
 <br>
 @@.notmc-speech;Tell me the type of ghost:@@<br>
-<<set _ghostTypes = setup.Ghosts.names()>>
 @@.mc-speech;I guess it was:@@<br>
-<<listbox "$ghostTypeSelected">>
-<<optionsfrom _ghostTypes>>
-<</listbox>><br>
+<<ghostTypeDropdown>><br>
 <<linkreplace "@@.usebtn;Choose@@">>
 	<<done>>
 		<<addclass ".linkselector" "disabled-link">>
@@ -14,26 +11,21 @@
 	<<video "witch/witch-result.mp4" { controls: false, loop: false }>>
 	@@.notmc-speech;Let's find out, give me some time...@@
 	<<timed 6s>>
-		<<if $hunt and $hunt.realName eq $ghostTypeSelected>>
+		<<if setup.Witch.huntRealName() eq setup.Witch.selectedGhostType()>>
 			@@.notmc-speech; Yes, you're right, good girl@@<br>
 
-			<<set $mc.money += $moneyFromContract + $moneyFromWeakenTheGhost>>
-			<<gainXP $expFromContract>>
+			<<run setup.Witch.payForContract()>>
+			<<gainXP setup.Witch.expFromContract()>>
 
 			@@.backbtn;[[Back|WitchInside]]@@
 		<<else>> @@.notmc-speech;No, you are wrong. Maybe you'll get it right next time.@@<br>
 
-			<<set $mc.money += 0 + $moneyFromWeakenTheGhost>>
+			<<run setup.Witch.payForWeakenOnly()>>
 			<<gainXP 10>>
 
 			@@.backbtn;[[Back|WitchInside]]@@
 		<</if>>
 		<<run setup.Ghosts.endContract()>>
-		<<unset $hiddenEvidence>>
-		<<unset $hiddenEvidence1>>
-		<<unset $hiddenEvidence2>>
-		<<unset $deleteSecondEvidence>>
-		<<unset $deleteThirdEvidence>>
-		<<unset $deleteOneEvidence>>
+		<<run setup.Witch.clearHiddenEvidence()>>
 	<</timed>>
 <</linkreplace>>

@@ -1,17 +1,17 @@
 :: MC [nobr] {"position":"400,300","size":"100,100"}
 <div id="statusContainer">
 <div id="inPainImg">
-<<hovertip "Need to buy medicine">><<if $isPenaltyOn eq 1>>
+<<hovertip "Need to buy medicine">><<if setup.Mc.isPenalized()>>
 	<<image "img/icons/pain.jpg">>
 <</if>>
 <</hovertip>>
 </div>
-<<if $isIronclad eq 1 and setup.Ghosts.isHunting()>>
+<<if setup.HauntedHouses.isIronclad() and setup.Ghosts.isHunting()>>
 	<<hovertip "Wearing a sexy warden costume">><<image "img/icons/warden1.png">>
 	<</hovertip>>
 <<else>>
 	<div id="statusOuterTop">
-	<<if $tshirtState eq "worn">>
+	<<if setup.Wardrobe.topShirtWorn()>>
 		<<hovertip "Wearing t-shirt">><<image "img/icons/top.jpg">>
 		<</hovertip>>
 	<<else>>
@@ -19,11 +19,7 @@
 	<</if>>
 	</div>
 	<div id="statusOuterBottom">
-	<<set _bottom to [
-	{ state: $jeansState,  tip: "Wearing jeans",  icon: "jeans.jpg" },
-	{ state: $shortsState, tip: "Wearing shorts", icon: "shorts.jpg" },
-	{ state: $skirtState,  tip: "Wearing skirt",  icon: "skirt.jpg" }
-	].find(b => b.state === "worn")>>
+	<<set _bottom to setup.Wardrobe.currentBottomDescriptor()>>
 	<<if _bottom>>
 		<<hovertip _bottom.tip>><<image "img/icons/" + _bottom.icon>>
 		<</hovertip>>
@@ -32,7 +28,7 @@
 	<</if>>
 	</div>
 	<div id="statusUnderTop">
-	<<if $braState eq "worn">>
+	<<if setup.Wardrobe.braWorn()>>
 		<<hovertip "Wearing bra.">><<image "img/icons/bra.jpg">>
 		<</hovertip>>
 	<<else>>
@@ -41,7 +37,7 @@
 	<</if>>
 	</div>
 	<div id="statusUnderBottom">
-	<<if $pantiesState eq "worn">>
+	<<if setup.Wardrobe.pantiesWorn()>>
 		<<hovertip "Wearing panties">><<image "img/icons/panties.jpg">>
 		<</hovertip>>
 	<<else>>

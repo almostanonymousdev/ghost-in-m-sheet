@@ -11,8 +11,8 @@
 <span>You gain:</span><br>
 <span> Money: +10$ </span><br>
 <span>Experience: +10 exp</span><br>
-<<if $mc.corruption lt 10>>
-	<<set $mc.corruption += 0.5>>
+<<if setup.Mc.corruption() lt 10>>
+	<<run setup.Mc.addCorruption(0.5)>>
 	<span><<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>: +0.5 </span>
 <</if>>
 <span class="reachedNewLvl"></span><br>
@@ -20,15 +20,15 @@
 <br>
 <span id="expBar"><<showmeter 'xpBar'>></span><br>
 <br>
-<<set $mc.exp += 10>><<set $percentageOfLevel to Math.floor(($mc.exp / $neededForNextLevel) *100)>><<updatemeter 'xpBar' `$mc.exp / $neededForNextLevel`>><<set $mc.money += 10>>
-<<if $mc.exp gte $neededForNextLevel>>
-	<<done>><<replace ".reachedNewLvl">>You reached a new level - $mc.lvl !
-	<</replace>>
+<<run setup.Mc.addMoney(10)>>
+<<set _leveled to setup.Mc.grantExp(10)>>
+<<updatemeter 'xpBar' `setup.Mc.exp() / setup.Mc.neededForNextLevel()`>>
+<<if _leveled>>
+	<<done>>
+		<<replace ".reachedNewLvl">>You reached a new level - <<= setup.Mc.lvl()>> !
+		<</replace>>
 	<</done>>
-	<<set $mc.exp to $mc.exp - $neededForNextLevel>>
-	<<set $mc.lvl += 1>>
-	<<set $percentageOfLevel -= 100>>
-	<<set $neededForNextLevel += Math.ceil(0.3 * $neededForNextLevel)>>
-<<updatemeter 'xpBar' `$mc.exp / $neededForNextLevel`>><</if>>
+	<<updatemeter 'xpBar' `setup.Mc.exp() / setup.Mc.neededForNextLevel()`>>
+<</if>>
 @@.backbtn;[[Leave|DeliveryHub]] @@
-<<set $deliveryBJCD to 1>>
+<<run setup.Delivery.startManagerBJCooldown()>>

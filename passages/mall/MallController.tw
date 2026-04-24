@@ -75,6 +75,69 @@ setup.Mall = (function () {
 		needsPepperSpray: function () {
 			var s = v('hasPSpray');
 			return s === undefined || s === 0;
+		},
+		hasPepperSpray: function () { return v('hasPSpray') === 1; },
+		pepperSprayCharges: function () { return v('hasPSprayCharges'); },
+		buyPepperSpray: function () {
+			var s = State.variables;
+			s.hasPSpray = 1;
+			s.hasPSprayCharges = 3;
+			s.mc.money -= 10;
+		},
+
+		// --- Warden costume purchase -----------------------------
+		buyWardenOutfit: function () {
+			var s = State.variables;
+			s.mc.money -= 500;
+			s.wardenClothesStage = 2;
+		},
+
+		// --- Blake dialogue state --------------------------------
+		blakeDialogStage: function () { return v('dialogBlake'); },
+		setBlakeDialogStage: function (v) { State.variables.dialogBlake = v; },
+
+		// --- Blake relationship ----------------------------------
+		blakeRelationship: function () { return v('relationshipBlake'); },
+		raiseBlakeRelationship: function () {
+			State.variables.relationshipBlake = (v('relationshipBlake') || 0) + 1;
+		},
+		setBlakeRelationship: function (n) { State.variables.relationshipBlake = n; },
+		blakeLvl: function () {
+			var b = v('blake');
+			return b ? b.lvl : 0;
+		},
+
+		// --- Chance-aloneHunt display values ---------------------
+		chanceBlakeAloneOwaissa: function () { return v('chanceToSuccessAloneOwaissaBlake'); },
+		chanceBlakeAloneElm:     function () { return v('chanceToSuccessAloneElmBlake'); },
+
+		// --- Camera purchase eligibility -------------------------
+		canBuyCamera: function () {
+			return v('isCameraBought') === undefined && v('ghostMareEventStart') === 3;
+		},
+
+		// --- Picking Blake for a solo hunt -----------------------
+		pickBlakeForSoloHuntOwaissa: function () {
+			var s = State.variables;
+			s.isCompChosenBlake = 0;
+			s.blakeChooseOwaissa = 1;
+			s.blakeChooseElm = 0;
+			s.isBlakeGoingForHuntingAlone = 1;
+			if ((s.payForHuntAloneBlake === undefined || s.payForHuntAloneBlake === 0) && s.mc.money >= 20) {
+				s.mc.money -= 20;
+				s.payForHuntAloneBlake = 1;
+			}
+		},
+		pickBlakeForSoloHuntElm: function () {
+			var s = State.variables;
+			s.isCompChosenBlake = 0;
+			s.blakeChooseOwaissa = 0;
+			s.blakeChooseElm = 1;
+			s.isBlakeGoingForHuntingAlone = 1;
+			if ((s.payForHuntAloneBlake === undefined || s.payForHuntAloneBlake === 0) && s.mc.money >= 20) {
+				s.mc.money -= 20;
+				s.payForHuntAloneBlake = 1;
+			}
 		}
 	};
 })();

@@ -95,6 +95,9 @@ setup.Gui = (function () {
 	return {
 		useBackInsteadOfReturn:  useBackInsteadOfReturn,
 		phoneContacts:           phoneContacts,
-		isCityNightOverlayActive: isCityNightOverlayActive
+		isCityNightOverlayActive: isCityNightOverlayActive,
+		phoneBought: function () {
+			return State.variables.isPhoneBought !== undefined;
+		}
 	};
 })();

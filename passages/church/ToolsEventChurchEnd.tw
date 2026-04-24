@@ -2,24 +2,19 @@
 <<video "church/8.mp4">>
 @@.mc-speech; Holy~ so much cum@@<br>
 
-<<if $eventToolsOneStart eq 0>>
+<<if not setup.Church.priestToolEventStarted()>>
 	@@.notmc-speech; I think you deserve it, here you go. If you want, you can come to me sometimes for special confessions@@<br>
 	@@.mc-speech; Thanks, i'll think about that@@<br>
-	<<set $equipment.temperature to 3>>
+	<<run setup.Church.startPriestToolEvent()>>
 	@@.mc-action; You get a lvl 3 Thermometr @@<<image "img/thermometr.png" { style: "max-width:5%" }>>
 	<br>
 	<br>
-	<<set $eventToolsOneStart to 1>>
 <<else>>
 	@@.notmc-speech; You are the best. I need to go now, bye@@<br>
 <</if>>
-<<if $mc.lust gte 100>>
-	<<set $mc.lust to 0>>
-	<<set $mc.corruption += 0.2>>
-<</if>>
-<<set $mc.lust to Number($mc.lust.toFixed(2))>>
-<<updatemeter 'mclust' `$mc.lust / 100`>>
-<<set $churchSexCD to 1>>
+<<run setup.Church.confessFlushLust()>>
+<<updatemeter 'mclust' `setup.Mc.lust() / 100`>>
+<<run setup.Church.startChurchSexCooldown()>>
 
 <<gainXP 10 0.5>>
 @@.backbtn;[[Leave|CityMap]]@@ <br>

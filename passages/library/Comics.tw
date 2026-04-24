@@ -2,22 +2,22 @@
 <div class="flexwrapper gap">
 <div class="housecardComics">
 <<image "library/getting-in-shape001.jpg" "comic-cover">><br>
-@@.enterbtn;<<link "read" "ReadComics">><<set $comics1 to 1>>
+@@.enterbtn;<<link "read" "ReadComics">><<run setup.Library.selectComics(1)>>
 <</link>>@@
 </div>
 <div class="housecardComics">
 <<image "library/closed-investigation-journal-colorized001.jpg" "comic-cover">><br>
-@@.enterbtn;<<link "read" "ReadComics">><<set $comics2 to 1>>
+@@.enterbtn;<<link "read" "ReadComics">><<run setup.Library.selectComics(2)>>
 <</link>>@@
 </div>
 <div class="housecardComics">
 <<image "library/the-naughty-in-law-1-zero001.jpg" "comic-cover">><br>
-@@.enterbtn;<<link "read" "ReadComics">><<set $comics3 to 1>>
+@@.enterbtn;<<link "read" "ReadComics">><<run setup.Library.selectComics(3)>>
 <</link>>@@
 </div>
 <div class="housecardComics">
 <<image "library/a-dumb-comic001.jpg" "comic-cover">><br>
-@@.enterbtn;<<link "read" "ReadComics">><<set $comics4 to 1>>
+@@.enterbtn;<<link "read" "ReadComics">><<run setup.Library.selectComics(4)>>
 <</link>>@@
 </div>
 </div>

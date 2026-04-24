@@ -13,5 +13,5 @@
 	<<video "rescue/ash/2.4.mp4">>
 	@@.notmc-speech; We'll let you go, this time. Maybe next time your ass won't be so lucky.@@<br>
 	@@.mc-thoughts; They kiss you again, and everything goes black.@@<br><br>
-	@@.backbtn; [[Wake up|Church][$hours += 3]]@@<br>
+	@@.backbtn; [[Wake up|Church][setup.MissingWomen.sleepOffHoursAfterEvent()]]@@<br>
 <</linkappend>>

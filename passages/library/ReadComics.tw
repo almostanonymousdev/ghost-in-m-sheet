@@ -1,9 +1,6 @@
 :: ReadComics [nobr] {"position":"3025,2200","size":"100,100"}
-<<if $comics1 eq 1>>
-	<<set $comics1 to 0>>
-	<<set $comics2 to 0>>
-	<<set $comics3 to 0>>
-	<<set $comics4 to 0>>
+<<if setup.Library.comicsFlag(1) eq 1>>
+	<<run setup.Library.resetComics()>>
 	<div class="slide-container">
 	<div class="slide active">
 	<<image "library/getting-in-shape001.jpg" { style: "width:100%", alt: "Image 1" }>>
@@ -102,11 +99,8 @@
 	<a class="next" onclick="plusSlides(1)">&#10095;</a>
 
 	</div>
-<<elseif $comics2 eq 1>>
-	<<set $comics1 to 0>>
-	<<set $comics2 to 0>>
-	<<set $comics3 to 0>>
-	<<set $comics4 to 0>>
+<<elseif setup.Library.comicsFlag(2) eq 1>>
+	<<run setup.Library.resetComics()>>
 	<div class="slide-container">
 	<div class="slide active">
 	<<image "library/closed-investigation-journal-colorized001.jpg" { style: "width:100%", alt: "Image 1" }>>
@@ -205,11 +199,8 @@
 	<a class="next" onclick="plusSlides(1)">&#10095;</a>
 
 	</div>
-<<elseif $comics3 eq 1>>
-	<<set $comics1 to 0>>
-	<<set $comics2 to 0>>
-	<<set $comics3 to 0>>
-	<<set $comics4 to 0>>
+<<elseif setup.Library.comicsFlag(3) eq 1>>
+	<<run setup.Library.resetComics()>>
 	<div class="slide-container">
 	<div class="slide active">
 	<<image "library/the-naughty-in-law-1-zero001.jpg" { style: "width:100%", alt: "Image 1" }>>
@@ -308,11 +299,8 @@
 	<a class="next" onclick="plusSlides(1)">&#10095;</a>
 
 	</div>
-<<elseif $comics4 eq 1>>
-	<<set $comics1 to 0>>
-	<<set $comics2 to 0>>
-	<<set $comics3 to 0>>
-	<<set $comics4 to 0>>
+<<elseif setup.Library.comicsFlag(4) eq 1>>
+	<<run setup.Library.resetComics()>>
 	<div class="slide-container">
 	<div class="slide active">
 	<<image "library/a-dumb-comic001.jpg" { style: "width:100%", alt: "Image 1" }>>

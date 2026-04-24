@@ -1,5 +1,5 @@
 :: RescueJadePossessed1 [nobr] {"position":"1925,2200","size":"100,100"}
-<<if $rescueJadePossessed eq 1>>
+<<if setup.MissingWomen.jadePossessedStage() eq 1>>
 
 	<<video "rescue/jade/1.2.mp4">>
 	@@.mc-thoughts; She started to lick your pussy at a furious pace. Your moans began to spread throughout the house, but she didn't show you any mercy.@@<br>
@@ -11,7 +11,7 @@
 		@@.notmc-speech; Get ready to find out...@@<br>
 		@@.mc-thoughts; She easily slid the huge dildo into your dripping pussy and began to [[fuck you.|RescueJadePossessed2]]@@<br>
 	<</linkappend>>@@
-<<elseif $rescueJadePossessed eq 2>>
+<<elseif setup.MissingWomen.jadePossessedStage() eq 2>>
 
 	<<set _checkR to random(1,2)>>
 	<<if _checkR eq 1>>
@@ -27,7 +27,7 @@
 		@@.mc-thoughts; She grabbed the vibrator and pressed it against your dripping pussy, causing your vision to darken and and uncontrollable moans to slip from your mouth@@<br>
 		@@.notmc-speech; Yes, good girl, [[come to me.|RescueJadePossessed2]]@@<br>
 	<</linkappend>>@@
-<<elseif $rescueJadePossessed eq 3>>
+<<elseif setup.MissingWomen.jadePossessedStage() eq 3>>
 
 	<<set _checkR to random(1,2)>>
 	<<if _checkR eq 1>>

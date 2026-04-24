@@ -1,17 +1,16 @@
 :: DeliverySpecialEvent [event nobr] {"position":"1500,1500","size":"100,100"}
-<<set _house to $currentHouse>>
+<<set _house to setup.Delivery.currentHouse()>>
 <<set _img to setup.deliveryHouses[_house]>>
 <<set _sp to _house.lastIndexOf(" ")>>
 <<set _address to _house.substr(0, _sp) + ", " + _house.substr(_sp + 1)>>
 <<image "img/" + _img { width: "90%" }>><br>
 @@.location; _address@@<br><br>
-<<if $deliverySpecialOrderType is "safe">>
+<<if setup.Delivery.specialOrderType() is "safe">>
 	<<image "img/deliverygirlhappy.jpg" { style: "max-width: 100%; height: auto; display: block; margin: 0 auto;" }>>
 	@@.notmc-speech; You're a lifesaver! I've been waiting for this all day. Here, keep the change.@@<br>
-	<<set $earnedMoney += $deliverySpecialOrderPay>>
-	<<set $deliverySpecialOrder to false>>
+	<<run setup.Delivery.bankSafeSpecialOrder()>>
 	<<deliveryTrackCorrect>>
-	@@.mc-action; You earned $<<= $deliverySpecialOrderPay>> for the rush delivery!@@<br>
+	@@.mc-action; You earned $<<= setup.Delivery.specialOrderPay()>> for the rush delivery!@@<br>
 	<<deliveryTipCheck>>
 	<br>
 	@@.backbtn;[[Back|DeliveryMap]]@@
@@ -19,7 +18,7 @@
 	<<image "deliveryhub/specialevent/1.jpg" { style: "max-width: 100%; height: auto; display: block; margin: 0 auto;" }>>
 	@@.notmc-speech; Finally! Get in here, I need to check the package before I pay.@@<br>
 	@@.mc-thoughts; Why can't he just check it at the door?@@<br>
-	<<if $mc.corruption gte 3>>
+	<<if setup.Mc.corruption() gte 3>>
 		@@.mc-speech;[[Go inside|DeliverySpecialUnsafe]]@@ or @@.mc-speech;[[No thanks, just pay me|DeliverySpecialRefused]]@@<br>
 	<<else>>
 		@@.mc-speech; Just pay me out here.@@<br>
@@ -30,14 +29,14 @@
 
 :: DeliverySpecialRefused [event nobr] {"position":"1500,1600","size":"100,100"}
 @@.notmc-speech; No inspection, no payment. That's how it works, sweetheart.@@<br>
-<<set $deliverySpecialOrder to false>>
+<<run setup.Delivery.clearSpecialOrder()>>
 @@.mc-speech; What?! But I delivered your order!@@<br>
 @@.mc-thoughts; What an asshole. I wasted my time for nothing.@@<br>
 <br>
 @@.backbtn;[[Back|DeliveryMap]]@@
 
 :: DeliverySpecialUnsafe [event nobr] {"position":"1500,1700","size":"100,100"}
-<<set $mc.lust += 45>>
+<<run setup.Delivery.addLust(45)>>
 <<image "deliveryhub/specialevent/2.jpg" { style: "max-width: 100%; height: auto; display: block; margin: 0 auto;" }>>
 @@.mc-thoughts; He locks the door behind me. Shit.@@<br>
 @@.notmc-speech; You want to get paid? Earn it.@@<br>
@@ -62,12 +61,12 @@
 <<linkreplace "@@.mc-speechLink; Please not inside...@@">>
 	<<set _pick3 to random(7, 8)>>
 	<<video "deliveryhub/specialevent/" + _pick3 + ".webm" { muted: false }>>
-	<<set $mc.lust to 0>>
+	<<run setup.Delivery.clearLust()>>
 	@@.notmc-speech; Too late for that. Here's your money, now get out.@@<br>
 	@@.mc-thoughts; Fuck... I can feel it dripping out of me@@<br>
 	<br>
-	<<set $deliverySpecialOrder to false>>
-	<<deliveryBonus $deliverySpecialOrderPay>>
+	<<run setup.Delivery.clearSpecialOrder()>>
+	<<deliveryBonus setup.Delivery.specialOrderPay()>>
 	<br>
 	@@.backbtn;[[Leave|DeliveryMap]]@@
 <</linkreplace>>

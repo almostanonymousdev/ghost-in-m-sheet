@@ -75,6 +75,83 @@ setup.Church = (function () {
 		},
 		priestWillTradeToolForSex: function () {
 			return mc().corruption >= 4;
+		},
+
+		// --- Mutations previously done inline by passages ---------
+		clearRescueQuest: function () {
+			State.variables.hasQuestForRescue = 0;
+		},
+		setRescueQuestStage: function (stage) {
+			State.variables.hasQuestForRescue = stage;
+		},
+		rescueQuestStage: function () { return v('hasQuestForRescue'); },
+		clearRescueClue:    function () { State.variables.hasRescueClue = 0; },
+		initRainIfNeeded:   function () {
+			if (v('relationshipWithRain') === undefined) {
+				State.variables.relationshipWithRain = 0;
+			}
+		},
+		relationshipWithRain: function () { return v('relationshipWithRain'); },
+		adjustRainRelationship: function (delta) {
+			var key = 'relationshipWithRain';
+			State.variables[key] = (v(key) || 0) + delta;
+		},
+		upgradeSpiritboxReward: function () {
+			// Rain thanks you by upgrading the spiritbox to level 3.
+			// Returns true iff a reward was granted (no-op when already
+			// at lvl 3).
+			if (v('equipment') && v('equipment').spiritbox !== 3) {
+				State.variables.equipment.spiritbox = 3;
+				return true;
+			}
+			return false;
+		},
+		startPriestToolEvent: function () {
+			State.variables.eventToolsOneStart = 1;
+			if (State.variables.equipment) {
+				State.variables.equipment.temperature = 3;
+			}
+		},
+		priestToolEventStarted: function () {
+			return v('eventToolsOneStart') === 1;
+		},
+		startChurchSexCooldown: function () {
+			State.variables.churchSexCD = 1;
+		},
+
+		// --- Priest: lust purge (after confession / pray) --------
+		clearLust: function () {
+			mc().lust = 0;
+		},
+		confessFlushLust: function () {
+			if (mc().lust >= 100) {
+				mc().lust = 0;
+				if (mc().corruption < 10) { mc().corruption += 0.2; }
+			}
+			mc().lust = Number(mc().lust.toFixed(2));
+		},
+
+		// --- Exorcism ---------------------------------------------
+		startExorcismQuest: function () {
+			State.variables.exorcismQuestStage = 1;
+			State.variables.amulet = 1;
+		},
+		clearBrookePossession: function () {
+			State.variables.isBrookePossessed = 0;
+			State.variables.isBrookePossessedCD = 0;
+		},
+
+		// --- Lust check for priest tool event --------------------
+		lustTooHighForPriest: function () {
+			return mc().lust >= 85;
+		},
+
+		// --- Cheat-menu rescue helpers (StoryCaption) -------------
+		setCheatRescueHouseHighlight: function (n) {
+			State.variables.cheatRescueHouseHighlight = n;
+		},
+		randomRescuePhotoNumber: function () {
+			return v('randomRescuePhotoNumber');
 		}
 	};
 })();

@@ -1,39 +1,39 @@
 :: RescueHouse [nobr] {"position":"2175,1700","size":"100,100"}
 <div style="position: relative;">
 
-<<image 'rescue/house/'+$randomRescuePhotoNumber+`.jpg` { class: $tornStyleRandom+` hideRescueHouse`, id: "rescueHouseHidden", width: "100%", style: "position: absolute; z-index: 10;" }>>
+<<image 'rescue/house/' + setup.MissingWomen.randomRescuePhotoNumber() + '.jpg' { class: setup.MissingWomen.tornStyleRandom() + ' hideRescueHouse', id: "rescueHouseHidden", width: "100%", style: "position: absolute; z-index: 10;" }>>
 
-<<if $rescueHouse eq 1>>
+<<if setup.MissingWomen.rescueHouse() eq 1>>
 	<<image "rescue/house/1.jpg" { width: "100%" }>>
-<<elseif $rescueHouse eq 2>>
+<<elseif setup.MissingWomen.rescueHouse() eq 2>>
 	<<image "rescue/house/2.jpg" { width: "100%" }>>
-<<elseif $rescueHouse eq 3>>
+<<elseif setup.MissingWomen.rescueHouse() eq 3>>
 	<<image "rescue/house/3.jpg" { width: "100%" }>>
-<<elseif $rescueHouse eq 4>>
+<<elseif setup.MissingWomen.rescueHouse() eq 4>>
 	<<image "rescue/house/4.jpg" { width: "100%" }>>
-<<elseif $rescueHouse eq 5>>
+<<elseif setup.MissingWomen.rescueHouse() eq 5>>
 	<<image "rescue/house/5.jpg" { width: "100%" }>>
-<<elseif $rescueHouse eq 6>>
+<<elseif setup.MissingWomen.rescueHouse() eq 6>>
 	<<image "rescue/house/6.jpg" { width: "100%" }>>
-<<elseif $rescueHouse eq 7>>
+<<elseif setup.MissingWomen.rescueHouse() eq 7>>
 	<<image "rescue/house/7.jpg" { width: "100%" }>>
-<<elseif $rescueHouse eq 8>>
+<<elseif setup.MissingWomen.rescueHouse() eq 8>>
 	<<image "rescue/house/8.jpg" { width: "100%" }>>
-<<elseif $rescueHouse eq 9>>
+<<elseif setup.MissingWomen.rescueHouse() eq 9>>
 	<<image "rescue/house/9.jpg" { width: "100%" }>>
-<<elseif $rescueHouse eq 10>>
+<<elseif setup.MissingWomen.rescueHouse() eq 10>>
 	<<image "rescue/house/10.jpg" { width: "100%" }>>
-<<elseif $rescueHouse eq 11>>
+<<elseif setup.MissingWomen.rescueHouse() eq 11>>
 	<<image "rescue/house/11.jpg" { width: "100%" }>>
-<<elseif $rescueHouse eq 12>>
+<<elseif setup.MissingWomen.rescueHouse() eq 12>>
 	<<image "rescue/house/12.jpg" { width: "100%" }>>
-<<elseif $rescueHouse eq 13>>
+<<elseif setup.MissingWomen.rescueHouse() eq 13>>
 	<<image "rescue/house/13.jpg" { width: "100%" }>>
-<<elseif $rescueHouse eq 14>>
+<<elseif setup.MissingWomen.rescueHouse() eq 14>>
 	<<image "rescue/house/14.jpg" { width: "100%" }>>
-<<elseif $rescueHouse eq 15>>
+<<elseif setup.MissingWomen.rescueHouse() eq 15>>
 	<<image "rescue/house/15.jpg" { width: "100%" }>>
-<<elseif $rescueHouse eq 16>>
+<<elseif setup.MissingWomen.rescueHouse() eq 16>>
 	<<image "rescue/house/16.jpg" { width: "100%" }>>
 <</if>>
 </div>
@@ -54,7 +54,7 @@
 <<else>>
 	<<if setup.MissingWomen.canSearchHouse()>>
 		<<linkreplace "@@.usebtn; Search the house @@ <<image \"img/energy.png\" { style: \"position: relative; top: 0.375em; width:3%; display: inline; margin: 0;\" }>>">>
-			<<set $mc.energy -=1>>
+			<<run setup.Mc.addEnergy(-1)>>
 			<<if not setup.MissingWomen.isCorrectHouse()>>
 				@@.mc-thoughts; You search the house for 30 minutes, but find no one.@@
 				<<addTime 30>>

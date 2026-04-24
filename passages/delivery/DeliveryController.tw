@@ -133,6 +133,143 @@ setup.Delivery = (function () {
 		packageLustHighEnough: function () {
 			// Drives which branch is shown in DeliveryPackageEventStart
 			return mc().lust > 49;
+		},
+
+		// --- State accessors / mutations previously inline --------
+		currentHouse:   function () { return v('currentHouse'); },
+		setCurrentHouse: function (h) { State.variables.currentHouse = h; },
+		currentOrder:   function () { return v('currentOrder'); },
+		setCurrentOrder: function (n) { State.variables.currentOrder = n; },
+		orders:         function () { return v('orders'); },
+		earnedMoney:    function () { return v('earnedMoney'); },
+		addEarnedMoney: function (n) { State.variables.earnedMoney += n; },
+		resetEarnedMoney: function () { State.variables.earnedMoney = 0; },
+		addJobSuccessEarnings: function () {
+			State.variables.earnedMoney += v('jobMoneySuccessed');
+		},
+		addJobFailEarnings: function () {
+			State.variables.earnedMoney += v('jobMoneyFailed');
+		},
+		jobMoneySuccessed: function () { return v('jobMoneySuccessed'); },
+		jobMoneyFailed:    function () { return v('jobMoneyFailed'); },
+
+		// --- Special order fields -------------------------------
+		specialOrderActive:  function () { return !!v('deliverySpecialOrder'); },
+		specialOrderAddress: function () { return v('deliverySpecialOrderAddress'); },
+		specialOrderType:    function () { return v('deliverySpecialOrderType'); },
+		specialOrderPay:     function () { return v('deliverySpecialOrderPay'); },
+		clearSpecialOrder:   function () { State.variables.deliverySpecialOrder = false; },
+		bankSafeSpecialOrder: function () {
+			State.variables.earnedMoney += v('deliverySpecialOrderPay');
+			State.variables.deliverySpecialOrder = false;
+		},
+
+		// --- Event flags ----------------------------------------
+		markPapersEvent:  function () { State.variables.deliveryPapersEvent = 1; },
+		markBurgerEvent:  function () { State.variables.deliveryBurgerEvent = 1; },
+		markPackageEvent: function () { State.variables.deliveryPackageEvent = 1; },
+		markPizzaEvent:   function () { State.variables.deliveryPizzaEvent = 1; },
+		startManagerBJCooldown: function () { State.variables.deliveryBJCD = 1; },
+		markMetAlice:     function () { State.variables.meetAlice = 1; },
+		hasMetAlice:      function () { return v('meetAlice') !== undefined; },
+		markFirstVisited: function () { State.variables.firstVisitDeliveryHub = false; },
+
+		// --- Active-icon flags for the three daily orders ---------
+		activeIcon: function (i) { return v('deliveryActiveIcon' + i); },
+		setActiveIcon: function (i, val) { State.variables['deliveryActiveIcon' + i] = val; },
+
+		// --- Per-shift counters --------------------------------
+		completedShifts: function () { return v('deliveryCompletedShifts'); },
+		correctThisShift: function () { return v('deliveryCorrectThisShift'); },
+		incrementCorrectThisShift: function () { State.variables.deliveryCorrectThisShift += 1; },
+		resetCorrectThisShift:     function () { State.variables.deliveryCorrectThisShift = 0; },
+		streak: function () { return v('deliveryStreak'); },
+		bestStreak: function () { return v('deliveryBestStreak'); },
+		endShift: function () {
+			var s = State.variables;
+			s.deliveryCompletedShifts += 1;
+			if (s.deliveryCorrectThisShift >= 3) {
+				s.deliveryStreak += 1;
+			} else {
+				s.deliveryStreak = 0;
+			}
+			if (s.deliveryStreak > s.deliveryBestStreak) {
+				s.deliveryBestStreak = s.deliveryStreak;
+			}
+			s.deliveryReputationLevel = this.getReputationLevel();
+		},
+		bankEarnedMoney: function () {
+			// Pay out the shift: credit MC, spend energy, reset counter.
+			var s = State.variables;
+			s.mc.money += s.earnedMoney;
+			s.mc.energy -= 2;
+			s.earnedMoney = 0;
+		},
+		grantPerfectShiftBonus: function (amount) {
+			State.variables.earnedMoney += amount;
+		},
+
+		// --- Find order slot for the current house (used by WorkDelivery) -
+		orderSlotForHouse: function (house) {
+			var orders = v('orders') || [];
+			for (var i = 0; i < orders.length; i++) {
+				var slotActive = v('deliveryActiveIcon' + (i + 1));
+				if (orders[i].address === house && slotActive) return i;
+			}
+			return -1;
+		},
+
+		// --- Manager event lust snippet (previously inline) -------
+		clearLust: function () { mc().lust = 0; },
+		addLust:   function (n) { mc().lust += n; },
+
+		// --- Shift initialization (WorkDelivery passage) --------
+		// Rolls the 3 randomized orders + optional special "rush" order
+		// for the upcoming shift and seeds the per-shift counters.
+		initShift: function () {
+			var s = State.variables;
+			s.itemImages = {
+				pizza:      "img/pizza.jpg",
+				package:    "img/package.jpg",
+				newspapers: "img/newspapers.jpg",
+				burgers:    "img/burger.jpg",
+				books:      "img/books.jpg"
+			};
+			s.items = ["pizza", "package", "newspapers", "books", "burgers"];
+			s.streets = setup.deliveryStreets.slice();
+			s.shuffledStreets = s.streets.slice().shuffle();
+			s.shuffledItems = s.items.slice().shuffle();
+
+			s.orders = [];
+			for (var i = 0; i < 3; i++) {
+				var it = s.shuffledItems[i];
+				s.orders.push({
+					address: s.shuffledStreets[i],
+					item:    it,
+					image:   s.itemImages[it]
+				});
+			}
+			s.shuffledOrders = s.orders.slice().shuffle();
+			s.order1 = s.orders[0];
+			s.order2 = s.orders[1];
+			s.order3 = s.orders[2];
+
+			s.deliveryCorrectThisShift = 0;
+
+			s.deliverySpecialOrder = false;
+			if (Math.floor(Math.random() * 100) + 1 <= 25) {
+				s.deliverySpecialOrder = true;
+				s.deliverySpecialOrderAddress = s.shuffledStreets[3];
+				s.deliverySpecialOrderPay = 20 + Math.floor(Math.random() * 6);
+				s.deliverySpecialOrderType = Math.random() < 0.5 ? 'safe' : 'unsafe';
+			}
+		},
+		shuffledOrders: function () { return v('shuffledOrders'); },
+		trackCorrect: function () { State.variables.deliveryCorrectThisShift += 1; },
+		reputationLevel: function () { return v('deliveryReputationLevel'); },
+		addTip:       function (n) {
+			State.variables.earnedMoney += n;
+			State.variables.deliveryTotalTips += n;
 		}
 	};
 })();

@@ -469,6 +469,28 @@ setup.Companion = (function () {
 				&& v('chosenPlan') !== 'Plan2'
 				&& v('chosenPlan') !== 'Plan3'
 				&& v('chosenPlan') !== 'Plan4';
+		},
+
+		// --- StoryCaption / HUD helpers ---------------------------
+		shouldRenderMini: function () {
+			return v('showComp') === 1 || v('showComp') === 3;
+		},
+		transPicture: function () { return v('transPicture'); },
+		sanityPercent: function () {
+			var c = comp();
+			return c ? c.sanity / 100 : 0;
+		},
+		drainSanity: function (n) {
+			var c = comp();
+			if (c) { c.sanity -= n; }
+		},
+		addLust: function (n) {
+			var c = comp();
+			if (c) { c.lust += n; }
+		},
+		cheatSetLvl: function (key, lvl) {
+			var obj = v(key);
+			if (obj) { obj.lvl = lvl; }
 		}
 	};
 })();

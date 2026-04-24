@@ -1,4 +1,12 @@
 :: widgetWitch [widget nobr] {"position":"1350,0","size":"100,100"}
+<<widget "ghostTypeDropdown">>
+	/* Wraps SugarCube's <<listbox>> UI binding for $ghostTypeSelected.
+	   Passages call <<ghostTypeDropdown>> instead of naming the global. */
+	<<listbox "$ghostTypeSelected">>
+		<<optionsfrom setup.Ghosts.names()>>
+	<</listbox>>
+<</widget>>
+
 <<widget "ghostInfoCard">>
 	<<set _ghostName to _args[0]>>
 	<<set _price to (typeof _args[1] !== "undefined") ? _args[1] : 200>>
@@ -7,10 +15,10 @@
 		<<image "ghosts/" + _ghostName.toLowerCase() + ".webp" "iconPx">>
 		@@.mc-thoughts; Information about _ghostName@@<br>
 		<span class="priceAmount"><<= _price>>$</span><br>
-		<<if $mc.money gte _price>>
+		<<if setup.Mc.money() gte _price>>
 			@@.buyItemLink;<<link "Buy" "WitchSale">>
 				<<run setup.Ghosts.markDiscovered(_ghostName)>>
-				<<set $mc.money -= _price>>
+				<<run setup.Mc.spendMoney(_price)>>
 			<</link>>@@<br>
 		<<else>>@@.warningtext; I don't have enough money@@
 		<</if>>

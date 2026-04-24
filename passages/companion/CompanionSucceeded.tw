@@ -8,7 +8,7 @@
 	<<elseif $companion.name eq "Blake">>
 		<<image "blake/blake-sad.png" { width: "50%" }>><br>
 	<<elseif $companion.name eq "Alex" or $companion.name eq "Taylor" or $companion.name eq "Casey">>
-		<<image "trans/" + $transPicture+`.jpg` "displayCentredImgs">><br>
+		<<image "trans/" + $transPicture + '.jpg' "displayCentredImgs">><br>
 	<</if>>
 	@@.notmc-speech; $mc.name, I'm sorry, I wasn't able to find what you asked for...@@<br>
 	@@.mc-speech; Don't worry about it, it's okay. The main thing is that you're alright@@<br>
@@ -23,11 +23,11 @@
 	<<elseif $companion.name eq "Blake">>
 		<<image "blake/blake-happy.png" { width: "50%" }>><br>
 	<<elseif $companion.name eq "Alex">>
-		<<image "trans/" + $transPicture+`.jpg` "displayCentredImgs">><br>
+		<<image "trans/" + $transPicture + '.jpg' "displayCentredImgs">><br>
 	<<elseif $companion.name eq "Taylor">>
-		<<image "trans/" + $transPicture+`.jpg` "displayCentredImgs">><br>
+		<<image "trans/" + $transPicture + '.jpg' "displayCentredImgs">><br>
 	<<elseif $companion.name eq "Casey">>
-		<<image "trans/" + $transPicture+`.jpg` "displayCentredImgs">><br>
+		<<image "trans/" + $transPicture + '.jpg' "displayCentredImgs">><br>
 	<</if>>
 	<<if $chosenPlan eq "Plan2" and $gotCursedItem eq 1>>
 		<<include "CompanionResult">>

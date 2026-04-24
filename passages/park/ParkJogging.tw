@@ -1,5 +1,5 @@
 :: ParkJogging [nobr] {"position":"2900,1550","size":"100,100"}
-<<set $joggingCD to 1>>
+<<run setup.Park.startJoggingCooldown()>>
 <<video "mc/parkevent1.mp4">>
 @@.mc-thoughts;You're jogging through the park, stopping now and then to catch your breath, sweat glistening on your skin. You notice the same girl too often, as if she craves you, watching your every move.@@<br>
 
@@ -13,7 +13,7 @@
 <<if setup.Park.canContinueJogging()>>
 	<<linkreplace 'Continue jogging <<image \'img/energy.png\' { style: \'position: relative; top: 0.375em; width:3%;\' }>>'>>
 		<<set _check to random(30,110)>>
-		<<if _check lte $mc.beauty>>
+		<<if setup.Park.isBeautyBelow(_check)>>
 			<<video "mc/parkevent2.mp4">>
 			@@.mc-thoughts;She bursts out from the bushes, her eyes burning with desire, and begins to chase you. Frightened, you try to [[run away from her|ParkEvent1]]@@
 		<<else>>
@@ -26,7 +26,7 @@
 				<<addclass ".linkselector" "disabled-link">>
 			<</done>>
 			<br><br>
-			@@.backbtn; [[Leave|CityMap][$mc.energy -=2]] @@<br>
+			@@.backbtn; [[Leave|CityMap][setup.Park.spendJoggingEnergy()]] @@<br>
 		<</if>>
 	<</linkreplace>>
 <<else>>

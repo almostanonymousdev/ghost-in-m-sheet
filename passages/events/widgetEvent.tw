@@ -211,7 +211,7 @@
 	<<if setup.Events.shouldOrgasm(_bodyPart)>>
 		<<addSanity -10>>
 		<<addLust -100>>
-		<<set $orgasmCooldownSteps to 3>>
+		<<run setup.Events.setOrgasmCooldown(3)>>
 		<br>
 		<<if _bodyPart eq "pussy">>
 			@@.mc-thoughts; A violent wave of pleasure crashes through your entire body. Your legs buckle and your vision blurs as an uncontrollable orgasm tears through you. Every nerve is on fire, your pussy clenching and spasming around him as you scream out, unable to stop yourself.@@<br>
@@ -231,25 +231,26 @@
 
 <<widget "companionHelpOption">>
 	<<if setup.Events.hasCompanionOnPlan1()>>
+		<<set _cName to setup.Companion.name()>>
 		<<if setup.Events.companionIsAroused()>>
-			<<if $companion.name eq "Brook">>
-				or @@.usebtn;<<link `$companion.name + " helps you"`>><<set $companion.sanity -= 3>><<set $companion.lust += 10>><<replace "#videoContainer">><<include "BrookHelp">>
+			<<if _cName eq "Brook">>
+				or @@.usebtn;<<link `_cName + " helps you"`>><<run setup.Events.companionDrainForHelp()>><<replace "#videoContainer">><<include "BrookHelp">>
 				<</replace>>
 				<</link>>
-			<<elseif $companion.name eq "Alice">>
-				or @@.usebtn;<<link `$companion.name + " helps you"`>><<set $companion.sanity -= 3>><<set $companion.lust += 10>><<replace "#videoContainer">><<include "AliceHelp">>
+			<<elseif _cName eq "Alice">>
+				or @@.usebtn;<<link `_cName + " helps you"`>><<run setup.Events.companionDrainForHelp()>><<replace "#videoContainer">><<include "AliceHelp">>
 				<</replace>>
 				<</link>>
-			<<elseif $companion.name eq "Blake">>
-				or @@.usebtn;<<link `$companion.name + " helps you"`>><<set $companion.sanity -= 3>><<set $companion.lust += 10>><<replace "#videoContainer">><<include "BlakeHelp">>
+			<<elseif _cName eq "Blake">>
+				or @@.usebtn;<<link `_cName + " helps you"`>><<run setup.Events.companionDrainForHelp()>><<replace "#videoContainer">><<include "BlakeHelp">>
 				<</replace>>
 				<</link>>
 			<<elseif setup.Events.companionIsInlineFriend()>>
-				or @@.usebtn; [["Call "+$companion.name + " for help"|$return][$companion.sanity -= 3; $companion.lust += 10]]@@
+				or @@.usebtn; [["Call "+_cName + " for help"|$return][setup.Events.companionDrainForHelp()]]@@
 			<</if>>
 		<<else>>
-			or @@.usebtn; [["Call "+$companion.name + " for help"|$return][$companion.sanity -= 3; $companion.lust += 10]]@@
+			or @@.usebtn; [["Call "+_cName + " for help"|$return][setup.Events.companionDrainForHelp()]]@@
 		<</if>>
-		- $companion.name's <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> and + $companion.name's <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>
+		- _cName's <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> and + _cName's <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>
 	<</if>>
 <</widget>>

@@ -8,12 +8,12 @@
 <<if _check eq 3>>
 	<<image "rescue/jade/3.0.jpg" { width: "100%" }>>
 <</if>>
-@@.mc-thoughts; You slowly regain consciousness, your head throbbing with pain, and the first thing you feel is the tight ropes binding your wrists. You try to move, but your hands and legs are tied up. Flashes of memory come back to you: you came here to save $currentRescueGirl. But something went wrong. <br>
+@@.mc-thoughts; You slowly regain consciousness, your head throbbing with pain, and the first thing you feel is the tight ropes binding your wrists. You try to move, but your hands and legs are tied up. Flashes of memory come back to you: you came here to save <<= setup.MissingWomen.currentRescueGirl()>>. But something went wrong. <br>
 You sense someone nearby. A wave of anxiety builds in your chest. Suddenly, you hear a voice@@<br>
 @@.notmc-speech; Well, well, baby, you're finally awake?@@<br>
-@@.mc-speech; $currentRescueGirl? What the hell is going on?!@@<br>
+@@.mc-speech; <<= setup.MissingWomen.currentRescueGirl()>>? What the hell is going on?!@@<br>
 @@.mc-thoughts; She laughs, but there's something off about it, something eerie that makes you tense up.<br>
-You realize it's not Jade anymore. Whoever's standing in front of you, it's not $currentRescueGirl.@@<br>
+You realize it's not Jade anymore. Whoever's standing in front of you, it's not <<= setup.MissingWomen.currentRescueGirl()>>.@@<br>
 @@.mc-speech; Hey, let me go! Whatever you are, just let me go!@@<br>
 @@.mc-thoughts; She leans in closer, her breath brushing against your skin. Her voice drops, almost whispering @@<br>
 @@.notmc-speech; Of course, I'll let you go... but not before we <<linkappend "have a little fun first. ">>
@@ -21,7 +21,7 @@ You realize it's not Jade anymore. Whoever's standing in front of you, it's not 
 		<<video "rescue/jade/1.1.mp4">>
 		@@.mc-thoughts; She started to rub your pussy at a furious pace. Your moans began to spread throughout the house, but she didn't show you any mercy.@@<br>
 		@@.mc-speech; OH~ Fuck~ I'm going to...@@<br>
-		@@.mc-thoughts; She latched onto your pussy and began to greedily [[suck on your clit.|RescueJadePossessed1][$rescueJadePossessed to 1]]@@<br>
+		@@.mc-thoughts; She latched onto your pussy and began to greedily [[suck on your clit.|RescueJadePossessed1][setup.MissingWomen.jadePossessedStage() to 1]]@@<br>
 	<</if>>
 
 	<<if _check eq 2>>
@@ -35,7 +35,7 @@ You realize it's not Jade anymore. Whoever's standing in front of you, it's not 
 		@@.notmc-speech; Oh~ we're going to have so much fun together.@@<br>
 		@@.mc-thoughts; With those words, she started touching your body greedily, sending small shivers through you every time she touched your sensitive spots.@@<br>
 		@@.mc-speech; No, don't touch me, ah~@@<br>
-		@@.notmc-speech; I can see you're starting to enjoy this. Haha, [[what if I just...|RescueJadePossessed1][$rescueJadePossessed to 2]]@@<br>
+		@@.notmc-speech; I can see you're starting to enjoy this. Haha, [[what if I just...|RescueJadePossessed1][setup.MissingWomen.jadePossessedStage() to 2]]@@<br>
 	<</if>>
 
 	<<if _check eq 3>>
@@ -52,6 +52,6 @@ You realize it's not Jade anymore. Whoever's standing in front of you, it's not 
 		@@.notmc-speech; Oh~ we're going to have so much fun together.@@<br>
 		@@.mc-thoughts; With those words, she started touching your body greedily, sending small shivers through you every time she touched your sensitive spots.@@<br>
 		@@.mc-speech; No, don't touch me, ah~@@<br>
-		@@.notmc-speech; I can see you're starting to enjoy this. Haha, [[what if I just...|RescueJadePossessed1][$rescueJadePossessed to 3]]@@<br>
+		@@.notmc-speech; I can see you're starting to enjoy this. Haha, [[what if I just...|RescueJadePossessed1][setup.MissingWomen.jadePossessedStage() to 3]]@@<br>
 	<</if>>
 <</linkappend>>@@

@@ -76,6 +76,88 @@ setup.Library = (function () {
 			if (lvl === 3) return 25;
 			if (lvl === 2) return 10;
 			return 0;
+		},
+
+		brookLvl: function () {
+			return (v('brook') || {}).lvl || 0;
+		},
+
+		// --- Mutations previously inline in library passages ------
+		spendEnergyToSearch: function () { mc().energy -= 1; },
+		markTipsBookFound:   function () { State.variables.foundTips = 1; },
+		markComicsFound:     function () { State.variables.foundComics = 1; },
+		markBrookFound:      function () { State.variables.foundBrook = 1; },
+		meetBrookFirstTime:  function () { State.variables.meetBrook = 1; },
+
+		// Library groping gains a bit of corruption each round; these
+		// are the three different "cap < x, gain y" pairs used across
+		// LibraryGirl.tw and LibraryGuy1.tw.
+		gainSmallCorruption: function () {
+			if (mc().corruption < 3) { mc().corruption += 0.1; }
+		},
+		tryGainGropingCorruption: function (cap, delta) {
+			if (mc().corruption <= cap) {
+				mc().corruption += delta;
+			}
+		},
+
+		// --- Comics selection --------------------------------------
+		selectComics: function (idx) {
+			// idx in [1..4]. Clears all, then sets the one being read.
+			for (var i = 1; i <= 4; i++) {
+				State.variables['comics' + i] = 0;
+			}
+			State.variables['comics' + idx] = 1;
+		},
+		resetComics: function () {
+			for (var i = 1; i <= 4; i++) {
+				State.variables['comics' + i] = 0;
+			}
+		},
+		comicsFlag: function (idx) { return v('comics' + idx); },
+
+		// --- Brook solo-hunt selection ----------------------------
+		chanceBrookAloneOwaissa: function () { return v('chanceToSuccessAloneOwaissaBrook'); },
+		chanceBrookAloneElm:     function () { return v('chanceToSuccessAloneElmBrook'); },
+		brookSoloHuntReporting:  function () {
+			return v('isBrookGoingForHuntingAlone') === 2;
+		},
+		refreshBrookSoloChances: function () {
+			var lvl = this.brookLvl();
+			State.variables.chanceToSuccessAloneOwaissaBrook = this.brookSoloOwaissaChance();
+			State.variables.chanceToSuccessAloneElmBrook     = this.brookSoloElmChance();
+		},
+		pickBrookAsCompanion: function () {
+			var s = State.variables;
+			s.companion = clone(s.brook);
+			s.isCompChosenBrook = 1;
+			s.isCompChosenAlice = 0;
+			s.chosenPlan = 0;
+			s.isBrookGoingForHuntingAlone = 0;
+			s.brookChooseOwaissa = 0;
+			s.brookChooseElm = 0;
+		},
+		pickBrookForSoloOwaissa: function () {
+			var s = State.variables;
+			s.isCompChosenBrook = 0;
+			s.brookChooseOwaissa = 1;
+			s.brookChooseElm = 0;
+			s.isBrookGoingForHuntingAlone = 1;
+			if ((s.payForHuntAloneBrook === undefined || s.payForHuntAloneBrook === 0) && s.mc.money >= 20) {
+				s.mc.money -= 20;
+				s.payForHuntAloneBrook = 1;
+			}
+		},
+		pickBrookForSoloElm: function () {
+			var s = State.variables;
+			s.isCompChosenBrook = 0;
+			s.brookChooseOwaissa = 0;
+			s.brookChooseElm = 1;
+			s.isBrookGoingForHuntingAlone = 1;
+			if ((s.payForHuntAloneBrook === undefined || s.payForHuntAloneBrook === 0) && s.mc.money >= 20) {
+				s.mc.money -= 20;
+				s.payForHuntAloneBrook = 1;
+			}
 		}
 	};
 })();

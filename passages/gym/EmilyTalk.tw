@@ -2,14 +2,14 @@
 <<image "gym/emily-talks.jpg" { width: "100%" }>><br>
 <<if not setup.Gym.hasMetEmily()>>
 
-	@@.mc-speech; Hi, you look really fit. You must work out a lot. Oh, I forgot to introduce myself: I'm $mc.name.@@<br>
-	@@.notmc-speech; Hey $mc.name. I'm Emily. Yes, you're right@@<br>
+	@@.mc-speech; Hi, you look really fit. You must work out a lot. Oh, I forgot to introduce myself: I'm <<= setup.Mc.name()>>.@@<br>
+	@@.notmc-speech; Hey <<= setup.Mc.name()>>. I'm Emily. Yes, you're right@@<br>
 	@@.mc-thoughts; You start chatting about various topics.@@<br>
 	<br>
-	<<set $relationEmily to 1>>
-	Relation with @@.mc-speech;Emily@@ improved: $relationEmily now!
+	<<run setup.Gym.greetEmilyFirstTime()>>
+	Relation with @@.mc-speech;Emily@@ improved: <<= setup.Gym.emilyRelationshipStage()>> now!
 
-<<elseif $relationEmily lte 4>>
+<<elseif setup.Gym.emilyRelationshipStage() lte 4>>
 	<<set _check to random(1,3)>>
 
 	<<if _check eq 1>>@@.mc-speech; Do you have any tips for staying motivated?<br>@@
@@ -24,12 +24,11 @@
 		@@.notmc-speech; There are group classes here, held daily from 12 PM to 14 PM. They are free and very effective.<br>@@
 		@@.mc-speech; Thanks for mentioning it. I'll keep that in mind.<br>@@
 	<</if>>
-	<<if $relationEmily lt 10>>
-		<<set $relationEmily +=1>>
-		Relation with @@.mc-speech;Emily@@ improved: $relationEmily now!<br>
+	<<if setup.Gym.raiseEmilyRelationship()>>
+		Relation with @@.mc-speech;Emily@@ improved: <<= setup.Gym.emilyRelationshipStage()>> now!<br>
 	<</if>>
 
-<<elseif $relationEmily gte 5>>
+<<elseif setup.Gym.emilyRelationshipStage() gte 5>>
 
 	<<set _check to random(1,3)>>
 
@@ -39,16 +38,15 @@
 
 	<<if _check eq 2>>@@.notmc-speech; Have you seen the trainer who works here in the morning? Well... I heard that he goes crazy for girls in pretty lingerie, so I took advantage of that. Now I'm training with him for free.<br>@@
 		@@.mc-speech; I think I understand what you mean. Maybe I'll take advantage of that too.<br>@@
-		<<set $trainer1TipReceived to 1>>
+		<<run setup.Gym.markTrainer1Tipped()>>
 	<</if>>
 
 	<<if _check eq 3>>
 		@@.notmc-speech; Do you know the trainer who works here during the day? He likes girls who are in good shape.<br>@@
 		@@.mc-speech; Thanks for mentioning it. I'll keep that in mind.<br>@@
 	<</if>>
-	<<if $relationEmily lt 10>>
-		<<set $relationEmily +=1>>
-		Relation with @@.mc-speech;Emily@@ improved: $relationEmily now!<br>
+	<<if setup.Gym.raiseEmilyRelationship()>>
+		Relation with @@.mc-speech;Emily@@ improved: <<= setup.Gym.emilyRelationshipStage()>> now!<br>
 	<</if>>
 
 <</if>>
@@ -56,7 +54,7 @@
 <br>
 <br>
 @@.backbtn;[[Leave|GymInside]] @@
-<<set $relationEmilyCD to 1>>
+<<run setup.Gym.startEmilyCooldown()>>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 <</done>>

@@ -36,6 +36,24 @@ setup.Park = (function () {
 		// --- Park event ------------------------------------------
 		canEscapeParkEvent: function () {
 			return mc().energy >= 4;
+		},
+
+		// --- Mutations the park passages used to do inline --------
+		startJoggingCooldown: function () {
+			State.variables.joggingCD = 1;
+		},
+		spendJoggingEnergy: function () {
+			// Jogging consumes 2 energy at start and again on continue.
+			mc().energy -= 2;
+		},
+		dropEnergyToZero: function () {
+			// Both park-event branches drain the MC to 0 energy.
+			mc().energy = 0;
+		},
+		isBeautyBelow: function (threshold) {
+			// Used by the jogging event to test whether the stalker
+			// loses interest vs. starts chasing.
+			return threshold <= mc().beauty;
 		}
 	};
 })();

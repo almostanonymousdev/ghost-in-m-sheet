@@ -5,7 +5,7 @@
 <<if setup.Witch.isFirstVisit()>>
 	&emsp;@@.notmc-speech;Hello, sweetheart, got lost? @@<br>
 
-	@@.mc-speech;Hi, I'm $mc.name. I was told I could get a contract here... for ghosts@@<br>
+	@@.mc-speech;Hi, I'm <<= setup.Mc.name()>>. I was told I could get a contract here... for ghosts@@<br>
 
 	&emsp;@@.notmc-speech;Are you really a ghost hunter? I wouldn't have guessed that looking at you... And how's the "interaction" with ghosts going? *She smiled* @@<br>
 
@@ -24,9 +24,9 @@
 	<br>
 	@@.mc-action; Now you can receive contracts for identifying the type of ghost.@@
 	<br>
-	<<set $firstVisitWitchShop to false>>
-<<elseif $firstVisitWitchShop eq false>>
-	@@.notmc-speech; Hey $mc.name, how are you?@@<br>
+	<<run setup.Witch.markShopVisited()>>
+<<elseif not setup.Witch.isFirstVisit()>>
+	@@.notmc-speech; Hey <<= setup.Mc.name()>>, how are you?@@<br>
 	<<if setup.Witch.hasSuccubusEncounter() and (hasVisited("SuccubusEventTV") or hasVisited("SuccubusPCEvent")) and setup.Witch.exorcismQuestNotStarted()>>
 		<<linkreplace "@@.usebtn; Ask about a ghost in the house@@">>
 			@@.mc-speech; I am disturbed by someone or something in my own home! <br>
@@ -34,35 +34,35 @@
 			I thought it would leave me alone after a while, like other ghosts, but it's not like that.@@<br>
 			@@.notmc-speech; Hm... if this has been going on for a long time, you need an exorcism ritual. Go to a church and ask for a nun named Rain - she knows about these things.@@<br><br>
 			@@.mc-action; You need to visit a church and ask about exorcism from a nun named Rain.@@<br><br>
-			<<set $exorcismQuestStage to 0>>
+			<<run setup.Witch.resetExorcismQuestStage()>>
 		<</linkreplace>><br>
 	<</if>>
 	<<done>>
-		<<if $mc.lvl lt 4>>
+		<<if setup.Mc.lvl() lt 4>>
 			<<addclass ".rescueGirlsDisabled" "disabled-link">>
 		<</if>>
 	<</done>>
 	<<if setup.Witch.canOfferRescueQuest()>><span class="rescueGirlsDisabled">
 		<<linkreplace "@@.usebtn; Missing girls@@">>
-			<<set $hasQuestForRescue to 0>>
-			@@.notmc-speech; Oh, $mc.name, you've come at just the right time. I can see you're getting more and more experienced with each passing day, and I've got an important task for you. My old friend, a nun named Rain from the church, needs some help<br>
+			<<run setup.Witch.clearQuestForRescue()>>
+			@@.notmc-speech; Oh, <<= setup.Mc.name()>>, you've come at just the right time. I can see you're getting more and more experienced with each passing day, and I've got an important task for you. My old friend, a nun named Rain from the church, needs some help<br>
 			She told me that recently, her girls -- who, like you, are also ghost hunters--have started disappearing. She needs help finding them, and I thought you might be the one to assist her.<br>@@
 			@@.mc-speech; Of course, I think I can help her.@@<br>
 			@@.notmc-speech; Great! I'll let her know you're on board. Head to the church -- I'm sure she'll find you and explain what to do next.@@<br>
 			<br>
 			@@.mc-action; You need to talk to Sister Rain at the church.@@<br>
-		<</linkreplace>><<if $mc.lvl lt 4>>@@.warningtext; (Req. lvl 4+)@@
+		<</linkreplace>><<if setup.Mc.lvl() lt 4>>@@.warningtext; (Req. lvl 4+)@@
 		<</if>><br></span>
 	<</if>>
 	<<if setup.Ghosts.isInactive()>>
 		<<if setup.Witch.canAffordContract()>>
 			@@.usebtn;[[I want to get a contract|GhostRandomize]]@@<br>
 			<br>
-			@@.usebtn; [[I want to get a challenging contract(Ghost will hide one piece of evidence)|GhostRandomize][$deleteOneEvidence to 1]]@@<br>
+			@@.usebtn; [[I want to get a challenging contract(Ghost will hide one piece of evidence)|GhostRandomize][setup.Ghosts.scheduleHideEvidence(1)]]@@<br>
 
-			@@.usebtn; [[I want to get a challenging contract(Ghost will hide two pieces of evidence)|GhostRandomize][$deleteOneEvidence to 1; $deleteSecondEvidence to 1]]@@<br>
+			@@.usebtn; [[I want to get a challenging contract(Ghost will hide two pieces of evidence)|GhostRandomize][setup.Ghosts.scheduleHideEvidence(2)]]@@<br>
 
-			@@.usebtn; [[I want to get a challenging contract(No evidence)|GhostRandomize][$deleteOneEvidence to 1; $deleteSecondEvidence to 1; $deleteThirdEvidence to 1]]@@<br>
+			@@.usebtn; [[I want to get a challenging contract(No evidence)|GhostRandomize][setup.Ghosts.scheduleHideEvidence(3)]]@@<br>
 
 		<<else>>@@.mc-thoughts; I don't have enough money@@
 		<</if>>
@@ -70,14 +70,14 @@
 	<<elseif setup.Ghosts.isPossessed()>>@@.usebtn;[[End the contract|WitchEndContract]]@@
 	<</if>><br>
 
-	<<if $mc.lvl lte 1>>
+	<<if setup.Mc.lvl() lte 1>>
 		@@.mc-speech; I just need to correctly identify the ghost, right?@@<br>
 		@@.notmc-speech; Yes, as long as you're inexperienced, that's enough for you.@@ <br>
 		@@.warningtext; (Req. lvl 2+)@@<br>
 	<<else>>
 		<<if setup.Witch.canOfferCursedItemQuest()>>
 			<<linkreplace "@@.usebtn;I have a small task for you.@@">>
-				<<set $gotCursedItem to 0>>
+				<<run setup.Witch.startCursedItemQuest()>>
 				@@.notmc-speech; It seems you've gained some experience and are ready for new challenges. So listen:<br>
 				In every house with a ghost, there is a cursed object. It could be in any room. Find it and bring it to me, and I'll reward you. Deal?<br>@@
 				@@.mc-speech; How will I know if the object is cursed and not just an ordinary one?@@<br>
@@ -94,7 +94,7 @@
 				<span> Money: +$30 $ </span><br>
 				<<run setup.Witch.collectCursedItemReward()>>
 				<<if setup.Witch.shouldAwardGwb3OnTurnIn()>>
-					<<set $equipment.gwb to 3>>
+					<<run setup.Witch.upgradeGwbToLvl3()>>
 					@@.mc-action; You get a lvl 3 Ghost Writing Book @@<<image "img/gwb.png" { style: "max-width:5%" }>><br>
 					<br>
 					@@.mc-speech; But why do you need them?@@<br>
@@ -119,7 +119,7 @@
 			@@.notmc-speech; <<if setup.Witch.ownsLevel3Gwb()>>
 			<<else>>I only have a level 3 ghostwriting book, but I'm not planning to sell it yet. Also,
 			<</if>>I know that the priest has some level 3 tool. Ask him about it@@
-			<<set $eventToolsOneStart to 0>>
+			<<run setup.Witch.restartToolEvent()>>
 		<</linkreplace>>@@<br>
 	<</if>>
 <</if>>
@@ -130,7 +130,7 @@
 		@@.notmc-speech; You see, it took a lot of effort to acquire it. So it's up to you to decide.@@<br>
 		@@.mc-speech; Alright, I'll think about it for now...@@<br>
 		@@.notmc-speech; No problem, just take a look at my wares if you decide to buy it.@@<br>
-		<<set $boughtMonkeyPawGuide to 1>>
+		<<run setup.Witch.markMonkeyPawGuideBought()>>
 	<</linkreplace>><br>
 
 <</if>>
@@ -139,7 +139,7 @@
 		@@.mc-speech; I went there, but I didn't find any paranormal activity. @@<br>
 		@@.notmc-speech; The thing is, some places have a special influence on ghosts. This includes the "Ironclad" prison. You won't be able to catch their attention unless you... fit in with the place. Perhaps you should think about how to become a part of this environment, how to make them notice you.@@<br>
 		@@.mc-thoughts; It seems like the ghosts are drawn to those who belong to this place... A specific outfit might help me blend in. Perhaps I could find something suitable at the Mall. @@<br>
-		<<set $wardenClothesStage to 1>>
+		<<run setup.Witch.markWardenOutfitHintOpened()>>
 	<</linkreplace>>
 <</if>><br>
 <<if setup.Witch.canOfferWeakenQuest()>>
@@ -151,7 +151,7 @@
 		@@.notmc-speech;I'll pay you extra for this task.@@<br>
 		@@.mc-speech;Okay, I'll think about it.@@<br><br>
 		@@.mc-action; Now you can perform the witch's additional task: weaken the ghost.@@<br>
-		<<set $weakenTheGhostQuest to 1>>
+		<<run setup.Witch.markWeakenQuestStarted()>>
 	<</linkreplace>>
 <</if>>
 <br><br>

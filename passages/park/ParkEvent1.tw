@@ -1,12 +1,12 @@
 :: ParkEvent1 [nobr] {"position":"2900,1650","size":"100,100"}
 <<if setup.Park.canEscapeParkEvent()>>
-	<<set $mc.energy to 0>>
+	<<run setup.Park.dropEnergyToZero()>>
 	<<video "mc/parkrunend.mp4">>
 	@@.mc-thoughts;You skillfully slip away from her grasping hands, leaving her behind with her unsatisfied lust.@@<br>
 	@@.mc-speech;FUCK! I barely got away from her, I need to be more careful around here.@@<br><br>
 	@@.backbtn; [[Leave|CityMap]]@@<br>
 <<else>>
-	<<set $mc.energy to 0>>
+	<<run setup.Park.dropEnergyToZero()>>
 	<<video "mc/parkeventcaught.mp4">>
 	@@.mc-thoughts;She catches up to you, her hot breath on your neck. She calms you, saying she just wants to enjoy your beautiful body before letting you go, filling the air with promises of passion.@@<br>
 	<<linkreplace "@@.usebtn; She puts you on your knees in front of her.@@">>

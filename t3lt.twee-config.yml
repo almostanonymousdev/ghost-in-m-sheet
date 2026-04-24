@@ -549,3 +549,16 @@ sugarcube-2:
       name: deliveryTrackCorrect
     deliveryTipCheck:
       name: deliveryTipCheck
+    ghostTypeDropdown:
+      name: ghostTypeDropdown
+      description: "Wraps SugarCube's <<listbox>> UI binding for
+        $ghostTypeSelected, so the witch contract passage doesn't
+        need to name the global directly."
+    bodyPartRadio:
+      name: bodyPartRadio
+      description: "Intro form radio bound to $sensualBodyPart.<key>. Args:
+        bodyPartKey (string, e.g. 'brain'), label (string)."
+    mcNameTextbox:
+      name: mcNameTextbox
+      description: "Intro form textbox bound to $mc.name. Args: defaultName
+        (string), nextPassage (string)."

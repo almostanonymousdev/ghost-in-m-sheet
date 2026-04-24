@@ -1,5 +1,5 @@
 :: GhostSpecialEventSleepSpirit [nobr] {"position":"700,2450","size":"100,100"}
-<<set $ghostSpecialEventSpiritCD to 1>>
+<<run setup.SpecialEvent.startSpiritEventCooldown()>>
 <<if setup.SpecialEvent.hasEnergyForSleepSpirit()>>
 	<<video "ghosts/specials/spirit3.0.mp4">>
 	@@.mc-thoughts; You lie in bed, deeply asleep. But something disturbs your peace. You feel a light touch on your body -- like it's a remnant from your last hunt. You think it will pass, and you let yourself sink@@

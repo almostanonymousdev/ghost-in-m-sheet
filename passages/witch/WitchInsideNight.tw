@@ -11,7 +11,7 @@
 <br>
 <<if setup.Witch.canStealItemsFromWitch()>>
 	<<linkreplace "@@.usebtn;Look for something useful@@">>
-		<<set $stealItemsFromWitchCD to 1>>
+		<<run setup.Witch.startStealItemsCooldown()>>
 		<<set _check to random(1,5)>>
 		@@.mc-speech;
 		<<if _check eq 1>>
@@ -20,16 +20,16 @@
 				You found information about the ghost Myling
 			<<else>>
 				You found 30$
-				<<set $mc.money +=30>>
+				<<run setup.Mc.addMoney(30)>>
 			<</if>>
 		<<elseif _check eq 2>>
 			You didn't find anything
 		<<elseif _check eq 3>>
 			You found sanity pillls!
-			<<set $sanityPillsAmount +=1>>
+			<<run setup.Mc.addSanityPills(1)>>
 		<<elseif _check eq 4>>
 			You found a crusifix!
-			<<set $crucifixAmount += 1>>
+			<<run setup.Witch.addCrucifix()>>
 		<<elseif _check eq 5>>
 			<<goto "WitchTentaclesEvent">>
 		<</if>>

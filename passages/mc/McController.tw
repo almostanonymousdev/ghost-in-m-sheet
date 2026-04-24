@@ -1,0 +1,305 @@
+:: McController [script]
+/*
+ * Centralized state queries and mutations for the main character
+ * ($mc plus the handful of top-level "player status" flags and
+ * consumables: $isPenaltyOn, $energyDrinkAmount, $makeupAmount/
+ * $makeupApplied, $medicineAmount, $sanityPillsAmount, $earnedMoney,
+ * level-progress counters, and the possession meter).
+ *
+ * Any passage that previously read/wrote $mc.x directly should route
+ * through setup.Mc. Every method comes in both a semantic shortcut
+ * (setup.Mc.money(), setup.Mc.addMoney(n)) and a generic form
+ * (setup.Mc.get('money'), setup.Mc.set('money', v), setup.Mc.add('money', n))
+ * so mass rewrites can pick whichever fits best.
+ */
+setup.Mc = (function () {
+	function sv()  { return State.variables; }
+	function mc()  { return State.variables.mc; }
+
+	function get(field)        { return mc()[field]; }
+	function set(field, value) { mc()[field] = value; }
+	function add(field, delta) { mc()[field] += delta; }
+
+	var api = {
+		mc: mc,
+
+		get: get,
+		set: set,
+		add: add,
+
+		// --- Core stats (getters) --------------------------------
+		money:         function () { return mc().money; },
+		sanity:        function () { return mc().sanity; },
+		sanityMax:     function () { return mc().sanityMax; },
+		sanityUp:      function () { return mc().sanityUp; },
+		energy:        function () { return mc().energy; },
+		energyMax:     function () { return mc().energyMax; },
+		energyPoints:  function () { return mc().energyPoints; },
+		corruption:    function () { return mc().corruption; },
+		beauty:        function () { return mc().beauty; },
+		lust:          function () { return mc().lust; },
+		name:          function () { return mc().name; },
+		fit:           function () { return mc().fit; },
+		lvl:           function () { return mc().lvl; },
+		exp:           function () { return mc().exp; },
+		exhibitionism: function () { return mc().exhibitionism; },
+		makeupImg:     function () { return mc().makeupImg; },
+		dirty:         function () { return mc().dirty; },
+
+		// --- Core stat mutators ---------------------------------
+		setMoney:         function (v) { mc().money = v; },
+		addMoney:         function (n) { mc().money += n; },
+		spendMoney:       function (n) { mc().money -= n; },
+		setSanity:        function (v) { mc().sanity = v; },
+		addSanity:        function (n) { mc().sanity += n; },
+		setSanityMax:     function (v) { mc().sanityMax = v; },
+		setSanityUp:      function (v) { mc().sanityUp = v; },
+		setEnergy:        function (v) { mc().energy = v; },
+		addEnergy:        function (n) { mc().energy += n; },
+		spendEnergy:      function (n) { mc().energy -= n; },
+		setEnergyMax:     function (v) { mc().energyMax = v; },
+		setEnergyPoints:  function (v) { mc().energyPoints = v; },
+		addEnergyPoints:  function (n) { mc().energyPoints += n; },
+		setCorruption:    function (v) { mc().corruption = v; },
+		addCorruption:    function (n) { mc().corruption += n; },
+		setBeauty:        function (v) { mc().beauty = v; },
+		addBeauty:        function (n) { mc().beauty += n; },
+		setLust:          function (v) { mc().lust = v; },
+		addLust:          function (n) { mc().lust += n; },
+		setName:          function (v) { mc().name = v; },
+		setFit:           function (v) { mc().fit = v; },
+		addFit:           function (n) { mc().fit += n; },
+		setLvl:           function (v) { mc().lvl = v; },
+		addLvl:           function (n) { mc().lvl += n; },
+		setExp:           function (v) { mc().exp = v; },
+		addExp:           function (n) { mc().exp += n; },
+		setExhibitionism: function (v) { mc().exhibitionism = v; },
+		addExhibitionism: function (n) { mc().exhibitionism += n; },
+		setMakeupImg:     function (v) { mc().makeupImg = v; },
+		setDirty:         function (v) { mc().dirty = v; },
+
+		// --- Fit percent shorthand ------------------------------
+		// $mc.fit is clamped to [0, 100]; plenty of callers that
+		// just display a bar divide by 100.
+		fitPct: function () { return mc().fit / 100; },
+
+		// --- Penalty (sleep / assault debuff flag) --------------
+		isPenalized:    function () { return sv().isPenaltyOn === 1; },
+		setPenalized:   function (on) { sv().isPenaltyOn = on ? 1 : 0; },
+		clearPenalty:   function () { sv().isPenaltyOn = 0; },
+
+		// --- Possession meter -----------------------------------
+		possession:     function () { return sv().mcpossession; },
+		setPossession:  function (v) { sv().mcpossession = v; },
+		addPossession:  function (n) { sv().mcpossession += n; },
+		ensurePossession: function () {
+			if (sv().mcpossession === undefined) { sv().mcpossession = 0; }
+		},
+
+		// --- Orgasm meter / cooldown ----------------------------
+		orgasmMeter:       function () { return sv().mcOrgasmMeter; },
+		setOrgasmMeter:    function (v) { sv().mcOrgasmMeter = v; },
+		orgasmCooldown:    function () { return sv().orgasmCooldownSteps; },
+		setOrgasmCooldown: function (v) { sv().orgasmCooldownSteps = v; },
+
+		// --- Level progress counters ----------------------------
+		percentageOfLevel:    function () { return sv().percentageOfLevel; },
+		setPercentageOfLevel: function (v) { sv().percentageOfLevel = v; },
+		neededForNextLevel:   function () { return sv().neededForNextLevel; },
+		setNeededForNextLevel: function (v) { sv().neededForNextLevel = v; },
+		tempCorr:             function () { return sv().tempCorr; },
+		setTempCorr:          function (v) { sv().tempCorr = v; },
+		addTempCorr:          function (n) { sv().tempCorr += n; },
+
+		// --- Earned-money accumulator ---------------------------
+		earnedMoney:     function () { return sv().earnedMoney; },
+		addEarnedMoney:  function (n) { sv().earnedMoney += n; },
+		earn: function (n) {
+			mc().money += n;
+			sv().earnedMoney += n;
+		},
+
+		// --- Energy drinks (inventory + use) --------------------
+		energyDrinkAmount:    function () { return sv().energyDrinkAmount; },
+		addEnergyDrink:       function (n) { sv().energyDrinkAmount += n; },
+		setEnergyDrinkAmount: function (v) { sv().energyDrinkAmount = v; },
+		useEnergyDrink: function () {
+			if (sv().energyDrinkAmount > 0) {
+				sv().energyDrinkAmount -= 1;
+				mc().energy = mc().energyMax;
+				return true;
+			}
+			return false;
+		},
+
+		// --- Makeup (inventory + applied flag) ------------------
+		makeupAmount:    function () { return sv().makeupAmount; },
+		addMakeup:       function (n) { sv().makeupAmount += n; },
+		spendMakeup:     function (n) { sv().makeupAmount -= n; },
+		setMakeupAmount: function (v) { sv().makeupAmount = v; },
+		makeupApplied:   function () { return sv().makeupApplied; },
+		setMakeupApplied: function (v) { sv().makeupApplied = v; },
+
+		// --- Medicine (clears the penalty / heals) --------------
+		medicineAmount:    function () { return sv().medicineAmount; },
+		addMedicine:       function (n) { sv().medicineAmount = (sv().medicineAmount || 0) + n; },
+		useMedicine:       function () {
+			if (sv().medicineAmount > 0) {
+				sv().medicineAmount -= 1;
+				return true;
+			}
+			return false;
+		},
+		setMedicineAmount: function (v) { sv().medicineAmount = v; },
+
+		// --- Sanity pills ---------------------------------------
+		sanityPillsAmount:    function () { return sv().sanityPillsAmount; },
+		addSanityPills:       function (n) { sv().sanityPillsAmount = (sv().sanityPillsAmount || 0) + n; },
+		useSanityPill:        function () {
+			if (sv().sanityPillsAmount > 0) {
+				sv().sanityPillsAmount -= 1;
+				return true;
+			}
+			return false;
+		},
+		setSanityPillsAmount: function (v) { sv().sanityPillsAmount = v; },
+
+		// --- XP / level-up ---------------------------------------
+		// Single grant-exp mutation shared by the gym, church, witch,
+		// etc. XP grants. Returns true iff at least one level-up fired.
+		grantExp: function (amount) {
+			var s = sv();
+			var m = mc();
+			m.exp += amount;
+			s.percentageOfLevel = Math.floor((m.exp / s.neededForNextLevel) * 100);
+			var leveled = false;
+			while (m.exp >= s.neededForNextLevel) {
+				m.exp -= s.neededForNextLevel;
+				m.lvl += 1;
+				s.percentageOfLevel -= 100;
+				s.neededForNextLevel += Math.ceil(0.3 * s.neededForNextLevel);
+				leveled = true;
+			}
+			return leveled;
+		},
+
+		// --- Lust helpers --------------------------------------
+		clampLust: function () {
+			mc().lust = Number(mc().lust.toFixed(2));
+		},
+
+		// --- addSanity widget core --------------------------------
+		// Applies a delta, clamps to [0, sanityMax]. Returns:
+		//   "collapsed" if sanity hit 0 (caller should jump to HuntOverSanity)
+		//   "clamped"   if clamped to max
+		//   ""          otherwise.
+		applySanityDelta: function (delta) {
+			var m = mc();
+			m.sanity += delta;
+			if (m.sanity >= m.sanityMax) {
+				m.sanity = m.sanityMax;
+				return 'clamped';
+			}
+			if (m.sanity < 0) {
+				m.sanity = 0;
+				return 'collapsed';
+			}
+			return '';
+		},
+
+		// --- addEnergy widget core --------------------------------
+		applyEnergyDelta: function (delta) {
+			var m = mc();
+			m.energy += delta;
+			if (m.energy >= m.energyMax) { m.energy = m.energyMax; }
+			if (m.energy <= 0)           { m.energy = 0; }
+		},
+
+		// --- addFit widget core -----------------------------------
+		// Same shape as setup.Gym.applyFitnessGain, but the gym controller
+		// imports this method so both widgets share logic.
+		applyFitnessDelta: function (delta) {
+			var m = mc();
+			var previousFit = m.fit;
+			m.fit += delta;
+			var beautyIncrease = Math.floor(m.fit / 5) - Math.floor(previousFit / 5);
+			if (beautyIncrease > 0) { m.beauty += beautyIncrease; }
+			if (!m.energyPoints) { m.energyPoints = Math.floor(previousFit / 10); }
+			var prevEp = m.energyPoints;
+			var curEp  = Math.floor(m.fit / 10);
+			var energyMaxDelta = 0;
+			if (curEp > prevEp) {
+				energyMaxDelta = curEp - prevEp;
+				m.energyMax   += energyMaxDelta;
+				m.energyPoints = curEp;
+			}
+			if (previousFit >= 5 && (previousFit - 1) % 5 === 0 && m.fit < 5) {
+				m.beauty -= 1;
+			}
+			m.fit    = Math.max(0, Math.min(100, m.fit));
+			m.beauty = Math.max(0, m.beauty);
+			var hitEnergyCap = false;
+			if (m.fit === 100 && m.energyMax < 20) {
+				m.energyMax  = 20;
+				energyMaxDelta += 20 - (curEp > prevEp ? curEp : prevEp);
+				hitEnergyCap = true;
+			}
+			return {
+				fit:             m.fit,
+				beauty:          m.beauty,
+				beautyIncrease:  beautyIncrease > 0 ? beautyIncrease : 0,
+				energyMaxDelta:  energyMaxDelta,
+				energyMax:       m.energyMax,
+				reachedFitCap:   m.fit === 100,
+				hitEnergyCap:    hitEnergyCap
+			};
+		},
+
+		// --- addLustByPart core -----------------------------------
+		// Escalates the chosen body part's sensitivity by 0.02 and feeds
+		// the (base + new sens) total into setup.addLust.
+		addLustByPart: function (part, base) {
+			var sv = State.variables;
+			var lustBase = (base !== undefined) ? base : 2;
+			var bp = sv.sensualBodyPart || {};
+			function bump(key, extra) {
+				extra = extra || 0;
+				bp[key] = (bp[key] || 0) + 0.02 + extra;
+			}
+			switch (part) {
+				case 'brain':
+					bp.brain = (bp.brain || 0) + 0.02;
+					setup.addLust(lustBase + bp.brain);
+					break;
+				case 'tits':
+					bump('tits', sv.piercingTitsAddSens || 0);
+					setup.addLust(lustBase + bp.tits);
+					break;
+				case 'ass':
+					bump('ass');
+					setup.addLust(lustBase + bp.ass);
+					break;
+				case 'bottom':
+					bp.bottom = (bp.bottom || 0) + 0.02;
+					bp.ass    = (bp.ass    || 0) + 0.01;
+					bp.pussy  = (bp.pussy  || 0) + 0.01 + (sv.piercingPussyAddSens || 0);
+					bp.anal   = (bp.anal   || 0) + 0.01;
+					setup.addLust(lustBase + bp.bottom);
+					break;
+				case 'mouth':
+					bump('mouth', sv.piercingTongueAddSens || 0);
+					setup.addLust(lustBase + bp.mouth);
+					break;
+				case 'pussy':
+					bump('pussy', sv.piercingPussyAddSens || 0);
+					setup.addLust(lustBase + bp.pussy);
+					break;
+				case 'anal':
+					bump('anal');
+					setup.addLust(lustBase + bp.anal);
+					break;
+			}
+		}
+	};
+	return api;
+})();

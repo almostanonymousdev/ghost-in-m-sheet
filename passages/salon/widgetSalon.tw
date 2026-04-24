@@ -13,12 +13,12 @@
 		<<image _img "iconPx">><br>
 		<span class="priceAmount"><<= _price>>$</span><br>
 		<span class="mc-thoughts">_bonusText</span><br>
-		<<if $mc.money gte _price>>
+		<<if setup.Mc.money() gte _price>>
 			<<capture _varName, _price, _returnPassage, _beautyBonus, _extraVar, _extraVal>>
 				@@.buyItemLink;<<link "Buy" _returnPassage>>
 					<<run State.variables[_varName] = "worn">>
-					<<set $mc.money -= _price>>
-					<<if _beautyBonus>><<set $mc.beauty += _beautyBonus>><</if>>
+					<<run setup.Mc.spendMoney(_price)>>
+					<<if _beautyBonus>><<run setup.Mc.addBeauty(_beautyBonus)>><</if>>
 					<<if _extraVar>><<run State.variables[_extraVar] = _extraVal>><</if>>
 				<</link>>@@<br>
 			<</capture>>
@@ -42,15 +42,15 @@
 	<div class="housecard">
 	<<if ndef State.variables[_varName]>>
 		<<image _img "iconPx">><br>
-		<<if $mc.corruption gte _reqCorruption>>
+		<<if setup.Mc.corruption() gte _reqCorruption>>
 			<span class="priceAmount"><<= _price>>$</span><br>
 			<span class="mc-thoughts">_bonusText</span><br>
-			<<if $mc.money gte _price>>
+			<<if setup.Mc.money() gte _price>>
 				<<capture _varName, _price, _returnPassage, _beautyBonus, _extraVar, _extraVal>>
 					@@.buyItemLink;<<link "Buy" _returnPassage>>
 						<<run State.variables[_varName] = "worn">>
-						<<set $mc.money -= _price>>
-						<<if _beautyBonus>><<set $mc.beauty += _beautyBonus>><</if>>
+						<<run setup.Mc.spendMoney(_price)>>
+						<<if _beautyBonus>><<run setup.Mc.addBeauty(_beautyBonus)>><</if>>
 						<<if _extraVar>><<run State.variables[_extraVar] = _extraVal>><</if>>
 					<</link>>@@<br>
 				<</capture>>
