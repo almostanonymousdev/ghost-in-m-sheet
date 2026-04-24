@@ -11,11 +11,11 @@
 <<if setup.Posession.canPepperSprayBrookeAttacker()>>
 	@@.mc-thoughts; He notices you but doesn't even try to run away. Luckily, you have a pepper spray in your bag. You quickly pull it out and use it. The man flees.@@<br>
 	@@.mc-thoughts;  You take her hand and drag her along with you [[the church|RainHelps]]@@
-	<<set $hasPSprayCharges -= 1>>
+	<<run setup.Posession.consumePepperSprayCharge()>>
 <<else>>
 	@@.mc-thoughts; He notices you but doesn't try to flee. You have no means of defense, and you're not strong enough to fight him. With a single blow, he knocks you to the ground, and you@@
 	<<linkappend "@@.usebtn; black out@@">>
-		<<set $hours to $hours + random(2,6)>>
+		<<run setup.Posession.skipRandomHours()>>
 		<<video "brook/possessed/3.mp4">>
 		@@.mc-thoughts; You wake up from a strange sensation: something warm and wet is trying to penetrate your anus.@@<br>
 		@@.notmc-speech; That's enough. Now I'll check how well you lubed her @@ <<linkappend "@@.usebtn; hole@@">>
@@ -31,11 +31,11 @@
 				@@.mc-thoughts;But that didn't stop him. He continued to rape your ass until he came inside you.@@<br>
 			<<else>>
 				@@.mc-thoughts; Your tight little hole wasn't ready for this. A sharp pain shot through you.@@<br>
-				<<set $isPenaltyOn to 1>>
+				<<run setup.Mc.setPenalized(true)>>
 				@@.mc-speech; Ah~ no, it hurts~@@<br>
 				@@.mc-thoughts;But that didn't stop him. He continued to rape your ass until he came inside you@@<br>
 			<</if>>
-			@@.mc-thoughts; Brooke hugged you. After a while, she helped you get up and walked you [[home|Sleep][$isBrookePossessed to "not active"]]@@<br>
+			@@.mc-thoughts; Brooke hugged you. After a while, she helped you get up and walked you [[home|Sleep][setup.Posession.markBrookePossessedInactive()]]@@<br>
 		<</linkappend>>
 	<</linkappend>>
 <</if>>

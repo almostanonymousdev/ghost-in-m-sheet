@@ -354,6 +354,82 @@ setup.Events = (function () {
 			return [];
 		},
 
+		// --- Ghost special-ability flags (Banshee / Cthulion) ----
+		enableBanshee:    function () { State.variables.bansheeAbility = 1; },
+		enableCthulion:   function () { State.variables.cthulionAbility = 1; },
+		clearBanshee:     function () { delete State.variables.bansheeAbility; },
+		clearCthulion:    function () { delete State.variables.cthulionAbility; },
+		bansheeActive:    function () { return v('bansheeAbility') === 1; },
+		cthulionActive:   function () { return v('cthulionAbility') === 1; },
+
+		// --- Argument randomizer (body-part key) -----------------
+		currentArgForRandomizer: function () { return v('argForRandomizer'); },
+
+		// --- Event video selection -------------------------------
+		setVideoEvent:    function (video) { State.variables.videoEvent = video; },
+		videoEvent:       function () { return v('videoEvent'); },
+		videoEventIsMp4:  function () {
+			var ve = v('videoEvent');
+			return typeof ve === 'string' && ve.indexOf('.mp4') !== -1;
+		},
+
+		// --- Art event video / image selection -------------------
+		setArtImgEvent:   function (img)   { State.variables.artImgEvent = img; },
+		setArtVideoEvent: function (video) { State.variables.artVideoEvent = video; },
+		artImgEvent:      function () { return v('artImgEvent'); },
+		artVideoEvent:    function () { return v('artVideoEvent'); },
+
+		// --- Ghost sanity-event decreased amount -----------------
+		rollGhostSanityEventDecreased: function () {
+			var g = setup.Ghosts.active();
+			State.variables.ghostSanityEventDecreased = g ? g.rollEventSanityLoss() : 0;
+		},
+		ghostSanityEventDecreased: function () { return v('ghostSanityEventDecreased'); },
+
+		// --- Decreasing-sanity stage table -----------------------
+		setDecreasingSanity: function (obj) { State.variables.decreasingSanity = obj; },
+		decreasingSanity:    function () { return v('decreasingSanity'); },
+
+		// --- Clothing-state convenience --------------------------
+		jeansWorn:   function () { return v('jeansState') === 'worn'; },
+		shortsWorn:  function () { return v('shortsState') === 'worn'; },
+		skirtWorn:   function () { return v('skirtState') === 'worn'; },
+		pantiesWorn: function () { return v('pantiesState') === 'worn'; },
+
+		// --- Orgasm cooldown flag --------------------------------
+		setOrgasmCooldown: function (n) { State.variables.orgasmCooldownSteps = n; },
+
+		// --- Companion lust/sanity mutators (used by eventWidget) ---
+		companionDrainForHelp: function () {
+			var c = companion();
+			if (!c) return;
+			c.sanity -= 3;
+			c.lust   += 10;
+		},
+
+		// --- Minigame state (SeduceGhost) ------------------------
+		minigameVideo:       function () { return v('minigameVideo'); },
+		minigameEventFailed: function () { return v('minigameEventFailed'); },
+		clearMinigameEventFailed: function () { delete State.variables.minigameEventFailed; },
+		ghostOrgasmMeter:    function () { return v('ghostOrgasmMeter'); },
+		mcOrgasmMeter:       function () { return v('mcOrgasmMeter'); },
+		clampGhostOrgasmFloor: function () {
+			if ((v('ghostOrgasmMeter') || 0) <= 0) { State.variables.ghostOrgasmMeter = 0; }
+		},
+		clampMcOrgasmFloor: function () {
+			if ((v('mcOrgasmMeter') || 0) <= 0) { State.variables.mcOrgasmMeter = 0; }
+		},
+		chanceToAttractFailedFlag: function () { return v('chanceToAttractFailed'); },
+
+		// --- Weaken-ghost minigame reward ------------------------
+		recordWeakenReward: function () {
+			State.variables.isWeakenGhost = 1;
+			State.variables.moneyFromWeakenTheGhost = 30;
+		},
+
+		// --- Room cleanup flag -----------------------------------
+		setCleanedUp: function (v) { State.variables.cleanedUp = !!v; },
+
 		rollBodyPartEvent: function (chance) {
 			var tier      = this.lustTier();
 			var threshold = sanityThresholds[tier];

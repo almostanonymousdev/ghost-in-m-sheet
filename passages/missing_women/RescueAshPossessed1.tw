@@ -18,6 +18,6 @@
 		@@.notmc-speech; You are free, but next time you might not be so lucky@@<br>
 		@@.mc-thoughts; She kisses you again, and everything goes black.@@<br>
 		<br>
-		@@.backbtn; [[Wake up|Church][$hours += 3]]@@<br>
+		@@.backbtn; [[Wake up|Church][setup.MissingWomen.sleepOffHoursAfterEvent()]]@@<br>
 	<</linkappend>>
 <</linkappend>>

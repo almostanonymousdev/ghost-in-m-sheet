@@ -94,6 +94,90 @@ setup.MissingWomen = (function () {
 		},
 		rescuePassageFor: function (girl) {
 			return (setup.rescueGirlPassages || {})[girl] || null;
+		},
+
+		// --- Mutations / accessors used by rescue passages --------
+		currentRescueGirl: function () { return v('currentRescueGirl'); },
+		setCurrentRescueGirl: function (name) { State.variables.currentRescueGirl = name; },
+		setQuestForRescueStarted: function () {
+			State.variables.hasQuestForRescue = 1;
+			State.variables.rescueStage = 0;
+		},
+		sleepOffHoursAfterEvent: function () {
+			State.variables.hours = (State.variables.hours || 0) + 3;
+		},
+		setJadePossessedStage: function (n) { State.variables.rescueJadePossessed = n; },
+		setVictoriaPossessedStage: function (n) { State.variables.rescueVictoriaPossessed = n; },
+		jadePossessedStage: function () { return v('rescueJadePossessed'); },
+		victoriaPossessedStage: function () { return v('rescueVictoriaPossessed'); },
+
+		// --- Task board state --------------------------------------
+		ensureBoardCooldowns: function () {
+			var s = State.variables;
+			if (s.rescueCD === undefined) { s.rescueCD = 0; }
+			if (s.rescueQuestCD === undefined) { s.rescueQuestCD = 0; }
+		},
+		rescueCooldown: function () { return v('rescueCD'); },
+		rescueGirlsList: function () { return v('rescueGirls'); },
+		rescueRandomGirls: function () { return v('rescueRandomGirls'); },
+		initRescueGirlPool: function (allGirls) {
+			State.variables.rescueGirls = allGirls;
+		},
+		rollBoardGirls: function () {
+			var s = State.variables;
+			s.rescueCD = 1;
+			s.rescueRandomGirls = [];
+			var girls = s.rescueGirls || [];
+			var index1 = Math.floor(Math.random() * girls.length);
+			s.rescueRandomGirls.push(girls[index1]);
+			var remaining = girls.filter(function (_, i) { return i !== index1; });
+			var index2 = Math.floor(Math.random() * remaining.length);
+			s.rescueRandomGirls.push(remaining[index2]);
+		},
+
+		// --- Rescue house / clue accessors -------------------------
+		rescueHouse: function () { return v('rescueHouse'); },
+		setRescueHouse: function (n) { State.variables.rescueHouse = n; },
+		randomRescuePhotoNumber: function () { return v('randomRescuePhotoNumber'); },
+		setRandomRescuePhotoNumber: function (n) {
+			State.variables.randomRescuePhotoNumber = n;
+		},
+		rescueStage: function () { return v('rescueStage'); },
+		setRescueStage: function (n) { State.variables.rescueStage = n; },
+		setRescueClueFound: function () { State.variables.hasRescueClue = 1; },
+
+		// --- Rescue quest state -----------------------------------
+		setQuestStage: function (stage) { State.variables.hasQuestForRescue = stage; },
+		getQuestStage: function () { return v('hasQuestForRescue'); },
+
+		// --- Video pool --------------------------------------------
+		rescueVideo: function () { return v('videoRescueEvent'); },
+		setRescueVideo: function (src) { State.variables.videoRescueEvent = src; },
+		startRescueBoardCooldown: function () { State.variables.rescueQuestCD = 1; },
+
+		// --- Torn-photo state (task board / clue display) ---------
+		tornStylesList: function () { return v('tornStyles'); },
+		tornStyleRandom: function () { return v('tornStyleRandom'); },
+		seedTornStyle: function () {
+			var styles = v('tornStyles') || [];
+			if (!styles.length) return;
+			var idx = Math.floor(Math.random() * styles.length);
+			State.variables.tornStyleRandom = styles[idx];
+			State.variables.randomRescuePhotoNumber = 1 + Math.floor(Math.random() * 16);
+		},
+
+		// --- Cheat-only highlight flag ----------------------------
+		cheatRescueHouseHighlight: function () { return v('cheatRescueHouseHighlight'); },
+
+		// --- EMF upgrade reward from clue --------------------------
+		emfLevel: function () {
+			var e = v('equipment');
+			return e ? e.emf : undefined;
+		},
+		upgradeEmfToLvl3: function () {
+			if (State.variables.equipment) {
+				State.variables.equipment.emf = 3;
+			}
 		}
 	};
 })();

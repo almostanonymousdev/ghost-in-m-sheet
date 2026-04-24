@@ -17,8 +17,8 @@
 /* Shared tail: meter refresh + Return button. Used by the in-place
    wish widgets (activity, trapTheGhost, sanity). */
 <<widget "monkeyPawTail">>
-	<<updatemeter 'mclust' `$mc.lust / 100`>>
-	<<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
+	<<updatemeter 'mclust' `setup.Mc.lustPct()`>>
+	<<updatemeter 'sanity' `setup.Mc.sanityPct()`>>
 	<br>
 	@@.backbtn;<<link "Return" `passage()`>>
 	<</link>>@@
@@ -77,13 +77,13 @@
 <<widget "leave">>
 	<<set _out to setup.MonkeyPaw.activate("leave")>>
 	<<if _out.clothesStolen>>
-		<<set $isClothesStolen to 1>>
-		<<if $tshirtState eq "worn">><<include "StealShirt">><</if>>
-		<<if $braState eq "worn">><<include "StealBra">><</if>>
-		<<if $jeansState eq "worn" or $shortsState eq "worn" or $skirtState eq "worn">>
+		<<run setup.HauntedHouses.markClothesStolen()>>
+		<<if setup.Wardrobe.topShirtWorn()>><<run setup.Wardrobe.stealWornInGroup("tshirt", "tshirtState", "isShirtStolen")>><</if>>
+		<<if setup.Wardrobe.braWorn()>><<include "StealBra">><</if>>
+		<<if setup.Wardrobe.jeansWorn() or setup.Wardrobe.shortsWorn() or setup.Wardrobe.skirtWorn()>>
 			<<include "StealBottomOuter">>
 		<</if>>
-		<<if $pantiesState eq "worn">><<include "StealPanties">><</if>>
+		<<if setup.Wardrobe.pantiesWorn()>><<include "StealPanties">><</if>>
 	<</if>>
 	<<if _out.goto>>
 		<<goto _out.goto>>
@@ -102,7 +102,7 @@
 			@@.mc-speech; <<= _out.narrative>>@@
 			<<if _out.sanityDelta>>
 				<br>@@.mc-thoughts; Sanity decreased: <<= _out.sanityDelta>> <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@
-				<<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
+				<<updatemeter 'sanity' `setup.Mc.sanityPct()`>>
 			<</if>>
 			<<if _out.goto>>
 				<br>@@.enterbtn;<<link "Brace yourself" _out.goto>>
@@ -129,9 +129,9 @@
    is the link text ("fading into darkness", "plunging you into
    darkness", "nothing"). */
 <<widget "huntEndExit">>
-	<<if $highpriestess eq 1>>
+	<<if setup.HauntedHouses.hasHighPriestess()>>
 		@@.usebtn;<<link _args[0] $return>>
-			<<set $highpriestess to 0>>
+			<<run setup.HauntedHouses.consumeHighPriestess()>>
 		<</link>>@@
 	<<else>>
 		@@.usebtn;<<link _args[0] "Sleep">>

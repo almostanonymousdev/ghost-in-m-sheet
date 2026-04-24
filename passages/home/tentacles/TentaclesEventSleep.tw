@@ -1,11 +1,11 @@
 :: TentaclesEventSleep [nobr] {"position":"600,4300","size":"100,100"}
-<<set $gotCursedItemEventCD to 0>>
+<<run setup.Home.resetTentaclesCooldown()>>
 <<video "tentacles/sleep1.mp4">>
 @@.mc-thoughts;Through your sleep, you feel something's off, like something is close to you.@@<br>
 <<linkappend "@@.usebtn; Wake up@@">>
-	<<if $tentaclesEventStageSleep eq 0>>
-		<<set $tentaclesEventStageSleep to 1>>
-		<<set $tentaclesTextAfterSleep to 1>>
+	<<if setup.Home.tentaclesStageSleep() eq 0>>
+		<<run setup.Home.setTentaclesStageSleep(1)>>
+		<<run setup.Home.setTentaclesAfterSleepText(1)>>
 		<<goto "Bedroom">>
 	<<else>>
 		<<image "tentacles/sleep2.jpg" { width: "100%" }>><br>
@@ -14,9 +14,9 @@
 		@@.mc-thoughts;You notice several tentacles crawling towards you.@@<br>
 		@@.mc-speech;Oh no~@@<br>
 		<<linkreplace "@@.usebtn; They slowly creep towards you@@">>
-			<<if $tentaclesEventStageSleep eq 1>>
-				<<set $tentaclesEventStageSleep to 2>>
-				<<set $tentaclesTextAfterSleep to 2>>
+			<<if setup.Home.tentaclesStageSleep() eq 1>>
+				<<run setup.Home.setTentaclesStageSleep(2)>>
+				<<run setup.Home.setTentaclesAfterSleepText(2)>>
 				<<goto "Bedroom">>
 			<<else>>
 				<span id ="tentaclesEventSleep">
@@ -40,9 +40,9 @@
 					<<video "tentacles/sleep5.mp4">>
 					@@.mc-speech;Aahhh ~fuck@@
 					<<linkappend "@@.usebtn; I'm c-cumming@@">>
-						<<if $tentaclesEventStageSleep eq 2>>
-							<<set $tentaclesEventStageSleep to 3>>
-							<<set $tentaclesTextAfterSleep to 3>>
+						<<if setup.Home.tentaclesStageSleep() eq 2>>
+							<<run setup.Home.setTentaclesStageSleep(3)>>
+							<<run setup.Home.setTentaclesAfterSleepText(3)>>
 							<<goto "Bedroom">>
 						<<else>>
 							<<goto "TentaclesEventSleep1">>

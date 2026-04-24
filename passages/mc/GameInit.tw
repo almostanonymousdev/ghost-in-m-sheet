@@ -1,0 +1,115 @@
+:: GameInit [script]
+/*
+ * Initial story-state bootstrap. StoryInit used to hand-set ~50
+ * $variables before any other passage could run; the block was too
+ * long to read as a single unit and the defaults were scattered
+ * across half a dozen systems. Centralising it here keeps the
+ * initialisation ordering explicit and lets individual controllers
+ * add their own defaults alongside their gameplay logic.
+ *
+ * StoryInit calls setup.Game.initState() so no passage owns the raw
+ * State.variables writes.
+ */
+setup.Game = (function () {
+
+	function initState() {
+		var s = State.variables;
+
+		// --- Sanity / hunt tuning -----------------------------
+		s.sanityIfHot = 0.3;
+		s.sanityInTheDark = 0.5;
+
+		// --- MC status flags ----------------------------------
+		s.orgasmCooldownSteps = 0;
+		s.tempCorr = 0;
+		s.percentageOfLevel = 0;
+		s.neededForNextLevel = 100;
+		s.makeupAmount = 0;
+		s.makeupApplied = 0;
+		s.energyDrinkAmount = 0;
+
+		// --- Tools / hunt state -------------------------------
+		s.tools = {
+			emf: { activated: 0, activationTime: 0 },
+			uvl: { activated: 0, activationTime: 0 }
+		};
+		s.hunt = null;
+		s.cheatBackForward = false;
+
+		// --- Clock / environment ------------------------------
+		s.temperature = 0;
+		s.meridiem = 'AM';
+		s.hours = 12;
+		s.minutes = 0;
+
+		// --- Equipment ----------------------------------------
+		s.spiritboxLvl = 1;
+
+		// --- Delivery / shift flags ---------------------------
+		s.deliveryActiveIcon1 = true;
+		s.deliveryActiveIcon2 = true;
+		s.deliveryActiveIcon3 = true;
+		s.earnedMoney = 0;
+		s.currentHouse = '';
+		s.firstVisitDeliveryHub = true;
+		s.firstVisitWitchShop = true;
+		s.jobMoneySuccessed = 10;
+		s.jobMoneyFailed = 3;
+		s.deliveryCompletedShifts = 0;
+		s.deliveryCorrectThisShift = 0;
+		s.deliveryStreak = 0;
+		s.deliveryBestStreak = 0;
+		s.deliveryReputationLevel = 0;
+		s.deliveryTotalTips = 0;
+		s.deliveryVisitCounts = {};
+		s.deliverySpecialOrder = false;
+		s.deliverySpecialOrderAddress = '';
+		s.deliverySpecialOrderPay = 0;
+		s.deliverySpecialOrderType = 'safe';
+
+		// --- Equipment durability -----------------------------
+		s.equipment = {
+			emf: 5, spiritbox: 5, gwb: 5,
+			glass: 5, temperature: 5, uvl: 5
+		};
+
+		// --- Main character object ----------------------------
+		s.mc = {
+			name: '',
+			makeupImg: 0,
+			money: 100,
+			sanity: 100,
+			corruption: 0,
+			lust: 0,
+			energy: 10,
+			energyMax: 10,
+			lvl: 0,
+			exp: 0,
+			dirty: 0,
+			beauty: 30
+		};
+
+		// --- Cursed home item ---------------------------------
+		s.cursedHomeItem = '';
+		s.cursedHomeItemActive = 0;
+
+		// --- Starting wardrobe --------------------------------
+		s.jeansState = 'worn';
+		s.tshirtState = 'worn';
+		s.pantiesState = 'worn';
+		s.braState = 'worn';
+		s.skirtState = 'not bought';
+
+		// --- Hunt-room state objects --------------------------
+		['kitchen', 'bathroom', 'bedroom', 'hallway', 'livingroom'].forEach(function (name) {
+			s[name] = {
+				name: name,
+				emf: '', glass: '', uvl: '',
+				temperature: '', spiritbox: '', gwb: '',
+				background: 2
+			};
+		});
+	}
+
+	return { initState: initState };
+})();

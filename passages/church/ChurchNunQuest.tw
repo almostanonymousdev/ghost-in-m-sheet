@@ -1,8 +1,8 @@
 :: ChurchNunQuest [nobr] {"position":"2075,1500","size":"100,100"}
 <<image "rescue/rain.jpg" { class: "displayCentredImgs", width: "50%" }>><br>
-<<if ndef $relationshipWithRain>>
-	<<set $relationshipWithRain to 0>>
-	@@.notmc-speech; $mc.name, hey. I'm Rain. The witch told me about you. Thanks for agreeing to help.@@<br>
+<<if not setup.Church.hasMetRain()>>
+	<<run setup.Church.initRainIfNeeded()>>
+	@@.notmc-speech; <<= setup.Mc.name()>>, hey. I'm Rain. The witch told me about you. Thanks for agreeing to help.@@<br>
 	@@.mc-speech; Of course. Though it's kind of strange that you know a witch.@@<br>
 	@@.notmc-speech; Well, she used to serve the church but left the order for some reasons.@@<br>
 	@@.mc-speech;An order?@@<br>
@@ -20,27 +20,26 @@
 	<br>
 	@@.mc-action; Now I can assist Rain in the search for the missing girls.@@<br>
 <</if>>
-<<set $hasRescueClue to 0>>
-<<if $hasQuestForRescue eq 2>>
+<<run setup.Church.clearRescueClue()>>
+<<if setup.Church.rescueQuestStage() eq 2>>
 	@@.notmc-speech; This is bad, I'll have to send an experienced ghost hunter to search for her, even though I have very few people available.@@<br>
-	<<if $relationshipWithRain eq 0>>
+	<<if setup.Church.relationshipWithRain() eq 0>>
 	<<else>>
-		<<set $relationshipWithRain -= 1>>
-		@@.mc-thoughts; Your relationship with Rain has decreased - $relationshipWithRain.@@
+		<<run setup.Church.adjustRainRelationship(-1)>>
+		@@.mc-thoughts; Your relationship with Rain has decreased - <<= setup.Church.relationshipWithRain()>>.@@
 	<</if>>
-<<elseif $hasQuestForRescue eq 3>>
-	@@.notmc-speech;Oh, $mc.name, I've already been informed that you found our girl, thank you so much. You've been a great help to me, thank you.<br>@@
-	<<if $equipment.spiritbox neq 3>>
+<<elseif setup.Church.rescueQuestStage() eq 3>>
+	@@.notmc-speech;Oh, <<= setup.Mc.name()>>, I've already been informed that you found our girl, thank you so much. You've been a great help to me, thank you.<br>@@
+	<<if setup.Church.upgradeSpiritboxReward()>>
 		@@.notmc-speech;I hope you'll be able to keep helping us. <br>
 		I don't have anything to give you in return for your help right now, but maybe I can repay you somehow later.@@<br>
-		<<set $equipment.spiritbox to 3>>
 		@@.mc-action; You get a lvl 3 Spiritbox @@<<image "img/spiritbox.png" { style: "max-width:5%" }>><br><br>
 	<</if>>
-	<<set $relationshipWithRain += 1>>
-	@@.mc-thoughts; Your relationship with Rain has increased - $relationshipWithRain now!@@<br>
+	<<run setup.Church.adjustRainRelationship(1)>>
+	@@.mc-thoughts; Your relationship with Rain has increased - <<= setup.Church.relationshipWithRain()>> now!@@<br>
 <</if>>
 <br><br>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 <</done>>
-@@.backbtn; [[Back|Church][$hasQuestForRescue to 0]]@@<br>
+@@.backbtn; [[Back|Church][setup.Church.clearRescueQuest()]]@@<br>

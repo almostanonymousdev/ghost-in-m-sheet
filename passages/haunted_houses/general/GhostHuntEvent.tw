@@ -1,6 +1,5 @@
 :: GhostHuntEvent [noreturn nobr] {"position":"2600,1100","size":"100,100"}
-<<set $huntActivationTime = $hours * 60 + $minutes>>
-<<set $elapsedTimeHunt to 0>>
+<<run setup.HauntedHouses.beginHuntEvent()>>
 <<set _check to random(1,3)>>
 <<if _check eq 1>>
 	<<video "hunting/1.mp4" { controls: false, loop: false }>>
@@ -15,14 +14,14 @@
 
 @@.usebtn; [[Run away|RunFast]]@@
 or @@.usebtn; [[Try to hide|Hide]]@@
-<<if $succubusEventTimer gte 1>>
+<<if setup.HauntedHouses.succubusEventTimer() gte 1>>
 	or @@.usebtn; [[Summon the succubus|HuntEventSuccubus]]@@<br>
 <</if>>
 <<if setup.HauntConditions.canPray()>>
 	or @@.usebtn;<<link `"Pray it passes (−10 sanity, −" + setup.HauntConditions.ENERGY_COST_PRAY + " energy)"` "PrayHunt">>
 	<</link>>@@
 <</if>>
-<<if setup.HauntedHouses.hasBottomWorn() or setup.HauntedHouses.hasTopWorn() or $pantiesState eq "worn" or $braState eq "worn">>
+<<if setup.HauntedHouses.hasAnyGarmentWorn()>>
 	or @@.usebtn;<<link "Freeze and let it pass (lose a garment)" "FreezeHunt">>
 	<</link>>@@
 <<else>>
@@ -32,4 +31,4 @@ or @@.usebtn; [[Try to hide|Hide]]@@
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 <</done>>
-<<set $huntActivated to 1>>
+<<run State.variables.huntActivated = 1>>

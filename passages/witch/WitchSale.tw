@@ -3,111 +3,105 @@
 <div class="housecard">
 <<image "img/sanity-pills.png" "iconPx">><br>
 <span class="priceAmount">10$</span><br>
-<<if $mc.money gte 10>>
+<<if setup.Mc.money() gte 10>>
 	@@.buyItemLink;<<link "Buy" "WitchSale">>
-		<<set $sanityPillsAmount += 1>>
-		<<set $mc.money -= 10>>
+		<<run setup.Mc.addSanityPills(1)>>
+		<<run setup.Mc.spendMoney(10)>>
 	<</link>>@@<br>
 <<else>>@@.mc-thoughts; I don't have enough money@@
 <</if>>
-<span class="subtitleAmount">@@.mc-thoughts; You have $sanityPillsAmount sanity pills@@</span>
+<span class="subtitleAmount">@@.mc-thoughts; You have <<= setup.Mc.sanityPillsAmount()>> sanity pills@@</span>
 </div>
 <div class="housecard">
-<<if ndef $crucifixAmount>><<set $crucifixAmount to 0>><</if>>
+<<run setup.Witch.initCrucifixIfNeeded()>>
 <<image "img/crucifix.webp" "iconPx">><br>
 <span class="priceAmount">10$</span><br>
-<<if $mc.money gte 10>>
+<<if setup.Mc.money() gte 10>>
 	@@.buyItemLink;<<link "Buy" "WitchSale">>
-		<<set $crucifixAmount += 1>>
-		<<set $mc.money -= 10>>
+		<<run setup.Witch.addCrucifix()>>
+		<<run setup.Mc.spendMoney(10)>>
 	<</link>>@@<br>
 <<else>>@@.mc-thoughts; I don't have enough money@@
 <</if>>
-<span class="subtitleAmount">@@.mc-thoughts; You have $crucifixAmount crucifix@@</span>
+<span class="subtitleAmount">@@.mc-thoughts; You have <<= setup.Witch.crucifixAmount()>> crucifix@@</span>
 </div>
 <div class="housecard">
-<<if $equipment.emf eq 5>>
+<<if setup.Witch.toolLevel("emf") eq 5>>
 	<<image "img/emf.png" "iconPx">><br>
 	<span class="priceAmount">200$</span><br>
-	<<if $mc.money gte 200>>
+	<<if setup.Mc.money() gte 200>>
 		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
-			<<set $equipment.emf to 4>>
-			<<set $mc.money -= 200>>
+			<<run setup.Witch.upgradeTool("emf")>>
 		<</link>>@@<br>
 	<<else>>@@.mc-thoughts; I don't have enough money@@
 	<</if>>
 <</if>>
 </div>
 <div class="housecard">
-<<if $equipment.temperature eq 5>>
+<<if setup.Witch.toolLevel("temperature") eq 5>>
 	<<image "img/thermometr.png" "iconPx">><br>
 	<span class="priceAmount">100$</span><br>
-	<<if $mc.money gte 100>>
+	<<if setup.Mc.money() gte 100>>
 		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
-			<<set $equipment.temperature to 4>>
-			<<set $mc.money -= 100>>
+			<<run setup.Witch.upgradeTool("temperature")>>
 		<</link>>@@<br>
 	<<else>>@@.mc-thoughts; I don't have enough money@@
 	<</if>>
 <</if>>
 </div>
 <div class="housecard">
-<<if $equipment.spiritbox eq 5>>
+<<if setup.Witch.toolLevel("spiritbox") eq 5>>
 	<<image "img/spiritbox.png" "iconPx">><br>
 	<span class="priceAmount">500$</span><br>
-	<<if $mc.money gte 500>>
+	<<if setup.Mc.money() gte 500>>
 		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
-			<<set $equipment.spiritbox to 4>>
-			<<set $mc.money -= 500>>
+			<<run setup.Witch.upgradeTool("spiritbox")>>
 		<</link>>@@<br>
 	<<else>>@@.mc-thoughts; I don't have enough money@@
 	<</if>>
 <</if>>
 </div>
 <div class="housecard">
-<<if $equipment.gwb eq 5>>
+<<if setup.Witch.toolLevel("gwb") eq 5>>
 	<<image "img/gwb.png" "iconPx">><br>
 	<span class="priceAmount">400$</span><br>
-	<<if $mc.money gte 400>>
+	<<if setup.Mc.money() gte 400>>
 		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
-			<<set $equipment.gwb to 4>>
-			<<set $mc.money -= 400>>
+			<<run setup.Witch.upgradeTool("gwb")>>
 		<</link>>@@<br>
 	<<else>>@@.mc-thoughts; I don't have enough money@@
 	<</if>>
 <</if>>
 </div>
 <div class="housecard">
-<<if $equipment.glass eq 5>>
+<<if setup.Witch.toolLevel("glass") eq 5>>
 	<<image "img/glass.png" "iconPx">><br>
 	<span class="priceAmount">300$</span><br>
-	<<if $mc.money gte 300>>
+	<<if setup.Mc.money() gte 300>>
 		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
-			<<set $equipment.glass to 4>>
-			<<set $mc.money -= 300>>
+			<<run setup.Witch.upgradeTool("glass")>>
 		<</link>>@@<br>
 	<<else>>@@.mc-thoughts; I don't have enough money@@
 	<</if>>
 <</if>>
 </div>
 <div class="housecard">
-<<if $equipment.uvl eq 5>>
+<<if setup.Witch.toolLevel("uvl") eq 5>>
 	<<image "img/uvl.png" "iconPx">><br>
 	<span class="priceAmount">400$</span><br>
-	<<if $mc.money gte 400>>
+	<<if setup.Mc.money() gte 400>>
 		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
-			<<set $equipment.uvl to 4>>
-			<<set $mc.money -= 400>>
+			<<run setup.Witch.upgradeTool("uvl")>>
 		<</link>>@@<br>
 	<<else>>@@.mc-thoughts; I don't have enough money@@
 	<</if>>
 <</if>>
 </div>
 <div class="housecard">
-<<if $boughtMonkeyPawGuide eq 1>>
+<<if setup.Witch.monkeyPawGuideAvailable()>>
 	<<image "cursedpossessions/monkey-paw/monkeypaw-page.jpg" "iconPx">><br>
 	<span class="priceAmount">400$</span><br>
-	<<if $mc.money gte 400>>
+	<<if setup.Mc.money() gte 400>>
 		@@.buyItemLink;<<link "Buy" "WitchSale">>
 			<<run setup.Witch.unlockMonkeyPawWishes()>>
 		<</link>>@@<br>
@@ -116,13 +110,12 @@
 <</if>>
 </div>
 <div class="housecard">
-<<if ndef $boughtDetector>>
+<<if not setup.Witch.detectorBought()>>
 	<<image "img/detector.png" "iconPx">><br>
 	<span class="priceAmount">200$</span><br>
-	<<if $mc.money gte 200>>
+	<<if setup.Mc.money() gte 200>>
 		@@.buyItemLink;<<link "Buy" "WitchSale">>
-			<<set $boughtDetector to 1>>
-			<<set $mc.money -= 200>>
+			<<run setup.Witch.buyDetector()>>
 		<</link>>@@<br>
 	<<else>>@@.mc-thoughts; I don't have enough money@@
 	<</if>>

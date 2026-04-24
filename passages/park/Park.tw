@@ -10,7 +10,7 @@
 <<elseif setup.Park.joggingOnCooldown()>>
 	@@.mc-speech; Enough for today...@@<br>
 <<elseif setup.Park.hasEnergyToJog()>>
-	@@.enterbtn; [[Jogging|ParkJogging][$mc.energy -= 2]]<<image "img/energy.png" { style: "position: relative; top: 0.375em; width:20px;" }>> @@<br>
+	@@.enterbtn; [[Jogging|ParkJogging][setup.Park.spendJoggingEnergy()]]<<image "img/energy.png" { style: "position: relative; top: 0.375em; width:20px;" }>> @@<br>
 <<else>>
 	@@.mc-speech; Not enough energy@@ <<image "img/energy.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
 <</if>>

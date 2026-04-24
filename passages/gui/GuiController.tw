@@ -1,0 +1,139 @@
+:: GuiController [script]
+/*
+ * Centralized helpers for the persistent GUI overlays (Bag, Phone,
+ * Notebook, Evidence, ChangeLog, etc.). The shared overlays open
+ * from anywhere via the toolbar HUD and need to navigate back to
+ * wherever the player came from -- but they have to use <<back>>
+ * for in-event/post-contract returns and <<return>> otherwise to
+ * avoid stranding the player inside an event chain. Before this
+ * controller existed, every overlay re-derived that branch for
+ * itself, which led to drift when new "event-like" passages were
+ * added but only some overlays got patched.
+ */
+setup.Gui = (function () {
+	function v(name) { return State.variables; }
+
+	// True when the previous passage is tagged "event" -- those should
+	// resume via <<back>> through the event chain rather than jumping
+	// to $return. Any passage that ought to behave that way (including
+	// e.g. WitchEndContract) just needs the "event" tag in its header.
+	function useBackInsteadOfReturn() {
+		var prev = previous();
+		if (!prev) return false;
+		var tagList = tags(prev);
+		return Array.isArray(tagList) && tagList.indexOf('event') !== -1;
+	}
+
+	// --- Phone contacts -----------------------------------------
+	/* The three slots on the Phone passage all follow the same
+	   "if unlocked, show name+lvl+exp+portrait+text-her link, else
+	   show a hint + question mark" structure. The only differences
+	   are the unlock predicate, the locked hint, and the hunting
+	   guard (Brook also gates on the possession state). Returns
+	   one descriptor per slot in stable display order. */
+	function phoneContacts() {
+		var sv = State.variables;
+
+		function meetFlag(name) { return sv['meet' + name] !== undefined; }
+		function huntingAlone(name) { return sv['is' + name + 'GoingForHuntingAlone'] === 2; }
+
+		return [
+			{
+				key:           'brook',
+				stateKey:      'brook',
+				portrait:      'brook/brook.png',
+				infoPassage:   'BrookInfo',
+				lockedHint:    'Need to search in the library',
+				isUnlocked:    function () { return meetFlag('Brook'); },
+				isHuntingAlone: function () { return huntingAlone('Brook'); },
+				canText: function () {
+					return !setup.Library.brookIsPossessed()
+						&& !setup.Library.brookIsWithRain();
+				},
+				possessedHint: 'She\'s not answering... Strange, she usually responds right away...',
+				withRainHint:  'She\'s probably still with Rain. Maybe it\'s worth waiting a couple of days.',
+				isPossessed:   function () { return setup.Library.brookIsPossessed(); },
+				isWithRain:    function () { return setup.Library.brookIsWithRain(); }
+			},
+			{
+				key:           'alice',
+				stateKey:      'alice',
+				portrait:      'alice/alice.png',
+				infoPassage:   'AliceInfo',
+				lockedHint:    'Deliver books to the correct address',
+				isUnlocked:    function () { return meetFlag('Alice'); },
+				isHuntingAlone: function () { return huntingAlone('Alice'); },
+				canText:       function () { return true; },
+				possessedHint: '',
+				withRainHint:  '',
+				isPossessed:   function () { return false; },
+				isWithRain:    function () { return false; }
+			},
+			{
+				key:           'blake',
+				stateKey:      'blake',
+				portrait:      'blake/blake.png',
+				infoPassage:   'BlakeInfo',
+				lockedHint:    'Befriend the assistant at the sex shop <br>(Relationship 5+)',
+				isUnlocked:    function () { return (sv.relationshipBlake || 0) >= 5; },
+				isHuntingAlone: function () { return huntingAlone('Blake'); },
+				canText:       function () { return true; },
+				possessedHint: '',
+				withRainHint:  '',
+				isPossessed:   function () { return false; },
+				isWithRain:    function () { return false; }
+			}
+		];
+	}
+
+	// --- City-map night overlay --------------------------------
+	function isCityNightOverlayActive() {
+		var h = State.variables.hours;
+		return h >= 22 || (h >= 0 && h <= 5);
+	}
+
+	// --- Guide return-to passage ---------------------------------
+	// Guide/Evidence pages need to remember which passage opened them
+	// so the Back button can jump there. Stored in $guideReturnPassage.
+	function guideReturnPassage() { return State.variables.guideReturnPassage; }
+	function setGuideReturnPassage(n) { State.variables.guideReturnPassage = n; }
+
+	// --- Cursed hunt toggle --------------------------------------
+	function cursedHuntOptionOff() { return State.variables.cursedHuntOption === 1; }
+	function isCursedHuntOptionOn() {
+		var v = State.variables.cursedHuntOption;
+		return v === 0 || v === undefined;
+	}
+	function setCursedHuntOption(v) { State.variables.cursedHuntOption = v; }
+
+	// --- Tool speed (based on MC lvl) ----------------------------
+	// $timerToolsDecreased is the "tick" duration passed to the
+	// <<repeat>> macros that drive tool meters; it shortens as the
+	// player levels up. Writing here centralises the lookup so the
+	// scaling table lives in one place.
+	var TOOL_TIMER_BY_LVL = {
+		0: "1s", 1: "900ms", 2: "800ms", 3: "650ms",
+		4: "500ms", 5: "350ms", 6: "200ms"
+	};
+	function refreshToolTimer() {
+		var lvl = setup.Mc.lvl();
+		var t = TOOL_TIMER_BY_LVL[lvl];
+		State.variables.timerToolsDecreased = t || "150ms";
+	}
+
+	return {
+		useBackInsteadOfReturn:  useBackInsteadOfReturn,
+		phoneContacts:           phoneContacts,
+		isCityNightOverlayActive: isCityNightOverlayActive,
+		phoneBought: function () {
+			return State.variables.isPhoneBought !== undefined;
+		},
+		guideReturnPassage: guideReturnPassage,
+		setGuideReturnPassage: setGuideReturnPassage,
+		cursedHuntOptionOff: cursedHuntOptionOff,
+		isCursedHuntOptionOn: isCursedHuntOptionOn,
+		setCursedHuntOption: setCursedHuntOption,
+		refreshToolTimer: refreshToolTimer,
+		monkeyPawWishInput: function () { return State.variables.inputWish; }
+	};
+})();

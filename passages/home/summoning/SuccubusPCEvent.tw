@@ -1,6 +1,6 @@
 :: SuccubusPCEvent [nobr] {"position":"1350,2725","size":"100,100"}
-<<if ndef $succubusPCEventStage>>
-	<<set $succubusPCEventStage to 0>>
+<<if setup.Home.succubusPCEventStage() is undefined>>
+	<<run setup.Home.setSuccubusPCEventStage(0)>>
 <</if>>
 <<video "succubus/pc1.mp4">>
 @@.mc-thoughts; You're sitting at your computer, engrossed in work, when something suddenly catches your eye in your peripheral vision.@@<br>
@@ -9,43 +9,43 @@
 	<<image "succubus/pc1.jpg" { width: "100%" }>><br>
 	@@.mc-thoughts; Suddenly, a girl appears before you, her eyes piercing through you as if she knows all your secrets. She just stares at you, her gaze so intense that@@
 	<<linkappend "@@.usebtn; you feel the heat rise@@">>
-		<<if $succubusEventCD eq 2>>
+		<<if setup.Home.succubusEventCD() eq 2>>
 			<br>@@.mc-thoughts; In a moment, she disappears, leaving you with a sense of something unexplored.@@<br>
 			@@.mc-speech; WHAT the fuck just happened... I hope this ghost doesn't bother me anymore. Maybe I should ask how to get rid of it if it keeps haunting me.@@<br><br>
 			@@.backbtn; [[Leave|Livingroom]]@@<br>
-		<<elseif $succubusEventCD eq 0>>
-			<<set $succubusEventCD to 1>>
+		<<elseif setup.Home.succubusEventCD() eq 0>>
+			<<run setup.Home.setSuccubusEventCD(1)>>
 			<<video "succubus/pc3.mp4">>
 			@@.mc-thoughts; Her hands unexpectedly wrapping around you from behind, turning you to face the desk. She bends you over, making you lean on the table, your ass now exposed for her to see and touch. Her hands glide over your ass, squeezing it, making you shiver with surprise and arousal.@@<br>
 			@@.mc-speech;Oh... what are you doing?@@<br>
 			@@.mc-thoughts; She starts kissing your ass, her lips leaving trails of passion on your skin, her tongue touching your cheeks, making you@@
-			<<set $mc.lust to 100>>
+			<<run setup.Mc.setLust(100)>>
 			<<linkappend "@@.usebtn; tremble with pleasure@@">>
 				<<video "succubus/pc2.mp4">>
 				@@.mc-thoughts; Then, she slightly turns you, her mouth finds your pussy, her tongue begins to caress you, exploring every nook, making@@
 				<<linkappend "@@.usebtn; you moan with delight.@@">>
-					<<if $succubusPCEventStage eq 0>>
+					<<if setup.Home.succubusPCEventStage() eq 0>>
 						<<video "succubus/pcend.mp4">>
 						@@.mc-thoughts; But suddenly, you wake up. It was all just a dream, yet the satisfaction from what you experienced lingers, as if your body still holds the echo of those sensations.@@<br>
 						@@.mc-speech;Damn... that was such a real dream...@@<br>
-						<<if $mc.corruption lt 10>>
-							<<set $mc.corruption += 0.2>>
+						<<if setup.Mc.corruption() lt 10>>
+							<<run setup.Mc.addCorruption(0.2)>>
 							+0.2 <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>><br>
 						<</if>><br><br>
-						@@.backbtn; [[Leave|Livingroom][$succubusPCEventStage +=1]]@@
+						@@.backbtn; [[Leave|Livingroom][setup.Home.bumpSuccubusPCEventStage()]]@@
 					<<else>>
 						<<video "succubus/pc4.mp4">>
 						@@.mc-thoughts; She pulls you to your knees in front of her, guiding a dildo to your mouth, and she starts slowly fucking you with it, making you take it deeper with each thrust. You feel the wetness running down your legs, @@
 						<<linkappend "@@.usebtn; the arousal reaching its peak@@">>
-							<<if $succubusPCEventStage eq 1>>
+							<<if setup.Home.succubusPCEventStage() eq 1>>
 								<<video "succubus/pcend.mp4">>
 								@@.mc-thoughts; But suddenly, you wake up. It was all just a dream, yet the satisfaction from what you experienced lingers, as if your body still holds the echo of those sensations.@@<br>
 								@@.mc-speech;Damn... that was such a real dream...@@<br>
-								<<if $mc.corruption lt 10>>
-									<<set $mc.corruption += 0.2>>
+								<<if setup.Mc.corruption() lt 10>>
+									<<run setup.Mc.addCorruption(0.2)>>
 									+0.2 <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>><br>
 								<</if>><br><br>
-								@@.backbtn; [[Leave|Livingroom][$succubusPCEventStage +=1]]@@<br>
+								@@.backbtn; [[Leave|Livingroom][setup.Home.bumpSuccubusPCEventStage()]]@@<br>
 
 							<<else>>
 
@@ -64,15 +64,15 @@
 
 								@@.mc-thoughts; each movement bringing new sensations, penetrating you with such force and sensuality that you lose yourself. Each thrust brings a new wave of pleasure; you feel an@@
 								<<linkappend "@@.usebtn; orgasm approaching.@@">>
-									<<if $succubusPCEventStage eq 2>>
+									<<if setup.Home.succubusPCEventStage() eq 2>>
 										<<video "succubus/pcend.mp4">>
 										@@.mc-thoughts; But suddenly, you wake up. It was all just a dream, yet the satisfaction from what you experienced lingers, as if your body still holds the echo of those sensations.@@<br>
 										@@.mc-speech;Damn... that was such a real dream...@@<br>
-										<<if $mc.corruption lt 10>>
-											<<set $mc.corruption += 0.2>>
+										<<if setup.Mc.corruption() lt 10>>
+											<<run setup.Mc.addCorruption(0.2)>>
 											+0.2 <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>><br>
 										<</if>><br><br>
-										@@.backbtn; [[Leave|Livingroom][$succubusPCEventStage +=1]]@@<br>
+										@@.backbtn; [[Leave|Livingroom][setup.Home.bumpSuccubusPCEventStage()]]@@<br>
 									<<else>>
 										<<video "succubus/pcend1.mp4">>
 										@@.mc-thoughts; She kisses your lips, smiling, promising even more pleasure. In an instant, she vanishes, leaving you alone with your sensations.<br>
@@ -80,8 +80,8 @@
 										You lie there, savoring the orgasm that still ripples through your body, every cell quivering with pleasure. Some time passes, but you don't wake up as before, causing you to wonder@@<br>
 
 										@@.mc-speech; Is this not a dream? Fuck, I need to get rid of her, or she'll corrupt me completely...@@<br>
-										<<if $mc.corruption lt 10>>
-											<<set $mc.corruption += 0.2>>
+										<<if setup.Mc.corruption() lt 10>>
+											<<run setup.Mc.addCorruption(0.2)>>
 											+0.2 <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>><br>
 										<</if>><br><br>
 										@@.backbtn; [[Leave|Livingroom]]@@<br>

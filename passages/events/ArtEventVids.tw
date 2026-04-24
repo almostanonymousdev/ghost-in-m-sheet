@@ -1,21 +1,21 @@
 :: ArtEventVids [nobr] {"position":"1650,950","size":"100,100"}
-<<set $ghostSanityEventDecreased to (setup.Ghosts.active() ? setup.Ghosts.active().rollEventSanityLoss() : 0)>>
+<<run setup.Events.rollGhostSanityEventDecreased()>>
 <<roomBackground `previous()`>>
 
-<<video $artVideoEvent>><br>
+<<video setup.Events.artVideoEvent()>><br>
 <<run setup.activateTool("emf")>>
 <<run setup.activateTool("uvl")>>
 
-<<if ($mc.sanity >= 1 and $mc.sanity < 50)>>
+<<if (setup.Mc.sanity() >= 1 and setup.Mc.sanity() < 50)>>
 	@@.mc-thoughts; Something appeared and immediately grabbed you. It happened so quickly that in a moment you already feel a huge dick inside you. All this seemed illusory, but the feelings received from penetration into your holes were more than real. <br>The ghost hunter herself became a victim of a ghost. All you can do is moan from such injustice... or from pleasure@@<br>@@.mc-speech; AHh~ You can't do this to me ~Ohh~ please...@@<br>
 
-	<<if $mc.energy gte 1>>
-		@@.usebtn;[[Run away|previous()][$mc.energy -= 1]]@@ <span>-<<image "img/energy.png" { style: "position: relative; top: 0.375em; width:3%;" }>></span>
+	<<if setup.Events.hasEnergyToRunAway()>>
+		@@.usebtn;[[Run away|previous()][setup.Mc.addEnergy(-1)]]@@ <span>-<<image "img/energy.png" { style: "position: relative; top: 0.375em; width:3%;" }>></span>
 	<<else>>
 		@@.mc-thoughts; I'm too tired to run@@
 		<span>-<<image "img/energy.png" { style: "position: relative; top: 0.375em; filter: grayscale(1); width:3%;" }>></span>
 	<</if>>
-	or @@.usebtn;[[Embrace it|previous()][$mc.sanity -= $ghostSanityEventDecreased * setup.HauntConditions.eventSanityMultiplier(); setup.addLust(4)]]@@ <span>-<<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>> +<<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>></span>
+	or @@.usebtn;[[Embrace it|previous()][setup.Mc.addSanity(-setup.Events.ghostSanityEventDecreased() * setup.HauntConditions.eventSanityMultiplier()); setup.addLust(4)]]@@ <span>-<<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>> +<<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>></span>
 
 <</if>>
 <<done>>

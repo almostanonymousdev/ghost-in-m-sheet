@@ -3,9 +3,9 @@
 <div class="flexwrapper">
 <<for _h to 1; _h lte 16; _h++>>
 <<capture _h>>
-<div @class="'housecard rescuehousecard' + ($cheatRescueHouseHighlight && _h === $randomRescuePhotoNumber ? ' cheatRescueHighlight' : '')">
+<div @class="'housecard rescuehousecard' + (setup.MissingWomen.cheatRescueHouseHighlight() && _h === setup.MissingWomen.randomRescuePhotoNumber() ? ' cheatRescueHighlight' : '')">
 <<image "rescue/house/" + _h + ".jpg" "iconRescuePx">>
-@@.icontextcity;<<link "Move" "RescueHouse">><<set $rescueHouse to _h>>
+@@.icontextcity;<<link "Move" "RescueHouse">><<run setup.MissingWomen.setRescueHouse(_h)>>
 <</link>>@@
 </div>
 <</capture>>
@@ -13,6 +13,6 @@
 </div>
 <<include "StyleRescueMap">>
 
-<<if ($hours gte 22) or ($hours gte 0 and $hours lte 5)>>
+<<if setup.Gui.isCityNightOverlayActive()>>
 <<include "StyleRescueNightOverlay">>
 		<</if>>

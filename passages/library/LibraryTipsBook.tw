@@ -2,7 +2,7 @@
 <<nobr>>
 <<image "library/book.jpg" "libraryCenteredImg">><br>
 @@.mc-thoughts;You pull out a book titled "A Brief Guide to Ghost Hunting".@@ <br>
-<<set $foundTips to 1>>
+<<run setup.Library.markTipsBookFound()>>
 <<set _check to random(1,3)>>
 <<if _check eq 1>>
 Favorite Room<br>

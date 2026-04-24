@@ -2,7 +2,7 @@
 <<addLust 15>>
 <<randomVideo "church/4.mp4" "church/5.mp4">>
 @@.notmc-speech; Oh~ you're so hot, I'm going to cum soon@@<br>
-<<if $mc.lust gte 85>>
+<<if setup.Church.lustTooHighForPriest()>>
 	@@.mc-speech; Nooo, wait, I feel like I'm going to cum, fuck me <<linkappend "in the ass, please">>
 		<<randomVideo "church/6.mp4" "church/7.mp4">>
 		@@.mc-speech; Fuck ~I can feel every millimeter of your huge dick in my ass, so good~@@<br>

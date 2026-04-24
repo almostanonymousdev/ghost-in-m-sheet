@@ -35,7 +35,7 @@
 	*/
 	var DEFAULTS = {
 		sensualBodyPart: function () {
-			return { brain: 1, tits: 1, ass: 1, bottom: 1, mouth: 1, pussy: 1, anal: 1 };
+			return setup.Intro.defaultSensualBodyParts();
 		},
 		ghostSpecialEventSpiritCD:  function () { return 0; },
 		relationshipBlake:          function () { return 0; },
@@ -104,17 +104,7 @@
 		}
 
 		// clamp body-part sensitivity (old saves occasionally over-increment)
-		if (vars.sensualBodyPart && typeof vars.sensualBodyPart === 'object') {
-			Object.keys(vars.sensualBodyPart).forEach(function (part) {
-				var v = Number(vars.sensualBodyPart[part]);
-				if (!Number.isFinite(v)) {
-					vars.sensualBodyPart[part] = 1;
-				}
-				else if (v > 6) {
-					vars.sensualBodyPart[part] = 6;
-				}
-			});
-		}
+		setup.Intro.clampSensualBodyParts(vars.sensualBodyPart);
 
 		// hasPSpray/charges invariant: if charges are gone, the spray is gone
 		if (typeof vars.hasPSprayCharges === 'number' && vars.hasPSprayCharges <= 0) {

@@ -3,8 +3,8 @@
 @@.location; PornCore@@<br>
 @@.mc-thoughts; I don't think it's worth explaining what this is for. Here I can relax a little@@<br>
 
-<<if $masturbationCD eq 0 or ndef $masturbationCD>>
-	<<if $gotCursedItem eq 1 and $gotCursedItemEventCD gte 2>>
+<<if setup.Home.masturbationAvailable()>>
+	<<if setup.Home.tentaclesPCEventReady()>>
 		@@.enterbtn;[[Watch porn|TentaclesEventPC]]@@<br>
 	<<else>>
 		@@.enterbtn;[[Watch porn|WatchPorn]]@@<br>
@@ -12,12 +12,12 @@
 <<else>>
 	@@.mc-thoughts; Too much for today...@@<br>
 <</if>>
-<<if ndef $webcamAccountCreated and $isCameraBought eq 1>>
+<<if not setup.Home.webcamAccountCreated() and setup.Home.cameraBought()>>
 	@@.enterbtn; <<linkreplace "Click on the ad banner">>
 		@@.mc-thoughts; When you clicked on the link, you landed on a site for webcam shows. The site was flashy and inviting, filled with lots of images and videos. You saw naked women performing explicit shows live. The models were getting tips for their performances.  The thought of trying out as a webcam model and making money from it began to swirl around in your mind.@@<br>
 		@@.mc-speech; Why not? I do have a webcam, after all... might as well put it to use. @@<br>
 		@@.mc-thoughts; You created your profile on the site.@@<br>
-		<<set $webcamAccountCreated to 1>>
+		<<run setup.Home.createWebcamAccount()>>
 		<br>
 		@@.mc-action; Now you can do live webcam shows.@@<br>
 	<</linkreplace>>@@<br>

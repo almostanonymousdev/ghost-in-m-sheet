@@ -1,6 +1,6 @@
 :: SuccubusEventTV [nobr] {"position":"1450,2725","size":"100,100"}
 <<image "succubus/1.jpg" { width: "100%" }>><br>
-<<set $succubusEventCD to 1>>
+<<run setup.Home.setSuccubusEventCD(1)>>
 @@.mc-thoughts; You've been watching TV for a while.@@<br>
 @@.mc-speech; Ah~ so boring.@@<br>
 <<linkreplace "@@.usebtn; Entertain yourself@@">>
@@ -34,7 +34,7 @@
 
 			@@color:red; Well, that's enough for you today.@@<br>
 			<br>
-			@@.backbtn; [[You pass out|Sleep][$succubusTVText to 1]]@@<br>
+			@@.backbtn; [[You pass out|Sleep][setup.Home.setSuccubusTVText(1)]]@@<br>
 
 		<</linkappend>>
 	<</linkappend>>

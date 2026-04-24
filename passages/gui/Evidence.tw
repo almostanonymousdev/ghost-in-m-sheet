@@ -233,14 +233,12 @@ TM & © 2026 WoMan Co. All rights reserved
 </section>
 </div>
 
-<<if (previous() eq "Guide") and (def $guideReturnPassage)>>
+<<if (previous() eq "Guide") and setup.Gui.guideReturnPassage()>>
 	@@.backbtn;<<link "Back">>
-		<<goto $guideReturnPassage>>
+		<<goto `setup.Gui.guideReturnPassage()`>>
 	<</link>>@@<br>
-<<elseif (previous() eq "WitchEndContract") or (tags(previous()).includes("event"))>>
-	@@.backbtn;<<back>>@@<br>
 <<else>>
-	@@.backbtn;<<return>>@@<br>
+	<<backOrReturn>>
 <</if>>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>

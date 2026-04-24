@@ -1,5 +1,5 @@
 :: TentaclesEventTV [nobr] {"position":"1000,4300","size":"100,100"}
-<<set $gotCursedItemEventCD to 0>>
+<<run setup.Home.resetTentaclesCooldown()>>
 <<image "tentacles/tv1.jpg" { width: "100%" }>><br>
 @@.mc-thoughts; You're sitting in front of the TV, trying to kill time@@<br><br>
 <span id="tentaclesEventTVHidOpt">@@.usebtn; [[Leave|Livingroom]]@@ or </span><<linkreplace "@@.usebtn; Masturbate@@">>
@@ -10,10 +10,10 @@
 	<<linkappend "@@.usebtn; moan with delight.@@">>
 		<<image "tentacles/tv3.jpg" { width: "100%" }>><br>
 		@@.mc-thoughts;Suddenly, as if by magic, tentacles appear on you, slick and flexible, as if they've been waiting for this moment.@@<br>
-		<<if $tentaclesEventStageAll gte 2>>
+		<<if setup.Home.tentaclesStageAll() gte 2>>
 			@@.usebtn; [[Let them fuck you|TentaclesEventTV1]]@@ or @@.usebtn; [[Run away|Livingroom]]@@
 		<<else>>
-			@@.usebtn; [[Run away|Livingroom][$tentaclesEventPCText to 1]]@@<br>
+			@@.usebtn; [[Run away|Livingroom][setup.Home.setTentaclesPCText(1)]]@@<br>
 		<</if>>
 	<</linkappend>>
 <</linkreplace>>

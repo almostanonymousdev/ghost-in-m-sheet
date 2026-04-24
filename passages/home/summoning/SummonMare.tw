@@ -19,6 +19,6 @@
 	@@.mc-thoughts; Your voice breaking with desire as the tongue masterfully teases you. The sensation is maddening, pushing you@@ <<linkappend "@@.usebtn; closer and closer to the edge@@">>
 		<<video "exorcism/mare5.mp4">>
 		@@.mc-thoughts; Your body is rocked by an orgasm, and you pass out, falling back into sleep.@@<br><br>
-		@@.backbtn; [[You pass out|CityMapPossessed][$ghostMareEventStart to 0]]@@<br>
+		@@.backbtn; [[You pass out|CityMapPossessed][setup.Home.setMareEventStartValue(0)]]@@<br>
 	<</linkappend>>
 <</linkappend>>

@@ -4,4 +4,4 @@
 @@.mc-speech; Oh my god, I can't take it anymore...@@<br>
 @@.notmc-speech; Cum, slut, you want it,  don't you? @@<br>
 @@.mc-speech; Yes~ Oh my~Ahhh@@<br>
-@@.mc-thoughts; A shock of pleasure went through your whole body and you [[passed out|Church][$hours += 3]]@@
+@@.mc-thoughts; A shock of pleasure went through your whole body and you [[passed out|Church][setup.MissingWomen.sleepOffHoursAfterEvent()]]@@

@@ -1,14 +1,14 @@
 :: RescueClueFound [nobr] {"position":"2075,1600","size":"100,100"}
 @@.mc-thoughts; You notice someone's EMF reader. Next to it, there's a small torn piece of a photo.<br>
 Your EMF reader spikes the moment you bring it close to the @@<<linkappend "@@.usebtn;fragment of the old photo.@@">>
-	<<set $hasRescueClue to 1>>
-	<<image 'rescue/house/'+$randomRescuePhotoNumber+`.jpg` { class: $tornStyleRandom+` displayCentredImgs`, width: "50%" }>>
+	<<run setup.MissingWomen.setRescueClueFound()>>
+	<<image 'rescue/house/' + setup.MissingWomen.randomRescuePhotoNumber() + '.jpg' { class: setup.MissingWomen.tornStyleRandom() + ' displayCentredImgs', width: "50%" }>>
 	<br>@@.mc-speech; Hmm, this place looks familiar... but I can't quite remember where I've seen it.<br>
 	Clearly, this photo is somehow connected to the ghost and the missing girl.@@<br>
 	<br>
 
 	@@.mc-action; You found a piece of an old photo.@@<br><br>
-	<<if $equipment.emf neq 3>><<set $equipment.emf to 3>>
+	<<if setup.MissingWomen.emfLevel() neq 3>><<run setup.MissingWomen.upgradeEmfToLvl3()>>
 		@@.mc-action; You picked up an EMF reader <<image "img/emf.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> (Level 3).@@
 	<</if>>
 	<br><br>

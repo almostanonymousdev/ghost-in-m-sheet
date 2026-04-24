@@ -13,7 +13,7 @@
 <br>
 <<if setup.MonkeyPaw.doorUnlockBy() eq "dawn">>
 	@@.mc-speech; The paw's hold on this door will break with the first grey light. I need to wait it out.@@<br>
-	@@.mc-thoughts; Current time: $hours:<<= ($minutes < 10 ? "0" : "") + $minutes>>.@@<br>
+	@@.mc-thoughts; Current time: <<= setup.Time.display()>>.@@<br>
 	<br>
 	@@.backbtn; <<link "Back to the hallway" `previous()`>>
 	<</link>>@@
@@ -44,13 +44,7 @@
 @@.mc-speech; The door swallows the cursed thing whole. The wood breathes out, and the latch gives.@@<br>
 @@.mc-action; You step outside.@@<br>
 <br>
-<<set _street to null>>
-<<if $isElm eq 1>>
-	<<set _street to "Elm Street">>
-<</if>>
-<<if $isOwaissa eq 1>>
-	<<set _street to "Owaissa Street">>
-<</if>>
+<<set _street to setup.HauntedHouses.activeStreetPassage()>>
 <<if _street>>
 	<<link "@@.usebtn; Outside@@" _street>>
 	<</link>>
@@ -73,13 +67,7 @@
 @@.mc-speech; The paw is satisfied. The air unclenches.@@<br>
 <<run setup.MonkeyPaw.sacrificeCursedItemForDoor()>>
 <br>
-<<set _street to null>>
-<<if $isElm eq 1>>
-	<<set _street to "Elm Street">>
-<</if>>
-<<if $isOwaissa eq 1>>
-	<<set _street to "Owaissa Street">>
-<</if>>
+<<set _street to setup.HauntedHouses.activeStreetPassage()>>
 <<if _street>>
 	<<link "@@.usebtn; Step outside@@" _street>>
 	<</link>>
@@ -106,28 +94,12 @@
 <br>
 <<timed 2s>>
 	@@.mc-action; <<= _companionName>> returns, white-faced, holding something wrapped in a shirt. The shape beneath the cloth wriggles.@@<br>
-	<<set $gotCursedItem to 1>>
-	<<set _pick to random(1, 4)>>
-	<<if _pick eq 1>>
-		<<set $isCIDildo to 1>>
-	<<elseif _pick eq 2>>
-		<<set $isCIButtplug to 1>>
-	<<elseif _pick eq 3>>
-		<<set $isCIBeads to 1>>
-	<<else>>
-		<<set $isCIHDildo to 1>>
-	<</if>>
+	<<run setup.HauntedHouses.rollCompanionCursedItem()>>
 	<<run setup.MonkeyPaw.sacrificeCursedItemForDoor()>>
 	<br>
 	@@.mc-speech; They took it to the door. The house let us out.<br>I owe <<= _companionName>> everything.@@<br>
 	<br>
-	<<set _street to null>>
-	<<if $isElm eq 1>>
-		<<set _street to "Elm Street">>
-	<</if>>
-	<<if $isOwaissa eq 1>>
-		<<set _street to "Owaissa Street">>
-	<</if>>
+	<<set _street to setup.HauntedHouses.activeStreetPassage()>>
 	<<if _street>>
 		<<link "@@.usebtn; Step outside@@" _street>>
 		<</link>>
@@ -149,12 +121,7 @@
 <br>
 @@.mc-speech; I can't fight it. I can't outlast it. Fine. Take it.@@<br>
 @@.mc-action; You slip out of your clothes and let them fall. The ghost is already closer than it was a moment ago.@@<br>
-<<set $tshirtState to "not worn">>
-<<set $jeansState to "not worn">>
-<<set $skirtState to "not worn">>
-<<set $shortsState to "not worn">>
-<<set $pantiesState to "not worn">>
-<<set $braState to "not worn">>
+<<run setup.HauntedHouses.stripToNaked()>>
 <br>
 @@.enterbtn; <<link "Close your eyes" "HuntOverSanity">>
 <</link>>@@
@@ -172,7 +139,7 @@
 <br>
 <<addSanity -20>>
 @@.mc-thoughts; Sanity decreased: -20@@<br>
-<<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
+<<updatemeter 'sanity' `setup.Mc.sanityPct()`>>
 @@.mc-action; Silence -- then footsteps. Heavy ones. The house heard me.@@<br>
 <br>
 @@.enterbtn; <<link "Brace yourself" "GhostHuntEvent">>

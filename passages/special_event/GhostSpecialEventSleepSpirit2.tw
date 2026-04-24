@@ -1,5 +1,5 @@
 :: GhostSpecialEventSleepSpirit2 [nobr] {"position":"750,2550","size":"100,100"}
-<<set $ghostSpiritEventStage to 1>>
+<<run setup.SpecialEvent.markSpiritEventStage()>>
 <<video "ghosts/specials/spirit4.2.mp4">>
 @@.mc-thoughts;Gradually, you feel something penetrating your pussy. Fatigue and drowsiness cloud your mind, and you can't clearly understand what's happening. Instead, a strange sensation in your sweet slit becomes increasingly pleasant. You feel how this touch brings unexpected waves of pleasure, and your body starts to respond to them. You let yourself relax and enjoy these warm and sweet sensations @@ <<linkappend "@@.usebtn; as sleep envelops you more deeply@@">>
 	<<video "ghosts/specials/spirit4.3.mp4">>

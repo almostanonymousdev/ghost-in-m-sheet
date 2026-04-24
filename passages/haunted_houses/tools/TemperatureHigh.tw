@@ -10,7 +10,7 @@ to a random 0..50 value on tier <= 4 thermometers. */
 <<set _inGhostRoom to setup.isGhostHere()>>
 <<set _hg to setup.Ghosts.active()>>
 <<set _hasTempEvidence to _hg and _hg.hasEvidence("temperature")>>
-<<set _tier to $equipment.temperature>>
+<<set _tier to setup.ToolController.tierOf("temperature")>>
 
 <<if _inGhostRoom and _hasTempEvidence>>
 	<<set _offset to 8>>
@@ -24,6 +24,6 @@ to a random 0..50 value on tier <= 4 thermometers. */
 <</if>>
 
 <<set _glitch to (_hg and _hg.rollTemperatureGlitch())>>
-<<set _reading to _glitch ? random(0, 50) : (random(13, 16) + $temperature + _offset)>>
+<<set _reading to _glitch ? random(0, 50) : (random(13, 16) + setup.Time.temperature() + _offset)>>
 
 <span class="toolsTextCentered boldText"><<coloredText _color _reading>></span>

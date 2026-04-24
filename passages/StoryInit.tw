@@ -1,42 +1,6 @@
 :: StoryInit {"position":"100,100","size":"100,100"}
 <<run setup.ImagePath = "asset-placeholders">>
-<<set $sanityIfHot to 0.3>>
-<<set $sanityInTheDark to 0.5>>
-<<set $orgasmCooldownSteps to 0>>
-<<set $tempCorr to 0>>
-<<set $percentageOfLevel to 0>>
-<<set $neededForNextLevel to 100>>
-<<set $makeupAmount to 0>>
-<<set $makeupApplied to 0>>
-<<set $energyDrinkAmount to 0>>
-<<set $tools to { emf: { activated: 0, activationTime: 0 }, uvl: { activated: 0, activationTime: 0 } }>>
-<<set $hunt to null>>
-<<set $cheatBackForward to false>>
-<<set $temperature to 0>>
-<<set $meridiem to "AM">>
-<<set $hours to 12>>
-<<set $minutes to 0>>
-<<set $spiritboxLvl to 1>>
-<<set $deliveryActiveIcon1 to true>>
-<<set $deliveryActiveIcon2 to true>>
-<<set $deliveryActiveIcon3 to true>>
-<<set $earnedMoney to 0>>
-<<set $currentHouse to "">>
-<<set $firstVisitDeliveryHub = true>>
-<<set $firstVisitWitchShop = true>>
-<<set $jobMoneySuccessed to 10>>
-<<set $jobMoneyFailed to 3>>
-<<set $deliveryCompletedShifts to 0>>
-<<set $deliveryCorrectThisShift to 0>>
-<<set $deliveryStreak to 0>>
-<<set $deliveryBestStreak to 0>>
-<<set $deliveryReputationLevel to 0>>
-<<set $deliveryTotalTips to 0>>
-<<set $deliveryVisitCounts to {}>>
-<<set $deliverySpecialOrder to false>>
-<<set $deliverySpecialOrderAddress to "">>
-<<set $deliverySpecialOrderPay to 0>>
-<<set $deliverySpecialOrderType to "safe">>
+<<run setup.Game.initState()>>
 <<run setup.deliveryHouses = {
 	"Honeywood Court 3":    "house1.jpg",
 	"Onyx Place 10":        "house2.jpg",
@@ -69,52 +33,11 @@
 	"",                  "Cascade Avenue 56", "",                   "Jasmine Lane 89",     "Golden Road 34",
 	"Twilight Boulevard 61","",               "Amethyst Street 42", "",                    ""
 ]>>
-<<set $equipment to {
-	emf:5,
-    spiritbox:5,
-    gwb:5,
-    glass:5,
-    temperature:5,
-    uvl:5,
-}>>
-<<set $mc to {
-name: "",
-makeupImg: 0,
-money: 100,
-sanity:100,
-corruption:0,
-lust:0,
-energy:10,
-energyMax:10,
-lvl: 0,
-exp: 0,
-dirty:0,
-beauty: 30,
-}>>
-
-/*CURSED HOME ITEMS*/
-<<set $cursedHomeItem to "">>
-<<set $cursedHomeItemActive to 0>>
-
-/*CLOTHES*/
-<<set $jeansState to "worn">>
-<<set $tshirtState to "worn">>
-<<set $pantiesState to "worn">>
-<<set $braState to "worn">>
-<<set $skirtState to "not bought">>
-
-----------------------------------------------------------------------------------------
-
-----------
-
-<<run ["kitchen", "bathroom", "bedroom", "hallway", "livingroom"].forEach(function(name) {
-	State.variables[name] = {
-		name: name,
-		emf: "", glass: "", uvl: "", temperature: "", spiritbox: "", gwb: "",
-		background: 2
-	};
-})>>
-
+/* Meter definitions. SugarCube's <<newmeter>> needs literal label
+   strings that reference state variables; these are internal bindings
+   the framework evaluates on each render, not reads performed by
+   passage logic. They live here because <<newmeter>> must be called
+   from StoryInit. */
 <<newmeter 'energy'>>
     <<sizing '220px'>>
     <<colors #d8f22c>>
@@ -124,9 +47,7 @@ beauty: 30,
 <<newmeter 'sanity'>>
     <<sizing '220px'>>
     <<label '$mc.sanityUp'>>
- <</newmeter>>
- ------------------------------------------------------------
- /*Tools meters (one per room × tool)*/
+<</newmeter>>
 <<for _room range ["Kitchen", "Hallway", "Bathroom", "Livingroom", "Bedroom"]>>
 <<for _tool range ["Emf", "Plasm", "Uvl", "Temperature", "Gwb", "Spiritbox"]>>
 <<newmeter `"search" + _room + _tool`>>
@@ -136,7 +57,7 @@ beauty: 30,
 <</for>>
 <</for>>
 
-<<newmeter 'xpBar' $mc.exp>>
+<<newmeter 'xpBar' setup.Mc.exp()>>
     <<label '$percentageOfLevel %'>>
     <<colors 'green'>>
     <<sizing '50%' 20px>>

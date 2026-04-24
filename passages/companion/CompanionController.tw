@@ -142,6 +142,19 @@ setup.Companion = (function () {
 		}
 	];
 
+	// Sanity threshold below which the active companion leaves you mid-event
+	// for a given level. Index by companion lvl (1..5+). Was duplicated three
+	// times in PassageDone (one block per cis companion) and once more inline
+	// for trans companions (always 0); centralised here so adding a new tier
+	// is a single edit. lvl >= 5 is "no floor": trust is total.
+	var SANITY_CAP_BY_LEVEL = [75, 75, 50, 25, 0, 0];
+
+	function sanityCapForLevel(lvl) {
+		if (typeof lvl !== 'number' || lvl < 1) return SANITY_CAP_BY_LEVEL[0];
+		if (lvl >= SANITY_CAP_BY_LEVEL.length) return 0;
+		return SANITY_CAP_BY_LEVEL[lvl];
+	}
+
 	// Shared stat defaults baked into every fresh $brook/$alice/$blake
 	// companion state. Per-companion overrides live in COMPANION_CONFIG's
 	// initStats field. Kept out of the catalogue entries because the fields
@@ -366,6 +379,9 @@ setup.Companion = (function () {
 		canAffordSoloContract: function () {
 			return mc().money >= 20;
 		},
+		cannotAffordSoloContract: function () {
+			return mc().money < 20;
+		},
 		payForSoloContract: function (prefix) {
 			var s = State.variables;
 			var key = "payForHuntAlone" + prefix;
@@ -412,6 +428,43 @@ setup.Companion = (function () {
 				&& this.inHauntedHouseLocation();
 		},
 
+		// --- Per-tick progression (called from PassageDone) -------
+		/* For each cis companion (hasExpSystem true) with stat object on
+		   $<key>, roll any banked exp into level-ups while lvl < 5, then
+		   refresh maxSanityCap from the new level. Trans companions are
+		   already at lvl 5 with no exp track and use a flat 0 cap. */
+		tickAllCompanionProgression: function () {
+			COMPANIONS.forEach(function (c) {
+				if (!c.hasExpSystem) return;
+				var stats = c.state();
+				if (!stats) return;
+				while (stats.lvl < 5 && stats.exp >= stats.expForNextLvl) {
+					stats.exp -= stats.expForNextLvl;
+					stats.lvl += 1;
+					stats.expForNextLvl = 20 + stats.lvl * 20;
+				}
+				stats.maxSanityCap = sanityCapForLevel(stats.lvl);
+			});
+		},
+		sanityCapForLevel: sanityCapForLevel,
+		/* Sanity cap that triggers "companion leaves" mid-event. Cis
+		   companions key off their own lvl; trans companions tolerate
+		   any non-zero sanity. */
+		activeCompanionSanityCap: function () {
+			var c = this.active();
+			if (!c) return 0;
+			if (!c.hasExpSystem) return 0;
+			var stats = c.state();
+			return stats ? sanityCapForLevel(stats.lvl) : 0;
+		},
+		activeCompanionShouldLeave: function () {
+			var c = this.active();
+			if (!c) return false;
+			var live = State.variables.companion;
+			if (!live || typeof live.sanity !== 'number') return false;
+			return live.sanity <= this.activeCompanionSanityCap();
+		},
+
 		// --- Street-passage "see your companion" test ------------
 		companionAtStreet: function () {
 			return v('isCompChosen') === 1
@@ -419,6 +472,476 @@ setup.Companion = (function () {
 				&& v('chosenPlan') !== 'Plan2'
 				&& v('chosenPlan') !== 'Plan3'
 				&& v('chosenPlan') !== 'Plan4';
+		},
+
+		// --- StoryCaption / HUD helpers ---------------------------
+		shouldRenderMini: function () {
+			return v('showComp') === 1 || v('showComp') === 3;
+		},
+		showComp: function () { return v('showComp'); },
+		transPicture: function () { return v('transPicture'); },
+		sanityPercent: function () {
+			var c = comp();
+			return c ? c.sanity / 100 : 0;
+		},
+		drainSanity: function (n) {
+			var c = comp();
+			if (c) { c.sanity -= n; }
+		},
+		addLust: function (n) {
+			var c = comp();
+			if (c) { c.lust += n; }
+		},
+		cheatSetLvl: function (key, lvl) {
+			var obj = v(key);
+			if (obj) { obj.lvl = lvl; }
+		},
+
+		// --- Solo-hunt success chances --------------------------
+		// Per-companion skill curve: level -> {owaissa, elm} success %.
+		// The same table drove three near-identical branches (one in
+		// each Companion Info passage) before this centralisation.
+		// Index by lvl: 0/1 defaults to 0%.
+		SOLO_SKILL_CURVE: {
+			Brook: { 2: [25, 10], 3: [40, 25], 4: [55, 40], 5: [70, 55] },
+			Alice: { 2: [20, 10], 3: [40, 20], 4: [50, 40], 5: [75, 65] },
+			Blake: { 2: [25, 10], 3: [40, 25], 4: [55, 40], 5: [70, 55] }
+		},
+		/* Roll & stash the per-street solo-hunt odds for the given
+		   cis companion into the backing save-field names so the
+		   link labels can still interpolate them. Called on Info
+		   passage entry. */
+		refreshSoloOdds: function (name) {
+			var lvl = (v(name.toLowerCase()) || {}).lvl || 0;
+			var table = this.SOLO_SKILL_CURVE[name] || {};
+			var tier = lvl >= 5 ? 5 : (lvl >= 4 ? 4 : (lvl >= 3 ? 3 : (lvl >= 2 ? 2 : 0)));
+			var pair = table[tier] || [0, 0];
+			State.variables['chanceToSuccessAloneOwaissa' + name] = pair[0];
+			State.variables['chanceToSuccessAloneElm' + name] = pair[1];
+		},
+		soloOdds: function (name, street) {
+			var suffix = street === 'Owaissa' ? 'Owaissa' : 'Elm';
+			return v('chanceToSuccessAlone' + suffix + name);
+		},
+
+		// --- Pick companion for tonight's hunt ------------------
+		// Clone the specified companion's stats onto $companion,
+		// clear all other selection flags, reset chosenPlan and
+		// per-companion solo-hunt bookkeeping.
+		pickCisCompanion: function (name) {
+			var s = State.variables;
+			s.companion = clone(s[name.toLowerCase()]);
+			this.selectCompanion(name);
+			s.chosenPlan = 0;
+			s['is' + name + 'GoingForHuntingAlone'] = 0;
+			s[name.toLowerCase() + 'ChooseOwaissa'] = 0;
+			s[name.toLowerCase() + 'ChooseElm'] = 0;
+		},
+		deselectCisCompanion: function (name) {
+			State.variables['isCompChosen' + name] = 0;
+		},
+		// Send the given companion solo to `street` (either
+		// "Owaissa" or "Elm"). Pays the 20$ solo-contract fee from
+		// $mc.money if not already paid this run, and stamps the
+		// street-choice flag. Callers should gate on
+		// canAffordSoloContract() for the warning path.
+		sendCompanionSolo: function (name, street) {
+			var s = State.variables;
+			var key = name.toLowerCase();
+			s[key + 'ChooseOwaissa'] = (street === 'Owaissa') ? 1 : 0;
+			s[key + 'ChooseElm'] = (street === 'Elm') ? 1 : 0;
+			s['is' + name + 'GoingForHuntingAlone'] = 1;
+			this.payForSoloContract(name);
+		},
+
+		// --- Per-companion state accessors ----------------------
+		companionLvl: function (name) {
+			var obj = v(name.toLowerCase());
+			return obj ? obj.lvl : 0;
+		},
+		companionExp: function (name) {
+			var obj = v(name.toLowerCase());
+			return obj ? obj.exp : 0;
+		},
+		companionExpForNextLvl: function (name) {
+			var obj = v(name.toLowerCase());
+			return obj ? obj.expForNextLvl : 0;
+		},
+		isCompChosen: function (name) {
+			return v('isCompChosen' + name) === 1;
+		},
+		isCompanionFlagActive: function () { return v('isCompChosen') === 1; },
+		markCompanionFlagActive: function () { State.variables.isCompChosen = 1; },
+		pegActiveLust: function (n) {
+			var c = comp();
+			if (c) c.lust = n;
+		},
+		isCompanionGoingSoloHunting: function (name) {
+			return v('is' + name + 'GoingForHuntingAlone') === 1;
+		},
+		isCompanionFinishedSoloHunting: function (name) {
+			return v('is' + name + 'GoingForHuntingAlone') === 2;
+		},
+		/* Pick a video/image descriptor for the CompanionEvent
+		   passage. Each companion has a 4-tier sanity ladder
+		   (75+, 50–74, 25–49, 0–24); some tiers split further on
+		   companion lust or recent-ElmBasement flag. The full
+		   table lived as ~200 lines of branching inside
+		   CompanionEvent; encoded here so the passage reduces to
+		   "pick, store, render". Returns {src, type:"video"/"image"}. */
+		pickEventMedia: function () {
+			var c = comp(); if (!c) return null;
+			var sanity = c.sanity;
+			var lust = c.lust;
+			var inElm = previous() === 'ElmBasement';
+			var BROOK = {
+				high: inElm
+					? [{type:"image",src:"brook/1.6.jpg"},{type:"image",src:"brook/1.7.jpg"},{type:"video",src:"brook/1.8.mp4"}]
+					: [{type:"image",src:"brook/1.0.jpg"},{type:"image",src:"brook/1.1.jpg"},{type:"video",src:"brook/1.2.mp4"},{type:"video",src:"brook/1.3.mp4"},{type:"video",src:"brook/1.4.mp4"},{type:"video",src:"brook/1.5.mp4"}],
+				mid: inElm
+					? [{type:"video",src:"brook/2.5.mp4"},{type:"video",src:"brook/2.6.mp4"},{type:"video",src:"brook/2.7.mp4"},{type:"video",src:"brook/2.8.mp4"}]
+					: [{type:"video",src:"brook/2.0.mp4"},{type:"video",src:"brook/2.1.mp4"},{type:"video",src:"brook/2.2.mp4"},{type:"video",src:"brook/2.3.mp4"},{type:"image",src:"brook/2.4.jpg"}],
+				low: inElm
+					? [{type:"video",src:"brook/3.6.mp4"},{type:"video",src:"brook/3.7.mp4"}]
+					: [{type:"video",src:"brook/3.0.mp4"},{type:"video",src:"brook/3.1.mp4"},{type:"video",src:"brook/3.2.mp4"},{type:"video",src:"brook/3.3.mp4"}],
+				crit: inElm
+					? [{type:"video",src:"brook/4.4.mp4"},{type:"video",src:"brook/4.5.mp4"},{type:"video",src:"brook/4.6.mp4"},{type:"video",src:"brook/4.7.mp4"}]
+					: [{type:"video",src:"brook/4.0.mp4"},{type:"video",src:"brook/4.1.mp4"},{type:"video",src:"brook/4.2.mp4"},{type:"video",src:"brook/4.3.mp4"}]
+			};
+			var ALICE = {
+				high: [{type:"image",src:"alice/1.0.jpg"},{type:"video",src:"alice/1.1.mp4"},{type:"video",src:"alice/1.2.mp4"},{type:"video",src:"alice/1.3.mp4"},{type:"image",src:"alice/1.4.jpg"},{type:"video",src:"alice/1.5.mp4"}],
+				mid: lust < 50
+					? [{type:"video",src:"alice/2.0.mp4"},{type:"video",src:"alice/2.1.mp4"},{type:"video",src:"alice/2.2.mp4"},{type:"video",src:"alice/2.3.mp4"},{type:"video",src:"alice/2.4.mp4"},{type:"video",src:"alice/2.5.mp4"}]
+					: [{type:"video",src:"alice/2.6.mp4"},{type:"video",src:"alice/2.7.mp4"},{type:"video",src:"alice/2.8.mp4"},{type:"video",src:"alice/2.9.mp4"},{type:"video",src:"alice/2.10.mp4"},{type:"video",src:"alice/2.11.mp4"},{type:"video",src:"alice/2.12.mp4"}],
+				low: lust < 50
+					? (inElm
+						? [{type:"video",src:"alice/3.5.mp4"},{type:"video",src:"alice/3.6.mp4"},{type:"video",src:"alice/3.7.mp4"}]
+						: [{type:"video",src:"alice/3.0.mp4"},{type:"video",src:"alice/3.1.mp4"},{type:"video",src:"alice/3.2.mp4"},{type:"video",src:"alice/3.3.mp4"},{type:"video",src:"alice/3.4.mp4"}])
+					: [{type:"video",src:"alice/3.8.mp4"},{type:"video",src:"alice/3.9.mp4"},{type:"video",src:"alice/3.10.mp4"},{type:"video",src:"alice/3.11.mp4"},{type:"video",src:"alice/3.12.mp4"}],
+				crit: lust < 50
+					? [{type:"video",src:"alice/4.0.mp4"},{type:"video",src:"alice/4.1.mp4"},{type:"video",src:"alice/4.2.mp4"},{type:"video",src:"alice/4.3.mp4"},{type:"video",src:"alice/4.4.mp4"},{type:"video",src:"alice/4.5.mp4"}]
+					: [{type:"video",src:"alice/4.6.mp4"},{type:"video",src:"alice/4.7.mp4"},{type:"video",src:"alice/4.8.mp4"},{type:"video",src:"alice/4.9.mp4"},{type:"video",src:"alice/4.10.mp4"},{type:"video",src:"alice/4.11.mp4"}]
+			};
+			var BLAKE = {
+				high: [{type:"video",src:"blake/1.1.mp4"},{type:"video",src:"blake/1.2.mp4"},{type:"video",src:"blake/1.3.mp4"},{type:"video",src:"blake/1.4.mp4"},{type:"video",src:"blake/1.5.mp4"}],
+				mid:  [{type:"video",src:"blake/2.0.mp4"},{type:"video",src:"blake/2.1.mp4"},{type:"video",src:"blake/2.2.mp4"},{type:"video",src:"blake/2.3.mp4"},{type:"video",src:"blake/2.4.mp4"},{type:"video",src:"blake/2.5.mp4"}],
+				low:  [{type:"video",src:"blake/3.0.mp4"},{type:"video",src:"blake/3.1.mp4"},{type:"video",src:"blake/3.2.mp4"},{type:"video",src:"blake/3.3.mp4"},{type:"video",src:"blake/3.4.mp4"}],
+				crit: [{type:"video",src:"blake/4.0.mp4"},{type:"video",src:"blake/4.1.mp4"},{type:"video",src:"blake/4.2.mp4"},{type:"video",src:"blake/4.3.mp4"},{type:"video",src:"blake/4.4.mp4"},{type:"video",src:"blake/4.5.mp4"},{type:"video",src:"blake/4.6.mp4"},{type:"video",src:"blake/4.7.mp4"},{type:"video",src:"blake/4.8.mp4"}]
+			};
+			// Trans companions share a tease/bj/sex video directory
+			// structure with per-index variants (1=Alex, 2=Taylor,
+			// 3=Casey). Helper generates the list for a given base
+			// index and count.
+			function transVids(base, dir, maxIndex) {
+				var out = [];
+				for (var i = 0; i <= maxIndex; i++) {
+					out.push({type:"video",src:"trans/"+dir+"/"+base+"."+i+".mp4"});
+				}
+				return out;
+			}
+			function transStills(name, firstStage) {
+				if (firstStage) {
+					return [{type:"image",src:"trans/"+name+"4.png"},{type:"image",src:"trans/"+name+"5.png"}];
+				}
+				return [{type:"image",src:"trans/"+name+"1.png"},{type:"image",src:"trans/"+name+"2.png"},{type:"image",src:"trans/"+name+"3.png"}];
+			}
+			var firstStage = this.isTransFirstStageSet();
+			var TRANS_MAP = {
+				Alex:   { idx: 1, name: "alex",   critMax: 22 },
+				Taylor: { idx: 2, name: "taylor", critMax: 21 },
+				Casey:  { idx: 3, name: "casey",  critMax: 22 }
+			};
+			var tierKey = sanity >= 75 ? "high" : sanity >= 50 ? "mid" : sanity >= 25 ? "low" : "crit";
+			var list;
+			if (c.name === "Brook") { list = BROOK[tierKey]; }
+			else if (c.name === "Alice") { list = ALICE[tierKey]; }
+			else if (c.name === "Blake") { list = BLAKE[tierKey]; }
+			else if (TRANS_MAP[c.name]) {
+				var cfg = TRANS_MAP[c.name];
+				if (tierKey === "high") { list = transStills(cfg.name, firstStage); }
+				else if (tierKey === "mid") { list = transVids(cfg.idx, "tease", 9); }
+				else if (tierKey === "low") { list = transVids(cfg.idx, "bj",
+					cfg.name === "casey" ? 6 : 5); }
+				else { list = transVids(cfg.idx, "sex", cfg.critMax); }
+			}
+			if (!list || !list.length) return null;
+			var pick = list[Math.floor(Math.random() * list.length)];
+			State.variables.videoEventCompanion = pick.src;
+			return pick;
+		},
+
+		/* Sanity-tier key for the CompanionEvent dispatcher: picks
+		   which <<companionTextEventN>> variant + <<isCompanionContinue>>
+		   threshold set applies. */
+		eventSanityTier: function () {
+			var s = (comp() || {}).sanity || 0;
+			return s >= 75 ? 1 : s >= 50 ? 2 : s >= 25 ? 3 : s >= 1 ? 4 : 0;
+		},
+		/* Active companion's level (pre-clone, reading from
+		   $<key>). Used by <<isCompanionContinue>> as the "lvl
+		   check" arg; all trans companions are locked at 5. */
+		activeCompanionLvl: function () {
+			var c = comp(); if (!c) return 0;
+			var src = v(c.name.toLowerCase());
+			return src ? src.lvl : 0;
+		},
+
+		/* Portrait path for CompanionSucceeded, by outcome. The
+		   non-trans companions have dedicated -happy / -sad PNGs;
+		   trans companions reuse the rotating $transPicture file. */
+		/* Contacts.tw flags -- used on the MC's phone home screen
+		   to gate the per-companion contact row. */
+		hasMetBrook: function () { return v('meetBrook') !== undefined; },
+		hasMetAlice: function () { return v('meetAlice') !== undefined; },
+		blakeUnlocked: function () { return (v('relationshipBlake') || 0) >= 5; },
+		isBrookeCurrentlyUnavailable: function () {
+			return v('isBrookePossessedCD') <= 2;
+		},
+
+		/* When Plan2 succeeds with no cursed item in hand, roll a
+		   random cursed-item type and flag it. Returns the rolled
+		   item's info so the passage can render the image + speech.
+		   Keyed by the existing $isCI<Type> save flags. */
+		TYPES_CURSED_ITEM: [
+			{key:"isCIDildo",     speech:"Dildo???",        img:"curseditems/dildo.png"},
+			{key:"isCIButtplug",  speech:"Buttplug???",     img:"curseditems/buttplug.png"},
+			{key:"isCIBeads",     speech:"Anal beads???",   img:"curseditems/beads.png"},
+			{key:"isCIHDildo",    speech:"Huge dildo???",   img:"curseditems/monsterdildo.png"}
+		],
+		rollFoundCursedItem: function () {
+			var list = this.TYPES_CURSED_ITEM;
+			var pick = list[Math.floor(Math.random() * list.length)];
+			State.variables[pick.key] = 1;
+			State.variables.gotCursedItem = 1;
+			return pick;
+		},
+		/* Random GWB evidence image (for Plan3 GWB result). Returns
+		   "gwb/<1..18>.jpg". */
+		pickGwbImage: function () {
+			return "gwb/" + (Math.floor(Math.random() * 18) + 1) + ".jpg";
+		},
+		/* Pick a random evidence type id from the current hunt.
+		   Used by the Plan3 "look for evidence" result. */
+		pickRandomHuntEvidence: function () {
+			var h = v('hunt'); if (!h || !h.evidence || !h.evidence.length) return null;
+			return h.evidence[Math.floor(Math.random() * h.evidence.length)];
+		},
+
+		/* Pick a random room passage for the companion to wander
+		   into. Excludes whatever passage the MC is currently in
+		   (read from `previous()` when this is called from
+		   EventMC/GhostHuntEvent, which re-render). Tags
+		   $isCompRoomChosen as 1 so a given hunt step only
+		   resolves once. */
+		pickRandomCompanionRoom: function (currentPassage) {
+			if (v('isCompRoomChosen') === 1) return;
+			State.variables.isCompRoomChosen = 1;
+			var rooms;
+			if (v('isOwaissa') === 1) {
+				rooms = ["OwaissaHallway", "OwaissaLivingroom", "OwaissaKitchen", "OwaissaBathroom", "OwaissaBedroom"];
+			} else if (v('isElm') === 1) {
+				rooms = ["ElmBasement", "ElmKitchen", "ElmBathroom", "ElmBathroomTwo", "ElmBedroom", "ElmBedroomTwo", "ElmNursery", "ElmHallway", "ElmHallwayUpstairs"];
+			} else {
+				return;
+			}
+			State.variables.currentGhostPassage = currentPassage;
+			var filtered = rooms.filter(function (p) { return p !== currentPassage; });
+			State.variables.filteredGhostPassages = filtered;
+			State.variables.randomGhostPassage = filtered[Math.floor(Math.random() * filtered.length)];
+		},
+
+		outcomePortrait: function (success) {
+			var c = comp(); if (!c) return null;
+			if (c.name === "Brook" || c.name === "Alice" || c.name === "Blake") {
+				return c.name.toLowerCase() + "/" + c.name.toLowerCase() + (success ? "-happy" : "-sad") + ".png";
+			}
+			return "trans/" + (v('transPicture') || 1) + ".jpg";
+		},
+		/* Completed-hunt cleanup: restore Plan1 / clear per-turn
+		   hunt scratch flags. Used at the end of CompanionSucceeded. */
+		acknowledgeCompanionResult: function () {
+			var s = State.variables;
+			s.chosenPlan = "Plan1";
+			s.chosenPlanActivated = 0;
+			s.randomPassageOwaissa = 0;
+			s.showComp = 1;
+			s.isCompRoomChosen = 0;
+		},
+
+		/* Pick the chosenPlan-N result: bank the plan id, grace
+		   period, timer and success chance into save vars. */
+		setHuntPlan: function (planKey, chancePct, minutes) {
+			var s = State.variables;
+			s.chosenPlan = planKey;
+			s.chanceToSuccess = chancePct;
+			s.showComp = 0;
+			s.chosenPlanActivated = 1;
+			s.chosenPlanActivatedTime = (s.hours || 0) * 60 + (s.minutes || 0) + (minutes || 0);
+		},
+		setStayTogetherPlan: function () {
+			var s = State.variables;
+			s.chosenPlan = "Plan1";
+			s.showComp = 1;
+			s.chosenPlanActivated = 0;
+		},
+		/* Ghost-encounter chance for the active companion. Persists
+		   on $chanceToAttack and $chanceToAttack<Name> so earlier
+		   refactor didn't touch save shape. */
+		chanceToAttackVar: function () {
+			var c = comp();
+			return c ? ("chanceToAttack" + c.name) : "chanceToAttack";
+		},
+		chanceToAttack: function () {
+			return v(this.chanceToAttackVar());
+		},
+		ensureChanceToAttack: function () {
+			var key = this.chanceToAttackVar();
+			if (v(key) === undefined) { State.variables[key] = 25; }
+		},
+		setChanceToAttack: function (n) {
+			State.variables[this.chanceToAttackVar()] = n;
+			State.variables.chanceToAttack = n;
+		},
+
+		/* Companion "help" event side-effects: zero lust, bank a
+		   small sanity top-up. Shared across Alice/Blake/Brook
+		   Help passages. */
+		helpEventEaseActive: function () {
+			var c = comp();
+			if (!c) return;
+			c.lust = 0;
+			c.sanity += 2;
+		},
+
+		/* Reset the "paid" flag + solo-hunt-in-progress flag when
+		   the player queries the HuntEndAlone passage (which runs
+		   the next morning). Called on entry to *HuntEndAlone. */
+		acknowledgeSoloHuntEnd: function (name) {
+			var s = State.variables;
+			s['payForHuntAlone' + name] = 0;
+			s['is' + name + 'GoingForHuntingAlone'] = 0;
+		},
+		/* Which street did this companion solo-hunt on? Returns
+		   "Owaissa" / "Elm" / "" based on the per-companion choice
+		   flag. Used to key into the success-chance table. */
+		companionChoseOwaissa: function (name) {
+			return v(name.toLowerCase() + 'ChooseOwaissa') === 1;
+		},
+		companionChoseElm: function (name) {
+			return v(name.toLowerCase() + 'ChooseElm') === 1;
+		},
+		/* Clear the per-companion Owaissa/Elm choice flags. Called
+		   at the end of HuntEndAlone after the result is narrated. */
+		clearSoloHuntStreet: function (name) {
+			var s = State.variables;
+			var k = name.toLowerCase();
+			s[k + 'ChooseOwaissa'] = 0;
+			s[k + 'ChooseElm'] = 0;
+		},
+		/* Pay out the solo-hunt reward to $mc.money. Owaissa hunts
+		   pay $50, Elm hunts pay $100. Called from *HuntEndAlone
+		   when the success roll lands. */
+		payoutSoloHunt: function (name) {
+			var reward = this.companionChoseElm(name) ? 100 : 50;
+			mc().money += reward;
+			return reward;
+		},
+		isCompanionPossessed: function (name) {
+			if (name === 'Brook') { return setup.Library.brookIsPossessed(); }
+			return false;
+		},
+
+		// --- Companion stat object getter ------------------------
+		// Return the mutable state object for a companion by their
+		// name key ("alex" / "taylor" / "casey" / "brook" / ...).
+		// Used by passages that render a companion card without
+		// knowing which companion is currently active (e.g. the
+		// Internet trans-companion picker).
+		stateFor: function (nameKey) {
+			return State.variables[nameKey];
+		},
+
+		// --- Active-companion HUD / event helpers ----------------
+		decreaseSanity: function () {
+			var c = comp();
+			return c ? c.decreaseSanity : 0;
+		},
+		lust: function () {
+			var c = comp();
+			return c ? c.lust : 0;
+		},
+		sanity: function () {
+			var c = comp();
+			return c ? c.sanity : 0;
+		},
+		lvl: function () {
+			var c = comp();
+			return c ? c.lvl : 0;
+		},
+		/* For a given companion slot (key = "brook" / "alice" / "blake")
+		   is the companion at the max level 5? Used by the companionExp
+		   widget to short-circuit xp gain. */
+		isAtMaxLvl: function (name) {
+			var obj = v(name.toLowerCase());
+			return obj && obj.lvl >= 5;
+		},
+		/* Add exp to a specific companion by name (used by the shared
+		   companionExp widget). Does nothing if the target is maxed out. */
+		grantExpTo: function (name, amount) {
+			var obj = v(name.toLowerCase());
+			if (!obj || obj.lvl >= 5) return;
+			obj.exp += amount;
+		},
+
+		// --- Trans-companion first-encounter bookkeeping ----------
+		// $transFirstStage gates the companionTextEvent* dispatcher: on
+		// the initial trigger it sets to 1 so the follow-up text plays
+		// the "post-change" variant. $transPicture records which of the
+		// three trans portraits to render (1 Alex / 2 Taylor / 3 Casey).
+		isTransFirstStageSet: function () { return v('transFirstStage') === 1; },
+		setTransFirstStage: function (n) { State.variables.transFirstStage = n; },
+		setTransPicture: function (n) { State.variables.transPicture = n; },
+		/* Apply the standard "$companion.sanity/lust change" side-effects
+		   from the shared companionTextEvent widgets. */
+		applyEventStatDeltas: function (lustIncrease) {
+			var c = comp();
+			if (!c) return;
+			c.sanity -= c.decreaseSanity;
+			c.lust   += lustIncrease;
+		},
+		/* One of the per-name bookkeeping branches shared by
+		   companionTextEvent1..4: for a trans companion, stamp the
+		   transFirstStage flag and set transPicture to the matching
+		   portrait index. */
+		markTransFirstStage: function () {
+			var c = comp();
+			if (!c) return;
+			var idx = { Alex: 1, Taylor: 2, Casey: 3 }[c.name];
+			if (!idx) return;
+			State.variables.transFirstStage = 1;
+			State.variables.transPicture = idx;
+		},
+		isTransByName: function (n) { return isTrans(n); },
+
+		// --- isCompanionContinue flow (widgetFriends) ---------
+		chanceToSuccess: function () { return v('chanceToSuccess'); },
+		/* When the companion decides to continue: reset the per-hunt
+		   scratch flags so the normal hunt tick can resume. */
+		resumeHunt: function () {
+			var s = State.variables;
+			s.chosenPlanActivated = 0;
+			s.randomGhostPassage = 0;
+			s.showComp = 1;
+			s.isCompRoomChosen = 0;
+		},
+		setChosenPlan: function (p) { State.variables.chosenPlan = p; },
+		/* "Continue alone" path: clears showComp + isCompChosen as
+		   well so the companion is no longer tagged as active. */
+		dismissCompanion: function () {
+			var s = State.variables;
+			s.showComp = 0;
+			s.isCompChosen = 0;
+			s.chosenPlan = 0;
 		}
 	};
 })();

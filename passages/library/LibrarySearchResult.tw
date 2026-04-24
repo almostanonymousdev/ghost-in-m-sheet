@@ -5,9 +5,9 @@
 
 <<if _selectedResult is "book">>
 	<<include "LibraryTipsBook">>
-	<<set $foundTips to 1>>
+	<<run setup.Library.markTipsBookFound()>>
 <<elseif _selectedResult is "Comics">>
-	<<set $foundComics to 1>>
+	<<run setup.Library.markComicsFound()>>
 	<<image "library/comics-found.jpg" { width: "100%" }>><br>
 	@@.mc-speech; What's this? Erotic comics? It looks interesting... I wonder how it ended up here.@@<br>
 	@@.enterbtn;[[Read comics|Comics]]<br>@@
@@ -19,7 +19,7 @@
 	<<include "LibraryGuy">>
 <<elseif _selectedResult is "brook">>
 	<<include "LibraryBrook">>
-	<<set $foundBrook to 1>>
+	<<run setup.Library.markBrookFound()>>
 <</if>>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>

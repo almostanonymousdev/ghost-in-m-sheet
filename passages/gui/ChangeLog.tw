@@ -183,11 +183,7 @@ v.0.5.1
 	- Events in the gym\
 <</linkreplace>>
 
-<<if (previous() eq "WitchEndContract") or (tags(previous()).includes("event"))>>\
-	@@.backbtn;<<back>>@@
-<<else>>\
-	@@.backbtn;<<return>>@@
-<</if>>\
+<<backOrReturn>>\
 <<done>>\
 	<<addclass ".linkselector" "disabled-link">>\
 <</done>>

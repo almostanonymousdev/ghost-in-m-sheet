@@ -2,7 +2,7 @@
 <<set _videoToggle to true>>
 <<video "alice/home/4.mp4">>
 @@.mc-thoughts;You continued kissing in the shower@@<br>
-@@.notmc-speech; I want you again, $mc.name, I can't stop.@@<br>
+@@.notmc-speech; I want you again, <<= setup.Mc.name()>>, I can't stop.@@<br>
 @@.mc-thoughts; The arousal surged again, and there was no turning back now.@@<br>
 @@.mc-speech; Oh~ yeah,@@ <<linkappend "@@.mc-speechLink;kiss my pussy@@">>
 	<span id ="walkhomealiceshower">

@@ -9,13 +9,13 @@
 		<<set _escapeOk to setup.SpecialEvent.rollEscapeSuccess()>>
 		<<if _escapeOk>>
 			<<run setup.SpecialEvent.spendEscapeEnergy()>>
-			<<updatemeter 'energy' `$mc.energy / $mc.energyMax`>>
+			<<updatemeter 'energy' `setup.Mc.energy() / setup.Mc.energyMax()`>>
 			<<replace "#divSpecialEventReplace">>
 				@@.mc-speech; I did it! I need to get dressed and [[go sleep home.|Sleep]]@@
 			<</replace>>
 		<<else>>
-			<<set $mc.energy to 0>>
-			<<updatemeter 'energy' `$mc.energy / $mc.energyMax`>>
+			<<run setup.Mc.setEnergy(0)>>
+			<<updatemeter 'energy' `setup.Mc.energy() / setup.Mc.energyMax()`>>
 			@@.mc-thoughts; You try to free yourself, twisting and turning, but the ropes hold fast. You gave it your all, but it wasn't enough.@@<br>
 			@@.mc-thoughts; Just as hope begins to fade, you hear the faint sound of footsteps.@@<br>
 			<<linkreplace "@@.usebtn;Call for help@@">>

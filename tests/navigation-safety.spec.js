@@ -353,7 +353,7 @@ test.describe('navigation safety', () => {
 
       // Must have some form of navigation out
       const hasExit = hasNavigation(p.body) ||
-        /<<return>>|<<back>>/.test(p.body);
+        /<<return>>|<<back>>|<<backOrReturn>>/.test(p.body);
 
       if (!hasExit) {
         violations.push(

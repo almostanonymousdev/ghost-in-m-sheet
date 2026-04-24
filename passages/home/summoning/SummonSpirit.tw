@@ -19,6 +19,6 @@
 	<<linkappend "@@.usebtn; you scream with ecstasy@@">>
 		<<video "exorcism/spirit5.mp4">>
 		@@.mc-thoughts; He pulls out, turns you around, and comes on your face, covering you with his hot cum, leaving you trembling with pleasure@@<br><br>
-		@@.backbtn; [[Sleep|Sleep][$summonText to 1; $ghostSpiritEventStage to 1]]@@
+		@@.backbtn; [[Sleep|Sleep][setup.Home.setSummonText(1); setup.Home.setSpiritEventStage(1)]]@@
 	<</linkappend>>
 <</linkappend>>

@@ -20,10 +20,7 @@
 		@@.mc-thoughts; When you finally pull yourself off, trembling and barely able to stand, you turn and look at the dildo still stuck to the glass. You feel oddly grateful.@@<br>
 		@@.mc-speech; That was... you were incredible...@@<br><br>
 		@@.mc-thoughts; You drop to your knees and take the dildo into your mouth -- slowly, tasting yourself on it. You take it deeper with a satisfied hum, tongue working the shaft. As your lips slide off with a soft pop, the dildo shimmers, flickers, and fades into nothing -- like it was never there at all.@@<br>
-		<<set $mc.sanity -= 15>>
-		<<set $mc.corruption += 0.5>>
-		<<set $mc.lust to 100>>
-		<<run setup.CursedItems.clearCurse()>>
+		<<run setup.CursedItems.applyCurseEventEffects()>>
 		<br>
 		@@.mc-speech; It's gone... but I can still feel it. Everywhere.@@<br>
 		Sanity decreased. Corruption slightly increased.<br>

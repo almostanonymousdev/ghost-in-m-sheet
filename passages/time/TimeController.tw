@@ -1,0 +1,66 @@
+:: TimeController [script]
+/*
+ * Centralized helpers for the in-game clock / weather state:
+ *   $hours, $minutes, $meridiem, $temperature
+ *
+ * Any passage that needs to read or set the clock should route
+ * through setup.Time. The mutation widgets <<addTime>> / <<addLust>>
+ * (in widgetGuiCommon) already lived here logically but read State
+ * directly -- this controller gives passages a way to do the same
+ * without touching $hours/$minutes.
+ */
+setup.Time = (function () {
+	function sv() { return State.variables; }
+
+	return {
+		// --- Raw getters -------------------------------------
+		hours:       function () { return sv().hours; },
+		minutes:     function () { return sv().minutes; },
+		meridiem:    function () { return sv().meridiem; },
+		temperature: function () { return sv().temperature; },
+
+		// --- Raw setters -------------------------------------
+		setHours:       function (v) { sv().hours = v; },
+		setMinutes:     function (v) { sv().minutes = v; },
+		addHours:       function (n) { sv().hours += n; },
+		addMinutes:     function (n) { sv().minutes += n; },
+		setMeridiem:    function (v) { sv().meridiem = v; },
+		setTemperature: function (v) { sv().temperature = v; },
+		addTemperature: function (n) { sv().temperature += n; },
+
+		// --- Derived / totals --------------------------------
+		totalMinutes: function () { return sv().hours * 60 + sv().minutes; },
+		display: function () {
+			var h = sv().hours < 10 ? '0' + sv().hours : sv().hours;
+			var m = Math.floor(sv().minutes) < 10 ?
+				'0' + Math.floor(sv().minutes) : Math.floor(sv().minutes);
+			return h + ':' + m;
+		},
+
+		// --- Windows used by multiple callers ----------------
+		isLate:        function () { return sv().hours <= 5; },
+		isEarlyMorning: function () { return sv().hours < 6; },
+		isMorningPlus:  function () { return sv().hours >= 6; },
+		isNight:        function () { return sv().hours >= 23; },
+
+		// --- Scheduled in-world actions ---------------------
+		// Reset the clock to midnight (used when a hunt starts
+		// from the haunted-house street).
+		resetToMidnight: function () {
+			sv().hours = 0;
+			sv().minutes = 0;
+		},
+		// Advance the clock by `n` hours and wrap at 24, then run
+		// the daily-cooldowns widget if a rollover happened. Used
+		// by sleep/wake paths — centralised here so each caller
+		// doesn't re-implement the wrap+reset dance.
+		sleepAdvanceHours: function (n) {
+			sv().hours += n;
+			if (sv().hours >= 24) {
+				sv().hours -= 24;
+				return true;
+			}
+			return false;
+		}
+	};
+})();

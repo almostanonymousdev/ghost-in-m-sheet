@@ -10,10 +10,10 @@
 <</widget>>
 
 <<widget "seduceGhostMinigameMenu">>
-	<<if $minigameVideo eq "start">>
-		Beauty: $mc.beauty<br>
-		<<unset $minigameEventFailed>>
-		<<if $mc.energy lt 1>>
+	<<if setup.Events.minigameVideo() eq "start">>
+		Beauty: <<= setup.Mc.beauty()>><br>
+		<<run setup.Events.clearMinigameEventFailed()>>
+		<<if setup.Mc.energy() lt 1>>
 			@@.mc-thoughts; Not enough energy@@
 		<<else>>
 			<<link "@@.usebtn; Try to attract a ghost@@ " "SeduceGhostMinigame">>
@@ -22,9 +22,9 @@
 		<</if>>
 		<<link "@@color:red; Leave@@" `$return`>><<run setup.SeduceGhostMinigame.leave()>><</link>>
 
-	<<elseif $minigameVideo eq "seduceFailed">>
-		<b>Beauty: $mc.beauty</b><br>
-		<<if $mc.energy lt 1>>
+	<<elseif setup.Events.minigameVideo() eq "seduceFailed">>
+		<b>Beauty: <<= setup.Mc.beauty()>></b><br>
+		<<if setup.Mc.energy() lt 1>>
 			@@.mc-thoughts; Not enough energy@@
 		<<else>>
 			<<link "@@.usebtn; Try again@@ " "SeduceGhostMinigame">>
@@ -33,17 +33,17 @@
 		<</if>>
 		<<link "@@color:red; Leave@@ " `$return`>><<run setup.SeduceGhostMinigame.leave()>><</link>>
 
-	<<elseif $minigameVideo eq "seduce">>
+	<<elseif setup.Events.minigameVideo() eq "seduce">>
 		<<link "Continue" "SeduceGhostMinigame">>
 			<<run setup.SeduceGhostMinigame.continueSeduce()>>
 		<</link>><b><<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:25px;" }>></b> |
 		<<link "@@color:red; Try to leave@@" "SeduceGhostMinigame">>
 			<<run setup.SeduceGhostMinigame.tryLeave()>>
-			<<if ndef $minigameVideo>><<goto `$return`>><</if>>
+			<<if ndef setup.Events.minigameVideo()>><<goto `$return`>><</if>>
 		<</link>>
 
 	<<elseif setup.SeduceGhostMinigame.hasSubdue()>>
-		<<if setup.SeduceGhostMinigame.resistCostsEnergy() and $mc.energy lt 1>>
+		<<if setup.SeduceGhostMinigame.resistCostsEnergy() and setup.Mc.energy() lt 1>>
 			@@.mc-thoughts; Not enough energy@@
 		<<else>>
 			<<link "Resist" "SeduceGhostMinigame">>
@@ -53,7 +53,7 @@
 		<<link "Submit" "SeduceGhostMinigame">>
 			<<run setup.SeduceGhostMinigame.submit()>>
 		<</link>> <b><<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:25px;" }>></b> |
-		<<if $mc.energy lt 1>>
+		<<if setup.Mc.energy() lt 1>>
 			@@.mc-thoughts; Not enough energy@@
 		<<else>>
 			<<link "Subdue" "SeduceGhostMinigame">>
@@ -62,7 +62,7 @@
 		<</if>>
 
 	<<else>>
-		<<if $mc.energy lt 1>>
+		<<if setup.Mc.energy() lt 1>>
 			@@.mc-thoughts; Not enough energy@@
 		<<else>>
 			<<link "Resist" "SeduceGhostMinigame">>
@@ -77,144 +77,144 @@
 <</widget>>
 
 <<widget "seduceGhostMinigameText">>
-	<<if $minigameVideo eq "seduceFailed">>
-		<<if $chanceToAttractFailed eq 1 or ndef $chanceToAttractFailed>>
+	<<if setup.Events.minigameVideo() eq "seduceFailed">>
+		<<if setup.Events.chanceToAttractFailedFlag() eq 1 or ndef setup.Events.chanceToAttractFailedFlag()>>
 			@@.mc-thoughts;You try to attract the ghost, stripping down and showing off your juicy pussy and tight tits, taking increasingly lewd poses.@@<br>
 			@@.mc-speech;Damn, wasted my time, this fucker isn't showing up!@@<br>
 		<<else>>
 			@@.mc-thoughts;You strip off your clothes, exposing your wet lips and hard nipples, and there he is - the ghost, with a huge, already hard cock, ready for action.@@<br>
 			@@.mc-speech; Oh~ I need to keep myself in check... but damn, it's so big...@@<br>
 		<</if>>
-	<<elseif $minigameVideo eq "seduce">>
-		<<if $ghostOrgasmMeter gte 100>>
+	<<elseif setup.Events.minigameVideo() eq "seduce">>
+		<<if setup.Events.ghostOrgasmMeter() gte 100>>
 			@@.mc-thoughts;You seduce him, showing off all your charms, and you see the ghost can't hold back any longer. He erupts, cumming on you, covering your body with warm semen just from the sight of your sensuous display.@@<br>
-		<<elseif $mcOrgasmMeter gte 100>>
+		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
 			@@.mc-thoughts;You seduce the ghost, moving from one enticing pose to another, feeling your body burn with desire. Your own sensuality brings you to climax, gasping from the intensity of the moment.@@<br>
 		<<else>>
 			@@.mc-thoughts;You strip down, taking lewd poses, showing off your pussy and tits, feeling your wetness grow, getting turned on by your own performance.@@<br>
 			@@.mc-speech;Fuck, I'm so hot watching myself... I bet he's getting hard just from looking at me...@@<br>
 		<</if>>
-	<<elseif $minigameVideo eq "slapface">>
-		<<if $ghostOrgasmMeter gte 100>>
+	<<elseif setup.Events.minigameVideo() eq "slapface">>
+		<<if setup.Events.ghostOrgasmMeter() gte 100>>
 			@@.mc-thoughts;The ghost can't take it anymore when he's slapping your face with his cock, each slap arousing him more until he climaxes, covering your face with his cum.@@<br>
-		<<elseif $mcOrgasmMeter gte 100>>
+		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
 			@@.mc-thoughts;The ghost slaps your face with his cock, and the strange, unexpected pleasure from this act makes you reach orgasm, your body trembling with unusual pleasure.@@<br>
 		<<else>>
 			@@.mc-thoughts;The ghost approaches, his cock slapping your face as if it's his entertainment. You feel your cheeks redden, your body trembling with a mix of humiliation and arousal.@@<br>
 			@@.mc-speech;He's slapping me with his dick... it's so degrading... but why do I like it so much?@@<br>
 		<</if>>
-	<<elseif $minigameVideo eq "subdueslapface">>
-		<<if $ghostOrgasmMeter gte 100>>
+	<<elseif setup.Events.minigameVideo() eq "subdueslapface">>
+		<<if setup.Events.ghostOrgasmMeter() gte 100>>
 			@@.mc-thoughts;You control the situation, and as you slap yourself with his cock, the ghost can't hold back, cumming on you, covering your face and chest with his semen.@@<br>
-		<<elseif $mcOrgasmMeter gte 100>>
+		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
 			@@.mc-thoughts;You take control, slapping yourself with his cock, and this feeling of power and sexuality brings you to orgasm, your body shuddering with pleasure.@@<br>
 		<<else>>
 			@@.mc-thoughts;You grab his cock, start slapping it against your own face, feeling the power and control.@@<br>
 			@@.mc-speech;Mmm... who's the whore here, huh? I decide when and how...@@<br>
 		<</if>>
-	<<elseif $minigameVideo eq "assjob">>
-		<<if $ghostOrgasmMeter gte 100>>
+	<<elseif setup.Events.minigameVideo() eq "assjob">>
+		<<if setup.Events.ghostOrgasmMeter() gte 100>>
 			@@.mc-thoughts;His cock slides between your ass cheeks, and this sensation brings the ghost to climax, he cums, covering your buttocks and back with his semen.@@<br>
-		<<elseif $mcOrgasmMeter gte 100>>
+		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
 			@@.mc-thoughts;His cock slides between your ass cheeks, each movement sending waves of pleasure through you, and you reach orgasm without penetration, it's so arousing.@@<br>
 		<<else>>
 			@@.mc-thoughts;His cock rubs against your pussy, making you feel him getting harder, causing you to moan with desire.@@<br>
 			@@.mc-speech;His cock rubbing against my pussy... it's so hot, how it feels... I want it inside me so bad...@@<br>
 		<</if>>
-	<<elseif $minigameVideo eq "subdueassjob">>
-		<<if $ghostOrgasmMeter gte 100>>
+	<<elseif setup.Events.minigameVideo() eq "subdueassjob">>
+		<<if setup.Events.ghostOrgasmMeter() gte 100>>
 			@@.mc-thoughts;Controlling the situation, you make him cum, his semen splattering over your buttocks and back as he loses control.@@<br>
-		<<elseif $mcOrgasmMeter gte 100>>
+		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
 			@@.mc-thoughts;You move your hips, controlling his pleasure, and this feeling of power makes you cum, your body trembling with ecstasy.@@<br>
 		<<else>>
 			@@.mc-thoughts;You move your hips, controlling how his cock slides between your ass cheeks, feeling him lose control.@@<br>
 			@@.mc-speech;You'll move as I want you to, ghost...@@<br>
 		<</if>>
-	<<elseif $minigameVideo eq "titjob">>
-		<<if $ghostOrgasmMeter gte 100>>
+	<<elseif setup.Events.minigameVideo() eq "titjob">>
+		<<if setup.Events.ghostOrgasmMeter() gte 100>>
 			@@.mc-thoughts;The sensation of your breasts around his cock is too much for him, he climaxes, covering your tits with his cum, unable to control himself any longer.@@
-		<<elseif $mcOrgasmMeter gte 100>>
+		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
 			@@.mc-thoughts;His cock moves between your breasts, the friction and the sight of his pleasure push you towards an orgasm, your body responding to the eroticism of the act.@@
 		<<else>>
 			@@.mc-thoughts;The ghost fucks your tits with his cock, you feel it pulsing, leaving traces of precum on your skin.@@<br>
 			@@.mc-speech;He's fucking my tits... I feel like he's about to cum... it's so arousing...@@<br>
 		<</if>>
-	<<elseif $minigameVideo eq "subduetitjob">>
-		<<if $ghostOrgasmMeter gte 100>>
+	<<elseif setup.Events.minigameVideo() eq "subduetitjob">>
+		<<if setup.Events.ghostOrgasmMeter() gte 100>>
 			@@.mc-thoughts;You control how he uses your breasts, and he climaxes, covering your tits with his cum, unable to hold back.@@<br>
-		<<elseif $mcOrgasmMeter gte 100>>
+		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
 			@@.mc-thoughts;You squeeze your tits around his cock, feeling every movement, and this sense of power over his pleasure makes you reach orgasm, arousing you with the control.@@<br>
 		<<else>>
 			@@.mc-thoughts;You squeeze your tits around his cock, controlling every thrust, making him moan with pleasure.@@<br>
 			@@.mc-speech;Show me how badly you want to cum on my tits...@@<br>
 		<</if>>
-	<<elseif $minigameVideo eq "rimjob">>
-		<<if $ghostOrgasmMeter gte 100>>
+	<<elseif setup.Events.minigameVideo() eq "rimjob">>
+		<<if setup.Events.ghostOrgasmMeter() gte 100>>
 			@@.mc-thoughts;Your tongue drives him wild, and he can't hold back, climaxing and covering you with his cum from the intensity of the sensation.@@<br>
-		<<elseif $mcOrgasmMeter gte 100>>
+		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
 			@@.mc-thoughts;You lick his ass, feeling the power and submission in your actions, which unexpectedly drives you to orgasm, your body quivering with pleasure.@@<br>
 		<<else>>
 			@@.mc-thoughts;You bend over, feeling his control, your tongue exploring his ass, each movement making him moan. You're under his command, fulfilling his dirtiest fantasies.@@<br>
 			@@.mc-speech;I'm licking his ass... he completely controls me... it's so dirty, but so sexy...@@<br>
 		<</if>>
-	<<elseif $minigameVideo eq "subduerimjob">>
-		<<if $ghostOrgasmMeter gte 100>>
+	<<elseif setup.Events.minigameVideo() eq "subduerimjob">>
+		<<if setup.Events.ghostOrgasmMeter() gte 100>>
 			@@.mc-thoughts;Your actions drive him to the edge, and he climaxes, covering you with semen as you control his pleasure.@@<br>
-		<<elseif $mcOrgasmMeter gte 100>>
+		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
 			@@.mc-thoughts;You explore his anus with your tongue with a sense of control, and this unexpected feeling of power causes you to orgasm.@@<br>
 		<<else>>
 			@@.mc-thoughts;You take control, using your tongue as you wish, making him tremble with pleasure.@@<br>
 			@@.mc-speech;You're under my control, ghost... I do it the way I want...@@<br>
 		<</if>>
-	<<elseif $minigameVideo eq "blowjob">>
-		<<if $ghostOrgasmMeter gte 100>>
+	<<elseif setup.Events.minigameVideo() eq "blowjob">>
+		<<if setup.Events.ghostOrgasmMeter() gte 100>>
 			@@.mc-thoughts;Your skill makes him lose control, and he climaxes, spilling his cum all over your face and chest from the intensity of the sensations.@@<br>
-		<<elseif $mcOrgasmMeter gte 100>>
+		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
 			@@.mc-thoughts;You feel his cock in your mouth, and the sensation of power and pleasure from his reactions brings you to orgasm, your body shuddering with delight.@@<br>
 		<<else>>
 			@@.mc-thoughts;You take his cock in your mouth, feeling its warmth and hardness, your lips moving, creating a vacuum that makes him moan with pleasure.@@<br>
 			@@.mc-speech;His dick in my mouth... he's using me like his personal whore... it's so fucking good...@@<br>
 		<</if>>
-	<<elseif $minigameVideo eq "subdueblowjob">>
-		<<if $ghostOrgasmMeter gte 100>>
+	<<elseif setup.Events.minigameVideo() eq "subdueblowjob">>
+		<<if setup.Events.ghostOrgasmMeter() gte 100>>
 			@@.mc-thoughts;You dictate the pace, and he can't hold back, cumming on you, covering your face and chest with cum from your control.@@<br>
-		<<elseif $mcOrgasmMeter gte 100>>
+		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
 			@@.mc-thoughts;You control every movement, making him moan, and this feeling of power causes you to orgasm, your body trembling with pleasure.@@<br>
 		<<else>>
 			@@.mc-thoughts;You control the rhythm, dictating his pleasure, your lips and tongue deciding when and how he feels it.@@<br>
 			@@.mc-speech;You'll only get what I allow...@@<br>
 		<</if>>
-	<<elseif $minigameVideo eq "penetratepussy">>
-		<<if $ghostOrgasmMeter gte 100>>
+	<<elseif setup.Events.minigameVideo() eq "penetratepussy">>
+		<<if setup.Events.ghostOrgasmMeter() gte 100>>
 			@@.mc-thoughts;He just enters you, and this is enough to make him lose control, he cums, covering your pussy with semen.@@<br>
-		<<elseif $mcOrgasmMeter gte 100>>
+		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
 			@@.mc-thoughts;His cock enters your pussy, and this sensation of being filled and the control over the situation makes you reach orgasm.@@<br>
 		<<else>>
 			@@.mc-thoughts;The ghost enters you, his cock penetrating your wet pussy just once, filling you with a sense of completion. You realize there's still a chance to stop this.@@<br>
 			@@.mc-speech;Fuck, he's inside me... but I can still stop this...@@<br>
 		<</if>>
-	<<elseif $minigameVideo eq "penetrateanal">>
-		<<if $ghostOrgasmMeter gte 100>>
+	<<elseif setup.Events.minigameVideo() eq "penetrateanal">>
+		<<if setup.Events.ghostOrgasmMeter() gte 100>>
 			@@.mc-thoughts;He just enters you, and it's enough to make him lose control, he cums, covering your buttocks with semen.@@<br>
-		<<elseif $mcOrgasmMeter gte 100>>
+		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
 			@@.mc-thoughts;His cock penetrates your ass, and this feeling of fullness and control over the situation makes you reach orgasm.@@<br>
 		<<else>>
 			@@.mc-thoughts;You feel his cock entering your ass just once, creating a mix of pain and pleasure. There's still a chance to stop it.@@<br>
 			@@.mc-speech;God, he's in my ass... but I can still control this...@@<br>
 		<</if>>
-	<<elseif $minigameVideo eq "fuckpussy">>
-		<<if $ghostOrgasmMeter gte 100>>
+	<<elseif setup.Events.minigameVideo() eq "fuckpussy">>
+		<<if setup.Events.ghostOrgasmMeter() gte 100>>
 			@@.mc-thoughts;His cock thrusts in and out of you, and this makes him cum, covering your pussy and stomach with semen.@@<br>
-		<<elseif $mcOrgasmMeter gte 100>>
+		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
 			@@.mc-thoughts;His hard thrusts into your pussy drive you to orgasm, you feel every thrust, sinking into ecstasy.@@
 		<<else>>
 			@@.mc-thoughts;The ghost fucks your dripping pussy with such force, it feels like he wants to tear you apart. His cock goes in and out, filling you, making you moan with each deep thrust. You feel your juicy hole embracing his hard tool.@@<br>
 			@@.mc-speech;Damn, he's fucking me like the last slut... I know I should stop him, but it feels so damn good... how can I resist when I'm this fucking wet...@@<br>
 		<</if>>
-	<<elseif $minigameVideo eq "fuckanal">>
-		<<if $ghostOrgasmMeter gte 100>>
+	<<elseif setup.Events.minigameVideo() eq "fuckanal">>
+		<<if setup.Events.ghostOrgasmMeter() gte 100>>
 			@@.mc-thoughts;His rough penetration into your ass brings him to orgasm, he cums, covering your buttocks and back with semen.@@<br>
-		<<elseif $mcOrgasmMeter gte 100>>
+		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
 			@@.mc-thoughts;He fucks your ass with such force that you climax, each thrust bringing a new wave of pleasure.@@<br>
 		<<else>>
 			@@.mc-thoughts;His engorged cock thrusts into your tight ass, stretching you with each brutal push. He uses your ass like his toy, each movement causing sharp sensations, mixing pain with unbelievable pleasure.@@<br>

@@ -2,9 +2,8 @@
 <<script>>
 /* Canonical tarot deck. `effect` names the widget invoked after the card
    is drawn (defined in widgetTarot.tw); draw-time dispatch below is a
-   single line: <<= '<<' + $chosenCard.effect + '>>'>>. Fool has no
-   effect widget -- its reveal-then-swap flow is handled directly by
-   the draw logic. */
+   single line that wikifies <<effectName>>. Fool has no effect widget --
+   its reveal-then-swap flow is handled directly by the draw logic. */
 setup.tarotDeck = setup.tarotDeck || [
 	{ name: "passion",       chance: 20, image: "cursedpossessions/tarot-cards/passion.jpg",       effect: "tarotPassion" },
 	{ name: "pulse",         chance: 20, image: "cursedpossessions/tarot-cards/pulse.jpg",         effect: "tarotPulse" },
@@ -30,17 +29,16 @@ setup.drawTarotCard = function (deck) {
 	return deck[deck.length - 1];
 };
 <</script>>
-<<set $tarotDeck to setup.tarotDeck>>
 <div id="tarotCard"><<image "cursedpossessions/tarot-cards/tarot.png" "displayCentredImgs">></div>
 
 <div id="tarotCardsEnd" class="tarotCardHidden"><<link "@@.usebtn;Pull a card@@">>
 	<<replace "#tarotCard">>
-		<<if $drawnCards < 10>>
-			<<set $chosenCard to setup.drawTarotCard($tarotDeck)>>
+		<<if setup.HauntedHouses.drawnCards() lt 10>>
+			<<set _chosen to setup.HauntedHouses.drawAndStampTarotCard()>>
 
-			<<if $chosenCard>>
-				<<if $chosenCard.name eq "fool">>
-					<<set _tempCard to $tarotDeck[random(0, 8)]>>
+			<<if _chosen>>
+				<<if _chosen.name eq "fool">>
+					<<set _tempCard to setup.HauntedHouses.tarotDeck()[random(0, 8)]>>
 					<div class="fadeInScale">
 					<<image _tempCard.image "displayCentredImgs fadeInScale">></div>
 					@@.mc-speech; Oh... something's about to happen... but what...@@
@@ -50,7 +48,7 @@ setup.drawTarotCard = function (deck) {
 					<</done>>
 					<<timed 1s>>
 						<<replace #tarotCard>>
-							<<image $chosenCard.image "displayCentredImgs fadeInScaleFool">>
+							<<image _chosen.image "displayCentredImgs fadeInScaleFool">>
 							@@.mc-speech; Um, did it just... change? Is this supposed to be a joke? @@
 						<</replace>>
 						<<done>>
@@ -60,7 +58,7 @@ setup.drawTarotCard = function (deck) {
 					<</timed>>
 				<<else>>
 					<div class="fadeInScale">
-					<<image $chosenCard.image "displayCentredImgs">>
+					<<image _chosen.image "displayCentredImgs">>
 					</div>
 					@@.mc-speech; Oh... something's about to happen... but what...?@@<br>
 					<<done>>
@@ -74,19 +72,19 @@ setup.drawTarotCard = function (deck) {
 					<</timed>>
 				<</if>>
 
-				<<if $chosenCard.effect>>
-					<<= "<<" + $chosenCard.effect + ">>">>
+				<<if _chosen.effect>>
+					<<= "<<" + _chosen.effect + ">>">>
 				<</if>>
 			<</if>>
 		<<else>>
 			<<replace "#tarotCardsEnd">>
 				<br>
 				@@.mc-thoughts; There's no cards left @@<br>
-				<<set $tarotCardsStage to 2>>
+				<<run setup.HauntedHouses.setTarotCardsStage(2)>>
 			<</replace>>
 		<</if>>
 	<</replace>>
-<<set $drawnCards += 1>><</link>></div>
+<<run setup.HauntedHouses.incrementDrawnCards()>><</link>></div>
 <br>
 <div class="tarotCardHidden">@@.backbtn; [[Back|$return]]@@</div>
 

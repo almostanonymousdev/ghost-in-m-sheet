@@ -1,5 +1,5 @@
 :: DeliveryPackageEventStart [event nobr] {"position":"1250,1750","size":"100,100"}
-<<set $deliveryPackageEvent to 1>>
+<<run setup.Delivery.markPackageEvent()>>
 <<addLust 15>>
 <<deliveryVideo "packageevent" 1>>
 @@.notmc-speech; You're better off doing something else instead of delivering crap@@<br>

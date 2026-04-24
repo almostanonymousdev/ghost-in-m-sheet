@@ -7,6 +7,6 @@
 	<<linkappend "@@.usebtn; I'll cum...@@">>
 		<<video "exorcism/tentacles3.mp4">>
 		@@.mc-thoughts;  Finally, the tentacles come inside you, filling all your holes with cum, stuffing you to the brim, making you shudder from the intensity of the sensations.@@<br><br>
-		@@.backbtn; [[Sleep|Sleep][$summonText to 1]]@@<br>
+		@@.backbtn; [[Sleep|Sleep][setup.Home.setSummonText(1)]]@@<br>
 	<</linkappend>>
 <</linkappend>>

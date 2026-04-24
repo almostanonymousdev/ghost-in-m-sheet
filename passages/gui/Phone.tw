@@ -1,93 +1,46 @@
 :: Phone [nobr noreturn] {"position":"200,925","size":"100,100"}
 <div class="flexwrapper addGap5">
-
-<div class="housecard">
-<<if def $meetBrook>>
-	@@.notmc-speech; $brook.name @@<br>
-	$brook.lvl lvl <<if $brook.lvl gte 5>> (max. lvl)
-	<<else>>($brook.exp / $brook.expForNextLvl)
-	<</if>><br>
-	<<image "brook/brook.png" "contactsImages">><br>
-	<<if $hours lte 7>>
-		<<if $isBrookGoingForHuntingAlone eq 2>>
-			@@.mc-thoughts; She is currently on a ghost hunt.@@
-		<<else>>
-			@@.mc-thoughts; She's sleeping/busy@@<br>
-		<</if>>
+<<for _contact range setup.Gui.phoneContacts()>>
+	<<set _stats to State.variables[_contact.stateKey]>>
+	<div class="housecard">
+	<<if !_contact.isUnlocked()>>
+		@@.mc-thoughts; _contact.lockedHint @@<br>
+		<<image "img/question-mark.png" "contactsImages">>
 	<<else>>
-		<<if setup.Library.brookIsPossessed()>>
-			<<linkreplace "@@.enterbtn;Text her@@">>She's not answering... Strange, she usually responds right away...
+		@@.notmc-speech; _stats.name @@<br>
+		_stats.lvl lvl
+		<<if _stats.lvl gte 5>>
+			(max. lvl)
+		<<else>>
+			(_stats.exp / _stats.expForNextLvl)
+		<</if>><br>
+		<<image _contact.portrait "contactsImages">><br>
+		<<if setup.Time.hours() lte 7>>
+			<<if _contact.isHuntingAlone()>>
+				@@.mc-thoughts; She is currently on a ghost hunt.@@
+			<<else>>
+				@@.mc-thoughts; She's sleeping/busy@@<br>
+			<</if>>
+		<<elseif _contact.isPossessed()>>
+			<<linkreplace "@@.enterbtn;Text her@@">>
+				_contact.possessedHint
 			<</linkreplace>>
-		<<elseif setup.Library.brookIsWithRain()>>
-			@@.mc-thoughts;She's probably still with Rain. Maybe it's worth waiting a couple of days. @@
+		<<elseif _contact.isWithRain()>>
+			@@.mc-thoughts; _contact.withRainHint @@
 		<<else>>
-			@@.enterbtn;[[Text her|BrookInfo]]@@<br>
+			@@.enterbtn;<<link "Text her" _contact.infoPassage>>
+			<</link>>@@<br>
 		<</if>>
 	<</if>>
-<<else>>
-
-	@@.mc-thoughts; Need to search in the library@@<br>
-	<<image "img/question-mark.png" "contactsImages">>
-<</if>>
-</div>
-
-<div class="housecard">
-<<if def $meetAlice>>
-	@@.notmc-speech; $alice.name @@<br>
-	$alice.lvl lvl <<if $alice.lvl gte 5>> (max. lvl)
-	<<else>>($alice.exp / $alice.expForNextLvl)
-	<</if>><br>
-	<<image "alice/alice.png" "contactsImages">><br>
-	<<if $hours lte 7>>
-		<<if $isAliceGoingForHuntingAlone eq 2>>
-			@@.mc-thoughts; She is currently on a ghost hunt.@@
-		<<else>>
-			@@.mc-thoughts; She's sleeping/busy@@<br>
-		<</if>>
-	<<else>>
-		@@.enterbtn;[[Text her|AliceInfo]]@@<br>
-	<</if>>
-<<else>>
-
-	@@.mc-thoughts; Deliver books to the correct address@@<br>
-	<<image "img/question-mark.png" "contactsImages">>
-<</if>>
-</div>
-
-<div class="housecard">
-<<if $relationshipBlake gte 5>>
-	@@.notmc-speech; $blake.name @@<br>
-	$blake.lvl lvl <<if $blake.lvl gte 5>> (max. lvl)
-	<<else>>($blake.exp / $blake.expForNextLvl)
-	<</if>><br>
-	<<image "blake/blake.png" "contactsImages">><br>
-	<<if $hours lte 7>>
-		<<if $isBlakeGoingForHuntingAlone eq 2>>
-			@@.mc-thoughts; She is currently on a ghost hunt.@@
-		<<else>>
-			@@.mc-thoughts; She's sleeping/busy@@<br>
-		<</if>>
-	<<else>>
-		@@.enterbtn;[[Text her|BlakeInfo]]@@<br>
-	<</if>>
-<<else>>
-
-	@@.mc-thoughts; Befriend the assistant at the sex shop <br>(Relationship 5+)@@<br>
-	<<image "img/question-mark.png" "contactsImages">>
-<</if>>
-</div>
-
+	</div>
+<</for>>
 </div>
 <br>
 <div>
 @@.enterbtn;[[Ghostopedia]]@@
 </div>
 <br/>
-<<if (previous() eq "WitchEndContract") or (tags(previous()).includes("event"))>>
-	@@.backbtn;<<back>>@@<br>
-<<else>>
-	@@.backbtn;[[Return|$return]]@@<br>
-<</if>>
+<<backOrReturn>>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 <</done>>

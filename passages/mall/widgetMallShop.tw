@@ -16,11 +16,11 @@ setup.notPurchased = function(varName) {
 	<div class="housecard">
 	<<image _img "iconPx">><br>
 	<span class="priceAmount"><<= _price>>$</span><br>
-	<<if $mc.money gte _price>>
+	<<if setup.Mc.money() gte _price>>
 		<<capture _varName, _price, _delta, _returnPassage>>
 			@@.buyItemLink;<<link "Buy" _returnPassage>>
 				<<run State.variables[_varName] = (State.variables[_varName] || 0) + _delta>>
-				<<set $mc.money -= _price>>
+				<<run setup.Mc.spendMoney(_price)>>
 			<</link>>@@<br>
 		<</capture>>
 	<<else>>@@.mc-thoughts; I don't have enough money@@
@@ -42,11 +42,11 @@ setup.notPurchased = function(varName) {
 		<<if _bonus>><span class="mc-thoughts">_bonus</span><br>
 		<</if>>
 		<span class="priceAmount"><<= _price>>$</span><br>
-		<<if $mc.money gte _price>>
+		<<if setup.Mc.money() gte _price>>
 			<<capture _varName, _price, _boughtValue, _returnPassage>>
 				@@.buyItemLink;<<link "Buy" _returnPassage>>
 					<<run State.variables[_varName] = _boughtValue>>
-					<<set $mc.money -= _price>>
+					<<run setup.Mc.spendMoney(_price)>>
 				<</link>>@@<br>
 			<</capture>>
 		<<else>>@@.mc-thoughts; I don't have enough money@@
@@ -67,12 +67,12 @@ setup.notPurchased = function(varName) {
 	<<if setup.notPurchased(_varName)>>
 		<<image _img "iconPx">><br>
 		<span class="priceAmount"><<= _price>>$</span><br>
-		<<if $mc.corruption gte _reqCorruption>>
-			<<if $mc.money gte _price>>
+		<<if setup.Mc.corruption() gte _reqCorruption>>
+			<<if setup.Mc.money() gte _price>>
 				<<capture _varName, _price, _boughtValue, _returnPassage>>
 					@@.buyItemLink;<<link "Buy" _returnPassage>>
 						<<run State.variables[_varName] = _boughtValue>>
-						<<set $mc.money -= _price>>
+						<<run setup.Mc.spendMoney(_price)>>
 					<</link>>@@<br>
 				<</capture>>
 			<<else>>@@.mc-thoughts; I don't have enough money@@
@@ -95,11 +95,11 @@ setup.notPurchased = function(varName) {
 		<<if setup.notPurchased(_varName)>>
 			<<image _img "iconPx">><br>
 			<span class="priceAmount"><<= _price>>$</span><br>
-			<<if $mc.money gte _price>>
+			<<if setup.Mc.money() gte _price>>
 				<<capture _varName, _price, _boughtValue, _returnPassage>>
 					@@.buyItemLink;<<link "Buy" _returnPassage>>
 						<<run State.variables[_varName] = _boughtValue>>
-						<<set $mc.money -= _price>>
+						<<run setup.Mc.spendMoney(_price)>>
 					<</link>>@@<br>
 				<</capture>>
 			<<else>>@@.mc-thoughts; I don't have enough money@@

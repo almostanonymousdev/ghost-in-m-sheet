@@ -1,8 +1,8 @@
 :: TentaclesEventNap [nobr] {"position":"900,4300","size":"100,100"}
-<<set $gotCursedItemEventCD to 0>>
+<<run setup.Home.resetTentaclesCooldown()>>
 <<video "tentacles/nap1.mp4">>
 @@.mc-thoughts; You're about to lie down for a rest when you notice something crawling towards you across the floor. It's the tentacles you've already had the pleasure of meeting. You freeze in place, your body numb with fear and anticipation, your heart beating in time with their movements.@@<br>
-<<if $tentaclesEventStageAll gte 1>>
+<<if setup.Home.tentaclesStageAll() gte 1>>
 	<span id="tentaclesEventNapHidOpt">@@.usebtn; [[Run away|Livingroom]]@@ or </span><<linkreplace "@@.usebtn; Stay@@">>
 		<<replace "#tentaclesEventNapHidOpt">>
 		<</replace>>
@@ -27,14 +27,14 @@
 				<<video "tentacles/nap6.mp4">>
 				@@.mc-thoughts;All this leads to an explosive, simultaneous orgasm - you and the tentacles reach the peak of pleasure together. You feel your muscles clench, while the tentacles, trembling, start to release their semen on you, covering you with warm, sticky fluid. The sensation of being coated in their seed, mixed with your own orgasm, creates a moment that feels endless in its intensity and pleasure. @@
 				@@.mc-speech; Oh~ fuck, I'm so fucked I can't even stand up.@@<br><br>
-				@@.backbtn; [[Rest|Bedroom][$hours += 4]]@@
-				<<if $tentaclesEventStageAll lt 2>>
-					<<set $tentaclesEventStageAll to 2>>
+				@@.backbtn; [[Rest|Bedroom][setup.Home.restForHours(4)]]@@
+				<<if setup.Home.tentaclesStageAll() lt 2>>
+					<<run setup.Home.setTentaclesStageAll(2)>>
 				<</if>>
 			<</linkappend>>
 
 		<</linkappend>>
 	<</linkreplace>>
 <<else>>
-	@@.usebtn; [[Run away|Livingroom][$tentaclesEventPCText to 1]]@@
+	@@.usebtn; [[Run away|Livingroom][setup.Home.setTentaclesPCText(1)]]@@
 <</if>>

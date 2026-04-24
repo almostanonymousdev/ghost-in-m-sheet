@@ -9,11 +9,11 @@
 	@@.backbtn; <<link "Sleep together" `_hg.walkHomePassage`>>
 	<</link>>@@
 <<else>>
-	<<if $companion.name eq "Brook">>
-		<<if $companion.lust gte 50>>
+	<<if setup.Companion.name() eq "Brook">>
+		<<if setup.Companion.lust() gte 50>>
 			<<video "brook/home/1.mp4">>
 			@@.mc-thoughts;As soon as you walked in, she pounced on you and started kissing you@@<br>
-			@@.notmc-speech; I'm so turned on, $mc.name. I want you right now.@@<br>
+			@@.notmc-speech; I'm so turned on, <<= setup.Mc.name()>>. I want you right now.@@<br>
 			@@.mc-thoughts; Her eagerness instantly aroused you, making your nipples harden, and your pussy crave attention.@@<br>
 			@@.mc-speech; Yes~ let's do it. @@<br>
 			@@.notmc-speech; I have something special for us. Here, let's use @@
@@ -36,8 +36,8 @@
 				@@.mc-speech;Yeah~@@<br>
 				@@.notmc-speech; I'm really exhausted today. You rest up, and I'll head back. Hopefully, we'll meet again.@@<br>
 				@@.mc-speech;Alright, bye.@@<br>
-				<<if $mc.corruption lt 10>>
-					<<set $mc.corruption += 0.1>>
+				<<if setup.Mc.corruption() lt 10>>
+					<<run setup.Mc.addCorruption(0.1)>>
 					+0.1 <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>><br><br>
 				<</if>>
 				<br>
@@ -47,16 +47,16 @@
 			<<image "img/mchouse.jpg" { width: "100%" }>>
 			@@.mc-speech; We made it to my place. Thanks for walking me back@@<br>
 			@@.notmc-speech; No problem, hope we meet again. Bye.@@<br>
-			@@.warningtext; (Req. $companion.name's <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 50)@@
+			@@.warningtext; (Req. <<= setup.Companion.name()>>'s <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 50)@@
 			<br><br>
 			@@.backbtn; [[Sleep]]@@<br>
 		<</if>>
 
-	<<elseif $companion.name eq "Alice">>
-		<<if $companion.lust gte 50>>
+	<<elseif setup.Companion.name() eq "Alice">>
+		<<if setup.Companion.lust() gte 50>>
 			<<video "alice/home/1.mp4">>
 			@@.mc-thoughts;As soon as you walked in, she pounced on you and started kissing you@@<br>
-			@@.notmc-speech; I'm so turned on, $mc.name. I want you right now.@@<br>
+			@@.notmc-speech; I'm so turned on, <<= setup.Mc.name()>>. I want you right now.@@<br>
 			@@.mc-thoughts; Her eagerness instantly aroused you, making your nipples harden, and your pussy crave attention.@@<br>
 			@@.mc-speech; Yes~ @@<<linkappend "@@.mc-speechLink; let's do it. @@">>
 				<span id ="walkhomealice">
@@ -74,8 +74,8 @@
 				<</link>>
 				until you were both completely spent.@@<br>
 				@@.notmc-speech; That was amazing.@@<br>
-				<<if $mc.corruption lt 10>>
-					<<set $mc.corruption += 0.1>>
+				<<if setup.Mc.corruption() lt 10>>
+					<<run setup.Mc.addCorruption(0.1)>>
 					+0.1 <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>
 				<</if>><br>
 				@@.mc-speech;Yeah~Do you want to [[take a shower|AliceContinue]] with me?@@<br> <b>or</b> <br>
@@ -85,15 +85,15 @@
 			<<image "img/mchouse.jpg" { width: "100%" }>>
 			@@.mc-speech; We made it to my place. Thanks for walking me back@@<br>
 			@@.notmc-speech; No problem, hope we meet again. Bye.@@<br>
-			@@.warningtext; (Req. $companion.name's <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 50)@@
+			@@.warningtext; (Req. <<= setup.Companion.name()>>'s <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 50)@@
 			<br><br>
 			@@.backbtn; [[Sleep]]@@<br>
 		<</if>>
-	<<elseif $companion.name eq "Blake">>
-		<<if $companion.lust gte 50>>
+	<<elseif setup.Companion.name() eq "Blake">>
+		<<if setup.Companion.lust() gte 50>>
 			<<video "blake/home/1.mp4">>
 			@@.mc-thoughts;As soon as you walked in, she pounced on you and started kissing you@@<br>
-			@@.notmc-speech; I'm so turned on, $mc.name. I want you right now.@@<br>
+			@@.notmc-speech; I'm so turned on, <<= setup.Mc.name()>>. I want you right now.@@<br>
 			@@.mc-thoughts; Her eagerness instantly aroused you, making your nipples harden, and your pussy crave attention.@@<br>
 			@@.mc-speech; Yes~ @@<<linkappend "@@.mc-speechLink; let's do it. @@">>
 				<span id ="walkhomeblake">
@@ -115,17 +115,14 @@
 			<<image "img/mchouse.jpg" { width: "100%" }>>
 			@@.mc-speech; We made it to my place. Thanks for walking me back@@<br>
 			@@.notmc-speech; No problem, hope we meet again. Bye.@@<br>
-			@@.warningtext; (Req. $companion.name's <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 50)@@
+			@@.warningtext; (Req. <<= setup.Companion.name()>>'s <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 50)@@
 			<br><br>
 			@@.backbtn; [[Sleep]]@@<br>
 		<</if>>
 	<</if>>
 <</if>>
 
-<<if $tempCorr gte 1>><<set $tempCorr to 1>><</if>>
-<<set $mc.corruption += $tempCorr>>
-
-<<set $tempCorr to 0>>
+<<run setup.Mc.bankTempCorruption()>>
 <<run setup.Ghosts.setHuntMode(setup.Ghosts.HuntMode.POSSESSED)>>
 
 <<run setup.resetTools()>>

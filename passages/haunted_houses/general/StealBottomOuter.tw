@@ -1,5 +1,5 @@
 :: StealBottomOuter [nobr] {"position":"4075,1050","size":"100,100"}
-<<if $pantiesState eq "worn">>
+<<if setup.Wardrobe.pantiesWorn()>>
 	<<set _check to random(1,3)>>
 	<<if _check eq 1>><<image "steal-clothes/13.png" "displayCentredImgs">>
 	<</if>>
@@ -16,61 +16,5 @@
 	<<if _check eq 3>><<image "steal-clothes/18.png" "displayCentredImgs">>
 	<</if>>
 <</if>>
-<<if $jeansState eq "worn" or $shortsState eq "worn" or $skirtState eq "worn">>
-	<<if $jeansState eq "worn">>
-		<<if $rememberBottomOuter eq "jeans0">>
-			<<set $rememberBottomOuter to "nojeans0">>
-		<<set $jeansState0 to "not worn">><</if>>
-
-		<<if $rememberBottomOuter eq "jeans1">>
-			<<set $rememberBottomOuter to "nojeans1">>
-			<<set $mc.beauty -=5>>
-		<<set $jeansState1 to "not worn">><</if>>
-
-		<<if $rememberBottomOuter eq "jeans2">>
-			<<set $rememberBottomOuter to "nojeans2">>
-			<<set $mc.beauty -=8>>
-		<<set $jeansState2 to "not worn">><</if>>
-
-		<<if $rememberBottomOuter eq "jeans3">>
-			<<set $rememberBottomOuter to "nojeans3">>
-			<<set $mc.beauty -=11>>
-		<<set $jeansState3 to "not worn">><</if>>
-
-	<<elseif $shortsState eq "worn">>
-
-		<<if $rememberBottomOuter eq "shorts1">>
-			<<set $rememberBottomOuter to "noshorts1">>
-			<<set $mc.beauty -=6>>
-		<<set $shortsState1 to "not worn">><</if>>
-
-		<<if $rememberBottomOuter eq "shorts2">>
-			<<set $rememberBottomOuter to "noshorts2">>
-			<<set $mc.beauty -=9>>
-		<<set $shortsState2 to "not worn">><</if>>
-
-		<<if $rememberBottomOuter eq "shorts3">>
-			<<set $rememberBottomOuter to "noshorts3">>
-			<<set $mc.beauty -=12>>
-		<<set $shortsState3 to "not worn">><</if>>
-
-	<<elseif $skirtState eq "worn">>
-		<<if $rememberBottomOuter eq "skirt1">>
-			<<set $rememberBottomOuter to "noskirt1">>
-			<<set $mc.beauty -=7>>
-		<<set $skirtState1 to "not worn">><</if>>
-
-		<<if $rememberBottomOuter eq "skirt2">>
-			<<set $rememberBottomOuter to "noskirt2">>
-			<<set $mc.beauty -=10>>
-		<<set $skirtState2 to "not worn">><</if>>
-
-		<<if $rememberBottomOuter eq "skirt3">>
-			<<set $rememberBottomOuter to "noskirt3">>
-			<<set $mc.beauty -=13>>
-		<<set $skirtState3 to "not worn">><</if>>
-	<</if>>
-
-<</if>>
-
-<<set $isBottomStolen to 1>>
+<<run setup.Wardrobe.stealBottomOuter()>>
+<<run State.variables.isBottomStolen = 1>>

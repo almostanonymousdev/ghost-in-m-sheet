@@ -1,5 +1,5 @@
 :: RescueVictoriaPossessed2 [nobr] {"position":"2025,2300","size":"100,100"}
-<<if $rescueVictoriaPossessed eq 1>>
+<<if setup.MissingWomen.victoriaPossessedStage() eq 1>>
 	<<video "rescue/victoria/1.4.mp4">>
 	@@.mc-thoughts; She kisses you, and you kiss her back.@@<br>
 	@@.notmc-speech; Did you like that?@@<br>
@@ -7,7 +7,7 @@
 	@@.notmc-speech; Oh, too bad you're not submissive enough. I would've taken over you, but maybe one day I'll get the chance...@@<br>
 	@@.mc-thoughts; She kisses you again, and everything goes black.@@<br>
 <</if>>
-<<if $rescueVictoriaPossessed eq 2>>
+<<if setup.MissingWomen.victoriaPossessedStage() eq 2>>
 	<<video "rescue/victoria/3.4.mp4">>
 	@@.mc-thoughts; She kisses you, and you kiss her back.@@<br>
 	@@.notmc-speech; Did you like that?@@<br>
@@ -15,7 +15,7 @@
 	@@.notmc-speech; Oh, too bad you're not submissive enough. I would've taken over you, but maybe one day I'll get the chance...@@<br>
 	@@.mc-thoughts; She kisses you again, and everything goes black.@@<br>
 <</if>>
-<<if $rescueVictoriaPossessed eq 3>>
+<<if setup.MissingWomen.victoriaPossessedStage() eq 3>>
 	<<video "rescue/victoria/3.4.mp4">>
 	@@.mc-thoughts; She kisses you, and you kiss her back.@@<br>
 	@@.notmc-speech; Did you like that?@@<br>
@@ -24,4 +24,4 @@
 	@@.mc-thoughts; She kisses you again, and everything goes black.@@<br>
 <</if>>
 <br>
-@@.backbtn; [[Wake up|Church][$hours += 3]]@@<br>
+@@.backbtn; [[Wake up|Church][setup.MissingWomen.sleepOffHoursAfterEvent()]]@@<br>

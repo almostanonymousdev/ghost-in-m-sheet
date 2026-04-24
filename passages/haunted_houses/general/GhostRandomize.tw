@@ -19,22 +19,10 @@
     })();
 <</script>>
 
-<<set $isIronclad to 0>>
+<<run setup.HauntedHouses.resetForNewHunt()>>
 
-<<set $tarotCardsStage to 0>>
-<<run setup.MonkeyPaw.resetHunt()>>
-<<set $drawnCards to 0>>
-<<unset $temperatureIncreased>>
-<<unset $cursedHuntActive>>
-<<unset $cursedHuntEndTime>>
-<<unset $isWeakenGhost>>
-<<unset $moneyFromWeakenTheGhost>>
-<<set $temperature to 0>>
-
-<<run setup.HauntedHouses.resetEvidenceChecks()>>
-
-<<if $deleteOneEvidence eq 1>>
-	<<include "DeleteEvidence">>
+<<if setup.HauntedHouses.shouldDeleteOneEvidence()>>
+	<<run setup.Ghosts.deleteEvidenceFromHunt()>>
 <</if>>
 @@.notmc-speech; Great, here's the location on the map. You need to go there at night and identify the type of ghost inhabiting that place. Remember, you only have one night to determine the ghost. If you feel tired, you can go there any night, not necessarily tonight.@@<br>
 @@.mc-speech; Okay, thanks@@<br>
@@ -43,6 +31,6 @@ Money: -35 $<br>
 
 <br>
 @@.mc-action; You've received a contract to identify the type of  ghost@@
-<<set $mc.money -= 35>>
+<<run setup.Mc.spendMoney(35)>>
 <br>
 @@.backbtn;[[Back|WitchInside]] @@<br>

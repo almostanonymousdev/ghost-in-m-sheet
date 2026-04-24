@@ -7,62 +7,67 @@
 
 <<linkreplace "@@.usebtn; Find a partner for ghost hunting@@ @@color:red; (trans content)@@">>
 	<b>Someone responded to your offer:</b>
+	<<set _alex to setup.Companion.stateFor("alex")>>
 	<div class="flexwrapper">
 	<div class="housecard">
 	<<image "trans/alex.jpg" { width: "100px" }>><br>
 	</div>
 	<div>
-	<b>$alex.name</b>:<br>
-	<em>Chance to find a cursed Item</em>: $alex.chanceOfSuccessCI: <br>
-	<em>Chance to find evidence</em>: $alex.chanceOfSuccessAnyEvidence: <br>
-	<em>Chance to find the ghost's favorite room</em>: $alex.chanceOfSuccessGR: <br>
+	<b><<= _alex.name>></b>:<br>
+	<em>Chance to find a cursed Item</em>: <<= _alex.chanceOfSuccessCI>>: <br>
+	<em>Chance to find evidence</em>: <<= _alex.chanceOfSuccessAnyEvidence>>: <br>
+	<em>Chance to find the ghost's favorite room</em>: <<= _alex.chanceOfSuccessGR>>: <br>
 	</div>
 	<div style="display:flex; align-items: center;">
 	<<link "@@.usebtn; Choose Alex@@">>
 		<<run setup.Companion.pickTransCompanion("Alex")>>
 		<<replace "#internetConfirm">>
-			@@.mc-speech; Okay, I think I've found a partner for the next ghost hunt@@ - @@color:red;<b>$companion.name </b>@@. @@.mc-speech; He said he would wait for me at the haunted house.@@
+			@@.mc-speech; Okay, I think I've found a partner for the next ghost hunt@@ - @@color:red;<b><<= setup.Companion.name()>> </b>@@. @@.mc-speech; He said he would wait for me at the haunted house.@@
 		<</replace>>
 	<</link>>
 	</div>
 	</div>
 
-	<<if $prefssubscribers gte 5>><div class="flexwrapper">
+	<<if setup.Home.subscribers() gte 5>>
+		<<set _taylor to setup.Companion.stateFor("taylor")>>
+		<div class="flexwrapper">
 		<div class="housecard">
 		<<image "trans/taylor.jpg" { width: "100px" }>><br>
 		</div>
 		<div>
-		<b>$taylor.name</b>:<br>
-		<em>Chance to find a cursed Item</em>: $taylor.chanceOfSuccessCI: <br>
-		<em>Chance to find evidence</em>: $taylor.chanceOfSuccessAnyEvidence: <br>
-		<em>Chance to find the ghost's favorite room</em>: $taylor.chanceOfSuccessGR: <br>
+		<b><<= _taylor.name>></b>:<br>
+		<em>Chance to find a cursed Item</em>: <<= _taylor.chanceOfSuccessCI>>: <br>
+		<em>Chance to find evidence</em>: <<= _taylor.chanceOfSuccessAnyEvidence>>: <br>
+		<em>Chance to find the ghost's favorite room</em>: <<= _taylor.chanceOfSuccessGR>>: <br>
 		</div>
 		<div style="display:flex; align-items: center;">
 		<<link "@@.usebtn; Choose Taylor@@">>
 			<<run setup.Companion.pickTransCompanion("Taylor")>>
 			<<replace "#internetConfirm">>
-				@@.mc-speech; Okay, I think I've found a partner for the next ghost hunt@@ - @@color:red;<b>$companion.name </b>@@. @@.mc-speech; He said he would wait for me at the haunted house.@@
+				@@.mc-speech; Okay, I think I've found a partner for the next ghost hunt@@ - @@color:red;<b><<= setup.Companion.name()>> </b>@@. @@.mc-speech; He said he would wait for me at the haunted house.@@
 			<</replace>>
 		<</link>>
 		</div>
 		</div>
 	<</if>>
 
-	<<if $prefssubscribers gte 10>><div class="flexwrapper">
+	<<if setup.Home.subscribers() gte 10>>
+		<<set _casey to setup.Companion.stateFor("casey")>>
+		<div class="flexwrapper">
 		<div class="housecard">
 		<<image "trans/casey.jpg" { width: "100px" }>><br>
 		</div>
 		<div>
-		<b>$casey.name</b>:<br>
-		<em>Chance to find a cursed Item</em>: $casey.chanceOfSuccessCI: <br>
-		<em>Chance to find evidence</em>: $casey.chanceOfSuccessAnyEvidence: <br>
-		<em>Chance to find the ghost's favorite room</em>: $casey.chanceOfSuccessGR: <br>
+		<b><<= _casey.name>></b>:<br>
+		<em>Chance to find a cursed Item</em>: <<= _casey.chanceOfSuccessCI>>: <br>
+		<em>Chance to find evidence</em>: <<= _casey.chanceOfSuccessAnyEvidence>>: <br>
+		<em>Chance to find the ghost's favorite room</em>: <<= _casey.chanceOfSuccessGR>>: <br>
 		</div>
 		<div style="display:flex; align-items: center;">
 		<<link "@@.usebtn; Choose Casey@@">>
 			<<run setup.Companion.pickTransCompanion("Casey")>>
 			<<replace "#internetConfirm">>
-				@@.mc-speech; Okay, I think I've found a partner for the next ghost hunt@@ - @@color:red;<b>$companion.name </b>@@. @@.mc-speech; He said he would wait for me at the haunted house.@@
+				@@.mc-speech; Okay, I think I've found a partner for the next ghost hunt@@ - @@color:red;<b><<= setup.Companion.name()>> </b>@@. @@.mc-speech; He said he would wait for me at the haunted house.@@
 			<</replace>>
 		<</link>>
 		</div>
@@ -72,14 +77,14 @@
 
 <</linkreplace>>
 
-<<if $ghostMareEventStart eq 2 or $ghostMareEventStart eq 3>>
+<<if setup.Home.mareEventStart() eq 2 or setup.Home.mareEventStart() eq 3>>
 	<br><<linkreplace "Feeling unwell after sleep">>
 		@@.mc-thoughts; You find many articles about bad habits, congenital diseases, all stages of cancer, etc. But that's not what you need. After some time, something more interesting appears. Someone suggests that you should check how you sleep. It might be a good idea to buy a video camera and record your sleep.@@<br>
 		@@.mc-speech; This sounds strange, what could be happening to me during sleep? Although, a camera might come in handy in the future. So, I need to go to the store and buy a video camera.@@
-		<<set $ghostMareEventStart to 3>>
+		<<run setup.Home.setMareEventStart(3)>>
 		<<addTime 30>>
 	<</linkreplace>>
-<<elseif $ghostMareEventStart eq 4>>
+<<elseif setup.Home.mareEventStart() eq 4>>
 	<br><<linkreplace "Someone's whisper during sleep">>
 		@@.mc-thoughts; I found information explaining what's happening. It turns out that this behavior is @@@@.notmc-speech; caused by a Mare.@@ @@.mc-speech;To get rid of it, I just need to sprinkle some holy water in the room.@@ @@.mc-thoughts; It's best to do this as soon as possible, or the ghost will become more persistent with each passing night. However, there's also some information suggesting that I don't have to do anything at all--the ghost might leave on its own.@@
 		<<run setup.Ghosts.markDiscovered("Mare")>>

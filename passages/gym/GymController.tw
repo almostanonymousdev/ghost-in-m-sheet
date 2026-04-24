@@ -123,6 +123,111 @@ setup.Gym = (function () {
 		},
 		emilyRelationshipStage: function () {
 			return v('relationEmily') || 0;
+		},
+		emilyOnCooldown: function () {
+			return v('relationEmilyCD') === 1;
+		},
+		startEmilyCooldown: function () {
+			State.variables.relationEmilyCD = 1;
+		},
+		greetEmilyFirstTime: function () {
+			// First conversation with Emily in the gym.
+			State.variables.relationEmily = 1;
+		},
+		raiseEmilyRelationship: function () {
+			var key = 'relationEmily';
+			if ((v(key) || 0) < 10) {
+				State.variables[key] = (v(key) || 0) + 1;
+				return true;
+			}
+			return false;
+		},
+		trainer1Tipped: function () {
+			return v('trainer1TipReceived') === 1;
+		},
+		markTrainer1Tipped: function () {
+			State.variables.trainer1TipReceived = 1;
+		},
+		trainer1Discounted: function () {
+			return v('isDiscountTrainer1') !== undefined;
+		},
+		applyTrainer1Discount: function () {
+			State.variables.isDiscountTrainer1 = 1;
+			State.variables.trainer1CoachingCost = 1;
+		},
+		markTrainer1Coaching: function () {
+			State.variables.trainer1CoachingCost = 1;
+		},
+		startTrainer1SexCooldown: function () {
+			State.variables.trainer1SexCD = 1;
+		},
+		startTrainer2SexCooldown: function () {
+			State.variables.trainer2SexCD = 1;
+		},
+		trainingCost: function () { return v('trainingCost'); },
+		setTrainingCost: function (value) { State.variables.trainingCost = value; },
+
+		// --- Core cost constant (used by GymTrainingTrainer) -----
+		payForCoach: function () {
+			var s = State.variables;
+			s.mc.money -= s.trainingCost;
+		},
+		spendEnergyToTrain: function () {
+			mc().energy -= TRAIN_COST;
+		},
+
+		// --- Fitness gain (view-agnostic deltas for widgetGym) ---
+		// Apply a fit delta and return the side-effect tuple the widget
+		// renders: how much beauty went up (or down), how much energyMax
+		// rose, and whether fitness hit the 100 cap.
+		applyFitnessGain: function (fitGain) {
+			var m = mc();
+			var previousFit = m.fit;
+			var previousBeauty = m.beauty;
+
+			m.fit += fitGain;
+
+			var beautyIncrease = Math.floor(m.fit / 5) - Math.floor(previousFit / 5);
+			if (beautyIncrease > 0) { m.beauty += beautyIncrease; }
+
+			if (!m.energyPoints) {
+				m.energyPoints = Math.floor(previousFit / 10);
+			}
+
+			var prevEp = m.energyPoints;
+			var curEp  = Math.floor(m.fit / 10);
+			var energyMaxDelta = 0;
+			if (curEp > prevEp) {
+				energyMaxDelta = curEp - prevEp;
+				m.energyMax    += energyMaxDelta;
+				m.energyPoints  = curEp;
+			}
+
+			// Crossing below fit 5 on a previously-elevated run drops beauty
+			// by 1 as the "you lost your tone" penalty.
+			if (previousFit >= 5 && (previousFit - 1) % 5 === 0 && m.fit < 5) {
+				m.beauty -= 1;
+			}
+
+			m.fit    = Math.max(0, Math.min(100, m.fit));
+			m.beauty = Math.max(0, m.beauty);
+
+			var hitEnergyCap = false;
+			if (m.fit === 100 && m.energyMax < 20) {
+				m.energyMax = 20;
+				energyMaxDelta += 20 - (curEp > prevEp ? curEp : prevEp);
+				hitEnergyCap = true;
+			}
+
+			return {
+				fit:              m.fit,
+				beauty:           m.beauty,
+				beautyIncrease:   beautyIncrease > 0 ? beautyIncrease : 0,
+				energyMaxDelta:   energyMaxDelta,
+				energyMax:        m.energyMax,
+				reachedFitCap:    m.fit === 100,
+				hitEnergyCap:     hitEnergyCap
+			};
 		}
 	};
 })();

@@ -9,20 +9,20 @@
 	<<run setup.HauntedHouses.clearStolenClothesFlag()>>
 	@@.movebtn; <<back "Return to the house">>@@<br>
 	Or<br>
-	<<if $tshirtState eq "worn" and setup.Companion.hasBottomWorn()>>
-		@@.movebtn;<<link "Leave without taking your clothes" "Livingroom">><<include "LostClothes">>
+	<<if setup.Wardrobe.topShirtWorn() and setup.Companion.hasBottomWorn()>>
+		@@.movebtn;<<link "Leave without taking your clothes" "Livingroom">><<run setup.Wardrobe.loseAllStolen()>>
 		<</link>>@@
 	<<else>>
-		@@.movebtn;<<link "Leave without taking your clothes" "NudityEvent">><<include "LostClothes">>
+		@@.movebtn;<<link "Leave without taking your clothes" "NudityEvent">><<run setup.Wardrobe.loseAllStolen()>>
 		<</link>>@@
 	<</if>>
 <<else>>
 	<<set _hg to setup.Ghosts.active()>>
 	<<if _hg and _hg.goHomePassage>>
 		@@.movebtn;<<link "Go home" `_hg.goHomePassage`>>
-		<<include "LostClothes">><<set $hours += 1>><</link>>@@
+		<<run setup.Wardrobe.loseAllStolen()>><<run setup.Time.addHours(1)>><</link>>@@
 	<<else>>
-		@@.movebtn;[[Go home|Livingroom][$hours += 1]]@@<br>
+		@@.movebtn;[[Go home|Livingroom][setup.Time.addHours(1)]]@@<br>
 	<</if>>
 <</if>>
 <br>

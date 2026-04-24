@@ -10,4 +10,4 @@
 <<else>>
 	<<include "RescuePossessed">>
 <</if>>
-<<set $rescueQuestCD to 1>>
+<<run setup.MissingWomen.startRescueBoardCooldown()>>

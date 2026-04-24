@@ -577,6 +577,89 @@
                 if (g.matchesEvidence(checked)) matches.add(g.name);
             });
             return matches;
+        },
+
+        /* Challenging-contract flag setters. Witch side-quests schedule
+           1-3 evidence types to hide from the next hunt. */
+        scheduleHideEvidence: function (count) {
+            var s = State.variables;
+            s.deleteOneEvidence = 1;
+            if (count >= 2) s.deleteSecondEvidence = 1;
+            if (count >= 3) s.deleteThirdEvidence = 1;
+        },
+
+        /* Cheat-menu helpers (StoryCaption) */
+        setHuntMode: function (mode) {
+            var h = State.variables.hunt;
+            if (h) { h.mode = mode; }
+        },
+        forceHuntGhost: function (g) {
+            var h = State.variables.hunt;
+            if (!h || !g) return;
+            h.name     = g.name;
+            h.realName = g.name;
+            h.evidence = g.evidence.map(function (e) { return e.id; });
+        },
+        huntName: function () {
+            var h = State.variables.hunt;
+            return h ? h.name : '';
+        },
+        huntRoomName: function () {
+            var h = State.variables.hunt;
+            if (h && h.room && h.room.name) { return h.room.name; }
+            return '';
+        },
+        knowledgeUsed: function () { return State.variables.knowledgeUsed === 1; },
+        chosenEvidence: function () { return State.variables.chosenEvidence; },
+        huntEvidence: function () {
+            var h = State.variables.hunt;
+            return h && h.evidence ? h.evidence : [];
+        },
+        /* Pull one random evidence id from the ghost's hunt list and
+           stash it in $hiddenEvidence (or $hiddenEvidence1 /
+           $hiddenEvidence2 for follow-on deletes gated by the witch
+           contract tier). Used by GhostRandomize to bake the witch's
+           requested evidence "removals" into the live hunt. */
+        deleteEvidenceFromHunt: function () {
+            var s = State.variables;
+            var hunt = s.hunt;
+            if (!hunt || !hunt.evidence || !hunt.evidence.length) return;
+            function pick() {
+                var i = Math.floor(Math.random() * hunt.evidence.length);
+                var picked = hunt.evidence[i];
+                hunt.evidence.deleteAt(i);
+                return picked;
+            }
+            s.hiddenEvidence = pick();
+            if (s.deleteSecondEvidence === 1 && hunt.evidence.length) {
+                s.hiddenEvidence1 = pick();
+            }
+            if (s.deleteThirdEvidence === 1 && hunt.evidence.length) {
+                s.hiddenEvidence2 = pick();
+            }
+        },
+        /* Shared "pick an evidence type that the ghost does NOT
+           have" roll. Called by the Tarot Knowledge card to stamp
+           $chosenEvidence + $knowledgeUsed so the Notebook can
+           mark the evidence-cross. Mirrors the exclusion list used
+           in MonkeyPawController: skip ghost-owned evidence and
+           anything the witch has hidden. */
+        consumeKnowledgeEvidence: function () {
+            if (State.variables.knowledgeUsed === 1) return;
+            State.variables.knowledgeUsed = 1;
+            var all = ["emf", "spiritbox", "gwb", "uvl", "glass", "temperature"];
+            var s = State.variables;
+            var hunt = s.hunt;
+            var owned = hunt && hunt.evidence ? hunt.evidence : [];
+            var missing = all.filter(function (e) {
+                return owned.indexOf(e) === -1
+                    && e !== s.hiddenEvidence
+                    && e !== s.hiddenEvidence1
+                    && e !== s.hiddenEvidence2;
+            });
+            State.variables.chosenEvidence = missing.length
+                ? missing[Math.floor(Math.random() * missing.length)]
+                : null;
         }
     };
 })();

@@ -78,9 +78,9 @@ whole (which contains the action bar), so we only need the one
 		<<if setup.HauntConditions.canBait()>>
 			· @@.huntActionLink;<<link `"Bait ghost (−" + setup.HauntConditions.BAIT_LUST_COST + " lust, −" + setup.HauntConditions.ENERGY_COST_BAIT + " energy)"`>>
 				<<run setup.HauntConditions.startBait()>>
-				<<updatemeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
-				<<updatemeter 'energy' `$mc.energy / $mc.energyMax`>>
-				<<if $exhausted eq 1>>
+				<<updatemeter 'sanity' `setup.Mc.sanityPct()`>>
+				<<updatemeter 'energy' `setup.Mc.energyPct()`>>
+				<<if setup.Mc.isExhausted()>>
 					<<goto "HuntOverExhaustion">>
 				<<else>>
 					<<replace ".hunt-conditions">><<huntConditions>><</replace>>
@@ -163,7 +163,7 @@ the only ways out are the scream link or a cursed-item sacrifice. */
 		<<capture _navMode>>
 			@@.adaptiveLink;<<link _args[0] _args[1]>><<if _navMode eq "hunt">><<includeTimeEventHunt>>
 			<<else>><<includeTimeEventClothesHunt>>
-			<</if>><<set $stepCount += 1>><</link>>@@
+			<</if>><<run setup.Updates.incrementStepCount()>><</link>>@@
 		<</capture>>
 	<</if>>
 <</widget>>
@@ -219,7 +219,7 @@ the only ways out are the scream link or a cursed-item sacrifice. */
 	<</link>>
 	<<link "<<image \"img/lightoff.png\">>" _args[0]>><<set State.variables[_args[1]].background = 2>>
 	<</link>>
-	<<if $mc.lust gte 80 and $weakenTheGhostQuest and $isWeakenGhost neq 1>>
+	<<if setup.Mc.lust() gte 80 and setup.Witch.hasWeakenTheGhostQuest() and not setup.Witch.isGhostWeakened()>>
 		<<link "<<image \"img/hearth.png\">>" "SeduceGhostMinigame">>
 		<<run setup.SeduceGhostMinigame.init()>><</link>>
 	<</if>></span>
@@ -248,17 +248,17 @@ the only ways out are the scream link or a cursed-item sacrifice. */
 	<<set _imgPath to 'img/furniture/' + _args[1]>>
 	<<set _hideTarget to _args[0]>>
 	<<set _hideId to _args[2]>>
-	<<if $cursedHuntActive eq 1>>
+	<<if setup.HauntedHouses.isCursedHuntActive()>>
 		<<capture _hideTarget>>
 			<span><<link `'<<image "' + _imgPath + '" "highlighted-furniture">>'` _hideTarget>>
-				<<replace ".room-wrapper">><<set $isInHideSpot to 1>><<image "hunting/hid1.jpg" { class: "fadeInScale", width: "80%" }>><br>
+				<<replace ".room-wrapper">><<run setup.HauntedHouses.setInHideSpot(true)>><<image "hunting/hid1.jpg" { class: "fadeInScale", width: "80%" }>><br>
 					<<done>>
 					<<run $(".fadeInScale").addClass("tarotCardsShow")>><</done>>
 					@@.mc-thoughts;You press yourself against the cold floor, feeling your heart racing in your chest. The screams and rustling outside make you hold your breath. The ghost, filled with rage, prowls the room, and each of its steps echoes dully in your ears.<br>
 
 					All you can do now is wait and hope it doesn't find you.@@
 					<br><br>
-					@@.backbtn;<<link "Leave" _hideTarget>><<set $isInHideSpot to 0>>
+					@@.backbtn;<<link "Leave" _hideTarget>><<run setup.HauntedHouses.setInHideSpot(false)>>
 					<</link>>@@<br>
 				<</replace>>
 			<</link>>
@@ -266,7 +266,7 @@ the only ways out are the scream link or a cursed-item sacrifice. */
 		<</capture>>
 	<<else>>
 		<<capture _hideId>>
-			<span @id="_hideId"><<link `'<<image "' + _imgPath + '">>'` "FurnitureSearch">><<set $currentFurniture to _hideId>><<includeTimeEventClothesHunt>>
+			<span @id="_hideId"><<link `'<<image "' + _imgPath + '">>'` "FurnitureSearch">><<run setup.HauntedHouses.setCurrentFurniture(_hideId)>><<includeTimeEventClothesHunt>>
 			<</link>></span>
 		<</capture>>
 	<</if>>
@@ -279,7 +279,7 @@ the only ways out are the scream link or a cursed-item sacrifice. */
 	<<set _imgPath to 'img/furniture/' + _args[0]>>
 	<<set _furnId to _args[1]>>
 	<<capture _furnId>>
-		<span @id="_furnId"><<link `'<<image "' + _imgPath + '">>'` "FurnitureSearch">><<set $currentFurniture to _furnId>><<includeTimeEventClothesHunt>>
+		<span @id="_furnId"><<link `'<<image "' + _imgPath + '">>'` "FurnitureSearch">><<run setup.HauntedHouses.setCurrentFurniture(_furnId)>><<includeTimeEventClothesHunt>>
 		<</link>></span>
 	<</capture>>
 <</widget>>
@@ -322,20 +322,20 @@ the only ways out are the scream link or a cursed-item sacrifice. */
 <</widget>>
 
 <<widget "companionCard">>
-	<<if $showComp eq 1>>
+	<<if setup.Companion.showComp() eq 1>>
 		<div class="footer-card">
 		<div class="cardimg">
 		<<companionLinks>>
 		</div>
 		</div>
-	<<elseif $showComp eq 2>>
+	<<elseif setup.Companion.showComp() eq 2>>
 		<div class="footer-card">
 		<div class="cardimg">
 		<a data-passage="CompanionFailed">
 		<<image "img/question-mark.png" "companion-image">> </a>
 		</div>
 		</div>
-	<<elseif $showComp eq 3>>
+	<<elseif setup.Companion.showComp() eq 3>>
 		<div class="footer-card">
 		<div class="cardimg">
 		<<companionLinksSuccess>>

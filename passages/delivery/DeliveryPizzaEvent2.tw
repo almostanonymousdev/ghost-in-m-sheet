@@ -1,5 +1,5 @@
 :: DeliveryPizzaEvent2 [event nobr] {"position":"1100,1950","size":"100,100"}
-<<set $deliveryPizzaEvent to 1>>
+<<run setup.Delivery.markPizzaEvent()>>
 <<addLust 60>>
 <<deliveryVideo "pizzaevent" 5>>
 +60 <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
@@ -16,5 +16,5 @@
 	<br>
 	<<deliveryBonus 10 0.1>>
 	@@.backbtn;[[Leave|DeliveryMap]]@@<br>
-	<<set $earnedMoney += $jobMoneySuccessed>>
+	<<run setup.Delivery.addJobSuccessEarnings()>>
 <</linkappend>>@@

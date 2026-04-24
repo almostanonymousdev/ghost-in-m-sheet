@@ -6,10 +6,9 @@
 	<<image "img/wardrobe/warden.webp" "iconPx">><br>
 	<span class="priceAmount">500$</span><br>
 	<<if setup.Mall.meetsCorruptionForWarden()>>
-		<<if $mc.money gte 500>>
+		<<if setup.Mc.money() gte 500>>
 			@@.buyItemLink;<<link "Buy" "AdultSectionPurchase">>
-				<<set $mc.money -= 500>>
-				<<set $wardenClothesStage to 2>>
+				<<run setup.Mall.buyWardenOutfit()>>
 			<</link>>@@<br>
 		<<else>>@@.mc-thoughts; I don't have enough money@@
 		<</if>>

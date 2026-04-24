@@ -2,7 +2,7 @@
 <<if setup.Library.wearingPants()>>
 	<<video "library/1.1.mp4">>
 	@@.mc-thoughts; He took off your clothes and started touching your butt.@@<br>
-	<<if $mc.corruption lt 2>><<set $mc.corruption += 0.1>>
+	<<if setup.Mc.corruption() lt 2>><<run setup.Library.tryGainGropingCorruption(2, 0.1)>>
 		+ 0.1 <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>><br>
 	<</if>>
 	+ 30 <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>><br>
@@ -10,14 +10,14 @@
 
 	@@.mc-speech; We have to stop! Someone might see what we're doing here. @@<br>
 	@@.notmc-speech; Come on, suck me off real quick, no one will catch us. @@<br>
-	<<if $mc.corruption lte 3>>
+	<<if setup.Mc.corruption() lte 3>>
 		@@.mc-speech; Ha~, [[no way.|LibraryInside]]@@ @@.warningtext; (Req. <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 4)@@<br>
 	<<else>>
 		@@.mc-speech; Well, okay, but keep an eye out to make sure <<linkappend "no one sees us.">>
 			<<video "library/1.2.mp4">>
 			@@.mc-speech; Slurp~Slurlp~ If someone sees us... Fuck! This thought makes my pussy even wetter, am I really such a slut?@@<br>
 			+ 30 <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>><br>
-			<<if $mc.corruption lte 6>><<set $mc.corruption += 0.2>>
+			<<if setup.Mc.corruption() lte 6>><<run setup.Library.tryGainGropingCorruption(6, 0.2)>>
 				+ 0.2 <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>><br>
 			<</if>>
 			<<addLust 30>>
@@ -33,20 +33,20 @@
 	@@.mc-speech; Ah~ you know how to please a woman. @@<br>
 	@@.notmc-speech; What about you? I see that you like it, maybe you can help me now too.@@<br>
 
-	<<if $mc.corruption lt 2>><<set $mc.corruption += 0.1>>
+	<<if setup.Mc.corruption() lt 2>><<run setup.Library.tryGainGropingCorruption(2, 0.1)>>
 		+ 0.1 <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>><br>
 	<</if>>
 	+ 30 <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>><br>
 	<<addLust 30>>
 
-	<<if $mc.corruption lte 3>>
+	<<if setup.Mc.corruption() lte 3>>
 		@@.mc-speech; Ha~, [[no way.|LibraryInside]]@@ @@.warningtext; (Req. <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 4)@@<br>
 	<<else>>
 		@@.mc-speech; Alright, you can consider yourself deserving of <<linkappend "this.">>
 			<<randomVideo "library/2.2.mp4" "library/2.3.mp4">>
 			@@.mc-speech; Why am I doing this? Fuck, my pussy is so wet ❤️@@<br>
 			+ 30 <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>><br>
-			<<if $mc.corruption lte 6>><<set $mc.corruption += 0.2>>
+			<<if setup.Mc.corruption() lte 6>><<run setup.Library.tryGainGropingCorruption(6, 0.2)>>
 				+ 0.2 <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>><br>
 			<</if>>
 			<<addLust 30>>

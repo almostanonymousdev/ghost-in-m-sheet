@@ -6,29 +6,30 @@
 	<<capture _cell>>
 		<<if _cell neq "">>
 			<<set _familiar to setup.Delivery.isRouteFamiliar(_cell)>>
-			<<set _isSpecial to ($deliverySpecialOrder and _cell is $deliverySpecialOrderAddress)>>
+			<<set _isSpecial to (setup.Delivery.specialOrderActive() and _cell is setup.Delivery.specialOrderAddress())>>
 			<div @class="'housecard' + (_familiar ? ' familiar-house' : '') + (_isSpecial ? ' special-house' : '')">
 			<<set _sp to _cell.lastIndexOf(" ")>>
 			<<set _label to _cell.substr(0, _sp) + ", " + _cell.substr(_sp + 1)>>
 			<<image "img/delivery1.png" "iconsOnMap">>
 			<<if _isSpecial>>
-				@@.icontextdelivery;<<link _label "DeliverySpecialEvent">><<set $currentHouse to _cell>>
+				@@.icontextdelivery;<<link _label "DeliverySpecialEvent">><<run setup.Delivery.setCurrentHouse(_cell)>>
 				<</link>>@@
 				<div class="mapOrderIcons"><<image "img/package.jpg" "mapOrderIcon rush-icon">></div>
 			<<else>>
-				@@.icontextdelivery;<<link _label "DeliveryAutoDeliver">><<set $currentHouse to _cell>>
+				@@.icontextdelivery;<<link _label "DeliveryAutoDeliver">><<run setup.Delivery.setCurrentHouse(_cell)>>
 				<</link>>@@
+				<<set _ordersList to setup.Delivery.orders()>>
 				<<set _hasOrder to false>>
 				<<for _oi to 0; _oi lt 3; _oi++>>
-					<<if $orders[_oi].address is _cell and State.variables["deliveryActiveIcon" + (_oi + 1)]>>
+					<<if _ordersList[_oi].address is _cell and setup.Delivery.activeIcon(_oi + 1)>>
 						<<set _hasOrder to true>>
 					<</if>>
 				<</for>>
 				<<if _hasOrder>>
 					<div class="mapOrderIcons">
 					<<for _oi to 0; _oi lt 3; _oi++>>
-						<<if $orders[_oi].address is _cell and State.variables["deliveryActiveIcon" + (_oi + 1)]>>
-							<<image $orders[_oi].image "mapOrderIcon">>
+						<<if _ordersList[_oi].address is _cell and setup.Delivery.activeIcon(_oi + 1)>>
+							<<image _ordersList[_oi].image "mapOrderIcon">>
 						<</if>>
 					<</for>>
 					</div>

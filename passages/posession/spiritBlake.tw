@@ -1,10 +1,10 @@
 :: spiritBlake [nobr] {"position":"1625,2550","size":"100,100"}
 <<video "ghosts/specials/spiritblake5.mp4">>
-@@.mc-thoughts; $companion.name licks your incredibly wet pussy, not forgetting about the stranger's balls<br>
+@@.mc-thoughts; <<= setup.Companion.name()>> licks your incredibly wet pussy, not forgetting about the stranger's balls<br>
 Unexpectedly for you, the stranger@@ <<linkappend "@@.mc-thoughtsLink; came right inside you. @@">>
 	<<video "ghosts/specials/spiritblake6.mp4">>
-	@@.mc-thoughts;The sperm flowed out onto $companion.name, covering her face.@@<br>
-	@@.mc-thoughts; $companion.name continued to play with the cum flowing out of you and lick your pussy. When she finishes playing with it, you notice that the stranger has disappeared.@@<br>
+	@@.mc-thoughts;The sperm flowed out onto <<= setup.Companion.name()>>, covering her face.@@<br>
+	@@.mc-thoughts; <<= setup.Companion.name()>> continued to play with the cum flowing out of you and lick your pussy. When she finishes playing with it, you notice that the stranger has disappeared.@@<br>
 	@@.notmc-speech; Ahh... So this is not a dream?@@<br>
 	@@.mc-speech; I don't think so, it seems like someone fucked us...@@<br>
 	@@.notmc-speech; What the fuck?@@<br>

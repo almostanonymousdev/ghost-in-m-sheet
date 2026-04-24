@@ -46,9 +46,9 @@ integer in [start, end]. Replaces the 4-10 line <<if>> ladders each
 		<<set _amt to _args[0]>>
 		<<set _corr to (_args.length gt 1 ? _args[1] : 0.2)>>
 		You earned an extra $<<= _amt>><br>
-		<<set $mc.money += _amt>>
-		<<if $mc.corruption lt 10>>
-			<<set $mc.corruption += _corr>>
+		<<run setup.Mc.addMoney(_amt)>>
+		<<if setup.Mc.corruption() lt 10>>
+			<<run setup.Mc.addCorruption(_corr)>>
 			+<<= _corr>> <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>><br>
 		<</if>>
 	<</widget>>
@@ -56,10 +56,10 @@ integer in [start, end]. Replaces the 4-10 line <<if>> ladders each
 	/* Clamp mc.lust back to 0 when it has overflowed 100, and repaint the
 	lust meter. Used by several climax passages. */
 	<<widget "deliveryLustOverflow">>
-		<<if $mc.lust gte 100>>
-			<<set $mc.lust to 0>>
-			<<set $mc.lust to Number($mc.lust.toFixed(2))>>
-			<<updatemeter 'mclust' `$mc.lust / 100`>>
+		<<if setup.Mc.lust() gte 100>>
+			<<run setup.Mc.setLust(0)>>
+			<<run setup.Mc.clampLust()>>
+			<<updatemeter 'mclust' `setup.Mc.lust() / 100`>>
 		<</if>>
 	<</widget>>
 
@@ -74,11 +74,11 @@ integer in [start, end]. Replaces the 4-10 line <<if>> ladders each
 		<<set _cfg to setup.deliveryEventChooseConfig[_args[0]]>>
 		<<set _varName to _cfg.varName>>
 		<<if ndef State.variables[_varName]>><<set State.variables[_varName] to 0>><</if>>
-		<<if _cfg.payMode eq "always">><<set $earnedMoney += $jobMoneySuccessed>><<deliveryTrackCorrect>><</if>>
+		<<if _cfg.payMode eq "always">><<run setup.Delivery.addJobSuccessEarnings()>><<deliveryTrackCorrect>><</if>>
 		<<image "deliveryhub/" + _cfg.img { style: "max-width: 100%; height: auto; display: block; margin: 0 auto;" }>>
 		<<if State.variables[_varName] eq 1>>
 			@@.notmc-speech; Great, thank you so much!@@<br>
-			<<if _cfg.payMode eq "done">><<set $earnedMoney += $jobMoneySuccessed>><<deliveryTrackCorrect>><</if>>
+			<<if _cfg.payMode eq "done">><<run setup.Delivery.addJobSuccessEarnings()>><<deliveryTrackCorrect>><</if>>
 			<<deliveryTipCheck>>
 			<br>
 			@@.backbtn;[[Back|DeliveryMap]]@@
@@ -101,23 +101,22 @@ integer in [start, end]. Replaces the 4-10 line <<if>> ladders each
 		<<set _tipRoll to random(1, 100)>>
 		<<if _tipRoll lte 30>>
 			<<set _tipAmount to random(2, 5)>>
-			<<set $earnedMoney += _tipAmount>>
-			<<set $deliveryTotalTips += _tipAmount>>
+			<<run setup.Delivery.addTip(_tipAmount)>>
 			@@.mc-action; The customer tipped you $<<= _tipAmount>>!@@<br>
 		<</if>>
 	<</widget>>
 
 	/* Track a correct delivery for perfect-shift bonus. */
 	<<widget "deliveryTrackCorrect">>
-		<<set $deliveryCorrectThisShift += 1>>
-		<<run setup.Delivery.trackVisit($currentHouse)>>
+		<<run setup.Delivery.incrementCorrectThisShift()>>
+		<<run setup.Delivery.trackVisit(setup.Delivery.currentHouse())>>
 	<</widget>>
 
 	/* Generic successful-delivery block: used when the matched item has no
 	custom encounter. */
 	<<widget "deliveryGenericSuccess">>
 		<<image "img/deliverygirlhappy.jpg" { style: "max-width: 100%; height: auto; display: block; margin: 0 auto;" }>>
-		<<set $earnedMoney += $jobMoneySuccessed>>
+		<<run setup.Delivery.addJobSuccessEarnings()>>
 		<<deliveryTrackCorrect>>
 		<<deliveryThanks>>
 		<<deliveryTipCheck>>

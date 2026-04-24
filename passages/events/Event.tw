@@ -6,11 +6,11 @@
 <<set _hg to setup.Ghosts.active()>>
 
 <<if _hg and _hg.canKiss and _bansheeRoll eq 1 and _chance <= 5>>
-	<<set $bansheeAbility to 1>>
+	<<run setup.Events.enableBanshee()>>
 	<<set _videoList to setup.Events.bansheeVideos()>>
 
 <<elseif _hg and _hg.canTentacles and _cthulionRoll eq 1 and _chance <= 5>>
-	<<set $cthulionAbility to 1>>
+	<<run setup.Events.enableCthulion()>>
 	<<set _lt to setup.Events.lustTier()>>
 	<<if _lt eq 5>>
 		<<cthulionAbility 1>>
@@ -29,6 +29,6 @@
 
 <<if _videoList.length gt 0>>
 	<<set _randomIndex to random(0, _videoList.length - 1)>>
-	<<set $videoEvent to _videoList[_randomIndex]>>
+	<<run setup.Events.setVideoEvent(_videoList[_randomIndex])>>
 	<<goto "EventMC">>
 <</if>>

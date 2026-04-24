@@ -1,5 +1,5 @@
 :: DeliveryBurgerEventStart [event nobr] {"position":"1425,1750","size":"100,100"}
-<<set $mc.lust to 100>>
+<<run setup.Mc.setLust(100)>>
 @@.mc-thoughts; You've been smoking weed for a while and are just relaxing. At first you are having a friendly conversation, but after 10 minutes you find yourself on your knees with a dick in your mouth, getting endless pleasure just from  @@@@.mc-speech;<<linkreplace " a blowjob">>
 	<<deliveryVideo "burgerevent" 1 2>>
 	@@.mc-thoughts; It seems that I will cum just from the dick in my mouth, why does it feel so good@@<br>

@@ -1,6 +1,6 @@
 :: GymTrainerEvent1Start [nobr] {"position":"3175,1700","size":"100,100"}
 <<addLust 15>>
-<<set $trainer1CoachingCost to 1>>
+<<run setup.Gym.markTrainer1Coaching()>>
 <<set _check to random(1,2)>>
 <<if _check eq 1>><<video "gym/trainer1event1.mp4">>
 <</if>>

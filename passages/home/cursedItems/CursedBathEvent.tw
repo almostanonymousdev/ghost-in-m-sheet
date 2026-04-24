@@ -20,10 +20,7 @@
 		@@.mc-speech; Ah-- ahh~ it hurts... s-stop... too much...!@@<br><br>
 		@@.mc-thoughts; The creature finally pulls out, and cum gushes from your pussy in a torrent. At the same time, the tentacle withdraws from your mouth and thick ropes of cum pour from your lips, dripping down your chin and chest. The release triggers one last orgasm -- your whole body convulses as you squirt violently, spraying into the dark.@@<br><br>
 		@@.mc-thoughts; The darkness dissolves. You're back in the bathtub, gasping, gripping the porcelain edges. The water is warm and clear. Your body is trembling, your thighs pressed together, an ache deep in your core. The bathroom looks exactly as it did before.@@<br>
-		<<set $mc.sanity -= 15>>
-		<<set $mc.corruption += 0.5>>
-		<<set $mc.lust to 100>>
-		<<run setup.CursedItems.clearCurse()>>
+		<<run setup.CursedItems.applyCurseEventEffects()>>
 		<br>
 		@@.mc-speech; Oh god... oh fuck... was that... I can still feel it inside me...@@<br>
 		Sanity decreased. Corruption slightly increased.<br>

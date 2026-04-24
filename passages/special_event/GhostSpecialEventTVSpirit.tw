@@ -1,5 +1,5 @@
 :: GhostSpecialEventTVSpirit [nobr] {"position":"500,2450","size":"100,100"}
-<<set $ghostSpecialEventSpiritCD to 1>>
+<<run setup.SpecialEvent.startSpiritEventCooldown()>>
 <<video "ghosts/specials/spirit1.0.mp4">>
 @@.mc-thoughts; You settled in front of the TV and soon fell asleep. But something strange disrupts your peace--an almost imperceptible feeling of someone's presence nearby. You sense gentle hands gliding over your body, exploring every curve and contour. These touches send shivers and excitement through you. Your sleep isn't too deep, and you gradually wake up, opening your eyes and realizing that something @@
 <<linkappend "@@.usebtn; unusual is happening...@@">>

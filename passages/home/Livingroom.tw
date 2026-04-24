@@ -2,18 +2,18 @@
 <<image "img/mclivingroom.jpg" { width: "100%" }>><br>
 @@.location; Livingroom@@<br>
 <br>
-<<if $tentaclesEventPCText eq 1>>
+<<if setup.Home.tentaclesPCText() eq 1>>
 	@@.mc-speech; These are the creatures from nightmares... they've appeared here too@@<br>
-	<<unset $tentaclesEventPCText>>
-<<elseif $tentaclesEventPCText eq 2>>
+	<<run setup.Home.clearTentaclesPCText()>>
+<<elseif setup.Home.tentaclesPCText() eq 2>>
 	@@.mc-speech; They're not so bad after all.@@<br>
-	<<unset $tentaclesEventPCText>>
-<<elseif $tentaclesEventPCText eq 3>>
+	<<run setup.Home.clearTentaclesPCText()>>
+<<elseif setup.Home.tentaclesPCText() eq 3>>
 	@@.mc-speech; It's a shame they disappeared... I hope next time I'll be able to keep them.@@<br>
-	<<unset $tentaclesEventPCText>>
-<<elseif $tentaclesEventTVText eq 1>>
+	<<run setup.Home.clearTentaclesPCText()>>
+<<elseif setup.Home.tentaclesTVText() eq 1>>
 	@@.mc-speech; How long did I sleep? Doesn't matter, I feel fantastic! Hehe~@@<br>
-	<<unset $tentaclesEventTVText>>
+	<<run setup.Home.clearTentaclesTVText()>>
 <</if>>
 @@.usebtn;<<link "Watch tv (30 min)" "Livingroom">>
 	<<addTime 30>>
@@ -35,15 +35,15 @@
 <</if>>
 @@.enterbtn;<<link "Bedroom" "Bedroom">><<addTime 0.5>>
 <</link>>@@<br>
-<<if $hours <= 22 and $hours >= 12>>
-	@@.usebtn;<<link "Skip time till midnight" "Livingroom">><<set $hours to 23>><<set $minutes to 0>>@@
-		<<replace "#time">><<print ($hours < 10 ? '0' + $hours : $hours) + ":" + ($minutes < 10 ? '0' + $minutes : $minutes)>><</replace>>
+<<if setup.Time.hours() <= 22 and setup.Time.hours() >= 12>>
+	@@.usebtn;<<link "Skip time till midnight" "Livingroom">><<run setup.Home.skipTimeToMidnight()>>@@
+		<<replace "#time">><<= setup.updateTimeDisplay()>><</replace>>
 	<</link>><br>
 <</if>>
 
 <<if setup.Home.succubusCanKnock()>>
 	<<linkreplace "@@.usebtn; Someone is gently knocking on the door@@">>
-		<<set $succubus to 1>>
+		<<run setup.Home.markSuccubusArrived()>>
 		@@.mc-thoughts; You open the door -- no one is there. A light breeze brushes against your face and fades away.@@<br>
 		@@.mc-speech; Hmm... Strange, I could've sworn I heard knocking...@@
 	<</linkreplace>><br>

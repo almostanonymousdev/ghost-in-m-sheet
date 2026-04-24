@@ -1,27 +1,13 @@
 :: widgetFriends [widget nobr noreturn] {"position":"300,1500","size":"100,100"}
 <<widget "companionExp">>
-	<<if $companion.name eq "Brook">>
-		<<if $brook.lvl gte 5>>
-			$companion.name is already at the maximum level!
+	<<set _cName to setup.Companion.name()>>
+	<<if _cName eq "Brook" or _cName eq "Alice" or _cName eq "Blake">>
+		<<if setup.Companion.isAtMaxLvl(_cName)>>
+			<<= _cName>> is already at the maximum level!
 		<<else>>
-			$companion.name 's exp: + _args[0]
-			<<set $brook.exp += _args[0]>>
+			<<= _cName>> 's exp: + _args[0]
+			<<run setup.Companion.grantExpTo(_cName, _args[0])>>
 		<</if>>
-	<<elseif $companion.name eq "Alice">>
-		<<if $alice.lvl gte 5>>
-			$companion.name is already at the maximum level!
-		<<else>>
-			$companion.name 's exp: + _args[0]
-			<<set $alice.exp += _args[0]>>
-		<</if>>
-	<<elseif $companion.name eq "Blake">>
-		<<if $blake.lvl gte 5>>
-			$companion.name is already at the maximum level!
-		<<else>>
-			$companion.name 's exp: + _args[0]
-			<<set $blake.exp += _args[0]>>
-		<</if>>
-
 	<</if>>
 <</widget>>
 
@@ -44,175 +30,138 @@
 <</widget>>
 
 <<widget "companionTextEvent1">>
-	<<if $companion.name eq "Brook">>
+	<<set _cName to setup.Companion.name()>>
+	<<if _cName eq "Brook">>
 		@@.mc-thoughts; As you entered the room, you immediately saw her. She was naked and visibly shaken.@@<br>
 		@@.mc-speech; Oh God, what happened to you?@@<br>
 		@@.notmc-speech; I don't want to talk about it... Just help me@@<br>
 		@@.mc-thoughts; You walked over to her, carefully helping her up.@@<br>
-	<<elseif $companion.name eq "Alice">>
+	<<elseif _cName eq "Alice">>
 		@@.mc-thoughts; When you entered the room, you saw her.@@<br> @@.mc-speech; Are you alright?@@<br> @@.notmc-speech; I'm fine. It's just a ghost, nothing to worry about. And it looks like I almost beat it.@@<br> @@.mc-thoughts; It seems I can see the marks of that fight on her...@@<br> @@.mc-speech; Well done, I'm proud of you.@@<br>
-	<<elseif $companion.name eq "Blake">>
+	<<elseif _cName eq "Blake">>
 		@@.mc-thoughts; When you entered the room, you saw her.@@<br> @@.mc-speech; What are you doing?@@<br> @@.notmc-speech; I thought I could attract the ghost this way.@@<br> @@.mc-speech; Why?@@<br> @@.notmc-speech; Well, maybe it would have more cursed items, and I could take them for myself.@@<br>
 		@@.mc-speech; I don't think that's how it works, or the ghost would probably not want to share with you.@@<br>
 		@@.notmc-speech; I still think my plan will work.@@<br>
 		@@.mc-speech; Alright, let's keep looking.@@<br>
-	<<elseif $companion.name eq "Alex" or $companion.name eq "Taylor" or $companion.name eq "Casey" and ndef $transFirstStage>>
-		@@.mc-thoughts; You enter the room and see a figure that clearly belongs to a female body. You don't recognize it until it turns around, revealing $companion.name's face.@@<br>
-		@@.mc-speech; $companion.name, are you okay? You look...@@<br>
+	<<elseif setup.Companion.isTransByName(_cName) and not setup.Companion.isTransFirstStageSet()>>
+		@@.mc-thoughts; You enter the room and see a figure that clearly belongs to a female body. You don't recognize it until it turns around, revealing <<= _cName>>'s face.@@<br>
+		@@.mc-speech; <<= _cName>>, are you okay? You look...@@<br>
 		@@.notmc-speech; Yeah, it's weird. Maybe this house is doing something to me.<br> Let's find the evidence quickly and get out of here.@@<br>
-		<<set $transFirstStage to 1>>
-		<<if $companion.name eq "Alex">>
-			<<set $transPicture to 1>>
-		<<elseif $companion.name eq "Taylor">>
-			<<set $transPicture to 2>>
-		<<elseif $companion.name eq "Casey">>
-			<<set $transPicture to 3>>
-		<</if>>
-	<<elseif $companion.name eq "Alex" or $companion.name eq "Taylor" or $companion.name eq "Casey" and $transFirstStage eq 1>>
-		@@.mc-thoughts; You stumble upon $companion.name, the body has become irresistibly feminine, movements now full of seduction.@@<br>
-		@@.mc-speech; $companion.name, you've changed so much... How do you feel with these changes?@@<br>
+		<<run setup.Companion.markTransFirstStage()>>
+	<<elseif setup.Companion.isTransByName(_cName) and setup.Companion.isTransFirstStageSet()>>
+		@@.mc-thoughts; You stumble upon <<= _cName>>, the body has become irresistibly feminine, movements now full of seduction.@@<br>
+		@@.mc-speech; <<= _cName>>, you've changed so much... How do you feel with these changes?@@<br>
 		@@.mc-speech; I... I don't know... I feel completely different... I can't explain it.@@<br>
-		<<set $transFirstStage to 1>>
-		<<if $companion.name eq "Alex">>
-			<<set $transPicture to 1>>
-		<<elseif $companion.name eq "Taylor">>
-			<<set $transPicture to 2>>
-		<<elseif $companion.name eq "Casey">>
-			<<set $transPicture to 3>>
-		<</if>>
+		<<run setup.Companion.markTransFirstStage()>>
 	<</if>>
-	<<set $companion.sanity -= $companion.decreaseSanity>>
-	<<set $companion.lust += _companionLustIncreased>>
-	$companion.name's lust: + _companionLustIncreased <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
-	$companion.name's sanity: - $companion.decreaseSanity<<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+	<<run setup.Companion.applyEventStatDeltas(_companionLustIncreased)>>
+	<<= _cName>>'s lust: + _companionLustIncreased <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+	<<= _cName>>'s sanity: - <<= setup.Companion.decreaseSanity()>><<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
 
 <</widget>>
 
 <<widget "companionTextEvent2">>
-	<<if $companion.name eq "Brook">>
+	<<set _cName to setup.Companion.name()>>
+	<<if _cName eq "Brook">>
 		@@.mc-thoughts; As you entered the room, you immediately saw her. But she wasn't alone. Fortunately, you entered just in time, and as soon as you did, the ghost let her go and vanished@@<br>
-		@@.mc-speech; $companion.name , are you alright? I saw the ghost trying to...@@<br>
-		@@.notmc-speech; Thank you, $mc.name, you came just in time.@@<br>
+		@@.mc-speech; <<= _cName>> , are you alright? I saw the ghost trying to...@@<br>
+		@@.notmc-speech; Thank you, <<= setup.Mc.name()>>, you came just in time.@@<br>
 		@@.mc-thoughts; You walked over to her, carefully helping her up.@@<br>
 
-	<<elseif $companion.name eq "Alice">>
+	<<elseif _cName eq "Alice">>
 		@@.mc-thoughts; As you entered the room, you immediately saw her. But she wasn't alone. <br>The ghost, noticing you, disappeared instantly.@@<br>
-		@@.mc-speech; $companion.name, are you alright?@@<br>
+		@@.mc-speech; <<= _cName>>, are you alright?@@<br>
 		@@.notmc-speech; Yes, I think I'm fine.@@<br>
 		@@.mc-thoughts; A faint smile remained on her face, as if she had enjoyed the encounter. @@<br>
 		@@.notmc-speech; I hope it comes back so I can teach it a lesson...@@<br>
 
-	<<elseif $companion.name eq "Blake">>
+	<<elseif _cName eq "Blake">>
 		@@.mc-thoughts; As you entered the room, you immediately saw her. But she wasn't alone. <br>The ghost, noticing you, disappeared instantly.@@<br>
-		@@.mc-speech; $companion.name, are you alright?@@<br>
+		@@.mc-speech; <<= _cName>>, are you alright?@@<br>
 		@@.notmc-speech; Yes, I saw it! I think you scared it away.@@<br>
 		@@.mc-speech; Are you disappointed? I just saved you.@@<br>
 		@@.notmc-speech; Well, yeah, of course...@@<br>
 		@@.mc-speech; Alright, let's continue.@@<br>
-	<<elseif $companion.name eq "Alex" or $companion.name eq "Taylor" or $companion.name eq "Casey">>
-		@@.mc-thoughts; You enter and see the ghost defiling $companion.name, taking every opportunity to satisfy its desires. Its touches and actions make $companion.name moan, sending him into a spiral of wild ecstasy and taboo pleasure.<br>
-		Seeing you, the ghost vanishes, leaving $companion.name panting and disheveled, a mix of relief and lingering desire evident on his face.@@<br>
-		@@.mc-speech; $companion.name, are you okay?@@<br>
+	<<elseif setup.Companion.isTransByName(_cName)>>
+		@@.mc-thoughts; You enter and see the ghost defiling <<= _cName>>, taking every opportunity to satisfy its desires. Its touches and actions make <<= _cName>> moan, sending him into a spiral of wild ecstasy and taboo pleasure.<br>
+		Seeing you, the ghost vanishes, leaving <<= _cName>> panting and disheveled, a mix of relief and lingering desire evident on his face.@@<br>
+		@@.mc-speech; <<= _cName>>, are you okay?@@<br>
 		@@.notmc-speech; Oh~ he touched me, and I... I don't understand what was happening to me.@@<br>
-		<<set $transFirstStage to 1>>
-		<<if $companion.name eq "Alex">>
-			<<set $transPicture to 1>>
-		<<elseif $companion.name eq "Taylor">>
-			<<set $transPicture to 2>>
-		<<elseif $companion.name eq "Casey">>
-			<<set $transPicture to 3>>
-		<</if>>
+		<<run setup.Companion.markTransFirstStage()>>
 	<</if>>
-	<<set $companion.sanity -= $companion.decreaseSanity>>
-	<<set $companion.lust += _companionLustIncreased>>
-	$companion.name's lust: + _companionLustIncreased <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
-	$companion.name's sanity: - $companion.decreaseSanity<<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+	<<run setup.Companion.applyEventStatDeltas(_companionLustIncreased)>>
+	<<= _cName>>'s lust: + _companionLustIncreased <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+	<<= _cName>>'s sanity: - <<= setup.Companion.decreaseSanity()>><<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
 	Your <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>> +15<br>
 	<<addLust 15>>
 <</widget>>
 
 <<widget "companionTextEvent3">>
-	<<if $companion.name eq "Brook">>
+	<<set _cName to setup.Companion.name()>>
+	<<if _cName eq "Brook">>
 		@@.mc-thoughts; As you entered the room, you immediately saw her. But she wasn't alone. Fortunately, you entered just in time, and as soon as you did, the ghost let her go and vanished@@<br>
-		@@.mc-speech; $companion.name, are you alright? I saw what the ghost was doing to you...@@<br>
-		@@.notmc-speech; Thank you, $mc.name, you came just in time.@@<br>
+		@@.mc-speech; <<= _cName>>, are you alright? I saw what the ghost was doing to you...@@<br>
+		@@.notmc-speech; Thank you, <<= setup.Mc.name()>>, you came just in time.@@<br>
 		@@.mc-thoughts; You walked over to her, carefully helping her up.@@<br>
 
-	<<elseif $companion.name eq "Alice">>
+	<<elseif _cName eq "Alice">>
 		@@.mc-thoughts; Before entering the room, you hear strange sounds coming from inside. <br>
 		As you entered the room, you immediately saw her. But she wasn't alone. You walked in just in time to see what was happening...<br>
 		It seems she doesn't want to be interrupted. But as soon as the ghost saw you, it disappeared. @@<br>
-		@@.mc-speech; $companion.name, are you alright? I heard strange noises...@@<br>
+		@@.mc-speech; <<= _cName>>, are you alright? I heard strange noises...@@<br>
 		@@.notmc-speech; Don't worry, it just caught me by surprise.@@<br>
 		@@.mc-speech; Sure...@@<br>
 
-	<<elseif $companion.name eq "Blake">>
+	<<elseif _cName eq "Blake">>
 		@@.mc-thoughts; Before entering the room, you hear strange sounds coming from inside. <br>
 		As you entered the room, you immediately saw her. But she wasn't alone. You walked in just in time to see what was happening...<br>
 		It seems she doesn't want to be interrupted. But as soon as the ghost saw you, it disappeared. @@<br>
-		@@.mc-speech; $companion.name, are you alright? I heard strange noises...@@<br>
+		@@.mc-speech; <<= _cName>>, are you alright? I heard strange noises...@@<br>
 		@@.notmc-speech; Don't worry, it just caught me by surprise.@@<br>
 		@@.mc-speech; Sure...@@<br>
-	<<elseif $companion.name eq "Alex" or $companion.name eq "Taylor" or
-		$companion.name eq "Casey">>
-		@@.mc-thoughts; You suddenly burst into the room and see $companion.name engaging in oral sex with the ghost. His movements are full of enthusiasm, but as soon as you enter, the ghost vanishes, leaving $companion.name with wet lips and a face full of confusion.@@<br>
-		@@.mc-speech; $companion.name, what the hell is going on here?!@@<br>
+	<<elseif setup.Companion.isTransByName(_cName)>>
+		@@.mc-thoughts; You suddenly burst into the room and see <<= _cName>> engaging in oral sex with the ghost. His movements are full of enthusiasm, but as soon as you enter, the ghost vanishes, leaving <<= _cName>> with wet lips and a face full of confusion.@@<br>
+		@@.mc-speech; <<= _cName>>, what the hell is going on here?!@@<br>
 		@@.notmc-speech; I... I don't know, he appeared so suddenly, and it seemed like I had no control over my actions. It all happened so fast, I didn't even get to understand anything.@@<br>
-		<<set $transFirstStage to 1>>
-		<<if $companion.name eq "Alex">>
-			<<set $transPicture to 1>>
-		<<elseif $companion.name eq "Taylor">>
-			<<set $transPicture to 2>>
-		<<elseif $companion.name eq "Casey">>
-			<<set $transPicture to 3>>
-		<</if>>
+		<<run setup.Companion.markTransFirstStage()>>
 	<</if>>
-	<<set $companion.sanity -= $companion.decreaseSanity>>
-	<<set $companion.lust += _companionLustIncreased>>
-	$companion.name's lust: + _companionLustIncreased <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
-	$companion.name's sanity: - $companion.decreaseSanity<<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+	<<run setup.Companion.applyEventStatDeltas(_companionLustIncreased)>>
+	<<= _cName>>'s lust: + _companionLustIncreased <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+	<<= _cName>>'s sanity: - <<= setup.Companion.decreaseSanity()>><<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
 	Your <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>> +15<br>
 	<<addLust 15>>
 <</widget>>
 
 <<widget "companionTextEvent4">>
-	<<if $companion.name eq "Brook">>
+	<<set _cName to setup.Companion.name()>>
+	<<if _cName eq "Brook">>
 		@@.mc-thoughts; As you entered the room, you immediately saw her. But she wasn't alone. Fortunately, you entered just in time, and as soon as you did, the ghost let her go and vanished@@<br>
-		@@.mc-speech; $companion.name, are you alright? I saw what the ghost was doing to you...@@<br>
-		@@.notmc-speech; Thank you, $mc.name, you came just in time.@@<br>
+		@@.mc-speech; <<= _cName>>, are you alright? I saw what the ghost was doing to you...@@<br>
+		@@.notmc-speech; Thank you, <<= setup.Mc.name()>>, you came just in time.@@<br>
 		@@.mc-thoughts; You walked over to her, carefully helping her up.@@<br>
 
-	<<elseif $companion.name eq "Alice">>
+	<<elseif _cName eq "Alice">>
 		@@.mc-thoughts; Before entering the room, you hear soft moans coming from inside. <br>
 		As you entered the room, you immediately saw her. But she wasn't alone. You walked in just in time to see what was happening...<br>
 		It seems she doesn't want to be interrupted. But as soon as the ghost saw you, it disappeared. @@<br>
 
-	<<elseif $companion.name eq "Blake">>
+	<<elseif _cName eq "Blake">>
 		@@.mc-thoughts; Before entering the room, you hear soft moans coming from inside. <br>
 		As you entered the room, you immediately saw her. But she wasn't alone. You walked in just in time to see what was happening...<br>
 		It seems she doesn't want to be interrupted. But as soon as the ghost saw you, it disappeared. @@<br>
 
-		@@.mc-speech; $companion.name, are you alright? I heard screaming...@@<br>
+		@@.mc-speech; <<= _cName>>, are you alright? I heard screaming...@@<br>
 		@@.notmc-speech; Don't worry, it just caught me by surprise.@@<br>
 		@@.mc-speech; Sure...@@<br>
-	<<elseif $companion.name eq "Alex" or $companion.name eq "Taylor" or
-		$companion.name eq "Casey">>
-		@@.mc-thoughts; You burst into the room and see the ghost fucking $companion.name hard in the ass, his cock going all the way in, making $companion.name 's body shake with each powerful thrust. The ghost disappears upon your arrival, leaving $companion.name with flushed skin and traces of ecstasy on his face.@@<br>
-		@@.mc-speech; $companion.name, what's wrong with you? Are you okay after this?@@<br>
+	<<elseif setup.Companion.isTransByName(_cName)>>
+		@@.mc-thoughts; You burst into the room and see the ghost fucking <<= _cName>> hard in the ass, his cock going all the way in, making <<= _cName>> 's body shake with each powerful thrust. The ghost disappears upon your arrival, leaving <<= _cName>> with flushed skin and traces of ecstasy on his face.@@<br>
+		@@.mc-speech; <<= _cName>>, what's wrong with you? Are you okay after this?@@<br>
 		@@.notmc-speech; I... I don't know... He used me, my body... It seems I didn't understand what was happening... It was like I wasn't in my own body, the sensations were so... intense, incredible.@@<br>
-		<<set $transFirstStage to 1>>
-		<<if $companion.name eq "Alex">>
-			<<set $transPicture to 1>>
-		<<elseif $companion.name eq "Taylor">>
-			<<set $transPicture to 2>>
-		<<elseif $companion.name eq "Casey">>
-			<<set $transPicture to 3>>
-		<</if>>
+		<<run setup.Companion.markTransFirstStage()>>
 	<</if>>
-	<<set $companion.sanity -= $companion.decreaseSanity>>
-	<<set $companion.lust += _companionLustIncreased>>
-	$companion.name's lust: + _companionLustIncreased <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
-	$companion.name's sanity: - $companion.decreaseSanity<<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+	<<run setup.Companion.applyEventStatDeltas(_companionLustIncreased)>>
+	<<= _cName>>'s lust: + _companionLustIncreased <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+	<<= _cName>>'s sanity: - <<= setup.Companion.decreaseSanity()>><<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
 	Your <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>> +15<br>
 	<<addLust 15>>
 <</widget>>
@@ -220,20 +169,17 @@
 <<widget "isCompanionContinue">>
 	<<linkappend "@@.mc-speechLink; Will you be able to continue?@@">><br>
 
-		<<if _args[0] gte _args[1] or ($companion.sanity gte _args[2] and $companion.sanity lte _args[3])>>
-			<<set $chosenPlanActivated to 0>>
-			<<set $randomGhostPassage to 0>>
-			<<set $showComp to 1>>
-			<<set $isCompRoomChosen to 0>>
+		<<if _args[0] gte _args[1] or (setup.Companion.sanity() gte _args[2] and setup.Companion.sanity() lte _args[3])>>
+			<<run setup.Companion.resumeHunt()>>
 			@@.notmc-speech; I think I can continue. @@
 			<<set _checkChance to random(1,100)>>
-			<<if _checkChance lte $chanceToSuccess>>
+			<<if _checkChance lte setup.Companion.chanceToSuccess()>>
 				@@.notmc-speech; Oh, by the way, before the ghost... attacked me, I found something...@@
 				<<include "CompanionResult">>
-				<<set $chosenPlan to "Plan1">>
+				<<run setup.Companion.setChosenPlan("Plan1")>>
 			<<else>>
-				<<set $chosenPlan to "Plan1">>
-				@@.notmc-speech; $mc.name, I'm sorry, I wasn't able to find what you asked for...@@<br>
+				<<run setup.Companion.setChosenPlan("Plan1")>>
+				@@.notmc-speech; <<= setup.Mc.name()>>, I'm sorry, I wasn't able to find what you asked for...@@<br>
 				@@.mc-speech; Don't worry about it, it's okay. The main thing is that you're fine@@<br>
 				<<companionExp 2>>
 				<br>
@@ -242,18 +188,15 @@
 			@@.notmc-speech; Thank you... I think I'm ready. [[Let's continue.|$return]]@@<br>
 		<<else>>
 
-			<<set $chosenPlanActivated to 0>>
-			<<set $randomGhostPassage to 0>>
-			<<set $showComp to 1>>
-			<<set $isCompRoomChosen to 0>>
+			<<run setup.Companion.resumeHunt()>>
 			@@.notmc-speech; You know... I'm not sure I can keep going. I need to rest for a bit...@@<br>
 			<<set _checkChance to random(1,100)>>
-			<<if _checkChance lte $chanceToSuccess>>
+			<<if _checkChance lte setup.Companion.chanceToSuccess()>>
 				@@.notmc-speech; Oh, by the way, before the ghost... attacked me, i found something...@@
 				<<include "CompanionResult">>
 
 			<<else>>
-				@@.notmc-speech; $mc.name, I'm sorry, I wasn't able to find what you asked for...@@<br>
+				@@.notmc-speech; <<= setup.Mc.name()>>, I'm sorry, I wasn't able to find what you asked for...@@<br>
 				@@.mc-speech; Don't worry about it, it's okay. The main thing is that you're fine@@<br>
 
 				<<companionExp 2>>
@@ -261,14 +204,15 @@
 				<br>
 
 			<</if>>
-			@@.mc-speech; Alright, then I'll [[continue|$return][$showComp to 0; $isCompChosen to 0; $chosenPlan to 0]] on my own...@@ <<if _args[0] lte 4>>@@.warningtext; Req. higher lvl@@
+			@@.mc-speech; Alright, then I'll [[continue|$return][setup.Companion.dismissCompanion()]] on my own...@@ <<if _args[0] lte 4>>@@.warningtext; Req. higher lvl@@
 			<</if>><br>
 		<</if>>
 	<</linkappend>>
 <</widget>>
 
 <<widget "aliceLustHighEvent">>
-	or @@.usebtn;<<link `$companion.name + " helps you"`>><<set $companion.sanity -= 3>>
+	<<set _cName to setup.Companion.name()>>
+	or @@.usebtn;<<link `_cName + " helps you"`>><<run setup.Companion.drainSanity(3)>>
 		<<replace "#eventVideo">><<include "AliceHelp">><</replace>>
-	<</link>> @@ - $companion.name's <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>>
+	<</link>> @@ - <<= _cName>>'s <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>>
 <</widget>>

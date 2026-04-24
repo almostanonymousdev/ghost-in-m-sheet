@@ -15,10 +15,7 @@
 		@@.mc-thoughts; The spectral presence grips the back of your head, thrusting against your mouth. You gag, eyes watering, but your body refuses to pull away -- the taste of it is intoxicating, electric. Then the ghost tenses and finishes, flooding your mouth with a warm static that dissolves on your greedy tongue.@@<br>
 		@@.mc-speech; Mmh~! Ah... ahh~!@@<br><br>
 		@@.mc-thoughts; The moment you swallow, an orgasm hits you like a freight train. Your thighs clench, your back arches, and you collapse against the couch, trembling and gasping through aftershock after aftershock. When you finally open your eyes, you're sitting on the couch again. The TV plays a normal channel. The room looks exactly as it did before.@@<br>
-		<<set $mc.sanity -= 15>>
-		<<set $mc.corruption += 0.5>>
-		<<set $mc.lust to 100>>
-		<<run setup.CursedItems.clearCurse()>>
+		<<run setup.CursedItems.applyCurseEventEffects()>>
 		<br>
 		@@.mc-speech; Was that... did I just... I can still taste it...@@<br>
 		Sanity decreased. Corruption slightly increased.<br>

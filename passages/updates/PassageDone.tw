@@ -1,204 +1,66 @@
 :: PassageDone {"position":"200,100","size":"100,100"}
-<<include "LightPassageManual">>
+<<applyRoomLightClass>>
 <<include "DeliveryActiveIcon">>
-<<include "ClothesChanges">>
+<<run setup.Wardrobe.refreshAggregateStates()>>
 <<include "Mimic">>
-<<include "ChangeGhostRoom">>
+<<run setup.HauntedHouses.shuffleGhostRoom()>>
 <<if passage() is "Wardrobe">>
 <<include "Piercing">>
 <<include "WardrobeSlots">>
 <</if>>
 
-<<if passage() eq "Mirror" and $thetwinsevent neq 1>>
-<<switch $mc.makeupImg>>
-	<<case 0>>
-<<replace "#mirrorImage">><<image "img/mc.jpg">>
-<</replace>>
-	<<case 1>>
-    <<replace "#mirrorImage">><<image "img/makeup1.jpg" { width: "70%" }>>
-    <</replace>>
-    <<case 2>>
-    <<replace "#mirrorImage">><<image "img/makeup2.jpg" { width: "70%" }>>
-    <</replace>>
-    <<case 3>>
-    <<replace "#mirrorImage">><<image "img/makeup3.jpg" { width: "70%" }>>
-    <</replace>>
- <</switch>>
+<<if passage() eq "Mirror" and not setup.Updates.twinsEventFired()>>
+<<if setup.Updates.mirrorMakeupHasWidth()>>
+	<<replace "#mirrorImage">><<image setup.Updates.mirrorMakeupImagePath() { width: "70%" }>>
+	<</replace>>
+<<else>>
+	<<replace "#mirrorImage">><<image setup.Updates.mirrorMakeupImagePath()>>
+	<</replace>>
+<</if>>
 <</if>>
 
-<<if $hours gte 6 and setup.Ghosts.isHunting()>>
+<<if setup.Time.isMorningPlus() and setup.Ghosts.isHunting()>>
 <<goto "HuntOverTime">>
 <</if>>
 
-<<if ndef $update22>>
+<<if not setup.Updates.update22Applied()>>
 <<include "Update1">>
 <</if>>
-<<if $cheatBackForward>><<run $("body").addClass("show-history")>><</if>>
+<<if setup.Updates.cheatBackForwardActive()>><<run $("body").addClass("show-history")>><</if>>
 
-<<if ndef $update0909>>
+<<if not setup.Updates.update0909Applied()>>
 <<include "Update3">>
 <</if>>
 
-<<if ndef $update2707>>
+<<if not setup.Updates.update2707Applied()>>
 <<include "Update2">>
 <</if>>
 
-<<if $brook.lvl lt 5>>
-<<if $brook.exp >= $brook.expForNextLvl>>
-    <<set $brook.exp -= $brook.expForNextLvl>>
-    <<set $brook.expForNextLvl to 20 + $brook.lvl * 20>>
-    <<set $brook.lvl += 1>>
-<</if>>
-<</if>>
+<<run setup.Companion.tickAllCompanionProgression()>>
 
-<<if $alice.lvl lt 5>>
-<<if $alice.exp >= $alice.expForNextLvl>>
-    <<set $alice.exp -= $alice.expForNextLvl>>
-    <<set $alice.expForNextLvl to 20 + $alice.lvl * 20>>
-    <<set $alice.lvl += 1>>
-<</if>>
-<</if>>
-
-<<if $blake.lvl lt 5>>
-<<if $blake.exp >= $blake.expForNextLvl>>
-    <<set $blake.exp -= $blake.expForNextLvl>>
-    <<set $blake.expForNextLvl to 20 + $blake.lvl * 20>>
-    <<set $blake.lvl += 1>>
-<</if>>
-<</if>>
-
-<<if $brook.lvl eq 1>>
-<<set $brook.maxSanityCap to 75>>
-<<elseif $brook.lvl eq 2>>
-<<set $brook.maxSanityCap to 50>>
-<<elseif $brook.lvl eq 3>>
-<<set $brook.maxSanityCap to 25>>
-<<elseif $brook.lvl gte 4>>
-<<set $brook.maxSanityCap to 0>>
-<</if>>
-
-<<if $alice.lvl eq 1>>
-<<set $alice.maxSanityCap to 75>>
-<<elseif $alice.lvl eq 2>>
-<<set $alice.maxSanityCap to 50>>
-<<elseif $alice.lvl eq 3>>
-<<set $alice.maxSanityCap to 25>>
-<<elseif $alice.lvl gte 4>>
-<<set $alice.maxSanityCap to 0>>
-<</if>>
-
-<<if $blake.lvl eq 1>>
-<<set $blake.maxSanityCap to 75>>
-<<elseif $blake.lvl eq 2>>
-<<set $blake.maxSanityCap to 50>>
-<<elseif $blake.lvl eq 3>>
-<<set $blake.maxSanityCap to 25>>
-<<elseif $blake.lvl gte 4>>
-<<set $blake.maxSanityCap to 0>>
-<</if>>
-
-<<if previous() eq "EventMC" and $chosenPlan eq "Plan1" and $isCompChosen eq 1>>
-<<if $companion.name eq "Brook">>
-<<if $companion.sanity lte $brook.maxSanityCap>>
+<<if setup.Updates.activeCompanionShouldLeaveAfterEvent()>>
 <<goto "CompanionLeaving">>
 <</if>>
-<<elseif $companion.name eq "Alice">>
-<<if $companion.sanity lte $alice.maxSanityCap>>
-<<goto "CompanionLeaving">>
-<</if>>
-<<elseif $companion.name eq "Blake">>
-<<if $companion.sanity lte $blake.maxSanityCap>>
-<<goto "CompanionLeaving">>
-<</if>>
-<<elseif $companion.name eq "Alex" or $companion.name eq "Taylor" or $companion.name eq "Casey">>
-<<if $companion.sanity lte 0>>
-<<goto "CompanionLeaving">>
-<</if>>
-<</if>>
-<</if>>
 
-<<if ndef $rememberTopUnder or ndef $rememberBottomUnder>>
-<<set $rememberTopUnder to "bra0">>
-<<set $rememberBottomUnder to "panties0">>
-<</if>>
+<<run setup.Updates.ensureUnderwearMemory()>>
 
-<<set $stealChanceMult to 1.1>>
+<<run setup.Updates.initTick()>>
 
 <<set _eventTriggered = false>>
 <<set _stealClothesTriggered = false>>
 
-<<if $elapsedTimeHunt gt $huntTimeRemain>>
-<<set $huntActivated to 0>>
-<<else>>
-<<set $elapsedTimeHunt = ($hours * 60 + $minutes) - $huntActivationTime>>
+<<run setup.Updates.tickHuntTimer()>>
+<<run setup.Updates.tickRescueQuestExpiry()>>
+<<run setup.Updates.tickCursedHuntTimer()>>
+<<run setup.Updates.applyOneTimeUpdate4()>>
+<<run setup.Updates.applyDetectorHighlights()>>
+
+<<run setup.Mc.ensurePossession()>>
+
+<<if setup.Updates.applyChokerLustFloor()>>
+<<updatemeter 'mclust' `setup.Mc.lust().toFixed(2) / 100`>>
 <</if>>
 
-<<if $hasQuestForRescue eq 1 and ($rescueStage gte 2 or ($rescueStage eq 1 and $hours gt 17))>>
-<<set $hasQuestForRescue to 2>>
-<<set $rescueStage to 0>>
-<<set $hasRescueClue to 0>>
-<</if>>
-
-<<script>>
-(function () {
-    var sv = State.variables;
-    if (sv.cursedHuntActive === 1) {
-        if (sv.cursedHuntEndTime && Date.now() >= sv.cursedHuntEndTime) {
-            sv.cursedHuntActive = 0;
-            delete sv.cursedHuntEndTime;
-            $('.cursedHuntLinkDisable').removeClass('disabled-linkSpecial');
-        } else {
-            $('.cursedHuntLinkDisable').addClass('disabled-linkSpecial');
-        }
-    }
-})();
-<</script>>
-
-<<if $update4 neq 1>>
-<<set $blake.plan2TimeReq to 10>>
-<<set $alice.plan2TimeReq to 15>>
-<<set $alice.plan3TimeReq to 15>>
-<<set $alice.plan4TimeReq to 10>>
-<<set $brook.plan2TimeReq to 15>>
-<<set $brook.plan3TimeReq to 10>>
-<<set $update4 to 1>>
-<</if>>
-
-<<script>>
-if (State.variables.boughtDetector === 1) {
-function addHighlightClass(elementId, condition) {
-  const element = document.getElementById(elementId);
-  if (element && condition) {
-    element.classList.add("highlighted-furnitureDetector");
-  }
-}
-if (State.variables.isElm === 1) {
-  addHighlightClass(State.variables.placeForCursedItemElm, State.variables.gotCursedItem !== 1 && typeof State.variables.gotCursedItem !== 'undefined');
-  addHighlightClass(State.variables.placeForRescueClueElm, State.variables.hasRescueClue !== 1 && State.variables.hasQuestForRescue === 1);
-  addHighlightClass(State.variables.placeForTarotCardsElm, State.variables.tarotCardsStage !== 1);
-  addHighlightClass(State.variables.placeForMonkeyPawElm, setup.MonkeyPaw.isDiscoverable());
-  addHighlightClass(State.variables.placeForClothesStolenElm, State.variables.isClothesStolen === 1);
-}
-
-else if (State.variables.isOwaissa === 1) {
-  addHighlightClass(State.variables.placeForCursedItemOwaissa, State.variables.gotCursedItem !== 1 && typeof State.variables.gotCursedItem !== 'undefined');
-  addHighlightClass(State.variables.placeForRescueClueOwaissa, State.variables.hasRescueClue !== 1 && State.variables.hasQuestForRescue === 1);
-  addHighlightClass(State.variables.placeForTarotCardsOwaissa, State.variables.tarotCardsStage !== 1);
-  addHighlightClass(State.variables.placeForMonkeyPawOwaissa, setup.MonkeyPaw.isDiscoverable());
-  addHighlightClass(State.variables.placeForClothesStolenOwaissa, State.variables.isClothesStolen === 1);
-}
-}
-<</script>>
-
-<<if ndef $mcpossession>>
-<<set $mcpossession to 0>>
-<</if>>
-
-<<if $neckChokerState1 eq "worn">>
-<<if $mc.lust lte 15>><<set $mc.lust to 15>>
-<<updatemeter 'mclust' `$mc.lust.toFixed(2) / 100`>><</if>>
-<</if>>
-
-<<if ndef $timerToolsDecreased>>
-<<include "ChangeTimer">>
+<<if not setup.Updates.timerToolsInitialized()>>
+<<run setup.Gui.refreshToolTimer()>>
 <</if>>

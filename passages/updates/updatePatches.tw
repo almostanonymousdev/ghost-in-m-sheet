@@ -1,29 +1,8 @@
 :: Update2 {"position":"400,0","size":"100,100"}
-<<set $stockingsState1 to "not bought">>
-<<set $stockingsState2 to "not bought">>
-<<set $stockingsState3 to "not bought">>
-<<set $footState1 to "not bought">>
-<<set $footState2 to "not bought">>
-<<set $footState3 to "not bought">>
-<<set $update2707 to 1>>
+<<run setup.Updates.applyUpdate2()>>
 
 :: Update3 {"position":"300,0","size":"100,100"}
-<<set $jobMoneySuccessed to 8>>
-<<set $jobMoneyFailed to 3>>
-<<set $companion to {
-	name:false
-}>>
-<<set $update0909 to 1>>
+<<run setup.Updates.applyUpdate3()>>
 
 :: FixSaveFile [nobr] {"position":"950,325","size":"100,100"}
-<<run [
-"Hallway", "Reception", "Kitchen",
-"BlockA", "BlockB",
-"BlockACellA", "BlockACellB", "BlockACellC",
-"BlockBCellA", "BlockBCellB", "BlockBCellC"
-].forEach(function(room) {
-State.variables["currentsearch" + room + "Ironclad"] = {
-emf: 0, plasm: 0, uvl: 0, temperature: 0, spiritbox: 0, gwb: 0
-};
-})>>
-<<set $fixSave to 1>>
+<<run setup.Updates.applyFixSaveFile()>>

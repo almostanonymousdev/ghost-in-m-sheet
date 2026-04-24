@@ -1,5 +1,5 @@
 :: CursedHunt [nobr] {"position":"2800,1100","size":"100,100"}
-<<set $cursedHuntActive to 1>>
+<<run setup.HauntedHouses.setCursedHuntActive(true)>>
 <<script>>
 (function () {
 	var sv = State.variables;

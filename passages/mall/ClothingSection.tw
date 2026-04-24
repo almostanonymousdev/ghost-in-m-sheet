@@ -35,7 +35,7 @@
 <div class="housecard">
 </div>
 <div class="housecard">
-<<if $mc.corruption gte 2>>
+<<if setup.Mc.corruption() gte 2>>
 	<<shopCard "neckChokerState1" "img/wardrobe/neck-choker1.png" 100 "ClothingSection" "+15 lust">>
 <</if>>
 </div>

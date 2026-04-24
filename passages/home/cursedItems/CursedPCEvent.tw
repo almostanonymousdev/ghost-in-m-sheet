@@ -27,10 +27,7 @@
 		@@.mc-thoughts; You ride the waves, delirious, moaning openly, your hips grinding against nothing. Then -- a cold, sticky sensation spreading inside you. Ghost cum. Filling your pussy, leaking down your thighs.@@<br>
 		@@.mc-thoughts; You whip around, chest heaving.@@<br>
 		@@.mc-thoughts; The chair is empty. The room is quiet. The screensaver drifts on.@@<br>
-		<<set $mc.sanity -= 15>>
-		<<set $mc.corruption += 0.5>>
-		<<set $mc.lust to 100>>
-		<<run setup.CursedItems.clearCurse()>>
+		<<run setup.CursedItems.applyCurseEventEffects()>>
 		<br>
 		@@.mc-speech; He's gone... but I can still feel it dripping out of me. And I still haven't swallowed what's in my mouth...@@<br>
 		Sanity decreased. Corruption slightly increased.<br>

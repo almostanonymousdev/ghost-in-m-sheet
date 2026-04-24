@@ -7,11 +7,11 @@
  *
  * Departure from the other hunt-over branches: the player only has the
  * strength to grab ONE stolen piece before stumbling out. Picking one
- * runs that FindStolen* include and then LostClothes nukes the rest.
+ * runs the matching restore then loseAllStolen nukes the rest.
  *
- * Exhibitionism gate: a low-exhibitionism player ($mc.exhibitionism < 5,
- * the same threshold CompanionMain / FindStolenClothes / NudityEvent use
- * for their "you don't mind being seen naked" branches) won't walk out
+ * Exhibitionism gate: a low-exhibitionism player (< 5, the same
+ * threshold CompanionMain / FindStolenClothes / NudityEvent use for
+ * their "you don't mind being seen naked" branches) won't walk out
  * exposed. If they're bottomless AND a bottom-ish item was stolen, only
  * the panties/bottoms grabs are offered. If they're top-bare AND a top-
  * ish item was stolen, only the shirt/bra grabs are offered. With both
@@ -25,11 +25,11 @@
 <<run setup.Companion.resetHuntState()>>
 <<run setup.Companion.resetAliceWorkIfNeeded()>>
 
-<<set _bottomless to $jeansState neq "worn" and $shortsState neq "worn" and $skirtState neq "worn" and $pantiesState neq "worn">>
-<<set _topBare    to $tshirtState neq "worn" and $braState neq "worn">>
-<<set _modest     to ($mc.exhibitionism || 0) lt 5>>
-<<set _canCoverBottom to _bottomless and ($isPantiesStolen eq 1 or $isBottomStolen eq 1)>>
-<<set _canCoverTop    to _topBare    and ($isShirtStolen eq 1 or $isBraStolen eq 1)>>
+<<set _bottomless to setup.HauntedHouses.isBottomless()>>
+<<set _topBare    to setup.HauntedHouses.isTopBare()>>
+<<set _modest     to (setup.Mc.exhibitionism() || 0) lt 5>>
+<<set _canCoverBottom to _bottomless and (setup.HauntedHouses.isPantiesStolen() or setup.HauntedHouses.isBottomStolen())>>
+<<set _canCoverTop    to _topBare    and (setup.HauntedHouses.isShirtStolen() or setup.HauntedHouses.isBraStolen())>>
 <<set _forceCover     to _modest and (_canCoverBottom or _canCoverTop)>>
 <<set _showBottom     to not _forceCover or _canCoverBottom>>
 <<set _showTop        to not _forceCover or _canCoverTop>>
@@ -52,58 +52,58 @@
 		@@<br>
 	<</if>>
 	<span id="exhaustionGrab">
-	<<if $isPantiesStolen eq 1 and _showBottom>>
+	<<if setup.HauntedHouses.isPantiesStolen() and _showBottom>>
 		@@.usebtn;<<link "Grab your panties">><<replace "#exhaustionGrab">>
-			<<include "FindStolenPanties">>
-			<<include "LostClothes">>
+			<<run setup.Wardrobe.restoreStolenInGroup("panties", "isPantiesStolen")>>
+			<<run setup.Wardrobe.loseAllStolen()>>
 			<<run setup.HauntedHouses.clearStolenClothesFlag()>>
 			@@.mc-action; You snatch your panties and stumble for the exit. The rest stays behind.@@<br>
-			@@.movebtn;[[Drag yourself home|CityMap][$hours += 1]]@@
+			@@.movebtn;[[Drag yourself home|CityMap][setup.Time.addHours(1)]]@@
 		<</replace>>
 		<</link>>@@<br>
 	<</if>>
-	<<if $isBottomStolen eq 1 and _showBottom>>
+	<<if setup.HauntedHouses.isBottomStolen() and _showBottom>>
 		@@.usebtn;<<link "Grab your bottoms">><<replace "#exhaustionGrab">>
-			<<include "FindStolenBottom">>
-			<<include "LostClothes">>
+			<<run setup.Wardrobe.restoreStolenInGroup("bottomOuter")>><<run State.variables.isBottomStolen = 0>><<run State.variables.isJeansStolen = 0>><<run State.variables.isShortsStolen = 0>><<run State.variables.isSkirtStolen = 0>>
+			<<run setup.Wardrobe.loseAllStolen()>>
 			<<run setup.HauntedHouses.clearStolenClothesFlag()>>
 			@@.mc-action; You snatch your bottoms and stumble for the exit. The rest stays behind.@@<br>
-			@@.movebtn;[[Drag yourself home|CityMap][$hours += 1]]@@
+			@@.movebtn;[[Drag yourself home|CityMap][setup.Time.addHours(1)]]@@
 		<</replace>>
 		<</link>>@@<br>
 	<</if>>
-	<<if $isShirtStolen eq 1 and _showTop>>
+	<<if setup.HauntedHouses.isShirtStolen() and _showTop>>
 		@@.usebtn;<<link "Grab your shirt">><<replace "#exhaustionGrab">>
-			<<include "FindStolenShirt">>
-			<<include "LostClothes">>
+			<<run setup.Wardrobe.restoreStolenInGroup("tshirt", "isShirtStolen")>>
+			<<run setup.Wardrobe.loseAllStolen()>>
 			<<run setup.HauntedHouses.clearStolenClothesFlag()>>
 			@@.mc-action; You snatch your shirt and stumble for the exit. The rest stays behind.@@<br>
-			@@.movebtn;[[Drag yourself home|CityMap][$hours += 1]]@@
+			@@.movebtn;[[Drag yourself home|CityMap][setup.Time.addHours(1)]]@@
 		<</replace>>
 		<</link>>@@<br>
 	<</if>>
-	<<if $isBraStolen eq 1 and _showTop>>
+	<<if setup.HauntedHouses.isBraStolen() and _showTop>>
 		@@.usebtn;<<link "Grab your bra">><<replace "#exhaustionGrab">>
-			<<include "FindStolenBra">>
-			<<include "LostClothes">>
+			<<run setup.Wardrobe.restoreStolenInGroup("bra", "isBraStolen")>>
+			<<run setup.Wardrobe.loseAllStolen()>>
 			<<run setup.HauntedHouses.clearStolenClothesFlag()>>
 			@@.mc-action; You snatch your bra and stumble for the exit. The rest stays behind.@@<br>
-			@@.movebtn;[[Drag yourself home|CityMap][$hours += 1]]@@
+			@@.movebtn;[[Drag yourself home|CityMap][setup.Time.addHours(1)]]@@
 		<</replace>>
 		<</link>>@@<br>
 	<</if>>
 	<<if not _forceCover>>
 		@@.usebtn;<<link "Leave with nothing">><<replace "#exhaustionGrab">>
-			<<include "LostClothes">>
+			<<run setup.Wardrobe.loseAllStolen()>>
 			<<run setup.HauntedHouses.clearStolenClothesFlag()>>
 			@@.mc-action; You can't even manage that. You stagger for the door empty-handed.@@<br>
-			@@.movebtn;[[Drag yourself home|CityMap][$hours += 1]]@@
+			@@.movebtn;[[Drag yourself home|CityMap][setup.Time.addHours(1)]]@@
 		<</replace>>
 		<</link>>@@<br>
 	<</if>>
 	</span>
 <<else>>
-	@@.movebtn;[[Drag yourself home|CityMap][$hours += 1]]@@<br>
+	@@.movebtn;[[Drag yourself home|CityMap][setup.Time.addHours(1)]]@@<br>
 <</if>>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>

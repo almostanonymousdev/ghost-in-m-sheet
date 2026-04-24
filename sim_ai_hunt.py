@@ -7,8 +7,8 @@ parsed from the game's own .tw sources at startup.
 Models the core hunt loop from Ghost in M'Sheet:
 
   - Ghost picks a favorite room from the house's room list at contract
-    start and can switch rooms every 20 in-game minutes with 35% chance
-    (ChangeGhostRoom.tw / HauntedHouses.rollStartingRoom).
+    start and can switch rooms every 20 in-game minutes with 45% chance
+    (HauntedHouses.shuffleGhostRoom / HauntedHouses.rollStartingRoom).
   - Navigating between rooms costs 0.25 energy per step (HauntConditions
     ENERGY_PER_STEP); the contract ends when energy bottoms out.
   - Evidence detection uses the same tier-based chance table as the game:
@@ -210,7 +210,7 @@ def _parse_orgasm_spend(widget_src: str) -> dict[str, float]:
     flows through the loader."""
     sanity_m = re.search(r'<<addSanity\s+-(\d+)>>', widget_src)
     lust_m   = re.search(r'<<addLust\s+-(\d+)>>',   widget_src)
-    cd_m     = re.search(r'\$orgasmCooldownSteps\s+to\s+(\d+)', widget_src)
+    cd_m     = re.search(r'setOrgasmCooldown\s*\(\s*(\d+)\s*\)', widget_src)
     if not (sanity_m and lust_m and cd_m):
         raise SystemExit(
             "parser: widgetEvent.tw orgasm spend block not found "
@@ -245,9 +245,9 @@ def _parse_event_choice_costs(event_mc_src: str) -> dict[str, float]:
     """Pull the Run / Embrace inline expressions from EventMC.tw so the sim
     picks up whatever the passage currently charges for each choice."""
     run_m = re.search(
-        r"Run away[^\[]*\[\$mc\.energy\s*-=\s*(\d+)\]", event_mc_src)
+        r"Run away[^\[]*\[setup\.Mc\.addEnergy\(-(\d+)\)\]", event_mc_src)
     embrace_m = re.search(
-        r"Embrace it[^\[]*\[\$mc\.sanity\s*-=\s*(\d+);\s*"
+        r"Embrace it[^\[]*\[setup\.Mc\.addSanity\(-(\d+)\);\s*"
         r"setup\.addLust\((\d+)\)\]",
         event_mc_src)
     if not (run_m and embrace_m):
@@ -263,7 +263,8 @@ def _parse_temperature(src: str) -> dict[str, int]:
     """Pull base range + ghost-room offsets from TemperatureHigh.tw. Shape:
     {base_lo, base_hi, offset_with_temp, offset_no_temp}. Lets the AI's
     room-detection threshold track the game's reading distribution."""
-    base = re.search(r'random\((\d+),\s*(\d+)\)\s*\+\s*\$temperature', src)
+    base = re.search(
+        r'random\((\d+),\s*(\d+)\)\s*\+\s*setup\.Time\.temperature\(\)', src)
     with_temp = re.search(
         r'_inGhostRoom\s+and\s+_hasTempEvidence>>\s*'
         r'<<set\s+_offset\s+to\s+(\d+)', src)
@@ -342,8 +343,8 @@ class GameData:
 
 def load_game_data() -> GameData:
     story_script = _read("StoryScript.tw")
-    story_init = _read("StoryInit.tw")
-    change_room = _read("haunted_houses/general/ChangeGhostRoom.tw")
+    story_init = _read("mc/GameInit.tw")
+    hh_controller = _read("haunted_houses/HauntedHousesController.tw")
     check_hunt = _read("haunted_houses/hunt/CheckHuntStart.tw")
     hide_tw = _read("haunted_houses/general/Hide.tw")
     run_tw = _read("haunted_houses/general/RunFast.tw")
@@ -351,7 +352,7 @@ def load_game_data() -> GameData:
     widget_event = _read("events/widgetEvent.tw")
     events_ctl = _read("events/EventsController.tw")
     event_mc = _read("events/EventMC.tw")
-    passage_done = _read("updates/PassageDone.tw")
+    time_ctl = _read("time/TimeController.tw")
 
     ghosts = {g["name"]: g for g in _load_ghosts()}
 
@@ -369,14 +370,15 @@ def load_game_data() -> GameData:
     contract_drain, companion_drain = _parse_contract_drain(story_script)
     temp_cfg = _parse_temperature(temp_tw)
 
-    # mc starting stats (StoryInit.tw).
+    # mc starting stats (mc/GameInit.tw).
     start_sanity = _find_num(r"sanity\s*:\s*(\d+)", story_init)
     start_lust   = _find_num(r"lust\s*:\s*(\d+)",   story_init)
     start_energy = _find_num(r"energy\s*:\s*(\d+)", story_init)
 
-    # ChangeGhostRoom.tw: Math.random() < 0.35
-    ghost_move_chance = _find_num(r"Math\.random\(\)\s*<\s*([\d.]+)",
-                                   change_room)
+    # HauntedHousesController.tw shuffleGhostRoom(): Math.random() < 0.45
+    ghost_move_chance = _find_num(
+        r"shuffleGhostRoom:[^}]*?Math\.random\(\)\s*<\s*([\d.]+)",
+        hh_controller)
 
     # CheckHuntStart.tw: _huntThreshold to N + setup.HauntConditions...
     hunt_base_threshold = int(_find_num(r"_huntThreshold\s+to\s+(\d+)",
@@ -388,9 +390,10 @@ def load_game_data() -> GameData:
     # RunFast.tw: `if _check lte 30` -> caught; success = 1 - that.
     run_caught = _find_num(r"_check\s+lte\s+(\d+)", run_tw) / 100.0
 
-    # PassageDone.tw: `$hours gte N and setup.Ghosts.isHunting()` -> dawn.
-    dawn_hours = int(_find_num(r"\$hours\s+gte\s+(\d+)[^\n]*isHunting",
-                               passage_done))
+    # TimeController.tw: `isMorningPlus: function () { return sv().hours >= N; }`
+    # PassageDone gates dawn via setup.Time.isMorningPlus(), which reads this.
+    dawn_hours = int(_find_num(r"isMorningPlus:[^}]*?hours\s*>=\s*(\d+)",
+                               time_ctl))
 
     # widgetEvent.tw + EventsController.tw: orgasm spend + gate
     orgasm = _parse_orgasm_spend(widget_event)
@@ -505,7 +508,7 @@ def validate_game_data() -> list[str]:
 
     # Scalar constants.
     require(0 < GD.ghost_move_chance <= 1,
-            f"ChangeGhostRoom Math.random() threshold "
+            f"shuffleGhostRoom Math.random() threshold "
             f"{GD.ghost_move_chance} out of (0,1]")
     require(0 <= GD.hunt_base_threshold <= 100,
             f"CheckHuntStart base threshold {GD.hunt_base_threshold} bad")

@@ -60,11 +60,11 @@
 				<<if setup.HauntedHouses.isInsideHouse()>>
 					<<run setup.Companion.clearBlakeCursedItem()>>
 					<<set _tempCorrGained to setup.HauntedHouses.commitTempCorruption()>>
-					Corruption is increased (+ <<= _tempCorrGained.toFixed(2)>>) : <<= $mc.corruption.toFixed(2)>><br>
-					<<set $mc.dirty to 1>>
+					Corruption is increased (+ <<= _tempCorrGained.toFixed(2)>>) : <<= setup.Mc.corruption().toFixed(2)>><br>
+					<<run setup.Mc.setDirty(1)>>
 					<<run setup.HauntedHouses.resetToolTimers()>>
 					<<run setup.HauntedHouses.endHunt()>>
-					<<include "LostClothes">>
+					<<run setup.Wardrobe.loseAllStolen()>>
 
 					<<done>>
 						<<addclass ".linkselector" "disabled-link">>
@@ -81,9 +81,8 @@
 <<widget "breakFreePossession">>
 	<<set _maxLevel to _args[0]>>
 	@@.mc-thoughts; Life and awareness return to you in an instant, and with all the strength you have left, you break free.@@ <br>
-	<<if $mcpossession lte _maxLevel>>
-		<<set $mcpossession += 1>>
-		<b>Surrender to possession</b> is increased: $mcpossession now!<br>
+	<<if setup.Posession.raiseMeter(_maxLevel)>>
+		<b>Surrender to possession</b> is increased: <<= setup.Posession.meter()>> now!<br>
 	<</if>>
 	@@.enterbtn; [[Next|Possessed]]@@<br>
 <</widget>>

@@ -9,7 +9,7 @@ One tentacle coiled around your neck, slightly constricting, forcing you to hold
 		<<video "tentacles/witch-t2.mp4">>
 		@@.mc-thoughts; After that, the cum starts to leak from your pussy, the tentacles loosen their grip and vanish. You try to escape the house, hoping the tentacles won't come back.@@<br><br>
 		@@.backbtn; [[Continue|Witch]]@@
-		<<set $hours +=2>><<if $hours >=24>><<set $hours -=24>><<include "ResetCooldowns">>
+		<<if setup.Witch.spend2HoursHandleMidnight()>><<include "ResetCooldowns">>
 		<</if>>
 	<</linkappend>>
 <</linkappend>>

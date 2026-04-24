@@ -1,6 +1,6 @@
 :: StealBra [nobr] {"position":"4275,1050","size":"100,100"}
 <<set _check to random(1,2)>>
-<<if $tshirtState eq "worn">>
+<<if setup.Wardrobe.topShirtWorn()>>
 	<<if _check eq 1>>
 		<<video "steal-clothes/3.mp4" "displayCentredImgs">>
 	<</if>>
@@ -14,25 +14,4 @@
 	<</if>>
 <</if>>
 
-<<if $braState eq "worn">>
-	<<if $rememberTopUnder eq "bra0">>
-		<<set $rememberTopUnder to "nobra0">>
-	<<set $braState0 to "not worn">><</if>>
-
-	<<if $rememberTopUnder eq "bra1">>
-		<<set $rememberTopUnder to "nobra1">>
-		<<set $mc.beauty -=2>>
-	<<set $braState1 to "not worn">><</if>>
-
-	<<if $rememberTopUnder eq "bra2">>
-		<<set $rememberTopUnder to "nobra2">>
-		<<set $mc.beauty -=4>>
-	<<set $braState2 to "not worn">><</if>>
-
-	<<if $rememberTopUnder eq "bra3">>
-		<<set $rememberTopUnder to "nobra3">>
-		<<set $mc.beauty -=6>>
-	<<set $braState3 to "not worn">><</if>>
-<</if>>
-
-<<set $isBraStolen to 1>>
+<<run setup.Wardrobe.stealWornInGroup("bra", "braState", "isBraStolen")>>

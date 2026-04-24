@@ -1,7 +1,7 @@
 :: Crucifix [noreturn nobr] {"position":"2700,1225","size":"100,100"}
 <<run setup.ToolController.consumeCrucifix()>>
 <<image "img/crucifix.webp" { class: "displayCentredImgs", width: "60%" }>> <br>
-&emsp;&emsp;The crucifix in your hands starts to glow, and the ghost that was about to grab you disappears in a cloud of smoke. You have used 1 crucifix. Now you have $crucifixAmount left.<br>
+&emsp;&emsp;The crucifix in your hands starts to glow, and the ghost that was about to grab you disappears in a cloud of smoke. You have used 1 crucifix. Now you have <<= setup.HauntedHouses.crucifixAmount()>> left.<br>
 <br>
 
 @@.backbtn;[[Continue|$return]]@@

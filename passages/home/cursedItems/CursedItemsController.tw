@@ -42,6 +42,19 @@ setup.CursedItems = (function () {
 			State.variables.cursedHomeItemActive = 0;
 		},
 
+		/* Shared stat payload for all 5 cursed-home events
+		   (bed / pc / bath / shower / tv): sanity -15, corruption
+		   +0.5, lust pegged to 100, and the curse flag cleared.
+		   Centralised here so the values live in one place and
+		   events don't drift apart. */
+		applyCurseEventEffects: function () {
+			var mc = State.variables.mc;
+			mc.sanity -= 15;
+			mc.corruption += 0.5;
+			mc.lust = 100;
+			this.clearCurse();
+		},
+
 		/* Human-readable label for UI / debug. */
 		cursedItemLabel: function () {
 			var labels = {

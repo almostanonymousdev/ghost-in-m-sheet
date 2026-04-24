@@ -1,44 +1,42 @@
 :: WebcamShow [nobr] {"position":"400,1100","size":"100,100"}
 <<image "webcam/workplace.jpg" { width: "100%" }>>
 @@.mc-speech; Looks like I'm ready for my webcam show. What should I do today?@@<br>
-Subscribers: <<if ndef $prefssubscribers>>0
-<<else>>$prefssubscribers
-<</if>><br>
+Subscribers: <<= setup.Home.subscribers()>><br>
 
-<<if ndef $webcamShowCD or $webcamShowCD eq 0>>
+<<if setup.Home.webcamShowAvailable()>>
 	<<done>>
-		<<if $mc.corruption lt 2>>
+		<<if setup.Mc.corruption() lt 2>>
 		<<addclass ".webcamShowMasturbate" "disabled-link">><</if>>
-		<<if $mc.corruption lt 3>>
+		<<if setup.Mc.corruption() lt 3>>
 		<<addclass ".webcamShowFingerAnal" "disabled-link">><</if>>
 	<</done>>
 	<span class="webcamShowTease">
-	@@.usebtn; [[Tease|WebcamShowStart][$webcamEvent to "tease"]]@@<br></span>
+	@@.usebtn; [[Tease|WebcamShowStart][setup.Home.setWebcamEvent("tease")]]@@<br></span>
 	<span class="webcamShowMasturbate">
-	@@.usebtn; [[Masturbate|WebcamShowStart][$webcamEvent to "masturbate"]]@@
-	<<if $mc.corruption lt 2>>@@.warningtext; (Req. <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 2)@@
+	@@.usebtn; [[Masturbate|WebcamShowStart][setup.Home.setWebcamEvent("masturbate")]]@@
+	<<if setup.Mc.corruption() lt 2>>@@.warningtext; (Req. <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 2)@@
 	<</if>>
 	<br></span>
 	<span class="webcamShowFingerAnal">
-	@@.usebtn; [[Anal fingering|WebcamShowStart][$webcamEvent to "fingeranal"]]@@
-	<<if $mc.corruption lt 3>>@@.warningtext; (Req. <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 3)@@
+	@@.usebtn; [[Anal fingering|WebcamShowStart][setup.Home.setWebcamEvent("fingeranal")]]@@
+	<<if setup.Mc.corruption() lt 3>>@@.warningtext; (Req. <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 3)@@
 	<</if>>
 	<br></span>
-	<<if $dildoPurchased eq 1>>
+	<<if setup.Home.dildoPurchased()>>
 		<<done>>
-			<<if $mc.corruption lt 3>>
+			<<if setup.Mc.corruption() lt 3>>
 			<<addclass ".webcamShowToyPussy" "disabled-link">><</if>>
-			<<if $mc.corruption lt 4>>
+			<<if setup.Mc.corruption() lt 4>>
 			<<addclass ".webcamShowToyAnal" "disabled-link">><</if>>
 		<</done>>
 		<span class="webcamShowToyPussy">
-		@@.usebtn; [[Play with pussy (toy)|WebcamShowStart][$webcamEvent to "toypussy"]]@@
-		<<if $mc.corruption lt 3>>@@.warningtext; (Req. <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 3)@@
+		@@.usebtn; [[Play with pussy (toy)|WebcamShowStart][setup.Home.setWebcamEvent("toypussy")]]@@
+		<<if setup.Mc.corruption() lt 3>>@@.warningtext; (Req. <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 3)@@
 		<</if>>
 		<br></span>
 		<span class="webcamShowToyAnal">
-		@@.usebtn; [[Play with ass (toy)|WebcamShowStart][$webcamEvent to "toyanal"]]@@
-		<<if $mc.corruption lt 4>>@@.warningtext; (Req. <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 4)@@
+		@@.usebtn; [[Play with ass (toy)|WebcamShowStart][setup.Home.setWebcamEvent("toyanal")]]@@
+		<<if setup.Mc.corruption() lt 4>>@@.warningtext; (Req. <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 4)@@
 		<</if>>
 		<br></span>
 	<</if>>
@@ -46,9 +44,7 @@ Subscribers: <<if ndef $prefssubscribers>>0
 	@@.mc-speech; Enough for today.@@<br>
 <</if>>
 
-<<set $prefsmoney to ($prefsmoney || 0)>>
-<<set $prefssubscribers to ($prefssubscribers || 0)>>
-<<set $prefsshowCount to ($prefsshowCount || 0)>>
+<<run setup.Home.initWebcamCounters()>>
 
 <br>
 @@.backbtn;[[Back|Use PC]] @@<br>

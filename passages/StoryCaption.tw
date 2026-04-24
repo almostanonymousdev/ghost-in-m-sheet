@@ -1,98 +1,84 @@
 :: StoryCaption [nobr] {"position":"100,200","size":"100,100"}
 <<include "MC">>
 <<include "BodyModification">><br>
-<<if $showComp eq 1 or $showComp eq 3>>
-	<<if $companion.name eq "Brook">>
-		<<companionMini "brook/brook.png" "Brook">>
-	<<elseif $companion.name eq "Alice">>
-		<<companionMini "alice/alice.png" "Alice">>
-	<<elseif $companion.name eq "Blake">>
-		<<companionMini "blake/blake.png" "Blake">>
-	<<elseif $companion.name eq "Alex">>
-		<<companionMini `"trans/" + $transPicture + ".jpg"` "Alex">>
-	<<elseif $companion.name eq "Taylor">>
-		<<companionMini `"trans/" + $transPicture + ".jpg"` "Taylor">>
-	<<elseif $companion.name eq "Casey">>
-		<<companionMini `"trans/" + $transPicture + ".jpg"` "Casey">>
+<<if setup.Companion.shouldRenderMini()>>
+	<<set _comp to setup.Companion.active()>>
+	<<if _comp.isTrans>>
+		<<companionMini `"trans/" + setup.Companion.transPicture() + ".jpg"` _comp.name>>
+	<<else>>
+		<<companionMini _comp.portraitPath() _comp.name>>
 	<</if>>
 <</if>>
 <br>
-<span id="time"><<print ($hours < 10 ? '0' + $hours : $hours) + ":" + (Math.floor($minutes) < 10 ? '0' + Math.floor($minutes) : Math.floor($minutes))>></span><br>
-<b><<image "img/energy.png" { style: "position: relative; top: 0.375em; width:10%;" }>>Energy:</b> <<showmeter 'energy' `$mc.energy / $mc.energyMax`>>
-<<set $mc.sanityUp to $mc.sanity.toFixed(2)>>
-<b><<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:10%;" }>>Sanity:</b> <<showmeter 'sanity' `$mc.sanity / $mc.sanityMax`>>
-<b><<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:10%;" }>>Lust:</b><<showmeter 'mclust' `$mc.lust.toFixed(2) / 100`>>
-<b><<image "img/icons/money.png" { style: "position: relative; top: 0.375em; width:13%; display: inline; margin: 0;" }>>$mc.money </b>
+<span id="time"><<= setup.Time.display()>></span><br>
+<b><<image "img/energy.png" { style: "position: relative; top: 0.375em; width:10%;" }>>Energy:</b> <<showmeter 'energy' `setup.Mc.energy() / setup.Mc.energyMax()`>>
+<<run setup.Mc.setSanityUp(setup.Mc.sanity().toFixed(2))>>
+<b><<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:10%;" }>>Sanity:</b> <<showmeter 'sanity' `setup.Mc.sanity() / setup.Mc.sanityMax()`>>
+<b><<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:10%;" }>>Lust:</b><<showmeter 'mclust' `setup.Mc.lust().toFixed(2) / 100`>>
+<b><<image "img/icons/money.png" { style: "position: relative; top: 0.375em; width:13%; display: inline; margin: 0;" }>><<= setup.Mc.money()>> </b>
 <b><<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:13%; display: inline; margin: 0;" }>>
-<<= $mc.corruption.toFixed(2)>>
-<b><<image "img/beauty.png" { style: "position: relative; top: 0.375em; width:11%; display: inline; margin: 0;" }>>$mc.beauty</b>
-<b><<image "img/icons/lvl.png" { style: "position: relative; top: 0.375em; width:11%; display: inline; margin: 0;" }>>$mc.lvl</b> <br>
+<<= setup.Mc.corruption().toFixed(2)>>
+<b><<image "img/beauty.png" { style: "position: relative; top: 0.375em; width:11%; display: inline; margin: 0;" }>><<= setup.Mc.beauty()>></b>
+<b><<image "img/icons/lvl.png" { style: "position: relative; top: 0.375em; width:11%; display: inline; margin: 0;" }>><<= setup.Mc.lvl()>></b> <br>
 <a class="linkselector" data-passage="Bag"><<image "img/bag.png" { width: "30%" }>></a><a class="linkselector" data-passage="Notebook"><<image "img/notebook.png" { width: "30%" }>></a><a class="linkselector" data-passage="Evidence"><<image "img/evidence-icon.png" { width: "30%" }>></a><br>
-<<if def $isPhoneBought>><a class="linkselector" data-passage="Phone"><<image "img/phone.png" { width: "30%" }>></a>
+<<if setup.Gui.phoneBought()>><a class="linkselector" data-passage="Phone"><<image "img/phone.png" { width: "30%" }>></a>
 <</if>>
 <div class="linkselector enterbtn"> Game [[Guide|Guide]] </div><br>
 
 <br>@@.usebtn;<<linkreplace "Cheats">>
-	<<if setup.Ghosts.isHunting()>><<link "take pills(cheats)">><<set $mc.sanity +=30>><</link>>
+	<<if setup.Ghosts.isHunting()>><<link "take pills(cheats)">><<run setup.Mc.addSanity(30)>><</link>>
 		<br><<linkreplace "possession Card">>
-			<<set $hunt.mode to setup.Ghosts.HuntMode.POSSESSED>>
-			<<set $hours to random(12,20)>>
+			<<run setup.Ghosts.setHuntMode(setup.Ghosts.HuntMode.POSSESSED)>>
+			<<run setup.Time.setHours(12 + Math.floor(Math.random() * 9))>>
 		<<goto "CityMapPossessed">><</linkreplace>><br>
-		<<link "Decreasefollower's sanity(-10)(cheats)">><<set $companion.sanity -=10>><<updatemeter 'companionsanity' `$companion.sanity / 100`>><</link>>
+		<<link "Decreasefollower's sanity(-10)(cheats)">><<run setup.Companion.drainSanity(10)>><<updatemeter 'companionsanity' `setup.Companion.sanityPercent()`>><</link>>
 	<</if>><br>
-	<<linkreplace "ghostname">>$hunt.name<<if setup.Ghosts.isMimicHunt()>>(Mimic)
+	<<linkreplace "ghostname">><<= setup.Ghosts.huntName()>><<if setup.Ghosts.isMimicHunt()>>(Mimic)
 	<</if>>
-	<</linkreplace>>
+	<</linkreplace>><br>
 	<<if setup.Ghosts.isAnyMode()>>
 		<<linkreplace "choose ghost type">>
 			<<for _g range setup.Ghosts.list()>>
-				<<capture _g>><<link `"set to " + _g.name`>><<set $hunt.name to _g.name>><<set $hunt.realName to _g.name>><<set $hunt.evidence to _g.evidence.map(e => e.id)>>
+				<<capture _g>><<link `"set to " + _g.name`>><<run setup.Ghosts.forceHuntGhost(_g)>>
 				<</link>>
 				<</capture>>
 			<</for>>
 		<</linkreplace>><br>
 	<</if>>
 	<<linkreplace "ghostroom">>
-		<<if $hunt and $hunt.room>>$hunt.room.name
-		<</if>>
+		<<= setup.Ghosts.huntRoomName()>>
 	<</linkreplace>><br>
-	<<link "lust">><<set $mc.lust += 100>><</link>><br>
-	<<link "money">><<set $mc.money += 100>><</link>><br>
-	<<link "lvlup">><<set $mc.lvl += 1>><</link>><br>
-	<<link "corruptionUp">><<set $mc.corruption += 1>><</link>><br>
-	<br><<linkreplace "highlight rescue house">><<set $cheatRescueHouseHighlight to 1>>Rescue house $randomRescuePhotoNumber highlighted on map
+	<<link "lust">><<run setup.Mc.addLust(100)>><</link>><br>
+	<<link "money">><<run setup.Mc.addMoney(100)>><</link>><br>
+	<<link "lvlup">><<run setup.Mc.addLvl(1)>><</link>><br>
+	<<link "corruptionUp">><<run setup.Mc.addCorruption(1)>><</link>><br>
+	<br><<linkreplace "highlight rescue house">><<run setup.Church.setCheatRescueHouseHighlight(1)>>Rescue house <<= setup.Church.randomRescuePhotoNumber()>> highlighted on map
 	<</linkreplace>>
-	<br><<linkreplace "lvlup Brook">><<set $brook.lvl to 5>>Brook is lvl5 now
+	<br><<linkreplace "lvlup Brook">><<run setup.Companion.cheatSetLvl("brook", 5)>>Brook is lvl5 now
 	<</linkreplace>>
-	<br><<linkreplace "lvlup Alice">><<set $alice.lvl to 5>>Alice is lvl5 now
+	<br><<linkreplace "lvlup Alice">><<run setup.Companion.cheatSetLvl("alice", 5)>>Alice is lvl5 now
 	<</linkreplace>>
-	<br><<linkreplace "lvlup Blake">><<set $blake.lvl to 5>>Blake is lvl5 now
+	<br><<linkreplace "lvlup Blake">><<run setup.Companion.cheatSetLvl("blake", 5)>>Blake is lvl5 now
 	<</linkreplace>>
-	<br><<linkreplace "Relationship Blake">><<set $relationshipBlake to 5>>Best Friends!
+	<br><<linkreplace "Relationship Blake">><<run setup.Mall.setBlakeRelationship(5)>>Best Friends!
 	<</linkreplace>>
-	<br><<linkreplace "fitUp">><<set $mc.fit to 100>>perfect body
+	<br><<linkreplace "fitUp">><<run setup.Mc.setFit(100)>>perfect body
 	<</linkreplace>>
-	<br><<linkreplace "lustCurrentFriend">><<set $companion.lust += 100>>$companion.name's lust +100
+	<br><<linkreplace "lustCurrentFriend">><<run setup.Companion.addLust(100)>><<= setup.Companion.name()>>'s lust +100
 	<</linkreplace>>
-	<br><<linkreplace "Exhib5">><<set $mc.exhibitionism to 5>>Exhib5
+	<br><<linkreplace "Exhib5">><<run setup.Mc.setExhibitionism(5)>>Exhib5
 	<</linkreplace>>
-	<br><<linkreplace "IncreaseSurrenderToPossession">><<set $mcpossession to 11>>Surrender to Possession is increased: $mcpossession now!
+	<br><<linkreplace "IncreaseSurrenderToPossession">><<run setup.Mc.setPossession(11)>>Surrender to Possession is increased: <<= setup.Mc.possession()>> now!
 	<</linkreplace>>
 	<<linkreplace "Maximize body part sensitivity">>
 		All body parts are now at maximum sensitivity!
-		<<set $sensualBodyPart.brain to 6>>
-		<<set $sensualBodyPart.tits to 6>>
-		<<set $sensualBodyPart.ass to 6>>
-		<<set $sensualBodyPart.bottom to 6>>
-		<<set $sensualBodyPart.mouth to 6>>
-		<<set $sensualBodyPart.pussy to 6>>
-		<<set $sensualBodyPart.anal to 6>>
+		<<run setup.Intro.maximizeSensualBodyParts(setup.Intro.currentSensualBodyPart())>>
 	<</linkreplace>>
-		<br><<link "Toggle Back/Forward buttons">><<if $cheatBackForward>><<set $cheatBackForward to false>><<run $("body").removeClass("show-history")>>
-		<<else>><<set $cheatBackForward to true>><<run $("body").addClass("show-history")>>
+		<br><<link "Toggle Back/Forward buttons">><<if setup.Updates.toggleCheatBackForward()>><<run $("body").addClass("show-history")>>
+		<<else>><<run $("body").removeClass("show-history")>>
 		<</if>>
 		<</link>>
-		<br><<link "Remove Tool Timers">><<set $timerToolsDecreased to "10ms">>
+		<br><<link "Remove Tool Timers">><<run setup.Updates.setTimerToolsDecreased("10ms")>>
 		<</link>>
 <</linkreplace>>@@
 

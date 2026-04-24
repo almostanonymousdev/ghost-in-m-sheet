@@ -8,12 +8,11 @@
 	<<set _randomIndex to random(0, _videoList.length - 1)>>
 	<<set _selectedVideo to _videoList[_randomIndex]>>
 	<<video _selectedVideo>>
-	@@.mc-thoughts; $companion.name tries to help, and the ghost pulls back. But instead, huge tentacles crawl out from the corners of the room. Before you can react, they're all over you, wrapping tight and keeping you from moving.<br>
+	@@.mc-thoughts; <<= setup.Companion.name()>> tries to help, and the ghost pulls back. But instead, huge tentacles crawl out from the corners of the room. Before you can react, they're all over you, wrapping tight and keeping you from moving.<br>
 	The soft, slimy tentacles start pushing into your holes, filling them with some kind of sticky liquid. You try to focus and break free, but these things know exactly what they're doing: they tease your most sensitive spots, making your body burn with desire. Your last hope is your friend, but one look at her tells you she's already lost. Her mouth's hanging open, eyes rolling back as another orgasm hits her. The room fills with wet, slurping sounds and her sweet moans.<br>
 	There's no point fighting it anymore. You give in to the tentacles. After a while, they finally pull back, done playing with your bodies.@@<br>
-	<<set $companion.lust to 0>>
-	<<set $companion.sanity += 2>>
-	$companion.name's lust <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> spent, sanity <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> eased.<br>
+	<<run setup.Companion.helpEventEaseActive()>>
+	<<= setup.Companion.name()>>'s lust <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> spent, sanity <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> eased.<br>
 	@@.notmc-speech; What... what was that?@@<br>
 	@@.mc-speech; I have no idea, but we need to get out of here. I can't handle another round with those things.@@<br>
 	<br>
@@ -34,13 +33,12 @@
 		<<if _check eq 4>>
 			<<video "alice/both1.4.mp4">>
 		<</if>>
-		@@.mc-thoughts; You rely on your friend. $companion.name tries to help you, but the ghost's malevolent entity, fueled by her lust, proves too powerful. The force is overwhelming, and for a moment, reality itself seems to distort. You feel an odd sensation, as if you've slipped out of this world--suddenly, you feel like a cheap whore getting fucked along with your friend.<br>
+		@@.mc-thoughts; You rely on your friend. <<= setup.Companion.name()>> tries to help you, but the ghost's malevolent entity, fueled by her lust, proves too powerful. The force is overwhelming, and for a moment, reality itself seems to distort. You feel an odd sensation, as if you've slipped out of this world--suddenly, you feel like a cheap whore getting fucked along with your friend.<br>
 		The ghost shoves its cock into your mouths alternately, almost as if it's mocking you. This goes on for a while before it vanishes.<br>
 
-		You look at $companion.name, but to your surprise, her face only shows satisfaction.@@<br>
-		<<set $companion.lust to 0>>
-		<<set $companion.sanity += 2>>
-		$companion.name's lust <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> spent, sanity <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> eased.<br>
+		You look at <<= setup.Companion.name()>>, but to your surprise, her face only shows satisfaction.@@<br>
+		<<run setup.Companion.helpEventEaseActive()>>
+		<<= setup.Companion.name()>>'s lust <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> spent, sanity <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> eased.<br>
 
 		@@.mc-thoughts; You want to say something encouraging, but suddenly she speaks up herself.<br>@@
 		@@.notmc-speech; It was amaz... awful, I mean. We can't just leave it like this. We need to continue our investigation to get rid of it!@@<br>
@@ -67,12 +65,11 @@
 			<<video "alice/both2.5.mp4">>
 		<</if>>
 
-		@@.mc-thoughts; You rely on your friend. $companion.name tries to help you, but the ghost's malevolent entity, fueled by her lust, proves too powerful. The force is overwhelming, and for a moment, reality itself seems to distort. You feel an odd sensation, as if you've slipped out of this world--suddenly, you feel like a cheap whore getting fucked along with your friend.<br>
-		The ghost fucks you and $companion.name alternately.This goes on for a while before it vanishes.<br>
-		You look at $companion.name, but to your surprise, her face only shows satisfaction.@@<br>
-		<<set $companion.lust to 0>>
-		<<set $companion.sanity += 2>>
-		$companion.name's lust <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> spent, sanity <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> eased.<br>
+		@@.mc-thoughts; You rely on your friend. <<= setup.Companion.name()>> tries to help you, but the ghost's malevolent entity, fueled by her lust, proves too powerful. The force is overwhelming, and for a moment, reality itself seems to distort. You feel an odd sensation, as if you've slipped out of this world--suddenly, you feel like a cheap whore getting fucked along with your friend.<br>
+		The ghost fucks you and <<= setup.Companion.name()>> alternately.This goes on for a while before it vanishes.<br>
+		You look at <<= setup.Companion.name()>>, but to your surprise, her face only shows satisfaction.@@<br>
+		<<run setup.Companion.helpEventEaseActive()>>
+		<<= setup.Companion.name()>>'s lust <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> spent, sanity <<image "img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> eased.<br>
 
 		@@.mc-thoughts; You want to say something encouraging, but suddenly she speaks up herself.<br>@@
 		@@.notmc-speech; It was amaz... awful, I mean. We can't just leave it like this. We need to continue our investigation to get rid of it!@@<br>

@@ -263,14 +263,8 @@ test.describe('Body mods — in-hunt exhibitionism events', () => {
     'StealClothes',
     'StealBra',
     'StealPanties',
-    'StealShirt',
     'StealBottomOuter',
-    'LostClothes',
     'FindStolenClothes',
-    'FindStolenBra',
-    'FindStolenPanties',
-    'FindStolenShirt',
-    'FindStolenBottom',
   ]) {
     test(`${passage} renders cleanly`, async () => {
       await setVar(page, 'ghost', { name: 'Shade' });

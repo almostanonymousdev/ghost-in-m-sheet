@@ -101,6 +101,8 @@ setup.Home = (function () {
 		mareEventActive: function () {
 			return v('ghostMareEventStart') >= 1;
 		},
+		mareEventStart: function () { return v('ghostMareEventStart'); },
+		setMareEventStart: function (n) { State.variables.ghostMareEventStart = n; },
 		mareStageIsLow: function () {
 			return v('ghostMareEventStage') <= 2;
 		},
@@ -192,6 +194,284 @@ setup.Home = (function () {
 		// --- Makeup -------------------------------------
 		canApplyMakeup: function (charges) {
 			return v('makeupApplied') === 0 && v('makeupAmount') >= charges;
+		},
+
+		// --- Webcam show --------------------------------
+		prefsMoney: function () { return v('prefsmoney') || 0; },
+		prefsShowCount: function () { return v('prefsshowCount') || 0; },
+		addPrefsMoney: function (n) {
+			State.variables.prefsmoney = (v('prefsmoney') || 0) + n;
+		},
+		addPrefsShow: function () {
+			State.variables.prefsshowCount = (v('prefsshowCount') || 0) + 1;
+		},
+		/* WebcamShowStart bundles a lot of per-event math: pick the
+		   video, compute fit/corruption bonuses, apply the subscriber
+		   multiplier, then bank the payout on $mc and the prefs*
+		   counters. Returns a single result descriptor the passage
+		   renders. Centralised here so the math table lives in one
+		   place. */
+		runWebcamShow: function () {
+			var VIDS = {
+				tease:      ["webcam/1.0.mp4", "webcam/1.1.mp4", "webcam/1.2.mp4", "webcam/1.3.mp4", "webcam/1.4.mp4"],
+				masturbate: ["webcam/2.0.mp4", "webcam/2.1.mp4", "webcam/2.2.mp4", "webcam/2.3.mp4", "webcam/2.4.mp4"],
+				toypussy:   ["webcam/3.0.mp4", "webcam/3.1.mp4", "webcam/3.2.mp4", "webcam/3.3.mp4", "webcam/3.4.mp4", "webcam/3.5.mp4"],
+				fingeranal: ["webcam/4.0.mp4", "webcam/4.1.mp4", "webcam/4.2.mp4", "webcam/4.3.mp4", "webcam/4.4.mp4"],
+				toyanal:    ["webcam/5.0.mp4", "webcam/5.1.mp4", "webcam/5.2.mp4", "webcam/5.3.mp4", "webcam/5.4.mp4", "webcam/5.5.mp4"]
+			};
+			var CORR = {
+				tease:      [1, 9],
+				masturbate: [15, 25],
+				toypussy:   [23, 33],
+				fingeranal: [30, 44],
+				toyanal:    [40, 55]
+			};
+			function rnd(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
+			function pick(list) { return list[Math.floor(Math.random() * list.length)]; }
+
+			var ev = v('webcamEvent');
+			var videos = VIDS[ev] || [];
+			var video = videos.length ? pick(videos) : "";
+			State.variables.webcamVideo = video;
+
+			var fit = mc().fit || 0;
+			var fitBonus =
+				fit <=  10 ? rnd( 1,  5) :
+				fit <=  20 ? rnd( 3,  8) :
+				fit <=  30 ? rnd( 6, 11) :
+				fit <=  40 ? rnd( 9, 14) :
+				fit <=  50 ? rnd(13, 17) :
+				fit <=  60 ? rnd(16, 20) :
+				fit <=  70 ? rnd(19, 23) :
+				fit <=  80 ? rnd(22, 26) :
+				fit <=  90 ? rnd(25, 30) :
+				fit <= 100 ? rnd(28, 32) : 0;
+
+			var corrRange = CORR[ev] || [1, 5];
+			var corrBonus = rnd(corrRange[0], corrRange[1]);
+
+			var baseMoney = rnd(7, 15);
+			var moneyBase = Math.round(baseMoney + fitBonus + corrBonus);
+			var subs = v('prefssubscribers') || 0;
+			var earned = Math.round(moneyBase * (1 + subs / 1000));
+			var newSubs = Math.round(earned * 0.1);
+
+			State.variables.prefsmoney = (v('prefsmoney') || 0) + earned;
+			State.variables.prefssubscribers = subs + newSubs;
+			State.variables.prefsshowCount = (v('prefsshowCount') || 0) + 1;
+			mc().money += earned;
+
+			return { video: video, moneyEarned: earned, newSubs: newSubs };
+		},
+		initWebcamCounters: function () {
+			if (v('prefsmoney') === undefined) { State.variables.prefsmoney = 0; }
+			if (v('prefssubscribers') === undefined) { State.variables.prefssubscribers = 0; }
+			if (v('prefsshowCount') === undefined) { State.variables.prefsshowCount = 0; }
+		},
+		dildoPurchased: function () { return v('dildoPurchased') === 1; },
+		subscribers: function () { return v('prefssubscribers') || 0; },
+		addSubscribers: function (n) {
+			State.variables.prefssubscribers = (v('prefssubscribers') || 0) + n;
+		},
+		initSubscribers: function () {
+			if (v('prefssubscribers') === undefined) {
+				State.variables.prefssubscribers = 0;
+			}
+		},
+		webcamEvent: function () { return v('webcamEvent'); },
+		setWebcamEvent: function (k) { State.variables.webcamEvent = k; },
+		setWebcamCooldown: function (n) { State.variables.webcamShowCD = n; },
+		webcamCooldown: function () { return v('webcamShowCD'); },
+		webcamShowAvailable: function () {
+			var cd = v('webcamShowCD');
+			return cd === undefined || cd === 0;
+		},
+
+		// --- Bedroom one-shot wake-up banners ------------
+		// These are single-use flags that the Bedroom passage reads
+		// on entry and then unsets, to show one-time messages after
+		// a specific event chain (succubus visit / tentacle dream /
+		// failed summon) resolved in the previous turn.
+		succubusChoiceText: function () { return v('succubusChoiceEventText'); },
+		clearSuccubusChoiceText: function () { delete State.variables.succubusChoiceEventText; },
+		summonText: function () { return v('summonText'); },
+		clearSummonText: function () { delete State.variables.summonText; },
+		succubusTVText: function () { return v('succubusTVText'); },
+		clearSuccubusTVText: function () { delete State.variables.succubusTVText; },
+		tentaclesAfterSleepText: function () { return v('tentaclesTextAfterSleep'); },
+		clearTentaclesAfterSleepText: function () { delete State.variables.tentaclesTextAfterSleep; },
+
+		// --- Livingroom one-shot event banners -----------
+		tentaclesPCText: function () { return v('tentaclesEventPCText'); },
+		clearTentaclesPCText: function () { delete State.variables.tentaclesEventPCText; },
+		tentaclesTVText: function () { return v('tentaclesEventTVText'); },
+		clearTentaclesTVText: function () { delete State.variables.tentaclesEventTVText; },
+
+		// --- Succubus arrival ----------------------------
+		markSuccubusArrived: function () { State.variables.succubus = 1; },
+
+		// --- Mirror / twins event ------------------------
+		consumeTwinsEvent: function () {
+			State.variables.thetwinsevent = 0;
+			State.variables.thetwinseventCD = 1;
+		},
+
+		// --- Makeup / mirror application -----------------
+		removeMakeupWithPenalty: function (penalty) {
+			// Sleeping / washing-with-shower paths call this from the
+			// <<removeMakeup N>> widget. Each tier gets a stacked
+			// penalty (tier+0 / +5 / +10) on top of the base penalty,
+			// then clears the applied flag and portrait.
+			var s = State.variables;
+			var tier = s.mc.makeupImg;
+			var stacked = tier === 1 ? penalty
+				: tier === 2 ? penalty + 5
+				: tier === 3 ? penalty + 10
+				: 0;
+			s.mc.beauty -= stacked;
+			s.makeupApplied = 0;
+			s.mc.makeupImg = 0;
+		},
+		removeMakeup: function () {
+			// Undo applied-makeup beauty + clear the flags; symmetric
+			// with applyMakeupTier. Safe to call when no makeup is on
+			// (delta becomes 0).
+			var s = State.variables;
+			var delta = { 1: 5, 2: 10, 3: 15 }[s.mc.makeupImg] || 0;
+			s.mc.beauty -= delta;
+			s.makeupApplied = 0;
+			s.mc.makeupImg = 0;
+		},
+		applyMakeupTier: function (tier) {
+			// tier 1 = regular / 2 = stylish / 3 = slutty. Each tier
+			// burns `tier` charges, sets the portrait image key, and
+			// adds a fixed beauty delta (5 / 10 / 15). makeupApplied
+			// gates against double-apply.
+			var s = State.variables;
+			var beautyDelta = { 1: 5, 2: 10, 3: 15 }[tier];
+			s.mc.makeupImg = tier;
+			s.makeupApplied = 1;
+			s.makeupAmount -= tier;
+			s.mc.beauty += beautyDelta;
+		},
+
+		// --- "Skip time till midnight" shortcut ----------
+		skipTimeToMidnight: function () {
+			State.variables.hours = 23;
+			State.variables.minutes = 0;
+		},
+
+		// --- Hunt-defeat / mare wake-up state ------------
+		// HuntEnd* / Sleep set these flags so the Bedroom passage can
+		// render the correct "you wake up" banner and apply the
+		// sanity/energy/lust penalties below.
+		// Shared sleep-advance: wraps midnight and fires the
+		// ResetCooldowns widget when the day rolls over. Called by
+		// Sleep.tw from every "wake up" branch.
+		sleepAdvance: function (n) { return setup.Time.sleepAdvanceHours(n); },
+		cameraBought: function () { return v('isCameraBought') === 1; },
+		markSleptWithCameraOn: function () { State.variables.mcSleptWithCameraOn = 1; },
+
+		// --- PC desktop helpers -------------------------
+		aliceWorkDone: function () { return v('aliceWorkDone') === 1; },
+		aliceWorkState: function () { return v('aliceWorkDone'); },
+		setAliceWorkState: function (n) { State.variables.aliceWorkDone = n; },
+		sleptWithCameraOn: function () { return v('mcSleptWithCameraOn') === 1; },
+		mareStageLow: function () { return (v('ghostMareEventStage') || 0) <= 2; },
+		setMareStart: function (n) { State.variables.ghostMareEventStart = n; },
+		webcamAccountCreated: function () { return v('webcamAccountCreated') === 1; },
+		createWebcamAccount: function () { State.variables.webcamAccountCreated = 1; },
+
+		// --- Summoning / succubus ritual -----------------
+		spiritEventStage: function () { return v('ghostSpiritEventStage'); },
+		setSpiritEventStage: function (n) { State.variables.ghostSpiritEventStage = n; },
+		twinsEventActive: function () { return v('thetwinsevent') === 1; },
+		clearTwinsEvent: function () { State.variables.thetwinsevent = 0; },
+		gotCursedItemFlag: function () { return v('gotCursedItem'); },
+		exorcismQuestStage: function () { return v('exorcismQuestStage'); },
+		setExorcismQuestStage: function (n) { State.variables.exorcismQuestStage = n; },
+		succubusEventTimer: function () { return v('succubusEventTimer'); },
+		setSuccubusEventTimer: function (n) { State.variables.succubusEventTimer = n; },
+		setSuccubus: function (n) { State.variables.succubus = n; },
+		summoningChoice: function () { return v('summoningChoice'); },
+		setSummoningChoice: function (n) { State.variables.summoningChoice = n; },
+		setExorcismCooldown: function (n) { State.variables.exorcismCD = n; },
+		setSummonText: function (n) { State.variables.summonText = n; },
+		setSuccubusChoiceText: function (n) { State.variables.succubusChoiceEventText = n; },
+		setSuccubusTVText: function (n) { State.variables.succubusTVText = n; },
+		setMareEventStartValue: function (n) { State.variables.ghostMareEventStart = n; },
+		succubusPCEventStage: function () { return v('succubusPCEventStage'); },
+		setSuccubusPCEventStage: function (n) { State.variables.succubusPCEventStage = n; },
+		bumpSuccubusPCEventStage: function () {
+			State.variables.succubusPCEventStage =
+				(v('succubusPCEventStage') || 0) + 1;
+		},
+		succubusEventCD: function () { return v('succubusEventCD'); },
+		setSuccubusEventCD: function (n) { State.variables.succubusEventCD = n; },
+		// Summoning advance: same wrap-clock-then-reset-cooldowns pattern
+		// as sleepAdvance, but used by the ritual (4-hour cast). Sets
+		// succubusEventTimer which ticks down elsewhere.
+		advanceSummoning: function () {
+			State.variables.succubusEventTimer = 6;
+			return setup.Time.sleepAdvanceHours(4);
+		},
+		masturbationAvailable: function () {
+			var cd = v('masturbationCD');
+			return cd === undefined || cd === 0;
+		},
+		setMasturbationCooldown: function (n) { State.variables.masturbationCD = n; },
+		ghostInfoSearchedToday: function () { return v('findGhostInfoCD') === 1; },
+		markGhostInfoSearched: function () { State.variables.findGhostInfoCD = 1; },
+		// Rotate through the porn-video playlist. Callers track an
+		// index in a temp var and hand it back each tick; returns the
+		// new index + the currently-selected video path.
+		PORN_VIDEOS: [
+			"porn/1.mp4", "porn/2.mp4", "porn/3.mp4", "porn/4.mp4",
+			"porn/5.mp4", "porn/6.mp4", "porn/7.mp4"
+		],
+		nextPornVideo: function (idx) {
+			var list = this.PORN_VIDEOS;
+			var next = (idx + 1) % list.length;
+			return { index: next, video: list[next] };
+		},
+		tentaclesPCEventReady: function () {
+			return v('gotCursedItem') === 1 && v('gotCursedItemEventCD') >= 2;
+		},
+		// --- Tentacles event stages -----------------------
+		// Reset CD on tentacle event start; advance per-branch
+		// stage flags and their paired "after-sleep" narration key.
+		resetTentaclesCooldown: function () { State.variables.gotCursedItemEventCD = 0; },
+		tentaclesStageAll: function () { return v('tentaclesEventStageAll') || 0; },
+		setTentaclesStageAll: function (n) { State.variables.tentaclesEventStageAll = n; },
+		ensureTentaclesStageAll: function (n) {
+			if ((v('tentaclesEventStageAll') || 0) < n) {
+				State.variables.tentaclesEventStageAll = n;
+			}
+		},
+		tentaclesStageSleep: function () { return v('tentaclesEventStageSleep') || 0; },
+		setTentaclesStageSleep: function (n) { State.variables.tentaclesEventStageSleep = n; },
+		setTentaclesAfterSleepText: function (n) { State.variables.tentaclesTextAfterSleep = n; },
+		setTentaclesPCText: function (n) { State.variables.tentaclesEventPCText = n; },
+		setTentaclesTVText: function (n) { State.variables.tentaclesEventTVText = n; },
+		// Advance the clock for a tentacles-event rest by N hours.
+		// Used by the "Rest" back-links at the end of each event;
+		// Doesn't wrap midnight because the events are short naps.
+		restForHours: function (n) { State.variables.hours += n; },
+		isSuccubusPCEventReady: function () {
+			var h = v('hours');
+			return (v('succubus') === 1 && v('succubusEventCD') === 0) ||
+				(v('succubusEventCD') === 2 && h >= 18 && h <= 23);
+		},
+
+		applyHuntDefeatWake: function () {
+			var m = mc();
+			m.sanityMax = 70;
+			m.sanity = 40 + Math.floor(Math.random() * 31);   // 40..70
+			m.energy = m.energyMax;
+			m.lust = 30 + Math.floor(Math.random() * 31);     // 30..60
+		},
+		clearPenaltyOnMareWake: function () {
+			State.variables.isPenaltyOn = 0;
 		}
 	};
 })();

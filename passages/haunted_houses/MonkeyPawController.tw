@@ -590,6 +590,9 @@ function bannedHouses() {
 			State.variables.boughtMonkeyPawGuide = 2;
 			this.learnAll();
 			this.grantAnything();
-		}
+		},
+
+		// --- Tarot deck carry stage (Bag display) -----------------
+		tarotCarryStage: function () { return v('tarotCardsStage'); }
 	};
 })();

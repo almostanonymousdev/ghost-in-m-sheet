@@ -15,8 +15,7 @@
 	@@.mc-speech; Understood. Thanks again.@@<br>
 	@@.notmc-speech; Good luck.@@<br><br>
 	@@.mc-action; I need to summon a ghost in my house using the book Rain gave me@@<br>
-	<<set $exorcismQuestStage to 1>>
-	<<set $amulet to 1>>
+	<<run setup.Church.startExorcismQuest()>>
 <<else>>
 	@@.notmc-speech; I'm sorry, I'm swamped right now - I need to find some missing nuns. If you help me with this, I'll be glad to assist you in return. You know what to do, so come back to me once you've helped me find a few of my girls.@@<br>
 

@@ -1,5 +1,5 @@
 :: SuccubusChoice [nobr] {"position":"700,3000","size":"100,100"}
-<<if $summoningChoice eq 1>>
+<<if setup.Home.summoningChoice() eq 1>>
 	<<set _check to random(1,2)>>
 	<<if _check eq 1>>
 		<<image "succubus/ass1.jpg" "displayCentredImgs">>
@@ -20,10 +20,10 @@
 		@@.mc-thoughts; Her voice dripping with satisfaction as she starts to fuck you harder.@@<br>
 		@@.mc-speech; Yes... oh, yes... more...@@<br>
 		@@.mc-thoughts; The intensity builds, and you feel the overwhelming pleasure cresting. You cum, your body trembling with ecstasy, then everything fades as you pass out@@<br><br>
-		@@.backbtn; [[Pass out|Bedroom][$succubusChoiceEventText to 1]]@@<br>
+		@@.backbtn; [[Pass out|Bedroom][setup.Home.setSuccubusChoiceText(1)]]@@<br>
 	<</linkappend>>
 
-<<elseif $summoningChoice eq 2>>
+<<elseif setup.Home.summoningChoice() eq 2>>
 	<<set _check to random(1,4)>>
 	<<if _check eq 1>>
 		<<image "succubus/form1.0.jpg" "displayCentredImgs">>
@@ -77,10 +77,10 @@
 
 			@@.mc-speech; "I'm... I'm cumming... oh fuck!"@@<br>
 			@@.mc-thoughts; You cum, your body trembling with ecstasy, then everything fades as you pass out.@@<br><br>
-			@@.backbtn; [[Pass out|Bedroom][$succubusChoiceEventText to 1]]@@<br>
+			@@.backbtn; [[Pass out|Bedroom][setup.Home.setSuccubusChoiceText(1)]]@@<br>
 		<</linkappend>>
 	<</linkappend>>
-<<elseif $summoningChoice eq 3>>
+<<elseif setup.Home.summoningChoice() eq 3>>
 	<<video "succubus/pc2.mp4" "displayCentredImgs">>
 	@@.mc-thoughts; The succubus leans over you, her tongue starts to caress your pussy@@<br>
 	@@color:red; Damn, you taste so sweet, I could lick you forever.@@<br>
@@ -106,11 +106,11 @@
 			<<video "succubus/pcend1.mp4" "displayCentredImgs">>
 			@@color:red; You were such a good little slut tonight.@@<br>
 			@@.mc-thoughts; You're left alone, but her taste lingers on your lips.@@<br><br>
-			@@.backbtn; [[Pass out|Bedroom][$succubusChoiceEventText to 2]]@@
+			@@.backbtn; [[Pass out|Bedroom][setup.Home.setSuccubusChoiceText(2)]]@@
 		<</linkappend>>
 	<</linkappend>>
 
-<<elseif $summoningChoice eq 4>>
+<<elseif setup.Home.summoningChoice() eq 4>>
 	<<video "succubus/trans1.mp4" "displayCentredImgs">>
 	@@.mc-thoughts; The succubus leans over you, her tongue starts to caress your pussy@@<br>
 	@@color:red; Damn, you taste so sweet, I could lick you forever.@@<br>
@@ -131,12 +131,11 @@
 			<<video "succubus/trans4.mp4" "displayCentredImgs">>
 			@@color:red; That was one hell of a ride, wasn't it?@@<br>
 			@@.mc-thoughts; Now alone, her kiss still echoes through your senses.@@<br><br>
-			@@.backbtn; [[Pass out|Bedroom][$succubusChoiceEventText to 2]]@@
+			@@.backbtn; [[Pass out|Bedroom][setup.Home.setSuccubusChoiceText(2)]]@@
 
 		<</linkappend>>
 
 	<</linkappend>>
 <</if>>
-<<set $hours +=4>><<if $hours >=24>><<set $hours -=24>><<include "ResetCooldowns">>
+<<if setup.Home.advanceSummoning()>><<include "ResetCooldowns">>
 <</if>>
-<<set $succubusEventTimer to 6>>

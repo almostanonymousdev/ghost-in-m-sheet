@@ -22,10 +22,7 @@
 		@@.mc-thoughts; You spread your legs wider on your own, inviting them. The tendrils oblige -- every one of them tenses and erupts at once. Thick ropes of ghostly cum coat you from head to toe. It splatters across your face, pools between your breasts, floods your pussy and drips down your thighs. You cum so hard you black out for a second, your whole body convulsing.@@<br><br>
 		@@.mc-thoughts; ...@@<br><br>
 		@@.mc-thoughts; You wake up in your own bed. The sheets are tangled around you. The hole in the mattress is gone -- smooth, unbroken fabric. Your body is clean, dry. But your tongue runs across your lips and you taste it. Faint and electric.@@<br>
-		<<set $mc.sanity -= 15>>
-		<<set $mc.corruption += 0.5>>
-		<<set $mc.lust to 100>>
-		<<run setup.CursedItems.clearCurse()>>
+		<<run setup.CursedItems.applyCurseEventEffects()>>
 		<br>
 		@@.mc-speech; Ectoplasm... I know I can still taste it. That wasn't a dream.@@<br>
 		Sanity decreased. Corruption slightly increased.<br>

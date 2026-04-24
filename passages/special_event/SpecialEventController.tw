@@ -32,9 +32,20 @@ setup.SpecialEvent = (function () {
 			State.variables.ghostSpiritEventStage = 1;
 			State.variables.ghostSpecialEventSpiritCD = 1;
 		},
+		markSpiritEventStage: function () {
+			State.variables.ghostSpiritEventStage = 1;
+		},
+		startSpiritEventCooldown: function () {
+			State.variables.ghostSpecialEventSpiritCD = 1;
+		},
 		clearMareEvent: function () {
 			State.variables.ghostMareEventStart = 0;
 			State.variables.ghostMareEventStage = 0;
+		},
+
+		// --- Myling video pick ----------------------------
+		recordMylingVideo: function (video) {
+			State.variables.videoEventSpecialMyling = video;
 		},
 
 		// --- Companion -------------------------------------
@@ -55,6 +66,12 @@ setup.SpecialEvent = (function () {
 		},
 		spendEscapeEnergy: function () {
 			State.variables.mc.energy = 0;
+		},
+
+		// --- Mare stage ------------------------------------
+		mareStage: function () { return v('ghostMareEventStage'); },
+		mareStageAtLeast: function (n) {
+			return (v('ghostMareEventStage') || 0) >= n;
 		},
 
 		// --- Myling companion reset ------------------------

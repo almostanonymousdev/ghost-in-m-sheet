@@ -10,13 +10,13 @@
 <</if>><br>
 @@.mc-thoughts; A wave of pleasure ran through you, making your body tremble with delight, taking your mind somewhere far from reality@@<br>
 <<image "img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>> decreased! <br>
-<<if $mc.corruption lte 4>>
+<<if setup.Mc.corruption() lte 4>>
 	+0.2 <<image "img/corruption.png" { style: "position: relative; top: 0.375em; width:3%;" }>>
-	<<set $mc.corruption += 0.2>><br>
+	<<run setup.Mc.addCorruption(0.2)>><br>
 <</if>>
 
 @@.mc-speech; Fuuhh~, i need to rest a bit@@<br>
-<<set $mc.lust to 0>>
+<<run setup.Mc.setLust(0)>>
 <br>
 @@.backbtn;[[Rest and leave|Livingroom]]@@<br>
 <<addTime 20>>

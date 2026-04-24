@@ -1,7 +1,7 @@
 :: Notebook [noreturn nobr] {"position":"100,300","size":"100,100"}
-<<if $knowledgeUsed eq 1>>
+<<if setup.Ghosts.knowledgeUsed()>>
 	<<done>>
-		<<= '<<addclass ".' + $chosenEvidence + '" "blackColor">>'>>
+		<<= '<<addclass ".' + setup.Ghosts.chosenEvidence() + '" "blackColor">>'>>
 	<</done>>
 <</if>>
 <div class="backgroundForTextNotebook">
@@ -10,21 +10,21 @@
 <div class="flexwrapperNotebook">
 <div>
 <b>
-* <span class="emf"><<checkbox "$EMF5Check" false true autocheck>>EMF 5 </span><<linkreplace "Tips:">><br>
+* <span class="emf"><<evidenceCheckbox "EMF5Check">>EMF 5 </span><<linkreplace "Tips:">><br>
 	<span style="color: red; font-weight: bold;  -webkit-text-stroke: 1px black;">Red</span> means evidence<br>
 	<span style="color: yellow; font-weight: bold;  -webkit-text-stroke: 1px black;">Yellow</span> means it's not evidence.<br>
 	<span style="color: green; font-weight: bold;  -webkit-text-stroke: 1px black;">Green</span> means nothing happened *try again*.
 <</linkreplace>>
-<br>* <span class="glass"><<checkbox "$EctoglassCheck" false true autocheck>> Ectoplasm</span><br>
-* <span class="gwb"><<checkbox "$GWBCheck" false true autocheck>> Ghost writing book</span><br>
-* <span class="spiritbox"><<checkbox "$SpiritboxCheck" false true autocheck>> Spiritbox</span><br>
-* <span class="temperature"><<checkbox "$TemperatureCheck" false true autocheck>> High temperature </span><<linkreplace "Tips:">><br>
+<br>* <span class="glass"><<evidenceCheckbox "EctoglassCheck">> Ectoplasm</span><br>
+* <span class="gwb"><<evidenceCheckbox "GWBCheck">> Ghost writing book</span><br>
+* <span class="spiritbox"><<evidenceCheckbox "SpiritboxCheck">> Spiritbox</span><br>
+* <span class="temperature"><<evidenceCheckbox "TemperatureCheck">> High temperature </span><<linkreplace "Tips:">><br>
 	Normal temperature: 13 - 18.<br>
 	Ghost's favorite room: 18 - 23.<br>
 	Evidence "High temperature": 21 - 26.<br>
 	If you have a level 2 or 3 thermometer -  color is added. (See the guide).
 <</linkreplace>>
-<br>* <span class="uvl"><<checkbox "$UVLCheck" false true autocheck>> UVL Fingerprints</span><br>
+<br>* <span class="uvl"><<evidenceCheckbox "UVLCheck">> UVL Fingerprints</span><br>
 </b>
 </div>
 <a data-passage="Ghostopedia"><<image "img/ghostopedia.png" " iconPC">><br></a>
@@ -36,11 +36,7 @@
 	<</hovertip>></span>
 <</for>><br>
 
-<<if (previous() eq "WitchEndContract") or (tags(previous()).includes("event"))>>
-	@@.backbtn;<<back>>@@<br>
-<<else>>
-	@@.backbtn;<<return>>@@<br>
-<</if>>
+<<backOrReturn>>
 </div>
 </div>
 

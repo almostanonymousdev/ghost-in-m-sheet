@@ -1,5 +1,5 @@
 :: NudityEventTwo [nobr] {"position":"1800,1350","size":"100,100"}
-<<set $companion.lust to 100>>
+<<run setup.Companion.pegActiveLust(100)>>
 <<run setup.Ghosts.markActiveHuntEvent()>>
 <<set _videoList to []>>
 <<set _videoList to ["naked/duo1.mp4", "naked/duo2.mp4", "naked/duo3.mp4", "naked/duo4.mp4", "naked/duo5.mp4"]>>
@@ -7,10 +7,10 @@
 <<set _selectedVideo to _videoList[_randomIndex]>>
 <<video _selectedVideo>>
 @@.mc-thoughts; You're walking home together. A gentle breeze tickles your bodies, and only a bathrobe offers a bit of cover from complete nudity@@<br>
-@@.notmc-speech; Oh~ $mc.name, this is weird, but I'm actually starting to like it. <br>
+@@.notmc-speech; Oh~ <<= setup.Mc.name()>>, this is weird, but I'm actually starting to like it. <br>
 I'm so turned on, I feel like I could fuck half the city right now@@<br>
 @@.mc-speech; Hehe~ and you called me a slut... How about you walk me home first?@@<br>
 @@.notmc-speech; Yeah, sure.@@<br>
 <br>
-<<include "LostClothes">>
+<<run setup.Wardrobe.loseAllStolen()>>
 @@.backbtn; [[You're finally home|WalkHomeTogether]]@@<br>

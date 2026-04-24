@@ -3,9 +3,9 @@
 
 <<if setup.Mall.blakeUnlocked()>>
 	<<if setup.Mall.blakeFirstMeeting()>>
-		@@.notmc-speech; Hey, you're not $mc.name by any chance, are you? Alice told me you went ghost hunting together.@@<br>
+		@@.notmc-speech; Hey, you're not <<= setup.Mc.name()>> by any chance, are you? Alice told me you went ghost hunting together.@@<br>
 		@@.mc-speech;Yeah, that's right.@@<br>
-		<<set $dialogBlake to 0>>
+		<<run setup.Mall.setBlakeDialogStage(0)>>
 		<<if setup.Mall.blakeCanIntroduceCursedItemBuyback()>>
 			@@.notmc-speech;Alice mentioned that sometimes you come across... hmm, let's say, "something special." Some toys with, well, "a magical aura"?@@<br>
 			@@.mc-speech;Yeah, you're right. But I usually give them to the witch in exchange for a fee.@@<br>
@@ -15,20 +15,20 @@
 			@@.mc-speech;Hmm... I'll think about it.@@<br>
 			<br>
 			@@.mc-action;Now you can bring cursed items to the adult store and sell them for a higher price.@@<br>
-			<<set $dialogBlake to 1>>
+			<<run setup.Mall.setBlakeDialogStage(1)>>
 		<<else>>
 			@@.notmc-speech;Wow! It's amazing that you're into this stuff. Good luck!@@<br>
 		<</if>>
 	<<else>>
-		@@.notmc-speech; Hi $mc.name, need any help?@@<br>
+		@@.notmc-speech; Hi <<= setup.Mc.name()>>, need any help?@@<br>
 		<<if setup.Mall.blakeHasCursedItemToSell()>>
 			<<linkreplace "@@.usebtn;Give her the cursed item@@">>
 				@@.notmc-speech; Wow, thanks. Here's your money. Feel free to bring more, I'll gladly buy them from you.@@<br>
 				Money: +60 $ <br>
 
 				<<if setup.Mall.canRaiseBlakeRelationship()>>
-					<<set $relationshipBlake += 1>>
-					@@.mc-speech; Relationship with Blake increased: now $relationshipBlake!@@
+					<<run setup.Mall.raiseBlakeRelationship()>>
+					@@.mc-speech; Relationship with Blake increased: now <<= setup.Mall.blakeRelationship()>>!@@
 				<</if>>
 				<<run setup.Mall.sellCursedItemToBlake()>>
 			<</linkreplace>>
@@ -43,7 +43,7 @@
 			@@.mc-speech;Hmm... I'll think about it.@@<br>
 			<br>
 			@@.mc-action;Now you can bring cursed items to the adult store and sell them for a higher price.@@<br>
-			<<set $dialogBlake to 1>>
+			<<run setup.Mall.setBlakeDialogStage(1)>>
 		<</if>>
 	<</if>>
 
@@ -67,16 +67,12 @@
 
 		<span class="CompanionInfoAskForHuntAlone">
 		@@.mc-speech;<<link "I'd like you to go ghost hunting alone.">>
-			<<set $isCompChosenBlake to 0>>
 			<<replace "#blakeInfoAnswer">>@@.notmc-speech; I think I'm already experienced enough to do it on my own. Where should I go?@@<br>
 
-				@@.enterbtn;<<link "Owaissa Street - $chanceToSuccessAloneOwaissaBlake %">>
-					<<set $blakeChooseOwaissa to 1>>
-					<<set $blakeChooseElm to 0>>
-					<<set $isBlakeGoingForHuntingAlone to 1>>
-					<<if (ndef $payForHuntAloneBlake or $payForHuntAloneBlake eq 0) and $mc.money gte 20>><<set $mc.money -= 20>><<set $payForHuntAloneBlake to 1>><</if>>
+				@@.enterbtn;<<link `"Owaissa Street - " + setup.Mall.chanceBlakeAloneOwaissa() + " %"`>>
+					<<run setup.Mall.pickBlakeForSoloHuntOwaissa()>>
 
-					<<if $mc.money lt 20>>
+					<<if setup.Mc.money() lt 20>>
 						<<replace "#blakeInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@
 						<</replace>>
 					<<else>>
@@ -85,12 +81,9 @@
 					<</if>>
 				<</link>>@@
 
-				@@.enterbtn;<<link "Elm Street - $chanceToSuccessAloneElmBlake %">>
-					<<set $blakeChooseOwaissa to 0>>
-					<<set $blakeChooseElm to 1>>
-					<<set $isBlakeGoingForHuntingAlone to 1>>
-					<<if (ndef $payForHuntAloneBlake or $payForHuntAloneBlake eq 0) and $mc.money gte 20>><<set $mc.money -= 20>><<set $payForHuntAloneBlake to 1>><</if>>
-					<<if $mc.money lt 20>>
+				@@.enterbtn;<<link `"Elm Street - " + setup.Mall.chanceBlakeAloneElm() + " %"`>>
+					<<run setup.Mall.pickBlakeForSoloHuntElm()>>
+					<<if setup.Mc.money() lt 20>>
 						<<replace "#blakeInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@
 						<</replace>>
 					<<else>>
@@ -103,7 +96,7 @@
 
 				</span>
 			<</replace>>
-		<</link>>@@<<if $blake.lvl lt 2>>
+		<</link>>@@<<if setup.Mall.blakeLvl() lt 2>>
 			@@.warningtext; Req. Blake's lvl 2+@@
 		<</if>></span>
 
@@ -116,7 +109,7 @@
 
 	<br>
 
-	<<if $blake.lvl lt 2>>
+	<<if setup.Mall.blakeLvl() lt 2>>
 		<<done>>
 			<<addclass ".CompanionInfoAskForHuntAlone" "disabled-link">>
 		<</done>>

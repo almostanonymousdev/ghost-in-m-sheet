@@ -29,14 +29,15 @@
 		<</linkreplace>><br>
 	<</if>><br>
 	<<if not setup.MonkeyPaw.hasGuide()>>
-		<label><b>@@.mc-speech;I wish for/to...@@</b><<textbox "$inputWish" "">></label>
+		<label><b>@@.mc-speech;I wish for/to...@@</b><<monkeyPawWishInput>></label>
 
 		<<link "@@.usebtn; Make a Wish@@">>
-			<<set _wish to setup.MonkeyPaw.byInput($inputWish)>>
+			<<set _inputWish to setup.Gui.monkeyPawWishInput()>>
+			<<set _wish to setup.MonkeyPaw.byInput(_inputWish)>>
 			<<if _wish>>
 				<<run setup.MonkeyPaw.markLearned(_wish.id)>>
 				<<monkeyPawWish _wish.widget>>
-			<<elseif $inputWish.toLowerCase().trim() eq "anything">>
+			<<elseif _inputWish.toLowerCase().trim() eq "anything">>
 				<<run setup.MonkeyPaw.grantAnything()>>
 				<<monkeyPawWish setup.MonkeyPaw.rollAnything().widget>>
 			<<else>>

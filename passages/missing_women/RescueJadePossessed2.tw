@@ -1,5 +1,5 @@
 :: RescueJadePossessed2 [nobr] {"position":"1925,2300","size":"100,100"}
-<<if $rescueJadePossessed eq 1>>
+<<if setup.MissingWomen.jadePossessedStage() eq 1>>
 	<<set _checkR to random(1,2)>>
 	<<if _checkR eq 1>>
 		<<video "rescue/jade/1.4.mp4">>
@@ -13,10 +13,10 @@
 		@@.mc-thoughts; The orgasm hit you again, and you couldn't hold on. Falling to the floor, your body was still trembling in pleasure.@@<br>
 		@@.notmc-speech; Well, I think you've had enough, you can [[leave|Church]] if you can get up, haha@@<br>
 	<</linkappend>>@@
-<<elseif $rescueJadePossessed eq 2>>
+<<elseif setup.MissingWomen.jadePossessedStage() eq 2>>
 	<<video "rescue/jade/2.6.mp4">>
 	@@.mc-thoughts; You start kissing, and the whole world slips away from you in that moment. <br>You [[pass out.|Church]]@@
-<<elseif $rescueJadePossessed eq 3>>
+<<elseif setup.MissingWomen.jadePossessedStage() eq 3>>
 	<<video "rescue/jade/3.8.mp4">>
-	@@.mc-thoughts; You start kissing, and the whole world slips away from you in that moment. <br>You [[pass out.|Church][$hours += 3]]@@
+	@@.mc-thoughts; You start kissing, and the whole world slips away from you in that moment. <br>You [[pass out.|Church][setup.MissingWomen.sleepOffHoursAfterEvent()]]@@
 <</if>>
