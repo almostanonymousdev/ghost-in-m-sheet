@@ -37,8 +37,10 @@ Simple AI patterns:
      take temperature readings; elevated reading (>= 18) means ghost room.
   2) "Scan for evidence in the ghost's room" - turn lights off for the
      tool bonus, scan every tool each round, revert lights if sanity gets
-     dangerous. If evidence is still incomplete and the ghost relocates,
-     drop back to pattern 1.
+     dangerous. As soon as any evidence reads positive (the room is
+     confirmed), force EMF/UVL windows open so the timed-tool scans
+     succeed this pass instead of waiting for a ghost event. If evidence
+     is still incomplete and the ghost relocates, drop back to pattern 1.
   3) "Respond to hunt" - on a hunt event, hide (ghost overrides aside).
 
 Usage:
@@ -930,9 +932,13 @@ def pattern_scan_for_evidence(hunt: Hunt, suspected: str, rounds: int = 6
     # GWB / Spiritbox roll before EMF so their hits can open the EMF window
     # in the same pass; temperature runs first to match the
     # pattern_find_ghost_room cadence.
-    scans = [
-        hunt.temperature_scan, hunt.gwb_scan, hunt.spiritbox_scan,
-        hunt.plasm_scan,       hunt.emf_scan, hunt.uvl_scan,
+    # Each entry pairs a scan callable with the timed-tool name it fronts
+    # ("" for non-timed scans). Keeping the tag alongside the callable
+    # avoids fragile bound-method identity checks in the activation step.
+    scans: list[tuple[callable, str]] = [
+        (hunt.temperature_scan, ""), (hunt.gwb_scan,       ""),
+        (hunt.spiritbox_scan,   ""), (hunt.plasm_scan,     ""),
+        (hunt.emf_scan,      "emf"), (hunt.uvl_scan,    "uvl"),
     ]
     for _ in range(rounds):
         if hunt.out_of_energy():
@@ -943,7 +949,12 @@ def pattern_scan_for_evidence(hunt: Hunt, suspected: str, rounds: int = 6
         exit_reason = hunt.move_to(suspected)
         if exit_reason:
             return hunt.found >= hunt.ghost_evidence, exit_reason
-        for scan in scans:
+        for scan, timed_tool in scans:
+            # Once any evidence has confirmed the ghost's room, force the
+            # EMF/UVL windows open so those timed-tool scans read positive
+            # this pass instead of waiting on a ghost event to activate them.
+            if timed_tool and hunt.found:
+                hunt._activate(timed_tool)
             scan()
             tick_reason = hunt.tool_tick()
             if tick_reason:
