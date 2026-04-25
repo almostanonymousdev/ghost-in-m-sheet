@@ -74,10 +74,6 @@
 		All body parts are now at maximum sensitivity!
 		<<run setup.Intro.maximizeSensualBodyParts(setup.Intro.currentSensualBodyPart())>>
 	<</linkreplace>>
-		<br><<link "Toggle Back/Forward buttons">><<if setup.Updates.toggleCheatBackForward()>><<run $("body").addClass("show-history")>>
-		<<else>><<run $("body").removeClass("show-history")>>
-		<</if>>
-		<</link>>
 		<br><<link "Remove Tool Timers">><<run setup.Updates.setTimerToolsDecreased("10ms")>>
 		<</link>>
 <</linkreplace>>@@

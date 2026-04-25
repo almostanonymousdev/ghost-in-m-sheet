@@ -100,12 +100,6 @@ html:not([data-debug-view]) .debug:not(.hidden) {
 }
 
 /* ===== UI Bar ===== */
-#ui-bar-history {
-	display: none;
-}
-body.show-history #ui-bar-history {
-	display: block;
-}
 #ui-bar-body {
 	overflow-x: hidden;
 }

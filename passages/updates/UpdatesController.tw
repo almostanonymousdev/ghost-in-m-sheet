@@ -151,10 +151,7 @@ setup.Updates = (function () {
 		}
 	}
 
-	// --- Cheat toggles / update-version flags -------------------
-	function cheatBackForwardActive() {
-		return !!State.variables.cheatBackForward;
-	}
+	// --- Update-version flags ----------------------------------
 	function update22Applied()  { return State.variables.update22 !== undefined; }
 	function update0909Applied() { return State.variables.update0909 !== undefined; }
 	function update2707Applied() { return State.variables.update2707 !== undefined; }
@@ -422,7 +419,6 @@ setup.Updates = (function () {
 		applyUpdate2:             applyUpdate2,
 		applyUpdate3:             applyUpdate3,
 		applyFixSaveFile:         applyFixSaveFile,
-		cheatBackForwardActive:   cheatBackForwardActive,
 		update22Applied:          update22Applied,
 		update0909Applied:        update0909Applied,
 		update2707Applied:        update2707Applied,
@@ -432,11 +428,6 @@ setup.Updates = (function () {
 		timerToolsInitialized:    timerToolsInitialized,
 		initTick:                 initTick,
 
-		setCheatBackForward:      function (on) { State.variables.cheatBackForward = !!on; },
-		toggleCheatBackForward:   function () {
-			State.variables.cheatBackForward = !State.variables.cheatBackForward;
-			return State.variables.cheatBackForward;
-		},
 		setTimerToolsDecreased:   function (v) { State.variables.timerToolsDecreased = v; },
 		stepCount: function () { return State.variables.stepCount || 0; },
 		incrementStepCount: function () {

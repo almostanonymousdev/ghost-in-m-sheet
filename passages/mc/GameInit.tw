@@ -34,7 +34,6 @@ setup.Game = (function () {
 			uvl: { activated: 0, activationTime: 0 }
 		};
 		s.hunt = null;
-		s.cheatBackForward = false;
 
 		// --- Clock / environment ------------------------------
 		s.temperature = 0;
