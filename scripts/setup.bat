@@ -4,7 +4,7 @@ setlocal enabledelayedexpansion
 :: Setup script for Ghost in M'Sheet (Windows)
 :: This script downloads and sets up Tweego, SugarCube, and Python if needed
 
-cd /d "%~dp0"
+cd /d "%~dp0\.."
 
 :: Configuration
 set TWEEGO_VERSION=2.1.1
@@ -133,4 +133,4 @@ git config core.hooksPath .githooks
 echo Git hooks configured.
 
 echo Setup complete!
-echo You can now run build.bat to build the story.
+echo You can now run scripts\build.bat to build the story.

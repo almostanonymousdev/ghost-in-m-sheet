@@ -59,7 +59,7 @@ import re
 import sys
 from pathlib import Path
 
-PROJECT_DIR = Path(__file__).resolve().parent
+PROJECT_DIR = Path(__file__).resolve().parent.parent
 PASSAGES_DIR = PROJECT_DIR / "passages"
 
 # Container (block) macros — those whose <<name>> requires a <</name>> close

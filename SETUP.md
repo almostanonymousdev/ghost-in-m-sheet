@@ -17,13 +17,13 @@ Run the setup script to automatically download and install Tweego and SugarCube:
 **Linux / macOS:**
 
 ```bash
-./setup.sh
+./scripts/setup.sh
 ```
 
 **Windows:**
 
 ```cmd
-setup.bat
+scripts\setup.bat
 ```
 
 This will:
@@ -44,7 +44,7 @@ If you prefer to set up Tweego manually:
 3. Ensure the path in the build script matches your Tweego location:
    - Linux/macOS default: `tweego-2.1.1-linux-x64/tweego`
    - Windows default: `tweego-2.1.1-windows-x64\tweego.exe`
-   - Or update the `TWEEGO_PATH` variable in `build.sh` / `build.bat`
+   - Or update the `TWEEGO_PATH` variable in `scripts/build.sh` / `scripts/build.bat`
 
 ## Building and Opening the Project
 
@@ -63,23 +63,23 @@ VS Code tasks automatically detect your OS and run the correct script.
 
 ```bash
 # Build the story
-./build.sh
+./scripts/build.sh
 
 # Build and open in browser
-./start.sh
+./scripts/start.sh
 ```
 
 **Windows:**
 
 ```cmd
 :: Build the story
-build.bat
+scripts\build.bat
 
 :: Build and open in browser
-start.bat
+scripts\start.bat
 ```
 
-The build produces `ghost-in-msheet.html`, which can be opened directly in any browser — no server required.
+The build produces `dist/ghost-in-msheet.html`, which can be opened directly in any browser — no server required.
 
 ## VS Code Integration
 
@@ -94,19 +94,19 @@ The build produces `ghost-in-msheet.html`, which can be opened directly in any b
 
 ### Formatting .tw files
 
-The project ships an auto-formatter — `format_twee.py` — that normalises
+The project ships an auto-formatter — `tools/format_twee.py` — that normalises
 whitespace, macro spacing, wiki-link pipes, and block-macro indentation.
 
 - **Format on save**: install the recommended `emeraldwalk.runonsave`
   extension (VS Code will prompt when the project is opened). Every `.tw`
-  save then runs `python3 format_twee.py "${file}"` automatically.
+  save then runs `python3 tools/format_twee.py "${file}"` automatically.
 - **Format the current file**: `Ctrl+Shift+P` → *Tasks: Run Task* →
   *Twee Format (current file)*.
 - **Format the whole project**: *Tasks: Run Task* → *Twee Format (all files)*.
-- **CI / pre-commit check**: `python3 format_twee.py --check` exits
+- **CI / pre-commit check**: `python3 tools/format_twee.py --check` exits
   non-zero if anything is unformatted. The matching task is
   *Twee Format (check)*.
-- **Diff preview**: `python3 format_twee.py --dry-run --diff` on the
+- **Diff preview**: `python3 tools/format_twee.py --dry-run --diff` on the
   command line.
 
 ## Development Workflow
@@ -147,7 +147,7 @@ npm run watch
 ### Tweego not found
 
 - Ensure Tweego is installed and in your PATH
-- Or update the `TWEEGO_PATH` variable in `build.sh`
+- Or update the `TWEEGO_PATH` variable in `scripts/build.sh`
 
 ### No .tw files found
 
@@ -157,19 +157,19 @@ npm run watch
 ### Build fails
 
 - Check that all required files exist
-- Verify file permissions (build.sh should be executable)
+- Verify file permissions (scripts/build.sh should be executable)
 - Check the error output for specific issues
 
 ## Output
 
-The build process creates `ghost-in-msheet.html` in the project root directory. Open it directly in any web browser — no server needed.
+The build process creates `dist/ghost-in-msheet.html`. Open it directly in any web browser — no server needed.
 
 ## Customization
 
 You can customize the build process by editing:
 
-- `build.sh` / `build.bat`: Main build script (Linux+macOS / Windows)
-- `start.sh` / `start.bat`: Build and open script
-- `setup.sh` / `setup.bat`: One-time setup script
+- `scripts/build.sh` / `scripts/build.bat`: Main build script (Linux+macOS / Windows)
+- `scripts/start.sh` / `scripts/start.bat`: Build and open script
+- `scripts/setup.sh` / `scripts/setup.bat`: One-time setup script
 - `.vscode/tasks.json`: VS Code task definitions (auto-detects OS)
 - `.vscode/launch.json`: VS Code debug configurations

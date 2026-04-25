@@ -4,17 +4,18 @@
 # This script downloads and sets up Tweego and SugarCube if needed
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-cd "$SCRIPT_DIR"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$REPO_ROOT"
 
 # Configuration
 TWEEGO_VERSION="2.1.1"
 TWEEGO_DIR="tweego-${TWEEGO_VERSION}-linux-x64"
 TWEEGO_URL="https://github.com/tmedwards/tweego/releases/download/v${TWEEGO_VERSION}/tweego-${TWEEGO_VERSION}-linux-x64.zip"
-TWEEGO_PATH="${SCRIPT_DIR}/${TWEEGO_DIR}/tweego"
+TWEEGO_PATH="${REPO_ROOT}/${TWEEGO_DIR}/tweego"
 
 SUGARCUBE_VERSION="2.37.3"
 SUGARCUBE_URL="https://github.com/tmedwards/sugarcube-2/releases/download/v${SUGARCUBE_VERSION}/sugarcube-${SUGARCUBE_VERSION}-for-twine-2.1-local.zip"
-SUGARCUBE_PATH="${SCRIPT_DIR}/${TWEEGO_DIR}/storyformats"
+SUGARCUBE_PATH="${REPO_ROOT}/${TWEEGO_DIR}/storyformats"
 SUGARCUBE_INSTALLED_PATH="${SUGARCUBE_PATH}/sugarcube-2"
 
 # Colors for output
@@ -138,7 +139,7 @@ if [ "$SUGARCUBE_NEEDS_INSTALL" = true ]; then
 fi
 
 # Make scripts executable
-chmod +x build.sh start.sh .githooks/pre-commit
+chmod +x scripts/build.sh scripts/start.sh .githooks/pre-commit
 
 # Install npm dependencies (Playwright, etc.) if npm is available
 if command -v npm >/dev/null 2>&1; then
@@ -157,4 +158,4 @@ git config core.hooksPath .githooks
 echo -e "${GREEN}Git hooks configured.${NC}"
 
 echo -e "${GREEN}Setup complete!${NC}"
-echo -e "${GREEN}You can now run ./build.sh to build the story.${NC}"
+echo -e "${GREEN}You can now run ./scripts/build.sh to build the story.${NC}"

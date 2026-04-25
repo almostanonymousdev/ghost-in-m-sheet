@@ -4,12 +4,14 @@
 # This script builds the Twee/Twine story into an HTML file
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-cd "$SCRIPT_DIR"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$REPO_ROOT"
 
 # Configuration
-OUTPUT_FILE="ghost-in-msheet.html"
+OUTPUT_FILE="dist/ghost-in-msheet.html"
 PASSAGES_DIR="passages"
 TWEEGO_PATH="tweego-2.1.1-linux-x64/tweego"
+mkdir -p dist
 
 # Colors for output
 RED='\033[0;31m'
@@ -47,21 +49,21 @@ fi
 
 # Run all passage checks before building
 echo -e "${GREEN}Checking passage links and duplicates...${NC}"
-if ! python3 "$SCRIPT_DIR/check_links.py"; then
+if ! python3 "$REPO_ROOT/tools/check_links.py"; then
     echo -e "${RED}Error: Passage link/duplicate check failed.${NC}"
     exit 1
 fi
 echo -e "${GREEN}Link check passed.${NC}"
 
 echo -e "${GREEN}Checking asset references...${NC}"
-if ! python3 "$SCRIPT_DIR/check_assets.py"; then
+if ! python3 "$REPO_ROOT/tools/check_assets.py"; then
     echo -e "${RED}Error: Missing asset files detected.${NC}"
     exit 1
 fi
 echo -e "${GREEN}Asset check passed.${NC}"
 
 echo -e "${GREEN}Checking ghost data integrity...${NC}"
-if ! python3 "$SCRIPT_DIR/check_ghosts.py"; then
+if ! python3 "$REPO_ROOT/tools/check_ghosts.py"; then
     echo -e "${RED}Error: Ghost data integrity check failed.${NC}"
     exit 1
 fi

@@ -45,7 +45,7 @@ If you want to contribute code or Twee/story content directly:
 1. **Fork** the repository
 2. Create a branch: `git checkout -b my-feature-name`
 3. Make your changes -- see [BUILD_INSTRUCTIONS.md](BUILD_INSTRUCTIONS.md) and [SETUP.md](SETUP.md) for how to build the project
-4. **Test** your build with `./build.sh` before submitting
+4. **Test** your build with `./scripts/build.sh` before submitting
 5. Open a **Pull Request** against `main` with a clear description of what you changed and why
 
 ### PR Guidelines

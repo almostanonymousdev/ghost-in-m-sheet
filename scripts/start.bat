@@ -4,9 +4,9 @@ setlocal enabledelayedexpansion
 :: Start script for Ghost in M'Sheet (Windows)
 :: This script builds the story and opens it in the default browser
 
-cd /d "%~dp0"
+cd /d "%~dp0\.."
 
-set OUTPUT_FILE=ghost-in-msheet.html
+set OUTPUT_FILE=dist\ghost-in-msheet.html
 set STORY_INIT=passages\StoryInit.tw
 set STORY_SCRIPT=passages\StoryScript.tw
 
@@ -52,7 +52,7 @@ echo SugarCube debug mode enabled
 
 :: Build the story
 echo Building story...
-call .\build.bat
+call scripts\build.bat
 if !errorlevel! neq 0 (
     echo Error: Build failed.
     goto :cleanup
@@ -60,7 +60,7 @@ if !errorlevel! neq 0 (
 
 :: Open the file in the default browser
 echo Opening %OUTPUT_FILE% in browser...
-start "" "%~dp0%OUTPUT_FILE%"
+start "" "%CD%\%OUTPUT_FILE%"
 
 :cleanup
 :: Restore modified files

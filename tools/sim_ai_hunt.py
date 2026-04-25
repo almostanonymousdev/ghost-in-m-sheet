@@ -69,7 +69,7 @@ from pathlib import Path
 # mechanics is hardcoded.
 
 
-REPO_ROOT = Path(__file__).resolve().parent
+REPO_ROOT = Path(__file__).resolve().parent.parent
 PASSAGES = REPO_ROOT / "passages"
 
 EVIDENCE_ENUM = {

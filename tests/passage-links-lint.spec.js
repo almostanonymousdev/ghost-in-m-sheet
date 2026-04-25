@@ -3,7 +3,7 @@ const { spawnSync } = require('child_process');
 const path = require('path');
 
 const REPO_ROOT = path.join(__dirname, '..');
-const SCRIPT = path.join(REPO_ROOT, 'check_links.py');
+const SCRIPT = path.join(REPO_ROOT, 'tools', 'check_links.py');
 
 /**
  * check_links.py walks passages/ for every `::` header and every link

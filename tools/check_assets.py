@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 # Parse ASSET_BASE from StoryInit's setup.ImagePath assignment
-_STORY_INIT = Path(__file__).parent / "passages" / "StoryInit.tw"
+_STORY_INIT = Path(__file__).resolve().parent.parent / "passages" / "StoryInit.tw"
 _IMAGE_PATH_RE = re.compile(r'''setup\.ImagePath\s*=\s*["']([^"']+)["']''')
 ASSET_BASE = "assets"  # fallback
 if _STORY_INIT.is_file():
@@ -45,7 +45,7 @@ FURNITURE_WIDGET_PATTERN_INDICES = {3, 4}
 
 
 def main():
-    repo_root = Path(__file__).parent
+    repo_root = Path(__file__).resolve().parent.parent
     passages_dir = repo_root / "passages"
 
     if not passages_dir.is_dir():

@@ -15,7 +15,7 @@ import re
 import sys
 from pathlib import Path
 
-PROJECT_DIR = Path(__file__).resolve().parent
+PROJECT_DIR = Path(__file__).resolve().parent.parent
 PASSAGES_DIR = PROJECT_DIR / "passages"
 
 EMBEDDED_BLOCK_TAGS = {"style", "script"}

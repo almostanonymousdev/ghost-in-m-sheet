@@ -3,7 +3,7 @@ const { spawnSync } = require('child_process');
 const path = require('path');
 
 const REPO_ROOT = path.join(__dirname, '..');
-const SCRIPT = path.join(REPO_ROOT, 'sim_ai_hunt.py');
+const SCRIPT = path.join(REPO_ROOT, 'tools', 'sim_ai_hunt.py');
 
 /**
  * sim_ai_hunt.py parses mechanics out of the live .tw source instead of

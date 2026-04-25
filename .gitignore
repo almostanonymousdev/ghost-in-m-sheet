@@ -25,6 +25,7 @@ Thumbs.db
 tgh-fork.html
 *.html
 *.zip
+dist/
 
 # Node modules (if using npm)
 node_modules/
@@ -34,4 +35,4 @@ test-results/
 playwright-report/
 
 # Claude code files
-.claude/CLAUDE.local.md
+CLAUDE.local.md

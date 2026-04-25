@@ -5,7 +5,7 @@
       "label": "Twee Lint (watch)",
       "type": "shell",
       "command": "python3",
-      "args": ["check_format.py", "--vscode", "--watch"],
+      "args": ["tools/check_format.py", "--vscode", "--watch"],
       "isBackground": true,
       "runOptions": {
         "runOn": "folderOpen"
@@ -41,7 +41,7 @@
       "label": "Twee Format (current file)",
       "type": "shell",
       "command": "python3",
-      "args": ["format_twee.py", "${file}"],
+      "args": ["tools/format_twee.py", "${file}"],
       "group": "none",
       "presentation": {
         "reveal": "silent",
@@ -56,7 +56,7 @@
       "label": "Twee Format (all files)",
       "type": "shell",
       "command": "python3",
-      "args": ["format_twee.py"],
+      "args": ["tools/format_twee.py"],
       "group": "none",
       "presentation": {
         "reveal": "silent"
@@ -68,7 +68,7 @@
       "label": "Twee Format (check)",
       "type": "shell",
       "command": "python3",
-      "args": ["format_twee.py", "--check"],
+      "args": ["tools/format_twee.py", "--check"],
       "group": "none",
       "presentation": {
         "reveal": "silent"
@@ -80,7 +80,7 @@
       "label": "Twee Lint (all files)",
       "type": "shell",
       "command": "python3",
-      "args": ["check_format.py", "--vscode"],
+      "args": ["tools/check_format.py", "--vscode"],
       "group": "none",
       "presentation": {
         "reveal": "silent"
@@ -103,9 +103,9 @@
     {
       "label": "Build Story",
       "type": "shell",
-      "command": "./build.sh",
+      "command": "./scripts/build.sh",
       "windows": {
-        "command": ".\\build.bat"
+        "command": ".\\scripts\\build.bat"
       },
       "group": {
         "kind": "build",
@@ -117,61 +117,61 @@
     {
       "label": "Open in Browser",
       "type": "shell",
-      "command": "./start.sh",
+      "command": "./scripts/start.sh",
       "windows": {
-        "command": ".\\start.bat"
+        "command": ".\\scripts\\start.bat"
       },
       "group": "test",
       "problemMatcher": [],
-      "detail": "Build the story and open ghost-in-msheet.html in the default browser"
+      "detail": "Build the story and open dist/ghost-in-msheet.html in the default browser"
     },
     {
       "label": "Open with Assets in Browser",
       "type": "shell",
-      "command": "./start.sh",
+      "command": "./scripts/start.sh",
       "args": ["assets"],
       "windows": {
-        "command": ".\\start.bat",
+        "command": ".\\scripts\\start.bat",
         "args": ["assets"]
       },
       "group": "test",
       "problemMatcher": [],
-      "detail": "Build with the real assets folder and open ghost-in-msheet.html in the default browser"
+      "detail": "Build with the real assets folder and open dist/ghost-in-msheet.html in the default browser"
     },
     {
       "label": "Debug in Browser",
       "type": "shell",
-      "command": "./start.sh",
+      "command": "./scripts/start.sh",
       "args": ["debug"],
       "windows": {
-        "command": ".\\start.bat",
+        "command": ".\\scripts\\start.bat",
         "args": ["debug"]
       },
       "group": "test",
       "problemMatcher": [],
-      "detail": "Build with placeholder assets and open ghost-in-msheet.html with SugarCube debug mode"
+      "detail": "Build with placeholder assets and open dist/ghost-in-msheet.html with SugarCube debug mode"
     },
     {
       "label": "Debug with Assets in Browser",
       "type": "shell",
-      "command": "./start.sh",
+      "command": "./scripts/start.sh",
       "args": ["debug", "assets"],
       "windows": {
-        "command": ".\\start.bat",
+        "command": ".\\scripts\\start.bat",
         "args": ["debug", "assets"]
       },
       "group": "test",
       "problemMatcher": [],
-      "detail": "Build with the real assets folder and open ghost-in-msheet.html with SugarCube debug mode"
+      "detail": "Build with the real assets folder and open dist/ghost-in-msheet.html with SugarCube debug mode"
     },
     {
       "label": "Clean Build Artifacts",
       "type": "shell",
       "command": "rm",
-      "args": ["-f", "ghost-in-msheet.html"],
+      "args": ["-f", "dist/ghost-in-msheet.html"],
       "windows": {
         "command": "del",
-        "args": ["/q", "ghost-in-msheet.html"]
+        "args": ["/q", "dist\\ghost-in-msheet.html"]
       },
       "group": "none",
       "problemMatcher": [],
@@ -180,9 +180,9 @@
     {
       "label": "Rebuild Story",
       "type": "shell",
-      "command": "./build.sh",
+      "command": "./scripts/build.sh",
       "windows": {
-        "command": ".\\build.bat"
+        "command": ".\\scripts\\build.bat"
       },
       "dependsOn": "Clean Build Artifacts",
       "group": "build",
@@ -203,10 +203,10 @@
     {
       "label": "Package Placeholder Release",
       "type": "shell",
-      "command": "V=$(sed -n \"s/.*Ghost in M'Sheet \\([0-9][0-9.]*\\).*/\\1/p\" passages/StoryCaption.tw | head -1 | tr . -); : \"${V:?version not found in passages/StoryCaption.tw}\"; zip -r \"ghost-in-m-sheet-v${V}-placeholder-release.zip\" ghost-in-msheet.html asset-placeholders",
+      "command": "V=$(sed -n \"s/.*Ghost in M'Sheet \\([0-9][0-9.]*\\).*/\\1/p\" passages/StoryCaption.tw | head -1 | tr . -); : \"${V:?version not found in passages/StoryCaption.tw}\"; zip -j \"dist/ghost-in-m-sheet-v${V}-placeholder-release.zip\" dist/ghost-in-msheet.html && zip -r \"dist/ghost-in-m-sheet-v${V}-placeholder-release.zip\" asset-placeholders",
       "windows": {
         "command": "powershell",
-        "args": ["-NoProfile", "-Command", "$m = Select-String -Path passages/StoryCaption.tw -Pattern \"Ghost in M'Sheet (\\d[\\d.]*)\" | Select-Object -First 1; if (-not $m) { throw 'version not found in passages/StoryCaption.tw' }; $v = $m.Matches[0].Groups[1].Value -replace '\\.','-'; Compress-Archive -Path ghost-in-msheet.html,asset-placeholders -DestinationPath \"ghost-in-m-sheet-v$v-placeholder-release.zip\" -Force"]
+        "args": ["-NoProfile", "-Command", "$m = Select-String -Path passages/StoryCaption.tw -Pattern \"Ghost in M'Sheet (\\d[\\d.]*)\" | Select-Object -First 1; if (-not $m) { throw 'version not found in passages/StoryCaption.tw' }; $v = $m.Matches[0].Groups[1].Value -replace '\\.','-'; Compress-Archive -Path dist\\ghost-in-msheet.html,asset-placeholders -DestinationPath \"dist\\ghost-in-m-sheet-v$v-placeholder-release.zip\" -Force"]
       },
       "dependsOn": "Build Story",
       "group": "none",
@@ -216,10 +216,10 @@
     {
       "label": "Package Release",
       "type": "shell",
-      "command": "V=$(sed -n \"s/.*Ghost in M'Sheet \\([0-9][0-9.]*\\).*/\\1/p\" passages/StoryCaption.tw | head -1 | tr . -); : \"${V:?version not found in passages/StoryCaption.tw}\"; trap 'mv -f passages/StoryInit.tw.bak passages/StoryInit.tw 2>/dev/null' EXIT; cp passages/StoryInit.tw passages/StoryInit.tw.bak && sed -i 's|setup.ImagePath = \"[^\"]*\"|setup.ImagePath = \"assets\"|' passages/StoryInit.tw && ./build.sh && zip -r \"ghost-in-m-sheet-v${V}-release.zip\" ghost-in-msheet.html assets",
+      "command": "V=$(sed -n \"s/.*Ghost in M'Sheet \\([0-9][0-9.]*\\).*/\\1/p\" passages/StoryCaption.tw | head -1 | tr . -); : \"${V:?version not found in passages/StoryCaption.tw}\"; trap 'mv -f passages/StoryInit.tw.bak passages/StoryInit.tw 2>/dev/null' EXIT; cp passages/StoryInit.tw passages/StoryInit.tw.bak && sed -i 's|setup.ImagePath = \"[^\"]*\"|setup.ImagePath = \"assets\"|' passages/StoryInit.tw && ./scripts/build.sh && zip -j \"dist/ghost-in-m-sheet-v${V}-release.zip\" dist/ghost-in-msheet.html && zip -r \"dist/ghost-in-m-sheet-v${V}-release.zip\" assets",
       "windows": {
         "command": "powershell",
-        "args": ["-NoProfile", "-Command", "$m = Select-String -Path passages/StoryCaption.tw -Pattern \"Ghost in M'Sheet (\\d[\\d.]*)\" | Select-Object -First 1; if (-not $m) { throw 'version not found in passages/StoryCaption.tw' }; $v = $m.Matches[0].Groups[1].Value -replace '\\.','-'; Copy-Item passages/StoryInit.tw passages/StoryInit.tw.bak; try { (Get-Content passages/StoryInit.tw) -replace 'setup.ImagePath = \"[^\"]*\"', 'setup.ImagePath = \"assets\"' | Set-Content passages/StoryInit.tw; & .\\build.bat; if ($LASTEXITCODE -ne 0) { throw 'build failed' }; Compress-Archive -Path ghost-in-msheet.html,assets -DestinationPath \"ghost-in-m-sheet-v$v-release.zip\" -Force } finally { Move-Item -Force passages/StoryInit.tw.bak passages/StoryInit.tw }"]
+        "args": ["-NoProfile", "-Command", "$m = Select-String -Path passages/StoryCaption.tw -Pattern \"Ghost in M'Sheet (\\d[\\d.]*)\" | Select-Object -First 1; if (-not $m) { throw 'version not found in passages/StoryCaption.tw' }; $v = $m.Matches[0].Groups[1].Value -replace '\\.','-'; Copy-Item passages/StoryInit.tw passages/StoryInit.tw.bak; try { (Get-Content passages/StoryInit.tw) -replace 'setup.ImagePath = \"[^\"]*\"', 'setup.ImagePath = \"assets\"' | Set-Content passages/StoryInit.tw; & .\\scripts\\build.bat; if ($LASTEXITCODE -ne 0) { throw 'build failed' }; Compress-Archive -Path dist\\ghost-in-msheet.html,assets -DestinationPath \"dist\\ghost-in-m-sheet-v$v-release.zip\" -Force } finally { Move-Item -Force passages/StoryInit.tw.bak passages/StoryInit.tw }"]
       },
       "group": "none",
       "problemMatcher": [],

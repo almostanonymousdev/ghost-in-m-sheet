@@ -3,7 +3,7 @@ const { spawnSync } = require('child_process');
 const path = require('path');
 
 const REPO_ROOT = path.join(__dirname, '..');
-const SCRIPT = path.join(REPO_ROOT, 'check_reachability.py');
+const SCRIPT = path.join(REPO_ROOT, 'tools', 'check_reachability.py');
 
 /**
  * check_reachability.py walks every passage and flags any that can be

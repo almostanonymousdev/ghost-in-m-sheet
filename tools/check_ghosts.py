@@ -80,7 +80,7 @@ def randomizer_uses_setup_ghosts(passages_dir: Path) -> bool:
 
 
 def main():
-    repo_root = Path(__file__).parent
+    repo_root = Path(__file__).resolve().parent.parent
     passages_dir = repo_root / "passages"
 
     if not passages_dir.is_dir():

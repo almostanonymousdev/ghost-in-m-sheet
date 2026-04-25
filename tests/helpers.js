@@ -1,6 +1,6 @@
 const path = require('path');
 
-const GAME_URL = `file://${path.resolve(__dirname, '..', 'ghost-in-msheet.html')}`;
+const GAME_URL = `file://${path.resolve(__dirname, '..', 'dist', 'ghost-in-msheet.html')}`;
 
 /**
  * Install a seeded PRNG in place of Math.random for the lifetime of the page.

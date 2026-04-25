@@ -25,13 +25,13 @@ Run the setup script to automatically download and install Tweego and SugarCube:
 **Linux / macOS:**
 
 ```bash
-./setup.sh
+./scripts/setup.sh
 ```
 
 **Windows:**
 
 ```cmd
-setup.bat
+scripts\setup.bat
 ```
 
 #### Manual Setup
@@ -43,7 +43,7 @@ If you prefer to set up Tweego manually:
 3. Ensure the path in the build script matches your Tweego location:
    - Linux/macOS default: `tweego-2.1.1-linux-x64/tweego`
    - Windows default: `tweego-2.1.1-windows-x64\tweego.exe`
-   - Or update the `TWEEGO_PATH` variable in `build.sh` / `build.bat`
+   - Or update the `TWEEGO_PATH` variable in `scripts/build.sh` / `scripts/build.bat`
 
 ### Building the Project
 
@@ -63,26 +63,26 @@ VS Code tasks automatically detect your OS and run the correct script.
 
 ```bash
 # Build the story
-./build.sh
+./scripts/build.sh
 
 # Build and open the story in your default browser
-./start.sh
+./scripts/start.sh
 
 # Clean build artifacts
-rm -f ghost-in-msheet.html
+rm -f dist/ghost-in-msheet.html
 ```
 
 **Windows:**
 
 ```cmd
 :: Build the story
-build.bat
+scripts\build.bat
 
 :: Build and open the story in your default browser
-start.bat
+scripts\start.bat
 
 :: Clean build artifacts
-del ghost-in-msheet.html
+del dist\ghost-in-msheet.html
 ```
 
 ## VS Code Integration
@@ -94,13 +94,13 @@ del ghost-in-msheet.html
 
 ### Debugging
 
-1. Build the story using the "Build Story" task (or run `./start.sh` to build and open it)
+1. Build the story using the "Build Story" task (or run `./scripts/start.sh` to build and open it)
 2. Press `F5` to launch the debugger
 3. Choose your preferred browser (Chrome or Firefox)
 
 ## Build Script Features
 
-The `build.sh` script includes:
+The `scripts/build.sh` script includes:
 
 - Automatic error handling
 - Verification of required files and dependencies
@@ -153,7 +153,7 @@ npm run rebuild
 ### Tweego not found
 
 - Ensure Tweego is installed and in your PATH
-- Or update the `TWEEGO_PATH` variable in `build.sh`
+- Or update the `TWEEGO_PATH` variable in `scripts/build.sh`
 
 ### No .tw files found
 
@@ -163,12 +163,12 @@ npm run rebuild
 ### Build fails
 
 - Check that all required files exist
-- Verify file permissions (build.sh should be executable)
+- Verify file permissions (scripts/build.sh should be executable)
 - Check the error output for specific issues
 
 ## Output
 
-The build process creates `ghost-in-msheet.html` in the project root directory, which can be:
+The build process creates `dist/ghost-in-msheet.html`, which can be:
 
 - Opened directly in a web browser
 - Served using a local development server
@@ -178,9 +178,9 @@ The build process creates `ghost-in-msheet.html` in the project root directory, 
 
 You can customize the build process by editing:
 
-- `build.sh` / `build.bat`: Main build script (Linux+macOS / Windows)
-- `start.sh` / `start.bat`: Build-and-open-in-browser script
-- `setup.sh` / `setup.bat`: One-time setup script
+- `scripts/build.sh` / `scripts/build.bat`: Main build script (Linux+macOS / Windows)
+- `scripts/start.sh` / `scripts/start.bat`: Build-and-open-in-browser script
+- `scripts/setup.sh` / `scripts/setup.bat`: One-time setup script
 - `.vscode/tasks.json`: VS Code task definitions (auto-detects OS)
 - `.vscode/launch.json`: VS Code debug configurations
 

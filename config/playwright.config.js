@@ -1,8 +1,8 @@
 const { defineConfig } = require('@playwright/test');
 
 module.exports = defineConfig({
-  testDir: './tests',
-  globalSetup: require.resolve('./tests/global-setup.js'),
+  testDir: '../tests',
+  globalSetup: require.resolve('../tests/global-setup.js'),
   /* Unit-ish tests finish in <1s. The 10s default absorbs variance in the
      heavier e2e specs (long loops that exercise ghost-ability RNG, or
      passages with dozens of <<do>>/<<redo>> tags) when workers contend for
@@ -15,7 +15,7 @@ module.exports = defineConfig({
   fullyParallel: false,
   workers: process.env.CI ? 2 : Math.max(1, Math.floor(require('os').cpus().length * 0.75)),
   use: {
-    baseURL: `file://${__dirname}/ghost-in-msheet.html`,
+    baseURL: `file://${__dirname}/../dist/ghost-in-msheet.html`,
     /* Run headless so the browser never steals focus from the editor. */
     headless: true,
     /* Skip unnecessary assets — the game is a local HTML file. */

@@ -28,7 +28,7 @@ from pathlib import Path
 # Configuration
 # ---------------------------------------------------------------------------
 
-PROJECT_DIR = Path(__file__).resolve().parent
+PROJECT_DIR = Path(__file__).resolve().parent.parent
 PASSAGES_DIR = PROJECT_DIR / "passages"
 
 # Container macros that require a closing tag.  Extend as the project grows.

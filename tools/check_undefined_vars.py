@@ -194,7 +194,7 @@ def collect_uses(passages):
 
 
 def main():
-    repo_root = Path(__file__).parent
+    repo_root = Path(__file__).resolve().parent.parent
     passages_dir = repo_root / "passages"
 
     if not passages_dir.is_dir():

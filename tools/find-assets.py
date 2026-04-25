@@ -3,6 +3,8 @@ import os
 import re
 import pathlib
 
+REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
+
 
 def recursive_grep(
     pattern: str | re.Pattern[str],
@@ -41,7 +43,7 @@ def recursive_grep(
     return matches
 
 def main():
-    results = recursive_grep(r"assets/.+", "passages/")
+    results = recursive_grep(r"assets/.+", str(REPO_ROOT / "passages"))
     found_count = 0
     not_found_count = 0
     not_found_entries = collections.defaultdict(list)
@@ -49,7 +51,7 @@ def main():
         m = re.search(r'(assets[\/\w\.\s\-\_\,]+)', s)
         if m:
             s = m.group(1)
-        img = pathlib.Path(s)
+        img = REPO_ROOT / s
         if not img.is_file():
             not_found_count += 1
             not_found_entries[str(img)].append((tw, lno))

@@ -4,12 +4,13 @@ setlocal enabledelayedexpansion
 :: Build script for Ghost in M'Sheet (Windows)
 :: This script builds the Twee/Twine story into an HTML file
 
-cd /d "%~dp0"
+cd /d "%~dp0\.."
 
 :: Configuration
-set OUTPUT_FILE=ghost-in-msheet.html
+set OUTPUT_FILE=dist\ghost-in-msheet.html
 set PASSAGES_DIR=passages
 set TWEEGO_EXE=tweego-2.1.1-windows-x64\tweego.exe
+if not exist "dist" mkdir "dist"
 
 echo Starting build process...
 
@@ -41,7 +42,7 @@ if !errorlevel! neq 0 (
 
 :: Run all passage checks before building
 echo Checking passage links and duplicates...
-python check_links.py
+python tools\check_links.py
 if !errorlevel! neq 0 (
     echo Error: Passage link/duplicate check failed.
     exit /b 1
@@ -49,7 +50,7 @@ if !errorlevel! neq 0 (
 echo Link check passed.
 
 echo Checking asset references...
-python check_assets.py
+python tools\check_assets.py
 if !errorlevel! neq 0 (
     echo Error: Missing asset files detected.
     exit /b 1
@@ -57,7 +58,7 @@ if !errorlevel! neq 0 (
 echo Asset check passed.
 
 echo Checking ghost data integrity...
-python check_ghosts.py
+python tools\check_ghosts.py
 if !errorlevel! neq 0 (
     echo Error: Ghost data integrity check failed.
     exit /b 1
