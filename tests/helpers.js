@@ -3,6 +3,54 @@ const path = require('path');
 const GAME_URL = `file://${path.resolve(__dirname, '..', 'ghost-in-msheet.html')}`;
 
 /**
+ * Install a seeded PRNG in place of Math.random for the lifetime of the page.
+ *
+ * Runs as an addInitScript so it takes effect before SugarCube loads and
+ * before any passage script runs. The game never calls State.prng.init(),
+ * so SugarCube's random() / either() / randomFloat() all delegate to
+ * Math.random — patching one function covers every RNG site in the game.
+ *
+ * The PRNG is Mulberry32: 32-bit state, fast, good-enough distribution for
+ * gameplay tests (not cryptographic). State is exposed at window.__rng__ so
+ * tests can re-seed mid-run (e.g. before Engine.restart) without a page
+ * reload by calling reseedRng(page, seed).
+ */
+async function installSeededRng(page, seed) {
+  await page.addInitScript((s) => {
+    const rng = {
+      state: s >>> 0,
+      seed: s >>> 0,
+      next() {
+        this.state = (this.state + 0x6D2B79F5) >>> 0;
+        let t = this.state;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      },
+      reseed(newSeed) {
+        this.seed = newSeed >>> 0;
+        this.state = newSeed >>> 0;
+      },
+    };
+    window.__rng__ = rng;
+    Math.random = () => rng.next();
+  }, seed);
+}
+
+/**
+ * Re-seed the PRNG on an already-open page. Useful before Engine.restart()
+ * so the restarted game sees the same random sequence as the initial run.
+ */
+async function reseedRng(page, seed) {
+  await page.evaluate((s) => {
+    if (!window.__rng__) {
+      throw new Error('reseedRng called but no seeded RNG is installed (open the page with openGame({ seed })).');
+    }
+    window.__rng__.reseed(s);
+  }, seed);
+}
+
+/**
  * Wait for SugarCube to finish initializing and rendering a passage.
  */
 async function waitForSugarCube(page) {
@@ -104,9 +152,17 @@ function callSetup(page, expr) {
  * decode/buffer pipeline saturates the browser under parallel worker load and
  * produces "Target page has been closed" flakes. Aborting these requests
  * keeps the DOM + SugarCube state intact while freeing those resources.
+ *
+ * Options:
+ *   seed — if provided, installs a deterministic Mulberry32 PRNG in place of
+ *          Math.random before SugarCube loads. Makes every random()/either()
+ *          call in the game reproducible for this page.
  */
-async function openGame(browser) {
+async function openGame(browser, { seed } = {}) {
   const page = await browser.newPage();
+  if (seed !== undefined) {
+    await installSeededRng(page, seed);
+  }
   await page.route('**/*', (route) => {
     const type = route.request().resourceType();
     if (type === 'image' || type === 'media' || type === 'font') {
@@ -140,4 +196,6 @@ module.exports = {
   callSetup,
   openGame,
   resetGame,
+  installSeededRng,
+  reseedRng,
 };
