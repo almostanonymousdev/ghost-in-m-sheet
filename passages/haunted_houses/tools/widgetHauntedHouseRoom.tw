@@ -44,9 +44,12 @@ roomFooter so re-renders via <<replace ".hunt-conditions">> don't
 double-nest the wrapper class (which compounds its 80% font-size). */
 <<widget "huntConditions">>
 	<<set _hc to setup.HauntConditions.snapshot()>>
-	<<set _sanity to (_hc.sanityPerStep gt 0 ? "+" : "") + _hc.sanityPerStep>>
-	<<set _lust to (_hc.lustPerStep gt 0 ? "+" : "") + _hc.lustPerStep>>
-	<<set _energy to (_hc.energyPerStep gt 0 ? "+" : "") + _hc.energyPerStep>>
+	<<set _sanityVal to Math.round(_hc.sanityPerStep * 100) / 100>>
+	<<set _lustVal to Math.round(_hc.lustPerStep * 100) / 100>>
+	<<set _energyVal to Math.round(_hc.energyPerStep * 100) / 100>>
+	<<set _sanity to (_sanityVal gt 0 ? "+" : "") + _sanityVal>>
+	<<set _lust to (_lustVal gt 0 ? "+" : "") + _lustVal>>
+	<<set _energy to (_energyVal gt 0 ? "+" : "") + _energyVal>>
 	<<set _corrShown to Math.round(_hc.corruptionPending * 100) / 100>>
 	<<image "ui/img/sanity.png" { class: "hunt-conditions-icon" }>> _sanity/step
 	· <<image "ui/img/hearth.png" { class: "hunt-conditions-icon" }>> _lust/step
