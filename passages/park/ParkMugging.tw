@@ -1,57 +1,54 @@
 :: ParkMugging [nobr] {"position":"3100,1550","size":"100,100"}
 <<video "characters/mc/parkmugging1.mp4">>
-@@.mc-thoughts;You're jogging along the trail, lost in the rhythm of your breath, when a stranger steps out from behind the trees and plants himself in your path. He's older than you, scruffy, and his eyes crawl up and down your body in a way that makes your stomach tighten.@@<br>
-@@.notmc-speech;Hey there, pretty thing. Out here all on your own? You got any money on you?@@<br>
-@@.mc-thoughts;Your pulse jumps. You glance over your shoulder -- the trail is empty in both directions. No joggers. No dog walkers. Nobody.@@<br>
-@@.mc-speech;I... I don't carry cash when I'm jogging, I swear...@@<br>
+@@.mc-thoughts;A man steps out from the trees and plants himself in the middle of the trail. Older than you. Scruffy. His eyes track over you slow enough that you feel them.@@<br>
+@@.notmc-speech;Hey there, pretty thing. Out here on your own? Got any cash on you?@@<br>
+@@.mc-thoughts;You glance back. The trail is empty. No joggers, no dogs, no one.@@<br>
+@@.mc-speech;I... I don't carry cash when I'm running, I swear...@@<br>
 
-<<linkreplace "@@.usebtn;He takes a step closer and reaches into his jacket.@@">>
+<<linkreplace "@@.usebtn;He steps closer and reaches into his jacket.@@">>
 	<<video "characters/mc/parkmugging2.mp4">>
-	@@.mc-thoughts;The breath dies in your throat. He's holding a pistol, angled at your chest, finger resting along the trigger guard. The whole world narrows down to that little black circle of the barrel.@@<br>
-	@@.notmc-speech;Don't lie to me, girl. You got more than that, don't you? That watch. That phone. Everything you got strapped to you. Lay it all on the ground. Nice and slow.@@<br>
-	@@.mc-thoughts;Your hands shake so badly you nearly drop the fitness watch as you fumble it off your wrist. You set everything in a pathetic little pile on the gravel.@@<br>
-	@@.mc-speech;Th-that's everything... please, that's all I have. Just let me go.@@<br>
+	@@.mc-thoughts;A pistol. Pointed at your chest. Your knees almost give.@@<br>
+	@@.notmc-speech;Don't lie to me, girl. The watch. The phone. All of it. On the ground. Slow.@@<br>
+	@@.mc-thoughts;Your hands shake so badly you nearly drop your fitness watch undoing the strap. The phone follows. You set them on the gravel and step back.@@<br>
+	@@.mc-speech;Th-that's everything. Please. Just let me go.@@<br>
 
-	<<linkreplace "@@.usebtn;He smirks and looks you up and down again.@@">>
+	<<linkreplace "@@.usebtn;He smirks and looks you over again.@@">>
 		<<video "characters/mc/parkmugging3.mp4">>
-		@@.notmc-speech;Not quite everything. Strip. Down to your underwear. Right here, right now. You wanna walk outta this park in one piece, you do as I say.@@<br>
-		@@.mc-thoughts;The blood drains out of your face. Your eyes dart down the trail one more time, desperate -- still no one, not a soul. The gun doesn't waver. With trembling fingers you peel off your top, then tug your shorts down and step out of them, kicking them into his waiting pile. The cool air hits your bare skin and you immediately wrap your arms across yourself, cheeks burning.@@<br>
-		@@.mc-speech;Th-there... I did it... please, please just let me leave...@@<br>
-		@@.mc-thoughts;He doesn't move. He just stares, drinking in your shame. Every rustle in the bushes makes you flinch -- what if someone is watching from the trees? What if there's a jogger right around the bend?@@<br>
+		@@.notmc-speech;Not everything. Strip. Down to your underwear. Right here.@@<br>
+		@@.mc-thoughts;Your stomach drops. The trail is still empty. The gun doesn't move. You peel off your top, then your shorts, kicking them onto his pile. Cool air hits your skin and you wrap your arms across yourself.@@<br>
+		@@.mc-speech;Th-there. I did it. Please let me leave...@@<br>
+		@@.mc-thoughts;He doesn't move. He just looks. Every rustle in the bushes makes you flinch.@@<br>
 
-		<<linkreplace "@@.usebtn;He shakes his head slowly, grinning.@@">>
+		<<linkreplace "@@.usebtn;He shakes his head, grinning.@@">>
 			<<video "characters/mc/parkmugging4.mp4">>
-			@@.notmc-speech;Uh-uh. Not good enough. All of it. Bra, panties, everything. Off. I wanna watch you walk your naked ass all the way back to the front gate.@@<br>
-			@@.mc-thoughts;Your stomach drops through the ground. Hot tears sting your eyes as your fingers go to the clasp of your bra and then the waistband of your panties. You can't even look at him. You strip off the last scraps of your clothing and drop them onto his pile, and then you're standing there, completely naked in the middle of a public trail, hands fluttering uselessly between covering your breasts and your lower body.@@<br>
-			@@.mc-speech;P-please... don't make me walk back like this... someone will see me...@@<br>
-			@@.mc-thoughts;He scoops up every last piece of your clothing, your watch, your phone -- and gestures with the gun back down the trail toward the distant entrance.@@<br>
-			@@.notmc-speech;Get walking, sweetheart. Nice and slow. Don't look back.@@<br>
+			@@.notmc-speech;Uh-uh. All of it. Bra. Panties. Off. I wanna watch you walk that bare ass back to the front gate.@@<br>
+			@@.mc-thoughts;Tears sting your eyes as your fingers find the bra clasp. Then the waistband of your panties. You can't look at him. The last scraps drop onto his pile and you're standing there, naked on a public trail, hands fluttering uselessly between your chest and your thighs.@@<br>
+			@@.mc-speech;Please... don't make me walk back like this. Someone'll see me...@@<br>
+			@@.mc-thoughts;He scoops up your clothes, your watch, your phone, and waves the gun back down the trail.@@<br>
+			@@.notmc-speech;Get walking, sweetheart. Don't look back.@@<br>
 
-			<<linkreplace "@@.usebtn;You start walking down the trail.@@">>
+			<<linkreplace "@@.usebtn;You start walking.@@">>
 				<<video "characters/mc/parkmugging5.mp4">>
-				@@.mc-thoughts;Every step is agony. The gravel bites into your bare feet and the crunch of it sounds impossibly loud, echoing through the trees like an alarm. You keep your arms clamped across your chest, crouched slightly, trying to make yourself smaller, smaller, invisible. The breeze drags over your skin and every muscle in your body is shivering -- from cold, from adrenaline, from pure, burning humiliation.@@<br>
-				@@.mc-speech;Oh god, oh god, oh god... please don't let anyone see me, please don't let anyone come around the bend...@@<br>
-				@@.mc-thoughts;You can hear laughter drifting from somewhere off through the trees -- a couple, maybe a group. You dart off the path and crouch behind a bush, heart slamming against your ribs so hard it hurts. You wait, holding your breath, praying they pass by on some other trail. What if they come this way? What if they see?@@<br>
+				@@.mc-thoughts;Gravel bites into your bare feet. Every crunch sounds like a shout. You hunch forward, arms locked across your chest, trying to be small.@@<br>
+				@@.mc-speech;Oh god. Please don't let anyone come around the bend, please...@@<br>
+				@@.mc-thoughts;Laughter drifts through the trees. A couple, maybe. You bolt off the path and crouch behind a bush, breath tight in your throat, waiting for them to pass on some other trail.@@<br>
 
 				<<linkreplace "@@.usebtn;You force yourself to keep moving.@@">>
 					<<video "characters/mc/parkmugging6.mp4">>
-					@@.mc-thoughts;A jogger comes into view on the parallel path and you throw yourself behind the nearest tree, pressing your cheek against the rough bark, trying to disappear into it. You can hear his footsteps, the thud-thud-thud of his sneakers, and you don't breathe until they fade. Your whole body is trembling. Tears are streaming down your face now and you can't even wipe them away -- both your hands are busy trying to hide you.@@<br>
-					@@.mc-speech;What if he saw me? What if anyone sees me? Oh god, I'm naked. I'm actually naked in the middle of the park in broad daylight...@@<br>
-					@@.mc-thoughts;You peek around the trunk, dart across the open path, and dive into the next cluster of bushes. You work your way toward the entrance in short, panicked bursts, every bird call and distant voice making you flinch like a struck nerve. How many people are going to see you before you make it out? How many are already watching?@@<br>
+					@@.mc-thoughts;A jogger appears on the parallel path. You throw yourself behind a tree and press your cheek to the bark, holding your breath until his footsteps fade. You're shaking. Tears are running down your face and you can't wipe them away because both hands are busy covering you.@@<br>
+					@@.mc-speech;What if he saw me? What if anyone sees me...@@<br>
+					@@.mc-thoughts;You peek around the trunk, dart across the open path, and dive into the next clump of bushes. The entrance is closer now. You work your way toward it in short, panicked sprints between cover.@@<br>
 
 					<<linkreplace "@@.usebtn;The front gate comes into view.@@">>
 						<<video "characters/mc/parkmugging7.mp4">>
-						@@.mc-thoughts;You press yourself flat against the side of the ranger's shed, chest heaving, and scan the entrance. There are people. There are always people here. A pair on a bench, a family coming up the path, a man taking out his phone -- oh god, is he taking a photo? You can't tell and you don't have time to wait. An older woman glances your way and her eyes go wide and you feel your soul try to leave your body. Hot tears of shame streak down your cheeks as you finally break into a sprint across the open ground, breasts bouncing, arms completely useless against all the skin you're trying to hide.@@<br>
-						@@.mc-speech;Never again. Never, ever again. I just have to get home, I just have to get home...@@<br>
-						@@.mc-thoughts;You make it past the gate at last and plunge into a side alley, sticking to every shadow, every gap between buildings you can find, praying with everything you have that nobody you know is about to turn the next corner.@@<br><br>
+						@@.mc-thoughts;You press flat against the side of a tree and watch the gate. There are always people here. A couple on a bench. A family on the path. A man scrolling on his phone. You wait, breath shallow, waiting for every head to turn the wrong way at the same time.@@<br>
+						@@.mc-speech;Just one second. One second where nobody's looking. Please...@@<br>
+						@@.mc-thoughts;The family rounds the corner. The phone-scroller turns to laugh at something. The couple lean in toward each other. Now. You break from cover and sprint, head down, praying nobody on the other side of that gate ever sees the streaks down your shameful, tear-soaked face.@@<br>
+						@@.mc-thoughts;You make it past the gate and dive into the first side alley you see, hugging the shadows the whole way home.@@<br><br>
 
-						<<set $mc.energy to 0>>
-						<<set $isPenaltyOn to 1>>
-						<<run setup.Home.applyAssaultDebuff()>>
-						<<if ndef $mc.exhib>><<set $mc.exhib to 0>><</if>>
-						<<if $mc.exhib lte 9>>
-							<<set $mc.exhib += 1>>
-							@@.mc-speech;Exhibitionism increased: $mc.exhib now!@@<br>
+						<<set _exhibAfter to setup.Park.applyMuggingOutcome()>>
+						<<if _exhibAfter isnot null>>
+							@@.mc-speech;Exhibitionism increased: <<= _exhibAfter>> now!@@<br>
 						<</if>>
 						<br>
 						@@.backbtn; [[Leave|CityMap]] @@<br>

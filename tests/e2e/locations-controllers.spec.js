@@ -178,6 +178,32 @@ test.describe('Park — controller mutations', () => {
     await setVar(page, 'hours', 23);
     expect(await callSetup(page, 'setup.Park.canJogNow()')).toBe(false);
   });
+
+  test('shouldTriggerParkMugging gates on exhibitionism < 5', async () => {
+    await setVar(page, 'mc.exhibitionism', 5);
+    expect(await callSetup(page, 'setup.Park.shouldTriggerParkMugging()')).toBe(false);
+    await setVar(page, 'mc.exhibitionism', 9);
+    expect(await callSetup(page, 'setup.Park.shouldTriggerParkMugging()')).toBe(false);
+  });
+
+  test('applyMuggingOutcome zeroes energy and bumps exhibitionism', async () => {
+    await setVar(page, 'mc.energy', 8);
+    await setVar(page, 'mc.exhibitionism', 2);
+
+    const result = await page.evaluate(() => SugarCube.setup.Park.applyMuggingOutcome());
+    expect(result).toBe(3);
+    expect(await getVar(page, 'mc.energy')).toBe(0);
+    expect(await getVar(page, 'mc.exhibitionism')).toBe(3);
+  });
+
+  test('applyMuggingOutcome caps exhibitionism at 10 and returns null', async () => {
+    await setVar(page, 'mc.energy', 5);
+    await setVar(page, 'mc.exhibitionism', 10);
+    const result = await page.evaluate(() => SugarCube.setup.Park.applyMuggingOutcome());
+    expect(result).toBeNull();
+    expect(await getVar(page, 'mc.exhibitionism')).toBe(10);
+    expect(await getVar(page, 'mc.energy')).toBe(0);
+  });
 });
 
 test.describe('Park — event passages', () => {
@@ -187,12 +213,13 @@ test.describe('Park — event passages', () => {
   test.afterAll(async () => { await page.close(); });
   test.beforeEach(async () => { await resetGame(page); });
 
-  for (const passage of ['ParkEvent1', 'ParkEvent2', 'ParkJogging']) {
+  for (const passage of ['ParkEvent1', 'ParkEvent2', 'ParkJogging', 'ParkMugging']) {
     test(`${passage} renders cleanly`, async () => {
       await setVar(page, 'hours', 10);
       await setVar(page, 'sportswear', 1);
       await setVar(page, 'mc.energy', 5);
       await setVar(page, 'mc.beauty', 50);
+      await setVar(page, 'mc.exhibitionism', 1);
       await goToPassage(page, passage);
       await expectCleanPassage(page);
     });
