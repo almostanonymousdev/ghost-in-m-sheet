@@ -5,37 +5,34 @@
  * underlying $variables directly, so the conditions live in one place.
  */
 setup.Park = (function () {
-	function v(name) { return State.variables[name]; }
-	function mc() { return State.variables.mc; }
-
 	return {
 		// --- Hours / access --------------------------------------
 		isOpen: function () {
-			var h = v('hours');
+			var h = setup.Time.hours();
 			return h > 5 && h < 22;
 		},
 		hasSportswear: function () {
-			return !!v('sportswear');
+			return !!State.variables.sportswear;
 		},
 
 		// --- Jogging ---------------------------------------------
 		joggingOnCooldown: function () {
-			return v('joggingCD') === 1;
+			return State.variables.joggingCD === 1;
 		},
 		hasEnergyToJog: function () {
-			return mc().energy >= 2;
+			return setup.Mc.energy() >= 2;
 		},
 		canJogNow: function () {
 			return this.hasSportswear() && this.isOpen() &&
 				!this.joggingOnCooldown() && this.hasEnergyToJog();
 		},
 		canContinueJogging: function () {
-			return mc().energy >= 2;
+			return setup.Mc.energy() >= 2;
 		},
 
 		// --- Park event ------------------------------------------
 		canEscapeParkEvent: function () {
-			return mc().energy >= 4;
+			return setup.Mc.energy() >= 4;
 		},
 
 		// --- Mutations the park passages used to do inline --------
@@ -44,16 +41,38 @@ setup.Park = (function () {
 		},
 		spendJoggingEnergy: function () {
 			// Jogging consumes 2 energy at start and again on continue.
-			mc().energy -= 2;
+			setup.Mc.spendEnergy(2);
 		},
 		dropEnergyToZero: function () {
 			// Both park-event branches drain the MC to 0 energy.
-			mc().energy = 0;
+			setup.Mc.setEnergy(0);
 		},
 		isBeautyBelow: function (threshold) {
 			// Used by the jogging event to test whether the stalker
 			// loses interest vs. starts chasing.
-			return threshold <= mc().beauty;
+			return threshold <= setup.Mc.beauty();
+		},
+
+		// --- Park mugging event ----------------------------------
+		// 10% chance to trigger while jogging, gated behind an
+		// exhibitionism score below 5 -- once the MC is comfortable
+		// being seen naked, the humiliation angle no longer lands.
+		shouldTriggerParkMugging: function () {
+			var exhib = setup.Mc.exhibitionism() || 0;
+			if (exhib >= 5) return false;
+			return Math.random() < 0.10;
+		},
+
+		// End-of-mugging consequences: drained energy, and a capped exhibitionism bump. Returns the
+		// new exhibitionism value when it ticked up, or null otherwise.
+		applyMuggingOutcome: function () {
+			setup.Mc.setEnergy(0);
+			var exhib = setup.Mc.exhibitionism() || 0;
+			if (exhib < 10) {
+				setup.Mc.addExhibitionism(1);
+				return setup.Mc.exhibitionism();
+			}
+			return null;
 		}
 	};
 })();

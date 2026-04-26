@@ -12,21 +12,25 @@
 
 <<if setup.Park.canContinueJogging()>>
 	<<linkreplace 'Continue jogging <<image \'ui/img/energy.png\' { style: \'position: relative; top: 0.375em; width:3%;\' }>>'>>
-		<<set _check to random(30,110)>>
-		<<if setup.Park.isBeautyBelow(_check)>>
-			<<video "characters/mc/parkevent2.mp4">>
-			@@.mc-thoughts;She bursts out from the bushes, her eyes burning with desire, and begins to chase you. Frightened, you try to [[run away from her|ParkEvent1]]@@
+		<<if setup.Park.shouldTriggerParkMugging()>>
+			<<goto "ParkMugging">>
 		<<else>>
-			<<video "characters/mc/parkend.mp4">>
-			@@.mc-thoughts;You keep jogging, enjoying the nature around you. That girl seems to have lost interest in you.@@<br>
-			@@.mc-speech;Maybe I'm not hot enough for her? Haha@@<br>
-			<<addTime 60>>
-			<<gymFitnessGain 1>>
-			<<done>>
-				<<addclass ".linkselector" "disabled-link">>
-			<</done>>
-			<br><br>
-			@@.backbtn; [[Leave|CityMap][setup.Park.spendJoggingEnergy()]] @@<br>
+			<<set _check to random(30,110)>>
+			<<if setup.Park.isBeautyBelow(_check)>>
+				<<video "characters/mc/parkevent2.mp4">>
+				@@.mc-thoughts;She bursts out from the bushes, her eyes burning with desire, and begins to chase you. Frightened, you try to [[run away from her|ParkEvent1]]@@
+			<<else>>
+				<<video "characters/mc/parkend.mp4">>
+				@@.mc-thoughts;You keep jogging, enjoying the nature around you. That girl seems to have lost interest in you.@@<br>
+				@@.mc-speech;Maybe I'm not hot enough for her? Haha@@<br>
+				<<addTime 60>>
+				<<gymFitnessGain 1>>
+				<<done>>
+					<<addclass ".linkselector" "disabled-link">>
+				<</done>>
+				<br><br>
+				@@.backbtn; [[Leave|CityMap][setup.Park.spendJoggingEnergy()]] @@<br>
+			<</if>>
 		<</if>>
 	<</linkreplace>>
 <<else>>
