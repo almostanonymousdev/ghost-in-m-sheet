@@ -49,7 +49,7 @@
 		<<= setup.Ghosts.huntRoomName()>>
 	<</linkreplace>><br>
 	<<link "lust">><<run setup.Mc.addLust(100)>><</link>><br>
-	<<link "money">><<run setup.Mc.addMoney(100)>><</link>><br>
+	<<link "money">><<run setup.Mc.addMoney(10000)>><</link>><br>
 	<<link "lvlup">><<run setup.Mc.addLvl(1)>><</link>><br>
 	<<link "corruptionUp">><<run setup.Mc.addCorruption(1)>><</link>><br>
 	<br><<linkreplace "highlight rescue house">><<run setup.Church.setCheatRescueHouseHighlight(1)>>Rescue house <<= setup.Church.randomRescuePhotoNumber()>> highlighted on map
