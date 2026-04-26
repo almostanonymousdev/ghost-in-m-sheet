@@ -54,12 +54,13 @@ The game world includes several city locations the player can visit between hunt
   * [LibraryGuy1.tw](../passages/library/LibraryGuy1.tw) - Guy resident event chain
   * [widgetLibrary.tw](../passages/library/widgetLibrary.tw) - Shared library widgets
 
-* **Park** - Outdoor location with jogging activities and park encounter events.
+* **Park** - Outdoor location with jogging activities and park encounter events. Jogging can branch into either the female-stalker chain (ParkEvent1/2) or, when exhibitionism is below 5, a 10% mugging encounter that strips the MC and forces a sneak back to the gate.
   * [Park.tw](../passages/park/Park.tw) - Park entry and activities
   * [ParkController.tw](../passages/park/ParkController.tw) - Shared park state and helpers
   * [ParkJogging.tw](../passages/park/ParkJogging.tw) - Jogging activity
   * [ParkEvent1.tw](../passages/park/ParkEvent1.tw) - Park encounter event 1
   * [ParkEvent2.tw](../passages/park/ParkEvent2.tw) - Park encounter event 2
+  * [ParkMugging.tw](../passages/park/ParkMugging.tw) - Armed mugger forces the MC to strip naked and pick her way back to the gate; ends with a capped exhibitionism bump and zeroed energy
 
 * **Church** - Central hub for the rescue quest task board, prayer mechanics, a nun quest, basement access, and exorcism events (Rain storyline). Also hosts church-specific tool events.
   * [Church.tw](../passages/church/Church.tw) - Church exterior and entry
