@@ -5,81 +5,91 @@
  * underlying $variables directly, so the conditions live in one place.
  */
 setup.Posession = (function () {
-	function v(name) { return State.variables[name]; }
-	function mc() { return State.variables.mc; }
+	function sv() { return State.variables; }
+
+	/* Variables owned by this controller. Other controllers should
+	   query these only through the API methods below. */
+	var OWNED_VARS = Object.freeze([
+		'checkChoosenLocation',
+		'hotAct',
+		'addtemptorealhouse'
+	]);
 
 	// Stages at which the player can resist a given tier of scene.
 	// Naming follows the existing breakFreePossession widget threshold:
-	// higher $mcpossession means the player has surrendered further and
+	// higher mc possession means the player has surrendered further and
 	// will follow through to harder scenes.
 	return {
+		OWNED_VARS: OWNED_VARS,
 		canResistFirstAttempt: function () {
-			return v('mcpossession') >= 4;
+			return setup.Mc.possession() >= 4;
 		},
 		canResistSecondAttempt: function () {
-			return v('mcpossession') >= 7;
+			return setup.Mc.possession() >= 7;
 		},
 		canResistFinalAttempt: function () {
-			return v('mcpossession') >= 11;
+			return setup.Mc.possession() >= 11;
 		},
 
 		// --- Brooke rescue ---------------------------------------
 		canPepperSprayBrookeAttacker: function () {
-			return v('hasPSpray') === 1 && v('hasPSprayCharges') >= 1;
+			return sv().hasPSpray === 1 && sv().hasPSprayCharges >= 1;
 		},
 		analIsVeryLoose: function () {
-			return v('sensualBodyPart').anal >= 5;
+			return sv().sensualBodyPart.anal >= 5;
 		},
 		analIsTrained: function () {
-			return v('sensualBodyPart').anal >= 3;
+			return sv().sensualBodyPart.anal >= 3;
 		},
 
 		// --- Post-possession hunt cleanup ------------------------
 		isBlakeHuntWithCursedItem: function () {
-			return v('isCompChosen') === 1 &&
-				v('companion').name === 'Blake' &&
-				v('gotCursedItem') === 1;
+			return sv().isCompChosen === 1 &&
+				sv().companion.name === 'Blake' &&
+				setup.Witch.hasCursedItemToTurnIn();
 		},
 
 		// --- Surrender-to-possession meter ------------------------
-		meter: function () { return v('mcpossession'); },
+		meter: function () { return setup.Mc.possession(); },
 		raiseMeter: function (cap) {
-			if ((v('mcpossession') || 0) <= cap) {
-				State.variables.mcpossession = (v('mcpossession') || 0) + 1;
+			if ((setup.Mc.possession() || 0) <= cap) {
+				setup.Mc.ensurePossession();
+				setup.Mc.addPossession(1);
 				return true;
 			}
 			return false;
 		},
-		meterAtLeast: function (n) { return (v('mcpossession') || 0) >= n; },
+		meterAtLeast: function (n) { return (setup.Mc.possession() || 0) >= n; },
 
 		// --- Location choice storage ------------------------------
-		locationChoice: function () { return v('checkChoosenLocation'); },
-		setLocationChoice: function (name) { State.variables.checkChoosenLocation = name; },
+		locationChoice: function () { return sv().checkChoosenLocation; },
+		setLocationChoice: function (name) { sv().checkChoosenLocation = name; },
 
 		// --- Mimic room randomizer --------------------------------
-		// Generates a 30-minute interval key from $minutes and, when the
-		// interval changes, picks a fresh random ghost type for the mimic.
-		// Returns the new name if the roll actually changed; null otherwise.
+		// Generates a 30-minute interval key from current minutes and, when
+		// the interval changes, picks a fresh random ghost type for the
+		// mimic. Returns the new name if the roll actually changed; null
+		// otherwise.
 		rollMimicType: function (ghostTypes) {
-			var m = v('minutes');
+			var m = setup.Time.minutes();
 			var interval = (m >= 0 && m < 30) ? '0-29' : '30-59';
-			if (interval !== v('lastChangeIntervalMimic')) {
+			if (interval !== sv().lastChangeIntervalMimic) {
 				var name = ghostTypes[Math.floor(Math.random() * ghostTypes.length)];
 				State.variables.hunt.name = name;
-				State.variables.currentIntervalMimic = interval;
-				State.variables.lastChangeIntervalMimic = interval;
+				sv().currentIntervalMimic = interval;
+				sv().lastChangeIntervalMimic = interval;
 				return name;
 			}
-			State.variables.currentIntervalMimic = interval;
+			sv().currentIntervalMimic = interval;
 			return null;
 		},
 
 		// --- "Hot" event flags ------------------------------------
-		pantiesState: function () { return v('pantiesState'); },
-		braState:     function () { return v('braState'); },
+		pantiesState: function () { return sv().pantiesState; },
+		braState:     function () { return sv().braState; },
 		clearHotFlags: function () {
-			State.variables.hotAct = 0;
-			State.variables.addtemptorealhouse = 0;
+			sv().hotAct = 0;
+			sv().addtemptorealhouse = 0;
 		},
 
 		// --- PossessedBrooke helpers ------------------------------

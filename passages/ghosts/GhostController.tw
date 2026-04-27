@@ -430,7 +430,33 @@
     /* The canonical ghost catalogue lives in the GHOSTS closure above;
        setup.Ghosts is the public namespace. Callers that want to iterate
        should use setup.Ghosts.list(). */
+    /* Variables owned by this controller. Other controllers should
+       query/mutate these only through the API methods below. */
+    var OWNED_VARS = Object.freeze([
+        'hunt',
+        'huntActivated', 'huntActivationTime',
+        'EMF5Check', 'SpiritboxCheck', 'GWBCheck', 'EctoglassCheck',
+        'TemperatureCheck', 'UVLCheck',
+        'ghostShadeInfoCollected', 'ghostSpiritInfoCollected',
+        'ghostPoltergeistInfoCollected', 'ghostPhantomInfoCollected',
+        'ghostGoryoInfoCollected', 'ghostDemonInfoCollected',
+        'ghostDeogenInfoCollected', 'ghostJinnInfoCollected',
+        'ghostMoroiInfoCollected', 'ghostMylingInfoCollected',
+        'ghostMareInfoCollected', 'ghostBansheeInfoCollected',
+        'ghostMimicInfoCollected', 'ghostOniInfoCollected',
+        'ghostObakeInfoCollected', 'ghostTheTwinsInfoCollected',
+        'ghostHighPriestessInfoCollected', 'ghostCthulionInfoCollected',
+        'knowledgeUsed', 'chosenEvidence',
+        'deleteOneEvidence', 'deleteSecondEvidence', 'deleteThirdEvidence',
+        'hiddenEvidence', 'hiddenEvidence1', 'hiddenEvidence2',
+        'lastChangeIntervalMimic', 'currentIntervalMimic',
+        'thetwinsevent', 'thetwinseventCD',
+        'highpriestess', 'bansheeAbility', 'cthulionAbility',
+        'ghostTypeSelected'
+    ]);
+
     setup.Ghosts = {
+        OWNED_VARS: OWNED_VARS,
         Evidence: Evidence,
         HuntMode: HuntMode,
 
@@ -604,16 +630,74 @@
             var h = State.variables.hunt;
             return h ? h.name : '';
         },
+        huntRealName: function () {
+            var h = State.variables.hunt;
+            return h && h.realName;
+        },
         huntRoomName: function () {
             var h = State.variables.hunt;
             if (h && h.room && h.room.name) { return h.room.name; }
             return '';
+        },
+        /* True if the witch contract scheduled at least one
+           evidence-removal for this hunt. Used by witch-end-contract
+           passages to decide whether the hidden-evidence cleanup
+           should run. */
+        hasScheduledHiddenEvidence: function () {
+            var s = State.variables;
+            return s.deleteOneEvidence === 1
+                || s.deleteSecondEvidence === 1
+                || s.deleteThirdEvidence === 1
+                || s.hiddenEvidence !== undefined
+                || s.hiddenEvidence1 !== undefined
+                || s.hiddenEvidence2 !== undefined;
+        },
+        /* Drop all hidden-evidence/scheduled-deletion flags. Used at
+           witch-contract close so the next hunt starts clean. */
+        clearHiddenEvidence: function () {
+            var s = State.variables;
+            delete s.hiddenEvidence;
+            delete s.hiddenEvidence1;
+            delete s.hiddenEvidence2;
+            delete s.deleteSecondEvidence;
+            delete s.deleteThirdEvidence;
+            delete s.deleteOneEvidence;
+        },
+        /* Marks an in-progress hunt as activated. Used by tools like
+           the crucifix and by haunted-house passages when the player
+           triggers the hunt directly. Stamps the time using TimeController. */
+        activateHunt: function () {
+            var s = State.variables;
+            s.huntActivated = 1;
+            s.huntActivationTime = setup.Time.totalMinutes();
+        },
+        clearHuntActivation: function () {
+            State.variables.huntActivated = 0;
+        },
+        isHuntActivated: function () {
+            return State.variables.huntActivated === 1;
         },
         knowledgeUsed: function () { return State.variables.knowledgeUsed === 1; },
         chosenEvidence: function () { return State.variables.chosenEvidence; },
         huntEvidence: function () {
             var h = State.variables.hunt;
             return h && h.evidence ? h.evidence : [];
+        },
+        /* Read-only accessors for the per-hunt hidden-evidence slots
+           the witch contract may have stashed; consumers that need to
+           filter "still-visible evidence" lists rely on these. */
+        hiddenEvidenceList: function () {
+            var s = State.variables;
+            return [s.hiddenEvidence, s.hiddenEvidence1, s.hiddenEvidence2];
+        },
+        /* How many evidence-deletions the witch scheduled for this hunt:
+           0/1/2/3. Used by HauntedHouses to pick a contract reward tier. */
+        scheduledDeletionCount: function () {
+            var s = State.variables;
+            if (s.deleteThirdEvidence === 1)  return 3;
+            if (s.deleteSecondEvidence === 1) return 2;
+            if (s.deleteOneEvidence === 1)    return 1;
+            return 0;
         },
         /* Pull one random evidence id from the ghost's hunt list and
            stash it in $hiddenEvidence (or $hiddenEvidence1 /

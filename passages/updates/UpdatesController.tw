@@ -10,7 +10,24 @@
  * systems hook into the tick without editing PassageDone itself.
  */
 setup.Updates = (function () {
-	function v(name) { return State.variables[name]; }
+	/* Variables owned by this controller. Other controllers should
+	   query these only through the API methods below. */
+	var OWNED_VARS = Object.freeze([
+		'update22', 'update0909', 'update2707', 'update4',
+		'updatePiercingBodyPartSens', 'updateIronclad', 'fixSave',
+		'stealChanceMult',
+		'stepCount'
+	]);
+
+	/* NOTE: Save-migration routines below intentionally read and write
+	   variables owned by other controllers. Migration code needs raw
+	   access to seed initial state on legacy saves before any of the
+	   owning controller APIs are valid; routing through those APIs
+	   would risk firing controller-side invariants on partially-shaped
+	   state. All non-migration helpers should still use the proper
+	   APIs (setup.Ghosts, setup.Mc, setup.HauntedHouses, etc.). Each
+	   function below uses a local `var sv = State.variables` for raw
+	   access. */
 
 	// --- Cursed hunt timer ---------------------------------------
 	/* The cursed-hunt window is wall-clock real-time, not in-game time:
@@ -391,6 +408,7 @@ setup.Updates = (function () {
 	}
 
 	return {
+		OWNED_VARS: OWNED_VARS,
 		tickCursedHuntTimer:                  tickCursedHuntTimer,
 		applyDetectorHighlights:              applyDetectorHighlights,
 		tickRescueQuestExpiry:                tickRescueQuestExpiry,

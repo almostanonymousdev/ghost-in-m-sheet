@@ -11,8 +11,29 @@
  * <<huntHouseStreet>> widgets.
  */
 setup.HauntedHouses = (function () {
-	function v(name) { return State.variables[name]; }
-	function mc() { return State.variables.mc; }
+	function sv() { return State.variables; }
+
+	/* Variables owned by this controller. Other controllers should
+	   query these only through the API methods below. */
+	var OWNED_VARS = Object.freeze([
+		'isOwaissa', 'isElm', 'isEnigma', 'isIronclad', 'isrealhouse',
+		'moneyFromContract', 'expFromContract',
+		'isClothesStolen',
+		'cursedHuntActive', 'cursedHuntEndTime',
+		'currentFurniture', 'isInHideSpot',
+		'furnitureListOwaissa', 'furnitureListElm',
+		'tempListOwaissa', 'tempListElm',
+		'placeForCursedItemOwaissa', 'placeForCursedItemElm',
+		'placeForRescueClueOwaissa', 'placeForRescueClueElm',
+		'placeForTarotCardsOwaissa', 'placeForTarotCardsElm',
+		'placeForMonkeyPawOwaissa', 'placeForMonkeyPawElm',
+		'placeForCurseOwaissa', 'placeForCurseElm',
+		'placeForClothesStolenOwaissa', 'placeForClothesStolenElm',
+		'chosenCard', 'drawnCards', 'tarotCardsStage',
+		'currentIntervalRoom', 'lastChangeIntervalRoom',
+		'cursedItemVide',
+		'stealChance'
+	]);
 
 	/* Canonical haunted-house catalogue. One entry per selectable house.
 		`flag` is the existing $is<House> state key that passages key off;
@@ -105,13 +126,16 @@ setup.HauntedHouses = (function () {
 	/* Map the three $delete*Evidence flags onto a contract-tier key.
 		Third takes priority, then second, then one, else zero. */
 	function contractTier() {
-		if (v('deleteThirdEvidence') === 1)  return 'three';
-		if (v('deleteSecondEvidence') === 1) return 'two';
-		if (v('deleteOneEvidence') === 1)    return 'one';
-		return 'zero';
+		switch (setup.Ghosts.scheduledDeletionCount()) {
+			case 3: return 'three';
+			case 2: return 'two';
+			case 1: return 'one';
+			default: return 'zero';
+		}
 	}
 
 	return {
+		OWNED_VARS: OWNED_VARS,
 		// --- House catalogue ------------------------------------
 		list: function () { return HOUSE_CONFIG; },
 		byId: function (id) {
@@ -123,7 +147,7 @@ setup.HauntedHouses = (function () {
 		/* Clear every $is<House> flag, then raise the one for `id`.
 			Called from GhostStreet when the player picks a house. */
 		activate: function (id) {
-			var s = State.variables;
+			var s = sv();
 			HOUSE_CONFIG.forEach(function (h) { s[h.flag] = 0; });
 			s.isrealhouse = 0;
 			var h = this.byId(id);
@@ -146,7 +170,7 @@ setup.HauntedHouses = (function () {
 			var h = this.byId(id);
 			if (!h) return null;
 			var name = h.rooms[Math.floor(Math.random() * h.rooms.length)];
-			var src = State.variables[name];
+			var src = sv()[name];
 			return src ? clone(src) : null;
 		},
 		roomsFor: function (id) {
@@ -157,8 +181,9 @@ setup.HauntedHouses = (function () {
 			flag set by activate(). null when none is set (witch pre-hunt,
 			or after GhostStreet teardown). */
 		activeHouse: function () {
+			var s = sv();
 			for (var i = 0; i < HOUSE_CONFIG.length; i++) {
-				if (v(HOUSE_CONFIG[i].flag) === 1) return HOUSE_CONFIG[i];
+				if (s[HOUSE_CONFIG[i].flag] === 1) return HOUSE_CONFIG[i];
 			}
 			return null;
 		},
@@ -167,7 +192,7 @@ setup.HauntedHouses = (function () {
 			the individual per-house `$is<House>`; activate() nulls the
 			rest first). */
 		clearHouseFlags: function () {
-			var s = State.variables;
+			var s = sv();
 			HOUSE_CONFIG.forEach(function (h) { s[h.flag] = 0; });
 		},
 
@@ -181,39 +206,39 @@ setup.HauntedHouses = (function () {
 		},
 
 		// --- Which house are we in? -----------------------------
-		isOwaissa: function () { return v('isOwaissa') === 1; },
-		isElm: function () { return v('isElm') === 1; },
-		isEnigma: function () { return v('isEnigma') === 1; },
-		isIronclad: function () { return v('isIronclad') === 1; },
-		isRealHouseActive: function () { return v('isrealhouse') === 1; },
-		wardenClothesStage: function () { return v('wardenClothesStage'); },
-		setWardenClothesStage: function (n) { State.variables.wardenClothesStage = n; },
-		setIroncladActive: function (on) { State.variables.isIronclad = on ? 1 : 0; },
-		isRealHouse: function () { return v('isrealhouse') === 1; },
+		isOwaissa: function () { return sv().isOwaissa === 1; },
+		isElm: function () { return sv().isElm === 1; },
+		isEnigma: function () { return sv().isEnigma === 1; },
+		isIronclad: function () { return sv().isIronclad === 1; },
+		isRealHouseActive: function () { return sv().isrealhouse === 1; },
+		wardenClothesStage: function () { return sv().wardenClothesStage; },
+		setWardenClothesStage: function (n) { sv().wardenClothesStage = n; },
+		setIroncladActive: function (on) { sv().isIronclad = on ? 1 : 0; },
+		isRealHouse: function () { return sv().isrealhouse === 1; },
 
 		// --- Clothing aggregation -------------------------------
 		hasBottomWorn: function () {
-			return v('jeansState') === 'worn'
-				|| v('skirtState') === 'worn'
-				|| v('shortsState') === 'worn';
+			return setup.Wardrobe.jeansWorn()
+				|| setup.Wardrobe.skirtWorn()
+				|| setup.Wardrobe.shortsWorn();
 		},
-		hasTopWorn: function () { return v('tshirtState') === 'worn'; },
+		hasTopWorn: function () { return setup.Wardrobe.topShirtWorn(); },
 		isFullyDressed: function () {
 			return this.hasTopWorn() && this.hasBottomWorn();
 		},
 		isFullyNude: function () {
-			return v('tshirtState') === 'not worn'
-				&& v('pantiesState') === 'not worn'
+			return !setup.Wardrobe.topShirtWorn()
+				&& !setup.Wardrobe.pantiesWorn()
 				&& !this.hasBottomWorn();
 		},
 		isTopless: function () {
-			return v('tshirtState') === 'not worn' && this.hasBottomWorn();
+			return !setup.Wardrobe.topShirtWorn() && this.hasBottomWorn();
 		},
 
 		// --- Stolen clothes -------------------------------------
-		hasClothesStolen: function () { return v('isClothesStolen') === 1; },
+		hasClothesStolen: function () { return sv().isClothesStolen === 1; },
 		clearStolenClothesFlag: function () {
-			State.variables.isClothesStolen = 0;
+			sv().isClothesStolen = 0;
 		},
 
 		// --- Timed tool activations -----------------------------
@@ -224,7 +249,7 @@ setup.HauntedHouses = (function () {
 			}
 		},
 		resetEvidenceChecks: function () {
-			var s = State.variables;
+			var s = sv();
 			s.EMF5Check = false;
 			s.EctoglassCheck = false;
 			s.GWBCheck = false;
@@ -234,66 +259,72 @@ setup.HauntedHouses = (function () {
 		},
 
 		// --- Corruption accumulator used at hunt end ------------
+		// (delegates to setup.Mc, which owns $tempCorr)
+		addTempCorruption: function (amount) {
+			setup.Mc.setTempCorr((setup.Mc.tempCorr() || 0) + amount);
+		},
+		tempCorruption: function () { return setup.Mc.tempCorr() || 0; },
 		commitTempCorruption: function () {
-			var s = State.variables;
-			if ((s.tempCorr || 0) >= 1) s.tempCorr = 1;
-			s.mc.corruption += (s.tempCorr || 0);
-			var amount = s.tempCorr || 0;
-			s.tempCorr = 0;
+			var amount = Math.min(1, setup.Mc.tempCorr() || 0);
+			setup.Mc.setTempCorr(amount);
+			setup.Mc.addCorruption(amount);
+			setup.Mc.setTempCorr(0);
 			return amount;
 		},
 
 		// --- Hunt triggers --------------------------------------
 		canStartRandomHunt: function () {
-			return v('huntActivated') === 0
-				&& (v('elapsedTimeHunt') || 0) >= (v('huntTimeRemain') || 0);
+			return !setup.Ghosts.isHuntActivated()
+				&& (sv().elapsedTimeHunt || 0) >= (sv().huntTimeRemain || 0);
 		},
 
 		// --- NudityEvent branch helpers -------------------------
 		nudityNakedNoBottoms: function () {
-			return v('tshirtState') === 'not worn'
-				&& v('pantiesState') === 'not worn'
+			return !setup.Wardrobe.topShirtWorn()
+				&& !setup.Wardrobe.pantiesWorn()
 				&& !this.hasBottomWorn();
 		},
 		nudityToplessWithPanties: function () {
-			return v('tshirtState') === 'not worn'
-				&& v('pantiesState') === 'worn'
+			return !setup.Wardrobe.topShirtWorn()
+				&& setup.Wardrobe.pantiesWorn()
 				&& !this.hasBottomWorn();
 		},
 		isTopless: function () {
-			return v('tshirtState') === 'not worn';
+			return !setup.Wardrobe.topShirtWorn();
 		},
 		isFullyDressed: function () {
-			return v('tshirtState') === 'worn'
-				&& (v('jeansState') === 'worn' || v('shortsState') === 'worn' || v('skirtState') === 'worn');
+			return setup.Wardrobe.topShirtWorn()
+				&& (setup.Wardrobe.jeansWorn() || setup.Wardrobe.shortsWorn() || setup.Wardrobe.skirtWorn());
 		},
 
 		// --- Cursed hunt flag ----------------------------------
-		isCursedHuntActive: function () { return v('cursedHuntActive') === 1; },
-		setCursedHuntActive: function (on) { State.variables.cursedHuntActive = on ? 1 : 0; },
-		clearCursedHuntActive: function () { delete State.variables.cursedHuntActive; },
-		markClothesStolen: function () { State.variables.isClothesStolen = 1; },
+		isCursedHuntActive: function () { return sv().cursedHuntActive === 1; },
+		setCursedHuntActive: function (on) { sv().cursedHuntActive = on ? 1 : 0; },
+		clearCursedHuntActive: function () {
+			delete sv().cursedHuntActive;
+			delete sv().cursedHuntEndTime;
+		},
+		markClothesStolen: function () { sv().isClothesStolen = 1; },
 
 		// --- Contract reward + hunt activation ---------------
 		setContractReward: function (money, xp) {
-			State.variables.moneyFromContract = money;
-			State.variables.expFromContract = xp;
+			var s = sv();
+			s.moneyFromContract = money;
+			s.expFromContract = xp;
 		},
 		setHuntRoom: function (room) {
-			var hunt = State.variables.hunt;
+			var hunt = setup.Ghosts.hunt();
 			if (hunt) { hunt.room = room; }
 		},
 		setHuntMode: function (mode) {
-			var hunt = State.variables.hunt;
+			var hunt = setup.Ghosts.hunt();
 			if (hunt) { hunt.mode = mode; }
 		},
 		/* Record that the MC just dodged a ghost event — stamps the
 		   activation flag + timestamp the Hunt tick reads off when
 		   deciding if enough in-game time has passed to retry. */
 		rearmHuntTimer: function () {
-			var s = State.variables;
-			s.huntActivated = 1;
-			s.huntActivationTime = (s.hours || 0) * 60 + (s.minutes || 0);
+			setup.Ghosts.activateHunt();
 		},
 		/* Start-of-hunt-event bookkeeping: reset elapsedTimeHunt
 		   window + stamp the activation time. Called by the first
@@ -311,92 +342,87 @@ setup.HauntedHouses = (function () {
 			var ghostRoom = hh.rooms || [];
 			if (!ghostRoom.length) return;
 			var active = setup.Ghosts.active();
-			var hunt = State.variables.hunt;
+			var hunt = setup.Ghosts.hunt();
 			if (!setup.Ghosts.isHunting() || !active || active.staysInOneRoom) return;
 			if (!hunt || hunt.trapped) return;
 			// hunt.room is null until GhostStreet's huntHouseCard runs
 			// setHuntRoom; the shuffler is a no-op until the player has
 			// actually picked a house and the room state has been seeded.
 			if (!hunt.room) return;
-			var mins = State.variables.minutes || 0;
+			var mins = setup.Time.minutes() || 0;
 			var interval = mins < 20 ? "0-19" : mins < 40 ? "20-39" : "40-59";
-			State.variables.currentIntervalRoom = interval;
-			if (interval === State.variables.lastChangeIntervalRoom) return;
+			var s = sv();
+			s.currentIntervalRoom = interval;
+			if (interval === s.lastChangeIntervalRoom) return;
 			if (Math.random() < 0.45) {
 				hunt.room.name = ghostRoom[Math.floor(Math.random() * ghostRoom.length)];
 			}
-			State.variables.lastChangeIntervalRoom = interval;
+			s.lastChangeIntervalRoom = interval;
 		},
 		beginHuntEvent: function () {
-			var s = State.variables;
-			s.huntActivationTime = (s.hours || 0) * 60 + (s.minutes || 0);
-			s.elapsedTimeHunt = 0;
+			setup.Ghosts.activateHunt();
+			sv().elapsedTimeHunt = 0;
 		},
-		succubusEventTimer: function () { return v('succubusEventTimer') || 0; },
-		stealChance: function () { return v('stealChance') || 0; },
+		succubusEventTimer: function () { return sv().succubusEventTimer || 0; },
+		stealChance: function () { return sv().stealChance || 0; },
 		canStealAnyItem: function () {
-			return v('braState') === 'worn' || v('pantiesState') === 'worn' || this.hasBottomWorn();
+			return setup.Wardrobe.braWorn() || setup.Wardrobe.pantiesWorn() || this.hasBottomWorn();
 		},
 		hasAnyGarmentWorn: function () {
 			return this.hasBottomWorn() || this.hasTopWorn()
-				|| v('pantiesState') === 'worn' || v('braState') === 'worn';
+				|| setup.Wardrobe.pantiesWorn() || setup.Wardrobe.braWorn();
 		},
 		huntMode: function () {
-			var hunt = State.variables.hunt;
-			return hunt ? hunt.mode : undefined;
+			return setup.Ghosts.huntMode();
 		},
 
 		/* What's the cursed-item / rescue-clue / tarot / monkey-paw
 		   stash spot for the active house? Returns undefined if
 		   the MC isn't currently in a house. Used by FurnitureSearch. */
 		activeHousePlace: function (kind) {
-			var suffix = v('isOwaissa') === 1 ? 'Owaissa' :
-				v('isElm') === 1 ? 'Elm' : null;
+			var s = sv();
+			var suffix = s.isOwaissa === 1 ? 'Owaissa' :
+				s.isElm === 1 ? 'Elm' : null;
 			if (!suffix) return undefined;
-			return v('placeFor' + kind + suffix);
+			return s['placeFor' + kind + suffix];
 		},
-		currentFurniture: function () { return v('currentFurniture'); },
-		setCurrentFurniture: function (id) { State.variables.currentFurniture = id; },
-		setInHideSpot: function (on) { State.variables.isInHideSpot = on ? 1 : 0; },
+		currentFurniture: function () { return sv().currentFurniture; },
+		setCurrentFurniture: function (id) { sv().currentFurniture = id; },
+		setInHideSpot: function (on) { sv().isInHideSpot = on ? 1 : 0; },
 		/* Street-passage name for the active haunted house, for the
 		   front-door exit link. */
 		activeStreetPassage: function () {
-			if (v('isElm') === 1)     return 'Elm Street';
-			if (v('isOwaissa') === 1) return 'Owaissa Street';
+			if (sv().isElm === 1)     return 'Elm Street';
+			if (sv().isOwaissa === 1) return 'Owaissa Street';
 			return null;
 		},
 		/* Strip the MC to naked (wardrobe state, not slot flags). Used
 		   by the tier-3 SealedRoomSubmit branch. */
 		stripToNaked: function () {
-			var s = State.variables;
-			s.tshirtState = "not worn";
-			s.jeansState = "not worn";
-			s.skirtState = "not worn";
-			s.shortsState = "not worn";
-			s.pantiesState = "not worn";
-			s.braState = "not worn";
+			setup.Wardrobe.stripToNaked();
 		},
 		/* Handed-by-companion cursed item: marks gotCursedItem and
 		   rolls one of the four item types. */
 		rollCompanionCursedItem: function () {
-			var s = State.variables;
-			s.gotCursedItem = 1;
+			setup.Witch.setCursedItemHeld();
 			var flags = ["isCIDildo", "isCIButtplug", "isCIBeads", "isCIHDildo"];
-			s[flags[Math.floor(Math.random() * flags.length)]] = 1;
+			setup.Witch.setCursedItemFlag(flags[Math.floor(Math.random() * flags.length)]);
 		},
-		hasActiveQuestForRescue: function () { return v('hasQuestForRescue') === 1; },
-		hasRescueClue: function () { return v('hasRescueClue') === 1; },
-		tarotCardsStage: function () { return v('tarotCardsStage') || 0; },
-		setTarotCardsStage: function (n) { State.variables.tarotCardsStage = n; },
-		drawnCards: function () { return v('drawnCards') || 0; },
-		setDrawnCards: function (n) { State.variables.drawnCards = n; },
-		shouldDeleteOneEvidence: function () { return v('deleteOneEvidence') === 1; },
+		hasActiveQuestForRescue: function () { return sv().hasQuestForRescue === 1; },
+		hasRescueClue: function () { return sv().hasRescueClue === 1; },
+		tarotCardsStage: function () { return sv().tarotCardsStage || 0; },
+		setTarotCardsStage: function (n) { sv().tarotCardsStage = n; },
+		drawnCards: function () { return sv().drawnCards || 0; },
+		setDrawnCards: function (n) { sv().drawnCards = n; },
+		shouldDeleteOneEvidence: function () {
+			return setup.Ghosts.scheduledDeletionCount() >= 1;
+		},
 		/* One-shot save migration that seeds the Ironclad prison
 		   room objects + reception state the first time the
 		   player's save is loaded with Ironclad content. Called
 		   from PassageReady; guarded by $updateIronclad. */
 		migrateIroncladRooms: function () {
-			var s = State.variables;
+			var s = sv();
 			var rooms = ["BlockA", "BlockB", "BlockACellA", "BlockACellB", "BlockACellC",
 				"BlockBCellA", "BlockBCellB", "BlockBCellC", "reception"];
 			rooms.forEach(function (r) {
@@ -409,7 +435,7 @@ setup.HauntedHouses = (function () {
 		   the temperature counter. Called from GhostRandomize when
 		   the witch hands out a new contract. */
 		resetForNewHunt: function () {
-			var s = State.variables;
+			var s = sv();
 			s.isIronclad = 0;
 			s.tarotCardsStage = 0;
 			setup.MonkeyPaw.resetHunt();
@@ -419,34 +445,35 @@ setup.HauntedHouses = (function () {
 			delete s.cursedHuntEndTime;
 			delete s.isWeakenGhost;
 			delete s.moneyFromWeakenTheGhost;
-			s.temperature = 0;
+			setup.Time.setTemperature(0);
 			this.resetEvidenceChecks();
 		},
 		incrementDrawnCards: function () {
-			State.variables.drawnCards = (v('drawnCards') || 0) + 1;
+			sv().drawnCards = (sv().drawnCards || 0) + 1;
 		},
-		chosenTarotCard: function () { return v('chosenCard'); },
+		chosenTarotCard: function () { return sv().chosenCard; },
 		/* Pull & stamp a fresh tarot card from setup.tarotDeck. */
 		drawAndStampTarotCard: function () {
-			State.variables.chosenCard = setup.drawTarotCard(setup.tarotDeck);
-			return State.variables.chosenCard;
+			sv().chosenCard = setup.drawTarotCard(setup.tarotDeck);
+			return sv().chosenCard;
 		},
 		tarotDeck: function () { return setup.tarotDeck; },
-		hasNoCursedItem: function () { return v('gotCursedItem') === 0 || v('gotCursedItem') === undefined; },
-		crucifixAmount: function () { return v('crucifixAmount') || 0; },
+		hasNoCursedItem: function () { return !setup.Witch.cursedItemQuestStarted() || setup.Witch.cursedItemQuestActive(); },
+		crucifixAmount: function () { return setup.ToolController.crucifixAmount() || 0; },
 		addCrucifix: function (n) {
-			State.variables.crucifixAmount = (v('crucifixAmount') || 0) + n;
+			for (var i = 0; i < (n || 1); i++) setup.ToolController.addCrucifix();
 		},
 		spendCrucifix: function () {
-			State.variables.crucifixAmount = (v('crucifixAmount') || 0) - 1;
+			setup.ToolController.consumeCrucifix();
 		},
 		/* Which of the four cursed-item variants is the MC carrying?
 		   Returns "dildo" / "buttplug" / "beads" / "hdildo" or "". */
 		cursedItemType: function () {
-			if (v('isCIDildo') === 1)    return 'dildo';
-			if (v('isCIButtplug') === 1) return 'buttplug';
-			if (v('isCIBeads') === 1)    return 'beads';
-			if (v('isCIHDildo') === 1)   return 'hdildo';
+			var s = sv();
+			if (s.isCIDildo === 1)    return 'dildo';
+			if (s.isCIButtplug === 1) return 'buttplug';
+			if (s.isCIBeads === 1)    return 'beads';
+			if (s.isCIHDildo === 1)   return 'hdildo';
 			return '';
 		},
 		/* Random cursed-item usage video for the active item variant.
@@ -456,7 +483,7 @@ setup.HauntedHouses = (function () {
 			var t = this.cursedItemType();
 			var list;
 			if (t === 'dildo') {
-				list = v('tshirtState') === 'worn'
+				list = setup.Wardrobe.topShirtWorn()
 					? ["mechanics/curseditems/1.0.mp4", "mechanics/curseditems/1.1.mp4", "mechanics/curseditems/1.2.mp4", "mechanics/curseditems/1.3.mp4"]
 					: ["mechanics/curseditems/1.0.mp4", "mechanics/curseditems/1.1.mp4"];
 			} else if (t === 'buttplug') {
@@ -469,7 +496,7 @@ setup.HauntedHouses = (function () {
 				return null;
 			}
 			var pick = list[Math.floor(Math.random() * list.length)];
-			State.variables.cursedItemVide = pick;
+			sv().cursedItemVide = pick;
 			return pick;
 		},
 
@@ -498,7 +525,7 @@ setup.HauntedHouses = (function () {
 			"hallwayUpstairs_carpet", "hallwayUpstairs_shelves"
 		],
 		distributeFurnitureStashes: function () {
-			var s = State.variables;
+			var s = sv();
 			s.furnitureListOwaissa = this.FURNITURE_OWAISSA.slice();
 			s.furnitureListElm = this.FURNITURE_ELM.slice();
 			s.tempListOwaissa = s.furnitureListOwaissa.slice();
@@ -532,10 +559,10 @@ setup.HauntedHouses = (function () {
 		   that track unused slots, and stamps the chosen slot
 		   into $placeForClothesStolen<House>. */
 		chooseClothesStashRoom: function () {
-			var s = State.variables;
-			if (v('isOwaissa') === 1 && Array.isArray(s.tempListOwaissa)) {
+			var s = sv();
+			if (s.isOwaissa === 1 && Array.isArray(s.tempListOwaissa)) {
 				s.placeForClothesStolenOwaissa = s.tempListOwaissa[Math.floor(Math.random() * s.tempListOwaissa.length)];
-			} else if (v('isElm') === 1 && Array.isArray(s.tempListElm)) {
+			} else if (s.isElm === 1 && Array.isArray(s.tempListElm)) {
 				s.placeForClothesStolenElm = s.tempListElm[Math.floor(Math.random() * s.tempListElm.length)];
 			}
 		},
@@ -545,10 +572,10 @@ setup.HauntedHouses = (function () {
 		   pick a random target. */
 		availableStealTargets: function () {
 			var opts = [];
-			if (v('pantiesState') === 'worn') opts.push('panties');
-			if (v('braState') === 'worn') opts.push('bra');
-			if (v('tshirtState') === 'worn' || v('jeansState') === 'worn'
-				|| v('skirtState') === 'worn' || v('shortsState') === 'worn') {
+			if (setup.Wardrobe.pantiesWorn()) opts.push('panties');
+			if (setup.Wardrobe.braWorn()) opts.push('bra');
+			if (setup.Wardrobe.topShirtWorn() || setup.Wardrobe.jeansWorn()
+				|| setup.Wardrobe.skirtWorn() || setup.Wardrobe.shortsWorn()) {
 				opts.push('outerwear');
 			}
 			return opts;
@@ -558,7 +585,7 @@ setup.HauntedHouses = (function () {
 		   figure out which bottom / underwear combo was stolen.
 		   Returns a video path or null. */
 		findStolenDressupVideo: function () {
-			var s = State.variables;
+			var s = sv();
 			var ro = s.rememberBottomOuter;
 			var ru = s.rememberBottomUnder;
 			function isJeans(k) { return typeof k === "string" && k.indexOf("nojeans") === 0; }
@@ -573,38 +600,38 @@ setup.HauntedHouses = (function () {
 			if (isSkirt(ro) && noPanties(ru))   return "characters/mc/skirtnp.mp4";
 			return null;
 		},
-		isPantiesStolen: function () { return v('isPantiesStolen') === 1; },
-		isBottomStolen:  function () { return v('isBottomStolen') === 1; },
-		isShirtStolen:   function () { return v('isShirtStolen') === 1; },
-		isBraStolen:     function () { return v('isBraStolen') === 1; },
-		clearClothesStolenFlag: function () { State.variables.isClothesStolen = 0; },
-		clearStolenClothesFlag: function () { State.variables.isClothesStolen = 0; },
+		isPantiesStolen: function () { return sv().isPantiesStolen === 1; },
+		isBottomStolen:  function () { return sv().isBottomStolen === 1; },
+		isShirtStolen:   function () { return sv().isShirtStolen === 1; },
+		isBraStolen:     function () { return sv().isBraStolen === 1; },
+		clearClothesStolenFlag: function () { sv().isClothesStolen = 0; },
 		isBottomless: function () {
-			return v('jeansState') !== 'worn' && v('shortsState') !== 'worn'
-				&& v('skirtState') !== 'worn' && v('pantiesState') !== 'worn';
+			return !setup.Wardrobe.jeansWorn() && !setup.Wardrobe.shortsWorn()
+				&& !setup.Wardrobe.skirtWorn() && !setup.Wardrobe.pantiesWorn();
 		},
 		isTopBare: function () {
-			return v('tshirtState') !== 'worn' && v('braState') !== 'worn';
+			return !setup.Wardrobe.topShirtWorn() && !setup.Wardrobe.braWorn();
 		},
 
 		/* The stash-room pointer for the active house. */
 		clothesStashRoom: function () {
-			if (v('isOwaissa') === 1) return v('placeForClothesStolenOwaissa');
-			if (v('isElm') === 1)     return v('placeForClothesStolenElm');
+			var s = sv();
+			if (s.isOwaissa === 1) return s.placeForClothesStolenOwaissa;
+			if (s.isElm === 1)     return s.placeForClothesStolenElm;
 			return undefined;
 		},
 		clearClothesStashRoom: function () {
-			var s = State.variables;
-			if (v('isOwaissa') === 1) s.placeForClothesStolenOwaissa = undefined;
-			if (v('isElm') === 1)     s.placeForClothesStolenElm = undefined;
+			var s = sv();
+			if (s.isOwaissa === 1) s.placeForClothesStolenOwaissa = undefined;
+			if (s.isElm === 1)     s.placeForClothesStolenElm = undefined;
 		},
 
 		// --- Tarot High-Priestess override ---------------------
 		// The High-Priestess tarot card, while active, swaps the
 		// hunt-end exit link from Sleep → $return (the passage that
 		// launched the hunt). The card burns itself on use.
-		hasHighPriestess: function () { return v('highpriestess') === 1; },
-		setHighPriestess: function (on) { State.variables.highpriestess = on ? 1 : 0; },
-		consumeHighPriestess: function () { State.variables.highpriestess = 0; }
+		hasHighPriestess: function () { return sv().highpriestess === 1; },
+		setHighPriestess: function (on) { sv().highpriestess = on ? 1 : 0; },
+		consumeHighPriestess: function () { sv().highpriestess = 0; }
 	};
 })();

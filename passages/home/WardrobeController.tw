@@ -131,7 +131,30 @@
         }
     ];
 
+    /* Variables owned by this controller. Other controllers should
+       query/mutate these only through the API methods below. */
+    var OWNED_VARS = Object.freeze([
+        'tshirtState', 'braState', 'pantiesState',
+        'jeansState', 'shortsState', 'skirtState',
+        'tshirtState0', 'tshirtState1', 'tshirtState2', 'tshirtState3',
+        'braState0', 'braState1', 'braState2', 'braState3',
+        'pantiesState0', 'pantiesState1', 'pantiesState2', 'pantiesState3',
+        'jeansState0', 'jeansState1', 'jeansState2', 'jeansState3',
+        'shortsState1', 'shortsState2', 'shortsState3',
+        'skirtState1', 'skirtState2', 'skirtState3',
+        'stockingsState1', 'stockingsState2', 'stockingsState3',
+        'footState1', 'footState2', 'footState3',
+        'neckChokerState1',
+        'rememberTopOuter', 'rememberBottomOuter',
+        'rememberTopUnder', 'rememberBottomUnder',
+        'rememberBottomStockings',
+        'isPantiesStolen', 'isBottomStolen',
+        'isShirtStolen', 'isBraStolen',
+        'isJeansStolen', 'isShortsStolen', 'isSkirtStolen'
+    ]);
+
     setup.Wardrobe = {
+        OWNED_VARS: OWNED_VARS,
         /* not worn → worn. Applies beauty delta, subtracts the previously
          * worn sibling's beauty (via rememberVar), marks every other item
          * in the group as not worn, then stamps rememberVar with this
@@ -196,6 +219,17 @@
         },
         skirtWorn: function () {
             return State.variables.skirtState === "worn";
+        },
+        /* Strip the MC down to "not worn" across every wardrobe slot.
+           Used by the MonkeyPaw tier-3 sealed-room branch. */
+        stripToNaked: function () {
+            var s = State.variables;
+            s.tshirtState = "not worn";
+            s.jeansState = "not worn";
+            s.skirtState = "not worn";
+            s.shortsState = "not worn";
+            s.pantiesState = "not worn";
+            s.braState = "not worn";
         },
         /* Permanently discard whatever garment the ghost stole
          * (mark as "not bought"). Fired when the MC leaves the

@@ -6,11 +6,21 @@
  * thresholds, companion identity, mare progression, wraith escape).
  */
 setup.SpecialEvent = (function () {
-	function v(name) { return State.variables[name]; }
-	function mc() { return State.variables.mc; }
+	function sv() { return State.variables; }
 	function companion() { return State.variables.companion || {}; }
 
+	/* Variables owned by this controller. Other controllers should
+	   query these only through the API methods below. */
+	var OWNED_VARS = Object.freeze([
+		'ghostSpiritEventStage',
+		'ghostSpecialEventSpiritCD',
+		'ghostMareEventStart',
+		'ghostMareEventStage',
+		'videoEventSpecialMyling'
+	]);
+
 	return {
+		OWNED_VARS: OWNED_VARS,
 		// --- Mare info gating ------------------------------
 		knowsAboutMare: function () {
 			return setup.Ghosts.hasDiscovered('Mare');
@@ -18,34 +28,34 @@ setup.SpecialEvent = (function () {
 
 		// --- Spirit branch thresholds ---------------------
 		hasMinCorruptionForTVSpirit: function () {
-			return mc().corruption >= 3;
+			return setup.Mc.corruption() >= 3;
 		},
 		hasMinCorruptionForSleepSpirit: function () {
-			return mc().corruption >= 5;
+			return setup.Mc.corruption() >= 5;
 		},
 		hasEnergyForSleepSpirit: function () {
-			return mc().energy >= 5;
+			return setup.Mc.energy() >= 5;
 		},
 
 		// --- Spirit / mare side effects -------------------
 		markSpiritEventSeen: function () {
-			State.variables.ghostSpiritEventStage = 1;
-			State.variables.ghostSpecialEventSpiritCD = 1;
+			sv().ghostSpiritEventStage = 1;
+			sv().ghostSpecialEventSpiritCD = 1;
 		},
 		markSpiritEventStage: function () {
-			State.variables.ghostSpiritEventStage = 1;
+			sv().ghostSpiritEventStage = 1;
 		},
 		startSpiritEventCooldown: function () {
-			State.variables.ghostSpecialEventSpiritCD = 1;
+			sv().ghostSpecialEventSpiritCD = 1;
 		},
 		clearMareEvent: function () {
-			State.variables.ghostMareEventStart = 0;
-			State.variables.ghostMareEventStage = 0;
+			sv().ghostMareEventStart = 0;
+			sv().ghostMareEventStage = 0;
 		},
 
 		// --- Myling video pick ----------------------------
 		recordMylingVideo: function (video) {
-			State.variables.videoEventSpecialMyling = video;
+			sv().videoEventSpecialMyling = video;
 		},
 
 		// --- Companion -------------------------------------
@@ -58,33 +68,33 @@ setup.SpecialEvent = (function () {
 
 		// --- Wraith escape ---------------------------------
 		canTryEscape: function () {
-			return mc().energy >= 1;
+			return setup.Mc.energy() >= 1;
 		},
 		rollEscapeSuccess: function () {
 			var chance = Math.floor(Math.random() * 100) + 1;
-			return chance <= mc().energy * 5;
+			return chance <= setup.Mc.energy() * 5;
 		},
 		spendEscapeEnergy: function () {
-			State.variables.mc.energy = 0;
+			setup.Mc.setEnergy(0);
 		},
 
 		// --- Mare stage ------------------------------------
-		mareStage: function () { return v('ghostMareEventStage'); },
+		mareStage: function () { return sv().ghostMareEventStage; },
 		mareStageAtLeast: function (n) {
-			return (v('ghostMareEventStage') || 0) >= n;
+			return (sv().ghostMareEventStage || 0) >= n;
 		},
 
 		// --- Myling companion reset ------------------------
 		resetHuntPlansAfterMyling: function () {
-			var sv = State.variables;
-			sv.chosenPlan = 0;
-			sv.chosenPlanActivated = 0;
-			sv.randomGhostPassage = 0;
-			sv.isCompRoomChosen = 0;
-			sv.showComp = 0;
-			sv.isCompChosen = 0;
-			if (this.companionIs('Alice') && sv.isAliceGoingForHuntingAlone === 0) {
-				sv.aliceWorkDone = 0;
+			var s = State.variables;
+			s.chosenPlan = 0;
+			s.chosenPlanActivated = 0;
+			s.randomGhostPassage = 0;
+			s.isCompRoomChosen = 0;
+			s.showComp = 0;
+			s.isCompChosen = 0;
+			if (this.companionIs('Alice') && s.isAliceGoingForHuntingAlone === 0) {
+				s.aliceWorkDone = 0;
 			}
 		}
 	};

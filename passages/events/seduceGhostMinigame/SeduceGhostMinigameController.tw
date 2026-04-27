@@ -6,9 +6,15 @@
  * setup.SeduceGhostMinigame instead of inlining the underlying logic.
  */
 setup.SeduceGhostMinigame = (function () {
-	function v(n) { return State.variables[n]; }
-	function sv(n, val) { State.variables[n] = val; }
-	function mc() { return State.variables.mc; }
+	function sv() { return State.variables; }
+
+	/* Variables owned by this controller. Other controllers should
+	   query these only through the API methods below. */
+	var OWNED_VARS = Object.freeze([
+		'minigameVideo',
+		'minigameEventFailed',
+		'ghostOrgasmMeter'
+	]);
 
 	function img(src) { return { type: "image", src: src }; }
 	function vid(src) { return { type: "video", src: src }; }
@@ -33,12 +39,12 @@ setup.SeduceGhostMinigame = (function () {
 	}
 
 	function clampMeters() {
-		if (v("ghostOrgasmMeter") < 0) sv("ghostOrgasmMeter", 0);
-		if (v("mcOrgasmMeter") < 0) sv("mcOrgasmMeter", 0);
+		if (setup.Mc.orgasmMeter() < 0) setup.Mc.setOrgasmMeter(0);
+		if ((sv().ghostOrgasmMeter || 0) < 0) sv().ghostOrgasmMeter = 0;
 	}
 
-	function ghostWin() { return v("ghostOrgasmMeter") >= 100; }
-	function mcWin() { return v("mcOrgasmMeter") >= 100; }
+	function ghostWin() { return (sv().ghostOrgasmMeter || 0) >= 100; }
+	function mcWin() { return setup.Mc.orgasmMeter() >= 100; }
 
 	// ----------------------------------------------------------------
 	// Video data -- keyed by state, each entry has ghostWin/mcWin/normal
@@ -234,26 +240,26 @@ setup.SeduceGhostMinigame = (function () {
 		t.fail.forEach(function (s) { pool.push({ state: s, failed: 1 }); });
 		if (pool.length === 0) return;
 		var pick = pickRandom(pool);
-		sv("minigameVideo", pick.state);
-		sv("minigameEventFailed", pick.failed);
+		sv().minigameVideo = pick.state;
+		sv().minigameEventFailed = pick.failed;
 	}
 
 	function rollSubmit(state) {
 		var pool = SUBMIT_NEXT[state];
 		if (!pool || pool.length === 0) return;
-		sv("minigameVideo", pickRandom(pool));
-		sv("minigameEventFailed", 0);
+		sv().minigameVideo = pickRandom(pool);
+		sv().minigameEventFailed = 0;
 	}
 
 	function rollSubdue(state) {
 		var t = SUBDUE[state];
 		if (!t) return;
 		if (random(1, 3) <= 2) {
-			sv("minigameVideo", t.success);
-			sv("minigameEventFailed", 0);
+			sv().minigameVideo = t.success;
+			sv().minigameEventFailed = 0;
 		} else {
-			sv("minigameVideo", t.fail);
-			sv("minigameEventFailed", 1);
+			sv().minigameVideo = t.fail;
+			sv().minigameEventFailed = 1;
 		}
 	}
 
@@ -261,20 +267,28 @@ setup.SeduceGhostMinigame = (function () {
 	// Public API
 	// ----------------------------------------------------------------
 	return {
+		OWNED_VARS: OWNED_VARS,
 		// --- Meter queries ---
 		isGhostFinished: function () { return ghostWin(); },
 		isMcFinished:    function () { return mcWin(); },
 		isFinished:      function () { return ghostWin() || mcWin(); },
 
 		// --- State queries ---
-		hasSubdue:          function (s) { return SUBDUE.hasOwnProperty(s || v("minigameVideo")); },
-		resistCostsEnergy:  function (s) { return FREE_RESIST.indexOf(s || v("minigameVideo")) === -1; },
+		hasSubdue:          function (s) { return SUBDUE.hasOwnProperty(s || sv().minigameVideo); },
+		resistCostsEnergy:  function (s) { return FREE_RESIST.indexOf(s || sv().minigameVideo) === -1; },
+		minigameVideo:       function () { return sv().minigameVideo; },
+		minigameEventFailed: function () { return sv().minigameEventFailed; },
+		clearMinigameEventFailed: function () { delete sv().minigameEventFailed; },
+		ghostOrgasmMeter:    function () { return sv().ghostOrgasmMeter; },
+		clampGhostOrgasmFloor: function () {
+			if ((sv().ghostOrgasmMeter || 0) <= 0) sv().ghostOrgasmMeter = 0;
+		},
 
 		// --- Video lookup ---
 		getVideoList: function () {
-			var state = v("minigameVideo");
+			var state = sv().minigameVideo;
 			if (state === "start") {
-				var mi = mc().makeupImg;
+				var mi = setup.Mc.makeupImg();
 				var src = mi === 1 ? "ui/img/makeup1.jpg"
 						: mi === 2 ? "ui/img/makeup2.jpg"
 						: mi === 3 ? "ui/img/makeup3.jpg"
@@ -290,9 +304,9 @@ setup.SeduceGhostMinigame = (function () {
 
 		// --- Actions ---
 		init: function () {
-			sv("minigameVideo", "start");
-			sv("ghostOrgasmMeter", 0);
-			sv("mcOrgasmMeter", 0);
+			sv().minigameVideo = "start";
+			sv().ghostOrgasmMeter = 0;
+			setup.Mc.setOrgasmMeter(0);
 		},
 
 		leave: function () {
@@ -300,31 +314,31 @@ setup.SeduceGhostMinigame = (function () {
 		},
 
 		tryAttract: function () {
-			if (random(30, 100) <= mc().beauty) {
-				sv("minigameEventFailed", 0);
-				sv("minigameVideo", "seduce");
+			if (random(30, 100) <= setup.Mc.beauty()) {
+				sv().minigameEventFailed = 0;
+				sv().minigameVideo = "seduce";
 			} else {
-				sv("minigameEventFailed", 1);
-				sv("minigameVideo", "seduceFailed");
+				sv().minigameEventFailed = 1;
+				sv().minigameVideo = "seduceFailed";
 			}
 		},
 
 		tryAgain: function () {
-			if (random(30, 100) <= mc().beauty) {
-				sv("minigameEventFailed", 0);
-				sv("minigameVideo", pickRandom(TEASE_POOL));
+			if (random(30, 100) <= setup.Mc.beauty()) {
+				sv().minigameEventFailed = 0;
+				sv().minigameVideo = pickRandom(TEASE_POOL);
 			} else {
-				sv("minigameEventFailed", 1);
-				sv("minigameVideo", "seduceFailed");
+				sv().minigameEventFailed = 1;
+				sv().minigameVideo = "seduceFailed";
 			}
 		},
 
 		continueSeduce: function () {
-			sv("mcOrgasmMeter", v("mcOrgasmMeter") + random(4, 8));
-			sv("ghostOrgasmMeter", v("ghostOrgasmMeter") + random(2, 6));
+			setup.Mc.setOrgasmMeter(setup.Mc.orgasmMeter() + random(4, 8));
+			sv().ghostOrgasmMeter = (sv().ghostOrgasmMeter || 0) + random(2, 6);
 			if (!ghostWin() && !mcWin()) {
-				sv("minigameEventFailed", 0);
-				sv("minigameVideo", pickRandom(TEASE_POOL));
+				sv().minigameEventFailed = 0;
+				sv().minigameVideo = pickRandom(TEASE_POOL);
 			}
 		},
 
@@ -332,36 +346,36 @@ setup.SeduceGhostMinigame = (function () {
 			if (random(1, 2) === 1) {
 				delete State.variables.minigameVideo;
 			} else {
-				sv("minigameEventFailed", 1);
-				sv("minigameVideo", pickRandom(TEASE_POOL));
+				sv().minigameEventFailed = 1;
+				sv().minigameVideo = pickRandom(TEASE_POOL);
 			}
 		},
 
 		resist: function () {
-			var state = v("minigameVideo");
+			var state = sv().minigameVideo;
 			if (FREE_RESIST.indexOf(state) === -1) {
-				sv("mcOrgasmMeter", v("mcOrgasmMeter") - random(2, 6));
-				sv("ghostOrgasmMeter", v("ghostOrgasmMeter") - random(0, 5));
+				setup.Mc.setOrgasmMeter(setup.Mc.orgasmMeter() - random(2, 6));
+				sv().ghostOrgasmMeter = (sv().ghostOrgasmMeter || 0) - random(0, 5);
 				clampMeters();
 			}
 			rollResist(state);
 		},
 
 		submit: function () {
-			var state = v("minigameVideo");
-			sv("mcOrgasmMeter", v("mcOrgasmMeter") + random(4, 8));
+			var state = sv().minigameVideo;
+			setup.Mc.setOrgasmMeter(setup.Mc.orgasmMeter() + random(4, 8));
 			var ghostInc = (state === "subduetitjob") ? random(2, 5) : random(2, 6);
-			sv("ghostOrgasmMeter", v("ghostOrgasmMeter") + ghostInc);
-			sv("minigameEventFailed", 0);
+			sv().ghostOrgasmMeter = (sv().ghostOrgasmMeter || 0) + ghostInc;
+			sv().minigameEventFailed = 0;
 			if (!ghostWin() && !mcWin()) {
 				rollSubmit(state);
 			}
 		},
 
 		subdue: function () {
-			var state = v("minigameVideo");
-			sv("mcOrgasmMeter", v("mcOrgasmMeter") + random(2, 6));
-			sv("ghostOrgasmMeter", v("ghostOrgasmMeter") + random(5, 10));
+			var state = sv().minigameVideo;
+			setup.Mc.setOrgasmMeter(setup.Mc.orgasmMeter() + random(2, 6));
+			sv().ghostOrgasmMeter = (sv().ghostOrgasmMeter || 0) + random(5, 10);
 			rollSubdue(state);
 		}
 	};

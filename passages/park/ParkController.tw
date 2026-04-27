@@ -5,7 +5,14 @@
  * underlying $variables directly, so the conditions live in one place.
  */
 setup.Park = (function () {
+	/* Variables owned by this controller. Other controllers should
+	   query/mutate these only through the API methods below. */
+	var OWNED_VARS = Object.freeze([
+		'joggingCD'
+	]);
+
 	return {
+		OWNED_VARS: OWNED_VARS,
 		// --- Hours / access --------------------------------------
 		isOpen: function () {
 			var h = setup.Time.hours();

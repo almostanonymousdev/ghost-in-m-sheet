@@ -265,7 +265,18 @@
         return render(v);
     }
 
+    /* Variables owned by this controller. Other controllers should
+       query/mutate these only through the API methods below. */
+    var OWNED_VARS = Object.freeze([
+        'equipment',
+        'tools',
+        'spiritboxLvl',
+        'crucifixAmount',
+        'boughtDetector'
+    ]);
+
     setup.ToolController = {
+        OWNED_VARS:     OWNED_VARS,
         Messages:       MESSAGES,
         NotFoundCopy:   NOT_FOUND_COPY,
         EvidenceHouses: EVIDENCE_HOUSES,
@@ -274,10 +285,15 @@
         /* Crucifix consume: one shared place for the decrement + hunt-start
            trio so the passage is pure presentation. */
         consumeCrucifix: function () {
-            var V = State.variables;
-            V.crucifixAmount -= 1;
-            V.huntActivated     = 1;
-            V.huntActivationTime = V.hours * 60 + V.minutes;
+            State.variables.crucifixAmount -= 1;
+            setup.Ghosts.activateHunt();
+        },
+        crucifixAmount: function () { return State.variables.crucifixAmount; },
+        addCrucifix:    function () { State.variables.crucifixAmount += 1; },
+        initCrucifixIfNeeded: function () {
+            if (State.variables.crucifixAmount === undefined) {
+                State.variables.crucifixAmount = 0;
+            }
         },
         /* Tier (1..5) of a given tool. Currently stored on
            $equipment.<toolKey>; the passages that read the tier
@@ -285,8 +301,15 @@
            global directly. */
         tierOf: function (toolKey) {
             var eq = State.variables.equipment;
-            return eq ? eq[toolKey] : 0;
-        }
+            return eq ? eq[toolKey] : undefined;
+        },
+        setTier: function (toolKey, n) {
+            var eq = State.variables.equipment;
+            if (eq) { eq[toolKey] = n; }
+        },
+        /* Unlock the haunted-house detector. Set by witch purchase. */
+        buyDetector:     function () { State.variables.boughtDetector = 1; },
+        detectorBought:  function () { return State.variables.boughtDetector !== undefined; }
     };
 
     /* <<toolCheck tool [variant]>> -- thin macro that delegates to the

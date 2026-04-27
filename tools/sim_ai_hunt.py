@@ -398,7 +398,7 @@ def load_game_data() -> GameData:
     # widgetEvent.tw + EventsController.tw: orgasm spend + gate
     orgasm = _parse_orgasm_spend(widget_event)
     orgasm_threshold = int(_find_num(
-        r'shouldOrgasm:\s*function[^{]*\{[^}]*?lust\s*<\s*(\d+)',
+        r'shouldOrgasm:\s*function[^{]*\{[^}]*?lust\(?\)?\s*<\s*(\d+)',
         events_ctl + "\n"))
     orgasm_ratio = _parse_orgasm_body_part_ratio(events_ctl)
 

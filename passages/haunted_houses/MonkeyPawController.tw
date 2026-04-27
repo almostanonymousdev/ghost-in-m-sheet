@@ -29,18 +29,27 @@
  * rather than just a UI shortcut.
  */
 setup.MonkeyPaw = (function () {
-	function v(name) { return State.variables[name]; }
+	function sv() { return State.variables; }
+
+	/* Variables owned by this controller. Other controllers should
+	   query these only through the API methods below. */
+	var OWNED_VARS = Object.freeze([
+		'wishesCount', 'monkeyPawDoorLock',
+		'monkeyPawBannedHouses', 'monkeyPawLearned',
+		'MonkeyPawStage', 'wishAnything',
+		'boughtMonkeyPawGuide'
+	]);
 
 	// --- Private state mutators (shared by activate() and the
 	// public API so there is exactly one implementation per op). ---
 
 	function spendWish() {
-		var s = State.variables;
+		var s = sv();
 		s.wishesCount = (s.wishesCount || 0) - 1;
 		if (s.wishesCount < 0) s.wishesCount = 0;
 	}
 
-	function wishesLeft() { return State.variables.wishesCount || 0; }
+	function wishesLeft() { return sv().wishesCount || 0; }
 
 	/* Severity tier derived from wishes-remaining before activation.
 	   3 left -> tier 1 (baseline), 2 -> 2 (bite), 1 -> 3 (catastrophe).
@@ -51,20 +60,19 @@ setup.MonkeyPaw = (function () {
 	}
 
 	function applySanity(delta) {
-		var mc = State.variables.mc;
-		var max = mc.sanityMax || 100;
-		mc.sanity = Math.max(1, Math.min(max, mc.sanity + delta));
+		var max = setup.Mc.sanityMax() || 100;
+		var current = setup.Mc.sanity();
+		setup.Mc.setSanity(Math.max(1, Math.min(max, current + delta)));
 	}
 
 	function applyEnergy(delta) {
-		var mc = State.variables.mc;
-		var max = mc.energyMax || 100;
-		mc.energy = Math.max(0, Math.min(max, mc.energy + delta));
+		var max = setup.Mc.energyMax() || 100;
+		var current = setup.Mc.energy();
+		setup.Mc.setEnergy(Math.max(0, Math.min(max, current + delta)));
 	}
 
 	function addTempCorr(amount) {
-		var s = State.variables;
-		s.tempCorr = (s.tempCorr || 0) + amount;
+		setup.HauntedHouses.addTempCorruption(amount);
 	}
 
 	/* The MC's actual room when a wish fires. The wish widgets run
@@ -74,7 +82,7 @@ setup.MonkeyPaw = (function () {
 	   updated on every :passagestart for non-noreturn passages, so
 	   it holds the last real haunted-house room the MC stood in. */
 	function currentRoomPassage() {
-		return State.variables.return || passage();
+		return sv().return || passage();
 	}
 
 	/* Front-door lock is hunt-scoped state set by trapTheGhost. The
@@ -85,7 +93,7 @@ setup.MonkeyPaw = (function () {
 	   option only surfaces in that passage; it is not a front-door
 	   action. Cleared on resetHunt() and on any explicit unlock. */
 	function lockFrontDoor(unlockBy) {
-		State.variables.monkeyPawDoorLock = {
+		sv().monkeyPawDoorLock = {
 			locked: true,
 			unlockBy: unlockBy,
 			sealedRoom: currentTier() >= 3 ? currentRoomPassage() : null
@@ -93,20 +101,20 @@ setup.MonkeyPaw = (function () {
 	}
 
 	function doorLockState() {
-		return State.variables.monkeyPawDoorLock || null;
+		return sv().monkeyPawDoorLock || null;
 	}
 
 	/* Snap the ghost's room to the player's current haunted passage.
 	   No-op if the player isn't on a registered haunted passage -- the
 	   activity wish just wasted its draw in that case. */
 	function snapHuntRoomToCurrent() {
-		var s = State.variables;
-		if (!s.hunt || !s.hunt.room) return;
+		var hunt = setup.Ghosts.hunt();
+		if (!hunt || !hunt.room) return;
 		var current = currentRoomPassage();
 		var hp = setup.hauntedPassages || [];
 		for (var i = 0; i < hp.length; i++) {
 			if (hp[i].passage === current) {
-				s.hunt.room.name = hp[i].bgRoom;
+				hunt.room.name = hp[i].bgRoom;
 				return;
 			}
 		}
@@ -127,16 +135,13 @@ setup.MonkeyPaw = (function () {
 	}
 
 	function streetPassageForCurrentHunt() {
-		var s = State.variables;
-		if (s.isElm === 1) return 'Elm Street';
-		if (s.isOwaissa === 1) return 'Owaissa Street';
+		if (setup.HauntedHouses.isElm()) return 'Elm Street';
+		if (setup.HauntedHouses.isOwaissa()) return 'Owaissa Street';
 		return null;
 	}
 
-	var CURSED_ITEM_TYPE_FLAGS = ['isCIDildo', 'isCIButtplug', 'isCIBeads', 'isCIHDildo'];
-
 	function hasCursedItem() {
-		return State.variables.gotCursedItem === 1;
+		return setup.Witch.hasCursedItemToTurnIn();
 	}
 
 	/* Consume the cursed item the player is carrying: clears the
@@ -145,27 +150,15 @@ setup.MonkeyPaw = (function () {
 	   has no item (no-op). Returns the type flag that was cleared,
 	   or null, for flavor. */
 	function consumeCursedItem() {
-		var s = State.variables;
-		if (!hasCursedItem()) return null;
-		var cleared = null;
-		for (var i = 0; i < CURSED_ITEM_TYPE_FLAGS.length; i++) {
-			var flag = CURSED_ITEM_TYPE_FLAGS[i];
-			if (s[flag] === 1) {
-				s[flag] = 0;
-				cleared = flag;
-				break;
-			}
-		}
-		s.gotCursedItem = 0;
-		return cleared;
+		return setup.Witch.consumeCarriedCursedItem();
 	}
 
 	function dawnHasBroken() {
-		return (State.variables.hours || 0) >= 6;
+		return (setup.Time.hours() || 0) >= 6;
 	}
 
-function bannedHouses() {
-		var s = State.variables;
+	function bannedHouses() {
+		var s = sv();
 		if (!Array.isArray(s.monkeyPawBannedHouses)) s.monkeyPawBannedHouses = [];
 		return s.monkeyPawBannedHouses;
 	}
@@ -184,7 +177,7 @@ function bannedHouses() {
 	}
 
 	function learnedMap() {
-		var s = State.variables;
+		var s = sv();
 		if (!s.monkeyPawLearned) s.monkeyPawLearned = {};
 		return s.monkeyPawLearned;
 	}
@@ -249,12 +242,12 @@ function bannedHouses() {
 			       for help (companion fetches, or noise draws the ghost) */
 			activate: function () {
 				var t = currentTier();
-				var s = State.variables;
 				var sanity = -[15, 25, 40][t - 1];
 				var corr   = [0, 0.2, 0.4][t - 1];
 				var unlockBy = t === 2 ? 'dawn' : 'cursedItem';
 
-				if (s.hunt) s.hunt.trapped = true;
+				var hunt = setup.Ghosts.hunt();
+				if (hunt) hunt.trapped = true;
 				applySanity(sanity);
 				if (corr) addTempCorr(corr);
 				lockFrontDoor(unlockBy);
@@ -295,7 +288,7 @@ function bannedHouses() {
 				var lust = [0, 10, 20][t - 1];
 				var corr = [0, 0.2, 0.4][t - 1];
 
-				State.variables.mc.sanity = 50;
+				setup.Mc.setSanity(50);
 				if (lust) setup.addLust(lust);
 				if (corr) addTempCorr(corr);
 
@@ -336,8 +329,7 @@ function bannedHouses() {
 				if (t >= 2) cursedItem = setup.CursedItems.forceCursedItem();
 				if (t >= 3) bannedHouse = banActiveHouse();
 
-				State.variables.cursedHuntActive = 0;
-				delete State.variables.cursedHuntEndTime;
+				setup.HauntedHouses.clearCursedHuntActive();
 
 				spendWish();
 
@@ -362,7 +354,7 @@ function bannedHouses() {
 			   t3: remove evidence, ghost event on click, -30 sanity
 			   No-ops if the wish has already been used this hunt. */
 			activate: function () {
-				var s = State.variables;
+				var s = sv();
 				if (s.knowledgeUsed === 1) {
 					return { tier: 0, alreadyUsed: true };
 				}
@@ -370,12 +362,13 @@ function bannedHouses() {
 				var t = currentTier();
 				var sanity = [0, -15, -30][t - 1];
 
+				var huntEvidence = setup.Ghosts.huntEvidence() || [];
+				var hasHunt = !!setup.Ghosts.hunt();
+				var hidden = setup.Ghosts.hiddenEvidenceList();
 				var all = ['emf', 'spiritbox', 'gwb', 'uvl', 'glass', 'temperature'];
 				var missing = all.filter(function (e) {
-					return s.hunt && !s.hunt.evidence.includes(e)
-						&& e !== s.hiddenEvidence
-						&& e !== s.hiddenEvidence1
-						&& e !== s.hiddenEvidence2;
+					return hasHunt && !huntEvidence.includes(e)
+						&& hidden.indexOf(e) === -1;
 				});
 				s.chosenEvidence = missing.length
 					? missing[Math.floor(Math.random() * missing.length)]
@@ -409,12 +402,10 @@ function bannedHouses() {
 			   t3: jump to 6 AM, end hunt, +0.4 tempCorr */
 			activate: function () {
 				var t = currentTier();
-				var s = State.variables;
 				var corr = [0, 0.2, 0.4][t - 1];
 
-				s.hours = 6;
-				s.cursedHuntActive = 0;
-				delete s.cursedHuntEndTime;
+				setup.Time.setHours(6);
+				setup.HauntedHouses.clearCursedHuntActive();
 				if (corr) addTempCorr(corr);
 
 				spendWish();
@@ -429,6 +420,7 @@ function bannedHouses() {
 	];
 
 	return {
+		OWNED_VARS: OWNED_VARS,
 		// --- Catalogue --------------------------------------------
 		list: function () { return WISHES.slice(); },
 		byId: function (id) {
@@ -464,7 +456,7 @@ function bannedHouses() {
 		   the start of every new contract. Does NOT touch `learned`
 		   or guide flags -- those persist across hunts. */
 		resetHunt: function () {
-			var s = State.variables;
+			var s = sv();
 			s.MonkeyPawStage = 0;
 			s.wishesCount = 3;
 			s.knowledgeUsed = undefined;
@@ -472,14 +464,14 @@ function bannedHouses() {
 			s.monkeyPawBannedHouses = [];
 		},
 		/* Furniture search calls this when the paw is discovered. */
-		markFound: function () { State.variables.MonkeyPawStage = 1; },
+		markFound: function () { sv().MonkeyPawStage = 1; },
 		/* Hunt-end cleanup. The paw is consumed for the session. */
-		retire: function () { State.variables.MonkeyPawStage = 2; },
-		isFound: function () { return v('MonkeyPawStage') === 1; },
+		retire: function () { sv().MonkeyPawStage = 2; },
+		isFound: function () { return sv().MonkeyPawStage === 1; },
 		/* Stage 0: paw is still sitting in a furniture slot waiting
 		   to be discovered this hunt. FurnitureSearch and the map
 		   highlight logic gate on this. */
-		isDiscoverable: function () { return (v('MonkeyPawStage') || 0) === 0; },
+		isDiscoverable: function () { return (sv().MonkeyPawStage || 0) === 0; },
 		/* The Bag icon shows only when carrying the paw AND not on a
 		   street (the player must be inside the house to use it). */
 		isCarrying: function () {
@@ -527,7 +519,7 @@ function bannedHouses() {
 			return bannedHouses().indexOf(id) !== -1;
 		},
 		unlockFrontDoor: function () {
-			State.variables.monkeyPawDoorLock = null;
+			sv().monkeyPawDoorLock = null;
 		},
 		hasCursedItem: hasCursedItem,
 		/* Sacrifice the player's carried cursed item to unlock the
@@ -568,31 +560,31 @@ function bannedHouses() {
 		},
 
 		// --- "Anything" meta-wish ---------------------------------
-		hasAnything: function () { return v('wishAnything') === 1; },
-		grantAnything: function () { State.variables.wishAnything = 1; },
+		hasAnything: function () { return sv().wishAnything === 1; },
+		grantAnything: function () { sv().wishAnything = 1; },
 
 		// --- Witch's guide ----------------------------------------
 		/* Guide states: undefined/0 = not asked, 1 = asked about but
 		   not bought, 2 = purchased (everything revealed). */
 		guideStage: function () {
-			var g = v('boughtMonkeyPawGuide');
+			var g = sv().boughtMonkeyPawGuide;
 			return g === undefined ? 0 : g;
 		},
 		ensureGuideInit: function () {
-			if (State.variables.boughtMonkeyPawGuide === undefined) {
-				State.variables.boughtMonkeyPawGuide = 0;
+			if (sv().boughtMonkeyPawGuide === undefined) {
+				sv().boughtMonkeyPawGuide = 0;
 			}
 		},
 		hasGuide: function () { return this.guideStage() === 2; },
 		/* Witch-side purchase effect: reveal everything. Money is
 		   deducted by the caller (WitchSale). */
 		purchaseGuide: function () {
-			State.variables.boughtMonkeyPawGuide = 2;
+			sv().boughtMonkeyPawGuide = 2;
 			this.learnAll();
 			this.grantAnything();
 		},
 
 		// --- Tarot deck carry stage (Bag display) -----------------
-		tarotCarryStage: function () { return v('tarotCardsStage'); }
+		tarotCarryStage: function () { return setup.HauntedHouses.tarotCardsStage(); }
 	};
 })();

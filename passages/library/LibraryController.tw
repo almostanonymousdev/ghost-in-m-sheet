@@ -6,39 +6,48 @@
  * inline the underlying $variable checks.
  */
 setup.Library = (function () {
-	function v(name) { return State.variables[name]; }
-	function mc() { return State.variables.mc; }
+	/* Variables owned by this controller. Other controllers should
+	   query these only through the API methods below. */
+	var OWNED_VARS = Object.freeze([
+		'meetBrook', 'foundTips', 'foundComics', 'foundBrook',
+		'foundGirl', 'foundGuy',
+		'comics1', 'comics2', 'comics3', 'comics4',
+		'chanceToSuccessAloneOwaissaBrook', 'chanceToSuccessAloneElmBrook'
+	]);
+
+	function sv() { return State.variables; }
 
 	return {
+		OWNED_VARS: OWNED_VARS,
 		// --- Hours ------------------------------------------------
 		isOpen: function () {
-			var h = v('hours');
+			var h = setup.Time.hours();
 			return h > 7 && h < 22;
 		},
 		hasEnergyToSearch: function () {
-			return mc().energy >= 1;
+			return setup.Mc.energy() >= 1;
 		},
 
 		// --- Brook / library-search encounter pool ---------------
 		hasMetBrook: function () {
-			return v('meetBrook') !== undefined;
+			return sv().meetBrook !== undefined;
 		},
 		brookIsPossessed: function () {
-			return v('isBrookePossessed') === 1;
+			return setup.Home.isBrookePossessed();
 		},
 		brookIsWithRain: function () {
-			return v('isBrookePossessed') === 0 && (v('isBrookePossessedCD') || 0) <= 2;
+			return !setup.Home.isBrookePossessed() && setup.Home.brookePossessedCDLow();
 		},
 		canMeetBrookAtLibrary: function () {
 			return !this.brookIsPossessed() && !this.brookIsWithRain();
 		},
 
 		// --- Discovered content (used to enable menu entries) ----
-		hasFoundTipsBook: function () { return v('foundTips') !== undefined; },
-		hasFoundComics: function () { return v('foundComics') !== undefined; },
-		hasFoundBrook: function () { return v('foundBrook') !== undefined; },
-		hasFoundGirl: function () { return v('foundGirl') !== undefined; },
-		hasFoundGuy: function () { return v('foundGuy') !== undefined; },
+		hasFoundTipsBook: function () { return sv().foundTips !== undefined; },
+		hasFoundComics:   function () { return sv().foundComics !== undefined; },
+		hasFoundBrook:    function () { return sv().foundBrook !== undefined; },
+		hasFoundGirl:     function () { return sv().foundGirl !== undefined; },
+		hasFoundGuy:      function () { return sv().foundGuy !== undefined; },
 
 		availableSearchResults: function () {
 			var out = [];
@@ -54,15 +63,15 @@ setup.Library = (function () {
 		/* Library groping event uses pants/shorts vs skirt to pick
 		* the pose; unified here for reuse. */
 		wearingPants: function () {
-			return v('jeansState') === 'worn' || v('shortsState') === 'worn';
+			return sv().jeansState === 'worn' || sv().shortsState === 'worn';
 		},
 		wearingSkirt: function () {
-			return v('skirtState') === 'worn';
+			return sv().skirtState === 'worn';
 		},
 
 		// --- Brook solo-hunt chances (duplicated in BrookInfo) --
 		brookSoloOwaissaChance: function () {
-			var lvl = (v('brook') || {}).lvl || 0;
+			var lvl = (sv().brook || {}).lvl || 0;
 			if (lvl >= 5) return 70;
 			if (lvl === 4) return 55;
 			if (lvl === 3) return 40;
@@ -70,7 +79,7 @@ setup.Library = (function () {
 			return 0;
 		},
 		brookSoloElmChance: function () {
-			var lvl = (v('brook') || {}).lvl || 0;
+			var lvl = (sv().brook || {}).lvl || 0;
 			if (lvl >= 5) return 55;
 			if (lvl === 4) return 40;
 			if (lvl === 3) return 25;
@@ -79,11 +88,11 @@ setup.Library = (function () {
 		},
 
 		brookLvl: function () {
-			return (v('brook') || {}).lvl || 0;
+			return (sv().brook || {}).lvl || 0;
 		},
 
 		// --- Mutations previously inline in library passages ------
-		spendEnergyToSearch: function () { mc().energy -= 1; },
+		spendEnergyToSearch: function () { setup.Mc.spendEnergy(1); },
 		markTipsBookFound:   function () { State.variables.foundTips = 1; },
 		markComicsFound:     function () { State.variables.foundComics = 1; },
 		markBrookFound:      function () { State.variables.foundBrook = 1; },
@@ -93,11 +102,11 @@ setup.Library = (function () {
 		// are the three different "cap < x, gain y" pairs used across
 		// LibraryGirl.tw and LibraryGuy1.tw.
 		gainSmallCorruption: function () {
-			if (mc().corruption < 3) { mc().corruption += 0.1; }
+			if (setup.Mc.corruption() < 3) { setup.Mc.addCorruption(0.1); }
 		},
 		tryGainGropingCorruption: function (cap, delta) {
-			if (mc().corruption <= cap) {
-				mc().corruption += delta;
+			if (setup.Mc.corruption() <= cap) {
+				setup.Mc.addCorruption(delta);
 			}
 		},
 
@@ -114,16 +123,15 @@ setup.Library = (function () {
 				State.variables['comics' + i] = 0;
 			}
 		},
-		comicsFlag: function (idx) { return v('comics' + idx); },
+		comicsFlag: function (idx) { return sv()['comics' + idx]; },
 
 		// --- Brook solo-hunt selection ----------------------------
-		chanceBrookAloneOwaissa: function () { return v('chanceToSuccessAloneOwaissaBrook'); },
-		chanceBrookAloneElm:     function () { return v('chanceToSuccessAloneElmBrook'); },
+		chanceBrookAloneOwaissa: function () { return sv().chanceToSuccessAloneOwaissaBrook; },
+		chanceBrookAloneElm:     function () { return sv().chanceToSuccessAloneElmBrook; },
 		brookSoloHuntReporting:  function () {
-			return v('isBrookGoingForHuntingAlone') === 2;
+			return sv().isBrookGoingForHuntingAlone === 2;
 		},
 		refreshBrookSoloChances: function () {
-			var lvl = this.brookLvl();
 			State.variables.chanceToSuccessAloneOwaissaBrook = this.brookSoloOwaissaChance();
 			State.variables.chanceToSuccessAloneElmBrook     = this.brookSoloElmChance();
 		},
@@ -143,8 +151,8 @@ setup.Library = (function () {
 			s.brookChooseOwaissa = 1;
 			s.brookChooseElm = 0;
 			s.isBrookGoingForHuntingAlone = 1;
-			if ((s.payForHuntAloneBrook === undefined || s.payForHuntAloneBrook === 0) && s.mc.money >= 20) {
-				s.mc.money -= 20;
+			if ((s.payForHuntAloneBrook === undefined || s.payForHuntAloneBrook === 0) && setup.Mc.money() >= 20) {
+				setup.Mc.spendMoney(20);
 				s.payForHuntAloneBrook = 1;
 			}
 		},
@@ -154,8 +162,8 @@ setup.Library = (function () {
 			s.brookChooseOwaissa = 0;
 			s.brookChooseElm = 1;
 			s.isBrookGoingForHuntingAlone = 1;
-			if ((s.payForHuntAloneBrook === undefined || s.payForHuntAloneBrook === 0) && s.mc.money >= 20) {
-				s.mc.money -= 20;
+			if ((s.payForHuntAloneBrook === undefined || s.payForHuntAloneBrook === 0) && setup.Mc.money() >= 20) {
+				setup.Mc.spendMoney(20);
 				s.payForHuntAloneBrook = 1;
 			}
 		}

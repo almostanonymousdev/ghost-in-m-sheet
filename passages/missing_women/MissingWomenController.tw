@@ -6,53 +6,74 @@
  * conditions live in one place.
  */
 setup.MissingWomen = (function () {
-	function v(name) { return State.variables[name]; }
-	function mc() { return State.variables.mc; }
+	function sv() { return State.variables; }
+
+	/* Variables owned by this controller. Other controllers should
+	   query these only through the API methods below. */
+	var OWNED_VARS = Object.freeze([
+		'hasQuestForRescue',
+		'rescueQuestCD',
+		'rescueCD',
+		'rescueStage',
+		'rescueHouse',
+		'randomRescuePhotoNumber',
+		'hasRescueClue',
+		'currentRescueGirl',
+		'rescueJadePossessed',
+		'rescueVictoriaPossessed',
+		'rescueGirls',
+		'rescueRandomGirls',
+		'videoRescueEvent',
+		'tornStyles',
+		'tornStyleRandom',
+		'cheatRescueHouseHighlight'
+	]);
 
 	return {
+		OWNED_VARS: OWNED_VARS,
 		// --- Holy water -------------------------------------------
 		hasHolyWater: function () {
-			return v('holyWaterIsCollected') === 1;
+			return sv().holyWaterIsCollected === 1;
 		},
 		useHolyWater: function () {
-			State.variables.holyWaterIsCollected = 0;
+			sv().holyWaterIsCollected = 0;
 		},
 
 		// --- Quest stage predicates --------------------------------
 		isQuestAvailable: function () {
-			return v('hasQuestForRescue') === 0;
+			return sv().hasQuestForRescue === 0;
 		},
 		hasActiveQuest: function () {
-			return v('hasQuestForRescue') === 1;
+			return sv().hasQuestForRescue === 1;
 		},
 		questFailed: function () {
-			return v('hasQuestForRescue') === 2;
+			return sv().hasQuestForRescue === 2;
 		},
 		questSucceeded: function () {
-			return v('hasQuestForRescue') === 3;
+			return sv().hasQuestForRescue === 3;
 		},
 		mustReturnToNun: function () {
-			var s = v('hasQuestForRescue');
+			var s = sv().hasQuestForRescue;
 			return s === 2 || s === 3;
 		},
 
 		// --- Task board timing ------------------------------------
 		boardPostingsOutToday: function () {
-			var h = v('hours');
+			var h = setup.Time.hours();
 			return h >= 18 && h < 24;
 		},
 		boardOnCooldown: function () {
-			return v('rescueQuestCD') !== 0;
+			return sv().rescueQuestCD !== 0;
 		},
 
 		// --- Stay / corruption gate -------------------------------
 		canStaySubmissive: function () {
-			return mc().corruption >= 6;
+			return setup.Mc.corruption() >= 6;
 		},
 
 		// --- House search ------------------------------------------
 		canSearchHouse: function () {
-			return mc().energy >= 1;
+			return setup.Mc.energy() >= 1;
 		},
 		searchTooLate: function () {
 			// Mirrors legacy "after 6 p.m. it's pointless" check on
@@ -60,24 +81,24 @@ setup.MissingWomen = (function () {
 			return this.questFailed();
 		},
 		isCorrectHouse: function () {
-			return v('randomRescuePhotoNumber') === v('rescueHouse');
+			return sv().randomRescuePhotoNumber === sv().rescueHouse;
 		},
 		canResolveRescue: function () {
-			return v('rescueStage') < 2 && this.isCorrectHouse() && this.hasActiveQuest();
+			return sv().rescueStage < 2 && this.isCorrectHouse() && this.hasActiveQuest();
 		},
 		hasRescueClue: function () {
-			return v('hasRescueClue') === 1;
+			return sv().hasRescueClue === 1;
 		},
 
 		// --- Rescue event outcome ---------------------------------
 		rescueEventAuto: function () {
-			return v('rescueStage') === 0;
+			return sv().rescueStage === 0;
 		},
 		rescueEventRolls: function () {
-			return v('rescueStage') === 1 && v('hours') < 18;
+			return sv().rescueStage === 1 && setup.Time.hours() < 18;
 		},
 		rollRescueSuccess: function () {
-			var chance = 100 - (v('hours') * 100 / 18);
+			var chance = 100 - (setup.Time.hours() * 100 / 18);
 			return random(1, 100) <= chance;
 		},
 
@@ -97,34 +118,34 @@ setup.MissingWomen = (function () {
 		},
 
 		// --- Mutations / accessors used by rescue passages --------
-		currentRescueGirl: function () { return v('currentRescueGirl'); },
-		setCurrentRescueGirl: function (name) { State.variables.currentRescueGirl = name; },
+		currentRescueGirl: function () { return sv().currentRescueGirl; },
+		setCurrentRescueGirl: function (name) { sv().currentRescueGirl = name; },
 		setQuestForRescueStarted: function () {
-			State.variables.hasQuestForRescue = 1;
-			State.variables.rescueStage = 0;
+			sv().hasQuestForRescue = 1;
+			sv().rescueStage = 0;
 		},
 		sleepOffHoursAfterEvent: function () {
 			State.variables.hours = (State.variables.hours || 0) + 3;
 		},
-		setJadePossessedStage: function (n) { State.variables.rescueJadePossessed = n; },
-		setVictoriaPossessedStage: function (n) { State.variables.rescueVictoriaPossessed = n; },
-		jadePossessedStage: function () { return v('rescueJadePossessed'); },
-		victoriaPossessedStage: function () { return v('rescueVictoriaPossessed'); },
+		setJadePossessedStage: function (n) { sv().rescueJadePossessed = n; },
+		setVictoriaPossessedStage: function (n) { sv().rescueVictoriaPossessed = n; },
+		jadePossessedStage: function () { return sv().rescueJadePossessed; },
+		victoriaPossessedStage: function () { return sv().rescueVictoriaPossessed; },
 
 		// --- Task board state --------------------------------------
 		ensureBoardCooldowns: function () {
-			var s = State.variables;
+			var s = sv();
 			if (s.rescueCD === undefined) { s.rescueCD = 0; }
 			if (s.rescueQuestCD === undefined) { s.rescueQuestCD = 0; }
 		},
-		rescueCooldown: function () { return v('rescueCD'); },
-		rescueGirlsList: function () { return v('rescueGirls'); },
-		rescueRandomGirls: function () { return v('rescueRandomGirls'); },
+		rescueCooldown: function () { return sv().rescueCD; },
+		rescueGirlsList: function () { return sv().rescueGirls; },
+		rescueRandomGirls: function () { return sv().rescueRandomGirls; },
 		initRescueGirlPool: function (allGirls) {
-			State.variables.rescueGirls = allGirls;
+			sv().rescueGirls = allGirls;
 		},
 		rollBoardGirls: function () {
-			var s = State.variables;
+			var s = sv();
 			s.rescueCD = 1;
 			s.rescueRandomGirls = [];
 			var girls = s.rescueGirls || [];
@@ -136,48 +157,45 @@ setup.MissingWomen = (function () {
 		},
 
 		// --- Rescue house / clue accessors -------------------------
-		rescueHouse: function () { return v('rescueHouse'); },
-		setRescueHouse: function (n) { State.variables.rescueHouse = n; },
-		randomRescuePhotoNumber: function () { return v('randomRescuePhotoNumber'); },
+		rescueHouse: function () { return sv().rescueHouse; },
+		setRescueHouse: function (n) { sv().rescueHouse = n; },
+		randomRescuePhotoNumber: function () { return sv().randomRescuePhotoNumber; },
 		setRandomRescuePhotoNumber: function (n) {
-			State.variables.randomRescuePhotoNumber = n;
+			sv().randomRescuePhotoNumber = n;
 		},
-		rescueStage: function () { return v('rescueStage'); },
-		setRescueStage: function (n) { State.variables.rescueStage = n; },
-		setRescueClueFound: function () { State.variables.hasRescueClue = 1; },
+		rescueStage: function () { return sv().rescueStage; },
+		setRescueStage: function (n) { sv().rescueStage = n; },
+		setRescueClueFound: function () { sv().hasRescueClue = 1; },
 
 		// --- Rescue quest state -----------------------------------
-		setQuestStage: function (stage) { State.variables.hasQuestForRescue = stage; },
-		getQuestStage: function () { return v('hasQuestForRescue'); },
+		setQuestStage: function (stage) { sv().hasQuestForRescue = stage; },
+		getQuestStage: function () { return sv().hasQuestForRescue; },
 
 		// --- Video pool --------------------------------------------
-		rescueVideo: function () { return v('videoRescueEvent'); },
-		setRescueVideo: function (src) { State.variables.videoRescueEvent = src; },
-		startRescueBoardCooldown: function () { State.variables.rescueQuestCD = 1; },
+		rescueVideo: function () { return sv().videoRescueEvent; },
+		setRescueVideo: function (src) { sv().videoRescueEvent = src; },
+		startRescueBoardCooldown: function () { sv().rescueQuestCD = 1; },
 
 		// --- Torn-photo state (task board / clue display) ---------
-		tornStylesList: function () { return v('tornStyles'); },
-		tornStyleRandom: function () { return v('tornStyleRandom'); },
+		tornStylesList: function () { return sv().tornStyles; },
+		tornStyleRandom: function () { return sv().tornStyleRandom; },
 		seedTornStyle: function () {
-			var styles = v('tornStyles') || [];
+			var styles = sv().tornStyles || [];
 			if (!styles.length) return;
 			var idx = Math.floor(Math.random() * styles.length);
-			State.variables.tornStyleRandom = styles[idx];
-			State.variables.randomRescuePhotoNumber = 1 + Math.floor(Math.random() * 16);
+			sv().tornStyleRandom = styles[idx];
+			sv().randomRescuePhotoNumber = 1 + Math.floor(Math.random() * 16);
 		},
 
 		// --- Cheat-only highlight flag ----------------------------
-		cheatRescueHouseHighlight: function () { return v('cheatRescueHouseHighlight'); },
+		cheatRescueHouseHighlight: function () { return sv().cheatRescueHouseHighlight; },
 
 		// --- EMF upgrade reward from clue --------------------------
 		emfLevel: function () {
-			var e = v('equipment');
-			return e ? e.emf : undefined;
+			return setup.ToolController.tierOf('emf');
 		},
 		upgradeEmfToLvl3: function () {
-			if (State.variables.equipment) {
-				State.variables.equipment.emf = 3;
-			}
+			setup.ToolController.setTier('emf', 3);
 		}
 	};
 })();

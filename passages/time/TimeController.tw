@@ -10,9 +10,16 @@
  * without touching $hours/$minutes.
  */
 setup.Time = (function () {
+	/* Variables owned by this controller. Other controllers should
+	   query/mutate these only through the API methods below. */
+	var OWNED_VARS = Object.freeze([
+		'hours', 'minutes', 'meridiem', 'temperature'
+	]);
+
 	function sv() { return State.variables; }
 
 	return {
+		OWNED_VARS: OWNED_VARS,
 		// --- Raw getters -------------------------------------
 		hours:       function () { return sv().hours; },
 		minutes:     function () { return sv().minutes; },

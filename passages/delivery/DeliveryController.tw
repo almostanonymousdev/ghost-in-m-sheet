@@ -5,10 +5,28 @@
  * underlying $variables directly, so the conditions live in one place.
  */
 setup.Delivery = (function () {
-	function v(name) { return State.variables[name]; }
-	function mc() { return State.variables.mc; }
+	function sv() { return State.variables; }
+
+	/* Variables owned by this controller. Other controllers should
+	   query these only through the API methods below. */
+	var OWNED_VARS = Object.freeze([
+		'deliveryCompletedShifts', 'deliveryStreak', 'deliveryBestStreak',
+		'deliveryReputationLevel', 'deliveryCorrectThisShift',
+		'deliveryActiveIcon1', 'deliveryActiveIcon2', 'deliveryActiveIcon3',
+		'deliveryVisitCounts',
+		'currentHouse', 'currentOrder', 'orders', 'shuffledOrders',
+		'order1', 'order2', 'order3',
+		'jobMoneySuccessed', 'jobMoneyFailed',
+		'deliveryBJCD', 'deliveryPapersEvent', 'deliveryBurgerEvent',
+		'deliveryPackageEvent', 'deliveryPizzaEvent',
+		'deliverySpecialOrder', 'deliverySpecialOrderAddress',
+		'deliverySpecialOrderType', 'deliverySpecialOrderPay',
+		'deliveryTotalTips', 'firstVisitDeliveryHub',
+		'itemImages', 'items', 'streets', 'shuffledStreets', 'shuffledItems'
+	]);
 
 	return {
+		OWNED_VARS: OWNED_VARS,
 		// --- Pay tiers & progression -----------------------------
 		payTiers: [
 			{ minShifts: 0,  base: 10, fail: 3 },
@@ -18,15 +36,15 @@ setup.Delivery = (function () {
 			{ minShifts: 50, base: 22, fail: 7 }
 		],
 		updatePayTier: function () {
-			var shifts = v('deliveryCompletedShifts');
+			var shifts = sv().deliveryCompletedShifts;
 			var tiers = this.payTiers;
 			var tier = 0;
 			for (var i = tiers.length - 1; i >= 0; i--) {
 				if (shifts >= tiers[i].minShifts) { tier = i; break; }
 			}
 			var repBonus = this.getReputationPayBonus();
-			State.variables.jobMoneySuccessed = tiers[tier].base + repBonus;
-			State.variables.jobMoneyFailed = tiers[tier].fail;
+			sv().jobMoneySuccessed = tiers[tier].base + repBonus;
+			sv().jobMoneyFailed = tiers[tier].fail;
 		},
 
 		// --- Reputation / streaks --------------------------------
@@ -36,7 +54,7 @@ setup.Delivery = (function () {
 			{ streak: 20, level: 3, label: "Star Courier",  payBonus: 6 }
 		],
 		getReputationLevel: function () {
-			var best = v('deliveryBestStreak');
+			var best = sv().deliveryBestStreak;
 			var milestones = this.reputationMilestones;
 			var level = 0;
 			for (var i = milestones.length - 1; i >= 0; i--) {
@@ -66,26 +84,26 @@ setup.Delivery = (function () {
 
 		// --- Route familiarity -----------------------------------
 		isRouteFamiliar: function (address) {
-			var counts = v('deliveryVisitCounts');
+			var counts = sv().deliveryVisitCounts;
 			return counts && counts[address] >= 3;
 		},
 		trackVisit: function (address) {
-			var counts = State.variables.deliveryVisitCounts;
-			if (!counts) { counts = {}; State.variables.deliveryVisitCounts = counts; }
+			var counts = sv().deliveryVisitCounts;
+			if (!counts) { counts = {}; sv().deliveryVisitCounts = counts; }
 			if (!counts[address]) { counts[address] = 0; }
 			counts[address] += 1;
 		},
 
 		// --- Hub hours / shift eligibility -----------------------
 		isOpen: function () {
-			var h = v('hours');
+			var h = setup.Time.hours();
 			return h > 7 && h < 20;
 		},
 		isFirstVisit: function () {
-			return v('firstVisitDeliveryHub') !== false;
+			return sv().firstVisitDeliveryHub !== false;
 		},
 		hasEnergyForShift: function () {
-			return mc().energy >= 2;
+			return setup.Mc.energy() >= 2;
 		},
 		canStartShift: function () {
 			return !this.isFirstVisit() && this.isOpen() && this.hasEnergyForShift();
@@ -96,13 +114,13 @@ setup.Delivery = (function () {
 
 		// --- Manager: flirt / BJ quest ---------------------------
 		managerBJOnCooldown: function () {
-			return v('deliveryBJCD') === 1;
+			return sv().deliveryBJCD === 1;
 		},
 		meetsBeautyForManagerFlirt: function () {
-			return mc().beauty >= 45;
+			return setup.Mc.beauty() >= 45;
 		},
 		managerWillPayExtra: function () {
-			return mc().corruption >= 2;
+			return setup.Mc.corruption() >= 2;
 		},
 		hasMetManagerEvent: function () {
 			return hasVisited('DeliveryManagerEventStart');
@@ -110,83 +128,83 @@ setup.Delivery = (function () {
 
 		// --- Pizza / Package / Burger / Papers gate checks -------
 		canAcceptPizzaDeal: function () {
-			return mc().corruption >= 3;
+			return setup.Mc.corruption() >= 3;
 		},
 		canAcceptPackageDeal: function () {
-			return mc().corruption >= 3;
+			return setup.Mc.corruption() >= 3;
 		},
 		canAcceptBurgerWeed: function () {
-			return mc().corruption >= 4;
+			return setup.Mc.corruption() >= 4;
 		},
 		canAcceptPapersFlirt: function () {
-			return mc().corruption >= 3;
+			return setup.Mc.corruption() >= 3;
 		},
 		papersLustHighEnough: function () {
-			return mc().lust >= 40;
+			return setup.Mc.lust() >= 40;
 		},
 		papersStillCorruptible: function () {
-			return mc().corruption <= 3;
+			return setup.Mc.corruption() <= 3;
 		},
 		papersInitialLustHighEnough: function () {
-			return mc().lust >= 30;
+			return setup.Mc.lust() >= 30;
 		},
 		packageLustHighEnough: function () {
 			// Drives which branch is shown in DeliveryPackageEventStart
-			return mc().lust > 49;
+			return setup.Mc.lust() > 49;
 		},
 
 		// --- State accessors / mutations previously inline --------
-		currentHouse:   function () { return v('currentHouse'); },
-		setCurrentHouse: function (h) { State.variables.currentHouse = h; },
-		currentOrder:   function () { return v('currentOrder'); },
-		setCurrentOrder: function (n) { State.variables.currentOrder = n; },
-		orders:         function () { return v('orders'); },
-		earnedMoney:    function () { return v('earnedMoney'); },
-		addEarnedMoney: function (n) { State.variables.earnedMoney += n; },
-		resetEarnedMoney: function () { State.variables.earnedMoney = 0; },
+		currentHouse:   function () { return sv().currentHouse; },
+		setCurrentHouse: function (h) { sv().currentHouse = h; },
+		currentOrder:   function () { return sv().currentOrder; },
+		setCurrentOrder: function (n) { sv().currentOrder = n; },
+		orders:         function () { return sv().orders; },
+		earnedMoney:    function () { return setup.Mc.earnedMoney(); },
+		addEarnedMoney: function (n) { setup.Mc.addEarnedMoney(n); },
+		resetEarnedMoney: function () { setup.Mc.setEarnedMoney(0); },
 		addJobSuccessEarnings: function () {
-			State.variables.earnedMoney += v('jobMoneySuccessed');
+			setup.Mc.addEarnedMoney(sv().jobMoneySuccessed);
 		},
 		addJobFailEarnings: function () {
-			State.variables.earnedMoney += v('jobMoneyFailed');
+			setup.Mc.addEarnedMoney(sv().jobMoneyFailed);
 		},
-		jobMoneySuccessed: function () { return v('jobMoneySuccessed'); },
-		jobMoneyFailed:    function () { return v('jobMoneyFailed'); },
+		jobMoneySuccessed: function () { return sv().jobMoneySuccessed; },
+		jobMoneyFailed:    function () { return sv().jobMoneyFailed; },
 
 		// --- Special order fields -------------------------------
-		specialOrderActive:  function () { return !!v('deliverySpecialOrder'); },
-		specialOrderAddress: function () { return v('deliverySpecialOrderAddress'); },
-		specialOrderType:    function () { return v('deliverySpecialOrderType'); },
-		specialOrderPay:     function () { return v('deliverySpecialOrderPay'); },
-		clearSpecialOrder:   function () { State.variables.deliverySpecialOrder = false; },
+		specialOrderActive:  function () { return !!sv().deliverySpecialOrder; },
+		specialOrderAddress: function () { return sv().deliverySpecialOrderAddress; },
+		specialOrderType:    function () { return sv().deliverySpecialOrderType; },
+		specialOrderPay:     function () { return sv().deliverySpecialOrderPay; },
+		clearSpecialOrder:   function () { sv().deliverySpecialOrder = false; },
 		bankSafeSpecialOrder: function () {
-			State.variables.earnedMoney += v('deliverySpecialOrderPay');
-			State.variables.deliverySpecialOrder = false;
+			setup.Mc.addEarnedMoney(sv().deliverySpecialOrderPay);
+			sv().deliverySpecialOrder = false;
 		},
 
 		// --- Event flags ----------------------------------------
-		markPapersEvent:  function () { State.variables.deliveryPapersEvent = 1; },
-		markBurgerEvent:  function () { State.variables.deliveryBurgerEvent = 1; },
-		markPackageEvent: function () { State.variables.deliveryPackageEvent = 1; },
-		markPizzaEvent:   function () { State.variables.deliveryPizzaEvent = 1; },
-		startManagerBJCooldown: function () { State.variables.deliveryBJCD = 1; },
-		markMetAlice:     function () { State.variables.meetAlice = 1; },
-		hasMetAlice:      function () { return v('meetAlice') !== undefined; },
-		markFirstVisited: function () { State.variables.firstVisitDeliveryHub = false; },
+		markPapersEvent:  function () { sv().deliveryPapersEvent = 1; },
+		markBurgerEvent:  function () { sv().deliveryBurgerEvent = 1; },
+		markPackageEvent: function () { sv().deliveryPackageEvent = 1; },
+		markPizzaEvent:   function () { sv().deliveryPizzaEvent = 1; },
+		startManagerBJCooldown: function () { sv().deliveryBJCD = 1; },
+		markMetAlice:     function () { sv().meetAlice = 1; },
+		hasMetAlice:      function () { return sv().meetAlice !== undefined; },
+		markFirstVisited: function () { sv().firstVisitDeliveryHub = false; },
 
 		// --- Active-icon flags for the three daily orders ---------
-		activeIcon: function (i) { return v('deliveryActiveIcon' + i); },
-		setActiveIcon: function (i, val) { State.variables['deliveryActiveIcon' + i] = val; },
+		activeIcon: function (i) { return sv()['deliveryActiveIcon' + i]; },
+		setActiveIcon: function (i, val) { sv()['deliveryActiveIcon' + i] = val; },
 
 		// --- Per-shift counters --------------------------------
-		completedShifts: function () { return v('deliveryCompletedShifts'); },
-		correctThisShift: function () { return v('deliveryCorrectThisShift'); },
-		incrementCorrectThisShift: function () { State.variables.deliveryCorrectThisShift += 1; },
-		resetCorrectThisShift:     function () { State.variables.deliveryCorrectThisShift = 0; },
-		streak: function () { return v('deliveryStreak'); },
-		bestStreak: function () { return v('deliveryBestStreak'); },
+		completedShifts: function () { return sv().deliveryCompletedShifts; },
+		correctThisShift: function () { return sv().deliveryCorrectThisShift; },
+		incrementCorrectThisShift: function () { sv().deliveryCorrectThisShift += 1; },
+		resetCorrectThisShift:     function () { sv().deliveryCorrectThisShift = 0; },
+		streak: function () { return sv().deliveryStreak; },
+		bestStreak: function () { return sv().deliveryBestStreak; },
 		endShift: function () {
-			var s = State.variables;
+			var s = sv();
 			s.deliveryCompletedShifts += 1;
 			if (s.deliveryCorrectThisShift >= 3) {
 				s.deliveryStreak += 1;
@@ -200,34 +218,33 @@ setup.Delivery = (function () {
 		},
 		bankEarnedMoney: function () {
 			// Pay out the shift: credit MC, spend energy, reset counter.
-			var s = State.variables;
-			s.mc.money += s.earnedMoney;
-			s.mc.energy -= 2;
-			s.earnedMoney = 0;
+			setup.Mc.addMoney(setup.Mc.earnedMoney());
+			setup.Mc.spendEnergy(2);
+			setup.Mc.setEarnedMoney(0);
 		},
 		grantPerfectShiftBonus: function (amount) {
-			State.variables.earnedMoney += amount;
+			setup.Mc.addEarnedMoney(amount);
 		},
 
 		// --- Find order slot for the current house (used by WorkDelivery) -
 		orderSlotForHouse: function (house) {
-			var orders = v('orders') || [];
+			var orders = sv().orders || [];
 			for (var i = 0; i < orders.length; i++) {
-				var slotActive = v('deliveryActiveIcon' + (i + 1));
+				var slotActive = sv()['deliveryActiveIcon' + (i + 1)];
 				if (orders[i].address === house && slotActive) return i;
 			}
 			return -1;
 		},
 
 		// --- Manager event lust snippet (previously inline) -------
-		clearLust: function () { mc().lust = 0; },
-		addLust:   function (n) { mc().lust += n; },
+		clearLust: function () { setup.Mc.setLust(0); },
+		addLust:   function (n) { setup.addLust(n); },
 
 		// --- Shift initialization (WorkDelivery passage) --------
 		// Rolls the 3 randomized orders + optional special "rush" order
 		// for the upcoming shift and seeds the per-shift counters.
 		initShift: function () {
-			var s = State.variables;
+			var s = sv();
 			s.itemImages = {
 				pizza:      "ui/img/pizza.jpg",
 				package:    "ui/img/package.jpg",
@@ -264,12 +281,12 @@ setup.Delivery = (function () {
 				s.deliverySpecialOrderType = Math.random() < 0.5 ? 'safe' : 'unsafe';
 			}
 		},
-		shuffledOrders: function () { return v('shuffledOrders'); },
-		trackCorrect: function () { State.variables.deliveryCorrectThisShift += 1; },
-		reputationLevel: function () { return v('deliveryReputationLevel'); },
+		shuffledOrders: function () { return sv().shuffledOrders; },
+		trackCorrect: function () { sv().deliveryCorrectThisShift += 1; },
+		reputationLevel: function () { return sv().deliveryReputationLevel; },
 		addTip:       function (n) {
-			State.variables.earnedMoney += n;
-			State.variables.deliveryTotalTips += n;
+			setup.Mc.addEarnedMoney(n);
+			sv().deliveryTotalTips += n;
 		}
 	};
 })();

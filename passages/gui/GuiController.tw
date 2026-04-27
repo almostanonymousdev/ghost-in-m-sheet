@@ -11,7 +11,15 @@
  * added but only some overlays got patched.
  */
 setup.Gui = (function () {
-	function v(name) { return State.variables; }
+	function sv() { return State.variables; }
+
+	/* Variables owned by this controller. Other controllers should
+	   query these only through the API methods below. */
+	var OWNED_VARS = Object.freeze([
+		'guideReturnPassage',
+		'cursedHuntOption',
+		'timerToolsDecreased'
+	]);
 
 	// True when the previous passage is tagged "event" -- those should
 	// resume via <<back>> through the event chain rather than jumping
@@ -32,10 +40,10 @@ setup.Gui = (function () {
 	   guard (Brook also gates on the possession state). Returns
 	   one descriptor per slot in stable display order. */
 	function phoneContacts() {
-		var sv = State.variables;
+		var s = sv();
 
-		function meetFlag(name) { return sv['meet' + name] !== undefined; }
-		function huntingAlone(name) { return sv['is' + name + 'GoingForHuntingAlone'] === 2; }
+		function meetFlag(name) { return s['meet' + name] !== undefined; }
+		function huntingAlone(name) { return s['is' + name + 'GoingForHuntingAlone'] === 2; }
 
 		return [
 			{
@@ -75,7 +83,7 @@ setup.Gui = (function () {
 				portrait:      'characters/blake/blake.png',
 				infoPassage:   'BlakeInfo',
 				lockedHint:    'Befriend the assistant at the sex shop <br>(Relationship 5+)',
-				isUnlocked:    function () { return (sv.relationshipBlake || 0) >= 5; },
+				isUnlocked:    function () { return (s.relationshipBlake || 0) >= 5; },
 				isHuntingAlone: function () { return huntingAlone('Blake'); },
 				canText:       function () { return true; },
 				possessedHint: '',
@@ -88,23 +96,23 @@ setup.Gui = (function () {
 
 	// --- City-map night overlay --------------------------------
 	function isCityNightOverlayActive() {
-		var h = State.variables.hours;
+		var h = setup.Time.hours();
 		return h >= 22 || (h >= 0 && h <= 5);
 	}
 
 	// --- Guide return-to passage ---------------------------------
 	// Guide/Evidence pages need to remember which passage opened them
 	// so the Back button can jump there. Stored in $guideReturnPassage.
-	function guideReturnPassage() { return State.variables.guideReturnPassage; }
-	function setGuideReturnPassage(n) { State.variables.guideReturnPassage = n; }
+	function guideReturnPassage() { return sv().guideReturnPassage; }
+	function setGuideReturnPassage(n) { sv().guideReturnPassage = n; }
 
 	// --- Cursed hunt toggle --------------------------------------
-	function cursedHuntOptionOff() { return State.variables.cursedHuntOption === 1; }
+	function cursedHuntOptionOff() { return sv().cursedHuntOption === 1; }
 	function isCursedHuntOptionOn() {
-		var v = State.variables.cursedHuntOption;
-		return v === 0 || v === undefined;
+		var val = sv().cursedHuntOption;
+		return val === 0 || val === undefined;
 	}
-	function setCursedHuntOption(v) { State.variables.cursedHuntOption = v; }
+	function setCursedHuntOption(val) { sv().cursedHuntOption = val; }
 
 	// --- Tool speed (based on MC lvl) ----------------------------
 	// $timerToolsDecreased is the "tick" duration passed to the
@@ -118,15 +126,16 @@ setup.Gui = (function () {
 	function refreshToolTimer() {
 		var lvl = setup.Mc.lvl();
 		var t = TOOL_TIMER_BY_LVL[lvl];
-		State.variables.timerToolsDecreased = t || "150ms";
+		sv().timerToolsDecreased = t || "150ms";
 	}
 
 	return {
+		OWNED_VARS: OWNED_VARS,
 		useBackInsteadOfReturn:  useBackInsteadOfReturn,
 		phoneContacts:           phoneContacts,
 		isCityNightOverlayActive: isCityNightOverlayActive,
 		phoneBought: function () {
-			return State.variables.isPhoneBought !== undefined;
+			return sv().isPhoneBought !== undefined;
 		},
 		guideReturnPassage: guideReturnPassage,
 		setGuideReturnPassage: setGuideReturnPassage,
@@ -134,6 +143,6 @@ setup.Gui = (function () {
 		isCursedHuntOptionOn: isCursedHuntOptionOn,
 		setCursedHuntOption: setCursedHuntOption,
 		refreshToolTimer: refreshToolTimer,
-		monkeyPawWishInput: function () { return State.variables.inputWish; }
+		monkeyPawWishInput: function () { return sv().inputWish; }
 	};
 })();

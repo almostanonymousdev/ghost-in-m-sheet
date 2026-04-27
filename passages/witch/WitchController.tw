@@ -3,19 +3,43 @@
  * Centralized state queries and mutations for the witch's house.
  * Passages should call into setup.Witch instead of testing the
  * underlying $variables directly, so the conditions live in one place.
+ *
+ * Variable ownership: Witch only directly reads/writes its own quest
+ * and shop state. Anything outside that domain (player stats, time of
+ * day, equipment tiers, hunt evidence, monkey-paw guide, cursed-home
+ * items) is queried through the owning controller's API.
  */
 setup.Witch = (function () {
-	function v(name) { return State.variables[name]; }
-	function mc() { return State.variables.mc; }
+	/* Variables owned by this controller. Other controllers should
+	   query/mutate these only through the API methods below. */
+	var OWNED_VARS = Object.freeze([
+		'firstVisitWitchShop',
+		'gotKeyFromWitch',
+		'witchNightCD',
+		'stealItemsFromWitchCD',
+		'succubus',
+		'exorcismQuestStage',
+		'gotCursedItem',
+		'isCIDildo', 'isCIButtplug', 'isCIBeads', 'isCIHDildo',
+		'eventToolsOneStart',
+		'wardenClothesStage',
+		'weakenTheGhostQuest',
+		'isWeakenGhost',
+		'moneyFromWeakenTheGhost',
+		'amulet'
+	]);
+
+	function sv() { return State.variables; }
 
 	return {
+		OWNED_VARS: OWNED_VARS,
 		// --- Hours / access --------------------------------------
 		isDayTime: function () {
-			var h = v('hours');
+			var h = setup.Time.hours();
 			return h > 9 && h <= 23;
 		},
 		hasStolenKey: function () {
-			return v('gotKeyFromWitch') !== undefined;
+			return sv().gotKeyFromWitch !== undefined;
 		},
 		canSneakInAtNight: function () {
 			return !this.isDayTime() && this.hasStolenKey();
@@ -23,10 +47,10 @@ setup.Witch = (function () {
 
 		// --- Contracts -------------------------------------------
 		isFirstVisit: function () {
-			return v('firstVisitWitchShop') === true;
+			return sv().firstVisitWitchShop === true;
 		},
 		canAffordContract: function () {
-			return mc().money >= 35;
+			return setup.Mc.money() >= 35;
 		},
 		hasActiveContract: function () {
 			return setup.Ghosts.hasContract();
@@ -37,37 +61,62 @@ setup.Witch = (function () {
 
 		// --- Exorcism referral -----------------------------------
 		hasSuccubusEncounter: function () {
-			return v('succubus') !== undefined;
+			return sv().succubus !== undefined;
 		},
 		exorcismQuestNotStarted: function () {
-			var s = v('exorcismQuestStage');
+			var s = sv().exorcismQuestStage;
 			return s === undefined || s === 0;
 		},
 
 		// --- Missing-girls / rescue quest ------------------------
 		canOfferRescueQuest: function () {
-			return v('hasQuestForRescue') === undefined;
+			return sv().hasQuestForRescue === undefined;
 		},
 		rescueQuestUnlocked: function () {
-			return mc().lvl >= 4;
+			return setup.Mc.lvl() >= 4;
 		},
 
 		// --- Cursed-object side quest ----------------------------
 		canOfferCursedItemQuest: function () {
-			return mc().lvl >= 2 && v('gotCursedItem') === undefined;
+			return setup.Mc.lvl() >= 2 && sv().gotCursedItem === undefined;
+		},
+		cursedItemQuestStarted: function () {
+			return sv().gotCursedItem !== undefined;
 		},
 		cursedItemQuestActive: function () {
-			return v('gotCursedItem') === 0;
+			return sv().gotCursedItem === 0;
 		},
 		hasCursedItemToTurnIn: function () {
-			return v('gotCursedItem') === 1;
+			return sv().gotCursedItem === 1;
+		},
+		clearCursedItemHeld: function () { sv().gotCursedItem = 0; },
+		setCursedItemHeld:   function () { sv().gotCursedItem = 1; },
+		setCursedItemFlag: function (key) { sv()[key] = 1; },
+		/* Consume the cursed item the player is carrying. Clears whichever
+		   of the four type flags is set and the held flag, returning the
+		   name of the cleared type flag (or null if nothing was carried).
+		   Used by the MonkeyPaw front-door sacrifice. */
+		consumeCarriedCursedItem: function () {
+			var s = sv();
+			if (s.gotCursedItem !== 1) return null;
+			var TYPE_FLAGS = ['isCIDildo', 'isCIButtplug', 'isCIBeads', 'isCIHDildo'];
+			var cleared = null;
+			for (var i = 0; i < TYPE_FLAGS.length; i++) {
+				if (s[TYPE_FLAGS[i]] === 1) {
+					s[TYPE_FLAGS[i]] = 0;
+					cleared = TYPE_FLAGS[i];
+					break;
+				}
+			}
+			s.gotCursedItem = 0;
+			return cleared;
 		},
 		shouldAwardGwb3OnTurnIn: function () {
-			return v('equipment').gwb !== 3;
+			return setup.ToolController.tierOf('gwb') !== 3;
 		},
 		collectCursedItemReward: function () {
-			var s = State.variables;
-			s.mc.money += 30;
+			var s = sv();
+			setup.Mc.addMoney(30);
 			s.gotCursedItem = 0;
 			s.isCIDildo = 0;
 			s.isCIButtplug = 0;
@@ -76,16 +125,16 @@ setup.Witch = (function () {
 		},
 		unlockMonkeyPawWishes: function () {
 			setup.MonkeyPaw.purchaseGuide();
-			State.variables.mc.money -= 400;
+			setup.Mc.spendMoney(400);
 		},
 
 		// --- Level 3 tools referral ------------------------------
 		canAskAboutLevel3Tools: function () {
-			var s = v('eventToolsOneStart');
+			var s = sv().eventToolsOneStart;
 			return s === undefined || s === 0;
 		},
 		ownsLevel3Gwb: function () {
-			return v('equipment').gwb === 3;
+			return setup.ToolController.tierOf('gwb') === 3;
 		},
 
 		// --- Monkey paw guide ------------------------------------
@@ -95,39 +144,40 @@ setup.Witch = (function () {
 
 		// --- Warden/Ironclad hint --------------------------------
 		canAskAboutIronclad: function () {
-			var s = v('wardenClothesStage');
+			var s = sv().wardenClothesStage;
 			return s === 0 || s === 1;
 		},
 
 		// --- Weaken-the-ghost quest ------------------------------
 		canOfferWeakenQuest: function () {
-			return mc().lvl >= 5 && v('weakenTheGhostQuest') === undefined;
+			return setup.Mc.lvl() >= 5 && sv().weakenTheGhostQuest === undefined;
 		},
 
 		// --- Night exploration -----------------------------------
 		canStealItemsFromWitch: function () {
-			var cd = v('stealItemsFromWitchCD');
+			var cd = sv().stealItemsFromWitchCD;
 			return cd === undefined || cd === 0;
 		},
 		canVisitWitchBedroomNight: function () {
-			return v('witchNightCD') !== 1;
+			return sv().witchNightCD !== 1;
 		},
 
 		// --- Mast (masturbation) event ---------------------------
 		canStealKeyFromWitch: function () {
-			return !this.hasStolenKey() && mc().corruption >= 3;
+			return !this.hasStolenKey() && setup.Mc.corruption() >= 3;
 		},
 
 		// --- Mutations previously inline in witch passages -------
-		startWitchNightCooldown: function () { State.variables.witchNightCD = 1; },
-		startStealItemsCooldown: function () { State.variables.stealItemsFromWitchCD = 1; },
-		markKeyFromWitchStolen:  function () { State.variables.gotKeyFromWitch = 1; },
-		markShopVisited:         function () { State.variables.firstVisitWitchShop = false; },
-		initCrucifixIfNeeded:    function () {
-			if (v('crucifixAmount') === undefined) { State.variables.crucifixAmount = 0; }
-		},
-		crucifixAmount:          function () { return v('crucifixAmount'); },
-		addCrucifix:             function () { State.variables.crucifixAmount += 1; },
+		startWitchNightCooldown: function () { sv().witchNightCD = 1; },
+		startStealItemsCooldown: function () { sv().stealItemsFromWitchCD = 1; },
+		markKeyFromWitchStolen:  function () { sv().gotKeyFromWitch = 1; },
+		markShopVisited:         function () { sv().firstVisitWitchShop = false; },
+
+		// --- Crucifix (delegates to ToolController; the witch is the
+		// only seller, so the buy/init APIs live here as façades) ----
+		initCrucifixIfNeeded: function () { setup.ToolController.initCrucifixIfNeeded(); },
+		crucifixAmount:       function () { return setup.ToolController.crucifixAmount(); },
+		addCrucifix:          function () { setup.ToolController.addCrucifix(); },
 
 		// --- Witch sale (tool upgrades) --------------------------
 		TOOL_UPGRADE_PRICES: {
@@ -135,95 +185,78 @@ setup.Witch = (function () {
 			gwb: 400, glass: 300, uvl: 400
 		},
 		toolLevel: function (tool) {
-			var eq = v('equipment');
-			return eq ? eq[tool] : undefined;
+			return setup.ToolController.tierOf(tool);
 		},
 		upgradeTool: function (tool) {
 			var price = this.TOOL_UPGRADE_PRICES[tool];
-			State.variables.equipment[tool] = 4;
-			mc().money -= price;
+			setup.ToolController.setTier(tool, 4);
+			setup.Mc.spendMoney(price);
 		},
 		buyDetector: function () {
-			State.variables.boughtDetector = 1;
-			mc().money -= 200;
+			setup.ToolController.buyDetector();
+			setup.Mc.spendMoney(200);
 		},
-		detectorBought: function () { return v('boughtDetector') !== undefined; },
+		detectorBought: function () { return setup.ToolController.detectorBought(); },
 		monkeyPawGuideAvailable: function () {
-			return v('boughtMonkeyPawGuide') === 1;
+			return sv().boughtMonkeyPawGuide === 1;
 		},
 
 		// --- Bedroom / night events ------------------------------
 		witchLateNightHour: function () {
-			return (v('hours') || 0) <= 5;
+			return (setup.Time.hours() || 0) <= 5;
 		},
 
 		// --- Weaken / contract bookkeeping -----------------------
 		markWeakenQuestStarted: function () {
-			State.variables.weakenTheGhostQuest = 1;
+			sv().weakenTheGhostQuest = 1;
 		},
 		markMonkeyPawGuideBought: function () {
-			State.variables.boughtMonkeyPawGuide = 1;
+			sv().boughtMonkeyPawGuide = 1;
 		},
 		markWardenOutfitHintOpened: function () {
-			State.variables.wardenClothesStage = 1;
+			sv().wardenClothesStage = 1;
 		},
 		resetExorcismQuestStage: function () {
-			State.variables.exorcismQuestStage = 0;
+			sv().exorcismQuestStage = 0;
 		},
 		clearQuestForRescue: function () {
-			State.variables.hasQuestForRescue = 0;
+			sv().hasQuestForRescue = 0;
 		},
 		startCursedItemQuest: function () {
-			State.variables.gotCursedItem = 0;
+			sv().gotCursedItem = 0;
 		},
 		restartToolEvent: function () {
-			State.variables.eventToolsOneStart = 0;
+			sv().eventToolsOneStart = 0;
 		},
 		upgradeGwbToLvl3: function () {
-			State.variables.equipment.gwb = 3;
+			setup.ToolController.setTier('gwb', 3);
 		},
 
 		// --- Contract settlement ---------------------------------
 		payForContract: function () {
-			var s = State.variables;
-			s.mc.money += (s.moneyFromContract || 0) + (s.moneyFromWeakenTheGhost || 0);
+			var s = sv();
+			setup.Mc.addMoney((s.moneyFromContract || 0) + (s.moneyFromWeakenTheGhost || 0));
 		},
 		payForWeakenOnly: function () {
-			var s = State.variables;
-			s.mc.money += 0 + (s.moneyFromWeakenTheGhost || 0);
+			setup.Mc.addMoney(sv().moneyFromWeakenTheGhost || 0);
 		},
 		clearHiddenEvidence: function () {
-			var s = State.variables;
-			delete s.hiddenEvidence;
-			delete s.hiddenEvidence1;
-			delete s.hiddenEvidence2;
-			delete s.deleteSecondEvidence;
-			delete s.deleteThirdEvidence;
-			delete s.deleteOneEvidence;
+			setup.Ghosts.clearHiddenEvidence();
 		},
-		selectedGhostType: function () { return v('ghostTypeSelected'); },
-		huntRealName: function () {
-			var h = v('hunt');
-			return h && h.realName;
-		},
-		expFromContract: function () { return v('expFromContract'); },
+		selectedGhostType: function () { return sv().ghostTypeSelected; },
+		huntRealName: function () { return setup.Ghosts.huntRealName(); },
+		expFromContract: function () { return sv().expFromContract; },
 
 		// --- Tentacles event (anti-midnight wraparound) ----------
 		spend2HoursHandleMidnight: function () {
-			var s = State.variables;
-			s.hours += 2;
-			if (s.hours >= 24) {
-				s.hours -= 24;
-				return true;
-			}
-			return false;
+			return setup.Time.sleepAdvanceHours(2);
 		},
 		hasWeakenTheGhostQuest: function () {
-			return State.variables.weakenTheGhostQuest === 1;
+			return sv().weakenTheGhostQuest === 1;
 		},
 		isGhostWeakened: function () {
-			return State.variables.isWeakenGhost === 1;
+			return sv().isWeakenGhost === 1;
 		},
-		markGhostWeakened: function () { State.variables.isWeakenGhost = 1; }
+		markGhostWeakened: function () { sv().isWeakenGhost = 1; }
 	};
 })();

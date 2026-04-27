@@ -5,73 +5,82 @@
  * underlying $variables directly, so the conditions live in one place.
  */
 setup.Gym = (function () {
-	function v(name) { return State.variables[name]; }
-	function mc() { return State.variables.mc; }
+	/* Variables owned by this controller. Other controllers should
+	   query these only through the API methods below. */
+	var OWNED_VARS = Object.freeze([
+		'trainer1TipReceived', 'trainer1SexCD', 'trainer1CoachingCost',
+		'isDiscountTrainer1', 'trainer2SexCD', 'trainer3CoachingCost',
+		'relationEmily', 'relationEmilyCD',
+		'sportswear', 'trainingCost'
+	]);
+
+	function sv() { return State.variables; }
 
 	var TRAIN_COST = 5;
 	var DEFAULT_TRAINING_PRICE = 15;
 
 	return {
+		OWNED_VARS: OWNED_VARS,
 		// --- Hours / open state --------------------------------
 		isOpen: function () {
-			var h = v('hours');
+			var h = setup.Time.hours();
 			return h > 7 && h < 22;
 		},
 		isMorning: function () {
-			var h = v('hours');
+			var h = setup.Time.hours();
 			return h >= 8 && h < 12;
 		},
 		isAfternoon: function () {
-			var h = v('hours');
+			var h = setup.Time.hours();
 			return h >= 12 && h < 17;
 		},
 		isEvening: function () {
-			var h = v('hours');
+			var h = setup.Time.hours();
 			return h >= 17 && h < 23;
 		},
 		isGroupClassTime: function () {
-			var h = v('hours');
+			var h = setup.Time.hours();
 			return h >= 12 && h <= 13;
 		},
 
 		// --- Solo video buckets (keyed slightly differently) --
 		soloSlotMorning: function () {
-			var h = v('hours');
+			var h = setup.Time.hours();
 			return h >= 8 && h < 13;
 		},
 		soloSlotAfternoon: function () {
-			var h = v('hours');
+			var h = setup.Time.hours();
 			return h >= 13 && h < 18;
 		},
 		soloSlotEvening: function () {
-			var h = v('hours');
+			var h = setup.Time.hours();
 			return h >= 18 && h < 23;
 		},
 
 		// --- Training cost (depends on time + discounts) -----
 		computeTrainingCost: function () {
-			var h = v('hours');
+			var h = setup.Time.hours();
 			if (h >= 8 && h < 12) {
-				return v('trainer1CoachingCost') === undefined ? DEFAULT_TRAINING_PRICE : 0;
+				return sv().trainer1CoachingCost === undefined ? DEFAULT_TRAINING_PRICE : 0;
 			}
 			if (h >= 12 && h < 17) {
 				return DEFAULT_TRAINING_PRICE;
 			}
 			if (h >= 17 && h < 23) {
-				return v('trainer3CoachingCost') === undefined ? DEFAULT_TRAINING_PRICE : 0;
+				return sv().trainer3CoachingCost === undefined ? DEFAULT_TRAINING_PRICE : 0;
 			}
 			return DEFAULT_TRAINING_PRICE;
 		},
 
 		// --- Player capability checks ------------------------
 		hasSportswear: function () {
-			return v('sportswear') !== undefined;
+			return sv().sportswear !== undefined;
 		},
 		hasEnergyToTrain: function () {
-			return mc().energy >= TRAIN_COST;
+			return setup.Mc.energy() >= TRAIN_COST;
 		},
 		canAffordCoach: function () {
-			return mc().money >= v('trainingCost');
+			return setup.Mc.money() >= sv().trainingCost;
 		},
 		canTrainSolo: function () {
 			return this.hasSportswear() && this.hasEnergyToTrain();
@@ -82,50 +91,50 @@ setup.Gym = (function () {
 
 		// --- Trainer 1 (morning) event conditions -----------
 		trainer1OnCooldown: function () {
-			return v('trainer1SexCD') === 1;
+			return sv().trainer1SexCD === 1;
 		},
 		hasSexyLingerieForTrainer1: function () {
-			var bs = v('rememberBottomStockings');
-			var tu = v('rememberTopUnder');
-			var bu = v('rememberBottomUnder');
+			var bs = sv().rememberBottomStockings;
+			var tu = sv().rememberTopUnder;
+			var bu = sv().rememberBottomUnder;
 			return (bs === 'stockings2' || bs === 'stockings3') &&
 				(tu === 'bra2' || tu === 'bra3') &&
 				(bu === 'panties2' || bu === 'panties3');
 		},
 		canTriggerTrainer1Event: function () {
-			return v('trainer1TipReceived') === 1 &&
+			return sv().trainer1TipReceived === 1 &&
 				!this.trainer1OnCooldown() &&
 				this.hasSexyLingerieForTrainer1();
 		},
 		trainer1GaveTip: function () {
-			return v('trainer1TipReceived') === 1;
+			return sv().trainer1TipReceived === 1;
 		},
 
 		// --- Trainer 2 (afternoon) event conditions ---------
 		trainer2OnCooldown: function () {
-			return v('trainer2SexCD') === 1;
+			return sv().trainer2SexCD === 1;
 		},
 		meetsFitForTrainer2Event: function () {
-			return mc().fit >= 30;
+			return setup.Mc.fit() >= 30;
 		},
 
 		// --- Group class -----------------------------------
 		meetsBeautyForGroupEvent: function () {
-			return mc().beauty >= 50;
+			return setup.Mc.beauty() >= 50;
 		},
 		canJoinGroupOrgy: function () {
-			return mc().lust >= 50;
+			return setup.Mc.lust() >= 50;
 		},
 
 		// --- Emily ----------------------------------------
 		hasMetEmily: function () {
-			return v('relationEmily') !== undefined;
+			return sv().relationEmily !== undefined;
 		},
 		emilyRelationshipStage: function () {
-			return v('relationEmily') || 0;
+			return sv().relationEmily || 0;
 		},
 		emilyOnCooldown: function () {
-			return v('relationEmilyCD') === 1;
+			return sv().relationEmilyCD === 1;
 		},
 		startEmilyCooldown: function () {
 			State.variables.relationEmilyCD = 1;
@@ -135,21 +144,20 @@ setup.Gym = (function () {
 			State.variables.relationEmily = 1;
 		},
 		raiseEmilyRelationship: function () {
-			var key = 'relationEmily';
-			if ((v(key) || 0) < 10) {
-				State.variables[key] = (v(key) || 0) + 1;
+			if ((sv().relationEmily || 0) < 10) {
+				State.variables.relationEmily = (sv().relationEmily || 0) + 1;
 				return true;
 			}
 			return false;
 		},
 		trainer1Tipped: function () {
-			return v('trainer1TipReceived') === 1;
+			return sv().trainer1TipReceived === 1;
 		},
 		markTrainer1Tipped: function () {
 			State.variables.trainer1TipReceived = 1;
 		},
 		trainer1Discounted: function () {
-			return v('isDiscountTrainer1') !== undefined;
+			return sv().isDiscountTrainer1 !== undefined;
 		},
 		applyTrainer1Discount: function () {
 			State.variables.isDiscountTrainer1 = 1;
@@ -164,16 +172,15 @@ setup.Gym = (function () {
 		startTrainer2SexCooldown: function () {
 			State.variables.trainer2SexCD = 1;
 		},
-		trainingCost: function () { return v('trainingCost'); },
+		trainingCost: function () { return sv().trainingCost; },
 		setTrainingCost: function (value) { State.variables.trainingCost = value; },
 
 		// --- Core cost constant (used by GymTrainingTrainer) -----
 		payForCoach: function () {
-			var s = State.variables;
-			s.mc.money -= s.trainingCost;
+			setup.Mc.spendMoney(State.variables.trainingCost);
 		},
 		spendEnergyToTrain: function () {
-			mc().energy -= TRAIN_COST;
+			setup.Mc.spendEnergy(TRAIN_COST);
 		},
 
 		// --- Fitness gain (view-agnostic deltas for widgetGym) ---
@@ -181,53 +188,7 @@ setup.Gym = (function () {
 		// renders: how much beauty went up (or down), how much energyMax
 		// rose, and whether fitness hit the 100 cap.
 		applyFitnessGain: function (fitGain) {
-			var m = mc();
-			var previousFit = m.fit;
-			var previousBeauty = m.beauty;
-
-			m.fit += fitGain;
-
-			var beautyIncrease = Math.floor(m.fit / 5) - Math.floor(previousFit / 5);
-			if (beautyIncrease > 0) { m.beauty += beautyIncrease; }
-
-			if (!m.energyPoints) {
-				m.energyPoints = Math.floor(previousFit / 10);
-			}
-
-			var prevEp = m.energyPoints;
-			var curEp  = Math.floor(m.fit / 10);
-			var energyMaxDelta = 0;
-			if (curEp > prevEp) {
-				energyMaxDelta = curEp - prevEp;
-				m.energyMax    += energyMaxDelta;
-				m.energyPoints  = curEp;
-			}
-
-			// Crossing below fit 5 on a previously-elevated run drops beauty
-			// by 1 as the "you lost your tone" penalty.
-			if (previousFit >= 5 && (previousFit - 1) % 5 === 0 && m.fit < 5) {
-				m.beauty -= 1;
-			}
-
-			m.fit    = Math.max(0, Math.min(100, m.fit));
-			m.beauty = Math.max(0, m.beauty);
-
-			var hitEnergyCap = false;
-			if (m.fit === 100 && m.energyMax < 20) {
-				m.energyMax = 20;
-				energyMaxDelta += 20 - (curEp > prevEp ? curEp : prevEp);
-				hitEnergyCap = true;
-			}
-
-			return {
-				fit:              m.fit,
-				beauty:           m.beauty,
-				beautyIncrease:   beautyIncrease > 0 ? beautyIncrease : 0,
-				energyMaxDelta:   energyMaxDelta,
-				energyMax:        m.energyMax,
-				reachedFitCap:    m.fit === 100,
-				hitEnergyCap:     hitEnergyCap
-			};
+			return setup.Mc.applyFitnessDelta(fitGain);
 		}
 	};
 })();

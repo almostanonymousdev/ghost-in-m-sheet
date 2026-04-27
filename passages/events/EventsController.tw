@@ -5,9 +5,16 @@
  * underlying $variables directly, so the conditions live in one place.
  */
 setup.Events = (function () {
-	function v(name) { return State.variables[name]; }
-	function mc() { return State.variables.mc; }
-	function companion() { return State.variables.companion; }
+	function sv() { return State.variables; }
+
+	/* Variables owned by this controller. Other controllers should
+	   query these only through the API methods below. */
+	var OWNED_VARS = Object.freeze([
+		'argForRandomizer', 'videoEvent', 'artImgEvent', 'artVideoEvent',
+		'ghostSanityEventDecreased', 'decreasingSanity', 'cleanedUp',
+		'chanceToAttractFailed',
+		'sanityIfHot', 'sanityInTheDark'
+	]);
 
 	function between(val, lo, hi) {
 		return val >= lo && val < hi;
@@ -122,18 +129,19 @@ setup.Events = (function () {
 	};
 
 	return {
+		OWNED_VARS: OWNED_VARS,
 		// --- Companion state -------------------------------------
 		hasCompanionOnPlan1: function () {
-			return v('isCompChosen') === 1 && v('chosenPlan') === 'Plan1';
+			return sv().isCompChosen === 1 && sv().chosenPlan === 'Plan1';
 		},
 		companionIsAroused: function () {
-			return companion().lust >= 60;
+			return setup.Companion.lust() >= 60;
 		},
 		companionIs: function (name) {
-			return companion().name === name;
+			return setup.Companion.name() === name;
 		},
 		companionIsInlineFriend: function () {
-			var n = companion().name;
+			var n = setup.Companion.name();
 			return n === 'Alex' || n === 'Taylor' || n === 'Casey';
 		},
 
@@ -147,7 +155,7 @@ setup.Events = (function () {
 
 		// --- Lust tiers ------------------------------------------
 		lustTier: function () {
-			var l = mc().lust;
+			var l = setup.Mc.lust();
 			if (l >= 90) return 7;
 			if (l >= 75) return 6;
 			if (l >= 60) return 5;
@@ -159,7 +167,7 @@ setup.Events = (function () {
 
 		// --- Corruption tiers ------------------------------------
 		corruptionTier: function () {
-			var c = mc().corruption;
+			var c = setup.Mc.corruption();
 			if (c >= 8) return 8;
 			if (c >= 6) return 6;
 			if (c >= 4) return 4;
@@ -171,7 +179,7 @@ setup.Events = (function () {
 
 		// --- Sanity tiers ----------------------------------------
 		sanityTierArt: function () {
-			var s = mc().sanity;
+			var s = setup.Mc.sanity();
 			if (s >= 90) return 1;
 			if (s >= 80) return 2;
 			if (s >= 70) return 3;
@@ -180,7 +188,7 @@ setup.Events = (function () {
 			return 0;
 		},
 		sanityTierSaveEvent: function () {
-			var s = mc().sanity;
+			var s = setup.Mc.sanity();
 			if (s >= 75) return 1;
 			if (s >= 50) return 2;
 			if (s >= 30) return 3;
@@ -190,7 +198,7 @@ setup.Events = (function () {
 
 		// --- MC energy / escape ----------------------------------
 		hasEnergyToRunAway: function () {
-			return mc().energy >= 1;
+			return setup.Mc.energy() >= 1;
 		},
 
 		// --- Event randomizer helpers ----------------------------
@@ -199,7 +207,7 @@ setup.Events = (function () {
 		* Set up common event state ($argForRandomizer, _eventTriggered).
 		*/
 		initEvent: function (eventKey) {
-			State.variables.argForRandomizer = eventKey;
+			sv().argForRandomizer = eventKey;
 			State.temporary.eventTriggered   = true;
 		},
 
@@ -222,8 +230,8 @@ setup.Events = (function () {
 		* Pick from an { owaissa, elm } pair based on location.
 		*/
 		pickByLocation: function (owaissaList, elmList) {
-			if (v('isOwaissa') === 1) return owaissaList || [];
-			if (v('isElm') === 1)     return elmList || [];
+			if (setup.HauntedHouses.isOwaissa()) return owaissaList || [];
+			if (setup.HauntedHouses.isElm())     return elmList || [];
 			return [];
 		},
 
@@ -232,28 +240,28 @@ setup.Events = (function () {
 		* and return the matching video list.
 		*/
 		bottomClothingVideos: function (eventKey) {
-			if (v('isIronclad') === 1) return this.getVideos(eventKey, 'prison');
-			var js = v('jeansState'),  sh = v('shortsState');
-			var sk = v('skirtState'),  pn = v('pantiesState');
+			if (setup.HauntedHouses.isIronclad()) return this.getVideos(eventKey, 'prison');
+			var jw = setup.Wardrobe.jeansWorn();
+			var sw = setup.Wardrobe.shortsWorn();
+			var kw = setup.Wardrobe.skirtWorn();
+			var pw = setup.Wardrobe.pantiesWorn();
 			var ev = eventVideos[eventKey];
 
-			if (js === 'worn') {
-				if (ev.jeansNP && pn === 'not worn')
+			if (jw) {
+				if (ev.jeansNP && !pw)
 					return this.getVideos(eventKey, 'jeansNP');
 				return this.getVideos(eventKey, 'jeans');
 			}
-			if (sh === 'worn')
+			if (sw)
 				return this.getVideos(eventKey, 'shorts');
-			if (sk === 'worn') {
-				if (pn !== 'worn' && ev.skirtNP)
+			if (kw) {
+				if (!pw && ev.skirtNP)
 					return this.getVideos(eventKey, 'skirtNP');
 				return this.getVideos(eventKey, 'skirt');
 			}
-			if (js === 'not worn') {
-				if (pn === 'worn')     return this.getVideos(eventKey, 'panties');
-				if (pn === 'not worn') return this.getVideos(eventKey, 'naked');
-			}
-			return [];
+			// No outerwear → underwear / naked branch
+			if (pw) return this.getVideos(eventKey, 'panties');
+			return this.getVideos(eventKey, 'naked');
 		},
 
 		/*
@@ -261,19 +269,18 @@ setup.Events = (function () {
 		* and return the matching video list.
 		*/
 		topClothingVideos: function (eventKey) {
-			if (v('isIronclad') === 1) return this.getVideos(eventKey, 'prison');
-			var ts = v('tshirtState'), br = v('braState');
+			if (setup.HauntedHouses.isIronclad()) return this.getVideos(eventKey, 'prison');
+			var ts = setup.Wardrobe.topShirtWorn();
+			var br = setup.Wardrobe.braWorn();
 			var ev = eventVideos[eventKey];
 
-			if (ts === 'worn') {
-				if (ev.tshirtNB && br === 'not worn')
+			if (ts) {
+				if (ev.tshirtNB && !br)
 					return this.getVideos(eventKey, 'tshirtNB');
 				return this.getVideos(eventKey, 'tshirt');
 			}
-			if (ts === 'not worn') {
-				if (br === 'worn' && ev.bra) return this.getVideos(eventKey, 'bra');
-				if (ev.noBra)                return this.getVideos(eventKey, 'noBra');
-			}
+			if (br && ev.bra) return this.getVideos(eventKey, 'bra');
+			if (ev.noBra)     return this.getVideos(eventKey, 'noBra');
 			return [];
 		},
 
@@ -296,7 +303,7 @@ setup.Events = (function () {
 		* Return the Banshee-ability video list (location-aware).
 		*/
 		bansheeVideos: function () {
-			if (v('isIronclad') === 1)
+			if (setup.HauntedHouses.isIronclad())
 				return ["scenes/prison/banshee1.mp4", "scenes/prison/banshee2.mp4"];
 			return ["characters/ghosts/banshee/1.mp4", "characters/ghosts/banshee/2.mp4", "characters/ghosts/banshee/3.mp4",
 					"characters/ghosts/banshee/4.mp4", "characters/ghosts/banshee/5.mp4", "characters/ghosts/banshee/6.mp4",
@@ -311,7 +318,7 @@ setup.Events = (function () {
 		* mouth, pussy, or anal.
 		*/
 		shouldOrgasm: function (bodyPart) {
-			if (mc().lust < 100) return false;
+			if (setup.Mc.lust() < 100) return false;
 			return bodyPart === 'mouth' || bodyPart === 'pussy' || bodyPart === 'anal';
 		},
 
@@ -355,80 +362,76 @@ setup.Events = (function () {
 		},
 
 		// --- Ghost special-ability flags (Banshee / Cthulion) ----
-		enableBanshee:    function () { State.variables.bansheeAbility = 1; },
-		enableCthulion:   function () { State.variables.cthulionAbility = 1; },
-		clearBanshee:     function () { delete State.variables.bansheeAbility; },
-		clearCthulion:    function () { delete State.variables.cthulionAbility; },
-		bansheeActive:    function () { return v('bansheeAbility') === 1; },
-		cthulionActive:   function () { return v('cthulionAbility') === 1; },
+		enableBanshee:    function () { sv().bansheeAbility = 1; },
+		enableCthulion:   function () { sv().cthulionAbility = 1; },
+		clearBanshee:     function () { delete sv().bansheeAbility; },
+		clearCthulion:    function () { delete sv().cthulionAbility; },
+		bansheeActive:    function () { return sv().bansheeAbility === 1; },
+		cthulionActive:   function () { return sv().cthulionAbility === 1; },
 
 		// --- Argument randomizer (body-part key) -----------------
-		currentArgForRandomizer: function () { return v('argForRandomizer'); },
+		currentArgForRandomizer: function () { return sv().argForRandomizer; },
 
 		// --- Event video selection -------------------------------
-		setVideoEvent:    function (video) { State.variables.videoEvent = video; },
-		videoEvent:       function () { return v('videoEvent'); },
+		setVideoEvent:    function (video) { sv().videoEvent = video; },
+		videoEvent:       function () { return sv().videoEvent; },
 		videoEventIsMp4:  function () {
-			var ve = v('videoEvent');
+			var ve = sv().videoEvent;
 			return typeof ve === 'string' && ve.indexOf('.mp4') !== -1;
 		},
 
 		// --- Art event video / image selection -------------------
-		setArtImgEvent:   function (img)   { State.variables.artImgEvent = img; },
-		setArtVideoEvent: function (video) { State.variables.artVideoEvent = video; },
-		artImgEvent:      function () { return v('artImgEvent'); },
-		artVideoEvent:    function () { return v('artVideoEvent'); },
+		setArtImgEvent:   function (img)   { sv().artImgEvent = img; },
+		setArtVideoEvent: function (video) { sv().artVideoEvent = video; },
+		artImgEvent:      function () { return sv().artImgEvent; },
+		artVideoEvent:    function () { return sv().artVideoEvent; },
 
 		// --- Ghost sanity-event decreased amount -----------------
 		rollGhostSanityEventDecreased: function () {
 			var g = setup.Ghosts.active();
-			State.variables.ghostSanityEventDecreased = g ? g.rollEventSanityLoss() : 0;
+			sv().ghostSanityEventDecreased = g ? g.rollEventSanityLoss() : 0;
 		},
-		ghostSanityEventDecreased: function () { return v('ghostSanityEventDecreased'); },
+		ghostSanityEventDecreased: function () { return sv().ghostSanityEventDecreased; },
 
 		// --- Decreasing-sanity stage table -----------------------
-		setDecreasingSanity: function (obj) { State.variables.decreasingSanity = obj; },
-		decreasingSanity:    function () { return v('decreasingSanity'); },
+		setDecreasingSanity: function (obj) { sv().decreasingSanity = obj; },
+		decreasingSanity:    function () { return sv().decreasingSanity; },
 
 		// --- Clothing-state convenience --------------------------
-		jeansWorn:   function () { return v('jeansState') === 'worn'; },
-		shortsWorn:  function () { return v('shortsState') === 'worn'; },
-		skirtWorn:   function () { return v('skirtState') === 'worn'; },
-		pantiesWorn: function () { return v('pantiesState') === 'worn'; },
+		jeansWorn:   function () { return setup.Wardrobe.jeansWorn(); },
+		shortsWorn:  function () { return setup.Wardrobe.shortsWorn(); },
+		skirtWorn:   function () { return setup.Wardrobe.skirtWorn(); },
+		pantiesWorn: function () { return setup.Wardrobe.pantiesWorn(); },
 
 		// --- Orgasm cooldown flag --------------------------------
-		setOrgasmCooldown: function (n) { State.variables.orgasmCooldownSteps = n; },
+		setOrgasmCooldown: function (n) { setup.Mc.setOrgasmCooldown(n); },
 
 		// --- Companion lust/sanity mutators (used by eventWidget) ---
 		companionDrainForHelp: function () {
-			var c = companion();
-			if (!c) return;
-			c.sanity -= 3;
-			c.lust   += 10;
+			setup.Companion.drainSanity(3);
+			setup.Companion.addLust(10);
 		},
 
 		// --- Minigame state (SeduceGhost) ------------------------
-		minigameVideo:       function () { return v('minigameVideo'); },
-		minigameEventFailed: function () { return v('minigameEventFailed'); },
-		clearMinigameEventFailed: function () { delete State.variables.minigameEventFailed; },
-		ghostOrgasmMeter:    function () { return v('ghostOrgasmMeter'); },
-		mcOrgasmMeter:       function () { return v('mcOrgasmMeter'); },
-		clampGhostOrgasmFloor: function () {
-			if ((v('ghostOrgasmMeter') || 0) <= 0) { State.variables.ghostOrgasmMeter = 0; }
-		},
+		minigameVideo:       function () { return setup.SeduceGhostMinigame.minigameVideo(); },
+		minigameEventFailed: function () { return setup.SeduceGhostMinigame.minigameEventFailed(); },
+		clearMinigameEventFailed: function () { setup.SeduceGhostMinigame.clearMinigameEventFailed(); },
+		ghostOrgasmMeter:    function () { return setup.SeduceGhostMinigame.ghostOrgasmMeter(); },
+		mcOrgasmMeter:       function () { return setup.Mc.orgasmMeter(); },
+		clampGhostOrgasmFloor: function () { setup.SeduceGhostMinigame.clampGhostOrgasmFloor(); },
 		clampMcOrgasmFloor: function () {
-			if ((v('mcOrgasmMeter') || 0) <= 0) { State.variables.mcOrgasmMeter = 0; }
+			if ((setup.Mc.orgasmMeter() || 0) <= 0) setup.Mc.setOrgasmMeter(0);
 		},
-		chanceToAttractFailedFlag: function () { return v('chanceToAttractFailed'); },
+		chanceToAttractFailedFlag: function () { return sv().chanceToAttractFailed; },
 
 		// --- Weaken-ghost minigame reward ------------------------
 		recordWeakenReward: function () {
-			State.variables.isWeakenGhost = 1;
-			State.variables.moneyFromWeakenTheGhost = 30;
+			sv().isWeakenGhost = 1;
+			sv().moneyFromWeakenTheGhost = 30;
 		},
 
 		// --- Room cleanup flag -----------------------------------
-		setCleanedUp: function (v) { State.variables.cleanedUp = !!v; },
+		setCleanedUp: function (val) { sv().cleanedUp = !!val; },
 
 		rollBodyPartEvent: function (chance) {
 			var tier      = this.lustTier();
@@ -436,7 +439,7 @@ setup.Events = (function () {
 			if (chance > threshold) return '';
 
 			var parts      = bodyPartKeys.slice(0, tier);
-			var bp         = State.variables.sensualBodyPart;
+			var bp         = setup.Intro.currentSensualBodyPart();
 			var weights    = [];
 			var totalWeight = 0;
 

@@ -13,6 +13,34 @@
  * so mass rewrites can pick whichever fits best.
  */
 setup.Mc = (function () {
+	/* Variables owned by this controller. Other controllers should
+	   query/mutate these only through the API methods below. */
+	var OWNED_VARS = Object.freeze([
+		'mc',
+		'isPenaltyOn',
+		'mcpossession',
+		'mcOrgasmMeter',
+		'orgasmCooldownSteps',
+		'percentageOfLevel',
+		'neededForNextLevel',
+		'tempCorr',
+		'earnedMoney',
+		'energyDrinkAmount',
+		'makeupAmount',
+		'makeupApplied',
+		'medicineAmount',
+		'sanityPillsAmount',
+		'sensualBodyPart',
+		'sanityCollapse',
+		'exhausted',
+		'piercingTitsAddSens',
+		'piercingPussyAddSens',
+		'piercingTongueAddSens',
+		'addLustPiercingTits',
+		'addLustPiercingPussy',
+		'addLustPiercingTongue'
+	]);
+
 	function sv()  { return State.variables; }
 	function mc()  { return State.variables.mc; }
 
@@ -21,6 +49,7 @@ setup.Mc = (function () {
 	function add(field, delta) { mc()[field] += delta; }
 
 	var api = {
+		OWNED_VARS: OWNED_VARS,
 		mc: mc,
 
 		get: get,
@@ -115,6 +144,7 @@ setup.Mc = (function () {
 		// --- Earned-money accumulator ---------------------------
 		earnedMoney:     function () { return sv().earnedMoney; },
 		addEarnedMoney:  function (n) { sv().earnedMoney += n; },
+		setEarnedMoney:  function (v) { sv().earnedMoney = v; },
 		earn: function (n) {
 			mc().money += n;
 			sv().earnedMoney += n;

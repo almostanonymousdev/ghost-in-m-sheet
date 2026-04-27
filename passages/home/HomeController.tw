@@ -2,30 +2,57 @@
 /*
  * Centralized state queries and mutations for the home / indoor
  * locations (bedroom, livingroom, bathroom, etc.).
- * Passages should call into setup.Home instead of testing the
- * underlying $variables directly, so the conditions live in one place.
+ *
+ * Cross-controller access: Home only mutates home-owned vars
+ * (succubus / mare / tentacles / webcam / brooke-possession / makeup-flag
+ * banners) directly. Player stats go through setup.Mc; the clock goes
+ * through setup.Time; clothing is read through setup.Wardrobe; the
+ * cursed-item witch quest reads through setup.Witch.
  */
 setup.Home = (function () {
-	function v(name) { return State.variables[name]; }
-	function mc() { return State.variables.mc; }
+	/* Variables owned by this controller. Other controllers should
+	   query/mutate these only through the API methods below. */
+	var OWNED_VARS = Object.freeze([
+		'isBrookePossessed', 'isBrookePossessedCD',
+		'succubusEventCD', 'succubusPCEventStage',
+		'succubusChoiceEventText', 'succubusTVText', 'summonText',
+		'succubusEventTimer', 'summoningChoice',
+		'tentaclesEventStageAll', 'tentaclesEventStageSleep',
+		'tentaclesEventPCText', 'tentaclesTextAfterSleep',
+		'tentaclesEventTVText',
+		'gotCursedItemEventCD',
+		'exorcismCD',
+		'webcamEvent', 'webcamShowCD', 'webcamAccountCreated',
+		'webcamVideo',
+		'prefsmoney', 'prefssubscribers', 'prefsshowCount',
+		'dildoPurchased', 'isCameraBought',
+		'mcSleptWithCameraOn',
+		'masturbationCD',
+		'findGhostInfoCD',
+		'holyWaterIsCollected'
+	]);
+
+	function sv() { return State.variables; }
 
 	return {
+		OWNED_VARS: OWNED_VARS,
 		// --- Outside / clothing gating ----------------------
 		isDressedForStreet: function () {
-			var top = v('tshirtState') !== 'not worn';
-			var bot = v('jeansState') !== 'not worn' ||
-				(v('shortsState') !== 'not worn' && v('shortsState') !== 'not bought') ||
-				(v('skirtState') !== 'not worn' && v('skirtState') !== 'not bought');
+			var s = sv();
+			var top = s.tshirtState !== 'not worn';
+			var bot = s.jeansState !== 'not worn' ||
+				(s.shortsState !== 'not worn' && s.shortsState !== 'not bought') ||
+				(s.skirtState !== 'not worn' && s.skirtState !== 'not bought');
 			return top && bot;
 		},
 		isWearingUnderwear: function () {
-			return v('braState') !== 'not worn' && v('pantiesState') !== 'not worn';
+			return sv().braState !== 'not worn' && sv().pantiesState !== 'not worn';
 		},
 		isDirty: function () {
-			return mc().dirty === 1;
+			return setup.Mc.dirty() === 1;
 		},
 		isCorruptEnoughToSkipUnderwear: function () {
-			return mc().corruption >= 10;
+			return setup.Mc.corruption() >= 10;
 		},
 		canLeaveHome: function () {
 			if (!this.isDressedForStreet()) { return false; }
@@ -44,7 +71,7 @@ setup.Home = (function () {
 
 		// --- Ghost hunting eligibility ----------------------
 		isNightForHunt: function () {
-			return v('hours') >= 23;
+			return setup.Time.hours() >= 23;
 		},
 		hasHuntContract: function () {
 			return setup.Ghosts.hasContract();
@@ -58,61 +85,68 @@ setup.Home = (function () {
 
 		// --- Brooke -----------------------------------------
 		isBrookePossessed: function () {
-			return v('isBrookePossessed') === 1;
+			return sv().isBrookePossessed === 1;
+		},
+		brookePossessedCDLow: function () {
+			return sv().isBrookePossessedCD <= 2;
+		},
+		clearBrookePossession: function () {
+			sv().isBrookePossessed = 0;
+			sv().isBrookePossessedCD = 0;
 		},
 
 		// --- Succubus / door knocking -----------------------
 		succubusCanKnock: function () {
-			var h = v('hours');
-			return h >= 18 && h <= 20 && mc().corruption >= 6 && v('succubus') === undefined;
+			var h = setup.Time.hours();
+			return h >= 18 && h <= 20 && setup.Mc.corruption() >= 6 && sv().succubus === undefined;
 		},
 		succubusTVEventReady: function () {
-			var h = v('hours');
-			return v('succubus') === 1 && v('succubusEventCD') === 0 && h >= 18 && h <= 23;
+			var h = setup.Time.hours();
+			return sv().succubus === 1 && sv().succubusEventCD === 0 && h >= 18 && h <= 23;
 		},
 
 		// --- Sleep / nap ghost hooks ------------------------
 		spiritNapEventReady: function () {
-			return v('ghostSpiritEventStage') === 0 && v('ghostSpecialEventSpiritCD') === 0;
+			return sv().ghostSpiritEventStage === 0 && sv().ghostSpecialEventSpiritCD === 0;
 		},
 		tentaclesNapEventReady: function () {
-			return v('gotCursedItem') === 1 && v('gotCursedItemEventCD') >= 2;
+			return setup.Witch.hasCursedItemToTurnIn() && sv().gotCursedItemEventCD >= 2;
 		},
 		tentaclesTVEventReady: function () {
-			return v('gotCursedItem') === 1 && v('gotCursedItemEventCD') >= 3;
+			return setup.Witch.hasCursedItemToTurnIn() && sv().gotCursedItemEventCD >= 3;
 		},
 		tentaclesSleepEventReady: function () {
-			var h = v('hours');
-			return v('gotCursedItem') === 1 && v('gotCursedItemEventCD') >= 1 &&
+			var h = setup.Time.hours();
+			return setup.Witch.hasCursedItemToTurnIn() && sv().gotCursedItemEventCD >= 1 &&
 				h >= 18 && h <= 23;
 		},
 
 		// --- Mare / exorcism --------------------------------
 		canSummonForExorcism: function () {
-			var stage = v('exorcismQuestStage');
-			var cd = v('exorcismCD');
+			var stage = sv().exorcismQuestStage;
+			var cd = sv().exorcismCD;
 			if (stage === 1 && cd === 0) { return true; }
 			if (stage === 2 && cd === 0) { return true; }
 			return false;
 		},
 		exorcismOnCooldown: function () {
-			return v('exorcismQuestStage') === 1 && v('exorcismCD') === 1;
+			return sv().exorcismQuestStage === 1 && sv().exorcismCD === 1;
 		},
 		mareEventActive: function () {
-			return v('ghostMareEventStart') >= 1;
+			return sv().ghostMareEventStart >= 1;
 		},
-		mareEventStart: function () { return v('ghostMareEventStart'); },
-		setMareEventStart: function (n) { State.variables.ghostMareEventStart = n; },
+		mareEventStart: function () { return sv().ghostMareEventStart; },
+		setMareEventStart: function (n) { sv().ghostMareEventStart = n; },
 		mareStageIsLow: function () {
-			return v('ghostMareEventStage') <= 2;
+			return sv().ghostMareEventStage <= 2;
 		},
 		canUseHolyWaterOnMare: function () {
-			return v('holyWaterIsCollected') === 1 && this.mareEventActive();
+			return sv().holyWaterIsCollected === 1 && this.mareEventActive();
 		},
 		useHolyWaterOnMare: function () {
-			State.variables.ghostMareEventStart = 0;
-			State.variables.holyWaterIsCollected = 0;
-			State.variables.ghostMareEventStage = 0;
+			sv().ghostMareEventStart = 0;
+			sv().holyWaterIsCollected = 0;
+			sv().ghostMareEventStage = 0;
 		},
 		returningFromHuntDefeat: function () {
 			var p2 = previous(2);
@@ -131,79 +165,75 @@ setup.Home = (function () {
 				!this.returningFromHuntDefeat();
 		},
 		advanceMareStageOnWake: function () {
-			if (State.variables.ghostMareEventStart === 1) {
-				State.variables.ghostMareEventStart = 2;
+			if (sv().ghostMareEventStart === 1) {
+				sv().ghostMareEventStart = 2;
 			}
 			if (this.mareEventShouldEscalate()) {
-				State.variables.ghostMareEventStart = 4;
+				sv().ghostMareEventStart = 4;
 			}
 		},
 
 		// --- Wake-up consequences --------------------------
 		applySleepPenalty: function () {
-			var m = mc();
-			m.sanityMax = 70;
-			m.sanity = 40 + Math.floor(Math.random() * 31); // 40..70
-			m.energy = m.energyMax;
-			m.lust = 30 + Math.floor(Math.random() * 31);
+			setup.Mc.setSanityMax(70);
+			setup.Mc.setSanity(40 + Math.floor(Math.random() * 31)); // 40..70
+			setup.Mc.setEnergy(setup.Mc.energyMax());
+			setup.Mc.setLust(30 + Math.floor(Math.random() * 31));
 		},
 		applyAssaultDebuff: function () {
 			// Same ranges as the sleep penalty but does not restore energy --
 			// used by standalone assault events (e.g. ParkEvent2).
-			var m = mc();
-			m.sanityMax = 70;
-			m.sanity = 40 + Math.floor(Math.random() * 31);
-			m.lust = 30 + Math.floor(Math.random() * 31);
+			setup.Mc.setSanityMax(70);
+			setup.Mc.setSanity(40 + Math.floor(Math.random() * 31));
+			setup.Mc.setLust(30 + Math.floor(Math.random() * 31));
 		},
 		applyFullRest: function () {
-			var m = mc();
-			m.sanityMax = 100;
-			m.sanity = m.sanityMax;
-			m.energy = m.energyMax;
-			m.lust = 0;
+			setup.Mc.setSanityMax(100);
+			setup.Mc.setSanity(setup.Mc.sanityMax());
+			setup.Mc.setEnergy(setup.Mc.energyMax());
+			setup.Mc.setLust(0);
 		},
 		applyMareWake: function () {
-			var m = mc();
 			if (this.mareStageIsLow()) {
-				m.sanityMax = 70;
-				m.sanity = 50 + Math.floor(Math.random() * 21); // 50..70
-				m.energy = m.energyMax;
-				m.lust = 30 + Math.floor(Math.random() * 31); // 30..60
+				setup.Mc.setSanityMax(70);
+				setup.Mc.setSanity(50 + Math.floor(Math.random() * 21)); // 50..70
+				setup.Mc.setEnergy(setup.Mc.energyMax());
+				setup.Mc.setLust(30 + Math.floor(Math.random() * 31)); // 30..60
 			} else {
-				m.sanityMax = 50;
-				m.sanity = 30 + Math.floor(Math.random() * 20); // 30..49
-				m.energy = m.energyMax;
-				m.lust = 60 + Math.floor(Math.random() * 31); // 60..90
+				setup.Mc.setSanityMax(50);
+				setup.Mc.setSanity(30 + Math.floor(Math.random() * 20)); // 30..49
+				setup.Mc.setEnergy(setup.Mc.energyMax());
+				setup.Mc.setLust(60 + Math.floor(Math.random() * 31)); // 60..90
 			}
 		},
 
 		// --- Twins mirror event ---------------------------
 		twinsEventAvailable: function () {
-			return v('thetwinsevent') === 1 && v('thetwinseventCD') === 0;
+			return sv().thetwinsevent === 1 && sv().thetwinseventCD === 0;
 		},
 		twinsEventTriggered: function (beautyRoll) {
 			// ghost only materialises fully if MC is beautiful enough
-			return beautyRoll <= mc().beauty;
+			return beautyRoll <= setup.Mc.beauty();
 		},
 
 		// --- Cursed home items --------------------------
 		hasCursedItem: function () {
-			return v('cursedHomeItemActive') === 1;
+			return sv().cursedHomeItemActive === 1;
 		},
 
 		// --- Makeup -------------------------------------
 		canApplyMakeup: function (charges) {
-			return v('makeupApplied') === 0 && v('makeupAmount') >= charges;
+			return setup.Mc.makeupApplied() === 0 && setup.Mc.makeupAmount() >= charges;
 		},
 
 		// --- Webcam show --------------------------------
-		prefsMoney: function () { return v('prefsmoney') || 0; },
-		prefsShowCount: function () { return v('prefsshowCount') || 0; },
+		prefsMoney: function () { return sv().prefsmoney || 0; },
+		prefsShowCount: function () { return sv().prefsshowCount || 0; },
 		addPrefsMoney: function (n) {
-			State.variables.prefsmoney = (v('prefsmoney') || 0) + n;
+			sv().prefsmoney = (sv().prefsmoney || 0) + n;
 		},
 		addPrefsShow: function () {
-			State.variables.prefsshowCount = (v('prefsshowCount') || 0) + 1;
+			sv().prefsshowCount = (sv().prefsshowCount || 0) + 1;
 		},
 		/* WebcamShowStart bundles a lot of per-event math: pick the
 		   video, compute fit/corruption bonuses, apply the subscriber
@@ -229,12 +259,12 @@ setup.Home = (function () {
 			function rnd(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
 			function pick(list) { return list[Math.floor(Math.random() * list.length)]; }
 
-			var ev = v('webcamEvent');
+			var ev = sv().webcamEvent;
 			var videos = VIDS[ev] || [];
 			var video = videos.length ? pick(videos) : "";
-			State.variables.webcamVideo = video;
+			sv().webcamVideo = video;
 
-			var fit = mc().fit || 0;
+			var fit = setup.Mc.fit() || 0;
 			var fitBonus =
 				fit <=  10 ? rnd( 1,  5) :
 				fit <=  20 ? rnd( 3,  8) :
@@ -252,38 +282,38 @@ setup.Home = (function () {
 
 			var baseMoney = rnd(7, 15);
 			var moneyBase = Math.round(baseMoney + fitBonus + corrBonus);
-			var subs = v('prefssubscribers') || 0;
+			var subs = sv().prefssubscribers || 0;
 			var earned = Math.round(moneyBase * (1 + subs / 1000));
 			var newSubs = Math.round(earned * 0.1);
 
-			State.variables.prefsmoney = (v('prefsmoney') || 0) + earned;
-			State.variables.prefssubscribers = subs + newSubs;
-			State.variables.prefsshowCount = (v('prefsshowCount') || 0) + 1;
-			mc().money += earned;
+			sv().prefsmoney = (sv().prefsmoney || 0) + earned;
+			sv().prefssubscribers = subs + newSubs;
+			sv().prefsshowCount = (sv().prefsshowCount || 0) + 1;
+			setup.Mc.addMoney(earned);
 
 			return { video: video, moneyEarned: earned, newSubs: newSubs };
 		},
 		initWebcamCounters: function () {
-			if (v('prefsmoney') === undefined) { State.variables.prefsmoney = 0; }
-			if (v('prefssubscribers') === undefined) { State.variables.prefssubscribers = 0; }
-			if (v('prefsshowCount') === undefined) { State.variables.prefsshowCount = 0; }
+			if (sv().prefsmoney === undefined) { sv().prefsmoney = 0; }
+			if (sv().prefssubscribers === undefined) { sv().prefssubscribers = 0; }
+			if (sv().prefsshowCount === undefined) { sv().prefsshowCount = 0; }
 		},
-		dildoPurchased: function () { return v('dildoPurchased') === 1; },
-		subscribers: function () { return v('prefssubscribers') || 0; },
+		dildoPurchased: function () { return sv().dildoPurchased === 1; },
+		subscribers: function () { return sv().prefssubscribers || 0; },
 		addSubscribers: function (n) {
-			State.variables.prefssubscribers = (v('prefssubscribers') || 0) + n;
+			sv().prefssubscribers = (sv().prefssubscribers || 0) + n;
 		},
 		initSubscribers: function () {
-			if (v('prefssubscribers') === undefined) {
-				State.variables.prefssubscribers = 0;
+			if (sv().prefssubscribers === undefined) {
+				sv().prefssubscribers = 0;
 			}
 		},
-		webcamEvent: function () { return v('webcamEvent'); },
-		setWebcamEvent: function (k) { State.variables.webcamEvent = k; },
-		setWebcamCooldown: function (n) { State.variables.webcamShowCD = n; },
-		webcamCooldown: function () { return v('webcamShowCD'); },
+		webcamEvent: function () { return sv().webcamEvent; },
+		setWebcamEvent: function (k) { sv().webcamEvent = k; },
+		setWebcamCooldown: function (n) { sv().webcamShowCD = n; },
+		webcamCooldown: function () { return sv().webcamShowCD; },
 		webcamShowAvailable: function () {
-			var cd = v('webcamShowCD');
+			var cd = sv().webcamShowCD;
 			return cd === undefined || cd === 0;
 		},
 
@@ -292,28 +322,28 @@ setup.Home = (function () {
 		// on entry and then unsets, to show one-time messages after
 		// a specific event chain (succubus visit / tentacle dream /
 		// failed summon) resolved in the previous turn.
-		succubusChoiceText: function () { return v('succubusChoiceEventText'); },
-		clearSuccubusChoiceText: function () { delete State.variables.succubusChoiceEventText; },
-		summonText: function () { return v('summonText'); },
-		clearSummonText: function () { delete State.variables.summonText; },
-		succubusTVText: function () { return v('succubusTVText'); },
-		clearSuccubusTVText: function () { delete State.variables.succubusTVText; },
-		tentaclesAfterSleepText: function () { return v('tentaclesTextAfterSleep'); },
-		clearTentaclesAfterSleepText: function () { delete State.variables.tentaclesTextAfterSleep; },
+		succubusChoiceText: function () { return sv().succubusChoiceEventText; },
+		clearSuccubusChoiceText: function () { delete sv().succubusChoiceEventText; },
+		summonText: function () { return sv().summonText; },
+		clearSummonText: function () { delete sv().summonText; },
+		succubusTVText: function () { return sv().succubusTVText; },
+		clearSuccubusTVText: function () { delete sv().succubusTVText; },
+		tentaclesAfterSleepText: function () { return sv().tentaclesTextAfterSleep; },
+		clearTentaclesAfterSleepText: function () { delete sv().tentaclesTextAfterSleep; },
 
 		// --- Livingroom one-shot event banners -----------
-		tentaclesPCText: function () { return v('tentaclesEventPCText'); },
-		clearTentaclesPCText: function () { delete State.variables.tentaclesEventPCText; },
-		tentaclesTVText: function () { return v('tentaclesEventTVText'); },
-		clearTentaclesTVText: function () { delete State.variables.tentaclesEventTVText; },
+		tentaclesPCText: function () { return sv().tentaclesEventPCText; },
+		clearTentaclesPCText: function () { delete sv().tentaclesEventPCText; },
+		tentaclesTVText: function () { return sv().tentaclesEventTVText; },
+		clearTentaclesTVText: function () { delete sv().tentaclesEventTVText; },
 
 		// --- Succubus arrival ----------------------------
-		markSuccubusArrived: function () { State.variables.succubus = 1; },
+		markSuccubusArrived: function () { sv().succubus = 1; },
 
 		// --- Mirror / twins event ------------------------
 		consumeTwinsEvent: function () {
-			State.variables.thetwinsevent = 0;
-			State.variables.thetwinseventCD = 1;
+			sv().thetwinsevent = 0;
+			sv().thetwinseventCD = 1;
 		},
 
 		// --- Makeup / mirror application -----------------
@@ -325,43 +355,40 @@ setup.Home = (function () {
 			// Clamp at 0: shower (penalty 10) deducts more than the
 			// matching apply added, so repeated shower→reapply cycles
 			// would otherwise drift beauty into the negatives.
-			var s = State.variables;
-			var tier = s.mc.makeupImg;
+			var tier = setup.Mc.makeupImg();
 			var stacked = tier === 1 ? penalty
 				: tier === 2 ? penalty + 5
 				: tier === 3 ? penalty + 10
 				: 0;
-			s.mc.beauty = Math.max(0, s.mc.beauty - stacked);
-			s.makeupApplied = 0;
-			s.mc.makeupImg = 0;
+			setup.Mc.setBeauty(Math.max(0, setup.Mc.beauty() - stacked));
+			setup.Mc.setMakeupApplied(0);
+			setup.Mc.setMakeupImg(0);
 		},
 		removeMakeup: function () {
 			// Undo applied-makeup beauty + clear the flags; symmetric
 			// with applyMakeupTier. Safe to call when no makeup is on
 			// (delta becomes 0).
-			var s = State.variables;
-			var delta = { 1: 5, 2: 10, 3: 15 }[s.mc.makeupImg] || 0;
-			s.mc.beauty = Math.max(0, s.mc.beauty - delta);
-			s.makeupApplied = 0;
-			s.mc.makeupImg = 0;
+			var delta = { 1: 5, 2: 10, 3: 15 }[setup.Mc.makeupImg()] || 0;
+			setup.Mc.setBeauty(Math.max(0, setup.Mc.beauty() - delta));
+			setup.Mc.setMakeupApplied(0);
+			setup.Mc.setMakeupImg(0);
 		},
 		applyMakeupTier: function (tier) {
 			// tier 1 = regular / 2 = stylish / 3 = slutty. Each tier
 			// burns `tier` charges, sets the portrait image key, and
 			// adds a fixed beauty delta (5 / 10 / 15). makeupApplied
 			// gates against double-apply.
-			var s = State.variables;
 			var beautyDelta = { 1: 5, 2: 10, 3: 15 }[tier];
-			s.mc.makeupImg = tier;
-			s.makeupApplied = 1;
-			s.makeupAmount -= tier;
-			s.mc.beauty += beautyDelta;
+			setup.Mc.setMakeupImg(tier);
+			setup.Mc.setMakeupApplied(1);
+			setup.Mc.spendMakeup(tier);
+			setup.Mc.addBeauty(beautyDelta);
 		},
 
 		// --- "Skip time till midnight" shortcut ----------
 		skipTimeToMidnight: function () {
-			State.variables.hours = 23;
-			State.variables.minutes = 0;
+			setup.Time.setHours(23);
+			setup.Time.setMinutes(0);
 		},
 
 		// --- Hunt-defeat / mare wake-up state ------------
@@ -372,59 +399,58 @@ setup.Home = (function () {
 		// ResetCooldowns widget when the day rolls over. Called by
 		// Sleep.tw from every "wake up" branch.
 		sleepAdvance: function (n) { return setup.Time.sleepAdvanceHours(n); },
-		cameraBought: function () { return v('isCameraBought') === 1; },
-		markSleptWithCameraOn: function () { State.variables.mcSleptWithCameraOn = 1; },
+		cameraBought: function () { return sv().isCameraBought === 1; },
+		markSleptWithCameraOn: function () { sv().mcSleptWithCameraOn = 1; },
 
 		// --- PC desktop helpers -------------------------
-		aliceWorkDone: function () { return v('aliceWorkDone') === 1; },
-		aliceWorkState: function () { return v('aliceWorkDone'); },
-		setAliceWorkState: function (n) { State.variables.aliceWorkDone = n; },
-		sleptWithCameraOn: function () { return v('mcSleptWithCameraOn') === 1; },
-		mareStageLow: function () { return (v('ghostMareEventStage') || 0) <= 2; },
-		setMareStart: function (n) { State.variables.ghostMareEventStart = n; },
-		webcamAccountCreated: function () { return v('webcamAccountCreated') === 1; },
-		createWebcamAccount: function () { State.variables.webcamAccountCreated = 1; },
+		aliceWorkDone: function () { return sv().aliceWorkDone === 1; },
+		aliceWorkState: function () { return sv().aliceWorkDone; },
+		setAliceWorkState: function (n) { sv().aliceWorkDone = n; },
+		sleptWithCameraOn: function () { return sv().mcSleptWithCameraOn === 1; },
+		mareStageLow: function () { return (sv().ghostMareEventStage || 0) <= 2; },
+		setMareStart: function (n) { sv().ghostMareEventStart = n; },
+		webcamAccountCreated: function () { return sv().webcamAccountCreated === 1; },
+		createWebcamAccount: function () { sv().webcamAccountCreated = 1; },
 
 		// --- Summoning / succubus ritual -----------------
-		spiritEventStage: function () { return v('ghostSpiritEventStage'); },
-		setSpiritEventStage: function (n) { State.variables.ghostSpiritEventStage = n; },
-		twinsEventActive: function () { return v('thetwinsevent') === 1; },
-		clearTwinsEvent: function () { State.variables.thetwinsevent = 0; },
-		gotCursedItemFlag: function () { return v('gotCursedItem'); },
-		exorcismQuestStage: function () { return v('exorcismQuestStage'); },
-		setExorcismQuestStage: function (n) { State.variables.exorcismQuestStage = n; },
-		succubusEventTimer: function () { return v('succubusEventTimer'); },
-		setSuccubusEventTimer: function (n) { State.variables.succubusEventTimer = n; },
-		setSuccubus: function (n) { State.variables.succubus = n; },
-		summoningChoice: function () { return v('summoningChoice'); },
-		setSummoningChoice: function (n) { State.variables.summoningChoice = n; },
-		setExorcismCooldown: function (n) { State.variables.exorcismCD = n; },
-		setSummonText: function (n) { State.variables.summonText = n; },
-		setSuccubusChoiceText: function (n) { State.variables.succubusChoiceEventText = n; },
-		setSuccubusTVText: function (n) { State.variables.succubusTVText = n; },
-		setMareEventStartValue: function (n) { State.variables.ghostMareEventStart = n; },
-		succubusPCEventStage: function () { return v('succubusPCEventStage'); },
-		setSuccubusPCEventStage: function (n) { State.variables.succubusPCEventStage = n; },
+		spiritEventStage: function () { return sv().ghostSpiritEventStage; },
+		setSpiritEventStage: function (n) { sv().ghostSpiritEventStage = n; },
+		twinsEventActive: function () { return sv().thetwinsevent === 1; },
+		clearTwinsEvent: function () { sv().thetwinsevent = 0; },
+		gotCursedItemFlag: function () { return sv().gotCursedItem; },
+		exorcismQuestStage: function () { return sv().exorcismQuestStage; },
+		setExorcismQuestStage: function (n) { sv().exorcismQuestStage = n; },
+		succubusEventTimer: function () { return sv().succubusEventTimer; },
+		setSuccubusEventTimer: function (n) { sv().succubusEventTimer = n; },
+		setSuccubus: function (n) { sv().succubus = n; },
+		summoningChoice: function () { return sv().summoningChoice; },
+		setSummoningChoice: function (n) { sv().summoningChoice = n; },
+		setExorcismCooldown: function (n) { sv().exorcismCD = n; },
+		setSummonText: function (n) { sv().summonText = n; },
+		setSuccubusChoiceText: function (n) { sv().succubusChoiceEventText = n; },
+		setSuccubusTVText: function (n) { sv().succubusTVText = n; },
+		setMareEventStartValue: function (n) { sv().ghostMareEventStart = n; },
+		succubusPCEventStage: function () { return sv().succubusPCEventStage; },
+		setSuccubusPCEventStage: function (n) { sv().succubusPCEventStage = n; },
 		bumpSuccubusPCEventStage: function () {
-			State.variables.succubusPCEventStage =
-				(v('succubusPCEventStage') || 0) + 1;
+			sv().succubusPCEventStage = (sv().succubusPCEventStage || 0) + 1;
 		},
-		succubusEventCD: function () { return v('succubusEventCD'); },
-		setSuccubusEventCD: function (n) { State.variables.succubusEventCD = n; },
+		succubusEventCD: function () { return sv().succubusEventCD; },
+		setSuccubusEventCD: function (n) { sv().succubusEventCD = n; },
 		// Summoning advance: same wrap-clock-then-reset-cooldowns pattern
 		// as sleepAdvance, but used by the ritual (4-hour cast). Sets
 		// succubusEventTimer which ticks down elsewhere.
 		advanceSummoning: function () {
-			State.variables.succubusEventTimer = 6;
+			sv().succubusEventTimer = 6;
 			return setup.Time.sleepAdvanceHours(4);
 		},
 		masturbationAvailable: function () {
-			var cd = v('masturbationCD');
+			var cd = sv().masturbationCD;
 			return cd === undefined || cd === 0;
 		},
-		setMasturbationCooldown: function (n) { State.variables.masturbationCD = n; },
-		ghostInfoSearchedToday: function () { return v('findGhostInfoCD') === 1; },
-		markGhostInfoSearched: function () { State.variables.findGhostInfoCD = 1; },
+		setMasturbationCooldown: function (n) { sv().masturbationCD = n; },
+		ghostInfoSearchedToday: function () { return sv().findGhostInfoCD === 1; },
+		markGhostInfoSearched: function () { sv().findGhostInfoCD = 1; },
 		// Rotate through the porn-video playlist. Callers track an
 		// index in a temp var and hand it back each tick; returns the
 		// new index + the currently-selected video path.
@@ -438,43 +464,42 @@ setup.Home = (function () {
 			return { index: next, video: list[next] };
 		},
 		tentaclesPCEventReady: function () {
-			return v('gotCursedItem') === 1 && v('gotCursedItemEventCD') >= 2;
+			return setup.Witch.hasCursedItemToTurnIn() && sv().gotCursedItemEventCD >= 2;
 		},
 		// --- Tentacles event stages -----------------------
 		// Reset CD on tentacle event start; advance per-branch
 		// stage flags and their paired "after-sleep" narration key.
-		resetTentaclesCooldown: function () { State.variables.gotCursedItemEventCD = 0; },
-		tentaclesStageAll: function () { return v('tentaclesEventStageAll') || 0; },
-		setTentaclesStageAll: function (n) { State.variables.tentaclesEventStageAll = n; },
+		resetTentaclesCooldown: function () { sv().gotCursedItemEventCD = 0; },
+		tentaclesStageAll: function () { return sv().tentaclesEventStageAll || 0; },
+		setTentaclesStageAll: function (n) { sv().tentaclesEventStageAll = n; },
 		ensureTentaclesStageAll: function (n) {
-			if ((v('tentaclesEventStageAll') || 0) < n) {
-				State.variables.tentaclesEventStageAll = n;
+			if ((sv().tentaclesEventStageAll || 0) < n) {
+				sv().tentaclesEventStageAll = n;
 			}
 		},
-		tentaclesStageSleep: function () { return v('tentaclesEventStageSleep') || 0; },
-		setTentaclesStageSleep: function (n) { State.variables.tentaclesEventStageSleep = n; },
-		setTentaclesAfterSleepText: function (n) { State.variables.tentaclesTextAfterSleep = n; },
-		setTentaclesPCText: function (n) { State.variables.tentaclesEventPCText = n; },
-		setTentaclesTVText: function (n) { State.variables.tentaclesEventTVText = n; },
+		tentaclesStageSleep: function () { return sv().tentaclesEventStageSleep || 0; },
+		setTentaclesStageSleep: function (n) { sv().tentaclesEventStageSleep = n; },
+		setTentaclesAfterSleepText: function (n) { sv().tentaclesTextAfterSleep = n; },
+		setTentaclesPCText: function (n) { sv().tentaclesEventPCText = n; },
+		setTentaclesTVText: function (n) { sv().tentaclesEventTVText = n; },
 		// Advance the clock for a tentacles-event rest by N hours.
 		// Used by the "Rest" back-links at the end of each event;
 		// Doesn't wrap midnight because the events are short naps.
-		restForHours: function (n) { State.variables.hours += n; },
+		restForHours: function (n) { setup.Time.addHours(n); },
 		isSuccubusPCEventReady: function () {
-			var h = v('hours');
-			return (v('succubus') === 1 && v('succubusEventCD') === 0) ||
-				(v('succubusEventCD') === 2 && h >= 18 && h <= 23);
+			var h = setup.Time.hours();
+			return (sv().succubus === 1 && sv().succubusEventCD === 0) ||
+				(sv().succubusEventCD === 2 && h >= 18 && h <= 23);
 		},
 
 		applyHuntDefeatWake: function () {
-			var m = mc();
-			m.sanityMax = 70;
-			m.sanity = 40 + Math.floor(Math.random() * 31);   // 40..70
-			m.energy = m.energyMax;
-			m.lust = 30 + Math.floor(Math.random() * 31);     // 30..60
+			setup.Mc.setSanityMax(70);
+			setup.Mc.setSanity(40 + Math.floor(Math.random() * 31));   // 40..70
+			setup.Mc.setEnergy(setup.Mc.energyMax());
+			setup.Mc.setLust(30 + Math.floor(Math.random() * 31));     // 30..60
 		},
 		clearPenaltyOnMareWake: function () {
-			State.variables.isPenaltyOn = 0;
+			setup.Mc.clearPenalty();
 		}
 	};
 })();
