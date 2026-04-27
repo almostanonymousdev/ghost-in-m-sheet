@@ -175,7 +175,10 @@ setup.HauntedHouses = (function () {
 		isContractMode: function () { return setup.Ghosts.hasContract(); },
 		isInsideHouse: function () { return setup.Ghosts.isHunting(); },
 		isHuntOver: function () { return setup.Ghosts.isPossessed(); },
-		endHunt: function () { setup.Ghosts.setHuntMode(setup.Ghosts.HuntMode.POSSESSED); },
+		endHunt: function () {
+			this.commitTempCorruption();
+			setup.Ghosts.setHuntMode(setup.Ghosts.HuntMode.POSSESSED);
+		},
 
 		// --- Which house are we in? -----------------------------
 		isOwaissa: function () { return v('isOwaissa') === 1; },

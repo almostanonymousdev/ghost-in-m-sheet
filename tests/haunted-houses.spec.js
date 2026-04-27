@@ -62,6 +62,40 @@ test.describe('Haunted Houses Controller', () => {
     expect(await getHuntMode(page)).toBe(3);
   });
 
+  // Regression: tempCorr was banked per step inside the house but only
+  // flushed to mc.corruption from Possessed.tw / WalkHomeTogether.tw, so
+  // hunts that ended normally (dawn / manual / exhaustion / caught) left
+  // the banked corruption stranded. endHunt is the shared cleanup, so
+  // that's where the commit belongs.
+  test('endHunt banks tempCorr into mc.corruption', async () => {
+    // arrange
+    await setVar(page, 'mc.corruption', 1);
+    await setVar(page, 'tempCorr', 0.4);
+    await setHuntMode(page, 2);
+
+    // act
+    await page.evaluate(() => SugarCube.setup.HauntedHouses.endHunt());
+
+    // assert
+    expect(await getVar(page, 'mc.corruption')).toBeCloseTo(1.4, 5);
+    expect(await getVar(page, 'tempCorr')).toBe(0);
+  });
+
+  test('endHunt accumulates corruption across multiple hunt cycles', async () => {
+    // arrange
+    await setVar(page, 'mc.corruption', 0);
+
+    // act — three hunts, each banking 0.3 tempCorr before the cleanup
+    for (let i = 0; i < 3; i += 1) {
+      await setVar(page, 'tempCorr', 0.3);
+      await setHuntMode(page, 2);
+      await page.evaluate(() => SugarCube.setup.HauntedHouses.endHunt());
+    }
+
+    // assert
+    expect(await getVar(page, 'mc.corruption')).toBeCloseTo(0.9, 5);
+  });
+
   test('hunt mode states are mutually exclusive', async () => {
     // arrange
     await setHuntMode(page, 1);

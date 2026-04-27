@@ -87,4 +87,4 @@
 	<</if>>
 <</linkreplace>>@@
 
-<<run setup.HauntedHouses.setHuntMode(setup.Ghosts.HuntMode.POSSESSED)>>
+<<run setup.HauntedHouses.endHunt()>>
