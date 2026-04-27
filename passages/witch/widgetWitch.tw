@@ -16,10 +16,17 @@
 		@@.mc-thoughts; Information about _ghostName@@<br>
 		<span class="priceAmount"><<= _price>>$</span><br>
 		<<if setup.Mc.money() gte _price>>
-			@@.buyItemLink;<<link "Buy" "WitchSale">>
-				<<run setup.Ghosts.markDiscovered(_ghostName)>>
-				<<run setup.Mc.spendMoney(_price)>>
-			<</link>>@@<br>
+			/* <<capture>> snapshots _ghostName/_price into the link's
+			   payload — without it, the link's <<run>> callback fires after
+			   the widget exits and reads whatever values the *last*
+			   ghostInfoCard invocation left in temp scope (so every Buy
+			   click marked the last-rendered ghost as discovered). */
+			<<capture _ghostName, _price>>
+				@@.buyItemLink;<<link "Buy" "WitchSale">>
+					<<run setup.Ghosts.markDiscovered(_ghostName)>>
+					<<run setup.Mc.spendMoney(_price)>>
+				<</link>>@@<br>
+			<</capture>>
 		<<else>>@@.warningtext; I don't have enough money@@
 		<</if>>
 	<</if>>

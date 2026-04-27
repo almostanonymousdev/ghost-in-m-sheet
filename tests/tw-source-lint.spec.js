@@ -703,6 +703,146 @@ test.describe('macro delimiters', () => {
 
 });
 
+// ── deferred-callback temp variable capture ─────────────────────
+
+test.describe('deferred macro callbacks must capture temp vars', () => {
+
+  /**
+   * SugarCube's deferred macros — <<link>>, <<button>>, <<linkappend>>,
+   * <<linkprepend>>, <<linkreplace>> — wikify their body contents at
+   * *click* time, not at render time. Temp variables (`_foo`) referenced
+   * inside the body are looked up in `State.temporary` at click time.
+   *
+   * Inside a <<widget>> body, `_args` and any temp vars set from `_args`
+   * live in the surrounding passage's temp scope. When the widget is
+   * called multiple times in one passage (e.g. <<ghostInfoCard "Phantom">>
+   * … <<ghostInfoCard "Raiju">>), each invocation overwrites the previous
+   * one's temp values — so by the time a deferred callback fires, every
+   * one of those callbacks reads whatever the *last* invocation wrote.
+   *
+   * This is exactly how the WitchSale "Buy ghost info" flow broke:
+   * clicking Buy on Phantom marked Raiju as discovered (last widget call
+   * in WitchSale.tw) and re-charged the player without removing the card.
+   *
+   * The fix is to wrap deferred-callback blocks in <<capture>>, which
+   * snapshots the listed temp vars into the link's payload closure.
+   *
+   * This test flags any widget body whose deferred-callback payload
+   * references a temp variable that the widget itself sets, unless that
+   * deferred macro is inside a <<capture>> block listing the variable.
+   */
+
+  const DEFERRED_MACROS = ['link', 'button', 'linkappend', 'linkprepend', 'linkreplace'];
+
+  /** Find every <<widget "name">> … <</widget>> block in a passage body. */
+  function findWidgets(body) {
+    const widgets = [];
+    const re = /<<widget\s+"([^"]+)"[^>]*>>([\s\S]*?)<<\/widget>>/g;
+    let m;
+    while ((m = re.exec(body)) !== null) {
+      widgets.push({ name: m[1], body: m[2], offset: m.index });
+    }
+    return widgets;
+  }
+
+  /** Temp vars assigned with <<set _name to/= …>> at any depth in the body. */
+  function tempVarsAssigned(body) {
+    const names = new Set();
+    const re = /<<set\s+_([A-Za-z_][A-Za-z0-9_]*)\b/g;
+    let m;
+    while ((m = re.exec(body)) !== null) names.add(m[1]);
+    return names;
+  }
+
+  /** Find each <<capture _a, _b, …>> … <</capture>> block, return [{vars, start, end}]. */
+  function findCaptureBlocks(body) {
+    const blocks = [];
+    const re = /<<capture\s+([^>]+)>>([\s\S]*?)<<\/capture>>/g;
+    let m;
+    while ((m = re.exec(body)) !== null) {
+      const varList = new Set(
+        [...m[1].matchAll(/_([A-Za-z_][A-Za-z0-9_]*)/g)].map(v => v[1])
+      );
+      blocks.push({ vars: varList, start: m.index, end: m.index + m[0].length });
+    }
+    return blocks;
+  }
+
+  /** Find each deferred-macro block in the body, return [{macro, payload, start}]. */
+  function findDeferredBlocks(body) {
+    const blocks = [];
+    for (const macro of DEFERRED_MACROS) {
+      // Bodyless self-closing forms (<<link "x" "Pass">><</link>>) are still matched
+      // — the payload is just empty, so any inner-temp-var references are absent.
+      const re = new RegExp(`<<${macro}\\b[^>]*>>([\\s\\S]*?)<</${macro}>>`, 'g');
+      let m;
+      while ((m = re.exec(body)) !== null) {
+        blocks.push({ macro, payload: m[1], start: m.index });
+      }
+    }
+    return blocks;
+  }
+
+  /** Temp-var refs inside a payload string. */
+  function tempVarsRefd(text) {
+    const names = new Set();
+    // Match _foo not preceded by another identifier char.
+    const re = /(?<![A-Za-z0-9_])_([A-Za-z_][A-Za-z0-9_]*)/g;
+    let m;
+    while ((m = re.exec(text)) !== null) names.add(m[1]);
+    return names;
+  }
+
+  test('widget bodies must <<capture>> any temp vars used in deferred-macro callbacks', () => {
+    // `_args*` are SugarCube widget intrinsics; flagging them would just
+    // spam the same fix everywhere, and they'd typically be copied into
+    // a named temp var first anyway (which IS what we check here).
+    const INTRINSICS = new Set(['args', 'argsArray', 'argsString']);
+    const violations = [];
+
+    for (const p of allPassages) {
+      if (!p.tags.includes('widget')) continue;
+      for (const w of findWidgets(p.body)) {
+        const assigned = tempVarsAssigned(w.body);
+        if (assigned.size === 0) continue;
+        const captures = findCaptureBlocks(w.body);
+        for (const d of findDeferredBlocks(w.body)) {
+          const refd = tempVarsRefd(d.payload);
+          // Limit to vars the widget itself sets (i.e. closure-captured
+          // by intent). Vars defined inside the same callback don't count.
+          const localSets = tempVarsAssigned(d.payload);
+          const risky = [...refd].filter(v =>
+            assigned.has(v) && !localSets.has(v) && !INTRINSICS.has(v)
+          );
+          if (risky.length === 0) continue;
+
+          // Is this deferred block enclosed by a <<capture>> that lists
+          // every risky var?
+          const enclosing = captures.find(c => d.start >= c.start && d.start < c.end);
+          const captured = enclosing ? enclosing.vars : new Set();
+          const missing = risky.filter(v => !captured.has(v));
+          if (missing.length === 0) continue;
+
+          // Compute approximate line number within the file.
+          const before = p.body.slice(0, w.offset + d.start);
+          const lineWithin = before.split('\n').length;
+          const absLine = p.headerLine + lineWithin;
+          violations.push(
+            `${rel(p.file)}:${absLine} <<widget "${w.name}">> — <<${d.macro}>> ` +
+            `payload references temp var(s) ${missing.map(v => '_' + v).join(', ')} ` +
+            `set in the widget body. Wrap the deferred macro in ` +
+            `<<capture ${missing.map(v => '_' + v).join(', ')}>> … <</capture>> — ` +
+            `otherwise the callback fires after the widget exits and reads ` +
+            `whatever the last widget invocation left in temp scope.`
+          );
+        }
+      }
+    }
+    expect(violations, violations.join('\n')).toHaveLength(0);
+  });
+
+});
+
 // ── @@ styled markup (SugarCube custom style markup) ────────────
 
 test.describe('styled markup (@@...@@)', () => {

@@ -46,58 +46,66 @@
 	<<if setup.Companion.isCompanionFinishedSoloHunting(_cName)>>
 		@@.mc-speech; [[Ask <<= _cName>> how <<= _args[1]>> ghost hunt went.|`_cName + "HuntEndAlone"`]]@@<br>
 	<<else>>
-		@@.mc-speech;<<link `"Ask " + _cName + " to join you for ghost hunting tonight."`>>
-			<<run setup.Companion.pickCisCompanion(_cName)>>
-			<<replace "#companionInfoAnswer">>@@.mc-speech; I want you to join me for ghost hunting today@@<br>
-				@@.notmc-speech; Yes, of course. I'll be ready. Let's meet by the entrance to the haunted house, okay?@@<br>
-				@@.mc-speech; Yeah, let's do that.@@
-			<</replace>>
-		<</link>>@@<br>
+		/* <<capture>> snapshots _cName into each deferred link's payload —
+		   without it, the click-time callback reads State.temporary._cName,
+		   which holds whatever the last cisCompanionSoloPicker call wrote
+		   (currently only ever called once per passage, but a second call
+		   added later would silently route every Ask-to-Join click to the
+		   wrong companion). */
+		<<capture _cName>>
+			@@.mc-speech;<<link `"Ask " + _cName + " to join you for ghost hunting tonight."`>>
+				<<run setup.Companion.pickCisCompanion(_cName)>>
+				<<replace "#companionInfoAnswer">>@@.mc-speech; I want you to join me for ghost hunting today@@<br>
+					@@.notmc-speech; Yes, of course. I'll be ready. Let's meet by the entrance to the haunted house, okay?@@<br>
+					@@.mc-speech; Yeah, let's do that.@@
+				<</replace>>
+			<</link>>@@<br>
 
-		<<done>>
-			<<if _cLvl lt 2>>
-				<<addclass ".CompanionInfoAskForHuntAlone" "disabled-link">>
-			<</if>>
-		<</done>>
-		<span class="CompanionInfoAskForHuntAlone">
-		@@.mc-speech;<<link "I'd like you to go ghost hunting alone.">>
-			<<run setup.Companion.deselectCisCompanion(_cName)>>
-			<<replace "#companionInfoAnswer">>@@.notmc-speech; I think I'm already experienced enough to do it on my own. Where should I go?@@<br>
+			<<done>>
+				<<if _cLvl lt 2>>
+					<<addclass ".CompanionInfoAskForHuntAlone" "disabled-link">>
+				<</if>>
+			<</done>>
+			<span class="CompanionInfoAskForHuntAlone">
+			@@.mc-speech;<<link "I'd like you to go ghost hunting alone.">>
+				<<run setup.Companion.deselectCisCompanion(_cName)>>
+				<<replace "#companionInfoAnswer">>@@.notmc-speech; I think I'm already experienced enough to do it on my own. Where should I go?@@<br>
 
-				@@.enterbtn;<<link `"Owaissa Street - " + setup.Companion.soloOdds(_cName, "Owaissa") + " %"`>>
-					<<run setup.Companion.sendCompanionSolo(_cName, "Owaissa")>>
-					<<if setup.Companion.cannotAffordSoloContract(_cName)>>
-						<<replace "#companionInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@
-						<</replace>>
-					<<else>>
-						<<replace "#companionInfoAnswerTwo">>@@.notmc-speech;Owaissa Street? Hmm... Yes, of course. I think I can handle it.@@
-						<</replace>>
-					<</if>>
-				<</link>>@@
+					@@.enterbtn;<<link `"Owaissa Street - " + setup.Companion.soloOdds(_cName, "Owaissa") + " %"`>>
+						<<run setup.Companion.sendCompanionSolo(_cName, "Owaissa")>>
+						<<if setup.Companion.cannotAffordSoloContract(_cName)>>
+							<<replace "#companionInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@
+							<</replace>>
+						<<else>>
+							<<replace "#companionInfoAnswerTwo">>@@.notmc-speech;Owaissa Street? Hmm... Yes, of course. I think I can handle it.@@
+							<</replace>>
+						<</if>>
+					<</link>>@@
 
-				@@.enterbtn;<<link `"Elm Street - " + setup.Companion.soloOdds(_cName, "Elm") + " %"`>>
-					<<run setup.Companion.sendCompanionSolo(_cName, "Elm")>>
-					<<if setup.Companion.cannotAffordSoloContract(_cName)>>
-						<<replace "#companionInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@
-						<</replace>>
-					<<else>>
-						<<replace "#companionInfoAnswerTwo">>@@.notmc-speech;Elm Street? Hmm... Yes, of course. I think I can handle it.@@
-						<</replace>>
-					<</if>>
-				<</link>>@@@@color: green; <b>-20$</b>@@<br>
+					@@.enterbtn;<<link `"Elm Street - " + setup.Companion.soloOdds(_cName, "Elm") + " %"`>>
+						<<run setup.Companion.sendCompanionSolo(_cName, "Elm")>>
+						<<if setup.Companion.cannotAffordSoloContract(_cName)>>
+							<<replace "#companionInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@
+							<</replace>>
+						<<else>>
+							<<replace "#companionInfoAnswerTwo">>@@.notmc-speech;Elm Street? Hmm... Yes, of course. I think I can handle it.@@
+							<</replace>>
+						<</if>>
+					<</link>>@@@@color: green; <b>-20$</b>@@<br>
 
-				<span id="companionInfoAnswerTwo">
+					<span id="companionInfoAnswerTwo">
 
-				</span>
-			<</replace>>
-		<</link>>@@<<if _cLvl lt 2>>
-			@@.warningtext; Req. <<= _cName>>'s lvl 2+@@
-		<</if>></span>
+					</span>
+				<</replace>>
+			<</link>>@@<<if _cLvl lt 2>>
+				@@.warningtext; Req. <<= _cName>>'s lvl 2+@@
+			<</if>></span>
 
-		<br>
-		<span id="companionInfoAnswer">
+			<br>
+			<span id="companionInfoAnswer">
 
-		</span>
+			</span>
+		<</capture>>
 	<</if>>
 <</widget>>
 
