@@ -738,17 +738,13 @@ class Hunt:
         self._maybe_move_ghost()
 
         # Per-step tick effects (HauntConditions.applyTickEffects). The
-        # energy drain here is on top of the nav-step drain above (matches
-        # the snapshot's energyPerStep contributor — used by the orgasm
-        # cooldown axis).
-        snap = self.snapshot()
-        self.mc.sanity = clamp(self.mc.sanity + snap["sanity_per_step"],
-                               1, GD.start_sanity)
-        self.mc.lust   = clamp(self.mc.lust + snap["lust_per_step"], 0, 100)
-        self.mc.energy += snap["energy_per_step"]
+        # energy drain inside the helper is on top of the nav-step drain
+        # above (matches the snapshot's energyPerStep contributor — used
+        # by the orgasm cooldown axis).
         # Sanity never hits 0 via natural drain (min clamp 1); the hunt-over
         # -sanity exit comes from GhostHuntEvent's rollEventSanityLoss. We
         # still surface sanity_zero if some future sink drives it below 1.
+        self._apply_tick_effects()
 
         if self.orgasm_cooldown > 0:
             self.orgasm_cooldown -= 1
@@ -763,7 +759,7 @@ class Hunt:
         # Random ghost-hunt roll (CheckHuntStart.tw).
         if not self.hunt_active_flag and can_hunt(
                 self.ghost_name, self.mc.sanity, self.mc.lust):
-            threshold = GD.hunt_base_threshold + snap["hunt_chance_bonus"]
+            threshold = GD.hunt_base_threshold + self.snapshot()["hunt_chance_bonus"]
             if random.randint(0, 100) <= threshold:
                 reason = self._resolve_hunt_event()
                 if reason:
@@ -844,6 +840,18 @@ class Hunt:
         return None
 
     # --- tool rolls ----------------------------------------------------
+    def _apply_tick_effects(self) -> None:
+        """Mirror of setup.HauntConditions.applyTickEffects(): bleed
+        sanity/lust/energy per the active snapshot bonuses. Called from
+        nav steps and from controller-routed tool checks (gwb / plasm /
+        spiritbox / emf / uvl), matching the production call sites in
+        widgetInclude.tw and ToolController.render."""
+        snap = self.snapshot()
+        self.mc.sanity = clamp(self.mc.sanity + snap["sanity_per_step"],
+                               1, GD.start_sanity)
+        self.mc.lust   = clamp(self.mc.lust + snap["lust_per_step"], 0, 100)
+        self.mc.energy += snap["energy_per_step"]
+
     def _activate(self, tool: str) -> None:
         window = GD.tool_window[self.tier] + self.snapshot()["tool_window_bonus"]
         until = self.minutes + int(window)
@@ -858,10 +866,11 @@ class Hunt:
 
     def tool_tick(self) -> str | None:
         """widgetInclude.tw `<<toolTick>>`: each tool click burns one
-        in-game minute and routes to HuntOverTime if dawn just broke. No
-        stat drain -- HauntConditions.applyTickEffects is gated to nav
-        steps so the HUD and the underlying drain don't drift. Returns
-        'dawn' exit reason when the click pushed the clock past 6am."""
+        in-game minute and routes to HuntOverTime if dawn just broke. The
+        per-tick drain itself is *not* applied here -- it fires once per
+        meter completion inside ToolController.render (mirrored by the
+        controller-routed scan methods below). Returns 'dawn' exit reason
+        when the click pushed the clock past 6am."""
         self.minutes += STEP_MINUTES
         if self.minutes >= GD.dawn_minutes:
             return "dawn"
@@ -881,6 +890,7 @@ class Hunt:
         return base + offset
 
     def gwb_scan(self) -> bool:
+        self._apply_tick_effects()
         if self.current_room != self.ghost_room or "gwb" not in self.ghost_evidence:
             return False
         if self._roll_tier():
@@ -890,6 +900,7 @@ class Hunt:
         return False
 
     def plasm_scan(self) -> bool:
+        self._apply_tick_effects()
         if self.current_room != self.ghost_room or "glass" not in self.ghost_evidence:
             return False
         if self._roll_tier():
@@ -898,6 +909,7 @@ class Hunt:
         return False
 
     def spiritbox_scan(self) -> bool:
+        self._apply_tick_effects()
         if self.current_room != self.ghost_room or "spiritbox" not in self.ghost_evidence:
             return False
         if self._roll_tier():
@@ -907,6 +919,7 @@ class Hunt:
         return False
 
     def emf_scan(self) -> bool:
+        self._apply_tick_effects()
         if self.current_room != self.ghost_room or "emf" not in self.ghost_evidence:
             return False
         if self.minutes > self.emf_until:
@@ -915,6 +928,7 @@ class Hunt:
         return True
 
     def uvl_scan(self) -> bool:
+        self._apply_tick_effects()
         if self.current_room != self.ghost_room or "uvl" not in self.ghost_evidence:
             return False
         if self.minutes > self.uvl_until:
