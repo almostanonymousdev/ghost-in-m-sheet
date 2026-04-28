@@ -243,19 +243,22 @@ def _parse_orgasm_body_part_ratio(events_src: str) -> float:
 
 def _parse_event_choice_costs(event_mc_src: str) -> dict[str, float]:
     """Pull the Run / Embrace inline expressions from EventMC.tw so the sim
-    picks up whatever the passage currently charges for each choice."""
+    picks up whatever the passage currently charges for each choice. Embrace
+    sanity is a per-ghost random roll (setup.Events.ghostSanityEventDecreased
+    -> Ghost.rollEventSanityLoss), so we just verify the call shape is
+    present here; the simulator rolls each ghost's sanityEventLossRange."""
     run_m = re.search(
         r"Run away[^\[]*\[setup\.Mc\.addEnergy\(-(\d+)\)\]", event_mc_src)
     embrace_m = re.search(
-        r"Embrace it[^\[]*\[setup\.Mc\.addSanity\(-(\d+)\);\s*"
+        r"Embrace it[^\[]*\[setup\.Mc\.addSanity\("
+        r"-setup\.Events\.ghostSanityEventDecreased\(\)\);\s*"
         r"setup\.addLust\((\d+)\)\]",
         event_mc_src)
     if not (run_m and embrace_m):
         raise SystemExit("parser: EventMC.tw Run/Embrace cost block not found")
     return {
-        "run_energy":    float(run_m.group(1)),
-        "embrace_sanity": float(embrace_m.group(1)),
-        "embrace_lust":  float(embrace_m.group(2)),
+        "run_energy":   float(run_m.group(1)),
+        "embrace_lust": float(embrace_m.group(1)),
     }
 
 
@@ -333,8 +336,11 @@ class GameData:
     orgasm_lust_threshold: int               # shouldOrgasm gate
     orgasm_body_part_ratio: float            # P(event body-part triggers orgasm)
     event_run_energy: float                  # EventMC Run away cost
-    event_embrace_sanity: float              # EventMC Embrace it cost
     event_embrace_lust: float                # EventMC Embrace it gain
+    # Embrace sanity cost is a per-ghost random roll
+    # (setup.Events.ghostSanityEventDecreased -> Ghost.rollEventSanityLoss),
+    # so the simulator draws from each ghost's sanityEventLossRange instead
+    # of carrying a single scalar here.
     ghost_event_chance_per_step: float = 0.05  # not encoded as a single
                                                # constant in-game; keeps the
                                                # ArtEvent/EventMC/Freeze
@@ -434,7 +440,6 @@ def load_game_data() -> GameData:
         orgasm_lust_threshold=orgasm_threshold,
         orgasm_body_part_ratio=orgasm_ratio,
         event_run_energy=event_costs["run_energy"],
-        event_embrace_sanity=event_costs["embrace_sanity"],
         event_embrace_lust=event_costs["embrace_lust"],
     )
 
@@ -552,8 +557,6 @@ def validate_game_data() -> list[str]:
             f"orgasm body-part ratio {GD.orgasm_body_part_ratio} out of (0,1]")
     require(GD.event_run_energy > 0,
             f"event run energy {GD.event_run_energy} must be > 0")
-    require(GD.event_embrace_sanity > 0,
-            f"event embrace sanity {GD.event_embrace_sanity} must be > 0")
     require(GD.event_embrace_lust > 0,
             f"event embrace lust {GD.event_embrace_lust} must be > 0")
     require(GD.dawn_minutes > 0,
@@ -793,13 +796,17 @@ class Hunt:
                 return "sanity_zero"
 
         # Player choice. Run preserves sanity but burns a full energy
-        # point; Embrace is sanity-negative but costs no energy.
+        # point; Embrace is sanity-negative but costs no energy. Embrace
+        # sanity is a per-ghost roll from sanityEventLossRange (matches
+        # setup.Events.ghostSanityEventDecreased -> rollEventSanityLoss).
         if self.mc.energy >= GD.event_run_energy:
             self.mc.energy -= GD.event_run_energy
             if self.mc.energy <= 0:
                 return "energy"
         else:
-            self.mc.sanity -= GD.event_embrace_sanity
+            lo, hi = GD.ghosts[self.ghost_name].get(
+                "sanity_loss", HUNT_EVENT_SANITY_LOSS_DEFAULT)
+            self.mc.sanity -= random.randint(lo, hi)
             self.mc.lust   += GD.event_embrace_lust
             if self.mc.lust > 100: self.mc.lust = 100
             if self.mc.sanity < 1:
