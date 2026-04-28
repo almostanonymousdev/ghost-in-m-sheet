@@ -32,7 +32,16 @@ setup.HauntedHouses = (function () {
 		'chosenCard', 'drawnCards', 'tarotCardsStage',
 		'currentIntervalRoom', 'lastChangeIntervalRoom',
 		'cursedItemVide',
-		'stealChance'
+		'stealChance',
+		// Per-house room state objects (seeded by GameInit /
+		// HOUSE_CONFIG; one $<roomName> per room across all four houses).
+		'kitchen', 'bathroom', 'bedroom', 'livingroom', 'hallway',
+		'nursery', 'hallwayUpstairs', 'bedroomTwo', 'bathroomTwo', 'basement',
+		'roomA', 'roomB', 'roomC',
+		'BlockA', 'BlockB',
+		'BlockACellA', 'BlockACellB', 'BlockACellC',
+		'BlockBCellA', 'BlockBCellB', 'BlockBCellC',
+		'reception'
 	]);
 
 	/* Canonical haunted-house catalogue. One entry per selectable house.

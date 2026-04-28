@@ -14,84 +14,55 @@
  * land in someone's OWNED_VARS or get listed in UNOWNED_ALLOWLIST.
  */
 const { test, expect } = require('@playwright/test');
-const { openGame, callSetup } = require('./helpers');
+const { openGame } = require('./helpers');
 
-/* Every controller that exposes an OWNED_VARS array. */
-const CONTROLLER_NAMES = [
-	'Mc',
-	'Time',
-	'Ghosts',
-	'ToolController',
-	'Wardrobe',
-	'Witch',
-	'Companion',
-	'Home',
-	'Church',
-	'Salon',
-	'CursedItems',
-	'Park',
-	'Mall',
-	'Gym',
-	'Library',
-	'Events',
-	'Delivery',
-	'MissingWomen',
-	'MonkeyPaw',
-	'HauntedHouses',
-	'Posession',
-	'SpecialEvent',
-	'SeduceGhostMinigame',
-	'Updates',
-	'Gui'
-];
+/* Lower-bound on the number of controllers we expect to find at
+   runtime. Catches the regression where a controller forgets to
+   expose OWNED_VARS (and so vanishes from the dynamic discovery
+   below) without us noticing. Bump as new controllers are added. */
+const MIN_CONTROLLER_COUNT = 23;
 
-/* Top-level State.variables keys we have NOT yet migrated to a single
-   owning controller. New variables should land in someone's OWNED_VARS
-   instead of growing this list. The allowlist exists so the
-   "every-var-owned" invariant can run today without blocking the
-   remaining cleanup. Adding an entry to OWNED_VARS should remove it
-   from this list. */
+/* Top-level State.variables keys with no owning controller. Only two
+   are allowed:
+     - `return` — a SugarCube built-in (last non-noreturn passage),
+       not a gameplay var the controllers should manage.
+     - `__rng__` — random-walk fuzzer / debug scaffolding seeded by
+       tests, never present in real saves.
+   Every other live $variable must be claimed in some controller's
+   OWNED_VARS. */
 const UNOWNED_ALLOWLIST = new Set([
-	// Hunt timing not yet folded into Ghosts.
-	'elapsedTimeHunt', 'huntTimeRemain',
-	// Search-overlay scratch state set by setup.searchToolDefs/StoryScript.
-	'searchState',
-	// Per-room state objects (kitchen, bedroom, ...) seeded by
-	// HOUSE_CONFIG. Owned indirectly by HauntedHouses, but their names
-	// vary by house and we don't enumerate them.
-	'kitchen', 'bathroom', 'bedroom', 'livingroom', 'hallway',
-	'nursery', 'hallwayUpstairs', 'bedroomTwo', 'bathroomTwo', 'basement',
-	'roomA', 'roomB', 'roomC',
-	'BlockA', 'BlockB',
-	'BlockACellA', 'BlockACellB', 'BlockACellC',
-	'BlockBCellA', 'BlockBCellB', 'BlockBCellC',
-	'reception',
-	// `return` is a SugarCube built-in (last non-noreturn passage).
 	'return',
-	// Random-walk fuzzer / debug scaffolding seeded by tests.
 	'__rng__'
 ]);
 
 test.describe('Variable ownership', () => {
 	let page;
-	let ownerMap;       // { varName: [ controllerName, ... ] }
-	let ownedByName;    // { controllerName: [varName, ...] }
+	let controllerNames; // [string] — keys of setup.* with an OWNED_VARS array
+	let ownerMap;        // { varName: [ controllerName, ... ] }
+	let ownedByName;     // { controllerName: [varName, ...] }
+	let unfrozenControllers; // [string] — controllers whose OWNED_VARS isn't frozen
 
 	test.beforeAll(async ({ browser }) => {
 		page = await openGame(browser);
-		const collected = await page.evaluate((names) => {
-			const result = { perController: {} };
-			for (const n of names) {
-				const ctrl = SugarCube.setup[n];
-				const owned = ctrl && ctrl.OWNED_VARS ? Array.from(ctrl.OWNED_VARS) : null;
-				result.perController[n] = owned;
+		const discovered = await page.evaluate(() => {
+			// A controller is anything on `setup` that exposes an
+			// OWNED_VARS array. Iterating setup picks up new controller
+			// files automatically — no registration needed.
+			const out = { perController: {}, unfrozen: [] };
+			for (const name of Object.keys(SugarCube.setup)) {
+				const ctrl = SugarCube.setup[name];
+				if (!ctrl || typeof ctrl !== 'object') continue;
+				if (!Array.isArray(ctrl.OWNED_VARS)) continue;
+				out.perController[name] = Array.from(ctrl.OWNED_VARS);
+				if (!Object.isFrozen(ctrl.OWNED_VARS)) out.unfrozen.push(name);
 			}
-			return result;
-		}, CONTROLLER_NAMES);
-		ownedByName = collected.perController;
+			return out;
+		});
+		ownedByName = discovered.perController;
+		unfrozenControllers = discovered.unfrozen;
+		controllerNames = Object.keys(ownedByName);
 		ownerMap = {};
 		for (const [ctrl, vars] of Object.entries(ownedByName)) {
-			if (!vars) continue;
 			for (const v of vars) {
 				if (!ownerMap[v]) ownerMap[v] = [];
 				ownerMap[v].push(ctrl);
@@ -103,19 +74,22 @@ test.describe('Variable ownership', () => {
 		await page.close();
 	});
 
-	test('every controller in CONTROLLER_NAMES exposes OWNED_VARS', () => {
-		const missing = CONTROLLER_NAMES.filter((n) => !ownedByName[n]);
+	test(`at least ${MIN_CONTROLLER_COUNT} controllers expose OWNED_VARS`, () => {
+		// Sanity check: discovery walks setup.* and picks up any object
+		// with an OWNED_VARS array. If a controller forgets to expose
+		// one (or fails to load) it silently disappears from every
+		// other check — this floor catches that regression.
 		expect(
-			missing,
-			`Controllers missing OWNED_VARS: ${missing.join(', ')}`
-		).toEqual([]);
+			controllerNames.length,
+			`Found only ${controllerNames.length} controllers with OWNED_VARS (expected >= ${MIN_CONTROLLER_COUNT}). Discovered: ${controllerNames.join(', ')}`
+		).toBeGreaterThanOrEqual(MIN_CONTROLLER_COUNT);
 	});
 
 	test('OWNED_VARS arrays are non-empty (or explicitly empty)', () => {
 		// Salon currently owns nothing — that's a deliberate design choice.
-		// Every other registered controller should claim at least one var.
-		const empty = CONTROLLER_NAMES
-			.filter((n) => ownedByName[n] && ownedByName[n].length === 0 && n !== 'Salon');
+		// Every other discovered controller should claim at least one var.
+		const empty = controllerNames
+			.filter((n) => ownedByName[n].length === 0 && n !== 'Salon');
 		expect(
 			empty,
 			`Controllers with empty OWNED_VARS (other than Salon): ${empty.join(', ')}`
@@ -144,20 +118,10 @@ test.describe('Variable ownership', () => {
 		).toEqual([]);
 	});
 
-	test('OWNED_VARS arrays are frozen', async () => {
-		const unfrozen = await page.evaluate((names) => {
-			const out = [];
-			for (const n of names) {
-				const ctrl = SugarCube.setup[n];
-				if (ctrl && ctrl.OWNED_VARS && !Object.isFrozen(ctrl.OWNED_VARS)) {
-					out.push(n);
-				}
-			}
-			return out;
-		}, CONTROLLER_NAMES);
+	test('OWNED_VARS arrays are frozen', () => {
 		expect(
-			unfrozen,
-			`Controllers with non-frozen OWNED_VARS: ${unfrozen.join(', ')}`
+			unfrozenControllers,
+			`Controllers with non-frozen OWNED_VARS: ${unfrozenControllers.join(', ')}`
 		).toEqual([]);
 	});
 });

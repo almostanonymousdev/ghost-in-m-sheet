@@ -435,6 +435,7 @@
     var OWNED_VARS = Object.freeze([
         'hunt',
         'huntActivated', 'huntActivationTime',
+        'elapsedTimeHunt', 'huntTimeRemain',
         'EMF5Check', 'SpiritboxCheck', 'GWBCheck', 'EctoglassCheck',
         'TemperatureCheck', 'UVLCheck',
         'ghostShadeInfoCollected', 'ghostSpiritInfoCollected',
