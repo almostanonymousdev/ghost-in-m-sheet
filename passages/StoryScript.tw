@@ -1786,10 +1786,10 @@ setup.searchToolMarkup = function (cfg) {
     if (cfg.replaceMode === "double") {
         completionReplace =
             '<<replace "#' + actionSel + '">>' + checkMarkup + '<</replace>>' +
-            '<<replace "#' + meterId + '">><</replace>>';
+            '<<replace "#' + meterId + '">><</replace>>' + '<<applyTickEffects>>';
     } else {
         completionReplace =
-            '<<replace "#' + meterId + '">>' + checkMarkup + '<</replace>>';
+            '<<replace "#' + meterId + '">>' + checkMarkup + '<</replace>>' + '<<applyTickEffects>>';
     }
 
     // Body of the <<repeat>> loop. Each iteration is one tool tick and
