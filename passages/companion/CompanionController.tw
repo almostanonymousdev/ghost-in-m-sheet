@@ -269,8 +269,7 @@ setup.Companion = (function () {
 	Companion.prototype.responseFor = function (chance) {
 		var idx = TIER_CHANCES.indexOf(chance);
 		var raw = idx === -1 ? this.neutralResp : this.clothingTiers[idx].resp;
-		var mcVar = State.variables.mc;
-		return raw.replace(/\$mc\.name/g, (mcVar && mcVar.name) || "");
+		return raw.replace(/\$mc\.name/g, setup.Mc.name() || "");
 	};
 
 	Companion.prototype.tierChance = function (idx) { return TIER_CHANCES[idx]; };
@@ -728,9 +727,80 @@ setup.Companion = (function () {
 		   trans companions reuse the rotating $transPicture file. */
 		/* Contacts.tw flags -- used on the MC's phone home screen
 		   to gate the per-companion contact row. */
-		hasMetBrook: function () { return State.variables.meetBrook !== undefined; },
+		hasMetBrook: function () { return setup.Library.hasMetBrook(); },
 		hasMetAlice: function () { return State.variables.meetAlice !== undefined; },
-		blakeUnlocked: function () { return (State.variables.relationshipBlake || 0) >= 5; },
+		markMetAlice: function () { State.variables.meetAlice = 1; },
+		blakeUnlocked: function () { return setup.Mall.blakeIsCompanionCandidate(); },
+		aliceWorkDone: function () { return State.variables.aliceWorkDone === 1; },
+		aliceWorkState: function () { return State.variables.aliceWorkDone; },
+		setAliceWorkState: function (n) { State.variables.aliceWorkDone = n; },
+		aliceLvl: function () {
+			var a = State.variables.alice;
+			return a ? a.lvl : 0;
+		},
+		brookLvl: function () {
+			var b = State.variables.brook;
+			return b ? b.lvl : 0;
+		},
+		blakeLvl: function () {
+			var b = State.variables.blake;
+			return b ? b.lvl : 0;
+		},
+		isCompChosenBy: function (name) {
+			return State.variables['isCompChosen' + name] === 1;
+		},
+		isGoingForHuntingAlone: function (name) {
+			return State.variables['is' + name + 'GoingForHuntingAlone'];
+		},
+		hasFinishedSoloHunt: function (name) {
+			return State.variables['is' + name + 'GoingForHuntingAlone'] === 2;
+		},
+		soloHuntPaymentState: function (name) {
+			return State.variables['payForHuntAlone' + name];
+		},
+		hasCompanionSelected: function () { return State.variables.isCompChosen === 1; },
+		chosenPlan: function () { return State.variables.chosenPlan; },
+		hasActiveCompanion: function () { return !!(State.variables.companion && State.variables.companion.name); },
+		activeCompanionName: function () {
+			var c = State.variables.companion;
+			return c && c.name;
+		},
+		/* Send the named companion solo to "Owaissa" or "Elm". Pays
+		   the 20$ contract fee from MC if not already paid. */
+		pickCompanionForSoloHunt: function (name, street) {
+			var s = State.variables;
+			var key = name.toLowerCase();
+			s['isCompChosen' + name] = 0;
+			s[key + 'ChooseOwaissa'] = (street === 'Owaissa') ? 1 : 0;
+			s[key + 'ChooseElm'] = (street === 'Elm') ? 1 : 0;
+			s['is' + name + 'GoingForHuntingAlone'] = 1;
+			this.payForSoloContract(name);
+		},
+		soloHuntChanceOwaissa: function (name) {
+			return State.variables['chanceToSuccessAloneOwaissa' + name];
+		},
+		soloHuntChanceElm: function (name) {
+			return State.variables['chanceToSuccessAloneElm' + name];
+		},
+		setSoloHuntChances: function (name, owaissa, elm) {
+			State.variables['chanceToSuccessAloneOwaissa' + name] = owaissa;
+			State.variables['chanceToSuccessAloneElm' + name] = elm;
+		},
+		/* Reset hunt plan/companion flags after a Myling event scares the
+		   companion away mid-hunt. If Alice was the active companion and
+		   she wasn't on a solo hunt, also clear her work-done flag. */
+		resetHuntPlansAfterMyling: function () {
+			var s = State.variables;
+			s.chosenPlan = 0;
+			s.chosenPlanActivated = 0;
+			s.randomGhostPassage = 0;
+			s.isCompRoomChosen = 0;
+			s.showComp = 0;
+			s.isCompChosen = 0;
+			if (isName('Alice') && s.isAliceGoingForHuntingAlone === 0) {
+				s.aliceWorkDone = 0;
+			}
+		},
 		isBrookeCurrentlyUnavailable: function () {
 			return setup.Home.brookePossessedCDLow();
 		},

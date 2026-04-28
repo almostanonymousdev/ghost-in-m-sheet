@@ -19,7 +19,7 @@ setup.Park = (function () {
 			return h > 5 && h < 22;
 		},
 		hasSportswear: function () {
-			return !!State.variables.sportswear;
+			return setup.Gym.hasSportswear();
 		},
 
 		// --- Jogging ---------------------------------------------

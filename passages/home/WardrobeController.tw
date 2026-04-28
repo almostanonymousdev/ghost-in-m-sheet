@@ -54,8 +54,7 @@
                     var: "neckChokerState1", img: "neck-choker1.png",
                     beauty: 0, slot: 1, key: "neckChoker1",
                     onEquip: function () {
-                        var mc = State.variables.mc;
-                        if (mc.lust <= 15) { mc.lust = 15; }
+                        if (setup.Mc.lust() <= 15) { setup.Mc.setLust(15); }
                     }
                 }
             ]
@@ -162,13 +161,13 @@
         equip: function (grp, item) {
             var V = State.variables;
             V[item.var] = setup.ClothingState.WORN;
-            if (item.beauty) { V.mc.beauty += item.beauty; }
+            if (item.beauty) { setup.Mc.addBeauty(item.beauty); }
 
             if (grp.rememberVar) {
                 var remembered = V[grp.rememberVar];
                 grp.items.forEach(function (other) {
                     if (other !== item && other.beauty && other.key === remembered) {
-                        V.mc.beauty -= other.beauty;
+                        setup.Mc.addBeauty(-other.beauty);
                     }
                 });
             }
@@ -194,7 +193,7 @@
         unequip: function (grp, item) {
             var V = State.variables;
             V[item.var] = setup.ClothingState.NOT_WORN;
-            if (item.beauty) { V.mc.beauty -= item.beauty; }
+            if (item.beauty) { setup.Mc.addBeauty(-item.beauty); }
             if (grp.rememberVar) { V[grp.rememberVar] = "no" + item.key; }
             if (typeof item.onUnequip === "function") { item.onUnequip(); }
         },
@@ -219,6 +218,32 @@
         },
         skirtWorn: function () {
             return State.variables.skirtState === "worn";
+        },
+        pantiesState: function () { return State.variables.pantiesState; },
+        braState:     function () { return State.variables.braState; },
+        tshirtState:  function () { return State.variables.tshirtState; },
+        jeansState:   function () { return State.variables.jeansState; },
+        shortsState:  function () { return State.variables.shortsState; },
+        skirtState:   function () { return State.variables.skirtState; },
+        rememberBottomOuter: function () { return State.variables.rememberBottomOuter; },
+        rememberBottomUnder: function () { return State.variables.rememberBottomUnder; },
+        rememberTopUnder:    function () { return State.variables.rememberTopUnder; },
+        rememberBottomStockings: function () { return State.variables.rememberBottomStockings; },
+        isPantiesStolen: function () { return State.variables.isPantiesStolen === 1; },
+        isBottomStolen:  function () { return State.variables.isBottomStolen === 1; },
+        isShirtStolen:   function () { return State.variables.isShirtStolen === 1; },
+        isBraStolen:     function () { return State.variables.isBraStolen === 1; },
+        isDressedForStreet: function () {
+            var s = State.variables;
+            var top = s.tshirtState !== 'not worn';
+            var bot = s.jeansState !== 'not worn' ||
+                (s.shortsState !== 'not worn' && s.shortsState !== 'not bought') ||
+                (s.skirtState !== 'not worn' && s.skirtState !== 'not bought');
+            return top && bot;
+        },
+        isWearingUnderwear: function () {
+            var s = State.variables;
+            return s.braState !== 'not worn' && s.pantiesState !== 'not worn';
         },
         /* Strip the MC down to "not worn" across every wardrobe slot.
            Used by the MonkeyPaw tier-3 sealed-room branch. */
@@ -254,7 +279,7 @@
             if (V.isBottomStolen  === 1) discardFromGroup("bottomOuter");
             if (V.isShirtStolen   === 1) discardFromGroup("tshirt");
             if (V.isBraStolen     === 1) discardFromGroup("bra");
-            V.isClothesStolen = 0;
+            setup.HauntedHouses.clearStolenClothesFlag();
             V.isPantiesStolen = 0;
             V.isBottomStolen = 0;
             V.isShirtStolen = 0;
@@ -275,7 +300,7 @@
             group.items.forEach(function (item) {
                 if (item.key === originalKey) {
                     V[item.var] = setup.ClothingState.WORN;
-                    if (item.beauty) { V.mc.beauty += item.beauty; }
+                    if (item.beauty) { setup.Mc.addBeauty(item.beauty); }
                     V[group.rememberVar] = originalKey;
                 }
             });
@@ -300,7 +325,7 @@
             group.items.forEach(function (item) {
                 if (item.key === key) {
                     V[item.var] = setup.ClothingState.NOT_WORN;
-                    if (item.beauty) { V.mc.beauty -= item.beauty; }
+                    if (item.beauty) { setup.Mc.addBeauty(-item.beauty); }
                     V[group.rememberVar] = "no" + item.key;
                 }
             });
@@ -322,7 +347,7 @@
             group.items.forEach(function (item) {
                 if (item.key === key) {
                     V[item.var] = setup.ClothingState.NOT_WORN;
-                    if (item.beauty) { V.mc.beauty -= item.beauty; }
+                    if (item.beauty) { setup.Mc.addBeauty(-item.beauty); }
                     V[group.rememberVar] = "no" + item.key;
                     if (item.key.indexOf("jeans")  === 0) stolenCategory = "jeans";
                     else if (item.key.indexOf("shorts") === 0) stolenCategory = "shorts";

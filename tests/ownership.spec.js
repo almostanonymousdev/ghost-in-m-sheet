@@ -209,6 +209,101 @@ test.describe('Variable ownership', () => {
 			`$variables referenced in passages but not owned by any controller:\n  ${unowned.join('\n  ')}`
 		).toEqual([]);
 	});
+
+	/* Encapsulation: a controller's IIFE may only directly read or write
+	   State.variables members listed in its own OWNED_VARS. Cross-domain
+	   state must go through the owning controller's API
+	   (setup.Other.foo()).
+
+	   Detection: for each [script] passage that defines
+	   `setup.X = (function () { … })`,
+	   - Match `State.variables.<name>` and `sv().<name>` references.
+	   - Detect aliases declared as `var <alias> = sv()` / `= State.variables`
+	     and treat `<alias>.<name>` as a state-var reference.
+	   - Each <name> must be in X's OWNED_VARS.
+	   Dynamic access (`s[expr]`) isn't validated. */
+	test('controllers only directly access variables they own', () => {
+		/* Updates is exempt: its job is save-migration. It deliberately
+		   reads and writes vars owned by other controllers to seed
+		   initial state on legacy saves before the owning APIs are
+		   safe to call. The header comment in UpdatesController.tw
+		   spells this out. */
+		const EXEMPT_CONTROLLERS = new Set(['Updates']);
+		const files = collectTwFiles(PASSAGES_ROOT);
+		const violations = [];
+		for (const file of files) {
+			const text = fs.readFileSync(file, 'utf8');
+			for (const passage of splitPassages(text)) {
+				if (!passage.isScript) continue;
+				/* A passage is a "controller passage" if it assigns to
+				   any setup.X where X has OWNED_VARS in our discovered
+				   map. Two patterns are in use:
+				     setup.X = (function () { … })()      -- IIFE
+				     setup.X = { OWNED_VARS: …, … }       -- object literal
+				   We accept either by just looking at top-level
+				   `setup.X = ` assignments and filtering to known
+				   controllers. */
+				const SETUP_RE = /\bsetup\.(\w+)\s*=(?!=)/g;
+				const ctrlSet = new Set();
+				let cm;
+				while ((cm = SETUP_RE.exec(passage.body)) !== null) {
+					if (ownedByName[cm[1]]) ctrlSet.add(cm[1]);
+				}
+				if (ctrlSet.size === 0) continue;
+				if ([...ctrlSet].some((n) => EXEMPT_CONTROLLERS.has(n))) continue;
+
+				/* If a passage defines multiple controllers in a single
+				   IIFE (rare), allow accesses to vars owned by any of
+				   them — they share a closure so the boundary doesn't
+				   meaningfully exist within the file. */
+				const ownedSet = new Set();
+				for (const n of ctrlSet) {
+					for (const v of ownedByName[n]) ownedSet.add(v);
+				}
+				const ctrlLabel = [...ctrlSet].sort().join('+');
+
+				const stripped = stripJsCommentsAndStrings(passage.body);
+
+				/* Aliases: any `var/let/const <name> = sv()` or
+				   `= State.variables` (not followed by . or [, which
+				   would indicate a sub-property read, not aliasing). */
+				const aliases = new Set();
+				const ALIAS_RE = /\b(?:var|let|const)\s+(\w+)\s*=\s*(?:sv\(\)|State\.variables)(?![.[])/g;
+				let am;
+				while ((am = ALIAS_RE.exec(stripped)) !== null) {
+					aliases.add(am[1]);
+				}
+
+				const accessRes = [
+					/State\.variables\.([a-zA-Z_]\w*)/g,
+					/\bsv\(\)\.([a-zA-Z_]\w*)/g
+				];
+				for (const alias of aliases) {
+					accessRes.push(new RegExp(`\\b${alias}\\.([a-zA-Z_]\\w*)`, 'g'));
+				}
+
+				const lines = stripped.split('\n');
+				for (let i = 0; i < lines.length; i++) {
+					for (const re of accessRes) {
+						re.lastIndex = 0;
+						let m;
+						while ((m = re.exec(lines[i])) !== null) {
+							const name = m[1];
+							if (ownedSet.has(name)) continue;
+							violations.push(
+								`${ctrlLabel} (${path.relative(PASSAGES_ROOT, file)}:${passage.headerLine + i}): .${name}`
+							);
+						}
+					}
+				}
+			}
+		}
+		violations.sort();
+		expect(
+			violations,
+			`Controllers directly accessing state-vars they don't own (route through the owner's API):\n  ${violations.join('\n  ')}`
+		).toEqual([]);
+	});
 });
 
 /* Recursively collect every .tw file under `dir`. */

@@ -32,13 +32,13 @@ setup.Church = (function () {
 			return sv().relationshipWithRain !== undefined;
 		},
 		canStartNunQuest: function () {
-			return sv().hasQuestForRescue === 0 && !this.hasMetRain();
+			return setup.MissingWomen.getQuestStage() === 0 && !this.hasMetRain();
 		},
 		showMissingPersonsBoard: function () {
-			return sv().hasQuestForRescue !== undefined && this.hasMetRain();
+			return setup.MissingWomen.getQuestStage() !== undefined && this.hasMetRain();
 		},
 		shouldRedirectToNunQuest: function () {
-			var stage = sv().hasQuestForRescue;
+			var stage = setup.MissingWomen.getQuestStage();
 			return stage === 2 || stage === 3;
 		},
 
@@ -47,15 +47,15 @@ setup.Church = (function () {
 			return setup.Ghosts.hasDiscovered('Mare') || this.hasMetRain();
 		},
 		holyWaterAvailable: function () {
-			return this.knowsAboutHolyWater() && sv().holyWaterIsCollected !== 1;
+			return this.knowsAboutHolyWater() && !setup.Home.hasHolyWater();
 		},
 		collectHolyWater: function () {
-			sv().holyWaterIsCollected = 1;
+			setup.Home.collectHolyWater();
 		},
 
 		// --- Exorcism --------------------------------------------
 		canRequestExorcism: function () {
-			return sv().exorcismQuestStage === 0 && this.hasMetRain();
+			return setup.Witch.exorcismQuestStage() === 0 && this.hasMetRain();
 		},
 		rainTrustsForExorcism: function () {
 			return (sv().relationshipWithRain || 0) >= 5;
@@ -66,7 +66,7 @@ setup.Church = (function () {
 
 		// --- Priest: flirt / sex ---------------------------------
 		priestRoutesUnlocked: function () {
-			return sv().eventToolsOneStart === 1;
+			return setup.Witch.eventToolsOneStart() === 1;
 		},
 		canFlirtWithPriest: function () {
 			return setup.Mc.lust() >= 40 && this.priestRoutesUnlocked();
@@ -80,7 +80,7 @@ setup.Church = (function () {
 
 		// --- Priest: level 3 tool quest --------------------------
 		canAskAboutLevel3Tools: function () {
-			return sv().eventToolsOneStart === 0;
+			return setup.Witch.eventToolsOneStart() === 0;
 		},
 		meetsBeautyForLevel3Tools: function () {
 			return setup.Mc.beauty() >= 45;
@@ -91,13 +91,13 @@ setup.Church = (function () {
 
 		// --- Mutations previously done inline by passages ---------
 		clearRescueQuest: function () {
-			sv().hasQuestForRescue = 0;
+			setup.MissingWomen.setQuestStage(0);
 		},
 		setRescueQuestStage: function (stage) {
-			sv().hasQuestForRescue = stage;
+			setup.MissingWomen.setQuestStage(stage);
 		},
-		rescueQuestStage: function () { return sv().hasQuestForRescue; },
-		clearRescueClue:    function () { sv().hasRescueClue = 0; },
+		rescueQuestStage: function () { return setup.MissingWomen.getQuestStage(); },
+		clearRescueClue:    function () { setup.MissingWomen.clearRescueClue(); },
 		initRainIfNeeded:   function () {
 			if (sv().relationshipWithRain === undefined) {
 				sv().relationshipWithRain = 0;
@@ -118,11 +118,11 @@ setup.Church = (function () {
 			return false;
 		},
 		startPriestToolEvent: function () {
-			sv().eventToolsOneStart = 1;
+			setup.Witch.setEventToolsOneStart(1);
 			setup.ToolController.setTier('temperature', 3);
 		},
 		priestToolEventStarted: function () {
-			return sv().eventToolsOneStart === 1;
+			return setup.Witch.eventToolsOneStart() === 1;
 		},
 		startChurchSexCooldown: function () {
 			sv().churchSexCD = 1;
@@ -142,8 +142,8 @@ setup.Church = (function () {
 
 		// --- Exorcism ---------------------------------------------
 		startExorcismQuest: function () {
-			sv().exorcismQuestStage = 1;
-			sv().amulet = 1;
+			setup.Witch.setExorcismQuestStage(1);
+			setup.Witch.grantAmulet();
 		},
 		clearBrookePossession: function () {
 			setup.Home.clearBrookePossession();
@@ -156,10 +156,10 @@ setup.Church = (function () {
 
 		// --- Cheat-menu rescue helpers (StoryCaption) -------------
 		setCheatRescueHouseHighlight: function (n) {
-			sv().cheatRescueHouseHighlight = n;
+			setup.MissingWomen.setCheatRescueHouseHighlight(n);
 		},
 		randomRescuePhotoNumber: function () {
-			return sv().randomRescuePhotoNumber;
+			return setup.MissingWomen.randomRescuePhotoNumber();
 		}
 	};
 })();

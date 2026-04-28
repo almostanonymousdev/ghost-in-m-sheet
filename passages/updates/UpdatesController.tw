@@ -447,6 +447,7 @@ setup.Updates = (function () {
 		initTick:                 initTick,
 
 		setTimerToolsDecreased:   function (v) { State.variables.timerToolsDecreased = v; },
+		markIroncladMigrated:     function () { State.variables.updateIronclad = 2; },
 		stepCount: function () { return State.variables.stepCount || 0; },
 		incrementStepCount: function () {
 			State.variables.stepCount = (State.variables.stepCount || 0) + 1;

@@ -63,6 +63,10 @@ setup.Witch = (function () {
 		hasSuccubusEncounter: function () {
 			return sv().succubus !== undefined;
 		},
+		succubusVisited: function () { return sv().succubus === 1; },
+		setSuccubus: function (n) { sv().succubus = n; },
+		exorcismQuestStage: function () { return sv().exorcismQuestStage; },
+		setExorcismQuestStage: function (n) { sv().exorcismQuestStage = n; },
 		exorcismQuestNotStarted: function () {
 			var s = sv().exorcismQuestStage;
 			return s === undefined || s === 0;
@@ -70,7 +74,7 @@ setup.Witch = (function () {
 
 		// --- Missing-girls / rescue quest ------------------------
 		canOfferRescueQuest: function () {
-			return sv().hasQuestForRescue === undefined;
+			return setup.MissingWomen.getQuestStage() === undefined;
 		},
 		rescueQuestUnlocked: function () {
 			return setup.Mc.lvl() >= 4;
@@ -91,6 +95,7 @@ setup.Witch = (function () {
 		},
 		clearCursedItemHeld: function () { sv().gotCursedItem = 0; },
 		setCursedItemHeld:   function () { sv().gotCursedItem = 1; },
+		gotCursedItem:       function () { return sv().gotCursedItem; },
 		setCursedItemFlag: function (key) { sv()[key] = 1; },
 		/* Consume the cursed item the player is carrying. Clears whichever
 		   of the four type flags is set and the held flag, returning the
@@ -133,6 +138,9 @@ setup.Witch = (function () {
 			var s = sv().eventToolsOneStart;
 			return s === undefined || s === 0;
 		},
+		eventToolsOneStart: function () { return sv().eventToolsOneStart; },
+		setEventToolsOneStart: function (n) { sv().eventToolsOneStart = n; },
+		grantAmulet: function () { sv().amulet = 1; },
 		ownsLevel3Gwb: function () {
 			return setup.ToolController.tierOf('gwb') === 3;
 		},
@@ -147,6 +155,8 @@ setup.Witch = (function () {
 			var s = sv().wardenClothesStage;
 			return s === 0 || s === 1;
 		},
+		wardenClothesStage: function () { return sv().wardenClothesStage; },
+		setWardenClothesStage: function (n) { sv().wardenClothesStage = n; },
 
 		// --- Weaken-the-ghost quest ------------------------------
 		canOfferWeakenQuest: function () {
@@ -198,7 +208,7 @@ setup.Witch = (function () {
 		},
 		detectorBought: function () { return setup.ToolController.detectorBought(); },
 		monkeyPawGuideAvailable: function () {
-			return sv().boughtMonkeyPawGuide === 1;
+			return setup.MonkeyPaw.isGuideAsked();
 		},
 
 		// --- Bedroom / night events ------------------------------
@@ -211,7 +221,7 @@ setup.Witch = (function () {
 			sv().weakenTheGhostQuest = 1;
 		},
 		markMonkeyPawGuideBought: function () {
-			sv().boughtMonkeyPawGuide = 1;
+			setup.MonkeyPaw.markGuideAsked();
 		},
 		markWardenOutfitHintOpened: function () {
 			sv().wardenClothesStage = 1;
@@ -220,7 +230,7 @@ setup.Witch = (function () {
 			sv().exorcismQuestStage = 0;
 		},
 		clearQuestForRescue: function () {
-			sv().hasQuestForRescue = 0;
+			setup.MissingWomen.setQuestStage(0);
 		},
 		startCursedItemQuest: function () {
 			sv().gotCursedItem = 0;
@@ -234,8 +244,7 @@ setup.Witch = (function () {
 
 		// --- Contract settlement ---------------------------------
 		payForContract: function () {
-			var s = sv();
-			setup.Mc.addMoney((s.moneyFromContract || 0) + (s.moneyFromWeakenTheGhost || 0));
+			setup.Mc.addMoney(setup.HauntedHouses.moneyFromContract() + (sv().moneyFromWeakenTheGhost || 0));
 		},
 		payForWeakenOnly: function () {
 			setup.Mc.addMoney(sv().moneyFromWeakenTheGhost || 0);
@@ -243,9 +252,9 @@ setup.Witch = (function () {
 		clearHiddenEvidence: function () {
 			setup.Ghosts.clearHiddenEvidence();
 		},
-		selectedGhostType: function () { return sv().ghostTypeSelected; },
+		selectedGhostType: function () { return setup.Ghosts.ghostTypeSelected(); },
 		huntRealName: function () { return setup.Ghosts.huntRealName(); },
-		expFromContract: function () { return sv().expFromContract; },
+		expFromContract: function () { return setup.HauntedHouses.expFromContract(); },
 
 		// --- Tentacles event (anti-midnight wraparound) ----------
 		spend2HoursHandleMidnight: function () {
@@ -257,6 +266,36 @@ setup.Witch = (function () {
 		isGhostWeakened: function () {
 			return sv().isWeakenGhost === 1;
 		},
-		markGhostWeakened: function () { sv().isWeakenGhost = 1; }
+		markGhostWeakened: function () { sv().isWeakenGhost = 1; },
+		moneyFromWeakenGhost: function () { return sv().moneyFromWeakenTheGhost || 0; },
+		recordWeakenReward: function (amount) {
+			sv().isWeakenGhost = 1;
+			sv().moneyFromWeakenTheGhost = amount;
+		},
+		clearWeakenGhostState: function () {
+			delete sv().isWeakenGhost;
+			delete sv().moneyFromWeakenTheGhost;
+		},
+		/* Drop the carried cursed item (clears type flag + held flag)
+		   and pay out `amount` to the MC. Used by the mall buyback. */
+		sellCarriedCursedItem: function (amount) {
+			var s = sv();
+			s.gotCursedItem = 0;
+			s.isCIDildo = 0;
+			s.isCIButtplug = 0;
+			s.isCIBeads = 0;
+			s.isCIHDildo = 0;
+			setup.Mc.addMoney(amount);
+		},
+		/* Which of the four cursed-item variants is the MC carrying?
+		   Returns "dildo" / "buttplug" / "beads" / "hdildo" or "". */
+		carriedCursedItemType: function () {
+			var s = sv();
+			if (s.isCIDildo === 1)    return 'dildo';
+			if (s.isCIButtplug === 1) return 'buttplug';
+			if (s.isCIBeads === 1)    return 'beads';
+			if (s.isCIHDildo === 1)   return 'hdildo';
+			return '';
+		}
 	};
 })();

@@ -105,8 +105,7 @@
                 message: MESSAGES.plasmClean
             };
         }
-        var V = State.variables;
-        var range = (V.tshirtState === "worn") ? [1, 7] : [8, 14];
+        var range = setup.Wardrobe.topShirtWorn() ? [1, 7] : [8, 14];
         return {
             pack:    { prefix: "mechanics/plasm/mess/", start: range[0], end: range[1], ext: ".png", cssClass: "displayCentredImgs" },
             message: MESSAGES.plasmMess
@@ -127,31 +126,35 @@
        handle both variants. Standard in Ironclad has a dedicated set that
        bypasses the clothing branch entirely. */
     function uvlLowerPack(variant) {
-        var V = State.variables;
+        var jeansW   = setup.Wardrobe.jeansWorn();
+        var jeans    = setup.Wardrobe.jeansState();
+        var shortsW  = setup.Wardrobe.shortsWorn();
+        var skirtW   = setup.Wardrobe.skirtWorn();
+        var pantiesW = setup.Wardrobe.pantiesWorn();
         if (variant === "art") {
-            if (V.jeansState  === "worn")     return { prefix: "ui/art/uvl/1.", start: 1, end: 3, ext: ".png" };
-            if (V.shortsState === "worn")     return { prefix: "ui/art/uvl/2.", start: 1, end: 2, ext: ".png" };
-            if (V.skirtState  === "worn") {
-                return V.pantiesState === "worn"
+            if (jeansW)   return { prefix: "ui/art/uvl/1.", start: 1, end: 3, ext: ".png" };
+            if (shortsW)  return { prefix: "ui/art/uvl/2.", start: 1, end: 2, ext: ".png" };
+            if (skirtW) {
+                return pantiesW
                     ? { prefix: "ui/art/uvl/3.", start: 1, end: 4, ext: ".png" }
                     : { prefix: "ui/art/uvl/4.", start: 1, end: 3, ext: ".png" };
             }
-            if (V.jeansState === "not worn") {
-                return V.pantiesState === "worn"
+            if (jeans === "not worn") {
+                return pantiesW
                     ? { prefix: "ui/art/uvl/5.", start: 1, end: 4, ext: ".png" }
                     : { prefix: "ui/art/uvl/6.", start: 1, end: 4, ext: ".png" };
             }
             return null;
         }
-        if (V.jeansState  === "worn")     return { prefix: "mechanics/uvl/1.", start: 1, end: 4, ext: ".png" };
-        if (V.shortsState === "worn")     return { prefix: "mechanics/uvl/3.", start: 1, end: 6, ext: ".png" };
-        if (V.skirtState  === "worn") {
-            return V.pantiesState === "worn"
+        if (jeansW)   return { prefix: "mechanics/uvl/1.", start: 1, end: 4, ext: ".png" };
+        if (shortsW)  return { prefix: "mechanics/uvl/3.", start: 1, end: 6, ext: ".png" };
+        if (skirtW) {
+            return pantiesW
                 ? { prefix: "mechanics/uvl/4.", start: 1, end: 5, ext: ".png" }
                 : { prefix: "mechanics/uvl/4.", start: 6, end: 9, ext: ".png" };
         }
-        if (V.jeansState === "not worn") {
-            return V.pantiesState === "worn"
+        if (jeans === "not worn") {
+            return pantiesW
                 ? { prefix: "mechanics/uvl/2.", start: 1, end: 6, ext: ".png" }
                 : { prefix: "mechanics/uvl/5.", start: 0, end: 4, ext: ".png" };
         }
@@ -162,10 +165,9 @@
         if (variant === "art") {
             return { prefix: "ui/art/uvl/7.", start: 1, end: 4, ext: ".png" };
         }
-        var V = State.variables;
-        if (V.tshirtState === "worn")     return { prefix: "mechanics/uvl/1.", start: 5, end:  7, ext: ".png" };
-        if (V.braState    === "worn")     return { prefix: "mechanics/uvl/2.", start: 7, end: 12, ext: ".png" };
-        if (V.braState    === "not worn") return { prefix: "mechanics/uvl/6.", start: 0, end:  4, ext: ".png" };
+        if (setup.Wardrobe.topShirtWorn())     return { prefix: "mechanics/uvl/1.", start: 5, end:  7, ext: ".png" };
+        if (setup.Wardrobe.braWorn())          return { prefix: "mechanics/uvl/2.", start: 7, end: 12, ext: ".png" };
+        if (setup.Wardrobe.braState() === "not worn") return { prefix: "mechanics/uvl/6.", start: 0, end:  4, ext: ".png" };
         return null;
     }
 
@@ -175,7 +177,7 @@
         if (state !== "ready" || !(g && g.hasEvidence("uvl"))) {
             return notFoundMarkup("uvl");
         }
-        if (variant !== "art" && State.variables.isIronclad === 1) {
+        if (variant !== "art" && setup.HauntedHouses.isIronclad()) {
             return packMarkup({ prefix: "mechanics/uvl/ironclad", start: 1, end: 6, ext: ".png" })
                 + '\n' + MESSAGES.uvl.standard + '<br>';
         }
@@ -202,11 +204,10 @@
     ];
 
     function maybeSetBrookPossessed() {
-        var V = State.variables;
-        if (V.companion && V.companion.name === "Brook"
-            && V.brook && V.brook.lvl >= 2
-            && V.isCompChosen === 1) {
-            V.isBrookePossessed = 1;
+        if (setup.Companion.activeCompanionName() === "Brook"
+            && setup.Companion.brookLvl() >= 2
+            && setup.Companion.isCompanionFlagActive()) {
+            setup.Home.markBrookePossessedActive();
         }
     }
 
@@ -217,7 +218,7 @@
 
         if (g && g.spiritboxPossessionChance > 0 && roll <= g.spiritboxPossessionChance) {
             maybeSetBrookPossessed();
-            if (V.sensualBodyPart && V.sensualBodyPart.brain >= 3) {
+            if (setup.Mc.bodyPartSensitivity('brain') >= 3) {
                 return '<div class="spiritbox-container">\n'
                      + '<b>Something\'s wrong, I think I\'m losing consciousness...</b>\n'
                      + '</div>\n'

@@ -42,6 +42,7 @@ setup.CursedItems = (function () {
 		isItemCursed: function (itemKey) {
 			return sv().cursedHomeItemActive === 1 && sv().cursedHomeItem === itemKey;
 		},
+		isActive: function () { return sv().cursedHomeItemActive === 1; },
 
 		/* Clear the curse after the event has been triggered. */
 		clearCurse: function () {

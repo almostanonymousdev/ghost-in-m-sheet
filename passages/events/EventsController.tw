@@ -132,7 +132,7 @@ setup.Events = (function () {
 		OWNED_VARS: OWNED_VARS,
 		// --- Companion state -------------------------------------
 		hasCompanionOnPlan1: function () {
-			return sv().isCompChosen === 1 && sv().chosenPlan === 'Plan1';
+			return setup.Companion.isCompanionFlagActive() && setup.Companion.chosenPlan() === 'Plan1';
 		},
 		companionIsAroused: function () {
 			return setup.Companion.lust() >= 60;
@@ -362,12 +362,12 @@ setup.Events = (function () {
 		},
 
 		// --- Ghost special-ability flags (Banshee / Cthulion) ----
-		enableBanshee:    function () { sv().bansheeAbility = 1; },
-		enableCthulion:   function () { sv().cthulionAbility = 1; },
-		clearBanshee:     function () { delete sv().bansheeAbility; },
-		clearCthulion:    function () { delete sv().cthulionAbility; },
-		bansheeActive:    function () { return sv().bansheeAbility === 1; },
-		cthulionActive:   function () { return sv().cthulionAbility === 1; },
+		enableBanshee:    function () { setup.Ghosts.enableBanshee(); },
+		enableCthulion:   function () { setup.Ghosts.enableCthulion(); },
+		clearBanshee:     function () { setup.Ghosts.clearBanshee(); },
+		clearCthulion:    function () { setup.Ghosts.clearCthulion(); },
+		bansheeActive:    function () { return setup.Ghosts.bansheeActive(); },
+		cthulionActive:   function () { return setup.Ghosts.cthulionActive(); },
 
 		// --- Argument randomizer (body-part key) -----------------
 		currentArgForRandomizer: function () { return sv().argForRandomizer; },
@@ -426,8 +426,7 @@ setup.Events = (function () {
 
 		// --- Weaken-ghost minigame reward ------------------------
 		recordWeakenReward: function () {
-			sv().isWeakenGhost = 1;
-			sv().moneyFromWeakenTheGhost = 30;
+			setup.Witch.recordWeakenReward(30);
 		},
 
 		// --- Room cleanup flag -----------------------------------

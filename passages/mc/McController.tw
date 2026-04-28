@@ -120,6 +120,11 @@ setup.Mc = (function () {
 
 		// --- Possession meter -----------------------------------
 		possession:     function () { return sv().mcpossession; },
+		sensualBodyPart: function () { return sv().sensualBodyPart; },
+		bodyPartSensitivity: function (part) {
+			var bp = sv().sensualBodyPart;
+			return bp ? (bp[part] || 0) : 0;
+		},
 		setPossession:  function (v) { sv().mcpossession = v; },
 		addPossession:  function (n) { sv().mcpossession += n; },
 		ensurePossession: function () {

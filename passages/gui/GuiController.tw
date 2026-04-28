@@ -84,7 +84,7 @@ setup.Gui = (function () {
 				portrait:      'characters/blake/blake.png',
 				infoPassage:   'BlakeInfo',
 				lockedHint:    'Befriend the assistant at the sex shop <br>(Relationship 5+)',
-				isUnlocked:    function () { return (s.relationshipBlake || 0) >= 5; },
+				isUnlocked:    function () { return (setup.Mall.blakeRelationship() || 0) >= 5; },
 				isHuntingAlone: function () { return huntingAlone('Blake'); },
 				canText:       function () { return true; },
 				possessedHint: '',
@@ -136,7 +136,7 @@ setup.Gui = (function () {
 		phoneContacts:           phoneContacts,
 		isCityNightOverlayActive: isCityNightOverlayActive,
 		phoneBought: function () {
-			return sv().isPhoneBought !== undefined;
+			return setup.Mall.phoneBought();
 		},
 		guideReturnPassage: guideReturnPassage,
 		setGuideReturnPassage: setGuideReturnPassage,

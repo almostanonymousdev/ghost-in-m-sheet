@@ -82,7 +82,7 @@ setup.MonkeyPaw = (function () {
 	   updated on every :passagestart for non-noreturn passages, so
 	   it holds the last real haunted-house room the MC stood in. */
 	function currentRoomPassage() {
-		return sv().return || passage();
+		return State.variables['return'] || passage();
 	}
 
 	/* Front-door lock is hunt-scoped state set by trapTheGhost. The
@@ -354,8 +354,7 @@ setup.MonkeyPaw = (function () {
 			   t3: remove evidence, ghost event on click, -30 sanity
 			   No-ops if the wish has already been used this hunt. */
 			activate: function () {
-				var s = sv();
-				if (s.knowledgeUsed === 1) {
+				if (setup.Ghosts.knowledgeUsed()) {
 					return { tier: 0, alreadyUsed: true };
 				}
 
@@ -370,10 +369,10 @@ setup.MonkeyPaw = (function () {
 					return hasHunt && !huntEvidence.includes(e)
 						&& hidden.indexOf(e) === -1;
 				});
-				s.chosenEvidence = missing.length
+				setup.Ghosts.setChosenEvidence(missing.length
 					? missing[Math.floor(Math.random() * missing.length)]
-					: null;
-				s.knowledgeUsed = 1;
+					: null);
+				setup.Ghosts.markKnowledgeUsed();
 				if (sanity) applySanity(sanity);
 
 				spendWish();
@@ -459,7 +458,7 @@ setup.MonkeyPaw = (function () {
 			var s = sv();
 			s.MonkeyPawStage = 0;
 			s.wishesCount = 3;
-			s.knowledgeUsed = undefined;
+			setup.Ghosts.clearKnowledgeUsed();
 			s.monkeyPawDoorLock = null;
 			s.monkeyPawBannedHouses = [];
 		},
@@ -576,6 +575,8 @@ setup.MonkeyPaw = (function () {
 			}
 		},
 		hasGuide: function () { return this.guideStage() === 2; },
+		isGuideAsked: function () { return this.guideStage() === 1; },
+		markGuideAsked: function () { sv().boughtMonkeyPawGuide = 1; },
 		/* Witch-side purchase effect: reveal everything. Money is
 		   deducted by the caller (WitchSale). */
 		purchaseGuide: function () {

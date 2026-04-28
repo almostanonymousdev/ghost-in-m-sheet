@@ -7,7 +7,7 @@
  */
 setup.SpecialEvent = (function () {
 	function sv() { return State.variables; }
-	function companion() { return State.variables.companion || {}; }
+	function companionName() { return setup.Companion.activeCompanionName(); }
 
 	/* Variables owned by this controller. Other controllers should
 	   query these only through the API methods below. */
@@ -60,10 +60,10 @@ setup.SpecialEvent = (function () {
 
 		// --- Companion -------------------------------------
 		companionIs: function (name) {
-			return companion().name === name;
+			return companionName() === name;
 		},
 		hasCompanion: function () {
-			return !!companion().name;
+			return !!companionName();
 		},
 
 		// --- Wraith escape ---------------------------------
@@ -80,22 +80,26 @@ setup.SpecialEvent = (function () {
 
 		// --- Mare stage ------------------------------------
 		mareStage: function () { return sv().ghostMareEventStage; },
+		setMareStage: function (n) { sv().ghostMareEventStage = n; },
 		mareStageAtLeast: function (n) {
 			return (sv().ghostMareEventStage || 0) >= n;
+		},
+		mareEventStart: function () { return sv().ghostMareEventStart; },
+		setMareEventStart: function (n) { sv().ghostMareEventStart = n; },
+		mareEventActive: function () {
+			return (sv().ghostMareEventStart || 0) >= 1;
+		},
+		spiritEventStage: function () { return sv().ghostSpiritEventStage; },
+		setSpiritEventStage: function (n) { sv().ghostSpiritEventStage = n; },
+		clearSpiritEventStage: function () { sv().ghostSpiritEventStage = 0; },
+		spiritEventCooldown: function () { return sv().ghostSpecialEventSpiritCD; },
+		spiritEventReady: function () {
+			return sv().ghostSpiritEventStage === 0 && sv().ghostSpecialEventSpiritCD === 0;
 		},
 
 		// --- Myling companion reset ------------------------
 		resetHuntPlansAfterMyling: function () {
-			var s = State.variables;
-			s.chosenPlan = 0;
-			s.chosenPlanActivated = 0;
-			s.randomGhostPassage = 0;
-			s.isCompRoomChosen = 0;
-			s.showComp = 0;
-			s.isCompChosen = 0;
-			if (this.companionIs('Alice') && s.isAliceGoingForHuntingAlone === 0) {
-				s.aliceWorkDone = 0;
-			}
+			setup.Companion.resetHuntPlansAfterMyling();
 		}
 	};
 })();

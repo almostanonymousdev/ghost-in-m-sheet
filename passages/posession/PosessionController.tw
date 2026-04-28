@@ -33,19 +33,19 @@ setup.Posession = (function () {
 
 		// --- Brooke rescue ---------------------------------------
 		canPepperSprayBrookeAttacker: function () {
-			return sv().hasPSpray === 1 && sv().hasPSprayCharges >= 1;
+			return setup.Mall.hasPepperSprayCharges();
 		},
 		analIsVeryLoose: function () {
-			return sv().sensualBodyPart.anal >= 5;
+			return setup.Mc.bodyPartSensitivity('anal') >= 5;
 		},
 		analIsTrained: function () {
-			return sv().sensualBodyPart.anal >= 3;
+			return setup.Mc.bodyPartSensitivity('anal') >= 3;
 		},
 
 		// --- Post-possession hunt cleanup ------------------------
 		isBlakeHuntWithCursedItem: function () {
-			return sv().isCompChosen === 1 &&
-				sv().companion.name === 'Blake' &&
+			return setup.Companion.isCompanionFlagActive() &&
+				setup.Companion.activeCompanionName() === 'Blake' &&
 				setup.Witch.hasCursedItemToTurnIn();
 		},
 
@@ -71,22 +71,12 @@ setup.Posession = (function () {
 		// mimic. Returns the new name if the roll actually changed; null
 		// otherwise.
 		rollMimicType: function (ghostTypes) {
-			var m = setup.Time.minutes();
-			var interval = (m >= 0 && m < 30) ? '0-29' : '30-59';
-			if (interval !== sv().lastChangeIntervalMimic) {
-				var name = ghostTypes[Math.floor(Math.random() * ghostTypes.length)];
-				State.variables.hunt.name = name;
-				sv().currentIntervalMimic = interval;
-				sv().lastChangeIntervalMimic = interval;
-				return name;
-			}
-			sv().currentIntervalMimic = interval;
-			return null;
+			return setup.Ghosts.rollMimicType(ghostTypes);
 		},
 
 		// --- "Hot" event flags ------------------------------------
-		pantiesState: function () { return sv().pantiesState; },
-		braState:     function () { return sv().braState; },
+		pantiesState: function () { return setup.Wardrobe.pantiesState(); },
+		braState:     function () { return setup.Wardrobe.braState(); },
 		clearHotFlags: function () {
 			sv().hotAct = 0;
 			sv().addtemptorealhouse = 0;
@@ -94,13 +84,13 @@ setup.Posession = (function () {
 
 		// --- PossessedBrooke helpers ------------------------------
 		consumePepperSprayCharge: function () {
-			State.variables.hasPSprayCharges -= 1;
+			setup.Mall.consumePepperSprayCharge();
 		},
 		skipRandomHours: function () {
-			State.variables.hours += 2 + Math.floor(Math.random() * 5);
+			setup.Time.addHours(2 + Math.floor(Math.random() * 5));
 		},
 		markBrookePossessedInactive: function () {
-			State.variables.isBrookePossessed = 'not active';
+			setup.Home.markBrookePossessedInactive();
 		}
 	};
 })();

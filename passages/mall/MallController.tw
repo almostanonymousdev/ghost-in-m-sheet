@@ -25,7 +25,7 @@ setup.Mall = (function () {
 
 		// --- Blake / adult shop ----------------------------------
 		blakeUnlocked: function () {
-			return sv().alice.lvl >= 2;
+			return setup.Companion.aliceLvl() >= 2;
 		},
 		blakeFirstMeeting: function () {
 			return sv().dialogBlake === undefined;
@@ -40,31 +40,19 @@ setup.Mall = (function () {
 			return sv().relationshipBlake <= 4;
 		},
 		sellCursedItemToBlake: function () {
-			var s = State.variables;
-			s.gotCursedItem = 0;
-			s.isCIDildo = 0;
-			s.isCIButtplug = 0;
-			s.isCIBeads = 0;
-			s.isCIHDildo = 0;
-			setup.Mc.addMoney(60);
+			setup.Witch.sellCarriedCursedItem(60);
 		},
 		pickBlakeForHunt: function () {
-			var s = State.variables;
-			s.companion = clone(s.blake);
-			setup.Companion.selectCompanion('Blake');
-			s.chosenPlan = 0;
-			s.isBlakeGoingForHuntingAlone = 0;
-			s.blakeChooseOwaissa = 0;
-			s.blakeChooseElm = 0;
+			setup.Companion.pickCisCompanion('Blake');
 		},
 		blakeIsCompanionCandidate: function () {
 			return sv().relationshipBlake >= 5;
 		},
 		blakeHuntFinishedAlone: function () {
-			return sv().isBlakeGoingForHuntingAlone === 2;
+			return setup.Companion.hasFinishedSoloHunt('Blake');
 		},
 		canPayForBlakeSoloHunt: function () {
-			var paid = sv().payForHuntAloneBlake;
+			var paid = setup.Companion.soloHuntPaymentState('Blake');
 			return (paid === undefined || paid === 0) && setup.Mc.money() >= 20;
 		},
 		cannotAffordBlakeSoloHunt: function () {
@@ -73,7 +61,7 @@ setup.Mall = (function () {
 
 		// --- Warden outfit purchase ------------------------------
 		canBuyWardenOutfit: function () {
-			return sv().wardenClothesStage === 1;
+			return setup.Witch.wardenClothesStage() === 1;
 		},
 		meetsCorruptionForWarden: function () {
 			return setup.Mc.corruption() >= 3;
@@ -85,7 +73,13 @@ setup.Mall = (function () {
 			return s === undefined || s === 0;
 		},
 		hasPepperSpray: function () { return sv().hasPSpray === 1; },
-		pepperSprayCharges: function () { return sv().hasPSprayCharges; },
+		pepperSprayCharges: function () { return sv().hasPSprayCharges || 0; },
+		hasPepperSprayCharges: function () {
+			return sv().hasPSpray === 1 && (sv().hasPSprayCharges || 0) >= 1;
+		},
+		consumePepperSprayCharge: function () {
+			sv().hasPSprayCharges -= 1;
+		},
 		buyPepperSpray: function () {
 			var s = State.variables;
 			s.hasPSpray = 1;
@@ -96,8 +90,11 @@ setup.Mall = (function () {
 		// --- Warden costume purchase -----------------------------
 		buyWardenOutfit: function () {
 			setup.Mc.spendMoney(500);
-			State.variables.wardenClothesStage = 2;
+			setup.Witch.setWardenClothesStage(2);
 		},
+
+		// --- Phone purchase --------------------------------------
+		phoneBought: function () { return sv().isPhoneBought !== undefined; },
 
 		// --- Blake dialogue state --------------------------------
 		blakeDialogStage: function () { return sv().dialogBlake; },
@@ -110,41 +107,24 @@ setup.Mall = (function () {
 		},
 		setBlakeRelationship: function (n) { State.variables.relationshipBlake = n; },
 		blakeLvl: function () {
-			var b = sv().blake;
-			return b ? b.lvl : 0;
+			return setup.Companion.blakeLvl();
 		},
 
 		// --- Chance-aloneHunt display values ---------------------
-		chanceBlakeAloneOwaissa: function () { return sv().chanceToSuccessAloneOwaissaBlake; },
-		chanceBlakeAloneElm:     function () { return sv().chanceToSuccessAloneElmBlake; },
+		chanceBlakeAloneOwaissa: function () { return setup.Companion.soloHuntChanceOwaissa('Blake'); },
+		chanceBlakeAloneElm:     function () { return setup.Companion.soloHuntChanceElm('Blake'); },
 
 		// --- Camera purchase eligibility -------------------------
 		canBuyCamera: function () {
-			return sv().isCameraBought === undefined && sv().ghostMareEventStart === 3;
+			return !setup.Home.isCameraBoughtFlagSet() && setup.SpecialEvent.mareEventStart() === 3;
 		},
 
 		// --- Picking Blake for a solo hunt -----------------------
 		pickBlakeForSoloHuntOwaissa: function () {
-			var s = State.variables;
-			s.isCompChosenBlake = 0;
-			s.blakeChooseOwaissa = 1;
-			s.blakeChooseElm = 0;
-			s.isBlakeGoingForHuntingAlone = 1;
-			if ((s.payForHuntAloneBlake === undefined || s.payForHuntAloneBlake === 0) && setup.Mc.money() >= 20) {
-				setup.Mc.spendMoney(20);
-				s.payForHuntAloneBlake = 1;
-			}
+			setup.Companion.pickCompanionForSoloHunt('Blake', 'Owaissa');
 		},
 		pickBlakeForSoloHuntElm: function () {
-			var s = State.variables;
-			s.isCompChosenBlake = 0;
-			s.blakeChooseOwaissa = 0;
-			s.blakeChooseElm = 1;
-			s.isBlakeGoingForHuntingAlone = 1;
-			if ((s.payForHuntAloneBlake === undefined || s.payForHuntAloneBlake === 0) && setup.Mc.money() >= 20) {
-				setup.Mc.spendMoney(20);
-				s.payForHuntAloneBlake = 1;
-			}
+			setup.Companion.pickCompanionForSoloHunt('Blake', 'Elm');
 		}
 	};
 })();

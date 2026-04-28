@@ -94,9 +94,9 @@ setup.Gym = (function () {
 			return sv().trainer1SexCD === 1;
 		},
 		hasSexyLingerieForTrainer1: function () {
-			var bs = sv().rememberBottomStockings;
-			var tu = sv().rememberTopUnder;
-			var bu = sv().rememberBottomUnder;
+			var bs = setup.Wardrobe.rememberBottomStockings();
+			var tu = setup.Wardrobe.rememberTopUnder();
+			var bu = setup.Wardrobe.rememberBottomUnder();
 			return (bs === 'stockings2' || bs === 'stockings3') &&
 				(tu === 'bra2' || tu === 'bra3') &&
 				(bu === 'panties2' || bu === 'panties3');

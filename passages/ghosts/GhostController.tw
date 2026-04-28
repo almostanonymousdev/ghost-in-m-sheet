@@ -43,7 +43,7 @@
             huntCondition:     function (mc) { return mc.lust >= 30; },
             huntConditionText: "Can start a hunt if you have >= 30 lust",
             walkHomePassage:   "GhostSpecialEventSpirit",
-            onHuntEnd:         function () { State.variables.ghostSpiritEventStage = 0; }
+            onHuntEnd:         function () { setup.SpecialEvent.clearSpiritEventStage(); }
         },
         {
             name: "Poltergeist", image: "poltergeist.webp",
@@ -170,11 +170,10 @@
             huntCondition:     function (mc) { return mc.lust >= 30; },
             huntConditionText: "Can start a hunt if you have >= 30 lust",
             onEnterHouse: function () {
-                var V = State.variables;
-                if (V.ghostMareEventStart === 0) {
-                    V.ghostMareEventStart = 1;
+                if (setup.SpecialEvent.mareEventStart() === 0) {
+                    setup.SpecialEvent.setMareEventStart(1);
                 } else if (State.hasPlayed("GhostSpecialEventMare")) {
-                    V.ghostMareEventStart = 4;
+                    setup.SpecialEvent.setMareEventStart(4);
                 }
             }
         },
@@ -679,7 +678,60 @@
             return State.variables.huntActivated === 1;
         },
         knowledgeUsed: function () { return State.variables.knowledgeUsed === 1; },
+        markKnowledgeUsed: function () { State.variables.knowledgeUsed = 1; },
+        ghostTypeSelected: function () { return State.variables.ghostTypeSelected; },
+        setGhostTypeSelected: function (v) { State.variables.ghostTypeSelected = v; },
+        elapsedTimeHunt: function () { return State.variables.elapsedTimeHunt || 0; },
+        setElapsedTimeHunt: function (n) { State.variables.elapsedTimeHunt = n; },
+        huntTimeRemain: function () { return State.variables.huntTimeRemain || 0; },
+        setHuntTimeRemain: function (n) { State.variables.huntTimeRemain = n; },
+        resetEvidenceChecks: function () {
+            var s = State.variables;
+            s.EMF5Check = false;
+            s.EctoglassCheck = false;
+            s.GWBCheck = false;
+            s.SpiritboxCheck = false;
+            s.TemperatureCheck = false;
+            s.UVLCheck = false;
+        },
+        hasHighPriestess: function () { return State.variables.highpriestess === 1; },
+        setHighPriestess: function (on) { State.variables.highpriestess = on ? 1 : 0; },
+        consumeHighPriestess: function () { State.variables.highpriestess = 0; },
+        twinsEventActive: function () { return State.variables.thetwinsevent === 1; },
+        enableBanshee:  function () { State.variables.bansheeAbility = 1; },
+        enableCthulion: function () { State.variables.cthulionAbility = 1; },
+        clearBanshee:   function () { delete State.variables.bansheeAbility; },
+        clearCthulion:  function () { delete State.variables.cthulionAbility; },
+        bansheeActive:  function () { return State.variables.bansheeAbility === 1; },
+        cthulionActive: function () { return State.variables.cthulionAbility === 1; },
+        /* Mimic rotation: every 30 in-game minutes the mimic disguises itself
+           as a different ghost. Returns the new disguise name when the
+           interval flipped, null otherwise. */
+        rollMimicType: function (ghostTypes) {
+            var V = State.variables;
+            var m = setup.Time.minutes();
+            var interval = (m >= 0 && m < 30) ? '0-29' : '30-59';
+            if (interval !== V.lastChangeIntervalMimic) {
+                var name = ghostTypes[Math.floor(Math.random() * ghostTypes.length)];
+                if (V.hunt) { V.hunt.name = name; }
+                V.currentIntervalMimic = interval;
+                V.lastChangeIntervalMimic = interval;
+                return name;
+            }
+            V.currentIntervalMimic = interval;
+            return null;
+        },
+        twinsEventReady:  function () {
+            return State.variables.thetwinsevent === 1 && State.variables.thetwinseventCD === 0;
+        },
+        consumeTwinsEvent: function () {
+            State.variables.thetwinsevent = 0;
+            State.variables.thetwinseventCD = 1;
+        },
+        clearTwinsEvent: function () { State.variables.thetwinsevent = 0; },
+        clearKnowledgeUsed: function () { State.variables.knowledgeUsed = undefined; },
         chosenEvidence: function () { return State.variables.chosenEvidence; },
+        setChosenEvidence: function (e) { State.variables.chosenEvidence = e; },
         huntEvidence: function () {
             var h = State.variables.hunt;
             return h && h.evidence ? h.evidence : [];

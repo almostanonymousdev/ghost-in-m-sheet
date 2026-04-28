@@ -33,10 +33,10 @@ setup.MissingWomen = (function () {
 		OWNED_VARS: OWNED_VARS,
 		// --- Holy water -------------------------------------------
 		hasHolyWater: function () {
-			return sv().holyWaterIsCollected === 1;
+			return setup.Home.hasHolyWater();
 		},
 		useHolyWater: function () {
-			sv().holyWaterIsCollected = 0;
+			setup.Home.consumeHolyWater();
 		},
 
 		// --- Quest stage predicates --------------------------------
@@ -125,7 +125,7 @@ setup.MissingWomen = (function () {
 			sv().rescueStage = 0;
 		},
 		sleepOffHoursAfterEvent: function () {
-			State.variables.hours = (State.variables.hours || 0) + 3;
+			setup.Time.addHours(3);
 		},
 		setJadePossessedStage: function (n) { sv().rescueJadePossessed = n; },
 		setVictoriaPossessedStage: function (n) { sv().rescueVictoriaPossessed = n; },
@@ -166,6 +166,7 @@ setup.MissingWomen = (function () {
 		rescueStage: function () { return sv().rescueStage; },
 		setRescueStage: function (n) { sv().rescueStage = n; },
 		setRescueClueFound: function () { sv().hasRescueClue = 1; },
+		clearRescueClue:   function () { sv().hasRescueClue = 0; },
 
 		// --- Rescue quest state -----------------------------------
 		setQuestStage: function (stage) { sv().hasQuestForRescue = stage; },
@@ -189,6 +190,7 @@ setup.MissingWomen = (function () {
 
 		// --- Cheat-only highlight flag ----------------------------
 		cheatRescueHouseHighlight: function () { return sv().cheatRescueHouseHighlight; },
+		setCheatRescueHouseHighlight: function (n) { sv().cheatRescueHouseHighlight = n; },
 
 		// --- EMF upgrade reward from clue --------------------------
 		emfLevel: function () {

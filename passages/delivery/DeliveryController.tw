@@ -188,8 +188,8 @@ setup.Delivery = (function () {
 		markPackageEvent: function () { sv().deliveryPackageEvent = 1; },
 		markPizzaEvent:   function () { sv().deliveryPizzaEvent = 1; },
 		startManagerBJCooldown: function () { sv().deliveryBJCD = 1; },
-		markMetAlice:     function () { sv().meetAlice = 1; },
-		hasMetAlice:      function () { return sv().meetAlice !== undefined; },
+		markMetAlice:     function () { setup.Companion.markMetAlice(); },
+		hasMetAlice:      function () { return setup.Companion.hasMetAlice(); },
 		markFirstVisited: function () { sv().firstVisitDeliveryHub = false; },
 
 		// --- Active-icon flags for the three daily orders ---------
