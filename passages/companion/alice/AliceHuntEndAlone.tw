@@ -108,5 +108,5 @@
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 <</done>>
-<<run setup.Home.setAliceWorkState(0)>>
+<<run setup.Companion.setAliceWorkState(0)>>
 @@.backbtn; [[Back|previous()][setup.Companion.clearSoloHuntStreet("Alice")]]@@

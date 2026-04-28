@@ -1252,7 +1252,7 @@ setup.HauntConditions = (function () {
      * array used by the HUD widget to show "why". */
     function snapshot() {
         var V = State.variables;
-        var inHouse = !!(setup.HauntedHouses && setup.HauntedHouses.isInsideHouse && setup.HauntedHouses.isInsideHouse());
+        var inHouse = !!(setup.Ghosts && setup.Ghosts.isHunting && setup.Ghosts.isHunting());
         var snap = {
             dark:              false,
             clothing:          clothingState(),
@@ -1389,7 +1389,7 @@ setup.HauntConditions = (function () {
         var V = State.variables;
         var mc = V.mc;
         if (!mc) return;
-        var inHouse = !!(setup.HauntedHouses && setup.HauntedHouses.isInsideHouse && setup.HauntedHouses.isInsideHouse());
+        var inHouse = !!(setup.Ghosts && setup.Ghosts.isHunting && setup.Ghosts.isHunting());
         var snap = snapshot();
 
         if (snap.sanityPerStep !== 0) {

@@ -18,6 +18,6 @@
 	<<linkappend "@@.usebtn; you suck him greedily@@">>
 		<<video "mechanics/exorcism/thetwins3.mp4">>
 		@@.mc-thoughts; You feel them picking up the pace, their movements becoming more urgent, until they come on your face, covering you with warm cum.@@<br><br>
-		@@.backbtn; [[Sleep|SleepTwins][setup.Home.setSummonText(1); setup.Home.clearTwinsEvent()]]@@<br>
+		@@.backbtn; [[Sleep|SleepTwins][setup.Home.setSummonText(1); setup.Ghosts.clearTwinsEvent()]]@@<br>
 	<</linkappend>>
 <</linkappend>>

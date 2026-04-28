@@ -27,7 +27,7 @@
 @@.backbtn;<<link "Wake up" "GhostSpecialEventMareEnd">><<if setup.Time.sleepAdvanceHours(3)>><<include "ResetCooldowns">>
 <</if>>
 <</link>>
-<<elseif setup.Home.spiritNapEventReady()>>
+<<elseif setup.SpecialEvent.spiritEventReady()>>
 @@.backbtn;<<link "Wake up" "GhostSpecialEventSleepSpirit">><<if setup.Time.sleepAdvanceHours(3)>><<include "ResetCooldowns">>
 <</if>>
 <</link>>

@@ -504,8 +504,8 @@ async function walkPassages(browser, passages, label) {
       V.isBrookGoingForHuntingAlone = 2;
       V.isAliceGoingForHuntingAlone = 2;
       V.isBlakeGoingForHuntingAlone = 2;
-      if (typeof setup.Home.setAliceWorkState === 'function') {
-        setup.Home.setAliceWorkState(2);
+      if (typeof setup.Companion.setAliceWorkState === 'function') {
+        setup.Companion.setAliceWorkState(2);
       }
 
       // Event content placeholders — passages that consume these

@@ -205,10 +205,6 @@ setup.HauntedHouses = (function () {
 			HOUSE_CONFIG.forEach(function (h) { s[h.flag] = 0; });
 		},
 
-		// --- Hunt mode (forwards to setup.Ghosts) ---------------
-		isContractMode: function () { return setup.Ghosts.hasContract(); },
-		isInsideHouse: function () { return setup.Ghosts.isHunting(); },
-		isHuntOver: function () { return setup.Ghosts.isPossessed(); },
 		endHunt: function () {
 			this.commitTempCorruption();
 			setup.Ghosts.setHuntMode(setup.Ghosts.HuntMode.POSSESSED);
@@ -220,8 +216,6 @@ setup.HauntedHouses = (function () {
 		isEnigma: function () { return sv().isEnigma === 1; },
 		isIronclad: function () { return sv().isIronclad === 1; },
 		isRealHouseActive: function () { return sv().isrealhouse === 1; },
-		wardenClothesStage: function () { return setup.Witch.wardenClothesStage(); },
-		setWardenClothesStage: function (n) { setup.Witch.setWardenClothesStage(n); },
 		setIroncladActive: function (on) { sv().isIronclad = on ? 1 : 0; },
 		isRealHouse: function () { return sv().isrealhouse === 1; },
 
@@ -256,9 +250,6 @@ setup.HauntedHouses = (function () {
 			if (setup.HauntConditions && setup.HauntConditions.resetHuntFlags) {
 				setup.HauntConditions.resetHuntFlags();
 			}
-		},
-		resetEvidenceChecks: function () {
-			setup.Ghosts.resetEvidenceChecks();
 		},
 
 		// --- Corruption accumulator used at hunt end ------------
@@ -377,9 +368,6 @@ setup.HauntedHouses = (function () {
 			return this.hasBottomWorn() || this.hasTopWorn()
 				|| setup.Wardrobe.pantiesWorn() || setup.Wardrobe.braWorn();
 		},
-		huntMode: function () {
-			return setup.Ghosts.huntMode();
-		},
 
 		/* What's the cursed-item / rescue-clue / tarot / monkey-paw
 		   stash spot for the active house? Returns undefined if
@@ -401,11 +389,6 @@ setup.HauntedHouses = (function () {
 			if (sv().isOwaissa === 1) return 'Owaissa Street';
 			return null;
 		},
-		/* Strip the MC to naked (wardrobe state, not slot flags). Used
-		   by the tier-3 SealedRoomSubmit branch. */
-		stripToNaked: function () {
-			setup.Wardrobe.stripToNaked();
-		},
 		/* Handed-by-companion cursed item: marks gotCursedItem and
 		   rolls one of the four item types. */
 		rollCompanionCursedItem: function () {
@@ -413,8 +396,6 @@ setup.HauntedHouses = (function () {
 			var flags = ["isCIDildo", "isCIButtplug", "isCIBeads", "isCIHDildo"];
 			setup.Witch.setCursedItemFlag(flags[Math.floor(Math.random() * flags.length)]);
 		},
-		hasActiveQuestForRescue: function () { return setup.MissingWomen.hasActiveQuest(); },
-		hasRescueClue: function () { return setup.MissingWomen.hasRescueClue(); },
 		tarotCardsStage: function () { return sv().tarotCardsStage || 0; },
 		setTarotCardsStage: function (n) { sv().tarotCardsStage = n; },
 		drawnCards: function () { return sv().drawnCards || 0; },
@@ -449,7 +430,7 @@ setup.HauntedHouses = (function () {
 			delete s.cursedHuntEndTime;
 			setup.Witch.clearWeakenGhostState();
 			setup.Time.setTemperature(0);
-			this.resetEvidenceChecks();
+			setup.Ghosts.resetEvidenceChecks();
 		},
 		incrementDrawnCards: function () {
 			sv().drawnCards = (sv().drawnCards || 0) + 1;
@@ -460,25 +441,15 @@ setup.HauntedHouses = (function () {
 			sv().chosenCard = setup.drawTarotCard(setup.tarotDeck);
 			return sv().chosenCard;
 		},
-		tarotDeck: function () { return setup.tarotDeck; },
-		hasNoCursedItem: function () { return !setup.Witch.cursedItemQuestStarted() || setup.Witch.cursedItemQuestActive(); },
 		crucifixAmount: function () { return setup.ToolController.crucifixAmount() || 0; },
 		addCrucifix: function (n) {
 			for (var i = 0; i < (n || 1); i++) setup.ToolController.addCrucifix();
-		},
-		spendCrucifix: function () {
-			setup.ToolController.consumeCrucifix();
-		},
-		/* Which of the four cursed-item variants is the MC carrying?
-		   Returns "dildo" / "buttplug" / "beads" / "hdildo" or "". */
-		cursedItemType: function () {
-			return setup.Witch.carriedCursedItemType();
 		},
 		/* Random cursed-item usage video for the active item variant.
 		   Top-covered dildo has a longer gallery; the others share
 		   their own fixed set. */
 		cursedItemVideo: function () {
-			var t = this.cursedItemType();
+			var t = setup.Witch.carriedCursedItemType();
 			var list;
 			if (t === 'dildo') {
 				list = setup.Wardrobe.topShirtWorn()
@@ -597,10 +568,6 @@ setup.HauntedHouses = (function () {
 			if (isSkirt(ro) && noPanties(ru))   return "characters/mc/skirtnp.mp4";
 			return null;
 		},
-		isPantiesStolen: function () { return setup.Wardrobe.isPantiesStolen(); },
-		isBottomStolen:  function () { return setup.Wardrobe.isBottomStolen(); },
-		isShirtStolen:   function () { return setup.Wardrobe.isShirtStolen(); },
-		isBraStolen:     function () { return setup.Wardrobe.isBraStolen(); },
 		clearClothesStolenFlag: function () { sv().isClothesStolen = 0; },
 		isBottomless: function () {
 			return !setup.Wardrobe.jeansWorn() && !setup.Wardrobe.shortsWorn()
@@ -621,14 +588,6 @@ setup.HauntedHouses = (function () {
 			var s = sv();
 			if (s.isOwaissa === 1) s.placeForClothesStolenOwaissa = undefined;
 			if (s.isElm === 1)     s.placeForClothesStolenElm = undefined;
-		},
-
-		// --- Tarot High-Priestess override ---------------------
-		// The High-Priestess tarot card, while active, swaps the
-		// hunt-end exit link from Sleep → $return (the passage that
-		// launched the hunt). The card burns itself on use.
-		hasHighPriestess: function () { return setup.Ghosts.hasHighPriestess(); },
-		setHighPriestess: function (on) { setup.Ghosts.setHighPriestess(on); },
-		consumeHighPriestess: function () { setup.Ghosts.consumeHighPriestess(); }
+		}
 	};
 })();

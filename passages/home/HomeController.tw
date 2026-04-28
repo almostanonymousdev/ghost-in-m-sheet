@@ -37,12 +37,6 @@ setup.Home = (function () {
 	return {
 		OWNED_VARS: OWNED_VARS,
 		// --- Outside / clothing gating ----------------------
-		isDressedForStreet: function () {
-			return setup.Wardrobe.isDressedForStreet();
-		},
-		isWearingUnderwear: function () {
-			return setup.Wardrobe.isWearingUnderwear();
-		},
 		isDirty: function () {
 			return setup.Mc.dirty() === 1;
 		},
@@ -50,15 +44,15 @@ setup.Home = (function () {
 			return setup.Mc.corruption() >= 10;
 		},
 		canLeaveHome: function () {
-			if (!this.isDressedForStreet()) { return false; }
+			if (!setup.Wardrobe.isDressedForStreet()) { return false; }
 			if (this.isDirty()) { return false; }
 			if (this.isCorruptEnoughToSkipUnderwear()) { return true; }
-			return this.isWearingUnderwear();
+			return setup.Wardrobe.isWearingUnderwear();
 		},
 		leaveBlockerReason: function () {
-			if (!this.isDressedForStreet()) { return 'naked'; }
+			if (!setup.Wardrobe.isDressedForStreet()) { return 'naked'; }
 			if (this.isDirty()) { return 'dirty'; }
-			if (!this.isCorruptEnoughToSkipUnderwear() && !this.isWearingUnderwear()) {
+			if (!this.isCorruptEnoughToSkipUnderwear() && !setup.Wardrobe.isWearingUnderwear()) {
 				return 'underwear';
 			}
 			return null;
@@ -68,14 +62,8 @@ setup.Home = (function () {
 		isNightForHunt: function () {
 			return setup.Time.hours() >= 23;
 		},
-		hasHuntContract: function () {
-			return setup.Ghosts.hasContract();
-		},
-		needsWitch: function () {
-			return setup.Ghosts.isPossessed();
-		},
 		canGoHunting: function () {
-			return this.hasHuntContract() && this.canLeaveHome();
+			return setup.Ghosts.hasContract() && this.canLeaveHome();
 		},
 
 		// --- Brooke -----------------------------------------
@@ -105,9 +93,6 @@ setup.Home = (function () {
 		},
 
 		// --- Sleep / nap ghost hooks ------------------------
-		spiritNapEventReady: function () {
-			return setup.SpecialEvent.spiritEventReady();
-		},
 		tentaclesNapEventReady: function () {
 			return setup.Witch.hasCursedItemToTurnIn() && sv().gotCursedItemEventCD >= 2;
 		},
@@ -131,16 +116,11 @@ setup.Home = (function () {
 		exorcismOnCooldown: function () {
 			return setup.Witch.exorcismQuestStage() === 1 && sv().exorcismCD === 1;
 		},
-		mareEventActive: function () {
-			return setup.SpecialEvent.mareEventActive();
-		},
-		mareEventStart: function () { return setup.SpecialEvent.mareEventStart(); },
-		setMareEventStart: function (n) { setup.SpecialEvent.setMareEventStart(n); },
 		mareStageIsLow: function () {
 			return setup.SpecialEvent.mareStage() <= 2;
 		},
 		canUseHolyWaterOnMare: function () {
-			return sv().holyWaterIsCollected === 1 && this.mareEventActive();
+			return sv().holyWaterIsCollected === 1 && setup.SpecialEvent.mareEventActive();
 		},
 		useHolyWaterOnMare: function () {
 			setup.SpecialEvent.setMareEventStart(0);
@@ -155,12 +135,12 @@ setup.Home = (function () {
 			return previous(2) === 'GhostSpecialEventMareEnd';
 		},
 		justSleptFromBedroom: function () {
-			return previous() === 'Sleep' && this.mareEventActive() &&
+			return previous() === 'Sleep' && setup.SpecialEvent.mareEventActive() &&
 				!this.returningFromHuntDefeat();
 		},
 		mareEventShouldEscalate: function () {
 			return hasVisited('GhostSpecialEventMare') &&
-				this.mareEventActive() &&
+				setup.SpecialEvent.mareEventActive() &&
 				!this.returningFromHuntDefeat();
 		},
 		advanceMareStageOnWake: function () {
@@ -207,17 +187,9 @@ setup.Home = (function () {
 		},
 
 		// --- Twins mirror event ---------------------------
-		twinsEventAvailable: function () {
-			return setup.Ghosts.twinsEventReady();
-		},
 		twinsEventTriggered: function (beautyRoll) {
 			// ghost only materialises fully if MC is beautiful enough
 			return beautyRoll <= setup.Mc.beauty();
-		},
-
-		// --- Cursed home items --------------------------
-		hasCursedItem: function () {
-			return setup.CursedItems.isActive();
 		},
 
 		// --- Makeup -------------------------------------
@@ -339,11 +311,6 @@ setup.Home = (function () {
 		// --- Succubus arrival ----------------------------
 		markSuccubusArrived: function () { setup.Witch.setSuccubus(1); },
 
-		// --- Mirror / twins event ------------------------
-		consumeTwinsEvent: function () {
-			setup.Ghosts.consumeTwinsEvent();
-		},
-
 		// --- Makeup / mirror application -----------------
 		removeMakeupWithPenalty: function (penalty) {
 			// Sleeping / washing-with-shower paths call this from the
@@ -403,33 +370,20 @@ setup.Home = (function () {
 		markSleptWithCameraOn: function () { sv().mcSleptWithCameraOn = 1; },
 
 		// --- PC desktop helpers -------------------------
-		aliceWorkDone: function () { return setup.Companion.aliceWorkDone(); },
-		aliceWorkState: function () { return setup.Companion.aliceWorkState(); },
-		setAliceWorkState: function (n) { setup.Companion.setAliceWorkState(n); },
 		sleptWithCameraOn: function () { return sv().mcSleptWithCameraOn === 1; },
 		mareStageLow: function () { return setup.SpecialEvent.mareStage() <= 2; },
-		setMareStart: function (n) { setup.SpecialEvent.setMareEventStart(n); },
 		webcamAccountCreated: function () { return sv().webcamAccountCreated === 1; },
 		createWebcamAccount: function () { sv().webcamAccountCreated = 1; },
 
 		// --- Summoning / succubus ritual -----------------
-		spiritEventStage: function () { return setup.SpecialEvent.spiritEventStage(); },
-		setSpiritEventStage: function (n) { setup.SpecialEvent.setSpiritEventStage(n); },
-		twinsEventActive: function () { return setup.Ghosts.twinsEventActive(); },
-		clearTwinsEvent: function () { setup.Ghosts.clearTwinsEvent(); },
-		gotCursedItemFlag: function () { return setup.Witch.gotCursedItem(); },
-		exorcismQuestStage: function () { return setup.Witch.exorcismQuestStage(); },
-		setExorcismQuestStage: function (n) { setup.Witch.setExorcismQuestStage(n); },
 		succubusEventTimer: function () { return sv().succubusEventTimer; },
 		setSuccubusEventTimer: function (n) { sv().succubusEventTimer = n; },
-		setSuccubus: function (n) { setup.Witch.setSuccubus(n); },
 		summoningChoice: function () { return sv().summoningChoice; },
 		setSummoningChoice: function (n) { sv().summoningChoice = n; },
 		setExorcismCooldown: function (n) { sv().exorcismCD = n; },
 		setSummonText: function (n) { sv().summonText = n; },
 		setSuccubusChoiceText: function (n) { sv().succubusChoiceEventText = n; },
 		setSuccubusTVText: function (n) { sv().succubusTVText = n; },
-		setMareEventStartValue: function (n) { setup.SpecialEvent.setMareEventStart(n); },
 		succubusPCEventStage: function () { return sv().succubusPCEventStage; },
 		setSuccubusPCEventStage: function (n) { sv().succubusPCEventStage = n; },
 		bumpSuccubusPCEventStage: function () {
@@ -497,9 +451,6 @@ setup.Home = (function () {
 			setup.Mc.setSanity(40 + Math.floor(Math.random() * 31));   // 40..70
 			setup.Mc.setEnergy(setup.Mc.energyMax());
 			setup.Mc.setLust(30 + Math.floor(Math.random() * 31));     // 30..60
-		},
-		clearPenaltyOnMareWake: function () {
-			setup.Mc.clearPenalty();
 		},
 		hasHolyWater: function () { return sv().holyWaterIsCollected === 1; },
 		collectHolyWater: function () { sv().holyWaterIsCollected = 1; },

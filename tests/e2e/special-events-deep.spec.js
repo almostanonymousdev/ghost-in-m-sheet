@@ -29,11 +29,11 @@ test.describe('Special events — Mare progression state machine', () => {
 
   test('Home.mareEventActive checks $ghostMareEventStart', async () => {
     await setVar(page, 'ghostMareEventStart', 0);
-    expect(await callSetup(page, 'setup.Home.mareEventActive()')).toBe(false);
+    expect(await callSetup(page, 'setup.SpecialEvent.mareEventActive()')).toBe(false);
     await setVar(page, 'ghostMareEventStart', 1);
-    expect(await callSetup(page, 'setup.Home.mareEventActive()')).toBe(true);
+    expect(await callSetup(page, 'setup.SpecialEvent.mareEventActive()')).toBe(true);
     await setVar(page, 'ghostMareEventStart', 4);
-    expect(await callSetup(page, 'setup.Home.mareEventActive()')).toBe(true);
+    expect(await callSetup(page, 'setup.SpecialEvent.mareEventActive()')).toBe(true);
   });
 
   test('useHolyWaterOnMare clears mare and consumes water', async () => {
@@ -248,14 +248,14 @@ test.describe('Special events — Twins event mirror', () => {
   test('twinsEventAvailable requires the flag set and CD off', async () => {
     await setVar(page, 'thetwinsevent', 0);
     await setVar(page, 'thetwinseventCD', 0);
-    expect(await callSetup(page, 'setup.Home.twinsEventAvailable()')).toBe(false);
+    expect(await callSetup(page, 'setup.Ghosts.twinsEventReady()')).toBe(false);
 
     await setVar(page, 'thetwinsevent', 1);
     await setVar(page, 'thetwinseventCD', 0);
-    expect(await callSetup(page, 'setup.Home.twinsEventAvailable()')).toBe(true);
+    expect(await callSetup(page, 'setup.Ghosts.twinsEventReady()')).toBe(true);
 
     await setVar(page, 'thetwinseventCD', 1);
-    expect(await callSetup(page, 'setup.Home.twinsEventAvailable()')).toBe(false);
+    expect(await callSetup(page, 'setup.Ghosts.twinsEventReady()')).toBe(false);
   });
 
   test('twinsEventTriggered compares beautyRoll <= mc.beauty', async () => {
@@ -268,7 +268,7 @@ test.describe('Special events — Twins event mirror', () => {
   test('consumeTwinsEvent flips flag and starts cooldown', async () => {
     await setVar(page, 'thetwinsevent', 1);
     await setVar(page, 'thetwinseventCD', 0);
-    await page.evaluate(() => SugarCube.setup.Home.consumeTwinsEvent());
+    await page.evaluate(() => SugarCube.setup.Ghosts.consumeTwinsEvent());
     expect(await getVar(page, 'thetwinsevent')).toBe(0);
     expect(await getVar(page, 'thetwinseventCD')).toBe(1);
   });
@@ -280,7 +280,7 @@ test.describe('Special events — Twins event mirror', () => {
 
   test('clearTwinsEvent zeroes the flag', async () => {
     await setVar(page, 'thetwinsevent', 1);
-    await page.evaluate(() => SugarCube.setup.Home.clearTwinsEvent());
+    await page.evaluate(() => SugarCube.setup.Ghosts.clearTwinsEvent());
     expect(await getVar(page, 'thetwinsevent')).toBe(0);
   });
 });

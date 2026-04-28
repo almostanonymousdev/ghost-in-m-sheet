@@ -23,7 +23,7 @@ test.describe('Haunted Houses Controller', () => {
     await setHuntMode(page, 1);
 
     // act
-    const result = await callSetup(page, 'setup.HauntedHouses.isContractMode()');
+    const result = await callSetup(page, 'setup.Ghosts.hasContract()');
 
     // assert
     expect(result).toBe(true);
@@ -34,7 +34,7 @@ test.describe('Haunted Houses Controller', () => {
     await setHuntMode(page, 2);
 
     // act
-    const result = await callSetup(page, 'setup.HauntedHouses.isInsideHouse()');
+    const result = await callSetup(page, 'setup.Ghosts.isHunting()');
 
     // assert
     expect(result).toBe(true);
@@ -45,7 +45,7 @@ test.describe('Haunted Houses Controller', () => {
     await setHuntMode(page, 3);
 
     // act
-    const result = await callSetup(page, 'setup.HauntedHouses.isHuntOver()');
+    const result = await callSetup(page, 'setup.Ghosts.isPossessed()');
 
     // assert
     expect(result).toBe(true);
@@ -101,9 +101,9 @@ test.describe('Haunted Houses Controller', () => {
     await setHuntMode(page, 1);
 
     // act
-    const isContract = await callSetup(page, 'setup.HauntedHouses.isContractMode()');
-    const isInside = await callSetup(page, 'setup.HauntedHouses.isInsideHouse()');
-    const isOver = await callSetup(page, 'setup.HauntedHouses.isHuntOver()');
+    const isContract = await callSetup(page, 'setup.Ghosts.hasContract()');
+    const isInside = await callSetup(page, 'setup.Ghosts.isHunting()');
+    const isOver = await callSetup(page, 'setup.Ghosts.isPossessed()');
 
     // assert
     expect(isContract).toBe(true);
@@ -348,7 +348,7 @@ test.describe('Haunted Houses Controller', () => {
     await setVar(page, 'UVLCheck', true);
 
     // act
-    await page.evaluate(() => SugarCube.setup.HauntedHouses.resetEvidenceChecks());
+    await page.evaluate(() => SugarCube.setup.Ghosts.resetEvidenceChecks());
 
     // assert
     expect(await getVar(page, 'EMF5Check')).toBe(false);

@@ -19,7 +19,7 @@
 		@@.mc-thoughts;Their fingers penetrate your pussy, making you shudder with waves of pleasure until they bring you to another orgasm. You feel the fluid gush out of you, squirting from the intensity of the sensations.@@<br>
 		@@.mc-speech;Oh, God... I... I can't...@@<br><br>
 		@@.mc-thoughts;You lie there in the bathroom for some time, thoroughly fucked, but then you gather your thoughts and leave the bathroom.@@<br><br>
-		<<run setup.Home.consumeTwinsEvent()>>
+		<<run setup.Ghosts.consumeTwinsEvent()>>
 		@@.backbtn; [[Leave|Bedroom]]@@<br>
 	<</linkappend>>
 <</linkappend>>

@@ -38,7 +38,7 @@ setup.drawTarotCard = function (deck) {
 
 			<<if _chosen>>
 				<<if _chosen.name eq "fool">>
-					<<set _tempCard to setup.HauntedHouses.tarotDeck()[random(0, 8)]>>
+					<<set _tempCard to setup.tarotDeck[random(0, 8)]>>
 					<div class="fadeInScale">
 					<<image _tempCard.image "displayCentredImgs fadeInScale">></div>
 					@@.mc-speech; Oh... something's about to happen... but what...@@

@@ -48,7 +48,7 @@
 		<<randomImage "characters/mc/1.webp" "characters/mc/2.webp" "characters/mc/3.webp" "40%">><br>
 		It seems like I'm starting to remember... I lost the battle, but not the war. Next time, I'll be more careful. <br>
 		I don't feel well, my whole body aches... I need to buy some medicine from the store, as hunting ghosts will be much harder without it. <br>
-		<<if setup.Home.hasCursedItem()>>
+		<<if setup.CursedItems.isActive()>>
 			@@.mc-thoughts; Something feels off... as you stir awake, you sense a small, lingering ghostly presence in your home. It's faint, but unmistakable -- like something followed you back.@@<br>
 		<</if>>
 		But for now, I need to go to the [[bathroom|Bathroom]].
@@ -58,7 +58,7 @@
 <<elseif setup.Home.returningFromMareEnd()>>
 	@@.mc-thoughts; You wake up and see the@@ <<linkappend "@@.mc-thoughtsLink;aftermath of last night on yourself...@@">><br>
 		<<randomImage "characters/mc/4.webp" "characters/mc/5.webp" "characters/mc/6.webp" "40%">><br>
-		<<run setup.Home.clearPenaltyOnMareWake()>>
+		<<run setup.Mc.clearPenalty()>>
 		@@.mc-speech; Weirdly enough, I feel great, maybe even a bit better than usual, hehe. I suppose I should still head to the [[bathroom|Bathroom]].@@
 	<</linkappend>>
 
@@ -83,7 +83,7 @@
 		<<addTime 60>>
 		<<if setup.Mc.energy() lt setup.Mc.energyMax()>>
 		<<run setup.Mc.addEnergy(1)>><</if>>
-		<<if setup.Home.spiritNapEventReady()>>
+		<<if setup.SpecialEvent.spiritEventReady()>>
 			<<goto "GhostSpecialEventNapSpirit">>
 		<<elseif setup.Home.tentaclesNapEventReady()>>
 			<<goto "TentaclesEventNap">>

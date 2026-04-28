@@ -88,6 +88,6 @@
 <<widget "tarotHighpriestess">>
 	<<timed 2s>>
 		@@.mc-speech; Looks like I'm still alive, and no one's about to attack me. I guess things aren't so bad. @@<br>
-		<<run setup.HauntedHouses.setHighPriestess(true)>>
+		<<run setup.Ghosts.setHighPriestess(true)>>
 	<</timed>>
 <</widget>>

@@ -118,7 +118,7 @@ test.describe('Companions — passage rendering', () => {
       await setVar(page, `is${name}GoingForHuntingAlone`, 2);
       // AliceInfo gates the picker on aliceWorkState === 2; harmless
       // for Brook/Blake which don't read it.
-      await page.evaluate(() => SugarCube.setup.Home.setAliceWorkState(2));
+      await page.evaluate(() => SugarCube.setup.Companion.setAliceWorkState(2));
       await goToPassage(page, `${name}Info`);
       await expectCleanPassage(page);
       const text = await page.locator('#passages').innerText();
