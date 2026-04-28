@@ -42,12 +42,18 @@
 	<<goto "Livingroom">>
 <</if>>
 
-<<set _selectedVideo to _videoList.random()>>
+/* When isFullyDressed redirects via <<goto>>, _videoList stays empty.
+   <<goto>> defers navigation to end-of-render, so the rest of the body
+   keeps executing — guard the consumer so we don't read .type off an
+   undefined .random() result and trip <<if>> with a JS exception. */
+<<if _videoList.length gt 0>>
+	<<set _selectedVideo to _videoList.random()>>
 
-<<if _selectedVideo.type is "video">>
-	<<video _selectedVideo.src>>
-<<else>>
-	<<image _selectedVideo.src { class: "displayCentredImgs", alt: "Image" }>><br>
+	<<if _selectedVideo.type is "video">>
+		<<video _selectedVideo.src>>
+	<<else>>
+		<<image _selectedVideo.src { class: "displayCentredImgs", alt: "Image" }>><br>
+	<</if>>
 <</if>>
 
 <<if setup.Mc.exhibitionism() lte 4>>

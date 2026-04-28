@@ -238,7 +238,12 @@ async function snapshotPage(page) {
     const clone = passageEl.cloneNode(true);
     clone.querySelectorAll('.error-view, .error-source').forEach((n) => n.remove());
     const txt = clone.textContent || '';
-    const macroLeaks = txt.match(/<<\/?[a-zA-Z][^<>]{0,80}>>/g);
+    // Match opening macros (<<name ...>>), closing macros (</name>>),
+    // AND the print-expression shorthands <<= expr>> / <<- expr>>. The
+    // [a-zA-Z]-only anchor previously missed <<=/<<- which let widget
+    // bugs (e.g. "Ask <<= _cName>>...") render straight to the player
+    // without flagging.
+    const macroLeaks = txt.match(/<<[\/=\-a-zA-Z][^<>]{0,80}>>/g);
     if (macroLeaks) {
       result.issues.push('unprocessed-macros: ' + macroLeaks.slice(0, 3).join(' | '));
     }
@@ -487,6 +492,21 @@ async function walkPassages(browser, passages, label) {
       V.companion = setup.Companion.defaultStateFor('Brook');
       setup.Companion.selectCompanion('Brook');
       V.chosenPlan = 'Plan1';
+
+      // Force the post-solo-return branch on for all three cis
+      // companions so the walker exercises the
+      // <<cisCompanionSoloPicker>> "Ask … how … went" link in
+      // BrookInfo / AliceInfo / BlakeInfo. Otherwise the cold render
+      // always takes the else-branch and a regression like the one
+      // fixed in widgetCompanion.tw (raw "<<= _cName>>" leak) would go
+      // unseen by this sweep. AliceInfo additionally gates on
+      // aliceWorkState === 2 — set that too.
+      V.isBrookGoingForHuntingAlone = 2;
+      V.isAliceGoingForHuntingAlone = 2;
+      V.isBlakeGoingForHuntingAlone = 2;
+      if (typeof setup.Home.setAliceWorkState === 'function') {
+        setup.Home.setAliceWorkState(2);
+      }
 
       // Event content placeholders — passages that consume these
       // require non-empty path strings. ui/img/witch-girl.jpg is a

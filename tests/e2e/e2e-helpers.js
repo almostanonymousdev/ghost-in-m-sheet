@@ -40,7 +40,11 @@ async function expectNoErrors(page) {
     const passageEl = document.querySelector('.passage');
     if (passageEl) {
       const text = passageEl.textContent;
-      const macroLeaks = text.match(/<<\/?[a-zA-Z][^>]*>>/g);
+      // Match opening macros (<<name ...>>), closing macros (</name>>),
+      // AND the print-expression shorthands <<= expr>> / <<- expr>>.
+      // The original [a-zA-Z] anchor missed <<=/<<- and let widget
+      // bugs (e.g. "Ask <<= _cName>>...") render to the player.
+      const macroLeaks = text.match(/<<[\/=\-a-zA-Z][^<>]*>>/g);
       if (macroLeaks) {
         problems.push('unprocessed-macros: ' + macroLeaks.slice(0, 5).join(', '));
       }
