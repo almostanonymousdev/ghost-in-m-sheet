@@ -97,7 +97,7 @@ else
     
     # Extract Tweego
     echo -e "${YELLOW}Extracting Tweego...${NC}"
-    unzip -o tweego.zip -d "${SCRIPT_DIR}/${TWEEGO_DIR}"
+    unzip -o tweego.zip -d "${REPO_ROOT}/${TWEEGO_DIR}"
     chmod +x "$TWEEGO_PATH"
     # Clean up
     rm tweego.zip
