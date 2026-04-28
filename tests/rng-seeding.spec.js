@@ -29,6 +29,10 @@ function sampleMathRandom(page, n) {
 test('same seed produces identical Math.random sequences across pages', async ({ browser }) => {
   const p1 = await openGame(browser, { seed: 12345 });
   const p2 = await openGame(browser, { seed: 12345 });
+  // Page-open + SugarCube init consume a non-deterministic number of RNG
+  // draws (timing-sensitive boot callbacks). Reseed both pages so sampling
+  // starts from state=seed on each.
+  await Promise.all([reseedRng(p1, 12345), reseedRng(p2, 12345)]);
   try {
     const [a, b] = await Promise.all([sampleMathRandom(p1, 50), sampleMathRandom(p2, 50)]);
     expect(a).toEqual(b);
@@ -53,6 +57,7 @@ test('different seeds produce different Math.random sequences', async ({ browser
 test('SugarCube random() macro inherits the seed', async ({ browser }) => {
   const p1 = await openGame(browser, { seed: 42 });
   const p2 = await openGame(browser, { seed: 42 });
+  await Promise.all([reseedRng(p1, 42), reseedRng(p2, 42)]);
   try {
     // SugarCube exposes `random` on the template API; it's the same function
     // the <<set _x to random(a, b)>> macro invokes.
@@ -127,6 +132,7 @@ test('seeded game produces reproducible in-game RNG (either/random macros)', asy
   });
   const p1 = await openGame(browser, { seed: 999 });
   const p2 = await openGame(browser, { seed: 999 });
+  await Promise.all([reseedRng(p1, 999), reseedRng(p2, 999)]);
   try {
     const [a, b] = await Promise.all([pick(p1), pick(p2)]);
     expect(a).toEqual(b);
