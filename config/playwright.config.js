@@ -27,7 +27,14 @@ module.exports = defineConfig({
      from disk — no browser needed and sub-second runtime. Putting them
      in a dedicated `lint` project and making `chromium` depend on it
      means the cheap static checks run first; a lint failure fails the
-     run before any e2e worker spins up. */
+     run before any e2e worker spins up.
+
+     Release specs (`*.release.spec.js`) are exhaustive multi-minute
+     sweeps (e.g. passage-walk-coverage walking every passage and
+     clicking every link). They live in their own `release` project so
+     `npm run test` doesn't pay the cost on every commit — they run via
+     `npm run test:release`, which is gated on by the Package Release
+     VS Code tasks. */
   projects: [
     {
       name: 'lint',
@@ -35,7 +42,13 @@ module.exports = defineConfig({
     },
     {
       name: 'chromium',
-      testIgnore: /.*-lint\.spec\.js/,
+      testIgnore: [/.*-lint\.spec\.js/, /.*\.release\.spec\.js/],
+      use: { browserName: 'chromium' },
+      dependencies: ['lint'],
+    },
+    {
+      name: 'release',
+      testMatch: /.*\.release\.spec\.js/,
       use: { browserName: 'chromium' },
       dependencies: ['lint'],
     },

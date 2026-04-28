@@ -201,6 +201,14 @@
       "detail": "Run the Twee lint check and the Playwright test suite"
     },
     {
+      "label": "npm: test:release",
+      "type": "npm",
+      "script": "test:release",
+      "group": "none",
+      "problemMatcher": [],
+      "detail": "Run the exhaustive release-only Playwright sweep (passage-walk-coverage): walks every passage and clicks every visible link, parallelized across ~50% of CPU cores. Excluded from `npm test`; gated on by the Package Release tasks."
+    },
+    {
       "label": "Package Placeholder Release",
       "type": "shell",
       "command": "V=$(sed -n \"s/.*Ghost in M'Sheet \\([0-9][0-9.]*\\).*/\\1/p\" passages/StoryCaption.tw | head -1 | tr . -); : \"${V:?version not found in passages/StoryCaption.tw}\"; zip -r \"ghost-in-m-sheet-v${V}-placeholder-release.zip\" ghost-in-msheet.html asset-placeholders",
@@ -208,10 +216,11 @@
         "command": "powershell",
         "args": ["-NoProfile", "-Command", "$m = Select-String -Path passages/StoryCaption.tw -Pattern \"Ghost in M'Sheet (\\d[\\d.]*)\" | Select-Object -First 1; if (-not $m) { throw 'version not found in passages/StoryCaption.tw' }; $v = $m.Matches[0].Groups[1].Value -replace '\\.','-'; Compress-Archive -Path ghost-in-msheet.html,asset-placeholders -DestinationPath \"ghost-in-m-sheet-v$v-placeholder-release.zip\" -Force"]
       },
-      "dependsOn": "Build Story",
+      "dependsOn": ["npm: test:release", "Build Story"],
+      "dependsOrder": "sequence",
       "group": "none",
       "problemMatcher": [],
-      "detail": "Build the story and zip it (versioned) with the asset-placeholders folder"
+      "detail": "Run the release sweep, build the story, and zip it (versioned) with the asset-placeholders folder"
     },
     {
       "label": "Package Release",
@@ -221,9 +230,10 @@
         "command": "powershell",
         "args": ["-NoProfile", "-Command", "$m = Select-String -Path passages/StoryCaption.tw -Pattern \"Ghost in M'Sheet (\\d[\\d.]*)\" | Select-Object -First 1; if (-not $m) { throw 'version not found in passages/StoryCaption.tw' }; $v = $m.Matches[0].Groups[1].Value -replace '\\.','-'; Copy-Item passages/StoryInit.tw passages/StoryInit.tw.bak; try { (Get-Content passages/StoryInit.tw) -replace 'setup.ImagePath = \"[^\"]*\"', 'setup.ImagePath = \"assets\"' | Set-Content passages/StoryInit.tw; & .\\scripts\\build.bat; if ($LASTEXITCODE -ne 0) { throw 'build failed' }; Compress-Archive -Path ghost-in-msheet.html,assets -DestinationPath \"ghost-in-m-sheet-v$v-release.zip\" -Force } finally { Move-Item -Force passages/StoryInit.tw.bak passages/StoryInit.tw }"]
       },
+      "dependsOn": ["npm: test:release"],
       "group": "none",
       "problemMatcher": [],
-      "detail": "Build the story with real assets and zip it (versioned) with the assets folder"
+      "detail": "Run the release sweep, build with real assets, and zip it (versioned) with the assets folder"
     }
   ]
 }

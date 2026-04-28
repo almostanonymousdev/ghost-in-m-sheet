@@ -11,7 +11,8 @@
     "clean": "node -e \"try{require('fs').unlinkSync('ghost-in-msheet.html')}catch(e){}\"",
     "rebuild": "npm run clean && npm run build",
     "lint": "python3 tools/check_format.py",
-    "test": "python3 tools/check_format.py && npx playwright test --config=config/playwright.config.js",
+    "test": "python3 tools/check_format.py && npx playwright test --config=config/playwright.config.js --project=lint --project=chromium",
+    "test:release": "python3 tools/check_format.py && npx playwright test --config=config/playwright.config.js --project=release",
     "prepare": "git config core.hooksPath .githooks"
   },
   "keywords": [

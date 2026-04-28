@@ -314,6 +314,10 @@ setup.HauntedHouses = (function () {
 			var hunt = State.variables.hunt;
 			if (!setup.Ghosts.isHunting() || !active || active.staysInOneRoom) return;
 			if (!hunt || hunt.trapped) return;
+			// hunt.room is null until GhostStreet's huntHouseCard runs
+			// setHuntRoom; the shuffler is a no-op until the player has
+			// actually picked a house and the room state has been seeded.
+			if (!hunt.room) return;
 			var mins = State.variables.minutes || 0;
 			var interval = mins < 20 ? "0-19" : mins < 40 ? "20-39" : "40-59";
 			State.variables.currentIntervalRoom = interval;
