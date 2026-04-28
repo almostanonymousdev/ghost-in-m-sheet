@@ -14,7 +14,11 @@
  * land in someone's OWNED_VARS or get listed in UNOWNED_ALLOWLIST.
  */
 const { test, expect } = require('@playwright/test');
+const fs = require('fs');
+const path = require('path');
 const { openGame } = require('./helpers');
+
+const PASSAGES_ROOT = path.join(__dirname, '..', 'passages');
 
 /* Lower-bound on the number of controllers we expect to find at
    runtime. Catches the regression where a controller forgets to
@@ -33,6 +37,16 @@ const MIN_CONTROLLER_COUNT = 23;
 const UNOWNED_ALLOWLIST = new Set([
 	'return',
 	'__rng__'
+]);
+
+/* Legacy state-var names that only appear in SaveMigration's
+   read-and-delete path for old saves. They are read off `vars.X`
+   (raw State.variables) to migrate the data into the new shape,
+   then `delete`d. They never exist in fresh games and aren't
+   owned by any controller. */
+const LEGACY_SAVE_VARS = new Set([
+	'ghostName', 'ghostEvidence', 'ghostRoom',
+	'ghostIsTrapped', 'ghostHuntingMode', 'saveMimic'
 ]);
 
 test.describe('Variable ownership', () => {
@@ -124,4 +138,177 @@ test.describe('Variable ownership', () => {
 			`Controllers with non-frozen OWNED_VARS: ${unfrozenControllers.join(', ')}`
 		).toEqual([]);
 	});
+
+	/* Static scan: walk every .tw source file and extract every
+	   top-level $variable / State.variables.X / sv().X reference.
+	   Each name must appear in some controller's OWNED_VARS or
+	   UNOWNED_ALLOWLIST. Catches the "someone added a new global
+	   var that isn't seeded at game-init" case the live-snapshot
+	   test above misses (e.g. flags only set after a witch
+	   contract begins / a hunt ends / a specific event fires). */
+	test('every $variable referenced in passages is owned by some controller', () => {
+		const ownedSet = new Set(Object.keys(ownerMap));
+		const files = collectTwFiles(PASSAGES_ROOT);
+		// name -> [file:line example, up to 3]
+		const seen = new Map();
+		const record = (name, file, lineNum) => {
+			if (!seen.has(name)) seen.set(name, []);
+			const list = seen.get(name);
+			if (list.length < 3) {
+				list.push(`${path.relative(PASSAGES_ROOT, file)}:${lineNum}`);
+			}
+		};
+		// Twee `$foo` is a SugarCube state-var reference. In [script]
+		// passages the same syntax is just a JS identifier (jQuery's
+		// `$el`, `$wrapper`, etc.) so we only scan TWEE_RE outside
+		// [script] passages. STATE_RE and SV_RE work in both.
+		const TWEE_RE = /\$([a-zA-Z_][a-zA-Z0-9_]*)/g;
+		const STATE_RE = /State\.variables\.([a-zA-Z_][a-zA-Z0-9_]*)/g;
+		const SV_RE = /\bsv\(\)\.([a-zA-Z_][a-zA-Z0-9_]*)/g;
+		for (const file of files) {
+			const text = fs.readFileSync(file, 'utf8');
+			for (const passage of splitPassages(text)) {
+				const stripped = stripJsCommentsAndStrings(passage.body);
+				// STATE_RE / SV_RE are unambiguous and run on the full
+				// passage body. TWEE_RE only fires in Twee context: skip
+				// [script]-tagged passages and the inside of any
+				// <<script>>…<</script>> block (where `$x` is jQuery /
+				// JS, not SugarCube state).
+				const stateLines = stripped.split('\n');
+				for (let i = 0; i < stateLines.length; i++) {
+					for (const re of [STATE_RE, SV_RE]) {
+						re.lastIndex = 0;
+						let m;
+						while ((m = re.exec(stateLines[i])) !== null) {
+							record(m[1], file, passage.headerLine + i);
+						}
+					}
+				}
+				if (passage.isScript) continue;
+				const tweeText = blankJsBlocks(stripped);
+				const tweeLines = tweeText.split('\n');
+				for (let i = 0; i < tweeLines.length; i++) {
+					TWEE_RE.lastIndex = 0;
+					let m;
+					while ((m = TWEE_RE.exec(tweeLines[i])) !== null) {
+						record(m[1], file, passage.headerLine + i);
+					}
+				}
+			}
+		}
+		const unowned = [];
+		for (const [name, locations] of seen) {
+			if (ownedSet.has(name)) continue;
+			if (UNOWNED_ALLOWLIST.has(name)) continue;
+			if (LEGACY_SAVE_VARS.has(name)) continue;
+			unowned.push(`${name} (e.g. ${locations.join(', ')})`);
+		}
+		unowned.sort();
+		expect(
+			unowned,
+			`$variables referenced in passages but not owned by any controller:\n  ${unowned.join('\n  ')}`
+		).toEqual([]);
+	});
 });
+
+/* Recursively collect every .tw file under `dir`. */
+function collectTwFiles(dir) {
+	const out = [];
+	for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+		const full = path.join(dir, entry.name);
+		if (entry.isDirectory()) {
+			out.push(...collectTwFiles(full));
+		} else if (entry.name.endsWith('.tw')) {
+			out.push(full);
+		}
+	}
+	return out;
+}
+
+/* Split a .tw file into its individual passages. Each passage starts
+   with a `:: Name [tags]` header line and runs until the next header
+   or EOF. Returns [{name, isScript, body, headerLine}]. */
+function splitPassages(text) {
+	const lines = text.split('\n');
+	const passages = [];
+	let current = null;
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i];
+		if (line.startsWith(':: ')) {
+			if (current) passages.push(current);
+			const tagMatch = line.match(/\[([^\]]+)\]/);
+			current = {
+				name: line.slice(3),
+				isScript: !!(tagMatch && /\bscript\b/i.test(tagMatch[1])),
+				body: '',
+				headerLine: i + 2 // body starts on the line after the header
+			};
+		} else if (current) {
+			current.body += line + '\n';
+		}
+	}
+	if (current) passages.push(current);
+	return passages;
+}
+
+/* Blank out the body of every `<<script>>…<</script>>` block, line by
+   line, preserving line numbers. Inside such blocks `$foo` is JS /
+   jQuery, not a SugarCube state-var reference. */
+function blankJsBlocks(src) {
+	return src.replace(
+		/<<script\b[\s\S]*?<<\/script>>/g,
+		(match) => match.replace(/[^\n]/g, ' ')
+	);
+}
+
+/* Replace JS line/block comments and string literals with same-length
+   whitespace so that line/column positions are preserved but textual
+   matches inside them no longer fire false positives. Twee macro
+   syntax (e.g. `<<set $foo>>`) lives outside JS comments and isn't
+   touched. */
+function stripJsCommentsAndStrings(src) {
+	const out = src.split('');
+	let i = 0;
+	const len = out.length;
+	const blank = (start, end) => {
+		for (let k = start; k < end; k++) {
+			if (out[k] !== '\n') out[k] = ' ';
+		}
+	};
+	while (i < len) {
+		const c = out[i];
+		const next = out[i + 1];
+		// Line comment
+		if (c === '/' && next === '/') {
+			let j = i + 2;
+			while (j < len && out[j] !== '\n') j++;
+			blank(i, j);
+			i = j;
+			continue;
+		}
+		// Block comment
+		if (c === '/' && next === '*') {
+			let j = i + 2;
+			while (j < len - 1 && !(out[j] === '*' && out[j + 1] === '/')) j++;
+			j = Math.min(len, j + 2);
+			blank(i, j);
+			i = j;
+			continue;
+		}
+		// String literal (single, double, backtick)
+		if (c === "'" || c === '"' || c === '`') {
+			const quote = c;
+			let j = i + 1;
+			while (j < len && out[j] !== quote) {
+				if (out[j] === '\\') j += 2; else j++;
+			}
+			j = Math.min(len, j + 1);
+			// Keep quote chars; only blank the content.
+			blank(i + 1, j - 1);
+			i = j;
+			continue;
+		}
+		i++;
+	}
+	return out.join('');
+}

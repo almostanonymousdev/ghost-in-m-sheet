@@ -9,7 +9,8 @@ setup.Mall = (function () {
 	   query these only through the API methods below. */
 	var OWNED_VARS = Object.freeze([
 		'dialogBlake', 'relationshipBlake',
-		'hasPSpray', 'hasPSprayCharges'
+		'hasPSpray', 'hasPSprayCharges',
+		'isPhoneBought'
 	]);
 
 	function sv() { return State.variables; }

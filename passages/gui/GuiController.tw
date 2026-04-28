@@ -18,7 +18,8 @@ setup.Gui = (function () {
 	var OWNED_VARS = Object.freeze([
 		'guideReturnPassage',
 		'cursedHuntOption',
-		'timerToolsDecreased'
+		'timerToolsDecreased',
+		'inputWish'
 	]);
 
 	// True when the previous passage is tagged "event" -- those should
