@@ -89,6 +89,10 @@ sugarcube-2:
       description: "Renders an extra action button shown when Alice's lust is high
         enough. The button reduces $companion.sanity by 3 and replaces
         #eventVideo with <<include \"AliceHelp\">>."
+    applyTickEffects:
+      name: applyTickEffects
+      description: Applies the current tick's stat modifiers to the MC and updates the UI 
+        for the relevant meters.
     includeTimeEventClothesHunt:
       name: includeTimeEventClothesHunt
       description: Advances time by 1 hour, runs the event check, then attempts a
