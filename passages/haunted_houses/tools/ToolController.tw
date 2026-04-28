@@ -263,6 +263,7 @@
         var render = RENDERERS[toolKey];
         if (!render) throw new Error("toolCheck: unknown tool '" + toolKey + "'");
         var v = (variant === "art") ? "art" : "standard";
+        setup.HauntConditions.applyTickEffects();
         return render(v);
     }
 
