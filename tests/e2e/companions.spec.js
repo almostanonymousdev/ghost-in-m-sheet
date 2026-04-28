@@ -104,6 +104,31 @@ test.describe('Companions — passage rendering', () => {
     }
   }
 
+  // Regression: the <<cisCompanionSoloPicker>> widget's
+  // "isCompanionFinishedSoloHunting" branch used to render a wikilink
+  // whose display text contained "<<= _cName>>" / "<<= _args[1]>>".
+  // SugarCube did not evaluate those macros in display text and the
+  // raw "<<=" leaked to the player. The {Brook,Alice,Blake}Info tests
+  // above don't set is*GoingForHuntingAlone, so they hit the <<else>>
+  // branch and missed the bug. Force the post-solo-return branch and
+  // confirm the link renders with the substituted name + pronoun.
+  for (const name of ['Brook', 'Alice', 'Blake']) {
+    test(`${name}Info post-solo-return link renders substituted text`, async () => {
+      await selectCompanion(page, name);
+      await setVar(page, `is${name}GoingForHuntingAlone`, 2);
+      // AliceInfo gates the picker on aliceWorkState === 2; harmless
+      // for Brook/Blake which don't read it.
+      await page.evaluate(() => SugarCube.setup.Home.setAliceWorkState(2));
+      await goToPassage(page, `${name}Info`);
+      await expectCleanPassage(page);
+      const text = await page.locator('#passages').innerText();
+      expect(text).toContain(`Ask ${name} how her ghost hunt went.`);
+      expect(text).not.toContain('<<=');
+      expect(text).not.toContain('_cName');
+      expect(text).not.toContain('_args');
+    });
+  }
+
   for (const name of ALL_COMPANIONS) {
     test(`CompanionMain renders cleanly for ${name}`, async () => {
       await selectCompanion(page, name);

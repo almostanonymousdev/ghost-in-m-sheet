@@ -14,9 +14,4 @@
 </div>
 <br>
 
-<<if _blake.lvl lt 2>>
-	<<done>>
-		<<addclass ".CompanionInfoAskForHuntAlone" "disabled-link">>
-	<</done>>
-<</if>>
 @@.backbtn; [[Return|$return]] @@<br>

@@ -1,24 +1,28 @@
 #!/usr/bin/env python3
 """
-Detects SugarCube wikilinks whose target portion contains unevaluated
-macro syntax (e.g. ``<<= var>>``).
+Detects SugarCube wikilinks whose target *or* display portion contains
+unevaluated macro syntax (e.g. ``<<= var>>``).
 
-The reported failure mode:
+Two failure modes are caught:
 
-    [[Ask <<= _cName>> ...|<<= _cName>>HuntEndAlone]]
+1. Macro in target. ``[[Ask ...|<<= _cName>>HuntEndAlone]]`` renders the
+   literal string ``<<= _cName>>HuntEndAlone`` as a passage name because
+   SugarCube does not evaluate macros in wikilink targets. Fix:
+   ``[[... |`_cName + "HuntEndAlone"`]]``.
 
-renders the literal string ``<<= _cName>> HuntEndAlone`` to the player
-because the wikilink target portion is parsed as a passage name, not as
-a macro template. The canonical fix is the backtick expression syntax:
+2. Macro in display. ``[[Ask <<= _cName>> ...|target]]`` shows the raw
+   ``<<= _cName>>`` text to the player. SugarCube docs claim the display
+   text is wikified, but in practice this codebase has hit cases where
+   it isn't (see commits e9c193e / this script's history). The canonical
+   fix is the ``<<link>>`` macro form, which uses TwineScript expressions
+   for both label and target:
+       ``<<link `"Ask " + _cName + " how it went."` `_cName + "End"`>><</link>>``
 
-    [[Ask <<= _cName>> ...|`_cName + "HuntEndAlone"`]]
-
-This script walks ``passages/`` and flags any wikilink whose target
-contains an unevaluated ``<<...>>`` macro outside of backticks. It is
-deliberately a stand-alone parser rather than a regex pass: a regex over
-``[[...]]`` mis-handles ``]`` characters inside macro arguments (e.g.
-``_args[1]``), which is exactly the kind of construct most likely to
-appear next to a buggy macro target.
+The script walks ``passages/`` and flags either case. It is a
+stand-alone parser rather than a regex pass: a regex over ``[[...]]``
+mis-handles ``]`` characters inside macro arguments (e.g. ``_args[1]``),
+which is exactly the kind of construct most likely to appear next to a
+buggy macro.
 """
 
 import sys
@@ -91,29 +95,37 @@ def split_wikilink_content(content):
     return content, None
 
 
-def target_has_unevaluated_macro(target):
-    """Return True if ``target`` contains ``<<...>>`` macro syntax that
-    SugarCube will treat as literal characters.
+def has_unevaluated_macro(text):
+    """Return True if ``text`` contains ``<<...>>`` macro syntax outside
+    of any backtick segment.
 
-    A target wrapped in backticks is a TwineScript expression — anything
-    inside is fine. Only ``<<`` occurrences outside of backtick segments
+    A backtick-wrapped span is a TwineScript expression — anything
+    inside is fine. Only ``<<`` occurrences outside backtick segments
     count as bugs.
     """
-    if target is None:
+    if text is None:
         return False
     in_backtick = False
     i = 0
-    n = len(target)
+    n = len(text)
     while i < n:
-        ch = target[i]
+        ch = text[i]
         if ch == '`':
             in_backtick = not in_backtick
             i += 1
             continue
-        if not in_backtick and i + 1 < n and ch == '<' and target[i + 1] == '<':
+        if not in_backtick and i + 1 < n and ch == '<' and text[i + 1] == '<':
             return True
         i += 1
     return False
+
+
+def target_has_unevaluated_macro(target):
+    return has_unevaluated_macro(target)
+
+
+def display_has_unevaluated_macro(display):
+    return has_unevaluated_macro(display)
 
 
 def offset_to_lineno(text, offset):
@@ -127,26 +139,35 @@ def main():
         print(f"ERROR: passages directory not found at {passages_dir}", file=sys.stderr)
         sys.exit(1)
 
-    bugs = []
+    target_bugs = []
+    display_bugs = []
     total_links = 0
     for tw_file in sorted(passages_dir.rglob("*.tw")):
         text = tw_file.read_text(encoding="utf-8", errors="replace")
         for offset, content in parse_wikilinks(text):
             total_links += 1
             display, target = split_wikilink_content(content)
-            # [[Target]] form: display IS target.
+            rel = tw_file.relative_to(repo_root)
+            lineno = offset_to_lineno(text, offset)
+            # [[Target]] form: display IS target — only check it once,
+            # as a target.
             if target is None:
-                target = display
+                if target_has_unevaluated_macro(display):
+                    target_bugs.append((rel, lineno, display.strip()))
+                continue
             if target_has_unevaluated_macro(target):
-                lineno = offset_to_lineno(text, offset)
-                rel = tw_file.relative_to(repo_root)
-                bugs.append((rel, lineno, target.strip()))
+                target_bugs.append((rel, lineno, target.strip()))
+            if display_has_unevaluated_macro(display):
+                display_bugs.append((rel, lineno, display.strip()))
 
     print(f"Wikilinks scanned: {total_links}")
 
-    if bugs:
-        print(f"\nUNEVALUATED MACROS IN WIKILINK TARGETS ({len(bugs)}):\n")
-        for rel, ln, target in bugs:
+    failed = False
+
+    if target_bugs:
+        failed = True
+        print(f"\nUNEVALUATED MACROS IN WIKILINK TARGETS ({len(target_bugs)}):\n")
+        for rel, ln, target in target_bugs:
             print(f"  {rel}:{ln}  →  target = {target!r}")
         print(
             "\nSugarCube does NOT evaluate <<...>> macros inside [[Text|target]]\n"
@@ -154,9 +175,23 @@ def main():
             "passage name. Use the backtick expression syntax instead, e.g.\n"
             '  [[Display|`_name + "Suffix"`]]\n'
         )
+
+    if display_bugs:
+        failed = True
+        print(f"\nUNEVALUATED MACROS IN WIKILINK DISPLAY TEXT ({len(display_bugs)}):\n")
+        for rel, ln, display in display_bugs:
+            print(f"  {rel}:{ln}  →  display = {display!r}")
+        print(
+            "\n[[Text|target]] display portions are not reliably wikified in this\n"
+            "codebase — raw <<...>> macros leak to the player. Use the <<link>>\n"
+            "macro form, which evaluates both label and target as TwineScript:\n"
+            '  <<link `"Ask " + _name + " ..."` `_name + "Suffix"`>><</link>>\n'
+        )
+
+    if failed:
         sys.exit(1)
 
-    print("No unevaluated macros found in wikilink targets.")
+    print("No unevaluated macros found in wikilink targets or display text.")
     sys.exit(0)
 
 

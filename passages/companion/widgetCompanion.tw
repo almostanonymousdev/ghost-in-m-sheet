@@ -44,7 +44,16 @@
 	<<set _cName to _args[0]>>
 	<<set _cLvl to setup.Companion.companionLvl(_cName)>>
 	<<if setup.Companion.isCompanionFinishedSoloHunting(_cName)>>
-		@@.mc-speech; [[Ask <<= _cName>> how <<= _args[1]>> ghost hunt went.|`_cName + "HuntEndAlone"`]]@@<br>
+		/* SugarCube does not reliably evaluate macros inside the display
+		   portion of wiki-style links in this codebase — the raw print
+		   syntax leaked to the player. Use the link macro form so both
+		   label and target are TwineScript expressions. The capture wrap
+		   mirrors the else branch and satisfies the deferred-temp-var
+		   lint, future-proofing a second widget invocation per passage. */
+		<<capture _cName>>
+			@@.mc-speech;<<link `"Ask " + _cName + " how " + _args[1] + " ghost hunt went."` `_cName + "HuntEndAlone"`>>
+			<</link>>@@<br>
+		<</capture>>
 	<<else>>
 		/* <<capture>> snapshots _cName into each deferred link's payload —
 		   without it, the click-time callback reads State.temporary._cName,

@@ -88,15 +88,15 @@
 
 				</span>
 
+				<<if setup.Library.brookLvl() lt 2>>
+					<<done>>
+						<<addclass ".CompanionInfoAskForHuntAlone" "disabled-link">>
+					<</done>>
+				<</if>>
+
 			<</if>>
 
 			<br>
-
-			<<if setup.Library.brookLvl() lt 2>>
-				<<done>>
-					<<addclass ".CompanionInfoAskForHuntAlone" "disabled-link">>
-				<</done>>
-			<</if>>
 		<</if>>
 		<br>
 		<<done>>
