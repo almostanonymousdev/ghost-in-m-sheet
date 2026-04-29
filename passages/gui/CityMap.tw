@@ -32,7 +32,13 @@
 @@.icontextcity; [[Witch's House|Witch]]@@
 </div>
 <div class="housecard">
-
+<<if setup.Run.isRogue()>>
+	<<image "ui/img/witchhouse.png" "icon">>
+	@@.icontextcity; [[Resume run|RogueRun]]@@
+<<else>>
+	<<image "ui/img/witchhouse.png" "icon">>
+	@@.icontextcity; [[Rogue run|RogueStart]]@@
+<</if>>
 </div>
 <div class="housecard">
 

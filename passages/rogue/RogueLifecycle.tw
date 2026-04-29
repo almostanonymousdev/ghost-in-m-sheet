@@ -1,0 +1,108 @@
+:: RogueStart [nobr] {"position":"3000,200","size":"100,100"}
+/* Entry point for a rogue run. Rolls modifiers + floor plan from
+   a seed (fresh random by default; copyable from the run record
+   for shareable seeds), then routes to the in-progress passage.
+   The actual gameplay lives in RogueRun -- this is the lobby. */
+<<set _rogueSeed to Math.floor(Math.random() * 1e9)>>
+<<run setup.Run.startRogue({ seed: _rogueSeed })>>
+<<set _run to setup.Run.active()>>
+<<set _modifiers to setup.Modifiers.activeList()>>
+<<set _floorplan to setup.Run.field('floorplan')>>
+
+@@.location; Rogue Run #<<= _run.number>>@@<br>
+@@.mc-thoughts; Seed _run.seed -- a fresh haunt is waiting.@@<br>
+<br>
+@@.location; Modifiers@@<br>
+<<for _m range _modifiers>>
+	· @@.usebtn;<<= _m.name>>@@ -- <<= _m.description>><br>
+<</for>>
+<br>
+@@.location; Floor plan@@<br>
+<<for _r range _floorplan.rooms>>
+	· <<= _r.id>> -- <<= _r.template>><br>
+<</for>>
+<br>
+@@.location; Objective@@<br>
+@@.mc-thoughts; <<= _run.objective>>@@<br>
+<br>
+@@.movebtn; [[Enter the haunt|RogueRun]]@@<br>
+@@.backbtn; [[Cancel|CityMap][setup.Run.end()]]@@
+
+:: RogueRun [nobr] {"position":"3100,200","size":"100,100"}
+/* Placeholder rogue gameplay. Real room navigation will replace
+   this once the rogue room renderer lands; for now the passage
+   prints the run state and offers debug routes to the result
+   screen so the lifecycle is exercisable end-to-end. */
+<<if not setup.Run.isRogue()>>
+	@@.mc-thoughts; No active rogue run.@@<br>
+	@@.backbtn; [[Back|CityMap]]@@
+<<else>>
+	<<set _run to setup.Run.active()>>
+	<<set _floorplan to setup.Run.field('floorplan')>>
+	<<set _modifiers to setup.Modifiers.activeList()>>
+
+	@@.location; Rogue Run #<<= _run.number>> -- in progress@@<br>
+	@@.mc-thoughts; (Placeholder. Room rendering arrives in a follow-up pass.)@@<br>
+	<br>
+	@@.mc-action; Spawn room: <<= _floorplan.spawnRoomId>>@@<br>
+	@@.mc-action; Stash spots: <<= JSON.stringify(_floorplan.stashes)>>@@<br>
+	<br>
+	@@.location; Active modifiers@@<br>
+	<<for _m range _modifiers>>
+		· @@.usebtn;<<= _m.name>>@@<br>
+	<</for>>
+	<br>
+	@@.movebtn; [[Win|RogueEnd][setup.Run.setField("outcome", "success")]]@@<br>
+	@@.movebtn; [[Lose|RogueEnd][setup.Run.setField("outcome", "failure")]]@@<br>
+	@@.backbtn; [[Abandon|RogueEnd][setup.Run.setField("outcome", "failure")]]@@
+<</if>>
+
+:: RogueEnd [nobr] {"position":"3200,200","size":"100,100"}
+/* Closes the active rogue run, pays out echoes, prints the
+   summary, and routes to the meta-shop. $rogueOutcome is set by
+   the calling link ("success" / "failure"); anything else
+   counts as a failure so the player can never lose echoes by
+   navigating in via a stale link. */
+<<if not setup.Run.isRogue()>>
+	@@.mc-thoughts; No run to end.@@<br>
+	@@.backbtn; [[Back|CityMap]]@@
+<<else>>
+	<<set _success to (setup.Run.field("outcome") eq "success")>>
+	<<set _summary to setup.Run.endRogue(_success)>>
+
+	<<if _summary.success>>
+		@@.notmc-speech; The haunt yields. Run #<<= _summary.number>> closes clean.@@<br>
+	<<else>>
+		@@.notmc-speech; The haunt swallows you. Run #<<= _summary.number>> ends in failure.@@<br>
+	<</if>>
+	<br>
+	@@.mc-action; +<<= _summary.payout>> echoes@@<br>
+	@@.mc-thoughts; Echo balance: <<= setup.Run.echoes()>>@@<br>
+	<br>
+	@@.movebtn; [[Visit the meta-shop|RogueMetaShop]]@@<br>
+	@@.backbtn; [[Back to the city|CityMap]]@@
+<</if>>
+
+:: RogueMetaShop [nobr] {"position":"3300,200","size":"100,100"}
+/* Persistent-unlock storefront. Costs are flat for now; specific
+   unlocks (extra modifier reroll, starting tool, companion at
+   run start, ...) will replace the placeholders as their gameplay
+   hooks come online. Spending an echo is itself the test the
+   lifecycle currently exercises. */
+@@.location; Meta-shop@@<br>
+@@.mc-thoughts; Echo balance: <<= setup.Run.echoes()>>@@<br>
+<br>
+<<if setup.Run.canAffordEchoes(3)>>
+	@@.usebtn; <<link "Spend 3 echoes (placeholder unlock)">>
+		<<run setup.Run.spendEchoes(3)>>
+		<<replace ".meta-shop-balance">>
+			Echo balance: <<= setup.Run.echoes()>>
+		<</replace>>
+	<</link>>@@<br>
+<<else>>
+	@@.disabled-link; Spend 3 echoes (need 3, have <<= setup.Run.echoes()>>)@@<br>
+<</if>>
+<br>
+<span class="meta-shop-balance"></span><br>
+@@.movebtn; [[Start a new run|RogueStart]]@@<br>
+@@.backbtn; [[Back to the city|CityMap]]@@

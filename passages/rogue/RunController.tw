@@ -128,6 +128,60 @@ setup.Run = (function () {
 	}
 	function canAffordEchoes(n) { return (sv().echoes || 0) >= n; }
 
+	// --- Composition helpers for the lifecycle passages -------
+	/* Roll a fresh rogue run end-to-end: seed, modifier draft,
+	   floor-plan generation, and $run population. opts:
+		seed          -- explicit seed (default = random in [0,1e9));
+		                 also drives the modifier draft, offset by a
+		                 32-bit constant so it differs from the
+		                 floor-plan rng stream.
+		modifierCount -- how many modifiers to draft (default 2).
+		floorPlanOpts -- forwarded to setup.FloorPlan.generate.
+		loadout       -- forwarded to start().
+		objective     -- forwarded to start() (default 'identify'). */
+	function startRogue(opts) {
+		opts = opts || {};
+		var seed = opts.seed != null ? opts.seed : Math.floor(Math.random() * 1e9);
+		var modifierCount = opts.modifierCount != null ? opts.modifierCount : 2;
+
+		var draft = setup.Modifiers.draft((seed ^ 0x9e3779b9) >>> 0, modifierCount);
+		var modifierIds = draft.map(function (m) { return m.id; });
+
+		var floorplan = setup.FloorPlan.generate(seed, opts.floorPlanOpts || {});
+
+		start({
+			seed: seed,
+			modifiers: modifierIds,
+			loadout: opts.loadout || {},
+			objective: opts.objective || 'identify'
+		});
+		setField('floorplan', floorplan);
+		return active();
+	}
+
+	/* End the active rogue run, paying out echoes based on whether
+	   it was a success and how many modifiers the run carried.
+	   Returns a small summary record the result passage can render
+	   without needing to peek at $run state. */
+	function endRogue(success) {
+		var run = active();
+		if (!run) return null;
+		var payout = 5;
+		if (success) payout += 5;
+		payout += Array.isArray(run.modifiers) ? run.modifiers.length : 0;
+		addEchoes(payout);
+		var summary = {
+			seed: run.seed,
+			number: run.number,
+			modifiers: (run.modifiers || []).slice(),
+			objective: run.objective,
+			success: !!success,
+			payout: payout
+		};
+		end();
+		return summary;
+	}
+
 	return {
 		OWNED_VARS: OWNED_VARS,
 		start: start,
@@ -148,6 +202,8 @@ setup.Run = (function () {
 		echoes: echoes,
 		addEchoes: addEchoes,
 		spendEchoes: spendEchoes,
-		canAffordEchoes: canAffordEchoes
+		canAffordEchoes: canAffordEchoes,
+		startRogue: startRogue,
+		endRogue: endRogue
 	};
 })();
