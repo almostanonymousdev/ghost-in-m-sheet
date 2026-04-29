@@ -233,9 +233,8 @@ test.describe('Library — controller helpers', () => {
   test.afterAll(async () => { await page.close(); });
   test.beforeEach(async () => { await resetGame(page); });
 
-  test('selectComics clears all flags then sets one', async () => {
-    await setVar(page, 'comics1', 1);
-    await setVar(page, 'comics2', 1);
+  test('selectComics sets the chosen issue and clears the others', async () => {
+    await page.evaluate(() => SugarCube.setup.Library.selectComics(2));
     await page.evaluate(() => SugarCube.setup.Library.selectComics(3));
     expect(await callSetup(page, 'setup.Library.comicsFlag(1)')).toBe(0);
     expect(await callSetup(page, 'setup.Library.comicsFlag(2)')).toBe(0);
@@ -243,11 +242,8 @@ test.describe('Library — controller helpers', () => {
     expect(await callSetup(page, 'setup.Library.comicsFlag(4)')).toBe(0);
   });
 
-  test('resetComics clears all four flags', async () => {
-    await setVar(page, 'comics1', 1);
-    await setVar(page, 'comics2', 1);
-    await setVar(page, 'comics3', 1);
-    await setVar(page, 'comics4', 1);
+  test('resetComics clears the active issue', async () => {
+    await page.evaluate(() => SugarCube.setup.Library.selectComics(2));
     await page.evaluate(() => SugarCube.setup.Library.resetComics());
     expect(await callSetup(page, 'setup.Library.comicsFlag(1)')).toBe(0);
     expect(await callSetup(page, 'setup.Library.comicsFlag(2)')).toBe(0);
@@ -312,23 +308,22 @@ test.describe('Library — controller helpers', () => {
   test('Brook hunt-pick records spent money + flags', async () => {
     await page.evaluate(() => {
       const V = SugarCube.State.variables;
-      V.brook = { name: 'Brook', lvl: 3 };
+      V.brook = { name: 'Brook', lvl: 3, paidForSolo: 0, goingSolo: 0, chooseOwaissa: 0, chooseElm: 0 };
       V.mc.money = 100;
-      delete V.payForHuntAloneBrook;
     });
 
     await page.evaluate(() => SugarCube.setup.Library.pickBrookForSoloOwaissa());
     expect(await getVar(page, 'mc.money')).toBe(80);
-    expect(await getVar(page, 'payForHuntAloneBrook')).toBe(1);
-    expect(await getVar(page, 'isBrookGoingForHuntingAlone')).toBe(1);
-    expect(await getVar(page, 'brookChooseOwaissa')).toBe(1);
-    expect(await getVar(page, 'brookChooseElm')).toBe(0);
+    expect(await getVar(page, 'brook.paidForSolo')).toBe(1);
+    expect(await getVar(page, 'brook.goingSolo')).toBe(1);
+    expect(await getVar(page, 'brook.chooseOwaissa')).toBe(1);
+    expect(await getVar(page, 'brook.chooseElm')).toBe(0);
 
     // Already paid: should not deduct again
     await page.evaluate(() => SugarCube.setup.Library.pickBrookForSoloElm());
     expect(await getVar(page, 'mc.money')).toBe(80);
-    expect(await getVar(page, 'brookChooseOwaissa')).toBe(0);
-    expect(await getVar(page, 'brookChooseElm')).toBe(1);
+    expect(await getVar(page, 'brook.chooseOwaissa')).toBe(0);
+    expect(await getVar(page, 'brook.chooseElm')).toBe(1);
   });
 
   test('refreshBrookSoloChances stores chance values', async () => {
@@ -336,8 +331,8 @@ test.describe('Library — controller helpers', () => {
       SugarCube.State.variables.brook = { lvl: 3 };
     });
     await page.evaluate(() => SugarCube.setup.Library.refreshBrookSoloChances());
-    expect(await getVar(page, 'chanceToSuccessAloneOwaissaBrook')).toBe(40);
-    expect(await getVar(page, 'chanceToSuccessAloneElmBrook')).toBe(25);
+    expect(await getVar(page, 'brook.soloChanceOwaissa')).toBe(40);
+    expect(await getVar(page, 'brook.soloChanceElm')).toBe(25);
   });
 });
 

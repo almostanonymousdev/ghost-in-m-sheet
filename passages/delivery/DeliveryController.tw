@@ -12,7 +12,10 @@ setup.Delivery = (function () {
 	var OWNED_VARS = Object.freeze([
 		'deliveryCompletedShifts', 'deliveryStreak', 'deliveryBestStreak',
 		'deliveryReputationLevel', 'deliveryCorrectThisShift',
-		'deliveryActiveIcon1', 'deliveryActiveIcon2', 'deliveryActiveIcon3',
+		// $deliveryActiveIcons: [bool, bool, bool] — replaces the three
+		// $deliveryActiveIcon{1,2,3} flat flags. SaveMigration folds the
+		// legacy keys into this array.
+		'deliveryActiveIcons',
 		'deliveryVisitCounts',
 		'currentHouse', 'currentOrder', 'orders', 'shuffledOrders',
 		'order1', 'order2', 'order3',
@@ -24,6 +27,14 @@ setup.Delivery = (function () {
 		'deliveryTotalTips', 'firstVisitDeliveryHub',
 		'itemImages', 'items', 'streets', 'shuffledStreets', 'shuffledItems'
 	]);
+
+	function activeIconsArray() {
+		var s = State.variables;
+		if (!Array.isArray(s.deliveryActiveIcons)) {
+			s.deliveryActiveIcons = [false, false, false];
+		}
+		return s.deliveryActiveIcons;
+	}
 
 	return {
 		OWNED_VARS: OWNED_VARS,
@@ -193,8 +204,14 @@ setup.Delivery = (function () {
 		markFirstVisited: function () { sv().firstVisitDeliveryHub = false; },
 
 		// --- Active-icon flags for the three daily orders ---------
-		activeIcon: function (i) { return sv()['deliveryActiveIcon' + i]; },
-		setActiveIcon: function (i, val) { sv()['deliveryActiveIcon' + i] = val; },
+		// 0-based slot index. The array $deliveryActiveIcons is the source
+		// of truth; callers shouldn't poke at the legacy individual flags.
+		activeIcon: function (i) { return activeIconsArray()[i]; },
+		setActiveIcon: function (i, val) { activeIconsArray()[i] = !!val; },
+		resetActiveIcons: function () {
+			var arr = activeIconsArray();
+			arr[0] = arr[1] = arr[2] = true;
+		},
 
 		// --- Per-shift counters --------------------------------
 		completedShifts: function () { return sv().deliveryCompletedShifts; },
@@ -229,9 +246,9 @@ setup.Delivery = (function () {
 		// --- Find order slot for the current house (used by WorkDelivery) -
 		orderSlotForHouse: function (house) {
 			var orders = sv().orders || [];
+			var icons = activeIconsArray();
 			for (var i = 0; i < orders.length; i++) {
-				var slotActive = sv()['deliveryActiveIcon' + (i + 1)];
-				if (orders[i].address === house && slotActive) return i;
+				if (orders[i].address === house && icons[i]) return i;
 			}
 			return -1;
 		},

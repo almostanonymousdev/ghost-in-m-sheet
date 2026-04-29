@@ -45,9 +45,7 @@ setup.Game = (function () {
 		s.spiritboxLvl = 1;
 
 		// --- Delivery / shift flags ---------------------------
-		s.deliveryActiveIcon1 = true;
-		s.deliveryActiveIcon2 = true;
-		s.deliveryActiveIcon3 = true;
+		s.deliveryActiveIcons = [true, true, true];
 		s.earnedMoney = 0;
 		s.currentHouse = '';
 		s.firstVisitDeliveryHub = true;
@@ -66,7 +64,7 @@ setup.Game = (function () {
 		s.deliverySpecialOrderPay = 0;
 		s.deliverySpecialOrderType = 'safe';
 
-		// --- Equipment durability -----------------------------
+		// --- Equipment tier -----------------------------
 		s.equipment = {
 			emf: 5, spiritbox: 5, gwb: 5,
 			glass: 5, temperature: 5, uvl: 5

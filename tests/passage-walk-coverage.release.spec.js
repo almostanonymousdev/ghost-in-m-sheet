@@ -501,9 +501,9 @@ async function walkPassages(browser, passages, label) {
       // fixed in widgetCompanion.tw (raw "<<= _cName>>" leak) would go
       // unseen by this sweep. AliceInfo additionally gates on
       // aliceWorkState === 2 — set that too.
-      V.isBrookGoingForHuntingAlone = 2;
-      V.isAliceGoingForHuntingAlone = 2;
-      V.isBlakeGoingForHuntingAlone = 2;
+      if (V.brook) V.brook.goingSolo = 2;
+      if (V.alice) V.alice.goingSolo = 2;
+      if (V.blake) V.blake.goingSolo = 2;
       if (typeof setup.Companion.setAliceWorkState === 'function') {
         setup.Companion.setAliceWorkState(2);
       }

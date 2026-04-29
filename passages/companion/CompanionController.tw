@@ -10,27 +10,24 @@ setup.Companion = (function () {
 	   / State.variables. Anything else (player money/sanity-pills,
 	   hours, hunt state, haunted-house flags, witch-quest flags)
 	   goes through the owning controller's API. */
+	/* Per-companion mutable state used to live in a forest of dynamically-
+	   named top-level variables ($isCompChosen<Name>, $chanceToAttack<Name>,
+	   $is<Name>GoingForHuntingAlone, $<key>ChooseOwaissa, $payForHuntAlone<Name>,
+	   $chanceToSuccessAloneOwaissa<Name>, etc.). They've been moved onto the
+	   per-companion stat object ($brook / $alice / $blake / $alex / $taylor /
+	   $casey) so every dynamic key concatenation collapses to a normal field
+	   read on whatever compFor(name) returns. SaveMigration carries the legacy
+	   keys forward. */
 	var OWNED_VARS = Object.freeze([
 		'companion',
 		'brook', 'alice', 'blake', 'alex', 'taylor', 'casey',
 		'isCompChosen',
-		'isCompChosenBrook', 'isCompChosenAlice', 'isCompChosenBlake',
-		'isCompChosenAlex', 'isCompChosenTaylor', 'isCompChosenCasey',
 		'chosenPlan', 'chosenPlanActivated', 'chosenPlanActivatedTime',
 		'chanceToSuccess',
 		'chanceToAttack',
-		'chanceToAttackBrook', 'chanceToAttackAlice', 'chanceToAttackBlake',
-		'chanceToAttackAlex', 'chanceToAttackTaylor', 'chanceToAttackCasey',
-		'chanceToSuccessAloneOwaissaAlice', 'chanceToSuccessAloneElmAlice',
-		'chanceToSuccessAloneOwaissaBlake', 'chanceToSuccessAloneElmBlake',
 		'isCompRoomChosen', 'currentGhostPassage', 'filteredGhostPassages',
 		'randomGhostPassage', 'showComp',
 		'transFirstStage', 'transPicture', 'transStart',
-		'isAliceGoingForHuntingAlone', 'isBlakeGoingForHuntingAlone',
-		'isBrookGoingForHuntingAlone',
-		'aliceChooseOwaissa', 'aliceChooseElm', 'blakeChooseOwaissa', 'blakeChooseElm',
-		'brookChooseOwaissa', 'brookChooseElm',
-		'payForHuntAloneAlice', 'payForHuntAloneBlake', 'payForHuntAloneBrook',
 		'aliceWorkDone',
 		'meetAlice',
 		'videoEventCompanion', 'randomPassageOwaissa'
@@ -197,18 +194,29 @@ setup.Companion = (function () {
 		chanceOfSuccessEMF: 15, chanceOfSuccessECTO: 15,
 		chanceOfSuccessGWB: 15, chanceOfSuccessSB: 15,
 		chanceOfSuccessTEMP: 15, chanceOfSuccessUVL: 15,
-		chanceOfSuccessAnyEvidence: 25
+		chanceOfSuccessAnyEvidence: 25,
+		// Per-companion flags formerly stored as top-level $isCompChosen<Name>,
+		// $chanceToAttack<Name>, $is<Name>GoingForHuntingAlone,
+		// $<key>Choose<Street>, $payForHuntAlone<Name>,
+		// $chanceToSuccessAlone<Street><Name>. See SaveMigration.tw for the
+		// legacy-key forwarding.
+		chosen: 0, chanceToAttack: 25,
+		goingSolo: 0, paidForSolo: 0,
+		chooseOwaissa: 0, chooseElm: 0,
+		soloChanceOwaissa: 0, soloChanceElm: 0
 	};
 
 	// Shared defaults for trans companions ($alex/$taylor/$casey). No
 	// corruption / exp fields (they're locked at lvl 5 with no progression),
-	// and the plan* times are uniformly 5 minutes.
+	// and the plan* times are uniformly 5 minutes. Trans companions also
+	// have no solo-hunt path, so the *Solo* fields are omitted.
 	var TRANS_BASE_STATS = {
 		sanity: 100, sanityMax: 100,
 		lust: 0, lvl: 5,
 		plan2TimeReq: 5, plan3TimeReq: 5, plan4TimeReq: 5,
 		decreaseSanity: 10,
-		chanceOfSuccessCI: 50, chanceOfSuccessGR: 50
+		chanceOfSuccessCI: 50, chanceOfSuccessGR: 50,
+		chosen: 0, chanceToAttack: 25
 	};
 
 	// The 4 non-zero attack-chance tiers, indexed the same as clothingTiers.
@@ -404,28 +412,24 @@ setup.Companion = (function () {
 		isTransCompanion: function () { return isTrans(this.name()); },
 		isName: isName,
 
-		// --- Selection ("isCompChosen*" flags) --------------------
+		// --- Selection ("chosen" flag on each $<key> stat object) --
 		anyCompanionSelected: function () {
-			var s = State.variables;
-			return s.isCompChosenBrook === 1
-				|| s.isCompChosenAlice === 1
-				|| s.isCompChosenBlake === 1
-				|| s.isCompChosenAlex === 1
-				|| s.isCompChosenTaylor === 1
-				|| s.isCompChosenCasey === 1;
+			for (var i = 0; i < COMPANIONS.length; i++) {
+				var stats = COMPANIONS[i].state();
+				if (stats && stats.chosen === 1) return true;
+			}
+			return false;
 		},
 		clearCompanionSelection: function () {
-			var s = State.variables;
-			s.isCompChosenBrook = 0;
-			s.isCompChosenAlice = 0;
-			s.isCompChosenBlake = 0;
-			s.isCompChosenAlex = 0;
-			s.isCompChosenTaylor = 0;
-			s.isCompChosenCasey = 0;
+			COMPANIONS.forEach(function (c) {
+				var stats = c.state();
+				if (stats) stats.chosen = 0;
+			});
 		},
 		selectCompanion: function (name) {
 			this.clearCompanionSelection();
-			State.variables["isCompChosen" + name] = 1;
+			var c = compFor(name);
+			if (c) c.chosen = 1;
 		},
 		pickTransCompanion: function (name) {
 			// Used by the Internet passage when choosing a trans companion
@@ -497,12 +501,12 @@ setup.Companion = (function () {
 		cannotAffordSoloContract: function () {
 			return setup.Mc.money() < 20;
 		},
-		payForSoloContract: function (prefix) {
-			var s = State.variables;
-			var key = "payForHuntAlone" + prefix;
-			if ((s[key] === undefined || s[key] === 0) && setup.Mc.money() >= 20) {
+		payForSoloContract: function (name) {
+			var c = compFor(name);
+			if (!c) return false;
+			if (!c.paidForSolo && setup.Mc.money() >= 20) {
 				setup.Mc.spendMoney(20);
-				s[key] = 1;
+				c.paidForSolo = 1;
 				return true;
 			}
 			return false;
@@ -519,7 +523,8 @@ setup.Companion = (function () {
 			if (this.blakeDropsCursedItem()) setup.Witch.clearCursedItemHeld();
 		},
 		aliceResetsWork: function () {
-			return isName("Alice") && State.variables.isAliceGoingForHuntingAlone === 0;
+			var alice = compFor('Alice');
+			return isName("Alice") && alice && alice.goingSolo === 0;
 		},
 		resetAliceWorkIfNeeded: function () {
 			if (this.aliceResetsWork()) State.variables.aliceWorkDone = 0;
@@ -630,16 +635,19 @@ setup.Companion = (function () {
 		   link labels can still interpolate them. Called on Info
 		   passage entry. */
 		refreshSoloOdds: function (name) {
-			var lvl = (compFor(name) || {}).lvl || 0;
+			var c = compFor(name);
+			if (!c) return;
 			var table = this.SOLO_SKILL_CURVE[name] || {};
+			var lvl = c.lvl || 0;
 			var tier = lvl >= 5 ? 5 : (lvl >= 4 ? 4 : (lvl >= 3 ? 3 : (lvl >= 2 ? 2 : 0)));
 			var pair = table[tier] || [0, 0];
-			State.variables['chanceToSuccessAloneOwaissa' + name] = pair[0];
-			State.variables['chanceToSuccessAloneElm' + name] = pair[1];
+			c.soloChanceOwaissa = pair[0];
+			c.soloChanceElm     = pair[1];
 		},
 		soloOdds: function (name, street) {
-			var suffix = street === 'Owaissa' ? 'Owaissa' : 'Elm';
-			return State.variables['chanceToSuccessAlone' + suffix + name];
+			var c = compFor(name);
+			if (!c) return undefined;
+			return street === 'Owaissa' ? c.soloChanceOwaissa : c.soloChanceElm;
 		},
 
 		// --- Pick companion for tonight's hunt ------------------
@@ -648,15 +656,18 @@ setup.Companion = (function () {
 		// per-companion solo-hunt bookkeeping.
 		pickCisCompanion: function (name) {
 			var s = State.variables;
-			s.companion = clone(s[name.toLowerCase()]);
+			var c = compFor(name);
+			if (!c) return;
+			s.companion = clone(c);
 			this.selectCompanion(name);
 			s.chosenPlan = 0;
-			s['is' + name + 'GoingForHuntingAlone'] = 0;
-			s[name.toLowerCase() + 'ChooseOwaissa'] = 0;
-			s[name.toLowerCase() + 'ChooseElm'] = 0;
+			c.goingSolo     = 0;
+			c.chooseOwaissa = 0;
+			c.chooseElm     = 0;
 		},
 		deselectCisCompanion: function (name) {
-			State.variables['isCompChosen' + name] = 0;
+			var c = compFor(name);
+			if (c) c.chosen = 0;
 		},
 		// Send the given companion solo to `street` (either
 		// "Owaissa" or "Elm"). Clears the "joined" flag, stamps the
@@ -665,12 +676,12 @@ setup.Companion = (function () {
 		// paid this run. Callers should gate on canAffordSoloContract()
 		// for the warning path.
 		sendCompanionSolo: function (name, street) {
-			var s = State.variables;
-			var key = name.toLowerCase();
-			s['isCompChosen' + name] = 0;
-			s[key + 'ChooseOwaissa'] = (street === 'Owaissa') ? 1 : 0;
-			s[key + 'ChooseElm'] = (street === 'Elm') ? 1 : 0;
-			s['is' + name + 'GoingForHuntingAlone'] = 1;
+			var c = compFor(name);
+			if (!c) return;
+			c.chosen        = 0;
+			c.chooseOwaissa = (street === 'Owaissa') ? 1 : 0;
+			c.chooseElm     = (street === 'Elm') ? 1 : 0;
+			c.goingSolo     = 1;
 			this.payForSoloContract(name);
 		},
 
@@ -694,7 +705,8 @@ setup.Companion = (function () {
 			if (c) c.lust = n;
 		},
 		isCompanionFinishedSoloHunting: function (name) {
-			return State.variables['is' + name + 'GoingForHuntingAlone'] === 2;
+			var c = compFor(name);
+			return !!(c && c.goingSolo === 2);
 		},
 		/* Pick a video/image descriptor for the CompanionEvent
 		   passage. Each companion has a 4-tier sanity ladder
@@ -774,10 +786,12 @@ setup.Companion = (function () {
 			return b ? b.lvl : 0;
 		},
 		hasFinishedSoloHunt: function (name) {
-			return State.variables['is' + name + 'GoingForHuntingAlone'] === 2;
+			var c = compFor(name);
+			return !!(c && c.goingSolo === 2);
 		},
 		soloHuntPaymentState: function (name) {
-			return State.variables['payForHuntAlone' + name];
+			var c = compFor(name);
+			return c ? c.paidForSolo : undefined;
 		},
 		chosenPlan: function () { return State.variables.chosenPlan; },
 		hasActiveCompanion: function () { return !!(State.variables.companion && State.variables.companion.name); },
@@ -786,14 +800,18 @@ setup.Companion = (function () {
 			return c && c.name;
 		},
 		soloHuntChanceOwaissa: function (name) {
-			return State.variables['chanceToSuccessAloneOwaissa' + name];
+			var c = compFor(name);
+			return c ? c.soloChanceOwaissa : undefined;
 		},
 		soloHuntChanceElm: function (name) {
-			return State.variables['chanceToSuccessAloneElm' + name];
+			var c = compFor(name);
+			return c ? c.soloChanceElm : undefined;
 		},
 		setSoloHuntChances: function (name, owaissa, elm) {
-			State.variables['chanceToSuccessAloneOwaissa' + name] = owaissa;
-			State.variables['chanceToSuccessAloneElm' + name] = elm;
+			var c = compFor(name);
+			if (!c) return;
+			c.soloChanceOwaissa = owaissa;
+			c.soloChanceElm     = elm;
 		},
 		/* Reset hunt plan/companion flags after a Myling event scares the
 		   companion away mid-hunt. If Alice was the active companion and
@@ -806,7 +824,8 @@ setup.Companion = (function () {
 			s.isCompRoomChosen = 0;
 			s.showComp = 0;
 			s.isCompChosen = 0;
-			if (isName('Alice') && s.isAliceGoingForHuntingAlone === 0) {
+			var alice = compFor('Alice');
+			if (isName('Alice') && alice && alice.goingSolo === 0) {
 				s.aliceWorkDone = 0;
 			}
 		},
@@ -902,21 +921,28 @@ setup.Companion = (function () {
 			s.chosenPlanActivated = 0;
 		},
 		/* Ghost-encounter chance for the active companion. Persists
-		   on $chanceToAttack and $chanceToAttack<Name> so earlier
-		   refactor didn't touch save shape. */
-		chanceToAttackVar: function () {
-			var c = comp();
-			return c ? ("chanceToAttack" + c.name) : "chanceToAttack";
-		},
+		   on $<key>.chanceToAttack with a top-level $chanceToAttack
+		   mirror that the tick handler reads (see TickController). */
 		chanceToAttack: function () {
-			return State.variables[this.chanceToAttackVar()];
+			var c = comp();
+			if (!c) return State.variables.chanceToAttack;
+			var stats = compFor(c.name);
+			return stats ? stats.chanceToAttack : State.variables.chanceToAttack;
 		},
 		ensureChanceToAttack: function () {
-			var key = this.chanceToAttackVar();
-			if (State.variables[key] === undefined) { State.variables[key] = 25; }
+			var c = comp();
+			if (!c) return;
+			var stats = compFor(c.name);
+			if (stats && stats.chanceToAttack === undefined) {
+				stats.chanceToAttack = 25;
+			}
 		},
 		setChanceToAttack: function (n) {
-			State.variables[this.chanceToAttackVar()] = n;
+			var c = comp();
+			if (c) {
+				var stats = compFor(c.name);
+				if (stats) stats.chanceToAttack = n;
+			}
 			State.variables.chanceToAttack = n;
 		},
 
@@ -934,26 +960,29 @@ setup.Companion = (function () {
 		   the player queries the HuntEndAlone passage (which runs
 		   the next morning). Called on entry to *HuntEndAlone. */
 		acknowledgeSoloHuntEnd: function (name) {
-			var s = State.variables;
-			s['payForHuntAlone' + name] = 0;
-			s['is' + name + 'GoingForHuntingAlone'] = 0;
+			var c = compFor(name);
+			if (!c) return;
+			c.paidForSolo = 0;
+			c.goingSolo   = 0;
 		},
 		/* Which street did this companion solo-hunt on? Returns
 		   "Owaissa" / "Elm" / "" based on the per-companion choice
 		   flag. Used to key into the success-chance table. */
 		companionChoseOwaissa: function (name) {
-			return State.variables[name.toLowerCase() + 'ChooseOwaissa'] === 1;
+			var c = compFor(name);
+			return !!(c && c.chooseOwaissa === 1);
 		},
 		companionChoseElm: function (name) {
-			return State.variables[name.toLowerCase() + 'ChooseElm'] === 1;
+			var c = compFor(name);
+			return !!(c && c.chooseElm === 1);
 		},
 		/* Clear the per-companion Owaissa/Elm choice flags. Called
 		   at the end of HuntEndAlone after the result is narrated. */
 		clearSoloHuntStreet: function (name) {
-			var s = State.variables;
-			var k = name.toLowerCase();
-			s[k + 'ChooseOwaissa'] = 0;
-			s[k + 'ChooseElm'] = 0;
+			var c = compFor(name);
+			if (!c) return;
+			c.chooseOwaissa = 0;
+			c.chooseElm     = 0;
 		},
 		/* Pay out the solo-hunt reward to $mc.money. Owaissa hunts
 		   pay $50, Elm hunts pay $100. Called from *HuntEndAlone
@@ -966,6 +995,15 @@ setup.Companion = (function () {
 		isCompanionPossessed: function (name) {
 			if (name === 'Brook') { return setup.Library.brookIsPossessed(); }
 			return false;
+		},
+		/* Midnight rollover: any cis companion mid-solo-hunt (goingSolo === 1)
+		   ticks to "finished" (goingSolo === 2) so the next morning's
+		   *HuntEndAlone passage runs. Called from setup.Tick.resetCooldowns. */
+		advanceSoloHuntsAtMidnight: function () {
+			['Brook', 'Alice', 'Blake'].forEach(function (name) {
+				var c = compFor(name);
+				if (c && c.goingSolo === 1) c.goingSolo = 2;
+			});
 		},
 
 		// --- Companion stat object getter ------------------------

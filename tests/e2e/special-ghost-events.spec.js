@@ -126,7 +126,7 @@ test.describe('Special ghost events — controller', () => {
     await setVar(page, 'showComp', 1);
     await setVar(page, 'isCompChosen', 1);
     await setVar(page, 'companion', { name: 'Alice' });
-    await setVar(page, 'isAliceGoingForHuntingAlone', 0);
+    await setVar(page, 'alice.goingSolo', 0);
     await setVar(page, 'aliceWorkDone', 1);
     await page.evaluate(() => SugarCube.setup.SpecialEvent.resetHuntPlansAfterMyling());
     expect(await getVar(page, 'chosenPlan')).toBe(0);
@@ -136,7 +136,7 @@ test.describe('Special ghost events — controller', () => {
 
   test('resetHuntPlansAfterMyling leaves aliceWorkDone untouched when Alice is hunting alone', async () => {
     await setVar(page, 'companion', { name: 'Alice' });
-    await setVar(page, 'isAliceGoingForHuntingAlone', 1);
+    await setVar(page, 'alice.goingSolo', 1);
     await setVar(page, 'aliceWorkDone', 1);
     await page.evaluate(() => SugarCube.setup.SpecialEvent.resetHuntPlansAfterMyling());
     expect(await getVar(page, 'aliceWorkDone')).toBe(1);

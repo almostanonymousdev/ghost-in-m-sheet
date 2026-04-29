@@ -11,8 +11,10 @@ setup.Library = (function () {
 	var OWNED_VARS = Object.freeze([
 		'meetBrook', 'foundTips', 'foundComics', 'foundBrook',
 		'foundGirl', 'foundGuy',
-		'comics1', 'comics2', 'comics3', 'comics4',
-		'chanceToSuccessAloneOwaissaBrook', 'chanceToSuccessAloneElmBrook'
+		// $comicsReading: 0 = none, 1..4 = currently-open issue. Replaces
+		// the four mutually-exclusive $comics<N> flags. SaveMigration
+		// folds existing $comics<N> into this single field.
+		'comicsReading'
 	]);
 
 	function sv() { return State.variables; }
@@ -112,19 +114,12 @@ setup.Library = (function () {
 		},
 
 		// --- Comics selection --------------------------------------
-		selectComics: function (idx) {
-			// idx in [1..4]. Clears all, then sets the one being read.
-			for (var i = 1; i <= 4; i++) {
-				State.variables['comics' + i] = 0;
-			}
-			State.variables['comics' + idx] = 1;
-		},
-		resetComics: function () {
-			for (var i = 1; i <= 4; i++) {
-				State.variables['comics' + i] = 0;
-			}
-		},
-		comicsFlag: function (idx) { return sv()['comics' + idx]; },
+		// One slot at a time: $comicsReading holds the active issue (1..4)
+		// or 0 when none is open. comicsFlag(idx) preserves the legacy
+		// per-issue boolean shape for the ReadComics passage's <<if>> chain.
+		selectComics: function (idx) { sv().comicsReading = idx; },
+		resetComics:  function ()    { sv().comicsReading = 0; },
+		comicsFlag:   function (idx) { return sv().comicsReading === idx ? 1 : 0; },
 
 		// --- Brook solo-hunt selection ----------------------------
 		chanceBrookAloneOwaissa: function () { return setup.Companion.soloHuntChanceOwaissa('Brook'); },

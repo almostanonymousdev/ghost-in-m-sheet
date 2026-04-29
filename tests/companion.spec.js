@@ -31,8 +31,8 @@ test.describe('Companion Controller', () => {
     await page.evaluate(() => SugarCube.setup.Companion.selectCompanion('Brook'));
 
     // assert
-    expect(await getVar(page, 'isCompChosenBrook')).toBe(1);
-    expect(await getVar(page, 'isCompChosenAlice')).toBe(0);
+    expect(await getVar(page, 'brook.chosen')).toBe(1);
+    expect(await getVar(page, 'alice.chosen')).toBe(0);
     expect(await callSetup(page, 'setup.Companion.anyCompanionSelected()')).toBe(true);
   });
 
@@ -44,8 +44,8 @@ test.describe('Companion Controller', () => {
     await page.evaluate(() => SugarCube.setup.Companion.selectCompanion('Alice'));
 
     // assert
-    expect(await getVar(page, 'isCompChosenBrook')).toBe(0);
-    expect(await getVar(page, 'isCompChosenAlice')).toBe(1);
+    expect(await getVar(page, 'brook.chosen')).toBe(0);
+    expect(await getVar(page, 'alice.chosen')).toBe(1);
   });
 
   test('clearCompanionSelection resets all flags', async () => {
@@ -286,22 +286,22 @@ test.describe('Companion Controller', () => {
 
     // act
     await page.evaluate(() =>
-      SugarCube.setup.Companion.payForSoloContract('Elm')
+      SugarCube.setup.Companion.payForSoloContract('Brook')
     );
 
     // assert
     expect(await getVar(page, 'mc.money')).toBe(80);
-    expect(await getVar(page, 'payForHuntAloneElm')).toBe(1);
+    expect(await getVar(page, 'brook.paidForSolo')).toBe(1);
   });
 
   test('payForSoloContract does not double-charge', async () => {
     // arrange
     await setVar(page, 'mc.money', 100);
-    await setVar(page, 'payForHuntAloneElm', 1);
+    await setVar(page, 'brook.paidForSolo', 1);
 
     // act
     await page.evaluate(() =>
-      SugarCube.setup.Companion.payForSoloContract('Elm')
+      SugarCube.setup.Companion.payForSoloContract('Brook')
     );
 
     // assert

@@ -191,9 +191,7 @@ setup.Tick = (function () {
 		];
 		perDayZero.forEach(function (k) { s[k] = 0; });
 
-		['isBrookGoingForHuntingAlone', 'isAliceGoingForHuntingAlone', 'isBlakeGoingForHuntingAlone'].forEach(function (k) {
-			if (s[k] === 1) { s[k] = 2; }
-		});
+		setup.Companion.advanceSoloHuntsAtMidnight();
 
 		if (s.ghostMareEventStart >= 1) {
 			s.ghostMareEventStage += 1;

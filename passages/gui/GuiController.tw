@@ -44,7 +44,7 @@ setup.Gui = (function () {
 		var s = sv();
 
 		function meetFlag(name) { return s['meet' + name] !== undefined; }
-		function huntingAlone(name) { return s['is' + name + 'GoingForHuntingAlone'] === 2; }
+		function huntingAlone(name) { return setup.Companion.hasFinishedSoloHunt(name); }
 
 		return [
 			{
