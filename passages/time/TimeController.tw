@@ -18,22 +18,8 @@ setup.Time = (function () {
 
 	function sv() { return State.variables; }
 
-	return {
+	var api = {
 		OWNED_VARS: OWNED_VARS,
-		// --- Raw getters -------------------------------------
-		hours:       function () { return sv().hours; },
-		minutes:     function () { return sv().minutes; },
-		meridiem:    function () { return sv().meridiem; },
-		temperature: function () { return sv().temperature; },
-
-		// --- Raw setters -------------------------------------
-		setHours:       function (v) { sv().hours = v; },
-		setMinutes:     function (v) { sv().minutes = v; },
-		addHours:       function (n) { sv().hours += n; },
-		addMinutes:     function (n) { sv().minutes += n; },
-		setMeridiem:    function (v) { sv().meridiem = v; },
-		setTemperature: function (v) { sv().temperature = v; },
-		addTemperature: function (n) { sv().temperature += n; },
 
 		// --- Derived / totals --------------------------------
 		totalMinutes: function () { return sv().hours * 60 + sv().minutes; },
@@ -70,4 +56,13 @@ setup.Time = (function () {
 			return false;
 		}
 	};
+
+	setup.defineAccessors(api, sv, [
+		{ name: 'hours',       add: 'addHours' },
+		{ name: 'minutes',     add: 'addMinutes' },
+		{ name: 'meridiem' },
+		{ name: 'temperature', add: 'addTemperature' }
+	]);
+
+	return api;
 })();

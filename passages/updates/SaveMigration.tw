@@ -42,7 +42,6 @@
 		crucifixAmount:             function () { return 0; },
 		sanityPillsAmount:          function () { return 0; },
 		moneyFromWeakenTheGhost:    function () { return 0; },
-		tentaclesEventStageSleep:   function () { return 0; },
 		piercingTitsAddSens:        function () { return 0; },
 		piercingTongueAddSens:      function () { return 0; },
 		piercingPussyAddSens:       function () { return 0; },
@@ -62,7 +61,18 @@
 		blake:  function () { return setup.Companion.defaultStateFor('Blake'); },
 		alex:   function () { return setup.Companion.defaultStateFor('Alex'); },
 		taylor: function () { return setup.Companion.defaultStateFor('Taylor'); },
-		casey:  function () { return setup.Companion.defaultStateFor('Casey'); }
+		casey:  function () { return setup.Companion.defaultStateFor('Casey'); },
+
+		// Home event bundles -- collapse the old flat $succubusEventCD /
+		// $tentaclesEventStageAll / $webcamEvent / $summonText forests
+		// into one object per feature. The flat-key fold-forward below
+		// handles existing saves; these defaults cover fresh-game/no-prior-
+		// state paths.
+		succubusEvent: function () { return {}; },
+		tentacles:     function () { return {}; },
+		webcam:        function () { return {}; },
+		summoning:     function () { return {}; },
+		hauntedHouse:  function () { return null; }
 	};
 
 	// mc sub-fields added after launch -- missing on very old saves
@@ -288,6 +298,75 @@
 			}
 		}
 		Object.keys(WISH_FLAG_TO_ID).forEach(function (flag) { delete vars[flag]; });
+
+		// Home event bundles: collapse flat $succubus*, $tentacles*,
+		// $webcam* / $prefs*, $summon* / $summoning* keys onto four
+		// per-feature objects ($succubusEvent, $tentacles, $webcam,
+		// $summoning). For each existing flat key on the save, copy
+		// its value into the bundle field, then delete the flat key.
+		// Skip a copy when the bundle already has the field — older
+		// saves coming through this path twice shouldn't clobber a
+		// value that was written via the new-shape API in the
+		// meantime.
+		function migrateBundle(bundleKey, mapping) {
+			if (!vars[bundleKey] || typeof vars[bundleKey] !== 'object') {
+				vars[bundleKey] = {};
+			}
+			var bundle = vars[bundleKey];
+			Object.keys(mapping).forEach(function (newField) {
+				var oldKey = mapping[newField];
+				if (vars[oldKey] !== undefined && bundle[newField] === undefined) {
+					bundle[newField] = vars[oldKey];
+				}
+				delete vars[oldKey];
+			});
+		}
+		migrateBundle('succubusEvent', {
+			eventCD:    'succubusEventCD',
+			pcStage:    'succubusPCEventStage',
+			choiceText: 'succubusChoiceEventText',
+			tvText:     'succubusTVText',
+			eventTimer: 'succubusEventTimer'
+		});
+		migrateBundle('tentacles', {
+			stageAll:       'tentaclesEventStageAll',
+			stageSleep:     'tentaclesEventStageSleep',
+			pcText:         'tentaclesEventPCText',
+			tvText:         'tentaclesEventTVText',
+			afterSleepText: 'tentaclesTextAfterSleep'
+		});
+		migrateBundle('webcam', {
+			event:          'webcamEvent',
+			showCD:         'webcamShowCD',
+			accountCreated: 'webcamAccountCreated',
+			video:          'webcamVideo',
+			money:          'prefsmoney',
+			subscribers:    'prefssubscribers',
+			showCount:      'prefsshowCount'
+		});
+		migrateBundle('summoning', {
+			text:   'summonText',
+			choice: 'summoningChoice'
+		});
+
+		// Active-house id: collapse four mutually-exclusive
+		// $is<House> flags + the derived $isrealhouse onto a single
+		// $hauntedHouse string ('owaissa' | 'elm' | 'enigma' |
+		// 'ironclad' | null). Migrate by finding whichever flag was
+		// raised; default to null when none was set.
+		if (vars.hauntedHouse === undefined) {
+			vars.hauntedHouse =
+				vars.isOwaissa  === 1 ? 'owaissa'  :
+				vars.isElm      === 1 ? 'elm'      :
+				vars.isEnigma   === 1 ? 'enigma'   :
+				vars.isIronclad === 1 ? 'ironclad' :
+				null;
+		}
+		delete vars.isOwaissa;
+		delete vars.isElm;
+		delete vars.isEnigma;
+		delete vars.isIronclad;
+		delete vars.isrealhouse;
 	}
 
 	// Expose for use from Twine (PassageReady belt-and-braces call).

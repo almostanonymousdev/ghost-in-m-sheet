@@ -32,13 +32,13 @@ setup.Church = (function () {
 			return sv().relationshipWithRain !== undefined;
 		},
 		canStartNunQuest: function () {
-			return setup.MissingWomen.getQuestStage() === 0 && !this.hasMetRain();
+			return setup.MissingWomen.rescueQuestStage() === 0 && !this.hasMetRain();
 		},
 		showMissingPersonsBoard: function () {
-			return setup.MissingWomen.getQuestStage() !== undefined && this.hasMetRain();
+			return setup.MissingWomen.rescueQuestStage() !== undefined && this.hasMetRain();
 		},
 		shouldRedirectToNunQuest: function () {
-			var stage = setup.MissingWomen.getQuestStage();
+			var stage = setup.MissingWomen.rescueQuestStage();
 			return stage === 2 || stage === 3;
 		},
 
@@ -91,12 +91,8 @@ setup.Church = (function () {
 
 		// --- Mutations previously done inline by passages ---------
 		clearRescueQuest: function () {
-			setup.MissingWomen.setQuestStage(0);
+			setup.MissingWomen.setRescueQuestStage(0);
 		},
-		setRescueQuestStage: function (stage) {
-			setup.MissingWomen.setQuestStage(stage);
-		},
-		rescueQuestStage: function () { return setup.MissingWomen.getQuestStage(); },
 		clearRescueClue:    function () { setup.MissingWomen.clearRescueClue(); },
 		initRainIfNeeded:   function () {
 			if (sv().relationshipWithRain === undefined) {

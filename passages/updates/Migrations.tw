@@ -54,7 +54,6 @@ setup.Migrations = (function () {
 		s.huntActivationTime  = 0;
 		s.elapsedTimeHunt     = 0;
 
-		s.isrealhouse = 1;
 		s.sanityIfHot = 0.1;
 		s.sanityInTheDark = 0.35;
 		if (s.mc) { s.mc.sanityMax = 100; }
@@ -138,8 +137,7 @@ setup.Migrations = (function () {
 		'crucifixAmount', 'sanityPillsAmount',
 		'addLustPiercingTits', 'addLustPiercingPussy',
 		'addLustPiercingTongue',
-		'moneyFromWeakenTheGhost',
-		'tentaclesEventStageSleep'
+		'moneyFromWeakenTheGhost'
 	];
 	function ensureZeroDefaults() {
 		var s = sv();
@@ -181,8 +179,9 @@ setup.Migrations = (function () {
 
 	function ensureSuccubusCooldown() {
 		var s = sv();
-		if (s.succubusEventCD === undefined && s.succubus !== undefined) {
-			s.succubusEventCD = 0;
+		if (!s.succubusEvent) s.succubusEvent = {};
+		if (s.succubusEvent.eventCD === undefined && s.succubus !== undefined) {
+			s.succubusEvent.eventCD = 0;
 		}
 	}
 	function ensureCursedItemCooldown() {

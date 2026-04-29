@@ -35,6 +35,22 @@ setup.Game = (function () {
 		};
 		s.hunt = null;
 
+		// --- Active haunted house -----------------------------
+		// 'owaissa' | 'elm' | 'enigma' | 'ironclad' | null. Replaces
+		// the old quartet of $is<House> bool flags + $isrealhouse.
+		s.hauntedHouse = null;
+
+		// --- Bundled home event state -------------------------
+		// Each bundle replaces a forest of ~5-7 flat top-level
+		// variables with one object so saves are easier to scan
+		// and cooldowns / banners cluster by feature. Legacy flat
+		// keys are folded forward by SaveMigration; new games
+		// start with empty objects (lazy-init through the API).
+		s.succubusEvent = {};
+		s.tentacles = {};
+		s.webcam = {};
+		s.summoning = {};
+
 		// --- Clock / environment ------------------------------
 		s.temperature = 0;
 		s.meridiem = 'AM';
@@ -56,7 +72,6 @@ setup.Game = (function () {
 		s.deliveryCorrectThisShift = 0;
 		s.deliveryStreak = 0;
 		s.deliveryBestStreak = 0;
-		s.deliveryReputationLevel = 0;
 		s.deliveryTotalTips = 0;
 		s.deliveryVisitCounts = {};
 		s.deliverySpecialOrder = false;

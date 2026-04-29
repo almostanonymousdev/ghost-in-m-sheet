@@ -11,7 +11,7 @@ setup.Delivery = (function () {
 	   query these only through the API methods below. */
 	var OWNED_VARS = Object.freeze([
 		'deliveryCompletedShifts', 'deliveryStreak', 'deliveryBestStreak',
-		'deliveryReputationLevel', 'deliveryCorrectThisShift',
+		'deliveryCorrectThisShift',
 		// $deliveryActiveIcons: [bool, bool, bool] — replaces the three
 		// $deliveryActiveIcon{1,2,3} flat flags. SaveMigration folds the
 		// legacy keys into this array.
@@ -53,7 +53,7 @@ setup.Delivery = (function () {
 			for (var i = tiers.length - 1; i >= 0; i--) {
 				if (shifts >= tiers[i].minShifts) { tier = i; break; }
 			}
-			var repBonus = this.getReputationPayBonus();
+			var repBonus = this.reputationPayBonus();
 			sv().jobMoneySuccessed = tiers[tier].base + repBonus;
 			sv().jobMoneyFailed = tiers[tier].fail;
 		},
@@ -64,7 +64,7 @@ setup.Delivery = (function () {
 			{ streak: 10, level: 2, label: "Trusted",       payBonus: 4 },
 			{ streak: 20, level: 3, label: "Star Courier",  payBonus: 6 }
 		],
-		getReputationLevel: function () {
+		reputationLevel: function () {
 			var best = sv().deliveryBestStreak;
 			var milestones = this.reputationMilestones;
 			var level = 0;
@@ -73,24 +73,24 @@ setup.Delivery = (function () {
 			}
 			return level;
 		},
-		getReputationPayBonus: function () {
-			var level = this.getReputationLevel();
+		reputationPayBonus: function () {
+			var level = this.reputationLevel();
 			var milestones = this.reputationMilestones;
 			for (var i = 0; i < milestones.length; i++) {
 				if (milestones[i].level === level) return milestones[i].payBonus;
 			}
 			return 0;
 		},
-		getReputationLabel: function () {
-			var level = this.getReputationLevel();
+		reputationLabel: function () {
+			var level = this.reputationLevel();
 			var milestones = this.reputationMilestones;
 			for (var i = 0; i < milestones.length; i++) {
 				if (milestones[i].level === level) return milestones[i].label;
 			}
 			return "Newbie";
 		},
-		getDeliveryTime: function () {
-			return this.getReputationLevel() >= 3 ? 20 : 30;
+		deliveryTime: function () {
+			return this.reputationLevel() >= 3 ? 20 : 30;
 		},
 
 		// --- Route familiarity -----------------------------------
@@ -231,7 +231,6 @@ setup.Delivery = (function () {
 			if (s.deliveryStreak > s.deliveryBestStreak) {
 				s.deliveryBestStreak = s.deliveryStreak;
 			}
-			s.deliveryReputationLevel = this.getReputationLevel();
 		},
 		bankEarnedMoney: function () {
 			// Pay out the shift: credit MC, spend energy, reset counter.
@@ -300,7 +299,6 @@ setup.Delivery = (function () {
 		},
 		shuffledOrders: function () { return sv().shuffledOrders; },
 		trackCorrect: function () { sv().deliveryCorrectThisShift += 1; },
-		reputationLevel: function () { return sv().deliveryReputationLevel; },
 		addTip:       function (n) {
 			setup.Mc.addEarnedMoney(n);
 			sv().deliveryTotalTips += n;

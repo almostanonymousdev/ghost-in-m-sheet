@@ -74,7 +74,7 @@ setup.Library = (function () {
 
 		// --- Brook solo-hunt chances (duplicated in BrookInfo) --
 		brookSoloOwaissaChance: function () {
-			var lvl = setup.Companion.brookLvl();
+			var lvl = setup.Companion.companionLvl('Brook');
 			if (lvl >= 5) return 70;
 			if (lvl === 4) return 55;
 			if (lvl === 3) return 40;
@@ -82,16 +82,12 @@ setup.Library = (function () {
 			return 0;
 		},
 		brookSoloElmChance: function () {
-			var lvl = setup.Companion.brookLvl();
+			var lvl = setup.Companion.companionLvl('Brook');
 			if (lvl >= 5) return 55;
 			if (lvl === 4) return 40;
 			if (lvl === 3) return 25;
 			if (lvl === 2) return 10;
 			return 0;
-		},
-
-		brookLvl: function () {
-			return setup.Companion.brookLvl();
 		},
 
 		// --- Mutations previously inline in library passages ------

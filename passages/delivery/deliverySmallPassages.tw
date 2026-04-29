@@ -53,7 +53,7 @@
 <<run setup.Delivery.setActiveIcon(_orderNum - 1, false)>>
 <br>
 <br>
-<<addTime `setup.Delivery.getDeliveryTime()`>>
+<<addTime `setup.Delivery.deliveryTime()`>>
 
 :: DeliveryActiveIcon {"position":"1100,1100","size":"100,100"}
 <<if passage() is "DeliveryHouse">>

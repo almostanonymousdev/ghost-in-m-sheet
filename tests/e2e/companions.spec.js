@@ -159,14 +159,13 @@ test.describe('Companions — hunt-side events', () => {
   test('canShowCompanionMiniPanel requires chosenPlan + hunt mode + haunted house', async () => {
     await setVar(page, 'chosenPlan', 'Plan1');
     await setHuntMode(page, 2);
-    await setVar(page, 'isOwaissa', 1);
+    await setVar(page, 'hauntedHouse', 'owaissa');
     expect(await callSetup(page, 'setup.Companion.canShowCompanionMiniPanel()')).toBe(true);
 
-    await setVar(page, 'isOwaissa', 0);
-    await setVar(page, 'isElm', 0);
+    await setVar(page, 'hauntedHouse', null);
     expect(await callSetup(page, 'setup.Companion.canShowCompanionMiniPanel()')).toBe(false);
 
-    await setVar(page, 'isElm', 1);
+    await setVar(page, 'hauntedHouse', 'elm');
     expect(await callSetup(page, 'setup.Companion.canShowCompanionMiniPanel()')).toBe(true);
 
     await setHuntMode(page, 0);
@@ -285,9 +284,8 @@ test.describe('Companions — home/intimate events', () => {
   ]) {
     test(`${passage} renders cleanly`, async () => {
       await selectCompanion(page, 'Alice');
-      // CompanionRandomRoom reads $isOwaissa/$isElm to pick a room list.
-      await setVar(page, 'isOwaissa', 1);
-      await setVar(page, 'isElm', 0);
+      // CompanionRandomRoom reads $hauntedHouse to pick a room list.
+      await setVar(page, 'hauntedHouse', 'owaissa');
       await setVar(page, 'isCompRoomChosen', 0);
       await goToPassage(page, passage);
       await expectCleanPassage(page);

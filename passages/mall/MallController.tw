@@ -25,7 +25,7 @@ setup.Mall = (function () {
 
 		// --- Blake / adult shop ----------------------------------
 		blakeUnlocked: function () {
-			return setup.Companion.aliceLvl() >= 2;
+			return setup.Companion.companionLvl('Alice') >= 2;
 		},
 		blakeFirstMeeting: function () {
 			return sv().dialogBlake === undefined;
@@ -106,9 +106,6 @@ setup.Mall = (function () {
 			State.variables.relationshipBlake = (sv().relationshipBlake || 0) + 1;
 		},
 		setBlakeRelationship: function (n) { State.variables.relationshipBlake = n; },
-		blakeLvl: function () {
-			return setup.Companion.blakeLvl();
-		},
 
 		// --- Chance-aloneHunt display values ---------------------
 		chanceBlakeAloneOwaissa: function () { return setup.Companion.soloHuntChanceOwaissa('Blake'); },

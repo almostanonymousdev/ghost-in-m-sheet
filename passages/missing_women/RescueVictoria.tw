@@ -56,7 +56,7 @@ I could watch a little longer and then help her... but I might get noticed. @@<b
 		<<if _caughtChance gte _randomChance>>
 			<<replace ".rescueWatchButton">>
 				@@.mc-speech; FUCK! They noticed me. I won't have time to take out the holy water, but I could@@
-				@@.usebtn; [[Run|Church][setup.MissingWomen.setQuestStage(2)]]@@
+				@@.usebtn; [[Run|Church][setup.MissingWomen.setRescueQuestStage(2)]]@@
 
 				<<done>>
 					<<if not setup.MissingWomen.canStaySubmissive()>>
@@ -65,7 +65,7 @@ I could watch a little longer and then help her... but I might get noticed. @@<b
 				<</done>>
 				<br>
 				<span class="rescueStayCorruptionCheck">
-				@@.mc-speech;Or...@@  @@.usebtn;[[Stay|RescueStay][setup.MissingWomen.setQuestStage(2)]]@@.@@.mc-speech; I guess I'm already used to losing...@@</span>
+				@@.mc-speech;Or...@@  @@.usebtn;[[Stay|RescueStay][setup.MissingWomen.setRescueQuestStage(2)]]@@.@@.mc-speech; I guess I'm already used to losing...@@</span>
 				<<if not setup.MissingWomen.canStaySubmissive()>>@@.warningtext; (Req. <<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 6)@@
 				<</if>>
 
@@ -117,6 +117,6 @@ I could watch a little longer and then help her... but I might get noticed. @@<b
 		@@.mc-thoughts; You grab her arm, and the two of you bolt out of the house.<br>
 		She thanks you for saving her and says she'll tell the nun about your help.@@<br>
 		<br><br>
-		@@.backbtn; [[Leave|Church][setup.MissingWomen.setQuestStage(3)]]@@<br>
+		@@.backbtn; [[Leave|Church][setup.MissingWomen.setRescueQuestStage(3)]]@@<br>
 	<</linkreplace>>
 <</if>></span>

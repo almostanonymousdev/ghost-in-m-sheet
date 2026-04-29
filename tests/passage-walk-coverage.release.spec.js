@@ -519,7 +519,7 @@ async function walkPassages(browser, passages, label) {
       // a recognised location flag set. Most location-aware passages
       // pick up either Owaissa or Elm; rooms in either renders cleanly
       // once the search bags above are in place.
-      V.isOwaissa = 1;
+      V.hauntedHouse = 'owaissa';
     });
   }
 

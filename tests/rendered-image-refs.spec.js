@@ -137,7 +137,7 @@ test.describe('rendered image/video refs resolve to files', () => {
         if (V[n.toLowerCase()]) V[n.toLowerCase()].chosen = 1;
         V.isCompChosen = 1;
         V.showComp = 1;
-        V.isOwaissa = 1;
+        V.hauntedHouse = 'owaissa';
       }, name);
       const srcs = await collectSrcs('<<companionLinks>>');
       expect(srcs.length).toBeGreaterThan(0);
@@ -225,7 +225,7 @@ test.describe('rendered image/video refs resolve to files', () => {
           V.isCompChosen = 1;
           V.showComp = 1;
           V.chosenPlan = 'Plan1';
-          V.isOwaissa = 1;
+          V.hauntedHouse = 'owaissa';
         },
       },
       {
@@ -237,7 +237,7 @@ test.describe('rendered image/video refs resolve to files', () => {
           V.isCompChosen = 1;
           V.showComp = 1;
           V.chosenPlan = 'Plan1';
-          V.isOwaissa = 1;
+          V.hauntedHouse = 'owaissa';
         },
       },
       {
@@ -249,7 +249,7 @@ test.describe('rendered image/video refs resolve to files', () => {
           V.isCompChosen = 1;
           V.showComp = 1;
           V.chosenPlan = 'Plan1';
-          V.isElm = 1;
+          V.hauntedHouse = 'elm';
         },
       },
       {
@@ -262,7 +262,7 @@ test.describe('rendered image/video refs resolve to files', () => {
           V.showComp = 1;
           V.transPicture = 3;
           V.transFirstStage = 1;
-          V.isElm = 1;
+          V.hauntedHouse = 'elm';
         },
       },
       {

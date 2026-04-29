@@ -9,7 +9,7 @@
 <<else>>
 	<<if setup.Delivery.completedShifts() gt 0>>
 		<div class="delivery-stats">
-		@@.mc-action; Rank: <<= setup.Delivery.getReputationLabel()>> | Streak: <<= setup.Delivery.streak()>> | Pay: $<<= setup.Delivery.jobMoneySuccessed()>>/delivery@@
+		@@.mc-action; Rank: <<= setup.Delivery.reputationLabel()>> | Streak: <<= setup.Delivery.streak()>> | Pay: $<<= setup.Delivery.jobMoneySuccessed()>>/delivery@@
 		<<if setup.Delivery.reputationLevel() gte 3>>
 			@@.mc-action;  | Fast routes unlocked@@
 		<</if>>

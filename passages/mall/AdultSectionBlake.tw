@@ -96,7 +96,7 @@
 
 				</span>
 			<</replace>>
-		<</link>>@@<<if setup.Mall.blakeLvl() lt 2>>
+		<</link>>@@<<if setup.Companion.companionLvl('Blake') lt 2>>
 			@@.warningtext; Req. Blake's lvl 2+@@
 		<</if>></span>
 
@@ -109,7 +109,7 @@
 
 	<br>
 
-	<<if setup.Mall.blakeLvl() lt 2>>
+	<<if setup.Companion.companionLvl('Blake') lt 2>>
 		<<done>>
 			<<addclass ".CompanionInfoAskForHuntAlone" "disabled-link">>
 		<</done>>

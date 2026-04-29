@@ -56,58 +56,6 @@ setup.Mc = (function () {
 		set: set,
 		add: add,
 
-		// --- Core stats (getters) --------------------------------
-		money:         function () { return mc().money; },
-		sanity:        function () { return mc().sanity; },
-		sanityMax:     function () { return mc().sanityMax; },
-		sanityUp:      function () { return mc().sanityUp; },
-		energy:        function () { return mc().energy; },
-		energyMax:     function () { return mc().energyMax; },
-		energyPoints:  function () { return mc().energyPoints; },
-		corruption:    function () { return mc().corruption; },
-		beauty:        function () { return mc().beauty; },
-		lust:          function () { return mc().lust; },
-		name:          function () { return mc().name; },
-		fit:           function () { return mc().fit; },
-		lvl:           function () { return mc().lvl; },
-		exp:           function () { return mc().exp; },
-		exhibitionism: function () { return mc().exhibitionism; },
-		makeupImg:     function () { return mc().makeupImg; },
-		dirty:         function () { return mc().dirty; },
-
-		// --- Core stat mutators ---------------------------------
-		setMoney:         function (v) { mc().money = v; },
-		addMoney:         function (n) { mc().money += n; },
-		spendMoney:       function (n) { mc().money -= n; },
-		setSanity:        function (v) { mc().sanity = v; },
-		addSanity:        function (n) { mc().sanity += n; },
-		spendSanity:      function (n) { mc().sanity -= n; },
-		setSanityMax:     function (v) { mc().sanityMax = v; },
-		setSanityUp:      function (v) { mc().sanityUp = v; },
-		setEnergy:        function (v) { mc().energy = v; },
-		addEnergy:        function (n) { mc().energy += n; },
-		spendEnergy:      function (n) { mc().energy -= n; },
-		setEnergyMax:     function (v) { mc().energyMax = v; },
-		setEnergyPoints:  function (v) { mc().energyPoints = v; },
-		addEnergyPoints:  function (n) { mc().energyPoints += n; },
-		setCorruption:    function (v) { mc().corruption = v; },
-		addCorruption:    function (n) { mc().corruption += n; },
-		setBeauty:        function (v) { mc().beauty = v; },
-		addBeauty:        function (n) { mc().beauty += n; },
-		setLust:          function (v) { mc().lust = v; },
-		addLust:          function (n) { mc().lust += n; },
-		setName:          function (v) { mc().name = v; },
-		setFit:           function (v) { mc().fit = v; },
-		addFit:           function (n) { mc().fit += n; },
-		setLvl:           function (v) { mc().lvl = v; },
-		addLvl:           function (n) { mc().lvl += n; },
-		setExp:           function (v) { mc().exp = v; },
-		addExp:           function (n) { mc().exp += n; },
-		setExhibitionism: function (v) { mc().exhibitionism = v; },
-		addExhibitionism: function (n) { mc().exhibitionism += n; },
-		setMakeupImg:     function (v) { mc().makeupImg = v; },
-		setDirty:         function (v) { mc().dirty = v; },
-
 		// --- Fit percent shorthand ------------------------------
 		// $mc.fit is clamped to [0, 100]; plenty of callers that
 		// just display a bar divide by 100.
@@ -118,47 +66,23 @@ setup.Mc = (function () {
 		setPenalized:   function (on) { sv().isPenaltyOn = on ? 1 : 0; },
 		clearPenalty:   function () { sv().isPenaltyOn = 0; },
 
-		// --- Possession meter -----------------------------------
-		possession:     function () { return sv().mcpossession; },
 		sensualBodyPart: function () { return sv().sensualBodyPart; },
 		bodyPartSensitivity: function (part) {
 			var bp = sv().sensualBodyPart;
 			return bp ? (bp[part] || 0) : 0;
 		},
-		setPossession:  function (v) { sv().mcpossession = v; },
-		addPossession:  function (n) { sv().mcpossession += n; },
 		ensurePossession: function () {
 			if (sv().mcpossession === undefined) { sv().mcpossession = 0; }
 		},
 
-		// --- Orgasm meter / cooldown ----------------------------
-		orgasmMeter:       function () { return sv().mcOrgasmMeter; },
-		setOrgasmMeter:    function (v) { sv().mcOrgasmMeter = v; },
-		orgasmCooldown:    function () { return sv().orgasmCooldownSteps; },
-		setOrgasmCooldown: function (v) { sv().orgasmCooldownSteps = v; },
-
-		// --- Level progress counters ----------------------------
-		percentageOfLevel:    function () { return sv().percentageOfLevel; },
-		setPercentageOfLevel: function (v) { sv().percentageOfLevel = v; },
-		neededForNextLevel:   function () { return sv().neededForNextLevel; },
-		setNeededForNextLevel: function (v) { sv().neededForNextLevel = v; },
-		tempCorr:             function () { return sv().tempCorr; },
-		setTempCorr:          function (v) { sv().tempCorr = v; },
-		addTempCorr:          function (n) { sv().tempCorr += n; },
-
-		// --- Earned-money accumulator ---------------------------
-		earnedMoney:     function () { return sv().earnedMoney; },
-		addEarnedMoney:  function (n) { sv().earnedMoney += n; },
-		setEarnedMoney:  function (v) { sv().earnedMoney = v; },
+		// --- Earned-money accumulator (compound mutation) -------
 		earn: function (n) {
 			mc().money += n;
 			sv().earnedMoney += n;
 		},
 
-		// --- Energy drinks (inventory + use) --------------------
-		energyDrinkAmount:    function () { return sv().energyDrinkAmount; },
-		addEnergyDrink:       function (n) { sv().energyDrinkAmount += n; },
-		setEnergyDrinkAmount: function (v) { sv().energyDrinkAmount = v; },
+		// --- Inventory consumables: amount-aware mutators -------
+		// useX returns true iff there was at least one to consume.
 		useEnergyDrink: function () {
 			if (sv().energyDrinkAmount > 0) {
 				sv().energyDrinkAmount -= 1;
@@ -167,38 +91,24 @@ setup.Mc = (function () {
 			}
 			return false;
 		},
-
-		// --- Makeup (inventory + applied flag) ------------------
-		makeupAmount:    function () { return sv().makeupAmount; },
-		addMakeup:       function (n) { sv().makeupAmount += n; },
-		spendMakeup:     function (n) { sv().makeupAmount -= n; },
-		setMakeupAmount: function (v) { sv().makeupAmount = v; },
-		makeupApplied:   function () { return sv().makeupApplied; },
-		setMakeupApplied: function (v) { sv().makeupApplied = v; },
-
-		// --- Medicine (clears the penalty / heals) --------------
-		medicineAmount:    function () { return sv().medicineAmount; },
-		addMedicine:       function (n) { sv().medicineAmount = (sv().medicineAmount || 0) + n; },
-		useMedicine:       function () {
+		// addMedicine / addSanityPills tolerate undefined so callers
+		// don't have to bootstrap the counter on legacy saves.
+		addMedicine:    function (n) { sv().medicineAmount    = (sv().medicineAmount    || 0) + n; },
+		addSanityPills: function (n) { sv().sanityPillsAmount = (sv().sanityPillsAmount || 0) + n; },
+		useMedicine: function () {
 			if (sv().medicineAmount > 0) {
 				sv().medicineAmount -= 1;
 				return true;
 			}
 			return false;
 		},
-		setMedicineAmount: function (v) { sv().medicineAmount = v; },
-
-		// --- Sanity pills ---------------------------------------
-		sanityPillsAmount:    function () { return sv().sanityPillsAmount; },
-		addSanityPills:       function (n) { sv().sanityPillsAmount = (sv().sanityPillsAmount || 0) + n; },
-		useSanityPill:        function () {
+		useSanityPill: function () {
 			if (sv().sanityPillsAmount > 0) {
 				sv().sanityPillsAmount -= 1;
 				return true;
 			}
 			return false;
 		},
-		setSanityPillsAmount: function (v) { sv().sanityPillsAmount = v; },
 
 		// --- XP / level-up ---------------------------------------
 		// Single grant-exp mutation shared by the gym, church, witch,
@@ -337,6 +247,50 @@ setup.Mc = (function () {
 			}
 		}
 	};
+
+	/* Trivial $mc.<field> accessors. Each row exposes the named root
+	   as a getter, "set"+Cap as a setter, and (where listed) "add" /
+	   "spend" mutators with the literal method name. */
+	setup.defineAccessors(api, mc, [
+		{ name: 'money',         add: 'addMoney',         spend: 'spendMoney' },
+		{ name: 'sanity',        add: 'addSanity',        spend: 'spendSanity' },
+		{ name: 'sanityMax' },
+		{ name: 'sanityUp' },
+		{ name: 'energy',        add: 'addEnergy',        spend: 'spendEnergy' },
+		{ name: 'energyMax' },
+		{ name: 'energyPoints',  add: 'addEnergyPoints' },
+		{ name: 'corruption',    add: 'addCorruption' },
+		{ name: 'beauty',        add: 'addBeauty' },
+		{ name: 'lust',          add: 'addLust' },
+		{ name: 'name' },
+		{ name: 'fit',           add: 'addFit' },
+		{ name: 'lvl',           add: 'addLvl' },
+		{ name: 'exp',           add: 'addExp' },
+		{ name: 'exhibitionism', add: 'addExhibitionism' },
+		{ name: 'makeupImg' },
+		{ name: 'dirty' }
+	]);
+
+	/* Trivial top-level State.variables accessors. `key` overrides the
+	   underlying $variable name when the public method root differs;
+	   `get` overrides the getter name. addMedicine / addSanityPills are
+	   defined manually above (they tolerate an undefined counter). */
+	setup.defineAccessors(api, sv, [
+		{ name: 'tempCorr',           add: 'addTempCorr' },
+		{ name: 'earnedMoney',        add: 'addEarnedMoney' },
+		{ name: 'percentageOfLevel' },
+		{ name: 'neededForNextLevel' },
+		{ name: 'makeupApplied' },
+		{ name: 'energyDrinkAmount',  add: 'addEnergyDrink' },
+		{ name: 'sanityPillsAmount' },
+		{ name: 'medicineAmount' },
+		{ name: 'makeupAmount',       add: 'addMakeup', spend: 'spendMakeup' },
+		// Public method root differs from $variable name:
+		{ name: 'possession',     key: 'mcpossession',         add: 'addPossession' },
+		{ name: 'orgasmMeter',    key: 'mcOrgasmMeter' },
+		{ name: 'orgasmCooldown', key: 'orgasmCooldownSteps' }
+	]);
+
 	/* Stamp whatever-is-banked $tempCorr into $mc.corruption,
 	   capping at 1 so a single walk-home can't spike corruption
 	   more than a point, then reset the bank. */

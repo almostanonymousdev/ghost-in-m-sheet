@@ -29,8 +29,8 @@
 		]
 	};
 
-	var rooms = sv.isOwaissa === 1 ? ROOMS_BY_HOUSE.owaissa
-				: sv.isElm     === 1 ? ROOMS_BY_HOUSE.elm
+	var rooms = sv.hauntedHouse === 'owaissa' ? ROOMS_BY_HOUSE.owaissa
+				: sv.hauntedHouse === 'elm'     ? ROOMS_BY_HOUSE.elm
 				: [];
 
 	function applyLights(isDark) {

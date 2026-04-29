@@ -22,7 +22,7 @@
 		@@.mc-thoughts; Suddenly, you feel a growing sense of weakness and fatigue. Barely reaching your bed, you fall into a deep@@ @@.enterbtn;[[sleep|SummonMare]]@@
 	<</linkappend>>
 
-<<elseif setup.Witch.gotCursedItem() eq 1>>
+<<elseif setup.Witch.cursedItemState() eq 1>>
 	<<image "mechanics/exorcism/tentacles.jpg" { class: "displayCentredImgs", width: "100%" }>>
 	@@.mc-thoughts; You start reading the words from the ancient book, your lips slowly forming each sound, each word like a whisper filling the room. You feel the energy growing around you, each syllable resonating in the air,@@ <<linkappend "@@.usebtn; calling something invisible@@">><br>
 		@@.mc-thoughts; But nothing happens@@<br>
@@ -55,7 +55,7 @@
 		@@.mc-thoughts; The succubus disappeared.@@<br>
 		@@.mc-speech; I don't know... if this is the right choice...@@<br>
 		@@.mc-thoughts; The succubus will protect me from ghost attacks for 5 days during the ghost hunt. But I need to summon her to renew her "protection"@@<br><br>
-		@@.backbtn; [[Back|Bedroom][setup.Witch.setExorcismQuestStage(2); setup.Witch.setSuccubus(2)]]@@<br>
+		@@.backbtn; [[Back|Bedroom][setup.Witch.setExorcismQuestStage(2); setup.Witch.setSuccubusVisited(2)]]@@<br>
 	<</linkreplace>>
 	</span>
 	<span id="summoningOr">or</span>

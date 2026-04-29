@@ -50,13 +50,10 @@ test.describe('Events controller — video resolvers', () => {
   test.beforeEach(async () => { await resetGame(page); });
 
   async function setLocation(p, location) {
-    await setVar(p, 'isOwaissa', location === 'owaissa' ? 1 : 0);
-    await setVar(p, 'isElm',     location === 'elm'     ? 1 : 0);
-    await setVar(p, 'isEnigma',  location === 'enigma'  ? 1 : 0);
-    await setVar(p, 'isIronclad', location === 'ironclad' ? 1 : 0);
+    await setVar(p, 'hauntedHouse', location || null);
   }
 
-  test('pickByLocation switches by isOwaissa/isElm', async () => {
+  test('pickByLocation switches by $hauntedHouse', async () => {
     await setLocation(page, 'owaissa');
     let result = await page.evaluate(() =>
       SugarCube.setup.Events.pickByLocation(['o1'], ['e1']));
@@ -295,8 +292,7 @@ test.describe('Events controller — save-event video aliases', () => {
   test.beforeEach(async () => { await resetGame(page); });
 
   async function setLocation(p, location) {
-    await setVar(p, 'isOwaissa', location === 'owaissa' ? 1 : 0);
-    await setVar(p, 'isElm',     location === 'elm'     ? 1 : 0);
+    await setVar(p, 'hauntedHouse', location || null);
   }
 
   test('saveEventBottomVideos picks the right body part by stage', async () => {

@@ -79,7 +79,7 @@
 
 						</span>
 					<</replace>>
-				<</link>>@@<<if setup.Library.brookLvl() lt 2>>
+				<</link>>@@<<if setup.Companion.companionLvl('Brook') lt 2>>
 					@@.warningtext; Req. Brook's lvl 2+@@
 				<</if>></span>
 
@@ -88,7 +88,7 @@
 
 				</span>
 
-				<<if setup.Library.brookLvl() lt 2>>
+				<<if setup.Companion.companionLvl('Brook') lt 2>>
 					<<done>>
 						<<addclass ".CompanionInfoAskForHuntAlone" "disabled-link">>
 					<</done>>

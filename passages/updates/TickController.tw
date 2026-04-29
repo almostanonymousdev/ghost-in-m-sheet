@@ -38,8 +38,8 @@ setup.Tick = (function () {
 	   target room flashes a highlight class on every passage so it stays
 	   visible as the player moves between rooms. */
 	var DETECTOR_TARGETS = [
-		{ houseFlag: 'isElm', suffix: 'Elm' },
-		{ houseFlag: 'isOwaissa', suffix: 'Owaissa' }
+		{ houseId: 'elm',     suffix: 'Elm' },
+		{ houseId: 'owaissa', suffix: 'Owaissa' }
 	];
 	var DETECTOR_RULES = [
 		{ slotKey: 'placeForCursedItem',    test: function (s) {
@@ -68,7 +68,7 @@ setup.Tick = (function () {
 		var s = sv();
 		if (s.boughtDetector !== 1) return;
 		DETECTOR_TARGETS.forEach(function (target) {
-			if (s[target.houseFlag] !== 1) return;
+			if (s.hauntedHouse !== target.houseId) return;
 			DETECTOR_RULES.forEach(function (rule) {
 				highlightIf(s[rule.slotKey + target.suffix], rule.test(s));
 			});
@@ -182,7 +182,7 @@ setup.Tick = (function () {
 		var s = sv();
 		var perDayZero = [
 			'thetwinseventCD', 'joggingCD', 'stealItemsFromWitchCD',
-			'ghostSpecialEventSpiritCD', 'webcamShowCD',
+			'ghostSpecialEventSpiritCD',
 			'deliveryPizzaEvent', 'deliveryPackageEvent',
 			'deliveryBurgerEvent', 'deliveryPapersEvent',
 			'witchNightCD', 'trainer1SexCD', 'trainer2SexCD',
@@ -190,6 +190,7 @@ setup.Tick = (function () {
 			'masturbationCD', 'exorcismCD', 'rescueCD', 'rescueQuestCD'
 		];
 		perDayZero.forEach(function (k) { s[k] = 0; });
+		if (s.webcam) s.webcam.showCD = 0;
 
 		setup.Companion.advanceSoloHuntsAtMidnight();
 
@@ -212,12 +213,14 @@ setup.Tick = (function () {
 		}
 
 		if (s.succubus === 1) {
-			if (s.succubusEventCD !== 0) { s.succubusEventCD += 1; }
-			if (s.succubusEventCD >= 3)  { s.succubusEventCD = 0; }
+			if (!s.succubusEvent) s.succubusEvent = {};
+			var se = s.succubusEvent;
+			if (se.eventCD !== 0) { se.eventCD = (se.eventCD || 0) + 1; }
+			if (se.eventCD >= 3)  { se.eventCD = 0; }
 		}
 
-		if (s.exorcismQuestStage === 2 && s.succubusEventTimer >= 1) {
-			s.succubusEventTimer -= 1;
+		if (s.exorcismQuestStage === 2 && s.succubusEvent && s.succubusEvent.eventTimer >= 1) {
+			s.succubusEvent.eventTimer -= 1;
 		}
 
 		if (s.gotCursedItem === 1 && s.gotCursedItemEventCD < 3) {

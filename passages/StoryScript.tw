@@ -947,6 +947,36 @@ function debounce(func, wait) {
     };
 }
 
+/* Generates trivial accessors on a controller's `api` object so the
+ * eight-line wall of `foo() / setFoo() / addFoo() / spendFoo()` for
+ * each owned field collapses into a one-row spec.
+ *
+ *   host: function returning the underlying object (e.g. mc(), sv())
+ *   spec: array of either a bare string ("money" → get + setMoney) or
+ *         { name, key?, get?, set?, add?, spend? } where each verb key
+ *         is the method name to expose; falsy disables that verb.
+ *
+ * Defaults: get = name, set = "set" + Capitalised(name); add and spend
+ * are off unless explicitly named. `key` overrides the underlying
+ * field name when it differs from the public method root (e.g.
+ * possession()/$mcpossession). */
+setup.defineAccessors = function (api, host, spec) {
+    function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+    spec.forEach(function (entry) {
+        var f      = (typeof entry === 'string') ? { name: entry } : entry;
+        var key    = f.key || f.name;
+        var getNm  = (f.get   !== undefined) ? f.get   : f.name;
+        var setNm  = (f.set   !== undefined) ? f.set   : 'set' + cap(f.name);
+        var addNm  = f.add;
+        var subNm  = f.spend;
+        if (getNm) api[getNm]  = function ()  { return host()[key]; };
+        if (setNm) api[setNm]  = function (v) { host()[key] = v; };
+        if (addNm) api[addNm]  = function (n) { host()[key] += n; };
+        if (subNm) api[subNm]  = function (n) { host()[key] -= n; };
+    });
+    return api;
+};
+
 // Keyboard shortcut: map each key to the tool it activates, then click the
 // canonical button for every room in setup.searchRoomPrefixes.
 setup.searchToolKeyMap = {

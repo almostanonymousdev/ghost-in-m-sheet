@@ -370,7 +370,7 @@ test.describe('Companion Controller', () => {
 
   test('inHauntedHouseLocation true for Owaissa', async () => {
     // arrange
-    await setVar(page, 'isOwaissa', 1);
+    await setVar(page, 'hauntedHouse', 'owaissa');
 
     // act
     const result = await callSetup(page, 'setup.Companion.inHauntedHouseLocation()');
@@ -381,7 +381,7 @@ test.describe('Companion Controller', () => {
 
   test('inHauntedHouseLocation true for Elm', async () => {
     // arrange
-    await setVar(page, 'isElm', 1);
+    await setVar(page, 'hauntedHouse', 'elm');
 
     // act
     const result = await callSetup(page, 'setup.Companion.inHauntedHouseLocation()');
@@ -392,8 +392,7 @@ test.describe('Companion Controller', () => {
 
   test('inHauntedHouseLocation false when not in either house', async () => {
     // arrange
-    await setVar(page, 'isOwaissa', 0);
-    await setVar(page, 'isElm', 0);
+    await setVar(page, 'hauntedHouse', null);
 
     // act
     const result = await callSetup(page, 'setup.Companion.inHauntedHouseLocation()');

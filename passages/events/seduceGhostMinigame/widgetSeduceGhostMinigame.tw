@@ -1,6 +1,6 @@
 :: widgetSeduceGhostMinigame [nobr widget noreturn] {"position":"1100,3900","size":"100,100"}
 <<widget "seduceGhostMinigameVideo">>
-	<<set _videoList to setup.SeduceGhostMinigame.getVideoList()>>
+	<<set _videoList to setup.SeduceGhostMinigame.videoList()>>
 	<<set _selected to _videoList[random(0, _videoList.length - 1)]>>
 	<<if _selected.type == "video">>
 		<<video _selected.src "displayCentredImgs">>

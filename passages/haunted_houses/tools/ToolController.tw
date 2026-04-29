@@ -205,7 +205,7 @@
 
     function maybeSetBrookPossessed() {
         if (setup.Companion.activeCompanionName() === "Brook"
-            && setup.Companion.brookLvl() >= 2
+            && setup.Companion.companionLvl('Brook') >= 2
             && setup.Companion.isCompanionFlagActive()) {
             setup.Home.markBrookePossessedActive();
         }

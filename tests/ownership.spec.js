@@ -46,7 +46,22 @@ const UNOWNED_ALLOWLIST = new Set([
    owned by any controller. */
 const LEGACY_SAVE_VARS = new Set([
 	'ghostName', 'ghostEvidence', 'ghostRoom',
-	'ghostIsTrapped', 'ghostHuntingMode', 'saveMimic'
+	'ghostIsTrapped', 'ghostHuntingMode', 'saveMimic',
+	// Pre-bundle home event flags — folded into $succubusEvent /
+	// $tentacles / $webcam / $summoning by SaveMigration.
+	'succubusEventCD', 'succubusPCEventStage',
+	'succubusChoiceEventText', 'succubusTVText',
+	'succubusEventTimer',
+	'tentaclesEventStageAll', 'tentaclesEventStageSleep',
+	'tentaclesEventPCText', 'tentaclesEventTVText',
+	'tentaclesTextAfterSleep',
+	'webcamEvent', 'webcamShowCD', 'webcamAccountCreated',
+	'webcamVideo',
+	'prefsmoney', 'prefssubscribers', 'prefsshowCount',
+	'summonText', 'summoningChoice',
+	// Pre-bundle haunted-house active flags — collapsed onto
+	// $hauntedHouse (string id) by SaveMigration.
+	'isOwaissa', 'isElm', 'isEnigma', 'isIronclad', 'isrealhouse'
 ]);
 
 test.describe('Variable ownership', () => {

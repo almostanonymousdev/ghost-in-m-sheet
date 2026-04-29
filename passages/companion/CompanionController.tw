@@ -700,7 +700,7 @@ setup.Companion = (function () {
 		},
 		isCompanionFlagActive: function () { return State.variables.isCompChosen === 1; },
 		markCompanionFlagActive: function () { State.variables.isCompChosen = 1; },
-		pegActiveLust: function (n) {
+		setActiveLust: function (n) {
 			var c = comp();
 			if (c) c.lust = n;
 		},
@@ -773,18 +773,6 @@ setup.Companion = (function () {
 		aliceWorkDone: function () { return State.variables.aliceWorkDone === 1; },
 		aliceWorkState: function () { return State.variables.aliceWorkDone; },
 		setAliceWorkState: function (n) { State.variables.aliceWorkDone = n; },
-		aliceLvl: function () {
-			var a = State.variables.alice;
-			return a ? a.lvl : 0;
-		},
-		brookLvl: function () {
-			var b = State.variables.brook;
-			return b ? b.lvl : 0;
-		},
-		blakeLvl: function () {
-			var b = State.variables.blake;
-			return b ? b.lvl : 0;
-		},
 		hasFinishedSoloHunt: function (name) {
 			var c = compFor(name);
 			return !!(c && c.goingSolo === 2);

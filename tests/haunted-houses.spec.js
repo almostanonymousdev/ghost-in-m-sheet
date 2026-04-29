@@ -113,10 +113,10 @@ test.describe('Haunted Houses Controller', () => {
 
   // --- House identification ---
 
-  test('isOwaissa checks isOwaissa flag', async () => {
+  test('isOwaissa true when $hauntedHouse is owaissa', async () => {
     // act
     const before = await callSetup(page, 'setup.HauntedHouses.isOwaissa()');
-    await setVar(page, 'isOwaissa', 1);
+    await setVar(page, 'hauntedHouse', 'owaissa');
     const after = await callSetup(page, 'setup.HauntedHouses.isOwaissa()');
 
     // assert
@@ -124,10 +124,10 @@ test.describe('Haunted Houses Controller', () => {
     expect(after).toBe(true);
   });
 
-  test('isElm checks isElm flag', async () => {
+  test('isElm true when $hauntedHouse is elm', async () => {
     // act
     const before = await callSetup(page, 'setup.HauntedHouses.isElm()');
-    await setVar(page, 'isElm', 1);
+    await setVar(page, 'hauntedHouse', 'elm');
     const after = await callSetup(page, 'setup.HauntedHouses.isElm()');
 
     // assert
@@ -135,10 +135,10 @@ test.describe('Haunted Houses Controller', () => {
     expect(after).toBe(true);
   });
 
-  test('isEnigma checks isEnigma flag', async () => {
+  test('isEnigma true when $hauntedHouse is enigma', async () => {
     // act
     const before = await callSetup(page, 'setup.HauntedHouses.isEnigma()');
-    await setVar(page, 'isEnigma', 1);
+    await setVar(page, 'hauntedHouse', 'enigma');
     const after = await callSetup(page, 'setup.HauntedHouses.isEnigma()');
 
     // assert
@@ -146,10 +146,10 @@ test.describe('Haunted Houses Controller', () => {
     expect(after).toBe(true);
   });
 
-  test('isIronclad checks isIronclad flag', async () => {
+  test('isIronclad true when $hauntedHouse is ironclad', async () => {
     // act
     const before = await callSetup(page, 'setup.HauntedHouses.isIronclad()');
-    await setVar(page, 'isIronclad', 1);
+    await setVar(page, 'hauntedHouse', 'ironclad');
     const after = await callSetup(page, 'setup.HauntedHouses.isIronclad()');
 
     // assert
