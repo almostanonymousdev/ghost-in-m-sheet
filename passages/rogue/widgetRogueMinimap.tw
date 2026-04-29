@@ -1,0 +1,30 @@
+:: widgetRogueMinimap [widget nobr] {"position":"3400,200","size":"100,100"}
+/* rogueMinimap -- arg-less. Renders the active run's floor plan as
+   a compact room list: id, template label, plus annotation tags
+   for spawn / boss / each stash kind that lives on the room.
+   Players can't memorize a layout that changes per run, so this
+   gives them a spatial anchor while moving through it.
+
+   Renders nothing when no rogue run is active (keeps the widget
+   cheap to drop into shared passages without an outer guard). */
+<<widget "rogueMinimap">>
+	<<set _mm to setup.Run.minimapData()>>
+	<<if _mm>>
+		<div class="rogue-minimap">
+			<span class="location">Floor plan</span><br>
+			<<for _r range _mm>>
+				· @@.usebtn;<<= _r.id>>@@ &mdash; <<= _r.label>>
+				<<if _r.isSpawn>>
+					· @@.notmc-speech;ghost spawn@@
+				<</if>>
+				<<if _r.isBoss>>
+					· @@.notmc-speech;boss room@@
+				<</if>>
+				<<for _k range _r.stashKinds>>
+					· @@.mc-thoughts;<<= _k>>@@
+				<</for>>
+				<br>
+			<</for>>
+		</div>
+	<</if>>
+<</widget>>

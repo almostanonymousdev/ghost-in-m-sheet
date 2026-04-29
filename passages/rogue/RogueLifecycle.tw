@@ -38,14 +38,12 @@
 	@@.backbtn; [[Back|CityMap]]@@
 <<else>>
 	<<set _run to setup.Run.active()>>
-	<<set _floorplan to setup.Run.field('floorplan')>>
 	<<set _modifiers to setup.Modifiers.activeList()>>
 
 	@@.location; Rogue Run #<<= _run.number>> -- in progress@@<br>
 	@@.mc-thoughts; (Placeholder. Room rendering arrives in a follow-up pass.)@@<br>
 	<br>
-	@@.mc-action; Spawn room: <<= _floorplan.spawnRoomId>>@@<br>
-	@@.mc-action; Stash spots: <<= JSON.stringify(_floorplan.stashes)>>@@<br>
+	<<rogueMinimap>>
 	<br>
 	@@.location; Active modifiers@@<br>
 	<<for _m range _modifiers>>

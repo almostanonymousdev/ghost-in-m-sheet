@@ -159,6 +159,35 @@ setup.Run = (function () {
 		return active();
 	}
 
+	/* View-layer summary of the active run's floor plan, denormalised
+	   for the minimap / room-list widget. Returns one record per
+	   room with its template label, spawn/boss flags, and any stash
+	   kinds living on it; null when no run is active. */
+	function minimapData() {
+		var run = active();
+		if (!run || !run.floorplan) return null;
+		var fp = run.floorplan;
+		var stashByRoom = {};
+		Object.keys(fp.stashes || {}).forEach(function (kind) {
+			var room = fp.stashes[kind];
+			if (!room) return;
+			if (!stashByRoom[room]) stashByRoom[room] = [];
+			stashByRoom[room].push(kind);
+		});
+		return fp.rooms.map(function (r) {
+			var t = (setup.Templates && setup.Templates.byId)
+				? setup.Templates.byId(r.template) : null;
+			return {
+				id: r.id,
+				template: r.template,
+				label: t ? t.label : r.template,
+				isSpawn: r.id === fp.spawnRoomId,
+				isBoss: r.id === fp.bossRoomId,
+				stashKinds: stashByRoom[r.id] || []
+			};
+		});
+	}
+
 	/* End the active rogue run, paying out echoes based on whether
 	   it was a success and how many modifiers the run carried.
 	   Returns a small summary record the result passage can render
@@ -204,6 +233,7 @@ setup.Run = (function () {
 		spendEchoes: spendEchoes,
 		canAffordEchoes: canAffordEchoes,
 		startRogue: startRogue,
-		endRogue: endRogue
+		endRogue: endRogue,
+		minimapData: minimapData
 	};
 })();
