@@ -67,7 +67,7 @@ test.describe('Floor-plan generator', () => {
 
   test('non-hallway rooms only use templates from the catalogue', async () => {
     const plan = await gen(99, { roomCount: 8 });
-    const cat = await callSetup(page, 'setup.FloorPlan.TEMPLATES');
+    const cat = await callSetup(page, 'setup.FloorPlan.nonHallwayTemplates()');
     plan.rooms.slice(1).forEach(r => {
       expect(cat).toContain(r.template);
     });

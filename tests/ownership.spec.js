@@ -121,8 +121,11 @@ test.describe('Variable ownership', () => {
 		//     produces lives on $run.floorplan, owned by setup.Run.
 		//   - Modifiers: pure-functional catalogue + drafter. The
 		//     active deck lives on $run.modifiers, owned by setup.Run.
+		//   - Templates: pure-functional template catalogue. No
+		//     state of its own; consumed by FloorPlan + rogue room
+		//     rendering.
 		// Every other discovered controller should claim at least one var.
-		const STATELESS_ALLOWED = new Set(['Salon', 'FloorPlan', 'Modifiers']);
+		const STATELESS_ALLOWED = new Set(['Salon', 'FloorPlan', 'Modifiers', 'Templates']);
 		const empty = controllerNames
 			.filter((n) => ownedByName[n].length === 0 && !STATELESS_ALLOWED.has(n));
 		expect(

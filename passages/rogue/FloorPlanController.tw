@@ -38,13 +38,15 @@
  * setup.Rooms.seed(id, { template }) when the run starts.
  */
 setup.FloorPlan = (function () {
-	/* Templates available for non-hallway slots. Each must already be
-	   a valid setup.Rooms template (i.e. have visual + furniture
-	   wiring under setup.Styles / per-house furnitureItem widgets). */
-	var TEMPLATES = Object.freeze([
-		'kitchen', 'bathroom', 'bedroom', 'livingroom',
-		'nursery', 'basement', 'roomA', 'roomB', 'roomC'
-	]);
+	/* Non-hallway templates available for procedural slots. Read
+	   from setup.Templates so the catalogue stays the single source
+	   of truth for what's procedurally eligible. The list is
+	   filtered to exclude hallway (which is always the backbone)
+	   and any story-locked templates. */
+	function nonHallwayTemplates() {
+		return setup.Templates.proceduralEligibleIds()
+			.filter(function (id) { return id !== HALLWAY_TEMPLATE; });
+	}
 
 	var HALLWAY_TEMPLATE = 'hallway';
 
@@ -91,7 +93,7 @@ setup.FloorPlan = (function () {
 		var includeBoss = !!opts.includeBoss;
 
 		var rooms = [{ id: 'room_0', template: HALLWAY_TEMPLATE }];
-		var nonHallway = pickN(rng, TEMPLATES, roomCount - 1);
+		var nonHallway = pickN(rng, nonHallwayTemplates(), roomCount - 1);
 		nonHallway.forEach(function (tmpl, i) {
 			rooms.push({ id: 'room_' + (i + 1), template: tmpl });
 		});
@@ -171,9 +173,9 @@ setup.FloorPlan = (function () {
 
 	return {
 		OWNED_VARS: Object.freeze([]),
-		TEMPLATES: TEMPLATES,
 		HALLWAY_TEMPLATE: HALLWAY_TEMPLATE,
 		STASH_KINDS: STASH_KINDS,
+		nonHallwayTemplates: nonHallwayTemplates,
 		generate: generate,
 		neighborsOf: neighborsOf,
 		roomById: roomById,
