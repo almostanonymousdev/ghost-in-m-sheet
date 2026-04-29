@@ -1,0 +1,153 @@
+:: RunController [script]
+/*
+ * Rogue-mode run lifecycle controller.
+ *
+ * The classic mode (witch contracts on the four authored haunted
+ * houses) keeps working unchanged when no run is active. A rogue
+ * run is represented by a single $run object holding everything
+ * that varies between runs:
+ *
+ *   $run = {
+ *     seed,        // int, drives the floor-plan generator + any
+ *                  //      other deterministic per-run rolls
+ *     number,      // int, monotonically incremented per attempt
+ *     modifiers,   // [<modifier_id>, ...] active modifier deck
+ *     loadout,     // { tools: [...], money: n, ... }
+ *     objective,   // string id (catalogue lives in prereq 8)
+ *     floorplan    // populated by setup.FloorPlan in prereq 5
+ *   }
+ *
+ * `$echoes` is the meta-progression currency that survives runs.
+ * Spent in the meta-shop on permanent unlocks (added in prereq 8).
+ *
+ * Predicate split:
+ *   isRogue()   -- a rogue run is currently active
+ *   isClassic() -- no rogue run; the player is in the classic flow
+ *                  (witch street -> contract -> hunt)
+ *
+ * Per-run state lives on $run. Persistent meta-state lives on
+ * $echoes (and any future $meta.* keys). Both keys are owned here
+ * so other controllers can query through this API rather than
+ * reaching into State directly.
+ */
+setup.Run = (function () {
+	var OWNED_VARS = Object.freeze(['run', 'echoes', 'runsStarted']);
+
+	function sv() { return State.variables; }
+
+	// --- Run lifecycle ----------------------------------------
+	/* Start a fresh rogue run. opts:
+		seed       -- int; if omitted, a random seed is rolled.
+		modifiers  -- array of modifier ids; defaults to [].
+		loadout    -- starting loadout object; defaults to {}.
+		objective  -- objective id string; defaults to 'identify'.
+	   The run number increments from $runsStarted, which persists
+	   across end() so attempt counts survive between runs. The
+	   floorplan field is left undefined for the floor-plan
+	   generator (prereq 5) to fill in. */
+	function start(opts) {
+		opts = opts || {};
+		sv().runsStarted = (sv().runsStarted || 0) + 1;
+		sv().run = {
+			seed: opts.seed != null ? opts.seed : Math.floor(Math.random() * 1e9),
+			number: sv().runsStarted,
+			modifiers: Array.isArray(opts.modifiers) ? opts.modifiers.slice() : [],
+			loadout: opts.loadout || {},
+			objective: opts.objective || 'identify'
+		};
+		return sv().run;
+	}
+
+	/* End the current run. Preserves the run number so the next
+	   start() picks up where we left off; the new run will overwrite
+	   the rest of the fields. */
+	function end() {
+		var prior = sv().run;
+		sv().run = null;
+		return prior;
+	}
+
+	function active()    { return sv().run || null; }
+	function isRogue()   { return !!sv().run; }
+	function isClassic() { return !sv().run; }
+
+	// --- Field accessors --------------------------------------
+	function seed()       { return sv().run ? sv().run.seed : null; }
+	function number()     { return sv().run ? sv().run.number : 0; }
+	function modifiers()  { return sv().run ? sv().run.modifiers.slice() : []; }
+	function loadout()    { return sv().run ? sv().run.loadout : null; }
+	function objective()  { return sv().run ? sv().run.objective : null; }
+
+	function hasModifier(id) {
+		var run = sv().run;
+		return !!(run && run.modifiers && run.modifiers.indexOf(id) !== -1);
+	}
+
+	function setObjective(id) {
+		if (sv().run) sv().run.objective = id;
+	}
+
+	/* Add a modifier to the active run if not already present.
+	   Returns true if it was added. */
+	function addModifier(id) {
+		var run = sv().run;
+		if (!run || !id) return false;
+		if (!Array.isArray(run.modifiers)) run.modifiers = [];
+		if (run.modifiers.indexOf(id) !== -1) return false;
+		run.modifiers.push(id);
+		return true;
+	}
+
+	/* Stash arbitrary generator output (e.g. floor plan) on the run
+	   so the floor-plan generator can hand state back without
+	   needing a top-level $variable. Subsystems read the field via
+	   this API rather than via $run directly. */
+	function setField(key, value) {
+		var run = sv().run;
+		if (!run) return;
+		run[key] = value;
+	}
+	function field(key) {
+		var run = sv().run;
+		return run ? run[key] : undefined;
+	}
+
+	// --- Meta-progression: echoes -----------------------------
+	function echoes() { return sv().echoes || 0; }
+	function addEchoes(n) {
+		sv().echoes = (sv().echoes || 0) + (n || 0);
+		return sv().echoes;
+	}
+	/* Spend `n` echoes. Returns true on success, false if the
+	   player can't afford it. No partial deductions. */
+	function spendEchoes(n) {
+		var have = sv().echoes || 0;
+		if (have < n) return false;
+		sv().echoes = have - n;
+		return true;
+	}
+	function canAffordEchoes(n) { return (sv().echoes || 0) >= n; }
+
+	return {
+		OWNED_VARS: OWNED_VARS,
+		start: start,
+		end: end,
+		active: active,
+		isRogue: isRogue,
+		isClassic: isClassic,
+		seed: seed,
+		number: number,
+		modifiers: modifiers,
+		hasModifier: hasModifier,
+		addModifier: addModifier,
+		loadout: loadout,
+		objective: objective,
+		setObjective: setObjective,
+		setField: setField,
+		field: field,
+		echoes: echoes,
+		addEchoes: addEchoes,
+		spendEchoes: spendEchoes,
+		canAffordEchoes: canAffordEchoes
+	};
+})();

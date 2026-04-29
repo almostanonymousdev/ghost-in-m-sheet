@@ -117,6 +117,16 @@ setup.Game = (function () {
 		['kitchen', 'bathroom', 'bedroom', 'hallway', 'livingroom'].forEach(function (id) {
 			setup.Rooms.seed(id);
 		});
+
+		// --- Rogue-mode run state -----------------------------
+		// $run is null in classic mode (witch-contract loop); a
+		// fresh rogue run replaces it via setup.Run.start().
+		// $echoes is the persistent meta-progression currency.
+		// $runsStarted is the lifetime attempt counter that
+		// stamps each run's `number` field.
+		s.run = null;
+		s.echoes = 0;
+		s.runsStarted = 0;
 	}
 
 	return { initState: initState };

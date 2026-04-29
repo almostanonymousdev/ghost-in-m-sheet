@@ -72,7 +72,15 @@
 		tentacles:     function () { return {}; },
 		webcam:        function () { return {}; },
 		summoning:     function () { return {}; },
-		hauntedHouse:  function () { return null; }
+		hauntedHouse:  function () { return null; },
+
+		// Rogue-mode state: pre-rogue saves don't have these
+		// fields. $run is null when no rogue run is active
+		// (classic mode). $echoes starts at 0. $runsStarted is
+		// the lifetime attempt counter, also 0 by default.
+		run:           function () { return null; },
+		echoes:        function () { return 0; },
+		runsStarted:   function () { return 0; }
 	};
 
 	// mc sub-fields added after launch -- missing on very old saves
