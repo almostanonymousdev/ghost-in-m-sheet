@@ -1255,8 +1255,7 @@ setup.HauntConditions = (function () {
     function isCurrentRoomDark() {
         var name = currentBgVar();
         if (!name) return false;
-        var room = State.variables[name];
-        return !!(room && room.background === setup.RoomLight.DARK);
+        return setup.Rooms.isDark(name);
     }
 
     /* Clothing buckets. Fully dressed = tshirt + any bottom. Topless = no

@@ -77,8 +77,7 @@ setup.Styles = (function () {
 	function isDark(passageName) {
 		var r = rooms[passageName];
 		if (!r) return false;
-		var s = State.variables[r.stateKey];
-		return !!(s && s.background === setup.RoomLight.DARK);
+		return setup.Rooms.isDark(r.stateKey);
 	}
 
 	return {
@@ -135,7 +134,7 @@ setup.Styles = (function () {
 			var p = passage();
 			var r = rooms[p];
 			if (!r) return null;
-			var s = State.variables[r.stateKey];
+			var s = setup.Rooms.byId(r.stateKey);
 			if (!s || s.background !== setup.RoomLight.LIT) return null;
 			s.background = setup.RoomLight.DARK;
 			return p;

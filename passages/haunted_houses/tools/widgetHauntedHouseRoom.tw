@@ -218,9 +218,9 @@ the only ways out are the scream link or a cursed-item sacrifice. */
    owaissa, and ironclad rooms. */
 <<widget "roomFooterLight">>
 	<div class="footer-card footer-light">
-	<span class="cursedHuntLinkDisable"><<link "<<image \"ui/img/lighton.png\">>" _args[0]>><<set State.variables[_args[1]].background = setup.RoomLight.LIT>>
+	<span class="cursedHuntLinkDisable"><<link "<<image \"ui/img/lighton.png\">>" _args[0]>><<run setup.Rooms.setBackground(_args[1], setup.RoomLight.LIT)>>
 	<</link>>
-	<<link "<<image \"ui/img/lightoff.png\">>" _args[0]>><<set State.variables[_args[1]].background = setup.RoomLight.DARK>>
+	<<link "<<image \"ui/img/lightoff.png\">>" _args[0]>><<run setup.Rooms.setBackground(_args[1], setup.RoomLight.DARK)>>
 	<</link>>
 	<<if setup.Mc.lust() gte 80 and setup.Witch.hasWeakenTheGhostQuest() and not setup.Witch.isGhostWeakened()>>
 		<<link "<<image \"ui/img/hearth.png\">>" "SeduceGhostMinigame">>
@@ -234,9 +234,9 @@ the only ways out are the scream link or a cursed-item sacrifice. */
    no minigame trigger. */
 <<widget "roomFooterLightBasic">>
 	<div class="footer-card footer-light">
-	<<link "<<image \"ui/img/lighton.png\">>" _args[0]>><<set State.variables[_args[1]].background = setup.RoomLight.LIT>>
+	<<link "<<image \"ui/img/lighton.png\">>" _args[0]>><<run setup.Rooms.setBackground(_args[1], setup.RoomLight.LIT)>>
 	<</link>>
-	<<link "<<image \"ui/img/lightoff.png\">>" _args[0]>><<set State.variables[_args[1]].background = setup.RoomLight.DARK>>
+	<<link "<<image \"ui/img/lightoff.png\">>" _args[0]>><<run setup.Rooms.setBackground(_args[1], setup.RoomLight.DARK)>>
 	<</link>>
 	</div>
 <</widget>>

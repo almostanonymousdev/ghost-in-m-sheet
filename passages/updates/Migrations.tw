@@ -41,8 +41,8 @@ setup.Migrations = (function () {
 	function migrateRoomsAndHuntTimer() {
 		var s = sv();
 		var rooms = ['basement', 'bedroomTwo', 'nursery', 'bathroomTwo', 'hallwayUpstairs', 'roomA', 'roomB', 'roomC'];
-		rooms.forEach(function (name) {
-			s[name] = { name: name, background: setup.RoomLight.DARK };
+		rooms.forEach(function (id) {
+			setup.Rooms.seed(id);
 		});
 
 		if (setup.initWardrobe) { setup.initWardrobe(s); }
@@ -191,6 +191,21 @@ setup.Migrations = (function () {
 		}
 	}
 
+	/* Legacy room state objects predate the `template` field that
+	   setup.Rooms.templateOf() consults. For existing rooms the
+	   template equals the id, so backfill that on any room state
+	   that's missing it. */
+	function ensureRoomTemplates() {
+		var s = sv();
+		setup.Rooms.OWNED_VARS.forEach(function (id) {
+			var r = s[id];
+			if (r && typeof r === 'object' && r.template === undefined) {
+				r.template = id;
+				if (r.id === undefined) r.id = id;
+			}
+		});
+	}
+
 	return {
 		OWNED_VARS: OWNED_VARS,
 
@@ -217,6 +232,7 @@ setup.Migrations = (function () {
 		ensurePSprayInventory: ensurePSprayInventory,
 		applyPiercingSensitivityPatch: applyPiercingSensitivityPatch,
 		ensureSuccubusCooldown: ensureSuccubusCooldown,
-		ensureCursedItemCooldown: ensureCursedItemCooldown
+		ensureCursedItemCooldown: ensureCursedItemCooldown,
+		ensureRoomTemplates: ensureRoomTemplates
 	};
 })();

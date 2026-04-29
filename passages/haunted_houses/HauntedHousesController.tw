@@ -46,16 +46,11 @@ setup.HauntedHouses = (function () {
 		'chosenCard', 'drawnCards', 'tarotCardsStage',
 		'currentIntervalRoom', 'lastChangeIntervalRoom',
 		'cursedItemVide',
-		'stealChance',
-		// Per-house room state objects (seeded by GameInit /
-		// HOUSE_CONFIG; one $<roomName> per room across all four houses).
-		'kitchen', 'bathroom', 'bedroom', 'livingroom', 'hallway',
-		'nursery', 'hallwayUpstairs', 'bedroomTwo', 'bathroomTwo', 'basement',
-		'roomA', 'roomB', 'roomC',
-		'BlockA', 'BlockB',
-		'BlockACellA', 'BlockACellB', 'BlockACellC',
-		'BlockBCellA', 'BlockBCellB', 'BlockBCellC',
-		'reception'
+		'stealChance'
+		// Per-room state objects ($kitchen, $BlockACellA, ...) are
+		// owned by setup.Rooms (see RoomsController.tw) -- access them
+		// through setup.Rooms.byId() rather than reaching into State
+		// directly.
 	]);
 
 	/* Canonical haunted-house catalogue. One entry per selectable house.
@@ -183,8 +178,8 @@ setup.HauntedHouses = (function () {
 		rollStartingRoom: function (id) {
 			var h = this.byId(id);
 			if (!h) return null;
-			var name = h.rooms[Math.floor(Math.random() * h.rooms.length)];
-			var src = sv()[name];
+			var roomId = h.rooms[Math.floor(Math.random() * h.rooms.length)];
+			var src = setup.Rooms.byId(roomId);
 			return src ? clone(src) : null;
 		},
 		roomsFor: function (id) {
@@ -409,11 +404,10 @@ setup.HauntedHouses = (function () {
 		   player's save is loaded with Ironclad content. Called
 		   from PassageReady; guarded by $updateIronclad. */
 		migrateIroncladRooms: function () {
-			var s = sv();
 			var rooms = ["BlockA", "BlockB", "BlockACellA", "BlockACellB", "BlockACellC",
 				"BlockBCellA", "BlockBCellB", "BlockBCellC", "reception"];
-			rooms.forEach(function (r) {
-				s[r] = { name: r, background: setup.RoomLight.DARK };
+			rooms.forEach(function (id) {
+				setup.Rooms.seed(id);
 			});
 			setup.Migrations.markIroncladMigrated();
 		},

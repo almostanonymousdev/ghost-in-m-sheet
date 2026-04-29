@@ -114,13 +114,8 @@ setup.Game = (function () {
 		s.skirtState = CS.NOT_BOUGHT;
 
 		// --- Hunt-room state objects --------------------------
-		['kitchen', 'bathroom', 'bedroom', 'hallway', 'livingroom'].forEach(function (name) {
-			s[name] = {
-				name: name,
-				emf: '', glass: '', uvl: '',
-				temperature: '', spiritbox: '', gwb: '',
-				background: setup.RoomLight.DARK
-			};
+		['kitchen', 'bathroom', 'bedroom', 'hallway', 'livingroom'].forEach(function (id) {
+			setup.Rooms.seed(id);
 		});
 	}
 

@@ -1,0 +1,79 @@
+:: RoomsController [script]
+/*
+ * Single source of truth for haunted-house room state lookups.
+ *
+ * Room state objects (light/dark `background`, per-room search
+ * scratch fields) live as top-level state vars keyed by the
+ * room's id (e.g. $kitchen, $BlockACellA). Existing rooms use
+ * their template name as their id (id === template); rogue runs
+ * can seed extra rooms with arbitrary ids (`room_0`, `room_1`)
+ * and set `template` to the asset/template family they should
+ * render as.
+ *
+ * Every passage / widget / controller that touches the
+ * background field or the room state object should go through
+ * setup.Rooms.byId(id) -- which means rogue runs can swap in
+ * fresh ids without any caller knowing the difference.
+ */
+setup.Rooms = (function () {
+	function sv() { return State.variables; }
+
+	/* Room state-var ids owned by this controller. Each id maps to
+	   a top-level state var ($<id>) holding the room's
+	   {id, name, template, background, ...search-scratch} object.
+	   Adding a new authored room means adding it here AND seeding
+	   it from GameInit / a save migration. */
+	var OWNED_VARS = Object.freeze([
+		'kitchen', 'bathroom', 'bedroom', 'livingroom', 'hallway',
+		'nursery', 'hallwayUpstairs', 'bedroomTwo', 'bathroomTwo', 'basement',
+		'roomA', 'roomB', 'roomC',
+		'BlockA', 'BlockB',
+		'BlockACellA', 'BlockACellB', 'BlockACellC',
+		'BlockBCellA', 'BlockBCellB', 'BlockBCellC',
+		'reception'
+	]);
+
+	function byId(id) {
+		if (!id) return null;
+		return sv()[id] || null;
+	}
+
+	function templateOf(id) {
+		var r = byId(id);
+		return r && r.template ? r.template : id;
+	}
+
+	function isDark(id) {
+		var r = byId(id);
+		return !!(r && r.background === setup.RoomLight.DARK);
+	}
+
+	function setBackground(id, n) {
+		var r = byId(id);
+		if (r) { r.background = n; }
+	}
+
+	/* Create or reset a room state object at sv()[id]. Used by
+	   GameInit / migrations and by future rogue-run setup. */
+	function seed(id, opts) {
+		opts = opts || {};
+		sv()[id] = {
+			id:          id,
+			name:        id,
+			template:    opts.template || id,
+			emf:         '', glass: '', uvl: '',
+			temperature: '', spiritbox: '', gwb: '',
+			background:  opts.background == null ? setup.RoomLight.DARK : opts.background
+		};
+		return sv()[id];
+	}
+
+	return {
+		OWNED_VARS:    OWNED_VARS,
+		byId:          byId,
+		templateOf:    templateOf,
+		isDark:        isDark,
+		setBackground: setBackground,
+		seed:          seed
+	};
+})();

@@ -43,3 +43,4 @@
 
 <<run setup.Migrations.ensureSuccubusCooldown()>>
 <<run setup.Migrations.ensureCursedItemCooldown()>>
+<<run setup.Migrations.ensureRoomTemplates()>>
