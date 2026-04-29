@@ -36,26 +36,24 @@ setup.Tick = (function () {
 	// --- Detector highlights -------------------------------------
 	/* When the player owns the furniture-detector ($boughtDetector), the
 	   target room flashes a highlight class on every passage so it stays
-	   visible as the player moves between rooms. */
-	var DETECTOR_TARGETS = [
-		{ houseId: 'elm',     suffix: 'Elm' },
-		{ houseId: 'owaissa', suffix: 'Owaissa' }
-	];
+	   visible as the player moves between rooms. Each rule names a slot
+	   on the active house's $houseSlots bucket (placeFor.<kind>) and a
+	   predicate; the slot DOM id flashes when the predicate is true. */
 	var DETECTOR_RULES = [
-		{ slotKey: 'placeForCursedItem',    test: function (s) {
+		{ kind: 'cursedItem',    test: function (s) {
 			return s.gotCursedItem !== 1 && typeof s.gotCursedItem !== 'undefined';
 		}},
-		{ slotKey: 'placeForRescueClue',    test: function (s) {
+		{ kind: 'rescueClue',    test: function (s) {
 			return s.hasRescueClue !== 1 && s.hasQuestForRescue === setup.RescueQuestState.ACTIVE;
 		}},
-		{ slotKey: 'placeForTarotCards',    test: function (s) {
+		{ kind: 'tarotCards',    test: function (s) {
 			return s.tarotCardsStage !== setup.TarotStage.CARRYING;
 		}},
-		{ slotKey: 'placeForMonkeyPaw',     test: function () {
+		{ kind: 'monkeyPaw',     test: function () {
 			return setup.MonkeyPaw && setup.MonkeyPaw.isDiscoverable
 				? setup.MonkeyPaw.isDiscoverable() : false;
 		}},
-		{ slotKey: 'placeForClothesStolen', test: function (s) {
+		{ kind: 'clothesStolen', test: function (s) {
 			return s.isClothesStolen === 1;
 		}}
 	];
@@ -67,11 +65,10 @@ setup.Tick = (function () {
 	function applyDetectorHighlights() {
 		var s = sv();
 		if (s.boughtDetector !== 1) return;
-		DETECTOR_TARGETS.forEach(function (target) {
-			if (s.hauntedHouse !== target.houseId) return;
-			DETECTOR_RULES.forEach(function (rule) {
-				highlightIf(s[rule.slotKey + target.suffix], rule.test(s));
-			});
+		var bucket = (s.houseSlots || {})[s.hauntedHouse];
+		if (!bucket || !bucket.placeFor) return;
+		DETECTOR_RULES.forEach(function (rule) {
+			highlightIf(bucket.placeFor[rule.kind], rule.test(s));
 		});
 	}
 

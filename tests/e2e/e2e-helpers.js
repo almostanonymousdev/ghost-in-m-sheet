@@ -135,8 +135,9 @@ async function setupHunt(page, ghostName, house = 'owaissa') {
   // can redirect to a body-part event via setup.Events.rollBodyPartEvent).
   // Pin stealChance to 0 and zero out sensualBodyPart so neither fires —
   // tests need deterministic room navigation. Also seed the per-house
-  // furniture lists (populated at GhostStreet time via FurnitureCode) so
-  // any stray StealClothes trigger can't crash on .random() of undefined.
+  // slot buckets (populated at GhostStreet time via
+  // distributeFurnitureStashes) so any stray StealClothes trigger can't
+  // crash on .random() of undefined.
   await setVar(page, 'stealChance', 0);
   await page.evaluate(() => {
     const V = SugarCube.State.variables;
@@ -145,10 +146,9 @@ async function setupHunt(page, ghostName, house = 'owaissa') {
       mouth: 0, pussy: 0, anal: 0,
     };
     const seed = ['hallway_carpet', 'kitchen_table', 'bedroom_table'];
-    if (!V.furnitureListOwaissa) V.furnitureListOwaissa = seed.slice();
-    if (!V.tempListOwaissa)      V.tempListOwaissa      = seed.slice();
-    if (!V.furnitureListElm)     V.furnitureListElm     = seed.slice();
-    if (!V.tempListElm)          V.tempListElm          = seed.slice();
+    if (!V.houseSlots) V.houseSlots = {};
+    if (!V.houseSlots.owaissa) V.houseSlots.owaissa = { available: seed.slice(), placeFor: {} };
+    if (!V.houseSlots.elm)     V.houseSlots.elm     = { available: seed.slice(), placeFor: {} };
   });
 
   await setVar(page, 'hours', 0);

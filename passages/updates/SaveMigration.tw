@@ -367,6 +367,61 @@
 		delete vars.isEnigma;
 		delete vars.isIronclad;
 		delete vars.isrealhouse;
+
+		// Per-house slot maps: the old shape stored a forest of
+		// $furnitureList<House>, $tempList<House>, and
+		// $placeFor<Kind><House> keys (House = "Owaissa" | "Elm",
+		// Kind = "CursedItem" | "RescueClue" | "TarotCards" |
+		// "MonkeyPaw" | "Curse" | "ClothesStolen"). The new shape
+		// is one bucket per house id on $houseSlots, with
+		// `available` (unallocated furniture slot ids, formerly
+		// $tempList<House>) and `placeFor.<kind>` (camelCase). Fold
+		// forward whatever the save has, then drop the flats.
+		if (!vars.houseSlots || typeof vars.houseSlots !== 'object') {
+			vars.houseSlots = {};
+		}
+		[
+			{ id: 'owaissa', suffix: 'Owaissa' },
+			{ id: 'elm',     suffix: 'Elm'     }
+		].forEach(function (h) {
+			var bucket = vars.houseSlots[h.id];
+			var temp   = vars['tempList' + h.suffix];
+			var hasLegacy = Array.isArray(temp);
+			var KINDS = ['CursedItem', 'RescueClue', 'TarotCards', 'MonkeyPaw', 'Curse', 'ClothesStolen'];
+			KINDS.forEach(function (kind) {
+				if (vars['placeFor' + kind + h.suffix] !== undefined) hasLegacy = true;
+			});
+			if (!bucket && hasLegacy) {
+				bucket = { available: hasLegacy && Array.isArray(temp) ? temp.slice() : [], placeFor: {} };
+				vars.houseSlots[h.id] = bucket;
+			}
+			if (bucket) {
+				if (!Array.isArray(bucket.available) && Array.isArray(temp)) {
+					bucket.available = temp.slice();
+				}
+				if (!bucket.placeFor || typeof bucket.placeFor !== 'object') {
+					bucket.placeFor = {};
+				}
+				[
+					{ src: 'CursedItem',    dst: 'cursedItem'    },
+					{ src: 'RescueClue',    dst: 'rescueClue'    },
+					{ src: 'TarotCards',    dst: 'tarotCards'    },
+					{ src: 'MonkeyPaw',     dst: 'monkeyPaw'     },
+					{ src: 'Curse',         dst: 'curse'         },
+					{ src: 'ClothesStolen', dst: 'clothesStolen' }
+				].forEach(function (m) {
+					var oldKey = 'placeFor' + m.src + h.suffix;
+					if (vars[oldKey] !== undefined && bucket.placeFor[m.dst] === undefined) {
+						bucket.placeFor[m.dst] = vars[oldKey];
+					}
+				});
+			}
+			delete vars['furnitureList' + h.suffix];
+			delete vars['tempList' + h.suffix];
+			KINDS.forEach(function (kind) {
+				delete vars['placeFor' + kind + h.suffix];
+			});
+		});
 	}
 
 	// Expose for use from Twine (PassageReady belt-and-braces call).

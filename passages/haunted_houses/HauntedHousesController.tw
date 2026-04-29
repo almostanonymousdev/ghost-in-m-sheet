@@ -35,14 +35,17 @@ setup.HauntedHouses = (function () {
 		'isClothesStolen',
 		'cursedHuntActive', 'cursedHuntEndTime',
 		'currentFurniture', 'isInHideSpot',
-		'furnitureListOwaissa', 'furnitureListElm',
-		'tempListOwaissa', 'tempListElm',
-		'placeForCursedItemOwaissa', 'placeForCursedItemElm',
-		'placeForRescueClueOwaissa', 'placeForRescueClueElm',
-		'placeForTarotCardsOwaissa', 'placeForTarotCardsElm',
-		'placeForMonkeyPawOwaissa', 'placeForMonkeyPawElm',
-		'placeForCurseOwaissa', 'placeForCurseElm',
-		'placeForClothesStolenOwaissa', 'placeForClothesStolenElm',
+		// $houseSlots replaces the per-house slot forest -- one
+		// bucket per stash-eligible house id with `available`
+		// (unallocated furniture slot ids) and `placeFor` (the
+		// chosen slot id for each stash kind: cursedItem,
+		// rescueClue, tarotCards, monkeyPaw, curse, clothesStolen).
+		// distributeFurnitureStashes() reseeds it on entry to a
+		// furniture-running street; legacy flat keys
+		// ($furnitureList<House>, $tempList<House>,
+		// $placeFor<Kind><House>) are folded forward by
+		// SaveMigration.
+		'houseSlots',
 		'chosenCard', 'drawnCards', 'tarotCardsStage',
 		'currentIntervalRoom', 'lastChangeIntervalRoom',
 		'cursedItemVide',
@@ -58,7 +61,10 @@ setup.HauntedHouses = (function () {
 		`rooms` is the list of room state-var names used by GhostStreet
 		(for the initial $hunt.room roll) and ChangeGhostRoom; `contract`
 		holds the four-tier money/xp reward scale driven by how many
-		evidence types the witch has hidden this contract. */
+		evidence types the witch has hidden this contract.
+		`furniture`, when present, lists the room-prefixed slot ids that
+		distributeFurnitureStashes() uses to seed stash positions for
+		that house. Houses without `furniture` are skipped. */
 	var HOUSE_CONFIG = [
 		{
 			id: 'owaissa',
@@ -69,6 +75,13 @@ setup.HauntedHouses = (function () {
 			isRealHouse: false,
 			runsFurnitureCode: true,
 			rooms: ['kitchen', 'bathroom', 'bedroom', 'livingroom', 'hallway'],
+			furniture: [
+				'hallway_carpet', 'hallway_wardrobe', 'hallway_coatrack',
+				'livingroom_table', 'livingroom_sofa',
+				'kitchen_desk', 'kitchen_table', 'kitchen_sink1',
+				'bathroom_bathtub', 'bathroom_carpet', 'bathroom_sink', 'bathroom_wmachine',
+				'bedroom_bed2', 'bedroom_table', 'bedroom_wardrobe1'
+			],
 			contract: {
 				zero:  { money: 120, xp:  35 },
 				one:   { money: 240, xp:  70 },
@@ -87,6 +100,17 @@ setup.HauntedHouses = (function () {
 			rooms: [
 				'kitchen', 'bathroom', 'bedroom', 'nursery', 'hallway',
 				'hallwayUpstairs', 'bedroomTwo', 'bathroomTwo', 'basement'
+			],
+			furniture: [
+				'basement_table', 'basement_shelves',
+				'kitchen_sink1', 'kitchen_table', 'kitchen_desk',
+				'bathroom_sink', 'bathroom_bathtub', 'bathroom_wmachine',
+				'bathroomTwo_sink', 'bathroomTwo_carpet',
+				'bedroom_bed1', 'bedroom_table', 'bedroom_wardrobe1',
+				'bedroomTwo_table', 'bedroomTwo_bed2', 'bedroomTwo_shelves',
+				'nursery_desk', 'nursery_table', 'nursery_bed',
+				'hallway_carpet', 'hallway_coatrack',
+				'hallwayUpstairs_carpet', 'hallwayUpstairs_shelves'
 			],
 			contract: {
 				zero:  { money: 180, xp:  60 },
@@ -366,13 +390,16 @@ setup.HauntedHouses = (function () {
 
 		/* What's the cursed-item / rescue-clue / tarot / monkey-paw
 		   stash spot for the active house? Returns undefined if
-		   the MC isn't currently in a house. Used by FurnitureSearch. */
+		   the MC isn't currently in a house. Used by FurnitureSearch.
+		   The `kind` argument matches the historical CamelCase
+		   suffix ("CursedItem", "RescueClue", "TarotCards",
+		   "MonkeyPaw", "Curse", "ClothesStolen"); internally the
+		   bucket is keyed by camelCase. */
 		activeHousePlace: function (kind) {
 			var s = sv();
-			var suffix = s.hauntedHouse === 'owaissa' ? 'Owaissa' :
-				s.hauntedHouse === 'elm' ? 'Elm' : null;
-			if (!suffix) return undefined;
-			return s['placeFor' + kind + suffix];
+			var bucket = (s.houseSlots || {})[s.hauntedHouse];
+			if (!bucket || !bucket.placeFor) return undefined;
+			return bucket.placeFor[kind.charAt(0).toLowerCase() + kind.slice(1)];
 		},
 		currentFurniture: function () { return sv().currentFurniture; },
 		setCurrentFurniture: function (id) { sv().currentFurniture = id; },
@@ -465,70 +492,57 @@ setup.HauntedHouses = (function () {
 		},
 
 		// --- Furniture stash setup ---------------------------
-		/* On hunt start, seed the per-house furniture lists and
+		/* On hunt start, seed one slot bucket per stash-eligible
+		   house (HOUSE_CONFIG entries with a `furniture` field) and
 		   deal out one hiding spot for each hidden-content type
-		   (cursed item, rescue clue, tarot cards, monkey paw,
-		   and a 50/50 curse slot). One house gets the curse, the
-		   other doesn't. */
-		FURNITURE_OWAISSA: [
-			"hallway_carpet", "hallway_wardrobe", "hallway_coatrack",
-			"livingroom_table", "livingroom_sofa",
-			"kitchen_desk", "kitchen_table", "kitchen_sink1",
-			"bathroom_bathtub", "bathroom_carpet", "bathroom_sink", "bathroom_wmachine",
-			"bedroom_bed2", "bedroom_table", "bedroom_wardrobe1"
-		],
-		FURNITURE_ELM: [
-			"basement_table", "basement_shelves",
-			"kitchen_sink1", "kitchen_table", "kitchen_desk",
-			"bathroom_sink", "bathroom_bathtub", "bathroom_wmachine",
-			"bathroomTwo_sink", "bathroomTwo_carpet",
-			"bedroom_bed1", "bedroom_table", "bedroom_wardrobe1",
-			"bedroomTwo_table", "bedroomTwo_bed2", "bedroomTwo_shelves",
-			"nursery_desk", "nursery_table", "nursery_bed",
-			"hallway_carpet", "hallway_coatrack",
-			"hallwayUpstairs_carpet", "hallwayUpstairs_shelves"
-		],
+		   (cursed item, rescue clue, tarot cards, monkey paw, plus
+		   a single curse slot rolled across one of the eligible
+		   houses). Buckets live on $houseSlots keyed by house id;
+		   `available` tracks the still-unused slot ids so
+		   chooseClothesStashRoom() and any future stash kind can
+		   draw from the same pool. */
 		distributeFurnitureStashes: function () {
 			var s = sv();
-			s.furnitureListOwaissa = this.FURNITURE_OWAISSA.slice();
-			s.furnitureListElm = this.FURNITURE_ELM.slice();
-			s.tempListOwaissa = s.furnitureListOwaissa.slice();
-			s.tempListElm     = s.furnitureListElm.slice();
+			s.houseSlots = {};
 			function pickFrom(list) {
 				var i = Math.floor(Math.random() * list.length);
-				var pick = list[i];
-				list.splice(i, 1);
-				return pick;
+				return list.splice(i, 1)[0];
 			}
-			s.placeForCursedItemOwaissa = pickFrom(s.tempListOwaissa);
-			s.placeForRescueClueOwaissa = pickFrom(s.tempListOwaissa);
-			s.placeForTarotCardsOwaissa = pickFrom(s.tempListOwaissa);
-			s.placeForMonkeyPawOwaissa  = pickFrom(s.tempListOwaissa);
-			s.placeForCursedItemElm = pickFrom(s.tempListElm);
-			s.placeForRescueClueElm = pickFrom(s.tempListElm);
-			s.placeForTarotCardsElm = pickFrom(s.tempListElm);
-			s.placeForMonkeyPawElm  = pickFrom(s.tempListElm);
-			// Exactly one of the two houses gets a curse spot this
-			// hunt. The coin flip decides which house owns it.
-			if (Math.random() < 0.5) {
-				s.placeForCurseOwaissa = pickFrom(s.tempListOwaissa);
-			} else {
-				s.placeForCurseElm = pickFrom(s.tempListElm);
+			var stashHouses = HOUSE_CONFIG.filter(function (h) {
+				return Array.isArray(h.furniture) && h.furniture.length > 0;
+			});
+			stashHouses.forEach(function (h) {
+				var bucket = { available: h.furniture.slice(), placeFor: {} };
+				bucket.placeFor.cursedItem = pickFrom(bucket.available);
+				bucket.placeFor.rescueClue = pickFrom(bucket.available);
+				bucket.placeFor.tarotCards = pickFrom(bucket.available);
+				bucket.placeFor.monkeyPaw  = pickFrom(bucket.available);
+				s.houseSlots[h.id] = bucket;
+			});
+			// Exactly one stash-eligible house gets a curse spot this
+			// hunt. Uniform pick across the eligible set; with two
+			// houses this matches the original 50/50 between Owaissa
+			// and Elm.
+			if (stashHouses.length) {
+				var curseHouse = stashHouses[Math.floor(Math.random() * stashHouses.length)];
+				var b = s.houseSlots[curseHouse.id];
+				if (b && b.available.length) {
+					b.placeFor.curse = pickFrom(b.available);
+				}
 			}
 		},
 
 		// --- Clothes steal / find -----------------------------
 		/* Pick a random room-slot where the ghost "stashes" stolen
-		   clothes. Uses the pre-seeded $tempList<House> arrays
-		   that track unused slots, and stamps the chosen slot
-		   into $placeForClothesStolen<House>. */
+		   clothes. Reads from the active house's bucket on
+		   $houseSlots and stamps the chosen slot into
+		   bucket.placeFor.clothesStolen. No-op when the active
+		   house has no stash bucket. */
 		chooseClothesStashRoom: function () {
 			var s = sv();
-			if (s.hauntedHouse === 'owaissa' && Array.isArray(s.tempListOwaissa)) {
-				s.placeForClothesStolenOwaissa = s.tempListOwaissa[Math.floor(Math.random() * s.tempListOwaissa.length)];
-			} else if (s.hauntedHouse === 'elm' && Array.isArray(s.tempListElm)) {
-				s.placeForClothesStolenElm = s.tempListElm[Math.floor(Math.random() * s.tempListElm.length)];
-			}
+			var bucket = (s.houseSlots || {})[s.hauntedHouse];
+			if (!bucket || !Array.isArray(bucket.available) || !bucket.available.length) return;
+			bucket.placeFor.clothesStolen = bucket.available[Math.floor(Math.random() * bucket.available.length)];
 		},
 		/* Given the MC's current clothing state, return the list of
 		   garment categories that are still available to steal
@@ -575,14 +589,13 @@ setup.HauntedHouses = (function () {
 		/* The stash-room pointer for the active house. */
 		clothesStashRoom: function () {
 			var s = sv();
-			if (s.hauntedHouse === 'owaissa') return s.placeForClothesStolenOwaissa;
-			if (s.hauntedHouse === 'elm')     return s.placeForClothesStolenElm;
-			return undefined;
+			var bucket = (s.houseSlots || {})[s.hauntedHouse];
+			return bucket && bucket.placeFor ? bucket.placeFor.clothesStolen : undefined;
 		},
 		clearClothesStashRoom: function () {
 			var s = sv();
-			if (s.hauntedHouse === 'owaissa') s.placeForClothesStolenOwaissa = undefined;
-			if (s.hauntedHouse === 'elm')     s.placeForClothesStolenElm = undefined;
+			var bucket = (s.houseSlots || {})[s.hauntedHouse];
+			if (bucket && bucket.placeFor) bucket.placeFor.clothesStolen = undefined;
 		}
 	};
 })();
