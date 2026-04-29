@@ -1,8 +1,8 @@
 :: Update2 {"position":"400,0","size":"100,100"}
-<<run setup.Updates.applyUpdate2()>>
+<<run setup.Migrations.migrateStockingsFootBought()>>
 
 :: Update3 {"position":"300,0","size":"100,100"}
-<<run setup.Updates.applyUpdate3()>>
+<<run setup.Migrations.migrateDeliveryAndCompanionReset()>>
 
 :: FixSaveFile [nobr] {"position":"950,325","size":"100,100"}
-<<run setup.Updates.applyFixSaveFile()>>
+<<run setup.Migrations.migrateIroncladSearchMaps()>>

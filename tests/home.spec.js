@@ -20,7 +20,7 @@ test.describe('Home Controller', () => {
 
   test('isDressedForStreet true with default clothing (tshirt + jeans)', async () => {
     // act
-    const result = await callSetup(page, 'setup.Home.isDressedForStreet()');
+    const result = await callSetup(page, 'setup.Wardrobe.isDressedForStreet()');
 
     // assert
     expect(result).toBe(true);
@@ -31,7 +31,7 @@ test.describe('Home Controller', () => {
     await setVar(page, 'tshirtState', 'not worn');
 
     // act
-    const result = await callSetup(page, 'setup.Home.isDressedForStreet()');
+    const result = await callSetup(page, 'setup.Wardrobe.isDressedForStreet()');
 
     // assert
     expect(result).toBe(false);
@@ -44,7 +44,7 @@ test.describe('Home Controller', () => {
     await setVar(page, 'shortsState', 'not bought');
 
     // act
-    const result = await callSetup(page, 'setup.Home.isDressedForStreet()');
+    const result = await callSetup(page, 'setup.Wardrobe.isDressedForStreet()');
 
     // assert
     expect(result).toBe(false);
@@ -56,7 +56,7 @@ test.describe('Home Controller', () => {
     await setVar(page, 'skirtState', 'worn');
 
     // act
-    const result = await callSetup(page, 'setup.Home.isDressedForStreet()');
+    const result = await callSetup(page, 'setup.Wardrobe.isDressedForStreet()');
 
     // assert
     expect(result).toBe(true);
@@ -68,7 +68,7 @@ test.describe('Home Controller', () => {
     await setVar(page, 'shortsState', 'worn');
 
     // act
-    const result = await callSetup(page, 'setup.Home.isDressedForStreet()');
+    const result = await callSetup(page, 'setup.Wardrobe.isDressedForStreet()');
 
     // assert
     expect(result).toBe(true);
@@ -78,7 +78,7 @@ test.describe('Home Controller', () => {
 
   test('isWearingUnderwear true with both bra and panties', async () => {
     // act
-    const result = await callSetup(page, 'setup.Home.isWearingUnderwear()');
+    const result = await callSetup(page, 'setup.Wardrobe.isWearingUnderwear()');
 
     // assert
     expect(result).toBe(true);
@@ -89,7 +89,7 @@ test.describe('Home Controller', () => {
     await setVar(page, 'braState', 'not worn');
 
     // act
-    const result = await callSetup(page, 'setup.Home.isWearingUnderwear()');
+    const result = await callSetup(page, 'setup.Wardrobe.isWearingUnderwear()');
 
     // assert
     expect(result).toBe(false);
@@ -100,7 +100,7 @@ test.describe('Home Controller', () => {
     await setVar(page, 'pantiesState', 'not worn');
 
     // act
-    const result = await callSetup(page, 'setup.Home.isWearingUnderwear()');
+    const result = await callSetup(page, 'setup.Wardrobe.isWearingUnderwear()');
 
     // assert
     expect(result).toBe(false);
@@ -236,7 +236,7 @@ test.describe('Home Controller', () => {
     await setHuntMode(page, 1);
 
     // act
-    const result = await callSetup(page, 'setup.Home.hasHuntContract()');
+    const result = await callSetup(page, 'setup.Ghosts.hasContract()');
 
     // assert
     expect(result).toBe(true);
@@ -247,7 +247,7 @@ test.describe('Home Controller', () => {
     await setHuntMode(page, 3);
 
     // act
-    const result = await callSetup(page, 'setup.Home.needsWitch()');
+    const result = await callSetup(page, 'setup.Ghosts.isPossessed()');
 
     // assert
     expect(result).toBe(true);
@@ -424,9 +424,9 @@ test.describe('Home Controller', () => {
     await setVar(page, 'ghostMareEventStart', 1);
 
     // act
-    const atOne = await callSetup(page, 'setup.Home.mareEventActive()');
+    const atOne = await callSetup(page, 'setup.SpecialEvent.mareEventActive()');
     await setVar(page, 'ghostMareEventStart', 3);
-    const atThree = await callSetup(page, 'setup.Home.mareEventActive()');
+    const atThree = await callSetup(page, 'setup.SpecialEvent.mareEventActive()');
 
     // assert
     expect(atOne).toBe(true);
@@ -438,7 +438,7 @@ test.describe('Home Controller', () => {
     await setVar(page, 'ghostMareEventStart', 0);
 
     // act
-    const result = await callSetup(page, 'setup.Home.mareEventActive()');
+    const result = await callSetup(page, 'setup.SpecialEvent.mareEventActive()');
 
     // assert
     expect(result).toBe(false);
@@ -571,7 +571,7 @@ test.describe('Home Controller', () => {
     await setVar(page, 'thetwinseventCD', 0);
 
     // act
-    const result = await callSetup(page, 'setup.Home.twinsEventAvailable()');
+    const result = await callSetup(page, 'setup.Ghosts.twinsEventReady()');
 
     // assert
     expect(result).toBe(true);
@@ -583,7 +583,7 @@ test.describe('Home Controller', () => {
     await setVar(page, 'thetwinseventCD', 1);
 
     // act
-    const result = await callSetup(page, 'setup.Home.twinsEventAvailable()');
+    const result = await callSetup(page, 'setup.Ghosts.twinsEventReady()');
 
     // assert
     expect(result).toBe(false);

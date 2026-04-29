@@ -82,7 +82,7 @@ test.describe('Beauty — full-kit stack (fit 100 + stylish makeup + all tattoos
     await setVar(page, 'makeupApplied', 1);
 
     for (let i = 0; i < 15; i++) {
-      await callSetup(page, 'setup.Home.removeMakeupWithPenalty(10)'); // shower
+      await callSetup(page, 'setup.Home.wipeMakeupWithPenalty(10)'); // shower
       await callSetup(page, 'setup.Home.applyMakeupTier(2)');          // re-apply
     }
 

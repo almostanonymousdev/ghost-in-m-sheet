@@ -190,7 +190,7 @@ test.describe('Mall Controller', () => {
 
   test('canPayForBlakeSoloHunt false when already paid', async () => {
     // arrange
-    await setVar(page, 'payForHuntAloneBlake', 1);
+    await setVar(page, 'blake.paidForSolo', 1);
     await setVar(page, 'mc.money', 100);
 
     // act
@@ -214,7 +214,7 @@ test.describe('Mall Controller', () => {
   test('blakeHuntFinishedAlone checks flag value 2', async () => {
     // act
     const before = await callSetup(page, 'setup.Mall.blakeHuntFinishedAlone()');
-    await setVar(page, 'isBlakeGoingForHuntingAlone', 2);
+    await setVar(page, 'blake.goingSolo', 2);
     const after = await callSetup(page, 'setup.Mall.blakeHuntFinishedAlone()');
 
     // assert

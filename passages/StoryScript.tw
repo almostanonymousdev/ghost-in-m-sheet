@@ -947,6 +947,36 @@ function debounce(func, wait) {
     };
 }
 
+/* Generates trivial accessors on a controller's `api` object so the
+ * eight-line wall of `foo() / setFoo() / addFoo() / removeFoo()` for
+ * each owned field collapses into a one-row spec.
+ *
+ *   host: function returning the underlying object (e.g. mc(), sv())
+ *   spec: array of either a bare string ("money" → get + setMoney) or
+ *         { name, key?, get?, set?, add?, spend? } where each verb key
+ *         is the method name to expose; falsy disables that verb.
+ *
+ * Defaults: get = name, set = "set" + Capitalised(name); add and spend
+ * are off unless explicitly named. `key` overrides the underlying
+ * field name when it differs from the public method root (e.g.
+ * possession()/$mcpossession). */
+setup.defineAccessors = function (api, host, spec) {
+    function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+    spec.forEach(function (entry) {
+        var f      = (typeof entry === 'string') ? { name: entry } : entry;
+        var key    = f.key || f.name;
+        var getNm  = (f.get   !== undefined) ? f.get   : f.name;
+        var setNm  = (f.set   !== undefined) ? f.set   : 'set' + cap(f.name);
+        var addNm  = f.add;
+        var subNm  = f.spend;
+        if (getNm) api[getNm]  = function ()  { return host()[key]; };
+        if (setNm) api[setNm]  = function (v) { host()[key] = v; };
+        if (addNm) api[addNm]  = function (n) { host()[key] += n; };
+        if (subNm) api[subNm]  = function (n) { host()[key] -= n; };
+    });
+    return api;
+};
+
 // Keyboard shortcut: map each key to the tool it activates, then click the
 // canonical button for every room in setup.searchRoomPrefixes.
 setup.searchToolKeyMap = {
@@ -1252,7 +1282,7 @@ setup.HauntConditions = (function () {
      * array used by the HUD widget to show "why". */
     function snapshot() {
         var V = State.variables;
-        var inHouse = !!(setup.HauntedHouses && setup.HauntedHouses.isInsideHouse && setup.HauntedHouses.isInsideHouse());
+        var inHouse = !!(setup.Ghosts && setup.Ghosts.isHunting && setup.Ghosts.isHunting());
         var snap = {
             dark:              false,
             clothing:          clothingState(),
@@ -1389,7 +1419,7 @@ setup.HauntConditions = (function () {
         var V = State.variables;
         var mc = V.mc;
         if (!mc) return;
-        var inHouse = !!(setup.HauntedHouses && setup.HauntedHouses.isInsideHouse && setup.HauntedHouses.isInsideHouse());
+        var inHouse = !!(setup.Ghosts && setup.Ghosts.isHunting && setup.Ghosts.isHunting());
         var snap = snapshot();
 
         if (snap.sanityPerStep !== 0) {
@@ -1435,7 +1465,7 @@ setup.HauntConditions = (function () {
     /* Spend ad-hoc energy for a player-driven action (bait, pray).
      * Returns true on success, false when not enough energy. Sets
      * V.exhausted at zero so the next nav tick routes to exhaustion. */
-    function spendEnergy(amount) {
+    function removeEnergy(amount) {
         var V = State.variables;
         var mc = V.mc;
         if (!mc) return false;
@@ -1460,7 +1490,7 @@ setup.HauntConditions = (function () {
         if (!bg) return false;
         if (!V.hunt || !V.hunt.room) return false;
         mc.lust -= BAIT_LUST_COST;
-        spendEnergy(ENERGY_COST_BAIT);
+        removeEnergy(ENERGY_COST_BAIT);
         V.hunt.room.name = bg;
         V.baitActive = 1;
         V.baitStepsRemain = BAIT_STEPS;
@@ -1528,7 +1558,7 @@ setup.HauntConditions = (function () {
         clothingState:       clothingState,
         snapshot:            snapshot,
         applyTickEffects:    applyTickEffects,
-        spendEnergy:         spendEnergy,
+        removeEnergy:         removeEnergy,
         startBait:           startBait,
         canBait:             canBait,
         canPray:             canPray,

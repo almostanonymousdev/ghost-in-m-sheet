@@ -7,14 +7,14 @@
 <a data-passage="PornCore"><<image "ui/img/porn-lab.jpg" "iconPC">></a>
 <a data-passage="Internet"><<image "ui/img/browser.png" "iconPC">></a>
 <a data-passage="Contacts"><<image "ui/img/contacts.jpg" "iconPC">></a>
-<<if setup.Home.aliceWorkDone()>><a data-passage="DocumentsForAlice"><<image "ui/img/documents.jpg" "iconPC">></a>
+<<if setup.Companion.aliceWorkDone()>><a data-passage="DocumentsForAlice"><<image "ui/img/documents.jpg" "iconPC">></a>
 <</if>>
 <<if setup.Home.cameraBought() and setup.Home.sleptWithCameraOn()>>
-	<<if setup.Home.mareEventStart() gte 2>>
+	<<if setup.SpecialEvent.mareEventStart() gte 2>>
 		<<if setup.Home.mareStageLow()>>
-			<a data-passage="GhostSpecialEventMare" onclick="$.wiki('<<run setup.Home.setMareStart(4)>>')"><<image "ui/img/webcamera.png" "iconPC">></a>
+			<a data-passage="GhostSpecialEventMare" onclick="$.wiki('<<run setup.SpecialEvent.setMareEventStart(4)>>')"><<image "ui/img/webcamera.png" "iconPC">></a>
 		<<else>>
-			<a data-passage="GhostSpecialEvent1Mare" onclick="$.wiki('<<run setup.Home.setMareStart(4)>>')"><<image "ui/img/webcamera.png" "iconPC">></a>
+			<a data-passage="GhostSpecialEvent1Mare" onclick="$.wiki('<<run setup.SpecialEvent.setMareEventStart(4)>>')"><<image "ui/img/webcamera.png" "iconPC">></a>
 		<</if>>
 	<<else>>
 		<a data-passage="GhostSpecialEventMare0"><<image "ui/img/webcamera.png" "iconPC">></a>

@@ -23,7 +23,7 @@ test.describe('Haunted Houses Controller', () => {
     await setHuntMode(page, 1);
 
     // act
-    const result = await callSetup(page, 'setup.HauntedHouses.isContractMode()');
+    const result = await callSetup(page, 'setup.Ghosts.hasContract()');
 
     // assert
     expect(result).toBe(true);
@@ -34,7 +34,7 @@ test.describe('Haunted Houses Controller', () => {
     await setHuntMode(page, 2);
 
     // act
-    const result = await callSetup(page, 'setup.HauntedHouses.isInsideHouse()');
+    const result = await callSetup(page, 'setup.Ghosts.isHunting()');
 
     // assert
     expect(result).toBe(true);
@@ -45,7 +45,7 @@ test.describe('Haunted Houses Controller', () => {
     await setHuntMode(page, 3);
 
     // act
-    const result = await callSetup(page, 'setup.HauntedHouses.isHuntOver()');
+    const result = await callSetup(page, 'setup.Ghosts.isPossessed()');
 
     // assert
     expect(result).toBe(true);
@@ -101,9 +101,9 @@ test.describe('Haunted Houses Controller', () => {
     await setHuntMode(page, 1);
 
     // act
-    const isContract = await callSetup(page, 'setup.HauntedHouses.isContractMode()');
-    const isInside = await callSetup(page, 'setup.HauntedHouses.isInsideHouse()');
-    const isOver = await callSetup(page, 'setup.HauntedHouses.isHuntOver()');
+    const isContract = await callSetup(page, 'setup.Ghosts.hasContract()');
+    const isInside = await callSetup(page, 'setup.Ghosts.isHunting()');
+    const isOver = await callSetup(page, 'setup.Ghosts.isPossessed()');
 
     // assert
     expect(isContract).toBe(true);
@@ -113,10 +113,10 @@ test.describe('Haunted Houses Controller', () => {
 
   // --- House identification ---
 
-  test('isOwaissa checks isOwaissa flag', async () => {
+  test('isOwaissa true when $hauntedHouse is owaissa', async () => {
     // act
     const before = await callSetup(page, 'setup.HauntedHouses.isOwaissa()');
-    await setVar(page, 'isOwaissa', 1);
+    await setVar(page, 'hauntedHouse', 'owaissa');
     const after = await callSetup(page, 'setup.HauntedHouses.isOwaissa()');
 
     // assert
@@ -124,10 +124,10 @@ test.describe('Haunted Houses Controller', () => {
     expect(after).toBe(true);
   });
 
-  test('isElm checks isElm flag', async () => {
+  test('isElm true when $hauntedHouse is elm', async () => {
     // act
     const before = await callSetup(page, 'setup.HauntedHouses.isElm()');
-    await setVar(page, 'isElm', 1);
+    await setVar(page, 'hauntedHouse', 'elm');
     const after = await callSetup(page, 'setup.HauntedHouses.isElm()');
 
     // assert
@@ -135,10 +135,10 @@ test.describe('Haunted Houses Controller', () => {
     expect(after).toBe(true);
   });
 
-  test('isEnigma checks isEnigma flag', async () => {
+  test('isEnigma true when $hauntedHouse is enigma', async () => {
     // act
     const before = await callSetup(page, 'setup.HauntedHouses.isEnigma()');
-    await setVar(page, 'isEnigma', 1);
+    await setVar(page, 'hauntedHouse', 'enigma');
     const after = await callSetup(page, 'setup.HauntedHouses.isEnigma()');
 
     // assert
@@ -146,10 +146,10 @@ test.describe('Haunted Houses Controller', () => {
     expect(after).toBe(true);
   });
 
-  test('isIronclad checks isIronclad flag', async () => {
+  test('isIronclad true when $hauntedHouse is ironclad', async () => {
     // act
     const before = await callSetup(page, 'setup.HauntedHouses.isIronclad()');
-    await setVar(page, 'isIronclad', 1);
+    await setVar(page, 'hauntedHouse', 'ironclad');
     const after = await callSetup(page, 'setup.HauntedHouses.isIronclad()');
 
     // assert
@@ -348,7 +348,7 @@ test.describe('Haunted Houses Controller', () => {
     await setVar(page, 'UVLCheck', true);
 
     // act
-    await page.evaluate(() => SugarCube.setup.HauntedHouses.resetEvidenceChecks());
+    await page.evaluate(() => SugarCube.setup.Ghosts.resetEvidenceChecks());
 
     // assert
     expect(await getVar(page, 'EMF5Check')).toBe(false);

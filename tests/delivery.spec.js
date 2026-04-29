@@ -458,89 +458,89 @@ test.describe('Delivery Controller', () => {
 
   // --- Reputation ---
 
-  test('getReputationLevel returns 0 with no streak', async () => {
+  test('reputationLevel returns 0 with no streak', async () => {
     // arrange
     await setVar(page, 'deliveryBestStreak', 0);
 
     // act
-    const level = await callSetup(page, 'setup.Delivery.getReputationLevel()');
+    const level = await callSetup(page, 'setup.Delivery.reputationLevel()');
 
     // assert
     expect(level).toBe(0);
   });
 
-  test('getReputationLevel returns 1 at streak 5', async () => {
+  test('reputationLevel returns 1 at streak 5', async () => {
     // arrange
     await setVar(page, 'deliveryBestStreak', 5);
 
     // act
-    const level = await callSetup(page, 'setup.Delivery.getReputationLevel()');
+    const level = await callSetup(page, 'setup.Delivery.reputationLevel()');
 
     // assert
     expect(level).toBe(1);
   });
 
-  test('getReputationLevel returns 2 at streak 10', async () => {
+  test('reputationLevel returns 2 at streak 10', async () => {
     // arrange
     await setVar(page, 'deliveryBestStreak', 10);
 
     // act
-    const level = await callSetup(page, 'setup.Delivery.getReputationLevel()');
+    const level = await callSetup(page, 'setup.Delivery.reputationLevel()');
 
     // assert
     expect(level).toBe(2);
   });
 
-  test('getReputationLevel returns 3 at streak 20', async () => {
+  test('reputationLevel returns 3 at streak 20', async () => {
     // arrange
     await setVar(page, 'deliveryBestStreak', 20);
 
     // act
-    const level = await callSetup(page, 'setup.Delivery.getReputationLevel()');
+    const level = await callSetup(page, 'setup.Delivery.reputationLevel()');
 
     // assert
     expect(level).toBe(3);
   });
 
-  test('getReputationLabel returns Newbie at level 0', async () => {
+  test('reputationLabel returns Newbie at level 0', async () => {
     // arrange
     await setVar(page, 'deliveryBestStreak', 0);
 
     // act
-    const label = await callSetup(page, 'setup.Delivery.getReputationLabel()');
+    const label = await callSetup(page, 'setup.Delivery.reputationLabel()');
 
     // assert
     expect(label).toBe('Newbie');
   });
 
-  test('getReputationLabel returns Star Courier at level 3', async () => {
+  test('reputationLabel returns Star Courier at level 3', async () => {
     // arrange
     await setVar(page, 'deliveryBestStreak', 20);
 
     // act
-    const label = await callSetup(page, 'setup.Delivery.getReputationLabel()');
+    const label = await callSetup(page, 'setup.Delivery.reputationLabel()');
 
     // assert
     expect(label).toBe('Star Courier');
   });
 
-  test('getDeliveryTime returns 30 normally', async () => {
+  test('deliveryTime returns 30 normally', async () => {
     // arrange
     await setVar(page, 'deliveryBestStreak', 0);
 
     // act
-    const time = await callSetup(page, 'setup.Delivery.getDeliveryTime()');
+    const time = await callSetup(page, 'setup.Delivery.deliveryTime()');
 
     // assert
     expect(time).toBe(30);
   });
 
-  test('getDeliveryTime returns 20 at reputation level 3', async () => {
+  test('deliveryTime returns 20 at reputation level 3', async () => {
     // arrange
     await setVar(page, 'deliveryBestStreak', 20);
 
     // act
-    const time = await callSetup(page, 'setup.Delivery.getDeliveryTime()');
+    const time = await callSetup(page, 'setup.Delivery.deliveryTime()');
 
     // assert
     expect(time).toBe(20);

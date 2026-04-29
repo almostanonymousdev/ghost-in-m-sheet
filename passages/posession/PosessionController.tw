@@ -10,7 +10,7 @@ setup.Posession = (function () {
 	/* Variables owned by this controller. Other controllers should
 	   query these only through the API methods below. */
 	var OWNED_VARS = Object.freeze([
-		'checkChoosenLocation',
+		'checkChosenLocation',
 		'hotAct',
 		'addtemptorealhouse'
 	]);
@@ -62,8 +62,8 @@ setup.Posession = (function () {
 		meterAtLeast: function (n) { return (setup.Mc.possession() || 0) >= n; },
 
 		// --- Location choice storage ------------------------------
-		locationChoice: function () { return sv().checkChoosenLocation; },
-		setLocationChoice: function (name) { sv().checkChoosenLocation = name; },
+		locationChoice: function () { return sv().checkChosenLocation; },
+		setLocationChoice: function (name) { sv().checkChosenLocation = name; },
 
 		// --- Mimic room randomizer --------------------------------
 		// Generates a 30-minute interval key from current minutes and, when

@@ -64,7 +64,7 @@ setup.Witch = (function () {
 			return sv().succubus !== undefined;
 		},
 		succubusVisited: function () { return sv().succubus === 1; },
-		setSuccubus: function (n) { sv().succubus = n; },
+		setSuccubusVisited: function (n) { sv().succubus = n; },
 		exorcismQuestStage: function () { return sv().exorcismQuestStage; },
 		setExorcismQuestStage: function (n) { sv().exorcismQuestStage = n; },
 		exorcismQuestNotStarted: function () {
@@ -74,7 +74,7 @@ setup.Witch = (function () {
 
 		// --- Missing-girls / rescue quest ------------------------
 		canOfferRescueQuest: function () {
-			return setup.MissingWomen.getQuestStage() === undefined;
+			return setup.MissingWomen.rescueQuestStage() === undefined;
 		},
 		rescueQuestUnlocked: function () {
 			return setup.Mc.lvl() >= 4;
@@ -95,7 +95,7 @@ setup.Witch = (function () {
 		},
 		clearCursedItemHeld: function () { sv().gotCursedItem = 0; },
 		setCursedItemHeld:   function () { sv().gotCursedItem = 1; },
-		gotCursedItem:       function () { return sv().gotCursedItem; },
+		cursedItemState:     function () { return sv().gotCursedItem; },
 		setCursedItemFlag: function (key) { sv()[key] = 1; },
 		/* Consume the cursed item the player is carrying. Clears whichever
 		   of the four type flags is set and the held flag, returning the
@@ -130,7 +130,7 @@ setup.Witch = (function () {
 		},
 		unlockMonkeyPawWishes: function () {
 			setup.MonkeyPaw.purchaseGuide();
-			setup.Mc.spendMoney(400);
+			setup.Mc.removeMoney(400);
 		},
 
 		// --- Level 3 tools referral ------------------------------
@@ -200,11 +200,11 @@ setup.Witch = (function () {
 		upgradeTool: function (tool) {
 			var price = this.TOOL_UPGRADE_PRICES[tool];
 			setup.ToolController.setTier(tool, 4);
-			setup.Mc.spendMoney(price);
+			setup.Mc.removeMoney(price);
 		},
 		buyDetector: function () {
 			setup.ToolController.buyDetector();
-			setup.Mc.spendMoney(200);
+			setup.Mc.removeMoney(200);
 		},
 		detectorBought: function () { return setup.ToolController.detectorBought(); },
 		monkeyPawGuideAvailable: function () {
@@ -230,7 +230,7 @@ setup.Witch = (function () {
 			sv().exorcismQuestStage = 0;
 		},
 		clearQuestForRescue: function () {
-			setup.MissingWomen.setQuestStage(0);
+			setup.MissingWomen.setRescueQuestStage(0);
 		},
 		startCursedItemQuest: function () {
 			sv().gotCursedItem = 0;

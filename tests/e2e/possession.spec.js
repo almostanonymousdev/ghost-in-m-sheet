@@ -126,7 +126,7 @@ test.describe('Possession — location-based event passages', () => {
 
   for (const loc of LOCATIONS) {
     test(`PossessedLocation renders cleanly for ${loc} with resistance tier 4`, async () => {
-      await setVar(page, 'checkChoosenLocation', loc);
+      await setVar(page, 'checkChosenLocation', loc);
       await setVar(page, 'mcpossession', 4);
       await goToPassage(page, 'PossessedLocation');
       await expectCleanPassage(page);
@@ -134,7 +134,7 @@ test.describe('Possession — location-based event passages', () => {
   }
 
   test('PossessedLocation handles the no-location fallback branch', async () => {
-    await setVar(page, 'checkChoosenLocation', 'nowhere');
+    await setVar(page, 'checkChosenLocation', 'nowhere');
     await setVar(page, 'mcpossession', 0);
     await goToPassage(page, 'PossessedLocation');
     await expectCleanPassage(page);
@@ -143,14 +143,14 @@ test.describe('Possession — location-based event passages', () => {
   });
 
   test('PossessedLocation1 renders cleanly', async () => {
-    await setVar(page, 'checkChoosenLocation', 'library');
+    await setVar(page, 'checkChosenLocation', 'library');
     await setVar(page, 'mcpossession', 7);
     await goToPassage(page, 'PossessedLocation1');
     await expectCleanPassage(page);
   });
 
   test('PossessedLocation2 renders cleanly', async () => {
-    await setVar(page, 'checkChoosenLocation', 'library');
+    await setVar(page, 'checkChosenLocation', 'library');
     await setVar(page, 'mcpossession', 11);
     await goToPassage(page, 'PossessedLocation2');
     await expectCleanPassage(page);

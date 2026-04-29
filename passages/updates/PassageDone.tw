@@ -9,12 +9,12 @@
 <<include "WardrobeSlots">>
 <</if>>
 
-<<if passage() eq "Mirror" and not setup.Updates.twinsEventFired()>>
-<<if setup.Updates.mirrorMakeupHasWidth()>>
-	<<replace "#mirrorImage">><<image setup.Updates.mirrorMakeupImagePath() { width: "70%" }>>
+<<if passage() eq "Mirror" and not setup.Tick.twinsEventFired()>>
+<<if setup.Gui.mirrorMakeupHasWidth()>>
+	<<replace "#mirrorImage">><<image setup.Gui.mirrorMakeupImagePath() { width: "70%" }>>
 	<</replace>>
 <<else>>
-	<<replace "#mirrorImage">><<image setup.Updates.mirrorMakeupImagePath()>>
+	<<replace "#mirrorImage">><<image setup.Gui.mirrorMakeupImagePath()>>
 	<</replace>>
 <</if>>
 <</if>>
@@ -23,43 +23,43 @@
 <<goto "HuntOverTime">>
 <</if>>
 
-<<if not setup.Updates.update22Applied()>>
+<<if not setup.Migrations.update22Applied()>>
 <<include "Update1">>
 <</if>>
 
-<<if not setup.Updates.update0909Applied()>>
+<<if not setup.Migrations.update0909Applied()>>
 <<include "Update3">>
 <</if>>
 
-<<if not setup.Updates.update2707Applied()>>
+<<if not setup.Migrations.update2707Applied()>>
 <<include "Update2">>
 <</if>>
 
 <<run setup.Companion.tickAllCompanionProgression()>>
 
-<<if setup.Updates.activeCompanionShouldLeaveAfterEvent()>>
+<<if setup.Tick.activeCompanionShouldLeaveAfterEvent()>>
 <<goto "CompanionLeaving">>
 <</if>>
 
-<<run setup.Updates.ensureUnderwearMemory()>>
+<<run setup.Migrations.ensureUnderwearMemory()>>
 
-<<run setup.Updates.initTick()>>
+<<run setup.Tick.initTick()>>
 
 <<set _eventTriggered = false>>
 <<set _stealClothesTriggered = false>>
 
-<<run setup.Updates.tickHuntTimer()>>
-<<run setup.Updates.tickRescueQuestExpiry()>>
-<<run setup.Updates.tickCursedHuntTimer()>>
-<<run setup.Updates.applyOneTimeUpdate4()>>
-<<run setup.Updates.applyDetectorHighlights()>>
+<<run setup.Tick.tickHuntTimer()>>
+<<run setup.Tick.tickRescueQuestExpiry()>>
+<<run setup.Tick.tickCursedHuntTimer()>>
+<<run setup.Migrations.migrateCompanionPlanTimes()>>
+<<run setup.Tick.applyDetectorHighlights()>>
 
 <<run setup.Mc.ensurePossession()>>
 
-<<if setup.Updates.applyChokerLustFloor()>>
+<<if setup.Tick.applyChokerLustFloor()>>
 <<updatemeter 'mclust' `setup.Mc.lust().toFixed(2) / 100`>>
 <</if>>
 
-<<if not setup.Updates.timerToolsInitialized()>>
+<<if not setup.Gui.timerToolsInitialized()>>
 <<run setup.Gui.refreshToolTimer()>>
 <</if>>

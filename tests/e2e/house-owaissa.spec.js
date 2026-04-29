@@ -32,7 +32,7 @@ test.describe('Haunted house — Owaissa', () => {
   test.beforeEach(async () => { await resetGame(page); });
 
   test('Owaissa Street renders with a Go inside link when no companion is set', async () => {
-    await setVar(page, 'isOwaissa', 1);
+    await setVar(page, 'hauntedHouse', 'owaissa');
     await setHuntMode(page, 1);
 
     await goToPassage(page, 'Owaissa Street');

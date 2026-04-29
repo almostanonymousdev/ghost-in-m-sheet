@@ -10,13 +10,13 @@
 <<else>>(<<= _alice.exp>> / <<= _alice.expForNextLvl>>)
 <</if>><br>
 
-<<set _aws to setup.Home.aliceWorkState()>>
+<<set _aws to setup.Companion.aliceWorkState()>>
 <<if _aws is undefined or _aws eq 0>>
 	<<linkreplace "@@.usebtn;Help her with the work@@">>
 		@@.notmc-speech; <<= setup.Mc.name()>>, I've sent you the documents that need to be filled out. Let me know when you're done.<br>@@
 		<br>
 		@@.mc-action; You received the documents from Alice.@@<br>
-		<<run setup.Home.setAliceWorkState(1)>>
+		<<run setup.Companion.setAliceWorkState(1)>>
 	<</linkreplace>><br>
 <<elseif _aws eq 1>>
 	@@.mc-speech; I need to help Alice with her work before asking her to join the ghost hunt.@@<br>

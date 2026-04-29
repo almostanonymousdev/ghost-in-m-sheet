@@ -121,7 +121,7 @@
 <br>
 @@.mc-speech; I can't fight it. I can't outlast it. Fine. Take it.@@<br>
 @@.mc-action; You slip out of your clothes and let them fall. The ghost is already closer than it was a moment ago.@@<br>
-<<run setup.HauntedHouses.stripToNaked()>>
+<<run setup.Wardrobe.stripToNaked()>>
 <br>
 @@.enterbtn; <<link "Close your eyes" "HuntOverSanity">>
 <</link>>@@

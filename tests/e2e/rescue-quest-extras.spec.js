@@ -137,9 +137,9 @@ test.describe('Missing Women — rescue dispatch and accessors', () => {
     expect(await getVar(page, 'rescueStage')).toBe(0);
   });
 
-  test('setQuestStage / getQuestStage round-trip', async () => {
-    await page.evaluate(() => SugarCube.setup.MissingWomen.setQuestStage(2));
-    expect(await callSetup(page, 'setup.MissingWomen.getQuestStage()')).toBe(2);
+  test('setRescueQuestStage / rescueQuestStage round-trip', async () => {
+    await page.evaluate(() => SugarCube.setup.MissingWomen.setRescueQuestStage(2));
+    expect(await callSetup(page, 'setup.MissingWomen.rescueQuestStage()')).toBe(2);
     expect(await callSetup(page, 'setup.MissingWomen.questFailed()')).toBe(true);
   });
 

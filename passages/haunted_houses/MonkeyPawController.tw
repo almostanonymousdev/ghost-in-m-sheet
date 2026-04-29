@@ -43,7 +43,7 @@ setup.MonkeyPaw = (function () {
 	// --- Private state mutators (shared by activate() and the
 	// public API so there is exactly one implementation per op). ---
 
-	function spendWish() {
+	function removeWish() {
 		var s = sv();
 		s.wishesCount = (s.wishesCount || 0) - 1;
 		if (s.wishesCount < 0) s.wishesCount = 0;
@@ -210,7 +210,7 @@ setup.MonkeyPaw = (function () {
 					drewGhost = true;
 				}
 
-				spendWish();
+				removeWish();
 
 				return {
 					tier: t,
@@ -257,7 +257,7 @@ setup.MonkeyPaw = (function () {
 					drewGhost = true;
 				}
 
-				spendWish();
+				removeWish();
 
 				return {
 					tier: t,
@@ -292,7 +292,7 @@ setup.MonkeyPaw = (function () {
 				if (lust) setup.addLust(lust);
 				if (corr) addTempCorr(corr);
 
-				spendWish();
+				removeWish();
 
 				return {
 					tier: t,
@@ -331,7 +331,7 @@ setup.MonkeyPaw = (function () {
 
 				setup.HauntedHouses.clearCursedHuntActive();
 
-				spendWish();
+				removeWish();
 
 				return {
 					tier: t,
@@ -375,7 +375,7 @@ setup.MonkeyPaw = (function () {
 				setup.Ghosts.markKnowledgeUsed();
 				if (sanity) applySanity(sanity);
 
-				spendWish();
+				removeWish();
 
 				return {
 					tier: t,
@@ -407,7 +407,7 @@ setup.MonkeyPaw = (function () {
 				setup.HauntedHouses.clearCursedHuntActive();
 				if (corr) addTempCorr(corr);
 
-				spendWish();
+				removeWish();
 
 				return {
 					tier: t,
@@ -482,7 +482,7 @@ setup.MonkeyPaw = (function () {
 		// --- Wish economy -----------------------------------------
 		wishesLeft: wishesLeft,
 		hasWishes: function () { return wishesLeft() > 0; },
-		spendWish: spendWish,
+		removeWish: removeWish,
 		/* Severity tier the next activate() would use, for UIs that
 		   want to warn the player before they click. */
 		tier: currentTier,

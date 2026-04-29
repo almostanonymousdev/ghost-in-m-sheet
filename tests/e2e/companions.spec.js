@@ -37,9 +37,9 @@ test.describe('Companions — selection controller', () => {
   test('selectCompanion is mutually exclusive across all six names', async () => {
     for (const name of ['Alice', 'Blake', 'Brook', 'Alex', 'Taylor', 'Casey']) {
       await page.evaluate((n) => SugarCube.setup.Companion.selectCompanion(n), name);
-      expect(await getVar(page, 'isCompChosen' + name)).toBe(1);
+      expect(await getVar(page, name.toLowerCase() + '.chosen')).toBe(1);
       for (const other of ['Alice', 'Blake', 'Brook', 'Alex', 'Taylor', 'Casey']) {
-        if (other !== name) expect(await getVar(page, 'isCompChosen' + other)).toBe(0);
+        if (other !== name) expect(await getVar(page, other.toLowerCase() + '.chosen')).toBe(0);
       }
     }
   });
@@ -92,9 +92,9 @@ test.describe('Companions — passage rendering', () => {
       test(`${name} — ${passage} renders cleanly`, async () => {
         await selectCompanion(page, name);
         // Seed vars read by *Main / *HuntEndAlone passages.
-        await setVar(page, 'chanceToAttackAlice', 25);
-        await setVar(page, 'chanceToAttackBlake', 25);
-        await setVar(page, 'chanceToAttackBrook', 25);
+        await setVar(page, 'alice.chanceToAttack', 25);
+        await setVar(page, 'blake.chanceToAttack', 25);
+        await setVar(page, 'brook.chanceToAttack', 25);
         await setVar(page, 'isCompChosen', 1);
         await setHuntMode(page, 2);
         await setVar(page, 'ghost', { name: 'Shade' });
@@ -115,10 +115,10 @@ test.describe('Companions — passage rendering', () => {
   for (const name of ['Brook', 'Alice', 'Blake']) {
     test(`${name}Info post-solo-return link renders substituted text`, async () => {
       await selectCompanion(page, name);
-      await setVar(page, `is${name}GoingForHuntingAlone`, 2);
+      await setVar(page, `${name.toLowerCase()}.goingSolo`, 2);
       // AliceInfo gates the picker on aliceWorkState === 2; harmless
       // for Brook/Blake which don't read it.
-      await page.evaluate(() => SugarCube.setup.Home.setAliceWorkState(2));
+      await page.evaluate(() => SugarCube.setup.Companion.setAliceWorkState(2));
       await goToPassage(page, `${name}Info`);
       await expectCleanPassage(page);
       const text = await page.locator('#passages').innerText();
@@ -133,12 +133,12 @@ test.describe('Companions — passage rendering', () => {
     test(`CompanionMain renders cleanly for ${name}`, async () => {
       await selectCompanion(page, name);
       // Seed vars read by CompanionMain via <<companionMain>>.
-      await setVar(page, 'chanceToAttackBrook', 25);
-      await setVar(page, 'chanceToAttackAlice', 25);
-      await setVar(page, 'chanceToAttackBlake', 25);
-      await setVar(page, 'chanceToAttackAlex', 25);
-      await setVar(page, 'chanceToAttackTaylor', 25);
-      await setVar(page, 'chanceToAttackCasey', 25);
+      await setVar(page, 'brook.chanceToAttack', 25);
+      await setVar(page, 'alice.chanceToAttack', 25);
+      await setVar(page, 'blake.chanceToAttack', 25);
+      await setVar(page, 'alex.chanceToAttack', 25);
+      await setVar(page, 'taylor.chanceToAttack', 25);
+      await setVar(page, 'casey.chanceToAttack', 25);
       await setVar(page, 'isCompChosen', 1);
       await setHuntMode(page, 2);
       await setVar(page, 'ghost', { name: 'Shade' });
@@ -159,14 +159,13 @@ test.describe('Companions — hunt-side events', () => {
   test('canShowCompanionMiniPanel requires chosenPlan + hunt mode + haunted house', async () => {
     await setVar(page, 'chosenPlan', 'Plan1');
     await setHuntMode(page, 2);
-    await setVar(page, 'isOwaissa', 1);
+    await setVar(page, 'hauntedHouse', 'owaissa');
     expect(await callSetup(page, 'setup.Companion.canShowCompanionMiniPanel()')).toBe(true);
 
-    await setVar(page, 'isOwaissa', 0);
-    await setVar(page, 'isElm', 0);
+    await setVar(page, 'hauntedHouse', null);
     expect(await callSetup(page, 'setup.Companion.canShowCompanionMiniPanel()')).toBe(false);
 
-    await setVar(page, 'isElm', 1);
+    await setVar(page, 'hauntedHouse', 'elm');
     expect(await callSetup(page, 'setup.Companion.canShowCompanionMiniPanel()')).toBe(true);
 
     await setHuntMode(page, 0);
@@ -230,7 +229,7 @@ test.describe('Companions — hunt-side events', () => {
     expect(await callSetup(page, 'setup.Companion.canAffordSoloContract()')).toBe(true);
     await page.evaluate(() => SugarCube.setup.Companion.payForSoloContract('Alice'));
     expect(await getVar(page, 'mc.money')).toBe(0);
-    expect(await getVar(page, 'payForHuntAloneAlice')).toBe(1);
+    expect(await getVar(page, 'alice.paidForSolo')).toBe(1);
   });
 
   test('blakeDropsCursedItem only fires when Blake + chosen + cursed item', async () => {
@@ -285,9 +284,8 @@ test.describe('Companions — home/intimate events', () => {
   ]) {
     test(`${passage} renders cleanly`, async () => {
       await selectCompanion(page, 'Alice');
-      // CompanionRandomRoom reads $isOwaissa/$isElm to pick a room list.
-      await setVar(page, 'isOwaissa', 1);
-      await setVar(page, 'isElm', 0);
+      // CompanionRandomRoom reads $hauntedHouse to pick a room list.
+      await setVar(page, 'hauntedHouse', 'owaissa');
       await setVar(page, 'isCompRoomChosen', 0);
       await goToPassage(page, passage);
       await expectCleanPassage(page);

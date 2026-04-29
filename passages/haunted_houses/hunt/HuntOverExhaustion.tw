@@ -28,8 +28,8 @@
 <<set _bottomless to setup.HauntedHouses.isBottomless()>>
 <<set _topBare    to setup.HauntedHouses.isTopBare()>>
 <<set _modest     to (setup.Mc.exhibitionism() || 0) lt 5>>
-<<set _canCoverBottom to _bottomless and (setup.HauntedHouses.isPantiesStolen() or setup.HauntedHouses.isBottomStolen())>>
-<<set _canCoverTop    to _topBare    and (setup.HauntedHouses.isShirtStolen() or setup.HauntedHouses.isBraStolen())>>
+<<set _canCoverBottom to _bottomless and (setup.Wardrobe.isPantiesStolen() or setup.Wardrobe.isBottomStolen())>>
+<<set _canCoverTop    to _topBare    and (setup.Wardrobe.isShirtStolen() or setup.Wardrobe.isBraStolen())>>
 <<set _forceCover     to _modest and (_canCoverBottom or _canCoverTop)>>
 <<set _showBottom     to not _forceCover or _canCoverBottom>>
 <<set _showTop        to not _forceCover or _canCoverTop>>
@@ -52,7 +52,7 @@
 		@@<br>
 	<</if>>
 	<span id="exhaustionGrab">
-	<<if setup.HauntedHouses.isPantiesStolen() and _showBottom>>
+	<<if setup.Wardrobe.isPantiesStolen() and _showBottom>>
 		@@.usebtn;<<link "Grab your panties">><<replace "#exhaustionGrab">>
 			<<run setup.Wardrobe.restoreStolenInGroup("panties", "isPantiesStolen")>>
 			<<run setup.Wardrobe.loseAllStolen()>>
@@ -62,7 +62,7 @@
 		<</replace>>
 		<</link>>@@<br>
 	<</if>>
-	<<if setup.HauntedHouses.isBottomStolen() and _showBottom>>
+	<<if setup.Wardrobe.isBottomStolen() and _showBottom>>
 		@@.usebtn;<<link "Grab your bottoms">><<replace "#exhaustionGrab">>
 			<<run setup.Wardrobe.restoreStolenInGroup("bottomOuter")>><<run State.variables.isBottomStolen = 0>><<run State.variables.isJeansStolen = 0>><<run State.variables.isShortsStolen = 0>><<run State.variables.isSkirtStolen = 0>>
 			<<run setup.Wardrobe.loseAllStolen()>>
@@ -72,7 +72,7 @@
 		<</replace>>
 		<</link>>@@<br>
 	<</if>>
-	<<if setup.HauntedHouses.isShirtStolen() and _showTop>>
+	<<if setup.Wardrobe.isShirtStolen() and _showTop>>
 		@@.usebtn;<<link "Grab your shirt">><<replace "#exhaustionGrab">>
 			<<run setup.Wardrobe.restoreStolenInGroup("tshirt", "isShirtStolen")>>
 			<<run setup.Wardrobe.loseAllStolen()>>
@@ -82,7 +82,7 @@
 		<</replace>>
 		<</link>>@@<br>
 	<</if>>
-	<<if setup.HauntedHouses.isBraStolen() and _showTop>>
+	<<if setup.Wardrobe.isBraStolen() and _showTop>>
 		@@.usebtn;<<link "Grab your bra">><<replace "#exhaustionGrab">>
 			<<run setup.Wardrobe.restoreStolenInGroup("bra", "isBraStolen")>>
 			<<run setup.Wardrobe.loseAllStolen()>>

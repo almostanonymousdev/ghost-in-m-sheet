@@ -4,8 +4,8 @@
  * loses interest; treated like a clean escape (mark the event, reset the
  * trigger timer, return to the room). The energy spend can also exhaust
  * the player — if so, route to HuntOverExhaustion instead of the room. */
-<<run setup.Mc.spendSanity(10)>>
-<<run setup.HauntConditions.spendEnergy(setup.HauntConditions.ENERGY_COST_PRAY)>>
+<<run setup.Mc.removeSanity(10)>>
+<<run setup.HauntConditions.removeEnergy(setup.HauntConditions.ENERGY_COST_PRAY)>>
 <<updatemeter 'energy' `setup.Mc.energyPct()`>>
 <<if setup.Mc.sanity() lt 0>>
 	<<run setup.Mc.setSanity(0)>>

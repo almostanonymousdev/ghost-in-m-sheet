@@ -1,2 +1,2 @@
 :: ResetCooldowns {"position":"2200,1350","size":"100,100"}
-<<run setup.Updates.resetCooldowns()>>
+<<run setup.Tick.resetCooldowns()>>

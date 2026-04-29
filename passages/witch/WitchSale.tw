@@ -6,7 +6,7 @@
 <<if setup.Mc.money() gte 10>>
 	@@.buyItemLink;<<link "Buy" "WitchSale">>
 		<<run setup.Mc.addSanityPills(1)>>
-		<<run setup.Mc.spendMoney(10)>>
+		<<run setup.Mc.removeMoney(10)>>
 	<</link>>@@<br>
 <<else>>@@.mc-thoughts; I don't have enough money@@
 <</if>>
@@ -19,7 +19,7 @@
 <<if setup.Mc.money() gte 10>>
 	@@.buyItemLink;<<link "Buy" "WitchSale">>
 		<<run setup.Witch.addCrucifix()>>
-		<<run setup.Mc.spendMoney(10)>>
+		<<run setup.Mc.removeMoney(10)>>
 	<</link>>@@<br>
 <<else>>@@.mc-thoughts; I don't have enough money@@
 <</if>>

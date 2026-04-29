@@ -285,7 +285,7 @@ setup.SeduceGhostMinigame = (function () {
 		},
 
 		// --- Video lookup ---
-		getVideoList: function () {
+		videoList: function () {
 			var state = sv().minigameVideo;
 			if (state === "start") {
 				var mi = setup.Mc.makeupImg();

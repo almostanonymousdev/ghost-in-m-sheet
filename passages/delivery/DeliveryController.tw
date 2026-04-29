@@ -11,8 +11,11 @@ setup.Delivery = (function () {
 	   query these only through the API methods below. */
 	var OWNED_VARS = Object.freeze([
 		'deliveryCompletedShifts', 'deliveryStreak', 'deliveryBestStreak',
-		'deliveryReputationLevel', 'deliveryCorrectThisShift',
-		'deliveryActiveIcon1', 'deliveryActiveIcon2', 'deliveryActiveIcon3',
+		'deliveryCorrectThisShift',
+		// $deliveryActiveIcons: [bool, bool, bool] — replaces the three
+		// $deliveryActiveIcon{1,2,3} flat flags. SaveMigration folds the
+		// legacy keys into this array.
+		'deliveryActiveIcons',
 		'deliveryVisitCounts',
 		'currentHouse', 'currentOrder', 'orders', 'shuffledOrders',
 		'order1', 'order2', 'order3',
@@ -24,6 +27,14 @@ setup.Delivery = (function () {
 		'deliveryTotalTips', 'firstVisitDeliveryHub',
 		'itemImages', 'items', 'streets', 'shuffledStreets', 'shuffledItems'
 	]);
+
+	function activeIconsArray() {
+		var s = State.variables;
+		if (!Array.isArray(s.deliveryActiveIcons)) {
+			s.deliveryActiveIcons = [false, false, false];
+		}
+		return s.deliveryActiveIcons;
+	}
 
 	return {
 		OWNED_VARS: OWNED_VARS,
@@ -42,7 +53,7 @@ setup.Delivery = (function () {
 			for (var i = tiers.length - 1; i >= 0; i--) {
 				if (shifts >= tiers[i].minShifts) { tier = i; break; }
 			}
-			var repBonus = this.getReputationPayBonus();
+			var repBonus = this.reputationPayBonus();
 			sv().jobMoneySuccessed = tiers[tier].base + repBonus;
 			sv().jobMoneyFailed = tiers[tier].fail;
 		},
@@ -53,7 +64,7 @@ setup.Delivery = (function () {
 			{ streak: 10, level: 2, label: "Trusted",       payBonus: 4 },
 			{ streak: 20, level: 3, label: "Star Courier",  payBonus: 6 }
 		],
-		getReputationLevel: function () {
+		reputationLevel: function () {
 			var best = sv().deliveryBestStreak;
 			var milestones = this.reputationMilestones;
 			var level = 0;
@@ -62,24 +73,24 @@ setup.Delivery = (function () {
 			}
 			return level;
 		},
-		getReputationPayBonus: function () {
-			var level = this.getReputationLevel();
+		reputationPayBonus: function () {
+			var level = this.reputationLevel();
 			var milestones = this.reputationMilestones;
 			for (var i = 0; i < milestones.length; i++) {
 				if (milestones[i].level === level) return milestones[i].payBonus;
 			}
 			return 0;
 		},
-		getReputationLabel: function () {
-			var level = this.getReputationLevel();
+		reputationLabel: function () {
+			var level = this.reputationLevel();
 			var milestones = this.reputationMilestones;
 			for (var i = 0; i < milestones.length; i++) {
 				if (milestones[i].level === level) return milestones[i].label;
 			}
 			return "Newbie";
 		},
-		getDeliveryTime: function () {
-			return this.getReputationLevel() >= 3 ? 20 : 30;
+		deliveryTime: function () {
+			return this.reputationLevel() >= 3 ? 20 : 30;
 		},
 
 		// --- Route familiarity -----------------------------------
@@ -193,8 +204,14 @@ setup.Delivery = (function () {
 		markFirstVisited: function () { sv().firstVisitDeliveryHub = false; },
 
 		// --- Active-icon flags for the three daily orders ---------
-		activeIcon: function (i) { return sv()['deliveryActiveIcon' + i]; },
-		setActiveIcon: function (i, val) { sv()['deliveryActiveIcon' + i] = val; },
+		// 0-based slot index. The array $deliveryActiveIcons is the source
+		// of truth; callers shouldn't poke at the legacy individual flags.
+		activeIcon: function (i) { return activeIconsArray()[i]; },
+		setActiveIcon: function (i, val) { activeIconsArray()[i] = !!val; },
+		resetActiveIcons: function () {
+			var arr = activeIconsArray();
+			arr[0] = arr[1] = arr[2] = true;
+		},
 
 		// --- Per-shift counters --------------------------------
 		completedShifts: function () { return sv().deliveryCompletedShifts; },
@@ -214,12 +231,11 @@ setup.Delivery = (function () {
 			if (s.deliveryStreak > s.deliveryBestStreak) {
 				s.deliveryBestStreak = s.deliveryStreak;
 			}
-			s.deliveryReputationLevel = this.getReputationLevel();
 		},
 		bankEarnedMoney: function () {
 			// Pay out the shift: credit MC, spend energy, reset counter.
 			setup.Mc.addMoney(setup.Mc.earnedMoney());
-			setup.Mc.spendEnergy(2);
+			setup.Mc.removeEnergy(2);
 			setup.Mc.setEarnedMoney(0);
 		},
 		grantPerfectShiftBonus: function (amount) {
@@ -229,9 +245,9 @@ setup.Delivery = (function () {
 		// --- Find order slot for the current house (used by WorkDelivery) -
 		orderSlotForHouse: function (house) {
 			var orders = sv().orders || [];
+			var icons = activeIconsArray();
 			for (var i = 0; i < orders.length; i++) {
-				var slotActive = sv()['deliveryActiveIcon' + (i + 1)];
-				if (orders[i].address === house && slotActive) return i;
+				if (orders[i].address === house && icons[i]) return i;
 			}
 			return -1;
 		},
@@ -283,7 +299,6 @@ setup.Delivery = (function () {
 		},
 		shuffledOrders: function () { return sv().shuffledOrders; },
 		trackCorrect: function () { sv().deliveryCorrectThisShift += 1; },
-		reputationLevel: function () { return sv().deliveryReputationLevel; },
 		addTip:       function (n) {
 			setup.Mc.addEarnedMoney(n);
 			sv().deliveryTotalTips += n;

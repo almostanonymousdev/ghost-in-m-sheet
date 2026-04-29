@@ -3,7 +3,7 @@
  * Controller for cursed home items.
  *
  * When the MC passes out during a haunted house run (HuntOverSanity),
- * there is a 20% chance a random home item becomes cursed.
+ * there is a 40% chance a random home item becomes cursed.
  * Using that item triggers its cursed event.
  */
 setup.CursedItems = (function () {
@@ -20,7 +20,7 @@ setup.CursedItems = (function () {
 	return {
 		OWNED_VARS: OWNED_VARS,
 		/* Roll for a cursed item after a hunt failure.
-		* 20% chance; picks one item at random. */
+		* 40% chance; picks one item at random. */
 		rollForCursedItem: function () {
 			if (Math.random() < 0.4) {
 				sv().cursedHomeItem = ITEMS[Math.floor(Math.random() * ITEMS.length)];
@@ -56,7 +56,7 @@ setup.CursedItems = (function () {
 		   Centralised here so the values live in one place and
 		   events don't drift apart. */
 		applyCurseEventEffects: function () {
-			setup.Mc.spendSanity(15);
+			setup.Mc.removeSanity(15);
 			setup.Mc.addCorruption(0.5);
 			setup.Mc.setLust(100);
 			this.clearCurse();

@@ -253,7 +253,7 @@
 
 <</if>> /*tentacle*/
 
-<<if setup.HauntedHouses.hasHighPriestess()>>
+<<if setup.Ghosts.hasHighPriestess()>>
 <<else>>
 	<<run setup.Companion.clearBlakeCursedItem()>>
 	<<run setup.HauntedHouses.resetToolTimers()>>

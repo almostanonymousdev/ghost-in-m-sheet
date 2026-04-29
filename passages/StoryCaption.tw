@@ -74,7 +74,7 @@
 		All body parts are now at maximum sensitivity!
 		<<run setup.Intro.maximizeSensualBodyParts(setup.Intro.currentSensualBodyPart())>>
 	<</linkreplace>>
-		<br><<link "Remove Tool Timers">><<run setup.Updates.setTimerToolsDecreased("10ms")>>
+		<br><<link "Remove Tool Timers">><<run setup.Gui.setTimerToolsDecreased("10ms")>>
 		<</link>>
 <</linkreplace>>@@
 

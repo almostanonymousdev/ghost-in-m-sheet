@@ -21,14 +21,14 @@
 				<<set _ordersList to setup.Delivery.orders()>>
 				<<set _hasOrder to false>>
 				<<for _oi to 0; _oi lt 3; _oi++>>
-					<<if _ordersList[_oi].address is _cell and setup.Delivery.activeIcon(_oi + 1)>>
+					<<if _ordersList[_oi].address is _cell and setup.Delivery.activeIcon(_oi)>>
 						<<set _hasOrder to true>>
 					<</if>>
 				<</for>>
 				<<if _hasOrder>>
 					<div class="mapOrderIcons">
 					<<for _oi to 0; _oi lt 3; _oi++>>
-						<<if _ordersList[_oi].address is _cell and setup.Delivery.activeIcon(_oi + 1)>>
+						<<if _ordersList[_oi].address is _cell and setup.Delivery.activeIcon(_oi)>>
 							<<image _ordersList[_oi].image "mapOrderIcon">>
 						<</if>>
 					<</for>>

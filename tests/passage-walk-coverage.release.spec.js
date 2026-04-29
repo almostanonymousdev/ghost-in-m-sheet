@@ -501,11 +501,11 @@ async function walkPassages(browser, passages, label) {
       // fixed in widgetCompanion.tw (raw "<<= _cName>>" leak) would go
       // unseen by this sweep. AliceInfo additionally gates on
       // aliceWorkState === 2 — set that too.
-      V.isBrookGoingForHuntingAlone = 2;
-      V.isAliceGoingForHuntingAlone = 2;
-      V.isBlakeGoingForHuntingAlone = 2;
-      if (typeof setup.Home.setAliceWorkState === 'function') {
-        setup.Home.setAliceWorkState(2);
+      if (V.brook) V.brook.goingSolo = 2;
+      if (V.alice) V.alice.goingSolo = 2;
+      if (V.blake) V.blake.goingSolo = 2;
+      if (typeof setup.Companion.setAliceWorkState === 'function') {
+        setup.Companion.setAliceWorkState(2);
       }
 
       // Event content placeholders — passages that consume these
@@ -519,7 +519,7 @@ async function walkPassages(browser, passages, label) {
       // a recognised location flag set. Most location-aware passages
       // pick up either Owaissa or Elm; rooms in either renders cleanly
       // once the search bags above are in place.
-      V.isOwaissa = 1;
+      V.hauntedHouse = 'owaissa';
     });
   }
 

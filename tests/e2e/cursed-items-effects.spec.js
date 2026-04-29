@@ -71,11 +71,11 @@ test.describe('Cursed home items — applyCurseEventEffects payload', () => {
     await expectCleanPassage(page);
   });
 
-  test('Home.hasCursedItem reflects $cursedHomeItemActive', async () => {
+  test('CursedItems.isActive reflects $cursedHomeItemActive', async () => {
     await setVar(page, 'cursedHomeItemActive', 0);
-    expect(await callSetup(page, 'setup.Home.hasCursedItem()')).toBe(false);
+    expect(await callSetup(page, 'setup.CursedItems.isActive()')).toBe(false);
     await setVar(page, 'cursedHomeItemActive', 1);
-    expect(await callSetup(page, 'setup.Home.hasCursedItem()')).toBe(true);
+    expect(await callSetup(page, 'setup.CursedItems.isActive()')).toBe(true);
   });
 });
 

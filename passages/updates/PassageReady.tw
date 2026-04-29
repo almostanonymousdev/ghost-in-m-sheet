@@ -1,45 +1,45 @@
 :: PassageReady {"position":"200,200","size":"100,100"}
 <<if setup.Ghosts.isHunting()>>
-	<<if setup.Updates.companionAttackActiveHit()>>
-		<<if setup.Updates.resolveCompanionAttack() eq "hit">>
+	<<if setup.Tick.companionAttackActiveHit()>>
+		<<if setup.Tick.resolveCompanionAttack() eq "hit">>
 			<<include "CompanionRandomRoom">>
 		<</if>>
 	<</if>>
 <</if>>
 
-<<if setup.Updates.atRandomGhostPassage()>>
+<<if setup.Tick.atRandomGhostPassage()>>
 <<goto "CompanionEvent">>
 <</if>>
 
 <<run setup.Gui.refreshToolTimer()>>
 
-<<run setup.Updates.recomputeStealChance()>>
+<<run setup.Tick.recomputeStealChance()>>
 
 /* SaveMigration already ran these defaults on load, but
    PassageReady keeps running them so brand-new variables introduced mid-save
    still get picked up without a reload. */
 <<run if (setup.applySaveDefaults) { setup.applySaveDefaults(State.variables); }>>
 
-<<run setup.Updates.ensureZeroDefaults()>>
-<<run setup.Updates.seedTornStyles()>>
-<<run setup.Updates.applyPossessionTarotCleanup()>>
+<<run setup.Migrations.ensureZeroDefaults()>>
+<<run setup.Migrations.seedTornStyles()>>
+<<run setup.Tick.applyPossessionTarotCleanup()>>
 
 <<run setup.MonkeyPaw.maybeAutoUnlockAtDawn()>>
 
-<<run setup.Updates.ensureMcFit()>>
+<<run setup.Migrations.ensureMcFit()>>
 
 <<run setup.Intro.ensureSensualBodyParts()>>
 <<run setup.Intro.clampSensualBodyParts(setup.Intro.currentSensualBodyPart())>>
 
-<<run setup.Updates.ensurePSprayInventory()>>
+<<run setup.Migrations.ensurePSprayInventory()>>
 
-<<run setup.Updates.applyPiercingSensitivityPatch()>>
+<<run setup.Migrations.applyPiercingSensitivityPatch()>>
 
-<<if setup.Updates.ironcladPatchNeeded()>>
+<<if setup.Migrations.ironcladPatchNeeded()>>
 <<run setup.HauntedHouses.migrateIroncladRooms()>>
 <</if>>
 
-<<if setup.Updates.saveFixNeeded()>><<include "FixSaveFile">><</if>>
+<<if setup.Migrations.saveFixNeeded()>><<include "FixSaveFile">><</if>>
 
-<<run setup.Updates.ensureSuccubusCooldown()>>
-<<run setup.Updates.ensureCursedItemCooldown()>>
+<<run setup.Migrations.ensureSuccubusCooldown()>>
+<<run setup.Migrations.ensureCursedItemCooldown()>>
