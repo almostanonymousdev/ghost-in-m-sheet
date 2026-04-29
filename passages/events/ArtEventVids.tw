@@ -15,7 +15,7 @@
 		@@.mc-thoughts; I'm too tired to run@@
 		<span>-<<image "ui/img/energy.png" { style: "position: relative; top: 0.375em; filter: grayscale(1); width:3%;" }>></span>
 	<</if>>
-	or @@.usebtn;[[Embrace it|previous()][setup.Mc.addSanity(-setup.Events.ghostSanityEventDecreased() * setup.HauntConditions.eventSanityMultiplier()); setup.addLust(4)]]@@ <span>-<<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>> +<<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>></span>
+	or @@.usebtn;[[Embrace it|previous()][setup.Mc.addSanity(-setup.Events.ghostSanityEventDecreased() * setup.HauntConditions.eventSanityMultiplier()); setup.Mc.addLust(4)]]@@ <span>-<<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>> +<<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>></span>
 
 <</if>>
 <<done>>

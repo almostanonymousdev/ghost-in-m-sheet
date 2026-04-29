@@ -3,6 +3,7 @@
 
 <<widget "eventRandomizerText">>
 	<<set _bodyPart to _args[0]>>
+	<<addLustByPart>>
 	<<set _ct to setup.Events.corruptionTier()>>
 	<<if _bodyPart eq "brain">>
 		<<if _ct eq 8>>

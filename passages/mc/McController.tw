@@ -67,6 +67,7 @@ setup.Mc = (function () {
 		corruption:    function () { return mc().corruption; },
 		beauty:        function () { return mc().beauty; },
 		lust:          function () { return mc().lust; },
+		lustMax:	   function () { return mc().lustMax; },
 		name:          function () { return mc().name; },
 		fit:           function () { return mc().fit; },
 		lvl:           function () { return mc().lvl; },
@@ -96,6 +97,7 @@ setup.Mc = (function () {
 		addBeauty:        function (n) { mc().beauty += n; },
 		setLust:          function (v) { mc().lust = v; },
 		addLust:          function (n) { mc().lust += n; },
+		setLustMax:		  function (n) { mc().lustMax += n; },
 		setName:          function (v) { mc().name = v; },
 		setFit:           function (v) { mc().fit = v; },
 		addFit:           function (n) { mc().fit += n; },
@@ -251,6 +253,14 @@ setup.Mc = (function () {
 			if (m.energy <= 0)           { m.energy = 0; }
 		},
 
+		// --- addLust widget core --------------------------------
+		applyLustDelta: function (delta) {
+			var m = mc();
+			m.lust += delta;
+			if (m.lust >= m.lustMax) { m.lust = m.lustMax; }
+			if (m.lust <= 0)         { m.lust = 0; }
+		},
+
 		// --- addFit widget core -----------------------------------
 		// Same shape as setup.Gym.applyFitnessGain, but the gym controller
 		// imports this method so both widgets share logic.
@@ -293,7 +303,7 @@ setup.Mc = (function () {
 
 		// --- addLustByPart core -----------------------------------
 		// Escalates the chosen body part's sensitivity by 0.02 and feeds
-		// the (base + new sens) total into setup.addLust.
+		// the (base + new sens) total into setup.Mc.addLust.
 		addLustByPart: function (part, base) {
 			var sv = State.variables;
 			var lustBase = (base !== undefined) ? base : 2;
@@ -305,34 +315,34 @@ setup.Mc = (function () {
 			switch (part) {
 				case 'brain':
 					bp.brain = (bp.brain || 0) + 0.02;
-					setup.addLust(lustBase + bp.brain);
+					setup.Mc.addLust(lustBase + bp.brain);
 					break;
 				case 'tits':
 					bump('tits', sv.piercingTitsAddSens || 0);
-					setup.addLust(lustBase + bp.tits);
+					setup.Mc.addLust(lustBase + bp.tits);
 					break;
 				case 'ass':
 					bump('ass');
-					setup.addLust(lustBase + bp.ass);
+					setup.Mc.addLust(lustBase + bp.ass);
 					break;
 				case 'bottom':
 					bp.bottom = (bp.bottom || 0) + 0.02;
 					bp.ass    = (bp.ass    || 0) + 0.01;
 					bp.pussy  = (bp.pussy  || 0) + 0.01 + (sv.piercingPussyAddSens || 0);
 					bp.anal   = (bp.anal   || 0) + 0.01;
-					setup.addLust(lustBase + bp.bottom);
+					setup.Mc.addLust(lustBase + bp.bottom);
 					break;
 				case 'mouth':
 					bump('mouth', sv.piercingTongueAddSens || 0);
-					setup.addLust(lustBase + bp.mouth);
+					setup.Mc.addLust(lustBase + bp.mouth);
 					break;
 				case 'pussy':
 					bump('pussy', sv.piercingPussyAddSens || 0);
-					setup.addLust(lustBase + bp.pussy);
+					setup.Mc.addLust(lustBase + bp.pussy);
 					break;
 				case 'anal':
 					bump('anal');
-					setup.addLust(lustBase + bp.anal);
+					setup.Mc.addLust(lustBase + bp.anal);
 					break;
 			}
 		}
@@ -350,7 +360,7 @@ setup.Mc = (function () {
 	api.clearSanityCollapse = function () { sv().sanityCollapse = 0; };
 	api.isExhausted = function () { return sv().exhausted === 1; };
 	api.clearExhausted = function () { sv().exhausted = 0; };
-	api.lustPct = function () { return mc().lust / 100; };
+	api.lustPct = function () { return mc().lust / mc().lustMax; };
 	api.sanityPct = function () { return mc().sanity / mc().sanityMax; };
 	api.energyPct = function () { return mc().energy / mc().energyMax; };
 	return api;

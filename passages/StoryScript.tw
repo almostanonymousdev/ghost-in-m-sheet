@@ -1403,7 +1403,7 @@ setup.HauntConditions = (function () {
         if (snap.lustPerStep !== 0) {
             mc.lust += snap.lustPerStep;
             if (mc.lust < 0)   mc.lust = 0;
-            if (mc.lust > 100) mc.lust = 100;
+            if (mc.lust > mc.lustMax) mc.lust = mc.lustMax;
         }
         if (snap.energyPerStep !== 0) {
             mc.energy += snap.energyPerStep;
