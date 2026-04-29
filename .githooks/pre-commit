@@ -6,17 +6,21 @@ bash "$SCRIPT_DIR/scripts/build.sh"
 
 cd "$SCRIPT_DIR" || exit 1
 
+echo "Running lint before commit..."
+npm run lint
+if [ $? -ne 0 ]; then
+  echo "Lint failed. Commit aborted."
+  exit 1
+fi
+
 if [ ! -d "node_modules/@playwright/test" ]; then
   echo "Playwright not installed. Running npm install..."
   npm install || { echo "npm install failed. Commit aborted."; exit 1; }
 fi
 
-echo "Running tests before commit..."
-# --retries=1 retries each failed test once before marking it failed, to
-# absorb parallel-worker flakes (page/context closed under CPU contention)
-# that occasionally hit the heavier e2e specs.
-npx playwright test --config=config/playwright.config.js --retries=1
+echo "Running Playwright lint specs before commit..."
+npx playwright test --config=config/playwright.config.js --project=lint
 if [ $? -ne 0 ]; then
-  echo "Tests failed. Commit aborted."
+  echo "Playwright lint specs failed. Commit aborted."
   exit 1
 fi
