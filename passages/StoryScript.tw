@@ -1224,7 +1224,6 @@ setup.hauntedPassages = (function () {
  * alongside the aggregated numbers. Keep new knobs HERE so the HUD numbers
  * and the underlying mechanics never drift apart. */
 setup.HauntConditions = (function () {
-    var DARK = 2;
     var LUST_FUEL_THRESHOLD = 50;   // passive evidence bonus when lust >= this
     var BAIT_LUST_COST      = 20;
     var BAIT_STEPS          = 3;    // nav ticks the ghost is pinned to you
@@ -1257,18 +1256,19 @@ setup.HauntConditions = (function () {
         var name = currentBgVar();
         if (!name) return false;
         var room = State.variables[name];
-        return !!(room && room.background === DARK);
+        return !!(room && room.background === setup.RoomLight.DARK);
     }
 
     /* Clothing buckets. Fully dressed = tshirt + any bottom. Topless = no
      * tshirt but a bottom. Fully nude = no tshirt, no bottom, no panties. */
     function clothingState() {
         var V = State.variables;
-        var topOn    = V.tshirtState === "worn";
-        var bottomOn = V.jeansState === "worn"
-                    || V.shortsState === "worn"
-                    || V.skirtState === "worn";
-        var pantiesOn = V.pantiesState === "worn";
+        var WORN = setup.ClothingState.WORN;
+        var topOn    = V.tshirtState === WORN;
+        var bottomOn = V.jeansState === WORN
+                    || V.shortsState === WORN
+                    || V.skirtState === WORN;
+        var pantiesOn = V.pantiesState === WORN;
         if (!topOn && !bottomOn && !pantiesOn) return "nude";
         if (!topOn && bottomOn)                return "topless";
         if (topOn && bottomOn)                 return "dressed";
@@ -1546,7 +1546,6 @@ setup.HauntConditions = (function () {
     }
 
     return {
-        DARK:                DARK,
         LUST_FUEL_THRESHOLD: LUST_FUEL_THRESHOLD,
         BAIT_LUST_COST:      BAIT_LUST_COST,
         BAIT_STEPS:          BAIT_STEPS,
@@ -1610,6 +1609,14 @@ setup.toolTimeRemain = function (tier) {
  * Shape: $tools = { emf: { activated, activationTime }, uvl: {...} }. */
 setup.TIMED_TOOLS = ["emf", "uvl"];
 
+/* Discrete states returned by setup.tickTimedTool. Consumers compare
+ * against these instead of bare string literals. */
+setup.ToolState = Object.freeze({
+    READY:    "ready",
+    EXPIRED:  "expired",
+    INACTIVE: "inactive"
+});
+
 /* Lazily ensure $tools is initialised — covers fresh saves, older saves
  * that predate the bundle, and test helpers that skip StoryInit. */
 setup.toolsRecord = function (tool) {
@@ -1641,23 +1648,24 @@ setup.resetTools = function () {
 };
 
 /* Evaluate a timed tool's state and auto-clear it if stale. Returns
- * "ready" (activated, within the freshness window), "expired" (was
- * activated but the window lapsed; flags are now cleared) or "inactive"
- * (never activated this cycle). setup.ToolController's emf/uvl
- * renderers share this logic. */
+ * setup.ToolState.READY (activated, within the freshness window),
+ * setup.ToolState.EXPIRED (was activated but the window lapsed; flags
+ * are now cleared) or setup.ToolState.INACTIVE (never activated this
+ * cycle). setup.ToolController's emf/uvl renderers share this logic. */
 setup.tickTimedTool = function (tool) {
-    if (setup.TIMED_TOOLS.indexOf(tool) === -1) return "inactive";
+    var TS = setup.ToolState;
+    if (setup.TIMED_TOOLS.indexOf(tool) === -1) return TS.INACTIVE;
     var rec = setup.toolsRecord(tool);
-    if (rec.activated !== 1) return "inactive";
+    if (rec.activated !== 1) return TS.INACTIVE;
     var V = State.variables;
     var elapsed = (V.hours * 60 + V.minutes) - rec.activationTime;
     var remain = setup.toolTimeRemain(V.equipment[tool]);
     if (elapsed > remain) {
         rec.activated = 0;
         rec.activationTime = 0;
-        return "expired";
+        return TS.EXPIRED;
     }
-    return "ready";
+    return TS.READY;
 };
 
 /* Shared predicate for the tier-gated evidence tools (GWB, Plasm,

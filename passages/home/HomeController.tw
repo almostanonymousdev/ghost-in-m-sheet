@@ -9,6 +9,20 @@
  * through setup.Time; clothing is read through setup.Wardrobe; the
  * cursed-item witch quest reads through setup.Witch.
  */
+/* Tri-state for $isBrookePossessed:
+   - INACTIVE: not yet possessed this run (or just cleared)
+   - POSSESSED: actively possessed; setHome shows the rescue link
+   - RECOVERED: possession ended and the cooldown finished */
+setup.BrookePossession = Object.freeze({
+	INACTIVE:  0,
+	POSSESSED: 1,
+	RECOVERED: 'not active'
+});
+
+/* Days before the possession cooldown expires and isBrookePossessed
+   flips from INACTIVE to RECOVERED. */
+setup.BROOKE_POSSESSED_RECOVERY_DAYS = 3;
+
 setup.Home = (function () {
 	/* Variables owned by this controller. Other controllers should
 	   query/mutate these only through the API methods below. */
@@ -70,19 +84,19 @@ setup.Home = (function () {
 
 		// --- Brooke -----------------------------------------
 		isBrookePossessed: function () {
-			return sv().isBrookePossessed === 1;
+			return sv().isBrookePossessed === setup.BrookePossession.POSSESSED;
 		},
 		brookePossessedCDLow: function () {
-			return sv().isBrookePossessedCD <= 2;
+			return sv().isBrookePossessedCD < setup.BROOKE_POSSESSED_RECOVERY_DAYS;
 		},
 		clearBrookePossession: function () {
-			sv().isBrookePossessed = 0;
+			sv().isBrookePossessed = setup.BrookePossession.INACTIVE;
 			sv().isBrookePossessedCD = 0;
 		},
 		markBrookePossessedInactive: function () {
-			sv().isBrookePossessed = 'not active';
+			sv().isBrookePossessed = setup.BrookePossession.RECOVERED;
 		},
-		markBrookePossessedActive: function () { sv().isBrookePossessed = 1; },
+		markBrookePossessedActive: function () { sv().isBrookePossessed = setup.BrookePossession.POSSESSED; },
 
 		// --- Succubus / door knocking -----------------------
 		succubusCanKnock: function () {
@@ -111,12 +125,13 @@ setup.Home = (function () {
 		canSummonForExorcism: function () {
 			var stage = setup.Witch.exorcismQuestStage();
 			var cd = sv().exorcismCD;
-			if (stage === 1 && cd === 0) { return true; }
-			if (stage === 2 && cd === 0) { return true; }
+			var EQS = setup.ExorcismQuestStage;
+			if (stage === EQS.REFERRED && cd === 0) { return true; }
+			if (stage === EQS.SUCCUBUS_SUMMONED && cd === 0) { return true; }
 			return false;
 		},
 		exorcismOnCooldown: function () {
-			return setup.Witch.exorcismQuestStage() === 1 && sv().exorcismCD === 1;
+			return setup.Witch.exorcismQuestStage() === setup.ExorcismQuestStage.REFERRED && sv().exorcismCD === 1;
 		},
 		mareStageIsLow: function () {
 			return setup.SpecialEvent.mareStage() <= 2;

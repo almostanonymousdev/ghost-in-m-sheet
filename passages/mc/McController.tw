@@ -12,6 +12,15 @@
  * (setup.Mc.get('money'), setup.Mc.set('money', v), setup.Mc.add('money', n))
  * so mass rewrites can pick whichever fits best.
  */
+/* Discrete results returned by setup.Mc.applySanityDelta. The
+   addSanity widget compares against these to decide whether to fire
+   the HuntOverSanity transition. */
+setup.SanityDeltaResult = Object.freeze({
+	NORMAL:    "",
+	CLAMPED:   "clamped",
+	COLLAPSED: "collapsed"
+});
+
 setup.Mc = (function () {
 	/* Variables owned by this controller. Other controllers should
 	   query/mutate these only through the API methods below. */
@@ -135,22 +144,23 @@ setup.Mc = (function () {
 		},
 
 		// --- addSanity widget core --------------------------------
-		// Applies a delta, clamps to [0, sanityMax]. Returns:
-		//   "collapsed" if sanity hit 0 (caller should jump to HuntOverSanity)
-		//   "clamped"   if clamped to max
-		//   ""          otherwise.
+		// Applies a delta, clamps to [0, sanityMax]. Returns one of
+		// setup.SanityDeltaResult: COLLAPSED if sanity hit 0 (caller
+		// should jump to HuntOverSanity), CLAMPED if clamped to max,
+		// NORMAL otherwise.
 		applySanityDelta: function (delta) {
+			var R = setup.SanityDeltaResult;
 			var m = mc();
 			m.sanity += delta;
 			if (m.sanity >= m.sanityMax) {
 				m.sanity = m.sanityMax;
-				return 'clamped';
+				return R.CLAMPED;
 			}
 			if (m.sanity < 0) {
 				m.sanity = 0;
-				return 'collapsed';
+				return R.COLLAPSED;
 			}
-			return '';
+			return R.NORMAL;
 		},
 
 		// --- addEnergy widget core --------------------------------

@@ -3,6 +3,18 @@
 // (Brook, Alice, Blake, Alex, Taylor, Casey). Passages should call
 // into setup.Companion instead of testing the underlying companion
 // $variables directly.
+
+/* Discrete states for $showComp — drives which footer card the
+   companion HUD renders (HIDDEN = no card, VISIBLE = normal card,
+   ATTACK_FAILED = question-mark "go check on them" card,
+   ATTACK_SAFE = success-link card). */
+setup.CompanionShow = Object.freeze({
+	HIDDEN:        0,
+	VISIBLE:       1,
+	ATTACK_FAILED: 2,
+	ATTACK_SAFE:   3
+});
+
 setup.Companion = (function () {
 	/* $companion (the active-companion clone) and the per-companion
 	   stat objects ($brook/$alice/$blake/$alex/$taylor/$casey) are
@@ -535,7 +547,7 @@ setup.Companion = (function () {
 			s.chosenPlanActivated = 0;
 			s.randomGhostPassage = 0;
 			s.isCompRoomChosen = 0;
-			s.showComp = 0;
+			s.showComp = setup.CompanionShow.HIDDEN;
 			s.isCompChosen = 0;
 		},
 
@@ -599,7 +611,8 @@ setup.Companion = (function () {
 		// --- StoryCaption / HUD helpers ---------------------------
 		shouldRenderMini: function () {
 			var sc = State.variables.showComp;
-			return sc === 1 || sc === 3;
+			var CS = setup.CompanionShow;
+			return sc === CS.VISIBLE || sc === CS.ATTACK_SAFE;
 		},
 		showComp: function () { return State.variables.showComp; },
 		transPicture: function () { return State.variables.transPicture; },
@@ -810,7 +823,7 @@ setup.Companion = (function () {
 			s.chosenPlanActivated = 0;
 			s.randomGhostPassage = 0;
 			s.isCompRoomChosen = 0;
-			s.showComp = 0;
+			s.showComp = setup.CompanionShow.HIDDEN;
 			s.isCompChosen = 0;
 			var alice = compFor('Alice');
 			if (isName('Alice') && alice && alice.goingSolo === 0) {
@@ -888,7 +901,7 @@ setup.Companion = (function () {
 			s.chosenPlan = "Plan1";
 			s.chosenPlanActivated = 0;
 			s.randomPassageOwaissa = 0;
-			s.showComp = 1;
+			s.showComp = setup.CompanionShow.VISIBLE;
 			s.isCompRoomChosen = 0;
 		},
 
@@ -898,14 +911,14 @@ setup.Companion = (function () {
 			var s = State.variables;
 			s.chosenPlan = planKey;
 			s.chanceToSuccess = chancePct;
-			s.showComp = 0;
+			s.showComp = setup.CompanionShow.HIDDEN;
 			s.chosenPlanActivated = 1;
 			s.chosenPlanActivatedTime = setup.Time.totalMinutes() + (minutes || 0);
 		},
 		setStayTogetherPlan: function () {
 			var s = State.variables;
 			s.chosenPlan = "Plan1";
-			s.showComp = 1;
+			s.showComp = setup.CompanionShow.VISIBLE;
 			s.chosenPlanActivated = 0;
 		},
 		/* Ghost-encounter chance for the active companion. Persists
@@ -1074,7 +1087,7 @@ setup.Companion = (function () {
 			var s = State.variables;
 			s.chosenPlanActivated = 0;
 			s.randomGhostPassage = 0;
-			s.showComp = 1;
+			s.showComp = setup.CompanionShow.VISIBLE;
 			s.isCompRoomChosen = 0;
 		},
 		setChosenPlan: function (p) { State.variables.chosenPlan = p; },
@@ -1082,7 +1095,7 @@ setup.Companion = (function () {
 		   well so the companion is no longer tagged as active. */
 		dismissCompanion: function () {
 			var s = State.variables;
-			s.showComp = 0;
+			s.showComp = setup.CompanionShow.HIDDEN;
 			s.isCompChosen = 0;
 			s.chosenPlan = 0;
 		}

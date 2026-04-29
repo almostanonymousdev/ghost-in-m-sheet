@@ -4,6 +4,14 @@
  * Passages should call into setup.Delivery instead of testing the
  * underlying $variables directly, so the conditions live in one place.
  */
+/* When the deliveryEventChoose widget pays out the success earnings:
+   ON_DONE waits for the encounter to be marked complete (door 1 →
+   thanks); ON_ENTRY pays as soon as the gate is opened. */
+setup.DeliveryPayMode = Object.freeze({
+	ON_DONE:  "done",
+	ON_ENTRY: "always"
+});
+
 setup.Delivery = (function () {
 	function sv() { return State.variables; }
 

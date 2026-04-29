@@ -1,4 +1,13 @@
 :: StyleController [script]
+/* Light/dark state stored on every haunt room object as `background`.
+   Room state init sets it to DARK by default; widgetHauntedHouseRoom
+   flips it via the lighton/lightoff link pair. Save format keeps the
+   raw 1/2 numbers, so don't rename the values. */
+setup.RoomLight = Object.freeze({
+	LIT:  1,
+	DARK: 2
+});
+
 /*
  * Centralized room background data and helpers.
  *
@@ -69,7 +78,7 @@ setup.Styles = (function () {
 		var r = rooms[passageName];
 		if (!r) return false;
 		var s = State.variables[r.stateKey];
-		return !!(s && s.background === 2);
+		return !!(s && s.background === setup.RoomLight.DARK);
 	}
 
 	return {
@@ -118,17 +127,17 @@ setup.Styles = (function () {
 
 		/*
 		 * If the current passage is a known hunt room AND the room
-		 * is currently lit (background === 1), flip it dark and
-		 * return the passage name so the caller can <<goto>> itself.
-		 * Returns null when no change is made.
+		 * is currently lit, flip it dark and return the passage name
+		 * so the caller can <<goto>> itself. Returns null when no
+		 * change is made.
 		 */
 		turnOffLightHere: function () {
 			var p = passage();
 			var r = rooms[p];
 			if (!r) return null;
 			var s = State.variables[r.stateKey];
-			if (!s || s.background !== 1) return null;
-			s.background = 2;
+			if (!s || s.background !== setup.RoomLight.LIT) return null;
+			s.background = setup.RoomLight.DARK;
 			return p;
 		}
 	};

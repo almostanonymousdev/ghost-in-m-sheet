@@ -8,7 +8,7 @@
 	@@.mc-speech; It seems that I have no more wishes left...@@<br>
 <<else>>
 	@@.mc-thoughts; <b>Hmm...What should I wish for?</b> <br><<= setup.MonkeyPaw.wishesLeft()>> wishes left...@@<br>
-	<<if setup.MonkeyPaw.guideStage() eq 0>>
+	<<if setup.MonkeyPaw.guideStage() eq setup.MonkeyPawGuide.NOT_ASKED>>
 		@@.mc-speech; I need to be extremely careful... Maybe I should ask the witch how to use it? I think she could help me.@@
 	<</if>>
 

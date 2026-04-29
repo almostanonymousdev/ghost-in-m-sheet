@@ -218,9 +218,9 @@ the only ways out are the scream link or a cursed-item sacrifice. */
    owaissa, and ironclad rooms. */
 <<widget "roomFooterLight">>
 	<div class="footer-card footer-light">
-	<span class="cursedHuntLinkDisable"><<link "<<image \"ui/img/lighton.png\">>" _args[0]>><<set State.variables[_args[1]].background = 1>>
+	<span class="cursedHuntLinkDisable"><<link "<<image \"ui/img/lighton.png\">>" _args[0]>><<set State.variables[_args[1]].background = setup.RoomLight.LIT>>
 	<</link>>
-	<<link "<<image \"ui/img/lightoff.png\">>" _args[0]>><<set State.variables[_args[1]].background = 2>>
+	<<link "<<image \"ui/img/lightoff.png\">>" _args[0]>><<set State.variables[_args[1]].background = setup.RoomLight.DARK>>
 	<</link>>
 	<<if setup.Mc.lust() gte 80 and setup.Witch.hasWeakenTheGhostQuest() and not setup.Witch.isGhostWeakened()>>
 		<<link "<<image \"ui/img/hearth.png\">>" "SeduceGhostMinigame">>
@@ -234,9 +234,9 @@ the only ways out are the scream link or a cursed-item sacrifice. */
    no minigame trigger. */
 <<widget "roomFooterLightBasic">>
 	<div class="footer-card footer-light">
-	<<link "<<image \"ui/img/lighton.png\">>" _args[0]>><<set State.variables[_args[1]].background = 1>>
+	<<link "<<image \"ui/img/lighton.png\">>" _args[0]>><<set State.variables[_args[1]].background = setup.RoomLight.LIT>>
 	<</link>>
-	<<link "<<image \"ui/img/lightoff.png\">>" _args[0]>><<set State.variables[_args[1]].background = 2>>
+	<<link "<<image \"ui/img/lightoff.png\">>" _args[0]>><<set State.variables[_args[1]].background = setup.RoomLight.DARK>>
 	<</link>>
 	</div>
 <</widget>>
@@ -325,20 +325,20 @@ the only ways out are the scream link or a cursed-item sacrifice. */
 <</widget>>
 
 <<widget "companionCard">>
-	<<if setup.Companion.showComp() eq 1>>
+	<<if setup.Companion.showComp() eq setup.CompanionShow.VISIBLE>>
 		<div class="footer-card">
 		<div class="cardimg">
 		<<companionLinks>>
 		</div>
 		</div>
-	<<elseif setup.Companion.showComp() eq 2>>
+	<<elseif setup.Companion.showComp() eq setup.CompanionShow.ATTACK_FAILED>>
 		<div class="footer-card">
 		<div class="cardimg">
 		<a data-passage="CompanionFailed">
 		<<image "ui/img/question-mark.png" "companion-image">> </a>
 		</div>
 		</div>
-	<<elseif setup.Companion.showComp() eq 3>>
+	<<elseif setup.Companion.showComp() eq setup.CompanionShow.ATTACK_SAFE>>
 		<div class="footer-card">
 		<div class="cardimg">
 		<<companionLinksSuccess>>

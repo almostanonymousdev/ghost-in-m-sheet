@@ -235,26 +235,29 @@
         isBraStolen:     function () { return State.variables.isBraStolen === 1; },
         isDressedForStreet: function () {
             var s = State.variables;
-            var top = s.tshirtState !== 'not worn';
-            var bot = s.jeansState !== 'not worn' ||
-                (s.shortsState !== 'not worn' && s.shortsState !== 'not bought') ||
-                (s.skirtState !== 'not worn' && s.skirtState !== 'not bought');
+            var CS = setup.ClothingState;
+            var top = s.tshirtState !== CS.NOT_WORN;
+            var bot = s.jeansState !== CS.NOT_WORN ||
+                (s.shortsState !== CS.NOT_WORN && s.shortsState !== CS.NOT_BOUGHT) ||
+                (s.skirtState !== CS.NOT_WORN && s.skirtState !== CS.NOT_BOUGHT);
             return top && bot;
         },
         isWearingUnderwear: function () {
             var s = State.variables;
-            return s.braState !== 'not worn' && s.pantiesState !== 'not worn';
+            var CS = setup.ClothingState;
+            return s.braState !== CS.NOT_WORN && s.pantiesState !== CS.NOT_WORN;
         },
-        /* Strip the MC down to "not worn" across every wardrobe slot.
+        /* Strip the MC down to NOT_WORN across every wardrobe slot.
            Used by the MonkeyPaw tier-3 sealed-room branch. */
         stripToNaked: function () {
             var s = State.variables;
-            s.tshirtState = "not worn";
-            s.jeansState = "not worn";
-            s.skirtState = "not worn";
-            s.shortsState = "not worn";
-            s.pantiesState = "not worn";
-            s.braState = "not worn";
+            var NOT_WORN = setup.ClothingState.NOT_WORN;
+            s.tshirtState = NOT_WORN;
+            s.jeansState = NOT_WORN;
+            s.skirtState = NOT_WORN;
+            s.shortsState = NOT_WORN;
+            s.pantiesState = NOT_WORN;
+            s.braState = NOT_WORN;
         },
         /* Permanently discard whatever garment the ghost stole
          * (mark as "not bought"). Fired when the MC leaves the
@@ -318,7 +321,7 @@
          * anything was actually stolen (the item group was worn). */
         stealWornInGroup: function (groupName, wornFlagKey, stolenMarkerKey) {
             var V = State.variables;
-            if (V[wornFlagKey] !== "worn") { return false; }
+            if (V[wornFlagKey] !== setup.ClothingState.WORN) { return false; }
             var group = setup.WARDROBE_GROUPS.find(function (g) { return g.name === groupName; });
             if (!group || !group.rememberVar) { return false; }
             var key = V[group.rememberVar];

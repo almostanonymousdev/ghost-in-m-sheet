@@ -2,7 +2,7 @@
 <<script>>
 setup.notPurchased = function(varName) {
     var val = State.variables[varName];
-    return val === undefined || val === "not bought" || val === 0;
+    return val === undefined || val === setup.ClothingState.NOT_BOUGHT || val === 0;
 };
 <</script>>
 
@@ -35,7 +35,7 @@ setup.notPurchased = function(varName) {
 	<<set _price to _args[2]>>
 	<<set _returnPassage to _args[3]>>
 	<<set _bonus to _args[4]>>
-	<<set _boughtValue to (typeof _args[5] !== "undefined") ? _args[5] : "not worn">>
+	<<set _boughtValue to (typeof _args[5] !== "undefined") ? _args[5] : setup.ClothingState.NOT_WORN>>
 	<div class="housecard">
 	<<if setup.notPurchased(_varName)>>
 		<<image _img "iconPx">><br>

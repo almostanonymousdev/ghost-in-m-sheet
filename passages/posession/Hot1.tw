@@ -11,7 +11,7 @@
 <</switch>>
 <<run ["rememberBottomOuter", "rememberTopOuter"].forEach(function(k) {
 var v = State.variables[k];
-if (v) State.variables[v.replace(/(\d+)$/, "State$1")] = "not worn";
+if (v) State.variables[v.replace(/(\d+)$/, "State$1")] = setup.ClothingState.NOT_WORN;
 })>>
 <br>
 @@.mc-speech;Am I not beautiful? Who could harm such a cutie?

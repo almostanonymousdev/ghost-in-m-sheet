@@ -4,14 +4,14 @@
 		<<capture _grp, _item>>
 			<<set _state to State.variables[_item.var]>>
 			<<set _linkImg to `<<image "outfits/wardrobe/${_item.img}">>`>>
-			<<if _state eq "worn">>
+			<<if _state eq setup.ClothingState.WORN>>
 				<<replace _grp.replaceTarget>>
 					<<link _linkImg "Wardrobe">>
 						<<run setup.Wardrobe.unequip(_grp, _item)>>
 					<</link>>
 				<</replace>>
 			<</if>>
-			<<if _state eq "not worn">>
+			<<if _state eq setup.ClothingState.NOT_WORN>>
 				<<if _item.slot eq 0 and def _grp.bareImage>>
 					<<replace _grp.replaceTarget>>
 						<<image "outfits/wardrobe/" + _grp.bareImage>>

@@ -46,10 +46,10 @@ setup.Tick = (function () {
 			return s.gotCursedItem !== 1 && typeof s.gotCursedItem !== 'undefined';
 		}},
 		{ slotKey: 'placeForRescueClue',    test: function (s) {
-			return s.hasRescueClue !== 1 && s.hasQuestForRescue === 1;
+			return s.hasRescueClue !== 1 && s.hasQuestForRescue === setup.RescueQuestState.ACTIVE;
 		}},
 		{ slotKey: 'placeForTarotCards',    test: function (s) {
-			return s.tarotCardsStage !== 1;
+			return s.tarotCardsStage !== setup.TarotStage.CARRYING;
 		}},
 		{ slotKey: 'placeForMonkeyPaw',     test: function () {
 			return setup.MonkeyPaw && setup.MonkeyPaw.isDiscoverable
@@ -76,15 +76,16 @@ setup.Tick = (function () {
 	}
 
 	// --- Rescue quest expiry --------------------------------------
-	/* When the rescue quest is active ($hasQuestForRescue === 1) and the
-	   player either ran out of stages or let the day slip past 5 PM, fail
-	   the quest by bumping it to stage 2 and reset the per-attempt vars. */
+	/* When the rescue quest is active and the player either ran out of
+	   stages or let the day slip past 5 PM, fail the quest and reset
+	   the per-attempt vars. */
 	function tickRescueQuestExpiry() {
 		var s = sv();
-		if (s.hasQuestForRescue !== 1) return;
+		var Q = setup.RescueQuestState;
+		if (s.hasQuestForRescue !== Q.ACTIVE) return;
 		var ranOut = s.rescueStage >= 2 || (s.rescueStage === 1 && s.hours > 17);
 		if (!ranOut) return;
-		s.hasQuestForRescue = 2;
+		s.hasQuestForRescue = Q.FAILED;
 		s.rescueStage = 0;
 		s.hasRescueClue = 0;
 	}
@@ -104,7 +105,7 @@ setup.Tick = (function () {
 	   if it pushed lust up so callers can refresh the meter. */
 	function applyChokerLustFloor() {
 		var s = sv();
-		if (s.neckChokerState1 !== 'worn') return false;
+		if (s.neckChokerState1 !== setup.ClothingState.WORN) return false;
 		if (!s.mc || s.mc.lust > 15) return false;
 		s.mc.lust = 15;
 		return true;
@@ -113,7 +114,7 @@ setup.Tick = (function () {
 	// --- Possession / tarot cleanup ------------------------------
 	function applyPossessionTarotCleanup() {
 		if (setup.Ghosts.isPossessed()) {
-			sv().tarotCardsStage = 2;
+			sv().tarotCardsStage = setup.TarotStage.SPENT;
 			setup.MonkeyPaw.retire();
 		}
 	}
@@ -136,18 +137,20 @@ setup.Tick = (function () {
 	// --- Companion attack timer (PassageReady top block) --------
 	function companionAttackActiveHit() {
 		var s = sv();
+		var CS = setup.CompanionShow;
 		return s.chosenPlanActivated === 1 &&
 			((s.hours * 60 + s.minutes) >= s.chosenPlanActivatedTime) &&
-			s.showComp !== 2 && s.showComp !== 3;
+			s.showComp !== CS.ATTACK_FAILED && s.showComp !== CS.ATTACK_SAFE;
 	}
 	function resolveCompanionAttack() {
 		var s = sv();
+		var CS = setup.CompanionShow;
 		var roll = Math.floor(Math.random() * 100) + 1;
 		if (roll >= s.chanceToAttack) {
-			s.showComp = 3;
+			s.showComp = CS.ATTACK_SAFE;
 			return 'safe';
 		}
-		s.showComp = 2;
+		s.showComp = CS.ATTACK_FAILED;
 		s.stepCount = 0;
 		return 'hit';
 	}
@@ -204,11 +207,11 @@ setup.Tick = (function () {
 			s.rescueStage += 1;
 		}
 
-		if (s.isBrookePossessed === 0) {
+		if (s.isBrookePossessed === setup.BrookePossession.INACTIVE) {
 			s.isBrookePossessedCD = (s.isBrookePossessedCD || 0) + 1;
-			if (s.isBrookePossessedCD >= 3) {
+			if (s.isBrookePossessedCD >= setup.BROOKE_POSSESSED_RECOVERY_DAYS) {
 				delete s.isBrookePossessedCD;
-				s.isBrookePossessed = 'not active';
+				s.isBrookePossessed = setup.BrookePossession.RECOVERED;
 			}
 		}
 
@@ -219,7 +222,7 @@ setup.Tick = (function () {
 			if (se.eventCD >= 3)  { se.eventCD = 0; }
 		}
 
-		if (s.exorcismQuestStage === 2 && s.succubusEvent && s.succubusEvent.eventTimer >= 1) {
+		if (s.exorcismQuestStage === setup.ExorcismQuestStage.SUCCUBUS_SUMMONED && s.succubusEvent && s.succubusEvent.eventTimer >= 1) {
 			s.succubusEvent.eventTimer -= 1;
 		}
 

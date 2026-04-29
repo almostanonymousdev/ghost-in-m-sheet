@@ -67,12 +67,12 @@
     function renderEmf() {
         var state = setup.tickTimedTool("emf");
         var g     = setup.Ghosts.active();
-        if (state === "ready" && g && g.hasEvidence("emf")) {
+        if (state === setup.ToolState.READY && g && g.hasEvidence("emf")) {
             return g.rollEmfGlitch()
                 ? '<<coloredText "red" ' + randInt(0, 100) + '>>'
                 : '<<coloredText "red" 5>>';
         }
-        if (state === "ready") return '<<coloredText "yellow" ' + randInt(1, 4) + '>>';
+        if (state === setup.ToolState.READY) return '<<coloredText "yellow" ' + randInt(1, 4) + '>>';
         return '<<coloredText "green" 0>>';
     }
 
@@ -139,7 +139,7 @@
                     ? { prefix: "ui/art/uvl/3.", start: 1, end: 4, ext: ".png" }
                     : { prefix: "ui/art/uvl/4.", start: 1, end: 3, ext: ".png" };
             }
-            if (jeans === "not worn") {
+            if (jeans === setup.ClothingState.NOT_WORN) {
                 return pantiesW
                     ? { prefix: "ui/art/uvl/5.", start: 1, end: 4, ext: ".png" }
                     : { prefix: "ui/art/uvl/6.", start: 1, end: 4, ext: ".png" };
@@ -153,7 +153,7 @@
                 ? { prefix: "mechanics/uvl/4.", start: 1, end: 5, ext: ".png" }
                 : { prefix: "mechanics/uvl/4.", start: 6, end: 9, ext: ".png" };
         }
-        if (jeans === "not worn") {
+        if (jeans === setup.ClothingState.NOT_WORN) {
             return pantiesW
                 ? { prefix: "mechanics/uvl/2.", start: 1, end: 6, ext: ".png" }
                 : { prefix: "mechanics/uvl/5.", start: 0, end: 4, ext: ".png" };
@@ -167,14 +167,14 @@
         }
         if (setup.Wardrobe.topShirtWorn())     return { prefix: "mechanics/uvl/1.", start: 5, end:  7, ext: ".png" };
         if (setup.Wardrobe.braWorn())          return { prefix: "mechanics/uvl/2.", start: 7, end: 12, ext: ".png" };
-        if (setup.Wardrobe.braState() === "not worn") return { prefix: "mechanics/uvl/6.", start: 0, end:  4, ext: ".png" };
+        if (setup.Wardrobe.braState() === setup.ClothingState.NOT_WORN) return { prefix: "mechanics/uvl/6.", start: 0, end:  4, ext: ".png" };
         return null;
     }
 
     function renderUvl(variant) {
         var state = setup.tickTimedTool("uvl");
         var g     = setup.Ghosts.active();
-        if (state !== "ready" || !(g && g.hasEvidence("uvl"))) {
+        if (state !== setup.ToolState.READY || !(g && g.hasEvidence("uvl"))) {
             return notFoundMarkup("uvl");
         }
         if (variant !== "art" && setup.HauntedHouses.isIronclad()) {
