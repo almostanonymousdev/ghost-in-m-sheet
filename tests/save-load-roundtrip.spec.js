@@ -381,4 +381,113 @@ test.describe('Save/load round-trip', () => {
     expect(migrated.monkeyPawLearned).toBeUndefined();
     expect(migrated.wishAnything).toBeUndefined();
   });
+
+  // --- Rogue-mode migration --------------------------------------
+
+  test('legacy save (pre-rogue) gets $run/$echoes/$runsStarted defaults', async () => {
+    // A v1/v2 save predates the rogue subsystem entirely. Loading
+    // should populate the three rogue-mode state vars with their
+    // safe-default classic-mode values.
+    await goToPassage(page, 'CityMap');
+
+    const migrated = await page.evaluate(() => {
+      const legacy = {};
+      SugarCube.setup.applySaveDefaults(legacy);
+      return legacy;
+    });
+
+    expect(migrated.run).toBeNull();
+    expect(migrated.echoes).toBe(0);
+    expect(migrated.runsStarted).toBe(0);
+  });
+
+  test('migration preserves a mid-rogue-run $run object', async () => {
+    // If a save is taken mid-rogue-run, the $run object survives
+    // applySaveDefaults intact (the defaulter only fills undefined
+    // / null fields).
+    await goToPassage(page, 'CityMap');
+
+    const liveRun = {
+      seed: 42,
+      number: 3,
+      modifiers: ['power_outage'],
+      loadout: { tools: ['emf'] },
+      objective: 'rescue',
+      floorplan: { seed: 42, rooms: [], edges: [], spawnRoomId: null, stashes: {}, bossRoomId: null }
+    };
+    const migrated = await page.evaluate((run) => {
+      const save = { run: run, echoes: 7, runsStarted: 3 };
+      SugarCube.setup.applySaveDefaults(save);
+      return save;
+    }, liveRun);
+
+    expect(migrated.run).toEqual(liveRun);
+    expect(migrated.echoes).toBe(7);
+    expect(migrated.runsStarted).toBe(3);
+  });
+
+  test('round-trip preserves a mid-rogue-run save', async () => {
+    // Full Save.serialize() / deserialize() cycle in a live
+    // session. Catches any subtle scrub-on-save behavior that
+    // applySaveDefaults can't reproduce on its own.
+    await goToPassage(page, 'CityMap');
+    await page.evaluate(() => SugarCube.setup.Run.startRogue({ seed: 12345 }));
+    await commitToSave(page);
+
+    const blob = await page.evaluate(() => SugarCube.Save.serialize());
+    await resetGame(page);
+    await page.evaluate((b) => SugarCube.Save.deserialize(b), blob);
+
+    const after = await page.evaluate(() => ({
+      run: SugarCube.State.variables.run,
+      echoes: SugarCube.State.variables.echoes,
+      runsStarted: SugarCube.State.variables.runsStarted,
+    }));
+    expect(after.run.seed).toBe(12345);
+    expect(after.run.number).toBe(1);
+    expect(after.run.modifiers.length).toBe(2);
+    expect(Array.isArray(after.run.floorplan.rooms)).toBe(true);
+    expect(after.runsStarted).toBe(1);
+  });
+
+  test('echoes and runsStarted survive across ended runs in a save', async () => {
+    // Lifetime counters persist across run boundaries. A serialize
+    // taken after end() must still know how many runs have been
+    // attempted and how many echoes the player has banked.
+    await goToPassage(page, 'CityMap');
+    await page.evaluate(() => {
+      SugarCube.setup.Run.startRogue({ seed: 1 });
+      SugarCube.setup.Run.endRogue(true);
+      SugarCube.setup.Run.startRogue({ seed: 2 });
+      SugarCube.setup.Run.endRogue(false);
+    });
+    await commitToSave(page);
+
+    const before = await page.evaluate(() => ({
+      run: SugarCube.State.variables.run,
+      echoes: SugarCube.State.variables.echoes,
+      runsStarted: SugarCube.State.variables.runsStarted,
+    }));
+    expect(before.run).toBeNull();
+    expect(before.runsStarted).toBe(2);
+
+    const blob = await page.evaluate(() => SugarCube.Save.serialize());
+    await resetGame(page);
+    await page.evaluate((b) => SugarCube.Save.deserialize(b), blob);
+
+    const after = await page.evaluate(() => ({
+      run: SugarCube.State.variables.run,
+      echoes: SugarCube.State.variables.echoes,
+      runsStarted: SugarCube.State.variables.runsStarted,
+    }));
+    expect(after).toEqual(before);
+  });
+
+  test('SAVE_VERSION marker is at the rogue-aware schema version', async () => {
+    // Bumped to 3 when the rogue-mode subsystem landed. Future
+    // downstream tooling can read this off save.metadata.version.
+    await goToPassage(page, 'CityMap');
+    const v = await page.evaluate(() => SugarCube.setup.SAVE_VERSION);
+    expect(v).toBeGreaterThanOrEqual(3);
+  });
 });

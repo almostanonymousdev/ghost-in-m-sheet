@@ -22,7 +22,12 @@
 
 	// Bump this when you add a new required top-level variable and want old
 	// saves to pick up its default on next load.
-	var SAVE_VERSION = 2;
+	//   v1: pre-bundle shape (flat $ghost*, $is<House>, etc.)
+	//   v2: hunt/tools bundles, $hauntedHouse, $monkeyPawLearned map.
+	//   v3: rogue-mode subsystem -- $run / $echoes / $runsStarted defaults
+	//       seeded for legacy saves; $houseSlots collapses the
+	//       per-house slot forest.
+	var SAVE_VERSION = 3;
 	setup.SAVE_VERSION = SAVE_VERSION;
 
 	/*
