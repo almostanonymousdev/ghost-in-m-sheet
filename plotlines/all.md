@@ -37,3 +37,7 @@ After losing a haunted house run, there is a 40% chance a ghost follows the MC h
 ## [Locations and Activities](locations.md)
 
 The game world includes several city locations the player can visit between hunts. These include delivery jobs for earning money, a gym for physical training, a library for research and social encounters, a park for jogging, a church that serves as the rescue quest hub and exorcism storyline, and a mall for shopping. Each location has its own activities, events, and companion interactions.
+
+## [Rogue Mode](rogue-mode.md)
+
+A run-based variant on the classic witch-contract loop. Each run rolls a fresh haunted house from a deterministic seed: the floor plan, the active modifiers, and the stash placements all change between runs. Echo currency carries forward and is spent in the meta-shop on persistent unlocks. The classic contract flow is unaffected — `$run` is null when no rogue run is active.

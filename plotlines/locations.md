@@ -75,6 +75,14 @@ The game world includes several city locations the player can visit between hunt
   * [ToolsEventChurchEnd.tw](../passages/church/ToolsEventChurchEnd.tw) - Church tool event conclusion
   * [widgetChurch.tw](../passages/church/widgetChurch.tw) - Shared church widgets
 
+* **Rogue Mode** - Run-based variant on the witch-contract loop, launched from a city-map card. Each run rolls a deterministic floor plan, modifier deck, and stash placement from a seed; echo currency persists across runs and is spent in the meta-shop on permanent unlocks. See [rogue-mode.md](rogue-mode.md) for the lifecycle, generator, and state shape.
+  * [RunController.tw](../passages/rogue/RunController.tw) - `setup.Run`: lifecycle, accessors, echoes, composition helpers, minimap data
+  * [FloorPlanController.tw](../passages/rogue/FloorPlanController.tw) - Seeded floor-plan generator (Mulberry32 PRNG, star topology, stash placement)
+  * [ModifiersController.tw](../passages/rogue/ModifiersController.tw) - Run-modifier catalogue and weighted draft
+  * [TemplatesController.tw](../passages/rogue/TemplatesController.tw) - Room-template metadata and slot-id helpers
+  * [RogueLifecycle.tw](../passages/rogue/RogueLifecycle.tw) - RogueStart, RogueRun, RogueEnd, RogueMetaShop passages
+  * [widgetRogueMinimap.tw](../passages/rogue/widgetRogueMinimap.tw) - `<<rogueMinimap>>` floor-plan view
+
 * **Mall** - Shopping location with clothing, electronics, general, and adult sections. The adult section includes Blake-specific companion content.
   * [Mall.tw](../passages/mall/Mall.tw) - Mall exterior and entry
   * [MallController.tw](../passages/mall/MallController.tw) - Shared mall state and helpers
