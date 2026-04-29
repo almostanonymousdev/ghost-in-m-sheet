@@ -5,7 +5,7 @@
 	<<image "ui/img/amulet0.png" "displayCentredImgs">>
 <</if>>
 @@.mc-speech; Rain talked about the amulet and how it reacts to the presence of ghosts... <br>
-<<if setup.Witch.exorcismQuestStage() eq 2>>
+<<if setup.Witch.exorcismQuestStage() eq setup.ExorcismQuestStage.SUCCUBUS_SUMMONED>>
 	@@.mc-thoughts; <<= setup.Home.succubusEventTimer()>> days left...@@<br>
 <</if>>
 I've got everything set up: the book with the incantation is open before me, the words waiting to be spoken. All I need to do now is to begin the summoning ritual...<br>@@

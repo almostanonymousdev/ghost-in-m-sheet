@@ -280,7 +280,7 @@
 		var hasLegacyWishFlag = Object.keys(WISH_FLAG_TO_ID).some(function (k) {
 			return vars[k] !== undefined;
 		});
-		if (vars.boughtMonkeyPawGuide === 2 || hasLegacyWishFlag) {
+		if (vars.boughtMonkeyPawGuide === setup.MonkeyPawGuide.PURCHASED || hasLegacyWishFlag) {
 			if (!vars.monkeyPawLearned || typeof vars.monkeyPawLearned !== 'object') {
 				vars.monkeyPawLearned = {};
 			}
@@ -290,7 +290,7 @@
 			// Buying the guide unlocked everything, including the
 			// "anything" meta-wish; some 0.5.1 paths set the per-wish
 			// flags but not $wishAnything when the guide was bought.
-			if (vars.boughtMonkeyPawGuide === 2) {
+			if (vars.boughtMonkeyPawGuide === setup.MonkeyPawGuide.PURCHASED) {
 				Object.keys(WISH_FLAG_TO_ID).forEach(function (flag) {
 					vars.monkeyPawLearned[WISH_FLAG_TO_ID[flag]] = true;
 				});

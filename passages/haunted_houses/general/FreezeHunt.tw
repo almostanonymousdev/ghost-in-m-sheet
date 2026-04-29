@@ -11,11 +11,12 @@
 <<script>>
 (function () {
 	var V = State.variables;
+	var WORN = setup.ClothingState.WORN;
 	var slots = [];
-	if (V.tshirtState === "worn") slots.push("top");
-	if (V.jeansState === "worn" || V.shortsState === "worn" || V.skirtState === "worn") slots.push("bottom");
-	if (V.pantiesState === "worn") slots.push("panties");
-	if (V.braState === "worn") slots.push("bra");
+	if (V.tshirtState === WORN) slots.push("top");
+	if (V.jeansState === WORN || V.shortsState === WORN || V.skirtState === WORN) slots.push("bottom");
+	if (V.pantiesState === WORN) slots.push("panties");
+	if (V.braState === WORN) slots.push("bra");
 	State.temporary.freezeSlot = slots.length ? slots[Math.floor(Math.random() * slots.length)] : "";
 })();
 <</script>>

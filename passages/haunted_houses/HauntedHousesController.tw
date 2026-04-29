@@ -10,6 +10,15 @@
  * the per-street passages consume via the <<huntHouseCard>> /
  * <<huntHouseStreet>> widgets.
  */
+/* Lifecycle of $tarotCardsStage. HIDDEN: deck still in furniture,
+   FurnitureSearch can pick it up. CARRYING: player holds the deck and
+   can draw cards. SPENT: every card drawn this hunt; deck is done. */
+setup.TarotStage = Object.freeze({
+	HIDDEN:    0,
+	CARRYING:  1,
+	SPENT:     2
+});
+
 setup.HauntedHouses = (function () {
 	function sv() { return State.variables; }
 
@@ -386,8 +395,10 @@ setup.HauntedHouses = (function () {
 			var flags = ["isCIDildo", "isCIButtplug", "isCIBeads", "isCIHDildo"];
 			setup.Witch.setCursedItemFlag(flags[Math.floor(Math.random() * flags.length)]);
 		},
-		tarotCardsStage: function () { return sv().tarotCardsStage || 0; },
+		tarotCardsStage: function () { return sv().tarotCardsStage || setup.TarotStage.HIDDEN; },
 		setTarotCardsStage: function (n) { sv().tarotCardsStage = n; },
+		markTarotCarrying: function () { sv().tarotCardsStage = setup.TarotStage.CARRYING; },
+		markTarotSpent:    function () { sv().tarotCardsStage = setup.TarotStage.SPENT; },
 		drawnCards: function () { return sv().drawnCards || 0; },
 		setDrawnCards: function (n) { sv().drawnCards = n; },
 		shouldDeleteOneEvidence: function () {
@@ -402,7 +413,7 @@ setup.HauntedHouses = (function () {
 			var rooms = ["BlockA", "BlockB", "BlockACellA", "BlockACellB", "BlockACellC",
 				"BlockBCellA", "BlockBCellB", "BlockBCellC", "reception"];
 			rooms.forEach(function (r) {
-				s[r] = { name: r, background: 2 };
+				s[r] = { name: r, background: setup.RoomLight.DARK };
 			});
 			setup.Migrations.markIroncladMigrated();
 		},
@@ -413,7 +424,7 @@ setup.HauntedHouses = (function () {
 		resetForNewHunt: function () {
 			var s = sv();
 			if (s.hauntedHouse === 'ironclad') s.hauntedHouse = null;
-			s.tarotCardsStage = 0;
+			s.tarotCardsStage = setup.TarotStage.HIDDEN;
 			setup.MonkeyPaw.resetHunt();
 			s.drawnCards = 0;
 			delete s.cursedHuntActive;

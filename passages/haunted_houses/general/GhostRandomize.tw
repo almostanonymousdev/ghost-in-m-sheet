@@ -14,7 +14,7 @@
 
         setup.huntableRoomVars.forEach(function (name) {
             var room = V[name];
-            if (room) room.background = 2;
+            if (room) room.background = setup.RoomLight.DARK;
         });
     })();
 <</script>>

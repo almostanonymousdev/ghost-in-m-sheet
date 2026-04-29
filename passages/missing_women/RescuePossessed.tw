@@ -6,7 +6,7 @@ Your instincts screamed that this place was dangerous, and you found yourself to
 @@.mc-speech; This has to be the right place. But should I keep going? There's something seriously wrong with this place... maybe I should leave while I can.@@<br><br>
 <span id="choiceRescuePossessed">@@.usebtn; [[Leave|RescueMap]] @@<b>or</b></span><<linkreplace "@@.usebtn; Continue@@">>
 	<<replace "#choiceRescuePossessed">><</replace>>
-	<<run setup.MissingWomen.setRescueQuestStage(2)>>
+	<<run setup.MissingWomen.markQuestFailed()>>
 	<<set _girl to setup.MissingWomen.currentRescueGirl()>>
 	<<if _girl eq "Victoria">>
 		<<video "characters/rescue/victoria/victoriapossessed.mp4">>

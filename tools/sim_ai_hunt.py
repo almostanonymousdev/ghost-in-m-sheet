@@ -359,6 +359,7 @@ def load_game_data() -> GameData:
     events_ctl = _read("events/EventsController.tw")
     event_mc = _read("events/EventMC.tw")
     time_ctl = _read("time/TimeController.tw")
+    style_controller = _read("styles/StyleController.tw")
 
     ghosts = {g["name"]: g for g in _load_ghosts()}
 
@@ -371,7 +372,7 @@ def load_game_data() -> GameData:
                                 story_script)
     lust_fuel = int(_find_num(r"var\s+LUST_FUEL_THRESHOLD\s*=\s*(\d+)",
                               story_script))
-    dark_bg = int(_find_num(r"var\s+DARK\s*=\s*(\d+)", story_script))
+    dark_bg = int(_find_num(r"DARK:\s*(\d+)", style_controller))
     snapshot_bonuses = _parse_snapshot_bonuses(story_script)
     contract_drain, companion_drain = _parse_contract_drain(story_script)
     temp_cfg = _parse_temperature(temp_tw)

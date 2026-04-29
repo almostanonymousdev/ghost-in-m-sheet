@@ -42,7 +42,7 @@ setup.Migrations = (function () {
 		var s = sv();
 		var rooms = ['basement', 'bedroomTwo', 'nursery', 'bathroomTwo', 'hallwayUpstairs', 'roomA', 'roomB', 'roomC'];
 		rooms.forEach(function (name) {
-			s[name] = { name: name, background: 2 };
+			s[name] = { name: name, background: setup.RoomLight.DARK };
 		});
 
 		if (setup.initWardrobe) { setup.initWardrobe(s); }
@@ -64,12 +64,12 @@ setup.Migrations = (function () {
 	}
 
 	/* Pre-27/07 saves: stockings/foot piercings hadn't been added.
-	   Mark them "not bought" so the shop renders correctly. */
+	   Mark them NOT_BOUGHT so the shop renders correctly. */
 	function migrateStockingsFootBought() {
 		var s = sv();
 		var keys = ['stockingsState1', 'stockingsState2', 'stockingsState3', 'footState1', 'footState2', 'footState3'];
 		keys.forEach(function (k) {
-			s[k] = 'not bought';
+			s[k] = setup.ClothingState.NOT_BOUGHT;
 		});
 		s.update2707 = 1;
 	}

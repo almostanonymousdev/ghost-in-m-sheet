@@ -80,7 +80,7 @@ setup.drawTarotCard = function (deck) {
 			<<replace "#tarotCardsEnd">>
 				<br>
 				@@.mc-thoughts; There's no cards left @@<br>
-				<<run setup.HauntedHouses.setTarotCardsStage(2)>>
+				<<run setup.HauntedHouses.markTarotSpent()>>
 			<</replace>>
 		<</if>>
 	<</replace>>

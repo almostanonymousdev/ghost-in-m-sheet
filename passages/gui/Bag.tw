@@ -101,7 +101,7 @@ Pepper spray (<<= setup.Mall.pepperSprayCharges()>> charges left)
 
 </div>
 <div class="housecard">
-<<if setup.MonkeyPaw.guideStage() eq 2>>
+<<if setup.MonkeyPaw.guideStage() eq setup.MonkeyPawGuide.PURCHASED>>
 <<image "mechanics/cursedpossessions/monkey-paw/monkeypaw-page.jpg" "icon">><br>
 <<link "@@.usebtn;Inspect@@">><<replace ".flexwrapper">><<image "mechanics/cursedpossessions/monkey-paw/monkeypaw-page.jpg" "displayCentredImgs">>
 <</replace>>

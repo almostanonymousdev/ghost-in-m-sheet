@@ -5,6 +5,15 @@
  * instead of testing the underlying $variables directly, so the
  * conditions live in one place.
  */
+/* Discrete states for $hasQuestForRescue (the rescue quest line's
+   lifecycle bit). Use setup.RescueQuestState.X instead of bare ints. */
+setup.RescueQuestState = Object.freeze({
+	AVAILABLE: 0,
+	ACTIVE:    1,
+	FAILED:    2,
+	SUCCEEDED: 3
+});
+
 setup.MissingWomen = (function () {
 	function sv() { return State.variables; }
 
@@ -41,20 +50,21 @@ setup.MissingWomen = (function () {
 
 		// --- Quest stage predicates --------------------------------
 		isQuestAvailable: function () {
-			return sv().hasQuestForRescue === 0;
+			return sv().hasQuestForRescue === setup.RescueQuestState.AVAILABLE;
 		},
 		hasActiveQuest: function () {
-			return sv().hasQuestForRescue === 1;
+			return sv().hasQuestForRescue === setup.RescueQuestState.ACTIVE;
 		},
 		questFailed: function () {
-			return sv().hasQuestForRescue === 2;
+			return sv().hasQuestForRescue === setup.RescueQuestState.FAILED;
 		},
 		questSucceeded: function () {
-			return sv().hasQuestForRescue === 3;
+			return sv().hasQuestForRescue === setup.RescueQuestState.SUCCEEDED;
 		},
 		mustReturnToNun: function () {
 			var s = sv().hasQuestForRescue;
-			return s === 2 || s === 3;
+			var Q = setup.RescueQuestState;
+			return s === Q.FAILED || s === Q.SUCCEEDED;
 		},
 
 		// --- Task board timing ------------------------------------
@@ -121,7 +131,7 @@ setup.MissingWomen = (function () {
 		currentRescueGirl: function () { return sv().currentRescueGirl; },
 		setCurrentRescueGirl: function (name) { sv().currentRescueGirl = name; },
 		setQuestForRescueStarted: function () {
-			sv().hasQuestForRescue = 1;
+			sv().hasQuestForRescue = setup.RescueQuestState.ACTIVE;
 			sv().rescueStage = 0;
 		},
 		sleepOffHoursAfterEvent: function () {
@@ -169,8 +179,10 @@ setup.MissingWomen = (function () {
 		clearRescueClue:   function () { sv().hasRescueClue = 0; },
 
 		// --- Rescue quest state -----------------------------------
-		setRescueQuestStage: function (stage) { sv().hasQuestForRescue = stage; },
 		rescueQuestStage: function () { return sv().hasQuestForRescue; },
+		resetQuestToAvailable: function () { sv().hasQuestForRescue = setup.RescueQuestState.AVAILABLE; },
+		markQuestFailed:      function () { sv().hasQuestForRescue = setup.RescueQuestState.FAILED; },
+		markQuestSucceeded:   function () { sv().hasQuestForRescue = setup.RescueQuestState.SUCCEEDED; },
 
 		// --- Video pool --------------------------------------------
 		rescueVideo: function () { return sv().videoRescueEvent; },

@@ -28,6 +28,25 @@
  * 400-coin guide actually valuable: it buys the spoilers up front
  * rather than just a UI shortcut.
  */
+/* Lifecycle of $MonkeyPawStage. HIDDEN: paw still tucked away in
+   furniture, FurnitureSearch can discover it. FOUND: player found it
+   and is carrying it through the hunt. RETIRED: hunt ended, paw is
+   spent for the session. */
+setup.MonkeyPawStage = Object.freeze({
+	HIDDEN:  0,
+	FOUND:   1,
+	RETIRED: 2
+});
+
+/* Lifecycle of $boughtMonkeyPawGuide. NOT_ASKED: witch shop hasn't
+   been queried about the guide. ASKED: player asked about it but
+   declined to buy. PURCHASED: guide bought, every wish learned. */
+setup.MonkeyPawGuide = Object.freeze({
+	NOT_ASKED: 0,
+	ASKED:     1,
+	PURCHASED: 2
+});
+
 setup.MonkeyPaw = (function () {
 	function sv() { return State.variables; }
 
@@ -456,21 +475,21 @@ setup.MonkeyPaw = (function () {
 		   or guide flags -- those persist across hunts. */
 		resetHunt: function () {
 			var s = sv();
-			s.MonkeyPawStage = 0;
+			s.MonkeyPawStage = setup.MonkeyPawStage.HIDDEN;
 			s.wishesCount = 3;
 			setup.Ghosts.clearKnowledgeUsed();
 			s.monkeyPawDoorLock = null;
 			s.monkeyPawBannedHouses = [];
 		},
 		/* Furniture search calls this when the paw is discovered. */
-		markFound: function () { sv().MonkeyPawStage = 1; },
+		markFound: function () { sv().MonkeyPawStage = setup.MonkeyPawStage.FOUND; },
 		/* Hunt-end cleanup. The paw is consumed for the session. */
-		retire: function () { sv().MonkeyPawStage = 2; },
-		isFound: function () { return sv().MonkeyPawStage === 1; },
-		/* Stage 0: paw is still sitting in a furniture slot waiting
+		retire: function () { sv().MonkeyPawStage = setup.MonkeyPawStage.RETIRED; },
+		isFound: function () { return sv().MonkeyPawStage === setup.MonkeyPawStage.FOUND; },
+		/* HIDDEN stage: paw is still sitting in a furniture slot waiting
 		   to be discovered this hunt. FurnitureSearch and the map
 		   highlight logic gate on this. */
-		isDiscoverable: function () { return (sv().MonkeyPawStage || 0) === 0; },
+		isDiscoverable: function () { return (sv().MonkeyPawStage || 0) === setup.MonkeyPawStage.HIDDEN; },
 		/* The Bag icon shows only when carrying the paw AND not on a
 		   street (the player must be inside the house to use it). */
 		isCarrying: function () {
@@ -563,24 +582,24 @@ setup.MonkeyPaw = (function () {
 		grantAnything: function () { sv().wishAnything = 1; },
 
 		// --- Witch's guide ----------------------------------------
-		/* Guide states: undefined/0 = not asked, 1 = asked about but
-		   not bought, 2 = purchased (everything revealed). */
+		/* Guide states: see setup.MonkeyPawGuide. undefined coerces
+		   to NOT_ASKED so legacy/missing saves Just Work. */
 		guideStage: function () {
 			var g = sv().boughtMonkeyPawGuide;
-			return g === undefined ? 0 : g;
+			return g === undefined ? setup.MonkeyPawGuide.NOT_ASKED : g;
 		},
 		ensureGuideInit: function () {
 			if (sv().boughtMonkeyPawGuide === undefined) {
-				sv().boughtMonkeyPawGuide = 0;
+				sv().boughtMonkeyPawGuide = setup.MonkeyPawGuide.NOT_ASKED;
 			}
 		},
-		hasGuide: function () { return this.guideStage() === 2; },
-		isGuideAsked: function () { return this.guideStage() === 1; },
-		markGuideAsked: function () { sv().boughtMonkeyPawGuide = 1; },
+		hasGuide: function () { return this.guideStage() === setup.MonkeyPawGuide.PURCHASED; },
+		isGuideAsked: function () { return this.guideStage() === setup.MonkeyPawGuide.ASKED; },
+		markGuideAsked: function () { sv().boughtMonkeyPawGuide = setup.MonkeyPawGuide.ASKED; },
 		/* Witch-side purchase effect: reveal everything. Money is
 		   deducted by the caller (WitchSale). */
 		purchaseGuide: function () {
-			sv().boughtMonkeyPawGuide = 2;
+			sv().boughtMonkeyPawGuide = setup.MonkeyPawGuide.PURCHASED;
 			this.learnAll();
 			this.grantAnything();
 		},

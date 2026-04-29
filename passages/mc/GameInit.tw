@@ -106,11 +106,12 @@ setup.Game = (function () {
 		s.cursedHomeItemActive = 0;
 
 		// --- Starting wardrobe --------------------------------
-		s.jeansState = 'worn';
-		s.tshirtState = 'worn';
-		s.pantiesState = 'worn';
-		s.braState = 'worn';
-		s.skirtState = 'not bought';
+		var CS = setup.ClothingState;
+		s.jeansState = CS.WORN;
+		s.tshirtState = CS.WORN;
+		s.pantiesState = CS.WORN;
+		s.braState = CS.WORN;
+		s.skirtState = CS.NOT_BOUGHT;
 
 		// --- Hunt-room state objects --------------------------
 		['kitchen', 'bathroom', 'bedroom', 'hallway', 'livingroom'].forEach(function (name) {
@@ -118,7 +119,7 @@ setup.Game = (function () {
 				name: name,
 				emf: '', glass: '', uvl: '',
 				temperature: '', spiritbox: '', gwb: '',
-				background: 2
+				background: setup.RoomLight.DARK
 			};
 		});
 	}

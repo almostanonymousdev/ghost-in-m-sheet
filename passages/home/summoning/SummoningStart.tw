@@ -29,7 +29,7 @@
 		@@.mc-speech; Did I do something wrong?@@<br>
 		@@.mc-thoughts; Suddenly, you feel a growing sense of weakness and fatigue. Barely reaching your bed, you fall into a deep@@ @@.enterbtn;[[sleep|SummonTentacles]]@@
 	<</linkappend>>
-<<elseif setup.Witch.exorcismQuestStage() eq 1>>
+<<elseif setup.Witch.exorcismQuestStage() eq setup.ExorcismQuestStage.REFERRED>>
 	<<image "characters/succubus/succubus0.jpg" { class: "displayCentredImgs", width: "100%" }>>
 	@@.mc-thoughts; You speak the words of the summoning, and the air around you grows denser. From the darkness, the succubus emerges, her smile dripping with mockery and pleasure.@@<br>
 	@@color:red; Finally, you've reached me, my sweet. Decided to play the hunter, have you?@@<br>
@@ -55,7 +55,7 @@
 		@@.mc-thoughts; The succubus disappeared.@@<br>
 		@@.mc-speech; I don't know... if this is the right choice...@@<br>
 		@@.mc-thoughts; The succubus will protect me from ghost attacks for 5 days during the ghost hunt. But I need to summon her to renew her "protection"@@<br><br>
-		@@.backbtn; [[Back|Bedroom][setup.Witch.setExorcismQuestStage(2); setup.Witch.setSuccubusVisited(2)]]@@<br>
+		@@.backbtn; [[Back|Bedroom][setup.Witch.markSuccubusSummoned(); setup.Witch.setSuccubusVisited(2)]]@@<br>
 	<</linkreplace>>
 	</span>
 	<span id="summoningOr">or</span>
@@ -72,7 +72,7 @@
 	<</linkreplace>>
 	</span>
 	</b>
-<<elseif setup.Witch.exorcismQuestStage() eq 2>>
+<<elseif setup.Witch.exorcismQuestStage() eq setup.ExorcismQuestStage.SUCCUBUS_SUMMONED>>
 	<<image "characters/succubus/succubus0.jpg" { class: "displayCentredImgs", width: "100%" }>><br>
 	@@.mc-thoughts; You utter the spell, and the air around you begins to pulse. Out of nowhere, the succubus appears, her eyes gleaming with pleasure.@@<br>
 	@@color:red; What a good little slut you are, calling me again. Well, let's do something fun. Here's your choice: <br>@@

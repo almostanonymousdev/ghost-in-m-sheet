@@ -9,6 +9,26 @@
  * day, equipment tiers, hunt evidence, monkey-paw guide, cursed-home
  * items) is queried through the owning controller's API.
  */
+/* Lifecycle of $exorcismQuestStage. NOT_STARTED: church hasn't yet
+   referred the player. REFERRED: church has, summoning is unlocked.
+   SUCCUBUS_SUMMONED: the succubus answered the call. */
+setup.ExorcismQuestStage = Object.freeze({
+	NOT_STARTED:       0,
+	REFERRED:          1,
+	SUCCUBUS_SUMMONED: 2
+});
+
+/* Lifecycle of $wardenClothesStage (Ironclad warden outfit gate).
+   HINT_NOT_OFFERED: witch hasn't told the player about the outfit.
+   HINT_OFFERED: witch dropped the hint; mall now sells the outfit.
+   OUTFIT_OWNED: outfit purchased; prison gate opens. Reset back to
+   HINT_NOT_OFFERED after the first wasted visit. */
+setup.WardenClothesStage = Object.freeze({
+	HINT_NOT_OFFERED: 0,
+	HINT_OFFERED:     1,
+	OUTFIT_OWNED:     2
+});
+
 setup.Witch = (function () {
 	/* Variables owned by this controller. Other controllers should
 	   query/mutate these only through the API methods below. */
@@ -67,9 +87,11 @@ setup.Witch = (function () {
 		setSuccubusVisited: function (n) { sv().succubus = n; },
 		exorcismQuestStage: function () { return sv().exorcismQuestStage; },
 		setExorcismQuestStage: function (n) { sv().exorcismQuestStage = n; },
+		markExorcismReferred:   function () { sv().exorcismQuestStage = setup.ExorcismQuestStage.REFERRED; },
+		markSuccubusSummoned:   function () { sv().exorcismQuestStage = setup.ExorcismQuestStage.SUCCUBUS_SUMMONED; },
 		exorcismQuestNotStarted: function () {
 			var s = sv().exorcismQuestStage;
-			return s === undefined || s === 0;
+			return s === undefined || s === setup.ExorcismQuestStage.NOT_STARTED;
 		},
 
 		// --- Missing-girls / rescue quest ------------------------
@@ -147,13 +169,14 @@ setup.Witch = (function () {
 
 		// --- Monkey paw guide ------------------------------------
 		canAskAboutMonkeyPaw: function () {
-			return setup.MonkeyPaw.guideStage() === 0;
+			return setup.MonkeyPaw.guideStage() === setup.MonkeyPawGuide.NOT_ASKED;
 		},
 
 		// --- Warden/Ironclad hint --------------------------------
 		canAskAboutIronclad: function () {
 			var s = sv().wardenClothesStage;
-			return s === 0 || s === 1;
+			var W = setup.WardenClothesStage;
+			return s === W.HINT_NOT_OFFERED || s === W.HINT_OFFERED;
 		},
 		wardenClothesStage: function () { return sv().wardenClothesStage; },
 		setWardenClothesStage: function (n) { sv().wardenClothesStage = n; },
@@ -224,13 +247,13 @@ setup.Witch = (function () {
 			setup.MonkeyPaw.markGuideAsked();
 		},
 		markWardenOutfitHintOpened: function () {
-			sv().wardenClothesStage = 1;
+			sv().wardenClothesStage = setup.WardenClothesStage.HINT_OFFERED;
 		},
 		resetExorcismQuestStage: function () {
-			sv().exorcismQuestStage = 0;
+			sv().exorcismQuestStage = setup.ExorcismQuestStage.NOT_STARTED;
 		},
 		clearQuestForRescue: function () {
-			setup.MissingWomen.setRescueQuestStage(0);
+			setup.MissingWomen.resetQuestToAvailable();
 		},
 		startCursedItemQuest: function () {
 			sv().gotCursedItem = 0;

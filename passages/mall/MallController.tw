@@ -61,7 +61,7 @@ setup.Mall = (function () {
 
 		// --- Warden outfit purchase ------------------------------
 		canBuyWardenOutfit: function () {
-			return setup.Witch.wardenClothesStage() === 1;
+			return setup.Witch.wardenClothesStage() === setup.WardenClothesStage.HINT_OFFERED;
 		},
 		meetsCorruptionForWarden: function () {
 			return setup.Mc.corruption() >= 3;
@@ -90,7 +90,7 @@ setup.Mall = (function () {
 		// --- Warden costume purchase -----------------------------
 		buyWardenOutfit: function () {
 			setup.Mc.removeMoney(500);
-			setup.Witch.setWardenClothesStage(2);
+			setup.Witch.setWardenClothesStage(setup.WardenClothesStage.OUTFIT_OWNED);
 		},
 
 		// --- Phone purchase --------------------------------------
