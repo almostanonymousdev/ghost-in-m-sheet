@@ -155,4 +155,44 @@ test.describe('Floor-plan generator', () => {
       SugarCube.setup.FloorPlan.roomById(p, 'room_999'), plan);
     expect(room).toBeNull();
   });
+
+  // --- Fuzz: invariants must hold across many seeds + room counts ---
+
+  test('generator invariants hold across 200 random (seed, roomCount) pairs', async () => {
+    test.setTimeout(20_000);
+    const summary = await page.evaluate(() => {
+      const fails = [];
+      for (let seed = 1; seed <= 200; seed++) {
+        const roomCount = 2 + (seed % 8); // 2..9
+        const plan = SugarCube.setup.FloorPlan.generate(seed, { roomCount, includeBoss: seed % 3 === 0 });
+        // Connectivity.
+        if (!SugarCube.setup.FloorPlan.isConnected(plan)) {
+          fails.push(`seed ${seed} (n=${roomCount}): not fully connected`);
+          continue;
+        }
+        // Stash placement: all kinds resolve to a real non-hallway room.
+        const ids = new Set(plan.rooms.map(r => r.id));
+        for (const k of SugarCube.setup.FloorPlan.STASH_KINDS) {
+          if (!ids.has(plan.stashes[k])) {
+            fails.push(`seed ${seed}: stash ${k} -> unknown room ${plan.stashes[k]}`);
+          }
+          if (plan.stashes[k] === 'room_0') {
+            fails.push(`seed ${seed}: stash ${k} placed in hallway`);
+          }
+        }
+        // Spawn must be a real non-hallway room.
+        if (!ids.has(plan.spawnRoomId) || plan.spawnRoomId === 'room_0') {
+          fails.push(`seed ${seed}: spawn ${plan.spawnRoomId} not a non-hallway room`);
+        }
+        // Boss room (when set) must also be a real non-hallway room.
+        if (plan.bossRoomId !== null) {
+          if (!ids.has(plan.bossRoomId) || plan.bossRoomId === 'room_0') {
+            fails.push(`seed ${seed}: bossRoom ${plan.bossRoomId} not a non-hallway room`);
+          }
+        }
+      }
+      return fails;
+    });
+    expect(summary).toEqual([]);
+  });
 });
