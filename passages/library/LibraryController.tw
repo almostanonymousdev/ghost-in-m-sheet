@@ -139,10 +139,10 @@ setup.Library = (function () {
 			setup.Companion.pickCisCompanion('Brook');
 		},
 		pickBrookForSoloOwaissa: function () {
-			setup.Companion.pickCompanionForSoloHunt('Brook', 'Owaissa');
+			setup.Companion.sendCompanionSolo('Brook', 'Owaissa');
 		},
 		pickBrookForSoloElm: function () {
-			setup.Companion.pickCompanionForSoloHunt('Brook', 'Elm');
+			setup.Companion.sendCompanionSolo('Brook', 'Elm');
 		}
 	};
 })();

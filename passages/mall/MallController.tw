@@ -121,10 +121,10 @@ setup.Mall = (function () {
 
 		// --- Picking Blake for a solo hunt -----------------------
 		pickBlakeForSoloHuntOwaissa: function () {
-			setup.Companion.pickCompanionForSoloHunt('Blake', 'Owaissa');
+			setup.Companion.sendCompanionSolo('Blake', 'Owaissa');
 		},
 		pickBlakeForSoloHuntElm: function () {
-			setup.Companion.pickCompanionForSoloHunt('Blake', 'Elm');
+			setup.Companion.sendCompanionSolo('Blake', 'Elm');
 		}
 	};
 })();

@@ -615,10 +615,6 @@
         },
 
         /* Cheat-menu helpers (StoryCaption) */
-        setHuntMode: function (mode) {
-            var h = State.variables.hunt;
-            if (h) { h.mode = mode; }
-        },
         forceHuntGhost: function (g) {
             var h = State.variables.hunt;
             if (!h || !g) return;

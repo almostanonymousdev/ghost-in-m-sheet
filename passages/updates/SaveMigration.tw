@@ -103,6 +103,13 @@
 			});
 		}
 
+		// One-time rename: $checkChoosenLocation -> $checkChosenLocation
+		// (typo fix). Carry the old value forward when set.
+		if (vars.checkChosenLocation === undefined && vars.checkChoosenLocation !== undefined) {
+			vars.checkChosenLocation = vars.checkChoosenLocation;
+		}
+		delete vars.checkChoosenLocation;
+
 		// clamp body-part sensitivity (old saves occasionally over-increment)
 		setup.Intro.clampSensualBodyParts(vars.sensualBodyPart);
 
