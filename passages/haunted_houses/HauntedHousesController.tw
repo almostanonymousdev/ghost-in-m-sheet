@@ -414,7 +414,7 @@ setup.HauntedHouses = (function () {
 			rooms.forEach(function (r) {
 				s[r] = { name: r, background: 2 };
 			});
-			setup.Updates.markIroncladMigrated();
+			setup.Migrations.markIroncladMigrated();
 		},
 		/* Full fresh-hunt teardown: clears any lingering tarot /
 		   monkey-paw / cursed-hunt / weaken-ghost flags and zeroes

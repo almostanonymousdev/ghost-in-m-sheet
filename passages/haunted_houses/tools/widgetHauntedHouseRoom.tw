@@ -166,7 +166,7 @@ the only ways out are the scream link or a cursed-item sacrifice. */
 		<<capture _navMode>>
 			@@.adaptiveLink;<<link _args[0] _args[1]>><<if _navMode eq "hunt">><<includeTimeEventHunt>>
 			<<else>><<includeTimeEventClothesHunt>>
-			<</if>><<run setup.Updates.incrementStepCount()>><</link>>@@
+			<</if>><<run setup.Tick.incrementStepCount()>><</link>>@@
 		<</capture>>
 	<</if>>
 <</widget>>

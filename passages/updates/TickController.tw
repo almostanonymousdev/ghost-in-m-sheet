@@ -1,0 +1,249 @@
+:: TickController [script]
+/*
+ * Per-tick maintenance helpers, called from :: PassageDone and
+ * :: PassageReady. These run on every passage transition, so the
+ * goal is "cheap predicates + small idempotent state nudges". One-
+ * shot save migrations live in :: Migrations; load-time defaulting
+ * lives in :: SaveMigration.
+ */
+setup.Tick = (function () {
+	var OWNED_VARS = Object.freeze([
+		'stealChanceMult',
+		'stepCount'
+	]);
+
+	function sv() { return State.variables; }
+
+	// --- Cursed hunt timer ---------------------------------------
+	/* The cursed-hunt window is wall-clock real-time, not in-game time:
+	   when a cursed possession is interacted with, $cursedHuntEndTime is
+	   stamped Date.now()+window. Expire it lazily on each tick rather
+	   than wiring up a setTimeout (which wouldn't survive save/load).
+	   The DOM toggle re-enables the link selectors that were greyed out
+	   while the hunt was active. */
+	function tickCursedHuntTimer() {
+		var s = sv();
+		if (s.cursedHuntActive !== 1) return;
+		if (s.cursedHuntEndTime && Date.now() >= s.cursedHuntEndTime) {
+			s.cursedHuntActive = 0;
+			delete s.cursedHuntEndTime;
+			$('.cursedHuntLinkDisable').removeClass('disabled-linkSpecial');
+		} else {
+			$('.cursedHuntLinkDisable').addClass('disabled-linkSpecial');
+		}
+	}
+
+	// --- Detector highlights -------------------------------------
+	/* When the player owns the furniture-detector ($boughtDetector), the
+	   target room flashes a highlight class on every passage so it stays
+	   visible as the player moves between rooms. */
+	var DETECTOR_TARGETS = [
+		{ houseFlag: 'isElm', suffix: 'Elm' },
+		{ houseFlag: 'isOwaissa', suffix: 'Owaissa' }
+	];
+	var DETECTOR_RULES = [
+		{ slotKey: 'placeForCursedItem',    test: function (s) {
+			return s.gotCursedItem !== 1 && typeof s.gotCursedItem !== 'undefined';
+		}},
+		{ slotKey: 'placeForRescueClue',    test: function (s) {
+			return s.hasRescueClue !== 1 && s.hasQuestForRescue === 1;
+		}},
+		{ slotKey: 'placeForTarotCards',    test: function (s) {
+			return s.tarotCardsStage !== 1;
+		}},
+		{ slotKey: 'placeForMonkeyPaw',     test: function () {
+			return setup.MonkeyPaw && setup.MonkeyPaw.isDiscoverable
+				? setup.MonkeyPaw.isDiscoverable() : false;
+		}},
+		{ slotKey: 'placeForClothesStolen', test: function (s) {
+			return s.isClothesStolen === 1;
+		}}
+	];
+	function highlightIf(elementId, condition) {
+		if (!condition) return;
+		var el = document.getElementById(elementId);
+		if (el) el.classList.add('highlighted-furnitureDetector');
+	}
+	function applyDetectorHighlights() {
+		var s = sv();
+		if (s.boughtDetector !== 1) return;
+		DETECTOR_TARGETS.forEach(function (target) {
+			if (s[target.houseFlag] !== 1) return;
+			DETECTOR_RULES.forEach(function (rule) {
+				highlightIf(s[rule.slotKey + target.suffix], rule.test(s));
+			});
+		});
+	}
+
+	// --- Rescue quest expiry --------------------------------------
+	/* When the rescue quest is active ($hasQuestForRescue === 1) and the
+	   player either ran out of stages or let the day slip past 5 PM, fail
+	   the quest by bumping it to stage 2 and reset the per-attempt vars. */
+	function tickRescueQuestExpiry() {
+		var s = sv();
+		if (s.hasQuestForRescue !== 1) return;
+		var ranOut = s.rescueStage >= 2 || (s.rescueStage === 1 && s.hours > 17);
+		if (!ranOut) return;
+		s.hasQuestForRescue = 2;
+		s.rescueStage = 0;
+		s.hasRescueClue = 0;
+	}
+
+	// --- Hunt timer accounting -----------------------------------
+	function tickHuntTimer() {
+		var s = sv();
+		if (s.elapsedTimeHunt > s.huntTimeRemain) {
+			s.huntActivated = 0;
+		} else {
+			s.elapsedTimeHunt = (s.hours * 60 + s.minutes) - s.huntActivationTime;
+		}
+	}
+
+	// --- Choker lust floor ---------------------------------------
+	/* The collar/choker keeps lust at >=15 while worn. Returns true
+	   if it pushed lust up so callers can refresh the meter. */
+	function applyChokerLustFloor() {
+		var s = sv();
+		if (s.neckChokerState1 !== 'worn') return false;
+		if (!s.mc || s.mc.lust > 15) return false;
+		s.mc.lust = 15;
+		return true;
+	}
+
+	// --- Possession / tarot cleanup ------------------------------
+	function applyPossessionTarotCleanup() {
+		if (setup.Ghosts.isPossessed()) {
+			sv().tarotCardsStage = 2;
+			setup.MonkeyPaw.retire();
+		}
+	}
+
+	// --- Companion leave check -----------------------------------
+	/* Returns true when the player just finished an MC-only event with
+	   a companion on Plan1 whose sanity has fallen below their level
+	   floor; PassageDone routes those cases to CompanionLeaving. */
+	function justFinishedSharedEvent() {
+		var s = sv();
+		return previous() === 'EventMC'
+			&& s.chosenPlan === 'Plan1'
+			&& s.isCompChosen === 1;
+	}
+	function activeCompanionShouldLeaveAfterEvent() {
+		if (!justFinishedSharedEvent()) return false;
+		return setup.Companion.activeCompanionShouldLeave();
+	}
+
+	// --- Companion attack timer (PassageReady top block) --------
+	function companionAttackActiveHit() {
+		var s = sv();
+		return s.chosenPlanActivated === 1 &&
+			((s.hours * 60 + s.minutes) >= s.chosenPlanActivatedTime) &&
+			s.showComp !== 2 && s.showComp !== 3;
+	}
+	function resolveCompanionAttack() {
+		var s = sv();
+		var roll = Math.floor(Math.random() * 100) + 1;
+		if (roll >= s.chanceToAttack) {
+			s.showComp = 3;
+			return 'safe';
+		}
+		s.showComp = 2;
+		s.stepCount = 0;
+		return 'hit';
+	}
+	function atRandomGhostPassage() {
+		return passage() === sv().randomGhostPassage;
+	}
+
+	// --- Steal-chance recompute ---------------------------------
+	function recomputeStealChance() {
+		var s = sv();
+		s.stealChance = (1 + (Math.log(101 - s.mc.sanity) / Math.log(101)) * 1) * s.stealChanceMult;
+	}
+
+	// --- PassageDone tick setup ---------------------------------
+	function initTick() {
+		sv().stealChanceMult = 1.1;
+	}
+
+	// --- Twins event guard --------------------------------------
+	function twinsEventFired() { return sv().thetwinsevent === 1; }
+
+	// --- Step counter -------------------------------------------
+	function stepCount() { return sv().stepCount || 0; }
+	function incrementStepCount() {
+		sv().stepCount = (sv().stepCount || 0) + 1;
+	}
+
+	// --- Midnight rollover (ResetCooldowns passage) --------------
+	/* Called once per day-change (via addTime crossing 24). Resets
+	   per-day cooldowns and ticks several multi-day counters. */
+	function resetCooldowns() {
+		var s = sv();
+		var perDayZero = [
+			'thetwinseventCD', 'joggingCD', 'stealItemsFromWitchCD',
+			'ghostSpecialEventSpiritCD', 'webcamShowCD',
+			'deliveryPizzaEvent', 'deliveryPackageEvent',
+			'deliveryBurgerEvent', 'deliveryPapersEvent',
+			'witchNightCD', 'trainer1SexCD', 'trainer2SexCD',
+			'findGhostInfoCD', 'deliveryBJCD', 'churchSexCD',
+			'masturbationCD', 'exorcismCD', 'rescueCD', 'rescueQuestCD'
+		];
+		perDayZero.forEach(function (k) { s[k] = 0; });
+
+		['isBrookGoingForHuntingAlone', 'isAliceGoingForHuntingAlone', 'isBlakeGoingForHuntingAlone'].forEach(function (k) {
+			if (s[k] === 1) { s[k] = 2; }
+		});
+
+		if (s.ghostMareEventStart >= 1) {
+			s.ghostMareEventStage += 1;
+		} else {
+			s.ghostMareEventStage = 0;
+		}
+
+		if (s.rescueStage === 0 || s.rescueStage === 1) {
+			s.rescueStage += 1;
+		}
+
+		if (s.isBrookePossessed === 0) {
+			s.isBrookePossessedCD = (s.isBrookePossessedCD || 0) + 1;
+			if (s.isBrookePossessedCD >= 3) {
+				delete s.isBrookePossessedCD;
+				s.isBrookePossessed = 'not active';
+			}
+		}
+
+		if (s.succubus === 1) {
+			if (s.succubusEventCD !== 0) { s.succubusEventCD += 1; }
+			if (s.succubusEventCD >= 3)  { s.succubusEventCD = 0; }
+		}
+
+		if (s.exorcismQuestStage === 2 && s.succubusEventTimer >= 1) {
+			s.succubusEventTimer -= 1;
+		}
+
+		if (s.gotCursedItem === 1 && s.gotCursedItemEventCD < 3) {
+			s.gotCursedItemEventCD += 1;
+		}
+	}
+
+	return {
+		OWNED_VARS: OWNED_VARS,
+		tickCursedHuntTimer: tickCursedHuntTimer,
+		applyDetectorHighlights: applyDetectorHighlights,
+		tickRescueQuestExpiry: tickRescueQuestExpiry,
+		tickHuntTimer: tickHuntTimer,
+		applyChokerLustFloor: applyChokerLustFloor,
+		applyPossessionTarotCleanup: applyPossessionTarotCleanup,
+		activeCompanionShouldLeaveAfterEvent: activeCompanionShouldLeaveAfterEvent,
+		companionAttackActiveHit: companionAttackActiveHit,
+		resolveCompanionAttack: resolveCompanionAttack,
+		atRandomGhostPassage: atRandomGhostPassage,
+		recomputeStealChance: recomputeStealChance,
+		initTick: initTick,
+		twinsEventFired: twinsEventFired,
+		stepCount: stepCount,
+		incrementStepCount: incrementStepCount,
+		resetCooldowns: resetCooldowns
+	};
+})();
