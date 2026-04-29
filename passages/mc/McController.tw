@@ -252,11 +252,11 @@ setup.Mc = (function () {
 	   as a getter, "set"+Cap as a setter, and (where listed) "add" /
 	   "spend" mutators with the literal method name. */
 	setup.defineAccessors(api, mc, [
-		{ name: 'money',         add: 'addMoney',         spend: 'spendMoney' },
-		{ name: 'sanity',        add: 'addSanity',        spend: 'spendSanity' },
+		{ name: 'money',         add: 'addMoney',         spend: 'removeMoney' },
+		{ name: 'sanity',        add: 'addSanity',        spend: 'removeSanity' },
 		{ name: 'sanityMax' },
 		{ name: 'sanityUp' },
-		{ name: 'energy',        add: 'addEnergy',        spend: 'spendEnergy' },
+		{ name: 'energy',        add: 'addEnergy',        spend: 'removeEnergy' },
 		{ name: 'energyMax' },
 		{ name: 'energyPoints',  add: 'addEnergyPoints' },
 		{ name: 'corruption',    add: 'addCorruption' },
@@ -284,7 +284,7 @@ setup.Mc = (function () {
 		{ name: 'energyDrinkAmount',  add: 'addEnergyDrink' },
 		{ name: 'sanityPillsAmount' },
 		{ name: 'medicineAmount' },
-		{ name: 'makeupAmount',       add: 'addMakeup', spend: 'spendMakeup' },
+		{ name: 'makeupAmount',       add: 'addMakeup', spend: 'removeMakeup' },
 		// Public method root differs from $variable name:
 		{ name: 'possession',     key: 'mcpossession',         add: 'addPossession' },
 		{ name: 'orgasmMeter',    key: 'mcOrgasmMeter' },

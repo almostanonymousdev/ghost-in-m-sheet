@@ -315,9 +315,13 @@ setup.Home = (function () {
 		markSuccubusArrived: function () { setup.Witch.setSuccubusVisited(1); },
 
 		// --- Makeup / mirror application -----------------
-		removeMakeupWithPenalty: function (penalty) {
+		// wipeMakeup* are the "undo applied makeup" actions (clear
+		// the on-face cosmetic and refund the beauty bonus). They
+		// don't touch inventory; setup.Mc.removeMakeup(n) is the
+		// inventory decrement.
+		wipeMakeupWithPenalty: function (penalty) {
 			// Sleeping / washing-with-shower paths call this from the
-			// <<removeMakeup N>> widget. Each tier gets a stacked
+			// <<wipeMakeup N>> widget. Each tier gets a stacked
 			// penalty (tier+0 / +5 / +10) on top of the base penalty,
 			// then clears the applied flag and portrait.
 			// Clamp at 0: shower (penalty 10) deducts more than the
@@ -332,7 +336,7 @@ setup.Home = (function () {
 			setup.Mc.setMakeupApplied(0);
 			setup.Mc.setMakeupImg(0);
 		},
-		removeMakeup: function () {
+		wipeMakeup: function () {
 			// Undo applied-makeup beauty + clear the flags; symmetric
 			// with applyMakeupTier. Safe to call when no makeup is on
 			// (delta becomes 0).
@@ -349,7 +353,7 @@ setup.Home = (function () {
 			var beautyDelta = { 1: 5, 2: 10, 3: 15 }[tier];
 			setup.Mc.setMakeupImg(tier);
 			setup.Mc.setMakeupApplied(1);
-			setup.Mc.spendMakeup(tier);
+			setup.Mc.removeMakeup(tier);
 			setup.Mc.addBeauty(beautyDelta);
 		},
 

@@ -47,4 +47,4 @@
 <</if>>
 <<if setup.Home.cameraBought()>><<run setup.Home.markSleptWithCameraOn()>><</if>>
 <</nobr>>
-<<removeMakeup 5>>
+<<wipeMakeup 5>>

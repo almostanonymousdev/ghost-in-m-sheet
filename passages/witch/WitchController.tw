@@ -130,7 +130,7 @@ setup.Witch = (function () {
 		},
 		unlockMonkeyPawWishes: function () {
 			setup.MonkeyPaw.purchaseGuide();
-			setup.Mc.spendMoney(400);
+			setup.Mc.removeMoney(400);
 		},
 
 		// --- Level 3 tools referral ------------------------------
@@ -200,11 +200,11 @@ setup.Witch = (function () {
 		upgradeTool: function (tool) {
 			var price = this.TOOL_UPGRADE_PRICES[tool];
 			setup.ToolController.setTier(tool, 4);
-			setup.Mc.spendMoney(price);
+			setup.Mc.removeMoney(price);
 		},
 		buyDetector: function () {
 			setup.ToolController.buyDetector();
-			setup.Mc.spendMoney(200);
+			setup.Mc.removeMoney(200);
 		},
 		detectorBought: function () { return setup.ToolController.detectorBought(); },
 		monkeyPawGuideAvailable: function () {

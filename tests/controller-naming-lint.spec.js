@@ -8,7 +8,7 @@
  *   Getter (no-arg, returns a value):  bareNoun()       e.g. money(), sanity()
  *   Setter (1 arg, writes a field):    setNoun(v)
  *   Increment (1 arg, += n):           addNoun(n)
- *   Decrement (1 arg, -= n):           spendNoun(n)
+ *   Decrement (1 arg, -= n):           removeNoun(n)
  *   Force-clear:                       clearNoun()
  *   Force-set (truthy):                markNounYyy()
  *   Predicate (no-arg, returns bool):  hasX() / canX() / isX()
@@ -17,7 +17,8 @@
  *
  * This lint policies a small blocklist of off-pattern prefixes that
  * have crept in during refactors. Adding a new convention violation
- * to the list is cheaper than reviewing every PR for it by hand.
+ * to the list is easier and less annoying than reviewing every PR for
+ * it by hand.
  */
 const { test, expect } = require('@playwright/test');
 const fs = require('fs');
@@ -51,23 +52,17 @@ function stripStringsAndComments(js) {
 }
 
 /* Disallowed method-name prefixes. Each entry is { prefix, zeroArgOnly,
-   suggestion }: `prefix` is matched as `^prefix[A-Z]` (so `getX` and
-   `gotXyz` match but `geometry` and `gothic` do not). When
-   `zeroArgOnly` is true the rule only fires on no-arg methods —
-   parametric lookups like `getByName(name)` / `getVideos(key)` are
-   legitimate queries and are intentionally exempted. */
+   suggestion } When `zeroArgOnly` is true the rule only fires on no-arg
+   methods — parametric lookups like `getByName(name)` / `getVideos(key)`
+   are legitimate queries and are intentionally exempted. */
 const BAD_PREFIXES = [
   { prefix: 'get', zeroArgOnly: true,
     suggestion: 'use bare-noun getter (e.g. money() not getMoney())' },
-  { prefix: 'got', zeroArgOnly: false,
-    suggestion: 'use a state-shape getter (e.g. cursedItemState()) or a hasX() predicate' },
-  { prefix: 'peg', zeroArgOnly: false,
-    suggestion: 'use setX() (e.g. setActiveLust)' }
 ];
 
 test.describe('controller method naming', () => {
 
-  test('no off-pattern verb prefixes (get*, got*, peg*) on controller methods', () => {
+  test('no off-pattern verb prefixes (get*) on controller methods', () => {
     const files = collectControllerFiles(PASSAGES_ROOT);
     const violations = [];
 

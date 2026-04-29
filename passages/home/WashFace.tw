@@ -2,7 +2,7 @@
 <<image "ui/img/washface.jpg" { width: "70%" }>><br>
 
 @@.mc-speech; Ah, that feels refreshing@@<br>
-<<run setup.Home.removeMakeup()>>
+<<run setup.Home.wipeMakeup()>>
 <br>
 @@.backbtn;[[Back|Bathroom]] @@<br>
 <<done>>

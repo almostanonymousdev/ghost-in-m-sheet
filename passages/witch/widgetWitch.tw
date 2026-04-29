@@ -24,7 +24,7 @@
 			<<capture _ghostName, _price>>
 				@@.buyItemLink;<<link "Buy" "WitchSale">>
 					<<run setup.Ghosts.markDiscovered(_ghostName)>>
-					<<run setup.Mc.spendMoney(_price)>>
+					<<run setup.Mc.removeMoney(_price)>>
 				<</link>>@@<br>
 			<</capture>>
 		<<else>>@@.warningtext; I don't have enough money@@

@@ -505,7 +505,7 @@ setup.Companion = (function () {
 			var c = compFor(name);
 			if (!c) return false;
 			if (!c.paidForSolo && setup.Mc.money() >= 20) {
-				setup.Mc.spendMoney(20);
+				setup.Mc.removeMoney(20);
 				c.paidForSolo = 1;
 				return true;
 			}

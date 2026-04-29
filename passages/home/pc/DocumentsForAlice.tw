@@ -5,7 +5,7 @@
 	<b>- 3</b> <<image "ui/img/energy.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
 
 	<<run setup.Companion.setAliceWorkState(2)>>
-	<<run setup.Mc.spendEnergy(3)>>
+	<<run setup.Mc.removeEnergy(3)>>
 	<<addTime 60>>
 	<<addTime 60>>
 	<br>

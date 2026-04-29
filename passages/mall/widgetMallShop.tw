@@ -20,7 +20,7 @@ setup.notPurchased = function(varName) {
 		<<capture _varName, _price, _delta, _returnPassage>>
 			@@.buyItemLink;<<link "Buy" _returnPassage>>
 				<<run State.variables[_varName] = (State.variables[_varName] || 0) + _delta>>
-				<<run setup.Mc.spendMoney(_price)>>
+				<<run setup.Mc.removeMoney(_price)>>
 			<</link>>@@<br>
 		<</capture>>
 	<<else>>@@.mc-thoughts; I don't have enough money@@
@@ -46,7 +46,7 @@ setup.notPurchased = function(varName) {
 			<<capture _varName, _price, _boughtValue, _returnPassage>>
 				@@.buyItemLink;<<link "Buy" _returnPassage>>
 					<<run State.variables[_varName] = _boughtValue>>
-					<<run setup.Mc.spendMoney(_price)>>
+					<<run setup.Mc.removeMoney(_price)>>
 				<</link>>@@<br>
 			<</capture>>
 		<<else>>@@.mc-thoughts; I don't have enough money@@
@@ -72,7 +72,7 @@ setup.notPurchased = function(varName) {
 				<<capture _varName, _price, _boughtValue, _returnPassage>>
 					@@.buyItemLink;<<link "Buy" _returnPassage>>
 						<<run State.variables[_varName] = _boughtValue>>
-						<<run setup.Mc.spendMoney(_price)>>
+						<<run setup.Mc.removeMoney(_price)>>
 					<</link>>@@<br>
 				<</capture>>
 			<<else>>@@.mc-thoughts; I don't have enough money@@
@@ -99,7 +99,7 @@ setup.notPurchased = function(varName) {
 				<<capture _varName, _price, _boughtValue, _returnPassage>>
 					@@.buyItemLink;<<link "Buy" _returnPassage>>
 						<<run State.variables[_varName] = _boughtValue>>
-						<<run setup.Mc.spendMoney(_price)>>
+						<<run setup.Mc.removeMoney(_price)>>
 					<</link>>@@<br>
 				<</capture>>
 			<<else>>@@.mc-thoughts; I don't have enough money@@

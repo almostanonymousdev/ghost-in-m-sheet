@@ -235,7 +235,7 @@ setup.Delivery = (function () {
 		bankEarnedMoney: function () {
 			// Pay out the shift: credit MC, spend energy, reset counter.
 			setup.Mc.addMoney(setup.Mc.earnedMoney());
-			setup.Mc.spendEnergy(2);
+			setup.Mc.removeEnergy(2);
 			setup.Mc.setEarnedMoney(0);
 		},
 		grantPerfectShiftBonus: function (amount) {

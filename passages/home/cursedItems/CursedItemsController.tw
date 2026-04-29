@@ -56,7 +56,7 @@ setup.CursedItems = (function () {
 		   Centralised here so the values live in one place and
 		   events don't drift apart. */
 		applyCurseEventEffects: function () {
-			setup.Mc.spendSanity(15);
+			setup.Mc.removeSanity(15);
 			setup.Mc.addCorruption(0.5);
 			setup.Mc.setLust(100);
 			this.clearCurse();

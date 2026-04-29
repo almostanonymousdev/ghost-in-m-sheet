@@ -31,6 +31,6 @@ Money: -35 $<br>
 
 <br>
 @@.mc-action; You've received a contract to identify the type of  ghost@@
-<<run setup.Mc.spendMoney(35)>>
+<<run setup.Mc.removeMoney(35)>>
 <br>
 @@.backbtn;[[Back|WitchInside]] @@<br>
