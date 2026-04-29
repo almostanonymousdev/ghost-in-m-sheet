@@ -115,13 +115,17 @@ test.describe('Variable ownership', () => {
 	});
 
 	test('OWNED_VARS arrays are non-empty (or explicitly empty)', () => {
-		// Salon currently owns nothing — that's a deliberate design choice.
+		// Stateless controllers are allowed to own nothing:
+		//   - Salon: deliberately stateless (legacy decision).
+		//   - FloorPlan: pure-functional generator. The plan it
+		//     produces lives on $run.floorplan, owned by setup.Run.
 		// Every other discovered controller should claim at least one var.
+		const STATELESS_ALLOWED = new Set(['Salon', 'FloorPlan']);
 		const empty = controllerNames
-			.filter((n) => ownedByName[n].length === 0 && n !== 'Salon');
+			.filter((n) => ownedByName[n].length === 0 && !STATELESS_ALLOWED.has(n));
 		expect(
 			empty,
-			`Controllers with empty OWNED_VARS (other than Salon): ${empty.join(', ')}`
+			`Controllers with empty OWNED_VARS (not in stateless allowlist): ${empty.join(', ')}`
 		).toEqual([]);
 	});
 

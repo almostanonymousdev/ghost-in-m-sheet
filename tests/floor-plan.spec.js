@@ -1,0 +1,158 @@
+const { test, expect } = require('@playwright/test');
+const { openGame, callSetup } = require('./helpers');
+
+/* setup.FloorPlan generates deterministic, fully-connected room
+   graphs for rogue runs. Same seed must always produce the same
+   plan (the generator uses an internal Mulberry32 PRNG, so global
+   Math.random patching is irrelevant). */
+test.describe('Floor-plan generator', () => {
+  let page;
+
+  test.beforeAll(async ({ browser }) => {
+    page = await openGame(browser);
+  });
+
+  test.afterAll(async () => {
+    await page.close();
+  });
+
+  /* Tiny helper: generate a plan in-page and return it as JSON. */
+  async function gen(seed, opts) {
+    return page.evaluate(({ s, o }) =>
+      SugarCube.setup.FloorPlan.generate(s, o || {}), { s: seed, o: opts });
+  }
+
+  // --- Determinism ---
+
+  test('same seed produces identical plans', async () => {
+    const a = await gen(42);
+    const b = await gen(42);
+    expect(a).toEqual(b);
+  });
+
+  test('different seeds produce different plans', async () => {
+    const a = await gen(1);
+    const b = await gen(2);
+    // Distinct seeds should differ in at least one of: room
+    // template selection, spawn, or stash placement.
+    expect(a).not.toEqual(b);
+  });
+
+  test('plan stamps the seed it was generated from', async () => {
+    const plan = await gen(2026);
+    expect(plan.seed).toBe(2026);
+  });
+
+  // --- Room invariants ---
+
+  test('default plan has 5 rooms with hallway as room_0', async () => {
+    const plan = await gen(1);
+    expect(plan.rooms.length).toBe(5);
+    expect(plan.rooms[0]).toEqual({ id: 'room_0', template: 'hallway' });
+  });
+
+  test('roomCount option controls room count, with hallway always room_0', async () => {
+    const plan = await gen(1, { roomCount: 8 });
+    expect(plan.rooms.length).toBe(8);
+    expect(plan.rooms[0].template).toBe('hallway');
+    // Non-hallway rooms have unique ids.
+    const ids = plan.rooms.map(r => r.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  test('roomCount is clamped to a minimum of 2', async () => {
+    const plan = await gen(1, { roomCount: 0 });
+    expect(plan.rooms.length).toBe(2);
+  });
+
+  test('non-hallway rooms only use templates from the catalogue', async () => {
+    const plan = await gen(99, { roomCount: 8 });
+    const cat = await callSetup(page, 'setup.FloorPlan.TEMPLATES');
+    plan.rooms.slice(1).forEach(r => {
+      expect(cat).toContain(r.template);
+    });
+  });
+
+  test('non-hallway templates are unique within a single plan', async () => {
+    const plan = await gen(7, { roomCount: 6 });
+    const tmpls = plan.rooms.slice(1).map(r => r.template);
+    expect(new Set(tmpls).size).toBe(tmpls.length);
+  });
+
+  // --- Connectivity ---
+
+  test('every room is reachable from the hallway', async () => {
+    for (const seed of [1, 2, 3, 100, 999, 12345]) {
+      const plan = await gen(seed, { roomCount: 7 });
+      const connected = await page.evaluate(p =>
+        SugarCube.setup.FloorPlan.isConnected(p), plan);
+      expect(connected).toBe(true);
+    }
+  });
+
+  test('star topology: every edge touches the hallway', async () => {
+    const plan = await gen(1, { roomCount: 6 });
+    plan.edges.forEach(([a, b]) => {
+      expect(a === 'room_0' || b === 'room_0').toBe(true);
+    });
+    // Every non-hallway room has exactly one edge into it.
+    expect(plan.edges.length).toBe(plan.rooms.length - 1);
+  });
+
+  test('neighborsOf walks the edge list both ways', async () => {
+    const plan = await gen(1, { roomCount: 4 });
+    const nbrs = await page.evaluate(p =>
+      SugarCube.setup.FloorPlan.neighborsOf(p, 'room_0'), plan);
+    expect(nbrs.sort()).toEqual(['room_1', 'room_2', 'room_3'].sort());
+
+    // Each spoke knows it borders the hallway.
+    for (const id of ['room_1', 'room_2', 'room_3']) {
+      const back = await page.evaluate(({ p, i }) =>
+        SugarCube.setup.FloorPlan.neighborsOf(p, i), { p: plan, i: id });
+      expect(back).toEqual(['room_0']);
+    }
+  });
+
+  // --- Spawn / stashes / boss ---
+
+  test('ghost spawns in a non-hallway room', async () => {
+    for (const seed of [1, 2, 3, 4, 5]) {
+      const plan = await gen(seed);
+      expect(plan.spawnRoomId).not.toBe('room_0');
+      const room = await page.evaluate(({ p, i }) =>
+        SugarCube.setup.FloorPlan.roomById(p, i), { p: plan, i: plan.spawnRoomId });
+      expect(room).not.toBeNull();
+    }
+  });
+
+  test('every stash kind is placed on a real non-hallway room', async () => {
+    const plan = await gen(31, { roomCount: 6 });
+    const kinds = await callSetup(page, 'setup.FloorPlan.STASH_KINDS');
+    const ids = new Set(plan.rooms.map(r => r.id));
+    kinds.forEach(k => {
+      expect(plan.stashes[k]).toBeDefined();
+      expect(ids.has(plan.stashes[k])).toBe(true);
+      expect(plan.stashes[k]).not.toBe('room_0');
+    });
+  });
+
+  test('bossRoomId is null when includeBoss is false (default)', async () => {
+    const plan = await gen(1);
+    expect(plan.bossRoomId).toBeNull();
+  });
+
+  test('bossRoomId picks a non-hallway room when includeBoss is true', async () => {
+    const plan = await gen(1, { includeBoss: true });
+    expect(plan.bossRoomId).not.toBeNull();
+    expect(plan.bossRoomId).not.toBe('room_0');
+  });
+
+  // --- Helpers ---
+
+  test('roomById returns null for unknown ids', async () => {
+    const plan = await gen(1);
+    const room = await page.evaluate(p =>
+      SugarCube.setup.FloorPlan.roomById(p, 'room_999'), plan);
+    expect(room).toBeNull();
+  });
+});
