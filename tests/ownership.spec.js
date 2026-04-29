@@ -119,8 +119,10 @@ test.describe('Variable ownership', () => {
 		//   - Salon: deliberately stateless (legacy decision).
 		//   - FloorPlan: pure-functional generator. The plan it
 		//     produces lives on $run.floorplan, owned by setup.Run.
+		//   - Modifiers: pure-functional catalogue + drafter. The
+		//     active deck lives on $run.modifiers, owned by setup.Run.
 		// Every other discovered controller should claim at least one var.
-		const STATELESS_ALLOWED = new Set(['Salon', 'FloorPlan']);
+		const STATELESS_ALLOWED = new Set(['Salon', 'FloorPlan', 'Modifiers']);
 		const empty = controllerNames
 			.filter((n) => ownedByName[n].length === 0 && !STATELESS_ALLOWED.has(n));
 		expect(
