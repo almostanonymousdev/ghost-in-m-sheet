@@ -1,10 +1,7 @@
 :: IroncladHallway [hauntedhouse IroncladHallway] {"position":"2700,400","size":"100,100"}
 <<nobr>><<roomShell "IroncladHallway" "hallway">>
 <<roomFooter>>
-<<navLink "Reception" "IroncladReception" "hunt">>
-<<navLink "Kitchen" "IroncladKitchen" "hunt">>
-<<navLink "BlockA" "IroncladBlockA" "hunt">>
-<<navLink "BlockB" "IroncladBlockB" "hunt">>
+<<navExits>>
 <br>
 @@.adaptiveLink;<<link "Leave" "Ironclad Prison">>
 <</link>>@@
@@ -16,7 +13,7 @@
 <<nobr>><<roomShell "IroncladReception" "reception">>
 <<roomFooter>>
 <br><br><br>
-<<navLink "Entrance" "IroncladHallway" "hunt">>
+<<navExits>>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
@@ -25,7 +22,7 @@
 <<nobr>><<roomShell "IroncladKitchen" "kitchen">>
 <<roomFooter>>
 <br><br><br>
-<<navLink "Entrance" "IroncladHallway" "hunt">>
+<<navExits>>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
@@ -33,10 +30,7 @@
 :: IroncladBlockA [IroncladBlockA hauntedhouse] {"position":"2600,300","size":"100,100"}
 <<nobr>><<roomShell "IroncladBlockA" "BlockA">>
 <<roomFooter>>
-<<navLink "CellA" "IroncladBlockACellA" "hunt">>
-<<navLink "CellB" "IroncladBlockACellB" "hunt">>
-<<navLink "CellC" "IroncladBlockACellC" "hunt">>
-<<navLink "Entrance" "IroncladHallway" "hunt">>
+<<navExits>>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
@@ -44,10 +38,7 @@
 :: IroncladBlockB [IroncladBlockB hauntedhouse] {"position":"2800,300","size":"100,100"}
 <<nobr>><<roomShell "IroncladBlockB" "BlockB">>
 <<roomFooter>>
-<<navLink "CellA" "IroncladBlockBCellA" "hunt">>
-<<navLink "CellB" "IroncladBlockBCellB" "hunt">>
-<<navLink "CellC" "IroncladBlockBCellC" "hunt">>
-<<navLink "Entrance" "IroncladHallway" "hunt">>
+<<navExits>>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
@@ -55,7 +46,7 @@
 :: IroncladBlockACellA [hauntedhouse IroncladBlockACellA] {"position":"2500,300","size":"100,100"}
 <<nobr>><<roomShell "IroncladBlockACellA" "BlockACellA">>
 <<roomFooter>>
-<<navLink "BlockA" "IroncladBlockA" "hunt">>
+<<navExits>>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
@@ -63,7 +54,7 @@
 :: IroncladBlockACellB [IroncladBlockACellB hauntedhouse] {"position":"2600,200","size":"100,100"}
 <<nobr>><<roomShell "IroncladBlockACellB" "BlockACellB">>
 <<roomFooter>>
-<<navLink "BlockA" "IroncladBlockA" "hunt">>
+<<navExits>>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
@@ -71,7 +62,7 @@
 :: IroncladBlockACellC [IroncladBlockACellC hauntedhouse] {"position":"2500,200","size":"100,100"}
 <<nobr>><<roomShell "IroncladBlockACellC" "BlockACellC">>
 <<roomFooter>>
-<<navLink "BlockA" "IroncladBlockA" "hunt">>
+<<navExits>>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
@@ -79,7 +70,7 @@
 :: IroncladBlockBCellA [IroncladBlockBCellA hauntedhouse] {"position":"2900,300","size":"100,100"}
 <<nobr>><<roomShell "IroncladBlockBCellA" "BlockBCellA">>
 <<roomFooter>>
-<<navLink "BlockB" "IroncladBlockB" "hunt">>
+<<navExits>>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
@@ -87,7 +78,7 @@
 :: IroncladBlockBCellB [IroncladBlockBCellB hauntedhouse] {"position":"2800,200","size":"100,100"}
 <<nobr>><<roomShell "IroncladBlockBCellB" "BlockBCellB">>
 <<roomFooter>>
-<<navLink "BlockB" "IroncladBlockB" "hunt">>
+<<navExits>>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
@@ -95,7 +86,7 @@
 :: IroncladBlockBCellC [hauntedhouse IroncladBlockBCellC] {"position":"2900,200","size":"100,100"}
 <<nobr>><<roomShell "IroncladBlockBCellC" "BlockBCellC">>
 <<roomFooter>>
-<<navLink "BlockB" "IroncladBlockB" "hunt">>
+<<navExits>>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>

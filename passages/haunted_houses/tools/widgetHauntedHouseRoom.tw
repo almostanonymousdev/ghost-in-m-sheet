@@ -171,24 +171,41 @@ the only ways out are the scream link or a cursed-item sacrifice. */
 	<</if>>
 <</widget>>
 
+/* navExits -- arg-less. Reads the active house's exits map for the
+current passage and emits one <<navLink>> per entry, using the house's
+default navMode (e.g. ironclad's "hunt"). Lets room passages express
+their connectivity in HOUSE_CONFIG.exits instead of hardcoding a
+column of <<navLink>> calls; rogue-mode floor plans wire a fresh
+exits map per run. Returns nothing when the active house has no
+exits map (enigma) or the current passage isn't in it. */
+<<widget "navExits">>
+	<<set _exits to setup.HauntedHouses.exitsFor(passage())>>
+	<<set _exitMode to setup.HauntedHouses.navMode()>>
+	<<for _e range _exits>>
+		<<capture _e>>
+			<<navLink _e.label _e.target _exitMode>>
+		<</capture>>
+	<</for>>
+<</widget>>
+
 /* leaveLink -- args: label, target passage. Wraps a plain @@.adaptiveLink;
 <<link>> in the .cursedHuntLinkDisable span used by the elm and owaissa
-	hallways' "leave / Outside" exits. No event chain or step increment.
-	When the Monkey Paw's trapTheGhost wish has sealed the front door,
-	the link routes to FrontDoorLocked instead of the street so the
-	player can see the unlock options (sacrifice, wait, scream). */
-	<<widget "leaveLink">>
-		<span class="cursedHuntLinkDisable">@@.adaptiveLink;<<link _args[0] `setup.MonkeyPaw.isFrontDoorLocked() ? "FrontDoorLocked" : _args[1]`>>
-		<</link>>@@</span>
-	<</widget>>
+hallways' "leave / Outside" exits. No event chain or step increment.
+When the Monkey Paw's trapTheGhost wish has sealed the front door,
+the link routes to FrontDoorLocked instead of the street so the
+player can see the unlock options (sacrifice, wait, scream). */
+<<widget "leaveLink">>
+	<span class="cursedHuntLinkDisable">@@.adaptiveLink;<<link _args[0] `setup.MonkeyPaw.isFrontDoorLocked() ? "FrontDoorLocked" : _args[1]`>>
+	<</link>>@@</span>
+<</widget>>
 
-	/* roomToolCard -- args: tool key (e.g. "emf"), room prefix (e.g. "ElmBedroom").
-	Renders one tool slot using metadata from setup.searchToolDefs and
-	setup.searchPrefixIndex, with the searchTool macro inlined directly. Wraps
-	the slot in <<hovertip>> so hovering surfaces the tool's current tier and
-	per-check/window success summary from setup.toolSuccessRate. */
-	<<widget "roomToolCard">>
-		<<hovertip setup.toolSuccessRate(_args[0])>>
+/* roomToolCard -- args: tool key (e.g. "emf"), room prefix (e.g. "ElmBedroom").
+Renders one tool slot using metadata from setup.searchToolDefs and
+setup.searchPrefixIndex, with the searchTool macro inlined directly. Wraps
+the slot in <<hovertip>> so hovering surfaces the tool's current tier and
+per-check/window success summary from setup.toolSuccessRate. */
+<<widget "roomToolCard">>
+	<<hovertip setup.toolSuccessRate(_args[0])>>
 		<div class="footer-card">
 		<div class="cardimg">
 		<<image "ui/img/" + setup.searchToolDefs[_args[0]].iconFile { class: "icon", id: _args[1] + setup.searchToolDefs[_args[0]].picSuffix }>>
@@ -197,12 +214,12 @@ the only ways out are the scream link or a cursed-item sacrifice. */
 		<<searchTool _args[0] _args[1]>>
 		</div>
 		</div>
-		<</hovertip>>
-	<</widget>>
+	<</hovertip>>
+<</widget>>
 
-	/* roomToolBar -- arg: room prefix. Emits the canonical six tool slots in
-	the order setup.searchToolOrder, plus the companion card. Replaces the
-	six per-tool <<toolCard>> calls (and the per-room <<script>>) that every
+/* roomToolBar -- arg: room prefix. Emits the canonical six tool slots in
+the order setup.searchToolOrder, plus the companion card. Replaces the
+six per-tool <<toolCard>> calls (and the per-room <<script>>) that every
    haunted-house room used to repeat. */
 <<widget "roomToolBar">>
 	<<for _t range setup.searchToolOrder>>

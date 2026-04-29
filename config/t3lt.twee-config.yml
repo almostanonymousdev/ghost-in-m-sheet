@@ -337,6 +337,14 @@ sugarcube-2:
         $stepCount. Args: label (string), targetPassage (string), [mode (string,
         'hunt' for ironclad's includeTimeEventHunt; default = elm/owaissa
         includeTimeEventClothesHunt)]."
+    navExits:
+      name: navExits
+      description: "Reads the active house's exits map (HOUSE_CONFIG.exits[passage()])
+        and emits one <<navLink>> per outgoing exit using the house's default
+        navMode (e.g. ironclad's 'hunt'). Lets each room declare its outgoing
+        nav links in HOUSE_CONFIG instead of hardcoding a column of <<navLink>>
+        calls. Returns nothing for houses without an exits map (enigma) or
+        passages not listed. No args."
     leaveLink:
       name: leaveLink
       description: "Wraps a plain @@.adaptiveLink;<<link>> in the

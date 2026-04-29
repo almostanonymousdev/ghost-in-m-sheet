@@ -7,7 +7,7 @@
 <<furnitureItem "wmachine.png" "bathroom_wmachine">>
 <</furnitureRow>>
 <<roomFooter>>
-<<navLink "Hallway" "OwaissaHallway">>
+<<navExits>>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
@@ -20,7 +20,7 @@
 <<furnitureItem "wardrobe1.png" "bedroom_wardrobe1">>
 <</furnitureRow>>
 <<roomFooter>>
-<<navLink "Hallway" "OwaissaHallway">>
+<<navExits>>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
@@ -33,9 +33,7 @@
 <<furnitureItem "coatrack.png" "hallway_coatrack">>
 <</furnitureRow>>
 <<roomFooter>>
-<<navLink "Kitchen" "OwaissaKitchen">>
-<<navLink "Bedroom" "OwaissaBedroom">>
-<<navLink "Bathroom" "OwaissaBathroom">>
+<<navExits>>
 <<leaveLink "Outside" "Owaissa Street">>
 <</roomFooter>>
 <</roomShell>>
@@ -49,8 +47,7 @@
 <<furnitureItem "sink1.png" "kitchen_sink1">>
 <</furnitureRow>>
 <<roomFooter>>
-<<navLink "Hallway" "OwaissaHallway">>
-<<navLink "Livingroom" "OwaissaLivingroom">>
+<<navExits>>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
@@ -62,7 +59,7 @@
 <<furnitureItem "sofa.png" "livingroom_sofa">>
 <</furnitureRow>>
 <<roomFooter>>
-<<navLink "Kitchen" "OwaissaKitchen">>
+<<navExits>>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>

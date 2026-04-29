@@ -64,7 +64,17 @@ setup.HauntedHouses = (function () {
 		evidence types the witch has hidden this contract.
 		`furniture`, when present, lists the room-prefixed slot ids that
 		distributeFurnitureStashes() uses to seed stash positions for
-		that house. Houses without `furniture` are skipped. */
+		that house. Houses without `furniture` are skipped.
+		`exits` is the room-to-room nav graph: keys are passage names
+		(e.g. "OwaissaKitchen"), values are arrays of
+		{label, target} for the <<navExits>> widget to emit as nav
+		links. Leave-links / outside-links are kept inline in their
+		hallway passages -- only the within-house room-to-room nav is
+		data-driven here. `navMode` is the third arg passed to
+		<<navLink>> (currently "hunt" for ironclad, undefined for
+		owaissa/elm). Houses without an exits map fall back to inline
+		nav (used for enigma, which renders raw markdown links and
+		isn't migrated). */
 	var HOUSE_CONFIG = [
 		{
 			id: 'owaissa',
@@ -82,6 +92,20 @@ setup.HauntedHouses = (function () {
 				'bathroom_bathtub', 'bathroom_carpet', 'bathroom_sink', 'bathroom_wmachine',
 				'bedroom_bed2', 'bedroom_table', 'bedroom_wardrobe1'
 			],
+			exits: {
+				OwaissaHallway: [
+					{ label: 'Kitchen',  target: 'OwaissaKitchen'  },
+					{ label: 'Bedroom',  target: 'OwaissaBedroom'  },
+					{ label: 'Bathroom', target: 'OwaissaBathroom' }
+				],
+				OwaissaKitchen: [
+					{ label: 'Hallway',    target: 'OwaissaHallway'    },
+					{ label: 'Livingroom', target: 'OwaissaLivingroom' }
+				],
+				OwaissaLivingroom: [{ label: 'Kitchen', target: 'OwaissaKitchen'  }],
+				OwaissaBedroom:    [{ label: 'Hallway', target: 'OwaissaHallway' }],
+				OwaissaBathroom:   [{ label: 'Hallway', target: 'OwaissaHallway' }]
+			},
 			contract: {
 				zero:  { money: 120, xp:  35 },
 				one:   { money: 240, xp:  70 },
@@ -112,6 +136,28 @@ setup.HauntedHouses = (function () {
 				'hallway_carpet', 'hallway_coatrack',
 				'hallwayUpstairs_carpet', 'hallwayUpstairs_shelves'
 			],
+			exits: {
+				ElmHallway: [
+					{ label: 'bedroom',    target: 'ElmBedroom'         },
+					{ label: 'bathroom',   target: 'ElmBathroom'        },
+					{ label: 'kitchen',    target: 'ElmKitchen'         },
+					{ label: 'upstairs',   target: 'ElmHallwayUpstairs' },
+					{ label: 'basement',   target: 'ElmBasement'        }
+				],
+				ElmHallwayUpstairs: [
+					{ label: 'downstairs', target: 'ElmHallway'         },
+					{ label: 'bathroom',   target: 'ElmBathroomTwo'     },
+					{ label: 'bedroom',    target: 'ElmBedroomTwo'      },
+					{ label: 'nursery',    target: 'ElmNursery'         }
+				],
+				ElmKitchen:     [{ label: 'hallway', target: 'ElmHallway'         }],
+				ElmBathroom:    [{ label: 'hallway', target: 'ElmHallway'         }],
+				ElmBedroom:     [{ label: 'hallway', target: 'ElmHallway'         }],
+				ElmBasement:    [{ label: 'hallway', target: 'ElmHallway'         }],
+				ElmBathroomTwo: [{ label: 'hallway', target: 'ElmHallwayUpstairs' }],
+				ElmBedroomTwo:  [{ label: 'hallway', target: 'ElmHallwayUpstairs' }],
+				ElmNursery:     [{ label: 'hallway', target: 'ElmHallwayUpstairs' }]
+			},
 			contract: {
 				zero:  { money: 180, xp:  60 },
 				one:   { money: 320, xp: 100 },
@@ -152,6 +198,35 @@ setup.HauntedHouses = (function () {
 				'BlockBCellA', 'BlockBCellB', 'BlockBCellC',
 				'reception', 'kitchen', 'hallway'
 			],
+			navMode: 'hunt',
+			exits: {
+				IroncladHallway: [
+					{ label: 'Reception', target: 'IroncladReception' },
+					{ label: 'Kitchen',   target: 'IroncladKitchen'   },
+					{ label: 'BlockA',    target: 'IroncladBlockA'    },
+					{ label: 'BlockB',    target: 'IroncladBlockB'    }
+				],
+				IroncladReception: [{ label: 'Entrance', target: 'IroncladHallway' }],
+				IroncladKitchen:   [{ label: 'Entrance', target: 'IroncladHallway' }],
+				IroncladBlockA: [
+					{ label: 'CellA',    target: 'IroncladBlockACellA' },
+					{ label: 'CellB',    target: 'IroncladBlockACellB' },
+					{ label: 'CellC',    target: 'IroncladBlockACellC' },
+					{ label: 'Entrance', target: 'IroncladHallway'     }
+				],
+				IroncladBlockB: [
+					{ label: 'CellA',    target: 'IroncladBlockBCellA' },
+					{ label: 'CellB',    target: 'IroncladBlockBCellB' },
+					{ label: 'CellC',    target: 'IroncladBlockBCellC' },
+					{ label: 'Entrance', target: 'IroncladHallway'     }
+				],
+				IroncladBlockACellA: [{ label: 'BlockA', target: 'IroncladBlockA' }],
+				IroncladBlockACellB: [{ label: 'BlockA', target: 'IroncladBlockA' }],
+				IroncladBlockACellC: [{ label: 'BlockA', target: 'IroncladBlockA' }],
+				IroncladBlockBCellA: [{ label: 'BlockB', target: 'IroncladBlockB' }],
+				IroncladBlockBCellB: [{ label: 'BlockB', target: 'IroncladBlockB' }],
+				IroncladBlockBCellC: [{ label: 'BlockB', target: 'IroncladBlockB' }]
+			},
 			contract: {
 				zero:  { money: 170, xp:  60 },
 				one:   { money: 240, xp: 100 },
@@ -209,6 +284,23 @@ setup.HauntedHouses = (function () {
 		roomsFor: function (id) {
 			var h = this.byId(id);
 			return h ? h.rooms.slice() : [];
+		},
+		/* Outgoing nav links for the given passage in the active
+		   house. Returns [] when the active house has no exits map
+		   (enigma) or the passage isn't in it. The <<navExits>>
+		   widget consumes this. */
+		exitsFor: function (passageName) {
+			var h = this.activeHouse();
+			if (!h || !h.exits) return [];
+			var list = h.exits[passageName];
+			return Array.isArray(list) ? list : [];
+		},
+		/* Default <<navLink>> mode for the active house ('' for the
+		   clothes-event default, 'hunt' for ironclad). Returns ''
+		   when no house is active. */
+		navMode: function () {
+			var h = this.activeHouse();
+			return h && h.navMode ? h.navMode : '';
 		},
 		/* The house that currently owns the hunt; null when no house
 			is active (witch pre-hunt, or after GhostStreet teardown). */

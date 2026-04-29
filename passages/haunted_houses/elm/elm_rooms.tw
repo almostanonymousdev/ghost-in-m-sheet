@@ -5,7 +5,7 @@
 <<furnitureItem "shelves.png" "basement_shelves">>
 <</furnitureRow>>
 <<roomFooter>>
-<<navLink "hallway" "ElmHallway">>
+<<navExits>>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
@@ -18,7 +18,7 @@
 <<furnitureItem "wmachine.png" "bathroom_wmachine">>
 <</furnitureRow>>
 <<roomFooter>>
-<<navLink "hallway" "ElmHallway">>
+<<navExits>>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
@@ -30,7 +30,7 @@
 <<furnitureItem "carpet.png" "bathroomTwo_carpet">>
 <</furnitureRow>>
 <<roomFooter>>
-<<navLink "hallway" "ElmHallwayUpstairs">>
+<<navExits>>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
@@ -43,7 +43,7 @@
 <<furnitureItem "wardrobe1.png" "bedroom_wardrobe1">>
 <</furnitureRow>>
 <<roomFooter>>
-<<navLink "hallway" "ElmHallway">>
+<<navExits>>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
@@ -56,7 +56,7 @@
 <<furnitureItem "shelves.png" "bedroomTwo_shelves">>
 <</furnitureRow>>
 <<roomFooter>>
-<<navLink "hallway" "ElmHallwayUpstairs">>
+<<navExits>>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
@@ -68,11 +68,7 @@
 <<furnitureItem "coatrack.png" "hallway_coatrack">>
 <</furnitureRow>>
 <<roomFooter>>
-<<navLink "bedroom" "ElmBedroom">>
-<<navLink "bathroom" "ElmBathroom">>
-<<navLink "kitchen" "ElmKitchen">>
-<<navLink "upstairs" "ElmHallwayUpstairs">>
-<<navLink "basement" "ElmBasement">>
+<<navExits>>
 <br>
 <<leaveLink "leave" "Elm Street">>
 <</roomFooter>>
@@ -86,10 +82,7 @@
 <<furnitureItem "shelves.png" "hallwayUpstairs_shelves">>
 <</furnitureRow>>
 <<roomFooter>>
-<<navLink "downstairs" "ElmHallway">>
-<<navLink "bathroom" "ElmBathroomTwo">>
-<<navLink "bedroom" "ElmBedroomTwo">>
-<<navLink "nursery" "ElmNursery">>
+<<navExits>>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
@@ -102,7 +95,7 @@
 <<furnitureItem "desk.png" "kitchen_desk">>
 <</furnitureRow>>
 <<roomFooter>>
-<<navLink "hallway" "ElmHallway">>
+<<navExits>>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
@@ -115,7 +108,7 @@
 <<hideSpot "ElmNursery" "bed.png" "nursery_bed">>
 <</furnitureRow>>
 <<roomFooter>>
-<<navLink "hallway" "ElmHallwayUpstairs">>
+<<navExits>>
 <</roomFooter>>
 <</roomShell>>
 <</nobr>>
