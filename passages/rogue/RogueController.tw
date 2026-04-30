@@ -54,8 +54,8 @@ setup.Rogue = (function () {
 			modifiers: Array.isArray(opts.modifiers) ? opts.modifiers.slice() : [],
 			loadout: opts.loadout || {},
 			objective: opts.objective || 'identify',
-			// Player starts in the hallway. Nav links update this via
-			// setCurrentRoom(); the rogueCurrentRoom widget reads it.
+			// Player starts in the hallway. Nav links in RogueRun
+			// update this via setCurrentRoom() before re-rendering.
 			currentRoomId: 'room_0'
 		};
 		return sv().run;
@@ -307,9 +307,10 @@ setup.Rogue = (function () {
 	/* View-layer summary of the player's current room: name, the
 	   furniture list (with any stashed item annotated), the stash
 	   kinds in this room that aren't pinned to a specific piece of
-	   furniture, and the adjacent-room nav links. The rogueCurrentRoom
-	   widget renders straight from this list, so coverage here locks
-	   in the structure. Returns null when no run is active. */
+	   furniture, and the adjacent-room nav links. RogueRun renders
+	   the furniture strip and exit links from this record, so
+	   coverage here locks in the structure. Returns null when no
+	   run is active. */
 	function currentRoomData() {
 		var run = active();
 		if (!run || !run.floorplan) return null;

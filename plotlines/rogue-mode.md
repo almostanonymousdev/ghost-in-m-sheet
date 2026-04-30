@@ -32,15 +32,16 @@ a failure before rolling fresh.
   the modifier list and the floor plan before they commit.
   `setup.Rogue.startRogue({ seed })` does the actual composition.
 * **[RogueRun](../passages/rogue/RogueLifecycle.tw)** — in-progress
-  view. Renders the player's current room
-  ([`<<rogueCurrentRoom>>`](../passages/rogue/widgetRogueCurrentRoom.tw):
-  name, furniture, stash annotations, exit nav links) above an
-  SVG floor-plan map
-  ([`<<rogueMinimap>>`](../passages/rogue/widgetRogueMinimap.tw):
-  labeled squares with edges, current/spawn/boss highlights).
-  Debug "Win" / "Lose" / "Abandon" links exercise the lifecycle
-  end-to-end; the room-by-room investigation logic is a follow-up
-  pass.
+  view. Laid out to mirror the regular ghost hunts: the SVG
+  minimap ([`<<rogueMinimap>>`](../passages/rogue/widgetRogueMinimap.tw)
+  — labeled squares with edges and current/spawn/boss highlights)
+  sits in the top-left, the active modifier list and the debug
+  Win / Lose / Abandon links sit in the top-right, and the bottom
+  is a furniture-icon strip + run HUD + tool/exit toolbar. The
+  exits column on the right of the toolbar calls
+  `setup.Rogue.setCurrentRoom(id)` and re-enters RogueRun. The
+  "tools" panel is a dashed placeholder until rogue-mode tool
+  gameplay lands.
 * **[RogueEnd](../passages/rogue/RogueLifecycle.tw)** — result
   screen. `setup.Rogue.endRogue(success)` clears `$run` and pays out
   echoes (5 base + 5 if successful + 1 per active modifier). The
@@ -138,7 +139,6 @@ links use to decide whether to render an unlock as active.
 * [TemplatesController.tw](../passages/rogue/TemplatesController.tw) — `setup.Templates`: room-template metadata + slot-id helpers.
 * [RogueLifecycle.tw](../passages/rogue/RogueLifecycle.tw) — `RogueStart`, `RogueRun`, `RogueEnd`, `RogueMetaShop` passages.
 * [widgetRogueMinimap.tw](../passages/rogue/widgetRogueMinimap.tw) — `<<rogueMinimap>>` SVG floor-plan view.
-* [widgetRogueCurrentRoom.tw](../passages/rogue/widgetRogueCurrentRoom.tw) — `<<rogueCurrentRoom>>` current-room view + adjacent-room nav links.
 
 ## Save migration
 

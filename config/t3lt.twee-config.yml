@@ -351,14 +351,6 @@ sugarcube-2:
         list with spawn / boss / stash annotations. Reads from
         setup.Rogue.minimapData(); emits nothing when no rogue run is active.
         No args."
-    rogueCurrentRoom:
-      name: rogueCurrentRoom
-      description: "Renders the player's current room inside the active rogue
-        run: room name, furniture list (with any stashed item annotated),
-        stash items hidden in templates without furniture, and nav links to
-        every adjacent room. Reads from setup.Rogue.currentRoomData(); nav
-        links call setup.Rogue.setCurrentRoom() and re-enter RogueRun. Emits
-        nothing when no rogue run is active. No args."
     leaveLink:
       name: leaveLink
       description: "Wraps a plain @@.adaptiveLink;<<link>> in the

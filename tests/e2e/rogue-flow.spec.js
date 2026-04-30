@@ -100,25 +100,29 @@ test.describe('E2E: rogue run lifecycle', () => {
     expect(await getVar(page, 'runsStarted')).toBe(2);
   });
 
-  test('current-room widget renders furniture + nav links, links advance the player', async () => {
+  test('RogueRun layout: minimap top-left, exits in toolbar, exits advance the player', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
     await clickLink(page, 'Rogue Haunt', 'RogueStart');
     await clickLink(page, 'Enter the haunt', 'RogueRun');
 
-    // The current-room block should render the player's starting
-    // room (the hallway) and at least one exit link the player can
-    // click to walk into another room.
-    await expect(page.locator('.rogue-current-room')).toBeVisible();
-    await expect(
-      page.locator('.rogue-current-room').getByText('Current Room: Hallway')
-    ).toBeVisible();
-
+    // Player starts in the hallway (room_0).
     expect(await getVar(page, 'run').then(r => r.currentRoomId)).toBe('room_0');
 
-    // The hallway's neighbours come from the floor plan; click the
-    // first one and verify currentRoomId follows.
+    // Layout slots are populated:
+    //   - top-left holds the minimap SVG
+    //   - top-right holds Win / Lose / Abandon
+    //   - bottom-right toolbar slot holds the exit nav links (no
+    //     "Exits" header -- the links speak for themselves)
+    await expect(page.locator('.rogue-run-tl .rogue-minimap-svg')).toBeVisible();
+    await expect(
+      page.locator('.rogue-run-tr').getByText('Win', { exact: true })
+    ).toBeVisible();
+    expect(await page.locator('.rogue-run-nav a').count()).toBeGreaterThan(0);
+
+    // Click the first hallway neighbour from the Exits column and verify
+    // currentRoomId follows.
     const fp = await getVar(page, 'run').then(r => r.floorplan);
     const neighbours = fp.edges
       .filter(e => e[0] === 'room_0' || e[1] === 'room_0')
@@ -129,7 +133,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     const firstNeighbour = fp.rooms.find(r => r.id === firstNeighbourId);
     const tLabel = await callSetup(page, `setup.Templates.byId("${firstNeighbour.template}").label`);
 
-    await page.locator('.rogue-current-room')
+    await page.locator('.rogue-run-nav')
       .getByText(tLabel, { exact: true })
       .first()
       .click();
@@ -137,6 +141,21 @@ test.describe('E2E: rogue run lifecycle', () => {
       id => SugarCube.State.variables.run.currentRoomId === id,
       firstNeighbourId
     );
+  });
+
+  test('furniture strip renders one icon per template slot for the current room', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Enter the haunt', 'RogueRun');
+
+    // The hallway template has 3 furniture suffixes; each renders an
+    // icon in the .rogue-run-furniture strip.
+    const hallwayFurniture = await callSetup(page, 'setup.Templates.byId("hallway").furniture');
+    expect(hallwayFurniture.length).toBeGreaterThan(0);
+    await expect(page.locator('.rogue-run-furniture .rogue-furniture-item'))
+      .toHaveCount(hallwayFurniture.length);
   });
 
   test('two consecutive runs increment runsStarted across the lifecycle', async () => {

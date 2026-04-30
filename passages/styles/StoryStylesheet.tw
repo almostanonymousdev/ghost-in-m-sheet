@@ -1141,6 +1141,122 @@ html[data-debug-view] .debug[data-name][data-type].nonvoid::after {
 	content: none !important;
 }
 
+/* ===== Rogue run layout =====
+ * Top half: two-column grid (minimap on the left, modifiers +
+ * Win/Lose/Abandon on the right). Bottom half: furniture-icon
+ * strip, run HUD line, and a toolbar whose left 80% is the
+ * (placeholder) tool bar and whose right 20% is the exit nav
+ * links.
+ *
+ * Position fixed so the layout breaks out of #passages's
+ * max-width: 864px / margin: 0 auto centering -- it spans the
+ * full area to the right of #ui-bar all the way to the viewport
+ * edge. left: 17.5em matches SugarCube's default ui-bar width;
+ * .ui-bar-stowed flips left to 0 when the player collapses the
+ * sidebar so we don't leave dead space on the left either. */
+.rogue-run-layout {
+	position: fixed;
+	top: 0;
+	left: 17.5em;
+	right: 0;
+	bottom: 0;
+	overflow-x: hidden;
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+	padding: 1em;
+	gap: 0.5em;
+}
+body.ui-bar-stowed .rogue-run-layout {
+	left: 0;
+}
+.rogue-run-top {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1em;
+	flex: 1 1 auto;
+	min-height: 0;
+}
+.rogue-run-tl,
+.rogue-run-tr {
+	display: flex;
+	flex-direction: column;
+	overflow: auto;
+}
+.rogue-run-tr {
+	align-items: flex-end;
+	text-align: right;
+}
+.rogue-run-furniture {
+	display: flex;
+	justify-content: center;
+	gap: 1.5em;
+	padding: 0.25em 0;
+	flex: 0 0 auto;
+}
+.rogue-furniture-item {
+	display: inline-flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+	min-width: 64px;
+}
+.rogue-furniture-item img {
+	width: 56px;
+	height: 56px;
+	object-fit: contain;
+	background-color: rgba(169, 169, 169, 0.5);
+}
+.rogue-furniture-label {
+	font-size: 0.75em;
+	opacity: 0.85;
+	line-height: 1;
+}
+.rogue-furniture-stash {
+	font-size: 0.7em;
+	line-height: 1;
+}
+.rogue-run-bottom {
+	display: flex;
+	flex-direction: column;
+	flex: 0 0 auto;
+	gap: 0.5em;
+}
+.rogue-run-hud {
+	display: flex;
+	justify-content: center;
+	gap: 2em;
+	font-size: 80%;
+	opacity: 0.85;
+	border-top: 1px solid #444;
+	padding-top: 0.25em;
+	flex-wrap: wrap;
+}
+.rogue-run-toolbar {
+	display: flex;
+	gap: 1em;
+	align-items: stretch;
+}
+.rogue-run-tools {
+	flex: 1 1 80%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px dashed #555;
+	padding: 0.5em;
+	min-height: 60px;
+	font-size: 80%;
+	opacity: 0.7;
+}
+.rogue-run-nav {
+	flex: 1 1 20%;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	text-align: right;
+	gap: 0.25em;
+}
+
 /* ===== Rogue minimap ===== */
 .rogue-minimap-svg {
 	display: block;
