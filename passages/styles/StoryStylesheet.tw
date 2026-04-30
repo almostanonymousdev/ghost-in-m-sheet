@@ -1232,27 +1232,48 @@ body.ui-bar-stowed .rogue-run-layout {
 	padding-top: 0.25em;
 	flex-wrap: wrap;
 }
+/* The toolbar is a positioned wrapper so .rogue-run-tools can span
+ * the full width and center its cluster on the same vertical axis as
+ * the furniture strip above it; .rogue-run-nav overlays the right
+ * edge as an absolute child. */
 .rogue-run-toolbar {
-	display: flex;
-	gap: 1em;
-	align-items: stretch;
+	position: relative;
 }
 .rogue-run-tools {
-	flex: 1 1 80%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	border: 1px dashed #555;
+	gap: 0.5em;
 	padding: 0.5em;
 	min-height: 60px;
-	font-size: 80%;
-	opacity: 0.7;
+}
+.rogue-tool-card {
+	flex: 0 0 auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+}
+.rogue-tool-icon {
+	width: 64px;
+	height: 64px;
+	object-fit: contain;
+}
+.rogue-tool-card-label {
+	font-size: 0.75em;
+	opacity: 0.85;
+	line-height: 1.1;
+	text-align: center;
 }
 .rogue-run-nav {
-	flex: 1 1 20%;
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
 	display: flex;
 	flex-direction: column;
 	align-items: flex-end;
+	justify-content: center;
 	text-align: right;
 	gap: 0.25em;
 }

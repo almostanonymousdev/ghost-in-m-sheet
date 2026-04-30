@@ -96,7 +96,7 @@
 			</div>
 			<div class="rogue-run-toolbar">
 				<div class="rogue-run-tools">
-					(tools — placeholder)
+					<<rogueToolBar>>
 				</div>
 				<div class="rogue-run-nav">
 					<<if _cr and _cr.neighbors.length>>

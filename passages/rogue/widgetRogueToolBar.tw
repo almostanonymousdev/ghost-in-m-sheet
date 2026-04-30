@@ -1,0 +1,20 @@
+:: widgetRogueToolBar [widget nobr] {"position":"3600,200","size":"100,100"}
+/* rogueToolBar -- arg-less. Renders the same six tool slots the
+   regular hunts show (EMF, Ectoglass, GWB, Spiritbox, Thermometr,
+   UVL), in the canonical setup.searchToolOrder. Each slot pulls
+   its icon and label from setup.searchToolDefs so the rogue
+   placeholder stays in sync with whatever the hunts use.
+
+   The slots are visual-only for now -- the rogue room renderer
+   doesn't have the per-room search bag / meter state the regular
+   <<searchTool>> macro needs, so wiring real tool checks waits
+   until that lands. */
+<<widget "rogueToolBar">>
+	<<for _t range setup.searchToolOrder>>
+		<<set _def to setup.searchToolDefs[_t]>>
+		<div class="rogue-tool-card">
+			<<image "ui/img/" + _def.iconFile { class: "rogue-tool-icon" }>>
+			<div class="rogue-tool-card-label"><<= _def.label>></div>
+		</div>
+	<</for>>
+<</widget>>

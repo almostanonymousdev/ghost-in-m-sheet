@@ -143,6 +143,19 @@ test.describe('E2E: rogue run lifecycle', () => {
     );
   });
 
+  test('toolbar renders one card per setup.searchToolOrder entry', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Enter the haunt', 'RogueRun');
+
+    const toolOrder = await callSetup(page, 'setup.searchToolOrder');
+    expect(toolOrder.length).toBe(6);
+    await expect(page.locator('.rogue-run-tools .rogue-tool-card'))
+      .toHaveCount(toolOrder.length);
+  });
+
   test('furniture strip renders one icon per template slot for the current room', async () => {
     test.setTimeout(15_000);
 

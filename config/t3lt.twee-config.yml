@@ -351,6 +351,14 @@ sugarcube-2:
         list with spawn / boss / stash annotations. Reads from
         setup.Rogue.minimapData(); emits nothing when no rogue run is active.
         No args."
+    rogueToolBar:
+      name: rogueToolBar
+      description: "Renders the six canonical investigation tool slots (EMF,
+        Ectoglass, GWB, Spiritbox, Thermometr, UVL) inside the RogueRun
+        toolbar. Pulls icons + labels from setup.searchToolDefs in
+        setup.searchToolOrder so the rogue placeholder stays in sync with
+        the regular hunts' tool catalogue. Visual-only until the rogue
+        room renderer wires up search bags / meters. No args."
     leaveLink:
       name: leaveLink
       description: "Wraps a plain @@.adaptiveLink;<<link>> in the
