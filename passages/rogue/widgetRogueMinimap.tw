@@ -15,6 +15,11 @@
 			<<= _mmSvg>>
 			<<set _mmStashes to setup.Rogue.minimapData()>>
 			<<for _r range _mmStashes>>
+				<<if _r.isSpawn>>
+					<<= _r.label>> &mdash; @@.notmc-speech;ghost@@<br>
+				<</if>>
+			<</for>>
+			<<for _r range _mmStashes>>
 				<<if _r.stashKinds.length>>
 					<<= _r.label>> &mdash;
 					<<for _k, _kind range _r.stashKinds>>
