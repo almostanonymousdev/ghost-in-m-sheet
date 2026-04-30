@@ -213,7 +213,7 @@ test.describe('E2E: rogue run lifecycle', () => {
       .filter({ hasText: fLabel })
       .first()
       .click();
-    await page.waitForFunction(() => SugarCube.State.passage === 'RogueFurnitureSearch');
+    await page.waitForFunction(() => SugarCube.State.passage === 'FurnitureSearch');
     await expect(
       page.locator('.passage').getByText(/cursed item/i)
     ).toBeVisible();
@@ -227,7 +227,7 @@ test.describe('E2E: rogue run lifecycle', () => {
       .filter({ hasText: fLabel })
       .first()
       .click();
-    await page.waitForFunction(() => SugarCube.State.passage === 'RogueFurnitureSearch');
+    await page.waitForFunction(() => SugarCube.State.passage === 'FurnitureSearch');
     await expect(
       page.locator('.passage').getByText(/nothing of note/i)
     ).toBeVisible();

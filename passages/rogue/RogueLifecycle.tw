@@ -76,7 +76,7 @@
 				<<for _f range _cr.furniture>>
 					<<capture _f>>
 						<span class="rogue-furniture-item">
-							<<link `'<<image "scenes/furniture/' + _f.suffix + '.png">>'` "RogueFurnitureSearch">>
+							<<link `'<<image "scenes/furniture/' + _f.suffix + '.png">>'` "FurnitureSearch">>
 								<<run setup.Rogue.setSearchedFurniture(_f.suffix)>>
 							<</link>>
 							<span class="rogue-furniture-label"><<= _f.label>></span>
@@ -166,40 +166,3 @@
 <span class="meta-shop-balance"></span><br>
 @@.movebtn; [[Continue hunting|RogueStart]]@@<br>
 @@.backbtn; [[Back to the city|CityMap]]@@
-
-:: RogueFurnitureSearch [nobr noreturn] {"position":"3400,200","size":"100,100"}
-/* Furniture-search placeholder for rogue mode. The RogueRun layout
-   wraps each furniture image in a link that calls
-   setup.Rogue.setSearchedFurniture(suffix) before routing here.
-   We look up what's hidden at the (currentRoomId, suffix) pair via
-   stashAt() and either render a "you find a <kind>" line (marking
-   the kind as collected so a re-search of the same slot finds
-   nothing) or the empty-handed message. The full witch / missing-
-   women / monkey-paw quest hooks the regular FurnitureSearch
-   triggers don't apply to rogue runs yet -- this is the
-   placeholder that lets the player feel out the loop. */
-<<if not setup.Rogue.isRogue()>>
-	@@.mc-thoughts; No active rogue run.@@<br>
-	@@.backbtn; [[Back|RogueRun]]@@
-<<else>>
-	<<set _sf to setup.Rogue.searchedFurniture()>>
-	<<set _kind to _sf ? setup.Rogue.stashAt(_sf.room, _sf.suffix) : null>>
-	<<video "mechanics/curseditems/lfci.mp4">>
-	<<if _kind eq "cursedItem">>
-		@@.mc-thoughts; You find a cursed item tucked into the furniture.@@<br>
-		<<run setup.Rogue.takeStash("cursedItem")>>
-	<<elseif _kind eq "rescueClue">>
-		@@.mc-thoughts; You find a clue about one of the missing women.@@<br>
-		<<run setup.Rogue.takeStash("rescueClue")>>
-	<<elseif _kind eq "tarotCards">>
-		@@.mc-thoughts; You come across a strange deck of tarot cards.@@<br>
-		<<run setup.Rogue.takeStash("tarotCards")>>
-	<<elseif _kind eq "monkeyPaw">>
-		@@.mc-thoughts; You come across a withered monkey's paw.@@<br>
-		<<run setup.Rogue.takeStash("monkeyPaw")>>
-	<<else>>
-		@@.mc-thoughts; You search but find nothing of note.@@<br>
-	<</if>>
-	<br>
-	@@.backbtn; [[Back|RogueRun]]@@
-<</if>>

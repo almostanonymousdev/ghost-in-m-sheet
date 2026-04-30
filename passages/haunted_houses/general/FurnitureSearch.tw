@@ -1,49 +1,80 @@
 :: FurnitureSearch [nobr noreturn] {"position":"1850,200","size":"100,100"}
+/* Unified furniture-search passage. Classic hunts route here from
+   the per-house <<furnitureItem>> widget (which sets
+   setup.HauntedHouses.currentFurniture()); rogue runs route here
+   from RogueRun's furniture row (which calls
+   setup.Rogue.setSearchedFurniture()). Both modes share the
+   "looking for cursed item" video and the empty-handed fallback;
+   the per-kind responses split because rogue mode doesn't have
+   the witch / missing-women / monkey-paw quest gates wired up
+   yet (those land with the broader rogue gameplay layer). */
 <<video "mechanics/curseditems/lfci.mp4">>
-<<set _cur to setup.HauntedHouses.currentFurniture()>>
-<<if setup.HauntedHouses.hasClothesStolen() and _cur eq setup.HauntedHouses.clothesStashRoom()>>
-	<<include "FindStolenClothes">>
+<<if setup.Rogue.isRogue()>>
+	<<set _sf to setup.Rogue.searchedFurniture()>>
+	<<set _kind to _sf ? setup.Rogue.stashAt(_sf.room, _sf.suffix) : null>>
+	<<if _kind eq "cursedItem">>
+		@@.mc-thoughts; You find a cursed item tucked into the furniture.@@<br>
+		<<run setup.Rogue.takeStash("cursedItem")>>
+	<<elseif _kind eq "rescueClue">>
+		@@.mc-thoughts; You find a clue about one of the missing women.@@<br>
+		<<run setup.Rogue.takeStash("rescueClue")>>
+	<<elseif _kind eq "tarotCards">>
+		@@.mc-thoughts; You come across a strange deck of tarot cards.@@<br>
+		<<run setup.Rogue.takeStash("tarotCards")>>
+	<<elseif _kind eq "monkeyPaw">>
+		@@.mc-thoughts; You come across a withered monkey's paw.@@<br>
+		<<run setup.Rogue.takeStash("monkeyPaw")>>
+	<<else>>
+		@@.mc-thoughts; You search but find nothing of note.@@<br>
+	<</if>>
 	<br>
-	<br>
-	@@.backbtn; [[Back|$return]]@@<br>
-<<elseif _cur eq setup.HauntedHouses.activeHousePlace("CursedItem") and (not setup.Witch.cursedItemQuestStarted() or setup.Witch.cursedItemQuestActive())>>
-	<<include "FindCursedItem">>
-<<elseif _cur eq setup.HauntedHouses.activeHousePlace("RescueClue") and setup.MissingWomen.hasActiveQuest() and not setup.MissingWomen.hasRescueClue()>>
-	<<include "RescueClueFound">>
-<<elseif _cur eq setup.HauntedHouses.activeHousePlace("TarotCards") and setup.HauntedHouses.tarotCardsStage() eq setup.TarotStage.HIDDEN>>
-	@@.mc-thoughts; You come across a strange@@ <<linkappend "@@.usebtn; deck of cards.@@">><br>
-		<<image "mechanics/cursedpossessions/tarot-cards/tarot.png" "displayCentredImgs">>
-
-		@@.mc-speech; Hmm... are these... tarot cards? <br>
-		This deck looks so unusual... They say it can predict the future.<br>
-		Maybe I should draw a card to see what fate has in store for me? <br>
-		I think I'll take the tarot cards with me. They might be useful.@@<br>
-		<br>
-		@@.mc-action; You put the tarot cards in your bag@@<br>
-		<<run setup.HauntedHouses.markTarotCarrying()>>
-	<</linkappend>>
-	<br><br>
-	@@.backbtn; [[Back|$return]]@@
-<<elseif _cur eq setup.HauntedHouses.activeHousePlace("MonkeyPaw") and setup.MonkeyPaw.isDiscoverable()>>
-	@@.mc-thoughts; You come across a strange@@ <<linkappend "@@.usebtn; paw.@@">><br>
-		<<image "mechanics/cursedpossessions/monkey-paw/monkeypaw.jpg" "displayCentredImgs">>
-
-		@@.mc-speech; Is this... the Monkey Paw? <br>
-		I think I read something about it when I was younger.<br>
-		It grants wishes, but always with tragic consequences. <br>
-		Maybe if I'm careful, I can avoid any trouble? <br>
-		I think I'll take the monkey paw with me. It might be useful.@@<br>
-		<br>
-		@@.mc-action; You put monkey paw in your bag@@<br>
-		<<run setup.MonkeyPaw.markFound()>>
-	<</linkappend>>
-	<br><br>
 	@@.backbtn; [[Back|$return]]@@
 <<else>>
-	@@.mc-thoughts;You try to find something, but it seems like nothing is there. @@
-	<br>
-	<br>
-	@@.backbtn; [[Back|$return]]@@
+	<<set _cur to setup.HauntedHouses.currentFurniture()>>
+	<<if setup.HauntedHouses.hasClothesStolen() and _cur eq setup.HauntedHouses.clothesStashRoom()>>
+		<<include "FindStolenClothes">>
+		<br>
+		<br>
+		@@.backbtn; [[Back|$return]]@@<br>
+	<<elseif _cur eq setup.HauntedHouses.activeHousePlace("CursedItem") and (not setup.Witch.cursedItemQuestStarted() or setup.Witch.cursedItemQuestActive())>>
+		<<include "FindCursedItem">>
+	<<elseif _cur eq setup.HauntedHouses.activeHousePlace("RescueClue") and setup.MissingWomen.hasActiveQuest() and not setup.MissingWomen.hasRescueClue()>>
+		<<include "RescueClueFound">>
+	<<elseif _cur eq setup.HauntedHouses.activeHousePlace("TarotCards") and setup.HauntedHouses.tarotCardsStage() eq setup.TarotStage.HIDDEN>>
+		@@.mc-thoughts; You come across a strange@@ <<linkappend "@@.usebtn; deck of cards.@@">><br>
+			<<image "mechanics/cursedpossessions/tarot-cards/tarot.png" "displayCentredImgs">>
+
+			@@.mc-speech; Hmm... are these... tarot cards? <br>
+			This deck looks so unusual... They say it can predict the future.<br>
+			Maybe I should draw a card to see what fate has in store for me? <br>
+			I think I'll take the tarot cards with me. They might be useful.@@<br>
+			<br>
+			@@.mc-action; You put the tarot cards in your bag@@<br>
+			<<run setup.HauntedHouses.markTarotCarrying()>>
+		<</linkappend>>
+		<br><br>
+		@@.backbtn; [[Back|$return]]@@
+	<<elseif _cur eq setup.HauntedHouses.activeHousePlace("MonkeyPaw") and setup.MonkeyPaw.isDiscoverable()>>
+		@@.mc-thoughts; You come across a strange@@ <<linkappend "@@.usebtn; paw.@@">><br>
+			<<image "mechanics/cursedpossessions/monkey-paw/monkeypaw.jpg" "displayCentredImgs">>
+
+			@@.mc-speech; Is this... the Monkey Paw? <br>
+			I think I read something about it when I was younger.<br>
+			It grants wishes, but always with tragic consequences. <br>
+			Maybe if I'm careful, I can avoid any trouble? <br>
+			I think I'll take the monkey paw with me. It might be useful.@@<br>
+			<br>
+			@@.mc-action; You put monkey paw in your bag@@<br>
+			<<run setup.MonkeyPaw.markFound()>>
+		<</linkappend>>
+		<br><br>
+		@@.backbtn; [[Back|$return]]@@
+	<<else>>
+		@@.mc-thoughts;You try to find something, but it seems like nothing is there. @@
+		<br>
+		<br>
+		@@.backbtn; [[Back|$return]]@@
+	<</if>>
 <</if>>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
