@@ -5,16 +5,33 @@
    its icon and label from setup.searchToolDefs so the rogue
    placeholder stays in sync with whatever the hunts use.
 
-   The slots are visual-only for now -- the rogue room renderer
-   doesn't have the per-room search bag / meter state the regular
-   <<searchTool>> macro needs, so wiring real tool checks waits
-   until that lands. */
+   Each card is a clickable <<linkreplace>> whose body wikifies the
+   shared <<toolCheck>> markup -- the same renderer the haunted-
+   house tool checks use. Reuse hinges on two bridges:
+     * setup.Ghosts.active() falls back to the rogue ghost when
+       no $hunt object exists (see GhostController), so the
+       evidence/hasEvidence/spiritboxPossessionChance/etc. paths
+       fire against the rogue ghost.
+     * setup.isGhostHere() returns true iff the player is in the
+       rogue ghost's lair room (floorplan.spawnRoomId), so
+       setup.evidenceAvailable's "ghost is here" gate works.
+   Each click burns 1 in-game minute, matching the per-tick cost
+   <<toolTick>> applies inside the regular hunts' repeat loop. */
 <<widget "rogueToolBar">>
 	<<for _t range setup.searchToolOrder>>
 		<<set _def to setup.searchToolDefs[_t]>>
-		<div class="rogue-tool-card">
-			<<image "ui/img/" + _def.iconFile { class: "rogue-tool-icon" }>>
-			<div class="rogue-tool-card-label"><<= _def.label>></div>
-		</div>
+		<<capture _t, _def>>
+			<div class="rogue-tool-card">
+				<<image "ui/img/" + _def.iconFile { class: "rogue-tool-icon" }>>
+				<span class="rogue-tool-card-label">@@.adaptiveLink;<<linkreplace `_def.label`>>
+					<<addTime 1>>
+					<<if _t eq "temperature">>
+						<<include "TemperatureHigh">>
+					<<else>>
+						<<toolCheck _t>>
+					<</if>>
+				<</linkreplace>>@@</span>
+			</div>
+		<</capture>>
 	<</for>>
 <</widget>>

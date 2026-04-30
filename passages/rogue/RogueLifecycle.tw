@@ -78,6 +78,7 @@
 						<span class="rogue-furniture-item">
 							<<link `'<<image "scenes/furniture/' + _f.suffix + '.png">>'` "FurnitureSearch">>
 								<<run setup.Rogue.setSearchedFurniture(_f.suffix)>>
+								<<addTime 1>>
 							<</link>>
 							<span class="rogue-furniture-label"><<= _f.label>></span>
 						</span>

@@ -1567,11 +1567,14 @@ setup.HauntConditions = (function () {
     };
 })();
 
-/* setup.isGhostHere([houses]) -- true iff the current passage belongs to
- * one of the listed houses AND $hunt.room.name matches that passage's
- * bgRoom. Pass a house-filter array to scope the check (e.g. ["enigma"]
- * for the *Art tool variants). Omit the filter to accept any house. */
+/* setup.isGhostHere([houses]) -- true iff the player is currently
+ * standing in the active ghost's room. Mode-specific dispatch lives
+ * in setup.HuntController; this thin wrapper preserves the public
+ * signature every haunted-house tool / event passage already calls. */
 setup.isGhostHere = function (houses) {
+    return setup.HuntController.isGhostHere(houses);
+};
+setup._isGhostHereInClassic = function (houses) {
     var h = State.variables.hunt;
     if (!h || !h.room || !h.room.name) return false;
     var cur = passage();

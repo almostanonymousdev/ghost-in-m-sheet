@@ -226,6 +226,15 @@ setup.Rogue = (function () {
 
 		var floorplan = setup.FloorPlan.generate(seed, opts.floorPlanOpts || {});
 
+		/* Pick the haunting ghost from the catalogue using a seed-derived
+		   index so a given seed reproduces the same ghost across replays.
+		   The lair room is whichever room the floor-plan generator picked
+		   as the spawn -- room_0 is always the hallway the player starts
+		   in, so this guarantees the ghost lives at least one nav-hop
+		   away from spawn. */
+		var ghostNames = setup.Ghosts.names();
+		var ghostName = ghostNames[((seed ^ 0x85ebca6b) >>> 0) % ghostNames.length];
+
 		start({
 			seed: seed,
 			modifiers: modifierIds,
@@ -233,7 +242,22 @@ setup.Rogue = (function () {
 			objective: opts.objective || 'identify'
 		});
 		setField('floorplan', floorplan);
+		setField('ghostName', ghostName);
 		return active();
+	}
+
+	function ghostName() {
+		var run = sv().run;
+		return run ? (run.ghostName || null) : null;
+	}
+	function ghostRoomId() {
+		var run = sv().run;
+		return run && run.floorplan ? (run.floorplan.spawnRoomId || null) : null;
+	}
+	function isInGhostRoom() {
+		var run = sv().run;
+		if (!run) return false;
+		return (run.currentRoomId || 'room_0') === ghostRoomId();
 	}
 
 	/* View-layer summary of the active run's floor plan, denormalised
@@ -490,6 +514,9 @@ setup.Rogue = (function () {
 		endRogue: endRogue,
 		minimapData: minimapData,
 		minimapSvg: minimapSvg,
-		currentRoomData: currentRoomData
+		currentRoomData: currentRoomData,
+		ghostName: ghostName,
+		ghostRoomId: ghostRoomId,
+		isInGhostRoom: isInGhostRoom
 	};
 })();

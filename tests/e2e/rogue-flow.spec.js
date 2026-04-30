@@ -156,6 +156,73 @@ test.describe('E2E: rogue run lifecycle', () => {
       .toHaveCount(toolOrder.length);
   });
 
+  test('startRogue stamps a ghost on $run and Ghosts.active() returns it', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+
+    const run = await getVar(page, 'run');
+    expect(run.ghostName).toBeTruthy();
+
+    // No witch contract is open, but setup.Ghosts.active() must hand
+    // back the rogue ghost so the shared <<toolCheck>> path can read
+    // its evidence list.
+    const activeName = await callSetup(page, 'setup.Ghosts.active().name');
+    expect(activeName).toBe(run.ghostName);
+
+    // Same ghost is reachable via the rogue-side accessor.
+    const rogueGhostName = await callSetup(page, 'setup.Rogue.ghostName()');
+    expect(rogueGhostName).toBe(run.ghostName);
+  });
+
+  test('isGhostHere() is true only inside the lair room during RogueRun', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Enter the haunt', 'RogueRun');
+
+    // Player starts in room_0 (hallway); the lair is whichever room
+    // the floor-plan generator picked as the spawn (always non-hallway).
+    const ghostRoom = await callSetup(page, 'setup.Rogue.ghostRoomId()');
+    expect(ghostRoom).not.toBe('room_0');
+
+    // Outside the lair: false.
+    expect(await callSetup(page, 'setup.isGhostHere()')).toBe(false);
+
+    // Walk into the lair and re-render the passage, then re-check.
+    await page.evaluate(id => SugarCube.setup.Rogue.setCurrentRoom(id), ghostRoom);
+    await goToPassage(page, 'RogueRun');
+    expect(await callSetup(page, 'setup.isGhostHere()')).toBe(true);
+  });
+
+  test('clicking a tool advances time and replaces the link with a result', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Enter the haunt', 'RogueRun');
+
+    // Baseline: GhostStreet resets to midnight.
+    expect(await getVar(page, 'minutes')).toBe(0);
+
+    // Each tool card has a clickable label that wikifies <<toolCheck>>
+    // when clicked. Pick the EMF card -- it never possesses, never
+    // navigates away, and renders a deterministic <<coloredText>> span.
+    const emfCard = page.locator('.rogue-tool-card').first();
+    await expect(emfCard.locator('a')).toHaveCount(1);
+    await emfCard.locator('a').click();
+
+    // Time burned by one tick.
+    expect(await getVar(page, 'minutes')).toBe(1);
+
+    // Linkreplace strips the <a> once the body wikifies, so the card
+    // no longer offers a clickable target -- proves the body fired.
+    await expect(emfCard.locator('a')).toHaveCount(0);
+  });
+
+
   test('furniture strip renders one icon per template slot for the current room', async () => {
     test.setTimeout(15_000);
 
@@ -198,28 +265,42 @@ test.describe('E2E: rogue run lifecycle', () => {
     await clickLink(page, 'Rogue Haunt', 'RogueStart');
 
     // Place the player in the room+slot the cursed item is hidden in.
+    // The floor-plan generator might land cursedItem on a furniture-
+    // less template (roomA/B/C); skip past those so the click target
+    // is always a real slot. We only need *some* stash kind pinned
+    // to a furniture suffix to exercise the search wiring.
     const fp = await getVar(page, 'run').then(r => r.floorplan);
-    const cursedRoom = fp.stashes.cursedItem;
-    const cursedFurniture = fp.stashFurniture.cursedItem;
-    expect(cursedFurniture).toBeDefined();
-    await page.evaluate(id => SugarCube.setup.Rogue.setCurrentRoom(id), cursedRoom);
+    const stashKind = Object.keys(fp.stashFurniture).find(k => fp.stashFurniture[k]);
+    expect(stashKind).toBeDefined();
+    const stashRoom      = fp.stashes[stashKind];
+    const stashFurniture = fp.stashFurniture[stashKind];
+    await page.evaluate(id => SugarCube.setup.Rogue.setCurrentRoom(id), stashRoom);
     await goToPassage(page, 'RogueRun');
 
-    // Click the cursed furniture slot. Its label is humanised; pull
+    // Each stash kind has its own line in FurnitureSearch.tw; pick
+    // the one this run rolled.
+    const STASH_TEXT = {
+      cursedItem:  /cursed item/i,
+      rescueClue:  /clue about one of the missing women/i,
+      tarotCards:  /strange deck of tarot cards/i,
+      monkeyPaw:   /withered monkey's paw/i
+    };
+
+    // Click the stashed furniture slot. Its label is humanised; pull
     // it from the controller so we click the right one.
     const fLabel = await callSetup(page,
-      `setup.Rogue.currentRoomData().furniture.find(f => f.suffix === "${cursedFurniture}").label`);
+      `setup.Rogue.currentRoomData().furniture.find(f => f.suffix === "${stashFurniture}").label`);
     await page.locator('.rogue-furniture-item')
       .filter({ hasText: fLabel })
       .first()
       .click();
     await page.waitForFunction(() => SugarCube.State.passage === 'FurnitureSearch');
     await expect(
-      page.locator('.passage').getByText(/cursed item/i)
+      page.locator('.passage').getByText(STASH_TEXT[stashKind])
     ).toBeVisible();
 
     // takeStash should have been called.
-    expect(await callSetup(page, 'setup.Rogue.hasCollected("cursedItem")')).toBe(true);
+    expect(await callSetup(page, `setup.Rogue.hasCollected("${stashKind}")`)).toBe(true);
 
     // Walking back to the same slot should now find nothing.
     await clickLink(page, 'Back', 'RogueRun');
@@ -231,6 +312,26 @@ test.describe('E2E: rogue run lifecycle', () => {
     await expect(
       page.locator('.passage').getByText(/nothing of note/i)
     ).toBeVisible();
+  });
+
+  test('searching furniture advances the clock by one minute', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Enter the haunt', 'RogueRun');
+
+    // GhostStreet resets to midnight; verify we start at 00:00.
+    expect(await getVar(page, 'hours')).toBe(0);
+    expect(await getVar(page, 'minutes')).toBe(0);
+
+    // Click any furniture in the hallway.
+    await page.locator('.rogue-furniture-item').first().click();
+    await page.waitForFunction(() => SugarCube.State.passage === 'FurnitureSearch');
+
+    // Each search should burn one in-game minute, mirroring regular hunts.
+    expect(await getVar(page, 'minutes')).toBe(1);
+    expect(await getVar(page, 'hours')).toBe(0);
   });
 
   test('two consecutive runs increment runsStarted across the lifecycle', async () => {

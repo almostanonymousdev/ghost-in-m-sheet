@@ -40,8 +40,12 @@ a failure before rolling fresh.
   is a furniture-icon strip + run HUD + tool/exit toolbar. The
   exits column on the right of the toolbar calls
   `setup.Rogue.setCurrentRoom(id)` and re-enters RogueRun. The
-  "tools" panel is a dashed placeholder until rogue-mode tool
-  gameplay lands.
+  tools panel ([`<<rogueToolBar>>`](../passages/rogue/widgetRogueToolBar.tw))
+  emits one card per `setup.searchToolOrder` entry; clicking a
+  card wikifies the shared `<<toolCheck>>` macro and burns one
+  in-game minute, the same renderer the haunted-house tools use
+  (see [Cross-mode hunt facade](#cross-mode-hunt-facade) for how
+  rogue runs plug into that machinery without a `$hunt`).
 * **[RogueEnd](../passages/rogue/RogueLifecycle.tw)** — result
   screen. `setup.Rogue.endRogue(success)` clears `$run` and pays out
   echoes (5 base + 5 if successful + 1 per active modifier). The
@@ -107,6 +111,32 @@ procedural-eligible filter on
 (Ironclad cells, Elm's nursery, the Enigma trio) stay
 authored-house-only.
 
+## Cross-mode hunt facade
+
+Two completely different lifecycles -- the classic witch-contract
+flow (`$hunt`) and rogue runs (`$run`) -- share one tool / evidence
+/ event stack. The mode dispatch lives in
+[`setup.HuntController`](../passages/hunt/HuntController.tw):
+
+* `mode()` — `'regular'` while a `$hunt` is open, `'rogue'` while
+  a rogue run is active, `null` otherwise. Regular wins the tie.
+* `activeGhost()` — Ghost instance for whichever mode is active.
+  Classic mode rebuilds from `$hunt` evidence (DeleteEvidence /
+  Mimic rotation); rogue mode hands back the catalogue ghost
+  named in `$run.ghostName`.
+* `isGhostHere(houses)` — true iff the player is in the active
+  ghost's room. Classic mode pins ghost-room to `$hunt.room.name`
+  against the haunted-passage table; rogue mode compares
+  `$run.currentRoomId` against `floorplan.spawnRoomId` and only
+  fires inside the `RogueRun` passage.
+
+`setup.Ghosts.active()` and `setup.isGhostHere()` are thin
+adapters that delegate to the facade -- legacy callers don't move,
+new shared code reads through the controller. The rogue ghost
+itself is rolled in `setup.Rogue.startRogue()` from a
+seed-derived index into `setup.Ghosts.names()` and stamped onto
+`$run.ghostName`, so the same seed reproduces the same ghost.
+
 ## Modifier registry
 
 [`setup.Modifiers`](../passages/rogue/ModifiersController.tw)
@@ -139,6 +169,8 @@ links use to decide whether to render an unlock as active.
 * [TemplatesController.tw](../passages/rogue/TemplatesController.tw) — `setup.Templates`: room-template metadata + slot-id helpers.
 * [RogueLifecycle.tw](../passages/rogue/RogueLifecycle.tw) — `RogueStart`, `RogueRun`, `RogueEnd`, `RogueMetaShop` passages.
 * [widgetRogueMinimap.tw](../passages/rogue/widgetRogueMinimap.tw) — `<<rogueMinimap>>` SVG floor-plan view.
+* [widgetRogueToolBar.tw](../passages/rogue/widgetRogueToolBar.tw) — `<<rogueToolBar>>` six-card tool grid; each card wikifies `<<toolCheck>>` on click.
+* [HuntController.tw](../passages/hunt/HuntController.tw) — `setup.HuntController`: cross-mode facade for `mode()` / `activeGhost()` / `isGhostHere()`.
 
 ## Save migration
 
@@ -158,4 +190,5 @@ last written under.
 * [rogue-lifecycle.spec.js](../tests/rogue-lifecycle.spec.js) — `startRogue` / `endRogue` composition.
 * [rogue-minimap.spec.js](../tests/rogue-minimap.spec.js) — `minimapData()` denormalisation.
 * [save-load-roundtrip.spec.js](../tests/save-load-roundtrip.spec.js) — migration and round-trip coverage for rogue state.
-* [e2e/rogue-flow.spec.js](../tests/e2e/rogue-flow.spec.js) — end-to-end CityMap → start → win → meta-shop walkthrough.
+* [e2e/rogue-flow.spec.js](../tests/e2e/rogue-flow.spec.js) — end-to-end CityMap → start → win → meta-shop walkthrough; tool functionality, lair-room `isGhostHere`, time advance per click.
+* [hunt-controller.spec.js](../tests/hunt-controller.spec.js) — `setup.HuntController` facade contract across both modes.

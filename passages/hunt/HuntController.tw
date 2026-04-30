@@ -1,0 +1,85 @@
+:: HuntController [script]
+/*
+ * Cross-mode hunt facade.
+ *
+ * Two completely different lifecycles -- the classic witch-contract
+ * flow and the procedurally generated rogue runs -- share a single
+ * tool / evidence / event stack. Without a facade, every shared
+ * helper would have to ask "am I in a $hunt or a $run right now?"
+ * before answering. setup.HuntController owns that mode dispatch
+ * and exposes a unified read-only view that both the haunted-house
+ * passages and the rogue-run widgets call into.
+ *
+ * Design notes:
+ *
+ *   - Mode is derived, never stored. `mode()` looks at the live
+ *     state (`$hunt` for classic, `$run` for rogue) so a save
+ *     loaded mid-run "just works" without a migration field.
+ *
+ *   - `activeGhost()` is the unification point for tool checks.
+ *     Classic mode rebuilds a Ghost from the per-hunt evidence list
+ *     (DeleteEvidence prunes it; Mimic rotates it); rogue mode
+ *     hands back the catalogue ghost as-is, since the evidence
+ *     list isn't mutated per run. Either way the rest of the tool
+ *     stack (`g.hasEvidence`, `g.rollEmfGlitch`, `g.evidenceLabels`
+ *     etc.) gets a fully-built Ghost instance.
+ *
+ *   - `isGhostHere(houses)` answers "is the player standing in
+ *     the ghost's room right now". Classic mode reads
+ *     `$hunt.room.name` against the haunted-passage table;
+ *     rogue mode compares `$run.currentRoomId` against the
+ *     floor-plan's spawn room. The `houses` filter is silently
+ *     ignored in rogue mode -- rogue runs aren't house-specific.
+ *
+ *   - The split keeps GhostController's catalogue/Ghost prototype
+ *     authoritative; HuntController just orchestrates which of the
+ *     `_activeFromHunt` / `_activeFromCatalogue` helpers to call.
+ */
+setup.HuntController = (function () {
+	function sv() { return State.variables; }
+
+	/* "regular" while a $hunt object holds a ghost name; "rogue"
+	   while a rogue run is active; null otherwise. Regular mode
+	   takes priority -- they should never both be active, but if
+	   they are (a save-state oddity), the witch flow wins. */
+	function mode() {
+		var h = sv().hunt;
+		if (h && h.name) return "regular";
+		if (setup.Rogue && setup.Rogue.isRogue && setup.Rogue.isRogue()) return "rogue";
+		return null;
+	}
+
+	function isActive() { return mode() !== null; }
+
+	/* The active Ghost instance, or null when no hunt is in flight.
+	   Classic and rogue modes plug into the same shared <<toolCheck>>
+	   stack via this single entry point. */
+	function activeGhost() {
+		var m = mode();
+		if (m === "regular") return setup.Ghosts._activeFromHunt();
+		if (m === "rogue")   return setup.Ghosts._activeFromCatalogue(setup.Rogue.ghostName());
+		return null;
+	}
+
+	/* True iff the player is in the same room as the active ghost.
+	   Classic mode pins ghost-room to a house-specific bgRoom and
+	   uses the optional `houses` filter to scope tool variants
+	   (e.g. ["enigma"] for the *Art renderers); rogue mode ignores
+	   the filter and answers from the floor plan. */
+	function isGhostHere(houses) {
+		var m = mode();
+		if (m === "regular") return setup._isGhostHereInClassic(houses);
+		if (m === "rogue") {
+			if (passage() !== "RogueRun") return false;
+			return setup.Rogue.isInGhostRoom();
+		}
+		return false;
+	}
+
+	return {
+		mode:         mode,
+		isActive:     isActive,
+		activeGhost:  activeGhost,
+		isGhostHere:  isGhostHere
+	};
+})();
