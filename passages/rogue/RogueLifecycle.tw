@@ -49,6 +49,8 @@
 	@@.location; Rogue Run #<<= _run.number>> -- in progress@@<br>
 	@@.mc-thoughts; (Placeholder. Room rendering arrives in a follow-up pass.)@@<br>
 	<br>
+	<<rogueCurrentRoom>>
+	<br>
 	<<rogueMinimap>>
 	<br>
 	@@.location; Active modifiers@@<br>

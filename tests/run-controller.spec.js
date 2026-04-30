@@ -165,4 +165,82 @@ test.describe('Run Controller', () => {
     await page.evaluate(() => SugarCube.setup.Run.end());
     expect(await callSetup(page, 'setup.Run.echoes()')).toBe(10);
   });
+
+  // --- Current room ---
+
+  test('currentRoomId defaults to room_0 (hallway) on a fresh run', async () => {
+    await page.evaluate(() => SugarCube.setup.Run.startRogue({ seed: 1 }));
+    expect(await callSetup(page, 'setup.Run.currentRoomId()')).toBe('room_0');
+  });
+
+  test('currentRoomId is null with no run active', async () => {
+    expect(await callSetup(page, 'setup.Run.currentRoomId()')).toBeNull();
+  });
+
+  test('setCurrentRoom moves the player when the id is on the floor plan', async () => {
+    await page.evaluate(() => SugarCube.setup.Run.startRogue({
+      seed: 1, floorPlanOpts: { roomCount: 5 }
+    }));
+    expect(await callSetup(page, 'setup.Run.setCurrentRoom("room_2")')).toBe(true);
+    expect(await callSetup(page, 'setup.Run.currentRoomId()')).toBe('room_2');
+  });
+
+  test('setCurrentRoom rejects unknown room ids and leaves currentRoomId alone', async () => {
+    await page.evaluate(() => SugarCube.setup.Run.startRogue({ seed: 1 }));
+    expect(await callSetup(page, 'setup.Run.setCurrentRoom("room_999")')).toBe(false);
+    expect(await callSetup(page, 'setup.Run.currentRoomId()')).toBe('room_0');
+  });
+
+  test('currentRoomData returns the room name, furniture, and adjacency', async () => {
+    await page.evaluate(() => SugarCube.setup.Run.startRogue({
+      seed: 42, floorPlanOpts: { roomCount: 5 }
+    }));
+    const cr = await callSetup(page, 'setup.Run.currentRoomData()');
+
+    // Player starts in the hallway, so its template/label should resolve.
+    expect(cr.id).toBe('room_0');
+    expect(cr.template).toBe('hallway');
+    expect(cr.label).toBe('Hallway');
+    expect(Array.isArray(cr.furniture)).toBe(true);
+    expect(Array.isArray(cr.neighbors)).toBe(true);
+
+    // Furniture entries surface a humanised label and a stash slot
+    // (null when the slot is empty).
+    cr.furniture.forEach(f => {
+      expect(typeof f.suffix).toBe('string');
+      expect(typeof f.label).toBe('string');
+      expect(f.stashKind === null || typeof f.stashKind === 'string').toBe(true);
+    });
+
+    // Each neighbor record carries an id + a label the nav link can render.
+    cr.neighbors.forEach(n => {
+      expect(typeof n.id).toBe('string');
+      expect(typeof n.label).toBe('string');
+    });
+  });
+
+  test('currentRoomData annotates a furniture slot when a stash is pinned to it', async () => {
+    // The generator picks a deterministic room+furniture per seed, so
+    // we can find a stash kind, jump into its room, and check that the
+    // matching furniture entry carries its kind label.
+    await page.evaluate(() => SugarCube.setup.Run.startRogue({
+      seed: 31, floorPlanOpts: { roomCount: 6 }
+    }));
+    const fp = await callSetup(page, 'setup.Run.field("floorplan")');
+    const kind = Object.keys(fp.stashFurniture)[0];
+    const roomId = fp.stashes[kind];
+    const suffix = fp.stashFurniture[kind];
+
+    await page.evaluate((id) => SugarCube.setup.Run.setCurrentRoom(id), roomId);
+    const cr = await callSetup(page, 'setup.Run.currentRoomData()');
+    const slot = cr.furniture.find(f => f.suffix === suffix);
+    expect(slot).toBeDefined();
+    expect(slot.stashKind).toBe(kind);
+    expect(typeof slot.stashLabel).toBe('string');
+    expect(slot.stashLabel.length).toBeGreaterThan(0);
+  });
+
+  test('currentRoomData returns null when no run is active', async () => {
+    expect(await callSetup(page, 'setup.Run.currentRoomData()')).toBeNull();
+  });
 });

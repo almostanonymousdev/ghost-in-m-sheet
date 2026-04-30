@@ -53,7 +53,10 @@ setup.Run = (function () {
 			number: sv().runsStarted,
 			modifiers: Array.isArray(opts.modifiers) ? opts.modifiers.slice() : [],
 			loadout: opts.loadout || {},
-			objective: opts.objective || 'identify'
+			objective: opts.objective || 'identify',
+			// Player starts in the hallway. Nav links update this via
+			// setCurrentRoom(); the rogueCurrentRoom widget reads it.
+			currentRoomId: 'room_0'
 		};
 		return sv().run;
 	}
@@ -77,6 +80,21 @@ setup.Run = (function () {
 	function modifiers()  { return sv().run ? sv().run.modifiers.slice() : []; }
 	function loadout()    { return sv().run ? sv().run.loadout : null; }
 	function objective()  { return sv().run ? sv().run.objective : null; }
+	function currentRoomId() {
+		var run = sv().run;
+		return run ? (run.currentRoomId || 'room_0') : null;
+	}
+	/* Move the player into `roomId`. No-op when no run is active or
+	   the id isn't on the current floor plan; nav links call this
+	   before re-entering RogueRun. */
+	function setCurrentRoom(roomId) {
+		var run = sv().run;
+		if (!run || !run.floorplan) return false;
+		var found = run.floorplan.rooms.some(function (r) { return r.id === roomId; });
+		if (!found) return false;
+		run.currentRoomId = roomId;
+		return true;
+	}
 
 	function hasModifier(id) {
 		var run = sv().run;
@@ -188,6 +206,94 @@ setup.Run = (function () {
 		});
 	}
 
+	/* Humanise a stash kind ("cursedItem" -> "Cursed item"). Inline
+	   so the widget doesn't have to repeat the camelCase split. */
+	function humanizeStashKind(kind) {
+		if (!kind) return '';
+		return kind
+			.replace(/([A-Z])/g, ' $1')
+			.replace(/^./, function (c) { return c.toUpperCase(); });
+	}
+
+	/* Humanise a furniture suffix ("wmachine" -> "Washing machine",
+	   "sink1" -> "Sink"). Strips trailing digits, then maps known
+	   abbreviations; falls back to title-case for unknown suffixes. */
+	var FURNITURE_LABELS = {
+		desk: 'Desk', table: 'Table', sink: 'Sink', wmachine: 'Washing machine',
+		bathtub: 'Bathtub', bed: 'Bed', wardrobe: 'Wardrobe',
+		coatrack: 'Coat rack', carpet: 'Carpet', sofa: 'Sofa', shelves: 'Shelves'
+	};
+	function humanizeFurniture(suffix) {
+		if (!suffix) return '';
+		var key = suffix.replace(/[0-9]+$/, '');
+		return FURNITURE_LABELS[key] || (key.charAt(0).toUpperCase() + key.slice(1));
+	}
+
+	/* View-layer summary of the player's current room: name, the
+	   furniture list (with any stashed item annotated), the stash
+	   kinds in this room that aren't pinned to a specific piece of
+	   furniture, and the adjacent-room nav links. The rogueCurrentRoom
+	   widget renders straight from this list, so coverage here locks
+	   in the structure. Returns null when no run is active. */
+	function currentRoomData() {
+		var run = active();
+		if (!run || !run.floorplan) return null;
+		var fp = run.floorplan;
+		var roomId = run.currentRoomId || 'room_0';
+		var room = fp.rooms.filter(function (r) { return r.id === roomId; })[0];
+		if (!room) return null;
+		var t = setup.Templates ? setup.Templates.byId(room.template) : null;
+		var stashFurn = fp.stashFurniture || {};
+
+		// Furniture entries with optional stash annotations.
+		var furniture = (t && Array.isArray(t.furniture) ? t.furniture : []).map(function (f) {
+			var stashKind = null;
+			Object.keys(fp.stashes || {}).forEach(function (k) {
+				if (fp.stashes[k] === roomId && stashFurn[k] === f) stashKind = k;
+			});
+			return {
+				suffix: f,
+				label: humanizeFurniture(f),
+				stashKind: stashKind,
+				stashLabel: stashKind ? humanizeStashKind(stashKind) : null
+			};
+		});
+
+		// Stashes assigned to this room but with no furniture pin
+		// (templates without any furniture, e.g. roomA/B/C).
+		var stashesWithoutFurniture = [];
+		Object.keys(fp.stashes || {}).forEach(function (k) {
+			if (fp.stashes[k] === roomId && !stashFurn[k]) {
+				stashesWithoutFurniture.push({
+					kind: k,
+					label: humanizeStashKind(k)
+				});
+			}
+		});
+
+		// Adjacent-room nav links.
+		var neighbors = setup.FloorPlan.neighborsOf(fp, roomId).map(function (id) {
+			var nr = fp.rooms.filter(function (r) { return r.id === id; })[0];
+			var nt = nr && setup.Templates ? setup.Templates.byId(nr.template) : null;
+			return {
+				id: id,
+				template: nr ? nr.template : null,
+				label: nt ? nt.label : (nr ? nr.template : id)
+			};
+		});
+
+		return {
+			id: roomId,
+			template: room.template,
+			label: t ? t.label : room.template,
+			isSpawn: roomId === fp.spawnRoomId,
+			isBoss: roomId === fp.bossRoomId,
+			furniture: furniture,
+			stashesWithoutFurniture: stashesWithoutFurniture,
+			neighbors: neighbors
+		};
+	}
+
 	/* End the active rogue run, paying out echoes based on whether
 	   it was a success and how many modifiers the run carried.
 	   Returns a small summary record the result passage can render
@@ -228,12 +334,15 @@ setup.Run = (function () {
 		setObjective: setObjective,
 		setField: setField,
 		field: field,
+		currentRoomId: currentRoomId,
+		setCurrentRoom: setCurrentRoom,
 		echoes: echoes,
 		addEchoes: addEchoes,
 		spendEchoes: spendEchoes,
 		canAffordEchoes: canAffordEchoes,
 		startRogue: startRogue,
 		endRogue: endRogue,
-		minimapData: minimapData
+		minimapData: minimapData,
+		currentRoomData: currentRoomData
 	};
 })();

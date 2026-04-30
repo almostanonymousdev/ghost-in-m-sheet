@@ -90,26 +90,43 @@ test.describe('Floor-plan generator', () => {
     }
   });
 
-  test('star topology: every edge touches the hallway', async () => {
+  test('spanning tree: edges connect distinct real rooms, count = roomCount - 1', async () => {
     const plan = await gen(1, { roomCount: 6 });
+    const ids = new Set(plan.rooms.map(r => r.id));
     plan.edges.forEach(([a, b]) => {
-      expect(a === 'room_0' || b === 'room_0').toBe(true);
+      expect(a).not.toBe(b);
+      expect(ids.has(a)).toBe(true);
+      expect(ids.has(b)).toBe(true);
     });
-    // Every non-hallway room has exactly one edge into it.
+    // Pure spanning tree -- one edge per non-root room.
     expect(plan.edges.length).toBe(plan.rooms.length - 1);
   });
 
-  test('neighborsOf walks the edge list both ways', async () => {
-    const plan = await gen(1, { roomCount: 4 });
-    const nbrs = await page.evaluate(p =>
-      SugarCube.setup.FloorPlan.neighborsOf(p, 'room_0'), plan);
-    expect(nbrs.sort()).toEqual(['room_1', 'room_2', 'room_3'].sort());
+  test('topology varies across seeds (not always a star around the hallway)', async () => {
+    // The star generator produced edges where every edge touched
+    // room_0; the spanning-tree generator should yield at least one
+    // seed in a small range whose layout has a non-hallway edge.
+    let foundNonHallwayEdge = false;
+    for (let seed = 1; seed <= 50; seed++) {
+      const plan = await gen(seed, { roomCount: 6 });
+      if (plan.edges.some(([a, b]) => a !== 'room_0' && b !== 'room_0')) {
+        foundNonHallwayEdge = true;
+        break;
+      }
+    }
+    expect(foundNonHallwayEdge).toBe(true);
+  });
 
-    // Each spoke knows it borders the hallway.
-    for (const id of ['room_1', 'room_2', 'room_3']) {
-      const back = await page.evaluate(({ p, i }) =>
-        SugarCube.setup.FloorPlan.neighborsOf(p, i), { p: plan, i: id });
-      expect(back).toEqual(['room_0']);
+  test('neighborsOf is symmetric: a in neighbors(b) iff b in neighbors(a)', async () => {
+    const plan = await gen(7, { roomCount: 6 });
+    for (const r of plan.rooms) {
+      const nbrs = await page.evaluate(({ p, i }) =>
+        SugarCube.setup.FloorPlan.neighborsOf(p, i), { p: plan, i: r.id });
+      for (const n of nbrs) {
+        const back = await page.evaluate(({ p, i }) =>
+          SugarCube.setup.FloorPlan.neighborsOf(p, i), { p: plan, i: n });
+        expect(back).toContain(r.id);
+      }
     }
   });
 
@@ -134,6 +151,24 @@ test.describe('Floor-plan generator', () => {
       expect(ids.has(plan.stashes[k])).toBe(true);
       expect(plan.stashes[k]).not.toBe('room_0');
     });
+  });
+
+  test('stashFurniture pins each stash to a real furniture suffix on its room', async () => {
+    const plan = await gen(31, { roomCount: 6 });
+    const kinds = await callSetup(page, 'setup.FloorPlan.STASH_KINDS');
+    for (const k of kinds) {
+      const roomId = plan.stashes[k];
+      const room = plan.rooms.find(r => r.id === roomId);
+      const t = await callSetup(page, `setup.Templates.byId("${room.template}")`);
+      if (t && t.furniture && t.furniture.length) {
+        // Every stash kind on a furniture-bearing room must pin to a
+        // suffix that exists in that template's furniture list.
+        expect(t.furniture).toContain(plan.stashFurniture[k]);
+      } else {
+        // Empty-furniture template -> no pin.
+        expect(plan.stashFurniture[k]).toBeUndefined();
+      }
+    }
   });
 
   test('bossRoomId is null when includeBoss is false (default)', async () => {

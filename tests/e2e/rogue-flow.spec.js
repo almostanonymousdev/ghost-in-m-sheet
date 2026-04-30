@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, getVar, goToPassage } = require('../helpers');
+const { openGame, resetGame, getVar, goToPassage, callSetup } = require('../helpers');
 
 /* End-to-end rogue lifecycle: GhostStreet → RogueStart → RogueRun
    → RogueEnd → RogueMetaShop. Exercises the actual passage flow
@@ -98,6 +98,45 @@ test.describe('E2E: rogue run lifecycle', () => {
     // Run 1: 5 base + 0 success + 2 modifiers = 7 echoes from the forfeit.
     expect(await getVar(page, 'echoes')).toBe(7);
     expect(await getVar(page, 'runsStarted')).toBe(2);
+  });
+
+  test('current-room widget renders furniture + nav links, links advance the player', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Enter the haunt', 'RogueRun');
+
+    // The current-room block should render the player's starting
+    // room (the hallway) and at least one exit link the player can
+    // click to walk into another room.
+    await expect(page.locator('.rogue-current-room')).toBeVisible();
+    await expect(
+      page.locator('.rogue-current-room').getByText('Current Room: Hallway')
+    ).toBeVisible();
+
+    expect(await getVar(page, 'run').then(r => r.currentRoomId)).toBe('room_0');
+
+    // The hallway's neighbours come from the floor plan; click the
+    // first one and verify currentRoomId follows.
+    const fp = await getVar(page, 'run').then(r => r.floorplan);
+    const neighbours = fp.edges
+      .filter(e => e[0] === 'room_0' || e[1] === 'room_0')
+      .map(e => e[0] === 'room_0' ? e[1] : e[0]);
+    expect(neighbours.length).toBeGreaterThan(0);
+
+    const firstNeighbourId = neighbours[0];
+    const firstNeighbour = fp.rooms.find(r => r.id === firstNeighbourId);
+    const tLabel = await callSetup(page, `setup.Templates.byId("${firstNeighbour.template}").label`);
+
+    await page.locator('.rogue-current-room')
+      .getByText(tLabel, { exact: true })
+      .first()
+      .click();
+    await page.waitForFunction(
+      id => SugarCube.State.variables.run.currentRoomId === id,
+      firstNeighbourId
+    );
   });
 
   test('two consecutive runs increment runsStarted across the lifecycle', async () => {
