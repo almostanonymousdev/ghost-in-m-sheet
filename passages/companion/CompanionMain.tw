@@ -1,10 +1,9 @@
 :: CompanionMain [nobr] {"position":"1950,3225","size":"100,100"}
 /* Shared Main screen for all six companions: portrait, clothing-tier
    links, plan selection, walk-home. Per-companion text, image paths,
-   and walk-home eligibility come from setup.Companion's catalogue.
-
-   Keeps the existing $chanceToAttack<Name> / $brook / $alice / ... save
-   variables untouched so saves from before the refactor still work. */
+   and walk-home eligibility come from setup.Companion's catalogue;
+   chance-to-attack lives on the companion stat object itself, accessed
+   through setup.Companion.chanceToAttack(). */
 <<set _cname to setup.Companion.name()>>
 <<set _c to setup.Companion.getByName(_cname)>>
 <<set _state to _c.state()>>

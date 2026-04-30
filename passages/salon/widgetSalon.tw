@@ -17,7 +17,7 @@
 			<<capture _varName, _price, _returnPassage, _beautyBonus, _extraVar, _extraVal>>
 				@@.buyItemLink;<<link "Buy" _returnPassage>>
 					<<run State.variables[_varName] = "worn">>
-					<<run setup.Mc.spendMoney(_price)>>
+					<<run setup.Mc.removeMoney(_price)>>
 					<<if _beautyBonus>><<run setup.Mc.addBeauty(_beautyBonus)>><</if>>
 					<<if _extraVar>><<run State.variables[_extraVar] = _extraVal>><</if>>
 				<</link>>@@<br>
@@ -49,7 +49,7 @@
 				<<capture _varName, _price, _returnPassage, _beautyBonus, _extraVar, _extraVal>>
 					@@.buyItemLink;<<link "Buy" _returnPassage>>
 						<<run State.variables[_varName] = "worn">>
-						<<run setup.Mc.spendMoney(_price)>>
+						<<run setup.Mc.removeMoney(_price)>>
 						<<if _beautyBonus>><<run setup.Mc.addBeauty(_beautyBonus)>><</if>>
 						<<if _extraVar>><<run State.variables[_extraVar] = _extraVal>><</if>>
 					<</link>>@@<br>

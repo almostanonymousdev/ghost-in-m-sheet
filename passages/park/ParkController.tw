@@ -48,7 +48,7 @@ setup.Park = (function () {
 		},
 		spendJoggingEnergy: function () {
 			// Jogging consumes 2 energy at start and again on continue.
-			setup.Mc.spendEnergy(2);
+			setup.Mc.removeEnergy(2);
 		},
 		dropEnergyToZero: function () {
 			// Both park-event branches drain the MC to 0 energy.

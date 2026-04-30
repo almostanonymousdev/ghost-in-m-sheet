@@ -25,7 +25,7 @@ setup.Mall = (function () {
 
 		// --- Blake / adult shop ----------------------------------
 		blakeUnlocked: function () {
-			return setup.Companion.aliceLvl() >= 2;
+			return setup.Companion.companionLvl('Alice') >= 2;
 		},
 		blakeFirstMeeting: function () {
 			return sv().dialogBlake === undefined;
@@ -84,12 +84,12 @@ setup.Mall = (function () {
 			var s = State.variables;
 			s.hasPSpray = 1;
 			s.hasPSprayCharges = 3;
-			setup.Mc.spendMoney(10);
+			setup.Mc.removeMoney(10);
 		},
 
 		// --- Warden costume purchase -----------------------------
 		buyWardenOutfit: function () {
-			setup.Mc.spendMoney(500);
+			setup.Mc.removeMoney(500);
 			setup.Witch.setWardenClothesStage(2);
 		},
 
@@ -106,9 +106,6 @@ setup.Mall = (function () {
 			State.variables.relationshipBlake = (sv().relationshipBlake || 0) + 1;
 		},
 		setBlakeRelationship: function (n) { State.variables.relationshipBlake = n; },
-		blakeLvl: function () {
-			return setup.Companion.blakeLvl();
-		},
 
 		// --- Chance-aloneHunt display values ---------------------
 		chanceBlakeAloneOwaissa: function () { return setup.Companion.soloHuntChanceOwaissa('Blake'); },
@@ -121,10 +118,10 @@ setup.Mall = (function () {
 
 		// --- Picking Blake for a solo hunt -----------------------
 		pickBlakeForSoloHuntOwaissa: function () {
-			setup.Companion.pickCompanionForSoloHunt('Blake', 'Owaissa');
+			setup.Companion.sendCompanionSolo('Blake', 'Owaissa');
 		},
 		pickBlakeForSoloHuntElm: function () {
-			setup.Companion.pickCompanionForSoloHunt('Blake', 'Elm');
+			setup.Companion.sendCompanionSolo('Blake', 'Elm');
 		}
 	};
 })();

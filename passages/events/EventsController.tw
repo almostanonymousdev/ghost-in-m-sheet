@@ -16,10 +16,6 @@ setup.Events = (function () {
 		'sanityIfHot', 'sanityInTheDark'
 	]);
 
-	function between(val, lo, hi) {
-		return val >= lo && val < hi;
-	}
-
 	// Room metadata (passage name → { stateKey, light/dark URLs,
 	// body class }) lives in setup.Styles. isDarkRoom() and
 	// turnOffLightHere() below delegate to that single source.
@@ -32,101 +28,8 @@ setup.Events = (function () {
 	// Body-part keys in escalation order (event numbers 1-7).
 	var bodyPartKeys = ['brain', 'tits', 'ass', 'bottom', 'mouth', 'pussy', 'anal'];
 
-	// --- Video data for each event (private) --------------------
-	// _type: 'flat' | 'top' | 'bottom' controls which resolver is used.
-	// 'prison' entries are flat arrays (no location split).
-	// All other entries are { owaissa: [...], elm: [...] }.
-	var eventVideos = {
-		brain: { _type: 'flat',
-			mind: ["mechanics/mind/1.webp", "mechanics/mind/2.webp", "mechanics/mind/3.webp", "mechanics/mind/4.webp", "mechanics/mind/5.webp", "mechanics/mind/6.webp", "mechanics/mind/7.webp", "mechanics/mind/8.webp", "mechanics/mind/9.webp", "mechanics/mind/10.webp", "mechanics/mind/12.webp", "mechanics/mind/13.webp", "mechanics/mind/14.webp", "mechanics/mind/15.webp", "mechanics/mind/16.webp", "mechanics/mind/17.webp", "mechanics/mind/18.webp", "mechanics/mind/19.webp", "mechanics/mind/20.webp", "mechanics/mind/21.webp", "mechanics/mind/22.webp", "mechanics/mind/23.webp", "mechanics/mind/24.webp", "mechanics/mind/25.webp", "mechanics/mind/26.webp", "mechanics/mind/27.webp", "mechanics/mind/28.webp"]
-		},
-		tits: { _type: 'top',
-			prison:   ["scenes/prison/1.0.mp4", "scenes/prison/1.1.mp4", "scenes/prison/1.2.mp4", "scenes/prison/1.3.mp4", "scenes/prison/1.4.mp4", "scenes/prison/1.5.mp4", "scenes/prison/1.6.mp4", "scenes/prison/1.7.mp4", "scenes/prison/1.8.mp4", "scenes/prison/1.9.mp4"],
-			tshirt:   { owaissa: ["outfits/tops/tshirt/1.mp4", "outfits/tops/tshirt/2.mp4", "outfits/tops/tshirt/3.mp4", "outfits/tops/tshirt/4.mp4", "outfits/tops/tshirt/5.mp4", "outfits/tops/tshirt/6.mp4", "outfits/tops/tshirt/7.mp4", "outfits/tops/tshirt/8.mp4"],
-						elm:     ["outfits/tops/tshirt/20.mp4", "outfits/tops/tshirt/21.mp4", "outfits/tops/tshirt/22.mp4", "outfits/tops/tshirt/23.mp4", "outfits/tops/tshirt/24.mp4", "outfits/tops/tshirt/25.mp4", "outfits/tops/tshirt/26.mp4", "outfits/tops/tshirt/27.mp4", "outfits/tops/tshirt/28.mp4"] },
-			tshirtNB: { owaissa: ["outfits/combos/tshirt-no-bra/1.mp4", "outfits/combos/tshirt-no-bra/2.mp4", "outfits/combos/tshirt-no-bra/3.mp4", "outfits/combos/tshirt-no-bra/4.mp4", "outfits/combos/tshirt-no-bra/5.mp4", "outfits/combos/tshirt-no-bra/6.mp4", "outfits/combos/tshirt-no-bra/7.mp4", "outfits/combos/tshirt-no-bra/8.mp4"],
-						elm:     ["outfits/combos/tshirt-no-bra/20.mp4", "outfits/combos/tshirt-no-bra/21.mp4", "outfits/combos/tshirt-no-bra/22.mp4", "outfits/combos/tshirt-no-bra/23.mp4", "outfits/combos/tshirt-no-bra/24.mp4", "outfits/combos/tshirt-no-bra/25.mp4", "outfits/combos/tshirt-no-bra/26.mp4"] },
-			bra:      { owaissa: ["outfits/tops/bra/1.mp4", "outfits/tops/bra/2.mp4", "outfits/tops/bra/3.mp4", "outfits/tops/bra/4.mp4", "outfits/tops/bra/5.mp4", "outfits/tops/bra/6.mp4", "outfits/tops/bra/7.mp4", "outfits/tops/bra/8.mp4", "outfits/tops/bra/9.mp4", "outfits/tops/bra/10.mp4", "outfits/tops/bra/11.mp4", "outfits/tops/bra/12.mp4", "outfits/tops/bra/13.mp4"],
-						elm:     ["outfits/tops/bra/20.mp4", "outfits/tops/bra/21.mp4", "outfits/tops/bra/22.mp4", "outfits/tops/bra/23.mp4", "outfits/tops/bra/24.mp4", "outfits/tops/bra/25.mp4"] },
-			noBra:    { owaissa: ["outfits/tops/no-bra/1.mp4", "outfits/tops/no-bra/2.mp4", "outfits/tops/no-bra/3.mp4", "outfits/tops/no-bra/4.mp4", "outfits/tops/no-bra/5.mp4", "outfits/tops/no-bra/6.mp4", "outfits/tops/no-bra/7.mp4", "outfits/tops/no-bra/8.mp4"],
-						elm:     ["outfits/tops/no-bra/20.mp4", "outfits/tops/no-bra/21.mp4", "outfits/tops/no-bra/22.mp4", "outfits/tops/no-bra/23.mp4", "outfits/tops/no-bra/24.mp4", "outfits/tops/no-bra/25.mp4"] }
-		},
-		ass: { _type: 'bottom',
-			prison:  ["scenes/prison/2.0.mp4", "scenes/prison/2.1.mp4", "scenes/prison/2.2.mp4", "scenes/prison/2.3.mp4", "scenes/prison/2.4.mp4", "scenes/prison/2.5.mp4", "scenes/prison/2.6.mp4", "scenes/prison/2.7.mp4", "scenes/prison/2.8.mp4", "scenes/prison/2.9.mp4", "scenes/prison/2.10.mp4"],
-			jeans:   { owaissa: ["outfits/bottoms/jeans/s1/1.mp4", "outfits/bottoms/jeans/s1/2.mp4", "outfits/bottoms/jeans/s1/3.mp4", "outfits/bottoms/jeans/s1/4.mp4", "outfits/bottoms/jeans/s1/5.mp4", "outfits/bottoms/jeans/s1/6.mp4", "outfits/bottoms/jeans/s1/7.mp4", "outfits/bottoms/jeans/s1/8.mp4", "outfits/bottoms/jeans/s1/9.mp4", "outfits/bottoms/jeans/s1/10.mp4"],
-						elm:     ["outfits/bottoms/jeans/s1/11.mp4", "outfits/bottoms/jeans/s1/12.mp4", "outfits/bottoms/jeans/s1/13.mp4", "outfits/bottoms/jeans/s1/14.mp4", "outfits/bottoms/jeans/s1/15.mp4", "outfits/bottoms/jeans/s1/16.mp4", "outfits/bottoms/jeans/s1/17.mp4", "outfits/bottoms/jeans/s1/18.mp4", "outfits/bottoms/jeans/s1/19.mp4", "outfits/bottoms/jeans/s1/20.mp4"] },
-			shorts:  { owaissa: ["outfits/bottoms/shorts/s1/1.mp4", "outfits/bottoms/shorts/s1/2.mp4", "outfits/bottoms/shorts/s1/3.mp4", "outfits/bottoms/shorts/s1/4.mp4", "outfits/bottoms/shorts/s1/5.mp4", "outfits/bottoms/shorts/s1/6.mp4", "outfits/bottoms/shorts/s1/7.mp4", "outfits/bottoms/shorts/s1/8.mp4", "outfits/bottoms/shorts/s1/9.mp4", "outfits/bottoms/shorts/s1/10.mp4"],
-						elm:     ["outfits/bottoms/shorts/s1/11.mp4", "outfits/bottoms/shorts/s1/12.mp4", "outfits/bottoms/shorts/s1/13.mp4", "outfits/bottoms/shorts/s1/14.mp4", "outfits/bottoms/shorts/s1/15.mp4", "outfits/bottoms/shorts/s1/16.mp4", "outfits/bottoms/shorts/s1/17.mp4", "outfits/bottoms/shorts/s1/18.mp4", "outfits/bottoms/shorts/s1/19.mp4", "outfits/bottoms/shorts/s1/20.mp4"] },
-			skirt:   { owaissa: ["outfits/bottoms/skirt/s1/1.mp4", "outfits/bottoms/skirt/s1/2.mp4", "outfits/bottoms/skirt/s1/3.mp4", "outfits/bottoms/skirt/s1/4.mp4", "outfits/bottoms/skirt/s1/5.mp4", "outfits/bottoms/skirt/s1/6.mp4", "outfits/bottoms/skirt/s1/7.mp4", "outfits/bottoms/skirt/s1/8.mp4", "outfits/bottoms/skirt/s1/9.mp4", "outfits/bottoms/skirt/s1/10.mp4", "outfits/bottoms/skirt/s1/11.mp4", "outfits/bottoms/skirt/s1/12.mp4", "outfits/bottoms/skirt/s1/13.mp4", "outfits/bottoms/skirt/s1/14.mp4"],
-						elm:     ["outfits/bottoms/skirt/s1/20.mp4", "outfits/bottoms/skirt/s1/21.mp4", "outfits/bottoms/skirt/s1/22.mp4", "outfits/bottoms/skirt/s1/23.mp4", "outfits/bottoms/skirt/s1/24.mp4", "outfits/bottoms/skirt/s1/25.mp4", "outfits/bottoms/skirt/s1/26.mp4", "outfits/bottoms/skirt/s1/27.mp4", "outfits/bottoms/skirt/s1/28.mp4", "outfits/bottoms/skirt/s1/29.mp4", "outfits/bottoms/skirt/s1/30.mp4"] },
-			skirtNP: { owaissa: ["outfits/combos/skirt-no-panties/s1/1.mp4", "outfits/combos/skirt-no-panties/s1/2.mp4", "outfits/combos/skirt-no-panties/s1/3.mp4", "outfits/combos/skirt-no-panties/s1/4.mp4", "outfits/combos/skirt-no-panties/s1/5.mp4", "outfits/combos/skirt-no-panties/s1/6.mp4", "outfits/combos/skirt-no-panties/s1/7.mp4", "outfits/combos/skirt-no-panties/s1/8.mp4", "outfits/combos/skirt-no-panties/s1/9.mp4", "outfits/combos/skirt-no-panties/s1/10.mp4", "outfits/combos/skirt-no-panties/s1/11.mp4", "outfits/combos/skirt-no-panties/s1/12.mp4", "outfits/combos/skirt-no-panties/s1/13.mp4"],
-						elm:     ["outfits/combos/skirt-no-panties/s1/20.mp4", "outfits/combos/skirt-no-panties/s1/21.mp4", "outfits/combos/skirt-no-panties/s1/22.mp4", "outfits/combos/skirt-no-panties/s1/23.mp4", "outfits/combos/skirt-no-panties/s1/24.mp4", "outfits/combos/skirt-no-panties/s1/25.mp4", "outfits/combos/skirt-no-panties/s1/26.mp4", "outfits/combos/skirt-no-panties/s1/27.mp4", "outfits/combos/skirt-no-panties/s1/28.mp4", "outfits/combos/skirt-no-panties/s1/29.mp4", "outfits/combos/skirt-no-panties/s1/30.mp4"] },
-			panties: { owaissa: ["outfits/bottoms/panties/s1/1.mp4", "outfits/bottoms/panties/s1/2.mp4", "outfits/bottoms/panties/s1/3.mp4", "outfits/bottoms/panties/s1/4.mp4", "outfits/bottoms/panties/s1/5.mp4", "outfits/bottoms/panties/s1/6.mp4", "outfits/bottoms/panties/s1/7.mp4", "outfits/bottoms/panties/s1/8.mp4", "outfits/bottoms/panties/s1/9.mp4", "outfits/bottoms/panties/s1/10.mp4", "outfits/bottoms/panties/s1/11.mp4", "outfits/bottoms/panties/s1/12.mp4", "outfits/bottoms/panties/s1/13.mp4", "outfits/bottoms/panties/s1/14.mp4", "outfits/bottoms/panties/s1/15.mp4"],
-						elm:     ["outfits/bottoms/panties/s1/20.mp4", "outfits/bottoms/panties/s1/21.mp4", "outfits/bottoms/panties/s1/22.mp4", "outfits/bottoms/panties/s1/23.mp4", "outfits/bottoms/panties/s1/24.mp4", "outfits/bottoms/panties/s1/25.mp4", "outfits/bottoms/panties/s1/26.mp4", "outfits/bottoms/panties/s1/27.mp4", "outfits/bottoms/panties/s1/28.mp4", "outfits/bottoms/panties/s1/29.mp4", "outfits/bottoms/panties/s1/30.mp4"] },
-			naked:   { owaissa: ["outfits/bottoms/no-panties/s1/1.mp4", "outfits/bottoms/no-panties/s1/2.mp4", "outfits/bottoms/no-panties/s1/3.mp4", "outfits/bottoms/no-panties/s1/4.mp4", "outfits/bottoms/no-panties/s1/5.mp4", "outfits/bottoms/no-panties/s1/6.mp4", "outfits/bottoms/no-panties/s1/7.mp4", "outfits/bottoms/no-panties/s1/8.mp4"],
-						elm:     ["outfits/bottoms/no-panties/s1/20.mp4", "outfits/bottoms/no-panties/s1/21.mp4", "outfits/bottoms/no-panties/s1/22.mp4", "outfits/bottoms/no-panties/s1/23.mp4", "outfits/bottoms/no-panties/s1/24.mp4", "outfits/bottoms/no-panties/s1/25.mp4", "outfits/bottoms/no-panties/s1/26.mp4"] }
-		},
-		bottom: { _type: 'bottom',
-			prison:  ["scenes/prison/3.0.mp4", "scenes/prison/3.1.mp4", "scenes/prison/3.2.mp4", "scenes/prison/3.3.mp4", "scenes/prison/3.4.mp4", "scenes/prison/3.5.mp4", "scenes/prison/3.6.mp4", "scenes/prison/3.7.mp4", "scenes/prison/3.8.mp4", "scenes/prison/3.9.mp4"],
-			jeans:   { owaissa: ["outfits/bottoms/jeans/s2/1.mp4", "outfits/bottoms/jeans/s2/2.mp4", "outfits/bottoms/jeans/s2/3.mp4", "outfits/bottoms/jeans/s2/4.mp4", "outfits/bottoms/jeans/s2/5.mp4", "outfits/bottoms/jeans/s2/6.mp4", "outfits/bottoms/jeans/s2/7.mp4", "outfits/bottoms/jeans/s2/8.mp4", "outfits/bottoms/jeans/s2/9.mp4", "outfits/bottoms/jeans/s2/10.mp4", "outfits/bottoms/jeans/s2/11.mp4", "outfits/bottoms/jeans/s2/12.mp4"],
-						elm:     ["outfits/bottoms/jeans/s2/13.mp4", "outfits/bottoms/jeans/s2/14.mp4", "outfits/bottoms/jeans/s2/15.mp4", "outfits/bottoms/jeans/s2/16.mp4", "outfits/bottoms/jeans/s2/17.mp4", "outfits/bottoms/jeans/s2/18.mp4", "outfits/bottoms/jeans/s2/19.mp4", "outfits/bottoms/jeans/s2/20.mp4"] },
-			jeansNP: { owaissa: ["outfits/bottoms/jeans/s2/29.mp4", "outfits/bottoms/jeans/s2/21.mp4", "outfits/bottoms/jeans/s2/22.mp4", "outfits/bottoms/jeans/s2/23.mp4", "outfits/bottoms/jeans/s2/24.mp4", "outfits/bottoms/jeans/s2/25.mp4", "outfits/bottoms/jeans/s2/26.mp4", "outfits/bottoms/jeans/s2/27.mp4", "outfits/bottoms/jeans/s2/28.mp4"],
-						elm:     ["outfits/bottoms/jeans/s2/30.mp4", "outfits/bottoms/jeans/s2/31.mp4", "outfits/bottoms/jeans/s2/32.mp4", "outfits/bottoms/jeans/s2/33.mp4", "outfits/bottoms/jeans/s2/34.mp4", "outfits/bottoms/jeans/s2/35.mp4", "outfits/bottoms/jeans/s2/36.mp4", "outfits/bottoms/jeans/s2/37.mp4", "outfits/bottoms/jeans/s2/38.mp4", "outfits/bottoms/jeans/s2/39.mp4"] },
-			shorts:  { owaissa: ["outfits/bottoms/shorts/s2/1.mp4", "outfits/bottoms/shorts/s2/2.mp4", "outfits/bottoms/shorts/s2/3.mp4", "outfits/bottoms/shorts/s2/4.mp4", "outfits/bottoms/shorts/s2/5.mp4", "outfits/bottoms/shorts/s2/6.mp4", "outfits/bottoms/shorts/s2/7.mp4", "outfits/bottoms/shorts/s2/8.mp4", "outfits/bottoms/shorts/s2/9.mp4"],
-						elm:     ["outfits/bottoms/shorts/s2/11.mp4", "outfits/bottoms/shorts/s2/12.mp4", "outfits/bottoms/shorts/s2/13.mp4", "outfits/bottoms/shorts/s2/14.mp4", "outfits/bottoms/shorts/s2/15.mp4", "outfits/bottoms/shorts/s2/16.mp4", "outfits/bottoms/shorts/s2/17.mp4", "outfits/bottoms/shorts/s2/18.mp4", "outfits/bottoms/shorts/s2/19.mp4", "outfits/bottoms/shorts/s2/20.mp4"] },
-			skirt:   { owaissa: ["outfits/bottoms/skirt/s2/1.mp4", "outfits/bottoms/skirt/s2/2.mp4", "outfits/bottoms/skirt/s2/3.mp4", "outfits/bottoms/skirt/s2/4.mp4", "outfits/bottoms/skirt/s2/5.mp4", "outfits/bottoms/skirt/s2/6.mp4", "outfits/bottoms/skirt/s2/7.mp4", "outfits/bottoms/skirt/s2/8.mp4", "outfits/bottoms/skirt/s2/9.mp4", "outfits/bottoms/skirt/s2/10.mp4", "outfits/bottoms/skirt/s2/11.mp4", "outfits/bottoms/skirt/s2/12.mp4", "outfits/bottoms/skirt/s2/13.mp4"],
-						elm:     ["outfits/bottoms/skirt/s2/20.mp4", "outfits/bottoms/skirt/s2/21.mp4", "outfits/bottoms/skirt/s2/22.mp4", "outfits/bottoms/skirt/s2/23.mp4", "outfits/bottoms/skirt/s2/24.mp4", "outfits/bottoms/skirt/s2/25.mp4", "outfits/bottoms/skirt/s2/26.mp4", "outfits/bottoms/skirt/s2/27.mp4", "outfits/bottoms/skirt/s2/28.mp4"] },
-			skirtNP: { owaissa: ["outfits/combos/skirt-no-panties/s2/1.mp4", "outfits/combos/skirt-no-panties/s2/2.mp4", "outfits/combos/skirt-no-panties/s2/3.mp4", "outfits/combos/skirt-no-panties/s2/4.mp4", "outfits/combos/skirt-no-panties/s2/5.mp4", "outfits/combos/skirt-no-panties/s2/6.mp4"],
-						elm:     ["outfits/combos/skirt-no-panties/s2/20.mp4", "outfits/combos/skirt-no-panties/s2/21.mp4", "outfits/combos/skirt-no-panties/s2/22.mp4", "outfits/combos/skirt-no-panties/s2/23.mp4", "outfits/combos/skirt-no-panties/s2/24.mp4", "outfits/combos/skirt-no-panties/s2/25.mp4", "outfits/combos/skirt-no-panties/s2/26.mp4", "outfits/combos/skirt-no-panties/s2/27.mp4"] },
-			panties: { owaissa: ["outfits/bottoms/panties/s2/1.mp4", "outfits/bottoms/panties/s2/2.mp4", "outfits/bottoms/panties/s2/3.mp4", "outfits/bottoms/panties/s2/4.mp4", "outfits/bottoms/panties/s2/5.mp4", "outfits/bottoms/panties/s2/6.mp4", "outfits/bottoms/panties/s2/7.mp4", "outfits/bottoms/panties/s2/8.mp4", "outfits/bottoms/panties/s2/9.mp4"],
-						elm:     ["outfits/bottoms/panties/s2/21.mp4", "outfits/bottoms/panties/s2/22.mp4", "outfits/bottoms/panties/s2/23.mp4", "outfits/bottoms/panties/s2/24.mp4", "outfits/bottoms/panties/s2/25.mp4", "outfits/bottoms/panties/s2/26.mp4", "outfits/bottoms/panties/s2/27.mp4", "outfits/bottoms/panties/s2/28.mp4", "outfits/bottoms/panties/s2/29.mp4", "outfits/bottoms/panties/s2/30.mp4"] },
-			naked:   { owaissa: ["outfits/bottoms/no-panties/s2/1.mp4", "outfits/bottoms/no-panties/s2/2.mp4", "outfits/bottoms/no-panties/s2/3.mp4", "outfits/bottoms/no-panties/s2/4.mp4", "outfits/bottoms/no-panties/s2/5.mp4", "outfits/bottoms/no-panties/s2/6.mp4", "outfits/bottoms/no-panties/s2/7.mp4", "outfits/bottoms/no-panties/s2/8.mp4", "outfits/bottoms/no-panties/s2/9.mp4", "outfits/bottoms/no-panties/s2/10.mp4"],
-						elm:     ["outfits/bottoms/no-panties/s2/20.mp4", "outfits/bottoms/no-panties/s2/21.mp4", "outfits/bottoms/no-panties/s2/22.mp4", "outfits/bottoms/no-panties/s2/23.mp4", "outfits/bottoms/no-panties/s2/24.mp4", "outfits/bottoms/no-panties/s2/25.mp4", "outfits/bottoms/no-panties/s2/26.mp4", "outfits/bottoms/no-panties/s2/27.mp4"] }
-		},
-		mouth: { _type: 'top',
-			prison:  ["scenes/prison/4.0.mp4", "scenes/prison/4.1.mp4", "scenes/prison/4.2.mp4", "scenes/prison/4.3.mp4", "scenes/prison/4.4.mp4", "scenes/prison/4.5.mp4", "scenes/prison/4.6.mp4", "scenes/prison/4.7.mp4", "scenes/prison/4.8.mp4", "scenes/prison/4.9.mp4", "scenes/prison/4.10.mp4", "scenes/prison/4.11.mp4", "scenes/prison/4.12.mp4", "scenes/prison/4.13.mp4"],
-			tshirt:  { owaissa: ["mechanics/bj/1.mp4", "mechanics/bj/2.mp4", "mechanics/bj/3.mp4", "mechanics/bj/4.mp4", "mechanics/bj/5.mp4", "mechanics/bj/6.mp4", "mechanics/bj/7.mp4", "mechanics/bj/8.mp4", "mechanics/bj/9.mp4", "mechanics/bj/10.mp4", "mechanics/bj/11.mp4", "mechanics/bj/12.mp4", "mechanics/bj/13.mp4"],
-						elm:     ["mechanics/bj/100.mp4", "mechanics/bj/101.mp4", "mechanics/bj/102.mp4", "mechanics/bj/103.mp4", "mechanics/bj/104.mp4", "mechanics/bj/105.mp4", "mechanics/bj/106.mp4", "mechanics/bj/107.mp4", "mechanics/bj/108.mp4", "mechanics/bj/109.mp4"] },
-			bra:     { owaissa: ["mechanics/bj/1.mp4", "mechanics/bj/2.mp4", "mechanics/bj/3.mp4", "mechanics/bj/20.mp4", "mechanics/bj/21.mp4", "mechanics/bj/22.mp4", "mechanics/bj/23.mp4", "mechanics/bj/24.mp4", "mechanics/bj/25.mp4", "mechanics/bj/26.mp4", "mechanics/bj/27.mp4"],
-						elm:     ["mechanics/bj/110.mp4", "mechanics/bj/111.mp4", "mechanics/bj/112.mp4", "mechanics/bj/113.mp4", "mechanics/bj/114.mp4", "mechanics/bj/115.mp4", "mechanics/bj/116.mp4", "mechanics/bj/117.mp4", "mechanics/bj/118.mp4", "mechanics/bj/119.mp4"] },
-			noBra:   { owaissa: ["mechanics/bj/1.mp4", "mechanics/bj/2.mp4", "mechanics/bj/3.mp4", "mechanics/bj/40.mp4", "mechanics/bj/41.mp4", "mechanics/bj/42.mp4", "mechanics/bj/43.mp4", "mechanics/bj/44.mp4", "mechanics/bj/45.mp4", "mechanics/bj/46.mp4", "mechanics/bj/47.mp4", "mechanics/bj/48.mp4", "mechanics/bj/49.mp4", "mechanics/bj/50.mp4", "mechanics/bj/51.mp4", "mechanics/bj/52.mp4"],
-						elm:     ["mechanics/bj/120.mp4", "mechanics/bj/121.mp4", "mechanics/bj/122.mp4", "mechanics/bj/123.mp4", "mechanics/bj/124.mp4", "mechanics/bj/125.mp4", "mechanics/bj/126.mp4", "mechanics/bj/127.mp4", "mechanics/bj/128.mp4", "mechanics/bj/129.mp4"] }
-		},
-		pussy: { _type: 'bottom',
-			prison:  ["scenes/prison/5.0.mp4", "scenes/prison/5.1.mp4", "scenes/prison/5.2.mp4", "scenes/prison/5.3.mp4", "scenes/prison/5.4.mp4", "scenes/prison/5.5.mp4", "scenes/prison/5.6.mp4", "scenes/prison/5.7.mp4", "scenes/prison/5.8.mp4", "scenes/prison/5.9.mp4", "scenes/prison/5.10.mp4", "scenes/prison/5.11.mp4"],
-			jeans:   { owaissa: ["outfits/bottoms/jeans/s3/3.mp4", "outfits/bottoms/jeans/s3/4.mp4", "outfits/bottoms/jeans/s3/5.mp4", "outfits/bottoms/jeans/s3/6.mp4", "outfits/bottoms/jeans/s3/7.mp4", "outfits/bottoms/jeans/s3/9.mp4"],
-						elm:     ["outfits/bottoms/jeans/s3/10.mp4", "outfits/bottoms/jeans/s3/12.mp4", "outfits/bottoms/jeans/s3/13.mp4", "outfits/bottoms/jeans/s3/14.mp4", "outfits/bottoms/jeans/s3/15.mp4", "outfits/bottoms/jeans/s3/16.mp4", "outfits/bottoms/jeans/s3/17.mp4"] },
-			jeansNP: { owaissa: ["outfits/bottoms/jeans/s3/20.mp4", "outfits/bottoms/jeans/s3/21.mp4", "outfits/bottoms/jeans/s3/23.mp4", "outfits/bottoms/jeans/s3/24.mp4", "outfits/bottoms/jeans/s3/25.mp4", "outfits/bottoms/jeans/s3/26.mp4"],
-						elm:     ["outfits/bottoms/jeans/s3/30.mp4", "outfits/bottoms/jeans/s3/31.mp4", "outfits/bottoms/jeans/s3/33.mp4", "outfits/bottoms/jeans/s3/34.mp4", "outfits/bottoms/jeans/s3/35.mp4", "outfits/bottoms/jeans/s3/36.mp4", "outfits/bottoms/jeans/s3/37.mp4", "outfits/bottoms/jeans/s3/39.mp4"] },
-			shorts:  { owaissa: ["outfits/bottoms/shorts/s3/1.mp4", "outfits/bottoms/shorts/s3/2.mp4", "outfits/bottoms/shorts/s3/4.mp4", "outfits/bottoms/shorts/s3/5.mp4", "outfits/bottoms/shorts/s3/7.mp4", "outfits/bottoms/shorts/s3/8.mp4", "outfits/bottoms/shorts/s3/9.mp4"],
-						elm:     ["outfits/bottoms/shorts/s3/11.mp4", "outfits/bottoms/shorts/s3/12.mp4", "outfits/bottoms/shorts/s3/13.mp4", "outfits/bottoms/shorts/s3/14.mp4", "outfits/bottoms/shorts/s3/17.mp4", "outfits/bottoms/shorts/s3/18.mp4"] },
-			skirt:   { owaissa: ["outfits/bottoms/skirt/s3/2.mp4", "outfits/bottoms/skirt/s3/3.mp4", "outfits/bottoms/skirt/s3/4.mp4", "outfits/bottoms/skirt/s3/5.mp4", "outfits/bottoms/skirt/s3/6.mp4", "outfits/bottoms/skirt/s3/7.mp4", "outfits/bottoms/skirt/s3/8.mp4", "outfits/bottoms/skirt/s3/9.mp4", "outfits/bottoms/skirt/s3/10.mp4", "outfits/bottoms/skirt/s3/11.mp4", "outfits/bottoms/skirt/s3/12.mp4", "outfits/bottoms/skirt/s3/13.mp4", "outfits/bottoms/skirt/s3/14.mp4", "outfits/bottoms/skirt/s3/15.mp4", "outfits/bottoms/skirt/s3/16.mp4", "outfits/bottoms/skirt/s3/17.mp4", "outfits/bottoms/skirt/s3/18.mp4"],
-						elm:     ["outfits/bottoms/skirt/s3/20.mp4", "outfits/bottoms/skirt/s3/21.mp4", "outfits/bottoms/skirt/s3/22.mp4", "outfits/bottoms/skirt/s3/23.mp4", "outfits/bottoms/skirt/s3/24.mp4", "outfits/bottoms/skirt/s3/25.mp4", "outfits/bottoms/skirt/s3/27.mp4", "outfits/bottoms/skirt/s3/28.mp4", "outfits/bottoms/skirt/s3/30.mp4"] },
-			skirtNP: { owaissa: ["outfits/combos/skirt-no-panties/s3/4.mp4", "outfits/combos/skirt-no-panties/s3/6.mp4", "outfits/combos/skirt-no-panties/s3/9.mp4", "outfits/combos/skirt-no-panties/s3/10.mp4", "outfits/combos/skirt-no-panties/s3/12.mp4", "outfits/combos/skirt-no-panties/s3/13.mp4", "outfits/combos/skirt-no-panties/s3/14.mp4", "outfits/combos/skirt-no-panties/s3/15.mp4", "outfits/combos/skirt-no-panties/s3/16.mp4"],
-						elm:     ["outfits/combos/skirt-no-panties/s3/21.mp4", "outfits/combos/skirt-no-panties/s3/22.mp4", "outfits/combos/skirt-no-panties/s3/23.mp4", "outfits/combos/skirt-no-panties/s3/24.mp4", "outfits/combos/skirt-no-panties/s3/25.mp4", "outfits/combos/skirt-no-panties/s3/27.mp4", "outfits/combos/skirt-no-panties/s3/29.mp4", "outfits/combos/skirt-no-panties/s3/30.mp4"] },
-			panties: { owaissa: ["outfits/bottoms/panties/s3/1.mp4", "outfits/bottoms/panties/s3/2.mp4", "outfits/bottoms/panties/s3/3.mp4", "outfits/bottoms/panties/s3/4.mp4", "outfits/bottoms/panties/s3/5.mp4", "outfits/bottoms/panties/s3/9.mp4"],
-						elm:     ["outfits/bottoms/panties/s3/22.mp4", "outfits/bottoms/panties/s3/23.mp4", "outfits/bottoms/panties/s3/25.mp4", "outfits/bottoms/panties/s3/26.mp4", "outfits/bottoms/panties/s3/27.mp4", "outfits/bottoms/panties/s3/28.mp4", "outfits/bottoms/panties/s3/29.mp4"] },
-			naked:   { owaissa: ["outfits/bottoms/no-panties/s3/1.mp4", "outfits/bottoms/no-panties/s3/2.mp4", "outfits/bottoms/no-panties/s3/3.mp4", "outfits/bottoms/no-panties/s3/4.mp4", "outfits/bottoms/no-panties/s3/5.mp4", "outfits/bottoms/no-panties/s3/9.mp4", "outfits/bottoms/no-panties/s3/12.mp4", "outfits/bottoms/no-panties/s3/14.mp4", "outfits/bottoms/no-panties/s3/15.mp4", "outfits/bottoms/no-panties/s3/16.mp4", "outfits/bottoms/no-panties/s3/17.mp4", "outfits/bottoms/no-panties/s3/19.mp4"],
-						elm:     ["outfits/bottoms/no-panties/s3/33.mp4", "outfits/bottoms/no-panties/s3/34.mp4", "outfits/bottoms/no-panties/s3/35.mp4", "outfits/bottoms/no-panties/s3/36.mp4", "outfits/bottoms/no-panties/s3/37.mp4", "outfits/bottoms/no-panties/s3/38.mp4", "outfits/bottoms/no-panties/s3/40.mp4"] }
-		},
-		anal: { _type: 'bottom',
-			prison:  ["scenes/prison/6.0.mp4", "scenes/prison/6.1.mp4", "scenes/prison/6.2.mp4", "scenes/prison/6.3.mp4", "scenes/prison/6.4.mp4", "scenes/prison/6.5.mp4", "scenes/prison/6.6.mp4", "scenes/prison/6.7.mp4", "scenes/prison/6.8.mp4", "scenes/prison/6.9.mp4", "scenes/prison/6.10.mp4", "scenes/prison/6.11.mp4", "scenes/prison/6.12.mp4", "scenes/prison/6.13.mp4", "scenes/prison/6.14.mp4"],
-			jeans:   { owaissa: ["outfits/bottoms/jeans/s3/1.mp4", "outfits/bottoms/jeans/s3/2.mp4", "outfits/bottoms/jeans/s3/8.mp4"],
-						elm:     ["outfits/bottoms/jeans/s3/11.mp4", "outfits/bottoms/jeans/s3/18.mp4", "outfits/bottoms/jeans/s3/19.mp4"] },
-			jeansNP: { owaissa: ["outfits/bottoms/jeans/s3/22.mp4", "outfits/bottoms/jeans/s3/27.mp4", "outfits/bottoms/jeans/s3/28.mp4"],
-						elm:     ["outfits/bottoms/jeans/s3/32.mp4", "outfits/bottoms/jeans/s3/38.mp4", "outfits/bottoms/jeans/s3/40.mp4"] },
-			shorts:  { owaissa: ["outfits/bottoms/shorts/s3/3.mp4", "outfits/bottoms/shorts/s3/6.mp4", "outfits/bottoms/shorts/s3/10.mp4", "outfits/bottoms/shorts/s3/19.mp4"],
-						elm:     ["outfits/bottoms/shorts/s3/15.mp4", "outfits/bottoms/shorts/s3/16.mp4", "outfits/bottoms/shorts/s3/20.mp4"] },
-			skirt:   { owaissa: ["outfits/bottoms/skirt/s3/1.mp4", "outfits/bottoms/skirt/s3/31.mp4", "outfits/bottoms/skirt/s3/32.mp4"],
-						elm:     ["outfits/bottoms/skirt/s3/26.mp4", "outfits/bottoms/skirt/s3/29.mp4", "outfits/bottoms/skirt/s3/33.mp4", "outfits/bottoms/skirt/s3/34.mp4"] },
-			skirtNP: { owaissa: ["outfits/combos/skirt-no-panties/s3/1.mp4", "outfits/combos/skirt-no-panties/s3/2.mp4", "outfits/combos/skirt-no-panties/s3/3.mp4", "outfits/combos/skirt-no-panties/s3/5.mp4", "outfits/combos/skirt-no-panties/s3/7.mp4", "outfits/combos/skirt-no-panties/s3/8.mp4", "outfits/combos/skirt-no-panties/s3/11.mp4"],
-						elm:     ["outfits/combos/skirt-no-panties/s3/20.mp4", "outfits/combos/skirt-no-panties/s3/26.mp4", "outfits/combos/skirt-no-panties/s3/28.mp4", "outfits/combos/skirt-no-panties/s3/31.mp4", "outfits/combos/skirt-no-panties/s3/32.mp4", "outfits/combos/skirt-no-panties/s3/33.mp4", "outfits/combos/skirt-no-panties/s3/34.mp4"] },
-			panties: { owaissa: ["outfits/bottoms/panties/s3/6.mp4", "outfits/bottoms/panties/s3/7.mp4", "outfits/bottoms/panties/s3/8.mp4", "outfits/bottoms/panties/s3/10.mp4", "outfits/bottoms/panties/s3/11.mp4", "outfits/bottoms/panties/s3/12.mp4", "outfits/bottoms/panties/s3/13.mp4", "outfits/bottoms/panties/s3/14.mp4"],
-						elm:     ["outfits/bottoms/panties/s3/20.mp4", "outfits/bottoms/panties/s3/21.mp4", "outfits/bottoms/panties/s3/24.mp4", "outfits/bottoms/panties/s3/30.mp4"] },
-			naked:   { owaissa: ["outfits/bottoms/no-panties/s3/6.mp4", "outfits/bottoms/no-panties/s3/7.mp4", "outfits/bottoms/no-panties/s3/8.mp4", "outfits/bottoms/no-panties/s3/10.mp4", "outfits/bottoms/no-panties/s3/11.mp4", "outfits/bottoms/no-panties/s3/13.mp4", "outfits/bottoms/no-panties/s3/18.mp4", "outfits/bottoms/no-panties/s3/20.mp4", "outfits/bottoms/no-panties/s3/21.mp4", "outfits/bottoms/no-panties/s3/22.mp4", "outfits/bottoms/no-panties/s3/23.mp4"],
-						elm:     ["outfits/bottoms/no-panties/s3/30.mp4", "outfits/bottoms/no-panties/s3/31.mp4", "outfits/bottoms/no-panties/s3/32.mp4", "outfits/bottoms/no-panties/s3/39.mp4", "outfits/bottoms/no-panties/s3/41.mp4"] }
-		}
-	};
+	// Video tables live in :: EventVideos (setup.EventVideos and
+	// setup.BansheeVideos).
 
 	return {
 		OWNED_VARS: OWNED_VARS,
@@ -177,25 +80,6 @@ setup.Events = (function () {
 			return 0;
 		},
 
-		// --- Sanity tiers ----------------------------------------
-		sanityTierArt: function () {
-			var s = setup.Mc.sanity();
-			if (s >= 90) return 1;
-			if (s >= 80) return 2;
-			if (s >= 70) return 3;
-			if (s >= 50) return 4;
-			if (s >= 1)  return 5;
-			return 0;
-		},
-		sanityTierSaveEvent: function () {
-			var s = setup.Mc.sanity();
-			if (s >= 75) return 1;
-			if (s >= 50) return 2;
-			if (s >= 30) return 3;
-			if (s >= 1)  return 4;
-			return 0;
-		},
-
 		// --- MC energy / escape ----------------------------------
 		hasEnergyToRunAway: function () {
 			return setup.Mc.energy() >= 1;
@@ -218,7 +102,7 @@ setup.Events = (function () {
 		* or the location-appropriate array from { owaissa, elm }.
 		*/
 		getVideos: function (eventKey, clothingType) {
-			var ev = eventVideos[eventKey];
+			var ev = setup.EventVideos[eventKey];
 			if (!ev) return [];
 			var entry = ev[clothingType];
 			if (!entry) return [];
@@ -245,7 +129,7 @@ setup.Events = (function () {
 			var sw = setup.Wardrobe.shortsWorn();
 			var kw = setup.Wardrobe.skirtWorn();
 			var pw = setup.Wardrobe.pantiesWorn();
-			var ev = eventVideos[eventKey];
+			var ev = setup.EventVideos[eventKey];
 
 			if (jw) {
 				if (ev.jeansNP && !pw)
@@ -272,7 +156,7 @@ setup.Events = (function () {
 			if (setup.HauntedHouses.isIronclad()) return this.getVideos(eventKey, 'prison');
 			var ts = setup.Wardrobe.topShirtWorn();
 			var br = setup.Wardrobe.braWorn();
-			var ev = eventVideos[eventKey];
+			var ev = setup.EventVideos[eventKey];
 
 			if (ts) {
 				if (ev.tshirtNB && !br)
@@ -291,7 +175,7 @@ setup.Events = (function () {
 		*/
 		videoListForEvent: function (eventKey) {
 			this.initEvent(eventKey);
-			var ev = eventVideos[eventKey];
+			var ev = setup.EventVideos[eventKey];
 			if (!ev) return [];
 			if (ev._type === 'flat')   return ev.mind || [];
 			if (ev._type === 'top')    return this.topClothingVideos(eventKey);
@@ -303,12 +187,9 @@ setup.Events = (function () {
 		* Return the Banshee-ability video list (location-aware).
 		*/
 		bansheeVideos: function () {
-			if (setup.HauntedHouses.isIronclad())
-				return ["scenes/prison/banshee1.mp4", "scenes/prison/banshee2.mp4"];
-			return ["characters/ghosts/banshee/1.mp4", "characters/ghosts/banshee/2.mp4", "characters/ghosts/banshee/3.mp4",
-					"characters/ghosts/banshee/4.mp4", "characters/ghosts/banshee/5.mp4", "characters/ghosts/banshee/6.mp4",
-					"characters/ghosts/banshee/7.mp4", "characters/ghosts/banshee/8.mp4", "characters/ghosts/banshee/9.mp4",
-					"characters/ghosts/banshee/10.mp4"];
+			return setup.HauntedHouses.isIronclad()
+				? setup.BansheeVideos.prison.slice()
+				: setup.BansheeVideos.house.slice();
 		},
 
 		// --- Orgasm check ----------------------------------------

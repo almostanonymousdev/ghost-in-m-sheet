@@ -26,7 +26,7 @@
 		@@.mc-speechLink;[[Step inside|DeliverySpecialCoerced]]@@<br>
 	<</if>>
 <</if>>
-<<addTime `setup.Delivery.getDeliveryTime()`>>
+<<addTime `setup.Delivery.deliveryTime()`>>
 
 :: DeliverySpecialCoerced [event nobr] {"position":"1500,1650","size":"100,100"}
 <<image "scenes/deliveryhub/specialevent/2.jpg" { style: "max-width: 100%; height: auto; display: block; margin: 0 auto;" }>>

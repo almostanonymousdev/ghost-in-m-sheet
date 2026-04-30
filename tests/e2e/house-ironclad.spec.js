@@ -29,7 +29,7 @@ test.describe('Haunted house — Ironclad', () => {
   test.beforeEach(async () => { await resetGame(page); });
 
   test('Ironclad Prison renders with a real Go inside link when the warden outfit is ready', async () => {
-    await setVar(page, 'isIronclad', 1);
+    await setVar(page, 'hauntedHouse', 'ironclad');
     await setHuntMode(page, 1);
     await setVar(page, 'wardenClothesStage', 2);
     await goToPassage(page, 'Ironclad Prison');

@@ -169,8 +169,8 @@ setup.MissingWomen = (function () {
 		clearRescueClue:   function () { sv().hasRescueClue = 0; },
 
 		// --- Rescue quest state -----------------------------------
-		setQuestStage: function (stage) { sv().hasQuestForRescue = stage; },
-		getQuestStage: function () { return sv().hasQuestForRescue; },
+		setRescueQuestStage: function (stage) { sv().hasQuestForRescue = stage; },
+		rescueQuestStage: function () { return sv().hasQuestForRescue; },
 
 		// --- Video pool --------------------------------------------
 		rescueVideo: function () { return sv().videoRescueEvent; },

@@ -77,7 +77,7 @@ overcharged tools on/off. Each click re-renders <<huntConditions>> as a
 whole (which contains the action bar), so we only need the one
 <<replace ".hunt-conditions">> per callback. Only renders in-house. */
 <<widget "huntActionBar">>
-	<<if setup.HauntedHouses.isInsideHouse()>>
+	<<if setup.Ghosts.isHunting()>>
 		<<if setup.HauntConditions.canBait()>>
 			· @@.huntActionLink;<<link `"Bait ghost (−" + setup.HauntConditions.BAIT_LUST_COST + " lust, −" + setup.HauntConditions.ENERGY_COST_BAIT + " energy)"`>>
 				<<run setup.HauntConditions.startBait()>>
@@ -166,7 +166,7 @@ the only ways out are the scream link or a cursed-item sacrifice. */
 		<<capture _navMode>>
 			@@.adaptiveLink;<<link _args[0] _args[1]>><<if _navMode eq "hunt">><<includeTimeEventHunt>>
 			<<else>><<includeTimeEventClothesHunt>>
-			<</if>><<run setup.Updates.incrementStepCount()>><</link>>@@
+			<</if>><<run setup.Tick.incrementStepCount()>><</link>>@@
 		<</capture>>
 	<</if>>
 <</widget>>

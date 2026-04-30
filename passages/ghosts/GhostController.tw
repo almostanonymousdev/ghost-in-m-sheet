@@ -20,11 +20,11 @@
     var EvidenceById = {};
     Object.keys(Evidence).forEach(function (k) { EvidenceById[Evidence[k].id] = Evidence[k]; });
 
-    /* Canonical ghost catalogue. Static fields live here; `isInfoCollected` is
-       a live accessor backed by the existing $ghost<Name>InfoCollected save flag
-       so existing saves stay compatible. Per-ghost data that never changes
-       (descriptions, hints) sits in code instead of $state so it's not
-       serialised into every save file. */
+    /* Canonical ghost catalogue. Static fields live here; `isInfoCollected`
+       is a live accessor backed by the $ghostInfoCollected map (keyed by
+       ghost name). Per-ghost data that never changes (descriptions, hints)
+       sits in code instead of $state so it's not serialised into every
+       save file. */
     var GHOST_CONFIG = [
         {
             name: "Shade", image: "shade.webp",
@@ -225,9 +225,9 @@
 
     /* Ghost is a prototype-based class so per-ghost behaviour (canHunt,
        evidenceLabels, hoverHtml, matchesEvidence, …) lives on instances
-       rather than as setup.Ghosts.xyz(ghost, …) free functions. The save
-       flag `$ghost<Name>InfoCollected` is exposed as the `isInfoCollected`
-       accessor so callers never touch the raw state key. */
+       rather than as setup.Ghosts.xyz(ghost, …) free functions. The
+       $ghostInfoCollected map is exposed as the `isInfoCollected`
+       accessor so callers never touch the raw map directly. */
     function Ghost(cfg) {
         this.name              = cfg.name;
         this.image             = cfg.image;
@@ -276,11 +276,27 @@
         if (typeof cfg.onEnterHouse === "function") this.onEnterHouse = cfg.onEnterHouse;
     }
 
+    /* All "have I read about this ghost in Ghostopedia yet?" flags share
+       a single map at $ghostInfoCollected (replaces 18 individual
+       $ghost<Name>InfoCollected vars). The accessor below preserves
+       the per-instance read/write API; SaveMigration folds legacy keys
+       into the map so existing saves keep their unlocks. */
+    function ghostInfoMap() {
+        var s = State.variables;
+        if (!s.ghostInfoCollected || typeof s.ghostInfoCollected !== "object") {
+            s.ghostInfoCollected = {};
+        }
+        return s.ghostInfoCollected;
+    }
+
     Object.defineProperty(Ghost.prototype, "isInfoCollected", {
         configurable: true,
         enumerable: true,
-        get: function () { return !!State.variables["ghost" + this.name + "InfoCollected"]; },
-        set: function (v) { State.variables["ghost" + this.name + "InfoCollected"] = v ? 1 : 0; }
+        get: function () { return !!ghostInfoMap()[this.name]; },
+        set: function (v) {
+            if (v) { ghostInfoMap()[this.name] = 1; }
+            else   { delete ghostInfoMap()[this.name]; }
+        }
     });
 
     Ghost.prototype.canHunt = function (mc) {
@@ -437,15 +453,11 @@
         'elapsedTimeHunt', 'huntTimeRemain',
         'EMF5Check', 'SpiritboxCheck', 'GWBCheck', 'EctoglassCheck',
         'TemperatureCheck', 'UVLCheck',
-        'ghostShadeInfoCollected', 'ghostSpiritInfoCollected',
-        'ghostPoltergeistInfoCollected', 'ghostPhantomInfoCollected',
-        'ghostGoryoInfoCollected', 'ghostDemonInfoCollected',
-        'ghostDeogenInfoCollected', 'ghostJinnInfoCollected',
-        'ghostMoroiInfoCollected', 'ghostMylingInfoCollected',
-        'ghostMareInfoCollected', 'ghostBansheeInfoCollected',
-        'ghostMimicInfoCollected', 'ghostOniInfoCollected',
-        'ghostObakeInfoCollected', 'ghostTheTwinsInfoCollected',
-        'ghostHighPriestessInfoCollected', 'ghostCthulionInfoCollected',
+        // $ghostInfoCollected: map keyed by ghost name (Shade, Spirit, ...)
+        // → 1 once the player has unlocked that Ghostopedia entry. Replaces
+        // 18 individual $ghost<Name>InfoCollected flags; legacy keys are
+        // folded into the map by SaveMigration.
+        'ghostInfoCollected',
         'knowledgeUsed', 'chosenEvidence',
         'deleteOneEvidence', 'deleteSecondEvidence', 'deleteThirdEvidence',
         'hiddenEvidence', 'hiddenEvidence1', 'hiddenEvidence2',
@@ -576,8 +588,8 @@
         },
 
         /* Info-collected flag helpers. Callers should never touch the
-           $ghost<Name>InfoCollected state key directly — the naming scheme
-           is an implementation detail of this file. */
+           $ghostInfoCollected map directly — go through these helpers
+           or the per-instance .isInfoCollected accessor. */
         markDiscovered: function (name) {
             var g = setup.Ghosts.getByName(name);
             if (g) g.isInfoCollected = true;
@@ -615,10 +627,6 @@
         },
 
         /* Cheat-menu helpers (StoryCaption) */
-        setHuntMode: function (mode) {
-            var h = State.variables.hunt;
-            if (h) { h.mode = mode; }
-        },
         forceHuntGhost: function (g) {
             var h = State.variables.hunt;
             if (!h || !g) return;

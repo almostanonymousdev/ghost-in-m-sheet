@@ -21,14 +21,14 @@
 	@@.mc-action; Now I can assist Rain in the search for the missing girls.@@<br>
 <</if>>
 <<run setup.Church.clearRescueClue()>>
-<<if setup.Church.rescueQuestStage() eq 2>>
+<<if setup.MissingWomen.rescueQuestStage() eq 2>>
 	@@.notmc-speech; This is bad, I'll have to send an experienced ghost hunter to search for her, even though I have very few people available.@@<br>
 	<<if setup.Church.relationshipWithRain() eq 0>>
 	<<else>>
 		<<run setup.Church.adjustRainRelationship(-1)>>
 		@@.mc-thoughts; Your relationship with Rain has decreased - <<= setup.Church.relationshipWithRain()>>.@@
 	<</if>>
-<<elseif setup.Church.rescueQuestStage() eq 3>>
+<<elseif setup.MissingWomen.rescueQuestStage() eq 3>>
 	@@.notmc-speech;Oh, <<= setup.Mc.name()>>, I've already been informed that you found our girl, thank you so much. You've been a great help to me, thank you.<br>@@
 	<<if setup.Church.upgradeSpiritboxReward()>>
 		@@.notmc-speech;I hope you'll be able to keep helping us. <br>

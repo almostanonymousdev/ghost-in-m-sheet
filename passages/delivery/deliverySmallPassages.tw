@@ -27,7 +27,6 @@
 :: DeliveryEvent [event nobr] {"position":"800,1600","size":"100,100"}
 <<set _orderNum to setup.Delivery.currentOrder()>>
 <<set _order to State.variables["order" + _orderNum]>>
-<<set _iconVar to "deliveryActiveIcon" + _orderNum>>
 <<set _match to false>>
 <<for _o range setup.Delivery.orders()>>
 	<<if _o.address === setup.Delivery.currentHouse() and _o.item is _order.item>><<set _match to true>><<break>><</if>>
@@ -51,17 +50,17 @@
 	<br>
 	@@.backbtn;[[Back|DeliveryMap]] @@
 <</if>>
-<<run State.variables[_iconVar] = false>>
+<<run setup.Delivery.setActiveIcon(_orderNum - 1, false)>>
 <br>
 <br>
-<<addTime `setup.Delivery.getDeliveryTime()`>>
+<<addTime `setup.Delivery.deliveryTime()`>>
 
 :: DeliveryActiveIcon {"position":"1100,1100","size":"100,100"}
 <<if passage() is "DeliveryHouse">>
 <<set _slotClasses to [".itemAvailableOne", ".itemAvailableTwo", ".itemAvailableThree"]>>
 <<for _i to 0; _i lt 3; _i++>>
 <<set _cls to _slotClasses[_i]>>
-<<if setup.Delivery.activeIcon(_i + 1)>>
+<<if setup.Delivery.activeIcon(_i)>>
 <<addclass _cls "visible">>
 <<removeclass _cls "hidden">>
 <<else>>
@@ -72,9 +71,7 @@
 <</if>>
 
 :: EndShiftDelivery [nobr] {"position":"1200,1200","size":"100,100"}
-<<for _i to 1; _i lte 3; _i++>>
-	<<run setup.Delivery.setActiveIcon(_i, true)>>
-<</for>>
+<<run setup.Delivery.resetActiveIcons()>>
 <<run setup.Delivery.endShift()>>
 <<run setup.Delivery.updatePayTier()>>
 <<if setup.Delivery.correctThisShift() gte 3>>

@@ -1,15 +1,15 @@
 :: Mirror [nobr] {"position":"700,1200","size":"100,100"}
 <<set _checkBeauty to random(30,100)>>
-<<if setup.Home.twinsEventAvailable() and _checkBeauty gt setup.Mc.beauty()>>
+<<if setup.Ghosts.twinsEventReady() and _checkBeauty gt setup.Mc.beauty()>>
 	<<video "characters/ghosts/specials/twins1.mp4">>
 	@@.mc-thoughts;You're looking in the mirror, admiring your reflection, when suddenly two strangers appear, observing you. They assess every curve of your body @@
 	<<linkappend "@@.mc-thoughtsLink; through the glass@@">>
 		@@.mc-thoughts; You watch them, captivated by their sudden arrival, but they disappear just as quickly as they appeared.@@<br>
 		@@.mc-speech; It was... strange @@<br><br>
 		@@.backbtn;[[Back|Bathroom]] @@<br>
-		<<run setup.Home.consumeTwinsEvent()>>
+		<<run setup.Ghosts.consumeTwinsEvent()>>
 	<</linkappend>>
-<<elseif setup.Home.twinsEventAvailable() and _checkBeauty lte setup.Mc.beauty()>>
+<<elseif setup.Ghosts.twinsEventReady() and _checkBeauty lte setup.Mc.beauty()>>
 	<<video "characters/ghosts/specials/twins.mp4">>
 	@@.mc-thoughts;You're looking in the mirror, admiring your reflection, when suddenly two strangers appear, observing you. They assess every curve of your body @@<<linkappend "@@.mc-thoughtsLink; through the glass@@">>
 		<<video "characters/ghosts/specials/twins2.mp4">>

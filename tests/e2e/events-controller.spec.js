@@ -40,34 +40,6 @@ test.describe('Events controller — tier classification', () => {
     }
   });
 
-  test('sanityTierArt maps sanity to art-event buckets', async () => {
-    const cases = [
-      [100, 1], [90, 1],
-      [89, 2], [80, 2],
-      [79, 3], [70, 3],
-      [69, 4], [50, 4],
-      [49, 5], [1, 5],
-      [0, 0],
-    ];
-    for (const [s, tier] of cases) {
-      await setVar(page, 'mc.sanity', s);
-      expect(await callSetup(page, 'setup.Events.sanityTierArt()')).toBe(tier);
-    }
-  });
-
-  test('sanityTierSaveEvent maps sanity to save-event buckets', async () => {
-    const cases = [
-      [100, 1], [75, 1],
-      [74, 2], [50, 2],
-      [49, 3], [30, 3],
-      [29, 4], [1, 4],
-      [0, 0],
-    ];
-    for (const [s, tier] of cases) {
-      await setVar(page, 'mc.sanity', s);
-      expect(await callSetup(page, 'setup.Events.sanityTierSaveEvent()')).toBe(tier);
-    }
-  });
 });
 
 test.describe('Events controller — video resolvers', () => {
@@ -78,13 +50,10 @@ test.describe('Events controller — video resolvers', () => {
   test.beforeEach(async () => { await resetGame(page); });
 
   async function setLocation(p, location) {
-    await setVar(p, 'isOwaissa', location === 'owaissa' ? 1 : 0);
-    await setVar(p, 'isElm',     location === 'elm'     ? 1 : 0);
-    await setVar(p, 'isEnigma',  location === 'enigma'  ? 1 : 0);
-    await setVar(p, 'isIronclad', location === 'ironclad' ? 1 : 0);
+    await setVar(p, 'hauntedHouse', location || null);
   }
 
-  test('pickByLocation switches by isOwaissa/isElm', async () => {
+  test('pickByLocation switches by $hauntedHouse', async () => {
     await setLocation(page, 'owaissa');
     let result = await page.evaluate(() =>
       SugarCube.setup.Events.pickByLocation(['o1'], ['e1']));
@@ -323,8 +292,7 @@ test.describe('Events controller — save-event video aliases', () => {
   test.beforeEach(async () => { await resetGame(page); });
 
   async function setLocation(p, location) {
-    await setVar(p, 'isOwaissa', location === 'owaissa' ? 1 : 0);
-    await setVar(p, 'isElm',     location === 'elm'     ? 1 : 0);
+    await setVar(p, 'hauntedHouse', location || null);
   }
 
   test('saveEventBottomVideos picks the right body part by stage', async () => {

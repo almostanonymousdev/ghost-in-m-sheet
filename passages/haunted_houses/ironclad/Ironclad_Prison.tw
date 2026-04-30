@@ -1,11 +1,11 @@
 :: Ironclad Prison [nobr] {"position":"2700,525","size":"100,100"}
 <<huntHouseStreet "ironclad" `'Prison "Ironclad"'`
 "Ironclad Prison, once a symbol of justice, now stands abandoned, its long and storied past cloaked in shadows. Whispers speak of restless spirits wandering its halls--a chilling reminder of the darkness it once held.">>
-	<<if setup.HauntedHouses.wardenClothesStage() eq 2>>
+	<<if setup.Witch.wardenClothesStage() eq 2>>
 		@@.movebtn;[[Go inside|IroncladHallway][setup.HauntedHouses.setHuntMode(setup.Ghosts.HuntMode.ACTIVE)]]@@<br>
 	<<else>>
 		@@.movebtn; <<linkreplace "Go inside">>
-			<<run setup.HauntedHouses.setWardenClothesStage(0)>>
+			<<run setup.Witch.setWardenClothesStage(0)>>
 			@@.mc-thoughts; You walk through the prison, exploring every room. But nothing happens.@@<br>
 			@@.mc-speech; Something's not right. This is definitely the place, but there are no ghosts... I guess I should ask the witch. @@<br><br>
 			@@.backbtn; [[Return home|Home][setup.Time.addHours(6); setup.HauntedHouses.setIroncladActive(false)]] @@<br>

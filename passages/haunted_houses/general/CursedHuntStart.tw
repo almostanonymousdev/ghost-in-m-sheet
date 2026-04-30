@@ -13,8 +13,8 @@
 		<<video _selectedVideo "displayCentredImgs">>
 		@@.mc-thoughts; Your strength has faded, and your attempts to stand have been in vain. It's becoming harder and harder to think, and it feels like the whole world is disappearing.@@<br>
 		<br><br>
-		<<if setup.HauntedHouses.hasHighPriestess()>>
-			@@.backbtn; [[You black out|$return][setup.HauntedHouses.consumeHighPriestess()]]@@
+		<<if setup.Ghosts.hasHighPriestess()>>
+			@@.backbtn; [[You black out|$return][setup.Ghosts.consumeHighPriestess()]]@@
 		<<else>>
 			<<run setup.Companion.clearBlakeCursedItem()>>
 			<<run setup.HauntedHouses.resetToolTimers()>>

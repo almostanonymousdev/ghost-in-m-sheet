@@ -498,8 +498,8 @@ sugarcube-2:
       name: randomImage
     washClean:
       name: washClean
-    removeMakeup:
-      name: removeMakeup
+    wipeMakeup:
+      name: wipeMakeup
     shopCardCorruption:
       name: shopCardCorruption
     shopCard:

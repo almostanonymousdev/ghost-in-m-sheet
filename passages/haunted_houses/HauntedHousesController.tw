@@ -16,7 +16,12 @@ setup.HauntedHouses = (function () {
 	/* Variables owned by this controller. Other controllers should
 	   query these only through the API methods below. */
 	var OWNED_VARS = Object.freeze([
-		'isOwaissa', 'isElm', 'isEnigma', 'isIronclad', 'isrealhouse',
+		// $hauntedHouse is the active-house id ('owaissa' | 'elm' |
+		// 'enigma' | 'ironclad' | null), replacing four mutually-
+		// exclusive $is<House> flags + the derived $isrealhouse. The
+		// distinction between haunted-house id and Delivery's
+		// $currentHouse (a delivery address) keeps the names clear.
+		'hauntedHouse',
 		'moneyFromContract', 'expFromContract',
 		'isClothesStolen',
 		'cursedHuntActive', 'cursedHuntEndTime',
@@ -53,7 +58,6 @@ setup.HauntedHouses = (function () {
 	var HOUSE_CONFIG = [
 		{
 			id: 'owaissa',
-			flag: 'isOwaissa',
 			streetPassage: 'Owaissa Street',
 			hallwayPassage: 'OwaissaHallway',
 			image: 'ui/img/owaissa-house.jpg',
@@ -70,7 +74,6 @@ setup.HauntedHouses = (function () {
 		},
 		{
 			id: 'elm',
-			flag: 'isElm',
 			streetPassage: 'Elm Street',
 			hallwayPassage: 'ElmHallway',
 			image: 'ui/img/elm-house.jpg',
@@ -90,7 +93,6 @@ setup.HauntedHouses = (function () {
 		},
 		{
 			id: 'enigma',
-			flag: 'isEnigma',
 			streetPassage: 'Enigma Street',
 			hallwayPassage: 'EnigmaHallway',
 			image: 'ui/img/enigma-house.jpg',
@@ -110,7 +112,6 @@ setup.HauntedHouses = (function () {
 		},
 		{
 			id: 'ironclad',
-			flag: 'isIronclad',
 			streetPassage: 'Ironclad Prison',
 			hallwayPassage: 'IroncladHallway',
 			image: 'scenes/room/ironclad/ironclad.webp',
@@ -153,16 +154,11 @@ setup.HauntedHouses = (function () {
 			}
 			return null;
 		},
-		/* Clear every $is<House> flag, then raise the one for `id`.
+		/* Activate a house by id (or pass null to deactivate all).
 			Called from GhostStreet when the player picks a house. */
 		activate: function (id) {
 			var s = sv();
-			HOUSE_CONFIG.forEach(function (h) { s[h.flag] = 0; });
-			s.isrealhouse = 0;
-			var h = this.byId(id);
-			if (!h) return;
-			s[h.flag] = 1;
-			s.isrealhouse = h.isRealHouse ? 1 : 0;
+			s.hauntedHouse = this.byId(id) ? id : null;
 		},
 		/* Reward for the current contract, driven by how many evidence
 			types the witch has hidden ($delete*Evidence flags). */
@@ -186,44 +182,33 @@ setup.HauntedHouses = (function () {
 			var h = this.byId(id);
 			return h ? h.rooms.slice() : [];
 		},
-		/* The house that currently owns the hunt, based on the $is<House>
-			flag set by activate(). null when none is set (witch pre-hunt,
-			or after GhostStreet teardown). */
+		/* The house that currently owns the hunt; null when no house
+			is active (witch pre-hunt, or after GhostStreet teardown). */
 		activeHouse: function () {
-			var s = sv();
-			for (var i = 0; i < HOUSE_CONFIG.length; i++) {
-				if (s[HOUSE_CONFIG[i].flag] === 1) return HOUSE_CONFIG[i];
-			}
-			return null;
+			return this.byId(sv().hauntedHouse);
 		},
-		/* Wipe every $is<House> flag. Used after GhostStreet has placed
-			the player inside a house (the specific flag stays set via
-			the individual per-house `$is<House>`; activate() nulls the
-			rest first). */
+		/* Clear the active-house pointer. Used after a hunt ends. */
 		clearHouseFlags: function () {
-			var s = sv();
-			HOUSE_CONFIG.forEach(function (h) { s[h.flag] = 0; });
+			sv().hauntedHouse = null;
 		},
 
-		// --- Hunt mode (forwards to setup.Ghosts) ---------------
-		isContractMode: function () { return setup.Ghosts.hasContract(); },
-		isInsideHouse: function () { return setup.Ghosts.isHunting(); },
-		isHuntOver: function () { return setup.Ghosts.isPossessed(); },
 		endHunt: function () {
 			this.commitTempCorruption();
 			setup.Ghosts.setHuntMode(setup.Ghosts.HuntMode.POSSESSED);
 		},
 
 		// --- Which house are we in? -----------------------------
-		isOwaissa: function () { return sv().isOwaissa === 1; },
-		isElm: function () { return sv().isElm === 1; },
-		isEnigma: function () { return sv().isEnigma === 1; },
-		isIronclad: function () { return sv().isIronclad === 1; },
-		isRealHouseActive: function () { return sv().isrealhouse === 1; },
-		wardenClothesStage: function () { return setup.Witch.wardenClothesStage(); },
-		setWardenClothesStage: function (n) { setup.Witch.setWardenClothesStage(n); },
-		setIroncladActive: function (on) { sv().isIronclad = on ? 1 : 0; },
-		isRealHouse: function () { return sv().isrealhouse === 1; },
+		// Predicates resolve against the single $hauntedHouse id.
+		// isRealHouse* derives from HOUSE_CONFIG.isRealHouse (only
+		// Enigma is currently flagged real) so the bit doesn't have
+		// to be persisted alongside the id.
+		isOwaissa:  function () { return sv().hauntedHouse === 'owaissa'; },
+		isElm:      function () { return sv().hauntedHouse === 'elm'; },
+		isEnigma:   function () { return sv().hauntedHouse === 'enigma'; },
+		isIronclad: function () { return sv().hauntedHouse === 'ironclad'; },
+		isRealHouseActive: function () { var h = this.activeHouse(); return !!(h && h.isRealHouse); },
+		isRealHouse:       function () { var h = this.activeHouse(); return !!(h && h.isRealHouse); },
+		setIroncladActive: function (on) { sv().hauntedHouse = on ? 'ironclad' : null; },
 
 		// --- Clothing aggregation -------------------------------
 		hasBottomWorn: function () {
@@ -256,9 +241,6 @@ setup.HauntedHouses = (function () {
 			if (setup.HauntConditions && setup.HauntConditions.resetHuntFlags) {
 				setup.HauntConditions.resetHuntFlags();
 			}
-		},
-		resetEvidenceChecks: function () {
-			setup.Ghosts.resetEvidenceChecks();
 		},
 
 		// --- Corruption accumulator used at hunt end ------------
@@ -377,17 +359,14 @@ setup.HauntedHouses = (function () {
 			return this.hasBottomWorn() || this.hasTopWorn()
 				|| setup.Wardrobe.pantiesWorn() || setup.Wardrobe.braWorn();
 		},
-		huntMode: function () {
-			return setup.Ghosts.huntMode();
-		},
 
 		/* What's the cursed-item / rescue-clue / tarot / monkey-paw
 		   stash spot for the active house? Returns undefined if
 		   the MC isn't currently in a house. Used by FurnitureSearch. */
 		activeHousePlace: function (kind) {
 			var s = sv();
-			var suffix = s.isOwaissa === 1 ? 'Owaissa' :
-				s.isElm === 1 ? 'Elm' : null;
+			var suffix = s.hauntedHouse === 'owaissa' ? 'Owaissa' :
+				s.hauntedHouse === 'elm' ? 'Elm' : null;
 			if (!suffix) return undefined;
 			return s['placeFor' + kind + suffix];
 		},
@@ -397,14 +376,8 @@ setup.HauntedHouses = (function () {
 		/* Street-passage name for the active haunted house, for the
 		   front-door exit link. */
 		activeStreetPassage: function () {
-			if (sv().isElm === 1)     return 'Elm Street';
-			if (sv().isOwaissa === 1) return 'Owaissa Street';
-			return null;
-		},
-		/* Strip the MC to naked (wardrobe state, not slot flags). Used
-		   by the tier-3 SealedRoomSubmit branch. */
-		stripToNaked: function () {
-			setup.Wardrobe.stripToNaked();
+			var h = this.activeHouse();
+			return h ? h.streetPassage : null;
 		},
 		/* Handed-by-companion cursed item: marks gotCursedItem and
 		   rolls one of the four item types. */
@@ -413,8 +386,6 @@ setup.HauntedHouses = (function () {
 			var flags = ["isCIDildo", "isCIButtplug", "isCIBeads", "isCIHDildo"];
 			setup.Witch.setCursedItemFlag(flags[Math.floor(Math.random() * flags.length)]);
 		},
-		hasActiveQuestForRescue: function () { return setup.MissingWomen.hasActiveQuest(); },
-		hasRescueClue: function () { return setup.MissingWomen.hasRescueClue(); },
 		tarotCardsStage: function () { return sv().tarotCardsStage || 0; },
 		setTarotCardsStage: function (n) { sv().tarotCardsStage = n; },
 		drawnCards: function () { return sv().drawnCards || 0; },
@@ -433,7 +404,7 @@ setup.HauntedHouses = (function () {
 			rooms.forEach(function (r) {
 				s[r] = { name: r, background: 2 };
 			});
-			setup.Updates.markIroncladMigrated();
+			setup.Migrations.markIroncladMigrated();
 		},
 		/* Full fresh-hunt teardown: clears any lingering tarot /
 		   monkey-paw / cursed-hunt / weaken-ghost flags and zeroes
@@ -441,7 +412,7 @@ setup.HauntedHouses = (function () {
 		   the witch hands out a new contract. */
 		resetForNewHunt: function () {
 			var s = sv();
-			s.isIronclad = 0;
+			if (s.hauntedHouse === 'ironclad') s.hauntedHouse = null;
 			s.tarotCardsStage = 0;
 			setup.MonkeyPaw.resetHunt();
 			s.drawnCards = 0;
@@ -449,7 +420,7 @@ setup.HauntedHouses = (function () {
 			delete s.cursedHuntEndTime;
 			setup.Witch.clearWeakenGhostState();
 			setup.Time.setTemperature(0);
-			this.resetEvidenceChecks();
+			setup.Ghosts.resetEvidenceChecks();
 		},
 		incrementDrawnCards: function () {
 			sv().drawnCards = (sv().drawnCards || 0) + 1;
@@ -460,25 +431,15 @@ setup.HauntedHouses = (function () {
 			sv().chosenCard = setup.drawTarotCard(setup.tarotDeck);
 			return sv().chosenCard;
 		},
-		tarotDeck: function () { return setup.tarotDeck; },
-		hasNoCursedItem: function () { return !setup.Witch.cursedItemQuestStarted() || setup.Witch.cursedItemQuestActive(); },
 		crucifixAmount: function () { return setup.ToolController.crucifixAmount() || 0; },
 		addCrucifix: function (n) {
 			for (var i = 0; i < (n || 1); i++) setup.ToolController.addCrucifix();
-		},
-		spendCrucifix: function () {
-			setup.ToolController.consumeCrucifix();
-		},
-		/* Which of the four cursed-item variants is the MC carrying?
-		   Returns "dildo" / "buttplug" / "beads" / "hdildo" or "". */
-		cursedItemType: function () {
-			return setup.Witch.carriedCursedItemType();
 		},
 		/* Random cursed-item usage video for the active item variant.
 		   Top-covered dildo has a longer gallery; the others share
 		   their own fixed set. */
 		cursedItemVideo: function () {
-			var t = this.cursedItemType();
+			var t = setup.Witch.carriedCursedItemType();
 			var list;
 			if (t === 'dildo') {
 				list = setup.Wardrobe.topShirtWorn()
@@ -558,9 +519,9 @@ setup.HauntedHouses = (function () {
 		   into $placeForClothesStolen<House>. */
 		chooseClothesStashRoom: function () {
 			var s = sv();
-			if (s.isOwaissa === 1 && Array.isArray(s.tempListOwaissa)) {
+			if (s.hauntedHouse === 'owaissa' && Array.isArray(s.tempListOwaissa)) {
 				s.placeForClothesStolenOwaissa = s.tempListOwaissa[Math.floor(Math.random() * s.tempListOwaissa.length)];
-			} else if (s.isElm === 1 && Array.isArray(s.tempListElm)) {
+			} else if (s.hauntedHouse === 'elm' && Array.isArray(s.tempListElm)) {
 				s.placeForClothesStolenElm = s.tempListElm[Math.floor(Math.random() * s.tempListElm.length)];
 			}
 		},
@@ -597,10 +558,6 @@ setup.HauntedHouses = (function () {
 			if (isSkirt(ro) && noPanties(ru))   return "characters/mc/skirtnp.mp4";
 			return null;
 		},
-		isPantiesStolen: function () { return setup.Wardrobe.isPantiesStolen(); },
-		isBottomStolen:  function () { return setup.Wardrobe.isBottomStolen(); },
-		isShirtStolen:   function () { return setup.Wardrobe.isShirtStolen(); },
-		isBraStolen:     function () { return setup.Wardrobe.isBraStolen(); },
 		clearClothesStolenFlag: function () { sv().isClothesStolen = 0; },
 		isBottomless: function () {
 			return !setup.Wardrobe.jeansWorn() && !setup.Wardrobe.shortsWorn()
@@ -613,22 +570,14 @@ setup.HauntedHouses = (function () {
 		/* The stash-room pointer for the active house. */
 		clothesStashRoom: function () {
 			var s = sv();
-			if (s.isOwaissa === 1) return s.placeForClothesStolenOwaissa;
-			if (s.isElm === 1)     return s.placeForClothesStolenElm;
+			if (s.hauntedHouse === 'owaissa') return s.placeForClothesStolenOwaissa;
+			if (s.hauntedHouse === 'elm')     return s.placeForClothesStolenElm;
 			return undefined;
 		},
 		clearClothesStashRoom: function () {
 			var s = sv();
-			if (s.isOwaissa === 1) s.placeForClothesStolenOwaissa = undefined;
-			if (s.isElm === 1)     s.placeForClothesStolenElm = undefined;
-		},
-
-		// --- Tarot High-Priestess override ---------------------
-		// The High-Priestess tarot card, while active, swaps the
-		// hunt-end exit link from Sleep → $return (the passage that
-		// launched the hunt). The card burns itself on use.
-		hasHighPriestess: function () { return setup.Ghosts.hasHighPriestess(); },
-		setHighPriestess: function (on) { setup.Ghosts.setHighPriestess(on); },
-		consumeHighPriestess: function () { setup.Ghosts.consumeHighPriestess(); }
+			if (s.hauntedHouse === 'owaissa') s.placeForClothesStolenOwaissa = undefined;
+			if (s.hauntedHouse === 'elm')     s.placeForClothesStolenElm = undefined;
+		}
 	};
 })();

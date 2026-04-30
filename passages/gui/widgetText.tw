@@ -129,9 +129,9 @@
    is the link text ("fading into darkness", "plunging you into
    darkness", "nothing"). */
 <<widget "huntEndExit">>
-	<<if setup.HauntedHouses.hasHighPriestess()>>
+	<<if setup.Ghosts.hasHighPriestess()>>
 		@@.usebtn;<<link _args[0] $return>>
-			<<run setup.HauntedHouses.consumeHighPriestess()>>
+			<<run setup.Ghosts.consumeHighPriestess()>>
 		<</link>>@@
 	<<else>>
 		@@.usebtn;<<link _args[0] "Sleep">>

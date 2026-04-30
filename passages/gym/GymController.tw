@@ -177,10 +177,10 @@ setup.Gym = (function () {
 
 		// --- Core cost constant (used by GymTrainingTrainer) -----
 		payForCoach: function () {
-			setup.Mc.spendMoney(State.variables.trainingCost);
+			setup.Mc.removeMoney(State.variables.trainingCost);
 		},
 		spendEnergyToTrain: function () {
-			setup.Mc.spendEnergy(TRAIN_COST);
+			setup.Mc.removeEnergy(TRAIN_COST);
 		},
 
 		// --- Fitness gain (view-agnostic deltas for widgetGym) ---

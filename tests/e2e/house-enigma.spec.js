@@ -27,7 +27,7 @@ test.describe('Haunted house — Enigma', () => {
   test.beforeEach(async () => { await resetGame(page); });
 
   test('Enigma Street renders with a Go inside link (no companion branch in this street)', async () => {
-    await setVar(page, 'isEnigma', 1);
+    await setVar(page, 'hauntedHouse', 'enigma');
     await setHuntMode(page, 1);
     await goToPassage(page, 'Enigma Street');
     await expectCleanPassage(page);
@@ -133,12 +133,11 @@ test.describe('Haunted house — Enigma', () => {
     expect(await getHuntMode(page)).toBe(2);
   });
 
-  test('Enigma is flagged as the real house (isrealhouse)', async () => {
-    // The Enigma house sets $isrealhouse to 1 when chosen from GhostStreet; the
-    // setupHunt helper simulates an in-house state but does not replay that
-    // assignment. Simulate it here and verify the controller query.
+  test('Enigma is flagged as the real house', async () => {
+    // The Enigma house is the only one whose HOUSE_CONFIG entry has
+    // isRealHouse: true. With $hauntedHouse === 'enigma' the controller's
+    // isRealHouse() / isRealHouseActive() should both report true.
     await setupHunt(page, 'Spirit', 'enigma');
-    await setVar(page, 'isrealhouse', 1);
     expect(await page.evaluate(() => SugarCube.setup.HauntedHouses.isRealHouse())).toBe(true);
   });
 

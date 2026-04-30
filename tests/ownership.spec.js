@@ -46,7 +46,22 @@ const UNOWNED_ALLOWLIST = new Set([
    owned by any controller. */
 const LEGACY_SAVE_VARS = new Set([
 	'ghostName', 'ghostEvidence', 'ghostRoom',
-	'ghostIsTrapped', 'ghostHuntingMode', 'saveMimic'
+	'ghostIsTrapped', 'ghostHuntingMode', 'saveMimic',
+	// Pre-bundle home event flags — folded into $succubusEvent /
+	// $tentacles / $webcam / $summoning by SaveMigration.
+	'succubusEventCD', 'succubusPCEventStage',
+	'succubusChoiceEventText', 'succubusTVText',
+	'succubusEventTimer',
+	'tentaclesEventStageAll', 'tentaclesEventStageSleep',
+	'tentaclesEventPCText', 'tentaclesEventTVText',
+	'tentaclesTextAfterSleep',
+	'webcamEvent', 'webcamShowCD', 'webcamAccountCreated',
+	'webcamVideo',
+	'prefsmoney', 'prefssubscribers', 'prefsshowCount',
+	'summonText', 'summoningChoice',
+	// Pre-bundle haunted-house active flags — collapsed onto
+	// $hauntedHouse (string id) by SaveMigration.
+	'isOwaissa', 'isElm', 'isEnigma', 'isIronclad', 'isrealhouse'
 ]);
 
 test.describe('Variable ownership', () => {
@@ -223,12 +238,14 @@ test.describe('Variable ownership', () => {
 	   - Each <name> must be in X's OWNED_VARS.
 	   Dynamic access (`s[expr]`) isn't validated. */
 	test('controllers only directly access variables they own', () => {
-		/* Updates is exempt: its job is save-migration. It deliberately
-		   reads and writes vars owned by other controllers to seed
-		   initial state on legacy saves before the owning APIs are
-		   safe to call. The header comment in UpdatesController.tw
-		   spells this out. */
-		const EXEMPT_CONTROLLERS = new Set(['Updates']);
+		/* Migrations and Tick are exempt: their jobs are save-migration
+		   and per-passage runtime maintenance. Both deliberately read
+		   and write vars owned by other controllers — Migrations to
+		   seed initial state on legacy saves before the owning APIs
+		   are safe to call; Tick to keep per-tick hot-path overhead
+		   minimal. The header comments in their controllers spell
+		   this out. */
+		const EXEMPT_CONTROLLERS = new Set(['Migrations', 'Tick']);
 		const files = collectTwFiles(PASSAGES_ROOT);
 		const violations = [];
 		for (const file of files) {

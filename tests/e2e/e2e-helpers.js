@@ -106,16 +106,10 @@ async function setupHunt(page, ghostName, house = 'owaissa') {
     throw new Error(`Failed to assign ghost "${ghostName}", got "${assigned}"`);
   }
 
-  const houseFlags = {
-    owaissa: { isOwaissa: 1, isElm: 0, isEnigma: 0, isIronclad: 0 },
-    elm: { isOwaissa: 0, isElm: 1, isEnigma: 0, isIronclad: 0 },
-    enigma: { isOwaissa: 0, isElm: 0, isEnigma: 1, isIronclad: 0 },
-    ironclad: { isOwaissa: 0, isElm: 0, isEnigma: 0, isIronclad: 1 },
-  };
-  const flags = houseFlags[house];
-  if (!flags) throw new Error(`Unknown house "${house}"`);
-
-  for (const [k, v] of Object.entries(flags)) await setVar(page, k, v);
+  if (!['owaissa', 'elm', 'enigma', 'ironclad'].includes(house)) {
+    throw new Error(`Unknown house "${house}"`);
+  }
+  await setVar(page, 'hauntedHouse', house);
 
   // Pick a ghost-room that actually exists in the chosen house so that
   // light/evidence widgets that read $hunt.room.name don't trip on a

@@ -42,7 +42,6 @@
 		crucifixAmount:             function () { return 0; },
 		sanityPillsAmount:          function () { return 0; },
 		moneyFromWeakenTheGhost:    function () { return 0; },
-		tentaclesEventStageSleep:   function () { return 0; },
 		piercingTitsAddSens:        function () { return 0; },
 		piercingTongueAddSens:      function () { return 0; },
 		piercingPussyAddSens:       function () { return 0; },
@@ -62,7 +61,18 @@
 		blake:  function () { return setup.Companion.defaultStateFor('Blake'); },
 		alex:   function () { return setup.Companion.defaultStateFor('Alex'); },
 		taylor: function () { return setup.Companion.defaultStateFor('Taylor'); },
-		casey:  function () { return setup.Companion.defaultStateFor('Casey'); }
+		casey:  function () { return setup.Companion.defaultStateFor('Casey'); },
+
+		// Home event bundles -- collapse the old flat $succubusEventCD /
+		// $tentaclesEventStageAll / $webcamEvent / $summonText forests
+		// into one object per feature. The flat-key fold-forward below
+		// handles existing saves; these defaults cover fresh-game/no-prior-
+		// state paths.
+		succubusEvent: function () { return {}; },
+		tentacles:     function () { return {}; },
+		webcam:        function () { return {}; },
+		summoning:     function () { return {}; },
+		hauntedHouse:  function () { return null; }
 	};
 
 	// mc sub-fields added after launch -- missing on very old saves
@@ -102,6 +112,87 @@
 				}
 			});
 		}
+
+		// One-time rename: $checkChoosenLocation -> $checkChosenLocation
+		// (typo fix). Carry the old value forward when set.
+		if (vars.checkChosenLocation === undefined && vars.checkChoosenLocation !== undefined) {
+			vars.checkChosenLocation = vars.checkChoosenLocation;
+		}
+		delete vars.checkChoosenLocation;
+
+		// Per-companion flags formerly stored as a forest of dynamically-named
+		// top-level vars ($isCompChosen<Name>, $is<Name>GoingForHuntingAlone,
+		// $payForHuntAlone<Name>, $<key>Choose<Street>, $chanceToAttack<Name>,
+		// $chanceToSuccessAlone<Street><Name>) now live on the per-companion
+		// stat object ($brook / $alice / $blake / $alex / $taylor / $casey).
+		// Carry forward whatever the old save had so existing players don't
+		// lose their solo-hunt progress.
+		[
+			{ name: 'Brook',  key: 'brook'  },
+			{ name: 'Alice',  key: 'alice'  },
+			{ name: 'Blake',  key: 'blake'  },
+			{ name: 'Alex',   key: 'alex'   },
+			{ name: 'Taylor', key: 'taylor' },
+			{ name: 'Casey',  key: 'casey'  }
+		].forEach(function (c) {
+			var stats = vars[c.key];
+			if (!stats || typeof stats !== 'object') return;
+			var legacy = {
+				chosen:            'isCompChosen' + c.name,
+				chanceToAttack:    'chanceToAttack' + c.name,
+				goingSolo:         'is' + c.name + 'GoingForHuntingAlone',
+				paidForSolo:       'payForHuntAlone' + c.name,
+				chooseOwaissa:     c.key + 'ChooseOwaissa',
+				chooseElm:         c.key + 'ChooseElm',
+				soloChanceOwaissa: 'chanceToSuccessAloneOwaissa' + c.name,
+				soloChanceElm:     'chanceToSuccessAloneElm' + c.name
+			};
+			Object.keys(legacy).forEach(function (newKey) {
+				var oldKey = legacy[newKey];
+				if (stats[newKey] === undefined && vars[oldKey] !== undefined) {
+					stats[newKey] = vars[oldKey];
+				}
+				delete vars[oldKey];
+			});
+		});
+
+		// Library: 4 mutually-exclusive $comics<N> flags collapsed into a
+		// single $comicsReading slot (0 = none, 1..4 = active issue).
+		if (vars.comicsReading === undefined) {
+			for (var ci = 1; ci <= 4; ci++) {
+				if (vars['comics' + ci] === 1) { vars.comicsReading = ci; break; }
+			}
+			if (vars.comicsReading === undefined) vars.comicsReading = 0;
+		}
+		for (var ck = 1; ck <= 4; ck++) delete vars['comics' + ck];
+
+		// Delivery: 3 flat $deliveryActiveIcon{1,2,3} flags collapsed into
+		// a single $deliveryActiveIcons array.
+		if (!Array.isArray(vars.deliveryActiveIcons)) {
+			vars.deliveryActiveIcons = [
+				vars.deliveryActiveIcon1 !== undefined ? !!vars.deliveryActiveIcon1 : true,
+				vars.deliveryActiveIcon2 !== undefined ? !!vars.deliveryActiveIcon2 : true,
+				vars.deliveryActiveIcon3 !== undefined ? !!vars.deliveryActiveIcon3 : true
+			];
+		}
+		delete vars.deliveryActiveIcon1;
+		delete vars.deliveryActiveIcon2;
+		delete vars.deliveryActiveIcon3;
+
+		// Ghosts: 18 individual $ghost<Name>InfoCollected flags folded into
+		// a single $ghostInfoCollected map keyed by ghost name.
+		if (!vars.ghostInfoCollected || typeof vars.ghostInfoCollected !== 'object') {
+			vars.ghostInfoCollected = {};
+		}
+		[
+			'Shade', 'Spirit', 'Poltergeist', 'Phantom', 'Goryo', 'Demon',
+			'Deogen', 'Jinn', 'Moroi', 'Myling', 'Mare', 'Banshee',
+			'Mimic', 'Oni', 'Obake', 'TheTwins', 'HighPriestess', 'Cthulion'
+		].forEach(function (gname) {
+			var legacyKey = 'ghost' + gname + 'InfoCollected';
+			if (vars[legacyKey]) vars.ghostInfoCollected[gname] = 1;
+			delete vars[legacyKey];
+		});
 
 		// clamp body-part sensitivity (old saves occasionally over-increment)
 		setup.Intro.clampSensualBodyParts(vars.sensualBodyPart);
@@ -207,6 +298,75 @@
 			}
 		}
 		Object.keys(WISH_FLAG_TO_ID).forEach(function (flag) { delete vars[flag]; });
+
+		// Home event bundles: collapse flat $succubus*, $tentacles*,
+		// $webcam* / $prefs*, $summon* / $summoning* keys onto four
+		// per-feature objects ($succubusEvent, $tentacles, $webcam,
+		// $summoning). For each existing flat key on the save, copy
+		// its value into the bundle field, then delete the flat key.
+		// Skip a copy when the bundle already has the field — older
+		// saves coming through this path twice shouldn't clobber a
+		// value that was written via the new-shape API in the
+		// meantime.
+		function migrateBundle(bundleKey, mapping) {
+			if (!vars[bundleKey] || typeof vars[bundleKey] !== 'object') {
+				vars[bundleKey] = {};
+			}
+			var bundle = vars[bundleKey];
+			Object.keys(mapping).forEach(function (newField) {
+				var oldKey = mapping[newField];
+				if (vars[oldKey] !== undefined && bundle[newField] === undefined) {
+					bundle[newField] = vars[oldKey];
+				}
+				delete vars[oldKey];
+			});
+		}
+		migrateBundle('succubusEvent', {
+			eventCD:    'succubusEventCD',
+			pcStage:    'succubusPCEventStage',
+			choiceText: 'succubusChoiceEventText',
+			tvText:     'succubusTVText',
+			eventTimer: 'succubusEventTimer'
+		});
+		migrateBundle('tentacles', {
+			stageAll:       'tentaclesEventStageAll',
+			stageSleep:     'tentaclesEventStageSleep',
+			pcText:         'tentaclesEventPCText',
+			tvText:         'tentaclesEventTVText',
+			afterSleepText: 'tentaclesTextAfterSleep'
+		});
+		migrateBundle('webcam', {
+			event:          'webcamEvent',
+			showCD:         'webcamShowCD',
+			accountCreated: 'webcamAccountCreated',
+			video:          'webcamVideo',
+			money:          'prefsmoney',
+			subscribers:    'prefssubscribers',
+			showCount:      'prefsshowCount'
+		});
+		migrateBundle('summoning', {
+			text:   'summonText',
+			choice: 'summoningChoice'
+		});
+
+		// Active-house id: collapse four mutually-exclusive
+		// $is<House> flags + the derived $isrealhouse onto a single
+		// $hauntedHouse string ('owaissa' | 'elm' | 'enigma' |
+		// 'ironclad' | null). Migrate by finding whichever flag was
+		// raised; default to null when none was set.
+		if (vars.hauntedHouse === undefined) {
+			vars.hauntedHouse =
+				vars.isOwaissa  === 1 ? 'owaissa'  :
+				vars.isElm      === 1 ? 'elm'      :
+				vars.isEnigma   === 1 ? 'enigma'   :
+				vars.isIronclad === 1 ? 'ironclad' :
+				null;
+		}
+		delete vars.isOwaissa;
+		delete vars.isElm;
+		delete vars.isEnigma;
+		delete vars.isIronclad;
+		delete vars.isrealhouse;
 	}
 
 	// Expose for use from Twine (PassageReady belt-and-braces call).

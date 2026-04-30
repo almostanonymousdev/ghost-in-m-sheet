@@ -11,8 +11,10 @@ setup.Library = (function () {
 	var OWNED_VARS = Object.freeze([
 		'meetBrook', 'foundTips', 'foundComics', 'foundBrook',
 		'foundGirl', 'foundGuy',
-		'comics1', 'comics2', 'comics3', 'comics4',
-		'chanceToSuccessAloneOwaissaBrook', 'chanceToSuccessAloneElmBrook'
+		// $comicsReading: 0 = none, 1..4 = currently-open issue. Replaces
+		// the four mutually-exclusive $comics<N> flags. SaveMigration
+		// folds existing $comics<N> into this single field.
+		'comicsReading'
 	]);
 
 	function sv() { return State.variables; }
@@ -72,7 +74,7 @@ setup.Library = (function () {
 
 		// --- Brook solo-hunt chances (duplicated in BrookInfo) --
 		brookSoloOwaissaChance: function () {
-			var lvl = setup.Companion.brookLvl();
+			var lvl = setup.Companion.companionLvl('Brook');
 			if (lvl >= 5) return 70;
 			if (lvl === 4) return 55;
 			if (lvl === 3) return 40;
@@ -80,7 +82,7 @@ setup.Library = (function () {
 			return 0;
 		},
 		brookSoloElmChance: function () {
-			var lvl = setup.Companion.brookLvl();
+			var lvl = setup.Companion.companionLvl('Brook');
 			if (lvl >= 5) return 55;
 			if (lvl === 4) return 40;
 			if (lvl === 3) return 25;
@@ -88,12 +90,8 @@ setup.Library = (function () {
 			return 0;
 		},
 
-		brookLvl: function () {
-			return setup.Companion.brookLvl();
-		},
-
 		// --- Mutations previously inline in library passages ------
-		spendEnergyToSearch: function () { setup.Mc.spendEnergy(1); },
+		spendEnergyToSearch: function () { setup.Mc.removeEnergy(1); },
 		markTipsBookFound:   function () { State.variables.foundTips = 1; },
 		markComicsFound:     function () { State.variables.foundComics = 1; },
 		markBrookFound:      function () { State.variables.foundBrook = 1; },
@@ -112,19 +110,12 @@ setup.Library = (function () {
 		},
 
 		// --- Comics selection --------------------------------------
-		selectComics: function (idx) {
-			// idx in [1..4]. Clears all, then sets the one being read.
-			for (var i = 1; i <= 4; i++) {
-				State.variables['comics' + i] = 0;
-			}
-			State.variables['comics' + idx] = 1;
-		},
-		resetComics: function () {
-			for (var i = 1; i <= 4; i++) {
-				State.variables['comics' + i] = 0;
-			}
-		},
-		comicsFlag: function (idx) { return sv()['comics' + idx]; },
+		// One slot at a time: $comicsReading holds the active issue (1..4)
+		// or 0 when none is open. comicsFlag(idx) preserves the legacy
+		// per-issue boolean shape for the ReadComics passage's <<if>> chain.
+		selectComics: function (idx) { sv().comicsReading = idx; },
+		resetComics:  function ()    { sv().comicsReading = 0; },
+		comicsFlag:   function (idx) { return sv().comicsReading === idx ? 1 : 0; },
 
 		// --- Brook solo-hunt selection ----------------------------
 		chanceBrookAloneOwaissa: function () { return setup.Companion.soloHuntChanceOwaissa('Brook'); },
@@ -139,10 +130,10 @@ setup.Library = (function () {
 			setup.Companion.pickCisCompanion('Brook');
 		},
 		pickBrookForSoloOwaissa: function () {
-			setup.Companion.pickCompanionForSoloHunt('Brook', 'Owaissa');
+			setup.Companion.sendCompanionSolo('Brook', 'Owaissa');
 		},
 		pickBrookForSoloElm: function () {
-			setup.Companion.pickCompanionForSoloHunt('Brook', 'Elm');
+			setup.Companion.sendCompanionSolo('Brook', 'Elm');
 		}
 	};
 })();

@@ -19,7 +19,7 @@
 	<<addTime 30>>
 	<<if setup.CursedItems.isItemCursed("tv")>>
 		<<goto "CursedTVEvent">>
-	<<elseif setup.Home.spiritNapEventReady()>>
+	<<elseif setup.SpecialEvent.spiritEventReady()>>
 		<<goto "GhostSpecialEventTVSpirit">>
 	<<elseif setup.Home.succubusTVEventReady()>>
 		<<goto "SuccubusEventTV">>
@@ -50,31 +50,31 @@
 <</if>>
 
 <<if setup.Home.isNightForHunt()>>
-	<<if not setup.Home.hasHuntContract() and not setup.Home.needsWitch() and setup.Ghosts.isInactive()>>
+	<<if not setup.Ghosts.hasContract() and not setup.Ghosts.isPossessed() and setup.Ghosts.isInactive()>>
 		@@.mc-thoughts; I don't have a contract@@
-	<<elseif setup.Home.hasHuntContract()>>
+	<<elseif setup.Ghosts.hasContract()>>
 
-		<<if not setup.Home.isDressedForStreet()>>
+		<<if not setup.Wardrobe.isDressedForStreet()>>
 			@@.mc-thoughts; I can't go outside naked @@
 
 		<<elseif setup.Home.isDirty()>>
 			@@.mc-thoughts; I need to go to the bathroom first@@
 		<<elseif setup.Home.isCorruptEnoughToSkipUnderwear()>>@@.movebtn;[[Ghost hunting|GhostStreet]]@@
-		<<elseif not setup.Home.isWearingUnderwear()>>@@.mc-thoughts; I can't go outside without underwear @@
+		<<elseif not setup.Wardrobe.isWearingUnderwear()>>@@.mc-thoughts; I can't go outside without underwear @@
 		<<else>>@@.movebtn;[[Ghost hunting|GhostStreet]]@@
 		<</if>>
-	<<elseif setup.Home.needsWitch()>>@@.mc-thoughts; I need to go to the witch first@@
+	<<elseif setup.Ghosts.isPossessed()>>@@.mc-thoughts; I need to go to the witch first@@
 	<</if>>
 <<else>> @@.mc-thoughts;Not appropriate time for ghost hunting@@
 <</if>>
 <br>
 <br>
-<<if not setup.Home.isDressedForStreet()>>
+<<if not setup.Wardrobe.isDressedForStreet()>>
 	@@.mc-thoughts; I can't go outside naked @@
 
 <<elseif setup.Home.isDirty()>>@@.mc-thoughts; I need to go to the bathroom first@@
 <<elseif setup.Home.isCorruptEnoughToSkipUnderwear()>>@@.backbtn;[[Leave|Home]]@@
-<<elseif not setup.Home.isWearingUnderwear()>>@@.mc-thoughts; I can't go outside without underwear @@<<else>>@@.backbtn;[[Leave|Home]]@@
+<<elseif not setup.Wardrobe.isWearingUnderwear()>>@@.mc-thoughts; I can't go outside without underwear @@<<else>>@@.backbtn;[[Leave|Home]]@@
 <</if>>
 /*[[RoomCleanup]]*/
 <<if previous() is "GhostSpecialEventWraithStart">>

@@ -6,9 +6,9 @@
 	<br>
 	<br>
 	@@.backbtn; [[Back|$return]]@@<br>
-<<elseif _cur eq setup.HauntedHouses.activeHousePlace("CursedItem") and setup.HauntedHouses.hasNoCursedItem()>>
+<<elseif _cur eq setup.HauntedHouses.activeHousePlace("CursedItem") and (not setup.Witch.cursedItemQuestStarted() or setup.Witch.cursedItemQuestActive())>>
 	<<include "FindCursedItem">>
-<<elseif _cur eq setup.HauntedHouses.activeHousePlace("RescueClue") and setup.HauntedHouses.hasActiveQuestForRescue() and not setup.HauntedHouses.hasRescueClue()>>
+<<elseif _cur eq setup.HauntedHouses.activeHousePlace("RescueClue") and setup.MissingWomen.hasActiveQuest() and not setup.MissingWomen.hasRescueClue()>>
 	<<include "RescueClueFound">>
 <<elseif _cur eq setup.HauntedHouses.activeHousePlace("TarotCards") and setup.HauntedHouses.tarotCardsStage() eq 0>>
 	@@.mc-thoughts; You come across a strange@@ <<linkappend "@@.usebtn; deck of cards.@@">><br>

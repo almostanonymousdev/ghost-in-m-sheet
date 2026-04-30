@@ -44,7 +44,7 @@ setup.Gui = (function () {
 		var s = sv();
 
 		function meetFlag(name) { return s['meet' + name] !== undefined; }
-		function huntingAlone(name) { return s['is' + name + 'GoingForHuntingAlone'] === 2; }
+		function huntingAlone(name) { return setup.Companion.hasFinishedSoloHunt(name); }
 
 		return [
 			{
@@ -129,6 +129,27 @@ setup.Gui = (function () {
 		var t = TOOL_TIMER_BY_LVL[lvl];
 		sv().timerToolsDecreased = t || "150ms";
 	}
+	function timerToolsInitialized() {
+		return sv().timerToolsDecreased !== undefined;
+	}
+	function setTimerToolsDecreased(v) { sv().timerToolsDecreased = v; }
+
+	// --- Mirror render -------------------------------------------
+	// PassageDone re-renders the mirror image after wash/apply makeup
+	// chains so the portrait stays in sync with $mc.makeupImg. The
+	// "70%" width branch matches the inline style applied by Mirror.
+	function mirrorMakeupImagePath() {
+		switch (setup.Mc.makeupImg()) {
+			case 1: return "ui/img/makeup1.jpg";
+			case 2: return "ui/img/makeup2.jpg";
+			case 3: return "ui/img/makeup3.jpg";
+			default: return "ui/img/mc.jpg";
+		}
+	}
+	function mirrorMakeupHasWidth() {
+		var m = setup.Mc.makeupImg();
+		return m >= 1 && m <= 3;
+	}
 
 	return {
 		OWNED_VARS: OWNED_VARS,
@@ -144,6 +165,10 @@ setup.Gui = (function () {
 		isCursedHuntOptionOn: isCursedHuntOptionOn,
 		setCursedHuntOption: setCursedHuntOption,
 		refreshToolTimer: refreshToolTimer,
+		timerToolsInitialized: timerToolsInitialized,
+		setTimerToolsDecreased: setTimerToolsDecreased,
+		mirrorMakeupImagePath: mirrorMakeupImagePath,
+		mirrorMakeupHasWidth: mirrorMakeupHasWidth,
 		monkeyPawWishInput: function () { return sv().inputWish; }
 	};
 })();
