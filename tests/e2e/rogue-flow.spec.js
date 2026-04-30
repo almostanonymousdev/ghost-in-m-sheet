@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 const { openGame, resetGame, getVar, goToPassage } = require('../helpers');
 
-/* End-to-end rogue lifecycle: CityMap → RogueStart → RogueRun
+/* End-to-end rogue lifecycle: GhostStreet → RogueStart → RogueRun
    → RogueEnd → RogueMetaShop. Exercises the actual passage flow
    so any wiring break (missing link text, broken setField call,
    wrong passage transition) shows up here. */
@@ -25,15 +25,15 @@ test.describe('E2E: rogue run lifecycle', () => {
     await page.waitForFunction(p => SugarCube.State.passage === p, expectedPassage);
   }
 
-  test('start from CityMap → win the run → spend echoes in meta-shop', async () => {
+  test('start from GhostStreet → win the run → spend echoes in meta-shop', async () => {
     test.setTimeout(20_000);
 
-    await goToPassage(page, 'CityMap');
+    await goToPassage(page, 'GhostStreet');
     expect(await getVar(page, 'run')).toBeNull();
     expect(await getVar(page, 'echoes')).toBe(0);
 
-    // 1. Launch the run from the CityMap rogue card.
-    await clickLink(page, 'Rogue run', 'RogueStart');
+    // 1. Launch the run from the GhostStreet rogue card.
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
 
     // RogueStart auto-rolls the run via setup.Run.startRogue, so $run
     // already exists on entry. Confirm the lifecycle stamps look sane.
@@ -67,8 +67,8 @@ test.describe('E2E: rogue run lifecycle', () => {
   test('losing a run still pays out base + per-modifier echoes', async () => {
     test.setTimeout(15_000);
 
-    await goToPassage(page, 'CityMap');
-    await clickLink(page, 'Rogue run', 'RogueStart');
+    await goToPassage(page, 'GhostStreet');
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
     await clickLink(page, 'Enter the haunt', 'RogueRun');
     await clickLink(page, 'Lose', 'RogueEnd');
 
@@ -77,27 +77,36 @@ test.describe('E2E: rogue run lifecycle', () => {
     expect(await getVar(page, 'run')).toBeNull();
   });
 
-  test('CityMap shows "Resume run" when a run is in progress', async () => {
+  test('walking back in mid-run forfeits the prior run as failure', async () => {
     test.setTimeout(15_000);
 
-    await goToPassage(page, 'CityMap');
-    await clickLink(page, 'Rogue run', 'RogueStart');
+    // Run 1: start it, then bail back out without finishing.
+    await goToPassage(page, 'GhostStreet');
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
     await clickLink(page, 'Enter the haunt', 'RogueRun');
+    await goToPassage(page, 'GhostStreet');
 
-    // Pop back out to the city without ending the run.
-    await goToPassage(page, 'CityMap');
-    expect(await getVar(page, 'run')).not.toBeNull();
-    // The "Resume run" link is wired in CityMap when setup.Run.isRogue() is true.
-    await clickLink(page, 'Resume run', 'RogueRun');
+    // The card never offers "Resume Run" -- only the fresh-haunt link.
+    await expect(
+      page.locator('.passage').getByText('Resume Run', { exact: true })
+    ).toHaveCount(0);
+
+    // Walking back in pays out failure echoes for run 1, then rolls run 2.
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    const run = await getVar(page, 'run');
+    expect(run.number).toBe(2);
+    // Run 1: 5 base + 0 success + 2 modifiers = 7 echoes from the forfeit.
+    expect(await getVar(page, 'echoes')).toBe(7);
+    expect(await getVar(page, 'runsStarted')).toBe(2);
   });
 
   test('two consecutive runs increment runsStarted across the lifecycle', async () => {
     test.setTimeout(20_000);
 
-    await goToPassage(page, 'CityMap');
+    await goToPassage(page, 'GhostStreet');
 
     // Run 1: win.
-    await clickLink(page, 'Rogue run', 'RogueStart');
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
     await clickLink(page, 'Enter the haunt', 'RogueRun');
     await clickLink(page, 'Win', 'RogueEnd');
     expect(await getVar(page, 'runsStarted')).toBe(1);

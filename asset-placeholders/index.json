@@ -15396,6 +15396,12 @@
       "height": 200,
       "kind": "image"
     },
+    "ui/img/rogue-house.jpg": {
+      "label": "Rogue Haunt",
+      "width": 480,
+      "height": 360,
+      "kind": "image"
+    },
     "ui/img/sanity-pills.jpg": {
       "label": "",
       "width": 600,

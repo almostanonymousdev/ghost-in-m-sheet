@@ -13,13 +13,23 @@ cleanly partitioned.
 
 ## Lifecycle
 
-A rogue run flows through four passages, all reachable from the
-[Rogue run](../passages/gui/CityMap.tw) card on the city map.
+A rogue run flows through four passages. The entry point is the
+**Rogue Haunt** card on
+[GhostStreet](../passages/haunted_houses/general/GhostStreet.tw),
+slotted alongside the authored haunts (Owaissa, Ironclad, Elm,
+Enigma) via the [`<<rogueHuntCard>>`](../passages/haunted_houses/tools/widgetHauntedHouseStreet.tw)
+widget. There is no "resume" — once you start a run, you either
+finish it (Win / Lose / Abandon from RogueRun) or forfeit it by
+walking back into RogueStart, which counts the unfinished run as
+a failure before rolling fresh.
 
 * **[RogueStart](../passages/rogue/RogueLifecycle.tw)** — entry point.
-  Rolls a fresh seed (or accepts an explicit one), drafts the
-  modifier deck, generates the floor plan, and stamps `$run`. Shows
-  the player the modifier list and the floor plan before they commit.
+  If the player walks in with an in-flight run on `$run`, that
+  run is auto-failed via `setup.Run.endRogue(false)` first (paying
+  the failure-rate echoes, no resume). Then rolls a fresh seed
+  (or accepts an explicit one), drafts the modifier deck,
+  generates the floor plan, and stamps `$run`. Shows the player
+  the modifier list and the floor plan before they commit.
   `setup.Run.startRogue({ seed })` does the actual composition.
 * **[RogueRun](../passages/rogue/RogueLifecycle.tw)** — in-progress
   view. Currently a placeholder that renders the floor-plan

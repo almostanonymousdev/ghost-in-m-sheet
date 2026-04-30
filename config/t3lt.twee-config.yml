@@ -404,6 +404,14 @@ sugarcube-2:
         setup.HauntedHouses catalogue. Handles the level gate, the street-passage
         link, and the per-click contract/flag/furniture/room side effects. Args:
         houseId (string, 'owaissa' | 'elm' | 'enigma' | 'ironclad')."
+    rogueHuntCard:
+      name: rogueHuntCard
+      description: "Drops a rogue-mode entry into the GhostStreet flexgrid.
+        Same iconPx-sized .housecard style as huntHouseCard. Always routes
+        to RogueStart for a fresh haunt -- there is no resume; an in-flight
+        run is treated as a failure if the player walks back in. No contract
+        reward, no $hauntedHouse activation -- the rogue subsystem owns its
+        own state on $run. Arg-less."
     huntHouseStreet:
       name: huntHouseStreet
       container: true

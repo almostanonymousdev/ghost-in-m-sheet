@@ -11,7 +11,7 @@
 <div class="housecard"></div>
 <div class="housecard"></div>
 <<huntHouseCard "enigma">>
-<div class="housecard"></div>
+<<rogueHuntCard>>
 </div>
 <<nobr>>
 <<run setup.Ghosts.fireActiveOnEnterHouse()>>

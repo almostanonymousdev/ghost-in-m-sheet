@@ -2,7 +2,13 @@
 /* Entry point for a rogue run. Rolls modifiers + floor plan from
    a seed (fresh random by default; copyable from the run record
    for shareable seeds), then routes to the in-progress passage.
-   The actual gameplay lives in RogueRun -- this is the lobby. */
+   The actual gameplay lives in RogueRun -- this is the lobby.
+   If the player walks back into the lobby with a run already in
+   flight, the previous run is forfeited (counts as failure, pays
+   the failure echoes) before the new one rolls -- no resume. */
+<<if setup.Run.isRogue()>>
+	<<run setup.Run.endRogue(false)>>
+<</if>>
 <<set _rogueSeed to Math.floor(Math.random() * 1e9)>>
 <<run setup.Run.startRogue({ seed: _rogueSeed })>>
 <<set _run to setup.Run.active()>>
