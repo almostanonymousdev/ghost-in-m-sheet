@@ -76,7 +76,7 @@ The game world includes several city locations the player can visit between hunt
   * [widgetChurch.tw](../passages/church/widgetChurch.tw) - Shared church widgets
 
 * **Rogue Mode** - Run-based variant on the witch-contract loop, launched from the **Rogue Haunt** card on GhostStreet alongside the authored haunts. Each run rolls a deterministic floor plan, modifier deck, and stash placement from a seed; echo currency persists across runs and is spent in the meta-shop on permanent unlocks. There is no resume — walking back into RogueStart with an unfinished run forfeits it as a failure. See [rogue-mode.md](rogue-mode.md) for the lifecycle, generator, and state shape.
-  * [RunController.tw](../passages/rogue/RunController.tw) - `setup.Run`: lifecycle, accessors, echoes, composition helpers, minimap data
+  * [RogueController.tw](../passages/rogue/RogueController.tw) - `setup.Rogue`: lifecycle, accessors, echoes, composition helpers, minimap data
   * [FloorPlanController.tw](../passages/rogue/FloorPlanController.tw) - Seeded floor-plan generator (Mulberry32 PRNG, star topology, stash placement)
   * [ModifiersController.tw](../passages/rogue/ModifiersController.tw) - Run-modifier catalogue and weighted draft
   * [TemplatesController.tw](../passages/rogue/TemplatesController.tw) - Room-template metadata and slot-id helpers

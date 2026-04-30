@@ -2,15 +2,15 @@
 /* rogueCurrentRoom -- arg-less. Renders the player's current room
    in the active rogue run: name, the furniture list (with any
    stashed item annotated), and nav links to every adjacent room.
-   Reads setup.Run.currentRoomData(); the nav links call
-   setup.Run.setCurrentRoom() and re-enter RogueRun so the widget
+   Reads setup.Rogue.currentRoomData(); the nav links call
+   setup.Rogue.setCurrentRoom() and re-enter RogueRun so the widget
    redraws from the new room.
 
    Renders nothing when no rogue run is active or the player isn't
    in any room (keeps the widget cheap to drop into shared passages
    without an outer guard). */
 <<widget "rogueCurrentRoom">>
-	<<set _cr to setup.Run.currentRoomData()>>
+	<<set _cr to setup.Rogue.currentRoomData()>>
 	<<if _cr>>
 		<div class="rogue-current-room">
 			<span class="location">Current Room: <<= _cr.label>></span><br>
@@ -42,7 +42,7 @@
 				<<for _n range _cr.neighbors>>
 					<<capture _n>>
 						· @@.movebtn;<<link _n.label "RogueRun">>
-							<<run setup.Run.setCurrentRoom(_n.id)>>
+							<<run setup.Rogue.setCurrentRoom(_n.id)>>
 						<</link>>@@<br>
 					<</capture>>
 				<</for>>

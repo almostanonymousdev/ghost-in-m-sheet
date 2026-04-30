@@ -37,7 +37,7 @@
  * because every new room is linked to the existing graph.
  *
  * The result is meant to live on $run.floorplan via
- * setup.Run.setField('floorplan', plan); the actual room state
+ * setup.Rogue.setField('floorplan', plan); the actual room state
  * objects (light, evidence, etc.) get seeded per-room via
  * setup.Rooms.seed(id, { template }) when the run starts.
  */
@@ -173,6 +173,35 @@ setup.FloorPlan = (function () {
 		return null;
 	}
 
+	/* BFS layout: assigns each room a (col, row) cell so the rogue
+	   minimap can render the plan as a tree-shaped map. col is the
+	   BFS depth from the hallway; row is the order rooms are visited
+	   at that depth (so siblings stack vertically rather than
+	   overlapping). Returns a { roomId -> {col, row} } map. */
+	function layout(plan) {
+		var positions = {};
+		if (!plan || !Array.isArray(plan.rooms) || !plan.rooms.length) return positions;
+		var rootId = plan.rooms[0].id;
+		var visited = {};
+		visited[rootId] = true;
+		var queue = [{ id: rootId, depth: 0 }];
+		var nextRowAtDepth = {};
+		while (queue.length) {
+			var cur = queue.shift();
+			var row = nextRowAtDepth[cur.depth] || 0;
+			positions[cur.id] = { col: cur.depth, row: row };
+			nextRowAtDepth[cur.depth] = row + 1;
+			var nbrs = neighborsOf(plan, cur.id);
+			for (var i = 0; i < nbrs.length; i++) {
+				if (!visited[nbrs[i]]) {
+					visited[nbrs[i]] = true;
+					queue.push({ id: nbrs[i], depth: cur.depth + 1 });
+				}
+			}
+		}
+		return positions;
+	}
+
 	/* True iff every room is reachable from the first room (hallway).
 	   Used as a generator-correctness invariant in tests. */
 	function isConnected(plan) {
@@ -197,6 +226,7 @@ setup.FloorPlan = (function () {
 		generate: generate,
 		neighborsOf: neighborsOf,
 		roomById: roomById,
-		isConnected: isConnected
+		isConnected: isConnected,
+		layout: layout
 	};
 })();

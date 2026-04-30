@@ -35,7 +35,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     // 1. Launch the run from the GhostStreet rogue card.
     await clickLink(page, 'Rogue Haunt', 'RogueStart');
 
-    // RogueStart auto-rolls the run via setup.Run.startRogue, so $run
+    // RogueStart auto-rolls the run via setup.Rogue.startRogue, so $run
     // already exists on entry. Confirm the lifecycle stamps look sane.
     let run = await getVar(page, 'run');
     expect(run).not.toBeNull();
@@ -153,7 +153,7 @@ test.describe('E2E: rogue run lifecycle', () => {
 
     // Run 2: lose.
     await clickLink(page, 'Visit the meta-shop', 'RogueMetaShop');
-    await clickLink(page, 'Start a new run', 'RogueStart');
+    await clickLink(page, 'Continue hunting', 'RogueStart');
     const run2 = await getVar(page, 'run');
     expect(run2.number).toBe(2);
     await clickLink(page, 'Enter the haunt', 'RogueRun');

@@ -9,7 +9,7 @@
  * tool-check overrides hook into setup.HauntConditions / Tool
  * controller; sanity-tick changes hook into McController; tarot-
  * only swaps the evidence pipeline. The active deck is queried
- * via setup.Run.hasModifier(id), so other controllers can branch
+ * via setup.Rogue.hasModifier(id), so other controllers can branch
  * without depending on this module directly.
  *
  * The catalogue here is metadata only — effect wiring is added
@@ -129,7 +129,7 @@ setup.Modifiers = (function () {
 	   entries. Unknown ids are dropped silently (e.g. a modifier
 	   that was renamed between save and load). */
 	function activeList() {
-		return setup.Run.modifiers()
+		return setup.Rogue.modifiers()
 			.map(function (id) { return byId(id); })
 			.filter(function (m) { return !!m; });
 	}

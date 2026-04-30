@@ -97,7 +97,7 @@ test.describe('Modifier registry', () => {
   // --- Integration with active run ---
 
   test('activeList resolves $run.modifiers ids to catalogue entries', async () => {
-    await page.evaluate(() => SugarCube.setup.Run.start({
+    await page.evaluate(() => SugarCube.setup.Rogue.start({
       seed: 1, modifiers: ['power_outage', 'tarot_only']
     }));
 
@@ -106,7 +106,7 @@ test.describe('Modifier registry', () => {
   });
 
   test('activeList drops unknown modifier ids silently', async () => {
-    await page.evaluate(() => SugarCube.setup.Run.start({
+    await page.evaluate(() => SugarCube.setup.Rogue.start({
       seed: 1, modifiers: ['power_outage', 'renamed_or_removed', 'sanity_drain']
     }));
 

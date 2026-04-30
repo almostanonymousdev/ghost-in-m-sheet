@@ -118,9 +118,9 @@ test.describe('Variable ownership', () => {
 		// Stateless controllers are allowed to own nothing:
 		//   - Salon: deliberately stateless (legacy decision).
 		//   - FloorPlan: pure-functional generator. The plan it
-		//     produces lives on $run.floorplan, owned by setup.Run.
+		//     produces lives on $run.floorplan, owned by setup.Rogue.
 		//   - Modifiers: pure-functional catalogue + drafter. The
-		//     active deck lives on $run.modifiers, owned by setup.Run.
+		//     active deck lives on $run.modifiers, owned by setup.Rogue.
 		//   - Templates: pure-functional template catalogue. No
 		//     state of its own; consumed by FloorPlan + rogue room
 		//     rendering.

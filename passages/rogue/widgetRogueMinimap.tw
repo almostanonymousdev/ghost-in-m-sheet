@@ -1,29 +1,30 @@
 :: widgetRogueMinimap [widget nobr] {"position":"3400,200","size":"100,100"}
 /* rogueMinimap -- arg-less. Renders the active run's floor plan as
-   a compact room list: id, template label, plus annotation tags
-   for spawn / boss / each stash kind that lives on the room.
-   Players can't memorize a layout that changes per run, so this
-   gives them a spatial anchor while moving through it.
+   an SVG map: one labeled square per room, lines between connected
+   rooms. The current room is highlighted; spawn and boss rooms get
+   their own border colours. Layout (BFS depth -> col, sibling order
+   -> row) and SVG markup come from setup.Rogue.minimapSvg().
 
    Renders nothing when no rogue run is active (keeps the widget
    cheap to drop into shared passages without an outer guard). */
 <<widget "rogueMinimap">>
-	<<set _mm to setup.Run.minimapData()>>
-	<<if _mm>>
+	<<set _mmSvg to setup.Rogue.minimapSvg()>>
+	<<if _mmSvg>>
 		<div class="rogue-minimap">
 			<span class="location">Floor plan</span><br>
-			<<for _r range _mm>>
-				· @@.usebtn;<<= _r.id>>@@ &mdash; <<= _r.label>>
-				<<if _r.isSpawn>>
-					· @@.notmc-speech;ghost spawn@@
+			<<= _mmSvg>>
+			<<set _mmStashes to setup.Rogue.minimapData()>>
+			<<for _r range _mmStashes>>
+				<<if _r.stashKinds.length>>
+					<<= _r.label>> &mdash;
+					<<for _k, _kind range _r.stashKinds>>
+						@@.mc-thoughts;<<= _kind>>@@
+						<<if _k lt _r.stashKinds.length - 1>>
+							,
+						<</if>>
+					<</for>>
+					<br>
 				<</if>>
-				<<if _r.isBoss>>
-					· @@.notmc-speech;boss room@@
-				<</if>>
-				<<for _k range _r.stashKinds>>
-					· @@.mc-thoughts;<<= _k>>@@
-				<</for>>
-				<br>
 			<</for>>
 		</div>
 	<</if>>

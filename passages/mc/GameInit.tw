@@ -120,7 +120,7 @@ setup.Game = (function () {
 
 		// --- Rogue-mode run state -----------------------------
 		// $run is null in classic mode (witch-contract loop); a
-		// fresh rogue run replaces it via setup.Run.start().
+		// fresh rogue run replaces it via setup.Rogue.start().
 		// $echoes is the persistent meta-progression currency.
 		// $runsStarted is the lifetime attempt counter that
 		// stamps each run's `number` field.

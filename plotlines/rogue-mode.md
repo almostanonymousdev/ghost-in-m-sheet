@@ -8,7 +8,7 @@ next and is spent in the meta-shop on persistent unlocks.
 
 The classic witch-contract flow is unaffected — `$run` is `null`
 when no rogue run is active, and predicates like
-`setup.Run.isClassic()` / `setup.Run.isRogue()` keep the two modes
+`setup.Rogue.isClassic()` / `setup.Rogue.isRogue()` keep the two modes
 cleanly partitioned.
 
 ## Lifecycle
@@ -25,21 +25,24 @@ a failure before rolling fresh.
 
 * **[RogueStart](../passages/rogue/RogueLifecycle.tw)** — entry point.
   If the player walks in with an in-flight run on `$run`, that
-  run is auto-failed via `setup.Run.endRogue(false)` first (paying
+  run is auto-failed via `setup.Rogue.endRogue(false)` first (paying
   the failure-rate echoes, no resume). Then rolls a fresh seed
   (or accepts an explicit one), drafts the modifier deck,
   generates the floor plan, and stamps `$run`. Shows the player
   the modifier list and the floor plan before they commit.
-  `setup.Run.startRogue({ seed })` does the actual composition.
+  `setup.Rogue.startRogue({ seed })` does the actual composition.
 * **[RogueRun](../passages/rogue/RogueLifecycle.tw)** — in-progress
-  view. Currently a placeholder that renders the floor-plan
-  minimap (via [`<<rogueMinimap>>`](../passages/rogue/widgetRogueMinimap.tw))
-  and offers debug "Win" / "Lose" / "Abandon" links so the
-  lifecycle can be exercised end-to-end. The actual room-by-room
-  rendering is a follow-up pass once the rogue room renderer
-  lands.
+  view. Renders the player's current room
+  ([`<<rogueCurrentRoom>>`](../passages/rogue/widgetRogueCurrentRoom.tw):
+  name, furniture, stash annotations, exit nav links) above an
+  SVG floor-plan map
+  ([`<<rogueMinimap>>`](../passages/rogue/widgetRogueMinimap.tw):
+  labeled squares with edges, current/spawn/boss highlights).
+  Debug "Win" / "Lose" / "Abandon" links exercise the lifecycle
+  end-to-end; the room-by-room investigation logic is a follow-up
+  pass.
 * **[RogueEnd](../passages/rogue/RogueLifecycle.tw)** — result
-  screen. `setup.Run.endRogue(success)` clears `$run` and pays out
+  screen. `setup.Rogue.endRogue(success)` clears `$run` and pays out
   echoes (5 base + 5 if successful + 1 per active modifier). The
   player can route to the meta-shop or back to the city.
 * **[RogueMetaShop](../passages/rogue/RogueLifecycle.tw)** —
@@ -52,7 +55,7 @@ a failure before rolling fresh.
 
 Run-level state lives on `$run` and meta-progression state on
 `$echoes` / `$runsStarted`. Both are owned by
-[`setup.Run`](../passages/rogue/RunController.tw).
+[`setup.Rogue`](../passages/rogue/RogueController.tw).
 
 ```
 $run = {
@@ -76,12 +79,15 @@ generator uses an internal Mulberry32 PRNG, so the result is
 independent of the global `Math.random` patching that tests
 install for other purposes.
 
-The plan is a star topology — `room_0` is always the hallway
-backbone; every other room links directly to it. Every room is
-reachable; every stash kind (cursed item, rescue clue, tarot,
-monkey paw) is placed on a real non-hallway room; the ghost
-spawn room is non-hallway. Optionally one room is flagged as
-the boss-room slot (`includeBoss: true`).
+The plan is a random spanning tree rooted at the hallway
+(`room_0`); each non-hallway room attaches to one already-placed
+room, so layouts vary per seed but stay fully connected. Every
+stash kind (cursed item, rescue clue, tarot, monkey paw) is
+placed on a real non-hallway room and pinned to a specific
+furniture suffix where the template carries one
+(`stashFurniture[kind]`); the ghost spawn room is non-hallway.
+Optionally one room is flagged as the boss-room slot
+(`includeBoss: true`).
 
 ```
 plan = {
@@ -113,25 +119,26 @@ Modifiers in the catalogue today: Power Outage, Whisper Network
 (locked tools), Skinwalker, Heatwave, Time Loop, Marked
 (weight 0). Effect hooks land alongside the gameplay
 controllers each modifier touches; querying the active deck
-goes through `setup.Run.hasModifier(id)`.
+goes through `setup.Rogue.hasModifier(id)`.
 
 ## Echoes (meta-progression)
 
-Earned at run end via `setup.Run.addEchoes(n)` or
-`setup.Run.endRogue(success)` (which composes the standard
-payout). Spent through `setup.Run.spendEchoes(n)` (returns
+Earned at run end via `setup.Rogue.addEchoes(n)` or
+`setup.Rogue.endRogue(success)` (which composes the standard
+payout). Spent through `setup.Rogue.spendEchoes(n)` (returns
 `false` if the player can't afford it; no partial deductions).
-`setup.Run.canAffordEchoes(n)` is the predicate the storefront
+`setup.Rogue.canAffordEchoes(n)` is the predicate the storefront
 links use to decide whether to render an unlock as active.
 
 ## File map
 
-* [RunController.tw](../passages/rogue/RunController.tw) — `setup.Run`: lifecycle, accessors, echoes, composition (`startRogue`/`endRogue`), and `minimapData()`.
-* [FloorPlanController.tw](../passages/rogue/FloorPlanController.tw) — `setup.FloorPlan`: seeded generator, neighbor / connectivity helpers.
+* [RogueController.tw](../passages/rogue/RogueController.tw) — `setup.Rogue`: lifecycle, accessors, echoes, composition (`startRogue`/`endRogue`), `minimapData()` / `minimapSvg()` / `currentRoomData()`, and current-room nav (`currentRoomId` / `setCurrentRoom`).
+* [FloorPlanController.tw](../passages/rogue/FloorPlanController.tw) — `setup.FloorPlan`: seeded generator, neighbour / connectivity helpers, BFS layout for the minimap.
 * [ModifiersController.tw](../passages/rogue/ModifiersController.tw) — `setup.Modifiers`: catalogue + weighted draft.
 * [TemplatesController.tw](../passages/rogue/TemplatesController.tw) — `setup.Templates`: room-template metadata + slot-id helpers.
 * [RogueLifecycle.tw](../passages/rogue/RogueLifecycle.tw) — `RogueStart`, `RogueRun`, `RogueEnd`, `RogueMetaShop` passages.
-* [widgetRogueMinimap.tw](../passages/rogue/widgetRogueMinimap.tw) — `<<rogueMinimap>>` floor-plan view.
+* [widgetRogueMinimap.tw](../passages/rogue/widgetRogueMinimap.tw) — `<<rogueMinimap>>` SVG floor-plan view.
+* [widgetRogueCurrentRoom.tw](../passages/rogue/widgetRogueCurrentRoom.tw) — `<<rogueCurrentRoom>>` current-room view + adjacent-room nav links.
 
 ## Save migration
 
@@ -144,7 +151,7 @@ last written under.
 
 ## Tests
 
-* [run-controller.spec.js](../tests/run-controller.spec.js) — `setup.Run` lifecycle + accessors.
+* [rogue-controller.spec.js](../tests/rogue-controller.spec.js) — `setup.Rogue` lifecycle + accessors.
 * [floor-plan.spec.js](../tests/floor-plan.spec.js) — generator determinism, connectivity, stash invariants, 200-seed fuzz.
 * [modifiers.spec.js](../tests/modifiers.spec.js) — catalogue + draft determinism.
 * [templates.spec.js](../tests/templates.spec.js) — template catalogue + slot-id helpers.

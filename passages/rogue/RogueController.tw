@@ -1,4 +1,4 @@
-:: RunController [script]
+:: RogueController [script]
 /*
  * Rogue-mode run lifecycle controller.
  *
@@ -30,7 +30,7 @@
  * so other controllers can query through this API rather than
  * reaching into State directly.
  */
-setup.Run = (function () {
+setup.Rogue = (function () {
 	var OWNED_VARS = Object.freeze(['run', 'echoes', 'runsStarted']);
 
 	function sv() { return State.variables; }
@@ -179,8 +179,9 @@ setup.Run = (function () {
 
 	/* View-layer summary of the active run's floor plan, denormalised
 	   for the minimap / room-list widget. Returns one record per
-	   room with its template label, spawn/boss flags, and any stash
-	   kinds living on it; null when no run is active. */
+	   room with its template label, spawn/boss flags, any stash kinds
+	   living on it, the BFS position for map layout, and the list of
+	   neighbouring room ids. Null when no run is active. */
 	function minimapData() {
 		var run = active();
 		if (!run || !run.floorplan) return null;
@@ -192,6 +193,7 @@ setup.Run = (function () {
 			if (!stashByRoom[room]) stashByRoom[room] = [];
 			stashByRoom[room].push(kind);
 		});
+		var positions = setup.FloorPlan.layout(fp);
 		return fp.rooms.map(function (r) {
 			var t = (setup.Templates && setup.Templates.byId)
 				? setup.Templates.byId(r.template) : null;
@@ -201,9 +203,82 @@ setup.Run = (function () {
 				label: t ? t.label : r.template,
 				isSpawn: r.id === fp.spawnRoomId,
 				isBoss: r.id === fp.bossRoomId,
-				stashKinds: stashByRoom[r.id] || []
+				stashKinds: stashByRoom[r.id] || [],
+				position: positions[r.id] || { col: 0, row: 0 },
+				connections: setup.FloorPlan.neighborsOf(fp, r.id)
 			};
 		});
+	}
+
+	/* Build the rogue minimap as an inline SVG: one labeled rect per
+	   room, one line per edge. Layout comes from setup.FloorPlan.layout
+	   (BFS depth -> column, sibling order -> row). The current room is
+	   tagged for highlighting; spawn/boss rooms get marker classes the
+	   stylesheet tints. Returns an empty string when no run is active. */
+	function minimapSvg() {
+		var run = active();
+		if (!run || !run.floorplan) return '';
+		var fp = run.floorplan;
+		var positions = setup.FloorPlan.layout(fp);
+		var CELL_W = 110, CELL_H = 70, ROOM_W = 90, ROOM_H = 50, PAD = 10;
+
+		// Canvas dims: span the right-most col and the deepest row used.
+		var maxCol = 0, maxRow = 0;
+		Object.keys(positions).forEach(function (id) {
+			if (positions[id].col > maxCol) maxCol = positions[id].col;
+			if (positions[id].row > maxRow) maxRow = positions[id].row;
+		});
+		var w = (maxCol + 1) * CELL_W + PAD * 2;
+		var h = (maxRow + 1) * CELL_H + PAD * 2;
+
+		function center(id) {
+			var p = positions[id] || { col: 0, row: 0 };
+			return {
+				x: PAD + p.col * CELL_W + ROOM_W / 2,
+				y: PAD + p.row * CELL_H + ROOM_H / 2
+			};
+		}
+		function escapeXml(s) {
+			return String(s)
+				.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+				.replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+		}
+
+		// Edges first so rooms render on top of the lines.
+		var seen = {};
+		var lines = [];
+		(fp.edges || []).forEach(function (e) {
+			var key = e[0] < e[1] ? e[0] + '--' + e[1] : e[1] + '--' + e[0];
+			if (seen[key]) return;
+			seen[key] = true;
+			var a = center(e[0]), b = center(e[1]);
+			lines.push('<line class="rogue-minimap-edge" x1="' + a.x +
+				'" y1="' + a.y + '" x2="' + b.x + '" y2="' + b.y + '"/>');
+		});
+
+		// Rooms.
+		var currentId = run.currentRoomId || 'room_0';
+		var nodes = fp.rooms.map(function (r) {
+			var p = positions[r.id] || { col: 0, row: 0 };
+			var x = PAD + p.col * CELL_W;
+			var y = PAD + p.row * CELL_H;
+			var t = setup.Templates ? setup.Templates.byId(r.template) : null;
+			var label = t ? t.label : r.template;
+			var classes = ['rogue-minimap-room'];
+			if (r.id === currentId)        classes.push('rogue-minimap-current');
+			if (r.id === fp.spawnRoomId)   classes.push('rogue-minimap-spawn');
+			if (r.id === fp.bossRoomId)    classes.push('rogue-minimap-boss');
+			return '<g class="' + classes.join(' ') + '" data-room="' + escapeXml(r.id) + '">' +
+				'<rect x="' + x + '" y="' + y + '" width="' + ROOM_W +
+				'" height="' + ROOM_H + '" rx="4" ry="4"/>' +
+				'<text x="' + (x + ROOM_W / 2) + '" y="' + (y + ROOM_H / 2 + 4) +
+				'" text-anchor="middle">' + escapeXml(label) + '</text>' +
+				'</g>';
+		});
+
+		return '<svg class="rogue-minimap-svg" width="' + w + '" height="' + h +
+			'" xmlns="http://www.w3.org/2000/svg">' +
+			lines.join('') + nodes.join('') + '</svg>';
 	}
 
 	/* Humanise a stash kind ("cursedItem" -> "Cursed item"). Inline
@@ -343,6 +418,7 @@ setup.Run = (function () {
 		startRogue: startRogue,
 		endRogue: endRogue,
 		minimapData: minimapData,
+		minimapSvg: minimapSvg,
 		currentRoomData: currentRoomData
 	};
 })();

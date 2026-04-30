@@ -520,9 +520,11 @@ body.city {
 }
 
 .backbtn a {
+	display: inline-block;
 	border: 3px solid black;
 	border-radius: 5px;
 	padding: 10px;
+	margin: 8px 4px;
 	background-color: rgba(255, 255, 255, 0.9);
 	font-size: 1.2em;
 	color: var(--color-back-blue);
@@ -1137,4 +1139,40 @@ body.city {
 html[data-debug-view] .debug[data-name][data-type]::before,
 html[data-debug-view] .debug[data-name][data-type].nonvoid::after {
 	content: none !important;
+}
+
+/* ===== Rogue minimap ===== */
+.rogue-minimap-svg {
+	display: block;
+	margin: 8px 0;
+	max-width: 100%;
+	height: auto;
+}
+.rogue-minimap-edge {
+	stroke: #777;
+	stroke-width: 2;
+}
+.rogue-minimap-room rect {
+	fill: #2a2a2a;
+	stroke: #888;
+	stroke-width: 2;
+}
+.rogue-minimap-room text {
+	fill: #cdcdcd;
+	font-size: 12px;
+	font-family: 'Cormorant', serif;
+	pointer-events: none;
+}
+.rogue-minimap-room.rogue-minimap-spawn rect {
+	stroke: #b33;
+	stroke-width: 3;
+}
+.rogue-minimap-room.rogue-minimap-boss rect {
+	stroke: gold;
+	stroke-width: 3;
+}
+.rogue-minimap-room.rogue-minimap-current rect {
+	fill: #444;
+	stroke: var(--color-nav-blue);
+	stroke-width: 3;
 }

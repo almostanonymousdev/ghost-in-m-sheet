@@ -431,7 +431,7 @@ test.describe('Save/load round-trip', () => {
     // session. Catches any subtle scrub-on-save behavior that
     // applySaveDefaults can't reproduce on its own.
     await goToPassage(page, 'CityMap');
-    await page.evaluate(() => SugarCube.setup.Run.startRogue({ seed: 12345 }));
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 12345 }));
     await commitToSave(page);
 
     const blob = await page.evaluate(() => SugarCube.Save.serialize());
@@ -456,10 +456,10 @@ test.describe('Save/load round-trip', () => {
     // attempted and how many echoes the player has banked.
     await goToPassage(page, 'CityMap');
     await page.evaluate(() => {
-      SugarCube.setup.Run.startRogue({ seed: 1 });
-      SugarCube.setup.Run.endRogue(true);
-      SugarCube.setup.Run.startRogue({ seed: 2 });
-      SugarCube.setup.Run.endRogue(false);
+      SugarCube.setup.Rogue.startRogue({ seed: 1 });
+      SugarCube.setup.Rogue.endRogue(true);
+      SugarCube.setup.Rogue.startRogue({ seed: 2 });
+      SugarCube.setup.Rogue.endRogue(false);
     });
     await commitToSave(page);
 
