@@ -171,6 +171,68 @@ test.describe('E2E: rogue run lifecycle', () => {
       .toHaveCount(hallwayFurniture.length);
   });
 
+  test('furniture row no longer shows stash kind labels (no spoilers)', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    // Walk into the room that holds the cursed-item stash so the row
+    // would have rendered a "Cursed item" label under the old layout.
+    const fp = await getVar(page, 'run').then(r => r.floorplan);
+    const cursedRoom = fp.stashes.cursedItem;
+    await page.evaluate(id => SugarCube.setup.Rogue.setCurrentRoom(id), cursedRoom);
+    await goToPassage(page, 'RogueRun');
+
+    // The deprecated label class should not appear in the DOM.
+    await expect(page.locator('.rogue-furniture-stash')).toHaveCount(0);
+    // Plain-text spoiler check too.
+    await expect(
+      page.locator('.rogue-run-furniture').getByText(/Cursed item/i)
+    ).toHaveCount(0);
+  });
+
+  test('clicking the stashed furniture finds the item and marks it collected', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+
+    // Place the player in the room+slot the cursed item is hidden in.
+    const fp = await getVar(page, 'run').then(r => r.floorplan);
+    const cursedRoom = fp.stashes.cursedItem;
+    const cursedFurniture = fp.stashFurniture.cursedItem;
+    expect(cursedFurniture).toBeDefined();
+    await page.evaluate(id => SugarCube.setup.Rogue.setCurrentRoom(id), cursedRoom);
+    await goToPassage(page, 'RogueRun');
+
+    // Click the cursed furniture slot. Its label is humanised; pull
+    // it from the controller so we click the right one.
+    const fLabel = await callSetup(page,
+      `setup.Rogue.currentRoomData().furniture.find(f => f.suffix === "${cursedFurniture}").label`);
+    await page.locator('.rogue-furniture-item')
+      .filter({ hasText: fLabel })
+      .first()
+      .click();
+    await page.waitForFunction(() => SugarCube.State.passage === 'RogueFurnitureSearch');
+    await expect(
+      page.locator('.passage').getByText(/cursed item/i)
+    ).toBeVisible();
+
+    // takeStash should have been called.
+    expect(await callSetup(page, 'setup.Rogue.hasCollected("cursedItem")')).toBe(true);
+
+    // Walking back to the same slot should now find nothing.
+    await clickLink(page, 'Back', 'RogueRun');
+    await page.locator('.rogue-furniture-item')
+      .filter({ hasText: fLabel })
+      .first()
+      .click();
+    await page.waitForFunction(() => SugarCube.State.passage === 'RogueFurnitureSearch');
+    await expect(
+      page.locator('.passage').getByText(/nothing of note/i)
+    ).toBeVisible();
+  });
+
   test('two consecutive runs increment runsStarted across the lifecycle', async () => {
     test.setTimeout(20_000);
 

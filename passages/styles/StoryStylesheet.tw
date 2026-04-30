@@ -1164,7 +1164,7 @@ html[data-debug-view] .debug[data-name][data-type].nonvoid::after {
 	display: flex;
 	flex-direction: column;
 	box-sizing: border-box;
-	padding: 1em;
+	padding: 1em 2.5em;
 	gap: 0.5em;
 }
 body.ui-bar-stowed .rogue-run-layout {

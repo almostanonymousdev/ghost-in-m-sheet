@@ -56,7 +56,14 @@ setup.Rogue = (function () {
 			objective: opts.objective || 'identify',
 			// Player starts in the hallway. Nav links in RogueRun
 			// update this via setCurrentRoom() before re-rendering.
-			currentRoomId: 'room_0'
+			currentRoomId: 'room_0',
+			// Furniture-search state. searchedFurniture is the
+			// {room, suffix} pair the player just clicked, read by
+			// RogueFurnitureSearch. collectedStashes tracks which
+			// stash kinds have already been picked up this run, so
+			// repeat searches at the same spot find nothing.
+			searchedFurniture: null,
+			collectedStashes: []
 		};
 		return sv().run;
 	}
@@ -84,6 +91,58 @@ setup.Rogue = (function () {
 		var run = sv().run;
 		return run ? (run.currentRoomId || 'room_0') : null;
 	}
+	/* Furniture-search bookkeeping. The RogueRun layout wraps each
+	   furniture image in a link that calls setSearchedFurniture(suffix)
+	   then routes to RogueFurnitureSearch, which reads the {room,
+	   suffix} pair via searchedFurniture() and looks up what (if
+	   anything) is hidden there with stashAt(). takeStash() marks a
+	   kind as collected so a follow-up search of the same spot finds
+	   nothing. */
+	function setSearchedFurniture(suffix) {
+		var run = sv().run;
+		if (!run) return;
+		run.searchedFurniture = { room: run.currentRoomId || 'room_0', suffix: suffix };
+	}
+	function searchedFurniture() {
+		var run = sv().run;
+		return run ? (run.searchedFurniture || null) : null;
+	}
+	function collectedStashes() {
+		var run = sv().run;
+		return run && Array.isArray(run.collectedStashes) ? run.collectedStashes.slice() : [];
+	}
+	function hasCollected(kind) {
+		var run = sv().run;
+		return !!(run && Array.isArray(run.collectedStashes)
+			&& run.collectedStashes.indexOf(kind) !== -1);
+	}
+	function takeStash(kind) {
+		var run = sv().run;
+		if (!run || !kind) return false;
+		if (!Array.isArray(run.collectedStashes)) run.collectedStashes = [];
+		if (run.collectedStashes.indexOf(kind) !== -1) return false;
+		run.collectedStashes.push(kind);
+		return true;
+	}
+	/* Look up which (uncollected) stash kind is hidden in `roomId`'s
+	   `suffix` furniture slot, or null if nothing is there. */
+	function stashAt(roomId, suffix) {
+		var run = sv().run;
+		if (!run || !run.floorplan) return null;
+		var fp = run.floorplan;
+		var stashes = fp.stashes || {};
+		var furn = fp.stashFurniture || {};
+		var collected = Array.isArray(run.collectedStashes) ? run.collectedStashes : [];
+		var keys = Object.keys(stashes);
+		for (var i = 0; i < keys.length; i++) {
+			var k = keys[i];
+			if (stashes[k] === roomId && furn[k] === suffix && collected.indexOf(k) === -1) {
+				return k;
+			}
+		}
+		return null;
+	}
+
 	/* Move the player into `roomId`. No-op when no run is active or
 	   the id isn't on the current floor plan; nav links call this
 	   before re-entering RogueRun. */
@@ -321,11 +380,16 @@ setup.Rogue = (function () {
 		var t = setup.Templates ? setup.Templates.byId(room.template) : null;
 		var stashFurn = fp.stashFurniture || {};
 
-		// Furniture entries with optional stash annotations.
+		// Furniture entries with optional stash annotations. Collected
+		// stash kinds are filtered out so a re-search of the same
+		// slot reports nothing.
+		var collected = Array.isArray(run.collectedStashes) ? run.collectedStashes : [];
 		var furniture = (t && Array.isArray(t.furniture) ? t.furniture : []).map(function (f) {
 			var stashKind = null;
 			Object.keys(fp.stashes || {}).forEach(function (k) {
-				if (fp.stashes[k] === roomId && stashFurn[k] === f) stashKind = k;
+				if (fp.stashes[k] === roomId && stashFurn[k] === f && collected.indexOf(k) === -1) {
+					stashKind = k;
+				}
 			});
 			return {
 				suffix: f,
@@ -412,6 +476,12 @@ setup.Rogue = (function () {
 		field: field,
 		currentRoomId: currentRoomId,
 		setCurrentRoom: setCurrentRoom,
+		setSearchedFurniture: setSearchedFurniture,
+		searchedFurniture: searchedFurniture,
+		stashAt: stashAt,
+		takeStash: takeStash,
+		hasCollected: hasCollected,
+		collectedStashes: collectedStashes,
 		echoes: echoes,
 		addEchoes: addEchoes,
 		spendEchoes: spendEchoes,
