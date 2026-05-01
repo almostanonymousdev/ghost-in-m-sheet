@@ -1,7 +1,0 @@
-:: StealClothesEvent [nobr] {"position":"4025,950","size":"100,100"}
-<<set _chanceToSteal to random(1,100)>>
-<<if _chanceToSteal lte setup.HauntedHouses.stealChance()>>
-	<<if setup.HauntedHouses.canStealAnyItem()>>
-		<<set _stealClothesTriggered = true>>
-	<<goto "StealClothes">><</if>>
-<</if>>

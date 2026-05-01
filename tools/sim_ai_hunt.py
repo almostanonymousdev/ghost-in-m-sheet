@@ -351,7 +351,6 @@ def load_game_data() -> GameData:
     story_script = _read("StoryScript.tw")
     story_init = _read("mc/GameInit.tw")
     hh_controller = _read("haunted_houses/HauntedHousesController.tw")
-    check_hunt = _read("haunted_houses/hunt/CheckHuntStart.tw")
     hide_tw = _read("haunted_houses/general/Hide.tw")
     run_tw = _read("haunted_houses/general/RunFast.tw")
     temp_tw = _read("haunted_houses/tools/TemperatureHigh.tw")
@@ -387,9 +386,10 @@ def load_game_data() -> GameData:
         r"shuffleGhostRoom:[^}]*?Math\.random\(\)\s*<\s*([\d.]+)",
         hh_controller)
 
-    # CheckHuntStart.tw: _huntThreshold to N + setup.HauntConditions...
-    hunt_base_threshold = int(_find_num(r"_huntThreshold\s+to\s+(\d+)",
-                                         check_hunt))
+    # HauntedHousesController shouldStartRandomHunt(): threshold base + HauntConditions bonus
+    hunt_base_threshold = int(_find_num(
+        r"shouldStartRandomHunt:[^}]*?var\s+threshold\s*=\s*(\d+)",
+        hh_controller))
 
     # Hide.tw: `if _checkH lte 50` -> success (swap: player lucky)
     hide_pct = _find_num(r"_checkH\s+lte\s+(\d+)", hide_tw) / 100.0

@@ -1,65 +1,27 @@
 :: PassageDone {"position":"200,100","size":"100,100"}
 <<applyRoomLightClass>>
 <<include "DeliveryActiveIcon">>
-<<run setup.Wardrobe.refreshAggregateStates()>>
-<<include "Mimic">>
-<<run setup.HauntedHouses.shuffleGhostRoom()>>
 <<if passage() is "Wardrobe">>
-<<include "Piercing">>
-<<include "WardrobeSlots">>
+	<<include "Piercing">>
+	<<include "WardrobeSlots">>
 <</if>>
 
 <<if passage() eq "Mirror" and not setup.Tick.twinsEventFired()>>
-<<if setup.Gui.mirrorMakeupHasWidth()>>
-	<<replace "#mirrorImage">><<image setup.Gui.mirrorMakeupImagePath() { width: "70%" }>>
-	<</replace>>
-<<else>>
-	<<replace "#mirrorImage">><<image setup.Gui.mirrorMakeupImagePath()>>
-	<</replace>>
-<</if>>
+	<<if setup.Gui.mirrorMakeupHasWidth()>>
+		<<replace "#mirrorImage">><<image setup.Gui.mirrorMakeupImagePath() { width: "70%" }>><</replace>>
+	<<else>>
+		<<replace "#mirrorImage">><<image setup.Gui.mirrorMakeupImagePath()>><</replace>>
+	<</if>>
 <</if>>
 
-<<if setup.Time.isMorningPlus() and setup.Ghosts.isHunting()>>
-<<goto "HuntOverTime">>
+<<set _done to setup.Tick.onPassageDone()>>
+<<if _done.goto>>
+	<<goto _done.goto>>
 <</if>>
-
-<<if not setup.Migrations.update22Applied()>>
-<<include "Update1">>
-<</if>>
-
-<<if not setup.Migrations.update0909Applied()>>
-<<include "Update3">>
-<</if>>
-
-<<if not setup.Migrations.update2707Applied()>>
-<<include "Update2">>
-<</if>>
-
-<<run setup.Companion.tickAllCompanionProgression()>>
-
-<<if setup.Tick.activeCompanionShouldLeaveAfterEvent()>>
-<<goto "CompanionLeaving">>
-<</if>>
-
-<<run setup.Migrations.ensureUnderwearMemory()>>
-
-<<run setup.Tick.initTick()>>
 
 <<set _eventTriggered = false>>
 <<set _stealClothesTriggered = false>>
 
-<<run setup.Tick.tickHuntTimer()>>
-<<run setup.Tick.tickRescueQuestExpiry()>>
-<<run setup.Tick.tickCursedHuntTimer()>>
-<<run setup.Migrations.migrateCompanionPlanTimes()>>
-<<run setup.Tick.applyDetectorHighlights()>>
-
-<<run setup.Mc.ensurePossession()>>
-
-<<if setup.Tick.applyChokerLustFloor()>>
-<<updatemeter 'mclust' `setup.Mc.lust().toFixed(2) / 100`>>
-<</if>>
-
-<<if not setup.Gui.timerToolsInitialized()>>
-<<run setup.Gui.refreshToolTimer()>>
+<<if _done.lustChanged>>
+	<<updatemeter 'mclust' `setup.Mc.lust().toFixed(2) / 100`>>
 <</if>>

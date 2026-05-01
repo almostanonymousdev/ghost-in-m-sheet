@@ -206,6 +206,22 @@ setup.HauntedHouses = (function () {
 			setup.Ghosts.setHuntMode(setup.Ghosts.HuntMode.POSSESSED);
 		},
 
+		/* Common end-of-hunt cleanup shared by HuntEnd, HuntOverSanity,
+		   HuntOverExhaustion, HuntOverTime, HuntOverManual. Bundles the
+		   four-call boilerplate every hunt-over passage was inlining.
+		   Does NOT call endHunt() -- callers vary in whether endHunt
+		   should fire at passage load (HuntOverSanity) or only when the
+		   ghost-catch branch resolves (HuntEnd). Pass { loseStolen: true }
+		   to nuke any stolen-clothing flags. */
+		cleanupAfterHunt: function (opts) {
+			opts = opts || {};
+			this.resetToolTimers();
+			setup.Companion.clearBlakeCursedItem();
+			setup.Companion.resetHuntState();
+			setup.Companion.resetAliceWorkIfNeeded();
+			if (opts.loseStolen) setup.Wardrobe.loseAllStolen();
+		},
+
 		// --- Which house are we in? -----------------------------
 		// Predicates resolve against the single $hauntedHouse id.
 		// isRealHouse* derives from HOUSE_CONFIG.isRealHouse (only
@@ -270,6 +286,24 @@ setup.HauntedHouses = (function () {
 		canStartRandomHunt: function () {
 			return !setup.Ghosts.isHuntActivated()
 				&& setup.Ghosts.elapsedTimeHunt() >= setup.Ghosts.huntTimeRemain();
+		},
+		/* :: CheckHuntStart entry: gates random hunt start by the
+		   hunt-conditions threshold + ghost canHunt check. Returns
+		   true when the passage should <<goto "GhostHuntEvent">>. */
+		shouldStartRandomHunt: function () {
+			if (!this.canStartRandomHunt()) return false;
+			var threshold = 6 + setup.HauntConditions.snapshot().huntChanceBonus;
+			if (Math.floor(Math.random() * 101) > threshold) return false;
+			var g = setup.Ghosts.active();
+			return !!(g && g.canHunt(setup.Mc.mc()));
+		},
+		/* :: StealClothesEvent entry: rolls the steal chance and gates
+		   on whether anything is actually stealable. Returns true when
+		   the passage should <<goto "StealClothes">>. */
+		shouldTriggerSteal: function () {
+			var roll = 1 + Math.floor(Math.random() * 100);
+			if (roll > this.stealChance()) return false;
+			return this.canStealAnyItem();
 		},
 
 		// --- NudityEvent branch helpers -------------------------

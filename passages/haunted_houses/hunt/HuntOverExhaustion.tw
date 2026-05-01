@@ -19,11 +19,8 @@
  * with nothing" is hidden whenever the gate forces a covering grab. */
 <<run setup.Ghosts.markActiveHuntEvent()>>
 <<run setup.Ghosts.fireActiveHuntEnd()>>
-<<run setup.HauntedHouses.resetToolTimers()>>
 <<run setup.HauntedHouses.endHunt()>>
-<<run setup.Companion.clearBlakeCursedItem()>>
-<<run setup.Companion.resetHuntState()>>
-<<run setup.Companion.resetAliceWorkIfNeeded()>>
+<<run setup.HauntedHouses.cleanupAfterHunt()>>
 
 <<set _bottomless to setup.HauntedHouses.isBottomless()>>
 <<set _topBare    to setup.HauntedHouses.isTopBare()>>

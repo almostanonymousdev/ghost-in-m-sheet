@@ -1,4 +1,0 @@
-:: Mimic [nobr] {"position":"825,2450","size":"100,100"}
-<<if setup.Ghosts.isMimicHunt() and setup.Ghosts.isHunting()>>
-	<<run setup.Posession.rollMimicType(setup.Ghosts.names({ exclude: ["Mimic"] }))>>
-<</if>>

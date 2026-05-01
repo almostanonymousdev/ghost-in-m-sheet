@@ -137,5 +137,4 @@
 
 	<</linkappend>>
 <</if>>
-<<if setup.Home.advanceSummoning()>><<include "ResetCooldowns">>
-<</if>>
+<<if setup.Home.advanceSummoning()>><<run setup.Tick.resetCooldowns()>><</if>>

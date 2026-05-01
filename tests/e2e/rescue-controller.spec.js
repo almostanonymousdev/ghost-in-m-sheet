@@ -140,13 +140,6 @@ test.describe('Missing Women — controller + church integration', () => {
     expect(await callSetup(page, 'setup.MissingWomen.possessedPassageFor("Nobody")')).toBeNull();
   });
 
-  test('rescuePassageFor returns correct passage for each girl', async () => {
-    for (const girl of ['Victoria', 'Jade', 'Julia', 'Nadia', 'Ash']) {
-      expect(await callSetup(page, `setup.MissingWomen.rescuePassageFor("${girl}")`))
-        .toBe('Rescue' + girl);
-    }
-  });
-
   // ── Church integration ─────────────────────────────────────────
 
   test('canStartNunQuest is true when quest is 0 and Rain not met', async () => {

@@ -2,37 +2,13 @@
 <<run setup.Ghosts.markActiveHuntEvent()>>
 <<set _hg to setup.Ghosts.active()>>
 <<if _hg and _hg.canTentacles>>
-	<<set _check to random(1,4)>>
+	<<set _check to random(0,3)>>
 	@@.mc-thoughts; For a moment, you black out. When you come to, a strange, unsettling feeling lingers -- like someone is close by. Suddenly, movements appear from the shadows, and you notice tentacles. They slowly coil around you, sliding across your skin. You try to resist, but their touches grow more insistent, keeping you captive.@@
-	<<if _check eq 1>>
-		<<video "mechanics/tentacles/1.0.mp4">>
-	<<elseif _check eq 2>>
-		<<video "mechanics/tentacles/1.1.mp4">>
-	<<elseif _check eq 3>>
-		<<video "mechanics/tentacles/1.2.mp4">>
-	<<elseif _check eq 4>>
-		<<video "mechanics/tentacles/1.3.mp4">>
-	<</if>>
+	<<video "mechanics/tentacles/1." + _check + ".mp4">>
 	@@.mc-thoughts; With each penetration, your breathing grows more uneven, waves of arousal washing over you. You let out an involuntary moan as your body begins to respond to their caresses, the tension inside you building with every second. The excitement intensifies into a pulsing desire that becomes@@ <<linkappend "@@.usebtn; harder and harder to resist.@@">>
-		<<if _check eq 1>>
-			<<video "mechanics/tentacles/2.0.mp4">>
-		<<elseif _check eq 2>>
-			<<video "mechanics/tentacles/2.1.mp4">>
-		<<elseif _check eq 3>>
-			<<video "mechanics/tentacles/2.2.mp4">>
-		<<elseif _check eq 4>>
-			<<video "mechanics/tentacles/2.3.mp4">>
-		<</if>>
+		<<video "mechanics/tentacles/2." + _check + ".mp4">>
 		The tentacles penetrate you more deeply, their movements growing bolder. You give in to them, feeling the white fluid they release flowing <<linkappend "@@.usebtn; out of you.@@">>
-			<<if _check eq 1>>
-				<<video "mechanics/tentacles/3.0.mp4">>
-			<<elseif _check eq 2>>
-				<<video "mechanics/tentacles/3.1.mp4">>
-			<<elseif _check eq 3>>
-				<<video "mechanics/tentacles/3.2.mp4">>
-			<<elseif _check eq 4>>
-				<<video "mechanics/tentacles/3.3.mp4">>
-			<</if>>
+			<<video "mechanics/tentacles/3." + _check + ".mp4">>
 			The sensations drive you wild -- hot waves of pleasure surge through your body, making you lose control. A bright, almost unbearable wave of ecstasy ignites within you, and soon your consciousness fades,
 			<<huntEndExit "plunging you into darkness">>
 		<</linkappend>>
@@ -40,27 +16,10 @@
 
 <<elseif setup.HauntedHouses.isIronclad()>>
 	<<set _randomHuntEven to random(1,4)>>
-	<<if _randomHuntEven eq 1>>
-		<<video "scenes/prison/hunt1.0.mp4">>
-	<<elseif _randomHuntEven eq 2>>
-		<<video "scenes/prison/hunt2.0.mp4">>
-	<<elseif _randomHuntEven eq 3>>
-		<<video "scenes/prison/hunt3.0.mp4">>
-	<<elseif _randomHuntEven eq 4>>
-		<<video "scenes/prison/hunt4.0.mp4">>
-	<</if>>
+	<<video "scenes/prison/hunt" + _randomHuntEven + ".0.mp4">>
 	They caught you and dragged you into a dark room. There's no strength to resist. You feel yourself losing control as the ghosts begin to do whatever they want with you. You can't fight back -- all that's left is to
 	<<linkappend "@@.usebtn; submit@@">>
-		<<if _randomHuntEven eq 1>>
-			<<video "scenes/prison/hunt1.1.mp4">>
-		<<elseif _randomHuntEven eq 2>>
-			<<video "scenes/prison/hunt2.1.mp4">>
-		<<elseif _randomHuntEven eq 3>>
-			<<video "scenes/prison/hunt3.1.mp4">>
-		<<elseif _randomHuntEven eq 4>>
-			<<video "scenes/prison/hunt4.1.mp4">>
-		<</if>>
-
+		<<video "scenes/prison/hunt" + _randomHuntEven + ".1.mp4">>
 		They keep fucking your holes until they cum all over your body. After a wild fuck, everything around you slowly disappears  and you @@.usebtn;[[black out|Sleep]]@@<br>
 	<</linkappend>>
 
@@ -83,13 +42,8 @@
 		<<if setup.Wardrobe.jeansWorn()>>
 			<<video "mechanics/hunting/1.1.mp4">>
 			Ghost put you on the bed and started fucking your huge tits. After a while, having played enough with them, <<linkappend "@@.usebtn; it fucked you@@">>
-				<<set _checkScene to random (1,2)>>
-				<<if _checkScene eq 1>>
-					<<video "mechanics/hunting/jeans1.1.mp4">>
-				<</if>>
-				<<if _checkScene eq 2>>
-					<<video "mechanics/hunting/jeans1.mp4">>
-				<</if>>
+				<<set _jeansFinale to ["mechanics/hunting/jeans1.1.mp4", "mechanics/hunting/jeans1.mp4"]>>
+				<<randomVideoFromList _jeansFinale>>
 				&emsp;&emsp; Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 				Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
 				Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
@@ -99,18 +53,7 @@
 			<<video "mechanics/hunting/shorts1.mp4">>
 			The ghost has caught you, and <<linkappend "@@.usebtn; is dragging you away@@">>
 				<<set _check to random(1,4)>>
-				<<if _check eq 1>>
-					<<video "mechanics/hunting/shorts1.1.mp4">>
-				<</if>>
-				<<if _check eq 2>>
-					<<video "mechanics/hunting/shorts1.2.mp4">>
-				<</if>>
-				<<if _check eq 3>>
-					<<video "mechanics/hunting/shorts1.3.mp4">>
-				<</if>>
-				<<if _check eq 4>>
-					<<video "mechanics/hunting/shorts1.4.mp4">>
-				<</if>>
+				<<video "mechanics/hunting/shorts1." + _check + ".mp4">>
 				&emsp;&emsp; The ghost started fucking you. Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 				Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
 				Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
@@ -123,25 +66,12 @@
 				<<video "mechanics/hunting/skirt1.mp4">>
 				The ghost has caught you, and <<linkappend "@@.usebtn; is dragging you away@@">>
 					<<set _checkScene to random(1,4)>>
-					<<if _checkScene eq 1>>
-						<<video "mechanics/hunting/skirt1.1.mp4">>
-					<</if>>
-					<<if _checkScene eq 2>>
-						<<video "mechanics/hunting/skirt1.2.mp4">>
-					<</if>>
-					<<if _checkScene eq 3>>
-						<<video "mechanics/hunting/skirt1.3.mp4">>
-					<</if>>
-					<<if _checkScene eq 4>>
-						<<video "mechanics/hunting/skirt1.4.mp4">>
-					<</if>>
+					<<video "mechanics/hunting/skirt1." + _checkScene + ".mp4">>
 					&emsp;&emsp; The ghost started fucking you. Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 					Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
 					Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
 				<</linkappend>>
-			<</if>>
-
-			<<if _check eq 2>>
+			<<elseif _check eq 2>>
 				<<video "mechanics/hunting/skirt2.mp4">>
 				It put you on your knees and started fucking your throat. But the ghost didn't stop there, <<linkappend "@@.usebtn; it needed more@@">>
 					<<video "mechanics/hunting/skirt2.1.mp4">>
@@ -149,12 +79,9 @@
 					Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
 					Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
 				<</linkappend>>
-			<</if>>
-
-			<<if _check eq 3>>
+			<<elseif _check eq 3>>
 				<<video "mechanics/hunting/skirt3.mp4">>
 				It wasn't even just one ghost, but you didn't care. They fucked you and you liked it. <<linkappend "@@.usebtn; This continued for some time@@">>
-
 					<<video "mechanics/hunting/skirt4.mp4">>
 					&emsp;&emsp;Each touch sent shivers of pleasure throughout your body.
 					Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
@@ -167,33 +94,16 @@
 					<<video "mechanics/hunting/underwear1.mp4">>
 					&emsp;&emsp;It put you on your knees and started fucking your throat. But the ghost didn't stop there, <<linkappend "@@.usebtn; it needed more@@">>
 						<<set _checkScene to random(1,2)>>
-						<<if _checkScene eq 1>>
-							<<video "mechanics/hunting/underwear1.1.mp4">>
-						<</if>>
-						<<if _checkScene eq 2>>
-							<<video "mechanics/hunting/underwear1.2.mp4">>
-						<</if>>
+						<<video "mechanics/hunting/underwear1." + _checkScene + ".mp4">>
 						&emsp;&emsp; The ghost started fucking you. Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 						Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
 						Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
 					<</linkappend>>
-				<</if>>
-				<<if _check eq 2>>
+				<<elseif _check eq 2>>
 					<<video "mechanics/hunting/underwear2.mp4">>
 					&emsp;&emsp;It put you on your knees and started fucking your throat. But the ghost didn't stop there, <<linkappend "@@.usebtn; it needed more@@">>
 						<<set _checkScene to random(1,4)>>
-						<<if _checkScene eq 1>>
-							<<video "mechanics/hunting/underwear2.1.mp4">>
-						<</if>>
-						<<if _checkScene eq 2>>
-							<<video "mechanics/hunting/underwear2.2.mp4">>
-						<</if>>
-						<<if _checkScene eq 3>>
-							<<video "mechanics/hunting/underwear2.3.mp4">>
-						<</if>>
-						<<if _checkScene eq 4>>
-							<<video "mechanics/hunting/underwear2.4.mp4">>
-						<</if>>
+						<<video "mechanics/hunting/underwear2." + _checkScene + ".mp4">>
 						&emsp;&emsp; The ghost started fucking you. Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 						Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
 						Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
@@ -210,9 +120,8 @@
 						Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
 						Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
 					<</linkappend>>
-				<</if>>
 
-				<<if _check eq 2>>
+				<<elseif _check eq 2>>
 					<<video "mechanics/hunting/naked2.1.mp4">>
 					It started fucking your throat. But the ghost didn't stop there, <<linkappend "@@.usebtn; it needed more@@">>
 						<<video "mechanics/hunting/naked2.2.mp4">>
@@ -220,22 +129,10 @@
 						Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
 						Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
 					<</linkappend>>
-				<</if>>
 
-				<<if _check eq 3>>
-					<<set _checkScene to random(1,4)>>
-					<<if _checkScene eq 1>>
-						<<video "mechanics/hunting/naked3.1.mp4">>
-					<</if>>
-					<<if _checkScene eq 2>>
-						<<video "mechanics/hunting/naked3.2.mp4">>
-					<</if>>
-					<<if _checkScene eq 3>>
-						<<video "mechanics/hunting/naked4.1.mp4">>
-					<</if>>
-					<<if _checkScene eq 4>>
-						<<video "mechanics/hunting/naked4.mp4">>
-					<</if>>
+				<<elseif _check eq 3>>
+					<<set _nakedFinale to ["mechanics/hunting/naked3.1.mp4", "mechanics/hunting/naked3.2.mp4", "mechanics/hunting/naked4.1.mp4", "mechanics/hunting/naked4.mp4"]>>
+					<<randomVideoFromList _nakedFinale>>
 					It wasn't even just one ghost, but you didn't care. They fucked you and you liked it. At the end they started cumming on your pretty face, <<linkappend "@@.usebtn; covering it with their cum@@">>
 						<<video "mechanics/hunting/naked4-end.mp4">>
 						Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
@@ -253,17 +150,10 @@
 
 <</if>> /*tentacle*/
 
-<<if setup.Ghosts.hasHighPriestess()>>
-<<else>>
-	<<run setup.Companion.clearBlakeCursedItem()>>
-	<<run setup.HauntedHouses.resetToolTimers()>>
-
+<<if not setup.Ghosts.hasHighPriestess()>>
 	<<run setup.HauntedHouses.endHunt()>>
-	<<run setup.Wardrobe.loseAllStolen()>>
-
+	<<run setup.HauntedHouses.cleanupAfterHunt({ loseStolen: true })>>
 	<<done>>
 		<<addclass ".linkselector" "disabled-link">>
 	<</done>>
-	<<run setup.Companion.resetHuntState()>>
-	<<run setup.Companion.resetAliceWorkIfNeeded()>>
 <</if>>

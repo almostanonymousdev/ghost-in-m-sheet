@@ -19,7 +19,7 @@ test.describe('Missing Women — rescue girls, possession, stay', () => {
       await setupActiveQuest(page, girl);
       await setVar(page, 'holyWaterIsCollected', 1);
 
-      await goToPassage(page, 'Rescue' + girl);
+      await goToPassage(page, 'RescueScene');
       await expectCleanPassage(page);
       expect(await page.locator('.passage').textContent()).toContain(girl);
     });
@@ -29,7 +29,7 @@ test.describe('Missing Women — rescue girls, possession, stay', () => {
       await setupActiveQuest(page, girl);
       await setVar(page, 'holyWaterIsCollected', 1);
 
-      await goToPassage(page, 'Rescue' + girl);
+      await goToPassage(page, 'RescueScene');
       await expectCleanPassage(page);
       expect(await page.locator('.passage').textContent()).toContain('holywater');
     });
@@ -39,7 +39,7 @@ test.describe('Missing Women — rescue girls, possession, stay', () => {
       await setupActiveQuest(page, girl);
       await setVar(page, 'holyWaterIsCollected', 0);
 
-      await goToPassage(page, 'Rescue' + girl);
+      await goToPassage(page, 'RescueScene');
       await expectCleanPassage(page);
       expect(await page.locator('.passage').textContent()).toContain("didn't bring any holy water");
     });
@@ -108,7 +108,7 @@ test.describe('Missing Women — rescue girls, possession, stay', () => {
       await setVar(page, 'mc.corruption', 10);
       await setVar(page, 'hasQuestForRescue', 2);
 
-      await goToPassage(page, 'Rescue' + girl);
+      await goToPassage(page, 'RescueScene');
       await goToPassage(page, 'RescueStay');
       await expectCleanPassage(page);
     });
