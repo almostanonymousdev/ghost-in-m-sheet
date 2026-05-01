@@ -3,7 +3,7 @@ const { openGame, resetGame, callSetup } = require('./helpers');
 
 /* setup.Rogue.minimapData() denormalises the active run's floor plan
    for the minimap widget — one record per room with template
-   label, spawn / boss flags, and the stash kinds anchored on it.
+   label, spawn / boss flags, and the loot kinds anchored on it.
    The widget renders straight from this list, so coverage here
    is the cheaper way to lock in the structure. */
 test.describe('Rogue minimap data', () => {
@@ -38,7 +38,7 @@ test.describe('Rogue minimap data', () => {
       expect(typeof r.label).toBe('string');
       expect(typeof r.isSpawn).toBe('boolean');
       expect(typeof r.isBoss).toBe('boolean');
-      expect(Array.isArray(r.stashKinds)).toBe(true);
+      expect(Array.isArray(r.lootKinds)).toBe(true);
     });
 
     // Hallway gets the human-friendly label from setup.Templates.
@@ -68,37 +68,37 @@ test.describe('Rogue minimap data', () => {
     expect(mm.filter(r => r.isBoss).length).toBe(0);
   });
 
-  test('stash kinds attach to the rooms they were placed on', async () => {
+  test('loot kinds attach to the rooms they were placed on', async () => {
     await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
       seed: 31, floorPlanOpts: { roomCount: 6 }
     }));
     const mm = await callSetup(page, 'setup.Rogue.minimapData()');
     const fp = await callSetup(page, 'setup.Rogue.field("floorplan")');
 
-    // Each kind in fp.stashes should appear in exactly one room's
-    // stashKinds list.
-    Object.entries(fp.stashes).forEach(([kind, roomId]) => {
+    // Each kind in fp.loot should appear in exactly one room's
+    // lootKinds list.
+    Object.entries(fp.loot).forEach(([kind, roomId]) => {
       const owner = mm.find(r => r.id === roomId);
       expect(owner).toBeDefined();
-      expect(owner.stashKinds).toContain(kind);
+      expect(owner.lootKinds).toContain(kind);
     });
 
     // Conversely, only those kinds appear on rooms.
-    const seen = mm.flatMap(r => r.stashKinds.map(k => [k, r.id]));
+    const seen = mm.flatMap(r => r.lootKinds.map(k => [k, r.id]));
     seen.forEach(([k, id]) => {
-      expect(fp.stashes[k]).toBe(id);
+      expect(fp.loot[k]).toBe(id);
     });
   });
 
-  test('rooms with no stash report an empty stashKinds array', async () => {
+  test('rooms with no loot report an empty lootKinds array', async () => {
     await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
       seed: 99, floorPlanOpts: { roomCount: 9 }
     }));
     const mm = await callSetup(page, 'setup.Rogue.minimapData()');
 
-    // The hallway never carries a stash; its stashKinds should be empty.
+    // The hallway never carries loot; its lootKinds should be empty.
     const hall = mm.find(r => r.id === 'room_0');
-    expect(hall.stashKinds).toEqual([]);
+    expect(hall.lootKinds).toEqual([]);
   });
 
   test('label falls back to template id if the template is unknown', async () => {

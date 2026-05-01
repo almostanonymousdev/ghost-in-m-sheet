@@ -59,11 +59,11 @@ setup.Rogue = (function () {
 			currentRoomId: 'room_0',
 			// Furniture-search state. searchedFurniture is the
 			// {room, suffix} pair the player just clicked, read by
-			// RogueFurnitureSearch. collectedStashes tracks which
-			// stash kinds have already been picked up this run, so
+			// RogueFurnitureSearch. collectedLoot tracks which
+			// loot kinds have already been picked up this run, so
 			// repeat searches at the same spot find nothing.
 			searchedFurniture: null,
-			collectedStashes: []
+			collectedLoot: []
 		};
 		return sv().run;
 	}
@@ -95,7 +95,7 @@ setup.Rogue = (function () {
 	   furniture image in a link that calls setSearchedFurniture(suffix)
 	   then routes to RogueFurnitureSearch, which reads the {room,
 	   suffix} pair via searchedFurniture() and looks up what (if
-	   anything) is hidden there with stashAt(). takeStash() marks a
+	   anything) is hidden there with lootAt(). takeLoot() marks a
 	   kind as collected so a follow-up search of the same spot finds
 	   nothing. */
 	function setSearchedFurniture(suffix) {
@@ -107,36 +107,36 @@ setup.Rogue = (function () {
 		var run = sv().run;
 		return run ? (run.searchedFurniture || null) : null;
 	}
-	function collectedStashes() {
+	function collectedLoot() {
 		var run = sv().run;
-		return run && Array.isArray(run.collectedStashes) ? run.collectedStashes.slice() : [];
+		return run && Array.isArray(run.collectedLoot) ? run.collectedLoot.slice() : [];
 	}
 	function hasCollected(kind) {
 		var run = sv().run;
-		return !!(run && Array.isArray(run.collectedStashes)
-			&& run.collectedStashes.indexOf(kind) !== -1);
+		return !!(run && Array.isArray(run.collectedLoot)
+			&& run.collectedLoot.indexOf(kind) !== -1);
 	}
-	function takeStash(kind) {
+	function takeLoot(kind) {
 		var run = sv().run;
 		if (!run || !kind) return false;
-		if (!Array.isArray(run.collectedStashes)) run.collectedStashes = [];
-		if (run.collectedStashes.indexOf(kind) !== -1) return false;
-		run.collectedStashes.push(kind);
+		if (!Array.isArray(run.collectedLoot)) run.collectedLoot = [];
+		if (run.collectedLoot.indexOf(kind) !== -1) return false;
+		run.collectedLoot.push(kind);
 		return true;
 	}
-	/* Look up which (uncollected) stash kind is hidden in `roomId`'s
+	/* Look up which (uncollected) loot kind is hidden in `roomId`'s
 	   `suffix` furniture slot, or null if nothing is there. */
-	function stashAt(roomId, suffix) {
+	function lootAt(roomId, suffix) {
 		var run = sv().run;
 		if (!run || !run.floorplan) return null;
 		var fp = run.floorplan;
-		var stashes = fp.stashes || {};
-		var furn = fp.stashFurniture || {};
-		var collected = Array.isArray(run.collectedStashes) ? run.collectedStashes : [];
-		var keys = Object.keys(stashes);
+		var loot = fp.loot || {};
+		var furn = fp.lootFurniture || {};
+		var collected = Array.isArray(run.collectedLoot) ? run.collectedLoot : [];
+		var keys = Object.keys(loot);
 		for (var i = 0; i < keys.length; i++) {
 			var k = keys[i];
-			if (stashes[k] === roomId && furn[k] === suffix && collected.indexOf(k) === -1) {
+			if (loot[k] === roomId && furn[k] === suffix && collected.indexOf(k) === -1) {
 				return k;
 			}
 		}
@@ -175,7 +175,7 @@ setup.Rogue = (function () {
 		return true;
 	}
 
-	/* Stash arbitrary generator output (e.g. floor plan) on the run
+	/* Stow arbitrary generator output (e.g. floor plan) on the run
 	   so the floor-plan generator can hand state back without
 	   needing a top-level $variable. Subsystems read the field via
 	   this API rather than via $run directly. */
@@ -262,19 +262,19 @@ setup.Rogue = (function () {
 
 	/* View-layer summary of the active run's floor plan, denormalised
 	   for the minimap / room-list widget. Returns one record per
-	   room with its template label, spawn/boss flags, any stash kinds
+	   room with its template label, spawn/boss flags, any loot kinds
 	   living on it, the BFS position for map layout, and the list of
 	   neighbouring room ids. Null when no run is active. */
 	function minimapData() {
 		var run = active();
 		if (!run || !run.floorplan) return null;
 		var fp = run.floorplan;
-		var stashByRoom = {};
-		Object.keys(fp.stashes || {}).forEach(function (kind) {
-			var room = fp.stashes[kind];
+		var lootByRoom = {};
+		Object.keys(fp.loot || {}).forEach(function (kind) {
+			var room = fp.loot[kind];
 			if (!room) return;
-			if (!stashByRoom[room]) stashByRoom[room] = [];
-			stashByRoom[room].push(kind);
+			if (!lootByRoom[room]) lootByRoom[room] = [];
+			lootByRoom[room].push(kind);
 		});
 		var positions = setup.FloorPlan.layout(fp);
 		return fp.rooms.map(function (r) {
@@ -286,7 +286,7 @@ setup.Rogue = (function () {
 				label: t ? t.label : r.template,
 				isSpawn: r.id === fp.spawnRoomId,
 				isBoss: r.id === fp.bossRoomId,
-				stashKinds: stashByRoom[r.id] || [],
+				lootKinds: lootByRoom[r.id] || [],
 				position: positions[r.id] || { col: 0, row: 0 },
 				connections: setup.FloorPlan.neighborsOf(fp, r.id)
 			};
@@ -364,9 +364,9 @@ setup.Rogue = (function () {
 			lines.join('') + nodes.join('') + '</svg>';
 	}
 
-	/* Humanise a stash kind ("cursedItem" -> "Cursed item"). Inline
+	/* Humanise a loot kind ("cursedItem" -> "Cursed item"). Inline
 	   so the widget doesn't have to repeat the camelCase split. */
-	function humanizeStashKind(kind) {
+	function humanizeLootKind(kind) {
 		if (!kind) return '';
 		return kind
 			.replace(/([A-Z])/g, ' $1')
@@ -388,12 +388,11 @@ setup.Rogue = (function () {
 	}
 
 	/* View-layer summary of the player's current room: name, the
-	   furniture list (with any stashed item annotated), the stash
-	   kinds in this room that aren't pinned to a specific piece of
-	   furniture, and the adjacent-room nav links. RogueRun renders
-	   the furniture strip and exit links from this record, so
-	   coverage here locks in the structure. Returns null when no
-	   run is active. */
+	   furniture list (with any loot annotated), the loot kinds in
+	   this room that aren't pinned to a specific piece of furniture,
+	   and the adjacent-room nav links. RogueRun renders the furniture
+	   strip and exit links from this record, so coverage here locks
+	   in the structure. Returns null when no run is active. */
 	function currentRoomData() {
 		var run = active();
 		if (!run || !run.floorplan) return null;
@@ -402,35 +401,35 @@ setup.Rogue = (function () {
 		var room = fp.rooms.filter(function (r) { return r.id === roomId; })[0];
 		if (!room) return null;
 		var t = setup.Templates ? setup.Templates.byId(room.template) : null;
-		var stashFurn = fp.stashFurniture || {};
+		var lootFurn = fp.lootFurniture || {};
 
-		// Furniture entries with optional stash annotations. Collected
-		// stash kinds are filtered out so a re-search of the same
+		// Furniture entries with optional loot annotations. Collected
+		// loot kinds are filtered out so a re-search of the same
 		// slot reports nothing.
-		var collected = Array.isArray(run.collectedStashes) ? run.collectedStashes : [];
+		var collected = Array.isArray(run.collectedLoot) ? run.collectedLoot : [];
 		var furniture = (t && Array.isArray(t.furniture) ? t.furniture : []).map(function (f) {
-			var stashKind = null;
-			Object.keys(fp.stashes || {}).forEach(function (k) {
-				if (fp.stashes[k] === roomId && stashFurn[k] === f && collected.indexOf(k) === -1) {
-					stashKind = k;
+			var lootKind = null;
+			Object.keys(fp.loot || {}).forEach(function (k) {
+				if (fp.loot[k] === roomId && lootFurn[k] === f && collected.indexOf(k) === -1) {
+					lootKind = k;
 				}
 			});
 			return {
 				suffix: f,
 				label: humanizeFurniture(f),
-				stashKind: stashKind,
-				stashLabel: stashKind ? humanizeStashKind(stashKind) : null
+				lootKind: lootKind,
+				lootLabel: lootKind ? humanizeLootKind(lootKind) : null
 			};
 		});
 
-		// Stashes assigned to this room but with no furniture pin
+		// Loot assigned to this room but with no furniture pin
 		// (templates without any furniture, e.g. roomA/B/C).
-		var stashesWithoutFurniture = [];
-		Object.keys(fp.stashes || {}).forEach(function (k) {
-			if (fp.stashes[k] === roomId && !stashFurn[k]) {
-				stashesWithoutFurniture.push({
+		var lootWithoutFurniture = [];
+		Object.keys(fp.loot || {}).forEach(function (k) {
+			if (fp.loot[k] === roomId && !lootFurn[k]) {
+				lootWithoutFurniture.push({
 					kind: k,
-					label: humanizeStashKind(k)
+					label: humanizeLootKind(k)
 				});
 			}
 		});
@@ -453,7 +452,7 @@ setup.Rogue = (function () {
 			isSpawn: roomId === fp.spawnRoomId,
 			isBoss: roomId === fp.bossRoomId,
 			furniture: furniture,
-			stashesWithoutFurniture: stashesWithoutFurniture,
+			lootWithoutFurniture: lootWithoutFurniture,
 			neighbors: neighbors
 		};
 	}
@@ -502,10 +501,10 @@ setup.Rogue = (function () {
 		setCurrentRoom: setCurrentRoom,
 		setSearchedFurniture: setSearchedFurniture,
 		searchedFurniture: searchedFurniture,
-		stashAt: stashAt,
-		takeStash: takeStash,
+		lootAt: lootAt,
+		takeLoot: takeLoot,
 		hasCollected: hasCollected,
-		collectedStashes: collectedStashes,
+		collectedLoot: collectedLoot,
 		echoes: echoes,
 		addEchoes: addEchoes,
 		spendEchoes: spendEchoes,

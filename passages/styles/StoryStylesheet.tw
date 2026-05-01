@@ -1212,7 +1212,7 @@ body.ui-bar-stowed .rogue-run-layout {
 	opacity: 0.85;
 	line-height: 1;
 }
-.rogue-furniture-stash {
+.rogue-furniture-loot {
 	font-size: 0.7em;
 	line-height: 1;
 }

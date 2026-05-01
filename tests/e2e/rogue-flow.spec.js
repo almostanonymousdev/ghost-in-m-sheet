@@ -238,27 +238,27 @@ test.describe('E2E: rogue run lifecycle', () => {
       .toHaveCount(hallwayFurniture.length);
   });
 
-  test('furniture row no longer shows stash kind labels (no spoilers)', async () => {
+  test('furniture row no longer shows loot kind labels (no spoilers)', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
     await clickLink(page, 'Rogue Haunt', 'RogueStart');
-    // Walk into the room that holds the cursed-item stash so the row
+    // Walk into the room that holds the cursed-item loot so the row
     // would have rendered a "Cursed item" label under the old layout.
     const fp = await getVar(page, 'run').then(r => r.floorplan);
-    const cursedRoom = fp.stashes.cursedItem;
+    const cursedRoom = fp.loot.cursedItem;
     await page.evaluate(id => SugarCube.setup.Rogue.setCurrentRoom(id), cursedRoom);
     await goToPassage(page, 'RogueRun');
 
     // The deprecated label class should not appear in the DOM.
-    await expect(page.locator('.rogue-furniture-stash')).toHaveCount(0);
+    await expect(page.locator('.rogue-furniture-loot')).toHaveCount(0);
     // Plain-text spoiler check too.
     await expect(
       page.locator('.rogue-run-furniture').getByText(/Cursed item/i)
     ).toHaveCount(0);
   });
 
-  test('clicking the stashed furniture finds the item and marks it collected', async () => {
+  test('clicking the loot furniture finds the item and marks it collected', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
@@ -267,40 +267,40 @@ test.describe('E2E: rogue run lifecycle', () => {
     // Place the player in the room+slot the cursed item is hidden in.
     // The floor-plan generator might land cursedItem on a furniture-
     // less template (roomA/B/C); skip past those so the click target
-    // is always a real slot. We only need *some* stash kind pinned
+    // is always a real slot. We only need *some* loot kind pinned
     // to a furniture suffix to exercise the search wiring.
     const fp = await getVar(page, 'run').then(r => r.floorplan);
-    const stashKind = Object.keys(fp.stashFurniture).find(k => fp.stashFurniture[k]);
-    expect(stashKind).toBeDefined();
-    const stashRoom      = fp.stashes[stashKind];
-    const stashFurniture = fp.stashFurniture[stashKind];
-    await page.evaluate(id => SugarCube.setup.Rogue.setCurrentRoom(id), stashRoom);
+    const lootKind = Object.keys(fp.lootFurniture).find(k => fp.lootFurniture[k]);
+    expect(lootKind).toBeDefined();
+    const lootRoom      = fp.loot[lootKind];
+    const lootFurniture = fp.lootFurniture[lootKind];
+    await page.evaluate(id => SugarCube.setup.Rogue.setCurrentRoom(id), lootRoom);
     await goToPassage(page, 'RogueRun');
 
-    // Each stash kind has its own line in FurnitureSearch.tw; pick
+    // Each loot kind has its own line in FurnitureSearch.tw; pick
     // the one this run rolled.
-    const STASH_TEXT = {
+    const LOOT_TEXT = {
       cursedItem:  /cursed item/i,
       rescueClue:  /clue about one of the missing women/i,
       tarotCards:  /strange deck of tarot cards/i,
       monkeyPaw:   /withered monkey's paw/i
     };
 
-    // Click the stashed furniture slot. Its label is humanised; pull
+    // Click the loot furniture slot. Its label is humanised; pull
     // it from the controller so we click the right one.
     const fLabel = await callSetup(page,
-      `setup.Rogue.currentRoomData().furniture.find(f => f.suffix === "${stashFurniture}").label`);
+      `setup.Rogue.currentRoomData().furniture.find(f => f.suffix === "${lootFurniture}").label`);
     await page.locator('.rogue-furniture-item')
       .filter({ hasText: fLabel })
       .first()
       .click();
     await page.waitForFunction(() => SugarCube.State.passage === 'FurnitureSearch');
     await expect(
-      page.locator('.passage').getByText(STASH_TEXT[stashKind])
+      page.locator('.passage').getByText(LOOT_TEXT[lootKind])
     ).toBeVisible();
 
-    // takeStash should have been called.
-    expect(await callSetup(page, `setup.Rogue.hasCollected("${stashKind}")`)).toBe(true);
+    // takeLoot should have been called.
+    expect(await callSetup(page, `setup.Rogue.hasCollected("${lootKind}")`)).toBe(true);
 
     // Walking back to the same slot should now find nothing.
     await clickLink(page, 'Back', 'RogueRun');

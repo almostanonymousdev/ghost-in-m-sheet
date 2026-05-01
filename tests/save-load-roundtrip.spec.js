@@ -413,7 +413,7 @@ test.describe('Save/load round-trip', () => {
       modifiers: ['power_outage'],
       loadout: { tools: ['emf'] },
       objective: 'rescue',
-      floorplan: { seed: 42, rooms: [], edges: [], spawnRoomId: null, stashes: {}, bossRoomId: null }
+      floorplan: { seed: 42, rooms: [], edges: [], spawnRoomId: null, loot: {}, bossRoomId: null }
     };
     const migrated = await page.evaluate((run) => {
       const save = { run: run, echoes: 7, runsStarted: 3 };

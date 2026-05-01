@@ -115,7 +115,7 @@ test.describe('Rogue Controller', () => {
     expect(await callSetup(page, 'setup.Rogue.modifiers()')).toEqual(['foo', 'bar']);
   });
 
-  // --- Generic field stash ---
+  // --- Generic field stowage ---
 
   test('setField/field round-trips arbitrary per-run subsystem state', async () => {
     await page.evaluate(() => SugarCube.setup.Rogue.start({ seed: 1 }));
@@ -204,12 +204,12 @@ test.describe('Rogue Controller', () => {
     expect(Array.isArray(cr.furniture)).toBe(true);
     expect(Array.isArray(cr.neighbors)).toBe(true);
 
-    // Furniture entries surface a humanised label and a stash slot
+    // Furniture entries surface a humanised label and a loot slot
     // (null when the slot is empty).
     cr.furniture.forEach(f => {
       expect(typeof f.suffix).toBe('string');
       expect(typeof f.label).toBe('string');
-      expect(f.stashKind === null || typeof f.stashKind === 'string').toBe(true);
+      expect(f.lootKind === null || typeof f.lootKind === 'string').toBe(true);
     });
 
     // Each neighbor record carries an id + a label the nav link can render.
@@ -219,25 +219,25 @@ test.describe('Rogue Controller', () => {
     });
   });
 
-  test('currentRoomData annotates a furniture slot when a stash is pinned to it', async () => {
+  test('currentRoomData annotates a furniture slot when loot is pinned to it', async () => {
     // The generator picks a deterministic room+furniture per seed, so
-    // we can find a stash kind, jump into its room, and check that the
+    // we can find a loot kind, jump into its room, and check that the
     // matching furniture entry carries its kind label.
     await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
       seed: 31, floorPlanOpts: { roomCount: 6 }
     }));
     const fp = await callSetup(page, 'setup.Rogue.field("floorplan")');
-    const kind = Object.keys(fp.stashFurniture)[0];
-    const roomId = fp.stashes[kind];
-    const suffix = fp.stashFurniture[kind];
+    const kind = Object.keys(fp.lootFurniture)[0];
+    const roomId = fp.loot[kind];
+    const suffix = fp.lootFurniture[kind];
 
     await page.evaluate((id) => SugarCube.setup.Rogue.setCurrentRoom(id), roomId);
     const cr = await callSetup(page, 'setup.Rogue.currentRoomData()');
     const slot = cr.furniture.find(f => f.suffix === suffix);
     expect(slot).toBeDefined();
-    expect(slot.stashKind).toBe(kind);
-    expect(typeof slot.stashLabel).toBe('string');
-    expect(slot.stashLabel.length).toBeGreaterThan(0);
+    expect(slot.lootKind).toBe(kind);
+    expect(typeof slot.lootLabel).toBe('string');
+    expect(slot.lootLabel.length).toBeGreaterThan(0);
   });
 
   test('currentRoomData returns null when no run is active', async () => {

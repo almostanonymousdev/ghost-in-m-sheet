@@ -11,19 +11,19 @@
 <<video "mechanics/curseditems/lfci.mp4">>
 <<if setup.Rogue.isRogue()>>
 	<<set _sf to setup.Rogue.searchedFurniture()>>
-	<<set _kind to _sf ? setup.Rogue.stashAt(_sf.room, _sf.suffix) : null>>
+	<<set _kind to _sf ? setup.Rogue.lootAt(_sf.room, _sf.suffix) : null>>
 	<<if _kind eq "cursedItem">>
 		@@.mc-thoughts; You find a cursed item tucked into the furniture.@@<br>
-		<<run setup.Rogue.takeStash("cursedItem")>>
+		<<run setup.Rogue.takeLoot("cursedItem")>>
 	<<elseif _kind eq "rescueClue">>
 		@@.mc-thoughts; You find a clue about one of the missing women.@@<br>
-		<<run setup.Rogue.takeStash("rescueClue")>>
+		<<run setup.Rogue.takeLoot("rescueClue")>>
 	<<elseif _kind eq "tarotCards">>
 		@@.mc-thoughts; You come across a strange deck of tarot cards.@@<br>
-		<<run setup.Rogue.takeStash("tarotCards")>>
+		<<run setup.Rogue.takeLoot("tarotCards")>>
 	<<elseif _kind eq "monkeyPaw">>
 		@@.mc-thoughts; You come across a withered monkey's paw.@@<br>
-		<<run setup.Rogue.takeStash("monkeyPaw")>>
+		<<run setup.Rogue.takeLoot("monkeyPaw")>>
 	<<else>>
 		@@.mc-thoughts; You search but find nothing of note.@@<br>
 	<</if>>

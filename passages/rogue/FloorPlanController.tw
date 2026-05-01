@@ -18,14 +18,19 @@
  *     ],
  *     edges:        [ [a, b], ... ],   // undirected room->room links
  *     spawnRoomId:  'room_X',          // ghost spawn
- *     stashes:      { cursedItem,      // hidden-content room ids
+ *     loot:         { cursedItem,      // hidden-content room ids
  *                     rescueClue,
  *                     tarotCards,
  *                     monkeyPaw },
- *     stashFurniture: { cursedItem,    // furniture suffix the stash
- *                       rescueClue,    // is pinned to inside its room
- *                       tarotCards,    // (undefined when the room has
- *                       monkeyPaw },   // no furniture at all)
+ *     lootFurniture: { cursedItem,     // furniture suffix the loot
+ *                      rescueClue,     // is pinned to inside its room
+ *                      tarotCards,     // (cursedItem/rescueClue may
+ *                      monkeyPaw },    // be undefined on empty-
+ *                                      // furniture templates;
+ *                                      // tarotCards & monkeyPaw are
+ *                                      // always pinned because the
+ *                                      // generator forces them onto
+ *                                      // a furniture-bearing room.)
  *     bossRoomId:   'room_W' | null    // optional boss-room slot
  *   }
  *
@@ -54,7 +59,7 @@ setup.FloorPlan = (function () {
 
 	var HALLWAY_TEMPLATE = 'hallway';
 
-	var STASH_KINDS = Object.freeze([
+	var LOOT_KINDS = Object.freeze([
 		'cursedItem', 'rescueClue', 'tarotCards', 'monkeyPaw'
 	]);
 
@@ -115,25 +120,47 @@ setup.FloorPlan = (function () {
 		var spawnIdx = 1 + Math.floor(rng() * (rooms.length - 1));
 		var spawnRoomId = rooms[spawnIdx].id;
 
-		// Stash placement: deal each kind to a non-hallway room, no
-		// duplicates within a hand. Cycles back through rooms when
-		// roomCount - 1 < STASH_KINDS.length so all kinds get a slot.
-		var stashRooms = pickN(rng, rooms.slice(1).map(function (r) { return r.id; }),
-								STASH_KINDS.length);
-		var stashes = {};
-		var stashFurniture = {};
-		STASH_KINDS.forEach(function (k, idx) {
-			if (!stashRooms.length) return;
-			var roomId = stashRooms[idx % stashRooms.length];
-			stashes[k] = roomId;
-			// Pin the stash to a specific furniture slot when the room
+		// Loot placement: cursedItem and rescueClue may land on any
+		// non-hallway room (including empty-furniture roomA/B/C
+		// templates), cycling through a distinct pool. tarotCards and
+		// monkeyPaw must reside in furniture, so they're forced onto a
+		// furniture-bearing non-hallway room -- duplicates with another
+		// loot kind are allowed (same room, even same furniture type),
+		// but the per-slot suffix pick avoids exact (room, suffix)
+		// collisions whenever an alternative exists.
+		var nonHallwayIds = rooms.slice(1).map(function (r) { return r.id; });
+		var lootRooms = pickN(rng, nonHallwayIds, LOOT_KINDS.length);
+		var furnitureRoomIds = nonHallwayIds.filter(function (id) {
+			var r = rooms.filter(function (rm) { return rm.id === id; })[0];
+			var t = setup.Templates && setup.Templates.byId(r.template);
+			return !!(t && Array.isArray(t.furniture) && t.furniture.length);
+		});
+		var loot = {};
+		var lootFurniture = {};
+		var takenSlots = {}; // 'roomId|suffix' -> true, to avoid double-pinning
+		LOOT_KINDS.forEach(function (k, idx) {
+			if (!lootRooms.length) return;
+			var roomId;
+			if ((k === 'tarotCards' || k === 'monkeyPaw') && furnitureRoomIds.length) {
+				roomId = furnitureRoomIds[Math.floor(rng() * furnitureRoomIds.length)];
+			} else {
+				roomId = lootRooms[idx % lootRooms.length];
+			}
+			loot[k] = roomId;
+			// Pin the loot to a specific furniture slot when the room
 			// has any. Empty-furniture templates (e.g. roomA/B/C) leave
-			// stashFurniture[k] undefined; the consumer falls back to
+			// lootFurniture[k] undefined; the consumer falls back to
 			// "hidden somewhere in this room".
 			var room = rooms.filter(function (r) { return r.id === roomId; })[0];
 			var t = setup.Templates && setup.Templates.byId(room.template);
 			if (t && Array.isArray(t.furniture) && t.furniture.length) {
-				stashFurniture[k] = t.furniture[Math.floor(rng() * t.furniture.length)];
+				var available = t.furniture.filter(function (f) {
+					return !takenSlots[roomId + '|' + f];
+				});
+				var pool = available.length ? available : t.furniture;
+				var suffix = pool[Math.floor(rng() * pool.length)];
+				lootFurniture[k] = suffix;
+				takenSlots[roomId + '|' + suffix] = true;
 			}
 		});
 
@@ -148,8 +175,8 @@ setup.FloorPlan = (function () {
 			rooms: rooms,
 			edges: edges,
 			spawnRoomId: spawnRoomId,
-			stashes: stashes,
-			stashFurniture: stashFurniture,
+			loot: loot,
+			lootFurniture: lootFurniture,
 			bossRoomId: bossRoomId
 		};
 	}
@@ -221,7 +248,7 @@ setup.FloorPlan = (function () {
 	return {
 		OWNED_VARS: Object.freeze([]),
 		HALLWAY_TEMPLATE: HALLWAY_TEMPLATE,
-		STASH_KINDS: STASH_KINDS,
+		LOOT_KINDS: LOOT_KINDS,
 		nonHallwayTemplates: nonHallwayTemplates,
 		generate: generate,
 		neighborsOf: neighborsOf,

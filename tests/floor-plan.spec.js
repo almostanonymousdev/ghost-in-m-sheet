@@ -34,7 +34,7 @@ test.describe('Floor-plan generator', () => {
     const a = await gen(1);
     const b = await gen(2);
     // Distinct seeds should differ in at least one of: room
-    // template selection, spawn, or stash placement.
+    // template selection, spawn, or loot placement.
     expect(a).not.toEqual(b);
   });
 
@@ -130,7 +130,7 @@ test.describe('Floor-plan generator', () => {
     }
   });
 
-  // --- Spawn / stashes / boss ---
+  // --- Spawn / loot / boss ---
 
   test('ghost spawns in a non-hallway room', async () => {
     for (const seed of [1, 2, 3, 4, 5]) {
@@ -142,33 +142,65 @@ test.describe('Floor-plan generator', () => {
     }
   });
 
-  test('every stash kind is placed on a real non-hallway room', async () => {
+  test('every loot kind is placed on a real non-hallway room', async () => {
     const plan = await gen(31, { roomCount: 6 });
-    const kinds = await callSetup(page, 'setup.FloorPlan.STASH_KINDS');
+    const kinds = await callSetup(page, 'setup.FloorPlan.LOOT_KINDS');
     const ids = new Set(plan.rooms.map(r => r.id));
     kinds.forEach(k => {
-      expect(plan.stashes[k]).toBeDefined();
-      expect(ids.has(plan.stashes[k])).toBe(true);
-      expect(plan.stashes[k]).not.toBe('room_0');
+      expect(plan.loot[k]).toBeDefined();
+      expect(ids.has(plan.loot[k])).toBe(true);
+      expect(plan.loot[k]).not.toBe('room_0');
     });
   });
 
-  test('stashFurniture pins each stash to a real furniture suffix on its room', async () => {
+  test('lootFurniture pins each loot kind to a real furniture suffix on its room', async () => {
     const plan = await gen(31, { roomCount: 6 });
-    const kinds = await callSetup(page, 'setup.FloorPlan.STASH_KINDS');
+    const kinds = await callSetup(page, 'setup.FloorPlan.LOOT_KINDS');
     for (const k of kinds) {
-      const roomId = plan.stashes[k];
+      const roomId = plan.loot[k];
       const room = plan.rooms.find(r => r.id === roomId);
       const t = await callSetup(page, `setup.Templates.byId("${room.template}")`);
       if (t && t.furniture && t.furniture.length) {
-        // Every stash kind on a furniture-bearing room must pin to a
+        // Every loot kind on a furniture-bearing room must pin to a
         // suffix that exists in that template's furniture list.
-        expect(t.furniture).toContain(plan.stashFurniture[k]);
+        expect(t.furniture).toContain(plan.lootFurniture[k]);
       } else {
         // Empty-furniture template -> no pin.
-        expect(plan.stashFurniture[k]).toBeUndefined();
+        expect(plan.lootFurniture[k]).toBeUndefined();
       }
     }
+  });
+
+  test('tarotCards and monkeyPaw always land on a furniture-bearing room', async () => {
+    test.setTimeout(20_000);
+    // roomCount >= 4 guarantees the distinct-template pool includes at
+    // least one furniture-bearing entry (only 3 empty-furniture
+    // templates exist), so tarotCards/monkeyPaw can always be placed
+    // without falling through to the degraded fallback.
+    const fails = await page.evaluate(() => {
+      const out = [];
+      for (let seed = 1; seed <= 200; seed++) {
+        const roomCount = 4 + (seed % 6); // 4..9
+        const plan = SugarCube.setup.FloorPlan.generate(seed, { roomCount });
+        ['tarotCards', 'monkeyPaw'].forEach((k) => {
+          const room = plan.rooms.find(r => r.id === plan.loot[k]);
+          const t = SugarCube.setup.Templates.byId(room.template);
+          if (!t || !Array.isArray(t.furniture) || !t.furniture.length) {
+            out.push(`seed ${seed} (n=${roomCount}): ${k} on furniture-less ${room.template}`);
+            return;
+          }
+          if (!plan.lootFurniture[k]) {
+            out.push(`seed ${seed} (n=${roomCount}): ${k} missing furniture pin`);
+            return;
+          }
+          if (t.furniture.indexOf(plan.lootFurniture[k]) === -1) {
+            out.push(`seed ${seed} (n=${roomCount}): ${k} pin ${plan.lootFurniture[k]} not in ${room.template} furniture`);
+          }
+        });
+      }
+      return out;
+    });
+    expect(fails).toEqual([]);
   });
 
   test('bossRoomId is null when includeBoss is false (default)', async () => {
@@ -205,14 +237,14 @@ test.describe('Floor-plan generator', () => {
           fails.push(`seed ${seed} (n=${roomCount}): not fully connected`);
           continue;
         }
-        // Stash placement: all kinds resolve to a real non-hallway room.
+        // Loot placement: all kinds resolve to a real non-hallway room.
         const ids = new Set(plan.rooms.map(r => r.id));
-        for (const k of SugarCube.setup.FloorPlan.STASH_KINDS) {
-          if (!ids.has(plan.stashes[k])) {
-            fails.push(`seed ${seed}: stash ${k} -> unknown room ${plan.stashes[k]}`);
+        for (const k of SugarCube.setup.FloorPlan.LOOT_KINDS) {
+          if (!ids.has(plan.loot[k])) {
+            fails.push(`seed ${seed}: loot ${k} -> unknown room ${plan.loot[k]}`);
           }
-          if (plan.stashes[k] === 'room_0') {
-            fails.push(`seed ${seed}: stash ${k} placed in hallway`);
+          if (plan.loot[k] === 'room_0') {
+            fails.push(`seed ${seed}: loot ${k} placed in hallway`);
           }
         }
         // Spawn must be a real non-hallway room.
