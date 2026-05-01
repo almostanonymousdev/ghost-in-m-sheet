@@ -1,78 +1,8 @@
 :: EventArt [nobr] {"position":"1400,950","size":"100,100"}
-<<set _hg to setup.Ghosts.active()>>
-<<if _hg and _hg.invertedSanityStages>>
-	<<run setup.Events.setDecreasingSanity({ stage1: 9, stage2: 7, stage3: 5, stage4: 3 })>>
-<<else>>
-	<<run setup.Events.setDecreasingSanity({ stage1: 3, stage2: 5, stage3: 7, stage4: 9 })>>
-<</if>>
-<<set _ds to setup.Events.decreasingSanity()>>
-<<set _artListVids to []>>
-<<set _artList to []>>
-<<set _chance = random(0, 100)>>
-<<if setup.Mc.sanity() >= 90 and _chance <= _ds.stage1>>
-	<<if setup.Events.jeansWorn()>>
-		<<set _artList to ["ui/art/jeans/s1/1.png", "ui/art/jeans/s1/2.png", "ui/art/jeans/s1/3.png", "ui/art/jeans/s1/4.png", "ui/art/jeans/s1/5.png", "ui/art/jeans/s1/6.png", "ui/art/jeans/s1/7.png", "ui/art/jeans/s1/8.png"]>>
-	<<elseif setup.Events.shortsWorn()>>
-		<<set _artList to ["ui/art/shorts/s1/1.png", "ui/art/shorts/s1/2.png", "ui/art/shorts/s1/3.png", "ui/art/shorts/s1/4.png", "ui/art/shorts/s1/5.png", "ui/art/shorts/s1/6.png", "ui/art/shorts/s1/7.png", "ui/art/shorts/s1/8.png", "ui/art/shorts/s1/9.png"]>>
-	<<elseif setup.Events.skirtWorn()>>
-		<<set _artList to ["ui/art/skirt/s1/1.png", "ui/art/skirt/s1/2.png", "ui/art/skirt/s1/3.png", "ui/art/skirt/s1/4.png", "ui/art/skirt/s1/5.png", "ui/art/skirt/s1/6.png", "ui/art/skirt/s1/7.png", "ui/art/skirt/s1/8.png", "ui/art/skirt/s1/9.png"]>>
-	<</if>>
-
-<<elseif (setup.Mc.sanity() >= 80 and setup.Mc.sanity() < 90) and _chance <= _ds.stage2>>
-	<<if setup.Events.jeansWorn()>>
-		<<set _artList to ["ui/art/jeans/s2/1.png", "ui/art/jeans/s2/2.png", "ui/art/jeans/s2/3.png", "ui/art/jeans/s2/4.png", "ui/art/jeans/s2/5.png", "ui/art/jeans/s2/6.png", "ui/art/jeans/s2/7.png", "ui/art/jeans/s2/8.png", "ui/art/jeans/s2/9.png", "ui/art/jeans/s2/10.png"]>>
-	<<elseif setup.Events.shortsWorn()>>
-		<<set _artList to ["ui/art/shorts/s2/1.png", "ui/art/shorts/s2/2.png", "ui/art/shorts/s2/3.png", "ui/art/shorts/s2/4.png", "ui/art/shorts/s2/5.png", "ui/art/shorts/s2/6.png", "ui/art/shorts/s2/7.png", "ui/art/shorts/s2/8.png", "ui/art/shorts/s2/9.png"]>>
-	<<elseif setup.Events.skirtWorn()>>
-		<<set _artList to ["ui/art/skirt/s2/1.png", "ui/art/skirt/s2/2.png", "ui/art/skirt/s2/3.png", "ui/art/skirt/s2/4.png", "ui/art/skirt/s2/5.png", "ui/art/skirt/s2/6.png", "ui/art/skirt/s2/7.png", "ui/art/skirt/s2/8.png", "ui/art/skirt/s2/9.png", "ui/art/skirt/s2/10.png"]>>
-	<</if>>
-
-<<elseif (setup.Mc.sanity() >= 70 and setup.Mc.sanity() < 80) and _chance <= _ds.stage2>>
-	<<if setup.Events.jeansWorn()>>
-		<<set _artList to ["ui/art/jeans/s3/1.png", "ui/art/jeans/s3/2.png", "ui/art/jeans/s3/3.png", "ui/art/jeans/s3/4.png", "ui/art/jeans/s3/5.png", "ui/art/jeans/s3/6.png", "ui/art/jeans/s3/7.png", "ui/art/jeans/s3/8.png", "ui/art/jeans/s3/9.png", "ui/art/jeans/s3/10.png"]>>
-	<<elseif setup.Events.shortsWorn()>>
-		<<set _artList to ["ui/art/shorts/s3/1.png", "ui/art/shorts/s3/2.png", "ui/art/shorts/s3/3.png", "ui/art/shorts/s3/4.png", "ui/art/shorts/s3/5.png", "ui/art/shorts/s3/6.png", "ui/art/shorts/s3/7.png", "ui/art/shorts/s3/8.png", "ui/art/shorts/s3/9.png", "ui/art/shorts/s3/10.png"]>>
-	<<elseif setup.Events.skirtWorn()>>
-		<<set _artList to ["ui/art/skirt/s3/1.png", "ui/art/skirt/s3/2.png", "ui/art/skirt/s3/3.png", "ui/art/skirt/s3/4.png", "ui/art/skirt/s3/5.png", "ui/art/skirt/s3/6.png", "ui/art/skirt/s3/7.png", "ui/art/skirt/s3/8.png", "ui/art/skirt/s3/9.png"]>>
-	<</if>>
-
-<<elseif (setup.Mc.sanity() >= 50 and setup.Mc.sanity() < 70) and _chance <= _ds.stage3>>
-	<<if setup.Events.pantiesWorn()>>
-		<<set _artList to ["ui/art/underwear/1.png", "ui/art/underwear/2.png", "ui/art/underwear/3.png", "ui/art/underwear/4.png", "ui/art/underwear/5.png", "ui/art/underwear/6.png", "ui/art/underwear/7.png", "ui/art/underwear/8.png", "ui/art/underwear/9.png", "ui/art/underwear/10.png", "ui/art/underwear/11.png"]>>
-	<<else>>
-		<<set _artList to ["ui/art/naked/1.png", "ui/art/naked/2.png", "ui/art/naked/3.png", "ui/art/naked/4.png", "ui/art/naked/5.png", "ui/art/naked/6.png", "ui/art/naked/7.png", "ui/art/naked/8.png", "ui/art/naked/9.png", "ui/art/naked/10.png", "ui/art/naked/11.png", "ui/art/naked/12.png", "ui/art/naked/13.png", "ui/art/naked/14.png"]>>
-	<</if>>
-
-<<elseif (setup.Mc.sanity() >= 1 and setup.Mc.sanity() < 50) and _chance <= _ds.stage4>>
-
-	<<if passage() is "EnigmaKitchen">>
-		<<set _artListVids to ["scenes/animated/all/1.mp4", "scenes/animated/all/2.mp4", "scenes/animated/all/3.mp4", "scenes/animated/all/4.mp4", "scenes/animated/all/5.mp4", "scenes/animated/all/6.mp4", "scenes/animated/all/7.mp4", "scenes/animated/all/8.mp4", "scenes/animated/all/9.mp4", "scenes/animated/all/10.mp4", "scenes/animated/all/11.mp4", "scenes/animated/all/12.mp4", "scenes/animated/all/13.mp4", "scenes/animated/all/14.mp4", "scenes/animated/all/15.mp4", "scenes/animated/all/16.mp4", "scenes/animated/all/17.mp4", "scenes/animated/all/18.mp4", "scenes/animated/all/19.mp4", "scenes/animated/all/20.mp4", "scenes/animated/all/21.mp4", "scenes/animated/all/22.mp4", "scenes/animated/all/23.mp4", "scenes/animated/all/24.mp4", "scenes/animated/kitchen/1.mp4", "scenes/animated/kitchen/2.mp4"]>>
-
-	<<elseif passage() is "EnigmaBedroom" or passage() is "EnigmaLivingroom">>
-		<<set _artListVids to ["scenes/animated/all/1.mp4", "scenes/animated/all/2.mp4", "scenes/animated/all/3.mp4", "scenes/animated/all/4.mp4", "scenes/animated/all/5.mp4", "scenes/animated/all/6.mp4", "scenes/animated/all/7.mp4", "scenes/animated/all/8.mp4", "scenes/animated/all/9.mp4", "scenes/animated/all/10.mp4", "scenes/animated/all/11.mp4", "scenes/animated/all/12.mp4", "scenes/animated/all/13.mp4", "scenes/animated/all/14.mp4", "scenes/animated/all/15.mp4", "scenes/animated/all/16.mp4", "scenes/animated/all/17.mp4", "scenes/animated/all/18.mp4", "scenes/animated/all/19.mp4", "scenes/animated/all/20.mp4", "scenes/animated/all/21.mp4", "scenes/animated/all/22.mp4", "scenes/animated/all/23.mp4", "scenes/animated/all/24.mp4", "scenes/animated/bed/1.mp4", "scenes/animated/bed/2.mp4", "scenes/animated/bed/3.mp4", "scenes/animated/bed/4.mp4", "scenes/animated/bed/5.mp4", "scenes/animated/bed/6.mp4", "scenes/animated/bed/7.mp4", "scenes/animated/bed/8.mp4", "scenes/animated/bed/9.mp4", "scenes/animated/bed/10.mp4", "scenes/animated/bed/11.mp4", "scenes/animated/bed/12.mp4", "scenes/animated/bed/13.mp4"]>>
-
-	<<elseif passage() is "EnigmaHallway">>
-		<<set _artListVids to ["scenes/animated/all/1.mp4", "scenes/animated/all/2.mp4", "scenes/animated/all/3.mp4", "scenes/animated/all/4.mp4", "scenes/animated/all/5.mp4", "scenes/animated/all/6.mp4", "scenes/animated/all/7.mp4", "scenes/animated/all/8.mp4", "scenes/animated/all/9.mp4", "scenes/animated/all/10.mp4", "scenes/animated/all/11.mp4", "scenes/animated/all/12.mp4", "scenes/animated/all/13.mp4", "scenes/animated/all/14.mp4", "scenes/animated/all/15.mp4", "scenes/animated/all/16.mp4", "scenes/animated/all/17.mp4", "scenes/animated/all/18.mp4", "scenes/animated/all/19.mp4", "scenes/animated/all/20.mp4", "scenes/animated/all/21.mp4", "scenes/animated/all/22.mp4", "scenes/animated/all/23.mp4", "scenes/animated/all/24.mp4", "scenes/animated/hallway/1.mp4", "scenes/animated/hallway/2.mp4", "scenes/animated/hallway/3.mp4", "scenes/animated/hallway/4.mp4"]>>
-
-	<<elseif passage() is "OwaissaBathroom" or passage() is "ElmBathroom">>
-		<<set _artListVids to ["scenes/animated/all/1.mp4", "scenes/animated/all/2.mp4", "scenes/animated/all/3.mp4", "scenes/animated/all/4.mp4", "scenes/animated/all/5.mp4", "scenes/animated/all/6.mp4", "scenes/animated/all/7.mp4", "scenes/animated/all/8.mp4", "scenes/animated/all/9.mp4", "scenes/animated/all/10.mp4", "scenes/animated/all/11.mp4", "scenes/animated/all/12.mp4", "scenes/animated/all/13.mp4", "scenes/animated/all/14.mp4", "scenes/animated/all/15.mp4", "scenes/animated/all/16.mp4", "scenes/animated/all/17.mp4", "scenes/animated/all/18.mp4", "scenes/animated/all/19.mp4", "scenes/animated/all/20.mp4", "scenes/animated/all/21.mp4", "scenes/animated/all/22.mp4", "scenes/animated/all/23.mp4", "scenes/animated/all/24.mp4", "scenes/animated/bath/1.mp4", "scenes/animated/bath/2.mp4"]>>
-
-	<<elseif passage() is "EnigmaBasement" or passage() is "EnigmaRoomA" or passage() is "EnigmaRoomB" or passage() is "EnigmaRoomC">>
-		<<set _artListVids to ["scenes/animated/all/1.mp4", "scenes/animated/all/2.mp4", "scenes/animated/all/3.mp4", "scenes/animated/all/4.mp4", "scenes/animated/all/5.mp4", "scenes/animated/all/6.mp4", "scenes/animated/all/7.mp4", "scenes/animated/all/8.mp4", "scenes/animated/all/9.mp4", "scenes/animated/all/10.mp4", "scenes/animated/all/11.mp4", "scenes/animated/all/12.mp4", "scenes/animated/all/13.mp4", "scenes/animated/all/14.mp4", "scenes/animated/all/15.mp4", "scenes/animated/all/16.mp4", "scenes/animated/all/17.mp4", "scenes/animated/all/18.mp4", "scenes/animated/all/19.mp4", "scenes/animated/all/20.mp4", "scenes/animated/all/21.mp4", "scenes/animated/all/22.mp4", "scenes/animated/all/23.mp4", "scenes/animated/all/24.mp4", "scenes/animated/basement/1.mp4", "scenes/animated/basement/2.mp4", "scenes/animated/basement/3.mp4", "scenes/animated/basement/4.mp4", "scenes/animated/basement/5.mp4", "scenes/animated/basement/6.mp4", "scenes/animated/basement/7.mp4", "scenes/animated/basement/8.mp4", "scenes/animated/basement/9.mp4", "scenes/animated/basement/10.mp4", "scenes/animated/basement/11.mp4", "scenes/animated/basement/12.mp4", "scenes/animated/basement/13.mp4", "scenes/animated/basement/14.mp4"]>>
-	<</if>>
-
-<</if>>
-<<set _randomIndex to random(0, _artList.length - 1)>>
-<<set _randomIndexVids to random(0, _artListVids.length - 1)>>
-<<set _selectedImg to _artList[_randomIndex]>>
-<<set _selectedVids to _artListVids[_randomIndexVids]>>
-<<run setup.Events.setArtImgEvent(_selectedImg)>>
-<<run setup.Events.setArtVideoEvent(_selectedVids)>>
-
-<<if _selectedImg>>
+<<set _artKind to setup.Events.rollArtEvent()>>
+<<if _artKind eq "img">>
 	<<goto "ArtEventImgs">>
 <</if>>
-
-<<if _selectedVids>>
+<<if _artKind eq "video">>
 	<<goto "ArtEventVids">>
 <</if>>

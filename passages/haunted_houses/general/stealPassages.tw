@@ -1,0 +1,18 @@
+:: StealClothesEvent [nobr] {"position":"4025,950","size":"100,100"}
+<<if setup.HauntedHouses.shouldTriggerSteal()>>
+	<<set _stealClothesTriggered = true>>
+	<<goto "StealClothes">>
+<</if>>
+
+:: StealPanties [nobr] {"position":"3975,1050","size":"100,100"}
+<<image setup.Wardrobe.stealPantiesImage() "displayCentredImgs">>
+<<run setup.Wardrobe.stealWornInGroup("panties", "pantiesState", "isPantiesStolen")>>
+
+:: StealBottomOuter [nobr] {"position":"4075,1050","size":"100,100"}
+<<image setup.Wardrobe.stealBottomOuterImage() "displayCentredImgs">>
+<<run setup.Wardrobe.stealBottomOuter()>>
+<<run State.variables.isBottomStolen = 1>>
+
+:: StealBra [nobr] {"position":"4275,1050","size":"100,100"}
+<<video setup.Wardrobe.stealBraVideo() "displayCentredImgs">>
+<<run setup.Wardrobe.stealWornInGroup("bra", "braState", "isBraStolen")>>

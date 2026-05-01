@@ -27,15 +27,7 @@
 <</if>>
 <br>
 <<run setup.HauntedHouses.endHunt()>>
-
-<<run setup.HauntedHouses.resetToolTimers()>>
-
-<<run setup.Companion.clearBlakeCursedItem()>>
-
-<<run setup.Companion.resetHuntState()>>
-
-<<run setup.Companion.resetAliceWorkIfNeeded()>>
-
+<<run setup.HauntedHouses.cleanupAfterHunt()>>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 <</done>>

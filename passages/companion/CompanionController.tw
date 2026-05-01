@@ -870,6 +870,16 @@ setup.Companion = (function () {
 		   EventMC/GhostHuntEvent, which re-render). Tags
 		   $isCompRoomChosen as 1 so a given hunt step only
 		   resolves once. */
+		/* Pick a "current MC location" the way CompanionRandomRoom did:
+		   when called during an event re-render (EventMC / GhostHuntEvent),
+		   the meaningful room is whatever the MC came from, not the
+		   re-rendering wrapper passage. */
+		pickRandomCompanionRoomFromContext: function () {
+			var here = passage();
+			var ctx = (here === "EventMC" || here === "GhostHuntEvent")
+				? previous() : here;
+			this.pickRandomCompanionRoom(ctx);
+		},
 		pickRandomCompanionRoom: function (currentPassage) {
 			if (State.variables.isCompRoomChosen === 1) return;
 			State.variables.isCompRoomChosen = 1;

@@ -1,0 +1,18 @@
+/* Street-entry passages -- one per haunted house. Each is a thin
+   wrapper around <<huntHouseStreet>> with the per-house id and intro
+   blurb. Bundled here so all three live next to each other. */
+
+:: Owaissa Street [nobr] {"position":"1850,450","size":"100,100"}
+<<huntHouseStreet "owaissa" "Owaissa Street"
+"Owaissa Street - quite a creepy place. It must be teeming with ghosts. Although, because of such locations, I'll always have a job">>
+<</huntHouseStreet>>
+
+:: Elm Street [nobr] {"position":"2050,450","size":"100,100"}
+<<huntHouseStreet "elm" "Elm Street"
+"Elm Street - quite a creepy place. It must be teeming with ghosts. Although, because of such locations, I'll always have a job">>
+<</huntHouseStreet>>
+
+:: Enigma Street [nobr] {"position":"2000,200","size":"100,100"}
+<<huntHouseStreet "enigma" "Enigma Street"
+"Enigma Street? Quite a peculiar name for a street. Or perhaps it's not just a name, but a warning that here reality and illusion intertwine, creating their own rules of existence.">>
+<</huntHouseStreet>>

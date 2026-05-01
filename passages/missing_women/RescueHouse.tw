@@ -1,41 +1,9 @@
 :: RescueHouse [nobr] {"position":"2175,1700","size":"100,100"}
 <div style="position: relative;">
 
-<<image 'characters/rescue/house/' + setup.MissingWomen.randomRescuePhotoNumber() + '.jpg' { class: setup.MissingWomen.tornStyleRandom() + ' hideRescueHouse', id: "rescueHouseHidden", width: "100%", style: "position: absolute; z-index: 10;" }>>
+<<image setup.MissingWomen.rescueHouseImage(setup.MissingWomen.randomRescuePhotoNumber()) { class: setup.MissingWomen.tornStyleRandom() + ' hideRescueHouse', id: "rescueHouseHidden", width: "100%", style: "position: absolute; z-index: 10;" }>>
 
-<<if setup.MissingWomen.rescueHouse() eq 1>>
-	<<image "characters/rescue/house/1.jpg" { width: "100%" }>>
-<<elseif setup.MissingWomen.rescueHouse() eq 2>>
-	<<image "characters/rescue/house/2.jpg" { width: "100%" }>>
-<<elseif setup.MissingWomen.rescueHouse() eq 3>>
-	<<image "characters/rescue/house/3.jpg" { width: "100%" }>>
-<<elseif setup.MissingWomen.rescueHouse() eq 4>>
-	<<image "characters/rescue/house/4.jpg" { width: "100%" }>>
-<<elseif setup.MissingWomen.rescueHouse() eq 5>>
-	<<image "characters/rescue/house/5.jpg" { width: "100%" }>>
-<<elseif setup.MissingWomen.rescueHouse() eq 6>>
-	<<image "characters/rescue/house/6.jpg" { width: "100%" }>>
-<<elseif setup.MissingWomen.rescueHouse() eq 7>>
-	<<image "characters/rescue/house/7.jpg" { width: "100%" }>>
-<<elseif setup.MissingWomen.rescueHouse() eq 8>>
-	<<image "characters/rescue/house/8.jpg" { width: "100%" }>>
-<<elseif setup.MissingWomen.rescueHouse() eq 9>>
-	<<image "characters/rescue/house/9.jpg" { width: "100%" }>>
-<<elseif setup.MissingWomen.rescueHouse() eq 10>>
-	<<image "characters/rescue/house/10.jpg" { width: "100%" }>>
-<<elseif setup.MissingWomen.rescueHouse() eq 11>>
-	<<image "characters/rescue/house/11.jpg" { width: "100%" }>>
-<<elseif setup.MissingWomen.rescueHouse() eq 12>>
-	<<image "characters/rescue/house/12.jpg" { width: "100%" }>>
-<<elseif setup.MissingWomen.rescueHouse() eq 13>>
-	<<image "characters/rescue/house/13.jpg" { width: "100%" }>>
-<<elseif setup.MissingWomen.rescueHouse() eq 14>>
-	<<image "characters/rescue/house/14.jpg" { width: "100%" }>>
-<<elseif setup.MissingWomen.rescueHouse() eq 15>>
-	<<image "characters/rescue/house/15.jpg" { width: "100%" }>>
-<<elseif setup.MissingWomen.rescueHouse() eq 16>>
-	<<image "characters/rescue/house/16.jpg" { width: "100%" }>>
-<</if>>
+<<image setup.MissingWomen.rescueHouseImage(setup.MissingWomen.rescueHouse()) { width: "100%" }>>
 </div>
 
 <<if setup.MissingWomen.hasRescueClue()>>

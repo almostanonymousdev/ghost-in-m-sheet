@@ -3,48 +3,25 @@
 <<image "ui/img/sleeping.jpg" { width: "100%" }>>
 <br>
 <br>
-<<if setup.Home.tentaclesSleepEventReady() and previous() is "Bedroom">>
-<<if setup.Time.sleepAdvanceHours(8)>><<include "ResetCooldowns">>
-<</if>>
-<<goto "TentaclesEventSleep">>
-
-<</if>>
-<<if (previous() is "HuntOverSanity" or previous() is "HuntEnd" or previous() is "CursedHuntStart")>>
-<<run setup.Mc.setPenalized(true)>>
-<<run setup.CursedItems.rollForCursedItem()>>
+<<if setup.Home.shouldRouteToTentaclesSleep(previous())>>
+	<<if setup.Time.sleepAdvanceHours(8)>><<run setup.Tick.resetCooldowns()>><</if>>
+	<<goto "TentaclesEventSleep">>
 <</if>>
 
-<<set _hg to setup.Ghosts.active()>>
-<<if (previous() is "HuntOverSanity" or previous() is "HuntEnd" or previous() is "CursedHuntStart") and _hg and _hg.sleepPassage>>
-<<run setup.Mc.setPenalized(true)>>
-@@.backbtn;<<link "Wake up" `_hg.sleepPassage`>><<if setup.Time.sleepAdvanceHours(3)>><<include "ResetCooldowns">>
+<<if setup.Home.cameFromHuntDefeat(previous())>>
+	<<run setup.Home.applyHuntDefeatPreSleep()>>
 <</if>>
-<</link>>
-<<run setup.Mc.setSanity(40)>>
-<<run setup.Mc.setLust(0)>>
 
-<<elseif setup.SpecialEvent.mareStageAtLeast(4)>>
-@@.backbtn;<<link "Wake up" "GhostSpecialEventMareEnd">><<if setup.Time.sleepAdvanceHours(3)>><<include "ResetCooldowns">>
-<</if>>
-<</link>>
-<<elseif setup.SpecialEvent.spiritEventReady()>>
-@@.backbtn;<<link "Wake up" "GhostSpecialEventSleepSpirit">><<if setup.Time.sleepAdvanceHours(3)>><<include "ResetCooldowns">>
-<</if>>
-<</link>>
-<<else>>
-@@.backbtn;<<link "Wake up" "Bedroom">><<if setup.Time.sleepAdvanceHours(8)>><<include "ResetCooldowns">>
-<</if>>
-<</link>>
-<<if setup.Mc.isPenalized()>>
-<<run setup.Home.applySleepPenalty()>>
-<<else>>
-<<run setup.Home.applyFullRest()>>
-<</if>>
+<<set _sleep to setup.Home.resolveSleepWake(previous())>>
+@@.backbtn;<<link "Wake up" `_sleep.passage`>>
+	<<if setup.Time.sleepAdvanceHours(_sleep.hours)>><<run setup.Tick.resetCooldowns()>><</if>>
+<</link>>@@
+<<run setup.Home.applySleepPostWake(_sleep.postWake)>>
 
 <<if previous() eq "GhostSpecialEventMareEnd">>
-<<run setup.Mc.setEnergy(30)>>
+	<<run setup.Mc.setEnergy(30)>>
 <</if>>
-<</if>>
+
 <<if setup.Home.cameraBought()>><<run setup.Home.markSleptWithCameraOn()>><</if>>
 <</nobr>>
 <<wipeMakeup 5>>

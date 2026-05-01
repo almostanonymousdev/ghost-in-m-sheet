@@ -319,6 +319,34 @@
          * Used by the StealShirt / StealBra / StealPanties /
          * StealBottomOuter hunt-event passages. Returns true if
          * anything was actually stolen (the item group was worn). */
+        /* Asset paths for the steal-clothes passages. Each passage
+           shows a randomised image/video bucketed by what the MC is
+           currently wearing -- the bucket layout lives here so the
+           passage stays a one-line <<image>>/<<video>> render. */
+        stealPantiesImage: function () {
+            var bucket =
+                this.jeansWorn()  ? [1, 2, 3]    :
+                this.shortsWorn() ? [4, 5, 6]    :
+                this.skirtWorn()  ? [7, 8, 9]    :
+                                    [10, 11, 12];
+            var n = bucket[Math.floor(Math.random() * bucket.length)];
+            return "mechanics/steal-clothes/" + n + ".png";
+        },
+        stealBottomOuterImage: function () {
+            var bucket = this.pantiesWorn()
+                ? [13, 14, 15]
+                : [16, 17, 18];
+            var n = bucket[Math.floor(Math.random() * bucket.length)];
+            return "mechanics/steal-clothes/" + n + ".png";
+        },
+        stealBraVideo: function () {
+            var bucket = this.topShirtWorn()
+                ? [3, 4]
+                : [1, 2];
+            var n = bucket[Math.floor(Math.random() * bucket.length)];
+            return "mechanics/steal-clothes/" + n + ".mp4";
+        },
+
         stealWornInGroup: function (groupName, wornFlagKey, stolenMarkerKey) {
             var V = State.variables;
             if (V[wornFlagKey] !== setup.ClothingState.WORN) { return false; }
