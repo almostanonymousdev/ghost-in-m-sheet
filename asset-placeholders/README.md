@@ -44,6 +44,21 @@ python3 tools/make_placeholder.py "LABEL" PATH WIDTH HEIGHT
 `.jpeg` (still image) and `.mp4`, `.webm` (3-second looping video). Each call
 also updates `index.json` with the file's label, dimensions, and kind.
 
+For `.png` output, if a real asset already lives at the matching path under
+`assets/` and shares the requested dimensions, the placeholder mirrors the
+asset's outer transparent rows/columns so the visible content lines up with
+the eventual real art.
+
+## Matching transparent borders on existing placeholders
+
+```bash
+python3 tools/make_placeholder.py --match-borders
+```
+
+Walks every `.png` under `asset-placeholders/`, compares it to the matching
+file under `assets/`, and crops + transparently pads the placeholder so its
+fully-transparent outer rows/columns mirror the asset's. Idempotent.
+
 ## Adding the real asset
 
 Drop the production file at the same relative path under `assets/`. The
