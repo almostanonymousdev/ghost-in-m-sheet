@@ -350,6 +350,81 @@ test.describe('E2E: rogue run lifecycle', () => {
     expect(await getVar(page, 'hours')).toBe(0);
   });
 
+  test('per-tick chain runs on tool click: applies stat drains and time', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Enter the haunt', 'RogueRun');
+
+    /* Pin event randomness off so the click only exercises the
+       per-tick drain branch (not Event / StealClothes / GhostHuntEvent
+       gotos). The chain still calls Event but rollHuntEvent's
+       chance-roll is gated on Math.random; pre-seeding all rolls
+       to 1.0 keeps every roll above its threshold. */
+    await page.evaluate(() => { Math.random = () => 0.99; });
+
+    // Snapshot the starting MC state.
+    const before = await page.evaluate(() => {
+      const mc = SugarCube.State.variables.mc;
+      return { energy: mc.energy, sanity: mc.sanity };
+    });
+
+    // One EMF click should fire <<huntTickStep>> -> applyTickEffects ->
+    // energy -0.125, sanity -<contractDrain> (0.4 baseline) and burn 1
+    // in-game minute.
+    await page.locator('.rogue-tool-card').first().locator('a').click();
+
+    const after = await page.evaluate(() => {
+      const mc = SugarCube.State.variables.mc;
+      return { energy: mc.energy, sanity: mc.sanity };
+    });
+    expect(after.energy).toBeLessThan(before.energy);
+    expect(after.sanity).toBeLessThan(before.sanity);
+    expect(await getVar(page, 'minutes')).toBe(1);
+  });
+
+  test('per-tick chain runs on nav click and burns one in-game minute', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Enter the haunt', 'RogueRun');
+    await page.evaluate(() => { Math.random = () => 0.99; });
+
+    expect(await getVar(page, 'minutes')).toBe(0);
+
+    // Click the first nav exit.
+    await page.locator('.rogue-run-nav a').first().click();
+    await page.waitForFunction(() => SugarCube.State.variables.minutes >= 1);
+    expect(await getVar(page, 'minutes')).toBe(1);
+  });
+
+  test('sanity collapse during a rogue tool tick routes to RogueEnd as failure', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Enter the haunt', 'RogueRun');
+    await page.evaluate(() => { Math.random = () => 0.99; });
+
+    // Set the MC up so the next tick will collapse sanity.
+    await page.evaluate(() => { SugarCube.State.variables.mc.sanity = 0.1; });
+
+    await page.locator('.rogue-tool-card').first().locator('a').click();
+
+    // The chain should goto huntOverPassage("sanity") -> RogueEnd.
+    await page.waitForFunction(() => SugarCube.State.passage === 'RogueEnd');
+
+    // The run is closed and stamped with the sanity reason.
+    expect(await getVar(page, 'run')).toBeNull();
+    // Failure echo payout: 5 base + 0 success + 2 modifiers = 7.
+    expect(await getVar(page, 'echoes')).toBe(7);
+    await expect(
+      page.locator('.passage').getByText(/sanity gone/i)
+    ).toBeVisible();
+  });
+
   test('two consecutive runs increment runsStarted across the lifecycle', async () => {
     test.setTimeout(20_000);
 

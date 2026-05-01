@@ -16,7 +16,7 @@ The core gameplay revolves around investigating haunted locations to identify an
   * [GhostController.tw](../passages/ghosts/GhostController.tw) - `setup.Ghost` namespace; owns per-ghost evidence lists and the shrink/prune logic that used to live in DeleteEvidence
   * [FindCursedItem.tw](../passages/haunted_houses/general/FindCursedItem.tw) - Searching for cursed items in haunted houses
 
-* **Hunt flow** - The core loop of starting, running, and ending a ghost hunt.
+* **Hunt flow** - The core loop of starting, running, and ending a ghost hunt. Per-tick events (light flicker, ghost event, clothes-steal roll, random hunt trigger) and per-step stat drain run through the shared `<<huntTickStep>>` / `<<huntTickEventChain>>` widgets in [widgetInclude.tw](../passages/gui/widgetInclude.tw); both classic nav/tool clicks and the rogue-mode toolbar/nav fire the same chain, with mode-specific branching dispatched via `setup.HuntController` predicates (`isHuntActive`, `isCursedHuntActive`, `shouldTriggerSteal`, `shouldStartRandomHunt`, `huntOverPassage`). The legacy `<<includeTimeEventClothesHunt>>` / `<<includeTimeEventHunt>>` widgets are kept as thin aliases for `<<huntTickStep>>`.
   * [CheckHuntStart.tw](../passages/haunted_houses/hunt/CheckHuntStart.tw) - Beginning a hunt
   * [HuntEnd.tw](../passages/haunted_houses/hunt/HuntEnd.tw) - Ending a hunt normally
   * [HuntOverManual.tw](../passages/haunted_houses/hunt/HuntOverManual.tw) - Manually ending a hunt

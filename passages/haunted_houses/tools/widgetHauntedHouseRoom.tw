@@ -149,10 +149,12 @@ based on _shellVariant. */
 	</div>
 <</widget>>
 
-/* navLink -- args: label, target passage, optional mode ("hunt" for the
-ironclad-style includeTimeEventHunt; default is includeTimeEventClothesHunt
-used by elm and owaissa). Always increments $stepCount, since every
-non-enigma navigation link in the haunted houses does.
+/* navLink -- args: label, target passage. Always increments
+$stepCount, since every non-enigma navigation link in the haunted
+houses does, and runs the shared per-tick chain via
+<<huntTickStep>> (steal-clothes / random-hunt branching is now
+gated inside the chain, so ironclad and the clothes-hunt houses
+share one widget).
 
 When the Monkey Paw's tier-3 trapTheGhost wish has sealed the player
 in their current room (setup.MonkeyPaw.canScreamHere()), the link
@@ -162,28 +164,25 @@ the only ways out are the scream link or a cursed-item sacrifice. */
 	<<if setup.MonkeyPaw.canScreamHere()>>
 		<span class="disabled-link">@@.adaptiveLink; <<= _args[0]>>@@</span>
 	<<else>>
-		<<set _navMode to (_args.length gt 2 ? _args[2] : "")>>
-		<<capture _navMode>>
-			@@.adaptiveLink;<<link _args[0] _args[1]>><<if _navMode eq "hunt">><<includeTimeEventHunt>>
-			<<else>><<includeTimeEventClothesHunt>>
-			<</if>><<run setup.Tick.incrementStepCount()>><</link>>@@
-		<</capture>>
+		@@.adaptiveLink;<<link _args[0] _args[1]>>
+			<<huntTickStep>>
+			<<run setup.Tick.incrementStepCount()>>
+		<</link>>@@
 	<</if>>
 <</widget>>
 
 /* navExits -- arg-less. Reads the active house's exits map for the
-current passage and emits one <<navLink>> per entry, using the house's
-default navMode (e.g. ironclad's "hunt"). Lets room passages express
-their connectivity in HOUSE_CONFIG.exits instead of hardcoding a
-column of <<navLink>> calls; rogue-mode floor plans wire a fresh
-exits map per run. Returns nothing when the active house has no
-exits map (enigma) or the current passage isn't in it. */
+current passage and emits one <<navLink>> per entry. Lets room
+passages express their connectivity in HOUSE_CONFIG.exits instead
+of hardcoding a column of <<navLink>> calls; rogue-mode floor
+plans wire a fresh exits map per run. Returns nothing when the
+active house has no exits map (enigma) or the current passage
+isn't in it. */
 <<widget "navExits">>
 	<<set _exits to setup.HauntedHouses.exitsFor(passage())>>
-	<<set _exitMode to setup.HauntedHouses.navMode()>>
 	<<for _e range _exits>>
 		<<capture _e>>
-			<<navLink _e.label _e.target _exitMode>>
+			<<navLink _e.label _e.target>>
 		<</capture>>
 	<</for>>
 <</widget>>

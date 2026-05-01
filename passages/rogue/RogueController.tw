@@ -460,7 +460,13 @@ setup.Rogue = (function () {
 	/* End the active rogue run, paying out echoes based on whether
 	   it was a success and how many modifiers the run carried.
 	   Returns a small summary record the result passage can render
-	   without needing to peek at $run state. */
+	   without needing to peek at $run state.
+
+	   Run cleanup mirrors the classic HuntOver* passages: commit any
+	   tempCorr the run accumulated, reset bait/overcharged/exhaustion
+	   flags, and reset timed-tool activations. setup.HauntedHouses
+	   owns those helpers because the classic path needs them too --
+	   we just call through so a rogue end does the same cleanup. */
 	function endRogue(success) {
 		var run = active();
 		if (!run) return null;
@@ -473,9 +479,18 @@ setup.Rogue = (function () {
 			number: run.number,
 			modifiers: (run.modifiers || []).slice(),
 			objective: run.objective,
+			failureReason: run.failureReason || null,
 			success: !!success,
 			payout: payout
 		};
+		if (setup.HauntedHouses) {
+			if (typeof setup.HauntedHouses.commitTempCorruption === 'function') {
+				setup.HauntedHouses.commitTempCorruption();
+			}
+			if (typeof setup.HauntedHouses.resetToolTimers === 'function') {
+				setup.HauntedHouses.resetToolTimers();
+			}
+		}
 		end();
 		return summary;
 	}

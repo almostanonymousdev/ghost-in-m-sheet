@@ -19,8 +19,14 @@
      * setup.isGhostHere() returns true iff the player is in the
        rogue ghost's lair room (floorplan.spawnRoomId), so
        setup.evidenceAvailable's "ghost is here" gate works.
-   Each click burns 1 in-game minute, matching the per-tick cost
-   <<toolTick>> applies inside the regular hunts' repeat loop. */
+   Per-click flow: render the tool result into #rogue-tool-result,
+   then run the shared <<huntTickStep>> chain (per-tick stat drain,
+   light flicker, ghost event roll, steal-clothes roll, random-hunt
+   gate, hunt-over routing). <<huntTickStep>> dispatches via
+   setup.HuntController so the same widget that drives classic
+   hunts services rogue clicks too -- no rogue-vs-classic branch
+   here. <<huntTickStep>> may <<goto>> away (StealClothes,
+   GhostHuntEvent, RogueEnd) so the result render runs first. */
 <<widget "rogueToolBar">>
 	<<for _t range setup.searchToolOrder>>
 		<<set _def to setup.searchToolDefs[_t]>>
@@ -28,7 +34,6 @@
 			<div class="rogue-tool-card">
 				<<image "ui/img/" + _def.iconFile { class: "rogue-tool-icon" }>>
 				<span class="rogue-tool-card-label">@@.adaptiveLink;<<link `_def.label`>>
-					<<addTime 1>>
 					<<replace "#rogue-tool-result">>
 						<<if _t eq "temperature">>
 							<<include "TemperatureHigh">>
@@ -36,6 +41,7 @@
 							<<toolCheck _t>>
 						<</if>>
 					<</replace>>
+					<<huntTickStep>>
 				<</link>>@@</span>
 			</div>
 		<</capture>>

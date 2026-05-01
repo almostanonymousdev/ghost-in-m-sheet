@@ -39,13 +39,28 @@ setup.HuntController = (function () {
 	function sv() { return State.variables; }
 
 	/* "regular" while a $hunt object holds a ghost name; "rogue"
-	   while a rogue run is active; null otherwise. Regular mode
-	   takes priority -- they should never both be active, but if
-	   they are (a save-state oddity), the witch flow wins. */
+	   while a rogue run is active; null otherwise.
+
+	   Tie-break rules when both $hunt and $run somehow coexist
+	   (the player walked into a rogue run without first formally
+	   ending a prior witch contract via WitchEndContract, so
+	   $hunt.name is still populated):
+	     - On the RogueRun passage, rogue wins. The player is
+	       physically inside the rogue UI, the rogue ghost was
+	       just rolled, and tool/event/per-tick dispatch must
+	       target the rogue run -- otherwise the per-tick chain
+	       reads $hunt.mode (likely POSSESSED), `isHuntActive()`
+	       answers false, and the clock + stat drains stop firing.
+	     - Anywhere else, regular wins. Witch-side state
+	       (evidence pruning, DeleteEvidence, contract reward) is
+	       authoritative when the player is back in the
+	       witch / city / haunted-house flow. */
 	function mode() {
+		var rogueActive = !!(setup.Rogue && setup.Rogue.isRogue && setup.Rogue.isRogue());
+		if (rogueActive && passage() === "RogueRun") return "rogue";
 		var h = sv().hunt;
 		if (h && h.name) return "regular";
-		if (setup.Rogue && setup.Rogue.isRogue && setup.Rogue.isRogue()) return "rogue";
+		if (rogueActive) return "rogue";
 		return null;
 	}
 
@@ -76,10 +91,89 @@ setup.HuntController = (function () {
 		return false;
 	}
 
+	/* True iff the per-tick effects + event chain should fire on
+	   this tool-tick / nav-step. Classic = ghost is in active hunt
+	   mode (player has gone inside a haunted house); rogue = a run
+	   is in flight AND the player is on the RogueRun passage (so
+	   the lobby / end / shop don't drain stats or roll events).
+	   This is the single predicate the per-tick chain widget and
+	   HauntConditions.snapshot/applyTickEffects gate on. */
+	function isHuntActive() {
+		var m = mode();
+		if (m === "regular") return setup.Ghosts.isHunting();
+		if (m === "rogue")   return passage() === "RogueRun";
+		return false;
+	}
+
+	/* Cursed-hunt suppression -- classic-only concept (a frozen-room
+	   sub-flow on the witch contract). Rogue runs don't spawn cursed
+	   hunts, so the answer is always false there. */
+	function isCursedHuntActive() {
+		var m = mode();
+		if (m === "regular") return setup.HauntedHouses.isCursedHuntActive();
+		return false;
+	}
+
+	/* Random-hunt-event roll. Classic delegates to the existing
+	   threshold + ghost.canHunt gate; rogue runs don't trigger
+	   GhostHuntEvent yet (the run-failure branch is wired through
+	   sanity / exhaustion / time over-states instead), so the
+	   answer is always false there. Returning false skips
+	   CheckHuntStart's <<goto "GhostHuntEvent">> the same way the
+	   classic gate would when the threshold isn't met. */
+	function shouldStartRandomHunt() {
+		var m = mode();
+		if (m === "regular") return setup.HauntedHouses.shouldStartRandomHunt();
+		return false;
+	}
+
+	/* Steal-clothes roll. The wardrobe / stash side-effects are
+	   mode-agnostic, so once a steal fires the StealClothes cascade
+	   works in either mode. Ironclad opts out via runsStealClothes
+	   so its event chain never invokes the steal step. Rogue
+	   answers true so the steal cascade fires. */
+	function shouldTriggerSteal() {
+		var m = mode();
+		if (m === "regular") {
+			var hh = setup.HauntedHouses.activeHouse();
+			if (hh && hh.runsStealClothes === false) return false;
+			return setup.HauntedHouses.shouldTriggerSteal();
+		}
+		if (m === "rogue") return setup.HauntedHouses.shouldTriggerSteal();
+		return false;
+	}
+
+	/* Mode-aware passage to <<goto>> when the per-tick chain
+	   detects a hunt-over condition. `reason` is one of
+	   "sanity" | "exhaustion" | "time". Classic returns the
+	   matching HuntOver* passage; rogue stamps the run as a
+	   failure with the reason and returns "RogueEnd" so the
+	   chain widget can route there with one <<goto>>. */
+	function huntOverPassage(reason) {
+		var m = mode();
+		if (m === "regular") {
+			if (reason === "sanity")     return "HuntOverSanity";
+			if (reason === "exhaustion") return "HuntOverExhaustion";
+			if (reason === "time")       return "HuntOverTime";
+			return null;
+		}
+		if (m === "rogue") {
+			setup.Rogue.setField("outcome", "failure");
+			setup.Rogue.setField("failureReason", reason);
+			return "RogueEnd";
+		}
+		return null;
+	}
+
 	return {
-		mode:         mode,
-		isActive:     isActive,
-		activeGhost:  activeGhost,
-		isGhostHere:  isGhostHere
+		mode:                   mode,
+		isActive:               isActive,
+		activeGhost:            activeGhost,
+		isGhostHere:            isGhostHere,
+		isHuntActive:           isHuntActive,
+		isCursedHuntActive:     isCursedHuntActive,
+		shouldStartRandomHunt:  shouldStartRandomHunt,
+		shouldTriggerSteal:     shouldTriggerSteal,
+		huntOverPassage:        huntOverPassage
 	};
 })();

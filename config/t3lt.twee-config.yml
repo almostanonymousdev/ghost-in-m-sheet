@@ -93,16 +93,30 @@ sugarcube-2:
       name: applyTickEffects
       description: Applies the current tick's stat modifiers to the MC and updates the UI 
         for the relevant meters.
+    huntTickStep:
+      name: huntTickStep
+      description: Per-nav-step / per-tool-click chain (mode-agnostic). Applies
+        per-tick stat drains, routes to the mode-aware HuntController.huntOverPassage()
+        on sanity / energy / time runout, and otherwise dispatches to
+        <<huntTickEventChain>>. Replaces the previous includeTimeEvent* widgets;
+        steal-clothes is now gated by HuntController.shouldTriggerSteal so a
+        single widget services both classic and rogue hunts.
+    huntTickEventChain:
+      name: huntTickEventChain
+      description: Inner per-tick chain run from <<huntTickStep>> and from
+        searchToolMarkup's repeat body. Includes LightPassageGhost + Event,
+        then conditionally StealClothes (HuntController.shouldTriggerSteal)
+        and GhostHuntEvent (HuntController.shouldStartRandomHunt). All
+        branching dispatched via HuntController so the same widget services
+        classic and rogue hunts.
     includeTimeEventClothesHunt:
       name: includeTimeEventClothesHunt
-      description: Advances time by 1 hour, runs the event check, then attempts a
-        clothes-steal event. Falls through to CheckHuntStart if no event fires.
-        Does nothing during an active cursed hunt ($cursedHuntActive eq 1).
+      description: Backwards-compat alias for <<huntTickStep>>; preserved so
+        existing call sites in widgetHauntedHouseRoom keep linting clean.
     includeTimeEventHunt:
       name: includeTimeEventHunt
-      description: Advances time by 1 hour, runs the event check, then falls through
-        to CheckHuntStart if no event fires. Does nothing during an active
-        cursed hunt ($cursedHuntActive eq 1).
+      description: Backwards-compat alias for <<huntTickStep>>; preserved so
+        existing ironclad-flavour call sites keep linting clean.
     includeStyle:
       name: includeStyle
       description: Injects a body background-image <style> block for the room

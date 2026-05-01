@@ -107,6 +107,7 @@
 							<<capture _n>>
 								@@.movebtn;<<link _n.label "RogueRun">>
 									<<run setup.Rogue.setCurrentRoom(_n.id)>>
+									<<huntTickStep>>
 								<</link>>@@<br>
 							<</capture>>
 						<</for>>
@@ -134,6 +135,12 @@
 
 	<<if _summary.success>>
 		@@.notmc-speech; The haunt yields. Run #<<= _summary.number>> closes clean.@@<br>
+	<<elseif _summary.failureReason eq "sanity">>
+		@@.notmc-speech; Your mind gives out. Run #<<= _summary.number>> ends with sanity gone.@@<br>
+	<<elseif _summary.failureReason eq "exhaustion">>
+		@@.notmc-speech; Your legs give out. Run #<<= _summary.number>> ends in exhaustion.@@<br>
+	<<elseif _summary.failureReason eq "time">>
+		@@.notmc-speech; Dawn breaks before the answer does. Run #<<= _summary.number>> ends with the clock.@@<br>
 	<<else>>
 		@@.notmc-speech; The haunt swallows you. Run #<<= _summary.number>> ends in failure.@@<br>
 	<</if>>

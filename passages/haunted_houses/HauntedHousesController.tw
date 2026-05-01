@@ -70,11 +70,12 @@ setup.HauntedHouses = (function () {
 		{label, target} for the <<navExits>> widget to emit as nav
 		links. Leave-links / outside-links are kept inline in their
 		hallway passages -- only the within-house room-to-room nav is
-		data-driven here. `navMode` is the third arg passed to
-		<<navLink>> (currently "hunt" for ironclad, undefined for
-		owaissa/elm). Houses without an exits map fall back to inline
-		nav (used for enigma, which renders raw markdown links and
-		isn't migrated). */
+		data-driven here. Houses without an exits map fall back to
+		inline nav (used for enigma, which renders raw markdown links
+		and isn't migrated).
+		`runsStealClothes: false` opts a house out of the steal-clothes
+		step in the per-tick chain (ironclad, since prison ghosts have
+		their own warden-clothes mechanic). Defaults to true. */
 	var HOUSE_CONFIG = [
 		{
 			id: 'owaissa',
@@ -192,13 +193,13 @@ setup.HauntedHouses = (function () {
 			levelGate: 4,
 			isRealHouse: false,
 			runsFurnitureCode: true,
+			runsStealClothes: false,
 			rooms: [
 				'BlockA', 'BlockB',
 				'BlockACellA', 'BlockACellB', 'BlockACellC',
 				'BlockBCellA', 'BlockBCellB', 'BlockBCellC',
 				'reception', 'kitchen', 'hallway'
 			],
-			navMode: 'hunt',
 			exits: {
 				IroncladHallway: [
 					{ label: 'Reception', target: 'IroncladReception' },
@@ -294,13 +295,6 @@ setup.HauntedHouses = (function () {
 			if (!h || !h.exits) return [];
 			var list = h.exits[passageName];
 			return Array.isArray(list) ? list : [];
-		},
-		/* Default <<navLink>> mode for the active house ('' for the
-		   clothes-event default, 'hunt' for ironclad). Returns ''
-		   when no house is active. */
-		navMode: function () {
-			var h = this.activeHouse();
-			return h && h.navMode ? h.navMode : '';
 		},
 		/* The house that currently owns the hunt; null when no house
 			is active (witch pre-hunt, or after GhostStreet teardown). */

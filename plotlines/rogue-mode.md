@@ -129,6 +129,26 @@ flow (`$hunt`) and rogue runs (`$run`) -- share one tool / evidence
   against the haunted-passage table; rogue mode compares
   `$run.currentRoomId` against `floorplan.spawnRoomId` and only
   fires inside the `RogueRun` passage.
+* `isHuntActive()` — gates the per-tick chain. Classic =
+  `Ghosts.isHunting()` (player is inside the haunted house);
+  rogue = run is in flight AND the player is on the `RogueRun`
+  passage. `setup.HauntConditions.snapshot()`/`applyTickEffects()`
+  and `<<toolTick>>`'s HuntOverTime check both read this so the
+  same per-step stat-drain + clock logic services both modes.
+* `isCursedHuntActive()` — classic-only sub-flow gate; rogue
+  always answers false.
+* `shouldTriggerSteal()` — wardrobe-state roll. Honours a
+  per-house `runsStealClothes: false` opt-out (ironclad, since
+  prison ghosts have their own warden-clothes mechanic).
+* `shouldStartRandomHunt()` — gates `CheckHuntStart`'s
+  `<<goto "GhostHuntEvent">>`. Rogue currently returns false
+  (random hunts not wired into rogue runs yet); classic delegates
+  to `HauntedHouses.shouldStartRandomHunt()`.
+* `huntOverPassage(reason)` — mode-aware passage to `<<goto>>`
+  when the per-tick chain detects sanity collapse / exhaustion /
+  time runout. Classic returns the matching `HuntOver*` passage;
+  rogue stamps the run as a failure with the reason and returns
+  `RogueEnd`.
 
 `setup.Ghosts.active()` and `setup.isGhostHere()` are thin
 adapters that delegate to the facade -- legacy callers don't move,
@@ -136,6 +156,38 @@ new shared code reads through the controller. The rogue ghost
 itself is rolled in `setup.Rogue.startRogue()` from a
 seed-derived index into `setup.Ghosts.names()` and stamped onto
 `$run.ghostName`, so the same seed reproduces the same ghost.
+
+## Per-tick event chain
+
+Classic and rogue hunts share one per-tick event chain widget
+pair, dispatched via `setup.HuntController` predicates so neither
+the widget body nor the calling passages need an "if rogue / else
+classic" branch:
+
+* `<<huntTickStep>>` — per-nav-step / per-tool-click chain. Runs
+  the per-tick stat drains, routes to
+  `HuntController.huntOverPassage("sanity"|"exhaustion")` if the
+  MC ran out, and otherwise dispatches to the inner chain.
+* `<<huntTickEventChain>>` — inner chain. Lights flicker
+  (`LightPassageGhost`), a ghost event may roll (`Event` →
+  `EventMC`), a steal-clothes event may roll
+  (`HuntController.shouldTriggerSteal` → `StealClothes`), and a
+  random hunt may start (`HuntController.shouldStartRandomHunt`
+  → `GhostHuntEvent`). Used both from `<<huntTickStep>>` and from
+  the per-tool-tick repeat body emitted by
+  `setup.searchToolMarkup`.
+
+The classic nav-link widget (`<<navLink>>`), the rogue nav links
+in `RogueRun`, and the `<<rogueToolBar>>` widget all call
+`<<huntTickStep>>`. The classic per-tool-tick repeat body uses
+`<<huntTickEventChain>>` directly (the meter-fill replace runs
+`<<applyTickEffects>>` on completion). Enigma is the only chain
+that doesn't go through this stack -- it has its own
+LightPassageGhost + EventArt loop.
+
+`<<includeTimeEventClothesHunt>>` and `<<includeTimeEventHunt>>`
+are now thin aliases for `<<huntTickStep>>` so existing call
+sites keep working without churn.
 
 ## Modifier registry
 

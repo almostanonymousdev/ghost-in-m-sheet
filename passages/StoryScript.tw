@@ -1281,7 +1281,8 @@ setup.HauntConditions = (function () {
      * array used by the HUD widget to show "why". */
     function snapshot() {
         var V = State.variables;
-        var inHouse = !!(setup.Ghosts && setup.Ghosts.isHunting && setup.Ghosts.isHunting());
+        var inHouse = !!(setup.HuntController && setup.HuntController.isHuntActive
+                         && setup.HuntController.isHuntActive());
         var snap = {
             dark:              false,
             clothing:          clothingState(),
@@ -1418,7 +1419,8 @@ setup.HauntConditions = (function () {
         var V = State.variables;
         var mc = V.mc;
         if (!mc) return;
-        var inHouse = !!(setup.Ghosts && setup.Ghosts.isHunting && setup.Ghosts.isHunting());
+        var inHouse = !!(setup.HuntController && setup.HuntController.isHuntActive
+                         && setup.HuntController.isHuntActive());
         var snap = snapshot();
 
         if (snap.sanityPerStep !== 0) {
@@ -1796,30 +1798,15 @@ setup.searchToolMarkup = function (cfg) {
     }
 
     // Event chain -- what happens when an iteration ticks WITHOUT completing.
-    var eventChain;
-    if (cfg.eventChain === "enigma") {
-        eventChain = '<<include "LightPassageGhost">><<include "EventArt">>';
-    } else if (cfg.eventChain === "ironclad") {
-        eventChain =
-            '<<if $cursedHuntActive eq 1>><<else>>' +
-                '<<include "LightPassageGhost">><<include "Event">>' +
-                '<<if not setup.Events.eventTriggered()>>' +
-                    '<<include "CheckHuntStart">>' +
-                '<</if>>' +
-            '<</if>>';
-    } else {
-        // standard (default + Elm + Owaissa)
-        eventChain =
-            '<<if $cursedHuntActive eq 1>><<else>>' +
-                '<<include "LightPassageGhost">><<include "Event">>' +
-                '<<if not setup.Events.eventTriggered()>>' +
-                    '<<include "StealClothesEvent">>' +
-                '<</if>>' +
-                '<<if not setup.HauntedHouses.stealClothesTriggered() and not setup.Events.eventTriggered()>>' +
-                    '<<include "CheckHuntStart">>' +
-                '<</if>>' +
-            '<</if>>';
-    }
+    // Enigma keeps its own art-chain (no random hunts / steal-clothes /
+    // CheckHuntStart -- it's a pure light + EventArt loop). Every other
+    // chain delegates to <<huntTickEventChain>>, which dispatches via
+    // setup.HuntController so the same widget services classic and
+    // rogue hunts. Per-house opt-outs (e.g. ironclad skipping the
+    // steal step) live on HOUSE_CONFIG flags read by the controller.
+    var eventChain = (cfg.eventChain === "enigma")
+        ? '<<include "LightPassageGhost">><<include "EventArt">>'
+        : '<<huntTickEventChain>>';
 
     // Completion replace -- what happens when the meter fills.
     var completionReplace;
