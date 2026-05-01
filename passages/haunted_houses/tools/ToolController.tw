@@ -328,3 +328,421 @@
         }
     });
 }());
+
+/* ------------------------------------------------------------------
+ * Search-tool runtime helpers, macros, and global handlers.
+ *
+ * Reads the per-tool / per-prefix data tables defined alongside the
+ * meter registration in StoryScript.tw (setup.searchToolDefs,
+ * setup.searchRoomPrefixes, setup.searchPrefixIndex,
+ * setup.hauntedPassages). Everything below was previously inline in
+ * StoryScript.tw and is grouped here so the tool subsystem lives in
+ * one place. The exported names stay top-level on `setup` because
+ * authored passages and other controllers refer to them by those
+ * exact names.
+ * ------------------------------------------------------------------ */
+(function () {
+    'use strict';
+
+    /* setup.isGhostHere([houses]) -- true iff the current passage belongs to
+     * one of the listed houses AND $hunt.room.name matches that passage's
+     * bgRoom. Pass a house-filter array to scope the check (e.g. ["enigma"]
+     * for the *Art tool variants). Omit the filter to accept any house. */
+    setup.isGhostHere = function (houses) {
+        var h = setup.Ghosts.hunt();
+        if (!h || !h.room || !h.room.name) return false;
+        var cur = passage();
+        return setup.hauntedPassages.some(function (e) {
+            if (houses && houses.indexOf(e.house) === -1) return false;
+            return e.passage === cur && e.bgRoom === h.room.name;
+        });
+    };
+
+    /* Shared equipment-tier chance table used by the gwb / plasm / spiritbox
+     * checks: tier 5 = 15%, tier 4 = 25%, tier 3 = 35%. Returns true when the
+     * (1..100) roll passes for the given tier. The lights-off bonus comes
+     * from setup.HauntConditions.snapshot().toolChanceBonus so the tooltip
+     * and the actual roll can never disagree. */
+    setup.TIER_CHANCE = { 5: 15, 4: 25, 3: 35 };
+    setup.chanceByTier = function (tier, roll) {
+        var t = setup.TIER_CHANCE[tier];
+        if (t === undefined) return false;
+        return roll <= (t + setup.HauntConditions.snapshot().toolChanceBonus);
+    };
+
+    /* Equipment upgrade → on-time window (in in-game minutes) used by the
+     * EMF and UVL tools. Higher tiers stay active longer; darkness extends
+     * the window further (same source as the tooltip). */
+    setup.TOOL_TIME_REMAIN = { 5: 10, 4: 15, 3: 20 };
+    setup.toolTimeRemain = function (tier) {
+        var base = setup.TOOL_TIME_REMAIN[tier];
+        if (base === undefined) return 0;
+        return base + setup.HauntConditions.snapshot().toolWindowBonus;
+    };
+
+    /* The two timed tools (EMF + UVL) track their activation state inside
+     * $tools so passage code never touches the per-tool state keys directly.
+     * Shape: $tools = { emf: { activated, activationTime }, uvl: {...} }. */
+    setup.TIMED_TOOLS = ["emf", "uvl"];
+
+    /* Discrete states returned by setup.tickTimedTool. Consumers compare
+     * against these instead of bare string literals. */
+    setup.ToolState = Object.freeze({
+        READY:    "ready",
+        EXPIRED:  "expired",
+        INACTIVE: "inactive"
+    });
+
+    /* Lazily ensure $tools is initialised — covers fresh saves, older saves
+     * that predate the bundle, and test helpers that skip StoryInit. */
+    setup.toolsRecord = function (tool) {
+        var V = State.variables;
+        if (!V.tools) V.tools = {};
+        if (!V.tools[tool]) V.tools[tool] = { activated: 0, activationTime: 0 };
+        return V.tools[tool];
+    };
+
+    function clearToolRecord(rec) {
+        rec.activated = 0;
+        rec.activationTime = 0;
+    }
+
+    /* Mark a tool as just-activated (EMF/UVL); the activationTime timestamp
+     * is used by tickTimedTool to compute the staleness window. */
+    setup.activateTool = function (tool) {
+        var rec = setup.toolsRecord(tool);
+        rec.activated = 1;
+        rec.activationTime = setup.Time.totalMinutes();
+    };
+
+    /* Clear a tool's activation state without tripping the "expired"
+     * observer path in tickTimedTool. */
+    setup.resetTool = function (tool) {
+        clearToolRecord(setup.toolsRecord(tool));
+    };
+
+    /* Reset every timed tool — used at hunt end / companion walk-home. */
+    setup.resetTools = function () {
+        setup.TIMED_TOOLS.forEach(setup.resetTool);
+    };
+
+    /* Evaluate a timed tool's state and auto-clear it if stale. Returns
+     * setup.ToolState.READY (activated, within the freshness window),
+     * setup.ToolState.EXPIRED (was activated but the window lapsed; flags
+     * are now cleared) or setup.ToolState.INACTIVE (never activated this
+     * cycle). setup.ToolController's emf/uvl renderers share this logic. */
+    setup.tickTimedTool = function (tool) {
+        var TS = setup.ToolState;
+        if (setup.TIMED_TOOLS.indexOf(tool) === -1) return TS.INACTIVE;
+        var rec = setup.toolsRecord(tool);
+        if (rec.activated !== 1) return TS.INACTIVE;
+        var elapsed = setup.Time.totalMinutes() - rec.activationTime;
+        var remain = setup.toolTimeRemain(State.variables.equipment[tool]);
+        if (elapsed > remain) {
+            clearToolRecord(rec);
+            return TS.EXPIRED;
+        }
+        return TS.READY;
+    };
+
+    /* Shared predicate for the tier-gated evidence tools (GWB, Plasm,
+     * Spiritbox). True iff the active ghost exposes `id`, the equipment-
+     * tier chance passes a fresh 1..100 roll, and the player is in a
+     * haunted passage matching `houses` (or any house when `houses` is
+     * omitted). Consumers still supply their own presentation. */
+    setup.evidenceAvailable = function (id, tier, houses) {
+        var g = setup.Ghosts.active();
+        if (!g || !g.hasEvidence(id)) return false;
+        var roll = Math.floor(Math.random() * 100) + 1;
+        if (!setup.chanceByTier(tier, roll)) return false;
+        return setup.isGhostHere(houses);
+    };
+
+    /* Short human-readable summary of a tool's per-check success behaviour
+     * for the hover tooltip on each <<roomToolCard>>. gwb/plasm/spiritbox
+     * roll a flat tier-based chance per check. emf/uvl are deterministic
+     * once their activation window is open (another tool's hit or a ghost
+     * event opens it, and it stays open for a tier-based number of
+     * in-game minutes). temperature is a passive reading that always
+     * produces a signal. */
+    setup.toolSuccessRate = function (toolKey) {
+        var def = setup.searchToolDefs[toolKey];
+        if (!def) return "";
+        var equipment = State.variables.equipment || {};
+        var tier = equipment[def.equipField];
+        var tierLabel = (tier !== undefined) ? ("Tier " + tier) : "Unowned";
+        var snap = setup.HauntConditions.snapshot();
+        var bonusNote = snap.contributors.length
+            ? " · " + snap.contributors.map(function (c) { return c.label; }).join(" + ")
+            : "";
+        if (toolKey === "temperature") {
+            return tierLabel + " · 100% accuracy";
+        }
+        if (toolKey === "emf" || toolKey === "uvl") {
+            var windowMin = setup.TOOL_TIME_REMAIN[tier];
+            if (windowMin === undefined) return tierLabel;
+            return tierLabel + " · 100% while active · Window "
+                + (windowMin + snap.toolWindowBonus)
+                + " min after another tool's hit or a ghost event" + bonusNote;
+        }
+        var chance = setup.TIER_CHANCE[tier];
+        if (chance === undefined) return tierLabel;
+        return tierLabel + " · " + (chance + snap.toolChanceBonus) + "% per check" + bonusNote;
+    };
+
+    /* Build the full <<searchTool>> config from a (tool, prefix) pair by
+     * pulling per-tool defaults out of setup.searchToolDefs and per-prefix
+     * defaults out of setup.searchRoomPrefixes. This is what the room-level
+     * <<roomToolBar>> widget calls -- there's no need for the 200+ thin
+     * search passage wrappers that previously hard-coded each combination. */
+    setup.searchToolConfigFor = function (tool, prefix) {
+        var entry = setup.searchPrefixIndex[prefix];
+        if (!entry) throw new Error("searchTool: unknown prefix '" + prefix + "'");
+        var def = setup.searchToolDefs[tool];
+        if (!def) throw new Error("searchTool: unknown tool '" + tool + "'");
+        var cfg = {
+            tool:        tool,
+            prefix:      prefix,
+            room:        entry.bagRoom,
+            bgRoom:      entry.bgRoom,
+            eventChain:  entry.eventChain || "standard",
+            replaceMode: def.replaceMode
+        };
+        if (entry.meterTag)      cfg.meterTag        = entry.meterTag;
+        if (def.needsLightCheck) cfg.needsLightCheck = true;
+        return cfg;
+    };
+
+    /* Markup for the side-effects that run on every iteration WITHOUT
+     * filling the meter (light-passage check + the appropriate event
+     * pipeline + start-of-hunt roll). One block per event-chain. */
+    var EVENT_CHAINS = {
+        enigma: '<<include "LightPassageGhost">><<include "EventArt">>',
+        ironclad:
+            '<<if $cursedHuntActive eq 1>><<else>>' +
+                '<<include "LightPassageGhost">><<include "Event">>' +
+                '<<if not setup.Events.eventTriggered()>>' +
+                    '<<include "CheckHuntStart">>' +
+                '<</if>>' +
+            '<</if>>',
+        standard:
+            '<<if $cursedHuntActive eq 1>><<else>>' +
+                '<<include "LightPassageGhost">><<include "Event">>' +
+                '<<if not setup.Events.eventTriggered()>>' +
+                    '<<include "StealClothesEvent">>' +
+                '<</if>>' +
+                '<<if not setup.HauntedHouses.stealClothesTriggered() and not setup.Events.eventTriggered()>>' +
+                    '<<include "CheckHuntStart">>' +
+                '<</if>>' +
+            '<</if>>'
+    };
+
+    function eventChainFor(name) {
+        return EVENT_CHAINS[name] || EVENT_CHAINS.standard;
+    }
+
+    function checkMarkupFor(cfg, def) {
+        if (def.checkPassage) {
+            var passageName = (cfg.eventChain === "enigma")
+                ? def.artCheckPassage
+                : def.checkPassage;
+            return '<<include "' + passageName + '">>';
+        }
+        var variant = (cfg.eventChain === "enigma") ? "art" : "standard";
+        return '<<toolCheck "' + cfg.tool + '" "' + variant + '">>';
+    }
+
+    function completionReplaceMarkup(cfg, ids, check) {
+        if (cfg.replaceMode === "double") {
+            return '<<replace "#' + ids.actionSel + '">>' + check + '<</replace>>'
+                 + '<<replace "#' + ids.meterId + '">><</replace>>'
+                 + '<<applyTickEffects>>';
+        }
+        return '<<replace "#' + ids.meterId + '">>' + check + '<</replace>>'
+             + '<<applyTickEffects>>';
+    }
+
+    /* Build the markup for one tool slot. Called by the <<searchTool>>
+     * macro with a config object whose required fields are:
+     *   tool        -- key into setup.searchToolDefs
+     *   room        -- bag suffix, e.g. "Bedroom" or "KitchenIronclad"
+     *                 (the search bag is $currentsearch<Room>; meter is
+     *                  search<Room><Tool>)
+     *   bgRoom      -- variable name of the room state object whose
+     *                 .background field controls the dark/lights checks
+     *                 (e.g. "bedroom" or "kitchen")
+     *   prefix      -- canonical per-haunted-house-room prefix (e.g.
+     *                 "owaissaBedroom", "ElmBasement", "ironcladKitchen").
+     *                 Button/meter/action ids are derived from this + the
+     *                 tool's widgetSuffix.
+     *   eventChain  -- "standard" | "ironclad" | "enigma"
+     *   replaceMode -- "single" (replace meterId with check passage)
+     *                | "double" (replace actionSel with check passage AND
+     *                            clear meterId)
+     * Optional overrides:
+     *   buttonId / meterId / actionSel -- only when the derived default
+     *                                     doesn't fit
+     *   meterTag    -- "span" (default) or "div"
+     *   needsLightCheck -- true for spiritbox; wraps body in lights-off
+     *                      guard
+     *   lightOffSel -- selector for the lights-off message (defaults to
+     *                  "#" + actionSel)
+     */
+    setup.searchToolMarkup = function (cfg) {
+        var def = setup.searchToolDefs[cfg.tool];
+        if (!def) {
+            throw new Error("searchTool: unknown tool '" + cfg.tool + "'");
+        }
+        if (!cfg.room || !cfg.bgRoom || !cfg.prefix) {
+            throw new Error("searchTool: missing required field (room/bgRoom/prefix)");
+        }
+
+        var ids = {
+            buttonId:  cfg.buttonId  || (cfg.prefix + def.widgetSuffix + "Button"),
+            meterId:   cfg.meterId   || (cfg.prefix + def.widgetSuffix),
+            actionSel: cfg.actionSel || (cfg.prefix + "Action")
+        };
+
+        if (cfg.replaceMode === "double" && !ids.actionSel) {
+            throw new Error("searchTool: replaceMode=double requires actionSel");
+        }
+
+        var meterTag  = cfg.meterTag || "span";
+        var bag       = "$currentsearch" + cfg.room;
+        var bgRoom    = "$" + cfg.bgRoom;
+        var equip     = "$equipment." + def.equipField;
+        var field     = bag + "." + cfg.tool;
+        var meterName = "search" + cfg.room + def.meterField;
+        var meterExpr = "`" + field + " / " + equip + "`";
+
+        var check = checkMarkupFor(cfg, def);
+        var eventChain = eventChainFor(cfg.eventChain);
+        var completion = completionReplaceMarkup(cfg, ids, check);
+
+        // Body of the <<repeat>> loop. Each iteration is one tool tick
+        // and burns one in-game minute via <<toolTick>>.
+        var repeatBody = [
+            '<<if ' + field + ' neq ' + equip + '>>',
+                eventChain,
+            '<</if>>',
+            '<<if ' + field + ' lte (' + equip + ' - 1)>>',
+                '<<toolTick>>',
+                '<<set ' + field + ' += 1>>',
+                '<<updatemeter \'' + meterName + '\' ' + meterExpr + '>>',
+            '<<elseif ' + field + ' gte ' + equip + '>>',
+                completion,
+                '<<set ' + field + ' to 0>>',
+                '<<removeclass ".cardlink" "disabled-link">>',
+                '<<stop>>',
+            '<</if>>'
+        ].join('\n');
+
+        var coreBody = [
+            '<' + meterTag + ' id="' + ids.meterId + '">',
+            '<<showmeter \'' + meterName + '\' ' + meterExpr + '>>',
+            '</' + meterTag + '>',
+            '<<repeat `$timerToolsDecreased`>>',
+            repeatBody,
+            '<</repeat>>'
+        ].join('\n');
+
+        // Spiritbox-style lights-off guard wraps the meter + repeat in an
+        // <<if bgRoom.background eq 1>>...<<else>>...<</if>> branch.
+        var inner;
+        if (cfg.needsLightCheck) {
+            var lightOffSel = cfg.lightOffSel || ('#' + ids.actionSel);
+            inner =
+                '<<if ' + bgRoom + '.background eq 1>>' +
+                    '<<replace "' + lightOffSel + '">>' +
+                        '<div class="spiritbox-container mc-thoughts">\nI need to turn off the light first</div>' +
+                    '<</replace>>' +
+                '<<else>>' +
+                    '<<addclass ".cardlink" "disabled-link">>\n' +
+                    coreBody + '\n' +
+                '<</if>>';
+        } else {
+            inner = '<<addclass ".cardlink" "disabled-link">>\n' + coreBody;
+        }
+
+        return [
+            '<span id="' + ids.buttonId + '">@@.adaptiveLink;<<linkreplace "' + def.label + '">>',
+            inner,
+            '<</linkreplace>>@@</span>'
+        ].join('\n');
+    };
+
+    Macro.add("searchTool", {
+        handler: function () {
+            try {
+                var first = this.args[0];
+                var cfg;
+                if (typeof first === "string") {
+                    cfg = setup.searchToolConfigFor(first, this.args[1]);
+                } else if (typeof first === "object" && first !== null) {
+                    cfg = first;
+                } else {
+                    return this.error("searchTool: expected (tool, prefix) or a config object");
+                }
+                $(this.output).wiki(setup.searchToolMarkup(cfg));
+            } catch (e) {
+                return this.error(e.message);
+            }
+        }
+    });
+
+    /* Keyboard shortcut: map each key to the tool it activates, then click
+     * the canonical button for every room in setup.searchRoomPrefixes. */
+    setup.searchToolKeyMap = {
+        t: "temperature",
+        f: "emf",
+        g: "gwb",
+        u: "uvl",
+        e: "plasm",
+        s: "spiritbox"
+    };
+
+    setup.clickAllSearchTools = function (tool) {
+        var def = setup.searchToolDefs[tool];
+        if (!def) return;
+        var suffix = def.widgetSuffix;
+        setup.searchRoomPrefixes.forEach(function (entry) {
+            $('#' + entry.prefix + suffix + 'Button a').click();
+        });
+    };
+
+    function debounce(func, wait) {
+        var timeout;
+        return function () {
+            var args = arguments;
+            var ctx = this;
+            clearTimeout(timeout);
+            timeout = setTimeout(function () { func.apply(ctx, args); }, wait);
+        };
+    }
+
+    $(document).off('keydown.searchToolKeys').on('keydown.searchToolKeys',
+        debounce(function (event) {
+            var tool = setup.searchToolKeyMap[event.key];
+            if (tool) setup.clickAllSearchTools(tool);
+        }, 50));
+
+    /* Global delegation: when any toolCard image is clicked, dispatch the
+     * click to the matching searchTool anchor. The id convention
+     * <prefix><picSuffix> uniquely identifies both the prefix and the
+     * tool, so one handler covers every haunted-house room without
+     * per-room script blocks. */
+    $(document).on('click.searchToolPic', '.footer-card .cardimg img.icon[id]', function () {
+        var picId = this.id;
+        var defs  = setup.searchToolDefs;
+        for (var key in defs) {
+            if (!defs.hasOwnProperty(key)) continue;
+            var d = defs[key];
+            if (picId.length > d.picSuffix.length &&
+                picId.slice(-d.picSuffix.length) === d.picSuffix) {
+                var prefix = picId.slice(0, -d.picSuffix.length);
+                $('#' + prefix + d.widgetSuffix + ' a').trigger('click');
+                return;
+            }
+        }
+    });
+}());

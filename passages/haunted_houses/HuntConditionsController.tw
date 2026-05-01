@@ -1,0 +1,357 @@
+:: HuntConditionsController [script]
+/* setup.HauntConditions -- single source of truth for the hunt-mechanics
+ * rework. Resolves the player's current haunted-house room from the running
+ * passage, aggregates every axis (darkness, clothing, lust, overcharged
+ * tools, bait) into one snapshot, and exposes it to:
+ *   - huntConditions HUD (per-step stat deltas above the tool bar)
+ *   - setup.ToolController.toolSuccessRate (hover tooltip on each tool card)
+ *   - setup.ToolController.chanceByTier / .toolTimeRemain (actual tool rolls)
+ *   - CheckHuntStart (random-hunt threshold)
+ *   - applyTickEffects (per-nav-step sanity/lust/corruption drain)
+ * Each axis pushes into contributors[] so the HUD can render a badge row
+ * alongside the aggregated numbers. Keep new knobs HERE so the HUD numbers
+ * and the underlying mechanics never drift apart. */
+setup.HauntConditions = (function () {
+	var LUST_FUEL_THRESHOLD = 50;   // passive evidence bonus when lust >= this
+	var BAIT_LUST_COST      = 20;
+	var BAIT_STEPS          = 3;    // nav ticks the ghost is pinned to you
+
+	/* Energy as the pacing gate: every nav tick inside a haunted house
+	 * burns ENERGY_PER_STEP, capping the total room-search budget per
+	 * contract. Spendable actions (bait, pray) charge their own energy
+	 * on top of their named cost. Energy at 0 kicks the player out via
+	 * HuntOverExhaustion. */
+	var ENERGY_PER_STEP    = 0.125;
+	var ENERGY_COST_BAIT   = 0.5;
+	var ENERGY_COST_PRAY   = 0.5;
+
+	var passageBgIndex = null;
+	function bgIndex() {
+		if (!passageBgIndex) {
+			passageBgIndex = {};
+			setup.hauntedPassages.forEach(function (e) {
+				passageBgIndex[e.passage] = e.bgRoom;
+			});
+		}
+		return passageBgIndex;
+	}
+
+	function currentBgVar() {
+		return bgIndex()[passage()] || null;
+	}
+
+	function isCurrentRoomDark() {
+		var name = currentBgVar();
+		if (!name) return false;
+		var room = State.variables[name];
+		return !!(room && room.background === setup.RoomLight.DARK);
+	}
+
+	/* Clothing buckets. Fully dressed = tshirt + any bottom. Topless = no
+	 * tshirt but a bottom. Fully nude = no tshirt, no bottom, no panties. */
+	function clothingState() {
+		var V = State.variables;
+		var WORN = setup.ClothingState.WORN;
+		var topOn    = V.tshirtState === WORN;
+		var bottomOn = V.jeansState === WORN
+			|| V.shortsState === WORN
+			|| V.skirtState === WORN;
+		var pantiesOn = V.pantiesState === WORN;
+		if (!topOn && !bottomOn && !pantiesOn) return "nude";
+		if (!topOn && bottomOn)                return "topless";
+		if (topOn && bottomOn)                 return "dressed";
+		return "partial";
+	}
+
+	function isBaitActive()       { return State.variables.baitActive === 1; }
+	function isOverchargedMode()  { return State.variables.overchargedTools === 1; }
+
+	/* Combined per-tick deltas + tool/hunt bonuses, plus a contributors
+	 * array used by the HUD widget to show "why". */
+	function snapshot() {
+		var V = State.variables;
+		var inHouse = !!(setup.Ghosts && setup.Ghosts.isHunting && setup.Ghosts.isHunting());
+		var snap = {
+			dark:              false,
+			clothing:          clothingState(),
+			overchargedTools:  isOverchargedMode(),
+			baitActive:        isBaitActive(),
+			baitStepsRemain:   V.baitStepsRemain || 0,
+			sanityPerStep:     0,
+			lustPerStep:       0,
+			energyPerStep:     inHouse ? -ENERGY_PER_STEP : 0,
+			corruptionPending: 0,
+			timeLabel:         "paused",
+			huntChanceBonus:   0,
+			toolChanceBonus:   0,
+			toolWindowBonus:   0,
+			contributors:      []
+		};
+
+		if (inHouse) {
+			snap.timeLabel = "+1 min/step";
+			var hasCompanion = V.isCompChosen === 1;
+			var contractDrain = hasCompanion ? 0.2 : 0.4;
+			snap.sanityPerStep -= contractDrain;
+		}
+
+		if (isCurrentRoomDark()) {
+			snap.dark = true;
+			snap.sanityPerStep   -= 1;
+			snap.huntChanceBonus += 6;
+			snap.toolChanceBonus += 10;
+			snap.toolWindowBonus += 5;
+			snap.contributors.push({
+				label: "Dark",
+				color: "#ff7777",
+				detail: "tools +10%, +5 min · hunt +6%"
+			});
+		}
+
+		if (snap.clothing === "topless") {
+			snap.toolChanceBonus += 5;
+			snap.lustPerStep     += 1;
+			snap.huntChanceBonus += 3;
+			snap.contributors.push({
+				label: "Topless",
+				color: "#ff99cc",
+				detail: "tools +5% · lust +1/step · hunt +3%"
+			});
+		} else if (snap.clothing === "nude") {
+			snap.toolChanceBonus   += 10;
+			snap.lustPerStep       += 2;
+			snap.corruptionPending += 0.1;
+			snap.huntChanceBonus   += 5;
+			snap.contributors.push({
+				label: "Nude",
+				color: "#ff66aa",
+				detail: "tools +10% · lust +2/step · hunt +5% · corr banking"
+			});
+		}
+
+		var mc = V.mc;
+		if (mc && mc.lust >= LUST_FUEL_THRESHOLD) {
+			snap.toolChanceBonus   += 5;
+			snap.huntChanceBonus   += 3;
+			snap.corruptionPending += 0.05;
+			snap.sanityPerStep     -= 0.2;
+			snap.contributors.push({
+				label: "Lust ≥ " + LUST_FUEL_THRESHOLD,
+				color: "#e84aa4",
+				detail: "tools +5% · hunt +3% · sanity -0.2/step · corr banking"
+			});
+		}
+
+		/* Orgasm-primed: at max lust the MC is on the edge. Hard sanity
+		 * bleed + corruption banking; the actual orgasm trigger lives in
+		 * widgetEvent.tw (shouldOrgasm), which also seeds the aftershock
+		 * cooldown below. */
+		if (mc && mc.lust >= 100) {
+			snap.sanityPerStep     -= 1;
+			snap.corruptionPending += 0.05;
+			snap.contributors.push({
+				label: "OrgasmRisk",
+				color: "#ff3366",
+				detail: "sanity -1/step · corr banking"
+			});
+		}
+
+		/* Orgasm aftershock: N steps of extra drain seeded by the orgasm
+		 * trigger in widgetEvent.tw. Counter is decremented in
+		 * applyTickEffects so the chip naturally clears. */
+		var cooldown = V.orgasmCooldownSteps || 0;
+		if (cooldown > 0) {
+			snap.sanityPerStep -= 1;
+			snap.energyPerStep -= 0.125;
+			snap.contributors.push({
+				label: "Aftershock (" + cooldown + ")",
+				color: "#aa4477",
+				detail: "sanity -1/step · energy -0.125/step"
+			});
+		}
+
+		if (snap.overchargedTools) {
+			snap.toolChanceBonus += 10;
+			snap.toolWindowBonus += 5;
+			snap.huntChanceBonus += 5;
+			snap.sanityPerStep   -= 1;
+			snap.contributors.push({
+				label: "Overcharged",
+				color: "#ffaa33",
+				detail: "tools +10%, +5 min · hunt +5% · sanity -1/step"
+			});
+		}
+
+		if (snap.baitActive) {
+			snap.toolChanceBonus += 20;
+			snap.huntChanceBonus += 20;
+			snap.sanityPerStep   -= 1;
+			snap.contributors.push({
+				label: "Baiting (" + snap.baitStepsRemain + ")",
+				color: "#cc66ff",
+				detail: "ghost pinned here · tools +20% · hunt +20%"
+			});
+		}
+
+		return snap;
+	}
+
+	/* Apply per-nav-step effects. Called from includeTimeEvent* widgets so
+	 * tool-tick spam doesn't double-charge stats. Mutates mc.sanity /
+	 * mc.lust / mc.energy, accrues tempCorr, decrements bait counter, and
+	 * sets V.exhausted when energy bottoms out (or V.sanityCollapse when
+	 * sanity bottoms out) so the includeTimeEvent widget can route to
+	 * HuntOverExhaustion / HuntOverSanity. Corresponding meters (sanity /
+	 * energy) are refreshed by the caller. */
+	function applyTickEffects() {
+		var V = State.variables;
+		var mc = V.mc;
+		if (!mc) return;
+		var inHouse = !!(setup.Ghosts && setup.Ghosts.isHunting && setup.Ghosts.isHunting());
+		var snap = snapshot();
+
+		if (snap.sanityPerStep !== 0) {
+			mc.sanity += snap.sanityPerStep;
+			if (mc.sanity < 0) {
+				mc.sanity = 0;
+				V.sanityCollapse = 1;
+			}
+			if (mc.sanity > mc.sanityMax) mc.sanity = mc.sanityMax;
+		}
+		if (snap.lustPerStep !== 0) {
+			mc.lust += snap.lustPerStep;
+			if (mc.lust < 0)   mc.lust = 0;
+			if (mc.lust > 100) mc.lust = 100;
+		}
+		if (snap.energyPerStep !== 0) {
+			mc.energy += snap.energyPerStep;
+			if (mc.energy <= 0) {
+				mc.energy = 0;
+				V.exhausted = 1;
+			}
+			if (mc.energy > (mc.energyMax || 10)) mc.energy = mc.energyMax;
+		}
+		if (snap.corruptionPending !== 0) {
+			V.tempCorr = (V.tempCorr || 0) + snap.corruptionPending;
+		}
+		if (snap.baitActive) {
+			V.baitStepsRemain = Math.max(0, (V.baitStepsRemain || 0) - 1);
+			if (V.baitStepsRemain <= 0) {
+				V.baitActive = 0;
+				V.baitStepsRemain = 0;
+			}
+		}
+		if ((V.orgasmCooldownSteps || 0) > 0) {
+			V.orgasmCooldownSteps -= 1;
+			if (V.orgasmCooldownSteps < 0) V.orgasmCooldownSteps = 0;
+		}
+		if (inHouse && typeof setup.addTime === 'function') {
+			setup.addTime(1);
+		}
+	}
+
+	/* Spend ad-hoc energy for a player-driven action (bait, pray).
+	 * Returns true on success, false when not enough energy. Sets
+	 * V.exhausted at zero so the next nav tick routes to exhaustion. */
+	function removeEnergy(amount) {
+		var V = State.variables;
+		var mc = V.mc;
+		if (!mc) return false;
+		if ((mc.energy || 0) < amount) return false;
+		mc.energy -= amount;
+		if (mc.energy <= 0) {
+			mc.energy = 0;
+			V.exhausted = 1;
+		}
+		return true;
+	}
+
+	/* Player-driven bait: spend lust + energy, pin the ghost to the
+	 * player's room for BAIT_STEPS nav ticks. Returns true when the spend
+	 * fires. Atomic — won't deduct lust unless the energy spend also clears. */
+	function startBait() {
+		var V = State.variables;
+		var mc = V.mc;
+		if (!mc || mc.lust < BAIT_LUST_COST) return false;
+		if ((mc.energy || 0) < ENERGY_COST_BAIT) return false;
+		var bg = currentBgVar();
+		if (!bg) return false;
+		if (!V.hunt || !V.hunt.room) return false;
+		mc.lust -= BAIT_LUST_COST;
+		removeEnergy(ENERGY_COST_BAIT);
+		V.hunt.room.name = bg;
+		V.baitActive = 1;
+		V.baitStepsRemain = BAIT_STEPS;
+		return true;
+	}
+
+	function canBait() {
+		var V = State.variables;
+		return !!(V.mc
+			&& V.mc.lust >= BAIT_LUST_COST
+			&& (V.mc.energy || 0) >= ENERGY_COST_BAIT
+			&& V.hunt && V.hunt.room
+			&& currentBgVar()
+			&& V.baitActive !== 1);
+	}
+
+	/* Pray (used by GhostHuntEvent). Costs sanity AND energy. */
+	function canPray() {
+		var V = State.variables;
+		return !!(V.mc
+			&& V.mc.sanity > 10
+			&& (V.mc.energy || 0) >= ENERGY_COST_PRAY);
+	}
+
+	function toggleOverchargedTools() {
+		var V = State.variables;
+		V.overchargedTools = V.overchargedTools === 1 ? 0 : 1;
+		return V.overchargedTools === 1;
+	}
+
+	/* Point-of-event sanity multiplier. Used by ArtEvent / EventMC "embrace"
+	 * drains so the same active axes the HUD already shows (dark,
+	 * overcharged) also scale fixed event drains. Keeps the two worlds
+	 * reading the same state. */
+	function eventSanityMultiplier() {
+		var mult = 1;
+		if (isCurrentRoomDark())  mult += 0.5;
+		if (isOverchargedMode())  mult += 0.25;
+		return mult;
+	}
+
+	/* Called from HuntEnd / HuntOverManual / HuntOverTime / HuntOverSanity
+	 * /HuntOverExhaustion to scrub hunt-only flags so the next contract
+	 * starts clean. */
+	function resetHuntFlags() {
+		var V = State.variables;
+		V.baitActive          = 0;
+		V.baitStepsRemain     = 0;
+		V.overchargedTools    = 0;
+		V.exhausted           = 0;
+		V.sanityCollapse      = 0;
+		V.orgasmCooldownSteps = 0;
+	}
+
+	return {
+		LUST_FUEL_THRESHOLD:    LUST_FUEL_THRESHOLD,
+		BAIT_LUST_COST:         BAIT_LUST_COST,
+		BAIT_STEPS:             BAIT_STEPS,
+		ENERGY_PER_STEP:        ENERGY_PER_STEP,
+		ENERGY_COST_BAIT:       ENERGY_COST_BAIT,
+		ENERGY_COST_PRAY:       ENERGY_COST_PRAY,
+		currentBgVar:           currentBgVar,
+		isCurrentRoomDark:      isCurrentRoomDark,
+		clothingState:          clothingState,
+		snapshot:               snapshot,
+		applyTickEffects:       applyTickEffects,
+		removeEnergy:           removeEnergy,
+		startBait:              startBait,
+		canBait:                canBait,
+		canPray:                canPray,
+		toggleOverchargedTools: toggleOverchargedTools,
+		isOverchargedMode:      isOverchargedMode,
+		eventSanityMultiplier:  eventSanityMultiplier,
+		resetHuntFlags:         resetHuntFlags
+	};
+})();
