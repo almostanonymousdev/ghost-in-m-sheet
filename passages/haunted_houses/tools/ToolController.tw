@@ -330,17 +330,214 @@
 }());
 
 /* ------------------------------------------------------------------
- * Search-tool runtime helpers, macros, and global handlers.
- *
- * Reads the per-tool / per-prefix data tables defined alongside the
- * meter registration in StoryScript.tw (setup.searchToolDefs,
- * setup.searchRoomPrefixes, setup.searchPrefixIndex,
- * setup.hauntedPassages). Everything below was previously inline in
- * StoryScript.tw and is grouped here so the tool subsystem lives in
- * one place. The exported names stay top-level on `setup` because
+ * Search-tool data tables, runtime helpers, macros, and global
+ * handlers. The exported names stay top-level on `setup` because
  * authored passages and other controllers refer to them by those
  * exact names.
  * ------------------------------------------------------------------ */
+
+/* Every room id that gets a per-hunt $currentsearch<Room> bag.
+ * The variable name is always "currentsearch" + room. */
+setup.searchableRooms = [
+    // standard houses
+    "Kitchen", "Hallway", "Livingroom", "Bedroom", "Bathroom", "Basement",
+    // Elm Street upstairs
+    "BedroomTwo", "Nursery", "BathroomTwo", "HallwayUpstairs",
+    // Enigma rooms
+    "RoomA", "RoomB", "RoomC",
+    // Ironclad
+    "HallwayIronclad", "ReceptionIronclad", "KitchenIronclad",
+    "BlockAIronclad", "BlockBIronclad",
+    "BlockACellAIronclad", "BlockACellBIronclad", "BlockACellCIronclad",
+    "BlockBCellAIronclad", "BlockBCellBIronclad", "BlockBCellCIronclad"
+];
+
+/* $-variable names of every room object that has a `.background` field
+ * reset between hunts. Some are camelCase (BlockACellA), others lowercase
+ * (kitchen) -- kept as a list rather than computed from searchableRooms. */
+setup.huntableRoomVars = [
+    "kitchen", "bathroom", "bedroom", "hallway", "livingroom", "basement",
+    "BlockA", "BlockB",
+    "BlockACellA", "BlockACellB", "BlockACellC",
+    "BlockBCellA", "BlockBCellB", "BlockBCellC",
+    "reception"
+];
+
+setup.makeEmptySearchState = function () {
+    return {
+        emf:         0,
+        plasm:       0,
+        uvl:         0,
+        temperature: 0,
+        spiritbox:   0,
+        gwb:         0
+    };
+};
+
+/* Per-tool metadata for the <<searchTool>> macro and <<roomToolCard>>
+ * widget. widgetSuffix builds the canonical button/meter ids
+ * (<prefix><widgetSuffix>[Button]); picSuffix matches the toolCard
+ * image id convention used by the global click-delegation handler
+ * below. The two diverge for spiritbox (PicSB vs widgetSuffix
+ * Spiritbox) and temperature (PicThermometr vs Temperature) -- that
+ * asymmetry predates this refactor. iconFile is the toolCard image
+ * filename under setup.ImagePath + "/img/". replaceMode and
+ * needsLightCheck are tool-wide constants: emf and temperature are
+ * simple "single" replacements; gwb/plasm/uvl/spiritbox use "double"
+ * (clear meter + drop check passage into the action slot); only
+ * spiritbox needs the lights-off guard. */
+setup.searchToolDefs = {
+    emf: {
+        meterField:      "Emf",
+        equipField:      "emf",
+        widgetSuffix:    "EMF",
+        picSuffix:       "PicEMF",
+        iconFile:        "emf.png",
+        replaceMode:     "single",
+        label:           "Use EM@@color:yellow;F@@"
+    },
+    plasm: {
+        meterField:      "Plasm",
+        equipField:      "glass",
+        widgetSuffix:    "Plasm",
+        picSuffix:       "PicPlasm",
+        iconFile:        "glass.png",
+        replaceMode:     "double",
+        label:           "Use @@color:yellow;E@@ctoglass"
+    },
+    gwb: {
+        meterField:      "Gwb",
+        equipField:      "gwb",
+        widgetSuffix:    "GWB",
+        picSuffix:       "PicGWB",
+        iconFile:        "gwb.png",
+        replaceMode:     "double",
+        label:           "Use @@color:yellow;G@@WB"
+    },
+    spiritbox: {
+        meterField:      "Spiritbox",
+        equipField:      "spiritbox",
+        widgetSuffix:    "Spiritbox",
+        picSuffix:       "PicSB",
+        iconFile:        "spiritbox.png",
+        replaceMode:     "double",
+        needsLightCheck: true,
+        label:           "Use @@color:yellow;S@@piritbox"
+    },
+    temperature: {
+        meterField:      "Temperature",
+        equipField:      "temperature",
+        widgetSuffix:    "Temperature",
+        picSuffix:       "PicThermometr",
+        iconFile:        "thermometr.png",
+        replaceMode:     "single",
+        label:           "Use @@color:yellow;T@@hermometr",
+        checkPassage:    "TemperatureHigh",
+        artCheckPassage: "TemperatureHigh"
+    },
+    uvl: {
+        meterField:      "Uvl",
+        equipField:      "uvl",
+        widgetSuffix:    "UVL",
+        picSuffix:       "PicUVL",
+        iconFile:        "uvl.png",
+        replaceMode:     "double",
+        label:           "Use @@color:yellow;U@@VL"
+    }
+};
+
+/* Tool slots are emitted in this canonical order by the <<roomToolBar>>
+ * widget -- every haunted-house room shows the same six in the same
+ * order. */
+setup.searchToolOrder = ["emf", "plasm", "gwb", "spiritbox", "temperature", "uvl"];
+
+/* Canonical per-haunted-house-room prefix list used by the
+ * <<searchTool>> macro (for id + config derivation), the keyboard
+ * shortcut handler, and the <<roomToolBar>> widget. Each entry holds:
+ *   prefix     -- the canonical id-prefix used by search/parent passages
+ *   bagRoom    -- bag name suffix; the search bag is $currentsearch<bagRoom>
+ *   bgRoom     -- name of the room state object whose .background field
+ *                gates dark/lights checks (e.g. "bedroom" or "BlockACellA")
+ *   eventChain -- "standard" (default), "enigma", or "ironclad"
+ *   meterTag   -- "div" overrides the default "span" (Owaissa rooms only)
+ */
+setup.searchRoomPrefixes = [
+    // Owaissa -- meterTag div
+    { prefix: "owaissaBedroom",      bagRoom: "Bedroom",     bgRoom: "bedroom",    meterTag: "div" },
+    { prefix: "owaissaBathroom",     bagRoom: "Bathroom",    bgRoom: "bathroom",   meterTag: "div" },
+    { prefix: "owaissaKitchen",      bagRoom: "Kitchen",     bgRoom: "kitchen",    meterTag: "div" },
+    { prefix: "owaissaHallway",      bagRoom: "Hallway",     bgRoom: "hallway",    meterTag: "div" },
+    { prefix: "owaissaLivingroom",   bagRoom: "Livingroom",  bgRoom: "livingroom", meterTag: "div" },
+    // Elm Street
+    { prefix: "elmBasement",         bagRoom: "Basement",        bgRoom: "basement"        },
+    { prefix: "elmBedroom",          bagRoom: "Bedroom",         bgRoom: "bedroom"         },
+    { prefix: "elmBedroomTwo",       bagRoom: "BedroomTwo",      bgRoom: "bedroomTwo"      },
+    { prefix: "elmBathroom",         bagRoom: "Bathroom",        bgRoom: "bathroom"        },
+    { prefix: "elmBathroomTwo",      bagRoom: "BathroomTwo",     bgRoom: "bathroomTwo"     },
+    { prefix: "elmKitchen",          bagRoom: "Kitchen",         bgRoom: "kitchen"         },
+    { prefix: "elmHallway",          bagRoom: "Hallway",         bgRoom: "hallway"         },
+    { prefix: "elmHallwayUpstairs",  bagRoom: "HallwayUpstairs", bgRoom: "hallwayUpstairs" },
+    { prefix: "elmNursery",          bagRoom: "Nursery",         bgRoom: "nursery"         },
+    // Enigma -- eventChain enigma
+    { prefix: "enigmaBasement",      bagRoom: "Basement",   bgRoom: "basement",   eventChain: "enigma" },
+    { prefix: "enigmaBedroom",       bagRoom: "Bedroom",    bgRoom: "bedroom",    eventChain: "enigma" },
+    { prefix: "enigmaBathroom",      bagRoom: "Bathroom",   bgRoom: "bathroom",   eventChain: "enigma" },
+    { prefix: "enigmaKitchen",       bagRoom: "Kitchen",    bgRoom: "kitchen",    eventChain: "enigma" },
+    { prefix: "enigmaHallway",       bagRoom: "Hallway",    bgRoom: "hallway",    eventChain: "enigma" },
+    { prefix: "enigmaLivingroom",    bagRoom: "Livingroom", bgRoom: "livingroom", eventChain: "enigma" },
+    { prefix: "enigmaRoomA",         bagRoom: "RoomA",      bgRoom: "roomA",      eventChain: "enigma" },
+    { prefix: "enigmaRoomB",         bagRoom: "RoomB",      bgRoom: "roomB",      eventChain: "enigma" },
+    { prefix: "enigmaRoomC",         bagRoom: "RoomC",      bgRoom: "roomC",      eventChain: "enigma" },
+    // Ironclad -- eventChain ironclad; bag names carry an "Ironclad" suffix that the prefix does not
+    { prefix: "ironcladHallway",     bagRoom: "HallwayIronclad",     bgRoom: "hallway",     eventChain: "ironclad" },
+    { prefix: "ironcladReception",   bagRoom: "ReceptionIronclad",   bgRoom: "reception",   eventChain: "ironclad" },
+    { prefix: "ironcladKitchen",     bagRoom: "KitchenIronclad",     bgRoom: "kitchen",     eventChain: "ironclad" },
+    { prefix: "ironcladBlockA",      bagRoom: "BlockAIronclad",      bgRoom: "BlockA",      eventChain: "ironclad" },
+    { prefix: "ironcladBlockB",      bagRoom: "BlockBIronclad",      bgRoom: "BlockB",      eventChain: "ironclad" },
+    { prefix: "ironcladBlockACellA", bagRoom: "BlockACellAIronclad", bgRoom: "BlockACellA", eventChain: "ironclad" },
+    { prefix: "ironcladBlockACellB", bagRoom: "BlockACellBIronclad", bgRoom: "BlockACellB", eventChain: "ironclad" },
+    { prefix: "ironcladBlockACellC", bagRoom: "BlockACellCIronclad", bgRoom: "BlockACellC", eventChain: "ironclad" },
+    { prefix: "ironcladBlockBCellA", bagRoom: "BlockBCellAIronclad", bgRoom: "BlockBCellA", eventChain: "ironclad" },
+    { prefix: "ironcladBlockBCellB", bagRoom: "BlockBCellBIronclad", bgRoom: "BlockBCellB", eventChain: "ironclad" },
+    { prefix: "ironcladBlockBCellC", bagRoom: "BlockBCellCIronclad", bgRoom: "BlockBCellC", eventChain: "ironclad" }
+];
+
+setup.searchPrefixIndex = (function () {
+    var idx = {};
+    setup.searchRoomPrefixes.forEach(function (e) { idx[e.prefix] = e; });
+    return idx;
+}());
+
+/* Haunted-house passage catalogue, derived from setup.searchRoomPrefixes.
+ * Each entry maps one concrete room passage back to its house + bgRoom,
+ * which is exactly the information the tool passages need to ask "is the
+ * player currently standing in the ghost's room?". Every haunted-house
+ * passage is capital-first (e.g. "ElmBasement", "OwaissaBedroom") and
+ * every prefix is camel-case (lowercase-first) so the two forms are
+ * one `charAt(0).toUpperCase()` apart. */
+setup.hauntedPassages = (function () {
+    return setup.searchRoomPrefixes.map(function (e) {
+        var house;
+        if (e.eventChain === "ironclad")      house = "ironclad";
+        else if (e.eventChain === "enigma")   house = "enigma";
+        else if (e.prefix.indexOf("owaissa") === 0) house = "owaissa";
+        else                                  house = "elm";
+        var passage = e.prefix.charAt(0).toUpperCase() + e.prefix.slice(1);
+        return { passage: passage, bgRoom: e.bgRoom, house: house };
+    });
+}());
+
+/* Auto-register the per-room search<Room><Tool> meters from the data
+ * tables above. The standalone HUD meters (mclust, companionsanity,
+ * companionlust, ghostlust) are registered by the controllers that
+ * own the underlying state. */
+setup.searchableRooms.forEach(function (room) {
+    setup.searchToolOrder.forEach(function (tool) {
+        var def = setup.searchToolDefs[tool];
+        Meter.add('search' + room + def.meterField,
+            { label: '$currentsearch' + room + '.' + tool, width: '50%' }, 1);
+    });
+});
 (function () {
     'use strict';
 

@@ -37,7 +37,11 @@
    strings that reference state variables; these are internal bindings
    the framework evaluates on each render, not reads performed by
    passage logic. They live here because <<newmeter>> must be called
-   from StoryInit. */
+   from StoryInit. The per-room search<Room><Tool> meters and the
+   sidebar HUD meters (mclust / companionsanity / companionlust /
+   ghostlust) are registered via Meter.add from their owning
+   controllers — see ToolController.tw and the *Controller.tw files
+   for each domain. */
 <<newmeter 'energy'>>
     <<sizing '220px'>>
     <<colors #d8f22c>>
@@ -48,14 +52,6 @@
     <<sizing '220px'>>
     <<label '$mc.sanityUp'>>
 <</newmeter>>
-<<for _room range ["Kitchen", "Hallway", "Bathroom", "Livingroom", "Bedroom"]>>
-<<for _tool range ["Emf", "Plasm", "Uvl", "Temperature", "Gwb", "Spiritbox"]>>
-<<newmeter `"search" + _room + _tool`>>
-<<sizing '50%'>>
-<<label `"$currentsearch" + _room + "." + _tool.toLowerCase()`>>
-<</newmeter>>
-<</for>>
-<</for>>
 
 <<newmeter 'xpBar' setup.Mc.exp()>>
     <<label '$percentageOfLevel %'>>
