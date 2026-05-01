@@ -520,6 +520,14 @@ async function walkPassages(browser, passages, label) {
       // pick up either Owaissa or Elm; rooms in either renders cleanly
       // once the search bags above are in place.
       V.hauntedHouse = 'owaissa';
+
+      // RescueScene's <<rescueScene>> widget bottoms out on
+      // setup.MissingWomen.currentRescueGirl(); without a seeded girl
+      // initRescueScene returns null and the cold render trips on
+      // <<video _scene.current>>. Pick the first catalogue girl so the
+      // widget has a real chapter pool to draw from.
+      const girls = setup.MissingWomen.rescueGirlNames();
+      if (girls.length) setup.MissingWomen.setCurrentRescueGirl(girls[0]);
     });
   }
 
