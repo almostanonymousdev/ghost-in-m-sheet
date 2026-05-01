@@ -280,17 +280,24 @@ test.describe('Companions — home/intimate events', () => {
 
   for (const passage of [
     'CompanionEvent', 'CompanionLeaving', 'CompanionSucceeded',
-    'CompanionFailed', 'CompanionResult', 'CompanionRandomRoom',
+    'CompanionFailed', 'CompanionResult',
   ]) {
     test(`${passage} renders cleanly`, async () => {
       await selectCompanion(page, 'Alice');
-      // CompanionRandomRoom reads $hauntedHouse to pick a room list.
       await setVar(page, 'hauntedHouse', 'owaissa');
       await setVar(page, 'isCompRoomChosen', 0);
       await goToPassage(page, passage);
       await expectCleanPassage(page);
     });
   }
+
+  test('pickRandomCompanionRoomFromContext picks a room without throwing', async () => {
+    await selectCompanion(page, 'Alice');
+    await setVar(page, 'hauntedHouse', 'owaissa');
+    await setVar(page, 'isCompRoomChosen', 0);
+    await callSetup(page, 'setup.Companion.pickRandomCompanionRoomFromContext()');
+    expect(await getVar(page, 'isCompRoomChosen')).toBe(1);
+  });
 });
 
 test.describe('Companions — hunt setup integration', () => {

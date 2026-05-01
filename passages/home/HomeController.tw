@@ -383,7 +383,7 @@ setup.Home = (function () {
 		// render the correct "you wake up" banner and apply the
 		// sanity/energy/lust penalties below.
 		// Shared sleep-advance: wraps midnight and fires the
-		// ResetCooldowns widget when the day rolls over. Called by
+		// setup.Tick.resetCooldowns() when the day rolls over. Called by
 		// Sleep.tw from every "wake up" branch.
 		sleepAdvance: function (n) { return setup.Time.sleepAdvanceHours(n); },
 		cameraBought: function () { return sv().isCameraBought === 1; },
@@ -473,6 +473,62 @@ setup.Home = (function () {
 			setup.Mc.setSanity(40 + Math.floor(Math.random() * 31));   // 40..70
 			setup.Mc.setEnergy(setup.Mc.energyMax());
 			setup.Mc.setLust(30 + Math.floor(Math.random() * 31));     // 30..60
+		},
+
+		/* "Came from a hunt-defeat" predicate. The three passages that
+		   route the player to Sleep with a defeat outcome -- HuntEnd,
+		   HuntOverSanity, and CursedHuntStart -- all need the same
+		   penalized / cursed-item-roll prep and the same per-ghost
+		   sleep-passage routing. */
+		cameFromHuntDefeat: function (prev) {
+			return prev === 'HuntOverSanity'
+				|| prev === 'HuntEnd'
+				|| prev === 'CursedHuntStart';
+		},
+		applyHuntDefeatPreSleep: function () {
+			setup.Mc.setPenalized(true);
+			setup.CursedItems.rollForCursedItem();
+		},
+
+		/* Sleep destination resolver. Returns
+		     { passage, hours, postWake }
+		   describing where the wake-up link should point, how many
+		   hours to advance, and which post-wake mutator (if any) the
+		   caller should run after the time-skip. postWake is a string
+		   key the Sleep passage maps to a setter (one of:
+		   'huntDefeat', 'mareEnd', 'spirit', 'rest', 'penalty').
+
+		   The "tentacles-after-sleep" branch is handled separately by
+		   shouldRouteToTentaclesSleep() -- it fires before any of the
+		   wake-link logic since it short-circuits Sleep with a goto. */
+		shouldRouteToTentaclesSleep: function (prev) {
+			return prev === 'Bedroom' && this.tentaclesSleepEventReady();
+		},
+		resolveSleepWake: function (prev) {
+			var hg = setup.Ghosts.active();
+			if (this.cameFromHuntDefeat(prev) && hg && hg.sleepPassage) {
+				return { passage: hg.sleepPassage, hours: 3, postWake: 'huntDefeat' };
+			}
+			if (setup.SpecialEvent.mareStageAtLeast(4)) {
+				return { passage: 'GhostSpecialEventMareEnd', hours: 3, postWake: 'mareEnd' };
+			}
+			if (setup.SpecialEvent.spiritEventReady()) {
+				return { passage: 'GhostSpecialEventSleepSpirit', hours: 3, postWake: 'spirit' };
+			}
+			return { passage: 'Bedroom', hours: 8, postWake: setup.Mc.isPenalized() ? 'penalty' : 'rest' };
+		},
+		/* Run the mutator named by resolveSleepWake().postWake. */
+		applySleepPostWake: function (key) {
+			if (key === 'huntDefeat') {
+				setup.Mc.setSanity(40);
+				setup.Mc.setLust(0);
+			} else if (key === 'penalty') {
+				this.applySleepPenalty();
+			} else if (key === 'rest') {
+				this.applyFullRest();
+			}
+			// 'mareEnd' / 'spirit' have no extra wake-up mutation here;
+			// they hand off to their own follow-up passage.
 		},
 		hasHolyWater: function () { return sv().holyWaterIsCollected === 1; },
 		collectHolyWater: function () { sv().holyWaterIsCollected = 1; },

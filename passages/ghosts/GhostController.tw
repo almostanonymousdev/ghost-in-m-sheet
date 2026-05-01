@@ -240,9 +240,8 @@
 
         /* Per-ghost behaviour fields. Consumers check these instead of
            branching on this.name; see passages/gui/Notebook, Hide, RunFast,
-           LightPassageGhost, ChangeGhostRoom, SaveEventPassage, EventMC,
-           WalkHomeTogether, Sleep, companion Main files, and the HuntOver*
-           flow for examples. */
+           LightPassageGhost, ChangeGhostRoom, EventMC, WalkHomeTogether,
+           Sleep, companion Main files, and the HuntOver* flow for examples. */
         this.canTurnOffLights     = cfg.canTurnOffLights !== false;     // default true
         this.staysInOneRoom       = !!cfg.staysInOneRoom;
         /* null = roll normally; true = always succeeds; false = never. */

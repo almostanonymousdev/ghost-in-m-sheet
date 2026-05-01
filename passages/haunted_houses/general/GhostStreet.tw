@@ -15,7 +15,7 @@
 </div>
 <<nobr>>
 <<run setup.Ghosts.fireActiveOnEnterHouse()>>
-<<run setup.Time.resetToMidnight()>><<include "ResetCooldowns">>
+<<run setup.Time.resetToMidnight()>><<run setup.Tick.resetCooldowns()>>
 <<done>>
 <<replace "#time">><<= setup.Time.display()>><</replace>>
 <</done>>

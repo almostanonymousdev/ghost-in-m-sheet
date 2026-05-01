@@ -13,12 +13,9 @@
 	<<run setup.HauntedHouses.clearStolenClothesFlag()>>
 <</if>>
 
-<<run setup.HauntedHouses.resetToolTimers()>>
 <<run setup.HauntedHouses.endHunt()>>
-<<run setup.Companion.clearBlakeCursedItem()>>
+<<run setup.HauntedHouses.cleanupAfterHunt()>>
 @@.movebtn;[[Leave|CityMap][setup.Time.addHours(1)]]@@<br>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 <</done>>
-<<run setup.Companion.resetHuntState()>>
-<<run setup.Companion.resetAliceWorkIfNeeded()>>

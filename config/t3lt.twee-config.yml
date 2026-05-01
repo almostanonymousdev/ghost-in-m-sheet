@@ -542,6 +542,18 @@ sugarcube-2:
       name: videoToggle
     rescueGirlLink:
       name: rescueGirlLink
+    rescueScene:
+      name: rescueScene
+      description: "Shared body for the per-girl rescue passages
+        (RescueVictoria, RescueNadia, RescueJade, RescueJulia, RescueAsh).
+        Pulls chapter pool + end clip from setup.MissingWomen.rescueGirlConfig
+        and runs the watch/click/holy-water flow. Args: girlName (string)."
+    rescueStay:
+      name: rescueStay
+      description: "Shared body for the RescueStay branches. Pulls the
+        per-girl 'stay' clip set from setup.MissingWomen.rescueStayConfig and
+        renders either the two-clip toggle (Victoria/Jade/Julia/Nadia) or the
+        Ash indexed cycle. Args: girlName (string)."
     breakFreePossession:
       name: breakFreePossession
     salonItem:

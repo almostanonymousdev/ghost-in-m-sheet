@@ -28,6 +28,92 @@ setup.Events = (function () {
 	// Body-part keys in escalation order (event numbers 1-7).
 	var bodyPartKeys = ['brain', 'tits', 'ass', 'bottom', 'mouth', 'pussy', 'anal'];
 
+	// --- Art-event asset ranges -------------------------------
+	// Sanity-stage 1-3 use jeans/shorts/skirt buckets; stage 4 uses
+	// panties or naked; stage 5 uses passage-keyed video buckets.
+	// Numeric ranges only; paths generated below.
+	var ART_IMG_RANGES = {
+		s1: { jeans: 8, shorts: 9, skirt: 9 },
+		s2: { jeans: 10, shorts: 9, skirt: 10 },
+		s3: { jeans: 10, shorts: 10, skirt: 9 },
+		underwear: 11,
+		naked: 14
+	};
+	// Animated-video buckets, keyed by sub-folder name.
+	var ART_VIDEO_RANGES = {
+		all: 24, kitchen: 2, bed: 13, hallway: 4, bath: 2, basement: 14
+	};
+	// Passage → video bucket appended to the "all" baseline.
+	var PASSAGE_ART_BUCKET = {
+		EnigmaKitchen:    'kitchen',
+		EnigmaBedroom:    'bed',
+		EnigmaLivingroom: 'bed',
+		EnigmaHallway:    'hallway',
+		OwaissaBathroom:  'bath',
+		ElmBathroom:      'bath',
+		EnigmaBasement:   'basement',
+		EnigmaRoomA:      'basement',
+		EnigmaRoomB:      'basement',
+		EnigmaRoomC:      'basement'
+	};
+
+	function range(folder, prefix, count, ext) {
+		var out = [];
+		for (var i = 1; i <= count; i++) out.push(folder + i + ext);
+		return out;
+	}
+	function imgRange(sub, count) {
+		return range("ui/art/" + sub + "/", "", count, ".png");
+	}
+	function videoRange(sub, count) {
+		return range("scenes/animated/" + sub + "/", "", count, ".mp4");
+	}
+	function artImagesForStage(stage, wardrobe) {
+		// Stage 1-3 use jeans/shorts/skirt depending on wardrobe.
+		var sKey = "s" + stage;
+		var ranges = ART_IMG_RANGES[sKey];
+		if (!ranges) return [];
+		if (wardrobe.jeansWorn())  return imgRange("jeans/"  + sKey, ranges.jeans);
+		if (wardrobe.shortsWorn()) return imgRange("shorts/" + sKey, ranges.shorts);
+		if (wardrobe.skirtWorn())  return imgRange("skirt/"  + sKey, ranges.skirt);
+		return [];
+	}
+	function artImagesUnderwearOrNaked(wardrobe) {
+		return wardrobe.pantiesWorn()
+			? imgRange("underwear", ART_IMG_RANGES.underwear)
+			: imgRange("naked", ART_IMG_RANGES.naked);
+	}
+	function artVideosForPassage(passageName) {
+		var bucket = PASSAGE_ART_BUCKET[passageName];
+		if (!bucket) return [];
+		return videoRange("all", ART_VIDEO_RANGES.all)
+			.concat(videoRange(bucket, ART_VIDEO_RANGES[bucket]));
+	}
+	function pickRandom(arr) {
+		if (!arr || !arr.length) return null;
+		return arr[Math.floor(Math.random() * arr.length)];
+	}
+
+	// Cthulion ability video pools, keyed by tier (1-4). Tiers 1-3
+	// are sanity-banded (used by SaveEventPassage); tier 4 is used by
+	// the companion-help passages (BlakeHelp, BrookHelp).
+	var CTHULION_RANGES = { 1: 7, 2: 5, 3: 8, 4: 10 };
+	function cthulionVideos(tier) {
+		var n = CTHULION_RANGES[tier];
+		if (!n) return [];
+		var out = [];
+		for (var i = 0; i < n; i++) {
+			out.push("characters/ghosts/cthulion/" + tier + "." + i + ".mp4");
+		}
+		return out;
+	}
+	function cthulionTierForSanity(sanity) {
+		if (sanity >= 50) return 1;
+		if (sanity >= 30) return 2;
+		if (sanity >= 1)  return 3;
+		return 0;
+	}
+
 	// Video tables live in :: EventVideos (setup.EventVideos and
 	// setup.BansheeVideos).
 
@@ -54,6 +140,16 @@ setup.Events = (function () {
 		},
 		turnOffLightHere: function () {
 			return setup.Styles.turnOffLightHere();
+		},
+		/* :: LightPassageGhost entry: 1-in-65 chance per tick that a
+		   light-capable ghost activates EMF and darkens the room.
+		   Returns the destination passage to <<goto>>, or null. */
+		maybeTurnOffLights: function () {
+			var g = setup.Ghosts.active();
+			if (!g || !g.canTurnOffLights) return null;
+			if (Math.floor(Math.random() * 65) !== 0) return null;
+			setup.activateTool("emf");
+			return this.turnOffLightHere() || null;
 		},
 
 		// --- Lust tiers ------------------------------------------
@@ -266,6 +362,122 @@ setup.Events = (function () {
 		setArtVideoEvent: function (video) { sv().artVideoEvent = video; },
 		artImgEvent:      function () { return sv().artImgEvent; },
 		artVideoEvent:    function () { return sv().artVideoEvent; },
+
+		/* Public Cthulion-tier video lookup. Used by the
+		   <<cthulionAbility>> widget and by rollSaveEvent below. */
+		cthulionVideos: function (tier) { return cthulionVideos(tier); },
+
+		/* :: Event entry: generic per-tick haunt event roll. Picks a
+		   video (Banshee / Cthulion / body-part) and writes it to
+		   $videoEvent. Returns true when the caller should <<goto
+		   "EventMC">>. Body-part fallback delegates to
+		   videoListForEvent() so the clothing-aware resolvers stay
+		   the single source. */
+		rollHuntEvent: function () {
+			var g           = setup.Ghosts.active();
+			var chance      = Math.floor(Math.random() * 101);
+			var bansheeRoll = 1 + Math.floor(Math.random() * 10);
+			var ctRoll      = 1 + Math.floor(Math.random() * 10);
+			var videoList = [];
+
+			if (g && g.canKiss && bansheeRoll === 1 && chance <= 5) {
+				this.enableBanshee();
+				videoList = this.bansheeVideos();
+			} else if (g && g.canTentacles && ctRoll === 1 && chance <= 5) {
+				this.enableCthulion();
+				var lt = this.lustTier();
+				var tier = lt >= 7 ? 3 : lt === 6 ? 2 : lt === 5 ? 1 : 0;
+				if (tier) videoList = cthulionVideos(tier);
+			} else {
+				var key = this.rollBodyPartEvent(chance);
+				if (key) videoList = this.videoListForEvent(key);
+			}
+
+			if (!videoList.length) return false;
+			sv().videoEvent = pickRandom(videoList);
+			return true;
+		},
+
+		/* SaveEventPassage entry: runs the sanity-stage / Banshee /
+		   Cthulion dispatch, picks a video, writes it to $videoEvent,
+		   and returns true if a video was selected (caller <<goto>>s
+		   EventMC). Encapsulates the entire flow that SaveEventPassage
+		   used to inline. */
+		rollSaveEvent: function () {
+			var g = setup.Ghosts.active();
+			this.setDecreasingSanity(
+				g && g.invertedSanityStages
+					? { stage1: 9, stage2: 7, stage3: 5, stage4: 3 }
+					: { stage1: 3, stage2: 5, stage3: 7, stage4: 9 }
+			);
+			var ds = this.decreasingSanity();
+			var sanity = setup.Mc.sanity();
+			var chance      = Math.floor(Math.random() * 101);
+			var bansheeRoll = 1 + Math.floor(Math.random() * 6);
+			var ctRoll      = 1 + Math.floor(Math.random() * 6);
+			var videoList = [];
+
+			if (chance <= ds.stage2 && bansheeRoll === 1 && g && g.canKiss) {
+				this.enableBanshee();
+				videoList = this.bansheeVideos();
+			} else if (chance <= ds.stage2 && ctRoll === 1 && g && g.canTentacles) {
+				var tier = cthulionTierForSanity(sanity);
+				if (tier) videoList = cthulionVideos(tier);
+			} else if (sanity >= 75 && chance <= ds.stage1) {
+				var inside = 1 + Math.floor(Math.random() * 5);
+				videoList = (inside <= 3)
+					? this.saveEventBottomVideos(1)
+					: this.saveEventTopVideos(1);
+			} else if (sanity >= 50 && sanity < 75 && chance <= ds.stage2) {
+				videoList = this.saveEventBottomVideos(2);
+			} else if (sanity >= 30 && sanity < 50 && chance <= ds.stage3) {
+				videoList = this.saveEventTopVideos(3);
+			} else if (sanity >= 1 && sanity < 30 && chance <= ds.stage4) {
+				videoList = this.saveEventBottomVideos(4);
+			}
+
+			var picked = pickRandom(videoList);
+			sv().videoEvent = picked || null;
+			return !!picked;
+		},
+
+		/* EventArt entry: rolls the sanity stage and clothing/passage
+		   bucket, picks an asset, and writes it to $artImgEvent or
+		   $artVideoEvent. Returns 'img' / 'video' / null so the caller
+		   knows which follow-up passage to <<goto>>. */
+		rollArtEvent: function () {
+			var g = setup.Ghosts.active();
+			this.setDecreasingSanity(
+				g && g.invertedSanityStages
+					? { stage1: 9, stage2: 7, stage3: 5, stage4: 3 }
+					: { stage1: 3, stage2: 5, stage3: 7, stage4: 9 }
+			);
+			var ds = this.decreasingSanity();
+			var sanity = setup.Mc.sanity();
+			var chance = Math.floor(Math.random() * 101); // [0,100]
+			var imgs = [];
+			var vids = [];
+
+			if (sanity >= 90 && chance <= ds.stage1) {
+				imgs = artImagesForStage(1, setup.Wardrobe);
+			} else if (sanity >= 80 && sanity < 90 && chance <= ds.stage2) {
+				imgs = artImagesForStage(2, setup.Wardrobe);
+			} else if (sanity >= 70 && sanity < 80 && chance <= ds.stage2) {
+				imgs = artImagesForStage(3, setup.Wardrobe);
+			} else if (sanity >= 50 && sanity < 70 && chance <= ds.stage3) {
+				imgs = artImagesUnderwearOrNaked(setup.Wardrobe);
+			} else if (sanity >= 1 && sanity < 50 && chance <= ds.stage4) {
+				vids = artVideosForPassage(passage());
+			}
+
+			var img = pickRandom(imgs);
+			var vid = pickRandom(vids);
+			sv().artImgEvent = img || null;
+			sv().artVideoEvent = vid || null;
+			if (img) return 'img';
+			if (vid) return 'video';
+			return null;
+		},
 
 		// --- Ghost sanity-event decreased amount -----------------
 		rollGhostSanityEventDecreased: function () {

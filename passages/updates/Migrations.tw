@@ -206,6 +206,7 @@ setup.Migrations = (function () {
 		});
 	}
 
+
 	return {
 		OWNED_VARS: OWNED_VARS,
 

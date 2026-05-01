@@ -2,20 +2,9 @@
 <<run setup.MissingWomen.seedTornStyle()>>
 
 :: widgetRescue [widget nobr] {"position":"2275,1700","size":"100,100"}
-<<script>>
-setup.rescueGirlPassages = {
-    "Victoria": "RescueVictoria",
-    "Jade": "RescueJade",
-    "Julia": "RescueJulia",
-    "Nadia": "RescueNadia",
-    "Ash": "RescueAsh"
-};
-<</script>>
-
 <<widget "rescueGirlLink">>
 	<<set _girlName to setup.MissingWomen.currentRescueGirl()>>
-	<<set _passage to setup.rescueGirlPassages[_girlName]>>
-	<<link _girlName _passage>><</link>>
+	<<link _girlName "RescueScene">><</link>>
 <</widget>>
 
 <<widget "videoToggle">>
@@ -27,5 +16,135 @@ setup.rescueGirlPassages = {
 		<<video _video1>>
 	<<else>>
 		<<video _video2>>
+	<</if>>
+<</widget>>
+
+/* Shared body for RescueVictoria/Nadia/Jade/Julia/Ash. The per-girl
+   chapter/variant pool and end clip come from
+   setup.MissingWomen.rescueGirlConfig — the only difference between
+   passages is the girl name passed in. */
+<<widget "rescueScene">>
+	<<set _scene to setup.MissingWomen.initRescueScene(_args[0])>>
+	<<set _randomChance to random(1, 100)>>
+	<<set _clickCount to 0>>
+	<<set _caughtChance to 0>>
+
+	<div id="videoContainer">
+	<<video _scene.current>>
+	</div>
+
+	@@.mc-speech; Oh wow~ it's <<= setup.MissingWomen.currentRescueGirl()>>, and it looks like she's... in trouble.<br>
+	I can help her if I use holy water.... or<br>
+	I could watch a little longer and then help her... but I might get noticed. @@<br>
+	@@.warningtext; The chance of being noticed - <<do tag "chanceRescue">>_caughtChance
+	<</do>>@@<br>
+	<span class="rescueWatchButton"><<capture _scene, _randomChance>><<link "@@.usebtn;Watch@@">>
+		<<set _clickCount += 1>>
+		<<if _clickCount lte 4>>
+			<<if _caughtChance gte _randomChance>>
+				<<replace ".rescueWatchButton">>
+					@@.mc-speech; FUCK! They noticed me. I won't have time to take out the holy water, but I could@@
+					@@.usebtn; [[Run|Church][setup.MissingWomen.markQuestFailed()]]@@
+
+					<<done>>
+						<<if not setup.MissingWomen.canStaySubmissive()>>
+							<<addclass ".rescueStayCorruptionCheck" "disabled-link">>
+						<</if>>
+					<</done>>
+					<br>
+					<span class="rescueStayCorruptionCheck">
+					@@.mc-speech;Or...@@  @@.usebtn;[[Stay|RescueStay][setup.MissingWomen.markQuestFailed()]]@@.@@.mc-speech; I guess I'm already used to losing...@@</span>
+					<<if not setup.MissingWomen.canStaySubmissive()>>@@.warningtext; (Req. <<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 6)@@
+					<</if>>
+
+					<br><br>
+					<br>
+				<</replace>>
+				<<replace ".useHolyWaterButton">><</replace>>
+			<</if>>
+			<<set _caughtChance += 20>>
+			<<redo "chanceRescue">>
+		<</if>>
+		<<if _clickCount == 4>>
+			<<run setup.MissingWomen.endRescueScene(_scene)>>
+			<<replace "#videoContainer">>
+				<<video _scene.current>>
+			<</replace>>
+		<</if>>
+		<<if _clickCount < 4>>
+			<<run setup.MissingWomen.advanceRescueScene(_scene)>>
+			<<replace "#videoContainer">>
+				<<video _scene.current>>
+			<</replace>>
+		<</if>>
+	<</link>>
+	<</capture>></span><br>
+	<span class="useHolyWaterButton"><<if not setup.MissingWomen.hasHolyWater()>>
+		@@.mc-thoughts; Fuck! I didn't bring any holy water... I can't do much without it...@@<br><br>
+		@@.backbtn; [[Leave|RescueMap]]@@<br>
+	<<else>>
+		<<linkreplace "@@.usebtn;Use holywater@@">>
+			<<replace ".rescueWatchButton">><</replace>>
+			<<run setup.MissingWomen.useHolyWater()>>
+			@@.mc-thoughts;But there's no time to waste! You quickly start throwing holy water toward the ghost. <br>
+			It lets out a loud hiss, like the water's burning it from the inside. The ghost pulls away from <<= setup.MissingWomen.currentRescueGirl()>> and disappears.@@<br>
+			@@.mc-speech;Let's get out of here before it comes back!@@<br>
+			@@.mc-thoughts; You grab her arm, and the two of you bolt out of the house.<br>
+			She thanks you for saving her and says she'll tell the nun about your help.@@<br>
+			<br><br>
+			@@.backbtn; [[Leave|Church][setup.MissingWomen.markQuestSucceeded()]]@@<br>
+		<</linkreplace>>
+	<</if>></span>
+<</widget>>
+
+/* Shared body for RescueStay branches. Argument is the girl name; the
+   per-girl clip set comes from setup.MissingWomen.rescueStayConfig.
+   Ash uses an indexed cycle (AshBoth1.mp4..AshBoth5.mp4) instead of
+   the two-clip toggle the other girls share. */
+<<widget "rescueStay">>
+	<<set _girl to _args[0]>>
+	<<set _stayCfg to setup.MissingWomen.rescueStayConfig(_girl)>>
+	<<if _stayCfg.stay.kind eq "toggle">>
+		<<set _bothA to setup.MissingWomen.stayClipPath(_stayCfg.slug, _stayCfg.stay.base + "1.mp4")>>
+		<<set _bothB to setup.MissingWomen.stayClipPath(_stayCfg.slug, _stayCfg.stay.base + "2.mp4")>>
+		<<set _stayEnd to setup.MissingWomen.stayClipPath(_stayCfg.slug, _stayCfg.stay.endClip)>>
+		<span id="rescueStayContainer">
+		<<video _bothA>></span>
+		@@.mc-thoughts; You don't even try to resist.@@<br>
+		@@.mc-speech; Let it be what it will be.@@<br>
+		<<capture _bothA, _bothB, _stayEnd>>
+			@@.mc-thoughts; The ghost dragged you to the missing girl and began to have fun with you, using <<link "@@.usebtn; one after the other@@">>.
+				<<replace "#rescueStayContainer">>
+					<<videoToggle "rescueStayContainer" _bothB _bothA>>
+				<</replace>>
+			<</link>>
+			His cock, hot and huge, beat inside you, taking up all your attention. You did not pay attention to the fact that <<= setup.MissingWomen.currentRescueGirl()>> sometimes licked your tits and pussy. But all this soon@@ <<linkappend "@@.enterbtn; ended@@">><br>
+				<<video _stayEnd>>
+
+				@@.mc-thoughts; He finished, but you were shaking all over. From excitement, nerves... from fear, probably. Tired, you@@ @@[[passed out|CityMapPossessed]]@@<br>
+			<</linkappend>>
+		<</capture>>
+	<<elseif _stayCfg.stay.kind eq "ash">>
+		<<set _initialClip to setup.MissingWomen.stayClipPath(_stayCfg.slug, _stayCfg.stay.initial)>>
+		<<set _stayEnd to setup.MissingWomen.stayClipPath(_stayCfg.slug, _stayCfg.stay.endClip)>>
+		<span id="rescueStayContainer">
+		<<video _initialClip>></span>
+		@@.mc-thoughts; You don't even try to resist.@@<br>
+		@@.mc-speech; Let it be what it will be.@@<br>
+		<<set _videoIndex to 1>>
+		<<capture _stayCfg, _stayEnd>>
+			@@.mc-thoughts; The ghost dragged you to the missing girl and began to have fun with you, using <<link "@@.usebtn; one after the other@@">>.
+				<<set _videoIndex to (_videoIndex + 1) % 6>>
+				<<replace "#rescueStayContainer">>
+					<<set _ashClip to setup.MissingWomen.stayClipPath(_stayCfg.slug, _stayCfg.stay.base + _videoIndex + ".mp4")>>
+					<<video _ashClip>>
+				<</replace>>
+			<</link>>
+			His cock, hot and huge, beat inside you, taking up all your attention. You did not pay attention to the fact that <<= setup.MissingWomen.currentRescueGirl()>> sometimes licked your tits and pussy. But all this soon@@ <<linkappend "@@.enterbtn; ended@@">><br>
+				<<video _stayEnd>>
+
+				@@.mc-thoughts; He finished, but you were shaking all over. From excitement, nerves... from fear, probably. Tired, you@@ @@[[passed out|CityMapPossessed]]@@<br>
+			<</linkappend>>
+		<</capture>>
 	<</if>>
 <</widget>>

@@ -1,46 +1,5 @@
 :: PassageReady {"position":"200,200","size":"100,100"}
-<<if setup.Ghosts.isHunting()>>
-	<<if setup.Tick.companionAttackActiveHit()>>
-		<<if setup.Tick.resolveCompanionAttack() eq "hit">>
-			<<include "CompanionRandomRoom">>
-		<</if>>
-	<</if>>
+<<set _go to setup.Tick.onPassageReady()>>
+<<if _go>>
+	<<goto _go>>
 <</if>>
-
-<<if setup.Tick.atRandomGhostPassage()>>
-<<goto "CompanionEvent">>
-<</if>>
-
-<<run setup.Gui.refreshToolTimer()>>
-
-<<run setup.Tick.recomputeStealChance()>>
-
-/* SaveMigration already ran these defaults on load, but
-   PassageReady keeps running them so brand-new variables introduced mid-save
-   still get picked up without a reload. */
-<<run if (setup.applySaveDefaults) { setup.applySaveDefaults(State.variables); }>>
-
-<<run setup.Migrations.ensureZeroDefaults()>>
-<<run setup.Migrations.seedTornStyles()>>
-<<run setup.Tick.applyPossessionTarotCleanup()>>
-
-<<run setup.MonkeyPaw.maybeAutoUnlockAtDawn()>>
-
-<<run setup.Migrations.ensureMcFit()>>
-
-<<run setup.Intro.ensureSensualBodyParts()>>
-<<run setup.Intro.clampSensualBodyParts(setup.Intro.currentSensualBodyPart())>>
-
-<<run setup.Migrations.ensurePSprayInventory()>>
-
-<<run setup.Migrations.applyPiercingSensitivityPatch()>>
-
-<<if setup.Migrations.ironcladPatchNeeded()>>
-<<run setup.HauntedHouses.migrateIroncladRooms()>>
-<</if>>
-
-<<if setup.Migrations.saveFixNeeded()>><<include "FixSaveFile">><</if>>
-
-<<run setup.Migrations.ensureSuccubusCooldown()>>
-<<run setup.Migrations.ensureCursedItemCooldown()>>
-<<run setup.Migrations.ensureRoomTemplates()>>

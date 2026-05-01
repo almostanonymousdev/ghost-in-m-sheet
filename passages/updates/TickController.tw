@@ -175,7 +175,7 @@ setup.Tick = (function () {
 		sv().stepCount = (sv().stepCount || 0) + 1;
 	}
 
-	// --- Midnight rollover (ResetCooldowns passage) --------------
+	// --- Midnight rollover (resetCooldowns helper) --------------
 	/* Called once per day-change (via addTime crossing 24). Resets
 	   per-day cooldowns and ticks several multi-day counters. */
 	function resetCooldowns() {
@@ -228,6 +228,102 @@ setup.Tick = (function () {
 		}
 	}
 
+	/* :: PassageReady lifecycle hook. Bundles the per-tick setup that
+	   used to live as a long stack of <<run>> calls in the lifecycle
+	   passage. Returns a passage name to <<goto>>, or null. The
+	   passage stays a thin wrapper that just routes the goto. */
+	function onPassageReady() {
+		if (setup.Ghosts.isHunting()
+			&& companionAttackActiveHit()
+			&& resolveCompanionAttack() === "hit") {
+			setup.Companion.pickRandomCompanionRoomFromContext();
+		}
+
+		if (atRandomGhostPassage()) return "CompanionEvent";
+
+		setup.Gui.refreshToolTimer();
+		recomputeStealChance();
+
+		// SaveMigration already ran these defaults on load, but
+		// running them here picks up brand-new variables introduced
+		// mid-save without a reload.
+		if (setup.applySaveDefaults) setup.applySaveDefaults(State.variables);
+
+		setup.Migrations.ensureZeroDefaults();
+		setup.Migrations.seedTornStyles();
+		applyPossessionTarotCleanup();
+		setup.MonkeyPaw.maybeAutoUnlockAtDawn();
+		setup.Migrations.ensureMcFit();
+		setup.Intro.ensureSensualBodyParts();
+		setup.Intro.clampSensualBodyParts(setup.Intro.currentSensualBodyPart());
+		setup.Migrations.ensurePSprayInventory();
+		setup.Migrations.applyPiercingSensitivityPatch();
+		if (setup.Migrations.ironcladPatchNeeded()) {
+			setup.HauntedHouses.migrateIroncladRooms();
+		}
+		if (setup.Migrations.saveFixNeeded()) {
+			setup.Migrations.migrateIroncladSearchMaps();
+		}
+		setup.Migrations.ensureSuccubusCooldown();
+		setup.Migrations.ensureCursedItemCooldown();
+		setup.Migrations.ensureRoomTemplates();
+		return null;
+	}
+
+	/* :: PassageDone lifecycle hook (logic-only portion). Bundles all
+	   the <<run>> calls and one-shot migration includes. The DOM
+	   widget calls (<<applyRoomLightClass>>, <<replace>>, addclass,
+	   updatemeter, etc.) stay in the passage because they're rendering
+	   ops; this function returns a string when a <<goto>> should fire.
+	   Bool flags returned drive in-passage <<replace>> blocks. */
+	function onPassageDone() {
+		setup.Wardrobe.refreshAggregateStates();
+
+		if (setup.Ghosts.isMimicHunt() && setup.Ghosts.isHunting()) {
+			setup.Posession.rollMimicType(
+				setup.Ghosts.names({ exclude: ["Mimic"] })
+			);
+		}
+
+		setup.HauntedHouses.shuffleGhostRoom();
+
+		if (setup.Time.isMorningPlus() && setup.Ghosts.isHunting()) {
+			return { goto: "HuntOverTime" };
+		}
+
+		if (!setup.Migrations.update22Applied()) {
+			setup.Migrations.migrateRoomsAndHuntTimer();
+		}
+		if (!setup.Migrations.update0909Applied()) {
+			setup.Migrations.migrateDeliveryAndCompanionReset();
+		}
+		if (!setup.Migrations.update2707Applied()) {
+			setup.Migrations.migrateStockingsFootBought();
+		}
+
+		setup.Companion.tickAllCompanionProgression();
+
+		if (activeCompanionShouldLeaveAfterEvent()) {
+			return { goto: "CompanionLeaving" };
+		}
+
+		setup.Migrations.ensureUnderwearMemory();
+		initTick();
+
+		tickHuntTimer();
+		tickRescueQuestExpiry();
+		tickCursedHuntTimer();
+		setup.Migrations.migrateCompanionPlanTimes();
+		applyDetectorHighlights();
+		setup.Mc.ensurePossession();
+
+		var lustChanged = applyChokerLustFloor();
+		if (!setup.Gui.timerToolsInitialized()) {
+			setup.Gui.refreshToolTimer();
+		}
+		return { lustChanged: !!lustChanged };
+	}
+
 	return {
 		OWNED_VARS: OWNED_VARS,
 		tickCursedHuntTimer: tickCursedHuntTimer,
@@ -245,6 +341,8 @@ setup.Tick = (function () {
 		twinsEventFired: twinsEventFired,
 		stepCount: stepCount,
 		incrementStepCount: incrementStepCount,
-		resetCooldowns: resetCooldowns
+		resetCooldowns: resetCooldowns,
+		onPassageReady: onPassageReady,
+		onPassageDone: onPassageDone
 	};
 })();
