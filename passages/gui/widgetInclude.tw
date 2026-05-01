@@ -21,10 +21,10 @@
 			<<if setup.Mc.sanity() lte 0>>
 				<<goto "HuntOverSanity">>
 			<</if>>
-			<<if _eventTriggered is false>>
+			<<if not setup.Events.eventTriggered()>>
 				<<include "StealClothesEvent">>
 			<</if>>
-			<<if _stealClothesTriggered is false and _eventTriggered is false>>
+			<<if not setup.HauntedHouses.stealClothesTriggered() and not setup.Events.eventTriggered()>>
 				<<include "CheckHuntStart">>
 			<</if>>
 		<</if>>
@@ -56,7 +56,7 @@
 			<<if setup.Mc.sanity() lte 0>>
 				<<goto "HuntOverSanity">>
 			<</if>>
-			<<if _eventTriggered is false>>
+			<<if not setup.Events.eventTriggered()>>
 				<<include "CheckHuntStart">>
 			<</if>>
 		<</if>>
@@ -79,5 +79,5 @@
 <</widget>>
 
 <<widget "cthulionAbility">>
-	<<set _videoList to setup.Events.cthulionVideos(_args[0])>>
+	<<video setup.Events.randomCthulionVideo(_args[0])>>
 <</widget>>

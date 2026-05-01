@@ -3,7 +3,6 @@
 <<run setup.HauntedHouses.markClothesStolen()>>
 @@.mc-thoughts; While focusing on your device, you suddenly felt a hard push from behind. Before you could understand what happened, the ground came veeeeery close. *Bang*@@<br>
 @@.mc-speech; Ouch! @@ @@.mc-thoughts;You tried to break the fall with your hands, but you didn't react in time. The impact was too strong, and it knocked you out for a few moments. @@
-<<set _randomNum to random(1, 100)>>
 
 <<set _stealOptions to setup.HauntedHouses.availableStealTargets()>>
 

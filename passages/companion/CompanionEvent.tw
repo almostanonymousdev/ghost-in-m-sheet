@@ -1,5 +1,4 @@
 :: CompanionEvent [nobr noreturn] {"position":"2250,3225","size":"100,100"}
-<<set _companionLustIncreased to setup.Tick.stepCount() * 3>>
 <<set _pick to setup.Companion.pickEventMedia()>>
 
 <<if _pick and _pick.type eq "video">>

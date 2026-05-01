@@ -119,10 +119,6 @@
 	<</if>>
 <</widget>>
 
-<<widget "anything">>
-	<<set _check to random(1,6)>>
-<</widget>>
-
 /* Shared exit link for every hunt-ending scene in HuntEnd.tw. Absent
    the high-priestess tarot, the MC slips into Sleep; with the tarot
    active, the card burns itself to return the MC to $return. `_args[0]`
