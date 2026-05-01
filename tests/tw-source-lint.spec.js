@@ -843,6 +843,163 @@ test.describe('deferred macro callbacks must capture temp vars', () => {
 
 });
 
+// ── widget / passage temp-var leak ──────────────────────────────
+
+test.describe('temp vars (`_foo`) must not leak across widget/passage boundaries', () => {
+
+  /**
+   * Temporary variables (`_foo`) live in `State.temporary`, which
+   * SugarCube resets on every passage navigation but NOT between
+   * widget invocations or `<<include>>` boundaries inside a single
+   * passage. That makes them a subtle but real leak surface:
+   *
+   *   <<widget "cthulionAbility">>
+   *     <<set _videoList to setup.Events.cthulionVideos(_args[0])>>
+   *   <</widget>>
+   *
+   *   :: BrookHelp
+   *     <<cthulionAbility 4>>
+   *     <<video _videoList[random(0, _videoList.length - 1)]>>
+   *
+   * The widget's only purpose is to write `_videoList` into temp
+   * scope so the caller can read it. That's an implicit handshake
+   * that breaks the moment a second caller re-uses the widget under a
+   * different name, or the widget gets renamed/inlined. Worse, every
+   * other widget invocation in the same passage clobbers the temp
+   * value, so the leak is order-dependent.
+   *
+   * The same anti-pattern shows up across `<<include>>` boundaries:
+   * a child passage sets `_x` purely so the including passage can
+   * branch on it (`<<if _x is false>>…<</if>>` after the include).
+   *
+   * Both cases should go through a controller method instead — a
+   * named getter on `setup.X` makes the contract explicit, the
+   * shared state survives passage transitions when it needs to, and
+   * the linter below stays useful as a guard against regression.
+   *
+   * Rule: every `<<set _foo …>>` inside a widget body or passage
+   * body must be matched by at least one *read* of `_foo` within the
+   * same scope. If a temp var is only ever written, the only way it
+   * gets used is via leakage — flag it.
+   */
+
+  // SugarCube widget intrinsics — always present in widget temp scope,
+  // never something the widget body "sets" in the leaky sense.
+  const TEMP_INTRINSICS = new Set(['args', 'argsArray', 'argsString']);
+
+  /** Count `<<set _name …>>` assignments per name in `body`. */
+  function tempVarSetCounts(body) {
+    const counts = new Map();
+    const re = /<<set\s+_([A-Za-z_][A-Za-z0-9_]*)\b/g;
+    let m;
+    while ((m = re.exec(body)) !== null) {
+      const name = m[1];
+      counts.set(name, (counts.get(name) || 0) + 1);
+    }
+    return counts;
+  }
+
+  /** Count every `_name` token in `body` (incl. set-LHS occurrences). */
+  function tempVarTotalCounts(body) {
+    const counts = new Map();
+    const re = /(?<![A-Za-z0-9_])_([A-Za-z_][A-Za-z0-9_]*)/g;
+    let m;
+    while ((m = re.exec(body)) !== null) {
+      const name = m[1];
+      counts.set(name, (counts.get(name) || 0) + 1);
+    }
+    return counts;
+  }
+
+  /** Approximate line number for the first `<<set _name>>` in `body`. */
+  function lineOfFirstSet(body, name) {
+    const idx = body.search(new RegExp(`<<set\\s+_${name}\\b`));
+    if (idx < 0) return 1;
+    return body.slice(0, idx).split('\n').length;
+  }
+
+  test('widget bodies must consume every temp var they set (or hand it to a sibling widget)', () => {
+    const violations = [];
+    for (const p of allPassages) {
+      if (!p.tags.includes('widget')) continue;
+      const widgets = [];
+      const re = /<<widget\s+"([^"]+)"[^>]*>>([\s\S]*?)<<\/widget>>/g;
+      let m;
+      while ((m = re.exec(p.body)) !== null) {
+        widgets.push({ name: m[1], body: m[2], offset: m.index });
+      }
+      // Container widgets routinely hand context to a sibling widget
+      // they wikify via `_contents` (e.g. <<roomShell>> sets shared
+      // context for <<roomFooter>>). That's a deliberate widget-level
+      // contract within the same passage file, so a temp var set in
+      // one widget body is allowed when another widget in the same
+      // passage reads it. The cross-file leak (widget here, passage
+      // elsewhere) is what we're catching.
+      const totalsByPassage = tempVarTotalCounts(p.body);
+      const setsByPassage = tempVarSetCounts(p.body);
+      for (const w of widgets) {
+        const sets = tempVarSetCounts(w.body);
+        if (sets.size === 0) continue;
+        const total = tempVarTotalCounts(w.body);
+        for (const [name, setCount] of sets) {
+          if (TEMP_INTRINSICS.has(name)) continue;
+          // Widget body reads it itself? OK.
+          if ((total.get(name) || 0) > setCount) continue;
+          // Read by a sibling widget in the same passage file? Also OK
+          // (deliberate parent→child container handshake). Compare the
+          // file-wide total against file-wide set count: any extra
+          // reference is a real read somewhere outside <<set …>>.
+          if ((totalsByPassage.get(name) || 0) > (setsByPassage.get(name) || 0)) continue;
+          const lineWithin = lineOfFirstSet(w.body, name);
+          const before = p.body.slice(0, w.offset).split('\n').length;
+          const absLine = p.headerLine + before + lineWithin - 1;
+          violations.push(
+            `${rel(p.file)}:${absLine} <<widget "${w.name}">> sets _${name} ` +
+            `but never reads it — the value is only reachable via leakage ` +
+            `into the caller's temp scope. Move the work into a controller ` +
+            `method (e.g. setup.X.fooBar() returning the value) and have the ` +
+            `caller use that instead, or have the widget consume the value itself.`
+          );
+        }
+      }
+    }
+    expect(violations, violations.join('\n')).toHaveLength(0);
+  });
+
+  test('passage bodies must consume every temp var they set (no <<include>> handshakes)', () => {
+    const violations = [];
+    for (const p of allPassages) {
+      // Widget-defining passages are checked by the per-widget rule above.
+      if (p.tags.includes('widget')) continue;
+      // [script] / [stylesheet] passages contain JS / CSS, not Twee macros.
+      if (p.tags.includes('script') || p.tags.includes('stylesheet')) continue;
+      // Strip widget bodies from the passage — those have their own scope.
+      const stripped = p.body.replace(
+        /<<widget\s+"[^"]+"[^>]*>>[\s\S]*?<<\/widget>>/g,
+        ''
+      );
+      const sets = tempVarSetCounts(stripped);
+      if (sets.size === 0) continue;
+      const total = tempVarTotalCounts(stripped);
+      for (const [name, setCount] of sets) {
+        if (TEMP_INTRINSICS.has(name)) continue;
+        if ((total.get(name) || 0) > setCount) continue;
+        const lineWithin = lineOfFirstSet(stripped, name);
+        const absLine = p.headerLine + lineWithin;
+        violations.push(
+          `${rel(p.file)}:${absLine} passage "${p.name}" sets _${name} ` +
+          `but never reads it — if the value is meant for an including passage ` +
+          `or following <<widget>> call, route it through a controller method ` +
+          `(setup.X.markFooBar() / setup.X.fooBar()) instead of leaking via ` +
+          `temp scope.`
+        );
+      }
+    }
+    expect(violations, violations.join('\n')).toHaveLength(0);
+  });
+
+});
+
 // ── @@ styled markup (SugarCube custom style markup) ────────────
 
 test.describe('styled markup (@@...@@)', () => {

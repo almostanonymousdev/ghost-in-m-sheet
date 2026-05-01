@@ -183,13 +183,24 @@ setup.Events = (function () {
 
 		// --- Event randomizer helpers ----------------------------
 
-		/*
-		* Set up common event state ($argForRandomizer, _eventTriggered).
-		*/
+		/* Set up common event state and mark the per-tick "event
+		   already fired" flag so search-tool chains skip
+		   StealClothesEvent / CheckHuntStart for the rest of the
+		   passage. The flag is per-passage temp state — SugarCube
+		   resets State.temporary on every passage navigation, and
+		   PassageDone defensively resets it again. */
 		initEvent: function (eventKey) {
 			sv().argForRandomizer = eventKey;
-			State.temporary.eventTriggered   = true;
+			this.markEventTriggered();
 		},
+
+		/* Per-tick "event already fired" flag, owned by setup.Events
+		   so passages don't share a leaky `_eventTriggered` temp var
+		   directly. Backed by State.temporary so it resets between
+		   passages without ceremony. */
+		eventTriggered:      function () { return State.temporary.eventTriggered === true; },
+		markEventTriggered:  function () { State.temporary.eventTriggered = true; },
+		resetEventTriggered: function () { State.temporary.eventTriggered = false; },
 
 		/*
 		* Look up videos for a given event and clothing type, resolving
@@ -363,9 +374,16 @@ setup.Events = (function () {
 		artImgEvent:      function () { return sv().artImgEvent; },
 		artVideoEvent:    function () { return sv().artVideoEvent; },
 
-		/* Public Cthulion-tier video lookup. Used by the
-		   <<cthulionAbility>> widget and by rollSaveEvent below. */
+		/* Public Cthulion-tier video lookup. Used by rollSaveEvent
+		   below (passes the full list to its picker). */
 		cthulionVideos: function (tier) { return cthulionVideos(tier); },
+
+		/* Pick one Cthulion video at random for the given tier. The
+		   <<cthulionAbility>> widget delegates here so callers don't
+		   have to read a list out of widget temp scope. */
+		randomCthulionVideo: function (tier) {
+			return pickRandom(cthulionVideos(tier));
+		},
 
 		/* :: Event entry: generic per-tick haunt event roll. Picks a
 		   video (Banshee / Cthulion / body-part) and writes it to

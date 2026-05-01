@@ -8,14 +8,11 @@
 <</widget>>
 
 <<widget "videoToggle">>
-	<<set _toggleId to _args[0]>>
-	<<set _video1 to _args[1]>>
-	<<set _video2 to _args[2]>>
 	<<set _videoToggle to !_videoToggle>>
 	<<if _videoToggle>>
-		<<video _video1>>
+		<<video _args[0]>>
 	<<else>>
-		<<video _video2>>
+		<<video _args[1]>>
 	<</if>>
 <</widget>>
 
@@ -115,7 +112,7 @@
 		<<capture _bothA, _bothB, _stayEnd>>
 			@@.mc-thoughts; The ghost dragged you to the missing girl and began to have fun with you, using <<link "@@.usebtn; one after the other@@">>.
 				<<replace "#rescueStayContainer">>
-					<<videoToggle "rescueStayContainer" _bothB _bothA>>
+					<<videoToggle _bothB _bothA>>
 				<</replace>>
 			<</link>>
 			His cock, hot and huge, beat inside you, taking up all your attention. You did not pay attention to the fact that <<= setup.MissingWomen.currentRescueGirl()>> sometimes licked your tits and pussy. But all this soon@@ <<linkappend "@@.enterbtn; ended@@">><br>

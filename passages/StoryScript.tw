@@ -1801,7 +1801,7 @@ setup.searchToolMarkup = function (cfg) {
         eventChain =
             '<<if $cursedHuntActive eq 1>><<else>>' +
                 '<<include "LightPassageGhost">><<include "Event">>' +
-                '<<if _eventTriggered is false>>' +
+                '<<if not setup.Events.eventTriggered()>>' +
                     '<<include "CheckHuntStart">>' +
                 '<</if>>' +
             '<</if>>';
@@ -1810,10 +1810,10 @@ setup.searchToolMarkup = function (cfg) {
         eventChain =
             '<<if $cursedHuntActive eq 1>><<else>>' +
                 '<<include "LightPassageGhost">><<include "Event">>' +
-                '<<if _eventTriggered is false>>' +
+                '<<if not setup.Events.eventTriggered()>>' +
                     '<<include "StealClothesEvent">>' +
                 '<</if>>' +
-                '<<if _stealClothesTriggered is false and _eventTriggered is false>>' +
+                '<<if not setup.HauntedHouses.stealClothesTriggered() and not setup.Events.eventTriggered()>>' +
                     '<<include "CheckHuntStart">>' +
                 '<</if>>' +
             '<</if>>';

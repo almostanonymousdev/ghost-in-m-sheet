@@ -1,6 +1,4 @@
 :: widgetEvent [widget nobr] {"position":"400,1800","size":"100,100"}
-<<widget "eventRandomizer">><<set _eventKey to _args[0]>><<set _videoList to setup.Events.videoListForEvent(_eventKey)>><</widget>>
-
 <<widget "eventRandomizerText">>
 	<<set _bodyPart to _args[0]>>
 	<<set _ct to setup.Events.corruptionTier()>>

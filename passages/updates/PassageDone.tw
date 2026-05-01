@@ -19,8 +19,8 @@
 	<<goto _done.goto>>
 <</if>>
 
-<<set _eventTriggered = false>>
-<<set _stealClothesTriggered = false>>
+<<run setup.Events.resetEventTriggered()>>
+<<run setup.HauntedHouses.resetStealClothesTriggered()>>
 
 <<if _done.lustChanged>>
 	<<updatemeter 'mclust' `setup.Mc.lust().toFixed(2) / 100`>>

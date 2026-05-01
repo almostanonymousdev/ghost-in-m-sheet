@@ -11,10 +11,8 @@
 <</widget>>
 
 <<widget "washClean">>
-	<<set _imgWidth to _args[0]>>
-	<<set _beautyPenalty to _args[1]>>
 	<<run setup.Mc.setDirty(0)>>
-	<<wipeMakeup _beautyPenalty>>
+	<<wipeMakeup _args[0]>>
 	@@.mc-speech; Nice and clean again@@<br>
 	<br>
 	@@.backbtn;[[Back|Bathroom]]@@
