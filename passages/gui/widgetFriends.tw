@@ -54,8 +54,8 @@
 		@@.mc-speech; I... I don't know... I feel completely different... I can't explain it.@@<br>
 		<<run setup.Companion.markTransFirstStage()>>
 	<</if>>
-	<<run setup.Companion.applyEventStatDeltas(_companionLustIncreased)>>
-	<<= _cName>>'s lust: + _companionLustIncreased <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+	<<run setup.Companion.applyEventStatDeltas()>>
+	<<= _cName>>'s lust: + <<= setup.Companion.eventLustGain()>> <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
 	<<= _cName>>'s sanity: - <<= setup.Companion.decreaseSanity()>><<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
 
 <</widget>>
@@ -89,8 +89,8 @@
 		@@.notmc-speech; Oh~ he touched me, and I... I don't understand what was happening to me.@@<br>
 		<<run setup.Companion.markTransFirstStage()>>
 	<</if>>
-	<<run setup.Companion.applyEventStatDeltas(_companionLustIncreased)>>
-	<<= _cName>>'s lust: + _companionLustIncreased <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+	<<run setup.Companion.applyEventStatDeltas()>>
+	<<= _cName>>'s lust: + <<= setup.Companion.eventLustGain()>> <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
 	<<= _cName>>'s sanity: - <<= setup.Companion.decreaseSanity()>><<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
 	Your <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>> +15<br>
 	<<addLust 15>>
@@ -125,8 +125,8 @@
 		@@.notmc-speech; I... I don't know, he appeared so suddenly, and it seemed like I had no control over my actions. It all happened so fast, I didn't even get to understand anything.@@<br>
 		<<run setup.Companion.markTransFirstStage()>>
 	<</if>>
-	<<run setup.Companion.applyEventStatDeltas(_companionLustIncreased)>>
-	<<= _cName>>'s lust: + _companionLustIncreased <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+	<<run setup.Companion.applyEventStatDeltas()>>
+	<<= _cName>>'s lust: + <<= setup.Companion.eventLustGain()>> <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
 	<<= _cName>>'s sanity: - <<= setup.Companion.decreaseSanity()>><<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
 	Your <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>> +15<br>
 	<<addLust 15>>
@@ -159,8 +159,8 @@
 		@@.notmc-speech; I... I don't know... He used me, my body... It seems I didn't understand what was happening... It was like I wasn't in my own body, the sensations were so... intense, incredible.@@<br>
 		<<run setup.Companion.markTransFirstStage()>>
 	<</if>>
-	<<run setup.Companion.applyEventStatDeltas(_companionLustIncreased)>>
-	<<= _cName>>'s lust: + _companionLustIncreased <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+	<<run setup.Companion.applyEventStatDeltas()>>
+	<<= _cName>>'s lust: + <<= setup.Companion.eventLustGain()>> <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
 	<<= _cName>>'s sanity: - <<= setup.Companion.decreaseSanity()>><<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
 	Your <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>> +15<br>
 	<<addLust 15>>

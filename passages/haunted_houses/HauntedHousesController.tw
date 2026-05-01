@@ -417,6 +417,14 @@ setup.HauntedHouses = (function () {
 			return this.canStealAnyItem();
 		},
 
+		/* Per-tick "steal-clothes already fired" flag. Same shape as
+		   setup.Events.eventTriggered() — backed by State.temporary
+		   so passages don't have to share a leaky `_stealClothesTriggered`
+		   temp var across <<include>> boundaries. */
+		stealClothesTriggered:      function () { return State.temporary.stealClothesTriggered === true; },
+		markStealClothesTriggered:  function () { State.temporary.stealClothesTriggered = true; },
+		resetStealClothesTriggered: function () { State.temporary.stealClothesTriggered = false; },
+
 		// --- NudityEvent branch helpers -------------------------
 		nudityNakedNoBottoms: function () {
 			return !setup.Wardrobe.topShirtWorn()

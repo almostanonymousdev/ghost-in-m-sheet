@@ -1,13 +1,9 @@
 :: BlakeHelp [noreturn nobr] {"position":"2150,3875","size":"100,100"}
 <<set _checkRandomCthulion to random(1,3)>>
-<<set _videoList to []>>
 <<set _hg to setup.Ghosts.active()>>
 
 <<if _hg and _hg.canTentacles and _checkRandomCthulion eq 1>>
 	<<cthulionAbility 4>>
-	<<set _randomIndex to random(0, _videoList.length - 1)>>
-	<<set _selectedVideo to _videoList[_randomIndex]>>
-	<<video _selectedVideo>>
 	@@.mc-thoughts; <<= setup.Companion.name()>> tries to help, and the ghost pulls back. But instead, huge tentacles crawl out from the corners of the room. Before you can react, they're all over you, wrapping tight and keeping you from moving.<br>
 	The soft, slimy tentacles start pushing into your holes, filling them with some kind of sticky liquid. You try to focus and break free, but these things know exactly what they're doing: they tease your most sensitive spots, making your body burn with desire. Your last hope is your friend, but one look at her tells you she's already lost. Her mouth's hanging open, eyes rolling back as another orgasm hits her. The room fills with wet, slurping sounds and her sweet moans.<br>
 	There's no point fighting it anymore. You give in to the tentacles. After a while, they finally pull back, done playing with your bodies.@@<br>

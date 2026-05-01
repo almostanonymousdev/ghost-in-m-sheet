@@ -1067,13 +1067,20 @@ setup.Companion = (function () {
 		isTransFirstStageSet: function () { return State.variables.transFirstStage === 1; },
 		setTransFirstStage: function (n) { State.variables.transFirstStage = n; },
 		setTransPicture: function (n) { State.variables.transPicture = n; },
+		/* Lust gain applied to the active companion when a CompanionEvent
+		   fires. Scales with the per-hunt step count so longer hunts
+		   build up arousal faster. The widgets call eventLustGain() for
+		   display and applyEventStatDeltas() to mutate state — both
+		   read this single source so they can't drift. */
+		eventLustGain: function () { return setup.Tick.stepCount() * 3; },
+
 		/* Apply the standard "$companion.sanity/lust change" side-effects
 		   from the shared companionTextEvent widgets. */
-		applyEventStatDeltas: function (lustIncrease) {
+		applyEventStatDeltas: function () {
 			var c = comp();
 			if (!c) return;
 			c.sanity -= c.decreaseSanity;
-			c.lust   += lustIncrease;
+			c.lust   += this.eventLustGain();
 		},
 		/* One of the per-name bookkeeping branches shared by
 		   companionTextEvent1..4: for a trans companion, stamp the

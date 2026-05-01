@@ -1,23 +1,6 @@
 :: Bag [noreturn] {"position":"100,400","size":"100,100"}
 <<nobr>>
 
-<<set _rooms = [
-  "OwaissaKitchen",
-  "ElmKitchen",
-  "OwaissaBedroom",
-  "ElmBedroom",
-  "ElmBedroomTwo",
-  "OwaissaHallway",
-  "ElmHallway",
-  "ElmHallwayUpstairs",
-  "OwaissaLivingroom",
-  "ElmNursery",
-  "OwaissaBathroom",
-  "ElmBathroom",
-  "ElmBathroomTwo",
-  "ElmBasement"
-]>>
-
 <div class="flexwrapper">
 <div class="housecard">
 <<image "ui/img/energy-drink.png" "icon">><br>
