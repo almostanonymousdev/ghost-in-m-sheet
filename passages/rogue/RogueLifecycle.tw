@@ -51,6 +51,7 @@
 	<<set _cr to setup.Rogue.currentRoomData()>>
 
 	<div class="rogue-run-layout">
+		<div id="rogue-tool-result" class="rogue-tool-result"></div>
 		<div class="rogue-run-top">
 			<div class="rogue-run-tl">
 				@@.location; Rogue Run #<<= _run.number>>@@<br>

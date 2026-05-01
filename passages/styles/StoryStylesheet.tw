@@ -1167,6 +1167,29 @@ html[data-debug-view] .debug[data-name][data-type].nonvoid::after {
 	padding: 1em 2.5em;
 	gap: 0.5em;
 }
+/* Top-center tray for tool readouts. The toolbar's replace macro
+ * targets #rogue-tool-result, so each tool click overwrites the prior
+ * reading here instead of inlining under the icon. Absolute positioning
+ * keeps it from disturbing the rogue-run-top grid; pointer-events:none
+ * lets clicks fall through to the top-row UI when the tray is empty. */
+.rogue-tool-result {
+	position: absolute;
+	top: 0.5em;
+	left: 50%;
+	transform: translateX(-50%);
+	max-width: 32em;
+	max-height: 60vh;
+	overflow: auto;
+	text-align: center;
+	z-index: 10;
+	pointer-events: none;
+}
+.rogue-tool-result:empty {
+	display: none;
+}
+.rogue-tool-result > * {
+	pointer-events: auto;
+}
 body.ui-bar-stowed .rogue-run-layout {
 	left: 0;
 }

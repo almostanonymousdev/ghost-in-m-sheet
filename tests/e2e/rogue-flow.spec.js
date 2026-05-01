@@ -197,7 +197,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     expect(await callSetup(page, 'setup.isGhostHere()')).toBe(true);
   });
 
-  test('clicking a tool advances time and replaces the link with a result', async () => {
+  test('clicking a tool advances time and renders into the top-center tray', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
@@ -207,9 +207,16 @@ test.describe('E2E: rogue run lifecycle', () => {
     // Baseline: GhostStreet resets to midnight.
     expect(await getVar(page, 'minutes')).toBe(0);
 
+    // The top-center result tray exists and is empty until a tool fires.
+    const tray = page.locator('#rogue-tool-result');
+    await expect(tray).toHaveCount(1);
+    await expect(tray).toBeEmpty();
+
     // Each tool card has a clickable label that wikifies <<toolCheck>>
-    // when clicked. Pick the EMF card -- it never possesses, never
-    // navigates away, and renders a deterministic <<coloredText>> span.
+    // into the tray on click. Pick the EMF card -- it never possesses,
+    // never navigates away, and renders a deterministic <<coloredText>>
+    // span. The tool card itself stays put; only the tray gains content,
+    // and the link remains clickable so the player can re-fire the tool.
     const emfCard = page.locator('.rogue-tool-card').first();
     await expect(emfCard.locator('a')).toHaveCount(1);
     await emfCard.locator('a').click();
@@ -217,9 +224,18 @@ test.describe('E2E: rogue run lifecycle', () => {
     // Time burned by one tick.
     expect(await getVar(page, 'minutes')).toBe(1);
 
-    // Linkreplace strips the <a> once the body wikifies, so the card
-    // no longer offers a clickable target -- proves the body fired.
-    await expect(emfCard.locator('a')).toHaveCount(0);
+    // Result landed in the top-center tray, not inline under the tool card.
+    // EMF's render path emits a <<coloredText>> span (.boldText), so the
+    // tray gains exactly one of those and the tool card stays clean.
+    await expect(tray).not.toBeEmpty();
+    await expect(tray.locator('.boldText')).toHaveCount(1);
+    await expect(emfCard.locator('.boldText')).toHaveCount(0);
+
+    // Re-clicking the same tool advances time again and overwrites the
+    // tray with a fresh reading rather than appending to it.
+    await emfCard.locator('a').click();
+    expect(await getVar(page, 'minutes')).toBe(2);
+    await expect(tray.locator('.boldText')).toHaveCount(1);
   });
 
 

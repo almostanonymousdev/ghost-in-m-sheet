@@ -5,9 +5,13 @@
    its icon and label from setup.searchToolDefs so the rogue
    placeholder stays in sync with whatever the hunts use.
 
-   Each card is a clickable <<linkreplace>> whose body wikifies the
-   shared <<toolCheck>> markup -- the same renderer the haunted-
-   house tool checks use. Reuse hinges on two bridges:
+   Each card is a clickable <<link>> that wikifies the shared
+   <<toolCheck>> markup -- the same renderer the haunted-house tool
+   checks use -- into #rogue-tool-result, the top-center overlay
+   RogueRun renders above the layout. Routing the result there
+   keeps it readable while leaving the toolbar visually intact, and
+   the in-tray <<replace>> makes a fresh click overwrite the prior
+   reading. Reuse hinges on two bridges:
      * setup.Ghosts.active() falls back to the rogue ghost when
        no $hunt object exists (see GhostController), so the
        evidence/hasEvidence/spiritboxPossessionChance/etc. paths
@@ -23,14 +27,16 @@
 		<<capture _t, _def>>
 			<div class="rogue-tool-card">
 				<<image "ui/img/" + _def.iconFile { class: "rogue-tool-icon" }>>
-				<span class="rogue-tool-card-label">@@.adaptiveLink;<<linkreplace `_def.label`>>
+				<span class="rogue-tool-card-label">@@.adaptiveLink;<<link `_def.label`>>
 					<<addTime 1>>
-					<<if _t eq "temperature">>
-						<<include "TemperatureHigh">>
-					<<else>>
-						<<toolCheck _t>>
-					<</if>>
-				<</linkreplace>>@@</span>
+					<<replace "#rogue-tool-result">>
+						<<if _t eq "temperature">>
+							<<include "TemperatureHigh">>
+						<<else>>
+							<<toolCheck _t>>
+						<</if>>
+					<</replace>>
+				<</link>>@@</span>
 			</div>
 		<</capture>>
 	<</for>>
