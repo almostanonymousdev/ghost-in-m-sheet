@@ -351,12 +351,17 @@
 
 		// Daily-cooldown rename: the `CD` suffix is redundant once the
 		// vars are routed through setup.Cooldowns, so they were renamed
-		// in place. For each old key on the save, copy its value into
-		// the new key (skip when the new key already holds something —
-		// don't clobber values written through the new-shape API in the
-		// meantime), then delete the old key.
-		var COOLDOWN_RENAMES = {
-			thetwinseventCD:           'twinsEventConsumed',
+		// in place. The twins event also got its trigger flag and
+		// cooldown swapped onto a clearer naming pair: $thetwinsevent
+		// (the "event is firing" trigger) → $twinsEventActive, and the
+		// old $thetwinseventCD (the "event has fired today" cooldown)
+		// → $twinsEvent. For each old key on the save, copy its value
+		// into the new key (skip when the new key already holds
+		// something — don't clobber values written through the new-shape
+		// API in the meantime), then delete the old key.
+		var FLAT_RENAMES = {
+			thetwinsevent:             'twinsEventActive',
+			thetwinseventCD:           'twinsEvent',
 			joggingCD:                 'jogging',
 			stealItemsFromWitchCD:     'stealItemsFromWitch',
 			ghostSpecialEventSpiritCD: 'ghostSpecialEventSpirit',
@@ -371,8 +376,8 @@
 			rescueCD:                  'rescue',
 			rescueQuestCD:             'rescueQuest'
 		};
-		Object.keys(COOLDOWN_RENAMES).forEach(function (oldKey) {
-			var newKey = COOLDOWN_RENAMES[oldKey];
+		Object.keys(FLAT_RENAMES).forEach(function (oldKey) {
+			var newKey = FLAT_RENAMES[oldKey];
 			if (vars[oldKey] !== undefined && vars[newKey] === undefined) {
 				vars[newKey] = vars[oldKey];
 			}

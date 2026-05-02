@@ -170,7 +170,7 @@ setup.Tick = (function () {
 	}
 
 	// --- Twins event guard --------------------------------------
-	function twinsEventFired() { return sv().thetwinsevent === 1; }
+	function twinsEventFired() { return sv().twinsEventActive === 1; }
 
 	// --- Step counter -------------------------------------------
 	function stepCount() { return sv().stepCount || 0; }

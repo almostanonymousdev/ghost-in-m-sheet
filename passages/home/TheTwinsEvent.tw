@@ -3,13 +3,13 @@
 @@.mc-thoughts;One of them enters your pussy, and the pleasure is so intense that your eyes roll back. The sensation is overwhelming, causing you to start sucking the other's cock, your moans muffled by his length. @@<br>
 @@.mc-speech;Mmm... fuck@@ <<linkappend "@@.mc-speechLink; this is too good...@@">>
 
-	<span id ="thetwinsevent">
+	<span id ="twinsEventActive">
 	<<video "characters/ghosts/specials/twins4.mp4">></span>
 	<<set _videoIndex to 4>>
 	@@.mc-thoughts;They take you together@@ <<link "@@.usebtn; in different positions@@">>
 
 		<<set _videoIndex to (_videoIndex + 1) % 2 +4>>
-		<<replace "#thetwinsevent">>
+		<<replace "#twinsEventActive">>
 
 			<<video "characters/ghosts/specials/twins" + _videoIndex+`.mp4`>>
 		<</replace>>

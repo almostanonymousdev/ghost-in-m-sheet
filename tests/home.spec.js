@@ -567,8 +567,8 @@ test.describe('Home Controller', () => {
 
   test('twinsEventAvailable requires flag and no cooldown', async () => {
     // arrange
-    await setVar(page, 'thetwinsevent', 1);
-    await setVar(page, 'twinsEventConsumed', 0);
+    await setVar(page, 'twinsEventActive', 1);
+    await setVar(page, 'twinsEvent', 0);
 
     // act
     const result = await callSetup(page, 'setup.Ghosts.twinsEventReady()');
@@ -579,8 +579,8 @@ test.describe('Home Controller', () => {
 
   test('twinsEventAvailable false on cooldown', async () => {
     // arrange
-    await setVar(page, 'thetwinsevent', 1);
-    await setVar(page, 'twinsEventConsumed', 1);
+    await setVar(page, 'twinsEventActive', 1);
+    await setVar(page, 'twinsEvent', 1);
 
     // act
     const result = await callSetup(page, 'setup.Ghosts.twinsEventReady()');
@@ -589,21 +589,21 @@ test.describe('Home Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('weak Mirror branch clears thetwinsevent so it does not re-fire daily', async () => {
+  test('weak Mirror branch clears twinsEventActive so it does not re-fire daily', async () => {
     // Regression: the Mirror passage's weak branch (beauty roll beats MC) used
-    // to set only $twinsEventConsumed, leaving $thetwinsevent=1. ResetCooldowns
+    // to set only $twinsEvent, leaving $twinsEventActive=1. ResetCooldowns
     // zeros the CD on every day-wrap, so the event re-fired every morning —
     // an infinite loop players can only escape by eventually rolling the full
     // event (TheTwinsEvent, which does clear both flags).
-    await setVar(page, 'thetwinsevent', 1);
-    await setVar(page, 'twinsEventConsumed', 0);
+    await setVar(page, 'twinsEventActive', 1);
+    await setVar(page, 'twinsEvent', 0);
     await setVar(page, 'mc.beauty', 10); // random(30,100) always beats this → weak branch
     await goToPassage(page, 'Mirror');
     await page.locator('.passage .macro-linkappend').filter({ hasText: 'through the glass' }).first().click();
     await page.waitForTimeout(100);
 
-    expect(await getVar(page, 'thetwinsevent')).toBe(0);
-    expect(await getVar(page, 'twinsEventConsumed')).toBe(1);
+    expect(await getVar(page, 'twinsEventActive')).toBe(0);
+    expect(await getVar(page, 'twinsEvent')).toBe(1);
   });
 
   test('twinsEventTriggered true when beauty roll <= mc beauty', async () => {

@@ -151,7 +151,7 @@
             description: "",
             huntCondition:     function (mc) { return mc.lust >= 30; },
             huntConditionText: "Can start a hunt if you have >= 30 lust",
-            huntEventFlag:     "thetwinsevent"
+            huntEventFlag:     "twinsEventActive"
         },
         {
             name: "Wraith", image: "wraith.webp",
@@ -253,7 +253,7 @@
         this.goHomePassage        = cfg.goHomePassage        || null;   // Myling: "GhostSpecialEventMyling"
         this.companionHuntPassage = cfg.companionHuntPassage || null;   // Myling: "GhostSpecialEventMylingTwo"
         this.sanityEventLossRange = cfg.sanityEventLossRange || [1, 5]; // Oni:    [3, 8]
-        this.huntEventFlag        = cfg.huntEventFlag        || null;   // Twins:  "thetwinsevent"
+        this.huntEventFlag        = cfg.huntEventFlag        || null;   // Twins:  "twinsEventActive"
 
         /* Sensor-glitch chance denominators (1/N per tool reading). */
         this.emfGlitchChance         = cfg.emfGlitchChance         || 0; // Raiju: 3
@@ -355,7 +355,7 @@
     };
 
     /* If this ghost has a per-hunt-event marker flag (e.g. Twins →
-       $thetwinsevent), set it to 1. Called from HuntOver* and the
+       $twinsEventActive), set it to 1. Called from HuntOver* and the
        NudityEvent passages so the flag doesn't need inline name branching. */
     Ghost.prototype.markHuntEvent = function () {
         if (this.huntEventFlag) State.variables[this.huntEventFlag] = 1;
@@ -461,7 +461,7 @@
         'deleteOneEvidence', 'deleteSecondEvidence', 'deleteThirdEvidence',
         'hiddenEvidence', 'hiddenEvidence1', 'hiddenEvidence2',
         'lastChangeIntervalMimic', 'currentIntervalMimic',
-        'thetwinsevent', 'twinsEventConsumed',
+        'twinsEventActive', 'twinsEvent',
         'highpriestess', 'bansheeAbility', 'cthulionAbility',
         'ghostTypeSelected'
     ]);
@@ -705,7 +705,7 @@
         hasHighPriestess: function () { return State.variables.highpriestess === 1; },
         setHighPriestess: function (on) { State.variables.highpriestess = on ? 1 : 0; },
         consumeHighPriestess: function () { State.variables.highpriestess = 0; },
-        twinsEventActive: function () { return State.variables.thetwinsevent === 1; },
+        twinsEventActive: function () { return State.variables.twinsEventActive === 1; },
         enableBanshee:  function () { State.variables.bansheeAbility = 1; },
         enableCthulion: function () { State.variables.cthulionAbility = 1; },
         clearBanshee:   function () { delete State.variables.bansheeAbility; },
@@ -729,17 +729,17 @@
             V.currentIntervalMimic = interval;
             return null;
         },
-        // twinsEventConsumed is registered with setup.Cooldowns at the
+        // twinsEvent is registered with setup.Cooldowns at the
         // bottom of this file; daily reset flows through
         // setup.Tick.resetCooldowns.
         twinsEventReady:  function () {
-            return State.variables.thetwinsevent === 1 && setup.Cooldowns.available('twinsEventConsumed');
+            return State.variables.twinsEventActive === 1 && setup.Cooldowns.available('twinsEvent');
         },
         consumeTwinsEvent: function () {
-            State.variables.thetwinsevent = 0;
-            setup.Cooldowns.start('twinsEventConsumed');
+            State.variables.twinsEventActive = 0;
+            setup.Cooldowns.start('twinsEvent');
         },
-        clearTwinsEvent: function () { State.variables.thetwinsevent = 0; },
+        clearTwinsEvent: function () { State.variables.twinsEventActive = 0; },
         clearKnowledgeUsed: function () { State.variables.knowledgeUsed = undefined; },
         huntEvidence: function () {
             var h = State.variables.hunt;
@@ -819,6 +819,6 @@
         { name: 'elapsedTimeHunt', get: false },
         { name: 'huntTimeRemain',  get: false }
     ]);
-    setup.Cooldowns.registerDaily('twinsEventConsumed');
+    setup.Cooldowns.registerDaily('twinsEvent');
     setup.Ghosts = api;
 })();
