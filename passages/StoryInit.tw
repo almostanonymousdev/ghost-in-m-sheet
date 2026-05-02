@@ -1,7 +1,10 @@
 :: StoryInit {"position":"100,100","size":"100,100"}
 /* Enable a single autosave slot. setup.Home.sleepAdvance writes to it
-   on every MC sleep so players always have a fresh restore point. */
+   on every MC sleep so players always have a fresh restore point.
+   installAutoSaveGate() suppresses SugarCube's per-passage autosave so
+   only sleepAdvance's explicit save reaches the slot. */
 <<run Config.saves.maxAutoSaves = 1>>
+<<run setup.Home.installAutoSaveGate()>>
 <<run setup.ImagePath = "asset-placeholders">>
 <<run setup.Game.initState()>>
 <<run setup.deliveryHouses = {
