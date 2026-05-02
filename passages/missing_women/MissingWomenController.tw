@@ -81,8 +81,8 @@ setup.MissingWomen = (function () {
 	   query these only through the API methods below. */
 	var OWNED_VARS = Object.freeze([
 		'hasQuestForRescue',
-		'rescueQuestCD',
-		'rescueCD',
+		'rescueQuest',
+		'rescue',
 		'rescueStage',
 		'rescueHouse',
 		'randomRescuePhotoNumber',
@@ -132,8 +132,12 @@ setup.MissingWomen = (function () {
 			var h = setup.Time.hours();
 			return h >= 18 && h < 24;
 		},
+		// (rescue / rescueQuest are registered with setup.Cooldowns
+		// at the bottom of this file; daily reset flows through
+		// setup.Tick.resetCooldowns. ensureBoardCooldowns below still
+		// zeros undefined values for legacy saves.)
 		boardOnCooldown: function () {
-			return sv().rescueQuestCD !== 0;
+			return setup.Cooldowns.onCooldown('rescueQuest');
 		},
 
 		// --- Stay / corruption gate -------------------------------
@@ -204,15 +208,15 @@ setup.MissingWomen = (function () {
 		// --- Task board state --------------------------------------
 		ensureBoardCooldowns: function () {
 			var s = sv();
-			if (s.rescueCD === undefined) { s.rescueCD = 0; }
-			if (s.rescueQuestCD === undefined) { s.rescueQuestCD = 0; }
+			if (s.rescue === undefined) { s.rescue = 0; }
+			if (s.rescueQuest === undefined) { s.rescueQuest = 0; }
 		},
 		initRescueGirlPool: function (allGirls) {
 			sv().rescueGirls = allGirls;
 		},
 		rollBoardGirls: function () {
 			var s = sv();
-			s.rescueCD = 1;
+			setup.Cooldowns.start('rescue');
 			s.rescueRandomGirls = [];
 			var girls = s.rescueGirls || [];
 			var index1 = Math.floor(Math.random() * girls.length);
@@ -235,7 +239,7 @@ setup.MissingWomen = (function () {
 		markQuestSucceeded:   function () { sv().hasQuestForRescue = setup.RescueQuestState.SUCCEEDED; },
 
 		// --- Video pool --------------------------------------------
-		startRescueBoardCooldown: function () { sv().rescueQuestCD = 1; },
+		startRescueBoardCooldown: function () { setup.Cooldowns.start('rescueQuest'); },
 
 		// --- Rescue scene (per-girl watch loop) -------------------
 		rescueGirlConfig: function (girl) { return RESCUE_GIRLS[girl] || null; },
@@ -320,7 +324,7 @@ setup.MissingWomen = (function () {
 		'currentRescueGirl',
 		{ name: 'jadePossessedStage',         key: 'rescueJadePossessed' },
 		{ name: 'victoriaPossessedStage',     key: 'rescueVictoriaPossessed' },
-		{ name: 'rescueCooldown',             key: 'rescueCD',         set: false },
+		{ name: 'rescueCooldown',             key: 'rescue',         set: false },
 		{ name: 'rescueGirlsList',            key: 'rescueGirls',      set: false },
 		'rescueRandomGirls',
 		'rescueHouse',
@@ -332,5 +336,7 @@ setup.MissingWomen = (function () {
 		{ name: 'tornStyleRandom',            set: false },
 		'cheatRescueHouseHighlight'
 	]);
+	setup.Cooldowns.registerDaily('rescue');
+	setup.Cooldowns.registerDaily('rescueQuest');
 	return api;
 })();

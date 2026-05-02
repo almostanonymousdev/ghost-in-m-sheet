@@ -33,11 +33,11 @@ setup.Home = (function () {
 		// out as `{}` and pick up keys on first write.
 		'succubusEvent', 'tentacles', 'webcam', 'summoning',
 		'gotCursedItemEventCD',
-		'exorcismCD',
+		'exorcism',
 		'dildoPurchased', 'isCameraBought',
 		'mcSleptWithCameraOn',
-		'masturbationCD',
-		'findGhostInfoCD',
+		'masturbation',
+		'findGhostInfo',
 		'holyWaterIsCollected'
 	]);
 
@@ -124,14 +124,18 @@ setup.Home = (function () {
 		// --- Mare / exorcism --------------------------------
 		canSummonForExorcism: function () {
 			var stage = setup.Witch.exorcismQuestStage();
-			var cd = sv().exorcismCD;
+			var cd = sv().exorcism;
 			var EQS = setup.ExorcismQuestStage;
 			if (stage === EQS.REFERRED && cd === 0) { return true; }
 			if (stage === EQS.SUCCUBUS_SUMMONED && cd === 0) { return true; }
 			return false;
 		},
+		// (exorcism / masturbation / findGhostInfo are registered
+		// with setup.Cooldowns at the bottom of this file; daily reset
+		// flows through setup.Tick.resetCooldowns → resetDaily.)
 		exorcismOnCooldown: function () {
-			return setup.Witch.exorcismQuestStage() === setup.ExorcismQuestStage.REFERRED && sv().exorcismCD === 1;
+			return setup.Witch.exorcismQuestStage() === setup.ExorcismQuestStage.REFERRED
+				&& setup.Cooldowns.onCooldown('exorcism');
 		},
 		mareStageIsLow: function () {
 			return setup.SpecialEvent.mareStage() <= 2;
@@ -399,11 +403,10 @@ setup.Home = (function () {
 			return setup.Time.sleepAdvanceHours(4);
 		},
 		masturbationAvailable: function () {
-			var cd = sv().masturbationCD;
-			return cd === undefined || cd === 0;
+			return setup.Cooldowns.available('masturbation');
 		},
-		ghostInfoSearchedToday: function () { return sv().findGhostInfoCD === 1; },
-		markGhostInfoSearched: function () { sv().findGhostInfoCD = 1; },
+		ghostInfoSearchedToday: function () { return setup.Cooldowns.onCooldown('findGhostInfo'); },
+		markGhostInfoSearched: function () { setup.Cooldowns.start('findGhostInfo'); },
 		// Rotate through the porn-video playlist. Callers track an
 		// index in a temp var and hand it back each tick; returns the
 		// new index + the currently-selected video path.
@@ -511,12 +514,12 @@ setup.Home = (function () {
 	};
 
 	// Pure $variable passthrough setters (no getter exposed: callers
-	// only ever write these). exorcismCD / masturbationCD live at
+	// only ever write these). exorcism / masturbation live at
 	// $-root because they're shared with sleep / time-of-day checks
 	// that read the field directly via setup.Mc-style flow predicates.
 	setup.defineAccessors(api, sv, [
-		{ name: 'exorcismCooldown',     key: 'exorcismCD',     get: false },
-		{ name: 'masturbationCooldown', key: 'masturbationCD', get: false }
+		{ name: 'exorcismCooldown',     key: 'exorcism',     get: false },
+		{ name: 'masturbationCooldown', key: 'masturbation', get: false }
 	]);
 	// Webcam-bundle accessors: pure passthrough on $webcam.{event,showCD}.
 	setup.defineAccessors(api, webcam, [
@@ -550,5 +553,8 @@ setup.Home = (function () {
 		{ name: 'summoningChoice', key: 'choice' },
 		{ name: 'summonText',      key: 'text' }
 	]);
+	setup.Cooldowns.registerDaily('exorcism');
+	setup.Cooldowns.registerDaily('masturbation');
+	setup.Cooldowns.registerDaily('findGhostInfo');
 	return api;
 })();

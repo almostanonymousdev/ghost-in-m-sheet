@@ -37,7 +37,7 @@
 		sensualBodyPart: function () {
 			return setup.Intro.defaultSensualBodyParts();
 		},
-		ghostSpecialEventSpiritCD:  function () { return 0; },
+		ghostSpecialEventSpirit:  function () { return 0; },
 		relationshipBlake:          function () { return 0; },
 		crucifixAmount:             function () { return 0; },
 		sanityPillsAmount:          function () { return 0; },
@@ -347,6 +347,36 @@
 		migrateBundle('summoning', {
 			text:   'summonText',
 			choice: 'summoningChoice'
+		});
+
+		// Daily-cooldown rename: the `CD` suffix is redundant once the
+		// vars are routed through setup.Cooldowns, so they were renamed
+		// in place. For each old key on the save, copy its value into
+		// the new key (skip when the new key already holds something —
+		// don't clobber values written through the new-shape API in the
+		// meantime), then delete the old key.
+		var COOLDOWN_RENAMES = {
+			thetwinseventCD:           'twinsEventConsumed',
+			joggingCD:                 'jogging',
+			stealItemsFromWitchCD:     'stealItemsFromWitch',
+			ghostSpecialEventSpiritCD: 'ghostSpecialEventSpirit',
+			witchNightCD:              'witchNight',
+			trainer1SexCD:             'trainer1Sex',
+			trainer2SexCD:             'trainer2Sex',
+			findGhostInfoCD:           'findGhostInfo',
+			deliveryBJCD:              'deliveryBJ',
+			churchSexCD:               'churchSex',
+			masturbationCD:            'masturbation',
+			exorcismCD:                'exorcism',
+			rescueCD:                  'rescue',
+			rescueQuestCD:             'rescueQuest'
+		};
+		Object.keys(COOLDOWN_RENAMES).forEach(function (oldKey) {
+			var newKey = COOLDOWN_RENAMES[oldKey];
+			if (vars[oldKey] !== undefined && vars[newKey] === undefined) {
+				vars[newKey] = vars[oldKey];
+			}
+			delete vars[oldKey];
 		});
 
 		// Active-house id: collapse four mutually-exclusive

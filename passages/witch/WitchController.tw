@@ -35,8 +35,8 @@ setup.Witch = (function () {
 	var OWNED_VARS = Object.freeze([
 		'firstVisitWitchShop',
 		'gotKeyFromWitch',
-		'witchNightCD',
-		'stealItemsFromWitchCD',
+		'witchNight',
+		'stealItemsFromWitch',
 		'succubus',
 		'exorcismQuestStage',
 		'gotCursedItem',
@@ -178,12 +178,14 @@ setup.Witch = (function () {
 		},
 
 		// --- Night exploration -----------------------------------
+		// (witchNight / stealItemsFromWitch are registered with
+		// setup.Cooldowns at the bottom of this file; the daily reset
+		// flows through setup.Tick.resetCooldowns → resetDaily.)
 		canStealItemsFromWitch: function () {
-			var cd = sv().stealItemsFromWitchCD;
-			return cd === undefined || cd === 0;
+			return setup.Cooldowns.available('stealItemsFromWitch');
 		},
 		canVisitWitchBedroomNight: function () {
-			return sv().witchNightCD !== 1;
+			return setup.Cooldowns.available('witchNight');
 		},
 
 		// --- Mast (masturbation) event ---------------------------
@@ -192,8 +194,8 @@ setup.Witch = (function () {
 		},
 
 		// --- Mutations previously inline in witch passages -------
-		startWitchNightCooldown: function () { sv().witchNightCD = 1; },
-		startStealItemsCooldown: function () { sv().stealItemsFromWitchCD = 1; },
+		startWitchNightCooldown: function () { setup.Cooldowns.start('witchNight'); },
+		startStealItemsCooldown: function () { setup.Cooldowns.start('stealItemsFromWitch'); },
 		markKeyFromWitchStolen:  function () { sv().gotKeyFromWitch = 1; },
 		markShopVisited:         function () { sv().firstVisitWitchShop = false; },
 
@@ -319,5 +321,7 @@ setup.Witch = (function () {
 		'wardenClothesStage',
 		{ name: 'cursedItemState', key: 'gotCursedItem', set: false }
 	]);
+	setup.Cooldowns.registerDaily('witchNight');
+	setup.Cooldowns.registerDaily('stealItemsFromWitch');
 	return api;
 })();

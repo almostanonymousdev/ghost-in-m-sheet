@@ -248,18 +248,18 @@ test.describe('Witch — night sneak-in gating', () => {
   });
 
   test('startWitchNightCooldown and canVisitWitchBedroomNight', async () => {
-    await page.evaluate(() => { delete SugarCube.State.variables.witchNightCD; });
+    await page.evaluate(() => { delete SugarCube.State.variables.witchNight; });
     expect(await callSetup(page, 'setup.Witch.canVisitWitchBedroomNight()')).toBe(true);
     await page.evaluate(() => SugarCube.setup.Witch.startWitchNightCooldown());
-    expect(await getVar(page, 'witchNightCD')).toBe(1);
+    expect(await getVar(page, 'witchNight')).toBe(1);
     expect(await callSetup(page, 'setup.Witch.canVisitWitchBedroomNight()')).toBe(false);
   });
 
   test('startStealItemsCooldown gates canStealItemsFromWitch', async () => {
-    await page.evaluate(() => { delete SugarCube.State.variables.stealItemsFromWitchCD; });
+    await page.evaluate(() => { delete SugarCube.State.variables.stealItemsFromWitch; });
     expect(await callSetup(page, 'setup.Witch.canStealItemsFromWitch()')).toBe(true);
     await page.evaluate(() => SugarCube.setup.Witch.startStealItemsCooldown());
-    expect(await getVar(page, 'stealItemsFromWitchCD')).toBe(1);
+    expect(await getVar(page, 'stealItemsFromWitch')).toBe(1);
     expect(await callSetup(page, 'setup.Witch.canStealItemsFromWitch()')).toBe(false);
   });
 

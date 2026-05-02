@@ -180,19 +180,17 @@ setup.Tick = (function () {
 
 	// --- Midnight rollover (resetCooldowns helper) --------------
 	/* Called once per day-change (via addTime crossing 24). Resets
-	   per-day cooldowns and ticks several multi-day counters. */
+	   per-day cooldowns and ticks several multi-day counters. The
+	   binary day-zero list lives in the setup.Cooldowns registry —
+	   each owning controller registers its CDs at module load, so
+	   adding a new daily cooldown is one registerDaily() line in the
+	   owning controller (not a fan-out edit here). */
 	function resetCooldowns() {
 		var s = sv();
-		var perDayZero = [
-			'thetwinseventCD', 'joggingCD', 'stealItemsFromWitchCD',
-			'ghostSpecialEventSpiritCD',
-			'deliveryPizzaEvent', 'deliveryPackageEvent',
-			'deliveryBurgerEvent', 'deliveryPapersEvent',
-			'witchNightCD', 'trainer1SexCD', 'trainer2SexCD',
-			'findGhostInfoCD', 'deliveryBJCD', 'churchSexCD',
-			'masturbationCD', 'exorcismCD', 'rescueCD', 'rescueQuestCD'
-		];
-		perDayZero.forEach(function (k) { s[k] = 0; });
+		setup.Cooldowns.resetDaily();
+		// webcam.showCD lives inside the $webcam bundle, not at the
+		// $-root, so the registry's flat-key reset can't see it. Reset
+		// it inline — the bundle is owned by HomeController.
 		if (s.webcam) s.webcam.showCD = 0;
 
 		setup.Companion.advanceSoloHuntsAtMidnight();

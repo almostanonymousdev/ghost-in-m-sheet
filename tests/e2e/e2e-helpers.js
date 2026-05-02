@@ -165,8 +165,8 @@ async function setupActiveQuest(page, girlName) {
   await setVar(page, 'currentRescueGirl', girlName);
   await setVar(page, 'rescueStage', 0);
   await setVar(page, 'randomRescuePhotoNumber', 5);
-  await setVar(page, 'rescueQuestCD', 0);
-  await setVar(page, 'rescueCD', 0);
+  await setVar(page, 'rescueQuest', 0);
+  await setVar(page, 'rescue', 0);
   await setVar(page, 'mc.energy', 10);
   await setVar(page, 'hours', 12);
   await setVar(page, 'minutes', 0);

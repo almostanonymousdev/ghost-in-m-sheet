@@ -60,10 +60,10 @@ test.describe('Missing Women — controller + church integration', () => {
     expect(await callSetup(page, 'setup.MissingWomen.boardPostingsOutToday()')).toBe(false);
   });
 
-  test('boardOnCooldown checks rescueQuestCD', async () => {
-    await setVar(page, 'rescueQuestCD', 0);
+  test('boardOnCooldown checks rescueQuest', async () => {
+    await setVar(page, 'rescueQuest', 0);
     expect(await callSetup(page, 'setup.MissingWomen.boardOnCooldown()')).toBe(false);
-    await setVar(page, 'rescueQuestCD', 1);
+    await setVar(page, 'rescueQuest', 1);
     expect(await callSetup(page, 'setup.MissingWomen.boardOnCooldown()')).toBe(true);
   });
 

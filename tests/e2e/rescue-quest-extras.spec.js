@@ -60,39 +60,39 @@ test.describe('Missing Women — task board', () => {
 
   test('ensureBoardCooldowns initialises both counters to 0', async () => {
     await page.evaluate(() => {
-      delete SugarCube.State.variables.rescueCD;
-      delete SugarCube.State.variables.rescueQuestCD;
+      delete SugarCube.State.variables.rescue;
+      delete SugarCube.State.variables.rescueQuest;
     });
     await page.evaluate(() => SugarCube.setup.MissingWomen.ensureBoardCooldowns());
-    expect(await getVar(page, 'rescueCD')).toBe(0);
-    expect(await getVar(page, 'rescueQuestCD')).toBe(0);
+    expect(await getVar(page, 'rescue')).toBe(0);
+    expect(await getVar(page, 'rescueQuest')).toBe(0);
   });
 
   test('ensureBoardCooldowns leaves existing values alone', async () => {
-    await setVar(page, 'rescueCD', 5);
-    await setVar(page, 'rescueQuestCD', 7);
+    await setVar(page, 'rescue', 5);
+    await setVar(page, 'rescueQuest', 7);
     await page.evaluate(() => SugarCube.setup.MissingWomen.ensureBoardCooldowns());
-    expect(await getVar(page, 'rescueCD')).toBe(5);
-    expect(await getVar(page, 'rescueQuestCD')).toBe(7);
+    expect(await getVar(page, 'rescue')).toBe(5);
+    expect(await getVar(page, 'rescueQuest')).toBe(7);
   });
 
-  test('startRescueBoardCooldown sets rescueQuestCD to 1', async () => {
-    await setVar(page, 'rescueQuestCD', 0);
+  test('startRescueBoardCooldown sets rescueQuest to 1', async () => {
+    await setVar(page, 'rescueQuest', 0);
     await page.evaluate(() => SugarCube.setup.MissingWomen.startRescueBoardCooldown());
-    expect(await getVar(page, 'rescueQuestCD')).toBe(1);
+    expect(await getVar(page, 'rescueQuest')).toBe(1);
   });
 
   test('rollBoardGirls picks two distinct girls from the pool', async () => {
     await setVar(page, 'rescueGirls', ['Victoria', 'Jade', 'Julia', 'Nadia', 'Ash']);
     await setVar(page, 'rescueRandomGirls', []);
-    await setVar(page, 'rescueCD', 0);
+    await setVar(page, 'rescue', 0);
     await page.evaluate(() => SugarCube.setup.MissingWomen.rollBoardGirls());
     const girls = await getVar(page, 'rescueRandomGirls');
     expect(girls).toHaveLength(2);
     expect(girls[0]).not.toBe(girls[1]);
     expect(['Victoria', 'Jade', 'Julia', 'Nadia', 'Ash']).toContain(girls[0]);
     expect(['Victoria', 'Jade', 'Julia', 'Nadia', 'Ash']).toContain(girls[1]);
-    expect(await getVar(page, 'rescueCD')).toBe(1);
+    expect(await getVar(page, 'rescue')).toBe(1);
   });
 
   test('initRescueGirlPool stores the master list', async () => {

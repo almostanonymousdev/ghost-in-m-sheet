@@ -14,7 +14,7 @@ setup.Church = (function () {
 	   query/mutate these only through the API methods below. */
 	var OWNED_VARS = Object.freeze([
 		'relationshipWithRain',
-		'churchSexCD'
+		'churchSex'
 	]);
 
 	function sv() { return State.variables; }
@@ -71,8 +71,10 @@ setup.Church = (function () {
 		canFlirtWithPriest: function () {
 			return setup.Mc.lust() >= 40 && this.priestRoutesUnlocked();
 		},
+		// (churchSex is registered with setup.Cooldowns at the bottom;
+		// daily reset flows through setup.Tick.resetCooldowns.)
 		priestSexOnCooldown: function () {
-			return sv().churchSexCD === 1;
+			return setup.Cooldowns.onCooldown('churchSex');
 		},
 		meetsBeautyForFlirt: function () {
 			return setup.Mc.beauty() >= 45;
@@ -121,7 +123,7 @@ setup.Church = (function () {
 			return setup.Witch.eventToolsOneStart() === 1;
 		},
 		startChurchSexCooldown: function () {
-			sv().churchSexCD = 1;
+			setup.Cooldowns.start('churchSex');
 		},
 
 		// --- Priest: lust purge (after confession / pray) --------
@@ -159,3 +161,4 @@ setup.Church = (function () {
 		}
 	};
 })();
+setup.Cooldowns.registerDaily('churchSex');

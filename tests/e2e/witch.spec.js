@@ -59,7 +59,7 @@ test.describe('Witch — access and hours', () => {
   test('WitchBedroom passage renders cleanly for bedroom events', async () => {
     await setVar(page, 'hours', 2);
     await setVar(page, 'gotKeyFromWitch', 1);
-    await setVar(page, 'witchNightCD', 0);
+    await setVar(page, 'witchNight', 0);
     await goToPassage(page, 'WitchBedroom');
     await expectCleanPassage(page);
   });

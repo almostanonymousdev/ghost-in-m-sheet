@@ -977,6 +977,46 @@ setup.defineAccessors = function (api, host, spec) {
     return api;
 };
 
+/* Daily-cooldown registry. Each owning controller registers its CDs at
+ * module load (setup.Cooldowns.registerDaily('witchNight')); midnight
+ * rollover (setup.Tick.resetCooldowns) calls resetDaily() to zero them
+ * all at once. Replaces the hardcoded perDayZero list that lived in
+ * TickController and duplicated each controller's OWNED_VARS.
+ *
+ * Semantic for binary cooldowns: "available" means undefined / 0;
+ * anything else (typically 1) means "on cooldown". Controllers that
+ * want a different shape (multi-stage counters like exorcism or
+ * succubusEvent.eventCD) keep their own logic — the registry only owns
+ * the binary-day-cooldown common case. */
+setup.Cooldowns = (function () {
+    var DAILY = [];
+    function sv() { return State.variables; }
+    return {
+        /* Add `name` to the daily-zero list. Idempotent so controllers
+           can call this from both module-load and tests without
+           accumulating duplicates. */
+        registerDaily: function (name) {
+            if (DAILY.indexOf(name) === -1) DAILY.push(name);
+        },
+        /* Test/inspection hook — returns a copy. */
+        listDaily: function () { return DAILY.slice(); },
+        /* True when `name` is undefined or 0. */
+        available:  function (name) {
+            var v = sv()[name];
+            return v === undefined || v === 0;
+        },
+        onCooldown: function (name) { return !this.available(name); },
+        start: function (name) { sv()[name] = 1; },
+        clear: function (name) { sv()[name] = 0; },
+        /* Zero every registered daily cooldown. Called from
+           setup.Tick.resetCooldowns at midnight. */
+        resetDaily: function () {
+            var s = sv();
+            for (var i = 0; i < DAILY.length; i++) { s[DAILY[i]] = 0; }
+        }
+    };
+})();
+
 // Keyboard shortcut: map each key to the tool it activates, then click the
 // canonical button for every room in setup.searchRoomPrefixes.
 setup.searchToolKeyMap = {

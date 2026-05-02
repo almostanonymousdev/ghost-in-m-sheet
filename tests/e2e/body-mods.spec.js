@@ -206,7 +206,7 @@ test.describe('Body mods — home mirror and wardrobe', () => {
     await setVar(page, 'mc.beauty', 10);
     // Suppress the twins mirror branch so we reliably hit the makeup UI.
     await setVar(page, 'thetwinsevent', 0);
-    await setVar(page, 'thetwinseventCD', 1);
+    await setVar(page, 'twinsEventConsumed', 1);
     await goToPassage(page, 'Mirror');
     await page.locator('#passages')
       .getByText('Apply regular makeup', { exact: false })

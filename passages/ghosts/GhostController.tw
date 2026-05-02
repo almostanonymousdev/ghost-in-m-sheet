@@ -461,7 +461,7 @@
         'deleteOneEvidence', 'deleteSecondEvidence', 'deleteThirdEvidence',
         'hiddenEvidence', 'hiddenEvidence1', 'hiddenEvidence2',
         'lastChangeIntervalMimic', 'currentIntervalMimic',
-        'thetwinsevent', 'thetwinseventCD',
+        'thetwinsevent', 'twinsEventConsumed',
         'highpriestess', 'bansheeAbility', 'cthulionAbility',
         'ghostTypeSelected'
     ]);
@@ -729,12 +729,15 @@
             V.currentIntervalMimic = interval;
             return null;
         },
+        // twinsEventConsumed is registered with setup.Cooldowns at the
+        // bottom of this file; daily reset flows through
+        // setup.Tick.resetCooldowns.
         twinsEventReady:  function () {
-            return State.variables.thetwinsevent === 1 && State.variables.thetwinseventCD === 0;
+            return State.variables.thetwinsevent === 1 && setup.Cooldowns.available('twinsEventConsumed');
         },
         consumeTwinsEvent: function () {
             State.variables.thetwinsevent = 0;
-            State.variables.thetwinseventCD = 1;
+            setup.Cooldowns.start('twinsEventConsumed');
         },
         clearTwinsEvent: function () { State.variables.thetwinsevent = 0; },
         clearKnowledgeUsed: function () { State.variables.knowledgeUsed = undefined; },
@@ -816,5 +819,6 @@
         { name: 'elapsedTimeHunt', get: false },
         { name: 'huntTimeRemain',  get: false }
     ]);
+    setup.Cooldowns.registerDaily('twinsEventConsumed');
     setup.Ghosts = api;
 })();

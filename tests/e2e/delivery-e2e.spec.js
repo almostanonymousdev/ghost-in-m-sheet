@@ -272,14 +272,14 @@ test.describe('Delivery E2E — Manager return visits', () => {
 
     expect(await getVar(page, 'mc.money')).toBe(startMoney + 10);
     expect(await getVar(page, 'mc.corruption')).toBe(startCorruption + 0.5);
-    expect(await getVar(page, 'deliveryBJCD')).toBe(1);
+    expect(await getVar(page, 'deliveryBJ')).toBe(1);
   });
 
   test('manager shows cooldown message after BJ event', async () => {
     await setupReadyWorker(page);
     await setVar(page, 'mc.beauty', 50);
     await setVar(page, 'mc.corruption', 3);
-    await setVar(page, 'deliveryBJCD', 1);
+    await setVar(page, 'deliveryBJ', 1);
     await goToPassage(page, 'DeliveryManager');
 
     await passage(page).getByText('Ask about payment').click();

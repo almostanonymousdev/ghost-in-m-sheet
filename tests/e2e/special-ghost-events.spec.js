@@ -59,10 +59,10 @@ test.describe('Special ghost events — controller', () => {
 
   test('markSpiritEventSeen sets stage and cooldown', async () => {
     await setVar(page, 'ghostSpiritEventStage', 0);
-    await setVar(page, 'ghostSpecialEventSpiritCD', 0);
+    await setVar(page, 'ghostSpecialEventSpirit', 0);
     await page.evaluate(() => SugarCube.setup.SpecialEvent.markSpiritEventSeen());
     expect(await getVar(page, 'ghostSpiritEventStage')).toBe(1);
-    expect(await getVar(page, 'ghostSpecialEventSpiritCD')).toBe(1);
+    expect(await getVar(page, 'ghostSpecialEventSpirit')).toBe(1);
   });
 
   test('clearMareEvent zeroes mare progression', async () => {

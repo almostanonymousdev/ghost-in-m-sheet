@@ -8,7 +8,7 @@ setup.Park = (function () {
 	/* Variables owned by this controller. Other controllers should
 	   query/mutate these only through the API methods below. */
 	var OWNED_VARS = Object.freeze([
-		'joggingCD'
+		'jogging'
 	]);
 
 	return {
@@ -23,8 +23,10 @@ setup.Park = (function () {
 		},
 
 		// --- Jogging ---------------------------------------------
+		// (jogging is registered with setup.Cooldowns at the bottom;
+		// daily reset flows through setup.Tick.resetCooldowns.)
 		joggingOnCooldown: function () {
-			return State.variables.joggingCD === 1;
+			return setup.Cooldowns.onCooldown('jogging');
 		},
 		hasEnergyToJog: function () {
 			return setup.Mc.energy() >= 2;
@@ -44,7 +46,7 @@ setup.Park = (function () {
 
 		// --- Mutations the park passages used to do inline --------
 		startJoggingCooldown: function () {
-			State.variables.joggingCD = 1;
+			setup.Cooldowns.start('jogging');
 		},
 		spendJoggingEnergy: function () {
 			// Jogging consumes 2 energy at start and again on continue.
@@ -83,3 +85,4 @@ setup.Park = (function () {
 		}
 	};
 })();
+setup.Cooldowns.registerDaily('jogging');
