@@ -198,29 +198,20 @@
             if (typeof item.onUnequip === "function") { item.onUnequip(); }
         },
 
-        /* Query helpers used by passages / HUD widgets. These let the
-         * view layer read individual clothing-state flags without
-         * touching $jeansState / $tshirtState / etc directly. */
-        topShirtWorn: function () {
-            return State.variables.tshirtState === "worn";
+        /* Query helpers used by passages / HUD widgets. `worn(slot)` /
+         * `state(slot)` let the view layer read clothing-state flags
+         * without touching $jeansState / $tshirtState / etc directly.
+         * `slot` is one of: 'tshirt' | 'bra' | 'panties' | 'jeans' |
+         * 'shorts' | 'skirt' (matches the underlying $<slot>State
+         * key, which is also the WARDROBE_GROUPS group name). */
+        worn: function (slot) {
+            return State.variables[slot + 'State'] === setup.ClothingState.WORN;
         },
-        braWorn: function () {
-            return State.variables.braState === "worn";
+        state: function (slot) {
+            return State.variables[slot + 'State'];
         },
-        pantiesWorn: function () {
-            return State.variables.pantiesState === "worn";
-        },
-        jeansWorn: function () {
-            return State.variables.jeansState === "worn";
-        },
-        shortsWorn: function () {
-            return State.variables.shortsState === "worn";
-        },
-        skirtWorn: function () {
-            return State.variables.skirtState === "worn";
-        },
-        // (Pure $-variable getters for *State / remember* fields fold
-        // into the defineAccessors block at the bottom.)
+        // (Pure $-variable getters for remember* fields fold into the
+        // defineAccessors block at the bottom.)
         isPantiesStolen: function () { return State.variables.isPantiesStolen === 1; },
         isBottomStolen:  function () { return State.variables.isBottomStolen === 1; },
         isShirtStolen:   function () { return State.variables.isShirtStolen === 1; },
@@ -317,22 +308,22 @@
            passage stays a one-line <<image>>/<<video>> render. */
         stealPantiesImage: function () {
             var bucket =
-                this.jeansWorn()  ? [1, 2, 3]    :
-                this.shortsWorn() ? [4, 5, 6]    :
-                this.skirtWorn()  ? [7, 8, 9]    :
-                                    [10, 11, 12];
+                this.worn('jeans')  ? [1, 2, 3]    :
+                this.worn('shorts') ? [4, 5, 6]    :
+                this.worn('skirt')  ? [7, 8, 9]    :
+                                      [10, 11, 12];
             var n = bucket[Math.floor(Math.random() * bucket.length)];
             return "mechanics/steal-clothes/" + n + ".png";
         },
         stealBottomOuterImage: function () {
-            var bucket = this.pantiesWorn()
+            var bucket = this.worn('panties')
                 ? [13, 14, 15]
                 : [16, 17, 18];
             var n = bucket[Math.floor(Math.random() * bucket.length)];
             return "mechanics/steal-clothes/" + n + ".png";
         },
         stealBraVideo: function () {
-            var bucket = this.topShirtWorn()
+            var bucket = this.worn('tshirt')
                 ? [3, 4]
                 : [1, 2];
             var n = bucket[Math.floor(Math.random() * bucket.length)];
@@ -441,12 +432,6 @@
        the per-slot rememberVar tokens (see refreshAggregateStates and
        the equip/unequip flow above for how those values are produced). */
     setup.defineAccessors(setup.Wardrobe, function () { return State.variables; }, [
-        { name: 'pantiesState',             set: false },
-        { name: 'braState',                 set: false },
-        { name: 'tshirtState',              set: false },
-        { name: 'jeansState',               set: false },
-        { name: 'shortsState',              set: false },
-        { name: 'skirtState',               set: false },
         { name: 'rememberBottomOuter',      set: false },
         { name: 'rememberBottomUnder',      set: false },
         { name: 'rememberTopUnder',         set: false },

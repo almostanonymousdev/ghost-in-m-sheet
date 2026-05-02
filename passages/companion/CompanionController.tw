@@ -503,9 +503,9 @@ setup.Companion = (function () {
 
 		// --- Walk-home eligibility --------------------------------
 		hasBottomWorn: function () {
-			return setup.Wardrobe.jeansWorn()
-				|| setup.Wardrobe.skirtWorn()
-				|| setup.Wardrobe.shortsWorn();
+			return setup.Wardrobe.worn('jeans')
+				|| setup.Wardrobe.worn('skirt')
+				|| setup.Wardrobe.worn('shorts');
 		},
 		canWalkHomeWithCompanion: function () {
 			return this.hasBottomWorn();

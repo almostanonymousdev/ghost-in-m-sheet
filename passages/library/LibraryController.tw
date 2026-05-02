@@ -66,10 +66,10 @@ setup.Library = (function () {
 		/* Library groping event uses pants/shorts vs skirt to pick
 		* the pose; unified here for reuse. */
 		wearingPants: function () {
-			return setup.Wardrobe.jeansWorn() || setup.Wardrobe.shortsWorn();
+			return setup.Wardrobe.worn('jeans') || setup.Wardrobe.worn('shorts');
 		},
 		wearingSkirt: function () {
-			return setup.Wardrobe.skirtWorn();
+			return setup.Wardrobe.worn('skirt');
 		},
 
 		// --- Brook solo-hunt chances (duplicated in BrookInfo) --

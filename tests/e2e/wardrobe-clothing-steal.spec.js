@@ -175,24 +175,24 @@ test.describe('Wardrobe — query helpers', () => {
 
   test('topShirtWorn / braWorn / pantiesWorn / jeansWorn / shortsWorn / skirtWorn', async () => {
     await setVar(page, 'tshirtState', 'worn');
-    expect(await callSetup(page, 'setup.Wardrobe.topShirtWorn()')).toBe(true);
+    expect(await callSetup(page, "setup.Wardrobe.worn('tshirt')")).toBe(true);
     await setVar(page, 'tshirtState', 'not worn');
-    expect(await callSetup(page, 'setup.Wardrobe.topShirtWorn()')).toBe(false);
+    expect(await callSetup(page, "setup.Wardrobe.worn('tshirt')")).toBe(false);
 
     await setVar(page, 'braState', 'worn');
-    expect(await callSetup(page, 'setup.Wardrobe.braWorn()')).toBe(true);
+    expect(await callSetup(page, "setup.Wardrobe.worn('bra')")).toBe(true);
 
     await setVar(page, 'pantiesState', 'worn');
-    expect(await callSetup(page, 'setup.Wardrobe.pantiesWorn()')).toBe(true);
+    expect(await callSetup(page, "setup.Wardrobe.worn('panties')")).toBe(true);
 
     await setVar(page, 'jeansState', 'worn');
-    expect(await callSetup(page, 'setup.Wardrobe.jeansWorn()')).toBe(true);
+    expect(await callSetup(page, "setup.Wardrobe.worn('jeans')")).toBe(true);
 
     await setVar(page, 'shortsState', 'worn');
-    expect(await callSetup(page, 'setup.Wardrobe.shortsWorn()')).toBe(true);
+    expect(await callSetup(page, "setup.Wardrobe.worn('shorts')")).toBe(true);
 
     await setVar(page, 'skirtState', 'worn');
-    expect(await callSetup(page, 'setup.Wardrobe.skirtWorn()')).toBe(true);
+    expect(await callSetup(page, "setup.Wardrobe.worn('skirt')")).toBe(true);
   });
 
   test('takeOffSlotZero flips slot-0 flag to "not worn"', async () => {

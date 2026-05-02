@@ -75,8 +75,8 @@ setup.Posession = (function () {
 		},
 
 		// --- "Hot" event flags ------------------------------------
-		pantiesState: function () { return setup.Wardrobe.pantiesState(); },
-		braState:     function () { return setup.Wardrobe.braState(); },
+		pantiesState: function () { return setup.Wardrobe.state('panties'); },
+		braState:     function () { return setup.Wardrobe.state('bra'); },
 		clearHotFlags: function () {
 			sv().hotAct = 0;
 			sv().addtemptorealhouse = 0;
