@@ -15,13 +15,6 @@ setup.updateTimeDisplay = function() {
     return h + ":" + m;
 };
 
-setup.addLust = function(amount) {
-    var sv = State.variables;
-    sv.mc.lust += amount;
-    if (sv.mc.lust >= 100) { sv.mc.lust = 100; }
-    if (sv.mc.lust <= 0) { sv.mc.lust = 0; }
-    sv.mc.lust = Number(sv.mc.lust.toFixed(2));
-};
 <</script>>
 
 <<widget "backOrReturn">>
@@ -43,24 +36,24 @@ setup.addLust = function(amount) {
 
 <<widget "addLust">>
 	<<set _amount to _args[0]>>
-	<<run setup.addLust(_amount)>>
-	<<updatemeter 'mclust' `setup.Mc.lust() / 100`>>
+	<<run setup.Mc.applyLustDelta(_amount)>>
+	<<updatemeter 'mclust' `setup.Mc.lust() / setup.Mc.lustMax()`>>
 <</widget>>
 
 <<widget "addLustTits">>
 	<<run setup.Mc.addLustByPart("tits", _args[0])>>
-	<<updatemeter 'mclust' `setup.Mc.lust() / 100`>>
+	<<updatemeter 'mclust' `setup.Mc.lust() / setup.Mc.lustMax()`>>
 <</widget>>
 
 <<widget "addLustPussy">>
 	<<run setup.Mc.addLustByPart("pussy", _args[0])>>
-	<<updatemeter 'mclust' `setup.Mc.lust() / 100`>>
+	<<updatemeter 'mclust' `setup.Mc.lust() / setup.Mc.lustMax()`>>
 <</widget>>
 
 <<widget "addLustByPart">>
 	<<set _lustBase to _args[0] !== undefined ? _args[0] : 2>>
 	<<run setup.Mc.addLustByPart(setup.Events.currentArgForRandomizer(), _lustBase)>>
-	<<updatemeter 'mclust' `setup.Mc.lust() / 100`>>
+	<<updatemeter 'mclust' `setup.Mc.lust() / setup.Mc.lustMax()`>>
 <</widget>>
 
 <<widget "addSanity">>

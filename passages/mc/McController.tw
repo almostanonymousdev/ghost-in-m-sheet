@@ -65,6 +65,63 @@ setup.Mc = (function () {
 		set: set,
 		add: add,
 
+<<<<<<< HEAD
+=======
+		// --- Core stats (getters) --------------------------------
+		money:         function () { return mc().money; },
+		sanity:        function () { return mc().sanity; },
+		sanityMax:     function () { return mc().sanityMax; },
+		sanityUp:      function () { return mc().sanityUp; },
+		energy:        function () { return mc().energy; },
+		energyMax:     function () { return mc().energyMax; },
+		energyPoints:  function () { return mc().energyPoints; },
+		corruption:    function () { return mc().corruption; },
+		beauty:        function () { return mc().beauty; },
+		lust:          function () { return mc().lust; },
+		lustMax:	   function () { return mc().lustMax; },
+		name:          function () { return mc().name; },
+		fit:           function () { return mc().fit; },
+		lvl:           function () { return mc().lvl; },
+		exp:           function () { return mc().exp; },
+		exhibitionism: function () { return mc().exhibitionism; },
+		makeupImg:     function () { return mc().makeupImg; },
+		dirty:         function () { return mc().dirty; },
+
+		// --- Core stat mutators ---------------------------------
+		setMoney:         function (v) { mc().money = v; },
+		addMoney:         function (n) { mc().money += n; },
+		spendMoney:       function (n) { mc().money -= n; },
+		setSanity:        function (v) { mc().sanity = v; },
+		addSanity:        function (n) { mc().sanity += n; },
+		spendSanity:      function (n) { mc().sanity -= n; },
+		setSanityMax:     function (v) { mc().sanityMax = v; },
+		setSanityUp:      function (v) { mc().sanityUp = v; },
+		setEnergy:        function (v) { mc().energy = v; },
+		addEnergy:        function (n) { mc().energy += n; },
+		spendEnergy:      function (n) { mc().energy -= n; },
+		setEnergyMax:     function (v) { mc().energyMax = v; },
+		setEnergyPoints:  function (v) { mc().energyPoints = v; },
+		addEnergyPoints:  function (n) { mc().energyPoints += n; },
+		setCorruption:    function (v) { mc().corruption = v; },
+		addCorruption:    function (n) { mc().corruption += n; },
+		setBeauty:        function (v) { mc().beauty = v; },
+		addBeauty:        function (n) { mc().beauty += n; },
+		setLust:          function (v) { mc().lust = v; },
+		addLust:          function (n) { mc().lust += n; },
+		setLustMax:		  function (n) { mc().lustMax += n; },
+		setName:          function (v) { mc().name = v; },
+		setFit:           function (v) { mc().fit = v; },
+		addFit:           function (n) { mc().fit += n; },
+		setLvl:           function (v) { mc().lvl = v; },
+		addLvl:           function (n) { mc().lvl += n; },
+		setExp:           function (v) { mc().exp = v; },
+		addExp:           function (n) { mc().exp += n; },
+		setExhibitionism: function (v) { mc().exhibitionism = v; },
+		addExhibitionism: function (n) { mc().exhibitionism += n; },
+		setMakeupImg:     function (v) { mc().makeupImg = v; },
+		setDirty:         function (v) { mc().dirty = v; },
+
+>>>>>>> events-add-lust
 		// --- Fit percent shorthand ------------------------------
 		// $mc.fit is clamped to [0, 100]; plenty of callers that
 		// just display a bar divide by 100.
@@ -171,6 +228,16 @@ setup.Mc = (function () {
 			if (m.energy <= 0)           { m.energy = 0; }
 		},
 
+		// --- addLust widget core --------------------------------
+		applyLustDelta: function (delta) {
+			setup.Mc.clampLust();
+			var m = mc();
+			m.lust += delta;
+			if (m.lust >= m.lustMax) { m.lust = m.lustMax; }
+			if (m.lust <= 0)         { m.lust = 0; }
+			setup.Mc.clampLust();
+		},
+
 		// --- addFit widget core -----------------------------------
 		// Same shape as setup.Gym.applyFitnessGain, but the gym controller
 		// imports this method so both widgets share logic.
@@ -212,47 +279,54 @@ setup.Mc = (function () {
 		},
 
 		// --- addLustByPart core -----------------------------------
-		// Escalates the chosen body part's sensitivity by 0.02 and feeds
-		// the (base + new sens) total into setup.addLust.
+		// Escalates the chosen body part's sensitivity and feeds
+		// the (base + new sens) total into setup.Mc.applyLustDelta.
 		addLustByPart: function (part, base) {
 			var sv = State.variables;
 			var lustBase = (base !== undefined) ? base : 2;
 			var bp = sv.sensualBodyPart || {};
+
+			// Variables for tuning the lust formula. sensMult must be between 0 and 1 to slowly taper
+			// sensMult 0.99, sensBase 0.2 => max sensitivity starting linear, asymptote approx. 20 after several hundred bumps
+			var sensMult = 0.99;
+			var sensBase = 0.2;
+
 			function bump(key, extra) {
 				extra = extra || 0;
-				bp[key] = (bp[key] || 0) + 0.02 + extra;
+				bp[key] = sensMult * (bp[key] || 0) + sensBase + extra;
 			}
+
 			switch (part) {
 				case 'brain':
-					bp.brain = (bp.brain || 0) + 0.02;
-					setup.addLust(lustBase + bp.brain);
+					bump('brain')
+					setup.Mc.applyLustDelta(lustBase + bp.brain);
 					break;
 				case 'tits':
 					bump('tits', sv.piercingTitsAddSens || 0);
-					setup.addLust(lustBase + bp.tits);
+					setup.Mc.applyLustDelta(lustBase + bp.tits);
 					break;
 				case 'ass':
 					bump('ass');
-					setup.addLust(lustBase + bp.ass);
+					setup.Mc.applyLustDelta(lustBase + bp.ass);
 					break;
 				case 'bottom':
-					bp.bottom = (bp.bottom || 0) + 0.02;
-					bp.ass    = (bp.ass    || 0) + 0.01;
-					bp.pussy  = (bp.pussy  || 0) + 0.01 + (sv.piercingPussyAddSens || 0);
-					bp.anal   = (bp.anal   || 0) + 0.01;
-					setup.addLust(lustBase + bp.bottom);
+					bump('bottom')
+					bump('ass')
+					bump('pussy', sv.piercingPussyAddSens || 0);
+					bump('anal')
+					setup.Mc.applyLustDelta(lustBase + bp.bottom);
 					break;
 				case 'mouth':
 					bump('mouth', sv.piercingTongueAddSens || 0);
-					setup.addLust(lustBase + bp.mouth);
+					setup.Mc.applyLustDelta(lustBase + bp.mouth);
 					break;
 				case 'pussy':
 					bump('pussy', sv.piercingPussyAddSens || 0);
-					setup.addLust(lustBase + bp.pussy);
+					setup.Mc.applyLustDelta(lustBase + bp.pussy);
 					break;
 				case 'anal':
 					bump('anal');
-					setup.addLust(lustBase + bp.anal);
+					setup.Mc.applyLustDelta(lustBase + bp.anal);
 					break;
 			}
 		}
@@ -314,7 +388,7 @@ setup.Mc = (function () {
 	api.clearSanityCollapse = function () { sv().sanityCollapse = 0; };
 	api.isExhausted = function () { return sv().exhausted === 1; };
 	api.clearExhausted = function () { sv().exhausted = 0; };
-	api.lustPct = function () { return mc().lust / 100; };
+	api.lustPct = function () { return mc().lust / mc().lustMax; };
 	api.sanityPct = function () { return mc().sanity / mc().sanityMax; };
 	api.energyPct = function () { return mc().energy / mc().energyMax; };
 	return api;

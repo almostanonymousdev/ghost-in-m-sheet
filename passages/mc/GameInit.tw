@@ -93,6 +93,7 @@ setup.Game = (function () {
 			sanity: 100,
 			corruption: 0,
 			lust: 0,
+			lustMax: 100,
 			energy: 10,
 			energyMax: 10,
 			lvl: 0,
