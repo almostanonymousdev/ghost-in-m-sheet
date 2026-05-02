@@ -834,3 +834,8 @@
         }
     };
 })();
+
+/* Ghost-lust meter shown by the seduce-ghost minigame; the bare
+ * "ghostlust" label is intentional — the minigame writes its own
+ * dynamic label via updatemeter. */
+Meter.add('ghostlust', { label: 'ghostlust', width: '100%' }, 1);

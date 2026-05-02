@@ -348,10 +348,11 @@ class GameData:
 
 
 def load_game_data() -> GameData:
-    story_script = _read("StoryScript.tw")
     story_init = _read("mc/GameInit.tw")
     hh_controller = _read("haunted_houses/HauntedHousesController.tw")
     hunt_controller = _read("hunt/HuntController.tw")
+    hunt_conditions = _read("haunted_houses/HuntConditionsController.tw")
+    tool_controller = _read("haunted_houses/tools/ToolController.tw")
     hide_tw = _read("haunted_houses/general/Hide.tw")
     run_tw = _read("haunted_houses/general/RunFast.tw")
     temp_tw = _read("haunted_houses/tools/TemperatureHigh.tw")
@@ -363,18 +364,18 @@ def load_game_data() -> GameData:
 
     ghosts = {g["name"]: g for g in _load_ghosts()}
 
-    tier_chance_raw = _parse_int_map(story_script, r"setup\.TIER_CHANCE")
+    tier_chance_raw = _parse_int_map(tool_controller, r"setup\.TIER_CHANCE")
     tier_chance = {k: v / 100.0 for k, v in tier_chance_raw.items()}
-    tool_window = _parse_int_map(story_script, r"setup\.TOOL_TIME_REMAIN")
+    tool_window = _parse_int_map(tool_controller, r"setup\.TOOL_TIME_REMAIN")
 
     # HauntConditions constants.
     energy_per_step = _find_num(r"var\s+ENERGY_PER_STEP\s*=\s*([\d.]+)",
-                                story_script)
+                                hunt_conditions)
     lust_fuel = int(_find_num(r"var\s+LUST_FUEL_THRESHOLD\s*=\s*(\d+)",
-                              story_script))
+                              hunt_conditions))
     dark_bg = int(_find_num(r"DARK:\s*(\d+)", style_controller))
-    snapshot_bonuses = _parse_snapshot_bonuses(story_script)
-    contract_drain, companion_drain = _parse_contract_drain(story_script)
+    snapshot_bonuses = _parse_snapshot_bonuses(hunt_conditions)
+    contract_drain, companion_drain = _parse_contract_drain(hunt_conditions)
     temp_cfg = _parse_temperature(temp_tw)
 
     # mc starting stats (mc/GameInit.tw).

@@ -141,3 +141,214 @@ setup.Styles = (function () {
 		}
 	};
 })();
+
+/* Asset-path rewriters. Authors write `assets/foo.png` everywhere; at
+ * runtime those paths are resolved against `setup.ImagePath` so the
+ * release/dev builds can swap roots without touching passage source.
+ * The :passagerender pass handles per-passage <style> blocks; the
+ * :storyready pass handles the story-wide stylesheet on first paint. */
+$(document).on(':passagerender', function (ev) {
+	$(ev.content).find('style').each(function () {
+		this.textContent = this.textContent.replace(
+			/url\((['"]?)assets\//g,
+			'url($1' + setup.ImagePath + '/'
+		);
+	});
+});
+
+$(document).one(':storyready', function () {
+	var styles = document.querySelectorAll('style');
+	styles.forEach(function (style) {
+		if (style.textContent.indexOf('assets/') !== -1) {
+			style.textContent = style.textContent.replace(
+				/url\((['"]?)assets\//g,
+				'url($1' + setup.ImagePath + '/'
+			);
+		}
+	});
+});
+
+/* <<video path [classOrOpts]>> and <<image path [classOrOpts]>>
+ *
+ * Thin wrappers that resolve `setup.ImagePath` and emit the HTML that
+ * authors would otherwise hand-write ~1300 times across the passages.
+ *
+ *   <<video "mechanics/tentacles/2.0.mp4">>                  autoplay controls muted loop, mp4/webm by ext
+ *   <<video "characters/mc/bra-off.webm" "displayCentredImgs">>   string 2nd arg = class
+ *   <<video "characters/mc/bra-off.webm" { controls: false, width: "40%" }>>
+ *   <<image "ui/img/corruption.png">>
+ *   <<image "characters/alice/alice.png" "companion-image">>
+ *   <<image "ui/img/trash1.png" { id: "trash1", class: "trash", onclick: "..." }>>
+ */
+(function () {
+	'use strict';
+
+	function escAttr(v) {
+		return String(v)
+			.replace(/&/g, '&amp;')
+			.replace(/"/g, '&quot;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;');
+	}
+
+	/* SugarCube's macro argument parser tokenises `"foo" + _bar` and
+	 * `"foo" { a: 1 }` into bare literal tokens (`+`, `{`, `}`, keys-with-
+	 * trailing-colon, ...) rather than evaluating them, so the raw `args`
+	 * array is unusable for call sites that rely on either pattern. When
+	 * we detect that shape, scan the post-substitution `full` arg string
+	 * to split path-expression from opts-expression and evaluate each
+	 * half as JS — that way common author patterns work without having
+	 * to remember backticks on every call. */
+	function splitFullArgs(full) {
+		var inStr = null, escape = false, depth = 0;
+		var afterCompleteExpr = false;
+		for (var i = 0; i < full.length; i++) {
+			var c = full.charAt(i);
+			if (escape) { escape = false; continue; }
+			if (inStr) {
+				if (c === '\\') { escape = true; continue; }
+				if (c === inStr) {
+					inStr = null;
+					if (depth === 0) afterCompleteExpr = true;
+				}
+				continue;
+			}
+			if (c === ' ' || c === '\t' || c === '\n' || c === '\r') continue;
+			if (c === '"' || c === "'" || c === '`') {
+				if (afterCompleteExpr && depth === 0) {
+					return { pathText: full.slice(0, i).trim(), optsText: full.slice(i).trim() };
+				}
+				inStr = c;
+				continue;
+			}
+			if (c === '{') {
+				if (afterCompleteExpr && depth === 0) {
+					return { pathText: full.slice(0, i).trim(), optsText: full.slice(i).trim() };
+				}
+				depth++;
+				afterCompleteExpr = false;
+				continue;
+			}
+			if (c === '(' || c === '[') { depth++; afterCompleteExpr = false; continue; }
+			if (c === ')' || c === ']' || c === '}') {
+				depth--;
+				if (depth === 0) afterCompleteExpr = true;
+				continue;
+			}
+			if ('-+*/%,.&|!?<>=^~:'.indexOf(c) >= 0) {
+				afterCompleteExpr = false;
+				continue;
+			}
+			afterCompleteExpr = true;
+		}
+		return { pathText: full.trim(), optsText: null };
+	}
+
+	function resolveOpts(ctx, macroName) {
+		var args = ctx.args;
+		if (args.length < 1) {
+			return { error: '<<' + macroName + '>> requires a non-empty path string as the first argument.' };
+		}
+
+		var needsFullParse = false;
+		for (var k = 0; k < args.length; k++) {
+			if (args[k] === '+' || args[k] === '{' || args[k] === '}') {
+				needsFullParse = true;
+				break;
+			}
+		}
+
+		if (needsFullParse) {
+			var split = splitFullArgs(args.full);
+			try {
+				var p = Scripting.evalJavaScript('(' + split.pathText + ')');
+				var opts = {};
+				if (split.optsText) {
+					var v = Scripting.evalJavaScript('(' + split.optsText + ')');
+					if (typeof v === 'string') {
+						opts.class = v;
+					} else if (v && typeof v === 'object') {
+						opts = v;
+					}
+				}
+				if (typeof p !== 'string' || !p) {
+					return { error: '<<' + macroName + '>> path expression did not resolve to a non-empty string.' };
+				}
+				return { path: p, opts: opts };
+			} catch (e) {
+				return { error: '<<' + macroName + '>> failed to parse arguments: ' + e.message };
+			}
+		}
+
+		if (typeof args[0] !== 'string' || !args[0]) {
+			return { error: '<<' + macroName + '>> requires a non-empty path string as the first argument.' };
+		}
+		var opts2 = {};
+		var second = args[1];
+		if (typeof second === 'string') {
+			opts2.class = second;
+		} else if (second && typeof second === 'object') {
+			opts2 = second;
+		}
+		return { path: args[0], opts: opts2 };
+	}
+
+	function resolveSrc(path) {
+		// Strip any leading slashes so we always produce exactly one between
+		// ImagePath and the author-supplied path.
+		return setup.ImagePath + '/' + String(path).replace(/^\/+/, '');
+	}
+
+	Macro.add('video', {
+		handler: function () {
+			var r = resolveOpts(this, 'video');
+			if (r.error) return this.error(r.error);
+
+			var opts = r.opts;
+			var autoplay = opts.autoplay !== false;
+			var controls = opts.controls !== false;
+			var muted    = opts.muted    !== false;
+			var loop     = opts.loop     !== false;
+
+			var type = opts.type;
+			if (!type) {
+				type = /\.webm$/i.test(r.path) ? 'video/webm' : 'video/mp4';
+			}
+
+			var attrs = [];
+			if (autoplay) attrs.push('autoplay');
+			if (controls) attrs.push('controls');
+			if (muted)    attrs.push('muted');
+			if (loop)     attrs.push('loop');
+			if (opts.class) attrs.push('class="' + escAttr(opts.class) + '"');
+			if (opts.id)    attrs.push('id="' + escAttr(opts.id) + '"');
+			if (opts.width) attrs.push('width="' + escAttr(opts.width) + '"');
+			if (opts.style) attrs.push('style="' + escAttr(opts.style) + '"');
+
+			var html =
+				'<video ' + attrs.join(' ') + '>' +
+				'<source src="' + escAttr(resolveSrc(r.path)) + '" type="' + escAttr(type) + '">' +
+				'</video>';
+			$(this.output).append(html);
+		}
+	});
+
+	Macro.add('image', {
+		handler: function () {
+			var r = resolveOpts(this, 'image');
+			if (r.error) return this.error(r.error);
+
+			var opts = r.opts;
+			var attrs = ['src="' + escAttr(resolveSrc(r.path)) + '"'];
+			if (opts.class)   attrs.push('class="' + escAttr(opts.class) + '"');
+			if (opts.id)      attrs.push('id="' + escAttr(opts.id) + '"');
+			if (opts.width)   attrs.push('width="' + escAttr(opts.width) + '"');
+			if (opts.height)  attrs.push('height="' + escAttr(opts.height) + '"');
+			if (opts.style)   attrs.push('style="' + escAttr(opts.style) + '"');
+			if (opts.alt)     attrs.push('alt="' + escAttr(opts.alt) + '"');
+			if (opts.onclick) attrs.push('onclick="' + escAttr(opts.onclick) + '"');
+
+			$(this.output).append('<img ' + attrs.join(' ') + '>');
+		}
+	});
+}());

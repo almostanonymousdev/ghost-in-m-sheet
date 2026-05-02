@@ -319,3 +319,8 @@ setup.Mc = (function () {
 	api.energyPct = function () { return mc().energy / mc().energyMax; };
 	return api;
 })();
+
+/* HUD lust meter for the MC. The 220px width is the wider sidebar
+ * style; per-room search meters use 50% (registered in
+ * ToolController). */
+Meter.add('mclust', { label: '$mc.lust', width: '220px' }, 1);
