@@ -67,16 +67,16 @@ test.describe('Gym — hours and training gates', () => {
 
   test('canTriggerTrainer1Event requires tip + no cooldown + sexy lingerie', async () => {
     await setVar(page, 'trainer1TipReceived', 1);
-    await setVar(page, 'trainer1SexCD', 0);
+    await setVar(page, 'trainer1Sex', 0);
     await setVar(page, 'rememberBottomStockings', 'stockings2');
     await setVar(page, 'rememberTopUnder', 'bra2');
     await setVar(page, 'rememberBottomUnder', 'panties2');
     expect(await callSetup(page, 'setup.Gym.canTriggerTrainer1Event()')).toBe(true);
 
-    await setVar(page, 'trainer1SexCD', 1);
+    await setVar(page, 'trainer1Sex', 1);
     expect(await callSetup(page, 'setup.Gym.canTriggerTrainer1Event()')).toBe(false);
 
-    await setVar(page, 'trainer1SexCD', 0);
+    await setVar(page, 'trainer1Sex', 0);
     await setVar(page, 'rememberTopUnder', 'bra1');
     expect(await callSetup(page, 'setup.Gym.canTriggerTrainer1Event()')).toBe(false);
   });
@@ -232,7 +232,7 @@ test.describe('Park — jogging and events', () => {
     await setVar(page, 'sportswear', 1);
     await setVar(page, 'hours', 10);
     await setVar(page, 'mc.energy', 10);
-    await setVar(page, 'joggingCD', 0);
+    await setVar(page, 'jogging', 0);
     await goToPassage(page, 'Park');
     const text = await page.locator('#passages').innerText();
     expect(text).toContain('Jogging');
@@ -242,7 +242,7 @@ test.describe('Park — jogging and events', () => {
   test('Park blocks jogging on cooldown', async () => {
     await setVar(page, 'sportswear', 1);
     await setVar(page, 'hours', 10);
-    await setVar(page, 'joggingCD', 1);
+    await setVar(page, 'jogging', 1);
     await goToPassage(page, 'Park');
     const text = await page.locator('#passages').innerText();
     expect(text).toContain('Enough for today');
@@ -251,7 +251,7 @@ test.describe('Park — jogging and events', () => {
   test('Park shows "not enough energy" when below 2 energy', async () => {
     await setVar(page, 'sportswear', 1);
     await setVar(page, 'hours', 10);
-    await setVar(page, 'joggingCD', 0);
+    await setVar(page, 'jogging', 0);
     await setVar(page, 'mc.energy', 1);
     await goToPassage(page, 'Park');
     const text = await page.locator('#passages').innerText();

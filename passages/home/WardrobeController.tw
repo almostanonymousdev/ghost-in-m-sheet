@@ -24,6 +24,19 @@
         WORN:       "worn"
     });
 
+    /* Slot identifiers used by setup.Wardrobe.worn / state. The string
+     * value is the WARDROBE_GROUPS group name and the prefix of the
+     * underlying $<slot>State save key (e.g. 'tshirt' → $tshirtState),
+     * so the enum doubles as the key into State.variables. */
+    setup.WardrobeSlot = Object.freeze({
+        TSHIRT:  'tshirt',
+        BRA:     'bra',
+        PANTIES: 'panties',
+        JEANS:   'jeans',
+        SHORTS:  'shorts',
+        SKIRT:   'skirt'
+    });
+
     /* Each group shares a DOM slot (replaceTarget), an "available" drawer
      * (appendTarget) where unequipped items list their equip link, and a
      * rememberVar tracking which sibling was worn last (for beauty diffing
@@ -198,37 +211,20 @@
             if (typeof item.onUnequip === "function") { item.onUnequip(); }
         },
 
-        /* Query helpers used by passages / HUD widgets. These let the
-         * view layer read individual clothing-state flags without
-         * touching $jeansState / $tshirtState / etc directly. */
-        topShirtWorn: function () {
-            return State.variables.tshirtState === "worn";
+        /* Query helpers used by passages / HUD widgets. `worn(slot)` /
+         * `state(slot)` let the view layer read clothing-state flags
+         * without touching $jeansState / $tshirtState / etc directly.
+         * `slot` is one of: 'tshirt' | 'bra' | 'panties' | 'jeans' |
+         * 'shorts' | 'skirt' (matches the underlying $<slot>State
+         * key, which is also the WARDROBE_GROUPS group name). */
+        worn: function (slot) {
+            return State.variables[slot + 'State'] === setup.ClothingState.WORN;
         },
-        braWorn: function () {
-            return State.variables.braState === "worn";
+        state: function (slot) {
+            return State.variables[slot + 'State'];
         },
-        pantiesWorn: function () {
-            return State.variables.pantiesState === "worn";
-        },
-        jeansWorn: function () {
-            return State.variables.jeansState === "worn";
-        },
-        shortsWorn: function () {
-            return State.variables.shortsState === "worn";
-        },
-        skirtWorn: function () {
-            return State.variables.skirtState === "worn";
-        },
-        pantiesState: function () { return State.variables.pantiesState; },
-        braState:     function () { return State.variables.braState; },
-        tshirtState:  function () { return State.variables.tshirtState; },
-        jeansState:   function () { return State.variables.jeansState; },
-        shortsState:  function () { return State.variables.shortsState; },
-        skirtState:   function () { return State.variables.skirtState; },
-        rememberBottomOuter: function () { return State.variables.rememberBottomOuter; },
-        rememberBottomUnder: function () { return State.variables.rememberBottomUnder; },
-        rememberTopUnder:    function () { return State.variables.rememberTopUnder; },
-        rememberBottomStockings: function () { return State.variables.rememberBottomStockings; },
+        // (Pure $-variable getters for remember* fields fold into the
+        // defineAccessors block at the bottom.)
         isPantiesStolen: function () { return State.variables.isPantiesStolen === 1; },
         isBottomStolen:  function () { return State.variables.isBottomStolen === 1; },
         isShirtStolen:   function () { return State.variables.isShirtStolen === 1; },
@@ -325,22 +321,22 @@
            passage stays a one-line <<image>>/<<video>> render. */
         stealPantiesImage: function () {
             var bucket =
-                this.jeansWorn()  ? [1, 2, 3]    :
-                this.shortsWorn() ? [4, 5, 6]    :
-                this.skirtWorn()  ? [7, 8, 9]    :
-                                    [10, 11, 12];
+                this.worn(setup.WardrobeSlot.JEANS)  ? [1, 2, 3]    :
+                this.worn(setup.WardrobeSlot.SHORTS) ? [4, 5, 6]    :
+                this.worn(setup.WardrobeSlot.SKIRT)  ? [7, 8, 9]    :
+                                      [10, 11, 12];
             var n = bucket[Math.floor(Math.random() * bucket.length)];
             return "mechanics/steal-clothes/" + n + ".png";
         },
         stealBottomOuterImage: function () {
-            var bucket = this.pantiesWorn()
+            var bucket = this.worn(setup.WardrobeSlot.PANTIES)
                 ? [13, 14, 15]
                 : [16, 17, 18];
             var n = bucket[Math.floor(Math.random() * bucket.length)];
             return "mechanics/steal-clothes/" + n + ".png";
         },
         stealBraVideo: function () {
-            var bucket = this.topShirtWorn()
+            var bucket = this.worn(setup.WardrobeSlot.TSHIRT)
                 ? [3, 4]
                 : [1, 2];
             var n = bucket[Math.floor(Math.random() * bucket.length)];
@@ -443,6 +439,17 @@
             return null;
         }
     };
+
+    /* Trivial $-variable read-only accessors. Each *State getter just
+       reads the aggregate worn/not-worn flag; remember* getters expose
+       the per-slot rememberVar tokens (see refreshAggregateStates and
+       the equip/unequip flow above for how those values are produced). */
+    setup.defineAccessors(setup.Wardrobe, function () { return State.variables; }, [
+        { name: 'rememberBottomOuter',      set: false },
+        { name: 'rememberBottomUnder',      set: false },
+        { name: 'rememberTopUnder',         set: false },
+        { name: 'rememberBottomStockings',  set: false }
+    ]);
 
     /* Save-file migration helper: called once from Update1 to seed the
      * per-slot state keys on old saves that predate the multi-tier

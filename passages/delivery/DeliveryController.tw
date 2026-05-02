@@ -28,7 +28,7 @@ setup.Delivery = (function () {
 		'currentHouse', 'currentOrder', 'orders', 'shuffledOrders',
 		'order1', 'order2', 'order3',
 		'jobMoneySuccessed', 'jobMoneyFailed',
-		'deliveryBJCD', 'deliveryPapersEvent', 'deliveryBurgerEvent',
+		'deliveryBJ', 'deliveryPapersEvent', 'deliveryBurgerEvent',
 		'deliveryPackageEvent', 'deliveryPizzaEvent',
 		'deliverySpecialOrder', 'deliverySpecialOrderAddress',
 		'deliverySpecialOrderType', 'deliverySpecialOrderPay',
@@ -132,8 +132,11 @@ setup.Delivery = (function () {
 		},
 
 		// --- Manager: flirt / BJ quest ---------------------------
+		// (the five delivery daily flags — deliveryBJ plus the four
+		// markXxxEvent setters — are registered with setup.Cooldowns at
+		// the bottom; daily reset flows through setup.Tick.resetCooldowns.)
 		managerBJOnCooldown: function () {
-			return sv().deliveryBJCD === 1;
+			return setup.Cooldowns.onCooldown('deliveryBJ');
 		},
 		meetsBeautyForManagerFlirt: function () {
 			return setup.Mc.beauty() >= 45;
@@ -202,11 +205,11 @@ setup.Delivery = (function () {
 		},
 
 		// --- Event flags ----------------------------------------
-		markPapersEvent:  function () { sv().deliveryPapersEvent = 1; },
-		markBurgerEvent:  function () { sv().deliveryBurgerEvent = 1; },
-		markPackageEvent: function () { sv().deliveryPackageEvent = 1; },
-		markPizzaEvent:   function () { sv().deliveryPizzaEvent = 1; },
-		startManagerBJCooldown: function () { sv().deliveryBJCD = 1; },
+		markPapersEvent:  function () { setup.Cooldowns.start('deliveryPapersEvent'); },
+		markBurgerEvent:  function () { setup.Cooldowns.start('deliveryBurgerEvent'); },
+		markPackageEvent: function () { setup.Cooldowns.start('deliveryPackageEvent'); },
+		markPizzaEvent:   function () { setup.Cooldowns.start('deliveryPizzaEvent'); },
+		startManagerBJCooldown: function () { setup.Cooldowns.start('deliveryBJ'); },
 		markMetAlice:     function () { setup.Companion.markMetAlice(); },
 		hasMetAlice:      function () { return setup.Companion.hasMetAlice(); },
 		markFirstVisited: function () { sv().firstVisitDeliveryHub = false; },
@@ -313,3 +316,8 @@ setup.Delivery = (function () {
 		}
 	};
 })();
+setup.Cooldowns.registerDaily('deliveryPizzaEvent');
+setup.Cooldowns.registerDaily('deliveryPackageEvent');
+setup.Cooldowns.registerDaily('deliveryBurgerEvent');
+setup.Cooldowns.registerDaily('deliveryPapersEvent');
+setup.Cooldowns.registerDaily('deliveryBJ');

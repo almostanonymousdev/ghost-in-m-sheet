@@ -4,7 +4,7 @@
 <br>
 <br>
 <<if setup.Home.shouldRouteToTentaclesSleep(previous())>>
-	<<if setup.Time.sleepAdvanceHours(8)>><<run setup.Tick.resetCooldowns()>><</if>>
+	<<run setup.Home.sleepAdvance(8)>>
 	<<goto "TentaclesEventSleep">>
 <</if>>
 
@@ -14,7 +14,7 @@
 
 <<set _sleep to setup.Home.resolveSleepWake(previous())>>
 @@.backbtn;<<link "Wake up" `_sleep.passage`>>
-	<<if setup.Time.sleepAdvanceHours(_sleep.hours)>><<run setup.Tick.resetCooldowns()>><</if>>
+	<<run setup.Home.sleepAdvance(_sleep.hours)>>
 <</link>>@@
 <<run setup.Home.applySleepPostWake(_sleep.postWake)>>
 

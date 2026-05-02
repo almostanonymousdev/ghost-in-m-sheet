@@ -267,10 +267,10 @@ test.describe('Delivery Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('managerBJOnCooldown checks deliveryBJCD flag', async () => {
+  test('managerBJOnCooldown checks deliveryBJ flag', async () => {
     // act
     const beforeCD = await callSetup(page, 'setup.Delivery.managerBJOnCooldown()');
-    await setVar(page, 'deliveryBJCD', 1);
+    await setVar(page, 'deliveryBJ', 1);
     const afterCD = await callSetup(page, 'setup.Delivery.managerBJOnCooldown()');
 
     // assert

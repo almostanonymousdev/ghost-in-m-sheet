@@ -140,7 +140,7 @@ test.describe('Missing Women — map, house search, events, clue, nun', () => {
     await goToPassage(page, 'RescueEvent');
     await expectCleanPassage(page);
     expect(await page.locator('.passage').textContent()).toContain('abandoned house');
-    expect(await getVar(page, 'rescueQuestCD')).toBe(1);
+    expect(await getVar(page, 'rescueQuest')).toBe(1);
   });
 
   test('rescueSuccess has Leave and Continue choices', async () => {

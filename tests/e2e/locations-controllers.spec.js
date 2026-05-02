@@ -134,10 +134,10 @@ test.describe('Park — controller mutations', () => {
   test.afterAll(async () => { await page.close(); });
   test.beforeEach(async () => { await resetGame(page); });
 
-  test('startJoggingCooldown sets joggingCD to 1', async () => {
-    await setVar(page, 'joggingCD', 0);
+  test('startJoggingCooldown sets jogging to 1', async () => {
+    await setVar(page, 'jogging', 0);
     await page.evaluate(() => SugarCube.setup.Park.startJoggingCooldown());
-    expect(await getVar(page, 'joggingCD')).toBe(1);
+    expect(await getVar(page, 'jogging')).toBe(1);
   });
 
   test('spendJoggingEnergy subtracts 2 from energy', async () => {
@@ -163,7 +163,7 @@ test.describe('Park — controller mutations', () => {
   test('canJogNow requires sportswear, hours-in-range, no cooldown, energy >= 2', async () => {
     await setVar(page, 'sportswear', 1);
     await setVar(page, 'hours', 10);
-    await setVar(page, 'joggingCD', 0);
+    await setVar(page, 'jogging', 0);
     await setVar(page, 'mc.energy', 5);
     expect(await callSetup(page, 'setup.Park.canJogNow()')).toBe(true);
 
@@ -171,10 +171,10 @@ test.describe('Park — controller mutations', () => {
     expect(await callSetup(page, 'setup.Park.canJogNow()')).toBe(false);
 
     await setVar(page, 'mc.energy', 5);
-    await setVar(page, 'joggingCD', 1);
+    await setVar(page, 'jogging', 1);
     expect(await callSetup(page, 'setup.Park.canJogNow()')).toBe(false);
 
-    await setVar(page, 'joggingCD', 0);
+    await setVar(page, 'jogging', 0);
     await setVar(page, 'hours', 23);
     expect(await callSetup(page, 'setup.Park.canJogNow()')).toBe(false);
   });

@@ -29,7 +29,7 @@
 			<<run setup.Mc.addSanityPills(1)>>
 		<<elseif _check eq 4>>
 			You found a crusifix!
-			<<run setup.Witch.addCrucifix()>>
+			<<run setup.ToolController.addCrucifix()>>
 		<<elseif _check eq 5>>
 			<<goto "WitchTentaclesEvent">>
 		<</if>>

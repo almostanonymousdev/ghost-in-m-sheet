@@ -30,7 +30,7 @@
 </div>
 <div class="housecard">
 <<image "ui/img/crucifix.webp" "iconPx">><br>
-<<if setup.Witch.crucifixAmount() gte 1>>You have <<= setup.Witch.crucifixAmount()>> crucifix.
+<<if setup.ToolController.crucifixAmount() gte 1>>You have <<= setup.ToolController.crucifixAmount()>> crucifix.
 <<else>>You don't have a crucifix
 <</if>>
 </div>

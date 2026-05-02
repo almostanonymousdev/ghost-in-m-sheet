@@ -81,8 +81,8 @@ setup.MissingWomen = (function () {
 	   query these only through the API methods below. */
 	var OWNED_VARS = Object.freeze([
 		'hasQuestForRescue',
-		'rescueQuestCD',
-		'rescueCD',
+		'rescueQuest',
+		'rescue',
 		'rescueStage',
 		'rescueHouse',
 		'randomRescuePhotoNumber',
@@ -98,7 +98,7 @@ setup.MissingWomen = (function () {
 		'cheatRescueHouseHighlight'
 	]);
 
-	return {
+	var api = {
 		OWNED_VARS: OWNED_VARS,
 		// --- Holy water -------------------------------------------
 		hasHolyWater: function () {
@@ -109,18 +109,8 @@ setup.MissingWomen = (function () {
 		},
 
 		// --- Quest stage predicates --------------------------------
-		isQuestAvailable: function () {
-			return sv().hasQuestForRescue === setup.RescueQuestState.AVAILABLE;
-		},
-		hasActiveQuest: function () {
-			return sv().hasQuestForRescue === setup.RescueQuestState.ACTIVE;
-		},
-		questFailed: function () {
-			return sv().hasQuestForRescue === setup.RescueQuestState.FAILED;
-		},
-		questSucceeded: function () {
-			return sv().hasQuestForRescue === setup.RescueQuestState.SUCCEEDED;
-		},
+		// (isQuestAvailable / hasActiveQuest / questFailed / questSucceeded
+		// fold into the defineStageAccessors block at the bottom.)
 		mustReturnToNun: function () {
 			var s = sv().hasQuestForRescue;
 			var Q = setup.RescueQuestState;
@@ -132,8 +122,12 @@ setup.MissingWomen = (function () {
 			var h = setup.Time.hours();
 			return h >= 18 && h < 24;
 		},
+		// (rescue / rescueQuest are registered with setup.Cooldowns
+		// at the bottom of this file; daily reset flows through
+		// setup.Tick.resetCooldowns. ensureBoardCooldowns below still
+		// zeros undefined values for legacy saves.)
 		boardOnCooldown: function () {
-			return sv().rescueQuestCD !== 0;
+			return setup.Cooldowns.onCooldown('rescueQuest');
 		},
 
 		// --- Stay / corruption gate -------------------------------
@@ -193,8 +187,6 @@ setup.MissingWomen = (function () {
 		},
 
 		// --- Mutations / accessors used by rescue passages --------
-		currentRescueGirl: function () { return sv().currentRescueGirl; },
-		setCurrentRescueGirl: function (name) { sv().currentRescueGirl = name; },
 		setQuestForRescueStarted: function () {
 			sv().hasQuestForRescue = setup.RescueQuestState.ACTIVE;
 			sv().rescueStage = 0;
@@ -202,26 +194,19 @@ setup.MissingWomen = (function () {
 		sleepOffHoursAfterEvent: function () {
 			setup.Time.addHours(3);
 		},
-		setJadePossessedStage: function (n) { sv().rescueJadePossessed = n; },
-		setVictoriaPossessedStage: function (n) { sv().rescueVictoriaPossessed = n; },
-		jadePossessedStage: function () { return sv().rescueJadePossessed; },
-		victoriaPossessedStage: function () { return sv().rescueVictoriaPossessed; },
 
 		// --- Task board state --------------------------------------
 		ensureBoardCooldowns: function () {
 			var s = sv();
-			if (s.rescueCD === undefined) { s.rescueCD = 0; }
-			if (s.rescueQuestCD === undefined) { s.rescueQuestCD = 0; }
+			if (s.rescue === undefined) { s.rescue = 0; }
+			if (s.rescueQuest === undefined) { s.rescueQuest = 0; }
 		},
-		rescueCooldown: function () { return sv().rescueCD; },
-		rescueGirlsList: function () { return sv().rescueGirls; },
-		rescueRandomGirls: function () { return sv().rescueRandomGirls; },
 		initRescueGirlPool: function (allGirls) {
 			sv().rescueGirls = allGirls;
 		},
 		rollBoardGirls: function () {
 			var s = sv();
-			s.rescueCD = 1;
+			setup.Cooldowns.start('rescue');
 			s.rescueRandomGirls = [];
 			var girls = s.rescueGirls || [];
 			var index1 = Math.floor(Math.random() * girls.length);
@@ -232,30 +217,18 @@ setup.MissingWomen = (function () {
 		},
 
 		// --- Rescue house / clue accessors -------------------------
-		rescueHouse: function () { return sv().rescueHouse; },
-		setRescueHouse: function (n) { sv().rescueHouse = n; },
 		rescueHouseImage: function (n) {
 			return "characters/rescue/house/" + n + ".jpg";
 		},
-		randomRescuePhotoNumber: function () { return sv().randomRescuePhotoNumber; },
-		setRandomRescuePhotoNumber: function (n) {
-			sv().randomRescuePhotoNumber = n;
-		},
-		rescueStage: function () { return sv().rescueStage; },
-		setRescueStage: function (n) { sv().rescueStage = n; },
 		setRescueClueFound: function () { sv().hasRescueClue = 1; },
 		clearRescueClue:   function () { sv().hasRescueClue = 0; },
 
 		// --- Rescue quest state -----------------------------------
-		rescueQuestStage: function () { return sv().hasQuestForRescue; },
-		resetQuestToAvailable: function () { sv().hasQuestForRescue = setup.RescueQuestState.AVAILABLE; },
-		markQuestFailed:      function () { sv().hasQuestForRescue = setup.RescueQuestState.FAILED; },
-		markQuestSucceeded:   function () { sv().hasQuestForRescue = setup.RescueQuestState.SUCCEEDED; },
+		// (resetQuestToAvailable / markQuestFailed / markQuestSucceeded
+		// fold into the defineStageAccessors block at the bottom.)
 
 		// --- Video pool --------------------------------------------
-		rescueVideo: function () { return sv().videoRescueEvent; },
-		setRescueVideo: function (src) { sv().videoRescueEvent = src; },
-		startRescueBoardCooldown: function () { sv().rescueQuestCD = 1; },
+		startRescueBoardCooldown: function () { setup.Cooldowns.start('rescueQuest'); },
 
 		// --- Rescue scene (per-girl watch loop) -------------------
 		rescueGirlConfig: function (girl) { return RESCUE_GIRLS[girl] || null; },
@@ -315,8 +288,6 @@ setup.MissingWomen = (function () {
 		},
 
 		// --- Torn-photo state (task board / clue display) ---------
-		tornStylesList: function () { return sv().tornStyles; },
-		tornStyleRandom: function () { return sv().tornStyleRandom; },
 		seedTornStyle: function () {
 			var styles = sv().tornStyles || [];
 			if (!styles.length) return;
@@ -324,10 +295,6 @@ setup.MissingWomen = (function () {
 			sv().tornStyleRandom = styles[idx];
 			sv().randomRescuePhotoNumber = 1 + Math.floor(Math.random() * 16);
 		},
-
-		// --- Cheat-only highlight flag ----------------------------
-		cheatRescueHouseHighlight: function () { return sv().cheatRescueHouseHighlight; },
-		setCheatRescueHouseHighlight: function (n) { sv().cheatRescueHouseHighlight = n; },
 
 		// --- EMF upgrade reward from clue --------------------------
 		emfLevel: function () {
@@ -337,4 +304,34 @@ setup.MissingWomen = (function () {
 			setup.ToolController.setTier('emf', 3);
 		}
 	};
+
+	// Pure $variable passthrough accessors. `key` overrides the field
+	// name where the public method root differs from the underlying var
+	// (rescueQuestStage <-> $hasQuestForRescue, rescueVideo <-> $videoRescueEvent,
+	// jadePossessedStage <-> $rescueJadePossessed, victoriaPossessedStage <-> $rescueVictoriaPossessed).
+	setup.defineAccessors(api, sv, [
+		'currentRescueGirl',
+		{ name: 'jadePossessedStage',         key: 'rescueJadePossessed' },
+		{ name: 'victoriaPossessedStage',     key: 'rescueVictoriaPossessed' },
+		{ name: 'rescueCooldown',             key: 'rescue',         set: false },
+		{ name: 'rescueGirlsList',            key: 'rescueGirls',      set: false },
+		'rescueRandomGirls',
+		'rescueHouse',
+		'randomRescuePhotoNumber',
+		'rescueStage',
+		{ name: 'rescueQuestStage',           key: 'hasQuestForRescue', set: false },
+		{ name: 'rescueVideo',                key: 'videoRescueEvent' },
+		{ name: 'tornStylesList',             key: 'tornStyles',        set: false },
+		{ name: 'tornStyleRandom',            set: false },
+		'cheatRescueHouseHighlight'
+	]);
+	setup.defineStageAccessors(api, sv, 'hasQuestForRescue', setup.RescueQuestState, {
+		is:   { isQuestAvailable: 'AVAILABLE', hasActiveQuest: 'ACTIVE',
+				questFailed: 'FAILED', questSucceeded: 'SUCCEEDED' },
+		mark: { resetQuestToAvailable: 'AVAILABLE', markQuestFailed: 'FAILED',
+				markQuestSucceeded: 'SUCCEEDED' }
+	});
+	setup.Cooldowns.registerDaily('rescue');
+	setup.Cooldowns.registerDaily('rescueQuest');
+	return api;
 })();

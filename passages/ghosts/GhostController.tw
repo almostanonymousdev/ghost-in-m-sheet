@@ -151,7 +151,7 @@
             description: "",
             prowlCondition:     function (mc) { return mc.lust >= 30; },
             prowlConditionText: "Can start a prowl if you have >= 30 lust",
-            prowlEventFlag:     "thetwinsevent"
+            prowlEventFlag:     "twinsEventActive"
         },
         {
             name: "Wraith", image: "wraith.webp",
@@ -253,7 +253,7 @@
         this.goHomePassage        = cfg.goHomePassage        || null;   // Myling: "GhostSpecialEventMyling"
         this.companionHuntPassage = cfg.companionHuntPassage || null;   // Myling: "GhostSpecialEventMylingTwo"
         this.sanityEventLossRange = cfg.sanityEventLossRange || [1, 5]; // Oni:    [3, 8]
-        this.prowlEventFlag        = cfg.prowlEventFlag        || null;   // Twins:  "thetwinsevent"
+        this.prowlEventFlag        = cfg.prowlEventFlag        || null;   // Twins:  "twinsEventActive"
 
         /* Sensor-glitch chance denominators (1/N per tool reading). */
         this.emfGlitchChance         = cfg.emfGlitchChance         || 0; // Raiju: 3
@@ -355,7 +355,7 @@
     };
 
     /* If this ghost has a per-hunt-event marker flag (e.g. Twins →
-       $thetwinsevent), set it to 1. Called from HuntOver* and the
+       $twinsEventActive), set it to 1. Called from HuntOver* and the
        NudityEvent passages so the flag doesn't need inline name branching. */
     Ghost.prototype.markProwlEvent = function () {
         if (this.prowlEventFlag) State.variables[this.prowlEventFlag] = 1;
@@ -461,12 +461,14 @@
         'deleteOneEvidence', 'deleteSecondEvidence', 'deleteThirdEvidence',
         'hiddenEvidence', 'hiddenEvidence1', 'hiddenEvidence2',
         'lastChangeIntervalMimic', 'currentIntervalMimic',
-        'thetwinsevent', 'thetwinseventCD',
+        'twinsEventActive', 'twinsEvent',
         'highpriestess', 'bansheeAbility', 'cthulionAbility',
         'ghostTypeSelected'
     ]);
 
-    setup.Ghosts = {
+    function sv() { return State.variables; }
+
+    var api = {
         OWNED_VARS: OWNED_VARS,
         Evidence: Evidence,
         HuntMode: HuntMode,
@@ -713,12 +715,11 @@
         },
         knowledgeUsed: function () { return State.variables.knowledgeUsed === 1; },
         markKnowledgeUsed: function () { State.variables.knowledgeUsed = 1; },
-        ghostTypeSelected: function () { return State.variables.ghostTypeSelected; },
-        setGhostTypeSelected: function (v) { State.variables.ghostTypeSelected = v; },
+        // `|| 0` getters are kept inline (callers do arithmetic and
+        // unguarded comparisons that need 0 on fresh saves); only the
+        // raw setters fold into the defineAccessors block.
         elapsedTimeProwl: function () { return State.variables.elapsedTimeProwl || 0; },
-        setElapsedTimeProwl: function (n) { State.variables.elapsedTimeProwl = n; },
         prowlTimeRemain: function () { return State.variables.prowlTimeRemain || 0; },
-        setProwlTimeRemain: function (n) { State.variables.prowlTimeRemain = n; },
         resetEvidenceChecks: function () {
             var s = State.variables;
             s.EMF5Check = false;
@@ -731,7 +732,7 @@
         hasHighPriestess: function () { return State.variables.highpriestess === 1; },
         setHighPriestess: function (on) { State.variables.highpriestess = on ? 1 : 0; },
         consumeHighPriestess: function () { State.variables.highpriestess = 0; },
-        twinsEventActive: function () { return State.variables.thetwinsevent === 1; },
+        twinsEventActive: function () { return State.variables.twinsEventActive === 1; },
         enableBanshee:  function () { State.variables.bansheeAbility = 1; },
         enableCthulion: function () { State.variables.cthulionAbility = 1; },
         clearBanshee:   function () { delete State.variables.bansheeAbility; },
@@ -755,17 +756,18 @@
             V.currentIntervalMimic = interval;
             return null;
         },
+        // twinsEvent is registered with setup.Cooldowns at the
+        // bottom of this file; daily reset flows through
+        // setup.Tick.resetCooldowns.
         twinsEventReady:  function () {
-            return State.variables.thetwinsevent === 1 && State.variables.thetwinseventCD === 0;
+            return State.variables.twinsEventActive === 1 && setup.Cooldowns.available('twinsEvent');
         },
         consumeTwinsEvent: function () {
-            State.variables.thetwinsevent = 0;
-            State.variables.thetwinseventCD = 1;
+            State.variables.twinsEventActive = 0;
+            setup.Cooldowns.start('twinsEvent');
         },
-        clearTwinsEvent: function () { State.variables.thetwinsevent = 0; },
+        clearTwinsEvent: function () { State.variables.twinsEventActive = 0; },
         clearKnowledgeUsed: function () { State.variables.knowledgeUsed = undefined; },
-        chosenEvidence: function () { return State.variables.chosenEvidence; },
-        setChosenEvidence: function (e) { State.variables.chosenEvidence = e; },
         /* Drop the Notebook's crossed-out-evidence overlay (set by
            the Tarot Knowledge card / Monkey Paw knowledge wish). The
            overlay is hunt-scoped, so the cursed-item shared-state
@@ -838,6 +840,19 @@
                 : null;
         }
     };
+
+    // Pure $variable passthrough accessors. elapsedTimeProwl /
+    // prowlTimeRemain getters live inline above (their `|| 0` fallback
+    // is load-bearing for arithmetic / Sugarcube comparisons); only
+    // their setters fold here.
+    setup.defineAccessors(api, sv, [
+        'ghostTypeSelected',
+        'chosenEvidence',
+        { name: 'elapsedTimeProwl', get: false },
+        { name: 'prowlTimeRemain',  get: false }
+    ]);
+    setup.Cooldowns.registerDaily('twinsEvent');
+    setup.Ghosts = api;
 })();
 
 /* Ghost-lust meter shown by the seduce-ghost minigame; the bare

@@ -48,6 +48,36 @@ setup.Companion = (function () {
 	function comp()    { return State.variables.companion; }
 	function compFor(name) { return State.variables[name.toLowerCase()]; }
 
+	/* Generate per-companion stat accessors that all share the
+	   `compFor(name) -> object[field]` shape. Each entry produces one
+	   method on `api`:
+	     { get: name, key: field, miss?: fallback }    one-arg getter
+	     { set: name, key: field }                     two-arg setter
+	     { is:  name, key: field, value: stage }       predicate
+	*/
+	function defineCompanionAccessors(api, spec) {
+		spec.forEach(function (entry) {
+			if (entry.get) {
+				api[entry.get] = function (name) {
+					var c = compFor(name);
+					return c ? c[entry.key] : entry.miss;
+				};
+			}
+			if (entry.set) {
+				api[entry.set] = function (name, v) {
+					var c = compFor(name);
+					if (c) c[entry.key] = v;
+				};
+			}
+			if (entry.is) {
+				api[entry.is] = function (name) {
+					var c = compFor(name);
+					return !!(c && c[entry.key] === entry.value);
+				};
+			}
+		});
+	}
+
 	var TRANS_NAMES = ["Alex", "Taylor", "Casey"];
 
 	function isName(n) { var c = comp(); return c && c.name === n; }
@@ -398,7 +428,7 @@ setup.Companion = (function () {
 		return null;
 	}
 
-	return {
+	var api = {
 		OWNED_VARS: OWNED_VARS,
 		// --- Catalogue -------------------------------------------
 		list: function () { return COMPANIONS; },
@@ -473,9 +503,9 @@ setup.Companion = (function () {
 
 		// --- Walk-home eligibility --------------------------------
 		hasBottomWorn: function () {
-			return setup.Wardrobe.jeansWorn()
-				|| setup.Wardrobe.skirtWorn()
-				|| setup.Wardrobe.shortsWorn();
+			return setup.Wardrobe.worn(setup.WardrobeSlot.JEANS)
+				|| setup.Wardrobe.worn(setup.WardrobeSlot.SKIRT)
+				|| setup.Wardrobe.worn(setup.WardrobeSlot.SHORTS);
 		},
 		canWalkHomeWithCompanion: function () {
 			return this.hasBottomWorn();
@@ -614,8 +644,6 @@ setup.Companion = (function () {
 			var CS = setup.CompanionShow;
 			return sc === CS.VISIBLE || sc === CS.ATTACK_SAFE;
 		},
-		showComp: function () { return State.variables.showComp; },
-		transPicture: function () { return State.variables.transPicture; },
 		sanityPercent: function () {
 			var c = comp();
 			return c ? c.sanity / 100 : 0;
@@ -699,27 +727,13 @@ setup.Companion = (function () {
 		},
 
 		// --- Per-companion state accessors ----------------------
-		companionLvl: function (name) {
-			var obj = compFor(name);
-			return obj ? obj.lvl : 0;
-		},
-		companionExp: function (name) {
-			var obj = compFor(name);
-			return obj ? obj.exp : 0;
-		},
-		companionExpForNextLvl: function (name) {
-			var obj = compFor(name);
-			return obj ? obj.expForNextLvl : 0;
-		},
+		// (companionLvl / companionExp / companionExpForNextLvl fold
+		// into the defineCompanionAccessors call at the bottom.)
 		isCompanionFlagActive: function () { return State.variables.isCompChosen === 1; },
 		markCompanionFlagActive: function () { State.variables.isCompChosen = 1; },
 		setActiveLust: function (n) {
 			var c = comp();
 			if (c) c.lust = n;
-		},
-		isCompanionFinishedSoloHunting: function (name) {
-			var c = compFor(name);
-			return !!(c && c.goingSolo === 2);
 		},
 		/* Pick a video/image descriptor for the CompanionEvent
 		   passage. Each companion has a 4-tier sanity ladder
@@ -784,30 +798,15 @@ setup.Companion = (function () {
 		markMetAlice: function () { State.variables.meetAlice = 1; },
 		blakeUnlocked: function () { return setup.Mall.blakeIsCompanionCandidate(); },
 		aliceWorkDone: function () { return State.variables.aliceWorkDone === 1; },
-		aliceWorkState: function () { return State.variables.aliceWorkDone; },
-		setAliceWorkState: function (n) { State.variables.aliceWorkDone = n; },
-		hasFinishedSoloHunt: function (name) {
-			var c = compFor(name);
-			return !!(c && c.goingSolo === 2);
-		},
-		soloHuntPaymentState: function (name) {
-			var c = compFor(name);
-			return c ? c.paidForSolo : undefined;
-		},
-		chosenPlan: function () { return State.variables.chosenPlan; },
+		// (hasFinishedSoloHunt / soloHuntPaymentState fold into the
+		// defineCompanionAccessors call at the bottom.)
 		hasActiveCompanion: function () { return !!(State.variables.companion && State.variables.companion.name); },
 		activeCompanionName: function () {
 			var c = State.variables.companion;
 			return c && c.name;
 		},
-		soloHuntChanceOwaissa: function (name) {
-			var c = compFor(name);
-			return c ? c.soloChanceOwaissa : undefined;
-		},
-		soloHuntChanceElm: function (name) {
-			var c = compFor(name);
-			return c ? c.soloChanceElm : undefined;
-		},
+		// (soloHuntChanceOwaissa / soloHuntChanceElm fold into the
+		// defineCompanionAccessors call at the bottom.)
 		setSoloHuntChances: function (name, owaissa, elm) {
 			var c = compFor(name);
 			if (!c) return;
@@ -976,17 +975,9 @@ setup.Companion = (function () {
 			c.paidForSolo = 0;
 			c.goingSolo   = 0;
 		},
-		/* Which street did this companion solo-hunt on? Returns
-		   "Owaissa" / "Elm" / "" based on the per-companion choice
-		   flag. Used to key into the success-chance table. */
-		companionChoseOwaissa: function (name) {
-			var c = compFor(name);
-			return !!(c && c.chooseOwaissa === 1);
-		},
-		companionChoseElm: function (name) {
-			var c = compFor(name);
-			return !!(c && c.chooseElm === 1);
-		},
+		/* Which street did this companion solo-hunt on? companionChoseOwaissa
+		   and companionChoseElm fold into the defineCompanionAccessors call
+		   at the bottom. Used to key into the success-chance table. */
 		/* Clear the per-companion Owaissa/Elm choice flags. Called
 		   at the end of HuntEndAlone after the result is narrated. */
 		clearSoloHuntStreet: function (name) {
@@ -1065,8 +1056,6 @@ setup.Companion = (function () {
 		// the "post-change" variant. $transPicture records which of the
 		// three trans portraits to render (1 Alex / 2 Taylor / 3 Casey).
 		isTransFirstStageSet: function () { return State.variables.transFirstStage === 1; },
-		setTransFirstStage: function (n) { State.variables.transFirstStage = n; },
-		setTransPicture: function (n) { State.variables.transPicture = n; },
 		/* Lust gain applied to the active companion when a CompanionEvent
 		   fires. Scales with the per-hunt step count so longer hunts
 		   build up arousal faster. The widgets call eventLustGain() for
@@ -1097,7 +1086,6 @@ setup.Companion = (function () {
 		isTransByName: function (n) { return isTrans(n); },
 
 		// --- isCompanionContinue flow (widgetFriends) ---------
-		chanceToSuccess: function () { return State.variables.chanceToSuccess; },
 		/* When the companion decides to continue: reset the per-hunt
 		   scratch flags so the normal hunt tick can resume. */
 		resumeHunt: function () {
@@ -1107,7 +1095,6 @@ setup.Companion = (function () {
 			s.showComp = setup.CompanionShow.VISIBLE;
 			s.isCompRoomChosen = 0;
 		},
-		setChosenPlan: function (p) { State.variables.chosenPlan = p; },
 		/* "Continue alone" path: clears showComp + isCompChosen as
 		   well so the companion is no longer tagged as active. */
 		dismissCompanion: function () {
@@ -1117,6 +1104,34 @@ setup.Companion = (function () {
 			s.chosenPlan = 0;
 		}
 	};
+
+	// Pure $variable passthrough accessors. Read-only fields use
+	// `set: false`; setTransFirstStage is paired with the semantic
+	// isTransFirstStageSet getter, so only the setter folds.
+	setup.defineAccessors(api, function () { return State.variables; }, [
+		'chosenPlan',
+		'transPicture',
+		{ name: 'aliceWorkState',     key: 'aliceWorkDone' },
+		{ name: 'chanceToSuccess',    set: false },
+		{ name: 'showComp',           set: false },
+		{ name: 'transFirstStage',    get: false, set: 'setTransFirstStage' }
+	]);
+	// Per-companion stat accessors. Each call resolves the target
+	// companion's mutable state object via compFor(name) and reads
+	// or writes a single field; folded here so the wrapper bodies
+	// don't have to repeat the null-check / fallback boilerplate.
+	defineCompanionAccessors(api, [
+		{ get: 'companionLvl',           key: 'lvl',                miss: 0 },
+		{ get: 'companionExp',           key: 'exp',                miss: 0 },
+		{ get: 'companionExpForNextLvl', key: 'expForNextLvl',      miss: 0 },
+		{ get: 'soloHuntChanceOwaissa',  key: 'soloChanceOwaissa' },
+		{ get: 'soloHuntChanceElm',      key: 'soloChanceElm' },
+		{ get: 'soloHuntPaymentState',   key: 'paidForSolo' },
+		{ is:  'hasFinishedSoloHunt',    key: 'goingSolo',     value: 2 },
+		{ is:  'companionChoseOwaissa',  key: 'chooseOwaissa', value: 1 },
+		{ is:  'companionChoseElm',      key: 'chooseElm',     value: 1 }
+	]);
+	return api;
 })();
 
 /* HUD meters for the active companion's sanity / lust shown in the

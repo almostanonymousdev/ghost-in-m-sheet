@@ -12,8 +12,8 @@ test.describe('Missing Women — task board', () => {
   test('shows girls when evening, quest available, no cooldown', async () => {
     await setVar(page, 'relationshipWithRain', 1);
     await setVar(page, 'hasQuestForRescue', 0);
-    await setVar(page, 'rescueQuestCD', 0);
-    await setVar(page, 'rescueCD', 0);
+    await setVar(page, 'rescueQuest', 0);
+    await setVar(page, 'rescue', 0);
     await setVar(page, 'hours', 20);
 
     await goToPassage(page, 'RescueTaskBoard');
@@ -28,8 +28,8 @@ test.describe('Missing Women — task board', () => {
     await setVar(page, 'relationshipWithRain', 1);
     await setVar(page, 'hasQuestForRescue', 1);
     await setVar(page, 'currentRescueGirl', 'Victoria');
-    await setVar(page, 'rescueQuestCD', 0);
-    await setVar(page, 'rescueCD', 0);
+    await setVar(page, 'rescueQuest', 0);
+    await setVar(page, 'rescue', 0);
     await setVar(page, 'hours', 20);
 
     await goToPassage(page, 'RescueTaskBoard');
@@ -42,8 +42,8 @@ test.describe('Missing Women — task board', () => {
   test('shows daytime message when before 6 PM', async () => {
     await setVar(page, 'relationshipWithRain', 1);
     await setVar(page, 'hasQuestForRescue', 0);
-    await setVar(page, 'rescueQuestCD', 0);
-    await setVar(page, 'rescueCD', 0);
+    await setVar(page, 'rescueQuest', 0);
+    await setVar(page, 'rescue', 0);
     await setVar(page, 'hours', 12);
 
     await goToPassage(page, 'RescueTaskBoard');
@@ -55,8 +55,8 @@ test.describe('Missing Women — task board', () => {
   test('shows cooldown message when on cooldown', async () => {
     await setVar(page, 'relationshipWithRain', 1);
     await setVar(page, 'hasQuestForRescue', 0);
-    await setVar(page, 'rescueQuestCD', 1);
-    await setVar(page, 'rescueCD', 0);
+    await setVar(page, 'rescueQuest', 1);
+    await setVar(page, 'rescue', 0);
     await setVar(page, 'hours', 20);
 
     await goToPassage(page, 'RescueTaskBoard');
@@ -68,8 +68,8 @@ test.describe('Missing Women — task board', () => {
   test('shows return-to-nun message when quest is 2 or 3', async () => {
     await setVar(page, 'relationshipWithRain', 1);
     await setVar(page, 'hasQuestForRescue', 2);
-    await setVar(page, 'rescueQuestCD', 0);
-    await setVar(page, 'rescueCD', 0);
+    await setVar(page, 'rescueQuest', 0);
+    await setVar(page, 'rescue', 0);
     await setVar(page, 'hours', 20);
 
     await goToPassage(page, 'RescueTaskBoard');
@@ -81,8 +81,8 @@ test.describe('Missing Women — task board', () => {
   test('taking a quest sets correct variables', async () => {
     await setVar(page, 'relationshipWithRain', 1);
     await setVar(page, 'hasQuestForRescue', 0);
-    await setVar(page, 'rescueQuestCD', 0);
-    await setVar(page, 'rescueCD', 0);
+    await setVar(page, 'rescueQuest', 0);
+    await setVar(page, 'rescue', 0);
     await setVar(page, 'hours', 20);
 
     await goToPassage(page, 'RescueTaskBoard');
@@ -101,8 +101,8 @@ test.describe('Missing Women — task board', () => {
   test('random girl selection produces 2 unique girls', async () => {
     await setVar(page, 'relationshipWithRain', 1);
     await setVar(page, 'hasQuestForRescue', 0);
-    await setVar(page, 'rescueQuestCD', 0);
-    await setVar(page, 'rescueCD', 0);
+    await setVar(page, 'rescueQuest', 0);
+    await setVar(page, 'rescue', 0);
     await setVar(page, 'hours', 20);
 
     await goToPassage(page, 'RescueTaskBoard');

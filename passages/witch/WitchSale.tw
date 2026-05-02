@@ -13,17 +13,17 @@
 <span class="subtitleAmount">@@.mc-thoughts; You have <<= setup.Mc.sanityPillsAmount()>> sanity pills@@</span>
 </div>
 <div class="housecard">
-<<run setup.Witch.initCrucifixIfNeeded()>>
+<<run setup.ToolController.initCrucifixIfNeeded()>>
 <<image "ui/img/crucifix.webp" "iconPx">><br>
 <span class="priceAmount">10$</span><br>
 <<if setup.Mc.money() gte 10>>
 	@@.buyItemLink;<<link "Buy" "WitchSale">>
-		<<run setup.Witch.addCrucifix()>>
+		<<run setup.ToolController.addCrucifix()>>
 		<<run setup.Mc.removeMoney(10)>>
 	<</link>>@@<br>
 <<else>>@@.mc-thoughts; I don't have enough money@@
 <</if>>
-<span class="subtitleAmount">@@.mc-thoughts; You have <<= setup.Witch.crucifixAmount()>> crucifix@@</span>
+<span class="subtitleAmount">@@.mc-thoughts; You have <<= setup.ToolController.crucifixAmount()>> crucifix@@</span>
 </div>
 <div class="housecard">
 <<if setup.Witch.toolLevel("emf") eq 5>>
@@ -98,7 +98,7 @@
 <</if>>
 </div>
 <div class="housecard">
-<<if setup.Witch.monkeyPawGuideAvailable()>>
+<<if setup.MonkeyPaw.isGuideAsked()>>
 	<<image "mechanics/cursedpossessions/monkey-paw/monkeypaw-page.jpg" "iconPx">><br>
 	<span class="priceAmount">400$</span><br>
 	<<if setup.Mc.money() gte 400>>

@@ -44,7 +44,7 @@
 	<</done>>
 	<<if setup.Witch.canOfferRescueQuest()>><span class="rescueGirlsDisabled">
 		<<linkreplace "@@.usebtn; Missing girls@@">>
-			<<run setup.Witch.clearQuestForRescue()>>
+			<<run setup.MissingWomen.resetQuestToAvailable()>>
 			@@.notmc-speech; Oh, <<= setup.Mc.name()>>, you've come at just the right time. I can see you're getting more and more experienced with each passing day, and I've got an important task for you. My old friend, a nun named Rain from the church, needs some help<br>
 			She told me that recently, her girls -- who, like you, are also ghost hunters--have started disappearing. She needs help finding them, and I thought you might be the one to assist her.<br>@@
 			@@.mc-speech; Of course, I think I can help her.@@<br>

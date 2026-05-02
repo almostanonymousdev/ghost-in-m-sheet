@@ -82,7 +82,7 @@
                 message: MESSAGES.plasmClean
             };
         }
-        var range = setup.Wardrobe.topShirtWorn() ? [1, 7] : [8, 14];
+        var range = setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT) ? [1, 7] : [8, 14];
         return {
             pack:    { prefix: "mechanics/plasm/mess/", start: range[0], end: range[1], ext: ".png", cssClass: "displayCentredImgs" },
             message: MESSAGES.plasmMess
@@ -101,11 +101,11 @@
        Ironclad has a dedicated set that bypasses the clothing branch
        entirely. */
     function uvlLowerPack() {
-        var jeansW   = setup.Wardrobe.jeansWorn();
-        var jeans    = setup.Wardrobe.jeansState();
-        var shortsW  = setup.Wardrobe.shortsWorn();
-        var skirtW   = setup.Wardrobe.skirtWorn();
-        var pantiesW = setup.Wardrobe.pantiesWorn();
+        var jeansW   = setup.Wardrobe.worn(setup.WardrobeSlot.JEANS);
+        var jeans    = setup.Wardrobe.state(setup.WardrobeSlot.JEANS);
+        var shortsW  = setup.Wardrobe.worn(setup.WardrobeSlot.SHORTS);
+        var skirtW   = setup.Wardrobe.worn(setup.WardrobeSlot.SKIRT);
+        var pantiesW = setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES);
         if (jeansW)   return { prefix: "mechanics/uvl/1.", start: 1, end: 4, ext: ".png" };
         if (shortsW)  return { prefix: "mechanics/uvl/3.", start: 1, end: 6, ext: ".png" };
         if (skirtW) {
@@ -122,9 +122,9 @@
     }
 
     function uvlUpperPack() {
-        if (setup.Wardrobe.topShirtWorn())     return { prefix: "mechanics/uvl/1.", start: 5, end:  7, ext: ".png" };
-        if (setup.Wardrobe.braWorn())          return { prefix: "mechanics/uvl/2.", start: 7, end: 12, ext: ".png" };
-        if (setup.Wardrobe.braState() === setup.ClothingState.NOT_WORN) return { prefix: "mechanics/uvl/6.", start: 0, end:  4, ext: ".png" };
+        if (setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT))     return { prefix: "mechanics/uvl/1.", start: 5, end:  7, ext: ".png" };
+        if (setup.Wardrobe.worn(setup.WardrobeSlot.BRA))          return { prefix: "mechanics/uvl/2.", start: 7, end: 12, ext: ".png" };
+        if (setup.Wardrobe.state(setup.WardrobeSlot.BRA) === setup.ClothingState.NOT_WORN) return { prefix: "mechanics/uvl/6.", start: 0, end:  4, ext: ".png" };
         return null;
     }
 

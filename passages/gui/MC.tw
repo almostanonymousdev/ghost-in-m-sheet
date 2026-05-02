@@ -11,7 +11,7 @@
 	<</hovertip>>
 <<else>>
 	<div id="statusOuterTop">
-	<<if setup.Wardrobe.topShirtWorn()>>
+	<<if setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT)>>
 		<<hovertip "Wearing t-shirt">><<image "ui/icons/top.jpg">>
 		<</hovertip>>
 	<<else>>
@@ -28,7 +28,7 @@
 	<</if>>
 	</div>
 	<div id="statusUnderTop">
-	<<if setup.Wardrobe.braWorn()>>
+	<<if setup.Wardrobe.worn(setup.WardrobeSlot.BRA)>>
 		<<hovertip "Wearing bra.">><<image "ui/icons/bra.jpg">>
 		<</hovertip>>
 	<<else>>
@@ -37,7 +37,7 @@
 	<</if>>
 	</div>
 	<div id="statusUnderBottom">
-	<<if setup.Wardrobe.pantiesWorn()>>
+	<<if setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES)>>
 		<<hovertip "Wearing panties">><<image "ui/icons/panties.jpg">>
 		<</hovertip>>
 	<<else>>

@@ -13,7 +13,7 @@ setup.SpecialEvent = (function () {
 	   query these only through the API methods below. */
 	var OWNED_VARS = Object.freeze([
 		'ghostSpiritEventStage',
-		'ghostSpecialEventSpiritCD',
+		'ghostSpecialEventSpirit',
 		'ghostMareEventStart',
 		'ghostMareEventStage',
 		'videoEventSpecialMyling'
@@ -38,15 +38,17 @@ setup.SpecialEvent = (function () {
 		},
 
 		// --- Spirit / mare side effects -------------------
+		// (ghostSpecialEventSpirit is registered with setup.Cooldowns
+		// at the bottom; daily reset flows through setup.Tick.resetCooldowns.)
 		markSpiritEventSeen: function () {
 			sv().ghostSpiritEventStage = 1;
-			sv().ghostSpecialEventSpiritCD = 1;
+			setup.Cooldowns.start('ghostSpecialEventSpirit');
 		},
 		markSpiritEventStage: function () {
 			sv().ghostSpiritEventStage = 1;
 		},
 		startSpiritEventCooldown: function () {
-			sv().ghostSpecialEventSpiritCD = 1;
+			setup.Cooldowns.start('ghostSpecialEventSpirit');
 		},
 		clearMareEvent: function () {
 			sv().ghostMareEventStart = 0;
@@ -92,9 +94,9 @@ setup.SpecialEvent = (function () {
 		spiritEventStage: function () { return sv().ghostSpiritEventStage; },
 		setSpiritEventStage: function (n) { sv().ghostSpiritEventStage = n; },
 		clearSpiritEventStage: function () { sv().ghostSpiritEventStage = 0; },
-		spiritEventCooldown: function () { return sv().ghostSpecialEventSpiritCD; },
+		spiritEventCooldown: function () { return sv().ghostSpecialEventSpirit; },
 		spiritEventReady: function () {
-			return sv().ghostSpiritEventStage === 0 && sv().ghostSpecialEventSpiritCD === 0;
+			return sv().ghostSpiritEventStage === 0 && setup.Cooldowns.available('ghostSpecialEventSpirit');
 		},
 
 		// --- Myling companion reset ------------------------
@@ -103,3 +105,4 @@ setup.SpecialEvent = (function () {
 		}
 	};
 })();
+setup.Cooldowns.registerDaily('ghostSpecialEventSpirit');

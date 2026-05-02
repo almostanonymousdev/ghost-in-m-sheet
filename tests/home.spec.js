@@ -395,7 +395,7 @@ test.describe('Home Controller', () => {
   test('canSummonForExorcism true at stage 1 or 2 with no cooldown', async () => {
     // arrange
     await setVar(page, 'exorcismQuestStage', 1);
-    await setVar(page, 'exorcismCD', 0);
+    await setVar(page, 'exorcism', 0);
 
     // act
     const atStage1 = await callSetup(page, 'setup.Home.canSummonForExorcism()');
@@ -410,7 +410,7 @@ test.describe('Home Controller', () => {
   test('canSummonForExorcism false on cooldown', async () => {
     // arrange
     await setVar(page, 'exorcismQuestStage', 1);
-    await setVar(page, 'exorcismCD', 1);
+    await setVar(page, 'exorcism', 1);
 
     // act
     const result = await callSetup(page, 'setup.Home.canSummonForExorcism()');
@@ -563,12 +563,66 @@ test.describe('Home Controller', () => {
     expect(lust).toBeLessThanOrEqual(90);
   });
 
+  // --- Sleep advance ---
+
+  test('sleepAdvance advances time and triggers an autosave', async () => {
+    // arrange
+    await page.evaluate(() => {
+      SugarCube.State.variables.hours = 22;
+      SugarCube.State.variables.minutes = 0;
+      SugarCube.Save.browser.auto.clear();
+    });
+    expect(await page.evaluate(
+      () => SugarCube.Save.browser.auto.entries().length
+    )).toBe(0);
+
+    // act: 4-hour sleep wraps past midnight
+    const rollover = await page.evaluate(
+      () => SugarCube.setup.Home.sleepAdvance(4)
+    );
+    // autosave is scheduled via setTimeout(..., 0) so we have to yield.
+    await page.waitForFunction(
+      () => SugarCube.Save.browser.auto.entries().length > 0
+    );
+
+    // assert
+    expect(rollover).toBe(true);
+    expect(await getVar(page, 'hours')).toBe(2);
+    expect(await page.evaluate(
+      () => SugarCube.Save.browser.auto.entries().length
+    )).toBeGreaterThan(0);
+  });
+
+  test('sleepAdvance without midnight rollover still autosaves', async () => {
+    // arrange
+    await page.evaluate(() => {
+      SugarCube.State.variables.hours = 8;
+      SugarCube.State.variables.minutes = 0;
+      SugarCube.Save.browser.auto.clear();
+    });
+
+    // act: 4-hour sleep stays within the same day
+    const rollover = await page.evaluate(
+      () => SugarCube.setup.Home.sleepAdvance(4)
+    );
+    await page.waitForFunction(
+      () => SugarCube.Save.browser.auto.entries().length > 0
+    );
+
+    // assert
+    expect(rollover).toBe(false);
+    expect(await getVar(page, 'hours')).toBe(12);
+    expect(await page.evaluate(
+      () => SugarCube.Save.browser.auto.entries().length
+    )).toBeGreaterThan(0);
+  });
+
   // --- Twins event ---
 
   test('twinsEventAvailable requires flag and no cooldown', async () => {
     // arrange
-    await setVar(page, 'thetwinsevent', 1);
-    await setVar(page, 'thetwinseventCD', 0);
+    await setVar(page, 'twinsEventActive', 1);
+    await setVar(page, 'twinsEvent', 0);
 
     // act
     const result = await callSetup(page, 'setup.Ghosts.twinsEventReady()');
@@ -579,8 +633,8 @@ test.describe('Home Controller', () => {
 
   test('twinsEventAvailable false on cooldown', async () => {
     // arrange
-    await setVar(page, 'thetwinsevent', 1);
-    await setVar(page, 'thetwinseventCD', 1);
+    await setVar(page, 'twinsEventActive', 1);
+    await setVar(page, 'twinsEvent', 1);
 
     // act
     const result = await callSetup(page, 'setup.Ghosts.twinsEventReady()');
@@ -589,21 +643,21 @@ test.describe('Home Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('weak Mirror branch clears thetwinsevent so it does not re-fire daily', async () => {
+  test('weak Mirror branch clears twinsEventActive so it does not re-fire daily', async () => {
     // Regression: the Mirror passage's weak branch (beauty roll beats MC) used
-    // to set only $thetwinseventCD, leaving $thetwinsevent=1. ResetCooldowns
+    // to set only $twinsEvent, leaving $twinsEventActive=1. ResetCooldowns
     // zeros the CD on every day-wrap, so the event re-fired every morning —
     // an infinite loop players can only escape by eventually rolling the full
     // event (TheTwinsEvent, which does clear both flags).
-    await setVar(page, 'thetwinsevent', 1);
-    await setVar(page, 'thetwinseventCD', 0);
+    await setVar(page, 'twinsEventActive', 1);
+    await setVar(page, 'twinsEvent', 0);
     await setVar(page, 'mc.beauty', 10); // random(30,100) always beats this → weak branch
     await goToPassage(page, 'Mirror');
     await page.locator('.passage .macro-linkappend').filter({ hasText: 'through the glass' }).first().click();
     await page.waitForTimeout(100);
 
-    expect(await getVar(page, 'thetwinsevent')).toBe(0);
-    expect(await getVar(page, 'thetwinseventCD')).toBe(1);
+    expect(await getVar(page, 'twinsEventActive')).toBe(0);
+    expect(await getVar(page, 'twinsEvent')).toBe(1);
   });
 
   test('twinsEventTriggered true when beauty roll <= mc beauty', async () => {

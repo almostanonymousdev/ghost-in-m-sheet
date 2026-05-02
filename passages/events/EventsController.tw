@@ -171,10 +171,10 @@ setup.Events = (function () {
 		*/
 		bottomClothingVideos: function (eventKey) {
 			if (setup.HauntedHouses.isIronclad()) return this.getVideos(eventKey, 'prison');
-			var jw = setup.Wardrobe.jeansWorn();
-			var sw = setup.Wardrobe.shortsWorn();
-			var kw = setup.Wardrobe.skirtWorn();
-			var pw = setup.Wardrobe.pantiesWorn();
+			var jw = setup.Wardrobe.worn(setup.WardrobeSlot.JEANS);
+			var sw = setup.Wardrobe.worn(setup.WardrobeSlot.SHORTS);
+			var kw = setup.Wardrobe.worn(setup.WardrobeSlot.SKIRT);
+			var pw = setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES);
 			var ev = setup.EventVideos[eventKey];
 
 			if (jw) {
@@ -200,8 +200,8 @@ setup.Events = (function () {
 		*/
 		topClothingVideos: function (eventKey) {
 			if (setup.HauntedHouses.isIronclad()) return this.getVideos(eventKey, 'prison');
-			var ts = setup.Wardrobe.topShirtWorn();
-			var br = setup.Wardrobe.braWorn();
+			var ts = setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT);
+			var br = setup.Wardrobe.worn(setup.WardrobeSlot.BRA);
 			var ev = setup.EventVideos[eventKey];
 
 			if (ts) {
@@ -404,10 +404,10 @@ setup.Events = (function () {
 		decreasingSanity:    function () { return sv().decreasingSanity; },
 
 		// --- Clothing-state convenience --------------------------
-		jeansWorn:   function () { return setup.Wardrobe.jeansWorn(); },
-		shortsWorn:  function () { return setup.Wardrobe.shortsWorn(); },
-		skirtWorn:   function () { return setup.Wardrobe.skirtWorn(); },
-		pantiesWorn: function () { return setup.Wardrobe.pantiesWorn(); },
+		jeansWorn:   function () { return setup.Wardrobe.worn(setup.WardrobeSlot.JEANS); },
+		shortsWorn:  function () { return setup.Wardrobe.worn(setup.WardrobeSlot.SHORTS); },
+		skirtWorn:   function () { return setup.Wardrobe.worn(setup.WardrobeSlot.SKIRT); },
+		pantiesWorn: function () { return setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES); },
 
 		// --- Orgasm cooldown flag --------------------------------
 		setOrgasmCooldown: function (n) { setup.Mc.setOrgasmCooldown(n); },

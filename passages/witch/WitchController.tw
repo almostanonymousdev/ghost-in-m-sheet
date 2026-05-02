@@ -35,8 +35,8 @@ setup.Witch = (function () {
 	var OWNED_VARS = Object.freeze([
 		'firstVisitWitchShop',
 		'gotKeyFromWitch',
-		'witchNightCD',
-		'stealItemsFromWitchCD',
+		'witchNight',
+		'stealItemsFromWitch',
 		'succubus',
 		'exorcismQuestStage',
 		'gotCursedItem',
@@ -51,7 +51,7 @@ setup.Witch = (function () {
 
 	function sv() { return State.variables; }
 
-	return {
+	var api = {
 		OWNED_VARS: OWNED_VARS,
 		// --- Hours / access --------------------------------------
 		isDayTime: function () {
@@ -84,11 +84,8 @@ setup.Witch = (function () {
 			return sv().succubus !== undefined;
 		},
 		succubusVisited: function () { return sv().succubus === 1; },
-		setSuccubusVisited: function (n) { sv().succubus = n; },
-		exorcismQuestStage: function () { return sv().exorcismQuestStage; },
-		setExorcismQuestStage: function (n) { sv().exorcismQuestStage = n; },
-		markExorcismReferred:   function () { sv().exorcismQuestStage = setup.ExorcismQuestStage.REFERRED; },
-		markSuccubusSummoned:   function () { sv().exorcismQuestStage = setup.ExorcismQuestStage.SUCCUBUS_SUMMONED; },
+		// (markExorcismReferred / markSuccubusSummoned / resetExorcismQuestStage
+		// fold into the defineStageAccessors block at the bottom.)
 		exorcismQuestNotStarted: function () {
 			var s = sv().exorcismQuestStage;
 			return s === undefined || s === setup.ExorcismQuestStage.NOT_STARTED;
@@ -117,7 +114,6 @@ setup.Witch = (function () {
 		},
 		clearCursedItemHeld: function () { sv().gotCursedItem = 0; },
 		setCursedItemHeld:   function () { sv().gotCursedItem = 1; },
-		cursedItemState:     function () { return sv().gotCursedItem; },
 		setCursedItemFlag: function (key) { sv()[key] = 1; },
 		/* Consume the cursed item the player is carrying. Clears whichever
 		   of the four type flags is set and the held flag, returning the
@@ -160,8 +156,6 @@ setup.Witch = (function () {
 			var s = sv().eventToolsOneStart;
 			return s === undefined || s === 0;
 		},
-		eventToolsOneStart: function () { return sv().eventToolsOneStart; },
-		setEventToolsOneStart: function (n) { sv().eventToolsOneStart = n; },
 		grantAmulet: function () { sv().amulet = 1; },
 		ownsLevel3Gwb: function () {
 			return setup.ToolController.tierOf('gwb') === 3;
@@ -178,21 +172,20 @@ setup.Witch = (function () {
 			var W = setup.WardenClothesStage;
 			return s === W.HINT_NOT_OFFERED || s === W.HINT_OFFERED;
 		},
-		wardenClothesStage: function () { return sv().wardenClothesStage; },
-		setWardenClothesStage: function (n) { sv().wardenClothesStage = n; },
-
 		// --- Weaken-the-ghost quest ------------------------------
 		canOfferWeakenQuest: function () {
 			return setup.Mc.lvl() >= 5 && sv().weakenTheGhostQuest === undefined;
 		},
 
 		// --- Night exploration -----------------------------------
+		// (witchNight / stealItemsFromWitch are registered with
+		// setup.Cooldowns at the bottom of this file; the daily reset
+		// flows through setup.Tick.resetCooldowns → resetDaily.)
 		canStealItemsFromWitch: function () {
-			var cd = sv().stealItemsFromWitchCD;
-			return cd === undefined || cd === 0;
+			return setup.Cooldowns.available('stealItemsFromWitch');
 		},
 		canVisitWitchBedroomNight: function () {
-			return sv().witchNightCD !== 1;
+			return setup.Cooldowns.available('witchNight');
 		},
 
 		// --- Mast (masturbation) event ---------------------------
@@ -201,16 +194,10 @@ setup.Witch = (function () {
 		},
 
 		// --- Mutations previously inline in witch passages -------
-		startWitchNightCooldown: function () { sv().witchNightCD = 1; },
-		startStealItemsCooldown: function () { sv().stealItemsFromWitchCD = 1; },
+		startWitchNightCooldown: function () { setup.Cooldowns.start('witchNight'); },
+		startStealItemsCooldown: function () { setup.Cooldowns.start('stealItemsFromWitch'); },
 		markKeyFromWitchStolen:  function () { sv().gotKeyFromWitch = 1; },
 		markShopVisited:         function () { sv().firstVisitWitchShop = false; },
-
-		// --- Crucifix (delegates to ToolController; the witch is the
-		// only seller, so the buy/init APIs live here as façades) ----
-		initCrucifixIfNeeded: function () { setup.ToolController.initCrucifixIfNeeded(); },
-		crucifixAmount:       function () { return setup.ToolController.crucifixAmount(); },
-		addCrucifix:          function () { setup.ToolController.addCrucifix(); },
 
 		// --- Witch sale (tool upgrades) --------------------------
 		TOOL_UPGRADE_PRICES: {
@@ -230,9 +217,6 @@ setup.Witch = (function () {
 			setup.Mc.removeMoney(200);
 		},
 		detectorBought: function () { return setup.ToolController.detectorBought(); },
-		monkeyPawGuideAvailable: function () {
-			return setup.MonkeyPaw.isGuideAsked();
-		},
 
 		// --- Bedroom / night events ------------------------------
 		witchLateNightHour: function () {
@@ -245,15 +229,6 @@ setup.Witch = (function () {
 		},
 		markMonkeyPawGuideBought: function () {
 			setup.MonkeyPaw.markGuideAsked();
-		},
-		markWardenOutfitHintOpened: function () {
-			sv().wardenClothesStage = setup.WardenClothesStage.HINT_OFFERED;
-		},
-		resetExorcismQuestStage: function () {
-			sv().exorcismQuestStage = setup.ExorcismQuestStage.NOT_STARTED;
-		},
-		clearQuestForRescue: function () {
-			setup.MissingWomen.resetQuestToAvailable();
 		},
 		startCursedItemQuest: function () {
 			sv().gotCursedItem = 0;
@@ -272,13 +247,6 @@ setup.Witch = (function () {
 		payForWeakenOnly: function () {
 			setup.Mc.addMoney(sv().moneyFromWeakenTheGhost || 0);
 		},
-		clearHiddenEvidence: function () {
-			setup.Ghosts.clearHiddenEvidence();
-		},
-		selectedGhostType: function () { return setup.Ghosts.ghostTypeSelected(); },
-		huntRealName: function () { return setup.Ghosts.huntRealName(); },
-		expFromContract: function () { return setup.HauntedHouses.expFromContract(); },
-
 		// --- Tentacles event (anti-midnight wraparound) ----------
 		spend2HoursHandleMidnight: function () {
 			return setup.Time.sleepAdvanceHours(2);
@@ -321,4 +289,22 @@ setup.Witch = (function () {
 			return '';
 		}
 	};
+
+	setup.defineAccessors(api, sv, [
+		'eventToolsOneStart',
+		'exorcismQuestStage',
+		'wardenClothesStage',
+		{ name: 'cursedItemState', key: 'gotCursedItem', set: false }
+	]);
+	setup.defineStageAccessors(api, sv, 'exorcismQuestStage', setup.ExorcismQuestStage, {
+		mark: { resetExorcismQuestStage: 'NOT_STARTED',
+				markExorcismReferred: 'REFERRED',
+				markSuccubusSummoned: 'SUCCUBUS_SUMMONED' }
+	});
+	setup.defineStageAccessors(api, sv, 'wardenClothesStage', setup.WardenClothesStage, {
+		mark: { markWardenOutfitHintOpened: 'HINT_OFFERED' }
+	});
+	setup.Cooldowns.registerDaily('witchNight');
+	setup.Cooldowns.registerDaily('stealItemsFromWitch');
+	return api;
 })();

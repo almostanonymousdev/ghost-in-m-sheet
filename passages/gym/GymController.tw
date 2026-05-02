@@ -8,8 +8,8 @@ setup.Gym = (function () {
 	/* Variables owned by this controller. Other controllers should
 	   query these only through the API methods below. */
 	var OWNED_VARS = Object.freeze([
-		'trainer1TipReceived', 'trainer1SexCD', 'trainer1CoachingCost',
-		'isDiscountTrainer1', 'trainer2SexCD', 'trainer3CoachingCost',
+		'trainer1TipReceived', 'trainer1Sex', 'trainer1CoachingCost',
+		'isDiscountTrainer1', 'trainer2Sex', 'trainer3CoachingCost',
 		'relationEmily', 'relationEmilyCD',
 		'sportswear', 'trainingCost'
 	]);
@@ -90,8 +90,11 @@ setup.Gym = (function () {
 		},
 
 		// --- Trainer 1 (morning) event conditions -----------
+		// (trainer1Sex / trainer2Sex are registered with
+		// setup.Cooldowns at the bottom; daily reset flows through
+		// setup.Tick.resetCooldowns.)
 		trainer1OnCooldown: function () {
-			return sv().trainer1SexCD === 1;
+			return setup.Cooldowns.onCooldown('trainer1Sex');
 		},
 		hasSexyLingerieForTrainer1: function () {
 			var bs = setup.Wardrobe.rememberBottomStockings();
@@ -112,7 +115,7 @@ setup.Gym = (function () {
 
 		// --- Trainer 2 (afternoon) event conditions ---------
 		trainer2OnCooldown: function () {
-			return sv().trainer2SexCD === 1;
+			return setup.Cooldowns.onCooldown('trainer2Sex');
 		},
 		meetsFitForTrainer2Event: function () {
 			return setup.Mc.fit() >= 30;
@@ -167,10 +170,10 @@ setup.Gym = (function () {
 			State.variables.trainer1CoachingCost = 1;
 		},
 		startTrainer1SexCooldown: function () {
-			State.variables.trainer1SexCD = 1;
+			setup.Cooldowns.start('trainer1Sex');
 		},
 		startTrainer2SexCooldown: function () {
-			State.variables.trainer2SexCD = 1;
+			setup.Cooldowns.start('trainer2Sex');
 		},
 		trainingCost: function () { return sv().trainingCost; },
 		setTrainingCost: function (value) { State.variables.trainingCost = value; },
@@ -192,3 +195,5 @@ setup.Gym = (function () {
 		}
 	};
 })();
+setup.Cooldowns.registerDaily('trainer1Sex');
+setup.Cooldowns.registerDaily('trainer2Sex');

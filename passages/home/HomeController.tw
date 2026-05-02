@@ -33,11 +33,11 @@ setup.Home = (function () {
 		// out as `{}` and pick up keys on first write.
 		'succubusEvent', 'tentacles', 'webcam', 'summoning',
 		'gotCursedItemEventCD',
-		'exorcismCD',
+		'exorcism',
 		'dildoPurchased', 'isCameraBought',
 		'mcSleptWithCameraOn',
-		'masturbationCD',
-		'findGhostInfoCD',
+		'masturbation',
+		'findGhostInfo',
 		'holyWaterIsCollected'
 	]);
 
@@ -50,7 +50,7 @@ setup.Home = (function () {
 	function webcam()    { var s = sv(); if (!s.webcam)        s.webcam       = {}; return s.webcam; }
 	function summoning() { var s = sv(); if (!s.summoning)     s.summoning    = {}; return s.summoning; }
 
-	return {
+	var api = {
 		OWNED_VARS: OWNED_VARS,
 		// --- Outside / clothing gating ----------------------
 		isDirty: function () {
@@ -83,9 +83,9 @@ setup.Home = (function () {
 		},
 
 		// --- Brooke -----------------------------------------
-		isBrookePossessed: function () {
-			return sv().isBrookePossessed === setup.BrookePossession.POSSESSED;
-		},
+		// (isBrookePossessed / markBrookePossessedActive / markBrookePossessedInactive
+		// fold into the defineStageAccessors block at the bottom; clearBrookePossession
+		// stays inline because it also zeros the CD.)
 		brookePossessedCDLow: function () {
 			return sv().isBrookePossessedCD < setup.BROOKE_POSSESSED_RECOVERY_DAYS;
 		},
@@ -93,10 +93,6 @@ setup.Home = (function () {
 			sv().isBrookePossessed = setup.BrookePossession.INACTIVE;
 			sv().isBrookePossessedCD = 0;
 		},
-		markBrookePossessedInactive: function () {
-			sv().isBrookePossessed = setup.BrookePossession.RECOVERED;
-		},
-		markBrookePossessedActive: function () { sv().isBrookePossessed = setup.BrookePossession.POSSESSED; },
 
 		// --- Succubus / door knocking -----------------------
 		succubusCanKnock: function () {
@@ -124,14 +120,18 @@ setup.Home = (function () {
 		// --- Mare / exorcism --------------------------------
 		canSummonForExorcism: function () {
 			var stage = setup.Witch.exorcismQuestStage();
-			var cd = sv().exorcismCD;
+			var cd = sv().exorcism;
 			var EQS = setup.ExorcismQuestStage;
 			if (stage === EQS.REFERRED && cd === 0) { return true; }
 			if (stage === EQS.SUCCUBUS_SUMMONED && cd === 0) { return true; }
 			return false;
 		},
+		// (exorcism / masturbation / findGhostInfo are registered
+		// with setup.Cooldowns at the bottom of this file; daily reset
+		// flows through setup.Tick.resetCooldowns → resetDaily.)
 		exorcismOnCooldown: function () {
-			return setup.Witch.exorcismQuestStage() === setup.ExorcismQuestStage.REFERRED && sv().exorcismCD === 1;
+			return setup.Witch.exorcismQuestStage() === setup.ExorcismQuestStage.REFERRED
+				&& setup.Cooldowns.onCooldown('exorcism');
 		},
 		mareStageIsLow: function () {
 			return setup.SpecialEvent.mareStage() <= 2;
@@ -297,33 +297,23 @@ setup.Home = (function () {
 			var w = webcam();
 			if (w.subscribers === undefined) w.subscribers = 0;
 		},
-		webcamEvent:    function () { return webcam().event; },
-		setWebcamEvent: function (k) { webcam().event = k; },
-		setWebcamCooldown: function (n) { webcam().showCD = n; },
-		webcamCooldown: function () { return webcam().showCD; },
 		webcamShowAvailable: function () {
 			var cd = webcam().showCD;
 			return cd === undefined || cd === 0;
 		},
 
-		// --- Bedroom one-shot wake-up banners ------------
-		// These are single-use flags that the Bedroom passage reads
-		// on entry and then unsets, to show one-time messages after
-		// a specific event chain (succubus visit / tentacle dream /
-		// failed summon) resolved in the previous turn.
-		succubusChoiceText: function () { return succEvent().choiceText; },
+		// --- Bedroom / livingroom one-shot wake-up banners
+		// These are single-use flags that the Bedroom / Livingroom
+		// passages read on entry and then `delete` (via clear*) to
+		// show one-time messages after a specific event chain
+		// (succubus visit / tentacle dream / failed summon) resolved
+		// in the previous turn. The pure get/set pairs are folded into
+		// the defineAccessors block at the bottom.
 		clearSuccubusChoiceText: function () { delete succEvent().choiceText; },
-		summonText:      function () { return summoning().text; },
 		clearSummonText: function () { delete summoning().text; },
-		succubusTVText:  function () { return succEvent().tvText; },
 		clearSuccubusTVText: function () { delete succEvent().tvText; },
-		tentaclesAfterSleepText: function () { return tentacles().afterSleepText; },
 		clearTentaclesAfterSleepText: function () { delete tentacles().afterSleepText; },
-
-		// --- Livingroom one-shot event banners -----------
-		tentaclesPCText: function () { return tentacles().pcText; },
 		clearTentaclesPCText: function () { delete tentacles().pcText; },
-		tentaclesTVText: function () { return tentacles().tvText; },
 		clearTentaclesTVText: function () { delete tentacles().tvText; },
 
 		// --- Succubus arrival ----------------------------
@@ -373,7 +363,17 @@ setup.Home = (function () {
 		},
 
 		// --- "Skip time till midnight" shortcut ----------
+		// Refreshes energy based on how much time remains in the day
 		skipTimeToMidnight: function () {
+			var restTime = 23 - setup.Time.hours();
+			var missingEnergy = setup.Mc.energyMax() - setup.Mc.energy();
+
+			if(missingEnergy <= restTime) {
+				setup.Mc.addEnergy(missingEnergy);
+			} else {
+				setup.Mc.addEnergy(restTime);
+			}
+
 			setup.Time.setHours(23);
 			setup.Time.setMinutes(0);
 		},
@@ -382,10 +382,27 @@ setup.Home = (function () {
 		// HuntEnd* / Sleep set these flags so the Bedroom passage can
 		// render the correct "you wake up" banner and apply the
 		// sanity/energy/lust penalties below.
-		// Shared sleep-advance: wraps midnight and fires the
-		// setup.Tick.resetCooldowns() when the day rolls over. Called by
-		// Sleep.tw from every "wake up" branch.
-		sleepAdvance: function (n) { return setup.Time.sleepAdvanceHours(n); },
+		// Shared sleep-advance: wraps midnight, fires
+		// setup.Tick.resetCooldowns() when the day rolls over, and triggers
+		// an autosave so the player always has a fresh restore point on
+		// every sleep. Called by Sleep.tw / SleepTwins.tw from every wake
+		// branch. The autosave is deferred so it captures the post-wake
+		// passage rather than Sleep itself.
+		sleepAdvance: function (n) {
+			var rollover = setup.Time.sleepAdvanceHours(n);
+			if (rollover) { setup.Tick.resetCooldowns(); }
+			setTimeout(function () {
+				try {
+					if (typeof Save !== 'undefined' && Save.browser
+						&& Save.browser.auto && Save.browser.auto.isEnabled()) {
+						Save.browser.auto.save('Autosave (sleep)');
+					}
+				} catch (ex) {
+					console.error('autosave on sleep failed:', ex);
+				}
+			}, 0);
+			return rollover;
+		},
 		cameraBought: function () { return sv().isCameraBought === 1; },
 		isCameraBoughtFlagSet: function () { return sv().isCameraBought !== undefined; },
 		setCameraBought: function () { sv().isCameraBought = 1; },
@@ -398,21 +415,9 @@ setup.Home = (function () {
 		createWebcamAccount: function () { webcam().accountCreated = 1; },
 
 		// --- Summoning / succubus ritual -----------------
-		succubusEventTimer: function () { return succEvent().eventTimer; },
-		setSuccubusEventTimer: function (n) { succEvent().eventTimer = n; },
-		summoningChoice: function () { return summoning().choice; },
-		setSummoningChoice: function (n) { summoning().choice = n; },
-		setExorcismCooldown: function (n) { sv().exorcismCD = n; },
-		setSummonText: function (n) { summoning().text = n; },
-		setSuccubusChoiceText: function (n) { succEvent().choiceText = n; },
-		setSuccubusTVText: function (n) { succEvent().tvText = n; },
-		succubusPCEventStage: function () { return succEvent().pcStage; },
-		setSuccubusPCEventStage: function (n) { succEvent().pcStage = n; },
 		bumpSuccubusPCEventStage: function () {
 			var e = succEvent(); e.pcStage = (e.pcStage || 0) + 1;
 		},
-		succubusEventCD: function () { return succEvent().eventCD; },
-		setSuccubusEventCD: function (n) { succEvent().eventCD = n; },
 		// Summoning advance: same wrap-clock-then-reset-cooldowns pattern
 		// as sleepAdvance, but used by the ritual (4-hour cast). Sets
 		// succubusEventTimer which ticks down elsewhere.
@@ -421,12 +426,10 @@ setup.Home = (function () {
 			return setup.Time.sleepAdvanceHours(4);
 		},
 		masturbationAvailable: function () {
-			var cd = sv().masturbationCD;
-			return cd === undefined || cd === 0;
+			return setup.Cooldowns.available('masturbation');
 		},
-		setMasturbationCooldown: function (n) { sv().masturbationCD = n; },
-		ghostInfoSearchedToday: function () { return sv().findGhostInfoCD === 1; },
-		markGhostInfoSearched: function () { sv().findGhostInfoCD = 1; },
+		ghostInfoSearchedToday: function () { return setup.Cooldowns.onCooldown('findGhostInfo'); },
+		markGhostInfoSearched: function () { setup.Cooldowns.start('findGhostInfo'); },
 		// Rotate through the porn-video playlist. Callers track an
 		// index in a temp var and hand it back each tick; returns the
 		// new index + the currently-selected video path.
@@ -446,17 +449,15 @@ setup.Home = (function () {
 		// Reset CD on tentacle event start; advance per-branch
 		// stage flags and their paired "after-sleep" narration key.
 		resetTentaclesCooldown: function () { sv().gotCursedItemEventCD = 0; },
+		// `|| 0` fallbacks here are load-bearing: callers do `lt N`
+		// and `eq 0` comparisons that would silently misbehave on
+		// undefined (Sugarcube `<` on undefined is false).
 		tentaclesStageAll:    function () { return tentacles().stageAll || 0; },
-		setTentaclesStageAll: function (n) { tentacles().stageAll = n; },
+		tentaclesStageSleep:  function () { return tentacles().stageSleep || 0; },
 		ensureTentaclesStageAll: function (n) {
 			var t = tentacles();
 			if ((t.stageAll || 0) < n) t.stageAll = n;
 		},
-		tentaclesStageSleep:    function () { return tentacles().stageSleep || 0; },
-		setTentaclesStageSleep: function (n) { tentacles().stageSleep = n; },
-		setTentaclesAfterSleepText: function (n) { tentacles().afterSleepText = n; },
-		setTentaclesPCText:         function (n) { tentacles().pcText = n; },
-		setTentaclesTVText:         function (n) { tentacles().tvText = n; },
 		// Advance the clock for a tentacles-event rest by N hours.
 		// Used by the "Rest" back-links at the end of each event;
 		// Doesn't wrap midnight because the events are short naps.
@@ -534,4 +535,54 @@ setup.Home = (function () {
 		collectHolyWater: function () { sv().holyWaterIsCollected = 1; },
 		consumeHolyWater: function () { sv().holyWaterIsCollected = 0; }
 	};
+
+	// Pure $variable passthrough setters (no getter exposed: callers
+	// only ever write these). exorcism / masturbation live at
+	// $-root because they're shared with sleep / time-of-day checks
+	// that read the field directly via setup.Mc-style flow predicates.
+	setup.defineAccessors(api, sv, [
+		{ name: 'exorcismCooldown',     key: 'exorcism',     get: false },
+		{ name: 'masturbationCooldown', key: 'masturbation', get: false }
+	]);
+	// Webcam-bundle accessors: pure passthrough on $webcam.{event,showCD}.
+	setup.defineAccessors(api, webcam, [
+		{ name: 'webcamEvent',    key: 'event' },
+		{ name: 'webcamCooldown', key: 'showCD' }
+	]);
+	// Succubus-event-bundle accessors: pure passthrough on
+	// $succubusEvent.{eventTimer,choiceText,tvText,pcStage,eventCD}.
+	// The matching clear* methods stay inline because they `delete`
+	// rather than assign, which defineAccessors can't model.
+	setup.defineAccessors(api, succEvent, [
+		{ name: 'succubusEventTimer',   key: 'eventTimer' },
+		{ name: 'succubusChoiceText',   key: 'choiceText' },
+		{ name: 'succubusTVText',       key: 'tvText' },
+		{ name: 'succubusPCEventStage', key: 'pcStage' },
+		{ name: 'succubusEventCD',      key: 'eventCD' }
+	]);
+	// Tentacle-bundle accessors. stageAll / stageSleep getters are
+	// kept inline above (their `|| 0` fallback is load-bearing —
+	// callers compare with `lt N` / `eq 0`); only the setters fold.
+	// The text-banner clear* methods stay inline because they `delete`.
+	setup.defineAccessors(api, tentacles, [
+		{ name: 'tentaclesStageAll',       key: 'stageAll',       get: false },
+		{ name: 'tentaclesStageSleep',     key: 'stageSleep',     get: false },
+		{ name: 'tentaclesAfterSleepText', key: 'afterSleepText' },
+		{ name: 'tentaclesPCText',         key: 'pcText' },
+		{ name: 'tentaclesTVText',         key: 'tvText' }
+	]);
+	// Summoning-bundle accessors.
+	setup.defineAccessors(api, summoning, [
+		{ name: 'summoningChoice', key: 'choice' },
+		{ name: 'summonText',      key: 'text' }
+	]);
+	setup.defineStageAccessors(api, sv, 'isBrookePossessed', setup.BrookePossession, {
+		is:   { isBrookePossessed: 'POSSESSED' },
+		mark: { markBrookePossessedActive: 'POSSESSED',
+				markBrookePossessedInactive: 'RECOVERED' }
+	});
+	setup.Cooldowns.registerDaily('exorcism');
+	setup.Cooldowns.registerDaily('masturbation');
+	setup.Cooldowns.registerDaily('findGhostInfo');
+	return api;
 })();

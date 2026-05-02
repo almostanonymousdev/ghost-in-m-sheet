@@ -188,13 +188,13 @@ test.describe('Special events — Spirit corruption / energy gates', () => {
 
   test('markSpiritEventStage and startSpiritEventCooldown are independent', async () => {
     await setVar(page, 'ghostSpiritEventStage', 0);
-    await setVar(page, 'ghostSpecialEventSpiritCD', 0);
+    await setVar(page, 'ghostSpecialEventSpirit', 0);
     await page.evaluate(() => SugarCube.setup.SpecialEvent.markSpiritEventStage());
     expect(await getVar(page, 'ghostSpiritEventStage')).toBe(1);
-    expect(await getVar(page, 'ghostSpecialEventSpiritCD')).toBe(0);
+    expect(await getVar(page, 'ghostSpecialEventSpirit')).toBe(0);
 
     await page.evaluate(() => SugarCube.setup.SpecialEvent.startSpiritEventCooldown());
-    expect(await getVar(page, 'ghostSpecialEventSpiritCD')).toBe(1);
+    expect(await getVar(page, 'ghostSpecialEventSpirit')).toBe(1);
   });
 
   test('Spirit nap variants render with companion-specific branches', async () => {
@@ -246,15 +246,15 @@ test.describe('Special events — Twins event mirror', () => {
   test.beforeEach(async () => { await resetGame(page); });
 
   test('twinsEventAvailable requires the flag set and CD off', async () => {
-    await setVar(page, 'thetwinsevent', 0);
-    await setVar(page, 'thetwinseventCD', 0);
+    await setVar(page, 'twinsEventActive', 0);
+    await setVar(page, 'twinsEvent', 0);
     expect(await callSetup(page, 'setup.Ghosts.twinsEventReady()')).toBe(false);
 
-    await setVar(page, 'thetwinsevent', 1);
-    await setVar(page, 'thetwinseventCD', 0);
+    await setVar(page, 'twinsEventActive', 1);
+    await setVar(page, 'twinsEvent', 0);
     expect(await callSetup(page, 'setup.Ghosts.twinsEventReady()')).toBe(true);
 
-    await setVar(page, 'thetwinseventCD', 1);
+    await setVar(page, 'twinsEvent', 1);
     expect(await callSetup(page, 'setup.Ghosts.twinsEventReady()')).toBe(false);
   });
 
@@ -266,11 +266,11 @@ test.describe('Special events — Twins event mirror', () => {
   });
 
   test('consumeTwinsEvent flips flag and starts cooldown', async () => {
-    await setVar(page, 'thetwinsevent', 1);
-    await setVar(page, 'thetwinseventCD', 0);
+    await setVar(page, 'twinsEventActive', 1);
+    await setVar(page, 'twinsEvent', 0);
     await page.evaluate(() => SugarCube.setup.Ghosts.consumeTwinsEvent());
-    expect(await getVar(page, 'thetwinsevent')).toBe(0);
-    expect(await getVar(page, 'thetwinseventCD')).toBe(1);
+    expect(await getVar(page, 'twinsEventActive')).toBe(0);
+    expect(await getVar(page, 'twinsEvent')).toBe(1);
   });
 
   test('TheTwinsEvent passage renders cleanly', async () => {
@@ -279,9 +279,9 @@ test.describe('Special events — Twins event mirror', () => {
   });
 
   test('clearTwinsEvent zeroes the flag', async () => {
-    await setVar(page, 'thetwinsevent', 1);
+    await setVar(page, 'twinsEventActive', 1);
     await page.evaluate(() => SugarCube.setup.Ghosts.clearTwinsEvent());
-    expect(await getVar(page, 'thetwinsevent')).toBe(0);
+    expect(await getVar(page, 'twinsEventActive')).toBe(0);
   });
 });
 

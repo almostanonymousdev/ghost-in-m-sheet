@@ -345,7 +345,7 @@ test.describe('Gym Controller', () => {
   test('trainer1OnCooldown checks CD flag', async () => {
     // act
     const before = await callSetup(page, 'setup.Gym.trainer1OnCooldown()');
-    await setVar(page, 'trainer1SexCD', 1);
+    await setVar(page, 'trainer1Sex', 1);
     const after = await callSetup(page, 'setup.Gym.trainer1OnCooldown()');
 
     // assert
@@ -356,7 +356,7 @@ test.describe('Gym Controller', () => {
   test('trainer2OnCooldown checks CD flag', async () => {
     // act
     const before = await callSetup(page, 'setup.Gym.trainer2OnCooldown()');
-    await setVar(page, 'trainer2SexCD', 1);
+    await setVar(page, 'trainer2Sex', 1);
     const after = await callSetup(page, 'setup.Gym.trainer2OnCooldown()');
 
     // assert
