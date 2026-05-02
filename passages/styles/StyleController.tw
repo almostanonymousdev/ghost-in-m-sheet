@@ -162,7 +162,7 @@ $(document).one(':storyready', function () {
  * Thin wrappers that resolve `setup.ImagePath` and emit the HTML that
  * authors would otherwise hand-write ~1300 times across the passages.
  *
- *   <<video "mechanics/tentacles/2.0.mp4">>                  autoplay controls muted loop, mp4/webm by ext
+ *   <<video "mechanics/tentacles/2.0.mp4">>                  autoplay controls loop, mp4/webm by ext (unmuted unless Settings toggle is on)
  *   <<video "characters/mc/bra-off.webm" "displayCentredImgs">>   string 2nd arg = class
  *   <<video "characters/mc/bra-off.webm" { controls: false, width: "40%" }>>
  *   <<image "ui/img/corruption.png">>
@@ -296,7 +296,11 @@ $(document).one(':storyready', function () {
 			var opts = r.opts;
 			var autoplay = opts.autoplay !== false;
 			var controls = opts.controls !== false;
-			var muted    = opts.muted    !== false;
+			/* `muted` defaults off so videos play with sound; callers
+			   opt in with `{ muted: true }`. The Settings-dialog
+			   toggle forces it on globally and overrides any per-call
+			   value, so a player who flips it on silences everything. */
+			var muted    = opts.muted === true || settings.muteAllVideos;
 			var loop     = opts.loop     !== false;
 
 			var type = opts.type;
