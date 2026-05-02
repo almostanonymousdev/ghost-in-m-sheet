@@ -413,8 +413,8 @@ setup.HauntedHouses = (function () {
 		// on fresh saves where the field is undefined).
 		tarotCardsStage: function () { return sv().tarotCardsStage || setup.TarotStage.HIDDEN; },
 		drawnCards: function () { return sv().drawnCards || 0; },
-		markTarotCarrying: function () { sv().tarotCardsStage = setup.TarotStage.CARRYING; },
-		markTarotSpent:    function () { sv().tarotCardsStage = setup.TarotStage.SPENT; },
+		// (markTarotCarrying / markTarotSpent fold into the defineStageAccessors
+		// block at the bottom.)
 		shouldDeleteOneEvidence: function () {
 			return setup.Ghosts.scheduledDeletionCount() >= 1;
 		},
@@ -615,5 +615,8 @@ setup.HauntedHouses = (function () {
 		{ name: 'tarotCardsStage',  get: false },
 		{ name: 'drawnCards',       get: false }
 	]);
+	setup.defineStageAccessors(api, sv, 'tarotCardsStage', setup.TarotStage, {
+		mark: { markTarotCarrying: 'CARRYING', markTarotSpent: 'SPENT' }
+	});
 	return api;
 })();

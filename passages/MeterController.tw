@@ -559,6 +559,30 @@ setup.defineAccessors = function (api, host, spec) {
     return api;
 };
 
+/* For a $-var that holds an enum stage value, splice mechanical per-
+ * stage `is<X>()` predicates and/or `mark<X>()` mutators directly onto
+ * the controller `api` object. `spec.is` / `spec.mark` are
+ * `{ methodName: STAGE_KEY }` pairs, where STAGE_KEY indexes into
+ * `stages`. Lets controllers keep callsite-friendly method names while
+ * collapsing the body wall:
+ *
+ *   setup.defineStageAccessors(api, sv, 'hasQuestForRescue',
+ *       setup.RescueQuestState, {
+ *           is:   { isQuestAvailable: 'AVAILABLE', hasActiveQuest: 'ACTIVE' },
+ *           mark: { markQuestFailed: 'FAILED' }
+ *       });
+ */
+setup.defineStageAccessors = function (api, host, key, stages, spec) {
+    Object.keys(spec.is || {}).forEach(function (methodName) {
+        var val = stages[spec.is[methodName]];
+        api[methodName] = function () { return host()[key] === val; };
+    });
+    Object.keys(spec.mark || {}).forEach(function (methodName) {
+        var val = stages[spec.mark[methodName]];
+        api[methodName] = function () { host()[key] = val; };
+    });
+};
+
 /* Daily-cooldown registry. Each owning controller registers its CDs at
  * module load (setup.Cooldowns.registerDaily('witchNight')); midnight
  * rollover (setup.Tick.resetCooldowns) calls resetDaily() to zero them

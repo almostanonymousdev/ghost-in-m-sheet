@@ -109,18 +109,8 @@ setup.MissingWomen = (function () {
 		},
 
 		// --- Quest stage predicates --------------------------------
-		isQuestAvailable: function () {
-			return sv().hasQuestForRescue === setup.RescueQuestState.AVAILABLE;
-		},
-		hasActiveQuest: function () {
-			return sv().hasQuestForRescue === setup.RescueQuestState.ACTIVE;
-		},
-		questFailed: function () {
-			return sv().hasQuestForRescue === setup.RescueQuestState.FAILED;
-		},
-		questSucceeded: function () {
-			return sv().hasQuestForRescue === setup.RescueQuestState.SUCCEEDED;
-		},
+		// (isQuestAvailable / hasActiveQuest / questFailed / questSucceeded
+		// fold into the defineStageAccessors block at the bottom.)
 		mustReturnToNun: function () {
 			var s = sv().hasQuestForRescue;
 			var Q = setup.RescueQuestState;
@@ -234,9 +224,8 @@ setup.MissingWomen = (function () {
 		clearRescueClue:   function () { sv().hasRescueClue = 0; },
 
 		// --- Rescue quest state -----------------------------------
-		resetQuestToAvailable: function () { sv().hasQuestForRescue = setup.RescueQuestState.AVAILABLE; },
-		markQuestFailed:      function () { sv().hasQuestForRescue = setup.RescueQuestState.FAILED; },
-		markQuestSucceeded:   function () { sv().hasQuestForRescue = setup.RescueQuestState.SUCCEEDED; },
+		// (resetQuestToAvailable / markQuestFailed / markQuestSucceeded
+		// fold into the defineStageAccessors block at the bottom.)
 
 		// --- Video pool --------------------------------------------
 		startRescueBoardCooldown: function () { setup.Cooldowns.start('rescueQuest'); },
@@ -336,6 +325,12 @@ setup.MissingWomen = (function () {
 		{ name: 'tornStyleRandom',            set: false },
 		'cheatRescueHouseHighlight'
 	]);
+	setup.defineStageAccessors(api, sv, 'hasQuestForRescue', setup.RescueQuestState, {
+		is:   { isQuestAvailable: 'AVAILABLE', hasActiveQuest: 'ACTIVE',
+				questFailed: 'FAILED', questSucceeded: 'SUCCEEDED' },
+		mark: { resetQuestToAvailable: 'AVAILABLE', markQuestFailed: 'FAILED',
+				markQuestSucceeded: 'SUCCEEDED' }
+	});
 	setup.Cooldowns.registerDaily('rescue');
 	setup.Cooldowns.registerDaily('rescueQuest');
 	return api;

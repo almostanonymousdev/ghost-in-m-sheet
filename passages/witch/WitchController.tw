@@ -84,8 +84,8 @@ setup.Witch = (function () {
 			return sv().succubus !== undefined;
 		},
 		succubusVisited: function () { return sv().succubus === 1; },
-		markExorcismReferred:   function () { sv().exorcismQuestStage = setup.ExorcismQuestStage.REFERRED; },
-		markSuccubusSummoned:   function () { sv().exorcismQuestStage = setup.ExorcismQuestStage.SUCCUBUS_SUMMONED; },
+		// (markExorcismReferred / markSuccubusSummoned / resetExorcismQuestStage
+		// fold into the defineStageAccessors block at the bottom.)
 		exorcismQuestNotStarted: function () {
 			var s = sv().exorcismQuestStage;
 			return s === undefined || s === setup.ExorcismQuestStage.NOT_STARTED;
@@ -239,12 +239,6 @@ setup.Witch = (function () {
 		markMonkeyPawGuideBought: function () {
 			setup.MonkeyPaw.markGuideAsked();
 		},
-		markWardenOutfitHintOpened: function () {
-			sv().wardenClothesStage = setup.WardenClothesStage.HINT_OFFERED;
-		},
-		resetExorcismQuestStage: function () {
-			sv().exorcismQuestStage = setup.ExorcismQuestStage.NOT_STARTED;
-		},
 		clearQuestForRescue: function () {
 			setup.MissingWomen.resetQuestToAvailable();
 		},
@@ -321,6 +315,14 @@ setup.Witch = (function () {
 		'wardenClothesStage',
 		{ name: 'cursedItemState', key: 'gotCursedItem', set: false }
 	]);
+	setup.defineStageAccessors(api, sv, 'exorcismQuestStage', setup.ExorcismQuestStage, {
+		mark: { resetExorcismQuestStage: 'NOT_STARTED',
+				markExorcismReferred: 'REFERRED',
+				markSuccubusSummoned: 'SUCCUBUS_SUMMONED' }
+	});
+	setup.defineStageAccessors(api, sv, 'wardenClothesStage', setup.WardenClothesStage, {
+		mark: { markWardenOutfitHintOpened: 'HINT_OFFERED' }
+	});
 	setup.Cooldowns.registerDaily('witchNight');
 	setup.Cooldowns.registerDaily('stealItemsFromWitch');
 	return api;

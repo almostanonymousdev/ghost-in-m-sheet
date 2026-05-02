@@ -83,9 +83,9 @@ setup.Home = (function () {
 		},
 
 		// --- Brooke -----------------------------------------
-		isBrookePossessed: function () {
-			return sv().isBrookePossessed === setup.BrookePossession.POSSESSED;
-		},
+		// (isBrookePossessed / markBrookePossessedActive / markBrookePossessedInactive
+		// fold into the defineStageAccessors block at the bottom; clearBrookePossession
+		// stays inline because it also zeros the CD.)
 		brookePossessedCDLow: function () {
 			return sv().isBrookePossessedCD < setup.BROOKE_POSSESSED_RECOVERY_DAYS;
 		},
@@ -93,10 +93,6 @@ setup.Home = (function () {
 			sv().isBrookePossessed = setup.BrookePossession.INACTIVE;
 			sv().isBrookePossessedCD = 0;
 		},
-		markBrookePossessedInactive: function () {
-			sv().isBrookePossessed = setup.BrookePossession.RECOVERED;
-		},
-		markBrookePossessedActive: function () { sv().isBrookePossessed = setup.BrookePossession.POSSESSED; },
 
 		// --- Succubus / door knocking -----------------------
 		succubusCanKnock: function () {
@@ -553,6 +549,11 @@ setup.Home = (function () {
 		{ name: 'summoningChoice', key: 'choice' },
 		{ name: 'summonText',      key: 'text' }
 	]);
+	setup.defineStageAccessors(api, sv, 'isBrookePossessed', setup.BrookePossession, {
+		is:   { isBrookePossessed: 'POSSESSED' },
+		mark: { markBrookePossessedActive: 'POSSESSED',
+				markBrookePossessedInactive: 'RECOVERED' }
+	});
 	setup.Cooldowns.registerDaily('exorcism');
 	setup.Cooldowns.registerDaily('masturbation');
 	setup.Cooldowns.registerDaily('findGhostInfo');
