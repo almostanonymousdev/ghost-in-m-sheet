@@ -180,7 +180,7 @@ setup.Gui = (function () {
    they are intentionally not in OWNED_VARS. */
 Setting.addToggle("muteAllVideos", {
 	label   : "Mute all videos",
-	default : true
+	default : false
 });
 
 /* hovertip v2.0

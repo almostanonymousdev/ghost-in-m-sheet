@@ -51,12 +51,12 @@
 @@.mc-thoughts; He locks the door behind me. Shit.@@<br>
 @@.notmc-speech; You want to get paid? Earn it.@@<br>
 @@.mc-speech;<<linkreplace " I... I need the money">>
-	<<video "scenes/deliveryhub/specialevent/1.webm" { muted: false }>>
+	<<video "scenes/deliveryhub/specialevent/1.webm">>
 	@@.notmc-speech; Good girl. On your knees.@@<br>
 	@@.mc-speech; ~Mm~@@<br>
 	<<linkreplace "@@.mc-speechLink; Get on your knees@@">>
 		<<set _pick to random(2, 4)>>
-		<<video "scenes/deliveryhub/specialevent/" + _pick + ".webm" { muted: false }>>
+		<<video "scenes/deliveryhub/specialevent/" + _pick + ".webm">>
 		@@.notmc-speech; Turn around@@<br>
 		@@.mc-speech; ~Ah~ just be quick@@<br>
 		@@.mc-speechLink;[[Let him continue|DeliverySpecialUnsafe2]]@@<br>
@@ -65,12 +65,12 @@
 
 :: DeliverySpecialUnsafe2 [event nobr] {"position":"1500,1800","size":"100,100"}
 <<set _pick2 to random(5, 6)>>
-<<video "scenes/deliveryhub/specialevent/" + _pick2 + ".webm" { muted: false }>>
+<<video "scenes/deliveryhub/specialevent/" + _pick2 + ".webm">>
 @@.mc-speech; ~Ah~ God...@@<br>
 @@.notmc-speech; Fuck, you're tight. I'm going to cum@@<br>
 <<linkreplace "@@.mc-speechLink; Please not inside...@@">>
 	<<set _pick3 to random(7, 8)>>
-	<<video "scenes/deliveryhub/specialevent/" + _pick3 + ".webm" { muted: false }>>
+	<<video "scenes/deliveryhub/specialevent/" + _pick3 + ".webm">>
 	<<run setup.Delivery.clearLust()>>
 	@@.notmc-speech; Too late for that. Here's your money, now get out.@@<br>
 	@@.mc-thoughts; Fuck... I can feel it dripping out of me@@<br>

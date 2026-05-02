@@ -21,18 +21,18 @@ test.describe('SugarCube Settings — mute all videos toggle', () => {
   test.afterAll(async () => { await page.close(); });
 
   test.beforeEach(async () => {
-    await page.evaluate(() => SugarCube.Setting.setValue('muteAllVideos', true));
+    await page.evaluate(() => SugarCube.Setting.setValue('muteAllVideos', false));
     await goToPassage(page, 'Start');
   });
 
-  test('muteAllVideos is registered with default true', async () => {
+  test('muteAllVideos is registered with default false', async () => {
     expect(await page.evaluate(() => SugarCube.Setting.has('muteAllVideos'))).toBe(true);
-    expect(await page.evaluate(() => SugarCube.settings.muteAllVideos)).toBe(true);
+    expect(await page.evaluate(() => SugarCube.settings.muteAllVideos)).toBe(false);
   });
 
   test('Setting.setValue flips the toggle', async () => {
-    await page.evaluate(() => SugarCube.Setting.setValue('muteAllVideos', false));
-    expect(await page.evaluate(() => SugarCube.settings.muteAllVideos)).toBe(false);
+    await page.evaluate(() => SugarCube.Setting.setValue('muteAllVideos', true));
+    expect(await page.evaluate(() => SugarCube.settings.muteAllVideos)).toBe(true);
   });
 
   test('muteAllVideos lives in SugarCube.settings, not State.variables', async () => {
@@ -41,26 +41,22 @@ test.describe('SugarCube Settings — mute all videos toggle', () => {
     expect(inState).toBe(false);
   });
 
-  test('<<video>> emits muted attribute when toggle is ON', async () => {
+  test('<<video>> defaults to unmuted (no muted attribute)', async () => {
     const html = await renderTwee(page, '<<video "characters/mc/bra-off.webm">>');
     expect(html).toContain('<video');
-    expect(html).toContain('muted');
+    expect(html).not.toMatch(/\smuted(\s|>|=)/);
   });
 
-  test('<<video>> still mutes when caller passes muted:false but toggle is ON', async () => {
-    const html = await renderTwee(page, '<<video "scenes/cursed-home/bath1.webm" { muted: false }>>');
-    expect(html).toContain('muted');
+  test('<<video>> respects explicit muted: true', async () => {
+    const html = await renderTwee(page, '<<video "characters/mc/bra-off.webm" { muted: true }>>');
+    expect(html).toMatch(/\smuted(\s|>|=)/);
   });
 
-  test('<<video>> respects muted:false when toggle is OFF', async () => {
-    await page.evaluate(() => SugarCube.Setting.setValue('muteAllVideos', false));
-    const html = await renderTwee(page, '<<video "scenes/cursed-home/bath1.webm" { muted: false }>>');
-    expect(html).not.toContain('muted');
-  });
-
-  test('<<video>> default-mutes even with toggle OFF (existing behavior)', async () => {
-    await page.evaluate(() => SugarCube.Setting.setValue('muteAllVideos', false));
-    const html = await renderTwee(page, '<<video "characters/mc/bra-off.webm">>');
-    expect(html).toContain('muted');
+  test('Settings toggle ON forces muted regardless of caller', async () => {
+    await page.evaluate(() => SugarCube.Setting.setValue('muteAllVideos', true));
+    const defaulted = await renderTwee(page, '<<video "characters/mc/bra-off.webm">>');
+    const explicitFalse = await renderTwee(page, '<<video "characters/mc/bra-off.webm" { muted: false }>>');
+    expect(defaulted).toMatch(/\smuted(\s|>|=)/);
+    expect(explicitFalse).toMatch(/\smuted(\s|>|=)/);
   });
 });
