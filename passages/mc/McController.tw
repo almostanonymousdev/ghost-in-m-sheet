@@ -255,10 +255,12 @@ setup.Mc = (function () {
 
 		// --- addLust widget core --------------------------------
 		applyLustDelta: function (delta) {
+			setup.Mc.clampLust();
 			var m = mc();
 			m.lust += delta;
 			if (m.lust >= m.lustMax) { m.lust = m.lustMax; }
 			if (m.lust <= 0)         { m.lust = 0; }
+			setup.Mc.clampLust();
 		},
 
 		// --- addFit widget core -----------------------------------
@@ -302,51 +304,59 @@ setup.Mc = (function () {
 		},
 
 		// --- addLustByPart core -----------------------------------
-		// Escalates the chosen body part's sensitivity by 0.02 and feeds
-		// the (base + new sens) total into setup.Mc.addLust.
+		// Escalates the chosen body part's sensitivity and feeds
+		// the (base + new sens) total into setup.Mc.applyLustDelta.
 		addLustByPart: function (part, base) {
 			var sv = State.variables;
 			var lustBase = (base !== undefined) ? base : 2;
 			var bp = sv.sensualBodyPart || {};
+
+			// Variables for tuning the lust formula. sensMult must be between 0 and 1 to slowly taper
+			// sensMult 0.99, sensBase 0.2 => max sensitivity starting linear, asymptote approx. 20 after several hundred bumps
+			var sensMult = 0.99;
+			var sensBase = 0.2;
+
 			function bump(key, extra) {
 				extra = extra || 0;
-				bp[key] = (bp[key] || 0) + 0.02 + extra;
+				bp[key] = sensMult * (bp[key] || 0) + sensBase + extra;
 			}
+
 			switch (part) {
 				case 'brain':
-					bp.brain = (bp.brain || 0) + 0.02;
-					setup.Mc.addLust(lustBase + bp.brain);
+					bump('brain')
+					setup.Mc.applyLustDelta(lustBase + bp.brain);
 					break;
 				case 'tits':
 					bump('tits', sv.piercingTitsAddSens || 0);
-					setup.Mc.addLust(lustBase + bp.tits);
+					setup.Mc.applyLustDelta(lustBase + bp.tits);
 					break;
 				case 'ass':
 					bump('ass');
-					setup.Mc.addLust(lustBase + bp.ass);
+					setup.Mc.applyLustDelta(lustBase + bp.ass);
 					break;
 				case 'bottom':
-					bp.bottom = (bp.bottom || 0) + 0.02;
-					bp.ass    = (bp.ass    || 0) + 0.01;
-					bp.pussy  = (bp.pussy  || 0) + 0.01 + (sv.piercingPussyAddSens || 0);
-					bp.anal   = (bp.anal   || 0) + 0.01;
-					setup.Mc.addLust(lustBase + bp.bottom);
+					bump('bottom')
+					bump('ass')
+					bump('pussy', sv.piercingPussyAddSens || 0);
+					bump('anal')
+					setup.Mc.applyLustDelta(lustBase + bp.bottom);
 					break;
 				case 'mouth':
 					bump('mouth', sv.piercingTongueAddSens || 0);
-					setup.Mc.addLust(lustBase + bp.mouth);
+					setup.Mc.applyLustDelta(lustBase + bp.mouth);
 					break;
 				case 'pussy':
 					bump('pussy', sv.piercingPussyAddSens || 0);
-					setup.Mc.addLust(lustBase + bp.pussy);
+					setup.Mc.applyLustDelta(lustBase + bp.pussy);
 					break;
 				case 'anal':
 					bump('anal');
-					setup.Mc.addLust(lustBase + bp.anal);
+					setup.Mc.applyLustDelta(lustBase + bp.anal);
 					break;
 			}
 		}
 	};
+
 	/* Stamp whatever-is-banked $tempCorr into $mc.corruption,
 	   capping at 1 so a single walk-home can't spike corruption
 	   more than a point, then reset the bank. */
