@@ -31,13 +31,13 @@
 
 <<widget "tarotOblivion">>
 	@@.mc-speech; It's... all going dark... I... can't... hold on... @@<br>
-	@@.enterbtn; <<link "Let go" "HuntOverSanity">>
+	@@.enterbtn; <<link "Let go" `setup.HuntController.huntOverPassage("sanity")`>>
 	<</link>>@@
 <</widget>>
 
 <<widget "tarotKnowledge">>
 	<<timed 2s>>
-		<<run setup.Ghosts.consumeKnowledgeEvidence()>>
+		<<run setup.HuntController.consumeKnowledgeEvidence()>>
 		@@.mc-speech; Knowledge? Hmm... interesting, that should be useful, right? @@<br>
 	<</timed>>
 <</widget>>
@@ -64,7 +64,7 @@
 <<widget "tarotDeath">>
 	@@.mc-speech; This can't be a good card. Oh no, I'm scared...I need to hide somewhere!@@<br>
 	@@.enterbtn; <<link "Hide">>
-		<<if setup.Gui.isCursedHuntOptionOn()>>
+		<<if setup.HuntController.shouldUseCursedHuntOption()>>
 			<<include "CursedHunt">>
 			<<script>>
 				setTimeout(() => {
@@ -79,9 +79,7 @@
 
 <<widget "tarotPossession">>
 	@@.mc-speech; Oh fuck.@@<br>
-	@@.enterbtn; <<link "Give in" "CityMapPossessed">>
-		<<run setup.HauntedHouses.setHuntMode(setup.Ghosts.HuntMode.POSSESSED)>>
-		<<run setup.Time.setHours(random(12,20))>>
+	@@.enterbtn; <<link "Give in" `setup.HuntController.possessionPassage()`>>
 	<</link>>@@
 <</widget>>
 

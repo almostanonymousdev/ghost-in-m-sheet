@@ -766,6 +766,11 @@
         clearKnowledgeUsed: function () { State.variables.knowledgeUsed = undefined; },
         chosenEvidence: function () { return State.variables.chosenEvidence; },
         setChosenEvidence: function (e) { State.variables.chosenEvidence = e; },
+        /* Drop the Notebook's crossed-out-evidence overlay (set by
+           the Tarot Knowledge card / Monkey Paw knowledge wish). The
+           overlay is hunt-scoped, so the cursed-item shared-state
+           reset clears it on every fresh contract / rogue run. */
+        clearChosenEvidence: function () { delete State.variables.chosenEvidence; },
         huntEvidence: function () {
             var h = State.variables.hunt;
             return h && h.evidence ? h.evidence : [];

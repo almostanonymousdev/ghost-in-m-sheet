@@ -63,7 +63,7 @@
 <</if>>
 </div>
 <div class="housecard">
-<<if setup.MonkeyPaw.tarotCarryStage() eq 1 and (previous(1) neq "Owaissa Street" and previous(1) neq "Elm Street")>>
+<<if setup.MonkeyPaw.tarotCarryStage() eq setup.TarotStage.CARRYING and setup.HuntController.isInsideHuntPassage()>>
 <<image "mechanics/cursedpossessions/tarot-cards/tarot.png" "iconsOnMap">><br>
 <<link "@@.usebtn; Look at the deck@@" "TarotCards">><</link>>
 <</if>>

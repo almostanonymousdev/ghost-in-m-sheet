@@ -296,13 +296,17 @@ test.describe('E2E: rogue run lifecycle', () => {
     await goToPassage(page, 'GhostStreet');
     await clickLink(page, 'Rogue Haunt', 'RogueStart');
 
-    // Place the player in the room+slot the cursed item is hidden in.
-    // The floor-plan generator might land cursedItem on a furniture-
-    // less template (roomA/B/C); skip past those so the click target
-    // is always a real slot. We only need *some* loot kind pinned
-    // to a furniture suffix to exercise the search wiring.
+    // Place the player in the room+slot one of the four base loot
+    // kinds is hidden in. The floor-plan generator might land
+    // cursedItem on a furniture-less template (roomA/B/C); skip past
+    // those so the click target is always a real slot. We only need
+    // *some* base loot kind pinned to a furniture suffix to exercise
+    // the search wiring -- tool_<id> loot is drafted when locked_tools
+    // happens to roll, but it has its own pickup branch covered
+    // separately by the Empty Bag e2e.
     const fp = await getVar(page, 'run').then(r => r.floorplan);
-    const lootKind = Object.keys(fp.lootFurniture).find(k => fp.lootFurniture[k]);
+    const BASE_KINDS = ['cursedItem', 'rescueClue', 'tarotCards', 'monkeyPaw'];
+    const lootKind = BASE_KINDS.find(k => fp.lootFurniture[k]);
     expect(lootKind).toBeDefined();
     const lootRoom      = fp.loot[lootKind];
     const lootFurniture = fp.lootFurniture[lootKind];
@@ -705,6 +709,310 @@ test.describe('E2E: rogue run lifecycle', () => {
     await page.evaluate(() => SugarCube.setup.HuntController.shuffleGhostRoom());
 
     expect(await callSetup(page, 'setup.Rogue.ghostRoomId()')).toBe(initial);
+  });
+
+  test('rogue picks up the tarot deck via FurnitureSearch and Bag opens TarotCards', async () => {
+    test.setTimeout(20_000);
+
+    /* Tarot pickup parity: rogue's FurnitureSearch branch routes
+       through the same PickupTarotCards include + markTarotCarrying
+       call classic uses, so $tarotCardsStage flips to CARRYING and
+       the Bag link becomes visible. */
+    await goToPassage(page, 'GhostStreet');
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await ensureNotEmptyBag(page);
+
+    // Walk the player to the room+slot the deck is hidden in.
+    const fp = await getVar(page, 'run').then(r => r.floorplan);
+    const tarotRoom      = fp.loot.tarotCards;
+    const tarotFurniture = fp.lootFurniture.tarotCards;
+    expect(tarotRoom).toBeDefined();
+    expect(tarotFurniture).toBeDefined();
+
+    await page.evaluate(id => SugarCube.setup.Rogue.setCurrentRoom(id), tarotRoom);
+    await goToPassage(page, 'RogueRun');
+
+    const fLabel = await callSetup(page,
+      `setup.Rogue.currentRoomData().furniture.find(f => f.suffix === "${tarotFurniture}").label`);
+    await page.locator('.rogue-furniture-item')
+      .filter({ hasText: fLabel })
+      .first()
+      .click();
+    await page.waitForFunction(() => SugarCube.State.passage === 'FurnitureSearch');
+
+    // Click through the linkappend "deck of cards." reveal.
+    await page.locator('.passage').getByText('deck of cards.', { exact: true }).click();
+
+    // Carry stage flipped (shared with classic).
+    expect(await callSetup(page, 'setup.HauntedHouses.tarotCardsStage()'))
+      .toBe(await callSetup(page, 'setup.TarotStage.CARRYING'));
+    // Loot collected so a re-search at the same slot finds nothing.
+    expect(await callSetup(page, 'setup.Rogue.hasCollected("tarotCards")')).toBe(true);
+
+    // Walk back into RogueRun and open Bag -- the tarot link must be visible.
+    await clickLink(page, 'Back', 'RogueRun');
+    await page.evaluate(() => SugarCube.Engine.play('Bag'));
+    await page.waitForFunction(() => SugarCube.State.passage === 'Bag');
+    await expect(
+      page.locator('.passage').getByText('Look at the deck', { exact: true })
+    ).toBeVisible();
+  });
+
+  test('rogue picks up the monkey paw via FurnitureSearch and Bag opens MonkeyPaw', async () => {
+    test.setTimeout(20_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await ensureNotEmptyBag(page);
+
+    const fp = await getVar(page, 'run').then(r => r.floorplan);
+    const pawRoom      = fp.loot.monkeyPaw;
+    const pawFurniture = fp.lootFurniture.monkeyPaw;
+    expect(pawRoom).toBeDefined();
+    expect(pawFurniture).toBeDefined();
+
+    await page.evaluate(id => SugarCube.setup.Rogue.setCurrentRoom(id), pawRoom);
+    await goToPassage(page, 'RogueRun');
+
+    const fLabel = await callSetup(page,
+      `setup.Rogue.currentRoomData().furniture.find(f => f.suffix === "${pawFurniture}").label`);
+    await page.locator('.rogue-furniture-item')
+      .filter({ hasText: fLabel })
+      .first()
+      .click();
+    await page.waitForFunction(() => SugarCube.State.passage === 'FurnitureSearch');
+    await page.locator('.passage').getByText('paw.', { exact: true }).click();
+
+    expect(await callSetup(page, 'setup.MonkeyPaw.isFound()')).toBe(true);
+    expect(await callSetup(page, 'setup.Rogue.hasCollected("monkeyPaw")')).toBe(true);
+
+    await clickLink(page, 'Back', 'RogueRun');
+    await page.evaluate(() => SugarCube.Engine.play('Bag'));
+    await page.waitForFunction(() => SugarCube.State.passage === 'Bag');
+    await expect(
+      page.locator('.passage').getByText('Look at the paw', { exact: true })
+    ).toBeVisible();
+    expect(await callSetup(page, 'setup.MonkeyPaw.isCarrying()')).toBe(true);
+  });
+
+  test('rogue tarot draw fires the Knowledge effect and stamps $chosenEvidence', async () => {
+    test.setTimeout(20_000);
+
+    /* Pre-set conditions so the deck draw lands on the Knowledge card
+       (the only card with a deterministic state mutation we can pin
+       without triggering passage transitions). The card weights from
+       setup.tarotDeck place Knowledge after Passion+Pulse (40% combined),
+       so a roll of 41 (out of 101) lands on Knowledge. */
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
+    await page.evaluate(() => SugarCube.setup.Rogue.setField('ghostName', 'Shade'));
+    await page.evaluate(() => SugarCube.setup.HauntedHouses.markTarotCarrying());
+    await goToPassage(page, 'RogueRun');
+
+    // Pin the deck draw to "knowledge" -- a roll <= 50 (passion 20 +
+    // pulse 20 + oblivion 1 + knowledge 10) lands inside the
+    // knowledge band; we go with 45 to be inside knowledge but not
+    // oblivion (which would route to a hunt-over passage).
+    await page.evaluate(() => { Math.random = () => 0.45; });
+    await goToPassage(page, 'TarotCards');
+
+    await page.locator('.passage').getByText('Pull a card', { exact: true }).click();
+    // The knowledge widget runs setup.HuntController.consumeKnowledgeEvidence
+    // inside <<timed 2s>>; wait for the side effect.
+    await page.waitForFunction(() =>
+      SugarCube.State.variables.knowledgeUsed === 1, null, { timeout: 5000 });
+
+    expect(await getVar(page, 'knowledgeUsed')).toBe(1);
+    const chosen = await getVar(page, 'chosenEvidence');
+    // Shade lacks spiritbox/uvl/glass; rogue knowledge picks one.
+    expect(['spiritbox', 'uvl', 'glass']).toContain(chosen);
+
+    // Drawn-cards counter incremented (shared classic counter).
+    expect(await getVar(page, 'drawnCards')).toBe(1);
+  });
+
+  test('rogue monkey-paw dawn wish forfeits the run as "time" failure', async () => {
+    test.setTimeout(20_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await ensureNotEmptyBag(page);
+    await clickLink(page, 'Enter the haunt', 'RogueRun');
+
+    // Hand the player the paw without going through pickup.
+    await page.evaluate(() => SugarCube.setup.MonkeyPaw.markFound());
+    await goToPassage(page, 'MonkeyPaw');
+
+    // The dawn wish renders an "I wish for dawn" link only when
+    // it's been learned; pre-learn it so the link surfaces.
+    await page.evaluate(() => SugarCube.setup.MonkeyPaw.markLearned('dawn'));
+    await goToPassage(page, 'MonkeyPaw');
+
+    await page.locator('.passage').getByText('I wish for dawn', { exact: true }).click();
+
+    // The dawn wish goto resolves through HuntController.huntOverPassage("time")
+    // which in rogue stamps "time" failure + returns "RogueEnd".
+    await page.waitForFunction(() => SugarCube.State.passage === 'RogueEnd');
+    expect(await getVar(page, 'run')).toBeNull();
+    await expect(
+      page.locator('.passage').getByText(/clock/i)
+    ).toBeVisible();
+  });
+
+  test('Empty Bag run places every tool in furniture and pickup adds it to the toolbar', async () => {
+    test.setTimeout(20_000);
+
+    /* End-to-end recovery flow for the Empty Bag modifier: the
+       run starts with [] tools (the toolbar collapses to "your bag
+       is empty"), but the floor plan now has every tool stamped
+       into furniture. Walk to a tool's room, click its furniture,
+       confirm the pickup beat, return to RogueRun, and the toolbar
+       gains the picked-up tool card. */
+    await page.evaluate(() => {
+      // Start a fresh run with locked_tools pinned so the toolbar
+      // begins empty and missingToolsToPlace returns the full set.
+      SugarCube.setup.Rogue.startRogue({
+        seed: 9, modifierCount: 0
+      });
+      // Pin locked_tools post-draft so the placement was based on
+      // the pre-startRogue modifier set; rebuild the floor plan
+      // with the missing tools stamped in.
+      SugarCube.setup.Rogue.addModifier('locked_tools');
+      const fp = SugarCube.setup.FloorPlan.generate(9, {
+        roomCount: 7,
+        toolKinds: SugarCube.setup.searchToolOrder.slice()
+      });
+      SugarCube.setup.Rogue.setField('floorplan', fp);
+    });
+    await goToPassage(page, 'RogueRun');
+
+    // Toolbar is empty.
+    await expect(page.locator('.rogue-run-tools .rogue-tool-card-empty')).toBeVisible();
+    await expect(page.locator('.rogue-run-tools .rogue-tool-card')).toHaveCount(1);
+
+    // Pick a tool that's pinned to a slot all by itself, so the solo
+    // pickup path (linkappend "equipment." click) fires. Multi-item
+    // slots are exercised by the dedicated multi-item test below.
+    const fp = await getVar(page, 'run').then(r => r.floorplan);
+    const toolKey = Object.keys(fp.loot).find((k) => {
+      if (!k.startsWith('tool_')) return false;
+      const room = fp.loot[k];
+      const slot = fp.lootFurniture[k];
+      if (!slot) return false;
+      const others = Object.keys(fp.loot).filter(o =>
+        o !== k && fp.loot[o] === room && fp.lootFurniture[o] === slot);
+      return others.length === 0;
+    });
+    expect(toolKey).toBeDefined();
+    const toolId   = toolKey.slice('tool_'.length);
+    const room     = fp.loot[toolKey];
+    const fSlot    = fp.lootFurniture[toolKey];
+
+    await page.evaluate(id => SugarCube.setup.Rogue.setCurrentRoom(id), room);
+    await goToPassage(page, 'RogueRun');
+
+    const fLabel = await callSetup(page,
+      `setup.Rogue.currentRoomData().furniture.find(f => f.suffix === "${fSlot}").label`);
+    await page.locator('.rogue-furniture-item')
+      .filter({ hasText: fLabel })
+      .first()
+      .click();
+    await page.waitForFunction(() => SugarCube.State.passage === 'FurnitureSearch');
+
+    await expect(
+      page.locator('.passage').getByText(/piece of hunting/i)
+    ).toBeVisible();
+    await page.locator('.passage').getByText('equipment.', { exact: true }).click();
+    expect(await callSetup(page, `setup.Rogue.hasCollected("${toolKey}")`)).toBe(true);
+
+    // Return to RogueRun. Toolbar now includes the picked-up tool.
+    await clickLink(page, 'Back', 'RogueRun');
+    expect(await callSetup(page, 'setup.Rogue.startingTools()')).toEqual([toolId]);
+    await expect(page.locator('.rogue-run-tools .rogue-tool-card')).toHaveCount(1);
+    await expect(page.locator('.rogue-run-tools .rogue-tool-card-empty')).toHaveCount(0);
+    await expect(page.locator('.rogue-run-tools a')).toHaveCount(1);
+  });
+
+  test('multi-item furniture slot reveals every loot kind in a single search', async () => {
+    test.setTimeout(20_000);
+
+    /* When the floor-plan generator stacks multiple loot kinds on
+       the same furniture slot (it falls back to sharing when a room
+       runs out of unique slots), one search should surface all of
+       them at once -- the player never has to click the same drawer
+       twice. The compact <<rogueLootBeat>> widget renders one short
+       line per kind and marks it collected; the back-button is one
+       click away. */
+    await page.evaluate(() => {
+      SugarCube.setup.Rogue.startRogue({ seed: 1, modifierCount: 0 });
+      // Hand-crafted plan: kitchen at room_1 holds tarot + paw + an EMF
+      // pickup all on the desk slot. The player walks in and clicks
+      // once.
+      SugarCube.setup.Rogue.setField('floorplan', {
+        rooms: [
+          { id: 'room_0', template: 'hallway' },
+          { id: 'room_1', template: 'kitchen' }
+        ],
+        edges: [['room_0', 'room_1']],
+        spawnRoomId: 'room_1',
+        loot: {
+          tarotCards: 'room_1',
+          monkeyPaw:  'room_1',
+          tool_emf:   'room_1'
+        },
+        lootFurniture: {
+          tarotCards: 'desk',
+          monkeyPaw:  'desk',
+          tool_emf:   'desk'
+        },
+        bossRoomId: null
+      });
+      SugarCube.setup.Rogue.setCurrentRoom('room_1');
+    });
+    await goToPassage(page, 'RogueRun');
+
+    // Click the desk slot.
+    await page.locator('.rogue-furniture-item')
+      .filter({ hasText: 'Desk' })
+      .first()
+      .click();
+    await page.waitForFunction(() => SugarCube.State.passage === 'FurnitureSearch');
+
+    // The combined header sets the multi-item beat.
+    await expect(
+      page.locator('.passage').getByText(/several things/i)
+    ).toBeVisible();
+    // All three kinds rendered in the compact form.
+    await expect(
+      page.locator('.passage').getByText(/strange deck of tarot cards/i)
+    ).toBeVisible();
+    await expect(
+      page.locator('.passage').getByText(/withered monkey's paw/i)
+    ).toBeVisible();
+    await expect(
+      page.locator('.passage').getByText(/piece of hunting equipment/i)
+    ).toBeVisible();
+
+    // All three flagged collected on this single search -- no
+    // linkappend gates to click through.
+    expect(await callSetup(page, 'setup.Rogue.hasCollected("tarotCards")')).toBe(true);
+    expect(await callSetup(page, 'setup.Rogue.hasCollected("monkeyPaw")')).toBe(true);
+    expect(await callSetup(page, 'setup.Rogue.hasCollected("tool_emf")')).toBe(true);
+
+    // Carry-stage flips happened (Bag link surfaces the deck + paw).
+    expect(await callSetup(page, 'setup.HauntedHouses.tarotCardsStage()'))
+      .toBe(await callSetup(page, 'setup.TarotStage.CARRYING'));
+    expect(await callSetup(page, 'setup.MonkeyPaw.isFound()')).toBe(true);
+
+    // A re-search of the same slot now finds nothing.
+    await clickLink(page, 'Back', 'RogueRun');
+    await page.locator('.rogue-furniture-item')
+      .filter({ hasText: 'Desk' })
+      .first()
+      .click();
+    await page.waitForFunction(() => SugarCube.State.passage === 'FurnitureSearch');
+    await expect(
+      page.locator('.passage').getByText(/nothing of note/i)
+    ).toBeVisible();
   });
 
   test('two consecutive runs increment runsStarted across the lifecycle', async () => {

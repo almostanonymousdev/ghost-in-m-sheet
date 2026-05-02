@@ -124,23 +124,35 @@ setup.Rogue = (function () {
 		run.collectedLoot.push(kind);
 		return true;
 	}
-	/* Look up which (uncollected) loot kind is hidden in `roomId`'s
-	   `suffix` furniture slot, or null if nothing is there. */
-	function lootAt(roomId, suffix) {
+	/* All (uncollected) loot kinds hidden in `roomId`'s `suffix`
+	   furniture slot, in the order they were stamped onto the plan.
+	   The floor-plan generator prefers distinct slots but can fall
+	   back to sharing one when the room runs out of unique furniture
+	   (forced-furniture loot kinds: tarotCards, monkeyPaw, tool_<id>),
+	   so a single search may legitimately surface several items at
+	   once. Returns []  when no run is active. */
+	function lootKindsAt(roomId, suffix) {
 		var run = sv().run;
-		if (!run || !run.floorplan) return null;
+		if (!run || !run.floorplan) return [];
 		var fp = run.floorplan;
 		var loot = fp.loot || {};
 		var furn = fp.lootFurniture || {};
 		var collected = Array.isArray(run.collectedLoot) ? run.collectedLoot : [];
-		var keys = Object.keys(loot);
-		for (var i = 0; i < keys.length; i++) {
-			var k = keys[i];
+		var out = [];
+		Object.keys(loot).forEach(function (k) {
 			if (loot[k] === roomId && furn[k] === suffix && collected.indexOf(k) === -1) {
-				return k;
+				out.push(k);
 			}
-		}
-		return null;
+		});
+		return out;
+	}
+
+	/* Single-kind variant -- returns the first uncollected loot kind
+	   at the slot, or null. Kept for callers that only need to know
+	   "is there anything here"; multi-kind sites use lootKindsAt. */
+	function lootAt(roomId, suffix) {
+		var kinds = lootKindsAt(roomId, suffix);
+		return kinds.length ? kinds[0] : null;
 	}
 
 	/* Move the player into `roomId`. No-op when no run is active or
@@ -162,27 +174,63 @@ setup.Rogue = (function () {
 
 	/* Tool keys the rogue toolbar should render this run, in canonical
 	   setup.searchToolOrder. Resolution order:
-	     1. Empty Bag modifier ('locked_tools') -> []. The bag is empty;
-	        the toolbar collapses to a "no tools" state until the player
-	        finds tools on the floor (gameplay seam, not built yet).
-	     2. loadout.tools array (set at meta-shop unlock or future
-	        per-run picker) -> intersection with searchToolOrder, so
-	        rendering order stays canonical regardless of input order.
-	     3. Default (no loadout / no Empty Bag) -> all six tools.
-	   Returns [] when no run is active so the rogue toolbar widget
-	   renders nothing in classic mode. */
+	     1. Build the "starting" base set:
+	        a. Empty Bag modifier ('locked_tools') -> [].
+	        b. loadout.tools array -> intersection with searchToolOrder.
+	        c. Default -> all six tools.
+	     2. Union with any tool the player has picked up from
+	        furniture this run ($run.collectedLoot entries shaped as
+	        'tool_<id>'). Tools placed in the floor plan and clicked
+	        through FurnitureSearch land in collectedLoot via takeLoot,
+	        so a started-empty bag fills back in as the player
+	        searches the rooms.
+	   Order is always the canonical setup.searchToolOrder regardless
+	   of the order tools were picked up. Returns [] when no run is
+	   active so the rogue toolbar widget renders nothing in classic
+	   mode. */
 	function startingTools() {
 		var run = sv().run;
 		if (!run) return [];
 		var order = (setup.searchToolOrder || []).slice();
-		if (hasModifier('locked_tools')) return [];
-		var loadout = run.loadout || {};
-		if (Array.isArray(loadout.tools)) {
+		var base;
+		if (hasModifier('locked_tools')) {
+			base = [];
+		} else if (Array.isArray((run.loadout || {}).tools)) {
+			base = order.filter(function (t) {
+				return run.loadout.tools.indexOf(t) !== -1;
+			});
+		} else {
+			base = order.slice();
+		}
+		var collected = Array.isArray(run.collectedLoot) ? run.collectedLoot : [];
+		return order.filter(function (t) {
+			if (base.indexOf(t) !== -1) return true;
+			return collected.indexOf(setup.FloorPlan.toolLootKind(t)) !== -1;
+		});
+	}
+
+	/* Compute the tool-pickup loot kinds the floor-plan generator
+	   should place this run -- exactly the tools the player would
+	   otherwise be missing from the toolbar. Reads from the same
+	   modifiers / loadout the toolbar resolution does, so the player
+	   can always recover a full kit by exploring the house.
+	   Returns an array of tool ids (not loot keys); the FloorPlan
+	   generator wraps them with the 'tool_' prefix. */
+	function startingToolsBase(modifierIds, loadout) {
+		var order = (setup.searchToolOrder || []).slice();
+		var ids = Array.isArray(modifierIds) ? modifierIds : [];
+		if (ids.indexOf('locked_tools') !== -1) return [];
+		if (loadout && Array.isArray(loadout.tools)) {
 			return order.filter(function (t) {
 				return loadout.tools.indexOf(t) !== -1;
 			});
 		}
 		return order;
+	}
+	function missingToolsToPlace(modifierIds, loadout) {
+		var order = (setup.searchToolOrder || []).slice();
+		var base = startingToolsBase(modifierIds, loadout);
+		return order.filter(function (t) { return base.indexOf(t) === -1; });
 	}
 
 	function setObjective(id) {
@@ -249,7 +297,24 @@ setup.Rogue = (function () {
 		var draft = setup.Modifiers.draft((seed ^ 0x9e3779b9) >>> 0, modifierCount);
 		var modifierIds = draft.map(function (m) { return m.id; });
 
-		var floorplan = setup.FloorPlan.generate(seed, opts.floorPlanOpts || {});
+		/* Compose the floor-plan options. Tools the player would
+		   otherwise be missing from the toolbar (Empty Bag modifier or
+		   a restricted loadout.tools) get placed in furniture so the
+		   run is recoverable -- the player can explore, find them, and
+		   the toolbar fills in via startingTools()'s collected-loot
+		   union. Bump the room count when there's tool loot to place
+		   so the per-room furniture pool has slack for the extra
+		   pins; default 5 rooms isn't enough headroom for all six
+		   tools in the worst-case Empty Bag run. */
+		var fpOpts = Object.assign({}, opts.floorPlanOpts || {});
+		var toolKinds = missingToolsToPlace(modifierIds, opts.loadout);
+		if (toolKinds.length && fpOpts.toolKinds == null) {
+			fpOpts.toolKinds = toolKinds;
+		}
+		if (fpOpts.toolKinds && fpOpts.toolKinds.length && fpOpts.roomCount == null) {
+			fpOpts.roomCount = Math.max(5, 4 + Math.ceil(fpOpts.toolKinds.length / 2));
+		}
+		var floorplan = setup.FloorPlan.generate(seed, fpOpts);
 
 		/* Pick the haunting ghost from the catalogue using a seed-derived
 		   index so a given seed reproduces the same ghost across replays.
@@ -268,6 +333,15 @@ setup.Rogue = (function () {
 		});
 		setField('floorplan', floorplan);
 		setField('ghostName', ghostName);
+		/* Same shared-state reset classic does at GhostRandomize:
+		   tarot deck back to HIDDEN, monkey paw back to 3 wishes /
+		   not-yet-found / no banned houses, knowledge-evidence
+		   overlay cleared. The cursed-item carry pickup reuses the
+		   classic markTarotCarrying / markFound, so both modes feed
+		   into the same Bag link + TarotCards / MonkeyPaw passages. */
+		if (setup.HauntedHouses && setup.HauntedHouses.resetCursedItemState) {
+			setup.HauntedHouses.resetCursedItemState();
+		}
 		return active();
 	}
 
@@ -297,6 +371,7 @@ setup.Rogue = (function () {
 	function driftGhostRoom() {
 		var run = sv().run;
 		if (!run || !run.floorplan) return;
+		if (run.trapped) return;
 		var fp = run.floorplan;
 		if (!Array.isArray(fp.rooms) || !fp.rooms.length) return;
 		var nonHallway = fp.rooms
@@ -414,10 +489,27 @@ setup.Rogue = (function () {
 			lines.join('') + nodes.join('') + '</svg>';
 	}
 
-	/* Humanise a loot kind ("cursedItem" -> "Cursed item"). Inline
-	   so the widget doesn't have to repeat the camelCase split. */
+	/* Humanise a loot kind ("cursedItem" -> "Cursed item"). Tool
+	   loot kinds ('tool_emf', 'tool_uvl', ...) resolve to the
+	   per-tool label in setup.searchToolDefs so the picked-up beat
+	   reads as "EMF reader" rather than "Tool emf". */
 	function humanizeLootKind(kind) {
 		if (!kind) return '';
+		var toolId = setup.FloorPlan.toolIdFromLootKind(kind);
+		if (toolId) {
+			var def = setup.searchToolDefs && setup.searchToolDefs[toolId];
+			// def.label is markup like "Use EM@@color:yellow;F@@"; strip
+			// the colour markers and the leading "Use " prefix so the
+			// result is plain text.
+			if (def && def.label) {
+				return def.label
+					.replace(/@@[^@]*@@/g, function (m) {
+						return m.replace(/^@@[^;]*;|@@$/g, '');
+					})
+					.replace(/^Use\s+/, '');
+			}
+			return toolId.toUpperCase();
+		}
 		return kind
 			.replace(/([A-Z])/g, ' $1')
 			.replace(/^./, function (c) { return c.toUpperCase(); });
@@ -455,20 +547,26 @@ setup.Rogue = (function () {
 
 		// Furniture entries with optional loot annotations. Collected
 		// loot kinds are filtered out so a re-search of the same
-		// slot reports nothing.
+		// slot reports nothing. lootKinds is the full uncollected
+		// list (the floor-plan generator may stack multiple kinds on
+		// the same slot when distinct slots run out); lootKind /
+		// lootLabel keep the legacy single-value shape for callers
+		// that only need a quick "is anything here".
 		var collected = Array.isArray(run.collectedLoot) ? run.collectedLoot : [];
 		var furniture = (t && Array.isArray(t.furniture) ? t.furniture : []).map(function (f) {
-			var lootKind = null;
+			var kinds = [];
 			Object.keys(fp.loot || {}).forEach(function (k) {
 				if (fp.loot[k] === roomId && lootFurn[k] === f && collected.indexOf(k) === -1) {
-					lootKind = k;
+					kinds.push(k);
 				}
 			});
+			var first = kinds.length ? kinds[0] : null;
 			return {
 				suffix: f,
 				label: humanizeFurniture(f),
-				lootKind: lootKind,
-				lootLabel: lootKind ? humanizeLootKind(lootKind) : null
+				lootKind: first,
+				lootLabel: first ? humanizeLootKind(first) : null,
+				lootKinds: kinds
 			};
 		});
 
@@ -540,6 +638,12 @@ setup.Rogue = (function () {
 			if (typeof setup.HauntedHouses.resetToolTimers === 'function') {
 				setup.HauntedHouses.resetToolTimers();
 			}
+			/* Hand the deck and paw back so a follow-up classic
+			   hunt or new rogue run starts from HIDDEN / 3 wishes
+			   instead of inheriting whatever the run left them in. */
+			if (typeof setup.HauntedHouses.resetCursedItemState === 'function') {
+				setup.HauntedHouses.resetCursedItemState();
+			}
 		}
 		end();
 		return summary;
@@ -568,6 +672,7 @@ setup.Rogue = (function () {
 		setSearchedFurniture: setSearchedFurniture,
 		searchedFurniture: searchedFurniture,
 		lootAt: lootAt,
+		lootKindsAt: lootKindsAt,
 		takeLoot: takeLoot,
 		hasCollected: hasCollected,
 		collectedLoot: collectedLoot,
@@ -580,6 +685,7 @@ setup.Rogue = (function () {
 		minimapData: minimapData,
 		minimapSvg: minimapSvg,
 		currentRoomData: currentRoomData,
+		humanizeLootKind: humanizeLootKind,
 		ghostName: ghostName,
 		ghostRoomId: ghostRoomId,
 		isInGhostRoom: isInGhostRoom,

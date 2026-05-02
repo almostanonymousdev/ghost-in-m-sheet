@@ -94,6 +94,17 @@ furniture suffix where the template carries one
 Optionally one room is flagged as the boss-room slot
 (`includeBoss: true`).
 
+Hunting tools the player would otherwise be missing from the
+toolbar (Empty Bag modifier, restricted `loadout.tools`) get
+seeded into the floor plan as `tool_<id>` loot when
+`opts.toolKinds` is provided. Each one is forced onto a
+furniture-bearing room and pinned to a distinct slot (same
+machinery as tarot / monkey paw), so the player can recover the
+kit by exploring. `setup.Rogue.startRogue` computes the missing
+tools off the drafted modifiers + loadout and forwards them to
+the generator; it also bumps `roomCount` when there's tool loot
+to place so the per-room slot pool has slack for the extra pins.
+
 ```
 plan = {
   seed,
@@ -177,6 +188,42 @@ flow (`$hunt`) and rogue runs (`$run`) -- share one tool / evidence
   `staysInOneRoom` (Goryo / Phantom). Called from
   `TickController.onPassageDone` so a single hook covers both
   modes.
+* `snapGhostToCurrentRoom()` — pin the active ghost to the
+  player's current room. Used by the Monkey Paw tier-3 activity
+  and trapTheGhost wishes. Classic walks `setup.hauntedPassages`
+  to find the room behind the current passage and stamps it on
+  `$hunt.room.name`; rogue snaps `floorplan.spawnRoomId` to
+  `$run.currentRoomId`.
+* `trapGhost(unlockBy)` / `isGhostTrapped()` — `trapGhost` pins
+  the ghost in place and locks the player's exit. Classic flips
+  `$hunt.trapped` and locks the front door
+  (`setup.MonkeyPaw.lockFrontDoor`); rogue stamps `run.trapped`
+  and `run.exitLock`, and `setup.Rogue.driftGhostRoom` honors
+  the `run.trapped` opt-out so the lair doesn't drift.
+* `streetExitPassage()` / `banActiveContext()` — used by the
+  Monkey Paw leave wish. Classic returns the active house's
+  street passage and bans the house from re-entry; rogue stamps
+  an `abandon` failure + returns `RogueEnd` (the run forfeits)
+  and bans nothing.
+* `possessionPassage()` — used by the Tarot Possession card.
+  Classic flips `$hunt.mode` to POSSESSED, jumps to a daytime
+  hour, and routes to `CityMapPossessed`; rogue stamps a
+  `possessed` failure on the run and routes to `RogueEnd`.
+* `consumeKnowledgeEvidence()` — used by the Tarot Knowledge
+  card and the Monkey Paw knowledge wish. Classic delegates to
+  `setup.Ghosts.consumeKnowledgeEvidence` (which knows about
+  `$hunt.evidence` and the witch's hidden slots); rogue picks a
+  random evidence the rogue ghost doesn't have and stamps it on
+  `$chosenEvidence`. Both modes mark `$knowledgeUsed` so a
+  second draw is a no-op.
+* `shouldUseCursedHuntOption()` — Death-card "Hide" branch
+  predicate. Classic mirrors the player toggle
+  (`setup.Gui.isCursedHuntOptionOn`); rogue is always false.
+* `isInsideHuntPassage()` — Bag carry-link gate. Returns true
+  iff `previous(1)` is one of the haunted-house room passages
+  (classic) or `RogueRun` (rogue), so the tarot deck and monkey
+  paw don't appear in Bag from the city, witch street, or rogue
+  lobby.
 
 `setup.Ghosts.active()` and `setup.isGhostHere()` are thin
 adapters that delegate to the facade -- legacy callers don't move,
@@ -249,7 +296,7 @@ links use to decide whether to render an unlock as active.
 * [TemplatesController.tw](../passages/rogue/TemplatesController.tw) — `setup.Templates`: room-template metadata + slot-id helpers.
 * [RogueLifecycle.tw](../passages/rogue/RogueLifecycle.tw) — `RogueStart`, `RogueRun`, `RogueEnd`, `RogueMetaShop` passages.
 * [widgetRogueMinimap.tw](../passages/rogue/widgetRogueMinimap.tw) — `<<rogueMinimap>>` SVG floor-plan view.
-* [widgetRogueToolBar.tw](../passages/rogue/widgetRogueToolBar.tw) — `<<rogueToolBar>>` tool grid; renders one card per `setup.Rogue.startingTools()` entry (default = all six). Empty Bag (`locked_tools`) collapses the strip to a "your bag is empty" placeholder; `loadout.tools` filters to a subset while preserving canonical order.
+* [widgetRogueToolBar.tw](../passages/rogue/widgetRogueToolBar.tw) — `<<rogueToolBar>>` tool grid; renders one card per `setup.Rogue.startingTools()` entry (default = all six). Empty Bag (`locked_tools`) collapses the strip to a "your bag is empty" placeholder; `loadout.tools` filters to a subset while preserving canonical order. Tools the player picks up from `tool_<id>` furniture loot get unioned back in, so a started-empty bag fills back in as the player searches the rooms.
 * [HuntController.tw](../passages/hunt/HuntController.tw) — `setup.HuntController`: cross-mode facade for `mode()` / `activeGhost()` / `isGhostHere()`.
 
 ## Save migration
@@ -270,5 +317,6 @@ last written under.
 * [rogue-lifecycle.spec.js](../tests/rogue-lifecycle.spec.js) — `startRogue` / `endRogue` composition.
 * [rogue-minimap.spec.js](../tests/rogue-minimap.spec.js) — `minimapData()` denormalisation.
 * [save-load-roundtrip.spec.js](../tests/save-load-roundtrip.spec.js) — migration and round-trip coverage for rogue state.
-* [e2e/rogue-flow.spec.js](../tests/e2e/rogue-flow.spec.js) — end-to-end CityMap → start → win → meta-shop walkthrough; tool functionality, lair-room `isGhostHere`, time advance per click.
+* [e2e/rogue-flow.spec.js](../tests/e2e/rogue-flow.spec.js) — end-to-end CityMap → start → win → meta-shop walkthrough; tool functionality, lair-room `isGhostHere`, time advance per click, tarot/paw pickup + Bag carry, dawn-wish run forfeit.
 * [hunt-controller.spec.js](../tests/hunt-controller.spec.js) — `setup.HuntController` facade contract across both modes.
+* [cursed-items-cross-mode.spec.js](../tests/cursed-items-cross-mode.spec.js) — `setup.HuntController` cursed-item facade (`snapGhostToCurrentRoom`, `trapGhost`, `streetExitPassage`, `possessionPassage`, `consumeKnowledgeEvidence`, `banActiveContext`, `isInsideHuntPassage`) plus the rogue start/end shared-state reset.

@@ -89,10 +89,29 @@ setup.FloorPlan = (function () {
 		return picks;
 	}
 
+	/* Tool-pickup loot kinds are namespaced ('tool_emf', 'tool_uvl', ...)
+	   so they share the same loot/lootFurniture pipeline as cursedItem
+	   et al. without colliding with future loot kinds. The TOOL_LOOT_PREFIX
+	   constant keeps consumers and the generator in sync. */
+	var TOOL_LOOT_PREFIX = 'tool_';
+
+	function toolLootKind(toolId) { return TOOL_LOOT_PREFIX + toolId; }
+	function toolIdFromLootKind(kind) {
+		if (typeof kind !== 'string' || kind.indexOf(TOOL_LOOT_PREFIX) !== 0) return null;
+		return kind.slice(TOOL_LOOT_PREFIX.length);
+	}
+	function isToolLootKind(kind) { return toolIdFromLootKind(kind) !== null; }
+
 	/* Build a fresh plan from `seed`. opts:
 		roomCount   -- total rooms incl. hallway; default 5, min 2.
 		includeBoss -- when true, marks one non-hallway room as
 		               bossRoomId (otherwise null).
+		toolKinds   -- array of tool ids ('emf', 'uvl', ...) to place
+		               as additional loot kinds. Each lands as
+		               'tool_<id>' on a furniture-bearing room (just
+		               like tarotCards / monkeyPaw), pinned to a
+		               distinct slot when one is available so the
+		               player can find them by clicking furniture.
 	   The room order in the returned `rooms` array is stable: the
 	   hallway is always rooms[0]. */
 	function generate(seed, opts) {
@@ -100,6 +119,9 @@ setup.FloorPlan = (function () {
 		var rng = makeRng(seed);
 		var roomCount = Math.max(2, opts.roomCount != null ? opts.roomCount : 5);
 		var includeBoss = !!opts.includeBoss;
+		var toolKinds = Array.isArray(opts.toolKinds)
+			? opts.toolKinds.map(toolLootKind)
+			: [];
 
 		var rooms = [{ id: 'room_0', template: HALLWAY_TEMPLATE }];
 		var nonHallway = pickN(rng, nonHallwayTemplates(), roomCount - 1);
@@ -138,19 +160,20 @@ setup.FloorPlan = (function () {
 		var loot = {};
 		var lootFurniture = {};
 		var takenSlots = {}; // 'roomId|suffix' -> true, to avoid double-pinning
-		LOOT_KINDS.forEach(function (k, idx) {
-			if (!lootRooms.length) return;
+
+		/* Place a single loot kind. forceFurnitureRoom=true forces
+		   the kind onto a furniture-bearing room (used by tarotCards,
+		   monkeyPaw, and tool pickups -- all of which need a
+		   clickable furniture slot to be found). */
+		function placeKind(k, fallbackRoomId, forceFurnitureRoom) {
 			var roomId;
-			if ((k === 'tarotCards' || k === 'monkeyPaw') && furnitureRoomIds.length) {
+			if (forceFurnitureRoom && furnitureRoomIds.length) {
 				roomId = furnitureRoomIds[Math.floor(rng() * furnitureRoomIds.length)];
 			} else {
-				roomId = lootRooms[idx % lootRooms.length];
+				roomId = fallbackRoomId;
 			}
+			if (!roomId) return;
 			loot[k] = roomId;
-			// Pin the loot to a specific furniture slot when the room
-			// has any. Empty-furniture templates (e.g. roomA/B/C) leave
-			// lootFurniture[k] undefined; the consumer falls back to
-			// "hidden somewhere in this room".
 			var room = rooms.filter(function (r) { return r.id === roomId; })[0];
 			var t = setup.Templates && setup.Templates.byId(room.template);
 			if (t && Array.isArray(t.furniture) && t.furniture.length) {
@@ -162,6 +185,20 @@ setup.FloorPlan = (function () {
 				lootFurniture[k] = suffix;
 				takenSlots[roomId + '|' + suffix] = true;
 			}
+		}
+
+		LOOT_KINDS.forEach(function (k, idx) {
+			if (!lootRooms.length) return;
+			var force = (k === 'tarotCards' || k === 'monkeyPaw');
+			placeKind(k, lootRooms[idx % lootRooms.length], force);
+		});
+
+		/* Tool pickups: always force onto a furniture-bearing room so
+		   the player can click them. Cycle through the same room pool
+		   (with replacement); the takenSlots map ensures distinct
+		   furniture slots whenever the rooms have spare capacity. */
+		toolKinds.forEach(function (k) {
+			placeKind(k, lootRooms[0], true);
 		});
 
 		// Boss room: optional, picked uniformly from non-hallway.
@@ -249,6 +286,10 @@ setup.FloorPlan = (function () {
 		OWNED_VARS: Object.freeze([]),
 		HALLWAY_TEMPLATE: HALLWAY_TEMPLATE,
 		LOOT_KINDS: LOOT_KINDS,
+		TOOL_LOOT_PREFIX: TOOL_LOOT_PREFIX,
+		toolLootKind: toolLootKind,
+		toolIdFromLootKind: toolIdFromLootKind,
+		isToolLootKind: isToolLootKind,
 		nonHallwayTemplates: nonHallwayTemplates,
 		generate: generate,
 		neighborsOf: neighborsOf,

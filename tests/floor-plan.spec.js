@@ -203,6 +203,81 @@ test.describe('Floor-plan generator', () => {
     expect(fails).toEqual([]);
   });
 
+  test('toolKinds option seeds tool_<id> loot for each requested tool', async () => {
+    /* When the rogue lifecycle starts a run with locked_tools or a
+       restricted loadout.tools, it asks the floor-plan generator to
+       place the missing tools in furniture so the player can recover
+       them by exploring. The generator namespaces them as
+       'tool_<id>' so they share the same loot pipeline as
+       cursedItem / rescueClue / tarotCards / monkeyPaw without
+       colliding with future loot kinds. */
+    const plan = await gen(123, {
+      roomCount: 7,
+      toolKinds: ['emf', 'uvl', 'spiritbox']
+    });
+    ['emf', 'uvl', 'spiritbox'].forEach((tool) => {
+      const key = 'tool_' + tool;
+      expect(plan.loot[key]).toBeDefined();
+      expect(plan.loot[key]).not.toBe('room_0');
+      // Every tool pin must land on a real furniture suffix --
+      // the player needs a clickable slot to find it.
+      const room = plan.rooms.find(r => r.id === plan.loot[key]);
+      expect(room).toBeDefined();
+      expect(plan.lootFurniture[key]).toBeDefined();
+    });
+  });
+
+  test('toolKinds default to no tool loot when the option is omitted', async () => {
+    const plan = await gen(123);
+    Object.keys(plan.loot).forEach((k) => {
+      expect(k.startsWith('tool_')).toBe(false);
+    });
+  });
+
+  test('toolIdFromLootKind / isToolLootKind round-trip the tool prefix', async () => {
+    expect(await callSetup(page, 'setup.FloorPlan.toolLootKind("emf")')).toBe('tool_emf');
+    expect(await callSetup(page, 'setup.FloorPlan.toolIdFromLootKind("tool_uvl")')).toBe('uvl');
+    expect(await callSetup(page, 'setup.FloorPlan.isToolLootKind("tool_gwb")')).toBe(true);
+    expect(await callSetup(page, 'setup.FloorPlan.isToolLootKind("cursedItem")')).toBe(false);
+    expect(await callSetup(page, 'setup.FloorPlan.toolIdFromLootKind("cursedItem")')).toBeNull();
+  });
+
+  test('all six tool kinds always land on furniture-bearing rooms across many seeds', async () => {
+    /* Empty Bag runs need every tool placed reliably; the generator
+       forces tool_* loot onto a furniture-bearing non-hallway room
+       (just like tarotCards / monkeyPaw). Fuzz across seeds to make
+       sure no run ends up with a tool stranded on roomA/B/C. */
+    test.setTimeout(20_000);
+    const fails = await page.evaluate(() => {
+      const out = [];
+      const tools = SugarCube.setup.searchToolOrder.slice();
+      for (let seed = 1; seed <= 100; seed++) {
+        const plan = SugarCube.setup.FloorPlan.generate(seed, {
+          roomCount: 7, toolKinds: tools
+        });
+        tools.forEach((tool) => {
+          const key = 'tool_' + tool;
+          if (!plan.loot[key]) {
+            out.push(`seed ${seed}: ${key} not placed`); return;
+          }
+          const room = plan.rooms.find(r => r.id === plan.loot[key]);
+          const t = SugarCube.setup.Templates.byId(room.template);
+          if (!t || !t.furniture || !t.furniture.length) {
+            out.push(`seed ${seed}: ${key} on furniture-less ${room.template}`); return;
+          }
+          if (!plan.lootFurniture[key]) {
+            out.push(`seed ${seed}: ${key} missing furniture pin`); return;
+          }
+          if (t.furniture.indexOf(plan.lootFurniture[key]) === -1) {
+            out.push(`seed ${seed}: ${key} pin ${plan.lootFurniture[key]} not in ${room.template}`);
+          }
+        });
+      }
+      return out;
+    });
+    expect(fails).toEqual([]);
+  });
+
   test('bossRoomId is null when includeBoss is false (default)', async () => {
     const plan = await gen(1);
     expect(plan.bossRoomId).toBeNull();

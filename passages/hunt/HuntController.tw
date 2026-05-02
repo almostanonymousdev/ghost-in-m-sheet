@@ -236,6 +236,190 @@ setup.HuntController = (function () {
 		setup.HauntedHouses.cleanupAfterHunt({ loseStolen: true });
 	}
 
+	/* Pin the active ghost to the player's current room. Used by the
+	   Monkey Paw activity-tier-3 and trapTheGhost-tier-3 wishes.
+	   Classic walks setup.hauntedPassages to find the room behind
+	   the current passage and stamps it on $hunt.room.name; rogue
+	   snaps floorplan.spawnRoomId to $run.currentRoomId. Returns
+	   true on success, false when no hunt is active or the player
+	   isn't on a registered hunt passage (the wish wastes its draw
+	   in that case). */
+	function snapGhostToCurrentRoom() {
+		var m = mode();
+		if (m === "regular") {
+			var hunt = setup.Ghosts.hunt();
+			if (!hunt || !hunt.room) return false;
+			var current = passage();
+			var hp = setup.hauntedPassages || [];
+			for (var i = 0; i < hp.length; i++) {
+				if (hp[i].passage === current) {
+					hunt.room.name = hp[i].bgRoom;
+					return true;
+				}
+			}
+			return false;
+		}
+		if (m === "rogue") {
+			var run = setup.Rogue.active();
+			if (!run || !run.floorplan) return false;
+			var roomId = run.currentRoomId || 'room_0';
+			run.floorplan.spawnRoomId = roomId;
+			return true;
+		}
+		return false;
+	}
+
+	/* Pin the ghost in place + lock the player's exit. Classic locks
+	   the front door (cursed-item or dawn unlock) and stamps
+	   hunt.trapped; rogue stamps run.trapped + run.exitLock so the
+	   nav layer can refuse exits until the lock is cleared. The
+	   trapped flag also opts the active mode out of the periodic
+	   ghost-room drift roll (driftGhostRoom checks isGhostTrapped
+	   before reseating the ghost). */
+	function trapGhost(unlockBy) {
+		var m = mode();
+		if (m === "regular") {
+			var hunt = setup.Ghosts.hunt();
+			if (hunt) hunt.trapped = true;
+			setup.MonkeyPaw.lockFrontDoor(unlockBy);
+			return true;
+		}
+		if (m === "rogue") {
+			var run = setup.Rogue.active();
+			if (!run) return false;
+			run.trapped = true;
+			run.exitLock = { unlockBy: unlockBy };
+			return true;
+		}
+		return false;
+	}
+
+	/* True iff the active mode's ghost is currently trapped (a
+	   trapTheGhost wish has fired and the unlock condition hasn't
+	   been satisfied yet). driftGhostRoom uses this to skip the
+	   shuffle for trapped ghosts. */
+	function isGhostTrapped() {
+		var m = mode();
+		if (m === "regular") {
+			var hunt = setup.Ghosts.hunt();
+			return !!(hunt && hunt.trapped);
+		}
+		if (m === "rogue") {
+			var run = setup.Rogue.active();
+			return !!(run && run.trapped);
+		}
+		return false;
+	}
+
+	/* Ban the active context from re-entry for the remainder of the
+	   contract / run. Classic delegates to setup.MonkeyPaw.banActiveHouse
+	   (the leave-tier-3 wish seals one of the four houses against
+	   re-entry on the same witch contract); rogue runs are one-shot,
+	   so banning is a no-op there. Returns the banned id (classic)
+	   or null. */
+	function banActiveContext() {
+		if (mode() === "regular") return setup.MonkeyPaw.banActiveHouse();
+		return null;
+	}
+
+	/* "Get me out of here" exit target -- the goto used by the
+	   Monkey Paw leave wish. Classic returns the active house's
+	   street passage so the MC walks back outside; rogue stamps an
+	   abandon failure on the run and returns RogueEnd so the leave
+	   wish forfeits the run cleanly. */
+	function streetExitPassage() {
+		var m = mode();
+		if (m === "regular") {
+			if (setup.HauntedHouses.isElm()) return 'Elm Street';
+			if (setup.HauntedHouses.isOwaissa()) return 'Owaissa Street';
+			return null;
+		}
+		if (m === "rogue") {
+			setup.Rogue.setField("outcome", "failure");
+			setup.Rogue.setField("failureReason", "abandon");
+			return "RogueEnd";
+		}
+		return null;
+	}
+
+	/* Mode-aware "the MC has been possessed" target -- the goto
+	   used by the Tarot Possession card. Classic flips $hunt.mode
+	   to POSSESSED, jumps to a daytime hour, and routes to
+	   CityMapPossessed; rogue stamps a 'possessed' failure on the
+	   run and routes to RogueEnd. The widget caller wraps the link
+	   around the returned passage so the imperative side effects
+	   fire as part of the link click. */
+	function possessionPassage() {
+		var m = mode();
+		if (m === "regular") {
+			setup.HauntedHouses.setHuntMode(setup.Ghosts.HuntMode.POSSESSED);
+			setup.Time.setHours(Math.floor(Math.random() * (20 - 12 + 1)) + 12);
+			return "CityMapPossessed";
+		}
+		if (m === "rogue") {
+			setup.Rogue.setField("outcome", "failure");
+			setup.Rogue.setField("failureReason", "possessed");
+			return "RogueEnd";
+		}
+		return null;
+	}
+
+	/* Mode-aware "remove one piece of evidence" used by the Tarot
+	   Knowledge card and the Monkey Paw knowledge wish. Classic
+	   delegates to setup.Ghosts.consumeKnowledgeEvidence (which
+	   knows about $hunt.evidence and the witch's hidden slots);
+	   rogue picks a random evidence the rogue ghost doesn't have
+	   and stamps it on $chosenEvidence. Both modes mark
+	   $knowledgeUsed so a second draw is a no-op. */
+	function consumeKnowledgeEvidence() {
+		if (sv().knowledgeUsed === 1) return;
+		var m = mode();
+		if (m === "regular") {
+			setup.Ghosts.consumeKnowledgeEvidence();
+			return;
+		}
+		if (m === "rogue") {
+			sv().knowledgeUsed = 1;
+			var ghost = activeGhost();
+			var owned = [];
+			if (ghost && Array.isArray(ghost.evidence)) {
+				owned = ghost.evidence.map(function (e) {
+					return e && e.id ? e.id : e;
+				});
+			}
+			var all = ['emf', 'spiritbox', 'gwb', 'uvl', 'glass', 'temperature'];
+			var missing = all.filter(function (e) { return owned.indexOf(e) === -1; });
+			sv().chosenEvidence = missing.length
+				? missing[Math.floor(Math.random() * missing.length)]
+				: null;
+		}
+	}
+
+	/* Should the Death-card "hide" branch route through the classic
+	   CursedHunt sub-flow? Classic answers from the player toggle
+	   (setup.Gui.isCursedHuntOptionOn); rogue runs don't have a
+	   cursed-hunt sub-flow, so the answer is always false. */
+	function shouldUseCursedHuntOption() {
+		if (mode() !== "regular") return false;
+		return !!(setup.Gui && setup.Gui.isCursedHuntOptionOn
+			&& setup.Gui.isCursedHuntOptionOn());
+	}
+
+	/* True iff the Bag was just opened from inside a hunt-context
+	   passage -- used to gate the carry links for the tarot deck and
+	   the monkey paw. Classic checks against the haunted-house
+	   passage table; rogue accepts the RogueRun passage. */
+	function isInsideHuntPassage() {
+		var prev = previous(1);
+		if (!prev) return false;
+		if (prev === "RogueRun") return true;
+		var hp = setup.hauntedPassages || [];
+		for (var i = 0; i < hp.length; i++) {
+			if (hp[i].passage === prev) return true;
+		}
+		return false;
+	}
+
 	return {
 		mode:                   mode,
 		isActive:               isActive,
@@ -248,6 +432,15 @@ setup.HuntController = (function () {
 		huntOverPassage:        huntOverPassage,
 		huntCaughtPassage:      huntCaughtPassage,
 		onCaughtCleanup:        onCaughtCleanup,
-		shuffleGhostRoom:       shuffleGhostRoom
+		shuffleGhostRoom:       shuffleGhostRoom,
+		snapGhostToCurrentRoom: snapGhostToCurrentRoom,
+		trapGhost:              trapGhost,
+		isGhostTrapped:         isGhostTrapped,
+		banActiveContext:       banActiveContext,
+		streetExitPassage:      streetExitPassage,
+		possessionPassage:      possessionPassage,
+		consumeKnowledgeEvidence: consumeKnowledgeEvidence,
+		shouldUseCursedHuntOption: shouldUseCursedHuntOption,
+		isInsideHuntPassage:    isInsideHuntPassage
 	};
 })();

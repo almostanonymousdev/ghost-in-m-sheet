@@ -275,6 +275,181 @@ test.describe('Rogue Controller', () => {
     expect(await callSetup(page, 'setup.Rogue.startingTools()')).toEqual([]);
   });
 
+  // --- Multi-kind furniture slots ---
+
+  test('lootKindsAt returns every uncollected kind pinned to a slot', async () => {
+    /* The floor-plan generator forces tarotCards / monkeyPaw / tool_*
+       loot onto a furniture-bearing room and prefers distinct slots,
+       but falls back to sharing one when the room runs out. The
+       lookup helper must surface every uncollected kind so a single
+       search can pull them all. */
+    await page.evaluate(() => SugarCube.setup.Rogue.start({ seed: 1 }));
+    await page.evaluate(() => {
+      // Hand-crafted multi-item slot: room_1 / desk holds three kinds.
+      SugarCube.setup.Rogue.setField('floorplan', {
+        rooms: [
+          { id: 'room_0', template: 'hallway' },
+          { id: 'room_1', template: 'kitchen' }
+        ],
+        edges: [['room_0', 'room_1']],
+        spawnRoomId: 'room_1',
+        loot: { tarotCards: 'room_1', monkeyPaw: 'room_1', tool_emf: 'room_1' },
+        lootFurniture: { tarotCards: 'desk', monkeyPaw: 'desk', tool_emf: 'desk' },
+        bossRoomId: null
+      });
+    });
+    expect(await callSetup(page, 'setup.Rogue.lootKindsAt("room_1", "desk")'))
+      .toEqual(['tarotCards', 'monkeyPaw', 'tool_emf']);
+    // lootAt keeps single-value semantics for lightweight callers.
+    expect(await callSetup(page, 'setup.Rogue.lootAt("room_1", "desk")'))
+      .toBe('tarotCards');
+  });
+
+  test('lootKindsAt drops kinds that have already been collected', async () => {
+    await page.evaluate(() => SugarCube.setup.Rogue.start({ seed: 1 }));
+    await page.evaluate(() => {
+      SugarCube.setup.Rogue.setField('floorplan', {
+        rooms: [
+          { id: 'room_0', template: 'hallway' },
+          { id: 'room_1', template: 'kitchen' }
+        ],
+        edges: [['room_0', 'room_1']],
+        spawnRoomId: 'room_1',
+        loot: { tarotCards: 'room_1', monkeyPaw: 'room_1' },
+        lootFurniture: { tarotCards: 'desk', monkeyPaw: 'desk' },
+        bossRoomId: null
+      });
+      SugarCube.setup.Rogue.takeLoot('tarotCards');
+    });
+    expect(await callSetup(page, 'setup.Rogue.lootKindsAt("room_1", "desk")'))
+      .toEqual(['monkeyPaw']);
+  });
+
+  test('lootKindsAt returns [] outside a run', async () => {
+    expect(await callSetup(page, 'setup.Rogue.lootKindsAt("room_1", "desk")'))
+      .toEqual([]);
+  });
+
+  test('currentRoomData annotates a slot with its full uncollected kind list', async () => {
+    await page.evaluate(() => SugarCube.setup.Rogue.start({ seed: 1 }));
+    await page.evaluate(() => {
+      SugarCube.setup.Rogue.setField('floorplan', {
+        rooms: [
+          { id: 'room_0', template: 'hallway' },
+          { id: 'room_1', template: 'kitchen' }
+        ],
+        edges: [['room_0', 'room_1']],
+        spawnRoomId: 'room_1',
+        loot: { tarotCards: 'room_1', tool_emf: 'room_1' },
+        lootFurniture: { tarotCards: 'desk', tool_emf: 'desk' },
+        bossRoomId: null
+      });
+      SugarCube.setup.Rogue.setCurrentRoom('room_1');
+    });
+    const room = await callSetup(page, 'setup.Rogue.currentRoomData()');
+    const desk = room.furniture.find(f => f.suffix === 'desk');
+    expect(desk.lootKinds).toEqual(['tarotCards', 'tool_emf']);
+    // Single-value fields stay populated with the first kind for
+    // legacy callers that just want "is anything here".
+    expect(desk.lootKind).toBe('tarotCards');
+  });
+
+  test('startingTools unions in tools the player has picked up from furniture', async () => {
+    /* When the run starts with locked_tools (Empty Bag), the toolbar
+       starts at []. Picking up a 'tool_<id>' loot kind through
+       FurnitureSearch (which calls takeLoot with the namespaced key)
+       should add that tool to the toolbar without re-running
+       startRogue. */
+    await page.evaluate(() => SugarCube.setup.Rogue.start({
+      seed: 1, modifiers: ['locked_tools']
+    }));
+    expect(await callSetup(page, 'setup.Rogue.startingTools()')).toEqual([]);
+
+    // Simulate picking up two tools mid-run.
+    await page.evaluate(() => SugarCube.setup.Rogue.takeLoot('tool_uvl'));
+    await page.evaluate(() => SugarCube.setup.Rogue.takeLoot('tool_emf'));
+
+    // Order is canonical setup.searchToolOrder, not pickup order.
+    expect(await callSetup(page, 'setup.Rogue.startingTools()'))
+      .toEqual(['emf', 'uvl']);
+  });
+
+  test('startingTools fills in over a restricted loadout as tools are found', async () => {
+    await page.evaluate(() => SugarCube.setup.Rogue.start({
+      seed: 1, loadout: { tools: ['emf'] }
+    }));
+    expect(await callSetup(page, 'setup.Rogue.startingTools()')).toEqual(['emf']);
+    await page.evaluate(() => SugarCube.setup.Rogue.takeLoot('tool_temperature'));
+    expect(await callSetup(page, 'setup.Rogue.startingTools()'))
+      .toEqual(['emf', 'temperature']);
+  });
+
+  test('startRogue places every tool when locked_tools is active', async () => {
+    /* The lifecycle composes the floor-plan options based on the
+       drafted modifiers / loadout: any tool the toolbar would
+       otherwise be missing gets stamped into the floor plan as
+       'tool_<id>' loot, so the player can recover the kit by
+       searching furniture. */
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
+      seed: 7, modifiers: ['locked_tools']
+    }));
+    // startRogue uses the drafted modifiers via setup.Modifiers.draft;
+    // pin them explicitly via setField since startRogue's modifiers
+    // come from the draft (we can't pass them directly).
+    await page.evaluate(() => {
+      SugarCube.State.variables.run.modifiers = ['locked_tools'];
+    });
+    // Re-run with the same seed so the floor plan reflects the
+    // pinned modifier.
+    await page.evaluate(() => SugarCube.setup.Rogue.endRogue(false));
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
+      seed: 7,
+      // Force-include locked_tools without a draft fight.
+      modifierCount: 0
+    }));
+    await page.evaluate(() => {
+      SugarCube.setup.Rogue.addModifier('locked_tools');
+      // Re-roll the floor plan with the modifier present so
+      // missingToolsToPlace sees locked_tools.
+      const fp = SugarCube.setup.FloorPlan.generate(7, {
+        roomCount: 7,
+        toolKinds: SugarCube.setup.searchToolOrder.slice()
+      });
+      SugarCube.setup.Rogue.setField('floorplan', fp);
+    });
+
+    const fp = await callSetup(page, 'setup.Rogue.field("floorplan")');
+    const tools = await callSetup(page, 'setup.searchToolOrder');
+    tools.forEach((tool) => {
+      expect(fp.loot['tool_' + tool]).toBeDefined();
+      expect(fp.lootFurniture['tool_' + tool]).toBeDefined();
+    });
+  });
+
+  test('startRogue places no tool loot for a default run', async () => {
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
+      seed: 7, modifierCount: 0
+    }));
+    const fp = await callSetup(page, 'setup.Rogue.field("floorplan")');
+    Object.keys(fp.loot).forEach((k) => {
+      expect(k.startsWith('tool_')).toBe(false);
+    });
+  });
+
+  test('startRogue with restricted loadout places only the missing tools', async () => {
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
+      seed: 7, modifierCount: 0,
+      loadout: { tools: ['emf', 'uvl'] }
+    }));
+    const fp = await callSetup(page, 'setup.Rogue.field("floorplan")');
+    const placed = Object.keys(fp.loot)
+      .filter(k => k.startsWith('tool_'))
+      .map(k => k.slice('tool_'.length))
+      .sort();
+    // The four tools missing from the loadout get placed in furniture.
+    expect(placed).toEqual(['gwb', 'plasm', 'spiritbox', 'temperature']);
+  });
+
   // --- Mid-run ghost movement ---
 
   test('driftGhostRoom moves the ghost to a non-hallway room', async () => {

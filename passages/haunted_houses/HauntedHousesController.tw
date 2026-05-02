@@ -539,6 +539,23 @@ setup.HauntedHouses = (function () {
 			});
 			setup.Migrations.markIroncladMigrated();
 		},
+		/* Reset the cursed-item carry/use state shared by both modes:
+		   tarot deck stage + draw count + drawn-card stamp, and the
+		   monkey-paw lifecycle (wishes count, found stage, learned
+		   knowledge, door lock, banned houses). The Notebook's
+		   crossed-out-evidence overlay also resets so the
+		   knowledge wish / tarot draw doesn't leak between hunts.
+		   Called by both classic resetForNewHunt and rogue's
+		   start/end so a fresh hunt always starts with a fresh deck
+		   and an unfound paw. */
+		resetCursedItemState: function () {
+			var s = sv();
+			s.tarotCardsStage = setup.TarotStage.HIDDEN;
+			s.drawnCards = 0;
+			delete s.chosenCard;
+			setup.Ghosts.clearChosenEvidence();
+			setup.MonkeyPaw.resetHunt();
+		},
 		/* Full fresh-hunt teardown: clears any lingering tarot /
 		   monkey-paw / cursed-hunt / weaken-ghost flags and zeroes
 		   the temperature counter. Called from GhostRandomize when
@@ -546,9 +563,7 @@ setup.HauntedHouses = (function () {
 		resetForNewHunt: function () {
 			var s = sv();
 			if (s.hauntedHouse === 'ironclad') s.hauntedHouse = null;
-			s.tarotCardsStage = setup.TarotStage.HIDDEN;
-			setup.MonkeyPaw.resetHunt();
-			s.drawnCards = 0;
+			this.resetCursedItemState();
 			delete s.cursedHuntActive;
 			delete s.cursedHuntEndTime;
 			setup.Witch.clearWeakenGhostState();

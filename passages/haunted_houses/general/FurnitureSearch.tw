@@ -3,32 +3,63 @@
    the per-house <<furnitureItem>> widget (which sets
    setup.HauntedHouses.currentFurniture()); rogue runs route here
    from RogueRun's furniture row (which calls
-   setup.Rogue.setSearchedFurniture()). Both modes share the
-   "looking for cursed item" video and the empty-handed fallback;
-   the per-kind responses split because rogue mode doesn't have
-   the witch / missing-women / monkey-paw quest gates wired up
-   yet (those land with the broader rogue gameplay layer). */
+   setup.Rogue.setSearchedFurniture()). Tarot deck and monkey paw
+   pickups feed into the shared carry-stage state
+   ($tarotCardsStage / $MonkeyPawStage), so both modes route into
+   the same Bag links + TarotCards / MonkeyPaw passages without a
+   per-mode fork. The witch / missing-women cursed-item + rescue
+   quests stay classic-only (rogue tracks them on $run.collectedLoot
+   without engaging the witch quest gates).
+
+   Multi-item slots: rogue's floor-plan generator prefers distinct
+   furniture slots but can stack multiple loot kinds on one slot
+   when the room runs out of unique furniture. The rogue branch
+   reads the full uncollected list via setup.Rogue.lootKindsAt and
+   renders one beat per kind in a single search -- the player
+   never has to click the same drawer twice. Solo searches keep
+   the existing linkappend reveal flavor; multi-item searches drop
+   the gate and reveal everything at once so the back-button is
+   one click away. */
 <<video "mechanics/curseditems/lfci.mp4">>
 <<if setup.Rogue.isRogue()>>
 	<<set _sf to setup.Rogue.searchedFurniture()>>
-	<<set _kind to _sf ? setup.Rogue.lootAt(_sf.room, _sf.suffix) : null>>
-	<<if _kind eq "cursedItem">>
-		@@.mc-thoughts; You find a cursed item tucked into the furniture.@@<br>
-		<<run setup.Rogue.takeLoot("cursedItem")>>
-	<<elseif _kind eq "rescueClue">>
-		@@.mc-thoughts; You find a clue about one of the missing women.@@<br>
-		<<run setup.Rogue.takeLoot("rescueClue")>>
-	<<elseif _kind eq "tarotCards">>
-		@@.mc-thoughts; You come across a strange deck of tarot cards.@@<br>
-		<<run setup.Rogue.takeLoot("tarotCards")>>
-	<<elseif _kind eq "monkeyPaw">>
-		@@.mc-thoughts; You come across a withered monkey's paw.@@<br>
-		<<run setup.Rogue.takeLoot("monkeyPaw")>>
-	<<else>>
+	<<set _kinds to _sf ? setup.Rogue.lootKindsAt(_sf.room, _sf.suffix) : []>>
+	<<if _kinds.length eq 0>>
 		@@.mc-thoughts; You search but find nothing of note.@@<br>
+		<br>
+		@@.backbtn; [[Back|$return]]@@
+	<<elseif _kinds.length eq 1>>
+		<<set _kind to _kinds[0]>>
+		<<set _toolId to setup.FloorPlan.toolIdFromLootKind(_kind)>>
+		<<if _kind eq "cursedItem">>
+			@@.mc-thoughts; You find a cursed item tucked into the furniture.@@<br>
+			<<run setup.Rogue.takeLoot("cursedItem")>>
+			<br>
+			@@.backbtn; [[Back|$return]]@@
+		<<elseif _kind eq "rescueClue">>
+			@@.mc-thoughts; You find a clue about one of the missing women.@@<br>
+			<<run setup.Rogue.takeLoot("rescueClue")>>
+			<br>
+			@@.backbtn; [[Back|$return]]@@
+		<<elseif _kind eq "tarotCards" and setup.HauntedHouses.tarotCardsStage() eq setup.TarotStage.HIDDEN>>
+			<<include "PickupTarotCards">>
+		<<elseif _kind eq "monkeyPaw" and setup.MonkeyPaw.isDiscoverable()>>
+			<<include "PickupMonkeyPaw">>
+		<<elseif _toolId>>
+			<<include "PickupRogueTool">>
+		<<else>>
+			@@.mc-thoughts; You search but find nothing of note.@@<br>
+			<br>
+			@@.backbtn; [[Back|$return]]@@
+		<</if>>
+	<<else>>
+		@@.mc-thoughts; You find several things tucked together.@@<br>
+		<br>
+		<<for _k range _kinds>>
+			<<rogueLootBeat _k>>
+		<</for>>
+		@@.backbtn; [[Back|$return]]@@
 	<</if>>
-	<br>
-	@@.backbtn; [[Back|$return]]@@
 <<else>>
 	<<set _cur to setup.HauntedHouses.currentFurniture()>>
 	<<if setup.HauntedHouses.hasClothesStolen() and _cur eq setup.HauntedHouses.clothesStashRoom()>>
@@ -41,34 +72,9 @@
 	<<elseif _cur eq setup.HauntedHouses.activeHousePlace("RescueClue") and setup.MissingWomen.hasActiveQuest() and not setup.MissingWomen.hasRescueClue()>>
 		<<include "RescueClueFound">>
 	<<elseif _cur eq setup.HauntedHouses.activeHousePlace("TarotCards") and setup.HauntedHouses.tarotCardsStage() eq setup.TarotStage.HIDDEN>>
-		@@.mc-thoughts; You come across a strange@@ <<linkappend "@@.usebtn; deck of cards.@@">><br>
-			<<image "mechanics/cursedpossessions/tarot-cards/tarot.png" "displayCentredImgs">>
-
-			@@.mc-speech; Hmm... are these... tarot cards? <br>
-			This deck looks so unusual... They say it can predict the future.<br>
-			Maybe I should draw a card to see what fate has in store for me? <br>
-			I think I'll take the tarot cards with me. They might be useful.@@<br>
-			<br>
-			@@.mc-action; You put the tarot cards in your bag@@<br>
-			<<run setup.HauntedHouses.markTarotCarrying()>>
-		<</linkappend>>
-		<br><br>
-		@@.backbtn; [[Back|$return]]@@
+		<<include "PickupTarotCards">>
 	<<elseif _cur eq setup.HauntedHouses.activeHousePlace("MonkeyPaw") and setup.MonkeyPaw.isDiscoverable()>>
-		@@.mc-thoughts; You come across a strange@@ <<linkappend "@@.usebtn; paw.@@">><br>
-			<<image "mechanics/cursedpossessions/monkey-paw/monkeypaw.jpg" "displayCentredImgs">>
-
-			@@.mc-speech; Is this... the Monkey Paw? <br>
-			I think I read something about it when I was younger.<br>
-			It grants wishes, but always with tragic consequences. <br>
-			Maybe if I'm careful, I can avoid any trouble? <br>
-			I think I'll take the monkey paw with me. It might be useful.@@<br>
-			<br>
-			@@.mc-action; You put monkey paw in your bag@@<br>
-			<<run setup.MonkeyPaw.markFound()>>
-		<</linkappend>>
-		<br><br>
-		@@.backbtn; [[Back|$return]]@@
+		<<include "PickupMonkeyPaw">>
 	<<else>>
 		@@.mc-thoughts;You try to find something, but it seems like nothing is there. @@
 		<br>
@@ -79,3 +85,117 @@
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 <</done>>
+
+:: PickupTarotCards [nobr] {"position":"1950,200","size":"100,100"}
+/* Pickup beat for the tarot deck. Shared by classic FurnitureSearch
+   and rogue FurnitureSearch -- the carry-stage flip
+   (setup.HauntedHouses.markTarotCarrying) feeds Bag's tarot link
+   and the TarotCards passage in both modes. The rogue branch also
+   stamps the loot as collected so a re-search finds nothing. */
+@@.mc-thoughts; You come across a strange@@ <<linkappend "@@.usebtn; deck of cards.@@">><br>
+	<<image "mechanics/cursedpossessions/tarot-cards/tarot.png" "displayCentredImgs">>
+
+	@@.mc-speech; Hmm... are these... tarot cards? <br>
+	This deck looks so unusual... They say it can predict the future.<br>
+	Maybe I should draw a card to see what fate has in store for me? <br>
+	I think I'll take the tarot cards with me. They might be useful.@@<br>
+	<br>
+	@@.mc-action; You put the tarot cards in your bag@@<br>
+	<<run setup.HauntedHouses.markTarotCarrying()>>
+	<<if setup.Rogue.isRogue()>>
+		<<run setup.Rogue.takeLoot("tarotCards")>>
+	<</if>>
+<</linkappend>>
+<br><br>
+@@.backbtn; [[Back|$return]]@@
+
+:: PickupMonkeyPaw [nobr] {"position":"2050,200","size":"100,100"}
+/* Pickup beat for the monkey paw. Shared by classic and rogue
+   FurnitureSearch via the same setup.MonkeyPaw.markFound() flip,
+   so the Bag link + MonkeyPaw wish menu work in both modes. */
+@@.mc-thoughts; You come across a strange@@ <<linkappend "@@.usebtn; paw.@@">><br>
+	<<image "mechanics/cursedpossessions/monkey-paw/monkeypaw.jpg" "displayCentredImgs">>
+
+	@@.mc-speech; Is this... the Monkey Paw? <br>
+	I think I read something about it when I was younger.<br>
+	It grants wishes, but always with tragic consequences. <br>
+	Maybe if I'm careful, I can avoid any trouble? <br>
+	I think I'll take the monkey paw with me. It might be useful.@@<br>
+	<br>
+	@@.mc-action; You put monkey paw in your bag@@<br>
+	<<run setup.MonkeyPaw.markFound()>>
+	<<if setup.Rogue.isRogue()>>
+		<<run setup.Rogue.takeLoot("monkeyPaw")>>
+	<</if>>
+<</linkappend>>
+<br><br>
+@@.backbtn; [[Back|$return]]@@
+
+:: widgetRogueLootBeat [widget nobr] {"position":"2250,200","size":"100,100"}
+/* rogueLootBeat -- compact pickup beat for one loot kind, used
+   when a multi-item furniture slot reveals everything in a single
+   search. Each kind renders a one- or two-line "you find X" line
+   (with a small image for the carriable items) and immediately
+   marks the kind collected via the appropriate setup.* call -- no
+   linkappend gating, since the player never has to click the same
+   drawer twice in the multi-item case. The single-item path keeps
+   its existing linkappend reveals (PickupTarotCards / PickupMonkeyPaw
+   / PickupRogueTool) for flavor; this widget only fires when
+   _kinds.length > 1. */
+<<widget "rogueLootBeat">>
+	<<set _kind to _args[0]>>
+	<<set _toolId to setup.FloorPlan.toolIdFromLootKind(_kind)>>
+	<<if _kind eq "cursedItem">>
+		@@.mc-thoughts; A cursed item, tucked into the furniture.@@<br><br>
+		<<run setup.Rogue.takeLoot("cursedItem")>>
+	<<elseif _kind eq "rescueClue">>
+		@@.mc-thoughts; A clue about one of the missing women.@@<br><br>
+		<<run setup.Rogue.takeLoot("rescueClue")>>
+	<<elseif _kind eq "tarotCards">>
+		@@.mc-thoughts; A strange deck of tarot cards.@@<br>
+		<<image "mechanics/cursedpossessions/tarot-cards/tarot.png" "iconsOnMap">><br>
+		@@.mc-action; You put the tarot cards in your bag.@@<br><br>
+		<<if setup.HauntedHouses.tarotCardsStage() eq setup.TarotStage.HIDDEN>>
+			<<run setup.HauntedHouses.markTarotCarrying()>>
+		<</if>>
+		<<run setup.Rogue.takeLoot("tarotCards")>>
+	<<elseif _kind eq "monkeyPaw">>
+		@@.mc-thoughts; A withered monkey's paw.@@<br>
+		<<image "mechanics/cursedpossessions/monkey-paw/monkeypaw.jpg" "iconsOnMap">><br>
+		@@.mc-action; You put the paw in your bag.@@<br><br>
+		<<if setup.MonkeyPaw.isDiscoverable()>>
+			<<run setup.MonkeyPaw.markFound()>>
+		<</if>>
+		<<run setup.Rogue.takeLoot("monkeyPaw")>>
+	<<elseif _toolId>>
+		<<set _toolDef to setup.searchToolDefs[_toolId]>>
+		@@.mc-thoughts; A piece of hunting equipment -- the <<= setup.Rogue.humanizeLootKind(_kind)>>.@@<br>
+		<<image "ui/img/" + _toolDef.iconFile "iconsOnMap">><br>
+		@@.mc-action; You put it in your bag.@@<br><br>
+		<<run setup.Rogue.takeLoot(_kind)>>
+	<</if>>
+<</widget>>
+
+:: PickupRogueTool [nobr] {"position":"2150,200","size":"100,100"}
+/* Pickup beat for a hunting tool found in furniture during a rogue
+   run. The Empty Bag modifier and any tools-restricting loadout
+   leave the toolbar starting short; setup.Rogue.startRogue stamps
+   the missing tools onto the floor plan as 'tool_<id>' loot, and
+   takeLoot here marks the slot collected. setup.Rogue.startingTools
+   re-renders the toolbar union of the starting set + collected loot
+   on the next visit to RogueRun, so the picked-up tool becomes
+   clickable in the strip. */
+<<set _kind to setup.Rogue.lootAt(setup.Rogue.searchedFurniture().room, setup.Rogue.searchedFurniture().suffix)>>
+<<set _toolId to setup.FloorPlan.toolIdFromLootKind(_kind)>>
+<<set _toolDef to setup.searchToolDefs[_toolId]>>
+@@.mc-thoughts; You come across a piece of hunting@@ <<linkappend "@@.usebtn; equipment.@@">><br>
+	<<image "ui/img/" + _toolDef.iconFile "displayCentredImgs">>
+
+	@@.mc-speech; Someone left this behind. It looks like it still works -- <br>
+	I should keep it. It might give me an edge in here.@@<br>
+	<br>
+	@@.mc-action; You put the <<= setup.Rogue.humanizeLootKind(_kind)>> in your bag@@<br>
+	<<run setup.Rogue.takeLoot(_kind)>>
+<</linkappend>>
+<br><br>
+@@.backbtn; [[Back|$return]]@@

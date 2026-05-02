@@ -104,13 +104,15 @@ setup.MonkeyPaw = (function () {
 		return State.variables['return'] || passage();
 	}
 
-	/* Front-door lock is hunt-scoped state set by trapTheGhost. The
-	   unlockBy field drives the FrontDoorLocked passage's branching:
-	   'cursedItem' requires a sacrifice, 'dawn' waits for 6 AM.
+	/* Front-door lock is hunt-scoped state set by the trapTheGhost
+	   wish. The unlockBy field drives FrontDoorLocked's branching
+	   ('cursedItem' requires a sacrifice, 'dawn' waits for 6 AM);
 	   sealedRoom captures the passage the MC was in when a tier-3
 	   wish was cast -- the "stuck in one room" beat. The scream
 	   option only surfaces in that passage; it is not a front-door
-	   action. Cleared on resetHunt() and on any explicit unlock. */
+	   action. Cleared on resetHunt() and on any explicit unlock.
+	   Called by setup.HuntController.trapGhost() in classic mode;
+	   rogue runs use the run.exitLock field instead. */
 	function lockFrontDoor(unlockBy) {
 		sv().monkeyPawDoorLock = {
 			locked: true,
@@ -121,22 +123,6 @@ setup.MonkeyPaw = (function () {
 
 	function doorLockState() {
 		return sv().monkeyPawDoorLock || null;
-	}
-
-	/* Snap the ghost's room to the player's current haunted passage.
-	   No-op if the player isn't on a registered haunted passage -- the
-	   activity wish just wasted its draw in that case. */
-	function snapHuntRoomToCurrent() {
-		var hunt = setup.Ghosts.hunt();
-		if (!hunt || !hunt.room) return;
-		var current = currentRoomPassage();
-		var hp = setup.hauntedPassages || [];
-		for (var i = 0; i < hp.length; i++) {
-			if (hp[i].passage === current) {
-				hunt.room.name = hp[i].bgRoom;
-				return;
-			}
-		}
 	}
 
 	function pickActivityVideo() {
@@ -151,12 +137,6 @@ setup.MonkeyPaw = (function () {
 		var g = setup.Ghosts && setup.Ghosts.active && setup.Ghosts.active();
 		if (g && g.cursedActivityVideos) base = base.concat(g.cursedActivityVideos);
 		return base[Math.floor(Math.random() * base.length)];
-	}
-
-	function streetPassageForCurrentHunt() {
-		if (setup.HauntedHouses.isElm()) return 'Elm Street';
-		if (setup.HauntedHouses.isOwaissa()) return 'Owaissa Street';
-		return null;
 	}
 
 	function hasCursedItem() {
@@ -225,7 +205,7 @@ setup.MonkeyPaw = (function () {
 				if (corr) addTempCorr(corr);
 				var drewGhost = false;
 				if (t >= 3) {
-					snapHuntRoomToCurrent();
+					setup.HuntController.snapGhostToCurrentRoom();
 					drewGhost = true;
 				}
 
@@ -265,14 +245,12 @@ setup.MonkeyPaw = (function () {
 				var corr   = [0, 0.2, 0.4][t - 1];
 				var unlockBy = t === 2 ? 'dawn' : 'cursedItem';
 
-				var hunt = setup.Ghosts.hunt();
-				if (hunt) hunt.trapped = true;
 				applySanity(sanity);
 				if (corr) addTempCorr(corr);
-				lockFrontDoor(unlockBy);
+				setup.HuntController.trapGhost(unlockBy);
 				var drewGhost = false;
 				if (t >= 3) {
-					snapHuntRoomToCurrent();
+					setup.HuntController.snapGhostToCurrentRoom();
 					drewGhost = true;
 				}
 
@@ -346,7 +324,7 @@ setup.MonkeyPaw = (function () {
 				var bannedHouse = null;
 
 				if (t >= 2) cursedItem = setup.CursedItems.forceCursedItem();
-				if (t >= 3) bannedHouse = banActiveHouse();
+				if (t >= 3) bannedHouse = setup.HuntController.banActiveContext();
 
 				setup.HauntedHouses.clearCursedHuntActive();
 
@@ -354,7 +332,7 @@ setup.MonkeyPaw = (function () {
 
 				return {
 					tier: t,
-					goto: streetPassageForCurrentHunt(),
+					goto: setup.HuntController.streetExitPassage(),
 					clothesStolen: true,
 					cursedItem: cursedItem,
 					bannedHouse: bannedHouse
@@ -380,18 +358,7 @@ setup.MonkeyPaw = (function () {
 				var t = currentTier();
 				var sanity = [0, -15, -30][t - 1];
 
-				var huntEvidence = setup.Ghosts.huntEvidence() || [];
-				var hasHunt = !!setup.Ghosts.hunt();
-				var hidden = setup.Ghosts.hiddenEvidenceList();
-				var all = ['emf', 'spiritbox', 'gwb', 'uvl', 'glass', 'temperature'];
-				var missing = all.filter(function (e) {
-					return hasHunt && !huntEvidence.includes(e)
-						&& hidden.indexOf(e) === -1;
-				});
-				setup.Ghosts.setChosenEvidence(missing.length
-					? missing[Math.floor(Math.random() * missing.length)]
-					: null);
-				setup.Ghosts.markKnowledgeUsed();
+				setup.HuntController.consumeKnowledgeEvidence();
 				if (sanity) applySanity(sanity);
 
 				removeWish();
@@ -430,7 +397,7 @@ setup.MonkeyPaw = (function () {
 
 				return {
 					tier: t,
-					goto: 'HuntOverTime',
+					goto: setup.HuntController.huntOverPassage('time'),
 					corrDelta: corr
 				};
 			}
@@ -490,12 +457,14 @@ setup.MonkeyPaw = (function () {
 		   to be discovered this hunt. FurnitureSearch and the map
 		   highlight logic gate on this. */
 		isDiscoverable: function () { return (sv().MonkeyPawStage || 0) === setup.MonkeyPawStage.HIDDEN; },
-		/* The Bag icon shows only when carrying the paw AND not on a
-		   street (the player must be inside the house to use it). */
+		/* The Bag icon shows only when carrying the paw AND the
+		   player just stepped into a hunt-context passage (a haunted-
+		   house room in classic, RogueRun in rogue) -- so the paw
+		   doesn't appear when Bag is opened from the city, the witch
+		   street, or the rogue lobby. */
 		isCarrying: function () {
 			if (!this.isFound()) return false;
-			var prev = previous(1);
-			return prev !== 'Owaissa Street' && prev !== 'Elm Street';
+			return setup.HuntController.isInsideHuntPassage();
 		},
 
 		// --- Wish economy -----------------------------------------
@@ -507,6 +476,15 @@ setup.MonkeyPaw = (function () {
 		tier: currentTier,
 
 		// --- Front-door lock (trapTheGhost wish side effect) -----
+		/* Lock the front door behind a trapTheGhost wish. Called by
+		   setup.HuntController.trapGhost in classic mode; rogue runs
+		   stamp run.exitLock through the same controller call instead. */
+		lockFrontDoor: lockFrontDoor,
+		/* Ban the currently-active haunted house from re-entry for
+		   the rest of the contract. Called by setup.HuntController
+		   .banActiveContext for classic; rogue runs are one-shot,
+		   so the controller no-ops there. */
+		banActiveHouse: banActiveHouse,
 		isFrontDoorLocked: function () {
 			var lock = doorLockState();
 			return !!(lock && lock.locked);
