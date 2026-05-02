@@ -147,8 +147,6 @@
 		@@.notmc-speech; Dawn breaks before the answer does. Run #<<= _summary.number>> ends with the clock.@@<br>
 	<<elseif _summary.failureReason eq _FR.FLED>>
 		@@.notmc-speech; You walk away from the haunt. Run #<<= _summary.number>> ends with the door at your back.@@<br>
-	<<elseif _summary.failureReason eq _FR.WRONG_GHOST>>
-		@@.notmc-speech; The wrong name. Run #<<= _summary.number>> ends with the haunt still uncalled.@@<br>
 	<<else>>
 		@@.notmc-speech; The haunt swallows you. Run #<<= _summary.number>> ends in failure.@@<br>
 	<</if>>
@@ -206,11 +204,11 @@
 
 :: RogueIdentify [nobr] {"position":"3200,300","size":"100,100"}
 /* Rogue-mode counterpart to WitchEndContract: pick a ghost from the
-   catalogue dropdown and lock it in. Correct guess wins the run;
-   wrong guess ends it as a failure with reason 'wrongGhost'. The
-   guess is compared against setup.Rogue.ghostName() (the per-run
-   ghost rolled at startRogue), not $hunt -- rogue runs don't use
-   the witch-contract bundle. */
+   catalogue dropdown and lock it in. The guess is compared against
+   setup.Rogue.ghostName() (the per-run ghost rolled at startRogue),
+   not $hunt -- rogue runs don't use the witch-contract bundle. The
+   reveal lives in RogueIdentifyResolve so the prep beat + timed
+   pause + correct/wrong branch all render in one place. */
 <<if not setup.Rogue.isRogue()>>
 	@@.mc-thoughts; No active rogue run.@@<br>
 	@@.backbtn; [[Back|CityMap]]@@
@@ -218,17 +216,47 @@
 	@@.location; Name the ghost@@<br>
 	@@.mc-speech; I think it was:@@<br>
 	<<ghostTypeDropdown>><br>
-	<<linkreplace "@@.usebtn;Choose@@">>
-		<<if setup.Rogue.ghostName() eq setup.Ghosts.ghostTypeSelected()>>
-			@@.notmc-speech; Right call. The haunt loosens its grip.@@<br>
-			<<run setup.Rogue.markSuccess()>>
-			@@.movebtn; [[Close the run|RogueEnd]]@@
-		<<else>>
-			@@.notmc-speech; Wrong name. The haunt holds.@@<br>
-			<<run setup.Rogue.markFailure(setup.Rogue.FailureReason.WRONG_GHOST)>>
-			@@.backbtn; [[Close the run|RogueEnd]]@@
-		<</if>>
-	<</linkreplace>>
+	@@.movebtn; [[Choose|RogueIdentifyResolve]]@@<br>
 	<br>
 	@@.backbtn; [[Back|RogueOutside]]@@
+<</if>>
+
+:: RogueIdentifyResolve [nobr] {"position":"3300,300","size":"100,100"}
+/* Resolves an identify attempt. The MC re-enters the haunt to
+   subdue the ghost; after a short pause the run either closes
+   peacefully (correct guess -- markSuccess + Continue/Go home) or
+   the ghost catches the MC (wrong guess -- routes to HuntEnd, whose
+   huntEndExit widget stamps a CAUGHT failure on its way to RogueEnd).
+
+   Reveal staging: the result line and exit links are wrapped in
+   .rogue-reveal (opacity:0, 1s opacity transition). The reveal text
+   gets .show on render so it fades in immediately; the buttons get
+   .show after a 1s <<timed>> nested inside the 6s outer wait, so
+   they fade in only once the text has fully settled. */
+<<if not setup.Rogue.isRogue()>>
+	@@.mc-thoughts; No active rogue run.@@<br>
+	@@.backbtn; [[Back|CityMap]]@@
+<<else>>
+	@@.mc-thoughts; You prepare, then confidently re-enter, ready to subdue the ghost and cleanse the house.@@<br>
+	<<timed 6s>>
+		<<if setup.Rogue.ghostName() eq setup.Ghosts.ghostTypeSelected()>>
+			<<run setup.Rogue.markSuccess()>>
+			<div class="rogue-reveal rogue-reveal-text">@@.notmc-speech; The ghost fades peacefully into the ether.@@</div>
+			<div class="rogue-reveal rogue-reveal-buttons">
+				@@.movebtn; [[Continue|RogueEnd]]@@<br>
+				@@.movebtn; [[Go home|RogueEnd]]@@
+			</div>
+		<<else>>
+			<div class="rogue-reveal rogue-reveal-text">@@.mc-thoughts; Your heart sinks as the ghost roughly grabs your helpless form.@@</div>
+			<div class="rogue-reveal rogue-reveal-buttons">
+				@@.movebtn; [[Continue|HuntEnd]]@@
+			</div>
+		<</if>>
+		<<done>>
+			<<run $(".rogue-reveal-text").addClass("show")>>
+		<</done>>
+		<<timed 1s>>
+			<<run $(".rogue-reveal-buttons").addClass("show")>>
+		<</timed>>
+	<</timed>>
 <</if>>

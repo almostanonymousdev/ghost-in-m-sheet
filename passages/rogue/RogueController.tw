@@ -43,14 +43,13 @@ setup.Rogue = (function () {
 		FAILURE: 'failure'
 	});
 	var FailureReason = Object.freeze({
-		SANITY:      'sanity',
-		EXHAUSTION:  'exhaustion',
-		TIME:        'time',
-		CAUGHT:      'caught',
-		ABANDON:     'abandon',
-		POSSESSED:   'possessed',
-		FLED:        'fled',
-		WRONG_GHOST: 'wrongGhost'
+		SANITY:     'sanity',
+		EXHAUSTION: 'exhaustion',
+		TIME:       'time',
+		CAUGHT:     'caught',
+		ABANDON:    'abandon',
+		POSSESSED:  'possessed',
+		FLED:       'fled'
 	});
 	var Objective = Object.freeze({
 		IDENTIFY: 'identify',

@@ -1125,6 +1125,18 @@ html[data-debug-view] .debug[data-name][data-type].nonvoid::after {
  * edge. left: 17.5em matches SugarCube's default ui-bar width;
  * .ui-bar-stowed flips left to 0 when the player collapses the
  * sidebar so we don't leave dead space on the left either. */
+/* RogueIdentifyResolve fade reveal. Both the result line and the
+   exit links start invisible; the passage adds .show to each in turn
+   so the text fades in first and the buttons fade in after the text
+   has fully settled. */
+.rogue-reveal {
+	opacity: 0;
+	transition: opacity 1s ease;
+}
+.rogue-reveal.show {
+	opacity: 1;
+}
+
 .rogue-run-layout {
 	position: fixed;
 	top: 0;

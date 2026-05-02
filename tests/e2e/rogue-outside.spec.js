@@ -90,7 +90,18 @@ test.describe('E2E: rogue Outside menu', () => {
     ).toBeVisible();
   });
 
-  test('Identify with the correct ghost wins the run', async () => {
+  test('Choose routes through the prep beat to RogueIdentifyResolve', async () => {
+    await startRun(page);
+    await clickLink(page, 'Outside', 'RogueOutside');
+    await clickLink(page, 'Identify the ghost', 'RogueIdentify');
+    await clickLink(page, 'Choose', 'RogueIdentifyResolve');
+    await expect(
+      page.locator('.passage').getByText(/confidently re-enter/i)
+    ).toBeVisible();
+  });
+
+  test('Identify with the correct ghost reveals the peaceful fade and closes the run on Continue', async () => {
+    test.setTimeout(20_000);
     await startRun(page);
     const ghost = await callSetup(page, 'setup.Rogue.ghostName()');
 
@@ -103,19 +114,23 @@ test.describe('E2E: rogue Outside menu', () => {
       SugarCube.State.variables.ghostTypeSelected = name;
     }, ghost);
 
-    await page.locator('.passage').getByText('Choose', { exact: true }).click();
+    await clickLink(page, 'Choose', 'RogueIdentifyResolve');
+
+    // Prep beat is visible immediately; the reveal is gated on a 6s
+    // <<timed>> block.
     await expect(
-      page.locator('.passage').getByText(/right call/i)
-    ).toBeVisible();
+      page.locator('.passage').getByText(/fades peacefully/i)
+    ).toBeVisible({ timeout: 10_000 });
     expect(await callSetup(page, 'setup.Rogue.field("outcome")')).toBe('success');
 
-    await clickLink(page, 'Close the run', 'RogueEnd');
+    await clickLink(page, 'Continue', 'RogueEnd');
     expect(await getVar(page, 'run')).toBeNull();
     // 5 base + 5 success + 2 modifiers = 12.
     expect(await getVar(page, 'echoes')).toBe(12);
   });
 
-  test('Identify with the wrong ghost ends the run as a "wrongGhost" failure', async () => {
+  test('Identify with the wrong ghost routes into HuntEnd and ends as caught', async () => {
+    test.setTimeout(20_000);
     await startRun(page);
     const ghost = await callSetup(page, 'setup.Rogue.ghostName()');
     const wrong = await page.evaluate((name) =>
@@ -128,19 +143,24 @@ test.describe('E2E: rogue Outside menu', () => {
       SugarCube.State.variables.ghostTypeSelected = name;
     }, wrong);
 
-    await page.locator('.passage').getByText('Choose', { exact: true }).click();
-    await expect(
-      page.locator('.passage').getByText(/wrong name/i)
-    ).toBeVisible();
-    expect(await callSetup(page, 'setup.Rogue.field("outcome")')).toBe('failure');
-    expect(await callSetup(page, 'setup.Rogue.field("failureReason")')).toBe('wrongGhost');
+    await clickLink(page, 'Choose', 'RogueIdentifyResolve');
 
-    await clickLink(page, 'Close the run', 'RogueEnd');
-    expect(await getVar(page, 'run')).toBeNull();
-    expect(await getVar(page, 'echoes')).toBe(7);
+    // Wait for the timed reveal to surface the wrong-guess line.
     await expect(
-      page.locator('.passage').getByText(/haunt still uncalled/i)
-    ).toBeVisible();
+      page.locator('.passage').getByText(/heart sinks/i)
+    ).toBeVisible({ timeout: 10_000 });
+
+    // Continue routes to HuntEnd; the run is still alive at that point
+    // (huntEndExit -> huntCaughtPassage closes it on the next click).
+    await clickLink(page, 'Continue', 'HuntEnd');
+    expect(await callSetup(page, 'setup.Rogue.isRogue()')).toBe(true);
+
+    // huntCaughtPassage stamps the failure reason on the run as soon as
+    // it's invoked (well before RogueEnd consumes it).
+    const target = await callSetup(page, 'setup.HuntController.huntCaughtPassage()');
+    expect(target).toBe('RogueEnd');
+    expect(await callSetup(page, 'setup.Rogue.field("outcome")')).toBe('failure');
+    expect(await callSetup(page, 'setup.Rogue.field("failureReason")')).toBe('caught');
   });
 
   test('RogueIdentify Back link returns to RogueOutside', async () => {
