@@ -382,10 +382,27 @@ setup.Home = (function () {
 		// HuntEnd* / Sleep set these flags so the Bedroom passage can
 		// render the correct "you wake up" banner and apply the
 		// sanity/energy/lust penalties below.
-		// Shared sleep-advance: wraps midnight and fires the
-		// setup.Tick.resetCooldowns() when the day rolls over. Called by
-		// Sleep.tw from every "wake up" branch.
-		sleepAdvance: function (n) { return setup.Time.sleepAdvanceHours(n); },
+		// Shared sleep-advance: wraps midnight, fires
+		// setup.Tick.resetCooldowns() when the day rolls over, and triggers
+		// an autosave so the player always has a fresh restore point on
+		// every sleep. Called by Sleep.tw / SleepTwins.tw from every wake
+		// branch. The autosave is deferred so it captures the post-wake
+		// passage rather than Sleep itself.
+		sleepAdvance: function (n) {
+			var rollover = setup.Time.sleepAdvanceHours(n);
+			if (rollover) { setup.Tick.resetCooldowns(); }
+			setTimeout(function () {
+				try {
+					if (typeof Save !== 'undefined' && Save.browser
+						&& Save.browser.auto && Save.browser.auto.isEnabled()) {
+						Save.browser.auto.save('Autosave (sleep)');
+					}
+				} catch (ex) {
+					console.error('autosave on sleep failed:', ex);
+				}
+			}, 0);
+			return rollover;
+		},
 		cameraBought: function () { return sv().isCameraBought === 1; },
 		isCameraBoughtFlagSet: function () { return sv().isCameraBought !== undefined; },
 		setCameraBought: function () { sv().isCameraBought = 1; },

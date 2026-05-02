@@ -563,6 +563,60 @@ test.describe('Home Controller', () => {
     expect(lust).toBeLessThanOrEqual(90);
   });
 
+  // --- Sleep advance ---
+
+  test('sleepAdvance advances time and triggers an autosave', async () => {
+    // arrange
+    await page.evaluate(() => {
+      SugarCube.State.variables.hours = 22;
+      SugarCube.State.variables.minutes = 0;
+      SugarCube.Save.browser.auto.clear();
+    });
+    expect(await page.evaluate(
+      () => SugarCube.Save.browser.auto.entries().length
+    )).toBe(0);
+
+    // act: 4-hour sleep wraps past midnight
+    const rollover = await page.evaluate(
+      () => SugarCube.setup.Home.sleepAdvance(4)
+    );
+    // autosave is scheduled via setTimeout(..., 0) so we have to yield.
+    await page.waitForFunction(
+      () => SugarCube.Save.browser.auto.entries().length > 0
+    );
+
+    // assert
+    expect(rollover).toBe(true);
+    expect(await getVar(page, 'hours')).toBe(2);
+    expect(await page.evaluate(
+      () => SugarCube.Save.browser.auto.entries().length
+    )).toBeGreaterThan(0);
+  });
+
+  test('sleepAdvance without midnight rollover still autosaves', async () => {
+    // arrange
+    await page.evaluate(() => {
+      SugarCube.State.variables.hours = 8;
+      SugarCube.State.variables.minutes = 0;
+      SugarCube.Save.browser.auto.clear();
+    });
+
+    // act: 4-hour sleep stays within the same day
+    const rollover = await page.evaluate(
+      () => SugarCube.setup.Home.sleepAdvance(4)
+    );
+    await page.waitForFunction(
+      () => SugarCube.Save.browser.auto.entries().length > 0
+    );
+
+    // assert
+    expect(rollover).toBe(false);
+    expect(await getVar(page, 'hours')).toBe(12);
+    expect(await page.evaluate(
+      () => SugarCube.Save.browser.auto.entries().length
+    )).toBeGreaterThan(0);
+  });
+
   // --- Twins event ---
 
   test('twinsEventAvailable requires flag and no cooldown', async () => {
