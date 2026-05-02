@@ -7,4 +7,4 @@
 	<<run setup.Home.clearSummonText()>>
 <</if>><br><br>
 @@.backbtn; [[Bathroom|Bathroom]]@@<br>
-<<if setup.Time.sleepAdvanceHours(8)>><<run setup.Tick.resetCooldowns()>><</if>>
+<<run setup.Home.sleepAdvance(8)>>
