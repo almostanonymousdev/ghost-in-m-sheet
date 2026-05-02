@@ -11,11 +11,11 @@
 	<<video "characters/witch/witch-result.mp4" { controls: false, loop: false }>>
 	@@.notmc-speech;Let's find out, give me some time...@@
 	<<timed 6s>>
-		<<if setup.Witch.huntRealName() eq setup.Witch.selectedGhostType()>>
+		<<if setup.Ghosts.huntRealName() eq setup.Ghosts.ghostTypeSelected()>>
 			@@.notmc-speech; Yes, you're right, good girl@@<br>
 
 			<<run setup.Witch.payForContract()>>
-			<<gainXP setup.Witch.expFromContract()>>
+			<<gainXP setup.HauntedHouses.expFromContract()>>
 
 			@@.backbtn;[[Back|WitchInside]]@@
 		<<else>> @@.notmc-speech;No, you are wrong. Maybe you'll get it right next time.@@<br>
@@ -26,6 +26,6 @@
 			@@.backbtn;[[Back|WitchInside]]@@
 		<</if>>
 		<<run setup.Ghosts.endContract()>>
-		<<run setup.Witch.clearHiddenEvidence()>>
+		<<run setup.Ghosts.clearHiddenEvidence()>>
 	<</timed>>
 <</linkreplace>>

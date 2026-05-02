@@ -78,7 +78,7 @@ test.describe('Witch — exorcism and rescue referrals', () => {
 
   test('clearQuestForRescue sets $hasQuestForRescue to 0', async () => {
     await setVar(page, 'hasQuestForRescue', 3);
-    await page.evaluate(() => SugarCube.setup.Witch.clearQuestForRescue());
+    await page.evaluate(() => SugarCube.setup.MissingWomen.resetQuestToAvailable());
     expect(await getVar(page, 'hasQuestForRescue')).toBe(0);
   });
 });
@@ -191,19 +191,19 @@ test.describe('Witch — tool upgrades and crucifix', () => {
 
   test('initCrucifixIfNeeded only sets 0 when undefined', async () => {
     await page.evaluate(() => { delete SugarCube.State.variables.crucifixAmount; });
-    await page.evaluate(() => SugarCube.setup.Witch.initCrucifixIfNeeded());
-    expect(await callSetup(page, 'setup.Witch.crucifixAmount()')).toBe(0);
+    await page.evaluate(() => SugarCube.setup.ToolController.initCrucifixIfNeeded());
+    expect(await callSetup(page, 'setup.ToolController.crucifixAmount()')).toBe(0);
 
     await setVar(page, 'crucifixAmount', 3);
-    await page.evaluate(() => SugarCube.setup.Witch.initCrucifixIfNeeded());
-    expect(await callSetup(page, 'setup.Witch.crucifixAmount()')).toBe(3);
+    await page.evaluate(() => SugarCube.setup.ToolController.initCrucifixIfNeeded());
+    expect(await callSetup(page, 'setup.ToolController.crucifixAmount()')).toBe(3);
   });
 
   test('addCrucifix increments crucifixAmount', async () => {
     await setVar(page, 'crucifixAmount', 0);
-    await page.evaluate(() => SugarCube.setup.Witch.addCrucifix());
-    await page.evaluate(() => SugarCube.setup.Witch.addCrucifix());
-    expect(await callSetup(page, 'setup.Witch.crucifixAmount()')).toBe(2);
+    await page.evaluate(() => SugarCube.setup.ToolController.addCrucifix());
+    await page.evaluate(() => SugarCube.setup.ToolController.addCrucifix());
+    expect(await callSetup(page, 'setup.ToolController.crucifixAmount()')).toBe(2);
   });
 
   test('clearHiddenEvidence removes all hidden-evidence flags', async () => {
@@ -213,7 +213,7 @@ test.describe('Witch — tool upgrades and crucifix', () => {
     await setVar(page, 'deleteSecondEvidence', 1);
     await setVar(page, 'deleteThirdEvidence', 1);
     await setVar(page, 'deleteOneEvidence', 1);
-    await page.evaluate(() => SugarCube.setup.Witch.clearHiddenEvidence());
+    await page.evaluate(() => SugarCube.setup.Ghosts.clearHiddenEvidence());
     const V = await page.evaluate(() => ({
       a: SugarCube.State.variables.hiddenEvidence,
       b: SugarCube.State.variables.hiddenEvidence1,

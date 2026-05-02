@@ -199,12 +199,6 @@ setup.Witch = (function () {
 		markKeyFromWitchStolen:  function () { sv().gotKeyFromWitch = 1; },
 		markShopVisited:         function () { sv().firstVisitWitchShop = false; },
 
-		// --- Crucifix (delegates to ToolController; the witch is the
-		// only seller, so the buy/init APIs live here as façades) ----
-		initCrucifixIfNeeded: function () { setup.ToolController.initCrucifixIfNeeded(); },
-		crucifixAmount:       function () { return setup.ToolController.crucifixAmount(); },
-		addCrucifix:          function () { setup.ToolController.addCrucifix(); },
-
 		// --- Witch sale (tool upgrades) --------------------------
 		TOOL_UPGRADE_PRICES: {
 			emf: 200, temperature: 100, spiritbox: 500,
@@ -223,9 +217,6 @@ setup.Witch = (function () {
 			setup.Mc.removeMoney(200);
 		},
 		detectorBought: function () { return setup.ToolController.detectorBought(); },
-		monkeyPawGuideAvailable: function () {
-			return setup.MonkeyPaw.isGuideAsked();
-		},
 
 		// --- Bedroom / night events ------------------------------
 		witchLateNightHour: function () {
@@ -238,9 +229,6 @@ setup.Witch = (function () {
 		},
 		markMonkeyPawGuideBought: function () {
 			setup.MonkeyPaw.markGuideAsked();
-		},
-		clearQuestForRescue: function () {
-			setup.MissingWomen.resetQuestToAvailable();
 		},
 		startCursedItemQuest: function () {
 			sv().gotCursedItem = 0;
@@ -259,13 +247,6 @@ setup.Witch = (function () {
 		payForWeakenOnly: function () {
 			setup.Mc.addMoney(sv().moneyFromWeakenTheGhost || 0);
 		},
-		clearHiddenEvidence: function () {
-			setup.Ghosts.clearHiddenEvidence();
-		},
-		selectedGhostType: function () { return setup.Ghosts.ghostTypeSelected(); },
-		huntRealName: function () { return setup.Ghosts.huntRealName(); },
-		expFromContract: function () { return setup.HauntedHouses.expFromContract(); },
-
 		// --- Tentacles event (anti-midnight wraparound) ----------
 		spend2HoursHandleMidnight: function () {
 			return setup.Time.sleepAdvanceHours(2);
