@@ -125,6 +125,12 @@ setup.Gui = (function () {
 		4: "500ms", 5: "350ms", 6: "200ms"
 	};
 	function refreshToolTimer() {
+		// Settings-dialog override (persists across save/load and history
+		// navigation, unlike a one-shot cheat link).
+		if (typeof settings !== 'undefined' && settings.fastToolTimers) {
+			sv().timerToolsDecreased = "10ms";
+			return;
+		}
 		var lvl = setup.Mc.lvl();
 		var t = TOOL_TIMER_BY_LVL[lvl];
 		sv().timerToolsDecreased = t || "150ms";
@@ -132,7 +138,6 @@ setup.Gui = (function () {
 	function timerToolsInitialized() {
 		return sv().timerToolsDecreased !== undefined;
 	}
-	function setTimerToolsDecreased(v) { sv().timerToolsDecreased = v; }
 
 	// --- Mirror render -------------------------------------------
 	// PassageDone re-renders the mirror image after wash/apply makeup
@@ -166,22 +171,195 @@ setup.Gui = (function () {
 		setCursedHuntOption: setCursedHuntOption,
 		refreshToolTimer: refreshToolTimer,
 		timerToolsInitialized: timerToolsInitialized,
-		setTimerToolsDecreased: setTimerToolsDecreased,
 		mirrorMakeupImagePath: mirrorMakeupImagePath,
 		mirrorMakeupHasWidth: mirrorMakeupHasWidth,
 		monkeyPawWishInput: function () { return sv().inputWish; }
 	};
 })();
 
-/* Built-in SugarCube Settings dialog entries. Registered at script
-   load (not StoryInit) so the Settings UI is wired up before any
-   passage runs. Values live in the global `settings` namespace
-   (persisted to localStorage by SugarCube), not in $state — so
-   they are intentionally not in OWNED_VARS. */
+/* Built-in SugarCube Settings dialog entries. Values live in the
+   global `settings` namespace (persisted to localStorage), not in
+   $state — so they are intentionally not in OWNED_VARS.
+
+   Real settings (muteAllVideos) register at script load so they
+   exist before the first passage tries to read them. Cheats register
+   at :storyready so they can call into other controllers
+   (setup.Ghosts.list, setup.Mc, etc.) that finish loading after this
+   file. */
 Setting.addToggle("muteAllVideos", {
 	label   : "Mute all videos",
 	default : false
 });
+
+/* Stateful cheats are registered through SugarCube's Setting API
+   because they have a meaningful persisted value (toggle on/off,
+   list selection). They live under a single "Cheats" header,
+   alongside `muteAllVideos` (a real player setting). */
+var SETTINGS_DIALOG_TITLE = "Settings / Cheats";
+
+$(document).one(":storyready", function () {
+	/* Rename the built-in "Settings" UIBar button so the cheats
+	   menu's new home is discoverable. We can't intercept
+	   L10n.get -- this SugarCube build defines it as a non-writable,
+	   non-configurable closure over a private strings table -- so
+	   the dialog title gets patched on the rendered DOM instead, in
+	   the :dialogopened handler below. */
+	$("#menu-item-settings a").text(SETTINGS_DIALOG_TITLE);
+
+	Setting.addHeader(
+		"Cheats",
+		"Toggles + the ghost-type picker persist across reloads. The button list further down fires one-shot mutations on $state.variables — back/forward arrows can rewind those."
+	);
+	Setting.addToggle("highlightRescueHouse", {
+		label: "Highlight correct rescue house on map",
+		default: false
+	});
+	Setting.addToggle("fastToolTimers", {
+		label: "Remove tool timers (instant)",
+		default: false,
+		onChange: function () { setup.Gui.refreshToolTimer(); }
+	});
+
+	var GHOST_PICKER_NULL = "—";
+	Setting.addList("cheatGhostType", {
+		label: "Force ghost type — needs active contract or hunt",
+		list: [GHOST_PICKER_NULL].concat(setup.Ghosts.list().map(function (g) { return g.name; })),
+		default: GHOST_PICKER_NULL,
+		onChange: function () {
+			var name = settings.cheatGhostType;
+			if (name === GHOST_PICKER_NULL) return;
+			if (!setup.Ghosts.isAnyMode()) return;
+			var ghost = setup.Ghosts.list().filter(function (g) { return g.name === name; })[0];
+			if (ghost) setup.Ghosts.forceHuntGhost(ghost);
+		}
+	});
+});
+
+/* One-shot cheat buttons + lazy reveals. SugarCube's Setting API
+   only exposes toggles / lists / ranges / headers — none of which
+   model "press once to fire" or "click to reveal" cleanly. So we
+   inject a custom buttons section into the Settings dialog body
+   each time it opens. The body is rebuilt by SugarCube on every
+   open, so reveal targets (ghost name, ghost room) start hidden
+   and only show after the player explicitly clicks — exactly the
+   "stay hidden until cheat is used" behavior we want. */
+(function () {
+	function isSettingsDialog() {
+		if (typeof SugarCube === "undefined" || !SugarCube.L10n) return false;
+		var titleEl = document.getElementById("ui-dialog-title");
+		if (!titleEl) return false;
+		// Match either the original L10n string (set by Dialog.setup)
+		// or our patched title (set on a previous :dialogopened that
+		// already ran for this dialog instance).
+		var t = titleEl.textContent;
+		return t === SugarCube.L10n.get("settingsTitle") || t === SETTINGS_DIALOG_TITLE;
+	}
+
+	function makeButton(label, onClick, enabled) {
+		var $btn = $('<button type="button" class="cheat-btn"></button>').text(label);
+		if (enabled === false) {
+			$btn.prop("disabled", true);
+		} else {
+			$btn.on("click", onClick);
+		}
+		return $btn;
+	}
+
+	function appendGroup($root, title, items, opts) {
+		opts = opts || {};
+		var enabled = opts.enabled !== false;
+		var $group = $('<div class="cheat-actions-group"></div>');
+		$group.append($('<h3 class="cheat-actions-gh"></h3>').text(title));
+		if (!enabled && opts.disabledMsg) {
+			$group.append($('<p class="cheat-actions-gh-note"></p>').text(opts.disabledMsg));
+		}
+		var $btns = $('<div class="cheat-actions-btns"></div>');
+		items.forEach(function (item) {
+			$btns.append(makeButton(item.label, item.fire, enabled));
+		});
+		$group.append($btns);
+		$root.append($group);
+	}
+
+	function appendRevealGroup($root) {
+		var inMode = setup.Ghosts.isAnyMode();
+		var $group = $('<div class="cheat-actions-group"></div>');
+		$group.append($('<h3 class="cheat-actions-gh"></h3>').text("Reveal (current contract / hunt)"));
+		if (!inMode) {
+			$group.append($('<p class="cheat-actions-gh-note"></p>').text("No active contract or hunt."));
+		}
+
+		function reveal(label, compute) {
+			var $wrap = $('<div class="cheat-reveal"></div>');
+			var $btn = makeButton(label, function () {
+				var $result = $('<span class="cheat-reveal-result"></span>')
+					.append($("<b></b>").text(label + ": "))
+					.append(document.createTextNode(compute()));
+				$wrap.empty().append($result);
+			}, inMode);
+			$wrap.append($btn);
+			return $wrap;
+		}
+
+		$group.append(reveal("Ghost name", function () {
+			return setup.Ghosts.huntName() + (setup.Ghosts.isMimicHunt() ? " (Mimic)" : "");
+		}));
+		$group.append(reveal("Ghost room", function () {
+			return setup.Ghosts.huntRoomName();
+		}));
+		$root.append($group);
+	}
+
+	function buildCheatActions() {
+		var $root = $('<section class="cheat-actions"></section>');
+		$root.append($('<h2 class="cheat-actions-h"></h2>').text("One-shot cheats"));
+		$root.append($('<p class="cheat-actions-note"></p>').text(
+			"Each click fires once."
+		));
+
+		appendGroup($root, "MC", [
+			{ label: "Add lust (+100)",                fire: function () { setup.Mc.addLust(100); } },
+			{ label: "Add money (+10,000)",            fire: function () { setup.Mc.addMoney(10000); } },
+			{ label: "Level up (+1)",                  fire: function () { setup.Mc.addLvl(1); } },
+			{ label: "Corruption (+1)",                fire: function () { setup.Mc.addCorruption(1); } },
+			{ label: "Perfect body (fit = 100)",       fire: function () { setup.Mc.setFit(100); } },
+			{ label: "Exhibitionism = 5",              fire: function () { setup.Mc.setExhibitionism(5); } },
+			{ label: "Surrender to possession = 11",   fire: function () { setup.Mc.setPossession(11); } },
+			{ label: "Maximize body part sensitivity", fire: function () { setup.Intro.maximizeSensualBodyParts(setup.Intro.currentSensualBodyPart()); } }
+		]);
+
+		appendGroup($root, "Companions", [
+			{ label: "Brook → lvl 5",                  fire: function () { setup.Companion.cheatSetLvl("brook", 5); } },
+			{ label: "Alice → lvl 5",                  fire: function () { setup.Companion.cheatSetLvl("alice", 5); } },
+			{ label: "Blake → lvl 5",                  fire: function () { setup.Companion.cheatSetLvl("blake", 5); } },
+			{ label: "Best friends with Blake (rel = 5)",   fire: function () { setup.Mall.setBlakeRelationship(5); } },
+			{ label: "Companion lust (+100)",               fire: function () { setup.Companion.addLust(100); } }
+		]);
+
+		appendGroup($root, "Hunting", [
+			{ label: "Sanity pills (+30)",            fire: function () { setup.Mc.addSanity(30); } },
+			{ label: "Drain companion sanity (-10)",  fire: function () { setup.Companion.drainSanity(10); } },
+			{ label: "Trigger possession card",       fire: function () {
+				setup.Ghosts.setHuntMode(setup.Ghosts.HuntMode.POSSESSED);
+				setup.Time.setHours(12 + Math.floor(Math.random() * 9));
+				Dialog.close();
+				Engine.play("CityMapPossessed");
+			} }
+		], { enabled: setup.Ghosts.isHunting(), disabledMsg: "Available only during a hunt." });
+
+		appendRevealGroup($root);
+		return $root;
+	}
+
+	$(document).on(":dialogopened", function () {
+		if (!isSettingsDialog()) return;
+		var titleEl = document.getElementById("ui-dialog-title");
+		if (titleEl) titleEl.textContent = SETTINGS_DIALOG_TITLE;
+		var $body = $("#ui-dialog-body");
+		if (!$body.length || $body.find(".cheat-actions").length) return;
+		$body.append(buildCheatActions());
+	});
+})();
 
 /* hovertip v2.0
  *

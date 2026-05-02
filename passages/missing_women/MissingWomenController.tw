@@ -94,8 +94,7 @@ setup.MissingWomen = (function () {
 		'rescueRandomGirls',
 		'videoRescueEvent',
 		'tornStyles',
-		'tornStyleRandom',
-		'cheatRescueHouseHighlight'
+		'tornStyleRandom'
 	]);
 
 	var api = {
@@ -322,8 +321,7 @@ setup.MissingWomen = (function () {
 		{ name: 'rescueQuestStage',           key: 'hasQuestForRescue', set: false },
 		{ name: 'rescueVideo',                key: 'videoRescueEvent' },
 		{ name: 'tornStylesList',             key: 'tornStyles',        set: false },
-		{ name: 'tornStyleRandom',            set: false },
-		'cheatRescueHouseHighlight'
+		{ name: 'tornStyleRandom',            set: false }
 	]);
 	setup.defineStageAccessors(api, sv, 'hasQuestForRescue', setup.RescueQuestState, {
 		is:   { isQuestAvailable: 'AVAILABLE', hasActiveQuest: 'ACTIVE',

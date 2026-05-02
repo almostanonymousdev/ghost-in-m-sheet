@@ -1109,3 +1109,67 @@ html[data-debug-view] .debug[data-name][data-type]::before,
 html[data-debug-view] .debug[data-name][data-type].nonvoid::after {
 	content: none !important;
 }
+
+/* ===== Settings-dialog cheats panel ===== */
+/* Injected by GuiController on :dialogopened. Buttons match the
+   pink action-link palette used elsewhere in the UI; reveal targets
+   start as buttons and replace themselves with their answer on click. */
+.cheat-actions {
+	margin-top: 1.5em;
+	padding-top: 1em;
+	border-top: 1px solid var(--color-mc-thoughts-link);
+}
+.cheat-actions-h {
+	margin: 0 0 .25em;
+	font-size: 1.1em;
+}
+.cheat-actions-note {
+	font-style: italic;
+	font-size: .9em;
+	margin: 0 0 1em;
+	opacity: .8;
+}
+.cheat-actions-group {
+	margin-bottom: .9em;
+}
+.cheat-actions-gh {
+	margin: 0 0 .25em;
+	font-size: 1em;
+}
+.cheat-actions-gh-note {
+	font-size: .85em;
+	font-style: italic;
+	opacity: .7;
+	margin: 0 0 .35em;
+}
+.cheat-actions-btns {
+	display: flex;
+	flex-wrap: wrap;
+	gap: .35em;
+}
+.cheat-btn {
+	padding: .35em .8em;
+	background: var(--color-mc-pink);
+	color: #000;
+	border: 1px solid #555;
+	border-radius: 3px;
+	cursor: pointer;
+	font: inherit;
+	transition: var(--btn-transition), background 0.2s;
+}
+.cheat-btn:hover:not(:disabled) {
+	background: var(--color-mc-pink-hover);
+}
+.cheat-btn:disabled {
+	opacity: .45;
+	cursor: not-allowed;
+}
+.cheat-reveal {
+	margin: .25em 0;
+}
+.cheat-reveal-result {
+	display: inline-block;
+	padding: .25em .5em;
+	background: rgba(255, 153, 221, 0.15);
+	border-radius: 3px;
+}

@@ -3,7 +3,7 @@
 <div class="flexwrapper">
 <<for _h to 1; _h lte 16; _h++>>
 <<capture _h>>
-<div @class="'housecard rescuehousecard' + (setup.MissingWomen.cheatRescueHouseHighlight() && _h === setup.MissingWomen.randomRescuePhotoNumber() ? ' cheatRescueHighlight' : '')">
+<div @class="'housecard rescuehousecard' + (settings.highlightRescueHouse && _h === setup.MissingWomen.randomRescuePhotoNumber() ? ' cheatRescueHighlight' : '')">
 <<image "characters/rescue/house/" + _h + ".jpg" "iconRescuePx">>
 @@.icontextcity;<<link "Move" "RescueHouse">><<run setup.MissingWomen.setRescueHouse(_h)>>
 <</link>>@@
