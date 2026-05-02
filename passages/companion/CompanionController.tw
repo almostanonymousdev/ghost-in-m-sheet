@@ -1122,3 +1122,8 @@ setup.Companion = (function () {
 	]);
 	return api;
 })();
+
+/* HUD meters for the active companion's sanity / lust shown in the
+ * sidebar while a companion is on a hunt with the MC. */
+Meter.add('companionsanity', { label: '$companion.sanity', width: '100%' }, 1);
+Meter.add('companionlust',   { label: '$companion.lust',   width: '100%' }, 1);

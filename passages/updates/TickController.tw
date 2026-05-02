@@ -346,3 +346,14 @@ setup.Tick = (function () {
 		onPassageDone: onPassageDone
 	};
 })();
+
+/* Per-navigation $return tracker. Every time the engine starts a new
+ * passage, stamp its name into $return — that's what `<<return>>`
+ * links and the GUI overlays read to jump back to where the player
+ * was. Passages that shouldn't be returned to (modal/event chains,
+ * dialog popovers) opt out with the "noreturn" tag. */
+$(document).on(':passagestart', function (ev) {
+	if (!ev.passage.tags.includes('noreturn')) {
+		State.variables.return = ev.passage.name;
+	}
+});
