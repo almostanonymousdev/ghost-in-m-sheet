@@ -43,7 +43,7 @@
 	   question ("to join you" vs "go alone"). */
 	<<set _cName to _args[0]>>
 	<<set _cLvl to setup.Companion.companionLvl(_cName)>>
-	<<if setup.Companion.isCompanionFinishedSoloHunting(_cName)>>
+	<<if setup.Companion.hasFinishedSoloHunt(_cName)>>
 		/* SugarCube does not reliably evaluate macros inside the display
 		   portion of wiki-style links in this codebase — the raw print
 		   syntax leaked to the player. Use the link macro form so both

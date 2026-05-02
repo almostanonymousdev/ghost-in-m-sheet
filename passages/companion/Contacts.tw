@@ -10,7 +10,7 @@
 	<</if>><br>
 	<<image "characters/brook/brook.png" "contactsImages">><br>
 	<<if setup.Time.hours() lte 5>>
-		<<if setup.Companion.isCompanionFinishedSoloHunting("Brook")>>
+		<<if setup.Companion.hasFinishedSoloHunt("Brook")>>
 			@@.mc-thoughts; She is currently on a ghost hunt.@@
 		<<else>>
 			@@.mc-thoughts; She's sleeping@@<br>
@@ -44,7 +44,7 @@
 	<</if>><br>
 	<<image "characters/alice/alice.png" "contactsImages">><br>
 	<<if setup.Time.hours() lte 5>>
-		<<if setup.Companion.isCompanionFinishedSoloHunting("Alice")>>
+		<<if setup.Companion.hasFinishedSoloHunt("Alice")>>
 			@@.mc-thoughts; She is currently on a ghost hunt.@@
 		<<else>>
 			@@.mc-thoughts; She's sleeping@@<br>
@@ -68,7 +68,7 @@
 	<</if>><br>
 	<<image "characters/blake/blake.png" "contactsImages">><br>
 	<<if setup.Time.hours() lte 5>>
-		<<if setup.Companion.isCompanionFinishedSoloHunting("Blake")>>
+		<<if setup.Companion.hasFinishedSoloHunt("Blake")>>
 			@@.mc-thoughts; She is currently on a ghost hunt.@@
 		<<else>>
 			@@.mc-thoughts; She's sleeping@@<br>

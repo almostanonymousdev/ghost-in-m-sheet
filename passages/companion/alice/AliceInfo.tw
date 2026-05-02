@@ -21,7 +21,7 @@
 <<elseif _aws eq 1>>
 	@@.mc-speech; I need to help Alice with her work before asking her to join the ghost hunt.@@<br>
 <<elseif _aws eq 2>>
-	<<if not setup.Companion.isCompanionFinishedSoloHunting("Alice")>>
+	<<if not setup.Companion.hasFinishedSoloHunt("Alice")>>
 		@@.notmc-speech; Thanks a lot, now I'm free and ready to join you on the ghost hunt!@@<br>
 	<</if>>
 
