@@ -36,8 +36,8 @@ setup.Game = (function () {
 		s.hunt = null;
 
 		// --- Active haunted house -----------------------------
-		// 'owaissa' | 'elm' | 'enigma' | 'ironclad' | null. Replaces
-		// the old quartet of $is<House> bool flags + $isrealhouse.
+		// 'owaissa' | 'elm' | 'ironclad' | null. Replaces the old
+		// trio of $is<House> bool flags.
 		s.hauntedHouse = null;
 
 		// --- Bundled home event state -------------------------

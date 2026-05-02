@@ -162,7 +162,6 @@ test.describe('Haunted house — Elm', () => {
     await setupHunt(page, 'Spirit', 'elm');
     expect(await page.evaluate(() => SugarCube.setup.HauntedHouses.isElm())).toBe(true);
     expect(await page.evaluate(() => SugarCube.setup.HauntedHouses.isOwaissa())).toBe(false);
-    expect(await page.evaluate(() => SugarCube.setup.HauntedHouses.isEnigma())).toBe(false);
     expect(await page.evaluate(() => SugarCube.setup.HauntedHouses.isIronclad())).toBe(false);
   });
 });

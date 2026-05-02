@@ -512,8 +512,6 @@ async function walkPassages(browser, passages, label) {
       // require non-empty path strings. ui/img/witch-girl.jpg is a
       // real asset under both asset-placeholders/ and assets/.
       V.videoEvent = 'ui/img/witch-girl.jpg';
-      V.artImgEvent = 'ui/img/witch-girl.jpg';
-      V.artVideoEvent = 'ui/img/witch-girl.jpg';
 
       // Default to "inside Owaissa house" so haunted-house rooms have
       // a recognised location flag set. Most location-aware passages

@@ -11,12 +11,6 @@
 		<b><<print "bathroom upstairs">></b>
 	<<elseif _roomName eq "hallwayUpstairs">>
 		<b><<print "hallway upstairs">></b>
-	<<elseif _roomName eq "roomA">>
-		<b><<print "roomA in the basement">></b>
-	<<elseif _roomName eq "roomB">>
-		<b><<print "roomB in the basement">></b>
-	<<elseif _roomName eq "roomC">>
-		<b><<print "roomC in the basement">></b>
 	<<elseif _roomName eq "kitchen">>
 		<b><<print "kitchen">></b>
 	<<elseif _roomName eq "bathroom">>

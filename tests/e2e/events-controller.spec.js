@@ -62,7 +62,7 @@ test.describe('Events controller — video resolvers', () => {
     result = await page.evaluate(() =>
       SugarCube.setup.Events.pickByLocation(['o1'], ['e1']));
     expect(result).toEqual(['e1']);
-    await setLocation(page, 'enigma');
+    await setLocation(page, 'ironclad');
     result = await page.evaluate(() =>
       SugarCube.setup.Events.pickByLocation(['o1'], ['e1']));
     expect(result).toEqual([]);
@@ -343,13 +343,6 @@ test.describe('Events controller — event flags / videos', () => {
     expect(await callSetup(page, 'setup.Events.videoEventIsMp4()')).toBe(false);
     await page.evaluate(() => SugarCube.setup.Events.setVideoEvent('foo.mp4'));
     expect(await callSetup(page, 'setup.Events.videoEventIsMp4()')).toBe(true);
-  });
-
-  test('setArtImgEvent / setArtVideoEvent round-trip', async () => {
-    await page.evaluate(() => SugarCube.setup.Events.setArtImgEvent('art/1.jpg'));
-    await page.evaluate(() => SugarCube.setup.Events.setArtVideoEvent('art/1.mp4'));
-    expect(await callSetup(page, 'setup.Events.artImgEvent()')).toBe('art/1.jpg');
-    expect(await callSetup(page, 'setup.Events.artVideoEvent()')).toBe('art/1.mp4');
   });
 
   test('setOrgasmCooldown stores the value', async () => {
