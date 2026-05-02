@@ -56,12 +56,12 @@ double-nest the wrapper class (which compounds its 80% font-size). */
 	· <<image "ui/img/energy.png" { class: "hunt-conditions-icon" }>> _energy/step
 	· <<image "ui/img/corruption.png" { class: "hunt-conditions-icon" }>> <<= _corrShown>>/step
 	· Time <<= _hc.timeLabel>>
-	<<if _hc.toolChanceBonus gt 0 or _hc.toolWindowBonus gt 0 or _hc.huntChanceBonus gt 0>>
+	<<if _hc.toolChanceBonus gt 0 or _hc.toolWindowBonus gt 0 or _hc.prowlChanceBonus gt 0>>
 		· tools +<<= _hc.toolChanceBonus>>%
 		<<if _hc.toolWindowBonus gt 0>>
 			/+<<= _hc.toolWindowBonus>>min
 		<</if>>
-		· hunt +<<= _hc.huntChanceBonus>>%
+		· prowl +<<= _hc.prowlChanceBonus>>%
 	<</if>>
 	<<for _c range _hc.contributors>>
 		<<capture _c>>

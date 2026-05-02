@@ -10,7 +10,7 @@ const { openGame, resetGame, callSetup, goToPassage, getVar } = require('./helpe
      - isGhostHere()            bool, mode-aware
      - isHuntActive()           per-tick chain gate
      - isCursedHuntActive()     classic-only sub-flow gate
-     - shouldStartRandomHunt()  CheckHuntStart gate
+     - shouldStartRandomProwl()  CheckHuntStart gate
      - shouldTriggerSteal()     StealClothesEvent gate
      - huntOverPassage(reason)  routes sanity / exhaustion / time
                                 runouts to the mode-appropriate
@@ -204,40 +204,40 @@ test.describe('HuntController', () => {
     expect(await callSetup(page, 'setup.Rogue.field("failureReason")')).toBe('caught');
   });
 
-  test('shouldStartRandomHunt() fires in both modes when the predicate is met', async () => {
-    /* Predicate: !huntActivated && elapsedTimeHunt >= huntTimeRemain
-       && roll <= threshold && ghost.canHunt(mc). We pre-stamp
-       huntTimeRemain=0 so the timer is already past, lower MC sanity
-       under Shade's canHunt cutoff (<= 55), and patch Math.random
+  test('shouldStartRandomProwl() fires in both modes when the predicate is met', async () => {
+    /* Predicate: !prowlActivated && elapsedTimeProwl >= prowlTimeRemain
+       && roll <= threshold && ghost.canProwl(mc). We pre-stamp
+       prowlTimeRemain=0 so the timer is already past, lower MC sanity
+       under Shade's canProwl cutoff (<= 55), and patch Math.random
        to 0 so the threshold roll always passes. The remaining
        gating is whether HuntController dispatches the call -- the
        point of this test is that it does so for both modes. */
     await page.evaluate(() => {
       const V = SugarCube.State.variables;
-      V.huntActivated = 0;
-      V.huntTimeRemain = 0;
-      V.elapsedTimeHunt = 0;
-      V.huntActivationTime = 0;
-      V.mc.sanity = 30; // under every catalogue ghost's huntCondition floor
+      V.prowlActivated = 0;
+      V.prowlTimeRemain = 0;
+      V.elapsedTimeProwl = 0;
+      V.prowlActivationTime = 0;
+      V.mc.sanity = 30; // under every catalogue ghost's prowlCondition floor
       const _r = Math.random;
       Math.random = () => 0; // floor(0*101) = 0, well below threshold
       window.__restoreRandom = () => { Math.random = _r; };
     });
 
     // No active mode: predicate is suppressed.
-    expect(await callSetup(page, 'setup.HuntController.shouldStartRandomHunt()')).toBe(false);
+    expect(await callSetup(page, 'setup.HuntController.shouldStartRandomProwl()')).toBe(false);
 
     // Classic: a $hunt object with a willing ghost answers true.
     await page.evaluate(() => {
       SugarCube.setup.Ghosts.startHunt('Shade');
       SugarCube.setup.Ghosts.setHuntMode(SugarCube.setup.Ghosts.HuntMode.ACTIVE);
     });
-    expect(await callSetup(page, 'setup.HuntController.shouldStartRandomHunt()')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntController.shouldStartRandomProwl()')).toBe(true);
 
     // Rogue: same predicate, same call, no mode-gating in the
     // controller. (Hide / RunFast / PrayHunt are all reachable via
     // GhostHuntEvent once the chain returns true here.) We pin the
-    // ghost to Shade so the canHunt(sanity<=55) condition is met
+    // ghost to Shade so the canProwl(sanity<=55) condition is met
     // regardless of which ghost the seed would have rolled.
     await page.evaluate(() => {
       SugarCube.setup.Ghosts.endContract();
@@ -245,7 +245,7 @@ test.describe('HuntController', () => {
       SugarCube.setup.Rogue.setField('ghostName', 'Shade');
     });
     await goToPassage(page, 'RogueRun');
-    expect(await callSetup(page, 'setup.HuntController.shouldStartRandomHunt()')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntController.shouldStartRandomProwl()')).toBe(true);
 
     await page.evaluate(() => window.__restoreRandom && window.__restoreRandom());
   });

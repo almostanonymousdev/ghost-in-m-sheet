@@ -87,13 +87,13 @@ setup.Tick = (function () {
 		s.hasRescueClue = 0;
 	}
 
-	// --- Hunt timer accounting -----------------------------------
-	function tickHuntTimer() {
+	// --- Haunt timer accounting ----------------------------------
+	function tickProwlTimer() {
 		var s = sv();
-		if (s.elapsedTimeHunt > s.huntTimeRemain) {
-			s.huntActivated = 0;
+		if (s.elapsedTimeProwl > s.prowlTimeRemain) {
+			s.prowlActivated = 0;
 		} else {
-			s.elapsedTimeHunt = (s.hours * 60 + s.minutes) - s.huntActivationTime;
+			s.elapsedTimeProwl = (s.hours * 60 + s.minutes) - s.prowlActivationTime;
 		}
 	}
 
@@ -292,7 +292,7 @@ setup.Tick = (function () {
 		}
 
 		if (!setup.Migrations.update22Applied()) {
-			setup.Migrations.migrateRoomsAndHuntTimer();
+			setup.Migrations.migrateRoomsAndProwlTimer();
 		}
 		if (!setup.Migrations.update0909Applied()) {
 			setup.Migrations.migrateDeliveryAndCompanionReset();
@@ -310,7 +310,7 @@ setup.Tick = (function () {
 		setup.Migrations.ensureUnderwearMemory();
 		initTick();
 
-		tickHuntTimer();
+		tickProwlTimer();
 		tickRescueQuestExpiry();
 		tickCursedHuntTimer();
 		setup.Migrations.migrateCompanionPlanTimes();
@@ -329,7 +329,7 @@ setup.Tick = (function () {
 		tickCursedHuntTimer: tickCursedHuntTimer,
 		applyDetectorHighlights: applyDetectorHighlights,
 		tickRescueQuestExpiry: tickRescueQuestExpiry,
-		tickHuntTimer: tickHuntTimer,
+		tickProwlTimer: tickProwlTimer,
 		applyChokerLustFloor: applyChokerLustFloor,
 		applyPossessionTarotCleanup: applyPossessionTarotCleanup,
 		activeCompanionShouldLeaveAfterEvent: activeCompanionShouldLeaveAfterEvent,

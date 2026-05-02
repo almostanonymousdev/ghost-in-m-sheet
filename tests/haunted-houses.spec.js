@@ -408,83 +408,83 @@ test.describe('Haunted Houses Controller', () => {
 
   // --- Hunt triggers ---
 
-  test('canStartRandomHunt true when not activated and time elapsed', async () => {
+  test('canStartRandomProwl true when not activated and time elapsed', async () => {
     // arrange
-    await setVar(page, 'huntActivated', 0);
-    await setVar(page, 'elapsedTimeHunt', 10);
-    await setVar(page, 'huntTimeRemain', 5);
+    await setVar(page, 'prowlActivated', 0);
+    await setVar(page, 'elapsedTimeProwl', 10);
+    await setVar(page, 'prowlTimeRemain', 5);
 
     // act
-    const result = await callSetup(page, 'setup.HauntedHouses.canStartRandomHunt()');
+    const result = await callSetup(page, 'setup.HauntedHouses.canStartRandomProwl()');
 
     // assert
     expect(result).toBe(true);
   });
 
-  test('canStartRandomHunt false when already activated', async () => {
+  test('canStartRandomProwl false when already activated', async () => {
     // arrange
-    await setVar(page, 'huntActivated', 1);
-    await setVar(page, 'elapsedTimeHunt', 100);
-    await setVar(page, 'huntTimeRemain', 5);
+    await setVar(page, 'prowlActivated', 1);
+    await setVar(page, 'elapsedTimeProwl', 100);
+    await setVar(page, 'prowlTimeRemain', 5);
 
     // act
-    const result = await callSetup(page, 'setup.HauntedHouses.canStartRandomHunt()');
+    const result = await callSetup(page, 'setup.HauntedHouses.canStartRandomProwl()');
 
     // assert
     expect(result).toBe(false);
   });
 
-  test('canStartRandomHunt false when not enough time elapsed', async () => {
+  test('canStartRandomProwl false when not enough time elapsed', async () => {
     // arrange
-    await setVar(page, 'huntActivated', 0);
-    await setVar(page, 'elapsedTimeHunt', 3);
-    await setVar(page, 'huntTimeRemain', 5);
+    await setVar(page, 'prowlActivated', 0);
+    await setVar(page, 'elapsedTimeProwl', 3);
+    await setVar(page, 'prowlTimeRemain', 5);
 
     // act
-    const result = await callSetup(page, 'setup.HauntedHouses.canStartRandomHunt()');
+    const result = await callSetup(page, 'setup.HauntedHouses.canStartRandomProwl()');
 
     // assert
     expect(result).toBe(false);
   });
 
-  // --- Hunt gates (huntCondition thresholds) ---
+  // --- Hunt gates (prowlCondition thresholds) ---
   //
   // The catalogue-wide gate widening lives in GhostController.tw: every
-  // huntCondition threshold was shifted 20 points toward "fires sooner"
+  // prowlCondition threshold was shifted 20 points toward "fires sooner"
   // (sanity-gated: +20, lust-gated: -20). These tests pin each ghost's
-  // canHunt(mc) boundary so an accidental revert to the pre-change values
+  // canProwl(mc) boundary so an accidental revert to the pre-change values
   // fails here instead of silently re-tightening the gates.
 
-  const canHunt = (ghostName, sanity, lust) =>
+  const canProwl = (ghostName, sanity, lust) =>
     callSetup(
       page,
       `setup.Ghosts.getByName(${JSON.stringify(ghostName)})` +
-        `.canHunt({ sanity: ${sanity}, lust: ${lust} })`,
+        `.canProwl({ sanity: ${sanity}, lust: ${lust} })`,
     );
 
-  test('Shade canHunt gate is sanity <= 55 (widened from 35)', async () => {
-    expect(await canHunt('Shade', 55, 0)).toBe(true);
-    expect(await canHunt('Shade', 56, 0)).toBe(false);
+  test('Shade canProwl gate is sanity <= 55 (widened from 35)', async () => {
+    expect(await canProwl('Shade', 55, 0)).toBe(true);
+    expect(await canProwl('Shade', 56, 0)).toBe(false);
   });
 
-  test('Demon canHunt gate is sanity <= 90 (widened from 70)', async () => {
-    expect(await canHunt('Demon', 90, 0)).toBe(true);
-    expect(await canHunt('Demon', 91, 0)).toBe(false);
+  test('Demon canProwl gate is sanity <= 90 (widened from 70)', async () => {
+    expect(await canProwl('Demon', 90, 0)).toBe(true);
+    expect(await canProwl('Demon', 91, 0)).toBe(false);
   });
 
-  test('Phantom canHunt gate is sanity <= 70 (widened from 50)', async () => {
-    expect(await canHunt('Phantom', 70, 0)).toBe(true);
-    expect(await canHunt('Phantom', 71, 0)).toBe(false);
+  test('Phantom canProwl gate is sanity <= 70 (widened from 50)', async () => {
+    expect(await canProwl('Phantom', 70, 0)).toBe(true);
+    expect(await canProwl('Phantom', 71, 0)).toBe(false);
   });
 
-  test('Spirit canHunt gate is lust >= 30 (widened from 50)', async () => {
-    expect(await canHunt('Spirit', 100, 30)).toBe(true);
-    expect(await canHunt('Spirit', 100, 29)).toBe(false);
+  test('Spirit canProwl gate is lust >= 30 (widened from 50)', async () => {
+    expect(await canProwl('Spirit', 100, 30)).toBe(true);
+    expect(await canProwl('Spirit', 100, 29)).toBe(false);
   });
 
-  test('Banshee canHunt gate is lust >= 30 (widened from 50)', async () => {
-    expect(await canHunt('Banshee', 100, 30)).toBe(true);
-    expect(await canHunt('Banshee', 100, 29)).toBe(false);
+  test('Banshee canProwl gate is lust >= 30 (widened from 50)', async () => {
+    expect(await canProwl('Banshee', 100, 30)).toBe(true);
+    expect(await canProwl('Banshee', 100, 29)).toBe(false);
   });
 
   // --- HauntConditions contract drain ---

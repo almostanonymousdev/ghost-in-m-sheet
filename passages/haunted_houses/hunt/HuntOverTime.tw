@@ -1,5 +1,5 @@
 :: HuntOverTime [nobr] {"position":"1500,1350","size":"100,100"}
-<<run setup.Ghosts.markActiveHuntEvent()>>
+<<run setup.Ghosts.markActiveProwlEvent()>>
 <<run setup.Ghosts.fireActiveHuntEnd()>>
 <<image "ui/img/dawn.jpg" { width: "100%" }>>
 <br>

@@ -26,8 +26,8 @@ Models the core hunt loop from Ghost in M'Sheet:
       * lust >= 50:          tool +5%, hunt +3%
       * overcharged tools:   tool +10%, tool window +5, hunt +5%, sanity -1/step
   - Ghost hunts (CheckHuntStart.tw): each nav tick rolls random(0,100) <=
-    6 + huntChanceBonus. If the ghost's canHunt(mc) gate is also satisfied,
-    a hunt fires. The AI hides; ghost-specific override rules (Deogen,
+    6 + prowlChanceBonus. If the ghost's canProwl(mc) gate is also satisfied,
+    a prowl fires. The AI hides; ghost-specific override rules (Deogen,
     Jinn) apply via runningSucceeds / hidingSucceeds.
   - Exit reasons tracked: identified, energy, sanity_zero (HuntOverSanity),
     caught_in_hunt (HuntEnd), search_timeout.
@@ -102,10 +102,10 @@ def _parse_ghost_block(block: str) -> dict:
     evidence = frozenset(
         EVIDENCE_ENUM[k] for k in re.findall(r'\bE\.([A-Z]+)', ev_match.group(1))
     )
-    # huntCondition is either `mc.sanity <= N` or `mc.lust >= N`.
+    # prowlCondition is either `mc.sanity <= N` or `mc.lust >= N`.
     hc = _need(re.search(
-        r'huntCondition:[^,]*?mc\.(sanity|lust)\s*(<=|>=)\s*(\d+)', block),
-        f"huntCondition for {name}")
+        r'prowlCondition:[^,]*?mc\.(sanity|lust)\s*(<=|>=)\s*(\d+)', block),
+        f"prowlCondition for {name}")
     kind = ("sanity_max" if hc.group(1) == "sanity" else "lust_min")
     hunt_cond = (kind, int(hc.group(3)))
     hide = running = None
@@ -185,7 +185,7 @@ def _parse_snapshot_bonuses(src: str) -> dict[str, dict[str, float]]:
         "energy_per_step":  r'snap\.energyPerStep\s*([+\-])=\s*([\d.]+)',
         "tool_chance":      r'snap\.toolChanceBonus\s*([+\-])=\s*([\d.]+)',
         "tool_window":      r'snap\.toolWindowBonus\s*([+\-])=\s*([\d.]+)',
-        "hunt_chance":      r'snap\.huntChanceBonus\s*([+\-])=\s*([\d.]+)',
+        "hunt_chance":      r'snap\.prowlChanceBonus\s*([+\-])=\s*([\d.]+)',
     }
     out: dict[str, dict[str, float]] = {}
     for name, block_re in branches.items():
@@ -390,9 +390,9 @@ def load_game_data() -> GameData:
         r"function\s+shuffleGhostRoom[^{}]*\{[^}]*?Math\.random\(\)\s*<\s*([\d.]+)",
         hunt_controller)
 
-    # HauntedHousesController shouldStartRandomHunt(): threshold base + HauntConditions bonus
+    # HauntedHousesController shouldStartRandomProwl(): threshold base + HauntConditions bonus
     hunt_base_threshold = int(_find_num(
-        r"shouldStartRandomHunt:[^}]*?var\s+threshold\s*=\s*(\d+)",
+        r"shouldStartRandomProwl:[^}]*?var\s+threshold\s*=\s*(\d+)",
         hh_controller))
 
     # Hide.tw: `if _checkH lte 50` -> success (swap: player lucky)
@@ -487,9 +487,9 @@ def validate_game_data() -> list[str]:
         require(not bad, f"ghost {name}: unknown evidence {sorted(bad)}")
         kind, threshold = g["hunt_cond"]
         require(kind in ("sanity_max", "lust_min"),
-                f"ghost {name}: bad huntCondition kind {kind!r}")
+                f"ghost {name}: bad prowlCondition kind {kind!r}")
         require(0 < threshold <= 100,
-                f"ghost {name}: huntCondition threshold {threshold} "
+                f"ghost {name}: prowlCondition threshold {threshold} "
                 f"out of range")
         lo, hi = g["sanity_loss"]
         require(0 < lo <= hi,
@@ -636,7 +636,7 @@ class Hunt:
     bottom: bool = True       # jeans/shorts/skirt worn
     panties: bool = True
     overcharged: bool = False
-    hunt_active_flag: bool = False   # $huntActivated
+    hunt_active_flag: bool = False   # $prowlActivated
     orgasm_cooldown: int = 0  # $orgasmCooldownSteps
     exit_reason: str = ""
 
@@ -844,8 +844,8 @@ class Hunt:
         # Survived - ghost event bumps both timed tools (like FreezeHunt).
         self._activate("emf")
         self._activate("uvl")
-        # After the event, the hunt-trigger clock resets (huntActivated=1;
-        # next CheckHuntStart waits for elapsedTimeHunt >= huntTimeRemain).
+        # After the event, the prowl-trigger clock resets (prowlActivated=1;
+        # next CheckHuntStart waits for elapsedTimeProwl >= prowlTimeRemain).
         # Approximate with a 60-minute cooldown window expressed as
         # "no new hunt this step"; next step we re-arm the flag.
         self.hunt_active_flag = False

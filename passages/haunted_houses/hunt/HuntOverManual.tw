@@ -1,5 +1,5 @@
 :: HuntOverManual [nobr] {"position":"1600,1350","size":"100,100"}
-<<run setup.Ghosts.markActiveHuntEvent()>>
+<<run setup.Ghosts.markActiveProwlEvent()>>
 <<run setup.Ghosts.fireActiveHuntEnd()>>
 @@.mc-speech;I am leaving this accursed house. It seems I've done everything I could.@@<br>
 

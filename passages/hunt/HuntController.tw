@@ -115,17 +115,17 @@ setup.HuntController = (function () {
 	}
 
 	/* Random-hunt-event roll. Both modes share the same
-	   threshold + ghost.canHunt gate -- the predicate works off
-	   $huntActivated / $elapsedTimeHunt / $huntTimeRemain, which
+	   threshold + ghost.canProwl gate -- the predicate works off
+	   $prowlActivated / $elapsedTimeProwl / $prowlTimeRemain, which
 	   the per-tick TickController maintenance keeps fresh in either
 	   mode. When a roll comes back true the per-tick chain in
 	   widgetInclude routes to GhostHuntEvent, which is itself
 	   mode-agnostic (Hide / RunFast / PrayHunt / FreezeHunt /
 	   HuntEventSuccubus all return through huntCaughtPassage or
 	   $return so they land back on the right passage). */
-	function shouldStartRandomHunt() {
+	function shouldStartRandomProwl() {
 		if (!isActive()) return false;
-		return setup.HauntedHouses.shouldStartRandomHunt();
+		return setup.HauntedHouses.shouldStartRandomProwl();
 	}
 
 	/* Steal-clothes roll. The wardrobe / stash side-effects are
@@ -243,7 +243,7 @@ setup.HuntController = (function () {
 		isGhostHere:            isGhostHere,
 		isHuntActive:           isHuntActive,
 		isCursedHuntActive:     isCursedHuntActive,
-		shouldStartRandomHunt:  shouldStartRandomHunt,
+		shouldStartRandomProwl:  shouldStartRandomProwl,
 		shouldTriggerSteal:     shouldTriggerSteal,
 		huntOverPassage:        huntOverPassage,
 		huntCaughtPassage:      huntCaughtPassage,

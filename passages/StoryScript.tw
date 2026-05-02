@@ -1020,7 +1020,7 @@ $(document).on(':passagerender', function (ev) {
 
 /* Ghost catalogue and helpers live in passages/ghosts/GhostController.tw
  * under the setup.Ghosts namespace (setup.Ghosts, setup.Ghosts.EvidenceType,
- * setup.Ghosts.getByName/active/huntCondition.../evidence... etc.). */
+ * setup.Ghosts.getByName/active/prowlCondition.../evidence... etc.). */
 
 /* Every room id that gets a per-hunt $currentsearch<Room> bag.
  * The variable name is always "currentsearch" + room. */
@@ -1294,7 +1294,7 @@ setup.HauntConditions = (function () {
             energyPerStep:     inHouse ? -ENERGY_PER_STEP : 0,
             corruptionPending: 0,
             timeLabel:         "paused",
-            huntChanceBonus:   0,
+            prowlChanceBonus:   0,
             toolChanceBonus:   0,
             toolWindowBonus:   0,
             contributors:      []
@@ -1310,47 +1310,47 @@ setup.HauntConditions = (function () {
         if (isCurrentRoomDark()) {
             snap.dark = true;
             snap.sanityPerStep  -= 1;
-            snap.huntChanceBonus += 6;
+            snap.prowlChanceBonus += 6;
             snap.toolChanceBonus += 10;
             snap.toolWindowBonus += 5;
             snap.contributors.push({
                 label: "Dark",
                 color: "#ff7777",
-                detail: "tools +10%, +5 min · hunt +6%"
+                detail: "tools +10%, +5 min · prowl +6%"
             });
         }
 
         if (snap.clothing === "topless") {
             snap.toolChanceBonus += 5;
             snap.lustPerStep     += 1;
-            snap.huntChanceBonus += 3;
+            snap.prowlChanceBonus += 3;
             snap.contributors.push({
                 label: "Topless",
                 color: "#ff99cc",
-                detail: "tools +5% · lust +1/step · hunt +3%"
+                detail: "tools +5% · lust +1/step · prowl +3%"
             });
         } else if (snap.clothing === "nude") {
             snap.toolChanceBonus     += 10;
             snap.lustPerStep         += 2;
             snap.corruptionPending   += 0.1;
-            snap.huntChanceBonus     += 5;
+            snap.prowlChanceBonus     += 5;
             snap.contributors.push({
                 label: "Nude",
                 color: "#ff66aa",
-                detail: "tools +10% · lust +2/step · hunt +5% · corr banking"
+                detail: "tools +10% · lust +2/step · prowl +5% · corr banking"
             });
         }
 
         var mc = V.mc;
         if (mc && mc.lust >= LUST_FUEL_THRESHOLD) {
             snap.toolChanceBonus   += 5;
-            snap.huntChanceBonus   += 3;
+            snap.prowlChanceBonus   += 3;
             snap.corruptionPending += 0.05;
             snap.sanityPerStep     -= 0.2;
             snap.contributors.push({
                 label: "Lust ≥ " + LUST_FUEL_THRESHOLD,
                 color: "#e84aa4",
-                detail: "tools +5% · hunt +3% · sanity -0.2/step · corr banking"
+                detail: "tools +5% · prowl +3% · sanity -0.2/step · corr banking"
             });
         }
 
@@ -1385,23 +1385,23 @@ setup.HauntConditions = (function () {
         if (snap.overchargedTools) {
             snap.toolChanceBonus += 10;
             snap.toolWindowBonus += 5;
-            snap.huntChanceBonus += 5;
+            snap.prowlChanceBonus += 5;
             snap.sanityPerStep   -= 1;
             snap.contributors.push({
                 label: "Overcharged",
                 color: "#ffaa33",
-                detail: "tools +10%, +5 min · hunt +5% · sanity -1/step"
+                detail: "tools +10%, +5 min · prowl +5% · sanity -1/step"
             });
         }
 
         if (snap.baitActive) {
             snap.toolChanceBonus += 20;
-            snap.huntChanceBonus += 20;
+            snap.prowlChanceBonus += 20;
             snap.sanityPerStep   -= 1;
             snap.contributors.push({
                 label: "Baiting (" + snap.baitStepsRemain + ")",
                 color: "#cc66ff",
-                detail: "ghost pinned here · tools +20% · hunt +20%"
+                detail: "ghost pinned here · tools +20% · prowl +20%"
             });
         }
 

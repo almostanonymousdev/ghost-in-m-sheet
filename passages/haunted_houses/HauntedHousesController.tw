@@ -388,19 +388,19 @@ setup.HauntedHouses = (function () {
 		},
 
 		// --- Hunt triggers --------------------------------------
-		canStartRandomHunt: function () {
-			return !setup.Ghosts.isHuntActivated()
-				&& setup.Ghosts.elapsedTimeHunt() >= setup.Ghosts.huntTimeRemain();
+		canStartRandomProwl: function () {
+			return !setup.Ghosts.isProwlActivated()
+				&& setup.Ghosts.elapsedTimeProwl() >= setup.Ghosts.prowlTimeRemain();
 		},
 		/* :: CheckHuntStart entry: gates random hunt start by the
-		   hunt-conditions threshold + ghost canHunt check. Returns
+		   hunt-conditions threshold + ghost canProwl check. Returns
 		   true when the passage should <<goto "GhostHuntEvent">>. */
-		shouldStartRandomHunt: function () {
-			if (!this.canStartRandomHunt()) return false;
-			var threshold = 6 + setup.HauntConditions.snapshot().huntChanceBonus;
+		shouldStartRandomProwl: function () {
+			if (!this.canStartRandomProwl()) return false;
+			var threshold = 6 + setup.HauntConditions.snapshot().prowlChanceBonus;
 			if (Math.floor(Math.random() * 101) > threshold) return false;
 			var g = setup.Ghosts.active();
-			return !!(g && g.canHunt(setup.Mc.mc()));
+			return !!(g && g.canProwl(setup.Mc.mc()));
 		},
 		/* :: StealClothesEvent entry: rolls the steal chance and gates
 		   on whether anything is actually stealable. Returns true when
@@ -467,9 +467,9 @@ setup.HauntedHouses = (function () {
 		   activation flag + timestamp the Hunt tick reads off when
 		   deciding if enough in-game time has passed to retry. */
 		rearmHuntTimer: function () {
-			setup.Ghosts.activateHunt();
+			setup.Ghosts.activateProwl();
 		},
-		/* Start-of-hunt-event bookkeeping: reset elapsedTimeHunt
+		/* Start-of-hunt-event bookkeeping: reset elapsedTimeProwl
 		   window + stamp the activation time. Called by the first
 		   frame of GhostHuntEvent before the player picks
 		   run/hide/freeze/pray. */
@@ -500,9 +500,9 @@ setup.HauntedHouses = (function () {
 				setup.HuntController.shuffleGhostRoom();
 			}
 		},
-		beginHuntEvent: function () {
-			setup.Ghosts.activateHunt();
-			setup.Ghosts.setElapsedTimeHunt(0);
+		beginProwlEvent: function () {
+			setup.Ghosts.activateProwl();
+			setup.Ghosts.setElapsedTimeProwl(0);
 		},
 		succubusEventTimer: function () { return setup.Home.succubusEventTimer() || 0; },
 		stealChance: function () { return sv().stealChance || 0; },

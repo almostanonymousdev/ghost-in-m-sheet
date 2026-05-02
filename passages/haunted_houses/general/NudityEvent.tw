@@ -1,6 +1,6 @@
 :: NudityEvent [nobr] {"position":"1700,1350","size":"100,100"}
 <<set _videoList to []>>
-<<run setup.Ghosts.markActiveHuntEvent()>>
+<<run setup.Ghosts.markActiveProwlEvent()>>
 <<if setup.HauntedHouses.nudityNakedNoBottoms()>>
 	<<if setup.Mc.exhibitionism() lte 4>>
 		<<set _videoList to [

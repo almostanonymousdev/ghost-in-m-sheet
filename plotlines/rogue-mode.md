@@ -140,10 +140,10 @@ flow (`$hunt`) and rogue runs (`$run`) -- share one tool / evidence
 * `shouldTriggerSteal()` — wardrobe-state roll. Honours a
   per-house `runsStealClothes: false` opt-out (ironclad, since
   prison ghosts have their own warden-clothes mechanic).
-* `shouldStartRandomHunt()` — gates `CheckHuntStart`'s
+* `shouldStartRandomProwl()` — gates `CheckHuntStart`'s
   `<<goto "GhostHuntEvent">>`. Both modes delegate to
-  `HauntedHouses.shouldStartRandomHunt()`, which is mode-agnostic
-  (`canStartRandomHunt` + `huntChanceBonus` + `g.canHunt(mc)`).
+  `HauntedHouses.shouldStartRandomProwl()`, which is mode-agnostic
+  (`canStartRandomProwl` + `prowlChanceBonus` + `g.canProwl(mc)`).
   Once the gate trips, the chain `<<goto>>`s `GhostHuntEvent` and
   the survival branches (Hide, RunFast, PrayHunt, FreezeHunt,
   HuntEventSuccubus) are reachable in both modes.
@@ -200,7 +200,7 @@ classic" branch:
   (`LightPassageGhost`), a ghost event may roll (`Event` →
   `EventMC`), a steal-clothes event may roll
   (`HuntController.shouldTriggerSteal` → `StealClothes`), and a
-  random hunt may start (`HuntController.shouldStartRandomHunt`
+  random prowl may start (`HuntController.shouldStartRandomProwl`
   → `GhostHuntEvent`). Used both from `<<huntTickStep>>` and from
   the per-tool-tick repeat body emitted by
   `setup.searchToolMarkup`.

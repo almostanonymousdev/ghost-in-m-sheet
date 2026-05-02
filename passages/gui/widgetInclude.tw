@@ -31,7 +31,7 @@
 		<</if>>
 		<<if not setup.HauntedHouses.stealClothesTriggered()
 				and not setup.Events.eventTriggered()
-				and setup.HuntController.shouldStartRandomHunt()>>
+				and setup.HuntController.shouldStartRandomProwl()>>
 			<<goto "GhostHuntEvent">>
 		<</if>>
 	<</if>>

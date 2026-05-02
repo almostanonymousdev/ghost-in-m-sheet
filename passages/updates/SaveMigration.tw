@@ -215,6 +215,25 @@
 			vars.hasPSpray = 0;
 		}
 
+		// One-time rename: the random-ghost-attack timer vars were
+		// renamed from "hunt*" to "prowl*" to mirror the player/ghost
+		// terminology split (the player goes on a "ghost hunt"; what
+		// the ghost does mid-session is a "ghost prowl"). Carry old
+		// values forward when only the legacy keys are defined.
+		[
+			['huntActivated',      'prowlActivated'],
+			['huntActivationTime', 'prowlActivationTime'],
+			['huntTimeRemain',     'prowlTimeRemain'],
+			['elapsedTimeHunt',    'elapsedTimeProwl']
+		].forEach(function (pair) {
+			var oldKey = pair[0];
+			var newKey = pair[1];
+			if (vars[newKey] === undefined && vars[oldKey] !== undefined) {
+				vars[newKey] = vars[oldKey];
+			}
+			delete vars[oldKey];
+		});
+
 		// Older saves stored hunt state as a scatter of variables
 		// ($ghost, $ghostName, $ghostEvidence, $ghostRoom, $ghostIsTrapped,
 		// $ghostHuntingMode, $saveMimic). Consolidate into $hunt so

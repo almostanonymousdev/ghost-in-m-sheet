@@ -376,7 +376,7 @@ test.describe('E2E: rogue run lifecycle', () => {
 
     /* Pin event randomness off so the click only exercises the
        per-tick drain branch (not Event / StealClothes / GhostHuntEvent
-       gotos). The chain still calls Event but rollHuntEvent's
+       gotos). The chain still calls Event but rollProwlEvent's
        chance-roll is gated on Math.random; pre-seeding all rolls
        to 1.0 keeps every roll above its threshold. */
     await page.evaluate(() => { Math.random = () => 0.99; });
@@ -441,11 +441,11 @@ test.describe('E2E: rogue run lifecycle', () => {
     ).toBeVisible();
   });
 
-  test('per-tick chain in rogue triggers GhostHuntEvent when shouldStartRandomHunt fires', async () => {
+  test('per-tick chain in rogue triggers GhostHuntEvent when shouldStartRandomProwl fires', async () => {
     test.setTimeout(15_000);
 
     /* The huntTickStep widget calls huntTickEventChain, which goes
-       through HuntController.shouldStartRandomHunt. With timer
+       through HuntController.shouldStartRandomProwl. With timer
        state pre-stamped past the threshold and Math.random pinned
        low, a single tool tick should land on GhostHuntEvent. */
     await goToPassage(page, 'GhostStreet');
@@ -455,18 +455,18 @@ test.describe('E2E: rogue run lifecycle', () => {
 
     await page.evaluate(() => {
       const V = SugarCube.State.variables;
-      V.huntActivated = 0;
-      V.huntTimeRemain = 0;
-      V.elapsedTimeHunt = 0;
-      V.huntActivationTime = 0;
+      V.prowlActivated = 0;
+      V.prowlTimeRemain = 0;
+      V.elapsedTimeProwl = 0;
+      V.prowlActivationTime = 0;
       V.mc.sanity = 30; // satisfies every sanity-cutoff ghost
       V.mc.lust = 60;   // satisfies lust-condition ghosts too
       V.mc.energy = 5;  // keep applyTickEffects from triggering exhaustion
-      // Pin the rogue ghost to Shade so its huntCondition (sanity<=55) trips.
+      // Pin the rogue ghost to Shade so its prowlCondition (sanity<=55) trips.
       SugarCube.setup.Rogue.setField('ghostName', 'Shade');
       // Force every Math.random call to 0 so:
       //   - LightPassageGhost roll: 0 (no light flicker dest)
-      //   - rollHuntEvent's various rolls all round-trip: chance=0,
+      //   - rollProwlEvent's various rolls all round-trip: chance=0,
       //     bansheeRoll/ctRoll = 1 (≠ 1 disables those branches),
       //     body part roll picks the first option.
       //   - shouldTriggerSteal: roll 1, > stealChance? -- with

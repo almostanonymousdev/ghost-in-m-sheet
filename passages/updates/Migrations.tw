@@ -4,7 +4,7 @@
  *
  * Two flavours live here:
  *   1. Big shape-change patches that rewrite multiple variables
- *      (migrateRoomsAndHuntTimer, migrateStockingsFootBought, etc.).
+ *      (migrateRoomsAndProwlTimer, migrateStockingsFootBought, etc.).
  *      These run from passages (Update1.tw, updatePatches.tw, FixSaveFile.tw)
  *      gated by a save-version flag and stamp the flag when done.
  *   2. "ensure" helpers run from PassageReady that backfill defaults
@@ -38,7 +38,7 @@ setup.Migrations = (function () {
 	/* Pre-0.4 saves: seed new rooms, init hunt timer fields, set
 	   sanity caps and pre-overhaul wardrobe defaults. Stamps
 	   $update22 = 0.4 so this runs once. */
-	function migrateRoomsAndHuntTimer() {
+	function migrateRoomsAndProwlTimer() {
 		var s = sv();
 		var rooms = ['basement', 'bedroomTwo', 'nursery', 'bathroomTwo', 'hallwayUpstairs', 'roomA', 'roomB', 'roomC'];
 		rooms.forEach(function (id) {
@@ -47,12 +47,12 @@ setup.Migrations = (function () {
 
 		if (setup.initWardrobe) { setup.initWardrobe(s); }
 
-		s.huntActivated       = 0;
-		s.rememberTopOuter    = 'tshirt0';
-		s.rememberBottomOuter = 'jeans0';
-		s.huntTimeRemain      = 60;
-		s.huntActivationTime  = 0;
-		s.elapsedTimeHunt     = 0;
+		s.prowlActivated       = 0;
+		s.rememberTopOuter     = 'tshirt0';
+		s.rememberBottomOuter  = 'jeans0';
+		s.prowlTimeRemain      = 60;
+		s.prowlActivationTime  = 0;
+		s.elapsedTimeProwl     = 0;
 
 		s.sanityIfHot = 0.1;
 		s.sanityInTheDark = 0.35;
@@ -219,7 +219,7 @@ setup.Migrations = (function () {
 		markIroncladMigrated: markIroncladMigrated,
 
 		// big patches
-		migrateRoomsAndHuntTimer: migrateRoomsAndHuntTimer,
+		migrateRoomsAndProwlTimer: migrateRoomsAndProwlTimer,
 		migrateStockingsFootBought: migrateStockingsFootBought,
 		migrateDeliveryAndCompanionReset: migrateDeliveryAndCompanionReset,
 		migrateCompanionPlanTimes: migrateCompanionPlanTimes,

@@ -287,7 +287,7 @@
            trio so the passage is pure presentation. */
         consumeCrucifix: function () {
             State.variables.crucifixAmount -= 1;
-            setup.Ghosts.activateHunt();
+            setup.Ghosts.activateProwl();
         },
         crucifixAmount: function () { return State.variables.crucifixAmount; },
         addCrucifix:    function () { State.variables.crucifixAmount += 1; },

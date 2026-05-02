@@ -10,11 +10,11 @@
 <</if>>
 
 :: Event [noreturn nobr] {"position":"1400,1050","size":"100,100"}
-<<if setup.Events.rollHuntEvent()>>
+<<if setup.Events.rollProwlEvent()>>
 	<<goto "EventMC">>
 <</if>>
 
 :: CheckHuntStart [noreturn nobr] {"position":"2500,1100","size":"100,100"}
-<<if setup.HauntedHouses.shouldStartRandomHunt()>>
+<<if setup.HauntedHouses.shouldStartRandomProwl()>>
 	<<goto "GhostHuntEvent">>
 <</if>>

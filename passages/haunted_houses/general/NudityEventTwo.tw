@@ -1,6 +1,6 @@
 :: NudityEventTwo [nobr] {"position":"1800,1350","size":"100,100"}
 <<run setup.Companion.setActiveLust(100)>>
-<<run setup.Ghosts.markActiveHuntEvent()>>
+<<run setup.Ghosts.markActiveProwlEvent()>>
 <<set _videoList to []>>
 <<set _videoList to ["outfits/bottoms/naked/duo1.mp4", "outfits/bottoms/naked/duo2.mp4", "outfits/bottoms/naked/duo3.mp4", "outfits/bottoms/naked/duo4.mp4", "outfits/bottoms/naked/duo5.mp4"]>>
 <<set _randomIndex to random(0, _videoList.length - 1)>>
