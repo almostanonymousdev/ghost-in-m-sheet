@@ -1,9 +1,12 @@
 :: widgetRogueToolBar [widget nobr] {"position":"3600,200","size":"100,100"}
-/* rogueToolBar -- arg-less. Renders the same six tool slots the
-   regular hunts show (EMF, Ectoglass, GWB, Spiritbox, Thermometr,
-   UVL), in the canonical setup.searchToolOrder. Each slot pulls
-   its icon and label from setup.searchToolDefs so the rogue
-   placeholder stays in sync with whatever the hunts use.
+/* rogueToolBar -- arg-less. Renders one tool card per entry in
+   setup.Rogue.startingTools(), which folds the run's loadout and
+   the Empty Bag modifier into the canonical setup.searchToolOrder:
+   default runs show all six (EMF, Ectoglass, GWB, Spiritbox,
+   Thermometr, UVL); a loadout that names a subset shows just those;
+   Empty Bag collapses the strip to a "no tools" placeholder. Each
+   slot pulls its icon and label from setup.searchToolDefs so the
+   rogue strip stays in sync with whatever the hunts use.
 
    Each card is a clickable <<link>> that wikifies the shared
    <<toolCheck>> markup -- the same renderer the haunted-house tool
@@ -28,22 +31,29 @@
    here. <<huntTickStep>> may <<goto>> away (StealClothes,
    GhostHuntEvent, RogueEnd) so the result render runs first. */
 <<widget "rogueToolBar">>
-	<<for _t range setup.searchToolOrder>>
-		<<set _def to setup.searchToolDefs[_t]>>
-		<<capture _t, _def>>
-			<div class="rogue-tool-card">
-				<<image "ui/img/" + _def.iconFile { class: "rogue-tool-icon" }>>
-				<span class="rogue-tool-card-label">@@.adaptiveLink;<<link `_def.label`>>
-					<<replace "#rogue-tool-result">>
-						<<if _t eq "temperature">>
-							<<include "TemperatureHigh">>
-						<<else>>
-							<<toolCheck _t>>
-						<</if>>
-					<</replace>>
-					<<huntTickStep>>
-				<</link>>@@</span>
-			</div>
-		<</capture>>
-	<</for>>
+	<<set _tools to setup.Rogue.startingTools()>>
+	<<if _tools.length eq 0>>
+		<div class="rogue-tool-card rogue-tool-card-empty">
+			@@.mc-thoughts; (your bag is empty)@@
+		</div>
+	<<else>>
+		<<for _t range _tools>>
+			<<set _def to setup.searchToolDefs[_t]>>
+			<<capture _t, _def>>
+				<div class="rogue-tool-card">
+					<<image "ui/img/" + _def.iconFile { class: "rogue-tool-icon" }>>
+					<span class="rogue-tool-card-label">@@.adaptiveLink;<<link `_def.label`>>
+						<<replace "#rogue-tool-result">>
+							<<if _t eq "temperature">>
+								<<include "TemperatureHigh">>
+							<<else>>
+								<<toolCheck _t>>
+							<</if>>
+						<</replace>>
+						<<huntTickStep>>
+					<</link>>@@</span>
+				</div>
+			<</capture>>
+		<</for>>
+	<</if>>
 <</widget>>

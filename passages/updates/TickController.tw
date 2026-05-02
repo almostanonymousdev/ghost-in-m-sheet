@@ -285,7 +285,7 @@ setup.Tick = (function () {
 			);
 		}
 
-		setup.HauntedHouses.shuffleGhostRoom();
+		setup.HuntController.shuffleGhostRoom();
 
 		if (setup.Time.isMorningPlus() && setup.Ghosts.isHunting()) {
 			return { goto: "HuntOverTime" };

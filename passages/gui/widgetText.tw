@@ -119,18 +119,20 @@
 	<</if>>
 <</widget>>
 
-/* Shared exit link for every hunt-ending scene in HuntEnd.tw. Absent
-   the high-priestess tarot, the MC slips into Sleep; with the tarot
-   active, the card burns itself to return the MC to $return. `_args[0]`
-   is the link text ("fading into darkness", "plunging you into
-   darkness", "nothing"). */
+/* Shared exit link for every hunt-ending scene in HuntEnd.tw. With
+   a classic high-priestess tarot active, the card burns itself to
+   return the MC to $return; absent that, the next-passage target is
+   delegated to setup.HuntController.huntCaughtPassage() so classic
+   sleeps the MC home and a rogue run stamps a "caught" failure and
+   routes to RogueEnd. `_args[0]` is the link text ("fading into
+   darkness", "plunging you into darkness", "nothing"). */
 <<widget "huntEndExit">>
 	<<if setup.Ghosts.hasHighPriestess()>>
 		@@.usebtn;<<link _args[0] $return>>
 			<<run setup.Ghosts.consumeHighPriestess()>>
 		<</link>>@@
 	<<else>>
-		@@.usebtn;<<link _args[0] "Sleep">>
+		@@.usebtn;<<link _args[0] setup.HuntController.huntCaughtPassage()>>
 		<</link>>@@
 	<</if>>
 <</widget>>

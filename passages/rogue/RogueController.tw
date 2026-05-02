@@ -160,6 +160,31 @@ setup.Rogue = (function () {
 		return !!(run && run.modifiers && run.modifiers.indexOf(id) !== -1);
 	}
 
+	/* Tool keys the rogue toolbar should render this run, in canonical
+	   setup.searchToolOrder. Resolution order:
+	     1. Empty Bag modifier ('locked_tools') -> []. The bag is empty;
+	        the toolbar collapses to a "no tools" state until the player
+	        finds tools on the floor (gameplay seam, not built yet).
+	     2. loadout.tools array (set at meta-shop unlock or future
+	        per-run picker) -> intersection with searchToolOrder, so
+	        rendering order stays canonical regardless of input order.
+	     3. Default (no loadout / no Empty Bag) -> all six tools.
+	   Returns [] when no run is active so the rogue toolbar widget
+	   renders nothing in classic mode. */
+	function startingTools() {
+		var run = sv().run;
+		if (!run) return [];
+		var order = (setup.searchToolOrder || []).slice();
+		if (hasModifier('locked_tools')) return [];
+		var loadout = run.loadout || {};
+		if (Array.isArray(loadout.tools)) {
+			return order.filter(function (t) {
+				return loadout.tools.indexOf(t) !== -1;
+			});
+		}
+		return order;
+	}
+
 	function setObjective(id) {
 		if (sv().run) sv().run.objective = id;
 	}
@@ -258,6 +283,31 @@ setup.Rogue = (function () {
 		var run = sv().run;
 		if (!run) return false;
 		return (run.currentRoomId || 'room_0') === ghostRoomId();
+	}
+
+	/* Rogue-mode ghost-room drift. Picks a fresh non-hallway room
+	   from the floor plan and updates floorplan.spawnRoomId. Called
+	   by setup.HuntController.shuffleGhostRoom once the shared
+	   interval gate + 45% roll have passed; the controller already
+	   filtered for `staysInOneRoom`, so all that's left here is
+	   the per-mode rule "ghost lives in any non-hallway room and
+	   prefers to drift somewhere different from its current lair".
+	   The room.trapped opt-out (Monkey Paw freeze) doesn't exist
+	   in rogue yet, so there's no equivalent guard. */
+	function driftGhostRoom() {
+		var run = sv().run;
+		if (!run || !run.floorplan) return;
+		var fp = run.floorplan;
+		if (!Array.isArray(fp.rooms) || !fp.rooms.length) return;
+		var nonHallway = fp.rooms
+			.filter(function (r) { return r.template !== 'hallway'; })
+			.map(function (r) { return r.id; });
+		if (!nonHallway.length) return;
+		// Prefer drifting somewhere new; fall back to the full pool
+		// when there's only one non-hallway room.
+		var others = nonHallway.filter(function (id) { return id !== fp.spawnRoomId; });
+		var pool = others.length ? others : nonHallway;
+		fp.spawnRoomId = pool[Math.floor(Math.random() * pool.length)];
 	}
 
 	/* View-layer summary of the active run's floor plan, denormalised
@@ -508,6 +558,7 @@ setup.Rogue = (function () {
 		hasModifier: hasModifier,
 		addModifier: addModifier,
 		loadout: loadout,
+		startingTools: startingTools,
 		objective: objective,
 		setObjective: setObjective,
 		setField: setField,
@@ -531,6 +582,7 @@ setup.Rogue = (function () {
 		currentRoomData: currentRoomData,
 		ghostName: ghostName,
 		ghostRoomId: ghostRoomId,
-		isInGhostRoom: isInGhostRoom
+		isInGhostRoom: isInGhostRoom,
+		driftGhostRoom: driftGhostRoom
 	};
 })();

@@ -243,4 +243,124 @@ test.describe('Rogue Controller', () => {
   test('currentRoomData returns null when no run is active', async () => {
     expect(await callSetup(page, 'setup.Rogue.currentRoomData()')).toBeNull();
   });
+
+  // --- Starting tools (loadout / Empty Bag) ---
+
+  test('startingTools defaults to all six tools in canonical order', async () => {
+    await page.evaluate(() => SugarCube.setup.Rogue.start({ seed: 1 }));
+    expect(await callSetup(page, 'setup.Rogue.startingTools()'))
+      .toEqual(['emf', 'plasm', 'gwb', 'spiritbox', 'temperature', 'uvl']);
+  });
+
+  test('startingTools collapses to [] when the Empty Bag modifier is active', async () => {
+    await page.evaluate(() => SugarCube.setup.Rogue.start({
+      seed: 1, modifiers: ['locked_tools']
+    }));
+    expect(await callSetup(page, 'setup.Rogue.startingTools()')).toEqual([]);
+  });
+
+  test('startingTools restricts to loadout.tools while preserving canonical order', async () => {
+    /* The loadout might list tools in any order (meta-shop unlocks,
+       starter packs); the toolbar should still render them in
+       searchToolOrder. */
+    await page.evaluate(() => SugarCube.setup.Rogue.start({
+      seed: 1,
+      loadout: { tools: ['uvl', 'emf', 'spiritbox'] }
+    }));
+    expect(await callSetup(page, 'setup.Rogue.startingTools()'))
+      .toEqual(['emf', 'spiritbox', 'uvl']);
+  });
+
+  test('startingTools returns [] when no run is active', async () => {
+    expect(await callSetup(page, 'setup.Rogue.startingTools()')).toEqual([]);
+  });
+
+  // --- Mid-run ghost movement ---
+
+  test('driftGhostRoom moves the ghost to a non-hallway room', async () => {
+    /* setup.HuntController.shuffleGhostRoom does the interval gate
+       + 45% roll; this helper just picks the destination. It must
+       always land on a non-hallway room. */
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
+      seed: 1, floorPlanOpts: { roomCount: 6 }
+    }));
+
+    const before = await callSetup(page, 'setup.Rogue.ghostRoomId()');
+    expect(before).not.toBe('room_0');
+
+    // Force the random-room pick to index 0 of the candidate pool.
+    await page.evaluate(() => { Math.random = () => 0; });
+    await page.evaluate(() => SugarCube.setup.Rogue.driftGhostRoom());
+
+    const after = await callSetup(page, 'setup.Rogue.ghostRoomId()');
+    expect(after).not.toBe('room_0');
+
+    // Verify the new room is in the floor plan and isn't the hallway.
+    const fp = await callSetup(page, 'setup.Rogue.field("floorplan")');
+    const newRoom = fp.rooms.find(r => r.id === after);
+    expect(newRoom).toBeDefined();
+    expect(newRoom.template).not.toBe('hallway');
+  });
+
+  test('driftGhostRoom prefers a different room than the current lair', async () => {
+    /* When more than one non-hallway room exists, the helper picks
+       from "every non-hallway room except the current spawn". */
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
+      seed: 5, floorPlanOpts: { roomCount: 6 }
+    }));
+
+    const initial = await callSetup(page, 'setup.Rogue.ghostRoomId()');
+
+    // Run drift many times; each call should land somewhere
+    // different from `initial`. Math.random=0 picks the first
+    // candidate, which is guaranteed to be != initial when others
+    // exist.
+    await page.evaluate(() => { Math.random = () => 0; });
+    for (let i = 0; i < 5; i++) {
+      await page.evaluate(() => SugarCube.setup.Rogue.driftGhostRoom());
+      const cur = await callSetup(page, 'setup.Rogue.ghostRoomId()');
+      // After the first call, the ghost should be in some non-
+      // initial room. After subsequent calls, the helper picks
+      // from "non-hallway and != current", so the room may rotate
+      // but never lands on hallway.
+      expect(cur).not.toBe('room_0');
+    }
+  });
+
+  test('driftGhostRoom is a no-op when no run or floor plan is active', async () => {
+    // No run.
+    await page.evaluate(() => SugarCube.setup.Rogue.driftGhostRoom());
+    expect(await callSetup(page, 'setup.Rogue.ghostRoomId()')).toBeNull();
+
+    // Run but no floor plan.
+    await page.evaluate(() => SugarCube.setup.Rogue.start({ seed: 1 }));
+    await page.evaluate(() => SugarCube.setup.Rogue.driftGhostRoom());
+    expect(await callSetup(page, 'setup.Rogue.ghostRoomId()')).toBeNull();
+  });
+
+  test('driftGhostRoom falls back to the same room when only one non-hallway room exists', async () => {
+    // Edge case: a 2-room floor plan has hallway + one other room.
+    // The drift helper should still complete cleanly and leave the
+    // ghost on that single non-hallway room.
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
+      seed: 1, floorPlanOpts: { roomCount: 2 }
+    }));
+    const initial = await callSetup(page, 'setup.Rogue.ghostRoomId()');
+    expect(initial).toBe('room_1');
+
+    await page.evaluate(() => SugarCube.setup.Rogue.driftGhostRoom());
+    expect(await callSetup(page, 'setup.Rogue.ghostRoomId()')).toBe('room_1');
+  });
+
+  test('Empty Bag wins over a populated loadout.tools', async () => {
+    /* If both apply, the modifier takes precedence: the player
+       drafted Empty Bag, so even unlocks they were going to start
+       with don't show up. */
+    await page.evaluate(() => SugarCube.setup.Rogue.start({
+      seed: 1,
+      modifiers: ['locked_tools'],
+      loadout: { tools: ['emf', 'uvl'] }
+    }));
+    expect(await callSetup(page, 'setup.Rogue.startingTools()')).toEqual([]);
+  });
 });

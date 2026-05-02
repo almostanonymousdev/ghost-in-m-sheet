@@ -114,17 +114,18 @@ setup.HuntController = (function () {
 		return false;
 	}
 
-	/* Random-hunt-event roll. Classic delegates to the existing
-	   threshold + ghost.canHunt gate; rogue runs don't trigger
-	   GhostHuntEvent yet (the run-failure branch is wired through
-	   sanity / exhaustion / time over-states instead), so the
-	   answer is always false there. Returning false skips
-	   CheckHuntStart's <<goto "GhostHuntEvent">> the same way the
-	   classic gate would when the threshold isn't met. */
+	/* Random-hunt-event roll. Both modes share the same
+	   threshold + ghost.canHunt gate -- the predicate works off
+	   $huntActivated / $elapsedTimeHunt / $huntTimeRemain, which
+	   the per-tick TickController maintenance keeps fresh in either
+	   mode. When a roll comes back true the per-tick chain in
+	   widgetInclude routes to GhostHuntEvent, which is itself
+	   mode-agnostic (Hide / RunFast / PrayHunt / FreezeHunt /
+	   HuntEventSuccubus all return through huntCaughtPassage or
+	   $return so they land back on the right passage). */
 	function shouldStartRandomHunt() {
-		var m = mode();
-		if (m === "regular") return setup.HauntedHouses.shouldStartRandomHunt();
-		return false;
+		if (!isActive()) return false;
+		return setup.HauntedHouses.shouldStartRandomHunt();
 	}
 
 	/* Steal-clothes roll. The wardrobe / stash side-effects are
@@ -165,6 +166,76 @@ setup.HuntController = (function () {
 		return null;
 	}
 
+	/* Mode-aware exit target for the "ghost catches the MC" branch
+	   that HuntEnd's <<huntEndExit>> widget routes through. Classic
+	   sleeps the MC home; rogue stamps a "caught" failure on the
+	   run and routes to RogueEnd. The High-Priestess override (a
+	   classic-only tarot draw) is handled inside the widget --
+	   neither mode reaches huntCaughtPassage when the priestess is
+	   in play. */
+	function huntCaughtPassage() {
+		var m = mode();
+		if (m === "rogue") {
+			setup.Rogue.setField("outcome", "failure");
+			setup.Rogue.setField("failureReason", "caught");
+			return "RogueEnd";
+		}
+		return "Sleep";
+	}
+
+	/* Periodic ghost-room shuffle. Roughly every 20 in-game
+	   minutes, the ghost has a 45% chance to drift to a different
+	   room. The interval gate (`$lastChangeIntervalRoom`) lives at
+	   the controller level so a single pass per `onPassageDone`
+	   covers both modes; the per-mode helpers
+	   (`setup.HauntedHouses.driftGhostRoom`,
+	   `setup.Rogue.driftGhostRoom`) own the actual room selection
+	   so the catalogue (classic) vs. floor plan (rogue) split stays
+	   encapsulated.
+
+	   Skips when:
+	   - no hunt is active (covers classic pre-house / rogue
+	     pre-RogueRun);
+	   - the ghost's catalogue marks it `staysInOneRoom`
+	     (Spirit / Phantom / etc.);
+	   - the same 20-minute interval has already rolled this run.
+	   The Trap (classic) and frozen-room (rogue) opt-outs live in
+	   the per-mode helper. */
+	function shuffleGhostRoom() {
+		if (!isHuntActive()) return;
+		var active = activeGhost();
+		if (!active || active.staysInOneRoom) return;
+		var mins = setup.Time.minutes() || 0;
+		var interval = mins < 20 ? "0-19" : mins < 40 ? "20-39" : "40-59";
+		var s = sv();
+		s.currentIntervalRoom = interval;
+		if (interval === s.lastChangeIntervalRoom) return;
+		if (Math.random() < 0.45) {
+			var m = mode();
+			if (m === "regular" && setup.HauntedHouses.driftGhostRoom) {
+				setup.HauntedHouses.driftGhostRoom();
+			} else if (m === "rogue" && setup.Rogue.driftGhostRoom) {
+				setup.Rogue.driftGhostRoom();
+			}
+		}
+		s.lastChangeIntervalRoom = interval;
+	}
+
+	/* End-of-HuntEnd cleanup. Both modes share the wardrobe /
+	   companion / tool-timer reset (it's mode-agnostic player state);
+	   the classic-only piece is `endHunt()`, which flips $hunt.mode
+	   to POSSESSED so the witch flow can recover. Rogue defers the
+	   matching $run cleanup to setup.Rogue.endRogue, which fires when
+	   the player clicks the huntEndExit link through to RogueEnd.
+	   Caller wraps this in `not setup.Ghosts.hasHighPriestess()` so
+	   the priestess reprieve still skips the cleanup entirely. */
+	function onCaughtCleanup() {
+		if (mode() === "regular") {
+			setup.HauntedHouses.endHunt();
+		}
+		setup.HauntedHouses.cleanupAfterHunt({ loseStolen: true });
+	}
+
 	return {
 		mode:                   mode,
 		isActive:               isActive,
@@ -174,6 +245,9 @@ setup.HuntController = (function () {
 		isCursedHuntActive:     isCursedHuntActive,
 		shouldStartRandomHunt:  shouldStartRandomHunt,
 		shouldTriggerSteal:     shouldTriggerSteal,
-		huntOverPassage:        huntOverPassage
+		huntOverPassage:        huntOverPassage,
+		huntCaughtPassage:      huntCaughtPassage,
+		onCaughtCleanup:        onCaughtCleanup,
+		shuffleGhostRoom:       shuffleGhostRoom
 	};
 })();

@@ -151,8 +151,7 @@
 <</if>> /*tentacle*/
 
 <<if not setup.Ghosts.hasHighPriestess()>>
-	<<run setup.HauntedHouses.endHunt()>>
-	<<run setup.HauntedHouses.cleanupAfterHunt({ loseStolen: true })>>
+	<<run setup.HuntController.onCaughtCleanup()>>
 	<<done>>
 		<<addclass ".linkselector" "disabled-link">>
 	<</done>>

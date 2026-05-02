@@ -141,14 +141,42 @@ flow (`$hunt`) and rogue runs (`$run`) -- share one tool / evidence
   per-house `runsStealClothes: false` opt-out (ironclad, since
   prison ghosts have their own warden-clothes mechanic).
 * `shouldStartRandomHunt()` — gates `CheckHuntStart`'s
-  `<<goto "GhostHuntEvent">>`. Rogue currently returns false
-  (random hunts not wired into rogue runs yet); classic delegates
-  to `HauntedHouses.shouldStartRandomHunt()`.
+  `<<goto "GhostHuntEvent">>`. Both modes delegate to
+  `HauntedHouses.shouldStartRandomHunt()`, which is mode-agnostic
+  (`canStartRandomHunt` + `huntChanceBonus` + `g.canHunt(mc)`).
+  Once the gate trips, the chain `<<goto>>`s `GhostHuntEvent` and
+  the survival branches (Hide, RunFast, PrayHunt, FreezeHunt,
+  HuntEventSuccubus) are reachable in both modes.
 * `huntOverPassage(reason)` — mode-aware passage to `<<goto>>`
   when the per-tick chain detects sanity collapse / exhaustion /
   time runout. Classic returns the matching `HuntOver*` passage;
   rogue stamps the run as a failure with the reason and returns
+  `RogueEnd`. Also called by `FreezeHunt`'s "Surrender to the
+  cold" link so the no-clothes-left branch ends the rogue run
+  cleanly instead of routing through the classic HuntOverSanity
+  cleanup.
+* `huntCaughtPassage()` — mode-aware target the
+  `<<huntEndExit>>` widget routes through after a HuntEnd scene.
+  Classic sleeps the MC home (`Sleep`); rogue stamps a `caught`
+  failure on the run and returns `RogueEnd`. The
+  classic-only High-Priestess override (a tarot draw that lets
+  the MC walk away from a catch) is handled inside the widget,
+  so neither mode reaches this helper when the priestess is in
+  play.
+* `onCaughtCleanup()` — end-of-HuntEnd cleanup. Both modes share
+  the wardrobe / companion / tool-timer reset; the classic-only
+  piece is `endHunt()` (flips `$hunt.mode` to POSSESSED). Rogue
+  defers the matching `$run` cleanup to `setup.Rogue.endRogue`,
+  fired when the player clicks the huntEndExit link through to
   `RogueEnd`.
+* `shuffleGhostRoom()` — periodic ghost-room drift. Owns the
+  shared 20-minute interval gate and the 45% roll, then
+  dispatches to `setup.HauntedHouses.driftGhostRoom` (classic) or
+  `setup.Rogue.driftGhostRoom` (rogue) for the actual room pick.
+  Skips when the active ghost's catalogue marks it
+  `staysInOneRoom` (Goryo / Phantom). Called from
+  `TickController.onPassageDone` so a single hook covers both
+  modes.
 
 `setup.Ghosts.active()` and `setup.isGhostHere()` are thin
 adapters that delegate to the facade -- legacy callers don't move,
@@ -221,7 +249,7 @@ links use to decide whether to render an unlock as active.
 * [TemplatesController.tw](../passages/rogue/TemplatesController.tw) — `setup.Templates`: room-template metadata + slot-id helpers.
 * [RogueLifecycle.tw](../passages/rogue/RogueLifecycle.tw) — `RogueStart`, `RogueRun`, `RogueEnd`, `RogueMetaShop` passages.
 * [widgetRogueMinimap.tw](../passages/rogue/widgetRogueMinimap.tw) — `<<rogueMinimap>>` SVG floor-plan view.
-* [widgetRogueToolBar.tw](../passages/rogue/widgetRogueToolBar.tw) — `<<rogueToolBar>>` six-card tool grid; each card wikifies `<<toolCheck>>` on click.
+* [widgetRogueToolBar.tw](../passages/rogue/widgetRogueToolBar.tw) — `<<rogueToolBar>>` tool grid; renders one card per `setup.Rogue.startingTools()` entry (default = all six). Empty Bag (`locked_tools`) collapses the strip to a "your bag is empty" placeholder; `loadout.tools` filters to a subset while preserving canonical order.
 * [HuntController.tw](../passages/hunt/HuntController.tw) — `setup.HuntController`: cross-mode facade for `mode()` / `activeGhost()` / `isGhostHere()`.
 
 ## Save migration

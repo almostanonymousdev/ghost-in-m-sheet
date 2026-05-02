@@ -473,34 +473,32 @@ setup.HauntedHouses = (function () {
 		   window + stamp the activation time. Called by the first
 		   frame of GhostHuntEvent before the player picks
 		   run/hide/freeze/pray. */
-		/* Periodic ghost-room shuffle. Roughly every 20 in-game
-		   minutes, the ghost has a 45% chance to drift to a fresh
-		   room in the active-house list. No-ops when:
-		   - the hunt is over / ghost is absent
-		   - the ghost's catalogue marks it as staying in one room
-		   - the MC has it currently trapped (Trap tool). */
-		shuffleGhostRoom: function () {
+		/* Classic-mode ghost-room drift. Picks a fresh room from the
+		   active house's room list and stamps it onto $hunt.room.name.
+		   Called by setup.HuntController.shuffleGhostRoom once the
+		   shared interval gate + 45% roll have passed; the controller
+		   already filtered for `staysInOneRoom`, so the only
+		   classic-only opt-outs left are the Trap state and the
+		   "no house picked yet" guard (hunt.room is null until
+		   GhostStreet's huntHouseCard seeds it). */
+		driftGhostRoom: function () {
 			var hh = this.activeHouse();
 			if (!hh) return;
-			var ghostRoom = hh.rooms || [];
-			if (!ghostRoom.length) return;
-			var active = setup.Ghosts.active();
+			var rooms = hh.rooms || [];
+			if (!rooms.length) return;
 			var hunt = setup.Ghosts.hunt();
-			if (!setup.Ghosts.isHunting() || !active || active.staysInOneRoom) return;
-			if (!hunt || hunt.trapped) return;
-			// hunt.room is null until GhostStreet's huntHouseCard runs
-			// setHuntRoom; the shuffler is a no-op until the player has
-			// actually picked a house and the room state has been seeded.
-			if (!hunt.room) return;
-			var mins = setup.Time.minutes() || 0;
-			var interval = mins < 20 ? "0-19" : mins < 40 ? "20-39" : "40-59";
-			var s = sv();
-			s.currentIntervalRoom = interval;
-			if (interval === s.lastChangeIntervalRoom) return;
-			if (Math.random() < 0.45) {
-				hunt.room.name = ghostRoom[Math.floor(Math.random() * ghostRoom.length)];
+			if (!hunt || hunt.trapped || !hunt.room) return;
+			hunt.room.name = rooms[Math.floor(Math.random() * rooms.length)];
+		},
+		/* Backwards-compat alias: pre-refactor callers (TickController,
+		   tests, save migrations) called shuffleGhostRoom directly.
+		   The new dispatch point is setup.HuntController.shuffleGhostRoom,
+		   but rather than chase every site we forward through here so
+		   the existing surface keeps working. */
+		shuffleGhostRoom: function () {
+			if (setup.HuntController && setup.HuntController.shuffleGhostRoom) {
+				setup.HuntController.shuffleGhostRoom();
 			}
-			s.lastChangeIntervalRoom = interval;
 		},
 		beginHuntEvent: function () {
 			setup.Ghosts.activateHunt();

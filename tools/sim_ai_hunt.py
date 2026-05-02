@@ -351,6 +351,7 @@ def load_game_data() -> GameData:
     story_script = _read("StoryScript.tw")
     story_init = _read("mc/GameInit.tw")
     hh_controller = _read("haunted_houses/HauntedHousesController.tw")
+    hunt_controller = _read("hunt/HuntController.tw")
     hide_tw = _read("haunted_houses/general/Hide.tw")
     run_tw = _read("haunted_houses/general/RunFast.tw")
     temp_tw = _read("haunted_houses/tools/TemperatureHigh.tw")
@@ -381,10 +382,13 @@ def load_game_data() -> GameData:
     start_lust   = _find_num(r"lust\s*:\s*(\d+)",   story_init)
     start_energy = _find_num(r"energy\s*:\s*(\d+)", story_init)
 
-    # HauntedHousesController.tw shuffleGhostRoom(): Math.random() < 0.45
+    # HuntController.tw shuffleGhostRoom(): Math.random() < 0.45.
+    # The classic-mode dispatch lives there now (HauntedHousesController
+    # only owns the per-mode driftGhostRoom helper that picks the
+    # destination room).
     ghost_move_chance = _find_num(
-        r"shuffleGhostRoom:[^}]*?Math\.random\(\)\s*<\s*([\d.]+)",
-        hh_controller)
+        r"function\s+shuffleGhostRoom[^{}]*\{[^}]*?Math\.random\(\)\s*<\s*([\d.]+)",
+        hunt_controller)
 
     # HauntedHousesController shouldStartRandomHunt(): threshold base + HauntConditions bonus
     hunt_base_threshold = int(_find_num(

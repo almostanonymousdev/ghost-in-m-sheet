@@ -25,7 +25,8 @@
 	@@.mc-thoughts;You feel the cold close around you and pull. There is nothing left to give but yourself.@@
 	<<run setup.HauntedHouses.rearmHuntTimer()>>
 	<br><br>
-	@@.usebtn;[[Surrender to the cold|HuntOverSanity]]@@
+	@@.usebtn;<<link "Surrender to the cold" setup.HuntController.huntOverPassage("sanity")>>
+	<</link>>@@
 <<else>>
 	<<run setup.Mc.addTempCorr(0.5)>>
 	<<run setup.activateTool("emf")>>

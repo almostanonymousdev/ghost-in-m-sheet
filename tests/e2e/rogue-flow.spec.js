@@ -25,6 +25,20 @@ test.describe('E2E: rogue run lifecycle', () => {
     await page.waitForFunction(p => SugarCube.State.passage === p, expectedPassage);
   }
 
+  /* Strip the Empty Bag modifier from the active rogue run if the
+     random draft happened to pick it. Tests that need a clickable
+     toolbar call this after RogueStart's auto-roll. The other
+     modifiers don't yet gate per-tick behaviour, so dropping just
+     locked_tools doesn't bypass anything else under test. */
+  async function ensureNotEmptyBag(page) {
+    await page.evaluate(() => {
+      const run = SugarCube.State.variables.run;
+      if (run && Array.isArray(run.modifiers)) {
+        run.modifiers = run.modifiers.filter(id => id !== 'locked_tools');
+      }
+    });
+  }
+
   test('start from GhostStreet → win the run → spend echoes in meta-shop', async () => {
     test.setTimeout(20_000);
 
@@ -148,6 +162,7 @@ test.describe('E2E: rogue run lifecycle', () => {
 
     await goToPassage(page, 'GhostStreet');
     await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await ensureNotEmptyBag(page);
     await clickLink(page, 'Enter the haunt', 'RogueRun');
 
     const toolOrder = await callSetup(page, 'setup.searchToolOrder');
@@ -202,6 +217,7 @@ test.describe('E2E: rogue run lifecycle', () => {
 
     await goToPassage(page, 'GhostStreet');
     await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await ensureNotEmptyBag(page);
     await clickLink(page, 'Enter the haunt', 'RogueRun');
 
     // Baseline: GhostStreet resets to midnight.
@@ -355,6 +371,7 @@ test.describe('E2E: rogue run lifecycle', () => {
 
     await goToPassage(page, 'GhostStreet');
     await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await ensureNotEmptyBag(page);
     await clickLink(page, 'Enter the haunt', 'RogueRun');
 
     /* Pin event randomness off so the click only exercises the
@@ -405,6 +422,7 @@ test.describe('E2E: rogue run lifecycle', () => {
 
     await goToPassage(page, 'GhostStreet');
     await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await ensureNotEmptyBag(page);
     await clickLink(page, 'Enter the haunt', 'RogueRun');
     await page.evaluate(() => { Math.random = () => 0.99; });
 
@@ -418,11 +436,275 @@ test.describe('E2E: rogue run lifecycle', () => {
 
     // The run is closed and stamped with the sanity reason.
     expect(await getVar(page, 'run')).toBeNull();
-    // Failure echo payout: 5 base + 0 success + 2 modifiers = 7.
-    expect(await getVar(page, 'echoes')).toBe(7);
     await expect(
       page.locator('.passage').getByText(/sanity gone/i)
     ).toBeVisible();
+  });
+
+  test('per-tick chain in rogue triggers GhostHuntEvent when shouldStartRandomHunt fires', async () => {
+    test.setTimeout(15_000);
+
+    /* The huntTickStep widget calls huntTickEventChain, which goes
+       through HuntController.shouldStartRandomHunt. With timer
+       state pre-stamped past the threshold and Math.random pinned
+       low, a single tool tick should land on GhostHuntEvent. */
+    await goToPassage(page, 'GhostStreet');
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await ensureNotEmptyBag(page);
+    await clickLink(page, 'Enter the haunt', 'RogueRun');
+
+    await page.evaluate(() => {
+      const V = SugarCube.State.variables;
+      V.huntActivated = 0;
+      V.huntTimeRemain = 0;
+      V.elapsedTimeHunt = 0;
+      V.huntActivationTime = 0;
+      V.mc.sanity = 30; // satisfies every sanity-cutoff ghost
+      V.mc.lust = 60;   // satisfies lust-condition ghosts too
+      V.mc.energy = 5;  // keep applyTickEffects from triggering exhaustion
+      // Pin the rogue ghost to Shade so its huntCondition (sanity<=55) trips.
+      SugarCube.setup.Rogue.setField('ghostName', 'Shade');
+      // Force every Math.random call to 0 so:
+      //   - LightPassageGhost roll: 0 (no light flicker dest)
+      //   - rollHuntEvent's various rolls all round-trip: chance=0,
+      //     bansheeRoll/ctRoll = 1 (≠ 1 disables those branches),
+      //     body part roll picks the first option.
+      //   - shouldTriggerSteal: roll 1, > stealChance? -- with
+      //     mc.sanity=30 stealChance ≈ 1.6, so 1 <= 1.6 may trigger
+      //     steal first. Force stealChance to 0 to keep the steal
+      //     gate closed and let the random-hunt gate fire.
+      V.stealChance = 0;
+      Math.random = () => 0;
+    });
+
+    // Click any tool. The chain runs synchronously inside the link
+    // body and may <<goto>> us to GhostHuntEvent / EventMC / StealClothes
+    // depending on which roll trips first. Any of those is a valid
+    // "the per-tick chain DID fire sanity-driven side content".
+    await page.locator('.rogue-tool-card').first().locator('a').click();
+    await page.waitForFunction(() =>
+      ['GhostHuntEvent', 'EventMC', 'StealClothes'].includes(SugarCube.State.passage),
+      null,
+      { timeout: 10_000 }
+    );
+    expect(await getVar(page, 'run')).not.toBeNull();
+  });
+
+  test('hunt-survival options in GhostHuntEvent are reachable in rogue mode', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Enter the haunt', 'RogueRun');
+
+    // Drop straight into the hunt event UI.
+    await goToPassage(page, 'GhostHuntEvent');
+    await expect(
+      page.locator('.passage').getByText('Run away', { exact: true })
+    ).toBeVisible();
+    await expect(
+      page.locator('.passage').getByText('Try to hide', { exact: true })
+    ).toBeVisible();
+    // FreezeHunt is conditionally shown based on garments worn; the
+    // generic "Freeze and let it pass" prefix appears in both branches.
+    await expect(
+      page.locator('.passage').getByText(/Freeze and let it pass/i)
+    ).toBeVisible();
+  });
+
+  test('PrayHunt (with energy) returns to RogueRun via $return in rogue mode', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Enter the haunt', 'RogueRun');
+
+    // Pre-load enough sanity / energy so PrayHunt doesn't bail out
+    // through a hunt-over passage.
+    await page.evaluate(() => {
+      SugarCube.State.variables.mc.sanity = 80;
+      SugarCube.State.variables.mc.energy = 4;
+    });
+
+    await goToPassage(page, 'PrayHunt');
+    await page.locator('.passage').getByText('Continue').first().click();
+    await page.waitForFunction(() => SugarCube.State.passage === 'RogueRun');
+  });
+
+  test('FreezeHunt with no garments routes to RogueEnd as a "sanity" failure in rogue mode', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Enter the haunt', 'RogueRun');
+
+    // Strip the MC bare so FreezeHunt's "nothing left to give" branch fires.
+    await page.evaluate(() => {
+      SugarCube.setup.Wardrobe.stripToNaked();
+    });
+    await goToPassage(page, 'FreezeHunt');
+
+    // The "Surrender to the cold" link delegates its target to
+    // setup.HuntController.huntOverPassage("sanity") which returns
+    // "RogueEnd" in rogue mode and stamps failureReason="sanity"
+    // on the run before it's cleared by RogueEnd's endRogue call.
+    // We assert on the RogueEnd-rendered text since the run record
+    // is null by the time the assertion runs.
+    await page.locator('.passage').getByText(/Surrender to the cold/i).click();
+    await page.waitForFunction(() => SugarCube.State.passage === 'RogueEnd');
+
+    expect(await getVar(page, 'run')).toBeNull();
+    await expect(
+      page.locator('.passage').getByText(/sanity gone/i)
+    ).toBeVisible();
+  });
+
+  test('Empty Bag modifier collapses the rogue toolbar to a placeholder', async () => {
+    test.setTimeout(15_000);
+
+    /* The toolbar reads from setup.Rogue.startingTools(), which folds
+       Empty Bag ('locked_tools') down to []. The widget renders the
+       "your bag is empty" placeholder instead of the six tool cards. */
+    await page.evaluate(() => {
+      SugarCube.setup.Rogue.startRogue({
+        seed: 1, modifiers: ['locked_tools'], modifierCount: 0
+      });
+      // startRogue overwrites modifiers from the draft; pin to just
+      // locked_tools so we know the bag is empty for sure.
+      SugarCube.State.variables.run.modifiers = ['locked_tools'];
+    });
+    await goToPassage(page, 'RogueRun');
+
+    await expect(page.locator('.rogue-run-tools .rogue-tool-card')).toHaveCount(1);
+    await expect(page.locator('.rogue-run-tools .rogue-tool-card-empty'))
+      .toBeVisible();
+    await expect(page.locator('.rogue-run-tools a')).toHaveCount(0);
+  });
+
+  test('loadout.tools restricts the rogue toolbar to the listed tools', async () => {
+    test.setTimeout(15_000);
+
+    await page.evaluate(() => {
+      SugarCube.setup.Rogue.startRogue({
+        seed: 1,
+        loadout: { tools: ['emf', 'uvl'] }
+      });
+    });
+    await goToPassage(page, 'RogueRun');
+
+    // Two cards rendered (in canonical order: emf before uvl).
+    await expect(page.locator('.rogue-run-tools .rogue-tool-card')).toHaveCount(2);
+    await expect(page.locator('.rogue-run-tools a').first())
+      .toContainText(/EMF/);
+    await expect(page.locator('.rogue-run-tools a').nth(1))
+      .toContainText(/UVL/);
+  });
+
+  test('rogue ghost catch routes through HuntEnd → RogueEnd as a "caught" failure', async () => {
+    test.setTimeout(20_000);
+
+    /* HuntEnd's bottom-of-passage cleanup runs through
+       setup.HuntController.onCaughtCleanup() and the huntEndExit
+       widget routes its post-scene exit through huntCaughtPassage();
+       in rogue mode that stamps a "caught" failure and returns
+       "RogueEnd". The e2e check here is that those helpers route
+       a real run end-to-end -- the widget rendering + linkappend
+       fan-out is covered by the classic hunt-flow tests. */
+    await goToPassage(page, 'GhostStreet');
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Enter the haunt', 'RogueRun');
+
+    // huntCaughtPassage() in rogue mode stamps the failure reason
+    // and returns the destination passage.
+    const target = await callSetup(page, 'setup.HuntController.huntCaughtPassage()');
+    expect(target).toBe('RogueEnd');
+    expect(await callSetup(page, 'setup.Rogue.field("outcome")')).toBe('failure');
+    expect(await callSetup(page, 'setup.Rogue.field("failureReason")')).toBe('caught');
+
+    // onCaughtCleanup is a no-op in rogue (cleanup happens on
+    // RogueEnd via setup.Rogue.endRogue) -- crucially, it must NOT
+    // try to call setup.HauntedHouses.endHunt() (which would crash
+    // when $hunt is null).
+    await page.evaluate(() => SugarCube.setup.HuntController.onCaughtCleanup());
+    expect(await callSetup(page, 'setup.Rogue.isRogue()')).toBe(true);
+
+    // Walking into RogueEnd closes the run as a failure.
+    await goToPassage(page, 'RogueEnd');
+    expect(await getVar(page, 'run')).toBeNull();
+    // Failure payout: 5 base + 0 success + 2 modifiers = 7 echoes.
+    expect(await getVar(page, 'echoes')).toBe(7);
+    await expect(
+      page.locator('.passage').getByText(/ends in failure/i)
+    ).toBeVisible();
+  });
+
+  test('ghost-room drift fires for the rogue ghost across 20-minute intervals', async () => {
+    test.setTimeout(15_000);
+
+    /* PassageDone calls setup.HuntController.shuffleGhostRoom which
+       gates on a 20-minute interval and a 45% roll. We start a run,
+       force the roll to 0 (drift fires) and walk the clock through
+       interval boundaries; the ghost room must end up somewhere
+       different from where it started. */
+    await goToPassage(page, 'GhostStreet');
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await ensureNotEmptyBag(page);
+    await clickLink(page, 'Enter the haunt', 'RogueRun');
+
+    // Pin the rogue ghost to one that DOES drift (not Goryo).
+    await page.evaluate(() => {
+      SugarCube.setup.Rogue.setField('ghostName', 'Shade');
+    });
+
+    const initial = await callSetup(page, 'setup.Rogue.ghostRoomId()');
+
+    // Force a fresh interval window + the drift roll.
+    await page.evaluate(() => {
+      SugarCube.State.variables.lastChangeIntervalRoom = '';
+      SugarCube.State.variables.minutes = 25; // 20-39 window
+      Math.random = () => 0;
+    });
+    await page.evaluate(() => SugarCube.setup.HuntController.shuffleGhostRoom());
+
+    // Drift should have moved the ghost (since Math.random=0 < 0.45)
+    // to a non-hallway room different from `initial` (when more than
+    // one non-hallway room exists in the seed=5 plan).
+    const fp = await callSetup(page, 'setup.Rogue.field("floorplan")');
+    const nonHallwayCount = fp.rooms.filter(r => r.template !== 'hallway').length;
+    if (nonHallwayCount > 1) {
+      expect(await callSetup(page, 'setup.Rogue.ghostRoomId()')).not.toBe(initial);
+    }
+    // Either way, the new room is non-hallway.
+    const ghostRoom = await callSetup(page, 'setup.Rogue.ghostRoomId()');
+    const newRoom = fp.rooms.find(r => r.id === ghostRoom);
+    expect(newRoom.template).not.toBe('hallway');
+  });
+
+  test('Goryo (staysInOneRoom) never drifts in rogue mode', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await ensureNotEmptyBag(page);
+    await clickLink(page, 'Enter the haunt', 'RogueRun');
+
+    // Pin the rogue ghost to Goryo, which has staysInOneRoom = true.
+    await page.evaluate(() => {
+      SugarCube.setup.Rogue.setField('ghostName', 'Goryo');
+    });
+
+    const initial = await callSetup(page, 'setup.Rogue.ghostRoomId()');
+
+    // Even with the roll forced + a fresh interval, Goryo's lair
+    // mustn't move.
+    await page.evaluate(() => {
+      SugarCube.State.variables.lastChangeIntervalRoom = '';
+      SugarCube.State.variables.minutes = 25;
+      Math.random = () => 0;
+    });
+    await page.evaluate(() => SugarCube.setup.HuntController.shuffleGhostRoom());
+
+    expect(await callSetup(page, 'setup.Rogue.ghostRoomId()')).toBe(initial);
   });
 
   test('two consecutive runs increment runsStarted across the lifecycle', async () => {
