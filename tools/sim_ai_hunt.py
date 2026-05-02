@@ -252,7 +252,7 @@ def _parse_event_choice_costs(event_mc_src: str) -> dict[str, float]:
     embrace_m = re.search(
         r"Embrace it[^\[]*\[setup\.Mc\.addSanity\("
         r"-setup\.Events\.ghostSanityEventDecreased\(\)\);\s*"
-        r"setup\.addLust\((\d+)\)\]",
+        r"setup\.Mc\.applyLustDelta\((\d+)\)\]",
         event_mc_src)
     if not (run_m and embrace_m):
         raise SystemExit("parser: EventMC.tw Run/Embrace cost block not found")

@@ -16,12 +16,12 @@
 <<if setup.Events.bansheeActive()>>
 	@@.mc-thoughts; Suddenly, out of the corner of your eye, you spot a faint figure. It slowly becomes clearer -- standing in front of you is a girl with pale skin and piercing eyes. Your body freezes, and you can't move.<br>
 	She glides toward you, her movements almost hypnotic. When her lips touch yours, a fire ignites inside you. You can't resist -- your lips respond to hers. The kiss is unbelievably sweet, soft yet full of passion, sending shivers down your spine. A wave of intense pleasure washes over you, making you forget everything else. Every part of you responds, as if you're being pulled into a state of euphoria.@@<br><br>
-	@@.usebtn; [[Embrace it|$return][setup.Mc.addSanity(-setup.Events.ghostSanityEventDecreased()); setup.addLust(4)]]@@ <span>-<<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>> +<<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>></span>
+	@@.usebtn; [[Embrace it|$return][setup.Mc.addSanity(-setup.Events.ghostSanityEventDecreased()); setup.Mc.applyLustDelta(4)]]@@ <span>-<<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>> +<<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>></span>
 	<<run setup.Events.clearBanshee()>>
 <<elseif setup.Events.cthulionActive()>>
 	@@.mc-thoughts; Tentacles creep out from the corner and begin wrapping around your body, trying to invade all your intimate areas.@@<br>
 	@@.mc-speech; N-Nooo~ What is this disgusting thing?! Get away from me!@@<br>
-	@@.usebtn; [[Embrace it|$return][setup.Mc.addSanity(-setup.Events.ghostSanityEventDecreased()); setup.addLust(4)]]@@ <span>-<<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>> +<<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>></span>
+	@@.usebtn; [[Embrace it|$return][setup.Mc.addSanity(-setup.Events.ghostSanityEventDecreased()); setup.Mc.applyLustDelta(4)]]@@ <span>-<<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>> +<<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>></span>
 	<<run setup.Events.clearCthulion()>>
 <<else>>
 	<<eventRandomizerText setup.Events.currentArgForRandomizer()>><br>
