@@ -299,6 +299,12 @@ $(document).one(':storyready', function () {
 			var muted    = opts.muted    !== false;
 			var loop     = opts.loop     !== false;
 
+			/* Global override from the Settings dialog. Forced after
+			   the per-call opt-out so callers that pass
+			   `{ muted: false }` (special-event audio) are still
+			   silenced when the player has the toggle on. */
+			if (settings.muteAllVideos) muted = true;
+
 			var type = opts.type;
 			if (!type) {
 				type = /\.webm$/i.test(r.path) ? 'video/webm' : 'video/mp4';
