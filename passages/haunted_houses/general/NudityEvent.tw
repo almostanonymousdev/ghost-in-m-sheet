@@ -17,7 +17,7 @@
 	<</if>>
 <<elseif setup.HauntedHouses.nudityToplessWithPanties()>>
 	<<if setup.Mc.exhibitionism() lte 4>>
-		<<if setup.Wardrobe.worn('bra')>>
+		<<if setup.Wardrobe.worn(setup.WardrobeSlot.BRA)>>
 			<<set _videoList to [
 			{type: "image", src: "outfits/bottoms/naked/5.png"},
 			{type: "image", src: "outfits/bottoms/naked/6.png"},

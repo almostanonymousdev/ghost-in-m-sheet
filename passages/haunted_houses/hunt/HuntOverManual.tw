@@ -9,7 +9,7 @@
 	<<run setup.HauntedHouses.clearStolenClothesFlag()>>
 	@@.movebtn; <<back "Return to the house">>@@<br>
 	Or<br>
-	<<if setup.Wardrobe.worn('tshirt') and setup.Companion.hasBottomWorn()>>
+	<<if setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT) and setup.Companion.hasBottomWorn()>>
 		@@.movebtn;<<link "Leave without taking your clothes" "Livingroom">><<run setup.Wardrobe.loseAllStolen()>>
 		<</link>>@@
 	<<else>>

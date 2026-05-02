@@ -78,12 +78,12 @@
 	<<set _out to setup.MonkeyPaw.activate("leave")>>
 	<<if _out.clothesStolen>>
 		<<run setup.HauntedHouses.markClothesStolen()>>
-		<<if setup.Wardrobe.worn('tshirt')>><<run setup.Wardrobe.stealWornInGroup("tshirt", "tshirtState", "isShirtStolen")>><</if>>
-		<<if setup.Wardrobe.worn('bra')>><<include "StealBra">><</if>>
-		<<if setup.Wardrobe.worn('jeans') or setup.Wardrobe.worn('shorts') or setup.Wardrobe.worn('skirt')>>
+		<<if setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT)>><<run setup.Wardrobe.stealWornInGroup("tshirt", "tshirtState", "isShirtStolen")>><</if>>
+		<<if setup.Wardrobe.worn(setup.WardrobeSlot.BRA)>><<include "StealBra">><</if>>
+		<<if setup.Wardrobe.worn(setup.WardrobeSlot.JEANS) or setup.Wardrobe.worn(setup.WardrobeSlot.SHORTS) or setup.Wardrobe.worn(setup.WardrobeSlot.SKIRT)>>
 			<<include "StealBottomOuter">>
 		<</if>>
-		<<if setup.Wardrobe.worn('panties')>><<include "StealPanties">><</if>>
+		<<if setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES)>><<include "StealPanties">><</if>>
 	<</if>>
 	<<if _out.goto>>
 		<<goto _out.goto>>

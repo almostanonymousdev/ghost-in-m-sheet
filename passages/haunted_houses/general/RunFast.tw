@@ -1,7 +1,7 @@
 :: RunFast [noreturn nobr] {"position":"2500,1225","size":"100,100"}
-<<if setup.Wardrobe.worn('jeans') or setup.Wardrobe.worn('shorts') or setup.Wardrobe.worn('skirt')>>
+<<if setup.Wardrobe.worn(setup.WardrobeSlot.JEANS) or setup.Wardrobe.worn(setup.WardrobeSlot.SHORTS) or setup.Wardrobe.worn(setup.WardrobeSlot.SKIRT)>>
 <<else>>
-	<<if setup.Wardrobe.worn('panties')>>
+	<<if setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES)>>
 		<<video "mechanics/hunting/run.mp4">>
 	<</if>>
 <</if>>

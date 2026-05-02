@@ -211,21 +211,21 @@ setup.HauntedHouses = (function () {
 
 		// --- Clothing aggregation -------------------------------
 		hasBottomWorn: function () {
-			return setup.Wardrobe.worn('jeans')
-				|| setup.Wardrobe.worn('skirt')
-				|| setup.Wardrobe.worn('shorts');
+			return setup.Wardrobe.worn(setup.WardrobeSlot.JEANS)
+				|| setup.Wardrobe.worn(setup.WardrobeSlot.SKIRT)
+				|| setup.Wardrobe.worn(setup.WardrobeSlot.SHORTS);
 		},
-		hasTopWorn: function () { return setup.Wardrobe.worn('tshirt'); },
+		hasTopWorn: function () { return setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT); },
 		isFullyDressed: function () {
 			return this.hasTopWorn() && this.hasBottomWorn();
 		},
 		isFullyNude: function () {
-			return !setup.Wardrobe.worn('tshirt')
-				&& !setup.Wardrobe.worn('panties')
+			return !setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT)
+				&& !setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES)
 				&& !this.hasBottomWorn();
 		},
 		isTopless: function () {
-			return !setup.Wardrobe.worn('tshirt') && this.hasBottomWorn();
+			return !setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT) && this.hasBottomWorn();
 		},
 
 		// --- Stolen clothes -------------------------------------
@@ -290,21 +290,21 @@ setup.HauntedHouses = (function () {
 
 		// --- NudityEvent branch helpers -------------------------
 		nudityNakedNoBottoms: function () {
-			return !setup.Wardrobe.worn('tshirt')
-				&& !setup.Wardrobe.worn('panties')
+			return !setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT)
+				&& !setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES)
 				&& !this.hasBottomWorn();
 		},
 		nudityToplessWithPanties: function () {
-			return !setup.Wardrobe.worn('tshirt')
-				&& setup.Wardrobe.worn('panties')
+			return !setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT)
+				&& setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES)
 				&& !this.hasBottomWorn();
 		},
 		isTopless: function () {
-			return !setup.Wardrobe.worn('tshirt');
+			return !setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT);
 		},
 		isFullyDressed: function () {
-			return setup.Wardrobe.worn('tshirt')
-				&& (setup.Wardrobe.worn('jeans') || setup.Wardrobe.worn('shorts') || setup.Wardrobe.worn('skirt'));
+			return setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT)
+				&& (setup.Wardrobe.worn(setup.WardrobeSlot.JEANS) || setup.Wardrobe.worn(setup.WardrobeSlot.SHORTS) || setup.Wardrobe.worn(setup.WardrobeSlot.SKIRT));
 		},
 
 		// --- Cursed hunt flag ----------------------------------
@@ -377,11 +377,11 @@ setup.HauntedHouses = (function () {
 		succubusEventTimer: function () { return setup.Home.succubusEventTimer() || 0; },
 		stealChance: function () { return sv().stealChance || 0; },
 		canStealAnyItem: function () {
-			return setup.Wardrobe.worn('bra') || setup.Wardrobe.worn('panties') || this.hasBottomWorn();
+			return setup.Wardrobe.worn(setup.WardrobeSlot.BRA) || setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES) || this.hasBottomWorn();
 		},
 		hasAnyGarmentWorn: function () {
 			return this.hasBottomWorn() || this.hasTopWorn()
-				|| setup.Wardrobe.worn('panties') || setup.Wardrobe.worn('bra');
+				|| setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES) || setup.Wardrobe.worn(setup.WardrobeSlot.BRA);
 		},
 
 		/* What's the cursed-item / rescue-clue / tarot / monkey-paw
@@ -466,7 +466,7 @@ setup.HauntedHouses = (function () {
 			var t = setup.Witch.carriedCursedItemType();
 			var list;
 			if (t === 'dildo') {
-				list = setup.Wardrobe.worn('tshirt')
+				list = setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT)
 					? ["mechanics/curseditems/1.0.mp4", "mechanics/curseditems/1.1.mp4", "mechanics/curseditems/1.2.mp4", "mechanics/curseditems/1.3.mp4"]
 					: ["mechanics/curseditems/1.0.mp4", "mechanics/curseditems/1.1.mp4"];
 			} else if (t === 'buttplug') {
@@ -555,10 +555,10 @@ setup.HauntedHouses = (function () {
 		   pick a random target. */
 		availableStealTargets: function () {
 			var opts = [];
-			if (setup.Wardrobe.worn('panties')) opts.push('panties');
-			if (setup.Wardrobe.worn('bra')) opts.push('bra');
-			if (setup.Wardrobe.worn('tshirt') || setup.Wardrobe.worn('jeans')
-				|| setup.Wardrobe.worn('skirt') || setup.Wardrobe.worn('shorts')) {
+			if (setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES)) opts.push('panties');
+			if (setup.Wardrobe.worn(setup.WardrobeSlot.BRA)) opts.push('bra');
+			if (setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT) || setup.Wardrobe.worn(setup.WardrobeSlot.JEANS)
+				|| setup.Wardrobe.worn(setup.WardrobeSlot.SKIRT) || setup.Wardrobe.worn(setup.WardrobeSlot.SHORTS)) {
 				opts.push('outerwear');
 			}
 			return opts;
@@ -584,11 +584,11 @@ setup.HauntedHouses = (function () {
 		},
 		clearClothesStolenFlag: function () { sv().isClothesStolen = 0; },
 		isBottomless: function () {
-			return !setup.Wardrobe.worn('jeans') && !setup.Wardrobe.worn('shorts')
-				&& !setup.Wardrobe.worn('skirt') && !setup.Wardrobe.worn('panties');
+			return !setup.Wardrobe.worn(setup.WardrobeSlot.JEANS) && !setup.Wardrobe.worn(setup.WardrobeSlot.SHORTS)
+				&& !setup.Wardrobe.worn(setup.WardrobeSlot.SKIRT) && !setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES);
 		},
 		isTopBare: function () {
-			return !setup.Wardrobe.worn('tshirt') && !setup.Wardrobe.worn('bra');
+			return !setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT) && !setup.Wardrobe.worn(setup.WardrobeSlot.BRA);
 		},
 
 		/* The stash-room pointer for the active house. */
