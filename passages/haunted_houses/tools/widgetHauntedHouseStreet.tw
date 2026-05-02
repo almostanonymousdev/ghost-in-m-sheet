@@ -29,7 +29,7 @@
 <</widget>>
 
 /* huntHouseStreet -- arg: house id. Renders the shared body of the
-   per-house street passage (Owaissa/Elm/Enigma/Ironclad): the header
+   per-house street passage (Owaissa/Elm/Ironclad): the header
    image, the location block, optional companion "talk to them" branch,
    the "Go inside" link (or whatever _contents block the caller provides
    -- Ironclad overrides it with the wardenClothesStage gate), and the

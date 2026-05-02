@@ -40,7 +40,7 @@ setup.Migrations = (function () {
 	   $update22 = 0.4 so this runs once. */
 	function migrateRoomsAndHuntTimer() {
 		var s = sv();
-		var rooms = ['basement', 'bedroomTwo', 'nursery', 'bathroomTwo', 'hallwayUpstairs', 'roomA', 'roomB', 'roomC'];
+		var rooms = ['basement', 'bedroomTwo', 'nursery', 'bathroomTwo', 'hallwayUpstairs'];
 		rooms.forEach(function (name) {
 			s[name] = { name: name, background: setup.RoomLight.DARK };
 		});

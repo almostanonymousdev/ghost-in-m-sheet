@@ -8,10 +8,6 @@
 <div class="housecard"></div>
 <<huntHouseCard "elm">>
 <div class="housecard"></div>
-<div class="housecard"></div>
-<div class="housecard"></div>
-<<huntHouseCard "enigma">>
-<div class="housecard"></div>
 </div>
 <<nobr>>
 <<run setup.Ghosts.fireActiveOnEnterHouse()>>
