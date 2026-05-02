@@ -211,25 +211,15 @@ setup.HauntConditions = (function () {
 		var snap = snapshot();
 
 		if (snap.sanityPerStep !== 0) {
-			mc.sanity += snap.sanityPerStep;
-			if (mc.sanity < 0) {
-				mc.sanity = 0;
+			if(setup.Mc.applySanityDelta(snap.sanityPerStep) == setup.SanityDeltaResult.COLLAPSED){
 				V.sanityCollapse = 1;
 			}
-			if (mc.sanity > mc.sanityMax) mc.sanity = mc.sanityMax;
 		}
 		if (snap.lustPerStep !== 0) {
-			mc.lust += snap.lustPerStep;
-			if (mc.lust < 0)   mc.lust = 0;
-			if (mc.lust > 100) mc.lust = 100;
+			setup.Mc.applyLustDelta(snap.lustPerStep);
 		}
 		if (snap.energyPerStep !== 0) {
-			mc.energy += snap.energyPerStep;
-			if (mc.energy <= 0) {
-				mc.energy = 0;
-				V.exhausted = 1;
-			}
-			if (mc.energy > (mc.energyMax || 10)) mc.energy = mc.energyMax;
+			setup.Mc.applyEnergyDelta(snap.energyPerStep);
 		}
 		if (snap.corruptionPending !== 0) {
 			V.tempCorr = (V.tempCorr || 0) + snap.corruptionPending;
