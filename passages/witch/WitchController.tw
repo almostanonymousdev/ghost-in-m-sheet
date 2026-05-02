@@ -51,7 +51,7 @@ setup.Witch = (function () {
 
 	function sv() { return State.variables; }
 
-	return {
+	var api = {
 		OWNED_VARS: OWNED_VARS,
 		// --- Hours / access --------------------------------------
 		isDayTime: function () {
@@ -84,9 +84,6 @@ setup.Witch = (function () {
 			return sv().succubus !== undefined;
 		},
 		succubusVisited: function () { return sv().succubus === 1; },
-		setSuccubusVisited: function (n) { sv().succubus = n; },
-		exorcismQuestStage: function () { return sv().exorcismQuestStage; },
-		setExorcismQuestStage: function (n) { sv().exorcismQuestStage = n; },
 		markExorcismReferred:   function () { sv().exorcismQuestStage = setup.ExorcismQuestStage.REFERRED; },
 		markSuccubusSummoned:   function () { sv().exorcismQuestStage = setup.ExorcismQuestStage.SUCCUBUS_SUMMONED; },
 		exorcismQuestNotStarted: function () {
@@ -117,7 +114,6 @@ setup.Witch = (function () {
 		},
 		clearCursedItemHeld: function () { sv().gotCursedItem = 0; },
 		setCursedItemHeld:   function () { sv().gotCursedItem = 1; },
-		cursedItemState:     function () { return sv().gotCursedItem; },
 		setCursedItemFlag: function (key) { sv()[key] = 1; },
 		/* Consume the cursed item the player is carrying. Clears whichever
 		   of the four type flags is set and the held flag, returning the
@@ -160,8 +156,6 @@ setup.Witch = (function () {
 			var s = sv().eventToolsOneStart;
 			return s === undefined || s === 0;
 		},
-		eventToolsOneStart: function () { return sv().eventToolsOneStart; },
-		setEventToolsOneStart: function (n) { sv().eventToolsOneStart = n; },
 		grantAmulet: function () { sv().amulet = 1; },
 		ownsLevel3Gwb: function () {
 			return setup.ToolController.tierOf('gwb') === 3;
@@ -178,9 +172,6 @@ setup.Witch = (function () {
 			var W = setup.WardenClothesStage;
 			return s === W.HINT_NOT_OFFERED || s === W.HINT_OFFERED;
 		},
-		wardenClothesStage: function () { return sv().wardenClothesStage; },
-		setWardenClothesStage: function (n) { sv().wardenClothesStage = n; },
-
 		// --- Weaken-the-ghost quest ------------------------------
 		canOfferWeakenQuest: function () {
 			return setup.Mc.lvl() >= 5 && sv().weakenTheGhostQuest === undefined;
@@ -321,4 +312,12 @@ setup.Witch = (function () {
 			return '';
 		}
 	};
+
+	setup.defineAccessors(api, sv, [
+		'eventToolsOneStart',
+		'exorcismQuestStage',
+		'wardenClothesStage',
+		{ name: 'cursedItemState', key: 'gotCursedItem', set: false }
+	]);
+	return api;
 })();

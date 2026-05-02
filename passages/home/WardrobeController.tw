@@ -219,16 +219,8 @@
         skirtWorn: function () {
             return State.variables.skirtState === "worn";
         },
-        pantiesState: function () { return State.variables.pantiesState; },
-        braState:     function () { return State.variables.braState; },
-        tshirtState:  function () { return State.variables.tshirtState; },
-        jeansState:   function () { return State.variables.jeansState; },
-        shortsState:  function () { return State.variables.shortsState; },
-        skirtState:   function () { return State.variables.skirtState; },
-        rememberBottomOuter: function () { return State.variables.rememberBottomOuter; },
-        rememberBottomUnder: function () { return State.variables.rememberBottomUnder; },
-        rememberTopUnder:    function () { return State.variables.rememberTopUnder; },
-        rememberBottomStockings: function () { return State.variables.rememberBottomStockings; },
+        // (Pure $-variable getters for *State / remember* fields fold
+        // into the defineAccessors block at the bottom.)
         isPantiesStolen: function () { return State.variables.isPantiesStolen === 1; },
         isBottomStolen:  function () { return State.variables.isBottomStolen === 1; },
         isShirtStolen:   function () { return State.variables.isShirtStolen === 1; },
@@ -443,6 +435,23 @@
             return null;
         }
     };
+
+    /* Trivial $-variable read-only accessors. Each *State getter just
+       reads the aggregate worn/not-worn flag; remember* getters expose
+       the per-slot rememberVar tokens (see refreshAggregateStates and
+       the equip/unequip flow above for how those values are produced). */
+    setup.defineAccessors(setup.Wardrobe, function () { return State.variables; }, [
+        { name: 'pantiesState',             set: false },
+        { name: 'braState',                 set: false },
+        { name: 'tshirtState',              set: false },
+        { name: 'jeansState',               set: false },
+        { name: 'shortsState',              set: false },
+        { name: 'skirtState',               set: false },
+        { name: 'rememberBottomOuter',      set: false },
+        { name: 'rememberBottomUnder',      set: false },
+        { name: 'rememberTopUnder',         set: false },
+        { name: 'rememberBottomStockings',  set: false }
+    ]);
 
     /* Save-file migration helper: called once from Update1 to seed the
      * per-slot state keys on old saves that predate the multi-tier

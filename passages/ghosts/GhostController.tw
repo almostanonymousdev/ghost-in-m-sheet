@@ -466,7 +466,9 @@
         'ghostTypeSelected'
     ]);
 
-    setup.Ghosts = {
+    function sv() { return State.variables; }
+
+    var api = {
         OWNED_VARS: OWNED_VARS,
         Evidence: Evidence,
         HuntMode: HuntMode,
@@ -686,12 +688,11 @@
         },
         knowledgeUsed: function () { return State.variables.knowledgeUsed === 1; },
         markKnowledgeUsed: function () { State.variables.knowledgeUsed = 1; },
-        ghostTypeSelected: function () { return State.variables.ghostTypeSelected; },
-        setGhostTypeSelected: function (v) { State.variables.ghostTypeSelected = v; },
+        // `|| 0` getters are kept inline (callers do arithmetic and
+        // unguarded comparisons that need 0 on fresh saves); only the
+        // raw setters fold into the defineAccessors block.
         elapsedTimeHunt: function () { return State.variables.elapsedTimeHunt || 0; },
-        setElapsedTimeHunt: function (n) { State.variables.elapsedTimeHunt = n; },
         huntTimeRemain: function () { return State.variables.huntTimeRemain || 0; },
-        setHuntTimeRemain: function (n) { State.variables.huntTimeRemain = n; },
         resetEvidenceChecks: function () {
             var s = State.variables;
             s.EMF5Check = false;
@@ -737,8 +738,6 @@
         },
         clearTwinsEvent: function () { State.variables.thetwinsevent = 0; },
         clearKnowledgeUsed: function () { State.variables.knowledgeUsed = undefined; },
-        chosenEvidence: function () { return State.variables.chosenEvidence; },
-        setChosenEvidence: function (e) { State.variables.chosenEvidence = e; },
         huntEvidence: function () {
             var h = State.variables.hunt;
             return h && h.evidence ? h.evidence : [];
@@ -806,4 +805,16 @@
                 : null;
         }
     };
+
+    // Pure $variable passthrough accessors. elapsedTimeHunt /
+    // huntTimeRemain getters live inline above (their `|| 0` fallback
+    // is load-bearing for arithmetic / Sugarcube comparisons); only
+    // their setters fold here.
+    setup.defineAccessors(api, sv, [
+        'ghostTypeSelected',
+        'chosenEvidence',
+        { name: 'elapsedTimeHunt', get: false },
+        { name: 'huntTimeRemain',  get: false }
+    ]);
+    setup.Ghosts = api;
 })();

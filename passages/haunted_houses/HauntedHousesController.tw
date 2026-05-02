@@ -153,7 +153,7 @@ setup.HauntedHouses = (function () {
 		}
 	}
 
-	return {
+	var api = {
 		OWNED_VARS: OWNED_VARS,
 		// --- House catalogue ------------------------------------
 		list: function () { return HOUSE_CONFIG; },
@@ -349,7 +349,6 @@ setup.HauntedHouses = (function () {
 			s.expFromContract = xp;
 		},
 		moneyFromContract: function () { return sv().moneyFromContract || 0; },
-		expFromContract:   function () { return sv().expFromContract; },
 		setHuntRoom: function (room) {
 			var hunt = setup.Ghosts.hunt();
 			if (hunt) { hunt.room = room; }
@@ -421,8 +420,6 @@ setup.HauntedHouses = (function () {
 			if (!suffix) return undefined;
 			return s['placeFor' + kind + suffix];
 		},
-		currentFurniture: function () { return sv().currentFurniture; },
-		setCurrentFurniture: function (id) { sv().currentFurniture = id; },
 		setInHideSpot: function (on) { sv().isInHideSpot = on ? 1 : 0; },
 		/* Street-passage name for the active haunted house, for the
 		   front-door exit link. */
@@ -437,12 +434,13 @@ setup.HauntedHouses = (function () {
 			var flags = ["isCIDildo", "isCIButtplug", "isCIBeads", "isCIHDildo"];
 			setup.Witch.setCursedItemFlag(flags[Math.floor(Math.random() * flags.length)]);
 		},
+		// `|| 0` / `|| HIDDEN` getters stay inline — fallback is
+		// load-bearing (callers compare with eq/lt and do arithmetic
+		// on fresh saves where the field is undefined).
 		tarotCardsStage: function () { return sv().tarotCardsStage || setup.TarotStage.HIDDEN; },
-		setTarotCardsStage: function (n) { sv().tarotCardsStage = n; },
+		drawnCards: function () { return sv().drawnCards || 0; },
 		markTarotCarrying: function () { sv().tarotCardsStage = setup.TarotStage.CARRYING; },
 		markTarotSpent:    function () { sv().tarotCardsStage = setup.TarotStage.SPENT; },
-		drawnCards: function () { return sv().drawnCards || 0; },
-		setDrawnCards: function (n) { sv().drawnCards = n; },
 		shouldDeleteOneEvidence: function () {
 			return setup.Ghosts.scheduledDeletionCount() >= 1;
 		},
@@ -478,7 +476,6 @@ setup.HauntedHouses = (function () {
 		incrementDrawnCards: function () {
 			sv().drawnCards = (sv().drawnCards || 0) + 1;
 		},
-		chosenTarotCard: function () { return sv().chosenCard; },
 		/* Pull & stamp a fresh tarot card from setup.tarotDeck. */
 		drawAndStampTarotCard: function () {
 			sv().chosenCard = setup.drawTarotCard(setup.tarotDeck);
@@ -633,4 +630,16 @@ setup.HauntedHouses = (function () {
 			if (s.hauntedHouse === 'elm')     s.placeForClothesStolenElm = undefined;
 		}
 	};
+
+	// Pure $variable passthrough accessors. tarotCardsStage / drawnCards
+	// keep their inline getters above (the `||` fallback is load-bearing);
+	// only the bare setters fold here.
+	setup.defineAccessors(api, sv, [
+		'currentFurniture',
+		{ name: 'expFromContract',  set: false },
+		{ name: 'chosenTarotCard',  key: 'chosenCard', set: false },
+		{ name: 'tarotCardsStage',  get: false },
+		{ name: 'drawnCards',       get: false }
+	]);
+	return api;
 })();

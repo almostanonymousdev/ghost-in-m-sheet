@@ -50,7 +50,7 @@ setup.Home = (function () {
 	function webcam()    { var s = sv(); if (!s.webcam)        s.webcam       = {}; return s.webcam; }
 	function summoning() { var s = sv(); if (!s.summoning)     s.summoning    = {}; return s.summoning; }
 
-	return {
+	var api = {
 		OWNED_VARS: OWNED_VARS,
 		// --- Outside / clothing gating ----------------------
 		isDirty: function () {
@@ -297,33 +297,23 @@ setup.Home = (function () {
 			var w = webcam();
 			if (w.subscribers === undefined) w.subscribers = 0;
 		},
-		webcamEvent:    function () { return webcam().event; },
-		setWebcamEvent: function (k) { webcam().event = k; },
-		setWebcamCooldown: function (n) { webcam().showCD = n; },
-		webcamCooldown: function () { return webcam().showCD; },
 		webcamShowAvailable: function () {
 			var cd = webcam().showCD;
 			return cd === undefined || cd === 0;
 		},
 
-		// --- Bedroom one-shot wake-up banners ------------
-		// These are single-use flags that the Bedroom passage reads
-		// on entry and then unsets, to show one-time messages after
-		// a specific event chain (succubus visit / tentacle dream /
-		// failed summon) resolved in the previous turn.
-		succubusChoiceText: function () { return succEvent().choiceText; },
+		// --- Bedroom / livingroom one-shot wake-up banners
+		// These are single-use flags that the Bedroom / Livingroom
+		// passages read on entry and then `delete` (via clear*) to
+		// show one-time messages after a specific event chain
+		// (succubus visit / tentacle dream / failed summon) resolved
+		// in the previous turn. The pure get/set pairs are folded into
+		// the defineAccessors block at the bottom.
 		clearSuccubusChoiceText: function () { delete succEvent().choiceText; },
-		summonText:      function () { return summoning().text; },
 		clearSummonText: function () { delete summoning().text; },
-		succubusTVText:  function () { return succEvent().tvText; },
 		clearSuccubusTVText: function () { delete succEvent().tvText; },
-		tentaclesAfterSleepText: function () { return tentacles().afterSleepText; },
 		clearTentaclesAfterSleepText: function () { delete tentacles().afterSleepText; },
-
-		// --- Livingroom one-shot event banners -----------
-		tentaclesPCText: function () { return tentacles().pcText; },
 		clearTentaclesPCText: function () { delete tentacles().pcText; },
-		tentaclesTVText: function () { return tentacles().tvText; },
 		clearTentaclesTVText: function () { delete tentacles().tvText; },
 
 		// --- Succubus arrival ----------------------------
@@ -398,21 +388,9 @@ setup.Home = (function () {
 		createWebcamAccount: function () { webcam().accountCreated = 1; },
 
 		// --- Summoning / succubus ritual -----------------
-		succubusEventTimer: function () { return succEvent().eventTimer; },
-		setSuccubusEventTimer: function (n) { succEvent().eventTimer = n; },
-		summoningChoice: function () { return summoning().choice; },
-		setSummoningChoice: function (n) { summoning().choice = n; },
-		setExorcismCooldown: function (n) { sv().exorcismCD = n; },
-		setSummonText: function (n) { summoning().text = n; },
-		setSuccubusChoiceText: function (n) { succEvent().choiceText = n; },
-		setSuccubusTVText: function (n) { succEvent().tvText = n; },
-		succubusPCEventStage: function () { return succEvent().pcStage; },
-		setSuccubusPCEventStage: function (n) { succEvent().pcStage = n; },
 		bumpSuccubusPCEventStage: function () {
 			var e = succEvent(); e.pcStage = (e.pcStage || 0) + 1;
 		},
-		succubusEventCD: function () { return succEvent().eventCD; },
-		setSuccubusEventCD: function (n) { succEvent().eventCD = n; },
 		// Summoning advance: same wrap-clock-then-reset-cooldowns pattern
 		// as sleepAdvance, but used by the ritual (4-hour cast). Sets
 		// succubusEventTimer which ticks down elsewhere.
@@ -424,7 +402,6 @@ setup.Home = (function () {
 			var cd = sv().masturbationCD;
 			return cd === undefined || cd === 0;
 		},
-		setMasturbationCooldown: function (n) { sv().masturbationCD = n; },
 		ghostInfoSearchedToday: function () { return sv().findGhostInfoCD === 1; },
 		markGhostInfoSearched: function () { sv().findGhostInfoCD = 1; },
 		// Rotate through the porn-video playlist. Callers track an
@@ -446,17 +423,15 @@ setup.Home = (function () {
 		// Reset CD on tentacle event start; advance per-branch
 		// stage flags and their paired "after-sleep" narration key.
 		resetTentaclesCooldown: function () { sv().gotCursedItemEventCD = 0; },
+		// `|| 0` fallbacks here are load-bearing: callers do `lt N`
+		// and `eq 0` comparisons that would silently misbehave on
+		// undefined (Sugarcube `<` on undefined is false).
 		tentaclesStageAll:    function () { return tentacles().stageAll || 0; },
-		setTentaclesStageAll: function (n) { tentacles().stageAll = n; },
+		tentaclesStageSleep:  function () { return tentacles().stageSleep || 0; },
 		ensureTentaclesStageAll: function (n) {
 			var t = tentacles();
 			if ((t.stageAll || 0) < n) t.stageAll = n;
 		},
-		tentaclesStageSleep:    function () { return tentacles().stageSleep || 0; },
-		setTentaclesStageSleep: function (n) { tentacles().stageSleep = n; },
-		setTentaclesAfterSleepText: function (n) { tentacles().afterSleepText = n; },
-		setTentaclesPCText:         function (n) { tentacles().pcText = n; },
-		setTentaclesTVText:         function (n) { tentacles().tvText = n; },
 		// Advance the clock for a tentacles-event rest by N hours.
 		// Used by the "Rest" back-links at the end of each event;
 		// Doesn't wrap midnight because the events are short naps.
@@ -534,4 +509,46 @@ setup.Home = (function () {
 		collectHolyWater: function () { sv().holyWaterIsCollected = 1; },
 		consumeHolyWater: function () { sv().holyWaterIsCollected = 0; }
 	};
+
+	// Pure $variable passthrough setters (no getter exposed: callers
+	// only ever write these). exorcismCD / masturbationCD live at
+	// $-root because they're shared with sleep / time-of-day checks
+	// that read the field directly via setup.Mc-style flow predicates.
+	setup.defineAccessors(api, sv, [
+		{ name: 'exorcismCooldown',     key: 'exorcismCD',     get: false },
+		{ name: 'masturbationCooldown', key: 'masturbationCD', get: false }
+	]);
+	// Webcam-bundle accessors: pure passthrough on $webcam.{event,showCD}.
+	setup.defineAccessors(api, webcam, [
+		{ name: 'webcamEvent',    key: 'event' },
+		{ name: 'webcamCooldown', key: 'showCD' }
+	]);
+	// Succubus-event-bundle accessors: pure passthrough on
+	// $succubusEvent.{eventTimer,choiceText,tvText,pcStage,eventCD}.
+	// The matching clear* methods stay inline because they `delete`
+	// rather than assign, which defineAccessors can't model.
+	setup.defineAccessors(api, succEvent, [
+		{ name: 'succubusEventTimer',   key: 'eventTimer' },
+		{ name: 'succubusChoiceText',   key: 'choiceText' },
+		{ name: 'succubusTVText',       key: 'tvText' },
+		{ name: 'succubusPCEventStage', key: 'pcStage' },
+		{ name: 'succubusEventCD',      key: 'eventCD' }
+	]);
+	// Tentacle-bundle accessors. stageAll / stageSleep getters are
+	// kept inline above (their `|| 0` fallback is load-bearing —
+	// callers compare with `lt N` / `eq 0`); only the setters fold.
+	// The text-banner clear* methods stay inline because they `delete`.
+	setup.defineAccessors(api, tentacles, [
+		{ name: 'tentaclesStageAll',       key: 'stageAll',       get: false },
+		{ name: 'tentaclesStageSleep',     key: 'stageSleep',     get: false },
+		{ name: 'tentaclesAfterSleepText', key: 'afterSleepText' },
+		{ name: 'tentaclesPCText',         key: 'pcText' },
+		{ name: 'tentaclesTVText',         key: 'tvText' }
+	]);
+	// Summoning-bundle accessors.
+	setup.defineAccessors(api, summoning, [
+		{ name: 'summoningChoice', key: 'choice' },
+		{ name: 'summonText',      key: 'text' }
+	]);
+	return api;
 })();

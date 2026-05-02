@@ -398,7 +398,7 @@ setup.Companion = (function () {
 		return null;
 	}
 
-	return {
+	var api = {
 		OWNED_VARS: OWNED_VARS,
 		// --- Catalogue -------------------------------------------
 		list: function () { return COMPANIONS; },
@@ -614,8 +614,6 @@ setup.Companion = (function () {
 			var CS = setup.CompanionShow;
 			return sc === CS.VISIBLE || sc === CS.ATTACK_SAFE;
 		},
-		showComp: function () { return State.variables.showComp; },
-		transPicture: function () { return State.variables.transPicture; },
 		sanityPercent: function () {
 			var c = comp();
 			return c ? c.sanity / 100 : 0;
@@ -784,8 +782,6 @@ setup.Companion = (function () {
 		markMetAlice: function () { State.variables.meetAlice = 1; },
 		blakeUnlocked: function () { return setup.Mall.blakeIsCompanionCandidate(); },
 		aliceWorkDone: function () { return State.variables.aliceWorkDone === 1; },
-		aliceWorkState: function () { return State.variables.aliceWorkDone; },
-		setAliceWorkState: function (n) { State.variables.aliceWorkDone = n; },
 		hasFinishedSoloHunt: function (name) {
 			var c = compFor(name);
 			return !!(c && c.goingSolo === 2);
@@ -794,7 +790,6 @@ setup.Companion = (function () {
 			var c = compFor(name);
 			return c ? c.paidForSolo : undefined;
 		},
-		chosenPlan: function () { return State.variables.chosenPlan; },
 		hasActiveCompanion: function () { return !!(State.variables.companion && State.variables.companion.name); },
 		activeCompanionName: function () {
 			var c = State.variables.companion;
@@ -1065,8 +1060,6 @@ setup.Companion = (function () {
 		// the "post-change" variant. $transPicture records which of the
 		// three trans portraits to render (1 Alex / 2 Taylor / 3 Casey).
 		isTransFirstStageSet: function () { return State.variables.transFirstStage === 1; },
-		setTransFirstStage: function (n) { State.variables.transFirstStage = n; },
-		setTransPicture: function (n) { State.variables.transPicture = n; },
 		/* Lust gain applied to the active companion when a CompanionEvent
 		   fires. Scales with the per-hunt step count so longer hunts
 		   build up arousal faster. The widgets call eventLustGain() for
@@ -1097,7 +1090,6 @@ setup.Companion = (function () {
 		isTransByName: function (n) { return isTrans(n); },
 
 		// --- isCompanionContinue flow (widgetFriends) ---------
-		chanceToSuccess: function () { return State.variables.chanceToSuccess; },
 		/* When the companion decides to continue: reset the per-hunt
 		   scratch flags so the normal hunt tick can resume. */
 		resumeHunt: function () {
@@ -1107,7 +1099,6 @@ setup.Companion = (function () {
 			s.showComp = setup.CompanionShow.VISIBLE;
 			s.isCompRoomChosen = 0;
 		},
-		setChosenPlan: function (p) { State.variables.chosenPlan = p; },
 		/* "Continue alone" path: clears showComp + isCompChosen as
 		   well so the companion is no longer tagged as active. */
 		dismissCompanion: function () {
@@ -1117,4 +1108,17 @@ setup.Companion = (function () {
 			s.chosenPlan = 0;
 		}
 	};
+
+	// Pure $variable passthrough accessors. Read-only fields use
+	// `set: false`; setTransFirstStage is paired with the semantic
+	// isTransFirstStageSet getter, so only the setter folds.
+	setup.defineAccessors(api, function () { return State.variables; }, [
+		'chosenPlan',
+		'transPicture',
+		{ name: 'aliceWorkState',     key: 'aliceWorkDone' },
+		{ name: 'chanceToSuccess',    set: false },
+		{ name: 'showComp',           set: false },
+		{ name: 'transFirstStage',    get: false, set: 'setTransFirstStage' }
+	]);
+	return api;
 })();

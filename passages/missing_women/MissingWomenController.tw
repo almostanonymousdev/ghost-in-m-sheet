@@ -98,7 +98,7 @@ setup.MissingWomen = (function () {
 		'cheatRescueHouseHighlight'
 	]);
 
-	return {
+	var api = {
 		OWNED_VARS: OWNED_VARS,
 		// --- Holy water -------------------------------------------
 		hasHolyWater: function () {
@@ -193,8 +193,6 @@ setup.MissingWomen = (function () {
 		},
 
 		// --- Mutations / accessors used by rescue passages --------
-		currentRescueGirl: function () { return sv().currentRescueGirl; },
-		setCurrentRescueGirl: function (name) { sv().currentRescueGirl = name; },
 		setQuestForRescueStarted: function () {
 			sv().hasQuestForRescue = setup.RescueQuestState.ACTIVE;
 			sv().rescueStage = 0;
@@ -202,10 +200,6 @@ setup.MissingWomen = (function () {
 		sleepOffHoursAfterEvent: function () {
 			setup.Time.addHours(3);
 		},
-		setJadePossessedStage: function (n) { sv().rescueJadePossessed = n; },
-		setVictoriaPossessedStage: function (n) { sv().rescueVictoriaPossessed = n; },
-		jadePossessedStage: function () { return sv().rescueJadePossessed; },
-		victoriaPossessedStage: function () { return sv().rescueVictoriaPossessed; },
 
 		// --- Task board state --------------------------------------
 		ensureBoardCooldowns: function () {
@@ -213,9 +207,6 @@ setup.MissingWomen = (function () {
 			if (s.rescueCD === undefined) { s.rescueCD = 0; }
 			if (s.rescueQuestCD === undefined) { s.rescueQuestCD = 0; }
 		},
-		rescueCooldown: function () { return sv().rescueCD; },
-		rescueGirlsList: function () { return sv().rescueGirls; },
-		rescueRandomGirls: function () { return sv().rescueRandomGirls; },
 		initRescueGirlPool: function (allGirls) {
 			sv().rescueGirls = allGirls;
 		},
@@ -232,29 +223,18 @@ setup.MissingWomen = (function () {
 		},
 
 		// --- Rescue house / clue accessors -------------------------
-		rescueHouse: function () { return sv().rescueHouse; },
-		setRescueHouse: function (n) { sv().rescueHouse = n; },
 		rescueHouseImage: function (n) {
 			return "characters/rescue/house/" + n + ".jpg";
 		},
-		randomRescuePhotoNumber: function () { return sv().randomRescuePhotoNumber; },
-		setRandomRescuePhotoNumber: function (n) {
-			sv().randomRescuePhotoNumber = n;
-		},
-		rescueStage: function () { return sv().rescueStage; },
-		setRescueStage: function (n) { sv().rescueStage = n; },
 		setRescueClueFound: function () { sv().hasRescueClue = 1; },
 		clearRescueClue:   function () { sv().hasRescueClue = 0; },
 
 		// --- Rescue quest state -----------------------------------
-		rescueQuestStage: function () { return sv().hasQuestForRescue; },
 		resetQuestToAvailable: function () { sv().hasQuestForRescue = setup.RescueQuestState.AVAILABLE; },
 		markQuestFailed:      function () { sv().hasQuestForRescue = setup.RescueQuestState.FAILED; },
 		markQuestSucceeded:   function () { sv().hasQuestForRescue = setup.RescueQuestState.SUCCEEDED; },
 
 		// --- Video pool --------------------------------------------
-		rescueVideo: function () { return sv().videoRescueEvent; },
-		setRescueVideo: function (src) { sv().videoRescueEvent = src; },
 		startRescueBoardCooldown: function () { sv().rescueQuestCD = 1; },
 
 		// --- Rescue scene (per-girl watch loop) -------------------
@@ -315,8 +295,6 @@ setup.MissingWomen = (function () {
 		},
 
 		// --- Torn-photo state (task board / clue display) ---------
-		tornStylesList: function () { return sv().tornStyles; },
-		tornStyleRandom: function () { return sv().tornStyleRandom; },
 		seedTornStyle: function () {
 			var styles = sv().tornStyles || [];
 			if (!styles.length) return;
@@ -324,10 +302,6 @@ setup.MissingWomen = (function () {
 			sv().tornStyleRandom = styles[idx];
 			sv().randomRescuePhotoNumber = 1 + Math.floor(Math.random() * 16);
 		},
-
-		// --- Cheat-only highlight flag ----------------------------
-		cheatRescueHouseHighlight: function () { return sv().cheatRescueHouseHighlight; },
-		setCheatRescueHouseHighlight: function (n) { sv().cheatRescueHouseHighlight = n; },
 
 		// --- EMF upgrade reward from clue --------------------------
 		emfLevel: function () {
@@ -337,4 +311,26 @@ setup.MissingWomen = (function () {
 			setup.ToolController.setTier('emf', 3);
 		}
 	};
+
+	// Pure $variable passthrough accessors. `key` overrides the field
+	// name where the public method root differs from the underlying var
+	// (rescueQuestStage <-> $hasQuestForRescue, rescueVideo <-> $videoRescueEvent,
+	// jadePossessedStage <-> $rescueJadePossessed, victoriaPossessedStage <-> $rescueVictoriaPossessed).
+	setup.defineAccessors(api, sv, [
+		'currentRescueGirl',
+		{ name: 'jadePossessedStage',         key: 'rescueJadePossessed' },
+		{ name: 'victoriaPossessedStage',     key: 'rescueVictoriaPossessed' },
+		{ name: 'rescueCooldown',             key: 'rescueCD',         set: false },
+		{ name: 'rescueGirlsList',            key: 'rescueGirls',      set: false },
+		'rescueRandomGirls',
+		'rescueHouse',
+		'randomRescuePhotoNumber',
+		'rescueStage',
+		{ name: 'rescueQuestStage',           key: 'hasQuestForRescue', set: false },
+		{ name: 'rescueVideo',                key: 'videoRescueEvent' },
+		{ name: 'tornStylesList',             key: 'tornStyles',        set: false },
+		{ name: 'tornStyleRandom',            set: false },
+		'cheatRescueHouseHighlight'
+	]);
+	return api;
 })();
