@@ -373,7 +373,17 @@ setup.Home = (function () {
 		},
 
 		// --- "Skip time till midnight" shortcut ----------
+		// Refreshes energy based on how much time remains in the day
 		skipTimeToMidnight: function () {
+			var restTime = 23 - setup.Time.hours();
+			var missingEnergy = setup.Mc.energyMax() - setup.Mc.energy();
+
+			if(missingEnergy <= restTime) {
+				setup.Mc.addEnergy(missingEnergy);
+			} else {
+				setup.Mc.addEnergy(restTime);
+			}
+
 			setup.Time.setHours(23);
 			setup.Time.setMinutes(0);
 		},
