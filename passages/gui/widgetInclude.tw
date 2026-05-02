@@ -5,7 +5,7 @@
 	<<run setup.HauntConditions.applyTickEffects()>>
 	<<updatemeter 'sanity' `setup.Mc.sanity() / setup.Mc.sanityMax()`>>
 	<<updatemeter 'energy' `setup.Mc.energy() / setup.Mc.energyMax()`>>
-	<<updatemeter 'mclust' `setup.Mc.lust() / setup.Mc.lustMax()`>>
+	<<updatemeter 'mclust' `setup.Mc.lust() / 100`>>
 	<<replace "#time">><<= setup.updateTimeDisplay()>><</replace>>
 <</widget>>
 

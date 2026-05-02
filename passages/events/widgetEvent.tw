@@ -1,7 +1,6 @@
 :: widgetEvent [widget nobr] {"position":"400,1800","size":"100,100"}
 <<widget "eventRandomizerText">>
 	<<set _bodyPart to _args[0]>>
-	<<addLustByPart>>
 	<<set _ct to setup.Events.corruptionTier()>>
 	<<if _bodyPart eq "brain">>
 		<<if _ct eq 8>>

@@ -14,7 +14,7 @@
 <b><<image "ui/img/energy.png" { style: "position: relative; top: 0.375em; width:10%;" }>>Energy:</b> <<showmeter 'energy' `setup.Mc.energy() / setup.Mc.energyMax()`>>
 <<run setup.Mc.setSanityUp(setup.Mc.sanity().toFixed(2))>>
 <b><<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:10%;" }>>Sanity:</b> <<showmeter 'sanity' `setup.Mc.sanity() / setup.Mc.sanityMax()`>>
-<b><<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:10%;" }>>Lust:</b><<showmeter 'mclust' `setup.Mc.lust() / setup.Mc.lustMax()`>>
+<b><<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:10%;" }>>Lust:</b><<showmeter 'mclust' `setup.Mc.lust().toFixed(2) / 100`>>
 <b><<image "ui/icons/money.png" { style: "position: relative; top: 0.375em; width:13%; display: inline; margin: 0;" }>><<= setup.Mc.money()>> </b>
 <b><<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:13%; display: inline; margin: 0;" }>>
 <<= setup.Mc.corruption().toFixed(2)>>
