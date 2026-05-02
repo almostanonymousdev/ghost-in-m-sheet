@@ -1,8 +1,0 @@
-:: EventArt [nobr] {"position":"1400,950","size":"100,100"}
-<<set _artKind to setup.Events.rollArtEvent()>>
-<<if _artKind eq "img">>
-	<<goto "ArtEventImgs">>
-<</if>>
-<<if _artKind eq "video">>
-	<<goto "ArtEventVids">>
-<</if>>

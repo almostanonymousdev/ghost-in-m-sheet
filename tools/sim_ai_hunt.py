@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 Simplistic AI that plays through a haunted-house contract against every
-ghost type in every house (Owaissa / Elm / Enigma / Ironclad), using data
-parsed from the game's own .tw sources at startup.
+ghost type in every house (Owaissa / Elm / Ironclad), using data parsed
+from the game's own .tw sources at startup.
 
 Models the core hunt loop from Ghost in M'Sheet:
 
@@ -508,7 +508,7 @@ def validate_game_data() -> list[str]:
         require(w > 0, f"TOOL_TIME_REMAIN[{tier}]={w} not positive")
 
     # Houses.
-    expected_houses = {"elm", "owaissa", "enigma", "ironclad"}
+    expected_houses = {"elm", "owaissa", "ironclad"}
     missing = expected_houses - set(GD.houses)
     require(not missing, f"HOUSE_CONFIG missing houses: {sorted(missing)}")
     for house, rooms in GD.houses.items():

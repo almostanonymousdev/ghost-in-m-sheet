@@ -141,7 +141,6 @@ test.describe('Haunted house — Owaissa', () => {
     await setupHunt(page, 'Spirit', 'owaissa');
     expect(await page.evaluate(() => SugarCube.setup.HauntedHouses.isOwaissa())).toBe(true);
     expect(await page.evaluate(() => SugarCube.setup.HauntedHouses.isElm())).toBe(false);
-    expect(await page.evaluate(() => SugarCube.setup.HauntedHouses.isEnigma())).toBe(false);
     expect(await page.evaluate(() => SugarCube.setup.HauntedHouses.isIronclad())).toBe(false);
   });
 });

@@ -129,15 +129,6 @@ body.city {
 .elmNurseryLight, .elmNurseryDark,
 .elmHallwayLight, .elmHallwayDark,
 .elmHallwayTwoLight, .elmHallwayTwoDark,
-.enigmaBasementLight, .enigmaBasementDark,
-.enigmaKitchenLight, .enigmaKitchenDark,
-.enigmaBathroomLight, .enigmaBathroomDark,
-.enigmaRoomALight, .enigmaRoomADark,
-.enigmaBedroomLight, .enigmaBedroomDark,
-.enigmaRoomBLight, .enigmaRoomBDark,
-.enigmaRoomCLight, .enigmaRoomCDark,
-.enigmaHallwayLight, .enigmaHallwayDark,
-.enigmaLivingroomLight, .enigmaLivingroomDark,
 .IroncladReceptionLight, .IroncladReceptionDark,
 .IroncladKitchenLight, .IroncladKitchenDark,
 .IroncladHallwayLight, .IroncladHallwayDark,
@@ -211,26 +202,6 @@ body.city {
 .elmHallwayDark       { background-image: url('assets/scenes/room/elm/hallway-dark.jpg'); }
 .elmHallwayTwoLight   { background-image: url('assets/scenes/room/elm/hallway1.jpg'); }
 .elmHallwayTwoDark    { background-image: url('assets/scenes/room/elm/hallway1-dark.jpg'); }
-
-/* Room Backgrounds — Enigma */
-.enigmaBasementLight    { background-image: url('assets/scenes/room/enigma/basement.jpg'); }
-.enigmaBasementDark     { background-image: url('assets/scenes/room/enigma/basement-dark.jpg'); }
-.enigmaKitchenLight     { background-image: url('assets/scenes/room/enigma/kitchen.jpg'); }
-.enigmaKitchenDark      { background-image: url('assets/scenes/room/enigma/kitchen-dark.jpg'); }
-.enigmaBathroomLight    { background-image: url('assets/scenes/room/enigma/bathroom.jpg'); }
-.enigmaBathroomDark     { background-image: url('assets/scenes/room/enigma/bathroom-dark.jpg'); }
-.enigmaRoomALight       { background-image: url('assets/scenes/room/enigma/room-a.jpg'); }
-.enigmaRoomADark        { background-image: url('assets/scenes/room/enigma/room-a-dark.jpg'); }
-.enigmaBedroomLight     { background-image: url('assets/scenes/room/enigma/bedroom.jpg'); }
-.enigmaBedroomDark      { background-image: url('assets/scenes/room/enigma/bedroom-dark.jpg'); }
-.enigmaRoomBLight       { background-image: url('assets/scenes/room/enigma/room-b.jpg'); }
-.enigmaRoomBDark        { background-image: url('assets/scenes/room/enigma/room-b-dark.jpg'); }
-.enigmaRoomCLight       { background-image: url('assets/scenes/room/enigma/room-c.jpg'); }
-.enigmaRoomCDark        { background-image: url('assets/scenes/room/enigma/room-c-dark.jpg'); }
-.enigmaHallwayLight     { background-image: url('assets/scenes/room/enigma/hallway.jpg'); }
-.enigmaHallwayDark      { background-image: url('assets/scenes/room/enigma/hallway-dark.jpg'); }
-.enigmaLivingroomLight  { background-image: url('assets/scenes/room/enigma/livingroom.jpg'); }
-.enigmaLivingroomDark   { background-image: url('assets/scenes/room/enigma/livingroom-dark.jpg'); }
 
 /* Room Backgrounds — Ironclad */
 .IroncladReceptionLight   { background-image: url('assets/scenes/room/ironclad/reception.webp'); }

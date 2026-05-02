@@ -48,11 +48,10 @@ The core gameplay revolves around investigating haunted locations to identify an
   * [NudityEvent.tw](../passages/haunted_houses/general/NudityEvent.tw) - Nudity event triggers
   * [NudityEventTwo.tw](../passages/haunted_houses/general/NudityEventTwo.tw) - Second nudity event
 
-* **Haunted house locations** - Four distinct haunted house maps, each with unique room layouts. Each house has a street-entry passage and a shared `*_rooms.tw` include for the per-room content rendered via the shared room widget.
+* **Haunted house locations** - Three distinct haunted house maps, each with unique room layouts. Each house has a street-entry passage and a shared `*_rooms.tw` include for the per-room content rendered via the shared room widget.
   * [HauntedHousesController.tw](../passages/haunted_houses/HauntedHousesController.tw) - Shared haunted-house state and helpers
   * [RoomsController.tw](../passages/haunted_houses/RoomsController.tw) - `setup.Rooms` namespace for per-room state (`byId`, `templateOf`, `isDark`, `setBackground`, `seed`); each room state object carries a `template` field so rogue runs can mint extra rooms with arbitrary ids
   * [Elm_Street.tw](../passages/haunted_houses/elm/Elm_Street.tw) / [elm_rooms.tw](../passages/haunted_houses/elm/elm_rooms.tw) - Elm Street house (two-story residential)
-  * [Enigma_Street.tw](../passages/haunted_houses/enigma/Enigma_Street.tw) / [enigma_rooms.tw](../passages/haunted_houses/enigma/enigma_rooms.tw) - Enigma Street house
   * [Ironclad_Prison.tw](../passages/haunted_houses/ironclad/Ironclad_Prison.tw) / [ironclad_rooms.tw](../passages/haunted_houses/ironclad/ironclad_rooms.tw) - Ironclad Prison (cell block layout)
   * [Owaissa_Street.tw](../passages/haunted_houses/owaissa/Owaissa_Street.tw) / [owaissa_rooms.tw](../passages/haunted_houses/owaissa/owaissa_rooms.tw) - Owaissa Street house
   * [MonkeyPaw.tw](../passages/haunted_houses/general/MonkeyPaw.tw) / [MonkeyPawController.tw](../passages/haunted_houses/MonkeyPawController.tw) - Monkey's Paw cursed wish item

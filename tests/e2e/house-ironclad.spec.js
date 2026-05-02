@@ -184,6 +184,5 @@ test.describe('Haunted house — Ironclad', () => {
     expect(await page.evaluate(() => SugarCube.setup.HauntedHouses.isIronclad())).toBe(true);
     expect(await page.evaluate(() => SugarCube.setup.HauntedHouses.isOwaissa())).toBe(false);
     expect(await page.evaluate(() => SugarCube.setup.HauntedHouses.isElm())).toBe(false);
-    expect(await page.evaluate(() => SugarCube.setup.HauntedHouses.isEnigma())).toBe(false);
   });
 });

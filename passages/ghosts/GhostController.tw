@@ -348,7 +348,7 @@
     };
 
     /* Roll the per-ghost sanity penalty that fires during MC events
-       (EventMC / ArtEventVids / ArtEventImgs). Default 1-5; Oni 3-8. */
+       (EventMC). Default 1-5; Oni 3-8. */
     Ghost.prototype.rollEventSanityLoss = function () {
         var r = this.sanityEventLossRange;
         return r[0] + Math.floor(Math.random() * (r[1] - r[0] + 1));

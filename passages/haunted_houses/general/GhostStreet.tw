@@ -8,9 +8,6 @@
 <div class="housecard"></div>
 <<huntHouseCard "elm">>
 <div class="housecard"></div>
-<div class="housecard"></div>
-<div class="housecard"></div>
-<<huntHouseCard "enigma">>
 <<rogueHuntCard>>
 </div>
 <<nobr>>

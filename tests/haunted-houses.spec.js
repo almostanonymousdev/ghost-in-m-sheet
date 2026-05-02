@@ -135,17 +135,6 @@ test.describe('Haunted Houses Controller', () => {
     expect(after).toBe(true);
   });
 
-  test('isEnigma true when $hauntedHouse is enigma', async () => {
-    // act
-    const before = await callSetup(page, 'setup.HauntedHouses.isEnigma()');
-    await setVar(page, 'hauntedHouse', 'enigma');
-    const after = await callSetup(page, 'setup.HauntedHouses.isEnigma()');
-
-    // assert
-    expect(before).toBe(false);
-    expect(after).toBe(true);
-  });
-
   test('isIronclad true when $hauntedHouse is ironclad', async () => {
     // act
     const before = await callSetup(page, 'setup.HauntedHouses.isIronclad()');

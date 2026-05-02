@@ -381,16 +381,16 @@
 			choice: 'summoningChoice'
 		});
 
-		// Active-house id: collapse four mutually-exclusive
-		// $is<House> flags + the derived $isrealhouse onto a single
-		// $hauntedHouse string ('owaissa' | 'elm' | 'enigma' |
-		// 'ironclad' | null). Migrate by finding whichever flag was
-		// raised; default to null when none was set.
+		// Active-house id: collapse the legacy $is<House> flags onto a
+		// single $hauntedHouse string ('owaissa' | 'elm' | 'ironclad' |
+		// null). Migrate by finding whichever flag was raised; default
+		// to null when none was set. The retired Enigma flag and its
+		// derived $isrealhouse bit are dropped silently — a save mid-
+		// Enigma reverts to no active house.
 		if (vars.hauntedHouse === undefined) {
 			vars.hauntedHouse =
 				vars.isOwaissa  === 1 ? 'owaissa'  :
 				vars.isElm      === 1 ? 'elm'      :
-				vars.isEnigma   === 1 ? 'enigma'   :
 				vars.isIronclad === 1 ? 'ironclad' :
 				null;
 		}

@@ -90,7 +90,7 @@ async function expectCleanPassage(page) {
 
 /**
  * Assign a specific ghost by name and set up a house for hunting.
- * `house` is one of 'owaissa' (default), 'elm', 'enigma', 'ironclad'.
+ * `house` is one of 'owaissa' (default), 'elm', 'ironclad'.
  */
 async function setupHunt(page, ghostName, house = 'owaissa') {
   await page.evaluate((name) => {
@@ -106,7 +106,7 @@ async function setupHunt(page, ghostName, house = 'owaissa') {
     throw new Error(`Failed to assign ghost "${ghostName}", got "${assigned}"`);
   }
 
-  if (!['owaissa', 'elm', 'enigma', 'ironclad'].includes(house)) {
+  if (!['owaissa', 'elm', 'ironclad'].includes(house)) {
     throw new Error(`Unknown house "${house}"`);
   }
   await setVar(page, 'hauntedHouse', house);
@@ -117,7 +117,6 @@ async function setupHunt(page, ghostName, house = 'owaissa') {
   const ghostRoomName = {
     owaissa: 'kitchen',
     elm: 'kitchen',
-    enigma: 'kitchen',
     ironclad: 'hallway',
   }[house];
   await page.evaluate((n) => {

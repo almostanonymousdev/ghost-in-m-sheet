@@ -12,10 +12,9 @@ setup.RoomLight = Object.freeze({
  * Centralized room background data and helpers.
  *
  * Before this controller existed, the same per-room facts were
- * repeated in five places: the CSS classes in StoryStylesheet.tw,
- * the inline <style> blocks in widgetIncludeStyles.tw (twice: one
- * chain for previous(), one for previous(2)), the standalone
- * Style* passages in enigmaRoomBackgrounds.tw, and the
+ * repeated across the CSS classes in StoryStylesheet.tw, the
+ * inline <style> blocks in widgetIncludeStyles.tw (twice: one chain
+ * for previous(), one for previous(2)), and the
  * <<addclass>>/<<removeclass>> switch in LightPassageManual.tw.
  *
  * Every widget / passage that needs a room's light/dark asset,
@@ -44,17 +43,6 @@ setup.Styles = (function () {
 		ElmNursery:         { stateKey: 'nursery',         light: 'assets/scenes/room/elm/nursery.jpg',   dark: 'assets/scenes/room/elm/nursery-dark.jpg',   cls: 'elmNursery' },
 		ElmHallway:         { stateKey: 'hallway',         light: 'assets/scenes/room/elm/hallway.jpg',   dark: 'assets/scenes/room/elm/hallway-dark.jpg',   cls: 'elmHallway' },
 		ElmHallwayUpstairs: { stateKey: 'hallwayUpstairs', light: 'assets/scenes/room/elm/hallway1.jpg',  dark: 'assets/scenes/room/elm/hallway1-dark.jpg',  cls: 'elmHallwayTwo' },
-
-		// --- Enigma ----------------------------------------------
-		EnigmaBasement:   { stateKey: 'basement',   light: 'assets/scenes/room/enigma/basement.jpg',   dark: 'assets/scenes/room/enigma/basement-dark.jpg',   cls: 'enigmaBasement' },
-		EnigmaKitchen:    { stateKey: 'kitchen',    light: 'assets/scenes/room/enigma/kitchen.jpg',    dark: 'assets/scenes/room/enigma/kitchen-dark.jpg',    cls: 'enigmaKitchen' },
-		EnigmaBathroom:   { stateKey: 'bathroom',   light: 'assets/scenes/room/enigma/bathroom.jpg',   dark: 'assets/scenes/room/enigma/bathroom-dark.jpg',   cls: 'enigmaBathroom' },
-		EnigmaLivingroom: { stateKey: 'livingroom', light: 'assets/scenes/room/enigma/livingroom.jpg', dark: 'assets/scenes/room/enigma/livingroom-dark.jpg', cls: 'enigmaLivingroom' },
-		EnigmaBedroom:    { stateKey: 'bedroom',    light: 'assets/scenes/room/enigma/bedroom.jpg',    dark: 'assets/scenes/room/enigma/bedroom-dark.jpg',    cls: 'enigmaBedroom' },
-		EnigmaRoomA:      { stateKey: 'roomA',      light: 'assets/scenes/room/enigma/room-a.jpg',     dark: 'assets/scenes/room/enigma/room-a-dark.jpg',     cls: 'enigmaRoomA' },
-		EnigmaRoomB:      { stateKey: 'roomB',      light: 'assets/scenes/room/enigma/room-b.jpg',     dark: 'assets/scenes/room/enigma/room-b-dark.jpg',     cls: 'enigmaRoomB' },
-		EnigmaRoomC:      { stateKey: 'roomC',      light: 'assets/scenes/room/enigma/room-c.jpg',     dark: 'assets/scenes/room/enigma/room-c-dark.jpg',     cls: 'enigmaRoomC' },
-		EnigmaHallway:    { stateKey: 'hallway',    light: 'assets/scenes/room/enigma/hallway.jpg',    dark: 'assets/scenes/room/enigma/hallway-dark.jpg',    cls: 'enigmaHallway' },
 
 		// --- Ironclad --------------------------------------------
 		IroncladReception:   { stateKey: 'reception',   light: 'assets/scenes/room/ironclad/reception.webp',     dark: 'assets/scenes/room/ironclad/reception-dark.webp',     cls: 'IroncladReception' },
