@@ -26,10 +26,10 @@ setup.HauntedHouses = (function () {
 	   query these only through the API methods below. */
 	var OWNED_VARS = Object.freeze([
 		// $hauntedHouse is the active-house id ('owaissa' | 'elm' |
-		// 'enigma' | 'ironclad' | null), replacing four mutually-
-		// exclusive $is<House> flags + the derived $isrealhouse. The
-		// distinction between haunted-house id and Delivery's
-		// $currentHouse (a delivery address) keeps the names clear.
+		// 'ironclad' | null), replacing three mutually-exclusive
+		// $is<House> flags. The distinction between haunted-house id
+		// and Delivery's $currentHouse (a delivery address) keeps
+		// the names clear.
 		'hauntedHouse',
 		'moneyFromContract', 'expFromContract',
 		'isClothesStolen',
@@ -54,7 +54,6 @@ setup.HauntedHouses = (function () {
 		// HOUSE_CONFIG; one $<roomName> per room across all four houses).
 		'kitchen', 'bathroom', 'bedroom', 'livingroom', 'hallway',
 		'nursery', 'hallwayUpstairs', 'bedroomTwo', 'bathroomTwo', 'basement',
-		'roomA', 'roomB', 'roomC',
 		'BlockA', 'BlockB',
 		'BlockACellA', 'BlockACellB', 'BlockACellC',
 		'BlockBCellA', 'BlockBCellB', 'BlockBCellC',
@@ -74,7 +73,6 @@ setup.HauntedHouses = (function () {
 			hallwayPassage: 'OwaissaHallway',
 			image: 'ui/img/owaissa-house.jpg',
 			levelGate: 0,
-			isRealHouse: false,
 			runsFurnitureCode: true,
 			rooms: ['kitchen', 'bathroom', 'bedroom', 'livingroom', 'hallway'],
 			contract: {
@@ -90,7 +88,6 @@ setup.HauntedHouses = (function () {
 			hallwayPassage: 'ElmHallway',
 			image: 'ui/img/elm-house.jpg',
 			levelGate: 3,
-			isRealHouse: false,
 			runsFurnitureCode: true,
 			rooms: [
 				'kitchen', 'bathroom', 'bedroom', 'nursery', 'hallway',
@@ -104,31 +101,11 @@ setup.HauntedHouses = (function () {
 			}
 		},
 		{
-			id: 'enigma',
-			streetPassage: 'Enigma Street',
-			hallwayPassage: 'EnigmaHallway',
-			image: 'ui/img/enigma-house.jpg',
-			levelGate: 2,
-			isRealHouse: true,
-			runsFurnitureCode: false,
-			rooms: [
-				'kitchen', 'bathroom', 'bedroom', 'livingroom', 'hallway',
-				'roomA', 'roomB', 'roomC', 'basement'
-			],
-			contract: {
-				zero:  { money: 120, xp:  35 },
-				one:   { money: 240, xp:  70 },
-				two:   { money: 340, xp: 100 },
-				three: { money: 450, xp: 140 }
-			}
-		},
-		{
 			id: 'ironclad',
 			streetPassage: 'Ironclad Prison',
 			hallwayPassage: 'IroncladHallway',
 			image: 'scenes/room/ironclad/ironclad.webp',
 			levelGate: 4,
-			isRealHouse: false,
 			runsFurnitureCode: true,
 			rooms: [
 				'BlockA', 'BlockB',
@@ -227,15 +204,9 @@ setup.HauntedHouses = (function () {
 
 		// --- Which house are we in? -----------------------------
 		// Predicates resolve against the single $hauntedHouse id.
-		// isRealHouse* derives from HOUSE_CONFIG.isRealHouse (only
-		// Enigma is currently flagged real) so the bit doesn't have
-		// to be persisted alongside the id.
 		isOwaissa:  function () { return sv().hauntedHouse === 'owaissa'; },
 		isElm:      function () { return sv().hauntedHouse === 'elm'; },
-		isEnigma:   function () { return sv().hauntedHouse === 'enigma'; },
 		isIronclad: function () { return sv().hauntedHouse === 'ironclad'; },
-		isRealHouseActive: function () { var h = this.activeHouse(); return !!(h && h.isRealHouse); },
-		isRealHouse:       function () { var h = this.activeHouse(); return !!(h && h.isRealHouse); },
 		setIroncladActive: function (on) { sv().hauntedHouse = on ? 'ironclad' : null; },
 
 		// --- Clothing aggregation -------------------------------

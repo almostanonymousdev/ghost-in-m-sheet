@@ -3,31 +3,22 @@
     'use strict';
 
     /* setup.ToolController -- single source of truth for the haunted-house
-       tool check passages (EMFcheck, GWBcheck[Art], PlasmCheck[Art],
-       SpiritboxCheck, TemperatureHigh, UVLcheck[Art]). Each passage used
-       to inline its own roll/branch/render ladder; now the controller owns
-       the shared scaffolding and the passage is a one-line `<<toolCheck>>`
-       call. See setup.searchToolDefs (StoryScript.tw) for the metadata the
+       tool check passages (EMFcheck, GWBcheck, PlasmCheck, SpiritboxCheck,
+       TemperatureHigh, UVLcheck). Each passage used to inline its own
+       roll/branch/render ladder; now the controller owns the shared
+       scaffolding and the passage is a one-line `<<toolCheck>>` call.
+       See setup.searchToolDefs (StoryScript.tw) for the metadata the
        controller augments.
 
        Rendering strategy: build a markup string and wikify it from the
        `<<toolCheck>>` macro handler -- same pattern as setup.searchToolMarkup.
        Image packs, hit messages, and not-found copy are data on the def so
-       new tools or art variants only need to add a descriptor. */
+       new tools only need to add a descriptor. */
 
-    /* Hit-message library. `standardCss` targets .mc-speech (used in
-       Owaissa/Elm/Ironclad rooms); `artCss` targets .evidenceshadowtext
-       directly (used in Enigma's art variants). The two share copy and
-       differ only in the outer CSS class. */
+    /* Hit-message library. */
     var MESSAGES = {
-        gwb: {
-            standard: '@@.mc-speech; <span class="evidenceshadowtext"> Ohh... what is this...? Nevertheless, one more piece of evidence</span>@@',
-            art:      '@@.evidenceshadowtext; <span class="evidenceshadowtext"> Ohh... what is this...? Nevertheless, one more piece of evidence</span>@@'
-        },
-        uvl: {
-            standard: '@@.mc-speech; <span class="evidenceshadowtext"> It seems I found fingerprints... one more piece of evidence</span>@@',
-            art:      '@@.evidenceshadowtext; <span class="evidenceshadowtext"> It seems I found fingerprints... one more piece of evidence</span>@@'
-        },
+        gwb:        '@@.mc-speech; <span class="evidenceshadowtext"> Ohh... what is this...? Nevertheless, one more piece of evidence</span>@@',
+        uvl:        '@@.mc-speech; <span class="evidenceshadowtext"> It seems I found fingerprints... one more piece of evidence</span>@@',
         plasmClean: '@@.evidenceshadowtext; It seems I found ectoplasm... one more piece of evidence@@',
         plasmMess:  "@@.evidenceshadowtext; It seems I've found ectoplasm... Except somehow I managed to get myself completely covered in this mysterious substance. I don't even remember how it happened. Oh well, at least I've found another piece of evidence..@@"
     };
@@ -38,12 +29,8 @@
         gwb:   "I didn't find anything"
     };
 
-    /* Houses each variant covers -- "standard" is the shared elm/owaissa/
-       ironclad art path, "art" is Enigma's stylised variant. */
-    var EVIDENCE_HOUSES = {
-        standard: ["elm", "owaissa", "ironclad"],
-        art:      ["enigma"]
-    };
+    /* Houses the evidence tools cover. */
+    var EVIDENCE_HOUSES = ["elm", "owaissa", "ironclad"];
 
     function randInt(lo, hi) {
         return Math.floor(Math.random() * (hi - lo + 1)) + lo;
@@ -76,29 +63,19 @@
         return '<<coloredText "green" 0>>';
     }
 
-    /* GWB: shared tier-gated evidence check. "standard" variant also opens
-       the EMF window -- the art variant historically did too, so both keep
-       that side effect. */
-    function renderGwb(variant) {
-        var houses = EVIDENCE_HOUSES[variant];
-        if (!setup.evidenceAvailable("gwb", State.variables.equipment.gwb, houses)) {
+    /* GWB: shared tier-gated evidence check. Also opens the EMF window. */
+    function renderGwb() {
+        if (!setup.evidenceAvailable("gwb", State.variables.equipment.gwb, EVIDENCE_HOUSES)) {
             return notFoundMarkup("gwb");
         }
         setup.activateTool("emf");
         return packMarkup({ prefix: "mechanics/gwb/", start: 1, end: 18, ext: ".jpg" })
-            + '\n' + MESSAGES.gwb[variant];
+            + '\n' + MESSAGES.gwb;
     }
 
-    /* Plasm ("standard"): 50/50 clean vs mess. Mess image range keys off
-       whether the t-shirt is currently worn; the art variant uses a single
-       combined set and always uses the "mess" copy. */
-    function plasmPack(variant) {
-        if (variant === "art") {
-            return {
-                pack:    { prefix: "ui/art/plasm/", start: 1, end: 14, ext: ".png", cssClass: "displayCentredImgs" },
-                message: MESSAGES.plasmMess
-            };
-        }
+    /* Plasm: 50/50 clean vs mess. Mess image range keys off whether the
+       t-shirt is currently worn. */
+    function plasmPack() {
         if (randInt(1, 2) === 1) {
             return {
                 pack:    { prefix: "mechanics/plasm/", start: 1, end: 6, ext: ".png", cssClass: "displayCentredImgs" },
@@ -112,40 +89,23 @@
         };
     }
 
-    function renderPlasm(variant) {
-        var houses = EVIDENCE_HOUSES[variant];
-        if (!setup.evidenceAvailable("glass", State.variables.equipment.glass, houses)) {
+    function renderPlasm() {
+        if (!setup.evidenceAvailable("glass", State.variables.equipment.glass, EVIDENCE_HOUSES)) {
             return notFoundMarkup("plasm");
         }
-        var r = plasmPack(variant);
+        var r = plasmPack();
         return packMarkup(r.pack) + '<br>\n' + r.message + '<br>';
     }
 
-    /* UVL image packs: standard/art each have a lower-body clothing ladder
-       and an upper-body fallback. Returning the pack lets a single renderer
-       handle both variants. Standard in Ironclad has a dedicated set that
-       bypasses the clothing branch entirely. */
-    function uvlLowerPack(variant) {
+    /* UVL image packs: lower-body clothing ladder and upper-body fallback.
+       Ironclad has a dedicated set that bypasses the clothing branch
+       entirely. */
+    function uvlLowerPack() {
         var jeansW   = setup.Wardrobe.jeansWorn();
         var jeans    = setup.Wardrobe.jeansState();
         var shortsW  = setup.Wardrobe.shortsWorn();
         var skirtW   = setup.Wardrobe.skirtWorn();
         var pantiesW = setup.Wardrobe.pantiesWorn();
-        if (variant === "art") {
-            if (jeansW)   return { prefix: "ui/art/uvl/1.", start: 1, end: 3, ext: ".png" };
-            if (shortsW)  return { prefix: "ui/art/uvl/2.", start: 1, end: 2, ext: ".png" };
-            if (skirtW) {
-                return pantiesW
-                    ? { prefix: "ui/art/uvl/3.", start: 1, end: 4, ext: ".png" }
-                    : { prefix: "ui/art/uvl/4.", start: 1, end: 3, ext: ".png" };
-            }
-            if (jeans === setup.ClothingState.NOT_WORN) {
-                return pantiesW
-                    ? { prefix: "ui/art/uvl/5.", start: 1, end: 4, ext: ".png" }
-                    : { prefix: "ui/art/uvl/6.", start: 1, end: 4, ext: ".png" };
-            }
-            return null;
-        }
         if (jeansW)   return { prefix: "mechanics/uvl/1.", start: 1, end: 4, ext: ".png" };
         if (shortsW)  return { prefix: "mechanics/uvl/3.", start: 1, end: 6, ext: ".png" };
         if (skirtW) {
@@ -161,32 +121,28 @@
         return null;
     }
 
-    function uvlUpperPack(variant) {
-        if (variant === "art") {
-            return { prefix: "ui/art/uvl/7.", start: 1, end: 4, ext: ".png" };
-        }
+    function uvlUpperPack() {
         if (setup.Wardrobe.topShirtWorn())     return { prefix: "mechanics/uvl/1.", start: 5, end:  7, ext: ".png" };
         if (setup.Wardrobe.braWorn())          return { prefix: "mechanics/uvl/2.", start: 7, end: 12, ext: ".png" };
         if (setup.Wardrobe.braState() === setup.ClothingState.NOT_WORN) return { prefix: "mechanics/uvl/6.", start: 0, end:  4, ext: ".png" };
         return null;
     }
 
-    function renderUvl(variant) {
+    function renderUvl() {
         var state = setup.tickTimedTool("uvl");
         var g     = setup.Ghosts.active();
         if (state !== setup.ToolState.READY || !(g && g.hasEvidence("uvl"))) {
             return notFoundMarkup("uvl");
         }
-        if (variant !== "art" && setup.HauntedHouses.isIronclad()) {
+        if (setup.HauntedHouses.isIronclad()) {
             return packMarkup({ prefix: "mechanics/uvl/ironclad", start: 1, end: 6, ext: ".png" })
-                + '\n' + MESSAGES.uvl.standard + '<br>';
+                + '\n' + MESSAGES.uvl + '<br>';
         }
-        /* Upper-vs-lower weighting matches the pre-refactor passages:
-           standard = 50/50 (random 1..2); art = 2/3 lower (random 1..3 > 1). */
-        var useLower = (variant === "art") ? (randInt(1, 3) > 1) : (randInt(1, 2) === 1);
-        var pack = useLower ? uvlLowerPack(variant) : uvlUpperPack(variant);
+        /* Upper-vs-lower 50/50 (random 1..2). */
+        var useLower = (randInt(1, 2) === 1);
+        var pack = useLower ? uvlLowerPack() : uvlUpperPack();
         if (!pack) return notFoundMarkup("uvl");
-        return packMarkup(pack) + '\n' + MESSAGES.uvl[variant] + '<br>';
+        return packMarkup(pack) + '\n' + MESSAGES.uvl + '<br>';
     }
 
     /* Spiritbox: four mutually exclusive branches rolled off one d100.
@@ -252,18 +208,17 @@
     /* Dispatch table. Keeping it a lookup makes adding a new tool a
        one-line registration instead of touching a switch ladder. */
     var RENDERERS = {
-        emf:       function (_v) { return renderEmf(); },
+        emf:       renderEmf,
         gwb:       renderGwb,
         plasm:     renderPlasm,
         uvl:       renderUvl,
-        spiritbox: function (_v) { return renderSpiritbox(); }
+        spiritbox: renderSpiritbox
     };
 
-    function render(toolKey, variant) {
+    function render(toolKey) {
         var render = RENDERERS[toolKey];
         if (!render) throw new Error("toolCheck: unknown tool '" + toolKey + "'");
-        var v = (variant === "art") ? "art" : "standard";
-        return render(v);
+        return render();
     }
 
     /* Variables owned by this controller. Other controllers should
@@ -313,15 +268,14 @@
         detectorBought:  function () { return State.variables.boughtDetector !== undefined; }
     };
 
-    /* <<toolCheck tool [variant]>> -- thin macro that delegates to the
-       controller and wikifies the resulting markup. Mirrors the
-       setup.searchToolMarkup / <<searchTool>> pairing in StoryScript.tw. */
+    /* <<toolCheck tool>> -- thin macro that delegates to the controller
+       and wikifies the resulting markup. Mirrors the setup.searchToolMarkup
+       / <<searchTool>> pairing in StoryScript.tw. */
     Macro.add("toolCheck", {
         handler: function () {
             try {
                 var toolKey = this.args[0];
-                var variant = this.args[1];
-                $(this.output).wiki(setup.ToolController.render(toolKey, variant));
+                $(this.output).wiki(setup.ToolController.render(toolKey));
             } catch (e) {
                 return this.error(e.message);
             }
@@ -343,8 +297,6 @@ setup.searchableRooms = [
     "Kitchen", "Hallway", "Livingroom", "Bedroom", "Bathroom", "Basement",
     // Elm Street upstairs
     "BedroomTwo", "Nursery", "BathroomTwo", "HallwayUpstairs",
-    // Enigma rooms
-    "RoomA", "RoomB", "RoomC",
     // Ironclad
     "HallwayIronclad", "ReceptionIronclad", "KitchenIronclad",
     "BlockAIronclad", "BlockBIronclad",
@@ -432,8 +384,7 @@ setup.searchToolDefs = {
         iconFile:        "thermometr.png",
         replaceMode:     "single",
         label:           "Use @@color:yellow;T@@hermometr",
-        checkPassage:    "TemperatureHigh",
-        artCheckPassage: "TemperatureHigh"
+        checkPassage:    "TemperatureHigh"
     },
     uvl: {
         meterField:      "Uvl",
@@ -458,7 +409,7 @@ setup.searchToolOrder = ["emf", "plasm", "gwb", "spiritbox", "temperature", "uvl
  *   bagRoom    -- bag name suffix; the search bag is $currentsearch<bagRoom>
  *   bgRoom     -- name of the room state object whose .background field
  *                gates dark/lights checks (e.g. "bedroom" or "BlockACellA")
- *   eventChain -- "standard" (default), "enigma", or "ironclad"
+ *   eventChain -- "standard" (default) or "ironclad"
  *   meterTag   -- "div" overrides the default "span" (Owaissa rooms only)
  */
 setup.searchRoomPrefixes = [
@@ -478,16 +429,6 @@ setup.searchRoomPrefixes = [
     { prefix: "elmHallway",          bagRoom: "Hallway",         bgRoom: "hallway"         },
     { prefix: "elmHallwayUpstairs",  bagRoom: "HallwayUpstairs", bgRoom: "hallwayUpstairs" },
     { prefix: "elmNursery",          bagRoom: "Nursery",         bgRoom: "nursery"         },
-    // Enigma -- eventChain enigma
-    { prefix: "enigmaBasement",      bagRoom: "Basement",   bgRoom: "basement",   eventChain: "enigma" },
-    { prefix: "enigmaBedroom",       bagRoom: "Bedroom",    bgRoom: "bedroom",    eventChain: "enigma" },
-    { prefix: "enigmaBathroom",      bagRoom: "Bathroom",   bgRoom: "bathroom",   eventChain: "enigma" },
-    { prefix: "enigmaKitchen",       bagRoom: "Kitchen",    bgRoom: "kitchen",    eventChain: "enigma" },
-    { prefix: "enigmaHallway",       bagRoom: "Hallway",    bgRoom: "hallway",    eventChain: "enigma" },
-    { prefix: "enigmaLivingroom",    bagRoom: "Livingroom", bgRoom: "livingroom", eventChain: "enigma" },
-    { prefix: "enigmaRoomA",         bagRoom: "RoomA",      bgRoom: "roomA",      eventChain: "enigma" },
-    { prefix: "enigmaRoomB",         bagRoom: "RoomB",      bgRoom: "roomB",      eventChain: "enigma" },
-    { prefix: "enigmaRoomC",         bagRoom: "RoomC",      bgRoom: "roomC",      eventChain: "enigma" },
     // Ironclad -- eventChain ironclad; bag names carry an "Ironclad" suffix that the prefix does not
     { prefix: "ironcladHallway",     bagRoom: "HallwayIronclad",     bgRoom: "hallway",     eventChain: "ironclad" },
     { prefix: "ironcladReception",   bagRoom: "ReceptionIronclad",   bgRoom: "reception",   eventChain: "ironclad" },
@@ -519,7 +460,6 @@ setup.hauntedPassages = (function () {
     return setup.searchRoomPrefixes.map(function (e) {
         var house;
         if (e.eventChain === "ironclad")      house = "ironclad";
-        else if (e.eventChain === "enigma")   house = "enigma";
         else if (e.prefix.indexOf("owaissa") === 0) house = "owaissa";
         else                                  house = "elm";
         var passage = e.prefix.charAt(0).toUpperCase() + e.prefix.slice(1);
@@ -543,8 +483,8 @@ setup.searchableRooms.forEach(function (room) {
 
     /* setup.isGhostHere([houses]) -- true iff the current passage belongs to
      * one of the listed houses AND $hunt.room.name matches that passage's
-     * bgRoom. Pass a house-filter array to scope the check (e.g. ["enigma"]
-     * for the *Art tool variants). Omit the filter to accept any house. */
+     * bgRoom. Pass a house-filter array to scope the check. Omit the filter
+     * to accept any house. */
     setup.isGhostHere = function (houses) {
         var h = setup.Ghosts.hunt();
         if (!h || !h.room || !h.room.name) return false;
@@ -714,7 +654,6 @@ setup.searchableRooms.forEach(function (room) {
      * filling the meter (light-passage check + the appropriate event
      * pipeline + start-of-hunt roll). One block per event-chain. */
     var EVENT_CHAINS = {
-        enigma: '<<include "LightPassageGhost">><<include "EventArt">>',
         ironclad:
             '<<if $cursedHuntActive eq 1>><<else>>' +
                 '<<include "LightPassageGhost">><<include "Event">>' +
@@ -740,13 +679,9 @@ setup.searchableRooms.forEach(function (room) {
 
     function checkMarkupFor(cfg, def) {
         if (def.checkPassage) {
-            var passageName = (cfg.eventChain === "enigma")
-                ? def.artCheckPassage
-                : def.checkPassage;
-            return '<<include "' + passageName + '">>';
+            return '<<include "' + def.checkPassage + '">>';
         }
-        var variant = (cfg.eventChain === "enigma") ? "art" : "standard";
-        return '<<toolCheck "' + cfg.tool + '" "' + variant + '">>';
+        return '<<toolCheck "' + cfg.tool + '">>';
     }
 
     function completionReplaceMarkup(cfg, ids, check) {
@@ -772,7 +707,7 @@ setup.searchableRooms.forEach(function (room) {
      *                 "owaissaBedroom", "ElmBasement", "ironcladKitchen").
      *                 Button/meter/action ids are derived from this + the
      *                 tool's widgetSuffix.
-     *   eventChain  -- "standard" | "ironclad" | "enigma"
+     *   eventChain  -- "standard" | "ironclad"
      *   replaceMode -- "single" (replace meterId with check passage)
      *                | "double" (replace actionSel with check passage AND
      *                            clear meterId)

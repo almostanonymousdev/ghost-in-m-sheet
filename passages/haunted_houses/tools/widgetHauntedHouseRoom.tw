@@ -2,8 +2,6 @@
 /* roomShell -- container widget. Args:
 0: passage name (e.g. "ElmBedroom" or "IroncladHallway")
 1: bgRoom state-variable name (e.g. "bedroom", "BlockACellA")
-2: light variant -- "basic" (enigma: simple light, no companion)
-or omitted/anything else (full: cursedHuntDisable + minigame heart + companion).
 Sets shared _shell* temp vars consumed by the inner roomFooter widget,
 then renders the standard outer .room/.room-wrapper/.content/.action
 scaffolding and wikifies its contents (which should include an optional
@@ -11,7 +9,6 @@ scaffolding and wikifies its contents (which should include an optional
 <<widget "roomShell" container>>
 	<<set _shellPassage to _args[0]>>
 	<<set _shellBgVar to _args[1]>>
-	<<set _shellVariant to (_args.length gt 2 ? _args[2] : "full")>>
 	<<set _shellPrefix to _args[0].charAt(0).toLowerCase() + _args[0].slice(1)>>
 	<div class="room">
 	<div class="room-wrapper">
@@ -27,7 +24,7 @@ scaffolding and wikifies its contents (which should include an optional
 <div class="furnitureSearch">, which matches the sizing rules in
 StoryStylesheet. Use it inside <<roomShell>> for the small set of
 <<furnitureItem>>/<<hideSpot>> calls each room exposes. Omit it
-entirely for rooms with no furniture (e.g. enigma). */
+entirely for rooms with no furniture. */
 <<widget "furnitureRow" container>>
 	<div class="furnitureSearch"><<= _contents>></div>
 <</widget>>
@@ -109,22 +106,15 @@ whole (which contains the action bar), so we only need the one
 /* roomFooter -- container widget. Reads the _shell* temp vars set by the
 enclosing <<roomShell>> and emits the full .footer block: a .hunt-conditions
 HUD row on top, and below it a .footer-row with a .footertools div that
-holds <<roomToolBar>> + the appropriate light widget, plus a .footeraction
-div whose body comes from _contents (the per-room links). Picks
-roomFooterLight vs roomFooterLightBasic and toggles companion visibility
-based on _shellVariant. */
+holds <<roomToolBar>> + the light widget, plus a .footeraction div whose
+body comes from _contents (the per-room links). */
 <<widget "roomFooter" container>>
 	<div class="footer">
 	<div class="hunt-conditions"><<huntConditions>></div>
 	<div class="footer-row">
 	<div class="footertools">
-	<<if _shellVariant eq "basic">>
-		<<roomToolBar _shellPrefix "noCompanion">>
-		<<roomFooterLightBasic _shellPassage _shellBgVar>>
-	<<else>>
-		<<roomToolBar _shellPrefix>>
-		<<roomFooterLight _shellPassage _shellBgVar>>
-	<</if>>
+	<<roomToolBar _shellPrefix>>
+	<<roomFooterLight _shellPassage _shellBgVar>>
 	</div>
 	<div class="footeraction">
 	<<= _contents>>
@@ -151,8 +141,7 @@ based on _shellVariant. */
 
 /* navLink -- args: label, target passage, optional mode ("hunt" for the
 ironclad-style includeTimeEventHunt; default is includeTimeEventClothesHunt
-used by elm and owaissa). Always increments $stepCount, since every
-non-enigma navigation link in the haunted houses does.
+used by elm and owaissa). Always increments $stepCount.
 
 When the Monkey Paw's tier-3 trapTheGhost wish has sealed the player
 in their current room (setup.MonkeyPaw.canScreamHere()), the link
@@ -208,7 +197,7 @@ the only ways out are the scream link or a cursed-item sacrifice. */
 	<<for _t range setup.searchToolOrder>>
 		<<roomToolCard _t _args[0]>>
 	<</for>>
-	<<if _args[1] neq "noCompanion">><<companionCard>><</if>>
+	<<companionCard>>
 <</widget>>
 
 /* roomFooterLight -- args: passage name (link target), bgRoom state-variable
@@ -226,18 +215,6 @@ the only ways out are the scream link or a cursed-item sacrifice. */
 		<<link "<<image \"ui/img/hearth.png\">>" "SeduceGhostMinigame">>
 		<<run setup.SeduceGhostMinigame.init()>><</link>>
 	<</if>></span>
-	</div>
-<</widget>>
-
-/* roomFooterLightBasic -- args: passage name, bgRoom state-variable name.
-   Enigma's simpler lights-only variant: no cursedHuntLinkDisable wrapper,
-   no minigame trigger. */
-<<widget "roomFooterLightBasic">>
-	<div class="footer-card footer-light">
-	<<link "<<image \"ui/img/lighton.png\">>" _args[0]>><<set State.variables[_args[1]].background = setup.RoomLight.LIT>>
-	<</link>>
-	<<link "<<image \"ui/img/lightoff.png\">>" _args[0]>><<set State.variables[_args[1]].background = setup.RoomLight.DARK>>
-	<</link>>
 	</div>
 <</widget>>
 
