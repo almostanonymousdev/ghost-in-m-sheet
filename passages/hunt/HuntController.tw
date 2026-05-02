@@ -36,9 +36,19 @@
  *     `_activeFromHunt` / `_activeFromCatalogue` helpers to call.
  */
 setup.HuntController = (function () {
+	/* Mode enum -- the two strings mode() can return. Callers compare
+	   against Mode.REGULAR / Mode.ROGUE rather than the literal so a
+	   typo is caught at parse time instead of as a silently-failing
+	   ===. The values are the on-disk strings; saves and tests work
+	   against them transparently. */
+	var Mode = Object.freeze({
+		REGULAR: 'regular',
+		ROGUE:   'rogue'
+	});
+
 	function sv() { return State.variables; }
 
-	/* "regular" while a $hunt object holds a ghost name; "rogue"
+	/* Mode.REGULAR while a $hunt object holds a ghost name; Mode.ROGUE
 	   while a rogue run is active; null otherwise.
 
 	   Tie-break rules when both $hunt and $run somehow coexist
@@ -57,10 +67,10 @@ setup.HuntController = (function () {
 	       witch / city / haunted-house flow. */
 	function mode() {
 		var rogueActive = !!(setup.Rogue && setup.Rogue.isRogue && setup.Rogue.isRogue());
-		if (rogueActive && passage() === "RogueRun") return "rogue";
+		if (rogueActive && passage() === "RogueRun") return Mode.ROGUE;
 		var h = sv().hunt;
-		if (h && h.name) return "regular";
-		if (rogueActive) return "rogue";
+		if (h && h.name) return Mode.REGULAR;
+		if (rogueActive) return Mode.ROGUE;
 		return null;
 	}
 
@@ -71,8 +81,8 @@ setup.HuntController = (function () {
 	   stack via this single entry point. */
 	function activeGhost() {
 		var m = mode();
-		if (m === "regular") return setup.Ghosts._activeFromHunt();
-		if (m === "rogue")   return setup.Ghosts._activeFromCatalogue(setup.Rogue.ghostName());
+		if (m === Mode.REGULAR) return setup.Ghosts._activeFromHunt();
+		if (m === Mode.ROGUE)   return setup.Ghosts._activeFromCatalogue(setup.Rogue.ghostName());
 		return null;
 	}
 
@@ -83,8 +93,8 @@ setup.HuntController = (function () {
 	   the filter and answers from the floor plan. */
 	function isGhostHere(houses) {
 		var m = mode();
-		if (m === "regular") return setup._isGhostHereInClassic(houses);
-		if (m === "rogue") {
+		if (m === Mode.REGULAR) return setup._isGhostHereInClassic(houses);
+		if (m === Mode.ROGUE) {
 			if (passage() !== "RogueRun") return false;
 			return setup.Rogue.isInGhostRoom();
 		}
@@ -100,8 +110,8 @@ setup.HuntController = (function () {
 	   HauntConditions.snapshot/applyTickEffects gate on. */
 	function isHuntActive() {
 		var m = mode();
-		if (m === "regular") return setup.Ghosts.isHunting();
-		if (m === "rogue")   return passage() === "RogueRun";
+		if (m === Mode.REGULAR) return setup.Ghosts.isHunting();
+		if (m === Mode.ROGUE)   return passage() === "RogueRun";
 		return false;
 	}
 
@@ -110,7 +120,7 @@ setup.HuntController = (function () {
 	   hunts, so the answer is always false there. */
 	function isCursedHuntActive() {
 		var m = mode();
-		if (m === "regular") return setup.HauntedHouses.isCursedHuntActive();
+		if (m === Mode.REGULAR) return setup.HauntedHouses.isCursedHuntActive();
 		return false;
 	}
 
@@ -135,32 +145,32 @@ setup.HuntController = (function () {
 	   answers true so the steal cascade fires. */
 	function shouldTriggerSteal() {
 		var m = mode();
-		if (m === "regular") {
+		if (m === Mode.REGULAR) {
 			var hh = setup.HauntedHouses.activeHouse();
 			if (hh && hh.runsStealClothes === false) return false;
 			return setup.HauntedHouses.shouldTriggerSteal();
 		}
-		if (m === "rogue") return setup.HauntedHouses.shouldTriggerSteal();
+		if (m === Mode.ROGUE) return setup.HauntedHouses.shouldTriggerSteal();
 		return false;
 	}
 
 	/* Mode-aware passage to <<goto>> when the per-tick chain
 	   detects a hunt-over condition. `reason` is one of
-	   "sanity" | "exhaustion" | "time". Classic returns the
+	   FailureReason.SANITY | EXHAUSTION | TIME. Classic returns the
 	   matching HuntOver* passage; rogue stamps the run as a
 	   failure with the reason and returns "RogueEnd" so the
 	   chain widget can route there with one <<goto>>. */
 	function huntOverPassage(reason) {
 		var m = mode();
-		if (m === "regular") {
-			if (reason === "sanity")     return "HuntOverSanity";
-			if (reason === "exhaustion") return "HuntOverExhaustion";
-			if (reason === "time")       return "HuntOverTime";
+		var FR = setup.Rogue.FailureReason;
+		if (m === Mode.REGULAR) {
+			if (reason === FR.SANITY)     return "HuntOverSanity";
+			if (reason === FR.EXHAUSTION) return "HuntOverExhaustion";
+			if (reason === FR.TIME)       return "HuntOverTime";
 			return null;
 		}
-		if (m === "rogue") {
-			setup.Rogue.setField("outcome", "failure");
-			setup.Rogue.setField("failureReason", reason);
+		if (m === Mode.ROGUE) {
+			setup.Rogue.markFailure(reason);
 			return "RogueEnd";
 		}
 		return null;
@@ -168,16 +178,14 @@ setup.HuntController = (function () {
 
 	/* Mode-aware exit target for the "ghost catches the MC" branch
 	   that HuntEnd's <<huntEndExit>> widget routes through. Classic
-	   sleeps the MC home; rogue stamps a "caught" failure on the
+	   sleeps the MC home; rogue stamps a CAUGHT failure on the
 	   run and routes to RogueEnd. The High-Priestess override (a
 	   classic-only tarot draw) is handled inside the widget --
 	   neither mode reaches huntCaughtPassage when the priestess is
 	   in play. */
 	function huntCaughtPassage() {
-		var m = mode();
-		if (m === "rogue") {
-			setup.Rogue.setField("outcome", "failure");
-			setup.Rogue.setField("failureReason", "caught");
+		if (mode() === Mode.ROGUE) {
+			setup.Rogue.markFailure(setup.Rogue.FailureReason.CAUGHT);
 			return "RogueEnd";
 		}
 		return "Sleep";
@@ -212,9 +220,9 @@ setup.HuntController = (function () {
 		if (interval === s.lastChangeIntervalRoom) return;
 		if (Math.random() < 0.45) {
 			var m = mode();
-			if (m === "regular" && setup.HauntedHouses.driftGhostRoom) {
+			if (m === Mode.REGULAR && setup.HauntedHouses.driftGhostRoom) {
 				setup.HauntedHouses.driftGhostRoom();
-			} else if (m === "rogue" && setup.Rogue.driftGhostRoom) {
+			} else if (m === Mode.ROGUE && setup.Rogue.driftGhostRoom) {
 				setup.Rogue.driftGhostRoom();
 			}
 		}
@@ -230,7 +238,7 @@ setup.HuntController = (function () {
 	   Caller wraps this in `not setup.Ghosts.hasHighPriestess()` so
 	   the priestess reprieve still skips the cleanup entirely. */
 	function onCaughtCleanup() {
-		if (mode() === "regular") {
+		if (mode() === Mode.REGULAR) {
 			setup.HauntedHouses.endHunt();
 		}
 		setup.HauntedHouses.cleanupAfterHunt({ loseStolen: true });
@@ -246,7 +254,7 @@ setup.HuntController = (function () {
 	   in that case). */
 	function snapGhostToCurrentRoom() {
 		var m = mode();
-		if (m === "regular") {
+		if (m === Mode.REGULAR) {
 			var hunt = setup.Ghosts.hunt();
 			if (!hunt || !hunt.room) return false;
 			var current = passage();
@@ -259,7 +267,7 @@ setup.HuntController = (function () {
 			}
 			return false;
 		}
-		if (m === "rogue") {
+		if (m === Mode.ROGUE) {
 			var run = setup.Rogue.active();
 			if (!run || !run.floorplan) return false;
 			var roomId = run.currentRoomId || 'room_0';
@@ -278,13 +286,13 @@ setup.HuntController = (function () {
 	   before reseating the ghost). */
 	function trapGhost(unlockBy) {
 		var m = mode();
-		if (m === "regular") {
+		if (m === Mode.REGULAR) {
 			var hunt = setup.Ghosts.hunt();
 			if (hunt) hunt.trapped = true;
 			setup.MonkeyPaw.lockFrontDoor(unlockBy);
 			return true;
 		}
-		if (m === "rogue") {
+		if (m === Mode.ROGUE) {
 			var run = setup.Rogue.active();
 			if (!run) return false;
 			run.trapped = true;
@@ -300,11 +308,11 @@ setup.HuntController = (function () {
 	   shuffle for trapped ghosts. */
 	function isGhostTrapped() {
 		var m = mode();
-		if (m === "regular") {
+		if (m === Mode.REGULAR) {
 			var hunt = setup.Ghosts.hunt();
 			return !!(hunt && hunt.trapped);
 		}
-		if (m === "rogue") {
+		if (m === Mode.ROGUE) {
 			var run = setup.Rogue.active();
 			return !!(run && run.trapped);
 		}
@@ -318,25 +326,24 @@ setup.HuntController = (function () {
 	   so banning is a no-op there. Returns the banned id (classic)
 	   or null. */
 	function banActiveContext() {
-		if (mode() === "regular") return setup.MonkeyPaw.banActiveHouse();
+		if (mode() === Mode.REGULAR) return setup.MonkeyPaw.banActiveHouse();
 		return null;
 	}
 
 	/* "Get me out of here" exit target -- the goto used by the
 	   Monkey Paw leave wish. Classic returns the active house's
 	   street passage so the MC walks back outside; rogue stamps an
-	   abandon failure on the run and returns RogueEnd so the leave
+	   ABANDON failure on the run and returns RogueEnd so the leave
 	   wish forfeits the run cleanly. */
 	function streetExitPassage() {
 		var m = mode();
-		if (m === "regular") {
+		if (m === Mode.REGULAR) {
 			if (setup.HauntedHouses.isElm()) return 'Elm Street';
 			if (setup.HauntedHouses.isOwaissa()) return 'Owaissa Street';
 			return null;
 		}
-		if (m === "rogue") {
-			setup.Rogue.setField("outcome", "failure");
-			setup.Rogue.setField("failureReason", "abandon");
+		if (m === Mode.ROGUE) {
+			setup.Rogue.markFailure(setup.Rogue.FailureReason.ABANDON);
 			return "RogueEnd";
 		}
 		return null;
@@ -345,20 +352,19 @@ setup.HuntController = (function () {
 	/* Mode-aware "the MC has been possessed" target -- the goto
 	   used by the Tarot Possession card. Classic flips $hunt.mode
 	   to POSSESSED, jumps to a daytime hour, and routes to
-	   CityMapPossessed; rogue stamps a 'possessed' failure on the
+	   CityMapPossessed; rogue stamps a POSSESSED failure on the
 	   run and routes to RogueEnd. The widget caller wraps the link
 	   around the returned passage so the imperative side effects
 	   fire as part of the link click. */
 	function possessionPassage() {
 		var m = mode();
-		if (m === "regular") {
+		if (m === Mode.REGULAR) {
 			setup.HauntedHouses.setHuntMode(setup.Ghosts.HuntMode.POSSESSED);
 			setup.Time.setHours(Math.floor(Math.random() * (20 - 12 + 1)) + 12);
 			return "CityMapPossessed";
 		}
-		if (m === "rogue") {
-			setup.Rogue.setField("outcome", "failure");
-			setup.Rogue.setField("failureReason", "possessed");
+		if (m === Mode.ROGUE) {
+			setup.Rogue.markFailure(setup.Rogue.FailureReason.POSSESSED);
 			return "RogueEnd";
 		}
 		return null;
@@ -374,11 +380,11 @@ setup.HuntController = (function () {
 	function consumeKnowledgeEvidence() {
 		if (sv().knowledgeUsed === 1) return;
 		var m = mode();
-		if (m === "regular") {
+		if (m === Mode.REGULAR) {
 			setup.Ghosts.consumeKnowledgeEvidence();
 			return;
 		}
-		if (m === "rogue") {
+		if (m === Mode.ROGUE) {
 			sv().knowledgeUsed = 1;
 			var ghost = activeGhost();
 			var owned = [];
@@ -400,7 +406,7 @@ setup.HuntController = (function () {
 	   (setup.Gui.isCursedHuntOptionOn); rogue runs don't have a
 	   cursed-hunt sub-flow, so the answer is always false. */
 	function shouldUseCursedHuntOption() {
-		if (mode() !== "regular") return false;
+		if (mode() !== Mode.REGULAR) return false;
 		return !!(setup.Gui && setup.Gui.isCursedHuntOptionOn
 			&& setup.Gui.isCursedHuntOptionOn());
 	}
@@ -421,6 +427,7 @@ setup.HuntController = (function () {
 	}
 
 	return {
+		Mode:                   Mode,
 		mode:                   mode,
 		isActive:               isActive,
 		activeGhost:            activeGhost,

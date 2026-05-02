@@ -33,6 +33,30 @@
 setup.Rogue = (function () {
 	var OWNED_VARS = Object.freeze(['run', 'echoes', 'runsStarted']);
 
+	/* Enum constants for the run's stringly-typed fields. The values
+	   are the on-disk strings; saves and tests work against them
+	   transparently. Callers should reference the enum (e.g.
+	   setup.Rogue.Outcome.SUCCESS) rather than the literal so a typo
+	   surfaces at parse time instead of as a silently-failing eq. */
+	var Outcome = Object.freeze({
+		SUCCESS: 'success',
+		FAILURE: 'failure'
+	});
+	var FailureReason = Object.freeze({
+		SANITY:      'sanity',
+		EXHAUSTION:  'exhaustion',
+		TIME:        'time',
+		CAUGHT:      'caught',
+		ABANDON:     'abandon',
+		POSSESSED:   'possessed',
+		FLED:        'fled',
+		WRONG_GHOST: 'wrongGhost'
+	});
+	var Objective = Object.freeze({
+		IDENTIFY: 'identify',
+		RESCUE:   'rescue'
+	});
+
 	function sv() { return State.variables; }
 
 	// --- Run lifecycle ----------------------------------------
@@ -40,7 +64,7 @@ setup.Rogue = (function () {
 		seed       -- int; if omitted, a random seed is rolled.
 		modifiers  -- array of modifier ids; defaults to [].
 		loadout    -- starting loadout object; defaults to {}.
-		objective  -- objective id string; defaults to 'identify'.
+		objective  -- objective id string; defaults to Objective.IDENTIFY.
 	   The run number increments from $runsStarted, which persists
 	   across end() so attempt counts survive between runs. The
 	   floorplan field is left undefined for the floor-plan
@@ -53,7 +77,7 @@ setup.Rogue = (function () {
 			number: sv().runsStarted,
 			modifiers: Array.isArray(opts.modifiers) ? opts.modifiers.slice() : [],
 			loadout: opts.loadout || {},
-			objective: opts.objective || 'identify',
+			objective: opts.objective || Objective.IDENTIFY,
 			// Player starts in the hallway. Nav links in RogueRun
 			// update this via setCurrentRoom() before re-rendering.
 			currentRoomId: 'room_0',
@@ -175,7 +199,7 @@ setup.Rogue = (function () {
 	/* Tool keys the rogue toolbar should render this run, in canonical
 	   setup.searchToolOrder. Resolution order:
 	     1. Build the "starting" base set:
-	        a. Empty Bag modifier ('locked_tools') -> [].
+	        a. Empty Bag modifier (Modifiers.LOCKED_TOOLS) -> [].
 	        b. loadout.tools array -> intersection with searchToolOrder.
 	        c. Default -> all six tools.
 	     2. Union with any tool the player has picked up from
@@ -193,7 +217,7 @@ setup.Rogue = (function () {
 		if (!run) return [];
 		var order = (setup.searchToolOrder || []).slice();
 		var base;
-		if (hasModifier('locked_tools')) {
+		if (hasModifier(setup.Modifiers.LOCKED_TOOLS)) {
 			base = [];
 		} else if (Array.isArray((run.loadout || {}).tools)) {
 			base = order.filter(function (t) {
@@ -219,7 +243,7 @@ setup.Rogue = (function () {
 	function startingToolsBase(modifierIds, loadout) {
 		var order = (setup.searchToolOrder || []).slice();
 		var ids = Array.isArray(modifierIds) ? modifierIds : [];
-		if (ids.indexOf('locked_tools') !== -1) return [];
+		if (ids.indexOf(setup.Modifiers.LOCKED_TOOLS) !== -1) return [];
 		if (loadout && Array.isArray(loadout.tools)) {
 			return order.filter(function (t) {
 				return loadout.tools.indexOf(t) !== -1;
@@ -288,7 +312,7 @@ setup.Rogue = (function () {
 		modifierCount -- how many modifiers to draft (default 2).
 		floorPlanOpts -- forwarded to setup.FloorPlan.generate.
 		loadout       -- forwarded to start().
-		objective     -- forwarded to start() (default 'identify'). */
+		objective     -- forwarded to start() (default Objective.IDENTIFY). */
 	function startRogue(opts) {
 		opts = opts || {};
 		var seed = opts.seed != null ? opts.seed : Math.floor(Math.random() * 1e9);
@@ -329,7 +353,7 @@ setup.Rogue = (function () {
 			seed: seed,
 			modifiers: modifierIds,
 			loadout: opts.loadout || {},
-			objective: opts.objective || 'identify'
+			objective: opts.objective || Objective.IDENTIFY
 		});
 		setField('floorplan', floorplan);
 		setField('ghostName', ghostName);
@@ -374,8 +398,9 @@ setup.Rogue = (function () {
 		if (run.trapped) return;
 		var fp = run.floorplan;
 		if (!Array.isArray(fp.rooms) || !fp.rooms.length) return;
+		var hallway = setup.FloorPlan.HALLWAY_TEMPLATE;
 		var nonHallway = fp.rooms
-			.filter(function (r) { return r.template !== 'hallway'; })
+			.filter(function (r) { return r.template !== hallway; })
 			.map(function (r) { return r.id; });
 		if (!nonHallway.length) return;
 		// Prefer drifting somewhere new; fall back to the full pool
@@ -605,6 +630,35 @@ setup.Rogue = (function () {
 		};
 	}
 
+	/* Outcome / failure-reason readers and writers. Callers go
+	   through these instead of touching $run.outcome / $run.failureReason
+	   directly so the field names + Outcome enum stay in one place.
+	   markSuccess / markFailure cover the common "stamp the result on
+	   the run before navigating to RogueEnd" flow. */
+	function outcome() {
+		var run = sv().run;
+		return run ? (run.outcome || null) : null;
+	}
+	function failureReason() {
+		var run = sv().run;
+		return run ? (run.failureReason || null) : null;
+	}
+	function isSuccess() {
+		return outcome() === Outcome.SUCCESS;
+	}
+	function markSuccess() {
+		var run = sv().run;
+		if (!run) return;
+		run.outcome = Outcome.SUCCESS;
+		run.failureReason = null;
+	}
+	function markFailure(reason) {
+		var run = sv().run;
+		if (!run) return;
+		run.outcome = Outcome.FAILURE;
+		if (reason) run.failureReason = reason;
+	}
+
 	/* End the active rogue run, paying out echoes based on whether
 	   it was a success and how many modifiers the run carried.
 	   Returns a small summary record the result passage can render
@@ -651,6 +705,9 @@ setup.Rogue = (function () {
 
 	return {
 		OWNED_VARS: OWNED_VARS,
+		Outcome: Outcome,
+		FailureReason: FailureReason,
+		Objective: Objective,
 		start: start,
 		end: end,
 		active: active,
@@ -667,6 +724,11 @@ setup.Rogue = (function () {
 		setObjective: setObjective,
 		setField: setField,
 		field: field,
+		outcome: outcome,
+		failureReason: failureReason,
+		isSuccess: isSuccess,
+		markSuccess: markSuccess,
+		markFailure: markFailure,
 		currentRoomId: currentRoomId,
 		setCurrentRoom: setCurrentRoom,
 		setSearchedFurniture: setSearchedFurniture,

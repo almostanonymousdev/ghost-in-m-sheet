@@ -66,9 +66,9 @@
 					@@.usebtn;<<= _m.name>>@@<br>
 				<</for>>
 				<br>
-				@@.movebtn; [[Win|RogueEnd][setup.Rogue.setField("outcome", "success")]]@@<br>
-				@@.movebtn; [[Lose|RogueEnd][setup.Rogue.setField("outcome", "failure")]]@@<br>
-				@@.backbtn; [[Abandon|RogueEnd][setup.Rogue.setField("outcome", "failure")]]@@
+				@@.movebtn; [[Win|RogueEnd][setup.Rogue.markSuccess()]]@@<br>
+				@@.movebtn; [[Lose|RogueEnd][setup.Rogue.markFailure()]]@@<br>
+				@@.backbtn; [[Abandon|RogueEnd][setup.Rogue.markFailure()]]@@
 			</div>
 		</div>
 
@@ -114,6 +114,9 @@
 					<<else>>
 						@@.mc-thoughts; (no exits)@@<br>
 					<</if>>
+					<<if _cr and _cr.template eq setup.FloorPlan.HALLWAY_TEMPLATE>>
+						@@.movebtn; [[Outside|RogueOutside]]@@<br>
+					<</if>>
 				</div>
 			</div>
 		</div>
@@ -122,25 +125,30 @@
 
 :: RogueEnd [nobr] {"position":"3200,200","size":"100,100"}
 /* Closes the active rogue run, pays out echoes, prints the
-   summary, and routes to the meta-shop. $rogueOutcome is set by
-   the calling link ("success" / "failure"); anything else
-   counts as a failure so the player can never lose echoes by
-   navigating in via a stale link. */
+   summary, and routes to the meta-shop. The calling link stamps
+   the outcome via setup.Rogue.markSuccess() / markFailure(reason);
+   anything other than Outcome.SUCCESS counts as a failure so the
+   player can never lose echoes by navigating in via a stale link. */
 <<if not setup.Rogue.isRogue()>>
 	@@.mc-thoughts; No run to end.@@<br>
 	@@.backbtn; [[Back|CityMap]]@@
 <<else>>
-	<<set _success to (setup.Rogue.field("outcome") eq "success")>>
+	<<set _success to setup.Rogue.isSuccess()>>
 	<<set _summary to setup.Rogue.endRogue(_success)>>
+	<<set _FR to setup.Rogue.FailureReason>>
 
 	<<if _summary.success>>
-		@@.notmc-speech; The haunt yields. Run #<<= _summary.number>> closes clean.@@<br>
-	<<elseif _summary.failureReason eq "sanity">>
+		@@.notmc-speech; The ghosts were no match for you. Run #<<= _summary.number>> closes clean.@@<br>
+	<<elseif _summary.failureReason eq _FR.SANITY>>
 		@@.notmc-speech; Your mind gives out. Run #<<= _summary.number>> ends with sanity gone.@@<br>
-	<<elseif _summary.failureReason eq "exhaustion">>
+	<<elseif _summary.failureReason eq _FR.EXHAUSTION>>
 		@@.notmc-speech; Your legs give out. Run #<<= _summary.number>> ends in exhaustion.@@<br>
-	<<elseif _summary.failureReason eq "time">>
+	<<elseif _summary.failureReason eq _FR.TIME>>
 		@@.notmc-speech; Dawn breaks before the answer does. Run #<<= _summary.number>> ends with the clock.@@<br>
+	<<elseif _summary.failureReason eq _FR.FLED>>
+		@@.notmc-speech; You walk away from the haunt. Run #<<= _summary.number>> ends with the door at your back.@@<br>
+	<<elseif _summary.failureReason eq _FR.WRONG_GHOST>>
+		@@.notmc-speech; The wrong name. Run #<<= _summary.number>> ends with the haunt still uncalled.@@<br>
 	<<else>>
 		@@.notmc-speech; The haunt swallows you. Run #<<= _summary.number>> ends in failure.@@<br>
 	<</if>>
@@ -175,3 +183,52 @@
 <span class="meta-shop-balance"></span><br>
 @@.movebtn; [[Continue hunting|RogueStart]]@@<br>
 @@.backbtn; [[Back to the city|CityMap]]@@
+
+:: RogueOutside [nobr] {"position":"3100,300","size":"100,100"}
+/* The yard outside the haunt. Reached from RogueRun's hallway via the
+   Outside nav link; only the hallway exposes that link. The run is
+   still active here -- the player can pick the ghost (RogueIdentify),
+   forfeit the run on the spot, or step back into the hallway and keep
+   exploring. The hunt event chain is paused while the player is on
+   this passage (HuntController.isHuntActive() answers off RogueRun
+   only), matching classic mode where leaving the house pauses ticks. */
+<<if not setup.Rogue.isRogue()>>
+	@@.mc-thoughts; No active rogue run.@@<br>
+	@@.backbtn; [[Back|CityMap]]@@
+<<else>>
+	@@.location; Outside the haunt@@<br>
+	@@.mc-thoughts; The front door is at your back. You can size up what you've found, walk away, or step back inside.@@<br>
+	<br>
+	@@.movebtn; [[Identify the ghost|RogueIdentify]]@@<br>
+	@@.movebtn; [[Flee the hunt|RogueEnd][setup.Rogue.markFailure(setup.Rogue.FailureReason.FLED)]]@@<br>
+	@@.movebtn; [[Go back inside|RogueRun]]@@
+<</if>>
+
+:: RogueIdentify [nobr] {"position":"3200,300","size":"100,100"}
+/* Rogue-mode counterpart to WitchEndContract: pick a ghost from the
+   catalogue dropdown and lock it in. Correct guess wins the run;
+   wrong guess ends it as a failure with reason 'wrongGhost'. The
+   guess is compared against setup.Rogue.ghostName() (the per-run
+   ghost rolled at startRogue), not $hunt -- rogue runs don't use
+   the witch-contract bundle. */
+<<if not setup.Rogue.isRogue()>>
+	@@.mc-thoughts; No active rogue run.@@<br>
+	@@.backbtn; [[Back|CityMap]]@@
+<<else>>
+	@@.location; Name the ghost@@<br>
+	@@.mc-speech; I think it was:@@<br>
+	<<ghostTypeDropdown>><br>
+	<<linkreplace "@@.usebtn;Choose@@">>
+		<<if setup.Rogue.ghostName() eq setup.Ghosts.ghostTypeSelected()>>
+			@@.notmc-speech; Right call. The haunt loosens its grip.@@<br>
+			<<run setup.Rogue.markSuccess()>>
+			@@.movebtn; [[Close the run|RogueEnd]]@@
+		<<else>>
+			@@.notmc-speech; Wrong name. The haunt holds.@@<br>
+			<<run setup.Rogue.markFailure(setup.Rogue.FailureReason.WRONG_GHOST)>>
+			@@.backbtn; [[Close the run|RogueEnd]]@@
+		<</if>>
+	<</linkreplace>>
+	<br>
+	@@.backbtn; [[Back|RogueOutside]]@@
+<</if>>
