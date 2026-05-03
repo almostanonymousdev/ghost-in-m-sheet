@@ -633,6 +633,108 @@ test.describe('Home Controller', () => {
     )).toBe(0);
   });
 
+  // --- Alarm clock ---
+
+  test('alarmEnabled defaults to false on a fresh game', async () => {
+    expect(await callSetup(page, 'setup.Home.alarmEnabled()')).toBe(false);
+    expect(await callSetup(page, 'setup.Home.alarmHour()')).toBe(7);
+  });
+
+  test('setAlarm enables and stores the chosen hour', async () => {
+    await page.evaluate(() => SugarCube.setup.Home.setAlarm(6));
+    expect(await callSetup(page, 'setup.Home.alarmEnabled()')).toBe(true);
+    expect(await callSetup(page, 'setup.Home.alarmHour()')).toBe(6);
+  });
+
+  test('clearAlarm disables the alarm but keeps the last hour', async () => {
+    await page.evaluate(() => SugarCube.setup.Home.setAlarm(9));
+    await page.evaluate(() => SugarCube.setup.Home.clearAlarm());
+    expect(await callSetup(page, 'setup.Home.alarmEnabled()')).toBe(false);
+    expect(await callSetup(page, 'setup.Home.alarmHour()')).toBe(9);
+  });
+
+  test('hoursUntilAlarm returns the gap to the alarm hour later today', async () => {
+    await setVar(page, 'hours', 23);
+    await page.evaluate(() => SugarCube.setup.Home.setAlarm(7));
+    expect(await callSetup(page, 'setup.Home.hoursUntilAlarm()')).toBe(8);
+  });
+
+  test('hoursUntilAlarm wraps past midnight when the alarm is later in the day', async () => {
+    await setVar(page, 'hours', 6);
+    await page.evaluate(() => SugarCube.setup.Home.setAlarm(7));
+    expect(await callSetup(page, 'setup.Home.hoursUntilAlarm()')).toBe(1);
+  });
+
+  test('hoursUntilAlarm returns a full day when the alarm hour matches now', async () => {
+    // Sleeping at 7:00 with the alarm set to 7 means waking 24 hours later,
+    // not zero -- otherwise Time.sleepAdvanceHours(0) is a no-op nap.
+    await setVar(page, 'hours', 7);
+    await page.evaluate(() => SugarCube.setup.Home.setAlarm(7));
+    expect(await callSetup(page, 'setup.Home.hoursUntilAlarm()')).toBe(24);
+  });
+
+  test('restHours falls back to a flat 8 when the alarm is off', async () => {
+    expect(await callSetup(page, 'setup.Home.restHours()')).toBe(8);
+  });
+
+  test('restHours honors the alarm when it is on', async () => {
+    await setVar(page, 'hours', 22);
+    await page.evaluate(() => SugarCube.setup.Home.setAlarm(6));
+    expect(await callSetup(page, 'setup.Home.restHours()')).toBe(8);
+  });
+
+  test('resolveSleepWake honors the alarm for the default rest branch', async () => {
+    await setVar(page, 'hours', 23);
+    await page.evaluate(() => SugarCube.setup.Home.setAlarm(5));
+    const result = await page.evaluate(() => SugarCube.setup.Home.resolveSleepWake('Bedroom'));
+    expect(result.passage).toBe('Bedroom');
+    expect(result.postWake).toBe('rest');
+    expect(result.hours).toBe(6);
+  });
+
+  test('sleepAdvance always lands on HH:00 regardless of the alarm', async () => {
+    // Wakes — alarm-driven or 3-hour event partials — read cleaner
+    // when minutes snap to 00, so sleepAdvance enforces that for
+    // every caller.
+    await setVar(page, 'hours', 22);
+    await setVar(page, 'minutes', 37);
+    await page.evaluate(() => SugarCube.setup.Home.sleepAdvance(3));
+    expect(await getVar(page, 'hours')).toBe(1);
+    expect(await getVar(page, 'minutes')).toBe(0);
+  });
+
+  test('resolveSleepWake leaves event branches at 3h even with alarm set', async () => {
+    // Alarm set: hunt-defeat / mareEnd / spirit are still 3-hour partial
+    // sleeps cut short by the event, not full nights. Wraith is the only
+    // catalogue ghost with a sleepPassage, so it's the branch we can
+    // exercise here.
+    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Wraith'));
+    await setVar(page, 'hours', 22);
+    await page.evaluate(() => SugarCube.setup.Home.setAlarm(7));
+    const fromDefeat = await page.evaluate(
+      () => SugarCube.setup.Home.resolveSleepWake('HuntEnd')
+    );
+    expect(fromDefeat.hours).toBe(3);
+    expect(fromDefeat.postWake).toBe('huntDefeat');
+  });
+
+  test('sleepAdvance to alarm wakes the MC at the configured hour', async () => {
+    await page.evaluate(() => {
+      SugarCube.State.variables.hours = 23;
+      SugarCube.State.variables.minutes = 0;
+      SugarCube.Save.browser.auto.clear();
+    });
+    await page.evaluate(() => SugarCube.setup.Home.setAlarm(6));
+    const hours = await page.evaluate(
+      () => SugarCube.setup.Home.hoursUntilAlarm()
+    );
+    await page.evaluate(
+      (n) => SugarCube.setup.Home.sleepAdvance(n),
+      hours
+    );
+    expect(await getVar(page, 'hours')).toBe(6);
+  });
+
   // --- Twins event ---
 
   test('twinsEventAvailable requires flag and no cooldown', async () => {

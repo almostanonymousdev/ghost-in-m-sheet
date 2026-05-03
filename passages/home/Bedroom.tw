@@ -73,11 +73,12 @@
 	<</if>>
 	@@.enterbtn;[[Wardrobe|Wardrobe]]@@ <br>
 	@@.enterbtn;[[Bathroom]]@@<br>
+	@@.enterbtn;[[Alarm clock|AlarmClock]]@@<br>
 	<<if setup.CursedItems.isItemCursed("bed")>>
-		@@.usebtn;<<link "Sleep (8 hours)" "CursedBedEvent">>
+		@@.usebtn;<<link "Sleep" "CursedBedEvent">>
 		<</link>>@@<br>
 	<<else>>
-		@@.usebtn;[[Sleep (8 hours)|Sleep]]@@<br>
+		@@.usebtn;[[Sleep|Sleep]]@@<br>
 	<</if>>
 	@@.usebtn;<<link "Take a nap(1 hour)" "Bedroom">>
 		<<addTime 60>>

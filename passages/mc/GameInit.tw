@@ -51,6 +51,12 @@ setup.Game = (function () {
 		s.webcam = {};
 		s.summoning = {};
 
+		// --- Bedroom alarm clock ------------------------------
+		// When enabled, sleeping in the bedroom (and post-event
+		// twin / tentacles sleep) wakes the MC at $alarm.hour
+		// instead of advancing a fixed 8 hours.
+		s.alarm = { enabled: false, hour: 7 };
+
 		// --- Clock / environment ------------------------------
 		s.temperature = 0;
 		s.meridiem = 'AM';
