@@ -1,0 +1,29 @@
+:: EctoglassFound [nobr noreturn] {"position":"2350,200","size":"100,100"}
+/* Shared landing for an ectoplasm hit in either classic or rogue
+   mode. setup.ToolController.renderPlasm() stamps the find on
+   $evidenceFind = { tool, pack, message } and emits a deferred
+   <<goto>> here. The destination always uses the messy plasm pack
+   so the MC line below ("now its all over me") makes sense; the
+   wardrobe-conditional 1..7 / 8..14 range mirrors renderPlasm's
+   mess branch. The "noreturn" tag keeps this passage out of $return,
+   so [[Back|$return]] takes the player back to the room they were
+   in (classic) or RogueRun (rogue) without bouncing through here. */
+<<set _range to setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT) ? [1, 7] : [8, 14]>>
+<<randRangeImg "mechanics/plasm/mess/" _range[0] _range[1] ".png" "displayCentredImgs">>
+<br>
+@@.mc-thoughts; great... now its all over me@@<br>
+<br>
+@@.backbtn; [[Back|$return]]@@
+
+:: GwbFound [nobr noreturn] {"position":"2450,200","size":"100,100"}
+/* Shared landing for a GWB hit in either classic or rogue mode.
+   setup.ToolController.renderGwb() stamps the find on $evidenceFind
+   and emits a deferred <<goto>> here. Image pack and reaction text
+   match the inline copy renderGwb used to wikify -- moving them
+   into a passage keeps the post-find beat consistent with the
+   ectoplasm flow without rewriting the renderer. */
+<<randRangeImg "mechanics/gwb/" 1 18 ".jpg">>
+<br>
+@@.mc-speech; <span class="evidenceshadowtext"> Ohh... what is this...? Nevertheless, one more piece of evidence</span>@@<br>
+<br>
+@@.backbtn; [[Back|$return]]@@

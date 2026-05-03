@@ -63,14 +63,25 @@
         return '<<coloredText "green" 0>>';
     }
 
-    /* GWB: shared tier-gated evidence check. Also opens the EMF window. */
-    function renderGwb() {
+    /* GWB: shared tier-gated evidence check. Hits also open the EMF
+       activation window as a side effect. Split into find/render the
+       same way as plasm so the two modes can share the navigating
+       renderer below. */
+    function findGwb() {
         if (!setup.evidenceAvailable("gwb", State.variables.equipment.gwb, EVIDENCE_HOUSES)) {
-            return notFoundMarkup("gwb");
+            return null;
         }
         setup.activateTool("emf");
-        return packMarkup({ prefix: "mechanics/gwb/", start: 1, end: 18, ext: ".jpg" })
-            + '\n' + MESSAGES.gwb;
+        return {
+            pack:    { prefix: "mechanics/gwb/", start: 1, end: 18, ext: ".jpg" },
+            message: MESSAGES.gwb
+        };
+    }
+
+    function renderGwb() {
+        var r = setup.ToolController.findGwb();
+        if (!r) return notFoundMarkup("gwb");
+        return foundPassageMarkup("gwb", "GwbFound", r);
     }
 
     /* Plasm: 50/50 clean vs mess. Mess image range keys off whether the
@@ -89,12 +100,43 @@
         };
     }
 
-    function renderPlasm() {
+    /* Roll an ectoplasm find. Returns the {pack, message} the renderer
+       would emit, or null when the evidence/tier/room gate fails. The
+       find/render split lets renderPlasm route a hit to the shared
+       EctoglassFound passage via foundPassageMarkup while keeping the
+       gate roll a single call. */
+    function findPlasm() {
         if (!setup.evidenceAvailable("glass", State.variables.equipment.glass, EVIDENCE_HOUSES)) {
-            return notFoundMarkup("plasm");
+            return null;
         }
-        var r = plasmPack();
-        return packMarkup(r.pack) + '<br>\n' + r.message + '<br>';
+        return plasmPack();
+    }
+
+    function renderPlasm() {
+        /* Route through setup.ToolController.findPlasm rather than the
+           closure so tests can stub the find without monkey-patching
+           internals. */
+        var r = setup.ToolController.findPlasm();
+        if (!r) return notFoundMarkup("plasm");
+        return foundPassageMarkup("plasm", "EctoglassFound", r);
+    }
+
+    /* Both renderPlasm and renderGwb share the same hit shape: stash
+       the pack + message on $evidenceFind for the destination passage
+       to read, then emit a deferred <<goto>>. The defer is critical
+       in the classic flow -- the surrounding <<replace>> / <<repeat>>
+       cleanup (meter zero, removeclass, applyTickEffects) runs
+       synchronously after this markup is wikified, and a synchronous
+       <<goto>> here would interrupt it. <<deferGoto>> schedules
+       Engine.play for the next event-loop tick so the cleanup
+       completes first. */
+    function foundPassageMarkup(toolKey, dest, hit) {
+        State.variables.evidenceFind = {
+            tool:    toolKey,
+            pack:    hit.pack,
+            message: hit.message
+        };
+        return '<<deferGoto "' + dest + '">>';
     }
 
     /* UVL image packs: lower-body clothing ladder and upper-body fallback.
@@ -228,7 +270,8 @@
         'tools',
         'spiritboxLvl',
         'crucifixAmount',
-        'boughtDetector'
+        'boughtDetector',
+        'evidenceFind'
     ]);
 
     setup.ToolController = {
@@ -237,6 +280,8 @@
         NotFoundCopy:   NOT_FOUND_COPY,
         EvidenceHouses: EVIDENCE_HOUSES,
         render:         render,
+        findPlasm:      findPlasm,
+        findGwb:        findGwb,
 
         /* Crucifix consume: one shared place for the decrement + hunt-start
            trio so the passage is pure presentation. */
@@ -279,6 +324,19 @@
             } catch (e) {
                 return this.error(e.message);
             }
+        }
+    });
+
+    /* <<deferGoto "PassageName">> -- schedule Engine.play for the next
+       event-loop tick. Used by renderPlasm / renderGwb so the
+       surrounding meter-completion cleanup runs synchronously before
+       the navigation. Synchronous <<goto>> would interrupt that
+       cleanup mid-stream and leave the meter stuck full + the cardlink
+       disabled for the player on return. */
+    Macro.add("deferGoto", {
+        handler: function () {
+            var dest = this.args[0];
+            setTimeout(function () { Engine.play(dest); }, 0);
         }
     });
 }());

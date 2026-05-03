@@ -22,14 +22,18 @@
      * setup.isGhostHere() returns true iff the player is in the
        rogue ghost's lair room (floorplan.spawnRoomId), so
        setup.evidenceAvailable's "ghost is here" gate works.
-   Per-click flow: render the tool result into #rogue-tool-result,
-   then run the shared <<huntTickStep>> chain (per-tick stat drain,
-   light flicker, ghost event roll, steal-clothes roll, random-hunt
-   gate, hunt-over routing). <<huntTickStep>> dispatches via
-   setup.HuntController so the same widget that drives classic
-   hunts services rogue clicks too -- no rogue-vs-classic branch
-   here. <<huntTickStep>> may <<goto>> away (StealClothes,
-   GhostHuntEvent, RogueEnd) so the result render runs first. */
+   Per-click flow: run the shared <<huntTickStep>> chain (per-tick
+   stat drain, light flicker, ghost event roll, steal-clothes roll,
+   random-hunt gate, hunt-over routing) FIRST so a hunt-event /
+   steal / hunt-over <<goto>> wins over the tool result. If the
+   chain doesn't navigate, render the tool result into
+   #rogue-tool-result. Plasm/GWB hits emit a deferred <<goto>> to
+   the shared EctoglassFound / GwbFound passages from inside their
+   ToolController renderers, so this widget doesn't need a per-tool
+   branch -- the same <<toolCheck>> markup classic hunts use does
+   the routing. <<huntTickStep>> dispatches via setup.HuntController
+   so the same widget that drives classic hunts services rogue
+   clicks too. */
 <<widget "rogueToolBar">>
 	<<set _tools to setup.Rogue.startingTools()>>
 	<<if _tools.length eq 0>>
@@ -43,6 +47,7 @@
 				<div class="rogue-tool-card">
 					<<image "ui/img/" + _def.iconFile { class: "rogue-tool-icon" }>>
 					<span class="rogue-tool-card-label">@@.adaptiveLink;<<link `_def.label`>>
+						<<huntTickStep>>
 						<<replace "#rogue-tool-result">>
 							<<if _t eq "temperature">>
 								<<include "TemperatureHigh">>
@@ -50,7 +55,6 @@
 								<<toolCheck _t>>
 							<</if>>
 						<</replace>>
-						<<huntTickStep>>
 					<</link>>@@</span>
 				</div>
 			<</capture>>

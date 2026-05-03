@@ -255,6 +255,116 @@ test.describe('E2E: rogue run lifecycle', () => {
   });
 
 
+  /* Shared per-tick gate stub used by the evidence-find tests. The
+     plasm/gwb hit paths emit a deferred goto to EctoglassFound /
+     GwbFound; if the per-tick chain (light flicker, prowl event,
+     steal, random hunt) navigates first, the deferred goto lands on
+     the wrong passage. Pinning the gates to constants is more
+     reliable than seeding Math.random because Event's body-part roll
+     branches on the active ghost's flags. */
+  async function stubPerTickGatesQuiet(page) {
+    await page.evaluate(() => {
+      SugarCube.setup.Events.rollProwlEvent      = () => false;
+      SugarCube.setup.Events.maybeTurnOffLights  = () => null;
+      SugarCube.setup.HuntController.shouldTriggerSteal     = () => false;
+      SugarCube.setup.HuntController.shouldStartRandomProwl = () => false;
+    });
+  }
+
+  test('Ectoglass hit in rogue mode routes to EctoglassFound', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await ensureNotEmptyBag(page);
+    await clickLink(page, 'Enter the haunt', 'RogueRun');
+
+    await stubPerTickGatesQuiet(page);
+    await page.evaluate(() => {
+      SugarCube.setup.ToolController.findPlasm = () => ({
+        pack: { prefix: 'mechanics/plasm/mess/', start: 1, end: 7,
+                ext: '.png', cssClass: 'displayCentredImgs' },
+        message: ''
+      });
+    });
+
+    const ectoCard = page.locator('.rogue-tool-card').filter({ hasText: 'Ectoglass' });
+    await expect(ectoCard).toHaveCount(1);
+    await ectoCard.locator('a').click();
+
+    await page.waitForFunction(() => SugarCube.State.passage === 'EctoglassFound');
+
+    // Image + MC reaction line are both present.
+    await expect(page.locator('.passage img')).toHaveCount(1);
+    await expect(page.locator('.passage').getByText('great... now its all over me'))
+      .toBeVisible();
+
+    // $evidenceFind was stamped by renderPlasm before the deferred goto.
+    expect(await getVar(page, 'evidenceFind').then(v => v && v.tool)).toBe('plasm');
+
+    // Back link returns the player to RogueRun.
+    await page.locator('.passage').getByText('Back', { exact: true }).click();
+    await page.waitForFunction(() => SugarCube.State.passage === 'RogueRun');
+  });
+
+  test('GWB hit in rogue mode routes to GwbFound', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await ensureNotEmptyBag(page);
+    await clickLink(page, 'Enter the haunt', 'RogueRun');
+
+    await stubPerTickGatesQuiet(page);
+    await page.evaluate(() => {
+      SugarCube.setup.ToolController.findGwb = () => ({
+        pack: { prefix: 'mechanics/gwb/', start: 1, end: 18, ext: '.jpg' },
+        message: SugarCube.setup.ToolController.Messages.gwb
+      });
+    });
+
+    const gwbCard = page.locator('.rogue-tool-card').filter({ hasText: 'GWB' });
+    await expect(gwbCard).toHaveCount(1);
+    await gwbCard.locator('a').click();
+
+    await page.waitForFunction(() => SugarCube.State.passage === 'GwbFound');
+
+    // Image + the canonical GWB-found reaction line are both present.
+    await expect(page.locator('.passage img')).toHaveCount(1);
+    await expect(
+      page.locator('.passage').getByText(/Ohh\.\.\. what is this/i)
+    ).toBeVisible();
+
+    expect(await getVar(page, 'evidenceFind').then(v => v && v.tool)).toBe('gwb');
+
+    await page.locator('.passage').getByText('Back', { exact: true }).click();
+    await page.waitForFunction(() => SugarCube.State.passage === 'RogueRun');
+  });
+
+  test('Ectoglass miss in rogue mode renders not-found in the tray (no goto)', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await ensureNotEmptyBag(page);
+    await clickLink(page, 'Enter the haunt', 'RogueRun');
+
+    await stubPerTickGatesQuiet(page);
+    await page.evaluate(() => {
+      SugarCube.setup.ToolController.findPlasm = () => null;
+    });
+
+    const ectoCard = page.locator('.rogue-tool-card').filter({ hasText: 'Ectoglass' });
+    await ectoCard.locator('a').click();
+
+    // Stayed on RogueRun.
+    expect(await page.evaluate(() => SugarCube.State.passage)).toBe('RogueRun');
+    // Tray shows the canonical "no ectoplasm stains" copy.
+    await expect(
+      page.locator('#rogue-tool-result').getByText(/ectoplasm stains/i)
+    ).toBeVisible();
+  });
+
   test('furniture strip renders one icon per template slot for the current room', async () => {
     test.setTimeout(15_000);
 
