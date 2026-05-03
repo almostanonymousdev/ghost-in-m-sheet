@@ -150,14 +150,6 @@ setup.Church = (function () {
 		// --- Lust check for priest tool event --------------------
 		lustTooHighForPriest: function () {
 			return setup.Mc.lust() >= 85;
-		},
-
-		// --- Cheat-menu rescue helpers (StoryCaption) -------------
-		setCheatRescueHouseHighlight: function (n) {
-			setup.MissingWomen.setCheatRescueHouseHighlight(n);
-		},
-		randomRescuePhotoNumber: function () {
-			return setup.MissingWomen.randomRescuePhotoNumber();
 		}
 	};
 })();

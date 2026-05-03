@@ -25,58 +25,5 @@
 <</if>>
 <div class="linkselector enterbtn"> Game [[Guide|Guide]] </div><br>
 
-<br>@@.usebtn;<<linkreplace "Cheats">>
-	<<if setup.Ghosts.isHunting()>><<link "take pills(cheats)">><<run setup.Mc.addSanity(30)>><</link>>
-		<br><<linkreplace "possession Card">>
-			<<run setup.Ghosts.setHuntMode(setup.Ghosts.HuntMode.POSSESSED)>>
-			<<run setup.Time.setHours(12 + Math.floor(Math.random() * 9))>>
-		<<goto "CityMapPossessed">><</linkreplace>><br>
-		<<link "Decreasefollower's sanity(-10)(cheats)">><<run setup.Companion.drainSanity(10)>><<updatemeter 'companionsanity' `setup.Companion.sanityPercent()`>><</link>>
-	<</if>><br>
-	<<linkreplace "ghostname">><<= setup.Ghosts.huntName()>><<if setup.Ghosts.isMimicHunt()>>(Mimic)
-	<</if>>
-	<</linkreplace>><br>
-	<<if setup.Ghosts.isAnyMode()>>
-		<<linkreplace "choose ghost type">>
-			<<for _g range setup.Ghosts.list()>>
-				<<capture _g>><<link `"set to " + _g.name`>><<run setup.Ghosts.forceHuntGhost(_g)>>
-				<</link>>
-				<</capture>>
-			<</for>>
-		<</linkreplace>><br>
-	<</if>>
-	<<linkreplace "ghostroom">>
-		<<= setup.Ghosts.huntRoomName()>>
-	<</linkreplace>><br>
-	<<link "lust">><<run setup.Mc.addLust(100)>><</link>><br>
-	<<link "money">><<run setup.Mc.addMoney(10000)>><</link>><br>
-	<<link "lvlup">><<run setup.Mc.addLvl(1)>><</link>><br>
-	<<link "corruptionUp">><<run setup.Mc.addCorruption(1)>><</link>><br>
-	<br><<linkreplace "highlight rescue house">><<run setup.Church.setCheatRescueHouseHighlight(1)>>Rescue house <<= setup.Church.randomRescuePhotoNumber()>> highlighted on map
-	<</linkreplace>>
-	<br><<linkreplace "lvlup Brook">><<run setup.Companion.cheatSetLvl("brook", 5)>>Brook is lvl5 now
-	<</linkreplace>>
-	<br><<linkreplace "lvlup Alice">><<run setup.Companion.cheatSetLvl("alice", 5)>>Alice is lvl5 now
-	<</linkreplace>>
-	<br><<linkreplace "lvlup Blake">><<run setup.Companion.cheatSetLvl("blake", 5)>>Blake is lvl5 now
-	<</linkreplace>>
-	<br><<linkreplace "Relationship Blake">><<run setup.Mall.setBlakeRelationship(5)>>Best Friends!
-	<</linkreplace>>
-	<br><<linkreplace "fitUp">><<run setup.Mc.setFit(100)>>perfect body
-	<</linkreplace>>
-	<br><<linkreplace "lustCurrentFriend">><<run setup.Companion.addLust(100)>><<= setup.Companion.name()>>'s lust +100
-	<</linkreplace>>
-	<br><<linkreplace "Exhib5">><<run setup.Mc.setExhibitionism(5)>>Exhib5
-	<</linkreplace>>
-	<br><<linkreplace "IncreaseSurrenderToPossession">><<run setup.Mc.setPossession(11)>>Surrender to Possession is increased: <<= setup.Mc.possession()>> now!
-	<</linkreplace>>
-	<<linkreplace "Maximize body part sensitivity">>
-		All body parts are now at maximum sensitivity!
-		<<run setup.Intro.maximizeSensualBodyParts(setup.Intro.currentSensualBodyPart())>>
-	<</linkreplace>>
-		<br><<link "Remove Tool Timers">><<run setup.Gui.setTimerToolsDecreased("10ms")>>
-		<</link>>
-<</linkreplace>>@@
-
 <br>Ghost in M'Sheet 0.5.2c
 <a class="linkselector" data-passage="ChangeLog">ChangeLog</a><br>

@@ -617,6 +617,22 @@ test.describe('Home Controller', () => {
     )).toBeGreaterThan(0);
   });
 
+  test('passage transitions outside of sleep do not autosave', async () => {
+    // arrange
+    await page.evaluate(() => SugarCube.Save.browser.auto.clear());
+
+    // act: navigate through several passages without calling sleepAdvance
+    await goToPassage(page, 'Bedroom');
+    await goToPassage(page, 'Bathroom');
+    await goToPassage(page, 'Livingroom');
+    await goToPassage(page, 'Bedroom');
+
+    // assert: SugarCube's per-passage autosave is suppressed
+    expect(await page.evaluate(
+      () => SugarCube.Save.browser.auto.entries().length
+    )).toBe(0);
+  });
+
   // --- Twins event ---
 
   test('twinsEventAvailable requires flag and no cooldown', async () => {
