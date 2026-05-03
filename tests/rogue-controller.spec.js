@@ -81,6 +81,40 @@ test.describe('Rogue Controller', () => {
     expect(await callSetup(page, 'setup.Rogue.isClassic()')).toBe(true);
   });
 
+  // --- Address (seed -> street label) ---
+
+  test('addressFromSeed returns deterministic { number, road, suffix, formatted }', async () => {
+    const a = await callSetup(page, 'setup.Rogue.addressFromSeed(12345)');
+    const b = await callSetup(page, 'setup.Rogue.addressFromSeed(12345)');
+    expect(a).toEqual(b);
+    expect(typeof a.number).toBe('number');
+    expect(a.number).toBeGreaterThanOrEqual(1);
+    expect(a.number).toBeLessThanOrEqual(999);
+    const roads = await callSetup(page, 'setup.Rogue.ROAD_NAMES');
+    const suffixes = await callSetup(page, 'setup.Rogue.ROAD_SUFFIXES');
+    expect(roads).toContain(a.road);
+    expect(suffixes).toContain(a.suffix);
+    expect(a.formatted).toBe(`${a.number} ${a.road} ${a.suffix}`);
+  });
+
+  test('addressFromSeed produces varied labels across seeds', async () => {
+    const labels = [];
+    for (let s = 1; s <= 50; s++) {
+      labels.push(await callSetup(page, `setup.Rogue.addressFromSeed(${s})`).then(a => a.formatted));
+    }
+    // Not strictly unique (only 5x5x999 = ~25k labels) but 50 seeds
+    // should easily produce more than a few distinct labels.
+    expect(new Set(labels).size).toBeGreaterThan(10);
+  });
+
+  test('address() returns null off-run and the active run\'s label otherwise', async () => {
+    expect(await callSetup(page, 'setup.Rogue.address()')).toBeNull();
+    await page.evaluate(() => SugarCube.setup.Rogue.start({ seed: 12345 }));
+    const live = await callSetup(page, 'setup.Rogue.address()');
+    const fromSeed = await callSetup(page, 'setup.Rogue.addressFromSeed(12345)');
+    expect(live).toEqual(fromSeed);
+  });
+
   test('run number increments across successive runs', async () => {
     await page.evaluate(() => SugarCube.setup.Rogue.start({ seed: 1 }));
     await page.evaluate(() => SugarCube.setup.Rogue.end());

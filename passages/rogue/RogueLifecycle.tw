@@ -15,8 +15,8 @@
 <<set _modifiers to setup.Modifiers.activeList()>>
 <<set _floorplan to setup.Rogue.field('floorplan')>>
 
-@@.location; Rogue Run #<<= _run.number>>@@<br>
-@@.mc-thoughts; Seed _run.seed -- a fresh haunt is waiting.@@<br>
+@@.location; <<= setup.Rogue.address().formatted>>@@<br>
+@@.mc-thoughts; A fresh hunt is waiting.@@<br>
 <br>
 @@.location; Modifiers@@<br>
 <<for _m range _modifiers>>
@@ -54,7 +54,7 @@
 		<div id="rogue-tool-result" class="rogue-tool-result"></div>
 		<div class="rogue-run-top">
 			<div class="rogue-run-tl">
-				@@.location; Rogue Run #<<= _run.number>>@@<br>
+				@@.location; <<= setup.Rogue.address().formatted>>@@<br>
 				<<if _cr>>
 					@@.mc-thoughts; <<= _cr.label>>@@<br>
 				<</if>>
@@ -92,7 +92,7 @@
 
 		<div class="rogue-run-bottom">
 			<div class="rogue-run-hud">
-				<span>Run #<<= _run.number>></span>
+				<span><<= setup.Rogue.address().formatted>></span>
 				<span>Room: <<= _cr ? _cr.label : "—">></span>
 				<span>Objective: <<= _run.objective>></span>
 				<span>Echoes: <<= setup.Rogue.echoes()>></span>
@@ -138,17 +138,17 @@
 	<<set _FR to setup.Rogue.FailureReason>>
 
 	<<if _summary.success>>
-		@@.notmc-speech; The ghosts were no match for you. Run #<<= _summary.number>> closes clean.@@<br>
+		@@.notmc-speech; The ghosts were no match for you. Hunt #<<= _summary.number>> closes clean.@@<br>
 	<<elseif _summary.failureReason eq _FR.SANITY>>
-		@@.notmc-speech; Your mind gives out. Run #<<= _summary.number>> ends with sanity gone.@@<br>
+		@@.notmc-speech; Your mind gives out. Hunt #<<= _summary.number>> ends with sanity gone.@@<br>
 	<<elseif _summary.failureReason eq _FR.EXHAUSTION>>
-		@@.notmc-speech; Your legs give out. Run #<<= _summary.number>> ends in exhaustion.@@<br>
+		@@.notmc-speech; Your legs give out. Hunt #<<= _summary.number>> ends in exhaustion.@@<br>
 	<<elseif _summary.failureReason eq _FR.TIME>>
-		@@.notmc-speech; Dawn breaks before the answer does. Run #<<= _summary.number>> ends with the clock.@@<br>
+		@@.notmc-speech; Dawn breaks before the answer does. Hunt #<<= _summary.number>> ends with the clock.@@<br>
 	<<elseif _summary.failureReason eq _FR.FLED>>
-		@@.notmc-speech; You walk away from the haunt. Run #<<= _summary.number>> ends with the door at your back.@@<br>
+		@@.notmc-speech; You walk away from the haunt. Hunt #<<= _summary.number>> ends with the door at your back.@@<br>
 	<<else>>
-		@@.notmc-speech; The haunt swallows you. Run #<<= _summary.number>> ends in failure.@@<br>
+		@@.notmc-speech; The haunt swallows you. Hunt #<<= _summary.number>> ends in failure.@@<br>
 	<</if>>
 	<br>
 	@@.mc-action; +<<= _summary.payout>> echoes@@<br>
