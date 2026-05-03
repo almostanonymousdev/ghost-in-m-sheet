@@ -50,6 +50,9 @@ setup.Home = (function () {
 	function webcam()    { var s = sv(); if (!s.webcam)        s.webcam       = {}; return s.webcam; }
 	function summoning() { var s = sv(); if (!s.summoning)     s.summoning    = {}; return s.summoning; }
 
+	/* Closure flag for installAutoSaveGate() / sleepAdvance(). */
+	var allowAutoSave = false;
+
 	var api = {
 		OWNED_VARS: OWNED_VARS,
 		// --- Outside / clothing gating ----------------------
@@ -378,6 +381,22 @@ setup.Home = (function () {
 			setup.Time.setMinutes(0);
 		},
 
+		// --- Autosave gate -------------------------------
+		// SugarCube 2.37 auto-fires Save.browser.auto.save() on every
+		// passage transition once autosaves are enabled. We only want
+		// the autosave slot to hold the most recent sleep wake-up, so
+		// installAutoSaveGate() blocks Save.Type.Auto by default and
+		// sleepAdvance flips the flag on briefly to let its explicit
+		// save through.
+		installAutoSaveGate: function () {
+			if (typeof Config === 'undefined' || !Config.saves) return;
+			if (typeof Save === 'undefined' || !Save.Type) return;
+			Config.saves.isAllowed = function (saveType) {
+				if (saveType === Save.Type.Auto) return allowAutoSave;
+				return true;
+			};
+		},
+
 		// --- Hunt-defeat / mare wake-up state ------------
 		// HuntEnd* / Sleep set these flags so the Bedroom passage can
 		// render the correct "you wake up" banner and apply the
@@ -395,7 +414,12 @@ setup.Home = (function () {
 				try {
 					if (typeof Save !== 'undefined' && Save.browser
 						&& Save.browser.auto && Save.browser.auto.isEnabled()) {
-						Save.browser.auto.save('Autosave (sleep)');
+						allowAutoSave = true;
+						try {
+							Save.browser.auto.save('Autosave (sleep)');
+						} finally {
+							allowAutoSave = false;
+						}
 					}
 				} catch (ex) {
 					console.error('autosave on sleep failed:', ex);
