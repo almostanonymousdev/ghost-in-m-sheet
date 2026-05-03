@@ -4,7 +4,7 @@
 <br>
 <br>
 <<if setup.Home.shouldRouteToTentaclesSleep(previous())>>
-	<<run setup.Home.sleepAdvance(8)>>
+	<<run setup.Home.sleepAdvance(setup.Home.restHours())>>
 	<<goto "TentaclesEventSleep">>
 <</if>>
 
