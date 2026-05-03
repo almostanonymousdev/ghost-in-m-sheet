@@ -1,5 +1,5 @@
 :: AlarmClock [nobr] {"position":"800,900","size":"100,100"}
-<<image "ui/img/alarmclock.jpg" { width: "60%" }>><br>
+<<image "ui/img/alarmclock.png" { width: "60%" }>><br>
 @@.location; Alarm Clock@@<br>
 <br>
 Current time: <<= setup.Time.display()>><br>
