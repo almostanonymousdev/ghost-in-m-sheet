@@ -37,7 +37,7 @@
 <</link>>@@<br>
 <<if setup.Time.hours() <= 22 and setup.Time.hours() >= 12>>
 	@@.usebtn;<<link "Skip time till midnight" "Livingroom">><<run setup.Home.skipTimeToMidnight()>>@@
-		<<replace "#time">><<= setup.updateTimeDisplay()>><</replace>>
+		<<replace "#time">><<= setup.Time.display()>><</replace>>
 	<</link>><br>
 <</if>>
 

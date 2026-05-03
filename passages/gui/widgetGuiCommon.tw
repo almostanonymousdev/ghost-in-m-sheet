@@ -1,27 +1,10 @@
 :: widgetGuiCommon [widget nobr] {"position":"0,1900","size":"100,100"}
 <<script>>
-setup.addTime = function(mins) {
-    var sv = State.variables;
-    sv.minutes += mins;
-    if (sv.minutes >= 60) { sv.minutes -= 60; sv.hours += 1; }
-    if (sv.hours >= 24) { sv.hours -= 24; return true; }
-    return false;
-};
-
-setup.updateTimeDisplay = function() {
-    var sv = State.variables;
-    var h = sv.hours < 10 ? '0' + sv.hours : sv.hours;
-    var m = Math.floor(sv.minutes) < 10 ? '0' + Math.floor(sv.minutes) : Math.floor(sv.minutes);
-    return h + ":" + m;
-};
-
-setup.addLust = function(amount) {
-    var sv = State.variables;
-    sv.mc.lust += amount;
-    if (sv.mc.lust >= 100) { sv.mc.lust = 100; }
-    if (sv.mc.lust <= 0) { sv.mc.lust = 0; }
-    sv.mc.lust = Number(sv.mc.lust.toFixed(2));
-};
+/* Thin <<addTime>>/<<addLust>> shims. Real logic lives in the owning
+   controllers; these stay only because the widgets pass the Twee
+   numeric arg straight through. */
+setup.addTime = function (mins) { return setup.Time.addMinutes(mins); };
+setup.addLust = function (amount) { setup.Mc.applyLustDelta(amount); };
 <</script>>
 
 <<widget "backOrReturn">>
@@ -37,7 +20,7 @@ setup.addLust = function(amount) {
 	<<set _crossedMidnight to setup.addTime(_mins)>>
 	<<if _crossedMidnight>><<run setup.Tick.resetCooldowns()>><</if>>
 	<<done>>
-		<<replace "#time">><<= setup.updateTimeDisplay()>><</replace>>
+		<<replace "#time">><<= setup.Time.display()>><</replace>>
 	<</done>>
 <</widget>>
 

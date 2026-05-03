@@ -234,19 +234,24 @@ test.describe('Variable ownership', () => {
 		).toEqual([]);
 	});
 
-	/* Encapsulation: a controller's IIFE may only directly read or write
-	   State.variables members listed in its own OWNED_VARS. Cross-domain
+	/* Encapsulation: any region that defines setup.* APIs (a [script]
+	   passage's IIFE OR a `<<script>>...<</script>>` block in a widget
+	   passage) may only directly read or write State.variables members
+	   listed in OWNED_VARS of the controllers it defines. Cross-domain
 	   state must go through the owning controller's API
-	   (setup.Other.foo()).
+	   (setup.Other.foo()). Non-controller setup.X helpers — i.e.
+	   `setup.foo = function () { ... }` blocks where `foo` has no
+	   OWNED_VARS — own no state and so cannot legally touch
+	   State.variables at all; they must delegate to a controller.
 
-	   Detection: for each [script] passage that defines
-	   `setup.X = (function () { … })`,
+	   Detection: for each script-context region that contains at least
+	   one `setup.X = ` assignment,
 	   - Match `State.variables.<name>` and `sv().<name>` references.
 	   - Detect aliases declared as `var <alias> = sv()` / `= State.variables`
 	     and treat `<alias>.<name>` as a state-var reference.
-	   - Each <name> must be in X's OWNED_VARS.
+	   - Each <name> must be in OWNED_VARS of one of the X's defined here.
 	   Dynamic access (`s[expr]`) isn't validated. */
-	test('controllers only directly access variables they own', () => {
+	test('script regions only directly access variables they own', () => {
 		/* Migrations and Tick are exempt: their jobs are save-migration
 		   and per-passage runtime maintenance. Both deliberately read
 		   and write vars owned by other controllers — Migrations to
@@ -260,35 +265,61 @@ test.describe('Variable ownership', () => {
 		for (const file of files) {
 			const text = fs.readFileSync(file, 'utf8');
 			for (const passage of splitPassages(text)) {
-				if (!passage.isScript) continue;
-				/* A passage is a "controller passage" if it assigns to
-				   any setup.X where X has OWNED_VARS in our discovered
-				   map. Two patterns are in use:
+				/* The scannable body is either the full passage body
+				   (for [script] passages) or just the contents of every
+				   <<script>>...<</script>> block (everything else is
+				   widget/Twee markup, not script-context JS). Both forms
+				   preserve line numbers so violations can point back to
+				   the original source. */
+				let body;
+				if (passage.isScript) {
+					body = passage.body;
+				} else {
+					if (passage.body.indexOf('<<script>>') === -1) continue;
+					body = isolateScriptBlocks(passage.body);
+				}
+
+				/* Two assignment patterns in use:
 				     setup.X = (function () { … })()      -- IIFE
 				     setup.X = { OWNED_VARS: …, … }       -- object literal
-				   We accept either by just looking at top-level
-				   `setup.X = ` assignments and filtering to known
-				   controllers. */
+				     setup.X = function () { ... }        -- helper fn
+				   Find every top-level setup.X. The region's owned set
+				   is the union of OWNED_VARS for any X that's a known
+				   controller; helpers attached to setup that aren't
+				   controllers contribute no ownership. */
 				const SETUP_RE = /\bsetup\.(\w+)\s*=(?!=)/g;
+				const setupNames = new Set();
 				const ctrlSet = new Set();
 				let cm;
-				while ((cm = SETUP_RE.exec(passage.body)) !== null) {
+				while ((cm = SETUP_RE.exec(body)) !== null) {
+					setupNames.add(cm[1]);
 					if (ownedByName[cm[1]]) ctrlSet.add(cm[1]);
 				}
-				if (ctrlSet.size === 0) continue;
+				/* Skip rules:
+				   - [script] passage with no known-controller
+				     assignment: a setup.X facade that doesn't expose
+				     OWNED_VARS yet (HuntController, Intro). Pre-
+				     existing tech debt; out of scope for this lint.
+				   - Widget passage <<script>> block with no setup.X
+				     at all: an inline-effect block, not an API
+				     definition. Policed by the read-from-passages
+				     lint above instead. */
+				if (passage.isScript) {
+					if (ctrlSet.size === 0) continue;
+				} else {
+					if (setupNames.size === 0) continue;
+				}
 				if ([...ctrlSet].some((n) => EXEMPT_CONTROLLERS.has(n))) continue;
 
-				/* If a passage defines multiple controllers in a single
-				   IIFE (rare), allow accesses to vars owned by any of
-				   them — they share a closure so the boundary doesn't
-				   meaningfully exist within the file. */
 				const ownedSet = new Set();
 				for (const n of ctrlSet) {
 					for (const v of ownedByName[n]) ownedSet.add(v);
 				}
-				const ctrlLabel = [...ctrlSet].sort().join('+');
+				const ctrlLabel = ctrlSet.size > 0
+					? [...ctrlSet].sort().join('+')
+					: 'non-controller setup.{' + [...setupNames].sort().join(',') + '}';
 
-				const stripped = stripJsCommentsAndStrings(passage.body);
+				const stripped = stripJsCommentsAndStrings(body);
 
 				/* Aliases: any `var/let/const <name> = sv()` or
 				   `= State.variables` (not followed by . or [, which
@@ -327,7 +358,7 @@ test.describe('Variable ownership', () => {
 		violations.sort();
 		expect(
 			violations,
-			`Controllers directly accessing state-vars they don't own (route through the owner's API):\n  ${violations.join('\n  ')}`
+			`Script regions directly accessing state-vars they don't own (route through the owner's API):\n  ${violations.join('\n  ')}`
 		).toEqual([]);
 	});
 });
@@ -380,6 +411,42 @@ function blankJsBlocks(src) {
 		/<<script\b[\s\S]*?<<\/script>>/g,
 		(match) => match.replace(/[^\n]/g, ' ')
 	);
+}
+
+/* Inverse of blankJsBlocks: keep the contents of every
+   `<<script>>…<</script>>` block, blank everything else with
+   whitespace. Preserves line numbers so a violation reported on
+   line N maps back to line N of the original passage source. */
+function isolateScriptBlocks(src) {
+	const OPEN = '<<script>>';
+	const CLOSE = '<</script>>';
+	const blank = (s) => s.replace(/[^\n]/g, ' ');
+	let out = '';
+	let i = 0;
+	let inScript = false;
+	while (i < src.length) {
+		if (!inScript) {
+			const next = src.indexOf(OPEN, i);
+			if (next === -1) {
+				out += blank(src.slice(i));
+				break;
+			}
+			out += blank(src.slice(i, next + OPEN.length));
+			i = next + OPEN.length;
+			inScript = true;
+		} else {
+			const close = src.indexOf(CLOSE, i);
+			if (close === -1) {
+				out += src.slice(i);
+				break;
+			}
+			out += src.slice(i, close);
+			out += blank(src.slice(close, close + CLOSE.length));
+			i = close + CLOSE.length;
+			inScript = false;
+		}
+	}
+	return out;
 }
 
 /* Replace JS line/block comments and string literals with same-length

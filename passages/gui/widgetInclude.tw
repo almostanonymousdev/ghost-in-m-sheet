@@ -6,7 +6,7 @@
 	<<updatemeter 'sanity' `setup.Mc.sanity() / setup.Mc.sanityMax()`>>
 	<<updatemeter 'energy' `setup.Mc.energy() / setup.Mc.energyMax()`>>
 	<<updatemeter 'mclust' `setup.Mc.lust() / 100`>>
-	<<replace "#time">><<= setup.updateTimeDisplay()>><</replace>>
+	<<replace "#time">><<= setup.Time.display()>><</replace>>
 <</widget>>
 
 /* huntTickEventChain -- arg-less. The shared "what happens between
@@ -73,7 +73,7 @@
 	trigger StoryCaption re-render) and routes to the mode-aware
 	hunt-over-time passage if the tick pushed dawn past 6am. */
 	<<run setup.addTime(1)>>
-	<<replace "#time">><<= setup.updateTimeDisplay()>><</replace>>
+	<<replace "#time">><<= setup.Time.display()>><</replace>>
 	<<if setup.Time.hours() gte 6 and setup.HuntController.isHuntActive()>>
 		<<goto setup.HuntController.huntOverPassage("time")>>
 	<</if>>

@@ -535,13 +535,21 @@
  *
  *   host: function returning the underlying object (e.g. mc(), sv())
  *   spec: array of either a bare string ("money" → get + setMoney) or
- *         { name, key?, get?, set?, add?, spend? } where each verb key
- *         is the method name to expose; falsy disables that verb.
+ *         { name, key?, get?, set?, add?, spend?, writeHook? } where
+ *         each verb key is the method name to expose; falsy disables
+ *         that verb.
  *
  * Defaults: get = name, set = "set" + Capitalised(name); add and spend
  * are off unless explicitly named. `key` overrides the underlying
  * field name when it differs from the public method root (e.g.
- * possession()/$mcpossession). */
+ * possession()/$mcpossession).
+ *
+ * `writeHook(oldV, newV)` fires after every set/add/spend with the
+ * pre-write and post-write values. It may mutate the underlying
+ * field directly (e.g. to wrap or clamp) -- those mutations bypass
+ * the hook, so it is safe to re-write `host()[key]` from inside.
+ * The hook's return value propagates back through the public method,
+ * letting callers receive a flag (e.g. "did the day roll over?"). */
 setup.defineAccessors = function (api, host, spec) {
     function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
     spec.forEach(function (entry) {
@@ -551,10 +559,16 @@ setup.defineAccessors = function (api, host, spec) {
         var setNm  = (f.set   !== undefined) ? f.set   : 'set' + cap(f.name);
         var addNm  = f.add;
         var subNm  = f.spend;
+        var hook   = f.writeHook;
+        function write(v) {
+            var oldV = host()[key];
+            host()[key] = v;
+            if (hook) return hook(oldV, v);
+        }
         if (getNm) api[getNm]  = function ()  { return host()[key]; };
-        if (setNm) api[setNm]  = function (v) { host()[key] = v; };
-        if (addNm) api[addNm]  = function (n) { host()[key] += n; };
-        if (subNm) api[subNm]  = function (n) { host()[key] -= n; };
+        if (setNm) api[setNm]  = function (v) { return write(v); };
+        if (addNm) api[addNm]  = function (n) { return write(host()[key] + n); };
+        if (subNm) api[subNm]  = function (n) { return write(host()[key] - n); };
     });
     return api;
 };

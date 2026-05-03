@@ -85,13 +85,17 @@
 		// the lifetime attempt counter, also 0 by default.
 		run:           function () { return null; },
 		echoes:        function () { return 0; },
-		runsStarted:   function () { return 0; }
+		runsStarted:   function () { return 0; },
+
+		// Per-day seed; regenerated on every 24h rollover.
+		dailySeed:     function () { return Math.floor(Math.random() * 0x100000000); }
 	};
 
 	// mc sub-fields added after launch -- missing on very old saves
 	var MC_DEFAULTS = {
 		fit:           0,
-		exhibitionism: 0
+		exhibitionism: 0,
+		lustMax:       100
 	};
 
 	function applyDefaults (vars) {
