@@ -223,6 +223,19 @@
       "detail": "Run the release sweep, build the story, and zip it (versioned) with the asset-placeholders folder"
     },
     {
+      "label": "Check Release Assets",
+      "type": "shell",
+      "command": "python3",
+      "args": ["tools/check_release_assets.py"],
+      "windows": {
+        "command": "python",
+        "args": ["tools/check_release_assets.py"]
+      },
+      "group": "none",
+      "problemMatcher": [],
+      "detail": "Fail if any asset is byte-identical to its placeholder; sync assets/index.json with files on disk"
+    },
+    {
       "label": "Package Release",
       "type": "shell",
       "command": "V=$(sed -n \"s/.*Ghost in M'Sheet \\([0-9][0-9.]*[a-z]*\\).*/\\1/p\" passages/StoryCaption.tw | head -1 | tr . -); : \"${V:?version not found in passages/StoryCaption.tw}\"; trap 'mv -f passages/StoryInit.tw.bak passages/StoryInit.tw 2>/dev/null' EXIT; cp passages/StoryInit.tw passages/StoryInit.tw.bak && sed -i 's|setup.ImagePath = \"[^\"]*\"|setup.ImagePath = \"assets\"|' passages/StoryInit.tw && ./scripts/build.sh && zip -r \"ghost-in-m-sheet-v${V}-release.zip\" ghost-in-msheet.html assets",
@@ -230,10 +243,26 @@
         "command": "powershell",
         "args": ["-NoProfile", "-Command", "$m = Select-String -Path passages/StoryCaption.tw -Pattern \"Ghost in M'Sheet (\\d[\\d.]*[a-z]*)\" | Select-Object -First 1; if (-not $m) { throw 'version not found in passages/StoryCaption.tw' }; $v = $m.Matches[0].Groups[1].Value -replace '\\.','-'; Copy-Item passages/StoryInit.tw passages/StoryInit.tw.bak; try { (Get-Content passages/StoryInit.tw) -replace 'setup.ImagePath = \"[^\"]*\"', 'setup.ImagePath = \"assets\"' | Set-Content passages/StoryInit.tw; & .\\scripts\\build.bat; if ($LASTEXITCODE -ne 0) { throw 'build failed' }; Compress-Archive -Path ghost-in-msheet.html,assets -DestinationPath \"ghost-in-m-sheet-v$v-release.zip\" -Force } finally { Move-Item -Force passages/StoryInit.tw.bak passages/StoryInit.tw }"]
       },
-      "dependsOn": ["npm: test:release"],
+      "dependsOn": ["Check Release Assets", "npm: test:release"],
+      "dependsOrder": "sequence",
       "group": "none",
       "problemMatcher": [],
-      "detail": "Run the release sweep, build with real assets, and zip it (versioned) with the assets folder"
+      "detail": "Run the asset audit + release sweep, build with real assets, and zip it (versioned) with the assets folder"
+    },
+    {
+      "label": "Package Incremental Release",
+      "type": "shell",
+      "command": "python3",
+      "args": ["tools/package_incremental_release.py"],
+      "windows": {
+        "command": "python",
+        "args": ["tools/package_incremental_release.py"]
+      },
+      "dependsOn": ["Check Release Assets", "npm: test:release"],
+      "dependsOrder": "sequence",
+      "group": "none",
+      "problemMatcher": [],
+      "detail": "Run the asset audit + release sweep, then bundle the HTML with only assets edited on/after the most recent vX.Y.Z tag's commit date (folder structure preserved, working tree untouched)"
     },
     {
       "label": "Package HTML Only Release",

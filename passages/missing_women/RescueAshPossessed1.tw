@@ -5,7 +5,7 @@
 
 <<link "@@.usebtn; for a while.@@">>
 	<<replace "#rescueAshPossessed1">>
-		<<videoToggle "RescueAshPossessed1" "characters/rescue/ash/1.4.mp4" "characters/rescue/ash/1.3.mp4">>
+		<<videoToggle "characters/rescue/ash/1.4.mp4" "characters/rescue/ash/1.3.mp4">>
 	<</replace>>
 <</link>>
 @@.mc-speech; Nooo this is not right...~ But feels sooo good~@@<br>
