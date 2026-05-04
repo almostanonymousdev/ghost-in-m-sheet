@@ -1271,6 +1271,24 @@ body.ui-bar-stowed .rogue-run-layout {
 	line-height: 1.1;
 	text-align: center;
 }
+/* Shared tool-tick progress bar. Sits at the top of the layout
+ * (sibling of #rogue-tool-result) rather than under each tool card,
+ * so the toolbar row stays compact whether or not a tick is in
+ * flight. Only the active tool renders its meter element here; on
+ * completion the slot empties the wrapper and :empty hides it. */
+.rogue-tool-meter {
+	position: absolute;
+	top: 0.25em;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 18em;
+	max-width: 60vw;
+	z-index: 11;
+	pointer-events: none;
+}
+.rogue-tool-meter:empty {
+	display: none;
+}
 .rogue-run-nav {
 	position: absolute;
 	top: 0;

@@ -31,7 +31,7 @@
 @@.location; Objective@@<br>
 @@.mc-thoughts; <<= _run.objective>>@@<br>
 <br>
-@@.movebtn; [[Enter the haunt|RogueRun]]@@<br>
+@@.movebtn; [[Enter the hunt|RogueRun]]@@<br>
 @@.backbtn; [[Cancel|CityMap][setup.Rogue.end()]]@@
 
 :: RogueRun [nobr] {"position":"3100,200","size":"100,100"}
@@ -52,6 +52,7 @@
 
 	<div class="rogue-run-layout">
 		<div id="rogue-tool-result" class="rogue-tool-result"></div>
+		<div id="rogue-tool-meter" class="rogue-tool-meter"></div>
 		<div class="rogue-run-top">
 			<div class="rogue-run-tl">
 				@@.location; <<= setup.Rogue.address().formatted>>@@<br>

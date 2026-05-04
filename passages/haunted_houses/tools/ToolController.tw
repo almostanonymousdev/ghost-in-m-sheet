@@ -271,7 +271,8 @@
         'spiritboxLvl',
         'crucifixAmount',
         'boughtDetector',
-        'evidenceFind'
+        'evidenceFind',
+        'currentsearchRogue'
     ]);
 
     setup.ToolController = {
@@ -349,7 +350,12 @@
  * ------------------------------------------------------------------ */
 
 /* Every room id that gets a per-hunt $currentsearch<Room> bag.
- * The variable name is always "currentsearch" + room. */
+ * The variable name is always "currentsearch" + room.
+ *
+ * "Rogue" is a synthetic entry that auto-registers the searchRogue<Tool>
+ * meters used by the rogue toolbar. Rogue runs lazy-init the
+ * $currentsearchRogue bag inside the toolbar widget itself (not via
+ * GhostRandomize, which only fires for classic contracts). */
 setup.searchableRooms = [
     // standard houses
     "Kitchen", "Hallway", "Livingroom", "Bedroom", "Bathroom", "Basement",
@@ -359,7 +365,9 @@ setup.searchableRooms = [
     "HallwayIronclad", "ReceptionIronclad", "KitchenIronclad",
     "BlockAIronclad", "BlockBIronclad",
     "BlockACellAIronclad", "BlockACellBIronclad", "BlockACellCIronclad",
-    "BlockBCellAIronclad", "BlockBCellBIronclad", "BlockBCellCIronclad"
+    "BlockBCellAIronclad", "BlockBCellBIronclad", "BlockBCellCIronclad",
+    // Rogue (single shared bag)
+    "Rogue"
 ];
 
 /* $-variable names of every room object that has a `.background` field
@@ -866,6 +874,18 @@ setup.searchableRooms.forEach(function (room) {
             }
         }
     });
+
+    /* Lazy-init the $currentsearchRogue counter bag. The classic
+     * per-room bags are seeded from GhostRandomize; rogue runs skip
+     * that passage entirely, so the toolbar widget invokes this once
+     * on render. Idempotent. */
+    setup.ensureRogueSearchBag = function () {
+        var V = State.variables;
+        if (!V.currentsearchRogue) {
+            V.currentsearchRogue = setup.makeEmptySearchState();
+        }
+        return V.currentsearchRogue;
+    };
 
     /* Keyboard shortcut: map each key to the tool it activates, then click
      * the canonical button for every room in setup.searchRoomPrefixes. */

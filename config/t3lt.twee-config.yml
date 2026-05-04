@@ -3,17 +3,18 @@ sugarcube-2:
     video:
       name: video
       description: "Renders a <video> element whose src is resolved against
-        setup.ImagePath. First arg is the path (required, e.g. 'tentacles/2.0.mp4');
-        .webm picks type=video/webm, otherwise video/mp4. Optional second arg:
-        a class-name string, or an options object with any of
-        { class, id, width, style, type, autoplay, controls, muted, loop }.
+        setup.ImagePath. First arg is the path (required, e.g.
+        'tentacles/2.0.mp4'); .webm picks type=video/webm, otherwise video/mp4.
+        Optional second arg: a class-name string, or an options object with any
+        of { class, id, width, style, type, autoplay, controls, muted, loop }.
         autoplay/controls/muted/loop default to true; pass false to disable."
     image:
       name: image
       description: "Renders an <img> element whose src is resolved against
-        setup.ImagePath. First arg is the path (required, e.g. 'img/corruption.png').
-        Optional second arg: a class-name string, or an options object with any
-        of { class, id, width, height, style, alt, onclick }."
+        setup.ImagePath. First arg is the path (required, e.g.
+        'img/corruption.png'). Optional second arg: a class-name string, or an
+        options object with any of { class, id, width, height, style, alt,
+        onclick }."
     updatemeter:
       name: updatemeter
       description: "Updates a named meter's value without re-rendering it. If the
@@ -81,9 +82,9 @@ sugarcube-2:
       name: isCompanionContinue
       description: 'Renders a linkappend asking whether the companion can continue the
         hunt. Evaluates companion level and sanity against the given thresholds.
-        On success may trigger <<include "CompanionResult">> and calls <<companionExp 2>>.
-        Args: companionLevel (number), levelThreshold (number), sanityMin
-        (number), sanityMax (number).'
+        On success may trigger <<include "CompanionResult">> and calls
+        <<companionExp 2>>. Args: companionLevel (number), levelThreshold
+        (number), sanityMin (number), sanityMax (number).'
     aliceLustHighEvent:
       name: aliceLustHighEvent
       description: "Renders an extra action button shown when Alice's lust is high
@@ -91,36 +92,37 @@ sugarcube-2:
         #eventVideo with <<include \"AliceHelp\">>."
     applyTickEffects:
       name: applyTickEffects
-      description: Applies the current tick's stat modifiers to the MC and updates the UI 
-        for the relevant meters.
+      description: Applies the current tick's stat modifiers to the MC and updates the
+        UI for the relevant meters.
     huntTickStep:
       name: huntTickStep
       description: Per-nav-step / per-tool-click chain (mode-agnostic). Applies
-        per-tick stat drains, routes to the mode-aware HuntController.huntOverPassage()
-        on sanity / energy / time runout, and otherwise dispatches to
-        <<huntTickEventChain>>. Replaces the previous includeTimeEvent* widgets;
-        steal-clothes is now gated by HuntController.shouldTriggerSteal so a
-        single widget services both classic and rogue hunts.
+        per-tick stat drains, routes to the mode-aware
+        HuntController.huntOverPassage() on sanity / energy / time runout, and
+        otherwise dispatches to <<huntTickEventChain>>. Replaces the previous
+        includeTimeEvent* widgets; steal-clothes is now gated by
+        HuntController.shouldTriggerSteal so a single widget services both
+        classic and rogue hunts.
     huntTickEventChain:
       name: huntTickEventChain
       description: Inner per-tick chain run from <<huntTickStep>> and from
-        searchToolMarkup's repeat body. Includes LightPassageGhost + Event,
-        then conditionally StealClothes (HuntController.shouldTriggerSteal)
-        and GhostHuntEvent (HuntController.shouldStartRandomHunt). All
-        branching dispatched via HuntController so the same widget services
-        classic and rogue hunts.
+        searchToolMarkup's repeat body. Includes LightPassageGhost + Event, then
+        conditionally StealClothes (HuntController.shouldTriggerSteal) and
+        GhostHuntEvent (HuntController.shouldStartRandomHunt). All branching
+        dispatched via HuntController so the same widget services classic and
+        rogue hunts.
     includeTimeEventClothesHunt:
       name: includeTimeEventClothesHunt
-      description: Backwards-compat alias for <<huntTickStep>>; preserved so
-        existing call sites in widgetHauntedHouseRoom keep linting clean.
+      description: Backwards-compat alias for <<huntTickStep>>; preserved so existing
+        call sites in widgetHauntedHouseRoom keep linting clean.
     includeTimeEventHunt:
       name: includeTimeEventHunt
-      description: Backwards-compat alias for <<huntTickStep>>; preserved so
-        existing ironclad-flavour call sites keep linting clean.
+      description: Backwards-compat alias for <<huntTickStep>>; preserved so existing
+        ironclad-flavour call sites keep linting clean.
     includeStyle:
       name: includeStyle
-      description: Injects a body background-image <style> block for the room
-        in previous(), resolving light/dark via setup.Styles. No args.
+      description: Injects a body background-image <style> block for the room in
+        previous(), resolving light/dark via setup.Styles. No args.
     includeStyle2:
       name: includeStyle2
       description: Variant of <<includeStyle>> for passages reached via an
@@ -131,9 +133,8 @@ sugarcube-2:
         #eventVideo element when coming from a dark room via FurnitureSearch."
     bodyBackground:
       name: bodyBackground
-      description: "Emits a <style> block setting body.background-image to the
-        given URL, with shared cover/no-repeat/center defaults. Args: url
-        (string)."
+      description: "Emits a <style> block setting body.background-image to the given
+        URL, with shared cover/no-repeat/center defaults. Args: url (string)."
     roomBackground:
       name: roomBackground
       description: "Emits a body-background <style> block for a named hunt room,
@@ -170,56 +171,56 @@ sugarcube-2:
         to display strings.
     monkeyPawWish:
       name: monkeyPawWish
-      description: "Dispatcher that wikifies the given wish-effect widget by
-        name. Used by MonkeyPaw.tw to iterate setup.MonkeyPaw.list() without
-        an if/elseif chain. Args: widgetName (string, one of 'activity',
+      description: "Dispatcher that wikifies the given wish-effect widget by name.
+        Used by MonkeyPaw.tw to iterate setup.MonkeyPaw.list() without an
+        if/elseif chain. Args: widgetName (string, one of 'activity',
         'trapTheGhost', 'sanity', 'leave', 'knowledge', 'dawn')."
     monkeyPawTail:
       name: monkeyPawTail
       description: "Shared render tail for in-place wish widgets (activity,
-        trapTheGhost, sanity): refreshes the lust and sanity meters and
-        renders the Return link. No args."
+        trapTheGhost, sanity): refreshes the lust and sanity meters and renders
+        the Return link. No args."
     activity:
       name: activity
-      description: "Monkey Paw wish view widget. Calls
-        setup.MonkeyPaw.activate('activity'), then renders the returned
-        video + narrative + stat deltas. Severity scales with wishes-left."
+      description: Monkey Paw wish view widget. Calls
+        setup.MonkeyPaw.activate('activity'), then renders the returned video +
+        narrative + stat deltas. Severity scales with wishes-left.
     trapTheGhost:
       name: trapTheGhost
-      description: "Monkey Paw wish view widget. Calls
+      description: Monkey Paw wish view widget. Calls
         setup.MonkeyPaw.activate('trapTheGhost'), then renders the returned
         narrative + stat deltas. Higher tiers also bait the ghost toward the
-        player."
+        player.
     sanity:
       name: sanity
-      description: "Monkey Paw wish view widget. Calls
-        setup.MonkeyPaw.activate('sanity'), which sets sanity to 50 and
-        (at higher tiers) adds lust / banking corruption. Renders deltas."
+      description: Monkey Paw wish view widget. Calls
+        setup.MonkeyPaw.activate('sanity'), which sets sanity to 50 and (at
+        higher tiers) adds lust / banking corruption. Renders deltas.
     leave:
       name: leave
-      description: "Monkey Paw wish view widget. Calls
+      description: Monkey Paw wish view widget. Calls
         setup.MonkeyPaw.activate('leave') and <<goto>>s the returned street
-        passage. Higher tiers drain energy / bank corruption on exit."
+        passage. Higher tiers drain energy / bank corruption on exit.
     knowledge:
       name: knowledge
-      description: "Monkey Paw wish view widget. Calls
+      description: Monkey Paw wish view widget. Calls
         setup.MonkeyPaw.activate('knowledge') which removes one unchecked
-        evidence and queues a ghost event. One-shot per hunt (renders a
-        'nothing happened' branch on repeat). Higher tiers arrive without
-        the 2-second delay and drain sanity."
+        evidence and queues a ghost event. One-shot per hunt (renders a 'nothing
+        happened' branch on repeat). Higher tiers arrive without the 2-second
+        delay and drain sanity.
     dawn:
       name: dawn
-      description: "Monkey Paw wish view widget. Calls
-        setup.MonkeyPaw.activate('dawn') which jumps to 6 AM, ends the cursed
-        hunt, and <<goto>>s HuntOverTime. Higher tiers bank corruption."
+      description: Monkey Paw wish view widget. Calls setup.MonkeyPaw.activate('dawn')
+        which jumps to 6 AM, ends the cursed hunt, and <<goto>>s HuntOverTime.
+        Higher tiers bank corruption.
     anything:
       name: anything
       description: "Monkey Paw wish: rolls a random number (1-6) into _check. The
         result is used by the calling passage to determine a random outcome."
     tarotPassion:
       name: tarotPassion
-      description: "Tarot effect widget dispatched by TarotCards when the passion
-        card is drawn: random passion video, +15 lust, -15 sanity."
+      description: "Tarot effect widget dispatched by TarotCards when the passion card
+        is drawn: random passion video, +15 lust, -15 sanity."
     tarotPulse:
       name: tarotPulse
       description: "Tarot effect widget dispatched by TarotCards when the pulse card
@@ -230,16 +231,16 @@ sugarcube-2:
         HuntOverSanity after a 2s delay."
     tarotKnowledge:
       name: tarotKnowledge
-      description: "Tarot effect widget for the knowledge card: once per hunt,
-        removes a random evidence type that isn't already checked or hidden."
+      description: "Tarot effect widget for the knowledge card: once per hunt, removes
+        a random evidence type that isn't already checked or hidden."
     tarotPower:
       name: tarotPower
-      description: "Tarot effect widget for the power card: random power video,
-        +5 energy, +1 fit."
+      description: "Tarot effect widget for the power card: random power video, +5
+        energy, +1 fit."
     tarotWhore:
       name: tarotWhore
-      description: "Tarot effect widget for the whore card: random whore video,
-        +0.3 corruption."
+      description: "Tarot effect widget for the whore card: random whore video, +0.3
+        corruption."
     tarotDeath:
       name: tarotDeath
       description: "Tarot effect widget for the death card: triggers the cursed hunt
@@ -254,12 +255,11 @@ sugarcube-2:
         $highpriestess to 1."
     huntEndExit:
       name: huntEndExit
-      description: "Shared exit link for HuntEnd hunt-ending scenes. Renders a
-        .usebtn link whose destination forks on $highpriestess: when set, the
-        tarot burns itself (clears the flag, restores sanity to 25) and routes
-        back to $return; otherwise, the link routes to Sleep. Args: linkText
-        (string) -- e.g. 'fading into darkness', 'plunging you into
-        darkness', 'nothing'."
+      description: "Shared exit link for HuntEnd hunt-ending scenes. Renders a .usebtn
+        link whose destination forks on $highpriestess: when set, the tarot
+        burns itself (clears the flag, restores sanity to 25) and routes back to
+        $return; otherwise, the link routes to Sleep. Args: linkText (string) --
+        e.g. 'fading into darkness', 'plunging you into darkness', 'nothing'."
     webcamEvent:
       name: webcamEvent
       description: Runs the webcam show for the current $webcamEvent type ("tease",
@@ -333,17 +333,17 @@ sugarcube-2:
         <<huntConditions>> HUD above the footer."
     huntConditions:
       name: huntConditions
-      description: "Renders the hunt HUD row above the tool bar showing the live
+      description: Renders the hunt HUD row above the tool bar showing the live
         per-step deltas for sanity, lust, corruption (and whether time is
         advancing), plus a coloured badge for every active contributor
-        (darkness, clothing state, lust-as-fuel, overcharged tools, bait).
-        Reads setup.HauntConditions.snapshot(). No args."
+        (darkness, clothing state, lust-as-fuel, overcharged tools, bait). Reads
+        setup.HauntConditions.snapshot(). No args.
     huntActionBar:
       name: huntActionBar
       description: "Renders the spendable-resource buttons surfaced during a hunt:
         bait the ghost (lust spend), toggle overcharged tools on/off. Only
-        renders when a hunt is active (setup.HauntedHouses.isInsideHouse()).
-        No args."
+        renders when a hunt is active (setup.HauntedHouses.isInsideHouse()). No
+        args."
     navLink:
       name: navLink
       description: "Renders an @@.adaptiveLink;<<link>>...<</link>>@@ navigation link
@@ -353,26 +353,26 @@ sugarcube-2:
         includeTimeEventClothesHunt)]."
     navExits:
       name: navExits
-      description: "Reads the active house's exits map (HOUSE_CONFIG.exits[passage()])
+      description: Reads the active house's exits map (HOUSE_CONFIG.exits[passage()])
         and emits one <<navLink>> per outgoing exit using the house's default
         navMode (e.g. ironclad's 'hunt'). Lets each room declare its outgoing
         nav links in HOUSE_CONFIG instead of hardcoding a column of <<navLink>>
         calls. Returns nothing for houses without an exits map (enigma) or
-        passages not listed. No args."
+        passages not listed. No args.
     rogueMinimap:
       name: rogueMinimap
-      description: "Renders the active rogue run's floor plan as a compact room
-        list with spawn / boss / stash annotations. Reads from
-        setup.Rogue.minimapData(); emits nothing when no rogue run is active.
-        No args."
+      description: Renders the active rogue run's floor plan as a compact room list
+        with spawn / boss / stash annotations. Reads from
+        setup.Rogue.minimapData(); emits nothing when no rogue run is active. No
+        args.
     rogueToolBar:
       name: rogueToolBar
-      description: "Renders the six canonical investigation tool slots (EMF,
-        Ectoglass, GWB, Spiritbox, Thermometr, UVL) inside the RogueRun
-        toolbar. Pulls icons + labels from setup.searchToolDefs in
-        setup.searchToolOrder so the rogue placeholder stays in sync with
-        the regular hunts' tool catalogue. Visual-only until the rogue
-        room renderer wires up search bags / meters. No args."
+      description: Renders the six canonical investigation tool slots (EMF, Ectoglass,
+        GWB, Spiritbox, Thermometr, UVL) inside the RogueRun toolbar. Pulls
+        icons + labels from setup.searchToolDefs in setup.searchToolOrder so the
+        rogue placeholder stays in sync with the regular hunts' tool catalogue.
+        Visual-only until the rogue room renderer wires up search bags / meters.
+        No args.
     leaveLink:
       name: leaveLink
       description: "Wraps a plain @@.adaptiveLink;<<link>> in the
@@ -423,17 +423,18 @@ sugarcube-2:
     huntHouseCard:
       name: huntHouseCard
       description: "Renders one .housecard tile on GhostStreet using the
-        setup.HauntedHouses catalogue. Handles the level gate, the street-passage
-        link, and the per-click contract/flag/furniture/room side effects. Args:
-        houseId (string, 'owaissa' | 'elm' | 'enigma' | 'ironclad')."
+        setup.HauntedHouses catalogue. Handles the level gate, the
+        street-passage link, and the per-click contract/flag/furniture/room side
+        effects. Args: houseId (string, 'owaissa' | 'elm' | 'enigma' |
+        'ironclad')."
     rogueHuntCard:
       name: rogueHuntCard
-      description: "Drops a rogue-mode entry into the GhostStreet flexgrid.
-        Same iconPx-sized .housecard style as huntHouseCard. Always routes
-        to RogueStart for a fresh haunt -- there is no resume; an in-flight
-        run is treated as a failure if the player walks back in. No contract
-        reward, no $hauntedHouse activation -- the rogue subsystem owns its
-        own state on $run. Arg-less."
+      description: Drops a rogue-mode entry into the GhostStreet flexgrid. Same
+        iconPx-sized .housecard style as huntHouseCard. Always routes to
+        RogueStart for a fresh haunt -- there is no resume; an in-flight run is
+        treated as a failure if the player walks back in. No contract reward, no
+        $hauntedHouse activation -- the rogue subsystem owns its own state on
+        $run. Arg-less.
     huntHouseStreet:
       name: huntHouseStreet
       container: true
@@ -446,10 +447,10 @@ sugarcube-2:
         mc-thoughts body)."
     companionStreetTalk:
       name: companionStreetTalk
-      description: "Renders the '@@.usebtn; [[Talk to her/him|<Name>Main]]' link
-        block used by the per-house street passages when the player's companion
-        is standing outside. Pulls the Main passage and pronoun from
-        setup.Companion."
+      description: Renders the '@@.usebtn; [[Talk to her/him|<Name>Main]]' link block
+        used by the per-house street passages when the player's companion is
+        standing outside. Pulls the Main passage and pronoun from
+        setup.Companion.
     randRangeImg:
       name: randRangeImg
       description: "Renders a random image from a numbered sequence. Path is
@@ -532,10 +533,10 @@ sugarcube-2:
       name: addLust
     backOrReturn:
       name: backOrReturn
-      description: "Renders the persistent overlay back button (.backbtn) as
-        either <<back>> (when previous() is tagged 'event') or <<return>>.
-        Replaces the if/else block that used to be repeated in every GUI
-        overlay (Notebook, Phone, Bag, Evidence, ChangeLog). No args."
+      description: Renders the persistent overlay back button (.backbtn) as either
+        <<back>> (when previous() is tagged 'event') or <<return>>. Replaces the
+        if/else block that used to be repeated in every GUI overlay (Notebook,
+        Phone, Bag, Evidence, ChangeLog). No args.
     gymFitnessGain:
       name: gymFitnessGain
     randomImage:
@@ -558,16 +559,16 @@ sugarcube-2:
       name: rescueGirlLink
     rescueScene:
       name: rescueScene
-      description: "Shared body for the per-girl rescue passages
-        (RescueVictoria, RescueNadia, RescueJade, RescueJulia, RescueAsh).
-        Pulls chapter pool + end clip from setup.MissingWomen.rescueGirlConfig
-        and runs the watch/click/holy-water flow. Args: girlName (string)."
+      description: "Shared body for the per-girl rescue passages (RescueVictoria,
+        RescueNadia, RescueJade, RescueJulia, RescueAsh). Pulls chapter pool +
+        end clip from setup.MissingWomen.rescueGirlConfig and runs the
+        watch/click/holy-water flow. Args: girlName (string)."
     rescueStay:
       name: rescueStay
-      description: "Shared body for the RescueStay branches. Pulls the
-        per-girl 'stay' clip set from setup.MissingWomen.rescueStayConfig and
-        renders either the two-clip toggle (Victoria/Jade/Julia/Nadia) or the
-        Ash indexed cycle. Args: girlName (string)."
+      description: "Shared body for the RescueStay branches. Pulls the per-girl 'stay'
+        clip set from setup.MissingWomen.rescueStayConfig and renders either the
+        two-clip toggle (Victoria/Jade/Julia/Nadia) or the Ash indexed cycle.
+        Args: girlName (string)."
     breakFreePossession:
       name: breakFreePossession
     salonItem:
@@ -589,10 +590,10 @@ sugarcube-2:
         control of buttonId/meterId/actionSel/etc."
     toolCheck:
       name: toolCheck
-      description: "Renders a tool check result (EMFcheck, GWBcheck[Art],
+      description: 'Renders a tool check result (EMFcheck, GWBcheck[Art],
         PlasmCheck[Art], SpiritboxCheck, TemperatureHigh, UVLcheck[Art]) via
         setup.ToolController. Args: tool (key into setup.searchToolDefs),
-        optional variant (\"standard\" or \"art\")."
+        optional variant ("standard" or "art").'
     addLustPussy:
       name: addLustPussy
     addLustByPart:
@@ -611,28 +612,29 @@ sugarcube-2:
       name: deliveryTipCheck
     ghostTypeDropdown:
       name: ghostTypeDropdown
-      description: "Wraps SugarCube's <<listbox>> UI binding for
-        $ghostTypeSelected, so the witch contract passage doesn't
-        need to name the global directly."
+      description: Wraps SugarCube's <<listbox>> UI binding for $ghostTypeSelected, so
+        the witch contract passage doesn't need to name the global directly.
     bodyPartRadio:
       name: bodyPartRadio
       description: "Intro form radio bound to $sensualBodyPart.<key>. Args:
         bodyPartKey (string, e.g. 'brain'), label (string)."
     mcNameTextbox:
       name: mcNameTextbox
-      description: "Intro form textbox bound to $mc.name. Args: defaultName
-        (string), nextPassage (string)."
+      description: "Intro form textbox bound to $mc.name. Args: defaultName (string),
+        nextPassage (string)."
     evidenceCheckbox:
       name: evidenceCheckbox
       description: "Notebook evidence row checkbox bound to $<key>Check. Args:
         stateKey (string, e.g. 'EMF5Check')."
     monkeyPawWishInput:
       name: monkeyPawWishInput
-      description: "Textbox bound to $inputWish for the free-form Monkey Paw
-        wish field. No args."
+      description: Textbox bound to $inputWish for the free-form Monkey Paw wish
+        field. No args.
     cisCompanionSoloPicker:
       name: cisCompanionSoloPicker
-      description: "Shared Info-card body for Brook/Alice/Blake: pick the
-        companion for a hunt or send her solo to Owaissa/Elm Street. Args:
-        companionName (string, 'Brook'/'Alice'/'Blake'), possessivePronoun
-        (string, e.g. 'her')."
+      description: "Shared Info-card body for Brook/Alice/Blake: pick the companion
+        for a hunt or send her solo to Owaissa/Elm Street. Args: companionName
+        (string, 'Brook'/'Alice'/'Blake'), possessivePronoun (string, e.g.
+        'her')."
+    rogueToolSlot:
+      name: rogueToolSlot

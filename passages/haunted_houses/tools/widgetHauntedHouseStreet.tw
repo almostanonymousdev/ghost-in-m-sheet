@@ -39,7 +39,7 @@
 <<widget "rogueHuntCard">>
 	<div class="housecard">
 		<<image "ui/img/rogue-house.jpg" "iconPx">>
-		@@.icontext;[[Rogue Haunt|RogueStart]]@@
+		@@.icontext;[[Rogue Hunt|RogueStart]]@@
 	</div>
 <</widget>>
 

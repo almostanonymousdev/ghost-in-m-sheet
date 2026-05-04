@@ -117,4 +117,18 @@ test.describe('ToolController renderers', () => {
       SugarCube.setup.toolsRecord('emf').activated);
     expect(emfActivated).toBe(1);
   });
+
+  test('Rogue meters are registered for every search tool', async () => {
+    /* The rogue toolbar renders one <<showmeter searchRogue<Tool>>> per
+       tool slot. Those meter names need to exist before the widget
+       fires, which the auto-registration loop in ToolController takes
+       care of by including "Rogue" in setup.searchableRooms. */
+    const tools = await callSetup(page, 'setup.searchToolOrder');
+    for (const tool of tools) {
+      const def = await callSetup(page, `setup.searchToolDefs[${JSON.stringify(tool)}]`);
+      const meterName = 'searchRogue' + def.meterField;
+      const exists = await page.evaluate(name => window.Meter.has(name), meterName);
+      expect(exists).toBe(true);
+    }
+  });
 });

@@ -56,7 +56,7 @@ test.describe('HuntController', () => {
   test('mode() returns "rogue" once a rogue run is rolled', async () => {
     await goToPassage(page, 'GhostStreet');
     await page.locator('.passage')
-      .getByText('Rogue Haunt', { exact: true })
+      .getByText('Rogue Hunt', { exact: true })
       .first()
       .click();
     await page.waitForFunction(() => SugarCube.State.passage === 'RogueStart');
@@ -77,7 +77,7 @@ test.describe('HuntController', () => {
        state live; rogue runs only ever read from the catalogue. */
     await goToPassage(page, 'GhostStreet');
     await page.locator('.passage')
-      .getByText('Rogue Haunt', { exact: true })
+      .getByText('Rogue Hunt', { exact: true })
       .first()
       .click();
     await page.waitForFunction(() => SugarCube.State.passage === 'RogueStart');
@@ -102,9 +102,9 @@ test.describe('HuntController', () => {
       SugarCube.setup.Ghosts.setHuntMode(SugarCube.setup.Ghosts.HuntMode.POSSESSED);
     });
     await goToPassage(page, 'GhostStreet');
-    await page.locator('.passage').getByText('Rogue Haunt', { exact: true }).first().click();
+    await page.locator('.passage').getByText('Rogue Hunt', { exact: true }).first().click();
     await page.waitForFunction(() => SugarCube.State.passage === 'RogueStart');
-    await page.locator('.passage').getByText('Enter the haunt', { exact: true }).first().click();
+    await page.locator('.passage').getByText('Enter the hunt', { exact: true }).first().click();
     await page.waitForFunction(() => SugarCube.State.passage === 'RogueRun');
 
     // On RogueRun, even with stale $hunt.name still set, dispatch
@@ -136,14 +136,14 @@ test.describe('HuntController', () => {
 
   test('isHuntActive() in rogue mode requires the player to be on RogueRun', async () => {
     await goToPassage(page, 'GhostStreet');
-    await page.locator('.passage').getByText('Rogue Haunt', { exact: true }).first().click();
+    await page.locator('.passage').getByText('Rogue Hunt', { exact: true }).first().click();
     await page.waitForFunction(() => SugarCube.State.passage === 'RogueStart');
 
     // Run is rolled but player is in the RogueStart lobby -- chain
     // shouldn't fire there.
     expect(await callSetup(page, 'setup.HuntController.isHuntActive()')).toBe(false);
 
-    await page.locator('.passage').getByText('Enter the haunt', { exact: true }).first().click();
+    await page.locator('.passage').getByText('Enter the hunt', { exact: true }).first().click();
     await page.waitForFunction(() => SugarCube.State.passage === 'RogueRun');
     expect(await callSetup(page, 'setup.HuntController.isHuntActive()')).toBe(true);
 
@@ -167,7 +167,7 @@ test.describe('HuntController', () => {
     // matching mc-thoughts line.
     await page.evaluate(() => SugarCube.setup.Ghosts.endContract());
     await goToPassage(page, 'GhostStreet');
-    await page.locator('.passage').getByText('Rogue Haunt', { exact: true }).first().click();
+    await page.locator('.passage').getByText('Rogue Hunt', { exact: true }).first().click();
     await page.waitForFunction(() => SugarCube.State.passage === 'RogueStart');
 
     expect(await callSetup(page, 'setup.HuntController.huntOverPassage("sanity")'))
@@ -196,7 +196,7 @@ test.describe('HuntController', () => {
 
     await page.evaluate(() => SugarCube.setup.Ghosts.endContract());
     await goToPassage(page, 'GhostStreet');
-    await page.locator('.passage').getByText('Rogue Haunt', { exact: true }).first().click();
+    await page.locator('.passage').getByText('Rogue Hunt', { exact: true }).first().click();
     await page.waitForFunction(() => SugarCube.State.passage === 'RogueStart');
 
     expect(await callSetup(page, 'setup.HuntController.huntCaughtPassage()')).toBe('RogueEnd');
@@ -282,7 +282,7 @@ test.describe('HuntController', () => {
     // Rogue: no $hunt to mutate; cleanup still runs without error.
     await page.evaluate(() => SugarCube.setup.Ghosts.endContract());
     await goToPassage(page, 'GhostStreet');
-    await page.locator('.passage').getByText('Rogue Haunt', { exact: true }).first().click();
+    await page.locator('.passage').getByText('Rogue Hunt', { exact: true }).first().click();
     await page.waitForFunction(() => SugarCube.State.passage === 'RogueStart');
 
     // Should not throw even with no $hunt object.
@@ -346,12 +346,12 @@ test.describe('HuntController', () => {
   test('isGhostHere() in rogue mode follows the lair-room comparison', async () => {
     await goToPassage(page, 'GhostStreet');
     await page.locator('.passage')
-      .getByText('Rogue Haunt', { exact: true })
+      .getByText('Rogue Hunt', { exact: true })
       .first()
       .click();
     await page.waitForFunction(() => SugarCube.State.passage === 'RogueStart');
     await page.locator('.passage')
-      .getByText('Enter the haunt', { exact: true })
+      .getByText('Enter the hunt', { exact: true })
       .first()
       .click();
     await page.waitForFunction(() => SugarCube.State.passage === 'RogueRun');

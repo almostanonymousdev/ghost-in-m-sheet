@@ -14,7 +14,7 @@ cleanly partitioned.
 ## Lifecycle
 
 A rogue run flows through four passages. The entry point is the
-**Rogue Haunt** card on
+**Rogue Hunt** card on
 [GhostStreet](../passages/haunted_houses/general/GhostStreet.tw),
 slotted alongside the authored haunts (Owaissa, Ironclad, Elm,
 Enigma) via the [`<<rogueHuntCard>>`](../passages/haunted_houses/tools/widgetHauntedHouseStreet.tw)

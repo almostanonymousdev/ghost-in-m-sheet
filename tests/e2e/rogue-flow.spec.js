@@ -47,7 +47,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     expect(await getVar(page, 'echoes')).toBe(0);
 
     // 1. Launch the run from the GhostStreet rogue card.
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
 
     // RogueStart auto-rolls the run via setup.Rogue.startRogue, so $run
     // already exists on entry. Confirm the lifecycle stamps look sane.
@@ -56,8 +56,8 @@ test.describe('E2E: rogue run lifecycle', () => {
     expect(run.number).toBe(1);
     expect(run.modifiers.length).toBe(2);
 
-    // 2. Enter the haunt (RogueRun).
-    await clickLink(page, 'Enter the haunt', 'RogueRun');
+    // 2. Enter the hunt (RogueRun).
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
 
     // 3. Win the run.
     await clickLink(page, 'Win', 'RogueEnd');
@@ -82,8 +82,8 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
-    await clickLink(page, 'Enter the haunt', 'RogueRun');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
     await clickLink(page, 'Lose', 'RogueEnd');
 
     // 5 base + 0 success + 2 modifiers = 7.
@@ -96,8 +96,8 @@ test.describe('E2E: rogue run lifecycle', () => {
 
     // Run 1: start it, then bail back out without finishing.
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
-    await clickLink(page, 'Enter the haunt', 'RogueRun');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
     await goToPassage(page, 'GhostStreet');
 
     // The card never offers "Resume Run" -- only the fresh-haunt link.
@@ -106,7 +106,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     ).toHaveCount(0);
 
     // Walking back in pays out failure echoes for run 1, then rolls run 2.
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
     const run = await getVar(page, 'run');
     expect(run.number).toBe(2);
     // Run 1: 5 base + 0 success + 2 modifiers = 7 echoes from the forfeit.
@@ -118,8 +118,8 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
-    await clickLink(page, 'Enter the haunt', 'RogueRun');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
 
     // Player starts in the hallway (room_0).
     expect(await getVar(page, 'run').then(r => r.currentRoomId)).toBe('room_0');
@@ -161,9 +161,9 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
     await ensureNotEmptyBag(page);
-    await clickLink(page, 'Enter the haunt', 'RogueRun');
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
 
     const toolOrder = await callSetup(page, 'setup.searchToolOrder');
     expect(toolOrder.length).toBe(6);
@@ -175,7 +175,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
 
     const run = await getVar(page, 'run');
     expect(run.ghostName).toBeTruthy();
@@ -195,8 +195,8 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
-    await clickLink(page, 'Enter the haunt', 'RogueRun');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
 
     // Player starts in room_0 (hallway); the lair is whichever room
     // the floor-plan generator picked as the spawn (always non-hallway).
@@ -212,13 +212,27 @@ test.describe('E2E: rogue run lifecycle', () => {
     expect(await callSetup(page, 'setup.isGhostHere()')).toBe(true);
   });
 
-  test('clicking a tool advances time and renders into the top-center tray', async () => {
+  /* Shared setup: drop the per-tick repeat duration to ~10ms so the
+     tool meter completes within a test budget. Real play uses
+     150ms..1s per tick depending on MC level. */
+  async function fastToolTicks(page) {
+    await page.evaluate(() => {
+      SugarCube.State.variables.timerToolsDecreased = '10ms';
+    });
+  }
+
+  test('clicking a tool kicks off the meter and lands the result in the tray', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
     await ensureNotEmptyBag(page);
-    await clickLink(page, 'Enter the haunt', 'RogueRun');
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await fastToolTicks(page);
+    /* Pin the per-tick chain off so an event-chain goto can't hijack
+       the meter mid-flight (same protection the other rogue tool
+       tests use). */
+    await stubPerTickGatesQuiet(page);
 
     // Baseline: GhostStreet resets to midnight.
     expect(await getVar(page, 'minutes')).toBe(0);
@@ -228,30 +242,71 @@ test.describe('E2E: rogue run lifecycle', () => {
     await expect(tray).toHaveCount(1);
     await expect(tray).toBeEmpty();
 
-    // Each tool card has a clickable label that wikifies <<toolCheck>>
-    // into the tray on click. Pick the EMF card -- it never possesses,
-    // never navigates away, and renders a deterministic <<coloredText>>
-    // span. The tool card itself stays put; only the tray gains content,
-    // and the link remains clickable so the player can re-fire the tool.
+    // Each tool card has a clickable label that, on click, starts a
+    // <<repeat>>-driven meter under the icon. The meter ticks
+    // $equipment.<tool> times (default tier 5) and on completion
+    // wikifies the tool result into the tray.
     const emfCard = page.locator('.rogue-tool-card').first();
     await expect(emfCard.locator('a')).toHaveCount(1);
     await emfCard.locator('a').click();
 
-    // Time burned by one tick.
-    expect(await getVar(page, 'minutes')).toBe(1);
-
-    // Result landed in the top-center tray, not inline under the tool card.
-    // EMF's render path emits a <<coloredText>> span (.boldText), so the
-    // tray gains exactly one of those and the tool card stays clean.
-    await expect(tray).not.toBeEmpty();
+    // Per click, the tier-5 EMF burns 5 toolTicks (1 min each) plus
+    // one applyTickEffects (1 min, since RogueRun is huntActive) =
+    // 6 in-game minutes.
+    await page.waitForFunction(() => SugarCube.State.variables.minutes === 6);
     await expect(tray.locator('.boldText')).toHaveCount(1);
     await expect(emfCard.locator('.boldText')).toHaveCount(0);
+    await expect(emfCard).not.toHaveClass(/disabled-link/);
 
-    // Re-clicking the same tool advances time again and overwrites the
+    // Re-clicking the same tool reopens the meter and overwrites the
     // tray with a fresh reading rather than appending to it.
     await emfCard.locator('a').click();
-    expect(await getVar(page, 'minutes')).toBe(2);
+    await page.waitForFunction(() => SugarCube.State.variables.minutes === 12);
     await expect(tray.locator('.boldText')).toHaveCount(1);
+  });
+
+  test('a tool click renders the shared top-of-screen meter while ticking', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await ensureNotEmptyBag(page);
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    /* Pin event-chain gates off so a stray <<goto>> can't tear the
+       meter element out from under the assertions. */
+    await stubPerTickGatesQuiet(page);
+
+    // Slow the per-tick interval so the meter is visible long enough
+    // to assert against. Real play uses 150ms..1s.
+    await page.evaluate(() => {
+      SugarCube.State.variables.timerToolsDecreased = '200ms';
+    });
+
+    // The shared progress bar lives at the top of the layout
+    // (#rogue-tool-meter) and is empty pre-click.
+    const meter = page.locator('#rogue-tool-meter');
+    await expect(meter).toHaveCount(1);
+    await expect(meter.locator('[id^="meter-"]')).toHaveCount(0);
+
+    // The cardlink class lives on the inner label span (so the
+    // shared <<addclass>> path can disable both rogue and classic
+    // tool slots without leaking 30px-tall classic .cardlink
+    // styling onto the outer card).
+    const emfCard = page.locator('.rogue-tool-card').first();
+    const cardLabel = emfCard.locator('.rogue-tool-card-label');
+    await emfCard.locator('a').click();
+
+    // Mid-flight: the meter renders a SugarCube meter element (id
+    // prefixed with "meter-") into the shared top container, and
+    // the label cardlink picks up .disabled-link so the player can't
+    // double-fire while ticking.
+    await expect(meter.locator('[id^="meter-"]')).toHaveCount(1);
+    await expect(cardLabel).toHaveClass(/disabled-link/);
+
+    // Wait for the meter to clear at the end of the tick + the
+    // disabled-link guard to lift.
+    await expect(meter.locator('[id^="meter-"]')).toHaveCount(0);
+    await expect(cardLabel).not.toHaveClass(/disabled-link/);
   });
 
 
@@ -275,11 +330,12 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
     await ensureNotEmptyBag(page);
-    await clickLink(page, 'Enter the haunt', 'RogueRun');
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
 
     await stubPerTickGatesQuiet(page);
+    await fastToolTicks(page);
     await page.evaluate(() => {
       SugarCube.setup.ToolController.findPlasm = () => ({
         pack: { prefix: 'mechanics/plasm/mess/', start: 1, end: 7,
@@ -311,11 +367,12 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
     await ensureNotEmptyBag(page);
-    await clickLink(page, 'Enter the haunt', 'RogueRun');
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
 
     await stubPerTickGatesQuiet(page);
+    await fastToolTicks(page);
     await page.evaluate(() => {
       SugarCube.setup.ToolController.findGwb = () => ({
         pack: { prefix: 'mechanics/gwb/', start: 1, end: 18, ext: '.jpg' },
@@ -345,11 +402,12 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
     await ensureNotEmptyBag(page);
-    await clickLink(page, 'Enter the haunt', 'RogueRun');
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
 
     await stubPerTickGatesQuiet(page);
+    await fastToolTicks(page);
     await page.evaluate(() => {
       SugarCube.setup.ToolController.findPlasm = () => null;
     });
@@ -357,20 +415,20 @@ test.describe('E2E: rogue run lifecycle', () => {
     const ectoCard = page.locator('.rogue-tool-card').filter({ hasText: 'Ectoglass' });
     await ectoCard.locator('a').click();
 
-    // Stayed on RogueRun.
-    expect(await page.evaluate(() => SugarCube.State.passage)).toBe('RogueRun');
-    // Tray shows the canonical "no ectoplasm stains" copy.
+    // Tray shows the canonical "no ectoplasm stains" copy after the
+    // meter completes; player stays on RogueRun.
     await expect(
       page.locator('#rogue-tool-result').getByText(/ectoplasm stains/i)
     ).toBeVisible();
+    expect(await page.evaluate(() => SugarCube.State.passage)).toBe('RogueRun');
   });
 
   test('furniture strip renders one icon per template slot for the current room', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
-    await clickLink(page, 'Enter the haunt', 'RogueRun');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
 
     // The hallway template has 3 furniture suffixes; each renders an
     // icon in the .rogue-run-furniture strip.
@@ -384,7 +442,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
     // Walk into the room that holds the cursed-item loot so the row
     // would have rendered a "Cursed item" label under the old layout.
     const fp = await getVar(page, 'run').then(r => r.floorplan);
@@ -404,7 +462,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
 
     // Place the player in the room+slot one of the four base loot
     // kinds is hidden in. The floor-plan generator might land
@@ -464,8 +522,8 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
-    await clickLink(page, 'Enter the haunt', 'RogueRun');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
 
     // GhostStreet resets to midnight; verify we start at 00:00.
     expect(await getVar(page, 'hours')).toBe(0);
@@ -484,9 +542,9 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
     await ensureNotEmptyBag(page);
-    await clickLink(page, 'Enter the haunt', 'RogueRun');
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
 
     /* Pin event randomness off so the click only exercises the
        per-tick drain branch (not Event / StealClothes / GhostHuntEvent
@@ -494,6 +552,7 @@ test.describe('E2E: rogue run lifecycle', () => {
        chance-roll is gated on Math.random; pre-seeding all rolls
        to 1.0 keeps every roll above its threshold. */
     await page.evaluate(() => { Math.random = () => 0.99; });
+    await fastToolTicks(page);
 
     // Snapshot the starting MC state.
     const before = await page.evaluate(() => {
@@ -501,10 +560,12 @@ test.describe('E2E: rogue run lifecycle', () => {
       return { energy: mc.energy, sanity: mc.sanity };
     });
 
-    // One EMF click should fire <<huntTickStep>> -> applyTickEffects ->
-    // energy -0.125, sanity -<contractDrain> (0.4 baseline) and burn 1
-    // in-game minute.
+    // A tool click runs the meter through `tier` ticks. Each tick
+    // burns 1 minute via <<toolTick>>; on completion <<applyTickEffects>>
+    // fires once (energy -0.125, sanity -<contractDrain>, +1 minute).
+    // Default equipment tier is 5, so 5 toolTicks + 1 applyTickEffects = 6.
     await page.locator('.rogue-tool-card').first().locator('a').click();
+    await page.waitForFunction(() => SugarCube.State.variables.minutes >= 6);
 
     const after = await page.evaluate(() => {
       const mc = SugarCube.State.variables.mc;
@@ -512,15 +573,15 @@ test.describe('E2E: rogue run lifecycle', () => {
     });
     expect(after.energy).toBeLessThan(before.energy);
     expect(after.sanity).toBeLessThan(before.sanity);
-    expect(await getVar(page, 'minutes')).toBe(1);
+    expect(await getVar(page, 'minutes')).toBe(6);
   });
 
   test('per-tick chain runs on nav click and burns one in-game minute', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
-    await clickLink(page, 'Enter the haunt', 'RogueRun');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
     await page.evaluate(() => { Math.random = () => 0.99; });
 
     expect(await getVar(page, 'minutes')).toBe(0);
@@ -535,17 +596,20 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
     await ensureNotEmptyBag(page);
-    await clickLink(page, 'Enter the haunt', 'RogueRun');
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
     await page.evaluate(() => { Math.random = () => 0.99; });
+    await fastToolTicks(page);
 
-    // Set the MC up so the next tick will collapse sanity.
+    // Set the MC up so the meter's completion <<applyTickEffects>>
+    // collapses sanity.
     await page.evaluate(() => { SugarCube.State.variables.mc.sanity = 0.1; });
 
     await page.locator('.rogue-tool-card').first().locator('a').click();
 
-    // The chain should goto huntOverPassage("sanity") -> RogueEnd.
+    // The widget's post-applyTickEffects guard routes to
+    // huntOverPassage("sanity") -> RogueEnd.
     await page.waitForFunction(() => SugarCube.State.passage === 'RogueEnd');
 
     // The run is closed and stamped with the sanity reason.
@@ -563,9 +627,9 @@ test.describe('E2E: rogue run lifecycle', () => {
        state pre-stamped past the threshold and Math.random pinned
        low, a single tool tick should land on GhostHuntEvent. */
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
     await ensureNotEmptyBag(page);
-    await clickLink(page, 'Enter the haunt', 'RogueRun');
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
 
     await page.evaluate(() => {
       const V = SugarCube.State.variables;
@@ -590,9 +654,10 @@ test.describe('E2E: rogue run lifecycle', () => {
       V.stealChance = 0;
       Math.random = () => 0;
     });
+    await fastToolTicks(page);
 
-    // Click any tool. The chain runs synchronously inside the link
-    // body and may <<goto>> us to GhostHuntEvent / EventMC / StealClothes
+    // Click any tool. Each meter tick runs huntTickEventChain, which
+    // may <<goto>> us to GhostHuntEvent / EventMC / StealClothes
     // depending on which roll trips first. Any of those is a valid
     // "the per-tick chain DID fire sanity-driven side content".
     await page.locator('.rogue-tool-card').first().locator('a').click();
@@ -608,8 +673,8 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
-    await clickLink(page, 'Enter the haunt', 'RogueRun');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
 
     // Drop straight into the hunt event UI.
     await goToPassage(page, 'GhostHuntEvent');
@@ -630,8 +695,8 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
-    await clickLink(page, 'Enter the haunt', 'RogueRun');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
 
     // Pre-load enough sanity / energy so PrayHunt doesn't bail out
     // through a hunt-over passage.
@@ -649,8 +714,8 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
-    await clickLink(page, 'Enter the haunt', 'RogueRun');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
 
     // Strip the MC bare so FreezeHunt's "nothing left to give" branch fires.
     await page.evaluate(() => {
@@ -725,8 +790,8 @@ test.describe('E2E: rogue run lifecycle', () => {
        a real run end-to-end -- the widget rendering + linkappend
        fan-out is covered by the classic hunt-flow tests. */
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
-    await clickLink(page, 'Enter the haunt', 'RogueRun');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
 
     // huntCaughtPassage() in rogue mode stamps the failure reason
     // and returns the destination passage.
@@ -761,9 +826,9 @@ test.describe('E2E: rogue run lifecycle', () => {
        interval boundaries; the ghost room must end up somewhere
        different from where it started. */
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
     await ensureNotEmptyBag(page);
-    await clickLink(page, 'Enter the haunt', 'RogueRun');
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
 
     // Pin the rogue ghost to one that DOES drift (not Goryo).
     await page.evaluate(() => {
@@ -798,9 +863,9 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
     await ensureNotEmptyBag(page);
-    await clickLink(page, 'Enter the haunt', 'RogueRun');
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
 
     // Pin the rogue ghost to Goryo, which has staysInOneRoom = true.
     await page.evaluate(() => {
@@ -829,7 +894,7 @@ test.describe('E2E: rogue run lifecycle', () => {
        call classic uses, so $tarotCardsStage flips to CARRYING and
        the Bag link becomes visible. */
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
     await ensureNotEmptyBag(page);
 
     // Walk the player to the room+slot the deck is hidden in.
@@ -872,7 +937,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(20_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
     await ensureNotEmptyBag(page);
 
     const fp = await getVar(page, 'run').then(r => r.floorplan);
@@ -944,9 +1009,9 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(20_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
     await ensureNotEmptyBag(page);
-    await clickLink(page, 'Enter the haunt', 'RogueRun');
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
 
     // Hand the player the paw without going through pickup.
     await page.evaluate(() => SugarCube.setup.MonkeyPaw.markFound());
@@ -1131,8 +1196,8 @@ test.describe('E2E: rogue run lifecycle', () => {
     await goToPassage(page, 'GhostStreet');
 
     // Run 1: win.
-    await clickLink(page, 'Rogue Haunt', 'RogueStart');
-    await clickLink(page, 'Enter the haunt', 'RogueRun');
+    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
     await clickLink(page, 'Win', 'RogueEnd');
     expect(await getVar(page, 'runsStarted')).toBe(1);
     expect(await getVar(page, 'echoes')).toBe(12);
@@ -1142,7 +1207,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     await clickLink(page, 'Continue hunting', 'RogueStart');
     const run2 = await getVar(page, 'run');
     expect(run2.number).toBe(2);
-    await clickLink(page, 'Enter the haunt', 'RogueRun');
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
     await clickLink(page, 'Lose', 'RogueEnd');
     expect(await getVar(page, 'runsStarted')).toBe(2);
     // 12 (run 1) + 7 (run 2 fail) = 19.
