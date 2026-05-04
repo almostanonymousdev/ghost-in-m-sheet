@@ -81,6 +81,15 @@ const CLICK_SETTLE_MS = 400;
 // <<goto>>-redirect chains complete before we sample the destination.
 const POST_CLICK_IDLE_MS = 40;
 
+// SugarCube's <<done>> macro defers via setTimeout(..., Engine.DOM_DELAY)
+// which is 40ms. If the walker leaves the passage faster than that, the
+// deferred body fires on the *next* passage's render — its shadow-captured
+// temp vars are unbound by then, so e.g. CompanionMain's <<done>> bleeds
+// "_cname is null" pageerrors into whatever passage was walked next. Park
+// 60ms after every Engine.play / re-entry so deferred handlers fire while
+// their owning passage's temp scope is still live.
+const DEFERRED_SETTLE_MS = 60;
+
 // Hard cap on links clicked per source passage. Hubs like CityMap or
 // Notebook can expose 30+ links, and the click cost is per-link
 // (re-enter + click + verify). Capping keeps the full sweep near 8 min
@@ -518,6 +527,13 @@ async function walkPassages(browser, passages, label) {
       // pick up either Owaissa or Elm; rooms in either renders cleanly
       // once the search bags above are in place.
       V.hauntedHouse = 'owaissa';
+
+      // Rescue-quest girl. RescueScene reads $currentRescueGirl via
+      // setup.MissingWomen.currentRescueGirl() and calls initRescueScene
+      // on the result; left unset, the scene object comes back null and
+      // <<video _scene.current>> errors with "non-empty path string".
+      // Pick any catalogued girl — Victoria has the largest variant pool.
+      V.currentRescueGirl = 'Victoria';
     });
   }
 
@@ -538,6 +554,7 @@ async function walkPassages(browser, passages, label) {
         const settled = await page.evaluate(() => SugarCube.State.passage);
         if (!settled) throw err;
       }
+      await page.waitForTimeout(DEFERRED_SETTLE_MS);
       return true;
     } catch (err) {
       return err;
@@ -566,6 +583,7 @@ async function walkPassages(browser, passages, label) {
         const settled = await page.evaluate(() => SugarCube.State.passage);
         if (!settled) throw err;
       }
+      await page.waitForTimeout(DEFERRED_SETTLE_MS);
       return true;
     } catch (err) {
       return err;
