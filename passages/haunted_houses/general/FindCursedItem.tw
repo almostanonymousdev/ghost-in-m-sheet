@@ -6,7 +6,7 @@
 	<br>
 	Well, the cursed and mysterious item turns out to be... this. I'm not  surprised. Well, I'll need to take it to the witch. <br>
 	Damn, as soon as I picked up this item, I immediately felt more... aroused.<br>
-	+30 <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br><<addLust 30>>
+	+30 <<statIcon setup.StatIcon.HEARTH>><br><<addLust 30>>
 	[[Continue investigating the house|previous()]] Or perhaps... <<linkreplace "Use it">>
 		<<include "UseCursedItem">>
 	<</linkreplace>><br>

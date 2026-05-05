@@ -13,7 +13,7 @@
 				@@.mc-thoughts; However, the hands become more daring, and it's impossible to ignore now. <br>@@
 				<<video "characters/ghosts/specials/spirit3.4.mp4">>
 				@@.mc-thoughts; Your body tenses, and suddenly, you realize -- this isn't a dream. Someone is touching you. You open your eyes and sit up abruptly. The room is empty. There's no one there, but your heart races. The lingering feeling of those touches still clings to your skin. @@<br>
-				@@.warningtext; (Req. <<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 5)@@<br>
+				@@.warningtext; (Req. <<statIcon setup.StatIcon.CORRUPTION>> ≥ 5)@@<br>
 				<br>
 				@@.backbtn; [[Sleep|Sleep]]@@<br>
 			<</linkappend>>

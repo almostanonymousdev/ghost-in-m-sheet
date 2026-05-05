@@ -13,11 +13,11 @@ You spent about an hour at the gym, diligently working on improving your physica
 			@@.mc-speech; I'm so horny...and they start rubbing my pussy right now....<br>
 			Oooh, [[I can't resist|GymGroupEvent1Start]]@@<br>
 		<<else>>
-			@@.mc-speech; No, sorry I'm [[not in the mood.|GymInside]]@@<br>@@.warningtext; (Req. <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 50)@@
+			@@.mc-speech; No, sorry I'm [[not in the mood.|GymInside]]@@<br>@@.warningtext; (Req. <<statIcon setup.StatIcon.HEARTH>> ≥ 50)@@
 		<</if>>
 	<</linkappend>>
 	<br>
-<<else>>@@.warningtext; (Req. <<image "ui/img/beauty.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 50)@@<br><br>@@.backbtn;[[Back|GymInside]] @@<br>
+<<else>>@@.warningtext; (Req. <<statIcon setup.StatIcon.BEAUTY>> ≥ 50)@@<br><br>@@.backbtn;[[Back|GymInside]] @@<br>
 <</if>>
 
 <<gymFitnessGain 2>>

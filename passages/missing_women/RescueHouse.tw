@@ -21,7 +21,7 @@
 	@@.mc-speech; The nun said that after 6 p.m. it's pointless to keep searching. It seems I'm too late. I should go back to her and tell her I failed.@@<br>
 <<else>>
 	<<if setup.MissingWomen.canSearchHouse()>>
-		<<linkreplace "@@.usebtn; Search the house @@ <<image \"ui/img/energy.png\" { style: \"position: relative; top: 0.375em; width:3%; display: inline; margin: 0;\" }>>">>
+		<<linkreplace '@@.usebtn; Search the house @@ <<statIcon setup.StatIcon.ENERGY>>'>>
 			<<run setup.Mc.addEnergy(-1)>>
 			<<if not setup.MissingWomen.isCorrectHouse()>>
 				@@.mc-thoughts; You search the house for 30 minutes, but find no one.@@

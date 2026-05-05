@@ -47,6 +47,6 @@
 		<<else>>
 			or @@.usebtn; [["Call "+_cName + " for help"|$return][setup.Events.companionDrainForHelp()]]@@
 		<</if>>
-		- _cName's <<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> and + _cName's <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>
+		- _cName's <<statIcon setup.StatIcon.SANITY>> and + _cName's <<statIcon setup.StatIcon.HEARTH>>
 	<</if>>
 <</widget>>

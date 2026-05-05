@@ -12,7 +12,7 @@
 <<elseif setup.Park.hasEnergyToJog()>>
 	@@.enterbtn; [[Jogging|ParkJogging][setup.Park.spendJoggingEnergy()]]<<image "ui/img/energy.png" { style: "position: relative; top: 0.375em; width:20px;" }>> @@<br>
 <<else>>
-	@@.mc-speech; Not enough energy@@ <<image "ui/img/energy.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+	@@.mc-speech; Not enough energy@@ <<statIcon setup.StatIcon.ENERGY>><br>
 <</if>>
 
 <br>

@@ -38,7 +38,7 @@
 				@@.mc-speech;Alright, bye.@@<br>
 				<<if setup.Mc.corruption() lt 10>>
 					<<run setup.Mc.addCorruption(0.1)>>
-					+0.1 <<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>><br><br>
+					+0.1 <<statIcon setup.StatIcon.CORRUPTION>><br><br>
 				<</if>>
 				<br>
 				@@.backbtn; [[Sleep]]@@<br>
@@ -47,7 +47,7 @@
 			<<image "ui/img/mchouse.jpg" { width: "100%" }>>
 			@@.mc-speech; We made it to my place. Thanks for walking me back@@<br>
 			@@.notmc-speech; No problem, hope we meet again. Bye.@@<br>
-			@@.warningtext; (Req. <<= setup.Companion.name()>>'s <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 50)@@
+			@@.warningtext; (Req. <<= setup.Companion.name()>>'s <<statIcon setup.StatIcon.HEARTH>> ≥ 50)@@
 			<br><br>
 			@@.backbtn; [[Sleep]]@@<br>
 		<</if>>
@@ -76,7 +76,7 @@
 				@@.notmc-speech; That was amazing.@@<br>
 				<<if setup.Mc.corruption() lt 10>>
 					<<run setup.Mc.addCorruption(0.1)>>
-					+0.1 <<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>
+					+0.1 <<statIcon setup.StatIcon.CORRUPTION>>
 				<</if>><br>
 				@@.mc-speech;Yeah~Do you want to [[take a shower|AliceContinue]] with me?@@<br> <b>or</b> <br>
 				@@.mc-speech; I'm really tired already. I think I need to get some [[sleep|Sleep]].@@<br>
@@ -85,7 +85,7 @@
 			<<image "ui/img/mchouse.jpg" { width: "100%" }>>
 			@@.mc-speech; We made it to my place. Thanks for walking me back@@<br>
 			@@.notmc-speech; No problem, hope we meet again. Bye.@@<br>
-			@@.warningtext; (Req. <<= setup.Companion.name()>>'s <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 50)@@
+			@@.warningtext; (Req. <<= setup.Companion.name()>>'s <<statIcon setup.StatIcon.HEARTH>> ≥ 50)@@
 			<br><br>
 			@@.backbtn; [[Sleep]]@@<br>
 		<</if>>
@@ -115,7 +115,7 @@
 			<<image "ui/img/mchouse.jpg" { width: "100%" }>>
 			@@.mc-speech; We made it to my place. Thanks for walking me back@@<br>
 			@@.notmc-speech; No problem, hope we meet again. Bye.@@<br>
-			@@.warningtext; (Req. <<= setup.Companion.name()>>'s <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 50)@@
+			@@.warningtext; (Req. <<= setup.Companion.name()>>'s <<statIcon setup.StatIcon.HEARTH>> ≥ 50)@@
 			<br><br>
 			@@.backbtn; [[Sleep]]@@<br>
 		<</if>>

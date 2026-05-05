@@ -17,7 +17,7 @@
 <<case "pizza">>
 	<<addLust 45>>
 	<<deliveryVideo "pizzaevent" 3>>
-	+45 <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+	+45 <<statIcon setup.StatIcon.HEARTH>><br>
 	@@.notmc-speech;Oh, I see you're ready now, nice and wet.@@<br>
 	@@.mc-thoughts; What's happening to me? Why am I starting to like this?@@<br>
 	@@.notmc-speech;Wait for me here, <<linkappend "I'll be right back">>
@@ -46,7 +46,7 @@
 	<<run setup.Delivery.markPapersEvent()>>
 	<<addLust 45>>
 	<<deliveryVideo "papersevent" 4 5>>
-	+45 <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+	+45 <<statIcon setup.StatIcon.HEARTH>><br>
 	@@.mc-speech; Oh~i'm cumming~@@<br>
 	@@.notmc-speech; On your knees bitch,@@ <<linkappend "@@.notmc-speechLink; quickly@@">><br>
 		<<deliveryVideo "papersevent" 6>>

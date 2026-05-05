@@ -3,13 +3,13 @@
 	<<set _fitGain to _args[0]>>
 	<<set _gymDelta to setup.Gym.applyFitnessGain(_fitGain)>>
 	<<if _gymDelta.beautyIncrease gt 0>>
-		@@.mc-speech; <span class="evidenceText">Your <<image "ui/img/beauty.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> has improved (+1): <<= _gymDelta.beauty>> now!</span>@@<br>
+		@@.mc-speech; <span class="evidenceText">Your <<statIcon setup.StatIcon.BEAUTY>> has improved (+1): <<= _gymDelta.beauty>> now!</span>@@<br>
 	<</if>>
 	<<if _gymDelta.energyMaxDelta gt 0 and not _gymDelta.hitEnergyCap>>
-		@@.mc-speech; <span class="evidenceText">Your <<image "ui/img/energy.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> has increased (+<<= _gymDelta.energyMaxDelta>>): <<= _gymDelta.energyMax>> now!</span>@@<br>
+		@@.mc-speech; <span class="evidenceText">Your <<statIcon setup.StatIcon.ENERGY>> has increased (+<<= _gymDelta.energyMaxDelta>>): <<= _gymDelta.energyMax>> now!</span>@@<br>
 	<</if>>
 	<<if _gymDelta.hitEnergyCap>>
-		@@.mc-speech; <span class="evidenceText">Your <<image "ui/img/energy.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> has reached the maximum of 20!</span>@@<br>
+		@@.mc-speech; <span class="evidenceText">Your <<statIcon setup.StatIcon.ENERGY>> has reached the maximum of 20!</span>@@<br>
 	<</if>>
 	<<if _gymDelta.reachedFitCap>>
 		@@.mc-speech; <span class="evidenceText">Your fitness level is perfect - 100</span>@@

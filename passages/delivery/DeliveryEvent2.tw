@@ -20,7 +20,7 @@
 	<<run setup.Delivery.markPizzaEvent()>>
 	<<addLust 60>>
 	<<deliveryVideo "pizzaevent" 5>>
-	+60 <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+	+60 <<statIcon setup.StatIcon.HEARTH>><br>
 	@@.mc-thoughts; I can't control myself anymore. The neighbors can probably hear my moans@@<br>
 	@@.notmc-speech; Yes, I see how you "don't like it". Will you cum for me, slut?@@<br>
 	@@.mc-speech; Ah~ YES~ Fuck me~ PLEASE, <<linkappend "I'M CUMMING">><br>
