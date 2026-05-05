@@ -1,0 +1,28 @@
+:: AlarmClock [nobr] {"position":"800,900","size":"100,100"}
+<<image "ui/img/alarmclock.png" { width: "60%" }>><br>
+@@.location; Alarm Clock@@<br>
+<br>
+Current time: <<= setup.Time.display()>><br>
+<<if setup.Home.alarmEnabled()>>
+	Alarm set for <<= (setup.Home.alarmHour() < 10 ? "0" : "") + setup.Home.alarmHour()>>:00.<br>
+<<else>>
+	Alarm is off. @@.mc-speech; My eyes will open whenever they feel like it.@@<br>
+<</if>>
+<br>
+Set wake-up time:<br>
+<<for _h range [4, 5, 6, 7, 8, 9, 10, 11, 12]>>
+	<<capture _h>>
+		@@.usebtn;<<link `(_h < 10 ? "0" : "") + _h + ":00"` "AlarmClock">>
+			<<run setup.Home.setAlarm(_h)>>
+		<</link>>@@
+	<</capture>>
+<</for>>
+<br>
+<br>
+<<if setup.Home.alarmEnabled()>>
+	@@.usebtn;<<link "Turn alarm off" "AlarmClock">>
+		<<run setup.Home.clearAlarm()>>
+	<</link>>@@<br>
+<</if>>
+<br>
+@@.backbtn;[[Back|Bedroom]]@@<br>

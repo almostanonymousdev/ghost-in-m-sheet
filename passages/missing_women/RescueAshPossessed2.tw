@@ -5,7 +5,7 @@
 
 <<link "@@.usebtn; penetrating every hole of yours.@@">>
 	<<replace "#rescueAshPossessed2">>
-		<<videoToggle "RescueAshPossessed2" "characters/rescue/ash/2.3.mp4" "characters/rescue/ash/2.2.mp4">>
+		<<videoToggle "characters/rescue/ash/2.3.mp4" "characters/rescue/ash/2.2.mp4">>
 	<</replace>>
 <</link>>
 @@.mc-speech; This is so nasty...@@<br>

@@ -32,6 +32,7 @@ setup.Home = (function () {
 		// the lazy-init helpers below; the underlying objects start
 		// out as `{}` and pick up keys on first write.
 		'succubusEvent', 'tentacles', 'webcam', 'summoning',
+		'alarm',
 		'gotCursedItemEventCD',
 		'exorcism',
 		'dildoPurchased', 'isCameraBought',
@@ -49,6 +50,11 @@ setup.Home = (function () {
 	function tentacles() { var s = sv(); if (!s.tentacles)     s.tentacles    = {}; return s.tentacles; }
 	function webcam()    { var s = sv(); if (!s.webcam)        s.webcam       = {}; return s.webcam; }
 	function summoning() { var s = sv(); if (!s.summoning)     s.summoning    = {}; return s.summoning; }
+	function alarm()     {
+		var s = sv();
+		if (!s.alarm) s.alarm = { enabled: false, hour: 7 };
+		return s.alarm;
+	}
 
 	/* Closure flag for installAutoSaveGate() / sleepAdvance(). */
 	var allowAutoSave = false;
@@ -397,6 +403,38 @@ setup.Home = (function () {
 			};
 		},
 
+		// --- Bedroom alarm clock --------------------------
+		// $alarm = { enabled: bool, hour: 0..23 }. When enabled,
+		// restHours() returns the gap from the current clock to
+		// the next alarm-hour mark (wrapping past midnight) so
+		// the rest/penalty branch of resolveSleepWake — and the
+		// twins / tentacles full-night sleeps — wake the MC at
+		// the configured time instead of always advancing 8h.
+		// Event-driven 3-hour wakes (hunt defeat, mare end,
+		// spirit) are unchanged: they're partial sleeps cut
+		// short by the event, not full nights.
+		alarmEnabled: function () { return alarm().enabled === true; },
+		alarmHour:    function () {
+			var h = alarm().hour;
+			return (typeof h === 'number') ? h : 7;
+		},
+		setAlarm: function (hour) {
+			var a = alarm();
+			a.enabled = true;
+			a.hour = hour;
+		},
+		clearAlarm: function () { alarm().enabled = false; },
+		hoursUntilAlarm: function () {
+			var delta = this.alarmHour() - setup.Time.hours();
+			if (delta <= 0) delta += 24;
+			return delta;
+		},
+		// Hours to skip on a full-night sleep. Honors the alarm
+		// when it's set; otherwise an even 8 hours.
+		restHours: function () {
+			return this.alarmEnabled() ? this.hoursUntilAlarm() : 8;
+		},
+
 		// --- Hunt-defeat / mare wake-up state ------------
 		// HuntEnd* / Sleep set these flags so the Bedroom passage can
 		// render the correct "you wake up" banner and apply the
@@ -405,10 +443,14 @@ setup.Home = (function () {
 		// setup.Tick.resetCooldowns() when the day rolls over, and triggers
 		// an autosave so the player always has a fresh restore point on
 		// every sleep. Called by Sleep.tw / SleepTwins.tw from every wake
-		// branch. The autosave is deferred so it captures the post-wake
-		// passage rather than Sleep itself.
+		// branch. Wakes always land on HH:00 -- alarm wakes are
+		// configured per-hour and event wakes (hunt defeat, mare,
+		// spirit) read cleaner than dragging the pre-sleep minutes
+		// across to the wake clock. The autosave is deferred so it
+		// captures the post-wake passage rather than Sleep itself.
 		sleepAdvance: function (n) {
 			var rollover = setup.Time.sleepAdvanceHours(n);
+			setup.Time.setMinutes(0);
 			if (rollover) { setup.Tick.resetCooldowns(); }
 			setTimeout(function () {
 				try {
@@ -540,7 +582,7 @@ setup.Home = (function () {
 			if (setup.SpecialEvent.spiritEventReady()) {
 				return { passage: 'GhostSpecialEventSleepSpirit', hours: 3, postWake: 'spirit' };
 			}
-			return { passage: 'Bedroom', hours: 8, postWake: setup.Mc.isPenalized() ? 'penalty' : 'rest' };
+			return { passage: 'Bedroom', hours: this.restHours(), postWake: setup.Mc.isPenalized() ? 'penalty' : 'rest' };
 		},
 		/* Run the mutator named by resolveSleepWake().postWake. */
 		applySleepPostWake: function (key) {

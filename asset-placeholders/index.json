@@ -13344,6 +13344,12 @@
       "height": 1309,
       "kind": "image"
     },
+    "ui/img/alarmclock.png": {
+      "label": "Alarm Clock",
+      "width": 1024,
+      "height": 1024,
+      "kind": "image"
+    },
     "ui/img/amulet0.png": {
       "label": "",
       "width": 400,
