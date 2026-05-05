@@ -18,11 +18,29 @@ test.describe('E2E: rogue run lifecycle', () => {
 
   test.beforeEach(async () => {
     await resetGame(page);
+    /* GhostStreet's rogueHuntCard gates the link behind setup.Mc.lvl() >= 4.
+       New games start at lvl 0, so without this every test would land on
+       the "Level 4+ required" placeholder instead of a clickable link.
+       Wait for $mc to be re-initialised by StoryInit before mutating it —
+       resetGame only blocks until the first passage renders, which can
+       race the variable rebind. */
+    await page.waitForFunction(() => SugarCube.State.variables.mc != null);
+    await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
   });
 
   async function clickLink(page, linkText, expectedPassage) {
     await page.locator('.passage').getByText(linkText, { exact: true }).first().click();
     await page.waitForFunction(p => SugarCube.State.passage === p, expectedPassage);
+  }
+
+  /* The rogue card's link text is the day's randomised street address, not
+     a fixed "Rogue Hunt" label. Resolve the address client-side and click
+     the matching link. */
+  async function clickRogueCard(page) {
+    const rogueAddr = await page.evaluate(() =>
+      SugarCube.setup.Rogue.addressFromSeed(SugarCube.setup.Time.dailySeed()).formatted
+    );
+    await clickLink(page, rogueAddr, 'RogueStart');
   }
 
   /* Strip the Empty Bag modifier from the active rogue run if the
@@ -47,7 +65,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     expect(await getVar(page, 'echoes')).toBe(0);
 
     // 1. Launch the run from the GhostStreet rogue card.
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
 
     // RogueStart auto-rolls the run via setup.Rogue.startRogue, so $run
     // already exists on entry. Confirm the lifecycle stamps look sane.
@@ -82,7 +100,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
     await clickLink(page, 'Lose', 'RogueEnd');
 
@@ -96,7 +114,7 @@ test.describe('E2E: rogue run lifecycle', () => {
 
     // Run 1: start it, then bail back out without finishing.
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
     await goToPassage(page, 'GhostStreet');
 
@@ -106,7 +124,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     ).toHaveCount(0);
 
     // Walking back in pays out failure echoes for run 1, then rolls run 2.
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
     const run = await getVar(page, 'run');
     expect(run.number).toBe(2);
     // Run 1: 5 base + 0 success + 2 modifiers = 7 echoes from the forfeit.
@@ -118,7 +136,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
 
     // Player starts in the hallway (room_0).
@@ -161,7 +179,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
     await ensureNotEmptyBag(page);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
 
@@ -175,7 +193,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
 
     const run = await getVar(page, 'run');
     expect(run.ghostName).toBeTruthy();
@@ -195,7 +213,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
 
     // Player starts in room_0 (hallway); the lair is whichever room
@@ -225,7 +243,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
     await ensureNotEmptyBag(page);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
     await fastToolTicks(page);
@@ -269,7 +287,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
     await ensureNotEmptyBag(page);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
     /* Pin event-chain gates off so a stray <<goto>> can't tear the
@@ -330,7 +348,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
     await ensureNotEmptyBag(page);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
 
@@ -367,7 +385,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
     await ensureNotEmptyBag(page);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
 
@@ -402,7 +420,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
     await ensureNotEmptyBag(page);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
 
@@ -427,7 +445,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
 
     // The hallway template has 3 furniture suffixes; each renders an
@@ -442,7 +460,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
     // Walk into the room that holds the cursed-item loot so the row
     // would have rendered a "Cursed item" label under the old layout.
     const fp = await getVar(page, 'run').then(r => r.floorplan);
@@ -462,7 +480,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
 
     // Place the player in the room+slot one of the four base loot
     // kinds is hidden in. The floor-plan generator might land
@@ -522,7 +540,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
 
     // GhostStreet resets to midnight; verify we start at 00:00.
@@ -542,7 +560,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
     await ensureNotEmptyBag(page);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
 
@@ -580,7 +598,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
     await page.evaluate(() => { Math.random = () => 0.99; });
 
@@ -596,7 +614,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
     await ensureNotEmptyBag(page);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
     await page.evaluate(() => { Math.random = () => 0.99; });
@@ -627,7 +645,7 @@ test.describe('E2E: rogue run lifecycle', () => {
        state pre-stamped past the threshold and Math.random pinned
        low, a single tool tick should land on GhostHuntEvent. */
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
     await ensureNotEmptyBag(page);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
 
@@ -673,7 +691,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
 
     // Drop straight into the hunt event UI.
@@ -695,7 +713,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
 
     // Pre-load enough sanity / energy so PrayHunt doesn't bail out
@@ -714,7 +732,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
 
     // Strip the MC bare so FreezeHunt's "nothing left to give" branch fires.
@@ -790,7 +808,7 @@ test.describe('E2E: rogue run lifecycle', () => {
        a real run end-to-end -- the widget rendering + linkappend
        fan-out is covered by the classic hunt-flow tests. */
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
 
     // huntCaughtPassage() in rogue mode stamps the failure reason
@@ -826,7 +844,7 @@ test.describe('E2E: rogue run lifecycle', () => {
        interval boundaries; the ghost room must end up somewhere
        different from where it started. */
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
     await ensureNotEmptyBag(page);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
 
@@ -863,7 +881,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
     await ensureNotEmptyBag(page);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
 
@@ -894,7 +912,7 @@ test.describe('E2E: rogue run lifecycle', () => {
        call classic uses, so $tarotCardsStage flips to CARRYING and
        the Bag link becomes visible. */
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
     await ensureNotEmptyBag(page);
 
     // Walk the player to the room+slot the deck is hidden in.
@@ -937,7 +955,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(20_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
     await ensureNotEmptyBag(page);
 
     const fp = await getVar(page, 'run').then(r => r.floorplan);
@@ -1009,7 +1027,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(20_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
     await ensureNotEmptyBag(page);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
 
@@ -1196,7 +1214,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     await goToPassage(page, 'GhostStreet');
 
     // Run 1: win.
-    await clickLink(page, 'Rogue Hunt', 'RogueStart');
+    await clickRogueCard(page);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
     await clickLink(page, 'Win', 'RogueEnd');
     expect(await getVar(page, 'runsStarted')).toBe(1);

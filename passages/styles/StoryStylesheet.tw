@@ -1,5 +1,5 @@
 :: StoryStylesheet [stylesheet]
-@import url('https://fonts.googleapis.com/css2?family=Amatic+SC&family=Cormorant&family=Creepster&family=Kode+Mono:wght@400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Amatic+SC&family=Cormorant&family=Creepster&family=Kode+Mono:wght@400..700&family=Special+Elite&display=swap');
 
 /* ===== CSS Custom Properties ===== */
 :root {
@@ -382,6 +382,10 @@ body.city {
 	z-index: 2;
 	line-height: 1.3;
 }
+.housecard img {
+	display: block;
+	margin: 0 auto;
+}
 .itemwrapper {
 	display: flex;
 	flex-wrap: wrap;
@@ -410,7 +414,12 @@ body.city {
 	font-size: 25px;
 }
 .icontext {
-	font-family: 'Creepster', cursive;
+	font-family: 'Special Elite', cursive;
+	letter-spacing: 0.5px;
+	text-shadow:
+		0 0 2px rgba(255, 255, 255, 0.9),
+		0 0 6px rgba(255, 255, 255, 0.6),
+		0 0 12px rgba(255, 255, 255, 0.4);
 }
 .icontextcity {
 	font-family: 'Amatic SC', sans-serif;

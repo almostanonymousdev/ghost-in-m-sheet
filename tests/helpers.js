@@ -163,6 +163,17 @@ async function openGame(browser, { seed } = {}) {
   if (seed !== undefined) {
     await installSeededRng(page, seed);
   }
+  /* Snapshot the active Math.random so resetGame can restore it after a
+     test pins a deterministic stub (e.g. `Math.random = () => 0`). Without
+     this, the stub survives Engine.restart (which doesn't reload the page)
+     and corrupts the next test's StoryInit — sometimes silently, sometimes
+     crashing the page outright. Runs after installSeededRng so the snapshot
+     captures the seeded rng when one is installed. */
+  await page.addInitScript(() => {
+    if (!window.__origMathRandom) {
+      window.__origMathRandom = Math.random;
+    }
+  });
   await page.route('**/*', (route) => {
     const type = route.request().resourceType();
     if (type === 'image' || type === 'media' || type === 'font') {
@@ -180,6 +191,11 @@ async function openGame(browser, { seed } = {}) {
  * Much faster than closing and reopening the page.
  */
 async function resetGame(page) {
+  /* Undo any test-local Math.random stub before StoryInit re-runs — see
+     openGame for the rationale. */
+  await page.evaluate(() => {
+    if (window.__origMathRandom) Math.random = window.__origMathRandom;
+  });
   await page.evaluate(() => SugarCube.Engine.restart());
   await waitForSugarCube(page);
   await page.waitForFunction(() => SugarCube.State.passage !== '');
