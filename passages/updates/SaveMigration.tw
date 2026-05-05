@@ -51,6 +51,7 @@
 		updatePiercingBodyPartSens: function () { return 1; },
 		fixSave:                    function () { return 1; },
 		orgasmCooldownSteps:        function () { return 0; },
+		baitOrgasmPending:          function () { return 0; },
 
 		// Companion state objects. Per-companion defaults live in
 		// COMPANION_CONFIG.initStats (see CompanionController.tw); these

@@ -11,6 +11,9 @@
 	<<updatemeter 'mclust' `setup.Mc.lust() / 100`>>
 	<<replace "#time">><<= setup.updateTimeDisplay()>><</replace>>
 	<<replace "#tool-timers">><<= setup.toolTimerHudMarkup()>><</replace>>
+	<<if setup.HauntConditions.isBaitOrgasmPending()>>
+		<<goto "BaitOrgasm">>
+	<</if>>
 <</widget>>
 
 <<widget "includeTimeEventClothesHunt">>
