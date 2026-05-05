@@ -400,4 +400,40 @@ test.describe('Companion Controller', () => {
     // assert
     expect(result).toBe(false);
   });
+
+  // --- CompanionEvent dialog catalogue ---
+
+  test('eventTextForTier returns Brook copy for cis companion', async () => {
+    const text = await callSetup(page, 'setup.Companion.getByName("Brook").eventTextForTier(1)');
+    expect(text).toContain('She was naked and visibly shaken');
+  });
+
+  test('eventTextForTier returns null outside tiers 1..4', async () => {
+    const t0 = await callSetup(page, 'setup.Companion.getByName("Brook").eventTextForTier(0)');
+    const t5 = await callSetup(page, 'setup.Companion.getByName("Brook").eventTextForTier(5)');
+    expect(t0).toBeNull();
+    expect(t5).toBeNull();
+  });
+
+  test('eventTextForTier picks trans pre-stage by default', async () => {
+    await setVar(page, 'transFirstStage', undefined);
+    const text = await callSetup(page, 'setup.Companion.getByName("Alex").eventTextForTier(1)');
+    expect(text).toContain('a figure that clearly belongs to a female body');
+  });
+
+  test('eventTextForTier picks trans post-stage once flag is set', async () => {
+    await setVar(page, 'transFirstStage', 1);
+    const text = await callSetup(page, 'setup.Companion.getByName("Alex").eventTextForTier(1)');
+    expect(text).toContain('the body has become irresistibly feminine');
+  });
+
+  test('eventTextForTier returns same trans copy for all trans companions', async () => {
+    await setVar(page, 'transFirstStage', 1);
+    const alex   = await callSetup(page, 'setup.Companion.getByName("Alex").eventTextForTier(2)');
+    const taylor = await callSetup(page, 'setup.Companion.getByName("Taylor").eventTextForTier(2)');
+    const casey  = await callSetup(page, 'setup.Companion.getByName("Casey").eventTextForTier(2)');
+    expect(alex).toBe(taylor);
+    expect(taylor).toBe(casey);
+    expect(alex).toContain('the ghost defiling');
+  });
 });
