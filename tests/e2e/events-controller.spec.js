@@ -377,3 +377,65 @@ test.describe('Events controller — event flags / videos', () => {
     expect(await callSetup(page, 'setup.Events.ghostOrgasmMeter()')).toBe(5);
   });
 });
+
+test.describe('Events controller — eventTextFor lookup', () => {
+  let page;
+
+  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
+  test.afterAll(async () => { await page.close(); });
+
+  async function lookup(bodyPart, tier) {
+    return page.evaluate(([bp, t]) =>
+      SugarCube.setup.Events.eventTextFor(bp, t), [bodyPart, tier]);
+  }
+
+  test('returns "" for an unknown body part', async () => {
+    expect(await lookup('nope', 0)).toBe('');
+  });
+
+  test('all corruption tiers resolve to non-empty prose for every body part', async () => {
+    const parts = ['brain', 'tits', 'ass', 'bottom', 'mouth', 'pussy', 'anal'];
+    const tiers = [0, 1, 2, 3, 4, 6, 8];
+    for (const bp of parts) {
+      for (const t of tiers) {
+        const text = await lookup(bp, t);
+        expect(text.length).toBeGreaterThan(0);
+        expect(text).toContain('@@.mc-');
+      }
+    }
+  });
+
+  test('strips embedded newlines so the output is one line of wiki source', async () => {
+    const text = await lookup('brain', 8);
+    expect(text).not.toContain('\n');
+  });
+
+  test('sparse maps fall back to the highest defined tier <= requested', async () => {
+    // mouth defines {0, 4, 6, 8}; tier 1, 2, 3 should resolve to the
+    // tier-0 fallback string.
+    const t0 = await lookup('mouth', 0);
+    for (const t of [1, 2, 3]) {
+      expect(await lookup('mouth', t)).toBe(t0);
+    }
+    // Tier 4 picks its own entry, distinct from the tier-0 fallback.
+    expect(await lookup('mouth', 4)).not.toBe(t0);
+  });
+
+  test('pussy tier 4 uses the gte-4 speech variant; tier 0-3 use the lt-4 one', async () => {
+    const t3 = await lookup('pussy', 3);
+    const t4 = await lookup('pussy', 4);
+    expect(t3).toContain('get away from me');
+    expect(t4).toContain('shouldn\'t do that to women');
+    expect(t3).not.toBe(t4);
+  });
+
+  test('brain tiers 0..8 each resolve to a distinct string', async () => {
+    const seen = new Set();
+    for (const t of [0, 1, 2, 3, 4, 6, 8]) {
+      const text = await lookup('brain', t);
+      expect(seen.has(text)).toBe(false);
+      seen.add(text);
+    }
+  });
+
+});

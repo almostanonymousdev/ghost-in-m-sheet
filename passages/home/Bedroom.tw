@@ -96,7 +96,7 @@
 		<<elseif setup.Home.tentaclesNapEventReady()>>
 			<<goto "TentaclesEventNap">>
 		<</if>>
-	<</link>>@@<span><<image "ui/img/energy.png" { style: "position: relative; top: 0.375em; width:3%;" }>></span><br>
+	<</link>>@@<span><<statIcon setup.StatIcon.ENERGY>></span><br>
 	<<if setup.Home.canUseHolyWaterOnMare()>>
 		<<linkreplace "@@.usebtn; Use holy water@@">><<run setup.Home.useHolyWaterOnMare()>>
 			@@.mc-speech; This should help. Now I can sleep peacefully.@@

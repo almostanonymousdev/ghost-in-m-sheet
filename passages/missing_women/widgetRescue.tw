@@ -51,7 +51,7 @@
 					<br>
 					<span class="rescueStayCorruptionCheck">
 					@@.mc-speech;Or...@@  @@.usebtn;[[Stay|RescueStay][setup.MissingWomen.markQuestFailed()]]@@.@@.mc-speech; I guess I'm already used to losing...@@</span>
-					<<if not setup.MissingWomen.canStaySubmissive()>>@@.warningtext; (Req. <<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 6)@@
+					<<if not setup.MissingWomen.canStaySubmissive()>>@@.warningtext; (Req. <<statIcon setup.StatIcon.CORRUPTION>> ≥ 6)@@
 					<</if>>
 
 					<br><br>

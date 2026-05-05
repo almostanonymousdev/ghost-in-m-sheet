@@ -4,60 +4,60 @@
 	<<if _wce eq "tease">>
 		@@.mc-thoughts; You start your webcam show. For an hour, you show yourself in various poses.@@<br>
 		@@.mc-speech; Do you guys like this? Oh~ I'm so wet. I wish someone would lick my juicy pussy. @@<br>
-		+60 <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>> <br>
+		+60 <<statIcon setup.StatIcon.HEALTH>> <br>
 		<<addLust 60>>
 		<<addTime 60>>
 
 		<<if setup.Mc.corruption() lt 10>>
 			<<run setup.Mc.addCorruption(0.2)>>
-			+0.2 <<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>><br>
+			+0.2 <<statIcon setup.StatIcon.CORRUPTION>><br>
 		<</if>>
 	<<elseif _wce eq "masturbate">>
 		@@.mc-thoughts; You start your webcam show. For an hour, you show yourself in various poses, masturbating your pussy.@@<br>
 		@@.mc-speech; ~Ahh~I'm cu... ~Ohhhh fuck~ that was awesome. I hope you guys enjoyed the show too@@<br>
-		+60 <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>> <br>
+		+60 <<statIcon setup.StatIcon.HEALTH>> <br>
 		<<addLust 60>>
 		<<addTime 60>>
 
 		<<if setup.Mc.corruption() lt 10>>
 			<<run setup.Mc.addCorruption(0.2)>>
-			+0.2 <<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>><br>
+			+0.2 <<statIcon setup.StatIcon.CORRUPTION>><br>
 		<</if>>
 
 	<<elseif _wce eq "toypussy">>
 		@@.mc-thoughts; You start your webcam show. For an hour, you show yourself in various poses, fucking your pussy with a toy.@@<br>
 		@@.mc-speech; ~Ahh~I'm cu... ~Ohhhh fuck~ that was awesome. I hope you guys enjoyed the show too@@<br>
-		+60 <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>> <br>
+		+60 <<statIcon setup.StatIcon.HEALTH>> <br>
 		<<addLust 60>>
 		<<addTime 60>>
 
 		<<if setup.Mc.corruption() lt 10>>
 			<<run setup.Mc.addCorruption(0.2)>>
-			+0.2 <<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>><br>
+			+0.2 <<statIcon setup.StatIcon.CORRUPTION>><br>
 		<</if>>
 
 	<<elseif _wce eq "toyanal">>
 		@@.mc-thoughts; You start your webcam show. For an hour, you show yourself in various poses, fucking your ass with a toy.@@<br>
 		@@.mc-speech; ~Ahh~I'm cu... ~Ohhhh fuck~ that was awesome. I hope you guys enjoyed the show too@@<br>
-		+60 <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>> <br>
+		+60 <<statIcon setup.StatIcon.HEALTH>> <br>
 		<<addLust 60>>
 		<<addTime 60>>
 
 		<<if setup.Mc.corruption() lt 10>>
 			<<run setup.Mc.addCorruption(0.2)>>
-			+0.2 <<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>><br>
+			+0.2 <<statIcon setup.StatIcon.CORRUPTION>><br>
 		<</if>>
 
 	<<elseif _wce eq "fingeranal">>
 		@@.mc-thoughts; You start your webcam show. For an hour, you show yourself in various poses, fingering your asshole.@@<br>
 		@@.mc-speech; ~Ahh~I'm cu... ~Ohhhh fuck~ that was awesome. I hope you guys enjoyed the show too@@<br>
-		+60 <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>> <br>
+		+60 <<statIcon setup.StatIcon.HEALTH>> <br>
 		<<addLust 60>>
 		<<addTime 60>>
 
 		<<if setup.Mc.corruption() lt 10>>
 			<<run setup.Mc.addCorruption(0.2)>>
-			+0.2 <<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>><br>
+			+0.2 <<statIcon setup.StatIcon.CORRUPTION>><br>
 		<</if>>
 
 	<</if>>

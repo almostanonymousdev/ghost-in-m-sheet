@@ -14,12 +14,12 @@ Subscribers: <<= setup.Home.subscribers()>><br>
 	@@.usebtn; [[Tease|WebcamShowStart][setup.Home.setWebcamEvent("tease")]]@@<br></span>
 	<span class="webcamShowMasturbate">
 	@@.usebtn; [[Masturbate|WebcamShowStart][setup.Home.setWebcamEvent("masturbate")]]@@
-	<<if setup.Mc.corruption() lt 2>>@@.warningtext; (Req. <<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 2)@@
+	<<if setup.Mc.corruption() lt 2>>@@.warningtext; (Req. <<statIcon setup.StatIcon.CORRUPTION>> ≥ 2)@@
 	<</if>>
 	<br></span>
 	<span class="webcamShowFingerAnal">
 	@@.usebtn; [[Anal fingering|WebcamShowStart][setup.Home.setWebcamEvent("fingeranal")]]@@
-	<<if setup.Mc.corruption() lt 3>>@@.warningtext; (Req. <<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 3)@@
+	<<if setup.Mc.corruption() lt 3>>@@.warningtext; (Req. <<statIcon setup.StatIcon.CORRUPTION>> ≥ 3)@@
 	<</if>>
 	<br></span>
 	<<if setup.Home.dildoPurchased()>>
@@ -31,12 +31,12 @@ Subscribers: <<= setup.Home.subscribers()>><br>
 		<</done>>
 		<span class="webcamShowToyPussy">
 		@@.usebtn; [[Play with pussy (toy)|WebcamShowStart][setup.Home.setWebcamEvent("toypussy")]]@@
-		<<if setup.Mc.corruption() lt 3>>@@.warningtext; (Req. <<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 3)@@
+		<<if setup.Mc.corruption() lt 3>>@@.warningtext; (Req. <<statIcon setup.StatIcon.CORRUPTION>> ≥ 3)@@
 		<</if>>
 		<br></span>
 		<span class="webcamShowToyAnal">
 		@@.usebtn; [[Play with ass (toy)|WebcamShowStart][setup.Home.setWebcamEvent("toyanal")]]@@
-		<<if setup.Mc.corruption() lt 4>>@@.warningtext; (Req. <<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ 4)@@
+		<<if setup.Mc.corruption() lt 4>>@@.warningtext; (Req. <<statIcon setup.StatIcon.CORRUPTION>> ≥ 4)@@
 		<</if>>
 		<br></span>
 	<</if>>

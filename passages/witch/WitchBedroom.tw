@@ -2,7 +2,7 @@
 <<image "characters/witch/sleeping.jpg" { width: "65%" }>><br>
 @@.mc-thoughts; The witch is lying on the bed. Her breathing is deep and calm. The blanket doesn't fully cover her body, revealing her round, juicy ass. <br>Your thoughts take over: you imagine kissing her, gently running your tongue over her wet pussy, biting her perfect ass.@@<br>
 <<addLust 30>>
-+30 <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
++30 <<statIcon setup.StatIcon.HEALTH>><br>
 <<linkreplace "@@.mc-speechLink; Lick her@@">>
 	<<addTime 30>>
 	<<run setup.Witch.startWitchNightCooldown()>>
@@ -20,9 +20,9 @@
 		@@.notmc-speech; Thank you, <<= setup.Mc.name()>>.@@<br>
 	<</if>>
 	<<addLust 60>>
-	+60 <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+	+60 <<statIcon setup.StatIcon.HEALTH>><br>
 	<<if setup.Mc.corruption() lt 10>>
-		+0.2 <<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:3%;" }>>
+		+0.2 <<statIcon setup.StatIcon.CORRUPTION>>
 		<<run setup.Mc.addCorruption(0.2)>><br>
 	<</if>>
 <</linkreplace>>

@@ -55,8 +55,8 @@
 		<<run setup.Companion.markTransFirstStage()>>
 	<</if>>
 	<<run setup.Companion.applyEventStatDeltas()>>
-	<<= _cName>>'s lust: + <<= setup.Companion.eventLustGain()>> <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
-	<<= _cName>>'s sanity: - <<= setup.Companion.decreaseSanity()>><<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+	<<= _cName>>'s lust: + <<= setup.Companion.eventLustGain()>> <<statIcon setup.StatIcon.HEALTH>><br>
+	<<= _cName>>'s sanity: - <<= setup.Companion.decreaseSanity()>><<statIcon setup.StatIcon.SANITY>><br>
 
 <</widget>>
 
@@ -90,9 +90,9 @@
 		<<run setup.Companion.markTransFirstStage()>>
 	<</if>>
 	<<run setup.Companion.applyEventStatDeltas()>>
-	<<= _cName>>'s lust: + <<= setup.Companion.eventLustGain()>> <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
-	<<= _cName>>'s sanity: - <<= setup.Companion.decreaseSanity()>><<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
-	Your <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>> +15<br>
+	<<= _cName>>'s lust: + <<= setup.Companion.eventLustGain()>> <<statIcon setup.StatIcon.HEALTH>><br>
+	<<= _cName>>'s sanity: - <<= setup.Companion.decreaseSanity()>><<statIcon setup.StatIcon.SANITY>><br>
+	Your <<statIcon setup.StatIcon.HEALTH>> +15<br>
 	<<addLust 15>>
 <</widget>>
 
@@ -126,9 +126,9 @@
 		<<run setup.Companion.markTransFirstStage()>>
 	<</if>>
 	<<run setup.Companion.applyEventStatDeltas()>>
-	<<= _cName>>'s lust: + <<= setup.Companion.eventLustGain()>> <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
-	<<= _cName>>'s sanity: - <<= setup.Companion.decreaseSanity()>><<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
-	Your <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>> +15<br>
+	<<= _cName>>'s lust: + <<= setup.Companion.eventLustGain()>> <<statIcon setup.StatIcon.HEALTH>><br>
+	<<= _cName>>'s sanity: - <<= setup.Companion.decreaseSanity()>><<statIcon setup.StatIcon.SANITY>><br>
+	Your <<statIcon setup.StatIcon.HEALTH>> +15<br>
 	<<addLust 15>>
 <</widget>>
 
@@ -160,9 +160,9 @@
 		<<run setup.Companion.markTransFirstStage()>>
 	<</if>>
 	<<run setup.Companion.applyEventStatDeltas()>>
-	<<= _cName>>'s lust: + <<= setup.Companion.eventLustGain()>> <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
-	<<= _cName>>'s sanity: - <<= setup.Companion.decreaseSanity()>><<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
-	Your <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>> +15<br>
+	<<= _cName>>'s lust: + <<= setup.Companion.eventLustGain()>> <<statIcon setup.StatIcon.HEALTH>><br>
+	<<= _cName>>'s sanity: - <<= setup.Companion.decreaseSanity()>><<statIcon setup.StatIcon.SANITY>><br>
+	Your <<statIcon setup.StatIcon.HEALTH>> +15<br>
 	<<addLust 15>>
 <</widget>>
 
@@ -214,5 +214,5 @@
 	<<set _cName to setup.Companion.name()>>
 	or @@.usebtn;<<link `_cName + " helps you"`>><<run setup.Companion.drainSanity(3)>>
 		<<replace "#eventVideo">><<include "AliceHelp">><</replace>>
-	<</link>> @@ - <<= _cName>>'s <<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>>
+	<</link>> @@ - <<= _cName>>'s <<statIcon setup.StatIcon.SANITY>>
 <</widget>>

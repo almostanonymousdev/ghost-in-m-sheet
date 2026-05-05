@@ -238,6 +238,29 @@ setup.Events = (function () {
 				: setup.BansheeVideos.house.slice();
 		},
 
+		// --- Per-tier prose --------------------------------------
+		/*
+		* Look up the corruption-tier prose for a body-part event.
+		* Falls back to the highest defined tier <= the requested
+		* tier so sparse maps (mouth/pussy/anal) don't need every
+		* tier listed. Returns '' if the body part is unknown.
+		*
+		* Embedded newlines (and the indentation that follows them)
+		* are stripped so multi-line template literals render the
+		* same as the original `nobr` widget body.
+		*/
+		eventTextFor: function (bodyPart, tier) {
+			var entries = setup.EventText && setup.EventText[bodyPart];
+			if (!entries) return '';
+			var match = null;
+			Object.keys(entries).forEach(function (k) {
+				var n = Number(k);
+				if (n <= tier && (match === null || n > match)) match = n;
+			});
+			if (match === null) return '';
+			return entries[match].replace(/\n\s*/g, '');
+		},
+
 		// --- Orgasm check ----------------------------------------
 		/*
 		* Returns true if the MC should orgasm during a sexual encounter.

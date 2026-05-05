@@ -49,7 +49,7 @@
 			<<addLust 15>>
 			<<image "scenes/deliveryhub/papersevent/2.jpg" { style: "max-width: 100%; height: auto; display: block; margin: 0 auto;" }>>
 			@@.mc-thoughts; I think he's staring at my butt, what a pervert@@<br>
-			+15 <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+			+15 <<statIcon setup.StatIcon.HEALTH>><br>
 			<<if not setup.Delivery.papersInitialLustHighEnough()>>
 				@@.mc-speech; Done. I have to go, bye.@@ <<deliveryLustReq 30>><br><br>
 				@@.backbtn;[[Back|DeliveryMap]]@@<br>
