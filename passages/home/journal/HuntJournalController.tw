@@ -4,14 +4,15 @@
  * the first wake-up after the witch closes the most recent contract.
  *
  * Snapshot points:
- *   recordHuntStart (GhostStreet)         — sanity baseline + real ghost
- *   recordHuntEnd   (HuntEnd / HuntOver*) — final sanity + collected
- *                                            evidence; flips `unread`
- *   recordCursedItem(applyHuntDefeatPreSleep) — cursed-home-item key (if any)
- *   recordPayout    (WitchEndContract)    — guess + money/xp; re-flips
- *                                            `unread` so the player gets a
- *                                            second, fuller recap after
- *                                            closing the contract
+ *   recordHuntStart (GhostStreet / RogueStart)        — sanity baseline + real ghost
+ *   recordHuntEnd   (HuntEnd / HuntOver* / RogueEnd)  — final sanity + collected
+ *                                                       evidence; flips `unread`
+ *   recordCursedItem(applyHuntDefeatPreSleep)         — cursed-home-item key (if any)
+ *   recordPayout    (WitchEndContract / RogueIdentifyResolve) — guess + money/xp;
+ *                                                       re-flips `unread` so the
+ *                                                       player gets a second,
+ *                                                       fuller recap after closing
+ *                                                       the contract / run
  *
  * Display gate: the recap only renders when the player has just woken up
  * from sleep — Sleep.tw's wake link calls armRecap(), Bedroom shows the
@@ -37,10 +38,13 @@ setup.HuntJournal = (function () {
 		OWNED_VARS: OWNED_VARS,
 
 		/* New hunt entered: blow away any prior recap and seed the new
-		   one with the starting sanity + real ghost identity (so Mimic
-		   reads as "Mimic" instead of its current disguise). */
+		   one with the starting sanity + real ghost identity. Sourced
+		   via setup.HuntController.realGhostName so classic Mimic
+		   reads as "Mimic" (not its rotating disguise) and rogue runs
+		   surface their per-run ghost without this helper needing to
+		   know which mode is active. */
 		recordHuntStart: function () {
-			var realName = setup.Ghosts.huntRealName();
+			var realName = setup.HuntController.realGhostName();
 			if (!realName) return;
 			sv().huntJournal = {
 				realGhost:    realName,
@@ -79,17 +83,19 @@ setup.HuntJournal = (function () {
 			rec.cursedItem = setup.CursedItems.currentItem();
 		},
 
-		/* Witch contract closed: save the player's guess + payout and
-		   flip `unread` so the next wake-up renders the recap. */
+		/* Player guess resolved (witch contract closed in classic; the
+		   Identify branch in rogue): save the guess + payout and flip
+		   `unread` so the next wake-up renders the recap. The payout
+		   shape comes from setup.HuntController.payoutForGuess so the
+		   per-mode money/XP rules (or rogue's "no money, ectoplasm
+		   shown elsewhere") live in the facade, not here. */
 		recordPayout: function (correct) {
 			var rec = j(); if (!rec) return;
 			rec.guessedGhost = setup.Ghosts.ghostTypeSelected() || null;
 			rec.guessCorrect = !!correct;
-			var money  = setup.HauntedHouses.moneyFromContract() || 0;
-			var weaken = (setup.Witch && setup.Witch.moneyFromWeakenGhost)
-				? setup.Witch.moneyFromWeakenGhost() : 0;
-			rec.moneyEarned = correct ? (money + weaken) : weaken;
-			rec.xpEarned    = correct ? (setup.HauntedHouses.expFromContract() || 0) : 10;
+			var payout = setup.HuntController.payoutForGuess(correct);
+			rec.moneyEarned = payout.money;
+			rec.xpEarned    = payout.xp;
 			rec.unread = true;
 		},
 

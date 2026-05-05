@@ -442,4 +442,71 @@ test.describe('Hunt Journal', () => {
     // No raw float garbage (e.g. 45.875999...) leaking through.
     expect(passageText).not.toMatch(/45\.876\d/);
   });
+
+  // --- Rogue mode plumbing -----------------------------------------------
+
+  test('recordHuntStart picks up the rogue ghost when no classic hunt is active', async () => {
+    await setVar(page, 'mc.sanity', 77);
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
+    const rogueGhost = await callSetup(page, 'setup.Rogue.ghostName()');
+    expect(rogueGhost).toBeTruthy();
+
+    await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
+
+    const j = await callSetup(page, 'setup.HuntJournal.journal()');
+    expect(j).not.toBeNull();
+    expect(j.realGhost).toBe(rogueGhost);
+    expect(j.sanityStart).toBe(77);
+  });
+
+  test('recordPayout in rogue mode skips the witch money/xp lookup', async () => {
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
+    await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
+    await page.evaluate(() => { SugarCube.State.variables.ghostTypeSelected = 'Wraith'; });
+
+    await page.evaluate(() => SugarCube.setup.HuntJournal.recordPayout(true));
+
+    const j = await callSetup(page, 'setup.HuntJournal.journal()');
+    expect(j.guessedGhost).toBe('Wraith');
+    expect(j.guessCorrect).toBe(true);
+    expect(j.moneyEarned).toBe(0);
+    expect(j.xpEarned).toBe(0);
+    expect(await callSetup(page, 'setup.HuntJournal.hasUnread()')).toBe(true);
+  });
+
+  test('full rogue lifecycle: RogueStart records start, RogueEnd records end + arms recap', async () => {
+    await setVar(page, 'mc.sanity', 90);
+    // RogueStart auto-rolls the run and calls recordHuntStart.
+    await goToPassage(page, 'RogueStart');
+    const startJournal = await callSetup(page, 'setup.HuntJournal.journal()');
+    expect(startJournal).not.toBeNull();
+    expect(startJournal.sanityStart).toBe(90);
+    expect(startJournal.realGhost).toBeTruthy();
+
+    // Stamp the run as a success and run RogueEnd. recordHuntEnd
+    // fires before endRogue, so sanityEnd captures the live value.
+    await setVar(page, 'mc.sanity', 55);
+    await page.evaluate(() => SugarCube.setup.Rogue.markSuccess());
+    await goToPassage(page, 'RogueEnd');
+
+    const endJournal = await callSetup(page, 'setup.HuntJournal.journal()');
+    expect(endJournal.sanityEnd).toBe(55);
+    expect(await callSetup(page, 'setup.HuntJournal.sanityLost()')).toBe(35);
+    expect(await callSetup(page, 'setup.HuntJournal.hasUnread()')).toBe(true);
+  });
+
+  test('recap renders after sleeping post-rogue-run', async () => {
+    await setVar(page, 'mc.sanity', 80);
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
+    await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
+    await setVar(page, 'EMF5Check', true);
+    await setVar(page, 'mc.sanity', 50);
+    await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntEnd());
+    await page.evaluate(() => SugarCube.setup.HuntJournal.armRecap());
+
+    await goToPassage(page, 'Bedroom');
+    const passageText = await page.locator('.passage').first().innerText();
+    expect(passageText).toContain('Last Night');
+    expect(passageText).toContain('EMF5');
+  });
 });

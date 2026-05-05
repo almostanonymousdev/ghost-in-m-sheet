@@ -374,4 +374,53 @@ test.describe('HuntController', () => {
     await goToPassage(page, 'CityMap');
     expect(await callSetup(page, 'setup.HuntController.isGhostHere()')).toBe(false);
   });
+
+  test('realGhostName() returns the true identity in either mode (Mimic stays "Mimic")', async () => {
+    expect(await callSetup(page, 'setup.HuntController.realGhostName()')).toBe('');
+
+    // Classic Mimic: the visible $hunt.name rotates to a disguise but
+    // realName stays "Mimic" -- the recap source-of-truth.
+    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Mimic'));
+    await page.evaluate(() => { SugarCube.State.variables.hunt.name = 'Spirit'; });
+    expect(await callSetup(page, 'setup.HuntController.realGhostName()')).toBe('Mimic');
+
+    // Switch to rogue: the per-run ghost name is the real name.
+    await page.evaluate(() => SugarCube.setup.Ghosts.endContract());
+    await goToPassage(page, 'GhostStreet');
+    await clickRogueCard(page);
+    const rogueGhost = await callSetup(page, 'setup.Rogue.ghostName()');
+    expect(await callSetup(page, 'setup.HuntController.realGhostName()')).toBe(rogueGhost);
+  });
+
+  test('payoutForGuess() pays the witch contract in classic and zero in rogue', async () => {
+    expect(await callSetup(page, 'setup.HuntController.payoutForGuess(true)'))
+      .toEqual({ money: 0, xp: 0 });
+
+    // Classic correct guess: contract bonus + weaken bonus + contract XP.
+    // Pre-stamp the witch-contract reward fields setup.HauntedHouses
+    // populates from the chosen house; we don't need to walk the witch
+    // dialogue, just have realistic numbers in place.
+    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
+    await page.evaluate(() => {
+      SugarCube.State.variables.moneyFromContract = 100;
+      SugarCube.State.variables.expFromContract = 50;
+      SugarCube.State.variables.moneyFromWeakenTheGhost = 20;
+    });
+
+    expect(await callSetup(page, 'setup.HuntController.payoutForGuess(true)'))
+      .toEqual({ money: 120, xp: 50 });
+
+    // Wrong guess: only the weaken bonus + the flat 10 XP consolation.
+    expect(await callSetup(page, 'setup.HuntController.payoutForGuess(false)'))
+      .toEqual({ money: 20, xp: 10 });
+
+    // Rogue: payout is always {0, 0}; ectoplasm is shown on RogueEnd.
+    await page.evaluate(() => SugarCube.setup.Ghosts.endContract());
+    await goToPassage(page, 'GhostStreet');
+    await clickRogueCard(page);
+    expect(await callSetup(page, 'setup.HuntController.payoutForGuess(true)'))
+      .toEqual({ money: 0, xp: 0 });
+    expect(await callSetup(page, 'setup.HuntController.payoutForGuess(false)'))
+      .toEqual({ money: 0, xp: 0 });
+  });
 });

@@ -176,6 +176,40 @@ setup.HuntController = (function () {
 		return null;
 	}
 
+	/* The ghost's true identity for the active hunt. Distinct from
+	   activeGhost().name because Mimic rotates its visible disguise
+	   during a classic hunt while $hunt.realName stays "Mimic"; the
+	   recap / journal want the real identity. Rogue runs don't
+	   disguise, so $run.ghostName is always the real name. Returns
+	   '' when no hunt is active. */
+	function realGhostName() {
+		var m = mode();
+		if (m === Mode.REGULAR) return setup.Ghosts.huntRealName() || '';
+		if (m === Mode.ROGUE)   return setup.Rogue.ghostName() || '';
+		return '';
+	}
+
+	/* Per-guess payout summary for the active hunt. Shape:
+	   { money: <number>, xp: <number> }. Classic sums witch contract
+	   reward + weaken bonus + XP (correct guess) or just the weaken
+	   bonus + 10 XP (wrong guess). Rogue runs pay ectoplasm via
+	   setup.Rogue.endRogue and surface it on RogueEnd, so the journal
+	   shouldn't double-bill -- payout is {0,0}. Used by HuntJournal
+	   so the recap stays mode-agnostic. */
+	function payoutForGuess(correct) {
+		var m = mode();
+		if (m === Mode.REGULAR) {
+			var money  = setup.HauntedHouses.moneyFromContract() || 0;
+			var weaken = (setup.Witch && setup.Witch.moneyFromWeakenGhost)
+				? setup.Witch.moneyFromWeakenGhost() : 0;
+			return {
+				money: correct ? (money + weaken) : weaken,
+				xp:    correct ? (setup.HauntedHouses.expFromContract() || 0) : 10
+			};
+		}
+		return { money: 0, xp: 0 };
+	}
+
 	/* Mode-aware exit target for the "ghost catches the MC" branch
 	   that HuntEnd's <<huntEndExit>> widget routes through. Classic
 	   sleeps the MC home; rogue stamps a CAUGHT failure on the
@@ -437,6 +471,8 @@ setup.HuntController = (function () {
 		shouldStartRandomProwl:  shouldStartRandomProwl,
 		shouldTriggerSteal:     shouldTriggerSteal,
 		huntOverPassage:        huntOverPassage,
+		realGhostName:          realGhostName,
+		payoutForGuess:         payoutForGuess,
 		huntCaughtPassage:      huntCaughtPassage,
 		onCaughtCleanup:        onCaughtCleanup,
 		shuffleGhostRoom:       shuffleGhostRoom,

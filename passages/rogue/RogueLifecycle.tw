@@ -11,6 +11,7 @@
 <</if>>
 <<set _rogueSeed to setup.Time.dailySeed()>>
 <<run setup.Rogue.startRogue({ seed: _rogueSeed })>>
+<<run setup.HuntJournal.recordHuntStart()>>
 <<set _run to setup.Rogue.active()>>
 <<set _modifiers to setup.Modifiers.activeList()>>
 <<set _floorplan to setup.Rogue.field('floorplan')>>
@@ -137,6 +138,7 @@
 	@@.backbtn; [[Back|CityMap]]@@
 <<else>>
 	<<set _success to setup.Rogue.isSuccess()>>
+	<<run setup.HuntJournal.recordHuntEnd()>>
 	<<set _summary to setup.Rogue.endRogue(_success)>>
 	<<set _FR to setup.Rogue.FailureReason>>
 
@@ -244,12 +246,14 @@
 	<<timed 6s>>
 		<<if setup.Rogue.ghostName() eq setup.Ghosts.ghostTypeSelected()>>
 			<<run setup.Rogue.markSuccess()>>
+			<<run setup.HuntJournal.recordPayout(true)>>
 			<div class="rogue-reveal rogue-reveal-text">@@.notmc-speech; The ghost fades peacefully into the ether.@@</div>
 			<div class="rogue-reveal rogue-reveal-buttons">
 				@@.movebtn; [[Continue|RogueEnd]]@@<br>
 				@@.movebtn; [[Go home|RogueEnd]]@@
 			</div>
 		<<else>>
+			<<run setup.HuntJournal.recordPayout(false)>>
 			<div class="rogue-reveal rogue-reveal-text">@@.mc-thoughts; Your heart sinks as the ghost roughly grabs your helpless form.@@</div>
 			<div class="rogue-reveal rogue-reveal-buttons">
 				@@.movebtn; [[Continue|HuntEnd]]@@

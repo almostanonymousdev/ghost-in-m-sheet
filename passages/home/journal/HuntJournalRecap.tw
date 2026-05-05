@@ -9,10 +9,10 @@
 	@@.location;Last Night@@<br>
 	<br>
 	<<if _j.guessedGhost and _j.guessCorrect>>
-		@@.mc-thoughts;The witch confirmed your call.@@<br>
+		@@.mc-thoughts;You called <<= _j.guessedGhost>> and you were right.@@<br>
 		<br>
 	<<elseif _j.guessedGhost>>
-		@@.mc-thoughts;The witch said you got it wrong.@@<br>
+		@@.mc-thoughts;You called <<= _j.guessedGhost>> and you were wrong.@@<br>
 		<br>
 	<</if>>
 	<<set _conts to setup.HuntJournal.contenders()>>
@@ -54,7 +54,7 @@
 			@@.mc-action;Witch paid out: <<= _money>>$@@<br>
 		<</if>>
 	<<elseif _j.guessedGhost eq null>>
-		@@.mc-thoughts;No payout yet -- you still owe the witch a name.@@<br>
+		@@.mc-thoughts;You never named the ghost.@@<br>
 	<</if>>
 	<hr>
 <</if>>
