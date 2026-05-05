@@ -76,6 +76,9 @@
 		<</if>>
 	<</if>>
 	@@.enterbtn;[[Wardrobe|Wardrobe]]@@ <br>
+	<<if setup.Wardrobe.hasLostClothing()>>
+		@@.alertbtn;[[Replace lost clothing|ReplaceLostClothing]]@@<br>
+	<</if>>
 	@@.enterbtn;[[Bathroom]]@@<br>
 	@@.enterbtn;[[Alarm clock|AlarmClock]]@@<br>
 	<<if setup.CursedItems.isItemCursed("bed")>>

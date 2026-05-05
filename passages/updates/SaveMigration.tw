@@ -73,7 +73,8 @@
 		webcam:        function () { return {}; },
 		summoning:     function () { return {}; },
 		alarm:         function () { return { enabled: false, hour: 7 }; },
-		hauntedHouse:  function () { return null; }
+		hauntedHouse:  function () { return null; },
+		lostClothing:  function () { return []; }
 	};
 
 	// mc sub-fields added after launch -- missing on very old saves
@@ -374,6 +375,31 @@
 		delete vars.isEnigma;
 		delete vars.isIronclad;
 		delete vars.isrealhouse;
+
+		// Back-fill $lostClothing for saves created before the lost-
+		// clothing tracking shipped. loseAllStolen used to just mark
+		// the stolen tier item NOT_BOUGHT and clear the rememberVar to
+		// "no<key>"; a tier-1..3 var sitting in NOT_BOUGHT while its
+		// group's rememberVar still points at "no<that-key>" can only
+		// have come from a hunt loss (a never-bought item never has
+		// the rememberVar pointed at it). Idempotent — re-runs on
+		// every load skip entries already in the list.
+		if (Array.isArray(vars.lostClothing) && setup.WARDROBE_GROUPS) {
+			setup.WARDROBE_GROUPS.forEach(function (grp) {
+				if (!grp.rememberVar) { return; }
+				var key = vars[grp.rememberVar];
+				if (typeof key !== 'string' || key.indexOf('no') !== 0) { return; }
+				var originalKey = key.slice(2);
+				grp.items.forEach(function (item) {
+					if (item.key !== originalKey) { return; }
+					if (item.slot === 0) { return; }
+					if (vars[item.var] !== setup.ClothingState.NOT_BOUGHT) { return; }
+					if (vars.lostClothing.indexOf(item.var) === -1) {
+						vars.lostClothing.push(item.var);
+					}
+				});
+			});
+		}
 	}
 
 	// Expose for use from Twine (PassageReady belt-and-braces call).

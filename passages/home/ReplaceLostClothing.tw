@@ -1,0 +1,31 @@
+:: ReplaceLostClothing [nobr] {"position":"600,1000","size":"100,100"}
+@@.location; Replace lost clothing@@<br>
+<br>
+<<if not setup.Wardrobe.hasLostClothing()>>
+	@@.mc-thoughts; Nothing to replace -- my wardrobe is back in order.@@<br>
+<<else>>
+	@@.mc-thoughts; The ghost made off with these. I can pop down to the mall later, or just order replacements now.@@<br>
+	<br>
+	<div class="flexwrapper backgroundForText">
+	<<for _varName range setup.Wardrobe.lostClothing()>>
+		<<set _item to setup.Wardrobe.itemByVar(_varName)>>
+		<<if _item and _item.price>>
+			<div class="housecard">
+			<<image "outfits/wardrobe/" + _item.img "iconPx">><br>
+			<span class="priceAmount"><<= _item.price>>$</span><br>
+			<<if setup.Mc.money() gte _item.price>>
+				<<capture _varName>>
+					@@.buyItemLink;<<link "Replace" "ReplaceLostClothing">>
+						<<run setup.Wardrobe.replaceLostClothing(_varName)>>
+					<</link>>@@<br>
+				<</capture>>
+			<<else>>
+				@@.mc-thoughts; I don't have enough money@@
+			<</if>>
+			</div>
+		<</if>>
+	<</for>>
+	</div>
+	<br>
+<</if>>
+@@.backbtn;[[Back|Bedroom]]@@
