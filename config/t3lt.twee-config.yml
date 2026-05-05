@@ -118,6 +118,13 @@ sugarcube-2:
       description: "Sets _videoList to the video pool for a specific Cthulion ghost
         ability tier (1-4). Used before rendering the event video for
         Cthulion-specific scenes. Args: tier (number, 1-4)."
+    energyGate:
+      name: energyGate
+      container: true
+      description: "Energy-gated link. Renders a grey 'Not enough energy' line when
+        MC energy is < 1; otherwise renders a <<link>> to the given passage with
+        the given label. The body is the action(s) to run on click. Args: passage
+        (string), label (string)."
     seduceGhostMinigameVideo:
       name: seduceGhostMinigameVideo
       description: Renders the media (image or video) for the current seduce-ghost
