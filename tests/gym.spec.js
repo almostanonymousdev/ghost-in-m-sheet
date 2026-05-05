@@ -1,24 +1,10 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, callSetup } = require('./helpers');
+const { test, expect } = require('./fixtures');
+const { setVar, getVar, callSetup } = require('./helpers');
 
 test.describe('Gym Controller', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => {
-    page = await openGame(browser);
-  });
-
-  test.afterAll(async () => {
-    await page.close();
-  });
-
-  test.beforeEach(async () => {
-    await resetGame(page);
-  });
-
   // --- Open hours ---
 
-  test('isOpen true during operating hours (8-21)', async () => {
+  test('isOpen true during operating hours (8-21)', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 12);
 
@@ -29,7 +15,7 @@ test.describe('Gym Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('isOpen false at hour 7 (boundary)', async () => {
+  test('isOpen false at hour 7 (boundary)', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 7);
 
@@ -40,7 +26,7 @@ test.describe('Gym Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('isOpen false at hour 22 (boundary)', async () => {
+  test('isOpen false at hour 22 (boundary)', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 22);
 
@@ -53,7 +39,7 @@ test.describe('Gym Controller', () => {
 
   // --- Time-of-day slots ---
 
-  test('isMorning true from 8 to 11', async () => {
+  test('isMorning true from 8 to 11', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 8);
 
@@ -67,7 +53,7 @@ test.describe('Gym Controller', () => {
     expect(atEnd).toBe(true);
   });
 
-  test('isMorning false at 12', async () => {
+  test('isMorning false at 12', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 12);
 
@@ -78,7 +64,7 @@ test.describe('Gym Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('isAfternoon true from 12 to 16', async () => {
+  test('isAfternoon true from 12 to 16', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 12);
 
@@ -92,7 +78,7 @@ test.describe('Gym Controller', () => {
     expect(atEnd).toBe(true);
   });
 
-  test('isAfternoon false at 17', async () => {
+  test('isAfternoon false at 17', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 17);
 
@@ -103,7 +89,7 @@ test.describe('Gym Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('isEvening true from 17 to 22', async () => {
+  test('isEvening true from 17 to 22', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 17);
 
@@ -117,7 +103,7 @@ test.describe('Gym Controller', () => {
     expect(atEnd).toBe(true);
   });
 
-  test('isEvening false at 23', async () => {
+  test('isEvening false at 23', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 23);
 
@@ -130,7 +116,7 @@ test.describe('Gym Controller', () => {
 
   // --- Group class time ---
 
-  test('isGroupClassTime true at 12 and 13', async () => {
+  test('isGroupClassTime true at 12 and 13', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 12);
 
@@ -144,7 +130,7 @@ test.describe('Gym Controller', () => {
     expect(atOne).toBe(true);
   });
 
-  test('isGroupClassTime false outside 12-13', async () => {
+  test('isGroupClassTime false outside 12-13', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 11);
 
@@ -160,7 +146,7 @@ test.describe('Gym Controller', () => {
 
   // --- Solo training slots ---
 
-  test('soloSlotMorning covers 8-12', async () => {
+  test('soloSlotMorning covers 8-12', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 8);
 
@@ -177,7 +163,7 @@ test.describe('Gym Controller', () => {
     expect(pastEnd).toBe(false);
   });
 
-  test('soloSlotAfternoon covers 13-17', async () => {
+  test('soloSlotAfternoon covers 13-17', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 13);
 
@@ -194,7 +180,7 @@ test.describe('Gym Controller', () => {
     expect(pastEnd).toBe(false);
   });
 
-  test('soloSlotEvening covers 18-22', async () => {
+  test('soloSlotEvening covers 18-22', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 18);
 
@@ -213,7 +199,7 @@ test.describe('Gym Controller', () => {
 
   // --- Training cost ---
 
-  test('computeTrainingCost returns default price in morning without discount', async () => {
+  test('computeTrainingCost returns default price in morning without discount', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 9);
 
@@ -224,7 +210,7 @@ test.describe('Gym Controller', () => {
     expect(cost).toBe(15);
   });
 
-  test('computeTrainingCost returns 0 in morning with trainer1 discount', async () => {
+  test('computeTrainingCost returns 0 in morning with trainer1 discount', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 9);
     await setVar(page, 'trainer1CoachingCost', 0);
@@ -236,7 +222,7 @@ test.describe('Gym Controller', () => {
     expect(cost).toBe(0);
   });
 
-  test('computeTrainingCost always 15 in afternoon', async () => {
+  test('computeTrainingCost always 15 in afternoon', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 14);
 
@@ -247,7 +233,7 @@ test.describe('Gym Controller', () => {
     expect(cost).toBe(15);
   });
 
-  test('computeTrainingCost returns default in evening without discount', async () => {
+  test('computeTrainingCost returns default in evening without discount', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 19);
 
@@ -258,7 +244,7 @@ test.describe('Gym Controller', () => {
     expect(cost).toBe(15);
   });
 
-  test('computeTrainingCost returns 0 in evening with trainer3 discount', async () => {
+  test('computeTrainingCost returns 0 in evening with trainer3 discount', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 19);
     await setVar(page, 'trainer3CoachingCost', 0);
@@ -272,7 +258,7 @@ test.describe('Gym Controller', () => {
 
   // --- Player capability checks ---
 
-  test('hasSportswear false by default', async () => {
+  test('hasSportswear false by default', async ({ game: page }) => {
     // act
     const result = await callSetup(page, 'setup.Gym.hasSportswear()');
 
@@ -280,7 +266,7 @@ test.describe('Gym Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('hasSportswear true when sportswear is defined', async () => {
+  test('hasSportswear true when sportswear is defined', async ({ game: page }) => {
     // arrange
     await setVar(page, 'sportswear', 1);
 
@@ -291,7 +277,7 @@ test.describe('Gym Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('hasEnergyToTrain requires energy >= 5', async () => {
+  test('hasEnergyToTrain requires energy >= 5', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.energy', 5);
 
@@ -305,7 +291,7 @@ test.describe('Gym Controller', () => {
     expect(belowThreshold).toBe(false);
   });
 
-  test('canTrainSolo requires sportswear and energy', async () => {
+  test('canTrainSolo requires sportswear and energy', async ({ game: page }) => {
     // arrange
     await setVar(page, 'sportswear', 1);
     await setVar(page, 'mc.energy', 5);
@@ -317,7 +303,7 @@ test.describe('Gym Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('canTrainSolo false without sportswear', async () => {
+  test('canTrainSolo false without sportswear', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.energy', 5);
 
@@ -328,7 +314,7 @@ test.describe('Gym Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('canTrainSolo false without enough energy', async () => {
+  test('canTrainSolo false without enough energy', async ({ game: page }) => {
     // arrange
     await setVar(page, 'sportswear', 1);
     await setVar(page, 'mc.energy', 4);
@@ -342,7 +328,7 @@ test.describe('Gym Controller', () => {
 
   // --- Trainer events ---
 
-  test('trainer1OnCooldown checks CD flag', async () => {
+  test('trainer1OnCooldown checks CD flag', async ({ game: page }) => {
     // act
     const before = await callSetup(page, 'setup.Gym.trainer1OnCooldown()');
     await setVar(page, 'trainer1Sex', 1);
@@ -353,7 +339,7 @@ test.describe('Gym Controller', () => {
     expect(after).toBe(true);
   });
 
-  test('trainer2OnCooldown checks CD flag', async () => {
+  test('trainer2OnCooldown checks CD flag', async ({ game: page }) => {
     // act
     const before = await callSetup(page, 'setup.Gym.trainer2OnCooldown()');
     await setVar(page, 'trainer2Sex', 1);
@@ -364,7 +350,7 @@ test.describe('Gym Controller', () => {
     expect(after).toBe(true);
   });
 
-  test('meetsFitForTrainer2Event requires fit >= 30', async () => {
+  test('meetsFitForTrainer2Event requires fit >= 30', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.fit', 29);
 
@@ -378,7 +364,7 @@ test.describe('Gym Controller', () => {
     expect(atGate).toBe(true);
   });
 
-  test('hasSexyLingerieForTrainer1 requires matching lingerie set', async () => {
+  test('hasSexyLingerieForTrainer1 requires matching lingerie set', async ({ game: page }) => {
     // arrange
     await setVar(page, 'rememberBottomStockings', 'stockings2');
     await setVar(page, 'rememberTopUnder', 'bra2');
@@ -391,7 +377,7 @@ test.describe('Gym Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('hasSexyLingerieForTrainer1 false with wrong lingerie', async () => {
+  test('hasSexyLingerieForTrainer1 false with wrong lingerie', async ({ game: page }) => {
     // arrange
     await setVar(page, 'rememberBottomStockings', 'stockings1');
     await setVar(page, 'rememberTopUnder', 'bra1');
@@ -406,7 +392,7 @@ test.describe('Gym Controller', () => {
 
   // --- Group class ---
 
-  test('meetsBeautyForGroupEvent requires beauty >= 50', async () => {
+  test('meetsBeautyForGroupEvent requires beauty >= 50', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.beauty', 49);
 
@@ -420,7 +406,7 @@ test.describe('Gym Controller', () => {
     expect(atGate).toBe(true);
   });
 
-  test('canJoinGroupOrgy requires lust >= 50', async () => {
+  test('canJoinGroupOrgy requires lust >= 50', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.lust', 49);
 
@@ -436,7 +422,7 @@ test.describe('Gym Controller', () => {
 
   // --- Emily ---
 
-  test('hasMetEmily false by default', async () => {
+  test('hasMetEmily false by default', async ({ game: page }) => {
     // act
     const result = await callSetup(page, 'setup.Gym.hasMetEmily()');
 
@@ -444,7 +430,7 @@ test.describe('Gym Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('hasMetEmily true when relationEmily is defined', async () => {
+  test('hasMetEmily true when relationEmily is defined', async ({ game: page }) => {
     // arrange
     await setVar(page, 'relationEmily', 1);
 
@@ -455,7 +441,7 @@ test.describe('Gym Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('emilyRelationshipStage returns 0 by default', async () => {
+  test('emilyRelationshipStage returns 0 by default', async ({ game: page }) => {
     // act
     const result = await callSetup(page, 'setup.Gym.emilyRelationshipStage()');
 
@@ -463,7 +449,7 @@ test.describe('Gym Controller', () => {
     expect(result).toBe(0);
   });
 
-  test('emilyRelationshipStage returns current stage', async () => {
+  test('emilyRelationshipStage returns current stage', async ({ game: page }) => {
     // arrange
     await setVar(page, 'relationEmily', 3);
 

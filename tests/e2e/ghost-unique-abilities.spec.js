@@ -1,21 +1,14 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, goToPassage } = require('../helpers');
+const { test, expect } = require('../fixtures');
+const { setVar, getVar, goToPassage } = require('../helpers');
 const { expectCleanPassage, expectNoErrors, setupHunt } = require('./e2e-helpers');
 
 test.describe('Ghost unique abilities — Phantom, Goryo, Deogen, Jinn', () => {
   // Playwright's per-test `{ timeout }` details arg is NOT honored
   // (TestDetails only accepts tag/annotation). Set the budget here instead.
   test.describe.configure({ timeout: 20_000, retries: 2 });
-
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
   // ── Phantom ────────────────────────────────────────────────────
 
-  test('Phantom: lights cannot be turned off', async () => {
+  test('Phantom: lights cannot be turned off', async ({ game: page }) => {
     await setupHunt(page, 'Phantom');
     await goToPassage(page, 'OwaissaHallway');
     await expectCleanPassage(page);
@@ -32,7 +25,7 @@ test.describe('Ghost unique abilities — Phantom, Goryo, Deogen, Jinn', () => {
     await expectCleanPassage(page);
   });
 
-  test('Phantom: non-Phantom ghost CAN turn off lights (control test)', async () => {
+  test('Phantom: non-Phantom ghost CAN turn off lights (control test)', async ({ game: page }) => {
     await setupHunt(page, 'Spirit');
     await goToPassage(page, 'OwaissaHallway');
 
@@ -45,7 +38,7 @@ test.describe('Ghost unique abilities — Phantom, Goryo, Deogen, Jinn', () => {
 
   // ── Goryo ──────────────────────────────────────────────────────
 
-  test('Goryo: ghost room never changes', async () => {
+  test('Goryo: ghost room never changes', async ({ game: page }) => {
     await setupHunt(page, 'Goryo');
     const initialRoom = await getVar(page, 'hunt.room.name');
 
@@ -62,7 +55,7 @@ test.describe('Ghost unique abilities — Phantom, Goryo, Deogen, Jinn', () => {
     await expectCleanPassage(page);
   });
 
-  test('Goryo: non-Goryo ghost CAN change rooms (control test)', async () => {
+  test('Goryo: non-Goryo ghost CAN change rooms (control test)', async ({ game: page }) => {
     await setupHunt(page, 'Spirit');
 
     const canChangeRoom = await page.evaluate(() => {
@@ -74,7 +67,7 @@ test.describe('Ghost unique abilities — Phantom, Goryo, Deogen, Jinn', () => {
 
   // ── Deogen ─────────────────────────────────────────────────────
 
-  test('Deogen: hiding always fails', async () => {
+  test('Deogen: hiding always fails', async ({ game: page }) => {
     test.setTimeout(10_000);
     await setupHunt(page, 'Deogen');
     await setVar(page, 'mc.corruption', 10);
@@ -97,7 +90,7 @@ test.describe('Ghost unique abilities — Phantom, Goryo, Deogen, Jinn', () => {
     await expectNoErrors(page);
   });
 
-  test('Deogen: running always succeeds', async () => {
+  test('Deogen: running always succeeds', async ({ game: page }) => {
     test.setTimeout(10_000);
     await setupHunt(page, 'Deogen');
     await setVar(page, 'crucifixAmount', 1);
@@ -119,7 +112,7 @@ test.describe('Ghost unique abilities — Phantom, Goryo, Deogen, Jinn', () => {
     await expectNoErrors(page);
   });
 
-  test('Deogen: cursed hunt catches hidden players', async () => {
+  test('Deogen: cursed hunt catches hidden players', async ({ game: page }) => {
     await setupHunt(page, 'Deogen');
 
     const deogenCatchesHidden = await page.evaluate(() => {
@@ -137,7 +130,7 @@ test.describe('Ghost unique abilities — Phantom, Goryo, Deogen, Jinn', () => {
 
   // ── Jinn ───────────────────────────────────────────────────────
 
-  test('Jinn: running always fails', async () => {
+  test('Jinn: running always fails', async ({ game: page }) => {
     test.setTimeout(10_000);
     await setupHunt(page, 'Jinn');
     await setVar(page, 'mc.corruption', 10);
@@ -160,7 +153,7 @@ test.describe('Ghost unique abilities — Phantom, Goryo, Deogen, Jinn', () => {
     await expectNoErrors(page);
   });
 
-  test('Jinn: hiding always succeeds', async () => {
+  test('Jinn: hiding always succeeds', async ({ game: page }) => {
     test.setTimeout(10_000);
     await setupHunt(page, 'Jinn');
     await setVar(page, 'crucifixAmount', 1);

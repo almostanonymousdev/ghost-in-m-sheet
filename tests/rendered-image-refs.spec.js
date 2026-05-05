@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 const fs = require('fs');
 const path = require('path');
-const { openGame, resetGame } = require('./helpers');
+const { openGame, resetGame, setHuntMode } = require('./helpers');
 
 const REPO_ROOT = path.join(__dirname, '..');
 const MEDIA_EXT_RE = /\.(jpg|jpeg|png|webp|gif|mp4|webm)$/i;

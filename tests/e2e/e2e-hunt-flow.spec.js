@@ -1,5 +1,5 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, setHuntMode, getHuntMode, goToPassage } = require('../helpers');
+const { test, expect } = require('../fixtures');
+const { setVar, getVar, setHuntMode, getHuntMode, goToPassage } = require('../helpers');
 
 /**
  * Click a SugarCube link whose visible text matches `linkText` and wait
@@ -21,21 +21,7 @@ function currentPassage(page) {
 }
 
 test.describe('E2E: buy contract → hunt → guess', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => {
-    page = await openGame(browser);
-  });
-
-  test.afterAll(async () => {
-    await page.close();
-  });
-
-  test.beforeEach(async () => {
-    await resetGame(page);
-  });
-
-  test('full flow: witch contract → owaissa hunt → correct guess', async () => {
+  test('full flow: witch contract → owaissa hunt → correct guess', async ({ game: page }) => {
     test.setTimeout(30_000);
     // ------------------------------------------------------------------
     // 1. Setup: start at CityMap during daytime with enough money

@@ -1,5 +1,5 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, goToPassage } = require('../helpers');
+const { test, expect } = require('../fixtures');
+const { setVar, goToPassage } = require('../helpers');
 const { expectCleanPassage, setupHunt } = require('./e2e-helpers');
 
 const ALL_GHOSTS = [
@@ -14,14 +14,8 @@ const OWAISSA_ROOMS = [
 ];
 
 test.describe('Ghost room rendering — all Owaissa rooms', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
   for (const ghostName of ALL_GHOSTS) {
-    test(`${ghostName}: all Owaissa rooms render without errors`, async () => {
+    test(`${ghostName}: all Owaissa rooms render without errors`, async ({ game: page }) => {
       test.setTimeout(15_000);
       await setupHunt(page, ghostName);
 
@@ -36,7 +30,7 @@ test.describe('Ghost room rendering — all Owaissa rooms', () => {
     });
   }
 
-  test('OwaissaBedroom renders cleanly with $cursedHuntActive = 1 (hideSpot cursed branch)', async () => {
+  test('OwaissaBedroom renders cleanly with $cursedHuntActive = 1 (hideSpot cursed branch)', async ({ game: page }) => {
     await setupHunt(page, 'Spirit');
     await setVar(page, 'cursedHuntActive', 1);
 

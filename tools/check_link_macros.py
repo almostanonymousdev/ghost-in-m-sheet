@@ -28,6 +28,8 @@ buggy macro.
 import sys
 from pathlib import Path
 
+from lib_repo import iter_passages, passages_dir, read_passage, repo_root
+
 
 def parse_wikilinks(text):
     """Yield ``(offset, content)`` for every ``[[...]]`` wikilink in ``text``.
@@ -133,21 +135,21 @@ def offset_to_lineno(text, offset):
 
 
 def main():
-    repo_root = Path(__file__).resolve().parent.parent
-    passages_dir = repo_root / "passages"
-    if not passages_dir.is_dir():
-        print(f"ERROR: passages directory not found at {passages_dir}", file=sys.stderr)
+    root = repo_root()
+    pdir = passages_dir()
+    if not pdir.is_dir():
+        print(f"ERROR: passages directory not found at {pdir}", file=sys.stderr)
         sys.exit(1)
 
     target_bugs = []
     display_bugs = []
     total_links = 0
-    for tw_file in sorted(passages_dir.rglob("*.tw")):
-        text = tw_file.read_text(encoding="utf-8", errors="replace")
+    for tw_file in iter_passages():
+        text = read_passage(tw_file)
         for offset, content in parse_wikilinks(text):
             total_links += 1
             display, target = split_wikilink_content(content)
-            rel = tw_file.relative_to(repo_root)
+            rel = tw_file.relative_to(root)
             lineno = offset_to_lineno(text, offset)
             # [[Target]] form: display IS target — only check it once,
             # as a target.

@@ -1,22 +1,8 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, callSetup } = require('./helpers');
+const { test, expect } = require('./fixtures');
+const { setVar, callSetup } = require('./helpers');
 
 test.describe('Salon Controller', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => {
-    page = await openGame(browser);
-  });
-
-  test.afterAll(async () => {
-    await page.close();
-  });
-
-  test.beforeEach(async () => {
-    await resetGame(page);
-  });
-
-  test('isOpen true during operating hours (8-21)', async () => {
+  test('isOpen true during operating hours (8-21)', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 12);
 
@@ -27,7 +13,7 @@ test.describe('Salon Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('isOpen true at hour 8', async () => {
+  test('isOpen true at hour 8', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 8);
 
@@ -38,7 +24,7 @@ test.describe('Salon Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('isOpen true at hour 21', async () => {
+  test('isOpen true at hour 21', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 21);
 
@@ -49,7 +35,7 @@ test.describe('Salon Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('isOpen false at hour 7 (boundary)', async () => {
+  test('isOpen false at hour 7 (boundary)', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 7);
 
@@ -60,7 +46,7 @@ test.describe('Salon Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('isOpen false at hour 22 (boundary)', async () => {
+  test('isOpen false at hour 22 (boundary)', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 22);
 
@@ -71,7 +57,7 @@ test.describe('Salon Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('isOpen false at midnight', async () => {
+  test('isOpen false at midnight', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 0);
 

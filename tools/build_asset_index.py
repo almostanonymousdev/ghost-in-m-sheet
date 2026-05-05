@@ -29,7 +29,9 @@ import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+from lib_repo import repo_root
+
+ROOT = repo_root()
 ASSETS = ROOT / "assets"
 TIMESTAMPS = ASSETS / "timestamps.txt"
 OUT = ASSETS / "index.json"

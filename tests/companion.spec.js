@@ -1,24 +1,10 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, callSetup } = require('./helpers');
+const { test, expect } = require('./fixtures');
+const { setVar, getVar, callSetup } = require('./helpers');
 
 test.describe('Companion Controller', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => {
-    page = await openGame(browser);
-  });
-
-  test.afterAll(async () => {
-    await page.close();
-  });
-
-  test.beforeEach(async () => {
-    await resetGame(page);
-  });
-
   // --- Selection ---
 
-  test('no companion selected by default', async () => {
+  test('no companion selected by default', async ({ game: page }) => {
     // act
     const result = await callSetup(page, 'setup.Companion.anyCompanionSelected()');
 
@@ -26,7 +12,7 @@ test.describe('Companion Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('selectCompanion sets the correct flag', async () => {
+  test('selectCompanion sets the correct flag', async ({ game: page }) => {
     // act
     await page.evaluate(() => SugarCube.setup.Companion.selectCompanion('Brook'));
 
@@ -36,7 +22,7 @@ test.describe('Companion Controller', () => {
     expect(await callSetup(page, 'setup.Companion.anyCompanionSelected()')).toBe(true);
   });
 
-  test('selectCompanion clears previous selection', async () => {
+  test('selectCompanion clears previous selection', async ({ game: page }) => {
     // arrange
     await page.evaluate(() => SugarCube.setup.Companion.selectCompanion('Brook'));
 
@@ -48,7 +34,7 @@ test.describe('Companion Controller', () => {
     expect(await getVar(page, 'alice.chosen')).toBe(1);
   });
 
-  test('clearCompanionSelection resets all flags', async () => {
+  test('clearCompanionSelection resets all flags', async ({ game: page }) => {
     // arrange
     await page.evaluate(() => SugarCube.setup.Companion.selectCompanion('Blake'));
 
@@ -61,7 +47,7 @@ test.describe('Companion Controller', () => {
 
   // --- Sanity tiers ---
 
-  test('sanityTier returns "high" when companion sanity >= 75', async () => {
+  test('sanityTier returns "high" when companion sanity >= 75', async ({ game: page }) => {
     // arrange
     await setVar(page, 'companion', { name: 'Brook', sanity: 80, lust: 0 });
 
@@ -72,7 +58,7 @@ test.describe('Companion Controller', () => {
     expect(tier).toBe('high');
   });
 
-  test('sanityTier returns "mid" when companion sanity is 50-74', async () => {
+  test('sanityTier returns "mid" when companion sanity is 50-74', async ({ game: page }) => {
     // arrange
     await setVar(page, 'companion', { name: 'Brook', sanity: 60, lust: 0 });
 
@@ -83,7 +69,7 @@ test.describe('Companion Controller', () => {
     expect(tier).toBe('mid');
   });
 
-  test('sanityTier returns "low" when companion sanity is 25-49', async () => {
+  test('sanityTier returns "low" when companion sanity is 25-49', async ({ game: page }) => {
     // arrange
     await setVar(page, 'companion', { name: 'Brook', sanity: 30, lust: 0 });
 
@@ -94,7 +80,7 @@ test.describe('Companion Controller', () => {
     expect(tier).toBe('low');
   });
 
-  test('sanityTier returns "critical" when companion sanity < 25', async () => {
+  test('sanityTier returns "critical" when companion sanity < 25', async ({ game: page }) => {
     // arrange
     await setVar(page, 'companion', { name: 'Brook', sanity: 10, lust: 0 });
 
@@ -105,7 +91,7 @@ test.describe('Companion Controller', () => {
     expect(tier).toBe('critical');
   });
 
-  test('sanityTier boundary: exactly 75 is "high"', async () => {
+  test('sanityTier boundary: exactly 75 is "high"', async ({ game: page }) => {
     // arrange
     await setVar(page, 'companion', { name: 'Brook', sanity: 75, lust: 0 });
 
@@ -116,7 +102,7 @@ test.describe('Companion Controller', () => {
     expect(tier).toBe('high');
   });
 
-  test('sanityTier boundary: exactly 50 is "mid"', async () => {
+  test('sanityTier boundary: exactly 50 is "mid"', async ({ game: page }) => {
     // arrange
     await setVar(page, 'companion', { name: 'Brook', sanity: 50, lust: 0 });
 
@@ -127,7 +113,7 @@ test.describe('Companion Controller', () => {
     expect(tier).toBe('mid');
   });
 
-  test('sanityTier boundary: exactly 25 is "low"', async () => {
+  test('sanityTier boundary: exactly 25 is "low"', async ({ game: page }) => {
     // arrange
     await setVar(page, 'companion', { name: 'Brook', sanity: 25, lust: 0 });
 
@@ -140,7 +126,7 @@ test.describe('Companion Controller', () => {
 
   // --- Lust ---
 
-  test('isLustHigh returns true when companion lust >= 50', async () => {
+  test('isLustHigh returns true when companion lust >= 50', async ({ game: page }) => {
     // arrange
     await setVar(page, 'companion', { name: 'Brook', sanity: 100, lust: 55 });
 
@@ -151,7 +137,7 @@ test.describe('Companion Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('isLustHigh returns false when companion lust < 50', async () => {
+  test('isLustHigh returns false when companion lust < 50', async ({ game: page }) => {
     // arrange
     await setVar(page, 'companion', { name: 'Brook', sanity: 100, lust: 30 });
 
@@ -164,7 +150,7 @@ test.describe('Companion Controller', () => {
 
   // --- Walk home ---
 
-  test('canWalkHomeWithCompanion requires bottom clothing', async () => {
+  test('canWalkHomeWithCompanion requires bottom clothing', async ({ game: page }) => {
     // act
     const result = await callSetup(page, 'setup.Companion.canWalkHomeWithCompanion()');
 
@@ -172,7 +158,7 @@ test.describe('Companion Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('canWalkHomeWithCompanion false when no bottoms worn', async () => {
+  test('canWalkHomeWithCompanion false when no bottoms worn', async ({ game: page }) => {
     // arrange
     await setVar(page, 'jeansState', 'not worn');
     await setVar(page, 'skirtState', 'not bought');
@@ -185,7 +171,7 @@ test.describe('Companion Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('canWalkHomeWithCompanion true with skirt', async () => {
+  test('canWalkHomeWithCompanion true with skirt', async ({ game: page }) => {
     // arrange
     await setVar(page, 'jeansState', 'not worn');
     await setVar(page, 'skirtState', 'worn');
@@ -199,7 +185,7 @@ test.describe('Companion Controller', () => {
 
   // --- Sanity pills ---
 
-  test('giveSanityPill decrements pills and heals companion', async () => {
+  test('giveSanityPill decrements pills and heals companion', async ({ game: page }) => {
     // arrange
     await setVar(page, 'sanityPillsAmount', 3);
     await setVar(page, 'companion', { name: 'Brook', sanity: 50, lust: 0 });
@@ -215,7 +201,7 @@ test.describe('Companion Controller', () => {
     expect(await getVar(page, 'companion.sanity')).toBe(80);
   });
 
-  test('giveSanityPill caps sanity at 100', async () => {
+  test('giveSanityPill caps sanity at 100', async ({ game: page }) => {
     // arrange
     await setVar(page, 'sanityPillsAmount', 1);
     await setVar(page, 'companion', { name: 'Brook', sanity: 85, lust: 0 });
@@ -227,7 +213,7 @@ test.describe('Companion Controller', () => {
     expect(await getVar(page, 'companion.sanity')).toBe(100);
   });
 
-  test('giveSanityPill fails with no pills', async () => {
+  test('giveSanityPill fails with no pills', async ({ game: page }) => {
     // arrange
     await setVar(page, 'sanityPillsAmount', 0);
     await setVar(page, 'companion', { name: 'Brook', sanity: 50, lust: 0 });
@@ -241,7 +227,7 @@ test.describe('Companion Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('giveSanityPill fails when companion at full sanity', async () => {
+  test('giveSanityPill fails when companion at full sanity', async ({ game: page }) => {
     // arrange
     await setVar(page, 'sanityPillsAmount', 5);
     await setVar(page, 'companion', { name: 'Brook', sanity: 100, lust: 0 });
@@ -258,7 +244,7 @@ test.describe('Companion Controller', () => {
 
   // --- Solo hunt ---
 
-  test('canAffordSoloContract true with >= $20', async () => {
+  test('canAffordSoloContract true with >= $20', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.money', 20);
 
@@ -269,7 +255,7 @@ test.describe('Companion Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('canAffordSoloContract false with < $20', async () => {
+  test('canAffordSoloContract false with < $20', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.money', 19);
 
@@ -280,7 +266,7 @@ test.describe('Companion Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('payForSoloContract deducts money and sets flag', async () => {
+  test('payForSoloContract deducts money and sets flag', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.money', 100);
 
@@ -294,7 +280,7 @@ test.describe('Companion Controller', () => {
     expect(await getVar(page, 'brook.paidForSolo')).toBe(1);
   });
 
-  test('payForSoloContract does not double-charge', async () => {
+  test('payForSoloContract does not double-charge', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.money', 100);
     await setVar(page, 'brook.paidForSolo', 1);
@@ -310,7 +296,7 @@ test.describe('Companion Controller', () => {
 
   // --- Hunt state reset ---
 
-  test('resetHuntState clears all hunt tracking variables', async () => {
+  test('resetHuntState clears all hunt tracking variables', async ({ game: page }) => {
     // arrange
     await setVar(page, 'chosenPlan', 'Plan1');
     await setVar(page, 'chosenPlanActivated', 1);
@@ -333,7 +319,7 @@ test.describe('Companion Controller', () => {
 
   // --- Cursed item ---
 
-  test('cursedItemQuestUnlocked false when gotCursedItem is undefined', async () => {
+  test('cursedItemQuestUnlocked false when gotCursedItem is undefined', async ({ game: page }) => {
     // act
     const result = await callSetup(page, 'setup.Companion.cursedItemQuestUnlocked()');
 
@@ -341,7 +327,7 @@ test.describe('Companion Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('cursedItemQuestUnlocked true when gotCursedItem is defined', async () => {
+  test('cursedItemQuestUnlocked true when gotCursedItem is defined', async ({ game: page }) => {
     // arrange
     await setVar(page, 'gotCursedItem', 1);
 
@@ -352,7 +338,7 @@ test.describe('Companion Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('hasCursedItem true only when gotCursedItem is 1', async () => {
+  test('hasCursedItem true only when gotCursedItem is 1', async ({ game: page }) => {
     // arrange
     await setVar(page, 'gotCursedItem', 0);
 
@@ -368,7 +354,7 @@ test.describe('Companion Controller', () => {
 
   // --- Haunted house location ---
 
-  test('inHauntedHouseLocation true for Owaissa', async () => {
+  test('inHauntedHouseLocation true for Owaissa', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hauntedHouse', 'owaissa');
 
@@ -379,7 +365,7 @@ test.describe('Companion Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('inHauntedHouseLocation true for Elm', async () => {
+  test('inHauntedHouseLocation true for Elm', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hauntedHouse', 'elm');
 
@@ -390,7 +376,7 @@ test.describe('Companion Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('inHauntedHouseLocation false when not in either house', async () => {
+  test('inHauntedHouseLocation false when not in either house', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hauntedHouse', null);
 
@@ -403,31 +389,31 @@ test.describe('Companion Controller', () => {
 
   // --- CompanionEvent dialog catalogue ---
 
-  test('eventTextForTier returns Brook copy for cis companion', async () => {
+  test('eventTextForTier returns Brook copy for cis companion', async ({ game: page }) => {
     const text = await callSetup(page, 'setup.Companion.getByName("Brook").eventTextForTier(1)');
     expect(text).toContain('She was naked and visibly shaken');
   });
 
-  test('eventTextForTier returns null outside tiers 1..4', async () => {
+  test('eventTextForTier returns null outside tiers 1..4', async ({ game: page }) => {
     const t0 = await callSetup(page, 'setup.Companion.getByName("Brook").eventTextForTier(0)');
     const t5 = await callSetup(page, 'setup.Companion.getByName("Brook").eventTextForTier(5)');
     expect(t0).toBeNull();
     expect(t5).toBeNull();
   });
 
-  test('eventTextForTier picks trans pre-stage by default', async () => {
+  test('eventTextForTier picks trans pre-stage by default', async ({ game: page }) => {
     await setVar(page, 'transFirstStage', undefined);
     const text = await callSetup(page, 'setup.Companion.getByName("Alex").eventTextForTier(1)');
     expect(text).toContain('a figure that clearly belongs to a female body');
   });
 
-  test('eventTextForTier picks trans post-stage once flag is set', async () => {
+  test('eventTextForTier picks trans post-stage once flag is set', async ({ game: page }) => {
     await setVar(page, 'transFirstStage', 1);
     const text = await callSetup(page, 'setup.Companion.getByName("Alex").eventTextForTier(1)');
     expect(text).toContain('the body has become irresistibly feminine');
   });
 
-  test('eventTextForTier returns same trans copy for all trans companions', async () => {
+  test('eventTextForTier returns same trans copy for all trans companions', async ({ game: page }) => {
     await setVar(page, 'transFirstStage', 1);
     const alex   = await callSetup(page, 'setup.Companion.getByName("Alex").eventTextForTier(2)');
     const taylor = await callSetup(page, 'setup.Companion.getByName("Taylor").eventTextForTier(2)');
