@@ -673,4 +673,31 @@ test.describe('Haunted Houses Controller', () => {
     expect(tip).not.toContain('GWB');
     expect(tip).not.toContain('Spiritbox');
   });
+
+  // --- Per-step energy drain → exhaustion routing ---
+  // Regression: applyEnergyDelta was clamping energy to zero without
+  // setting $exhausted, so includeTimeEventHunt couldn't route to
+  // HuntOverExhaustion when the per-step drain bottomed energy out.
+  // Only the player-driven HauntConditions.removeEnergy spend (bait /
+  // pray) was setting the flag.
+
+  test('applyTickEffects sets exhausted when per-step drain bottoms out energy', async () => {
+    await setHuntMode(page, 2); // hunt active so the snapshot reads in-house drain
+    await setVar(page, 'mc.energy', 0.1); // one tick at -0.125 will clamp to 0
+
+    await page.evaluate(() => SugarCube.setup.HauntConditions.applyTickEffects());
+
+    expect(await getVar(page, 'mc.energy')).toBe(0);
+    expect(await callSetup(page, 'setup.Mc.isExhausted()')).toBe(true);
+  });
+
+  test('applyTickEffects leaves exhausted clear while energy is positive', async () => {
+    await setHuntMode(page, 2);
+    await setVar(page, 'mc.energy', 50);
+
+    await page.evaluate(() => SugarCube.setup.HauntConditions.applyTickEffects());
+
+    expect(await getVar(page, 'mc.energy')).toBeGreaterThan(0);
+    expect(await callSetup(page, 'setup.Mc.isExhausted()')).toBe(false);
+  });
 });

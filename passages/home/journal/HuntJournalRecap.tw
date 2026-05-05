@@ -1,0 +1,60 @@
+:: HuntJournalRecap [nobr]
+/* "What happened last night" recap, rendered at the top of Bedroom on
+   the first wake-up after a hunt (Sleep → Bedroom only — Bedroom checks
+   recapArmed). Never names the real ghost; instead lists contenders
+   that match the player's logged evidence, plus each contender's
+   Ghostopedia hint when the player has already unlocked it. */
+<<set _j to setup.HuntJournal.journal()>>
+<<if _j>>
+	@@.location;Last Night@@<br>
+	<br>
+	<<if _j.guessedGhost and _j.guessCorrect>>
+		@@.mc-thoughts;The witch confirmed your call.@@<br>
+		<br>
+	<<elseif _j.guessedGhost>>
+		@@.mc-thoughts;The witch said you got it wrong.@@<br>
+		<br>
+	<</if>>
+	<<set _conts to setup.HuntJournal.contenders()>>
+	@@.mc-action;Best fits for what you saw:@@<br>
+	<<if _conts.length>>
+		<<for _i, _c range _conts>>
+			&emsp;-- <<= _c.name>><br>
+			<<if _c.discovered and _c.hint>>
+				&emsp;&emsp;@@.mc-thoughts;<<= _c.hint>>@@<br>
+			<</if>>
+		<</for>>
+	<<else>>
+		&emsp;@@.mc-thoughts;Nothing you logged narrows it down yet.@@<br>
+	<</if>>
+	<br>
+	@@.mc-action;Evidence you logged:@@<br>
+	<<set _labels to setup.HuntJournal.evidenceLabels()>>
+	<<if _labels.length>>
+		<<for _i, _label range _labels>>
+			&emsp;-- <<= _label>><br>
+		<</for>>
+	<<else>>
+		&emsp;@@.mc-thoughts;Nothing you were sure enough to mark down.@@<br>
+	<</if>>
+	<br>
+	<<set _lost to setup.HuntJournal.truncate2(setup.HuntJournal.sanityLost())>>
+	<<if _lost gt 0>>
+		@@.mc-action;Sanity left in that house: <<= _lost>>@@<br>
+	<</if>>
+	<<if _j.cursedItem>>
+		@@.mc-action;Something rode home with you and settled into the <<= setup.HuntJournal.cursedItemLabel()>>.@@<br>
+	<</if>>
+	<<if _j.moneyEarned gt 0>>
+		<<set _money to setup.HuntJournal.truncate2(_j.moneyEarned)>>
+		<<set _xp to setup.HuntJournal.truncate2(_j.xpEarned)>>
+		<<if _xp gt 0>>
+			@@.mc-action;Witch paid out: <<= _money>>$ &nbsp; (+<<= _xp>> XP)@@<br>
+		<<else>>
+			@@.mc-action;Witch paid out: <<= _money>>$@@<br>
+		<</if>>
+	<<elseif _j.guessedGhost eq null>>
+		@@.mc-thoughts;No payout yet -- you still owe the witch a name.@@<br>
+	<</if>>
+	<hr>
+<</if>>
