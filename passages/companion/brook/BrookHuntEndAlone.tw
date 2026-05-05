@@ -26,30 +26,18 @@
 	<<else>>
 		@@.notmc-speech;Well, listen...<br>
 		At first, things went well, of course, sometimes the ghost tried to...@@<<linkappend "@@.notmc-speechLink; scare me@@">>
-			<<set _checkR to random(1,2)>>
-			<<if _checkR eq 1>>
-				<<video "characters/brook/alone1.1.mp4">>
-			<<elseif _checkR eq 2>>
-				<<video "characters/brook/alone1.2.mp4">>
-			<</if>>
+			<<set _scareVids to ["characters/brook/alone1.1.mp4", "characters/brook/alone1.2.mp4"]>>
+			<<randomVideoFromList _scareVids>>
 			@@.notmc-speech;But I'm not easily frightened! <br>
 			I continued searching for evidence.<br>
 			The ghost became more aggressive... Sometimes it tried to @@<<linkappend "@@.notmc-speechLink;strangle me@@">>
-				<<set _checkR to random(1,2)>>
-				<<if _checkR eq 1>>
-					<<video "characters/brook/alone2.1.mp4">>
-				<<elseif _checkR eq 2>>
-					<<video "characters/brook/alone2.2.mp4">>
-				<</if>>
+				<<set _chokeVids to ["characters/brook/alone2.1.mp4", "characters/brook/alone2.2.mp4"]>>
+				<<randomVideoFromList _chokeVids>>
 				@@.notmc-speech;But I was stronger than it...<br>
 				I was about to find the last piece of evidence when suddenly@@ <<linkappend
 					"@@.notmc-speechLink;it appeared right in front of me.@@">>
-					<<set _checkR to random(1,2)>>
-					<<if _checkR eq 1>>
-						<<video "characters/brook/alone3.1.mp4">>
-					<<elseif _checkR eq 2>>
-						<<video "characters/brook/alone3.2.mp4">>
-					<</if>>
+					<<set _appearVids to ["characters/brook/alone3.1.mp4", "characters/brook/alone3.2.mp4"]>>
+					<<randomVideoFromList _appearVids>>
 					@@.notmc-speech;I lost control... and I might have given it what it had been after from the beginning...@@<br>
 					<<if _resultBrookAlone eq 1>>@@.notmc-speech; After it cu... weakened, I ran away. That's it. @@<br>
 						@@.mc-speech; I knew you would succeed! Great job!@@

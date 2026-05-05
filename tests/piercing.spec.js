@@ -1,18 +1,12 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, goToPassage, getVar, setVar } = require('./helpers');
+const { test, expect } = require('./fixtures');
+const { goToPassage, getVar, setVar } = require('./helpers');
 
 test.describe('Piercing — Purchase and Beauty', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-
-  test.beforeEach(async () => {
-    await resetGame(page);
+  test.beforeEach(async ({ game: page }) => {
     await setVar(page, 'hours', 12);
   });
 
-  test('purchasing ears piercing adds +2 beauty at purchase', async () => {
+  test('purchasing ears piercing adds +2 beauty at purchase', async ({ game: page }) => {
     await setVar(page, 'mc.money', 200);
     await goToPassage(page, 'BeautySalonPiercing');
     const buyLink = page.locator('.buyItemLink a').first();
@@ -25,7 +19,7 @@ test.describe('Piercing — Purchase and Beauty', () => {
     expect(await getVar(page, 'mc.beauty')).toBe(30 + 2);
   });
 
-  test('purchasing nose piercing adds +3 beauty at purchase', async () => {
+  test('purchasing nose piercing adds +3 beauty at purchase', async ({ game: page }) => {
     await setVar(page, 'mc.money', 200);
     await goToPassage(page, 'BeautySalonPiercing');
     const buyLink = page.locator('.buyItemLink a').nth(1);
@@ -38,7 +32,7 @@ test.describe('Piercing — Purchase and Beauty', () => {
     expect(await getVar(page, 'mc.beauty')).toBe(30 + 3);
   });
 
-  test('purchasing tongue piercing sets sensitivity modifier, no beauty', async () => {
+  test('purchasing tongue piercing sets sensitivity modifier, no beauty', async ({ game: page }) => {
     await setVar(page, 'mc.money', 200);
     const startBeauty = await getVar(page, 'mc.beauty');
     await goToPassage(page, 'BeautySalonPiercing');
@@ -53,7 +47,7 @@ test.describe('Piercing — Purchase and Beauty', () => {
     expect(await getVar(page, 'mc.beauty')).toBe(startBeauty);
   });
 
-  test('removing ears piercing in wardrobe subtracts beauty', async () => {
+  test('removing ears piercing in wardrobe subtracts beauty', async ({ game: page }) => {
     await setVar(page, 'earsPiercing', 'worn');
     await setVar(page, 'mc.beauty', 32);
 
@@ -67,7 +61,7 @@ test.describe('Piercing — Purchase and Beauty', () => {
     expect(await getVar(page, 'mc.beauty')).toBe(30);
   });
 
-  test('re-wearing ears piercing in wardrobe adds beauty back', async () => {
+  test('re-wearing ears piercing in wardrobe adds beauty back', async ({ game: page }) => {
     await setVar(page, 'earsPiercing', 'not worn');
     await setVar(page, 'mc.beauty', 30);
 
@@ -81,7 +75,7 @@ test.describe('Piercing — Purchase and Beauty', () => {
     expect(await getVar(page, 'mc.beauty')).toBe(32);
   });
 
-  test('removing tongue piercing clears sensitivity modifier', async () => {
+  test('removing tongue piercing clears sensitivity modifier', async ({ game: page }) => {
     await setVar(page, 'tonguePiercing', 'worn');
     await setVar(page, 'piercingTongueAddSens', 0.1);
 

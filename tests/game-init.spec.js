@@ -1,24 +1,10 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, getVar, getHuntMode, callSetup } = require('./helpers');
+const { test, expect } = require('./fixtures');
+const { getVar, getHuntMode, callSetup } = require('./helpers');
 
 test.describe('Game Initialization (StoryInit)', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => {
-    page = await openGame(browser);
-  });
-
-  test.afterAll(async () => {
-    await page.close();
-  });
-
-  test.beforeEach(async () => {
-    await resetGame(page);
-  });
-
   // --- MC defaults ---
 
-  test('MC stats are initialized correctly', async () => {
+  test('MC stats are initialized correctly', async ({ game: page }) => {
     // act
     const mc = await page.evaluate(() => SugarCube.State.variables.mc);
 
@@ -37,7 +23,7 @@ test.describe('Game Initialization (StoryInit)', () => {
 
   // --- Clothing defaults ---
 
-  test('clothing states are initialized correctly', async () => {
+  test('clothing states are initialized correctly', async ({ game: page }) => {
     // act
     const jeans = await getVar(page, 'jeansState');
     const tshirt = await getVar(page, 'tshirtState');
@@ -55,7 +41,7 @@ test.describe('Game Initialization (StoryInit)', () => {
 
   // --- Equipment ---
 
-  test('all equipment starts with 5 charges', async () => {
+  test('all equipment starts with 5 charges', async ({ game: page }) => {
     // act
     const equipment = await getVar(page, 'equipment');
 
@@ -70,7 +56,7 @@ test.describe('Game Initialization (StoryInit)', () => {
 
   // --- Time and game state defaults ---
 
-  test('time and game state are initialized correctly', async () => {
+  test('time and game state are initialized correctly', async ({ game: page }) => {
     // act
     const hours = await getVar(page, 'hours');
     const minutes = await getVar(page, 'minutes');
@@ -86,7 +72,7 @@ test.describe('Game Initialization (StoryInit)', () => {
 
   // --- Delivery ---
 
-  test('delivery defaults are initialized correctly', async () => {
+  test('delivery defaults are initialized correctly', async ({ game: page }) => {
     // act
     const successPay = await getVar(page, 'jobMoneySuccessed');
     const failPay = await getVar(page, 'jobMoneyFailed');
@@ -100,7 +86,7 @@ test.describe('Game Initialization (StoryInit)', () => {
 
   // --- Ghost definitions ---
 
-  test('ghost types have correct evidence arrays', async () => {
+  test('ghost types have correct evidence arrays', async ({ game: page }) => {
     // act
     const shadeIds = await page.evaluate(() =>
       SugarCube.setup.Ghosts.getByName('Shade').evidence.map(e => e.id));
@@ -112,7 +98,7 @@ test.describe('Game Initialization (StoryInit)', () => {
     expect(spiritIds).toEqual(['emf', 'spiritbox', 'gwb']);
   });
 
-  test('Evidence table exposes all 6 types with id/label/cssClass', async () => {
+  test('Evidence table exposes all 6 types with id/label/cssClass', async ({ game: page }) => {
     // act
     const ev = await page.evaluate(() => SugarCube.setup.Ghosts.Evidence);
 
@@ -127,7 +113,7 @@ test.describe('Game Initialization (StoryInit)', () => {
 
   // --- Piercing list ---
 
-  test('piercingList has 5 entries with correct structure', async () => {
+  test('piercingList has 5 entries with correct structure', async ({ game: page }) => {
     // act
     const list = await page.evaluate(() => SugarCube.setup.piercingList);
 
@@ -141,7 +127,7 @@ test.describe('Game Initialization (StoryInit)', () => {
 
   // --- Delivery houses ---
 
-  test('deliveryStreets has 10 entries', async () => {
+  test('deliveryStreets has 10 entries', async ({ game: page }) => {
     // act
     const streets = await page.evaluate(() => SugarCube.setup.deliveryStreets);
 
@@ -149,7 +135,7 @@ test.describe('Game Initialization (StoryInit)', () => {
     expect(streets).toHaveLength(10);
   });
 
-  test('deliveryEvents catalogue has pizza, package, burger, papers', async () => {
+  test('deliveryEvents catalogue has pizza, package, burger, papers', async ({ game: page }) => {
     // act
     const config = await page.evaluate(() => SugarCube.setup.deliveryEvents);
 

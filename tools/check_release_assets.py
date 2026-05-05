@@ -23,17 +23,16 @@ import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from build_asset_index import (  # noqa: E402
+from build_asset_index import (
     ASSETS,
     OUT,
     build_entry,
     collect_files,
     load_sources,
 )
+from lib_repo import repo_root
 
-REPO = Path(__file__).resolve().parents[1]
-PLACEHOLDERS = REPO / "asset-placeholders"
+PLACEHOLDERS = repo_root() / "asset-placeholders"
 
 
 def file_sha(path: Path) -> str:

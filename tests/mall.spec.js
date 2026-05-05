@@ -1,24 +1,10 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, callSetup } = require('./helpers');
+const { test, expect } = require('./fixtures');
+const { setVar, getVar, callSetup } = require('./helpers');
 
 test.describe('Mall Controller', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => {
-    page = await openGame(browser);
-  });
-
-  test.afterAll(async () => {
-    await page.close();
-  });
-
-  test.beforeEach(async () => {
-    await resetGame(page);
-  });
-
   // --- Open hours ---
 
-  test('isOpen true during business hours (8-21)', async () => {
+  test('isOpen true during business hours (8-21)', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 12);
 
@@ -29,7 +15,7 @@ test.describe('Mall Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('isOpen false at hour 7', async () => {
+  test('isOpen false at hour 7', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 7);
 
@@ -40,7 +26,7 @@ test.describe('Mall Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('isOpen false at hour 22', async () => {
+  test('isOpen false at hour 22', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 22);
 
@@ -53,7 +39,7 @@ test.describe('Mall Controller', () => {
 
   // --- Blake / adult shop ---
 
-  test('blakeUnlocked requires alice level >= 2', async () => {
+  test('blakeUnlocked requires alice level >= 2', async ({ game: page }) => {
     // act
     const beforeLevelUp = await callSetup(page, 'setup.Mall.blakeUnlocked()');
     await page.evaluate(() => { SugarCube.State.variables.alice.lvl = 2; });
@@ -64,7 +50,7 @@ test.describe('Mall Controller', () => {
     expect(afterLevelUp).toBe(true);
   });
 
-  test('blakeFirstMeeting true when dialogBlake is undefined', async () => {
+  test('blakeFirstMeeting true when dialogBlake is undefined', async ({ game: page }) => {
     // act
     const result = await callSetup(page, 'setup.Mall.blakeFirstMeeting()');
 
@@ -72,7 +58,7 @@ test.describe('Mall Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('blakeFirstMeeting false after dialog starts', async () => {
+  test('blakeFirstMeeting false after dialog starts', async ({ game: page }) => {
     // arrange
     await setVar(page, 'dialogBlake', 1);
 
@@ -83,7 +69,7 @@ test.describe('Mall Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('blakeCanIntroduceCursedItemBuyback requires gotCursedItem defined and dialogBlake != 1', async () => {
+  test('blakeCanIntroduceCursedItemBuyback requires gotCursedItem defined and dialogBlake != 1', async ({ game: page }) => {
     // arrange
     await setVar(page, 'gotCursedItem', 1);
 
@@ -94,7 +80,7 @@ test.describe('Mall Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('blakeCanIntroduceCursedItemBuyback false when dialogBlake is 1', async () => {
+  test('blakeCanIntroduceCursedItemBuyback false when dialogBlake is 1', async ({ game: page }) => {
     // arrange
     await setVar(page, 'gotCursedItem', 1);
     await setVar(page, 'dialogBlake', 1);
@@ -106,7 +92,7 @@ test.describe('Mall Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('blakeHasCursedItemToSell requires gotCursedItem=1 and dialogBlake=1', async () => {
+  test('blakeHasCursedItemToSell requires gotCursedItem=1 and dialogBlake=1', async ({ game: page }) => {
     // arrange
     await setVar(page, 'gotCursedItem', 1);
     await setVar(page, 'dialogBlake', 1);
@@ -118,7 +104,7 @@ test.describe('Mall Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('sellCursedItemToBlake clears item flags and adds $60', async () => {
+  test('sellCursedItemToBlake clears item flags and adds $60', async ({ game: page }) => {
     // arrange
     await setVar(page, 'gotCursedItem', 1);
     await setVar(page, 'isCIDildo', 1);
@@ -141,7 +127,7 @@ test.describe('Mall Controller', () => {
 
   // --- Blake as companion ---
 
-  test('blakeIsCompanionCandidate requires relationshipBlake >= 5', async () => {
+  test('blakeIsCompanionCandidate requires relationshipBlake >= 5', async ({ game: page }) => {
     // arrange
     await setVar(page, 'relationshipBlake', 4);
 
@@ -155,7 +141,7 @@ test.describe('Mall Controller', () => {
     expect(atGate).toBe(true);
   });
 
-  test('canRaiseBlakeRelationship true when <= 4', async () => {
+  test('canRaiseBlakeRelationship true when <= 4', async ({ game: page }) => {
     // arrange
     await setVar(page, 'relationshipBlake', 4);
 
@@ -166,7 +152,7 @@ test.describe('Mall Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('canRaiseBlakeRelationship false when > 4', async () => {
+  test('canRaiseBlakeRelationship false when > 4', async ({ game: page }) => {
     // arrange
     await setVar(page, 'relationshipBlake', 5);
 
@@ -177,7 +163,7 @@ test.describe('Mall Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('canPayForBlakeSoloHunt requires unpaid and $20', async () => {
+  test('canPayForBlakeSoloHunt requires unpaid and $20', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.money', 20);
 
@@ -188,7 +174,7 @@ test.describe('Mall Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('canPayForBlakeSoloHunt false when already paid', async () => {
+  test('canPayForBlakeSoloHunt false when already paid', async ({ game: page }) => {
     // arrange
     await setVar(page, 'blake.paidForSolo', 1);
     await setVar(page, 'mc.money', 100);
@@ -200,7 +186,7 @@ test.describe('Mall Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('cannotAffordBlakeSoloHunt when money < 20', async () => {
+  test('cannotAffordBlakeSoloHunt when money < 20', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.money', 19);
 
@@ -211,7 +197,7 @@ test.describe('Mall Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('blakeHuntFinishedAlone checks flag value 2', async () => {
+  test('blakeHuntFinishedAlone checks flag value 2', async ({ game: page }) => {
     // act
     const before = await callSetup(page, 'setup.Mall.blakeHuntFinishedAlone()');
     await setVar(page, 'blake.goingSolo', 2);
@@ -224,7 +210,7 @@ test.describe('Mall Controller', () => {
 
   // --- Warden outfit ---
 
-  test('canBuyWardenOutfit requires wardenClothesStage === 1', async () => {
+  test('canBuyWardenOutfit requires wardenClothesStage === 1', async ({ game: page }) => {
     // act
     const before = await callSetup(page, 'setup.Mall.canBuyWardenOutfit()');
     await setVar(page, 'wardenClothesStage', 1);
@@ -235,7 +221,7 @@ test.describe('Mall Controller', () => {
     expect(after).toBe(true);
   });
 
-  test('meetsCorruptionForWarden requires corruption >= 3', async () => {
+  test('meetsCorruptionForWarden requires corruption >= 3', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.corruption', 2);
 
@@ -251,7 +237,7 @@ test.describe('Mall Controller', () => {
 
   // --- Pepper spray ---
 
-  test('needsPepperSpray true when hasPSpray undefined', async () => {
+  test('needsPepperSpray true when hasPSpray undefined', async ({ game: page }) => {
     // act
     const result = await callSetup(page, 'setup.Mall.needsPepperSpray()');
 
@@ -259,7 +245,7 @@ test.describe('Mall Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('needsPepperSpray true when hasPSpray is 0', async () => {
+  test('needsPepperSpray true when hasPSpray is 0', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hasPSpray', 0);
 
@@ -270,7 +256,7 @@ test.describe('Mall Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('needsPepperSpray false when hasPSpray is truthy', async () => {
+  test('needsPepperSpray false when hasPSpray is truthy', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hasPSpray', 1);
 

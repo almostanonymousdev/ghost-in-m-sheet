@@ -1,5 +1,5 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, callSetup, goToPassage } = require('../helpers');
+const { test, expect } = require('../fixtures');
+const { setVar, getVar, callSetup, goToPassage } = require('../helpers');
 const { expectCleanPassage, setupHunt } = require('./e2e-helpers');
 
 test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
@@ -9,16 +9,9 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
   // NB: Playwright's per-test `{ timeout }` details arg is NOT honored
   // (TestDetails only accepts tag/annotation). Set the budget here instead.
   test.describe.configure({ timeout: 90_000, retries: 2 });
-
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
   // ── Oni ────────────────────────────────────────────────────────
 
-  test('Oni: sanity drain is 3-8 (faster than normal 1-5)', async () => {
+  test('Oni: sanity drain is 3-8 (faster than normal 1-5)', async ({ game: page }) => {
     await setupHunt(page, 'Oni');
     await goToPassage(page, 'OwaissaKitchen');
     await expectCleanPassage(page);
@@ -36,7 +29,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
     expect(new Set(drains).size).toBeGreaterThan(1);
   });
 
-  test('Oni: non-Oni ghost drains sanity at 1-5 (control test)', async () => {
+  test('Oni: non-Oni ghost drains sanity at 1-5 (control test)', async ({ game: page }) => {
     await setupHunt(page, 'Spirit');
 
     const drains = [];
@@ -68,7 +61,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
     return readings;
   }
 
-  test('Raiju: EMF readings can glitch to random values', async () => {
+  test('Raiju: EMF readings can glitch to random values', async ({ game: page }) => {
     await setupHunt(page, 'Raiju');
     await setVar(page, 'tools', { emf: { activated: 1, activationTime: 0 }, uvl: { activated: 0, activationTime: 0 } });
     await setVar(page, 'equipment.emf', 3);
@@ -79,7 +72,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
     expect(readings.some(r => r === 5), 'Normal EMF (5) never appeared').toBe(true);
   });
 
-  test('Raiju: non-Raiju ghost always shows EMF 5 for emf evidence', async () => {
+  test('Raiju: non-Raiju ghost always shows EMF 5 for emf evidence', async ({ game: page }) => {
     await setupHunt(page, 'Spirit');
     await setVar(page, 'tools', { emf: { activated: 1, activationTime: 0 }, uvl: { activated: 0, activationTime: 0 } });
     await setVar(page, 'equipment.emf', 3);
@@ -88,7 +81,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
     for (const num of readings) expect(num).toBe(5);
   });
 
-  test('Raiju: temperature readings can glitch', async () => {
+  test('Raiju: temperature readings can glitch', async ({ game: page }) => {
     await setupHunt(page, 'Raiju');
 
     await page.evaluate(() => {
@@ -115,7 +108,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
 
   // ── Mimic ──────────────────────────────────────────────────────
 
-  test('Mimic: isMimicHunt reports true for a Mimic contract', async () => {
+  test('Mimic: isMimicHunt reports true for a Mimic contract', async ({ game: page }) => {
     await setupHunt(page, 'Mimic');
 
     expect(await page.evaluate(() =>
@@ -127,7 +120,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
     await expectCleanPassage(page);
   });
 
-  test('Mimic: disguise changes at 30-minute intervals', async () => {
+  test('Mimic: disguise changes at 30-minute intervals', async ({ game: page }) => {
     await setupHunt(page, 'Mimic');
     await setVar(page, 'lastChangeIntervalMimic', ' ');
 
@@ -143,7 +136,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
     expect(await getVar(page, 'lastChangeIntervalMimic')).toBe('30-59');
   });
 
-  test('Mimic: extra ectoplasm evidence check', async () => {
+  test('Mimic: extra ectoplasm evidence check', async ({ game: page }) => {
     await setupHunt(page, 'Mimic');
 
     const evidence = await page.evaluate(() =>

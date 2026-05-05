@@ -1,15 +1,9 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, callSetup, goToPassage } = require('../helpers');
+const { test, expect } = require('../fixtures');
+const { setVar, getVar, callSetup, goToPassage } = require('../helpers');
 const { expectCleanPassage } = require('./e2e-helpers');
 
 test.describe('Gym — hours and training gates', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('Gym exterior shows closed message at 5 AM', async () => {
+  test('Gym exterior shows closed message at 5 AM', async ({ game: page }) => {
     await setVar(page, 'hours', 5);
     await goToPassage(page, 'Gym');
     const text = await page.locator('#passages').innerText();
@@ -17,7 +11,7 @@ test.describe('Gym — hours and training gates', () => {
     await expectCleanPassage(page);
   });
 
-  test('Gym exterior shows "Inside" link at 10 AM', async () => {
+  test('Gym exterior shows "Inside" link at 10 AM', async ({ game: page }) => {
     await setVar(page, 'hours', 10);
     await goToPassage(page, 'Gym');
     const text = await page.locator('#passages').innerText();
@@ -25,7 +19,7 @@ test.describe('Gym — hours and training gates', () => {
     await expectCleanPassage(page);
   });
 
-  test('Gym.isMorning/Afternoon/Evening are mutually exclusive', async () => {
+  test('Gym.isMorning/Afternoon/Evening are mutually exclusive', async ({ game: page }) => {
     await setVar(page, 'hours', 9);
     expect(await callSetup(page, 'setup.Gym.isMorning()')).toBe(true);
     expect(await callSetup(page, 'setup.Gym.isAfternoon()')).toBe(false);
@@ -36,7 +30,7 @@ test.describe('Gym — hours and training gates', () => {
     expect(await callSetup(page, 'setup.Gym.isEvening()')).toBe(true);
   });
 
-  test('Gym.isGroupClassTime only fires between 12:00 and 13:59', async () => {
+  test('Gym.isGroupClassTime only fires between 12:00 and 13:59', async ({ game: page }) => {
     await setVar(page, 'hours', 11);
     expect(await callSetup(page, 'setup.Gym.isGroupClassTime()')).toBe(false);
     await setVar(page, 'hours', 12);
@@ -47,7 +41,7 @@ test.describe('Gym — hours and training gates', () => {
     expect(await callSetup(page, 'setup.Gym.isGroupClassTime()')).toBe(false);
   });
 
-  test('computeTrainingCost is $15 by default and $0 in morning with trainer1 discount', async () => {
+  test('computeTrainingCost is $15 by default and $0 in morning with trainer1 discount', async ({ game: page }) => {
     await setVar(page, 'hours', 10);
     await page.evaluate(() => { delete SugarCube.State.variables.trainer1CoachingCost; });
     expect(await callSetup(page, 'setup.Gym.computeTrainingCost()')).toBe(15);
@@ -55,7 +49,7 @@ test.describe('Gym — hours and training gates', () => {
     expect(await callSetup(page, 'setup.Gym.computeTrainingCost()')).toBe(0);
   });
 
-  test('canTrainSolo requires sportswear and energy >= 5', async () => {
+  test('canTrainSolo requires sportswear and energy >= 5', async ({ game: page }) => {
     await setVar(page, 'mc.energy', 10);
     await page.evaluate(() => { delete SugarCube.State.variables.sportswear; });
     expect(await callSetup(page, 'setup.Gym.canTrainSolo()')).toBe(false);
@@ -65,7 +59,7 @@ test.describe('Gym — hours and training gates', () => {
     expect(await callSetup(page, 'setup.Gym.canTrainSolo()')).toBe(false);
   });
 
-  test('canTriggerTrainer1Event requires tip + no cooldown + sexy lingerie', async () => {
+  test('canTriggerTrainer1Event requires tip + no cooldown + sexy lingerie', async ({ game: page }) => {
     await setVar(page, 'trainer1TipReceived', 1);
     await setVar(page, 'trainer1Sex', 0);
     await setVar(page, 'rememberBottomStockings', 'stockings2');
@@ -81,7 +75,7 @@ test.describe('Gym — hours and training gates', () => {
     expect(await callSetup(page, 'setup.Gym.canTriggerTrainer1Event()')).toBe(false);
   });
 
-  test('group-class gates: beauty >= 50 for event, lust >= 50 for orgy', async () => {
+  test('group-class gates: beauty >= 50 for event, lust >= 50 for orgy', async ({ game: page }) => {
     await setVar(page, 'mc.beauty', 49);
     expect(await callSetup(page, 'setup.Gym.meetsBeautyForGroupEvent()')).toBe(false);
     await setVar(page, 'mc.beauty', 50);
@@ -96,13 +90,6 @@ test.describe('Gym — hours and training gates', () => {
 
 test.describe('Gym — passages render cleanly', () => {
   test.describe.configure({ timeout: 10_000, retries: 1 });
-
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
   for (const passage of [
     'Gym', 'GymInside', 'GymSolo', 'GymTraining', 'GymTrainingTrainer',
     'GymTrainer', 'GymTrainerEvent1Start', 'GymTrainerEvent1Start1',
@@ -110,7 +97,7 @@ test.describe('Gym — passages render cleanly', () => {
     'GroupGymTraining', 'GymGroupEvent1Start', 'GymGroupEvent1Start2',
     'EmilyTalk',
   ]) {
-    test(`${passage} renders cleanly during open hours`, async () => {
+    test(`${passage} renders cleanly during open hours`, async ({ game: page }) => {
       await setVar(page, 'hours', 10);
       await setVar(page, 'sportswear', 1);
       await setVar(page, 'mc.energy', 10);
@@ -123,13 +110,7 @@ test.describe('Gym — passages render cleanly', () => {
 });
 
 test.describe('Library — hours and meeting gates', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('Library exterior shows no "Enter" link before 8 AM', async () => {
+  test('Library exterior shows no "Enter" link before 8 AM', async ({ game: page }) => {
     await setVar(page, 'hours', 5);
     await goToPassage(page, 'Library');
     const text = await page.locator('#passages').innerText();
@@ -137,7 +118,7 @@ test.describe('Library — hours and meeting gates', () => {
     await expectCleanPassage(page);
   });
 
-  test('Library exterior shows "Enter the library" at 10 AM', async () => {
+  test('Library exterior shows "Enter the library" at 10 AM', async ({ game: page }) => {
     await setVar(page, 'hours', 10);
     await goToPassage(page, 'Library');
     const text = await page.locator('#passages').innerText();
@@ -145,7 +126,7 @@ test.describe('Library — hours and meeting gates', () => {
     await expectCleanPassage(page);
   });
 
-  test('canMeetBrookAtLibrary blocked when Brook is possessed or recently with Rain', async () => {
+  test('canMeetBrookAtLibrary blocked when Brook is possessed or recently with Rain', async ({ game: page }) => {
     await setVar(page, 'isBrookePossessed', 1);
     expect(await callSetup(page, 'setup.Library.canMeetBrookAtLibrary()')).toBe(false);
     await setVar(page, 'isBrookePossessed', 0);
@@ -155,7 +136,7 @@ test.describe('Library — hours and meeting gates', () => {
     expect(await callSetup(page, 'setup.Library.canMeetBrookAtLibrary()')).toBe(true);
   });
 
-  test('availableSearchResults is a subset of the five discovery keys', async () => {
+  test('availableSearchResults is a subset of the five discovery keys', async ({ game: page }) => {
     const results = await callSetup(page, 'setup.Library.availableSearchResults()');
     expect(Array.isArray(results)).toBe(true);
     for (const r of results) {
@@ -163,7 +144,7 @@ test.describe('Library — hours and meeting gates', () => {
     }
   });
 
-  test('availableSearchResults drops entries that have already been found', async () => {
+  test('availableSearchResults drops entries that have already been found', async ({ game: page }) => {
     await setVar(page, 'foundTips', 1);
     await setVar(page, 'foundComics', 1);
     const results = await callSetup(page, 'setup.Library.availableSearchResults()');
@@ -171,7 +152,7 @@ test.describe('Library — hours and meeting gates', () => {
     expect(results).not.toContain('Comics');
   });
 
-  test('brookSolo chances scale with $brook.lvl', async () => {
+  test('brookSolo chances scale with $brook.lvl', async ({ game: page }) => {
     await setVar(page, 'brook', { lvl: 5 });
     expect(await callSetup(page, 'setup.Library.brookSoloOwaissaChance()')).toBe(70);
     await setVar(page, 'brook', { lvl: 1 });
@@ -181,19 +162,12 @@ test.describe('Library — hours and meeting gates', () => {
 
 test.describe('Library — passages render cleanly', () => {
   test.describe.configure({ timeout: 10_000, retries: 1 });
-
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
   for (const passage of [
     'Library', 'LibraryInside', 'LibrarySearchResult',
     'Comics', 'ReadComics', 'LibraryGhostBook', 'LibraryTipsBook',
     'LibraryGirl', 'LibraryGuy', 'LibraryGuy1',
   ]) {
-    test(`${passage} renders cleanly`, async () => {
+    test(`${passage} renders cleanly`, async ({ game: page }) => {
       await setVar(page, 'hours', 10);
       await setVar(page, 'mc.energy', 10);
       await setVar(page, 'mc.money', 100);
@@ -202,7 +176,7 @@ test.describe('Library — passages render cleanly', () => {
     });
   }
 
-  test('LibraryBrook renders cleanly when Brook is eligible', async () => {
+  test('LibraryBrook renders cleanly when Brook is eligible', async ({ game: page }) => {
     await setVar(page, 'hours', 10);
     await setVar(page, 'isBrookePossessed', 0);
     await setVar(page, 'isBrookePossessedCD', 5);
@@ -213,13 +187,7 @@ test.describe('Library — passages render cleanly', () => {
 });
 
 test.describe('Park — jogging and events', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('Park prompts for sportswear when missing', async () => {
+  test('Park prompts for sportswear when missing', async ({ game: page }) => {
     await page.evaluate(() => { delete SugarCube.State.variables.sportswear; });
     await setVar(page, 'hours', 10);
     await goToPassage(page, 'Park');
@@ -228,7 +196,7 @@ test.describe('Park — jogging and events', () => {
     await expectCleanPassage(page);
   });
 
-  test('Park shows Jogging link when sportswear owned + open + energy >= 2', async () => {
+  test('Park shows Jogging link when sportswear owned + open + energy >= 2', async ({ game: page }) => {
     await setVar(page, 'sportswear', 1);
     await setVar(page, 'hours', 10);
     await setVar(page, 'mc.energy', 10);
@@ -239,7 +207,7 @@ test.describe('Park — jogging and events', () => {
     await expectCleanPassage(page);
   });
 
-  test('Park blocks jogging on cooldown', async () => {
+  test('Park blocks jogging on cooldown', async ({ game: page }) => {
     await setVar(page, 'sportswear', 1);
     await setVar(page, 'hours', 10);
     await setVar(page, 'jogging', 1);
@@ -248,7 +216,7 @@ test.describe('Park — jogging and events', () => {
     expect(text).toContain('Enough for today');
   });
 
-  test('Park shows "not enough energy" when below 2 energy', async () => {
+  test('Park shows "not enough energy" when below 2 energy', async ({ game: page }) => {
     await setVar(page, 'sportswear', 1);
     await setVar(page, 'hours', 10);
     await setVar(page, 'jogging', 0);
@@ -258,7 +226,7 @@ test.describe('Park — jogging and events', () => {
     expect(text).toContain('Not enough energy');
   });
 
-  test('canEscapeParkEvent requires energy >= 4', async () => {
+  test('canEscapeParkEvent requires energy >= 4', async ({ game: page }) => {
     await setVar(page, 'mc.energy', 3);
     expect(await callSetup(page, 'setup.Park.canEscapeParkEvent()')).toBe(false);
     await setVar(page, 'mc.energy', 4);
@@ -266,7 +234,7 @@ test.describe('Park — jogging and events', () => {
   });
 
   for (const passage of ['Park', 'ParkJogging', 'ParkEvent1', 'ParkEvent2']) {
-    test(`${passage} renders cleanly`, async () => {
+    test(`${passage} renders cleanly`, async ({ game: page }) => {
       await setVar(page, 'sportswear', 1);
       await setVar(page, 'hours', 10);
       await setVar(page, 'mc.energy', 10);
@@ -277,13 +245,7 @@ test.describe('Park — jogging and events', () => {
 });
 
 test.describe('Church — rescue hub and priest routes', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('Church exterior shows closed message at 3 AM', async () => {
+  test('Church exterior shows closed message at 3 AM', async ({ game: page }) => {
     await setVar(page, 'hours', 3);
     await goToPassage(page, 'Church');
     const text = await page.locator('#passages').innerText();
@@ -291,7 +253,7 @@ test.describe('Church — rescue hub and priest routes', () => {
     await expectCleanPassage(page);
   });
 
-  test('Church exterior shows "Confess your sins" during open hours', async () => {
+  test('Church exterior shows "Confess your sins" during open hours', async ({ game: page }) => {
     await setVar(page, 'hours', 10);
     await goToPassage(page, 'Church');
     const text = await page.locator('#passages').innerText();
@@ -299,7 +261,7 @@ test.describe('Church — rescue hub and priest routes', () => {
     await expectCleanPassage(page);
   });
 
-  test('Church shows missing persons board once Rain is met and quest exists', async () => {
+  test('Church shows missing persons board once Rain is met and quest exists', async ({ game: page }) => {
     await setVar(page, 'hours', 10);
     await setVar(page, 'relationshipWithRain', 1);
     await setVar(page, 'hasQuestForRescue', 0);
@@ -308,7 +270,7 @@ test.describe('Church — rescue hub and priest routes', () => {
     expect(text).toContain('Missing persons board');
   });
 
-  test('Church shows "Take holy water" when Rain is met and none collected', async () => {
+  test('Church shows "Take holy water" when Rain is met and none collected', async ({ game: page }) => {
     await setVar(page, 'hours', 10);
     await setVar(page, 'relationshipWithRain', 1);
     await setVar(page, 'holyWaterIsCollected', 0);
@@ -317,7 +279,7 @@ test.describe('Church — rescue hub and priest routes', () => {
     expect(text).toContain('Take holy water');
   });
 
-  test('Church holy water link sets $holyWaterIsCollected on click', async () => {
+  test('Church holy water link sets $holyWaterIsCollected on click', async ({ game: page }) => {
     await setVar(page, 'hours', 10);
     await setVar(page, 'relationshipWithRain', 1);
     await setVar(page, 'holyWaterIsCollected', 0);
@@ -330,7 +292,7 @@ test.describe('Church — rescue hub and priest routes', () => {
     expect(await getVar(page, 'holyWaterIsCollected')).toBe(1);
   });
 
-  test('priest-flirt gates: lust >= 40 AND eventToolsOneStart === 1', async () => {
+  test('priest-flirt gates: lust >= 40 AND eventToolsOneStart === 1', async ({ game: page }) => {
     await setVar(page, 'mc.lust', 39);
     await setVar(page, 'eventToolsOneStart', 1);
     expect(await callSetup(page, 'setup.Church.canFlirtWithPriest()')).toBe(false);
@@ -340,7 +302,7 @@ test.describe('Church — rescue hub and priest routes', () => {
     expect(await callSetup(page, 'setup.Church.canFlirtWithPriest()')).toBe(false);
   });
 
-  test('rescuesNeededForExorcism decreases as relationship increases', async () => {
+  test('rescuesNeededForExorcism decreases as relationship increases', async ({ game: page }) => {
     await setVar(page, 'relationshipWithRain', 0);
     expect(await callSetup(page, 'setup.Church.rescuesNeededForExorcism()')).toBe(5);
     await setVar(page, 'relationshipWithRain', 3);
@@ -351,7 +313,7 @@ test.describe('Church — rescue hub and priest routes', () => {
     expect(await callSetup(page, 'setup.Church.rescuesNeededForExorcism()')).toBe(0);
   });
 
-  test('priestWillTradeToolForSex requires corruption >= 4', async () => {
+  test('priestWillTradeToolForSex requires corruption >= 4', async ({ game: page }) => {
     await setVar(page, 'mc.corruption', 3);
     expect(await callSetup(page, 'setup.Church.priestWillTradeToolForSex()')).toBe(false);
     await setVar(page, 'mc.corruption', 4);
@@ -361,19 +323,12 @@ test.describe('Church — rescue hub and priest routes', () => {
 
 test.describe('Church — passages render cleanly', () => {
   test.describe.configure({ timeout: 10_000, retries: 1 });
-
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
   for (const passage of [
     'Church', 'ChurchPray', 'ChurchNunQuest', 'ChurchBasementEntrance',
     'RainExorcism', 'RainHelps',
     'ToolsEventChurch', 'ToolsEventChurch1', 'ToolsEventChurchEnd',
   ]) {
-    test(`${passage} renders cleanly`, async () => {
+    test(`${passage} renders cleanly`, async ({ game: page }) => {
       await setVar(page, 'hours', 10);
       await setVar(page, 'mc.energy', 10);
       await goToPassage(page, passage);
@@ -384,18 +339,11 @@ test.describe('Church — passages render cleanly', () => {
 
 test.describe('Mall — shopping and Blake content', () => {
   test.describe.configure({ timeout: 10_000, retries: 1 });
-
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
   for (const passage of [
     'Mall', 'ClothingSection', 'ElectronicsSection',
     'AdultSection', 'AdultSectionPurchase', 'AdultSectionBlake',
   ]) {
-    test(`${passage} renders cleanly`, async () => {
+    test(`${passage} renders cleanly`, async ({ game: page }) => {
       await setVar(page, 'hours', 12);
       await setVar(page, 'mc.money', 1000);
       await goToPassage(page, passage);

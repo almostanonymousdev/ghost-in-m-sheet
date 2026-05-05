@@ -1,18 +1,12 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, goToPassage, getVar, setVar, callSetup } = require('./helpers');
+const { test, expect } = require('./fixtures');
+const { goToPassage, getVar, setVar, callSetup } = require('./helpers');
 
 test.describe('Clothing — Purchase and Beauty', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-
-  test.beforeEach(async () => {
-    await resetGame(page);
+  test.beforeEach(async ({ game: page }) => {
     await setVar(page, 'hours', 12);
   });
 
-  test('purchasing jeans1 deducts $30 and sets state to "not worn"', async () => {
+  test('purchasing jeans1 deducts $30 and sets state to "not worn"', async ({ game: page }) => {
     await setVar(page, 'mc.money', 200);
     const startBeauty = await getVar(page, 'mc.beauty');
     await goToPassage(page, 'ClothingSection');
@@ -26,7 +20,7 @@ test.describe('Clothing — Purchase and Beauty', () => {
     expect(await getVar(page, 'mc.beauty')).toBe(startBeauty);
   });
 
-  test('purchasing tshirt1 deducts $30 and sets state to "not worn"', async () => {
+  test('purchasing tshirt1 deducts $30 and sets state to "not worn"', async ({ game: page }) => {
     await setVar(page, 'mc.money', 500);
     await setVar(page, 'jeansState1', 'not worn');
     await setVar(page, 'jeansState2', 'not worn');
@@ -48,7 +42,7 @@ test.describe('Clothing — Purchase and Beauty', () => {
     expect(await getVar(page, 'tshirtState1')).toBe('not worn');
   });
 
-  test('cannot purchase clothing when money is insufficient', async () => {
+  test('cannot purchase clothing when money is insufficient', async ({ game: page }) => {
     await setVar(page, 'mc.money', 5);
     await goToPassage(page, 'ClothingSection');
 
@@ -57,7 +51,7 @@ test.describe('Clothing — Purchase and Beauty', () => {
     expect(await getVar(page, 'mc.money')).toBe(5);
   });
 
-  test('already-purchased clothing does not show buy button', async () => {
+  test('already-purchased clothing does not show buy button', async ({ game: page }) => {
     await setVar(page, 'mc.money', 1000);
     await setVar(page, 'jeansState1', 'not worn');
 
@@ -67,7 +61,7 @@ test.describe('Clothing — Purchase and Beauty', () => {
     expect(count).toBeLessThan(22);
   });
 
-  test('wearing jeans1 in wardrobe adds +5 beauty', async () => {
+  test('wearing jeans1 in wardrobe adds +5 beauty', async ({ game: page }) => {
     await setVar(page, 'jeansState1', 'not worn');
     await setVar(page, 'jeansState0', 'not worn');
     await setVar(page, 'rememberBottomOuter', 'nojeans0');
@@ -85,7 +79,7 @@ test.describe('Clothing — Purchase and Beauty', () => {
     expect(await getVar(page, 'mc.beauty')).toBe(startBeauty + 5);
   });
 
-  test('wearing bra1 in wardrobe adds +2 beauty', async () => {
+  test('wearing bra1 in wardrobe adds +2 beauty', async ({ game: page }) => {
     await setVar(page, 'braState1', 'not worn');
     await setVar(page, 'braState0', 'not worn');
     await setVar(page, 'rememberTopUnder', 'nobra0');
@@ -103,7 +97,7 @@ test.describe('Clothing — Purchase and Beauty', () => {
     expect(await getVar(page, 'mc.beauty')).toBe(startBeauty + 2);
   });
 
-  test('switching from jeans1 (+5) to jeans2 (+8) nets +3 beauty', async () => {
+  test('switching from jeans1 (+5) to jeans2 (+8) nets +3 beauty', async ({ game: page }) => {
     await setVar(page, 'jeansState0', 'not worn');
     await setVar(page, 'jeansState1', 'worn');
     await setVar(page, 'jeansState2', 'not worn');
@@ -125,17 +119,11 @@ test.describe('Clothing — Purchase and Beauty', () => {
 });
 
 test.describe('Clothing — Lost-clothing buyback', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-
-  test.beforeEach(async () => {
-    await resetGame(page);
+  test.beforeEach(async ({ game: page }) => {
     await setVar(page, 'hours', 12);
   });
 
-  test('loseAllStolen records discarded tier item onto $lostClothing', async () => {
+  test('loseAllStolen records discarded tier item onto $lostClothing', async ({ game: page }) => {
     // arrange — wear and have a tier-2 tshirt stolen
     await setVar(page, 'tshirtState0', 'not worn');
     await setVar(page, 'tshirtState1', 'not worn');
@@ -151,7 +139,7 @@ test.describe('Clothing — Lost-clothing buyback', () => {
     expect(await callSetup(page, 'setup.Wardrobe.hasLostClothing()')).toBe(true);
   });
 
-  test('replaceLostClothing deducts store price and restores not-worn state', async () => {
+  test('replaceLostClothing deducts store price and restores not-worn state', async ({ game: page }) => {
     await setVar(page, 'mc.money', 100);
     await setVar(page, 'tshirtState2', 'not bought');
     await setVar(page, 'lostClothing', ['tshirtState2']);
@@ -164,7 +152,7 @@ test.describe('Clothing — Lost-clothing buyback', () => {
     expect(await getVar(page, 'lostClothing')).toEqual([]);
   });
 
-  test('replaceLostClothing fails when MC cannot afford it', async () => {
+  test('replaceLostClothing fails when MC cannot afford it', async ({ game: page }) => {
     await setVar(page, 'mc.money', 5);
     await setVar(page, 'tshirtState2', 'not bought');
     await setVar(page, 'lostClothing', ['tshirtState2']);
@@ -177,7 +165,7 @@ test.describe('Clothing — Lost-clothing buyback', () => {
     expect(await getVar(page, 'lostClothing')).toEqual(['tshirtState2']);
   });
 
-  test('replaceLostClothing no-ops on items not in the lost list', async () => {
+  test('replaceLostClothing no-ops on items not in the lost list', async ({ game: page }) => {
     await setVar(page, 'mc.money', 1000);
     await setVar(page, 'lostClothing', []);
 
@@ -187,7 +175,7 @@ test.describe('Clothing — Lost-clothing buyback', () => {
     expect(await getVar(page, 'mc.money')).toBe(1000);
   });
 
-  test('Bedroom hides Replace lost clothing button when nothing is lost', async () => {
+  test('Bedroom hides Replace lost clothing button when nothing is lost', async ({ game: page }) => {
     await setVar(page, 'lostClothing', []);
     await goToPassage(page, 'Bedroom');
 
@@ -195,7 +183,7 @@ test.describe('Clothing — Lost-clothing buyback', () => {
     await expect(link).toHaveCount(0);
   });
 
-  test('Bedroom shows Replace lost clothing button when items are lost', async () => {
+  test('Bedroom shows Replace lost clothing button when items are lost', async ({ game: page }) => {
     await setVar(page, 'lostClothing', ['tshirtState2']);
     await setVar(page, 'tshirtState2', 'not bought');
     await goToPassage(page, 'Bedroom');
@@ -204,7 +192,7 @@ test.describe('Clothing — Lost-clothing buyback', () => {
     await expect(link).toHaveCount(1);
   });
 
-  test('ReplaceLostClothing passage buy link replaces the item end-to-end', async () => {
+  test('ReplaceLostClothing passage buy link replaces the item end-to-end', async ({ game: page }) => {
     await setVar(page, 'mc.money', 200);
     await setVar(page, 'tshirtState2', 'not bought');
     await setVar(page, 'lostClothing', ['tshirtState2']);
@@ -219,7 +207,7 @@ test.describe('Clothing — Lost-clothing buyback', () => {
     expect(await getVar(page, 'lostClothing')).toEqual([]);
   });
 
-  test('SaveMigration back-fills $lostClothing for pre-tracking saves', async () => {
+  test('SaveMigration back-fills $lostClothing for pre-tracking saves', async ({ game: page }) => {
     // Simulate a save that lost a tier-2 tshirt before the tracking
     // shipped: tier-2 in NOT_BOUGHT, rememberVar still pointing at
     // "notshirt2", but $lostClothing not yet populated.
@@ -233,7 +221,7 @@ test.describe('Clothing — Lost-clothing buyback', () => {
     expect(await callSetup(page, 'setup.Wardrobe.hasLostClothing()')).toBe(true);
   });
 
-  test('SaveMigration back-fill leaves never-bought items alone', async () => {
+  test('SaveMigration back-fill leaves never-bought items alone', async ({ game: page }) => {
     // Fresh save: tier-2 tshirt in NOT_BOUGHT but rememberVar points at
     // the slot-0 default. No loss happened — no entry should appear.
     await setVar(page, 'tshirtState2', 'not bought');
@@ -245,7 +233,7 @@ test.describe('Clothing — Lost-clothing buyback', () => {
     expect(await getVar(page, 'lostClothing')).toEqual([]);
   });
 
-  test('SaveMigration back-fill is idempotent across repeated runs', async () => {
+  test('SaveMigration back-fill is idempotent across repeated runs', async ({ game: page }) => {
     await setVar(page, 'tshirtState2', 'not bought');
     await setVar(page, 'rememberTopOuter', 'notshirt2');
     await setVar(page, 'lostClothing', []);
@@ -259,7 +247,7 @@ test.describe('Clothing — Lost-clothing buyback', () => {
     expect(await getVar(page, 'lostClothing')).toEqual(['tshirtState2']);
   });
 
-  test('WARDROBE_GROUPS prices match ClothingSection.tw store prices', async () => {
+  test('WARDROBE_GROUPS prices match ClothingSection.tw store prices', async ({ game: page }) => {
     // Pulled from passages/mall/ClothingSection.tw -- the buyback button
     // uses the price field on each WARDROBE_GROUPS item, so the two
     // tables must agree. Slot-0 items have no store price.

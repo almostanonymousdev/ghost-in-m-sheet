@@ -1,18 +1,12 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, goToPassage, getVar, setVar } = require('./helpers');
+const { test, expect } = require('./fixtures');
+const { goToPassage, getVar, setVar } = require('./helpers');
 
 test.describe('Tattoo — Purchase and Beauty', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-
-  test.beforeEach(async () => {
-    await resetGame(page);
+  test.beforeEach(async ({ game: page }) => {
     await setVar(page, 'hours', 12);
   });
 
-  test('purchasing face tattoo deducts $100 and adds +2 beauty', async () => {
+  test('purchasing face tattoo deducts $100 and adds +2 beauty', async ({ game: page }) => {
     await setVar(page, 'mc.money', 500);
     await goToPassage(page, 'BeautySalonTattoos');
     const buyLink = page.locator('.buyItemLink a').first();
@@ -25,7 +19,7 @@ test.describe('Tattoo — Purchase and Beauty', () => {
     expect(await getVar(page, 'mc.beauty')).toBe(30 + 2);
   });
 
-  test('purchasing neck tattoo deducts $80 and adds +2 beauty', async () => {
+  test('purchasing neck tattoo deducts $80 and adds +2 beauty', async ({ game: page }) => {
     await setVar(page, 'mc.money', 500);
     await goToPassage(page, 'BeautySalonTattoos');
     const buyLink = page.locator('.buyItemLink a').nth(1);
@@ -38,7 +32,7 @@ test.describe('Tattoo — Purchase and Beauty', () => {
     expect(await getVar(page, 'mc.beauty')).toBe(30 + 2);
   });
 
-  test('purchasing hand tattoo deducts $50 and adds +1 beauty', async () => {
+  test('purchasing hand tattoo deducts $50 and adds +1 beauty', async ({ game: page }) => {
     await setVar(page, 'mc.money', 500);
     await goToPassage(page, 'BeautySalonTattoos');
     const buyLink = page.locator('.buyItemLink a').nth(2);
@@ -51,7 +45,7 @@ test.describe('Tattoo — Purchase and Beauty', () => {
     expect(await getVar(page, 'mc.beauty')).toBe(30 + 1);
   });
 
-  test('corruption-gated tattoo hidden when corruption too low', async () => {
+  test('corruption-gated tattoo hidden when corruption too low', async ({ game: page }) => {
     await setVar(page, 'mc.money', 1000);
     await setVar(page, 'mc.corruption', 2);
     await goToPassage(page, 'BeautySalonTattoos');
@@ -60,7 +54,7 @@ test.describe('Tattoo — Purchase and Beauty', () => {
     await expect(buyLinks).toHaveCount(3);
   });
 
-  test('corruption-gated chest tattoo purchasable at corruption >= 5', async () => {
+  test('corruption-gated chest tattoo purchasable at corruption >= 5', async ({ game: page }) => {
     await setVar(page, 'mc.money', 1000);
     await setVar(page, 'mc.corruption', 5);
 
@@ -77,7 +71,7 @@ test.describe('Tattoo — Purchase and Beauty', () => {
     expect(await getVar(page, 'mc.beauty')).toBe(30 + 3);
   });
 
-  test('cannot purchase tattoo when money is insufficient', async () => {
+  test('cannot purchase tattoo when money is insufficient', async ({ game: page }) => {
     await setVar(page, 'mc.money', 10);
     await goToPassage(page, 'BeautySalonTattoos');
 
@@ -86,7 +80,7 @@ test.describe('Tattoo — Purchase and Beauty', () => {
     expect(await getVar(page, 'mc.money')).toBe(10);
   });
 
-  test('already-purchased tattoo does not appear again', async () => {
+  test('already-purchased tattoo does not appear again', async ({ game: page }) => {
     await setVar(page, 'mc.money', 1000);
     await setVar(page, 'tattooFace', 'worn');
     await goToPassage(page, 'BeautySalonTattoos');
@@ -95,7 +89,7 @@ test.describe('Tattoo — Purchase and Beauty', () => {
     await expect(buyLinks).toHaveCount(2);
   });
 
-  test('buying multiple tattoos accumulates beauty', async () => {
+  test('buying multiple tattoos accumulates beauty', async ({ game: page }) => {
     await setVar(page, 'mc.money', 1000);
     const startBeauty = await getVar(page, 'mc.beauty');
 
