@@ -1,25 +1,14 @@
 :: Comics [nobr] {"position":"2925,2200","size":"100,100"}
 <div class="flexwrapper gap">
-<div class="housecardComics">
-<<image "scenes/library/getting-in-shape001.jpg" "comic-cover">><br>
-@@.enterbtn;<<link "read" "ReadComics">><<run setup.Library.selectComics(1)>>
-<</link>>@@
-</div>
-<div class="housecardComics">
-<<image "scenes/library/closed-investigation-journal-colorized001.jpg" "comic-cover">><br>
-@@.enterbtn;<<link "read" "ReadComics">><<run setup.Library.selectComics(2)>>
-<</link>>@@
-</div>
-<div class="housecardComics">
-<<image "scenes/library/the-naughty-in-law-1-zero001.jpg" "comic-cover">><br>
-@@.enterbtn;<<link "read" "ReadComics">><<run setup.Library.selectComics(3)>>
-<</link>>@@
-</div>
-<div class="housecardComics">
-<<image "scenes/library/a-dumb-comic001.jpg" "comic-cover">><br>
-@@.enterbtn;<<link "read" "ReadComics">><<run setup.Library.selectComics(4)>>
-<</link>>@@
-</div>
+<<for _i, _comic range setup.Library.comics>>
+	<<capture _i>>
+		<div class="housecardComics">
+		<<image _comic.prefix + "001.jpg" "comic-cover">><br>
+		@@.enterbtn;<<link "read" "ReadComics">><<run setup.Library.selectComics(_i + 1)>>
+		<</link>>@@
+		</div>
+	<</capture>>
+<</for>>
 </div>
 <br>
 @@.backbtn;[[Leave|LibraryInside]] @@<br>
