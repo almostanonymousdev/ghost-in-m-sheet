@@ -64,7 +64,7 @@
 	<<set _meterName to "searchRogue" + _def.meterField>>
 	<<set _equipField to _def.equipField>>
 	<<capture _t, _def, _meterName, _equipField>>
-		<span class="rogue-tool-card-label cardlink">@@.adaptiveLink;<<link `_def.label`>>
+		<span class="rogue-tool-card-label cardlink" @data-tool="_t">@@.adaptiveLink;<<link `_def.label`>>
 			<<addclass ".cardlink" "disabled-link">>
 			<<replace "#rogue-tool-meter">>
 				<<showmeter _meterName `$currentsearchRogue[_t] / $equipment[_equipField]`>>

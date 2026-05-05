@@ -118,6 +118,54 @@ test.describe('ToolController renderers', () => {
     expect(emfActivated).toBe(1);
   });
 
+  test('clickRogueSearchTool fires the slot link only when not .disabled-link', async () => {
+    /* Pin the disabled-state contract for the rogue keyboard-shortcut
+       path. .disabled-link is added/removed on the
+       .rogue-tool-card-label[data-tool=...] span by widgetRogueToolBar
+       around each meter cycle; programmatic .click() bypasses the
+       pointer-events: none rule, so the helper has to gate on the
+       class explicitly. Two cases below: enabled → click propagates,
+       disabled → click is suppressed. */
+    const result = await page.evaluate(() => {
+      const $ = window.jQuery;
+      const $slot = $('<span class="rogue-tool-card-label cardlink" data-tool="emf">' +
+                      '<a href="#" id="probe-emf">EMF</a></span>')
+                    .appendTo('body');
+      let clicks = 0;
+      $slot.find('a').on('click', (e) => { e.preventDefault(); clicks++; });
+
+      SugarCube.setup.clickRogueSearchTool('emf');
+      const enabled = clicks;
+
+      $slot.addClass('disabled-link');
+      SugarCube.setup.clickRogueSearchTool('emf');
+      const afterDisable = clicks;
+
+      $slot.removeClass('disabled-link');
+      SugarCube.setup.clickRogueSearchTool('emf');
+      const reEnabled = clicks;
+
+      $slot.remove();
+      return { enabled, afterDisable, reEnabled };
+    });
+
+    expect(result.enabled).toBe(1);
+    expect(result.afterDisable).toBe(1);
+    expect(result.reEnabled).toBe(2);
+  });
+
+  test('clickRogueSearchTool is a no-op when no rogue toolbar is rendered', async () => {
+    /* Outside RogueRun the [data-tool] selector matches nothing -- the
+       function must early-return without throwing so the global
+       keydown handler can fan out to both clickAllSearchTools and
+       clickRogueSearchTool unconditionally. */
+    const threw = await page.evaluate(() => {
+      try { SugarCube.setup.clickRogueSearchTool('emf'); return false; }
+      catch (e) { return true; }
+    });
+    expect(threw).toBe(false);
+  });
+
   test('Rogue meters are registered for every search tool', async () => {
     /* The rogue toolbar renders one <<showmeter searchRogue<Tool>>> per
        tool slot. Those meter names need to exist before the widget

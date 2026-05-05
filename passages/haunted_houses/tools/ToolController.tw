@@ -952,6 +952,20 @@ setup.searchableRooms.forEach(function (room) {
         });
     };
 
+    /* Rogue toolbar counterpart to clickAllSearchTools. The rogue
+     * widget renders a single .rogue-tool-card-label[data-tool=...]
+     * span per slot and toggles the .disabled-link class on it
+     * during the meter cycle (widgetRogueToolBar). Programmatic
+     * .click() bypasses CSS pointer-events, so we have to gate the
+     * click on the class explicitly -- otherwise re-pressing the
+     * shortcut key mid-tick would re-enter <<link>> and double-fire
+     * the meter. No-op outside RogueRun (selector matches nothing). */
+    setup.clickRogueSearchTool = function (tool) {
+        var $slot = $('.rogue-tool-card-label[data-tool="' + tool + '"]');
+        if (!$slot.length || $slot.hasClass('disabled-link')) return;
+        $slot.find('a').first().click();
+    };
+
     function debounce(func, wait) {
         var timeout;
         return function () {
@@ -965,7 +979,9 @@ setup.searchableRooms.forEach(function (room) {
     $(document).off('keydown.searchToolKeys').on('keydown.searchToolKeys',
         debounce(function (event) {
             var tool = setup.searchToolKeyMap[event.key];
-            if (tool) setup.clickAllSearchTools(tool);
+            if (!tool) return;
+            setup.clickAllSearchTools(tool);
+            setup.clickRogueSearchTool(tool);
         }, 50));
 
     /* Global delegation: when any toolCard image is clicked, dispatch the
