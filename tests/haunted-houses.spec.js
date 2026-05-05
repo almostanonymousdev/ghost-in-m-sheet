@@ -562,6 +562,64 @@ test.describe('Haunted Houses Controller', () => {
     expect(snap.energyPerStep).toBeCloseTo(-0.25, 5);
   });
 
+  // --- Pheromones modifier ---
+  // The Ghost Pheromones rogue modifier piles +1 lust/step on top of any
+  // clothing-driven lust contribution, but only while the hunt is live and
+  // only when the modifier is in the active deck.
+
+  test('pheromones modifier adds +1 lust/step in-house', async () => {
+    await setHuntMode(page, 2);
+    await page.evaluate(() => SugarCube.setup.Rogue.start({
+      seed: 1, modifiers: ['pheromones']
+    }));
+
+    const snap = await callSetup(page, 'setup.HauntConditions.snapshot()');
+
+    expect(snap.lustPerStep).toBe(1);
+    const labels = snap.contributors.map(c => c.label);
+    expect(labels).toContain('Pheromones');
+  });
+
+  test('pheromones stacks with clothing-driven lust', async () => {
+    await setHuntMode(page, 2);
+    await page.evaluate(() => SugarCube.setup.Rogue.start({
+      seed: 1, modifiers: ['pheromones']
+    }));
+    // Strip the MC down to nude (no top, no bottoms, no panties) to add the
+    // existing +2/step nude contribution alongside the modifier's +1.
+    await setVar(page, 'tshirtState', 0);
+    await setVar(page, 'jeansState', 0);
+    await setVar(page, 'shortsState', 0);
+    await setVar(page, 'skirtState', 0);
+    await setVar(page, 'pantiesState', 0);
+
+    const snap = await callSetup(page, 'setup.HauntConditions.snapshot()');
+
+    expect(snap.lustPerStep).toBe(3);
+  });
+
+  test('pheromones is inert outside a hunt', async () => {
+    await setHuntMode(page, 0);
+    await page.evaluate(() => SugarCube.setup.Rogue.start({
+      seed: 1, modifiers: ['pheromones']
+    }));
+
+    const snap = await callSetup(page, 'setup.HauntConditions.snapshot()');
+
+    expect(snap.lustPerStep).toBe(0);
+    const labels = snap.contributors.map(c => c.label);
+    expect(labels).not.toContain('Pheromones');
+  });
+
+  test('classic mode without the modifier has no pheromones contribution', async () => {
+    await setHuntMode(page, 2);
+
+    const snap = await callSetup(page, 'setup.HauntConditions.snapshot()');
+
+    const labels = snap.contributors.map(c => c.label);
+    expect(labels).not.toContain('Pheromones');
+  });
+
   // --- Tool timer HUD (sidebar strip) ---
   // Regression bait: the strip reads minutes-remaining from $tools and
   // $equipment, so any rename of those fields breaks the caption silently

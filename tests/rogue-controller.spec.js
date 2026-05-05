@@ -60,12 +60,12 @@ test.describe('Rogue Controller', () => {
   test('start() with options stores modifiers, loadout, objective', async () => {
     await page.evaluate(() => SugarCube.setup.Rogue.start({
       seed: 7,
-      modifiers: ['power_outage', 'tarot_only'],
+      modifiers: ['locked_tools', 'pheromones'],
       loadout: { tools: ['emf'], money: 50 },
       objective: 'rescue'
     }));
 
-    expect(await callSetup(page, 'setup.Rogue.modifiers()')).toEqual(['power_outage', 'tarot_only']);
+    expect(await callSetup(page, 'setup.Rogue.modifiers()')).toEqual(['locked_tools', 'pheromones']);
     expect(await callSetup(page, 'setup.Rogue.loadout()')).toEqual({ tools: ['emf'], money: 50 });
     expect(await callSetup(page, 'setup.Rogue.objective()')).toBe('rescue');
   });
@@ -128,14 +128,14 @@ test.describe('Rogue Controller', () => {
   // --- Modifier helpers ---
 
   test('hasModifier matches the active deck and returns false off-run', async () => {
-    expect(await callSetup(page, 'setup.Rogue.hasModifier("power_outage")')).toBe(false);
+    expect(await callSetup(page, 'setup.Rogue.hasModifier("pheromones")')).toBe(false);
 
     await page.evaluate(() => SugarCube.setup.Rogue.start({
-      seed: 1, modifiers: ['power_outage']
+      seed: 1, modifiers: ['pheromones']
     }));
 
-    expect(await callSetup(page, 'setup.Rogue.hasModifier("power_outage")')).toBe(true);
-    expect(await callSetup(page, 'setup.Rogue.hasModifier("tarot_only")')).toBe(false);
+    expect(await callSetup(page, 'setup.Rogue.hasModifier("pheromones")')).toBe(true);
+    expect(await callSetup(page, 'setup.Rogue.hasModifier("locked_tools")')).toBe(false);
   });
 
   test('addModifier appends to the deck and is idempotent', async () => {

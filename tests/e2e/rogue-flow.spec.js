@@ -43,17 +43,20 @@ test.describe('E2E: rogue run lifecycle', () => {
     await clickLink(page, rogueAddr, 'RogueStart');
   }
 
-  /* Strip the Empty Bag modifier from the active rogue run if the
-     random draft happened to pick it. Tests that need a clickable
-     toolbar call this after RogueStart's auto-roll. The other
-     modifiers don't yet gate per-tick behaviour, so dropping just
-     locked_tools doesn't bypass anything else under test. */
+  /* Restart the active rogue run with no modifiers so the toolbar is
+     fully populated and the floor plan has no tool-recovery loot
+     stacked onto authored loot slots (tarot, paw, etc). The default
+     RogueStart auto-roll always drafts the full catalogue, which
+     means locked_tools is reliably active and the floor-plan
+     generator places all six missing tools as furniture loot --
+     stacking those onto the same slot as e.g. the tarot deck flips
+     FurnitureSearch into its multi-item branch and skips the
+     "deck of cards." linkappend reveal these tests pin. Tests that
+     need a clean toolbar + clean floor plan call this after the
+     RogueStart auto-roll. */
   async function ensureNotEmptyBag(page) {
     await page.evaluate(() => {
-      const run = SugarCube.State.variables.run;
-      if (run && Array.isArray(run.modifiers)) {
-        run.modifiers = run.modifiers.filter(id => id !== 'locked_tools');
-      }
+      SugarCube.setup.Rogue.startRogue({ modifierCount: 0 });
     });
   }
 

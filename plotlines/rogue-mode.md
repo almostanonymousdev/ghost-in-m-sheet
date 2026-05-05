@@ -273,12 +273,14 @@ keeps a modifier out of the random draw (reserved for meta-shop
 unlocks, debug, etc.). `setup.Modifiers.draft(seed, n)` does a
 seeded weighted no-replacement draw.
 
-Modifiers in the catalogue today: Power Outage, Whisper Network
-(sanity drain), Cartomancer's Curse (tarot-only), Empty Bag
-(locked tools), Skinwalker, Heatwave, Time Loop, Marked
-(weight 0). Effect hooks land alongside the gameplay
-controllers each modifier touches; querying the active deck
-goes through `setup.Rogue.hasModifier(id)`.
+Modifiers in the catalogue today: Empty Bag (locked tools)
+and Ghost Pheromones (+1 lust/step in-house). The catalogue
+deliberately tracks only modifiers with real effect wiring —
+catalogue-only entries that ship to the run-start UI but do
+nothing in-game make for a bait-and-switch draft, so new ideas
+live in this doc until their effect is wired into the relevant
+controller. Querying the active deck goes through
+`setup.Rogue.hasModifier(id)`.
 
 ## Ectoplasm (meta-progression, mL)
 

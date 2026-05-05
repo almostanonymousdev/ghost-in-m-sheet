@@ -55,11 +55,11 @@ test.describe('Rogue lifecycle helpers', () => {
 
   test('startRogue with modifierCount controls the draft size', async () => {
     await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
-      seed: 1, modifierCount: 4
+      seed: 1, modifierCount: 1
     }));
 
     const run = await getVar(page, 'run');
-    expect(run.modifiers.length).toBe(4);
+    expect(run.modifiers.length).toBe(1);
   });
 
   test('startRogue forwards floor-plan opts (e.g. roomCount, includeBoss)', async () => {
@@ -124,7 +124,7 @@ test.describe('Rogue lifecycle helpers', () => {
 
   test('endRogue summary captures the run identifiers and modifier list', async () => {
     await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
-      seed: 7, modifierCount: 3
+      seed: 7, modifierCount: 2
     }));
 
     const summary = await page.evaluate(() => SugarCube.setup.Rogue.endRogue(true));
@@ -132,7 +132,7 @@ test.describe('Rogue lifecycle helpers', () => {
     expect(summary.seed).toBe(7);
     expect(summary.number).toBe(1);
     expect(summary.objective).toBe('identify');
-    expect(summary.modifiers.length).toBe(3);
+    expect(summary.modifiers.length).toBe(2);
   });
 
   test('endRogue is a no-op (returns null) when no run is active', async () => {

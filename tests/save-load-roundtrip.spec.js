@@ -410,7 +410,7 @@ test.describe('Save/load round-trip', () => {
     const liveRun = {
       seed: 42,
       number: 3,
-      modifiers: ['power_outage'],
+      modifiers: ['pheromones'],
       loadout: { tools: ['emf'] },
       objective: 'rescue',
       floorplan: { seed: 42, rooms: [], edges: [], spawnRoomId: null, loot: {}, bossRoomId: null }

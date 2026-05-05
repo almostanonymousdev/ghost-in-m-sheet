@@ -19,41 +19,22 @@
  * full set without each rediscovering it.
  */
 setup.Modifiers = (function () {
-	/* Catalogue id constants. Code that gates on a specific modifier
-	   (e.g. RogueController's Empty-Bag toolbar branch) references the
-	   constant instead of the literal so a typo surfaces at parse time
-	   rather than as a silently-failing indexOf. */
-	var POWER_OUTAGE  = 'power_outage';
-	var SANITY_DRAIN  = 'sanity_drain';
-	var TAROT_ONLY    = 'tarot_only';
+	/* Catalogue id constants. Only modifiers with actual gameplay
+	   wiring belong here — catalogue-only entries that ship to the
+	   run-start UI but do nothing in-game make for a bait-and-switch
+	   draft. New ideas live in a design doc until their effect is
+	   wired into the relevant controller. Code that gates on a
+	   specific modifier (e.g. RogueController's Empty-Bag toolbar
+	   branch) references the constant instead of the literal so a
+	   typo surfaces at parse time rather than as a silently-failing
+	   indexOf. */
 	var LOCKED_TOOLS  = 'locked_tools';
-	var SKINWALKER    = 'skinwalker';
-	var HEATWAVE      = 'heatwave';
-	var TIME_LOOP     = 'time_loop';
-	var HARD_MODE     = 'hard_mode';
+	var PHEROMONES    = 'pheromones';
 
 	/* Each entry's `weight` controls relative draft frequency.
-	   Anything <= 0 is excluded from random draws (use it for
+	   Anything <= 0 is excluded from random draws (reserved for
 	   modifiers that only the meta-shop / cheats can grant). */
 	var CATALOGUE = Object.freeze([
-		{
-			id: POWER_OUTAGE,
-			name: 'Power Outage',
-			description: 'Electronics flicker unreliably. EMF readings are jittery and lights cut out faster.',
-			weight: 1
-		},
-		{
-			id: SANITY_DRAIN,
-			name: 'Whisper Network',
-			description: 'Voices follow you everywhere. Sanity drains 50% faster while inside.',
-			weight: 1
-		},
-		{
-			id: TAROT_ONLY,
-			name: 'Cartomancer\'s Curse',
-			description: 'Tools come back blank. Evidence shows up only in tarot draws.',
-			weight: 1
-		},
 		{
 			id: LOCKED_TOOLS,
 			name: 'Empty Bag',
@@ -61,28 +42,10 @@ setup.Modifiers = (function () {
 			weight: 1
 		},
 		{
-			id: SKINWALKER,
-			name: 'Skinwalker',
-			description: 'The ghost is wearing your stolen clothes from the moment you walk in.',
+			id: PHEROMONES,
+			name: 'Ghost Pheromones',
+			description: 'The air itself works on you. Lust climbs an extra +1/step the entire hunt.',
 			weight: 1
-		},
-		{
-			id: HEATWAVE,
-			name: 'Heatwave',
-			description: 'Cold-reading evidence is disabled; the ghost wakes faster the more you sweat.',
-			weight: 1
-		},
-		{
-			id: TIME_LOOP,
-			name: 'Time Loop',
-			description: 'Every 15 in-game minutes the room layout reshuffles.',
-			weight: 1
-		},
-		{
-			id: HARD_MODE,
-			name: 'Marked',
-			description: 'Hunts trigger twice as often. The witch never loses sleep.',
-			weight: 0
 		}
 	]);
 
@@ -150,14 +113,8 @@ setup.Modifiers = (function () {
 	return {
 		OWNED_VARS: Object.freeze([]),
 		CATALOGUE: CATALOGUE,
-		POWER_OUTAGE: POWER_OUTAGE,
-		SANITY_DRAIN: SANITY_DRAIN,
-		TAROT_ONLY:   TAROT_ONLY,
 		LOCKED_TOOLS: LOCKED_TOOLS,
-		SKINWALKER:   SKINWALKER,
-		HEATWAVE:     HEATWAVE,
-		TIME_LOOP:    TIME_LOOP,
-		HARD_MODE:    HARD_MODE,
+		PHEROMONES:   PHEROMONES,
 		list: list,
 		byId: byId,
 		draftableList: draftableList,

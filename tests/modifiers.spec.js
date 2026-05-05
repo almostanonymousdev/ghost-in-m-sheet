@@ -43,24 +43,24 @@ test.describe('Modifier registry', () => {
   });
 
   test('byId returns the entry or null', async () => {
-    const known = await callSetup(page, 'setup.Modifiers.byId("power_outage")');
+    const known = await callSetup(page, 'setup.Modifiers.byId("locked_tools")');
     expect(known).not.toBeNull();
-    expect(known.id).toBe('power_outage');
+    expect(known.id).toBe('locked_tools');
 
     const unknown = await callSetup(page, 'setup.Modifiers.byId("does_not_exist")');
     expect(unknown).toBeNull();
   });
 
+  test('pheromones is a draftable modifier', async () => {
+    const entry = await callSetup(page, 'setup.Modifiers.byId("pheromones")');
+    expect(entry).not.toBeNull();
+    expect(entry.id).toBe('pheromones');
+    expect(entry.weight).toBeGreaterThan(0);
+  });
+
   test('draftableList drops weight-0 entries', async () => {
     const draftable = await callSetup(page, 'setup.Modifiers.draftableList()');
     draftable.forEach(m => expect(m.weight).toBeGreaterThan(0));
-
-    // hard_mode is in the catalogue but not draftable.
-    const cat = await callSetup(page, 'setup.Modifiers.list()');
-    const hard = cat.find(m => m.id === 'hard_mode');
-    expect(hard).toBeDefined();
-    expect(hard.weight).toBe(0);
-    expect(draftable.find(m => m.id === 'hard_mode')).toBeUndefined();
   });
 
   // --- Draft determinism ---
@@ -98,20 +98,20 @@ test.describe('Modifier registry', () => {
 
   test('activeList resolves $run.modifiers ids to catalogue entries', async () => {
     await page.evaluate(() => SugarCube.setup.Rogue.start({
-      seed: 1, modifiers: ['power_outage', 'tarot_only']
+      seed: 1, modifiers: ['locked_tools', 'pheromones']
     }));
 
     const active = await callSetup(page, 'setup.Modifiers.activeList()');
-    expect(active.map(m => m.id)).toEqual(['power_outage', 'tarot_only']);
+    expect(active.map(m => m.id)).toEqual(['locked_tools', 'pheromones']);
   });
 
   test('activeList drops unknown modifier ids silently', async () => {
     await page.evaluate(() => SugarCube.setup.Rogue.start({
-      seed: 1, modifiers: ['power_outage', 'renamed_or_removed', 'sanity_drain']
+      seed: 1, modifiers: ['locked_tools', 'renamed_or_removed', 'pheromones']
     }));
 
     const active = await callSetup(page, 'setup.Modifiers.activeList()');
-    expect(active.map(m => m.id)).toEqual(['power_outage', 'sanity_drain']);
+    expect(active.map(m => m.id)).toEqual(['locked_tools', 'pheromones']);
   });
 
   test('activeList returns [] in classic mode', async () => {
