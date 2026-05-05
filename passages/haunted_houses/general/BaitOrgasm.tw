@@ -1,0 +1,30 @@
+:: BaitOrgasm [nobr] {"position":"2800,1100","size":"100,100"}
+/* Triggered when the bait mechanic stamps lust onto an MC who was already
+ * at 100. consumeBaitOrgasm zeros lust and bleeds 10 sanity but
+ * intentionally leaves $baitActive / $baitStepsRemain alone — the ghost
+ * stays pinned for whatever bait turns are left. The pending flag is
+ * raised in setup.HauntConditions.applyTickEffects (movement + tool
+ * measurement) and in startBait (the +20 click), and is consumed here
+ * exactly once per fire. */
+<<run setup.HauntConditions.consumeBaitOrgasm()>>
+<<updatemeter 'sanity' `setup.Mc.sanityPct()`>>
+<<updatemeter 'mclust' `setup.Mc.lust() / 100`>>
+<<if setup.Mc.isSanityCollapsed() or setup.Mc.sanity() lte 0>>
+	<<goto "HuntOverSanity">>
+<</if>>
+
+<<randRangeVideo "mechanics/orgasm/solo" 1 12 ".mp4">>
+<br>
+@@.mc-thoughts; The pressure snaps. Your fingers are between your thighs before you even register moving them, and the room tilts. Your knees give. You hit the floor hard, every muscle locked tight as the orgasm rips through you in shuddering waves.@@<br>
+<<linkreplace `"@@.mc-speech; A-ahh~ I can't — I can't stop —!@@"`>>
+	@@.mc-speech; A-ahh~ I can't — I can't stop —!@@<br>
+	<<randRangeVideo "mechanics/cum-covered/laying-down" 1 5 ".mp4">>
+	<br>
+	@@.mc-thoughts; Above you, the air thickens. Something cold and slick spatters across your skin in long, sticky ropes. Your face burns with desire. Your head swims in ecstasy. You lose a piece of yourself in the haze.@@<br>
+	<br>
+	@@.backbtn;[[Pull yourself up|$return]]@@
+<</linkreplace>>
+
+<<done>>
+	<<addclass ".linkselector" "disabled-link">>
+<</done>>

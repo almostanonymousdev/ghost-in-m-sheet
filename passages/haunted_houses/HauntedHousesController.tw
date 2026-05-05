@@ -35,8 +35,9 @@ setup.HauntedHouses = (function () {
 		'isClothesStolen',
 		'cursedHuntActive', 'cursedHuntEndTime',
 		// Hunt-conditions flags driven by HuntConditionsController
-		// (bait spend, overcharged-tools toggle, bait countdown).
-		'baitActive', 'baitStepsRemain', 'overchargedTools',
+		// (bait spend, overcharged-tools toggle, bait countdown,
+		// pending bait orgasm trigger).
+		'baitActive', 'baitStepsRemain', 'baitOrgasmPending', 'overchargedTools',
 		'currentFurniture', 'isInHideSpot',
 		'furnitureListOwaissa', 'furnitureListElm',
 		'tempListOwaissa', 'tempListElm',

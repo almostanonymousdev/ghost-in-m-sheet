@@ -13,8 +13,10 @@
  * and the underlying mechanics never drift apart. */
 setup.HauntConditions = (function () {
 	var LUST_FUEL_THRESHOLD = 50;   // passive evidence bonus when lust >= this
-	var BAIT_LUST_COST      = 20;
+	var BAIT_INITIAL_LUST   = 20;   // lust the bait click stamps onto the MC
+	var BAIT_LUST_PER_STEP  = 10;   // lust accrued each remaining bait step
 	var BAIT_STEPS          = 3;    // nav ticks the ghost is pinned to you
+	var BAIT_ORGASM_SANITY  = 10;   // sanity lost when bait pushes lust past the cap
 
 	/* Energy as the pacing gate: every nav tick inside a haunted house
 	 * burns ENERGY_PER_STEP, capping the total room-search budget per
@@ -186,10 +188,12 @@ setup.HauntConditions = (function () {
 			snap.toolChanceBonus += 20;
 			snap.huntChanceBonus += 20;
 			snap.sanityPerStep   -= 1;
+			snap.lustPerStep     += BAIT_LUST_PER_STEP;
 			snap.contributors.push({
 				label: "Baiting (" + snap.baitStepsRemain + ")",
 				color: "#cc66ff",
-				detail: "ghost pinned here · tools +20% · hunt +20%"
+				detail: "ghost pinned here · tools +20% · hunt +20% · lust +"
+					+ BAIT_LUST_PER_STEP + "/step"
 			});
 		}
 
@@ -216,7 +220,14 @@ setup.HauntConditions = (function () {
 			}
 		}
 		if (snap.lustPerStep !== 0) {
+			/* Cap-overflow during bait routes to BaitOrgasm — see
+			 * consumeBaitOrgasm. Only the bait flow flags this; other
+			 * lust sources (topless/nude clothing tick) just clamp. */
+			var baitAtCap = snap.baitActive && mc.lust >= 100;
 			setup.Mc.applyLustDelta(snap.lustPerStep);
+			if (baitAtCap) {
+				V.baitOrgasmPending = 1;
+			}
 		}
 		if (snap.energyPerStep !== 0) {
 			setup.Mc.applyEnergyDelta(snap.energyPerStep);
@@ -260,29 +271,57 @@ setup.HauntConditions = (function () {
 		return true;
 	}
 
-	/* Player-driven bait: spend lust + energy, pin the ghost to the
-	 * player's room for BAIT_STEPS nav ticks. Returns true when the spend
-	 * fires. Atomic — won't deduct lust unless the energy spend also clears. */
+	/* Resolve a pending bait orgasm: drop sanity, reset lust to zero. The
+	 * bait counter is intentionally NOT cleared — the ghost stays pinned
+	 * for the rest of the contract window per spec. Returns true when an
+	 * orgasm was actually pending so callers can branch on the result. */
+	function consumeBaitOrgasm() {
+		var V = State.variables;
+		if (V.baitOrgasmPending !== 1) return false;
+		V.baitOrgasmPending = 0;
+		var mc = V.mc;
+		if (!mc) return true;
+		mc.lust = 0;
+		setup.Mc.clampLust();
+		var outcome = setup.Mc.applySanityDelta(-BAIT_ORGASM_SANITY);
+		if (outcome === setup.SanityDeltaResult.COLLAPSED) {
+			V.sanityCollapse = 1;
+		}
+		return true;
+	}
+
+	function isBaitOrgasmPending() {
+		return State.variables.baitOrgasmPending === 1;
+	}
+
+	/* Player-driven bait: spend energy, pin the ghost to the player's
+	 * room for BAIT_STEPS nav ticks, and stamp BAIT_INITIAL_LUST onto
+	 * the MC. The +20 can itself trip an orgasm when lust was already
+	 * at 100 — the caller should check isBaitOrgasmPending() right
+	 * after to route to BaitOrgasm. Returns true when the start fires. */
 	function startBait() {
 		var V = State.variables;
 		var mc = V.mc;
-		if (!mc || mc.lust < BAIT_LUST_COST) return false;
+		if (!mc) return false;
 		if ((mc.energy || 0) < ENERGY_COST_BAIT) return false;
 		var bg = currentBgVar();
 		if (!bg) return false;
 		if (!V.hunt || !V.hunt.room) return false;
-		mc.lust -= BAIT_LUST_COST;
 		removeEnergy(ENERGY_COST_BAIT);
 		V.hunt.room.name = bg;
 		V.baitActive = 1;
 		V.baitStepsRemain = BAIT_STEPS;
+		var atCap = mc.lust >= 100;
+		setup.Mc.applyLustDelta(BAIT_INITIAL_LUST);
+		if (atCap) {
+			V.baitOrgasmPending = 1;
+		}
 		return true;
 	}
 
 	function canBait() {
 		var V = State.variables;
 		return !!(V.mc
-			&& V.mc.lust >= BAIT_LUST_COST
 			&& (V.mc.energy || 0) >= ENERGY_COST_BAIT
 			&& V.hunt && V.hunt.room
 			&& currentBgVar()
@@ -321,6 +360,7 @@ setup.HauntConditions = (function () {
 		var V = State.variables;
 		V.baitActive          = 0;
 		V.baitStepsRemain     = 0;
+		V.baitOrgasmPending   = 0;
 		V.overchargedTools    = 0;
 		V.exhausted           = 0;
 		V.sanityCollapse      = 0;
@@ -329,8 +369,10 @@ setup.HauntConditions = (function () {
 
 	return {
 		LUST_FUEL_THRESHOLD:    LUST_FUEL_THRESHOLD,
-		BAIT_LUST_COST:         BAIT_LUST_COST,
+		BAIT_INITIAL_LUST:      BAIT_INITIAL_LUST,
+		BAIT_LUST_PER_STEP:     BAIT_LUST_PER_STEP,
 		BAIT_STEPS:             BAIT_STEPS,
+		BAIT_ORGASM_SANITY:     BAIT_ORGASM_SANITY,
 		ENERGY_PER_STEP:        ENERGY_PER_STEP,
 		ENERGY_COST_BAIT:       ENERGY_COST_BAIT,
 		ENERGY_COST_PRAY:       ENERGY_COST_PRAY,
@@ -343,6 +385,8 @@ setup.HauntConditions = (function () {
 		startBait:              startBait,
 		canBait:                canBait,
 		canPray:                canPray,
+		isBaitOrgasmPending:    isBaitOrgasmPending,
+		consumeBaitOrgasm:      consumeBaitOrgasm,
 		toggleOverchargedTools: toggleOverchargedTools,
 		isOverchargedMode:      isOverchargedMode,
 		eventSanityMultiplier:  eventSanityMultiplier,
