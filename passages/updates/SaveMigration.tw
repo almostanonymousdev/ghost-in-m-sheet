@@ -24,9 +24,9 @@
 	// saves to pick up its default on next load.
 	//   v1: pre-bundle shape (flat $ghost*, $is<House>, etc.)
 	//   v2: hunt/tools bundles, $hauntedHouse, $monkeyPawLearned map.
-	//   v3: rogue-mode subsystem -- $run / $echoes / $runsStarted defaults
-	//       seeded for legacy saves; $houseSlots collapses the
-	//       per-house slot forest.
+	//   v3: rogue-mode subsystem -- $run / $ectoplasm / $runsStarted
+	//       defaults seeded for legacy saves; $houseSlots collapses
+	//       the per-house slot forest.
 	var SAVE_VERSION = 3;
 	setup.SAVE_VERSION = SAVE_VERSION;
 
@@ -82,10 +82,10 @@
 
 		// Rogue-mode state: pre-rogue saves don't have these
 		// fields. $run is null when no rogue run is active
-		// (classic mode). $echoes starts at 0. $runsStarted is
-		// the lifetime attempt counter, also 0 by default.
+		// (classic mode). $ectoplasm starts at 0 mL. $runsStarted
+		// is the lifetime attempt counter, also 0 by default.
 		run:           function () { return null; },
-		echoes:        function () { return 0; },
+		ectoplasm:     function () { return 0; },
 		runsStarted:   function () { return 0; },
 
 		// Per-day seed; regenerated on every 24h rollover.

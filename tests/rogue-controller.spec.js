@@ -2,8 +2,8 @@ const { test, expect } = require('@playwright/test');
 const { openGame, resetGame, getVar, setVar, callSetup } = require('./helpers');
 
 /* setup.Rogue owns rogue-run lifecycle ($run) and the persistent
-   meta-progression currency ($echoes). Classic mode = no rogue
-   run active = $run is null. */
+   meta-progression currency ($ectoplasm, measured in mL). Classic
+   mode = no rogue run active = $run is null. */
 test.describe('Rogue Controller', () => {
   let page;
 
@@ -28,9 +28,9 @@ test.describe('Rogue Controller', () => {
     expect(await callSetup(page, 'setup.Rogue.active()')).toBeNull();
   });
 
-  test('fresh save initializes echoes to 0', async () => {
-    expect(await getVar(page, 'echoes')).toBe(0);
-    expect(await callSetup(page, 'setup.Rogue.echoes()')).toBe(0);
+  test('fresh save initializes ectoplasm to 0 mL', async () => {
+    expect(await getVar(page, 'ectoplasm')).toBe(0);
+    expect(await callSetup(page, 'setup.Rogue.ectoplasm()')).toBe(0);
   });
 
   // --- Run lifecycle ---
@@ -163,41 +163,41 @@ test.describe('Rogue Controller', () => {
     expect(await callSetup(page, 'setup.Rogue.field("floorplan")')).toBeUndefined();
   });
 
-  // --- Echoes ---
+  // --- Ectoplasm (mL) ---
 
-  test('addEchoes accumulates the persistent currency', async () => {
-    await page.evaluate(() => SugarCube.setup.Rogue.addEchoes(5));
-    await page.evaluate(() => SugarCube.setup.Rogue.addEchoes(7));
-    expect(await callSetup(page, 'setup.Rogue.echoes()')).toBe(12);
+  test('addEctoplasm accumulates the persistent currency', async () => {
+    await page.evaluate(() => SugarCube.setup.Rogue.addEctoplasm(5));
+    await page.evaluate(() => SugarCube.setup.Rogue.addEctoplasm(7));
+    expect(await callSetup(page, 'setup.Rogue.ectoplasm()')).toBe(12);
   });
 
-  test('spendEchoes rejects when the player cannot afford the cost', async () => {
-    await page.evaluate(() => SugarCube.setup.Rogue.addEchoes(3));
+  test('spendEctoplasm rejects when the player cannot afford the cost', async () => {
+    await page.evaluate(() => SugarCube.setup.Rogue.addEctoplasm(3));
 
-    expect(await callSetup(page, 'setup.Rogue.spendEchoes(5)')).toBe(false);
-    expect(await callSetup(page, 'setup.Rogue.echoes()')).toBe(3); // unchanged
+    expect(await callSetup(page, 'setup.Rogue.spendEctoplasm(5)')).toBe(false);
+    expect(await callSetup(page, 'setup.Rogue.ectoplasm()')).toBe(3); // unchanged
   });
 
-  test('spendEchoes deducts on success', async () => {
-    await page.evaluate(() => SugarCube.setup.Rogue.addEchoes(10));
+  test('spendEctoplasm deducts on success', async () => {
+    await page.evaluate(() => SugarCube.setup.Rogue.addEctoplasm(10));
 
-    expect(await callSetup(page, 'setup.Rogue.spendEchoes(4)')).toBe(true);
-    expect(await callSetup(page, 'setup.Rogue.echoes()')).toBe(6);
+    expect(await callSetup(page, 'setup.Rogue.spendEctoplasm(4)')).toBe(true);
+    expect(await callSetup(page, 'setup.Rogue.ectoplasm()')).toBe(6);
   });
 
-  test('canAffordEchoes reflects the current balance', async () => {
-    await page.evaluate(() => SugarCube.setup.Rogue.addEchoes(5));
+  test('canAffordEctoplasm reflects the current balance', async () => {
+    await page.evaluate(() => SugarCube.setup.Rogue.addEctoplasm(5));
 
-    expect(await callSetup(page, 'setup.Rogue.canAffordEchoes(5)')).toBe(true);
-    expect(await callSetup(page, 'setup.Rogue.canAffordEchoes(6)')).toBe(false);
+    expect(await callSetup(page, 'setup.Rogue.canAffordEctoplasm(5)')).toBe(true);
+    expect(await callSetup(page, 'setup.Rogue.canAffordEctoplasm(6)')).toBe(false);
   });
 
-  test('echoes survive across run start/end', async () => {
-    await page.evaluate(() => SugarCube.setup.Rogue.addEchoes(10));
+  test('ectoplasm survives across run start/end', async () => {
+    await page.evaluate(() => SugarCube.setup.Rogue.addEctoplasm(10));
     await page.evaluate(() => SugarCube.setup.Rogue.start({ seed: 1 }));
-    expect(await callSetup(page, 'setup.Rogue.echoes()')).toBe(10);
+    expect(await callSetup(page, 'setup.Rogue.ectoplasm()')).toBe(10);
     await page.evaluate(() => SugarCube.setup.Rogue.end());
-    expect(await callSetup(page, 'setup.Rogue.echoes()')).toBe(10);
+    expect(await callSetup(page, 'setup.Rogue.ectoplasm()')).toBe(10);
   });
 
   // --- Current room ---

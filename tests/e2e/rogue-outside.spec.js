@@ -83,8 +83,8 @@ test.describe('E2E: rogue Outside menu', () => {
     await clickLink(page, 'Flee the hunt', 'RogueEnd');
 
     expect(await getVar(page, 'run')).toBeNull();
-    // Failure payout: 5 base + 0 success + 2 modifiers = 7.
-    expect(await getVar(page, 'echoes')).toBe(7);
+    // Failure payout: 5 base + 0 success + 2 modifiers = 7 mL.
+    expect(await getVar(page, 'ectoplasm')).toBe(7);
     await expect(
       page.locator('.passage').getByText(/door at your back/i)
     ).toBeVisible();
@@ -125,8 +125,8 @@ test.describe('E2E: rogue Outside menu', () => {
 
     await clickLink(page, 'Continue', 'RogueEnd');
     expect(await getVar(page, 'run')).toBeNull();
-    // 5 base + 5 success + 2 modifiers = 12.
-    expect(await getVar(page, 'echoes')).toBe(12);
+    // 5 base + 5 success + 2 modifiers = 12 mL.
+    expect(await getVar(page, 'ectoplasm')).toBe(12);
   });
 
   test('Identify with the wrong ghost routes into HuntEnd and ends as caught', async () => {

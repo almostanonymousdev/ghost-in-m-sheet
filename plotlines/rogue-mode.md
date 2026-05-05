@@ -3,8 +3,8 @@
 A run-based variant on the classic witch-contract loop. Each rogue
 run rolls a fresh haunted house from a deterministic seed: the floor
 plan, the active modifiers, and the stash placements all change
-between runs. Echo currency carries forward from one run to the
-next and is spent in the meta-shop on persistent unlocks.
+between runs. Ectoplasm (measured in mL) carries forward from one
+run to the next and is spent in the meta-shop on persistent unlocks.
 
 The classic witch-contract flow is unaffected — `$run` is `null`
 when no rogue run is active, and predicates like
@@ -26,7 +26,7 @@ a failure before rolling fresh.
 * **[RogueStart](../passages/rogue/RogueLifecycle.tw)** — entry point.
   If the player walks in with an in-flight run on `$run`, that
   run is auto-failed via `setup.Rogue.endRogue(false)` first (paying
-  the failure-rate echoes, no resume). Then rolls a fresh seed
+  the failure-rate ectoplasm, no resume). Then rolls a fresh seed
   (or accepts an explicit one), drafts the modifier deck,
   generates the floor plan, and stamps `$run`. Shows the player
   the modifier list and the floor plan before they commit.
@@ -48,18 +48,19 @@ a failure before rolling fresh.
   rogue runs plug into that machinery without a `$hunt`).
 * **[RogueEnd](../passages/rogue/RogueLifecycle.tw)** — result
   screen. `setup.Rogue.endRogue(success)` clears `$run` and pays out
-  echoes (5 base + 5 if successful + 1 per active modifier). The
-  player can route to the meta-shop or back to the city.
+  ectoplasm (5 mL base + 5 mL if successful + 1 mL per active
+  modifier). The player can route to the meta-shop or back to the
+  city.
 * **[RogueMetaShop](../passages/rogue/RogueLifecycle.tw)** —
-  echo-spending storefront. Currently exposes a placeholder
-  3-echo unlock; specific unlocks (extra modifier reroll, starting
+  ectoplasm-spending storefront. Currently exposes a placeholder
+  3 mL unlock; specific unlocks (extra modifier reroll, starting
   tool, companion at run start, etc.) land alongside their
   gameplay hooks.
 
 ## State shape
 
 Run-level state lives on `$run` and meta-progression state on
-`$echoes` / `$runsStarted`. Both are owned by
+`$ectoplasm` / `$runsStarted`. Both are owned by
 [`setup.Rogue`](../passages/rogue/RogueController.tw).
 
 ```
@@ -72,7 +73,7 @@ $run = {
   floorplan    // populated by setup.FloorPlan.generate()
 }
 
-$echoes        // persistent meta-progression currency
+$ectoplasm     // persistent meta-progression currency, in mL
 $runsStarted   // lifetime attempt counter
 ```
 
@@ -279,18 +280,18 @@ Modifiers in the catalogue today: Power Outage, Whisper Network
 controllers each modifier touches; querying the active deck
 goes through `setup.Rogue.hasModifier(id)`.
 
-## Echoes (meta-progression)
+## Ectoplasm (meta-progression, mL)
 
-Earned at run end via `setup.Rogue.addEchoes(n)` or
+Earned at run end via `setup.Rogue.addEctoplasm(n)` or
 `setup.Rogue.endRogue(success)` (which composes the standard
-payout). Spent through `setup.Rogue.spendEchoes(n)` (returns
+payout). Spent through `setup.Rogue.spendEctoplasm(n)` (returns
 `false` if the player can't afford it; no partial deductions).
-`setup.Rogue.canAffordEchoes(n)` is the predicate the storefront
+`setup.Rogue.canAffordEctoplasm(n)` is the predicate the storefront
 links use to decide whether to render an unlock as active.
 
 ## File map
 
-* [RogueController.tw](../passages/rogue/RogueController.tw) — `setup.Rogue`: lifecycle, accessors, echoes, composition (`startRogue`/`endRogue`), `minimapData()` / `minimapSvg()` / `currentRoomData()`, and current-room nav (`currentRoomId` / `setCurrentRoom`).
+* [RogueController.tw](../passages/rogue/RogueController.tw) — `setup.Rogue`: lifecycle, accessors, ectoplasm, composition (`startRogue`/`endRogue`), `minimapData()` / `minimapSvg()` / `currentRoomData()`, and current-room nav (`currentRoomId` / `setCurrentRoom`).
 * [FloorPlanController.tw](../passages/rogue/FloorPlanController.tw) — `setup.FloorPlan`: seeded generator, neighbour / connectivity helpers, BFS layout for the minimap.
 * [ModifiersController.tw](../passages/rogue/ModifiersController.tw) — `setup.Modifiers`: catalogue + weighted draft.
 * [TemplatesController.tw](../passages/rogue/TemplatesController.tw) — `setup.Templates`: room-template metadata + slot-id helpers.
@@ -301,7 +302,7 @@ links use to decide whether to render an unlock as active.
 
 ## Save migration
 
-`$run`, `$echoes`, and `$runsStarted` are seeded on legacy saves
+`$run`, `$ectoplasm`, and `$runsStarted` are seeded on legacy saves
 by [SaveMigration.tw](../passages/updates/SaveMigration.tw)'s
 `DEFAULTS` map (default values: `null`, `0`, `0`). `SAVE_VERSION`
 bumps to 3 when a save is touched by rogue-aware code, so

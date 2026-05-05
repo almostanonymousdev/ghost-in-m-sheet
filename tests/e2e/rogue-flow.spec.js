@@ -57,12 +57,12 @@ test.describe('E2E: rogue run lifecycle', () => {
     });
   }
 
-  test('start from GhostStreet → win the run → spend echoes in meta-shop', async () => {
+  test('start from GhostStreet → win the run → spend ectoplasm in meta-shop', async () => {
     test.setTimeout(20_000);
 
     await goToPassage(page, 'GhostStreet');
     expect(await getVar(page, 'run')).toBeNull();
-    expect(await getVar(page, 'echoes')).toBe(0);
+    expect(await getVar(page, 'ectoplasm')).toBe(0);
 
     // 1. Launch the run from the GhostStreet rogue card.
     await clickRogueCard(page);
@@ -80,23 +80,23 @@ test.describe('E2E: rogue run lifecycle', () => {
     // 3. Win the run.
     await clickLink(page, 'Win', 'RogueEnd');
 
-    // The end-passage clears the run and pays out echoes.
+    // The end-passage clears the run and pays out ectoplasm (mL).
     run = await getVar(page, 'run');
     expect(run).toBeNull();
-    const echoes = await getVar(page, 'echoes');
-    // 5 base + 5 success + 2 modifiers = 12.
-    expect(echoes).toBe(12);
+    const ectoplasm = await getVar(page, 'ectoplasm');
+    // 5 base + 5 success + 2 modifiers = 12 mL.
+    expect(ectoplasm).toBe(12);
     expect(await getVar(page, 'runsStarted')).toBe(1);
 
-    // 4. Walk into the meta-shop and spend 3 echoes.
+    // 4. Walk into the meta-shop and spend 3 mL of ectoplasm.
     await clickLink(page, 'Visit the meta-shop', 'RogueMetaShop');
-    await page.locator('.passage').getByText('Spend 3 echoes (placeholder unlock)', { exact: true }).click();
+    await page.locator('.passage').getByText('Spend 3 mL of ectoplasm (placeholder unlock)', { exact: true }).click();
     // The link uses <<replace>> to rewrite the balance text; wait for
     // the underlying state to reflect the spend instead of polling DOM.
-    await page.waitForFunction(() => SugarCube.State.variables.echoes === 9);
+    await page.waitForFunction(() => SugarCube.State.variables.ectoplasm === 9);
   });
 
-  test('losing a run still pays out base + per-modifier echoes', async () => {
+  test('losing a run still pays out base + per-modifier mL of ectoplasm', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
@@ -104,8 +104,8 @@ test.describe('E2E: rogue run lifecycle', () => {
     await clickLink(page, 'Enter the hunt', 'RogueRun');
     await clickLink(page, 'Lose', 'RogueEnd');
 
-    // 5 base + 0 success + 2 modifiers = 7.
-    expect(await getVar(page, 'echoes')).toBe(7);
+    // 5 base + 0 success + 2 modifiers = 7 mL.
+    expect(await getVar(page, 'ectoplasm')).toBe(7);
     expect(await getVar(page, 'run')).toBeNull();
   });
 
@@ -123,12 +123,12 @@ test.describe('E2E: rogue run lifecycle', () => {
       page.locator('.passage').getByText('Resume Run', { exact: true })
     ).toHaveCount(0);
 
-    // Walking back in pays out failure echoes for run 1, then rolls run 2.
+    // Walking back in pays out failure ectoplasm for run 1, then rolls run 2.
     await clickRogueCard(page);
     const run = await getVar(page, 'run');
     expect(run.number).toBe(2);
-    // Run 1: 5 base + 0 success + 2 modifiers = 7 echoes from the forfeit.
-    expect(await getVar(page, 'echoes')).toBe(7);
+    // Run 1: 5 base + 0 success + 2 modifiers = 7 mL from the forfeit.
+    expect(await getVar(page, 'ectoplasm')).toBe(7);
     expect(await getVar(page, 'runsStarted')).toBe(2);
   });
 
@@ -874,8 +874,8 @@ test.describe('E2E: rogue run lifecycle', () => {
     // Walking into RogueEnd closes the run as a failure.
     await goToPassage(page, 'RogueEnd');
     expect(await getVar(page, 'run')).toBeNull();
-    // Failure payout: 5 base + 0 success + 2 modifiers = 7 echoes.
-    expect(await getVar(page, 'echoes')).toBe(7);
+    // Failure payout: 5 base + 0 success + 2 modifiers = 7 mL.
+    expect(await getVar(page, 'ectoplasm')).toBe(7);
     await expect(
       page.locator('.passage').getByText(/ends in failure/i)
     ).toBeVisible();
@@ -1264,7 +1264,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     await clickLink(page, 'Enter the hunt', 'RogueRun');
     await clickLink(page, 'Win', 'RogueEnd');
     expect(await getVar(page, 'runsStarted')).toBe(1);
-    expect(await getVar(page, 'echoes')).toBe(12);
+    expect(await getVar(page, 'ectoplasm')).toBe(12);
 
     // Run 2: lose.
     await clickLink(page, 'Visit the meta-shop', 'RogueMetaShop');
@@ -1274,7 +1274,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     await clickLink(page, 'Enter the hunt', 'RogueRun');
     await clickLink(page, 'Lose', 'RogueEnd');
     expect(await getVar(page, 'runsStarted')).toBe(2);
-    // 12 (run 1) + 7 (run 2 fail) = 19.
-    expect(await getVar(page, 'echoes')).toBe(19);
+    // 12 (run 1) + 7 (run 2 fail) = 19 mL.
+    expect(await getVar(page, 'ectoplasm')).toBe(19);
   });
 });

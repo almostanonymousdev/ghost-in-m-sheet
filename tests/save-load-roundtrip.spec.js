@@ -384,7 +384,7 @@ test.describe('Save/load round-trip', () => {
 
   // --- Rogue-mode migration --------------------------------------
 
-  test('legacy save (pre-rogue) gets $run/$echoes/$runsStarted defaults', async () => {
+  test('legacy save (pre-rogue) gets $run/$ectoplasm/$runsStarted defaults', async () => {
     // A v1/v2 save predates the rogue subsystem entirely. Loading
     // should populate the three rogue-mode state vars with their
     // safe-default classic-mode values.
@@ -397,7 +397,7 @@ test.describe('Save/load round-trip', () => {
     });
 
     expect(migrated.run).toBeNull();
-    expect(migrated.echoes).toBe(0);
+    expect(migrated.ectoplasm).toBe(0);
     expect(migrated.runsStarted).toBe(0);
   });
 
@@ -416,13 +416,13 @@ test.describe('Save/load round-trip', () => {
       floorplan: { seed: 42, rooms: [], edges: [], spawnRoomId: null, loot: {}, bossRoomId: null }
     };
     const migrated = await page.evaluate((run) => {
-      const save = { run: run, echoes: 7, runsStarted: 3 };
+      const save = { run: run, ectoplasm: 7, runsStarted: 3 };
       SugarCube.setup.applySaveDefaults(save);
       return save;
     }, liveRun);
 
     expect(migrated.run).toEqual(liveRun);
-    expect(migrated.echoes).toBe(7);
+    expect(migrated.ectoplasm).toBe(7);
     expect(migrated.runsStarted).toBe(3);
   });
 
@@ -440,7 +440,7 @@ test.describe('Save/load round-trip', () => {
 
     const after = await page.evaluate(() => ({
       run: SugarCube.State.variables.run,
-      echoes: SugarCube.State.variables.echoes,
+      ectoplasm: SugarCube.State.variables.ectoplasm,
       runsStarted: SugarCube.State.variables.runsStarted,
     }));
     expect(after.run.seed).toBe(12345);
@@ -450,10 +450,10 @@ test.describe('Save/load round-trip', () => {
     expect(after.runsStarted).toBe(1);
   });
 
-  test('echoes and runsStarted survive across ended runs in a save', async () => {
+  test('ectoplasm and runsStarted survive across ended runs in a save', async () => {
     // Lifetime counters persist across run boundaries. A serialize
     // taken after end() must still know how many runs have been
-    // attempted and how many echoes the player has banked.
+    // attempted and how many mL of ectoplasm the player has banked.
     await goToPassage(page, 'CityMap');
     await page.evaluate(() => {
       SugarCube.setup.Rogue.startRogue({ seed: 1 });
@@ -465,7 +465,7 @@ test.describe('Save/load round-trip', () => {
 
     const before = await page.evaluate(() => ({
       run: SugarCube.State.variables.run,
-      echoes: SugarCube.State.variables.echoes,
+      ectoplasm: SugarCube.State.variables.ectoplasm,
       runsStarted: SugarCube.State.variables.runsStarted,
     }));
     expect(before.run).toBeNull();
@@ -477,7 +477,7 @@ test.describe('Save/load round-trip', () => {
 
     const after = await page.evaluate(() => ({
       run: SugarCube.State.variables.run,
-      echoes: SugarCube.State.variables.echoes,
+      ectoplasm: SugarCube.State.variables.ectoplasm,
       runsStarted: SugarCube.State.variables.runsStarted,
     }));
     expect(after).toEqual(before);

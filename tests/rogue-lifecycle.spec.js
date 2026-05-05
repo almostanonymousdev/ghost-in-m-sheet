@@ -86,17 +86,17 @@ test.describe('Rogue lifecycle helpers', () => {
 
   // --- endRogue ---
 
-  test('endRogue on a successful run pays out base + bonus + per-modifier echoes', async () => {
+  test('endRogue on a successful run pays out base + bonus + per-modifier mL of ectoplasm', async () => {
     await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
       seed: 1, modifierCount: 2
     }));
 
     const summary = await page.evaluate(() => SugarCube.setup.Rogue.endRogue(true));
 
-    // base 5 + success 5 + 2 modifiers = 12
+    // base 5 + success 5 + 2 modifiers = 12 mL
     expect(summary.payout).toBe(12);
     expect(summary.success).toBe(true);
-    expect(await callSetup(page, 'setup.Rogue.echoes()')).toBe(12);
+    expect(await callSetup(page, 'setup.Rogue.ectoplasm()')).toBe(12);
   });
 
   test('endRogue on a failed run pays out base + per-modifier (no success bonus)', async () => {
@@ -106,10 +106,10 @@ test.describe('Rogue lifecycle helpers', () => {
 
     const summary = await page.evaluate(() => SugarCube.setup.Rogue.endRogue(false));
 
-    // base 5 + 2 modifiers = 7
+    // base 5 + 2 modifiers = 7 mL
     expect(summary.payout).toBe(7);
     expect(summary.success).toBe(false);
-    expect(await callSetup(page, 'setup.Rogue.echoes()')).toBe(7);
+    expect(await callSetup(page, 'setup.Rogue.ectoplasm()')).toBe(7);
   });
 
   test('endRogue clears the active run', async () => {
@@ -138,6 +138,6 @@ test.describe('Rogue lifecycle helpers', () => {
   test('endRogue is a no-op (returns null) when no run is active', async () => {
     const result = await page.evaluate(() => SugarCube.setup.Rogue.endRogue(true));
     expect(result).toBeNull();
-    expect(await callSetup(page, 'setup.Rogue.echoes()')).toBe(0);
+    expect(await callSetup(page, 'setup.Rogue.ectoplasm()')).toBe(0);
   });
 });

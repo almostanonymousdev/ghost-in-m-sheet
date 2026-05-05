@@ -5,7 +5,7 @@
    The actual gameplay lives in RogueRun -- this is the lobby.
    If the player walks back into the lobby with a run already in
    flight, the previous run is forfeited (counts as failure, pays
-   the failure echoes) before the new one rolls -- no resume. */
+   the failure ectoplasm payout) before the new one rolls -- no resume. */
 <<if setup.Rogue.isRogue()>>
 	<<run setup.Rogue.endRogue(false)>>
 <</if>>
@@ -97,7 +97,7 @@
 				<span><<= setup.Rogue.address().formatted>></span>
 				<span>Room: <<= _cr ? _cr.label : "—">></span>
 				<span>Objective: <<= _run.objective>></span>
-				<span>Echoes: <<= setup.Rogue.echoes()>></span>
+				<span>Ectoplasm: <<= setup.Rogue.ectoplasm()>> mL</span>
 			</div>
 			<div class="rogue-run-toolbar">
 				<div class="rogue-run-tools">
@@ -126,11 +126,12 @@
 <</if>>
 
 :: RogueEnd [nobr] {"position":"3200,200","size":"100,100"}
-/* Closes the active rogue run, pays out echoes, prints the
-   summary, and routes to the meta-shop. The calling link stamps
-   the outcome via setup.Rogue.markSuccess() / markFailure(reason);
-   anything other than Outcome.SUCCESS counts as a failure so the
-   player can never lose echoes by navigating in via a stale link. */
+/* Closes the active rogue run, pays out ectoplasm (mL), prints
+   the summary, and routes to the meta-shop. The calling link
+   stamps the outcome via setup.Rogue.markSuccess() /
+   markFailure(reason); anything other than Outcome.SUCCESS counts
+   as a failure so the player can never lose ectoplasm by
+   navigating in via a stale link. */
 <<if not setup.Rogue.isRogue()>>
 	@@.mc-thoughts; No run to end.@@<br>
 	@@.backbtn; [[Back|CityMap]]@@
@@ -153,8 +154,8 @@
 		@@.notmc-speech; The haunt swallows you. Hunt #<<= _summary.number>> ends in failure.@@<br>
 	<</if>>
 	<br>
-	@@.mc-action; +<<= _summary.payout>> echoes@@<br>
-	@@.mc-thoughts; Echo balance: <<= setup.Rogue.echoes()>>@@<br>
+	<span class="mc-action">+<<= _summary.payout>> mL of ectoplasm</span><br>
+	<span class="mc-thoughts">Ectoplasm: <<= setup.Rogue.ectoplasm()>> mL</span><br>
 	<br>
 	@@.movebtn; [[Visit the meta-shop|RogueMetaShop]]@@<br>
 	@@.backbtn; [[Back to the city|CityMap]]@@
@@ -164,20 +165,20 @@
 /* Persistent-unlock storefront. Costs are flat for now; specific
    unlocks (extra modifier reroll, starting tool, companion at
    run start, ...) will replace the placeholders as their gameplay
-   hooks come online. Spending an echo is itself the test the
+   hooks come online. Spending ectoplasm is itself the test the
    lifecycle currently exercises. */
 @@.location; Meta-shop@@<br>
-@@.mc-thoughts; Echo balance: <<= setup.Rogue.echoes()>>@@<br>
+<span class="mc-thoughts">Ectoplasm: <<= setup.Rogue.ectoplasm()>> mL</span><br>
 <br>
-<<if setup.Rogue.canAffordEchoes(3)>>
-	@@.usebtn; <<link "Spend 3 echoes (placeholder unlock)">>
-		<<run setup.Rogue.spendEchoes(3)>>
+<<if setup.Rogue.canAffordEctoplasm(3)>>
+	@@.usebtn; <<link "Spend 3 mL of ectoplasm (placeholder unlock)">>
+		<<run setup.Rogue.spendEctoplasm(3)>>
 		<<replace ".meta-shop-balance">>
-			Echo balance: <<= setup.Rogue.echoes()>>
+			Ectoplasm: <<= setup.Rogue.ectoplasm()>> mL
 		<</replace>>
 	<</link>>@@<br>
 <<else>>
-	@@.disabled-link; Spend 3 echoes (need 3, have <<= setup.Rogue.echoes()>>)@@<br>
+	<span class="disabled-link">Spend 3 mL of ectoplasm (need 3 mL, have <<= setup.Rogue.ectoplasm()>> mL)</span><br>
 <</if>>
 <br>
 <span class="meta-shop-balance"></span><br>

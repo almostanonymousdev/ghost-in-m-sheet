@@ -40,4 +40,4 @@ The game world includes several city locations the player can visit between hunt
 
 ## [Rogue Mode](rogue-mode.md)
 
-A run-based variant on the classic witch-contract loop. Each run rolls a fresh haunted house from a deterministic seed: the floor plan, the active modifiers, and the stash placements all change between runs. Echo currency carries forward and is spent in the meta-shop on persistent unlocks. The classic contract flow is unaffected — `$run` is null when no rogue run is active.
+A run-based variant on the classic witch-contract loop. Each run rolls a fresh haunted house from a deterministic seed: the floor plan, the active modifiers, and the stash placements all change between runs. Ectoplasm (measured in mL) carries forward and is spent in the meta-shop on persistent unlocks. The classic contract flow is unaffected — `$run` is null when no rogue run is active.

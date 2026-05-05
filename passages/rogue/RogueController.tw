@@ -17,8 +17,9 @@
  *     floorplan    // populated by setup.FloorPlan in prereq 5
  *   }
  *
- * `$echoes` is the meta-progression currency that survives runs.
- * Spent in the meta-shop on permanent unlocks (added in prereq 8).
+ * `$ectoplasm` is the meta-progression currency that survives runs,
+ * measured in mL. Spent in the meta-shop on permanent unlocks
+ * (added in prereq 8).
  *
  * Predicate split:
  *   isRogue()   -- a rogue run is currently active
@@ -26,12 +27,12 @@
  *                  (witch street -> contract -> hunt)
  *
  * Per-run state lives on $run. Persistent meta-state lives on
- * $echoes (and any future $meta.* keys). Both keys are owned here
+ * $ectoplasm (and any future $meta.* keys). Both keys are owned here
  * so other controllers can query through this API rather than
  * reaching into State directly.
  */
 setup.Rogue = (function () {
-	var OWNED_VARS = Object.freeze(['run', 'echoes', 'runsStarted']);
+	var OWNED_VARS = Object.freeze(['run', 'ectoplasm', 'runsStarted']);
 
 	/* Street-address vocabulary used to render a seed as a human
 	   "123 Hollow Lane"-style label. The seed maps deterministically
@@ -483,21 +484,21 @@ setup.Rogue = (function () {
 		return run ? run[key] : undefined;
 	}
 
-	// --- Meta-progression: echoes -----------------------------
-	function echoes() { return sv().echoes || 0; }
-	function addEchoes(n) {
-		sv().echoes = (sv().echoes || 0) + (n || 0);
-		return sv().echoes;
+	// --- Meta-progression: ectoplasm (mL) ---------------------
+	function ectoplasm() { return sv().ectoplasm || 0; }
+	function addEctoplasm(n) {
+		sv().ectoplasm = (sv().ectoplasm || 0) + (n || 0);
+		return sv().ectoplasm;
 	}
-	/* Spend `n` echoes. Returns true on success, false if the
-	   player can't afford it. No partial deductions. */
-	function spendEchoes(n) {
-		var have = sv().echoes || 0;
+	/* Spend `n` mL of ectoplasm. Returns true on success, false if
+	   the player can't afford it. No partial deductions. */
+	function spendEctoplasm(n) {
+		var have = sv().ectoplasm || 0;
 		if (have < n) return false;
-		sv().echoes = have - n;
+		sv().ectoplasm = have - n;
 		return true;
 	}
-	function canAffordEchoes(n) { return (sv().echoes || 0) >= n; }
+	function canAffordEctoplasm(n) { return (sv().ectoplasm || 0) >= n; }
 
 	// --- Composition helpers for the lifecycle passages -------
 	/* Roll a fresh rogue run end-to-end: seed, modifier draft,
@@ -863,8 +864,8 @@ setup.Rogue = (function () {
 		if (reason) run.failureReason = reason;
 	}
 
-	/* End the active rogue run, paying out echoes based on whether
-	   it was a success and how many modifiers the run carried.
+	/* End the active rogue run, paying out ectoplasm (mL) based on
+	   whether it was a success and how many modifiers the run carried.
 	   Returns a small summary record the result passage can render
 	   without needing to peek at $run state.
 
@@ -879,7 +880,7 @@ setup.Rogue = (function () {
 		var payout = 5;
 		if (success) payout += 5;
 		payout += Array.isArray(run.modifiers) ? run.modifiers.length : 0;
-		addEchoes(payout);
+		addEctoplasm(payout);
 		var summary = {
 			seed: run.seed,
 			number: run.number,
@@ -943,10 +944,10 @@ setup.Rogue = (function () {
 		takeLoot: takeLoot,
 		hasCollected: hasCollected,
 		collectedLoot: collectedLoot,
-		echoes: echoes,
-		addEchoes: addEchoes,
-		spendEchoes: spendEchoes,
-		canAffordEchoes: canAffordEchoes,
+		ectoplasm: ectoplasm,
+		addEctoplasm: addEctoplasm,
+		spendEctoplasm: spendEctoplasm,
+		canAffordEctoplasm: canAffordEctoplasm,
 		startRogue: startRogue,
 		endRogue: endRogue,
 		minimapData: minimapData,
