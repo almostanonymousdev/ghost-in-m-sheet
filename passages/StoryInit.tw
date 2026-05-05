@@ -20,12 +20,6 @@
 	"Amethyst Street 42":   "house10.jpg"
 }>>
 <<run setup.deliveryStreets = Object.keys(setup.deliveryHouses)>>
-<<run setup.deliveryEventChooseConfig = {
-	pizza:   { varName: "deliveryPizzaEvent",   img: "pizzaevent/1.jpg",   payMode: setup.DeliveryPayMode.ON_DONE  },
-	package: { varName: "deliveryPackageEvent", img: "packageevent/1.jpg", payMode: setup.DeliveryPayMode.ON_ENTRY },
-	burger:  { varName: "deliveryBurgerEvent",  img: "burgerevent/1.jpg",  payMode: setup.DeliveryPayMode.ON_ENTRY },
-	papers:  { varName: "deliveryPapersEvent", img: "papersevent/1.jpg",  payMode: setup.DeliveryPayMode.ON_ENTRY }
-}>>
 <<run setup.piercingList = [
 	{ var: "earsPiercing",   img: "earspiercing.jpg",   target: "Ears",   tip: "Pierced ears",    icon: "ears.png",   beauty: 2 },
 	{ var: "nosePiercing",   img: "nosepiercing.jpg",   target: "Nose",   tip: "Pierced nose",    icon: "nose.png",   beauty: 3 },

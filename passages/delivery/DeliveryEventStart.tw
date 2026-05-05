@@ -1,0 +1,96 @@
+:: DeliveryEventStart [event nobr] {"position":"1325,1750","size":"100,100"}
+/* Unified Stage-1 dispatcher. Switches on the active order's event
+   key (set in $orders by initShift; resolved via currentEventType).
+   Each case follows the per-event encounter and ends by linking to
+   DeliveryEvent1 -- except package's low-lust fork, which inlines its
+   End2 terminal block via linkappend so we don't need a per-event
+   variant flag on DeliveryEvent2. */
+<<set _ev to setup.Delivery.currentEventType()>>
+<<switch _ev>>
+<<case "burger">>
+	<<run setup.Mc.setLust(100)>>
+	@@.mc-thoughts; You've been smoking weed for a while and are just relaxing. At first you are having a friendly conversation, but after 10 minutes you find yourself on your knees with a dick in your mouth, getting endless pleasure just from  @@@@.mc-speech;<<linkreplace " a blowjob">>
+		<<deliveryVideo "burgerevent" 1 2>>
+		@@.mc-thoughts; It seems that I will cum just from the dick in my mouth, why does it feel so good@@<br>
+		@@.notmc-speech; Take off your clothes and show me your pussy@@<br>
+		<<linkreplace "@@.mc-speechLink; Take off your clothes@@">>
+			<<deliveryVideo "burgerevent" 3 4>>
+			@@.mc-speech; ~Mm~ my pussy is all yours@@<br>
+			@@.notmc-speech; Ha~ i know, suck a little more baby@@<br>
+			@@.mc-thoughts; I'll do whatever you want@@<br>
+			@@.mc-speechLink; [[Suck his cock|DeliveryEvent1]]@@<br>
+		<</linkreplace>>
+	<</linkreplace>>@@
+<<case "pizza">>
+	<<deliveryVideo "pizzaevent" 1>>
+	@@.notmc-speech; So you need money but you don't want to work?@@<br>
+	@@.mc-speech; Well, not exactly like that...@@<br>
+	@@.notmc-speech; Of course, I'll pay you, but you'll have to do something for me.@@<br>
+	@@.mc-speech; Hmm, okay... <<linkappend "Ouch">><br>
+		<<deliveryVideo "pizzaevent" 2>>
+		@@.mc-speech; Ah~ It hurts@@<br>
+		@@.notmc-speech; Take off your clothes, now!@@<br>
+		@@.mc-speech; She's crazy, I'd rather do [[what she wants|DeliveryEvent1]]@@<br>
+	<</linkappend>>@@
+<<case "package">>
+	<<run setup.Delivery.markPackageEvent()>>
+	<<addLust 15>>
+	<<deliveryVideo "packageevent" 1>>
+	@@.notmc-speech; You're better off doing something else instead of delivering crap@@<br>
+	@@.mc-speech; Maybe you are right~AH~@@<br>
+	@@.notmc-speech; For example: sit down and @@<<linkappend "@@.notmc-speechLink; suck me off@@">><br>
+		<<addLust 30>>
+		<<set _pick to either(2, 5)>>
+		<<video "scenes/deliveryhub/packageevent/" + _pick + ".mp4">>
+		@@.notmc-speech; You're good at it@@<br>
+		@@.mc-speech; ~Hmng~ulrp~@@<br>
+		<<if not setup.Delivery.packageLustHighEnough()>>
+			@@.mc-thoughts; I suck dick for money, what happened to me?@@ <<deliveryLustReq 50>><br>
+			<<linkappend "@@.mc-speechLink; He's cumming@@">><br>
+				/* End2 terminal block -- inlined here (instead of a
+				   variant branch on DeliveryEvent2) so the low-lust
+				   fork doesn't need a flag round-trip through state. */
+				<<addLust 15>>
+				<<deliveryLustOverflow>>
+				<<deliveryVideo "packageevent" 7>>
+				@@.notmc-speech; Yea~ that's it, you're a good girl. Here you go, you've earned it@@<br>
+				@@.mc-thoughts; It's finally over@@<br>
+				<<deliveryBonus 10>>
+				<br>
+				@@.backbtn;[[Leave|DeliveryMap]]@@<br>
+			<</linkappend>>
+		<<else>>
+			@@.mc-speech; Mm~ my pussy is so wet, please [[fuck me~|DeliveryEvent1]] @@<br>
+		<</if>>
+	<</linkappend>>
+<<case "papers">>
+	<<addLust 15>>
+	<<deliveryVideo "papersevent" 1>>
+	@@.notmc-speech; How about staying with me for a while? I think the work can wait, and I'll write a good review for your work?@@<br>
+	+15 <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+	<<if setup.Delivery.papersStillCorruptible()>>
+		+0.1 <<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:3%;" }>>
+		<<run setup.Mc.addCorruption(0.1)>><br>
+	<</if>>
+	<<if setup.Delivery.canAcceptPapersFlirt()>>
+		<<if setup.Delivery.papersLustHighEnough()>>
+			@@.mc-thoughts; I'm so turned on, I need to relax a little@@<br>
+			@@.mc-speech; Maybe you are right~AH~, work can wait@@<br>
+			@@.notmc-speech; Get on <<linkappend "your knees">><br>
+				<<addLust 30>>
+				<<deliveryVideo "papersevent" 2 3>><br>
+				+30 <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+				@@.mc-speech; ~Hmng~ulrp~ It's too big to fit in my mouth@@<br>
+				@@.notmc-speech; Oh~ I think it will fit in your pussy, I'm sure you're all wet@@<br>
+				@@.mc-thoughts; He is right. I can not stand it any longer@@<br>
+				@@.notmc-speech; Sit on my dick with your [[wet pussy|DeliveryEvent1]]@@<br>
+			<</linkappend>>@@
+		<<else>>
+			@@.mc-speech; Nah, I better get back to work, bye@@ <<deliveryLustReq 40>><br>
+			@@.backbtn;[[Leave|DeliveryMap]] @@<br>
+		<</if>>
+	<<else>>
+		@@.mc-speech; What? I'm not some cheap whore, I'm leaving@@ <<deliveryCorrReq 3>><br><br>
+		@@.backbtn;[[Leave|DeliveryMap]] @@<br>
+	<</if>>
+<</switch>>

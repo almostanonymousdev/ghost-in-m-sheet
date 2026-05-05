@@ -205,11 +205,39 @@ setup.Delivery = (function () {
 		},
 
 		// --- Event flags ----------------------------------------
-		markPapersEvent:  function () { setup.Cooldowns.start('deliveryPapersEvent'); },
-		markBurgerEvent:  function () { setup.Cooldowns.start('deliveryBurgerEvent'); },
-		markPackageEvent: function () { setup.Cooldowns.start('deliveryPackageEvent'); },
-		markPizzaEvent:   function () { setup.Cooldowns.start('deliveryPizzaEvent'); },
+		// markEvent(name) reads the cooldown var name from the catalogue
+		// (setup.deliveryEvents) so the four delivery encounters share one
+		// marker call. Per-event helpers below kept thin for callers that
+		// still read by name.
+		markEvent: function (name) {
+			var cfg = setup.deliveryEvents[name];
+			if (cfg) setup.Cooldowns.start(cfg.varName);
+		},
+		markPapersEvent:  function () { this.markEvent('papers'); },
+		markBurgerEvent:  function () { this.markEvent('burger'); },
+		markPackageEvent: function () { this.markEvent('package'); },
+		markPizzaEvent:   function () { this.markEvent('pizza'); },
 		startManagerBJCooldown: function () { setup.Cooldowns.start('deliveryBJ'); },
+
+		// --- Delivery-event catalogue lookups -------------------
+		// Maps an order item key (e.g. "burgers") to the catalogue
+		// event key (e.g. "burger"). Returns null for items without
+		// an encounter (books, generic).
+		eventNameForItem: function (item) {
+			switch (item) {
+				case 'pizza':      return 'pizza';
+				case 'package':    return 'package';
+				case 'burgers':    return 'burger';
+				case 'newspapers': return 'papers';
+				default:           return null;
+			}
+		},
+		// Event type for the order in the active currentOrder slot.
+		currentEventType: function () {
+			var slot = sv().currentOrder;
+			var order = sv()['order' + slot];
+			return order ? this.eventNameForItem(order.item) : null;
+		},
 		markMetAlice:     function () { setup.Companion.markMetAlice(); },
 		hasMetAlice:      function () { return setup.Companion.hasMetAlice(); },
 		markFirstVisited: function () { sv().firstVisitDeliveryHub = false; },
@@ -321,3 +349,55 @@ setup.Cooldowns.registerDaily('deliveryPackageEvent');
 setup.Cooldowns.registerDaily('deliveryBurgerEvent');
 setup.Cooldowns.registerDaily('deliveryPapersEvent');
 setup.Cooldowns.registerDaily('deliveryBJ');
+
+/* Delivery-event catalogue. Each entry holds the metadata the unified
+   dispatch passages (DeliveryEventChoose / Start / Event1 / Event2)
+   need to render the gate, route between stages, and pay out. The
+   per-encounter narrative still lives in those passages — what's here
+   is the data the wrapper widgets consume.
+
+   Fields:
+     varName       cooldown flag set by markEvent(name)
+     videoSubdir   /scenes/deliveryhub/<subdir>/N.mp4 root for the encounter
+     headerImg     image rendered above the gate dialog
+     payMode       DeliveryPayMode.ON_ENTRY pays the regular delivery
+                   fee as soon as the gate is shown; ON_DONE waits for
+                   the cooldown var to flip to 1 (encounter complete)
+     canAcceptFn   () -> bool, gate the offer dialog; false branch
+                   shows the corruption-required line and exits
+     gateCorrReq   number rendered by deliveryCorrReq next to the
+                   refusal link when canAcceptFn is false. */
+setup.deliveryEvents = Object.freeze({
+	pizza: Object.freeze({
+		varName:     "deliveryPizzaEvent",
+		videoSubdir: "pizzaevent",
+		headerImg:   "pizzaevent/1.jpg",
+		payMode:     setup.DeliveryPayMode.ON_DONE,
+		canAcceptFn: function () { return setup.Delivery.canAcceptPizzaDeal(); },
+		gateCorrReq: 3
+	}),
+	package: Object.freeze({
+		varName:     "deliveryPackageEvent",
+		videoSubdir: "packageevent",
+		headerImg:   "packageevent/1.jpg",
+		payMode:     setup.DeliveryPayMode.ON_ENTRY,
+		canAcceptFn: function () { return setup.Delivery.canAcceptPackageDeal(); },
+		gateCorrReq: 3
+	}),
+	burger: Object.freeze({
+		varName:     "deliveryBurgerEvent",
+		videoSubdir: "burgerevent",
+		headerImg:   "burgerevent/1.jpg",
+		payMode:     setup.DeliveryPayMode.ON_ENTRY,
+		canAcceptFn: function () { return setup.Delivery.canAcceptBurgerWeed(); },
+		gateCorrReq: 5
+	}),
+	papers: Object.freeze({
+		varName:     "deliveryPapersEvent",
+		videoSubdir: "papersevent",
+		headerImg:   "papersevent/1.jpg",
+		payMode:     setup.DeliveryPayMode.ON_ENTRY,
+		canAcceptFn: function () { return setup.Delivery.canAcceptPapersFlirt(); },
+		gateCorrReq: 3
+	})
+});
