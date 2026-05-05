@@ -92,6 +92,7 @@
 		</div>
 
 		<div class="rogue-run-bottom">
+			<div class="hunt-conditions"><<huntConditions>></div>
 			<div class="rogue-run-hud">
 				<span><<= setup.Rogue.address().formatted>></span>
 				<span>Room: <<= _cr ? _cr.label : "—">></span>

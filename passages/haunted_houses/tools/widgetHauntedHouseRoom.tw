@@ -37,8 +37,12 @@ buttons were on a second row, but adding a row to the height-capped
 Numbers come from setup.HauntConditions.snapshot() so the HUD, the
 tool-card hovertip, and the actual tool/hunt rolls all read the same
 source. Renders contents only -- the .hunt-conditions wrapper lives on
-roomFooter so re-renders via <<replace ".hunt-conditions">> don't
-double-nest the wrapper class (which compounds its 80% font-size). */
+roomFooter (classic) and on the RogueRun layout (rogue) so re-renders
+via <<replace ".hunt-conditions">> don't double-nest the wrapper class
+(which compounds its 80% font-size). Used by both classic haunted-
+house rooms and rogue runs; the snapshot already gates contributors
+that don't apply outside a classic house (e.g. darkness keys off
+setup.hauntedPassages, which doesn't list RogueRun). */
 <<widget "huntConditions">>
 	<<set _hc to setup.HauntConditions.snapshot()>>
 	<<set _sanityVal to Math.round(_hc.sanityPerStep * 100) / 100>>
@@ -72,9 +76,11 @@ double-nest the wrapper class (which compounds its 80% font-size). */
 the end of <<huntConditions>>: bait the ghost (lust spend) and toggle
 overcharged tools on/off. Each click re-renders <<huntConditions>> as a
 whole (which contains the action bar), so we only need the one
-<<replace ".hunt-conditions">> per callback. Only renders in-house. */
+<<replace ".hunt-conditions">> per callback. Renders whenever the
+shared hunt is active (classic in-house OR rogue on RogueRun); the
+canBait predicate self-gates against rogue runs that have no $hunt. */
 <<widget "huntActionBar">>
-	<<if setup.Ghosts.isHunting()>>
+	<<if setup.HuntController.isHuntActive()>>
 		<<if setup.HauntConditions.canBait()>>
 			· @@.huntActionLink;<<link `"Bait ghost (−" + setup.HauntConditions.BAIT_LUST_COST + " lust, −" + setup.HauntConditions.ENERGY_COST_BAIT + " energy)"`>>
 				<<run setup.HauntConditions.startBait()>>

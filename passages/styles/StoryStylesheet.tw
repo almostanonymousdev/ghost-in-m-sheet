@@ -1237,6 +1237,13 @@ body.ui-bar-stowed .rogue-run-layout {
 	flex: 0 0 auto;
 	gap: 0.5em;
 }
+/* Rogue's tool row is full-width and content-centered, so the
+   hunt-conditions HUD inside .rogue-run-bottom should span full width
+   too -- the 80% rule used in classic aligns the HUD with the 80%
+   .footertools column, which doesn't exist here. */
+.rogue-run-bottom .hunt-conditions {
+	width: 100%;
+}
 .rogue-run-hud {
 	display: flex;
 	justify-content: center;

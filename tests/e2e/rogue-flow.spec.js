@@ -175,6 +175,52 @@ test.describe('E2E: rogue run lifecycle', () => {
     );
   });
 
+  test('RogueRun renders the shared hunt-conditions HUD with live deltas', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickRogueCard(page);
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
+
+    // The HUD wrapper exists exactly once -- the same .hunt-conditions
+    // class classic uses, so <<replace ".hunt-conditions">> works in
+    // either mode.
+    const hud = page.locator('.rogue-run-bottom .hunt-conditions');
+    await expect(hud).toHaveCount(1);
+
+    // The snapshot's per-step deltas are present (sanity/lust/energy
+    // each emit a "<n>/step" chip) and the time label renders.
+    await expect(hud).toContainText('/step');
+    await expect(hud).toContainText('+1 min/step');
+  });
+
+  test('Lust ≥ 50 contributor chip appears in the rogue HUD after a tool tick refresh', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickRogueCard(page);
+    await ensureNotEmptyBag(page);
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await stubPerTickGatesQuiet(page);
+    await fastToolTicks(page);
+
+    const hud = page.locator('.rogue-run-bottom .hunt-conditions');
+    // Baseline: no Lust contributor chip (mc.lust starts at 0).
+    await expect(hud).not.toContainText('Lust ≥');
+
+    // Cross the LUST_FUEL_THRESHOLD (50) without re-rendering the
+    // passage -- the HUD should pick this up only after the tool-tick
+    // refresh, which mirrors classic's nav re-render.
+    await page.evaluate(() => { SugarCube.State.variables.mc.lust = 60; });
+
+    // Click any tool; the rogueToolSlot re-renders .hunt-conditions
+    // after applyTickEffects.
+    await page.locator('.rogue-tool-card').first().locator('a').click();
+    await page.waitForFunction(() => SugarCube.State.variables.minutes >= 6);
+
+    await expect(hud).toContainText('Lust ≥ 50');
+  });
+
   test('toolbar renders one card per setup.searchToolOrder entry', async () => {
     test.setTimeout(15_000);
 

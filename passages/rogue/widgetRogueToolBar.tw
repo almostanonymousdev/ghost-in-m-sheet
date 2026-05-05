@@ -52,6 +52,9 @@
      * Adds a sanity/exhaustion guard after <<applyTickEffects>> so
        a stat-collapse landed by the click routes to RogueEnd
        immediately instead of waiting for the next nav.
+     * Refreshes the .hunt-conditions HUD after the tick so per-step
+       deltas + contributor chips track stat changes from the click
+       (rogue doesn't re-render the passage between tool-clicks).
    The shared bridges (setup.Ghosts.active / setup.isGhostHere /
    setup.HuntController.huntOverPassage) make the per-tick chain
    reusable in either mode. */
@@ -84,6 +87,7 @@
 					<</replace>>
 					<<replace "#rogue-tool-meter">><</replace>>
 					<<applyTickEffects>>
+					<<replace ".hunt-conditions">><<huntConditions>><</replace>>
 					<<set $currentsearchRogue[_t] to 0>>
 					<<removeclass ".cardlink" "disabled-link">>
 					<<if setup.Mc.isSanityCollapsed() or setup.Mc.sanity() lte 0>>
