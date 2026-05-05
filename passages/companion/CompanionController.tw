@@ -28,8 +28,8 @@ setup.Companion = (function () {
 	   $chanceToSuccessAloneOwaissa<Name>, etc.). They've been moved onto the
 	   per-companion stat object ($brook / $alice / $blake / $alex / $taylor /
 	   $casey) so every dynamic key concatenation collapses to a normal field
-	   read on whatever compFor(name) returns. SaveMigration carries the legacy
-	   keys forward. */
+	   read on whatever compFor(name) returns. api.migrateLegacyKeys (called
+	   from SaveMigration) carries the legacy keys forward off old saves. */
 	var OWNED_VARS = Object.freeze([
 		'companion',
 		'brook', 'alice', 'blake', 'alex', 'taylor', 'casey',
@@ -83,189 +83,18 @@ setup.Companion = (function () {
 	function isName(n) { var c = comp(); return c && c.name === n; }
 	function isTrans(n) { return TRANS_NAMES.indexOf(n) !== -1; }
 
-	// Canonical companion catalogue. Static per-companion metadata lives
-	// here so the six near-identical Main passages collapse into a single
-	// <<companionMain>> dispatch. Mutable stats stay on the existing
-	// $brook / $alice / $blake / $alex / $taylor / $casey objects so saves
-	// keep working; only the display/dialogue variations moved into config.
-	var COMPANION_CONFIG = [
-		{
-			name: "Brook", key: "brook",
-			imageFolder: "brook", imagePrefix: "brook",
-			isTrans: false, canWalkHome: true, hasExpSystem: true,
-			pronObj: "her", pronPos: "her",
-			neutralResp: "Let's just focus on the task.",
-			// Per-companion stat overrides merged over CIS_BASE_STATS by
-			// Companion.prototype.defaultState(). Only the fields that
-			// differ from the shared cis defaults live here.
-			initStats: {
-				plan2TimeReq: 15, plan3TimeReq: 10, plan4TimeReq: 10,
-				chanceOfSuccessCI: 20, chanceOfSuccessGR: 30
-			},
-			clothingTiers: [
-				{ mc: "You can take off your top, it'll make it easier for you to move.",
-				resp: "It'll be easier to move if I take off my top? How exactly? Well, alright, if you say so..." },
-				{ mc: "Stay in just your underwear, it might help us get through this.",
-				resp: "I actually feel better wearing just my underwear." },
-				{ mc: "Just keep your panties on, it'll be easier for both of us.",
-				resp: "I feel like I'm making things easier for the ghost, but I don't really mind..." },
-				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
-				resp: "Fine, he's going to get to my pussy anyway." }
-			]
-		},
-		{
-			name: "Alice", key: "alice",
-			imageFolder: "alice", imagePrefix: "alice",
-			isTrans: false, canWalkHome: true, hasExpSystem: true,
-			pronObj: "her", pronPos: "her",
-			neutralResp: "Let's just focus on the task.",
-			initStats: {
-				plan2TimeReq: 15, plan3TimeReq: 15, plan4TimeReq: 10,
-				chanceOfSuccessCI: 30, chanceOfSuccessGR: 50
-			},
-			clothingTiers: [
-				{ mc: "You can take off your top, it'll make it easier for you to move.",
-				resp: "Take my top off? Well... alright, if you think it'll help." },
-				{ mc: "Stay in just your underwear, it might help us get through this.",
-				resp: "Down to my underwear? Okay, I trust you." },
-				{ mc: "Just keep your panties on, it'll be easier for both of us.",
-				resp: "Just my panties? This is so embarrassing, but fine..." },
-				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
-				resp: "Completely naked? You're lucky I like you, $mc.name." }
-			]
-		},
-		{
-			name: "Blake", key: "blake",
-			imageFolder: "blake", imagePrefix: "blake",
-			isTrans: false, canWalkHome: true, hasExpSystem: true,
-			pronObj: "her", pronPos: "her",
-			neutralResp: "Let's just focus on the task.",
-			initStats: {
-				plan2TimeReq: 10, plan3TimeReq: 15, plan4TimeReq: 10,
-				chanceOfSuccessCI: 30, chanceOfSuccessGR: 20,
-				chanceOfSuccessAnyEvidence: 15
-			},
-			clothingTiers: [
-				{ mc: "You can take off your top, it'll make it easier for you to move.",
-				resp: "Take my top off? Well... alright, if you think it'll help." },
-				{ mc: "Stay in just your underwear, it might help us get through this.",
-				resp: "Down to my underwear? Okay, I trust you." },
-				{ mc: "Just keep your panties on, it'll be easier for both of us.",
-				resp: "Just my panties? This is so embarrassing, but fine..." },
-				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
-				resp: "Completely naked? You're lucky I like you, $mc.name." }
-			]
-		},
-		{
-			name: "Alex", key: "alex",
-			imageFolder: "trans", imagePrefix: "alex",
-			isTrans: true, canWalkHome: false, hasExpSystem: false,
-			pronObj: "him", pronPos: "his",
-			neutralResp: "Let's just focus on the task.",
-			initStats: { chanceOfSuccessAnyEvidence: 25 },
-			clothingTiers: [
-				{ mc: "You can take off your shirt, it'll make it easier for you to move.",
-				resp: "Shirt off? Sure, if you say it helps." },
-				{ mc: "Stay in just your underwear, it might help us get through this.",
-				resp: "Down to my underwear? Alright, I trust you." },
-				{ mc: "Just keep your briefs on, it'll be easier for both of us.",
-				resp: "Just my briefs? This feels a bit ridiculous, but fine." },
-				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
-				resp: "Completely naked? You owe me one, $mc.name." }
-			]
-		},
-		{
-			name: "Taylor", key: "taylor",
-			imageFolder: "trans", imagePrefix: "taylor",
-			isTrans: true, canWalkHome: false, hasExpSystem: false,
-			pronObj: "her", pronPos: "her",
-			neutralResp: "Let's just focus on the task.",
-			initStats: { chanceOfSuccessAnyEvidence: 35 },
-			clothingTiers: [
-				{ mc: "You can take off your top, it'll make it easier for you to move.",
-				resp: "Top off? Alright, if you think it'll help." },
-				{ mc: "Stay in just your underwear, it might help us get through this.",
-				resp: "Down to my underwear? Okay, I trust you." },
-				{ mc: "Just keep your panties on, it'll be easier for both of us.",
-				resp: "Just my panties? Embarrassing, but fine..." },
-				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
-				resp: "Completely naked? You're lucky I like you, $mc.name." }
-			]
-		},
-		{
-			name: "Casey", key: "casey",
-			imageFolder: "trans", imagePrefix: "casey",
-			isTrans: true, canWalkHome: false, hasExpSystem: false,
-			pronObj: "them", pronPos: "their",
-			neutralResp: "Let's just focus on the task.",
-			initStats: { chanceOfSuccessAnyEvidence: 50 },
-			clothingTiers: [
-				{ mc: "You can take off your top, it'll make it easier for you to move.",
-				resp: "Top off? Alright, if you say so." },
-				{ mc: "Stay in just your underwear, it might help us get through this.",
-				resp: "Down to my underwear? Okay, I trust you." },
-				{ mc: "Just keep your underwear on, it'll be easier for both of us.",
-				resp: "Just my underwear? A bit much, but fine..." },
-				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
-				resp: "Completely naked? You're really pushing it, $mc.name." }
-			]
-		}
-	];
-
-	// Sanity threshold below which the active companion leaves you mid-event
-	// for a given level. Index by companion lvl (1..5+). Was duplicated three
-	// times in PassageDone (one block per cis companion) and once more inline
-	// for trans companions (always 0); centralised here so adding a new tier
-	// is a single edit. lvl >= 5 is "no floor": trust is total.
-	var SANITY_CAP_BY_LEVEL = [75, 75, 50, 25, 0, 0];
+	// Pure data lives in CompanionData.tw (loaded after this script
+	// alphabetically). data() is the single accessor — every read goes
+	// through it so callers don't need to remember which sub-table they
+	// want.
+	function data() { return setup.CompanionData; }
 
 	function sanityCapForLevel(lvl) {
-		if (typeof lvl !== 'number' || lvl < 1) return SANITY_CAP_BY_LEVEL[0];
-		if (lvl >= SANITY_CAP_BY_LEVEL.length) return 0;
-		return SANITY_CAP_BY_LEVEL[lvl];
+		var caps = data().sanityCapByLevel;
+		if (typeof lvl !== 'number' || lvl < 1) return caps[0];
+		if (lvl >= caps.length) return 0;
+		return caps[lvl];
 	}
-
-	// Shared stat defaults baked into every fresh $brook/$alice/$blake
-	// companion state. Per-companion overrides live in COMPANION_CONFIG's
-	// initStats field. Kept out of the catalogue entries because the fields
-	// only ever differ on the handful of dials listed in initStats.
-	var CIS_BASE_STATS = {
-		sanity: 100, sanityMax: 100, corruption: 0,
-		lust: 0, lvl: 1, exp: 0, expForNextLvl: 20,
-		decreaseSanity: 10,
-		chanceOfSuccessEMF: 15, chanceOfSuccessECTO: 15,
-		chanceOfSuccessGWB: 15, chanceOfSuccessSB: 15,
-		chanceOfSuccessTEMP: 15, chanceOfSuccessUVL: 15,
-		chanceOfSuccessAnyEvidence: 25,
-		// Per-companion flags formerly stored as top-level $isCompChosen<Name>,
-		// $chanceToAttack<Name>, $is<Name>GoingForHuntingAlone,
-		// $<key>Choose<Street>, $payForHuntAlone<Name>,
-		// $chanceToSuccessAlone<Street><Name>. See SaveMigration.tw for the
-		// legacy-key forwarding.
-		chosen: 0, chanceToAttack: 25,
-		goingSolo: 0, paidForSolo: 0,
-		chooseOwaissa: 0, chooseElm: 0,
-		soloChanceOwaissa: 0, soloChanceElm: 0
-	};
-
-	// Shared defaults for trans companions ($alex/$taylor/$casey). No
-	// corruption / exp fields (they're locked at lvl 5 with no progression),
-	// and the plan* times are uniformly 5 minutes. Trans companions also
-	// have no solo-hunt path, so the *Solo* fields are omitted.
-	var TRANS_BASE_STATS = {
-		sanity: 100, sanityMax: 100,
-		lust: 0, lvl: 5,
-		plan2TimeReq: 5, plan3TimeReq: 5, plan4TimeReq: 5,
-		decreaseSanity: 10,
-		chanceOfSuccessCI: 50, chanceOfSuccessGR: 50,
-		chosen: 0, chanceToAttack: 25
-	};
-
-	// The 4 non-zero attack-chance tiers, indexed the same as clothingTiers.
-	// Kept out of the per-companion config because they're shared across all
-	// six: the slider values are game-balance, not character dialogue.
-	var TIER_CHANCES = [40, 55, 70, 90];
-	var BASE_CHANCE = 25;
 
 	// Companion is a prototype-based class so per-companion behaviour
 	// (image paths, clothing responses, walk-home eligibility) lives on
@@ -293,7 +122,7 @@ setup.Companion = (function () {
 	// ... get populated on load without each companion needing its own
 	// {Name}Init passage.
 	Companion.prototype.defaultState = function () {
-		var base = this.isTrans ? TRANS_BASE_STATS : CIS_BASE_STATS;
+		var base = this.isTrans ? data().transBaseStats : data().cisBaseStats;
 		return Object.assign({ name: this.name }, base, this.initStats);
 	};
 
@@ -305,9 +134,9 @@ setup.Companion = (function () {
 	};
 
 	// One of the five portrait files, keyed by the current attack chance.
-	// BASE_CHANCE → tier 1 (fully dressed); TIER_CHANCES[i] → tier i+2.
+	// data().baseChance → tier 1 (fully dressed); tierChances[i] → tier i+2.
 	Companion.prototype.imagePath = function (chance) {
-		var idx = TIER_CHANCES.indexOf(chance);
+		var idx = data().tierChances.indexOf(chance);
 		var tier = idx === -1 ? 1 : idx + 2;
 		return "characters/" + this.imageFolder + "/" + this.imagePrefix + tier + ".png";
 	};
@@ -317,13 +146,13 @@ setup.Companion = (function () {
 	// the clothingTiers entry for that chance. $mc.name is interpolated
 	// here because the widget outputs via <<=>>, which doesn't re-wikify.
 	Companion.prototype.responseFor = function (chance) {
-		var idx = TIER_CHANCES.indexOf(chance);
+		var idx = data().tierChances.indexOf(chance);
 		var raw = idx === -1 ? this.neutralResp : this.clothingTiers[idx].resp;
 		return raw.replace(/\$mc\.name/g, setup.Mc.name() || "");
 	};
 
-	Companion.prototype.tierChance = function (idx) { return TIER_CHANCES[idx]; };
-	Companion.prototype.tierCount  = function ()    { return TIER_CHANCES.length; };
+	Companion.prototype.tierChance = function (idx) { return data().tierChances[idx]; };
+	Companion.prototype.tierCount  = function ()    { return data().tierChances.length; };
 
 	// Small thumbnail portrait (contacts list / inline companion links /
 	// success banner). Cis companions have a single characters/{folder}/{prefix}.png;
@@ -336,64 +165,16 @@ setup.Companion = (function () {
 		return "characters/" + this.imageFolder + "/" + this.imagePrefix + ".png";
 	};
 
-	var COMPANIONS = COMPANION_CONFIG.map(function (cfg) { return new Companion(cfg); });
-
-	// Per-companion CompanionEvent video/image tables. Each tier key
-	// (high/mid/low/crit) maps either to an array of {type, src} entries
-	// or to a {default, inElm?, lustHigh?} bundle whose keys are picked at
-	// runtime. The Companion.pickEventMedia dispatcher does the lookup.
-	// Hoisted to module scope so the (~80) descriptors aren't reallocated
-	// on every event tick.
-	var EVENT_MEDIA_BROOK = {
-		high: {
-			default: [{type:"image",src:"characters/brook/1.0.jpg"},{type:"image",src:"characters/brook/1.1.jpg"},{type:"video",src:"characters/brook/1.2.mp4"},{type:"video",src:"characters/brook/1.3.mp4"},{type:"video",src:"characters/brook/1.4.mp4"},{type:"video",src:"characters/brook/1.5.mp4"}],
-			inElm:   [{type:"image",src:"characters/brook/1.6.jpg"},{type:"image",src:"characters/brook/1.7.jpg"},{type:"video",src:"characters/brook/1.8.mp4"}]
-		},
-		mid: {
-			default: [{type:"video",src:"characters/brook/2.0.mp4"},{type:"video",src:"characters/brook/2.1.mp4"},{type:"video",src:"characters/brook/2.2.mp4"},{type:"video",src:"characters/brook/2.3.mp4"},{type:"image",src:"characters/brook/2.4.jpg"}],
-			inElm:   [{type:"video",src:"characters/brook/2.5.mp4"},{type:"video",src:"characters/brook/2.6.mp4"},{type:"video",src:"characters/brook/2.7.mp4"},{type:"video",src:"characters/brook/2.8.mp4"}]
-		},
-		low: {
-			default: [{type:"video",src:"characters/brook/3.0.mp4"},{type:"video",src:"characters/brook/3.1.mp4"},{type:"video",src:"characters/brook/3.2.mp4"},{type:"video",src:"characters/brook/3.3.mp4"}],
-			inElm:   [{type:"video",src:"characters/brook/3.6.mp4"},{type:"video",src:"characters/brook/3.7.mp4"}]
-		},
-		crit: {
-			default: [{type:"video",src:"characters/brook/4.0.mp4"},{type:"video",src:"characters/brook/4.1.mp4"},{type:"video",src:"characters/brook/4.2.mp4"},{type:"video",src:"characters/brook/4.3.mp4"}],
-			inElm:   [{type:"video",src:"characters/brook/4.4.mp4"},{type:"video",src:"characters/brook/4.5.mp4"},{type:"video",src:"characters/brook/4.6.mp4"},{type:"video",src:"characters/brook/4.7.mp4"}]
+	// Lazy because setup.CompanionData is populated by a script that
+	// loads after this one. companions() is called inside api methods
+	// (game-time), by which point both scripts have run.
+	var COMPANIONS = null;
+	function companions() {
+		if (!COMPANIONS) {
+			COMPANIONS = data().config.map(function (cfg) { return new Companion(cfg); });
 		}
-	};
-	var EVENT_MEDIA_ALICE = {
-		high: [{type:"image",src:"characters/alice/1.0.jpg"},{type:"video",src:"characters/alice/1.1.mp4"},{type:"video",src:"characters/alice/1.2.mp4"},{type:"video",src:"characters/alice/1.3.mp4"},{type:"image",src:"characters/alice/1.4.jpg"},{type:"video",src:"characters/alice/1.5.mp4"}],
-		mid: {
-			default:  [{type:"video",src:"characters/alice/2.0.mp4"},{type:"video",src:"characters/alice/2.1.mp4"},{type:"video",src:"characters/alice/2.2.mp4"},{type:"video",src:"characters/alice/2.3.mp4"},{type:"video",src:"characters/alice/2.4.mp4"},{type:"video",src:"characters/alice/2.5.mp4"}],
-			lustHigh: [{type:"video",src:"characters/alice/2.6.mp4"},{type:"video",src:"characters/alice/2.7.mp4"},{type:"video",src:"characters/alice/2.8.mp4"},{type:"video",src:"characters/alice/2.9.mp4"},{type:"video",src:"characters/alice/2.10.mp4"},{type:"video",src:"characters/alice/2.11.mp4"},{type:"video",src:"characters/alice/2.12.mp4"}]
-		},
-		low: {
-			default:  [{type:"video",src:"characters/alice/3.0.mp4"},{type:"video",src:"characters/alice/3.1.mp4"},{type:"video",src:"characters/alice/3.2.mp4"},{type:"video",src:"characters/alice/3.3.mp4"},{type:"video",src:"characters/alice/3.4.mp4"}],
-			inElm:    [{type:"video",src:"characters/alice/3.5.mp4"},{type:"video",src:"characters/alice/3.6.mp4"},{type:"video",src:"characters/alice/3.7.mp4"}],
-			lustHigh: [{type:"video",src:"characters/alice/3.8.mp4"},{type:"video",src:"characters/alice/3.9.mp4"},{type:"video",src:"characters/alice/3.10.mp4"},{type:"video",src:"characters/alice/3.11.mp4"},{type:"video",src:"characters/alice/3.12.mp4"}]
-		},
-		crit: {
-			default:  [{type:"video",src:"characters/alice/4.0.mp4"},{type:"video",src:"characters/alice/4.1.mp4"},{type:"video",src:"characters/alice/4.2.mp4"},{type:"video",src:"characters/alice/4.3.mp4"},{type:"video",src:"characters/alice/4.4.mp4"},{type:"video",src:"characters/alice/4.5.mp4"}],
-			lustHigh: [{type:"video",src:"characters/alice/4.6.mp4"},{type:"video",src:"characters/alice/4.7.mp4"},{type:"video",src:"characters/alice/4.8.mp4"},{type:"video",src:"characters/alice/4.9.mp4"},{type:"video",src:"characters/alice/4.10.mp4"},{type:"video",src:"characters/alice/4.11.mp4"}]
-		}
-	};
-	var EVENT_MEDIA_BLAKE = {
-		high: [{type:"video",src:"characters/blake/1.1.mp4"},{type:"video",src:"characters/blake/1.2.mp4"},{type:"video",src:"characters/blake/1.3.mp4"},{type:"video",src:"characters/blake/1.4.mp4"},{type:"video",src:"characters/blake/1.5.mp4"}],
-		mid:  [{type:"video",src:"characters/blake/2.0.mp4"},{type:"video",src:"characters/blake/2.1.mp4"},{type:"video",src:"characters/blake/2.2.mp4"},{type:"video",src:"characters/blake/2.3.mp4"},{type:"video",src:"characters/blake/2.4.mp4"},{type:"video",src:"characters/blake/2.5.mp4"}],
-		low:  [{type:"video",src:"characters/blake/3.0.mp4"},{type:"video",src:"characters/blake/3.1.mp4"},{type:"video",src:"characters/blake/3.2.mp4"},{type:"video",src:"characters/blake/3.3.mp4"},{type:"video",src:"characters/blake/3.4.mp4"}],
-		crit: [{type:"video",src:"characters/blake/4.0.mp4"},{type:"video",src:"characters/blake/4.1.mp4"},{type:"video",src:"characters/blake/4.2.mp4"},{type:"video",src:"characters/blake/4.3.mp4"},{type:"video",src:"characters/blake/4.4.mp4"},{type:"video",src:"characters/blake/4.5.mp4"},{type:"video",src:"characters/blake/4.6.mp4"},{type:"video",src:"characters/blake/4.7.mp4"},{type:"video",src:"characters/blake/4.8.mp4"}]
-	};
-	var EVENT_MEDIA_CIS = { Brook: EVENT_MEDIA_BROOK, Alice: EVENT_MEDIA_ALICE, Blake: EVENT_MEDIA_BLAKE };
-
-	// Trans companions share a tease/bj/sex video directory layout. Each
-	// gets a fixed portrait index (1..3), a directory name, and a critMax
-	// describing how many sex-tier videos are catalogued.
-	var EVENT_MEDIA_TRANS = {
-		Alex:   { idx: 1, name: "alex",   critMax: 22, bjMax: 5 },
-		Taylor: { idx: 2, name: "taylor", critMax: 21, bjMax: 5 },
-		Casey:  { idx: 3, name: "casey",  critMax: 22, bjMax: 6 }
-	};
+		return COMPANIONS;
+	}
 
 	function transVids(base, dir, maxIndex) {
 		var out = [];
@@ -422,8 +203,9 @@ setup.Companion = (function () {
 	}
 
 	function getByName(name) {
-		for (var i = 0; i < COMPANIONS.length; i++) {
-			if (COMPANIONS[i].name === name) return COMPANIONS[i];
+		var list = companions();
+		for (var i = 0; i < list.length; i++) {
+			if (list[i].name === name) return list[i];
 		}
 		return null;
 	}
@@ -431,7 +213,7 @@ setup.Companion = (function () {
 	var api = {
 		OWNED_VARS: OWNED_VARS,
 		// --- Catalogue -------------------------------------------
-		list: function () { return COMPANIONS; },
+		list: function () { return companions(); },
 		getByName: getByName,
 		// The companion currently selected by the player, or null if
 		// none. Mirrors setup.Ghosts.active() in shape; used by shared
@@ -449,6 +231,40 @@ setup.Companion = (function () {
 			return c ? c.defaultState() : null;
 		},
 
+		/* Per-companion flags formerly stored as a forest of dynamically-
+		   named top-level vars ($isCompChosen<Name>,
+		   $is<Name>GoingForHuntingAlone, $payForHuntAlone<Name>,
+		   $<key>Choose<Street>, $chanceToAttack<Name>,
+		   $chanceToSuccessAlone<Street><Name>) now live on the per-
+		   companion stat object. Carry whatever the old save had forward
+		   so existing players don't lose their solo-hunt progress, then
+		   strip the legacy keys. Called from SaveMigration.applyDefaults
+		   so this controller owns the full save-shape story for companions. */
+		migrateLegacyKeys: function (vars) {
+			if (!vars || typeof vars !== 'object') return;
+			companions().forEach(function (c) {
+				var stats = vars[c.key];
+				if (!stats || typeof stats !== 'object') return;
+				var legacy = {
+					chosen:            'isCompChosen' + c.name,
+					chanceToAttack:    'chanceToAttack' + c.name,
+					goingSolo:         'is' + c.name + 'GoingForHuntingAlone',
+					paidForSolo:       'payForHuntAlone' + c.name,
+					chooseOwaissa:     c.key + 'ChooseOwaissa',
+					chooseElm:         c.key + 'ChooseElm',
+					soloChanceOwaissa: 'chanceToSuccessAloneOwaissa' + c.name,
+					soloChanceElm:     'chanceToSuccessAloneElm' + c.name
+				};
+				Object.keys(legacy).forEach(function (newKey) {
+					var oldKey = legacy[newKey];
+					if (stats[newKey] === undefined && vars[oldKey] !== undefined) {
+						stats[newKey] = vars[oldKey];
+					}
+					delete vars[oldKey];
+				});
+			});
+		},
+
 		// --- Identity --------------------------------------------
 		name: function () { var c = comp(); return c && c.name; },
 		isTransCompanion: function () { return isTrans(this.name()); },
@@ -456,14 +272,15 @@ setup.Companion = (function () {
 
 		// --- Selection ("chosen" flag on each $<key> stat object) --
 		anyCompanionSelected: function () {
-			for (var i = 0; i < COMPANIONS.length; i++) {
-				var stats = COMPANIONS[i].state();
+			var list = companions();
+			for (var i = 0; i < list.length; i++) {
+				var stats = list[i].state();
 				if (stats && stats.chosen === 1) return true;
 			}
 			return false;
 		},
 		clearCompanionSelection: function () {
-			COMPANIONS.forEach(function (c) {
+			companions().forEach(function (c) {
 				var stats = c.state();
 				if (stats) stats.chosen = 0;
 			});
@@ -597,7 +414,7 @@ setup.Companion = (function () {
 		   refresh maxSanityCap from the new level. Trans companions are
 		   already at lvl 5 with no exp track and use a flat 0 cap. */
 		tickAllCompanionProgression: function () {
-			COMPANIONS.forEach(function (c) {
+			companions().forEach(function (c) {
 				if (!c.hasExpSystem) return;
 				var stats = c.state();
 				if (!stats) return;
@@ -662,23 +479,14 @@ setup.Companion = (function () {
 		},
 
 		// --- Solo-hunt success chances --------------------------
-		// Per-companion skill curve: level -> {owaissa, elm} success %.
-		// The same table drove three near-identical branches (one in
-		// each Companion Info passage) before this centralisation.
-		// Index by lvl: 0/1 defaults to 0%.
-		SOLO_SKILL_CURVE: {
-			Brook: { 2: [25, 10], 3: [40, 25], 4: [55, 40], 5: [70, 55] },
-			Alice: { 2: [20, 10], 3: [40, 20], 4: [50, 40], 5: [75, 65] },
-			Blake: { 2: [25, 10], 3: [40, 25], 4: [55, 40], 5: [70, 55] }
-		},
 		/* Roll & stash the per-street solo-hunt odds for the given
 		   cis companion into the backing save-field names so the
 		   link labels can still interpolate them. Called on Info
-		   passage entry. */
+		   passage entry. The skill curve lives in CompanionData. */
 		refreshSoloOdds: function (name) {
 			var c = compFor(name);
 			if (!c) return;
-			var table = this.SOLO_SKILL_CURVE[name] || {};
+			var table = data().soloSkillCurve[name] || {};
 			var lvl = c.lvl || 0;
 			var tier = lvl >= 5 ? 5 : (lvl >= 4 ? 4 : (lvl >= 3 ? 3 : (lvl >= 2 ? 2 : 0)));
 			var pair = table[tier] || [0, 0];
@@ -739,7 +547,7 @@ setup.Companion = (function () {
 		   passage. Each companion has a 4-tier sanity ladder
 		   (75+, 50–74, 25–49, 0–24); some tiers split further on
 		   companion lust or recent-ElmBasement flag. Tables live in
-		   the EVENT_MEDIA_* constants at module scope; this method
+		   CompanionData.eventMediaCis / .eventMediaTrans; this method
 		   just picks the right tier and rolls. Returns
 		   {src, type:"video"/"image"}. */
 		pickEventMedia: function () {
@@ -751,11 +559,12 @@ setup.Companion = (function () {
 				: sanity >= 50 ? "mid"
 				: sanity >= 25 ? "low"
 				: "crit";
+			var d = data();
 			var list = null;
-			if (EVENT_MEDIA_CIS[c.name]) {
-				list = resolveCisTier(EVENT_MEDIA_CIS[c.name][tierKey], lust, inElm);
-			} else if (EVENT_MEDIA_TRANS[c.name]) {
-				var cfg = EVENT_MEDIA_TRANS[c.name];
+			if (d.eventMediaCis[c.name]) {
+				list = resolveCisTier(d.eventMediaCis[c.name][tierKey], lust, inElm);
+			} else if (d.eventMediaTrans[c.name]) {
+				var cfg = d.eventMediaTrans[c.name];
 				if (tierKey === "high") {
 					list = transStills(cfg.name, this.isTransFirstStageSet());
 				} else if (tierKey === "mid") {
@@ -836,15 +645,10 @@ setup.Companion = (function () {
 		/* When Plan2 succeeds with no cursed item in hand, roll a
 		   random cursed-item type and flag it. Returns the rolled
 		   item's info so the passage can render the image + speech.
-		   Keyed by the existing $isCI<Type> save flags. */
-		TYPES_CURSED_ITEM: [
-			{key:"isCIDildo",     speech:"Dildo???",        img:"mechanics/curseditems/dildo.png"},
-			{key:"isCIButtplug",  speech:"Buttplug???",     img:"mechanics/curseditems/buttplug.png"},
-			{key:"isCIBeads",     speech:"Anal beads???",   img:"mechanics/curseditems/beads.png"},
-			{key:"isCIHDildo",    speech:"Huge dildo???",   img:"mechanics/curseditems/monsterdildo.png"}
-		],
+		   Keyed by the existing $isCI<Type> save flags. The catalogue
+		   of types lives in CompanionData. */
 		rollFoundCursedItem: function () {
-			var list = this.TYPES_CURSED_ITEM;
+			var list = data().cursedItemTypes;
 			var pick = list[Math.floor(Math.random() * list.length)];
 			setup.Witch.setCursedItemFlag(pick.key);
 			setup.Witch.setCursedItemHeld();
