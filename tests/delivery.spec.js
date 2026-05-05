@@ -583,4 +583,73 @@ test.describe('Delivery Controller', () => {
     // assert
     expect(counts['Star Street 25']).toBe(2);
   });
+
+  // --- Unified delivery-event catalogue & dispatch helpers ---
+
+  test('eventNameForItem maps order items to catalogue keys', async () => {
+    expect(await callSetup(page, "setup.Delivery.eventNameForItem('pizza')")).toBe('pizza');
+    expect(await callSetup(page, "setup.Delivery.eventNameForItem('package')")).toBe('package');
+    expect(await callSetup(page, "setup.Delivery.eventNameForItem('burgers')")).toBe('burger');
+    expect(await callSetup(page, "setup.Delivery.eventNameForItem('newspapers')")).toBe('papers');
+    expect(await callSetup(page, "setup.Delivery.eventNameForItem('books')")).toBe(null);
+    expect(await callSetup(page, "setup.Delivery.eventNameForItem('mystery')")).toBe(null);
+  });
+
+  test('currentEventType reads the order in the active slot', async () => {
+    // arrange — slot 2 holds a burgers order
+    await setVar(page, 'currentOrder', 2);
+    await setVar(page, 'order2', { address: 'Star Street 25', item: 'burgers', image: '' });
+
+    // act
+    const ev = await callSetup(page, 'setup.Delivery.currentEventType()');
+
+    // assert
+    expect(ev).toBe('burger');
+  });
+
+  test('currentEventType returns null for non-encounter items', async () => {
+    // arrange — books has no encounter (Alice intercepts)
+    await setVar(page, 'currentOrder', 1);
+    await setVar(page, 'order1', { address: 'Star Street 25', item: 'books', image: '' });
+
+    // act
+    const ev = await callSetup(page, 'setup.Delivery.currentEventType()');
+
+    // assert
+    expect(ev).toBe(null);
+  });
+
+  test('markEvent sets the cooldown var named in the catalogue', async () => {
+    // arrange
+    await setVar(page, 'deliveryBurgerEvent', 0);
+
+    // act
+    await callSetup(page, "setup.Delivery.markEvent('burger')");
+    const flag = await getVar(page, 'deliveryBurgerEvent');
+
+    // assert
+    expect(flag).toBe(1);
+  });
+
+  test('markEvent is a no-op for unknown names (no throw)', async () => {
+    // act / assert — must not throw, must not touch unrelated vars
+    await callSetup(page, "setup.Delivery.markEvent('does-not-exist')");
+  });
+
+  test('per-item markXxxEvent helpers go through the catalogue', async () => {
+    // arrange
+    await setVar(page, 'deliveryPizzaEvent', 0);
+    await setVar(page, 'deliveryPackageEvent', 0);
+    await setVar(page, 'deliveryPapersEvent', 0);
+
+    // act
+    await callSetup(page, 'setup.Delivery.markPizzaEvent()');
+    await callSetup(page, 'setup.Delivery.markPackageEvent()');
+    await callSetup(page, 'setup.Delivery.markPapersEvent()');
+
+    // assert
+    expect(await getVar(page, 'deliveryPizzaEvent')).toBe(1);
+    expect(await getVar(page, 'deliveryPackageEvent')).toBe(1);
+    expect(await getVar(page, 'deliveryPapersEvent')).toBe(1);
+  });
 });

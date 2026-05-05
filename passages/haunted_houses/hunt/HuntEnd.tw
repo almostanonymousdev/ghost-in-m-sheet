@@ -1,5 +1,6 @@
 :: HuntEnd [noreturn nobr] {"position":"2500,1350","size":"100,100"}
 <<run setup.Ghosts.markActiveProwlEvent()>>
+<<run setup.HuntJournal.recordHuntEnd()>>
 <<set _hg to setup.Ghosts.active()>>
 <<if _hg and _hg.canTentacles>>
 	<<set _check to random(0,3)>>

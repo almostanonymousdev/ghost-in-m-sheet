@@ -1,9 +1,0 @@
-:: DeliveryPackageEventEnd2 [event nobr] {"position":"1300,1950","size":"100,100"}
-<<addLust 15>>
-<<deliveryLustOverflow>>
-<<deliveryVideo "packageevent" 7>>
-@@.notmc-speech; Yea~ that's it, you're a good girl. Here you go, you've earned it@@<br>
-@@.mc-thoughts; It's finally over@@<br>
-<<deliveryBonus 10>>
-<br>
-@@.backbtn;[[Leave|DeliveryMap]]@@<br>

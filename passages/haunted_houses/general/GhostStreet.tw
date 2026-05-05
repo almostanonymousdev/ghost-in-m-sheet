@@ -12,6 +12,7 @@
 </div>
 <<nobr>>
 <<run setup.Ghosts.fireActiveOnEnterHouse()>>
+<<run setup.HuntJournal.recordHuntStart()>>
 <<run setup.Time.resetToMidnight()>><<run setup.Tick.resetCooldowns()>>
 <<done>>
 <<replace "#time">><<= setup.Time.display()>><</replace>>

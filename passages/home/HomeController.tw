@@ -452,6 +452,12 @@ setup.Home = (function () {
 			var rollover = setup.Time.sleepAdvanceHours(n);
 			setup.Time.setMinutes(0);
 			if (rollover) { setup.Tick.resetCooldowns(); }
+			/* Arm the hunt-journal recap so the morning-after recap
+			   fires from a true sleep transition only, not from any
+			   mid-day Bedroom visit while the journal is unread. */
+			if (setup.HuntJournal && setup.HuntJournal.armRecap) {
+				setup.HuntJournal.armRecap();
+			}
 			setTimeout(function () {
 				try {
 					if (typeof Save !== 'undefined' && Save.browser
@@ -555,6 +561,7 @@ setup.Home = (function () {
 		applyHuntDefeatPreSleep: function () {
 			setup.Mc.setPenalized(true);
 			setup.CursedItems.rollForCursedItem();
+			setup.HuntJournal.recordCursedItem();
 		},
 
 		/* Sleep destination resolver. Returns

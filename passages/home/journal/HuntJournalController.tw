@@ -1,0 +1,175 @@
+:: HuntJournalController [script]
+/*
+ * Hunt journal: a one-screen "what happened last night" recap shown on
+ * the first wake-up after the witch closes the most recent contract.
+ *
+ * Snapshot points:
+ *   recordHuntStart (GhostStreet)         — sanity baseline + real ghost
+ *   recordHuntEnd   (HuntEnd / HuntOver*) — final sanity + collected
+ *                                            evidence; flips `unread`
+ *   recordCursedItem(applyHuntDefeatPreSleep) — cursed-home-item key (if any)
+ *   recordPayout    (WitchEndContract)    — guess + money/xp; re-flips
+ *                                            `unread` so the player gets a
+ *                                            second, fuller recap after
+ *                                            closing the contract
+ *
+ * Display gate: the recap only renders when the player has just woken up
+ * from sleep — Sleep.tw's wake link calls armRecap(), Bedroom shows the
+ * recap iff (unread && armed), then markRead() clears both. Walking into
+ * Bedroom mid-day does not surface the recap.
+ *
+ * Content rule: the recap never names the real ghost. It lists the
+ * contenders that match the evidence the player logged, and includes
+ * each contender's hint when the player has read its Ghostopedia entry.
+ */
+setup.HuntJournal = (function () {
+	var OWNED_VARS = Object.freeze(['huntJournal']);
+
+	function sv() { return State.variables; }
+	function j()  { return sv().huntJournal || null; }
+
+	var ITEM_LABELS = {
+		tv: "TV", pc: "Computer", bed: "Bed",
+		shower: "Shower", bath: "Bathtub"
+	};
+
+	return {
+		OWNED_VARS: OWNED_VARS,
+
+		/* New hunt entered: blow away any prior recap and seed the new
+		   one with the starting sanity + real ghost identity (so Mimic
+		   reads as "Mimic" instead of its current disguise). */
+		recordHuntStart: function () {
+			var realName = setup.Ghosts.huntRealName();
+			if (!realName) return;
+			sv().huntJournal = {
+				realGhost:    realName,
+				guessedGhost: null,
+				guessCorrect: null,
+				sanityStart:  setup.Mc.sanity(),
+				sanityEnd:    null,
+				cursedItem:   null,
+				moneyEarned:  0,
+				xpEarned:     0,
+				unread:       false
+			};
+		},
+
+		/* Hunt over (any branch): record the sanity the player walked out
+		   with and arm `unread` so the next wake-up renders the recap.
+		   Evidence is NOT snapshotted here — it's read live at recap
+		   render time so any boxes the player ticks between hunt-end
+		   and the morning wake (e.g., "filling in the notebook on the
+		   way home") show up in the recap. The notebook's
+		   evidence-check vars persist across the hunt-end → witch close
+		   boundary and only get reset at the next contract's
+		   GhostRandomize, so live reads stay accurate for the entire
+		   recap window. */
+		recordHuntEnd: function () {
+			var rec = j(); if (!rec) return;
+			rec.sanityEnd = setup.Mc.sanity();
+			rec.unread = true;
+		},
+
+		/* Called from applyHuntDefeatPreSleep after the cursed-item roll —
+		   captures whichever item (if any) became cursed so the recap can
+		   call it out before the player stumbles into it. */
+		recordCursedItem: function () {
+			var rec = j(); if (!rec) return;
+			rec.cursedItem = setup.CursedItems.currentItem();
+		},
+
+		/* Witch contract closed: save the player's guess + payout and
+		   flip `unread` so the next wake-up renders the recap. */
+		recordPayout: function (correct) {
+			var rec = j(); if (!rec) return;
+			rec.guessedGhost = setup.Ghosts.ghostTypeSelected() || null;
+			rec.guessCorrect = !!correct;
+			var money  = setup.HauntedHouses.moneyFromContract() || 0;
+			var weaken = (setup.Witch && setup.Witch.moneyFromWeakenGhost)
+				? setup.Witch.moneyFromWeakenGhost() : 0;
+			rec.moneyEarned = correct ? (money + weaken) : weaken;
+			rec.xpEarned    = correct ? (setup.HauntedHouses.expFromContract() || 0) : 10;
+			rec.unread = true;
+		},
+
+		hasUnread: function () { var rec = j(); return !!(rec && rec.unread); },
+		/* Set by Sleep.tw's "Wake up" link so Bedroom only renders the
+		   recap on a true sleep wake, not on any mid-day Bedroom visit
+		   while data is unread. */
+		armRecap:    function () { var rec = j(); if (rec) rec.armedAtWake = true; },
+		recapArmed:  function () { var rec = j(); return !!(rec && rec.armedAtWake); },
+		/* Clears both flags so the same recap doesn't fire twice. */
+		markRead:    function () {
+			var rec = j();
+			if (rec) { rec.unread = false; rec.armedAtWake = false; }
+		},
+		journal:   function () { return j(); },
+
+		/* Sanity drop during the hunt, clamped to >= 0 (sanity-pill use
+		   between snapshot points could otherwise produce a negative). */
+		sanityLost: function () {
+			var rec = j();
+			if (!rec || rec.sanityStart == null || rec.sanityEnd == null) return 0;
+			return Math.max(0, rec.sanityStart - rec.sanityEnd);
+		},
+
+		/* Live read of the evidence ids the player has ticked in the
+		   notebook, mapped through the canonical Evidence catalogue so
+		   the recap reads "EMF5" / "SpiritBox" instead of the raw ids.
+		   Reads State.variables directly so anything checked between
+		   hunt-end and the morning recap is reflected. */
+		loggedEvidenceIds: function () {
+			var checks = setup.Ghosts.readEvidenceChecks();
+			return Object.keys(checks).filter(function (k) { return checks[k]; });
+		},
+		evidenceLabels: function () {
+			var ids = this.loggedEvidenceIds();
+			var E = setup.Ghosts.Evidence;
+			var byId = {};
+			Object.keys(E).forEach(function (k) { byId[E[k].id] = E[k]; });
+			return ids.map(function (id) {
+				var e = byId[id];
+				return e ? e.label : id;
+			});
+		},
+
+		cursedItemLabel: function () {
+			var rec = j();
+			if (!rec || !rec.cursedItem) return '';
+			return ITEM_LABELS[rec.cursedItem] || '';
+		},
+
+		/* Possible-ghost list driven by the notebook checks the player
+		   confirmed during the hunt. Each entry is { name, hint,
+		   discovered } — `hint` is empty when the player hasn't unlocked
+		   the Ghostopedia entry yet, so the recap can show "name + hint"
+		   for known ghosts and just the name for the rest. */
+		contenders: function () {
+			var rec = j(); if (!rec) return [];
+			var checks = setup.Ghosts.readEvidenceChecks();
+			var anyChecked = false;
+			Object.keys(checks).forEach(function (k) { if (checks[k]) anyChecked = true; });
+			if (!anyChecked) return [];
+			var matches = setup.Ghosts.matchingNames(checks);
+			var out = [];
+			matches.forEach(function (name) {
+				var g = setup.Ghosts.getByName(name);
+				var discovered = setup.Ghosts.hasDiscovered(name);
+				out.push({
+					name:       name,
+					hint:       (g && discovered) ? (g.hint || '') : '',
+					discovered: discovered
+				});
+			});
+			return out;
+		},
+
+		/* Truncate (not round) to 2 decimal places, so the recap shows
+		   sanity/money values like 45.87 instead of 45.876999. */
+		truncate2: function (n) {
+			n = Number(n) || 0;
+			return Math.floor(n * 100) / 100;
+		}
+	};
+})();

@@ -17,6 +17,17 @@ setup.Library = (function () {
 		'comicsReading'
 	]);
 
+	/* Comic catalogue. `prefix` is appended with a 3-digit zero-padded
+	   page number (001..count) and the .jpg extension to form the asset
+	   path -- so cover = prefix + "001.jpg". Add a new entry here and
+	   both the Comics rack and the ReadComics slider pick it up. */
+	var COMICS = Object.freeze([
+		{ prefix: "scenes/library/getting-in-shape",                  count: 31 },
+		{ prefix: "scenes/library/closed-investigation-journal-colorized", count: 31 },
+		{ prefix: "scenes/library/the-naughty-in-law-1-zero",          count: 31 },
+		{ prefix: "scenes/library/a-dumb-comic",                       count: 32 }
+	]);
+
 	function sv() { return State.variables; }
 
 	return {
@@ -110,12 +121,18 @@ setup.Library = (function () {
 		},
 
 		// --- Comics selection --------------------------------------
-		// One slot at a time: $comicsReading holds the active issue (1..4)
-		// or 0 when none is open. comicsFlag(idx) preserves the legacy
-		// per-issue boolean shape for the ReadComics passage's <<if>> chain.
-		selectComics: function (idx) { sv().comicsReading = idx; },
-		resetComics:  function ()    { sv().comicsReading = 0; },
-		comicsFlag:   function (idx) { return sv().comicsReading === idx ? 1 : 0; },
+		// One slot at a time: $comicsReading holds the active issue (1..N)
+		// or 0 when none is open.
+		comics:        COMICS,
+		selectComics:  function (idx) { sv().comicsReading = idx; },
+		resetComics:   function ()    { sv().comicsReading = 0; },
+		// activeComic() returns the catalogue entry currently being read,
+		// or null when none is selected. ReadComics uses this to render
+		// the slider without needing to know which issue is active.
+		activeComic:   function () {
+			var idx = sv().comicsReading;
+			return idx >= 1 && idx <= COMICS.length ? COMICS[idx - 1] : null;
+		},
 
 		// --- Brook solo-hunt selection ----------------------------
 		chanceBrookAloneOwaissa: function () { return setup.Companion.soloHuntChanceOwaissa('Brook'); },

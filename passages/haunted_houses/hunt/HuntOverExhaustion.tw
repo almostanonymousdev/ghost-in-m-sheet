@@ -19,6 +19,7 @@
  * with nothing" is hidden whenever the gate forces a covering grab. */
 <<run setup.Ghosts.markActiveProwlEvent()>>
 <<run setup.Ghosts.fireActiveHuntEnd()>>
+<<run setup.HuntJournal.recordHuntEnd()>>
 <<run setup.HauntedHouses.endHunt()>>
 <<run setup.HauntedHouses.cleanupAfterHunt()>>
 

@@ -13,11 +13,11 @@ The game world includes several city locations the player can visit between hunt
   * [MeetAlice.tw](../passages/delivery/MeetAlice.tw) - Meeting Alice during deliveries
   * [DeliverySpecialEvent.tw](../passages/delivery/DeliverySpecialEvent.tw) - Special / rare delivery event
   * [widgetDelivery.tw](../passages/delivery/widgetDelivery.tw) - Shared delivery widgets (address formatting, etc.)
-  * Delivery types - each has Start/Choose/Event passages:
-    * Burger: [DeliveryBurgerEventStart.tw](../passages/delivery/DeliveryBurgerEventStart.tw), [DeliveryBurgerEventChoose.tw](../passages/delivery/DeliveryBurgerEventChoose.tw), [DeliveryBurgerEvent1.tw](../passages/delivery/DeliveryBurgerEvent1.tw), [DeliveryBurgerEvent2.tw](../passages/delivery/DeliveryBurgerEvent2.tw)
-    * Package: [DeliveryPackageEventStart.tw](../passages/delivery/DeliveryPackageEventStart.tw), [DeliveryPackageEventChoose.tw](../passages/delivery/DeliveryPackageEventChoose.tw), [DeliveryPackageEvent1.tw](../passages/delivery/DeliveryPackageEvent1.tw), [DeliveryPackageEventEnd1.tw](../passages/delivery/DeliveryPackageEventEnd1.tw), [DeliveryPackageEventEnd2.tw](../passages/delivery/DeliveryPackageEventEnd2.tw)
-    * Papers: [DeliveryPapersEventStart.tw](../passages/delivery/DeliveryPapersEventStart.tw), [DeliveryPapersEventChoose.tw](../passages/delivery/DeliveryPapersEventChoose.tw), [DeliveryPapersEvent1.tw](../passages/delivery/DeliveryPapersEvent1.tw)
-    * Pizza: [DeliveryPizzaEventStart.tw](../passages/delivery/DeliveryPizzaEventStart.tw), [DeliveryPizzaEventChoose.tw](../passages/delivery/DeliveryPizzaEventChoose.tw), [DeliveryPizzaEvent1.tw](../passages/delivery/DeliveryPizzaEvent1.tw), [DeliveryPizzaEvent2.tw](../passages/delivery/DeliveryPizzaEvent2.tw)
+  * Delivery encounters (burger / pizza / package / papers) all dispatch through four unified passages, switching on the active order's event type. Per-event metadata (cooldown var, header image, gate check, payMode) lives in `setup.deliveryEvents` in [DeliveryController.tw](../passages/delivery/DeliveryController.tw):
+    * [DeliveryEventChoose.tw](../passages/delivery/DeliveryEventChoose.tw) - gate / offer dialog
+    * [DeliveryEventStart.tw](../passages/delivery/DeliveryEventStart.tw) - first scene after acceptance. Package's low-lust fork inlines its terminal block here.
+    * [DeliveryEvent1.tw](../passages/delivery/DeliveryEvent1.tw) - middle scene. Papers' Event1 is terminal and ends the encounter here.
+    * [DeliveryEvent2.tw](../passages/delivery/DeliveryEvent2.tw) - terminal scene for burger / pizza / package high-lust path.
   * Delivery addresses: Amethyst Street 42, Cascade Avenue 56, Emerald Street 17, Golden Road 34, Honeywood Court 3, Jasmine Lane 89, Lilac Lane 72, Onyx Place 10, Twilight Boulevard 61
 
 * **Gym** - Physical training location with solo workouts, group training sessions, and personal trainer events. Multiple trainer event chains with progression.

@@ -221,6 +221,10 @@ setup.HauntConditions = (function () {
 		}
 		if (snap.energyPerStep !== 0) {
 			setup.Mc.applyEnergyDelta(snap.energyPerStep);
+			/* Per-step drain mirrors HauntConditions.removeEnergy: zero
+			   energy stamps V.exhausted so includeTimeEvent* widgets can
+			   route the next nav tick to HuntOverExhaustion. */
+			if ((mc.energy || 0) <= 0) { V.exhausted = 1; }
 		}
 		if (snap.corruptionPending !== 0) {
 			V.tempCorr = (V.tempCorr || 0) + snap.corruptionPending;

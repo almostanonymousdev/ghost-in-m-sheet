@@ -138,41 +138,12 @@
 		}
 		delete vars.checkChoosenLocation;
 
-		// Per-companion flags formerly stored as a forest of dynamically-named
-		// top-level vars ($isCompChosen<Name>, $is<Name>GoingForHuntingAlone,
-		// $payForHuntAlone<Name>, $<key>Choose<Street>, $chanceToAttack<Name>,
-		// $chanceToSuccessAlone<Street><Name>) now live on the per-companion
-		// stat object ($brook / $alice / $blake / $alex / $taylor / $casey).
-		// Carry forward whatever the old save had so existing players don't
-		// lose their solo-hunt progress.
-		[
-			{ name: 'Brook',  key: 'brook'  },
-			{ name: 'Alice',  key: 'alice'  },
-			{ name: 'Blake',  key: 'blake'  },
-			{ name: 'Alex',   key: 'alex'   },
-			{ name: 'Taylor', key: 'taylor' },
-			{ name: 'Casey',  key: 'casey'  }
-		].forEach(function (c) {
-			var stats = vars[c.key];
-			if (!stats || typeof stats !== 'object') return;
-			var legacy = {
-				chosen:            'isCompChosen' + c.name,
-				chanceToAttack:    'chanceToAttack' + c.name,
-				goingSolo:         'is' + c.name + 'GoingForHuntingAlone',
-				paidForSolo:       'payForHuntAlone' + c.name,
-				chooseOwaissa:     c.key + 'ChooseOwaissa',
-				chooseElm:         c.key + 'ChooseElm',
-				soloChanceOwaissa: 'chanceToSuccessAloneOwaissa' + c.name,
-				soloChanceElm:     'chanceToSuccessAloneElm' + c.name
-			};
-			Object.keys(legacy).forEach(function (newKey) {
-				var oldKey = legacy[newKey];
-				if (stats[newKey] === undefined && vars[oldKey] !== undefined) {
-					stats[newKey] = vars[oldKey];
-				}
-				delete vars[oldKey];
-			});
-		});
+		// Per-companion legacy-key forwarding (the dynamically-named
+		// $isCompChosen<Name>, $chanceToSuccessAlone<Street><Name>, etc.
+		// that used to scatter across $vars) lives on the controller —
+		// it owns the catalogue and the per-companion stat shape, so the
+		// migration table belongs there too.
+		setup.Companion.migrateLegacyKeys(vars);
 
 		// Library: 4 mutually-exclusive $comics<N> flags collapsed into a
 		// single $comicsReading slot (0 = none, 1..4 = active issue).

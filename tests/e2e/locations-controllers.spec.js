@@ -236,19 +236,15 @@ test.describe('Library — controller helpers', () => {
   test('selectComics sets the chosen issue and clears the others', async () => {
     await page.evaluate(() => SugarCube.setup.Library.selectComics(2));
     await page.evaluate(() => SugarCube.setup.Library.selectComics(3));
-    expect(await callSetup(page, 'setup.Library.comicsFlag(1)')).toBe(0);
-    expect(await callSetup(page, 'setup.Library.comicsFlag(2)')).toBe(0);
-    expect(await callSetup(page, 'setup.Library.comicsFlag(3)')).toBe(1);
-    expect(await callSetup(page, 'setup.Library.comicsFlag(4)')).toBe(0);
+    const active = await callSetup(page, 'setup.Library.activeComic()');
+    const all = await callSetup(page, 'setup.Library.comics');
+    expect(active).toEqual(all[2]);
   });
 
   test('resetComics clears the active issue', async () => {
     await page.evaluate(() => SugarCube.setup.Library.selectComics(2));
     await page.evaluate(() => SugarCube.setup.Library.resetComics());
-    expect(await callSetup(page, 'setup.Library.comicsFlag(1)')).toBe(0);
-    expect(await callSetup(page, 'setup.Library.comicsFlag(2)')).toBe(0);
-    expect(await callSetup(page, 'setup.Library.comicsFlag(3)')).toBe(0);
-    expect(await callSetup(page, 'setup.Library.comicsFlag(4)')).toBe(0);
+    expect(await callSetup(page, 'setup.Library.activeComic()')).toBeNull();
   });
 
   test('discovery flag setters add the entries to availableSearchResults until found', async () => {

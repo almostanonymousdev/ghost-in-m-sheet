@@ -2,6 +2,10 @@
 <<image "ui/img/bedroom.jpg" { width: "100%" }>><br>
 @@.location; Bedroom@@<br>
 <br>
+<<if setup.HuntJournal.hasUnread() and setup.HuntJournal.recapArmed()>>
+	<<include "HuntJournalRecap">>
+	<<run setup.HuntJournal.markRead()>>
+<</if>>
 <<if setup.Home.succubusChoiceText() eq 1>>
 	<<run setup.Home.clearSuccubusChoiceText()>>
 	@@.mc-thoughts; You wake up, back in your original form@@<br>

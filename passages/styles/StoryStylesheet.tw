@@ -897,6 +897,32 @@ body.city {
 	box-sizing: border-box;
 }
 
+/* ===== Tool timers (sidebar HUD strip) ===== */
+/* Sits directly under #time. setup.toolTimerHudMarkup yields the empty
+   string when no timed tool is active, and :empty collapses the row to
+   zero height so the sidebar stays tight. Once an EMF/UVL window is
+   open each tool gets its own .tool-timer chip; .tool-timer--low flips
+   red when 2 min or fewer remain. */
+#tool-timers {
+	display: block;
+	font-family: "Kode Mono", sans-serif;
+	font-size: 12px;
+	margin-top: 4px;
+}
+#tool-timers:empty {
+	display: none;
+}
+.tool-timer {
+	color: #fff;
+	font-weight: bold;
+	text-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
+}
+.tool-timer--low {
+	color: #ff5252;
+	font-weight: bold;
+	text-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
+}
+
 /* ===== Text Backgrounds ===== */
 .backgroundForText {
 	background-color: rgba(0, 0, 0, 0.5);

@@ -149,14 +149,22 @@ test.describe('Game Initialization (StoryInit)', () => {
     expect(streets).toHaveLength(10);
   });
 
-  test('deliveryEventChooseConfig has pizza, package, burger, papers', async () => {
+  test('deliveryEvents catalogue has pizza, package, burger, papers', async () => {
     // act
-    const config = await page.evaluate(() => SugarCube.setup.deliveryEventChooseConfig);
+    const config = await page.evaluate(() => SugarCube.setup.deliveryEvents);
 
     // assert
     expect(config.pizza).toBeDefined();
     expect(config.package).toBeDefined();
     expect(config.burger).toBeDefined();
     expect(config.papers).toBeDefined();
+    // each entry must carry the fields the unified dispatcher reads
+    for (const key of ['pizza', 'package', 'burger', 'papers']) {
+      expect(typeof config[key].varName).toBe('string');
+      expect(typeof config[key].videoSubdir).toBe('string');
+      expect(typeof config[key].headerImg).toBe('string');
+      expect(typeof config[key].payMode).toBe('string');
+      expect(typeof config[key].gateCorrReq).toBe('number');
+    }
   });
 });

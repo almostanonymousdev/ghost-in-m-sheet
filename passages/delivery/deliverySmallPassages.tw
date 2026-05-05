@@ -33,10 +33,7 @@
 <</for>>
 <<if _match>>
 	<<switch _order.item>>
-	<<case "pizza">><<include "DeliveryPizzaEventChoose">>
-	<<case "package">><<include "DeliveryPackageEventChoose">>
-	<<case "burgers">><<include "DeliveryBurgerEventChoose">>
-	<<case "newspapers">><<include "DeliveryPapersEventChoose">>
+	<<case "pizza" "package" "burgers" "newspapers">><<include "DeliveryEventChoose">>
 	<<case "books">><<if not setup.Delivery.hasMetAlice()>><<include "MeetAlice">>
 	<<else>><<deliveryGenericSuccess>><</if>>
 	<<default>><<deliveryGenericSuccess>>

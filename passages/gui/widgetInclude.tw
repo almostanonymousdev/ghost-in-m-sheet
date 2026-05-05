@@ -1,12 +1,16 @@
 :: widgetInclude [widget nobr] {"position":"300,1800","size":"100,100"}
 
 <<widget "applyTickEffects">>
-	/* Wrapper for applying tick effects and updating the UI in one call */
+	/* Wrapper for applying tick effects and updating the UI in one call.
+	The tool-timer strip refresh is here too because tool-check completions
+	(e.g. GWB hit -> EMF activated) land in this widget, and the sidebar
+	caption isn't re-rendered until the next passage transition. */
 	<<run setup.HauntConditions.applyTickEffects()>>
 	<<updatemeter 'sanity' `setup.Mc.sanity() / setup.Mc.sanityMax()`>>
 	<<updatemeter 'energy' `setup.Mc.energy() / setup.Mc.energyMax()`>>
 	<<updatemeter 'mclust' `setup.Mc.lust() / 100`>>
 	<<replace "#time">><<= setup.Time.display()>><</replace>>
+	<<replace "#tool-timers">><<= setup.toolTimerHudMarkup()>><</replace>>
 <</widget>>
 
 /* huntTickEventChain -- arg-less. The shared "what happens between
@@ -69,11 +73,12 @@
 <<widget "toolTick">>
 	/* Tools burn 1 in-game minute per tick. Fired from inside the
 	<<repeat>> loop in setup.searchToolMarkup so every meter increment
-	advances the clock. Updates the clock display (linkreplace doesn't
-	trigger StoryCaption re-render) and routes to the mode-aware
-	hunt-over-time passage if the tick pushed dawn past 6am. */
+	advances the clock. Updates the clock display and tool-timer strip
+	(linkreplace doesn't trigger StoryCaption re-render) and routes to
+	the mode-aware hunt-over-time passage if the tick pushed dawn past 6am. */
 	<<run setup.addTime(1)>>
 	<<replace "#time">><<= setup.Time.display()>><</replace>>
+	<<replace "#tool-timers">><<= setup.toolTimerHudMarkup()>><</replace>>
 	<<if setup.Time.hours() gte 6 and setup.HuntController.isHuntActive()>>
 		<<goto setup.HuntController.huntOverPassage("time")>>
 	<</if>>

@@ -15,12 +15,14 @@
 			@@.notmc-speech; Yes, you're right, good girl@@<br>
 
 			<<run setup.Witch.payForContract()>>
+			<<run setup.HuntJournal.recordPayout(true)>>
 			<<gainXP setup.HauntedHouses.expFromContract()>>
 
 			@@.backbtn;[[Back|WitchInside]]@@
 		<<else>> @@.notmc-speech;No, you are wrong. Maybe you'll get it right next time.@@<br>
 
 			<<run setup.Witch.payForWeakenOnly()>>
+			<<run setup.HuntJournal.recordPayout(false)>>
 			<<gainXP 10>>
 
 			@@.backbtn;[[Back|WitchInside]]@@

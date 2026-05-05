@@ -561,4 +561,143 @@ test.describe('Haunted Houses Controller', () => {
     // base in-house -0.125 + aftershock -0.125 = -0.25
     expect(snap.energyPerStep).toBeCloseTo(-0.25, 5);
   });
+
+  // --- Tool timer HUD (sidebar strip) ---
+  // Regression bait: the strip reads minutes-remaining from $tools and
+  // $equipment, so any rename of those fields breaks the caption silently
+  // (it just renders empty). These tests pin the contract.
+
+  test('toolTimerRemain is 0 before EMF is activated', async () => {
+    expect(await callSetup(page, 'setup.toolTimerRemain("emf")')).toBe(0);
+  });
+
+  test('toolTimerRemain reports the full window right after activation', async () => {
+    // arrange: tier 5 EMF -> 10-min window per setup.TOOL_TIME_REMAIN
+    await setVar(page, 'equipment', { emf: 5, uvl: 5 });
+    await setVar(page, 'hours', 12);
+    await setVar(page, 'minutes', 0);
+    await page.evaluate(() => SugarCube.setup.activateTool('emf'));
+
+    // act
+    const remain = await callSetup(page, 'setup.toolTimerRemain("emf")');
+
+    // assert
+    expect(remain).toBe(10);
+  });
+
+  test('toolTimerRemain decreases as the clock advances', async () => {
+    await setVar(page, 'equipment', { emf: 5, uvl: 5 });
+    await setVar(page, 'hours', 12);
+    await setVar(page, 'minutes', 0);
+    await page.evaluate(() => SugarCube.setup.activateTool('emf'));
+    await setVar(page, 'minutes', 7);
+
+    expect(await callSetup(page, 'setup.toolTimerRemain("emf")')).toBe(3);
+  });
+
+  test('toolTimerRemain returns 0 once the window has lapsed', async () => {
+    await setVar(page, 'equipment', { emf: 5, uvl: 5 });
+    await setVar(page, 'hours', 12);
+    await setVar(page, 'minutes', 0);
+    await page.evaluate(() => SugarCube.setup.activateTool('emf'));
+    await setVar(page, 'minutes', 30);
+
+    expect(await callSetup(page, 'setup.toolTimerRemain("emf")')).toBe(0);
+  });
+
+  test('toolTimerRemain does not mutate $tools (read-only view)', async () => {
+    // tickTimedTool clears stale flags; toolTimerRemain must not — the
+    // sidebar caption shouldn't have side effects on the hunt state.
+    await setVar(page, 'equipment', { emf: 5, uvl: 5 });
+    await setVar(page, 'hours', 12);
+    await setVar(page, 'minutes', 0);
+    await page.evaluate(() => SugarCube.setup.activateTool('emf'));
+    await setVar(page, 'minutes', 59); // far past the 10-min window
+
+    await callSetup(page, 'setup.toolTimerRemain("emf")');
+
+    expect(await getVar(page, 'tools.emf.activated')).toBe(1);
+  });
+
+  test('toolTimerRemain is 0 for non-timed tools', async () => {
+    expect(await callSetup(page, 'setup.toolTimerRemain("gwb")')).toBe(0);
+  });
+
+  test('toolTimerHudMarkup is empty when no timed tool is active', async () => {
+    expect(await callSetup(page, 'setup.toolTimerHudMarkup()')).toBe('');
+  });
+
+  test('toolTimerHudMarkup shows EMF + UVL chips when both active', async () => {
+    await setVar(page, 'equipment', { emf: 5, uvl: 5 });
+    await setVar(page, 'hours', 12);
+    await setVar(page, 'minutes', 0);
+    await page.evaluate(() => SugarCube.setup.activateTool('emf'));
+    await page.evaluate(() => SugarCube.setup.activateTool('uvl'));
+
+    const markup = await callSetup(page, 'setup.toolTimerHudMarkup()');
+
+    expect(markup).toContain('EMF: 10 min left');
+    expect(markup).toContain('UVL: 10 min left');
+  });
+
+  test('toolTimerHudMarkup flags low-time entries with tool-timer--low', async () => {
+    await setVar(page, 'equipment', { emf: 5, uvl: 5 });
+    await setVar(page, 'hours', 12);
+    await setVar(page, 'minutes', 0);
+    await page.evaluate(() => SugarCube.setup.activateTool('emf'));
+    await setVar(page, 'minutes', 9); // 1 min remaining
+
+    const markup = await callSetup(page, 'setup.toolTimerHudMarkup()');
+
+    expect(markup).toContain('tool-timer--low');
+    expect(markup).toContain('EMF: 1 min left');
+  });
+
+  // --- toolSuccessRate hovertip copy ---
+  // EMF and UVL share a tier-based window but open from different
+  // in-world events. Pin the trigger copy so a refactor can't silently
+  // re-merge the two strings.
+
+  test('EMF tooltip names the GWB/Spiritbox/lights-off trigger', async () => {
+    const tip = await callSetup(page, 'setup.toolSuccessRate("emf")');
+
+    expect(tip).toContain('GWB or Spiritbox hit');
+    expect(tip).toContain('lights off');
+    expect(tip).not.toContain('ghost sanity event');
+  });
+
+  test('UVL tooltip names the ghost-sanity-event trigger', async () => {
+    const tip = await callSetup(page, 'setup.toolSuccessRate("uvl")');
+
+    expect(tip).toContain('ghost sanity event');
+    expect(tip).not.toContain('GWB');
+    expect(tip).not.toContain('Spiritbox');
+  });
+
+  // --- Per-step energy drain → exhaustion routing ---
+  // Regression: applyEnergyDelta was clamping energy to zero without
+  // setting $exhausted, so includeTimeEventHunt couldn't route to
+  // HuntOverExhaustion when the per-step drain bottomed energy out.
+  // Only the player-driven HauntConditions.removeEnergy spend (bait /
+  // pray) was setting the flag.
+
+  test('applyTickEffects sets exhausted when per-step drain bottoms out energy', async () => {
+    await setHuntMode(page, 2); // hunt active so the snapshot reads in-house drain
+    await setVar(page, 'mc.energy', 0.1); // one tick at -0.125 will clamp to 0
+
+    await page.evaluate(() => SugarCube.setup.HauntConditions.applyTickEffects());
+
+    expect(await getVar(page, 'mc.energy')).toBe(0);
+    expect(await callSetup(page, 'setup.Mc.isExhausted()')).toBe(true);
+  });
+
+  test('applyTickEffects leaves exhausted clear while energy is positive', async () => {
+    await setHuntMode(page, 2);
+    await setVar(page, 'mc.energy', 50);
+
+    await page.evaluate(() => SugarCube.setup.HauntConditions.applyTickEffects());
+
+    expect(await getVar(page, 'mc.energy')).toBeGreaterThan(0);
+    expect(await callSetup(page, 'setup.Mc.isExhausted()')).toBe(false);
+  });
 });

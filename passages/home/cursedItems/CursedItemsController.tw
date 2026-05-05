@@ -44,6 +44,14 @@ setup.CursedItems = (function () {
 		},
 		isActive: function () { return sv().cursedHomeItemActive === 1; },
 
+		/* Read-only accessor for the currently-cursed item key
+		   (one of "tv"/"pc"/"bed"/"shower"/"bath", or null when no
+		   item is cursed). Used by HuntJournal so the morning recap
+		   can name what followed the player home. */
+		currentItem: function () {
+			return sv().cursedHomeItemActive === 1 ? (sv().cursedHomeItem || null) : null;
+		},
+
 		/* Clear the curse after the event has been triggered. */
 		clearCurse: function () {
 			sv().cursedHomeItem = "";

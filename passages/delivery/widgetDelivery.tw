@@ -69,13 +69,13 @@ integer in [start, end]. Replaces the 4-10 line <<if>> ladders each
 	the generic "already delivered → thank you → back" branch. The
 	per-encounter dialog lives in _contents and is only rendered when
 	the encounter hasn't been completed yet.
-	_args[0]: type key from setup.deliveryEventChooseConfig */
+	_args[0]: type key from setup.deliveryEvents */
 	<<widget "deliveryEventChoose" container>>
-		<<set _cfg to setup.deliveryEventChooseConfig[_args[0]]>>
+		<<set _cfg to setup.deliveryEvents[_args[0]]>>
 		<<set _varName to _cfg.varName>>
 		<<if ndef State.variables[_varName]>><<set State.variables[_varName] to 0>><</if>>
 		<<if _cfg.payMode eq setup.DeliveryPayMode.ON_ENTRY>><<run setup.Delivery.addJobSuccessEarnings()>><<deliveryTrackCorrect>><</if>>
-		<<image "scenes/deliveryhub/" + _cfg.img { style: "max-width: 100%; height: auto; display: block; margin: 0 auto;" }>>
+		<<image "scenes/deliveryhub/" + _cfg.headerImg { style: "max-width: 100%; height: auto; display: block; margin: 0 auto;" }>>
 		<<if State.variables[_varName] eq 1>>
 			@@.notmc-speech; Great, thank you so much!@@<br>
 			<<if _cfg.payMode eq setup.DeliveryPayMode.ON_DONE>><<run setup.Delivery.addJobSuccessEarnings()>><<deliveryTrackCorrect>><</if>>

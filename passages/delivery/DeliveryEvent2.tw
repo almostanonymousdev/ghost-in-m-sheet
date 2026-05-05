@@ -1,0 +1,50 @@
+:: DeliveryEvent2 [event nobr] {"position":"1325,1950","size":"100,100"}
+/* Unified Stage-3 (terminal) dispatcher. Burger/pizza/package end
+   their encounters here. Papers terminates earlier in DeliveryEvent1
+   and never routes through this passage; package's low-lust fork
+   inlines its End2 in DeliveryEventStart. */
+<<set _ev to setup.Delivery.currentEventType()>>
+<<switch _ev>>
+<<case "burger">>
+	<<run setup.Delivery.markBurgerEvent()>>
+	<<run setup.Delivery.clearLust()>>
+	<<deliveryVideo "burgerevent" 9>>
+	@@.mc-speech; Ah~ Did you cum inside me?@@<br>
+	@@.notmc-speech; I haven't fucked like this for a long time, you're a great slut, I hope to see you again sometime@@<br>
+	@@.mc-thoughts; Fuck, I feel his cum dripping from my pussy, I hope everything will be fine@@<br>
+	<br>
+	<<deliveryBonus 5>>
+	<br>
+	@@.backbtn;[[Take a shower and leave|DeliveryMap]]@@<br>
+<<case "pizza">>
+	<<run setup.Delivery.markPizzaEvent()>>
+	<<addLust 60>>
+	<<deliveryVideo "pizzaevent" 5>>
+	+60 <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
+	@@.mc-thoughts; I can't control myself anymore. The neighbors can probably hear my moans@@<br>
+	@@.notmc-speech; Yes, I see how you "don't like it". Will you cum for me, slut?@@<br>
+	@@.mc-speech; Ah~ YES~ Fuck me~ PLEASE, <<linkappend "I'M CUMMING">><br>
+		<<deliveryLustOverflow>>
+		<<deliveryVideo "pizzaevent" 6>>
+		@@.notmc-speech; Now get the fuck out of here@@<br>
+		@@.notmc-speech; Take this too. You deserved it@@<br>
+		@@.mc-speech; Mm~ @@<br>
+
+		@@.mc-thoughts; At least she gave me money. It seems even more than I usually earn. I could go now@@<br>
+		<br>
+		<<deliveryBonus 10 0.1>>
+		@@.backbtn;[[Leave|DeliveryMap]]@@<br>
+		<<run setup.Delivery.addJobSuccessEarnings()>>
+	<</linkappend>>@@
+<<case "package">>
+	/* End1: the high-lust path (Start -> Event1 -> Event2). The
+	   low-lust End2 is rendered inline in DeliveryEventStart. */
+	<<addLust 15>>
+	<<deliveryVideo "packageevent" 7>>
+	@@.notmc-speech; Ohhh~ maybe you should pay me instead@@<br>
+	@@.mc-speech; We had another agreement@@<br>
+	@@.notmc-speech; Haha, of course I'm kidding. Here's your money@@<br>
+	<<deliveryBonus 15>>
+	<br>
+	@@.backbtn;[[Leave|DeliveryMap]]@@<br>
+<</switch>>

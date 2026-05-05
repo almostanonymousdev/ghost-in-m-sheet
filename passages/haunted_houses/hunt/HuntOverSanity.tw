@@ -1,5 +1,6 @@
 :: HuntOverSanity [noreturn nobr] {"position":"1400,1350","size":"100,100"}
 <<run setup.Ghosts.markActiveProwlEvent()>>
+<<run setup.HuntJournal.recordHuntEnd()>>
 <<set _hg to setup.Ghosts.active()>>
 &emsp;@@.mc-thoughts;Your mind succumbs to the pressure of darkness and horrors enveloping you. Everything around you merges into a black void@@<br>
 @@.enterbtn;<<linkreplace "Next">>
