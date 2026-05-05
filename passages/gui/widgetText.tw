@@ -29,7 +29,7 @@
 		<<set _out to setup.MonkeyPaw.activate("activity")>>
 		<<video _out.video "displayCentredImgs">>
 		@@.mc-speech; <<= _out.narrative>>@@<br>
-		@@.mc-thoughts; Lust increased: +<<= _out.lustDelta>> <<statIcon setup.StatIcon.HEARTH>>@@<br>
+		@@.mc-thoughts; Lust increased: +<<= _out.lustDelta>> <<statIcon setup.StatIcon.HEALTH>>@@<br>
 		@@.mc-thoughts; Sanity decreased: <<= _out.sanityDelta>> <<statIcon setup.StatIcon.SANITY>>@@<br>
 		<<if _out.corrDelta>>
 			@@.mc-thoughts; Corruption banking: +<<= _out.corrDelta>>@@<br>
@@ -65,7 +65,7 @@
 		<b>@@.mc-thoughts; Sanity set to <<= _out.sanitySet>> <<statIcon setup.StatIcon.SANITY>> now!@@</b><br>
 		@@.mc-speech; <<= _out.narrative>>@@<br>
 		<<if _out.lustDelta>>
-			@@.mc-thoughts; Lust increased: +<<= _out.lustDelta>> <<statIcon setup.StatIcon.HEARTH>>@@<br>
+			@@.mc-thoughts; Lust increased: +<<= _out.lustDelta>> <<statIcon setup.StatIcon.HEALTH>>@@<br>
 		<</if>>
 		<<if _out.corrDelta>>
 			@@.mc-thoughts; Corruption banking: +<<= _out.corrDelta>>@@<br>

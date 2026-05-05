@@ -8,7 +8,7 @@ You wander from shelf to shelf, searching for something interesting. Suddenly, y
 <<if setup.Mc.corruption() lt 3>><<run setup.Library.gainSmallCorruption()>>
 + 0.1 <<statIcon setup.StatIcon.CORRUPTION>><br>
 <</if>>
-+ 30 <<statIcon setup.StatIcon.HEARTH>><br>
++ 30 <<statIcon setup.StatIcon.HEALTH>><br>
 <br>
 @@.backbtn; [[Leave|LibraryInside]]@@ <br>
 <<done>>

@@ -30,7 +30,7 @@ setup.StatIcon = Object.freeze({
     CORRUPTION: "corruption",
     EMF:        "emf",
     ENERGY:     "energy",
-    HEARTH:     "hearth",
+    HEALTH:     "hearth",
     SANITY:     "sanity",
     UVL:        "uvl"
 });

@@ -13,7 +13,7 @@ You spent about an hour at the gym, diligently working on improving your physica
 			@@.mc-speech; I'm so horny...and they start rubbing my pussy right now....<br>
 			Oooh, [[I can't resist|GymGroupEvent1Start]]@@<br>
 		<<else>>
-			@@.mc-speech; No, sorry I'm [[not in the mood.|GymInside]]@@<br>@@.warningtext; (Req. <<statIcon setup.StatIcon.HEARTH>> ≥ 50)@@
+			@@.mc-speech; No, sorry I'm [[not in the mood.|GymInside]]@@<br>@@.warningtext; (Req. <<statIcon setup.StatIcon.HEALTH>> ≥ 50)@@
 		<</if>>
 	<</linkappend>>
 	<br>

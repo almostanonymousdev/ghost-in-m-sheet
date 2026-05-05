@@ -8,7 +8,7 @@
 	<<timed 2s>>
 		<<randRangeVideo "mechanics/cursedpossessions/passion" 1 4 ".mp4">>
 		@@.mc-speech; Ah~ I'm getting so wet down there... mmm. @@<br>
-		@@.mc-thoughts; Lust increased: +15 <<statIcon setup.StatIcon.HEARTH>>@@<br>
+		@@.mc-thoughts; Lust increased: +15 <<statIcon setup.StatIcon.HEALTH>>@@<br>
 		@@.mc-thoughts; Sanity decreased: -15 <<statIcon setup.StatIcon.SANITY>>@@<br>
 		<<addSanity -15>>
 		<<addLust 15>>
@@ -21,7 +21,7 @@
 		<<randRangeVideo "mechanics/cursedpossessions/pulse" 1 4 ".mp4">>
 		@@.mc-speech; My... oh~ my little asshole is pulsating so hard... <br>
 		Somehow, I feel much better after that...@@<br>
-		@@.mc-thoughts; Lust decreased: -15 <<statIcon setup.StatIcon.HEARTH>>@@<br>
+		@@.mc-thoughts; Lust decreased: -15 <<statIcon setup.StatIcon.HEALTH>>@@<br>
 		@@.mc-thoughts; Sanity increased: +15 <<statIcon setup.StatIcon.SANITY>>@@<br>
 		<<addSanity 15>>
 		<<addLust -15>>

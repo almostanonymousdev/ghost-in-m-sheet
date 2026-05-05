@@ -35,7 +35,7 @@ showSlides();
 </script>
 <br>
 <<addLust 30>>
-+ 30 <<statIcon setup.StatIcon.HEARTH>><br>
++ 30 <<statIcon setup.StatIcon.HEALTH>><br>
 <br>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>

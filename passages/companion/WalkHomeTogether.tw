@@ -47,7 +47,7 @@
 			<<image "ui/img/mchouse.jpg" { width: "100%" }>>
 			@@.mc-speech; We made it to my place. Thanks for walking me back@@<br>
 			@@.notmc-speech; No problem, hope we meet again. Bye.@@<br>
-			@@.warningtext; (Req. <<= setup.Companion.name()>>'s <<statIcon setup.StatIcon.HEARTH>> ≥ 50)@@
+			@@.warningtext; (Req. <<= setup.Companion.name()>>'s <<statIcon setup.StatIcon.HEALTH>> ≥ 50)@@
 			<br><br>
 			@@.backbtn; [[Sleep]]@@<br>
 		<</if>>
@@ -85,7 +85,7 @@
 			<<image "ui/img/mchouse.jpg" { width: "100%" }>>
 			@@.mc-speech; We made it to my place. Thanks for walking me back@@<br>
 			@@.notmc-speech; No problem, hope we meet again. Bye.@@<br>
-			@@.warningtext; (Req. <<= setup.Companion.name()>>'s <<statIcon setup.StatIcon.HEARTH>> ≥ 50)@@
+			@@.warningtext; (Req. <<= setup.Companion.name()>>'s <<statIcon setup.StatIcon.HEALTH>> ≥ 50)@@
 			<br><br>
 			@@.backbtn; [[Sleep]]@@<br>
 		<</if>>
@@ -115,7 +115,7 @@
 			<<image "ui/img/mchouse.jpg" { width: "100%" }>>
 			@@.mc-speech; We made it to my place. Thanks for walking me back@@<br>
 			@@.notmc-speech; No problem, hope we meet again. Bye.@@<br>
-			@@.warningtext; (Req. <<= setup.Companion.name()>>'s <<statIcon setup.StatIcon.HEARTH>> ≥ 50)@@
+			@@.warningtext; (Req. <<= setup.Companion.name()>>'s <<statIcon setup.StatIcon.HEALTH>> ≥ 50)@@
 			<br><br>
 			@@.backbtn; [[Sleep]]@@<br>
 		<</if>>

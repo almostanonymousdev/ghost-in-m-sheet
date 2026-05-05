@@ -7,7 +7,7 @@
 You were examining the books in search of something useful when a guy approached from behind and started groping you.<br>
 @@.mc-speech; Oh~ Hey! What do you think you're doing?!@@<br>
 @@.mc-thoughts; But he continues to touch you.@@<br>
-+ 15 <<statIcon setup.StatIcon.HEARTH>><br>
++ 15 <<statIcon setup.StatIcon.HEALTH>><br>
 <<if setup.Mc.corruption() lt 1>>
 	@@.mc-speech; [[Stop it right now, or I'll scream|LibraryInside]]@@ @@.warningtext; (Req. <<statIcon setup.StatIcon.CORRUPTION>> ≥ 1)@@
 <<else>>

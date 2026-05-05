@@ -47,6 +47,6 @@
 		<<else>>
 			or @@.usebtn; [["Call "+_cName + " for help"|$return][setup.Events.companionDrainForHelp()]]@@
 		<</if>>
-		- _cName's <<statIcon setup.StatIcon.SANITY>> and + _cName's <<statIcon setup.StatIcon.HEARTH>>
+		- _cName's <<statIcon setup.StatIcon.SANITY>> and + _cName's <<statIcon setup.StatIcon.HEALTH>>
 	<</if>>
 <</widget>>

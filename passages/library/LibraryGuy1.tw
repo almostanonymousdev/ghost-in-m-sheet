@@ -5,7 +5,7 @@
 	<<if setup.Mc.corruption() lt 2>><<run setup.Library.tryGainGropingCorruption(2, 0.1)>>
 		+ 0.1 <<statIcon setup.StatIcon.CORRUPTION>><br>
 	<</if>>
-	+ 30 <<statIcon setup.StatIcon.HEARTH>><br>
+	+ 30 <<statIcon setup.StatIcon.HEALTH>><br>
 	<<addLust 30>>
 
 	@@.mc-speech; We have to stop! Someone might see what we're doing here. @@<br>
@@ -16,7 +16,7 @@
 		@@.mc-speech; Well, okay, but keep an eye out to make sure <<linkappend "no one sees us.">>
 			<<video "scenes/library/1.2.mp4">>
 			@@.mc-speech; Slurp~Slurlp~ If someone sees us... Fuck! This thought makes my pussy even wetter, am I really such a slut?@@<br>
-			+ 30 <<statIcon setup.StatIcon.HEARTH>><br>
+			+ 30 <<statIcon setup.StatIcon.HEALTH>><br>
 			<<if setup.Mc.corruption() lte 6>><<run setup.Library.tryGainGropingCorruption(6, 0.2)>>
 				+ 0.2 <<statIcon setup.StatIcon.CORRUPTION>><br>
 			<</if>>
@@ -36,7 +36,7 @@
 	<<if setup.Mc.corruption() lt 2>><<run setup.Library.tryGainGropingCorruption(2, 0.1)>>
 		+ 0.1 <<statIcon setup.StatIcon.CORRUPTION>><br>
 	<</if>>
-	+ 30 <<statIcon setup.StatIcon.HEARTH>><br>
+	+ 30 <<statIcon setup.StatIcon.HEALTH>><br>
 	<<addLust 30>>
 
 	<<if setup.Mc.corruption() lte 3>>
@@ -45,7 +45,7 @@
 		@@.mc-speech; Alright, you can consider yourself deserving of <<linkappend "this.">>
 			<<randomVideo "scenes/library/2.2.mp4" "scenes/library/2.3.mp4">>
 			@@.mc-speech; Why am I doing this? Fuck, my pussy is so wet ❤️@@<br>
-			+ 30 <<statIcon setup.StatIcon.HEARTH>><br>
+			+ 30 <<statIcon setup.StatIcon.HEALTH>><br>
 			<<if setup.Mc.corruption() lte 6>><<run setup.Library.tryGainGropingCorruption(6, 0.2)>>
 				+ 0.2 <<statIcon setup.StatIcon.CORRUPTION>><br>
 			<</if>>

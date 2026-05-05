@@ -26,7 +26,7 @@
 	@@.mc-speech; Thank you, father. I will pray and endeavor to be better@@<br>
 	@@.notmc-speech; May the peace and grace of the Lord be with you. Go in peace, my daughter@@<br>
 	<br>
-	Your <<statIcon setup.StatIcon.HEARTH>> is decreased
+	Your <<statIcon setup.StatIcon.HEALTH>> is decreased
 	<<run setup.Church.clearLust()>>
 
 <</linkreplace>>

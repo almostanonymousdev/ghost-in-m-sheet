@@ -55,7 +55,7 @@
 		<<run setup.Companion.markTransFirstStage()>>
 	<</if>>
 	<<run setup.Companion.applyEventStatDeltas()>>
-	<<= _cName>>'s lust: + <<= setup.Companion.eventLustGain()>> <<statIcon setup.StatIcon.HEARTH>><br>
+	<<= _cName>>'s lust: + <<= setup.Companion.eventLustGain()>> <<statIcon setup.StatIcon.HEALTH>><br>
 	<<= _cName>>'s sanity: - <<= setup.Companion.decreaseSanity()>><<statIcon setup.StatIcon.SANITY>><br>
 
 <</widget>>
@@ -90,9 +90,9 @@
 		<<run setup.Companion.markTransFirstStage()>>
 	<</if>>
 	<<run setup.Companion.applyEventStatDeltas()>>
-	<<= _cName>>'s lust: + <<= setup.Companion.eventLustGain()>> <<statIcon setup.StatIcon.HEARTH>><br>
+	<<= _cName>>'s lust: + <<= setup.Companion.eventLustGain()>> <<statIcon setup.StatIcon.HEALTH>><br>
 	<<= _cName>>'s sanity: - <<= setup.Companion.decreaseSanity()>><<statIcon setup.StatIcon.SANITY>><br>
-	Your <<statIcon setup.StatIcon.HEARTH>> +15<br>
+	Your <<statIcon setup.StatIcon.HEALTH>> +15<br>
 	<<addLust 15>>
 <</widget>>
 
@@ -126,9 +126,9 @@
 		<<run setup.Companion.markTransFirstStage()>>
 	<</if>>
 	<<run setup.Companion.applyEventStatDeltas()>>
-	<<= _cName>>'s lust: + <<= setup.Companion.eventLustGain()>> <<statIcon setup.StatIcon.HEARTH>><br>
+	<<= _cName>>'s lust: + <<= setup.Companion.eventLustGain()>> <<statIcon setup.StatIcon.HEALTH>><br>
 	<<= _cName>>'s sanity: - <<= setup.Companion.decreaseSanity()>><<statIcon setup.StatIcon.SANITY>><br>
-	Your <<statIcon setup.StatIcon.HEARTH>> +15<br>
+	Your <<statIcon setup.StatIcon.HEALTH>> +15<br>
 	<<addLust 15>>
 <</widget>>
 
@@ -160,9 +160,9 @@
 		<<run setup.Companion.markTransFirstStage()>>
 	<</if>>
 	<<run setup.Companion.applyEventStatDeltas()>>
-	<<= _cName>>'s lust: + <<= setup.Companion.eventLustGain()>> <<statIcon setup.StatIcon.HEARTH>><br>
+	<<= _cName>>'s lust: + <<= setup.Companion.eventLustGain()>> <<statIcon setup.StatIcon.HEALTH>><br>
 	<<= _cName>>'s sanity: - <<= setup.Companion.decreaseSanity()>><<statIcon setup.StatIcon.SANITY>><br>
-	Your <<statIcon setup.StatIcon.HEARTH>> +15<br>
+	Your <<statIcon setup.StatIcon.HEALTH>> +15<br>
 	<<addLust 15>>
 <</widget>>
 

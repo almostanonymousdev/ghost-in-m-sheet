@@ -93,7 +93,7 @@ integer in [start, end]. Replaces the 4-10 line <<if>> ladders each
 	<</widget>>
 
 	<<widget "deliveryLustReq">>
-		@@.warningtext; (Req. <<statIcon setup.StatIcon.HEARTH>> ≥ <<= _args[0]>>)@@
+		@@.warningtext; (Req. <<statIcon setup.StatIcon.HEALTH>> ≥ <<= _args[0]>>)@@
 	<</widget>>
 
 	/* Random tip on correct deliveries (30% chance, $2-$5). */

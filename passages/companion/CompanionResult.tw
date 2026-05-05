@@ -16,7 +16,7 @@
 		<br>@@.mc-speech; Well, we'll have to take this to the witch.@@<br>
 		@@.mc-thoughts; She definitely took longer than expected finding that item... I think I know what kept her for so long...<br>
 		As soon as I thought about it, I started to feel more... aroused<br>@@
-		+30 <<statIcon setup.StatIcon.HEARTH>><br><<addLust 30>>
+		+30 <<statIcon setup.StatIcon.HEALTH>><br><<addLust 30>>
 		<br>
 		@@.mc-action; <<= _cName>> found the cursed item!@@<br>
 		<br>
