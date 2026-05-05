@@ -6,7 +6,7 @@ Each entry has:
     kind     — "video" or "image"
     width    — pixel width
     height   — pixel height
-    changed  — file mtime as YYYY-MM-DD (ISO 8601 date)
+    changed  — most recent of file creation/modification time as YYYY-MM-DD
     source   — {file, start, end} for a single segment, or a list of such
                objects when the output is spliced from multiple segments.
                Omitted when no source info is known.
@@ -142,6 +142,25 @@ def probe_image(path: Path) -> tuple[int | None, int | None]:
         return None, None
 
 
+def birth_time(path: Path) -> float | None:
+    """Return file creation time as Unix seconds, or None if unavailable.
+
+    Python's stdlib `os.stat()` exposes `st_birthtime` only on BSD/macOS/Windows;
+    on Linux it's absent even when the kernel/filesystem store it (e.g. btrfs,
+    ext4). Shell out to `stat -c %W` to read it via the statx() syscall.
+    `%W` returns 0 (or '-') when the filesystem doesn't store a birth time.
+    """
+    try:
+        r = subprocess.run(
+            ["stat", "-c", "%W", str(path)],
+            capture_output=True, text=True, timeout=10,
+        )
+        ts = int(r.stdout.strip())
+        return float(ts) if ts > 0 else None
+    except (subprocess.SubprocessError, ValueError, OSError):
+        return None
+
+
 def classify(path: Path) -> str | None:
     ext = path.suffix.lower()
     if ext in VIDEO_EXTS:
@@ -169,7 +188,10 @@ def build_entry(path: Path, sources: dict[str, dict | list]) -> dict:
         w, h = probe_video(path)
     else:
         w, h = probe_image(path)
-    changed = dt.date.fromtimestamp(path.stat().st_mtime).isoformat()
+    mtime = path.stat().st_mtime
+    btime = birth_time(path)
+    ts = max(mtime, btime) if btime is not None else mtime
+    changed = dt.date.fromtimestamp(ts).isoformat()
     entry: dict = {"path": rel, "kind": kind, "width": w, "height": h, "changed": changed}
     src = sources.get(rel)
     if src:
