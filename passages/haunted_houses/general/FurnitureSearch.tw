@@ -45,6 +45,12 @@
 			<<include "PickupTarotCards">>
 		<<elseif _kind eq "monkeyPaw" and setup.MonkeyPaw.isDiscoverable()>>
 			<<include "PickupMonkeyPaw">>
+		<<elseif _kind eq "clothesStolen" and setup.HauntedHouses.hasClothesStolen()>>
+			<<run setup.Rogue.takeLoot("clothesStolen")>>
+			<<include "FindStolenClothes">>
+			<br>
+			<br>
+			@@.backbtn; [[Back|$return]]@@<br>
 		<<elseif _toolId>>
 			<<include "PickupRogueTool">>
 		<<else>>
@@ -167,6 +173,15 @@
 			<<run setup.MonkeyPaw.markFound()>>
 		<</if>>
 		<<run setup.Rogue.takeLoot("monkeyPaw")>>
+	<<elseif _kind eq "clothesStolen" and setup.HauntedHouses.hasClothesStolen()>>
+		@@.mc-thoughts; Your stolen clothes, balled up out of sight.@@<br>
+		@@.mc-action; You put them back on.@@<br><br>
+		<<if setup.Wardrobe.isPantiesStolen()>><<run setup.Wardrobe.restoreStolenInGroup("panties", "isPantiesStolen")>><</if>>
+		<<if setup.Wardrobe.isBottomStolen()>><<run setup.Wardrobe.restoreStolenInGroup("bottomOuter")>><<run State.variables.isBottomStolen = 0>><<run State.variables.isJeansStolen = 0>><<run State.variables.isShortsStolen = 0>><<run State.variables.isSkirtStolen = 0>><</if>>
+		<<if setup.Wardrobe.isShirtStolen()>><<run setup.Wardrobe.restoreStolenInGroup("tshirt", "isShirtStolen")>><</if>>
+		<<if setup.Wardrobe.isBraStolen()>><<run setup.Wardrobe.restoreStolenInGroup("bra", "isBraStolen")>><</if>>
+		<<run setup.HauntedHouses.clearClothesStolenFlag()>>
+		<<run setup.Rogue.takeLoot("clothesStolen")>>
 	<<elseif _toolId>>
 		<<set _toolDef to setup.searchToolDefs[_toolId]>>
 		@@.mc-thoughts; A piece of hunting equipment -- the <<= setup.Rogue.humanizeLootKind(_kind)>>.@@<br>

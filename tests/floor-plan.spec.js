@@ -337,4 +337,50 @@ test.describe('Floor-plan generator', () => {
     });
     expect(summary).toEqual([]);
   });
+
+  // --- BFS distances ---
+
+  test('bfsDistances stamps the source room at distance 0', async () => {
+    const plan = await gen(1, { roomCount: 6 });
+    const dist = await page.evaluate(p =>
+      SugarCube.setup.FloorPlan.bfsDistances(p, 'room_0'), plan);
+    expect(dist['room_0']).toBe(0);
+  });
+
+  test('bfsDistances assigns finite hop counts to every reachable room', async () => {
+    const plan = await gen(7, { roomCount: 6 });
+    const dist = await page.evaluate(p =>
+      SugarCube.setup.FloorPlan.bfsDistances(p, 'room_0'), plan);
+    plan.rooms.forEach(r => {
+      expect(typeof dist[r.id]).toBe('number');
+      expect(dist[r.id]).toBeGreaterThanOrEqual(0);
+    });
+  });
+
+  test('bfsDistances reports neighbors at distance 1', async () => {
+    const plan = await gen(3, { roomCount: 6 });
+    const dist = await page.evaluate(p =>
+      SugarCube.setup.FloorPlan.bfsDistances(p, 'room_0'), plan);
+    const neighbors = await page.evaluate(p =>
+      SugarCube.setup.FloorPlan.neighborsOf(p, 'room_0'), plan);
+    neighbors.forEach(id => expect(dist[id]).toBe(1));
+  });
+
+  test('bfsDistances satisfies the spanning-tree triangle inequality', async () => {
+    /* For any edge (a, b), |dist(src, a) - dist(src, b)| === 1 in
+       a tree; a violation would mean the BFS missed an edge. */
+    const plan = await gen(11, { roomCount: 7 });
+    const dist = await page.evaluate(p =>
+      SugarCube.setup.FloorPlan.bfsDistances(p, 'room_0'), plan);
+    plan.edges.forEach(([a, b]) => {
+      expect(Math.abs(dist[a] - dist[b])).toBe(1);
+    });
+  });
+
+  test('bfsDistances returns {} for an unknown source id', async () => {
+    const plan = await gen(1);
+    const dist = await page.evaluate(p =>
+      SugarCube.setup.FloorPlan.bfsDistances(p, 'room_does_not_exist'), plan);
+    expect(dist).toEqual({});
+  });
 });

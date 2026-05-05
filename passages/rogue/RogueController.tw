@@ -275,6 +275,107 @@ setup.Rogue = (function () {
 		return kinds.length ? kinds[0] : null;
 	}
 
+	/* Stash stolen clothes onto a furniture slot somewhere on the
+	   floor plan, using the same loot/lootFurniture pipeline as
+	   cursedItem / tarotCards / monkeyPaw -- so a normal furniture
+	   search reveals them via setup.Rogue.lootKindsAt. The stash is
+	   weighted by BFS distance from the player's current room:
+	   ~50% chance to land in the current room (when it has any
+	   furniture), with the remainder split among reachable rooms
+	   on a 1/distance falloff (so a neighbor is twice as likely as
+	   a room two hops away). When the current room has no furniture
+	   the full weight redistributes onto the rest of the house.
+	   The slot picker prefers furniture pieces that aren't already
+	   pinned to other loot, so co-located stashes are rare. Returns
+	   `{ roomId, suffix }` on success or null when the floor plan
+	   has no furniture-bearing rooms.
+
+	   Also clears any prior 'clothesStolen' entry from collectedLoot
+	   so a re-steal during the same run is findable again. */
+	function stashStolenClothes(rngOpt) {
+		var run = sv().run;
+		if (!run || !run.floorplan) return null;
+		var fp = run.floorplan;
+		var rand = (typeof rngOpt === 'function') ? rngOpt : Math.random;
+
+		var furnitureRooms = fp.rooms.filter(function (r) {
+			var t = setup.Templates && setup.Templates.byId(r.template);
+			return !!(t && Array.isArray(t.furniture) && t.furniture.length);
+		});
+		if (!furnitureRooms.length) return null;
+
+		var current = run.currentRoomId || 'room_0';
+		var distances = setup.FloorPlan.bfsDistances(fp, current);
+
+		// Weight rooms: distance-0 absorbs 50% (when reachable +
+		// has furniture), the rest splits the remaining 50% by 1/d.
+		var hasCurrent = furnitureRooms.some(function (r) { return r.id === current; });
+		var falloff = furnitureRooms.map(function (r) {
+			var d = distances[r.id];
+			if (d == null) return 0;        // unreachable
+			if (d === 0)   return 0;        // current-room handled separately
+			return 1 / d;
+		});
+		var falloffSum = falloff.reduce(function (a, b) { return a + b; }, 0);
+
+		var weights;
+		if (hasCurrent && falloffSum > 0) {
+			weights = furnitureRooms.map(function (r, i) {
+				return r.id === current ? 0.5 : 0.5 * (falloff[i] / falloffSum);
+			});
+		} else if (hasCurrent) {
+			// Only the current room is furnitured & reachable.
+			weights = furnitureRooms.map(function (r) {
+				return r.id === current ? 1 : 0;
+			});
+		} else if (falloffSum > 0) {
+			// No furniture in current room: redistribute 100% by 1/d.
+			weights = falloff.map(function (w) { return w / falloffSum; });
+		} else {
+			// Nothing reachable from current room had furniture --
+			// fall back to a uniform pick across all furniture rooms
+			// (covers degenerate plans where current is isolated).
+			weights = furnitureRooms.map(function () { return 1 / furnitureRooms.length; });
+		}
+
+		var roll = rand();
+		var cum = 0;
+		var pickedIdx = furnitureRooms.length - 1;
+		for (var i = 0; i < weights.length; i++) {
+			cum += weights[i];
+			if (roll < cum) { pickedIdx = i; break; }
+		}
+		var picked = furnitureRooms[pickedIdx];
+		var t = setup.Templates.byId(picked.template);
+
+		// Avoid (room, suffix) collisions with already-placed loot
+		// when there's a free slot to use.
+		var lootFurn = fp.lootFurniture || {};
+		var taken = {};
+		Object.keys(fp.loot || {}).forEach(function (k) {
+			if (k === 'clothesStolen') return;
+			if (fp.loot[k] === picked.id && lootFurn[k]) taken[lootFurn[k]] = true;
+		});
+		var available = t.furniture.filter(function (f) { return !taken[f]; });
+		var pool = available.length ? available : t.furniture.slice();
+		var suffix = pool[Math.floor(rand() * pool.length)];
+
+		if (!fp.loot) fp.loot = {};
+		if (!fp.lootFurniture) fp.lootFurniture = {};
+		fp.loot.clothesStolen = picked.id;
+		fp.lootFurniture.clothesStolen = suffix;
+
+		// A previous steal in the same run may have left
+		// 'clothesStolen' in collectedLoot; clear it so the new
+		// stash is searchable.
+		if (Array.isArray(run.collectedLoot)) {
+			var idx = run.collectedLoot.indexOf('clothesStolen');
+			if (idx !== -1) run.collectedLoot.splice(idx, 1);
+		}
+
+		return { roomId: picked.id, suffix: suffix };
+	}
+
 	/* Move the player into `roomId`. No-op when no run is active or
 	   the id isn't on the current floor plan; nav links call this
 	   before re-entering RogueRun. */
@@ -836,6 +937,7 @@ setup.Rogue = (function () {
 		setCurrentRoom: setCurrentRoom,
 		setSearchedFurniture: setSearchedFurniture,
 		searchedFurniture: searchedFurniture,
+		stashStolenClothes: stashStolenClothes,
 		lootAt: lootAt,
 		lootKindsAt: lootKindsAt,
 		takeLoot: takeLoot,

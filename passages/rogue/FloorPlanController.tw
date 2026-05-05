@@ -229,6 +229,29 @@ setup.FloorPlan = (function () {
 		return out;
 	}
 
+	/* BFS hop counts from `fromId` to every reachable room.
+	   Returns a { roomId -> distance } map; the source is at 0,
+	   direct neighbors at 1, and so on. Unreachable rooms are
+	   omitted (the floor plan is a spanning tree, so this only
+	   matters when `fromId` isn't on the plan). */
+	function bfsDistances(plan, fromId) {
+		var dist = {};
+		if (!plan || !Array.isArray(plan.rooms) || !plan.rooms.length) return dist;
+		if (!plan.rooms.some(function (r) { return r.id === fromId; })) return dist;
+		dist[fromId] = 0;
+		var queue = [fromId];
+		while (queue.length) {
+			var cur = queue.shift();
+			neighborsOf(plan, cur).forEach(function (n) {
+				if (dist[n] == null) {
+					dist[n] = dist[cur] + 1;
+					queue.push(n);
+				}
+			});
+		}
+		return dist;
+	}
+
 	function roomById(plan, roomId) {
 		if (!plan || !Array.isArray(plan.rooms)) return null;
 		for (var i = 0; i < plan.rooms.length; i++) {
@@ -293,6 +316,7 @@ setup.FloorPlan = (function () {
 		nonHallwayTemplates: nonHallwayTemplates,
 		generate: generate,
 		neighborsOf: neighborsOf,
+		bfsDistances: bfsDistances,
 		roomById: roomById,
 		isConnected: isConnected,
 		layout: layout

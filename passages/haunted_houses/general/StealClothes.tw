@@ -1,5 +1,9 @@
 :: StealClothes [nobr noreturn] {"position":"4125,950","size":"100,100"}
-<<run setup.HauntedHouses.chooseClothesStashRoom()>>
+<<if setup.Rogue.isRogue()>>
+	<<run setup.Rogue.stashStolenClothes()>>
+<<else>>
+	<<run setup.HauntedHouses.chooseClothesStashRoom()>>
+<</if>>
 <<run setup.HauntedHouses.markClothesStolen()>>
 @@.mc-thoughts; While focusing on your device, you suddenly felt a hard push from behind. Before you could understand what happened, the ground came veeeeery close. *Bang*@@<br>
 @@.mc-speech; Ouch! @@ @@.mc-thoughts;You tried to break the fall with your hands, but you didn't react in time. The impact was too strong, and it knocked you out for a few moments. @@

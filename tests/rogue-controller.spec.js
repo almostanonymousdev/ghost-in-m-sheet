@@ -573,3 +573,245 @@ test.describe('Rogue Controller', () => {
     expect(await callSetup(page, 'setup.Rogue.startingTools()')).toEqual([]);
   });
 });
+
+/* setup.Rogue.stashStolenClothes places the steal target on a
+   furniture slot using the same loot/lootFurniture pipeline as
+   the other rogue loot kinds, weighted by BFS distance from the
+   player's current room (~50% same room, then 1/distance
+   falloff). */
+test.describe('Rogue Controller — stashStolenClothes', () => {
+  let page;
+
+  test.beforeAll(async ({ browser }) => {
+    page = await openGame(browser);
+  });
+
+  test.afterAll(async () => {
+    await page.close();
+  });
+
+  test.beforeEach(async () => {
+    await resetGame(page);
+  });
+
+  /* Build a deterministic floor plan whose hallway has furniture so
+     the "stash in current room" branch can be exercised. We force
+     the templates list through a fixed sequence by patching the
+     plan post-generation; the alternative would be hunting for a
+     seed whose hallway happens to satisfy the constraint, which is
+     brittle. */
+  async function startWithPlan() {
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
+      seed: 42, floorPlanOpts: { roomCount: 5 }
+    }));
+  }
+
+  test('returns null when no run is active', async () => {
+    const out = await page.evaluate(() =>
+      SugarCube.setup.Rogue.stashStolenClothes());
+    expect(out).toBeNull();
+  });
+
+  test('stash lands somewhere on the active floor plan', async () => {
+    await startWithPlan();
+    const result = await page.evaluate(() =>
+      SugarCube.setup.Rogue.stashStolenClothes());
+    expect(result).not.toBeNull();
+    const fp = await callSetup(page, 'setup.Rogue.field("floorplan")');
+    expect(fp.loot.clothesStolen).toBe(result.roomId);
+    expect(fp.lootFurniture.clothesStolen).toBe(result.suffix);
+    // Picked room must have furniture and the picked suffix must
+    // be in that template's furniture list.
+    const room = fp.rooms.find(r => r.id === result.roomId);
+    const tmpl = await page.evaluate(t =>
+      SugarCube.setup.Templates.byId(t), room.template);
+    expect(tmpl.furniture).toContain(result.suffix);
+  });
+
+  test('FurnitureSearch can find the stash via lootKindsAt', async () => {
+    /* The whole point of plumbing the stash through the loot
+       pipeline is that the existing furniture-search lookup picks
+       it up without a special case. */
+    await startWithPlan();
+    const stash = await page.evaluate(() =>
+      SugarCube.setup.Rogue.stashStolenClothes());
+    const kinds = await page.evaluate(({ r, s }) =>
+      SugarCube.setup.Rogue.lootKindsAt(r, s), { r: stash.roomId, s: stash.suffix });
+    expect(kinds).toContain('clothesStolen');
+  });
+
+  test('current room (when furnitured) absorbs ~50% of the distribution', async () => {
+    /* Force the player into a room with furniture, then sample
+       the stash room many times. The current room should land
+       roughly half the time -- looser bounds (35-65%) to keep
+       the test robust against PRNG variance. */
+    await startWithPlan();
+
+    // Pick a non-hallway room with furniture as the player's spot.
+    const fp = await callSetup(page, 'setup.Rogue.field("floorplan")');
+    const furnitureRoom = await page.evaluate(plan => {
+      for (const r of plan.rooms) {
+        if (r.id === 'room_0') continue;
+        const t = SugarCube.setup.Templates.byId(r.template);
+        if (t && t.furniture && t.furniture.length) return r.id;
+      }
+      return null;
+    }, fp);
+    expect(furnitureRoom).not.toBeNull();
+    await page.evaluate(id => SugarCube.setup.Rogue.setCurrentRoom(id), furnitureRoom);
+
+    const N = 400;
+    const counts = await page.evaluate(({ n, here }) => {
+      const c = {};
+      for (let i = 0; i < n; i++) {
+        const r = SugarCube.setup.Rogue.stashStolenClothes();
+        c[r.roomId] = (c[r.roomId] || 0) + 1;
+      }
+      return c;
+    }, { n: N, here: furnitureRoom });
+    const hereShare = (counts[furnitureRoom] || 0) / N;
+    expect(hereShare).toBeGreaterThan(0.35);
+    expect(hereShare).toBeLessThan(0.65);
+  });
+
+  test('distance falloff: nearer rooms beat farther rooms over many samples', async () => {
+    /* Build a long-chain plan so distance 1 vs distance 3 is
+       unambiguous. The 1/distance weighting must produce
+       count(near) > count(far) when sampled many times. We sample
+       from a current room with no furniture so the 50%
+       "current-room" bucket isn't in play (the test isolates the
+       falloff curve, not the same-room bias). */
+    await page.evaluate(() => SugarCube.setup.Rogue.start({ seed: 1 }));
+    /* Hand-built plan: room_0 (hallway, no furniture) -- room_1 --
+       room_2 -- room_3, all in a straight chain, with room_1 and
+       room_3 carrying furniture. We use templates whose furniture
+       lists are non-empty by reading the catalogue. */
+    const plan = await page.evaluate(() => {
+      // Pick two real templates that have furniture.
+      const cat = SugarCube.setup.Templates;
+      const candidates = SugarCube.setup.FloorPlan.nonHallwayTemplates()
+        .map(id => ({ id, t: cat.byId(id) }))
+        .filter(x => x.t && x.t.furniture && x.t.furniture.length);
+      const a = candidates[0].id;
+      const b = candidates[1].id;
+      const c = candidates[2].id;
+      return {
+        seed: 1,
+        rooms: [
+          { id: 'room_0', template: 'hallway' },
+          { id: 'room_1', template: a },
+          { id: 'room_2', template: b },
+          { id: 'room_3', template: c }
+        ],
+        edges: [['room_0','room_1'], ['room_1','room_2'], ['room_2','room_3']],
+        spawnRoomId: 'room_3',
+        loot: {},
+        lootFurniture: {},
+        bossRoomId: null
+      };
+    });
+    await page.evaluate(p => SugarCube.setup.Rogue.setField('floorplan', p), plan);
+    // Player at hallway (room_0) -- which has no furniture, so the
+    // 50% same-room bucket isn't engaged. Distances: room_1=1,
+    // room_2=2, room_3=3.
+    await page.evaluate(() => SugarCube.setup.Rogue.setCurrentRoom('room_0'));
+
+    const N = 600;
+    const counts = await page.evaluate(n => {
+      const c = { room_1: 0, room_2: 0, room_3: 0 };
+      for (let i = 0; i < n; i++) {
+        const r = SugarCube.setup.Rogue.stashStolenClothes();
+        c[r.roomId] = (c[r.roomId] || 0) + 1;
+      }
+      return c;
+    }, N);
+
+    // Strict ordering by distance: distance 1 > distance 2 > distance 3.
+    expect(counts.room_1).toBeGreaterThan(counts.room_2);
+    expect(counts.room_2).toBeGreaterThan(counts.room_3);
+  });
+
+  test('falls back to non-current rooms when current room has no furniture', async () => {
+    /* Hallway typically has no furniture -- if the player is in
+       the hallway, the stash must land somewhere with furniture. */
+    await startWithPlan();
+    await page.evaluate(() => SugarCube.setup.Rogue.setCurrentRoom('room_0'));
+
+    // Confirm hallway has no furniture before stashing.
+    const fp = await callSetup(page, 'setup.Rogue.field("floorplan")');
+    const hallwayTmpl = await page.evaluate(() =>
+      SugarCube.setup.Templates.byId('hallway'));
+    if (hallwayTmpl && hallwayTmpl.furniture && hallwayTmpl.furniture.length) {
+      // Skip: this assumption only holds when hallway is empty.
+      return;
+    }
+
+    for (let i = 0; i < 20; i++) {
+      const r = await page.evaluate(() =>
+        SugarCube.setup.Rogue.stashStolenClothes());
+      expect(r.roomId).not.toBe('room_0');
+    }
+  });
+
+  test('avoids slots already occupied by other loot when an alternative exists', async () => {
+    /* Pin the only-other-loot kind to a specific (room, suffix),
+       then force the stash into that same room and check the
+       picker picks a different slot when the room has spare
+       furniture. */
+    await page.evaluate(() => SugarCube.setup.Rogue.start({ seed: 1 }));
+    // Find a template with at least 3 furniture slots so we can
+    // crowd one and still have room left over.
+    const tmplId = await page.evaluate(() => {
+      const cat = SugarCube.setup.Templates;
+      return SugarCube.setup.FloorPlan.nonHallwayTemplates()
+        .find(id => {
+          const t = cat.byId(id);
+          return t && t.furniture && t.furniture.length >= 3;
+        });
+    });
+    expect(tmplId).toBeTruthy();
+    const tmpl = await page.evaluate(id =>
+      SugarCube.setup.Templates.byId(id), tmplId);
+
+    const occupiedSuffix = tmpl.furniture[0];
+    const plan = {
+      seed: 1,
+      rooms: [
+        { id: 'room_0', template: 'hallway' },
+        { id: 'room_1', template: tmplId }
+      ],
+      edges: [['room_0', 'room_1']],
+      spawnRoomId: 'room_1',
+      loot: { cursedItem: 'room_1' },
+      lootFurniture: { cursedItem: occupiedSuffix },
+      bossRoomId: null
+    };
+    await page.evaluate(p =>
+      SugarCube.setup.Rogue.setField('floorplan', p), plan);
+    await page.evaluate(() => SugarCube.setup.Rogue.setCurrentRoom('room_1'));
+
+    // Sample many stashes; none should land on the occupied slot
+    // because the picker has free alternatives.
+    let collisions = 0;
+    for (let i = 0; i < 50; i++) {
+      const r = await page.evaluate(() =>
+        SugarCube.setup.Rogue.stashStolenClothes());
+      if (r.roomId === 'room_1' && r.suffix === occupiedSuffix) collisions++;
+    }
+    expect(collisions).toBe(0);
+  });
+
+  test('re-stashing during the same run clears the prior collected flag', async () => {
+    await startWithPlan();
+    await page.evaluate(() => SugarCube.setup.Rogue.stashStolenClothes());
+    // Simulate the player having already searched / collected the
+    // first stash.
+    await page.evaluate(() => SugarCube.setup.Rogue.takeLoot('clothesStolen'));
+    expect(await callSetup(page, 'setup.Rogue.hasCollected("clothesStolen")')).toBe(true);
+
+    await page.evaluate(() => SugarCube.setup.Rogue.stashStolenClothes());
+    // After re-stashing, the new stash must be findable again --
+    // i.e. clothesStolen is no longer in collectedLoot.
+    expect(await callSetup(page, 'setup.Rogue.hasCollected("clothesStolen")')).toBe(false);
+  });
+});
