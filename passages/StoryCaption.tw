@@ -11,6 +11,7 @@
 <</if>>
 <br>
 <span id="time"><<= setup.Time.display()>></span><br>
+<span id="tool-timers"><<= setup.toolTimerHudMarkup()>></span>
 <b><<image "ui/img/energy.png" { style: "position: relative; top: 0.375em; width:10%;" }>>Energy:</b> <<showmeter 'energy' `setup.Mc.energy() / setup.Mc.energyMax()`>>
 <<run setup.Mc.setSanityUp(setup.Mc.sanity().toFixed(2))>>
 <b><<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:10%;" }>>Sanity:</b> <<showmeter 'sanity' `setup.Mc.sanity() / setup.Mc.sanityMax()`>>

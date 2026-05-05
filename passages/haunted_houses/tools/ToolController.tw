@@ -582,6 +582,44 @@ setup.searchableRooms.forEach(function (room) {
         return TS.READY;
     };
 
+    /* Read-only timer view used by the sidebar HUD. Returns the
+     * minutes remaining in a timed tool's activation window, or 0 if
+     * the tool is not currently active (or already stale). Unlike
+     * tickTimedTool this never mutates $tools — the strip should never
+     * cause an "EXPIRED" side effect just by rendering the caption. */
+    setup.toolTimerRemain = function (tool) {
+        if (setup.TIMED_TOOLS.indexOf(tool) === -1) return 0;
+        var V = State.variables;
+        if (!V.tools || !V.tools[tool] || V.tools[tool].activated !== 1) return 0;
+        var elapsed = setup.Time.totalMinutes() - V.tools[tool].activationTime;
+        var window = setup.toolTimeRemain((V.equipment || {})[tool]);
+        var remain = window - elapsed;
+        return remain > 0 ? remain : 0;
+    };
+
+    /* Display-name lookup for the timer strip. Mirrors the colour-coded
+     * letter style used by setup.searchToolDefs labels but stripped to
+     * plain text — the strip is small and the colour highlight would
+     * compete with EMF's red/yellow numbers in the room. */
+    var TIMER_LABELS = { emf: "EMF", uvl: "UVL" };
+
+    /* Markup for the sidebar tool-timer strip. Returns an empty string
+     * when no timed tool is currently active so StoryCaption renders a
+     * blank slot rather than a stub line. Each entry shows the tool
+     * name and the in-game minutes remaining; the strip is wrapped per
+     * tool so CSS can pick out the "almost expired" case. */
+    setup.toolTimerHudMarkup = function () {
+        var parts = [];
+        setup.TIMED_TOOLS.forEach(function (tool) {
+            var remain = setup.toolTimerRemain(tool);
+            if (remain <= 0) return;
+            var label = TIMER_LABELS[tool] || tool.toUpperCase();
+            var cls = remain <= 2 ? 'tool-timer tool-timer--low' : 'tool-timer';
+            parts.push('<span class="' + cls + '">' + label + ': ' + remain + ' min left</span>');
+        });
+        return parts.join(' · ');
+    };
+
     /* Shared predicate for the tier-gated evidence tools (GWB, Plasm,
      * Spiritbox). True iff the active ghost exposes `id`, the equipment-
      * tier chance passes a fresh 1..100 roll, and the player is in a
@@ -618,9 +656,16 @@ setup.searchableRooms.forEach(function (room) {
         if (toolKey === "emf" || toolKey === "uvl") {
             var windowMin = setup.TOOL_TIME_REMAIN[tier];
             if (windowMin === undefined) return tierLabel;
+            /* EMF and UVL both have a tier-based activation window, but
+               they're opened by different in-world events (see
+               setup.activateTool callers). The tip splits the trigger
+               copy so players know which actions arm which tool. */
+            var trigger = (toolKey === "emf")
+                ? "min after a GWB or Spiritbox hit, or the ghost flicking the lights off"
+                : "min after a ghost sanity event (an MC encounter)";
             return tierLabel + " · 100% while active · Window "
-                + (windowMin + snap.toolWindowBonus)
-                + " min after another tool's hit or a ghost event" + bonusNote;
+                + (windowMin + snap.toolWindowBonus) + " "
+                + trigger + bonusNote;
         }
         var chance = setup.TIER_CHANCE[tier];
         if (chance === undefined) return tierLabel;
