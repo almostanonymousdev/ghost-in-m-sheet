@@ -275,3 +275,377 @@ test.describe('Clothing — Lost-clothing buyback', () => {
     expect(prices).toEqual(expected);
   });
 });
+
+test.describe('Clothing — Hunt-mode quick undress/redress', () => {
+  test.beforeEach(async ({ game: page }) => {
+    await setVar(page, 'hours', 12);
+  });
+
+  test('groupForSlot returns the right group for each slot alias', async ({ game: page }) => {
+    const map = await page.evaluate(() => {
+      const W = SugarCube.setup.Wardrobe;
+      return {
+        tshirt:  W.groupForSlot('tshirt').name,
+        bra:     W.groupForSlot('bra').name,
+        panties: W.groupForSlot('panties').name,
+        jeans:   W.groupForSlot('jeans').name,
+        shorts:  W.groupForSlot('shorts').name,
+        skirt:   W.groupForSlot('skirt').name,
+        bottom:  W.groupForSlot('bottomOuter').name,
+        bogus:   W.groupForSlot('nope'),
+      };
+    });
+    expect(map).toEqual({
+      tshirt: 'tshirt', bra: 'bra', panties: 'panties',
+      jeans: 'bottomOuter', shorts: 'bottomOuter', skirt: 'bottomOuter',
+      bottom: 'bottomOuter', bogus: null,
+    });
+  });
+
+  test('quickUndress(tshirt) on a worn tier-1 t-shirt unequips it and refunds beauty', async ({ game: page }) => {
+    await setVar(page, 'tshirtState0', 'not worn');
+    await setVar(page, 'tshirtState1', 'worn');
+    await setVar(page, 'tshirtState',  'worn');
+    await setVar(page, 'rememberTopOuter', 'tshirt1');
+    await setVar(page, 'mc.beauty', 30);
+
+    const ok = await callSetup(page, 'setup.Wardrobe.quickUndress("tshirt")');
+
+    expect(ok).toBe(true);
+    expect(await getVar(page, 'tshirtState1')).toBe('not worn');
+    expect(await getVar(page, 'rememberTopOuter')).toBe('notshirt1');
+    expect(await getVar(page, 'mc.beauty')).toBe(30 - 5);
+  });
+
+  test('quickUndress no-ops when the slot already has nothing on', async ({ game: page }) => {
+    await setVar(page, 'braState0', 'not worn');
+    await setVar(page, 'braState1', 'not worn');
+    await setVar(page, 'braState',  'not worn');
+    const startBeauty = await getVar(page, 'mc.beauty');
+
+    const ok = await callSetup(page, 'setup.Wardrobe.quickUndress("bra")');
+
+    expect(ok).toBe(false);
+    expect(await getVar(page, 'mc.beauty')).toBe(startBeauty);
+  });
+
+  test('quickRedress restores the previously worn item and re-applies its beauty', async ({ game: page }) => {
+    await setVar(page, 'pantiesState0', 'not worn');
+    await setVar(page, 'pantiesState2', 'not worn');
+    await setVar(page, 'pantiesState',  'not worn');
+    await setVar(page, 'rememberBottomUnder', 'nopanties2');
+    await setVar(page, 'mc.beauty', 20);
+
+    const ok = await callSetup(page, 'setup.Wardrobe.quickRedress("panties")');
+
+    expect(ok).toBe(true);
+    expect(await getVar(page, 'pantiesState2')).toBe('worn');
+    expect(await getVar(page, 'rememberBottomUnder')).toBe('panties2');
+    expect(await getVar(page, 'mc.beauty')).toBe(20 + 4);
+  });
+
+  test('quickRedress refuses to put back a now-NOT_BOUGHT (stolen) item', async ({ game: page }) => {
+    await setVar(page, 'tshirtState0', 'not worn');
+    await setVar(page, 'tshirtState2', 'not bought');
+    await setVar(page, 'tshirtState',  'not worn');
+    await setVar(page, 'rememberTopOuter', 'notshirt2');
+
+    const can = await callSetup(page, 'setup.Wardrobe.canQuickRedress("tshirt")');
+    const ok  = await callSetup(page, 'setup.Wardrobe.quickRedress("tshirt")');
+
+    expect(can).toBe(false);
+    expect(ok).toBe(false);
+    expect(await getVar(page, 'tshirtState2')).toBe('not bought');
+  });
+
+  test('quickRedress refuses to put back an in-hunt stolen item even though the tier is still purchased', async ({ game: page }) => {
+    /* In-hunt steal: stealWornInGroup flips tshirtState1 to NOT_WORN
+     * (still purchased — it's not gone for good yet) and stamps
+     * isShirtStolen=1. Recovery has to happen via FindStolenClothes;
+     * the HUD shortcut must refuse. */
+    await setVar(page, 'tshirtState0', 'not worn');
+    await setVar(page, 'tshirtState1', 'not worn');
+    await setVar(page, 'tshirtState',  'not worn');
+    await setVar(page, 'rememberTopOuter', 'notshirt1');
+    await setVar(page, 'isShirtStolen', 1);
+
+    const can = await callSetup(page, 'setup.Wardrobe.canQuickRedress("tshirt")');
+    const ok  = await callSetup(page, 'setup.Wardrobe.quickRedress("tshirt")');
+
+    expect(can).toBe(false);
+    expect(ok).toBe(false);
+    expect(await getVar(page, 'tshirtState1')).toBe('not worn');
+    expect(await getVar(page, 'isShirtStolen')).toBe(1);
+  });
+
+  test('quickRedress refuses bottomOuter when the in-hunt $isBottomStolen aggregate is set', async ({ game: page }) => {
+    await setVar(page, 'jeansState0', 'not worn');
+    await setVar(page, 'jeansState1', 'not worn');
+    await setVar(page, 'jeansState',  'not worn');
+    await setVar(page, 'rememberBottomOuter', 'nojeans1');
+    await setVar(page, 'isBottomStolen', 1);
+
+    expect(await callSetup(page, 'setup.Wardrobe.canQuickRedress("jeans")')).toBe(false);
+    expect(await callSetup(page, 'setup.Wardrobe.canQuickRedress("bottomOuter")')).toBe(false);
+    expect(await callSetup(page, 'setup.Wardrobe.quickRedress("bottomOuter")')).toBe(false);
+    expect(await getVar(page, 'jeansState1')).toBe('not worn');
+  });
+
+  test('isSlotStolen maps each slot to the right $is<Garment>Stolen flag', async ({ game: page }) => {
+    await setVar(page, 'isShirtStolen',   1);
+    await setVar(page, 'isBraStolen',     0);
+    await setVar(page, 'isPantiesStolen', 1);
+    await setVar(page, 'isBottomStolen',  1);
+
+    const map = await page.evaluate(() => {
+      const W = SugarCube.setup.Wardrobe;
+      return {
+        tshirt:      W.isSlotStolen('tshirt'),
+        bra:         W.isSlotStolen('bra'),
+        panties:     W.isSlotStolen('panties'),
+        jeans:       W.isSlotStolen('jeans'),
+        shorts:      W.isSlotStolen('shorts'),
+        skirt:       W.isSlotStolen('skirt'),
+        bottomOuter: W.isSlotStolen('bottomOuter'),
+        bogus:       W.isSlotStolen('nope'),
+      };
+    });
+    expect(map).toEqual({
+      tshirt: true, bra: false, panties: true,
+      jeans: true, shorts: true, skirt: true, bottomOuter: true,
+      bogus: false,
+    });
+  });
+
+  test('canQuickRedress is false when nothing is remembered', async ({ game: page }) => {
+    // rememberVar still holds the worn key (no "no" prefix) — nothing to restore.
+    await setVar(page, 'rememberTopUnder', 'bra0');
+    const can = await callSetup(page, 'setup.Wardrobe.canQuickRedress("bra")');
+    expect(can).toBe(false);
+  });
+
+  test('undress + redress on bottomOuter (jeans) round-trips', async ({ game: page }) => {
+    await setVar(page, 'jeansState0', 'not worn');
+    await setVar(page, 'jeansState1', 'worn');
+    await setVar(page, 'jeansState',  'worn');
+    await setVar(page, 'rememberBottomOuter', 'jeans1');
+    await setVar(page, 'mc.beauty', 35);
+
+    expect(await callSetup(page, 'setup.Wardrobe.quickUndress("jeans")')).toBe(true);
+    expect(await getVar(page, 'jeansState1')).toBe('not worn');
+    expect(await getVar(page, 'rememberBottomOuter')).toBe('nojeans1');
+    expect(await getVar(page, 'mc.beauty')).toBe(35 - 5);
+
+    expect(await callSetup(page, 'setup.Wardrobe.canQuickRedress("jeans")')).toBe(true);
+    expect(await callSetup(page, 'setup.Wardrobe.quickRedress("jeans")')).toBe(true);
+    expect(await getVar(page, 'jeansState1')).toBe('worn');
+    expect(await getVar(page, 'rememberBottomOuter')).toBe('jeans1');
+    expect(await getVar(page, 'mc.beauty')).toBe(35);
+  });
+
+  test('currentBottomSlotName reports the worn outer-bottom or null', async ({ game: page }) => {
+    await setVar(page, 'jeansState',  'not worn');
+    await setVar(page, 'shortsState', 'worn');
+    await setVar(page, 'skirtState',  'not worn');
+    expect(await callSetup(page, 'setup.Wardrobe.currentBottomSlotName()')).toBe('shorts');
+
+    await setVar(page, 'shortsState', 'not worn');
+    expect(await callSetup(page, 'setup.Wardrobe.currentBottomSlotName()')).toBe(null);
+  });
+});
+
+test.describe('MC HUD — Hunt-mode click handlers', () => {
+  const { setHuntMode } = require('./helpers');
+
+  /* Pin to pre-dawn so PassageDone's isMorningPlus + isHunting branch
+   * doesn't auto-redirect Bedroom to HuntOverTime and tear down the
+   * hunt mid-test. */
+  test.beforeEach(async ({ game: page }) => {
+    await setVar(page, 'hours', 2);
+  });
+
+  /* The MC clothing strip lives in StoryCaption (sidebar). To verify
+   * a specific state actually drives the right output we render the
+   * widget body directly via `setup.Macro.evaluateString` — that
+   * sidesteps the parallel-worker race where the sidebar HTML
+   * snapshotted into the DOM lags behind the just-set state. */
+  async function renderStrip(page) {
+    return page.evaluate(() => {
+      const $div = jQuery('<div></div>');
+      $div.wiki('<<mcStatusBody>>');
+      return $div.html();
+    });
+  }
+
+  test('outside a hunt the t-shirt icon has no click handler', async ({ game: page }) => {
+    await setHuntMode(page, 0);
+    await setVar(page, 'tshirtState0', 'worn');
+    await setVar(page, 'tshirtState',  'worn');
+
+    const html = await renderStrip(page);
+    expect(html).toContain('id="statusOuterTop"');
+    expect(html).not.toContain('take it off');
+  });
+
+  test('during a hunt the t-shirt slot becomes a take-off link', async ({ game: page }) => {
+    await setHuntMode(page, 2);
+    await setVar(page, 'tshirtState0', 'not worn');
+    await setVar(page, 'tshirtState1', 'worn');
+    await setVar(page, 'tshirtState',  'worn');
+    await setVar(page, 'rememberTopOuter', 'tshirt1');
+
+    const html = await renderStrip(page);
+    expect(html).toContain('take it off');
+    expect(html).toMatch(/id="statusOuterTop"[\s\S]*?<a /);
+  });
+
+  test('during a hunt with a remembered item the empty bra slot becomes a put-back-on link', async ({ game: page }) => {
+    await setHuntMode(page, 2);
+    await setVar(page, 'braState0', 'not worn');
+    await setVar(page, 'braState2', 'not worn');
+    await setVar(page, 'braState',  'not worn');
+    await setVar(page, 'rememberTopUnder', 'nobra2');
+
+    const html = await renderStrip(page);
+    expect(html).toContain('put it back on');
+    expect(html).toMatch(/id="statusUnderTop"[\s\S]*?<a /);
+  });
+
+  test('during a hunt with no remembered item the empty bra slot stays a plain image', async ({ game: page }) => {
+    await setHuntMode(page, 2);
+    await setVar(page, 'braState0', 'not worn');
+    await setVar(page, 'braState',  'not worn');
+    await setVar(page, 'rememberTopUnder', 'bra0');
+
+    const html = await renderStrip(page);
+    expect(html).toContain('id="statusUnderTop"');
+    expect(html).not.toContain('put it back on');
+  });
+
+  test('a stolen tier-1 t-shirt renders with no redress link in the HUD', async ({ game: page }) => {
+    /* Even though the tier is still purchased and the rememberVar
+     * still points at "notshirt1", the in-hunt steal flag must
+     * suppress the put-back-on shortcut. */
+    await setHuntMode(page, 2);
+    await setVar(page, 'tshirtState0', 'not worn');
+    await setVar(page, 'tshirtState1', 'not worn');
+    await setVar(page, 'tshirtState',  'not worn');
+    await setVar(page, 'rememberTopOuter', 'notshirt1');
+    await setVar(page, 'isShirtStolen', 1);
+
+    const html = await renderStrip(page);
+    /* Pull just the tshirt slot out of the strip so anchors in
+     * other slots can't mask a regression. */
+    const slot = html.match(/id="statusOuterTop"[\s\S]*?<\/div>/)[0];
+    expect(slot).toContain('empty.jpg');
+    expect(slot).not.toContain('<a ');
+    expect(slot).not.toContain('put it back on');
+  });
+
+  test('Ironclad warden costume mode shows no clothing slots', async ({ game: page }) => {
+    await setHuntMode(page, 2);
+    await setVar(page, 'hauntedHouse', 'ironclad');
+
+    const html = await renderStrip(page);
+    expect(html).not.toContain('id="statusOuterTop"');
+    expect(html).not.toContain('id="statusUnderTop"');
+    expect(html).toContain('warden1.png');
+  });
+
+  /* End-to-end: navigate, click the live link in the sidebar, and
+   * verify both the wardrobe state AND the re-rendered strip flip.
+   * Uses jQuery.trigger('click') to drive the SugarCube link
+   * handler (Playwright's click doesn't bubble cleanly through the
+   * <img> child + force-click trips the visibility check because
+   * test mode aborts the icon image request). */
+  test('clicking the worn t-shirt icon in the sidebar takes it off and re-renders', async ({ game: page }) => {
+    await setHuntMode(page, 2);
+    await setVar(page, 'tshirtState0', 'not worn');
+    await setVar(page, 'tshirtState1', 'worn');
+    await setVar(page, 'tshirtState',  'worn');
+    await setVar(page, 'rememberTopOuter', 'tshirt1');
+    await setVar(page, 'mc.beauty', 30);
+    await goToPassage(page, 'Bedroom');
+
+    await page.evaluate(() => jQuery('#statusOuterTop a').trigger('click'));
+
+    expect(await getVar(page, 'tshirtState1')).toBe('not worn');
+    /* Aggregate must refresh too — otherwise the next click finds
+     * tshirtState still "worn" and quickUndress no-ops. */
+    expect(await getVar(page, 'tshirtState')).toBe('not worn');
+    expect(await getVar(page, 'rememberTopOuter')).toBe('notshirt1');
+    expect(await getVar(page, 'mc.beauty')).toBe(30 - 5);
+
+    const html = await page.locator('#statusOuterTop').innerHTML();
+    expect(html).toMatch(/img src="[^"]+\/empty\.jpg"/);
+    expect(html).toContain('put it back on');
+  });
+
+  test('clicking the empty t-shirt icon puts the remembered tier back on', async ({ game: page }) => {
+    await setHuntMode(page, 2);
+    await setVar(page, 'tshirtState0', 'not worn');
+    await setVar(page, 'tshirtState1', 'not worn');
+    await setVar(page, 'tshirtState',  'not worn');
+    await setVar(page, 'rememberTopOuter', 'notshirt1');
+    await setVar(page, 'mc.beauty', 25);
+    await goToPassage(page, 'Bedroom');
+
+    await page.evaluate(() => jQuery('#statusOuterTop a').trigger('click'));
+
+    expect(await getVar(page, 'tshirtState1')).toBe('worn');
+    expect(await getVar(page, 'tshirtState')).toBe('worn');
+    expect(await getVar(page, 'rememberTopOuter')).toBe('tshirt1');
+    expect(await getVar(page, 'mc.beauty')).toBe(25 + 5);
+
+    const html = await page.locator('#statusOuterTop').innerHTML();
+    expect(html).toMatch(/img src="[^"]+\/top\.jpg"/);
+    expect(html).toContain('take it off');
+  });
+
+  test('toggle round-trip: take off → put back on lands on the original state', async ({ game: page }) => {
+    await setHuntMode(page, 2);
+    await setVar(page, 'tshirtState0', 'not worn');
+    await setVar(page, 'tshirtState1', 'worn');
+    await setVar(page, 'tshirtState',  'worn');
+    await setVar(page, 'rememberTopOuter', 'tshirt1');
+    await setVar(page, 'mc.beauty', 30);
+    await goToPassage(page, 'Bedroom');
+
+    // First click: take off
+    await page.evaluate(() => jQuery('#statusOuterTop a').trigger('click'));
+    expect(await getVar(page, 'tshirtState1')).toBe('not worn');
+    expect(await getVar(page, 'mc.beauty')).toBe(30 - 5);
+
+    // Second click on the now-empty slot: put back on
+    await page.evaluate(() => jQuery('#statusOuterTop a').trigger('click'));
+    expect(await getVar(page, 'tshirtState1')).toBe('worn');
+    expect(await getVar(page, 'tshirtState')).toBe('worn');
+    expect(await getVar(page, 'rememberTopOuter')).toBe('tshirt1');
+    expect(await getVar(page, 'mc.beauty')).toBe(30);
+  });
+
+  /* The HUD shortcut gates on HuntController.isHuntActive() instead of
+     the classic-only setup.Ghosts.isHunting() so it also fires inside
+     a rogue run (mode === 'rogue' on the RogueRun passage). Without
+     this, the click-to-undress feature would silently no-op for the
+     entire rogue flow. */
+  test('rogue run: t-shirt slot becomes a take-off link on the RogueRun passage', async ({ game: page }) => {
+    await setHuntMode(page, 0);
+    await setVar(page, 'tshirtState0', 'not worn');
+    await setVar(page, 'tshirtState1', 'worn');
+    await setVar(page, 'tshirtState',  'worn');
+    await setVar(page, 'rememberTopOuter', 'tshirt1');
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
+    await page.evaluate(() => SugarCube.Engine.play('RogueRun'));
+    await page.waitForFunction(() => SugarCube.State.passage === 'RogueRun');
+
+    const html = await page.evaluate(() => {
+      const $div = jQuery('<div></div>');
+      $div.wiki('<<mcStatusBody>>');
+      return $div.html();
+    });
+    expect(html).toContain('take it off');
+    expect(html).toMatch(/id="statusOuterTop"[\s\S]*?<a /);
+  });
+});
+

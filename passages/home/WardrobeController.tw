@@ -497,6 +497,105 @@
                 if (rows[i].state === "worn") { return rows[i]; }
             }
             return null;
+        },
+
+        /* MC HUD: name of the currently-worn bottom-outer slot
+         * ('jeans'/'shorts'/'skirt') or null. Pairs with
+         * currentBottomDescriptor for the hunt-mode click target. */
+        currentBottomSlotName: function () {
+            var V = State.variables;
+            var CS = setup.ClothingState;
+            if (V.jeansState  === CS.WORN) return 'jeans';
+            if (V.shortsState === CS.WORN) return 'shorts';
+            if (V.skirtState  === CS.WORN) return 'skirt';
+            return null;
+        },
+
+        /* Map a WardrobeSlot value (or 'bottomOuter') to its
+         * WARDROBE_GROUPS entry. The three bottom-outer aliases
+         * (jeans/shorts/skirt) all share one group, so they collapse
+         * to the same entry. Returns null for unknown slot names. */
+        groupForSlot: function (slot) {
+            var groupName = (slot === 'jeans' || slot === 'shorts' || slot === 'skirt')
+                ? 'bottomOuter' : slot;
+            return setup.WARDROBE_GROUPS.find(function (g) { return g.name === groupName; }) || null;
+        },
+
+        /* HUD click: take off whatever is currently worn in `slot`'s
+         * group. Mirrors the wardrobe-screen unequip but locates the
+         * worn item itself, then refreshes the legacy $<slot>State
+         * aggregate so the immediate sidebar re-render sees the
+         * change (the wardrobe screen leans on PassageDone for the
+         * same refresh, but the HUD click skips passage navigation).
+         * Returns true iff anything was removed. */
+        quickUndress: function (slot) {
+            var grp = this.groupForSlot(slot);
+            if (!grp) return false;
+            var V = State.variables;
+            var worn = grp.items.find(function (it) {
+                return V[it.var] === setup.ClothingState.WORN;
+            });
+            if (!worn) return false;
+            this.unequip(grp, worn);
+            this.refreshAggregateStates();
+            return true;
+        },
+
+        /* HUD click: re-equip whichever item was last worn in
+         * `slot`'s group. Reads the rememberVar's "no<key>" marker,
+         * looks the matching item up by key, and routes through the
+         * regular equip path. Refreshes $<slot>State for the same
+         * reason quickUndress does. Returns false when nothing has
+         * been remembered or the remembered item is no longer
+         * purchased. */
+        quickRedress: function (slot) {
+            var item = this._rememberedItem(slot);
+            if (!item) return false;
+            this.equip(this.groupForSlot(slot), item);
+            this.refreshAggregateStates();
+            return true;
+        },
+
+        /* Predicate paired with quickRedress: true iff the slot has a
+         * remembered last-worn item the HUD can put back on with one
+         * click. */
+        canQuickRedress: function (slot) {
+            return !!this._rememberedItem(slot);
+        },
+
+        _rememberedItem: function (slot) {
+            var grp = this.groupForSlot(slot);
+            if (!grp || !grp.rememberVar) return null;
+            var V = State.variables;
+            var token = V[grp.rememberVar];
+            if (typeof token !== 'string' || token.indexOf('no') !== 0) return null;
+            var key = token.slice(2);
+            var item = grp.items.find(function (it) { return it.key === key; });
+            if (!item) return null;
+            if (V[item.var] === setup.ClothingState.NOT_BOUGHT) return null;
+            if (this.isSlotStolen(slot)) return null;
+            return item;
+        },
+
+        /* True iff the slot's group currently has its in-hunt
+         * "stolen" marker set. Used by canQuickRedress / quickRedress
+         * to refuse the HUD shortcut: stolen clothing has to be
+         * actually recovered (FindStolenClothes) or fully lost
+         * (HuntOverTime / HuntOverExhaustion). The bottom-outer
+         * group shares one aggregate marker since the steal flow
+         * collapses jeans/shorts/skirt into the same slot. */
+        isSlotStolen: function (slot) {
+            var V = State.variables;
+            switch (slot) {
+                case 'tshirt':      return V.isShirtStolen   === 1;
+                case 'bra':         return V.isBraStolen     === 1;
+                case 'panties':     return V.isPantiesStolen === 1;
+                case 'bottomOuter':
+                case 'jeans':
+                case 'shorts':
+                case 'skirt':       return V.isBottomStolen  === 1;
+                default:            return false;
+            }
         }
     };
 
