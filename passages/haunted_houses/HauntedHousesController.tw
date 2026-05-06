@@ -381,6 +381,12 @@ setup.HauntedHouses = (function () {
 		   on whether anything is actually stealable. Returns true when
 		   the passage should <<goto "StealClothes">>. */
 		shouldTriggerSteal: function () {
+			/* Swiper (rogue) bypasses the roll entirely: every tick
+			   with something stealable triggers a steal. */
+			if (setup.Rogue && setup.Rogue.hasModifier
+				&& setup.Rogue.hasModifier(setup.Modifiers.SWIPER)) {
+				return this.canStealAnyItem();
+			}
 			var roll = 1 + Math.floor(Math.random() * 100);
 			if (roll > this.stealChance()) return false;
 			return this.canStealAnyItem();

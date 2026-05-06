@@ -94,14 +94,22 @@ setup.HauntConditions = (function () {
 			var contractDrain = hasCompanion ? 0.2 : 0.4;
 			snap.sanityPerStep -= contractDrain;
 
+			/* Rogue modifiers fold into the aggregated readouts
+			   (lust/step, prowl%, etc.) but do NOT push their own
+			   contributor chip — the modifier name already shows in
+			   the Active Modifiers panel with a hover tooltip
+			   describing the effect, so a chip here would duplicate. */
 			if (setup.Rogue && setup.Rogue.hasModifier
 				&& setup.Rogue.hasModifier(setup.Modifiers.PHEROMONES)) {
 				snap.lustPerStep += 1;
-				snap.contributors.push({
-					label: "Pheromones",
-					color: "#cc66ff",
-					detail: "lust +1/step"
-				});
+			}
+			if (setup.Rogue && setup.Rogue.hasModifier
+				&& setup.Rogue.hasModifier(setup.Modifiers.COLD_SWEAT)) {
+				snap.prowlChanceBonus += 4;
+			}
+			if (setup.Rogue && setup.Rogue.hasModifier
+				&& setup.Rogue.hasModifier(setup.Modifiers.OH_BUGGER)) {
+				snap.prowlChanceBonus += 15;
 			}
 		}
 
@@ -247,7 +255,12 @@ setup.HauntConditions = (function () {
 			}
 		}
 		if ((V.orgasmCooldownSteps || 0) > 0) {
-			V.orgasmCooldownSteps -= 1;
+			/* Glass Bones (rogue) halves the per-tick decrement so the
+			   aftershock window lasts twice as long. */
+			var dec = (setup.Rogue && setup.Rogue.hasModifier
+				&& setup.Rogue.hasModifier(setup.Modifiers.GLASS_BONES))
+				? 0.5 : 1;
+			V.orgasmCooldownSteps -= dec;
 			if (V.orgasmCooldownSteps < 0) V.orgasmCooldownSteps = 0;
 		}
 		if (inHouse && typeof setup.addTime === 'function') {
@@ -292,6 +305,10 @@ setup.HauntConditions = (function () {
 
 	function canBait() {
 		var V = State.variables;
+		if (setup.Rogue && setup.Rogue.hasModifier
+			&& setup.Rogue.hasModifier(setup.Modifiers.NOT_THEIR_TYPE)) {
+			return false;
+		}
 		return !!(V.mc
 			&& V.mc.lust >= BAIT_LUST_COST
 			&& (V.mc.energy || 0) >= ENERGY_COST_BAIT
@@ -322,6 +339,10 @@ setup.HauntConditions = (function () {
 		var mult = 1;
 		if (isCurrentRoomDark())  mult += 0.5;
 		if (isOverchargedMode())  mult += 0.25;
+		if (setup.Rogue && setup.Rogue.hasModifier
+			&& setup.Rogue.hasModifier(setup.Modifiers.BRITTLE_MIND)) {
+			mult += 0.5;
+		}
 		return mult;
 	}
 

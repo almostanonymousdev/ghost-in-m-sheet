@@ -87,28 +87,35 @@ test.describe('E2E: rogue run lifecycle', () => {
     run = await getVar(page, 'run');
     expect(run).toBeNull();
     const ectoplasm = await getVar(page, 'ectoplasm');
-    // 5 base + 5 success + 2 modifiers = 12 mL.
-    expect(ectoplasm).toBe(12);
+    // Payout = round(success-base 10 * deck payoutMultiplier).
+    // Two modifiers from the seeded daily draft -> at least the
+    // success base, with each modifier scaling > 1.
+    expect(ectoplasm).toBeGreaterThanOrEqual(10);
     expect(await getVar(page, 'runsStarted')).toBe(1);
 
     // 4. Walk into the meta-shop and spend 3 mL of ectoplasm.
     await clickLink(page, 'Visit the meta-shop', 'RogueMetaShop');
     await page.locator('.passage').getByText('Spend 3 mL of ectoplasm (placeholder unlock)', { exact: true }).click();
     // The link uses <<replace>> to rewrite the balance text; wait for
-    // the underlying state to reflect the spend instead of polling DOM.
-    await page.waitForFunction(() => SugarCube.State.variables.ectoplasm === 9);
+    // the underlying state to reflect the spend (3 mL deducted) instead
+    // of polling DOM.
+    await page.waitForFunction(
+      remaining => SugarCube.State.variables.ectoplasm === remaining,
+      ectoplasm - 3
+    );
   });
 
-  test('losing a run still pays out base + per-modifier mL of ectoplasm', async () => {
+  test('losing a run still pays out failure-base * deck multiplier of ectoplasm', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
     await clickRogueCard(page);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
+    const expected = await page.evaluate(() =>
+      Math.round(5 * SugarCube.setup.Modifiers.payoutMultiplier()));
     await clickLink(page, 'Lose', 'RogueEnd');
 
-    // 5 base + 0 success + 2 modifiers = 7 mL.
-    expect(await getVar(page, 'ectoplasm')).toBe(7);
+    expect(await getVar(page, 'ectoplasm')).toBe(expected);
     expect(await getVar(page, 'run')).toBeNull();
   });
 
@@ -119,6 +126,10 @@ test.describe('E2E: rogue run lifecycle', () => {
     await goToPassage(page, 'GhostStreet');
     await clickRogueCard(page);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
+    // Snapshot the failure payout BEFORE walking back; the forfeit pays
+    // failure-base * the run-1 modifier deck.
+    const expectedForfeit = await page.evaluate(() =>
+      Math.round(5 * SugarCube.setup.Modifiers.payoutMultiplier()));
     await goToPassage(page, 'GhostStreet');
 
     // The card never offers "Resume Run" -- only the fresh-haunt link.
@@ -130,8 +141,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     await clickRogueCard(page);
     const run = await getVar(page, 'run');
     expect(run.number).toBe(2);
-    // Run 1: 5 base + 0 success + 2 modifiers = 7 mL from the forfeit.
-    expect(await getVar(page, 'ectoplasm')).toBe(7);
+    expect(await getVar(page, 'ectoplasm')).toBe(expectedForfeit);
     expect(await getVar(page, 'runsStarted')).toBe(2);
   });
 
@@ -874,11 +884,14 @@ test.describe('E2E: rogue run lifecycle', () => {
     await page.evaluate(() => SugarCube.setup.HuntController.onCaughtCleanup());
     expect(await callSetup(page, 'setup.Rogue.isRogue()')).toBe(true);
 
+    // Snapshot the failure payout BEFORE RogueEnd clears the run.
+    const expectedFailure = await page.evaluate(() =>
+      Math.round(5 * SugarCube.setup.Modifiers.payoutMultiplier()));
+
     // Walking into RogueEnd closes the run as a failure.
     await goToPassage(page, 'RogueEnd');
     expect(await getVar(page, 'run')).toBeNull();
-    // Failure payout: 5 base + 0 success + 2 modifiers = 7 mL.
-    expect(await getVar(page, 'ectoplasm')).toBe(7);
+    expect(await getVar(page, 'ectoplasm')).toBe(expectedFailure);
     await expect(
       page.locator('.passage').getByText(/ends in failure/i)
     ).toBeVisible();
@@ -1046,7 +1059,14 @@ test.describe('E2E: rogue run lifecycle', () => {
        setup.tarotDeck place Knowledge after Passion+Pulse (40% combined),
        so a roll of 41 (out of 101) lands on Knowledge. */
     await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
-    await page.evaluate(() => SugarCube.setup.Rogue.setField('ghostName', 'Shade'));
+    await page.evaluate(() => {
+      SugarCube.setup.Rogue.setField('ghostName', 'Shade');
+      // Re-stamp run.evidence to match Shade so any rogue modifier
+      // (e.g. Fog of War) drafted at startRogue doesn't leak the
+      // previous ghost's spliced list into Shade's evidence view.
+      const shade = SugarCube.setup.Ghosts.getByName('Shade');
+      SugarCube.setup.Rogue.setField('evidence', shade.evidence.map(e => e.id));
+    });
     await page.evaluate(() => SugarCube.setup.HauntedHouses.markTarotCarrying());
     await goToPassage(page, 'RogueRun');
 
@@ -1265,9 +1285,11 @@ test.describe('E2E: rogue run lifecycle', () => {
     // Run 1: win.
     await clickRogueCard(page);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
+    const run1Win = await page.evaluate(() =>
+      Math.round(10 * SugarCube.setup.Modifiers.payoutMultiplier()));
     await clickLink(page, 'Win', 'RogueEnd');
     expect(await getVar(page, 'runsStarted')).toBe(1);
-    expect(await getVar(page, 'ectoplasm')).toBe(12);
+    expect(await getVar(page, 'ectoplasm')).toBe(run1Win);
 
     // Run 2: lose.
     await clickLink(page, 'Visit the meta-shop', 'RogueMetaShop');
@@ -1275,9 +1297,10 @@ test.describe('E2E: rogue run lifecycle', () => {
     const run2 = await getVar(page, 'run');
     expect(run2.number).toBe(2);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
+    const run2Loss = await page.evaluate(() =>
+      Math.round(5 * SugarCube.setup.Modifiers.payoutMultiplier()));
     await clickLink(page, 'Lose', 'RogueEnd');
     expect(await getVar(page, 'runsStarted')).toBe(2);
-    // 12 (run 1) + 7 (run 2 fail) = 19 mL.
-    expect(await getVar(page, 'ectoplasm')).toBe(19);
+    expect(await getVar(page, 'ectoplasm')).toBe(run1Win + run2Loss);
   });
 });

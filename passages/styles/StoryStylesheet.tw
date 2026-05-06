@@ -1228,6 +1228,10 @@ body.ui-bar-stowed .rogue-run-layout {
 	align-items: flex-end;
 	text-align: right;
 }
+.rogue-modifier-chip {
+	cursor: help;
+	border-bottom: 1px dotted currentColor;
+}
 .rogue-run-furniture {
 	display: flex;
 	justify-content: center;

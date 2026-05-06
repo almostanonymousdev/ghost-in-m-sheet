@@ -28,24 +28,101 @@ setup.Modifiers = (function () {
 	   branch) references the constant instead of the literal so a
 	   typo surfaces at parse time rather than as a silently-failing
 	   indexOf. */
-	var LOCKED_TOOLS  = 'locked_tools';
-	var PHEROMONES    = 'pheromones';
+	var LOCKED_TOOLS    = 'locked_tools';
+	var PHEROMONES      = 'pheromones';
+	var GLASS_BONES     = 'glass_bones';
+	var BRITTLE_MIND    = 'brittle_mind';
+	var COLD_SWEAT      = 'cold_sweat';
+	var NOT_THEIR_TYPE  = 'not_their_type';
+	var SWIPER          = 'swiper';
+	var FOG_OF_WAR      = 'fog_of_war';
+	var OH_BUGGER       = 'oh_bugger';
+	var STICKY_FINGERS  = 'sticky_fingers';
+	var MAZE            = 'maze';
 
 	/* Each entry's `weight` controls relative draft frequency.
 	   Anything <= 0 is excluded from random draws (reserved for
-	   modifiers that only the meta-shop / cheats can grant). */
+	   modifiers that only the meta-shop / cheats can grant).
+	   `payoutMultiplier` scales the run's ectoplasm payout — picked
+	   to scale roughly with how much harder the modifier makes the
+	   run, so harder modifiers earn proportionally more on success. */
 	var CATALOGUE = Object.freeze([
 		{
 			id: LOCKED_TOOLS,
 			name: 'Empty Bag',
 			description: 'You start with no tools. Find them on the floor — or do without.',
-			weight: 1
+			weight: 1,
+			payoutMultiplier: 1.2
 		},
 		{
 			id: PHEROMONES,
 			name: 'Ghost Pheromones',
 			description: 'The air itself works on you. Lust climbs an extra +1/step the entire hunt.',
-			weight: 1
+			weight: 1,
+			payoutMultiplier: 1.2
+		},
+		{
+			id: GLASS_BONES,
+			name: 'Glass Bones',
+			description: 'Aftershock cooldown lingers twice as long after every orgasm.',
+			weight: 1,
+			payoutMultiplier: 1.2
+		},
+		{
+			id: BRITTLE_MIND,
+			name: 'Brittle Mind',
+			description: 'Event-time sanity drains hit 50% harder, on top of dark/overcharged stacking.',
+			weight: 1,
+			payoutMultiplier: 1.3
+		},
+		{
+			id: COLD_SWEAT,
+			name: 'Cold Sweat',
+			description: 'Something keeps the ghost interested. Prowl chance +4% the whole hunt.',
+			weight: 1,
+			payoutMultiplier: 1.15
+		},
+		{
+			id: NOT_THEIR_TYPE,
+			name: 'Not Their Type',
+			description: 'The ghost will not bite. Baiting is unavailable this run.',
+			weight: 1,
+			payoutMultiplier: 1.15
+		},
+		{
+			id: SWIPER,
+			name: 'Swiper',
+			description: 'Every tick with stealable clothes triggers a steal. Hold on to your panties.',
+			weight: 1,
+			payoutMultiplier: 1.4
+		},
+		{
+			id: FOG_OF_WAR,
+			name: 'Fog of War',
+			description: 'One of the ghost\'s three evidences is hidden from the start. Good luck.',
+			weight: 1,
+			payoutMultiplier: 1.5
+		},
+		{
+			id: OH_BUGGER,
+			name: 'Oh, Bugger',
+			description: 'Something is very wrong. Prowl chance +15% the whole hunt.',
+			weight: 1,
+			payoutMultiplier: 1.4
+		},
+		{
+			id: STICKY_FINGERS,
+			name: 'Sticky Fingers',
+			description: 'Steal chance is doubled this run.',
+			weight: 1,
+			payoutMultiplier: 1.4
+		},
+		{
+			id: MAZE,
+			name: 'Maze',
+			description: 'The house twists into three extra rooms.',
+			weight: 1,
+			payoutMultiplier: 1.3
 		}
 	]);
 
@@ -110,15 +187,34 @@ setup.Modifiers = (function () {
 			.filter(function (m) { return !!m; });
 	}
 
+	/* Multiplicative payout scaling for the active deck. Unknown ids
+	   contribute 1x. Returns 1 when no modifiers are active. */
+	function payoutMultiplier() {
+		return activeList().reduce(function (acc, m) {
+			var mult = (m && typeof m.payoutMultiplier === 'number') ? m.payoutMultiplier : 1;
+			return acc * mult;
+		}, 1);
+	}
+
 	return {
 		OWNED_VARS: Object.freeze([]),
 		CATALOGUE: CATALOGUE,
-		LOCKED_TOOLS: LOCKED_TOOLS,
-		PHEROMONES:   PHEROMONES,
+		LOCKED_TOOLS:   LOCKED_TOOLS,
+		PHEROMONES:     PHEROMONES,
+		GLASS_BONES:    GLASS_BONES,
+		BRITTLE_MIND:   BRITTLE_MIND,
+		COLD_SWEAT:     COLD_SWEAT,
+		NOT_THEIR_TYPE: NOT_THEIR_TYPE,
+		SWIPER:         SWIPER,
+		FOG_OF_WAR:     FOG_OF_WAR,
+		OH_BUGGER:      OH_BUGGER,
+		STICKY_FINGERS: STICKY_FINGERS,
+		MAZE:           MAZE,
 		list: list,
 		byId: byId,
 		draftableList: draftableList,
 		draft: draft,
-		activeList: activeList
+		activeList: activeList,
+		payoutMultiplier: payoutMultiplier
 	};
 })();

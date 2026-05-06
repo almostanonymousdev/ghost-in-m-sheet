@@ -576,8 +576,11 @@ test.describe('Haunted Houses Controller', () => {
     const snap = await callSetup(page, 'setup.HauntConditions.snapshot()');
 
     expect(snap.lustPerStep).toBe(1);
+    /* Modifiers fold into the aggregated readouts but don't push
+       their own contributor chip — the Active Modifiers panel
+       carries the name + hover tooltip instead. */
     const labels = snap.contributors.map(c => c.label);
-    expect(labels).toContain('Pheromones');
+    expect(labels).not.toContain('Pheromones');
   });
 
   test('pheromones stacks with clothing-driven lust', async () => {
@@ -607,8 +610,6 @@ test.describe('Haunted Houses Controller', () => {
     const snap = await callSetup(page, 'setup.HauntConditions.snapshot()');
 
     expect(snap.lustPerStep).toBe(0);
-    const labels = snap.contributors.map(c => c.label);
-    expect(labels).not.toContain('Pheromones');
   });
 
   test('classic mode without the modifier has no pheromones contribution', async () => {
@@ -616,8 +617,177 @@ test.describe('Haunted Houses Controller', () => {
 
     const snap = await callSetup(page, 'setup.HauntConditions.snapshot()');
 
-    const labels = snap.contributors.map(c => c.label);
-    expect(labels).not.toContain('Pheromones');
+    expect(snap.lustPerStep).toBe(0);
+  });
+
+  // --- Cold Sweat / Oh Bugger (prowl bonuses, no chip) ---
+
+  test('Cold Sweat adds +4 prowl bonus in-house', async () => {
+    await setHuntMode(page, 2);
+    await page.evaluate(() => SugarCube.setup.Rogue.start({
+      seed: 1, modifiers: ['cold_sweat']
+    }));
+    const snap = await callSetup(page, 'setup.HauntConditions.snapshot()');
+    expect(snap.prowlChanceBonus).toBe(4);
+    /* The bonus folds into the aggregated prowl readout; the
+       modifier name is shown only in the Active Modifiers panel. */
+    expect(snap.contributors.map(c => c.label)).not.toContain('Cold Sweat');
+  });
+
+  test('Cold Sweat is inert outside a hunt', async () => {
+    await setHuntMode(page, 0);
+    await page.evaluate(() => SugarCube.setup.Rogue.start({
+      seed: 1, modifiers: ['cold_sweat']
+    }));
+    const snap = await callSetup(page, 'setup.HauntConditions.snapshot()');
+    expect(snap.prowlChanceBonus).toBe(0);
+  });
+
+  test('Oh Bugger adds +15 prowl bonus in-house', async () => {
+    await setHuntMode(page, 2);
+    await page.evaluate(() => SugarCube.setup.Rogue.start({
+      seed: 1, modifiers: ['oh_bugger']
+    }));
+    const snap = await callSetup(page, 'setup.HauntConditions.snapshot()');
+    expect(snap.prowlChanceBonus).toBe(15);
+    expect(snap.contributors.map(c => c.label)).not.toContain('Oh, Bugger');
+  });
+
+  test('Cold Sweat + Oh Bugger stack additively on prowl bonus', async () => {
+    await setHuntMode(page, 2);
+    await page.evaluate(() => SugarCube.setup.Rogue.start({
+      seed: 1, modifiers: ['cold_sweat', 'oh_bugger']
+    }));
+    const snap = await callSetup(page, 'setup.HauntConditions.snapshot()');
+    expect(snap.prowlChanceBonus).toBe(19);
+  });
+
+  // --- Brittle Mind (eventSanityMultiplier += 0.5) ---
+
+  test('Brittle Mind raises eventSanityMultiplier by 0.5', async () => {
+    await setHuntMode(page, 2);
+    await page.evaluate(() => SugarCube.setup.Rogue.start({
+      seed: 1, modifiers: ['brittle_mind']
+    }));
+    const mult = await callSetup(page, 'setup.HauntConditions.eventSanityMultiplier()');
+    expect(mult).toBe(1.5);
+  });
+
+  test('Brittle Mind stacks on top of dark-room/overcharged contributions', async () => {
+    await setHuntMode(page, 2);
+    await page.evaluate(() => SugarCube.setup.Rogue.start({
+      seed: 1, modifiers: ['brittle_mind']
+    }));
+    // Force overchargedTools = 1 so the multiplier picks up +0.25.
+    await setVar(page, 'overchargedTools', 1);
+    const mult = await callSetup(page, 'setup.HauntConditions.eventSanityMultiplier()');
+    // 1 (base) + 0.25 (overcharged) + 0.5 (brittle mind) = 1.75
+    expect(mult).toBe(1.75);
+  });
+
+  test('eventSanityMultiplier is 1 with no modifiers and no overcharge', async () => {
+    await setHuntMode(page, 2);
+    const mult = await callSetup(page, 'setup.HauntConditions.eventSanityMultiplier()');
+    expect(mult).toBe(1);
+  });
+
+  // --- Not Their Type (canBait returns false) ---
+
+  test('Not Their Type forces canBait to return false', async () => {
+    await setHuntMode(page, 2);
+    await page.evaluate(() => {
+      // Set up the conditions so canBait would otherwise pass.
+      const V = SugarCube.State.variables;
+      V.mc.lust = 99;
+      V.mc.energy = 5;
+      V.hunt = V.hunt || { name: 'Shade', evidence: [], room: { name: 'kitchen' }, mode: 2 };
+      if (!V.hunt.room) V.hunt.room = { name: 'kitchen' };
+      V.baitActive = 0;
+      SugarCube.setup.Rogue.start({ seed: 1, modifiers: ['not_their_type'] });
+    });
+    expect(await callSetup(page, 'setup.HauntConditions.canBait()')).toBe(false);
+  });
+
+  // --- Swiper (steal trigger forced) ---
+
+  test('Swiper makes shouldTriggerSteal return true whenever stealable', async () => {
+    await setHuntMode(page, 2);
+    await page.evaluate(() => SugarCube.setup.Rogue.start({
+      seed: 1, modifiers: ['swiper']
+    }));
+    // Make Math.random return 1 (would normally fail any roll).
+    await page.evaluate(() => { Math.random = () => 1; });
+    // canStealAnyItem requires SOMETHING worn — pin a panties-worn state.
+    await setVar(page, 'pantiesState', await callSetup(page, 'setup.ClothingState.WORN'));
+    const got = await callSetup(page, 'setup.HauntedHouses.shouldTriggerSteal()');
+    expect(got).toBe(true);
+  });
+
+  test('Swiper still respects canStealAnyItem (returns false when nothing wearable)', async () => {
+    await setHuntMode(page, 2);
+    await page.evaluate(() => SugarCube.setup.Rogue.start({
+      seed: 1, modifiers: ['swiper']
+    }));
+    // Strip everything off so canStealAnyItem returns false.
+    await setVar(page, 'tshirtState', 0);
+    await setVar(page, 'jeansState', 0);
+    await setVar(page, 'shortsState', 0);
+    await setVar(page, 'skirtState', 0);
+    await setVar(page, 'pantiesState', 0);
+    await setVar(page, 'braState', 0);
+    const got = await callSetup(page, 'setup.HauntedHouses.shouldTriggerSteal()');
+    expect(got).toBe(false);
+  });
+
+  test('without Swiper, shouldTriggerSteal still rolls against stealChance', async () => {
+    await setHuntMode(page, 2);
+    // Force the steal-chance roll to fail (roll = 100, chance = 0).
+    await setVar(page, 'stealChance', 0);
+    await page.evaluate(() => { Math.random = () => 0.99; });
+    await setVar(page, 'pantiesState', await callSetup(page, 'setup.ClothingState.WORN'));
+    const got = await callSetup(page, 'setup.HauntedHouses.shouldTriggerSteal()');
+    expect(got).toBe(false);
+  });
+
+  // --- Glass Bones (orgasm aftershock decrement halved) ---
+
+  test('Glass Bones halves the per-tick aftershock decrement', async () => {
+    await setHuntMode(page, 2);
+    await page.evaluate(() => SugarCube.setup.Rogue.start({
+      seed: 1, modifiers: ['glass_bones']
+    }));
+    await setVar(page, 'orgasmCooldownSteps', 4);
+    await page.evaluate(() => SugarCube.setup.HauntConditions.applyTickEffects());
+    expect(await getVar(page, 'orgasmCooldownSteps')).toBeCloseTo(3.5, 5);
+  });
+
+  test('without Glass Bones the decrement stays at 1 per tick', async () => {
+    await setHuntMode(page, 2);
+    await setVar(page, 'orgasmCooldownSteps', 4);
+    await page.evaluate(() => SugarCube.setup.HauntConditions.applyTickEffects());
+    expect(await getVar(page, 'orgasmCooldownSteps')).toBe(3);
+  });
+
+  // --- Sticky Fingers (steal chance x2) ---
+
+  test('Sticky Fingers doubles the recomputed stealChance', async () => {
+    await page.evaluate(() => SugarCube.setup.Rogue.start({
+      seed: 1, modifiers: ['sticky_fingers']
+    }));
+    // Pin the inputs so the formula is reproducible:
+    //   sanity = 50 -> log(51)/log(101) factor; mult = 1.1 (default)
+    await setVar(page, 'mc.sanity', 50);
+    await setVar(page, 'stealChanceMult', 1.1);
+    await page.evaluate(() => SugarCube.setup.Tick.recomputeStealChance());
+    const withMod = await getVar(page, 'stealChance');
+
+    await page.evaluate(() => SugarCube.setup.Rogue.end());
+    await setVar(page, 'mc.sanity', 50);
+    await setVar(page, 'stealChanceMult', 1.1);
+    await page.evaluate(() => SugarCube.setup.Tick.recomputeStealChance());
+    const baseline = await getVar(page, 'stealChance');
+
+    expect(withMod).toBeCloseTo(baseline * 2, 5);
   });
 
   // --- Tool timer HUD (sidebar strip) ---

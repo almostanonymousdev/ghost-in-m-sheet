@@ -21,7 +21,7 @@
 <br>
 @@.location; Modifiers@@<br>
 <<for _m range _modifiers>>
-	· @@.usebtn;<<= _m.name>>@@ -- <<= _m.description>><br>
+	· <span class="usebtn" @title="_m.description"><<= _m.name>></span> -- <<= _m.description>><br>
 <</for>>
 <br>
 @@.location; Floor plan@@<br>
@@ -65,7 +65,7 @@
 			<div class="rogue-run-tr">
 				@@.location; Active modifiers@@<br>
 				<<for _m range _modifiers>>
-					@@.usebtn;<<= _m.name>>@@<br>
+					<span class="usebtn rogue-modifier-chip" @title="_m.description"><<= _m.name>></span><br>
 				<</for>>
 				<br>
 				@@.movebtn; [[Win|RogueEnd][setup.Rogue.markSuccess()]]@@<br>

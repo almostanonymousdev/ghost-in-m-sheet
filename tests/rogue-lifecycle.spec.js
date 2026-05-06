@@ -86,30 +86,32 @@ test.describe('Rogue lifecycle helpers', () => {
 
   // --- endRogue ---
 
-  test('endRogue on a successful run pays out base + bonus + per-modifier mL of ectoplasm', async () => {
+  test('endRogue on a successful run pays out base * deck payoutMultiplier (success base 10)', async () => {
     await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
       seed: 1, modifierCount: 2
     }));
+    const expected = await page.evaluate(() =>
+      Math.round(10 * SugarCube.setup.Modifiers.payoutMultiplier()));
 
     const summary = await page.evaluate(() => SugarCube.setup.Rogue.endRogue(true));
 
-    // base 5 + success 5 + 2 modifiers = 12 mL
-    expect(summary.payout).toBe(12);
+    expect(summary.payout).toBe(expected);
     expect(summary.success).toBe(true);
-    expect(await callSetup(page, 'setup.Rogue.ectoplasm()')).toBe(12);
+    expect(await callSetup(page, 'setup.Rogue.ectoplasm()')).toBe(expected);
   });
 
-  test('endRogue on a failed run pays out base + per-modifier (no success bonus)', async () => {
+  test('endRogue on a failed run pays out base * deck payoutMultiplier (failure base 5)', async () => {
     await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
       seed: 1, modifierCount: 2
     }));
+    const expected = await page.evaluate(() =>
+      Math.round(5 * SugarCube.setup.Modifiers.payoutMultiplier()));
 
     const summary = await page.evaluate(() => SugarCube.setup.Rogue.endRogue(false));
 
-    // base 5 + 2 modifiers = 7 mL
-    expect(summary.payout).toBe(7);
+    expect(summary.payout).toBe(expected);
     expect(summary.success).toBe(false);
-    expect(await callSetup(page, 'setup.Rogue.ectoplasm()')).toBe(7);
+    expect(await callSetup(page, 'setup.Rogue.ectoplasm()')).toBe(expected);
   });
 
   test('endRogue clears the active run', async () => {

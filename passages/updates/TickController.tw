@@ -158,7 +158,10 @@ setup.Tick = (function () {
 	// --- Steal-chance recompute ---------------------------------
 	function recomputeStealChance() {
 		var s = sv();
-		s.stealChance = (1 + (Math.log(101 - s.mc.sanity) / Math.log(101)) * 1) * s.stealChanceMult;
+		var rogueMult = (setup.Rogue && setup.Rogue.hasModifier
+			&& setup.Rogue.hasModifier(setup.Modifiers.STICKY_FINGERS))
+			? 2 : 1;
+		s.stealChance = (1 + (Math.log(101 - s.mc.sanity) / Math.log(101)) * 1) * s.stealChanceMult * rogueMult;
 	}
 
 	// --- PassageDone tick setup ---------------------------------

@@ -572,6 +572,135 @@ test.describe('Rogue Controller', () => {
     }));
     expect(await callSetup(page, 'setup.Rogue.startingTools()')).toEqual([]);
   });
+
+  // --- endRogue payout multiplier ---
+
+  test('endRogue payout = base * sum of payoutMultipliers (success)', async () => {
+    await page.evaluate(() => SugarCube.setup.Rogue.start({
+      seed: 1, modifiers: ['locked_tools', 'pheromones']
+    }));
+    const lt = await callSetup(page, 'setup.Modifiers.byId("locked_tools").payoutMultiplier');
+    const ph = await callSetup(page, 'setup.Modifiers.byId("pheromones").payoutMultiplier');
+    const summary = await page.evaluate(() => SugarCube.setup.Rogue.endRogue(true));
+    expect(summary.payout).toBe(Math.round(10 * lt * ph));
+  });
+
+  test('endRogue payout = base * multiplier (failure base 5)', async () => {
+    await page.evaluate(() => SugarCube.setup.Rogue.start({
+      seed: 1, modifiers: ['fog_of_war']
+    }));
+    const fow = await callSetup(page, 'setup.Modifiers.byId("fog_of_war").payoutMultiplier');
+    const summary = await page.evaluate(() => SugarCube.setup.Rogue.endRogue(false));
+    expect(summary.payout).toBe(Math.round(5 * fow));
+  });
+
+  test('endRogue payout for a no-modifier run is exactly 10 (success) or 5 (failure)', async () => {
+    await page.evaluate(() => SugarCube.setup.Rogue.start({ seed: 1, modifiers: [] }));
+    let summary = await page.evaluate(() => SugarCube.setup.Rogue.endRogue(true));
+    expect(summary.payout).toBe(10);
+
+    await page.evaluate(() => SugarCube.setup.Rogue.start({ seed: 2, modifiers: [] }));
+    summary = await page.evaluate(() => SugarCube.setup.Rogue.endRogue(false));
+    expect(summary.payout).toBe(5);
+  });
+
+  // --- Maze modifier (roomCount += 3) ---
+
+  test('Maze in startRogue bumps roomCount by 3 end-to-end', async () => {
+    /* End-to-end: when the modifier is in the draft at startRogue
+       time, the resulting floor plan has 3 more rooms than the
+       default (which is 5). */
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
+      seed: 99, modifierCount: 0
+    }));
+    const before = (await callSetup(page, 'setup.Rogue.field("floorplan")')).rooms.length;
+    expect(before).toBe(5);
+
+    await page.evaluate(() => SugarCube.setup.Rogue.endRogue(false));
+    // Patch draft to deterministically return [maze] so startRogue's
+    // own modifier-id lookup sees it during fpOpts composition.
+    await page.evaluate(() => {
+      const orig = SugarCube.setup.Modifiers.draft;
+      SugarCube.setup.Modifiers.draft = function () {
+        return [SugarCube.setup.Modifiers.byId('maze')];
+      };
+      SugarCube.setup.Rogue.startRogue({ seed: 99 });
+      SugarCube.setup.Modifiers.draft = orig;
+    });
+    const after = (await callSetup(page, 'setup.Rogue.field("floorplan")')).rooms.length;
+    expect(after).toBe(8);
+  });
+
+  // --- Fog of War (one evidence spliced) ---
+
+  test('Fog of War splices one evidence id from the run-evidence list', async () => {
+    await page.evaluate(() => {
+      const orig = SugarCube.setup.Modifiers.draft;
+      SugarCube.setup.Modifiers.draft = function () {
+        return [SugarCube.setup.Modifiers.byId('fog_of_war')];
+      };
+      SugarCube.setup.Rogue.startRogue({ seed: 12345 });
+      SugarCube.setup.Modifiers.draft = orig;
+    });
+
+    const ghostName = await callSetup(page, 'setup.Rogue.ghostName()');
+    const cat = await page.evaluate(name =>
+      SugarCube.setup.Ghosts.getByName(name).evidence.map(e => e.id), ghostName);
+    const runEv = await callSetup(page, 'setup.Rogue.runEvidence()');
+
+    expect(cat.length).toBe(3);
+    expect(runEv.length).toBe(2);
+    // Two of the catalogue evidences survive.
+    runEv.forEach(id => expect(cat).toContain(id));
+  });
+
+  test('without Fog of War, runEvidence equals the catalogue evidence', async () => {
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
+      seed: 12345, modifierCount: 0
+    }));
+    const ghostName = await callSetup(page, 'setup.Rogue.ghostName()');
+    const cat = await page.evaluate(name =>
+      SugarCube.setup.Ghosts.getByName(name).evidence.map(e => e.id), ghostName);
+    const runEv = await callSetup(page, 'setup.Rogue.runEvidence()');
+    expect(runEv).toEqual(cat);
+  });
+
+  test('Fog of War: _activeFromCatalogue exposes the spliced evidence on the active ghost', async () => {
+    await page.evaluate(() => {
+      const orig = SugarCube.setup.Modifiers.draft;
+      SugarCube.setup.Modifiers.draft = function () {
+        return [SugarCube.setup.Modifiers.byId('fog_of_war')];
+      };
+      SugarCube.setup.Rogue.startRogue({ seed: 7777 });
+      SugarCube.setup.Modifiers.draft = orig;
+    });
+    const ghostName = await callSetup(page, 'setup.Rogue.ghostName()');
+    const ev = await page.evaluate(name => {
+      const g = SugarCube.setup.Ghosts._activeFromCatalogue(name);
+      return g ? g.evidence.map(e => e.id) : null;
+    }, ghostName);
+    const runEv = await callSetup(page, 'setup.Rogue.runEvidence()');
+    expect(ev).toEqual(runEv);
+    expect(ev.length).toBe(2);
+  });
+
+  test('Fog of War splice is deterministic for the same seed', async () => {
+    async function runEvForSeed(s) {
+      await page.evaluate(() => SugarCube.setup.Rogue.endRogue(false));
+      await page.evaluate(seed => {
+        const orig = SugarCube.setup.Modifiers.draft;
+        SugarCube.setup.Modifiers.draft = function () {
+          return [SugarCube.setup.Modifiers.byId('fog_of_war')];
+        };
+        SugarCube.setup.Rogue.startRogue({ seed });
+        SugarCube.setup.Modifiers.draft = orig;
+      }, s);
+      return await callSetup(page, 'setup.Rogue.runEvidence()');
+    }
+    const a = await runEvForSeed(424242);
+    const b = await runEvForSeed(424242);
+    expect(a).toEqual(b);
+  });
 });
 
 /* setup.Rogue.stashStolenClothes places the steal target on a

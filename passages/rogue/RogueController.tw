@@ -536,6 +536,11 @@ setup.Rogue = (function () {
 		if (fpOpts.toolKinds && fpOpts.toolKinds.length && fpOpts.roomCount == null) {
 			fpOpts.roomCount = Math.max(5, 4 + Math.ceil(fpOpts.toolKinds.length / 2));
 		}
+		/* Maze: three extra rooms on top of whatever the base
+		   plan would have rolled. */
+		if (modifierIds.indexOf(setup.Modifiers.MAZE) !== -1) {
+			fpOpts.roomCount = (fpOpts.roomCount || 5) + 3;
+		}
 		var floorplan = setup.FloorPlan.generate(seed, fpOpts);
 
 		/* Pick the haunting ghost from the catalogue using a seed-derived
@@ -547,6 +552,21 @@ setup.Rogue = (function () {
 		var ghostNames = setup.Ghosts.names();
 		var ghostName = ghostNames[((seed ^ 0x85ebca6b) >>> 0) % ghostNames.length];
 
+		/* Build the per-run evidence list. By default rogue ghosts
+		   answer to their catalogue evidence verbatim; Fog of War
+		   splices one of the three out so identification is harder.
+		   The picked evidence is seed-derived so a given seed always
+		   loses the same one across replays. */
+		var ghostCat = setup.Ghosts.getByName(ghostName);
+		var evidenceIds = (ghostCat && Array.isArray(ghostCat.evidence))
+			? ghostCat.evidence.map(function (e) { return e.id; })
+			: [];
+		if (modifierIds.indexOf(setup.Modifiers.FOG_OF_WAR) !== -1
+			&& evidenceIds.length > 0) {
+			var dropIdx = ((seed ^ 0xdeadbeef) >>> 0) % evidenceIds.length;
+			evidenceIds.splice(dropIdx, 1);
+		}
+
 		start({
 			seed: seed,
 			modifiers: modifierIds,
@@ -555,6 +575,7 @@ setup.Rogue = (function () {
 		});
 		setField('floorplan', floorplan);
 		setField('ghostName', ghostName);
+		setField('evidence', evidenceIds);
 		/* Same shared-state reset classic does at GhostRandomize:
 		   tarot deck back to HIDDEN, monkey paw back to 3 wishes /
 		   not-yet-found / no banned houses, knowledge-evidence
@@ -570,6 +591,16 @@ setup.Rogue = (function () {
 	function ghostName() {
 		var run = sv().run;
 		return run ? (run.ghostName || null) : null;
+	}
+	/* Evidence id list for the active rogue ghost. Returns the
+	   per-run override stamped at startRogue (so Fog of War's spliced
+	   list survives reads), or null when no run is active or no
+	   override was set. setup.Ghosts._activeFromCatalogue consults
+	   this to overlay evidence onto the catalogue Ghost. */
+	function runEvidence() {
+		var run = sv().run;
+		if (!run || !Array.isArray(run.evidence)) return null;
+		return run.evidence.slice();
 	}
 	/* Seed-derived street address shown in the lobby/HUD instead of
 	   the raw seed. Returns null off-run; callers that need a label
@@ -877,9 +908,11 @@ setup.Rogue = (function () {
 	function endRogue(success) {
 		var run = active();
 		if (!run) return null;
-		var payout = 5;
-		if (success) payout += 5;
-		payout += Array.isArray(run.modifiers) ? run.modifiers.length : 0;
+		var base = success ? 10 : 5;
+		var mult = (setup.Modifiers && setup.Modifiers.payoutMultiplier)
+			? setup.Modifiers.payoutMultiplier()
+			: 1;
+		var payout = Math.round(base * mult);
 		addEctoplasm(payout);
 		var summary = {
 			seed: run.seed,
@@ -955,6 +988,7 @@ setup.Rogue = (function () {
 		currentRoomData: currentRoomData,
 		humanizeLootKind: humanizeLootKind,
 		ghostName: ghostName,
+		runEvidence: runEvidence,
 		ghostRoomId: ghostRoomId,
 		isInGhostRoom: isInGhostRoom,
 		driftGhostRoom: driftGhostRoom,

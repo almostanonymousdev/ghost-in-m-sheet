@@ -33,6 +33,8 @@ test.describe('Modifier registry', () => {
       expect(typeof m.name).toBe('string');
       expect(typeof m.description).toBe('string');
       expect(typeof m.weight).toBe('number');
+      expect(typeof m.payoutMultiplier).toBe('number');
+      expect(m.payoutMultiplier).toBeGreaterThan(0);
     });
   });
 
@@ -117,5 +119,30 @@ test.describe('Modifier registry', () => {
   test('activeList returns [] in classic mode', async () => {
     const active = await callSetup(page, 'setup.Modifiers.activeList()');
     expect(active).toEqual([]);
+  });
+
+  // --- Payout multiplier ---
+
+  test('payoutMultiplier returns 1 with no active run', async () => {
+    expect(await callSetup(page, 'setup.Modifiers.payoutMultiplier()')).toBe(1);
+  });
+
+  test('payoutMultiplier multiplies the active deck', async () => {
+    await page.evaluate(() => SugarCube.setup.Rogue.start({
+      seed: 1, modifiers: ['locked_tools', 'pheromones']
+    }));
+    const lt = await callSetup(page, 'setup.Modifiers.byId("locked_tools").payoutMultiplier');
+    const ph = await callSetup(page, 'setup.Modifiers.byId("pheromones").payoutMultiplier');
+    const got = await callSetup(page, 'setup.Modifiers.payoutMultiplier()');
+    expect(got).toBeCloseTo(lt * ph, 5);
+  });
+
+  test('payoutMultiplier ignores unknown modifier ids (1x contribution)', async () => {
+    await page.evaluate(() => SugarCube.setup.Rogue.start({
+      seed: 1, modifiers: ['fog_of_war', 'renamed_or_removed']
+    }));
+    const fow = await callSetup(page, 'setup.Modifiers.byId("fog_of_war").payoutMultiplier');
+    const got = await callSetup(page, 'setup.Modifiers.payoutMultiplier()');
+    expect(got).toBeCloseTo(fow, 5);
   });
 });

@@ -504,13 +504,13 @@
             }
             var key = "hunt|" + h.name + "|" + (h.evidence ? h.evidence.join(",") : "");
             if (activeCache.key === key) return activeCache.ghost;
-            var catalogue = setup.Ghosts.getByName(h.name);
-            if (!catalogue) return null;
+            var ghost = setup.Ghosts.getByName(h.name);
+            if (!ghost) return null;
             var g = Object.create(Ghost.prototype);
             /* Copy every own property from the catalogue entry (static fields
                plus any behaviour overrides like onHuntEnd), then overlay the
                mutable per-hunt evidence from state. */
-            Object.keys(catalogue).forEach(function (k) { g[k] = catalogue[k]; });
+            Object.keys(ghost).forEach(function (k) { g[k] = ghost[k]; });
             g.evidence = rehydrateEvidence(h.evidence);
             activeCache.key = key;
             activeCache.ghost = g;
@@ -518,14 +518,27 @@
         },
 
         /* Internal: hand back the catalogue Ghost named `name`. Used by
-           HuntController for rogue runs, where there's no per-hunt
-           evidence mutation -- the catalogue evidence is the answer. */
+           HuntController for rogue runs. When the active rogue run
+           carries an `evidence` override (e.g. Fog of War splices one
+           id at run start), wrap the catalogue entry so the rehydrated
+           evidence list reflects the override without mutating the
+           shared catalogue object. */
         _activeFromCatalogue: function (name) {
             if (!name) return null;
-            var key = "catalogue|" + name;
+            var override = (setup.Rogue && setup.Rogue.runEvidence)
+                ? setup.Rogue.runEvidence() : null;
+            var key = "catalogue|" + name + "|" + (override ? override.join(",") : "");
             if (activeCache.key === key) return activeCache.ghost;
-            var g = setup.Ghosts.getByName(name);
-            if (!g) return null;
+            var ghost = setup.Ghosts.getByName(name);
+            if (!ghost) return null;
+            var g;
+            if (override) {
+                g = Object.create(Ghost.prototype);
+                Object.keys(ghost).forEach(function (k) { g[k] = ghost[k]; });
+                g.evidence = rehydrateEvidence(override);
+            } else {
+                g = ghost;
+            }
             activeCache.key = key;
             activeCache.ghost = g;
             return g;

@@ -123,10 +123,11 @@ test.describe('E2E: rogue Outside menu', () => {
     ).toBeVisible({ timeout: 10_000 });
     expect(await callSetup(page, 'setup.Rogue.field("outcome")')).toBe('success');
 
+    const expectedSuccess = await page.evaluate(() =>
+      Math.round(10 * SugarCube.setup.Modifiers.payoutMultiplier()));
     await clickLink(page, 'Continue', 'RogueEnd');
     expect(await getVar(page, 'run')).toBeNull();
-    // 5 base + 5 success + 2 modifiers = 12 mL.
-    expect(await getVar(page, 'ectoplasm')).toBe(12);
+    expect(await getVar(page, 'ectoplasm')).toBe(expectedSuccess);
   });
 
   test('Identify with the wrong ghost routes into HuntEnd and ends as caught', async () => {

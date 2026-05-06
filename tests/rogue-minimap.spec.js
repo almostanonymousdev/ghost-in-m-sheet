@@ -27,7 +27,7 @@ test.describe('Rogue minimap data', () => {
 
   test('emits one record per room with template-resolved label', async () => {
     await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
-      seed: 42, floorPlanOpts: { roomCount: 5 }
+      seed: 42, modifierCount: 0, floorPlanOpts: { roomCount: 5 }
     }));
 
     const mm = await callSetup(page, 'setup.Rogue.minimapData()');
