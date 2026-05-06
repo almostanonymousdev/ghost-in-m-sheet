@@ -13,24 +13,6 @@
 		<div class="rogue-minimap">
 			<span class="location">Floor plan</span><br>
 			<<= _mmSvg>>
-			<<set _mmRooms to setup.Rogue.minimapData()>>
-			<<for _r range _mmRooms>>
-				<<if _r.isSpawn>>
-					<<= _r.label>> &mdash; @@.notmc-speech;ghost@@<br>
-				<</if>>
-			<</for>>
-			<<for _r range _mmRooms>>
-				<<if _r.lootKinds.length>>
-					<<= _r.label>> &mdash;
-					<<for _k, _kind range _r.lootKinds>>
-						@@.mc-thoughts;<<= _kind>>@@
-						<<if _k lt _r.lootKinds.length - 1>>
-							,
-						<</if>>
-					<</for>>
-					<br>
-				<</if>>
-			<</for>>
 		</div>
 	<</if>>
 <</widget>>

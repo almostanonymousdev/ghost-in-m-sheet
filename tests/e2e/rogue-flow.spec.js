@@ -80,8 +80,12 @@ test.describe('E2E: rogue run lifecycle', () => {
     // 2. Enter the hunt (RogueRun).
     await clickLink(page, 'Enter the hunt', 'RogueRun');
 
-    // 3. Win the run.
-    await clickLink(page, 'Win', 'RogueEnd');
+    // 3. Win the run. Stamp the success outcome and navigate to the
+    // end-passage; the in-game flow gates this behind a correct ghost
+    // identification, but for lifecycle coverage we drive the outcome
+    // directly.
+    await page.evaluate(() => SugarCube.setup.Rogue.markSuccess());
+    await goToPassage(page, 'RogueEnd');
 
     // The end-passage clears the run and pays out ectoplasm (mL).
     run = await getVar(page, 'run');
@@ -113,7 +117,8 @@ test.describe('E2E: rogue run lifecycle', () => {
     await clickLink(page, 'Enter the hunt', 'RogueRun');
     const expected = await page.evaluate(() =>
       Math.round(5 * SugarCube.setup.Modifiers.payoutMultiplier()));
-    await clickLink(page, 'Lose', 'RogueEnd');
+    await page.evaluate(() => SugarCube.setup.Rogue.markFailure());
+    await goToPassage(page, 'RogueEnd');
 
     expect(await getVar(page, 'ectoplasm')).toBe(expected);
     expect(await getVar(page, 'run')).toBeNull();
@@ -157,12 +162,12 @@ test.describe('E2E: rogue run lifecycle', () => {
 
     // Layout slots are populated:
     //   - top-left holds the minimap SVG
-    //   - top-right holds Win / Lose / Abandon
+    //   - top-right holds the active-modifier chip list
     //   - bottom-right toolbar slot holds the exit nav links (no
     //     "Exits" header -- the links speak for themselves)
     await expect(page.locator('.rogue-run-tl .rogue-minimap-svg')).toBeVisible();
     await expect(
-      page.locator('.rogue-run-tr').getByText('Win', { exact: true })
+      page.locator('.rogue-run-tr .rogue-modifier-chip').first()
     ).toBeVisible();
     expect(await page.locator('.rogue-run-nav a').count()).toBeGreaterThan(0);
 
@@ -1287,7 +1292,8 @@ test.describe('E2E: rogue run lifecycle', () => {
     await clickLink(page, 'Enter the hunt', 'RogueRun');
     const run1Win = await page.evaluate(() =>
       Math.round(10 * SugarCube.setup.Modifiers.payoutMultiplier()));
-    await clickLink(page, 'Win', 'RogueEnd');
+    await page.evaluate(() => SugarCube.setup.Rogue.markSuccess());
+    await goToPassage(page, 'RogueEnd');
     expect(await getVar(page, 'runsStarted')).toBe(1);
     expect(await getVar(page, 'ectoplasm')).toBe(run1Win);
 
@@ -1299,7 +1305,8 @@ test.describe('E2E: rogue run lifecycle', () => {
     await clickLink(page, 'Enter the hunt', 'RogueRun');
     const run2Loss = await page.evaluate(() =>
       Math.round(5 * SugarCube.setup.Modifiers.payoutMultiplier()));
-    await clickLink(page, 'Lose', 'RogueEnd');
+    await page.evaluate(() => SugarCube.setup.Rogue.markFailure());
+    await goToPassage(page, 'RogueEnd');
     expect(await getVar(page, 'runsStarted')).toBe(2);
     expect(await getVar(page, 'ectoplasm')).toBe(run1Win + run2Loss);
   });

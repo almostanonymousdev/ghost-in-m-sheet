@@ -31,8 +31,8 @@
 
 :: RogueRun [nobr] {"position":"3100,200","size":"100,100"}
 /* Placeholder rogue gameplay laid out to mirror the regular ghost
-   hunts: minimap top-left, modifiers + Win/Lose/Abandon top-right,
-   furniture-icon strip + HUD + tools/nav row at the bottom. The
+   hunts: minimap top-left, modifiers top-right, furniture-icon
+   strip + HUD + tools/nav row at the bottom. The
    "tools" panel is a dashed placeholder until rogue tool gameplay
    lands. Furniture icons reuse the scenes/furniture/<suffix>.png
    set the authored haunts use, so e.g. a procedural kitchen still
@@ -61,10 +61,6 @@
 				<<for _m range _modifiers>>
 					<span class="usebtn rogue-modifier-chip" @title="_m.description"><<= _m.name>></span><br>
 				<</for>>
-				<br>
-				@@.movebtn; [[Win|RogueEnd][setup.Rogue.markSuccess()]]@@<br>
-				@@.movebtn; [[Lose|RogueEnd][setup.Rogue.markFailure()]]@@<br>
-				@@.backbtn; [[Abandon|RogueEnd][setup.Rogue.markFailure()]]@@
 			</div>
 		</div>
 
