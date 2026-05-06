@@ -1,51 +1,6 @@
 :: MC [nobr] {"position":"400,300","size":"100,100"}
 <div id="statusContainer">
-<div id="inPainImg">
-<<hovertip "Need to buy medicine">><<if setup.Mc.isPenalized()>>
-	<<image "ui/icons/pain.jpg">>
-<</if>>
-<</hovertip>>
-</div>
-<<if setup.HauntedHouses.isIronclad() and setup.Ghosts.isHunting()>>
-	<<hovertip "Wearing a sexy warden costume">><<image "ui/icons/warden1.png">>
-	<</hovertip>>
-<<else>>
-	<div id="statusOuterTop">
-	<<if setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT)>>
-		<<hovertip "Wearing t-shirt">><<image "ui/icons/top.jpg">>
-		<</hovertip>>
-	<<else>>
-		<<image "ui/icons/empty.jpg">>
-	<</if>>
-	</div>
-	<div id="statusOuterBottom">
-	<<set _bottom to setup.Wardrobe.currentBottomDescriptor()>>
-	<<if _bottom>>
-		<<hovertip _bottom.tip>><<image "ui/icons/" + _bottom.icon>>
-		<</hovertip>>
-	<<else>>
-		<<image "ui/icons/empty.jpg">>
-	<</if>>
-	</div>
-	<div id="statusUnderTop">
-	<<if setup.Wardrobe.worn(setup.WardrobeSlot.BRA)>>
-		<<hovertip "Wearing bra.">><<image "ui/icons/bra.jpg">>
-		<</hovertip>>
-	<<else>>
-		<<hovertip "No bra on!">><<image "ui/icons/tits.jpg">>
-		<</hovertip>>
-	<</if>>
-	</div>
-	<div id="statusUnderBottom">
-	<<if setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES)>>
-		<<hovertip "Wearing panties">><<image "ui/icons/panties.jpg">>
-		<</hovertip>>
-	<<else>>
-		<<hovertip "No panties on!">><<image "ui/icons/nude.jpg">>
-		<</hovertip>>
-	<</if>>
-	</div>
-<</if>>
+<<mcStatusBody>>
 </div>
 
 <<include "StyleStatusContainer">>

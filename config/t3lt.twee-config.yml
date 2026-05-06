@@ -590,3 +590,23 @@ sugarcube-2:
         'her')."
     statIcon:
       name: statIcon
+    mcStatusBody:
+      name: mcStatusBody
+      description: "Inner contents of the sidebar #statusContainer (MC clothing
+        HUD). Split out of MC.tw so per-slot click handlers in hunt mode can
+        re-render the strip via <<replace \"#statusContainer\">> without
+        rebuilding the surrounding container div. No args."
+    mcUndressIcon:
+      name: mcUndressIcon
+      description: "Sidebar HUD icon for a worn clothing slot. During a hunt the
+        icon becomes a click target that takes the garment off and re-renders
+        the strip; outside hunts it falls back to the original hovertip + image.
+        Args: hunting (bool), slotName (string), hoverText (string), iconFile
+        (string, e.g. 'top.jpg')."
+    mcRedressIcon:
+      name: mcRedressIcon
+      description: "Sidebar HUD icon for a not-worn clothing slot. Mirrors
+        mcUndressIcon, but only becomes a link when the slot has a remembered
+        last-worn item to put back on. tipText \"\" suppresses the hovertip
+        (preserves the existing tshirt/bottom empty cells). Args: hunting
+        (bool), slotName (string), tipText (string), iconFile (string)."
