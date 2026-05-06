@@ -11940,8 +11940,8 @@
       "height": 720,
       "kind": "image"
     },
-    "scenes/library/desecrated-book.jpg": {
-      "label": "Desecrated tips book",
+    "scenes/library/desecrated-book.png": {
+      "label": "",
       "width": 444,
       "height": 674,
       "kind": "image"
@@ -12318,8 +12318,8 @@
       "height": 1300,
       "kind": "image"
     },
-    "scenes/library/torn-page.jpg": {
-      "label": "Torn page",
+    "scenes/library/torn-page.png": {
+      "label": "",
       "width": 444,
       "height": 674,
       "kind": "image"
@@ -13356,8 +13356,14 @@
       "height": 1309,
       "kind": "image"
     },
+    "ui/img/alarmclock.jpg": {
+      "label": "",
+      "width": 600,
+      "height": 400,
+      "kind": "image"
+    },
     "ui/img/alarmclock.png": {
-      "label": "Alarm Clock",
+      "label": "",
       "width": 1024,
       "height": 1024,
       "kind": "image"
@@ -14095,7 +14101,7 @@
       "kind": "image"
     },
     "ui/img/witchhouse.png": {
-      "label": "Witch's House",
+      "label": "",
       "width": 605,
       "height": 610,
       "kind": "image"
