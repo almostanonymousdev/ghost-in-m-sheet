@@ -11940,6 +11940,12 @@
       "height": 720,
       "kind": "image"
     },
+    "scenes/library/desecrated-book.jpg": {
+      "label": "Desecrated tips book",
+      "width": 444,
+      "height": 674,
+      "kind": "image"
+    },
     "scenes/library/getting-in-shape001.jpg": {
       "label": "",
       "width": 1280,
@@ -12310,6 +12316,12 @@
       "label": "",
       "width": 850,
       "height": 1300,
+      "kind": "image"
+    },
+    "scenes/library/torn-page.jpg": {
+      "label": "Torn page",
+      "width": 444,
+      "height": 674,
       "kind": "image"
     },
     "scenes/library/woman1.jpg": {

@@ -74,7 +74,8 @@
 		summoning:     function () { return {}; },
 		alarm:         function () { return { enabled: false, hour: 7 }; },
 		hauntedHouse:  function () { return null; },
-		lostClothing:  function () { return []; }
+		lostClothing:  function () { return []; },
+		tornPagesFound: function () { return []; }
 	};
 
 	// mc sub-fields added after launch -- missing on very old saves

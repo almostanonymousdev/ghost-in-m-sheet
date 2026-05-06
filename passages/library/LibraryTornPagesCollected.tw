@@ -1,0 +1,21 @@
+:: LibraryTornPagesCollected {"position":"3325,2100","size":"100,100"}
+<<nobr>>
+@@.mc-thoughts; You smooth out the pages you've recovered so far and look them over again.@@<br>
+<<image "scenes/library/torn-page.jpg" "libraryCenteredImg">><br>
+<br>
+<<set _picked to setup.Library.randomCollectedTornPage()>>
+<<if _picked is null>>
+	@@.mc-thoughts; ...nothing yet. The pages must still be tucked somewhere on the shelves.@@<br>
+<<else>>
+	''<<= _picked.tip.title>>''<br>
+	<<= _picked.tip.body>><br>
+	<br>
+	@@.mc-thoughts; (<<= setup.Library.tornPagesFound().length>> of <<= setup.Library.tornPageTips().length>> pages recovered.)@@<br>
+<</if>>
+<br>
+@@.backbtn; [[Leave|LibraryInside]]@@<br>
+<<done>>
+<<addclass ".linkselector" "disabled-link">>
+<</done>>
+<</nobr>>
+<<include "StyleLibraryCenteredImg">>

@@ -13,6 +13,9 @@
 <<if setup.Library.hasFoundTipsBook()>>
 	@@.enterbtn; [[Read "A Brief Guide to Ghost Hunting"|LibraryTipsBook]]@@<br>
 <</if>>
+<<if setup.Library.hasFoundAnyTornPage()>>
+	@@.enterbtn; [[Read recovered torn pages|LibraryTornPagesCollected]]@@<br>
+<</if>>
 <<if setup.Library.hasFoundBrook()>>
 	@@.enterbtn; [[Find Brook|LibraryBrook]]@@<br>
 <</if>>

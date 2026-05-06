@@ -222,18 +222,49 @@ test.describe('Library — controller helpers', () => {
       const V = SugarCube.State.variables;
       delete V.foundTips; delete V.foundComics; delete V.foundGirl;
       delete V.foundGuy; delete V.foundBrook;
+      delete V.foundDesecratedBook; V.tornPagesFound = [];
       // brookIsWithRain is true while isBrookePossessed === 0 AND CD <= 2.
       // Push the CD past that to make Brook meetable.
       V.isBrookePossessed = 0; V.isBrookePossessedCD = 5;
     });
     let results = await callSetup(page, 'setup.Library.availableSearchResults()');
-    expect(results.sort()).toEqual(['Comics', 'book', 'brook', 'girl', 'guy'].sort());
+    expect(results.sort()).toEqual(['Comics', 'book', 'brook', 'desecratedBook', 'girl', 'guy'].sort());
 
     await page.evaluate(() => SugarCube.setup.Library.markTipsBookFound());
     await page.evaluate(() => SugarCube.setup.Library.markComicsFound());
     results = await callSetup(page, 'setup.Library.availableSearchResults()');
     expect(results).not.toContain('book');
     expect(results).not.toContain('Comics');
+  });
+
+  test('pickRandomTornPage marks an unfound index, never duplicates, and drains the pool', async ({ game: page }) => {
+    await page.evaluate(() => {
+      SugarCube.State.variables.tornPagesFound = [];
+      SugarCube.setup.Library.markDesecratedBookFound();
+    });
+    const total = await callSetup(page, 'setup.Library.tornPageTips().length');
+    for (let i = 0; i < total; i++) {
+      const result = await page.evaluate(() => SugarCube.setup.Library.pickRandomTornPage());
+      expect(result).not.toBeNull();
+      expect(typeof result.index).toBe('number');
+    }
+    const found = await getVar(page, 'tornPagesFound');
+    expect(found.length).toBe(total);
+    // No duplicates.
+    expect(new Set(found).size).toBe(total);
+    expect(await callSetup(page, 'setup.Library.hasTornPagesRemaining()')).toBe(false);
+    expect(await page.evaluate(() => SugarCube.setup.Library.pickRandomTornPage())).toBeNull();
+  });
+
+  test('randomCollectedTornPage returns null until at least one is found', async ({ game: page }) => {
+    await page.evaluate(() => { SugarCube.State.variables.tornPagesFound = []; });
+    expect(await page.evaluate(() => SugarCube.setup.Library.randomCollectedTornPage())).toBeNull();
+    expect(await callSetup(page, 'setup.Library.hasFoundAnyTornPage()')).toBe(false);
+    await page.evaluate(() => { SugarCube.State.variables.tornPagesFound = [0]; });
+    const picked = await page.evaluate(() => SugarCube.setup.Library.randomCollectedTornPage());
+    expect(picked).not.toBeNull();
+    expect(picked.index).toBe(0);
+    expect(await callSetup(page, 'setup.Library.hasFoundAnyTornPage()')).toBe(true);
   });
 
   test('gainSmallCorruption caps at 3', async ({ game: page }) => {
