@@ -14,16 +14,16 @@
 <<set _tier to setup.Companion.eventSanityTier()>>
 <<set _lvl  to setup.Companion.activeCompanionLvl()>>
 <<if _tier is 1>>
-	<<companionTextEvent1>>
+	<<companionTextEvent 1>>
 	<<isCompanionContinue _lvl 2 75 100>>
 <<elseif _tier is 2>>
-	<<companionTextEvent2>>
+	<<companionTextEvent 2>>
 	<<isCompanionContinue _lvl 3 50 75>>
 <<elseif _tier is 3>>
-	<<companionTextEvent3>>
+	<<companionTextEvent 3>>
 	<<isCompanionContinue _lvl 4 25 50>>
 <<elseif _tier is 4>>
-	<<companionTextEvent4>>
+	<<companionTextEvent 4>>
 	<<isCompanionContinue _lvl 6 1 25>>
 <</if>>
 

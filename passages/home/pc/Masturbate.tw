@@ -9,9 +9,9 @@
 <<if _check eq 4>><<image "mechanics/porn/4.webp" { width: "70%" }>>
 <</if>><br>
 @@.mc-thoughts; A wave of pleasure ran through you, making your body tremble with delight, taking your mind somewhere far from reality@@<br>
-<<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>> decreased! <br>
+<<statIcon setup.StatIcon.HEALTH>> decreased! <br>
 <<if setup.Mc.corruption() lte 4>>
-	+0.2 <<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:3%;" }>>
+	+0.2 <<statIcon setup.StatIcon.CORRUPTION>>
 	<<run setup.Mc.addCorruption(0.2)>><br>
 <</if>>
 

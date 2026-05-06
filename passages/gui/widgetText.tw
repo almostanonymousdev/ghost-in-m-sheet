@@ -29,8 +29,8 @@
 		<<set _out to setup.MonkeyPaw.activate("activity")>>
 		<<video _out.video "displayCentredImgs">>
 		@@.mc-speech; <<= _out.narrative>>@@<br>
-		@@.mc-thoughts; Lust increased: +<<= _out.lustDelta>> <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
-		@@.mc-thoughts; Sanity decreased: <<= _out.sanityDelta>> <<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
+		@@.mc-thoughts; Lust increased: +<<= _out.lustDelta>> <<statIcon setup.StatIcon.HEALTH>>@@<br>
+		@@.mc-thoughts; Sanity decreased: <<= _out.sanityDelta>> <<statIcon setup.StatIcon.SANITY>>@@<br>
 		<<if _out.corrDelta>>
 			@@.mc-thoughts; Corruption banking: +<<= _out.corrDelta>>@@<br>
 		<</if>>
@@ -47,7 +47,7 @@
 		<<set _out to setup.MonkeyPaw.activate("trapTheGhost")>>
 		@@.mc-thoughts; <<= setup.MonkeyPaw.wishesLeft()>> wishes left...@@<br><br>
 		@@.mc-speech; <<= _out.narrative>>@@<br>
-		<b>@@.mc-thoughts; Sanity decreased: <<= _out.sanityDelta>> <<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@</b><br>
+		<b>@@.mc-thoughts; Sanity decreased: <<= _out.sanityDelta>> <<statIcon setup.StatIcon.SANITY>>@@</b><br>
 		<<if _out.corrDelta>>
 			@@.mc-thoughts; Corruption banking: +<<= _out.corrDelta>>@@<br>
 		<</if>>
@@ -62,10 +62,10 @@
 	<<replace "#wishesCount">>
 		<<set _out to setup.MonkeyPaw.activate("sanity")>>
 		@@.mc-thoughts; <<= setup.MonkeyPaw.wishesLeft()>> wishes left...@@<br><br>
-		<b>@@.mc-thoughts; Sanity set to <<= _out.sanitySet>> <<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> now!@@</b><br>
+		<b>@@.mc-thoughts; Sanity set to <<= _out.sanitySet>> <<statIcon setup.StatIcon.SANITY>> now!@@</b><br>
 		@@.mc-speech; <<= _out.narrative>>@@<br>
 		<<if _out.lustDelta>>
-			@@.mc-thoughts; Lust increased: +<<= _out.lustDelta>> <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
+			@@.mc-thoughts; Lust increased: +<<= _out.lustDelta>> <<statIcon setup.StatIcon.HEALTH>>@@<br>
 		<</if>>
 		<<if _out.corrDelta>>
 			@@.mc-thoughts; Corruption banking: +<<= _out.corrDelta>>@@<br>
@@ -101,7 +101,7 @@
 			@@.mc-thoughts; <<= setup.MonkeyPaw.wishesLeft()>> wishes left...@@<br><br>
 			@@.mc-speech; <<= _out.narrative>>@@
 			<<if _out.sanityDelta>>
-				<br>@@.mc-thoughts; Sanity decreased: <<= _out.sanityDelta>> <<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@
+				<br>@@.mc-thoughts; Sanity decreased: <<= _out.sanityDelta>> <<statIcon setup.StatIcon.SANITY>>@@
 				<<updatemeter 'sanity' `setup.Mc.sanityPct()`>>
 			<</if>>
 			<<if _out.goto>>

@@ -6,27 +6,27 @@
 	@@.mc-thoughts; It's time to go, there's no one here@@<br>
 <<else>>
 	<<if setup.Gym.hasSportswear()>>
-		<<if setup.Gym.hasEnergyToTrain()>><span class="movebtn">[[Train solo|GymTraining][setup.Gym.spendEnergyToTrain()]]</span><span><<image "ui/img/energy.png" { style: "position: relative; top: 0.375em; width:3%;" }>></span><<else>>
+		<<if setup.Gym.hasEnergyToTrain()>><span class="movebtn">[[Train solo|GymTraining][setup.Gym.spendEnergyToTrain()]]</span><span><<statIcon setup.StatIcon.ENERGY>></span><<else>>
 			@@.mc-thoughts; I'm too tired to train solo@@
-			<span><<image "ui/img/energy.png" { style: "position: relative; top: 0.375em; filter: grayscale(1); width:3%;" }>></span>
+			<span><<statIcon setup.StatIcon.ENERGY true>></span>
 		<</if>><br>
 
 		<<if setup.Gym.hasEnergyToTrain()>>
 			<<if setup.Gym.canAffordCoach()>>
-				<span class="movebtn">[[Train with a coach|GymTrainingTrainer][setup.Gym.spendEnergyToTrain()]]</span><span><<image "ui/img/energy.png" { style: "position: relative; top: 0.375em; width:3%;" }>></span>
+				<span class="movebtn">[[Train with a coach|GymTrainingTrainer][setup.Gym.spendEnergyToTrain()]]</span><span><<statIcon setup.StatIcon.ENERGY>></span>
 				<span class="priceAmount">-<<= setup.Gym.trainingCost()>> $</span>
 			<<else>>
 				@@.mc-thoughts; I don't have enough money for a training session with a coach@@
 			<</if>>
 		<<else>>
 			@@.mc-thoughts; I'm too tired to train with a coach@@
-			<span><<image "ui/img/energy.png" { style: "position: relative; top: 0.375em; filter: grayscale(1); width:3%;" }>></span>
+			<span><<statIcon setup.StatIcon.ENERGY true>></span>
 		<</if>><br>
 
 		<<if setup.Gym.isGroupClassTime()>>
-			<<if setup.Gym.hasEnergyToTrain()>><span class="movebtn">[[Group fitness classes|GroupGymTraining][setup.Gym.spendEnergyToTrain()]]</span><span><<image "ui/img/energy.png" { style: "position: relative; top: 0.375em; width:3%;" }>></span>
+			<<if setup.Gym.hasEnergyToTrain()>><span class="movebtn">[[Group fitness classes|GroupGymTraining][setup.Gym.spendEnergyToTrain()]]</span><span><<statIcon setup.StatIcon.ENERGY>></span>
 			<<else>>
-				@@.mc-thoughts; I'm too tired to train@@<span><<image "ui/img/energy.png" { style: "position: relative; top: 0.375em; filter: grayscale(1); width:3%;" }>></span>
+				@@.mc-thoughts; I'm too tired to train@@<span><<statIcon setup.StatIcon.ENERGY true>></span>
 			<</if>>
 		<</if>>
 		<br>

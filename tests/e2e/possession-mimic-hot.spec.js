@@ -1,35 +1,29 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, callSetup, goToPassage } = require('../helpers');
+const { test, expect } = require('../fixtures');
+const { setVar, getVar, callSetup, goToPassage, resetGame } = require('../helpers');
 const { expectCleanPassage, setupHunt } = require('./e2e-helpers');
 
 test.describe('Possession — resistance meter', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('meter() returns $mcpossession', async () => {
+  test('meter() returns $mcpossession', async ({ game: page }) => {
     await setVar(page, 'mcpossession', 0);
     expect(await callSetup(page, 'setup.Posession.meter()')).toBe(0);
     await setVar(page, 'mcpossession', 5);
     expect(await callSetup(page, 'setup.Posession.meter()')).toBe(5);
   });
 
-  test('meterAtLeast compares against threshold', async () => {
+  test('meterAtLeast compares against threshold', async ({ game: page }) => {
     await setVar(page, 'mcpossession', 3);
     expect(await callSetup(page, 'setup.Posession.meterAtLeast(2)')).toBe(true);
     expect(await callSetup(page, 'setup.Posession.meterAtLeast(3)')).toBe(true);
     expect(await callSetup(page, 'setup.Posession.meterAtLeast(4)')).toBe(false);
   });
 
-  test('meterAtLeast handles undefined meter as 0', async () => {
+  test('meterAtLeast handles undefined meter as 0', async ({ game: page }) => {
     await page.evaluate(() => { delete SugarCube.State.variables.mcpossession; });
     expect(await callSetup(page, 'setup.Posession.meterAtLeast(0)')).toBe(true);
     expect(await callSetup(page, 'setup.Posession.meterAtLeast(1)')).toBe(false);
   });
 
-  test('raiseMeter increments up to cap and blocks beyond', async () => {
+  test('raiseMeter increments up to cap and blocks beyond', async ({ game: page }) => {
     await setVar(page, 'mcpossession', 0);
     expect(await callSetup(page, 'setup.Posession.raiseMeter(3)')).toBe(true);
     expect(await getVar(page, 'mcpossession')).toBe(1);
@@ -41,13 +35,13 @@ test.describe('Possession — resistance meter', () => {
     expect(await callSetup(page, 'setup.Posession.raiseMeter(3)')).toBe(false);
   });
 
-  test('raiseMeter initialises undefined meter to 1', async () => {
+  test('raiseMeter initialises undefined meter to 1', async ({ game: page }) => {
     await page.evaluate(() => { delete SugarCube.State.variables.mcpossession; });
     expect(await callSetup(page, 'setup.Posession.raiseMeter(10)')).toBe(true);
     expect(await getVar(page, 'mcpossession')).toBe(1);
   });
 
-  test('canResist tier predicates match documented thresholds', async () => {
+  test('canResist tier predicates match documented thresholds', async ({ game: page }) => {
     const checks = [
       { meter: 3, first: false, second: false, final: false },
       { meter: 4, first: true,  second: false, final: false },
@@ -66,13 +60,7 @@ test.describe('Possession — resistance meter', () => {
 });
 
 test.describe('Possession — Mimic ghost rotation', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('rollMimicType picks a new ghost when interval changes', async () => {
+  test('rollMimicType picks a new ghost when interval changes', async ({ game: page }) => {
     await setupHunt(page, 'Mimic');
     await setVar(page, 'minutes', 15);
     await page.evaluate(() => { delete SugarCube.State.variables.lastChangeIntervalMimic; });
@@ -88,7 +76,7 @@ test.describe('Possession — Mimic ghost rotation', () => {
     expect(await getVar(page, 'currentIntervalMimic')).toBe('0-29');
   });
 
-  test('rollMimicType returns null when interval unchanged', async () => {
+  test('rollMimicType returns null when interval unchanged', async ({ game: page }) => {
     await setupHunt(page, 'Mimic');
     await setVar(page, 'minutes', 10);
     await setVar(page, 'lastChangeIntervalMimic', '0-29');
@@ -100,7 +88,7 @@ test.describe('Possession — Mimic ghost rotation', () => {
     expect(await getVar(page, 'currentIntervalMimic')).toBe('0-29');
   });
 
-  test('rollMimicType distinguishes 0-29 and 30-59 intervals', async () => {
+  test('rollMimicType distinguishes 0-29 and 30-59 intervals', async ({ game: page }) => {
     await setupHunt(page, 'Mimic');
     await setVar(page, 'minutes', 45);
     await setVar(page, 'lastChangeIntervalMimic', '0-29');
@@ -112,7 +100,7 @@ test.describe('Possession — Mimic ghost rotation', () => {
     expect(await getVar(page, 'lastChangeIntervalMimic')).toBe('30-59');
   });
 
-  test('rollMimicType updates $hunt.name to the rolled identity', async () => {
+  test('rollMimicType updates $hunt.name to the rolled identity', async ({ game: page }) => {
     await setupHunt(page, 'Mimic');
     await setVar(page, 'minutes', 20);
     await page.evaluate(() => { delete SugarCube.State.variables.lastChangeIntervalMimic; });
@@ -125,7 +113,7 @@ test.describe('Possession — Mimic ghost rotation', () => {
     expect(await getVar(page, 'hunt.realName')).toBe('Mimic');
   });
 
-  test('Mimic passage runs rollMimicType when active mimic hunt', async () => {
+  test('Mimic passage runs rollMimicType when active mimic hunt', async ({ game: page }) => {
     await setupHunt(page, 'Mimic');
     await setVar(page, 'minutes', 12);
     await page.evaluate(() => { delete SugarCube.State.variables.lastChangeIntervalMimic; });
@@ -135,20 +123,14 @@ test.describe('Possession — Mimic ghost rotation', () => {
 });
 
 test.describe('Possession — Hot flags', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('pantiesState / braState read underlying clothing flags', async () => {
+  test('pantiesState / braState read underlying clothing flags', async ({ game: page }) => {
     await setVar(page, 'pantiesState', 'worn');
     await setVar(page, 'braState', 'not worn');
     expect(await callSetup(page, 'setup.Posession.pantiesState()')).toBe('worn');
     expect(await callSetup(page, 'setup.Posession.braState()')).toBe('not worn');
   });
 
-  test('clearHotFlags zeroes hotAct and addtemptorealhouse', async () => {
+  test('clearHotFlags zeroes hotAct and addtemptorealhouse', async ({ game: page }) => {
     await setVar(page, 'hotAct', 1);
     await setVar(page, 'addtemptorealhouse', 1);
     await page.evaluate(() => SugarCube.setup.Posession.clearHotFlags());
@@ -156,13 +138,13 @@ test.describe('Possession — Hot flags', () => {
     expect(await getVar(page, 'addtemptorealhouse')).toBe(0);
   });
 
-  test('Hot passage renders cleanly during an active hunt', async () => {
+  test('Hot passage renders cleanly during an active hunt', async ({ game: page }) => {
     await setupHunt(page, 'Shade');
     await goToPassage(page, 'Hot');
     await expectCleanPassage(page);
   });
 
-  test('Hot1 renders cleanly and clears hot flags for each clothing combo', async () => {
+  test('Hot1 renders cleanly and clears hot flags for each clothing combo', async ({ game: page }) => {
     for (const p of ['worn', 'not worn']) {
       for (const b of ['worn', 'not worn']) {
         await resetGame(page);
@@ -181,13 +163,7 @@ test.describe('Possession — Hot flags', () => {
 });
 
 test.describe('Possession — location choice', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('setLocationChoice and locationChoice round-trip', async () => {
+  test('setLocationChoice and locationChoice round-trip', async ({ game: page }) => {
     await page.evaluate(() => SugarCube.setup.Posession.setLocationChoice('Park'));
     expect(await callSetup(page, 'setup.Posession.locationChoice()')).toBe('Park');
     await page.evaluate(() => SugarCube.setup.Posession.setLocationChoice('Gym'));
@@ -196,13 +172,7 @@ test.describe('Possession — location choice', () => {
 });
 
 test.describe('Possession — Brooke rescue path', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('canPepperSprayBrookeAttacker requires spray + charges', async () => {
+  test('canPepperSprayBrookeAttacker requires spray + charges', async ({ game: page }) => {
     await setVar(page, 'hasPSpray', 0);
     await setVar(page, 'hasPSprayCharges', 0);
     expect(await callSetup(page, 'setup.Posession.canPepperSprayBrookeAttacker()')).toBe(false);
@@ -214,13 +184,13 @@ test.describe('Possession — Brooke rescue path', () => {
     expect(await callSetup(page, 'setup.Posession.canPepperSprayBrookeAttacker()')).toBe(true);
   });
 
-  test('consumePepperSprayCharge decrements charges', async () => {
+  test('consumePepperSprayCharge decrements charges', async ({ game: page }) => {
     await setVar(page, 'hasPSprayCharges', 3);
     await page.evaluate(() => SugarCube.setup.Posession.consumePepperSprayCharge());
     expect(await getVar(page, 'hasPSprayCharges')).toBe(2);
   });
 
-  test('analIsTrained and analIsVeryLoose thresholds', async () => {
+  test('analIsTrained and analIsVeryLoose thresholds', async ({ game: page }) => {
     await page.evaluate(() => {
       SugarCube.State.variables.sensualBodyPart = {
         brain: 0, tits: 0, ass: 0, bottom: 0,
@@ -236,13 +206,13 @@ test.describe('Possession — Brooke rescue path', () => {
     expect(await callSetup(page, 'setup.Posession.analIsVeryLoose()')).toBe(true);
   });
 
-  test('markBrookePossessedInactive sets Brooke back to not active', async () => {
+  test('markBrookePossessedInactive sets Brooke back to not active', async ({ game: page }) => {
     await setVar(page, 'isBrookePossessed', 1);
     await page.evaluate(() => SugarCube.setup.Posession.markBrookePossessedInactive());
     expect(await getVar(page, 'isBrookePossessed')).toBe('not active');
   });
 
-  test('skipRandomHours adds 2-6 hours to the clock', async () => {
+  test('skipRandomHours adds 2-6 hours to the clock', async ({ game: page }) => {
     await setVar(page, 'hours', 10);
     await page.evaluate(() => SugarCube.setup.Posession.skipRandomHours());
     const after = await getVar(page, 'hours');
@@ -250,7 +220,7 @@ test.describe('Possession — Brooke rescue path', () => {
     expect(after).toBeLessThanOrEqual(16);
   });
 
-  test('isBlakeHuntWithCursedItem requires Blake as companion + cursed item', async () => {
+  test('isBlakeHuntWithCursedItem requires Blake as companion + cursed item', async ({ game: page }) => {
     await setVar(page, 'isCompChosen', 1);
     await setVar(page, 'companion', { name: 'Blake' });
     await setVar(page, 'gotCursedItem', 1);

@@ -26,6 +26,8 @@ import re
 import sys
 from pathlib import Path
 
+from lib_repo import iter_passages, passages_dir, read_passage, repo_root
+
 SUGARCUBE_SPECIAL = {
     "StoryAuthor", "StoryBanner", "StoryCaption", "StoryMenu", "StoryTitle",
     "StoryInit", "StoryData", "StoryScript", "StoryStylesheet",
@@ -107,11 +109,11 @@ def parse_header(line: str):
     return name, tags
 
 
-def collect_passages(passages_dir: Path):
+def collect_passages():
     """Return dict: name -> {'file': Path, 'tags': set, 'body': str}."""
     passages: dict[str, dict] = {}
-    for tw_file in sorted(passages_dir.rglob("*.tw")):
-        text = tw_file.read_text(encoding="utf-8", errors="replace")
+    for tw_file in iter_passages():
+        text = read_passage(tw_file)
         lines = text.splitlines()
         current = None
         body_lines: list[str] = []
@@ -184,14 +186,14 @@ def body_has_interaction(body: str, widget_names: set[str]) -> bool:
 
 
 def main():
-    repo_root = Path(__file__).resolve().parent.parent
-    passages_dir = repo_root / "passages"
+    root = repo_root()
+    pdir = passages_dir()
 
-    if not passages_dir.is_dir():
-        print(f"ERROR: passages directory not found at {passages_dir}", file=sys.stderr)
+    if not pdir.is_dir():
+        print(f"ERROR: passages directory not found at {pdir}", file=sys.stderr)
         sys.exit(1)
 
-    passages = collect_passages(passages_dir)
+    passages = collect_passages()
     widget_names = collect_widget_names(passages)
     nav_refs, include_refs = collect_references(passages)
 
@@ -220,7 +222,7 @@ def main():
     print(f"\nDEAD-END PASSAGES ({len(dead_ends)}):\n")
     for name, info in sorted(dead_ends):
         try:
-            rel = info["file"].relative_to(repo_root)
+            rel = info["file"].relative_to(root)
         except ValueError:
             rel = info["file"]
         callers = nav_refs.get(name, set())
@@ -230,7 +232,7 @@ def main():
         print(f"      reached from {len(callers)} caller(s):")
         for caller_file, caller_line, caller_name in sorted(callers)[:5]:
             try:
-                caller_rel = Path(caller_file).relative_to(repo_root)
+                caller_rel = Path(caller_file).relative_to(root)
             except ValueError:
                 caller_rel = caller_file
             print(f"        {caller_rel}:{caller_line}  (in passage {caller_name})")

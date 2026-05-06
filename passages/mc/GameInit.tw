@@ -120,6 +120,7 @@ setup.Game = (function () {
 		s.pantiesState = CS.WORN;
 		s.braState = CS.WORN;
 		s.skirtState = CS.NOT_BOUGHT;
+		s.lostClothing = [];
 
 		// --- Hunt-room state objects --------------------------
 		['kitchen', 'bathroom', 'bedroom', 'hallway', 'livingroom'].forEach(function (id) {

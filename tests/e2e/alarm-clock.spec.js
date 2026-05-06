@@ -1,21 +1,15 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, callSetup, goToPassage } = require('../helpers');
+const { test, expect } = require('../fixtures');
+const { setVar, getVar, callSetup, goToPassage } = require('../helpers');
 const { expectCleanPassage } = require('./e2e-helpers');
 
 test.describe('Alarm clock — bedroom flow', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('Bedroom shows the alarm-clock entry and renders without errors', async () => {
+  test('Bedroom shows the alarm-clock entry and renders without errors', async ({ game: page }) => {
     await goToPassage(page, 'Bedroom');
     await expect(page.locator('#passages')).toContainText('Alarm clock');
     await expectCleanPassage(page);
   });
 
-  test('AlarmClock passage offers an hour and persists the selection', async () => {
+  test('AlarmClock passage offers an hour and persists the selection', async ({ game: page }) => {
     await goToPassage(page, 'AlarmClock');
     await expectCleanPassage(page);
     await page.locator('.passage').getByRole('link', { name: '06:00' }).click();
@@ -28,7 +22,7 @@ test.describe('Alarm clock — bedroom flow', () => {
     await expect(page.locator('#passages')).toContainText('Alarm set for 06:00');
   });
 
-  test('Turn-off link clears the alarm', async () => {
+  test('Turn-off link clears the alarm', async ({ game: page }) => {
     await page.evaluate(() => SugarCube.setup.Home.setAlarm(8));
     await goToPassage(page, 'AlarmClock');
     await page.locator('.passage').getByRole('link', { name: 'Turn alarm off' }).click();
@@ -38,7 +32,7 @@ test.describe('Alarm clock — bedroom flow', () => {
     expect(await callSetup(page, 'setup.Home.alarmEnabled()')).toBe(false);
   });
 
-  test('Sleep with alarm set wakes at the alarm hour and zeros minutes', async () => {
+  test('Sleep with alarm set wakes at the alarm hour and zeros minutes', async ({ game: page }) => {
     await setVar(page, 'hours', 23);
     await setVar(page, 'minutes', 37);
     await page.evaluate(() => SugarCube.setup.Home.setAlarm(7));
@@ -51,7 +45,7 @@ test.describe('Alarm clock — bedroom flow', () => {
     expect(await getVar(page, 'minutes')).toBe(0);
   });
 
-  test('Sleep with alarm off keeps the legacy 8-hour advance and snaps minutes to 00', async () => {
+  test('Sleep with alarm off keeps the legacy 8-hour advance and snaps minutes to 00', async ({ game: page }) => {
     // Wakes always land on HH:00 -- including the alarm-off default.
     await setVar(page, 'hours', 22);
     await setVar(page, 'minutes', 37);

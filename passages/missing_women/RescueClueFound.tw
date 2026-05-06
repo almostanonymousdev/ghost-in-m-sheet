@@ -9,7 +9,7 @@ Your EMF reader spikes the moment you bring it close to the @@<<linkappend "@@.u
 
 	@@.mc-action; You found a piece of an old photo.@@<br><br>
 	<<if setup.MissingWomen.emfLevel() neq 3>><<run setup.MissingWomen.upgradeEmfToLvl3()>>
-		@@.mc-action; You picked up an EMF reader <<image "ui/img/emf.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> (Level 3).@@
+		@@.mc-action; You picked up an EMF reader <<statIcon setup.StatIcon.EMF>> (Level 3).@@
 	<</if>>
 	<br><br>
 	@@.backbtn; [[Continue|$return]]@@

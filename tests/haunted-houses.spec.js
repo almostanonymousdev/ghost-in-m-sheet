@@ -1,24 +1,10 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, setHuntMode, getHuntMode, callSetup } = require('./helpers');
+const { test, expect } = require('./fixtures');
+const { setVar, getVar, setHuntMode, getHuntMode, callSetup } = require('./helpers');
 
 test.describe('Haunted Houses Controller', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => {
-    page = await openGame(browser);
-  });
-
-  test.afterAll(async () => {
-    await page.close();
-  });
-
-  test.beforeEach(async () => {
-    await resetGame(page);
-  });
-
   // --- Hunt mode states ---
 
-  test('isContractMode true when ghostHuntingMode is 1', async () => {
+  test('isContractMode true when ghostHuntingMode is 1', async ({ game: page }) => {
     // arrange
     await setHuntMode(page, 1);
 
@@ -29,7 +15,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('isInsideHouse true when ghostHuntingMode is 2', async () => {
+  test('isInsideHouse true when ghostHuntingMode is 2', async ({ game: page }) => {
     // arrange
     await setHuntMode(page, 2);
 
@@ -40,7 +26,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('isHuntOver true when ghostHuntingMode is 3', async () => {
+  test('isHuntOver true when ghostHuntingMode is 3', async ({ game: page }) => {
     // arrange
     await setHuntMode(page, 3);
 
@@ -51,7 +37,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('endHunt sets ghostHuntingMode to 3', async () => {
+  test('endHunt sets ghostHuntingMode to 3', async ({ game: page }) => {
     // arrange
     await setHuntMode(page, 2);
 
@@ -67,7 +53,7 @@ test.describe('Haunted Houses Controller', () => {
   // hunts that ended normally (dawn / manual / exhaustion / caught) left
   // the banked corruption stranded. endHunt is the shared cleanup, so
   // that's where the commit belongs.
-  test('endHunt banks tempCorr into mc.corruption', async () => {
+  test('endHunt banks tempCorr into mc.corruption', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.corruption', 1);
     await setVar(page, 'tempCorr', 0.4);
@@ -81,7 +67,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(await getVar(page, 'tempCorr')).toBe(0);
   });
 
-  test('endHunt accumulates corruption across multiple hunt cycles', async () => {
+  test('endHunt accumulates corruption across multiple hunt cycles', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.corruption', 0);
 
@@ -96,7 +82,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(await getVar(page, 'mc.corruption')).toBeCloseTo(0.9, 5);
   });
 
-  test('hunt mode states are mutually exclusive', async () => {
+  test('hunt mode states are mutually exclusive', async ({ game: page }) => {
     // arrange
     await setHuntMode(page, 1);
 
@@ -113,7 +99,7 @@ test.describe('Haunted Houses Controller', () => {
 
   // --- House identification ---
 
-  test('isOwaissa true when $hauntedHouse is owaissa', async () => {
+  test('isOwaissa true when $hauntedHouse is owaissa', async ({ game: page }) => {
     // act
     const before = await callSetup(page, 'setup.HauntedHouses.isOwaissa()');
     await setVar(page, 'hauntedHouse', 'owaissa');
@@ -124,7 +110,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(after).toBe(true);
   });
 
-  test('isElm true when $hauntedHouse is elm', async () => {
+  test('isElm true when $hauntedHouse is elm', async ({ game: page }) => {
     // act
     const before = await callSetup(page, 'setup.HauntedHouses.isElm()');
     await setVar(page, 'hauntedHouse', 'elm');
@@ -135,7 +121,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(after).toBe(true);
   });
 
-  test('isIronclad true when $hauntedHouse is ironclad', async () => {
+  test('isIronclad true when $hauntedHouse is ironclad', async ({ game: page }) => {
     // act
     const before = await callSetup(page, 'setup.HauntedHouses.isIronclad()');
     await setVar(page, 'hauntedHouse', 'ironclad');
@@ -148,7 +134,7 @@ test.describe('Haunted Houses Controller', () => {
 
   // --- Clothing aggregation ---
 
-  test('isFullyDressed true with tshirt and jeans', async () => {
+  test('isFullyDressed true with tshirt and jeans', async ({ game: page }) => {
     // act
     const result = await callSetup(page, 'setup.HauntedHouses.isFullyDressed()');
 
@@ -156,7 +142,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('isFullyDressed false when topless', async () => {
+  test('isFullyDressed false when topless', async ({ game: page }) => {
     // arrange
     await setVar(page, 'tshirtState', 'not worn');
 
@@ -167,7 +153,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('isFullyDressed false when no bottoms', async () => {
+  test('isFullyDressed false when no bottoms', async ({ game: page }) => {
     // arrange
     await setVar(page, 'jeansState', 'not worn');
     await setVar(page, 'skirtState', 'not bought');
@@ -180,7 +166,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('isTopless true with bottom but no top', async () => {
+  test('isTopless true with bottom but no top', async ({ game: page }) => {
     // arrange
     await setVar(page, 'tshirtState', 'not worn');
 
@@ -191,7 +177,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('isTopless false when fully dressed', async () => {
+  test('isTopless false when fully dressed', async ({ game: page }) => {
     // act
     const result = await callSetup(page, 'setup.HauntedHouses.isTopless()');
 
@@ -199,7 +185,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('isFullyNude true when all clothes off', async () => {
+  test('isFullyNude true when all clothes off', async ({ game: page }) => {
     // arrange
     await setVar(page, 'tshirtState', 'not worn');
     await setVar(page, 'pantiesState', 'not worn');
@@ -214,7 +200,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('isFullyNude false when wearing panties', async () => {
+  test('isFullyNude false when wearing panties', async ({ game: page }) => {
     // arrange
     await setVar(page, 'tshirtState', 'not worn');
     await setVar(page, 'pantiesState', 'worn');
@@ -229,7 +215,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('hasBottomWorn true with skirt instead of jeans', async () => {
+  test('hasBottomWorn true with skirt instead of jeans', async ({ game: page }) => {
     // arrange
     await setVar(page, 'jeansState', 'not worn');
     await setVar(page, 'skirtState', 'worn');
@@ -241,7 +227,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('hasBottomWorn true with shorts instead of jeans', async () => {
+  test('hasBottomWorn true with shorts instead of jeans', async ({ game: page }) => {
     // arrange
     await setVar(page, 'jeansState', 'not worn');
     await setVar(page, 'shortsState', 'worn');
@@ -255,7 +241,7 @@ test.describe('Haunted Houses Controller', () => {
 
   // --- Nudity event helpers ---
 
-  test('nudityNakedNoBottoms matches fully nude state', async () => {
+  test('nudityNakedNoBottoms matches fully nude state', async ({ game: page }) => {
     // arrange
     await setVar(page, 'tshirtState', 'not worn');
     await setVar(page, 'pantiesState', 'not worn');
@@ -270,7 +256,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('nudityToplessWithPanties matches topless-panties state', async () => {
+  test('nudityToplessWithPanties matches topless-panties state', async ({ game: page }) => {
     // arrange
     await setVar(page, 'tshirtState', 'not worn');
     await setVar(page, 'pantiesState', 'worn');
@@ -287,7 +273,7 @@ test.describe('Haunted Houses Controller', () => {
 
   // --- Stolen clothes ---
 
-  test('hasClothesStolen checks flag', async () => {
+  test('hasClothesStolen checks flag', async ({ game: page }) => {
     // act
     const before = await callSetup(page, 'setup.HauntedHouses.hasClothesStolen()');
     await setVar(page, 'isClothesStolen', 1);
@@ -298,7 +284,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(after).toBe(true);
   });
 
-  test('clearStolenClothesFlag resets flag to 0', async () => {
+  test('clearStolenClothesFlag resets flag to 0', async ({ game: page }) => {
     // arrange
     await setVar(page, 'isClothesStolen', 1);
 
@@ -311,7 +297,7 @@ test.describe('Haunted Houses Controller', () => {
 
   // --- Tool timers ---
 
-  test('resetToolTimers clears all tool activation state', async () => {
+  test('resetToolTimers clears all tool activation state', async ({ game: page }) => {
     // arrange
     await setVar(page, 'tools', {
       emf: { activated: 1, activationTime: 500 },
@@ -327,7 +313,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(tools.uvl).toEqual({ activated: 0, activationTime: 0 });
   });
 
-  test('resetEvidenceChecks clears all evidence check flags', async () => {
+  test('resetEvidenceChecks clears all evidence check flags', async ({ game: page }) => {
     // arrange
     await setVar(page, 'EMF5Check', true);
     await setVar(page, 'EctoglassCheck', true);
@@ -350,7 +336,7 @@ test.describe('Haunted Houses Controller', () => {
 
   // --- Corruption accumulator ---
 
-  test('commitTempCorruption adds temp corruption to mc and resets', async () => {
+  test('commitTempCorruption adds temp corruption to mc and resets', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.corruption', 0);
     await setVar(page, 'tempCorr', 0.5);
@@ -366,7 +352,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(await getVar(page, 'tempCorr')).toBe(0);
   });
 
-  test('commitTempCorruption caps tempCorr at 1 before applying', async () => {
+  test('commitTempCorruption caps tempCorr at 1 before applying', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.corruption', 2);
     await setVar(page, 'tempCorr', 5);
@@ -381,7 +367,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(await getVar(page, 'tempCorr')).toBe(0);
   });
 
-  test('commitTempCorruption does nothing with zero tempCorr', async () => {
+  test('commitTempCorruption does nothing with zero tempCorr', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.corruption', 5);
     await setVar(page, 'tempCorr', 0);
@@ -397,7 +383,7 @@ test.describe('Haunted Houses Controller', () => {
 
   // --- Hunt triggers ---
 
-  test('canStartRandomProwl true when not activated and time elapsed', async () => {
+  test('canStartRandomProwl true when not activated and time elapsed', async ({ game: page }) => {
     // arrange
     await setVar(page, 'prowlActivated', 0);
     await setVar(page, 'elapsedTimeProwl', 10);
@@ -410,7 +396,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('canStartRandomProwl false when already activated', async () => {
+  test('canStartRandomProwl false when already activated', async ({ game: page }) => {
     // arrange
     await setVar(page, 'prowlActivated', 1);
     await setVar(page, 'elapsedTimeProwl', 100);
@@ -423,7 +409,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('canStartRandomProwl false when not enough time elapsed', async () => {
+  test('canStartRandomProwl false when not enough time elapsed', async ({ game: page }) => {
     // arrange
     await setVar(page, 'prowlActivated', 0);
     await setVar(page, 'elapsedTimeProwl', 3);
@@ -444,36 +430,36 @@ test.describe('Haunted Houses Controller', () => {
   // canProwl(mc) boundary so an accidental revert to the pre-change values
   // fails here instead of silently re-tightening the gates.
 
-  const canProwl = (ghostName, sanity, lust) =>
+  const canProwl = (page, ghostName, sanity, lust) =>
     callSetup(
       page,
       `setup.Ghosts.getByName(${JSON.stringify(ghostName)})` +
         `.canProwl({ sanity: ${sanity}, lust: ${lust} })`,
     );
 
-  test('Shade canProwl gate is sanity <= 55 (widened from 35)', async () => {
-    expect(await canProwl('Shade', 55, 0)).toBe(true);
-    expect(await canProwl('Shade', 56, 0)).toBe(false);
+  test('Shade canProwl gate is sanity <= 55 (widened from 35)', async ({ game: page }) => {
+    expect(await canProwl(page, 'Shade', 55, 0)).toBe(true);
+    expect(await canProwl(page, 'Shade', 56, 0)).toBe(false);
   });
 
-  test('Demon canProwl gate is sanity <= 90 (widened from 70)', async () => {
-    expect(await canProwl('Demon', 90, 0)).toBe(true);
-    expect(await canProwl('Demon', 91, 0)).toBe(false);
+  test('Demon canProwl gate is sanity <= 90 (widened from 70)', async ({ game: page }) => {
+    expect(await canProwl(page, 'Demon', 90, 0)).toBe(true);
+    expect(await canProwl(page, 'Demon', 91, 0)).toBe(false);
   });
 
-  test('Phantom canProwl gate is sanity <= 70 (widened from 50)', async () => {
-    expect(await canProwl('Phantom', 70, 0)).toBe(true);
-    expect(await canProwl('Phantom', 71, 0)).toBe(false);
+  test('Phantom canProwl gate is sanity <= 70 (widened from 50)', async ({ game: page }) => {
+    expect(await canProwl(page, 'Phantom', 70, 0)).toBe(true);
+    expect(await canProwl(page, 'Phantom', 71, 0)).toBe(false);
   });
 
-  test('Spirit canProwl gate is lust >= 30 (widened from 50)', async () => {
-    expect(await canProwl('Spirit', 100, 30)).toBe(true);
-    expect(await canProwl('Spirit', 100, 29)).toBe(false);
+  test('Spirit canProwl gate is lust >= 30 (widened from 50)', async ({ game: page }) => {
+    expect(await canProwl(page, 'Spirit', 100, 30)).toBe(true);
+    expect(await canProwl(page, 'Spirit', 100, 29)).toBe(false);
   });
 
-  test('Banshee canProwl gate is lust >= 30 (widened from 50)', async () => {
-    expect(await canProwl('Banshee', 100, 30)).toBe(true);
-    expect(await canProwl('Banshee', 100, 29)).toBe(false);
+  test('Banshee canProwl gate is lust >= 30 (widened from 50)', async ({ game: page }) => {
+    expect(await canProwl(page, 'Banshee', 100, 30)).toBe(true);
+    expect(await canProwl(page, 'Banshee', 100, 29)).toBe(false);
   });
 
   // --- HauntConditions contract drain ---
@@ -483,7 +469,7 @@ test.describe('Haunted Houses Controller', () => {
   // These tests lock the numbers in as a direct read of the snapshot;
   // without them a regression silently weakens the hunt-gate pressure.
 
-  test('snapshot has no contract drain outside a house', async () => {
+  test('snapshot has no contract drain outside a house', async ({ game: page }) => {
     // arrange - no active hunt means isInsideHouse() returns false
     await setHuntMode(page, 0);
 
@@ -497,7 +483,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(drain).toBe(0);
   });
 
-  test('snapshot applies 0.4/step contract drain in-house without companion', async () => {
+  test('snapshot applies 0.4/step contract drain in-house without companion', async ({ game: page }) => {
     // arrange
     await setHuntMode(page, 2); // inside a house
     await setVar(page, 'isCompChosen', 0);
@@ -509,7 +495,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(snap.sanityPerStep).toBeCloseTo(-0.4, 5);
   });
 
-  test('companion halves the contract drain to 0.2/step', async () => {
+  test('companion halves the contract drain to 0.2/step', async ({ game: page }) => {
     // arrange
     await setHuntMode(page, 2);
     await setVar(page, 'isCompChosen', 1);
@@ -528,7 +514,7 @@ test.describe('Haunted Houses Controller', () => {
   // were halved to soften the exhaustion ceiling. Lock them in so a revert
   // to the pre-change values is caught here.
 
-  test('energyPerStep is -0.125 inside a house', async () => {
+  test('energyPerStep is -0.125 inside a house', async ({ game: page }) => {
     await setHuntMode(page, 2);
 
     const snap = await callSetup(page, 'setup.HauntConditions.snapshot()');
@@ -536,7 +522,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(snap.energyPerStep).toBeCloseTo(-0.125, 5);
   });
 
-  test('energyPerStep is 0 outside a house', async () => {
+  test('energyPerStep is 0 outside a house', async ({ game: page }) => {
     await setHuntMode(page, 0);
 
     const snap = await callSetup(page, 'setup.HauntConditions.snapshot()');
@@ -544,15 +530,15 @@ test.describe('Haunted Houses Controller', () => {
     expect(snap.energyPerStep).toBe(0);
   });
 
-  test('ENERGY_COST_BAIT is 0.5', async () => {
+  test('ENERGY_COST_BAIT is 0.5', async ({ game: page }) => {
     expect(await callSetup(page, 'setup.HauntConditions.ENERGY_COST_BAIT')).toBe(0.5);
   });
 
-  test('ENERGY_COST_PRAY is 0.5', async () => {
+  test('ENERGY_COST_PRAY is 0.5', async ({ game: page }) => {
     expect(await callSetup(page, 'setup.HauntConditions.ENERGY_COST_PRAY')).toBe(0.5);
   });
 
-  test('orgasm aftershock adds -0.125 energy/step on top of base drain', async () => {
+  test('orgasm aftershock adds -0.125 energy/step on top of base drain', async ({ game: page }) => {
     await setHuntMode(page, 2);
     await setVar(page, 'orgasmCooldownSteps', 3);
 
@@ -567,7 +553,7 @@ test.describe('Haunted Houses Controller', () => {
   // clothing-driven lust contribution, but only while the hunt is live and
   // only when the modifier is in the active deck.
 
-  test('pheromones modifier adds +1 lust/step in-house', async () => {
+  test('pheromones modifier adds +1 lust/step in-house', async ({ game: page }) => {
     await setHuntMode(page, 2);
     await page.evaluate(() => SugarCube.setup.Rogue.start({
       seed: 1, modifiers: ['pheromones']
@@ -583,7 +569,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(labels).not.toContain('Pheromones');
   });
 
-  test('pheromones stacks with clothing-driven lust', async () => {
+  test('pheromones stacks with clothing-driven lust', async ({ game: page }) => {
     await setHuntMode(page, 2);
     await page.evaluate(() => SugarCube.setup.Rogue.start({
       seed: 1, modifiers: ['pheromones']
@@ -601,7 +587,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(snap.lustPerStep).toBe(3);
   });
 
-  test('pheromones is inert outside a hunt', async () => {
+  test('pheromones is inert outside a hunt', async ({ game: page }) => {
     await setHuntMode(page, 0);
     await page.evaluate(() => SugarCube.setup.Rogue.start({
       seed: 1, modifiers: ['pheromones']
@@ -612,7 +598,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(snap.lustPerStep).toBe(0);
   });
 
-  test('classic mode without the modifier has no pheromones contribution', async () => {
+  test('classic mode without the modifier has no pheromones contribution', async ({ game: page }) => {
     await setHuntMode(page, 2);
 
     const snap = await callSetup(page, 'setup.HauntConditions.snapshot()');
@@ -622,7 +608,7 @@ test.describe('Haunted Houses Controller', () => {
 
   // --- Cold Sweat / Oh Bugger (prowl bonuses, no chip) ---
 
-  test('Cold Sweat adds +4 prowl bonus in-house', async () => {
+  test('Cold Sweat adds +4 prowl bonus in-house', async ({ game: page }) => {
     await setHuntMode(page, 2);
     await page.evaluate(() => SugarCube.setup.Rogue.start({
       seed: 1, modifiers: ['cold_sweat']
@@ -634,7 +620,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(snap.contributors.map(c => c.label)).not.toContain('Cold Sweat');
   });
 
-  test('Cold Sweat is inert outside a hunt', async () => {
+  test('Cold Sweat is inert outside a hunt', async ({ game: page }) => {
     await setHuntMode(page, 0);
     await page.evaluate(() => SugarCube.setup.Rogue.start({
       seed: 1, modifiers: ['cold_sweat']
@@ -643,7 +629,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(snap.prowlChanceBonus).toBe(0);
   });
 
-  test('Oh Bugger adds +15 prowl bonus in-house', async () => {
+  test('Oh Bugger adds +15 prowl bonus in-house', async ({ game: page }) => {
     await setHuntMode(page, 2);
     await page.evaluate(() => SugarCube.setup.Rogue.start({
       seed: 1, modifiers: ['oh_bugger']
@@ -653,7 +639,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(snap.contributors.map(c => c.label)).not.toContain('Oh, Bugger');
   });
 
-  test('Cold Sweat + Oh Bugger stack additively on prowl bonus', async () => {
+  test('Cold Sweat + Oh Bugger stack additively on prowl bonus', async ({ game: page }) => {
     await setHuntMode(page, 2);
     await page.evaluate(() => SugarCube.setup.Rogue.start({
       seed: 1, modifiers: ['cold_sweat', 'oh_bugger']
@@ -664,7 +650,7 @@ test.describe('Haunted Houses Controller', () => {
 
   // --- Brittle Mind (eventSanityMultiplier += 0.5) ---
 
-  test('Brittle Mind raises eventSanityMultiplier by 0.5', async () => {
+  test('Brittle Mind raises eventSanityMultiplier by 0.5', async ({ game: page }) => {
     await setHuntMode(page, 2);
     await page.evaluate(() => SugarCube.setup.Rogue.start({
       seed: 1, modifiers: ['brittle_mind']
@@ -673,7 +659,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(mult).toBe(1.5);
   });
 
-  test('Brittle Mind stacks on top of dark-room/overcharged contributions', async () => {
+  test('Brittle Mind stacks on top of dark-room/overcharged contributions', async ({ game: page }) => {
     await setHuntMode(page, 2);
     await page.evaluate(() => SugarCube.setup.Rogue.start({
       seed: 1, modifiers: ['brittle_mind']
@@ -685,7 +671,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(mult).toBe(1.75);
   });
 
-  test('eventSanityMultiplier is 1 with no modifiers and no overcharge', async () => {
+  test('eventSanityMultiplier is 1 with no modifiers and no overcharge', async ({ game: page }) => {
     await setHuntMode(page, 2);
     const mult = await callSetup(page, 'setup.HauntConditions.eventSanityMultiplier()');
     expect(mult).toBe(1);
@@ -693,7 +679,7 @@ test.describe('Haunted Houses Controller', () => {
 
   // --- Not Their Type (canBait returns false) ---
 
-  test('Not Their Type forces canBait to return false', async () => {
+  test('Not Their Type forces canBait to return false', async ({ game: page }) => {
     await setHuntMode(page, 2);
     await page.evaluate(() => {
       // Set up the conditions so canBait would otherwise pass.
@@ -710,7 +696,7 @@ test.describe('Haunted Houses Controller', () => {
 
   // --- Swiper (steal trigger forced) ---
 
-  test('Swiper makes shouldTriggerSteal return true whenever stealable', async () => {
+  test('Swiper makes shouldTriggerSteal return true whenever stealable', async ({ game: page }) => {
     await setHuntMode(page, 2);
     await page.evaluate(() => SugarCube.setup.Rogue.start({
       seed: 1, modifiers: ['swiper']
@@ -723,7 +709,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(got).toBe(true);
   });
 
-  test('Swiper still respects canStealAnyItem (returns false when nothing wearable)', async () => {
+  test('Swiper still respects canStealAnyItem (returns false when nothing wearable)', async ({ game: page }) => {
     await setHuntMode(page, 2);
     await page.evaluate(() => SugarCube.setup.Rogue.start({
       seed: 1, modifiers: ['swiper']
@@ -739,7 +725,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(got).toBe(false);
   });
 
-  test('without Swiper, shouldTriggerSteal still rolls against stealChance', async () => {
+  test('without Swiper, shouldTriggerSteal still rolls against stealChance', async ({ game: page }) => {
     await setHuntMode(page, 2);
     // Force the steal-chance roll to fail (roll = 100, chance = 0).
     await setVar(page, 'stealChance', 0);
@@ -751,7 +737,7 @@ test.describe('Haunted Houses Controller', () => {
 
   // --- Glass Bones (orgasm aftershock decrement halved) ---
 
-  test('Glass Bones halves the per-tick aftershock decrement', async () => {
+  test('Glass Bones halves the per-tick aftershock decrement', async ({ game: page }) => {
     await setHuntMode(page, 2);
     await page.evaluate(() => SugarCube.setup.Rogue.start({
       seed: 1, modifiers: ['glass_bones']
@@ -761,7 +747,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(await getVar(page, 'orgasmCooldownSteps')).toBeCloseTo(3.5, 5);
   });
 
-  test('without Glass Bones the decrement stays at 1 per tick', async () => {
+  test('without Glass Bones the decrement stays at 1 per tick', async ({ game: page }) => {
     await setHuntMode(page, 2);
     await setVar(page, 'orgasmCooldownSteps', 4);
     await page.evaluate(() => SugarCube.setup.HauntConditions.applyTickEffects());
@@ -770,7 +756,7 @@ test.describe('Haunted Houses Controller', () => {
 
   // --- Sticky Fingers (steal chance x2) ---
 
-  test('Sticky Fingers doubles the recomputed stealChance', async () => {
+  test('Sticky Fingers doubles the recomputed stealChance', async ({ game: page }) => {
     await page.evaluate(() => SugarCube.setup.Rogue.start({
       seed: 1, modifiers: ['sticky_fingers']
     }));
@@ -795,11 +781,11 @@ test.describe('Haunted Houses Controller', () => {
   // $equipment, so any rename of those fields breaks the caption silently
   // (it just renders empty). These tests pin the contract.
 
-  test('toolTimerRemain is 0 before EMF is activated', async () => {
+  test('toolTimerRemain is 0 before EMF is activated', async ({ game: page }) => {
     expect(await callSetup(page, 'setup.toolTimerRemain("emf")')).toBe(0);
   });
 
-  test('toolTimerRemain reports the full window right after activation', async () => {
+  test('toolTimerRemain reports the full window right after activation', async ({ game: page }) => {
     // arrange: tier 5 EMF -> 10-min window per setup.TOOL_TIME_REMAIN
     await setVar(page, 'equipment', { emf: 5, uvl: 5 });
     await setVar(page, 'hours', 12);
@@ -813,7 +799,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(remain).toBe(10);
   });
 
-  test('toolTimerRemain decreases as the clock advances', async () => {
+  test('toolTimerRemain decreases as the clock advances', async ({ game: page }) => {
     await setVar(page, 'equipment', { emf: 5, uvl: 5 });
     await setVar(page, 'hours', 12);
     await setVar(page, 'minutes', 0);
@@ -823,7 +809,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(await callSetup(page, 'setup.toolTimerRemain("emf")')).toBe(3);
   });
 
-  test('toolTimerRemain returns 0 once the window has lapsed', async () => {
+  test('toolTimerRemain returns 0 once the window has lapsed', async ({ game: page }) => {
     await setVar(page, 'equipment', { emf: 5, uvl: 5 });
     await setVar(page, 'hours', 12);
     await setVar(page, 'minutes', 0);
@@ -833,7 +819,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(await callSetup(page, 'setup.toolTimerRemain("emf")')).toBe(0);
   });
 
-  test('toolTimerRemain does not mutate $tools (read-only view)', async () => {
+  test('toolTimerRemain does not mutate $tools (read-only view)', async ({ game: page }) => {
     // tickTimedTool clears stale flags; toolTimerRemain must not — the
     // sidebar caption shouldn't have side effects on the hunt state.
     await setVar(page, 'equipment', { emf: 5, uvl: 5 });
@@ -847,15 +833,15 @@ test.describe('Haunted Houses Controller', () => {
     expect(await getVar(page, 'tools.emf.activated')).toBe(1);
   });
 
-  test('toolTimerRemain is 0 for non-timed tools', async () => {
+  test('toolTimerRemain is 0 for non-timed tools', async ({ game: page }) => {
     expect(await callSetup(page, 'setup.toolTimerRemain("gwb")')).toBe(0);
   });
 
-  test('toolTimerHudMarkup is empty when no timed tool is active', async () => {
+  test('toolTimerHudMarkup is empty when no timed tool is active', async ({ game: page }) => {
     expect(await callSetup(page, 'setup.toolTimerHudMarkup()')).toBe('');
   });
 
-  test('toolTimerHudMarkup shows EMF + UVL chips when both active', async () => {
+  test('toolTimerHudMarkup shows EMF + UVL chips when both active', async ({ game: page }) => {
     await setVar(page, 'equipment', { emf: 5, uvl: 5 });
     await setVar(page, 'hours', 12);
     await setVar(page, 'minutes', 0);
@@ -868,7 +854,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(markup).toContain('UVL: 10 min left');
   });
 
-  test('toolTimerHudMarkup flags low-time entries with tool-timer--low', async () => {
+  test('toolTimerHudMarkup flags low-time entries with tool-timer--low', async ({ game: page }) => {
     await setVar(page, 'equipment', { emf: 5, uvl: 5 });
     await setVar(page, 'hours', 12);
     await setVar(page, 'minutes', 0);
@@ -886,7 +872,7 @@ test.describe('Haunted Houses Controller', () => {
   // in-world events. Pin the trigger copy so a refactor can't silently
   // re-merge the two strings.
 
-  test('EMF tooltip names the GWB/Spiritbox/lights-off trigger', async () => {
+  test('EMF tooltip names the GWB/Spiritbox/lights-off trigger', async ({ game: page }) => {
     const tip = await callSetup(page, 'setup.toolSuccessRate("emf")');
 
     expect(tip).toContain('GWB or Spiritbox hit');
@@ -894,7 +880,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(tip).not.toContain('ghost sanity event');
   });
 
-  test('UVL tooltip names the ghost-sanity-event trigger', async () => {
+  test('UVL tooltip names the ghost-sanity-event trigger', async ({ game: page }) => {
     const tip = await callSetup(page, 'setup.toolSuccessRate("uvl")');
 
     expect(tip).toContain('ghost sanity event');
@@ -909,7 +895,7 @@ test.describe('Haunted Houses Controller', () => {
   // Only the player-driven HauntConditions.removeEnergy spend (bait /
   // pray) was setting the flag.
 
-  test('applyTickEffects sets exhausted when per-step drain bottoms out energy', async () => {
+  test('applyTickEffects sets exhausted when per-step drain bottoms out energy', async ({ game: page }) => {
     await setHuntMode(page, 2); // hunt active so the snapshot reads in-house drain
     await setVar(page, 'mc.energy', 0.1); // one tick at -0.125 will clamp to 0
 
@@ -919,7 +905,7 @@ test.describe('Haunted Houses Controller', () => {
     expect(await callSetup(page, 'setup.Mc.isExhausted()')).toBe(true);
   });
 
-  test('applyTickEffects leaves exhausted clear while energy is positive', async () => {
+  test('applyTickEffects leaves exhausted clear while energy is positive', async ({ game: page }) => {
     await setHuntMode(page, 2);
     await setVar(page, 'mc.energy', 50);
 

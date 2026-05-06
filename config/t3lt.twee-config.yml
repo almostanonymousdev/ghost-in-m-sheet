@@ -54,30 +54,13 @@ sugarcube-2:
       description: Renders the active companion's portrait as a link to the
         'CompanionSucceeded' passage. Uses $companion.name to select the correct
         image.
-    companionTextEvent1:
-      name: companionTextEvent1
-      description: Displays companion-specific dialogue and applies stat changes for
-        ghost encounter event type 1. Adjusts $companion.sanity and
-        $companion.lust. Handles trans-companion transformation stage 1 for
-        Alex/Taylor/Casey.
-    companionTextEvent2:
-      name: companionTextEvent2
-      description: Displays companion-specific dialogue and applies stat changes for
-        ghost encounter event type 2. Adjusts $companion.sanity and
-        $companion.lust, and grants +15 MC lust. Handles trans-companion
-        transformation for Alex/Taylor/Casey.
-    companionTextEvent3:
-      name: companionTextEvent3
-      description: Displays companion-specific dialogue and applies stat changes for
-        ghost encounter event type 3. Adjusts $companion.sanity and
-        $companion.lust, and grants +15 MC lust. Handles trans-companion
-        transformation for Alex/Taylor/Casey.
-    companionTextEvent4:
-      name: companionTextEvent4
-      description: Displays companion-specific dialogue and applies stat changes for
-        ghost encounter event type 4. Adjusts $companion.sanity and
-        $companion.lust, and grants +15 MC lust. Handles trans-companion
-        transformation for Alex/Taylor/Casey.
+    companionTextEvent:
+      name: companionTextEvent
+      description: 'Sanity-tier dispatcher for the CompanionEvent passage.
+        Renders companion-specific dialog from the catalogue (eventCopy /
+        transEventCopy) and applies the standard sanity/lust deltas; tiers
+        2-4 also grant +15 MC lust. Trans companions stamp transFirstStage
+        on every render. Args: tier (1..4).'
     isCompanionContinue:
       name: isCompanionContinue
       description: 'Renders a linkappend asking whether the companion can continue the
@@ -150,6 +133,13 @@ sugarcube-2:
       description: "Sets _videoList to the video pool for a specific Cthulion ghost
         ability tier (1-4). Used before rendering the event video for
         Cthulion-specific scenes. Args: tier (number, 1-4)."
+    energyGate:
+      name: energyGate
+      container: true
+      description: "Energy-gated link. Renders a grey 'Not enough energy' line when
+        MC energy is < 1; otherwise renders a <<link>> to the given passage with
+        the given label. The body is the action(s) to run on click. Args: passage
+        (string), label (string)."
     seduceGhostMinigameVideo:
       name: seduceGhostMinigameVideo
       description: Renders the media (image or video) for the current seduce-ghost
@@ -469,11 +459,11 @@ sugarcube-2:
         evidence-check tool passages. Args: message (string)."
     comicSlider:
       name: comicSlider
-      description: "Renders the slide-container that ReadComics steps through.
-        Each page's asset is `pathPrefix + 3-digit zero-padded index +
-        '.jpg'`. The first slide is marked .active; prev/next anchors hook
-        into the showSlides / plusSlides script in ReadComics. Args:
-        pathPrefix (string), count (int)."
+      description: "Renders the slide-container that ReadComics steps through. Each
+        page's asset is `pathPrefix + 3-digit zero-padded index + '.jpg'`. The
+        first slide is marked .active; prev/next anchors hook into the
+        showSlides / plusSlides script in ReadComics. Args: pathPrefix (string),
+        count (int)."
     coloredText:
       name: coloredText
       description: "Wraps content in the evidence bold/stroke text span. Args: color
@@ -645,3 +635,5 @@ sugarcube-2:
         'her')."
     rogueToolSlot:
       name: rogueToolSlot
+    statIcon:
+      name: statIcon

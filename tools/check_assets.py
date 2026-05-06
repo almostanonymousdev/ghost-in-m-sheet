@@ -10,14 +10,9 @@ import re
 import sys
 from pathlib import Path
 
-# Parse ASSET_BASE from StoryInit's setup.ImagePath assignment
-_STORY_INIT = Path(__file__).resolve().parent.parent / "passages" / "StoryInit.tw"
-_IMAGE_PATH_RE = re.compile(r'''setup\.ImagePath\s*=\s*["']([^"']+)["']''')
-ASSET_BASE = "assets"  # fallback
-if _STORY_INIT.is_file():
-    _match = _IMAGE_PATH_RE.search(_STORY_INIT.read_text(encoding="utf-8", errors="replace"))
-    if _match:
-        ASSET_BASE = _match.group(1)
+from lib_repo import image_path, iter_passages, passages_dir, read_passage, repo_root
+
+ASSET_BASE = image_path()
 
 # Patterns that reference assets:
 # 1. <<video "PATH">> / <<image "PATH">> — path relative to setup.ImagePath
@@ -45,19 +40,17 @@ FURNITURE_WIDGET_PATTERN_INDICES = {3, 4}
 
 
 def main():
-    repo_root = Path(__file__).resolve().parent.parent
-    passages_dir = repo_root / "passages"
+    root = repo_root()
+    pdir = passages_dir()
 
-    if not passages_dir.is_dir():
-        print(f"ERROR: passages directory not found at {passages_dir}", file=sys.stderr)
+    if not pdir.is_dir():
+        print(f"ERROR: passages directory not found at {pdir}", file=sys.stderr)
         sys.exit(1)
 
     # Collect all asset references: (rel_path, file, lineno)
     refs: list[tuple[str, Path, int]] = []
-    for tw_file in sorted(passages_dir.rglob("*.tw")):
-        for lineno, line in enumerate(
-            tw_file.read_text(encoding="utf-8", errors="replace").splitlines(), 1
-        ):
+    for tw_file in iter_passages():
+        for lineno, line in enumerate(read_passage(tw_file).splitlines(), 1):
             for pi, pattern in enumerate(ASSET_PATTERNS):
                 for m in pattern.finditer(line):
                     raw = m.group(1)
@@ -84,7 +77,7 @@ def main():
     missing: list[tuple[str, Path, int]] = [
         (asset_path, tw_file, lineno)
         for asset_path, tw_file, lineno in refs
-        if not (repo_root / asset_path).exists()
+        if not (root / asset_path).exists()
     ]
 
     # Deduplicate: one report per unique asset path
@@ -106,7 +99,7 @@ def main():
     # Group first occurrence by asset path
     for asset_path, tw_file, lineno in sorted(unique_missing):
         try:
-            rel = tw_file.relative_to(repo_root)
+            rel = tw_file.relative_to(root)
         except ValueError:
             rel = tw_file
         print(f"  {asset_path}")

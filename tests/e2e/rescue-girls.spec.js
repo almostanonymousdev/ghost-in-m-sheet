@@ -1,20 +1,14 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, goToPassage, callSetup } = require('../helpers');
+const { test, expect } = require('../fixtures');
+const { setVar, getVar, goToPassage, callSetup } = require('../helpers');
 const { expectCleanPassage, expectNoErrors, setupActiveQuest } = require('./e2e-helpers');
 
 const GIRLS = ['Victoria', 'Jade', 'Julia', 'Nadia', 'Ash'];
 
 test.describe('Missing Women — rescue girls, possession, stay', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
   // ── Per-girl rescue passages ───────────────────────────────────
 
   for (const girl of GIRLS) {
-    test(`${girl}: passage renders without errors (with holy water)`, async () => {
+    test(`${girl}: passage renders without errors (with holy water)`, async ({ game: page }) => {
       test.setTimeout(10_000);
       await setupActiveQuest(page, girl);
       await setVar(page, 'holyWaterIsCollected', 1);
@@ -24,7 +18,7 @@ test.describe('Missing Women — rescue girls, possession, stay', () => {
       expect(await page.locator('.passage').textContent()).toContain(girl);
     });
 
-    test(`${girl}: holy water option appears when collected`, async () => {
+    test(`${girl}: holy water option appears when collected`, async ({ game: page }) => {
       test.setTimeout(10_000);
       await setupActiveQuest(page, girl);
       await setVar(page, 'holyWaterIsCollected', 1);
@@ -34,7 +28,7 @@ test.describe('Missing Women — rescue girls, possession, stay', () => {
       expect(await page.locator('.passage').textContent()).toContain('holywater');
     });
 
-    test(`${girl}: no holy water shows missing message`, async () => {
+    test(`${girl}: no holy water shows missing message`, async ({ game: page }) => {
       test.setTimeout(10_000);
       await setupActiveQuest(page, girl);
       await setVar(page, 'holyWaterIsCollected', 0);
@@ -48,7 +42,7 @@ test.describe('Missing Women — rescue girls, possession, stay', () => {
   // ── Possession flow ────────────────────────────────────────────
 
   for (const girl of GIRLS) {
-    test(`rescuePossessed dispatches to ${girl}'s possession passage`, async () => {
+    test(`rescuePossessed dispatches to ${girl}'s possession passage`, async ({ game: page }) => {
       test.setTimeout(10_000);
       await setupActiveQuest(page, girl);
       await setVar(page, 'rescueStage', 2);
@@ -69,7 +63,7 @@ test.describe('Missing Women — rescue girls, possession, stay', () => {
     });
   }
 
-  test('rescuePossessed Leave option returns to rescueMap', async () => {
+  test('rescuePossessed Leave option returns to rescueMap', async ({ game: page }) => {
     test.setTimeout(10_000);
     await setupActiveQuest(page, 'Victoria');
     await setVar(page, 'rescueStage', 2);
@@ -87,7 +81,7 @@ test.describe('Missing Women — rescue girls, possession, stay', () => {
   // ── Girl-specific possession passages ──────────────────────────
 
   for (const girl of GIRLS) {
-    test(`${girl} possessed passage renders without errors`, async () => {
+    test(`${girl} possessed passage renders without errors`, async ({ game: page }) => {
       test.setTimeout(10_000);
       await setupActiveQuest(page, girl);
       await setVar(page, 'hasQuestForRescue', 2);
@@ -102,7 +96,7 @@ test.describe('Missing Women — rescue girls, possession, stay', () => {
   // ── rescueStay ─────────────────────────────────────────────────
 
   for (const girl of GIRLS) {
-    test(`rescueStay renders for ${girl} without errors`, async () => {
+    test(`rescueStay renders for ${girl} without errors`, async ({ game: page }) => {
       test.setTimeout(10_000);
       await setupActiveQuest(page, girl);
       await setVar(page, 'mc.corruption', 10);

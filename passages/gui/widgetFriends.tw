@@ -29,141 +29,31 @@
 	<</if>>
 <</widget>>
 
-<<widget "companionTextEvent1">>
-	<<set _cName to setup.Companion.name()>>
-	<<if _cName eq "Brook">>
-		@@.mc-thoughts; As you entered the room, you immediately saw her. She was naked and visibly shaken.@@<br>
-		@@.mc-speech; Oh God, what happened to you?@@<br>
-		@@.notmc-speech; I don't want to talk about it... Just help me@@<br>
-		@@.mc-thoughts; You walked over to her, carefully helping her up.@@<br>
-	<<elseif _cName eq "Alice">>
-		@@.mc-thoughts; When you entered the room, you saw her.@@<br> @@.mc-speech; Are you alright?@@<br> @@.notmc-speech; I'm fine. It's just a ghost, nothing to worry about. And it looks like I almost beat it.@@<br> @@.mc-thoughts; It seems I can see the marks of that fight on her...@@<br> @@.mc-speech; Well done, I'm proud of you.@@<br>
-	<<elseif _cName eq "Blake">>
-		@@.mc-thoughts; When you entered the room, you saw her.@@<br> @@.mc-speech; What are you doing?@@<br> @@.notmc-speech; I thought I could attract the ghost this way.@@<br> @@.mc-speech; Why?@@<br> @@.notmc-speech; Well, maybe it would have more cursed items, and I could take them for myself.@@<br>
-		@@.mc-speech; I don't think that's how it works, or the ghost would probably not want to share with you.@@<br>
-		@@.notmc-speech; I still think my plan will work.@@<br>
-		@@.mc-speech; Alright, let's keep looking.@@<br>
-	<<elseif setup.Companion.isTransByName(_cName) and not setup.Companion.isTransFirstStageSet()>>
-		@@.mc-thoughts; You enter the room and see a figure that clearly belongs to a female body. You don't recognize it until it turns around, revealing <<= _cName>>'s face.@@<br>
-		@@.mc-speech; <<= _cName>>, are you okay? You look...@@<br>
-		@@.notmc-speech; Yeah, it's weird. Maybe this house is doing something to me.<br> Let's find the evidence quickly and get out of here.@@<br>
-		<<run setup.Companion.markTransFirstStage()>>
-	<<elseif setup.Companion.isTransByName(_cName) and setup.Companion.isTransFirstStageSet()>>
-		@@.mc-thoughts; You stumble upon <<= _cName>>, the body has become irresistibly feminine, movements now full of seduction.@@<br>
-		@@.mc-speech; <<= _cName>>, you've changed so much... How do you feel with these changes?@@<br>
-		@@.mc-speech; I... I don't know... I feel completely different... I can't explain it.@@<br>
-		<<run setup.Companion.markTransFirstStage()>>
+<<widget "companionTextEvent">>
+	/* Sanity-tier (1..4) dispatcher for the CompanionEvent passage.
+	   Per-companion dialog lives on the catalogue (eventCopy) and the
+	   shared transEventCopy table; this widget just renders it. Trans
+	   companions also stamp the transFirstStage flag on every render so
+	   the next event picks the post-stage portrait + tier-1 variant.
+	   Tiers 2-4 add a +15 lust hit on the MC. */
+	<<set _tier to _args[0]>>
+	<<set _ac to setup.Companion.active()>>
+	<<if _ac>>
+		<<set _markup to _ac.eventTextForTier(_tier)>>
+		<<if _markup>>
+			<<= _markup>>
+			<<if _ac.isTrans>>
+				<<run setup.Companion.markTransFirstStage()>>
+			<</if>>
+		<</if>>
 	<</if>>
 	<<run setup.Companion.applyEventStatDeltas()>>
-	<<= _cName>>'s lust: + <<= setup.Companion.eventLustGain()>> <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
-	<<= _cName>>'s sanity: - <<= setup.Companion.decreaseSanity()>><<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
-
-<</widget>>
-
-<<widget "companionTextEvent2">>
-	<<set _cName to setup.Companion.name()>>
-	<<if _cName eq "Brook">>
-		@@.mc-thoughts; As you entered the room, you immediately saw her. But she wasn't alone. Fortunately, you entered just in time, and as soon as you did, the ghost let her go and vanished@@<br>
-		@@.mc-speech; <<= _cName>> , are you alright? I saw the ghost trying to...@@<br>
-		@@.notmc-speech; Thank you, <<= setup.Mc.name()>>, you came just in time.@@<br>
-		@@.mc-thoughts; You walked over to her, carefully helping her up.@@<br>
-
-	<<elseif _cName eq "Alice">>
-		@@.mc-thoughts; As you entered the room, you immediately saw her. But she wasn't alone. <br>The ghost, noticing you, disappeared instantly.@@<br>
-		@@.mc-speech; <<= _cName>>, are you alright?@@<br>
-		@@.notmc-speech; Yes, I think I'm fine.@@<br>
-		@@.mc-thoughts; A faint smile remained on her face, as if she had enjoyed the encounter. @@<br>
-		@@.notmc-speech; I hope it comes back so I can teach it a lesson...@@<br>
-
-	<<elseif _cName eq "Blake">>
-		@@.mc-thoughts; As you entered the room, you immediately saw her. But she wasn't alone. <br>The ghost, noticing you, disappeared instantly.@@<br>
-		@@.mc-speech; <<= _cName>>, are you alright?@@<br>
-		@@.notmc-speech; Yes, I saw it! I think you scared it away.@@<br>
-		@@.mc-speech; Are you disappointed? I just saved you.@@<br>
-		@@.notmc-speech; Well, yeah, of course...@@<br>
-		@@.mc-speech; Alright, let's continue.@@<br>
-	<<elseif setup.Companion.isTransByName(_cName)>>
-		@@.mc-thoughts; You enter and see the ghost defiling <<= _cName>>, taking every opportunity to satisfy its desires. Its touches and actions make <<= _cName>> moan, sending him into a spiral of wild ecstasy and taboo pleasure.<br>
-		Seeing you, the ghost vanishes, leaving <<= _cName>> panting and disheveled, a mix of relief and lingering desire evident on his face.@@<br>
-		@@.mc-speech; <<= _cName>>, are you okay?@@<br>
-		@@.notmc-speech; Oh~ he touched me, and I... I don't understand what was happening to me.@@<br>
-		<<run setup.Companion.markTransFirstStage()>>
+	<<= setup.Companion.name()>>'s lust: + <<= setup.Companion.eventLustGain()>> <<statIcon setup.StatIcon.HEALTH>><br>
+	<<= setup.Companion.name()>>'s sanity: - <<= setup.Companion.decreaseSanity()>><<statIcon setup.StatIcon.SANITY>><br>
+	<<if _tier gte 2>>
+		Your <<statIcon setup.StatIcon.HEALTH>> +15<br>
+		<<addLust 15>>
 	<</if>>
-	<<run setup.Companion.applyEventStatDeltas()>>
-	<<= _cName>>'s lust: + <<= setup.Companion.eventLustGain()>> <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
-	<<= _cName>>'s sanity: - <<= setup.Companion.decreaseSanity()>><<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
-	Your <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>> +15<br>
-	<<addLust 15>>
-<</widget>>
-
-<<widget "companionTextEvent3">>
-	<<set _cName to setup.Companion.name()>>
-	<<if _cName eq "Brook">>
-		@@.mc-thoughts; As you entered the room, you immediately saw her. But she wasn't alone. Fortunately, you entered just in time, and as soon as you did, the ghost let her go and vanished@@<br>
-		@@.mc-speech; <<= _cName>>, are you alright? I saw what the ghost was doing to you...@@<br>
-		@@.notmc-speech; Thank you, <<= setup.Mc.name()>>, you came just in time.@@<br>
-		@@.mc-thoughts; You walked over to her, carefully helping her up.@@<br>
-
-	<<elseif _cName eq "Alice">>
-		@@.mc-thoughts; Before entering the room, you hear strange sounds coming from inside. <br>
-		As you entered the room, you immediately saw her. But she wasn't alone. You walked in just in time to see what was happening...<br>
-		It seems she doesn't want to be interrupted. But as soon as the ghost saw you, it disappeared. @@<br>
-		@@.mc-speech; <<= _cName>>, are you alright? I heard strange noises...@@<br>
-		@@.notmc-speech; Don't worry, it just caught me by surprise.@@<br>
-		@@.mc-speech; Sure...@@<br>
-
-	<<elseif _cName eq "Blake">>
-		@@.mc-thoughts; Before entering the room, you hear strange sounds coming from inside. <br>
-		As you entered the room, you immediately saw her. But she wasn't alone. You walked in just in time to see what was happening...<br>
-		It seems she doesn't want to be interrupted. But as soon as the ghost saw you, it disappeared. @@<br>
-		@@.mc-speech; <<= _cName>>, are you alright? I heard strange noises...@@<br>
-		@@.notmc-speech; Don't worry, it just caught me by surprise.@@<br>
-		@@.mc-speech; Sure...@@<br>
-	<<elseif setup.Companion.isTransByName(_cName)>>
-		@@.mc-thoughts; You suddenly burst into the room and see <<= _cName>> engaging in oral sex with the ghost. His movements are full of enthusiasm, but as soon as you enter, the ghost vanishes, leaving <<= _cName>> with wet lips and a face full of confusion.@@<br>
-		@@.mc-speech; <<= _cName>>, what the hell is going on here?!@@<br>
-		@@.notmc-speech; I... I don't know, he appeared so suddenly, and it seemed like I had no control over my actions. It all happened so fast, I didn't even get to understand anything.@@<br>
-		<<run setup.Companion.markTransFirstStage()>>
-	<</if>>
-	<<run setup.Companion.applyEventStatDeltas()>>
-	<<= _cName>>'s lust: + <<= setup.Companion.eventLustGain()>> <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
-	<<= _cName>>'s sanity: - <<= setup.Companion.decreaseSanity()>><<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
-	Your <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>> +15<br>
-	<<addLust 15>>
-<</widget>>
-
-<<widget "companionTextEvent4">>
-	<<set _cName to setup.Companion.name()>>
-	<<if _cName eq "Brook">>
-		@@.mc-thoughts; As you entered the room, you immediately saw her. But she wasn't alone. Fortunately, you entered just in time, and as soon as you did, the ghost let her go and vanished@@<br>
-		@@.mc-speech; <<= _cName>>, are you alright? I saw what the ghost was doing to you...@@<br>
-		@@.notmc-speech; Thank you, <<= setup.Mc.name()>>, you came just in time.@@<br>
-		@@.mc-thoughts; You walked over to her, carefully helping her up.@@<br>
-
-	<<elseif _cName eq "Alice">>
-		@@.mc-thoughts; Before entering the room, you hear soft moans coming from inside. <br>
-		As you entered the room, you immediately saw her. But she wasn't alone. You walked in just in time to see what was happening...<br>
-		It seems she doesn't want to be interrupted. But as soon as the ghost saw you, it disappeared. @@<br>
-
-	<<elseif _cName eq "Blake">>
-		@@.mc-thoughts; Before entering the room, you hear soft moans coming from inside. <br>
-		As you entered the room, you immediately saw her. But she wasn't alone. You walked in just in time to see what was happening...<br>
-		It seems she doesn't want to be interrupted. But as soon as the ghost saw you, it disappeared. @@<br>
-
-		@@.mc-speech; <<= _cName>>, are you alright? I heard screaming...@@<br>
-		@@.notmc-speech; Don't worry, it just caught me by surprise.@@<br>
-		@@.mc-speech; Sure...@@<br>
-	<<elseif setup.Companion.isTransByName(_cName)>>
-		@@.mc-thoughts; You burst into the room and see the ghost fucking <<= _cName>> hard in the ass, his cock going all the way in, making <<= _cName>> 's body shake with each powerful thrust. The ghost disappears upon your arrival, leaving <<= _cName>> with flushed skin and traces of ecstasy on his face.@@<br>
-		@@.mc-speech; <<= _cName>>, what's wrong with you? Are you okay after this?@@<br>
-		@@.notmc-speech; I... I don't know... He used me, my body... It seems I didn't understand what was happening... It was like I wasn't in my own body, the sensations were so... intense, incredible.@@<br>
-		<<run setup.Companion.markTransFirstStage()>>
-	<</if>>
-	<<run setup.Companion.applyEventStatDeltas()>>
-	<<= _cName>>'s lust: + <<= setup.Companion.eventLustGain()>> <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
-	<<= _cName>>'s sanity: - <<= setup.Companion.decreaseSanity()>><<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>><br>
-	Your <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%;" }>> +15<br>
-	<<addLust 15>>
 <</widget>>
 
 <<widget "isCompanionContinue">>
@@ -214,5 +104,5 @@
 	<<set _cName to setup.Companion.name()>>
 	or @@.usebtn;<<link `_cName + " helps you"`>><<run setup.Companion.drainSanity(3)>>
 		<<replace "#eventVideo">><<include "AliceHelp">><</replace>>
-	<</link>> @@ - <<= _cName>>'s <<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%;" }>>
+	<</link>> @@ - <<= _cName>>'s <<statIcon setup.StatIcon.SANITY>>
 <</widget>>

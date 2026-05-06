@@ -8,8 +8,8 @@
 	<<timed 2s>>
 		<<randRangeVideo "mechanics/cursedpossessions/passion" 1 4 ".mp4">>
 		@@.mc-speech; Ah~ I'm getting so wet down there... mmm. @@<br>
-		@@.mc-thoughts; Lust increased: +15 <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
-		@@.mc-thoughts; Sanity decreased: -15 <<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
+		@@.mc-thoughts; Lust increased: +15 <<statIcon setup.StatIcon.HEALTH>>@@<br>
+		@@.mc-thoughts; Sanity decreased: -15 <<statIcon setup.StatIcon.SANITY>>@@<br>
 		<<addSanity -15>>
 		<<addLust 15>>
 		<<run setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 50)>>
@@ -21,8 +21,8 @@
 		<<randRangeVideo "mechanics/cursedpossessions/pulse" 1 4 ".mp4">>
 		@@.mc-speech; My... oh~ my little asshole is pulsating so hard... <br>
 		Somehow, I feel much better after that...@@<br>
-		@@.mc-thoughts; Lust decreased: -15 <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
-		@@.mc-thoughts; Sanity increased: +15 <<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
+		@@.mc-thoughts; Lust decreased: -15 <<statIcon setup.StatIcon.HEALTH>>@@<br>
+		@@.mc-thoughts; Sanity increased: +15 <<statIcon setup.StatIcon.SANITY>>@@<br>
 		<<addSanity 15>>
 		<<addLust -15>>
 		<<run setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 50)>>
@@ -47,7 +47,7 @@
 		<<randRangeVideo "mechanics/cursedpossessions/power" 1 3 ".mp4">>
 		<<run setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 50)>>
 		@@.mc-speech; Wow, I can feel power surging through me! Oh, I'm ready to take on anything! @@<br>
-		@@.mc-thoughts; Energy increased: +5 <<image "ui/img/energy.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>>@@<br>
+		@@.mc-thoughts; Energy increased: +5 <<statIcon setup.StatIcon.ENERGY>>@@<br>
 		<<addEnergy 5>>
 		<<addFit 1>>
 	<</timed>>

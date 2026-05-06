@@ -30,7 +30,7 @@
 						@@.mc-speech;Damn... that was such a real dream...@@<br>
 						<<if setup.Mc.corruption() lt 10>>
 							<<run setup.Mc.addCorruption(0.2)>>
-							+0.2 <<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>><br>
+							+0.2 <<statIcon setup.StatIcon.CORRUPTION>><br>
 						<</if>><br><br>
 						@@.backbtn; [[Leave|Livingroom][setup.Home.bumpSuccubusPCEventStage()]]@@
 					<<else>>
@@ -43,7 +43,7 @@
 								@@.mc-speech;Damn... that was such a real dream...@@<br>
 								<<if setup.Mc.corruption() lt 10>>
 									<<run setup.Mc.addCorruption(0.2)>>
-									+0.2 <<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>><br>
+									+0.2 <<statIcon setup.StatIcon.CORRUPTION>><br>
 								<</if>><br><br>
 								@@.backbtn; [[Leave|Livingroom][setup.Home.bumpSuccubusPCEventStage()]]@@<br>
 
@@ -70,7 +70,7 @@
 										@@.mc-speech;Damn... that was such a real dream...@@<br>
 										<<if setup.Mc.corruption() lt 10>>
 											<<run setup.Mc.addCorruption(0.2)>>
-											+0.2 <<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>><br>
+											+0.2 <<statIcon setup.StatIcon.CORRUPTION>><br>
 										<</if>><br><br>
 										@@.backbtn; [[Leave|Livingroom][setup.Home.bumpSuccubusPCEventStage()]]@@<br>
 									<<else>>
@@ -82,7 +82,7 @@
 										@@.mc-speech; Is this not a dream? Fuck, I need to get rid of her, or she'll corrupt me completely...@@<br>
 										<<if setup.Mc.corruption() lt 10>>
 											<<run setup.Mc.addCorruption(0.2)>>
-											+0.2 <<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>><br>
+											+0.2 <<statIcon setup.StatIcon.CORRUPTION>><br>
 										<</if>><br><br>
 										@@.backbtn; [[Leave|Livingroom]]@@<br>
 									<</if>>

@@ -540,6 +540,24 @@ body.city {
 	text-shadow: var(--btn-shadow);
 }
 
+.alertbtn a {
+	display: inline-block;
+	padding: 6px 14px;
+	margin: 2px 0;
+	border: 2px solid #c0364d;
+	border-radius: 6px;
+	background: linear-gradient(135deg, #ff5a7a, #c0364d);
+	color: #fff;
+	font-size: 1.05em;
+	font-weight: bold;
+	text-shadow: var(--btn-shadow);
+	box-shadow: var(--card-shadow);
+}
+.alertbtn a:hover {
+	background: linear-gradient(135deg, #ff7e96, #d94a63);
+	box-shadow: var(--card-shadow-hover);
+}
+
 /* ===== Dialogue Text ===== */
 .location {
 	font-size: 1.5em;

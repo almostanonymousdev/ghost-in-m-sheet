@@ -1,5 +1,5 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, goToPassage, getVar, setVar, callSetup } = require('./helpers');
+const { test, expect } = require('./fixtures');
+const { goToPassage, getVar, setVar, callSetup } = require('./helpers');
 
 /**
  * Regression coverage for the WitchSale ghost-info purchase flow.
@@ -16,24 +16,13 @@ const { openGame, resetGame, goToPassage, getVar, setVar, callSetup } = require(
  * received undefined and silently no-op'd.
  */
 test.describe('WitchSale — ghost info purchase', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => {
-    page = await openGame(browser);
-  });
-
-  test.afterAll(async () => {
-    await page.close();
-  });
-
-  test.beforeEach(async () => {
-    await resetGame(page);
+  test.beforeEach(async ({ game: page }) => {
     await setVar(page, 'hours', 12);
     await setVar(page, 'mc.money', 5000);
   });
 
   /** Click the Buy link inside the housecard whose <img alt> matches name. */
-  async function clickBuyForGhost(ghostName) {
+  async function clickBuyForGhost(page, ghostName) {
     const card = page.locator('.housecard', {
       has: page.locator(`text=Information about ${ghostName}`),
     });
@@ -41,27 +30,27 @@ test.describe('WitchSale — ghost info purchase', () => {
     await page.waitForFunction(() => SugarCube.State.passage === 'WitchSale');
   }
 
-  test('buying ghost info marks the ghost as discovered', async () => {
+  test('buying ghost info marks the ghost as discovered', async ({ game: page }) => {
     await goToPassage(page, 'WitchSale');
     expect(await callSetup(page, 'setup.Ghosts.hasDiscovered("Phantom")')).toBe(false);
 
-    await clickBuyForGhost('Phantom');
+    await clickBuyForGhost(page, 'Phantom');
 
     expect(await callSetup(page, 'setup.Ghosts.hasDiscovered("Phantom")')).toBe(true);
   });
 
-  test('buying ghost info deducts the listed price exactly once', async () => {
+  test('buying ghost info deducts the listed price exactly once', async ({ game: page }) => {
     await goToPassage(page, 'WitchSale');
     const before = await getVar(page, 'mc.money');
 
-    await clickBuyForGhost('Phantom');
+    await clickBuyForGhost(page, 'Phantom');
 
     expect(await getVar(page, 'mc.money')).toBe(before - 200);
   });
 
-  test('after purchase the same ghost card is no longer offered for sale', async () => {
+  test('after purchase the same ghost card is no longer offered for sale', async ({ game: page }) => {
     await goToPassage(page, 'WitchSale');
-    await clickBuyForGhost('Phantom');
+    await clickBuyForGhost(page, 'Phantom');
 
     const phantomCards = page.locator('.housecard', {
       has: page.locator('text=Information about Phantom'),
@@ -69,11 +58,11 @@ test.describe('WitchSale — ghost info purchase', () => {
     await expect(phantomCards.locator('.buyItemLink a')).toHaveCount(0);
   });
 
-  test('purchasing the same ghost twice cannot drain money beyond the single price', async () => {
+  test('purchasing the same ghost twice cannot drain money beyond the single price', async ({ game: page }) => {
     await goToPassage(page, 'WitchSale');
     const before = await getVar(page, 'mc.money');
 
-    await clickBuyForGhost('Phantom');
+    await clickBuyForGhost(page, 'Phantom');
 
     // The second click should be impossible because the buy link is gone.
     // If it ever comes back as a clickable link, that's the bug.
@@ -85,9 +74,9 @@ test.describe('WitchSale — ghost info purchase', () => {
     expect(await getVar(page, 'mc.money')).toBe(before - 200);
   });
 
-  test('purchased ghost description shows up in Ghostopedia', async () => {
+  test('purchased ghost description shows up in Ghostopedia', async ({ game: page }) => {
     await goToPassage(page, 'WitchSale');
-    await clickBuyForGhost('Phantom');
+    await clickBuyForGhost(page, 'Phantom');
 
     await goToPassage(page, 'Ghostopedia');
     // Phantom's catalogue description is "This type of ghost cannot turn off the lights."
@@ -98,9 +87,9 @@ test.describe('WitchSale — ghost info purchase', () => {
     ).toBeVisible();
   });
 
-  test('buying one ghost does not accidentally mark a different ghost as discovered', async () => {
+  test('buying one ghost does not accidentally mark a different ghost as discovered', async ({ game: page }) => {
     await goToPassage(page, 'WitchSale');
-    await clickBuyForGhost('Phantom');
+    await clickBuyForGhost(page, 'Phantom');
 
     expect(await callSetup(page, 'setup.Ghosts.hasDiscovered("Phantom")')).toBe(true);
     expect(await callSetup(page, 'setup.Ghosts.hasDiscovered("Shade")')).toBe(false);

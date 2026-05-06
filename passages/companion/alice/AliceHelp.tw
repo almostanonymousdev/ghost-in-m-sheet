@@ -8,7 +8,7 @@
 	The soft, slimy tentacles start pushing into your holes, filling them with some kind of sticky liquid. You try to focus and break free, but these things know exactly what they're doing: they tease your most sensitive spots, making your body burn with desire. Your last hope is your friend, but one look at her tells you she's already lost. Her mouth's hanging open, eyes rolling back as another orgasm hits her. The room fills with wet, slurping sounds and her sweet moans.<br>
 	There's no point fighting it anymore. You give in to the tentacles. After a while, they finally pull back, done playing with your bodies.@@<br>
 	<<run setup.Companion.helpEventEaseActive()>>
-	<<= setup.Companion.name()>>'s lust <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> spent, sanity <<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> eased.<br>
+	<<= setup.Companion.name()>>'s lust <<statIcon setup.StatIcon.HEALTH>> spent, sanity <<statIcon setup.StatIcon.SANITY>> eased.<br>
 	@@.notmc-speech; What... what was that?@@<br>
 	@@.mc-speech; I have no idea, but we need to get out of here. I can't handle another round with those things.@@<br>
 	<br>
@@ -34,7 +34,7 @@
 
 		You look at <<= setup.Companion.name()>>, but to your surprise, her face only shows satisfaction.@@<br>
 		<<run setup.Companion.helpEventEaseActive()>>
-		<<= setup.Companion.name()>>'s lust <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> spent, sanity <<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> eased.<br>
+		<<= setup.Companion.name()>>'s lust <<statIcon setup.StatIcon.HEALTH>> spent, sanity <<statIcon setup.StatIcon.SANITY>> eased.<br>
 
 		@@.mc-thoughts; You want to say something encouraging, but suddenly she speaks up herself.<br>@@
 		@@.notmc-speech; It was amaz... awful, I mean. We can't just leave it like this. We need to continue our investigation to get rid of it!@@<br>
@@ -65,7 +65,7 @@
 		The ghost fucks you and <<= setup.Companion.name()>> alternately.This goes on for a while before it vanishes.<br>
 		You look at <<= setup.Companion.name()>>, but to your surprise, her face only shows satisfaction.@@<br>
 		<<run setup.Companion.helpEventEaseActive()>>
-		<<= setup.Companion.name()>>'s lust <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> spent, sanity <<image "ui/img/sanity.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> eased.<br>
+		<<= setup.Companion.name()>>'s lust <<statIcon setup.StatIcon.HEALTH>> spent, sanity <<statIcon setup.StatIcon.SANITY>> eased.<br>
 
 		@@.mc-thoughts; You want to say something encouraging, but suddenly she speaks up herself.<br>@@
 		@@.notmc-speech; It was amaz... awful, I mean. We can't just leave it like this. We need to continue our investigation to get rid of it!@@<br>

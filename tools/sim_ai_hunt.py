@@ -69,8 +69,10 @@ from pathlib import Path
 # mechanics is hardcoded.
 
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
-PASSAGES = REPO_ROOT / "passages"
+from lib_repo import passages_dir, repo_root
+
+REPO_ROOT = repo_root()
+PASSAGES = passages_dir()
 
 EVIDENCE_ENUM = {
     "EMF": "emf", "SPIRITBOX": "spiritbox", "GWB": "gwb",

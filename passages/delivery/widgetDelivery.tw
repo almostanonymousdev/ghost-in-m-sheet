@@ -49,7 +49,7 @@ integer in [start, end]. Replaces the 4-10 line <<if>> ladders each
 		<<run setup.Mc.addMoney(_amt)>>
 		<<if setup.Mc.corruption() lt 10>>
 			<<run setup.Mc.addCorruption(_corr)>>
-			+<<= _corr>> <<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>><br>
+			+<<= _corr>> <<statIcon setup.StatIcon.CORRUPTION>><br>
 		<</if>>
 	<</widget>>
 
@@ -89,11 +89,11 @@ integer in [start, end]. Replaces the 4-10 line <<if>> ladders each
 
 	/* Emit a "corruption required" gate line -- shared by the Choose gates. */
 	<<widget "deliveryCorrReq">>
-		@@.warningtext; (Req. <<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ <<= _args[0]>>)@@
+		@@.warningtext; (Req. <<statIcon setup.StatIcon.CORRUPTION>> ≥ <<= _args[0]>>)@@
 	<</widget>>
 
 	<<widget "deliveryLustReq">>
-		@@.warningtext; (Req. <<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:3%; display: inline; margin: 0;" }>> ≥ <<= _args[0]>>)@@
+		@@.warningtext; (Req. <<statIcon setup.StatIcon.HEALTH>> ≥ <<= _args[0]>>)@@
 	<</widget>>
 
 	/* Random tip on correct deliveries (30% chance, $2-$5). */

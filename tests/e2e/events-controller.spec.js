@@ -1,14 +1,8 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, callSetup } = require('../helpers');
+const { test, expect } = require('../fixtures');
+const { setVar, getVar, callSetup, openGame } = require('../helpers');
 
 test.describe('Events controller — tier classification', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('lustTier maps lust ranges to 1-7', async () => {
+  test('lustTier maps lust ranges to 1-7', async ({ game: page }) => {
     const cases = [
       [0, 1], [14, 1],
       [15, 2], [29, 2],
@@ -24,7 +18,7 @@ test.describe('Events controller — tier classification', () => {
     }
   });
 
-  test('corruptionTier maps corruption to discrete buckets', async () => {
+  test('corruptionTier maps corruption to discrete buckets', async ({ game: page }) => {
     const cases = [
       [0, 0],
       [1, 1], [1.5, 1],
@@ -43,17 +37,11 @@ test.describe('Events controller — tier classification', () => {
 });
 
 test.describe('Events controller — video resolvers', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
   async function setLocation(p, location) {
     await setVar(p, 'hauntedHouse', location || null);
   }
 
-  test('pickByLocation switches by $hauntedHouse', async () => {
+  test('pickByLocation switches by $hauntedHouse', async ({ game: page }) => {
     await setLocation(page, 'owaissa');
     let result = await page.evaluate(() =>
       SugarCube.setup.Events.pickByLocation(['o1'], ['e1']));
@@ -68,14 +56,14 @@ test.describe('Events controller — video resolvers', () => {
     expect(result).toEqual([]);
   });
 
-  test('videoListForEvent("brain") returns the flat mind list', async () => {
+  test('videoListForEvent("brain") returns the flat mind list', async ({ game: page }) => {
     const list = await page.evaluate(() =>
       SugarCube.setup.Events.videoListForEvent('brain'));
     expect(list.length).toBeGreaterThan(0);
     expect(list[0]).toContain('mind/');
   });
 
-  test('videoListForEvent for tits with a t-shirt + bra picks tshirt set', async () => {
+  test('videoListForEvent for tits with a t-shirt + bra picks tshirt set', async ({ game: page }) => {
     await setLocation(page, 'owaissa');
     await setVar(page, 'tshirtState', 'worn');
     await setVar(page, 'braState', 'worn');
@@ -85,7 +73,7 @@ test.describe('Events controller — video resolvers', () => {
     expect(list[0]).toContain('tshirt/');
   });
 
-  test('videoListForEvent for tits with no top + no bra picks noBra set', async () => {
+  test('videoListForEvent for tits with no top + no bra picks noBra set', async ({ game: page }) => {
     await setLocation(page, 'owaissa');
     await setVar(page, 'tshirtState', 'not worn');
     await setVar(page, 'braState', 'not worn');
@@ -95,7 +83,7 @@ test.describe('Events controller — video resolvers', () => {
     expect(list[0]).toContain('/no-bra/');
   });
 
-  test('videoListForEvent for ass with jeans + panties picks jeans set', async () => {
+  test('videoListForEvent for ass with jeans + panties picks jeans set', async ({ game: page }) => {
     await setLocation(page, 'owaissa');
     await setVar(page, 'jeansState', 'worn');
     await setVar(page, 'pantiesState', 'worn');
@@ -106,7 +94,7 @@ test.describe('Events controller — video resolvers', () => {
     expect(list[0]).toContain('/jeans/s1/');
   });
 
-  test('videoListForEvent for ass with skirt + no panties picks skirtNP', async () => {
+  test('videoListForEvent for ass with skirt + no panties picks skirtNP', async ({ game: page }) => {
     await setLocation(page, 'owaissa');
     await setVar(page, 'jeansState', 'not worn');
     await setVar(page, 'shortsState', 'not worn');
@@ -117,14 +105,14 @@ test.describe('Events controller — video resolvers', () => {
     expect(list[0]).toContain('/skirt-no-panties/s1/');
   });
 
-  test('videoListForEvent on ironclad always picks prison list', async () => {
+  test('videoListForEvent on ironclad always picks prison list', async ({ game: page }) => {
     await setLocation(page, 'ironclad');
     const list = await page.evaluate(() =>
       SugarCube.setup.Events.videoListForEvent('ass'));
     expect(list[0]).toContain('prison/');
   });
 
-  test('bansheeVideos returns ironclad list when isIronclad', async () => {
+  test('bansheeVideos returns ironclad list when isIronclad', async ({ game: page }) => {
     await setLocation(page, 'ironclad');
     let list = await page.evaluate(() => SugarCube.setup.Events.bansheeVideos());
     expect(list[0]).toContain('prison/banshee');
@@ -136,13 +124,7 @@ test.describe('Events controller — video resolvers', () => {
 });
 
 test.describe('Events controller — orgasm and body-part roll', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('shouldOrgasm fires only at lust 100 for mouth/pussy/anal', async () => {
+  test('shouldOrgasm fires only at lust 100 for mouth/pussy/anal', async ({ game: page }) => {
     await setVar(page, 'mc.lust', 100);
     expect(await callSetup(page, 'setup.Events.shouldOrgasm("mouth")')).toBe(true);
     expect(await callSetup(page, 'setup.Events.shouldOrgasm("pussy")')).toBe(true);
@@ -154,11 +136,11 @@ test.describe('Events controller — orgasm and body-part roll', () => {
     expect(await callSetup(page, 'setup.Events.shouldOrgasm("mouth")')).toBe(false);
   });
 
-  test('orgasmSanityLoss is -10', async () => {
+  test('orgasmSanityLoss is -10', async ({ game: page }) => {
     expect(await callSetup(page, 'setup.Events.orgasmSanityLoss')).toBe(-10);
   });
 
-  test('rollBodyPartEvent returns "" when chance exceeds the lust threshold', async () => {
+  test('rollBodyPartEvent returns "" when chance exceeds the lust threshold', async ({ game: page }) => {
     // Lust tier 1 threshold is 4
     await setVar(page, 'mc.lust', 0);
     await page.evaluate(() => {
@@ -171,7 +153,7 @@ test.describe('Events controller — orgasm and body-part roll', () => {
     expect(r).toBe('');
   });
 
-  test('rollBodyPartEvent picks "brain" when only brain has weight at tier 1', async () => {
+  test('rollBodyPartEvent picks "brain" when only brain has weight at tier 1', async ({ game: page }) => {
     await setVar(page, 'mc.lust', 0);
     await page.evaluate(() => {
       SugarCube.State.variables.sensualBodyPart = {
@@ -183,7 +165,7 @@ test.describe('Events controller — orgasm and body-part roll', () => {
     expect(r).toBe('brain');
   });
 
-  test('rollBodyPartEvent returns "" when totalWeight is 0', async () => {
+  test('rollBodyPartEvent returns "" when totalWeight is 0', async ({ game: page }) => {
     await setVar(page, 'mc.lust', 100);
     await page.evaluate(() => {
       SugarCube.State.variables.sensualBodyPart = {
@@ -195,7 +177,7 @@ test.describe('Events controller — orgasm and body-part roll', () => {
     expect(r).toBe('');
   });
 
-  test('rollBodyPartEvent at tier 7 (lust 90+) can pick any of 7 keys', async () => {
+  test('rollBodyPartEvent at tier 7 (lust 90+) can pick any of 7 keys', async ({ game: page }) => {
     await setVar(page, 'mc.lust', 95);
     await page.evaluate(() => {
       SugarCube.State.variables.sensualBodyPart = {
@@ -215,13 +197,7 @@ test.describe('Events controller — orgasm and body-part roll', () => {
 });
 
 test.describe('Events controller — banshee / cthulion abilities', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('enableBanshee / clearBanshee toggle bansheeAbility', async () => {
+  test('enableBanshee / clearBanshee toggle bansheeAbility', async ({ game: page }) => {
     await page.evaluate(() => { delete SugarCube.State.variables.bansheeAbility; });
     expect(await callSetup(page, 'setup.Events.bansheeActive()')).toBe(false);
     await page.evaluate(() => SugarCube.setup.Events.enableBanshee());
@@ -231,7 +207,7 @@ test.describe('Events controller — banshee / cthulion abilities', () => {
     expect(await callSetup(page, 'setup.Events.bansheeActive()')).toBe(false);
   });
 
-  test('enableCthulion / clearCthulion toggle cthulionAbility', async () => {
+  test('enableCthulion / clearCthulion toggle cthulionAbility', async ({ game: page }) => {
     await page.evaluate(() => { delete SugarCube.State.variables.cthulionAbility; });
     expect(await callSetup(page, 'setup.Events.cthulionActive()')).toBe(false);
     await page.evaluate(() => SugarCube.setup.Events.enableCthulion());
@@ -242,13 +218,7 @@ test.describe('Events controller — banshee / cthulion abilities', () => {
 });
 
 test.describe('Events controller — companion checks', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('hasCompanionOnPlan1 requires both flags set', async () => {
+  test('hasCompanionOnPlan1 requires both flags set', async ({ game: page }) => {
     await setVar(page, 'isCompChosen', 0);
     await setVar(page, 'chosenPlan', 0);
     expect(await callSetup(page, 'setup.Events.hasCompanionOnPlan1()')).toBe(false);
@@ -258,14 +228,14 @@ test.describe('Events controller — companion checks', () => {
     expect(await callSetup(page, 'setup.Events.hasCompanionOnPlan1()')).toBe(true);
   });
 
-  test('companionIsAroused requires lust >= 60', async () => {
+  test('companionIsAroused requires lust >= 60', async ({ game: page }) => {
     await page.evaluate(() => { SugarCube.State.variables.companion = { lust: 59 }; });
     expect(await callSetup(page, 'setup.Events.companionIsAroused()')).toBe(false);
     await page.evaluate(() => { SugarCube.State.variables.companion.lust = 60; });
     expect(await callSetup(page, 'setup.Events.companionIsAroused()')).toBe(true);
   });
 
-  test('companionIsInlineFriend matches Alex / Taylor / Casey', async () => {
+  test('companionIsInlineFriend matches Alex / Taylor / Casey', async ({ game: page }) => {
     for (const name of ['Alex', 'Taylor', 'Casey']) {
       await page.evaluate((n) => { SugarCube.State.variables.companion = { name: n }; }, name);
       expect(await callSetup(page, 'setup.Events.companionIsInlineFriend()')).toBe(true);
@@ -274,7 +244,7 @@ test.describe('Events controller — companion checks', () => {
     expect(await callSetup(page, 'setup.Events.companionIsInlineFriend()')).toBe(false);
   });
 
-  test('companionDrainForHelp drains 3 sanity, gains 10 lust', async () => {
+  test('companionDrainForHelp drains 3 sanity, gains 10 lust', async ({ game: page }) => {
     await page.evaluate(() => {
       SugarCube.State.variables.companion = { name: 'Alice', sanity: 80, lust: 30 };
     });
@@ -285,17 +255,11 @@ test.describe('Events controller — companion checks', () => {
 });
 
 test.describe('Events controller — save-event video aliases', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
   async function setLocation(p, location) {
     await setVar(p, 'hauntedHouse', location || null);
   }
 
-  test('saveEventBottomVideos picks the right body part by stage', async () => {
+  test('saveEventBottomVideos picks the right body part by stage', async ({ game: page }) => {
     await setLocation(page, 'owaissa');
     await setVar(page, 'jeansState', 'worn');
     await setVar(page, 'pantiesState', 'worn');
@@ -312,7 +276,7 @@ test.describe('Events controller — save-event video aliases', () => {
     expect(stage4.length).toBeGreaterThan(0);
   });
 
-  test('saveEventTopVideos picks the right body part by stage', async () => {
+  test('saveEventTopVideos picks the right body part by stage', async ({ game: page }) => {
     await setLocation(page, 'owaissa');
     await setVar(page, 'tshirtState', 'worn');
     await setVar(page, 'braState', 'worn');
@@ -326,18 +290,12 @@ test.describe('Events controller — save-event video aliases', () => {
 });
 
 test.describe('Events controller — event flags / videos', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('initEvent stores the key on argForRandomizer', async () => {
+  test('initEvent stores the key on argForRandomizer', async ({ game: page }) => {
     await page.evaluate(() => SugarCube.setup.Events.initEvent('mouth'));
     expect(await callSetup(page, 'setup.Events.currentArgForRandomizer()')).toBe('mouth');
   });
 
-  test('setVideoEvent / videoEvent / videoEventIsMp4', async () => {
+  test('setVideoEvent / videoEvent / videoEventIsMp4', async ({ game: page }) => {
     await page.evaluate(() => SugarCube.setup.Events.setVideoEvent('foo.webp'));
     expect(await callSetup(page, 'setup.Events.videoEvent()')).toBe('foo.webp');
     expect(await callSetup(page, 'setup.Events.videoEventIsMp4()')).toBe(false);
@@ -345,25 +303,25 @@ test.describe('Events controller — event flags / videos', () => {
     expect(await callSetup(page, 'setup.Events.videoEventIsMp4()')).toBe(true);
   });
 
-  test('setOrgasmCooldown stores the value', async () => {
+  test('setOrgasmCooldown stores the value', async ({ game: page }) => {
     await page.evaluate(() => SugarCube.setup.Events.setOrgasmCooldown(3));
     expect(await getVar(page, 'orgasmCooldownSteps')).toBe(3);
   });
 
-  test('recordWeakenReward sets weaken flag and money', async () => {
+  test('recordWeakenReward sets weaken flag and money', async ({ game: page }) => {
     await page.evaluate(() => SugarCube.setup.Events.recordWeakenReward());
     expect(await getVar(page, 'isWeakenGhost')).toBe(1);
     expect(await getVar(page, 'moneyFromWeakenTheGhost')).toBe(30);
   });
 
-  test('setCleanedUp coerces to boolean', async () => {
+  test('setCleanedUp coerces to boolean', async ({ game: page }) => {
     await page.evaluate(() => SugarCube.setup.Events.setCleanedUp(1));
     expect(await getVar(page, 'cleanedUp')).toBe(true);
     await page.evaluate(() => SugarCube.setup.Events.setCleanedUp(0));
     expect(await getVar(page, 'cleanedUp')).toBe(false);
   });
 
-  test('clampGhostOrgasmFloor and clampMcOrgasmFloor', async () => {
+  test('clampGhostOrgasmFloor and clampMcOrgasmFloor', async ({ game: page }) => {
     await setVar(page, 'ghostOrgasmMeter', -5);
     await page.evaluate(() => SugarCube.setup.Events.clampGhostOrgasmFloor());
     expect(await callSetup(page, 'setup.Events.ghostOrgasmMeter()')).toBe(0);
@@ -376,4 +334,66 @@ test.describe('Events controller — event flags / videos', () => {
     await page.evaluate(() => SugarCube.setup.Events.clampGhostOrgasmFloor());
     expect(await callSetup(page, 'setup.Events.ghostOrgasmMeter()')).toBe(5);
   });
+});
+
+test.describe('Events controller — eventTextFor lookup', () => {
+  let page;
+
+  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
+  test.afterAll(async () => { await page.close(); });
+
+  async function lookup(bodyPart, tier) {
+    return page.evaluate(([bp, t]) =>
+      SugarCube.setup.Events.eventTextFor(bp, t), [bodyPart, tier]);
+  }
+
+  test('returns "" for an unknown body part', async ({ game: page }) => {
+    expect(await lookup('nope', 0)).toBe('');
+  });
+
+  test('all corruption tiers resolve to non-empty prose for every body part', async ({ game: page }) => {
+    const parts = ['brain', 'tits', 'ass', 'bottom', 'mouth', 'pussy', 'anal'];
+    const tiers = [0, 1, 2, 3, 4, 6, 8];
+    for (const bp of parts) {
+      for (const t of tiers) {
+        const text = await lookup(bp, t);
+        expect(text.length).toBeGreaterThan(0);
+        expect(text).toContain('@@.mc-');
+      }
+    }
+  });
+
+  test('strips embedded newlines so the output is one line of wiki source', async ({ game: page }) => {
+    const text = await lookup('brain', 8);
+    expect(text).not.toContain('\n');
+  });
+
+  test('sparse maps fall back to the highest defined tier <= requested', async ({ game: page }) => {
+    // mouth defines {0, 4, 6, 8}; tier 1, 2, 3 should resolve to the
+    // tier-0 fallback string.
+    const t0 = await lookup('mouth', 0);
+    for (const t of [1, 2, 3]) {
+      expect(await lookup('mouth', t)).toBe(t0);
+    }
+    // Tier 4 picks its own entry, distinct from the tier-0 fallback.
+    expect(await lookup('mouth', 4)).not.toBe(t0);
+  });
+
+  test('pussy tier 4 uses the gte-4 speech variant; tier 0-3 use the lt-4 one', async ({ game: page }) => {
+    const t3 = await lookup('pussy', 3);
+    const t4 = await lookup('pussy', 4);
+    expect(t3).toContain('get away from me');
+    expect(t4).toContain('shouldn\'t do that to women');
+    expect(t3).not.toBe(t4);
+  });
+
+  test('brain tiers 0..8 each resolve to a distinct string', async ({ game: page }) => {
+    const seen = new Set();
+    for (const t of [0, 1, 2, 3, 4, 6, 8]) {
+      const text = await lookup('brain', t);
+      expect(seen.has(text)).toBe(false);
+      seen.add(text);
+    }
+  });
+
 });

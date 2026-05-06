@@ -196,9 +196,44 @@
        The Brook possession side effect is set whenever the possession roll
        fires, matching the old passage's unconditional set. */
     var SPIRITBOX_QA = [
-        { q: "Where are you?",   a: "I am hiding." },
-        { q: "Are you here?",    a: "I am here." },
-        { q: "What do you want?", a: "I want revenge." }
+        { q: "Where are you?",        a: "Behind you. Closer than you think." },
+        { q: "Where are you?",        a: "Inside the walls. Inside you, soon." },
+        { q: "Where are you?",        a: "Right between your legs." },
+        { q: "Are you here?",         a: "I've been watching you undress." },
+        { q: "Are you here?",         a: "I've had my hands on you for hours. You just didn't notice." },
+        { q: "What do you want?",     a: "You. On your knees." },
+        { q: "What do you want?",     a: "I'll use you until you can't stand." },
+        { q: "What do you want?",     a: "What's already mine." },
+        { q: "What do you want?",     a: "Every wet little sound you try to hold in." },
+        { q: "Who are you?",          a: "The ghoul who spreads you open tonight." },
+        { q: "Who are you?",          a: "The one you keep dreaming about." },
+        { q: "Why are you here?",     a: "Because you keep moaning my name in your sleep." },
+        { q: "Why are you here?",     a: "You called. I came." },
+        { q: "Are you alone?",        a: "Not anymore. Not with you here." },
+        { q: "Can you hear me?",      a: "I can hear how wet you are." },
+        { q: "Will you hurt me?",     a: "Only the way you want." },
+        { q: "Will you leave me alone?", a: "After I'm finished. Maybe." }
+    ];
+
+    /* Menacing one-liner pool (Moroi-style possession threat when the
+       MC's brain isn't sensitive enough to actually be possessed). */
+    var SPIRITBOX_MENACING = [
+        "I will spread you open. Sooner or later. You'll be begging.",
+        "Keep that pretty mouth ready. I want to hear it scream.",
+        "Sleep tonight. I want you somewhere I can take my time.",
+        "Your body already knows me. The rest of you will catch up.",
+        "I felt how wet you got just hearing me. Your pussy is already mine."
+    ];
+
+    /* Static-burst pool (interrupted response -- Raiju and similar). The
+       answer should sound like a leaked moan or filthy whisper bleeding
+       through the static, not just generic noise. */
+    var SPIRITBOX_STATIC = [
+        "...crackling, then a low moan against the speaker before it cuts.",
+        "...static, ragged breathing, a voice that almost says your name before it dies.",
+        "...wet sounds through the static. A whisper: \"...soon...\" Then nothing.",
+        "...a long, shuddering exhale. Static. Silence.",
+        "...interrupted. For half a second it sounds like someone gasping into the mic."
     ];
 
     function maybeSetBrookPossessed() {
@@ -222,13 +257,15 @@
                      + '</div>\n'
                      + '<br>@@.enterbtn;<<link "Close your eyes" "CityMapPossessed">><</link>>@@';
             }
+            var threat = SPIRITBOX_MENACING[randInt(0, SPIRITBOX_MENACING.length - 1)];
             return '<span class="spiritbox-question">You ask through the Spiritbox: "What do you want?"</span>\n'
-                 + '<span class="spiritbox-answer"><b>I will be able to subdue you... sooner or later, but you will surrender.</b></span>';
+                 + '<span class="spiritbox-answer"><b>' + threat + '</b></span>';
         }
 
         if (g && g.spiritboxStaticChance > 0 && roll <= g.spiritboxStaticChance) {
+            var burst = SPIRITBOX_STATIC[randInt(0, SPIRITBOX_STATIC.length - 1)];
             return '<span class="spiritbox-question">You ask through the Spiritbox: "What do you want?"</span>\n'
-                 + '<span class="spiritbox-answer"><b>The response is interrupted... static and crackling in the speaker... then silence.</b></span>';
+                 + '<span class="spiritbox-answer"><b>' + burst + '</b></span>';
         }
 
         if (g && g.hasEvidence("spiritbox")

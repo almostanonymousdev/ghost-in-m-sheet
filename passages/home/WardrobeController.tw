@@ -52,6 +52,10 @@
      *   slot   -- 0 means the free default; 1..3 are purchased tiers
      *   key    -- rememberVar token; siblings check `remember eq key` to
      *             subtract the previously-worn item's beauty
+     *   price  -- store cost in dollars (slot 1..3 only); also used by the
+     *             Bedroom "Replace lost clothing" buyback button. Must
+     *             stay in sync with ClothingSection.tw -- a test asserts
+     *             the two tables agree.
      *   onEquip / onUnequip -- optional side-effect callbacks
      *
      * The bottomOuter group merges jeans, shorts, and skirts because they
@@ -65,7 +69,7 @@
             items: [
                 {
                     var: "neckChokerState1", img: "neck-choker1.png",
-                    beauty: 0, slot: 1, key: "neckChoker1",
+                    beauty: 0, slot: 1, key: "neckChoker1", price: 100,
                     onEquip: function () {
                         if (setup.Mc.lust() <= 15) { setup.Mc.setLust(15); }
                     }
@@ -78,9 +82,9 @@
             replaceTarget: "#currentUnderwearStockings",
             rememberVar: "rememberBottomStockings",
             items: [
-                { var: "stockingsState1", img: "stockings1.png", beauty: 2, slot: 1, key: "stockings1" },
-                { var: "stockingsState2", img: "stockings2.png", beauty: 4, slot: 2, key: "stockings2" },
-                { var: "stockingsState3", img: "stockings3.png", beauty: 6, slot: 3, key: "stockings3" }
+                { var: "stockingsState1", img: "stockings1.png", beauty: 2, slot: 1, key: "stockings1", price: 30 },
+                { var: "stockingsState2", img: "stockings2.png", beauty: 4, slot: 2, key: "stockings2", price: 60 },
+                { var: "stockingsState3", img: "stockings3.png", beauty: 6, slot: 3, key: "stockings3", price: 120 }
             ]
         },
         {
@@ -91,9 +95,9 @@
             bareImage: "underweartop.png",
             items: [
                 { var: "braState0", img: "slip1.png", beauty: 0, slot: 0, key: "bra0" },
-                { var: "braState1", img: "slip2.png", beauty: 2, slot: 1, key: "bra1" },
-                { var: "braState2", img: "slip3.png", beauty: 4, slot: 2, key: "bra2" },
-                { var: "braState3", img: "slip4.png", beauty: 6, slot: 3, key: "bra3" }
+                { var: "braState1", img: "slip2.png", beauty: 2, slot: 1, key: "bra1", price: 20 },
+                { var: "braState2", img: "slip3.png", beauty: 4, slot: 2, key: "bra2", price: 30 },
+                { var: "braState3", img: "slip4.png", beauty: 6, slot: 3, key: "bra3", price: 40 }
             ]
         },
         {
@@ -104,9 +108,9 @@
             bareImage: "underwearbottom.png",
             items: [
                 { var: "pantiesState0", img: "short1.png", beauty: 0, slot: 0, key: "panties0" },
-                { var: "pantiesState1", img: "short2.png", beauty: 2, slot: 1, key: "panties1" },
-                { var: "pantiesState2", img: "short3.png", beauty: 4, slot: 2, key: "panties2" },
-                { var: "pantiesState3", img: "short4.png", beauty: 6, slot: 3, key: "panties3" }
+                { var: "pantiesState1", img: "short2.png", beauty: 2, slot: 1, key: "panties1", price: 25 },
+                { var: "pantiesState2", img: "short3.png", beauty: 4, slot: 2, key: "panties2", price: 35 },
+                { var: "pantiesState3", img: "short4.png", beauty: 6, slot: 3, key: "panties3", price: 45 }
             ]
         },
         {
@@ -117,9 +121,9 @@
             bareImage: "outerweartop.png",
             items: [
                 { var: "tshirtState0", img: "tshirt0.png", beauty: 0,  slot: 0, key: "tshirt0" },
-                { var: "tshirtState1", img: "tshirt1.png", beauty: 5,  slot: 1, key: "tshirt1" },
-                { var: "tshirtState2", img: "tshirt2.png", beauty: 8,  slot: 2, key: "tshirt2" },
-                { var: "tshirtState3", img: "tshirt3.png", beauty: 11, slot: 3, key: "tshirt3" }
+                { var: "tshirtState1", img: "tshirt1.png", beauty: 5,  slot: 1, key: "tshirt1", price: 30 },
+                { var: "tshirtState2", img: "tshirt2.png", beauty: 8,  slot: 2, key: "tshirt2", price: 40 },
+                { var: "tshirtState3", img: "tshirt3.png", beauty: 11, slot: 3, key: "tshirt3", price: 50 }
             ]
         },
         {
@@ -130,15 +134,15 @@
             bareImage: "outerwearbottom.png",
             items: [
                 { var: "jeansState0",  img: "jeans0.png",  beauty: 0,  slot: 0, key: "jeans0"  },
-                { var: "jeansState1",  img: "jeans1.png",  beauty: 5,  slot: 1, key: "jeans1"  },
-                { var: "jeansState2",  img: "jeans2.png",  beauty: 8,  slot: 2, key: "jeans2"  },
-                { var: "jeansState3",  img: "jeans3.png",  beauty: 11, slot: 3, key: "jeans3"  },
-                { var: "shortsState1", img: "shorts1.png", beauty: 6,  slot: 1, key: "shorts1" },
-                { var: "shortsState2", img: "shorts2.png", beauty: 9,  slot: 2, key: "shorts2" },
-                { var: "shortsState3", img: "shorts3.png", beauty: 12, slot: 3, key: "shorts3" },
-                { var: "skirtState1",  img: "skirt1.png",  beauty: 7,  slot: 1, key: "skirt1"  },
-                { var: "skirtState2",  img: "skirt2.png",  beauty: 10, slot: 2, key: "skirt2"  },
-                { var: "skirtState3",  img: "skirt3.png",  beauty: 13, slot: 3, key: "skirt3"  }
+                { var: "jeansState1",  img: "jeans1.png",  beauty: 5,  slot: 1, key: "jeans1",  price: 30 },
+                { var: "jeansState2",  img: "jeans2.png",  beauty: 8,  slot: 2, key: "jeans2",  price: 40 },
+                { var: "jeansState3",  img: "jeans3.png",  beauty: 11, slot: 3, key: "jeans3",  price: 50 },
+                { var: "shortsState1", img: "shorts1.png", beauty: 6,  slot: 1, key: "shorts1", price: 35 },
+                { var: "shortsState2", img: "shorts2.png", beauty: 9,  slot: 2, key: "shorts2", price: 45 },
+                { var: "shortsState3", img: "shorts3.png", beauty: 12, slot: 3, key: "shorts3", price: 55 },
+                { var: "skirtState1",  img: "skirt1.png",  beauty: 7,  slot: 1, key: "skirt1",  price: 40 },
+                { var: "skirtState2",  img: "skirt2.png",  beauty: 10, slot: 2, key: "skirt2",  price: 50 },
+                { var: "skirtState3",  img: "skirt3.png",  beauty: 13, slot: 3, key: "skirt3",  price: 60 }
             ]
         }
     ];
@@ -162,7 +166,8 @@
         'rememberBottomStockings',
         'isPantiesStolen', 'isBottomStolen',
         'isShirtStolen', 'isBraStolen',
-        'isJeansStolen', 'isShortsStolen', 'isSkirtStolen'
+        'isJeansStolen', 'isShortsStolen', 'isSkirtStolen',
+        'lostClothing'
     ]);
 
     setup.Wardrobe = {
@@ -259,9 +264,14 @@
          * (mark as "not bought"). Fired when the MC leaves the
          * hunt without recovering her clothes. Works on every
          * rememberVar's "no<key>" marker. Resets all the stolen
-         * flags. */
+         * flags.
+         *
+         * Each lost slot-1..3 item is also pushed onto $lostClothing
+         * so the Bedroom "Replace lost clothing" buyback button can
+         * offer to repurchase it at store price. */
         loseAllStolen: function () {
             var V = State.variables;
+            if (!Array.isArray(V.lostClothing)) V.lostClothing = [];
             function discardFromGroup(groupName) {
                 var group = setup.WARDROBE_GROUPS.find(function (g) { return g.name === groupName; });
                 if (!group || !group.rememberVar) return;
@@ -271,6 +281,9 @@
                 group.items.forEach(function (item) {
                     if (item.key === originalKey && item.slot !== 0) {
                         V[item.var] = setup.ClothingState.NOT_BOUGHT;
+                        if (V.lostClothing.indexOf(item.var) === -1) {
+                            V.lostClothing.push(item.var);
+                        }
                     }
                 });
             }
@@ -283,6 +296,53 @@
             V.isBottomStolen = 0;
             V.isShirtStolen = 0;
             V.isBraStolen = 0;
+        },
+
+        /* Lookup an item descriptor by its save-file state var. Used
+         * by ReplaceLostClothing to render the price/image of each
+         * lost garment without the passage having to know the
+         * group→item mapping. */
+        itemByVar: function (varName) {
+            var groups = setup.WARDROBE_GROUPS;
+            for (var i = 0; i < groups.length; i++) {
+                var items = groups[i].items;
+                for (var j = 0; j < items.length; j++) {
+                    if (items[j].var === varName) return items[j];
+                }
+            }
+            return null;
+        },
+
+        /* Lost-clothing list (mutable copy). Populated by
+         * loseAllStolen when the MC leaves a hunt with stolen
+         * tier-1..3 clothing she didn't recover. The Bedroom shows
+         * the buyback button while this list is non-empty. */
+        lostClothing: function () {
+            var V = State.variables;
+            if (!Array.isArray(V.lostClothing)) V.lostClothing = [];
+            return V.lostClothing.slice();
+        },
+        hasLostClothing: function () {
+            var V = State.variables;
+            return Array.isArray(V.lostClothing) && V.lostClothing.length > 0;
+        },
+        /* Repurchase a lost garment at store price. Deducts money,
+         * flips the slot back to NOT_WORN (the same state a fresh
+         * mall purchase leaves it in), and removes the entry from
+         * $lostClothing. Returns true on success, false when the
+         * item isn't actually lost or the MC can't afford it. */
+        replaceLostClothing: function (varName) {
+            var V = State.variables;
+            if (!Array.isArray(V.lostClothing)) V.lostClothing = [];
+            var idx = V.lostClothing.indexOf(varName);
+            if (idx === -1) return false;
+            var item = this.itemByVar(varName);
+            if (!item || typeof item.price !== "number") return false;
+            if (setup.Mc.money() < item.price) return false;
+            setup.Mc.removeMoney(item.price);
+            V[varName] = setup.ClothingState.NOT_WORN;
+            V.lostClothing.splice(idx, 1);
+            return true;
         },
 
         /* Symmetric inverse of stealWornInGroup: restore the

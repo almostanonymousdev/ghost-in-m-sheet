@@ -32,6 +32,8 @@ import re
 import sys
 from pathlib import Path
 
+from lib_repo import iter_passages, passages_dir, read_passage, repo_root
+
 
 # Engine-managed or otherwise auto-populated story variables. Referencing
 # these without an explicit <<set>> is fine.
@@ -107,11 +109,11 @@ def parse_header(line):
     return name, tags
 
 
-def collect_passages(passages_dir):
+def collect_passages():
     """Return a list of dicts: name, file, tags, body."""
     passages = []
-    for tw_file in sorted(passages_dir.rglob("*.tw")):
-        text = tw_file.read_text(encoding="utf-8", errors="replace")
+    for tw_file in iter_passages():
+        text = read_passage(tw_file)
         lines = text.splitlines()
         current = None
         body_lines = []
@@ -194,14 +196,14 @@ def collect_uses(passages):
 
 
 def main():
-    repo_root = Path(__file__).resolve().parent.parent
-    passages_dir = repo_root / "passages"
+    root = repo_root()
+    pdir = passages_dir()
 
-    if not passages_dir.is_dir():
-        print(f"ERROR: passages directory not found at {passages_dir}", file=sys.stderr)
+    if not pdir.is_dir():
+        print(f"ERROR: passages directory not found at {pdir}", file=sys.stderr)
         sys.exit(1)
 
-    passages = collect_passages(passages_dir)
+    passages = collect_passages()
     defined = collect_definitions(passages)
     uses = collect_uses(passages)
 
@@ -221,7 +223,7 @@ def main():
         print(f'  ${name}  — used {len(refs)}x, never set:')
         for ref in refs[:5]:
             try:
-                rel = ref["file"].relative_to(repo_root)
+                rel = ref["file"].relative_to(root)
             except ValueError:
                 rel = ref["file"]
             print(f"      {rel}:{ref['lineno']}  ({ref['passage']})")
