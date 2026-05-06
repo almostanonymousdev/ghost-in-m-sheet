@@ -349,6 +349,56 @@ test.describe('HuntController', () => {
     expect(await callSetup(page, 'setup.HuntController.mode()')).toBeNull();
   });
 
+  test('driftChance() shrinks as MC beauty rises (ghost lingers near a prettier MC)', async () => {
+    // Default beauty is 30 -> base 45% drift chance.
+    await page.evaluate(() => SugarCube.setup.Mc.setBeauty(30));
+    expect(await callSetup(page, 'setup.HuntController.driftChance()')).toBeCloseTo(0.45, 5);
+
+    // 0.5% off per beauty point above 30.
+    await page.evaluate(() => SugarCube.setup.Mc.setBeauty(50));
+    expect(await callSetup(page, 'setup.HuntController.driftChance()')).toBeCloseTo(0.35, 5);
+
+    await page.evaluate(() => SugarCube.setup.Mc.setBeauty(70));
+    expect(await callSetup(page, 'setup.HuntController.driftChance()')).toBeCloseTo(0.25, 5);
+
+    // Floored at 20% so the ghost can still wander in extreme cases.
+    await page.evaluate(() => SugarCube.setup.Mc.setBeauty(200));
+    expect(await callSetup(page, 'setup.HuntController.driftChance()')).toBeCloseTo(0.20, 5);
+
+    // Below the 30-point baseline: chance stays at the base (no bonus).
+    await page.evaluate(() => SugarCube.setup.Mc.setBeauty(0));
+    expect(await callSetup(page, 'setup.HuntController.driftChance()')).toBeCloseTo(0.45, 5);
+  });
+
+  test('shuffleGhostRoom() respects the beauty-scaled drift chance in classic mode', async () => {
+    // High beauty drops drift chance to ~0.20. A roll of 0.30 sits above
+    // that floor, so the ghost should NOT drift -- room stays put.
+    await page.evaluate(() => {
+      SugarCube.setup.Mc.setBeauty(100); // -> driftChance == 0.20
+      SugarCube.setup.Ghosts.startHunt('Shade');
+      SugarCube.setup.Ghosts.setHuntMode(SugarCube.setup.Ghosts.HuntMode.ACTIVE);
+      SugarCube.setup.HauntedHouses.activate('owaissa');
+      SugarCube.setup.HauntedHouses.setHuntRoom({ name: 'kitchen' });
+      SugarCube.State.variables.lastChangeIntervalRoom = '';
+      SugarCube.State.variables.minutes = 25;
+      Math.random = () => 0.30; // would have fired at base 0.45
+    });
+    await page.evaluate(() => SugarCube.setup.HuntController.shuffleGhostRoom());
+    expect(await getVar(page, 'hunt.room.name')).toBe('kitchen');
+
+    // Same beauty, but a roll under the 20% floor still drifts.
+    await page.evaluate(() => {
+      SugarCube.State.variables.lastChangeIntervalRoom = '';
+      const rolls = [0.05, 0]; // < 0.20 (drift fires) + index 0
+      let i = 0;
+      Math.random = () => rolls[i++ % rolls.length];
+    });
+    await page.evaluate(() => SugarCube.setup.HuntController.shuffleGhostRoom());
+    const roomName = await getVar(page, 'hunt.room.name');
+    const owaissaRooms = await callSetup(page, 'setup.HauntedHouses.byId("owaissa").rooms');
+    expect(roomName).toBe(owaissaRooms[0]);
+  });
+
   test('isGhostHere() in rogue mode follows the lair-room comparison', async () => {
     await goToPassage(page, 'GhostStreet');
     await clickRogueCard(page);

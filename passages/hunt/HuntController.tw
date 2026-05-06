@@ -226,7 +226,7 @@ setup.HuntController = (function () {
 	}
 
 	/* Periodic ghost-room shuffle. Roughly every 20 in-game
-	   minutes, the ghost has a 45% chance to drift to a different
+	   minutes, the ghost has a chance to drift to a different
 	   room. The interval gate (`$lastChangeIntervalRoom`) lives at
 	   the controller level so a single pass per `onPassageDone`
 	   covers both modes; the per-mode helpers
@@ -234,6 +234,11 @@ setup.HuntController = (function () {
 	   `setup.Rogue.driftGhostRoom`) own the actual room selection
 	   so the catalogue (classic) vs. floor plan (rogue) split stays
 	   encapsulated.
+
+	   Drift chance scales with MC beauty: the ghost is drawn to a
+	   prettier MC and is less inclined to wander away. Base 45%
+	   at beauty <= 30 (default), losing 0.5% per beauty point above
+	   30, floored at 20%.
 
 	   Skips when:
 	   - no hunt is active (covers classic pre-house / rogue
@@ -252,7 +257,7 @@ setup.HuntController = (function () {
 		var s = sv();
 		s.currentIntervalRoom = interval;
 		if (interval === s.lastChangeIntervalRoom) return;
-		if (Math.random() < 0.45) {
+		if (Math.random() < driftChance()) {
 			var m = mode();
 			if (m === Mode.REGULAR && setup.HauntedHouses.driftGhostRoom) {
 				setup.HauntedHouses.driftGhostRoom();
@@ -261,6 +266,12 @@ setup.HuntController = (function () {
 			}
 		}
 		s.lastChangeIntervalRoom = interval;
+	}
+
+	function driftChance() {
+		var beauty = (setup.Mc && setup.Mc.beauty) ? (setup.Mc.beauty() || 0) : 0;
+		var bonus = Math.max(0, beauty - 30);
+		return Math.max(0.20, 0.45 - bonus * 0.005);
 	}
 
 	/* End-of-HuntEnd cleanup. Both modes share the wardrobe /
@@ -476,6 +487,7 @@ setup.HuntController = (function () {
 		huntCaughtPassage:      huntCaughtPassage,
 		onCaughtCleanup:        onCaughtCleanup,
 		shuffleGhostRoom:       shuffleGhostRoom,
+		driftChance:            driftChance,
 		snapGhostToCurrentRoom: snapGhostToCurrentRoom,
 		trapGhost:              trapGhost,
 		isGhostTrapped:         isGhostTrapped,

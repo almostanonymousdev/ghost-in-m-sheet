@@ -385,12 +385,15 @@ def load_game_data() -> GameData:
     start_lust   = _find_num(r"lust\s*:\s*(\d+)",   story_init)
     start_energy = _find_num(r"energy\s*:\s*(\d+)", story_init)
 
-    # HuntController.tw shuffleGhostRoom(): Math.random() < 0.45.
-    # The classic-mode dispatch lives there now (HauntedHousesController
-    # only owns the per-mode driftGhostRoom helper that picks the
-    # destination room).
+    # HuntController.tw driftChance(): base 0.45, scaled down by MC beauty.
+    # shuffleGhostRoom() rolls Math.random() < driftChance(). We pull the
+    # base literal here as the upper bound for the sim's average-case
+    # ghost-move chance (the per-roll value is lower for prettier MCs).
+    # The classic-mode dispatch lives in HuntController too;
+    # HauntedHousesController only owns the per-mode driftGhostRoom helper
+    # that picks the destination room.
     ghost_move_chance = _find_num(
-        r"function\s+shuffleGhostRoom[^{}]*\{[^}]*?Math\.random\(\)\s*<\s*([\d.]+)",
+        r"function\s+driftChance[^{}]*\{[^}]*?Math\.max\([^,]+,\s*([\d.]+)\s*-",
         hunt_controller)
 
     # HauntedHousesController shouldStartRandomProwl(): threshold base + HauntConditions bonus
