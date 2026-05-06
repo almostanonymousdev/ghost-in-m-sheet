@@ -149,10 +149,29 @@ setup.Rogue = (function () {
 		POSSESSED:  'possessed',
 		FLED:       'fled'
 	});
+	/* Rogue-run objective catalogue. Each entry carries an `id` (the
+	   string stamped onto $run.objective and on-disk saves) and a
+	   `description` shown to the player when the run starts. Callers
+	   that need the id should reference Objective.<NAME>.id; saves
+	   continue to round-trip the id string verbatim. */
 	var Objective = Object.freeze({
-		IDENTIFY: 'identify',
-		RESCUE:   'rescue'
+		IDENTIFY: Object.freeze({
+			id: 'identify',
+			description: 'Identify the ghost then banish it from the house. Chanting its name will keep you safe.'
+		}),
+		RESCUE: Object.freeze({
+			id: 'rescue',
+			description: ''
+		})
 	});
+
+	function objectiveDescription(id) {
+		var keys = Object.keys(Objective);
+		for (var i = 0; i < keys.length; i++) {
+			if (Objective[keys[i]].id === id) return Objective[keys[i]].description;
+		}
+		return '';
+	}
 
 	function sv() { return State.variables; }
 
@@ -174,7 +193,7 @@ setup.Rogue = (function () {
 			number: sv().runsStarted,
 			modifiers: Array.isArray(opts.modifiers) ? opts.modifiers.slice() : [],
 			loadout: opts.loadout || {},
-			objective: opts.objective || Objective.IDENTIFY,
+			objective: opts.objective || Objective.IDENTIFY.id,
 			// Player starts in the hallway. Nav links in RogueRun
 			// update this via setCurrentRoom() before re-rendering.
 			currentRoomId: 'room_0',
@@ -571,7 +590,7 @@ setup.Rogue = (function () {
 			seed: seed,
 			modifiers: modifierIds,
 			loadout: opts.loadout || {},
-			objective: opts.objective || Objective.IDENTIFY
+			objective: opts.objective || Objective.IDENTIFY.id
 		});
 		setField('floorplan', floorplan);
 		setField('ghostName', ghostName);
@@ -959,6 +978,7 @@ setup.Rogue = (function () {
 		loadout: loadout,
 		startingTools: startingTools,
 		objective: objective,
+		objectiveDescription: objectiveDescription,
 		setObjective: setObjective,
 		setField: setField,
 		field: field,
