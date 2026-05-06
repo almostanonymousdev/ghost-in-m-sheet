@@ -72,6 +72,45 @@ test.describe('Cheats moved to the Settings / Cheats dialog', () => {
     }
   });
 
+  test('Hunting + Reveal cheats enable during a rogue run', async () => {
+    await setHuntMode(page, 0);
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 42 }));
+    await goToPassage(page, 'RogueRun');
+    try {
+      await openSettingsDialog(page);
+
+      const huntingGroup = page.locator('#ui-dialog-body .cheat-actions-group')
+        .filter({ has: page.locator('.cheat-actions-gh', { hasText: 'Hunting' }) });
+      // No "available only..." note when rogue makes the group active.
+      expect(await huntingGroup.locator('.cheat-actions-gh-note').count()).toBe(0);
+      const huntingButtons = huntingGroup.locator('.cheat-btn');
+      expect(await huntingButtons.count()).toBeGreaterThan(0);
+      for (const btn of await huntingButtons.all()) {
+        await expect(btn).toBeEnabled();
+      }
+
+      // Reveal Ghost name surfaces the rogue ghost (no Mimic disguise here).
+      const expectedName = await callSetup(page, 'setup.Rogue.ghostName()');
+      const revealRow = page.locator('#ui-dialog-body .cheat-reveal').first();
+      await expect(revealRow.locator('button.cheat-btn')).toBeEnabled();
+      await revealRow.locator('button.cheat-btn').click();
+      await expect(revealRow.locator('.cheat-reveal-result'))
+        .toContainText(new RegExp(`Ghost name:\\s*${expectedName}`));
+
+      // Reveal Ghost room shows the floor-plan room label, not the raw id.
+      const expectedRoom = await callSetup(page, 'setup.HuntController.ghostRoomLabel()');
+      expect(expectedRoom).not.toMatch(/^room_\d+$/);
+      const roomRow = page.locator('#ui-dialog-body .cheat-reveal').nth(1);
+      await roomRow.locator('button.cheat-btn').click();
+      await expect(roomRow.locator('.cheat-reveal-result'))
+        .toContainText(`Ghost room: ${expectedRoom}`);
+
+      await closeDialog(page);
+    } finally {
+      await page.evaluate(() => SugarCube.setup.Rogue.end());
+    }
+  });
+
   test('Ghost name reveal stays hidden until the button is clicked', async () => {
     await setHuntMode(page, 1);  // contract — stub Hunt is "Shade"
     await openSettingsDialog(page);

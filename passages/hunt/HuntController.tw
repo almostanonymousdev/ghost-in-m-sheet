@@ -189,6 +189,31 @@ setup.HuntController = (function () {
 		return '';
 	}
 
+	/* Display label for the ghost's current room. Classic reads
+	   $hunt.room.name (the bgRoom string the witch contract pinned);
+	   rogue resolves the floor-plan spawn room id back through the
+	   template catalogue so the cheat panel sees a human label
+	   ("Bedroom") instead of the internal id ("room_3"). Returns ''
+	   when no hunt is active. */
+	function ghostRoomLabel() {
+		var m = mode();
+		if (m === Mode.REGULAR) return setup.Ghosts.huntRoomName();
+		if (m === Mode.ROGUE) {
+			var run = setup.Rogue.active();
+			var roomId = setup.Rogue.ghostRoomId();
+			if (!run || !roomId || !run.floorplan) return '';
+			var rooms = run.floorplan.rooms || [];
+			for (var i = 0; i < rooms.length; i++) {
+				if (rooms[i].id === roomId) {
+					var t = setup.Templates && setup.Templates.byId(rooms[i].template);
+					return t ? t.label : rooms[i].template;
+				}
+			}
+			return roomId;
+		}
+		return '';
+	}
+
 	/* Per-guess payout summary for the active hunt. Shape:
 	   { money: <number>, xp: <number> }. Classic sums witch contract
 	   reward + weaken bonus + XP (correct guess) or just the weaken
@@ -483,6 +508,7 @@ setup.HuntController = (function () {
 		shouldTriggerSteal:     shouldTriggerSteal,
 		huntOverPassage:        huntOverPassage,
 		realGhostName:          realGhostName,
+		ghostRoomLabel:         ghostRoomLabel,
 		payoutForGuess:         payoutForGuess,
 		huntCaughtPassage:      huntCaughtPassage,
 		onCaughtCleanup:        onCaughtCleanup,

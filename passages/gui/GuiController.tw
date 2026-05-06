@@ -282,7 +282,7 @@ $(document).one(":storyready", function () {
 	}
 
 	function appendRevealGroup($root) {
-		var inMode = setup.Ghosts.isAnyMode();
+		var inMode = setup.HuntController.isActive();
 		var $group = $('<div class="cheat-actions-group"></div>');
 		$group.append($('<h3 class="cheat-actions-gh"></h3>').text("Reveal (current contract / hunt)"));
 		if (!inMode) {
@@ -302,10 +302,13 @@ $(document).one(":storyready", function () {
 		}
 
 		$group.append(reveal("Ghost name", function () {
-			return setup.Ghosts.huntName() + (setup.Ghosts.isMimicHunt() ? " (Mimic)" : "");
+			if (setup.HuntController.mode() === setup.HuntController.Mode.REGULAR) {
+				return setup.Ghosts.huntName() + (setup.Ghosts.isMimicHunt() ? " (Mimic)" : "");
+			}
+			return setup.HuntController.realGhostName();
 		}));
 		$group.append(reveal("Ghost room", function () {
-			return setup.Ghosts.huntRoomName();
+			return setup.HuntController.ghostRoomLabel();
 		}));
 		$root.append($group);
 	}
@@ -340,12 +343,11 @@ $(document).one(":storyready", function () {
 			{ label: "Sanity pills (+30)",            fire: function () { setup.Mc.addSanity(30); } },
 			{ label: "Drain companion sanity (-10)",  fire: function () { setup.Companion.drainSanity(10); } },
 			{ label: "Trigger possession card",       fire: function () {
-				setup.Ghosts.setHuntMode(setup.Ghosts.HuntMode.POSSESSED);
-				setup.Time.setHours(12 + Math.floor(Math.random() * 9));
+				var target = setup.HuntController.possessionPassage();
 				Dialog.close();
-				Engine.play("CityMapPossessed");
+				if (target) Engine.play(target);
 			} }
-		], { enabled: setup.Ghosts.isHunting(), disabledMsg: "Available only during a hunt." });
+		], { enabled: setup.HuntController.isHuntActive(), disabledMsg: "Available only during a hunt." });
 
 		appendRevealGroup($root);
 		return $root;
