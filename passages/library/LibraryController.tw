@@ -14,7 +14,11 @@ setup.Library = (function () {
 		// $comicsReading: 0 = none, 1..4 = currently-open issue. Replaces
 		// the four mutually-exclusive $comics<N> flags. SaveMigration
 		// folds existing $comics<N> into this single field.
-		'comicsReading'
+		'comicsReading',
+		// Torn-page tip drop. $foundDesecratedBook unlocks the search
+		// pool entry; $tornPagesFound is an array of indices into
+		// TORN_PAGE_TIPS for pages the MC has recovered.
+		'foundDesecratedBook', 'tornPagesFound'
 	]);
 
 	/* Comic catalogue. `prefix` is appended with a 3-digit zero-padded
@@ -27,6 +31,13 @@ setup.Library = (function () {
 		{ prefix: "scenes/library/the-naughty-in-law-1-zero",          count: 31 },
 		{ prefix: "scenes/library/a-dumb-comic",                       count: 32 }
 	]);
+
+	/* Torn-page tip catalogue lives in setup.LibraryData (LibraryData.tw),
+	   following the same pattern as setup.CompanionData. Read lazily so
+	   load order between the two [script] passages doesn't matter. */
+	function tornPageCatalogue() {
+		return (setup.LibraryData && setup.LibraryData.tornPageTips) || [];
+	}
 
 	function sv() { return State.variables; }
 
@@ -62,6 +73,7 @@ setup.Library = (function () {
 		hasFoundBrook:    function () { return sv().foundBrook !== undefined; },
 		hasFoundGirl:     function () { return sv().foundGirl !== undefined; },
 		hasFoundGuy:      function () { return sv().foundGuy !== undefined; },
+		hasFoundDesecratedBook: function () { return sv().foundDesecratedBook !== undefined; },
 
 		availableSearchResults: function () {
 			var out = [];
@@ -70,6 +82,8 @@ setup.Library = (function () {
 			if (!this.hasFoundGirl()) out.push('girl');
 			if (!this.hasFoundGuy()) out.push('guy');
 			if (!this.hasFoundBrook() && this.canMeetBrookAtLibrary()) out.push('brook');
+			if (!this.hasFoundDesecratedBook()) out.push('desecratedBook');
+			else if (this.hasTornPagesRemaining()) out.push('tornPage');
 			return out;
 		},
 
@@ -107,6 +121,45 @@ setup.Library = (function () {
 		markComicsFound:     function () { State.variables.foundComics = 1; },
 		markBrookFound:      function () { State.variables.foundBrook = 1; },
 		meetBrookFirstTime:  function () { State.variables.meetBrook = 1; },
+		markDesecratedBookFound: function () { State.variables.foundDesecratedBook = 1; },
+
+		// --- Torn pages -------------------------------------------
+		tornPageTips: function () { return tornPageCatalogue(); },
+		tornPagesFound: function () {
+			var arr = sv().tornPagesFound;
+			return Array.isArray(arr) ? arr : [];
+		},
+		hasFoundAnyTornPage: function () { return this.tornPagesFound().length > 0; },
+		availableTornPageIndices: function () {
+			var found = this.tornPagesFound();
+			var tips = tornPageCatalogue();
+			var out = [];
+			for (var i = 0; i < tips.length; i++) {
+				if (found.indexOf(i) === -1) out.push(i);
+			}
+			return out;
+		},
+		hasTornPagesRemaining: function () {
+			return this.availableTornPageIndices().length > 0;
+		},
+		/* Pick one unfound torn-page index, mark it found, return the
+		   tip object plus its index. Returns null if nothing remains. */
+		pickRandomTornPage: function () {
+			var available = this.availableTornPageIndices();
+			if (available.length === 0) return null;
+			var idx = available[Math.floor(Math.random() * available.length)];
+			var V = State.variables;
+			if (!Array.isArray(V.tornPagesFound)) V.tornPagesFound = [];
+			V.tornPagesFound.push(idx);
+			return { index: idx, tip: tornPageCatalogue()[idx] };
+		},
+		/* Pick one already-collected page at random, for re-reading. */
+		randomCollectedTornPage: function () {
+			var found = this.tornPagesFound();
+			if (found.length === 0) return null;
+			var idx = found[Math.floor(Math.random() * found.length)];
+			return { index: idx, tip: tornPageCatalogue()[idx] };
+		},
 
 		// Library groping gains a bit of corruption each round; these
 		// are the three different "cap < x, gain y" pairs used across

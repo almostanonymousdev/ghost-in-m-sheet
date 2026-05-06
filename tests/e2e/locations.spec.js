@@ -136,11 +136,11 @@ test.describe('Library — hours and meeting gates', () => {
     expect(await callSetup(page, 'setup.Library.canMeetBrookAtLibrary()')).toBe(true);
   });
 
-  test('availableSearchResults is a subset of the five discovery keys', async ({ game: page }) => {
+  test('availableSearchResults is a subset of the seven discovery keys', async ({ game: page }) => {
     const results = await callSetup(page, 'setup.Library.availableSearchResults()');
     expect(Array.isArray(results)).toBe(true);
     for (const r of results) {
-      expect(['book', 'Comics', 'girl', 'guy', 'brook']).toContain(r);
+      expect(['book', 'Comics', 'girl', 'guy', 'brook', 'desecratedBook', 'tornPage']).toContain(r);
     }
   });
 
@@ -150,6 +150,30 @@ test.describe('Library — hours and meeting gates', () => {
     const results = await callSetup(page, 'setup.Library.availableSearchResults()');
     expect(results).not.toContain('book');
     expect(results).not.toContain('Comics');
+  });
+
+  test('availableSearchResults flips desecratedBook → tornPage once the book is found', async ({ game: page }) => {
+    await page.evaluate(() => { delete SugarCube.State.variables.foundDesecratedBook; });
+    let results = await callSetup(page, 'setup.Library.availableSearchResults()');
+    expect(results).toContain('desecratedBook');
+    expect(results).not.toContain('tornPage');
+
+    await page.evaluate(() => SugarCube.setup.Library.markDesecratedBookFound());
+    results = await callSetup(page, 'setup.Library.availableSearchResults()');
+    expect(results).not.toContain('desecratedBook');
+    expect(results).toContain('tornPage');
+  });
+
+  test('availableSearchResults drops tornPage once every page has been collected', async ({ game: page }) => {
+    await page.evaluate(() => SugarCube.setup.Library.markDesecratedBookFound());
+    const total = await callSetup(page, 'setup.Library.tornPageTips().length');
+    await page.evaluate((n) => {
+      const all = [];
+      for (let i = 0; i < n; i++) all.push(i);
+      SugarCube.State.variables.tornPagesFound = all;
+    }, total);
+    const results = await callSetup(page, 'setup.Library.availableSearchResults()');
+    expect(results).not.toContain('tornPage');
   });
 
   test('brookSolo chances scale with $brook.lvl', async ({ game: page }) => {
@@ -166,6 +190,7 @@ test.describe('Library — passages render cleanly', () => {
     'Library', 'LibraryInside', 'LibrarySearchResult',
     'Comics', 'ReadComics', 'LibraryGhostBook', 'LibraryTipsBook',
     'LibraryGirl', 'LibraryGuy', 'LibraryGuy1',
+    'LibraryDesecratedBook', 'LibraryTornPage', 'LibraryTornPagesCollected',
   ]) {
     test(`${passage} renders cleanly`, async ({ game: page }) => {
       await setVar(page, 'hours', 10);

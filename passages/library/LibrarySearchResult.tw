@@ -20,6 +20,10 @@
 <<elseif _selectedResult is "brook">>
 	<<include "LibraryBrook">>
 	<<run setup.Library.markBrookFound()>>
+<<elseif _selectedResult is "desecratedBook">>
+	<<include "LibraryDesecratedBook">>
+<<elseif _selectedResult is "tornPage">>
+	<<include "LibraryTornPage">>
 <</if>>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>

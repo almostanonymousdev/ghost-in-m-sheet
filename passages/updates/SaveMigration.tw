@@ -93,7 +93,8 @@
 
 		// Buyback for clothes lost during a hunt. Older saves
 		// have no array; default to empty.
-		lostClothing:  function () { return []; }
+		lostClothing:  function () { return []; },
+		tornPagesFound: function () { return []; }
 	};
 
 	// mc sub-fields added after launch -- missing on very old saves
