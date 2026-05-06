@@ -198,15 +198,16 @@ test.describe('Rogue minimap data', () => {
     expect(svg).not.toMatch(/rogue-minimap-current[^"]*"\s+data-room="room_0"/);
   });
 
-  test('minimapSvg tags spawn and boss rooms when present', async () => {
+  test('minimapSvg tags the boss room but never reveals the ghost spawn', async () => {
     await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
       seed: 1, floorPlanOpts: { roomCount: 5, includeBoss: true }
     }));
     const fp = await callSetup(page, 'setup.Rogue.field("floorplan")');
     const svg = await callSetup(page, 'setup.Rogue.minimapSvg()');
-    const spawnRe = new RegExp('rogue-minimap-spawn[^"]*"\\s+data-room="' + fp.spawnRoomId + '"');
     const bossRe  = new RegExp('rogue-minimap-boss[^"]*"\\s+data-room="' + fp.bossRoomId + '"');
-    expect(svg).toMatch(spawnRe);
     expect(svg).toMatch(bossRe);
+    // The ghost's lair must not be highlighted on the minimap --
+    // the spawn class is intentionally omitted from the SVG nodes.
+    expect(svg).not.toMatch(/rogue-minimap-spawn/);
   });
 });

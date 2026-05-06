@@ -1388,10 +1388,6 @@ body.ui-bar-stowed .rogue-run-layout {
 	font-family: 'Cormorant', serif;
 	pointer-events: none;
 }
-.rogue-minimap-room.rogue-minimap-spawn rect {
-	stroke: #b33;
-	stroke-width: 3;
-}
 .rogue-minimap-room.rogue-minimap-boss rect {
 	stroke: gold;
 	stroke-width: 3;

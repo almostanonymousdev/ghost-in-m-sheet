@@ -754,7 +754,6 @@ setup.Rogue = (function () {
 			var label = t ? t.label : r.template;
 			var classes = ['rogue-minimap-room'];
 			if (r.id === currentId)        classes.push('rogue-minimap-current');
-			if (r.id === fp.spawnRoomId)   classes.push('rogue-minimap-spawn');
 			if (r.id === fp.bossRoomId)    classes.push('rogue-minimap-boss');
 			return '<g class="' + classes.join(' ') + '" data-room="' + escapeXml(r.id) + '">' +
 				'<rect x="' + x + '" y="' + y + '" width="' + ROOM_W +
