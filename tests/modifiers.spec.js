@@ -96,6 +96,28 @@ test.describe('Modifier registry', () => {
     }
   });
 
+  test('draft excludes ids in opts.banned', async () => {
+    const all = await callSetup(page, 'setup.Modifiers.draftableList()');
+    const banned = [all[0].id, all[1].id];
+    for (const seed of [1, 17, 42, 123, 9000]) {
+      const picks = await page.evaluate(({ s, b }) =>
+        SugarCube.setup.Modifiers.draft(s, 5, { banned: b }).map(m => m.id),
+        { s: seed, b: banned });
+      banned.forEach(id => expect(picks).not.toContain(id));
+    }
+  });
+
+  test('draft falls back to the trimmed pool size when banned shrinks it below n', async () => {
+    const all = await callSetup(page, 'setup.Modifiers.draftableList()');
+    // Ban every modifier except the last; ask for more than 1 -> 1 returned.
+    const banned = all.slice(0, -1).map(m => m.id);
+    const picks = await page.evaluate(b =>
+      SugarCube.setup.Modifiers.draft(1, 5, { banned: b }).map(m => m.id),
+      banned);
+    expect(picks.length).toBe(1);
+    expect(banned).not.toContain(picks[0]);
+  });
+
   // --- Integration with active run ---
 
   test('activeList resolves $run.modifiers ids to catalogue entries', async () => {

@@ -585,23 +585,23 @@ test.describe('Rogue Controller', () => {
     expect(summary.payout).toBe(Math.round(10 * lt * ph));
   });
 
-  test('endRogue payout = base * multiplier (failure base 5)', async () => {
+  test('endRogue payout = base * multiplier (failure base 3)', async () => {
     await page.evaluate(() => SugarCube.setup.Rogue.start({
       seed: 1, modifiers: ['fog_of_war']
     }));
     const fow = await callSetup(page, 'setup.Modifiers.byId("fog_of_war").payoutMultiplier');
     const summary = await page.evaluate(() => SugarCube.setup.Rogue.endRogue(false));
-    expect(summary.payout).toBe(Math.round(5 * fow));
+    expect(summary.payout).toBe(Math.round(3 * fow));
   });
 
-  test('endRogue payout for a no-modifier run is exactly 10 (success) or 5 (failure)', async () => {
+  test('endRogue payout for a no-modifier run is exactly 10 (success) or 3 (failure)', async () => {
     await page.evaluate(() => SugarCube.setup.Rogue.start({ seed: 1, modifiers: [] }));
     let summary = await page.evaluate(() => SugarCube.setup.Rogue.endRogue(true));
     expect(summary.payout).toBe(10);
 
     await page.evaluate(() => SugarCube.setup.Rogue.start({ seed: 2, modifiers: [] }));
     summary = await page.evaluate(() => SugarCube.setup.Rogue.endRogue(false));
-    expect(summary.payout).toBe(5);
+    expect(summary.payout).toBe(3);
   });
 
   // --- Maze modifier (roomCount += 3) ---

@@ -156,10 +156,19 @@ setup.Modifiers = (function () {
 	/* Pick `n` modifiers from the draftable catalogue, weighted by
 	   each entry's `weight`. Deterministic from `seed` (same seed
 	   + same n -> same picks). Picks without replacement: a single
-	   modifier never appears twice in the same draft. */
-	function draft(seed, n) {
+	   modifier never appears twice in the same draft.
+
+	   opts.banned -- optional array of modifier ids to exclude from
+	     the pool (used by the meta-shop banlist). Unknown ids are
+	     ignored; the resulting draft size is still capped at the
+	     remaining pool length. */
+	function draft(seed, n, opts) {
 		var rng = makeRng(seed);
 		var pool = draftableList();
+		var banned = (opts && Array.isArray(opts.banned)) ? opts.banned : null;
+		if (banned && banned.length) {
+			pool = pool.filter(function (m) { return banned.indexOf(m.id) === -1; });
+		}
 		var picks = [];
 		var take = Math.min(n, pool.length);
 		for (var i = 0; i < take; i++) {

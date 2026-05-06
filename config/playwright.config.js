@@ -10,10 +10,10 @@ module.exports = defineConfig({
   timeout: 10_000,
   /* Each spec file shares a page via beforeAll, so tests within a file
      must stay serial — but files themselves are independent.  Let
-     Playwright spin up one worker per spec file (up to 75% the cores
+     Playwright spin up one worker per spec file (up to ~70% the cores
      so we don't starve the machine). */
   fullyParallel: false,
-  workers: process.env.CI ? 2 : Math.max(1, Math.floor(require('os').cpus().length * 0.75)),
+  workers: process.env.CI ? 2 : Math.max(1, Math.floor(require('os').cpus().length * 0.70)),
   use: {
     baseURL: `file://${__dirname}/../ghost-in-msheet.html`,
     /* Run headless so the browser never steals focus from the editor. */

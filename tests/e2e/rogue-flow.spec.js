@@ -33,12 +33,13 @@ test.describe('E2E: rogue run lifecycle', () => {
     await page.waitForFunction(p => SugarCube.State.passage === p, expectedPassage);
   }
 
-  /* The rogue card's link text is the day's randomised street address, not
-     a fixed "Rogue Hunt" label. Resolve the address client-side and click
-     the matching link. */
+  /* The rogue card's link text is the per-cycle randomised street
+     address, not a fixed "Rogue Hunt" label. Resolve the address from
+     setup.Rogue.nextSeed() (the same source the card widget reads) and
+     click the matching link. */
   async function clickRogueCard(page) {
     const rogueAddr = await page.evaluate(() =>
-      SugarCube.setup.Rogue.addressFromSeed(SugarCube.setup.Time.dailySeed()).formatted
+      SugarCube.setup.Rogue.addressFromSeed(SugarCube.setup.Rogue.nextSeed()).formatted
     );
     await clickLink(page, rogueAddr, 'RogueStart');
   }
@@ -97,16 +98,20 @@ test.describe('E2E: rogue run lifecycle', () => {
     expect(ectoplasm).toBeGreaterThanOrEqual(10);
     expect(await getVar(page, 'runsStarted')).toBe(1);
 
-    // 4. Walk into the meta-shop and spend 3 mL of ectoplasm.
+    // 4. Walk into the meta-shop and buy the cheapest unlock
+    // (Reroll Charge at 5 mL). The shop redirects through goto on
+    // every purchase; we wait on the resulting state mutation
+    // (charges incremented, ectoplasm deducted) instead of DOM.
     await clickLink(page, 'Visit the meta-shop', 'RogueMetaShop');
-    await page.locator('.passage').getByText('Spend 3 mL of ectoplasm (placeholder unlock)', { exact: true }).click();
-    // The link uses <<replace>> to rewrite the balance text; wait for
-    // the underlying state to reflect the spend (3 mL deducted) instead
-    // of polling DOM.
+    await page.locator('.passage')
+      .locator('#rogue-shop-row-reroll_charge')
+      .getByText(/^Buy \(5 mL\)$/)
+      .click();
     await page.waitForFunction(
       remaining => SugarCube.State.variables.ectoplasm === remaining,
-      ectoplasm - 3
+      ectoplasm - 5
     );
+    expect(await page.evaluate(() => SugarCube.setup.Rogue.rerollCharges())).toBe(1);
   });
 
   test('losing a run still pays out failure-base * deck multiplier of ectoplasm', async () => {
@@ -116,7 +121,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     await clickRogueCard(page);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
     const expected = await page.evaluate(() =>
-      Math.round(5 * SugarCube.setup.Modifiers.payoutMultiplier()));
+      Math.round(3 * SugarCube.setup.Modifiers.payoutMultiplier()));
     await page.evaluate(() => SugarCube.setup.Rogue.markFailure());
     await goToPassage(page, 'RogueEnd');
 
@@ -134,7 +139,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     // Snapshot the failure payout BEFORE walking back; the forfeit pays
     // failure-base * the run-1 modifier deck.
     const expectedForfeit = await page.evaluate(() =>
-      Math.round(5 * SugarCube.setup.Modifiers.payoutMultiplier()));
+      Math.round(3 * SugarCube.setup.Modifiers.payoutMultiplier()));
     await goToPassage(page, 'GhostStreet');
 
     // The card never offers "Resume Run" -- only the fresh-haunt link.
@@ -891,7 +896,7 @@ test.describe('E2E: rogue run lifecycle', () => {
 
     // Snapshot the failure payout BEFORE RogueEnd clears the run.
     const expectedFailure = await page.evaluate(() =>
-      Math.round(5 * SugarCube.setup.Modifiers.payoutMultiplier()));
+      Math.round(3 * SugarCube.setup.Modifiers.payoutMultiplier()));
 
     // Walking into RogueEnd closes the run as a failure.
     await goToPassage(page, 'RogueEnd');
@@ -1299,12 +1304,16 @@ test.describe('E2E: rogue run lifecycle', () => {
 
     // Run 2: lose.
     await clickLink(page, 'Visit the meta-shop', 'RogueMetaShop');
-    await clickLink(page, 'Continue hunting', 'RogueStart');
+    // Meta-shop's only exit goes back to the city; from there we
+    // re-enter the rogue lobby via the GhostStreet card.
+    await clickLink(page, 'Back to the city', 'CityMap');
+    await goToPassage(page, 'GhostStreet');
+    await clickRogueCard(page);
     const run2 = await getVar(page, 'run');
     expect(run2.number).toBe(2);
     await clickLink(page, 'Enter the hunt', 'RogueRun');
     const run2Loss = await page.evaluate(() =>
-      Math.round(5 * SugarCube.setup.Modifiers.payoutMultiplier()));
+      Math.round(3 * SugarCube.setup.Modifiers.payoutMultiplier()));
     await page.evaluate(() => SugarCube.setup.Rogue.markFailure());
     await goToPassage(page, 'RogueEnd');
     expect(await getVar(page, 'runsStarted')).toBe(2);

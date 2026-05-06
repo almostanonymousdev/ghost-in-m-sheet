@@ -363,6 +363,13 @@ sugarcube-2:
         rogue placeholder stays in sync with the regular hunts' tool catalogue.
         Visual-only until the rogue room renderer wires up search bags / meters.
         No args.
+    rogueLobbyRerollControl:
+      name: rogueLobbyRerollControl
+      description: Renders the lobby's reroll-charge button when the player has at
+        least one charge stockpiled, and nothing otherwise. Clicking the button
+        consumes a charge, redrafts the run's modifiers, repaints the modifier
+        list, and re-invokes itself so the button's visibility and "(you have N)"
+        label stay current. No args.
     leaveLink:
       name: leaveLink
       description: "Wraps a plain @@.adaptiveLink;<<link>> in the

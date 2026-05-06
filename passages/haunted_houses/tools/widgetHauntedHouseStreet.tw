@@ -37,7 +37,7 @@
    $hauntedHouse activation, no furniture seed -- the rogue
    subsystem owns its own state on $run. */
 <<widget "rogueHuntCard">>
-	<<set _rogueAddr to setup.Rogue.addressFromSeed(setup.Time.dailySeed()).formatted>>
+	<<set _rogueAddr to setup.Rogue.addressFromSeed(setup.Rogue.nextSeed()).formatted>>
 	<div class="housecard">
 		<<image "ui/img/rogue-house.jpg" "iconPx">>
 		<<if setup.Mc.lvl() gte 4>>

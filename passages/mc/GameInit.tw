@@ -132,10 +132,22 @@ setup.Game = (function () {
 		// fresh rogue run replaces it via setup.Rogue.start().
 		// $ectoplasm is the persistent meta-progression currency
 		// (measured in mL). $runsStarted is the lifetime attempt
-		// counter that stamps each run's `number` field.
+		// counter that stamps each run's `number` field. $meta
+		// holds permanent meta-shop unlocks: per-id owned counts
+		// in unlocks{}, the player's modifier banlist, and any
+		// stockpiled per-run reroll charges.
 		s.run = null;
 		s.ectoplasm = 0;
 		s.runsStarted = 0;
+		s.meta = {
+			unlocks: {},
+			bannedModifiers: [],
+			rerollCharges: 0
+		};
+		// Seed the GhostStreet rogue card / RogueStart lobby read for
+		// the *next* run. Rotates after each run so addresses change
+		// between visits without waiting for the in-game day to flip.
+		s.nextRogueSeed = Math.floor(Math.random() * 0x100000000);
 	}
 
 	return { initState: initState };

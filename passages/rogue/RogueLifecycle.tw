@@ -9,7 +9,7 @@
 <<if setup.Rogue.isRogue()>>
 	<<run setup.Rogue.endRogue(false)>>
 <</if>>
-<<set _rogueSeed to setup.Time.dailySeed()>>
+<<set _rogueSeed to setup.Rogue.nextSeed()>>
 <<run setup.Rogue.startRogue({ seed: _rogueSeed })>>
 <<run setup.HuntJournal.recordHuntStart()>>
 <<set _run to setup.Rogue.active()>>
@@ -19,9 +19,12 @@
 @@.mc-thoughts; A fresh hunt is waiting.@@<br>
 <br>
 @@.location; Modifiers@@<br>
-<<for _m range _modifiers>>
-	· <span class="usebtn" @title="_m.description"><<= _m.name>></span> -- <<= _m.description>><br>
-<</for>>
+<div id="rogue-lobby-modifiers">
+	<<for _m range _modifiers>>
+		· <span class="usebtn" @title="_m.description"><<= _m.name>></span> -- <<= _m.description>><br>
+	<</for>>
+</div>
+<span id="rogue-lobby-reroll"><<rogueLobbyRerollControl>></span>
 <br>
 @@.location; Objective@@<br>
 @@.mc-thoughts; <<= setup.Rogue.objectiveDescription(_run.objective) || _run.objective>>@@<br>
@@ -154,27 +157,87 @@
 <</if>>
 
 :: RogueMetaShop [nobr] {"position":"3300,200","size":"100,100"}
-/* Persistent-unlock storefront. Costs are flat for now; specific
-   unlocks (extra modifier reroll, starting tool, companion at
-   run start, ...) will replace the placeholders as their gameplay
-   hooks come online. Spending ectoplasm is itself the test the
-   lifecycle currently exercises. */
+/* Persistent-unlock storefront. Lists every item in
+   setup.Rogue.shopCatalogue(). Bool unlocks (max=1) flip to
+   "Owned" once bought; stackable unlocks (banlist slot, reroll
+   charge) keep their buy link until the cap is hit. Banlist
+   slots also expose a per-modifier ban toggle so the player can
+   spend their owned slots; the toggle never charges ectoplasm.
+   Costs are paid in mL of $ectoplasm; redraws of the balance and
+   item rows happen via <<replace>>. */
+<<set _balanceLine to function () {
+	return 'Ectoplasm: ' + setup.Rogue.ectoplasm() + ' mL';
+}>>
 @@.location; Meta-shop@@<br>
-<span class="mc-thoughts">Ectoplasm: <<= setup.Rogue.ectoplasm()>> mL</span><br>
+<span class="meta-shop-balance"><<= _balanceLine()>></span><br>
 <br>
-<<if setup.Rogue.canAffordEctoplasm(3)>>
-	@@.usebtn; <<link "Spend 3 mL of ectoplasm (placeholder unlock)">>
-		<<run setup.Rogue.spendEctoplasm(3)>>
-		<<replace ".meta-shop-balance">>
-			Ectoplasm: <<= setup.Rogue.ectoplasm()>> mL
-		<</replace>>
-	<</link>>@@<br>
-<<else>>
-	<span class="disabled-link">Spend 3 mL of ectoplasm (need 3 mL, have <<= setup.Rogue.ectoplasm()>> mL)</span><br>
+<div id="rogue-shop-list">
+	<<for _item range setup.Rogue.shopCatalogue()>>
+		<<capture _item>>
+			<<set _owned to setup.Rogue.metaUnlock(_item.id)>>
+			<<set _stackable to (_item.max gt 1)>>
+			<<set _atCap to (_owned gte _item.max)>>
+			<<set _rowId to 'rogue-shop-row-' + _item.id>>
+			<div class="rogue-shop-row" @id="_rowId">
+				<b><<= _item.name>></b>
+				<<if _stackable>>
+					(<<= _owned>> / <<= isFinite(_item.max) ? _item.max : '∞'>>)
+				<<elseif _atCap>>
+					<span class="mc-action">— Owned</span>
+				<</if>>
+				<br>
+				<span class="mc-thoughts"><<= _item.description>></span><br>
+				<<if not _atCap>>
+					<<if setup.Rogue.canAffordEctoplasm(_item.cost)>>
+						@@.usebtn; <<link `'Buy (' + _item.cost + ' mL)'`>>
+							<<run setup.Rogue.buyUnlock(_item.id)>>
+							<<goto "RogueMetaShop">>
+						<</link>>@@
+					<<else>>
+						<span class="disabled-link">Buy (<<= _item.cost>> mL — need <<= _item.cost - setup.Rogue.ectoplasm()>> more)</span>
+					<</if>>
+					<br>
+				<</if>>
+			</div>
+		<</capture>>
+	<</for>>
+</div>
+
+<<if setup.Rogue.bannedSlotsTotal() gt 0>>
+	<br>
+	@@.location; Modifier banlist@@<br>
+	<span class="mc-thoughts">
+		Slots used: <<= setup.Rogue.bannedSlotsUsed()>> / <<= setup.Rogue.bannedSlotsTotal()>>.
+		Banned modifiers will not appear in the run-start draft.
+	</span><br>
+	<div id="rogue-banlist">
+		<<for _mod range setup.Modifiers.draftableList()>>
+			<<capture _mod>>
+				<<set _isBanned to setup.Rogue.isBanned(_mod.id)>>
+				<<set _slotsLeft to setup.Rogue.bannedSlotsRemaining()>>
+				·
+				<<if _isBanned>>
+					<span class="mc-action"><<= _mod.name>></span>
+					@@.usebtn; <<link "Unban">>
+						<<run setup.Rogue.toggleBannedModifier(_mod.id)>>
+						<<goto "RogueMetaShop">>
+					<</link>>@@
+				<<elseif _slotsLeft gt 0>>
+					<<= _mod.name>>
+					@@.usebtn; <<link "Ban">>
+						<<run setup.Rogue.toggleBannedModifier(_mod.id)>>
+						<<goto "RogueMetaShop">>
+					<</link>>@@
+				<<else>>
+					<span class="disabled-link"><<= _mod.name>> (no slots free)</span>
+				<</if>>
+				-- @@.mc-thoughts;<<= _mod.description>>@@<br>
+			<</capture>>
+		<</for>>
+	</div>
 <</if>>
+
 <br>
-<span class="meta-shop-balance"></span><br>
-@@.movebtn; [[Continue hunting|RogueStart]]@@<br>
 @@.backbtn; [[Back to the city|CityMap]]@@
 
 :: RogueOutside [nobr] {"position":"3100,300","size":"100,100"}

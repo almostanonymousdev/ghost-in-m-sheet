@@ -1397,6 +1397,22 @@ body.ui-bar-stowed .rogue-run-layout {
 	stroke: var(--color-nav-blue);
 	stroke-width: 3;
 }
+/* Loot Sense (meta-shop unlock): rooms with at least one uncollected
+   loot kind glow lime-green. Stacks with the current-room blue stroke
+   via stroke-width precedence -- the cascade picks whichever rule lands
+   later, so authors can reorder these for the intended highlight. */
+.rogue-minimap-room.rogue-minimap-loot rect {
+	fill: #2c3a23;
+	stroke: #9ee27a;
+	stroke-width: 3;
+}
+/* Reliable Recon (meta-shop unlock): the ghost's original lair until
+   it drifts. Magenta so it reads distinctly from boss-gold and
+   loot-green at a glance. */
+.rogue-minimap-room.rogue-minimap-recon rect {
+	stroke: #d870ff;
+	stroke-width: 3;
+}
 
 /* ===== Settings-dialog cheats panel ===== */
 /* Injected by GuiController on :dialogopened. Buttons match the

@@ -1,0 +1,26 @@
+:: widgetRogueLobby [widget nobr] {"position":"3000,300","size":"100,100"}
+/* rogueLobbyRerollControl -- arg-less. Renders the lobby's reroll-charge
+   button when the player has at least one charge stockpiled, and nothing
+   otherwise. Clicking the button consumes a charge, redrafts the run's
+   modifiers, repaints the modifier list, and re-invokes this widget so
+   its own visibility / "(you have N)" label stay current. The caller is
+   responsible for wrapping the widget in a stable id (the lobby uses
+   #rogue-lobby-reroll) so the click handler's <<replace>> can drop the
+   button entirely once charges hit 0. */
+<<widget "rogueLobbyRerollControl">>
+	<<if setup.Rogue.rerollCharges() gt 0>>
+		@@.movebtn; <<link "Spend reroll charge (you have <<= setup.Rogue.rerollCharges()>>)">>
+			<<run setup.Rogue.consumeRerollCharge()>>
+			<<run setup.Rogue.redraftRunModifiers()>>
+			<<replace "#rogue-lobby-modifiers">>
+				<<set _modifiers to setup.Modifiers.activeList()>>
+				<<for _m range _modifiers>>
+					· <span class="usebtn" @title="_m.description"><<= _m.name>></span> -- <<= _m.description>><br>
+				<</for>>
+			<</replace>>
+			<<replace "#rogue-lobby-reroll">>
+				<<rogueLobbyRerollControl>>
+			<</replace>>
+		<</link>>@@<br>
+	<</if>>
+<</widget>>

@@ -84,9 +84,17 @@
 		// fields. $run is null when no rogue run is active
 		// (classic mode). $ectoplasm starts at 0 mL. $runsStarted
 		// is the lifetime attempt counter, also 0 by default.
+		// $meta holds permanent meta-shop unlocks: per-id owned
+		// counts, the modifier banlist, and stockpiled reroll
+		// charges. Saves predating the meta-shop default to none.
 		run:           function () { return null; },
 		ectoplasm:     function () { return 0; },
 		runsStarted:   function () { return 0; },
+		meta:          function () { return { unlocks: {}, bannedModifiers: [], rerollCharges: 0 }; },
+		// Seed for the *next* rogue run. Rotated after each run end so
+		// the GhostStreet card / RogueStart lobby preview a fresh
+		// address every attempt.
+		nextRogueSeed: function () { return Math.floor(Math.random() * 0x100000000); },
 
 		// Per-day seed; regenerated on every 24h rollover.
 		dailySeed:     function () { return Math.floor(Math.random() * 0x100000000); },

@@ -646,6 +646,17 @@
             return out;
         },
 
+        /* Set a single Notebook evidence checkbox by evidence id
+           ('emf', 'gwb', etc.). No-op for unknown ids. Used by the
+           rogue meta-shop's Intense Intuition unlock so a freshly
+           rolled run can pre-check one of the ghost's true evidences. */
+        setEvidenceCheck: function (evidenceId, value) {
+            var key = CHECK_VAR[evidenceId];
+            if (!key) return false;
+            State.variables[key] = !!value;
+            return true;
+        },
+
         /* Pure filter: given an evidence-id → boolean map, return a Set of
            ghost names whose evidence pattern matches. View-layer concerns
            (DOM classes, etc.) live in the consumer — see Notebook.tw. */
