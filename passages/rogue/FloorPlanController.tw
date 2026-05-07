@@ -89,6 +89,25 @@ setup.FloorPlan = (function () {
 		return picks;
 	}
 
+	/* Pick `n` items, refilling the pool whenever it runs out so the
+	   caller always gets exactly `n` results. Used for room-template
+	   selection in the rogue floor plan: the rogue catalogue is small
+	   enough that big floor plans (Maze, tool-loot expansion) need
+	   templates to repeat rather than the plan getting silently
+	   capped at the catalogue size. Returns an empty list when the
+	   source list is empty. */
+	function pickNCycling(rng, list, n) {
+		if (!list.length) return [];
+		var picks = [];
+		var pool = list.slice();
+		for (var i = 0; i < n; i++) {
+			if (!pool.length) pool = list.slice();
+			var idx = Math.floor(rng() * pool.length);
+			picks.push(pool.splice(idx, 1)[0]);
+		}
+		return picks;
+	}
+
 	/* Tool-pickup loot kinds are namespaced ('tool_emf', 'tool_uvl', ...)
 	   so they share the same loot/lootFurniture pipeline as cursedItem
 	   et al. without colliding with future loot kinds. The TOOL_LOOT_PREFIX
@@ -124,7 +143,7 @@ setup.FloorPlan = (function () {
 			: [];
 
 		var rooms = [{ id: 'room_0', template: HALLWAY_TEMPLATE }];
-		var nonHallway = pickN(rng, nonHallwayTemplates(), roomCount - 1);
+		var nonHallway = pickNCycling(rng, nonHallwayTemplates(), roomCount - 1);
 		nonHallway.forEach(function (tmpl, i) {
 			rooms.push({ id: 'room_' + (i + 1), template: tmpl });
 		});

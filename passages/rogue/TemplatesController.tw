@@ -43,6 +43,46 @@ setup.Templates = (function () {
 	   rogue rooms feel comparably furnished to authored ones. */
 	var TEMPLATES = Object.freeze({
 		// --- Procedural-eligible: appear in rogue floor plans -----
+		// Rogue-only templates with dedicated backgrounds (see
+		// setup.Styles.bgUrlForTemplate). Kept distinct from the
+		// authored-house templates below so the rogue floor plan
+		// renders its own scene set instead of reusing classic art.
+		attic: {
+			id: 'attic', label: 'Attic',
+			furniture: ['shelves', 'wardrobe', 'table'],
+			hideSpot: 'wardrobe',
+			proceduralEligible: true
+		},
+		'dining-room': {
+			id: 'dining-room', label: 'Dining Room',
+			furniture: ['table', 'desk', 'sofa'],
+			hideSpot: null,
+			proceduralEligible: true
+		},
+		sauna: {
+			id: 'sauna', label: 'Sauna',
+			furniture: ['bathtub', 'sink', 'carpet'],
+			hideSpot: null,
+			proceduralEligible: true
+		},
+		'sex-dungeon': {
+			id: 'sex-dungeon', label: 'Sex Dungeon',
+			furniture: ['bed', 'table', 'wardrobe1'],
+			hideSpot: 'bed',
+			proceduralEligible: true
+		},
+		'walk-in-closet': {
+			id: 'walk-in-closet', label: 'Walk-In Closet',
+			furniture: ['wardrobe1', 'wardrobe', 'shelves'],
+			hideSpot: 'wardrobe1',
+			proceduralEligible: true
+		},
+
+		// --- Authored-house templates -----------------------------
+		// Kept in the catalogue so classic-mode rooms keep working
+		// (id is used as the room state-var name in classic houses),
+		// but excluded from procedural rogue plans -- rogue uses its
+		// own dedicated rooms above.
 		kitchen: {
 			id: 'kitchen', label: 'Kitchen',
 			furniture: ['desk', 'table', 'sink1'],
@@ -80,9 +120,9 @@ setup.Templates = (function () {
 			proceduralEligible: true
 		},
 		// Enigma's three trio rooms -- no furniture, atmospheric only.
-		roomA: { id: 'roomA', label: 'Room A', furniture: [], hideSpot: null, proceduralEligible: true },
-		roomB: { id: 'roomB', label: 'Room B', furniture: [], hideSpot: null, proceduralEligible: true },
-		roomC: { id: 'roomC', label: 'Room C', furniture: [], hideSpot: null, proceduralEligible: true },
+		roomA: { id: 'roomA', label: 'Room A', furniture: [], hideSpot: null, proceduralEligible: false },
+		roomB: { id: 'roomB', label: 'Room B', furniture: [], hideSpot: null, proceduralEligible: false },
+		roomC: { id: 'roomC', label: 'Room C', furniture: [], hideSpot: null, proceduralEligible: false },
 
 		// --- Backbone: hallway is always present in rogue plans ---
 		hallway: {

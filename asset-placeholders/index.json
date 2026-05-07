@@ -12864,6 +12864,18 @@
       "height": 720,
       "kind": "video"
     },
+    "scenes/room/attic-dark.jpg": {
+      "label": "attic dark",
+      "width": 1280,
+      "height": 720,
+      "kind": "image"
+    },
+    "scenes/room/attic-lit.jpg": {
+      "label": "attic lit",
+      "width": 1280,
+      "height": 720,
+      "kind": "image"
+    },
     "scenes/room/bathroom-dark.jpg": {
       "label": "",
       "width": 1920,
@@ -12886,6 +12898,18 @@
       "label": "",
       "width": 1920,
       "height": 1013,
+      "kind": "image"
+    },
+    "scenes/room/dining-room-dark.jpg": {
+      "label": "dining room dark",
+      "width": 1280,
+      "height": 720,
+      "kind": "image"
+    },
+    "scenes/room/dining-room-lit.jpg": {
+      "label": "dining room lit",
+      "width": 1280,
+      "height": 720,
       "kind": "image"
     },
     "scenes/room/elm/basement-dark.jpg": {
@@ -13030,6 +13054,42 @@
       "label": "",
       "width": 1920,
       "height": 1433,
+      "kind": "image"
+    },
+    "scenes/room/sauna-dark.jpg": {
+      "label": "sauna dark",
+      "width": 1280,
+      "height": 720,
+      "kind": "image"
+    },
+    "scenes/room/sauna-lit.jpg": {
+      "label": "sauna lit",
+      "width": 1280,
+      "height": 720,
+      "kind": "image"
+    },
+    "scenes/room/sex-dungeon-dark.jpg": {
+      "label": "sex dungeon dark",
+      "width": 1280,
+      "height": 720,
+      "kind": "image"
+    },
+    "scenes/room/sex-dungeon-lit.jpg": {
+      "label": "sex dungeon lit",
+      "width": 1280,
+      "height": 720,
+      "kind": "image"
+    },
+    "scenes/room/walk-in-closet-dark.jpg": {
+      "label": "walk in closet dark",
+      "width": 1280,
+      "height": 720,
+      "kind": "image"
+    },
+    "scenes/room/walk-in-closet-lit.jpg": {
+      "label": "walk in closet lit",
+      "width": 1280,
+      "height": 720,
       "kind": "image"
     },
     "scenes/shower/1.jpg": {

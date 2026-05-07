@@ -48,6 +48,10 @@
 	<<set _modifiers to setup.Modifiers.activeList()>>
 	<<set _cr to setup.Rogue.currentRoomData()>>
 
+	<<if _cr>>
+		<<bodyBackground `setup.Styles.bgUrlForTemplate(_cr.template)`>>
+	<</if>>
+
 	<div class="rogue-run-layout">
 		<div id="rogue-tool-result" class="rogue-tool-result"></div>
 		<div id="rogue-tool-meter" class="rogue-tool-meter"></div>

@@ -27,6 +27,12 @@ test.describe('Room template catalogue', () => {
     expected.forEach(id => expect(ids).toContain(id));
   });
 
+  test('catalogue lists the rogue-only templates', async () => {
+    const ids = await callSetup(page, 'setup.Templates.ids()');
+    ['attic', 'dining-room', 'sauna', 'sex-dungeon', 'walk-in-closet']
+      .forEach(id => expect(ids).toContain(id));
+  });
+
   test('every entry has the required fields', async () => {
     const tmpls = await callSetup(page, 'setup.Templates.list()');
     tmpls.forEach(t => {
@@ -62,10 +68,38 @@ test.describe('Room template catalogue', () => {
       .forEach(id => expect(eligible).not.toContain(id));
   });
 
-  test('canonical templates (kitchen, bedroom, livingroom) are procedurally eligible', async () => {
+  test('authored-house templates (kitchen, bedroom, livingroom) remain procedurally eligible', async () => {
+    // Rogue plans draw from the union of authored and rogue-only
+    // templates so the floor plan has variety beyond the five
+    // dedicated rogue scenes.
     const eligible = await callSetup(page, 'setup.Templates.proceduralEligibleIds()');
     ['kitchen', 'bathroom', 'bedroom', 'livingroom', 'nursery', 'basement']
       .forEach(id => expect(eligible).toContain(id));
+  });
+
+  test('enigma trio rooms (roomA, roomB, roomC) are NOT procedurally eligible', async () => {
+    // The empty-furniture enigma rooms are story-locked and have no
+    // rogue background art, so they must not show up in rogue plans.
+    const eligible = await callSetup(page, 'setup.Templates.proceduralEligibleIds()');
+    ['roomA', 'roomB', 'roomC']
+      .forEach(id => expect(eligible).not.toContain(id));
+  });
+
+  test('rogue-only templates (attic, dining-room, sauna, sex-dungeon, walk-in-closet) are procedurally eligible', async () => {
+    const eligible = await callSetup(page, 'setup.Templates.proceduralEligibleIds()');
+    ['attic', 'dining-room', 'sauna', 'sex-dungeon', 'walk-in-closet']
+      .forEach(id => expect(eligible).toContain(id));
+  });
+
+  test('every procedurally-eligible template has a rogue background entry', async () => {
+    // setup.Styles.bgUrlForTemplate must resolve every rogue room
+    // the floor-plan generator can pick, so the player never lands
+    // in a room with no background art.
+    const eligible = await callSetup(page, 'setup.Templates.proceduralEligibleIds()');
+    for (const id of eligible) {
+      const bg = await callSetup(page, `setup.Styles.bgUrlForTemplate("${id}")`);
+      expect(bg, `template "${id}" has no rogue background mapping`).toBeTruthy();
+    }
   });
 
   // --- Slot-id helpers ---

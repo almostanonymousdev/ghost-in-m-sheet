@@ -73,10 +73,22 @@ test.describe('Floor-plan generator', () => {
     });
   });
 
-  test('non-hallway templates are unique within a single plan', async () => {
-    const plan = await gen(7, { roomCount: 6 });
-    const tmpls = plan.rooms.slice(1).map(r => r.template);
-    expect(new Set(tmpls).size).toBe(tmpls.length);
+  test('non-hallway templates prefer distinct picks before repeating', async () => {
+    /* The rogue catalogue is small, so the generator allows templates
+       to repeat once the pool is exhausted (Maze + tool-loot can
+       request more rooms than there are distinct templates). For a
+       plan that fits inside the catalogue, picks are still distinct;
+       for a plan that overflows it, every catalogue template must
+       appear at least once before any repeats. */
+    const cat = await callSetup(page, 'setup.FloorPlan.nonHallwayTemplates()');
+    const fittingPlan = await gen(7, { roomCount: Math.min(cat.length, 5) + 1 });
+    const fittingTmpls = fittingPlan.rooms.slice(1).map(r => r.template);
+    expect(new Set(fittingTmpls).size).toBe(fittingTmpls.length);
+
+    const overflowPlan = await gen(7, { roomCount: cat.length + 3 });
+    const overflowTmpls = overflowPlan.rooms.slice(1).map(r => r.template);
+    cat.forEach(id => expect(overflowTmpls).toContain(id));
+    expect(overflowTmpls.length).toBe(cat.length + 2);
   });
 
   // --- Connectivity ---

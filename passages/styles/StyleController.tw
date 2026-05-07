@@ -58,6 +58,31 @@ setup.Styles = (function () {
 		IroncladBlockBCellC: { stateKey: 'BlockBCellC', light: 'assets/scenes/room/ironclad/block-b-cell-c.webp', dark: 'assets/scenes/room/ironclad/block-b-cell-c-dark.webp', cls: 'IroncladBlockBCellC' }
 	};
 
+	/* Rogue-mode rooms render through the single RogueRun passage, so
+	   they can't share the passage-name → room map above. Keyed by
+	   setup.Templates id instead; setup.Styles.bgUrlForTemplate is the
+	   sole reader. Adding a new rogue-eligible template means adding
+	   the template here AND in setup.Templates. */
+	var rogueRooms = {
+		// Hallway is the rogue backbone (room_0).
+		hallway:          { light: 'assets/scenes/room/hallway.jpg',             dark: 'assets/scenes/room/hallway-dark.jpg' },
+		// Authored-house templates kept eligible for rogue plans;
+		// they reuse the Owaissa/Elm scene art rather than ship
+		// rogue-specific variants.
+		kitchen:          { light: 'assets/scenes/room/kitchen.jpg',             dark: 'assets/scenes/room/kitchen-dark.jpg' },
+		bathroom:         { light: 'assets/scenes/room/bathroom.jpg',            dark: 'assets/scenes/room/bathroom-dark.jpg' },
+		bedroom:          { light: 'assets/scenes/room/bedroom.jpg',             dark: 'assets/scenes/room/bedroom-dark.jpg' },
+		livingroom:       { light: 'assets/scenes/room/livingroom.jpg',          dark: 'assets/scenes/room/livingroom-dark.jpg' },
+		nursery:          { light: 'assets/scenes/room/elm/nursery.jpg',         dark: 'assets/scenes/room/elm/nursery-dark.jpg' },
+		basement:         { light: 'assets/scenes/room/elm/basement.jpg',        dark: 'assets/scenes/room/elm/basement-dark.jpg' },
+		// Rogue-only templates with dedicated backgrounds.
+		attic:            { light: 'assets/scenes/room/attic-lit.jpg',           dark: 'assets/scenes/room/attic-dark.jpg' },
+		'dining-room':    { light: 'assets/scenes/room/dining-room-lit.jpg',     dark: 'assets/scenes/room/dining-room-dark.jpg' },
+		sauna:            { light: 'assets/scenes/room/sauna-lit.jpg',           dark: 'assets/scenes/room/sauna-dark.jpg' },
+		'sex-dungeon':    { light: 'assets/scenes/room/sex-dungeon-lit.jpg',     dark: 'assets/scenes/room/sex-dungeon-dark.jpg' },
+		'walk-in-closet': { light: 'assets/scenes/room/walk-in-closet-lit.jpg',  dark: 'assets/scenes/room/walk-in-closet-dark.jpg' }
+	};
+
 	function roomOf(passageName) {
 		return rooms[passageName] || null;
 	}
@@ -70,6 +95,7 @@ setup.Styles = (function () {
 
 	return {
 		rooms: rooms,
+		rogueRooms: rogueRooms,
 		roomOf: roomOf,
 		isDarkRoom: isDark,
 
@@ -81,6 +107,18 @@ setup.Styles = (function () {
 			var r = rooms[passageName];
 			if (!r) return null;
 			return isDark(passageName) ? r.dark : r.light;
+		},
+
+		/*
+		 * Background image URL for a rogue-mode room template.
+		 * Rogue rooms have no per-room light state, so callers
+		 * pass `dark = true` explicitly when they want the dark
+		 * variant. Returns null for templates without art.
+		 */
+		bgUrlForTemplate: function (templateId, dark) {
+			var r = rogueRooms[templateId];
+			if (!r) return null;
+			return dark ? r.dark : r.light;
 		},
 
 		/*
