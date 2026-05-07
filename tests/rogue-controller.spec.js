@@ -278,6 +278,75 @@ test.describe('Rogue Controller', () => {
     expect(await callSetup(page, 'setup.Rogue.currentRoomData()')).toBeNull();
   });
 
+  // --- Per-room light state ---
+
+  test('rogue rooms default to dark (matches classic-mode default)', async () => {
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
+      seed: 1, floorPlanOpts: { roomCount: 5 }
+    }));
+    expect(await callSetup(page, 'setup.Rogue.isRoomDark("room_0")')).toBe(true);
+    expect(await callSetup(page, 'setup.Rogue.isRoomDark("room_1")')).toBe(true);
+    expect(await callSetup(page, 'setup.Rogue.isCurrentRoomDark()')).toBe(true);
+  });
+
+  test('setRoomLight to LIT flips isRoomDark for that room', async () => {
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
+      seed: 1, floorPlanOpts: { roomCount: 5 }
+    }));
+    await page.evaluate(() =>
+      SugarCube.setup.Rogue.setRoomLight('room_0', SugarCube.setup.RoomLight.LIT));
+    expect(await callSetup(page, 'setup.Rogue.isRoomDark("room_0")')).toBe(false);
+    expect(await callSetup(page, 'setup.Rogue.isCurrentRoomDark()')).toBe(false);
+  });
+
+  test('light state is per-room and survives navigation', async () => {
+    /* Toggling room_0 LIT should not bleed into room_1; navigating
+       away and back to room_0 should still see LIT. */
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
+      seed: 42, floorPlanOpts: { roomCount: 5 }
+    }));
+    await page.evaluate(() =>
+      SugarCube.setup.Rogue.setRoomLight('room_0', SugarCube.setup.RoomLight.LIT));
+    expect(await callSetup(page, 'setup.Rogue.isRoomDark("room_0")')).toBe(false);
+    expect(await callSetup(page, 'setup.Rogue.isRoomDark("room_1")')).toBe(true);
+
+    await page.evaluate(() => SugarCube.setup.Rogue.setCurrentRoom('room_1'));
+    expect(await callSetup(page, 'setup.Rogue.isCurrentRoomDark()')).toBe(true);
+    await page.evaluate(() => SugarCube.setup.Rogue.setCurrentRoom('room_0'));
+    expect(await callSetup(page, 'setup.Rogue.isCurrentRoomDark()')).toBe(false);
+  });
+
+  test('setRoomLight back to DARK re-darkens the room', async () => {
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
+      seed: 1, floorPlanOpts: { roomCount: 5 }
+    }));
+    await page.evaluate(() =>
+      SugarCube.setup.Rogue.setRoomLight('room_0', SugarCube.setup.RoomLight.LIT));
+    await page.evaluate(() =>
+      SugarCube.setup.Rogue.setRoomLight('room_0', SugarCube.setup.RoomLight.DARK));
+    expect(await callSetup(page, 'setup.Rogue.isRoomDark("room_0")')).toBe(true);
+  });
+
+  test('lights map clears between runs', async () => {
+    /* A fresh start() should hand the player a brand-new $run with
+       lights cleared -- otherwise saves would leak previous-run light
+       picks into a new haunt. */
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
+      seed: 1, floorPlanOpts: { roomCount: 5 }
+    }));
+    await page.evaluate(() =>
+      SugarCube.setup.Rogue.setRoomLight('room_0', SugarCube.setup.RoomLight.LIT));
+    await page.evaluate(() => SugarCube.setup.Rogue.end());
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
+      seed: 2, floorPlanOpts: { roomCount: 5 }
+    }));
+    expect(await callSetup(page, 'setup.Rogue.isRoomDark("room_0")')).toBe(true);
+  });
+
+  test('isRoomDark returns false off-run (no haunt to be dark)', async () => {
+    expect(await callSetup(page, 'setup.Rogue.isRoomDark("room_0")')).toBe(false);
+  });
+
   // --- Starting tools (loadout / Empty Bag) ---
 
   test('startingTools defaults to all six tools in canonical order', async () => {

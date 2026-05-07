@@ -396,7 +396,12 @@ setup.Rogue = (function () {
 			// loot kinds have already been picked up this run, so
 			// repeat searches at the same spot find nothing.
 			searchedFurniture: null,
-			collectedLoot: []
+			collectedLoot: [],
+			/* Per-room light state, keyed by floor-plan room id. Missing
+			   entries default to dark (matches classic, where every room
+			   starts dark on house entry); the rogue light widget toggles
+			   them via setRoomLight. */
+			lights: {}
 		};
 		return sv().run;
 	}
@@ -599,6 +604,30 @@ setup.Rogue = (function () {
 		if (!found) return false;
 		run.currentRoomId = roomId;
 		return true;
+	}
+
+	/* Per-room light state. Rogue rooms are not seeded into setup.Rooms,
+	   so the light/dark flag lives on $run.lights keyed by floor-plan
+	   room id; missing entries default to DARK (matches classic-mode
+	   defaults from setup.Rooms.seed). The rogueFooterLight widget toggles
+	   this and re-navigates RogueRun, which re-resolves the body
+	   background through setup.Styles.bgUrlForTemplate(template, dark). */
+	function isRoomDark(roomId) {
+		var run = sv().run;
+		if (!run || !roomId) return false;
+		var lights = run.lights || {};
+		var v = lights[roomId];
+		if (v == null) return true;
+		return v === setup.RoomLight.DARK;
+	}
+	function setRoomLight(roomId, lightConst) {
+		var run = sv().run;
+		if (!run || !roomId) return;
+		if (!run.lights) run.lights = {};
+		run.lights[roomId] = lightConst;
+	}
+	function isCurrentRoomDark() {
+		return isRoomDark(currentRoomId());
 	}
 
 	function hasModifier(id) {
@@ -1340,6 +1369,9 @@ setup.Rogue = (function () {
 		markFailure: markFailure,
 		currentRoomId: currentRoomId,
 		setCurrentRoom: setCurrentRoom,
+		isRoomDark: isRoomDark,
+		isCurrentRoomDark: isCurrentRoomDark,
+		setRoomLight: setRoomLight,
 		setSearchedFurniture: setSearchedFurniture,
 		searchedFurniture: searchedFurniture,
 		stashStolenClothes: stashStolenClothes,

@@ -38,11 +38,14 @@ test.describe('HuntController', () => {
     await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
   });
 
-  /* The rogue card's link text is the day's randomised street address,
-     not a fixed "Rogue Hunt" label. Resolve it client-side and click. */
+  /* The rogue card's link text is the per-cycle randomised street address.
+     The card resolves it from setup.Rogue.nextSeed() (see
+     widgetHauntedHouseStreet.tw), so the test must read from the same
+     source -- not setup.Time.dailySeed(), which the card no longer uses
+     after the address-update fix. Resolve it client-side and click. */
   async function clickRogueCard(page) {
     const rogueAddr = await page.evaluate(() =>
-      SugarCube.setup.Rogue.addressFromSeed(SugarCube.setup.Time.dailySeed()).formatted
+      SugarCube.setup.Rogue.addressFromSeed(SugarCube.setup.Rogue.nextSeed()).formatted
     );
     await page.locator('.passage')
       .getByText(rogueAddr, { exact: true })

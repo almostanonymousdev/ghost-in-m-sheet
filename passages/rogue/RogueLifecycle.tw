@@ -49,7 +49,7 @@
 	<<set _cr to setup.Rogue.currentRoomData()>>
 
 	<<if _cr>>
-		<<bodyBackground `setup.Styles.bgUrlForTemplate(_cr.template)`>>
+		<<bodyBackground `setup.Styles.bgUrlForTemplate(_cr.template, setup.Rogue.isRoomDark(_cr.id))`>>
 	<</if>>
 
 	<div class="rogue-run-layout">
@@ -86,12 +86,15 @@
 				<</for>>
 			<<elseif _cr>>
 				@@.mc-thoughts; (bare room)@@
+			<<else>>
+				/% _cr is null only when currentRoomId points to a non-existent room (corrupted save). Render nothing; the outer isRogue gate is the player-visible recovery path for a missing $run. %/
 			<</if>>
 		</div>
 
 		<div class="rogue-run-bottom">
 			<div class="hunt-conditions"><<huntConditions>></div>
 			<div class="rogue-run-hud">
+				<<rogueFooterLight>>
 				<span><<= setup.Rogue.address().formatted>></span>
 				<span>Room: <<= _cr ? _cr.label : "—">></span>
 				<span>Objective: <<= _run.objective>></span>

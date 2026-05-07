@@ -1,3 +1,26 @@
+:: widgetRogueFooterLight [widget nobr] {"position":"3600,300","size":"100,100"}
+/* rogueFooterLight -- arg-less. Rogue counterpart of <<roomFooterLight>>:
+   two image links that toggle the current room's light/dark state and
+   re-render RogueRun so the body background re-resolves through
+   setup.Styles.bgUrlForTemplate(template, dark). State lives on
+   $run.lights keyed by floor-plan room id so each room remembers its
+   setting independently; classic-style cursedHuntLinkDisable wrapper
+   gates clicks while a hunt is active, matching the haunted-house
+   widget's behavior. */
+<<widget "rogueFooterLight">>
+	<<set _roomId to setup.Rogue.currentRoomId()>>
+	<<if _roomId>>
+		<<capture _roomId>>
+			<div class="rogue-run-lights">
+			<span class="cursedHuntLinkDisable"><<link "<<image \"ui/img/lighton.png\">>" "RogueRun">><<run setup.Rogue.setRoomLight(_roomId, setup.RoomLight.LIT)>>
+			<</link>>
+			<<link "<<image \"ui/img/lightoff.png\">>" "RogueRun">><<run setup.Rogue.setRoomLight(_roomId, setup.RoomLight.DARK)>>
+			<</link>></span>
+			</div>
+		<</capture>>
+	<</if>>
+<</widget>>
+
 :: widgetRogueToolBar [widget nobr] {"position":"3600,200","size":"100,100"}
 /* rogueToolBar -- arg-less. Renders one tool card per entry in
    setup.Rogue.startingTools(), which folds the run's loadout and

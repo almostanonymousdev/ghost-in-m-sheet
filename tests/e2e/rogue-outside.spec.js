@@ -80,11 +80,19 @@ test.describe('E2E: rogue Outside menu', () => {
   test('Flee the hunt ends the run as failure with reason "fled"', async () => {
     await startRun(page);
     await clickLink(page, 'Outside', 'RogueOutside');
+    /* Snapshot the expected failure payout BEFORE Flee triggers
+       endRogue (which clears $run and zeroes the active modifier
+       deck). Failure payout = round(failure_base * deck multiplier);
+       failure_base is 3 in setup.Rogue.endRogue, and the multiplier
+       compounds the per-modifier payoutMultiplier values from the
+       active deck. Computing it from the live API keeps the test
+       robust against retuned modifier rates. */
+    const expected = await page.evaluate(() =>
+      Math.round(3 * SugarCube.setup.Modifiers.payoutMultiplier()));
     await clickLink(page, 'Flee the hunt', 'RogueEnd');
 
     expect(await getVar(page, 'run')).toBeNull();
-    // Failure payout: 5 base + 0 success + 2 modifiers = 7 mL.
-    expect(await getVar(page, 'ectoplasm')).toBe(7);
+    expect(await getVar(page, 'ectoplasm')).toBe(expected);
     await expect(
       page.locator('.passage').getByText(/door at your back/i)
     ).toBeVisible();

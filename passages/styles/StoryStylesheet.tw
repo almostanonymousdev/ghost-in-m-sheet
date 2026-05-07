@@ -1301,6 +1301,23 @@ body.ui-bar-stowed .rogue-run-layout {
 	border-top: 1px solid #444;
 	padding-top: 0.25em;
 	flex-wrap: wrap;
+	position: relative;
+}
+/* Light on/off buttons. Anchored to .rogue-run-hud's top-right edge so
+   they float just above the HUD's border-top divider on the far right
+   side. Pulled out of the flex flow with absolute positioning so the
+   HUD's centered-stat layout keeps its symmetry. */
+.rogue-run-lights {
+	position: absolute;
+	right: 0;
+	bottom: calc(100% + 4px);
+	display: flex;
+	gap: 4px;
+	z-index: 5;
+}
+.rogue-run-lights img {
+	width: 32px;
+	height: auto;
 }
 /* The toolbar is a positioned wrapper so .rogue-run-tools can span
  * the full width and center its cluster on the same vertical axis as

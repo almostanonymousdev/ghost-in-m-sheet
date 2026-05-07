@@ -198,6 +198,55 @@ test.describe('E2E: rogue run lifecycle', () => {
     );
   });
 
+  test('rogueFooterLight toggles the current room\'s light state and the body background', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickRogueCard(page);
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
+
+    // Both buttons render inside the bottom HUD's .rogue-run-lights
+    // wrapper (anchored to the right edge, above the .rogue-run-hud
+    // border line by absolute positioning).
+    const lights = page.locator('.rogue-run-bottom .rogue-run-lights');
+    await expect(lights).toHaveCount(1);
+    await expect(lights.locator('img')).toHaveCount(2);
+
+    // Default: room_0 starts dark, so the rendered body bg should
+    // reference the dark variant of the hallway template. The
+    // <<bodyBackground>> widget emits an inline <style> in the
+    // passage; <style> content isn't visible text, so read it via
+    // evaluate rather than Playwright's hasText matcher.
+    const bgStyleText = () => page.evaluate(() => {
+      var styles = document.querySelectorAll('.passage style');
+      for (var i = 0; i < styles.length; i++) {
+        if (styles[i].textContent.indexOf('background-image') !== -1) {
+          return styles[i].textContent;
+        }
+      }
+      return '';
+    });
+    expect(await callSetup(page, 'setup.Rogue.isCurrentRoomDark()')).toBe(true);
+    expect(await bgStyleText()).toContain('hallway-dark');
+
+    // Click "lights on" (first image link). RogueRun re-renders, the
+    // light flag flips to LIT, and the body bg switches to the lit URL.
+    await lights.locator('a').nth(0).click();
+    await page.waitForFunction(
+      () => SugarCube.setup.Rogue.isCurrentRoomDark() === false
+    );
+    const litStyle = await bgStyleText();
+    expect(litStyle).toContain('hallway.jpg');
+    expect(litStyle).not.toContain('hallway-dark');
+
+    // Click "lights off" -- back to dark.
+    await page.locator('.rogue-run-bottom .rogue-run-lights a').nth(1).click();
+    await page.waitForFunction(
+      () => SugarCube.setup.Rogue.isCurrentRoomDark() === true
+    );
+    expect(await bgStyleText()).toContain('hallway-dark');
+  });
+
   test('RogueRun renders the shared hunt-conditions HUD with live deltas', async () => {
     test.setTimeout(15_000);
 
