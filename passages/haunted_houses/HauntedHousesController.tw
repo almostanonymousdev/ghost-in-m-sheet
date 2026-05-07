@@ -306,6 +306,7 @@ setup.HauntedHouses = (function () {
 			setup.Companion.resetHuntState();
 			setup.Companion.resetAliceWorkIfNeeded();
 			if (opts.loseStolen) setup.Wardrobe.loseAllStolen();
+			setup.Wardrobe.redressAfterHunt();
 		},
 
 		// --- Which house are we in? -----------------------------

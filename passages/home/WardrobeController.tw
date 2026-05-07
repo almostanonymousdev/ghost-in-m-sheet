@@ -563,6 +563,23 @@
             return !!this._rememberedItem(slot);
         },
 
+        /* End-of-hunt auto-redress for clothes the MC took off herself
+         * via the side-panel quickUndress shortcut. Voluntarily-removed
+         * slots leave isXxxStolen at 0 (only the steal events flip those),
+         * so quickRedress' stolen/NOT_BOUGHT filters do the work: any slot
+         * that still has a re-equippable remembered item gets it back on.
+         * Stolen items either ran through loseAllStolen (now NOT_BOUGHT)
+         * or are still flagged stolen, so they correctly stay off.
+         * Returns the list of slots that were actually redressed. */
+        redressAfterHunt: function () {
+            var slots = ['tshirt', 'bra', 'panties', 'bottomOuter'];
+            var restored = [];
+            for (var i = 0; i < slots.length; i++) {
+                if (this.quickRedress(slots[i])) restored.push(slots[i]);
+            }
+            return restored;
+        },
+
         _rememberedItem: function (slot) {
             var grp = this.groupForSlot(slot);
             if (!grp || !grp.rememberVar) return null;

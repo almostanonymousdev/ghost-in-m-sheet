@@ -673,6 +673,25 @@ test.describe('Rogue Controller', () => {
     expect(summary.payout).toBe(3);
   });
 
+  test('endRogue auto-redresses slots the MC took off during the run', async () => {
+    /* Rogue clean-exit paths (success / flee) skip cleanupAfterHunt,
+       so redressAfterHunt has to fire from endRogue itself. */
+    await page.evaluate(() => SugarCube.setup.Rogue.start({ seed: 3, modifiers: [] }));
+    await page.evaluate(() => {
+      const V = SugarCube.State.variables;
+      V.tshirtState0 = 'not worn';
+      V.tshirtState1 = 'not worn';
+      V.tshirtState  = 'not worn';
+      V.rememberTopOuter = 'notshirt1';
+      V.isShirtStolen = 0;
+    });
+
+    await page.evaluate(() => SugarCube.setup.Rogue.endRogue(true));
+
+    expect(await getVar(page, 'tshirtState1')).toBe('worn');
+    expect(await getVar(page, 'tshirtState')).toBe('worn');
+  });
+
   // --- Maze modifier (roomCount += 3) ---
 
   test('Maze in startRogue bumps roomCount by 3 end-to-end', async () => {

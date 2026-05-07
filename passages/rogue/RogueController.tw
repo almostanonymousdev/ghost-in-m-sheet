@@ -1315,6 +1315,13 @@ setup.Rogue = (function () {
 				setup.HauntedHouses.resetCursedItemState();
 			}
 		}
+		/* Auto-redress slots the MC undressed herself during the run.
+		   The classic-mode caught path runs this through cleanupAfterHunt;
+		   rogue's clean-exit paths (success / flee) skip that helper, so
+		   we redress here too. Stolen / lost items are already filtered. */
+		if (setup.Wardrobe && typeof setup.Wardrobe.redressAfterHunt === 'function') {
+			setup.Wardrobe.redressAfterHunt();
+		}
 		/* Restore the pre-run sanity / energy caps if the run bumped
 		   them via Steeled Hand / Calves of Steel. Caps are long-lived
 		   in classic mode (energyMax in particular is bumped by

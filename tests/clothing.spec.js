@@ -452,6 +452,96 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
     await setVar(page, 'shortsState', 'not worn');
     expect(await callSetup(page, 'setup.Wardrobe.currentBottomSlotName()')).toBe(null);
   });
+
+  test('redressAfterHunt re-equips slots the MC voluntarily took off', async ({ game: page }) => {
+    /* MC took her tier-1 jeans and tier-2 bra off mid-hunt and never
+     * put them back on. End-of-hunt cleanup should restore them. */
+    await setVar(page, 'jeansState0', 'not worn');
+    await setVar(page, 'jeansState1', 'not worn');
+    await setVar(page, 'jeansState',  'not worn');
+    await setVar(page, 'rememberBottomOuter', 'nojeans1');
+    await setVar(page, 'isBottomStolen', 0);
+
+    await setVar(page, 'braState0', 'not worn');
+    await setVar(page, 'braState2', 'not worn');
+    await setVar(page, 'braState',  'not worn');
+    await setVar(page, 'rememberTopUnder', 'nobra2');
+    await setVar(page, 'isBraStolen', 0);
+
+    const restored = await callSetup(page, 'setup.Wardrobe.redressAfterHunt()');
+    expect(restored.sort()).toEqual(['bottomOuter', 'bra']);
+    expect(await getVar(page, 'jeansState1')).toBe('worn');
+    expect(await getVar(page, 'jeansState')).toBe('worn');
+    expect(await getVar(page, 'braState2')).toBe('worn');
+    expect(await getVar(page, 'braState')).toBe('worn');
+  });
+
+  test('redressAfterHunt skips slots flagged as stolen', async ({ game: page }) => {
+    /* The ghost stole the tier-1 tshirt during the hunt
+     * (isShirtStolen=1) — auto-redress must not put it back on, the
+     * recovery has to go through FindStolenClothes / loseAllStolen. */
+    await setVar(page, 'tshirtState0', 'not worn');
+    await setVar(page, 'tshirtState1', 'not worn');
+    await setVar(page, 'tshirtState',  'not worn');
+    await setVar(page, 'rememberTopOuter', 'notshirt1');
+    await setVar(page, 'isShirtStolen', 1);
+
+    const restored = await callSetup(page, 'setup.Wardrobe.redressAfterHunt()');
+    expect(restored).toEqual([]);
+    expect(await getVar(page, 'tshirtState1')).toBe('not worn');
+    expect(await getVar(page, 'isShirtStolen')).toBe(1);
+  });
+
+  test('redressAfterHunt skips slots whose item is now NOT_BOUGHT (lost)', async ({ game: page }) => {
+    /* loseAllStolen runs first in cleanupAfterHunt and flips a stolen
+     * tier to NOT_BOUGHT. Even after isXxxStolen is cleared, the
+     * NOT_BOUGHT filter in _rememberedItem keeps redress from putting
+     * a no-longer-owned garment back on. */
+    await setVar(page, 'pantiesState0', 'not worn');
+    await setVar(page, 'pantiesState2', 'not bought');
+    await setVar(page, 'pantiesState',  'not worn');
+    await setVar(page, 'rememberBottomUnder', 'nopanties2');
+    await setVar(page, 'isPantiesStolen', 0);
+
+    const restored = await callSetup(page, 'setup.Wardrobe.redressAfterHunt()');
+    expect(restored).toEqual([]);
+    expect(await getVar(page, 'pantiesState2')).toBe('not bought');
+  });
+
+  test('redressAfterHunt is a no-op when nothing was undressed', async ({ game: page }) => {
+    await setVar(page, 'tshirtState0', 'worn');
+    await setVar(page, 'tshirtState',  'worn');
+    await setVar(page, 'rememberTopOuter', 'tshirt0');
+
+    const restored = await callSetup(page, 'setup.Wardrobe.redressAfterHunt()');
+    expect(restored).toEqual([]);
+    expect(await getVar(page, 'tshirtState0')).toBe('worn');
+  });
+
+  test('cleanupAfterHunt redresses voluntary removals and skips ghost-stolen ones', async ({ game: page }) => {
+    /* Mixed end-of-hunt state: MC took off her own jeans, ghost
+     * stole her tier-1 tshirt. After cleanupAfterHunt({loseStolen:true}):
+     * - jeans back on (voluntary removal),
+     * - tshirt permanently lost (NOT_BOUGHT, on $lostClothing). */
+    await setVar(page, 'jeansState0', 'not worn');
+    await setVar(page, 'jeansState1', 'not worn');
+    await setVar(page, 'jeansState',  'not worn');
+    await setVar(page, 'rememberBottomOuter', 'nojeans1');
+    await setVar(page, 'isBottomStolen', 0);
+
+    await setVar(page, 'tshirtState0', 'not worn');
+    await setVar(page, 'tshirtState1', 'not worn');
+    await setVar(page, 'tshirtState',  'not worn');
+    await setVar(page, 'rememberTopOuter', 'notshirt1');
+    await setVar(page, 'isShirtStolen', 1);
+    await setVar(page, 'lostClothing', []);
+
+    await callSetup(page, 'setup.HauntedHouses.cleanupAfterHunt({ loseStolen: true })');
+
+    expect(await getVar(page, 'jeansState1')).toBe('worn');
+    expect(await getVar(page, 'tshirtState1')).toBe('not bought');
+    expect(await getVar(page, 'lostClothing')).toEqual(['tshirtState1']);
+  });
 });
 
 test.describe('MC HUD — Hunt-mode click handlers', () => {
