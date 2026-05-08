@@ -298,6 +298,7 @@ setup.Rogue = (function () {
 	function hasUnlock(id) { return metaUnlock(id) > 0; }
 	function shopCatalogue() { return SHOP_CATALOGUE.slice(); }
 	function shopItem(id)   { return shopItemById(id); }
+	function lastWasSuccess() { return !!metaState().lastWasSuccess; }
 
 	/* Spend ectoplasm and increment the unlock count. Caps at the
 	   item's `max`; rejects unknown ids and broke players (no partial
@@ -1301,6 +1302,11 @@ setup.Rogue = (function () {
 			success: !!success,
 			payout: payout
 		};
+		/* Stash the outcome on persistent meta-state so RogueEnd /
+		   RogueMetaShop can gate the "Start a new hunt" continuation
+		   link on it -- $run is cleared by end() below, so the passages
+		   need a side channel that survives a successful close. */
+		metaState().lastWasSuccess = !!success;
 		if (setup.HauntedHouses) {
 			if (typeof setup.HauntedHouses.commitTempCorruption === 'function') {
 				setup.HauntedHouses.commitTempCorruption();
@@ -1372,6 +1378,7 @@ setup.Rogue = (function () {
 		outcome: outcome,
 		failureReason: failureReason,
 		isSuccess: isSuccess,
+		lastWasSuccess: lastWasSuccess,
 		markSuccess: markSuccess,
 		markFailure: markFailure,
 		currentRoomId: currentRoomId,

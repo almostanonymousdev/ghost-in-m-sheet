@@ -1404,4 +1404,32 @@ test.describe('E2E: rogue run lifecycle', () => {
     expect(run).not.toBeNull();
     expect(run.number).toBe(2);
   });
+
+  /* Continuation gate: a failed identify (or any non-success exit
+     like FLED / SANITY / TIME / EXHAUSTION) should hide the
+     "Start a new hunt" link on both RogueEnd and RogueMetaShop, so
+     the player has to step through the city map before queueing the
+     next run. */
+  test('RogueEnd hides Start a new hunt after a failed run', async () => {
+    test.setTimeout(15_000);
+    await goToPassage(page, 'GhostStreet');
+    await clickRogueCard(page);
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await page.evaluate(() => SugarCube.setup.Rogue.markFailure());
+    await goToPassage(page, 'RogueEnd');
+    await expect(page.locator('.passage').getByText('Start a new hunt')).toHaveCount(0);
+    await expect(page.locator('.passage').getByText('Visit the meta-shop')).toBeVisible();
+  });
+
+  test('RogueMetaShop hides Start a new hunt after a failed run', async () => {
+    test.setTimeout(15_000);
+    await goToPassage(page, 'GhostStreet');
+    await clickRogueCard(page);
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await page.evaluate(() => SugarCube.setup.Rogue.markFailure());
+    await goToPassage(page, 'RogueEnd');
+    await clickLink(page, 'Visit the meta-shop', 'RogueMetaShop');
+    await expect(page.locator('.passage').getByText('Start a new hunt')).toHaveCount(0);
+    await expect(page.locator('.passage').getByText('Back to the city')).toBeVisible();
+  });
 });

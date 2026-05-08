@@ -159,7 +159,9 @@
 	<span class="mc-action">+<<= _summary.payout>> mL of ectoplasm</span><br>
 	<span class="mc-thoughts">Ectoplasm: <<= setup.Rogue.ectoplasm()>> mL</span><br>
 	<br>
-	@@.movebtn; [[Start a new hunt|RogueStart]]@@<br>
+	<<if _summary.success>>
+		@@.movebtn; [[Start a new hunt|RogueStart]]@@<br>
+	<</if>>
 	@@.movebtn; [[Visit the meta-shop|RogueMetaShop]]@@<br>
 	@@.backbtn; [[Back to the city|CityMap]]@@
 <</if>>
@@ -246,7 +248,9 @@
 <</if>>
 
 <br>
-@@.movebtn; [[Start a new hunt|RogueStart]]@@<br>
+<<if setup.Rogue.lastWasSuccess()>>
+	@@.movebtn; [[Start a new hunt|RogueStart]]@@<br>
+<</if>>
 @@.backbtn; [[Back to the city|CityMap]]@@
 
 :: RogueOutside [nobr] {"position":"3100,300","size":"100,100"}
