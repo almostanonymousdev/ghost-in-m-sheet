@@ -11,6 +11,9 @@
 	<<updatemeter 'mclust' `setup.Mc.lust() / 100`>>
 	<<replace "#time">><<= setup.Time.display()>><</replace>>
 	<<replace "#tool-timers">><<= setup.toolTimerHudMarkup()>><</replace>>
+	<<if setup.HauntConditions.isBaitOrgasmPending()>>
+		<<goto "BaitOrgasm">>
+	<</if>>
 <</widget>>
 
 /* huntTickEventChain -- arg-less. The shared "what happens between

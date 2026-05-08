@@ -82,11 +82,14 @@ canBait predicate self-gates against rogue runs that have no $hunt. */
 <<widget "huntActionBar">>
 	<<if setup.HuntController.isHuntActive()>>
 		<<if setup.HauntConditions.canBait()>>
-			· @@.huntActionLink;<<link `"Bait ghost (−" + setup.HauntConditions.BAIT_LUST_COST + " lust, −" + setup.HauntConditions.ENERGY_COST_BAIT + " energy)"`>>
+			· @@.huntActionLink;<<link `"Bait ghost (+" + setup.HauntConditions.BAIT_INITIAL_LUST + " lust, -" + setup.HauntConditions.ENERGY_COST_BAIT + " energy)"`>>
 				<<run setup.HauntConditions.startBait()>>
 				<<updatemeter 'sanity' `setup.Mc.sanityPct()`>>
 				<<updatemeter 'energy' `setup.Mc.energyPct()`>>
-				<<if setup.Mc.isExhausted()>>
+				<<updatemeter 'mclust' `setup.Mc.lust() / 100`>>
+				<<if setup.HauntConditions.isBaitOrgasmPending()>>
+					<<goto "BaitOrgasm">>
+				<<elseif setup.Mc.isExhausted()>>
 					<<goto "HuntOverExhaustion">>
 				<<else>>
 					<<replace ".hunt-conditions">><<huntConditions>><</replace>>

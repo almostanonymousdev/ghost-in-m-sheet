@@ -538,6 +538,133 @@ test.describe('Haunted Houses Controller', () => {
     expect(await callSetup(page, 'setup.HauntConditions.ENERGY_COST_PRAY')).toBe(0.5);
   });
 
+  // --- Bait lust mechanic ---
+  //
+  // The bait click stamps +20 lust immediately and then the snapshot
+  // accrues +10 lust/step for the BAIT_STEPS countdown. Hitting the lust
+  // cap during bait flags $baitOrgasmPending so the next applyTickEffects
+  // (movement OR tool measurement) routes to BaitOrgasm.
+
+  test('BAIT_INITIAL_LUST is 20', async ({ game: page }) => {
+    expect(await callSetup(page, 'setup.HauntConditions.BAIT_INITIAL_LUST')).toBe(20);
+  });
+
+  test('BAIT_LUST_PER_STEP is 10', async ({ game: page }) => {
+    expect(await callSetup(page, 'setup.HauntConditions.BAIT_LUST_PER_STEP')).toBe(10);
+  });
+
+  test('BAIT_STEPS is 3', async ({ game: page }) => {
+    expect(await callSetup(page, 'setup.HauntConditions.BAIT_STEPS')).toBe(3);
+  });
+
+  test('BAIT_ORGASM_SANITY is 10', async ({ game: page }) => {
+    expect(await callSetup(page, 'setup.HauntConditions.BAIT_ORGASM_SANITY')).toBe(10);
+  });
+
+  test('snapshot with bait active adds +10 lust/step', async ({ game: page }) => {
+    await setHuntMode(page, 2);
+    await setVar(page, 'baitActive', 1);
+    await setVar(page, 'baitStepsRemain', 3);
+
+    const snap = await callSetup(page, 'setup.HauntConditions.snapshot()');
+
+    expect(snap.lustPerStep).toBeCloseTo(10, 5);
+  });
+
+  test('applyTickEffects adds +10 lust per turn while bait is active', async ({ game: page }) => {
+    await setHuntMode(page, 2);
+    await setVar(page, 'baitActive', 1);
+    await setVar(page, 'baitStepsRemain', 3);
+    await setVar(page, 'mc.lust', 40);
+
+    await page.evaluate(() => SugarCube.setup.HauntConditions.applyTickEffects());
+
+    expect(await getVar(page, 'mc.lust')).toBeCloseTo(50, 5);
+    expect(await getVar(page, 'baitStepsRemain')).toBe(2);
+    expect(await getVar(page, 'baitOrgasmPending') || 0).toBe(0);
+  });
+
+  test('applyTickEffects flags baitOrgasmPending when lust was already at 100', async ({ game: page }) => {
+    await setHuntMode(page, 2);
+    await setVar(page, 'baitActive', 1);
+    await setVar(page, 'baitStepsRemain', 2);
+    await setVar(page, 'mc.lust', 100);
+
+    await page.evaluate(() => SugarCube.setup.HauntConditions.applyTickEffects());
+
+    expect(await callSetup(page, 'setup.HauntConditions.isBaitOrgasmPending()')).toBe(true);
+    // bait counter still ticks down even when the orgasm is queued
+    expect(await getVar(page, 'baitStepsRemain')).toBe(1);
+    expect(await getVar(page, 'baitActive')).toBe(1);
+  });
+
+  test('applyTickEffects does NOT flag baitOrgasmPending without bait', async ({ game: page }) => {
+    // even when other lust sources push lust over 100, only bait flags the orgasm
+    await setHuntMode(page, 2);
+    await setVar(page, 'mc.lust', 100);
+    await setVar(page, 'tshirtState', 1); // any non-WORN value to trigger nude/topless? skip — just check default
+    await setVar(page, 'baitActive', 0);
+
+    await page.evaluate(() => SugarCube.setup.HauntConditions.applyTickEffects());
+
+    expect(await callSetup(page, 'setup.HauntConditions.isBaitOrgasmPending()')).toBe(false);
+  });
+
+  test('consumeBaitOrgasm zeros lust, drops sanity 10, leaves bait active', async ({ game: page }) => {
+    await setHuntMode(page, 2);
+    await setVar(page, 'baitActive', 1);
+    await setVar(page, 'baitStepsRemain', 1);
+    await setVar(page, 'baitOrgasmPending', 1);
+    await setVar(page, 'mc.lust', 100);
+    await setVar(page, 'mc.sanity', 80);
+
+    const consumed = await callSetup(page, 'setup.HauntConditions.consumeBaitOrgasm()');
+
+    expect(consumed).toBe(true);
+    expect(await getVar(page, 'mc.lust')).toBe(0);
+    expect(await getVar(page, 'mc.sanity')).toBe(70);
+    expect(await getVar(page, 'baitOrgasmPending')).toBe(0);
+    // Bait stays armed for the rest of the contract
+    expect(await getVar(page, 'baitActive')).toBe(1);
+    expect(await getVar(page, 'baitStepsRemain')).toBe(1);
+  });
+
+  test('consumeBaitOrgasm is a no-op when no orgasm is pending', async ({ game: page }) => {
+    await setVar(page, 'mc.lust', 50);
+    await setVar(page, 'mc.sanity', 80);
+
+    const consumed = await callSetup(page, 'setup.HauntConditions.consumeBaitOrgasm()');
+
+    expect(consumed).toBe(false);
+    expect(await getVar(page, 'mc.lust')).toBe(50);
+    expect(await getVar(page, 'mc.sanity')).toBe(80);
+  });
+
+  test('resetHuntFlags clears baitOrgasmPending', async ({ game: page }) => {
+    await setVar(page, 'baitOrgasmPending', 1);
+
+    await page.evaluate(() => SugarCube.setup.HauntConditions.resetHuntFlags());
+
+    expect(await getVar(page, 'baitOrgasmPending')).toBe(0);
+  });
+
+  test('canBait no longer requires lust >= cost (lust is now an add)', async ({ game: page }) => {
+    // Lust at 0 — old code gated this; new code only gates on energy + room
+    await setHuntMode(page, 2);
+    await setVar(page, 'mc.lust', 0);
+    await setVar(page, 'mc.energy', 5);
+    await setVar(page, 'baitActive', 0);
+    // canBait still reads currentBgVar(), which needs the player on a
+    // haunted passage. Drive Engine.play to ElmBedroom (a known
+    // haunted-house room) so the bg lookup resolves.
+    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
+    await page.evaluate(() => { SugarCube.State.variables.hunt.room = { name: 'bedroom' }; });
+    await page.evaluate(() => SugarCube.Engine.play('ElmBedroom'));
+    await page.waitForFunction(() => SugarCube.State.passage === 'ElmBedroom');
+
+    expect(await callSetup(page, 'setup.HauntConditions.canBait()')).toBe(true);
+  });
+
   test('orgasm aftershock adds -0.125 energy/step on top of base drain', async ({ game: page }) => {
     await setHuntMode(page, 2);
     await setVar(page, 'orgasmCooldownSteps', 3);
