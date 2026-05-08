@@ -1,7 +1,7 @@
 :: GhostStreet [ghoststreet] {"position":"1950,350","size":"100,100"}
 <div class="flexwrapper">
 <<huntHouseCard "owaissa">>
-<div class="housecard"></div>
+<<rogueStaticHouseCard "rogue-owaissa">>
 <div class="housecard"></div>
 <<huntHouseCard "ironclad">>
 <div class="housecard"></div>

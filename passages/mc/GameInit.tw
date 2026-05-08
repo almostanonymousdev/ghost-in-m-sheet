@@ -148,6 +148,9 @@ setup.Game = (function () {
 		// the *next* run. Rotates after each run so addresses change
 		// between visits without waiting for the in-game day to flip.
 		s.nextRogueSeed = Math.floor(Math.random() * 0x100000000);
+		// Static-rogue-house id staged by a GhostStreet card (e.g.
+		// rogue-owaissa). RogueStart consumes it once and clears it.
+		s.pendingRogueStaticHouseId = null;
 	}
 
 	return { initState: initState };

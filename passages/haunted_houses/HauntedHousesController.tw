@@ -79,7 +79,10 @@ setup.HauntedHouses = (function () {
 		and isn't migrated).
 		`runsStealClothes: false` opts a house out of the steal-clothes
 		step in the per-tick chain (ironclad, since prison ghosts have
-		their own warden-clothes mechanic). Defaults to true. */
+		their own warden-clothes mechanic). Defaults to true.
+		`allowsCompanions: false` opts a house out of the companion
+		hunt-plan flow (the companion mini-panel + per-tick events do
+		not engage there). Defaults to true; ironclad sets it false. */
 	var HOUSE_CONFIG = [
 		{
 			id: 'owaissa',
@@ -88,6 +91,7 @@ setup.HauntedHouses = (function () {
 			image: 'ui/img/owaissa-house.jpg',
 			levelGate: 0,
 			runsFurnitureCode: true,
+			allowsCompanions: true,
 			rooms: ['kitchen', 'bathroom', 'bedroom', 'livingroom', 'hallway'],
 			furniture: [
 				'hallway_carpet', 'hallway_wardrobe', 'hallway_coatrack',
@@ -124,6 +128,7 @@ setup.HauntedHouses = (function () {
 			image: 'ui/img/elm-house.jpg',
 			levelGate: 3,
 			runsFurnitureCode: true,
+			allowsCompanions: true,
 			rooms: [
 				'kitchen', 'bathroom', 'bedroom', 'nursery', 'hallway',
 				'hallwayUpstairs', 'bedroomTwo', 'bathroomTwo', 'basement'
@@ -176,6 +181,7 @@ setup.HauntedHouses = (function () {
 			levelGate: 4,
 			runsFurnitureCode: true,
 			runsStealClothes: false,
+			allowsCompanions: false,
 			rooms: [
 				'BlockA', 'BlockB',
 				'BlockACellA', 'BlockACellB', 'BlockACellC',
@@ -282,6 +288,21 @@ setup.HauntedHouses = (function () {
 			is active (witch pre-hunt, or after GhostStreet teardown). */
 		activeHouse: function () {
 			return this.byId(sv().hauntedHouse);
+		},
+		/* Catalogue lookup for the per-house companion gate. Returns
+		   the boolean from HOUSE_CONFIG[id].allowsCompanions, or false
+		   when the id isn't a registered classic house. Used by
+		   Companion.inHauntedHouseLocation through the active-house
+		   pointer so adding new classic houses never requires
+		   touching the predicate -- one entry on the catalogue
+		   covers it. */
+		allowsCompanions: function (id) {
+			var h = this.byId(id);
+			return !!(h && h.allowsCompanions);
+		},
+		activeHouseAllowsCompanions: function () {
+			var h = this.activeHouse();
+			return !!(h && h.allowsCompanions);
 		},
 		/* Clear the active-house pointer. Used after a hunt ends. */
 		clearHouseFlags: function () {

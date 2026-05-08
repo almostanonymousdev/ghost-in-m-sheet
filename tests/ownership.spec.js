@@ -124,8 +124,12 @@ test.describe('Variable ownership', () => {
 		//   - Templates: pure-functional template catalogue. No
 		//     state of its own; consumed by FloorPlan + rogue room
 		//     rendering.
+		//   - RogueHouses: pure-functional static-plan catalogue. The
+		//     active staticHouseId lives on $run.staticHouseId, owned
+		//     by setup.Rogue; the staging slot $pendingRogueStaticHouseId
+		//     is owned there too.
 		// Every other discovered controller should claim at least one var.
-		const STATELESS_ALLOWED = new Set(['Salon', 'FloorPlan', 'Modifiers', 'Templates']);
+		const STATELESS_ALLOWED = new Set(['Salon', 'FloorPlan', 'Modifiers', 'Templates', 'RogueHouses']);
 		const empty = controllerNames
 			.filter((n) => ownedByName[n].length === 0 && !STATELESS_ALLOWED.has(n));
 		expect(

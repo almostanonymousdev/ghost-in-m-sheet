@@ -131,30 +131,54 @@ setup.FloorPlan = (function () {
 		               like tarotCards / monkeyPaw), pinned to a
 		               distinct slot when one is available so the
 		               player can find them by clicking furniture.
+		staticPlan  -- when present, freezes the room set + edge graph
+		               to the supplied blueprint instead of rolling a
+		               procedural spanning tree. Shape:
+		                 { rooms: [{ id, template }, ...],
+		                   edges: [[a, b], ...] }
+		               rooms[0] must be the hallway. roomCount,
+		               includeBoss, and toolKinds still apply on top
+		               (boss flag, loot placement, tool pinning all
+		               operate against the frozen rooms). Same seed
+		               still drives spawn + loot deterministically.
 	   The room order in the returned `rooms` array is stable: the
 	   hallway is always rooms[0]. */
 	function generate(seed, opts) {
 		opts = opts || {};
 		var rng = makeRng(seed);
+		var staticPlan = opts.staticPlan || null;
 		var roomCount = Math.max(2, opts.roomCount != null ? opts.roomCount : 5);
 		var includeBoss = !!opts.includeBoss;
 		var toolKinds = Array.isArray(opts.toolKinds)
 			? opts.toolKinds.map(toolLootKind)
 			: [];
 
-		var rooms = [{ id: 'room_0', template: HALLWAY_TEMPLATE }];
-		var nonHallway = pickNCycling(rng, nonHallwayTemplates(), roomCount - 1);
-		nonHallway.forEach(function (tmpl, i) {
-			rooms.push({ id: 'room_' + (i + 1), template: tmpl });
-		});
+		var rooms;
+		var edges;
+		if (staticPlan) {
+			// Frozen topology -- copy the blueprint so the caller's
+			// catalogue object is never mutated by downstream code,
+			// and the seed-derived spawn/loot rolls land on
+			// per-call data.
+			rooms = staticPlan.rooms.map(function (r) {
+				return { id: r.id, template: r.template };
+			});
+			edges = staticPlan.edges.map(function (e) { return [e[0], e[1]]; });
+		} else {
+			rooms = [{ id: 'room_0', template: HALLWAY_TEMPLATE }];
+			var nonHallway = pickNCycling(rng, nonHallwayTemplates(), roomCount - 1);
+			nonHallway.forEach(function (tmpl, i) {
+				rooms.push({ id: 'room_' + (i + 1), template: tmpl });
+			});
 
-		// Random spanning tree: each new room attaches to one of the
-		// already-placed rooms (uniformly random). Connectivity is
-		// guaranteed by construction; layout varies per seed.
-		var edges = [];
-		for (var i = 1; i < rooms.length; i++) {
-			var parentIdx = Math.floor(rng() * i);
-			edges.push([rooms[parentIdx].id, rooms[i].id]);
+			// Random spanning tree: each new room attaches to one of the
+			// already-placed rooms (uniformly random). Connectivity is
+			// guaranteed by construction; layout varies per seed.
+			edges = [];
+			for (var i = 1; i < rooms.length; i++) {
+				var parentIdx = Math.floor(rng() * i);
+				edges.push([rooms[parentIdx].id, rooms[i].id]);
+			}
 		}
 
 		// Ghost spawn: pick a non-hallway room.

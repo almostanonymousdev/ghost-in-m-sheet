@@ -32,7 +32,7 @@
  * reaching into State directly.
  */
 setup.Rogue = (function () {
-	var OWNED_VARS = Object.freeze(['run', 'ectoplasm', 'runsStarted', 'meta', 'nextRogueSeed']);
+	var OWNED_VARS = Object.freeze(['run', 'ectoplasm', 'runsStarted', 'meta', 'nextRogueSeed', 'pendingRogueStaticHouseId']);
 
 	/* Street-address vocabulary used to render a seed as a human
 	   "123 Hollow Lane"-style label. The seed maps deterministically
@@ -388,6 +388,12 @@ setup.Rogue = (function () {
 			modifiers: Array.isArray(opts.modifiers) ? opts.modifiers.slice() : [],
 			loadout: opts.loadout || {},
 			objective: opts.objective || Objective.IDENTIFY.id,
+			// Static-plan rogue houses (setup.RogueHouses) stamp their
+			// catalogue id here so downstream consumers can ask which
+			// frozen plan the run is using -- HUD label override, the
+			// companion gate, save migration. Procedural runs leave it
+			// null and behave exactly as before.
+			staticHouseId: opts.staticHouseId || null,
 			// Player starts in the hallway. Nav links in RogueRun
 			// update this via setCurrentRoom() before re-rendering.
 			currentRoomId: 'room_0',
@@ -821,6 +827,18 @@ setup.Rogue = (function () {
 		if (hasUnlock(ShopItem.SMALLER_HOUSE)) {
 			fpOpts.roomCount = Math.max(2, (fpOpts.roomCount || 5) - 1);
 		}
+		/* Static rogue houses (setup.RogueHouses) freeze the topology to
+		   a catalogue blueprint -- same rooms, same edges every run,
+		   regardless of seed or modifiers. Spawn / loot / boss still
+		   roll off the seed because they're local concerns; the room
+		   set + edge graph come from the catalogue. Procedural runs
+		   leave staticHouseId null and behave exactly as before. */
+		if (opts.staticHouseId && setup.RogueHouses) {
+			var staticPlan = setup.RogueHouses.planFor(opts.staticHouseId);
+			if (staticPlan) {
+				fpOpts.staticPlan = staticPlan;
+			}
+		}
 		var floorplan = setup.FloorPlan.generate(seed, fpOpts);
 		/* Snapshot the spawn room id for Reliable Recon. driftGhostRoom
 		   mutates floorplan.spawnRoomId; comparing against this snapshot
@@ -856,7 +874,8 @@ setup.Rogue = (function () {
 			seed: seed,
 			modifiers: modifierIds,
 			loadout: opts.loadout || {},
-			objective: opts.objective || Objective.IDENTIFY.id
+			objective: opts.objective || Objective.IDENTIFY.id,
+			staticHouseId: opts.staticHouseId || null
 		});
 		setField('floorplan', floorplan);
 		setField('ghostName', ghostName);
@@ -948,6 +967,27 @@ setup.Rogue = (function () {
 		var run = sv().run;
 		return run ? (run.ghostName || null) : null;
 	}
+	/* Catalogue id of the static rogue house powering the active run,
+	   or null when the run is procedural. Mirrors ghostName() in
+	   shape: stamped at startRogue() and surfaced read-only here. */
+	function staticHouseId() {
+		var run = sv().run;
+		return run ? (run.staticHouseId || null) : null;
+	}
+	function staticHouse() {
+		var id = staticHouseId();
+		return id && setup.RogueHouses ? setup.RogueHouses.byId(id) : null;
+	}
+	/* True when the active rogue run is bound to a static-plan house
+	   that opts into companions. Procedural rogue runs return false.
+	   Drives Companion.inHauntedHouseLocation through a data-driven
+	   catalogue lookup so adding new houses (or flipping the flag on
+	   an existing one) doesn't require touching the predicate. */
+	function staticHouseAllowsCompanions() {
+		var id = staticHouseId();
+		return !!(id && setup.RogueHouses
+			&& setup.RogueHouses.allowsCompanions(id));
+	}
 	/* Evidence id list for the active rogue ghost. Returns the
 	   per-run override stamped at startRogue (so Fog of War's spliced
 	   list survives reads), or null when no run is active or no
@@ -960,10 +1000,28 @@ setup.Rogue = (function () {
 	}
 	/* Seed-derived street address shown in the lobby/HUD instead of
 	   the raw seed. Returns null off-run; callers that need a label
-	   for an arbitrary seed can call addressFromSeed() directly. */
+	   for an arbitrary seed can call addressFromSeed() directly.
+
+	   Static-plan rogue houses (setup.RogueHouses) override the
+	   `formatted` label with their catalogue label so the HUD reads
+	   the house name ("Rogue Owaissa") instead of a generated street
+	   address. The seed-derived number/road/suffix fields stay so
+	   callers that want the underlying address (rng-seed displays,
+	   diagnostics) can still read them. */
 	function address() {
 		var run = sv().run;
-		return run ? addressFromSeed(run.seed) : null;
+		if (!run) return null;
+		var addr = addressFromSeed(run.seed);
+		var house = staticHouse();
+		if (house && house.label) {
+			return {
+				number: addr.number,
+				road: addr.road,
+				suffix: addr.suffix,
+				formatted: house.label
+			};
+		}
+		return addr;
 	}
 	function ghostRoomId() {
 		var run = sv().run;
@@ -1407,6 +1465,9 @@ setup.Rogue = (function () {
 		currentRoomData: currentRoomData,
 		humanizeLootKind: humanizeLootKind,
 		ghostName: ghostName,
+		staticHouseId: staticHouseId,
+		staticHouse: staticHouse,
+		staticHouseAllowsCompanions: staticHouseAllowsCompanions,
 		runEvidence: runEvidence,
 		ghostRoomId: ghostRoomId,
 		isInGhostRoom: isInGhostRoom,

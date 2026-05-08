@@ -1,0 +1,113 @@
+:: RogueHousesController [script]
+/*
+ * Catalogue of named rogue-mode houses with frozen floor plans.
+ *
+ * The procedural rogue path (RogueStart with no staticHouseId)
+ * still rolls a fresh spanning-tree haunt each run. A "static
+ * rogue house" is an entry here that pins a fixed room set + edge
+ * graph onto the same rogue lifecycle: same minimap, same nav
+ * widget, same modifiers + ectoplasm payout pipeline -- only the
+ * topology is frozen so the player walks into a familiar layout.
+ *
+ * Each entry:
+ *   id              -- canonical house key (e.g. 'rogue-owaissa').
+ *                      Stored on $run.staticHouseId for the lifetime
+ *                      of the run so resume / save migration can
+ *                      tell which static plan a saved run belongs
+ *                      to.
+ *   label           -- player-facing card label (lobby + HUD).
+ *   image           -- thumbnail URL for the GhostStreet card.
+ *   levelGate       -- min Mc.lvl required to pick the card.
+ *   allowsCompanions -- when true, gates the companion plan flow
+ *                      onto this rogue house. Drives
+ *                      Companion.inHauntedHouseLocation through
+ *                      the catalogue lookup so adding a new house
+ *                      doesn't require touching the predicate.
+ *   plan            -- frozen floor-plan blueprint:
+ *                        { rooms: [{ id, template }, ...],
+ *                          edges: [[a, b], ...] }
+ *                      rooms[0] must be the hallway. The id strings
+ *                      use the same `room_<n>` shape the procedural
+ *                      generator emits so every downstream consumer
+ *                      (RogueRun, minimap, lootKindsAt, etc.) keeps
+ *                      working without per-house branching.
+ *
+ * Adding a new static rogue house = one entry below + an asset for
+ * `image`. The lifecycle, lobby card widget, and companion gate all
+ * pick up the new entry through the catalogue.
+ */
+setup.RogueHouses = (function () {
+	/* Owaissa's classic 5-room layout, frozen.
+	   Hallway hub connects to kitchen, bedroom, bathroom; kitchen
+	   branches off to the livingroom. Same template ids as
+	   classic Owaissa so the rogue body-background pipeline picks
+	   up identical room art for free. */
+	var OWAISSA_PLAN = Object.freeze({
+		rooms: [
+			Object.freeze({ id: 'room_0', template: 'hallway'    }),
+			Object.freeze({ id: 'room_1', template: 'kitchen'    }),
+			Object.freeze({ id: 'room_2', template: 'livingroom' }),
+			Object.freeze({ id: 'room_3', template: 'bedroom'    }),
+			Object.freeze({ id: 'room_4', template: 'bathroom'   })
+		],
+		edges: [
+			Object.freeze(['room_0', 'room_1']),
+			Object.freeze(['room_1', 'room_2']),
+			Object.freeze(['room_0', 'room_3']),
+			Object.freeze(['room_0', 'room_4'])
+		]
+	});
+
+	var CATALOGUE = Object.freeze([
+		Object.freeze({
+			id:               'rogue-owaissa',
+			label:            'Rogue Owaissa',
+			image:            'ui/img/owaissa-house.jpg',
+			levelGate:        0,
+			allowsCompanions: true,
+			plan:             OWAISSA_PLAN
+		})
+	]);
+
+	function list() { return CATALOGUE.slice(); }
+
+	function byId(id) {
+		for (var i = 0; i < CATALOGUE.length; i++) {
+			if (CATALOGUE[i].id === id) return CATALOGUE[i];
+		}
+		return null;
+	}
+
+	function ids() {
+		return CATALOGUE.map(function (h) { return h.id; });
+	}
+
+	/* Convenience: returns the frozen plan for `id`, deep-cloned so
+	   callers that mutate (e.g. floor-plan.generate stamps spawn +
+	   loot onto the plan) don't trample the catalogue. */
+	function planFor(id) {
+		var h = byId(id);
+		if (!h || !h.plan) return null;
+		return {
+			rooms: h.plan.rooms.map(function (r) {
+				return { id: r.id, template: r.template };
+			}),
+			edges: h.plan.edges.map(function (e) { return [e[0], e[1]]; })
+		};
+	}
+
+	function allowsCompanions(id) {
+		var h = byId(id);
+		return !!(h && h.allowsCompanions);
+	}
+
+	return {
+		OWNED_VARS:       Object.freeze([]),
+		CATALOGUE:        CATALOGUE,
+		list:             list,
+		byId:             byId,
+		ids:              ids,
+		planFor:          planFor,
+		allowsCompanions: allowsCompanions
+	};
+})();

@@ -96,6 +96,10 @@
 		// the GhostStreet card / RogueStart lobby preview a fresh
 		// address every attempt.
 		nextRogueSeed: function () { return Math.floor(Math.random() * 0x100000000); },
+		// Static-rogue-house id staged from a GhostStreet card.
+		// RogueStart consumes it once and clears it; null on saves
+		// predating static-plan rogue houses.
+		pendingRogueStaticHouseId: function () { return null; },
 
 		// Per-day seed; regenerated on every 24h rollover.
 		dailySeed:     function () { return Math.floor(Math.random() * 0x100000000); },

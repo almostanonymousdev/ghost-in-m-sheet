@@ -432,6 +432,14 @@ sugarcube-2:
         treated as a failure if the player walks back in. No contract reward, no
         $hauntedHouse activation -- the rogue subsystem owns its own state on
         $run. Arg-less.
+    rogueStaticHouseCard:
+      name: rogueStaticHouseCard
+      description: "GhostStreet card for a named static-plan rogue house. Renders
+        the catalogue entry's image + label, gates on Mc.lvl >= levelGate, and
+        on click stages the house id on $pendingRogueStaticHouseId before
+        routing to RogueStart -- the lifecycle reads + clears the staging slot
+        and forwards staticHouseId to setup.Rogue.startRogue. Args: houseId
+        (string from setup.RogueHouses.list(), e.g. 'rogue-owaissa')."
     huntHouseStreet:
       name: huntHouseStreet
       container: true

@@ -49,6 +49,34 @@
 	</div>
 <</widget>>
 
+/* rogueStaticHouseCard -- arg: static rogue-house id from
+   setup.RogueHouses.list() (e.g. "rogue-owaissa"). Drops a
+   GhostStreet card that routes to RogueStart with the house's
+   catalogue id stashed on $pendingRogueStaticHouseId; RogueStart
+   reads + clears it before invoking startRogue, so the rogue
+   lifecycle stays in charge of the run. Same iconPx card style as
+   huntHouseCard / rogueHuntCard. The data is the catalogue, so
+   adding a new static rogue house is one entry in
+   setup.RogueHouses + a card per house here. */
+<<widget "rogueStaticHouseCard">>
+	<<set _rsh to setup.RogueHouses and setup.RogueHouses.byId(_args[0])>>
+	<<if _rsh>>
+		<div class="housecard">
+			<<image _rsh.image "iconPx">>
+			<<if setup.Mc.lvl() gte _rsh.levelGate>>
+				<<capture _rsh>>
+					@@.icontext;<<link _rsh.label "RogueStart">>
+						<<set $pendingRogueStaticHouseId to _rsh.id>>
+					<</link>>@@
+				<</capture>>
+			<<else>>
+				<<set _rshGate to _rsh.levelGate>>
+				@@.mc-thoughts; Level _rshGate+ required@@
+			<</if>>
+		</div>
+	<</if>>
+<</widget>>
+
 /* huntHouseStreet -- arg: house id. Renders the shared body of the
    per-house street passage (Owaissa/Elm/Ironclad): the header
    image, the location block, optional companion "talk to them" branch,
