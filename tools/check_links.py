@@ -9,6 +9,8 @@ import re
 import sys
 from pathlib import Path
 
+from lib_repo import iter_passages, passages_dir, read_passage, repo_root
+
 # SugarCube built-in passage names - these are valid targets even without a definition
 SUGARCUBE_BUILTINS = {
     "StoryAuthor", "StoryBanner", "StoryCaption", "StoryMenu", "StoryTitle",
@@ -59,11 +61,11 @@ def is_dynamic(target: str) -> bool:
     return False
 
 
-def collect_passages(passages_dir: Path) -> tuple[dict[str, Path], list[tuple[str, list[Path]]]]:
+def collect_passages() -> tuple[dict[str, Path], list[tuple[str, list[Path]]]]:
     """Return (name->file mapping, list of (name, [files]) for duplicates)."""
     seen: dict[str, list[Path]] = {}
-    for tw_file in sorted(passages_dir.rglob("*.tw")):
-        for line in tw_file.read_text(encoding="utf-8", errors="replace").splitlines():
+    for tw_file in iter_passages():
+        for line in read_passage(tw_file).splitlines():
             m = PASSAGE_HEADER.match(line)
             if m:
                 name = m.group(1).strip()
@@ -73,11 +75,11 @@ def collect_passages(passages_dir: Path) -> tuple[dict[str, Path], list[tuple[st
     return passages, duplicates
 
 
-def collect_links(passages_dir: Path) -> list[tuple[str, int, str]]:
+def collect_links() -> list[tuple[str, int, str]]:
     """Return a list of (file_path, line_number, target) for every link found."""
     links: list[tuple[str, int, str]] = []
-    for tw_file in sorted(passages_dir.rglob("*.tw")):
-        text = tw_file.read_text(encoding="utf-8", errors="replace")
+    for tw_file in iter_passages():
+        text = read_passage(tw_file)
         for lineno, line in enumerate(text.splitlines(), 1):
             # Skip comment lines
             stripped = line.strip()
@@ -92,17 +94,17 @@ def collect_links(passages_dir: Path) -> list[tuple[str, int, str]]:
 
 
 def main():
-    repo_root = Path(__file__).resolve().parent.parent
-    passages_dir = repo_root / "passages"
+    root = repo_root()
+    pdir = passages_dir()
 
-    if not passages_dir.is_dir():
-        print(f"ERROR: passages directory not found at {passages_dir}", file=sys.stderr)
+    if not pdir.is_dir():
+        print(f"ERROR: passages directory not found at {pdir}", file=sys.stderr)
         sys.exit(1)
 
-    passages, duplicates = collect_passages(passages_dir)
+    passages, duplicates = collect_passages()
     all_known = set(passages.keys()) | SUGARCUBE_BUILTINS
 
-    links = collect_links(passages_dir)
+    links = collect_links()
 
     broken: list[tuple[str, int, str]] = []
     for file_path, lineno, target in links:
@@ -130,7 +132,7 @@ def main():
             print(f'  "{name}" defined in:')
             for f in files:
                 try:
-                    rel = f.relative_to(repo_root)
+                    rel = f.relative_to(root)
                 except ValueError:
                     rel = f
                 print(f"      {rel}")
@@ -147,7 +149,7 @@ def main():
             print(f'  "{target}"  — referenced in:')
             for file_path, lineno in refs:
                 try:
-                    rel = Path(file_path).relative_to(repo_root)
+                    rel = Path(file_path).relative_to(root)
                 except ValueError:
                     rel = file_path
                 print(f"      {rel}:{lineno}")

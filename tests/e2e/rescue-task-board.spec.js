@@ -1,15 +1,9 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, goToPassage } = require('../helpers');
+const { test, expect } = require('../fixtures');
+const { setVar, getVar, goToPassage } = require('../helpers');
 const { expectCleanPassage } = require('./e2e-helpers');
 
 test.describe('Missing Women — task board', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('shows girls when evening, quest available, no cooldown', async () => {
+  test('shows girls when evening, quest available, no cooldown', async ({ game: page }) => {
     await setVar(page, 'relationshipWithRain', 1);
     await setVar(page, 'hasQuestForRescue', 0);
     await setVar(page, 'rescueQuest', 0);
@@ -24,7 +18,7 @@ test.describe('Missing Women — task board', () => {
     expect(await page.locator('.passage .usebtn').count()).toBe(2);
   });
 
-  test('shows active quest message when quest is 1', async () => {
+  test('shows active quest message when quest is 1', async ({ game: page }) => {
     await setVar(page, 'relationshipWithRain', 1);
     await setVar(page, 'hasQuestForRescue', 1);
     await setVar(page, 'currentRescueGirl', 'Victoria');
@@ -39,7 +33,7 @@ test.describe('Missing Women — task board', () => {
     expect(text).toContain('already taken the missing poster');
   });
 
-  test('shows daytime message when before 6 PM', async () => {
+  test('shows daytime message when before 6 PM', async ({ game: page }) => {
     await setVar(page, 'relationshipWithRain', 1);
     await setVar(page, 'hasQuestForRescue', 0);
     await setVar(page, 'rescueQuest', 0);
@@ -52,7 +46,7 @@ test.describe('Missing Women — task board', () => {
     expect(await page.locator('.passage').textContent()).toContain('6 PM');
   });
 
-  test('shows cooldown message when on cooldown', async () => {
+  test('shows cooldown message when on cooldown', async ({ game: page }) => {
     await setVar(page, 'relationshipWithRain', 1);
     await setVar(page, 'hasQuestForRescue', 0);
     await setVar(page, 'rescueQuest', 1);
@@ -65,7 +59,7 @@ test.describe('Missing Women — task board', () => {
     expect(await page.locator('.passage').textContent()).toContain('Enough for today');
   });
 
-  test('shows return-to-nun message when quest is 2 or 3', async () => {
+  test('shows return-to-nun message when quest is 2 or 3', async ({ game: page }) => {
     await setVar(page, 'relationshipWithRain', 1);
     await setVar(page, 'hasQuestForRescue', 2);
     await setVar(page, 'rescueQuest', 0);
@@ -78,7 +72,7 @@ test.describe('Missing Women — task board', () => {
     expect(await page.locator('.passage').textContent()).toContain('nun');
   });
 
-  test('taking a quest sets correct variables', async () => {
+  test('taking a quest sets correct variables', async ({ game: page }) => {
     await setVar(page, 'relationshipWithRain', 1);
     await setVar(page, 'hasQuestForRescue', 0);
     await setVar(page, 'rescueQuest', 0);
@@ -98,7 +92,7 @@ test.describe('Missing Women — task board', () => {
     expect(houseNum).toBeLessThanOrEqual(16);
   });
 
-  test('random girl selection produces 2 unique girls', async () => {
+  test('random girl selection produces 2 unique girls', async ({ game: page }) => {
     await setVar(page, 'relationshipWithRain', 1);
     await setVar(page, 'hasQuestForRescue', 0);
     await setVar(page, 'rescueQuest', 0);

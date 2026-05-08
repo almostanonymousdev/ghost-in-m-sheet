@@ -1,24 +1,10 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, setHuntMode, getHuntMode, callSetup, goToPassage } = require('./helpers');
+const { test, expect } = require('./fixtures');
+const { setVar, getVar, setHuntMode, getHuntMode, callSetup, goToPassage } = require('./helpers');
 
 test.describe('Home Controller', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => {
-    page = await openGame(browser);
-  });
-
-  test.afterAll(async () => {
-    await page.close();
-  });
-
-  test.beforeEach(async () => {
-    await resetGame(page);
-  });
-
   // --- isDressedForStreet ---
 
-  test('isDressedForStreet true with default clothing (tshirt + jeans)', async () => {
+  test('isDressedForStreet true with default clothing (tshirt + jeans)', async ({ game: page }) => {
     // act
     const result = await callSetup(page, 'setup.Wardrobe.isDressedForStreet()');
 
@@ -26,7 +12,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('isDressedForStreet false without top', async () => {
+  test('isDressedForStreet false without top', async ({ game: page }) => {
     // arrange
     await setVar(page, 'tshirtState', 'not worn');
 
@@ -37,7 +23,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('isDressedForStreet false without any bottom', async () => {
+  test('isDressedForStreet false without any bottom', async ({ game: page }) => {
     // arrange
     await setVar(page, 'jeansState', 'not worn');
     await setVar(page, 'skirtState', 'not bought');
@@ -50,7 +36,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('isDressedForStreet true with skirt instead of jeans', async () => {
+  test('isDressedForStreet true with skirt instead of jeans', async ({ game: page }) => {
     // arrange
     await setVar(page, 'jeansState', 'not worn');
     await setVar(page, 'skirtState', 'worn');
@@ -62,7 +48,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('isDressedForStreet true with shorts instead of jeans', async () => {
+  test('isDressedForStreet true with shorts instead of jeans', async ({ game: page }) => {
     // arrange
     await setVar(page, 'jeansState', 'not worn');
     await setVar(page, 'shortsState', 'worn');
@@ -76,7 +62,7 @@ test.describe('Home Controller', () => {
 
   // --- isWearingUnderwear ---
 
-  test('isWearingUnderwear true with both bra and panties', async () => {
+  test('isWearingUnderwear true with both bra and panties', async ({ game: page }) => {
     // act
     const result = await callSetup(page, 'setup.Wardrobe.isWearingUnderwear()');
 
@@ -84,7 +70,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('isWearingUnderwear false without bra', async () => {
+  test('isWearingUnderwear false without bra', async ({ game: page }) => {
     // arrange
     await setVar(page, 'braState', 'not worn');
 
@@ -95,7 +81,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('isWearingUnderwear false without panties', async () => {
+  test('isWearingUnderwear false without panties', async ({ game: page }) => {
     // arrange
     await setVar(page, 'pantiesState', 'not worn');
 
@@ -108,7 +94,7 @@ test.describe('Home Controller', () => {
 
   // --- canLeaveHome ---
 
-  test('canLeaveHome true when dressed with underwear', async () => {
+  test('canLeaveHome true when dressed with underwear', async ({ game: page }) => {
     // act
     const result = await callSetup(page, 'setup.Home.canLeaveHome()');
 
@@ -116,7 +102,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('canLeaveHome false when naked', async () => {
+  test('canLeaveHome false when naked', async ({ game: page }) => {
     // arrange
     await setVar(page, 'tshirtState', 'not worn');
 
@@ -127,7 +113,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('canLeaveHome false when dirty', async () => {
+  test('canLeaveHome false when dirty', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.dirty', 1);
 
@@ -138,7 +124,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('canLeaveHome false without underwear at low corruption', async () => {
+  test('canLeaveHome false without underwear at low corruption', async ({ game: page }) => {
     // arrange
     await setVar(page, 'braState', 'not worn');
     await setVar(page, 'mc.corruption', 5);
@@ -150,7 +136,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('canLeaveHome true without underwear at high corruption (>= 10)', async () => {
+  test('canLeaveHome true without underwear at high corruption (>= 10)', async ({ game: page }) => {
     // arrange
     await setVar(page, 'braState', 'not worn');
     await setVar(page, 'pantiesState', 'not worn');
@@ -165,7 +151,7 @@ test.describe('Home Controller', () => {
 
   // --- leaveBlockerReason ---
 
-  test('leaveBlockerReason returns null when can leave', async () => {
+  test('leaveBlockerReason returns null when can leave', async ({ game: page }) => {
     // act
     const result = await callSetup(page, 'setup.Home.leaveBlockerReason()');
 
@@ -173,7 +159,7 @@ test.describe('Home Controller', () => {
     expect(result).toBeNull();
   });
 
-  test('leaveBlockerReason returns "naked" when undressed', async () => {
+  test('leaveBlockerReason returns "naked" when undressed', async ({ game: page }) => {
     // arrange
     await setVar(page, 'tshirtState', 'not worn');
 
@@ -184,7 +170,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe('naked');
   });
 
-  test('leaveBlockerReason returns "dirty" when dirty', async () => {
+  test('leaveBlockerReason returns "dirty" when dirty', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.dirty', 1);
 
@@ -195,7 +181,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe('dirty');
   });
 
-  test('leaveBlockerReason returns "underwear" when no underwear and low corruption', async () => {
+  test('leaveBlockerReason returns "underwear" when no underwear and low corruption', async ({ game: page }) => {
     // arrange
     await setVar(page, 'braState', 'not worn');
     await setVar(page, 'mc.corruption', 0);
@@ -209,7 +195,7 @@ test.describe('Home Controller', () => {
 
   // --- Ghost hunting eligibility ---
 
-  test('isNightForHunt true at hour >= 23', async () => {
+  test('isNightForHunt true at hour >= 23', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 23);
 
@@ -220,7 +206,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('isNightForHunt false before 23', async () => {
+  test('isNightForHunt false before 23', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 22);
 
@@ -231,7 +217,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('hasHuntContract true when ghostHuntingMode is 1', async () => {
+  test('hasHuntContract true when ghostHuntingMode is 1', async ({ game: page }) => {
     // arrange
     await setHuntMode(page, 1);
 
@@ -242,7 +228,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('needsWitch true when ghostHuntingMode is 3', async () => {
+  test('needsWitch true when ghostHuntingMode is 3', async ({ game: page }) => {
     // arrange
     await setHuntMode(page, 3);
 
@@ -253,7 +239,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('canGoHunting requires contract and dressed', async () => {
+  test('canGoHunting requires contract and dressed', async ({ game: page }) => {
     // arrange
     await setHuntMode(page, 1);
 
@@ -264,7 +250,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('canGoHunting false without contract', async () => {
+  test('canGoHunting false without contract', async ({ game: page }) => {
     // arrange
     await setHuntMode(page, 0);
 
@@ -277,7 +263,7 @@ test.describe('Home Controller', () => {
 
   // --- Succubus events ---
 
-  test('succubusCanKnock requires evening hours and high corruption', async () => {
+  test('succubusCanKnock requires evening hours and high corruption', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 19);
     await setVar(page, 'mc.corruption', 6);
@@ -289,7 +275,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('succubusCanKnock false outside 18-20 range', async () => {
+  test('succubusCanKnock false outside 18-20 range', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 17);
     await setVar(page, 'mc.corruption', 6);
@@ -301,7 +287,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('succubusCanKnock false with low corruption', async () => {
+  test('succubusCanKnock false with low corruption', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 19);
     await setVar(page, 'mc.corruption', 5);
@@ -313,7 +299,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('succubusCanKnock false if succubus already encountered', async () => {
+  test('succubusCanKnock false if succubus already encountered', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 19);
     await setVar(page, 'mc.corruption', 6);
@@ -328,7 +314,7 @@ test.describe('Home Controller', () => {
 
   // --- Tentacles events ---
 
-  test('tentaclesNapEventReady requires cursed item and high cooldown', async () => {
+  test('tentaclesNapEventReady requires cursed item and high cooldown', async ({ game: page }) => {
     // arrange
     await setVar(page, 'gotCursedItem', 1);
     await setVar(page, 'gotCursedItemEventCD', 2);
@@ -340,7 +326,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('tentaclesNapEventReady false without cursed item', async () => {
+  test('tentaclesNapEventReady false without cursed item', async ({ game: page }) => {
     // arrange
     await setVar(page, 'gotCursedItem', 0);
     await setVar(page, 'gotCursedItemEventCD', 2);
@@ -352,7 +338,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('tentaclesTVEventReady requires cooldown >= 3', async () => {
+  test('tentaclesTVEventReady requires cooldown >= 3', async ({ game: page }) => {
     // arrange
     await setVar(page, 'gotCursedItem', 1);
     await setVar(page, 'gotCursedItemEventCD', 3);
@@ -364,7 +350,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('tentaclesSleepEventReady requires evening hours', async () => {
+  test('tentaclesSleepEventReady requires evening hours', async ({ game: page }) => {
     // arrange
     await setVar(page, 'gotCursedItem', 1);
     await setVar(page, 'gotCursedItemEventCD', 1);
@@ -377,7 +363,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('tentaclesSleepEventReady false during daytime', async () => {
+  test('tentaclesSleepEventReady false during daytime', async ({ game: page }) => {
     // arrange
     await setVar(page, 'gotCursedItem', 1);
     await setVar(page, 'gotCursedItemEventCD', 1);
@@ -392,7 +378,7 @@ test.describe('Home Controller', () => {
 
   // --- Mare / exorcism ---
 
-  test('canSummonForExorcism true at stage 1 or 2 with no cooldown', async () => {
+  test('canSummonForExorcism true at stage 1 or 2 with no cooldown', async ({ game: page }) => {
     // arrange
     await setVar(page, 'exorcismQuestStage', 1);
     await setVar(page, 'exorcism', 0);
@@ -407,7 +393,7 @@ test.describe('Home Controller', () => {
     expect(atStage2).toBe(true);
   });
 
-  test('canSummonForExorcism false on cooldown', async () => {
+  test('canSummonForExorcism false on cooldown', async ({ game: page }) => {
     // arrange
     await setVar(page, 'exorcismQuestStage', 1);
     await setVar(page, 'exorcism', 1);
@@ -419,7 +405,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('mareEventActive true when ghostMareEventStart >= 1', async () => {
+  test('mareEventActive true when ghostMareEventStart >= 1', async ({ game: page }) => {
     // arrange
     await setVar(page, 'ghostMareEventStart', 1);
 
@@ -433,7 +419,7 @@ test.describe('Home Controller', () => {
     expect(atThree).toBe(true);
   });
 
-  test('mareEventActive false when ghostMareEventStart is 0', async () => {
+  test('mareEventActive false when ghostMareEventStart is 0', async ({ game: page }) => {
     // arrange
     await setVar(page, 'ghostMareEventStart', 0);
 
@@ -444,7 +430,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('useHolyWaterOnMare clears mare and holy water state', async () => {
+  test('useHolyWaterOnMare clears mare and holy water state', async ({ game: page }) => {
     // arrange
     await setVar(page, 'ghostMareEventStart', 2);
     await setVar(page, 'holyWaterIsCollected', 1);
@@ -459,7 +445,7 @@ test.describe('Home Controller', () => {
     expect(await getVar(page, 'ghostMareEventStage')).toBe(0);
   });
 
-  test('canUseHolyWaterOnMare requires holy water and active mare', async () => {
+  test('canUseHolyWaterOnMare requires holy water and active mare', async ({ game: page }) => {
     // arrange
     await setVar(page, 'holyWaterIsCollected', 1);
     await setVar(page, 'ghostMareEventStart', 1);
@@ -471,7 +457,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('canUseHolyWaterOnMare false without holy water', async () => {
+  test('canUseHolyWaterOnMare false without holy water', async ({ game: page }) => {
     // arrange
     await setVar(page, 'holyWaterIsCollected', 0);
     await setVar(page, 'ghostMareEventStart', 1);
@@ -485,7 +471,7 @@ test.describe('Home Controller', () => {
 
   // --- Sleep effects ---
 
-  test('applyFullRest restores all stats to max', async () => {
+  test('applyFullRest restores all stats to max', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.sanity', 30);
     await setVar(page, 'mc.energy', 2);
@@ -501,7 +487,7 @@ test.describe('Home Controller', () => {
     expect(await getVar(page, 'mc.lust')).toBe(0);
   });
 
-  test('applySleepPenalty caps sanity at 70 and restores energy', async () => {
+  test('applySleepPenalty caps sanity at 70 and restores energy', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.sanity', 100);
     await setVar(page, 'mc.energy', 2);
@@ -520,7 +506,7 @@ test.describe('Home Controller', () => {
     expect(lust).toBeLessThanOrEqual(60);
   });
 
-  test('applyAssaultDebuff does not restore energy', async () => {
+  test('applyAssaultDebuff does not restore energy', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.energy', 2);
 
@@ -532,7 +518,7 @@ test.describe('Home Controller', () => {
     expect(await getVar(page, 'mc.energy')).toBe(2);
   });
 
-  test('applyMareWake low stage gives moderate debuff', async () => {
+  test('applyMareWake low stage gives moderate debuff', async ({ game: page }) => {
     // arrange
     await setVar(page, 'ghostMareEventStage', 1);
 
@@ -546,7 +532,7 @@ test.describe('Home Controller', () => {
     expect(sanity).toBeLessThanOrEqual(70);
   });
 
-  test('applyMareWake high stage gives severe debuff', async () => {
+  test('applyMareWake high stage gives severe debuff', async ({ game: page }) => {
     // arrange
     await setVar(page, 'ghostMareEventStage', 3);
 
@@ -565,7 +551,7 @@ test.describe('Home Controller', () => {
 
   // --- Sleep advance ---
 
-  test('sleepAdvance advances time and triggers an autosave', async () => {
+  test('sleepAdvance advances time and triggers an autosave', async ({ game: page }) => {
     // arrange
     await page.evaluate(() => {
       SugarCube.State.variables.hours = 22;
@@ -593,7 +579,7 @@ test.describe('Home Controller', () => {
     )).toBeGreaterThan(0);
   });
 
-  test('sleepAdvance without midnight rollover still autosaves', async () => {
+  test('sleepAdvance without midnight rollover still autosaves', async ({ game: page }) => {
     // arrange
     await page.evaluate(() => {
       SugarCube.State.variables.hours = 8;
@@ -617,7 +603,7 @@ test.describe('Home Controller', () => {
     )).toBeGreaterThan(0);
   });
 
-  test('passage transitions outside of sleep do not autosave', async () => {
+  test('passage transitions outside of sleep do not autosave', async ({ game: page }) => {
     // arrange
     await page.evaluate(() => SugarCube.Save.browser.auto.clear());
 
@@ -635,37 +621,37 @@ test.describe('Home Controller', () => {
 
   // --- Alarm clock ---
 
-  test('alarmEnabled defaults to false on a fresh game', async () => {
+  test('alarmEnabled defaults to false on a fresh game', async ({ game: page }) => {
     expect(await callSetup(page, 'setup.Home.alarmEnabled()')).toBe(false);
     expect(await callSetup(page, 'setup.Home.alarmHour()')).toBe(7);
   });
 
-  test('setAlarm enables and stores the chosen hour', async () => {
+  test('setAlarm enables and stores the chosen hour', async ({ game: page }) => {
     await page.evaluate(() => SugarCube.setup.Home.setAlarm(6));
     expect(await callSetup(page, 'setup.Home.alarmEnabled()')).toBe(true);
     expect(await callSetup(page, 'setup.Home.alarmHour()')).toBe(6);
   });
 
-  test('clearAlarm disables the alarm but keeps the last hour', async () => {
+  test('clearAlarm disables the alarm but keeps the last hour', async ({ game: page }) => {
     await page.evaluate(() => SugarCube.setup.Home.setAlarm(9));
     await page.evaluate(() => SugarCube.setup.Home.clearAlarm());
     expect(await callSetup(page, 'setup.Home.alarmEnabled()')).toBe(false);
     expect(await callSetup(page, 'setup.Home.alarmHour()')).toBe(9);
   });
 
-  test('hoursUntilAlarm returns the gap to the alarm hour later today', async () => {
+  test('hoursUntilAlarm returns the gap to the alarm hour later today', async ({ game: page }) => {
     await setVar(page, 'hours', 23);
     await page.evaluate(() => SugarCube.setup.Home.setAlarm(7));
     expect(await callSetup(page, 'setup.Home.hoursUntilAlarm()')).toBe(8);
   });
 
-  test('hoursUntilAlarm wraps past midnight when the alarm is later in the day', async () => {
+  test('hoursUntilAlarm wraps past midnight when the alarm is later in the day', async ({ game: page }) => {
     await setVar(page, 'hours', 6);
     await page.evaluate(() => SugarCube.setup.Home.setAlarm(7));
     expect(await callSetup(page, 'setup.Home.hoursUntilAlarm()')).toBe(1);
   });
 
-  test('hoursUntilAlarm returns a full day when the alarm hour matches now', async () => {
+  test('hoursUntilAlarm returns a full day when the alarm hour matches now', async ({ game: page }) => {
     // Sleeping at 7:00 with the alarm set to 7 means waking 24 hours later,
     // not zero -- otherwise Time.sleepAdvanceHours(0) is a no-op nap.
     await setVar(page, 'hours', 7);
@@ -673,17 +659,17 @@ test.describe('Home Controller', () => {
     expect(await callSetup(page, 'setup.Home.hoursUntilAlarm()')).toBe(24);
   });
 
-  test('restHours falls back to a flat 8 when the alarm is off', async () => {
+  test('restHours falls back to a flat 8 when the alarm is off', async ({ game: page }) => {
     expect(await callSetup(page, 'setup.Home.restHours()')).toBe(8);
   });
 
-  test('restHours honors the alarm when it is on', async () => {
+  test('restHours honors the alarm when it is on', async ({ game: page }) => {
     await setVar(page, 'hours', 22);
     await page.evaluate(() => SugarCube.setup.Home.setAlarm(6));
     expect(await callSetup(page, 'setup.Home.restHours()')).toBe(8);
   });
 
-  test('resolveSleepWake honors the alarm for the default rest branch', async () => {
+  test('resolveSleepWake honors the alarm for the default rest branch', async ({ game: page }) => {
     await setVar(page, 'hours', 23);
     await page.evaluate(() => SugarCube.setup.Home.setAlarm(5));
     const result = await page.evaluate(() => SugarCube.setup.Home.resolveSleepWake('Bedroom'));
@@ -692,7 +678,7 @@ test.describe('Home Controller', () => {
     expect(result.hours).toBe(6);
   });
 
-  test('sleepAdvance always lands on HH:00 regardless of the alarm', async () => {
+  test('sleepAdvance always lands on HH:00 regardless of the alarm', async ({ game: page }) => {
     // Wakes — alarm-driven or 3-hour event partials — read cleaner
     // when minutes snap to 00, so sleepAdvance enforces that for
     // every caller.
@@ -703,7 +689,7 @@ test.describe('Home Controller', () => {
     expect(await getVar(page, 'minutes')).toBe(0);
   });
 
-  test('resolveSleepWake leaves event branches at 3h even with alarm set', async () => {
+  test('resolveSleepWake leaves event branches at 3h even with alarm set', async ({ game: page }) => {
     // Alarm set: hunt-defeat / mareEnd / spirit are still 3-hour partial
     // sleeps cut short by the event, not full nights. Wraith is the only
     // catalogue ghost with a sleepPassage, so it's the branch we can
@@ -718,7 +704,7 @@ test.describe('Home Controller', () => {
     expect(fromDefeat.postWake).toBe('huntDefeat');
   });
 
-  test('sleepAdvance to alarm wakes the MC at the configured hour', async () => {
+  test('sleepAdvance to alarm wakes the MC at the configured hour', async ({ game: page }) => {
     await page.evaluate(() => {
       SugarCube.State.variables.hours = 23;
       SugarCube.State.variables.minutes = 0;
@@ -737,7 +723,7 @@ test.describe('Home Controller', () => {
 
   // --- Twins event ---
 
-  test('twinsEventAvailable requires flag and no cooldown', async () => {
+  test('twinsEventAvailable requires flag and no cooldown', async ({ game: page }) => {
     // arrange
     await setVar(page, 'twinsEventActive', 1);
     await setVar(page, 'twinsEvent', 0);
@@ -749,7 +735,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('twinsEventAvailable false on cooldown', async () => {
+  test('twinsEventAvailable false on cooldown', async ({ game: page }) => {
     // arrange
     await setVar(page, 'twinsEventActive', 1);
     await setVar(page, 'twinsEvent', 1);
@@ -761,7 +747,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('weak Mirror branch clears twinsEventActive so it does not re-fire daily', async () => {
+  test('weak Mirror branch clears twinsEventActive so it does not re-fire daily', async ({ game: page }) => {
     // Regression: the Mirror passage's weak branch (beauty roll beats MC) used
     // to set only $twinsEvent, leaving $twinsEventActive=1. ResetCooldowns
     // zeros the CD on every day-wrap, so the event re-fired every morning —
@@ -778,7 +764,7 @@ test.describe('Home Controller', () => {
     expect(await getVar(page, 'twinsEvent')).toBe(1);
   });
 
-  test('twinsEventTriggered true when beauty roll <= mc beauty', async () => {
+  test('twinsEventTriggered true when beauty roll <= mc beauty', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.beauty', 50);
 
@@ -795,7 +781,7 @@ test.describe('Home Controller', () => {
 
   // --- Makeup ---
 
-  test('canApplyMakeup requires not already applied and enough charges', async () => {
+  test('canApplyMakeup requires not already applied and enough charges', async ({ game: page }) => {
     // arrange
     await setVar(page, 'makeupApplied', 0);
     await setVar(page, 'makeupAmount', 3);
@@ -807,7 +793,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('canApplyMakeup false if already applied', async () => {
+  test('canApplyMakeup false if already applied', async ({ game: page }) => {
     // arrange
     await setVar(page, 'makeupApplied', 1);
     await setVar(page, 'makeupAmount', 3);
@@ -819,7 +805,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('canApplyMakeup false if not enough charges', async () => {
+  test('canApplyMakeup false if not enough charges', async ({ game: page }) => {
     // arrange
     await setVar(page, 'makeupApplied', 0);
     await setVar(page, 'makeupAmount', 1);

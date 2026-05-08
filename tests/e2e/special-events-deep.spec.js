@@ -1,15 +1,9 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, callSetup, goToPassage } = require('../helpers');
+const { test, expect } = require('../fixtures');
+const { setVar, getVar, callSetup, goToPassage, resetGame } = require('../helpers');
 const { expectCleanPassage, setupHunt } = require('./e2e-helpers');
 
 test.describe('Special events — Mare progression state machine', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('mareStage and mareStageAtLeast read $ghostMareEventStage', async () => {
+  test('mareStage and mareStageAtLeast read $ghostMareEventStage', async ({ game: page }) => {
     await setVar(page, 'ghostMareEventStage', 0);
     expect(await callSetup(page, 'setup.SpecialEvent.mareStage()')).toBe(0);
     expect(await callSetup(page, 'setup.SpecialEvent.mareStageAtLeast(1)')).toBe(false);
@@ -21,13 +15,13 @@ test.describe('Special events — Mare progression state machine', () => {
     expect(await callSetup(page, 'setup.SpecialEvent.mareStageAtLeast(4)')).toBe(false);
   });
 
-  test('mareStageAtLeast handles undefined stage as 0', async () => {
+  test('mareStageAtLeast handles undefined stage as 0', async ({ game: page }) => {
     await page.evaluate(() => { delete SugarCube.State.variables.ghostMareEventStage; });
     expect(await callSetup(page, 'setup.SpecialEvent.mareStageAtLeast(0)')).toBe(true);
     expect(await callSetup(page, 'setup.SpecialEvent.mareStageAtLeast(1)')).toBe(false);
   });
 
-  test('Home.mareEventActive checks $ghostMareEventStart', async () => {
+  test('Home.mareEventActive checks $ghostMareEventStart', async ({ game: page }) => {
     await setVar(page, 'ghostMareEventStart', 0);
     expect(await callSetup(page, 'setup.SpecialEvent.mareEventActive()')).toBe(false);
     await setVar(page, 'ghostMareEventStart', 1);
@@ -36,7 +30,7 @@ test.describe('Special events — Mare progression state machine', () => {
     expect(await callSetup(page, 'setup.SpecialEvent.mareEventActive()')).toBe(true);
   });
 
-  test('useHolyWaterOnMare clears mare and consumes water', async () => {
+  test('useHolyWaterOnMare clears mare and consumes water', async ({ game: page }) => {
     await setVar(page, 'ghostMareEventStart', 4);
     await setVar(page, 'ghostMareEventStage', 3);
     await setVar(page, 'holyWaterIsCollected', 1);
@@ -48,7 +42,7 @@ test.describe('Special events — Mare progression state machine', () => {
     expect(await callSetup(page, 'setup.Home.canUseHolyWaterOnMare()')).toBe(false);
   });
 
-  test('canUseHolyWaterOnMare requires both flags', async () => {
+  test('canUseHolyWaterOnMare requires both flags', async ({ game: page }) => {
     await setVar(page, 'ghostMareEventStart', 0);
     await setVar(page, 'holyWaterIsCollected', 1);
     expect(await callSetup(page, 'setup.Home.canUseHolyWaterOnMare()')).toBe(false);
@@ -57,14 +51,14 @@ test.describe('Special events — Mare progression state machine', () => {
     expect(await callSetup(page, 'setup.Home.canUseHolyWaterOnMare()')).toBe(false);
   });
 
-  test('mareStageIsLow is true when stage <= 2', async () => {
+  test('mareStageIsLow is true when stage <= 2', async ({ game: page }) => {
     await setVar(page, 'ghostMareEventStage', 2);
     expect(await callSetup(page, 'setup.Home.mareStageIsLow()')).toBe(true);
     await setVar(page, 'ghostMareEventStage', 3);
     expect(await callSetup(page, 'setup.Home.mareStageIsLow()')).toBe(false);
   });
 
-  test('clearMareEvent zeroes both progression vars', async () => {
+  test('clearMareEvent zeroes both progression vars', async ({ game: page }) => {
     await setVar(page, 'ghostMareEventStart', 4);
     await setVar(page, 'ghostMareEventStage', 3);
     await page.evaluate(() => SugarCube.setup.SpecialEvent.clearMareEvent());
@@ -74,27 +68,21 @@ test.describe('Special events — Mare progression state machine', () => {
 });
 
 test.describe('Special events — Mare passages render across stages', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('GhostSpecialEventMare0 (initial discovery) renders cleanly', async () => {
+  test('GhostSpecialEventMare0 (initial discovery) renders cleanly', async ({ game: page }) => {
     await setVar(page, 'ghostMareEventStart', 1);
     await setVar(page, 'ghostMareEventStage', 0);
     await goToPassage(page, 'GhostSpecialEventMare0');
     await expectCleanPassage(page);
   });
 
-  test('GhostSpecialEvent1Mare (mid-progression) renders cleanly', async () => {
+  test('GhostSpecialEvent1Mare (mid-progression) renders cleanly', async ({ game: page }) => {
     await setVar(page, 'ghostMareEventStart', 2);
     await setVar(page, 'ghostMareEventStage', 1);
     await goToPassage(page, 'GhostSpecialEvent1Mare');
     await expectCleanPassage(page);
   });
 
-  test('GhostSpecialEventMareEnd renders cleanly at the climax', async () => {
+  test('GhostSpecialEventMareEnd renders cleanly at the climax', async ({ game: page }) => {
     await setVar(page, 'ghostMareEventStart', 4);
     await setVar(page, 'ghostMareEventStage', 3);
     await goToPassage(page, 'GhostSpecialEventMareEnd');
@@ -103,13 +91,7 @@ test.describe('Special events — Mare passages render across stages', () => {
 });
 
 test.describe('Special events — Wraith escape outcomes', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('rollEscapeSuccess at energy=1 succeeds for low rolls only', async () => {
+  test('rollEscapeSuccess at energy=1 succeeds for low rolls only', async ({ game: page }) => {
     await setVar(page, 'mc.energy', 1);
     // chance = floor(0*100)+1 = 1, energy*5 = 5; 1 <= 5 → true
     await page.evaluate(() => { window._origRandom = Math.random; Math.random = () => 0; });
@@ -127,7 +109,7 @@ test.describe('Special events — Wraith escape outcomes', () => {
     }
   });
 
-  test('rollEscapeSuccess at energy=20 always succeeds (chance 100)', async () => {
+  test('rollEscapeSuccess at energy=20 always succeeds (chance 100)', async ({ game: page }) => {
     await setVar(page, 'mc.energy', 20);
     for (const r of [0, 0.5, 0.99]) {
       await page.evaluate((rr) => { window._origRandom = Math.random; Math.random = () => rr; }, r);
@@ -139,7 +121,7 @@ test.describe('Special events — Wraith escape outcomes', () => {
     }
   });
 
-  test('Wraith passage hides escape UI when out of energy', async () => {
+  test('Wraith passage hides escape UI when out of energy', async ({ game: page }) => {
     await setVar(page, 'mc.energy', 0);
     await goToPassage(page, 'GhostSpecialEventWraith');
     await expectCleanPassage(page);
@@ -147,7 +129,7 @@ test.describe('Special events — Wraith escape outcomes', () => {
     expect(text).toContain('faint sound of footsteps');
   });
 
-  test('GhostSpecialEventWraithStart and End render cleanly', async () => {
+  test('GhostSpecialEventWraithStart and End render cleanly', async ({ game: page }) => {
     await goToPassage(page, 'GhostSpecialEventWraithStart');
     await expectCleanPassage(page);
     await resetGame(page);
@@ -157,13 +139,7 @@ test.describe('Special events — Wraith escape outcomes', () => {
 });
 
 test.describe('Special events — Spirit corruption / energy gates', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('TVSpirit corruption gate flips at exactly 3', async () => {
+  test('TVSpirit corruption gate flips at exactly 3', async ({ game: page }) => {
     for (const c of [0, 1, 2]) {
       await setVar(page, 'mc.corruption', c);
       expect(await callSetup(page, 'setup.SpecialEvent.hasMinCorruptionForTVSpirit()')).toBe(false);
@@ -174,7 +150,7 @@ test.describe('Special events — Spirit corruption / energy gates', () => {
     }
   });
 
-  test('SleepSpirit needs corruption >= 5 AND energy >= 5', async () => {
+  test('SleepSpirit needs corruption >= 5 AND energy >= 5', async ({ game: page }) => {
     await setVar(page, 'mc.corruption', 4);
     await setVar(page, 'mc.energy', 10);
     expect(await callSetup(page, 'setup.SpecialEvent.hasMinCorruptionForSleepSpirit()')).toBe(false);
@@ -186,7 +162,7 @@ test.describe('Special events — Spirit corruption / energy gates', () => {
     expect(await callSetup(page, 'setup.SpecialEvent.hasEnergyForSleepSpirit()')).toBe(false);
   });
 
-  test('markSpiritEventStage and startSpiritEventCooldown are independent', async () => {
+  test('markSpiritEventStage and startSpiritEventCooldown are independent', async ({ game: page }) => {
     await setVar(page, 'ghostSpiritEventStage', 0);
     await setVar(page, 'ghostSpecialEventSpirit', 0);
     await page.evaluate(() => SugarCube.setup.SpecialEvent.markSpiritEventStage());
@@ -197,7 +173,7 @@ test.describe('Special events — Spirit corruption / energy gates', () => {
     expect(await getVar(page, 'ghostSpecialEventSpirit')).toBe(1);
   });
 
-  test('Spirit nap variants render with companion-specific branches', async () => {
+  test('Spirit nap variants render with companion-specific branches', async ({ game: page }) => {
     for (const comp of ['Alice', 'Brook', 'Blake']) {
       await resetGame(page);
       await setVar(page, 'companion', { name: comp, lust: 30, sanity: 80 });
@@ -211,18 +187,12 @@ test.describe('Special events — Spirit corruption / energy gates', () => {
 });
 
 test.describe('Special events — Myling video record', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('recordMylingVideo stores the chosen video', async () => {
+  test('recordMylingVideo stores the chosen video', async ({ game: page }) => {
     await page.evaluate(() => SugarCube.setup.SpecialEvent.recordMylingVideo('ghosts/specials/myling-alice.mp4'));
     expect(await getVar(page, 'videoEventSpecialMyling')).toBe('ghosts/specials/myling-alice.mp4');
   });
 
-  test('GhostSpecialEventMyling and Two render with each companion present', async () => {
+  test('GhostSpecialEventMyling and Two render with each companion present', async ({ game: page }) => {
     for (const comp of ['Alice', 'Blake', 'Brook']) {
       await resetGame(page);
       await setVar(page, 'companion', { name: comp });
@@ -239,13 +209,7 @@ test.describe('Special events — Myling video record', () => {
 });
 
 test.describe('Special events — Twins event mirror', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('twinsEventAvailable requires the flag set and CD off', async () => {
+  test('twinsEventAvailable requires the flag set and CD off', async ({ game: page }) => {
     await setVar(page, 'twinsEventActive', 0);
     await setVar(page, 'twinsEvent', 0);
     expect(await callSetup(page, 'setup.Ghosts.twinsEventReady()')).toBe(false);
@@ -258,14 +222,14 @@ test.describe('Special events — Twins event mirror', () => {
     expect(await callSetup(page, 'setup.Ghosts.twinsEventReady()')).toBe(false);
   });
 
-  test('twinsEventTriggered compares beautyRoll <= mc.beauty', async () => {
+  test('twinsEventTriggered compares beautyRoll <= mc.beauty', async ({ game: page }) => {
     await setVar(page, 'mc.beauty', 50);
     expect(await callSetup(page, 'setup.Home.twinsEventTriggered(30)')).toBe(true);
     expect(await callSetup(page, 'setup.Home.twinsEventTriggered(50)')).toBe(true);
     expect(await callSetup(page, 'setup.Home.twinsEventTriggered(60)')).toBe(false);
   });
 
-  test('consumeTwinsEvent flips flag and starts cooldown', async () => {
+  test('consumeTwinsEvent flips flag and starts cooldown', async ({ game: page }) => {
     await setVar(page, 'twinsEventActive', 1);
     await setVar(page, 'twinsEvent', 0);
     await page.evaluate(() => SugarCube.setup.Ghosts.consumeTwinsEvent());
@@ -273,12 +237,12 @@ test.describe('Special events — Twins event mirror', () => {
     expect(await getVar(page, 'twinsEvent')).toBe(1);
   });
 
-  test('TheTwinsEvent passage renders cleanly', async () => {
+  test('TheTwinsEvent passage renders cleanly', async ({ game: page }) => {
     await goToPassage(page, 'TheTwinsEvent');
     await expectCleanPassage(page);
   });
 
-  test('clearTwinsEvent zeroes the flag', async () => {
+  test('clearTwinsEvent zeroes the flag', async ({ game: page }) => {
     await setVar(page, 'twinsEventActive', 1);
     await page.evaluate(() => SugarCube.setup.Ghosts.clearTwinsEvent());
     expect(await getVar(page, 'twinsEventActive')).toBe(0);
@@ -286,20 +250,14 @@ test.describe('Special events — Twins event mirror', () => {
 });
 
 test.describe('Special events — Spirit hunt-end hook', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('Spirit ghost has an onHuntEnd hook that resets the stage', async () => {
+  test('Spirit ghost has an onHuntEnd hook that resets the stage', async ({ game: page }) => {
     await setupHunt(page, 'Spirit');
     await setVar(page, 'ghostSpiritEventStage', 1);
     await page.evaluate(() => SugarCube.setup.Ghosts.fireActiveHuntEnd());
     expect(await getVar(page, 'ghostSpiritEventStage')).toBe(0);
   });
 
-  test('non-Spirit ghosts leave the spirit stage alone on hunt end', async () => {
+  test('non-Spirit ghosts leave the spirit stage alone on hunt end', async ({ game: page }) => {
     await setupHunt(page, 'Shade');
     await setVar(page, 'ghostSpiritEventStage', 1);
     await page.evaluate(() => SugarCube.setup.Ghosts.fireActiveHuntEnd());
@@ -308,13 +266,7 @@ test.describe('Special events — Spirit hunt-end hook', () => {
 });
 
 test.describe('Special events — myling reset of hunt plan', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('resets companion + plan flags in one call', async () => {
+  test('resets companion + plan flags in one call', async ({ game: page }) => {
     await setVar(page, 'chosenPlan', 'Plan2');
     await setVar(page, 'chosenPlanActivated', 1);
     await setVar(page, 'randomGhostPassage', 5);

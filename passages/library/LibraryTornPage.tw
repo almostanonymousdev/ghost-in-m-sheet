@@ -1,0 +1,19 @@
+:: LibraryTornPage {"position":"3225,2100","size":"100,100"}
+<<nobr>>
+<<set _found to setup.Library.pickRandomTornPage()>>
+<<if _found is null>>
+	@@.mc-thoughts; You search the stacks again, but you've already collected every page that was hidden here.@@<br>
+<<else>>
+	@@.mc-thoughts; A folded scrap of paper is wedged behind the spine of a book that doesn't belong on this shelf. The handwriting matches the desecrated field guide.@@<br>
+	<<image "scenes/library/torn-page.png" "libraryCenteredImg">><br>
+	<br>
+	''<<= _found.tip.title>>''<br>
+	<<= _found.tip.body>><br>
+<</if>>
+<br>
+@@.backbtn; [[Leave|LibraryInside]]@@<br>
+<<done>>
+<<addclass ".linkselector" "disabled-link">>
+<</done>>
+<</nobr>>
+<<include "StyleLibraryCenteredImg">>

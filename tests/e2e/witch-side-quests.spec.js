@@ -1,15 +1,9 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, callSetup, goToPassage } = require('../helpers');
+const { test, expect } = require('../fixtures');
+const { setVar, getVar, callSetup, goToPassage } = require('../helpers');
 const { expectCleanPassage } = require('./e2e-helpers');
 
 test.describe('Witch — cursed-item quest lifecycle', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('quest progresses offer → active → turn-in → reward', async () => {
+  test('quest progresses offer → active → turn-in → reward', async ({ game: page }) => {
     await page.evaluate(() => { delete SugarCube.State.variables.gotCursedItem; });
     await setVar(page, 'mc.lvl', 3);
 
@@ -38,7 +32,7 @@ test.describe('Witch — cursed-item quest lifecycle', () => {
     expect(await getVar(page, 'isCIHDildo')).toBe(0);
   });
 
-  test('shouldAwardGwb3OnTurnIn fires upgradeGwbToLvl3', async () => {
+  test('shouldAwardGwb3OnTurnIn fires upgradeGwbToLvl3', async ({ game: page }) => {
     await setVar(page, 'equipment', { gwb: 1 });
     expect(await callSetup(page, 'setup.Witch.shouldAwardGwb3OnTurnIn()')).toBe(true);
     await page.evaluate(() => SugarCube.setup.Witch.upgradeGwbToLvl3());
@@ -48,13 +42,7 @@ test.describe('Witch — cursed-item quest lifecycle', () => {
 });
 
 test.describe('Witch — exorcism and rescue referrals', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('exorcismQuestNotStarted is true when stage is 0 or undefined', async () => {
+  test('exorcismQuestNotStarted is true when stage is 0 or undefined', async ({ game: page }) => {
     await page.evaluate(() => { delete SugarCube.State.variables.exorcismQuestStage; });
     expect(await callSetup(page, 'setup.Witch.exorcismQuestNotStarted()')).toBe(true);
     await setVar(page, 'exorcismQuestStage', 0);
@@ -63,20 +51,20 @@ test.describe('Witch — exorcism and rescue referrals', () => {
     expect(await callSetup(page, 'setup.Witch.exorcismQuestNotStarted()')).toBe(false);
   });
 
-  test('resetExorcismQuestStage sets stage back to 0', async () => {
+  test('resetExorcismQuestStage sets stage back to 0', async ({ game: page }) => {
     await setVar(page, 'exorcismQuestStage', 5);
     await page.evaluate(() => SugarCube.setup.Witch.resetExorcismQuestStage());
     expect(await getVar(page, 'exorcismQuestStage')).toBe(0);
   });
 
-  test('hasSuccubusEncounter reads $succubus', async () => {
+  test('hasSuccubusEncounter reads $succubus', async ({ game: page }) => {
     await page.evaluate(() => { delete SugarCube.State.variables.succubus; });
     expect(await callSetup(page, 'setup.Witch.hasSuccubusEncounter()')).toBe(false);
     await setVar(page, 'succubus', 1);
     expect(await callSetup(page, 'setup.Witch.hasSuccubusEncounter()')).toBe(true);
   });
 
-  test('clearQuestForRescue sets $hasQuestForRescue to 0', async () => {
+  test('clearQuestForRescue sets $hasQuestForRescue to 0', async ({ game: page }) => {
     await setVar(page, 'hasQuestForRescue', 3);
     await page.evaluate(() => SugarCube.setup.MissingWomen.resetQuestToAvailable());
     expect(await getVar(page, 'hasQuestForRescue')).toBe(0);
@@ -84,20 +72,14 @@ test.describe('Witch — exorcism and rescue referrals', () => {
 });
 
 test.describe('Witch — level 3 tools referral', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('restartToolEvent clears eventToolsOneStart', async () => {
+  test('restartToolEvent clears eventToolsOneStart', async ({ game: page }) => {
     await setVar(page, 'eventToolsOneStart', 1);
     await page.evaluate(() => SugarCube.setup.Witch.restartToolEvent());
     expect(await getVar(page, 'eventToolsOneStart')).toBe(0);
     expect(await callSetup(page, 'setup.Witch.canAskAboutLevel3Tools()')).toBe(true);
   });
 
-  test('markWardenOutfitHintOpened sets wardenClothesStage to 1', async () => {
+  test('markWardenOutfitHintOpened sets wardenClothesStage to 1', async ({ game: page }) => {
     await setVar(page, 'wardenClothesStage', 0);
     await page.evaluate(() => SugarCube.setup.Witch.markWardenOutfitHintOpened());
     expect(await getVar(page, 'wardenClothesStage')).toBe(1);
@@ -106,13 +88,7 @@ test.describe('Witch — level 3 tools referral', () => {
 });
 
 test.describe('Witch — weaken ghost quest', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('markWeakenQuestStarted sets weakenTheGhostQuest to 1', async () => {
+  test('markWeakenQuestStarted sets weakenTheGhostQuest to 1', async ({ game: page }) => {
     await page.evaluate(() => { delete SugarCube.State.variables.weakenTheGhostQuest; });
     expect(await callSetup(page, 'setup.Witch.hasWeakenTheGhostQuest()')).toBe(false);
     await page.evaluate(() => SugarCube.setup.Witch.markWeakenQuestStarted());
@@ -120,7 +96,7 @@ test.describe('Witch — weaken ghost quest', () => {
     expect(await callSetup(page, 'setup.Witch.hasWeakenTheGhostQuest()')).toBe(true);
   });
 
-  test('markGhostWeakened reflects in isGhostWeakened', async () => {
+  test('markGhostWeakened reflects in isGhostWeakened', async ({ game: page }) => {
     await setVar(page, 'isWeakenGhost', 0);
     expect(await callSetup(page, 'setup.Witch.isGhostWeakened()')).toBe(false);
     await page.evaluate(() => SugarCube.setup.Witch.markGhostWeakened());
@@ -128,7 +104,7 @@ test.describe('Witch — weaken ghost quest', () => {
     expect(await callSetup(page, 'setup.Witch.isGhostWeakened()')).toBe(true);
   });
 
-  test('payForContract pays contract + weaken rewards', async () => {
+  test('payForContract pays contract + weaken rewards', async ({ game: page }) => {
     await setVar(page, 'mc.money', 100);
     await setVar(page, 'moneyFromContract', 50);
     await setVar(page, 'moneyFromWeakenTheGhost', 30);
@@ -136,7 +112,7 @@ test.describe('Witch — weaken ghost quest', () => {
     expect(await getVar(page, 'mc.money')).toBe(180);
   });
 
-  test('payForWeakenOnly pays only weaken reward, not contract', async () => {
+  test('payForWeakenOnly pays only weaken reward, not contract', async ({ game: page }) => {
     await setVar(page, 'mc.money', 100);
     await setVar(page, 'moneyFromContract', 50);
     await setVar(page, 'moneyFromWeakenTheGhost', 30);
@@ -144,7 +120,7 @@ test.describe('Witch — weaken ghost quest', () => {
     expect(await getVar(page, 'mc.money')).toBe(130);
   });
 
-  test('payForWeakenOnly handles undefined weaken reward as 0', async () => {
+  test('payForWeakenOnly handles undefined weaken reward as 0', async ({ game: page }) => {
     await setVar(page, 'mc.money', 100);
     await page.evaluate(() => {
       delete SugarCube.State.variables.moneyFromWeakenTheGhost;
@@ -156,13 +132,7 @@ test.describe('Witch — weaken ghost quest', () => {
 });
 
 test.describe('Witch — tool upgrades and crucifix', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('TOOL_UPGRADE_PRICES lists a price for each tool', async () => {
+  test('TOOL_UPGRADE_PRICES lists a price for each tool', async ({ game: page }) => {
     const prices = await page.evaluate(() => SugarCube.setup.Witch.TOOL_UPGRADE_PRICES);
     expect(prices.emf).toBe(200);
     expect(prices.temperature).toBe(100);
@@ -172,7 +142,7 @@ test.describe('Witch — tool upgrades and crucifix', () => {
     expect(prices.uvl).toBe(400);
   });
 
-  test('upgradeTool raises tool to 4 and deducts money', async () => {
+  test('upgradeTool raises tool to 4 and deducts money', async ({ game: page }) => {
     await setVar(page, 'mc.money', 500);
     await setVar(page, 'equipment', { emf: 2, temperature: 1, spiritbox: 1, gwb: 1, glass: 1, uvl: 1 });
     await page.evaluate(() => SugarCube.setup.Witch.upgradeTool('emf'));
@@ -180,7 +150,7 @@ test.describe('Witch — tool upgrades and crucifix', () => {
     expect(await getVar(page, 'mc.money')).toBe(300);
   });
 
-  test('buyDetector sets boughtDetector and deducts $200', async () => {
+  test('buyDetector sets boughtDetector and deducts $200', async ({ game: page }) => {
     await setVar(page, 'mc.money', 300);
     await page.evaluate(() => { delete SugarCube.State.variables.boughtDetector; });
     expect(await callSetup(page, 'setup.Witch.detectorBought()')).toBe(false);
@@ -189,7 +159,7 @@ test.describe('Witch — tool upgrades and crucifix', () => {
     expect(await callSetup(page, 'setup.Witch.detectorBought()')).toBe(true);
   });
 
-  test('initCrucifixIfNeeded only sets 0 when undefined', async () => {
+  test('initCrucifixIfNeeded only sets 0 when undefined', async ({ game: page }) => {
     await page.evaluate(() => { delete SugarCube.State.variables.crucifixAmount; });
     await page.evaluate(() => SugarCube.setup.ToolController.initCrucifixIfNeeded());
     expect(await callSetup(page, 'setup.ToolController.crucifixAmount()')).toBe(0);
@@ -199,14 +169,14 @@ test.describe('Witch — tool upgrades and crucifix', () => {
     expect(await callSetup(page, 'setup.ToolController.crucifixAmount()')).toBe(3);
   });
 
-  test('addCrucifix increments crucifixAmount', async () => {
+  test('addCrucifix increments crucifixAmount', async ({ game: page }) => {
     await setVar(page, 'crucifixAmount', 0);
     await page.evaluate(() => SugarCube.setup.ToolController.addCrucifix());
     await page.evaluate(() => SugarCube.setup.ToolController.addCrucifix());
     expect(await callSetup(page, 'setup.ToolController.crucifixAmount()')).toBe(2);
   });
 
-  test('clearHiddenEvidence removes all hidden-evidence flags', async () => {
+  test('clearHiddenEvidence removes all hidden-evidence flags', async ({ game: page }) => {
     await setVar(page, 'hiddenEvidence', 1);
     await setVar(page, 'hiddenEvidence1', 1);
     await setVar(page, 'hiddenEvidence2', 1);
@@ -232,13 +202,7 @@ test.describe('Witch — tool upgrades and crucifix', () => {
 });
 
 test.describe('Witch — night sneak-in gating', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('witchLateNightHour is true only when hours <= 5', async () => {
+  test('witchLateNightHour is true only when hours <= 5', async ({ game: page }) => {
     await setVar(page, 'hours', 2);
     expect(await callSetup(page, 'setup.Witch.witchLateNightHour()')).toBe(true);
     await setVar(page, 'hours', 5);
@@ -247,7 +211,7 @@ test.describe('Witch — night sneak-in gating', () => {
     expect(await callSetup(page, 'setup.Witch.witchLateNightHour()')).toBe(false);
   });
 
-  test('startWitchNightCooldown and canVisitWitchBedroomNight', async () => {
+  test('startWitchNightCooldown and canVisitWitchBedroomNight', async ({ game: page }) => {
     await page.evaluate(() => { delete SugarCube.State.variables.witchNight; });
     expect(await callSetup(page, 'setup.Witch.canVisitWitchBedroomNight()')).toBe(true);
     await page.evaluate(() => SugarCube.setup.Witch.startWitchNightCooldown());
@@ -255,7 +219,7 @@ test.describe('Witch — night sneak-in gating', () => {
     expect(await callSetup(page, 'setup.Witch.canVisitWitchBedroomNight()')).toBe(false);
   });
 
-  test('startStealItemsCooldown gates canStealItemsFromWitch', async () => {
+  test('startStealItemsCooldown gates canStealItemsFromWitch', async ({ game: page }) => {
     await page.evaluate(() => { delete SugarCube.State.variables.stealItemsFromWitch; });
     expect(await callSetup(page, 'setup.Witch.canStealItemsFromWitch()')).toBe(true);
     await page.evaluate(() => SugarCube.setup.Witch.startStealItemsCooldown());
@@ -263,7 +227,7 @@ test.describe('Witch — night sneak-in gating', () => {
     expect(await callSetup(page, 'setup.Witch.canStealItemsFromWitch()')).toBe(false);
   });
 
-  test('markKeyFromWitchStolen sets $gotKeyFromWitch and unlocks sneak-in', async () => {
+  test('markKeyFromWitchStolen sets $gotKeyFromWitch and unlocks sneak-in', async ({ game: page }) => {
     await page.evaluate(() => { delete SugarCube.State.variables.gotKeyFromWitch; });
     await setVar(page, 'hours', 2);
     expect(await callSetup(page, 'setup.Witch.canSneakInAtNight()')).toBe(false);
@@ -274,26 +238,20 @@ test.describe('Witch — night sneak-in gating', () => {
 });
 
 test.describe('Witch — passage rendering with mixed state', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('Witch entrance renders at 10:00 (just-open edge)', async () => {
+  test('Witch entrance renders at 10:00 (just-open edge)', async ({ game: page }) => {
     await setVar(page, 'hours', 10);
     await goToPassage(page, 'Witch');
     await expectCleanPassage(page);
   });
 
-  test('Witch entrance renders at 23:59 (closing edge)', async () => {
+  test('Witch entrance renders at 23:59 (closing edge)', async ({ game: page }) => {
     await setVar(page, 'hours', 23);
     await setVar(page, 'minutes', 59);
     await goToPassage(page, 'Witch');
     await expectCleanPassage(page);
   });
 
-  test('WitchInside renders without error after contract turn-in', async () => {
+  test('WitchInside renders without error after contract turn-in', async ({ game: page }) => {
     await setVar(page, 'hours', 12);
     await setVar(page, 'firstVisitWitchShop', false);
     await page.evaluate(() => { SugarCube.setup.Ghosts.endContract(); });

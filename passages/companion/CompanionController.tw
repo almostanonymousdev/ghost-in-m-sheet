@@ -114,6 +114,7 @@ setup.Companion = (function () {
 		this.neutralResp   = cfg.neutralResp;
 		this.clothingTiers = cfg.clothingTiers;
 		this.initStats     = cfg.initStats || {};
+		this.eventCopy     = cfg.eventCopy || null;
 	}
 
 	// Fresh mutable stat object for a brand-new save. Merges the shared
@@ -154,10 +155,29 @@ setup.Companion = (function () {
 	Companion.prototype.tierChance = function (idx) { return data().tierChances[idx]; };
 	Companion.prototype.tierCount  = function ()    { return data().tierChances.length; };
 
+	// CompanionEvent dialog markup for sanity tier (1..4). Cis companions
+	// store their own eventCopy on the catalogue entry; trans companions
+	// share data().transEventCopy. Tier-1 trans entry is a {pre, post}
+	// pair selected by isTransFirstStageSet; everything else is a flat
+	// string. Returns null if no copy is catalogued for the tier (no-op
+	// in the widget). Wikification of $companion.name / $mc.name happens
+	// at the call site via <<= ...>>.
+	Companion.prototype.eventTextForTier = function (tier) {
+		if (typeof tier !== 'number' || tier < 1 || tier > 4) return null;
+		var entry = this.isTrans
+			? (data().transEventCopy || [])[tier - 1]
+			: (this.eventCopy || [])[tier - 1];
+		if (!entry) return null;
+		if (typeof entry === 'object' && entry.pre && entry.post) {
+			return State.variables.transFirstStage === 1 ? entry.post : entry.pre;
+		}
+		return entry;
+	};
+
 	// Small thumbnail portrait (contacts list / inline companion links /
 	// success banner). Cis companions have a single characters/{folder}/{prefix}.png;
 	// trans companions rotate through characters/trans/{$transPicture}.jpg as the
-	// hunt-event stages advance ($transPicture is set by companionTextEvent*).
+	// hunt-event stages advance ($transPicture is set by markTransFirstStage()).
 	Companion.prototype.portraitPath = function () {
 		if (this.isTrans) {
 			return "characters/trans/" + (State.variables.transPicture || 1) + ".jpg";
@@ -875,10 +895,10 @@ setup.Companion = (function () {
 			c.sanity -= c.decreaseSanity;
 			c.lust   += this.eventLustGain();
 		},
-		/* One of the per-name bookkeeping branches shared by
-		   companionTextEvent1..4: for a trans companion, stamp the
-		   transFirstStage flag and set transPicture to the matching
-		   portrait index. */
+		/* Per-name bookkeeping called from the shared
+		   <<companionTextEvent>> dispatcher: for a trans companion,
+		   stamp the transFirstStage flag and set transPicture to the
+		   matching portrait index. */
 		markTransFirstStage: function () {
 			var c = comp();
 			if (!c) return;

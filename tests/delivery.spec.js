@@ -1,24 +1,10 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, callSetup } = require('./helpers');
+const { test, expect } = require('./fixtures');
+const { setVar, getVar, callSetup } = require('./helpers');
 
 test.describe('Delivery Controller', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => {
-    page = await openGame(browser);
-  });
-
-  test.afterAll(async () => {
-    await page.close();
-  });
-
-  test.beforeEach(async () => {
-    await resetGame(page);
-  });
-
   // --- Open hours ---
 
-  test('isOpen true during business hours (8-19)', async () => {
+  test('isOpen true during business hours (8-19)', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 12);
 
@@ -29,7 +15,7 @@ test.describe('Delivery Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('isOpen false at hour 7 (boundary)', async () => {
+  test('isOpen false at hour 7 (boundary)', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 7);
 
@@ -40,7 +26,7 @@ test.describe('Delivery Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('isOpen false at hour 20 (boundary)', async () => {
+  test('isOpen false at hour 20 (boundary)', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 20);
 
@@ -51,7 +37,7 @@ test.describe('Delivery Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('isOpen true at hour 8', async () => {
+  test('isOpen true at hour 8', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 8);
 
@@ -62,7 +48,7 @@ test.describe('Delivery Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('isOpen true at hour 19', async () => {
+  test('isOpen true at hour 19', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 19);
 
@@ -73,7 +59,7 @@ test.describe('Delivery Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('isOpen false at night', async () => {
+  test('isOpen false at night', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 23);
 
@@ -86,7 +72,7 @@ test.describe('Delivery Controller', () => {
 
   // --- First visit ---
 
-  test('isFirstVisit true by default', async () => {
+  test('isFirstVisit true by default', async ({ game: page }) => {
     // act
     const result = await callSetup(page, 'setup.Delivery.isFirstVisit()');
 
@@ -94,7 +80,7 @@ test.describe('Delivery Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('isFirstVisit false after clearing flag', async () => {
+  test('isFirstVisit false after clearing flag', async ({ game: page }) => {
     // arrange
     await setVar(page, 'firstVisitDeliveryHub', false);
 
@@ -107,7 +93,7 @@ test.describe('Delivery Controller', () => {
 
   // --- Energy for shift ---
 
-  test('hasEnergyForShift true with energy >= 2', async () => {
+  test('hasEnergyForShift true with energy >= 2', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.energy', 5);
 
@@ -118,7 +104,7 @@ test.describe('Delivery Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('hasEnergyForShift true at exactly 2', async () => {
+  test('hasEnergyForShift true at exactly 2', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.energy', 2);
 
@@ -129,7 +115,7 @@ test.describe('Delivery Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('hasEnergyForShift false with energy < 2', async () => {
+  test('hasEnergyForShift false with energy < 2', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.energy', 1);
 
@@ -142,7 +128,7 @@ test.describe('Delivery Controller', () => {
 
   // --- canStartShift (composite) ---
 
-  test('canStartShift true when not first visit, open, and has energy', async () => {
+  test('canStartShift true when not first visit, open, and has energy', async ({ game: page }) => {
     // arrange
     await setVar(page, 'firstVisitDeliveryHub', false);
     await setVar(page, 'hours', 12);
@@ -155,7 +141,7 @@ test.describe('Delivery Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('canStartShift false on first visit', async () => {
+  test('canStartShift false on first visit', async ({ game: page }) => {
     // arrange
     await setVar(page, 'hours', 12);
     await setVar(page, 'mc.energy', 5);
@@ -167,7 +153,7 @@ test.describe('Delivery Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('canStartShift false when closed', async () => {
+  test('canStartShift false when closed', async ({ game: page }) => {
     // arrange
     await setVar(page, 'firstVisitDeliveryHub', false);
     await setVar(page, 'hours', 23);
@@ -180,7 +166,7 @@ test.describe('Delivery Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('canStartShift false when too tired', async () => {
+  test('canStartShift false when too tired', async ({ game: page }) => {
     // arrange
     await setVar(page, 'firstVisitDeliveryHub', false);
     await setVar(page, 'hours', 12);
@@ -195,7 +181,7 @@ test.describe('Delivery Controller', () => {
 
   // --- tooTiredForShift ---
 
-  test('tooTiredForShift true when open but no energy', async () => {
+  test('tooTiredForShift true when open but no energy', async ({ game: page }) => {
     // arrange
     await setVar(page, 'firstVisitDeliveryHub', false);
     await setVar(page, 'hours', 12);
@@ -208,7 +194,7 @@ test.describe('Delivery Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('tooTiredForShift false when has energy', async () => {
+  test('tooTiredForShift false when has energy', async ({ game: page }) => {
     // arrange
     await setVar(page, 'firstVisitDeliveryHub', false);
     await setVar(page, 'hours', 12);
@@ -223,7 +209,7 @@ test.describe('Delivery Controller', () => {
 
   // --- Manager event ---
 
-  test('meetsBeautyForManagerFlirt true at beauty >= 45', async () => {
+  test('meetsBeautyForManagerFlirt true at beauty >= 45', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.beauty', 45);
 
@@ -234,7 +220,7 @@ test.describe('Delivery Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('meetsBeautyForManagerFlirt false at beauty < 45', async () => {
+  test('meetsBeautyForManagerFlirt false at beauty < 45', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.beauty', 44);
 
@@ -245,7 +231,7 @@ test.describe('Delivery Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('managerWillPayExtra true at corruption >= 2', async () => {
+  test('managerWillPayExtra true at corruption >= 2', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.corruption', 2);
 
@@ -256,7 +242,7 @@ test.describe('Delivery Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('managerWillPayExtra false at corruption < 2', async () => {
+  test('managerWillPayExtra false at corruption < 2', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.corruption', 1);
 
@@ -267,7 +253,7 @@ test.describe('Delivery Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('managerBJOnCooldown checks deliveryBJ flag', async () => {
+  test('managerBJOnCooldown checks deliveryBJ flag', async ({ game: page }) => {
     // act
     const beforeCD = await callSetup(page, 'setup.Delivery.managerBJOnCooldown()');
     await setVar(page, 'deliveryBJ', 1);
@@ -278,7 +264,7 @@ test.describe('Delivery Controller', () => {
     expect(afterCD).toBe(true);
   });
 
-  test('hasMetManagerEvent does not throw', async () => {
+  test('hasMetManagerEvent does not throw', async ({ game: page }) => {
     // act — State.hasVisited is not a function; the correct global is hasVisited()
     const result = await callSetup(page, 'setup.Delivery.hasMetManagerEvent()');
 
@@ -288,7 +274,7 @@ test.describe('Delivery Controller', () => {
 
   // --- Corruption gates ---
 
-  test('canAcceptPizzaDeal requires corruption >= 3', async () => {
+  test('canAcceptPizzaDeal requires corruption >= 3', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.corruption', 2);
 
@@ -302,7 +288,7 @@ test.describe('Delivery Controller', () => {
     expect(atGate).toBe(true);
   });
 
-  test('canAcceptPackageDeal requires corruption >= 3', async () => {
+  test('canAcceptPackageDeal requires corruption >= 3', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.corruption', 2);
 
@@ -316,7 +302,7 @@ test.describe('Delivery Controller', () => {
     expect(atGate).toBe(true);
   });
 
-  test('canAcceptBurgerWeed requires corruption >= 4', async () => {
+  test('canAcceptBurgerWeed requires corruption >= 4', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.corruption', 3);
 
@@ -330,7 +316,7 @@ test.describe('Delivery Controller', () => {
     expect(atGate).toBe(true);
   });
 
-  test('canAcceptPapersFlirt requires corruption >= 3', async () => {
+  test('canAcceptPapersFlirt requires corruption >= 3', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.corruption', 2);
 
@@ -346,7 +332,7 @@ test.describe('Delivery Controller', () => {
 
   // --- Lust gates ---
 
-  test('papersLustHighEnough requires lust >= 40', async () => {
+  test('papersLustHighEnough requires lust >= 40', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.lust', 39);
 
@@ -360,7 +346,7 @@ test.describe('Delivery Controller', () => {
     expect(atGate).toBe(true);
   });
 
-  test('papersInitialLustHighEnough requires lust >= 30', async () => {
+  test('papersInitialLustHighEnough requires lust >= 30', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.lust', 29);
 
@@ -374,7 +360,7 @@ test.describe('Delivery Controller', () => {
     expect(atGate).toBe(true);
   });
 
-  test('packageLustHighEnough requires lust > 49', async () => {
+  test('packageLustHighEnough requires lust > 49', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.lust', 49);
 
@@ -388,7 +374,7 @@ test.describe('Delivery Controller', () => {
     expect(atGate).toBe(true);
   });
 
-  test('papersStillCorruptible requires corruption <= 3', async () => {
+  test('papersStillCorruptible requires corruption <= 3', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.corruption', 3);
 
@@ -404,7 +390,7 @@ test.describe('Delivery Controller', () => {
 
   // --- Pay tiers ---
 
-  test('updatePayTier sets base pay from tier table', async () => {
+  test('updatePayTier sets base pay from tier table', async ({ game: page }) => {
     // arrange
     await setVar(page, 'deliveryCompletedShifts', 0);
     await setVar(page, 'deliveryBestStreak', 0);
@@ -417,7 +403,7 @@ test.describe('Delivery Controller', () => {
     expect(basePay).toBe(10);
   });
 
-  test('updatePayTier increases pay at 5 shifts', async () => {
+  test('updatePayTier increases pay at 5 shifts', async ({ game: page }) => {
     // arrange
     await setVar(page, 'deliveryCompletedShifts', 5);
     await setVar(page, 'deliveryBestStreak', 0);
@@ -430,7 +416,7 @@ test.describe('Delivery Controller', () => {
     expect(basePay).toBe(12);
   });
 
-  test('updatePayTier increases pay at 12 shifts', async () => {
+  test('updatePayTier increases pay at 12 shifts', async ({ game: page }) => {
     // arrange
     await setVar(page, 'deliveryCompletedShifts', 12);
     await setVar(page, 'deliveryBestStreak', 0);
@@ -443,7 +429,7 @@ test.describe('Delivery Controller', () => {
     expect(basePay).toBe(15);
   });
 
-  test('updatePayTier includes reputation bonus', async () => {
+  test('updatePayTier includes reputation bonus', async ({ game: page }) => {
     // arrange - 25 shifts + streak of 10 = Trusted (+$4)
     await setVar(page, 'deliveryCompletedShifts', 25);
     await setVar(page, 'deliveryBestStreak', 10);
@@ -458,7 +444,7 @@ test.describe('Delivery Controller', () => {
 
   // --- Reputation ---
 
-  test('reputationLevel returns 0 with no streak', async () => {
+  test('reputationLevel returns 0 with no streak', async ({ game: page }) => {
     // arrange
     await setVar(page, 'deliveryBestStreak', 0);
 
@@ -469,7 +455,7 @@ test.describe('Delivery Controller', () => {
     expect(level).toBe(0);
   });
 
-  test('reputationLevel returns 1 at streak 5', async () => {
+  test('reputationLevel returns 1 at streak 5', async ({ game: page }) => {
     // arrange
     await setVar(page, 'deliveryBestStreak', 5);
 
@@ -480,7 +466,7 @@ test.describe('Delivery Controller', () => {
     expect(level).toBe(1);
   });
 
-  test('reputationLevel returns 2 at streak 10', async () => {
+  test('reputationLevel returns 2 at streak 10', async ({ game: page }) => {
     // arrange
     await setVar(page, 'deliveryBestStreak', 10);
 
@@ -491,7 +477,7 @@ test.describe('Delivery Controller', () => {
     expect(level).toBe(2);
   });
 
-  test('reputationLevel returns 3 at streak 20', async () => {
+  test('reputationLevel returns 3 at streak 20', async ({ game: page }) => {
     // arrange
     await setVar(page, 'deliveryBestStreak', 20);
 
@@ -502,7 +488,7 @@ test.describe('Delivery Controller', () => {
     expect(level).toBe(3);
   });
 
-  test('reputationLabel returns Newbie at level 0', async () => {
+  test('reputationLabel returns Newbie at level 0', async ({ game: page }) => {
     // arrange
     await setVar(page, 'deliveryBestStreak', 0);
 
@@ -513,7 +499,7 @@ test.describe('Delivery Controller', () => {
     expect(label).toBe('Newbie');
   });
 
-  test('reputationLabel returns Star Courier at level 3', async () => {
+  test('reputationLabel returns Star Courier at level 3', async ({ game: page }) => {
     // arrange
     await setVar(page, 'deliveryBestStreak', 20);
 
@@ -524,7 +510,7 @@ test.describe('Delivery Controller', () => {
     expect(label).toBe('Star Courier');
   });
 
-  test('deliveryTime returns 30 normally', async () => {
+  test('deliveryTime returns 30 normally', async ({ game: page }) => {
     // arrange
     await setVar(page, 'deliveryBestStreak', 0);
 
@@ -535,7 +521,7 @@ test.describe('Delivery Controller', () => {
     expect(time).toBe(30);
   });
 
-  test('deliveryTime returns 20 at reputation level 3', async () => {
+  test('deliveryTime returns 20 at reputation level 3', async ({ game: page }) => {
     // arrange
     await setVar(page, 'deliveryBestStreak', 20);
 
@@ -548,7 +534,7 @@ test.describe('Delivery Controller', () => {
 
   // --- Route familiarity ---
 
-  test('isRouteFamiliar false with no visits', async () => {
+  test('isRouteFamiliar false with no visits', async ({ game: page }) => {
     // arrange
     await setVar(page, 'deliveryVisitCounts', {});
 
@@ -559,7 +545,7 @@ test.describe('Delivery Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('isRouteFamiliar true after 3 visits', async () => {
+  test('isRouteFamiliar true after 3 visits', async ({ game: page }) => {
     // arrange
     await setVar(page, 'deliveryVisitCounts', { 'Star Street 25': 3 });
 
@@ -570,7 +556,7 @@ test.describe('Delivery Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('trackVisit increments visit count', async () => {
+  test('trackVisit increments visit count', async ({ game: page }) => {
     // arrange
     await setVar(page, 'deliveryVisitCounts', {});
     await setVar(page, 'currentHouse', 'Star Street 25');
@@ -586,7 +572,7 @@ test.describe('Delivery Controller', () => {
 
   // --- Unified delivery-event catalogue & dispatch helpers ---
 
-  test('eventNameForItem maps order items to catalogue keys', async () => {
+  test('eventNameForItem maps order items to catalogue keys', async ({ game: page }) => {
     expect(await callSetup(page, "setup.Delivery.eventNameForItem('pizza')")).toBe('pizza');
     expect(await callSetup(page, "setup.Delivery.eventNameForItem('package')")).toBe('package');
     expect(await callSetup(page, "setup.Delivery.eventNameForItem('burgers')")).toBe('burger');
@@ -595,7 +581,7 @@ test.describe('Delivery Controller', () => {
     expect(await callSetup(page, "setup.Delivery.eventNameForItem('mystery')")).toBe(null);
   });
 
-  test('currentEventType reads the order in the active slot', async () => {
+  test('currentEventType reads the order in the active slot', async ({ game: page }) => {
     // arrange — slot 2 holds a burgers order
     await setVar(page, 'currentOrder', 2);
     await setVar(page, 'order2', { address: 'Star Street 25', item: 'burgers', image: '' });
@@ -607,7 +593,7 @@ test.describe('Delivery Controller', () => {
     expect(ev).toBe('burger');
   });
 
-  test('currentEventType returns null for non-encounter items', async () => {
+  test('currentEventType returns null for non-encounter items', async ({ game: page }) => {
     // arrange — books has no encounter (Alice intercepts)
     await setVar(page, 'currentOrder', 1);
     await setVar(page, 'order1', { address: 'Star Street 25', item: 'books', image: '' });
@@ -619,7 +605,7 @@ test.describe('Delivery Controller', () => {
     expect(ev).toBe(null);
   });
 
-  test('markEvent sets the cooldown var named in the catalogue', async () => {
+  test('markEvent sets the cooldown var named in the catalogue', async ({ game: page }) => {
     // arrange
     await setVar(page, 'deliveryBurgerEvent', 0);
 
@@ -631,12 +617,12 @@ test.describe('Delivery Controller', () => {
     expect(flag).toBe(1);
   });
 
-  test('markEvent is a no-op for unknown names (no throw)', async () => {
+  test('markEvent is a no-op for unknown names (no throw)', async ({ game: page }) => {
     // act / assert — must not throw, must not touch unrelated vars
     await callSetup(page, "setup.Delivery.markEvent('does-not-exist')");
   });
 
-  test('per-item markXxxEvent helpers go through the catalogue', async () => {
+  test('per-item markXxxEvent helpers go through the catalogue', async ({ game: page }) => {
     // arrange
     await setVar(page, 'deliveryPizzaEvent', 0);
     await setVar(page, 'deliveryPackageEvent', 0);

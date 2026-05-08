@@ -59,8 +59,10 @@ import re
 import sys
 from pathlib import Path
 
-PROJECT_DIR = Path(__file__).resolve().parent.parent
-PASSAGES_DIR = PROJECT_DIR / "passages"
+from lib_repo import passages_dir, repo_root
+
+PROJECT_DIR = repo_root()
+PASSAGES_DIR = passages_dir()
 
 # Container (block) macros — those whose <<name>> requires a <</name>> close
 # and whose body is a real Twee region.  Kept in sync with check_format.py

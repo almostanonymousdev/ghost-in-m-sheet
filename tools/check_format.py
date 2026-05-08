@@ -24,12 +24,14 @@ import sys
 import time
 from pathlib import Path
 
+from lib_repo import passages_dir, repo_root
+
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
 
-PROJECT_DIR = Path(__file__).resolve().parent.parent
-PASSAGES_DIR = PROJECT_DIR / "passages"
+PROJECT_DIR = repo_root()
+PASSAGES_DIR = passages_dir()
 
 # Container macros that require a closing tag.  Extend as the project grows.
 CONTAINER_MACROS = {

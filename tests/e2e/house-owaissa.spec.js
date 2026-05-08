@@ -1,5 +1,5 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, setHuntMode, getHuntMode, goToPassage } = require('../helpers');
+const { test, expect } = require('../fixtures');
+const { setVar, getVar, setHuntMode, getHuntMode, goToPassage } = require('../helpers');
 const { expectCleanPassage, setupHunt } = require('./e2e-helpers');
 
 const ROOMS = [
@@ -24,14 +24,7 @@ test.describe('Haunted house — Owaissa', () => {
   // in sequence; a single slow navigation under parallel load can blow the
   // default 5s timeout. Single retry covers transient contention.
   test.describe.configure({ retries: 1 });
-
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('Owaissa Street renders with a Go inside link when no companion is set', async () => {
+  test('Owaissa Street renders with a Go inside link when no companion is set', async ({ game: page }) => {
     await setVar(page, 'hauntedHouse', 'owaissa');
     await setHuntMode(page, 1);
 
@@ -42,7 +35,7 @@ test.describe('Haunted house — Owaissa', () => {
     expect(await page.locator('.passage').textContent()).toContain('Owaissa Street');
   });
 
-  test('clicking Go inside enters OwaissaHallway and sets huntingMode to 2', async () => {
+  test('clicking Go inside enters OwaissaHallway and sets huntingMode to 2', async ({ game: page }) => {
     test.setTimeout(10_000);
     await setupHunt(page, 'Spirit', 'owaissa');
     await setHuntMode(page, 1);
@@ -53,14 +46,14 @@ test.describe('Haunted house — Owaissa', () => {
     expect(await getHuntMode(page)).toBe(2);
   });
 
-  test('End the hunt link appears on street while inside hunt mode', async () => {
+  test('End the hunt link appears on street while inside hunt mode', async ({ game: page }) => {
     await setupHunt(page, 'Spirit', 'owaissa');
     await goToPassage(page, 'Owaissa Street');
     await expectCleanPassage(page);
     await expect(page.locator('.passage').getByText('End the hunt', { exact: true })).toBeVisible();
   });
 
-  test('End the hunt from street sends player to HuntOverManual and sets mode 3', async () => {
+  test('End the hunt from street sends player to HuntOverManual and sets mode 3', async ({ game: page }) => {
     test.setTimeout(10_000);
     await setupHunt(page, 'Spirit', 'owaissa');
     await setVar(page, 'isClothesStolen', 0);
@@ -70,14 +63,14 @@ test.describe('Haunted house — Owaissa', () => {
   });
 
   for (const room of ROOMS) {
-    test(`${room} renders cleanly during a hunt`, async () => {
+    test(`${room} renders cleanly during a hunt`, async ({ game: page }) => {
       await setupHunt(page, 'Spirit', 'owaissa');
       await goToPassage(page, room);
       await expectCleanPassage(page);
     });
   }
 
-  test('OwaissaHallway exposes links to every adjacent Owaissa room', async () => {
+  test('OwaissaHallway exposes links to every adjacent Owaissa room', async ({ game: page }) => {
     await setupHunt(page, 'Spirit', 'owaissa');
     await goToPassage(page, 'OwaissaHallway');
     const hallway = page.locator('.passage');
@@ -87,7 +80,7 @@ test.describe('Haunted house — Owaissa', () => {
     await expect(hallway.getByText('Outside', { exact: true })).toBeVisible();
   });
 
-  test('Hallway → Kitchen → Livingroom → Kitchen → Hallway navigates without errors', async () => {
+  test('Hallway → Kitchen → Livingroom → Kitchen → Hallway navigates without errors', async ({ game: page }) => {
     test.setTimeout(15_000);
     await setupHunt(page, 'Spirit', 'owaissa');
     await goToPassage(page, 'OwaissaHallway');
@@ -104,7 +97,7 @@ test.describe('Haunted house — Owaissa', () => {
     await expectCleanPassage(page);
   });
 
-  test('Hallway → Bedroom → Hallway round-trip works', async () => {
+  test('Hallway → Bedroom → Hallway round-trip works', async ({ game: page }) => {
     test.setTimeout(10_000);
     await setupHunt(page, 'Spirit', 'owaissa');
     await goToPassage(page, 'OwaissaHallway');
@@ -113,7 +106,7 @@ test.describe('Haunted house — Owaissa', () => {
     await clickPassageLink(page, 'Hallway', 'OwaissaHallway');
   });
 
-  test('Hallway → Bathroom → Hallway round-trip works', async () => {
+  test('Hallway → Bathroom → Hallway round-trip works', async ({ game: page }) => {
     test.setTimeout(10_000);
     await setupHunt(page, 'Spirit', 'owaissa');
     await goToPassage(page, 'OwaissaHallway');
@@ -122,7 +115,7 @@ test.describe('Haunted house — Owaissa', () => {
     await clickPassageLink(page, 'Hallway', 'OwaissaHallway');
   });
 
-  test('Hallway Outside link returns to Owaissa Street', async () => {
+  test('Hallway Outside link returns to Owaissa Street', async ({ game: page }) => {
     test.setTimeout(10_000);
     await setupHunt(page, 'Spirit', 'owaissa');
     await goToPassage(page, 'OwaissaHallway');
@@ -130,14 +123,14 @@ test.describe('Haunted house — Owaissa', () => {
     expect(await getHuntMode(page)).toBe(2);
   });
 
-  test('OwaissaBedroom renders cleanly when cursedHuntActive is 1 (hide-spot branch)', async () => {
+  test('OwaissaBedroom renders cleanly when cursedHuntActive is 1 (hide-spot branch)', async ({ game: page }) => {
     await setupHunt(page, 'Spirit', 'owaissa');
     await setVar(page, 'cursedHuntActive', 1);
     await goToPassage(page, 'OwaissaBedroom');
     await expectCleanPassage(page);
   });
 
-  test('Owaissa controller flag round-trips with setupHunt', async () => {
+  test('Owaissa controller flag round-trips with setupHunt', async ({ game: page }) => {
     await setupHunt(page, 'Spirit', 'owaissa');
     expect(await page.evaluate(() => SugarCube.setup.HauntedHouses.isOwaissa())).toBe(true);
     expect(await page.evaluate(() => SugarCube.setup.HauntedHouses.isElm())).toBe(false);

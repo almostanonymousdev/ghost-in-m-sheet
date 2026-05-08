@@ -1,47 +1,41 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, callSetup, goToPassage } = require('../helpers');
+const { test, expect } = require('../fixtures');
+const { setVar, getVar, callSetup, goToPassage, resetGame } = require('../helpers');
 const { expectCleanPassage, setupActiveQuest } = require('./e2e-helpers');
 
 test.describe('Missing Women — clue / EMF upgrade flow', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('hasRescueClue reflects $hasRescueClue', async () => {
+  test('hasRescueClue reflects $hasRescueClue', async ({ game: page }) => {
     await page.evaluate(() => { delete SugarCube.State.variables.hasRescueClue; });
     expect(await callSetup(page, 'setup.MissingWomen.hasRescueClue()')).toBe(false);
     await setVar(page, 'hasRescueClue', 1);
     expect(await callSetup(page, 'setup.MissingWomen.hasRescueClue()')).toBe(true);
   });
 
-  test('setRescueClueFound flips $hasRescueClue', async () => {
+  test('setRescueClueFound flips $hasRescueClue', async ({ game: page }) => {
     await page.evaluate(() => { delete SugarCube.State.variables.hasRescueClue; });
     await page.evaluate(() => SugarCube.setup.MissingWomen.setRescueClueFound());
     expect(await getVar(page, 'hasRescueClue')).toBe(1);
   });
 
-  test('emfLevel reads equipment.emf', async () => {
+  test('emfLevel reads equipment.emf', async ({ game: page }) => {
     await setVar(page, 'equipment', { emf: 1 });
     expect(await callSetup(page, 'setup.MissingWomen.emfLevel()')).toBe(1);
     await setVar(page, 'equipment', { emf: 3 });
     expect(await callSetup(page, 'setup.MissingWomen.emfLevel()')).toBe(3);
   });
 
-  test('upgradeEmfToLvl3 raises EMF to level 3', async () => {
+  test('upgradeEmfToLvl3 raises EMF to level 3', async ({ game: page }) => {
     await setVar(page, 'equipment', { emf: 1 });
     await page.evaluate(() => SugarCube.setup.MissingWomen.upgradeEmfToLvl3());
     expect(await callSetup(page, 'setup.MissingWomen.emfLevel()')).toBe(3);
   });
 
-  test('upgradeEmfToLvl3 is a no-op when equipment is missing', async () => {
+  test('upgradeEmfToLvl3 is a no-op when equipment is missing', async ({ game: page }) => {
     await page.evaluate(() => { delete SugarCube.State.variables.equipment; });
     await page.evaluate(() => SugarCube.setup.MissingWomen.upgradeEmfToLvl3());
     expect(await callSetup(page, 'setup.MissingWomen.emfLevel()')).toBeUndefined();
   });
 
-  test('RescueClueFound passage upgrades EMF to 3', async () => {
+  test('RescueClueFound passage upgrades EMF to 3', async ({ game: page }) => {
     await setupActiveQuest(page, 'Victoria');
     await setVar(page, 'equipment', { emf: 1 });
     await setVar(page, 'tornStyles', ['torn-style-1 torn-effect']);
@@ -52,13 +46,7 @@ test.describe('Missing Women — clue / EMF upgrade flow', () => {
 });
 
 test.describe('Missing Women — task board', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('ensureBoardCooldowns initialises both counters to 0', async () => {
+  test('ensureBoardCooldowns initialises both counters to 0', async ({ game: page }) => {
     await page.evaluate(() => {
       delete SugarCube.State.variables.rescue;
       delete SugarCube.State.variables.rescueQuest;
@@ -68,7 +56,7 @@ test.describe('Missing Women — task board', () => {
     expect(await getVar(page, 'rescueQuest')).toBe(0);
   });
 
-  test('ensureBoardCooldowns leaves existing values alone', async () => {
+  test('ensureBoardCooldowns leaves existing values alone', async ({ game: page }) => {
     await setVar(page, 'rescue', 5);
     await setVar(page, 'rescueQuest', 7);
     await page.evaluate(() => SugarCube.setup.MissingWomen.ensureBoardCooldowns());
@@ -76,13 +64,13 @@ test.describe('Missing Women — task board', () => {
     expect(await getVar(page, 'rescueQuest')).toBe(7);
   });
 
-  test('startRescueBoardCooldown sets rescueQuest to 1', async () => {
+  test('startRescueBoardCooldown sets rescueQuest to 1', async ({ game: page }) => {
     await setVar(page, 'rescueQuest', 0);
     await page.evaluate(() => SugarCube.setup.MissingWomen.startRescueBoardCooldown());
     expect(await getVar(page, 'rescueQuest')).toBe(1);
   });
 
-  test('rollBoardGirls picks two distinct girls from the pool', async () => {
+  test('rollBoardGirls picks two distinct girls from the pool', async ({ game: page }) => {
     await setVar(page, 'rescueGirls', ['Victoria', 'Jade', 'Julia', 'Nadia', 'Ash']);
     await setVar(page, 'rescueRandomGirls', []);
     await setVar(page, 'rescue', 0);
@@ -95,12 +83,12 @@ test.describe('Missing Women — task board', () => {
     expect(await getVar(page, 'rescue')).toBe(1);
   });
 
-  test('initRescueGirlPool stores the master list', async () => {
+  test('initRescueGirlPool stores the master list', async ({ game: page }) => {
     await page.evaluate(() => SugarCube.setup.MissingWomen.initRescueGirlPool(['Victoria', 'Jade']));
     expect(await getVar(page, 'rescueGirls')).toEqual(['Victoria', 'Jade']);
   });
 
-  test('seedTornStyle picks from $tornStyles and randomizes photo number', async () => {
+  test('seedTornStyle picks from $tornStyles and randomizes photo number', async ({ game: page }) => {
     await setVar(page, 'tornStyles', ['style-A', 'style-B', 'style-C']);
     await page.evaluate(() => SugarCube.setup.MissingWomen.seedTornStyle());
     const t = await getVar(page, 'tornStyleRandom');
@@ -110,7 +98,7 @@ test.describe('Missing Women — task board', () => {
     expect(n).toBeLessThanOrEqual(16);
   });
 
-  test('seedTornStyle is a no-op when $tornStyles is empty', async () => {
+  test('seedTornStyle is a no-op when $tornStyles is empty', async ({ game: page }) => {
     await setVar(page, 'tornStyles', []);
     await setVar(page, 'tornStyleRandom', 'unchanged');
     await page.evaluate(() => SugarCube.setup.MissingWomen.seedTornStyle());
@@ -119,67 +107,55 @@ test.describe('Missing Women — task board', () => {
 });
 
 test.describe('Missing Women — rescue dispatch and accessors', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('setCurrentRescueGirl / currentRescueGirl round-trip', async () => {
+  test('setCurrentRescueGirl / currentRescueGirl round-trip', async ({ game: page }) => {
     await page.evaluate(() => SugarCube.setup.MissingWomen.setCurrentRescueGirl('Nadia'));
     expect(await callSetup(page, 'setup.MissingWomen.currentRescueGirl()')).toBe('Nadia');
   });
 
-  test('setQuestForRescueStarted sets quest to active and stage 0', async () => {
+  test('setQuestForRescueStarted sets quest to active and stage 0', async ({ game: page }) => {
     await setVar(page, 'hasQuestForRescue', 0);
     await page.evaluate(() => SugarCube.setup.MissingWomen.setQuestForRescueStarted());
     expect(await getVar(page, 'hasQuestForRescue')).toBe(1);
     expect(await getVar(page, 'rescueStage')).toBe(0);
   });
 
-  test('markQuestFailed / rescueQuestStage round-trip', async () => {
+  test('markQuestFailed / rescueQuestStage round-trip', async ({ game: page }) => {
     await page.evaluate(() => SugarCube.setup.MissingWomen.markQuestFailed());
     expect(await callSetup(page, 'setup.MissingWomen.rescueQuestStage()')).toBe(2);
     expect(await callSetup(page, 'setup.MissingWomen.questFailed()')).toBe(true);
   });
 
-  test('Jade and Victoria possessed-stage helpers track distinct keys', async () => {
+  test('Jade and Victoria possessed-stage helpers track distinct keys', async ({ game: page }) => {
     await page.evaluate(() => SugarCube.setup.MissingWomen.setJadePossessedStage(2));
     await page.evaluate(() => SugarCube.setup.MissingWomen.setVictoriaPossessedStage(1));
     expect(await callSetup(page, 'setup.MissingWomen.jadePossessedStage()')).toBe(2);
     expect(await callSetup(page, 'setup.MissingWomen.victoriaPossessedStage()')).toBe(1);
   });
 
-  test('sleepOffHoursAfterEvent advances clock by 3', async () => {
+  test('sleepOffHoursAfterEvent advances clock by 3', async ({ game: page }) => {
     await setVar(page, 'hours', 10);
     await page.evaluate(() => SugarCube.setup.MissingWomen.sleepOffHoursAfterEvent());
     expect(await getVar(page, 'hours')).toBe(13);
   });
 
-  test('setRescueHouse / rescueHouse round-trip', async () => {
+  test('setRescueHouse / rescueHouse round-trip', async ({ game: page }) => {
     await page.evaluate(() => SugarCube.setup.MissingWomen.setRescueHouse(7));
     expect(await callSetup(page, 'setup.MissingWomen.rescueHouse()')).toBe(7);
   });
 
-  test('setRescueStage / rescueStage round-trip', async () => {
+  test('setRescueStage / rescueStage round-trip', async ({ game: page }) => {
     await page.evaluate(() => SugarCube.setup.MissingWomen.setRescueStage(2));
     expect(await callSetup(page, 'setup.MissingWomen.rescueStage()')).toBe(2);
   });
 
-  test('setRandomRescuePhotoNumber / randomRescuePhotoNumber round-trip', async () => {
+  test('setRandomRescuePhotoNumber / randomRescuePhotoNumber round-trip', async ({ game: page }) => {
     await page.evaluate(() => SugarCube.setup.MissingWomen.setRandomRescuePhotoNumber(11));
     expect(await callSetup(page, 'setup.MissingWomen.randomRescuePhotoNumber()')).toBe(11);
   });
 });
 
 test.describe('Missing Women — rescue success roll', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('rollRescueSuccess always succeeds at hour 0 (chance = 100)', async () => {
+  test('rollRescueSuccess always succeeds at hour 0 (chance = 100)', async ({ game: page }) => {
     await setVar(page, 'hours', 0);
     await page.evaluate(() => { window._origRandom = Math.random; Math.random = () => 0.5; });
     try {
@@ -189,7 +165,7 @@ test.describe('Missing Women — rescue success roll', () => {
     }
   });
 
-  test('rollRescueSuccess hour 9 has ~50% chance', async () => {
+  test('rollRescueSuccess hour 9 has ~50% chance', async ({ game: page }) => {
     await setVar(page, 'hours', 9);
     // chance = 100 - 9*100/18 = 50
     await page.evaluate(() => { window._origRandom = Math.random; Math.random = () => 0; });
@@ -208,7 +184,7 @@ test.describe('Missing Women — rescue success roll', () => {
     }
   });
 
-  test('rollRescueSuccess at hour 18+ is essentially 0 (always fails)', async () => {
+  test('rollRescueSuccess at hour 18+ is essentially 0 (always fails)', async ({ game: page }) => {
     await setVar(page, 'hours', 18);
     // chance = 100 - 18*100/18 = 0
     await page.evaluate(() => { window._origRandom = Math.random; Math.random = () => 0; });
@@ -222,13 +198,7 @@ test.describe('Missing Women — rescue success roll', () => {
 });
 
 test.describe('Missing Women — RescueSuccess and RescueMap rendering', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('RescueSuccess renders for each girl', async () => {
+  test('RescueSuccess renders for each girl', async ({ game: page }) => {
     for (const girl of ['Victoria', 'Jade', 'Julia', 'Nadia', 'Ash']) {
       await resetGame(page);
       await setupActiveQuest(page, girl);
@@ -237,13 +207,13 @@ test.describe('Missing Women — RescueSuccess and RescueMap rendering', () => {
     }
   });
 
-  test('RescueMap renders cleanly', async () => {
+  test('RescueMap renders cleanly', async ({ game: page }) => {
     await setupActiveQuest(page, 'Victoria');
     await goToPassage(page, 'RescueMap');
     await expectCleanPassage(page);
   });
 
-  test('RescueMap shows 16 house cards', async () => {
+  test('RescueMap shows 16 house cards', async ({ game: page }) => {
     await setupActiveQuest(page, 'Victoria');
     await goToPassage(page, 'RescueMap');
     const count = await page.locator('.rescuehousecard').count();
@@ -252,13 +222,7 @@ test.describe('Missing Women — RescueSuccess and RescueMap rendering', () => {
 });
 
 test.describe('Missing Women — Bag rescue clue photo viewer', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('Bag renders cleanly when the rescue clue is held', async () => {
+  test('Bag renders cleanly when the rescue clue is held', async ({ game: page }) => {
     await setupActiveQuest(page, 'Victoria');
     await page.evaluate(() => SugarCube.setup.MissingWomen.setRescueClueFound());
     await goToPassage(page, 'Bag');
@@ -266,7 +230,7 @@ test.describe('Missing Women — Bag rescue clue photo viewer', () => {
     await expect(page.locator('a:has-text("Look at the photo")')).toHaveCount(1);
   });
 
-  test('clicking "Look at the photo" reveals the photo without errors', async () => {
+  test('clicking "Look at the photo" reveals the photo without errors', async ({ game: page }) => {
     await setupActiveQuest(page, 'Victoria');
     await page.evaluate(() => SugarCube.setup.MissingWomen.setRescueClueFound());
     await goToPassage(page, 'Bag');
@@ -276,7 +240,7 @@ test.describe('Missing Women — Bag rescue clue photo viewer', () => {
     expect(imgCount).toBeGreaterThan(0);
   });
 
-  test('photo viewer still works when $tornStyleRandom is unset', async () => {
+  test('photo viewer still works when $tornStyleRandom is unset', async ({ game: page }) => {
     await setupActiveQuest(page, 'Victoria');
     await page.evaluate(() => SugarCube.setup.MissingWomen.setRescueClueFound());
     await page.evaluate(() => { delete SugarCube.State.variables.tornStyleRandom; });
@@ -287,12 +251,6 @@ test.describe('Missing Women — Bag rescue clue photo viewer', () => {
 });
 
 test.describe('Missing Women — multi-stage possession passages', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
   const POSSESSION_PASSAGES = [
     { girl: 'Victoria', passages: ['RescueVictoriaPossessed', 'RescueVictoriaPossessed1', 'RescueVictoriaPossessed2'] },
     { girl: 'Jade',     passages: ['RescueJadePossessed', 'RescueJadePossessed1', 'RescueJadePossessed2'] },
@@ -303,7 +261,7 @@ test.describe('Missing Women — multi-stage possession passages', () => {
 
   for (const { girl, passages } of POSSESSION_PASSAGES) {
     for (const passage of passages) {
-      test(`${passage} renders cleanly`, async () => {
+      test(`${passage} renders cleanly`, async ({ game: page }) => {
         test.setTimeout(10_000);
         await setupActiveQuest(page, girl);
         await setVar(page, 'hasQuestForRescue', 2);

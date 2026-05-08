@@ -1,5 +1,5 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, setHuntMode, getHuntMode, goToPassage } = require('../helpers');
+const { test, expect } = require('../fixtures');
+const { setVar, getVar, setHuntMode, getHuntMode, goToPassage } = require('../helpers');
 const { expectCleanPassage, setupHunt } = require('./e2e-helpers');
 
 const ROOMS = [
@@ -22,13 +22,7 @@ async function clickPassageLink(page, linkText, expectedPassage) {
 }
 
 test.describe('Haunted house — Ironclad', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('Ironclad Prison renders with a real Go inside link when the warden outfit is ready', async () => {
+  test('Ironclad Prison renders with a real Go inside link when the warden outfit is ready', async ({ game: page }) => {
     await setVar(page, 'hauntedHouse', 'ironclad');
     await setHuntMode(page, 1);
     await setVar(page, 'wardenClothesStage', 2);
@@ -38,7 +32,7 @@ test.describe('Haunted house — Ironclad', () => {
     expect(await page.locator('.passage').textContent()).toContain('Prison "Ironclad"');
   });
 
-  test('clicking Go inside (wardenClothesStage=2) enters IroncladHallway and sets mode 2', async () => {
+  test('clicking Go inside (wardenClothesStage=2) enters IroncladHallway and sets mode 2', async ({ game: page }) => {
     test.setTimeout(10_000);
     await setupHunt(page, 'Spirit', 'ironclad');
     await setHuntMode(page, 1);
@@ -47,7 +41,7 @@ test.describe('Haunted house — Ironclad', () => {
     expect(await getHuntMode(page)).toBe(2);
   });
 
-  test('Ironclad Prison with wardenClothesStage != 2 shows the empty-walk-through branch', async () => {
+  test('Ironclad Prison with wardenClothesStage != 2 shows the empty-walk-through branch', async ({ game: page }) => {
     test.setTimeout(10_000);
     await setupHunt(page, 'Spirit', 'ironclad');
     // Street is re-entered before the warden outfit is ready.
@@ -70,14 +64,14 @@ test.describe('Haunted house — Ironclad', () => {
     // expect(await getVar(page, 'mc.energy')).toBe(0);
   });
 
-  test('End the hunt link appears on street while inside hunt mode', async () => {
+  test('End the hunt link appears on street while inside hunt mode', async ({ game: page }) => {
     await setupHunt(page, 'Spirit', 'ironclad');
     await goToPassage(page, 'Ironclad Prison');
     await expectCleanPassage(page);
     await expect(page.locator('.passage').getByText('End the hunt', { exact: true })).toBeVisible();
   });
 
-  test('End the hunt from street sends player to HuntOverManual and sets mode 3', async () => {
+  test('End the hunt from street sends player to HuntOverManual and sets mode 3', async ({ game: page }) => {
     test.setTimeout(10_000);
     await setupHunt(page, 'Spirit', 'ironclad');
     await setVar(page, 'isClothesStolen', 0);
@@ -87,14 +81,14 @@ test.describe('Haunted house — Ironclad', () => {
   });
 
   for (const room of ROOMS) {
-    test(`${room} renders cleanly during a hunt`, async () => {
+    test(`${room} renders cleanly during a hunt`, async ({ game: page }) => {
       await setupHunt(page, 'Spirit', 'ironclad');
       await goToPassage(page, room);
       await expectCleanPassage(page);
     });
   }
 
-  test('IroncladHallway exposes links to Reception, Kitchen, both Blocks, and Leave', async () => {
+  test('IroncladHallway exposes links to Reception, Kitchen, both Blocks, and Leave', async ({ game: page }) => {
     await setupHunt(page, 'Spirit', 'ironclad');
     await goToPassage(page, 'IroncladHallway');
     const hallway = page.locator('.passage');
@@ -103,7 +97,7 @@ test.describe('Haunted house — Ironclad', () => {
     }
   });
 
-  test('BlockA exposes cell links A/B/C plus Entrance', async () => {
+  test('BlockA exposes cell links A/B/C plus Entrance', async ({ game: page }) => {
     await setupHunt(page, 'Spirit', 'ironclad');
     await goToPassage(page, 'IroncladBlockA');
     const block = page.locator('.passage');
@@ -112,7 +106,7 @@ test.describe('Haunted house — Ironclad', () => {
     }
   });
 
-  test('BlockB exposes cell links A/B/C plus Entrance', async () => {
+  test('BlockB exposes cell links A/B/C plus Entrance', async ({ game: page }) => {
     await setupHunt(page, 'Spirit', 'ironclad');
     await goToPassage(page, 'IroncladBlockB');
     const block = page.locator('.passage');
@@ -121,7 +115,7 @@ test.describe('Haunted house — Ironclad', () => {
     }
   });
 
-  test('Hallway navigates to Reception, Kitchen, and both Blocks', async () => {
+  test('Hallway navigates to Reception, Kitchen, and both Blocks', async ({ game: page }) => {
     test.setTimeout(25_000);
     await setupHunt(page, 'Spirit', 'ironclad');
 
@@ -139,7 +133,7 @@ test.describe('Haunted house — Ironclad', () => {
     }
   });
 
-  test('BlockA → each cell → BlockA round-trip', async () => {
+  test('BlockA → each cell → BlockA round-trip', async ({ game: page }) => {
     test.setTimeout(20_000);
     await setupHunt(page, 'Spirit', 'ironclad');
     const pairs = [
@@ -155,7 +149,7 @@ test.describe('Haunted house — Ironclad', () => {
     }
   });
 
-  test('BlockB → each cell → BlockB round-trip', async () => {
+  test('BlockB → each cell → BlockB round-trip', async ({ game: page }) => {
     test.setTimeout(20_000);
     await setupHunt(page, 'Spirit', 'ironclad');
     const pairs = [
@@ -171,7 +165,7 @@ test.describe('Haunted house — Ironclad', () => {
     }
   });
 
-  test('Hallway Leave link returns to Ironclad Prison', async () => {
+  test('Hallway Leave link returns to Ironclad Prison', async ({ game: page }) => {
     test.setTimeout(10_000);
     await setupHunt(page, 'Spirit', 'ironclad');
     await goToPassage(page, 'IroncladHallway');
@@ -179,7 +173,7 @@ test.describe('Haunted house — Ironclad', () => {
     expect(await getHuntMode(page)).toBe(2);
   });
 
-  test('Ironclad controller flag round-trips with setupHunt', async () => {
+  test('Ironclad controller flag round-trips with setupHunt', async ({ game: page }) => {
     await setupHunt(page, 'Spirit', 'ironclad');
     expect(await page.evaluate(() => SugarCube.setup.HauntedHouses.isIronclad())).toBe(true);
     expect(await page.evaluate(() => SugarCube.setup.HauntedHouses.isOwaissa())).toBe(false);

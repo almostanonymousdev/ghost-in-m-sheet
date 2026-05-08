@@ -1,4 +1,20 @@
 :: widgetSeduceGhostMinigame [nobr widget noreturn] {"position":"1100,3900","size":"100,100"}
+/* Energy-gated link. _args[0]=passage, _args[1]=label.
+   Body is the action to run on click (e.g. <<run setup.X.Y()>>).
+   When MC energy < 1, renders a grey "Not enough energy" line instead. */
+<<widget "energyGate" container>>
+	<<if setup.Mc.energy() lt 1>>
+		@@.mc-thoughts; Not enough energy@@
+	<<else>>
+		<<set _body to _contents>>
+		<<capture _body>>
+			<<link _args[1] _args[0]>>
+				<<= _body>>
+			<</link>>
+		<</capture>>
+	<</if>>
+<</widget>>
+
 <<widget "seduceGhostMinigameVideo">>
 	<<set _videoList to setup.SeduceGhostMinigame.videoList()>>
 	<<set _selected to _videoList[random(0, _videoList.length - 1)]>>
@@ -13,24 +29,16 @@
 	<<if setup.Events.minigameVideo() eq "start">>
 		Beauty: <<= setup.Mc.beauty()>><br>
 		<<run setup.Events.clearMinigameEventFailed()>>
-		<<if setup.Mc.energy() lt 1>>
-			@@.mc-thoughts; Not enough energy@@
-		<<else>>
-			<<link "@@.usebtn; Try to attract a ghost@@ " "SeduceGhostMinigame">>
-				<<run setup.SeduceGhostMinigame.tryAttract()>>
-			<</link>>
-		<</if>>
+		<<energyGate "SeduceGhostMinigame" "@@.usebtn; Try to attract a ghost@@ ">>
+			<<run setup.SeduceGhostMinigame.tryAttract()>>
+		<</energyGate>>
 		<<link "@@color:red; Leave@@" `$return`>><<run setup.SeduceGhostMinigame.leave()>><</link>>
 
 	<<elseif setup.Events.minigameVideo() eq "seduceFailed">>
 		<b>Beauty: <<= setup.Mc.beauty()>></b><br>
-		<<if setup.Mc.energy() lt 1>>
-			@@.mc-thoughts; Not enough energy@@
-		<<else>>
-			<<link "@@.usebtn; Try again@@ " "SeduceGhostMinigame">>
-				<<run setup.SeduceGhostMinigame.tryAgain()>>
-			<</link>>
-		<</if>>
+		<<energyGate "SeduceGhostMinigame" "@@.usebtn; Try again@@ ">>
+			<<run setup.SeduceGhostMinigame.tryAgain()>>
+		<</energyGate>>
 		<<link "@@color:red; Leave@@ " `$return`>><<run setup.SeduceGhostMinigame.leave()>><</link>>
 
 	<<elseif setup.Events.minigameVideo() eq "seduce">>
@@ -53,22 +61,14 @@
 		<<link "Submit" "SeduceGhostMinigame">>
 			<<run setup.SeduceGhostMinigame.submit()>>
 		<</link>> <b><<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:25px;" }>></b> |
-		<<if setup.Mc.energy() lt 1>>
-			@@.mc-thoughts; Not enough energy@@
-		<<else>>
-			<<link "Subdue" "SeduceGhostMinigame">>
-				<<run setup.SeduceGhostMinigame.subdue()>>
-			<</link>>
-		<</if>>
+		<<energyGate "SeduceGhostMinigame" "Subdue">>
+			<<run setup.SeduceGhostMinigame.subdue()>>
+		<</energyGate>>
 
 	<<else>>
-		<<if setup.Mc.energy() lt 1>>
-			@@.mc-thoughts; Not enough energy@@
-		<<else>>
-			<<link "Resist" "SeduceGhostMinigame">>
-				<<run setup.SeduceGhostMinigame.resist()>>
-			<</link>>
-		<</if>>
+		<<energyGate "SeduceGhostMinigame" "Resist">>
+			<<run setup.SeduceGhostMinigame.resist()>>
+		<</energyGate>>
 		<<link "Submit" "SeduceGhostMinigame">>
 			<<run setup.SeduceGhostMinigame.submit()>>
 		<</link>> <b><<image "ui/img/hearth.png" { style: "position: relative; top: 0.375em; width:25px;" }>></b>

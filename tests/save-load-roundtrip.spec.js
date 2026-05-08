@@ -1,5 +1,5 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, goToPassage, setVar } = require('./helpers');
+const { test, expect } = require('./fixtures');
+const { goToPassage, setVar, resetGame } = require('./helpers');
 
 /*
  * Save/load round-trip tests.
@@ -82,28 +82,14 @@ function commitToSave(page) {
 }
 
 test.describe('Save/load round-trip', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => {
-    page = await openGame(browser);
-  });
-
-  test.afterAll(async () => {
-    await page.close();
-  });
-
-  test.beforeEach(async () => {
-    await resetGame(page);
-  });
-
-  test('Save.serialize() returns a non-empty string', async () => {
+  test('Save.serialize() returns a non-empty string', async ({ game: page }) => {
     await goToPassage(page, 'CityMap');
     const blob = await page.evaluate(() => SugarCube.Save.serialize());
     expect(typeof blob).toBe('string');
     expect(blob.length).toBeGreaterThan(0);
   });
 
-  test('round-trip preserves CityMap state with custom stats', async () => {
+  test('round-trip preserves CityMap state with custom stats', async ({ game: page }) => {
     await goToPassage(page, 'CityMap');
     await setVar(page, 'mc.money', 257);
     await setVar(page, 'mc.energy', 7);
@@ -123,7 +109,7 @@ test.describe('Save/load round-trip', () => {
     expect(after).toEqual(before);
   });
 
-  test('round-trip preserves wardrobe + delivery flags', async () => {
+  test('round-trip preserves wardrobe + delivery flags', async ({ game: page }) => {
     await goToPassage(page, 'CityMap');
     await setVar(page, 'jeansState', 'in wardrobe');
     await setVar(page, 'tshirtState', 'in laundry');
@@ -139,7 +125,7 @@ test.describe('Save/load round-trip', () => {
     expect(await snapshot(page)).toEqual(before);
   });
 
-  test('Ghost behaviour survives a save/load round-trip', async () => {
+  test('Ghost behaviour survives a save/load round-trip', async ({ game: page }) => {
     // The codebase deliberately stores $hunt as plain serializable data
     // (name, evidence ids, mode, ...) and projects to a Ghost instance
     // on demand via setup.Ghosts.active() — see GhostController.tw:447
@@ -193,7 +179,7 @@ test.describe('Save/load round-trip', () => {
     expect(restored).toEqual(live);
   });
 
-  test('legacy v1 save migrates flat $ghost* vars into $hunt via setup.applySaveDefaults', async () => {
+  test('legacy v1 save migrates flat $ghost* vars into $hunt via setup.applySaveDefaults', async ({ game: page }) => {
     await goToPassage(page, 'CityMap');
 
     const migrated = await page.evaluate(() => {
@@ -233,7 +219,7 @@ test.describe('Save/load round-trip', () => {
     }
   });
 
-  test('saveMimic=1 in legacy save preserves the visible name as Mimic-cover', async () => {
+  test('saveMimic=1 in legacy save preserves the visible name as Mimic-cover', async ({ game: page }) => {
     // The Mimic ghost masquerades as another ghost; legacy saves stored
     // the cover name in $ghostName and the real type in $saveMimic. The
     // migration must preserve both: visible name vs. realName.
@@ -254,7 +240,7 @@ test.describe('Save/load round-trip', () => {
     expect(migrated.realName).toBe('Mimic');
   });
 
-  test('legacy $wish<Name> flags migrate into $monkeyPawLearned', async () => {
+  test('legacy $wish<Name> flags migrate into $monkeyPawLearned', async ({ game: page }) => {
     // 0.5.1 stored each Monkey Paw wish unlock as a separate flat flag
     // ($wishActivity, $wishKnowledge, ...). The post-overhaul code reads
     // $monkeyPawLearned[<id>] instead. Without migration, a player who
@@ -287,7 +273,7 @@ test.describe('Save/load round-trip', () => {
     }
   });
 
-  test('boughtMonkeyPawGuide===2 marks every wish learned (the F95 0.5.1 bug)', async () => {
+  test('boughtMonkeyPawGuide===2 marks every wish learned (the F95 0.5.1 bug)', async ({ game: page }) => {
     // The exact reported bug: a 0.5.1 save where the Monkey Paw guide had
     // already been purchased loaded with no wish buttons except "I wish
     // for anything". The guide-bought flag survived the migration, but
@@ -325,7 +311,7 @@ test.describe('Save/load round-trip', () => {
     expect(migrated.boughtMonkeyPawGuide).toBe(2);
   });
 
-  test('boughtMonkeyPawGuide===2 alone (no per-wish flags) still unlocks every wish', async () => {
+  test('boughtMonkeyPawGuide===2 alone (no per-wish flags) still unlocks every wish', async ({ game: page }) => {
     // Defensive: a save shape that lost the $wish<Name> scatter (e.g.
     // already partially migrated, or a custom export) but kept the guide
     // flag must still expose every wish. The guide is the source of truth
@@ -349,7 +335,7 @@ test.describe('Save/load round-trip', () => {
     expect(migrated.wishAnything).toBe(1);
   });
 
-  test('after migration, every wish in the catalogue reports as learned', async () => {
+  test('after migration, every wish in the catalogue reports as learned', async ({ game: page }) => {
     // End-to-end check against the live setup.MonkeyPaw API, so a future
     // catalogue rename (e.g. renaming the 'trapTheGhost' id) would fail
     // this test alongside the migration itself.
@@ -367,7 +353,7 @@ test.describe('Save/load round-trip', () => {
     expect(allLearned).toBe(true);
   });
 
-  test('migration is a no-op when no legacy wish flags or guide are present', async () => {
+  test('migration is a no-op when no legacy wish flags or guide are present', async ({ game: page }) => {
     // A fresh save without any Monkey Paw history should keep its empty
     // (or absent) monkeyPawLearned map and never gain a stray wishAnything.
     await goToPassage(page, 'CityMap');

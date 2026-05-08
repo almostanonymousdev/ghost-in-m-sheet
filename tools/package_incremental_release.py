@@ -30,13 +30,15 @@ import sys
 import zipfile
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[1]
+from lib_repo import passages_dir, repo_root
+
+REPO = repo_root()
 ASSETS_DIR = REPO / "assets"
 INDEX = ASSETS_DIR / "index.json"
 HTML = REPO / "ghost-in-msheet.html"
-STORY_INIT = REPO / "passages" / "StoryInit.tw"
+STORY_INIT = passages_dir() / "StoryInit.tw"
 STORY_INIT_BAK = STORY_INIT.with_name(STORY_INIT.name + ".bak")
-STORY_CAPTION = REPO / "passages" / "StoryCaption.tw"
+STORY_CAPTION = passages_dir() / "StoryCaption.tw"
 
 VERSION_RE = re.compile(r"Ghost in M'Sheet (\d[\d.]*[a-z]*)")
 TAG_RE = re.compile(r"^v\d+\.\d+\.\d+$")

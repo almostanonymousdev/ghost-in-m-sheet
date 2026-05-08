@@ -14,6 +14,8 @@ import re
 import sys
 from pathlib import Path
 
+from lib_repo import iter_passages, passages_dir, read_passage, repo_root
+
 VALID_EVIDENCE = {"emf", "gwb", "temperature", "glass", "spiritbox", "uvl"}
 EXPECTED_GHOST_COUNT = 18
 EVIDENCE_PER_GHOST = 3
@@ -55,14 +57,14 @@ def extract_evidence(bracketed: str) -> list[str]:
     return re.findall(r'["\']([^"\']+)["\']', bracketed)
 
 
-def parse_ghosts(passages_dir: Path) -> list[dict]:
+def parse_ghosts() -> list[dict]:
     """
     Scan all .tw files and return a list of {name, evidence, file} entries for
     every ghost object literal encountered.
     """
     ghosts: list[dict] = []
-    for tw_file in sorted(passages_dir.rglob("*.tw")):
-        text = tw_file.read_text(encoding="utf-8", errors="replace")
+    for tw_file in iter_passages():
+        text = read_passage(tw_file)
         for m in GHOST_OBJECT.finditer(text):
             name = m.group(1)
             evidence = extract_evidence(m.group(2))
@@ -70,24 +72,23 @@ def parse_ghosts(passages_dir: Path) -> list[dict]:
     return ghosts
 
 
-def randomizer_uses_setup_ghosts(passages_dir: Path) -> bool:
+def randomizer_uses_setup_ghosts() -> bool:
     """Verify GhostRandomize picks from setup.Ghosts."""
-    randomize_file = passages_dir / "haunted_houses" / "general" / "GhostRandomize.tw"
+    randomize_file = passages_dir() / "haunted_houses" / "general" / "GhostRandomize.tw"
     if not randomize_file.exists():
         return False
-    text = randomize_file.read_text(encoding="utf-8", errors="replace")
-    return "setup.Ghosts" in text
+    return "setup.Ghosts" in read_passage(randomize_file)
 
 
 def main():
-    repo_root = Path(__file__).resolve().parent.parent
-    passages_dir = repo_root / "passages"
+    root = repo_root()
+    pdir = passages_dir()
 
-    if not passages_dir.is_dir():
-        print(f"ERROR: passages directory not found at {passages_dir}", file=sys.stderr)
+    if not pdir.is_dir():
+        print(f"ERROR: passages directory not found at {pdir}", file=sys.stderr)
         sys.exit(1)
 
-    ghosts = parse_ghosts(passages_dir)
+    ghosts = parse_ghosts()
 
     failed = False
 
@@ -106,7 +107,7 @@ def main():
             f"found {defined_count}: {sorted(unique_by_name)}"
         )
 
-    if not randomizer_uses_setup_ghosts(passages_dir):
+    if not randomizer_uses_setup_ghosts():
         failed = True
         print(
             "RANDOMIZER MISMATCH: GhostRandomize.tw does not reference setup.Ghosts"
@@ -117,7 +118,7 @@ def main():
         info = unique_by_name[name]
         ev = info["evidence"]
         try:
-            rel = info["file"].relative_to(repo_root)
+            rel = info["file"].relative_to(root)
         except ValueError:
             rel = info["file"]
 

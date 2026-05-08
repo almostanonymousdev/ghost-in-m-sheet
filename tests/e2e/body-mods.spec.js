@@ -1,5 +1,5 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, callSetup, goToPassage } = require('../helpers');
+const { test, expect } = require('../fixtures');
+const { setVar, getVar, callSetup, goToPassage } = require('../helpers');
 const { expectCleanPassage } = require('./e2e-helpers');
 
 const PIERCING_LIST = [
@@ -20,13 +20,7 @@ const TATTOO_LIST = [
 ];
 
 test.describe('Body mods — salon access and hours', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('Salon.isOpen between 8 AM and 9 PM', async () => {
+  test('Salon.isOpen between 8 AM and 9 PM', async ({ game: page }) => {
     await setVar(page, 'hours', 7);
     expect(await callSetup(page, 'setup.Salon.isOpen()')).toBe(false);
     await setVar(page, 'hours', 8);
@@ -37,7 +31,7 @@ test.describe('Body mods — salon access and hours', () => {
     expect(await callSetup(page, 'setup.Salon.isOpen()')).toBe(false);
   });
 
-  test('BeautySalon exterior shows closed message before 8 AM', async () => {
+  test('BeautySalon exterior shows closed message before 8 AM', async ({ game: page }) => {
     await setVar(page, 'hours', 5);
     await goToPassage(page, 'BeautySalon');
     const text = await page.locator('#passages').innerText();
@@ -45,7 +39,7 @@ test.describe('Body mods — salon access and hours', () => {
     await expectCleanPassage(page);
   });
 
-  test('BeautySalon exterior shows "Go inside" during open hours', async () => {
+  test('BeautySalon exterior shows "Go inside" during open hours', async ({ game: page }) => {
     await setVar(page, 'hours', 10);
     await goToPassage(page, 'BeautySalon');
     const text = await page.locator('#passages').innerText();
@@ -53,7 +47,7 @@ test.describe('Body mods — salon access and hours', () => {
     await expectCleanPassage(page);
   });
 
-  test('BeautySalonInside shows both Piercing and Tattoos links', async () => {
+  test('BeautySalonInside shows both Piercing and Tattoos links', async ({ game: page }) => {
     await setVar(page, 'hours', 10);
     await goToPassage(page, 'BeautySalonInside');
     const text = await page.locator('#passages').innerText();
@@ -64,13 +58,7 @@ test.describe('Body mods — salon access and hours', () => {
 });
 
 test.describe('Body mods — piercing purchases', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('BeautySalonPiercing renders cleanly with enough money', async () => {
+  test('BeautySalonPiercing renders cleanly with enough money', async ({ game: page }) => {
     await setVar(page, 'hours', 10);
     await setVar(page, 'mc.money', 1000);
     await goToPassage(page, 'BeautySalonPiercing');
@@ -85,7 +73,7 @@ test.describe('Body mods — piercing purchases', () => {
     expect(text).toContain('Buy');
   });
 
-  test('BeautySalonPiercing shows "not enough money" when broke', async () => {
+  test('BeautySalonPiercing shows "not enough money" when broke', async ({ game: page }) => {
     await setVar(page, 'hours', 10);
     await setVar(page, 'mc.money', 10);
     await goToPassage(page, 'BeautySalonPiercing');
@@ -96,7 +84,7 @@ test.describe('Body mods — piercing purchases', () => {
   });
 
   for (const piercing of PIERCING_LIST) {
-    test(`${piercing.var} already purchased hides its card`, async () => {
+    test(`${piercing.var} already purchased hides its card`, async ({ game: page }) => {
       await setVar(page, 'hours', 10);
       await setVar(page, 'mc.money', 1000);
       // Setting it to "worn" makes `ndef State.variables[_varName]` false, so
@@ -117,13 +105,7 @@ test.describe('Body mods — piercing purchases', () => {
 });
 
 test.describe('Body mods — tattoo purchases', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('BeautySalonTattoos shows low-corruption tattoos by default', async () => {
+  test('BeautySalonTattoos shows low-corruption tattoos by default', async ({ game: page }) => {
     await setVar(page, 'hours', 10);
     await setVar(page, 'mc.money', 1000);
     await setVar(page, 'mc.corruption', 0);
@@ -138,7 +120,7 @@ test.describe('Body mods — tattoo purchases', () => {
     expect(text).toContain('Req. 5+');
   });
 
-  test('BeautySalonTattoos unlocks corruption-gated tattoos at corruption >= 5', async () => {
+  test('BeautySalonTattoos unlocks corruption-gated tattoos at corruption >= 5', async ({ game: page }) => {
     await setVar(page, 'hours', 10);
     await setVar(page, 'mc.money', 1000);
     await setVar(page, 'mc.corruption', 5);
@@ -154,13 +136,7 @@ test.describe('Body mods — tattoo purchases', () => {
 });
 
 test.describe('Body mods — piercing wardrobe (wear/remove)', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('Piercing passage renders without SugarCube errors when nothing is owned', async () => {
+  test('Piercing passage renders without SugarCube errors when nothing is owned', async ({ game: page }) => {
     // The Piercing passage is a partial — normally rendered inside the
     // Wardrobe passage, which provides the #currentPiercing* anchors. When
     // every piercing is undefined (the default), no `<<replace>>` or
@@ -169,7 +145,7 @@ test.describe('Body mods — piercing wardrobe (wear/remove)', () => {
     await expectCleanPassage(page);
   });
 
-  test('setup.piercingList exposes the five piercings', async () => {
+  test('setup.piercingList exposes the five piercings', async ({ game: page }) => {
     const entries = await page.evaluate(() => SugarCube.setup.piercingList.map(p => p.var));
     for (const piercing of PIERCING_LIST) {
       expect(entries).toContain(piercing.var);
@@ -179,28 +155,22 @@ test.describe('Body mods — piercing wardrobe (wear/remove)', () => {
 });
 
 test.describe('Body mods — home mirror and wardrobe', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('Home Mirror passage renders cleanly', async () => {
+  test('Home Mirror passage renders cleanly', async ({ game: page }) => {
     await goToPassage(page, 'Mirror');
     await expectCleanPassage(page);
   });
 
-  test('Home Wardrobe passage renders cleanly', async () => {
+  test('Home Wardrobe passage renders cleanly', async ({ game: page }) => {
     await goToPassage(page, 'Wardrobe');
     await expectCleanPassage(page);
   });
 
-  test('BodyModification gui passage renders cleanly', async () => {
+  test('BodyModification gui passage renders cleanly', async ({ game: page }) => {
     await goToPassage(page, 'BodyModification');
     await expectCleanPassage(page);
   });
 
-  test('Mirror applies regular makeup: +5 beauty, -1 charge', async () => {
+  test('Mirror applies regular makeup: +5 beauty, -1 charge', async ({ game: page }) => {
     await setVar(page, 'makeupAmount', 3);
     await setVar(page, 'makeupApplied', 0);
     await setVar(page, 'mc.beauty', 10);
@@ -220,13 +190,6 @@ test.describe('Body mods — home mirror and wardrobe', () => {
 
 test.describe('Body mods — in-hunt exhibitionism events', () => {
   test.describe.configure({ timeout: 10_000, retries: 1 });
-
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
   async function primeForNudityEvent(page, { exhib }) {
     // Drive the "naked, no bottoms" branch deterministically.
     await setVar(page, 'ghost', { name: 'Shade' });
@@ -239,7 +202,7 @@ test.describe('Body mods — in-hunt exhibitionism events', () => {
     await setVar(page, 'mc.exhibitionism', exhib);
   }
 
-  test('NudityEvent renders the low-exhib branch when mc.exhibitionism <= 4', async () => {
+  test('NudityEvent renders the low-exhib branch when mc.exhibitionism <= 4', async ({ game: page }) => {
     await primeForNudityEvent(page, { exhib: 2 });
     await goToPassage(page, 'NudityEvent');
     await expectCleanPassage(page);
@@ -247,13 +210,13 @@ test.describe('Body mods — in-hunt exhibitionism events', () => {
     expect(text).toContain('Exhibitionism');
   });
 
-  test('NudityEvent renders the high-exhib branch when mc.exhibitionism >= 5', async () => {
+  test('NudityEvent renders the high-exhib branch when mc.exhibitionism >= 5', async ({ game: page }) => {
     await primeForNudityEvent(page, { exhib: 7 });
     await goToPassage(page, 'NudityEvent');
     await expectCleanPassage(page);
   });
 
-  test('NudityEventTwo renders cleanly with a driven ghost and clothing state', async () => {
+  test('NudityEventTwo renders cleanly with a driven ghost and clothing state', async ({ game: page }) => {
     await primeForNudityEvent(page, { exhib: 3 });
     await goToPassage(page, 'NudityEventTwo');
     await expectCleanPassage(page);
@@ -266,7 +229,7 @@ test.describe('Body mods — in-hunt exhibitionism events', () => {
     'StealBottomOuter',
     'FindStolenClothes',
   ]) {
-    test(`${passage} renders cleanly`, async () => {
+    test(`${passage} renders cleanly`, async ({ game: page }) => {
       await setVar(page, 'ghost', { name: 'Shade' });
       await goToPassage(page, passage);
       await expectCleanPassage(page);

@@ -1,15 +1,9 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, callSetup, goToPassage } = require('../helpers');
+const { test, expect } = require('../fixtures');
+const { setVar, getVar, callSetup, goToPassage, resetGame } = require('../helpers');
 const { expectCleanPassage } = require('./e2e-helpers');
 
 test.describe('Cursed home items — applyCurseEventEffects payload', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('applyCurseEventEffects: -15 sanity, +0.5 corruption, lust=100, curse cleared', async () => {
+  test('applyCurseEventEffects: -15 sanity, +0.5 corruption, lust=100, curse cleared', async ({ game: page }) => {
     await setVar(page, 'cursedHomeItem', 'tv');
     await setVar(page, 'cursedHomeItemActive', 1);
     await setVar(page, 'mc.sanity', 80);
@@ -25,7 +19,7 @@ test.describe('Cursed home items — applyCurseEventEffects payload', () => {
     expect(await getVar(page, 'cursedHomeItemActive')).toBe(0);
   });
 
-  test('applyCurseEventEffects pegs lust to 100 even from already-high lust', async () => {
+  test('applyCurseEventEffects pegs lust to 100 even from already-high lust', async ({ game: page }) => {
     await setVar(page, 'mc.sanity', 100);
     await setVar(page, 'mc.corruption', 0);
     await setVar(page, 'mc.lust', 80);
@@ -33,7 +27,7 @@ test.describe('Cursed home items — applyCurseEventEffects payload', () => {
     expect(await getVar(page, 'mc.lust')).toBe(100);
   });
 
-  test('forceCursedItem returns one of the five item keys and activates curse', async () => {
+  test('forceCursedItem returns one of the five item keys and activates curse', async ({ game: page }) => {
     await page.evaluate(() => { window._origRandom = Math.random; Math.random = () => 0.5; });
     try {
       const item = await page.evaluate(() => SugarCube.setup.CursedItems.forceCursedItem());
@@ -45,7 +39,7 @@ test.describe('Cursed home items — applyCurseEventEffects payload', () => {
     }
   });
 
-  test('forceCursedItem can roll each of the five items deterministically', async () => {
+  test('forceCursedItem can roll each of the five items deterministically', async ({ game: page }) => {
     const items = ['tv', 'pc', 'bed', 'shower', 'bath'];
     for (let i = 0; i < items.length; i++) {
       await resetGame(page);
@@ -62,7 +56,7 @@ test.describe('Cursed home items — applyCurseEventEffects payload', () => {
     }
   });
 
-  test('curse persists between hub visit and event trigger', async () => {
+  test('curse persists between hub visit and event trigger', async ({ game: page }) => {
     await setVar(page, 'cursedHomeItem', 'tv');
     await setVar(page, 'cursedHomeItemActive', 1);
     await goToPassage(page, 'Livingroom');
@@ -71,7 +65,7 @@ test.describe('Cursed home items — applyCurseEventEffects payload', () => {
     await expectCleanPassage(page);
   });
 
-  test('CursedItems.isActive reflects $cursedHomeItemActive', async () => {
+  test('CursedItems.isActive reflects $cursedHomeItemActive', async ({ game: page }) => {
     await setVar(page, 'cursedHomeItemActive', 0);
     expect(await callSetup(page, 'setup.CursedItems.isActive()')).toBe(false);
     await setVar(page, 'cursedHomeItemActive', 1);
@@ -80,12 +74,6 @@ test.describe('Cursed home items — applyCurseEventEffects payload', () => {
 });
 
 test.describe('Summoning home events — render at base state', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
   for (const passage of [
     'SummoningStart',
     'Summoning',
@@ -95,7 +83,7 @@ test.describe('Summoning home events — render at base state', () => {
     'SummonTwins',
     'SuccubusChoice',
   ]) {
-    test(`${passage} renders cleanly`, async () => {
+    test(`${passage} renders cleanly`, async ({ game: page }) => {
       await goToPassage(page, passage);
       await expectCleanPassage(page);
     });

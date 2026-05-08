@@ -1,5 +1,5 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, goToPassage, getVar, setVar } = require('../helpers');
+const { test, expect } = require('../fixtures');
+const { goToPassage, getVar, setVar } = require('../helpers');
 
 /**
  * Wait until SugarCube navigates to the given passage.
@@ -87,20 +87,14 @@ async function clickEndShift(page) {
 // ─── Hub access ─────────────────────────────────────────────────
 
 test.describe('Delivery E2E — Hub access', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('hub shows closed message outside business hours', async () => {
+  test('hub shows closed message outside business hours', async ({ game: page }) => {
     await setVar(page, 'hours', 23);
     await goToPassage(page, 'DeliveryHub');
     const text = await passageText(page);
     expect(text).toContain('not open right now');
   });
 
-  test('hub shows manager link during open hours', async () => {
+  test('hub shows manager link during open hours', async ({ game: page }) => {
     await setVar(page, 'hours', 12);
     await goToPassage(page, 'DeliveryHub');
     const link = passage(page).locator('.enterbtn a');
@@ -108,7 +102,7 @@ test.describe('Delivery E2E — Hub access', () => {
     expect(await link.innerText()).toContain('manager');
   });
 
-  test('hub shows "Take orders" when eligible to work', async () => {
+  test('hub shows "Take orders" when eligible to work', async ({ game: page }) => {
     await setupReadyWorker(page);
     await goToPassage(page, 'DeliveryHub');
     const link = passage(page).locator('.usebtn a');
@@ -116,7 +110,7 @@ test.describe('Delivery E2E — Hub access', () => {
     expect(await link.innerText()).toContain('Take orders');
   });
 
-  test('hub shows too tired message when low energy', async () => {
+  test('hub shows too tired message when low energy', async ({ game: page }) => {
     await setVar(page, 'firstVisitDeliveryHub', false);
     await setVar(page, 'hours', 12);
     await setVar(page, 'mc.energy', 0);
@@ -125,7 +119,7 @@ test.describe('Delivery E2E — Hub access', () => {
     expect(text).toContain('too tired');
   });
 
-  test('hub does not show "Take orders" on first visit', async () => {
+  test('hub does not show "Take orders" on first visit', async ({ game: page }) => {
     await setVar(page, 'hours', 12);
     await setVar(page, 'mc.energy', 10);
     await goToPassage(page, 'DeliveryHub');
@@ -133,7 +127,7 @@ test.describe('Delivery E2E — Hub access', () => {
     await expect(links).toHaveCount(0);
   });
 
-  test('hub displays stats after completing shifts', async () => {
+  test('hub displays stats after completing shifts', async ({ game: page }) => {
     await setupReadyWorker(page);
     await setVar(page, 'deliveryCompletedShifts', 3);
     await setVar(page, 'deliveryStreak', 2);
@@ -149,13 +143,7 @@ test.describe('Delivery E2E — Hub access', () => {
 // ─── Manager — first visit ──────────────────────────────────────
 
 test.describe('Delivery E2E — Manager first visit', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('first visit shows intro dialogue and clears first-visit flag', async () => {
+  test('first visit shows intro dialogue and clears first-visit flag', async ({ game: page }) => {
     await setVar(page, 'hours', 12);
     await goToPassage(page, 'DeliveryManager');
 
@@ -166,7 +154,7 @@ test.describe('Delivery E2E — Manager first visit', () => {
     expect(await getVar(page, 'firstVisitDeliveryHub')).toBe(false);
   });
 
-  test('clicking manager link from hub navigates to DeliveryManager', async () => {
+  test('clicking manager link from hub navigates to DeliveryManager', async ({ game: page }) => {
     await setVar(page, 'hours', 12);
     await goToPassage(page, 'DeliveryHub');
 
@@ -176,7 +164,7 @@ test.describe('Delivery E2E — Manager first visit', () => {
     expect(await currentPassage(page)).toBe('DeliveryManager');
   });
 
-  test('after first visit, hub now shows Take orders', async () => {
+  test('after first visit, hub now shows Take orders', async ({ game: page }) => {
     await setVar(page, 'hours', 12);
     await setVar(page, 'mc.energy', 10);
     await goToPassage(page, 'DeliveryManager');
@@ -192,13 +180,7 @@ test.describe('Delivery E2E — Manager first visit', () => {
 // ─── Manager — return visits & payment ──────────────────────────
 
 test.describe('Delivery E2E — Manager return visits', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('return visit shows generic greeting (not first visit)', async () => {
+  test('return visit shows generic greeting (not first visit)', async ({ game: page }) => {
     await setupReadyWorker(page);
     await goToPassage(page, 'DeliveryManager');
 
@@ -207,7 +189,7 @@ test.describe('Delivery E2E — Manager return visits', () => {
     expect(text).toContain('Ask about payment');
   });
 
-  test('payment discussion shows beauty requirement when beauty < 45', async () => {
+  test('payment discussion shows beauty requirement when beauty < 45', async ({ game: page }) => {
     await setupReadyWorker(page);
     await setVar(page, 'mc.beauty', 30);
     await goToPassage(page, 'DeliveryManager');
@@ -226,7 +208,7 @@ test.describe('Delivery E2E — Manager return visits', () => {
     expect(text).toContain('45');
   });
 
-  test('payment discussion shows corruption requirement when beauty >= 45 but corruption < 2', async () => {
+  test('payment discussion shows corruption requirement when beauty >= 45 but corruption < 2', async ({ game: page }) => {
     await setupReadyWorker(page);
     await setVar(page, 'mc.beauty', 50);
     await setVar(page, 'mc.corruption', 1);
@@ -243,7 +225,7 @@ test.describe('Delivery E2E — Manager return visits', () => {
     expect(text).toContain('No fucking way');
   });
 
-  test('BJ option appears when beauty >= 45 and corruption >= 2', async () => {
+  test('BJ option appears when beauty >= 45 and corruption >= 2', async ({ game: page }) => {
     await setupReadyWorker(page);
     await setVar(page, 'mc.beauty', 50);
     await setVar(page, 'mc.corruption', 3);
@@ -260,7 +242,7 @@ test.describe('Delivery E2E — Manager return visits', () => {
     await expect(bjLink).toHaveCount(1);
   });
 
-  test('BJ event grants money, exp, corruption and sets cooldown', async () => {
+  test('BJ event grants money, exp, corruption and sets cooldown', async ({ game: page }) => {
     await setupReadyWorker(page);
     await setVar(page, 'mc.beauty', 50);
     await setVar(page, 'mc.corruption', 3);
@@ -275,7 +257,7 @@ test.describe('Delivery E2E — Manager return visits', () => {
     expect(await getVar(page, 'deliveryBJ')).toBe(1);
   });
 
-  test('manager shows cooldown message after BJ event', async () => {
+  test('manager shows cooldown message after BJ event', async ({ game: page }) => {
     await setupReadyWorker(page);
     await setVar(page, 'mc.beauty', 50);
     await setVar(page, 'mc.corruption', 3);
@@ -297,13 +279,7 @@ test.describe('Delivery E2E — Manager return visits', () => {
 // ─── Shift initialization ───────────────────────────────────────
 
 test.describe('Delivery E2E — Shift initialization', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('workDelivery generates 3 orders with addresses and items', async () => {
+  test('workDelivery generates 3 orders with addresses and items', async ({ game: page }) => {
     await setupReadyWorker(page);
     await goToPassage(page, 'WorkDelivery');
 
@@ -324,7 +300,7 @@ test.describe('Delivery E2E — Shift initialization', () => {
     }
   });
 
-  test('workDelivery resets correct-this-shift counter', async () => {
+  test('workDelivery resets correct-this-shift counter', async ({ game: page }) => {
     await setupReadyWorker(page);
     await setVar(page, 'deliveryCorrectThisShift', 5);
     await goToPassage(page, 'WorkDelivery');
@@ -332,7 +308,7 @@ test.describe('Delivery E2E — Shift initialization', () => {
     expect(await getVar(page, 'deliveryCorrectThisShift')).toBe(0);
   });
 
-  test('workDelivery shows order list and Start button', async () => {
+  test('workDelivery shows order list and Start button', async ({ game: page }) => {
     await setupReadyWorker(page);
     await goToPassage(page, 'WorkDelivery');
 
@@ -344,7 +320,7 @@ test.describe('Delivery E2E — Shift initialization', () => {
     expect(await startLink.innerText()).toContain('Start');
   });
 
-  test('clicking Start navigates to DeliveryMap', async () => {
+  test('clicking Start navigates to DeliveryMap', async ({ game: page }) => {
     await setupReadyWorker(page);
     await goToPassage(page, 'WorkDelivery');
 
@@ -358,13 +334,7 @@ test.describe('Delivery E2E — Shift initialization', () => {
 // ─── Delivery map ───────────────────────────────────────────────
 
 test.describe('Delivery E2E — Delivery map', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('map shows house cards with clickable addresses', async () => {
+  test('map shows house cards with clickable addresses', async ({ game: page }) => {
     await setupReadyWorker(page);
     await startShiftWithKnownOrders(page);
 
@@ -377,7 +347,7 @@ test.describe('Delivery E2E — Delivery map', () => {
     expect(count).toBeGreaterThanOrEqual(10);
   });
 
-  test('map shows End the shift button', async () => {
+  test('map shows End the shift button', async ({ game: page }) => {
     await setupReadyWorker(page);
     await startShiftWithKnownOrders(page);
     await passage(page).locator('.movebtn a').click();
@@ -388,7 +358,7 @@ test.describe('Delivery E2E — Delivery map', () => {
     expect(await endShiftBtn.innerText()).toContain('End the shift');
   });
 
-  test('map shows order icons on correct houses', async () => {
+  test('map shows order icons on correct houses', async ({ game: page }) => {
     await setupReadyWorker(page);
     await startShiftWithKnownOrders(page);
     await passage(page).locator('.movebtn a').click();
@@ -403,13 +373,7 @@ test.describe('Delivery E2E — Delivery map', () => {
 // ─── Correct delivery (auto-deliver) ───────────────────────────
 
 test.describe('Delivery E2E — Correct delivery', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('delivering to correct address earns success pay', async () => {
+  test('delivering to correct address earns success pay', async ({ game: page }) => {
     await setupReadyWorker(page);
     const orders = await startShiftWithKnownOrders(page);
 
@@ -425,7 +389,7 @@ test.describe('Delivery E2E — Correct delivery', () => {
     expect(earned).toBeGreaterThanOrEqual(successPay);
   });
 
-  test('correct delivery increments deliveryCorrectThisShift', async () => {
+  test('correct delivery increments deliveryCorrectThisShift', async ({ game: page }) => {
     await setupReadyWorker(page);
     const orders = await startShiftWithKnownOrders(page);
 
@@ -436,7 +400,7 @@ test.describe('Delivery E2E — Correct delivery', () => {
     expect(await getVar(page, 'deliveryCorrectThisShift')).toBeGreaterThanOrEqual(1);
   });
 
-  test('correct delivery tracks visit count', async () => {
+  test('correct delivery tracks visit count', async ({ game: page }) => {
     await setupReadyWorker(page);
     const orders = await startShiftWithKnownOrders(page);
     const address = orders[0].address;
@@ -453,13 +417,7 @@ test.describe('Delivery E2E — Correct delivery', () => {
 // ─── Wrong delivery ─────────────────────────────────────────────
 
 test.describe('Delivery E2E — Wrong delivery', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('delivering wrong item shows sad image and earns fail pay', async () => {
+  test('delivering wrong item shows sad image and earns fail pay', async ({ game: page }) => {
     await setupReadyWorker(page);
     await goToPassage(page, 'WorkDelivery');
     await waitForPassage(page, 'WorkDelivery');
@@ -491,13 +449,7 @@ test.describe('Delivery E2E — Wrong delivery', () => {
 // ─── Auto-deliver to house with no matching order ───────────────
 
 test.describe('Delivery E2E — No order at address', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('auto-delivering to house with no order shows "no one ordered" message', async () => {
+  test('auto-delivering to house with no order shows "no one ordered" message', async ({ game: page }) => {
     await setupReadyWorker(page);
     await startShiftWithKnownOrders(page);
 
@@ -519,13 +471,7 @@ test.describe('Delivery E2E — No order at address', () => {
 // ─── End shift / back to manager ────────────────────────────────
 
 test.describe('Delivery E2E — End shift', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('ending shift from map goes to manager and shows earnings', async () => {
+  test('ending shift from map goes to manager and shows earnings', async ({ game: page }) => {
     await setupReadyWorker(page);
     await startShiftWithKnownOrders(page);
     await passage(page).locator('.movebtn a').click();
@@ -541,7 +487,7 @@ test.describe('Delivery E2E — End shift', () => {
     expect(text).toContain('Earned during the shift');
   });
 
-  test('ending shift increments completed shifts', async () => {
+  test('ending shift increments completed shifts', async ({ game: page }) => {
     await setupReadyWorker(page);
     const shiftsBefore = await getVar(page, 'deliveryCompletedShifts');
 
@@ -555,7 +501,7 @@ test.describe('Delivery E2E — End shift', () => {
     expect(await getVar(page, 'deliveryCompletedShifts')).toBe(shiftsBefore + 1);
   });
 
-  test('ending shift deducts 2 energy', async () => {
+  test('ending shift deducts 2 energy', async ({ game: page }) => {
     await setupReadyWorker(page);
     const energyBefore = await getVar(page, 'mc.energy');
 
@@ -569,7 +515,7 @@ test.describe('Delivery E2E — End shift', () => {
     expect(await getVar(page, 'mc.energy')).toBe(energyBefore - 2);
   });
 
-  test('ending shift adds earned money to mc.money', async () => {
+  test('ending shift adds earned money to mc.money', async ({ game: page }) => {
     await setupReadyWorker(page);
     const moneyBefore = await getVar(page, 'mc.money');
 
@@ -586,7 +532,7 @@ test.describe('Delivery E2E — End shift', () => {
     expect(await getVar(page, 'mc.money')).toBeGreaterThanOrEqual(moneyBefore + 25);
   });
 
-  test('perfect shift (3/3 correct) increments streak', async () => {
+  test('perfect shift (3/3 correct) increments streak', async ({ game: page }) => {
     await setupReadyWorker(page);
     await setVar(page, 'deliveryStreak', 2);
 
@@ -602,7 +548,7 @@ test.describe('Delivery E2E — End shift', () => {
     expect(await getVar(page, 'deliveryStreak')).toBe(3);
   });
 
-  test('imperfect shift resets streak to 0', async () => {
+  test('imperfect shift resets streak to 0', async ({ game: page }) => {
     await setupReadyWorker(page);
     await setVar(page, 'deliveryStreak', 5);
 
@@ -618,7 +564,7 @@ test.describe('Delivery E2E — End shift', () => {
     expect(await getVar(page, 'deliveryStreak')).toBe(0);
   });
 
-  test('perfect shift shows bonus message', async () => {
+  test('perfect shift shows bonus message', async ({ game: page }) => {
     await setupReadyWorker(page);
 
     await startShiftWithKnownOrders(page);
@@ -635,7 +581,7 @@ test.describe('Delivery E2E — End shift', () => {
     expect(text).toContain('Bonus');
   });
 
-  test('best streak updates when current streak exceeds it', async () => {
+  test('best streak updates when current streak exceeds it', async ({ game: page }) => {
     await setupReadyWorker(page);
     await setVar(page, 'deliveryStreak', 4);
     await setVar(page, 'deliveryBestStreak', 4);
@@ -652,7 +598,7 @@ test.describe('Delivery E2E — End shift', () => {
     expect(await getVar(page, 'deliveryBestStreak')).toBe(5);
   });
 
-  test('leave button from manager returns to hub', async () => {
+  test('leave button from manager returns to hub', async ({ game: page }) => {
     await setupReadyWorker(page);
     await goToPassage(page, 'DeliveryManager');
 
@@ -666,13 +612,7 @@ test.describe('Delivery E2E — End shift', () => {
 // ─── Full flow: hub → manager → shift → deliver → end ──────────
 
 test.describe('Delivery E2E — Full flow', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('complete flow: first visit → take orders → map → end shift → return to hub', async () => {
+  test('complete flow: first visit → take orders → map → end shift → return to hub', async ({ game: page }) => {
     await setVar(page, 'hours', 12);
     await setVar(page, 'mc.energy', 10);
     await setVar(page, 'mc.money', 50);
@@ -716,7 +656,7 @@ test.describe('Delivery E2E — Full flow', () => {
     expect(await currentPassage(page)).toBe('DeliveryHub');
   });
 
-  test('multiple shifts accumulate completed shift count', async () => {
+  test('multiple shifts accumulate completed shift count', async ({ game: page }) => {
     await setupReadyWorker(page);
 
     for (let shift = 0; shift < 2; shift++) {
@@ -739,13 +679,7 @@ test.describe('Delivery E2E — Full flow', () => {
 // ─── Special order ──────────────────────────────────────────────
 
 test.describe('Delivery E2E — Special order', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('special order shows RUSH label on workDelivery page', async () => {
+  test('special order shows RUSH label on workDelivery page', async ({ game: page }) => {
     await setupReadyWorker(page);
 
     // Mock Math.random so workDelivery's 25% check always passes.
@@ -763,7 +697,7 @@ test.describe('Delivery E2E — Special order', () => {
     expect(text).toContain('RUSH');
   });
 
-  test('special order house is marked on map', async () => {
+  test('special order house is marked on map', async ({ game: page }) => {
     await setupReadyWorker(page);
     await startShiftWithKnownOrders(page);
 
@@ -778,7 +712,7 @@ test.describe('Delivery E2E — Special order', () => {
     await expect(specialHouse).toHaveCount(1);
   });
 
-  test('safe special order earns special order pay', async () => {
+  test('safe special order earns special order pay', async ({ game: page }) => {
     await setupReadyWorker(page);
     await startShiftWithKnownOrders(page);
 
@@ -799,7 +733,7 @@ test.describe('Delivery E2E — Special order', () => {
     expect(earned).toBeGreaterThanOrEqual(22);
   });
 
-  test('unsafe special order with low corruption coerces MC inside then forces decline', async () => {
+  test('unsafe special order with low corruption coerces MC inside then forces decline', async ({ game: page }) => {
     await setupReadyWorker(page);
     await startShiftWithKnownOrders(page);
 
@@ -845,13 +779,7 @@ test.describe('Delivery E2E — Special order', () => {
 // ─── Route familiarity on map ───────────────────────────────────
 
 test.describe('Delivery E2E — Route familiarity display', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('familiar routes get visual indicator on map', async () => {
+  test('familiar routes get visual indicator on map', async ({ game: page }) => {
     await setupReadyWorker(page);
     await setVar(page, 'deliveryVisitCounts', { 'Star Street 25': 3 });
 
@@ -862,7 +790,7 @@ test.describe('Delivery E2E — Route familiarity display', () => {
     await expect(familiarHouse).toHaveCount(1);
   });
 
-  test('unfamiliar routes have no familiar-house class', async () => {
+  test('unfamiliar routes have no familiar-house class', async ({ game: page }) => {
     await setupReadyWorker(page);
     await setVar(page, 'deliveryVisitCounts', {});
 

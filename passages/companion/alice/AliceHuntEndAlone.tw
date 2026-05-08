@@ -22,72 +22,18 @@
 	<<else>>
 		@@.notmc-speech;Well, listen...<br>
 		At first, things went well, of course, sometimes the ghost tried to...@@<<linkappend "@@.notmc-speechLink; scare me@@">>
-			<<set _checkR to random(1,9)>>
-			<<if _checkR eq 1>>
-				<<video "characters/alice/alone1.1.mp4">>
-			<<elseif _checkR eq 2>>
-				<<video "characters/alice/2.11.mp4">>
-			<<elseif _checkR eq 3>>
-				<<video "characters/alice/2.12.mp4">>
-			<<elseif _checkR eq 4>>
-				<<video "characters/alice/2.10.mp4">>
-			<<elseif _checkR eq 5>>
-				<<video "characters/alice/2.0.mp4">>
-			<<elseif _checkR eq 6>>
-				<<video "characters/alice/2.9.mp4">>
-			<<elseif _checkR eq 7>>
-				<<video "characters/alice/2.7.mp4">>
-			<<elseif _checkR eq 8>>
-				<<video "characters/alice/2.1.mp4">>
-			<<elseif _checkR eq 9>>
-				<<video "characters/alice/2.4.mp4">>
-			<</if>>
+			<<set _scareVids to ["characters/alice/alone1.1.mp4", "characters/alice/2.11.mp4", "characters/alice/2.12.mp4", "characters/alice/2.10.mp4", "characters/alice/2.0.mp4", "characters/alice/2.9.mp4", "characters/alice/2.7.mp4", "characters/alice/2.1.mp4", "characters/alice/2.4.mp4"]>>
+			<<randomVideoFromList _scareVids>>
 			@@.notmc-speech;But I'm not easily frightened! <br>
 			I continued searching for evidence.<br>
 			The ghost became more aggressive... Sometimes it tried to @@<<linkappend "@@.notmc-speechLink;chocke me@@">>
-				<<set _checkR to random(1,9)>>
-				<<if _checkR eq 1>>
-					<<video "characters/alice/alone2.1.mp4">>
-				<<elseif _checkR eq 2>>
-					<<video "characters/alice/alone2.2.mp4">>
-				<<elseif _checkR eq 3>>
-					<<video "characters/alice/alone2.3.mp4">>
-				<<elseif _checkR eq 4>>
-					<<video "characters/alice/3.1.mp4">>
-				<<elseif _checkR eq 5>>
-					<<video "characters/alice/3.5.mp4">>
-				<<elseif _checkR eq 6>>
-					<<video "characters/alice/3.7.mp4">>
-				<<elseif _checkR eq 7>>
-					<<video "characters/alice/3.10.mp4">>
-				<<elseif _checkR eq 8>>
-					<<video "characters/alice/3.8.mp4">>
-				<<elseif _checkR eq 9>>
-					<<video "characters/alice/3.12.mp4">>
-				<</if>>
+				<<set _chokeVids to ["characters/alice/alone2.1.mp4", "characters/alice/alone2.2.mp4", "characters/alice/alone2.3.mp4", "characters/alice/3.1.mp4", "characters/alice/3.5.mp4", "characters/alice/3.7.mp4", "characters/alice/3.10.mp4", "characters/alice/3.8.mp4", "characters/alice/3.12.mp4"]>>
+				<<randomVideoFromList _chokeVids>>
 				@@.notmc-speech;But I was stronger than it...<br>
 				I was about to find the last piece of evidence when suddenly@@ <<linkappend
 					"@@.notmc-speechLink;it appeared right in front of me.@@">>
-					<<set _checkR to random(1,9)>>
-					<<if _checkR eq 1>>
-						<<video "characters/alice/alone3.1.mp4">>
-					<<elseif _checkR eq 2>>
-						<<video "characters/alice/alone3.2.mp4">>
-					<<elseif _checkR eq 3>>
-						<<video "characters/alice/4.10.mp4">>
-					<<elseif _checkR eq 4>>
-						<<video "characters/alice/4.11.mp4">>
-					<<elseif _checkR eq 5>>
-						<<video "characters/alice/4.4.mp4">>
-					<<elseif _checkR eq 6>>
-						<<video "characters/alice/4.7.mp4">>
-					<<elseif _checkR eq 7>>
-						<<video "characters/alice/4.6.mp4">>
-					<<elseif _checkR eq 8>>
-						<<video "characters/alice/4.1.mp4">>
-					<<elseif _checkR eq 9>>
-						<<video "characters/alice/4.8.mp4">>
-					<</if>>
+					<<set _appearVids to ["characters/alice/alone3.1.mp4", "characters/alice/alone3.2.mp4", "characters/alice/4.10.mp4", "characters/alice/4.11.mp4", "characters/alice/4.4.mp4", "characters/alice/4.7.mp4", "characters/alice/4.6.mp4", "characters/alice/4.1.mp4", "characters/alice/4.8.mp4"]>>
+					<<randomVideoFromList _appearVids>>
 					@@.notmc-speech;I lost control... and I might have given it what it had been after from the beginning...@@<br>
 					<<if _resultAliceAlone eq 1>>@@.notmc-speech; After it cu... weakened, I ran away. That's it. @@<br>
 						@@.mc-speech; I knew you would succeed! Great job!@@

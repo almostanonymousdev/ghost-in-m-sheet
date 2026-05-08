@@ -1,23 +1,12 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, goToPassage, getVar, setVar } = require('./helpers');
+const { test, expect } = require('./fixtures');
+const { goToPassage, getVar, setVar } = require('./helpers');
 
 test.describe('Beauty Salon — Piercing Purchase', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => {
-    page = await openGame(browser);
-  });
-
-  test.afterAll(async () => {
-    await page.close();
-  });
-
-  test.beforeEach(async () => {
-    await resetGame(page);
+  test.beforeEach(async ({ game: page }) => {
     await setVar(page, 'hours', 12);
   });
 
-  test('purchasing ears piercing deducts money and marks item as worn', async () => {
+  test('purchasing ears piercing deducts money and marks item as worn', async ({ game: page }) => {
     // arrange
     const startingMoney = await getVar(page, 'mc.money');
     const piercingBefore = await getVar(page, 'earsPiercing');
@@ -36,7 +25,7 @@ test.describe('Beauty Salon — Piercing Purchase', () => {
     expect(await getVar(page, 'mc.beauty')).toBe(32); // 30 (base) + 2 from ears piercing
   });
 
-  test('purchasing nose piercing deducts $70 and adds +3 beauty', async () => {
+  test('purchasing nose piercing deducts $70 and adds +3 beauty', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.money', 200);
     const startBeauty = await getVar(page, 'mc.beauty');
@@ -53,7 +42,7 @@ test.describe('Beauty Salon — Piercing Purchase', () => {
     expect(await getVar(page, 'mc.beauty')).toBe(startBeauty + 3);
   });
 
-  test('cannot purchase when money is insufficient', async () => {
+  test('cannot purchase when money is insufficient', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.money', 10);
     await goToPassage(page, 'BeautySalonPiercing');
@@ -68,7 +57,7 @@ test.describe('Beauty Salon — Piercing Purchase', () => {
     expect(await getVar(page, 'mc.money')).toBe(10);
   });
 
-  test('already-purchased piercing does not appear again', async () => {
+  test('already-purchased piercing does not appear again', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.money', 1000);
     await setVar(page, 'earsPiercing', 'worn');

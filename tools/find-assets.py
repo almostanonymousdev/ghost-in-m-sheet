@@ -1,9 +1,10 @@
 import collections
 import os
 import re
-import pathlib
 
-REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
+from lib_repo import passages_dir, repo_root
+
+REPO_ROOT = repo_root()
 
 
 def recursive_grep(
@@ -43,7 +44,7 @@ def recursive_grep(
     return matches
 
 def main():
-    results = recursive_grep(r"assets/.+", str(REPO_ROOT / "passages"))
+    results = recursive_grep(r"assets/.+", str(passages_dir()))
     found_count = 0
     not_found_count = 0
     not_found_entries = collections.defaultdict(list)

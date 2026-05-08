@@ -37,6 +37,15 @@ setup.CompanionData = (function () {
 				resp: "I feel like I'm making things easier for the ghost, but I don't really mind..." },
 				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
 				resp: "Fine, he's going to get to my pussy anyway." }
+			],
+			// Per-companion CompanionEvent dialog by sanity tier (1..4).
+			// Strings are wikified by <<companionTextEvent>>: $mc.name and
+			// $companion.name are substituted at render time.
+			eventCopy: [
+				"@@.mc-thoughts; As you entered the room, you immediately saw her. She was naked and visibly shaken.@@<br>\n@@.mc-speech; Oh God, what happened to you?@@<br>\n@@.notmc-speech; I don't want to talk about it... Just help me@@<br>\n@@.mc-thoughts; You walked over to her, carefully helping her up.@@<br>",
+				"@@.mc-thoughts; As you entered the room, you immediately saw her. But she wasn't alone. Fortunately, you entered just in time, and as soon as you did, the ghost let her go and vanished@@<br>\n@@.mc-speech; $companion.name , are you alright? I saw the ghost trying to...@@<br>\n@@.notmc-speech; Thank you, $mc.name, you came just in time.@@<br>\n@@.mc-thoughts; You walked over to her, carefully helping her up.@@<br>",
+				"@@.mc-thoughts; As you entered the room, you immediately saw her. But she wasn't alone. Fortunately, you entered just in time, and as soon as you did, the ghost let her go and vanished@@<br>\n@@.mc-speech; $companion.name, are you alright? I saw what the ghost was doing to you...@@<br>\n@@.notmc-speech; Thank you, $mc.name, you came just in time.@@<br>\n@@.mc-thoughts; You walked over to her, carefully helping her up.@@<br>",
+				"@@.mc-thoughts; As you entered the room, you immediately saw her. But she wasn't alone. Fortunately, you entered just in time, and as soon as you did, the ghost let her go and vanished@@<br>\n@@.mc-speech; $companion.name, are you alright? I saw what the ghost was doing to you...@@<br>\n@@.notmc-speech; Thank you, $mc.name, you came just in time.@@<br>\n@@.mc-thoughts; You walked over to her, carefully helping her up.@@<br>"
 			]
 		},
 		{
@@ -58,6 +67,12 @@ setup.CompanionData = (function () {
 				resp: "Just my panties? This is so embarrassing, but fine..." },
 				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
 				resp: "Completely naked? You're lucky I like you, $mc.name." }
+			],
+			eventCopy: [
+				"@@.mc-thoughts; When you entered the room, you saw her.@@<br> @@.mc-speech; Are you alright?@@<br> @@.notmc-speech; I'm fine. It's just a ghost, nothing to worry about. And it looks like I almost beat it.@@<br> @@.mc-thoughts; It seems I can see the marks of that fight on her...@@<br> @@.mc-speech; Well done, I'm proud of you.@@<br>",
+				"@@.mc-thoughts; As you entered the room, you immediately saw her. But she wasn't alone. <br>The ghost, noticing you, disappeared instantly.@@<br>\n@@.mc-speech; $companion.name, are you alright?@@<br>\n@@.notmc-speech; Yes, I think I'm fine.@@<br>\n@@.mc-thoughts; A faint smile remained on her face, as if she had enjoyed the encounter. @@<br>\n@@.notmc-speech; I hope it comes back so I can teach it a lesson...@@<br>",
+				"@@.mc-thoughts; Before entering the room, you hear strange sounds coming from inside. <br>\nAs you entered the room, you immediately saw her. But she wasn't alone. You walked in just in time to see what was happening...<br>\nIt seems she doesn't want to be interrupted. But as soon as the ghost saw you, it disappeared. @@<br>\n@@.mc-speech; $companion.name, are you alright? I heard strange noises...@@<br>\n@@.notmc-speech; Don't worry, it just caught me by surprise.@@<br>\n@@.mc-speech; Sure...@@<br>",
+				"@@.mc-thoughts; Before entering the room, you hear soft moans coming from inside. <br>\nAs you entered the room, you immediately saw her. But she wasn't alone. You walked in just in time to see what was happening...<br>\nIt seems she doesn't want to be interrupted. But as soon as the ghost saw you, it disappeared. @@<br>"
 			]
 		},
 		{
@@ -80,6 +95,12 @@ setup.CompanionData = (function () {
 				resp: "Just my panties? This is so embarrassing, but fine..." },
 				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
 				resp: "Completely naked? You're lucky I like you, $mc.name." }
+			],
+			eventCopy: [
+				"@@.mc-thoughts; When you entered the room, you saw her.@@<br> @@.mc-speech; What are you doing?@@<br> @@.notmc-speech; I thought I could attract the ghost this way.@@<br> @@.mc-speech; Why?@@<br> @@.notmc-speech; Well, maybe it would have more cursed items, and I could take them for myself.@@<br>\n@@.mc-speech; I don't think that's how it works, or the ghost would probably not want to share with you.@@<br>\n@@.notmc-speech; I still think my plan will work.@@<br>\n@@.mc-speech; Alright, let's keep looking.@@<br>",
+				"@@.mc-thoughts; As you entered the room, you immediately saw her. But she wasn't alone. <br>The ghost, noticing you, disappeared instantly.@@<br>\n@@.mc-speech; $companion.name, are you alright?@@<br>\n@@.notmc-speech; Yes, I saw it! I think you scared it away.@@<br>\n@@.mc-speech; Are you disappointed? I just saved you.@@<br>\n@@.notmc-speech; Well, yeah, of course...@@<br>\n@@.mc-speech; Alright, let's continue.@@<br>",
+				"@@.mc-thoughts; Before entering the room, you hear strange sounds coming from inside. <br>\nAs you entered the room, you immediately saw her. But she wasn't alone. You walked in just in time to see what was happening...<br>\nIt seems she doesn't want to be interrupted. But as soon as the ghost saw you, it disappeared. @@<br>\n@@.mc-speech; $companion.name, are you alright? I heard strange noises...@@<br>\n@@.notmc-speech; Don't worry, it just caught me by surprise.@@<br>\n@@.mc-speech; Sure...@@<br>",
+				"@@.mc-thoughts; Before entering the room, you hear soft moans coming from inside. <br>\nAs you entered the room, you immediately saw her. But she wasn't alone. You walked in just in time to see what was happening...<br>\nIt seems she doesn't want to be interrupted. But as soon as the ghost saw you, it disappeared. @@<br>\n\n@@.mc-speech; $companion.name, are you alright? I heard screaming...@@<br>\n@@.notmc-speech; Don't worry, it just caught me by surprise.@@<br>\n@@.mc-speech; Sure...@@<br>"
 			]
 		},
 		{
@@ -248,6 +269,21 @@ setup.CompanionData = (function () {
 		Blake: { 2: [25, 10], 3: [40, 25], 4: [55, 40], 5: [70, 55] }
 	};
 
+	// CompanionEvent dialog shared by all trans companions (Alex / Taylor /
+	// Casey). Tier-1 has pre/post variants keyed off
+	// setup.Companion.isTransFirstStageSet(); tiers 2-4 are flat strings.
+	// Wikified by <<companionTextEvent>> with $companion.name interpolated
+	// at render time.
+	var transEventCopy = [
+		{
+			pre:  "@@.mc-thoughts; You enter the room and see a figure that clearly belongs to a female body. You don't recognize it until it turns around, revealing $companion.name's face.@@<br>\n@@.mc-speech; $companion.name, are you okay? You look...@@<br>\n@@.notmc-speech; Yeah, it's weird. Maybe this house is doing something to me.<br> Let's find the evidence quickly and get out of here.@@<br>",
+			post: "@@.mc-thoughts; You stumble upon $companion.name, the body has become irresistibly feminine, movements now full of seduction.@@<br>\n@@.mc-speech; $companion.name, you've changed so much... How do you feel with these changes?@@<br>\n@@.mc-speech; I... I don't know... I feel completely different... I can't explain it.@@<br>"
+		},
+		"@@.mc-thoughts; You enter and see the ghost defiling $companion.name, taking every opportunity to satisfy its desires. Its touches and actions make $companion.name moan, sending him into a spiral of wild ecstasy and taboo pleasure.<br>\nSeeing you, the ghost vanishes, leaving $companion.name panting and disheveled, a mix of relief and lingering desire evident on his face.@@<br>\n@@.mc-speech; $companion.name, are you okay?@@<br>\n@@.notmc-speech; Oh~ he touched me, and I... I don't understand what was happening to me.@@<br>",
+		"@@.mc-thoughts; You suddenly burst into the room and see $companion.name engaging in oral sex with the ghost. His movements are full of enthusiasm, but as soon as you enter, the ghost vanishes, leaving $companion.name with wet lips and a face full of confusion.@@<br>\n@@.mc-speech; $companion.name, what the hell is going on here?!@@<br>\n@@.notmc-speech; I... I don't know, he appeared so suddenly, and it seemed like I had no control over my actions. It all happened so fast, I didn't even get to understand anything.@@<br>",
+		"@@.mc-thoughts; You burst into the room and see the ghost fucking $companion.name hard in the ass, his cock going all the way in, making $companion.name 's body shake with each powerful thrust. The ghost disappears upon your arrival, leaving $companion.name with flushed skin and traces of ecstasy on his face.@@<br>\n@@.mc-speech; $companion.name, what's wrong with you? Are you okay after this?@@<br>\n@@.notmc-speech; I... I don't know... He used me, my body... It seems I didn't understand what was happening... It was like I wasn't in my own body, the sensations were so... intense, incredible.@@<br>"
+	];
+
 	// When Plan2 succeeds with no cursed item in hand, one of these is
 	// rolled and the matching $isCI<Type> save flag is set.
 	var cursedItemTypes = [
@@ -266,6 +302,7 @@ setup.CompanionData = (function () {
 		baseChance:       baseChance,
 		eventMediaCis:    eventMediaCis,
 		eventMediaTrans:  eventMediaTrans,
+		transEventCopy:   transEventCopy,
 		soloSkillCurve:   soloSkillCurve,
 		cursedItemTypes:  cursedItemTypes
 	};

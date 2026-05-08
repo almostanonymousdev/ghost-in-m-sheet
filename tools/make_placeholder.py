@@ -43,7 +43,9 @@ import sys
 import tempfile
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+from lib_repo import repo_root
+
+REPO_ROOT = repo_root()
 DEFAULT_BASE = REPO_ROOT / "asset-placeholders"
 ASSETS_BASE = REPO_ROOT / "assets"
 MANIFEST_PATH = DEFAULT_BASE / "index.json"

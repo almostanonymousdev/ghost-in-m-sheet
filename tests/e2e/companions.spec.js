@@ -1,5 +1,5 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, setHuntMode, getHuntMode, callSetup, goToPassage } = require('../helpers');
+const { test, expect } = require('../fixtures');
+const { setVar, getVar, setHuntMode, getHuntMode, callSetup, goToPassage, openGame } = require('../helpers');
 const { expectCleanPassage, setupHunt } = require('./e2e-helpers');
 
 const COMPANIONS = [
@@ -28,13 +28,7 @@ async function selectCompanion(page, name) {
 }
 
 test.describe('Companions — selection controller', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('selectCompanion is mutually exclusive across all six names', async () => {
+  test('selectCompanion is mutually exclusive across all six names', async ({ game: page }) => {
     for (const name of ['Alice', 'Blake', 'Brook', 'Alex', 'Taylor', 'Casey']) {
       await page.evaluate((n) => SugarCube.setup.Companion.selectCompanion(n), name);
       expect(await getVar(page, name.toLowerCase() + '.chosen')).toBe(1);
@@ -44,7 +38,7 @@ test.describe('Companions — selection controller', () => {
     }
   });
 
-  test('isTransCompanion detects Alex/Taylor/Casey only', async () => {
+  test('isTransCompanion detects Alex/Taylor/Casey only', async ({ game: page }) => {
     for (const name of TRANS_COMPANIONS) {
       await setVar(page, 'companion', { name });
       expect(await callSetup(page, 'setup.Companion.isTransCompanion()')).toBe(true);
@@ -55,7 +49,7 @@ test.describe('Companions — selection controller', () => {
     }
   });
 
-  test('sanityTier breaks at 75/50/25', async () => {
+  test('sanityTier breaks at 75/50/25', async ({ game: page }) => {
     await setVar(page, 'companion', { sanity: 80 });
     expect(await callSetup(page, 'setup.Companion.sanityTier()')).toBe('high');
     await setVar(page, 'companion', { sanity: 60 });
@@ -66,7 +60,7 @@ test.describe('Companions — selection controller', () => {
     expect(await callSetup(page, 'setup.Companion.sanityTier()')).toBe('critical');
   });
 
-  test('isLustHigh triggers at lust >= 50', async () => {
+  test('isLustHigh triggers at lust >= 50', async ({ game: page }) => {
     await setVar(page, 'companion', { lust: 49 });
     expect(await callSetup(page, 'setup.Companion.isLustHigh()')).toBe(false);
     await setVar(page, 'companion', { lust: 50 });
@@ -80,16 +74,9 @@ test.describe('Companions — passage rendering', () => {
   // flake, so give this describe's tests 15s and two retries. Media requests
   // are blocked in openGame() so videos/images don't compete for bandwidth.
   test.describe.configure({ timeout: 15_000, retries: 2 });
-
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
   for (const { name, passages } of COMPANIONS) {
     for (const passage of passages) {
-      test(`${name} — ${passage} renders cleanly`, async () => {
+      test(`${name} — ${passage} renders cleanly`, async ({ game: page }) => {
         await selectCompanion(page, name);
         // Seed vars read by *Main / *HuntEndAlone passages.
         await setVar(page, 'alice.chanceToAttack', 25);
@@ -113,7 +100,7 @@ test.describe('Companions — passage rendering', () => {
   // branch and missed the bug. Force the post-solo-return branch and
   // confirm the link renders with the substituted name + pronoun.
   for (const name of ['Brook', 'Alice', 'Blake']) {
-    test(`${name}Info post-solo-return link renders substituted text`, async () => {
+    test(`${name}Info post-solo-return link renders substituted text`, async ({ game: page }) => {
       await selectCompanion(page, name);
       await setVar(page, `${name.toLowerCase()}.goingSolo`, 2);
       // AliceInfo gates the picker on aliceWorkState === 2; harmless
@@ -130,7 +117,7 @@ test.describe('Companions — passage rendering', () => {
   }
 
   for (const name of ALL_COMPANIONS) {
-    test(`CompanionMain renders cleanly for ${name}`, async () => {
+    test(`CompanionMain renders cleanly for ${name}`, async ({ game: page }) => {
       await selectCompanion(page, name);
       // Seed vars read by CompanionMain via <<companionMain>>.
       await setVar(page, 'brook.chanceToAttack', 25);
@@ -150,13 +137,7 @@ test.describe('Companions — passage rendering', () => {
 });
 
 test.describe('Companions — hunt-side events', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('canShowCompanionMiniPanel requires chosenPlan + hunt mode + haunted house', async () => {
+  test('canShowCompanionMiniPanel requires chosenPlan + hunt mode + haunted house', async ({ game: page }) => {
     await setVar(page, 'chosenPlan', 'Plan1');
     await setHuntMode(page, 2);
     await setVar(page, 'hauntedHouse', 'owaissa');
@@ -172,7 +153,7 @@ test.describe('Companions — hunt-side events', () => {
     expect(await callSetup(page, 'setup.Companion.canShowCompanionMiniPanel()')).toBe(false);
   });
 
-  test('companionAtStreet excludes Plan1–Plan4 (those keep the companion inside)', async () => {
+  test('companionAtStreet excludes Plan1–Plan4 (those keep the companion inside)', async ({ game: page }) => {
     await setVar(page, 'isCompChosen', 1);
     for (const plan of ['Plan1', 'Plan2', 'Plan3', 'Plan4']) {
       await setVar(page, 'chosenPlan', plan);
@@ -182,7 +163,7 @@ test.describe('Companions — hunt-side events', () => {
     expect(await callSetup(page, 'setup.Companion.companionAtStreet()')).toBe(true);
   });
 
-  test('canWalkHomeWithCompanion requires any bottom worn', async () => {
+  test('canWalkHomeWithCompanion requires any bottom worn', async ({ game: page }) => {
     await setVar(page, 'jeansState', 'not worn');
     await setVar(page, 'skirtState', 'not bought');
     await setVar(page, 'shortsState', 'not bought');
@@ -191,7 +172,7 @@ test.describe('Companions — hunt-side events', () => {
     expect(await callSetup(page, 'setup.Companion.canWalkHomeWithCompanion()')).toBe(true);
   });
 
-  test('giveSanityPill raises companion sanity and decrements pills', async () => {
+  test('giveSanityPill raises companion sanity and decrements pills', async ({ game: page }) => {
     await setVar(page, 'sanityPillsAmount', 2);
     await setVar(page, 'companion', { name: 'Alice', sanity: 40 });
     const used = await page.evaluate(() => SugarCube.setup.Companion.giveSanityPill());
@@ -200,21 +181,21 @@ test.describe('Companions — hunt-side events', () => {
     expect(await getVar(page, 'companion.sanity')).toBe(70);
   });
 
-  test('giveSanityPill clamps companion sanity at 100', async () => {
+  test('giveSanityPill clamps companion sanity at 100', async ({ game: page }) => {
     await setVar(page, 'sanityPillsAmount', 1);
     await setVar(page, 'companion', { name: 'Alice', sanity: 85 });
     await page.evaluate(() => SugarCube.setup.Companion.giveSanityPill());
     expect(await getVar(page, 'companion.sanity')).toBe(100);
   });
 
-  test('giveSanityPill returns false when no pills remain', async () => {
+  test('giveSanityPill returns false when no pills remain', async ({ game: page }) => {
     await setVar(page, 'sanityPillsAmount', 0);
     await setVar(page, 'companion', { name: 'Alice', sanity: 50 });
     const used = await page.evaluate(() => SugarCube.setup.Companion.giveSanityPill());
     expect(used).toBe(false);
   });
 
-  test('giveSanityPill returns false when companion is already at full sanity', async () => {
+  test('giveSanityPill returns false when companion is already at full sanity', async ({ game: page }) => {
     await setVar(page, 'sanityPillsAmount', 3);
     await setVar(page, 'companion', { name: 'Alice', sanity: 100 });
     const used = await page.evaluate(() => SugarCube.setup.Companion.giveSanityPill());
@@ -222,7 +203,7 @@ test.describe('Companions — hunt-side events', () => {
     expect(await getVar(page, 'sanityPillsAmount')).toBe(3);
   });
 
-  test('canAffordSoloContract and payForSoloContract integrate correctly', async () => {
+  test('canAffordSoloContract and payForSoloContract integrate correctly', async ({ game: page }) => {
     await setVar(page, 'mc.money', 19);
     expect(await callSetup(page, 'setup.Companion.canAffordSoloContract()')).toBe(false);
     await setVar(page, 'mc.money', 20);
@@ -232,7 +213,7 @@ test.describe('Companions — hunt-side events', () => {
     expect(await getVar(page, 'alice.paidForSolo')).toBe(1);
   });
 
-  test('blakeDropsCursedItem only fires when Blake + chosen + cursed item', async () => {
+  test('blakeDropsCursedItem only fires when Blake + chosen + cursed item', async ({ game: page }) => {
     await setVar(page, 'companion', { name: 'Blake' });
     await setVar(page, 'isCompChosen', 1);
     await setVar(page, 'gotCursedItem', 1);
@@ -241,7 +222,7 @@ test.describe('Companions — hunt-side events', () => {
     expect(await getVar(page, 'gotCursedItem')).toBe(0);
   });
 
-  test('resetHuntState zeroes plan/flags for clean post-hunt state', async () => {
+  test('resetHuntState zeroes plan/flags for clean post-hunt state', async ({ game: page }) => {
     await setVar(page, 'chosenPlan', 'Plan3');
     await setVar(page, 'isCompChosen', 1);
     await setVar(page, 'showComp', 1);
@@ -255,13 +236,7 @@ test.describe('Companions — hunt-side events', () => {
 });
 
 test.describe('Companions — home/intimate events', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('WalkHomeTogether renders cleanly for Brook with high lust', async () => {
+  test('WalkHomeTogether renders cleanly for Brook with high lust', async ({ game: page }) => {
     await selectCompanion(page, 'Brook');
     await setVar(page, 'companion.lust', 80);
     await setupHunt(page, 'Shade');
@@ -269,7 +244,7 @@ test.describe('Companions — home/intimate events', () => {
     await expectCleanPassage(page);
   });
 
-  test('WalkHomeTogether routes to GhostSpecialEventSpirit for a Spirit ghost', async () => {
+  test('WalkHomeTogether routes to GhostSpecialEventSpirit for a Spirit ghost', async ({ game: page }) => {
     await selectCompanion(page, 'Alice');
     await setupHunt(page, 'Spirit');
     await goToPassage(page, 'WalkHomeTogether');
@@ -282,7 +257,7 @@ test.describe('Companions — home/intimate events', () => {
     'CompanionEvent', 'CompanionLeaving', 'CompanionSucceeded',
     'CompanionFailed', 'CompanionResult',
   ]) {
-    test(`${passage} renders cleanly`, async () => {
+    test(`${passage} renders cleanly`, async ({ game: page }) => {
       await selectCompanion(page, 'Alice');
       await setVar(page, 'hauntedHouse', 'owaissa');
       await setVar(page, 'isCompRoomChosen', 0);
@@ -291,7 +266,7 @@ test.describe('Companions — home/intimate events', () => {
     });
   }
 
-  test('pickRandomCompanionRoomFromContext picks a room without throwing', async () => {
+  test('pickRandomCompanionRoomFromContext picks a room without throwing', async ({ game: page }) => {
     await selectCompanion(page, 'Alice');
     await setVar(page, 'hauntedHouse', 'owaissa');
     await setVar(page, 'isCompRoomChosen', 0);
@@ -301,13 +276,7 @@ test.describe('Companions — home/intimate events', () => {
 });
 
 test.describe('Companions — hunt setup integration', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('Owaissa hallway with Alice chosen renders the mini panel', async () => {
+  test('Owaissa hallway with Alice chosen renders the mini panel', async ({ game: page }) => {
     await setupHunt(page, 'Shade');
     await selectCompanion(page, 'Alice');
     await setVar(page, 'isCompChosen', 1);

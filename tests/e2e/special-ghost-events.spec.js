@@ -1,5 +1,5 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, getVar, callSetup, goToPassage } = require('../helpers');
+const { test, expect } = require('../fixtures');
+const { setVar, getVar, callSetup, goToPassage } = require('../helpers');
 const { expectCleanPassage } = require('./e2e-helpers');
 
 const EVENT_PASSAGES = [
@@ -23,41 +23,35 @@ const EVENT_PASSAGES = [
 ];
 
 test.describe('Special ghost events — controller', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('knowsAboutMare tracks Mare discovery', async () => {
+  test('knowsAboutMare tracks Mare discovery', async ({ game: page }) => {
     await page.evaluate(() => { SugarCube.setup.Ghosts.getByName('Mare').isInfoCollected = false; });
     expect(await callSetup(page, 'setup.SpecialEvent.knowsAboutMare()')).toBe(false);
     await page.evaluate(() => SugarCube.setup.Ghosts.markDiscovered('Mare'));
     expect(await callSetup(page, 'setup.SpecialEvent.knowsAboutMare()')).toBe(true);
   });
 
-  test('hasMinCorruptionForTVSpirit requires mc.corruption >= 3', async () => {
+  test('hasMinCorruptionForTVSpirit requires mc.corruption >= 3', async ({ game: page }) => {
     await setVar(page, 'mc.corruption', 2);
     expect(await callSetup(page, 'setup.SpecialEvent.hasMinCorruptionForTVSpirit()')).toBe(false);
     await setVar(page, 'mc.corruption', 3);
     expect(await callSetup(page, 'setup.SpecialEvent.hasMinCorruptionForTVSpirit()')).toBe(true);
   });
 
-  test('hasMinCorruptionForSleepSpirit requires mc.corruption >= 5', async () => {
+  test('hasMinCorruptionForSleepSpirit requires mc.corruption >= 5', async ({ game: page }) => {
     await setVar(page, 'mc.corruption', 4);
     expect(await callSetup(page, 'setup.SpecialEvent.hasMinCorruptionForSleepSpirit()')).toBe(false);
     await setVar(page, 'mc.corruption', 5);
     expect(await callSetup(page, 'setup.SpecialEvent.hasMinCorruptionForSleepSpirit()')).toBe(true);
   });
 
-  test('hasEnergyForSleepSpirit requires mc.energy >= 5', async () => {
+  test('hasEnergyForSleepSpirit requires mc.energy >= 5', async ({ game: page }) => {
     await setVar(page, 'mc.energy', 4);
     expect(await callSetup(page, 'setup.SpecialEvent.hasEnergyForSleepSpirit()')).toBe(false);
     await setVar(page, 'mc.energy', 5);
     expect(await callSetup(page, 'setup.SpecialEvent.hasEnergyForSleepSpirit()')).toBe(true);
   });
 
-  test('markSpiritEventSeen sets stage and cooldown', async () => {
+  test('markSpiritEventSeen sets stage and cooldown', async ({ game: page }) => {
     await setVar(page, 'ghostSpiritEventStage', 0);
     await setVar(page, 'ghostSpecialEventSpirit', 0);
     await page.evaluate(() => SugarCube.setup.SpecialEvent.markSpiritEventSeen());
@@ -65,7 +59,7 @@ test.describe('Special ghost events — controller', () => {
     expect(await getVar(page, 'ghostSpecialEventSpirit')).toBe(1);
   });
 
-  test('clearMareEvent zeroes mare progression', async () => {
+  test('clearMareEvent zeroes mare progression', async ({ game: page }) => {
     await setVar(page, 'ghostMareEventStart', 4);
     await setVar(page, 'ghostMareEventStage', 2);
     await page.evaluate(() => SugarCube.setup.SpecialEvent.clearMareEvent());
@@ -73,7 +67,7 @@ test.describe('Special ghost events — controller', () => {
     expect(await getVar(page, 'ghostMareEventStage')).toBe(0);
   });
 
-  test('companionIs and hasCompanion read $companion.name', async () => {
+  test('companionIs and hasCompanion read $companion.name', async ({ game: page }) => {
     await setVar(page, 'companion', {});
     expect(await callSetup(page, 'setup.SpecialEvent.hasCompanion()')).toBe(false);
     expect(await callSetup(page, 'setup.SpecialEvent.companionIs("Alice")')).toBe(false);
@@ -83,14 +77,14 @@ test.describe('Special ghost events — controller', () => {
     expect(await callSetup(page, 'setup.SpecialEvent.companionIs("Blake")')).toBe(false);
   });
 
-  test('canTryEscape requires mc.energy >= 1', async () => {
+  test('canTryEscape requires mc.energy >= 1', async ({ game: page }) => {
     await setVar(page, 'mc.energy', 0);
     expect(await callSetup(page, 'setup.SpecialEvent.canTryEscape()')).toBe(false);
     await setVar(page, 'mc.energy', 1);
     expect(await callSetup(page, 'setup.SpecialEvent.canTryEscape()')).toBe(true);
   });
 
-  test('rollEscapeSuccess always succeeds when random is forced low', async () => {
+  test('rollEscapeSuccess always succeeds when random is forced low', async ({ game: page }) => {
     await setVar(page, 'mc.energy', 1);
     await page.evaluate(() => { window._origRandom = Math.random; Math.random = () => 0; });
     try {
@@ -101,7 +95,7 @@ test.describe('Special ghost events — controller', () => {
     }
   });
 
-  test('rollEscapeSuccess always fails when random is forced high', async () => {
+  test('rollEscapeSuccess always fails when random is forced high', async ({ game: page }) => {
     await setVar(page, 'mc.energy', 1);
     await page.evaluate(() => { window._origRandom = Math.random; Math.random = () => 0.99; });
     try {
@@ -112,13 +106,13 @@ test.describe('Special ghost events — controller', () => {
     }
   });
 
-  test('spendEscapeEnergy zeroes mc.energy', async () => {
+  test('spendEscapeEnergy zeroes mc.energy', async ({ game: page }) => {
     await setVar(page, 'mc.energy', 5);
     await page.evaluate(() => SugarCube.setup.SpecialEvent.spendEscapeEnergy());
     expect(await getVar(page, 'mc.energy')).toBe(0);
   });
 
-  test('resetHuntPlansAfterMyling clears plan/companion state', async () => {
+  test('resetHuntPlansAfterMyling clears plan/companion state', async ({ game: page }) => {
     await setVar(page, 'chosenPlan', 'Plan2');
     await setVar(page, 'chosenPlanActivated', 1);
     await setVar(page, 'randomGhostPassage', 1);
@@ -134,7 +128,7 @@ test.describe('Special ghost events — controller', () => {
     expect(await getVar(page, 'aliceWorkDone')).toBe(0);
   });
 
-  test('resetHuntPlansAfterMyling leaves aliceWorkDone untouched when Alice is hunting alone', async () => {
+  test('resetHuntPlansAfterMyling leaves aliceWorkDone untouched when Alice is hunting alone', async ({ game: page }) => {
     await setVar(page, 'companion', { name: 'Alice' });
     await setVar(page, 'alice.goingSolo', 1);
     await setVar(page, 'aliceWorkDone', 1);
@@ -145,21 +139,14 @@ test.describe('Special ghost events — controller', () => {
 
 test.describe('Special ghost events — passage rendering', () => {
   test.describe.configure({ timeout: 10_000, retries: 1 });
-
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
   for (const passage of EVENT_PASSAGES) {
-    test(`${passage} renders cleanly at default state`, async () => {
+    test(`${passage} renders cleanly at default state`, async ({ game: page }) => {
       await goToPassage(page, passage);
       await expectCleanPassage(page);
     });
   }
 
-  test('Mare event narration changes once info is collected', async () => {
+  test('Mare event narration changes once info is collected', async ({ game: page }) => {
     await page.evaluate(() => { SugarCube.setup.Ghosts.getByName('Mare').isInfoCollected = false; });
     await goToPassage(page, 'GhostSpecialEventMare');
     let text = await page.locator('#passages').innerText();
@@ -171,7 +158,7 @@ test.describe('Special ghost events — passage rendering', () => {
     expect(text).toContain('happening again');
   });
 
-  test('Wraith event shows energy escape UI when mc.energy > 0', async () => {
+  test('Wraith event shows energy escape UI when mc.energy > 0', async ({ game: page }) => {
     await setVar(page, 'mc.energy', 4);
     await goToPassage(page, 'GhostSpecialEventWraith');
     await expectCleanPassage(page);
@@ -182,13 +169,6 @@ test.describe('Special ghost events — passage rendering', () => {
 
 test.describe('Special ghost events — home summoning variants', () => {
   test.describe.configure({ timeout: 10_000, retries: 1 });
-
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
   for (const passage of [
     'SuccubusEventTV',
     'SuccubusPCEvent',
@@ -200,7 +180,7 @@ test.describe('Special ghost events — home summoning variants', () => {
     'TentaclesEventPC',
     'TentaclesEventPC1',
   ]) {
-    test(`${passage} renders cleanly`, async () => {
+    test(`${passage} renders cleanly`, async ({ game: page }) => {
       await goToPassage(page, passage);
       await expectCleanPassage(page);
     });

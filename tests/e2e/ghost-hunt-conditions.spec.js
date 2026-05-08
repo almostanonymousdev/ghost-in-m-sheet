@@ -1,15 +1,9 @@
-const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, setVar, goToPassage, callSetup } = require('../helpers');
+const { test, expect } = require('../fixtures');
+const { setVar, goToPassage, callSetup } = require('../helpers');
 const { expectCleanPassage, setupHunt } = require('./e2e-helpers');
 
 test.describe('Ghost hunt conditions', () => {
-  let page;
-
-  test.beforeAll(async ({ browser }) => { page = await openGame(browser); });
-  test.afterAll(async () => { await page.close(); });
-  test.beforeEach(async () => { await resetGame(page); });
-
-  test('Shade: hunt triggers only at sanity <= 55', async () => {
+  test('Shade: hunt triggers only at sanity <= 55', async ({ game: page }) => {
     await setupHunt(page, 'Shade');
 
     await setVar(page, 'mc.sanity', 60);
@@ -28,7 +22,7 @@ test.describe('Ghost hunt conditions', () => {
     await expectCleanPassage(page);
   });
 
-  test('Demon: hunt triggers at sanity <= 90 (most aggressive)', async () => {
+  test('Demon: hunt triggers at sanity <= 90 (most aggressive)', async ({ game: page }) => {
     await setupHunt(page, 'Demon');
 
     await setVar(page, 'mc.sanity', 95);
@@ -47,7 +41,7 @@ test.describe('Ghost hunt conditions', () => {
     await expectCleanPassage(page);
   });
 
-  test('Spirit: hunt condition requires lust >= 30', async () => {
+  test('Spirit: hunt condition requires lust >= 30', async ({ game: page }) => {
     await setupHunt(page, 'Spirit');
 
     await setVar(page, 'mc.lust', 25);
@@ -62,7 +56,7 @@ test.describe('Ghost hunt conditions', () => {
     await expectCleanPassage(page);
   });
 
-  test('Poltergeist: hunt condition requires sanity <= 70', async () => {
+  test('Poltergeist: hunt condition requires sanity <= 70', async ({ game: page }) => {
     await setupHunt(page, 'Poltergeist');
 
     await setVar(page, 'mc.sanity', 75);
@@ -77,7 +71,7 @@ test.describe('Ghost hunt conditions', () => {
     await expectCleanPassage(page);
   });
 
-  test('Moroi: hunt condition requires sanity <= 70 and has spiritbox evidence', async () => {
+  test('Moroi: hunt condition requires sanity <= 70 and has spiritbox evidence', async ({ game: page }) => {
     await setupHunt(page, 'Moroi');
 
     await setVar(page, 'mc.sanity', 75);
@@ -95,7 +89,7 @@ test.describe('Ghost hunt conditions', () => {
     await expectCleanPassage(page);
   });
 
-  test('Myling: hunt condition requires lust >= 30', async () => {
+  test('Myling: hunt condition requires lust >= 30', async ({ game: page }) => {
     await setupHunt(page, 'Myling');
 
     await setVar(page, 'mc.lust', 25);
@@ -110,7 +104,7 @@ test.describe('Ghost hunt conditions', () => {
     await expectCleanPassage(page);
   });
 
-  test('The Twins: hunt condition requires lust >= 30', async () => {
+  test('The Twins: hunt condition requires lust >= 30', async ({ game: page }) => {
     await setupHunt(page, 'The Twins');
 
     await setVar(page, 'mc.lust', 25);
@@ -125,7 +119,7 @@ test.describe('Ghost hunt conditions', () => {
     await expectCleanPassage(page);
   });
 
-  test('Wraith: hunt condition requires lust >= 30', async () => {
+  test('Wraith: hunt condition requires lust >= 30', async ({ game: page }) => {
     await setupHunt(page, 'Wraith');
 
     await setVar(page, 'mc.lust', 25);
@@ -140,7 +134,7 @@ test.describe('Ghost hunt conditions', () => {
     await expectCleanPassage(page);
   });
 
-  test('Mare: hunt condition requires lust >= 30', async () => {
+  test('Mare: hunt condition requires lust >= 30', async ({ game: page }) => {
     await setupHunt(page, 'Mare');
 
     await setVar(page, 'mc.lust', 25);
@@ -155,7 +149,7 @@ test.describe('Ghost hunt conditions', () => {
     await expectCleanPassage(page);
   });
 
-  test('Banshee: hunt condition requires lust >= 30', async () => {
+  test('Banshee: hunt condition requires lust >= 30', async ({ game: page }) => {
     await setupHunt(page, 'Banshee');
 
     await setVar(page, 'mc.lust', 25);
@@ -170,7 +164,7 @@ test.describe('Ghost hunt conditions', () => {
     await expectCleanPassage(page);
   });
 
-  test('Banshee: Kiss of the Banshee reduces sanity by 10', async () => {
+  test('Banshee: Kiss of the Banshee reduces sanity by 10', async ({ game: page }) => {
     await setupHunt(page, 'Banshee');
 
     const hint = await callSetup(page, 'setup.Ghosts.getByName("Banshee").hint');
@@ -181,7 +175,7 @@ test.describe('Ghost hunt conditions', () => {
     await expectCleanPassage(page);
   });
 
-  test('Cthulion: hunt condition requires sanity <= 70', async () => {
+  test('Cthulion: hunt condition requires sanity <= 70', async ({ game: page }) => {
     await setupHunt(page, 'Cthulion');
 
     await setVar(page, 'mc.sanity', 75);
@@ -196,7 +190,7 @@ test.describe('Ghost hunt conditions', () => {
     await expectCleanPassage(page);
   });
 
-  test('Raiju: hunt condition requires sanity <= 70', async () => {
+  test('Raiju: hunt condition requires sanity <= 70', async ({ game: page }) => {
     await setupHunt(page, 'Raiju');
 
     await setVar(page, 'mc.sanity', 75);
@@ -211,7 +205,7 @@ test.describe('Ghost hunt conditions', () => {
     await expectCleanPassage(page);
   });
 
-  test('all ghosts have exactly 3 evidence types', async () => {
+  test('all ghosts have exactly 3 evidence types', async ({ game: page }) => {
     const ALL_GHOSTS = [
       'Spirit', 'Shade', 'Poltergeist', 'Phantom', 'Goryo', 'Demon',
       'Deogen', 'Jinn', 'Moroi', 'Myling', 'Oni', 'Mimic',
@@ -224,7 +218,7 @@ test.describe('Ghost hunt conditions', () => {
     }
   });
 
-  test('all ghosts have valid hunt conditions', async () => {
+  test('all ghosts have valid hunt conditions', async ({ game: page }) => {
     const ALL_GHOSTS = [
       'Spirit', 'Shade', 'Poltergeist', 'Phantom', 'Goryo', 'Demon',
       'Deogen', 'Jinn', 'Moroi', 'Myling', 'Oni', 'Mimic',

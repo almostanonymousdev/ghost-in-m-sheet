@@ -1,0 +1,100 @@
+:: widgetMcStatus [widget nobr] {"position":"400,400","size":"100,100"}
+/* mcStatusBody -- inner contents of the sidebar #statusContainer (the
+   MC clothing HUD). Split out so the per-slot click handlers in hunt
+   mode can re-render the strip via <<replace "#statusContainer">>
+   without rebuilding the surrounding container div. */
+<<widget "mcStatusBody">>
+	<<set _hunting to setup.Ghosts.isHunting() and not setup.HauntedHouses.isIronclad()>>
+	<div id="inPainImg">
+	<<hovertip "Need to buy medicine">><<if setup.Mc.isPenalized()>>
+		<<image "ui/icons/pain.jpg">>
+	<</if>>
+	<</hovertip>>
+	</div>
+	<<if setup.HauntedHouses.isIronclad() and setup.Ghosts.isHunting()>>
+		<<hovertip "Wearing a sexy warden costume">><<image "ui/icons/warden1.png">>
+		<</hovertip>>
+	<<else>>
+		<div id="statusOuterTop">
+		<<if setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT)>>
+			<<mcUndressIcon _hunting "tshirt" "Wearing t-shirt" "top.jpg">>
+		<<else>>
+			<<mcRedressIcon _hunting "tshirt" "" "empty.jpg">>
+		<</if>>
+		</div>
+		<div id="statusOuterBottom">
+		<<set _bottom to setup.Wardrobe.currentBottomDescriptor()>>
+		<<if _bottom>>
+			<<mcUndressIcon _hunting `setup.Wardrobe.currentBottomSlotName()` _bottom.tip _bottom.icon>>
+		<<else>>
+			<<mcRedressIcon _hunting "bottomOuter" "" "empty.jpg">>
+		<</if>>
+		</div>
+		<div id="statusUnderTop">
+		<<if setup.Wardrobe.worn(setup.WardrobeSlot.BRA)>>
+			<<mcUndressIcon _hunting "bra" "Wearing bra." "bra.jpg">>
+		<<else>>
+			<<mcRedressIcon _hunting "bra" "No bra on!" "tits.jpg">>
+		<</if>>
+		</div>
+		<div id="statusUnderBottom">
+		<<if setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES)>>
+			<<mcUndressIcon _hunting "panties" "Wearing panties" "panties.jpg">>
+		<<else>>
+			<<mcRedressIcon _hunting "panties" "No panties on!" "nude.jpg">>
+		<</if>>
+		</div>
+	<</if>>
+<</widget>>
+
+/* mcUndressIcon -- "currently wearing X" sidebar icon. During a hunt
+   the icon becomes a click target that takes the garment off and
+   re-renders the strip; outside of hunts it's the original
+   hovertip + image. Args: hunting, slotName, hoverText, iconFile. */
+<<widget "mcUndressIcon">>
+	<<set _hunting to _args[0]>>
+	<<set _slot to _args[1]>>
+	<<set _tip to _args[2]>>
+	<<set _icon to _args[3]>>
+	<<if _hunting>>
+		<<set _label to `<<image "ui/icons/${_icon}">>`>>
+		<<capture _slot>>
+			<<hovertip `_tip + " — click to take it off"`>>
+				<<link _label>>
+					<<run setup.Wardrobe.quickUndress(_slot)>>
+					<<replace "#statusContainer">><<mcStatusBody>><</replace>>
+				<</link>>
+			<</hovertip>>
+		<</capture>>
+	<<else>>
+		<<hovertip _tip>><<image "ui/icons/" + _icon>><</hovertip>>
+	<</if>>
+<</widget>>
+
+/* mcRedressIcon -- "currently not wearing X" sidebar icon. Mirrors
+   mcUndressIcon, but only becomes a link when the slot has a
+   remembered last-worn item to put back on. tip "" suppresses the
+   hovertip (preserves the existing tshirt/bottom empty cells). */
+<<widget "mcRedressIcon">>
+	<<set _hunting to _args[0]>>
+	<<set _slot to _args[1]>>
+	<<set _tip to _args[2]>>
+	<<set _icon to _args[3]>>
+	<<set _canRedress to _hunting and setup.Wardrobe.canQuickRedress(_slot)>>
+	<<if _canRedress>>
+		<<set _redressTip to _tip eq "" ? "Click to put it back on" : _tip + " — click to put it back on">>
+		<<set _label to `<<image "ui/icons/${_icon}">>`>>
+		<<capture _slot>>
+			<<hovertip _redressTip>>
+				<<link _label>>
+					<<run setup.Wardrobe.quickRedress(_slot)>>
+					<<replace "#statusContainer">><<mcStatusBody>><</replace>>
+				<</link>>
+			<</hovertip>>
+		<</capture>>
+	<<elseif _tip neq "">>
+		<<hovertip _tip>><<image "ui/icons/" + _icon>><</hovertip>>
+	<<else>>
+		<<image "ui/icons/" + _icon>>
+	<</if>>
+<</widget>>
