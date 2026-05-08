@@ -82,6 +82,22 @@ setup.Styles = (function () {
 		hallwayUpstairs:  { light: 'assets/scenes/room/elm/hallway1.jpg',        dark: 'assets/scenes/room/elm/hallway1-dark.jpg' },
 		bathroomTwo:      { light: 'assets/scenes/room/elm/bathroom1.jpg',       dark: 'assets/scenes/room/elm/bathroom1-dark.jpg' },
 		bedroomTwo:       { light: 'assets/scenes/room/elm/bedroom1.jpg',        dark: 'assets/scenes/room/elm/bedroom1-dark.jpg' },
+		// Ironclad templates -- not procedurally eligible (cellblock
+		// layout is uniquely structural), but reachable via the
+		// static-plan rogue-ironclad catalogue. Reception, the two
+		// cellblock hubs, and the six cells each get the same prison
+		// art the classic IroncladReception / IroncladBlockA / etc.
+		// passages use, so the rogue body-background pipeline
+		// renders identical scenery.
+		reception:        { light: 'assets/scenes/room/ironclad/reception.webp',     dark: 'assets/scenes/room/ironclad/reception-dark.webp' },
+		BlockA:           { light: 'assets/scenes/room/ironclad/block-a.webp',       dark: 'assets/scenes/room/ironclad/block-a-dark.webp' },
+		BlockB:           { light: 'assets/scenes/room/ironclad/block-b.webp',       dark: 'assets/scenes/room/ironclad/block-b-dark.webp' },
+		BlockACellA:      { light: 'assets/scenes/room/ironclad/block-a-cell-a.webp', dark: 'assets/scenes/room/ironclad/block-a-cell-a-dark.webp' },
+		BlockACellB:      { light: 'assets/scenes/room/ironclad/block-a-cell-b.webp', dark: 'assets/scenes/room/ironclad/block-a-cell-b-dark.webp' },
+		BlockACellC:      { light: 'assets/scenes/room/ironclad/block-a-cell-c.webp', dark: 'assets/scenes/room/ironclad/block-a-cell-c-dark.webp' },
+		BlockBCellA:      { light: 'assets/scenes/room/ironclad/block-b-cell-a.webp', dark: 'assets/scenes/room/ironclad/block-b-cell-a-dark.webp' },
+		BlockBCellB:      { light: 'assets/scenes/room/ironclad/block-b-cell-b.webp', dark: 'assets/scenes/room/ironclad/block-b-cell-b-dark.webp' },
+		BlockBCellC:      { light: 'assets/scenes/room/ironclad/block-b-cell-c.webp', dark: 'assets/scenes/room/ironclad/block-b-cell-c-dark.webp' },
 		// Rogue-only templates with dedicated backgrounds.
 		attic:            { light: 'assets/scenes/room/attic-lit.jpg',           dark: 'assets/scenes/room/attic-dark.jpg' },
 		'dining-room':    { light: 'assets/scenes/room/dining-room-lit.jpg',     dark: 'assets/scenes/room/dining-room-dark.jpg' },

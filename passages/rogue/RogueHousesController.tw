@@ -58,6 +58,43 @@ setup.RogueHouses = (function () {
 		]
 	});
 
+	/* Ironclad's classic 11-room cellblock layout, frozen.
+	   The hallway (prison entrance) hub connects to reception,
+	   kitchen, and the two cellblock hubs. Each cellblock hub
+	   branches to its three cells, mirroring the classic Ironclad
+	   navigation graph.
+
+	   allowsCompanions is false on the catalogue entry below to
+	   match classic Ironclad (companions don't engage in the prison
+	   hunt path). Catalogue lookup -- no per-house branch needed. */
+	var IRONCLAD_PLAN = Object.freeze({
+		rooms: [
+			Object.freeze({ id: 'room_0',  template: 'hallway'     }),
+			Object.freeze({ id: 'room_1',  template: 'reception'   }),
+			Object.freeze({ id: 'room_2',  template: 'kitchen'     }),
+			Object.freeze({ id: 'room_3',  template: 'BlockA'      }),
+			Object.freeze({ id: 'room_4',  template: 'BlockACellA' }),
+			Object.freeze({ id: 'room_5',  template: 'BlockACellB' }),
+			Object.freeze({ id: 'room_6',  template: 'BlockACellC' }),
+			Object.freeze({ id: 'room_7',  template: 'BlockB'      }),
+			Object.freeze({ id: 'room_8',  template: 'BlockBCellA' }),
+			Object.freeze({ id: 'room_9',  template: 'BlockBCellB' }),
+			Object.freeze({ id: 'room_10', template: 'BlockBCellC' })
+		],
+		edges: [
+			Object.freeze(['room_0', 'room_1']),  // hallway-reception
+			Object.freeze(['room_0', 'room_2']),  // hallway-kitchen
+			Object.freeze(['room_0', 'room_3']),  // hallway-BlockA
+			Object.freeze(['room_0', 'room_7']),  // hallway-BlockB
+			Object.freeze(['room_3', 'room_4']),  // BlockA-CellA
+			Object.freeze(['room_3', 'room_5']),  // BlockA-CellB
+			Object.freeze(['room_3', 'room_6']),  // BlockA-CellC
+			Object.freeze(['room_7', 'room_8']),  // BlockB-CellA
+			Object.freeze(['room_7', 'room_9']),  // BlockB-CellB
+			Object.freeze(['room_7', 'room_10'])  // BlockB-CellC
+		]
+	});
+
 	/* Elm's classic 9-room two-floor layout, frozen.
 	   Downstairs hallway is the entry hub: kitchen, bathroom,
 	   bedroom, basement hang off it, plus the staircase up to
@@ -106,6 +143,20 @@ setup.RogueHouses = (function () {
 			levelGate:        3,
 			allowsCompanions: true,
 			plan:             ELM_PLAN
+		}),
+		Object.freeze({
+			/* Ironclad classically opts out of the companion plan flow
+			   (the prison hunt has its own warden-clothes mechanic and
+			   no companion-event choreography). The rogue mirror keeps
+			   that opt-out so the catalogue carries the gate -- the
+			   companion predicate is data-driven, no per-house
+			   branching needed. */
+			id:               'rogue-ironclad',
+			label:            'Rogue Ironclad',
+			image:            'scenes/room/ironclad/ironclad.webp',
+			levelGate:        4,
+			allowsCompanions: false,
+			plan:             IRONCLAD_PLAN
 		})
 	]);
 

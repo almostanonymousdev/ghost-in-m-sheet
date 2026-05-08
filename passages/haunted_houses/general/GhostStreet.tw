@@ -4,7 +4,7 @@
 <<rogueStaticHouseCard "rogue-owaissa">>
 <div class="housecard"></div>
 <<huntHouseCard "ironclad">>
-<div class="housecard"></div>
+<<rogueStaticHouseCard "rogue-ironclad">>
 <div class="housecard"></div>
 <<huntHouseCard "elm">>
 <<rogueStaticHouseCard "rogue-elm">>
