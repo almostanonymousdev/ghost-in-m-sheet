@@ -460,14 +460,16 @@ test.describe('Rogue Owaissa parity', () => {
 
   // --- No "if rogue-owaissa do A else do B" lint ---
 
-  test('no executable code branches on the rogue-owaissa id', async () => {
+  test('no executable code branches on any rogue-house id', async () => {
     /* "if rogue_owaissa do A, else do B" is the design's named
-       failure mode. This lint scans every .tw passage for
-       executable comparisons against the literal 'rogue-owaissa'
-       (== / === / eq / != / !== / neq) -- the fingerprints of a
-       per-house branch. Comment-only mentions (catalogue docs,
-       widget doc-strings, etc.) are allowed; what's forbidden is
-       a code path that fires only when the id matches. */
+       failure mode -- and the same trap applies to every other
+       static rogue house added to setup.RogueHouses. This lint
+       walks the catalogue and scans every .tw passage for
+       executable comparisons against any catalogue id (== / === /
+       eq / != / !== / neq) -- the fingerprints of a per-house
+       branch. Comment-only mentions (catalogue docs, widget
+       doc-strings, etc.) are allowed; what's forbidden is a code
+       path that fires only when the id matches. */
     const fs = require('fs');
     const path = require('path');
 
@@ -481,23 +483,30 @@ test.describe('Rogue Owaissa parity', () => {
       return out;
     }
 
-    /* Comparison operators that would couple a code path to the id.
-       The id is wrapped in a quoted string in any literal usage
-       ('rogue-owaissa' or "rogue-owaissa"), which lets this regex
-       avoid the false-positive on stray comment text. */
-    const BRANCH_PATTERNS = [
-      /(===|!==|==|!=)\s*['"]rogue-owaissa['"]/,
-      /['"]rogue-owaissa['"]\s*(===|!==|==|!=)/,
-      /\b(eq|neq|is|isnot)\b\s*['"]rogue-owaissa['"]/,
-      /['"]rogue-owaissa['"]\s*\b(eq|neq|is|isnot)\b/
+    const ids = await callSetup(page, 'setup.RogueHouses.ids()');
+    expect(ids.length).toBeGreaterThan(0);
+
+    /* Comparison operators that would couple a code path to a
+       specific catalogue id. Each id is checked with the four
+       binary comparison shapes (operator before / after, JS-side
+       and SugarCube-side). */
+    const buildPatterns = (id) => [
+      new RegExp(`(===|!==|==|!=)\\s*['"]${id}['"]`),
+      new RegExp(`['"]${id}['"]\\s*(===|!==|==|!=)`),
+      new RegExp(`\\b(eq|neq|is|isnot)\\b\\s*['"]${id}['"]`),
+      new RegExp(`['"]${id}['"]\\s*\\b(eq|neq|is|isnot)\\b`)
     ];
 
     const offenders = [];
     for (const f of walk(path.resolve(__dirname, '..', 'passages'))) {
       const body = fs.readFileSync(f, 'utf8');
-      for (const re of BRANCH_PATTERNS) {
-        if (re.test(body)) {
-          offenders.push(path.relative(path.resolve(__dirname, '..'), f));
+      for (const id of ids) {
+        let hit = false;
+        for (const re of buildPatterns(id)) {
+          if (re.test(body)) { hit = true; break; }
+        }
+        if (hit) {
+          offenders.push(`${id} -> ${path.relative(path.resolve(__dirname, '..'), f)}`);
           break;
         }
       }

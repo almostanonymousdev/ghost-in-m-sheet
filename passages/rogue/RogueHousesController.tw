@@ -58,6 +58,38 @@ setup.RogueHouses = (function () {
 		]
 	});
 
+	/* Elm's classic 9-room two-floor layout, frozen.
+	   Downstairs hallway is the entry hub: kitchen, bathroom,
+	   bedroom, basement hang off it, plus the staircase up to
+	   hallwayUpstairs which branches to bathroomTwo, bedroomTwo,
+	   nursery. Same template ids as classic Elm so the rogue
+	   body-background pipeline picks up identical Elm room art
+	   for free (provided the rogueRooms style map covers the
+	   upstairs templates). */
+	var ELM_PLAN = Object.freeze({
+		rooms: [
+			Object.freeze({ id: 'room_0', template: 'hallway'         }),
+			Object.freeze({ id: 'room_1', template: 'kitchen'         }),
+			Object.freeze({ id: 'room_2', template: 'bathroom'        }),
+			Object.freeze({ id: 'room_3', template: 'bedroom'         }),
+			Object.freeze({ id: 'room_4', template: 'basement'        }),
+			Object.freeze({ id: 'room_5', template: 'hallwayUpstairs' }),
+			Object.freeze({ id: 'room_6', template: 'bathroomTwo'     }),
+			Object.freeze({ id: 'room_7', template: 'bedroomTwo'      }),
+			Object.freeze({ id: 'room_8', template: 'nursery'         })
+		],
+		edges: [
+			Object.freeze(['room_0', 'room_1']),
+			Object.freeze(['room_0', 'room_2']),
+			Object.freeze(['room_0', 'room_3']),
+			Object.freeze(['room_0', 'room_4']),
+			Object.freeze(['room_0', 'room_5']),
+			Object.freeze(['room_5', 'room_6']),
+			Object.freeze(['room_5', 'room_7']),
+			Object.freeze(['room_5', 'room_8'])
+		]
+	});
+
 	var CATALOGUE = Object.freeze([
 		Object.freeze({
 			id:               'rogue-owaissa',
@@ -66,6 +98,14 @@ setup.RogueHouses = (function () {
 			levelGate:        0,
 			allowsCompanions: true,
 			plan:             OWAISSA_PLAN
+		}),
+		Object.freeze({
+			id:               'rogue-elm',
+			label:            'Rogue Elm',
+			image:            'ui/img/elm-house.jpg',
+			levelGate:        3,
+			allowsCompanions: true,
+			plan:             ELM_PLAN
 		})
 	]);
 

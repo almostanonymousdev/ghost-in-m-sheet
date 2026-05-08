@@ -75,6 +75,13 @@ setup.Styles = (function () {
 		livingroom:       { light: 'assets/scenes/room/livingroom.jpg',          dark: 'assets/scenes/room/livingroom-dark.jpg' },
 		nursery:          { light: 'assets/scenes/room/elm/nursery.jpg',         dark: 'assets/scenes/room/elm/nursery-dark.jpg' },
 		basement:         { light: 'assets/scenes/room/elm/basement.jpg',        dark: 'assets/scenes/room/elm/basement-dark.jpg' },
+		// Upstairs Elm templates -- not procedurally eligible (rogue
+		// procedural plans use a single hallway as the backbone), but
+		// reachable via the static-plan rogue-elm catalogue, which pins
+		// the same hub-and-spoke layout the classic Elm passages use.
+		hallwayUpstairs:  { light: 'assets/scenes/room/elm/hallway1.jpg',        dark: 'assets/scenes/room/elm/hallway1-dark.jpg' },
+		bathroomTwo:      { light: 'assets/scenes/room/elm/bathroom1.jpg',       dark: 'assets/scenes/room/elm/bathroom1-dark.jpg' },
+		bedroomTwo:       { light: 'assets/scenes/room/elm/bedroom1.jpg',        dark: 'assets/scenes/room/elm/bedroom1-dark.jpg' },
 		// Rogue-only templates with dedicated backgrounds.
 		attic:            { light: 'assets/scenes/room/attic-lit.jpg',           dark: 'assets/scenes/room/attic-dark.jpg' },
 		'dining-room':    { light: 'assets/scenes/room/dining-room-lit.jpg',     dark: 'assets/scenes/room/dining-room-dark.jpg' },
