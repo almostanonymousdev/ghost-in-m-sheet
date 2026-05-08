@@ -49,8 +49,9 @@ a failure before rolling fresh.
 * **[RogueEnd](../passages/rogue/RogueLifecycle.tw)** — result
   screen. `setup.Rogue.endRogue(success)` clears `$run` and pays out
   ectoplasm (5 mL base + 5 mL if successful + 1 mL per active
-  modifier). The player can route to the meta-shop or back to the
-  city.
+  modifier). The player can chain straight into a fresh run via
+  "Start a new hunt" (re-enters `RogueStart`), spend ectoplasm in the
+  meta-shop, or fall back to the city.
 * **[RogueMetaShop](../passages/rogue/RogueLifecycle.tw)** —
   ectoplasm-spending storefront. Currently exposes a placeholder
   3 mL unlock; specific unlocks (extra modifier reroll, starting

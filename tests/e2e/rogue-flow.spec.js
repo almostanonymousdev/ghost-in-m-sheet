@@ -1351,10 +1351,9 @@ test.describe('E2E: rogue run lifecycle', () => {
     expect(await getVar(page, 'runsStarted')).toBe(1);
     expect(await getVar(page, 'ectoplasm')).toBe(run1Win);
 
-    // Run 2: lose.
+    // Run 2: lose. Bounce through the city map to exercise the
+    // back-to-city exit; the chain-runs path is covered separately.
     await clickLink(page, 'Visit the meta-shop', 'RogueMetaShop');
-    // Meta-shop's only exit goes back to the city; from there we
-    // re-enter the rogue lobby via the GhostStreet card.
     await clickLink(page, 'Back to the city', 'CityMap');
     await goToPassage(page, 'GhostStreet');
     await clickRogueCard(page);
@@ -1367,5 +1366,42 @@ test.describe('E2E: rogue run lifecycle', () => {
     await goToPassage(page, 'RogueEnd');
     expect(await getVar(page, 'runsStarted')).toBe(2);
     expect(await getVar(page, 'ectoplasm')).toBe(run1Win + run2Loss);
+  });
+
+  /* The "Start a new hunt" link on RogueEnd / RogueMetaShop chains
+     runs without bouncing through the city map. Both exits re-enter
+     RogueStart, which auto-rolls a fresh seed + modifier deck and
+     stamps a new $run. */
+  test('RogueEnd offers Start a new hunt that rolls a fresh run', async () => {
+    test.setTimeout(15_000);
+    await goToPassage(page, 'GhostStreet');
+    await clickRogueCard(page);
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await page.evaluate(() => SugarCube.setup.Rogue.markSuccess());
+    await goToPassage(page, 'RogueEnd');
+    expect(await getVar(page, 'run')).toBeNull();
+    expect(await getVar(page, 'runsStarted')).toBe(1);
+
+    await clickLink(page, 'Start a new hunt', 'RogueStart');
+    const run = await getVar(page, 'run');
+    expect(run).not.toBeNull();
+    expect(run.number).toBe(2);
+    expect(await getVar(page, 'runsStarted')).toBe(2);
+  });
+
+  test('RogueMetaShop offers Start a new hunt that rolls a fresh run', async () => {
+    test.setTimeout(15_000);
+    await goToPassage(page, 'GhostStreet');
+    await clickRogueCard(page);
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await page.evaluate(() => SugarCube.setup.Rogue.markSuccess());
+    await goToPassage(page, 'RogueEnd');
+    await clickLink(page, 'Visit the meta-shop', 'RogueMetaShop');
+    expect(await getVar(page, 'run')).toBeNull();
+
+    await clickLink(page, 'Start a new hunt', 'RogueStart');
+    const run = await getVar(page, 'run');
+    expect(run).not.toBeNull();
+    expect(run.number).toBe(2);
   });
 });
