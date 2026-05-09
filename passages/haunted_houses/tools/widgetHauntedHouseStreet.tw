@@ -31,17 +31,22 @@
 /* rogueHuntCard -- arg-less. Drops a rogue-mode entry into the
    GhostStreet flexgrid. Shows the same iconPx-sized card style as
    huntHouseCard. Always routes to RogueStart for a fresh haunt --
-   there is no resume; the player either finishes a run or
-   forfeits it (RogueStart treats an in-flight run as a failure
-   when the player walks back in). No contract reward, no
-   $hauntedHouse activation, no furniture seed -- the rogue
-   subsystem owns its own state on $run. */
+   there is no resume from this entry point; clicking the card
+   while a run is already in flight forfeits the previous one
+   (counts as failure, pays the failure ectoplasm payout) before
+   the new one rolls. The forfeit fires on the click rather than
+   on RogueStart entry so save/reload paths landing back on the
+   lobby resume the existing run instead of accidentally rotating
+   $nextRogueSeed. No contract reward, no $hauntedHouse
+   activation, no furniture seed -- the rogue subsystem owns its
+   own state on $run. */
 <<widget "rogueHuntCard">>
 	<<set _rogueAddr to setup.Rogue.addressFromSeed(setup.Rogue.nextSeed()).formatted>>
 	<div class="housecard">
 		<<image "ui/img/rogue-house.jpg" "iconPx">>
 		<<if setup.Mc.lvl() gte 4>>
 			@@.icontext;<<link _rogueAddr "RogueStart">>
+				<<if setup.Rogue.isRogue()>><<run setup.Rogue.endRogue(false)>><</if>>
 			<</link>>@@
 		<<else>>
 			@@.mc-thoughts; Level 4+ required@@
@@ -66,6 +71,7 @@
 			<<if setup.Mc.lvl() gte _rsh.levelGate>>
 				<<capture _rsh>>
 					@@.icontext;<<link _rsh.label "RogueStart">>
+						<<if setup.Rogue.isRogue()>><<run setup.Rogue.endRogue(false)>><</if>>
 						<<set $pendingRogueStaticHouseId to _rsh.id>>
 					<</link>>@@
 				<</capture>>
