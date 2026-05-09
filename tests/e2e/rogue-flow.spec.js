@@ -534,6 +534,71 @@ test.describe('E2E: rogue run lifecycle', () => {
     await page.waitForFunction(() => SugarCube.State.passage === 'RogueRun');
   });
 
+  test('Spiritbox click with the lights on prompts the player to kill the lights first', async () => {
+    /* Lights-off is a tool-wide rule
+       (setup.searchToolDefs.spiritbox.needsLightCheck): the rogue
+       tool slot must short-circuit a click while the room is lit
+       and route the catalogue prompt into the shared result tray
+       instead of starting a meter. Mirrors classic <<searchTool>>'s
+       lights-off guard so the rule is enforced in both modes. */
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickRogueCard(page);
+    await ensureNotEmptyBag(page);
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
+
+    // Force the current rogue room to LIT before the click. The
+    // rogueFooterLight widget normally toggles this, but pinning
+    // it via the controller skips the click + re-render dance.
+    await page.evaluate(() => {
+      const id = SugarCube.setup.Rogue.currentRoomId();
+      SugarCube.setup.Rogue.setRoomLight(id, SugarCube.setup.RoomLight.LIT);
+    });
+    expect(await callSetup(page, 'setup.Rogue.isCurrentRoomDark()')).toBe(false);
+
+    const spiritboxCard = page.locator('.rogue-tool-card').filter({ hasText: 'Spiritbox' });
+    await expect(spiritboxCard).toHaveCount(1);
+    await spiritboxCard.locator('a').click();
+
+    // Tray surfaces the lights-off prompt; meter never starts.
+    await expect(
+      page.locator('#rogue-tool-result').getByText(/turn off the light first/i)
+    ).toBeVisible();
+    expect(await page.evaluate(() => SugarCube.State.passage)).toBe('RogueRun');
+  });
+
+  test('Spiritbox click with the lights off proceeds into the meter cycle', async () => {
+    /* Negative companion test of the lights-off guard: with the
+       current room dark, the spiritbox click must drop into the
+       same <<repeat>> meter loop the other tools use, not the
+       lights-off prompt. */
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickRogueCard(page);
+    await ensureNotEmptyBag(page);
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
+
+    await page.evaluate(() => {
+      const id = SugarCube.setup.Rogue.currentRoomId();
+      SugarCube.setup.Rogue.setRoomLight(id, SugarCube.setup.RoomLight.DARK);
+    });
+    expect(await callSetup(page, 'setup.Rogue.isCurrentRoomDark()')).toBe(true);
+
+    const spiritboxCard = page.locator('.rogue-tool-card').filter({ hasText: 'Spiritbox' });
+    await spiritboxCard.locator('a').click();
+
+    // Lit-state prompt must NOT appear; the click landed in the
+    // meter branch instead. .disabled-link is added to .cardlink
+    // (the inner span the click handler annotates) for the
+    // duration of the cycle.
+    await expect(
+      page.locator('#rogue-tool-result').getByText(/turn off the light first/i)
+    ).toHaveCount(0);
+    await expect(spiritboxCard.locator('.cardlink')).toHaveClass(/disabled-link/);
+  });
+
   test('Ectoglass miss in rogue mode renders not-found in the tray (no goto)', async () => {
     test.setTimeout(15_000);
 
