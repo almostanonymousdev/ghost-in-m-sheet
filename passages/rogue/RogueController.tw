@@ -779,14 +779,34 @@ setup.Rogue = (function () {
 		                 also drives the modifier draft, offset by a
 		                 32-bit constant so it differs from the
 		                 floor-plan rng stream.
-		modifierCount -- how many modifiers to draft (default 2).
+		modifierCount -- how many modifiers to draft. Resolution order:
+		                 1. opts.modifierCount when set (caller wins);
+		                 2. catalogue entry's modifierCount when
+		                    staticHouseId points at a setup.RogueHouses
+		                    record carrying that field;
+		                 3. fallback default of 2 (procedural runs).
 		floorPlanOpts -- forwarded to setup.FloorPlan.generate.
 		loadout       -- forwarded to start().
 		objective     -- forwarded to start() (default Objective.IDENTIFY). */
 	function startRogue(opts) {
 		opts = opts || {};
 		var seed = opts.seed != null ? opts.seed : Math.floor(Math.random() * 1e9);
-		var modifierCount = opts.modifierCount != null ? opts.modifierCount : 2;
+		/* Resolve modifierCount through the catalogue when a static
+		   rogue house is in play and the caller didn't pin a value
+		   explicitly -- keeps "this house has no modifier deck" as
+		   data on the catalogue entry instead of a per-house branch
+		   in the lifecycle. */
+		var staticHouseEntry = (opts.staticHouseId && setup.RogueHouses)
+			? setup.RogueHouses.byId(opts.staticHouseId)
+			: null;
+		var modifierCount;
+		if (opts.modifierCount != null) {
+			modifierCount = opts.modifierCount;
+		} else if (staticHouseEntry && typeof staticHouseEntry.modifierCount === 'number') {
+			modifierCount = staticHouseEntry.modifierCount;
+		} else {
+			modifierCount = 2;
+		}
 
 		/* Modifier draft honors the player's banlist. Banned ids are
 		   stripped from the draft pool before weighting; banlist slots

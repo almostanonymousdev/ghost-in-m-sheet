@@ -23,6 +23,12 @@
  *                      Companion.inHauntedHouseLocation through
  *                      the catalogue lookup so adding a new house
  *                      doesn't require touching the predicate.
+ *   modifierCount   -- number of modifiers to draft for runs in
+ *                      this house. Omit to inherit the procedural
+ *                      default (2). Set to 0 to opt out of the
+ *                      modifier deck entirely -- the lobby renders
+ *                      no modifier list and the run carries no
+ *                      payout multiplier from modifiers.
  *   plan            -- frozen floor-plan blueprint:
  *                        { rooms: [{ id, template }, ...],
  *                          edges: [[a, b], ...] }
@@ -134,6 +140,7 @@ setup.RogueHouses = (function () {
 			image:            'ui/img/owaissa-house.jpg',
 			levelGate:        0,
 			allowsCompanions: true,
+			modifierCount:    0,
 			plan:             OWAISSA_PLAN
 		}),
 		Object.freeze({
@@ -142,6 +149,7 @@ setup.RogueHouses = (function () {
 			image:            'ui/img/elm-house.jpg',
 			levelGate:        3,
 			allowsCompanions: true,
+			modifierCount:    0,
 			plan:             ELM_PLAN
 		}),
 		Object.freeze({

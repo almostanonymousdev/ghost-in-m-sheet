@@ -24,14 +24,16 @@
 @@.location; <<= setup.Rogue.address().formatted>>@@<br>
 @@.mc-thoughts; A fresh hunt is waiting.@@<br>
 <br>
-@@.location; Modifiers@@<br>
-<div id="rogue-lobby-modifiers">
-	<<for _m range _modifiers>>
-		· <span class="usebtn" @title="_m.description"><<= _m.name>></span> -- <<= _m.description>><br>
-	<</for>>
-</div>
-<span id="rogue-lobby-reroll"><<rogueLobbyRerollControl>></span>
-<br>
+<<if _modifiers.length>>
+	@@.location; Modifiers@@<br>
+	<div id="rogue-lobby-modifiers">
+		<<for _m range _modifiers>>
+			· <span class="usebtn" @title="_m.description"><<= _m.name>></span> -- <<= _m.description>><br>
+		<</for>>
+	</div>
+	<span id="rogue-lobby-reroll"><<rogueLobbyRerollControl>></span>
+	<br>
+<</if>>
 @@.location; Objective@@<br>
 @@.mc-thoughts; <<= setup.Rogue.objectiveDescription(_run.objective) || _run.objective>>@@<br>
 <br>
@@ -70,10 +72,12 @@
 				<<rogueMinimap>>
 			</div>
 			<div class="rogue-run-tr">
-				@@.location; Active modifiers@@<br>
-				<<for _m range _modifiers>>
-					<span class="usebtn rogue-modifier-chip" @title="_m.description"><<= _m.name>></span><br>
-				<</for>>
+				<<if _modifiers.length>>
+					@@.location; Active modifiers@@<br>
+					<<for _m range _modifiers>>
+						<span class="usebtn rogue-modifier-chip" @title="_m.description"><<= _m.name>></span><br>
+					<</for>>
+				<</if>>
 			</div>
 		</div>
 

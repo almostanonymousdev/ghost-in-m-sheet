@@ -211,6 +211,20 @@ test.describe('Rogue Ironclad parity', () => {
     expect(house.id).toBe('rogue-ironclad');
   });
 
+  test('rogue-ironclad inherits the default modifier deck (catalogue does not pin modifierCount)', async () => {
+    /* Owaissa and Elm pin modifierCount: 0 on their catalogue
+       entries to suppress modifiers. Ironclad omits the field, so
+       it falls through to the procedural default of 2 modifiers
+       per run. The catalogue resolution is data-driven -- no
+       per-house branch in startRogue. */
+    const cat = await callSetup(page, 'setup.RogueHouses.byId("rogue-ironclad")');
+    expect(cat.modifierCount).toBeUndefined();
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
+      seed: 1, staticHouseId: 'rogue-ironclad'
+    }));
+    expect(await callSetup(page, 'setup.Rogue.modifiers()')).toHaveLength(2);
+  });
+
   test('rogue-ironclad runs always have the same room set across seeds', async () => {
     const sigs = new Set();
     for (const seed of [1, 2, 7, 42, 999, 12345]) {

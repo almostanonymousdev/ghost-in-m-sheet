@@ -243,6 +243,31 @@ test.describe('Rogue Owaissa parity', () => {
     expect(house.id).toBe('rogue-owaissa');
   });
 
+  test('rogue-owaissa runs draft no modifiers (catalogue modifierCount: 0)', async () => {
+    /* The catalogue entry pins modifierCount to 0, which collapses
+       the lifecycle's modifier-deck draft to an empty array. The
+       lobby + HUD render the modifier section conditionally on
+       _modifiers.length, so a 0-modifier run gets a clean lobby
+       with no chips. */
+    expect(await callSetup(page, 'setup.RogueHouses.byId("rogue-owaissa").modifierCount')).toBe(0);
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
+      seed: 1, staticHouseId: 'rogue-owaissa'
+    }));
+    expect(await callSetup(page, 'setup.Rogue.modifiers()')).toEqual([]);
+  });
+
+  test('rogue-owaissa modifier suppression is robust to seed changes', async () => {
+    for (const seed of [1, 2, 7, 42, 999, 12345]) {
+      await page.evaluate(({ s }) => {
+        SugarCube.setup.Rogue.start({ seed: s });
+        SugarCube.setup.Rogue.end();
+        SugarCube.setup.Rogue.startRogue({ seed: s, staticHouseId: 'rogue-owaissa' });
+      }, { s: seed });
+      expect(await callSetup(page, 'setup.Rogue.modifiers()')).toEqual([]);
+      await page.evaluate(() => SugarCube.setup.Rogue.endRogue(false));
+    }
+  });
+
   test('startRogue without staticHouseId leaves staticHouseId null (procedural mode)', async () => {
     await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
     expect(await callSetup(page, 'setup.Rogue.staticHouseId()')).toBeNull();

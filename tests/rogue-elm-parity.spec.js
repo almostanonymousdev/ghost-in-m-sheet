@@ -208,6 +208,26 @@ test.describe('Rogue Elm parity', () => {
     expect(house.id).toBe('rogue-elm');
   });
 
+  test('rogue-elm runs draft no modifiers (catalogue modifierCount: 0)', async () => {
+    expect(await callSetup(page, 'setup.RogueHouses.byId("rogue-elm").modifierCount')).toBe(0);
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
+      seed: 1, staticHouseId: 'rogue-elm'
+    }));
+    expect(await callSetup(page, 'setup.Rogue.modifiers()')).toEqual([]);
+  });
+
+  test('rogue-elm modifier suppression is robust to seed changes', async () => {
+    for (const seed of [1, 2, 7, 42, 999, 12345]) {
+      await page.evaluate(({ s }) => {
+        SugarCube.setup.Rogue.start({ seed: s });
+        SugarCube.setup.Rogue.end();
+        SugarCube.setup.Rogue.startRogue({ seed: s, staticHouseId: 'rogue-elm' });
+      }, { s: seed });
+      expect(await callSetup(page, 'setup.Rogue.modifiers()')).toEqual([]);
+      await page.evaluate(() => SugarCube.setup.Rogue.endRogue(false));
+    }
+  });
+
   test('rogue-elm runs always have the same room set across seeds', async () => {
     const sigs = new Set();
     for (const seed of [1, 2, 7, 42, 999, 12345]) {
