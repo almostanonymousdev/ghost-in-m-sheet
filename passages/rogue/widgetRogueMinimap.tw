@@ -5,12 +5,19 @@
    their own border colours. Layout (BFS depth -> col, sibling order
    -> row) and SVG markup come from setup.Rogue.minimapSvg().
 
+   Clicking the wrapper toggles a collapsed thumbnail mode anchored
+   at the top-left, so the player can free up the upper-left column
+   to read other UI. The collapsed flag lives on setup.Rogue (module
+   state) so it survives the RogueRun re-render that fires on every
+   room move.
+
    Renders nothing when no rogue run is active (keeps the widget
    cheap to drop into shared passages without an outer guard). */
 <<widget "rogueMinimap">>
 	<<set _mmSvg to setup.Rogue.minimapSvg()>>
 	<<if _mmSvg>>
-		<div class="rogue-minimap">
+		<<set _mmCollapsed to setup.Rogue.isMinimapCollapsed()>>
+		<div @class="'rogue-minimap' + (_mmCollapsed ? ' rogue-minimap-collapsed' : '')" onclick="SugarCube.setup.Rogue.toggleMinimapCollapsed(); this.classList.toggle('rogue-minimap-collapsed');">
 			<span class="location">Floor plan</span><br>
 			<<= _mmSvg>>
 		</div>

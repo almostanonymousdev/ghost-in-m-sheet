@@ -1035,6 +1035,19 @@ setup.Rogue = (function () {
 		});
 	}
 
+	/* Per-session UI flag: when the player clicks the minimap it
+	   collapses to a small top-left thumbnail; clicking again expands.
+	   Module-level so the choice survives passage re-renders (room
+	   navigation rebuilds RogueRun, which would otherwise pop the map
+	   back to full size every step). Reset on endRogue so a fresh run
+	   always starts expanded. */
+	var minimapCollapsed = false;
+	function isMinimapCollapsed() { return minimapCollapsed; }
+	function toggleMinimapCollapsed() {
+		minimapCollapsed = !minimapCollapsed;
+		return minimapCollapsed;
+	}
+
 	/* Build the rogue minimap as an inline SVG: one labeled rect per
 	   room, one line per edge. Layout comes from setup.FloorPlan.layout
 	   (BFS depth -> column, sibling order -> row). The current room is
@@ -1350,6 +1363,7 @@ setup.Rogue = (function () {
 		   to the in-game daily seed and showed the same address until
 		   the player slept. */
 		rollNextSeed();
+		minimapCollapsed = false;
 		return summary;
 	}
 
@@ -1404,6 +1418,8 @@ setup.Rogue = (function () {
 		endRogue: endRogue,
 		minimapData: minimapData,
 		minimapSvg: minimapSvg,
+		isMinimapCollapsed: isMinimapCollapsed,
+		toggleMinimapCollapsed: toggleMinimapCollapsed,
 		currentRoomData: currentRoomData,
 		humanizeLootKind: humanizeLootKind,
 		ghostName: ghostName,

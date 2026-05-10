@@ -198,6 +198,47 @@ test.describe('E2E: rogue run lifecycle', () => {
     );
   });
 
+  test('clicking the minimap toggles the rogue-minimap-collapsed class and survives room moves', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickRogueCard(page);
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    // The default rogue draft can leave minimapCollapsed lingering true
+    // from an earlier test run -- reset to a known state before asserting.
+    await page.evaluate(() => {
+      if (SugarCube.setup.Rogue.isMinimapCollapsed()) {
+        SugarCube.setup.Rogue.toggleMinimapCollapsed();
+      }
+    });
+    await goToPassage(page, 'RogueRun');
+
+    const map = page.locator('.rogue-run-tl .rogue-minimap');
+    await expect(map).toBeVisible();
+    await expect(map).not.toHaveClass(/rogue-minimap-collapsed/);
+
+    // First click: collapse.
+    await map.click();
+    await expect(map).toHaveClass(/rogue-minimap-collapsed/);
+    expect(await callSetup(page, 'setup.Rogue.isMinimapCollapsed()')).toBe(true);
+
+    // Re-render the passage -- the collapsed flag must persist so the
+    // map does not pop back to full size on every navigation step.
+    // Drive the re-render directly (setCurrentRoom + goToPassage) so a
+    // hunt-event redirect from huntTickStep can't whisk us off RogueRun
+    // and break the assertion we actually care about.
+    await page.evaluate(() => SugarCube.setup.Rogue.setCurrentRoom('room_1'));
+    await goToPassage(page, 'RogueRun');
+
+    const mapAfterMove = page.locator('.rogue-run-tl .rogue-minimap');
+    await expect(mapAfterMove).toHaveClass(/rogue-minimap-collapsed/);
+
+    // Second click: expand.
+    await mapAfterMove.click();
+    await expect(mapAfterMove).not.toHaveClass(/rogue-minimap-collapsed/);
+    expect(await callSetup(page, 'setup.Rogue.isMinimapCollapsed()')).toBe(false);
+  });
+
   test('rogueFooterLight toggles the current room\'s light state and the body background', async () => {
     test.setTimeout(15_000);
 
