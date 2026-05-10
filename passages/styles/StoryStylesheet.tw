@@ -1397,6 +1397,19 @@ body.ui-bar-stowed .rogue-run-layout {
 }
 
 /* ===== Rogue minimap ===== */
+/* Click-to-collapse: scaling the wrapper with transform-origin top
+   left shrinks the visual map toward its top-left corner without
+   changing its layout box, so the rest of the rogue-run-tl column
+   stays anchored. Click anywhere on the (still-original-sized) box
+   to expand it back. */
+.rogue-minimap {
+	cursor: pointer;
+	transform-origin: top left;
+	transition: transform 0.2s ease;
+}
+.rogue-minimap.rogue-minimap-collapsed {
+	transform: scale(0.35);
+}
 .rogue-minimap-svg {
 	display: block;
 	margin: 8px 0;

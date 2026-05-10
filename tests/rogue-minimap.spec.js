@@ -210,4 +210,23 @@ test.describe('Rogue minimap data', () => {
     // the spawn class is intentionally omitted from the SVG nodes.
     expect(svg).not.toMatch(/rogue-minimap-spawn/);
   });
+
+  // --- Click-to-collapse state ---
+
+  test('isMinimapCollapsed defaults to false; toggle flips and returns the new value', async () => {
+    expect(await callSetup(page, 'setup.Rogue.isMinimapCollapsed()')).toBe(false);
+    expect(await callSetup(page, 'setup.Rogue.toggleMinimapCollapsed()')).toBe(true);
+    expect(await callSetup(page, 'setup.Rogue.isMinimapCollapsed()')).toBe(true);
+    expect(await callSetup(page, 'setup.Rogue.toggleMinimapCollapsed()')).toBe(false);
+    expect(await callSetup(page, 'setup.Rogue.isMinimapCollapsed()')).toBe(false);
+  });
+
+  test('endRogue resets the collapsed flag so the next run starts expanded', async () => {
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
+    await page.evaluate(() => SugarCube.setup.Rogue.toggleMinimapCollapsed());
+    expect(await callSetup(page, 'setup.Rogue.isMinimapCollapsed()')).toBe(true);
+
+    await page.evaluate(() => SugarCube.setup.Rogue.endRogue(true));
+    expect(await callSetup(page, 'setup.Rogue.isMinimapCollapsed()')).toBe(false);
+  });
 });
