@@ -136,7 +136,11 @@
 <</if>>
 <<if setup.Witch.canAskAboutIronclad()>>
 	<<linkreplace "@@.usebtn; Ask about Prison 'Ironclad'@@">>
-		@@.mc-speech; I went there, but I didn't find any paranormal activity. @@<br>
+		<<if hasVisited("Ironclad Prison")>>
+			@@.mc-speech; I went there, but I didn't find any paranormal activity. @@<br>
+		<<else>>
+			@@.mc-speech; What can you tell me about Ironclad prison? I've heard it's haunted, but I haven't been there yet. @@<br>
+		<</if>>
 		@@.notmc-speech; The thing is, some places have a special influence on ghosts. This includes the "Ironclad" prison. You won't be able to catch their attention unless you... fit in with the place. Perhaps you should think about how to become a part of this environment, how to make them notice you.@@<br>
 		@@.mc-thoughts; It seems like the ghosts are drawn to those who belong to this place... A specific outfit might help me blend in. Perhaps I could find something suitable at the Mall. @@<br>
 		<<run setup.Witch.markWardenOutfitHintOpened()>>

@@ -115,6 +115,31 @@ setup.HuntController = (function () {
 		return false;
 	}
 
+	/* { image, tip } override for the MC sidebar wardrobe strip,
+	   sourced from the active hunt's catalogue entry (classic
+	   HOUSE_CONFIG or rogue RogueHouses). Returns null when no hunt
+	   is active or the catalogue entry doesn't carry a sidebarOutfit
+	   override. Drives widgetMcStatus's fixed-outfit tile branch so
+	   the per-house override stays in the catalogue, not in the
+	   widget -- adding a new hunt-outfit-locked house is one
+	   catalogue field, no widget edits. */
+	function sidebarOutfit() {
+		var m = mode();
+		if (m === Mode.REGULAR) {
+			if (!setup.Ghosts.isHunting()) return null;
+			var h = setup.HauntedHouses.activeHouse();
+			return (h && h.sidebarOutfit) || null;
+		}
+		if (m === Mode.ROGUE) {
+			if (!setup.Rogue.isRogue()) return null;
+			var rid = setup.Rogue.staticHouseId();
+			if (!rid || !setup.RogueHouses) return null;
+			var rh = setup.RogueHouses.byId(rid);
+			return (rh && rh.sidebarOutfit) || null;
+		}
+		return null;
+	}
+
 	/* Cursed-hunt suppression -- classic-only concept (a frozen-room
 	   sub-flow on the witch contract). Rogue runs don't spawn cursed
 	   hunts, so the answer is always false there. */
@@ -517,6 +542,7 @@ setup.HuntController = (function () {
 		activeGhost:            activeGhost,
 		isGhostHere:            isGhostHere,
 		isHuntActive:           isHuntActive,
+		sidebarOutfit:          sidebarOutfit,
 		isCursedHuntActive:     isCursedHuntActive,
 		shouldStartRandomProwl:  shouldStartRandomProwl,
 		shouldTriggerSteal:     shouldTriggerSteal,

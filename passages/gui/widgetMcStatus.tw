@@ -5,17 +5,21 @@
    without rebuilding the surrounding container div. The hunt-active
    gate uses HuntController so the click-to-undress shortcut also
    fires inside rogue runs (mode === 'rogue'), not just classic
-   witch-contract hunts. */
+   witch-contract hunts. The fixed-outfit branch (Ironclad's warden
+   costume in either mode) is catalogue-driven via
+   HuntController.sidebarOutfit() -- adding a new fixed-outfit house
+   is one catalogue field, no widget edit. */
 <<widget "mcStatusBody">>
-	<<set _hunting to setup.HuntController.isHuntActive() and not setup.HauntedHouses.isIronclad()>>
+	<<set _outfit to setup.HuntController.sidebarOutfit()>>
+	<<set _hunting to setup.HuntController.isHuntActive() and not _outfit>>
 	<div id="inPainImg">
 	<<hovertip "Need to buy medicine">><<if setup.Mc.isPenalized()>>
 		<<image "ui/icons/pain.jpg">>
 	<</if>>
 	<</hovertip>>
 	</div>
-	<<if setup.HauntedHouses.isIronclad() and setup.Ghosts.isHunting()>>
-		<<hovertip "Wearing a sexy warden costume">><<image "ui/icons/warden1.png">>
+	<<if _outfit>>
+		<<hovertip _outfit.tip>><<image _outfit.image>>
 		<</hovertip>>
 	<<else>>
 		<div id="statusOuterTop">

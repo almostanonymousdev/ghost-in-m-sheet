@@ -82,7 +82,12 @@ setup.HauntedHouses = (function () {
 		their own warden-clothes mechanic). Defaults to true.
 		`allowsCompanions: false` opts a house out of the companion
 		hunt-plan flow (the companion mini-panel + per-tick events do
-		not engage there). Defaults to true; ironclad sets it false. */
+		not engage there). Defaults to true; ironclad sets it false.
+		`sidebarOutfit: { image, tip }` swaps the wardrobe-icon strip in
+		the MC sidebar for a single fixed-outfit tile while a hunt is
+		active in this house (e.g. ironclad's warden costume). The
+		widget reads it through HuntController.sidebarOutfit() so the
+		per-house override stays in the catalogue, not in the widget. */
 	var HOUSE_CONFIG = [
 		{
 			id: 'owaissa',
@@ -188,6 +193,10 @@ setup.HauntedHouses = (function () {
 				'BlockBCellA', 'BlockBCellB', 'BlockBCellC',
 				'reception', 'kitchen', 'hallway'
 			],
+			sidebarOutfit: {
+				image: 'ui/icons/warden1.png',
+				tip:   'Wearing a sexy warden costume'
+			},
 			exits: {
 				IroncladHallway: [
 					{ label: 'Reception', target: 'IroncladReception' },

@@ -209,11 +209,24 @@ test.describe('Witch — side quests', () => {
   });
 
   test('canAskAboutIronclad matches wardenClothesStage 0 or 1', async ({ game: page }) => {
+    await setVar(page, 'mc.lvl', 1);
     await setVar(page, 'wardenClothesStage', 0);
     expect(await callSetup(page, 'setup.Witch.canAskAboutIronclad()')).toBe(true);
     await setVar(page, 'wardenClothesStage', 1);
     expect(await callSetup(page, 'setup.Witch.canAskAboutIronclad()')).toBe(true);
     await setVar(page, 'wardenClothesStage', 2);
+    expect(await callSetup(page, 'setup.Witch.canAskAboutIronclad()')).toBe(false);
+  });
+
+  test('canAskAboutIronclad opens at lvl 4 even if MC has not visited the prison', async ({ game: page }) => {
+    await page.evaluate(() => { delete SugarCube.State.variables.wardenClothesStage; });
+    await setVar(page, 'mc.lvl', 3);
+    expect(await callSetup(page, 'setup.Witch.canAskAboutIronclad()')).toBe(false);
+    await setVar(page, 'mc.lvl', 4);
+    expect(await callSetup(page, 'setup.Witch.canAskAboutIronclad()')).toBe(true);
+    /* Once the warden outfit is owned the dialog stays closed regardless of level. */
+    await setVar(page, 'wardenClothesStage', 2);
+    await setVar(page, 'mc.lvl', 5);
     expect(await callSetup(page, 'setup.Witch.canAskAboutIronclad()')).toBe(false);
   });
 

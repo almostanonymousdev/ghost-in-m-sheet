@@ -141,6 +141,37 @@ test.describe('E2E parity: classic Ironclad vs Rogue Ironclad', () => {
     expect(rogueCompanions).toBe(false);
   });
 
+  test('both Ironclad houses carry the same sidebarOutfit override (warden costume tile)', async () => {
+    /* The MC sidebar wardrobe strip swaps in a fixed-outfit tile while
+       a hunt is active here -- catalogue-driven via
+       HuntController.sidebarOutfit(), not a per-house widget branch.
+       Both Ironclad catalogues pin the same warden costume override,
+       and the helper resolves to that override in either mode while
+       the corresponding hunt is in flight. */
+    const classicOutfit = await callSetup(page,
+      'setup.HauntedHouses.byId("ironclad").sidebarOutfit');
+    const rogueOutfit   = await callSetup(page,
+      'setup.RogueHouses.byId("rogue-ironclad").sidebarOutfit');
+    expect(classicOutfit).toEqual(rogueOutfit);
+    expect(classicOutfit && classicOutfit.image).toBeTruthy();
+    expect(classicOutfit && classicOutfit.tip).toBeTruthy();
+
+    /* No hunt active -> helper returns null in either mode. */
+    expect(await callSetup(page, 'setup.HuntController.sidebarOutfit()')).toBeNull();
+
+    /* Classic hunt at Ironclad -> helper returns the override. */
+    await startClassicIronclad(page, 'Shade');
+    expect(await callSetup(page, 'setup.HuntController.sidebarOutfit()'))
+      .toEqual(classicOutfit);
+
+    await tearDownAnyMode(page);
+
+    /* Rogue run at rogue-ironclad -> helper returns the same override. */
+    await startRogueIronclad(page, 'Shade');
+    expect(await callSetup(page, 'setup.HuntController.sidebarOutfit()'))
+      .toEqual(rogueOutfit);
+  });
+
   test('GhostStreet entry from classic Ironclad lands on Ironclad Prison', async () => {
     await goToPassage(page, 'GhostStreet');
     /* The card label is "Ironclad Prison" (matches HauntedHouses.byId.streetPassage). */
@@ -915,18 +946,45 @@ test.describe('E2E parity: classic Ironclad vs Rogue Ironclad', () => {
 
   /* ---------- shared body-background pipeline ---------- */
 
-  test('rogue body-background uses the same dark/lit asset URLs as classic Ironclad (per template)', async () => {
-    const templates = await callSetup(page, 'setup.HauntedHouses.byId("ironclad").rooms');
+  test('every rogue-ironclad template renders the same dark/lit URLs classic Ironclad pins on the matching passage', async () => {
+    /* Per-template URL parity: walk the rogue-ironclad floor plan and,
+       for every (template, dark/lit) pair, assert the rogue body-
+       background URL is byte-for-byte identical to the URL classic
+       Ironclad renders on the matching `Ironclad<Template>` passage.
+       The rogue-ironclad catalogue carries explicit `roomBackgrounds`
+       overrides for hallway + kitchen (since the global rogueRooms
+       defaults point those templates at non-prison art); cellblocks,
+       cells, and reception fall through to the prison-art globals.
+       Pinning every URL here is what makes "rogue prison uses the
+       same prison art as classic" a contract -- if a rogue room
+       silently picks up Owaissa's kitchen.jpg again, this test
+       fails on that template. */
+    const TEMPLATE_TO_PASSAGE = {
+      hallway:     'IroncladHallway',
+      kitchen:     'IroncladKitchen',
+      reception:   'IroncladReception',
+      BlockA:      'IroncladBlockA',
+      BlockB:      'IroncladBlockB',
+      BlockACellA: 'IroncladBlockACellA',
+      BlockACellB: 'IroncladBlockACellB',
+      BlockACellC: 'IroncladBlockACellC',
+      BlockBCellA: 'IroncladBlockBCellA',
+      BlockBCellB: 'IroncladBlockBCellB',
+      BlockBCellC: 'IroncladBlockBCellC'
+    };
+    const templates = await callSetup(page,
+      'setup.RogueHouses.planFor("rogue-ironclad").rooms.map(r => r.template)');
     for (const t of templates) {
-      const dark = await callSetup(page, `setup.Styles.bgUrlForTemplate(${JSON.stringify(t)}, true)`);
-      const lit  = await callSetup(page, `setup.Styles.bgUrlForTemplate(${JSON.stringify(t)}, false)`);
-      expect(typeof dark).toBe('string');
-      expect(typeof lit).toBe('string');
-      /* Ironclad templates that share a single background asset
-         (cells, blocks) may legitimately resolve dark === lit. The
-         essential parity is just that both lookups return strings;
-         skipping the dark != lit assertion here makes Ironclad
-         tolerant of single-variant cell backgrounds. */
+      const passage = TEMPLATE_TO_PASSAGE[t];
+      expect(passage, `no classic passage mapping for template ${t}`).toBeTruthy();
+      const classic = await callSetup(page,
+        `setup.Styles.rooms[${JSON.stringify(passage)}]`);
+      const rogueDark = await callSetup(page,
+        `setup.Styles.bgUrlForTemplate(${JSON.stringify(t)}, true, "rogue-ironclad")`);
+      const rogueLit  = await callSetup(page,
+        `setup.Styles.bgUrlForTemplate(${JSON.stringify(t)}, false, "rogue-ironclad")`);
+      expect(rogueDark, `${t} dark URL`).toBe(classic.dark);
+      expect(rogueLit,  `${t} lit URL`).toBe(classic.light);
     }
   });
 

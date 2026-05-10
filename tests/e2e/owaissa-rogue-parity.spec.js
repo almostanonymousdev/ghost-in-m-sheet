@@ -933,26 +933,37 @@ test.describe('E2E parity: classic Owaissa vs Rogue Owaissa', () => {
 
   /* ---------- shared body-background pipeline ---------- */
 
-  test('rogue body-background uses the same dark/lit asset URLs as classic Owaissa', async () => {
-    /* The rogue body-background pipeline reads template+dark/lit
-       from setup.Styles.bgUrlForTemplate. Classic Owaissa's room
-       passages call into the same helper via roomShell. So both
-       modes resolve "kitchen + dark" to the same URL. */
-    const kitchenDark = await callSetup(page,
-      'setup.Styles.bgUrlForTemplate("kitchen", true)');
-    const kitchenLit  = await callSetup(page,
-      'setup.Styles.bgUrlForTemplate("kitchen", false)');
-    expect(kitchenDark).toBeTruthy();
-    expect(kitchenLit).toBeTruthy();
-    expect(kitchenDark).not.toBe(kitchenLit);
-
-    /* Same template should resolve to the same URL irrespective of
-       which mode loaded the room. */
-    const hallwayDark1 = await callSetup(page,
-      'setup.Styles.bgUrlForTemplate("hallway", true)');
-    const hallwayDark2 = await callSetup(page,
-      'setup.Styles.bgUrlForTemplate("hallway", true)');
-    expect(hallwayDark1).toBe(hallwayDark2);
+  test('every rogue-owaissa template renders the same dark/lit URLs classic Owaissa pins on the matching passage', async () => {
+    /* Per-template URL parity: walk the rogue-owaissa floor plan and,
+       for every (template, dark/lit) pair, assert the rogue body-
+       background URL is byte-for-byte identical to the URL classic
+       Owaissa renders on the matching `Owaissa<Template>` passage.
+       Pinning every classic asset is what makes "rogue uses the same
+       house art" a contract instead of a coincidence -- if a rogue
+       template ever drifts to a different asset family, this test
+       fails on that template. */
+    const TEMPLATE_TO_PASSAGE = {
+      hallway:    'OwaissaHallway',
+      kitchen:    'OwaissaKitchen',
+      bathroom:   'OwaissaBathroom',
+      bedroom:    'OwaissaBedroom',
+      livingroom: 'OwaissaLivingroom'
+    };
+    const templates = await callSetup(page,
+      'setup.RogueHouses.planFor("rogue-owaissa").rooms.map(r => r.template)');
+    for (const t of templates) {
+      const passage = TEMPLATE_TO_PASSAGE[t];
+      expect(passage, `no classic passage mapping for template ${t}`).toBeTruthy();
+      const classic = await callSetup(page,
+        `setup.Styles.rooms[${JSON.stringify(passage)}]`);
+      const rogueDark = await callSetup(page,
+        `setup.Styles.bgUrlForTemplate(${JSON.stringify(t)}, true, "rogue-owaissa")`);
+      const rogueLit  = await callSetup(page,
+        `setup.Styles.bgUrlForTemplate(${JSON.stringify(t)}, false, "rogue-owaissa")`);
+      expect(rogueDark, `${t} dark URL`).toBe(classic.dark);
+      expect(rogueLit,  `${t} lit URL`).toBe(classic.light);
+      expect(rogueDark).not.toBe(rogueLit);
+    }
   });
 
   /* ---------- snapGhostToCurrentRoom dispatch parity ---------- */

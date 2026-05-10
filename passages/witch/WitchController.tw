@@ -167,10 +167,16 @@ setup.Witch = (function () {
 		},
 
 		// --- Warden/Ironclad hint --------------------------------
+		/* Available once the MC reaches the prison's level gate (4),
+		   even before she's stepped inside, so the witch can prime the
+		   warden-outfit lead. Closes again only after the outfit is
+		   bought (OUTFIT_OWNED). */
 		canAskAboutIronclad: function () {
 			var s = sv().wardenClothesStage;
 			var W = setup.WardenClothesStage;
-			return s === W.HINT_NOT_OFFERED || s === W.HINT_OFFERED;
+			if (s === W.OUTFIT_OWNED) return false;
+			if (s === W.HINT_NOT_OFFERED || s === W.HINT_OFFERED) return true;
+			return setup.Mc.lvl() >= 4;
 		},
 		// --- Weaken-the-ghost quest ------------------------------
 		canOfferWeakenQuest: function () {

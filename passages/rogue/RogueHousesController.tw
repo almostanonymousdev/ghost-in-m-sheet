@@ -29,6 +29,25 @@
  *                      modifier deck entirely -- the lobby renders
  *                      no modifier list and the run carries no
  *                      payout multiplier from modifiers.
+ *   description     -- optional flavor blurb shown on the RogueStart
+ *                      lobby in place of the generic
+ *                      "A fresh hunt is waiting." line.
+ *   roomBackgrounds -- optional per-template background override map:
+ *                        { <templateId>: { light, dark }, ... }
+ *                      bgUrlForTemplate consults this before falling
+ *                      back to the global rogueRooms map. Lets a
+ *                      static rogue house pin its rooms to its
+ *                      house's classic art when the global default
+ *                      points at a different house's variant
+ *                      (e.g. rogue-elm's kitchen needs Elm's
+ *                      kitchen.jpg, not the Owaissa-default global).
+ *   sidebarOutfit   -- optional { image, tip } override for the MC
+ *                      sidebar wardrobe strip while a run is in
+ *                      flight here. Read by HuntController.sidebarOutfit()
+ *                      and rendered as a single fixed-outfit tile by
+ *                      widgetMcStatus (matches the classic-house
+ *                      catalogue's sidebarOutfit field, used by
+ *                      Ironclad's warden costume).
  *   plan            -- frozen floor-plan blueprint:
  *                        { rooms: [{ id, template }, ...],
  *                          edges: [[a, b], ...] }
@@ -150,6 +169,19 @@ setup.RogueHouses = (function () {
 			levelGate:        3,
 			allowsCompanions: true,
 			modifierCount:    0,
+			/* Pin rogue-elm's downstairs templates to Elm's classic art
+			   so the rogue body-background pipeline shows the Elm
+			   variants instead of the Owaissa-defaulted globals in
+			   setup.Styles.rogueRooms. Upstairs templates (hallwayUpstairs,
+			   bathroomTwo, bedroomTwo, nursery) and basement already
+			   match Elm in the global map, so they don't need an
+			   override. */
+			roomBackgrounds: Object.freeze({
+				hallway:  Object.freeze({ light: 'assets/scenes/room/elm/hallway.jpg',  dark: 'assets/scenes/room/elm/hallway-dark.jpg'  }),
+				kitchen:  Object.freeze({ light: 'assets/scenes/room/elm/kitchen.jpg',  dark: 'assets/scenes/room/elm/kitchen-dark.jpg'  }),
+				bathroom: Object.freeze({ light: 'assets/scenes/room/elm/bathroom.jpg', dark: 'assets/scenes/room/elm/bathroom-dark.jpg' }),
+				bedroom:  Object.freeze({ light: 'assets/scenes/room/elm/bedroom.jpg',  dark: 'assets/scenes/room/elm/bedroom-dark.jpg'  })
+			}),
 			plan:             ELM_PLAN
 		}),
 		Object.freeze({
@@ -170,6 +202,21 @@ setup.RogueHouses = (function () {
 			allowsCompanions: false,
 			runsStealClothes: false,
 			modifierCount:    0,
+			sidebarOutfit:    Object.freeze({
+				image: 'ui/icons/warden1.png',
+				tip:   'Wearing a sexy warden costume'
+			}),
+			description:      "Ironclad Prison, once a symbol of justice, now stands abandoned, its long and storied past cloaked in shadows. Whispers speak of restless spirits wandering its halls — a chilling reminder of the darkness it once held.",
+			/* Pin rogue-ironclad's hallway and kitchen to the prison's
+			   classic art (entrance.webp / ironclad/kitchen.webp) so
+			   every room in the rogue plan renders the same scenery
+			   the player sees inside classic Ironclad. The cellblock
+			   templates (reception, BlockA/B, BlockA/B cells) already
+			   resolve to the prison art via the global rogueRooms map. */
+			roomBackgrounds: Object.freeze({
+				hallway: Object.freeze({ light: 'assets/scenes/room/ironclad/entrance.webp', dark: 'assets/scenes/room/ironclad/entrance-dark.webp' }),
+				kitchen: Object.freeze({ light: 'assets/scenes/room/ironclad/kitchen.webp',  dark: 'assets/scenes/room/ironclad/kitchen-dark.webp'  })
+			}),
 			gate:             function () {
 				return setup.Witch && setup.Witch.wardenClothesStage
 					&& setup.Witch.wardenClothesStage()
@@ -212,13 +259,24 @@ setup.RogueHouses = (function () {
 		return !!(h && h.allowsCompanions);
 	}
 
+	/* Per-template { light, dark } background override stamped on the
+	   catalogue entry, or null when the house doesn't override that
+	   template. setup.Styles.bgUrlForTemplate consults this before the
+	   global rogueRooms map. */
+	function backgroundOverride(id, templateId) {
+		var h = byId(id);
+		if (!h || !h.roomBackgrounds) return null;
+		return h.roomBackgrounds[templateId] || null;
+	}
+
 	return {
-		OWNED_VARS:       Object.freeze([]),
-		CATALOGUE:        CATALOGUE,
-		list:             list,
-		byId:             byId,
-		ids:              ids,
-		planFor:          planFor,
-		allowsCompanions: allowsCompanions
+		OWNED_VARS:        Object.freeze([]),
+		CATALOGUE:         CATALOGUE,
+		list:              list,
+		byId:              byId,
+		ids:               ids,
+		planFor:           planFor,
+		allowsCompanions:  allowsCompanions,
+		backgroundOverride: backgroundOverride
 	};
 })();

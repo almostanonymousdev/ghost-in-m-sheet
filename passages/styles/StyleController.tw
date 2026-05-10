@@ -137,8 +137,19 @@ setup.Styles = (function () {
 		 * Rogue rooms have no per-room light state, so callers
 		 * pass `dark = true` explicitly when they want the dark
 		 * variant. Returns null for templates without art.
+		 *
+		 * Optional `staticHouseId` lets a static-plan rogue house
+		 * (setup.RogueHouses) override the global default with its
+		 * own house art -- so rogue-elm's hallway pulls Elm's
+		 * hallway.jpg instead of the Owaissa default and rogue-
+		 * ironclad's hallway pulls the prison entrance.
 		 */
-		bgUrlForTemplate: function (templateId, dark) {
+		bgUrlForTemplate: function (templateId, dark, staticHouseId) {
+			if (staticHouseId && setup.RogueHouses
+					&& typeof setup.RogueHouses.backgroundOverride === 'function') {
+				var override = setup.RogueHouses.backgroundOverride(staticHouseId, templateId);
+				if (override) return dark ? override.dark : override.light;
+			}
 			var r = rogueRooms[templateId];
 			if (!r) return null;
 			return dark ? r.dark : r.light;

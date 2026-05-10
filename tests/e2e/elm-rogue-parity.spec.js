@@ -851,21 +851,40 @@ test.describe('E2E parity: classic Elm vs Rogue Elm', () => {
 
   /* ---------- shared body-background pipeline ---------- */
 
-  test('rogue body-background uses the same dark/lit asset URLs as classic Elm (per template)', async () => {
-    /* Walk every Elm template through setup.Styles.bgUrlForTemplate
-       in both dark and lit modes. The pipeline is shared, so both
-       modes should resolve the same template + light state to the
-       same URL. */
-    const templates = await callSetup(page, 'setup.HauntedHouses.byId("elm").rooms');
+  test('every rogue-elm template renders the same dark/lit URLs classic Elm pins on the matching passage', async () => {
+    /* Per-template URL parity: walk the rogue-elm floor plan and, for
+       every (template, dark/lit) pair, assert the rogue body-background
+       URL is byte-for-byte identical to the URL classic Elm renders on
+       the matching `Elm<Template>` passage. Catches the bug where the
+       global rogueRooms map points a template at a different house's
+       asset (e.g. an unfilled rogue-elm override would pull Owaissa's
+       kitchen art for "kitchen") -- the rogue-elm catalogue's
+       `roomBackgrounds` override is what keeps these in sync. */
+    const TEMPLATE_TO_PASSAGE = {
+      hallway:         'ElmHallway',
+      kitchen:         'ElmKitchen',
+      bathroom:        'ElmBathroom',
+      bedroom:         'ElmBedroom',
+      basement:        'ElmBasement',
+      hallwayUpstairs: 'ElmHallwayUpstairs',
+      bathroomTwo:     'ElmBathroomTwo',
+      bedroomTwo:      'ElmBedroomTwo',
+      nursery:         'ElmNursery'
+    };
+    const templates = await callSetup(page,
+      'setup.RogueHouses.planFor("rogue-elm").rooms.map(r => r.template)');
     for (const t of templates) {
-      const dark = await callSetup(page, `setup.Styles.bgUrlForTemplate(${JSON.stringify(t)}, true)`);
-      const lit  = await callSetup(page, `setup.Styles.bgUrlForTemplate(${JSON.stringify(t)}, false)`);
-      expect(typeof dark).toBe('string');
-      expect(typeof lit).toBe('string');
-      /* The dark/lit pair must differ; if a template lacked a
-         dark variant, both lookups would return the same URL and a
-         lit room would silently wash through unchanged. */
-      expect(dark).not.toBe(lit);
+      const passage = TEMPLATE_TO_PASSAGE[t];
+      expect(passage, `no classic passage mapping for template ${t}`).toBeTruthy();
+      const classic = await callSetup(page,
+        `setup.Styles.rooms[${JSON.stringify(passage)}]`);
+      const rogueDark = await callSetup(page,
+        `setup.Styles.bgUrlForTemplate(${JSON.stringify(t)}, true, "rogue-elm")`);
+      const rogueLit  = await callSetup(page,
+        `setup.Styles.bgUrlForTemplate(${JSON.stringify(t)}, false, "rogue-elm")`);
+      expect(rogueDark, `${t} dark URL`).toBe(classic.dark);
+      expect(rogueLit,  `${t} lit URL`).toBe(classic.light);
+      expect(rogueDark).not.toBe(rogueLit);
     }
   });
 
