@@ -334,9 +334,11 @@ test.describe('Floor-plan generator', () => {
             fails.push(`seed ${seed}: loot ${k} placed in hallway`);
           }
         }
-        // Spawn must be a real non-hallway room.
-        if (!ids.has(plan.spawnRoomId) || plan.spawnRoomId === 'room_0') {
-          fails.push(`seed ${seed}: spawn ${plan.spawnRoomId} not a non-hallway room`);
+        // Spawn must resolve to a real room id (any room, including
+        // the hallway -- classic mode lets the ghost lair in the
+        // hallway and the rogue mirror does the same).
+        if (!ids.has(plan.spawnRoomId)) {
+          fails.push(`seed ${seed}: spawn ${plan.spawnRoomId} not a real room`);
         }
         // Boss room (when set) must also be a real non-hallway room.
         if (plan.bossRoomId !== null) {

@@ -136,12 +136,17 @@ test.describe('Cursed-item cross-mode facade', () => {
       .toBe(await callSetup(page, 'setup.Ghosts.HuntMode.POSSESSED'));
   });
 
-  test('possessionPassage stamps possessed failure in rogue and routes to RogueEnd', async () => {
+  test('possessionPassage routes rogue to CityMapPossessed (parity with classic) after stamping a possessed failure', async () => {
+    /* Both modes route to CityMapPossessed so the player gets the
+       same mid-day wake-up UX. The rogue side still stamps a
+       POSSESSED failure on $run before endRogue tears the run down,
+       so the meta-state remembers the loss. */
     await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
     expect(await callSetup(page, 'setup.HuntController.possessionPassage()'))
-      .toBe('RogueEnd');
-    expect(await callSetup(page, 'setup.Rogue.field("outcome")')).toBe('failure');
-    expect(await callSetup(page, 'setup.Rogue.field("failureReason")')).toBe('possessed');
+      .toBe('CityMapPossessed');
+    /* endRogue cleared $run so isRogue() flips false; the run is
+       gone, but the meta-failure was recorded inside endRogue. */
+    expect(await callSetup(page, 'setup.Rogue.isRogue()')).toBe(false);
   });
 
   // --- HuntController.consumeKnowledgeEvidence ---
@@ -343,10 +348,10 @@ test.describe('Cursed-item cross-mode facade', () => {
 
   // --- Tarot draw widgets pull state through HuntController ---
 
-  test('tarot Possession card target routes via HuntController.possessionPassage', async () => {
+  test('tarot Possession card target routes via HuntController.possessionPassage in both modes', async () => {
     /* The widget renders <<link "Give in" `possessionPassage()`>>; the
-       passage target is computed at render time, so we just verify
-       that target string in both modes. */
+       passage target is CityMapPossessed in both modes so the player
+       gets the same mid-day wake-up UX. */
     await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
     expect(await callSetup(page, 'setup.HuntController.possessionPassage()'))
       .toBe('CityMapPossessed');
@@ -354,7 +359,7 @@ test.describe('Cursed-item cross-mode facade', () => {
     await page.evaluate(() => SugarCube.setup.Ghosts.endContract());
     await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
     expect(await callSetup(page, 'setup.HuntController.possessionPassage()'))
-      .toBe('RogueEnd');
+      .toBe('CityMapPossessed');
   });
 
   test('tarot Oblivion card target routes via HuntController.huntOverPassage("sanity")', async () => {

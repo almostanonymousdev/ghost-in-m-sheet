@@ -189,13 +189,17 @@ test.describe('Rogue Ironclad parity', () => {
     }
   });
 
-  test('FloorPlan.generate with the rogue-ironclad plan keeps spawn off the hallway', async () => {
+  test('FloorPlan.generate with the rogue-ironclad plan picks a spawn from the full room list', async () => {
+    /* Spawn picks uniformly across all rooms (hallway eligible),
+       mirroring classic mode where the ghost can lair in the entry
+       hallway. Pin only that the picked spawn is a real room id. */
     const plan = await callSetup(page, 'setup.RogueHouses.planFor("rogue-ironclad")');
+    const allIds = plan.rooms.map(r => r.id);
     for (let seed = 1; seed <= 20; seed++) {
       const fp = await page.evaluate(({ s, p }) =>
         SugarCube.setup.FloorPlan.generate(s, { staticPlan: p }),
         { s: seed, p: plan });
-      expect(fp.spawnRoomId).not.toBe('room_0');
+      expect(allIds).toContain(fp.spawnRoomId);
     }
   });
 
@@ -211,18 +215,17 @@ test.describe('Rogue Ironclad parity', () => {
     expect(house.id).toBe('rogue-ironclad');
   });
 
-  test('rogue-ironclad inherits the default modifier deck (catalogue does not pin modifierCount)', async () => {
-    /* Owaissa and Elm pin modifierCount: 0 on their catalogue
-       entries to suppress modifiers. Ironclad omits the field, so
-       it falls through to the procedural default of 2 modifiers
-       per run. The catalogue resolution is data-driven -- no
+  test('rogue-ironclad runs draft no modifiers (catalogue modifierCount: 0)', async () => {
+    /* Like rogue-owaissa / rogue-elm, the rogue-ironclad catalogue
+       entry pins modifierCount: 0 so the prison hunt stays off the
+       modifier deck. The catalogue resolution is data-driven -- no
        per-house branch in startRogue. */
-    const cat = await callSetup(page, 'setup.RogueHouses.byId("rogue-ironclad")');
-    expect(cat.modifierCount).toBeUndefined();
+    expect(await callSetup(page,
+      'setup.RogueHouses.byId("rogue-ironclad").modifierCount')).toBe(0);
     await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
       seed: 1, staticHouseId: 'rogue-ironclad'
     }));
-    expect(await callSetup(page, 'setup.Rogue.modifiers()')).toHaveLength(2);
+    expect(await callSetup(page, 'setup.Rogue.modifiers()')).toEqual([]);
   });
 
   test('rogue-ironclad runs always have the same room set across seeds', async () => {

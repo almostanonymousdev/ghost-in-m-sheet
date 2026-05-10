@@ -141,8 +141,10 @@ setup.HuntController = (function () {
 	/* Steal-clothes roll. The wardrobe / stash side-effects are
 	   mode-agnostic, so once a steal fires the StealClothes cascade
 	   works in either mode. Ironclad opts out via runsStealClothes
-	   so its event chain never invokes the steal step. Rogue
-	   answers true so the steal cascade fires. */
+	   in either mode -- the classic catalogue (HOUSE_CONFIG) and the
+	   rogue catalogue (RogueHouses) carry the same flag, so the
+	   prison hunt skips the steal step regardless of which lifecycle
+	   it ran through. */
 	function shouldTriggerSteal() {
 		var m = mode();
 		if (m === Mode.REGULAR) {
@@ -150,7 +152,14 @@ setup.HuntController = (function () {
 			if (hh && hh.runsStealClothes === false) return false;
 			return setup.HauntedHouses.shouldTriggerSteal();
 		}
-		if (m === Mode.ROGUE) return setup.HauntedHouses.shouldTriggerSteal();
+		if (m === Mode.ROGUE) {
+			var rid = setup.Rogue.staticHouseId();
+			if (rid && setup.RogueHouses) {
+				var rh = setup.RogueHouses.byId(rid);
+				if (rh && rh.runsStealClothes === false) return false;
+			}
+			return setup.HauntedHouses.shouldTriggerSteal();
+		}
 		return false;
 	}
 
@@ -402,15 +411,14 @@ setup.HuntController = (function () {
 
 	/* "Get me out of here" exit target -- the goto used by the
 	   Monkey Paw leave wish. Classic returns the active house's
-	   street passage so the MC walks back outside; rogue stamps an
-	   ABANDON failure on the run and returns RogueEnd so the leave
-	   wish forfeits the run cleanly. */
+	   street passage so the MC walks back outside (read straight
+	   off the catalogue rather than per-house if-isElm branches);
+	   rogue stamps an ABANDON failure on the run and returns
+	   RogueEnd so the leave wish forfeits the run cleanly. */
 	function streetExitPassage() {
 		var m = mode();
 		if (m === Mode.REGULAR) {
-			if (setup.HauntedHouses.isElm()) return 'Elm Street';
-			if (setup.HauntedHouses.isOwaissa()) return 'Owaissa Street';
-			return null;
+			return setup.HauntedHouses.activeStreetPassage();
 		}
 		if (m === Mode.ROGUE) {
 			setup.Rogue.markFailure(setup.Rogue.FailureReason.ABANDON);
@@ -420,12 +428,16 @@ setup.HuntController = (function () {
 	}
 
 	/* Mode-aware "the MC has been possessed" target -- the goto
-	   used by the Tarot Possession card. Classic flips $hunt.mode
-	   to POSSESSED, jumps to a daytime hour, and routes to
-	   CityMapPossessed; rogue stamps a POSSESSED failure on the
-	   run and routes to RogueEnd. The widget caller wraps the link
-	   around the returned passage so the imperative side effects
-	   fire as part of the link click. */
+	   used by the Tarot Possession card. Both modes route to
+	   CityMapPossessed so the player gets the same mid-day
+	   wake-up-on-the-street UX after a possession. Classic flips
+	   $hunt.mode to POSSESSED; rogue stamps a POSSESSED failure on
+	   the run and ends it before the player lands on CityMapPossessed
+	   (so a fresh hunt isn't bleeding into the rogue payout summary).
+	   Both modes jump to a daytime hour so the city-map render makes
+	   sense after the possession. The widget caller wraps the link
+	   around the returned passage so the imperative side effects fire
+	   as part of the link click. */
 	function possessionPassage() {
 		var m = mode();
 		if (m === Mode.REGULAR) {
@@ -435,7 +447,9 @@ setup.HuntController = (function () {
 		}
 		if (m === Mode.ROGUE) {
 			setup.Rogue.markFailure(setup.Rogue.FailureReason.POSSESSED);
-			return "RogueEnd";
+			setup.Rogue.endRogue(false);
+			setup.Time.setHours(Math.floor(Math.random() * (20 - 12 + 1)) + 12);
+			return "CityMapPossessed";
 		}
 		return null;
 	}

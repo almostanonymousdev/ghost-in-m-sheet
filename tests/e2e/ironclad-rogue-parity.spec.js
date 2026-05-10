@@ -6,17 +6,18 @@
  * routed through the rogue lifecycle ($run, ectoplasm payout,
  * modifiers draft) rather than the witch-contract bundle ($hunt).
  *
- * Catalogue divergences from the Owaissa / Elm pattern:
+ * Catalogue divergences from the Owaissa / Elm pattern (Ironclad-specific):
  *   - Both Ironclad houses opt OUT of companions (allowsCompanions
  *     is false on both catalogue entries -- the prison hunt has its
  *     own warden-outfit mechanic and no companion choreography).
- *   - Classic Ironclad opts out of the steal-clothes per-tick step
- *     (runsStealClothes: false). Rogue runs always answer through
- *     the wardrobe predicate, so the steal-step dispatch differs.
- *   - Classic Ironclad's "Go inside" link gates on the warden outfit
- *     (wardenClothesStage === OUTFIT_OWNED). Rogue does not require
- *     the outfit -- the rogue catalogue card routes straight into
- *     the run.
+ *   - Both Ironclad houses opt OUT of the steal-clothes per-tick step
+ *     (runsStealClothes: false on both classic HOUSE_CONFIG and rogue
+ *     RogueHouses entries). The prison hunt skips the steal cascade
+ *     in either mode.
+ *   - Both modes gate entry on the warden outfit
+ *     (wardenClothesStage === OUTFIT_OWNED). Classic gates the
+ *     "Go inside" link on the per-house street card; rogue gates the
+ *     GhostStreet card itself via the catalogue's `gate` predicate.
  *
  * The intent of this spec is to walk a hunt step-by-step in both
  * modes and pin down (a) the shared subsystems (per-tick chain,
@@ -86,6 +87,12 @@ test.describe('E2E parity: classic Ironclad vs Rogue Ironclad', () => {
 
   async function startRogueIronclad(page, ghostName, seed = 1) {
     await page.evaluate(({ name, s }) => {
+      /* Pin the warden outfit so the rogue-ironclad catalogue gate
+         resolves to true. Tests that exercise the GhostStreet card
+         click rely on the same flag to make the card clickable. */
+      SugarCube.setup.Witch.setWardenClothesStage(
+        SugarCube.setup.WardenClothesStage.OUTFIT_OWNED
+      );
       SugarCube.setup.Rogue.startRogue({
         seed: s, staticHouseId: 'rogue-ironclad'
       });
@@ -144,11 +151,37 @@ test.describe('E2E parity: classic Ironclad vs Rogue Ironclad', () => {
   });
 
   test('GhostStreet entry from Rogue Ironclad lands on RogueStart with staticHouseId stamped', async () => {
+    /* The rogue-ironclad card gates on wardenClothesStage === OUTFIT_OWNED;
+       pin the stage so the link surfaces clickably. */
+    await page.evaluate(() => {
+      SugarCube.setup.Witch.setWardenClothesStage(
+        SugarCube.setup.WardenClothesStage.OUTFIT_OWNED
+      );
+    });
     await goToPassage(page, 'GhostStreet');
     await page.locator('.passage').locator('.housecard').getByText('Rogue Ironclad')
       .first().click();
     await page.waitForFunction(() => SugarCube.State.passage === 'RogueStart');
     expect(await callSetup(page, 'setup.Rogue.staticHouseId()')).toBe('rogue-ironclad');
+  });
+
+  test('Rogue Ironclad card hides behind the warden-outfit gate when stage != OUTFIT_OWNED', async () => {
+    /* Without OUTFIT_OWNED the catalogue's `gate` predicate returns
+       false; the rogueStaticHouseCard widget swaps the link for the
+       gate message ("Warden outfit required"). */
+    await page.evaluate(() => {
+      const Stages = SugarCube.setup.WardenClothesStage;
+      SugarCube.setup.Witch.setWardenClothesStage(Stages.HINT_NOT_OFFERED);
+    });
+    await goToPassage(page, 'GhostStreet');
+    const gatedCard = page.locator('.passage').locator('.housecard')
+      .filter({ hasText: 'Warden outfit required' });
+    await expect(gatedCard).toHaveCount(1);
+    /* With the gate closed the catalogue label is not rendered as a
+       clickable link. */
+    const liveLink = page.locator('.passage').locator('.housecard a')
+      .filter({ hasText: 'Rogue Ironclad' });
+    await expect(liveLink).toHaveCount(0);
   });
 
   /* ---------- floor-plan parity ---------- */
@@ -373,17 +406,18 @@ test.describe('E2E parity: classic Ironclad vs Rogue Ironclad', () => {
     expect(await deltaForMode('rogue')).toBeGreaterThan(0);
   });
 
-  /* ---------- steal-clothes opt-out divergence ---------- */
+  /* ---------- steal-clothes opt-out parity ---------- */
 
-  test('shouldTriggerSteal() is FALSE in classic Ironclad (runsStealClothes opt-out), TRUE in rogue Ironclad', async () => {
-    /* Classic Ironclad's HOUSE_CONFIG sets runsStealClothes:false;
-       the steal-step gate in HuntController returns false there.
-       The rogue runs always answer through the wardrobe predicate
-       (no per-house opt-out in rogue), so a rogue Ironclad steal
-       can trigger if the predicate fires.
+  test('shouldTriggerSteal() is FALSE in BOTH Ironclad modes (runsStealClothes opt-out on both catalogues)', async () => {
+    /* Both Ironclad catalogue entries carry runsStealClothes:false.
+       Classic reads it off setup.HauntedHouses.activeHouse(); rogue
+       reads it off setup.RogueHouses.byId(staticHouseId). Either
+       way, HuntController.shouldTriggerSteal short-circuits to false
+       so the prison hunt skips the steal step in either mode.
 
-       Pre-stamp $stealChance=100 + a wearable garment so the
-       predicate WOULD fire if the gate was open. */
+       Pre-stamp $stealChance=100 so the predicate WOULD fire if the
+       gate was open -- pinning the catalogue opt-out, not the
+       wardrobe predicate. */
     async function gateFor(mode) {
       await tearDownAnyMode(page);
       if (mode === 'classic') await startClassicIronclad(page, 'Shade');
@@ -394,11 +428,7 @@ test.describe('E2E parity: classic Ironclad vs Rogue Ironclad', () => {
       return await callSetup(page, 'setup.HuntController.shouldTriggerSteal()');
     }
     expect(await gateFor('classic')).toBe(false);
-    /* Rogue answers true regardless of which static house the run
-       is bound to -- the catalogue carries no runsStealClothes flag
-       on the rogue side, and HuntController.shouldTriggerSteal
-       routes rogue mode straight through the wardrobe predicate. */
-    expect(await gateFor('rogue')).toBe(true);
+    expect(await gateFor('rogue')).toBe(false);
   });
 
   /* ---------- ghost drift parity ---------- */
@@ -430,10 +460,11 @@ test.describe('E2E parity: classic Ironclad vs Rogue Ironclad', () => {
       return { before, afterId, afterTemplate: after && after.template };
     });
     expect(rogueResult.afterId).not.toBe(rogueResult.before);
-    /* Hallway is never a valid drift destination in rogue; classic
-       Ironclad's rooms list also includes hallway as the entry hub
-       (drift CAN land there in classic) -- documented divergence. */
-    expect(rogueResult.afterTemplate).not.toBe('hallway');
+    /* Both classic and rogue draw from the full room list, so the
+       hallway is a valid drift destination in either mode. The
+       drifted-to template just needs to be defined; no per-mode
+       hallway exclusion. */
+    expect(typeof rogueResult.afterTemplate).toBe('string');
   });
 
   test('Goryo (staysInOneRoom) never drifts in either mode', async () => {
@@ -609,12 +640,8 @@ test.describe('E2E parity: classic Ironclad vs Rogue Ironclad', () => {
     await startRogueIronclad(page, 'Shade');
     await page.evaluate(() => SugarCube.setup.Rogue.markSuccess());
     await goToPassage(page, 'RogueEnd');
-    /* rogue-ironclad has no modifierCount override -> default 2
-       drafted modifiers; payout = 10 * payoutMultiplier(). Compute
-       the expectation off the live multiplier instead of pinning a
-       constant so a future modifier-roster change doesn't invalidate
-       the assertion. */
-    expect(await getVar(page, 'ectoplasm')).toBeGreaterThanOrEqual(10);
+    /* rogue-ironclad has modifierCount=0, so multiplier=1 -> 10 mL on success. */
+    expect(await getVar(page, 'ectoplasm')).toBe(10);
   });
 
   /* ---------- room nav UI parity ---------- */
@@ -693,6 +720,68 @@ test.describe('E2E parity: classic Ironclad vs Rogue Ironclad', () => {
     }
     expect(await survivalOptionsForMode('classic')).toBe(true);
     expect(await survivalOptionsForMode('rogue')).toBe(true);
+  });
+
+  /* ---------- Succubus / special-event parity ---------- */
+
+  test('Summon-the-succubus link surfaces on GhostHuntEvent identically in both modes when timer >= 1', async () => {
+    /* The succubus link gates on setup.HauntedHouses.succubusEventTimer()
+       (read off the global Home succubus bundle, not on $hunt or $run),
+       so once the timer is >= 1 the option must surface in either mode.
+       Pre-stamp the timer so the link always renders. */
+    async function succubusVisibleFor(mode) {
+      await tearDownAnyMode(page);
+      if (mode === 'classic') await startClassicIronclad(page, 'Shade');
+      else                    await startRogueIronclad(page, 'Shade');
+      await page.evaluate(() => {
+        SugarCube.State.variables.mc.sanity = 80;
+        SugarCube.State.variables.mc.energy = 4;
+        if (!SugarCube.State.variables.succubusEvent) SugarCube.State.variables.succubusEvent = {};
+        SugarCube.State.variables.succubusEvent.eventTimer = 3;
+      });
+      await goToPassage(page, 'GhostHuntEvent');
+      return await page.locator('.passage')
+        .getByText('Summon the succubus', { exact: true }).count();
+    }
+    expect(await succubusVisibleFor('classic')).toBeGreaterThanOrEqual(1);
+    expect(await succubusVisibleFor('rogue')).toBeGreaterThanOrEqual(1);
+  });
+
+  test('rollProwlEvent picks the same body-part video for the same Math.random seed in both modes', async () => {
+    /* The per-tick prowl event roll dispatches off setup.Ghosts.active()
+       (which routes through HuntController.activeGhost), so a Math.random
+       pin should produce the same body-part choice regardless of mode.
+       Pin the random sequence and read the chosen video back off
+       $videoEvent. */
+    async function rolledVideoFor(mode) {
+      await tearDownAnyMode(page);
+      if (mode === 'classic') await startClassicIronclad(page, 'Shade');
+      else                    await startRogueIronclad(page, 'Shade');
+      await page.evaluate(() => {
+        SugarCube.State.variables.mc.sanity = 80;
+        SugarCube.State.variables.mc.lust   = 0;
+        SugarCube.State.variables.videoEvent = '';
+        var calls = 0;
+        Math.random = function () {
+          /* seq drives rollProwlEvent: chance=0 (low enough to clear
+             every lust-tier sanity threshold), bansheeRoll=6,
+             ctRoll=6 (both !=1 to skip the Banshee/Cthulion paths
+             regardless of ghost flags), then 0/0 inside
+             rollBodyPartEvent + pickRandom for the body-part roll. */
+          var seq = [0.0, 0.5, 0.5, 0.0, 0.0];
+          var r = seq[calls % seq.length];
+          calls++;
+          return r;
+        };
+        SugarCube.setup.Events.rollProwlEvent();
+      });
+      return await getVar(page, 'videoEvent');
+    }
+    const classicVid = await rolledVideoFor('classic');
+    const rogueVid   = await rolledVideoFor('rogue');
+    expect(typeof classicVid).toBe('string');
+    expect(classicVid.length).toBeGreaterThan(0);
+    expect(rogueVid).toBe(classicVid);
   });
 
   /* ---------- Lights-off rule parity ---------- */
@@ -808,15 +897,13 @@ test.describe('E2E parity: classic Ironclad vs Rogue Ironclad', () => {
 
   /* ---------- modifier deck divergence ---------- */
 
-  test('rogue-ironclad drafts the default modifier deck (no catalogue opt-out)', async () => {
-    /* Unlike rogue-owaissa / rogue-elm (which pin modifierCount: 0),
-       rogue-ironclad has no override -- it inherits the procedural
-       default of 2 modifiers. Asserting the count here pins the
-       catalogue choice so a future opt-out is a deliberate change,
-       not silent drift. */
+  test('rogue-ironclad carries no modifier deck (catalogue modifierCount=0)', async () => {
+    /* Like rogue-owaissa / rogue-elm, rogue-ironclad pins
+       modifierCount=0 on the catalogue entry so the prison hunt stays
+       off the modifier deck. The static rogue houses use the catalogue
+       opt-out; only the procedural rogue card draws the default deck. */
     await startRogueIronclad(page, 'Shade');
-    const modifiers = await callSetup(page, 'setup.Rogue.modifiers()');
-    expect(modifiers.length).toBe(2);
+    expect(await callSetup(page, 'setup.Rogue.modifiers()')).toEqual([]);
   });
 
   test('rogue-ironclad staticHouseId drives label override; classic uses the prison street name', async () => {
@@ -867,17 +954,14 @@ test.describe('E2E parity: classic Ironclad vs Rogue Ironclad', () => {
 
   /* ---------- streetExit parity (MonkeyPaw leave wish) ---------- */
 
-  test('streetExitPassage routes to null in classic Ironclad (no street registered), RogueEnd (abandon) in rogue', async () => {
-    /* Classic Ironclad isn't covered by the per-house if-isElm /
-       isOwaissa branch in HuntController.streetExitPassage, so it
-       returns null -- a known gap that the MonkeyPaw leave-wish
-       inherits. Pin the current behavior here so a future Ironclad
-       leave-wish handler is a deliberate change.
-
-       Rogue mirror still routes through markFailure(ABANDON) ->
-       RogueEnd because the rogue side is data-driven. */
+  test('streetExitPassage routes to Ironclad Prison in classic, RogueEnd (abandon) in rogue', async () => {
+    /* HuntController.streetExitPassage now reads the active house's
+       streetPassage straight off the catalogue, so classic Ironclad
+       routes the MonkeyPaw leave wish back to the prison street.
+       Rogue mirror routes through markFailure(ABANDON) -> RogueEnd. */
     await startClassicIronclad(page, 'Shade');
-    expect(await callSetup(page, 'setup.HuntController.streetExitPassage()')).toBeNull();
+    expect(await callSetup(page, 'setup.HuntController.streetExitPassage()'))
+      .toBe('Ironclad Prison');
 
     await tearDownAnyMode(page);
 
@@ -888,7 +972,7 @@ test.describe('E2E parity: classic Ironclad vs Rogue Ironclad', () => {
 
   /* ---------- Possession Tarot parity ---------- */
 
-  test('possessionPassage routes to CityMapPossessed in classic, RogueEnd (possessed) in rogue', async () => {
+  test('possessionPassage routes to CityMapPossessed in BOTH modes (rogue stamps + ends the run before routing)', async () => {
     await startClassicIronclad(page, 'Shade');
     await page.evaluate(() => { Math.random = () => 0; });
     expect(await callSetup(page, 'setup.HuntController.possessionPassage()'))
@@ -896,9 +980,17 @@ test.describe('E2E parity: classic Ironclad vs Rogue Ironclad', () => {
 
     await tearDownAnyMode(page);
 
+    /* Rogue: same destination, but the side effects still record a
+       POSSESSED failure on the run before endRogue tears it down --
+       so the meta-state remembers it as a possession loss while the
+       player UX matches classic's mid-day wake-up. */
     await startRogueIronclad(page, 'Shade');
-    expect(await callSetup(page, 'setup.HuntController.possessionPassage()')).toBe('RogueEnd');
-    expect(await callSetup(page, 'setup.Rogue.field("failureReason")')).toBe('possessed');
+    await page.evaluate(() => { Math.random = () => 0; });
+    expect(await callSetup(page, 'setup.HuntController.possessionPassage()'))
+      .toBe('CityMapPossessed');
+    /* endRogue clears $run, so failureReason isn't directly readable
+       afterward. The run no longer exists. */
+    expect(await callSetup(page, 'setup.Rogue.isRogue()')).toBe(false);
   });
 
   /* ---------- exit-after-onCaughtCleanup ---------- */
@@ -947,9 +1039,8 @@ test.describe('E2E parity: classic Ironclad vs Rogue Ironclad', () => {
     });
     await goToPassage(page, 'RogueEnd');
     expect(await getVar(page, 'run')).toBeNull();
-    /* "Fled" failure pays out failure ectoplasm. With the default
-       2-modifier draft on rogue-ironclad, the multiplier is >= 1 so
-       the payout is at least the failure base (3 mL). */
-    expect(await getVar(page, 'ectoplasm')).toBeGreaterThanOrEqual(3);
+    /* "Fled" failure pays out failure ectoplasm (3 mL with no
+       modifier multiplier on rogue-ironclad). */
+    expect(await getVar(page, 'ectoplasm')).toBe(3);
   });
 });

@@ -420,11 +420,10 @@ test.describe('E2E parity: classic Owaissa vs Rogue Owaissa', () => {
       return { before, afterId, afterTemplate: after && after.template };
     });
     expect(rogueResult.afterId).not.toBe(rogueResult.before);
-    /* Hallway is never a valid drift destination in rogue (rule
-       built into Rogue.driftGhostRoom). Classic's drift pool is
-       the full house.rooms list, which DOES include hallway --
-       documented divergence. */
-    expect(rogueResult.afterTemplate).not.toBe('hallway');
+    /* Both classic and rogue draw from the full room list, so the
+       hallway is a valid drift destination in either mode. The
+       drifted-to template just needs to be defined. */
+    expect(typeof rogueResult.afterTemplate).toBe('string');
   });
 
   test('Goryo (staysInOneRoom) never drifts in either mode', async () => {
@@ -706,6 +705,65 @@ test.describe('E2E parity: classic Owaissa vs Rogue Owaissa', () => {
     expect(await survivalOptionsForMode('rogue')).toBe(true);
   });
 
+  /* ---------- Succubus / special-event parity ---------- */
+
+  test('Summon-the-succubus link surfaces on GhostHuntEvent identically in both modes when timer >= 1', async () => {
+    /* The succubus link gates on setup.HauntedHouses.succubusEventTimer()
+       (read off the global Home succubus bundle, not on $hunt or $run),
+       so once the timer is >= 1 the option must surface in either mode. */
+    async function succubusVisibleFor(mode) {
+      await tearDownAnyMode(page);
+      if (mode === 'classic') await startClassicOwaissa(page, 'Shade');
+      else                    await startRogueOwaissa(page, 'Shade');
+      await page.evaluate(() => {
+        SugarCube.State.variables.mc.sanity = 80;
+        SugarCube.State.variables.mc.energy = 4;
+        if (!SugarCube.State.variables.succubusEvent) SugarCube.State.variables.succubusEvent = {};
+        SugarCube.State.variables.succubusEvent.eventTimer = 3;
+      });
+      await goToPassage(page, 'GhostHuntEvent');
+      return await page.locator('.passage')
+        .getByText('Summon the succubus', { exact: true }).count();
+    }
+    expect(await succubusVisibleFor('classic')).toBeGreaterThanOrEqual(1);
+    expect(await succubusVisibleFor('rogue')).toBeGreaterThanOrEqual(1);
+  });
+
+  test('rollProwlEvent picks the same body-part video for the same Math.random seed in both modes', async () => {
+    /* The per-tick prowl event roll dispatches off setup.Ghosts.active()
+       (which routes through HuntController.activeGhost), so a Math.random
+       pin should produce the same body-part choice regardless of mode. */
+    async function rolledVideoFor(mode) {
+      await tearDownAnyMode(page);
+      if (mode === 'classic') await startClassicOwaissa(page, 'Shade');
+      else                    await startRogueOwaissa(page, 'Shade');
+      await page.evaluate(() => {
+        SugarCube.State.variables.mc.sanity = 80;
+        SugarCube.State.variables.mc.lust   = 0;
+        SugarCube.State.variables.videoEvent = '';
+        var calls = 0;
+        Math.random = function () {
+          /* seq drives rollProwlEvent: chance=0 (low enough to clear
+             every lust-tier sanity threshold), bansheeRoll=6,
+             ctRoll=6 (both !=1 to skip the Banshee/Cthulion paths
+             regardless of ghost flags), then 0/0 inside
+             rollBodyPartEvent + pickRandom for the body-part roll. */
+          var seq = [0.0, 0.5, 0.5, 0.0, 0.0];
+          var r = seq[calls % seq.length];
+          calls++;
+          return r;
+        };
+        SugarCube.setup.Events.rollProwlEvent();
+      });
+      return await getVar(page, 'videoEvent');
+    }
+    const classicVid = await rolledVideoFor('classic');
+    const rogueVid   = await rolledVideoFor('rogue');
+    expect(typeof classicVid).toBe('string');
+    expect(classicVid.length).toBeGreaterThan(0);
+    expect(rogueVid).toBe(classicVid);
+  });
+
   /* ---------- Lights-off rule parity ---------- */
 
   test('Spiritbox lights-off rule is enforced via the same per-room light state in both modes', async () => {
@@ -934,7 +992,7 @@ test.describe('E2E parity: classic Owaissa vs Rogue Owaissa', () => {
 
   /* ---------- Possession Tarot parity ---------- */
 
-  test('possessionPassage routes to CityMapPossessed in classic, RogueEnd (possessed) in rogue', async () => {
+  test('possessionPassage routes to CityMapPossessed in BOTH modes (rogue stamps + ends the run before routing)', async () => {
     await startClassicOwaissa(page, 'Shade');
     /* possessionPassage has a side effect of randomising the time of
        day; pin Math.random so the test is deterministic. */
@@ -944,9 +1002,15 @@ test.describe('E2E parity: classic Owaissa vs Rogue Owaissa', () => {
 
     await tearDownAnyMode(page);
 
+    /* Rogue: same destination, but the side effects still record a
+       POSSESSED failure on the run before endRogue tears it down --
+       so the meta-state remembers it as a possession loss while the
+       player UX matches classic's mid-day wake-up. */
     await startRogueOwaissa(page, 'Shade');
-    expect(await callSetup(page, 'setup.HuntController.possessionPassage()')).toBe('RogueEnd');
-    expect(await callSetup(page, 'setup.Rogue.field("failureReason")')).toBe('possessed');
+    await page.evaluate(() => { Math.random = () => 0; });
+    expect(await callSetup(page, 'setup.HuntController.possessionPassage()'))
+      .toBe('CityMapPossessed');
+    expect(await callSetup(page, 'setup.Rogue.isRogue()')).toBe(false);
   });
 
   /* ---------- exit-after-onCaughtCleanup ---------- */

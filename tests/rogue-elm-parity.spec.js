@@ -186,13 +186,17 @@ test.describe('Rogue Elm parity', () => {
     }
   });
 
-  test('FloorPlan.generate with the rogue-elm plan keeps spawn off the hallway', async () => {
+  test('FloorPlan.generate with the rogue-elm plan picks a spawn from the full room list', async () => {
+    /* Spawn picks uniformly across all rooms (hallway eligible),
+       mirroring classic mode where the ghost can lair in the entry
+       hallway. Pin only that the picked spawn is a real room id. */
     const plan = await callSetup(page, 'setup.RogueHouses.planFor("rogue-elm")');
+    const allIds = plan.rooms.map(r => r.id);
     for (let seed = 1; seed <= 20; seed++) {
       const fp = await page.evaluate(({ s, p }) =>
         SugarCube.setup.FloorPlan.generate(s, { staticPlan: p }),
         { s: seed, p: plan });
-      expect(fp.spawnRoomId).not.toBe('room_0');
+      expect(allIds).toContain(fp.spawnRoomId);
     }
   });
 

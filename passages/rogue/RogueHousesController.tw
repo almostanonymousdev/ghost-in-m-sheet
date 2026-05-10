@@ -154,16 +154,28 @@ setup.RogueHouses = (function () {
 		}),
 		Object.freeze({
 			/* Ironclad classically opts out of the companion plan flow
-			   (the prison hunt has its own warden-clothes mechanic and
-			   no companion-event choreography). The rogue mirror keeps
-			   that opt-out so the catalogue carries the gate -- the
-			   companion predicate is data-driven, no per-house
-			   branching needed. */
+			   AND the steal-clothes per-tick roll (the prison hunt has
+			   its own warden-clothes mechanic and no companion-event
+			   choreography). The rogue mirror keeps both opt-outs so
+			   the catalogue carries the gates -- the companion / steal
+			   predicates are data-driven, no per-house branching
+			   needed. modifierCount=0 keeps the prison hunt off the
+			   modifier deck for now (matching the other static rogue
+			   houses); the warden-outfit gate behind the GhostStreet
+			   card is enforced via the `gate` predicate. */
 			id:               'rogue-ironclad',
 			label:            'Rogue Ironclad',
 			image:            'scenes/room/ironclad/ironclad.webp',
 			levelGate:        4,
 			allowsCompanions: false,
+			runsStealClothes: false,
+			modifierCount:    0,
+			gate:             function () {
+				return setup.Witch && setup.Witch.wardenClothesStage
+					&& setup.Witch.wardenClothesStage()
+						=== setup.WardenClothesStage.OUTFIT_OWNED;
+			},
+			gateMessage:      'Warden outfit required',
 			plan:             IRONCLAD_PLAN
 		})
 	]);

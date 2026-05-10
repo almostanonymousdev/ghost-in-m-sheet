@@ -68,16 +68,18 @@
 	<<if _rsh>>
 		<div class="housecard">
 			<<image _rsh.image "iconPx">>
-			<<if setup.Mc.lvl() gte _rsh.levelGate>>
+			<<if setup.Mc.lvl() lt _rsh.levelGate>>
+				<<set _rshGate to _rsh.levelGate>>
+				@@.mc-thoughts; Level _rshGate+ required@@
+			<<elseif typeof _rsh.gate eq "function" and not _rsh.gate()>>
+				@@.mc-thoughts; <<= _rsh.gateMessage or "Locked">>@@
+			<<else>>
 				<<capture _rsh>>
 					@@.icontext;<<link _rsh.label "RogueStart">>
 						<<if setup.Rogue.isRogue()>><<run setup.Rogue.endRogue(false)>><</if>>
 						<<set $pendingRogueStaticHouseId to _rsh.id>>
 					<</link>>@@
 				<</capture>>
-			<<else>>
-				<<set _rshGate to _rsh.levelGate>>
-				@@.mc-thoughts; Level _rshGate+ required@@
 			<</if>>
 		</div>
 	<</if>>

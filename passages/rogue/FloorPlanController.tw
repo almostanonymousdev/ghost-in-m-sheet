@@ -181,8 +181,10 @@ setup.FloorPlan = (function () {
 			}
 		}
 
-		// Ghost spawn: pick a non-hallway room.
-		var spawnIdx = 1 + Math.floor(rng() * (rooms.length - 1));
+		// Ghost spawn: any room is fair game, including the hallway.
+		// Classic mode also lets the ghost lair in the hallway, so the
+		// rogue mirror picks uniformly across the full room list.
+		var spawnIdx = Math.floor(rng() * rooms.length);
 		var spawnRoomId = rooms[spawnIdx].id;
 
 		// Loot placement: cursedItem and rescueClue may land on any
