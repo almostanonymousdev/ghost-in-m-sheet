@@ -56,11 +56,11 @@ sugarcube-2:
         image.
     companionTextEvent:
       name: companionTextEvent
-      description: 'Sanity-tier dispatcher for the CompanionEvent passage.
-        Renders companion-specific dialog from the catalogue (eventCopy /
-        transEventCopy) and applies the standard sanity/lust deltas; tiers
-        2-4 also grant +15 MC lust. Trans companions stamp transFirstStage
-        on every render. Args: tier (1..4).'
+      description: "Sanity-tier dispatcher for the CompanionEvent passage. Renders
+        companion-specific dialog from the catalogue (eventCopy /
+        transEventCopy) and applies the standard sanity/lust deltas; tiers 2-4
+        also grant +15 MC lust. Trans companions stamp transFirstStage on every
+        render. Args: tier (1..4)."
     isCompanionContinue:
       name: isCompanionContinue
       description: 'Renders a linkappend asking whether the companion can continue the
@@ -136,10 +136,10 @@ sugarcube-2:
     energyGate:
       name: energyGate
       container: true
-      description: "Energy-gated link. Renders a grey 'Not enough energy' line when
-        MC energy is < 1; otherwise renders a <<link>> to the given passage with
-        the given label. The body is the action(s) to run on click. Args: passage
-        (string), label (string)."
+      description: "Energy-gated link. Renders a grey 'Not enough energy' line when MC
+        energy is < 1; otherwise renders a <<link>> to the given passage with
+        the given label. The body is the action(s) to run on click. Args:
+        passage (string), label (string)."
     seduceGhostMinigameVideo:
       name: seduceGhostMinigameVideo
       description: Renders the media (image or video) for the current seduce-ghost
@@ -368,8 +368,8 @@ sugarcube-2:
       description: Renders the lobby's reroll-charge button when the player has at
         least one charge stockpiled, and nothing otherwise. Clicking the button
         consumes a charge, redrafts the run's modifiers, repaints the modifier
-        list, and re-invokes itself so the button's visibility and "(you have N)"
-        label stay current. No args.
+        list, and re-invokes itself so the button's visibility and "(you have
+        N)" label stay current. No args.
     leaveLink:
       name: leaveLink
       description: "Wraps a plain @@.adaptiveLink;<<link>> in the
@@ -434,12 +434,12 @@ sugarcube-2:
         $run. Arg-less.
     rogueStaticHouseCard:
       name: rogueStaticHouseCard
-      description: "GhostStreet card for a named static-plan rogue house. Renders
-        the catalogue entry's image + label, gates on Mc.lvl >= levelGate, and
-        on click stages the house id on $pendingRogueStaticHouseId before
-        routing to RogueStart -- the lifecycle reads + clears the staging slot
-        and forwards staticHouseId to setup.Rogue.startRogue. Args: houseId
-        (string from setup.RogueHouses.list(), e.g. 'rogue-owaissa')."
+      description: "GhostStreet card for a named static-plan rogue house. Renders the
+        catalogue entry's image + label, gates on Mc.lvl >= levelGate, and on
+        click stages the house id on $pendingRogueStaticHouseId before routing
+        to RogueStart -- the lifecycle reads + clears the staging slot and
+        forwards staticHouseId to setup.Rogue.startRogue. Args: houseId (string
+        from setup.RogueHouses.list(), e.g. 'rogue-owaissa')."
     huntHouseStreet:
       name: huntHouseStreet
       container: true
@@ -654,21 +654,23 @@ sugarcube-2:
       name: statIcon
     mcStatusBody:
       name: mcStatusBody
-      description: "Inner contents of the sidebar #statusContainer (MC clothing
-        HUD). Split out of MC.tw so per-slot click handlers in hunt mode can
-        re-render the strip via <<replace \"#statusContainer\">> without
-        rebuilding the surrounding container div. No args."
+      description: 'Inner contents of the sidebar #statusContainer (MC clothing HUD).
+        Split out of MC.tw so per-slot click handlers in hunt mode can re-render
+        the strip via <<replace "#statusContainer">> without rebuilding the
+        surrounding container div. No args.'
     mcUndressIcon:
       name: mcUndressIcon
-      description: "Sidebar HUD icon for a worn clothing slot. During a hunt the
-        icon becomes a click target that takes the garment off and re-renders
-        the strip; outside hunts it falls back to the original hovertip + image.
+      description: "Sidebar HUD icon for a worn clothing slot. During a hunt the icon
+        becomes a click target that takes the garment off and re-renders the
+        strip; outside hunts it falls back to the original hovertip + image.
         Args: hunting (bool), slotName (string), hoverText (string), iconFile
         (string, e.g. 'top.jpg')."
     mcRedressIcon:
       name: mcRedressIcon
-      description: "Sidebar HUD icon for a not-worn clothing slot. Mirrors
+      description: 'Sidebar HUD icon for a not-worn clothing slot. Mirrors
         mcUndressIcon, but only becomes a link when the slot has a remembered
-        last-worn item to put back on. tipText \"\" suppresses the hovertip
+        last-worn item to put back on. tipText "" suppresses the hovertip
         (preserves the existing tshirt/bottom empty cells). Args: hunting
-        (bool), slotName (string), tipText (string), iconFile (string)."
+        (bool), slotName (string), tipText (string), iconFile (string).'
+    rogueFooterLight:
+      name: rogueFooterLight

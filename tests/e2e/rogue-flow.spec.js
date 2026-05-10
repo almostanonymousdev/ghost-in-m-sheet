@@ -198,6 +198,48 @@ test.describe('E2E: rogue run lifecycle', () => {
     );
   });
 
+  test('rogue exit nav switches to compact layout when the current room has >3 neighbours', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickRogueCard(page);
+    await clickLink(page, 'Enter the hunt', 'RogueRun');
+
+    // Find a room with <=3 exits to serve as the low-exit baseline.
+    // The procedurally-rolled floor plan doesn't reliably produce a
+    // >3-exit room every run, so synthesise that case by injecting
+    // extra edges; the live count is read from FloorPlan.neighborsOf
+    // (the same source currentRoomData consults), so adding edges to
+    // fp.edges is the minimum mutation needed.
+    const { lowId, hubId } = await page.evaluate(() => {
+      const fp = SugarCube.State.variables.run.floorplan;
+      // Pick a hub and connect it to four other rooms so the live
+      // neighbor count is guaranteed to exceed 3.
+      const hub = fp.rooms[0];
+      const others = fp.rooms.filter(r => r.id !== hub.id).slice(0, 4);
+      others.forEach(o => fp.edges.push([hub.id, o.id]));
+      // Find a <=3-exit room AFTER the mutation so the four `others`
+      // we just bumped don't get picked.
+      let low = null;
+      for (const r of fp.rooms) {
+        if (r.id === hub.id) continue;
+        const n = SugarCube.setup.FloorPlan.neighborsOf(fp, r.id).length;
+        if (n <= 3) { low = r; break; }
+      }
+      return { lowId: low?.id ?? null, hubId: hub.id };
+    });
+
+    test.skip(!lowId, 'floorplan lacks a <=3-exit room');
+
+    await page.evaluate(id => SugarCube.setup.Rogue.setCurrentRoom(id), hubId);
+    await goToPassage(page, 'RogueRun');
+    await expect(page.locator('.rogue-run-nav')).toHaveClass(/rogue-run-nav-compact/);
+
+    await page.evaluate(id => SugarCube.setup.Rogue.setCurrentRoom(id), lowId);
+    await goToPassage(page, 'RogueRun');
+    await expect(page.locator('.rogue-run-nav')).not.toHaveClass(/rogue-run-nav-compact/);
+  });
+
   test('rogueFooterLight toggles the current room\'s light state and the body background', async () => {
     test.setTimeout(15_000);
 

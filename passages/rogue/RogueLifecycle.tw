@@ -133,7 +133,7 @@
 				<div class="rogue-run-tools">
 					<<rogueToolBar>>
 				</div>
-				<div class="rogue-run-nav">
+				<div @class="'rogue-run-nav' + (_cr and _cr.neighbors.length gt 3 ? ' rogue-run-nav-compact' : '')">
 					<<if _cr and _cr.neighbors.length>>
 						<<for _n range _cr.neighbors>>
 							<<capture _n>>

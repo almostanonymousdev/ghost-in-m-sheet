@@ -1382,6 +1382,19 @@ body.ui-bar-stowed .rogue-run-layout {
 	text-align: right;
 	gap: 0.25em;
 }
+/* When the current room has more than 3 exits the column overruns the
+   tool row's vertical budget; the compact variant shrinks the link
+   text and tightens the gap so all exits stay visible without
+   overlapping the toolbar. */
+.rogue-run-nav-compact {
+	gap: 0.1em;
+}
+.rogue-run-nav-compact .movebtn a {
+	font-size: 0.85em;
+}
+.rogue-run-nav-compact br {
+	display: none;
+}
 
 /* ===== Rogue minimap ===== */
 .rogue-minimap-svg {
