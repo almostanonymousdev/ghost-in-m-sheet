@@ -2,15 +2,15 @@
 /*
  * Run-modifier catalogue.
  *
- * Each rogue run draws 1-3 modifiers from this catalogue at run
- * start (handled by the run-start passage in prereq 8). Modifiers
- * are small declarative records — id, name, description, draft
- * weight. Each modifier's *effect* lives wherever it has to:
- * tool-check overrides hook into setup.HauntConditions / Tool
- * controller; sanity-tick changes hook into McController; tarot-
- * only swaps the evidence pipeline. The active deck is queried
- * via setup.Rogue.hasModifier(id), so other controllers can branch
- * without depending on this module directly.
+ * Each hunt draws 1-3 modifiers from this catalogue at run start
+ * (handled in HuntStart). Modifiers are small declarative records —
+ * id, name, description, draft weight. Each modifier's *effect*
+ * lives wherever it has to: tool-check overrides hook into
+ * setup.HauntConditions / Tool controller; sanity-tick changes hook
+ * into McController; tarot-only swaps the evidence pipeline. The
+ * active deck is queried via setup.HuntController.hasModifier(id),
+ * so other controllers can branch without depending on this module
+ * directly.
  *
  * The catalogue here is metadata only — effect wiring is added
  * alongside each modifier as it becomes needed by the gameplay
@@ -24,7 +24,7 @@ setup.Modifiers = (function () {
 	   run-start UI but do nothing in-game make for a bait-and-switch
 	   draft. New ideas live in a design doc until their effect is
 	   wired into the relevant controller. Code that gates on a
-	   specific modifier (e.g. RogueController's Empty-Bag toolbar
+	   specific modifier (e.g. HuntController's Empty-Bag toolbar
 	   branch) references the constant instead of the literal so a
 	   typo surfaces at parse time rather than as a silently-failing
 	   indexOf. */
@@ -191,7 +191,7 @@ setup.Modifiers = (function () {
 	   entries. Unknown ids are dropped silently (e.g. a modifier
 	   that was renamed between save and load). */
 	function activeList() {
-		return setup.Rogue.modifiers()
+		return setup.HuntController.modifiers()
 			.map(function (id) { return byId(id); })
 			.filter(function (m) { return !!m; });
 	}

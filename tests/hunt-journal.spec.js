@@ -2,20 +2,20 @@ const { test, expect } = require('./fixtures');
 const { setVar, getVar, callSetup, goToPassage } = require('./helpers');
 
 /* HuntJournal.recordHuntStart reads setup.HuntController.realGhostName(),
- * which only resolves while a rogue run is active. The classic
+ * which only resolves while a hunt is active. The classic
  * `setup.Ghosts.startHunt(name)` helper alone no longer satisfies that
- * gate, so journal tests start a rogue run and pin its ghost name. */
+ * gate, so journal tests start a hunt and pin its ghost name. */
 async function startHuntWithGhost(page, name) {
   await page.evaluate((n) => {
-    SugarCube.setup.Rogue.startRogue({ seed: 1 });
-    SugarCube.setup.Rogue.setField('ghostName', n);
+    SugarCube.setup.HuntController.startHunt({ seed: 1 });
+    SugarCube.setup.HuntController.setField('ghostName', n);
     SugarCube.setup.Ghosts.startHunt(n);
   }, name);
 }
 
 async function endActiveHunt(page) {
   await page.evaluate(() => {
-    if (SugarCube.setup.Rogue.active()) SugarCube.setup.Rogue.end();
+    if (SugarCube.setup.HuntController.active()) SugarCube.setup.HuntController.end();
     SugarCube.State.variables.hunt = null;
   });
 }
@@ -154,8 +154,8 @@ test.describe('Hunt Journal', () => {
   // --- recordPayout -------------------------------------------------------
 
   test('recordPayout(true) stamps the correct guess and flips unread', async ({ game: page }) => {
-    /* Rogue mode pays ectoplasm via setup.Rogue.endRogue and surfaces it
-     * on RogueEnd, so HuntController.payoutForGuess returns {0, 0} and
+    /* Hunt mode pays ectoplasm via setup.HuntController.endHunt and surfaces it
+     * on HuntSummary, so HuntController.payoutForGuess returns {0, 0} and
      * the journal stores no per-guess money/xp. */
     await startHuntWithGhost(page, 'Shade');
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
@@ -202,7 +202,7 @@ test.describe('Hunt Journal', () => {
 
   test('recordPayout re-flips unread so the post-guess wake shows the full recap', async ({ game: page }) => {
     // Player wakes once after the hunt sleep (recap marked read), then
-    // resolves the rogue Identify branch and sleeps again — the
+    // resolves the hunt Identify branch and sleeps again — the
     // post-payout summary should surface on that second wake.
     await startHuntWithGhost(page, 'Shade');
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
@@ -446,24 +446,24 @@ test.describe('Hunt Journal', () => {
     expect(passageText).not.toMatch(/45\.876\d/);
   });
 
-  // --- Rogue mode plumbing -----------------------------------------------
+  // --- Hunt mode plumbing -----------------------------------------------
 
-  test('recordHuntStart picks up the rogue ghost when no classic hunt is active', async ({ game: page }) => {
+  test('recordHuntStart picks up the hunt ghost when no classic hunt is active', async ({ game: page }) => {
     await setVar(page, 'mc.sanity', 77);
-    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
-    const rogueGhost = await callSetup(page, 'setup.Rogue.ghostName()');
-    expect(rogueGhost).toBeTruthy();
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
+    const huntGhost = await callSetup(page, 'setup.HuntController.ghostName()');
+    expect(huntGhost).toBeTruthy();
 
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
 
     const j = await callSetup(page, 'setup.HuntJournal.journal()');
     expect(j).not.toBeNull();
-    expect(j.realGhost).toBe(rogueGhost);
+    expect(j.realGhost).toBe(huntGhost);
     expect(j.sanityStart).toBe(77);
   });
 
-  test('recordPayout in rogue mode skips the witch money/xp lookup', async ({ game: page }) => {
-    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
+  test('recordPayout in hunt mode skips the witch money/xp lookup', async ({ game: page }) => {
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
     await page.evaluate(() => { SugarCube.State.variables.ghostTypeSelected = 'Wraith'; });
 
@@ -477,20 +477,20 @@ test.describe('Hunt Journal', () => {
     expect(await callSetup(page, 'setup.HuntJournal.hasUnread()')).toBe(true);
   });
 
-  test('full rogue lifecycle: RogueStart records start, RogueEnd records end + arms recap', async ({ game: page }) => {
+  test('full hunt lifecycle: HuntStart records start, HuntSummary records end + arms recap', async ({ game: page }) => {
     await setVar(page, 'mc.sanity', 90);
-    // RogueStart auto-rolls the run and calls recordHuntStart.
-    await goToPassage(page, 'RogueStart');
+    // HuntStart auto-rolls the run and calls recordHuntStart.
+    await goToPassage(page, 'HuntStart');
     const startJournal = await callSetup(page, 'setup.HuntJournal.journal()');
     expect(startJournal).not.toBeNull();
     expect(startJournal.sanityStart).toBe(90);
     expect(startJournal.realGhost).toBeTruthy();
 
-    // Stamp the run as a success and run RogueEnd. recordHuntEnd
-    // fires before endRogue, so sanityEnd captures the live value.
+    // Stamp the run as a success and run HuntSummary. recordHuntEnd
+    // fires before endHunt, so sanityEnd captures the live value.
     await setVar(page, 'mc.sanity', 55);
-    await page.evaluate(() => SugarCube.setup.Rogue.markSuccess());
-    await goToPassage(page, 'RogueEnd');
+    await page.evaluate(() => SugarCube.setup.HuntController.markSuccess());
+    await goToPassage(page, 'HuntSummary');
 
     const endJournal = await callSetup(page, 'setup.HuntJournal.journal()');
     expect(endJournal.sanityEnd).toBe(55);
@@ -498,9 +498,9 @@ test.describe('Hunt Journal', () => {
     expect(await callSetup(page, 'setup.HuntJournal.hasUnread()')).toBe(true);
   });
 
-  test('recap renders after sleeping post-rogue-run', async ({ game: page }) => {
+  test('recap renders after sleeping post-hunt', async ({ game: page }) => {
     await setVar(page, 'mc.sanity', 80);
-    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
     await setVar(page, 'EMF5Check', true);
     await setVar(page, 'mc.sanity', 50);

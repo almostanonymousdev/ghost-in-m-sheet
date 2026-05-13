@@ -484,7 +484,7 @@
            rotates while $hunt.evidence stays the real Mimic set). null
            when no hunt is active. Cached across calls; see activeCache. */
         /* The active ghost. Delegates to setup.HuntController so both
-           regular witch contracts ($hunt) and rogue runs ($run.ghostName)
+           regular witch contracts ($hunt) and hunts ($run.ghostName)
            share one entry point; the controller calls into the helpers
            below for the per-mode build. */
         active: function () {
@@ -518,15 +518,15 @@
         },
 
         /* Internal: hand back the catalogue Ghost named `name`. Used by
-           HuntController for rogue runs. When the active rogue run
+           HuntController for hunts. When the active hunt
            carries an `evidence` override (e.g. Fog of War splices one
            id at run start), wrap the catalogue entry so the rehydrated
            evidence list reflects the override without mutating the
            shared catalogue object. */
         _activeFromCatalogue: function (name) {
             if (!name) return null;
-            var override = (setup.Rogue && setup.Rogue.runEvidence)
-                ? setup.Rogue.runEvidence() : null;
+            var override = (setup.HuntController && setup.HuntController.runEvidence)
+                ? setup.HuntController.runEvidence() : null;
             var key = "catalogue|" + name + "|" + (override ? override.join(",") : "");
             if (activeCache.key === key) return activeCache.ghost;
             var ghost = setup.Ghosts.getByName(name);
@@ -648,7 +648,7 @@
 
         /* Set a single Notebook evidence checkbox by evidence id
            ('emf', 'gwb', etc.). No-op for unknown ids. Used by the
-           rogue meta-shop's Intense Intuition unlock so a freshly
+           hunt meta-shop's Intense Intuition unlock so a freshly
            rolled run can pre-check one of the ghost's true evidences. */
         setEvidenceCheck: function (evidenceId, value) {
             var key = CHECK_VAR[evidenceId];
@@ -795,7 +795,7 @@
         /* Drop the Notebook's crossed-out-evidence overlay (set by
            the Tarot Knowledge card / Monkey Paw knowledge wish). The
            overlay is hunt-scoped, so the cursed-item shared-state
-           reset clears it on every fresh contract / rogue run. */
+           reset clears it on every fresh contract / hunt. */
         clearChosenEvidence: function () { delete State.variables.chosenEvidence; },
         huntEvidence: function () {
             var h = State.variables.hunt;

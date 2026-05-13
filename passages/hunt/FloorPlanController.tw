@@ -1,11 +1,11 @@
 :: FloorPlanController [script]
 /*
- * Seeded floor-plan generator for rogue-mode runs.
+ * Seeded floor-plan generator for hunts.
  *
  * generate(seed, opts) returns a deterministic plan — same seed
  * means same plan, every time, regardless of Math.random state
  * (the generator uses an internal Mulberry32 PRNG keyed on seed).
- * Tests rely on this property; rogue UX relies on it for shareable
+ * Tests rely on this property; hunt UX relies on it for shareable
  * seed strings.
  *
  * Plan shape:
@@ -42,8 +42,8 @@
  * because every new room is linked to the existing graph.
  *
  * The result is meant to live on $run.floorplan via
- * setup.Rogue.setField('floorplan', plan); the actual room state
- * objects (light, evidence, etc.) get seeded per-room via
+ * setup.HuntController.setField('floorplan', plan); the actual room
+ * state objects (light, evidence, etc.) get seeded per-room via
  * setup.Rooms.seed(id, { template }) when the run starts.
  */
 setup.FloorPlan = (function () {
@@ -91,11 +91,11 @@ setup.FloorPlan = (function () {
 
 	/* Pick `n` items, refilling the pool whenever it runs out so the
 	   caller always gets exactly `n` results. Used for room-template
-	   selection in the rogue floor plan: the rogue catalogue is small
-	   enough that big floor plans (Maze, tool-loot expansion) need
-	   templates to repeat rather than the plan getting silently
-	   capped at the catalogue size. Returns an empty list when the
-	   source list is empty. */
+	   selection in the hunt floor plan: the catalogue is small enough
+	   that big floor plans (Maze, tool-loot expansion) need templates
+	   to repeat rather than the plan getting silently capped at the
+	   catalogue size. Returns an empty list when the source list is
+	   empty. */
 	function pickNCycling(rng, list, n) {
 		if (!list.length) return [];
 		var picks = [];
@@ -182,8 +182,6 @@ setup.FloorPlan = (function () {
 		}
 
 		// Ghost spawn: any room is fair game, including the hallway.
-		// Classic mode also lets the ghost lair in the hallway, so the
-		// rogue mirror picks uniformly across the full room list.
 		var spawnIdx = Math.floor(rng() * rooms.length);
 		var spawnRoomId = rooms[spawnIdx].id;
 
@@ -305,7 +303,7 @@ setup.FloorPlan = (function () {
 		return null;
 	}
 
-	/* BFS layout: assigns each room a (col, row) cell so the rogue
+	/* BFS layout: assigns each room a (col, row) cell so the hunt
 	   minimap can render the plan as a tree-shaped map. col is the
 	   BFS depth from the hallway; row is the order rooms are visited
 	   at that depth (so siblings stack vertically rather than

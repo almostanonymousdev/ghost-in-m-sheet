@@ -123,8 +123,8 @@
    a classic high-priestess tarot active, the card burns itself to
    return the MC to $return; absent that, the next-passage target is
    delegated to setup.HuntController.huntCaughtPassage() so classic
-   sleeps the MC home and a rogue run stamps a "caught" failure and
-   routes to RogueEnd. `_args[0]` is the link text ("fading into
+   sleeps the MC home and a hunt stamps a "caught" failure and
+   routes to HuntSummary. `_args[0]` is the link text ("fading into
    darkness", "plunging you into darkness", "nothing"). */
 <<widget "huntEndExit">>
 	<<if setup.Ghosts.hasHighPriestess()>>

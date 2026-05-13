@@ -554,14 +554,14 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
     await setVar(page, 'hours', 2);
   });
 
-  /* HuntController.isHuntActive() requires both an active rogue run and
-   * the current passage to be RogueRun, so the in-hunt HUD branch fires.
+  /* HuntController.isHuntActive() requires both an active hunt and
+   * the current passage to be HuntRun, so the in-hunt HUD branch fires.
    * `house` is one of 'owaissa' (default) / 'elm' / 'ironclad'. */
-  async function startRogueHunt(page, house = 'owaissa') {
+  async function startActiveHunt(page, house = 'owaissa') {
     await page.evaluate((staticHouseId) => {
-      SugarCube.setup.Rogue.startRogue({ seed: 1, staticHouseId });
-    }, `rogue-${house}`);
-    await goToPassage(page, 'RogueRun');
+      SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId });
+    }, house);
+    await goToPassage(page, 'HuntRun');
   }
 
   /* The MC clothing strip lives in StoryCaption (sidebar). To verify
@@ -592,7 +592,7 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
     await setVar(page, 'tshirtState1', 'worn');
     await setVar(page, 'tshirtState',  'worn');
     await setVar(page, 'rememberTopOuter', 'tshirt1');
-    await startRogueHunt(page);
+    await startActiveHunt(page);
 
     const html = await renderStrip(page);
     expect(html).toContain('take it off');
@@ -604,7 +604,7 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
     await setVar(page, 'braState2', 'not worn');
     await setVar(page, 'braState',  'not worn');
     await setVar(page, 'rememberTopUnder', 'nobra2');
-    await startRogueHunt(page);
+    await startActiveHunt(page);
 
     const html = await renderStrip(page);
     expect(html).toContain('put it back on');
@@ -615,7 +615,7 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
     await setVar(page, 'braState0', 'not worn');
     await setVar(page, 'braState',  'not worn');
     await setVar(page, 'rememberTopUnder', 'bra0');
-    await startRogueHunt(page);
+    await startActiveHunt(page);
 
     const html = await renderStrip(page);
     expect(html).toContain('id="statusUnderTop"');
@@ -631,7 +631,7 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
     await setVar(page, 'tshirtState',  'not worn');
     await setVar(page, 'rememberTopOuter', 'notshirt1');
     await setVar(page, 'isShirtStolen', 1);
-    await startRogueHunt(page);
+    await startActiveHunt(page);
 
     const html = await renderStrip(page);
     /* Pull just the tshirt slot out of the strip so anchors in
@@ -644,7 +644,7 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
 
   test('Ironclad warden costume mode shows no clothing slots', async ({ game: page }) => {
     await setVar(page, 'wardenClothesStage', 2);
-    await startRogueHunt(page, 'ironclad');
+    await startActiveHunt(page, 'ironclad');
 
     const html = await renderStrip(page);
     expect(html).not.toContain('id="statusOuterTop"');
@@ -664,7 +664,7 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
     await setVar(page, 'tshirtState',  'worn');
     await setVar(page, 'rememberTopOuter', 'tshirt1');
     await setVar(page, 'mc.beauty', 30);
-    await startRogueHunt(page);
+    await startActiveHunt(page);
 
     await page.evaluate(() => jQuery('#statusOuterTop a').trigger('click'));
 
@@ -686,7 +686,7 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
     await setVar(page, 'tshirtState',  'not worn');
     await setVar(page, 'rememberTopOuter', 'notshirt1');
     await setVar(page, 'mc.beauty', 25);
-    await startRogueHunt(page);
+    await startActiveHunt(page);
 
     await page.evaluate(() => jQuery('#statusOuterTop a').trigger('click'));
 
@@ -706,7 +706,7 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
     await setVar(page, 'tshirtState',  'worn');
     await setVar(page, 'rememberTopOuter', 'tshirt1');
     await setVar(page, 'mc.beauty', 30);
-    await startRogueHunt(page);
+    await startActiveHunt(page);
 
     // First click: take off
     await page.evaluate(() => jQuery('#statusOuterTop a').trigger('click'));
@@ -721,20 +721,19 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
     expect(await getVar(page, 'mc.beauty')).toBe(30);
   });
 
-  /* The HUD shortcut gates on HuntController.isHuntActive() instead of
-     the classic-only setup.Ghosts.isHunting() so it also fires inside
-     a rogue run (mode === 'rogue' on the RogueRun passage). Without
-     this, the click-to-undress feature would silently no-op for the
-     entire rogue flow. */
-  test('rogue run: t-shirt slot becomes a take-off link on the RogueRun passage', async ({ game: page }) => {
+  /* The HUD shortcut gates on HuntController.isHuntActive() so it
+     fires whenever a hunt is in flight on the HuntRun passage.
+     Without this, the click-to-undress feature would silently no-op
+     during a hunt. */
+  test('active hunt: t-shirt slot becomes a take-off link on the HuntRun passage', async ({ game: page }) => {
     await setHuntMode(page, 0);
     await setVar(page, 'tshirtState0', 'not worn');
     await setVar(page, 'tshirtState1', 'worn');
     await setVar(page, 'tshirtState',  'worn');
     await setVar(page, 'rememberTopOuter', 'tshirt1');
-    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
-    await page.evaluate(() => SugarCube.Engine.play('RogueRun'));
-    await page.waitForFunction(() => SugarCube.State.passage === 'RogueRun');
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
+    await page.evaluate(() => SugarCube.Engine.play('HuntRun'));
+    await page.waitForFunction(() => SugarCube.State.passage === 'HuntRun');
 
     const html = await page.evaluate(() => {
       const $div = jQuery('<div></div>');

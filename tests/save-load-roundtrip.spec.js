@@ -147,10 +147,10 @@ test.describe('Save/load round-trip', () => {
     // same observable behaviour.
     await goToPassage(page, 'CityMap');
     await page.evaluate(() => {
-      SugarCube.setup.Rogue.startRogue({ seed: 1 });
-      SugarCube.setup.Rogue.setField('ghostName', 'Shade');
+      SugarCube.setup.HuntController.startHunt({ seed: 1 });
+      SugarCube.setup.HuntController.setField('ghostName', 'Shade');
       const g = SugarCube.setup.Ghosts.getByName('Shade');
-      SugarCube.setup.Rogue.setField('evidence', g.evidence.map(e => e.id));
+      SugarCube.setup.HuntController.setField('evidence', g.evidence.map(e => e.id));
       SugarCube.setup.Ghosts.startHunt('Shade');
     });
     await commitToSave(page);
@@ -386,11 +386,11 @@ test.describe('Save/load round-trip', () => {
     expect(migrated.wishAnything).toBeUndefined();
   });
 
-  // --- Rogue-mode migration --------------------------------------
+  // --- Hunt-mode migration --------------------------------------
 
-  test('legacy save (pre-rogue) gets $run/$ectoplasm/$runsStarted defaults', async ({ game: page }) => {
-    // A v1/v2 save predates the rogue subsystem entirely. Loading
-    // should populate the three rogue-mode state vars with their
+  test('legacy save (pre-hunt) gets $run/$ectoplasm/$runsStarted defaults', async ({ game: page }) => {
+    // A v1/v2 save predates the hunt subsystem entirely. Loading
+    // should populate the three hunt-mode state vars with their
     // safe-default classic-mode values.
     await goToPassage(page, 'CityMap');
 
@@ -405,8 +405,8 @@ test.describe('Save/load round-trip', () => {
     expect(migrated.runsStarted).toBe(0);
   });
 
-  test('migration preserves a mid-rogue-run $run object', async ({ game: page }) => {
-    // If a save is taken mid-rogue-run, the $run object survives
+  test('migration preserves a mid-hunt $run object', async ({ game: page }) => {
+    // If a save is taken mid-hunt, the $run object survives
     // applySaveDefaults intact (the defaulter only fills undefined
     // / null fields).
     await goToPassage(page, 'CityMap');
@@ -430,12 +430,12 @@ test.describe('Save/load round-trip', () => {
     expect(migrated.runsStarted).toBe(3);
   });
 
-  test('round-trip preserves a mid-rogue-run save', async ({ game: page }) => {
+  test('round-trip preserves a mid-hunt save', async ({ game: page }) => {
     // Full Save.serialize() / deserialize() cycle in a live
     // session. Catches any subtle scrub-on-save behavior that
     // applySaveDefaults can't reproduce on its own.
     await goToPassage(page, 'CityMap');
-    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 12345 }));
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 12345 }));
     await commitToSave(page);
 
     const blob = await page.evaluate(() => SugarCube.Save.serialize());
@@ -460,10 +460,10 @@ test.describe('Save/load round-trip', () => {
     // attempted and how many mL of ectoplasm the player has banked.
     await goToPassage(page, 'CityMap');
     await page.evaluate(() => {
-      SugarCube.setup.Rogue.startRogue({ seed: 1 });
-      SugarCube.setup.Rogue.endRogue(true);
-      SugarCube.setup.Rogue.startRogue({ seed: 2 });
-      SugarCube.setup.Rogue.endRogue(false);
+      SugarCube.setup.HuntController.startHunt({ seed: 1 });
+      SugarCube.setup.HuntController.endHunt(true);
+      SugarCube.setup.HuntController.startHunt({ seed: 2 });
+      SugarCube.setup.HuntController.endHunt(false);
     });
     await commitToSave(page);
 
@@ -487,8 +487,8 @@ test.describe('Save/load round-trip', () => {
     expect(after).toEqual(before);
   });
 
-  test('SAVE_VERSION marker is at the rogue-aware schema version', async ({ game: page }) => {
-    // Bumped to 3 when the rogue-mode subsystem landed. Future
+  test('SAVE_VERSION marker is at the hunt-aware schema version', async ({ game: page }) => {
+    // Bumped to 3 when the hunt-mode subsystem landed. Future
     // downstream tooling can read this off save.metadata.version.
     await goToPassage(page, 'CityMap');
     const v = await page.evaluate(() => SugarCube.setup.SAVE_VERSION);

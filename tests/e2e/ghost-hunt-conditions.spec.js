@@ -18,7 +18,7 @@ test.describe('Ghost hunt conditions', () => {
     expect(await callSetup(page,
       'setup.Ghosts.getByName("Shade").canProwl(SugarCube.State.variables.mc)')).toBe(true);
 
-    await goToPassage(page, 'RogueRun');
+    await goToPassage(page, 'HuntRun');
     await expectCleanPassage(page);
   });
 
@@ -37,7 +37,7 @@ test.describe('Ghost hunt conditions', () => {
     expect(await callSetup(page,
       'setup.Ghosts.getByName("Demon").canProwl(SugarCube.State.variables.mc)')).toBe(true);
 
-    await goToPassage(page, 'RogueRun');
+    await goToPassage(page, 'HuntRun');
     await expectCleanPassage(page);
   });
 
@@ -52,7 +52,7 @@ test.describe('Ghost hunt conditions', () => {
     expect(await callSetup(page,
       'setup.Ghosts.getByName("Spirit").canProwl(SugarCube.State.variables.mc)')).toBe(true);
 
-    await goToPassage(page, 'RogueRun');
+    await goToPassage(page, 'HuntRun');
     await expectCleanPassage(page);
   });
 
@@ -67,7 +67,7 @@ test.describe('Ghost hunt conditions', () => {
     expect(await callSetup(page,
       'setup.Ghosts.getByName("Poltergeist").canProwl(SugarCube.State.variables.mc)')).toBe(true);
 
-    await goToPassage(page, 'RogueRun');
+    await goToPassage(page, 'HuntRun');
     await expectCleanPassage(page);
   });
 
@@ -85,7 +85,7 @@ test.describe('Ghost hunt conditions', () => {
     const evidence = await page.evaluate(() => SugarCube.State.variables.hunt.evidence);
     expect(evidence).toContain('spiritbox');
 
-    await goToPassage(page, 'RogueRun');
+    await goToPassage(page, 'HuntRun');
     await expectCleanPassage(page);
   });
 
@@ -100,7 +100,7 @@ test.describe('Ghost hunt conditions', () => {
     expect(await callSetup(page,
       'setup.Ghosts.getByName("Myling").canProwl(SugarCube.State.variables.mc)')).toBe(true);
 
-    await goToPassage(page, 'RogueRun');
+    await goToPassage(page, 'HuntRun');
     await expectCleanPassage(page);
   });
 
@@ -115,7 +115,7 @@ test.describe('Ghost hunt conditions', () => {
     expect(await callSetup(page,
       'setup.Ghosts.getByName("The Twins").canProwl(SugarCube.State.variables.mc)')).toBe(true);
 
-    await goToPassage(page, 'RogueRun');
+    await goToPassage(page, 'HuntRun');
     await expectCleanPassage(page);
   });
 
@@ -130,7 +130,7 @@ test.describe('Ghost hunt conditions', () => {
     expect(await callSetup(page,
       'setup.Ghosts.getByName("Wraith").canProwl(SugarCube.State.variables.mc)')).toBe(true);
 
-    await goToPassage(page, 'RogueRun');
+    await goToPassage(page, 'HuntRun');
     await expectCleanPassage(page);
   });
 
@@ -145,7 +145,7 @@ test.describe('Ghost hunt conditions', () => {
     expect(await callSetup(page,
       'setup.Ghosts.getByName("Mare").canProwl(SugarCube.State.variables.mc)')).toBe(true);
 
-    await goToPassage(page, 'RogueRun');
+    await goToPassage(page, 'HuntRun');
     await expectCleanPassage(page);
   });
 
@@ -160,7 +160,7 @@ test.describe('Ghost hunt conditions', () => {
     expect(await callSetup(page,
       'setup.Ghosts.getByName("Banshee").canProwl(SugarCube.State.variables.mc)')).toBe(true);
 
-    await goToPassage(page, 'RogueRun');
+    await goToPassage(page, 'HuntRun');
     await expectCleanPassage(page);
   });
 
@@ -171,7 +171,7 @@ test.describe('Ghost hunt conditions', () => {
     expect(hint).toContain('10');
     expect(hint.toLowerCase()).toContain('sanity');
 
-    await goToPassage(page, 'RogueRun');
+    await goToPassage(page, 'HuntRun');
     await expectCleanPassage(page);
   });
 
@@ -186,7 +186,7 @@ test.describe('Ghost hunt conditions', () => {
     expect(await callSetup(page,
       'setup.Ghosts.getByName("Cthulion").canProwl(SugarCube.State.variables.mc)')).toBe(true);
 
-    await goToPassage(page, 'RogueRun');
+    await goToPassage(page, 'HuntRun');
     await expectCleanPassage(page);
   });
 
@@ -201,7 +201,7 @@ test.describe('Ghost hunt conditions', () => {
     expect(await callSetup(page,
       'setup.Ghosts.getByName("Raiju").canProwl(SugarCube.State.variables.mc)')).toBe(true);
 
-    await goToPassage(page, 'RogueRun');
+    await goToPassage(page, 'HuntRun');
     await expectCleanPassage(page);
   });
 

@@ -16,7 +16,7 @@ The core gameplay revolves around investigating haunted locations to identify an
   * [GhostController.tw](../passages/ghosts/GhostController.tw) - `setup.Ghost` namespace; owns per-ghost evidence lists and the shrink/prune logic that used to live in DeleteEvidence
   * [FindCursedItem.tw](../passages/haunted_houses/general/FindCursedItem.tw) - Searching for cursed items in haunted houses
 
-* **Hunt flow** - The core loop of starting, running, and ending a ghost hunt. Per-tick events (light flicker, ghost event, clothes-steal roll, random prowl trigger) and per-step stat drain run through the shared `<<huntTickStep>>` / `<<huntTickEventChain>>` widgets in [widgetInclude.tw](../passages/gui/widgetInclude.tw); rogue nav links and the `<<rogueToolBar>>` widget all fire the same chain through `setup.HuntController` predicates (`isHuntActive`, `shouldTriggerSteal`, `shouldStartRandomProwl`, `huntOverPassage`). The legacy `<<includeTimeEventClothesHunt>>` / `<<includeTimeEventHunt>>` widgets are kept as thin aliases for `<<huntTickStep>>`.
+* **Hunt flow** - The core loop of starting, running, and ending a ghost hunt. Per-tick events (light flicker, ghost event, clothes-steal roll, random prowl trigger) and per-step stat drain run through the shared `<<huntTickStep>>` / `<<huntTickEventChain>>` widgets in [widgetInclude.tw](../passages/gui/widgetInclude.tw); hunt nav links and the `<<huntToolBar>>` widget all fire the same chain through `setup.HuntController` predicates (`isHuntActive`, `shouldTriggerSteal`, `shouldStartRandomProwl`, `huntOverPassage`). The legacy `<<includeTimeEventClothesHunt>>` / `<<includeTimeEventHunt>>` widgets are kept as thin aliases for `<<huntTickStep>>`.
   * [HuntController.tw](../passages/hunt/HuntController.tw) - Hunt facade — owns `isActive()`/`activeGhost()`/`isGhostHere()` and the hunt-over routing helpers
   * [HuntEnd.tw](../passages/haunted_houses/hunt/HuntEnd.tw) - Ending a hunt normally
   * [HuntOverManual.tw](../passages/haunted_houses/hunt/HuntOverManual.tw) - Manually ending a hunt
@@ -25,8 +25,8 @@ The core gameplay revolves around investigating haunted locations to identify an
   * [HuntOverExhaustion.tw](../passages/haunted_houses/hunt/HuntOverExhaustion.tw) - Hunt ending due to exhaustion
   * [HuntEventSuccubus.tw](../passages/haunted_houses/hunt/HuntEventSuccubus.tw) - Succubus hunt event
 
-* **Ghost behavior and randomization** - The ghost type is rolled at the start of each rogue run from a seed-derived index into `setup.Ghosts.names()`; the spawn room comes from the floor-plan generator. Mid-run room changes are handled by `setup.HuntController.shuffleGhostRoom()` → `setup.Rogue.driftGhostRoom()`.
-  * [GhostStreet.tw](../passages/haunted_houses/general/GhostStreet.tw) - Ghost street assignment (entry point for the Rogue Hunt card)
+* **Ghost behavior and randomization** - The ghost type is rolled at the start of each hunt from a seed-derived index into `setup.Ghosts.names()`; the spawn room comes from the floor-plan generator. Mid-run room changes are handled by `setup.HuntController.shuffleGhostRoom()` → `setup.HuntController.driftGhostRoom()`.
+  * [GhostStreet.tw](../passages/haunted_houses/general/GhostStreet.tw) - Ghost street assignment (entry point for the Hunt card)
   * [GhostHuntEvent.tw](../passages/haunted_houses/general/GhostHuntEvent.tw) - Ghost hunt event triggers
   * [FreezeHunt.tw](../passages/haunted_houses/general/FreezeHunt.tw) - Freeze-state / stall handling during a hunt
 
@@ -44,8 +44,8 @@ The core gameplay revolves around investigating haunted locations to identify an
   * [NudityEvent.tw](../passages/haunted_houses/general/NudityEvent.tw) - Nudity event triggers
   * [NudityEventTwo.tw](../passages/haunted_houses/general/NudityEventTwo.tw) - Second nudity event
 
-* **Hunt-house plumbing** - The rogue lifecycle composes its floor plan from the catalogues in [passages/rogue/](../passages/rogue/) — see [rogue-mode.md](rogue-mode.md) for the full lifecycle, modifiers, and meta-shop. Shared room / cursed-item / monkey-paw plumbing still lives here:
+* **Hunt-house plumbing** - The hunt lifecycle composes its floor plan from the catalogues in [passages/hunt/](../passages/hunt/) — see [hunt-mode.md](hunt-mode.md) for the full lifecycle, modifiers, and meta-shop. Shared room / cursed-item / monkey-paw plumbing still lives here:
   * [HauntedHousesController.tw](../passages/haunted_houses/HauntedHousesController.tw) - Shared haunted-house state and helpers (cursed-item placement, prowl roll, drift hooks)
-  * [RoomsController.tw](../passages/haunted_houses/RoomsController.tw) - `setup.Rooms` namespace for per-room state (`byId`, `templateOf`, `isDark`, `setBackground`, `seed`); each room state object carries a `template` field so rogue runs can mint extra rooms with arbitrary ids
+  * [RoomsController.tw](../passages/haunted_houses/RoomsController.tw) - `setup.Rooms` namespace for per-room state (`byId`, `templateOf`, `isDark`, `setBackground`, `seed`); each room state object carries a `template` field so hunts can mint extra rooms with arbitrary ids
   * [MonkeyPaw.tw](../passages/haunted_houses/general/MonkeyPaw.tw) / [MonkeyPawController.tw](../passages/haunted_houses/MonkeyPawController.tw) - Monkey's Paw cursed wish item
   * [FurnitureSearch.tw](../passages/haunted_houses/general/FurnitureSearch.tw) - Searching furniture for evidence and stash loot

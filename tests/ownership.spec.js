@@ -118,18 +118,18 @@ test.describe('Variable ownership', () => {
 		// Stateless controllers are allowed to own nothing:
 		//   - Salon: deliberately stateless (legacy decision).
 		//   - FloorPlan: pure-functional generator. The plan it
-		//     produces lives on $run.floorplan, owned by setup.Rogue.
+		//     produces lives on $run.floorplan, owned by setup.HuntController.
 		//   - Modifiers: pure-functional catalogue + drafter. The
-		//     active deck lives on $run.modifiers, owned by setup.Rogue.
+		//     active deck lives on $run.modifiers, owned by setup.HuntController.
 		//   - Templates: pure-functional template catalogue. No
-		//     state of its own; consumed by FloorPlan + rogue room
+		//     state of its own; consumed by FloorPlan + hunt room
 		//     rendering.
-		//   - RogueHouses: pure-functional static-plan catalogue. The
+		//   - HuntHouses: pure-functional static-plan catalogue. The
 		//     active staticHouseId lives on $run.staticHouseId, owned
-		//     by setup.Rogue; the staging slot $pendingRogueStaticHouseId
+		//     by setup.HuntController; the staging slot $pendingHuntHouseId
 		//     is owned there too.
 		// Every other discovered controller should claim at least one var.
-		const STATELESS_ALLOWED = new Set(['Salon', 'FloorPlan', 'Modifiers', 'Templates', 'RogueHouses']);
+		const STATELESS_ALLOWED = new Set(['Salon', 'FloorPlan', 'Modifiers', 'Templates', 'HuntHouses']);
 		const empty = controllerNames
 			.filter((n) => ownedByName[n].length === 0 && !STATELESS_ALLOWED.has(n));
 		expect(

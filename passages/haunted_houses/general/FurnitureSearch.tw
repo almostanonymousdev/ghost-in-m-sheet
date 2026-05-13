@@ -1,19 +1,18 @@
 :: FurnitureSearch [nobr noreturn] {"position":"1850,200","size":"100,100"}
-/* Furniture-search passage for rogue runs. Rogue runs route here
-   from RogueRun's furniture row (which calls
-   setup.Rogue.setSearchedFurniture()).
+/* Furniture-search passage for hunts. HuntRun's furniture row
+   routes here via setup.HuntController.setSearchedFurniture().
 
-   Multi-item slots: rogue's floor-plan generator prefers distinct
+   Multi-item slots: the floor-plan generator prefers distinct
    furniture slots but can stack multiple loot kinds on one slot
    when the room runs out of unique furniture. The branch reads the
-   full uncollected list via setup.Rogue.lootKindsAt and renders one
+   full uncollected list via setup.HuntController.lootKindsAt and renders one
    beat per kind in a single search -- the player never has to click
    the same drawer twice. Solo searches keep the existing linkappend
    reveal flavor; multi-item searches drop the gate and reveal
    everything at once so the back-button is one click away. */
 <<video "mechanics/curseditems/lfci.mp4">>
-<<set _sf to setup.Rogue.searchedFurniture()>>
-<<set _kinds to _sf ? setup.Rogue.lootKindsAt(_sf.room, _sf.suffix) : []>>
+<<set _sf to setup.HuntController.searchedFurniture()>>
+<<set _kinds to _sf ? setup.HuntController.lootKindsAt(_sf.room, _sf.suffix) : []>>
 <<if _kinds.length eq 0>>
 	@@.mc-thoughts; You search but find nothing of note.@@<br>
 	<br>
@@ -23,12 +22,12 @@
 	<<set _toolId to setup.FloorPlan.toolIdFromLootKind(_kind)>>
 	<<if _kind eq "cursedItem">>
 		@@.mc-thoughts; You find a cursed item tucked into the furniture.@@<br>
-		<<run setup.Rogue.takeLoot("cursedItem")>>
+		<<run setup.HuntController.takeLoot("cursedItem")>>
 		<br>
 		@@.backbtn; [[Back|$return]]@@
 	<<elseif _kind eq "rescueClue">>
 		@@.mc-thoughts; You find a clue about one of the missing women.@@<br>
-		<<run setup.Rogue.takeLoot("rescueClue")>>
+		<<run setup.HuntController.takeLoot("rescueClue")>>
 		<br>
 		@@.backbtn; [[Back|$return]]@@
 	<<elseif _kind eq "tarotCards" and setup.HauntedHouses.tarotCardsStage() eq setup.TarotStage.HIDDEN>>
@@ -36,13 +35,13 @@
 	<<elseif _kind eq "monkeyPaw" and setup.MonkeyPaw.isDiscoverable()>>
 		<<include "PickupMonkeyPaw">>
 	<<elseif _kind eq "clothesStolen" and setup.HauntedHouses.hasClothesStolen()>>
-		<<run setup.Rogue.takeLoot("clothesStolen")>>
+		<<run setup.HuntController.takeLoot("clothesStolen")>>
 		<<include "FindStolenClothes">>
 		<br>
 		<br>
 		@@.backbtn; [[Back|$return]]@@<br>
 	<<elseif _toolId>>
-		<<include "PickupRogueTool">>
+		<<include "PickupHuntTool">>
 	<<else>>
 		@@.mc-thoughts; You search but find nothing of note.@@<br>
 		<br>
@@ -52,7 +51,7 @@
 	@@.mc-thoughts; You find several things tucked together.@@<br>
 	<br>
 	<<for _k range _kinds>>
-		<<rogueLootBeat _k>>
+		<<huntLootBeat _k>>
 	<</for>>
 	@@.backbtn; [[Back|$return]]@@
 <</if>>
@@ -75,7 +74,7 @@
 	<br>
 	@@.mc-action; You put the tarot cards in your bag@@<br>
 	<<run setup.HauntedHouses.markTarotCarrying()>>
-	<<run setup.Rogue.takeLoot("tarotCards")>>
+	<<run setup.HuntController.takeLoot("tarotCards")>>
 <</linkappend>>
 <br><br>
 @@.backbtn; [[Back|$return]]@@
@@ -94,13 +93,13 @@
 	<br>
 	@@.mc-action; You put monkey paw in your bag@@<br>
 	<<run setup.MonkeyPaw.markFound()>>
-	<<run setup.Rogue.takeLoot("monkeyPaw")>>
+	<<run setup.HuntController.takeLoot("monkeyPaw")>>
 <</linkappend>>
 <br><br>
 @@.backbtn; [[Back|$return]]@@
 
-:: widgetRogueLootBeat [widget nobr] {"position":"2250,200","size":"100,100"}
-/* rogueLootBeat -- compact pickup beat for one loot kind, used
+:: widgetHuntLootBeat [widget nobr] {"position":"2250,200","size":"100,100"}
+/* huntLootBeat -- compact pickup beat for one loot kind, used
    when a multi-item furniture slot reveals everything in a single
    search. Each kind renders a one- or two-line "you find X" line
    (with a small image for the carriable items) and immediately
@@ -108,17 +107,17 @@
    linkappend gating, since the player never has to click the same
    drawer twice in the multi-item case. The single-item path keeps
    its existing linkappend reveals (PickupTarotCards / PickupMonkeyPaw
-   / PickupRogueTool) for flavor; this widget only fires when
+   / PickupHuntTool) for flavor; this widget only fires when
    _kinds.length > 1. */
-<<widget "rogueLootBeat">>
+<<widget "huntLootBeat">>
 	<<set _kind to _args[0]>>
 	<<set _toolId to setup.FloorPlan.toolIdFromLootKind(_kind)>>
 	<<if _kind eq "cursedItem">>
 		@@.mc-thoughts; A cursed item, tucked into the furniture.@@<br><br>
-		<<run setup.Rogue.takeLoot("cursedItem")>>
+		<<run setup.HuntController.takeLoot("cursedItem")>>
 	<<elseif _kind eq "rescueClue">>
 		@@.mc-thoughts; A clue about one of the missing women.@@<br><br>
-		<<run setup.Rogue.takeLoot("rescueClue")>>
+		<<run setup.HuntController.takeLoot("rescueClue")>>
 	<<elseif _kind eq "tarotCards">>
 		@@.mc-thoughts; A strange deck of tarot cards.@@<br>
 		<<image "mechanics/cursedpossessions/tarot-cards/tarot.png" "iconsOnMap">><br>
@@ -126,7 +125,7 @@
 		<<if setup.HauntedHouses.tarotCardsStage() eq setup.TarotStage.HIDDEN>>
 			<<run setup.HauntedHouses.markTarotCarrying()>>
 		<</if>>
-		<<run setup.Rogue.takeLoot("tarotCards")>>
+		<<run setup.HuntController.takeLoot("tarotCards")>>
 	<<elseif _kind eq "monkeyPaw">>
 		@@.mc-thoughts; A withered monkey's paw.@@<br>
 		<<image "mechanics/cursedpossessions/monkey-paw/monkeypaw.jpg" "iconsOnMap">><br>
@@ -134,7 +133,7 @@
 		<<if setup.MonkeyPaw.isDiscoverable()>>
 			<<run setup.MonkeyPaw.markFound()>>
 		<</if>>
-		<<run setup.Rogue.takeLoot("monkeyPaw")>>
+		<<run setup.HuntController.takeLoot("monkeyPaw")>>
 	<<elseif _kind eq "clothesStolen" and setup.HauntedHouses.hasClothesStolen()>>
 		@@.mc-thoughts; Your stolen clothes, balled up out of sight.@@<br>
 		@@.mc-action; You put them back on.@@<br><br>
@@ -143,26 +142,26 @@
 		<<if setup.Wardrobe.isShirtStolen()>><<run setup.Wardrobe.restoreStolenInGroup("tshirt", "isShirtStolen")>><</if>>
 		<<if setup.Wardrobe.isBraStolen()>><<run setup.Wardrobe.restoreStolenInGroup("bra", "isBraStolen")>><</if>>
 		<<run setup.HauntedHouses.clearClothesStolenFlag()>>
-		<<run setup.Rogue.takeLoot("clothesStolen")>>
+		<<run setup.HuntController.takeLoot("clothesStolen")>>
 	<<elseif _toolId>>
 		<<set _toolDef to setup.searchToolDefs[_toolId]>>
-		@@.mc-thoughts; A piece of hunting equipment -- the <<= setup.Rogue.humanizeLootKind(_kind)>>.@@<br>
+		@@.mc-thoughts; A piece of hunting equipment -- the <<= setup.HuntController.humanizeLootKind(_kind)>>.@@<br>
 		<<image "ui/img/" + _toolDef.iconFile "iconsOnMap">><br>
 		@@.mc-action; You put it in your bag.@@<br><br>
-		<<run setup.Rogue.takeLoot(_kind)>>
+		<<run setup.HuntController.takeLoot(_kind)>>
 	<</if>>
 <</widget>>
 
-:: PickupRogueTool [nobr] {"position":"2150,200","size":"100,100"}
-/* Pickup beat for a hunting tool found in furniture during a rogue
-   run. The Empty Bag modifier and any tools-restricting loadout
-   leave the toolbar starting short; setup.Rogue.startRogue stamps
+:: PickupHuntTool [nobr] {"position":"2150,200","size":"100,100"}
+/* Pickup beat for a hunting tool found in furniture during a hunt.
+   The Empty Bag modifier and any tools-restricting loadout leave
+   the toolbar starting short; setup.HuntController.startHunt stamps
    the missing tools onto the floor plan as 'tool_<id>' loot, and
-   takeLoot here marks the slot collected. setup.Rogue.startingTools
+   takeLoot here marks the slot collected. setup.HuntController.startingTools
    re-renders the toolbar union of the starting set + collected loot
-   on the next visit to RogueRun, so the picked-up tool becomes
+   on the next visit to HuntRun, so the picked-up tool becomes
    clickable in the strip. */
-<<set _kind to setup.Rogue.lootAt(setup.Rogue.searchedFurniture().room, setup.Rogue.searchedFurniture().suffix)>>
+<<set _kind to setup.HuntController.lootAt(setup.HuntController.searchedFurniture().room, setup.HuntController.searchedFurniture().suffix)>>
 <<set _toolId to setup.FloorPlan.toolIdFromLootKind(_kind)>>
 <<set _toolDef to setup.searchToolDefs[_toolId]>>
 @@.mc-thoughts; You come across a piece of hunting@@ <<linkappend "@@.usebtn; equipment.@@">><br>
@@ -171,8 +170,8 @@
 	@@.mc-speech; Someone left this behind. It looks like it still works -- <br>
 	I should keep it. It might give me an edge in here.@@<br>
 	<br>
-	@@.mc-action; You put the <<= setup.Rogue.humanizeLootKind(_kind)>> in your bag@@<br>
-	<<run setup.Rogue.takeLoot(_kind)>>
+	@@.mc-action; You put the <<= setup.HuntController.humanizeLootKind(_kind)>> in your bag@@<br>
+	<<run setup.HuntController.takeLoot(_kind)>>
 <</linkappend>>
 <br><br>
 @@.backbtn; [[Back|$return]]@@

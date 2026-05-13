@@ -354,30 +354,30 @@ test.describe('Companion Controller', () => {
 
   // --- Haunted house location ---
 
-  test('inHauntedHouseLocation true for rogue-owaissa', async ({ game: page }) => {
-    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1, staticHouseId: 'rogue-owaissa' }));
+  test('inHauntedHouseLocation true for owaissa', async ({ game: page }) => {
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: 'owaissa' }));
     const result = await callSetup(page, 'setup.Companion.inHauntedHouseLocation()');
-    await page.evaluate(() => SugarCube.setup.Rogue.end());
+    await page.evaluate(() => SugarCube.setup.HuntController.end());
     expect(result).toBe(true);
   });
 
-  test('inHauntedHouseLocation true for rogue-elm', async ({ game: page }) => {
-    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1, staticHouseId: 'rogue-elm' }));
+  test('inHauntedHouseLocation true for elm', async ({ game: page }) => {
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: 'elm' }));
     const result = await callSetup(page, 'setup.Companion.inHauntedHouseLocation()');
-    await page.evaluate(() => SugarCube.setup.Rogue.end());
+    await page.evaluate(() => SugarCube.setup.HuntController.end());
     expect(result).toBe(true);
   });
 
-  test('inHauntedHouseLocation false when no rogue run is active', async ({ game: page }) => {
-    await page.evaluate(() => { if (SugarCube.setup.Rogue.active()) SugarCube.setup.Rogue.end(); });
+  test('inHauntedHouseLocation false when no hunt is active', async ({ game: page }) => {
+    await page.evaluate(() => { if (SugarCube.setup.HuntController.active()) SugarCube.setup.HuntController.end(); });
     const result = await callSetup(page, 'setup.Companion.inHauntedHouseLocation()');
     expect(result).toBe(false);
   });
 
-  test('inHauntedHouseLocation false for rogue-ironclad (opts out)', async ({ game: page }) => {
-    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1, staticHouseId: 'rogue-ironclad' }));
+  test('inHauntedHouseLocation false for ironclad (opts out)', async ({ game: page }) => {
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: 'ironclad' }));
     const result = await callSetup(page, 'setup.Companion.inHauntedHouseLocation()');
-    await page.evaluate(() => SugarCube.setup.Rogue.end());
+    await page.evaluate(() => SugarCube.setup.HuntController.end());
     expect(result).toBe(false);
   });
 

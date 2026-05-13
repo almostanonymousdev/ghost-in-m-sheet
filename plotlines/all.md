@@ -38,6 +38,6 @@ After losing a haunted house run, there is a 40% chance a ghost follows the MC h
 
 The game world includes several city locations the player can visit between hunts. These include delivery jobs for earning money, a gym for physical training, a library for research and social encounters, a park for jogging, a church that serves as the rescue quest hub and exorcism storyline, and a mall for shopping. Each location has its own activities, events, and companion interactions.
 
-## [Rogue Mode](rogue-mode.md)
+## [Hunt Mode](hunt-mode.md)
 
 The hunt loop. Each run rolls a fresh haunted house from a deterministic seed: the floor plan, the active modifiers, and the stash placements all change between runs. A small static-house catalogue (Owaissa, Elm, Ironclad) rides the same lifecycle with authored floor plans. Ectoplasm (measured in mL) carries forward and is spent in the meta-shop on persistent unlocks. `$run` is null when no run is active.

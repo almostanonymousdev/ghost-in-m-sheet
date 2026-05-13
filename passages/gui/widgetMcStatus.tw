@@ -3,12 +3,11 @@
    MC clothing HUD). Split out so the per-slot click handlers in hunt
    mode can re-render the strip via <<replace "#statusContainer">>
    without rebuilding the surrounding container div. The hunt-active
-   gate uses HuntController so the click-to-undress shortcut also
-   fires inside rogue runs (mode === 'rogue'), not just classic
-   witch-contract hunts. The fixed-outfit branch (Ironclad's warden
-   costume in either mode) is catalogue-driven via
-   HuntController.sidebarOutfit() -- adding a new fixed-outfit house
-   is one catalogue field, no widget edit. */
+   gate uses HuntController so the click-to-undress shortcut fires
+   on the HuntRun passage. The fixed-outfit branch (Ironclad's warden
+   costume) is catalogue-driven via HuntController.sidebarOutfit() --
+   adding a new fixed-outfit house is one catalogue field, no widget
+   edit. */
 <<widget "mcStatusBody">>
 	<<set _outfit to setup.HuntController.sidebarOutfit()>>
 	<<set _hunting to setup.HuntController.isHuntActive() and not _outfit>>

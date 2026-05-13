@@ -5,7 +5,7 @@ per-step deltas, contributor chips, and the spendable-action buttons
 from setup.HauntConditions.snapshot() so the HUD, the tool-card
 hovertip, and the actual tool/hunt rolls all read the same source.
 Renders contents only -- the .hunt-conditions wrapper lives on the
-RogueRun layout so re-renders via <<replace ".hunt-conditions">>
+HuntRun layout so re-renders via <<replace ".hunt-conditions">>
 don't double-nest the wrapper class (which compounds its 80%
 font-size). */
 <<widget "huntConditions">>
@@ -42,8 +42,8 @@ the end of <<huntConditions>>: bait the ghost (lust spend) and toggle
 overcharged tools on/off. Each click re-renders <<huntConditions>> as a
 whole (which contains the action bar), so we only need the one
 <<replace ".hunt-conditions">> per callback. Renders whenever the
-shared hunt is active on RogueRun; the canBait predicate self-gates
-against rogue runs that have no $hunt. */
+shared hunt is active on HuntRun; the canBait predicate self-gates
+against hunts that have no $hunt. */
 <<widget "huntActionBar">>
 	<<if setup.HuntController.isHuntActive()>>
 		<<if setup.HauntConditions.canBait()>>

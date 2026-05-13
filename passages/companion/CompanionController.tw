@@ -419,11 +419,11 @@ setup.Companion = (function () {
 		},
 
 		// --- House / room / street helpers -----------------------
-		/* True when the active rogue static-plan house opts into
+		/* True when the active hunt's static-plan house opts into
 		   companions. Catalogue-driven so adding a new house never
 		   touches this predicate. */
 		inHauntedHouseLocation: function () {
-			return !!(setup.Rogue && setup.Rogue.staticHouseAllowsCompanions());
+			return !!(setup.HuntController && setup.HuntController.staticHouseAllowsCompanions());
 		},
 		canShowCompanionMiniPanel: function () {
 			return State.variables.chosenPlan !== undefined
@@ -690,7 +690,7 @@ setup.Companion = (function () {
 			return ev[Math.floor(Math.random() * ev.length)];
 		},
 
-		/* Pick a rogue room id for the companion to wander into.
+		/* Pick a hunt room id for the companion to wander into.
 		   Stamps $randomGhostPassage with the picked room id so the
 		   next-tick "is the MC there yet?" check in TickController
 		   can fire the CompanionEvent. Excludes the current room.
@@ -702,10 +702,10 @@ setup.Companion = (function () {
 		pickRandomCompanionRoom: function () {
 			if (State.variables.isCompRoomChosen === 1) return;
 			State.variables.isCompRoomChosen = 1;
-			if (!setup.Rogue) return;
-			var run = setup.Rogue.active();
+			if (!setup.HuntController) return;
+			var run = setup.HuntController.active();
 			if (!run || !run.floorplan) return;
-			var current = setup.Rogue.currentRoomId();
+			var current = setup.HuntController.currentRoomId();
 			var rooms = run.floorplan.rooms
 				.map(function (r) { return r.id; })
 				.filter(function (id) { return id !== current; });

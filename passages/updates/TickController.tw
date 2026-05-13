@@ -96,18 +96,18 @@ setup.Tick = (function () {
 	}
 	function atRandomGhostPassage() {
 		var target = sv().randomGhostPassage;
-		if (!target || !setup.Rogue) return false;
-		if (passage() !== "RogueRun") return false;
-		return setup.Rogue.currentRoomId() === target;
+		if (!target || !setup.HuntController) return false;
+		if (passage() !== "HuntRun") return false;
+		return setup.HuntController.currentRoomId() === target;
 	}
 
 	// --- Steal-chance recompute ---------------------------------
 	function recomputeStealChance() {
 		var s = sv();
-		var rogueMult = (setup.Rogue && setup.Rogue.hasModifier
-			&& setup.Rogue.hasModifier(setup.Modifiers.STICKY_FINGERS))
+		var modifierMult = (setup.HuntController && setup.HuntController.hasModifier
+			&& setup.HuntController.hasModifier(setup.Modifiers.STICKY_FINGERS))
 			? 2 : 1;
-		s.stealChance = (1 + (Math.log(101 - s.mc.sanity) / Math.log(101)) * 1) * s.stealChanceMult * rogueMult;
+		s.stealChance = (1 + (Math.log(101 - s.mc.sanity) / Math.log(101)) * 1) * s.stealChanceMult * modifierMult;
 	}
 
 	// --- PassageDone tick setup ---------------------------------

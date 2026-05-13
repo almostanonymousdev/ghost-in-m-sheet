@@ -218,8 +218,8 @@ async function openGame(browser, { seed } = {}) {
  * the renderer was closed (heavy passages can OOM the renderer under
  * parallel worker load), open a fresh one against the same browser.
  *
- * Used by spec files that own their own page lifecycle (rogue-flow,
- * rogue-outside, events-controller) so a single crashed page doesn't
+ * Used by spec files that own their own page lifecycle (hunt-flow,
+ * hunt-outside, events-controller) so a single crashed page doesn't
  * cascade into "Target page closed" failures across the rest of the file.
  * The fixture-based `game` test fixture handles the equivalent recovery
  * inline.

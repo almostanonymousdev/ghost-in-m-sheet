@@ -24,12 +24,18 @@
 	// saves to pick up its default on next load.
 	//   v1: pre-bundle shape (flat $ghost*, $is<House>, etc.)
 	//   v2: hunt/tools bundles, $hauntedHouse, $monkeyPawLearned map.
-	//   v3: rogue-mode subsystem -- $run / $ectoplasm / $runsStarted
+	//   v3: per-run state introduced -- $run / $ectoplasm / $runsStarted
 	//       defaults seeded for legacy saves; $houseSlots collapses
 	//       the per-house slot forest.
-	//   v4: classic mode removed; rogue is the only hunt mode. Legacy
-	//       $hauntedHouse / $houseSlots / $isClassicHouse flags are dropped.
-	var SAVE_VERSION = 4;
+	//   v4: classic mode removed; only the unified hunt mode remains.
+	//       Legacy $hauntedHouse / $houseSlots / $isClassicHouse flags
+	//       are dropped.
+	//   v5: "rogue" terminology dropped. $nextRogueSeed →
+	//       $nextHuntSeed, $pendingRogueStaticHouseId →
+	//       $pendingHuntHouseId, $currentsearchRogue →
+	//       $currentsearchHunt, and the "rogue-" prefix is stripped
+	//       from static house ids ('rogue-owaissa' → 'owaissa', etc.).
+	var SAVE_VERSION = 5;
 	setup.SAVE_VERSION = SAVE_VERSION;
 
 	/*
@@ -82,8 +88,8 @@
 		summoning:     function () { return {}; },
 		alarm:         function () { return { enabled: false, hour: 7 }; },
 
-		// Rogue-mode state: pre-rogue saves don't have these
-		// fields. $run is null when no rogue run is active
+		// Hunt-mode state: pre-hunt saves don't have these
+		// fields. $run is null when no hunt is active
 		// (classic mode). $ectoplasm starts at 0 mL. $runsStarted
 		// is the lifetime attempt counter, also 0 by default.
 		// $meta holds permanent meta-shop unlocks: per-id owned
@@ -93,14 +99,14 @@
 		ectoplasm:     function () { return 0; },
 		runsStarted:   function () { return 0; },
 		meta:          function () { return { unlocks: {}, bannedModifiers: [], rerollCharges: 0 }; },
-		// Seed for the *next* rogue run. Rotated after each run end so
-		// the GhostStreet card / RogueStart lobby preview a fresh
+		// Seed for the *next* hunt. Rotated after each run end so
+		// the GhostStreet card / HuntStart lobby preview a fresh
 		// address every attempt.
-		nextRogueSeed: function () { return Math.floor(Math.random() * 0x100000000); },
-		// Static-rogue-house id staged from a GhostStreet card.
-		// RogueStart consumes it once and clears it; null on saves
-		// predating static-plan rogue houses.
-		pendingRogueStaticHouseId: function () { return null; },
+		nextHuntSeed: function () { return Math.floor(Math.random() * 0x100000000); },
+		// Static-hunt-house id staged from a GhostStreet card.
+		// HuntStart consumes it once and clears it; null on saves
+		// predating static-plan hunt houses.
+		pendingHuntHouseId: function () { return null; },
 
 		// Per-day seed; regenerated on every 24h rollover.
 		dailySeed:     function () { return Math.floor(Math.random() * 0x100000000); },
@@ -401,7 +407,12 @@
 			masturbationCD:            'masturbation',
 			exorcismCD:                'exorcism',
 			rescueCD:                  'rescue',
-			rescueQuestCD:             'rescueQuest'
+			rescueQuestCD:             'rescueQuest',
+			// v5: "rogue" terminology dropped. Carry old values
+			// forward to their new keys.
+			nextRogueSeed:             'nextHuntSeed',
+			pendingRogueStaticHouseId: 'pendingHuntHouseId',
+			currentsearchRogue:        'currentsearchHunt'
 		};
 		Object.keys(FLAT_RENAMES).forEach(function (oldKey) {
 			var newKey = FLAT_RENAMES[oldKey];
@@ -411,10 +422,27 @@
 			delete vars[oldKey];
 		});
 
+		// v5: static-plan house ids lost their "rogue-" prefix
+		// ('rogue-owaissa' → 'owaissa', etc.). Strip the prefix
+		// from any place a save could be carrying a stale id —
+		// the pending-house staging slot and the active $run.
+		function stripRoguePrefix(id) {
+			return typeof id === 'string' && id.indexOf('rogue-') === 0
+				? id.slice('rogue-'.length)
+				: id;
+		}
+		if (typeof vars.pendingHuntHouseId === 'string') {
+			vars.pendingHuntHouseId = stripRoguePrefix(vars.pendingHuntHouseId);
+		}
+		if (vars.run && typeof vars.run === 'object'
+			&& typeof vars.run.staticHouseId === 'string') {
+			vars.run.staticHouseId = stripRoguePrefix(vars.run.staticHouseId);
+		}
+
 		// Classic-house flags + per-house slot maps were removed
-		// when the only hunt mode became rogue. Drop whatever legacy
-		// fields the save is carrying so they don't bloat downstream
-		// state walks.
+		// when the game collapsed to a single unified hunt mode.
+		// Drop whatever legacy fields the save is carrying so they
+		// don't bloat downstream state walks.
 		delete vars.hauntedHouse;
 		delete vars.isOwaissa;
 		delete vars.isElm;

@@ -121,7 +121,7 @@ test.describe('Modifier registry', () => {
   // --- Integration with active run ---
 
   test('activeList resolves $run.modifiers ids to catalogue entries', async () => {
-    await page.evaluate(() => SugarCube.setup.Rogue.start({
+    await page.evaluate(() => SugarCube.setup.HuntController.start({
       seed: 1, modifiers: ['locked_tools', 'pheromones']
     }));
 
@@ -130,7 +130,7 @@ test.describe('Modifier registry', () => {
   });
 
   test('activeList drops unknown modifier ids silently', async () => {
-    await page.evaluate(() => SugarCube.setup.Rogue.start({
+    await page.evaluate(() => SugarCube.setup.HuntController.start({
       seed: 1, modifiers: ['locked_tools', 'renamed_or_removed', 'pheromones']
     }));
 
@@ -150,7 +150,7 @@ test.describe('Modifier registry', () => {
   });
 
   test('payoutMultiplier multiplies the active deck', async () => {
-    await page.evaluate(() => SugarCube.setup.Rogue.start({
+    await page.evaluate(() => SugarCube.setup.HuntController.start({
       seed: 1, modifiers: ['locked_tools', 'pheromones']
     }));
     const lt = await callSetup(page, 'setup.Modifiers.byId("locked_tools").payoutMultiplier');
@@ -160,7 +160,7 @@ test.describe('Modifier registry', () => {
   });
 
   test('payoutMultiplier ignores unknown modifier ids (1x contribution)', async () => {
-    await page.evaluate(() => SugarCube.setup.Rogue.start({
+    await page.evaluate(() => SugarCube.setup.HuntController.start({
       seed: 1, modifiers: ['fog_of_war', 'renamed_or_removed']
     }));
     const fow = await callSetup(page, 'setup.Modifiers.byId("fog_of_war").payoutMultiplier');

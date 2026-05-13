@@ -1,12 +1,12 @@
 const { test, expect } = require('@playwright/test');
 const { openGame, resetGame, getVar, goToPassage, callSetup, ensureOpenPage, seedRandom } = require('../helpers');
 
-/* End-to-end rogue lifecycle: GhostStreet → RogueStart → RogueRun
-   → RogueEnd → RogueMetaShop. Exercises the actual passage flow
+/* End-to-end hunt lifecycle: GhostStreet → HuntStart → HuntRun
+   → HuntSummary → MetaShop. Exercises the actual passage flow
    so any wiring break (missing link text, broken setField call,
    wrong passage transition) shows up here. */
-test.describe('E2E: rogue run lifecycle', () => {
-  /* Click-driven rogue navigation hits dozens of passages with heavy
+test.describe('E2E: hunt lifecycle', () => {
+  /* Click-driven hunt navigation hits dozens of passages with heavy
      <<do>>/<<redo>> chains. Under parallel worker load the renderer can OOM
      mid-test ("Target page closed"); the self-healing beforeEach reopens
      the page on the retry, so a single retry covers a transient renderer
@@ -36,7 +36,7 @@ test.describe('E2E: rogue run lifecycle', () => {
       page = await openGame(savedBrowser);
       await resetGame(page);
     }
-    /* GhostStreet's rogueHuntCard gates the link behind setup.Mc.lvl() >= 4.
+    /* GhostStreet's huntCard gates the link behind setup.Mc.lvl() >= 4.
        New games start at lvl 0, so without this every test would land on
        the "Level 4+ required" placeholder instead of a clickable link.
        Wait for $mc to be re-initialised by StoryInit before mutating it —
@@ -44,7 +44,7 @@ test.describe('E2E: rogue run lifecycle', () => {
        race the variable rebind. */
     await page.waitForFunction(() => SugarCube.State.variables.mc != null);
     await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
-    /* Pin Math.random per-test so RogueStart's auto-roll (nextSeed,
+    /* Pin Math.random per-test so HuntStart's auto-roll (nextSeed,
        floor-plan generator, modifier draft) lands on the same layout
        every run. Without this the floor-plan layout flips between
        attempts and tests that walk the resulting plan
@@ -58,31 +58,31 @@ test.describe('E2E: rogue run lifecycle', () => {
     await page.waitForFunction(p => SugarCube.State.passage === p, expectedPassage);
   }
 
-  /* The rogue card's link text is the per-cycle randomised street
-     address, not a fixed "Rogue Hunt" label. Resolve the address from
-     setup.Rogue.nextSeed() (the same source the card widget reads) and
+  /* The hunt card's link text is the per-cycle randomised street
+     address, not a fixed "Hunt" label. Resolve the address from
+     setup.HuntController.nextSeed() (the same source the card widget reads) and
      click the matching link. */
-  async function clickRogueCard(page) {
-    const rogueAddr = await page.evaluate(() =>
-      SugarCube.setup.Rogue.addressFromSeed(SugarCube.setup.Rogue.nextSeed()).formatted
+  async function clickHuntCard(page) {
+    const huntAddr = await page.evaluate(() =>
+      SugarCube.setup.HuntController.addressFromSeed(SugarCube.setup.HuntController.nextSeed()).formatted
     );
-    await clickLink(page, rogueAddr, 'RogueStart');
+    await clickLink(page, huntAddr, 'HuntStart');
   }
 
-  /* Restart the active rogue run with no modifiers so the toolbar is
+  /* Restart the active hunt with no modifiers so the toolbar is
      fully populated and the floor plan has no tool-recovery loot
      stacked onto authored loot slots (tarot, paw, etc). The default
-     RogueStart auto-roll always drafts the full catalogue, which
+     HuntStart auto-roll always drafts the full catalogue, which
      means locked_tools is reliably active and the floor-plan
      generator places all six missing tools as furniture loot --
      stacking those onto the same slot as e.g. the tarot deck flips
      FurnitureSearch into its multi-item branch and skips the
      "deck of cards." linkappend reveal these tests pin. Tests that
      need a clean toolbar + clean floor plan call this after the
-     RogueStart auto-roll. */
+     HuntStart auto-roll. */
   async function ensureNotEmptyBag(page) {
     await page.evaluate(() => {
-      SugarCube.setup.Rogue.startRogue({ modifierCount: 0 });
+      SugarCube.setup.HuntController.startHunt({ modifierCount: 0 });
     });
   }
 
@@ -93,25 +93,25 @@ test.describe('E2E: rogue run lifecycle', () => {
     expect(await getVar(page, 'run')).toBeNull();
     expect(await getVar(page, 'ectoplasm')).toBe(0);
 
-    // 1. Launch the run from the GhostStreet rogue card.
-    await clickRogueCard(page);
+    // 1. Launch the run from the GhostStreet hunt card.
+    await clickHuntCard(page);
 
-    // RogueStart auto-rolls the run via setup.Rogue.startRogue, so $run
+    // HuntStart auto-rolls the run via setup.HuntController.startHunt, so $run
     // already exists on entry. Confirm the lifecycle stamps look sane.
     let run = await getVar(page, 'run');
     expect(run).not.toBeNull();
     expect(run.number).toBe(1);
     expect(run.modifiers.length).toBe(2);
 
-    // 2. Enter the hunt (RogueRun).
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    // 2. Enter the hunt (HuntRun).
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
 
     // 3. Win the run. Stamp the success outcome and navigate to the
     // end-passage; the in-game flow gates this behind a correct ghost
     // identification, but for lifecycle coverage we drive the outcome
     // directly.
-    await page.evaluate(() => SugarCube.setup.Rogue.markSuccess());
-    await goToPassage(page, 'RogueEnd');
+    await page.evaluate(() => SugarCube.setup.HuntController.markSuccess());
+    await goToPassage(page, 'HuntSummary');
 
     // The end-passage clears the run and pays out ectoplasm (mL).
     run = await getVar(page, 'run');
@@ -127,28 +127,28 @@ test.describe('E2E: rogue run lifecycle', () => {
     // (Reroll Charge at 5 mL). The shop redirects through goto on
     // every purchase; we wait on the resulting state mutation
     // (charges incremented, ectoplasm deducted) instead of DOM.
-    await clickLink(page, 'Visit the meta-shop', 'RogueMetaShop');
+    await clickLink(page, 'Visit the meta-shop', 'MetaShop');
     await page.locator('.passage')
-      .locator('#rogue-shop-row-reroll_charge')
+      .locator('#hunt-shop-row-reroll_charge')
       .getByText(/^Buy \(5 mL\)$/)
       .click();
     await page.waitForFunction(
       remaining => SugarCube.State.variables.ectoplasm === remaining,
       ectoplasm - 5
     );
-    expect(await page.evaluate(() => SugarCube.setup.Rogue.rerollCharges())).toBe(1);
+    expect(await page.evaluate(() => SugarCube.setup.HuntController.rerollCharges())).toBe(1);
   });
 
   test('losing a run still pays out failure-base * deck multiplier of ectoplasm', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickHuntCard(page);
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
     const expected = await page.evaluate(() =>
       Math.round(3 * SugarCube.setup.Modifiers.payoutMultiplier()));
-    await page.evaluate(() => SugarCube.setup.Rogue.markFailure());
-    await goToPassage(page, 'RogueEnd');
+    await page.evaluate(() => SugarCube.setup.HuntController.markFailure());
+    await goToPassage(page, 'HuntSummary');
 
     expect(await getVar(page, 'ectoplasm')).toBe(expected);
     expect(await getVar(page, 'run')).toBeNull();
@@ -159,8 +159,8 @@ test.describe('E2E: rogue run lifecycle', () => {
 
     // Run 1: start it, then bail back out without finishing.
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickHuntCard(page);
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
     // Snapshot the failure payout BEFORE walking back; the forfeit pays
     // failure-base * the run-1 modifier deck.
     const expectedForfeit = await page.evaluate(() =>
@@ -173,19 +173,19 @@ test.describe('E2E: rogue run lifecycle', () => {
     ).toHaveCount(0);
 
     // Walking back in pays out failure ectoplasm for run 1, then rolls run 2.
-    await clickRogueCard(page);
+    await clickHuntCard(page);
     const run = await getVar(page, 'run');
     expect(run.number).toBe(2);
     expect(await getVar(page, 'ectoplasm')).toBe(expectedForfeit);
     expect(await getVar(page, 'runsStarted')).toBe(2);
   });
 
-  test('RogueRun layout: minimap top-left, exits in toolbar, exits advance the player', async () => {
+  test('HuntRun layout: minimap top-left, exits in toolbar, exits advance the player', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickHuntCard(page);
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
 
     // Player starts in the hallway (room_0).
     expect(await getVar(page, 'run').then(r => r.currentRoomId)).toBe('room_0');
@@ -195,11 +195,11 @@ test.describe('E2E: rogue run lifecycle', () => {
     //   - top-right holds the active-modifier chip list
     //   - bottom-right toolbar slot holds the exit nav links (no
     //     "Exits" header -- the links speak for themselves)
-    await expect(page.locator('.rogue-run-tl .rogue-minimap-svg')).toBeVisible();
+    await expect(page.locator('.hunt-run-tl .hunt-minimap-svg')).toBeVisible();
     await expect(
-      page.locator('.rogue-run-tr .rogue-modifier-chip').first()
+      page.locator('.hunt-run-tr .hunt-modifier-chip').first()
     ).toBeVisible();
-    expect(await page.locator('.rogue-run-nav a').count()).toBeGreaterThan(0);
+    expect(await page.locator('.hunt-run-nav a').count()).toBeGreaterThan(0);
 
     // Click the first hallway neighbour from the Exits column and verify
     // currentRoomId follows.
@@ -213,7 +213,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     const firstNeighbour = fp.rooms.find(r => r.id === firstNeighbourId);
     const tLabel = await callSetup(page, `setup.Templates.byId("${firstNeighbour.template}").label`);
 
-    await page.locator('.rogue-run-nav')
+    await page.locator('.hunt-run-nav')
       .getByText(tLabel, { exact: true })
       .first()
       .click();
@@ -223,12 +223,12 @@ test.describe('E2E: rogue run lifecycle', () => {
     );
   });
 
-  test('rogue exit nav switches to compact layout when the current room has >3 neighbours', async () => {
+  test('hunt exit nav switches to compact layout when the current room has >3 neighbours', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickHuntCard(page);
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
 
     // Find a room with <=3 exits to serve as the low-exit baseline.
     // The procedurally-rolled floor plan doesn't reliably produce a
@@ -256,67 +256,67 @@ test.describe('E2E: rogue run lifecycle', () => {
 
     test.skip(!lowId, 'floorplan lacks a <=3-exit room');
 
-    await page.evaluate(id => SugarCube.setup.Rogue.setCurrentRoom(id), hubId);
-    await goToPassage(page, 'RogueRun');
-    await expect(page.locator('.rogue-run-nav')).toHaveClass(/rogue-run-nav-compact/);
+    await page.evaluate(id => SugarCube.setup.HuntController.setCurrentRoom(id), hubId);
+    await goToPassage(page, 'HuntRun');
+    await expect(page.locator('.hunt-run-nav')).toHaveClass(/hunt-run-nav-compact/);
 
-    await page.evaluate(id => SugarCube.setup.Rogue.setCurrentRoom(id), lowId);
-    await goToPassage(page, 'RogueRun');
-    await expect(page.locator('.rogue-run-nav')).not.toHaveClass(/rogue-run-nav-compact/);
+    await page.evaluate(id => SugarCube.setup.HuntController.setCurrentRoom(id), lowId);
+    await goToPassage(page, 'HuntRun');
+    await expect(page.locator('.hunt-run-nav')).not.toHaveClass(/hunt-run-nav-compact/);
   });
 
-  test('clicking the minimap toggles the rogue-minimap-collapsed class and survives room moves', async () => {
+  test('clicking the minimap toggles the hunt-minimap-collapsed class and survives room moves', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
-    // The default rogue draft can leave minimapCollapsed lingering true
+    await clickHuntCard(page);
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
+    // The default hunt draft can leave minimapCollapsed lingering true
     // from an earlier test run -- reset to a known state before asserting.
     await page.evaluate(() => {
-      if (SugarCube.setup.Rogue.isMinimapCollapsed()) {
-        SugarCube.setup.Rogue.toggleMinimapCollapsed();
+      if (SugarCube.setup.HuntController.isMinimapCollapsed()) {
+        SugarCube.setup.HuntController.toggleMinimapCollapsed();
       }
     });
-    await goToPassage(page, 'RogueRun');
+    await goToPassage(page, 'HuntRun');
 
-    const map = page.locator('.rogue-run-tl .rogue-minimap');
+    const map = page.locator('.hunt-run-tl .hunt-minimap');
     await expect(map).toBeVisible();
-    await expect(map).not.toHaveClass(/rogue-minimap-collapsed/);
+    await expect(map).not.toHaveClass(/hunt-minimap-collapsed/);
 
     // First click: collapse.
     await map.click();
-    await expect(map).toHaveClass(/rogue-minimap-collapsed/);
-    expect(await callSetup(page, 'setup.Rogue.isMinimapCollapsed()')).toBe(true);
+    await expect(map).toHaveClass(/hunt-minimap-collapsed/);
+    expect(await callSetup(page, 'setup.HuntController.isMinimapCollapsed()')).toBe(true);
 
     // Re-render the passage -- the collapsed flag must persist so the
     // map does not pop back to full size on every navigation step.
     // Drive the re-render directly (setCurrentRoom + goToPassage) so a
-    // hunt-event redirect from huntTickStep can't whisk us off RogueRun
+    // hunt-event redirect from huntTickStep can't whisk us off HuntRun
     // and break the assertion we actually care about.
-    await page.evaluate(() => SugarCube.setup.Rogue.setCurrentRoom('room_1'));
-    await goToPassage(page, 'RogueRun');
+    await page.evaluate(() => SugarCube.setup.HuntController.setCurrentRoom('room_1'));
+    await goToPassage(page, 'HuntRun');
 
-    const mapAfterMove = page.locator('.rogue-run-tl .rogue-minimap');
-    await expect(mapAfterMove).toHaveClass(/rogue-minimap-collapsed/);
+    const mapAfterMove = page.locator('.hunt-run-tl .hunt-minimap');
+    await expect(mapAfterMove).toHaveClass(/hunt-minimap-collapsed/);
 
     // Second click: expand.
     await mapAfterMove.click();
-    await expect(mapAfterMove).not.toHaveClass(/rogue-minimap-collapsed/);
-    expect(await callSetup(page, 'setup.Rogue.isMinimapCollapsed()')).toBe(false);
+    await expect(mapAfterMove).not.toHaveClass(/hunt-minimap-collapsed/);
+    expect(await callSetup(page, 'setup.HuntController.isMinimapCollapsed()')).toBe(false);
   });
 
-  test('rogueFooterLight toggles the current room\'s light state and the body background', async () => {
+  test('huntFooterLight toggles the current room\'s light state and the body background', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickHuntCard(page);
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
 
-    // Both buttons render inside the bottom HUD's .rogue-run-lights
-    // wrapper (anchored to the right edge, above the .rogue-run-hud
+    // Both buttons render inside the bottom HUD's .hunt-run-lights
+    // wrapper (anchored to the right edge, above the .hunt-run-hud
     // border line by absolute positioning).
-    const lights = page.locator('.rogue-run-bottom .rogue-run-lights');
+    const lights = page.locator('.hunt-run-bottom .hunt-run-lights');
     await expect(lights).toHaveCount(1);
     await expect(lights.locator('img')).toHaveCount(2);
 
@@ -334,10 +334,10 @@ test.describe('E2E: rogue run lifecycle', () => {
       }
       return '';
     });
-    expect(await callSetup(page, 'setup.Rogue.isCurrentRoomDark()')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntController.isCurrentRoomDark()')).toBe(true);
     expect(await bgStyleText()).toContain('hallway-dark');
 
-    // Click "lights on" (first image link). RogueRun re-renders, the
+    // Click "lights on" (first image link). HuntRun re-renders, the
     // light flag flips to LIT, and the body bg switches to the lit URL.
     // Test media is blocked at the network layer (see openGame), so the
     // wrapping <a>'s rendered geometry is the icon's intrinsic 32×32 box
@@ -345,12 +345,12 @@ test.describe('E2E: rogue run lifecycle', () => {
     // dispatch to keep the test independent of layout overlap with the
     // toolbar/nav links anchored on the same edge.
     const clickLightLink = (idx) => page.evaluate((i) => {
-      const links = document.querySelectorAll('.rogue-run-bottom .rogue-run-lights a');
+      const links = document.querySelectorAll('.hunt-run-bottom .hunt-run-lights a');
       links[i].click();
     }, idx);
     await clickLightLink(0);
     await page.waitForFunction(
-      () => SugarCube.setup.Rogue.isCurrentRoomDark() === false
+      () => SugarCube.setup.HuntController.isCurrentRoomDark() === false
     );
     const litStyle = await bgStyleText();
     expect(litStyle).toContain('hallway.jpg');
@@ -359,22 +359,22 @@ test.describe('E2E: rogue run lifecycle', () => {
     // Click "lights off" -- back to dark.
     await clickLightLink(1);
     await page.waitForFunction(
-      () => SugarCube.setup.Rogue.isCurrentRoomDark() === true
+      () => SugarCube.setup.HuntController.isCurrentRoomDark() === true
     );
     expect(await bgStyleText()).toContain('hallway-dark');
   });
 
-  test('RogueRun renders the shared hunt-conditions HUD with live deltas', async () => {
+  test('HuntRun renders the shared hunt-conditions HUD with live deltas', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickHuntCard(page);
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
 
     // The HUD wrapper exists exactly once -- the same .hunt-conditions
     // class classic uses, so <<replace ".hunt-conditions">> works in
     // either mode.
-    const hud = page.locator('.rogue-run-bottom .hunt-conditions');
+    const hud = page.locator('.hunt-run-bottom .hunt-conditions');
     await expect(hud).toHaveCount(1);
 
     // The snapshot's per-step deltas are present (sanity/lust/energy
@@ -383,17 +383,17 @@ test.describe('E2E: rogue run lifecycle', () => {
     await expect(hud).toContainText('+1 min/step');
   });
 
-  test('Lust ≥ 50 contributor chip appears in the rogue HUD after a tool tick refresh', async () => {
+  test('Lust ≥ 50 contributor chip appears in the hunt HUD after a tool tick refresh', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
+    await clickHuntCard(page);
     await ensureNotEmptyBag(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
     await stubPerTickGatesQuiet(page);
     await fastToolTicks(page);
 
-    const hud = page.locator('.rogue-run-bottom .hunt-conditions');
+    const hud = page.locator('.hunt-run-bottom .hunt-conditions');
     // Baseline: no Lust contributor chip (mc.lust starts at 0).
     await expect(hud).not.toContainText('Lust ≥');
 
@@ -402,9 +402,9 @@ test.describe('E2E: rogue run lifecycle', () => {
     // refresh, which mirrors classic's nav re-render.
     await page.evaluate(() => { SugarCube.State.variables.mc.lust = 60; });
 
-    // Click any tool; the rogueToolSlot re-renders .hunt-conditions
+    // Click any tool; the huntToolSlot re-renders .hunt-conditions
     // after applyTickEffects.
-    await page.locator('.rogue-tool-card').first().locator('a').click();
+    await page.locator('.hunt-tool-card').first().locator('a').click();
     await page.waitForFunction(() => SugarCube.State.variables.minutes >= 6);
 
     await expect(hud).toContainText('Lust ≥ 50');
@@ -414,54 +414,54 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
+    await clickHuntCard(page);
     await ensureNotEmptyBag(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
 
     const toolOrder = await callSetup(page, 'setup.searchToolOrder');
     expect(toolOrder.length).toBe(6);
-    await expect(page.locator('.rogue-run-tools .rogue-tool-card'))
+    await expect(page.locator('.hunt-run-tools .hunt-tool-card'))
       .toHaveCount(toolOrder.length);
   });
 
-  test('startRogue stamps a ghost on $run and Ghosts.active() returns it', async () => {
+  test('startHunt stamps a ghost on $run and Ghosts.active() returns it', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
+    await clickHuntCard(page);
 
     const run = await getVar(page, 'run');
     expect(run.ghostName).toBeTruthy();
 
     // No witch contract is open, but setup.Ghosts.active() must hand
-    // back the rogue ghost so the shared <<toolCheck>> path can read
+    // back the hunt ghost so the shared <<toolCheck>> path can read
     // its evidence list.
     const activeName = await callSetup(page, 'setup.Ghosts.active().name');
     expect(activeName).toBe(run.ghostName);
 
-    // Same ghost is reachable via the rogue-side accessor.
-    const rogueGhostName = await callSetup(page, 'setup.Rogue.ghostName()');
-    expect(rogueGhostName).toBe(run.ghostName);
+    // Same ghost is reachable via the controller-side accessor.
+    const huntGhostName = await callSetup(page, 'setup.HuntController.ghostName()');
+    expect(huntGhostName).toBe(run.ghostName);
   });
 
-  test('isGhostHere() is true only inside the lair room during RogueRun', async () => {
+  test('isGhostHere() is true only inside the lair room during HuntRun', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickHuntCard(page);
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
 
     // Player starts in room_0 (hallway); the lair is whichever room
     // the floor-plan generator picked as the spawn (always non-hallway).
-    const ghostRoom = await callSetup(page, 'setup.Rogue.ghostRoomId()');
+    const ghostRoom = await callSetup(page, 'setup.HuntController.ghostRoomId()');
     expect(ghostRoom).not.toBe('room_0');
 
     // Outside the lair: false.
     expect(await callSetup(page, 'setup.isGhostHere()')).toBe(false);
 
     // Walk into the lair and re-render the passage, then re-check.
-    await page.evaluate(id => SugarCube.setup.Rogue.setCurrentRoom(id), ghostRoom);
-    await goToPassage(page, 'RogueRun');
+    await page.evaluate(id => SugarCube.setup.HuntController.setCurrentRoom(id), ghostRoom);
+    await goToPassage(page, 'HuntRun');
     expect(await callSetup(page, 'setup.isGhostHere()')).toBe(true);
   });
 
@@ -478,12 +478,12 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
+    await clickHuntCard(page);
     await ensureNotEmptyBag(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
     await fastToolTicks(page);
     /* Pin the per-tick chain off so an event-chain goto can't hijack
-       the meter mid-flight (same protection the other rogue tool
+       the meter mid-flight (same protection the other hunt tool
        tests use). */
     await stubPerTickGatesQuiet(page);
 
@@ -491,7 +491,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     expect(await getVar(page, 'minutes')).toBe(0);
 
     // The top-center result tray exists and is empty until a tool fires.
-    const tray = page.locator('#rogue-tool-result');
+    const tray = page.locator('#hunt-tool-result');
     await expect(tray).toHaveCount(1);
     await expect(tray).toBeEmpty();
 
@@ -499,12 +499,12 @@ test.describe('E2E: rogue run lifecycle', () => {
     // <<repeat>>-driven meter under the icon. The meter ticks
     // $equipment.<tool> times (default tier 5) and on completion
     // wikifies the tool result into the tray.
-    const emfCard = page.locator('.rogue-tool-card').first();
+    const emfCard = page.locator('.hunt-tool-card').first();
     await expect(emfCard.locator('a')).toHaveCount(1);
     await emfCard.locator('a').click();
 
     // Per click, the tier-5 EMF burns 5 toolTicks (1 min each) plus
-    // one applyTickEffects (1 min, since RogueRun is huntActive) =
+    // one applyTickEffects (1 min, since HuntRun is huntActive) =
     // 6 in-game minutes.
     await page.waitForFunction(() => SugarCube.State.variables.minutes === 6);
     await expect(tray.locator('.boldText')).toHaveCount(1);
@@ -522,9 +522,9 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
+    await clickHuntCard(page);
     await ensureNotEmptyBag(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
     /* Pin event-chain gates off so a stray <<goto>> can't tear the
        meter element out from under the assertions. */
     await stubPerTickGatesQuiet(page);
@@ -536,17 +536,17 @@ test.describe('E2E: rogue run lifecycle', () => {
     });
 
     // The shared progress bar lives at the top of the layout
-    // (#rogue-tool-meter) and is empty pre-click.
-    const meter = page.locator('#rogue-tool-meter');
+    // (#hunt-tool-meter) and is empty pre-click.
+    const meter = page.locator('#hunt-tool-meter');
     await expect(meter).toHaveCount(1);
     await expect(meter.locator('[id^="meter-"]')).toHaveCount(0);
 
     // The cardlink class lives on the inner label span (so the
-    // shared <<addclass>> path can disable both rogue and classic
+    // shared <<addclass>> path can disable the disabled state
     // tool slots without leaking 30px-tall classic .cardlink
     // styling onto the outer card).
-    const emfCard = page.locator('.rogue-tool-card').first();
-    const cardLabel = emfCard.locator('.rogue-tool-card-label');
+    const emfCard = page.locator('.hunt-tool-card').first();
+    const cardLabel = emfCard.locator('.hunt-tool-card-label');
     await emfCard.locator('a').click();
 
     // Mid-flight: the meter renders a SugarCube meter element (id
@@ -579,13 +579,13 @@ test.describe('E2E: rogue run lifecycle', () => {
     });
   }
 
-  test('Ectoglass hit in rogue mode routes to EctoglassFound', async () => {
+  test('Ectoglass hit in hunt mode routes to EctoglassFound', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
+    await clickHuntCard(page);
     await ensureNotEmptyBag(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
 
     await stubPerTickGatesQuiet(page);
     await fastToolTicks(page);
@@ -597,7 +597,7 @@ test.describe('E2E: rogue run lifecycle', () => {
       });
     });
 
-    const ectoCard = page.locator('.rogue-tool-card').filter({ hasText: 'Ectoglass' });
+    const ectoCard = page.locator('.hunt-tool-card').filter({ hasText: 'Ectoglass' });
     await expect(ectoCard).toHaveCount(1);
     await ectoCard.locator('a').click();
 
@@ -611,18 +611,18 @@ test.describe('E2E: rogue run lifecycle', () => {
     // $evidenceFind was stamped by renderPlasm before the deferred goto.
     expect(await getVar(page, 'evidenceFind').then(v => v && v.tool)).toBe('plasm');
 
-    // Back link returns the player to RogueRun.
+    // Back link returns the player to HuntRun.
     await page.locator('.passage').getByText('Back', { exact: true }).click();
-    await page.waitForFunction(() => SugarCube.State.passage === 'RogueRun');
+    await page.waitForFunction(() => SugarCube.State.passage === 'HuntRun');
   });
 
-  test('GWB hit in rogue mode routes to GwbFound', async () => {
+  test('GWB hit in hunt mode routes to GwbFound', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
+    await clickHuntCard(page);
     await ensureNotEmptyBag(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
 
     await stubPerTickGatesQuiet(page);
     await fastToolTicks(page);
@@ -633,7 +633,7 @@ test.describe('E2E: rogue run lifecycle', () => {
       });
     });
 
-    const gwbCard = page.locator('.rogue-tool-card').filter({ hasText: 'GWB' });
+    const gwbCard = page.locator('.hunt-tool-card').filter({ hasText: 'GWB' });
     await expect(gwbCard).toHaveCount(1);
     await gwbCard.locator('a').click();
 
@@ -648,12 +648,12 @@ test.describe('E2E: rogue run lifecycle', () => {
     expect(await getVar(page, 'evidenceFind').then(v => v && v.tool)).toBe('gwb');
 
     await page.locator('.passage').getByText('Back', { exact: true }).click();
-    await page.waitForFunction(() => SugarCube.State.passage === 'RogueRun');
+    await page.waitForFunction(() => SugarCube.State.passage === 'HuntRun');
   });
 
   test('Spiritbox click with the lights on prompts the player to kill the lights first', async () => {
     /* Lights-off is a tool-wide rule
-       (setup.searchToolDefs.spiritbox.needsLightCheck): the rogue
+       (setup.searchToolDefs.spiritbox.needsLightCheck): the hunt
        tool slot must short-circuit a click while the room is lit
        and route the catalogue prompt into the shared result tray
        instead of starting a meter. Mirrors classic <<searchTool>>'s
@@ -661,28 +661,28 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
+    await clickHuntCard(page);
     await ensureNotEmptyBag(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
 
-    // Force the current rogue room to LIT before the click. The
-    // rogueFooterLight widget normally toggles this, but pinning
+    // Force the current hunt room to LIT before the click. The
+    // huntFooterLight widget normally toggles this, but pinning
     // it via the controller skips the click + re-render dance.
     await page.evaluate(() => {
-      const id = SugarCube.setup.Rogue.currentRoomId();
-      SugarCube.setup.Rogue.setRoomLight(id, SugarCube.setup.RoomLight.LIT);
+      const id = SugarCube.setup.HuntController.currentRoomId();
+      SugarCube.setup.HuntController.setRoomLight(id, SugarCube.setup.RoomLight.LIT);
     });
-    expect(await callSetup(page, 'setup.Rogue.isCurrentRoomDark()')).toBe(false);
+    expect(await callSetup(page, 'setup.HuntController.isCurrentRoomDark()')).toBe(false);
 
-    const spiritboxCard = page.locator('.rogue-tool-card').filter({ hasText: 'Spiritbox' });
+    const spiritboxCard = page.locator('.hunt-tool-card').filter({ hasText: 'Spiritbox' });
     await expect(spiritboxCard).toHaveCount(1);
     await spiritboxCard.locator('a').click();
 
     // Tray surfaces the lights-off prompt; meter never starts.
     await expect(
-      page.locator('#rogue-tool-result').getByText(/turn off the light first/i)
+      page.locator('#hunt-tool-result').getByText(/turn off the light first/i)
     ).toBeVisible();
-    expect(await page.evaluate(() => SugarCube.State.passage)).toBe('RogueRun');
+    expect(await page.evaluate(() => SugarCube.State.passage)).toBe('HuntRun');
   });
 
   test('Spiritbox click with the lights off proceeds into the meter cycle', async () => {
@@ -693,17 +693,17 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
+    await clickHuntCard(page);
     await ensureNotEmptyBag(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
 
     await page.evaluate(() => {
-      const id = SugarCube.setup.Rogue.currentRoomId();
-      SugarCube.setup.Rogue.setRoomLight(id, SugarCube.setup.RoomLight.DARK);
+      const id = SugarCube.setup.HuntController.currentRoomId();
+      SugarCube.setup.HuntController.setRoomLight(id, SugarCube.setup.RoomLight.DARK);
     });
-    expect(await callSetup(page, 'setup.Rogue.isCurrentRoomDark()')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntController.isCurrentRoomDark()')).toBe(true);
 
-    const spiritboxCard = page.locator('.rogue-tool-card').filter({ hasText: 'Spiritbox' });
+    const spiritboxCard = page.locator('.hunt-tool-card').filter({ hasText: 'Spiritbox' });
     await spiritboxCard.locator('a').click();
 
     // Lit-state prompt must NOT appear; the click landed in the
@@ -711,18 +711,18 @@ test.describe('E2E: rogue run lifecycle', () => {
     // (the inner span the click handler annotates) for the
     // duration of the cycle.
     await expect(
-      page.locator('#rogue-tool-result').getByText(/turn off the light first/i)
+      page.locator('#hunt-tool-result').getByText(/turn off the light first/i)
     ).toHaveCount(0);
     await expect(spiritboxCard.locator('.cardlink')).toHaveClass(/disabled-link/);
   });
 
-  test('Ectoglass miss in rogue mode renders not-found in the tray (no goto)', async () => {
+  test('Ectoglass miss in hunt mode renders not-found in the tray (no goto)', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
+    await clickHuntCard(page);
     await ensureNotEmptyBag(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
 
     await stubPerTickGatesQuiet(page);
     await fastToolTicks(page);
@@ -730,29 +730,29 @@ test.describe('E2E: rogue run lifecycle', () => {
       SugarCube.setup.ToolController.findPlasm = () => null;
     });
 
-    const ectoCard = page.locator('.rogue-tool-card').filter({ hasText: 'Ectoglass' });
+    const ectoCard = page.locator('.hunt-tool-card').filter({ hasText: 'Ectoglass' });
     await ectoCard.locator('a').click();
 
     // Tray shows the canonical "no ectoplasm stains" copy after the
-    // meter completes; player stays on RogueRun.
+    // meter completes; player stays on HuntRun.
     await expect(
-      page.locator('#rogue-tool-result').getByText(/ectoplasm stains/i)
+      page.locator('#hunt-tool-result').getByText(/ectoplasm stains/i)
     ).toBeVisible();
-    expect(await page.evaluate(() => SugarCube.State.passage)).toBe('RogueRun');
+    expect(await page.evaluate(() => SugarCube.State.passage)).toBe('HuntRun');
   });
 
   test('furniture strip renders one icon per template slot for the current room', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickHuntCard(page);
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
 
     // The hallway template has 3 furniture suffixes; each renders an
-    // icon in the .rogue-run-furniture strip.
+    // icon in the .hunt-run-furniture strip.
     const hallwayFurniture = await callSetup(page, 'setup.Templates.byId("hallway").furniture');
     expect(hallwayFurniture.length).toBeGreaterThan(0);
-    await expect(page.locator('.rogue-run-furniture .rogue-furniture-item'))
+    await expect(page.locator('.hunt-run-furniture .hunt-furniture-item'))
       .toHaveCount(hallwayFurniture.length);
   });
 
@@ -760,19 +760,19 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
+    await clickHuntCard(page);
     // Walk into the room that holds the cursed-item loot so the row
     // would have rendered a "Cursed item" label under the old layout.
     const fp = await getVar(page, 'run').then(r => r.floorplan);
     const cursedRoom = fp.loot.cursedItem;
-    await page.evaluate(id => SugarCube.setup.Rogue.setCurrentRoom(id), cursedRoom);
-    await goToPassage(page, 'RogueRun');
+    await page.evaluate(id => SugarCube.setup.HuntController.setCurrentRoom(id), cursedRoom);
+    await goToPassage(page, 'HuntRun');
 
     // The deprecated label class should not appear in the DOM.
-    await expect(page.locator('.rogue-furniture-loot')).toHaveCount(0);
+    await expect(page.locator('.hunt-furniture-loot')).toHaveCount(0);
     // Plain-text spoiler check too.
     await expect(
-      page.locator('.rogue-run-furniture').getByText(/Cursed item/i)
+      page.locator('.hunt-run-furniture').getByText(/Cursed item/i)
     ).toHaveCount(0);
   });
 
@@ -780,12 +780,12 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
+    await clickHuntCard(page);
     /* Wipe the auto-rolled modifier deck (and any locked_tools-driven
        tool loot it pinned onto base-loot furniture slots). With
        locked_tools active a single slot can hold both cursedItem and a
        tool, and FurnitureSearch then takes the multi-kind branch with
-       "rogueLootBeat" instead of the single-kind text the regex below
+       "huntLootBeat" instead of the single-kind text the regex below
        expects. modifierCount:0 keeps the floor plan to its base layout
        so the click target is unambiguous. */
     await ensureNotEmptyBag(page);
@@ -800,8 +800,8 @@ test.describe('E2E: rogue run lifecycle', () => {
     expect(lootKind).toBeDefined();
     const lootRoom      = fp.loot[lootKind];
     const lootFurniture = fp.lootFurniture[lootKind];
-    await page.evaluate(id => SugarCube.setup.Rogue.setCurrentRoom(id), lootRoom);
-    await goToPassage(page, 'RogueRun');
+    await page.evaluate(id => SugarCube.setup.HuntController.setCurrentRoom(id), lootRoom);
+    await goToPassage(page, 'HuntRun');
 
     // Each loot kind has its own line in FurnitureSearch.tw; pick
     // the one this run rolled.
@@ -815,8 +815,8 @@ test.describe('E2E: rogue run lifecycle', () => {
     // Click the loot furniture slot. Its label is humanised; pull
     // it from the controller so we click the right one.
     const fLabel = await callSetup(page,
-      `setup.Rogue.currentRoomData().furniture.find(f => f.suffix === "${lootFurniture}").label`);
-    await page.locator('.rogue-furniture-item')
+      `setup.HuntController.currentRoomData().furniture.find(f => f.suffix === "${lootFurniture}").label`);
+    await page.locator('.hunt-furniture-item')
       .filter({ hasText: fLabel })
       .first()
       .click();
@@ -826,11 +826,11 @@ test.describe('E2E: rogue run lifecycle', () => {
     ).toBeVisible();
 
     // takeLoot should have been called.
-    expect(await callSetup(page, `setup.Rogue.hasCollected("${lootKind}")`)).toBe(true);
+    expect(await callSetup(page, `setup.HuntController.hasCollected("${lootKind}")`)).toBe(true);
 
     // Walking back to the same slot should now find nothing.
-    await clickLink(page, 'Back', 'RogueRun');
-    await page.locator('.rogue-furniture-item')
+    await clickLink(page, 'Back', 'HuntRun');
+    await page.locator('.hunt-furniture-item')
       .filter({ hasText: fLabel })
       .first()
       .click();
@@ -844,15 +844,15 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickHuntCard(page);
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
 
     // GhostStreet resets to midnight; verify we start at 00:00.
     expect(await getVar(page, 'hours')).toBe(0);
     expect(await getVar(page, 'minutes')).toBe(0);
 
     // Click any furniture in the hallway.
-    await page.locator('.rogue-furniture-item').first().click();
+    await page.locator('.hunt-furniture-item').first().click();
     await page.waitForFunction(() => SugarCube.State.passage === 'FurnitureSearch');
 
     // Each search should burn one in-game minute, mirroring regular hunts.
@@ -864,9 +864,9 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
+    await clickHuntCard(page);
     await ensureNotEmptyBag(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
 
     /* Pin event randomness off so the click only exercises the
        per-tick drain branch (not Event / StealClothes / GhostHuntEvent
@@ -886,7 +886,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     // burns 1 minute via <<toolTick>>; on completion <<applyTickEffects>>
     // fires once (energy -0.125, sanity -<contractDrain>, +1 minute).
     // Default equipment tier is 5, so 5 toolTicks + 1 applyTickEffects = 6.
-    await page.locator('.rogue-tool-card').first().locator('a').click();
+    await page.locator('.hunt-tool-card').first().locator('a').click();
     await page.waitForFunction(() => SugarCube.State.variables.minutes >= 6);
 
     const after = await page.evaluate(() => {
@@ -902,25 +902,25 @@ test.describe('E2E: rogue run lifecycle', () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickHuntCard(page);
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
     await page.evaluate(() => { Math.random = () => 0.99; });
 
     expect(await getVar(page, 'minutes')).toBe(0);
 
     // Click the first nav exit.
-    await page.locator('.rogue-run-nav a').first().click();
+    await page.locator('.hunt-run-nav a').first().click();
     await page.waitForFunction(() => SugarCube.State.variables.minutes >= 1);
     expect(await getVar(page, 'minutes')).toBe(1);
   });
 
-  test('sanity collapse during a rogue tool tick routes to RogueEnd as failure', async () => {
+  test('sanity collapse during a hunt tool tick routes to HuntSummary as failure', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
+    await clickHuntCard(page);
     await ensureNotEmptyBag(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
     await page.evaluate(() => { Math.random = () => 0.99; });
     await fastToolTicks(page);
 
@@ -928,11 +928,11 @@ test.describe('E2E: rogue run lifecycle', () => {
     // collapses sanity.
     await page.evaluate(() => { SugarCube.State.variables.mc.sanity = 0.1; });
 
-    await page.locator('.rogue-tool-card').first().locator('a').click();
+    await page.locator('.hunt-tool-card').first().locator('a').click();
 
     // The widget's post-applyTickEffects guard routes to
-    // huntOverPassage("sanity") -> RogueEnd.
-    await page.waitForFunction(() => SugarCube.State.passage === 'RogueEnd');
+    // huntOverPassage("sanity") -> HuntSummary.
+    await page.waitForFunction(() => SugarCube.State.passage === 'HuntSummary');
 
     // The run is closed and stamped with the sanity reason.
     expect(await getVar(page, 'run')).toBeNull();
@@ -941,7 +941,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     ).toBeVisible();
   });
 
-  test('per-tick chain in rogue triggers GhostHuntEvent when shouldStartRandomProwl fires', async () => {
+  test('per-tick chain in the hunt triggers GhostHuntEvent when shouldStartRandomProwl fires', async () => {
     test.setTimeout(15_000);
 
     /* The huntTickStep widget calls huntTickEventChain, which goes
@@ -949,9 +949,9 @@ test.describe('E2E: rogue run lifecycle', () => {
        state pre-stamped past the threshold and Math.random pinned
        low, a single tool tick should land on GhostHuntEvent. */
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
+    await clickHuntCard(page);
     await ensureNotEmptyBag(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
 
     await page.evaluate(() => {
       const V = SugarCube.State.variables;
@@ -962,8 +962,8 @@ test.describe('E2E: rogue run lifecycle', () => {
       V.mc.sanity = 30; // satisfies every sanity-cutoff ghost
       V.mc.lust = 60;   // satisfies lust-condition ghosts too
       V.mc.energy = 5;  // keep applyTickEffects from triggering exhaustion
-      // Pin the rogue ghost to Shade so its prowlCondition (sanity<=55) trips.
-      SugarCube.setup.Rogue.setField('ghostName', 'Shade');
+      // Pin the hunt ghost to Shade so its prowlCondition (sanity<=55) trips.
+      SugarCube.setup.HuntController.setField('ghostName', 'Shade');
       // Force every Math.random call to 0 so:
       //   - LightPassageGhost roll: 0 (no light flicker dest)
       //   - rollProwlEvent's various rolls all round-trip: chance=0,
@@ -982,7 +982,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     // may <<goto>> us to GhostHuntEvent / EventMC / StealClothes
     // depending on which roll trips first. Any of those is a valid
     // "the per-tick chain DID fire sanity-driven side content".
-    await page.locator('.rogue-tool-card').first().locator('a').click();
+    await page.locator('.hunt-tool-card').first().locator('a').click();
     await page.waitForFunction(() =>
       ['GhostHuntEvent', 'EventMC', 'StealClothes'].includes(SugarCube.State.passage),
       null,
@@ -991,12 +991,12 @@ test.describe('E2E: rogue run lifecycle', () => {
     expect(await getVar(page, 'run')).not.toBeNull();
   });
 
-  test('hunt-survival options in GhostHuntEvent are reachable in rogue mode', async () => {
+  test('hunt-survival options in GhostHuntEvent are reachable in hunt mode', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickHuntCard(page);
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
 
     // Drop straight into the hunt event UI.
     await goToPassage(page, 'GhostHuntEvent');
@@ -1013,12 +1013,12 @@ test.describe('E2E: rogue run lifecycle', () => {
     ).toBeVisible();
   });
 
-  test('PrayHunt (with energy) returns to RogueRun via $return in rogue mode', async () => {
+  test('PrayHunt (with energy) returns to HuntRun via $return in hunt mode', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickHuntCard(page);
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
 
     // Pre-load enough sanity / energy so PrayHunt doesn't bail out
     // through a hunt-over passage.
@@ -1029,15 +1029,15 @@ test.describe('E2E: rogue run lifecycle', () => {
 
     await goToPassage(page, 'PrayHunt');
     await page.locator('.passage').getByText('Continue').first().click();
-    await page.waitForFunction(() => SugarCube.State.passage === 'RogueRun');
+    await page.waitForFunction(() => SugarCube.State.passage === 'HuntRun');
   });
 
-  test('FreezeHunt with no garments routes to RogueEnd as a "sanity" failure in rogue mode', async () => {
+  test('FreezeHunt with no garments routes to HuntSummary as a "sanity" failure in hunt mode', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickHuntCard(page);
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
 
     // Strip the MC bare so FreezeHunt's "nothing left to give" branch fires.
     await page.evaluate(() => {
@@ -1047,12 +1047,12 @@ test.describe('E2E: rogue run lifecycle', () => {
 
     // The "Surrender to the cold" link delegates its target to
     // setup.HuntController.huntOverPassage("sanity") which returns
-    // "RogueEnd" in rogue mode and stamps failureReason="sanity"
-    // on the run before it's cleared by RogueEnd's endRogue call.
-    // We assert on the RogueEnd-rendered text since the run record
+    // "HuntSummary" in hunt mode and stamps failureReason="sanity"
+    // on the run before it's cleared by HuntSummary's endHunt call.
+    // We assert on the HuntSummary-rendered text since the run record
     // is null by the time the assertion runs.
     await page.locator('.passage').getByText(/Surrender to the cold/i).click();
-    await page.waitForFunction(() => SugarCube.State.passage === 'RogueEnd');
+    await page.waitForFunction(() => SugarCube.State.passage === 'HuntSummary');
 
     expect(await getVar(page, 'run')).toBeNull();
     await expect(
@@ -1060,81 +1060,81 @@ test.describe('E2E: rogue run lifecycle', () => {
     ).toBeVisible();
   });
 
-  test('Empty Bag modifier collapses the rogue toolbar to a placeholder', async () => {
+  test('Empty Bag modifier collapses the hunt toolbar to a placeholder', async () => {
     test.setTimeout(15_000);
 
-    /* The toolbar reads from setup.Rogue.startingTools(), which folds
+    /* The toolbar reads from setup.HuntController.startingTools(), which folds
        Empty Bag ('locked_tools') down to []. The widget renders the
        "your bag is empty" placeholder instead of the six tool cards. */
     await page.evaluate(() => {
-      SugarCube.setup.Rogue.startRogue({
+      SugarCube.setup.HuntController.startHunt({
         seed: 1, modifiers: ['locked_tools'], modifierCount: 0
       });
-      // startRogue overwrites modifiers from the draft; pin to just
+      // startHunt overwrites modifiers from the draft; pin to just
       // locked_tools so we know the bag is empty for sure.
       SugarCube.State.variables.run.modifiers = ['locked_tools'];
     });
-    await goToPassage(page, 'RogueRun');
+    await goToPassage(page, 'HuntRun');
 
-    await expect(page.locator('.rogue-run-tools .rogue-tool-card')).toHaveCount(1);
-    await expect(page.locator('.rogue-run-tools .rogue-tool-card-empty'))
+    await expect(page.locator('.hunt-run-tools .hunt-tool-card')).toHaveCount(1);
+    await expect(page.locator('.hunt-run-tools .hunt-tool-card-empty'))
       .toBeVisible();
-    await expect(page.locator('.rogue-run-tools a')).toHaveCount(0);
+    await expect(page.locator('.hunt-run-tools a')).toHaveCount(0);
   });
 
-  test('loadout.tools restricts the rogue toolbar to the listed tools', async () => {
+  test('loadout.tools restricts the hunt toolbar to the listed tools', async () => {
     test.setTimeout(15_000);
 
     await page.evaluate(() => {
-      SugarCube.setup.Rogue.startRogue({
+      SugarCube.setup.HuntController.startHunt({
         seed: 1,
         loadout: { tools: ['emf', 'uvl'] }
       });
     });
-    await goToPassage(page, 'RogueRun');
+    await goToPassage(page, 'HuntRun');
 
     // Two cards rendered (in canonical order: emf before uvl).
-    await expect(page.locator('.rogue-run-tools .rogue-tool-card')).toHaveCount(2);
-    await expect(page.locator('.rogue-run-tools a').first())
+    await expect(page.locator('.hunt-run-tools .hunt-tool-card')).toHaveCount(2);
+    await expect(page.locator('.hunt-run-tools a').first())
       .toContainText(/EMF/);
-    await expect(page.locator('.rogue-run-tools a').nth(1))
+    await expect(page.locator('.hunt-run-tools a').nth(1))
       .toContainText(/UVL/);
   });
 
-  test('rogue ghost catch routes through HuntEnd → RogueEnd as a "caught" failure', async () => {
+  test('hunt ghost catch routes through HuntEnd → HuntSummary as a "caught" failure', async () => {
     test.setTimeout(20_000);
 
     /* HuntEnd's bottom-of-passage cleanup runs through
        setup.HuntController.onCaughtCleanup() and the huntEndExit
        widget routes its post-scene exit through huntCaughtPassage();
-       in rogue mode that stamps a "caught" failure and returns
-       "RogueEnd". The e2e check here is that those helpers route
+       in hunt mode that stamps a "caught" failure and returns
+       "HuntSummary". The e2e check here is that those helpers route
        a real run end-to-end -- the widget rendering + linkappend
        fan-out is covered by the classic hunt-flow tests. */
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickHuntCard(page);
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
 
-    // huntCaughtPassage() in rogue mode stamps the failure reason
+    // huntCaughtPassage() in hunt mode stamps the failure reason
     // and returns the destination passage.
     const target = await callSetup(page, 'setup.HuntController.huntCaughtPassage()');
-    expect(target).toBe('RogueEnd');
-    expect(await callSetup(page, 'setup.Rogue.field("outcome")')).toBe('failure');
-    expect(await callSetup(page, 'setup.Rogue.field("failureReason")')).toBe('caught');
+    expect(target).toBe('HuntSummary');
+    expect(await callSetup(page, 'setup.HuntController.field("outcome")')).toBe('failure');
+    expect(await callSetup(page, 'setup.HuntController.field("failureReason")')).toBe('caught');
 
-    // onCaughtCleanup is a no-op in rogue (cleanup happens on
-    // RogueEnd via setup.Rogue.endRogue) -- crucially, it must NOT
+    // onCaughtCleanup is a no-op in the hunt (cleanup happens on
+    // HuntSummary via setup.HuntController.endHunt) -- crucially, it must NOT
     // try to call setup.HauntedHouses.endHunt() (which would crash
     // when $hunt is null).
     await page.evaluate(() => SugarCube.setup.HuntController.onCaughtCleanup());
-    expect(await callSetup(page, 'setup.Rogue.isRogue()')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(true);
 
-    // Snapshot the failure payout BEFORE RogueEnd clears the run.
+    // Snapshot the failure payout BEFORE HuntSummary clears the run.
     const expectedFailure = await page.evaluate(() =>
       Math.round(3 * SugarCube.setup.Modifiers.payoutMultiplier()));
 
-    // Walking into RogueEnd closes the run as a failure.
-    await goToPassage(page, 'RogueEnd');
+    // Walking into HuntSummary closes the run as a failure.
+    await goToPassage(page, 'HuntSummary');
     expect(await getVar(page, 'run')).toBeNull();
     expect(await getVar(page, 'ectoplasm')).toBe(expectedFailure);
     await expect(
@@ -1142,7 +1142,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     ).toBeVisible();
   });
 
-  test('ghost-room drift fires for the rogue ghost across 20-minute intervals', async () => {
+  test('ghost-room drift fires for the hunt ghost across 20-minute intervals', async () => {
     test.setTimeout(15_000);
 
     /* PassageDone calls setup.HuntController.shuffleGhostRoom which
@@ -1151,16 +1151,16 @@ test.describe('E2E: rogue run lifecycle', () => {
        interval boundaries; the ghost room must end up somewhere
        different from where it started. */
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
+    await clickHuntCard(page);
     await ensureNotEmptyBag(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
 
-    // Pin the rogue ghost to one that DOES drift (not Goryo).
+    // Pin the hunt ghost to one that DOES drift (not Goryo).
     await page.evaluate(() => {
-      SugarCube.setup.Rogue.setField('ghostName', 'Shade');
+      SugarCube.setup.HuntController.setField('ghostName', 'Shade');
     });
 
-    const initial = await callSetup(page, 'setup.Rogue.ghostRoomId()');
+    const initial = await callSetup(page, 'setup.HuntController.ghostRoomId()');
 
     // Force a fresh interval window + the drift roll.
     await page.evaluate(() => {
@@ -1174,26 +1174,26 @@ test.describe('E2E: rogue run lifecycle', () => {
     // somewhere different from `initial`. The destination is drawn from
     // the full plan minus the current spawn -- hallway is intentionally
     // a valid drift target (see driftGhostRoom comment).
-    const fp = await callSetup(page, 'setup.Rogue.field("floorplan")');
+    const fp = await callSetup(page, 'setup.HuntController.field("floorplan")');
     if (fp.rooms.length > 1) {
-      expect(await callSetup(page, 'setup.Rogue.ghostRoomId()')).not.toBe(initial);
+      expect(await callSetup(page, 'setup.HuntController.ghostRoomId()')).not.toBe(initial);
     }
   });
 
-  test('Goryo (staysInOneRoom) never drifts in rogue mode', async () => {
+  test('Goryo (staysInOneRoom) never drifts in hunt mode', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
+    await clickHuntCard(page);
     await ensureNotEmptyBag(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
 
-    // Pin the rogue ghost to Goryo, which has staysInOneRoom = true.
+    // Pin the hunt ghost to Goryo, which has staysInOneRoom = true.
     await page.evaluate(() => {
-      SugarCube.setup.Rogue.setField('ghostName', 'Goryo');
+      SugarCube.setup.HuntController.setField('ghostName', 'Goryo');
     });
 
-    const initial = await callSetup(page, 'setup.Rogue.ghostRoomId()');
+    const initial = await callSetup(page, 'setup.HuntController.ghostRoomId()');
 
     // Even with the roll forced + a fresh interval, Goryo's lair
     // mustn't move.
@@ -1204,18 +1204,18 @@ test.describe('E2E: rogue run lifecycle', () => {
     });
     await page.evaluate(() => SugarCube.setup.HuntController.shuffleGhostRoom());
 
-    expect(await callSetup(page, 'setup.Rogue.ghostRoomId()')).toBe(initial);
+    expect(await callSetup(page, 'setup.HuntController.ghostRoomId()')).toBe(initial);
   });
 
-  test('rogue picks up the tarot deck via FurnitureSearch and Bag opens TarotCards', async () => {
+  test('hunt picks up the tarot deck via FurnitureSearch and Bag opens TarotCards', async () => {
     test.setTimeout(20_000);
 
-    /* Tarot pickup parity: rogue's FurnitureSearch branch routes
+    /* Tarot pickup parity: the hunt's FurnitureSearch branch routes
        through the same PickupTarotCards include + markTarotCarrying
        call classic uses, so $tarotCardsStage flips to CARRYING and
        the Bag link becomes visible. */
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
+    await clickHuntCard(page);
     await ensureNotEmptyBag(page);
 
     // Walk the player to the room+slot the deck is hidden in.
@@ -1225,12 +1225,12 @@ test.describe('E2E: rogue run lifecycle', () => {
     expect(tarotRoom).toBeDefined();
     expect(tarotFurniture).toBeDefined();
 
-    await page.evaluate(id => SugarCube.setup.Rogue.setCurrentRoom(id), tarotRoom);
-    await goToPassage(page, 'RogueRun');
+    await page.evaluate(id => SugarCube.setup.HuntController.setCurrentRoom(id), tarotRoom);
+    await goToPassage(page, 'HuntRun');
 
     const fLabel = await callSetup(page,
-      `setup.Rogue.currentRoomData().furniture.find(f => f.suffix === "${tarotFurniture}").label`);
-    await page.locator('.rogue-furniture-item')
+      `setup.HuntController.currentRoomData().furniture.find(f => f.suffix === "${tarotFurniture}").label`);
+    await page.locator('.hunt-furniture-item')
       .filter({ hasText: fLabel })
       .first()
       .click();
@@ -1243,10 +1243,10 @@ test.describe('E2E: rogue run lifecycle', () => {
     expect(await callSetup(page, 'setup.HauntedHouses.tarotCardsStage()'))
       .toBe(await callSetup(page, 'setup.TarotStage.CARRYING'));
     // Loot collected so a re-search at the same slot finds nothing.
-    expect(await callSetup(page, 'setup.Rogue.hasCollected("tarotCards")')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntController.hasCollected("tarotCards")')).toBe(true);
 
-    // Walk back into RogueRun and open Bag -- the tarot link must be visible.
-    await clickLink(page, 'Back', 'RogueRun');
+    // Walk back into HuntRun and open Bag -- the tarot link must be visible.
+    await clickLink(page, 'Back', 'HuntRun');
     await page.evaluate(() => SugarCube.Engine.play('Bag'));
     await page.waitForFunction(() => SugarCube.State.passage === 'Bag');
     await expect(
@@ -1254,11 +1254,11 @@ test.describe('E2E: rogue run lifecycle', () => {
     ).toBeVisible();
   });
 
-  test('rogue picks up the monkey paw via FurnitureSearch and Bag opens MonkeyPaw', async () => {
+  test('hunt picks up the monkey paw via FurnitureSearch and Bag opens MonkeyPaw', async () => {
     test.setTimeout(20_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
+    await clickHuntCard(page);
     await ensureNotEmptyBag(page);
 
     const fp = await getVar(page, 'run').then(r => r.floorplan);
@@ -1267,12 +1267,12 @@ test.describe('E2E: rogue run lifecycle', () => {
     expect(pawRoom).toBeDefined();
     expect(pawFurniture).toBeDefined();
 
-    await page.evaluate(id => SugarCube.setup.Rogue.setCurrentRoom(id), pawRoom);
-    await goToPassage(page, 'RogueRun');
+    await page.evaluate(id => SugarCube.setup.HuntController.setCurrentRoom(id), pawRoom);
+    await goToPassage(page, 'HuntRun');
 
     const fLabel = await callSetup(page,
-      `setup.Rogue.currentRoomData().furniture.find(f => f.suffix === "${pawFurniture}").label`);
-    await page.locator('.rogue-furniture-item')
+      `setup.HuntController.currentRoomData().furniture.find(f => f.suffix === "${pawFurniture}").label`);
+    await page.locator('.hunt-furniture-item')
       .filter({ hasText: fLabel })
       .first()
       .click();
@@ -1280,9 +1280,9 @@ test.describe('E2E: rogue run lifecycle', () => {
     await page.locator('.passage').getByText('paw.', { exact: true }).click();
 
     expect(await callSetup(page, 'setup.MonkeyPaw.isFound()')).toBe(true);
-    expect(await callSetup(page, 'setup.Rogue.hasCollected("monkeyPaw")')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntController.hasCollected("monkeyPaw")')).toBe(true);
 
-    await clickLink(page, 'Back', 'RogueRun');
+    await clickLink(page, 'Back', 'HuntRun');
     await page.evaluate(() => SugarCube.Engine.play('Bag'));
     await page.waitForFunction(() => SugarCube.State.passage === 'Bag');
     await expect(
@@ -1291,7 +1291,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     expect(await callSetup(page, 'setup.MonkeyPaw.isCarrying()')).toBe(true);
   });
 
-  test('rogue tarot draw fires the Knowledge effect and stamps $chosenEvidence', async () => {
+  test('hunt tarot draw fires the Knowledge effect and stamps $chosenEvidence', async () => {
     test.setTimeout(20_000);
 
     /* Pre-set conditions so the deck draw lands on the Knowledge card
@@ -1299,17 +1299,17 @@ test.describe('E2E: rogue run lifecycle', () => {
        without triggering passage transitions). The card weights from
        setup.tarotDeck place Knowledge after Passion+Pulse (40% combined),
        so a roll of 41 (out of 101) lands on Knowledge. */
-    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
     await page.evaluate(() => {
-      SugarCube.setup.Rogue.setField('ghostName', 'Shade');
-      // Re-stamp run.evidence to match Shade so any rogue modifier
-      // (e.g. Fog of War) drafted at startRogue doesn't leak the
+      SugarCube.setup.HuntController.setField('ghostName', 'Shade');
+      // Re-stamp run.evidence to match Shade so any hunt modifier
+      // (e.g. Fog of War) drafted at startHunt doesn't leak the
       // previous ghost's spliced list into Shade's evidence view.
       const shade = SugarCube.setup.Ghosts.getByName('Shade');
-      SugarCube.setup.Rogue.setField('evidence', shade.evidence.map(e => e.id));
+      SugarCube.setup.HuntController.setField('evidence', shade.evidence.map(e => e.id));
     });
     await page.evaluate(() => SugarCube.setup.HauntedHouses.markTarotCarrying());
-    await goToPassage(page, 'RogueRun');
+    await goToPassage(page, 'HuntRun');
 
     // Pin the deck draw to "knowledge" -- a roll <= 50 (passion 20 +
     // pulse 20 + oblivion 1 + knowledge 10) lands inside the
@@ -1326,20 +1326,20 @@ test.describe('E2E: rogue run lifecycle', () => {
 
     expect(await getVar(page, 'knowledgeUsed')).toBe(1);
     const chosen = await getVar(page, 'chosenEvidence');
-    // Shade lacks spiritbox/uvl/glass; rogue knowledge picks one.
+    // Shade lacks spiritbox/uvl/glass; hunt knowledge picks one.
     expect(['spiritbox', 'uvl', 'glass']).toContain(chosen);
 
     // Drawn-cards counter incremented (shared classic counter).
     expect(await getVar(page, 'drawnCards')).toBe(1);
   });
 
-  test('rogue monkey-paw dawn wish forfeits the run as "time" failure', async () => {
+  test('hunt monkey-paw dawn wish forfeits the run as "time" failure', async () => {
     test.setTimeout(20_000);
 
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
+    await clickHuntCard(page);
     await ensureNotEmptyBag(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
 
     // Hand the player the paw without going through pickup.
     await page.evaluate(() => SugarCube.setup.MonkeyPaw.markFound());
@@ -1353,8 +1353,8 @@ test.describe('E2E: rogue run lifecycle', () => {
     await page.locator('.passage').getByText('I wish for dawn', { exact: true }).click();
 
     // The dawn wish goto resolves through HuntController.huntOverPassage("time")
-    // which in rogue stamps "time" failure + returns "RogueEnd".
-    await page.waitForFunction(() => SugarCube.State.passage === 'RogueEnd');
+    // which in the hunt stamps "time" failure + returns "HuntSummary".
+    await page.waitForFunction(() => SugarCube.State.passage === 'HuntSummary');
     expect(await getVar(page, 'run')).toBeNull();
     await expect(
       page.locator('.passage').getByText(/clock/i)
@@ -1368,29 +1368,29 @@ test.describe('E2E: rogue run lifecycle', () => {
        run starts with [] tools (the toolbar collapses to "your bag
        is empty"), but the floor plan now has every tool stamped
        into furniture. Walk to a tool's room, click its furniture,
-       confirm the pickup beat, return to RogueRun, and the toolbar
+       confirm the pickup beat, return to HuntRun, and the toolbar
        gains the picked-up tool card. */
     await page.evaluate(() => {
       // Start a fresh run with locked_tools pinned so the toolbar
       // begins empty and missingToolsToPlace returns the full set.
-      SugarCube.setup.Rogue.startRogue({
+      SugarCube.setup.HuntController.startHunt({
         seed: 9, modifierCount: 0
       });
       // Pin locked_tools post-draft so the placement was based on
-      // the pre-startRogue modifier set; rebuild the floor plan
+      // the pre-startHunt modifier set; rebuild the floor plan
       // with the missing tools stamped in.
-      SugarCube.setup.Rogue.addModifier('locked_tools');
+      SugarCube.setup.HuntController.addModifier('locked_tools');
       const fp = SugarCube.setup.FloorPlan.generate(9, {
         roomCount: 7,
         toolKinds: SugarCube.setup.searchToolOrder.slice()
       });
-      SugarCube.setup.Rogue.setField('floorplan', fp);
+      SugarCube.setup.HuntController.setField('floorplan', fp);
     });
-    await goToPassage(page, 'RogueRun');
+    await goToPassage(page, 'HuntRun');
 
     // Toolbar is empty.
-    await expect(page.locator('.rogue-run-tools .rogue-tool-card-empty')).toBeVisible();
-    await expect(page.locator('.rogue-run-tools .rogue-tool-card')).toHaveCount(1);
+    await expect(page.locator('.hunt-run-tools .hunt-tool-card-empty')).toBeVisible();
+    await expect(page.locator('.hunt-run-tools .hunt-tool-card')).toHaveCount(1);
 
     // Pick a tool that's pinned to a slot all by itself, so the solo
     // pickup path (linkappend "equipment." click) fires. Multi-item
@@ -1410,12 +1410,12 @@ test.describe('E2E: rogue run lifecycle', () => {
     const room     = fp.loot[toolKey];
     const fSlot    = fp.lootFurniture[toolKey];
 
-    await page.evaluate(id => SugarCube.setup.Rogue.setCurrentRoom(id), room);
-    await goToPassage(page, 'RogueRun');
+    await page.evaluate(id => SugarCube.setup.HuntController.setCurrentRoom(id), room);
+    await goToPassage(page, 'HuntRun');
 
     const fLabel = await callSetup(page,
-      `setup.Rogue.currentRoomData().furniture.find(f => f.suffix === "${fSlot}").label`);
-    await page.locator('.rogue-furniture-item')
+      `setup.HuntController.currentRoomData().furniture.find(f => f.suffix === "${fSlot}").label`);
+    await page.locator('.hunt-furniture-item')
       .filter({ hasText: fLabel })
       .first()
       .click();
@@ -1425,14 +1425,14 @@ test.describe('E2E: rogue run lifecycle', () => {
       page.locator('.passage').getByText(/piece of hunting/i)
     ).toBeVisible();
     await page.locator('.passage').getByText('equipment.', { exact: true }).click();
-    expect(await callSetup(page, `setup.Rogue.hasCollected("${toolKey}")`)).toBe(true);
+    expect(await callSetup(page, `setup.HuntController.hasCollected("${toolKey}")`)).toBe(true);
 
-    // Return to RogueRun. Toolbar now includes the picked-up tool.
-    await clickLink(page, 'Back', 'RogueRun');
-    expect(await callSetup(page, 'setup.Rogue.startingTools()')).toEqual([toolId]);
-    await expect(page.locator('.rogue-run-tools .rogue-tool-card')).toHaveCount(1);
-    await expect(page.locator('.rogue-run-tools .rogue-tool-card-empty')).toHaveCount(0);
-    await expect(page.locator('.rogue-run-tools a')).toHaveCount(1);
+    // Return to HuntRun. Toolbar now includes the picked-up tool.
+    await clickLink(page, 'Back', 'HuntRun');
+    expect(await callSetup(page, 'setup.HuntController.startingTools()')).toEqual([toolId]);
+    await expect(page.locator('.hunt-run-tools .hunt-tool-card')).toHaveCount(1);
+    await expect(page.locator('.hunt-run-tools .hunt-tool-card-empty')).toHaveCount(0);
+    await expect(page.locator('.hunt-run-tools a')).toHaveCount(1);
   });
 
   test('multi-item furniture slot reveals every loot kind in a single search', async () => {
@@ -1442,15 +1442,15 @@ test.describe('E2E: rogue run lifecycle', () => {
        the same furniture slot (it falls back to sharing when a room
        runs out of unique slots), one search should surface all of
        them at once -- the player never has to click the same drawer
-       twice. The compact <<rogueLootBeat>> widget renders one short
+       twice. The compact <<huntLootBeat>> widget renders one short
        line per kind and marks it collected; the back-button is one
        click away. */
     await page.evaluate(() => {
-      SugarCube.setup.Rogue.startRogue({ seed: 1, modifierCount: 0 });
+      SugarCube.setup.HuntController.startHunt({ seed: 1, modifierCount: 0 });
       // Hand-crafted plan: kitchen at room_1 holds tarot + paw + an EMF
       // pickup all on the desk slot. The player walks in and clicks
       // once.
-      SugarCube.setup.Rogue.setField('floorplan', {
+      SugarCube.setup.HuntController.setField('floorplan', {
         rooms: [
           { id: 'room_0', template: 'hallway' },
           { id: 'room_1', template: 'kitchen' }
@@ -1469,12 +1469,12 @@ test.describe('E2E: rogue run lifecycle', () => {
         },
         bossRoomId: null
       });
-      SugarCube.setup.Rogue.setCurrentRoom('room_1');
+      SugarCube.setup.HuntController.setCurrentRoom('room_1');
     });
-    await goToPassage(page, 'RogueRun');
+    await goToPassage(page, 'HuntRun');
 
     // Click the desk slot.
-    await page.locator('.rogue-furniture-item')
+    await page.locator('.hunt-furniture-item')
       .filter({ hasText: 'Desk' })
       .first()
       .click();
@@ -1497,9 +1497,9 @@ test.describe('E2E: rogue run lifecycle', () => {
 
     // All three flagged collected on this single search -- no
     // linkappend gates to click through.
-    expect(await callSetup(page, 'setup.Rogue.hasCollected("tarotCards")')).toBe(true);
-    expect(await callSetup(page, 'setup.Rogue.hasCollected("monkeyPaw")')).toBe(true);
-    expect(await callSetup(page, 'setup.Rogue.hasCollected("tool_emf")')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntController.hasCollected("tarotCards")')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntController.hasCollected("monkeyPaw")')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntController.hasCollected("tool_emf")')).toBe(true);
 
     // Carry-stage flips happened (Bag link surfaces the deck + paw).
     expect(await callSetup(page, 'setup.HauntedHouses.tarotCardsStage()'))
@@ -1507,8 +1507,8 @@ test.describe('E2E: rogue run lifecycle', () => {
     expect(await callSetup(page, 'setup.MonkeyPaw.isFound()')).toBe(true);
 
     // A re-search of the same slot now finds nothing.
-    await clickLink(page, 'Back', 'RogueRun');
-    await page.locator('.rogue-furniture-item')
+    await clickLink(page, 'Back', 'HuntRun');
+    await page.locator('.hunt-furniture-item')
       .filter({ hasText: 'Desk' })
       .first()
       .click();
@@ -1524,64 +1524,64 @@ test.describe('E2E: rogue run lifecycle', () => {
     await goToPassage(page, 'GhostStreet');
 
     // Run 1: win.
-    await clickRogueCard(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickHuntCard(page);
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
     const run1Win = await page.evaluate(() =>
       Math.round(10 * SugarCube.setup.Modifiers.payoutMultiplier()));
-    await page.evaluate(() => SugarCube.setup.Rogue.markSuccess());
-    await goToPassage(page, 'RogueEnd');
+    await page.evaluate(() => SugarCube.setup.HuntController.markSuccess());
+    await goToPassage(page, 'HuntSummary');
     expect(await getVar(page, 'runsStarted')).toBe(1);
     expect(await getVar(page, 'ectoplasm')).toBe(run1Win);
 
     // Run 2: lose. Bounce through the city map to exercise the
     // back-to-city exit; the chain-runs path is covered separately.
-    await clickLink(page, 'Visit the meta-shop', 'RogueMetaShop');
+    await clickLink(page, 'Visit the meta-shop', 'MetaShop');
     await clickLink(page, 'Back to the city', 'CityMap');
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
+    await clickHuntCard(page);
     const run2 = await getVar(page, 'run');
     expect(run2.number).toBe(2);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
     const run2Loss = await page.evaluate(() =>
       Math.round(3 * SugarCube.setup.Modifiers.payoutMultiplier()));
-    await page.evaluate(() => SugarCube.setup.Rogue.markFailure());
-    await goToPassage(page, 'RogueEnd');
+    await page.evaluate(() => SugarCube.setup.HuntController.markFailure());
+    await goToPassage(page, 'HuntSummary');
     expect(await getVar(page, 'runsStarted')).toBe(2);
     expect(await getVar(page, 'ectoplasm')).toBe(run1Win + run2Loss);
   });
 
-  /* The "Start a new hunt" link on RogueEnd / RogueMetaShop chains
+  /* The "Start a new hunt" link on HuntSummary / MetaShop chains
      runs without bouncing through the city map. Both exits re-enter
-     RogueStart, which auto-rolls a fresh seed + modifier deck and
+     HuntStart, which auto-rolls a fresh seed + modifier deck and
      stamps a new $run. */
-  test('RogueEnd offers Start a new hunt that rolls a fresh run', async () => {
+  test('HuntSummary offers Start a new hunt that rolls a fresh run', async () => {
     test.setTimeout(15_000);
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
-    await page.evaluate(() => SugarCube.setup.Rogue.markSuccess());
-    await goToPassage(page, 'RogueEnd');
+    await clickHuntCard(page);
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
+    await page.evaluate(() => SugarCube.setup.HuntController.markSuccess());
+    await goToPassage(page, 'HuntSummary');
     expect(await getVar(page, 'run')).toBeNull();
     expect(await getVar(page, 'runsStarted')).toBe(1);
 
-    await clickLink(page, 'Start a new hunt', 'RogueStart');
+    await clickLink(page, 'Start a new hunt', 'HuntStart');
     const run = await getVar(page, 'run');
     expect(run).not.toBeNull();
     expect(run.number).toBe(2);
     expect(await getVar(page, 'runsStarted')).toBe(2);
   });
 
-  test('RogueMetaShop offers Start a new hunt that rolls a fresh run', async () => {
+  test('MetaShop offers Start a new hunt that rolls a fresh run', async () => {
     test.setTimeout(15_000);
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
-    await page.evaluate(() => SugarCube.setup.Rogue.markSuccess());
-    await goToPassage(page, 'RogueEnd');
-    await clickLink(page, 'Visit the meta-shop', 'RogueMetaShop');
+    await clickHuntCard(page);
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
+    await page.evaluate(() => SugarCube.setup.HuntController.markSuccess());
+    await goToPassage(page, 'HuntSummary');
+    await clickLink(page, 'Visit the meta-shop', 'MetaShop');
     expect(await getVar(page, 'run')).toBeNull();
 
-    await clickLink(page, 'Start a new hunt', 'RogueStart');
+    await clickLink(page, 'Start a new hunt', 'HuntStart');
     const run = await getVar(page, 'run');
     expect(run).not.toBeNull();
     expect(run.number).toBe(2);
@@ -1589,28 +1589,28 @@ test.describe('E2E: rogue run lifecycle', () => {
 
   /* Continuation gate: a failed identify (or any non-success exit
      like FLED / SANITY / TIME / EXHAUSTION) should hide the
-     "Start a new hunt" link on both RogueEnd and RogueMetaShop, so
+     "Start a new hunt" link on both HuntSummary and MetaShop, so
      the player has to step through the city map before queueing the
      next run. */
-  test('RogueEnd hides Start a new hunt after a failed run', async () => {
+  test('HuntSummary hides Start a new hunt after a failed run', async () => {
     test.setTimeout(15_000);
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
-    await page.evaluate(() => SugarCube.setup.Rogue.markFailure());
-    await goToPassage(page, 'RogueEnd');
+    await clickHuntCard(page);
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
+    await page.evaluate(() => SugarCube.setup.HuntController.markFailure());
+    await goToPassage(page, 'HuntSummary');
     await expect(page.locator('.passage').getByText('Start a new hunt')).toHaveCount(0);
     await expect(page.locator('.passage').getByText('Visit the meta-shop')).toBeVisible();
   });
 
-  test('RogueMetaShop hides Start a new hunt after a failed run', async () => {
+  test('MetaShop hides Start a new hunt after a failed run', async () => {
     test.setTimeout(15_000);
     await goToPassage(page, 'GhostStreet');
-    await clickRogueCard(page);
-    await clickLink(page, 'Enter the hunt', 'RogueRun');
-    await page.evaluate(() => SugarCube.setup.Rogue.markFailure());
-    await goToPassage(page, 'RogueEnd');
-    await clickLink(page, 'Visit the meta-shop', 'RogueMetaShop');
+    await clickHuntCard(page);
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
+    await page.evaluate(() => SugarCube.setup.HuntController.markFailure());
+    await goToPassage(page, 'HuntSummary');
+    await clickLink(page, 'Visit the meta-shop', 'MetaShop');
     await expect(page.locator('.passage').getByText('Start a new hunt')).toHaveCount(0);
     await expect(page.locator('.passage').getByText('Back to the city')).toBeVisible();
   });

@@ -1,0 +1,367 @@
+:: HuntStart [nobr] {"position":"3000,200","size":"100,100"}
+/* Entry point for a hunt. The lobby lives here -- the actual gameplay
+   lives in HuntRun.
+
+   Two arrival paths:
+
+     1. Fresh launch -- no run is active. HuntStart rolls modifiers
+        + floor plan from $nextHuntSeed and stamps the run via
+        setup.HuntController.startHunt. Static-plan houses
+        (setup.HuntHouses) pass their catalogue id through
+        $pendingHuntHouseId, which the GhostStreet card sets and
+        HuntStart consumes once.
+
+     2. Resume -- a run is already active. The player got here via
+        save/reload, browser back-button, or a sidebar nav while a
+        run was in flight. HuntStart re-renders the lobby for the
+        existing run without rolling fresh modifiers or a new seed.
+        The address / modifier list / objective stay pinned to the
+        run's original seed, so reloading the same save shows the
+        same address.
+
+   The "no resume" forfeit (clicking a GhostStreet card while a run
+   is in flight) lives on the card widgets themselves -- they call
+   setup.HuntController.endHunt(false) before navigating here, so
+   the click ends the old run and HuntStart sees a clean slate.
+   Putting the forfeit on the card click keeps save/reload paths
+   from accidentally tripping it (rollNextSeed) and rotating the
+   seed. */
+<<if not setup.HuntController.isActive()>>
+	<<set _huntSeed to setup.HuntController.nextSeed()>>
+	<<set _huntStaticHouseId to $pendingHuntHouseId or null>>
+	<<set $pendingHuntHouseId to null>>
+	<<run setup.HuntController.startHunt({ seed: _huntSeed, staticHouseId: _huntStaticHouseId })>>
+	<<run setup.HuntJournal.recordHuntStart()>>
+<</if>>
+<<set _run to setup.HuntController.active()>>
+<<set _modifiers to setup.Modifiers.activeList()>>
+<<set _staticHouseId to setup.HuntController.staticHouseId()>>
+<<set _staticHouse to _staticHouseId ? setup.HuntHouses.byId(_staticHouseId) : null>>
+
+@@.location; <<= setup.HuntController.address().formatted>>@@<br>
+<<if _staticHouse and _staticHouse.description>>
+	@@.mc-thoughts; <<= _staticHouse.description>>@@<br>
+<<else>>
+	@@.mc-thoughts; A fresh hunt is waiting.@@<br>
+<</if>>
+<br>
+<<if _modifiers.length>>
+	@@.location; Modifiers@@<br>
+	<div id="hunt-lobby-modifiers">
+		<<for _m range _modifiers>>
+			· <span class="usebtn" @title="_m.description"><<= _m.name>></span> -- <<= _m.description>><br>
+		<</for>>
+	</div>
+	<span id="hunt-lobby-reroll"><<huntLobbyRerollControl>></span>
+	<br>
+<</if>>
+@@.location; Objective@@<br>
+@@.mc-thoughts; <<= setup.HuntController.objectiveDescription(_run.objective) || _run.objective>>@@<br>
+<br>
+@@.movebtn; [[Enter the hunt|HuntRun]]@@<br>
+@@.backbtn; [[Cancel|CityMap][setup.HuntController.end()]]@@
+
+:: HuntRun [nobr] {"position":"3100,200","size":"100,100"}
+/* Placeholder hunt gameplay laid out to mirror the regular ghost
+   hunts: minimap top-left, modifiers top-right, furniture-icon
+   strip + HUD + tools/nav row at the bottom. The "tools" panel is
+   a dashed placeholder until hunt tool gameplay lands. Furniture
+   icons reuse the scenes/furniture/<suffix>.png set the authored
+   haunts use, so e.g. a procedural kitchen still shows
+   desk/table/sink1 thumbnails. */
+<<if not setup.HuntController.isActive()>>
+	@@.mc-thoughts; No active hunt.@@<br>
+	@@.backbtn; [[Back|CityMap]]@@
+<<else>>
+	<<set _run to setup.HuntController.active()>>
+	<<set _modifiers to setup.Modifiers.activeList()>>
+	<<set _cr to setup.HuntController.currentRoomData()>>
+
+	<<if _cr>>
+		<<bodyBackground `setup.Styles.bgUrlForTemplate(_cr.template, setup.HuntController.isRoomDark(_cr.id), setup.HuntController.staticHouseId())`>>
+	<</if>>
+
+	<div class="hunt-run-layout">
+		<div id="hunt-tool-result" class="hunt-tool-result"></div>
+		<div id="hunt-tool-meter" class="hunt-tool-meter"></div>
+		<div class="hunt-run-top">
+			<div class="hunt-run-tl">
+				@@.location; <<= setup.HuntController.address().formatted>>@@<br>
+				<<if _cr>>
+					@@.mc-thoughts; <<= _cr.label>>@@<br>
+				<</if>>
+				<<huntMinimap>>
+			</div>
+			<div class="hunt-run-tr">
+				<<if _modifiers.length>>
+					@@.location; Active modifiers@@<br>
+					<<for _m range _modifiers>>
+						<span class="usebtn hunt-modifier-chip" @title="_m.description"><<= _m.name>></span><br>
+					<</for>>
+				<</if>>
+			</div>
+		</div>
+
+		<div class="hunt-run-furniture">
+			<<if _cr and _cr.furniture.length>>
+				<<for _f range _cr.furniture>>
+					<<capture _f>>
+						<span class="hunt-furniture-item">
+							<<link `'<<image "scenes/furniture/' + _f.suffix + '.png">>'` "FurnitureSearch">>
+								<<run setup.HuntController.setSearchedFurniture(_f.suffix)>>
+								<<addTime 1>>
+							<</link>>
+							<span class="hunt-furniture-label"><<= _f.label>></span>
+						</span>
+					<</capture>>
+				<</for>>
+			<<elseif _cr>>
+				@@.mc-thoughts; (bare room)@@
+			<<else>>
+				/% _cr is null only when currentRoomId points to a non-existent room (corrupted save). Render nothing; the outer isActive gate is the player-visible recovery path for a missing $run. %/
+			<</if>>
+		</div>
+
+		<div class="hunt-run-bottom">
+			<div class="hunt-conditions"><<huntConditions>></div>
+			<div class="hunt-run-hud">
+				<<huntFooterLight>>
+				<span><<= setup.HuntController.address().formatted>></span>
+				<span>Room: <<= _cr ? _cr.label : "—">></span>
+				<span>Objective: <<= _run.objective>></span>
+				<span>Ectoplasm: <<= setup.HuntController.ectoplasm()>> mL</span>
+			</div>
+			<div class="hunt-run-toolbar">
+				<div class="hunt-run-tools">
+					<<huntToolBar>>
+				</div>
+				<div @class="'hunt-run-nav' + (_cr and _cr.neighbors.length gt 3 ? ' hunt-run-nav-compact' : '')">
+					<<if _cr and _cr.neighbors.length>>
+						<<for _n range _cr.neighbors>>
+							<<capture _n>>
+								@@.movebtn;<<link _n.label "HuntRun">>
+									<<run setup.HuntController.setCurrentRoom(_n.id)>>
+									<<huntTickStep>>
+								<</link>>@@<br>
+							<</capture>>
+						<</for>>
+					<<else>>
+						@@.mc-thoughts; (no exits)@@<br>
+					<</if>>
+					<<if _cr and _cr.template eq setup.FloorPlan.HALLWAY_TEMPLATE>>
+						@@.movebtn; [[Outside|HuntOutside]]@@<br>
+					<</if>>
+				</div>
+			</div>
+		</div>
+	</div>
+<</if>>
+
+:: HuntSummary [nobr] {"position":"3200,200","size":"100,100"}
+/* Closes the active hunt, pays out ectoplasm (mL), prints the
+   summary, and routes to the meta-shop. The calling link stamps
+   the outcome via setup.HuntController.markSuccess() /
+   markFailure(reason); anything other than Outcome.SUCCESS counts
+   as a failure so the player can never lose ectoplasm by
+   navigating in via a stale link. */
+<<if not setup.HuntController.isActive()>>
+	@@.mc-thoughts; No run to end.@@<br>
+	@@.backbtn; [[Back|CityMap]]@@
+<<else>>
+	<<set _success to setup.HuntController.isSuccess()>>
+	<<run setup.HuntJournal.recordHuntEnd()>>
+	<<set _summary to setup.HuntController.endHunt(_success)>>
+	<<set _FR to setup.HuntController.FailureReason>>
+
+	<<if _summary.success>>
+		@@.notmc-speech; The ghosts were no match for you. Hunt #<<= _summary.number>> closes clean.@@<br>
+	<<elseif _summary.failureReason eq _FR.SANITY>>
+		@@.notmc-speech; Your mind gives out. Hunt #<<= _summary.number>> ends with sanity gone.@@<br>
+	<<elseif _summary.failureReason eq _FR.EXHAUSTION>>
+		@@.notmc-speech; Your legs give out. Hunt #<<= _summary.number>> ends in exhaustion.@@<br>
+	<<elseif _summary.failureReason eq _FR.TIME>>
+		@@.notmc-speech; Dawn breaks before the answer does. Hunt #<<= _summary.number>> ends with the clock.@@<br>
+	<<elseif _summary.failureReason eq _FR.FLED>>
+		@@.notmc-speech; You walk away from the haunt. Hunt #<<= _summary.number>> ends with the door at your back.@@<br>
+	<<else>>
+		@@.notmc-speech; The haunt swallows you. Hunt #<<= _summary.number>> ends in failure.@@<br>
+	<</if>>
+	<br>
+	<span class="mc-action">+<<= _summary.payout>> mL of ectoplasm</span><br>
+	<span class="mc-thoughts">Ectoplasm: <<= setup.HuntController.ectoplasm()>> mL</span><br>
+	<br>
+	<<if _summary.success>>
+		@@.movebtn; [[Start a new hunt|HuntStart]]@@<br>
+	<</if>>
+	@@.movebtn; [[Visit the meta-shop|MetaShop]]@@<br>
+	@@.backbtn; [[Back to the city|CityMap]]@@
+<</if>>
+
+:: MetaShop [nobr] {"position":"3300,200","size":"100,100"}
+/* Persistent-unlock storefront. Lists every item in
+   setup.HuntController.shopCatalogue(). Bool unlocks (max=1) flip
+   to "Owned" once bought; stackable unlocks (banlist slot, reroll
+   charge) keep their buy link until the cap is hit. Banlist slots
+   also expose a per-modifier ban toggle so the player can spend
+   their owned slots; the toggle never charges ectoplasm. Costs are
+   paid in mL of $ectoplasm; redraws of the balance and item rows
+   happen via <<replace>>. */
+<<set _balanceLine to function () {
+	return 'Ectoplasm: ' + setup.HuntController.ectoplasm() + ' mL';
+}>>
+@@.location; Meta-shop@@<br>
+<span class="meta-shop-balance"><<= _balanceLine()>></span><br>
+<br>
+<div id="hunt-shop-list">
+	<<for _item range setup.HuntController.shopCatalogue()>>
+		<<capture _item>>
+			<<set _owned to setup.HuntController.metaUnlock(_item.id)>>
+			<<set _stackable to (_item.max gt 1)>>
+			<<set _atCap to (_owned gte _item.max)>>
+			<<set _rowId to 'hunt-shop-row-' + _item.id>>
+			<div class="hunt-shop-row" @id="_rowId">
+				<b><<= _item.name>></b>
+				<<if _stackable>>
+					(<<= _owned>> / <<= isFinite(_item.max) ? _item.max : '∞'>>)
+				<<elseif _atCap>>
+					<span class="mc-action">— Owned</span>
+				<</if>>
+				<br>
+				<span class="mc-thoughts"><<= _item.description>></span><br>
+				<<if not _atCap>>
+					<<if setup.HuntController.canAffordEctoplasm(_item.cost)>>
+						@@.usebtn; <<link `'Buy (' + _item.cost + ' mL)'`>>
+							<<run setup.HuntController.buyUnlock(_item.id)>>
+							<<goto "MetaShop">>
+						<</link>>@@
+					<<else>>
+						<span class="disabled-link">Buy (<<= _item.cost>> mL — need <<= _item.cost - setup.HuntController.ectoplasm()>> more)</span>
+					<</if>>
+					<br>
+				<</if>>
+			</div>
+		<</capture>>
+	<</for>>
+</div>
+
+<<if setup.HuntController.bannedSlotsTotal() gt 0>>
+	<br>
+	@@.location; Modifier banlist@@<br>
+	<span class="mc-thoughts">
+		Slots used: <<= setup.HuntController.bannedSlotsUsed()>> / <<= setup.HuntController.bannedSlotsTotal()>>.
+		Banned modifiers will not appear in the run-start draft.
+	</span><br>
+	<div id="hunt-banlist">
+		<<for _mod range setup.Modifiers.draftableList()>>
+			<<capture _mod>>
+				<<set _isBanned to setup.HuntController.isBanned(_mod.id)>>
+				<<set _slotsLeft to setup.HuntController.bannedSlotsRemaining()>>
+				·
+				<<if _isBanned>>
+					<span class="mc-action"><<= _mod.name>></span>
+					@@.usebtn; <<link "Unban">>
+						<<run setup.HuntController.toggleBannedModifier(_mod.id)>>
+						<<goto "MetaShop">>
+					<</link>>@@
+				<<elseif _slotsLeft gt 0>>
+					<<= _mod.name>>
+					@@.usebtn; <<link "Ban">>
+						<<run setup.HuntController.toggleBannedModifier(_mod.id)>>
+						<<goto "MetaShop">>
+					<</link>>@@
+				<<else>>
+					<span class="disabled-link"><<= _mod.name>> (no slots free)</span>
+				<</if>>
+				-- @@.mc-thoughts;<<= _mod.description>>@@<br>
+			<</capture>>
+		<</for>>
+	</div>
+<</if>>
+
+<br>
+<<if setup.HuntController.lastWasSuccess()>>
+	@@.movebtn; [[Start a new hunt|HuntStart]]@@<br>
+<</if>>
+@@.backbtn; [[Back to the city|CityMap]]@@
+
+:: HuntOutside [nobr] {"position":"3100,300","size":"100,100"}
+/* The yard outside the haunt. Reached from HuntRun's hallway via the
+   Outside nav link; only the hallway exposes that link. The run is
+   still active here -- the player can pick the ghost (HuntIdentify),
+   forfeit the run on the spot, or step back into the hallway and keep
+   exploring. The hunt event chain is paused while the player is on
+   this passage (HuntController.isHuntActive() answers off HuntRun
+   only), matching the in-house ticks pausing when the player leaves
+   the house. */
+<<if not setup.HuntController.isActive()>>
+	@@.mc-thoughts; No active hunt.@@<br>
+	@@.backbtn; [[Back|CityMap]]@@
+<<else>>
+	@@.location; Outside the haunt@@<br>
+	@@.mc-thoughts; The front door is at your back. You can size up what you've found, walk away, or step back inside.@@<br>
+	<br>
+	@@.movebtn; [[Identify the ghost|HuntIdentify]]@@<br>
+	@@.movebtn; [[Flee the hunt|HuntSummary][setup.HuntController.markFailure(setup.HuntController.FailureReason.FLED)]]@@<br>
+	@@.movebtn; [[Go back inside|HuntRun]]@@
+<</if>>
+
+:: HuntIdentify [nobr] {"position":"3200,300","size":"100,100"}
+/* Pick a ghost from the catalogue dropdown and lock it in. The guess
+   is compared against setup.HuntController.ghostName() (the per-run
+   ghost rolled at startHunt). The reveal lives in HuntIdentifyResolve
+   so the prep beat + timed pause + correct/wrong branch all render in
+   one place. */
+<<if not setup.HuntController.isActive()>>
+	@@.mc-thoughts; No active hunt.@@<br>
+	@@.backbtn; [[Back|CityMap]]@@
+<<else>>
+	@@.location; Name the ghost@@<br>
+	@@.mc-speech; I think it was:@@<br>
+	<<ghostTypeDropdown>><br>
+	@@.movebtn; [[Choose|HuntIdentifyResolve]]@@<br>
+	<br>
+	@@.backbtn; [[Back|HuntOutside]]@@
+<</if>>
+
+:: HuntIdentifyResolve [nobr] {"position":"3300,300","size":"100,100"}
+/* Resolves an identify attempt. The MC re-enters the haunt to subdue
+   the ghost; after a short pause the run either closes peacefully
+   (correct guess -- markSuccess + Continue/Go home) or the ghost
+   catches the MC (wrong guess -- routes to HuntEnd, whose
+   huntEndExit widget stamps a CAUGHT failure on its way to
+   HuntSummary).
+
+   Reveal staging: the result line and exit links are wrapped in
+   .hunt-reveal (opacity:0, 1s opacity transition). The reveal text
+   gets .show on render so it fades in immediately; the buttons get
+   .show after a 1s <<timed>> nested inside the 6s outer wait, so
+   they fade in only once the text has fully settled. */
+<<if not setup.HuntController.isActive()>>
+	@@.mc-thoughts; No active hunt.@@<br>
+	@@.backbtn; [[Back|CityMap]]@@
+<<else>>
+	@@.mc-thoughts; You prepare, then confidently re-enter, ready to subdue the ghost and cleanse the house.@@<br>
+	<<timed 6s>>
+		<<if setup.HuntController.ghostName() eq setup.Ghosts.ghostTypeSelected()>>
+			<<run setup.HuntController.markSuccess()>>
+			<<run setup.HuntJournal.recordPayout(true)>>
+			<div class="hunt-reveal hunt-reveal-text">@@.notmc-speech; The ghost fades peacefully into the ether.@@</div>
+			<div class="hunt-reveal hunt-reveal-buttons">
+				@@.movebtn; [[Continue|HuntSummary]]@@<br>
+				@@.movebtn; [[Go home|HuntSummary]]@@
+			</div>
+		<<else>>
+			<<run setup.HuntJournal.recordPayout(false)>>
+			<div class="hunt-reveal hunt-reveal-text">@@.mc-thoughts; Your heart sinks as the ghost roughly grabs your helpless form.@@</div>
+			<div class="hunt-reveal hunt-reveal-buttons">
+				@@.movebtn; [[Continue|HuntEnd]]@@
+			</div>
+		<</if>>
+		<<done>>
+			<<run $(".hunt-reveal-text").addClass("show")>>
+		<</done>>
+		<<timed 1s>>
+			<<run $(".hunt-reveal-buttons").addClass("show")>>
+		<</timed>>
+	<</timed>>
+<</if>>

@@ -2,7 +2,7 @@ const { test, expect } = require('@playwright/test');
 const { openGame, callSetup } = require('./helpers');
 
 /* setup.FloorPlan generates deterministic, fully-connected room
-   graphs for rogue runs. Same seed must always produce the same
+   graphs for hunts. Same seed must always produce the same
    plan (the generator uses an internal Mulberry32 PRNG, so global
    Math.random patching is irrelevant). */
 test.describe('Floor-plan generator', () => {
@@ -74,7 +74,7 @@ test.describe('Floor-plan generator', () => {
   });
 
   test('non-hallway templates prefer distinct picks before repeating', async () => {
-    /* The rogue catalogue is small, so the generator allows templates
+    /* The hunt catalogue is small, so the generator allows templates
        to repeat once the pool is exhausted (Maze + tool-loot can
        request more rooms than there are distinct templates). For a
        plan that fits inside the catalogue, picks are still distinct;
@@ -216,7 +216,7 @@ test.describe('Floor-plan generator', () => {
   });
 
   test('toolKinds option seeds tool_<id> loot for each requested tool', async () => {
-    /* When the rogue lifecycle starts a run with locked_tools or a
+    /* When the hunt lifecycle starts a run with locked_tools or a
        restricted loadout.tools, it asks the floor-plan generator to
        place the missing tools in furniture so the player can recover
        them by exploring. The generator namespaces them as
@@ -336,7 +336,7 @@ test.describe('Floor-plan generator', () => {
         }
         // Spawn must resolve to a real room id (any room, including
         // the hallway -- classic mode lets the ghost lair in the
-        // hallway and the rogue mirror does the same).
+        // hallway and the hunt mirror does the same).
         if (!ids.has(plan.spawnRoomId)) {
           fails.push(`seed ${seed}: spawn ${plan.spawnRoomId} not a real room`);
         }

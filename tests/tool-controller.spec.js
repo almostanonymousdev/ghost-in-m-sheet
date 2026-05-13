@@ -3,7 +3,7 @@ const { openGame, resetGame, callSetup, getVar } = require('./helpers');
 
 /* setup.ToolController.render(toolKey) drives the markup that
    <<toolCheck>> wikifies for both classic-hunt completion replaces
-   and the rogue toolbar. The plasm and gwb renderers route a hit
+   and the hunt toolbar. The plasm and gwb renderers route a hit
    to the shared EctoglassFound / GwbFound passages by stamping
    $evidenceFind and emitting <<deferGoto>> -- both modes use the
    same code path. These tests pin that contract so a regression in
@@ -23,21 +23,21 @@ test.describe('ToolController renderers', () => {
   test.beforeEach(async () => {
     await resetGame(page);
     // Make all ToolController renderers callable from the City flow
-    // by pinning a known active hunt + ghost. The rogue flow drives
+    // by pinning a known active hunt + ghost. The hunt flow drives
     // setup.Ghosts.active() / setup.HuntController.isGhostHere() —
-    // both gate on an in-flight rogue run, so we boot one with the
+    // both gate on an in-flight hunt, so we boot one with the
     // requested ghost pinned. Banshee carries both GLASS and GWB so
     // the side-effect test below can call the real findGwb without
-    // swapping ghosts. The isGhostHere stub bypasses the RogueRun
+    // swapping ghosts. The isGhostHere stub bypasses the HuntRun
     // passage requirement so renderers can run from the City flow.
     await page.evaluate(() => {
-      SugarCube.setup.Rogue.startRogue({ seed: 1 });
-      // startRogue stamps $run.evidence from the seed-picked ghost; repoint
+      SugarCube.setup.HuntController.startHunt({ seed: 1 });
+      // startHunt stamps $run.evidence from the seed-picked ghost; repoint
       // both the name and the evidence override so _activeFromCatalogue
       // builds a Banshee with her real (GLASS, GWB, UVL) evidence list.
-      SugarCube.setup.Rogue.setField('ghostName', 'Banshee');
+      SugarCube.setup.HuntController.setField('ghostName', 'Banshee');
       const banshee = SugarCube.setup.Ghosts.getByName('Banshee');
-      SugarCube.setup.Rogue.setField('evidence',
+      SugarCube.setup.HuntController.setField('evidence',
         banshee.evidence.map(e => e.id));
       SugarCube.setup.Ghosts.startHunt('Banshee');
       SugarCube.setup.Ghosts.setHuntMode(SugarCube.setup.Ghosts.HuntMode.ACTIVE);
@@ -127,31 +127,31 @@ test.describe('ToolController renderers', () => {
     expect(emfActivated).toBe(1);
   });
 
-  test('clickRogueSearchTool fires the slot link only when not .disabled-link', async () => {
-    /* Pin the disabled-state contract for the rogue keyboard-shortcut
+  test('clickHuntSearchTool fires the slot link only when not .disabled-link', async () => {
+    /* Pin the disabled-state contract for the hunt keyboard-shortcut
        path. .disabled-link is added/removed on the
-       .rogue-tool-card-label[data-tool=...] span by widgetRogueToolBar
+       .hunt-tool-card-label[data-tool=...] span by widgetHuntToolBar
        around each meter cycle; programmatic .click() bypasses the
        pointer-events: none rule, so the helper has to gate on the
        class explicitly. Two cases below: enabled → click propagates,
        disabled → click is suppressed. */
     const result = await page.evaluate(() => {
       const $ = window.jQuery;
-      const $slot = $('<span class="rogue-tool-card-label cardlink" data-tool="emf">' +
+      const $slot = $('<span class="hunt-tool-card-label cardlink" data-tool="emf">' +
                       '<a href="#" id="probe-emf">EMF</a></span>')
                     .appendTo('body');
       let clicks = 0;
       $slot.find('a').on('click', (e) => { e.preventDefault(); clicks++; });
 
-      SugarCube.setup.clickRogueSearchTool('emf');
+      SugarCube.setup.clickHuntSearchTool('emf');
       const enabled = clicks;
 
       $slot.addClass('disabled-link');
-      SugarCube.setup.clickRogueSearchTool('emf');
+      SugarCube.setup.clickHuntSearchTool('emf');
       const afterDisable = clicks;
 
       $slot.removeClass('disabled-link');
-      SugarCube.setup.clickRogueSearchTool('emf');
+      SugarCube.setup.clickHuntSearchTool('emf');
       const reEnabled = clicks;
 
       $slot.remove();
@@ -163,27 +163,27 @@ test.describe('ToolController renderers', () => {
     expect(result.reEnabled).toBe(2);
   });
 
-  test('clickRogueSearchTool is a no-op when no rogue toolbar is rendered', async () => {
-    /* Outside RogueRun the [data-tool] selector matches nothing -- the
+  test('clickHuntSearchTool is a no-op when no hunt toolbar is rendered', async () => {
+    /* Outside HuntRun the [data-tool] selector matches nothing -- the
        function must early-return without throwing so the global
        keydown handler can fan out to both clickAllSearchTools and
-       clickRogueSearchTool unconditionally. */
+       clickHuntSearchTool unconditionally. */
     const threw = await page.evaluate(() => {
-      try { SugarCube.setup.clickRogueSearchTool('emf'); return false; }
+      try { SugarCube.setup.clickHuntSearchTool('emf'); return false; }
       catch (e) { return true; }
     });
     expect(threw).toBe(false);
   });
 
-  test('Rogue meters are registered for every search tool', async () => {
-    /* The rogue toolbar renders one <<showmeter searchRogue<Tool>>> per
+  test('Hunt meters are registered for every search tool', async () => {
+    /* The hunt toolbar renders one <<showmeter searchHunt<Tool>>> per
        tool slot. Those meter names need to exist before the widget
        fires, which the auto-registration loop in ToolController takes
-       care of by including "Rogue" in setup.searchableRooms. */
+       care of by including "Hunt" in setup.searchableRooms. */
     const tools = await callSetup(page, 'setup.searchToolOrder');
     for (const tool of tools) {
       const def = await callSetup(page, `setup.searchToolDefs[${JSON.stringify(tool)}]`);
-      const meterName = 'searchRogue' + def.meterField;
+      const meterName = 'searchHunt' + def.meterField;
       const exists = await page.evaluate(name => window.Meter.has(name), meterName);
       expect(exists).toBe(true);
     }

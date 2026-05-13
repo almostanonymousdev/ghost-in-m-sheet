@@ -127,9 +127,9 @@ setup.Game = (function () {
 			setup.Rooms.seed(id);
 		});
 
-		// --- Rogue-mode run state -----------------------------
+		// --- Hunt-mode run state -----------------------------
 		// $run is null in classic mode (witch-contract loop); a
-		// fresh rogue run replaces it via setup.Rogue.start().
+		// fresh hunt replaces it via setup.HuntController.start().
 		// $ectoplasm is the persistent meta-progression currency
 		// (measured in mL). $runsStarted is the lifetime attempt
 		// counter that stamps each run's `number` field. $meta
@@ -144,13 +144,13 @@ setup.Game = (function () {
 			bannedModifiers: [],
 			rerollCharges: 0
 		};
-		// Seed the GhostStreet rogue card / RogueStart lobby read for
+		// Seed the GhostStreet hunt card / HuntStart lobby read for
 		// the *next* run. Rotates after each run so addresses change
 		// between visits without waiting for the in-game day to flip.
-		s.nextRogueSeed = Math.floor(Math.random() * 0x100000000);
-		// Static-rogue-house id staged by a GhostStreet card (e.g.
-		// rogue-owaissa). RogueStart consumes it once and clears it.
-		s.pendingRogueStaticHouseId = null;
+		s.nextHuntSeed = Math.floor(Math.random() * 0x100000000);
+		// Static hunt-house id staged by a GhostStreet card (e.g.
+		// 'owaissa'). HuntStart consumes it once and clears it.
+		s.pendingHuntHouseId = null;
 	}
 
 	return { initState: initState };

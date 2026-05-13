@@ -158,7 +158,7 @@ setup.Events = (function () {
 
 		/*
 		* Pick from an { owaissa, elm } pair based on the active
-		* rogue static-house id (rogue-owaissa / rogue-elm).
+		* static hunt-house id ('owaissa' / 'elm').
 		* Procedural runs default to owaissa art.
 		*/
 		pickByLocation: function (owaissaList, elmList) {

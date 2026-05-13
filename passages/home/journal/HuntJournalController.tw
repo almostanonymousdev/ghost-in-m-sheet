@@ -4,11 +4,11 @@
  * the first wake-up after the witch closes the most recent contract.
  *
  * Snapshot points:
- *   recordHuntStart (GhostStreet / RogueStart)        — sanity baseline + real ghost
- *   recordHuntEnd   (HuntEnd / HuntOver* / RogueEnd)  — final sanity + collected
+ *   recordHuntStart (GhostStreet / HuntStart)        — sanity baseline + real ghost
+ *   recordHuntEnd   (HuntEnd / HuntOver* / HuntSummary)  — final sanity + collected
  *                                                       evidence; flips `unread`
  *   recordCursedItem(applyHuntDefeatPreSleep)         — cursed-home-item key (if any)
- *   recordPayout    (WitchEndContract / RogueIdentifyResolve) — guess + money/xp;
+ *   recordPayout    (WitchEndContract / HuntIdentifyResolve) — guess + money/xp;
  *                                                       re-flips `unread` so the
  *                                                       player gets a second,
  *                                                       fuller recap after closing
@@ -40,7 +40,7 @@ setup.HuntJournal = (function () {
 		/* New hunt entered: blow away any prior recap and seed the new
 		   one with the starting sanity + real ghost identity. Sourced
 		   via setup.HuntController.realGhostName so classic Mimic
-		   reads as "Mimic" (not its rotating disguise) and rogue runs
+		   reads as "Mimic" (not its rotating disguise) and hunts
 		   surface their per-run ghost without this helper needing to
 		   know which mode is active. */
 		recordHuntStart: function () {
@@ -83,12 +83,11 @@ setup.HuntJournal = (function () {
 			rec.cursedItem = setup.CursedItems.currentItem();
 		},
 
-		/* Player guess resolved (witch contract closed in classic; the
-		   Identify branch in rogue): save the guess + payout and flip
-		   `unread` so the next wake-up renders the recap. The payout
-		   shape comes from setup.HuntController.payoutForGuess so the
-		   per-mode money/XP rules (or rogue's "no money, ectoplasm
-		   shown elsewhere") live in the facade, not here. */
+		/* Player guess resolved (via the HuntIdentify branch): save
+		   the guess + payout and flip `unread` so the next wake-up
+		   renders the recap. The payout shape comes from
+		   setup.HuntController.payoutForGuess so the ectoplasm rules
+		   live in the facade, not here. */
 		recordPayout: function (correct) {
 			var rec = j(); if (!rec) return;
 			rec.guessedGhost = setup.Ghosts.ghostTypeSelected() || null;

@@ -1165,7 +1165,7 @@ html[data-debug-view] .debug[data-name][data-type].nonvoid::after {
 	content: none !important;
 }
 
-/* ===== Rogue run layout =====
+/* ===== Hunt layout =====
  * Top half: two-column grid (minimap on the left, modifiers +
  * Win/Lose/Abandon on the right). Bottom half: furniture-icon
  * strip, run HUD line, and a toolbar whose left 80% is the
@@ -1178,19 +1178,19 @@ html[data-debug-view] .debug[data-name][data-type].nonvoid::after {
  * edge. left: 17.5em matches SugarCube's default ui-bar width;
  * .ui-bar-stowed flips left to 0 when the player collapses the
  * sidebar so we don't leave dead space on the left either. */
-/* RogueIdentifyResolve fade reveal. Both the result line and the
+/* HuntIdentifyResolve fade reveal. Both the result line and the
    exit links start invisible; the passage adds .show to each in turn
    so the text fades in first and the buttons fade in after the text
    has fully settled. */
-.rogue-reveal {
+.hunt-reveal {
 	opacity: 0;
 	transition: opacity 1s ease;
 }
-.rogue-reveal.show {
+.hunt-reveal.show {
 	opacity: 1;
 }
 
-.rogue-run-layout {
+.hunt-run-layout {
 	position: fixed;
 	top: 0;
 	left: 17.5em;
@@ -1204,11 +1204,11 @@ html[data-debug-view] .debug[data-name][data-type].nonvoid::after {
 	gap: 0.5em;
 }
 /* Top-center tray for tool readouts. The toolbar's replace macro
- * targets #rogue-tool-result, so each tool click overwrites the prior
+ * targets #hunt-tool-result, so each tool click overwrites the prior
  * reading here instead of inlining under the icon. Absolute positioning
- * keeps it from disturbing the rogue-run-top grid; pointer-events:none
+ * keeps it from disturbing the hunt-run-top grid; pointer-events:none
  * lets clicks fall through to the top-row UI when the tray is empty. */
-.rogue-tool-result {
+.hunt-tool-result {
 	position: absolute;
 	top: 0.5em;
 	left: 50%;
@@ -1220,79 +1220,78 @@ html[data-debug-view] .debug[data-name][data-type].nonvoid::after {
 	z-index: 10;
 	pointer-events: none;
 }
-.rogue-tool-result:empty {
+.hunt-tool-result:empty {
 	display: none;
 }
-.rogue-tool-result > * {
+.hunt-tool-result > * {
 	pointer-events: auto;
 }
-body.ui-bar-stowed .rogue-run-layout {
+body.ui-bar-stowed .hunt-run-layout {
 	left: 0;
 }
-.rogue-run-top {
+.hunt-run-top {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	gap: 1em;
 	flex: 1 1 auto;
 	min-height: 0;
 }
-.rogue-run-tl,
-.rogue-run-tr {
+.hunt-run-tl,
+.hunt-run-tr {
 	display: flex;
 	flex-direction: column;
 	overflow: auto;
 }
-.rogue-run-tr {
+.hunt-run-tr {
 	align-items: flex-end;
 	text-align: right;
 }
-.rogue-modifier-chip {
+.hunt-modifier-chip {
 	cursor: help;
 	border-bottom: 1px dotted currentColor;
 }
-.rogue-run-furniture {
+.hunt-run-furniture {
 	display: flex;
 	justify-content: center;
 	gap: 1.5em;
 	padding: 0.25em 0;
 	flex: 0 0 auto;
 }
-.rogue-furniture-item {
+.hunt-furniture-item {
 	display: inline-flex;
 	flex-direction: column;
 	align-items: center;
 	gap: 4px;
 	min-width: 64px;
 }
-.rogue-furniture-item img {
+.hunt-furniture-item img {
 	width: 56px;
 	height: 56px;
 	object-fit: contain;
 	background-color: rgba(169, 169, 169, 0.5);
 }
-.rogue-furniture-label {
+.hunt-furniture-label {
 	font-size: 0.75em;
 	opacity: 0.85;
 	line-height: 1;
 }
-.rogue-furniture-loot {
+.hunt-furniture-loot {
 	font-size: 0.7em;
 	line-height: 1;
 }
-.rogue-run-bottom {
+.hunt-run-bottom {
 	display: flex;
 	flex-direction: column;
 	flex: 0 0 auto;
 	gap: 0.5em;
 }
-/* Rogue's tool row is full-width and content-centered, so the
-   hunt-conditions HUD inside .rogue-run-bottom should span full width
-   too -- the 80% rule used in classic aligns the HUD with the 80%
-   .footertools column, which doesn't exist here. */
-.rogue-run-bottom .hunt-conditions {
+/* The hunt tool row is full-width and content-centered, so the
+   hunt-conditions HUD inside .hunt-run-bottom spans full width
+   to align with the tool row beside it. */
+.hunt-run-bottom .hunt-conditions {
 	width: 100%;
 }
-.rogue-run-hud {
+.hunt-run-hud {
 	display: flex;
 	justify-content: center;
 	gap: 2em;
@@ -1303,11 +1302,11 @@ body.ui-bar-stowed .rogue-run-layout {
 	flex-wrap: wrap;
 	position: relative;
 }
-/* Light on/off buttons. Anchored to .rogue-run-hud's top-right edge so
+/* Light on/off buttons. Anchored to .hunt-run-hud's top-right edge so
    they float just above the HUD's border-top divider on the far right
    side. Pulled out of the flex flow with absolute positioning so the
    HUD's centered-stat layout keeps its symmetry. */
-.rogue-run-lights {
+.hunt-run-lights {
 	position: absolute;
 	right: 0;
 	bottom: calc(100% + 4px);
@@ -1320,18 +1319,18 @@ body.ui-bar-stowed .rogue-run-layout {
    `height: auto` collapses to 0 and downstream layout (or test
    harnesses that block media) can let neighbouring nav links steal the
    click. */
-.rogue-run-lights img {
+.hunt-run-lights img {
 	width: 32px;
 	height: 32px;
 }
-/* The toolbar is a positioned wrapper so .rogue-run-tools can span
+/* The toolbar is a positioned wrapper so .hunt-run-tools can span
  * the full width and center its cluster on the same vertical axis as
- * the furniture strip above it; .rogue-run-nav overlays the right
+ * the furniture strip above it; .hunt-run-nav overlays the right
  * edge as an absolute child. */
-.rogue-run-toolbar {
+.hunt-run-toolbar {
 	position: relative;
 }
-.rogue-run-tools {
+.hunt-run-tools {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -1339,30 +1338,30 @@ body.ui-bar-stowed .rogue-run-layout {
 	padding: 0.5em;
 	min-height: 60px;
 }
-.rogue-tool-card {
+.hunt-tool-card {
 	flex: 0 0 auto;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	gap: 4px;
 }
-.rogue-tool-icon {
+.hunt-tool-icon {
 	width: 64px;
 	height: 64px;
 	object-fit: contain;
 }
-.rogue-tool-card-label {
+.hunt-tool-card-label {
 	font-size: 0.75em;
 	opacity: 0.85;
 	line-height: 1.1;
 	text-align: center;
 }
 /* Shared tool-tick progress bar. Sits at the top of the layout
- * (sibling of #rogue-tool-result) rather than under each tool card,
+ * (sibling of #hunt-tool-result) rather than under each tool card,
  * so the toolbar row stays compact whether or not a tick is in
  * flight. Only the active tool renders its meter element here; on
  * completion the slot empties the wrapper and :empty hides it. */
-.rogue-tool-meter {
+.hunt-tool-meter {
 	position: absolute;
 	top: 0.25em;
 	left: 50%;
@@ -1372,10 +1371,10 @@ body.ui-bar-stowed .rogue-run-layout {
 	z-index: 11;
 	pointer-events: none;
 }
-.rogue-tool-meter:empty {
+.hunt-tool-meter:empty {
 	display: none;
 }
-.rogue-run-nav {
+.hunt-run-nav {
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -1391,56 +1390,56 @@ body.ui-bar-stowed .rogue-run-layout {
    tool row's vertical budget; the compact variant shrinks the link
    text and tightens the gap so all exits stay visible without
    overlapping the toolbar. */
-.rogue-run-nav-compact {
+.hunt-run-nav-compact {
 	gap: 0.1em;
 }
-.rogue-run-nav-compact .movebtn a {
+.hunt-run-nav-compact .movebtn a {
 	font-size: 0.85em;
 }
-.rogue-run-nav-compact br {
+.hunt-run-nav-compact br {
 	display: none;
 }
 
-/* ===== Rogue minimap ===== */
+/* ===== Hunt minimap ===== */
 /* Click-to-collapse: scaling the wrapper with transform-origin top
    left shrinks the visual map toward its top-left corner without
-   changing its layout box, so the rest of the rogue-run-tl column
+   changing its layout box, so the rest of the hunt-run-tl column
    stays anchored. Click anywhere on the (still-original-sized) box
    to expand it back. */
-.rogue-minimap {
+.hunt-minimap {
 	cursor: pointer;
 	transform-origin: top left;
 	transition: transform 0.2s ease;
 }
-.rogue-minimap.rogue-minimap-collapsed {
+.hunt-minimap.hunt-minimap-collapsed {
 	transform: scale(0.35);
 }
-.rogue-minimap-svg {
+.hunt-minimap-svg {
 	display: block;
 	margin: 8px 0;
 	max-width: 100%;
 	height: auto;
 }
-.rogue-minimap-edge {
+.hunt-minimap-edge {
 	stroke: #777;
 	stroke-width: 2;
 }
-.rogue-minimap-room rect {
+.hunt-minimap-room rect {
 	fill: #2a2a2a;
 	stroke: #888;
 	stroke-width: 2;
 }
-.rogue-minimap-room text {
+.hunt-minimap-room text {
 	fill: #cdcdcd;
 	font-size: 12px;
 	font-family: 'Cormorant', serif;
 	pointer-events: none;
 }
-.rogue-minimap-room.rogue-minimap-boss rect {
+.hunt-minimap-room.hunt-minimap-boss rect {
 	stroke: gold;
 	stroke-width: 3;
 }
-.rogue-minimap-room.rogue-minimap-current rect {
+.hunt-minimap-room.hunt-minimap-current rect {
 	fill: #444;
 	stroke: var(--color-nav-blue);
 	stroke-width: 3;
@@ -1449,7 +1448,7 @@ body.ui-bar-stowed .rogue-run-layout {
    loot kind glow lime-green. Stacks with the current-room blue stroke
    via stroke-width precedence -- the cascade picks whichever rule lands
    later, so authors can reorder these for the intended highlight. */
-.rogue-minimap-room.rogue-minimap-loot rect {
+.hunt-minimap-room.hunt-minimap-loot rect {
 	fill: #2c3a23;
 	stroke: #9ee27a;
 	stroke-width: 3;
@@ -1457,7 +1456,7 @@ body.ui-bar-stowed .rogue-run-layout {
 /* Reliable Recon (meta-shop unlock): the ghost's original lair until
    it drifts. Magenta so it reads distinctly from boss-gold and
    loot-green at a glance. */
-.rogue-minimap-room.rogue-minimap-recon rect {
+.hunt-minimap-room.hunt-minimap-recon rect {
 	stroke: #d870ff;
 	stroke-width: 3;
 }

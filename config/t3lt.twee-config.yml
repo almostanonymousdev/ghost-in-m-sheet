@@ -79,21 +79,18 @@ sugarcube-2:
         UI for the relevant meters.
     huntTickStep:
       name: huntTickStep
-      description: Per-nav-step / per-tool-click chain (mode-agnostic). Applies
-        per-tick stat drains, routes to the mode-aware
-        HuntController.huntOverPassage() on sanity / energy / time runout, and
-        otherwise dispatches to <<huntTickEventChain>>. Replaces the previous
-        includeTimeEvent* widgets; steal-clothes is now gated by
-        HuntController.shouldTriggerSteal so a single widget services both
-        classic and rogue hunts.
+      description: Per-nav-step / per-tool-click chain. Applies per-tick stat
+        drains, routes to HuntController.huntOverPassage() on sanity / energy /
+        time runout, and otherwise dispatches to <<huntTickEventChain>>.
+        Replaces the previous includeTimeEvent* widgets; steal-clothes is gated
+        by HuntController.shouldTriggerSteal.
     huntTickEventChain:
       name: huntTickEventChain
       description: Inner per-tick chain run from <<huntTickStep>> and from
         searchToolMarkup's repeat body. Includes LightPassageGhost + Event, then
         conditionally StealClothes (HuntController.shouldTriggerSteal) and
-        GhostHuntEvent (HuntController.shouldStartRandomHunt). All branching
-        dispatched via HuntController so the same widget services classic and
-        rogue hunts.
+        GhostHuntEvent (HuntController.shouldStartRandomHunt). All branching is
+        dispatched via HuntController.
     includeTimeEventClothesHunt:
       name: includeTimeEventClothesHunt
       description: Backwards-compat alias for <<huntTickStep>>; preserved so existing
@@ -349,22 +346,22 @@ sugarcube-2:
         nav links in HOUSE_CONFIG instead of hardcoding a column of <<navLink>>
         calls. Returns nothing for houses without an exits map (enigma) or
         passages not listed. No args.
-    rogueMinimap:
-      name: rogueMinimap
-      description: Renders the active rogue run's floor plan as a compact room list
+    huntMinimap:
+      name: huntMinimap
+      description: Renders the active hunt's floor plan as a compact room list
         with spawn / boss / stash annotations. Reads from
-        setup.Rogue.minimapData(); emits nothing when no rogue run is active. No
+        setup.HuntController.minimapData(); emits nothing when no hunt is active. No
         args.
-    rogueToolBar:
-      name: rogueToolBar
+    huntToolBar:
+      name: huntToolBar
       description: Renders the six canonical investigation tool slots (EMF, Ectoglass,
-        GWB, Spiritbox, Thermometr, UVL) inside the RogueRun toolbar. Pulls
+        GWB, Spiritbox, Thermometr, UVL) inside the HuntRun toolbar. Pulls
         icons + labels from setup.searchToolDefs in setup.searchToolOrder so the
-        rogue placeholder stays in sync with the regular hunts' tool catalogue.
-        Visual-only until the rogue room renderer wires up search bags / meters.
+        hunt's placeholder stays in sync with the tool catalogue.
+        Visual-only until the hunt room renderer wires up search bags / meters.
         No args.
-    rogueLobbyRerollControl:
-      name: rogueLobbyRerollControl
+    huntLobbyRerollControl:
+      name: huntLobbyRerollControl
       description: Renders the lobby's reroll-charge button when the player has at
         least one charge stockpiled, and nothing otherwise. Clicking the button
         consumes a charge, redrafts the run's modifiers, repaints the modifier
@@ -424,22 +421,22 @@ sugarcube-2:
         street-passage link, and the per-click contract/flag/furniture/room side
         effects. Args: houseId (string, 'owaissa' | 'elm' | 'enigma' |
         'ironclad')."
-    rogueHuntCard:
-      name: rogueHuntCard
-      description: Drops a rogue-mode entry into the GhostStreet flexgrid. Same
+    huntCard:
+      name: huntCard
+      description: Drops a hunt entry into the GhostStreet flexgrid. Same
         iconPx-sized .housecard style as huntHouseCard. Always routes to
-        RogueStart for a fresh haunt -- there is no resume; an in-flight run is
+        HuntStart for a fresh haunt -- there is no resume; an in-flight run is
         treated as a failure if the player walks back in. No contract reward, no
-        $hauntedHouse activation -- the rogue subsystem owns its own state on
+        $hauntedHouse activation -- the hunt subsystem owns its own state on
         $run. Arg-less.
-    rogueStaticHouseCard:
-      name: rogueStaticHouseCard
-      description: "GhostStreet card for a named static-plan rogue house. Renders the
+    huntHouseCard:
+      name: huntHouseCard
+      description: "GhostStreet card for a named static-plan hunt house. Renders the
         catalogue entry's image + label, gates on Mc.lvl >= levelGate, and on
-        click stages the house id on $pendingRogueStaticHouseId before routing
-        to RogueStart -- the lifecycle reads + clears the staging slot and
-        forwards staticHouseId to setup.Rogue.startRogue. Args: houseId (string
-        from setup.RogueHouses.list(), e.g. 'rogue-owaissa')."
+        click stages the house id on $pendingHuntHouseId before routing
+        to HuntStart -- the lifecycle reads + clears the staging slot and
+        forwards staticHouseId to setup.HuntController.startHunt. Args: houseId (string
+        from setup.HuntHouses.list(), e.g. 'owaissa')."
     huntHouseStreet:
       name: huntHouseStreet
       container: true
@@ -648,8 +645,8 @@ sugarcube-2:
         for a hunt or send her solo to Owaissa/Elm Street. Args: companionName
         (string, 'Brook'/'Alice'/'Blake'), possessivePronoun (string, e.g.
         'her')."
-    rogueToolSlot:
-      name: rogueToolSlot
+    huntToolSlot:
+      name: huntToolSlot
     statIcon:
       name: statIcon
     mcStatusBody:
@@ -672,7 +669,7 @@ sugarcube-2:
         last-worn item to put back on. tipText "" suppresses the hovertip
         (preserves the existing tshirt/bottom empty cells). Args: hunting
         (bool), slotName (string), tipText (string), iconFile (string).'
-    rogueFooterLight:
-      name: rogueFooterLight
-    rogueLootBeat:
-      name: rogueLootBeat
+    huntFooterLight:
+      name: huntFooterLight
+    huntLootBeat:
+      name: huntLootBeat

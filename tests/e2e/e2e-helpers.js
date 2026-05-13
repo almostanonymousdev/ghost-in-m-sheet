@@ -89,16 +89,16 @@ async function expectCleanPassage(page) {
 }
 
 /**
- * Bootstrap an active rogue run pinned to a specific ghost.
+ * Bootstrap an active hunt pinned to a specific ghost.
  *
  * `house` is one of 'owaissa' (default), 'elm', 'ironclad' -- the
- * static rogue house used to seed the floor plan. Replaces the legacy
- * `$hauntedHouse` global with the equivalent `rogue-<name>` static-house
- * id so `setup.HauntedHouses.isOwaissa/isElm/isIronclad` resolve.
+ * static hunt house used to seed the floor plan. `setup.HauntedHouses`
+ * helpers (`isOwaissa`/`isElm`/`isIronclad`) resolve off the active
+ * run's `staticHouseId`.
  *
  * The function leaves $hunt in HuntMode.ACTIVE with the requested ghost
- * pinned so shared ghost helpers (canProwl, hasEvidence, etc.) work as
- * they did under classic mode.
+ * pinned so shared ghost helpers (canProwl, hasEvidence, etc.) resolve
+ * against a real catalogue entry.
  */
 async function setupHunt(page, ghostName, house = 'owaissa') {
   if (!['owaissa', 'elm', 'ironclad'].includes(house)) {
@@ -106,16 +106,16 @@ async function setupHunt(page, ghostName, house = 'owaissa') {
   }
 
   await page.evaluate(({ name, staticHouseId }) => {
-    // Roll a rogue run with the requested static house plan so legacy
+    // Roll a hunt with the requested static house plan so the
     // location helpers resolve.
-    SugarCube.setup.Rogue.startRogue({ seed: 1, staticHouseId: staticHouseId });
-    // Pin the rogue ghost to the requested catalogue entry.
-    SugarCube.setup.Rogue.setField('ghostName', name);
+    SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: staticHouseId });
+    // Pin the hunt ghost to the requested catalogue entry.
+    SugarCube.setup.HuntController.setField('ghostName', name);
     // Mirror the catalogue evidence onto $hunt so shared callers
-    // (canProwl, hasEvidence) work without depending on Rogue internals.
+    // (canProwl, hasEvidence) work without depending on hunt internals.
     SugarCube.setup.Ghosts.startHunt(name);
     SugarCube.setup.Ghosts.setHuntMode(SugarCube.setup.Ghosts.HuntMode.ACTIVE);
-  }, { name: ghostName, staticHouseId: `rogue-${house}` });
+  }, { name: ghostName, staticHouseId: house });
 
   const assigned = await page.evaluate(() => {
     const h = SugarCube.State.variables.hunt;

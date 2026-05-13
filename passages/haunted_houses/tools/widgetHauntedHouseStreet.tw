@@ -1,20 +1,20 @@
 :: widgetHauntedHouseStreet [widget nobr] {"position":"800,3300","size":"100,100"}
-/* rogueHuntCard -- arg-less. Drops a rogue-mode entry into the
-   GhostStreet flexgrid. Always routes to RogueStart for a fresh
+/* huntCard -- arg-less. Drops a procedural-hunt entry into the
+   GhostStreet flexgrid. Always routes to HuntStart for a fresh
    haunt -- there is no resume from this entry point; clicking the
-   card while a run is already in flight forfeits the previous one
+   card while a hunt is already in flight forfeits the previous one
    (counts as failure, pays the failure ectoplasm payout) before
    the new one rolls. The forfeit fires on the click rather than
-   on RogueStart entry so save/reload paths landing back on the
-   lobby resume the existing run instead of accidentally rotating
-   $nextRogueSeed. */
-<<widget "rogueHuntCard">>
-	<<set _rogueAddr to setup.Rogue.addressFromSeed(setup.Rogue.nextSeed()).formatted>>
+   on HuntStart entry so save/reload paths landing back on the
+   lobby resume the existing hunt instead of accidentally rotating
+   $nextHuntSeed. */
+<<widget "huntCard">>
+	<<set _huntAddr to setup.HuntController.addressFromSeed(setup.HuntController.nextSeed()).formatted>>
 	<div class="housecard">
-		<<image "ui/img/rogue-house.jpg" "iconPx">>
+		<<image "ui/img/hunt-house.jpg" "iconPx">>
 		<<if setup.Mc.lvl() gte 4>>
-			@@.icontext;<<link _rogueAddr "RogueStart">>
-				<<if setup.Rogue.isRogue()>><<run setup.Rogue.endRogue(false)>><</if>>
+			@@.icontext;<<link _huntAddr "HuntStart">>
+				<<if setup.HuntController.isActive()>><<run setup.HuntController.endHunt(false)>><</if>>
 			<</link>>@@
 		<<else>>
 			@@.mc-thoughts; Level 4+ required@@
@@ -22,16 +22,16 @@
 	</div>
 <</widget>>
 
-/* rogueStaticHouseCard -- arg: static rogue-house id from
-   setup.RogueHouses.list() (e.g. "rogue-owaissa"). Drops a
-   GhostStreet card that routes to RogueStart with the house's
-   catalogue id stashed on $pendingRogueStaticHouseId; RogueStart
-   reads + clears it before invoking startRogue, so the rogue
+/* huntHouseCard -- arg: static hunt-house id from
+   setup.HuntHouses.list() (e.g. "owaissa"). Drops a
+   GhostStreet card that routes to HuntStart with the house's
+   catalogue id stashed on $pendingHuntHouseId; HuntStart
+   reads + clears it before invoking startHunt, so the hunt
    lifecycle stays in charge of the run. The data is the
-   catalogue, so adding a new static rogue house is one entry in
-   setup.RogueHouses + a card per house here. */
-<<widget "rogueStaticHouseCard">>
-	<<set _rsh to setup.RogueHouses and setup.RogueHouses.byId(_args[0])>>
+   catalogue, so adding a new static hunt house is one entry in
+   setup.HuntHouses + a card per house here. */
+<<widget "huntHouseCard">>
+	<<set _rsh to setup.HuntHouses and setup.HuntHouses.byId(_args[0])>>
 	<<if _rsh>>
 		<div class="housecard">
 			<<image _rsh.image "iconPx">>
@@ -42,9 +42,9 @@
 				@@.mc-thoughts; <<= _rsh.gateMessage or "Locked">>@@
 			<<else>>
 				<<capture _rsh>>
-					@@.icontext;<<link _rsh.label "RogueStart">>
-						<<if setup.Rogue.isRogue()>><<run setup.Rogue.endRogue(false)>><</if>>
-						<<set $pendingRogueStaticHouseId to _rsh.id>>
+					@@.icontext;<<link _rsh.label "HuntStart">>
+						<<if setup.HuntController.isActive()>><<run setup.HuntController.endHunt(false)>><</if>>
+						<<set $pendingHuntHouseId to _rsh.id>>
 					<</link>>@@
 				<</capture>>
 			<</if>>
@@ -54,7 +54,7 @@
 
 /* companionStreetTalk -- arg-less. Pulls the objective pronoun off
    the active companion catalogue entry and routes to the shared
-   CompanionMain passage. Surfaced inside rogue-street contexts where
+   CompanionMain passage. Surfaced inside hunt-street contexts where
    the companion is waiting at the entrance. */
 <<widget "companionStreetTalk">>
 	<<set _ac to setup.Companion.active()>>

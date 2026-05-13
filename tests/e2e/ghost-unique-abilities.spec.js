@@ -10,7 +10,7 @@ test.describe('Ghost unique abilities — Phantom, Goryo, Deogen, Jinn', () => {
 
   test('Phantom: lights cannot be turned off', async ({ game: page }) => {
     await setupHunt(page, 'Phantom');
-    await goToPassage(page, 'RogueRun');
+    await goToPassage(page, 'HuntRun');
     await expectCleanPassage(page);
 
     await setVar(page, 'hallway.background', 1);
@@ -21,13 +21,13 @@ test.describe('Ghost unique abilities — Phantom, Goryo, Deogen, Jinn', () => {
       expect(bg, 'Phantom turned off lights on iteration ' + i).toBe(1);
     }
 
-    await goToPassage(page, 'RogueRun');
+    await goToPassage(page, 'HuntRun');
     await expectCleanPassage(page);
   });
 
   test('Phantom: non-Phantom ghost CAN turn off lights (control test)', async ({ game: page }) => {
     await setupHunt(page, 'Spirit');
-    await goToPassage(page, 'RogueRun');
+    await goToPassage(page, 'HuntRun');
 
     const canTurnOff = await page.evaluate(() =>
       SugarCube.State.variables.hunt.name !== 'Phantom'
@@ -51,7 +51,7 @@ test.describe('Ghost unique abilities — Phantom, Goryo, Deogen, Jinn', () => {
       expect(room, `Goryo room changed at minute ${min}`).toBe(initialRoom);
     }
 
-    await goToPassage(page, 'RogueRun');
+    await goToPassage(page, 'HuntRun');
     await expectCleanPassage(page);
   });
 

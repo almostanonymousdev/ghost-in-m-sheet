@@ -1,0 +1,138 @@
+:: widgetHuntFooterLight [widget nobr] {"position":"3600,300","size":"100,100"}
+/* huntFooterLight -- arg-less. Hunt counterpart of <<roomFooterLight>>:
+   two image links that toggle the current room's light/dark state and
+   re-render HuntRun so the body background re-resolves through
+   setup.Styles.bgUrlForTemplate(template, dark). State lives on
+   $run.lights keyed by floor-plan room id so each room remembers its
+   setting independently; the cursedHuntLinkDisable wrapper gates
+   clicks while a hunt is active, matching the haunted-house widget's
+   behavior. */
+<<widget "huntFooterLight">>
+	<<set _roomId to setup.HuntController.currentRoomId()>>
+	<<if _roomId>>
+		<<capture _roomId>>
+			<div class="hunt-run-lights">
+			<span class="cursedHuntLinkDisable"><<link "<<image \"ui/img/lighton.png\">>" "HuntRun">><<run setup.HuntController.setRoomLight(_roomId, setup.RoomLight.LIT)>>
+			<</link>>
+			<<link "<<image \"ui/img/lightoff.png\">>" "HuntRun">><<run setup.HuntController.setRoomLight(_roomId, setup.RoomLight.DARK)>>
+			<</link>></span>
+			</div>
+		<</capture>>
+	<</if>>
+<</widget>>
+
+:: widgetHuntToolBar [widget nobr] {"position":"3600,200","size":"100,100"}
+/* huntToolBar -- arg-less. Renders one tool card per entry in
+   setup.HuntController.startingTools(), which folds the run's loadout
+   and the Empty Bag modifier into the canonical setup.searchToolOrder:
+   default runs show all six (EMF, Ectoglass, GWB, Spiritbox,
+   Thermometr, UVL); a loadout that names a subset shows just those;
+   Empty Bag collapses the strip to a "no tools" placeholder.
+
+   Per-slot markup lives in <<huntToolSlot>> below. setup.ensureHuntSearchBag
+   (ToolController) seeds the per-tool counter object the meter reads
+   from. */
+<<widget "huntToolBar">>
+	<<set _tools to setup.HuntController.startingTools()>>
+	<<if _tools.length eq 0>>
+		<div class="hunt-tool-card hunt-tool-card-empty">
+			@@.mc-thoughts; (your bag is empty)@@
+		</div>
+	<<else>>
+		<<run setup.ensureHuntSearchBag()>>
+		<<for _t range _tools>>
+			<<set _def to setup.searchToolDefs[_t]>>
+			<<capture _t, _def>>
+				<div class="hunt-tool-card">
+					<<image "ui/img/" + _def.iconFile { class: "hunt-tool-icon" }>>
+					<<huntToolSlot _t>>
+				</div>
+			<</capture>>
+		<</for>>
+	<</if>>
+<</widget>>
+
+/* huntToolSlot -- args[0] = tool key. Renders the link for one hunt
+   tool slot. Click starts a <<repeat>>-driven meter that mirrors
+   <<searchTool>>: each tick fires <<huntTickEventChain>> + <<toolTick>>,
+   the meter completes after `$equipment.<tool>` ticks, and the result
+   is wikified into the shared #hunt-tool-result tray.
+
+   The meter element renders into the shared #hunt-tool-meter
+   container at the top of the layout (see HuntRun) -- not per-card --
+   so the toolbar row keeps its compact icon-plus-label sizing whether
+   or not a tick is in flight.
+
+   Differences from the in-house <<searchTool>>:
+     * Uses <<link>> (multi-use) so the player can re-fire the same
+       tool without leaving HuntRun -- the in-house markup relies on
+       the room re-rendering on nav, which doesn't happen here.
+     * Routes the completion check into #hunt-tool-result rather than
+       a per-tool actionSel -- the layout has one shared readout area.
+     * Adds a sanity/exhaustion guard after <<applyTickEffects>> so a
+       stat-collapse landed by the click routes to HuntSummary
+       immediately instead of waiting for the next nav.
+     * Refreshes the .hunt-conditions HUD after the tick so per-step
+       deltas + contributor chips track stat changes from the click.
+   The shared bridges (setup.Ghosts.active / setup.isGhostHere /
+   setup.HuntController.huntOverPassage) make the per-tick chain
+   reusable.
+
+   Tools whose searchToolDefs entry sets needsLightCheck (currently
+   spiritbox) are gated on the current room being dark -- mirroring
+   the lights-off guard the in-house <<searchTool>> markup emits.
+   When the room is lit the click routes a "turn the lights off
+   first" prompt into #hunt-tool-result instead of starting the
+   meter; the predicate reads through setup.HuntController.isCurrentRoomDark
+   so the catalogue flag drives the rule, no per-tool branch in
+   the widget. */
+<<widget "huntToolSlot">>
+	<<set _t to _args[0]>>
+	<<set _def to setup.searchToolDefs[_t]>>
+	<<set _meterName to "searchHunt" + _def.meterField>>
+	<<set _equipField to _def.equipField>>
+	<<capture _t, _def, _meterName, _equipField>>
+		<span class="hunt-tool-card-label cardlink" @data-tool="_t">@@.adaptiveLink;<<link `_def.label`>>
+			<<if _def.needsLightCheck and not setup.HuntController.isCurrentRoomDark()>>
+				<<replace "#hunt-tool-result">>
+					<div class="spiritbox-container mc-thoughts">I need to turn off the light first</div>
+				<</replace>>
+			<<else>>
+				<<addclass ".cardlink" "disabled-link">>
+				<<replace "#hunt-tool-meter">>
+					<<showmeter _meterName `$currentsearchHunt[_t] / $equipment[_equipField]`>>
+				<</replace>>
+				<<repeat `$timerToolsDecreased`>>
+					<<if $currentsearchHunt[_t] neq $equipment[_equipField]>>
+						<<huntTickEventChain>>
+					<</if>>
+					<<if $currentsearchHunt[_t] lte ($equipment[_equipField] - 1)>>
+						<<toolTick>>
+						<<set $currentsearchHunt[_t] += 1>>
+						<<updatemeter _meterName `$currentsearchHunt[_t] / $equipment[_equipField]`>>
+					<<elseif $currentsearchHunt[_t] gte $equipment[_equipField]>>
+						<<replace "#hunt-tool-result">>
+							<<if _t eq "temperature">>
+								<<include "TemperatureHigh">>
+							<<else>>
+								<<toolCheck _t>>
+							<</if>>
+						<</replace>>
+						<<replace "#hunt-tool-meter">><</replace>>
+						<<applyTickEffects>>
+						<<replace ".hunt-conditions">><<huntConditions>><</replace>>
+						<<set $currentsearchHunt[_t] to 0>>
+						<<removeclass ".cardlink" "disabled-link">>
+						<<if setup.Mc.isSanityCollapsed() or setup.Mc.sanity() lte 0>>
+							<<goto setup.HuntController.huntOverPassage("sanity")>>
+						<<elseif setup.Mc.isExhausted()>>
+							<<goto setup.HuntController.huntOverPassage("exhaustion")>>
+						<<else>>
+							<<stop>>
+						<</if>>
+					<</if>>
+				<</repeat>>
+			<</if>>
+		<</link>>@@</span>
+	<</capture>>
+<</widget>>

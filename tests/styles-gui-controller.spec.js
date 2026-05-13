@@ -104,9 +104,9 @@ test.describe('StyleController (setup.Styles)', () => {
     expect(await callSetup(page, 'setup.Styles.classesFor("NotARoom")')).toBeNull();
   });
 
-  // --- Rogue-room backgrounds ------------------------------------
+  // --- Hunt-room backgrounds ------------------------------------
 
-  test('bgUrlForTemplate returns light/dark variants for the rogue catalogue', async ({ game: page }) => {
+  test('bgUrlForTemplate returns light/dark variants for the hunt catalogue', async ({ game: page }) => {
     for (const id of ['hallway', 'attic', 'sauna', 'dining-room',
                       'sex-dungeon', 'walk-in-closet']) {
       const lit  = await callSetup(page, `setup.Styles.bgUrlForTemplate("${id}")`);

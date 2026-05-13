@@ -390,10 +390,9 @@ setup.MonkeyPaw = (function () {
 		   highlight logic gate on this. */
 		isDiscoverable: function () { return (sv().MonkeyPawStage || 0) === setup.MonkeyPawStage.HIDDEN; },
 		/* The Bag icon shows only when carrying the paw AND the
-		   player just stepped into a hunt-context passage (a haunted-
-		   house room in classic, RogueRun in rogue) -- so the paw
+		   player just stepped into the HuntRun passage -- so the paw
 		   doesn't appear when Bag is opened from the city, the witch
-		   street, or the rogue lobby. */
+		   street, or the hunt lobby. */
 		isCarrying: function () {
 			if (!this.isFound()) return false;
 			return setup.HuntController.isInsideHuntPassage();

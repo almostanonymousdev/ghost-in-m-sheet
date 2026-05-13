@@ -1,6 +1,6 @@
 # Witch Plotline
 
-The witch is a mysterious character who sells supernatural items and runs through her own intimate storyline. She lives in a house accessible during specific hours (10 AM to midnight). With the hunt loop unified under rogue mode, the witch no longer hands out contracts — her role is the shopkeeper for cursed items and the focal point for her personal events.
+The witch is a mysterious character who sells supernatural items and runs through her own intimate storyline. She lives in a house accessible during specific hours (10 AM to midnight). With the hunt loop unified under a single mode, the witch no longer hands out contracts — her role is the shopkeeper for cursed items and the focal point for her personal events.
 
 * **Witch location and access** - The witch's house is accessible only between 10 AM and midnight (`setup.Witch.isDayTime()` returns true for hours 10–23). Outside these hours, the house appears abandoned or locked, though sneaking in is possible once the MC has stolen her key.
   * [Witch.tw](../passages/witch/Witch.tw) - Witch's house exterior and entry

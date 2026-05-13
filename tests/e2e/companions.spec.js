@@ -149,18 +149,18 @@ test.describe('Companions — passage rendering', () => {
 });
 
 test.describe('Companions — hunt-side events', () => {
-  test('canShowCompanionMiniPanel requires chosenPlan + hunt mode + active rogue run', async ({ game: page }) => {
+  test('canShowCompanionMiniPanel requires chosenPlan + hunt mode + active hunt', async ({ game: page }) => {
     await setVar(page, 'chosenPlan', 'Plan1');
     await setHuntMode(page, 2);
     await page.evaluate(() =>
-      SugarCube.setup.Rogue.startRogue({ seed: 1, staticHouseId: 'rogue-owaissa' }));
+      SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: 'owaissa' }));
     expect(await callSetup(page, 'setup.Companion.canShowCompanionMiniPanel()')).toBe(true);
 
-    await page.evaluate(() => SugarCube.setup.Rogue.end());
+    await page.evaluate(() => SugarCube.setup.HuntController.end());
     expect(await callSetup(page, 'setup.Companion.canShowCompanionMiniPanel()')).toBe(false);
 
     await page.evaluate(() =>
-      SugarCube.setup.Rogue.startRogue({ seed: 1, staticHouseId: 'rogue-elm' }));
+      SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: 'elm' }));
     expect(await callSetup(page, 'setup.Companion.canShowCompanionMiniPanel()')).toBe(true);
 
     await setHuntMode(page, 0);
@@ -274,7 +274,7 @@ test.describe('Companions — home/intimate events', () => {
     test(`${passage} renders cleanly`, async ({ game: page }) => {
       await selectCompanion(page, 'Alice');
       await page.evaluate(() =>
-        SugarCube.setup.Rogue.startRogue({ seed: 1, staticHouseId: 'rogue-owaissa' }));
+        SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: 'owaissa' }));
       await setVar(page, 'isCompRoomChosen', 0);
       await goToPassage(page, passage);
       await expectCleanPassage(page);
@@ -284,7 +284,7 @@ test.describe('Companions — home/intimate events', () => {
   test('pickRandomCompanionRoomFromContext picks a room without throwing', async ({ game: page }) => {
     await selectCompanion(page, 'Alice');
     await page.evaluate(() =>
-      SugarCube.setup.Rogue.startRogue({ seed: 1, staticHouseId: 'rogue-owaissa' }));
+      SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: 'owaissa' }));
     await setVar(page, 'isCompRoomChosen', 0);
     await callSetup(page, 'setup.Companion.pickRandomCompanionRoomFromContext()');
     expect(await getVar(page, 'isCompRoomChosen')).toBe(1);
@@ -292,12 +292,12 @@ test.describe('Companions — home/intimate events', () => {
 });
 
 test.describe('Companions — hunt setup integration', () => {
-  test('Rogue hunt with Alice chosen renders the mini panel', async ({ game: page }) => {
+  test('Active hunt with Alice chosen renders the mini panel', async ({ game: page }) => {
     await setupHunt(page, 'Shade');
     await selectCompanion(page, 'Alice');
     await setVar(page, 'isCompChosen', 1);
     await setVar(page, 'chosenPlan', 'Plan1');
-    await goToPassage(page, 'RogueRun');
+    await goToPassage(page, 'HuntRun');
     await expectCleanPassage(page);
     expect(await callSetup(page, 'setup.Companion.canShowCompanionMiniPanel()')).toBe(true);
   });

@@ -11,15 +11,15 @@
  * eligible to appear in a procedurally-generated floor plan -- is
  * the same wherever it shows up.
  *
- * setup.Templates is that single source of truth. Rogue mode reads
- * from here when building floor plans (see FloorPlanController);
- * future per-template encounter hooks (a library rolls a cursed-
- * book hook, a kitchen rolls a cooking-corruption hook) will hang
- * off these entries.
+ * setup.Templates is that single source of truth. The hunt
+ * controller reads from here when building floor plans (see
+ * FloorPlanController); future per-template encounter hooks (a
+ * library rolls a cursed-book hook, a kitchen rolls a cooking-
+ * corruption hook) will hang off these entries.
  *
  * Each entry:
  *   id                 -- canonical template key (also used as the
- *                         room state-var name in classic houses).
+ *                         room state-var name in static-plan houses).
  *   label              -- human-facing name for nav / minimap.
  *   furniture          -- ordered list of slot suffixes (e.g.
  *                         ['table', 'sink1']). Slot ids in concrete
@@ -31,22 +31,21 @@
  *                         hide-spot during cursed hunts, or null.
  *   proceduralEligible -- true if the floor-plan generator is
  *                         allowed to slot this template into a
- *                         rogue run. Story-locked templates
- *                         (ironclad cells, enigma's barren rooms)
- *                         stay false.
+ *                         procedural hunt. Story-locked templates
+ *                         (ironclad cells, upstairs hallways) stay
+ *                         false.
  */
 setup.Templates = (function () {
 	/* Authored-house furniture sets vary slightly between houses
 	   (Owaissa bathroom has a carpet, Elm's doesn't; Elm bedroom
 	   uses bed1.png while Owaissa uses bed2.png). The canonical
 	   set here picks the more featureful/Owaissa-style variant so
-	   rogue rooms feel comparably furnished to authored ones. */
+	   procedural rooms feel comparably furnished to authored ones. */
 	var TEMPLATES = Object.freeze({
-		// --- Procedural-eligible: appear in rogue floor plans -----
-		// Rogue-only templates with dedicated backgrounds (see
-		// setup.Styles.bgUrlForTemplate). Kept distinct from the
-		// authored-house templates below so the rogue floor plan
-		// renders its own scene set instead of reusing classic art.
+		// --- Procedural-only templates with dedicated backgrounds
+		// (see setup.Styles.bgUrlForTemplate). Kept distinct from the
+		// authored-house templates below so the procedural floor plan
+		// renders its own scene set instead of reusing static-plan art.
 		attic: {
 			id: 'attic', label: 'Attic',
 			furniture: ['shelves', 'wardrobe', 'table'],
@@ -79,10 +78,8 @@ setup.Templates = (function () {
 		},
 
 		// --- Authored-house templates -----------------------------
-		// Kept in the catalogue so classic-mode rooms keep working
-		// (id is used as the room state-var name in classic houses),
-		// but excluded from procedural rogue plans -- rogue uses its
-		// own dedicated rooms above.
+		// Kept in the catalogue so static-plan houses keep working
+		// (id is used as the room state-var name in those houses).
 		kitchen: {
 			id: 'kitchen', label: 'Kitchen',
 			furniture: ['desk', 'table', 'sink1'],
@@ -120,7 +117,7 @@ setup.Templates = (function () {
 			proceduralEligible: true
 		},
 
-		// --- Backbone: hallway is always present in rogue plans ---
+		// --- Backbone: hallway is always present in hunt plans ----
 		hallway: {
 			id: 'hallway', label: 'Hallway',
 			furniture: ['carpet', 'wardrobe', 'coatrack'],
@@ -128,9 +125,9 @@ setup.Templates = (function () {
 			proceduralEligible: false
 		},
 
-		// --- Story-locked: authored houses only -------------------
-		// Multi-storey hallway -- only Elm has it; rogue plans use a
-		// single hallway as the backbone.
+		// --- Story-locked: static-plan houses only ----------------
+		// Multi-storey hallway -- only Elm has it; procedural plans
+		// use a single hallway as the backbone.
 		hallwayUpstairs: {
 			id: 'hallwayUpstairs', label: 'Hallway Upstairs',
 			furniture: ['carpet', 'shelves'],

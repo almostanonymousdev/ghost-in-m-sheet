@@ -5,14 +5,14 @@
  * Room state objects (light/dark `background`, per-room search
  * scratch fields) live as top-level state vars keyed by the
  * room's id (e.g. $kitchen, $BlockACellA). Existing rooms use
- * their template name as their id (id === template); rogue runs
+ * their template name as their id (id === template); hunts
  * can seed extra rooms with arbitrary ids (`room_0`, `room_1`)
  * and set `template` to the asset/template family they should
  * render as.
  *
  * Every passage / widget / controller that touches the
  * background field or the room state object should go through
- * setup.Rooms.byId(id) -- which means rogue runs can swap in
+ * setup.Rooms.byId(id) -- which means hunts can swap in
  * fresh ids without any caller knowing the difference.
  */
 setup.Rooms = (function () {
@@ -54,7 +54,7 @@ setup.Rooms = (function () {
 	}
 
 	/* Create or reset a room state object at sv()[id]. Used by
-	   GameInit / migrations and by future rogue-run setup. */
+	   GameInit / migrations and by future hunt setup. */
 	function seed(id, opts) {
 		opts = opts || {};
 		sv()[id] = {

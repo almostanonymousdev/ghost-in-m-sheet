@@ -694,14 +694,14 @@ test.describe('Home Controller', () => {
     // sleeps cut short by the event, not full nights. Wraith is the only
     // catalogue ghost with a sleepPassage, so it's the branch we can
     // exercise here.
-    // resolveSleepWake reads setup.Ghosts.active(), which in unified rogue
+    // resolveSleepWake reads setup.Ghosts.active(), which in the unified hunt
     // mode comes from $run.ghostName -- a bare $hunt isn't enough, so we
-    // start a real rogue run with Wraith pinned.
+    // start a real hunt with Wraith pinned.
     await page.evaluate(() => {
-      SugarCube.setup.Rogue.startRogue({ seed: 1 });
-      SugarCube.setup.Rogue.setField('ghostName', 'Wraith');
+      SugarCube.setup.HuntController.startHunt({ seed: 1 });
+      SugarCube.setup.HuntController.setField('ghostName', 'Wraith');
       const g = SugarCube.setup.Ghosts.getByName('Wraith');
-      SugarCube.setup.Rogue.setField('evidence', g.evidence.map(e => e.id));
+      SugarCube.setup.HuntController.setField('evidence', g.evidence.map(e => e.id));
       SugarCube.setup.Ghosts.startHunt('Wraith');
     });
     await setVar(page, 'hours', 22);
@@ -711,7 +711,7 @@ test.describe('Home Controller', () => {
     );
     expect(fromDefeat.hours).toBe(3);
     expect(fromDefeat.postWake).toBe('huntDefeat');
-    await page.evaluate(() => SugarCube.setup.Rogue.end());
+    await page.evaluate(() => SugarCube.setup.HuntController.end());
   });
 
   test('sleepAdvance to alarm wakes the MC at the configured hour', async ({ game: page }) => {

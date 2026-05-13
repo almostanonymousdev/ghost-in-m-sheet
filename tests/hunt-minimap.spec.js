@@ -1,12 +1,12 @@
 const { test, expect } = require('@playwright/test');
 const { openGame, resetGame, callSetup } = require('./helpers');
 
-/* setup.Rogue.minimapData() denormalises the active run's floor plan
+/* setup.HuntController.minimapData() denormalises the active run's floor plan
    for the minimap widget — one record per room with template
    label, spawn / boss flags, and the loot kinds anchored on it.
    The widget renders straight from this list, so coverage here
    is the cheaper way to lock in the structure. */
-test.describe('Rogue minimap data', () => {
+test.describe('Hunt minimap data', () => {
   let page;
 
   test.beforeAll(async ({ browser }) => {
@@ -21,16 +21,16 @@ test.describe('Rogue minimap data', () => {
     await resetGame(page);
   });
 
-  test('returns null when no rogue run is active', async () => {
-    expect(await callSetup(page, 'setup.Rogue.minimapData()')).toBeNull();
+  test('returns null when no hunt is active', async () => {
+    expect(await callSetup(page, 'setup.HuntController.minimapData()')).toBeNull();
   });
 
   test('emits one record per room with template-resolved label', async () => {
-    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({
       seed: 42, modifierCount: 0, floorPlanOpts: { roomCount: 5 }
     }));
 
-    const mm = await callSetup(page, 'setup.Rogue.minimapData()');
+    const mm = await callSetup(page, 'setup.HuntController.minimapData()');
     expect(mm.length).toBe(5);
     mm.forEach(r => {
       expect(typeof r.id).toBe('string');
@@ -48,32 +48,32 @@ test.describe('Rogue minimap data', () => {
   });
 
   test('exactly one room is flagged as spawn', async () => {
-    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
-    const mm = await callSetup(page, 'setup.Rogue.minimapData()');
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
+    const mm = await callSetup(page, 'setup.HuntController.minimapData()');
     const spawns = mm.filter(r => r.isSpawn);
     expect(spawns.length).toBe(1);
     expect(spawns[0].id).not.toBe('room_0');
   });
 
   test('boss room is flagged when includeBoss is on, otherwise no rooms are', async () => {
-    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({
       seed: 1, floorPlanOpts: { includeBoss: true }
     }));
-    let mm = await callSetup(page, 'setup.Rogue.minimapData()');
+    let mm = await callSetup(page, 'setup.HuntController.minimapData()');
     expect(mm.filter(r => r.isBoss).length).toBe(1);
 
-    await page.evaluate(() => SugarCube.setup.Rogue.end());
-    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
-    mm = await callSetup(page, 'setup.Rogue.minimapData()');
+    await page.evaluate(() => SugarCube.setup.HuntController.end());
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
+    mm = await callSetup(page, 'setup.HuntController.minimapData()');
     expect(mm.filter(r => r.isBoss).length).toBe(0);
   });
 
   test('loot kinds attach to the rooms they were placed on', async () => {
-    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({
       seed: 31, floorPlanOpts: { roomCount: 6 }
     }));
-    const mm = await callSetup(page, 'setup.Rogue.minimapData()');
-    const fp = await callSetup(page, 'setup.Rogue.field("floorplan")');
+    const mm = await callSetup(page, 'setup.HuntController.minimapData()');
+    const fp = await callSetup(page, 'setup.HuntController.field("floorplan")');
 
     // Each kind in fp.loot should appear in exactly one room's
     // lootKinds list.
@@ -91,10 +91,10 @@ test.describe('Rogue minimap data', () => {
   });
 
   test('rooms with no loot report an empty lootKinds array', async () => {
-    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({
       seed: 99, floorPlanOpts: { roomCount: 9 }
     }));
-    const mm = await callSetup(page, 'setup.Rogue.minimapData()');
+    const mm = await callSetup(page, 'setup.HuntController.minimapData()');
 
     // The hallway never carries loot; its lootKinds should be empty.
     const hall = mm.find(r => r.id === 'room_0');
@@ -104,13 +104,13 @@ test.describe('Rogue minimap data', () => {
   test('label falls back to template id if the template is unknown', async () => {
     // Synthesize a run with a template id that isn't in setup.Templates.
     await page.evaluate(() => {
-      SugarCube.setup.Rogue.startRogue({ seed: 1 });
-      const fp = SugarCube.setup.Rogue.field('floorplan');
+      SugarCube.setup.HuntController.startHunt({ seed: 1 });
+      const fp = SugarCube.setup.HuntController.field('floorplan');
       fp.rooms.push({ id: 'room_x', template: 'mystery_template' });
-      SugarCube.setup.Rogue.setField('floorplan', fp);
+      SugarCube.setup.HuntController.setField('floorplan', fp);
     });
 
-    const mm = await callSetup(page, 'setup.Rogue.minimapData()');
+    const mm = await callSetup(page, 'setup.HuntController.minimapData()');
     const x = mm.find(r => r.id === 'room_x');
     expect(x.template).toBe('mystery_template');
     expect(x.label).toBe('mystery_template');
@@ -119,10 +119,10 @@ test.describe('Rogue minimap data', () => {
   // --- Layout + connections ---
 
   test('each record carries a position {col, row} and a neighbour list', async () => {
-    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({
       seed: 42, floorPlanOpts: { roomCount: 5 }
     }));
-    const mm = await callSetup(page, 'setup.Rogue.minimapData()');
+    const mm = await callSetup(page, 'setup.HuntController.minimapData()');
 
     mm.forEach(r => {
       expect(typeof r.position.col).toBe('number');
@@ -164,15 +164,15 @@ test.describe('Rogue minimap data', () => {
   // --- SVG builder ---
 
   test('minimapSvg returns an empty string with no run active', async () => {
-    expect(await callSetup(page, 'setup.Rogue.minimapSvg()')).toBe('');
+    expect(await callSetup(page, 'setup.HuntController.minimapSvg()')).toBe('');
   });
 
   test('minimapSvg emits one <rect> per room and one <line> per edge', async () => {
-    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({
       seed: 1, floorPlanOpts: { roomCount: 6 }
     }));
-    const svg = await callSetup(page, 'setup.Rogue.minimapSvg()');
-    const fp = await callSetup(page, 'setup.Rogue.field("floorplan")');
+    const svg = await callSetup(page, 'setup.HuntController.minimapSvg()');
+    const fp = await callSetup(page, 'setup.HuntController.field("floorplan")');
 
     const rectCount = (svg.match(/<rect /g) || []).length;
     const lineCount = (svg.match(/<line /g) || []).length;
@@ -184,49 +184,49 @@ test.describe('Rogue minimap data', () => {
   });
 
   test('minimapSvg flags the player\'s current room with the current class', async () => {
-    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({
       seed: 1, floorPlanOpts: { roomCount: 5 }
     }));
-    let svg = await callSetup(page, 'setup.Rogue.minimapSvg()');
+    let svg = await callSetup(page, 'setup.HuntController.minimapSvg()');
     // Default: room_0 (hallway) is current.
-    expect(svg).toMatch(/rogue-minimap-current[^"]*"\s+data-room="room_0"/);
+    expect(svg).toMatch(/hunt-minimap-current[^"]*"\s+data-room="room_0"/);
 
     // Move the player; the highlight should follow.
-    await page.evaluate(() => SugarCube.setup.Rogue.setCurrentRoom('room_2'));
-    svg = await callSetup(page, 'setup.Rogue.minimapSvg()');
-    expect(svg).toMatch(/rogue-minimap-current[^"]*"\s+data-room="room_2"/);
-    expect(svg).not.toMatch(/rogue-minimap-current[^"]*"\s+data-room="room_0"/);
+    await page.evaluate(() => SugarCube.setup.HuntController.setCurrentRoom('room_2'));
+    svg = await callSetup(page, 'setup.HuntController.minimapSvg()');
+    expect(svg).toMatch(/hunt-minimap-current[^"]*"\s+data-room="room_2"/);
+    expect(svg).not.toMatch(/hunt-minimap-current[^"]*"\s+data-room="room_0"/);
   });
 
   test('minimapSvg tags the boss room but never reveals the ghost spawn', async () => {
-    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({
       seed: 1, floorPlanOpts: { roomCount: 5, includeBoss: true }
     }));
-    const fp = await callSetup(page, 'setup.Rogue.field("floorplan")');
-    const svg = await callSetup(page, 'setup.Rogue.minimapSvg()');
-    const bossRe  = new RegExp('rogue-minimap-boss[^"]*"\\s+data-room="' + fp.bossRoomId + '"');
+    const fp = await callSetup(page, 'setup.HuntController.field("floorplan")');
+    const svg = await callSetup(page, 'setup.HuntController.minimapSvg()');
+    const bossRe  = new RegExp('hunt-minimap-boss[^"]*"\\s+data-room="' + fp.bossRoomId + '"');
     expect(svg).toMatch(bossRe);
     // The ghost's lair must not be highlighted on the minimap --
     // the spawn class is intentionally omitted from the SVG nodes.
-    expect(svg).not.toMatch(/rogue-minimap-spawn/);
+    expect(svg).not.toMatch(/hunt-minimap-spawn/);
   });
 
   // --- Click-to-collapse state ---
 
   test('isMinimapCollapsed defaults to false; toggle flips and returns the new value', async () => {
-    expect(await callSetup(page, 'setup.Rogue.isMinimapCollapsed()')).toBe(false);
-    expect(await callSetup(page, 'setup.Rogue.toggleMinimapCollapsed()')).toBe(true);
-    expect(await callSetup(page, 'setup.Rogue.isMinimapCollapsed()')).toBe(true);
-    expect(await callSetup(page, 'setup.Rogue.toggleMinimapCollapsed()')).toBe(false);
-    expect(await callSetup(page, 'setup.Rogue.isMinimapCollapsed()')).toBe(false);
+    expect(await callSetup(page, 'setup.HuntController.isMinimapCollapsed()')).toBe(false);
+    expect(await callSetup(page, 'setup.HuntController.toggleMinimapCollapsed()')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntController.isMinimapCollapsed()')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntController.toggleMinimapCollapsed()')).toBe(false);
+    expect(await callSetup(page, 'setup.HuntController.isMinimapCollapsed()')).toBe(false);
   });
 
-  test('endRogue resets the collapsed flag so the next run starts expanded', async () => {
-    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
-    await page.evaluate(() => SugarCube.setup.Rogue.toggleMinimapCollapsed());
-    expect(await callSetup(page, 'setup.Rogue.isMinimapCollapsed()')).toBe(true);
+  test('endHunt resets the collapsed flag so the next run starts expanded', async () => {
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
+    await page.evaluate(() => SugarCube.setup.HuntController.toggleMinimapCollapsed());
+    expect(await callSetup(page, 'setup.HuntController.isMinimapCollapsed()')).toBe(true);
 
-    await page.evaluate(() => SugarCube.setup.Rogue.endRogue(true));
-    expect(await callSetup(page, 'setup.Rogue.isMinimapCollapsed()')).toBe(false);
+    await page.evaluate(() => SugarCube.setup.HuntController.endHunt(true));
+    expect(await callSetup(page, 'setup.HuntController.isMinimapCollapsed()')).toBe(false);
   });
 });

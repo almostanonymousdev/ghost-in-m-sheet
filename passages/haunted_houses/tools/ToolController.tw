@@ -309,7 +309,7 @@
         'crucifixAmount',
         'boughtDetector',
         'evidenceFind',
-        'currentsearchRogue'
+        'currentsearchHunt'
     ]);
 
     setup.ToolController = {
@@ -389,10 +389,9 @@
 /* Every room id that gets a per-hunt $currentsearch<Room> bag.
  * The variable name is always "currentsearch" + room.
  *
- * "Rogue" is a synthetic entry that auto-registers the searchRogue<Tool>
- * meters used by the rogue toolbar. Rogue runs lazy-init the
- * $currentsearchRogue bag inside the toolbar widget itself (not via
- * GhostRandomize, which only fires for classic contracts). */
+ * "Hunt" is a synthetic entry that auto-registers the searchHunt<Tool>
+ * meters used by the hunt toolbar. The toolbar widget lazy-inits the
+ * $currentsearchHunt bag itself rather than relying on per-room init. */
 setup.searchableRooms = [
     // standard houses
     "Kitchen", "Hallway", "Livingroom", "Bedroom", "Bathroom", "Basement",
@@ -403,8 +402,8 @@ setup.searchableRooms = [
     "BlockAIronclad", "BlockBIronclad",
     "BlockACellAIronclad", "BlockACellBIronclad", "BlockACellCIronclad",
     "BlockBCellAIronclad", "BlockBCellBIronclad", "BlockBCellCIronclad",
-    // Rogue (single shared bag)
-    "Rogue"
+    // Hunt toolbar (single shared bag)
+    "Hunt"
 ];
 
 /* $-variable names of every room object that has a `.background` field
@@ -804,10 +803,9 @@ setup.searchableRooms.forEach(function (room) {
     /* Markup for the side-effects that run on every iteration WITHOUT
      * filling the meter (light-passage check + the appropriate event
      * pipeline + start-of-hunt roll). All chains delegate to
-     * <<huntTickEventChain>>, which dispatches via setup.HuntController
-     * so the same widget services classic and rogue hunts. Per-house
-     * opt-outs (e.g. ironclad skipping the steal step) live on
-     * HOUSE_CONFIG flags read by the controller. */
+     * <<huntTickEventChain>>, which dispatches via setup.HuntController.
+     * Per-house opt-outs (e.g. ironclad skipping the steal step) live
+     * on HOUSE_CONFIG flags read by the controller. */
     function eventChainFor(name) {
         return '<<huntTickEventChain>>';
     }
@@ -957,16 +955,16 @@ setup.searchableRooms.forEach(function (room) {
         }
     });
 
-    /* Lazy-init the $currentsearchRogue counter bag. The classic
-     * per-room bags are seeded from GhostRandomize; rogue runs skip
+    /* Lazy-init the $currentsearchHunt counter bag. The classic
+     * per-room bags are seeded from GhostRandomize; hunts skip
      * that passage entirely, so the toolbar widget invokes this once
      * on render. Idempotent. */
-    setup.ensureRogueSearchBag = function () {
+    setup.ensureHuntSearchBag = function () {
         var V = State.variables;
-        if (!V.currentsearchRogue) {
-            V.currentsearchRogue = setup.makeEmptySearchState();
+        if (!V.currentsearchHunt) {
+            V.currentsearchHunt = setup.makeEmptySearchState();
         }
-        return V.currentsearchRogue;
+        return V.currentsearchHunt;
     };
 
     /* Keyboard shortcut: map each key to the tool it activates, then click
@@ -989,16 +987,16 @@ setup.searchableRooms.forEach(function (room) {
         });
     };
 
-    /* Rogue toolbar counterpart to clickAllSearchTools. The rogue
-     * widget renders a single .rogue-tool-card-label[data-tool=...]
+    /* Hunt toolbar counterpart to clickAllSearchTools. The hunt
+     * widget renders a single .hunt-tool-card-label[data-tool=...]
      * span per slot and toggles the .disabled-link class on it
-     * during the meter cycle (widgetRogueToolBar). Programmatic
+     * during the meter cycle (widgetHuntToolBar). Programmatic
      * .click() bypasses CSS pointer-events, so we have to gate the
      * click on the class explicitly -- otherwise re-pressing the
      * shortcut key mid-tick would re-enter <<link>> and double-fire
-     * the meter. No-op outside RogueRun (selector matches nothing). */
-    setup.clickRogueSearchTool = function (tool) {
-        var $slot = $('.rogue-tool-card-label[data-tool="' + tool + '"]');
+     * the meter. No-op outside HuntRun (selector matches nothing). */
+    setup.clickHuntSearchTool = function (tool) {
+        var $slot = $('.hunt-tool-card-label[data-tool="' + tool + '"]');
         if (!$slot.length || $slot.hasClass('disabled-link')) return;
         $slot.find('a').first().click();
     };
@@ -1018,7 +1016,7 @@ setup.searchableRooms.forEach(function (room) {
             var tool = setup.searchToolKeyMap[event.key];
             if (!tool) return;
             setup.clickAllSearchTools(tool);
-            setup.clickRogueSearchTool(tool);
+            setup.clickHuntSearchTool(tool);
         }, 50));
 
     /* Global delegation: when any toolCard image is clicked, dispatch the

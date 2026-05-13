@@ -39,14 +39,14 @@ test.describe('Events controller — tier classification', () => {
 test.describe('Events controller — video resolvers', () => {
   async function setLocation(p, location) {
     await p.evaluate((loc) => {
-      if (SugarCube.setup.Rogue.active()) SugarCube.setup.Rogue.end();
+      if (SugarCube.setup.HuntController.active()) SugarCube.setup.HuntController.end();
       if (loc) {
-        SugarCube.setup.Rogue.startRogue({ seed: 1, staticHouseId: `rogue-${loc}` });
+        SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: `${loc}` });
       }
     }, location || null);
   }
 
-  test('pickByLocation switches by active rogue house', async ({ game: page }) => {
+  test('pickByLocation switches by active hunt house', async ({ game: page }) => {
     await setLocation(page, 'owaissa');
     let result = await page.evaluate(() =>
       SugarCube.setup.Events.pickByLocation(['o1'], ['e1']));

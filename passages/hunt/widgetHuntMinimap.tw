@@ -1,0 +1,25 @@
+:: widgetHuntMinimap [widget nobr] {"position":"3400,200","size":"100,100"}
+/* huntMinimap -- arg-less. Renders the active run's floor plan as
+   an SVG map: one labeled square per room, lines between connected
+   rooms. The current room is highlighted; spawn and boss rooms get
+   their own border colours. Layout (BFS depth -> col, sibling order
+   -> row) and SVG markup come from setup.HuntController.minimapSvg().
+
+   Clicking the wrapper toggles a collapsed thumbnail mode anchored
+   at the top-left, so the player can free up the upper-left column
+   to read other UI. The collapsed flag lives on setup.HuntController
+   (module state) so it survives the HuntRun re-render that fires on
+   every room move.
+
+   Renders nothing when no hunt is active (keeps the widget cheap to
+   drop into shared passages without an outer guard). */
+<<widget "huntMinimap">>
+	<<set _mmSvg to setup.HuntController.minimapSvg()>>
+	<<if _mmSvg>>
+		<<set _mmCollapsed to setup.HuntController.isMinimapCollapsed()>>
+		<div @class="'hunt-minimap' + (_mmCollapsed ? ' hunt-minimap-collapsed' : '')" onclick="SugarCube.setup.HuntController.toggleMinimapCollapsed(); this.classList.toggle('hunt-minimap-collapsed');">
+			<span class="location">Floor plan</span><br>
+			<<= _mmSvg>>
+		</div>
+	<</if>>
+<</widget>>
