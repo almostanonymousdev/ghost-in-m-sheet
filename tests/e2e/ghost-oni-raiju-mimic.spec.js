@@ -15,7 +15,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
 
   test('Oni: sanity drain is 3-8 (faster than normal 1-5)', async ({ game: page }) => {
     await setupHunt(page, 'Oni');
-    await goToPassage(page, 'OwaissaKitchen');
+    await goToPassage(page, 'RogueRun');
     await expectCleanPassage(page);
     await seedRandom(page, 0xA1);
 
@@ -103,7 +103,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
     // readings drop to 13-16, which would be indistinguishable from glitches.
     const readings = [];
     for (let i = 0; i < 25; i++) {
-      await goToPassage(page, 'OwaissaKitchen');
+      await goToPassage(page, 'RogueRun');
       await goToPassage(page, 'TemperatureHigh');
       const num = parseInt(await page.locator('.passage').textContent(), 10);
       if (!isNaN(num)) readings.push(num);
@@ -123,7 +123,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
     )).toBe(true);
     expect(await callSetup(page, 'setup.Ghosts.isMimicHunt()')).toBe(true);
 
-    await goToPassage(page, 'OwaissaHallway');
+    await goToPassage(page, 'RogueRun');
     await expectCleanPassage(page);
   });
 
@@ -154,7 +154,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
     expect(evidence).toContain('uvl');
     expect(await callSetup(page, 'setup.Ghosts.isMimicHunt()')).toBe(true);
 
-    await goToPassage(page, 'OwaissaKitchen');
+    await goToPassage(page, 'RogueRun');
     await expectCleanPassage(page);
   });
 });

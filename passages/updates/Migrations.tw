@@ -19,7 +19,7 @@
 setup.Migrations = (function () {
 	var OWNED_VARS = Object.freeze([
 		'update22', 'update0909', 'update2707', 'update4',
-		'updatePiercingBodyPartSens', 'updateIronclad', 'fixSave'
+		'updatePiercingBodyPartSens', 'fixSave'
 	]);
 
 	function sv() { return State.variables; }
@@ -28,10 +28,6 @@ setup.Migrations = (function () {
 	function update22Applied()   { return sv().update22  !== undefined; }
 	function update0909Applied() { return sv().update0909 !== undefined; }
 	function update2707Applied() { return sv().update2707 !== undefined; }
-	function ironcladPatchNeeded() { return sv().updateIronclad !== 2; }
-	function saveFixNeeded() { return sv().fixSave === undefined; }
-
-	function markIroncladMigrated() { sv().updateIronclad = 2; }
 
 	// --- Big shape-change patches --------------------------------
 
@@ -100,24 +96,6 @@ setup.Migrations = (function () {
 			s.brook.plan3TimeReq = 10;
 		}
 		s.update4 = 1;
-	}
-
-	/* FixSaveFile patch: seed Ironclad search-state objects so
-	   FurnitureSearch overlays render. Stamps $fixSave = 1. */
-	function migrateIroncladSearchMaps() {
-		var s = sv();
-		var rooms = [
-			'Hallway', 'Reception', 'Kitchen',
-			'BlockA', 'BlockB',
-			'BlockACellA', 'BlockACellB', 'BlockACellC',
-			'BlockBCellA', 'BlockBCellB', 'BlockBCellC'
-		];
-		rooms.forEach(function (room) {
-			s['currentsearch' + room + 'Ironclad'] = {
-				emf: 0, plasm: 0, uvl: 0, temperature: 0, spiritbox: 0, gwb: 0
-			};
-		});
-		s.fixSave = 1;
 	}
 
 	// --- "ensure" defaults -------------------------------------
@@ -214,16 +192,12 @@ setup.Migrations = (function () {
 		update22Applied:   update22Applied,
 		update0909Applied: update0909Applied,
 		update2707Applied: update2707Applied,
-		ironcladPatchNeeded: ironcladPatchNeeded,
-		saveFixNeeded: saveFixNeeded,
-		markIroncladMigrated: markIroncladMigrated,
 
 		// big patches
 		migrateRoomsAndProwlTimer: migrateRoomsAndProwlTimer,
 		migrateStockingsFootBought: migrateStockingsFootBought,
 		migrateDeliveryAndCompanionReset: migrateDeliveryAndCompanionReset,
 		migrateCompanionPlanTimes: migrateCompanionPlanTimes,
-		migrateIroncladSearchMaps: migrateIroncladSearchMaps,
 
 		// ensure-defaults
 		ensureUnderwearMemory: ensureUnderwearMemory,

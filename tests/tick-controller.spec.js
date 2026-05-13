@@ -10,42 +10,6 @@ const { setVar, getVar, callSetup, goToPassage, seedRandom } = require('./helper
    passage chain. */
 test.describe('TickController helpers', () => {
 
-  // --- Cursed hunt timer -----------------------------------------
-
-  test('tickCursedHuntTimer expires the active flag once endTime has passed', async ({ game: page }) => {
-    await setVar(page, 'cursedHuntActive', 1);
-    await page.evaluate(() => {
-      SugarCube.State.variables.cursedHuntEndTime = Date.now() - 1000;
-    });
-    await page.evaluate(() => SugarCube.setup.Tick.tickCursedHuntTimer());
-    expect(await getVar(page, 'cursedHuntActive')).toBe(0);
-    const remainingEndTime = await page.evaluate(
-      () => SugarCube.State.variables.cursedHuntEndTime);
-    expect(remainingEndTime).toBeUndefined();
-  });
-
-  test('tickCursedHuntTimer leaves an unexpired hunt alone', async ({ game: page }) => {
-    await setVar(page, 'cursedHuntActive', 1);
-    await page.evaluate(() => {
-      SugarCube.State.variables.cursedHuntEndTime = Date.now() + 60_000;
-    });
-    await page.evaluate(() => SugarCube.setup.Tick.tickCursedHuntTimer());
-    expect(await getVar(page, 'cursedHuntActive')).toBe(1);
-    expect(await page.evaluate(
-      () => SugarCube.State.variables.cursedHuntEndTime)).toBeGreaterThan(Date.now());
-  });
-
-  test('tickCursedHuntTimer is a no-op when cursedHuntActive is 0', async ({ game: page }) => {
-    await setVar(page, 'cursedHuntActive', 0);
-    await page.evaluate(() => {
-      SugarCube.State.variables.cursedHuntEndTime = Date.now() - 1000;
-    });
-    await page.evaluate(() => SugarCube.setup.Tick.tickCursedHuntTimer());
-    // Untouched: only the `active === 1` branch is supposed to mutate.
-    expect(await page.evaluate(
-      () => SugarCube.State.variables.cursedHuntEndTime)).toBeLessThan(Date.now());
-  });
-
   // --- Rescue quest expiry --------------------------------------
 
   test('tickRescueQuestExpiry fails the quest when stage hits 2', async ({ game: page }) => {
@@ -313,34 +277,6 @@ test.describe('TickController helpers', () => {
     await page.evaluate(() => SugarCube.setup.Tick.resetCooldowns());
     expect(await page.evaluate(
       () => SugarCube.State.variables.webcam.showCD)).toBe(0);
-  });
-
-  // --- Detector highlights --------------------------------------
-
-  test('applyDetectorHighlights is a no-op when detector is not bought', async ({ game: page }) => {
-    await setVar(page, 'boughtDetector', 0);
-    // Should not throw even when houseSlots is missing.
-    await page.evaluate(() => SugarCube.setup.Tick.applyDetectorHighlights());
-  });
-
-  test('applyDetectorHighlights tags the slot id when its predicate fires', async ({ game: page }) => {
-    await goToPassage(page, 'Start');
-    await setVar(page, 'boughtDetector', 1);
-    await setVar(page, 'hauntedHouse', 'owaissa');
-    await setVar(page, 'isClothesStolen', 1);
-    await page.evaluate(() => {
-      const V = SugarCube.State.variables;
-      V.houseSlots = V.houseSlots || {};
-      V.houseSlots.owaissa = V.houseSlots.owaissa || { placeFor: {} };
-      V.houseSlots.owaissa.placeFor.clothesStolen = 'detectorTestSlot';
-      const div = document.createElement('div');
-      div.id = 'detectorTestSlot';
-      document.body.appendChild(div);
-    });
-    await page.evaluate(() => SugarCube.setup.Tick.applyDetectorHighlights());
-    const hasClass = await page.evaluate(() =>
-      document.getElementById('detectorTestSlot').classList.contains('highlighted-furnitureDetector'));
-    expect(hasClass).toBe(true);
   });
 
   // --- onPassageReady --------------------------------------------

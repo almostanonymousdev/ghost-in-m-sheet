@@ -18,11 +18,11 @@ test.describe('Room template catalogue', () => {
 
   // --- Catalogue shape ---
 
-  test('catalogue lists at least the canonical haunted-house templates', async () => {
+  test('catalogue lists the core room templates', async () => {
     const ids = await callSetup(page, 'setup.Templates.ids()');
     const expected = [
       'kitchen', 'bathroom', 'bedroom', 'livingroom', 'hallway',
-      'nursery', 'basement', 'roomA', 'roomB', 'roomC'
+      'nursery', 'basement'
     ];
     expected.forEach(id => expect(ids).toContain(id));
   });

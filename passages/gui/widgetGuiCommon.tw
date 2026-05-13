@@ -67,8 +67,8 @@ setup.StatIcon = Object.freeze({
 <<widget "addSanity">>
 	<<set _outcome to setup.Mc.applySanityDelta(_args[0])>>
 	<<updatemeter 'sanity' `setup.Mc.sanity() / setup.Mc.sanityMax()`>>
-	<<if _outcome is setup.SanityDeltaResult.COLLAPSED>>
-		<<goto "HuntOverSanity">>
+	<<if _outcome is setup.SanityDeltaResult.COLLAPSED and setup.HuntController.isActive()>>
+		<<goto setup.HuntController.huntOverPassage("sanity")>>
 	<</if>>
 <</widget>>
 

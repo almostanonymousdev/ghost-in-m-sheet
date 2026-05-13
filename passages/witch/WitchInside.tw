@@ -54,21 +54,6 @@
 		<</linkreplace>><<if setup.Mc.lvl() lt 4>>@@.warningtext; (Req. lvl 4+)@@
 		<</if>><br></span>
 	<</if>>
-	<<if setup.Ghosts.isInactive()>>
-		<<if setup.Witch.canAffordContract()>>
-			@@.usebtn;[[I want to get a contract|GhostRandomize]]@@<br>
-			<br>
-			@@.usebtn; [[I want to get a challenging contract(Ghost will hide one piece of evidence)|GhostRandomize][setup.Ghosts.scheduleHideEvidence(1)]]@@<br>
-
-			@@.usebtn; [[I want to get a challenging contract(Ghost will hide two pieces of evidence)|GhostRandomize][setup.Ghosts.scheduleHideEvidence(2)]]@@<br>
-
-			@@.usebtn; [[I want to get a challenging contract(No evidence)|GhostRandomize][setup.Ghosts.scheduleHideEvidence(3)]]@@<br>
-
-		<<else>>@@.mc-thoughts; I don't have enough money@@
-		<</if>>
-	<<elseif setup.Ghosts.hasContract()>>@@.mc-thoughts; I already have a contract@@
-	<<elseif setup.Ghosts.isPossessed()>>@@.usebtn;[[End the contract|WitchEndContract]]@@
-	<</if>><br>
 
 	<<if setup.Mc.lvl() lte 1>>
 		@@.mc-speech; I just need to correctly identify the ghost, right?@@<br>

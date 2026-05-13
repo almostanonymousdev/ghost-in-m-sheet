@@ -1,45 +1,13 @@
 :: widgetHauntedHouseStreet [widget nobr] {"position":"800,3300","size":"100,100"}
-/* huntHouseCard -- arg: house id from setup.HauntedHouses.list() (e.g.
-   "owaissa"). Renders one .housecard entry on GhostStreet: the
-   thumbnail, a level-gated <<link>> to the matching street passage, and
-   the <<set>> side-effects that used to be inlined per-house (contract
-   reward, $is<House> flag, optional FurnitureCode include, starting
-   room roll). */
-<<widget "huntHouseCard">>
-	<<set _hc to setup.HauntedHouses.byId(_args[0])>>
-	<<if _hc>>
-		<div class="housecard">
-		<<image _hc.image "iconPx">>
-			<<if setup.Mc.lvl() gte _hc.levelGate>>
-				<<capture _hc>>
-					@@.icontext;<<link _hc.streetPassage _hc.streetPassage>>
-						<<set _reward to setup.HauntedHouses.contractReward(_hc.id)>>
-						<<run setup.HauntedHouses.setContractReward(_reward.money, _reward.xp)>>
-						<<run setup.HauntedHouses.activate(_hc.id)>>
-						<<if _hc.runsFurnitureCode>><<run setup.HauntedHouses.distributeFurnitureStashes()>><</if>>
-						<<run setup.HauntedHouses.setHuntRoom(setup.HauntedHouses.rollStartingRoom(_hc.id))>>
-					<</link>>@@
-				<</capture>>
-			<<else>>
-				<<set _hcGate to _hc.levelGate>>
-				@@.mc-thoughts; Level _hcGate+ required@@
-			<</if>>
-		</div>
-	<</if>>
-<</widget>>
-
 /* rogueHuntCard -- arg-less. Drops a rogue-mode entry into the
-   GhostStreet flexgrid. Shows the same iconPx-sized card style as
-   huntHouseCard. Always routes to RogueStart for a fresh haunt --
-   there is no resume from this entry point; clicking the card
-   while a run is already in flight forfeits the previous one
+   GhostStreet flexgrid. Always routes to RogueStart for a fresh
+   haunt -- there is no resume from this entry point; clicking the
+   card while a run is already in flight forfeits the previous one
    (counts as failure, pays the failure ectoplasm payout) before
    the new one rolls. The forfeit fires on the click rather than
    on RogueStart entry so save/reload paths landing back on the
    lobby resume the existing run instead of accidentally rotating
-   $nextRogueSeed. No contract reward, no $hauntedHouse
-   activation, no furniture seed -- the rogue subsystem owns its
-   own state on $run. */
+   $nextRogueSeed. */
 <<widget "rogueHuntCard">>
 	<<set _rogueAddr to setup.Rogue.addressFromSeed(setup.Rogue.nextSeed()).formatted>>
 	<div class="housecard">
@@ -59,9 +27,8 @@
    GhostStreet card that routes to RogueStart with the house's
    catalogue id stashed on $pendingRogueStaticHouseId; RogueStart
    reads + clears it before invoking startRogue, so the rogue
-   lifecycle stays in charge of the run. Same iconPx card style as
-   huntHouseCard / rogueHuntCard. The data is the catalogue, so
-   adding a new static rogue house is one entry in
+   lifecycle stays in charge of the run. The data is the
+   catalogue, so adding a new static rogue house is one entry in
    setup.RogueHouses + a card per house here. */
 <<widget "rogueStaticHouseCard">>
 	<<set _rsh to setup.RogueHouses and setup.RogueHouses.byId(_args[0])>>
@@ -85,52 +52,10 @@
 	<</if>>
 <</widget>>
 
-/* huntHouseStreet -- arg: house id. Renders the shared body of the
-   per-house street passage (Owaissa/Elm/Ironclad): the header
-   image, the location block, optional companion "talk to them" branch,
-   the "Go inside" link (or whatever _contents block the caller provides
-   -- Ironclad overrides it with the wardenClothesStage gate), and the
-   "End the hunt" link while inside a hunt. `_contents` replaces the
-   default Go-inside link when the caller needs custom behaviour. */
-<<widget "huntHouseStreet" container>>
-	<<set _hs to setup.HauntedHouses.byId(_args[0])>>
-	<<set _hsLabel to _args[1]>>
-	<<set _hsDescription to _args[2]>>
-	<<if _hs and setup.Companion.active() and setup.Companion.companionAtStreet()>>
-		<<run setup.Companion.clearCompanionSelection()>>
-	<</if>>
-	<<if _hs>>
-		<<image _hs.image { width: "90%" }>><br>
-		@@.location; _hsLabel@@<br>
-		@@.mc-thoughts; _hsDescription@@<br>
-		<br>
-		<<set _streetBody to _contents ? _contents.trim() : "">>
-		<<if setup.Companion.companionAtStreet()>>
-			You see <<= setup.Companion.name()>>.
-			<<companionStreetTalk>>
-		<<elseif setup.MonkeyPaw.isHouseBanned(_hs.id)>>
-			@@.mc-thoughts; The front door won't open. The paw's price was one contract's worth of this house.@@<br>
-		<<elseif _streetBody neq "">>
-			<<= _contents>>
-		<<else>>
-			<<capture _hs>>
-				@@.movebtn;<<link "Go inside" _hs.hallwayPassage>>
-					<<run setup.HauntedHouses.setHuntMode(setup.Ghosts.HuntMode.ACTIVE)>>
-				<</link>>@@<br>
-			<</capture>>
-		<</if>>
-		<br><br>
-		<<if setup.Ghosts.isHunting()>>
-			<span class="movebtn">[[End the hunt|HuntOverManual][setup.HauntedHouses.setHuntMode(setup.Ghosts.HuntMode.POSSESSED)]]</span>
-		<</if>>
-	<</if>>
-<</widget>>
-
-/* companionStreetTalk -- arg-less. The "@@.usebtn; Talk to her"
-   link that Owaissa_Street / Elm_Street used to inline for each of
-   the six companion names. Pulls the objective pronoun off the
-   active companion catalogue entry and routes to the shared
-   CompanionMain passage. */
+/* companionStreetTalk -- arg-less. Pulls the objective pronoun off
+   the active companion catalogue entry and routes to the shared
+   CompanionMain passage. Surfaced inside rogue-street contexts where
+   the companion is waiting at the entrance. */
 <<widget "companionStreetTalk">>
 	<<set _ac to setup.Companion.active()>>
 	<<if _ac>>

@@ -1,6 +1,25 @@
 const { test, expect } = require('./fixtures');
 const { setVar, getVar, callSetup, goToPassage } = require('./helpers');
 
+/* HuntJournal.recordHuntStart reads setup.HuntController.realGhostName(),
+ * which only resolves while a rogue run is active. The classic
+ * `setup.Ghosts.startHunt(name)` helper alone no longer satisfies that
+ * gate, so journal tests start a rogue run and pin its ghost name. */
+async function startHuntWithGhost(page, name) {
+  await page.evaluate((n) => {
+    SugarCube.setup.Rogue.startRogue({ seed: 1 });
+    SugarCube.setup.Rogue.setField('ghostName', n);
+    SugarCube.setup.Ghosts.startHunt(n);
+  }, name);
+}
+
+async function endActiveHunt(page) {
+  await page.evaluate(() => {
+    if (SugarCube.setup.Rogue.active()) SugarCube.setup.Rogue.end();
+    SugarCube.State.variables.hunt = null;
+  });
+}
+
 test.describe('Hunt Journal', () => {
   // --- Lifecycle ----------------------------------------------------------
 
@@ -28,7 +47,7 @@ test.describe('Hunt Journal', () => {
 
   test('recordHuntStart snapshots sanity and the real ghost name', async ({ game: page }) => {
     await setVar(page, 'mc.sanity', 82);
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
+    await startHuntWithGhost(page, 'Shade');
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
 
     const j = await callSetup(page, 'setup.HuntJournal.journal()');
@@ -42,7 +61,7 @@ test.describe('Hunt Journal', () => {
   });
 
   test('recordHuntStart records "Mimic" not the rotating disguise', async ({ game: page }) => {
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Mimic'));
+    await startHuntWithGhost(page, 'Mimic');
     // Force the visible name to a disguise; realName stays "Mimic".
     await page.evaluate(() => { SugarCube.State.variables.hunt.name = 'Spirit'; });
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
@@ -52,14 +71,14 @@ test.describe('Hunt Journal', () => {
   });
 
   test('recordHuntStart wipes any prior journal so only the latest hunt shows', async ({ game: page }) => {
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
+    await startHuntWithGhost(page, 'Shade');
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordPayout(true));
     expect(await callSetup(page, 'setup.HuntJournal.hasUnread()')).toBe(true);
 
     // A new hunt starts: prior unread recap must be cleared.
-    await page.evaluate(() => SugarCube.setup.Ghosts.endContract());
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Wraith'));
+    await endActiveHunt(page);
+    await startHuntWithGhost(page, 'Wraith');
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
 
     expect(await callSetup(page, 'setup.HuntJournal.hasUnread()')).toBe(false);
@@ -72,7 +91,7 @@ test.describe('Hunt Journal', () => {
 
   test('recordHuntEnd snapshots end sanity', async ({ game: page }) => {
     await setVar(page, 'mc.sanity', 80);
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
+    await startHuntWithGhost(page, 'Shade');
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
     await setVar(page, 'mc.sanity', 35);
 
@@ -86,7 +105,7 @@ test.describe('Hunt Journal', () => {
   test('evidenceLabels reads notebook checks live (not from a hunt-end snapshot)', async ({ game: page }) => {
     // Ticks added AFTER recordHuntEnd should still surface in the recap
     // — players often fill in their notebook on the way home.
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
+    await startHuntWithGhost(page, 'Shade');
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntEnd());
 
@@ -99,7 +118,7 @@ test.describe('Hunt Journal', () => {
 
   test('sanityLost clamps at 0 when sanity recovered (e.g. pills) during the hunt', async ({ game: page }) => {
     await setVar(page, 'mc.sanity', 40);
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
+    await startHuntWithGhost(page, 'Shade');
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
     await setVar(page, 'mc.sanity', 90);
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntEnd());
@@ -110,7 +129,7 @@ test.describe('Hunt Journal', () => {
   // --- recordCursedItem ---------------------------------------------------
 
   test('recordCursedItem stores the cursed item key when one is active', async ({ game: page }) => {
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
+    await startHuntWithGhost(page, 'Shade');
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
 
     await setVar(page, 'cursedHomeItem', 'tv');
@@ -123,7 +142,7 @@ test.describe('Hunt Journal', () => {
   });
 
   test('recordCursedItem leaves cursedItem null when no item is cursed', async ({ game: page }) => {
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
+    await startHuntWithGhost(page, 'Shade');
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordCursedItem());
 
@@ -134,11 +153,12 @@ test.describe('Hunt Journal', () => {
 
   // --- recordPayout -------------------------------------------------------
 
-  test('recordPayout(true) sums contract + weaken bonus and flips unread', async ({ game: page }) => {
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
+  test('recordPayout(true) stamps the correct guess and flips unread', async ({ game: page }) => {
+    /* Rogue mode pays ectoplasm via setup.Rogue.endRogue and surfaces it
+     * on RogueEnd, so HuntController.payoutForGuess returns {0, 0} and
+     * the journal stores no per-guess money/xp. */
+    await startHuntWithGhost(page, 'Shade');
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
-    await page.evaluate(() => SugarCube.setup.HauntedHouses.setContractReward(240, 70));
-    await setVar(page, 'moneyFromWeakenTheGhost', 50);
     await setVar(page, 'ghostTypeSelected', 'Shade');
 
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordPayout(true));
@@ -146,16 +166,14 @@ test.describe('Hunt Journal', () => {
     const j = await callSetup(page, 'setup.HuntJournal.journal()');
     expect(j.guessedGhost).toBe('Shade');
     expect(j.guessCorrect).toBe(true);
-    expect(j.moneyEarned).toBe(290);
-    expect(j.xpEarned).toBe(70);
+    expect(j.moneyEarned).toBe(0);
+    expect(j.xpEarned).toBe(0);
     expect(await callSetup(page, 'setup.HuntJournal.hasUnread()')).toBe(true);
   });
 
-  test('recordPayout(false) pays only the weaken bonus and stamps a wrong guess', async ({ game: page }) => {
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Wraith'));
+  test('recordPayout(false) stamps a wrong guess and flips unread', async ({ game: page }) => {
+    await startHuntWithGhost(page, 'Wraith');
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
-    await page.evaluate(() => SugarCube.setup.HauntedHouses.setContractReward(240, 70));
-    await setVar(page, 'moneyFromWeakenTheGhost', 50);
     await setVar(page, 'ghostTypeSelected', 'Shade');
 
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordPayout(false));
@@ -163,8 +181,8 @@ test.describe('Hunt Journal', () => {
     const j = await callSetup(page, 'setup.HuntJournal.journal()');
     expect(j.guessedGhost).toBe('Shade');
     expect(j.guessCorrect).toBe(false);
-    expect(j.moneyEarned).toBe(50);
-    expect(j.xpEarned).toBe(10);
+    expect(j.moneyEarned).toBe(0);
+    expect(j.xpEarned).toBe(0);
     expect(await callSetup(page, 'setup.HuntJournal.hasUnread()')).toBe(true);
   });
 
@@ -172,7 +190,7 @@ test.describe('Hunt Journal', () => {
     // Drives the morning-routine beat: the recap should surface after
     // the FIRST sleep that follows the hunt, even before the witch
     // contract is closed.
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
+    await startHuntWithGhost(page, 'Shade');
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntEnd());
 
@@ -182,17 +200,16 @@ test.describe('Hunt Journal', () => {
     expect(rec.moneyEarned).toBe(0);
   });
 
-  test('recordPayout re-flips unread so a second post-witch wake shows the full recap', async ({ game: page }) => {
+  test('recordPayout re-flips unread so the post-guess wake shows the full recap', async ({ game: page }) => {
     // Player wakes once after the hunt sleep (recap marked read), then
-    // visits the witch and sleeps again — the post-payout summary
-    // (guess + money) should surface on that second wake.
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
+    // resolves the rogue Identify branch and sleeps again — the
+    // post-payout summary should surface on that second wake.
+    await startHuntWithGhost(page, 'Shade');
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntEnd());
     await page.evaluate(() => SugarCube.setup.HuntJournal.markRead());
     expect(await callSetup(page, 'setup.HuntJournal.hasUnread()')).toBe(false);
 
-    await page.evaluate(() => SugarCube.setup.HauntedHouses.setContractReward(240, 70));
     await setVar(page, 'ghostTypeSelected', 'Shade');
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordPayout(true));
 
@@ -202,7 +219,7 @@ test.describe('Hunt Journal', () => {
   // --- markRead -----------------------------------------------------------
 
   test('markRead clears unread without dropping the journal data', async ({ game: page }) => {
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
+    await startHuntWithGhost(page, 'Shade');
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordPayout(true));
     expect(await callSetup(page, 'setup.HuntJournal.hasUnread()')).toBe(true);
@@ -218,7 +235,7 @@ test.describe('Hunt Journal', () => {
   // --- evidenceLabels -----------------------------------------------------
 
   test('evidenceLabels maps stored ids to canonical Evidence labels', async ({ game: page }) => {
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
+    await startHuntWithGhost(page, 'Shade');
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
     await setVar(page, 'EMF5Check', true);
     await setVar(page, 'EctoglassCheck', true);
@@ -233,7 +250,7 @@ test.describe('Hunt Journal', () => {
   test('contenders: returns all ghosts whose evidence pattern matches the logged checks', async ({ game: page }) => {
     // EMF + GWB + Temperature → exact match for Shade (no other ghost
     // has all three).
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
+    await startHuntWithGhost(page, 'Shade');
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
     await setVar(page, 'EMF5Check', true);
     await setVar(page, 'GWBCheck', true);
@@ -245,7 +262,7 @@ test.describe('Hunt Journal', () => {
   });
 
   test('contenders: a single piece of evidence yields multiple matches', async ({ game: page }) => {
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
+    await startHuntWithGhost(page, 'Shade');
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
     await setVar(page, 'EMF5Check', true);
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntEnd());
@@ -258,7 +275,7 @@ test.describe('Hunt Journal', () => {
   });
 
   test('contenders: hint is exposed only when the ghost has been discovered', async ({ game: page }) => {
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
+    await startHuntWithGhost(page, 'Shade');
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
     await setVar(page, 'EMF5Check', true);
     await setVar(page, 'GWBCheck', true);
@@ -274,7 +291,7 @@ test.describe('Hunt Journal', () => {
   });
 
   test('contenders: undiscovered ghost reports discovered=false', async ({ game: page }) => {
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
+    await startHuntWithGhost(page, 'Shade');
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
     await setVar(page, 'EMF5Check', true);
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntEnd());
@@ -301,7 +318,7 @@ test.describe('Hunt Journal', () => {
     // doesn't reveal the real identity. Real = Wraith, but the player
     // ticked GWB only — Wraith doesn't have GWB, so it must NOT appear.
     await setVar(page, 'mc.sanity', 80);
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Wraith'));
+    await startHuntWithGhost(page, 'Wraith');
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
     await setVar(page, 'GWBCheck', true);
     await setVar(page, 'mc.sanity', 50);
@@ -328,7 +345,7 @@ test.describe('Hunt Journal', () => {
   test('Bedroom does NOT show the recap on a non-sleep visit', async ({ game: page }) => {
     // No armRecap call → walking into Bedroom from Livingroom mid-day
     // should leave the journal alone.
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
+    await startHuntWithGhost(page, 'Shade');
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
     await setVar(page, 'EMF5Check', true);
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntEnd());
@@ -342,7 +359,7 @@ test.describe('Hunt Journal', () => {
   });
 
   test('recap renders contender hints when the ghost is discovered', async ({ game: page }) => {
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
+    await startHuntWithGhost(page, 'Shade');
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
     await setVar(page, 'EMF5Check', true);
     await setVar(page, 'GWBCheck', true);
@@ -363,7 +380,7 @@ test.describe('Hunt Journal', () => {
     // the player walks home / opens the notebook / records what they
     // saw. The recap on the next sleep wake should reflect the
     // *current* notebook state, not the empty snapshot.
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
+    await startHuntWithGhost(page, 'Shade');
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
 
     // Hunt ends BEFORE the player ticks anything.
@@ -388,7 +405,7 @@ test.describe('Hunt Journal', () => {
     // traverse: enter house, open Notebook, tick a checkbox via the UI,
     // run the hunt-end hooks, sleep, then visit Bedroom — recap should
     // surface the ticked evidence.
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
+    await startHuntWithGhost(page, 'Shade');
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
 
     // Real notebook click via the SugarCube checkbox UI.
@@ -414,7 +431,7 @@ test.describe('Hunt Journal', () => {
 
   test('recap displays sanity lost truncated to two decimal places', async ({ game: page }) => {
     await setVar(page, 'mc.sanity', 80.999);
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
+    await startHuntWithGhost(page, 'Shade');
     await page.evaluate(() => SugarCube.setup.HuntJournal.recordHuntStart());
     await setVar(page, 'mc.sanity', 35.123);
     await setVar(page, 'EMF5Check', true);

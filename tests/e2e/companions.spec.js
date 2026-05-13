@@ -149,16 +149,18 @@ test.describe('Companions — passage rendering', () => {
 });
 
 test.describe('Companions — hunt-side events', () => {
-  test('canShowCompanionMiniPanel requires chosenPlan + hunt mode + haunted house', async ({ game: page }) => {
+  test('canShowCompanionMiniPanel requires chosenPlan + hunt mode + active rogue run', async ({ game: page }) => {
     await setVar(page, 'chosenPlan', 'Plan1');
     await setHuntMode(page, 2);
-    await setVar(page, 'hauntedHouse', 'owaissa');
+    await page.evaluate(() =>
+      SugarCube.setup.Rogue.startRogue({ seed: 1, staticHouseId: 'rogue-owaissa' }));
     expect(await callSetup(page, 'setup.Companion.canShowCompanionMiniPanel()')).toBe(true);
 
-    await setVar(page, 'hauntedHouse', null);
+    await page.evaluate(() => SugarCube.setup.Rogue.end());
     expect(await callSetup(page, 'setup.Companion.canShowCompanionMiniPanel()')).toBe(false);
 
-    await setVar(page, 'hauntedHouse', 'elm');
+    await page.evaluate(() =>
+      SugarCube.setup.Rogue.startRogue({ seed: 1, staticHouseId: 'rogue-elm' }));
     expect(await callSetup(page, 'setup.Companion.canShowCompanionMiniPanel()')).toBe(true);
 
     await setHuntMode(page, 0);
@@ -271,7 +273,8 @@ test.describe('Companions — home/intimate events', () => {
   ]) {
     test(`${passage} renders cleanly`, async ({ game: page }) => {
       await selectCompanion(page, 'Alice');
-      await setVar(page, 'hauntedHouse', 'owaissa');
+      await page.evaluate(() =>
+        SugarCube.setup.Rogue.startRogue({ seed: 1, staticHouseId: 'rogue-owaissa' }));
       await setVar(page, 'isCompRoomChosen', 0);
       await goToPassage(page, passage);
       await expectCleanPassage(page);
@@ -280,7 +283,8 @@ test.describe('Companions — home/intimate events', () => {
 
   test('pickRandomCompanionRoomFromContext picks a room without throwing', async ({ game: page }) => {
     await selectCompanion(page, 'Alice');
-    await setVar(page, 'hauntedHouse', 'owaissa');
+    await page.evaluate(() =>
+      SugarCube.setup.Rogue.startRogue({ seed: 1, staticHouseId: 'rogue-owaissa' }));
     await setVar(page, 'isCompRoomChosen', 0);
     await callSetup(page, 'setup.Companion.pickRandomCompanionRoomFromContext()');
     expect(await getVar(page, 'isCompRoomChosen')).toBe(1);
@@ -288,12 +292,12 @@ test.describe('Companions — home/intimate events', () => {
 });
 
 test.describe('Companions — hunt setup integration', () => {
-  test('Owaissa hallway with Alice chosen renders the mini panel', async ({ game: page }) => {
+  test('Rogue hunt with Alice chosen renders the mini panel', async ({ game: page }) => {
     await setupHunt(page, 'Shade');
     await selectCompanion(page, 'Alice');
     await setVar(page, 'isCompChosen', 1);
     await setVar(page, 'chosenPlan', 'Plan1');
-    await goToPassage(page, 'OwaissaHallway');
+    await goToPassage(page, 'RogueRun');
     await expectCleanPassage(page);
     expect(await callSetup(page, 'setup.Companion.canShowCompanionMiniPanel()')).toBe(true);
   });

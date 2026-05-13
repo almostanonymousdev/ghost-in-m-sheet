@@ -14,63 +14,6 @@ setup.Tick = (function () {
 
 	function sv() { return State.variables; }
 
-	// --- Cursed hunt timer ---------------------------------------
-	/* The cursed-hunt window is wall-clock real-time, not in-game time:
-	   when a cursed possession is interacted with, $cursedHuntEndTime is
-	   stamped Date.now()+window. Expire it lazily on each tick rather
-	   than wiring up a setTimeout (which wouldn't survive save/load).
-	   The DOM toggle re-enables the link selectors that were greyed out
-	   while the hunt was active. */
-	function tickCursedHuntTimer() {
-		var s = sv();
-		if (s.cursedHuntActive !== 1) return;
-		if (s.cursedHuntEndTime && Date.now() >= s.cursedHuntEndTime) {
-			s.cursedHuntActive = 0;
-			delete s.cursedHuntEndTime;
-			$('.cursedHuntLinkDisable').removeClass('disabled-linkSpecial');
-		} else {
-			$('.cursedHuntLinkDisable').addClass('disabled-linkSpecial');
-		}
-	}
-
-	// --- Detector highlights -------------------------------------
-	/* When the player owns the furniture-detector ($boughtDetector), the
-	   target room flashes a highlight class on every passage so it stays
-	   visible as the player moves between rooms. Each rule names a slot
-	   on the active house's $houseSlots bucket (placeFor.<kind>) and a
-	   predicate; the slot DOM id flashes when the predicate is true. */
-	var DETECTOR_RULES = [
-		{ kind: 'cursedItem',    test: function (s) {
-			return s.gotCursedItem !== 1 && typeof s.gotCursedItem !== 'undefined';
-		}},
-		{ kind: 'rescueClue',    test: function (s) {
-			return s.hasRescueClue !== 1 && s.hasQuestForRescue === setup.RescueQuestState.ACTIVE;
-		}},
-		{ kind: 'tarotCards',    test: function (s) {
-			return s.tarotCardsStage !== setup.TarotStage.CARRYING;
-		}},
-		{ kind: 'monkeyPaw',     test: function () {
-			return setup.MonkeyPaw && setup.MonkeyPaw.isDiscoverable
-				? setup.MonkeyPaw.isDiscoverable() : false;
-		}},
-		{ kind: 'clothesStolen', test: function (s) {
-			return s.isClothesStolen === 1;
-		}}
-	];
-	function highlightIf(elementId, condition) {
-		if (!condition) return;
-		var el = document.getElementById(elementId);
-		if (el) el.classList.add('highlighted-furnitureDetector');
-	}
-	function applyDetectorHighlights() {
-		var s = sv();
-		if (s.boughtDetector !== 1) return;
-		var bucket = (s.houseSlots || {})[s.hauntedHouse];
-		if (!bucket || !bucket.placeFor) return;
-		DETECTOR_RULES.forEach(function (rule) {
-			highlightIf(bucket.placeFor[rule.kind], rule.test(s));
-		});
-	}
 
 	// --- Rescue quest expiry --------------------------------------
 	/* When the rescue quest is active and the player either ran out of
@@ -152,7 +95,10 @@ setup.Tick = (function () {
 		return 'hit';
 	}
 	function atRandomGhostPassage() {
-		return passage() === sv().randomGhostPassage;
+		var target = sv().randomGhostPassage;
+		if (!target || !setup.Rogue) return false;
+		if (passage() !== "RogueRun") return false;
+		return setup.Rogue.currentRoomId() === target;
 	}
 
 	// --- Steal-chance recompute ---------------------------------
@@ -253,18 +199,11 @@ setup.Tick = (function () {
 		setup.Migrations.ensureZeroDefaults();
 		setup.Migrations.seedTornStyles();
 		applyPossessionTarotCleanup();
-		setup.MonkeyPaw.maybeAutoUnlockAtDawn();
 		setup.Migrations.ensureMcFit();
 		setup.Intro.ensureSensualBodyParts();
 		setup.Intro.clampSensualBodyParts(setup.Intro.currentSensualBodyPart());
 		setup.Migrations.ensurePSprayInventory();
 		setup.Migrations.applyPiercingSensitivityPatch();
-		if (setup.Migrations.ironcladPatchNeeded()) {
-			setup.HauntedHouses.migrateIroncladRooms();
-		}
-		if (setup.Migrations.saveFixNeeded()) {
-			setup.Migrations.migrateIroncladSearchMaps();
-		}
 		setup.Migrations.ensureSuccubusCooldown();
 		setup.Migrations.ensureCursedItemCooldown();
 		setup.Migrations.ensureRoomTemplates();
@@ -313,9 +252,7 @@ setup.Tick = (function () {
 
 		tickProwlTimer();
 		tickRescueQuestExpiry();
-		tickCursedHuntTimer();
 		setup.Migrations.migrateCompanionPlanTimes();
-		applyDetectorHighlights();
 		setup.Mc.ensurePossession();
 
 		var lustChanged = applyChokerLustFloor();
@@ -327,8 +264,6 @@ setup.Tick = (function () {
 
 	return {
 		OWNED_VARS: OWNED_VARS,
-		tickCursedHuntTimer: tickCursedHuntTimer,
-		applyDetectorHighlights: applyDetectorHighlights,
 		tickRescueQuestExpiry: tickRescueQuestExpiry,
 		tickProwlTimer: tickProwlTimer,
 		applyChokerLustFloor: applyChokerLustFloor,

@@ -23,13 +23,22 @@ test.describe('ToolController renderers', () => {
   test.beforeEach(async () => {
     await resetGame(page);
     // Make all ToolController renderers callable from the City flow
-    // by pinning a known active hunt + ghost. Classic flows would
-    // normally satisfy this via setupHunt; we stub the ghost-here
-    // gate directly so the test doesn't need to navigate into a
-    // haunted room.
+    // by pinning a known active hunt + ghost. The rogue flow drives
+    // setup.Ghosts.active() / setup.HuntController.isGhostHere() —
+    // both gate on an in-flight rogue run, so we boot one with the
+    // requested ghost pinned. Banshee carries both GLASS and GWB so
+    // the side-effect test below can call the real findGwb without
+    // swapping ghosts. The isGhostHere stub bypasses the RogueRun
+    // passage requirement so renderers can run from the City flow.
     await page.evaluate(() => {
-      // Banshee carries both GLASS and GWB so the side-effect test
-      // below can call the real findGwb without swapping ghosts.
+      SugarCube.setup.Rogue.startRogue({ seed: 1 });
+      // startRogue stamps $run.evidence from the seed-picked ghost; repoint
+      // both the name and the evidence override so _activeFromCatalogue
+      // builds a Banshee with her real (GLASS, GWB, UVL) evidence list.
+      SugarCube.setup.Rogue.setField('ghostName', 'Banshee');
+      const banshee = SugarCube.setup.Ghosts.getByName('Banshee');
+      SugarCube.setup.Rogue.setField('evidence',
+        banshee.evidence.map(e => e.id));
       SugarCube.setup.Ghosts.startHunt('Banshee');
       SugarCube.setup.Ghosts.setHuntMode(SugarCube.setup.Ghosts.HuntMode.ACTIVE);
       SugarCube.setup.isGhostHere = () => true;

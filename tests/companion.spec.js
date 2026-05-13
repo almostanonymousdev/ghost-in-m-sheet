@@ -354,36 +354,30 @@ test.describe('Companion Controller', () => {
 
   // --- Haunted house location ---
 
-  test('inHauntedHouseLocation true for Owaissa', async ({ game: page }) => {
-    // arrange
-    await setVar(page, 'hauntedHouse', 'owaissa');
-
-    // act
+  test('inHauntedHouseLocation true for rogue-owaissa', async ({ game: page }) => {
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1, staticHouseId: 'rogue-owaissa' }));
     const result = await callSetup(page, 'setup.Companion.inHauntedHouseLocation()');
-
-    // assert
+    await page.evaluate(() => SugarCube.setup.Rogue.end());
     expect(result).toBe(true);
   });
 
-  test('inHauntedHouseLocation true for Elm', async ({ game: page }) => {
-    // arrange
-    await setVar(page, 'hauntedHouse', 'elm');
-
-    // act
+  test('inHauntedHouseLocation true for rogue-elm', async ({ game: page }) => {
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1, staticHouseId: 'rogue-elm' }));
     const result = await callSetup(page, 'setup.Companion.inHauntedHouseLocation()');
-
-    // assert
+    await page.evaluate(() => SugarCube.setup.Rogue.end());
     expect(result).toBe(true);
   });
 
-  test('inHauntedHouseLocation false when not in either house', async ({ game: page }) => {
-    // arrange
-    await setVar(page, 'hauntedHouse', null);
-
-    // act
+  test('inHauntedHouseLocation false when no rogue run is active', async ({ game: page }) => {
+    await page.evaluate(() => { if (SugarCube.setup.Rogue.active()) SugarCube.setup.Rogue.end(); });
     const result = await callSetup(page, 'setup.Companion.inHauntedHouseLocation()');
+    expect(result).toBe(false);
+  });
 
-    // assert
+  test('inHauntedHouseLocation false for rogue-ironclad (opts out)', async ({ game: page }) => {
+    await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1, staticHouseId: 'rogue-ironclad' }));
+    const result = await callSetup(page, 'setup.Companion.inHauntedHouseLocation()');
+    await page.evaluate(() => SugarCube.setup.Rogue.end());
     expect(result).toBe(false);
   });
 

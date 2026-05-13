@@ -17,7 +17,6 @@ setup.Gui = (function () {
 	   query these only through the API methods below. */
 	var OWNED_VARS = Object.freeze([
 		'guideReturnPassage',
-		'cursedHuntOption',
 		'timerToolsDecreased',
 		'inputWish'
 	]);
@@ -107,14 +106,6 @@ setup.Gui = (function () {
 	function guideReturnPassage() { return sv().guideReturnPassage; }
 	function setGuideReturnPassage(n) { sv().guideReturnPassage = n; }
 
-	// --- Cursed hunt toggle --------------------------------------
-	function cursedHuntOptionOff() { return sv().cursedHuntOption === 1; }
-	function isCursedHuntOptionOn() {
-		var val = sv().cursedHuntOption;
-		return val === 0 || val === undefined;
-	}
-	function setCursedHuntOption(val) { sv().cursedHuntOption = val; }
-
 	// --- Tool speed (based on MC lvl) ----------------------------
 	// $timerToolsDecreased is the "tick" duration passed to the
 	// <<repeat>> macros that drive tool meters; it shortens as the
@@ -166,9 +157,6 @@ setup.Gui = (function () {
 		},
 		guideReturnPassage: guideReturnPassage,
 		setGuideReturnPassage: setGuideReturnPassage,
-		cursedHuntOptionOff: cursedHuntOptionOff,
-		isCursedHuntOptionOn: isCursedHuntOptionOn,
-		setCursedHuntOption: setCursedHuntOption,
 		refreshToolTimer: refreshToolTimer,
 		timerToolsInitialized: timerToolsInitialized,
 		mirrorMakeupImagePath: mirrorMakeupImagePath,
@@ -302,9 +290,6 @@ $(document).one(":storyready", function () {
 		}
 
 		$group.append(reveal("Ghost name", function () {
-			if (setup.HuntController.mode() === setup.HuntController.Mode.REGULAR) {
-				return setup.Ghosts.huntName() + (setup.Ghosts.isMimicHunt() ? " (Mimic)" : "");
-			}
 			return setup.HuntController.realGhostName();
 		}));
 		$group.append(reveal("Ghost room", function () {

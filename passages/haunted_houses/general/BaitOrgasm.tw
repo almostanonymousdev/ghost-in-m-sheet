@@ -10,7 +10,7 @@
 <<updatemeter 'sanity' `setup.Mc.sanityPct()`>>
 <<updatemeter 'mclust' `setup.Mc.lust() / 100`>>
 <<if setup.Mc.isSanityCollapsed() or setup.Mc.sanity() lte 0>>
-	<<goto "HuntOverSanity">>
+	<<goto setup.HuntController.huntOverPassage("sanity")>>
 <</if>>
 
 <<randRangeVideo "mechanics/orgasm/solo" 1 12 ".mp4">>

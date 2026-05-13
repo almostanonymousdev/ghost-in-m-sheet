@@ -19,6 +19,15 @@ async function closeDialog(page) {
   await page.waitForFunction(() => !SugarCube.Dialog.isOpen());
 }
 
+async function startRogueWithGhost(page, name) {
+  await page.evaluate((n) => {
+    SugarCube.setup.Rogue.startRogue({ seed: 1 });
+    SugarCube.setup.Rogue.setField('ghostName', n);
+    const g = SugarCube.setup.Ghosts.getByName(n);
+    SugarCube.setup.Rogue.setField('evidence', g.evidence.map(e => e.id));
+  }, name);
+}
+
 test.describe('Cheats moved to the Settings / Cheats dialog', () => {
   let page;
 
@@ -112,30 +121,40 @@ test.describe('Cheats moved to the Settings / Cheats dialog', () => {
   });
 
   test('Ghost name reveal stays hidden until the button is clicked', async () => {
-    await setHuntMode(page, 1);  // contract — stub Hunt is "Shade"
-    await openSettingsDialog(page);
+    await startRogueWithGhost(page, 'Shade');
+    await goToPassage(page, 'RogueRun');
+    try {
+      await openSettingsDialog(page);
 
-    const revealRow = page.locator('#ui-dialog-body .cheat-reveal').first();
+      const revealRow = page.locator('#ui-dialog-body .cheat-reveal').first();
 
-    // Before click: shows only the button label, no result span.
-    expect(await revealRow.locator('.cheat-reveal-result').count()).toBe(0);
-    await expect(revealRow.locator('button.cheat-btn')).toHaveText('Ghost name');
+      // Before click: shows only the button label, no result span.
+      expect(await revealRow.locator('.cheat-reveal-result').count()).toBe(0);
+      await expect(revealRow.locator('button.cheat-btn')).toHaveText('Ghost name');
 
-    // After click: button is replaced by the result, which contains the name.
-    await revealRow.locator('button.cheat-btn').click();
-    await expect(revealRow.locator('.cheat-reveal-result')).toContainText(/Ghost name:\s*Shade/);
-    expect(await revealRow.locator('button.cheat-btn').count()).toBe(0);
+      // After click: button is replaced by the result, which contains the name.
+      await revealRow.locator('button.cheat-btn').click();
+      await expect(revealRow.locator('.cheat-reveal-result')).toContainText(/Ghost name:\s*Shade/);
+      expect(await revealRow.locator('button.cheat-btn').count()).toBe(0);
+    } finally {
+      await page.evaluate(() => SugarCube.setup.Rogue.end());
+    }
   });
 
   test('Reveal hides again when the dialog is closed and reopened', async () => {
-    await setHuntMode(page, 1);
-    await openSettingsDialog(page);
-    await page.locator('#ui-dialog-body .cheat-reveal').first().locator('button.cheat-btn').click();
-    await closeDialog(page);
+    await startRogueWithGhost(page, 'Shade');
+    await goToPassage(page, 'RogueRun');
+    try {
+      await openSettingsDialog(page);
+      await page.locator('#ui-dialog-body .cheat-reveal').first().locator('button.cheat-btn').click();
+      await closeDialog(page);
 
-    await openSettingsDialog(page);
-    const revealRow = page.locator('#ui-dialog-body .cheat-reveal').first();
-    expect(await revealRow.locator('.cheat-reveal-result').count()).toBe(0);
-    await expect(revealRow.locator('button.cheat-btn')).toHaveText('Ghost name');
+      await openSettingsDialog(page);
+      const revealRow = page.locator('#ui-dialog-body .cheat-reveal').first();
+      expect(await revealRow.locator('.cheat-reveal-result').count()).toBe(0);
+      await expect(revealRow.locator('button.cheat-btn')).toHaveText('Ghost name');
+    } finally {
+      await page.evaluate(() => SugarCube.setup.Rogue.end());
+    }
   });
 });

@@ -19,48 +19,33 @@
 /* huntTickEventChain -- arg-less. The shared "what happens between
    tool/nav ticks during a hunt" inner chain: lights flicker, a ghost
    event may roll, a steal-clothes event may roll, and a random hunt
-   may start. Used by:
-     * the per-nav-step <<huntTickStep>> widget below (classic and
-       rogue navigation)
-     * the per-tool-tick repeat body emitted by setup.searchToolMarkup
-       (classic toolbar; replaces the bespoke ironclad / standard /
-       rogue inline chains)
-     * the rogue toolbar widget for click-time event rolls
-   All branching lives in setup.HuntController predicates so this
-   widget never needs an "if rogue / else classic" split. */
+   may start. */
 <<widget "huntTickEventChain">>
-	<<if not setup.HuntController.isCursedHuntActive()>>
-		<<include "LightPassageGhost">>
-		<<include "Event">>
-		<<if not setup.Events.eventTriggered() and setup.HuntController.shouldTriggerSteal()>>
-			<<run setup.HauntedHouses.markStealClothesTriggered()>>
-			<<goto "StealClothes">>
-		<</if>>
-		<<if not setup.HauntedHouses.stealClothesTriggered()
-				and not setup.Events.eventTriggered()
-				and setup.HuntController.shouldStartRandomProwl()>>
-			<<goto "GhostHuntEvent">>
-		<</if>>
+	<<include "LightPassageGhost">>
+	<<include "Event">>
+	<<if not setup.Events.eventTriggered() and setup.HuntController.shouldTriggerSteal()>>
+		<<run setup.HauntedHouses.markStealClothesTriggered()>>
+		<<goto "StealClothes">>
+	<</if>>
+	<<if not setup.HauntedHouses.stealClothesTriggered()
+			and not setup.Events.eventTriggered()
+			and setup.HuntController.shouldStartRandomProwl()>>
+		<<goto "GhostHuntEvent">>
 	<</if>>
 <</widget>>
 
 /* huntTickStep -- arg-less. The shared per-nav-step chain: applies
    per-tick stat drains, routes to a hunt-over passage when sanity /
    energy / time gives out, and otherwise fires the inner event
-   chain. Replaces the previous includeTimeEventClothesHunt /
-   includeTimeEventHunt pair -- the steal-clothes step is now a
-   data-driven HOUSE_CONFIG.runsStealClothes flag inside
-   <<huntTickEventChain>> rather than two parallel widgets. */
+   chain. */
 <<widget "huntTickStep">>
-	<<if not setup.HuntController.isCursedHuntActive()>>
-		<<applyTickEffects>>
-		<<if setup.Mc.isSanityCollapsed() or setup.Mc.sanity() lte 0>>
-			<<goto setup.HuntController.huntOverPassage("sanity")>>
-		<<elseif setup.Mc.isExhausted()>>
-			<<goto setup.HuntController.huntOverPassage("exhaustion")>>
-		<<else>>
-			<<huntTickEventChain>>
-		<</if>>
+	<<applyTickEffects>>
+	<<if setup.Mc.isSanityCollapsed() or setup.Mc.sanity() lte 0>>
+		<<goto setup.HuntController.huntOverPassage("sanity")>>
+	<<elseif setup.Mc.isExhausted()>>
+		<<goto setup.HuntController.huntOverPassage("exhaustion")>>
+	<<else>>
+		<<huntTickEventChain>>
 	<</if>>
 <</widget>>
 

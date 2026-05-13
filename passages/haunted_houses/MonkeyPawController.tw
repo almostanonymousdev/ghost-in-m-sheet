@@ -53,8 +53,8 @@ setup.MonkeyPaw = (function () {
 	/* Variables owned by this controller. Other controllers should
 	   query these only through the API methods below. */
 	var OWNED_VARS = Object.freeze([
-		'wishesCount', 'monkeyPawDoorLock',
-		'monkeyPawBannedHouses', 'monkeyPawLearned',
+		'wishesCount',
+		'monkeyPawLearned',
 		'MonkeyPawStage', 'wishAnything',
 		'boughtMonkeyPawGuide'
 	]);
@@ -94,37 +94,6 @@ setup.MonkeyPaw = (function () {
 		setup.HauntedHouses.addTempCorruption(amount);
 	}
 
-	/* The MC's actual room when a wish fires. The wish widgets run
-	   inside the MonkeyPaw menu passage (and the player reaches it
-	   via Bag), both tagged `noreturn`, so passage() here returns
-	   "MonkeyPaw" -- useless for gating room exits. $return is
-	   updated on every :passagestart for non-noreturn passages, so
-	   it holds the last real haunted-house room the MC stood in. */
-	function currentRoomPassage() {
-		return State.variables['return'] || passage();
-	}
-
-	/* Front-door lock is hunt-scoped state set by the trapTheGhost
-	   wish. The unlockBy field drives FrontDoorLocked's branching
-	   ('cursedItem' requires a sacrifice, 'dawn' waits for 6 AM);
-	   sealedRoom captures the passage the MC was in when a tier-3
-	   wish was cast -- the "stuck in one room" beat. The scream
-	   option only surfaces in that passage; it is not a front-door
-	   action. Cleared on resetHunt() and on any explicit unlock.
-	   Called by setup.HuntController.trapGhost() in classic mode;
-	   rogue runs use the run.exitLock field instead. */
-	function lockFrontDoor(unlockBy) {
-		sv().monkeyPawDoorLock = {
-			locked: true,
-			unlockBy: unlockBy,
-			sealedRoom: currentTier() >= 3 ? currentRoomPassage() : null
-		};
-	}
-
-	function doorLockState() {
-		return sv().monkeyPawDoorLock || null;
-	}
-
 	function pickActivityVideo() {
 		var base = [
 			'mechanics/cursedpossessions/slap1.mp4', 'mechanics/cursedpossessions/slap2.mp4',
@@ -141,38 +110,6 @@ setup.MonkeyPaw = (function () {
 
 	function hasCursedItem() {
 		return setup.Witch.hasCursedItemToTurnIn();
-	}
-
-	/* Consume the cursed item the player is carrying: clears the
-	   witch-quest flag and whichever type flag is set. Used by the
-	   FrontDoorLocked sacrifice branch. Safe to call when the player
-	   has no item (no-op). Returns the type flag that was cleared,
-	   or null, for flavor. */
-	function consumeCursedItem() {
-		return setup.Witch.consumeCarriedCursedItem();
-	}
-
-	function dawnHasBroken() {
-		return (setup.Time.hours() || 0) >= 6;
-	}
-
-	function bannedHouses() {
-		var s = sv();
-		if (!Array.isArray(s.monkeyPawBannedHouses)) s.monkeyPawBannedHouses = [];
-		return s.monkeyPawBannedHouses;
-	}
-
-	/* Ban the currently-active haunted house from re-entry for the
-	   remainder of this contract. Cleared on resetHunt(). No-op if
-	   no house is active (defensive; the leave wish is always used
-	   from inside a house). */
-	function banActiveHouse() {
-		var h = setup.HauntedHouses && setup.HauntedHouses.activeHouse
-			? setup.HauntedHouses.activeHouse() : null;
-		if (!h || !h.id) return null;
-		var list = bannedHouses();
-		if (list.indexOf(h.id) === -1) list.push(h.id);
-		return h.id;
 	}
 
 	function learnedMap() {
@@ -326,8 +263,6 @@ setup.MonkeyPaw = (function () {
 				if (t >= 2) cursedItem = setup.CursedItems.forceCursedItem();
 				if (t >= 3) bannedHouse = setup.HuntController.banActiveContext();
 
-				setup.HauntedHouses.clearCursedHuntActive();
-
 				removeWish();
 
 				return {
@@ -390,7 +325,6 @@ setup.MonkeyPaw = (function () {
 				var corr = [0, 0.2, 0.4][t - 1];
 
 				setup.Time.setHours(6);
-				setup.HauntedHouses.clearCursedHuntActive();
 				if (corr) addTempCorr(corr);
 
 				removeWish();
@@ -445,8 +379,6 @@ setup.MonkeyPaw = (function () {
 			s.MonkeyPawStage = setup.MonkeyPawStage.HIDDEN;
 			s.wishesCount = 3;
 			setup.Ghosts.clearKnowledgeUsed();
-			s.monkeyPawDoorLock = null;
-			s.monkeyPawBannedHouses = [];
 		},
 		/* Furniture search calls this when the paw is discovered. */
 		markFound: function () { sv().MonkeyPawStage = setup.MonkeyPawStage.FOUND; },
@@ -475,68 +407,7 @@ setup.MonkeyPaw = (function () {
 		   want to warn the player before they click. */
 		tier: currentTier,
 
-		// --- Front-door lock (trapTheGhost wish side effect) -----
-		/* Lock the front door behind a trapTheGhost wish. Called by
-		   setup.HuntController.trapGhost in classic mode; rogue runs
-		   stamp run.exitLock through the same controller call instead. */
-		lockFrontDoor: lockFrontDoor,
-		/* Ban the currently-active haunted house from re-entry for
-		   the rest of the contract. Called by setup.HuntController
-		   .banActiveContext for classic; rogue runs are one-shot,
-		   so the controller no-ops there. */
-		banActiveHouse: banActiveHouse,
-		isFrontDoorLocked: function () {
-			var lock = doorLockState();
-			return !!(lock && lock.locked);
-		},
-		doorUnlockBy: function () {
-			var lock = doorLockState();
-			return lock ? lock.unlockBy : null;
-		},
-		/* True iff the current passage is the room the MC was in when
-		   a tier-3 trapTheGhost wish was cast, and the lock is still
-		   active. The <<roomFooter>> widget uses this to decide
-		   whether to render the scream link. */
-		canScreamHere: function () {
-			var lock = doorLockState();
-			if (!lock || !lock.locked || !lock.sealedRoom) return false;
-			return passage() === lock.sealedRoom;
-		},
-		sealedRoom: function () {
-			var lock = doorLockState();
-			return lock ? lock.sealedRoom : null;
-		},
-
-		// --- Paw-banned houses (leave wish, tier 3) --------------
-		/* True iff the "leave" wish at tier 3 has sealed this house
-		   against re-entry for the current contract. Cleared by
-		   resetHunt() when the witch hands out a new contract. */
-		isHouseBanned: function (id) {
-			return bannedHouses().indexOf(id) !== -1;
-		},
-		unlockFrontDoor: function () {
-			sv().monkeyPawDoorLock = null;
-		},
 		hasCursedItem: hasCursedItem,
-		/* Sacrifice the player's carried cursed item to unlock the
-		   door. Returns the cleared type flag for flavor text, or
-		   null if the player had no item (in which case the door
-		   stays locked and the caller should show the alternate
-		   branch). */
-		sacrificeCursedItemForDoor: function () {
-			var cleared = consumeCursedItem();
-			if (cleared) this.unlockFrontDoor();
-			return cleared;
-		},
-		/* Called from PassageReady after time advances. Clears a
-		   dawn-conditioned lock once $hours >= 6. No-op otherwise. */
-		maybeAutoUnlockAtDawn: function () {
-			var lock = doorLockState();
-			if (!lock || !lock.locked) return;
-			if (lock.unlockBy === 'dawn' && dawnHasBroken()) {
-				this.unlockFrontDoor();
-			}
-		},
 
 		// --- Learned state ----------------------------------------
 		isLearned: function (id) { return learnedMap()[id] === true; },

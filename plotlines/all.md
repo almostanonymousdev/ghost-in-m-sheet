@@ -10,9 +10,9 @@ The game features multiple companion characters (Alice, Blake, Brook, Alex, Case
 
 This plotline involves rescuing missing women (Victoria, Julia, Jade, Nadia, and Ash) who have been taken by ghosts. The process begins at the church where you can take missing posters for these women. Each rescue mission requires you to locate their haunted house, investigate the ghost, and complete specific objectives to rescue the woman. The rescue missions have multiple stages and can involve ghost encounters, possession events, and special rescue scenarios. Successfully rescuing a woman completes her storyline and may unlock additional content.
 
-## [Witch Contract Plotline](witch.md)
+## [Witch Plotline](witch.md)
 
-The witch is a mysterious character who offers contracts and special items. You can visit her house during specific hours (10 AM to midnight) to interact with her. The witch provides quests for finding cursed items and other supernatural objects. Completing her contracts can grant powerful benefits but may come with risks or consequences. The witch also has her own unique storyline that unfolds as you progress through her quests and develop a relationship with her.
+The witch is a mysterious character who sells rare supernatural items and runs through her own intimate storyline. You can visit her house between 10 AM and midnight; outside those hours it appears abandoned (sneaking in is possible once you've stolen her key). Her role is the shopkeeper for cursed items and the focal point for her personal events.
 
 ## [Ghost Hunting Plotline](ghost-hunting.md)
 
@@ -40,4 +40,4 @@ The game world includes several city locations the player can visit between hunt
 
 ## [Rogue Mode](rogue-mode.md)
 
-A run-based variant on the classic witch-contract loop. Each run rolls a fresh haunted house from a deterministic seed: the floor plan, the active modifiers, and the stash placements all change between runs. Ectoplasm (measured in mL) carries forward and is spent in the meta-shop on persistent unlocks. The classic contract flow is unaffected — `$run` is null when no rogue run is active.
+The hunt loop. Each run rolls a fresh haunted house from a deterministic seed: the floor plan, the active modifiers, and the stash placements all change between runs. A small static-house catalogue (Owaissa, Elm, Ironclad) rides the same lifecycle with authored floor plans. Ectoplasm (measured in mL) carries forward and is spent in the meta-shop on persistent unlocks. `$run` is null when no run is active.

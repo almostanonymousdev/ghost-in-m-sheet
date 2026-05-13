@@ -1171,17 +1171,13 @@ test.describe('E2E: rogue run lifecycle', () => {
     await page.evaluate(() => SugarCube.setup.HuntController.shuffleGhostRoom());
 
     // Drift should have moved the ghost (since Math.random=0 < 0.45)
-    // to a non-hallway room different from `initial` (when more than
-    // one non-hallway room exists in the seed=5 plan).
+    // somewhere different from `initial`. The destination is drawn from
+    // the full plan minus the current spawn -- hallway is intentionally
+    // a valid drift target (see driftGhostRoom comment).
     const fp = await callSetup(page, 'setup.Rogue.field("floorplan")');
-    const nonHallwayCount = fp.rooms.filter(r => r.template !== 'hallway').length;
-    if (nonHallwayCount > 1) {
+    if (fp.rooms.length > 1) {
       expect(await callSetup(page, 'setup.Rogue.ghostRoomId()')).not.toBe(initial);
     }
-    // Either way, the new room is non-hallway.
-    const ghostRoom = await callSetup(page, 'setup.Rogue.ghostRoomId()');
-    const newRoom = fp.rooms.find(r => r.id === ghostRoom);
-    expect(newRoom.template).not.toBe('hallway');
   });
 
   test('Goryo (staysInOneRoom) never drifts in rogue mode', async () => {

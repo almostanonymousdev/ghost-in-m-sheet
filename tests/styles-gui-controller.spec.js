@@ -201,24 +201,6 @@ test.describe('GuiController (setup.Gui)', () => {
     expect(await callSetup(page, 'setup.Gui.timerToolsInitialized()')).toBe(true);
   });
 
-  // --- Cursed hunt option ----------------------------------------
-
-  test('cursed hunt option defaults to ON when unset', async ({ game: page }) => {
-    await page.evaluate(() => { delete SugarCube.State.variables.cursedHuntOption; });
-    expect(await callSetup(page, 'setup.Gui.isCursedHuntOptionOn()')).toBe(true);
-    expect(await callSetup(page, 'setup.Gui.cursedHuntOptionOff()')).toBe(false);
-  });
-
-  test('setCursedHuntOption + getters round-trip through the OFF state', async ({ game: page }) => {
-    await page.evaluate(() => SugarCube.setup.Gui.setCursedHuntOption(1));
-    expect(await callSetup(page, 'setup.Gui.cursedHuntOptionOff()')).toBe(true);
-    expect(await callSetup(page, 'setup.Gui.isCursedHuntOptionOn()')).toBe(false);
-
-    await page.evaluate(() => SugarCube.setup.Gui.setCursedHuntOption(0));
-    expect(await callSetup(page, 'setup.Gui.cursedHuntOptionOff()')).toBe(false);
-    expect(await callSetup(page, 'setup.Gui.isCursedHuntOptionOn()')).toBe(true);
-  });
-
   // --- Guide return passage --------------------------------------
 
   test('setGuideReturnPassage round-trips through guideReturnPassage', async ({ game: page }) => {

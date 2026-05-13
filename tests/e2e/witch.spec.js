@@ -59,68 +59,6 @@ test.describe('Witch — access and hours', () => {
   });
 });
 
-test.describe('Witch — contract lifecycle', () => {
-  test('canAffordContract requires money >= 35', async ({ game: page }) => {
-    await setVar(page, 'mc.money', 34);
-    expect(await callSetup(page, 'setup.Witch.canAffordContract()')).toBe(false);
-    await setVar(page, 'mc.money', 35);
-    expect(await callSetup(page, 'setup.Witch.canAffordContract()')).toBe(true);
-  });
-
-  test('hasActiveContract / contractReadyToEnd track ghostHuntingMode', async ({ game: page }) => {
-    await setHuntMode(page, 0);
-    expect(await callSetup(page, 'setup.Witch.hasActiveContract()')).toBe(false);
-    expect(await callSetup(page, 'setup.Witch.contractReadyToEnd()')).toBe(false);
-    await setHuntMode(page, 1);
-    expect(await callSetup(page, 'setup.Witch.hasActiveContract()')).toBe(true);
-    await setHuntMode(page, 3);
-    expect(await callSetup(page, 'setup.Witch.contractReadyToEnd()')).toBe(true);
-  });
-
-  test('WitchInside shows contract links during daytime when affordable', async ({ game: page }) => {
-    await setVar(page, 'hours', 12);
-    await setVar(page, 'mc.money', 200);
-    await setVar(page, 'firstVisitWitchShop', false);
-    await setHuntMode(page, 0);
-    await goToPassage(page, 'WitchInside');
-    await expectCleanPassage(page);
-    const text = await page.locator('#passages').innerText();
-    expect(text).toContain('I want to get a contract');
-  });
-
-  test('WitchInside shows "not enough money" when broke', async ({ game: page }) => {
-    await setVar(page, 'hours', 12);
-    await setVar(page, 'mc.money', 5);
-    await setVar(page, 'firstVisitWitchShop', false);
-    await setHuntMode(page, 0);
-    await goToPassage(page, 'WitchInside');
-    const text = await page.locator('#passages').innerText();
-    expect(text).toContain("don't have enough money");
-    await expectCleanPassage(page);
-  });
-
-  test('WitchInside shows "already have a contract" during an active hunt', async ({ game: page }) => {
-    await setVar(page, 'hours', 12);
-    await setVar(page, 'mc.money', 200);
-    await setVar(page, 'firstVisitWitchShop', false);
-    await setHuntMode(page, 1);
-    await goToPassage(page, 'WitchInside');
-    const text = await page.locator('#passages').innerText();
-    expect(text).toContain('already have a contract');
-    await expectCleanPassage(page);
-  });
-
-  test('WitchEndContract renders the ghost-type picker when ready to turn in', async ({ game: page }) => {
-    await setVar(page, 'hours', 12);
-    await setHuntMode(page, 3);
-    await setVar(page, 'moneyFromContract', 100);
-    await setVar(page, 'moneyFromWeakenTheGhost', 0);
-    await goToPassage(page, 'WitchEndContract');
-    await expectCleanPassage(page);
-    await expect(page.locator('select')).toBeVisible();
-  });
-});
-
 test.describe('Witch — side quests', () => {
   test('canOfferRescueQuest is true only when $hasQuestForRescue is undefined', async ({ game: page }) => {
     await page.evaluate(() => { delete SugarCube.State.variables.hasQuestForRescue; });

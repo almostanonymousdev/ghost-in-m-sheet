@@ -18,7 +18,7 @@
 	&emsp;@@.mc-thoughts;Periodically, moments of realization break through: you are being fucked, not sparing all your holes. Your body becomes pliable, you feel like a doll. This goes on forever. However, your body reacts to all this torture; the feeling of pleasure gradually takes over. A powerful surge of enjoyment passes through it. You feel the strength leaving your body, and consciousness slips away.@@<br>
 
 	<<if setup.Ghosts.hasHighPriestess()>>
-		@@.usebtn; [[Next|$return][setup.Ghosts.consumeHighPriestess(); setup.HauntedHouses.setHuntMode(setup.Ghosts.HuntMode.ACTIVE)]]@@
+		@@.usebtn; [[Next|$return][setup.Ghosts.consumeHighPriestess()]]@@
 	<<else>>
 		<<run setup.HauntedHouses.cleanupAfterHunt({ loseStolen: true })>>
 		<<done>>

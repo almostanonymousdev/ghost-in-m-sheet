@@ -1,12 +1,7 @@
 :: GhostStreet [ghoststreet] {"position":"1950,350","size":"100,100"}
 <div class="flexwrapper">
-<<huntHouseCard "owaissa">>
 <<rogueStaticHouseCard "rogue-owaissa">>
-<div class="housecard"></div>
-<<huntHouseCard "ironclad">>
 <<rogueStaticHouseCard "rogue-ironclad">>
-<div class="housecard"></div>
-<<huntHouseCard "elm">>
 <<rogueStaticHouseCard "rogue-elm">>
 <<rogueHuntCard>>
 </div>
@@ -17,6 +12,5 @@
 <<done>>
 <<replace "#time">><<= setup.Time.display()>><</replace>>
 <</done>>
-<<run setup.HauntedHouses.clearHouseFlags()>>
 <<if setup.Companion.anyCompanionSelected()>><<run setup.Companion.markCompanionFlagActive()>><</if>>
 <</nobr>>

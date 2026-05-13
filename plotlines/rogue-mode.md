@@ -1,23 +1,22 @@
 # Rogue Mode
 
-A run-based variant on the classic witch-contract loop. Each rogue
-run rolls a fresh haunted house from a deterministic seed: the floor
-plan, the active modifiers, and the stash placements all change
-between runs. Ectoplasm (measured in mL) carries forward from one
-run to the next and is spent in the meta-shop on persistent unlocks.
+The hunt loop. Each rogue run rolls a fresh haunted house from a
+deterministic seed: the floor plan, the active modifiers, and the
+stash placements all change between runs. A small set of static
+houses (Owaissa, Elm, Ironclad) ride the same lifecycle but skip
+the floor-plan roll and substitute their authored template.
+Ectoplasm (measured in mL) carries forward from one run to the next
+and is spent in the meta-shop on persistent unlocks.
 
-The classic witch-contract flow is unaffected — `$run` is `null`
-when no rogue run is active, and predicates like
-`setup.Rogue.isClassic()` / `setup.Rogue.isRogue()` keep the two modes
-cleanly partitioned.
+`setup.Rogue.isRogue()` is the canonical "a run is in flight"
+predicate; `$run` is `null` whenever no run is active.
 
 ## Lifecycle
 
 A rogue run flows through four passages. The entry point is the
 **Rogue Hunt** card on
 [GhostStreet](../passages/haunted_houses/general/GhostStreet.tw),
-slotted alongside the authored haunts (Owaissa, Ironclad, Elm,
-Enigma) via the [`<<rogueHuntCard>>`](../passages/haunted_houses/tools/widgetHauntedHouseStreet.tw)
+via the [`<<rogueHuntCard>>`](../passages/haunted_houses/tools/widgetHauntedHouseStreet.tw)
 widget. There is no "resume" — once you start a run, you either
 finish it (Win / Lose / Abandon from RogueRun) or forfeit it by
 walking back into RogueStart, which counts the unfinished run as
@@ -30,10 +29,13 @@ a failure before rolling fresh.
   (or accepts an explicit one), drafts the modifier deck,
   generates the floor plan, and stamps `$run`. Shows the player
   the modifier list and the floor plan before they commit.
-  `setup.Rogue.startRogue({ seed })` does the actual composition.
+  `setup.Rogue.startRogue({ seed, staticHouseId })` does the actual
+  composition; passing a `staticHouseId` from the
+  [`setup.RogueHouses`](../passages/rogue/RogueHousesController.tw)
+  catalogue substitutes the authored plan for the procedural roll.
 * **[RogueRun](../passages/rogue/RogueLifecycle.tw)** — in-progress
-  view. Laid out to mirror the regular ghost hunts: the SVG
-  minimap ([`<<rogueMinimap>>`](../passages/rogue/widgetRogueMinimap.tw)
+  view. The SVG minimap
+  ([`<<rogueMinimap>>`](../passages/rogue/widgetRogueMinimap.tw)
   — labeled squares with edges and current/spawn/boss highlights)
   sits in the top-left, the active modifier list and the debug
   Win / Lose / Abandon links sit in the top-right, and the bottom
@@ -44,8 +46,8 @@ a failure before rolling fresh.
   emits one card per `setup.searchToolOrder` entry; clicking a
   card wikifies the shared `<<toolCheck>>` macro and burns one
   in-game minute, the same renderer the haunted-house tools use
-  (see [Cross-mode hunt facade](#cross-mode-hunt-facade) for how
-  rogue runs plug into that machinery without a `$hunt`).
+  (see [Hunt facade](#hunt-facade) for how rogue runs plug into
+  that machinery).
 * **[RogueEnd](../passages/rogue/RogueLifecycle.tw)** — result
   screen. `setup.Rogue.endRogue(success)` clears `$run` and pays out
   ectoplasm (5 mL base + 5 mL if successful + 1 mL per active
@@ -66,12 +68,17 @@ Run-level state lives on `$run` and meta-progression state on
 
 ```
 $run = {
-  seed,        // int driving the floor-plan generator + per-run rolls
-  number,      // monotonic attempt counter (= $runsStarted at start)
-  modifiers,   // array of modifier ids (catalogued in setup.Modifiers)
-  loadout,     // { tools, money, ... } — starting kit
-  objective,   // string id (default 'identify')
-  floorplan    // populated by setup.FloorPlan.generate()
+  seed,           // int driving the floor-plan generator + per-run rolls
+  number,         // monotonic attempt counter (= $runsStarted at start)
+  modifiers,      // array of modifier ids (catalogued in setup.Modifiers)
+  loadout,        // { tools, money, ... } — starting kit
+  objective,      // string id (default 'identify')
+  floorplan,      // populated by setup.FloorPlan.generate()
+  ghostName,      // active ghost's catalogue name
+  evidence,       // evidence-id list (Fog of War may splice one out)
+  staticHouseId,  // null for procedural runs, RogueHouses id otherwise
+  trapped,        // true when a Monkey Paw wish has frozen the lair
+  exitLock        // matching exit-lock target on trap
 }
 
 $ectoplasm     // persistent meta-progression currency, in mL
@@ -120,126 +127,94 @@ Templates available for non-hallway slots come from the
 procedural-eligible filter on
 [`setup.Templates`](../passages/rogue/TemplatesController.tw)
 (`kitchen`, `bathroom`, `bedroom`, `livingroom`, `nursery`,
-`basement`, `roomA`, `roomB`, `roomC`). Story-locked templates
-(Ironclad cells, Elm's nursery, the Enigma trio) stay
-authored-house-only.
+`basement`, `attic`, `dining-room`, `sauna`, `sex-dungeon`,
+`walk-in-closet`). Static-house templates (Ironclad cells, Elm's
+nursery, the Enigma trio) stay catalogue-only and don't roll
+into the procedural pool.
 
-## Cross-mode hunt facade
+## Hunt facade
 
-Two completely different lifecycles -- the classic witch-contract
-flow (`$hunt`) and rogue runs (`$run`) -- share one tool / evidence
-/ event stack. The mode dispatch lives in
-[`setup.HuntController`](../passages/hunt/HuntController.tw):
+The tool / evidence / event stack all reads through
+[`setup.HuntController`](../passages/hunt/HuntController.tw), so
+passages and widgets never branch on rogue-vs-not internally —
+they just call the facade and let it return the right thing for
+the current run state:
 
-* `mode()` — `'regular'` while a `$hunt` is open, `'rogue'` while
-  a rogue run is active, `null` otherwise. Regular wins the tie.
-* `activeGhost()` — Ghost instance for whichever mode is active.
-  Classic mode rebuilds from `$hunt` evidence (DeleteEvidence /
-  Mimic rotation); rogue mode hands back the catalogue ghost
-  named in `$run.ghostName`.
-* `isGhostHere(houses)` — true iff the player is in the active
-  ghost's room. Classic mode pins ghost-room to `$hunt.room.name`
-  against the haunted-passage table; rogue mode compares
-  `$run.currentRoomId` against `floorplan.spawnRoomId` and only
-  fires inside the `RogueRun` passage.
-* `isHuntActive()` — gates the per-tick chain. Classic =
-  `Ghosts.isHunting()` (player is inside the haunted house);
-  rogue = run is in flight AND the player is on the `RogueRun`
-  passage. `setup.HauntConditions.snapshot()`/`applyTickEffects()`
-  and `<<toolTick>>`'s HuntOverTime check both read this so the
-  same per-step stat-drain + clock logic services both modes.
-* `isCursedHuntActive()` — classic-only sub-flow gate; rogue
-  always answers false.
+* `isActive()` / `isRogueActive()` — true iff a rogue run is in
+  flight. The two names coexist so dispatch sites can read the
+  way they want; both delegate to the same check.
+* `activeGhost()` — the catalogue Ghost named in `$run.ghostName`,
+  with any per-run evidence override (e.g. Fog of War) overlaid.
+  Returns `null` when no run is active.
+* `realGhostName()` — `$run.ghostName` or `''`. Used by the cheat
+  panel and journal reveals.
+* `isGhostHere(houses)` — true iff the player is in the ghost's
+  room. Compares `$run.currentRoomId` against
+  `floorplan.spawnRoomId` and only fires inside the `RogueRun`
+  passage. The optional `houses` filter is silently ignored —
+  rogue runs aren't house-specific.
+* `isHuntActive()` — gates the per-tick chain. Run is in flight
+  AND the player is on the `RogueRun` passage.
+  `setup.HauntConditions.snapshot()`/`applyTickEffects()` and
+  `<<toolTick>>`'s HuntOverTime check both read this.
 * `shouldTriggerSteal()` — wardrobe-state roll. Honours a
-  per-house `runsStealClothes: false` opt-out (ironclad, since
-  prison ghosts have their own warden-clothes mechanic).
+  per-static-house `runsStealClothes: false` opt-out (Ironclad,
+  since prison ghosts have their own warden-clothes mechanic).
 * `shouldStartRandomProwl()` — gates `CheckHuntStart`'s
-  `<<goto "GhostHuntEvent">>`. Both modes delegate to
-  `HauntedHouses.shouldStartRandomProwl()`, which is mode-agnostic
+  `<<goto "GhostHuntEvent">>`. Delegates to
+  `HauntedHouses.shouldStartRandomProwl()`
   (`canStartRandomProwl` + `prowlChanceBonus` + `g.canProwl(mc)`).
-  Once the gate trips, the chain `<<goto>>`s `GhostHuntEvent` and
-  the survival branches (Hide, RunFast, PrayHunt, FreezeHunt,
-  HuntEventSuccubus) are reachable in both modes.
-* `huntOverPassage(reason)` — mode-aware passage to `<<goto>>`
-  when the per-tick chain detects sanity collapse / exhaustion /
-  time runout. Classic returns the matching `HuntOver*` passage;
-  rogue stamps the run as a failure with the reason and returns
-  `RogueEnd`. Also called by `FreezeHunt`'s "Surrender to the
-  cold" link so the no-clothes-left branch ends the rogue run
-  cleanly instead of routing through the classic HuntOverSanity
-  cleanup.
-* `huntCaughtPassage()` — mode-aware target the
-  `<<huntEndExit>>` widget routes through after a HuntEnd scene.
-  Classic sleeps the MC home (`Sleep`); rogue stamps a `caught`
-  failure on the run and returns `RogueEnd`. The
-  classic-only High-Priestess override (a tarot draw that lets
-  the MC walk away from a catch) is handled inside the widget,
-  so neither mode reaches this helper when the priestess is in
-  play.
-* `onCaughtCleanup()` — end-of-HuntEnd cleanup. Both modes share
-  the wardrobe / companion / tool-timer reset; the classic-only
-  piece is `endHunt()` (flips `$hunt.mode` to POSSESSED). Rogue
-  defers the matching `$run` cleanup to `setup.Rogue.endRogue`,
-  fired when the player clicks the huntEndExit link through to
-  `RogueEnd`.
+* `huntOverPassage(reason)` — stamps the run as a failure with
+  the reason and returns `RogueEnd`. Also called by
+  `FreezeHunt`'s "Surrender to the cold" link so the
+  no-clothes-left branch ends the run cleanly.
+* `huntCaughtPassage()` — stamps a `caught` failure on the run
+  and returns `RogueEnd`. The High-Priestess tarot override (a
+  draw that lets the MC walk away from a catch) is handled
+  inside the widget, so the helper isn't reached when the
+  priestess is in play.
+* `onCaughtCleanup()` — wardrobe / companion / tool-timer reset.
+  The matching `$run` cleanup is deferred to
+  `setup.Rogue.endRogue`, fired when the player clicks the
+  huntEndExit link through to `RogueEnd`.
 * `shuffleGhostRoom()` — periodic ghost-room drift. Owns the
   shared 20-minute interval gate and the 45% roll, then
-  dispatches to `setup.HauntedHouses.driftGhostRoom` (classic) or
-  `setup.Rogue.driftGhostRoom` (rogue) for the actual room pick.
-  Skips when the active ghost's catalogue marks it
+  dispatches to `setup.Rogue.driftGhostRoom` for the actual
+  room pick. Skips when the active ghost's catalogue marks it
   `staysInOneRoom` (Goryo / Phantom). Called from
-  `TickController.onPassageDone` so a single hook covers both
-  modes.
-* `snapGhostToCurrentRoom()` — pin the active ghost to the
-  player's current room. Used by the Monkey Paw tier-3 activity
-  and trapTheGhost wishes. Classic walks `setup.hauntedPassages`
-  to find the room behind the current passage and stamps it on
-  `$hunt.room.name`; rogue snaps `floorplan.spawnRoomId` to
+  `TickController.onPassageDone`.
+* `snapGhostToCurrentRoom()` — pin the ghost to the player's
+  current room. Used by the Monkey Paw tier-3 activity and
+  trapTheGhost wishes. Snaps `floorplan.spawnRoomId` to
   `$run.currentRoomId`.
-* `trapGhost(unlockBy)` / `isGhostTrapped()` — `trapGhost` pins
-  the ghost in place and locks the player's exit. Classic flips
-  `$hunt.trapped` and locks the front door
-  (`setup.MonkeyPaw.lockFrontDoor`); rogue stamps `run.trapped`
-  and `run.exitLock`, and `setup.Rogue.driftGhostRoom` honors
-  the `run.trapped` opt-out so the lair doesn't drift.
+* `trapGhost(unlockBy)` / `isGhostTrapped()` — `trapGhost` stamps
+  `run.trapped` and `run.exitLock` so the lair doesn't drift and
+  the player's exit is locked.
 * `streetExitPassage()` / `banActiveContext()` — used by the
-  Monkey Paw leave wish. Classic returns the active house's
-  street passage and bans the house from re-entry; rogue stamps
-  an `abandon` failure + returns `RogueEnd` (the run forfeits)
-  and bans nothing.
+  Monkey Paw leave wish. Stamps an `abandon` failure + returns
+  `RogueEnd` (the run forfeits) and bans nothing.
 * `possessionPassage()` — used by the Tarot Possession card.
-  Classic flips `$hunt.mode` to POSSESSED, jumps to a daytime
-  hour, and routes to `CityMapPossessed`; rogue stamps a
-  `possessed` failure on the run and routes to `RogueEnd`.
+  Stamps a `possessed` failure on the run and routes to
+  `RogueEnd`.
 * `consumeKnowledgeEvidence()` — used by the Tarot Knowledge
-  card and the Monkey Paw knowledge wish. Classic delegates to
-  `setup.Ghosts.consumeKnowledgeEvidence` (which knows about
-  `$hunt.evidence` and the witch's hidden slots); rogue picks a
-  random evidence the rogue ghost doesn't have and stamps it on
-  `$chosenEvidence`. Both modes mark `$knowledgeUsed` so a
-  second draw is a no-op.
-* `shouldUseCursedHuntOption()` — Death-card "Hide" branch
-  predicate. Classic mirrors the player toggle
-  (`setup.Gui.isCursedHuntOptionOn`); rogue is always false.
-* `isInsideHuntPassage()` — Bag carry-link gate. Returns true
-  iff `previous(1)` is one of the haunted-house room passages
-  (classic) or `RogueRun` (rogue), so the tarot deck and monkey
-  paw don't appear in Bag from the city, witch street, or rogue
-  lobby.
+  card and the Monkey Paw knowledge wish. Picks a random
+  evidence the ghost doesn't have and stamps it on
+  `$chosenEvidence`. Marks `$knowledgeUsed` so a second draw
+  is a no-op.
+* `isInsideHuntPassage()` — Bag carry-link gate. True iff
+  `previous(1)` is `RogueRun`, so the tarot deck and monkey paw
+  don't appear in Bag from the city or rogue lobby.
 
 `setup.Ghosts.active()` and `setup.isGhostHere()` are thin
-adapters that delegate to the facade -- legacy callers don't move,
-new shared code reads through the controller. The rogue ghost
-itself is rolled in `setup.Rogue.startRogue()` from a
-seed-derived index into `setup.Ghosts.names()` and stamped onto
-`$run.ghostName`, so the same seed reproduces the same ghost.
+adapters that delegate to the facade. The rogue ghost is rolled
+in `setup.Rogue.startRogue()` from a seed-derived index into
+`setup.Ghosts.names()` and stamped onto `$run.ghostName`, so the
+same seed reproduces the same ghost.
 
 ## Per-tick event chain
 
-Classic and rogue hunts share one per-tick event chain widget
-pair, dispatched via `setup.HuntController` predicates so neither
-the widget body nor the calling passages need an "if rogue / else
-classic" branch:
+`setup.HuntController` predicates drive a single per-tick chain,
+shared between nav-link steps and tool clicks:
 
 * `<<huntTickStep>>` — per-nav-step / per-tool-click chain. Runs
   the per-tick stat drains, routes to
@@ -250,21 +225,16 @@ classic" branch:
   `EventMC`), a steal-clothes event may roll
   (`HuntController.shouldTriggerSteal` → `StealClothes`), and a
   random prowl may start (`HuntController.shouldStartRandomProwl`
-  → `GhostHuntEvent`). Used both from `<<huntTickStep>>` and from
-  the per-tool-tick repeat body emitted by
-  `setup.searchToolMarkup`.
+  → `GhostHuntEvent`).
 
-The classic nav-link widget (`<<navLink>>`), the rogue nav links
-in `RogueRun`, and the `<<rogueToolBar>>` widget all call
-`<<huntTickStep>>`. The classic per-tool-tick repeat body uses
-`<<huntTickEventChain>>` directly (the meter-fill replace runs
-`<<applyTickEffects>>` on completion). Enigma is the only chain
-that doesn't go through this stack -- it has its own
+The rogue nav links in `RogueRun` and the `<<rogueToolBar>>`
+widget all call `<<huntTickStep>>`. Enigma is the only chain
+that doesn't go through this stack — it has its own
 LightPassageGhost + EventArt loop.
 
 `<<includeTimeEventClothesHunt>>` and `<<includeTimeEventHunt>>`
-are now thin aliases for `<<huntTickStep>>` so existing call
-sites keep working without churn.
+are thin aliases for `<<huntTickStep>>` so existing call sites
+keep working without churn.
 
 ## Modifier registry
 
@@ -298,10 +268,11 @@ links use to decide whether to render an unlock as active.
 * [FloorPlanController.tw](../passages/rogue/FloorPlanController.tw) — `setup.FloorPlan`: seeded generator, neighbour / connectivity helpers, BFS layout for the minimap.
 * [ModifiersController.tw](../passages/rogue/ModifiersController.tw) — `setup.Modifiers`: catalogue + weighted draft.
 * [TemplatesController.tw](../passages/rogue/TemplatesController.tw) — `setup.Templates`: room-template metadata + slot-id helpers.
+* [RogueHousesController.tw](../passages/rogue/RogueHousesController.tw) — `setup.RogueHouses`: static-house catalogue (Owaissa / Elm / Ironclad) with authored floor plans and per-house overrides.
 * [RogueLifecycle.tw](../passages/rogue/RogueLifecycle.tw) — `RogueStart`, `RogueRun`, `RogueEnd`, `RogueMetaShop` passages.
 * [widgetRogueMinimap.tw](../passages/rogue/widgetRogueMinimap.tw) — `<<rogueMinimap>>` SVG floor-plan view.
 * [widgetRogueToolBar.tw](../passages/rogue/widgetRogueToolBar.tw) — `<<rogueToolBar>>` tool grid; renders one card per `setup.Rogue.startingTools()` entry (default = all six). Empty Bag (`locked_tools`) collapses the strip to a "your bag is empty" placeholder; `loadout.tools` filters to a subset while preserving canonical order. Tools the player picks up from `tool_<id>` furniture loot get unioned back in, so a started-empty bag fills back in as the player searches the rooms.
-* [HuntController.tw](../passages/hunt/HuntController.tw) — `setup.HuntController`: cross-mode facade for `mode()` / `activeGhost()` / `isGhostHere()`.
+* [HuntController.tw](../passages/hunt/HuntController.tw) — `setup.HuntController`: hunt facade for `isActive()` / `activeGhost()` / `isGhostHere()` and the lifecycle-routing helpers.
 
 ## Save migration
 
@@ -322,5 +293,5 @@ last written under.
 * [rogue-minimap.spec.js](../tests/rogue-minimap.spec.js) — `minimapData()` denormalisation.
 * [save-load-roundtrip.spec.js](../tests/save-load-roundtrip.spec.js) — migration and round-trip coverage for rogue state.
 * [e2e/rogue-flow.spec.js](../tests/e2e/rogue-flow.spec.js) — end-to-end CityMap → start → win → meta-shop walkthrough; tool functionality, lair-room `isGhostHere`, time advance per click, tarot/paw pickup + Bag carry, dawn-wish run forfeit.
-* [hunt-controller.spec.js](../tests/hunt-controller.spec.js) — `setup.HuntController` facade contract across both modes.
+* [hunt-controller.spec.js](../tests/hunt-controller.spec.js) — `setup.HuntController` facade contract.
 * [cursed-items-cross-mode.spec.js](../tests/cursed-items-cross-mode.spec.js) — `setup.HuntController` cursed-item facade (`snapGhostToCurrentRoom`, `trapGhost`, `streetExitPassage`, `possessionPassage`, `consumeKnowledgeEvidence`, `banActiveContext`, `isInsideHuntPassage`) plus the rogue start/end shared-state reset.

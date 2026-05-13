@@ -1,103 +1,70 @@
 :: FurnitureSearch [nobr noreturn] {"position":"1850,200","size":"100,100"}
-/* Unified furniture-search passage. Classic hunts route here from
-   the per-house <<furnitureItem>> widget (which sets
-   setup.HauntedHouses.currentFurniture()); rogue runs route here
+/* Furniture-search passage for rogue runs. Rogue runs route here
    from RogueRun's furniture row (which calls
-   setup.Rogue.setSearchedFurniture()). Tarot deck and monkey paw
-   pickups feed into the shared carry-stage state
-   ($tarotCardsStage / $MonkeyPawStage), so both modes route into
-   the same Bag links + TarotCards / MonkeyPaw passages without a
-   per-mode fork. The witch / missing-women cursed-item + rescue
-   quests stay classic-only (rogue tracks them on $run.collectedLoot
-   without engaging the witch quest gates).
+   setup.Rogue.setSearchedFurniture()).
 
    Multi-item slots: rogue's floor-plan generator prefers distinct
    furniture slots but can stack multiple loot kinds on one slot
-   when the room runs out of unique furniture. The rogue branch
-   reads the full uncollected list via setup.Rogue.lootKindsAt and
-   renders one beat per kind in a single search -- the player
-   never has to click the same drawer twice. Solo searches keep
-   the existing linkappend reveal flavor; multi-item searches drop
-   the gate and reveal everything at once so the back-button is
-   one click away. */
+   when the room runs out of unique furniture. The branch reads the
+   full uncollected list via setup.Rogue.lootKindsAt and renders one
+   beat per kind in a single search -- the player never has to click
+   the same drawer twice. Solo searches keep the existing linkappend
+   reveal flavor; multi-item searches drop the gate and reveal
+   everything at once so the back-button is one click away. */
 <<video "mechanics/curseditems/lfci.mp4">>
-<<if setup.Rogue.isRogue()>>
-	<<set _sf to setup.Rogue.searchedFurniture()>>
-	<<set _kinds to _sf ? setup.Rogue.lootKindsAt(_sf.room, _sf.suffix) : []>>
-	<<if _kinds.length eq 0>>
-		@@.mc-thoughts; You search but find nothing of note.@@<br>
+<<set _sf to setup.Rogue.searchedFurniture()>>
+<<set _kinds to _sf ? setup.Rogue.lootKindsAt(_sf.room, _sf.suffix) : []>>
+<<if _kinds.length eq 0>>
+	@@.mc-thoughts; You search but find nothing of note.@@<br>
+	<br>
+	@@.backbtn; [[Back|$return]]@@
+<<elseif _kinds.length eq 1>>
+	<<set _kind to _kinds[0]>>
+	<<set _toolId to setup.FloorPlan.toolIdFromLootKind(_kind)>>
+	<<if _kind eq "cursedItem">>
+		@@.mc-thoughts; You find a cursed item tucked into the furniture.@@<br>
+		<<run setup.Rogue.takeLoot("cursedItem")>>
 		<br>
 		@@.backbtn; [[Back|$return]]@@
-	<<elseif _kinds.length eq 1>>
-		<<set _kind to _kinds[0]>>
-		<<set _toolId to setup.FloorPlan.toolIdFromLootKind(_kind)>>
-		<<if _kind eq "cursedItem">>
-			@@.mc-thoughts; You find a cursed item tucked into the furniture.@@<br>
-			<<run setup.Rogue.takeLoot("cursedItem")>>
-			<br>
-			@@.backbtn; [[Back|$return]]@@
-		<<elseif _kind eq "rescueClue">>
-			@@.mc-thoughts; You find a clue about one of the missing women.@@<br>
-			<<run setup.Rogue.takeLoot("rescueClue")>>
-			<br>
-			@@.backbtn; [[Back|$return]]@@
-		<<elseif _kind eq "tarotCards" and setup.HauntedHouses.tarotCardsStage() eq setup.TarotStage.HIDDEN>>
-			<<include "PickupTarotCards">>
-		<<elseif _kind eq "monkeyPaw" and setup.MonkeyPaw.isDiscoverable()>>
-			<<include "PickupMonkeyPaw">>
-		<<elseif _kind eq "clothesStolen" and setup.HauntedHouses.hasClothesStolen()>>
-			<<run setup.Rogue.takeLoot("clothesStolen")>>
-			<<include "FindStolenClothes">>
-			<br>
-			<br>
-			@@.backbtn; [[Back|$return]]@@<br>
-		<<elseif _toolId>>
-			<<include "PickupRogueTool">>
-		<<else>>
-			@@.mc-thoughts; You search but find nothing of note.@@<br>
-			<br>
-			@@.backbtn; [[Back|$return]]@@
-		<</if>>
-	<<else>>
-		@@.mc-thoughts; You find several things tucked together.@@<br>
+	<<elseif _kind eq "rescueClue">>
+		@@.mc-thoughts; You find a clue about one of the missing women.@@<br>
+		<<run setup.Rogue.takeLoot("rescueClue")>>
 		<br>
-		<<for _k range _kinds>>
-			<<rogueLootBeat _k>>
-		<</for>>
 		@@.backbtn; [[Back|$return]]@@
-	<</if>>
-<<else>>
-	<<set _cur to setup.HauntedHouses.currentFurniture()>>
-	<<if setup.HauntedHouses.hasClothesStolen() and _cur eq setup.HauntedHouses.clothesStashRoom()>>
+	<<elseif _kind eq "tarotCards" and setup.HauntedHouses.tarotCardsStage() eq setup.TarotStage.HIDDEN>>
+		<<include "PickupTarotCards">>
+	<<elseif _kind eq "monkeyPaw" and setup.MonkeyPaw.isDiscoverable()>>
+		<<include "PickupMonkeyPaw">>
+	<<elseif _kind eq "clothesStolen" and setup.HauntedHouses.hasClothesStolen()>>
+		<<run setup.Rogue.takeLoot("clothesStolen")>>
 		<<include "FindStolenClothes">>
 		<br>
 		<br>
 		@@.backbtn; [[Back|$return]]@@<br>
-	<<elseif _cur eq setup.HauntedHouses.activeHousePlace("CursedItem") and (not setup.Witch.cursedItemQuestStarted() or setup.Witch.cursedItemQuestActive())>>
-		<<include "FindCursedItem">>
-	<<elseif _cur eq setup.HauntedHouses.activeHousePlace("RescueClue") and setup.MissingWomen.hasActiveQuest() and not setup.MissingWomen.hasRescueClue()>>
-		<<include "RescueClueFound">>
-	<<elseif _cur eq setup.HauntedHouses.activeHousePlace("TarotCards") and setup.HauntedHouses.tarotCardsStage() eq setup.TarotStage.HIDDEN>>
-		<<include "PickupTarotCards">>
-	<<elseif _cur eq setup.HauntedHouses.activeHousePlace("MonkeyPaw") and setup.MonkeyPaw.isDiscoverable()>>
-		<<include "PickupMonkeyPaw">>
+	<<elseif _toolId>>
+		<<include "PickupRogueTool">>
 	<<else>>
-		@@.mc-thoughts;You try to find something, but it seems like nothing is there. @@
-		<br>
+		@@.mc-thoughts; You search but find nothing of note.@@<br>
 		<br>
 		@@.backbtn; [[Back|$return]]@@
 	<</if>>
+<<else>>
+	@@.mc-thoughts; You find several things tucked together.@@<br>
+	<br>
+	<<for _k range _kinds>>
+		<<rogueLootBeat _k>>
+	<</for>>
+	@@.backbtn; [[Back|$return]]@@
 <</if>>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 <</done>>
 
 :: PickupTarotCards [nobr] {"position":"1950,200","size":"100,100"}
-/* Pickup beat for the tarot deck. Shared by classic FurnitureSearch
-   and rogue FurnitureSearch -- the carry-stage flip
+/* Pickup beat for the tarot deck. The carry-stage flip
    (setup.HauntedHouses.markTarotCarrying) feeds Bag's tarot link
-   and the TarotCards passage in both modes. The rogue branch also
-   stamps the loot as collected so a re-search finds nothing. */
+   and the TarotCards passage; takeLoot stamps the slot collected
+   so a re-search finds nothing. */
 @@.mc-thoughts; You come across a strange@@ <<linkappend "@@.usebtn; deck of cards.@@">><br>
 	<<image "mechanics/cursedpossessions/tarot-cards/tarot.png" "displayCentredImgs">>
 
@@ -108,17 +75,14 @@
 	<br>
 	@@.mc-action; You put the tarot cards in your bag@@<br>
 	<<run setup.HauntedHouses.markTarotCarrying()>>
-	<<if setup.Rogue.isRogue()>>
-		<<run setup.Rogue.takeLoot("tarotCards")>>
-	<</if>>
+	<<run setup.Rogue.takeLoot("tarotCards")>>
 <</linkappend>>
 <br><br>
 @@.backbtn; [[Back|$return]]@@
 
 :: PickupMonkeyPaw [nobr] {"position":"2050,200","size":"100,100"}
-/* Pickup beat for the monkey paw. Shared by classic and rogue
-   FurnitureSearch via the same setup.MonkeyPaw.markFound() flip,
-   so the Bag link + MonkeyPaw wish menu work in both modes. */
+/* Pickup beat for the monkey paw. The setup.MonkeyPaw.markFound()
+   flip feeds Bag's monkey-paw link + the MonkeyPaw wish menu. */
 @@.mc-thoughts; You come across a strange@@ <<linkappend "@@.usebtn; paw.@@">><br>
 	<<image "mechanics/cursedpossessions/monkey-paw/monkeypaw.jpg" "displayCentredImgs">>
 
@@ -130,9 +94,7 @@
 	<br>
 	@@.mc-action; You put monkey paw in your bag@@<br>
 	<<run setup.MonkeyPaw.markFound()>>
-	<<if setup.Rogue.isRogue()>>
-		<<run setup.Rogue.takeLoot("monkeyPaw")>>
-	<</if>>
+	<<run setup.Rogue.takeLoot("monkeyPaw")>>
 <</linkappend>>
 <br><br>
 @@.backbtn; [[Back|$return]]@@

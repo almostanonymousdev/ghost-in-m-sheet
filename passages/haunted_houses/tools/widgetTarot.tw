@@ -63,17 +63,7 @@
 
 <<widget "tarotDeath">>
 	@@.mc-speech; This can't be a good card. Oh no, I'm scared...I need to hide somewhere!@@<br>
-	@@.enterbtn; <<link "Hide">>
-		<<if setup.HuntController.shouldUseCursedHuntOption()>>
-			<<include "CursedHunt">>
-			<<script>>
-				setTimeout(() => {
-					Engine.play(State.variables.return);
-				}, 50);
-			<</script>>
-		<<else>>
-			<<goto "GhostHuntEvent">>
-		<</if>>
+	@@.enterbtn; <<link "Hide" "GhostHuntEvent">>
 	<</link>>@@
 <</widget>>
 

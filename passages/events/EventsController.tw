@@ -157,12 +157,13 @@ setup.Events = (function () {
 		},
 
 		/*
-		* Pick from an { owaissa, elm } pair based on location.
+		* Pick from an { owaissa, elm } pair based on the active
+		* rogue static-house id (rogue-owaissa / rogue-elm).
+		* Procedural runs default to owaissa art.
 		*/
 		pickByLocation: function (owaissaList, elmList) {
-			if (setup.HauntedHouses.isOwaissa()) return owaissaList || [];
-			if (setup.HauntedHouses.isElm())     return elmList || [];
-			return [];
+			if (setup.HauntedHouses.isElm()) return elmList || [];
+			return owaissaList || [];
 		},
 
 		/*

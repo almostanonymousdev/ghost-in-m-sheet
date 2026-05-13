@@ -6,16 +6,6 @@ This game is similar to titles like Phasmophobia and Demonologist. If you are fa
 @@.enterbtn;[[Player guide -> Evidence]]@@
 
 <<nobr>>
-<<linkreplace "CURSED HUNT OPTION (Replacing the cursed hunt with a regular hunt)">>
-<<linkreplace "Cursed Hunt - ON">>
-<<run setup.Gui.setCursedHuntOption(0)>>
-<b>The cursed hunt will be activated upon interacting with cursed possessions.</b><br>
-<</linkreplace>>
-<br><<linkreplace "Cursed Hunt - OFF">>
-<<run setup.Gui.setCursedHuntOption(1)>>
-<b>The cursed hunt will NOT be activated upon interacting with cursed possessions.</b><br>
-<</linkreplace>>
-<</linkreplace>><br>
 <<linkreplace "Sensitive body part">>
 <b>What's your extra sensitive spot?</b><br>
 <em>The chosen one will occur more frequently during the ghost hunt than the other body parts, bringing more lust.</em><br>

@@ -1,48 +1,13 @@
 :: widgetHauntedHouseRoom [widget nobr] {"position":"7000,100","size":"100,100"}
-/* roomShell -- container widget. Args:
-0: passage name (e.g. "ElmBedroom" or "IroncladHallway")
-1: bgRoom state-variable name (e.g. "bedroom", "BlockACellA")
-Sets shared _shell* temp vars consumed by the inner roomFooter widget,
-then renders the standard outer .room/.room-wrapper/.content/.action
-scaffolding and wikifies its contents (which should include an optional
-<<furnitureRow>> followed by a <<roomFooter>> block). */
-<<widget "roomShell" container>>
-	<<set _shellPassage to _args[0]>>
-	<<set _shellBgVar to _args[1]>>
-	<<set _shellPrefix to _args[0].charAt(0).toLowerCase() + _args[0].slice(1)>>
-	<div class="room">
-	<div class="room-wrapper">
-	<div class="content">
-	<div @id="_shellPrefix + 'Action'" class="action"></div>
-	</div>
-	<<= _contents>>
-	</div>
-	</div>
-<</widget>>
-
-/* furnitureRow -- container widget. Wraps its contents in
-<div class="furnitureSearch">, which matches the sizing rules in
-StoryStylesheet. Use it inside <<roomShell>> for the small set of
-<<furnitureItem>>/<<hideSpot>> calls each room exposes. Omit it
-entirely for rooms with no furniture. */
-<<widget "furnitureRow" container>>
-	<div class="furnitureSearch"><<= _contents>></div>
-<</widget>>
-
 /* huntConditions -- single-row HUD above the tool bar. Renders the live
 per-step deltas, contributor chips, and the spendable-action buttons
-(bait the ghost, toggle overcharged tools) on ONE row. Originally the
-buttons were on a second row, but adding a row to the height-capped
-.footer column stole vertical space from the tool bar and shrank icons.
-Numbers come from setup.HauntConditions.snapshot() so the HUD, the
-tool-card hovertip, and the actual tool/hunt rolls all read the same
-source. Renders contents only -- the .hunt-conditions wrapper lives on
-roomFooter (classic) and on the RogueRun layout (rogue) so re-renders
-via <<replace ".hunt-conditions">> don't double-nest the wrapper class
-(which compounds its 80% font-size). Used by both classic haunted-
-house rooms and rogue runs; the snapshot already gates contributors
-that don't apply outside a classic house (e.g. darkness keys off
-setup.hauntedPassages, which doesn't list RogueRun). */
+(bait the ghost, toggle overcharged tools) on ONE row. Numbers come
+from setup.HauntConditions.snapshot() so the HUD, the tool-card
+hovertip, and the actual tool/hunt rolls all read the same source.
+Renders contents only -- the .hunt-conditions wrapper lives on the
+RogueRun layout so re-renders via <<replace ".hunt-conditions">>
+don't double-nest the wrapper class (which compounds its 80%
+font-size). */
 <<widget "huntConditions">>
 	<<set _hc to setup.HauntConditions.snapshot()>>
 	<<set _sanityVal to Math.round(_hc.sanityPerStep * 100) / 100>>
@@ -77,8 +42,8 @@ the end of <<huntConditions>>: bait the ghost (lust spend) and toggle
 overcharged tools on/off. Each click re-renders <<huntConditions>> as a
 whole (which contains the action bar), so we only need the one
 <<replace ".hunt-conditions">> per callback. Renders whenever the
-shared hunt is active (classic in-house OR rogue on RogueRun); the
-canBait predicate self-gates against rogue runs that have no $hunt. */
+shared hunt is active on RogueRun; the canBait predicate self-gates
+against rogue runs that have no $hunt. */
 <<widget "huntActionBar">>
 	<<if setup.HuntController.isHuntActive()>>
 		<<if setup.HauntConditions.canBait()>>
@@ -110,183 +75,6 @@ canBait predicate self-gates against rogue runs that have no $hunt. */
 			<</link>>@@
 		<</if>>
 	<</if>>
-<</widget>>
-
-/* roomFooter -- container widget. Reads the _shell* temp vars set by the
-enclosing <<roomShell>> and emits the full .footer block: a .hunt-conditions
-HUD row on top, and below it a .footer-row with a .footertools div that
-holds <<roomToolBar>> + the light widget, plus a .footeraction div whose
-body comes from _contents (the per-room links). */
-<<widget "roomFooter" container>>
-	<div class="footer">
-	<div class="hunt-conditions"><<huntConditions>></div>
-	<div class="footer-row">
-	<div class="footertools">
-	<<roomToolBar _shellPrefix>>
-	<<roomFooterLight _shellPassage _shellBgVar>>
-	</div>
-	<div class="footeraction">
-	<<= _contents>>
-	<<if setup.MonkeyPaw.canScreamHere()>>
-		<br>
-		<<if setup.MonkeyPaw.hasCursedItem()>>
-			@@.adaptiveLink;<<link "Press a cursed offering into the floor" "SealedRoomSacrifice">>
-			<</link>>@@
-		<<elseif setup.Companion.active()>>
-			@@.adaptiveLink;<<link "Scream for help" "SealedRoomCompanionFetch">>
-			<</link>>@@
-		<<else>>
-			@@.adaptiveLink;<<link "Scream" "SealedRoomScream">>
-			<</link>>@@
-			<br>
-			@@.adaptiveLink;<<link "Undress and submit" "SealedRoomSubmit">>
-			<</link>>@@
-		<</if>>
-	<</if>>
-	</div>
-	</div>
-	</div>
-<</widget>>
-
-/* navLink -- args: label, target passage. Always increments
-$stepCount, since every navigation link in the haunted houses does,
-and runs the shared per-tick chain via <<huntTickStep>>
-(steal-clothes / random-hunt branching is now gated inside the
-chain, so ironclad and the clothes-hunt houses share one widget).
-
-When the Monkey Paw's tier-3 trapTheGhost wish has sealed the player
-in their current room (setup.MonkeyPaw.canScreamHere()), the link
-renders as inert disabled text -- the MC is physically confined and
-the only ways out are the scream link or a cursed-item sacrifice. */
-<<widget "navLink">>
-	<<if setup.MonkeyPaw.canScreamHere()>>
-		<span class="disabled-link">@@.adaptiveLink; <<= _args[0]>>@@</span>
-	<<else>>
-		@@.adaptiveLink;<<link _args[0] _args[1]>>
-			<<huntTickStep>>
-			<<run setup.Tick.incrementStepCount()>>
-		<</link>>@@
-	<</if>>
-<</widget>>
-
-/* navExits -- arg-less. Reads the active house's exits map for the
-current passage and emits one <<navLink>> per entry. Lets room
-passages express their connectivity in HOUSE_CONFIG.exits instead
-of hardcoding a column of <<navLink>> calls; rogue-mode floor
-plans wire a fresh exits map per run. Returns nothing when the
-active house has no exits map (enigma) or the current passage
-isn't in it. */
-<<widget "navExits">>
-	<<set _exits to setup.HauntedHouses.exitsFor(passage())>>
-	<<for _e range _exits>>
-		<<capture _e>>
-			<<navLink _e.label _e.target>>
-		<</capture>>
-	<</for>>
-<</widget>>
-
-/* leaveLink -- args: label, target passage. Wraps a plain @@.adaptiveLink;
-<<link>> in the .cursedHuntLinkDisable span used by the elm and owaissa
-hallways' "leave / Outside" exits. No event chain or step increment.
-When the Monkey Paw's trapTheGhost wish has sealed the front door,
-the link routes to FrontDoorLocked instead of the street so the
-player can see the unlock options (sacrifice, wait, scream). */
-<<widget "leaveLink">>
-	<span class="cursedHuntLinkDisable">@@.adaptiveLink;<<link _args[0] `setup.MonkeyPaw.isFrontDoorLocked() ? "FrontDoorLocked" : _args[1]`>>
-	<</link>>@@</span>
-<</widget>>
-
-/* roomToolCard -- args: tool key (e.g. "emf"), room prefix (e.g. "ElmBedroom").
-Renders one tool slot using metadata from setup.searchToolDefs and
-setup.searchPrefixIndex, with the searchTool macro inlined directly. Wraps
-the slot in <<hovertip>> so hovering surfaces the tool's current tier and
-per-check/window success summary from setup.toolSuccessRate. */
-<<widget "roomToolCard">>
-	<<hovertip setup.toolSuccessRate(_args[0])>>
-		<div class="footer-card">
-		<div class="cardimg">
-		<<image "ui/img/" + setup.searchToolDefs[_args[0]].iconFile { class: "icon", id: _args[1] + setup.searchToolDefs[_args[0]].picSuffix }>>
-		</div>
-		<div class="cardlink">
-		<<searchTool _args[0] _args[1]>>
-		</div>
-		</div>
-	<</hovertip>>
-<</widget>>
-
-/* roomToolBar -- arg: room prefix. Emits the canonical six tool slots in
-the order setup.searchToolOrder, plus the companion card. Replaces the
-six per-tool <<toolCard>> calls (and the per-room <<script>>) that every
-   haunted-house room used to repeat. */
-<<widget "roomToolBar">>
-	<<for _t range setup.searchToolOrder>>
-		<<roomToolCard _t _args[0]>>
-	<</for>>
-	<<companionCard>>
-<</widget>>
-
-/* roomFooterLight -- args: passage name (link target), bgRoom state-variable
-   name (e.g. "bedroom" or "BlockACellA"). The cursedHuntLinkDisable wrapper
-   prevents the lights from being toggled while a hunt is active, and the
-   conditional heart link launches the seduction minigame. Used by elm,
-   owaissa, and ironclad rooms. */
-<<widget "roomFooterLight">>
-	<div class="footer-card footer-light">
-	<span class="cursedHuntLinkDisable"><<link "<<image \"ui/img/lighton.png\">>" _args[0]>><<run setup.Rooms.setBackground(_args[1], setup.RoomLight.LIT)>>
-	<</link>>
-	<<link "<<image \"ui/img/lightoff.png\">>" _args[0]>><<run setup.Rooms.setBackground(_args[1], setup.RoomLight.DARK)>>
-	<</link>>
-	<<if setup.Mc.lust() gte 80 and setup.Witch.hasWeakenTheGhostQuest() and not setup.Witch.isGhostWeakened()>>
-		<<link "<<image \"ui/img/hearth.png\">>" "SeduceGhostMinigame">>
-		<<run setup.SeduceGhostMinigame.init()>><</link>>
-	<</if>></span>
-	</div>
-<</widget>>
-
-/* hideSpot -- args: passage name (link target), furniture image filename
-   under scenes/furniture/, furniture span id (e.g. "bedroom_bed1").
-   Renders one furniture item that doubles as a hide spot during cursed
-   hunts: when $cursedHuntActive is 1 the image highlights and clicking it
-   replaces the room with the hide-spot scene; otherwise it behaves as a
-   normal furniture span that opens furnitureSearch. */
-<<widget "hideSpot">>
-	<<set _imgPath to 'scenes/furniture/' + _args[1]>>
-	<<set _hideTarget to _args[0]>>
-	<<set _hideId to _args[2]>>
-	<<if setup.HauntedHouses.isCursedHuntActive()>>
-		<<capture _hideTarget>>
-			<span><<link `'<<image "' + _imgPath + '" "highlighted-furniture">>'` _hideTarget>>
-				<<replace ".room-wrapper">><<run setup.HauntedHouses.setInHideSpot(true)>><<image "mechanics/hunting/hid1.jpg" { class: "fadeInScale", width: "80%" }>><br>
-					<<done>>
-					<<run $(".fadeInScale").addClass("tarotCardsShow")>><</done>>
-					@@.mc-thoughts;You press yourself against the cold floor, feeling your heart racing in your chest. The screams and rustling outside make you hold your breath. The ghost, filled with rage, prowls the room, and each of its steps echoes dully in your ears.<br>
-
-					All you can do now is wait and hope it doesn't find you.@@
-					<br><br>
-					@@.backbtn;<<link "Leave" _hideTarget>><<run setup.HauntedHouses.setInHideSpot(false)>>
-					<</link>>@@<br>
-				<</replace>>
-			<</link>>
-			</span>
-		<</capture>>
-	<<else>>
-		<<capture _hideId>>
-			<span @id="_hideId"><<link `'<<image "' + _imgPath + '">>'` "FurnitureSearch">><<run setup.HauntedHouses.setCurrentFurniture(_hideId)>><<includeTimeEventClothesHunt>>
-			<</link>></span>
-		<</capture>>
-	<</if>>
-<</widget>>
-
-/* furnitureItem -- args: furniture image filename under scenes/furniture/,
-   furniture span id (e.g. "bedroom_table"). The image span that opens
-   furnitureSearch on click. */
-<<widget "furnitureItem">>
-	<<set _imgPath to 'scenes/furniture/' + _args[0]>>
-	<<set _furnId to _args[1]>>
-	<<capture _furnId>>
-		<span @id="_furnId"><<link `'<<image "' + _imgPath + '">>'` "FurnitureSearch">><<run setup.HauntedHouses.setCurrentFurniture(_furnId)>><<includeTimeEventClothesHunt>>
-		<</link>></span>
-	<</capture>>
 <</widget>>
 
 /* randRangeImg -- args: pathPrefix, start, end, ext, cssClass?
@@ -324,27 +112,4 @@ six per-tool <<toolCard>> calls (and the per-room <<script>>) that every
 	<<set _ctColor to _args[0] || "inherit">>
 	<<set _ctBody to _args[1]>>
 	<span @style="'color: ' + _ctColor + '; font-weight: bold; -webkit-text-stroke: 1px black;'" class="boldText">_ctBody</span>
-<</widget>>
-
-<<widget "companionCard">>
-	<<if setup.Companion.showComp() eq setup.CompanionShow.VISIBLE>>
-		<div class="footer-card">
-		<div class="cardimg">
-		<<companionLinks>>
-		</div>
-		</div>
-	<<elseif setup.Companion.showComp() eq setup.CompanionShow.ATTACK_FAILED>>
-		<div class="footer-card">
-		<div class="cardimg">
-		<a data-passage="CompanionFailed">
-		<<image "ui/img/question-mark.png" "companion-image">> </a>
-		</div>
-		</div>
-	<<elseif setup.Companion.showComp() eq setup.CompanionShow.ATTACK_SAFE>>
-		<div class="footer-card">
-		<div class="cardimg">
-		<<companionLinksSuccess>>
-		</div>
-		</div>
-	<</if>>
 <</widget>>

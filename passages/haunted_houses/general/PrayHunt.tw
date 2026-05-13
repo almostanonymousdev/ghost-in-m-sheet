@@ -10,9 +10,9 @@
 <<if setup.Mc.sanity() lt 0>>
 	<<run setup.Mc.setSanity(0)>>
 	<<updatemeter 'sanity' `setup.Mc.sanityPct()`>>
-	<<goto "HuntOverSanity">>
+	<<goto setup.HuntController.huntOverPassage("sanity")>>
 <<elseif setup.Mc.isExhausted()>>
-	<<goto "HuntOverExhaustion">>
+	<<goto setup.HuntController.huntOverPassage("exhaustion")>>
 <</if>>
 <<image "ui/img/crucifix.webp" { class: "displayCentredImgs", width: "60%" }>>
 <br>

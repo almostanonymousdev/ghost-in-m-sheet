@@ -1,17 +1,14 @@
 const { test, expect } = require('@playwright/test');
 const { openGame, resetGame, callSetup, getVar, setVar } = require('./helpers');
 
-/* The tarot deck and the monkey paw share a single carry-state +
-   wish/draw mechanism between classic (witch contract) and rogue
-   (procedural run) modes. Both pickup paths land on the same
-   $tarotCardsStage / $MonkeyPawStage flags, both runtime mechanics
-   call into setup.HuntController for any branching that depends on
-   what kind of hunt is in flight, and rogue-lifecycle resets fold
-   in the same setup.HauntedHouses.resetCursedItemState helper that
-   classic uses at GhostRandomize. These tests pin the contract so
-   future callers don't reintroduce mode-aware forks at the call
-   site. */
-test.describe('Cursed-item cross-mode facade', () => {
+/* The tarot deck and the monkey paw share a carry-state + wish/draw
+   mechanism inside a rogue run. Both pickup paths land on the same
+   $tarotCardsStage / $MonkeyPawStage flags, and the rogue lifecycle
+   folds in setup.HauntedHouses.resetCursedItemState at start/end so
+   leftovers from a prior run never bleed into the next one. These
+   tests pin the contract so future callers don't reintroduce ad-hoc
+   forks at the call site. */
+test.describe('Cursed-item rogue facade', () => {
   let page;
 
   test.beforeAll(async ({ browser }) => {
@@ -28,7 +25,7 @@ test.describe('Cursed-item cross-mode facade', () => {
 
   // --- HuntController.snapGhostToCurrentRoom ---
 
-  test('snapGhostToCurrentRoom in rogue pins floorplan.spawnRoomId to currentRoomId', async () => {
+  test('snapGhostToCurrentRoom pins floorplan.spawnRoomId to currentRoomId', async () => {
     await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
     const fp = await getVar(page, 'run').then(r => r.floorplan);
     const nonHallway = fp.rooms.find(r => r.template !== 'hallway');
@@ -43,52 +40,23 @@ test.describe('Cursed-item cross-mode facade', () => {
     expect(newSpawn).toBe(nonHallway.id);
   });
 
-  test('snapGhostToCurrentRoom in classic pins $hunt.room.name from the current passage', async () => {
-    await page.evaluate(() => {
-      SugarCube.setup.Ghosts.startHunt('Shade');
-      SugarCube.State.variables.hunt.room = { name: 'kitchen' };
-    });
-    // Walk the player into a known haunted-house passage so the
-    // hauntedPassages lookup has a hit.
-    await page.evaluate(() => SugarCube.Engine.play('OwaissaBedroom'));
-    await page.waitForFunction(() => SugarCube.State.passage === 'OwaissaBedroom');
-    await page.evaluate(() => SugarCube.setup.HuntController.snapGhostToCurrentRoom());
-
-    expect(await getVar(page, 'hunt.room.name')).toBe('bedroom');
-  });
-
   test('snapGhostToCurrentRoom outside any hunt is a no-op', async () => {
     expect(await callSetup(page, 'setup.HuntController.snapGhostToCurrentRoom()')).toBe(false);
   });
 
   // --- HuntController.trapGhost / isGhostTrapped ---
 
-  test('trapGhost in classic locks the front door + flags hunt.trapped', async () => {
-    await page.evaluate(() => {
-      SugarCube.setup.Ghosts.startHunt('Shade');
-      SugarCube.State.variables.hunt.room = { name: 'kitchen' };
-    });
-    await page.evaluate(() => SugarCube.setup.HuntController.trapGhost('cursedItem'));
-
-    expect(await getVar(page, 'hunt.trapped')).toBe(true);
-    expect(await callSetup(page, 'setup.MonkeyPaw.isFrontDoorLocked()')).toBe(true);
-    expect(await callSetup(page, 'setup.MonkeyPaw.doorUnlockBy()')).toBe('cursedItem');
-    expect(await callSetup(page, 'setup.HuntController.isGhostTrapped()')).toBe(true);
-  });
-
-  test('trapGhost in rogue stamps run.trapped + run.exitLock and skips the classic door state', async () => {
+  test('trapGhost stamps run.trapped + run.exitLock', async () => {
     await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
     await page.evaluate(() => SugarCube.setup.HuntController.trapGhost('dawn'));
 
     const run = await getVar(page, 'run');
     expect(run.trapped).toBe(true);
     expect(run.exitLock).toEqual({ unlockBy: 'dawn' });
-    // Classic door-lock state is never touched in rogue.
-    expect(await callSetup(page, 'setup.MonkeyPaw.isFrontDoorLocked()')).toBe(false);
     expect(await callSetup(page, 'setup.HuntController.isGhostTrapped()')).toBe(true);
   });
 
-  test('rogue driftGhostRoom respects run.trapped and stops the shuffle', async () => {
+  test('driftGhostRoom respects run.trapped and stops the shuffle', async () => {
     await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 42 }));
     const before = await page.evaluate(
       () => SugarCube.State.variables.run.floorplan.spawnRoomId
@@ -105,20 +73,7 @@ test.describe('Cursed-item cross-mode facade', () => {
 
   // --- HuntController.streetExitPassage ---
 
-  test('streetExitPassage returns the active house street in classic', async () => {
-    await page.evaluate(() => {
-      SugarCube.setup.Ghosts.startHunt('Shade');
-      SugarCube.setup.HauntedHouses.activate('owaissa');
-    });
-    expect(await callSetup(page, 'setup.HuntController.streetExitPassage()'))
-      .toBe('Owaissa Street');
-
-    await page.evaluate(() => SugarCube.setup.HauntedHouses.activate('elm'));
-    expect(await callSetup(page, 'setup.HuntController.streetExitPassage()'))
-      .toBe('Elm Street');
-  });
-
-  test('streetExitPassage stamps abandon failure + RogueEnd in rogue', async () => {
+  test('streetExitPassage stamps abandon failure + RogueEnd', async () => {
     await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
     expect(await callSetup(page, 'setup.HuntController.streetExitPassage()'))
       .toBe('RogueEnd');
@@ -128,19 +83,7 @@ test.describe('Cursed-item cross-mode facade', () => {
 
   // --- HuntController.possessionPassage ---
 
-  test('possessionPassage flips $hunt.mode to POSSESSED in classic and routes to CityMapPossessed', async () => {
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
-    const target = await callSetup(page, 'setup.HuntController.possessionPassage()');
-    expect(target).toBe('CityMapPossessed');
-    expect(await callSetup(page, 'setup.Ghosts.huntMode()'))
-      .toBe(await callSetup(page, 'setup.Ghosts.HuntMode.POSSESSED'));
-  });
-
-  test('possessionPassage routes rogue to CityMapPossessed (parity with classic) after stamping a possessed failure', async () => {
-    /* Both modes route to CityMapPossessed so the player gets the
-       same mid-day wake-up UX. The rogue side still stamps a
-       POSSESSED failure on $run before endRogue tears the run down,
-       so the meta-state remembers the loss. */
+  test('possessionPassage routes to CityMapPossessed and stamps a possessed failure', async () => {
     await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
     expect(await callSetup(page, 'setup.HuntController.possessionPassage()'))
       .toBe('CityMapPossessed');
@@ -151,24 +94,7 @@ test.describe('Cursed-item cross-mode facade', () => {
 
   // --- HuntController.consumeKnowledgeEvidence ---
 
-  test('consumeKnowledgeEvidence in classic stamps a missing evidence on $chosenEvidence', async () => {
-    /* Classic path mirrors the existing setup.Ghosts.consumeKnowledgeEvidence
-       behavior: pick something the ghost doesn't have and that the witch
-       hasn't already hidden. We pin the random pick to index 0 of the
-       missing list. */
-    await page.evaluate(() => {
-      SugarCube.setup.Ghosts.startHunt('Shade');
-      // Shade's evidence is [emf, gwb, temperature].
-      Math.random = () => 0;
-    });
-    await page.evaluate(() => SugarCube.setup.HuntController.consumeKnowledgeEvidence());
-
-    expect(await getVar(page, 'knowledgeUsed')).toBe(1);
-    const chosen = await getVar(page, 'chosenEvidence');
-    expect(['spiritbox', 'uvl', 'glass']).toContain(chosen);
-  });
-
-  test('consumeKnowledgeEvidence in rogue picks an evidence the rogue ghost lacks', async () => {
+  test('consumeKnowledgeEvidence picks an evidence the rogue ghost lacks', async () => {
     await page.evaluate(() => {
       SugarCube.setup.Rogue.startRogue({ seed: 1 });
       // Pin the rogue ghost to Shade so the missing-evidence pool is known
@@ -200,58 +126,25 @@ test.describe('Cursed-item cross-mode facade', () => {
 
   // --- HuntController.banActiveContext ---
 
-  test('banActiveContext bans the classic house but is a no-op in rogue', async () => {
-    await page.evaluate(() => {
-      SugarCube.setup.Ghosts.startHunt('Shade');
-      SugarCube.setup.HauntedHouses.activate('owaissa');
-    });
-    const banned = await page.evaluate(
-      () => SugarCube.setup.HuntController.banActiveContext()
-    );
-    expect(banned).toBe('owaissa');
-    expect(await callSetup(page, 'setup.MonkeyPaw.isHouseBanned("owaissa")')).toBe(true);
-
-    await page.evaluate(() => SugarCube.setup.Ghosts.endContract());
+  test('banActiveContext is a no-op in rogue (runs are one-shot)', async () => {
     await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
     expect(await callSetup(page, 'setup.HuntController.banActiveContext()')).toBeNull();
   });
 
-  // --- HuntController.shouldUseCursedHuntOption ---
+  // --- HuntController.isInsideHuntPassage (Bag gate) ---
 
-  test('shouldUseCursedHuntOption mirrors the player toggle in classic and is false in rogue', async () => {
-    /* setup.Gui.isCursedHuntOptionOn() returns true when
-       $cursedHuntOption is 0 or undefined (the default), false when
-       the player has flipped the toggle off (1). Classic mirrors
-       that state; rogue always returns false because cursed-hunt
-       sub-flow only applies to witch-contract hunts. */
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
-    await setVar(page, 'cursedHuntOption', 0);
-    expect(await callSetup(page, 'setup.HuntController.shouldUseCursedHuntOption()')).toBe(true);
-    await setVar(page, 'cursedHuntOption', 1);
-    expect(await callSetup(page, 'setup.HuntController.shouldUseCursedHuntOption()')).toBe(false);
-
-    // Same toggle, rogue mode -> the cursed-hunt sub-flow is disabled.
-    await page.evaluate(() => SugarCube.setup.Ghosts.endContract());
+  test('isInsideHuntPassage accepts RogueRun and rejects the city/lobby', async () => {
+    /* Bag opens with previous(1) = whichever passage launched it.
+       Force passage history to each candidate and assert the gate. */
     await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
     await page.evaluate(() => SugarCube.Engine.play('RogueRun'));
     await page.waitForFunction(() => SugarCube.State.passage === 'RogueRun');
-    await setVar(page, 'cursedHuntOption', 0);
-    expect(await callSetup(page, 'setup.HuntController.shouldUseCursedHuntOption()')).toBe(false);
-  });
-
-  // --- HuntController.isInsideHuntPassage (Bag gate) ---
-
-  test('isInsideHuntPassage accepts haunted-house rooms and RogueRun, rejects streets', async () => {
-    /* Bag opens with previous(1) = whichever passage launched it.
-       Force passage history to each candidate and assert the gate. */
-    await page.evaluate(() => SugarCube.Engine.play('OwaissaBedroom'));
-    await page.waitForFunction(() => SugarCube.State.passage === 'OwaissaBedroom');
     await page.evaluate(() => SugarCube.Engine.play('Bag'));
     await page.waitForFunction(() => SugarCube.State.passage === 'Bag');
     expect(await callSetup(page, 'setup.HuntController.isInsideHuntPassage()')).toBe(true);
 
-    await page.evaluate(() => SugarCube.Engine.play('Owaissa Street'));
-    await page.waitForFunction(() => SugarCube.State.passage === 'Owaissa Street');
+    await page.evaluate(() => SugarCube.Engine.play('CityMap'));
+    await page.waitForFunction(() => SugarCube.State.passage === 'CityMap');
     await page.evaluate(() => SugarCube.Engine.play('Bag'));
     await page.waitForFunction(() => SugarCube.State.passage === 'Bag');
     expect(await callSetup(page, 'setup.HuntController.isInsideHuntPassage()')).toBe(false);
@@ -282,7 +175,7 @@ test.describe('Cursed-item cross-mode facade', () => {
     expect(await getVar(page, 'chosenEvidence')).toBeUndefined();
   });
 
-  test('endRogue resets shared state so a follow-up classic hunt starts clean', async () => {
+  test('endRogue resets shared state so the next run starts clean', async () => {
     await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
     // Simulate the player picking up the deck + paw mid-run and using a wish.
     await page.evaluate(() => {
@@ -294,17 +187,17 @@ test.describe('Cursed-item cross-mode facade', () => {
 
     await page.evaluate(() => SugarCube.setup.Rogue.endRogue(true));
 
-    // Carry state is back to fresh defaults so a classic hunt sees a
-    // clean deck/paw rather than inheriting the rogue run's leftovers.
+    // Carry state is back to fresh defaults so the next rogue run sees a
+    // clean deck/paw rather than inheriting the prior run's leftovers.
     expect(await callSetup(page, 'setup.HauntedHouses.tarotCardsStage()'))
       .toBe(await callSetup(page, 'setup.TarotStage.HIDDEN'));
     expect(await callSetup(page, 'setup.MonkeyPaw.isDiscoverable()')).toBe(true);
     expect(await callSetup(page, 'setup.MonkeyPaw.wishesLeft()')).toBe(3);
   });
 
-  // --- MonkeyPaw wish results route through HuntController in rogue ---
+  // --- MonkeyPaw wish results route through HuntController ---
 
-  test('dawn wish in rogue routes the goto through huntOverPassage("time") -> RogueEnd', async () => {
+  test('dawn wish routes the goto through huntOverPassage("time") -> RogueEnd', async () => {
     await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
     const out = await page.evaluate(
       () => SugarCube.setup.MonkeyPaw.activate('dawn')
@@ -313,7 +206,7 @@ test.describe('Cursed-item cross-mode facade', () => {
     expect(await callSetup(page, 'setup.Rogue.field("failureReason")')).toBe('time');
   });
 
-  test('leave wish in rogue routes the goto through streetExitPassage -> RogueEnd', async () => {
+  test('leave wish routes the goto through streetExitPassage -> RogueEnd', async () => {
     await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
     const out = await page.evaluate(
       () => SugarCube.setup.MonkeyPaw.activate('leave')
@@ -322,7 +215,7 @@ test.describe('Cursed-item cross-mode facade', () => {
     expect(await callSetup(page, 'setup.Rogue.field("failureReason")')).toBe('abandon');
   });
 
-  test('trapTheGhost wish in rogue marks run.trapped + run.exitLock', async () => {
+  test('trapTheGhost wish marks run.trapped + run.exitLock', async () => {
     await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
     await page.evaluate(() => SugarCube.setup.MonkeyPaw.activate('trapTheGhost'));
 
@@ -331,7 +224,7 @@ test.describe('Cursed-item cross-mode facade', () => {
     expect(run.exitLock).toEqual({ unlockBy: 'cursedItem' });
   });
 
-  test('knowledge wish in rogue stamps $chosenEvidence and burns one wish', async () => {
+  test('knowledge wish stamps $chosenEvidence and burns one wish', async () => {
     await page.evaluate(() => {
       SugarCube.setup.Rogue.startRogue({ seed: 1 });
       SugarCube.setup.Rogue.setField('ghostName', 'Shade');
@@ -348,26 +241,13 @@ test.describe('Cursed-item cross-mode facade', () => {
 
   // --- Tarot draw widgets pull state through HuntController ---
 
-  test('tarot Possession card target routes via HuntController.possessionPassage in both modes', async () => {
-    /* The widget renders <<link "Give in" `possessionPassage()`>>; the
-       passage target is CityMapPossessed in both modes so the player
-       gets the same mid-day wake-up UX. */
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
-    expect(await callSetup(page, 'setup.HuntController.possessionPassage()'))
-      .toBe('CityMapPossessed');
-
-    await page.evaluate(() => SugarCube.setup.Ghosts.endContract());
+  test('tarot Possession card target routes via HuntController.possessionPassage', async () => {
     await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
     expect(await callSetup(page, 'setup.HuntController.possessionPassage()'))
       .toBe('CityMapPossessed');
   });
 
   test('tarot Oblivion card target routes via HuntController.huntOverPassage("sanity")', async () => {
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
-    expect(await callSetup(page, 'setup.HuntController.huntOverPassage("sanity")'))
-      .toBe('HuntOverSanity');
-
-    await page.evaluate(() => SugarCube.setup.Ghosts.endContract());
     await page.evaluate(() => SugarCube.setup.Rogue.startRogue({ seed: 1 }));
     expect(await callSetup(page, 'setup.HuntController.huntOverPassage("sanity")'))
       .toBe('RogueEnd');

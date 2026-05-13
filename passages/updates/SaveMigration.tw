@@ -27,7 +27,9 @@
 	//   v3: rogue-mode subsystem -- $run / $ectoplasm / $runsStarted
 	//       defaults seeded for legacy saves; $houseSlots collapses
 	//       the per-house slot forest.
-	var SAVE_VERSION = 3;
+	//   v4: classic mode removed; rogue is the only hunt mode. Legacy
+	//       $hauntedHouse / $houseSlots / $isClassicHouse flags are dropped.
+	var SAVE_VERSION = 4;
 	setup.SAVE_VERSION = SAVE_VERSION;
 
 	/*
@@ -79,7 +81,6 @@
 		webcam:        function () { return {}; },
 		summoning:     function () { return {}; },
 		alarm:         function () { return { enabled: false, hour: 7 }; },
-		hauntedHouse:  function () { return null; },
 
 		// Rogue-mode state: pre-rogue saves don't have these
 		// fields. $run is null when no rogue run is active
@@ -410,77 +411,29 @@
 			delete vars[oldKey];
 		});
 
-		// Active-house id: collapse the legacy $is<House> flags onto a
-		// single $hauntedHouse string ('owaissa' | 'elm' | 'ironclad' |
-		// null). Migrate by finding whichever flag was raised; default
-		// to null when none was set. The retired Enigma flag and its
-		// derived $isrealhouse bit are dropped silently — a save mid-
-		// Enigma reverts to no active house.
-		if (vars.hauntedHouse === undefined) {
-			vars.hauntedHouse =
-				vars.isOwaissa  === 1 ? 'owaissa'  :
-				vars.isElm      === 1 ? 'elm'      :
-				vars.isIronclad === 1 ? 'ironclad' :
-				null;
-		}
+		// Classic-house flags + per-house slot maps were removed
+		// when the only hunt mode became rogue. Drop whatever legacy
+		// fields the save is carrying so they don't bloat downstream
+		// state walks.
+		delete vars.hauntedHouse;
 		delete vars.isOwaissa;
 		delete vars.isElm;
 		delete vars.isEnigma;
 		delete vars.isIronclad;
 		delete vars.isrealhouse;
-
-		// Per-house slot maps: the old shape stored a forest of
-		// $furnitureList<House>, $tempList<House>, and
-		// $placeFor<Kind><House> keys (House = "Owaissa" | "Elm",
-		// Kind = "CursedItem" | "RescueClue" | "TarotCards" |
-		// "MonkeyPaw" | "Curse" | "ClothesStolen"). The new shape
-		// is one bucket per house id on $houseSlots, with
-		// `available` (unallocated furniture slot ids, formerly
-		// $tempList<House>) and `placeFor.<kind>` (camelCase). Fold
-		// forward whatever the save has, then drop the flats.
-		if (!vars.houseSlots || typeof vars.houseSlots !== 'object') {
-			vars.houseSlots = {};
-		}
-		[
-			{ id: 'owaissa', suffix: 'Owaissa' },
-			{ id: 'elm',     suffix: 'Elm'     }
-		].forEach(function (h) {
-			var bucket = vars.houseSlots[h.id];
-			var temp   = vars['tempList' + h.suffix];
-			var hasLegacy = Array.isArray(temp);
-			var KINDS = ['CursedItem', 'RescueClue', 'TarotCards', 'MonkeyPaw', 'Curse', 'ClothesStolen'];
-			KINDS.forEach(function (kind) {
-				if (vars['placeFor' + kind + h.suffix] !== undefined) hasLegacy = true;
-			});
-			if (!bucket && hasLegacy) {
-				bucket = { available: hasLegacy && Array.isArray(temp) ? temp.slice() : [], placeFor: {} };
-				vars.houseSlots[h.id] = bucket;
-			}
-			if (bucket) {
-				if (!Array.isArray(bucket.available) && Array.isArray(temp)) {
-					bucket.available = temp.slice();
-				}
-				if (!bucket.placeFor || typeof bucket.placeFor !== 'object') {
-					bucket.placeFor = {};
-				}
-				[
-					{ src: 'CursedItem',    dst: 'cursedItem'    },
-					{ src: 'RescueClue',    dst: 'rescueClue'    },
-					{ src: 'TarotCards',    dst: 'tarotCards'    },
-					{ src: 'MonkeyPaw',     dst: 'monkeyPaw'     },
-					{ src: 'Curse',         dst: 'curse'         },
-					{ src: 'ClothesStolen', dst: 'clothesStolen' }
-				].forEach(function (m) {
-					var oldKey = 'placeFor' + m.src + h.suffix;
-					if (vars[oldKey] !== undefined && bucket.placeFor[m.dst] === undefined) {
-						bucket.placeFor[m.dst] = vars[oldKey];
-					}
-				});
-			}
-			delete vars['furnitureList' + h.suffix];
-			delete vars['tempList' + h.suffix];
-			KINDS.forEach(function (kind) {
-				delete vars['placeFor' + kind + h.suffix];
+		delete vars.houseSlots;
+		delete vars.cursedHuntActive;
+		delete vars.cursedHuntEndTime;
+		delete vars.currentFurniture;
+		delete vars.isInHideSpot;
+		delete vars.moneyFromContract;
+		delete vars.expFromContract;
+		delete vars.monkeyPawDoorLock;
+		['Owaissa', 'Elm', 'Ironclad'].forEach(function (suffix) {
+			delete vars['furnitureList' + suffix];
+			delete vars['tempList' + suffix];
+			['CursedItem', 'RescueClue', 'TarotCards', 'MonkeyPaw', 'Curse', 'ClothesStolen'].forEach(function (kind) {
+				delete vars['placeFor' + kind + suffix];
 			});
 		});
 

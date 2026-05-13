@@ -38,10 +38,15 @@ test.describe('Events controller — tier classification', () => {
 
 test.describe('Events controller — video resolvers', () => {
   async function setLocation(p, location) {
-    await setVar(p, 'hauntedHouse', location || null);
+    await p.evaluate((loc) => {
+      if (SugarCube.setup.Rogue.active()) SugarCube.setup.Rogue.end();
+      if (loc) {
+        SugarCube.setup.Rogue.startRogue({ seed: 1, staticHouseId: `rogue-${loc}` });
+      }
+    }, location || null);
   }
 
-  test('pickByLocation switches by $hauntedHouse', async ({ game: page }) => {
+  test('pickByLocation switches by active rogue house', async ({ game: page }) => {
     await setLocation(page, 'owaissa');
     let result = await page.evaluate(() =>
       SugarCube.setup.Events.pickByLocation(['o1'], ['e1']));
@@ -50,10 +55,12 @@ test.describe('Events controller — video resolvers', () => {
     result = await page.evaluate(() =>
       SugarCube.setup.Events.pickByLocation(['o1'], ['e1']));
     expect(result).toEqual(['e1']);
+    /* Ironclad uses its own prison resolver path; pickByLocation itself
+     * just picks owaissa-vs-elm and defaults to owaissa otherwise. */
     await setLocation(page, 'ironclad');
     result = await page.evaluate(() =>
       SugarCube.setup.Events.pickByLocation(['o1'], ['e1']));
-    expect(result).toEqual([]);
+    expect(result).toEqual(['o1']);
   });
 
   test('videoListForEvent("brain") returns the flat mind list', async ({ game: page }) => {

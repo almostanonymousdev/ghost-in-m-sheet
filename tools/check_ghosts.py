@@ -7,7 +7,7 @@ Validates that:
   - Each ghost has exactly 3 evidence types
   - Each evidence type is from the known valid set
   - No ghost has duplicate evidence types
-  - The ghost randomizer in GhostRandomize draws from setup.Ghosts
+  - The rogue startup logic in RogueController draws ghosts from setup.Ghosts
 """
 
 import re
@@ -73,11 +73,11 @@ def parse_ghosts() -> list[dict]:
 
 
 def randomizer_uses_setup_ghosts() -> bool:
-    """Verify GhostRandomize picks from setup.Ghosts."""
-    randomize_file = passages_dir() / "haunted_houses" / "general" / "GhostRandomize.tw"
-    if not randomize_file.exists():
+    """Verify rogue run startup draws its ghost from setup.Ghosts."""
+    rogue_file = passages_dir() / "rogue" / "RogueController.tw"
+    if not rogue_file.exists():
         return False
-    return "setup.Ghosts" in read_passage(randomize_file)
+    return "setup.Ghosts.names" in read_passage(rogue_file)
 
 
 def main():
@@ -110,7 +110,7 @@ def main():
     if not randomizer_uses_setup_ghosts():
         failed = True
         print(
-            "RANDOMIZER MISMATCH: GhostRandomize.tw does not reference setup.Ghosts"
+            "RANDOMIZER MISMATCH: RogueController.tw does not reference setup.Ghosts.names"
         )
 
     evidence_errors: list[str] = []

@@ -1,14 +1,13 @@
 :: HauntedHousesController [script]
 /*
  * Centralized state queries and mutations for the haunted-houses
- * subsystem: hunt mode, clothing state, stolen-clothes tracking,
- * and the shared hunt-end cleanup. Passages call into
+ * subsystem: clothing state, stolen-clothes tracking, hunt-condition
+ * helpers, and shared hunt-end cleanup. Passages call into
  * setup.HauntedHouses instead of inlining the underlying checks.
  *
- * Also owns the HOUSE_CONFIG catalogue -- the per-house metadata
- * (image, level gate, contract tiers, rooms) that GhostStreet and
- * the per-street passages consume via the <<huntHouseCard>> /
- * <<huntHouseStreet>> widgets.
+ * Rogue runs are the only mode that exercises these helpers now --
+ * the classic witch-contract flow and the per-house catalogue have
+ * been removed.
  */
 /* Lifecycle of $tarotCardsStage. HIDDEN: deck still in furniture,
    FurnitureSearch can pick it up. CARRYING: player holds the deck and
@@ -25,31 +24,11 @@ setup.HauntedHouses = (function () {
 	/* Variables owned by this controller. Other controllers should
 	   query these only through the API methods below. */
 	var OWNED_VARS = Object.freeze([
-		// $hauntedHouse is the active-house id ('owaissa' | 'elm' |
-		// 'ironclad' | null), replacing three mutually-exclusive
-		// $is<House> flags. The distinction between haunted-house id
-		// and Delivery's $currentHouse (a delivery address) keeps
-		// the names clear.
-		'hauntedHouse',
-		'moneyFromContract', 'expFromContract',
 		'isClothesStolen',
-		'cursedHuntActive', 'cursedHuntEndTime',
 		// Hunt-conditions flags driven by HuntConditionsController
 		// (bait spend, overcharged-tools toggle, bait countdown,
 		// pending bait orgasm trigger).
 		'baitActive', 'baitStepsRemain', 'baitOrgasmPending', 'overchargedTools',
-		'currentFurniture', 'isInHideSpot',
-		// $houseSlots replaces the per-house slot forest -- one
-		// bucket per stash-eligible house id with `available`
-		// (unallocated furniture slot ids) and `placeFor` (the
-		// chosen slot id for each stash kind: cursedItem,
-		// rescueClue, tarotCards, monkeyPaw, curse, clothesStolen).
-		// distributeFurnitureStashes() reseeds it on entry to a
-		// furniture-running street; legacy flat keys
-		// ($furnitureList<House>, $tempList<House>,
-		// $placeFor<Kind><House>) are folded forward by
-		// SaveMigration.
-		'houseSlots',
 		'chosenCard', 'drawnCards', 'tarotCardsStage',
 		'currentIntervalRoom', 'lastChangeIntervalRoom',
 		'cursedItemVide',
@@ -60,276 +39,20 @@ setup.HauntedHouses = (function () {
 		// directly.
 	]);
 
-	/* Canonical haunted-house catalogue. One entry per selectable house.
-		`flag` is the existing $is<House> state key that passages key off;
-		`rooms` is the list of room state-var names used by GhostStreet
-		(for the initial $hunt.room roll) and ChangeGhostRoom; `contract`
-		holds the four-tier money/xp reward scale driven by how many
-		evidence types the witch has hidden this contract.
-		`furniture`, when present, lists the room-prefixed slot ids that
-		distributeFurnitureStashes() uses to seed stash positions for
-		that house. Houses without `furniture` are skipped.
-		`exits` is the room-to-room nav graph: keys are passage names
-		(e.g. "OwaissaKitchen"), values are arrays of
-		{label, target} for the <<navExits>> widget to emit as nav
-		links. Leave-links / outside-links are kept inline in their
-		hallway passages -- only the within-house room-to-room nav is
-		data-driven here. Houses without an exits map fall back to
-		inline nav (used for enigma, which renders raw markdown links
-		and isn't migrated).
-		`runsStealClothes: false` opts a house out of the steal-clothes
-		step in the per-tick chain (ironclad, since prison ghosts have
-		their own warden-clothes mechanic). Defaults to true.
-		`allowsCompanions: false` opts a house out of the companion
-		hunt-plan flow (the companion mini-panel + per-tick events do
-		not engage there). Defaults to true; ironclad sets it false.
-		`sidebarOutfit: { image, tip }` swaps the wardrobe-icon strip in
-		the MC sidebar for a single fixed-outfit tile while a hunt is
-		active in this house (e.g. ironclad's warden costume). The
-		widget reads it through HuntController.sidebarOutfit() so the
-		per-house override stays in the catalogue, not in the widget. */
-	var HOUSE_CONFIG = [
-		{
-			id: 'owaissa',
-			streetPassage: 'Owaissa Street',
-			hallwayPassage: 'OwaissaHallway',
-			image: 'ui/img/owaissa-house.jpg',
-			levelGate: 0,
-			runsFurnitureCode: true,
-			allowsCompanions: true,
-			rooms: ['kitchen', 'bathroom', 'bedroom', 'livingroom', 'hallway'],
-			furniture: [
-				'hallway_carpet', 'hallway_wardrobe', 'hallway_coatrack',
-				'livingroom_table', 'livingroom_sofa',
-				'kitchen_desk', 'kitchen_table', 'kitchen_sink1',
-				'bathroom_bathtub', 'bathroom_carpet', 'bathroom_sink', 'bathroom_wmachine',
-				'bedroom_bed2', 'bedroom_table', 'bedroom_wardrobe1'
-			],
-			exits: {
-				OwaissaHallway: [
-					{ label: 'Kitchen',  target: 'OwaissaKitchen'  },
-					{ label: 'Bedroom',  target: 'OwaissaBedroom'  },
-					{ label: 'Bathroom', target: 'OwaissaBathroom' }
-				],
-				OwaissaKitchen: [
-					{ label: 'Hallway',    target: 'OwaissaHallway'    },
-					{ label: 'Livingroom', target: 'OwaissaLivingroom' }
-				],
-				OwaissaLivingroom: [{ label: 'Kitchen', target: 'OwaissaKitchen'  }],
-				OwaissaBedroom:    [{ label: 'Hallway', target: 'OwaissaHallway' }],
-				OwaissaBathroom:   [{ label: 'Hallway', target: 'OwaissaHallway' }]
-			},
-			contract: {
-				zero:  { money: 120, xp:  35 },
-				one:   { money: 240, xp:  70 },
-				two:   { money: 340, xp: 100 },
-				three: { money: 450, xp: 140 }
-			}
-		},
-		{
-			id: 'elm',
-			streetPassage: 'Elm Street',
-			hallwayPassage: 'ElmHallway',
-			image: 'ui/img/elm-house.jpg',
-			levelGate: 3,
-			runsFurnitureCode: true,
-			allowsCompanions: true,
-			rooms: [
-				'kitchen', 'bathroom', 'bedroom', 'nursery', 'hallway',
-				'hallwayUpstairs', 'bedroomTwo', 'bathroomTwo', 'basement'
-			],
-			furniture: [
-				'basement_table', 'basement_shelves',
-				'kitchen_sink1', 'kitchen_table', 'kitchen_desk',
-				'bathroom_sink', 'bathroom_bathtub', 'bathroom_wmachine',
-				'bathroomTwo_sink', 'bathroomTwo_carpet',
-				'bedroom_bed1', 'bedroom_table', 'bedroom_wardrobe1',
-				'bedroomTwo_table', 'bedroomTwo_bed2', 'bedroomTwo_shelves',
-				'nursery_desk', 'nursery_table', 'nursery_bed',
-				'hallway_carpet', 'hallway_coatrack',
-				'hallwayUpstairs_carpet', 'hallwayUpstairs_shelves'
-			],
-			exits: {
-				ElmHallway: [
-					{ label: 'bedroom',    target: 'ElmBedroom'         },
-					{ label: 'bathroom',   target: 'ElmBathroom'        },
-					{ label: 'kitchen',    target: 'ElmKitchen'         },
-					{ label: 'upstairs',   target: 'ElmHallwayUpstairs' },
-					{ label: 'basement',   target: 'ElmBasement'        }
-				],
-				ElmHallwayUpstairs: [
-					{ label: 'downstairs', target: 'ElmHallway'         },
-					{ label: 'bathroom',   target: 'ElmBathroomTwo'     },
-					{ label: 'bedroom',    target: 'ElmBedroomTwo'      },
-					{ label: 'nursery',    target: 'ElmNursery'         }
-				],
-				ElmKitchen:     [{ label: 'hallway', target: 'ElmHallway'         }],
-				ElmBathroom:    [{ label: 'hallway', target: 'ElmHallway'         }],
-				ElmBedroom:     [{ label: 'hallway', target: 'ElmHallway'         }],
-				ElmBasement:    [{ label: 'hallway', target: 'ElmHallway'         }],
-				ElmBathroomTwo: [{ label: 'hallway', target: 'ElmHallwayUpstairs' }],
-				ElmBedroomTwo:  [{ label: 'hallway', target: 'ElmHallwayUpstairs' }],
-				ElmNursery:     [{ label: 'hallway', target: 'ElmHallwayUpstairs' }]
-			},
-			contract: {
-				zero:  { money: 180, xp:  60 },
-				one:   { money: 320, xp: 100 },
-				two:   { money: 440, xp: 150 },
-				three: { money: 550, xp: 180 }
-			}
-		},
-		{
-			id: 'ironclad',
-			streetPassage: 'Ironclad Prison',
-			hallwayPassage: 'IroncladHallway',
-			image: 'scenes/room/ironclad/ironclad.webp',
-			levelGate: 4,
-			runsFurnitureCode: true,
-			runsStealClothes: false,
-			allowsCompanions: false,
-			rooms: [
-				'BlockA', 'BlockB',
-				'BlockACellA', 'BlockACellB', 'BlockACellC',
-				'BlockBCellA', 'BlockBCellB', 'BlockBCellC',
-				'reception', 'kitchen', 'hallway'
-			],
-			sidebarOutfit: {
-				image: 'ui/icons/warden1.png',
-				tip:   'Wearing a sexy warden costume'
-			},
-			exits: {
-				IroncladHallway: [
-					{ label: 'Reception', target: 'IroncladReception' },
-					{ label: 'Kitchen',   target: 'IroncladKitchen'   },
-					{ label: 'BlockA',    target: 'IroncladBlockA'    },
-					{ label: 'BlockB',    target: 'IroncladBlockB'    }
-				],
-				IroncladReception: [{ label: 'Entrance', target: 'IroncladHallway' }],
-				IroncladKitchen:   [{ label: 'Entrance', target: 'IroncladHallway' }],
-				IroncladBlockA: [
-					{ label: 'CellA',    target: 'IroncladBlockACellA' },
-					{ label: 'CellB',    target: 'IroncladBlockACellB' },
-					{ label: 'CellC',    target: 'IroncladBlockACellC' },
-					{ label: 'Entrance', target: 'IroncladHallway'     }
-				],
-				IroncladBlockB: [
-					{ label: 'CellA',    target: 'IroncladBlockBCellA' },
-					{ label: 'CellB',    target: 'IroncladBlockBCellB' },
-					{ label: 'CellC',    target: 'IroncladBlockBCellC' },
-					{ label: 'Entrance', target: 'IroncladHallway'     }
-				],
-				IroncladBlockACellA: [{ label: 'BlockA', target: 'IroncladBlockA' }],
-				IroncladBlockACellB: [{ label: 'BlockA', target: 'IroncladBlockA' }],
-				IroncladBlockACellC: [{ label: 'BlockA', target: 'IroncladBlockA' }],
-				IroncladBlockBCellA: [{ label: 'BlockB', target: 'IroncladBlockB' }],
-				IroncladBlockBCellB: [{ label: 'BlockB', target: 'IroncladBlockB' }],
-				IroncladBlockBCellC: [{ label: 'BlockB', target: 'IroncladBlockB' }]
-			},
-			contract: {
-				zero:  { money: 170, xp:  60 },
-				one:   { money: 240, xp: 100 },
-				two:   { money: 440, xp: 150 },
-				three: { money: 650, xp: 240 }
-			}
-		}
-	];
-
-	/* Map the three $delete*Evidence flags onto a contract-tier key.
-		Third takes priority, then second, then one, else zero. */
-	function contractTier() {
-		switch (setup.Ghosts.scheduledDeletionCount()) {
-			case 3: return 'three';
-			case 2: return 'two';
-			case 1: return 'one';
-			default: return 'zero';
-		}
-	}
-
 	var api = {
 		OWNED_VARS: OWNED_VARS,
-		// --- House catalogue ------------------------------------
-		list: function () { return HOUSE_CONFIG; },
-		byId: function (id) {
-			for (var i = 0; i < HOUSE_CONFIG.length; i++) {
-				if (HOUSE_CONFIG[i].id === id) return HOUSE_CONFIG[i];
-			}
-			return null;
-		},
-		/* Activate a house by id (or pass null to deactivate all).
-			Called from GhostStreet when the player picks a house. */
-		activate: function (id) {
-			var s = sv();
-			s.hauntedHouse = this.byId(id) ? id : null;
-		},
-		/* Reward for the current contract, driven by how many evidence
-			types the witch has hidden ($delete*Evidence flags). */
-		contractReward: function (id) {
-			var h = this.byId(id);
-			if (!h) return { money: 0, xp: 0 };
-			return h.contract[contractTier()];
-		},
-		/* Pick the ghost's starting room from the given house's room
-			list, cloned from the matching state var so the furniture-
-			search overlay stays in sync. Falls back to null when no
-			state var is present yet. */
-		rollStartingRoom: function (id) {
-			var h = this.byId(id);
-			if (!h) return null;
-			var roomId = h.rooms[Math.floor(Math.random() * h.rooms.length)];
-			var src = setup.Rooms.byId(roomId);
-			return src ? clone(src) : null;
-		},
-		roomsFor: function (id) {
-			var h = this.byId(id);
-			return h ? h.rooms.slice() : [];
-		},
-		/* Outgoing nav links for the given passage in the active
-		   house. Returns [] when the active house has no exits map
-		   (enigma) or the passage isn't in it. The <<navExits>>
-		   widget consumes this. */
-		exitsFor: function (passageName) {
-			var h = this.activeHouse();
-			if (!h || !h.exits) return [];
-			var list = h.exits[passageName];
-			return Array.isArray(list) ? list : [];
-		},
-		/* The house that currently owns the hunt; null when no house
-			is active (witch pre-hunt, or after GhostStreet teardown). */
-		activeHouse: function () {
-			return this.byId(sv().hauntedHouse);
-		},
-		/* Catalogue lookup for the per-house companion gate. Returns
-		   the boolean from HOUSE_CONFIG[id].allowsCompanions, or false
-		   when the id isn't a registered classic house. Used by
-		   Companion.inHauntedHouseLocation through the active-house
-		   pointer so adding new classic houses never requires
-		   touching the predicate -- one entry on the catalogue
-		   covers it. */
-		allowsCompanions: function (id) {
-			var h = this.byId(id);
-			return !!(h && h.allowsCompanions);
-		},
-		activeHouseAllowsCompanions: function () {
-			var h = this.activeHouse();
-			return !!(h && h.allowsCompanions);
-		},
-		/* Clear the active-house pointer. Used after a hunt ends. */
-		clearHouseFlags: function () {
-			sv().hauntedHouse = null;
-		},
 
 		endHunt: function () {
 			this.commitTempCorruption();
 			setup.Ghosts.setHuntMode(setup.Ghosts.HuntMode.POSSESSED);
 		},
 
-		/* Common end-of-hunt cleanup shared by HuntEnd, HuntOverSanity,
-		   HuntOverExhaustion, HuntOverTime, HuntOverManual. Bundles the
-		   four-call boilerplate every hunt-over passage was inlining.
-		   Does NOT call endHunt() -- callers vary in whether endHunt
-		   should fire at passage load (HuntOverSanity) or only when the
-		   ghost-catch branch resolves (HuntEnd). Pass { loseStolen: true }
-		   to nuke any stolen-clothing flags. */
+		/* Common end-of-hunt cleanup shared by the rogue lifecycle and
+		   the shared hunt-over passages. Bundles the four-call
+		   boilerplate every hunt-over beat was inlining. Does NOT call
+		   endHunt() -- callers vary in whether endHunt should fire at
+		   passage load or only when the ghost-catch branch resolves.
+		   Pass { loseStolen: true } to nuke any stolen-clothing flags. */
 		cleanupAfterHunt: function (opts) {
 			opts = opts || {};
 			this.resetToolTimers();
@@ -339,13 +62,6 @@ setup.HauntedHouses = (function () {
 			if (opts.loseStolen) setup.Wardrobe.loseAllStolen();
 			setup.Wardrobe.redressAfterHunt();
 		},
-
-		// --- Which house are we in? -----------------------------
-		// Predicates resolve against the single $hauntedHouse id.
-		isOwaissa:  function () { return sv().hauntedHouse === 'owaissa'; },
-		isElm:      function () { return sv().hauntedHouse === 'elm'; },
-		isIronclad: function () { return sv().hauntedHouse === 'ironclad'; },
-		setIroncladActive: function (on) { sv().hauntedHouse = on ? 'ironclad' : null; },
 
 		// --- Clothing aggregation -------------------------------
 		hasBottomWorn: function () {
@@ -443,38 +159,28 @@ setup.HauntedHouses = (function () {
 				&& setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES)
 				&& !this.hasBottomWorn();
 		},
-		isTopless: function () {
-			return !setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT);
-		},
-		isFullyDressed: function () {
-			return setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT)
-				&& (setup.Wardrobe.worn(setup.WardrobeSlot.JEANS) || setup.Wardrobe.worn(setup.WardrobeSlot.SHORTS) || setup.Wardrobe.worn(setup.WardrobeSlot.SKIRT));
-		},
 
-		// --- Cursed hunt flag ----------------------------------
-		isCursedHuntActive: function () { return sv().cursedHuntActive === 1; },
-		setCursedHuntActive: function (on) { sv().cursedHuntActive = on ? 1 : 0; },
-		clearCursedHuntActive: function () {
-			delete sv().cursedHuntActive;
-			delete sv().cursedHuntEndTime;
-		},
 		markClothesStolen: function () { sv().isClothesStolen = 1; },
 
-		// --- Contract reward + hunt activation ---------------
-		setContractReward: function (money, xp) {
-			var s = sv();
-			s.moneyFromContract = money;
-			s.expFromContract = xp;
+		// --- Which static rogue house is active? --------------------
+		// Resolves against the rogue run's staticHouseId so legacy
+		// callers ("which house art / video list?") keep working
+		// without threading the id through. Returns false when no
+		// rogue run is in flight or the run is procedural (no
+		// staticHouseId).
+		isOwaissa: function () {
+			return setup.Rogue && setup.Rogue.staticHouseId
+				&& setup.Rogue.staticHouseId() === 'rogue-owaissa';
 		},
-		moneyFromContract: function () { return sv().moneyFromContract || 0; },
-		setHuntRoom: function (room) {
-			var hunt = setup.Ghosts.hunt();
-			if (hunt) { hunt.room = room; }
+		isElm: function () {
+			return setup.Rogue && setup.Rogue.staticHouseId
+				&& setup.Rogue.staticHouseId() === 'rogue-elm';
 		},
-		setHuntMode: function (mode) {
-			var hunt = setup.Ghosts.hunt();
-			if (hunt) { hunt.mode = mode; }
+		isIronclad: function () {
+			return setup.Rogue && setup.Rogue.staticHouseId
+				&& setup.Rogue.staticHouseId() === 'rogue-ironclad';
 		},
+
 		/* Record that the MC just dodged a ghost event — stamps the
 		   activation flag + timestamp the Hunt tick reads off when
 		   deciding if enough in-game time has passed to retry. */
@@ -485,33 +191,6 @@ setup.HauntedHouses = (function () {
 		   window + stamp the activation time. Called by the first
 		   frame of GhostHuntEvent before the player picks
 		   run/hide/freeze/pray. */
-		/* Classic-mode ghost-room drift. Picks a fresh room from the
-		   active house's room list and stamps it onto $hunt.room.name.
-		   Called by setup.HuntController.shuffleGhostRoom once the
-		   shared interval gate + 45% roll have passed; the controller
-		   already filtered for `staysInOneRoom`, so the only
-		   classic-only opt-outs left are the Trap state and the
-		   "no house picked yet" guard (hunt.room is null until
-		   GhostStreet's huntHouseCard seeds it). */
-		driftGhostRoom: function () {
-			var hh = this.activeHouse();
-			if (!hh) return;
-			var rooms = hh.rooms || [];
-			if (!rooms.length) return;
-			var hunt = setup.Ghosts.hunt();
-			if (!hunt || hunt.trapped || !hunt.room) return;
-			hunt.room.name = rooms[Math.floor(Math.random() * rooms.length)];
-		},
-		/* Backwards-compat alias: pre-refactor callers (TickController,
-		   tests, save migrations) called shuffleGhostRoom directly.
-		   The new dispatch point is setup.HuntController.shuffleGhostRoom,
-		   but rather than chase every site we forward through here so
-		   the existing surface keeps working. */
-		shuffleGhostRoom: function () {
-			if (setup.HuntController && setup.HuntController.shuffleGhostRoom) {
-				setup.HuntController.shuffleGhostRoom();
-			}
-		},
 		beginProwlEvent: function () {
 			setup.Ghosts.activateProwl();
 			setup.Ghosts.setElapsedTimeProwl(0);
@@ -526,26 +205,6 @@ setup.HauntedHouses = (function () {
 				|| setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES) || setup.Wardrobe.worn(setup.WardrobeSlot.BRA);
 		},
 
-		/* What's the cursed-item / rescue-clue / tarot / monkey-paw
-		   stash spot for the active house? Returns undefined if
-		   the MC isn't currently in a house. Used by FurnitureSearch.
-		   The `kind` argument matches the historical CamelCase
-		   suffix ("CursedItem", "RescueClue", "TarotCards",
-		   "MonkeyPaw", "Curse", "ClothesStolen"); internally the
-		   bucket is keyed by camelCase. */
-		activeHousePlace: function (kind) {
-			var s = sv();
-			var bucket = (s.houseSlots || {})[s.hauntedHouse];
-			if (!bucket || !bucket.placeFor) return undefined;
-			return bucket.placeFor[kind.charAt(0).toLowerCase() + kind.slice(1)];
-		},
-		setInHideSpot: function (on) { sv().isInHideSpot = on ? 1 : 0; },
-		/* Street-passage name for the active haunted house, for the
-		   front-door exit link. */
-		activeStreetPassage: function () {
-			var h = this.activeHouse();
-			return h ? h.streetPassage : null;
-		},
 		/* Handed-by-companion cursed item: marks gotCursedItem and
 		   rolls one of the four item types. */
 		rollCompanionCursedItem: function () {
@@ -558,32 +217,17 @@ setup.HauntedHouses = (function () {
 		// on fresh saves where the field is undefined).
 		tarotCardsStage: function () { return sv().tarotCardsStage || setup.TarotStage.HIDDEN; },
 		drawnCards: function () { return sv().drawnCards || 0; },
-		// (markTarotCarrying / markTarotSpent fold into the defineStageAccessors
-		// block at the bottom.)
 		shouldDeleteOneEvidence: function () {
 			return setup.Ghosts.scheduledDeletionCount() >= 1;
 		},
-		/* One-shot save migration that seeds the Ironclad prison
-		   room objects + reception state the first time the
-		   player's save is loaded with Ironclad content. Called
-		   from PassageReady; guarded by $updateIronclad. */
-		migrateIroncladRooms: function () {
-			var rooms = ["BlockA", "BlockB", "BlockACellA", "BlockACellB", "BlockACellC",
-				"BlockBCellA", "BlockBCellB", "BlockBCellC", "reception"];
-			rooms.forEach(function (id) {
-				setup.Rooms.seed(id);
-			});
-			setup.Migrations.markIroncladMigrated();
-		},
-		/* Reset the cursed-item carry/use state shared by both modes:
+		/* Reset the cursed-item carry/use state shared across runs:
 		   tarot deck stage + draw count + drawn-card stamp, and the
 		   monkey-paw lifecycle (wishes count, found stage, learned
 		   knowledge, door lock, banned houses). The Notebook's
 		   crossed-out-evidence overlay also resets so the
 		   knowledge wish / tarot draw doesn't leak between hunts.
-		   Called by both classic resetForNewHunt and rogue's
-		   start/end so a fresh hunt always starts with a fresh deck
-		   and an unfound paw. */
+		   Called from the rogue lifecycle start/end so a fresh hunt
+		   always starts with a fresh deck and an unfound paw. */
 		resetCursedItemState: function () {
 			var s = sv();
 			s.tarotCardsStage = setup.TarotStage.HIDDEN;
@@ -591,20 +235,6 @@ setup.HauntedHouses = (function () {
 			delete s.chosenCard;
 			setup.Ghosts.clearChosenEvidence();
 			setup.MonkeyPaw.resetHunt();
-		},
-		/* Full fresh-hunt teardown: clears any lingering tarot /
-		   monkey-paw / cursed-hunt / weaken-ghost flags and zeroes
-		   the temperature counter. Called from GhostRandomize when
-		   the witch hands out a new contract. */
-		resetForNewHunt: function () {
-			var s = sv();
-			if (s.hauntedHouse === 'ironclad') s.hauntedHouse = null;
-			this.resetCursedItemState();
-			delete s.cursedHuntActive;
-			delete s.cursedHuntEndTime;
-			setup.Witch.clearWeakenGhostState();
-			setup.Time.setTemperature(0);
-			setup.Ghosts.resetEvidenceChecks();
 		},
 		incrementDrawnCards: function () {
 			sv().drawnCards = (sv().drawnCards || 0) + 1;
@@ -642,59 +272,7 @@ setup.HauntedHouses = (function () {
 			return pick;
 		},
 
-		// --- Furniture stash setup ---------------------------
-		/* On hunt start, seed one slot bucket per stash-eligible
-		   house (HOUSE_CONFIG entries with a `furniture` field) and
-		   deal out one hiding spot for each hidden-content type
-		   (cursed item, rescue clue, tarot cards, monkey paw, plus
-		   a single curse slot rolled across one of the eligible
-		   houses). Buckets live on $houseSlots keyed by house id;
-		   `available` tracks the still-unused slot ids so
-		   chooseClothesStashRoom() and any future stash kind can
-		   draw from the same pool. */
-		distributeFurnitureStashes: function () {
-			var s = sv();
-			s.houseSlots = {};
-			function pickFrom(list) {
-				var i = Math.floor(Math.random() * list.length);
-				return list.splice(i, 1)[0];
-			}
-			var stashHouses = HOUSE_CONFIG.filter(function (h) {
-				return Array.isArray(h.furniture) && h.furniture.length > 0;
-			});
-			stashHouses.forEach(function (h) {
-				var bucket = { available: h.furniture.slice(), placeFor: {} };
-				bucket.placeFor.cursedItem = pickFrom(bucket.available);
-				bucket.placeFor.rescueClue = pickFrom(bucket.available);
-				bucket.placeFor.tarotCards = pickFrom(bucket.available);
-				bucket.placeFor.monkeyPaw  = pickFrom(bucket.available);
-				s.houseSlots[h.id] = bucket;
-			});
-			// Exactly one stash-eligible house gets a curse spot this
-			// hunt. Uniform pick across the eligible set; with two
-			// houses this matches the original 50/50 between Owaissa
-			// and Elm.
-			if (stashHouses.length) {
-				var curseHouse = stashHouses[Math.floor(Math.random() * stashHouses.length)];
-				var b = s.houseSlots[curseHouse.id];
-				if (b && b.available.length) {
-					b.placeFor.curse = pickFrom(b.available);
-				}
-			}
-		},
-
 		// --- Clothes steal / find -----------------------------
-		/* Pick a random room-slot where the ghost "stashes" stolen
-		   clothes. Reads from the active house's bucket on
-		   $houseSlots and stamps the chosen slot into
-		   bucket.placeFor.clothesStolen. No-op when the active
-		   house has no stash bucket. */
-		chooseClothesStashRoom: function () {
-			var s = sv();
-			var bucket = (s.houseSlots || {})[s.hauntedHouse];
-			if (!bucket || !Array.isArray(bucket.available) || !bucket.available.length) return;
-			bucket.placeFor.clothesStolen = bucket.available[Math.floor(Math.random() * bucket.available.length)];
-		},
 		/* Given the MC's current clothing state, return the list of
 		   garment categories that are still available to steal
 		   ("panties", "bra", "outerwear"). Used by StealClothes to
@@ -735,18 +313,6 @@ setup.HauntedHouses = (function () {
 		},
 		isTopBare: function () {
 			return !setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT) && !setup.Wardrobe.worn(setup.WardrobeSlot.BRA);
-		},
-
-		/* The stash-room pointer for the active house. */
-		clothesStashRoom: function () {
-			var s = sv();
-			var bucket = (s.houseSlots || {})[s.hauntedHouse];
-			return bucket && bucket.placeFor ? bucket.placeFor.clothesStolen : undefined;
-		},
-		clearClothesStashRoom: function () {
-			var s = sv();
-			var bucket = (s.houseSlots || {})[s.hauntedHouse];
-			if (bucket && bucket.placeFor) bucket.placeFor.clothesStolen = undefined;
 		}
 	};
 
@@ -754,8 +320,6 @@ setup.HauntedHouses = (function () {
 	// keep their inline getters above (the `||` fallback is load-bearing);
 	// only the bare setters fold here.
 	setup.defineAccessors(api, sv, [
-		'currentFurniture',
-		{ name: 'expFromContract',  set: false },
 		{ name: 'chosenTarotCard',  key: 'chosenCard', set: false },
 		{ name: 'tarotCardsStage',  get: false },
 		{ name: 'drawnCards',       get: false }

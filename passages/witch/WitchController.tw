@@ -65,18 +65,8 @@ setup.Witch = (function () {
 			return !this.isDayTime() && this.hasStolenKey();
 		},
 
-		// --- Contracts -------------------------------------------
 		isFirstVisit: function () {
 			return sv().firstVisitWitchShop === true;
-		},
-		canAffordContract: function () {
-			return setup.Mc.money() >= 35;
-		},
-		hasActiveContract: function () {
-			return setup.Ghosts.hasContract();
-		},
-		contractReadyToEnd: function () {
-			return setup.Ghosts.isPossessed();
 		},
 
 		// --- Exorcism referral -----------------------------------
@@ -246,13 +236,6 @@ setup.Witch = (function () {
 			setup.ToolController.setTier('gwb', 3);
 		},
 
-		// --- Contract settlement ---------------------------------
-		payForContract: function () {
-			setup.Mc.addMoney(setup.HauntedHouses.moneyFromContract() + (sv().moneyFromWeakenTheGhost || 0));
-		},
-		payForWeakenOnly: function () {
-			setup.Mc.addMoney(sv().moneyFromWeakenTheGhost || 0);
-		},
 		// --- Tentacles event (anti-midnight wraparound) ----------
 		spend2HoursHandleMidnight: function () {
 			return setup.Time.sleepAdvanceHours(2);

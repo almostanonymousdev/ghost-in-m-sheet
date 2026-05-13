@@ -146,7 +146,13 @@ test.describe('Save/load round-trip', () => {
     // setup.Ghosts.active() returns a working Ghost instance with the
     // same observable behaviour.
     await goToPassage(page, 'CityMap');
-    await page.evaluate(() => SugarCube.setup.Ghosts.startHunt('Shade'));
+    await page.evaluate(() => {
+      SugarCube.setup.Rogue.startRogue({ seed: 1 });
+      SugarCube.setup.Rogue.setField('ghostName', 'Shade');
+      const g = SugarCube.setup.Ghosts.getByName('Shade');
+      SugarCube.setup.Rogue.setField('evidence', g.evidence.map(e => e.id));
+      SugarCube.setup.Ghosts.startHunt('Shade');
+    });
     await commitToSave(page);
 
     // The Ghost constructor isn't exposed on setup.Ghosts, so we infer

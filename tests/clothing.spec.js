@@ -554,6 +554,16 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
     await setVar(page, 'hours', 2);
   });
 
+  /* HuntController.isHuntActive() requires both an active rogue run and
+   * the current passage to be RogueRun, so the in-hunt HUD branch fires.
+   * `house` is one of 'owaissa' (default) / 'elm' / 'ironclad'. */
+  async function startRogueHunt(page, house = 'owaissa') {
+    await page.evaluate((staticHouseId) => {
+      SugarCube.setup.Rogue.startRogue({ seed: 1, staticHouseId });
+    }, `rogue-${house}`);
+    await goToPassage(page, 'RogueRun');
+  }
+
   /* The MC clothing strip lives in StoryCaption (sidebar). To verify
    * a specific state actually drives the right output we render the
    * widget body directly via `setup.Macro.evaluateString` — that
@@ -578,11 +588,11 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
   });
 
   test('during a hunt the t-shirt slot becomes a take-off link', async ({ game: page }) => {
-    await setHuntMode(page, 2);
     await setVar(page, 'tshirtState0', 'not worn');
     await setVar(page, 'tshirtState1', 'worn');
     await setVar(page, 'tshirtState',  'worn');
     await setVar(page, 'rememberTopOuter', 'tshirt1');
+    await startRogueHunt(page);
 
     const html = await renderStrip(page);
     expect(html).toContain('take it off');
@@ -590,11 +600,11 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
   });
 
   test('during a hunt with a remembered item the empty bra slot becomes a put-back-on link', async ({ game: page }) => {
-    await setHuntMode(page, 2);
     await setVar(page, 'braState0', 'not worn');
     await setVar(page, 'braState2', 'not worn');
     await setVar(page, 'braState',  'not worn');
     await setVar(page, 'rememberTopUnder', 'nobra2');
+    await startRogueHunt(page);
 
     const html = await renderStrip(page);
     expect(html).toContain('put it back on');
@@ -602,10 +612,10 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
   });
 
   test('during a hunt with no remembered item the empty bra slot stays a plain image', async ({ game: page }) => {
-    await setHuntMode(page, 2);
     await setVar(page, 'braState0', 'not worn');
     await setVar(page, 'braState',  'not worn');
     await setVar(page, 'rememberTopUnder', 'bra0');
+    await startRogueHunt(page);
 
     const html = await renderStrip(page);
     expect(html).toContain('id="statusUnderTop"');
@@ -616,12 +626,12 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
     /* Even though the tier is still purchased and the rememberVar
      * still points at "notshirt1", the in-hunt steal flag must
      * suppress the put-back-on shortcut. */
-    await setHuntMode(page, 2);
     await setVar(page, 'tshirtState0', 'not worn');
     await setVar(page, 'tshirtState1', 'not worn');
     await setVar(page, 'tshirtState',  'not worn');
     await setVar(page, 'rememberTopOuter', 'notshirt1');
     await setVar(page, 'isShirtStolen', 1);
+    await startRogueHunt(page);
 
     const html = await renderStrip(page);
     /* Pull just the tshirt slot out of the strip so anchors in
@@ -633,8 +643,8 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
   });
 
   test('Ironclad warden costume mode shows no clothing slots', async ({ game: page }) => {
-    await setHuntMode(page, 2);
-    await setVar(page, 'hauntedHouse', 'ironclad');
+    await setVar(page, 'wardenClothesStage', 2);
+    await startRogueHunt(page, 'ironclad');
 
     const html = await renderStrip(page);
     expect(html).not.toContain('id="statusOuterTop"');
@@ -649,13 +659,12 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
    * <img> child + force-click trips the visibility check because
    * test mode aborts the icon image request). */
   test('clicking the worn t-shirt icon in the sidebar takes it off and re-renders', async ({ game: page }) => {
-    await setHuntMode(page, 2);
     await setVar(page, 'tshirtState0', 'not worn');
     await setVar(page, 'tshirtState1', 'worn');
     await setVar(page, 'tshirtState',  'worn');
     await setVar(page, 'rememberTopOuter', 'tshirt1');
     await setVar(page, 'mc.beauty', 30);
-    await goToPassage(page, 'Bedroom');
+    await startRogueHunt(page);
 
     await page.evaluate(() => jQuery('#statusOuterTop a').trigger('click'));
 
@@ -672,13 +681,12 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
   });
 
   test('clicking the empty t-shirt icon puts the remembered tier back on', async ({ game: page }) => {
-    await setHuntMode(page, 2);
     await setVar(page, 'tshirtState0', 'not worn');
     await setVar(page, 'tshirtState1', 'not worn');
     await setVar(page, 'tshirtState',  'not worn');
     await setVar(page, 'rememberTopOuter', 'notshirt1');
     await setVar(page, 'mc.beauty', 25);
-    await goToPassage(page, 'Bedroom');
+    await startRogueHunt(page);
 
     await page.evaluate(() => jQuery('#statusOuterTop a').trigger('click'));
 
@@ -693,13 +701,12 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
   });
 
   test('toggle round-trip: take off → put back on lands on the original state', async ({ game: page }) => {
-    await setHuntMode(page, 2);
     await setVar(page, 'tshirtState0', 'not worn');
     await setVar(page, 'tshirtState1', 'worn');
     await setVar(page, 'tshirtState',  'worn');
     await setVar(page, 'rememberTopOuter', 'tshirt1');
     await setVar(page, 'mc.beauty', 30);
-    await goToPassage(page, 'Bedroom');
+    await startRogueHunt(page);
 
     // First click: take off
     await page.evaluate(() => jQuery('#statusOuterTop a').trigger('click'));
