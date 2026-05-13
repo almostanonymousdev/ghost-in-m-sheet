@@ -138,7 +138,7 @@ test.describe('Special ghost events — controller', () => {
 });
 
 test.describe('Special ghost events — passage rendering', () => {
-  test.describe.configure({ timeout: 10_000, retries: 1 });
+  test.describe.configure({ timeout: 10_000 });
   for (const passage of EVENT_PASSAGES) {
     test(`${passage} renders cleanly at default state`, async ({ game: page }) => {
       await goToPassage(page, passage);
@@ -168,7 +168,7 @@ test.describe('Special ghost events — passage rendering', () => {
 });
 
 test.describe('Special ghost events — home summoning variants', () => {
-  test.describe.configure({ timeout: 10_000, retries: 1 });
+  test.describe.configure({ timeout: 10_000 });
   for (const passage of [
     'SuccubusEventTV',
     'SuccubusPCEvent',

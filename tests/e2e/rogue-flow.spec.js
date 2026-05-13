@@ -1,23 +1,41 @@
 const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, getVar, goToPassage, callSetup } = require('../helpers');
+const { openGame, resetGame, getVar, goToPassage, callSetup, ensureOpenPage, seedRandom } = require('../helpers');
 
 /* End-to-end rogue lifecycle: GhostStreet → RogueStart → RogueRun
    → RogueEnd → RogueMetaShop. Exercises the actual passage flow
    so any wiring break (missing link text, broken setField call,
    wrong passage transition) shows up here. */
 test.describe('E2E: rogue run lifecycle', () => {
+  /* Click-driven rogue navigation hits dozens of passages with heavy
+     <<do>>/<<redo>> chains. Under parallel worker load the renderer can OOM
+     mid-test ("Target page closed"); the self-healing beforeEach reopens
+     the page on the retry, so a single retry covers a transient renderer
+     crash without masking real bugs. */
+  test.describe.configure({ retries: 1 });
   let page;
+  let savedBrowser;
 
   test.beforeAll(async ({ browser }) => {
+    savedBrowser = browser;
     page = await openGame(browser);
   });
 
   test.afterAll(async () => {
-    await page.close();
+    if (page && !page.isClosed()) await page.close();
   });
 
   test.beforeEach(async () => {
-    await resetGame(page);
+    /* If a prior test crashed the renderer (heavy <<do>>/<<redo>> chains
+       can OOM under parallel worker load), transparently reopen so this
+       test still gets a clean page. Without this, every subsequent test
+       in the file fails with "Target page closed" until the worker exits. */
+    page = await ensureOpenPage(savedBrowser, page);
+    try {
+      await resetGame(page);
+    } catch (err) {
+      page = await openGame(savedBrowser);
+      await resetGame(page);
+    }
     /* GhostStreet's rogueHuntCard gates the link behind setup.Mc.lvl() >= 4.
        New games start at lvl 0, so without this every test would land on
        the "Level 4+ required" placeholder instead of a clickable link.
@@ -26,6 +44,13 @@ test.describe('E2E: rogue run lifecycle', () => {
        race the variable rebind. */
     await page.waitForFunction(() => SugarCube.State.variables.mc != null);
     await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+    /* Pin Math.random per-test so RogueStart's auto-roll (nextSeed,
+       floor-plan generator, modifier draft) lands on the same layout
+       every run. Without this the floor-plan layout flips between
+       attempts and tests that walk the resulting plan
+       (clicking-the-loot-furniture, tarot/paw pickup) flake when the
+       loot lands on a slot that stacks with another kind. */
+    await seedRandom(page, 0xC0FFEE);
   });
 
   async function clickLink(page, linkText, expectedPassage) {
@@ -272,7 +297,16 @@ test.describe('E2E: rogue run lifecycle', () => {
 
     // Click "lights on" (first image link). RogueRun re-renders, the
     // light flag flips to LIT, and the body bg switches to the lit URL.
-    await lights.locator('a').nth(0).click();
+    // Test media is blocked at the network layer (see openGame), so the
+    // wrapping <a>'s rendered geometry is the icon's intrinsic 32×32 box
+    // even when the <img> never decodes — but we still click via DOM
+    // dispatch to keep the test independent of layout overlap with the
+    // toolbar/nav links anchored on the same edge.
+    const clickLightLink = (idx) => page.evaluate((i) => {
+      const links = document.querySelectorAll('.rogue-run-bottom .rogue-run-lights a');
+      links[i].click();
+    }, idx);
+    await clickLightLink(0);
     await page.waitForFunction(
       () => SugarCube.setup.Rogue.isCurrentRoomDark() === false
     );
@@ -281,7 +315,7 @@ test.describe('E2E: rogue run lifecycle', () => {
     expect(litStyle).not.toContain('hallway-dark');
 
     // Click "lights off" -- back to dark.
-    await page.locator('.rogue-run-bottom .rogue-run-lights a').nth(1).click();
+    await clickLightLink(1);
     await page.waitForFunction(
       () => SugarCube.setup.Rogue.isCurrentRoomDark() === true
     );
@@ -640,15 +674,19 @@ test.describe('E2E: rogue run lifecycle', () => {
 
     await goToPassage(page, 'GhostStreet');
     await clickRogueCard(page);
+    /* Wipe the auto-rolled modifier deck (and any locked_tools-driven
+       tool loot it pinned onto base-loot furniture slots). With
+       locked_tools active a single slot can hold both cursedItem and a
+       tool, and FurnitureSearch then takes the multi-kind branch with
+       "rogueLootBeat" instead of the single-kind text the regex below
+       expects. modifierCount:0 keeps the floor plan to its base layout
+       so the click target is unambiguous. */
+    await ensureNotEmptyBag(page);
 
     // Place the player in the room+slot one of the four base loot
     // kinds is hidden in. The floor-plan generator might land
     // cursedItem on a furniture-less template (roomA/B/C); skip past
-    // those so the click target is always a real slot. We only need
-    // *some* base loot kind pinned to a furniture suffix to exercise
-    // the search wiring -- tool_<id> loot is drafted when locked_tools
-    // happens to roll, but it has its own pickup branch covered
-    // separately by the Empty Bag e2e.
+    // those so the click target is always a real slot.
     const fp = await getVar(page, 'run').then(r => r.floorplan);
     const BASE_KINDS = ['cursedItem', 'rescueClue', 'tarotCards', 'monkeyPaw'];
     const lootKind = BASE_KINDS.find(k => fp.lootFurniture[k]);

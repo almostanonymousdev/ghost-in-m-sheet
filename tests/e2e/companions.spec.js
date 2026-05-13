@@ -12,6 +12,18 @@ const TRANS_COMPANIONS = ['Alex', 'Taylor', 'Casey'];
 const ALL_COMPANIONS = ['Brook', 'Alice', 'Blake', 'Alex', 'Taylor', 'Casey'];
 
 async function selectCompanion(page, name) {
+  // Force defaults for $brook/$alice/$blake/$alex/$taylor/$casey before
+  // selectCompanion runs. PassageReady normally seeds these via
+  // applySaveDefaults, but order of operations after Engine.restart() can
+  // leave a window where the store still holds undefined for some slots —
+  // tests that touch every companion's `chanceToAttack` then fail with
+  // "Cannot set properties of undefined". Calling applySaveDefaults
+  // explicitly makes that deterministic and removes the need for retries.
+  await page.evaluate(() => {
+    if (SugarCube.setup.applySaveDefaults) {
+      SugarCube.setup.applySaveDefaults(SugarCube.State.variables);
+    }
+  });
   await page.evaluate((n) => SugarCube.setup.Companion.selectCompanion(n), name);
   const stats = {
     name, sanity: 100, sanityMax: 100, corruption: 0, lust: 0,
@@ -71,9 +83,9 @@ test.describe('Companions — selection controller', () => {
 test.describe('Companions — passage rendering', () => {
   // These passages pull in heavy <<do>>/<<redo>> blocks and a long chain of
   // conditional branches. Under parallel worker load the default 5s can
-  // flake, so give this describe's tests 15s and two retries. Media requests
+  // be tight, so give this describe's tests a 15s budget. Media requests
   // are blocked in openGame() so videos/images don't compete for bandwidth.
-  test.describe.configure({ timeout: 15_000, retries: 2 });
+  test.describe.configure({ timeout: 15_000 });
   for (const { name, passages } of COMPANIONS) {
     for (const passage of passages) {
       test(`${name} — ${passage} renders cleanly`, async ({ game: page }) => {

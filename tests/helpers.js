@@ -51,6 +51,33 @@ async function reseedRng(page, seed) {
 }
 
 /**
+ * Install a deterministic Mulberry32 PRNG over Math.random on an already-open
+ * page. Unlike installSeededRng (which uses addInitScript and only takes effect
+ * for fresh navigations), this can be called mid-test after openGame so a
+ * single test can pin RNG without disturbing the worker-shared page — the
+ * patched Math.random survives until the next resetGame, which restores the
+ * snapshot captured by openGame.
+ *
+ * Use this for stochastic gameplay tests (sanity-drain sampling, evidence
+ * glitch sampling, etc.) so a fixed seed produces a reproducible sequence
+ * instead of relying on natural RNG variance + test retries.
+ */
+async function seedRandom(page, seed) {
+  await page.evaluate((s) => {
+    if (!window.__origMathRandom) window.__origMathRandom = Math.random;
+    let state = s >>> 0;
+    Math.random = function () {
+      state = (state + 0x6D2B79F5) >>> 0;
+      let t = state;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+    if (window.__rng__) window.__rng__.reseed(s);
+  }, seed);
+}
+
+/**
  * Wait for SugarCube to finish initializing and rendering a passage.
  */
 async function waitForSugarCube(page) {
@@ -187,6 +214,22 @@ async function openGame(browser, { seed } = {}) {
 }
 
 /**
+ * Ensure a usable page: if the supplied one is still alive, return it; if
+ * the renderer was closed (heavy passages can OOM the renderer under
+ * parallel worker load), open a fresh one against the same browser.
+ *
+ * Used by spec files that own their own page lifecycle (rogue-flow,
+ * rogue-outside, events-controller) so a single crashed page doesn't
+ * cascade into "Target page closed" failures across the rest of the file.
+ * The fixture-based `game` test fixture handles the equivalent recovery
+ * inline.
+ */
+async function ensureOpenPage(browser, page) {
+  if (page && !page.isClosed()) return page;
+  return openGame(browser);
+}
+
+/**
  * Reset SugarCube state by restarting the engine (replays StoryInit).
  * Much faster than closing and reopening the page.
  */
@@ -214,4 +257,6 @@ module.exports = {
   resetGame,
   installSeededRng,
   reseedRng,
+  seedRandom,
+  ensureOpenPage,
 };
