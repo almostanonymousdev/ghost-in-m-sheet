@@ -82,13 +82,18 @@ setup.Events = (function () {
 		},
 		/* :: LightPassageGhost entry: 1-in-65 chance per tick that a
 		   light-capable ghost activates EMF and darkens the room.
-		   Returns the destination passage to <<goto>>, or null. */
+		   Returns the destination passage to <<goto>>, or null.
+		   EMF only arms when a lit hunt room was actually flipped to
+		   dark — otherwise the player saw no in-world cause for the
+		   reading and the window appeared to open on its own. */
 		maybeTurnOffLights: function () {
 			var g = setup.Ghosts.active();
 			if (!g || !g.canTurnOffLights) return null;
 			if (Math.floor(Math.random() * 65) !== 0) return null;
+			var dest = this.turnOffLightHere();
+			if (!dest) return null;
 			setup.activateTool("emf");
-			return this.turnOffLightHere() || null;
+			return dest;
 		},
 
 		// --- Lust tiers ------------------------------------------

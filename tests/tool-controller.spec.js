@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, callSetup, getVar } = require('./helpers');
+const { openGame, resetGame, callSetup, getVar, goToPassage } = require('./helpers');
 
 /* setup.ToolController.render(toolKey) drives the markup that
    <<toolCheck>> wikifies for both classic-hunt completion replaces
@@ -125,6 +125,50 @@ test.describe('ToolController renderers', () => {
     const emfActivated = await page.evaluate(() =>
       SugarCube.setup.toolsRecord('emf').activated);
     expect(emfActivated).toBe(1);
+  });
+
+  test('maybeTurnOffLights leaves EMF inactive when no light could be flipped', async () => {
+    /* The ghost's flick-the-lights roll arms EMF, but only when there
+       was an actual light to flick. If the current passage isn't a
+       hunt room (or the room is already dark) turnOffLightHere returns
+       null, and the previous code path armed EMF anyway — the player
+       saw the reading open with no in-world cause. Pin the roll to
+       always succeed and stub turnOffLightHere null/non-null to cover
+       both branches. */
+    await page.evaluate(() => {
+      Math.random = () => 0;
+      SugarCube.setup.toolsRecord('emf').activated = 0;
+      const g = SugarCube.setup.Ghosts.active();
+      g.canTurnOffLights = true;
+      SugarCube.setup.Events.turnOffLightHere = () => null;
+    });
+    const dest1 = await callSetup(page, 'setup.Events.maybeTurnOffLights()');
+    expect(dest1).toBeNull();
+    const emf1 = await page.evaluate(() =>
+      SugarCube.setup.toolsRecord('emf').activated);
+    expect(emf1).toBe(0);
+
+    await page.evaluate(() => {
+      SugarCube.setup.Events.turnOffLightHere = () => 'OwaissaKitchen';
+    });
+    const dest2 = await callSetup(page, 'setup.Events.maybeTurnOffLights()');
+    expect(dest2).toBe('OwaissaKitchen');
+    const emf2 = await page.evaluate(() =>
+      SugarCube.setup.toolsRecord('emf').activated);
+    expect(emf2).toBe(1);
+  });
+
+  test('StealClothes arms the UVL activation window', async () => {
+    /* When the ghost physically grabs MC's clothes it leaves prints
+       behind, so the steal event should open the UVL reading window
+       the same way a sanity event does. */
+    await page.evaluate(() => {
+      SugarCube.setup.toolsRecord('uvl').activated = 0;
+    });
+    await goToPassage(page, 'StealClothes');
+    const uvl = await page.evaluate(() =>
+      SugarCube.setup.toolsRecord('uvl').activated);
+    expect(uvl).toBe(1);
   });
 
   test('clickHuntSearchTool fires the slot link only when not .disabled-link', async () => {

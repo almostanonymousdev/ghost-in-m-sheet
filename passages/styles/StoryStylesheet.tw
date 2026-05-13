@@ -108,10 +108,12 @@ html:not([data-debug-view]) .debug:not(.hidden) {
 body.ghoststreet {
 	background-image: url('assets/ui/img/ghoststreet.jpg');
 	background-size: cover;
+	background-attachment: fixed;
 }
 body.city {
 	background-image: url('assets/ui/img/city.jpg');
 	background-size: cover;
+	background-attachment: fixed;
 }
 
 /* ===== Room Backgrounds — Shared Base ===== */
@@ -142,6 +144,7 @@ body.city {
 .IroncladBlockBCellCLight, .IroncladBlockBCellCDark {
 	background-size: cover;
 	background-repeat: no-repeat;
+	background-attachment: fixed;
 	z-index: 1;
 }
 
