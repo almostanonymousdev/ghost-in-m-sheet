@@ -5,7 +5,7 @@ const { expectCleanPassage, expectNoErrors, setupHunt } = require('./e2e-helpers
 test.describe('Ghost unique abilities — Phantom, Goryo, Deogen, Jinn', () => {
   // Playwright's per-test `{ timeout }` details arg is NOT honored
   // (TestDetails only accepts tag/annotation). Set the budget here instead.
-  test.describe.configure({ timeout: 20_000, retries: 2 });
+  test.describe.configure({ timeout: 20_000 });
   // ── Phantom ────────────────────────────────────────────────────
 
   test('Phantom: lights cannot be turned off', async ({ game: page }) => {

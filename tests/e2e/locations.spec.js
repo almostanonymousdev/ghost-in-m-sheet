@@ -89,7 +89,7 @@ test.describe('Gym — hours and training gates', () => {
 });
 
 test.describe('Gym — passages render cleanly', () => {
-  test.describe.configure({ timeout: 10_000, retries: 1 });
+  test.describe.configure({ timeout: 10_000 });
   for (const passage of [
     'Gym', 'GymInside', 'GymSolo', 'GymTraining', 'GymTrainingTrainer',
     'GymTrainer', 'GymTrainerEvent1Start', 'GymTrainerEvent1Start1',
@@ -185,7 +185,7 @@ test.describe('Library — hours and meeting gates', () => {
 });
 
 test.describe('Library — passages render cleanly', () => {
-  test.describe.configure({ timeout: 10_000, retries: 1 });
+  test.describe.configure({ timeout: 10_000 });
   for (const passage of [
     'Library', 'LibraryInside', 'LibrarySearchResult',
     'Comics', 'ReadComics', 'LibraryGhostBook', 'LibraryTipsBook',
@@ -347,7 +347,7 @@ test.describe('Church — rescue hub and priest routes', () => {
 });
 
 test.describe('Church — passages render cleanly', () => {
-  test.describe.configure({ timeout: 10_000, retries: 1 });
+  test.describe.configure({ timeout: 10_000 });
   for (const passage of [
     'Church', 'ChurchPray', 'ChurchNunQuest', 'ChurchBasementEntrance',
     'RainExorcism', 'RainHelps',
@@ -363,7 +363,7 @@ test.describe('Church — passages render cleanly', () => {
 });
 
 test.describe('Mall — shopping and Blake content', () => {
-  test.describe.configure({ timeout: 10_000, retries: 1 });
+  test.describe.configure({ timeout: 10_000 });
   for (const passage of [
     'Mall', 'ClothingSection', 'ElectronicsSection',
     'AdultSection', 'AdultSectionPurchase', 'AdultSectionBlake',

@@ -96,7 +96,7 @@ test.describe('Possession — hunt cleanup', () => {
 });
 
 test.describe('Possession — location-based event passages', () => {
-  test.describe.configure({ timeout: 10_000, retries: 1 });
+  test.describe.configure({ timeout: 10_000 });
   const LOCATIONS = ['library', 'home', 'gym', 'church', 'park'];
 
   for (const loc of LOCATIONS) {
@@ -165,7 +165,7 @@ test.describe('Possession — city map gating', () => {
 });
 
 test.describe('Possession — home summoning events', () => {
-  test.describe.configure({ timeout: 10_000, retries: 1 });
+  test.describe.configure({ timeout: 10_000 });
   for (const passage of [
     'TheTwinsEvent',
     'SleepTwins',

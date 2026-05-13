@@ -20,6 +20,11 @@ async function clickPassageLink(page, linkText, expectedPassage) {
 }
 
 test.describe('Haunted house — Elm', () => {
+  // Each test walks 4-6 rooms via click-driven nav — the Elm passages embed
+  // heavy <<do>>/<<redo>> chains and many videos. Under parallel worker load
+  // the renderer can OOM mid-test ("Target page closed"); the self-healing
+  // `game` fixture reopens the page on the next attempt, so a single retry
+  // covers a transient renderer crash without masking a real bug.
   test.describe.configure({ retries: 1 });
   test('Elm Street renders with a Go inside link when no companion is set', async ({ game: page }) => {
     await setVar(page, 'hauntedHouse', 'elm');

@@ -189,7 +189,7 @@ test.describe('Body mods — home mirror and wardrobe', () => {
 });
 
 test.describe('Body mods — in-hunt exhibitionism events', () => {
-  test.describe.configure({ timeout: 10_000, retries: 1 });
+  test.describe.configure({ timeout: 10_000 });
   async function primeForNudityEvent(page, { exhib }) {
     // Drive the "naked, no bottoms" branch deterministically.
     await setVar(page, 'ghost', { name: 'Shade' });

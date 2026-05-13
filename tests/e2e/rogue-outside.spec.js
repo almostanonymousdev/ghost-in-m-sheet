@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, getVar, goToPassage, callSetup } = require('../helpers');
+const { openGame, resetGame, getVar, goToPassage, callSetup, ensureOpenPage } = require('../helpers');
 
 /* RogueOutside / RogueIdentify: from the rogue hallway, the player can
    step Outside and choose to identify the ghost, flee the haunt, or
@@ -8,17 +8,27 @@ const { openGame, resetGame, getVar, goToPassage, callSetup } = require('../help
    already use. */
 test.describe('E2E: rogue Outside menu', () => {
   let page;
+  let savedBrowser;
 
   test.beforeAll(async ({ browser }) => {
+    savedBrowser = browser;
     page = await openGame(browser);
   });
 
   test.afterAll(async () => {
-    await page.close();
+    if (page && !page.isClosed()) await page.close();
   });
 
   test.beforeEach(async () => {
-    await resetGame(page);
+    /* Self-heal if the renderer crashed during a prior test — see
+       fixtures.js for the equivalent logic on the shared `game` fixture. */
+    page = await ensureOpenPage(savedBrowser, page);
+    try {
+      await resetGame(page);
+    } catch (err) {
+      page = await openGame(savedBrowser);
+      await resetGame(page);
+    }
   });
 
   async function clickLink(page, linkText, expectedPassage) {

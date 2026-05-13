@@ -21,9 +21,12 @@ async function clickPassageLink(page, linkText, expectedPassage) {
 
 test.describe('Haunted house — Owaissa', () => {
   // Click-driven navigation tests hit 4-5 goToPassage / clickPassageLink calls
-  // in sequence; a single slow navigation under parallel load can blow the
-  // default 5s timeout. Single retry covers transient contention.
-  test.describe.configure({ retries: 1 });
+  // in sequence; bump the per-test budget so a single slow navigation under
+  // parallel load doesn't blow the default 5s. A single retry is kept because
+  // these passages are heavy enough to occasionally OOM the renderer under
+  // parallel worker load — the self-healing `game` fixture reopens the page
+  // on the next attempt.
+  test.describe.configure({ timeout: 10_000, retries: 1 });
   test('Owaissa Street renders with a Go inside link when no companion is set', async ({ game: page }) => {
     await setVar(page, 'hauntedHouse', 'owaissa');
     await setHuntMode(page, 1);

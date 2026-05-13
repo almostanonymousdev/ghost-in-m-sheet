@@ -25,17 +25,30 @@ const { openGame, resetGame } = require('./helpers');
  * fixture is only for the standard one-page-per-worker pattern.
  */
 const test = base.test.extend({
-  // Worker-scoped page: opened once when the worker starts, closed when it ends.
+  // Worker-scoped page holder: opened once when the worker starts. Wrapped
+  // in a holder so the per-test fixture can reopen the page mid-worker if a
+  // prior test crashed it (under heavy parallel load, a runaway passage can
+  // OOM-kill the renderer; without recovery, every subsequent test in that
+  // worker fails with "Target page, context or browser has been closed").
   gameWorkerPage: [async ({ browser }, use) => {
-    const page = await openGame(browser);
-    await use(page);
-    await page.close();
+    const holder = { browser, page: await openGame(browser) };
+    await use(holder);
+    if (!holder.page.isClosed()) await holder.page.close();
   }, { scope: 'worker' }],
 
-  // Test-scoped handoff: resets SugarCube state before each test runs.
+  // Test-scoped handoff: resets SugarCube state before each test runs. If
+  // the worker page was closed (or its context was destroyed) since the last
+  // test, transparently reopen so this test still gets a clean game.
   game: async ({ gameWorkerPage }, use) => {
-    await resetGame(gameWorkerPage);
-    await use(gameWorkerPage);
+    if (gameWorkerPage.page.isClosed()) {
+      gameWorkerPage.page = await openGame(gameWorkerPage.browser);
+    }
+    try {
+      await resetGame(gameWorkerPage.page);
+    } catch (err) {
+      gameWorkerPage.page = await openGame(gameWorkerPage.browser);
+    }
+    await use(gameWorkerPage.page);
   },
 });
 

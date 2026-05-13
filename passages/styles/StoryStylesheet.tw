@@ -1315,9 +1315,14 @@ body.ui-bar-stowed .rogue-run-layout {
 	gap: 4px;
 	z-index: 5;
 }
+/* Explicit square height (matching width) so the wrapping anchor keeps
+   a clickable area even when the icon fails to load — without this,
+   `height: auto` collapses to 0 and downstream layout (or test
+   harnesses that block media) can let neighbouring nav links steal the
+   click. */
 .rogue-run-lights img {
 	width: 32px;
-	height: auto;
+	height: 32px;
 }
 /* The toolbar is a positioned wrapper so .rogue-run-tools can span
  * the full width and center its cluster on the same vertical axis as
