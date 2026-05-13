@@ -119,10 +119,6 @@ setup.Templates = (function () {
 			hideSpot: null,
 			proceduralEligible: true
 		},
-		// Enigma's three trio rooms -- no furniture, atmospheric only.
-		roomA: { id: 'roomA', label: 'Room A', furniture: [], hideSpot: null, proceduralEligible: false },
-		roomB: { id: 'roomB', label: 'Room B', furniture: [], hideSpot: null, proceduralEligible: false },
-		roomC: { id: 'roomC', label: 'Room C', furniture: [], hideSpot: null, proceduralEligible: false },
 
 		// --- Backbone: hallway is always present in rogue plans ---
 		hallway: {

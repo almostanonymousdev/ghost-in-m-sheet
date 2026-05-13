@@ -674,3 +674,5 @@ sugarcube-2:
         (bool), slotName (string), tipText (string), iconFile (string).'
     rogueFooterLight:
       name: rogueFooterLight
+    rogueLootBeat:
+      name: rogueLootBeat
