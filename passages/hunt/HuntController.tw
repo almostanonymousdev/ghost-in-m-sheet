@@ -1572,6 +1572,10 @@ setup.HuntController = (function () {
 		if (!isHuntActive()) return;
 		var ghost = activeGhost();
 		if (!ghost || ghost.staysInOneRoom) return;
+		// Bait pins the ghost to the player for its window; skip the
+		// drift roll so the bait spend doesn't get undone by a shuffle.
+		if (setup.HauntConditions && setup.HauntConditions.isBaitActive
+			&& setup.HauntConditions.isBaitActive()) return;
 		var mins = setup.Time.minutes() || 0;
 		var interval = mins < 20 ? "0-19" : mins < 40 ? "20-39" : "40-59";
 		var s = sv();

@@ -1,0 +1,6 @@
+sugarcube-2:
+  macros:
+    updatemeter:
+      name: updatemeter
+    randRangeVideo:
+      name: randRangeVideo

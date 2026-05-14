@@ -1,4 +1,4 @@
-:: BaitOrgasm [nobr] {"position":"2800,1100","size":"100,100"}
+:: BaitOrgasm [nobr noreturn] {"position":"2800,1100","size":"100,100"}
 /* Triggered when the bait mechanic stamps lust onto an MC who was already
  * at 100. consumeBaitOrgasm zeros lust and bleeds 10 sanity but
  * intentionally leaves $baitActive / $baitStepsRemain alone — the ghost
