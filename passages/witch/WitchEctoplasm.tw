@@ -1,0 +1,83 @@
+:: WitchEctoplasm [nobr] {"position":"1450,25","size":"100,100"}
+/* Persistent hunt-unlock storefront priced in ectoplasm (mL).
+   Lists every item in setup.HuntController.shopCatalogue(). Bool
+   unlocks (max=1) flip to "Owned" once bought; stackable unlocks
+   (banlist slot, reroll charge) keep their buy link until the cap
+   is hit. Banlist slots also expose a per-modifier ban toggle so
+   the player can spend their owned slots; the toggle never charges
+   ectoplasm. Costs are paid in mL of $ectoplasm. */
+<<set _balanceLine to function () {
+	return 'Ectoplasm: ' + setup.HuntController.ectoplasm() + ' mL';
+}>>
+@@.location; The Witch's Ectoplasm Wares@@<br>
+@@.notmc-speech; Ectoplasm fetches a different sort of favor than coin does. Pick what you want.@@<br>
+<span class="meta-shop-balance"><<= _balanceLine()>></span><br>
+<br>
+<div id="hunt-shop-list">
+	<<for _item range setup.HuntController.shopCatalogue()>>
+		<<capture _item>>
+			<<set _owned to setup.HuntController.metaUnlock(_item.id)>>
+			<<set _stackable to (_item.max gt 1)>>
+			<<set _atCap to (_owned gte _item.max)>>
+			<<set _rowId to 'hunt-shop-row-' + _item.id>>
+			<div class="hunt-shop-row" @id="_rowId">
+				<b><<= _item.name>></b>
+				<<if _stackable>>
+					(<<= _owned>> / <<= isFinite(_item.max) ? _item.max : '∞'>>)
+				<<elseif _atCap>>
+					<span class="mc-action">— Owned</span>
+				<</if>>
+				<br>
+				<span class="mc-thoughts"><<= _item.description>></span><br>
+				<<if not _atCap>>
+					<<if setup.HuntController.canAffordEctoplasm(_item.cost)>>
+						@@.usebtn; <<link `'Buy (' + _item.cost + ' mL)'`>>
+							<<run setup.HuntController.buyUnlock(_item.id)>>
+							<<goto "WitchEctoplasm">>
+						<</link>>@@
+					<<else>>
+						<span class="disabled-link">Buy (<<= _item.cost>> mL — need <<= _item.cost - setup.HuntController.ectoplasm()>> more)</span>
+					<</if>>
+					<br>
+				<</if>>
+			</div>
+		<</capture>>
+	<</for>>
+</div>
+
+<<if setup.HuntController.bannedSlotsTotal() gt 0>>
+	<br>
+	@@.location; Modifier banlist@@<br>
+	<span class="mc-thoughts">
+		Slots used: <<= setup.HuntController.bannedSlotsUsed()>> / <<= setup.HuntController.bannedSlotsTotal()>>.
+		Banned modifiers will not appear in the run-start draft.
+	</span><br>
+	<div id="hunt-banlist">
+		<<for _mod range setup.Modifiers.draftableList()>>
+			<<capture _mod>>
+				<<set _isBanned to setup.HuntController.isBanned(_mod.id)>>
+				<<set _slotsLeft to setup.HuntController.bannedSlotsRemaining()>>
+				·
+				<<if _isBanned>>
+					<span class="mc-action"><<= _mod.name>></span>
+					@@.usebtn; <<link "Unban">>
+						<<run setup.HuntController.toggleBannedModifier(_mod.id)>>
+						<<goto "WitchEctoplasm">>
+					<</link>>@@
+				<<elseif _slotsLeft gt 0>>
+					<<= _mod.name>>
+					@@.usebtn; <<link "Ban">>
+						<<run setup.HuntController.toggleBannedModifier(_mod.id)>>
+						<<goto "WitchEctoplasm">>
+					<</link>>@@
+				<<else>>
+					<span class="disabled-link"><<= _mod.name>> (no slots free)</span>
+				<</if>>
+				-- @@.mc-thoughts;<<= _mod.description>>@@<br>
+			<</capture>>
+		<</for>>
+	</div>
+<</if>>
+
+<br>
+@@.backbtn;[[Back|WitchInside]]@@<br>

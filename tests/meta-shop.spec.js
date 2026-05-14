@@ -1,14 +1,15 @@
 const { test, expect } = require('@playwright/test');
 const { openGame, resetGame, getVar, callSetup } = require('./helpers');
 
-/* Persistent meta-shop unlocks. setup.HuntController exposes a catalogue
-   (shopCatalogue), per-id getters (metaUnlock / hasUnlock), a
-   buy entry point that deducts $ectoplasm and bumps the count,
-   plus banlist + reroll-charge helpers. Effect wiring lives in
-   startHunt / endHunt / minimapSvg; the tests below pin the
-   API contract and the wiring surface for each unlock. */
+/* Persistent hunt unlocks bought from the witch with ectoplasm.
+   setup.HuntController exposes a catalogue (shopCatalogue), per-id
+   getters (metaUnlock / hasUnlock), a buy entry point that deducts
+   $ectoplasm and bumps the count, plus banlist + reroll-charge
+   helpers. Effect wiring lives in startHunt / endHunt / minimapSvg;
+   the tests below pin the API contract and the wiring surface for
+   each unlock. The WitchEctoplasm passage renders this catalogue. */
 
-test.describe('Hunt meta-shop unlocks', () => {
+test.describe('Hunt persistent unlocks (witch ectoplasm shop)', () => {
   let page;
 
   test.beforeAll(async ({ browser }) => { page = await openGame(browser); });

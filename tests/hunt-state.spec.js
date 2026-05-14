@@ -363,9 +363,9 @@ test.describe('Hunt Controller', () => {
   });
 
   test('startingTools restricts to loadout.tools while preserving canonical order', async () => {
-    /* The loadout might list tools in any order (meta-shop unlocks,
-       starter packs); the toolbar should still render them in
-       searchToolOrder. */
+    /* The loadout might list tools in any order (witch ectoplasm
+       unlocks, starter packs); the toolbar should still render
+       them in searchToolOrder. */
     await page.evaluate(() => SugarCube.setup.HuntController.start({
       seed: 1,
       loadout: { tools: ['uvl', 'emf', 'spiritbox'] }

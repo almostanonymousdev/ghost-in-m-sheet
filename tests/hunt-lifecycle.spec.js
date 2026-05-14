@@ -3,8 +3,9 @@ const { openGame, resetGame, getVar, callSetup } = require('./helpers');
 
 /* setup.HuntController.startHunt / endHunt compose Run + FloorPlan +
    Modifiers into a single end-to-end lifecycle. The lifecycle
-   passages (HuntStart, HuntRun, HuntSummary, MetaShop) are
-   thin orchestration around these. */
+   passages (HuntStart, HuntRun, HuntSummary) are thin orchestration
+   around these; the persistent-unlock storefront lives on the
+   witch (WitchEctoplasm). */
 test.describe('Hunt lifecycle helpers', () => {
   let page;
 

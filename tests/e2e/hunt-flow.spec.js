@@ -2,9 +2,10 @@ const { test, expect } = require('@playwright/test');
 const { openGame, resetGame, getVar, goToPassage, callSetup, ensureOpenPage, seedRandom } = require('../helpers');
 
 /* End-to-end hunt lifecycle: GhostStreet → HuntStart → HuntRun
-   → HuntSummary → MetaShop. Exercises the actual passage flow
-   so any wiring break (missing link text, broken setField call,
-   wrong passage transition) shows up here. */
+   → HuntSummary, plus the witch's ectoplasm storefront
+   (WitchEctoplasm). Exercises the actual passage flow so any
+   wiring break (missing link text, broken setField call, wrong
+   passage transition) shows up here. */
 test.describe('E2E: hunt lifecycle', () => {
   /* Click-driven hunt navigation hits dozens of passages with heavy
      <<do>>/<<redo>> chains. Under parallel worker load the renderer can OOM
@@ -86,7 +87,7 @@ test.describe('E2E: hunt lifecycle', () => {
     });
   }
 
-  test('start from GhostStreet → win the run → spend ectoplasm in meta-shop', async () => {
+  test('start from GhostStreet → win the run → spend ectoplasm at the witch', async () => {
     test.setTimeout(20_000);
 
     await goToPassage(page, 'GhostStreet');
@@ -123,11 +124,11 @@ test.describe('E2E: hunt lifecycle', () => {
     expect(ectoplasm).toBeGreaterThanOrEqual(10);
     expect(await getVar(page, 'runsStarted')).toBe(1);
 
-    // 4. Walk into the meta-shop and buy the cheapest unlock
-    // (Reroll Charge at 5 mL). The shop redirects through goto on
-    // every purchase; we wait on the resulting state mutation
-    // (charges incremented, ectoplasm deducted) instead of DOM.
-    await clickLink(page, 'Visit the meta-shop', 'MetaShop');
+    // 4. Walk into the witch's ectoplasm storefront and buy the
+    // cheapest unlock (Reroll Charge at 5 mL). The shop redirects
+    // through goto on every purchase; we wait on the resulting state
+    // mutation (charges incremented, ectoplasm deducted) instead of DOM.
+    await goToPassage(page, 'WitchEctoplasm');
     await page.locator('.passage')
       .locator('#hunt-shop-row-reroll_charge')
       .getByText(/^Buy \(5 mL\)$/)
@@ -1535,7 +1536,6 @@ test.describe('E2E: hunt lifecycle', () => {
 
     // Run 2: lose. Bounce through the city map to exercise the
     // back-to-city exit; the chain-runs path is covered separately.
-    await clickLink(page, 'Visit the meta-shop', 'MetaShop');
     await clickLink(page, 'Back to the city', 'CityMap');
     await goToPassage(page, 'GhostStreet');
     await clickHuntCard(page);
@@ -1550,10 +1550,10 @@ test.describe('E2E: hunt lifecycle', () => {
     expect(await getVar(page, 'ectoplasm')).toBe(run1Win + run2Loss);
   });
 
-  /* The "Start a new hunt" link on HuntSummary / MetaShop chains
-     runs without bouncing through the city map. Both exits re-enter
-     HuntStart, which auto-rolls a fresh seed + modifier deck and
-     stamps a new $run. */
+  /* The "Start a new hunt" link on HuntSummary chains runs without
+     bouncing through the city map; the exit re-enters HuntStart,
+     which auto-rolls a fresh seed + modifier deck and stamps a new
+     $run. */
   test('HuntSummary offers Start a new hunt that rolls a fresh run', async () => {
     test.setTimeout(15_000);
     await goToPassage(page, 'GhostStreet');
@@ -1571,27 +1571,10 @@ test.describe('E2E: hunt lifecycle', () => {
     expect(await getVar(page, 'runsStarted')).toBe(2);
   });
 
-  test('MetaShop offers Start a new hunt that rolls a fresh run', async () => {
-    test.setTimeout(15_000);
-    await goToPassage(page, 'GhostStreet');
-    await clickHuntCard(page);
-    await clickLink(page, 'Enter the hunt', 'HuntRun');
-    await page.evaluate(() => SugarCube.setup.HuntController.markSuccess());
-    await goToPassage(page, 'HuntSummary');
-    await clickLink(page, 'Visit the meta-shop', 'MetaShop');
-    expect(await getVar(page, 'run')).toBeNull();
-
-    await clickLink(page, 'Start a new hunt', 'HuntStart');
-    const run = await getVar(page, 'run');
-    expect(run).not.toBeNull();
-    expect(run.number).toBe(2);
-  });
-
   /* Continuation gate: a failed identify (or any non-success exit
-     like FLED / SANITY / TIME / EXHAUSTION) should hide the
-     "Start a new hunt" link on both HuntSummary and MetaShop, so
-     the player has to step through the city map before queueing the
-     next run. */
+     like FLED / SANITY / TIME / EXHAUSTION) hides the "Start a new
+     hunt" link on HuntSummary, so the player has to step through
+     the city map before queueing the next run. */
   test('HuntSummary hides Start a new hunt after a failed run', async () => {
     test.setTimeout(15_000);
     await goToPassage(page, 'GhostStreet');
@@ -1599,18 +1582,6 @@ test.describe('E2E: hunt lifecycle', () => {
     await clickLink(page, 'Enter the hunt', 'HuntRun');
     await page.evaluate(() => SugarCube.setup.HuntController.markFailure());
     await goToPassage(page, 'HuntSummary');
-    await expect(page.locator('.passage').getByText('Start a new hunt')).toHaveCount(0);
-    await expect(page.locator('.passage').getByText('Visit the meta-shop')).toBeVisible();
-  });
-
-  test('MetaShop hides Start a new hunt after a failed run', async () => {
-    test.setTimeout(15_000);
-    await goToPassage(page, 'GhostStreet');
-    await clickHuntCard(page);
-    await clickLink(page, 'Enter the hunt', 'HuntRun');
-    await page.evaluate(() => SugarCube.setup.HuntController.markFailure());
-    await goToPassage(page, 'HuntSummary');
-    await clickLink(page, 'Visit the meta-shop', 'MetaShop');
     await expect(page.locator('.passage').getByText('Start a new hunt')).toHaveCount(0);
     await expect(page.locator('.passage').getByText('Back to the city')).toBeVisible();
   });

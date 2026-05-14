@@ -6,7 +6,8 @@ stash placements all change between runs. A small set of static
 houses (Owaissa, Elm, Ironclad) ride the same lifecycle but skip
 the floor-plan roll and substitute their authored template.
 Ectoplasm (measured in mL) carries forward from one run to the next
-and is spent in the meta-shop on persistent unlocks.
+and is spent at the witch's house ([WitchEctoplasm](../passages/witch/WitchEctoplasm.tw))
+on persistent unlocks.
 
 `setup.HuntController.isActive()` is the canonical "a hunt is in
 flight" predicate; `$run` is `null` whenever no hunt is active.
@@ -52,13 +53,14 @@ a failure before rolling fresh.
   screen. `setup.HuntController.endHunt(success)` clears `$run` and pays out
   ectoplasm (5 mL base + 5 mL if successful + 1 mL per active
   modifier). The player can chain straight into a fresh run via
-  "Start a new hunt" (re-enters `HuntStart`), spend ectoplasm in the
-  meta-shop, or fall back to the city.
-* **[MetaShop](../passages/hunt/HuntLifecycle.tw)** —
-  ectoplasm-spending storefront. Currently exposes a placeholder
-  3 mL unlock; specific unlocks (extra modifier reroll, starting
-  tool, companion at run start, etc.) land alongside their
-  gameplay hooks.
+  "Start a new hunt" (re-enters `HuntStart`) or fall back to the
+  city; persistent unlocks are bought separately from the witch.
+* **[WitchEctoplasm](../passages/witch/WitchEctoplasm.tw)** —
+  ectoplasm-spending storefront, reached from `WitchInside`.
+  Lists every entry in `setup.HuntController.shopCatalogue()`
+  (banlist slot, reroll charge, witch's blessing, smaller house,
+  loot sense, etc.) priced in mL. Banlist toggles render here too
+  when the player owns one or more slots.
 
 ## State shape
 
@@ -235,8 +237,8 @@ keep working without churn.
 
 [`setup.Modifiers`](../passages/hunt/ModifiersController.tw)
 catalogues every run modifier with a draft weight; weight 0
-keeps a modifier out of the random draw (reserved for meta-shop
-unlocks, debug, etc.). `setup.Modifiers.draft(seed, n)` does a
+keeps a modifier out of the random draw (reserved for witch
+ectoplasm unlocks, debug, etc.). `setup.Modifiers.draft(seed, n)` does a
 seeded weighted no-replacement draw.
 
 Modifiers in the catalogue today: Empty Bag (locked tools)
@@ -264,7 +266,8 @@ links use to decide whether to render an unlock as active.
 * [ModifiersController.tw](../passages/hunt/ModifiersController.tw) — `setup.Modifiers`: catalogue + weighted draft.
 * [TemplatesController.tw](../passages/hunt/TemplatesController.tw) — `setup.Templates`: room-template metadata + slot-id helpers.
 * [HuntHousesController.tw](../passages/hunt/HuntHousesController.tw) — `setup.HuntHouses`: static-house catalogue (Owaissa / Elm / Ironclad) with authored floor plans and per-house overrides.
-* [HuntLifecycle.tw](../passages/hunt/HuntLifecycle.tw) — `HuntStart`, `HuntRun`, `HuntSummary`, `MetaShop` passages.
+* [HuntLifecycle.tw](../passages/hunt/HuntLifecycle.tw) — `HuntStart`, `HuntRun`, `HuntSummary` passages.
+* [WitchEctoplasm.tw](../passages/witch/WitchEctoplasm.tw) — persistent-unlock storefront, priced in ectoplasm; reached from `WitchInside`.
 * [widgetHuntMinimap.tw](../passages/hunt/widgetHuntMinimap.tw) — `<<huntMinimap>>` SVG floor-plan view.
 * [widgetHuntToolBar.tw](../passages/hunt/widgetHuntToolBar.tw) — `<<huntToolBar>>` tool grid; renders one card per `setup.HuntController.startingTools()` entry (default = all six). Empty Bag (`locked_tools`) collapses the strip to a "your bag is empty" placeholder; `loadout.tools` filters to a subset while preserving canonical order. Tools the player picks up from `tool_<id>` furniture loot get unioned back in, so a started-empty bag fills back in as the player searches the rooms.
 
@@ -286,6 +289,6 @@ under.
 * [hunt-lifecycle.spec.js](../tests/hunt-lifecycle.spec.js) — `startHunt` / `endHunt` composition.
 * [hunt-minimap.spec.js](../tests/hunt-minimap.spec.js) — `minimapData()` denormalisation.
 * [save-load-roundtrip.spec.js](../tests/save-load-roundtrip.spec.js) — migration and round-trip coverage for hunt state.
-* [e2e/hunt-flow.spec.js](../tests/e2e/hunt-flow.spec.js) — end-to-end CityMap → start → win → meta-shop walkthrough; tool functionality, lair-room `isGhostHere`, time advance per click, tarot/paw pickup + Bag carry, dawn-wish run forfeit.
+* [e2e/hunt-flow.spec.js](../tests/e2e/hunt-flow.spec.js) — end-to-end CityMap → start → win → witch ectoplasm shop walkthrough; tool functionality, lair-room `isGhostHere`, time advance per click, tarot/paw pickup + Bag carry, dawn-wish run forfeit.
 * [hunt-controller.spec.js](../tests/hunt-controller.spec.js) — `setup.HuntController` facade contract.
 * [cursed-items-cross-mode.spec.js](../tests/cursed-items-cross-mode.spec.js) — `setup.HuntController` cursed-item facade (`snapGhostToCurrentRoom`, `trapGhost`, `streetExitPassage`, `possessionPassage`, `consumeKnowledgeEvidence`, `banActiveContext`, `isInsideHuntPassage`) plus the hunt start/end shared-state reset.

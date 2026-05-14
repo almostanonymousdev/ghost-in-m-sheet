@@ -40,4 +40,4 @@ The game world includes several city locations the player can visit between hunt
 
 ## [Hunt Mode](hunt-mode.md)
 
-The hunt loop. Each run rolls a fresh haunted house from a deterministic seed: the floor plan, the active modifiers, and the stash placements all change between runs. A small static-house catalogue (Owaissa, Elm, Ironclad) rides the same lifecycle with authored floor plans. Ectoplasm (measured in mL) carries forward and is spent in the meta-shop on persistent unlocks. `$run` is null when no run is active.
+The hunt loop. Each run rolls a fresh haunted house from a deterministic seed: the floor plan, the active modifiers, and the stash placements all change between runs. A small static-house catalogue (Owaissa, Elm, Ironclad) rides the same lifecycle with authored floor plans. Ectoplasm (measured in mL) carries forward and is spent at the witch's house (`WitchEctoplasm`) on persistent unlocks. `$run` is null when no run is active.

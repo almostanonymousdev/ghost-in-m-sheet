@@ -75,12 +75,13 @@ The game world includes several city locations the player can visit between hunt
   * [ToolsEventChurchEnd.tw](../passages/church/ToolsEventChurchEnd.tw) - Church tool event conclusion
   * [widgetChurch.tw](../passages/church/widgetChurch.tw) - Shared church widgets
 
-* **Hunt Mode** - The unified ghost-hunt loop, launched from the **Hunt** card on GhostStreet alongside the static-house cards. Each run rolls a deterministic floor plan, modifier deck, and stash placement from a seed; ectoplasm (mL) persists across runs and is spent in the meta-shop on permanent unlocks. There is no resume — walking back into HuntStart with an unfinished run forfeits it as a failure. See [hunt-mode.md](hunt-mode.md) for the lifecycle, generator, and state shape.
+* **Hunt Mode** - The unified ghost-hunt loop, launched from the **Hunt** card on GhostStreet alongside the static-house cards. Each run rolls a deterministic floor plan, modifier deck, and stash placement from a seed; ectoplasm (mL) persists across runs and is spent at the witch's house ([`WitchEctoplasm`](../passages/witch/WitchEctoplasm.tw)) on permanent unlocks. There is no resume — walking back into HuntStart with an unfinished run forfeits it as a failure. See [hunt-mode.md](hunt-mode.md) for the lifecycle, generator, and state shape.
   * [HuntController.tw](../passages/hunt/HuntController.tw) - `setup.HuntController`: lifecycle, accessors, ectoplasm, composition helpers, minimap data
   * [FloorPlanController.tw](../passages/hunt/FloorPlanController.tw) - Seeded floor-plan generator (Mulberry32 PRNG, star topology, stash placement)
   * [ModifiersController.tw](../passages/hunt/ModifiersController.tw) - Run-modifier catalogue and weighted draft
   * [TemplatesController.tw](../passages/hunt/TemplatesController.tw) - Room-template metadata and slot-id helpers
-  * [HuntLifecycle.tw](../passages/hunt/HuntLifecycle.tw) - HuntStart, HuntRun, HuntSummary, MetaShop passages
+  * [HuntLifecycle.tw](../passages/hunt/HuntLifecycle.tw) - HuntStart, HuntRun, HuntSummary passages
+  * [WitchEctoplasm.tw](../passages/witch/WitchEctoplasm.tw) - Persistent-unlock storefront priced in ectoplasm
   * [widgetHuntMinimap.tw](../passages/hunt/widgetHuntMinimap.tw) - `<<huntMinimap>>` floor-plan view
 
 * **Mall** - Shopping location with clothing, electronics, general, and adult sections. The adult section includes Blake-specific companion content.

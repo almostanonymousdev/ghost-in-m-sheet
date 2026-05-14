@@ -158,12 +158,12 @@
 <</if>>
 
 :: HuntSummary [nobr] {"position":"3200,200","size":"100,100"}
-/* Closes the active hunt, pays out ectoplasm (mL), prints the
-   summary, and routes to the meta-shop. The calling link stamps
-   the outcome via setup.HuntController.markSuccess() /
-   markFailure(reason); anything other than Outcome.SUCCESS counts
-   as a failure so the player can never lose ectoplasm by
-   navigating in via a stale link. */
+/* Closes the active hunt, pays out ectoplasm (mL), and prints the
+   summary. The calling link stamps the outcome via
+   setup.HuntController.markSuccess() / markFailure(reason); anything
+   other than Outcome.SUCCESS counts as a failure so the player can
+   never lose ectoplasm by navigating in via a stale link.
+   Persistent unlocks are spent with the witch (WitchEctoplasm). */
 <<if not setup.HuntController.isActive()>>
 	@@.mc-thoughts; No run to end.@@<br>
 	@@.backbtn; [[Back|CityMap]]@@
@@ -193,96 +193,8 @@
 	<<if _summary.success>>
 		@@.movebtn; [[Start a new hunt|HuntStart]]@@<br>
 	<</if>>
-	@@.movebtn; [[Visit the meta-shop|MetaShop]]@@<br>
 	@@.backbtn; [[Back to the city|CityMap]]@@
 <</if>>
-
-:: MetaShop [nobr] {"position":"3300,200","size":"100,100"}
-/* Persistent-unlock storefront. Lists every item in
-   setup.HuntController.shopCatalogue(). Bool unlocks (max=1) flip
-   to "Owned" once bought; stackable unlocks (banlist slot, reroll
-   charge) keep their buy link until the cap is hit. Banlist slots
-   also expose a per-modifier ban toggle so the player can spend
-   their owned slots; the toggle never charges ectoplasm. Costs are
-   paid in mL of $ectoplasm; redraws of the balance and item rows
-   happen via <<replace>>. */
-<<set _balanceLine to function () {
-	return 'Ectoplasm: ' + setup.HuntController.ectoplasm() + ' mL';
-}>>
-@@.location; Meta-shop@@<br>
-<span class="meta-shop-balance"><<= _balanceLine()>></span><br>
-<br>
-<div id="hunt-shop-list">
-	<<for _item range setup.HuntController.shopCatalogue()>>
-		<<capture _item>>
-			<<set _owned to setup.HuntController.metaUnlock(_item.id)>>
-			<<set _stackable to (_item.max gt 1)>>
-			<<set _atCap to (_owned gte _item.max)>>
-			<<set _rowId to 'hunt-shop-row-' + _item.id>>
-			<div class="hunt-shop-row" @id="_rowId">
-				<b><<= _item.name>></b>
-				<<if _stackable>>
-					(<<= _owned>> / <<= isFinite(_item.max) ? _item.max : '∞'>>)
-				<<elseif _atCap>>
-					<span class="mc-action">— Owned</span>
-				<</if>>
-				<br>
-				<span class="mc-thoughts"><<= _item.description>></span><br>
-				<<if not _atCap>>
-					<<if setup.HuntController.canAffordEctoplasm(_item.cost)>>
-						@@.usebtn; <<link `'Buy (' + _item.cost + ' mL)'`>>
-							<<run setup.HuntController.buyUnlock(_item.id)>>
-							<<goto "MetaShop">>
-						<</link>>@@
-					<<else>>
-						<span class="disabled-link">Buy (<<= _item.cost>> mL — need <<= _item.cost - setup.HuntController.ectoplasm()>> more)</span>
-					<</if>>
-					<br>
-				<</if>>
-			</div>
-		<</capture>>
-	<</for>>
-</div>
-
-<<if setup.HuntController.bannedSlotsTotal() gt 0>>
-	<br>
-	@@.location; Modifier banlist@@<br>
-	<span class="mc-thoughts">
-		Slots used: <<= setup.HuntController.bannedSlotsUsed()>> / <<= setup.HuntController.bannedSlotsTotal()>>.
-		Banned modifiers will not appear in the run-start draft.
-	</span><br>
-	<div id="hunt-banlist">
-		<<for _mod range setup.Modifiers.draftableList()>>
-			<<capture _mod>>
-				<<set _isBanned to setup.HuntController.isBanned(_mod.id)>>
-				<<set _slotsLeft to setup.HuntController.bannedSlotsRemaining()>>
-				·
-				<<if _isBanned>>
-					<span class="mc-action"><<= _mod.name>></span>
-					@@.usebtn; <<link "Unban">>
-						<<run setup.HuntController.toggleBannedModifier(_mod.id)>>
-						<<goto "MetaShop">>
-					<</link>>@@
-				<<elseif _slotsLeft gt 0>>
-					<<= _mod.name>>
-					@@.usebtn; <<link "Ban">>
-						<<run setup.HuntController.toggleBannedModifier(_mod.id)>>
-						<<goto "MetaShop">>
-					<</link>>@@
-				<<else>>
-					<span class="disabled-link"><<= _mod.name>> (no slots free)</span>
-				<</if>>
-				-- @@.mc-thoughts;<<= _mod.description>>@@<br>
-			<</capture>>
-		<</for>>
-	</div>
-<</if>>
-
-<br>
-<<if setup.HuntController.lastWasSuccess()>>
-	@@.movebtn; [[Start a new hunt|HuntStart]]@@<br>
-<</if>>
-@@.backbtn; [[Back to the city|CityMap]]@@
 
 :: HuntOutside [nobr] {"position":"3100,300","size":"100,100"}
 /* The yard outside the haunt. Reached from HuntRun's hallway via the

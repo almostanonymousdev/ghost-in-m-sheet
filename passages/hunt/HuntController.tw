@@ -1385,10 +1385,10 @@ setup.HuntController = (function () {
 			success: !!success,
 			payout: payout
 		};
-		/* Stash the outcome on persistent meta-state so HuntSummary /
-		   MetaShop can gate the "Start a new hunt" continuation link
-		   on it -- $run is cleared by end() below, so the passages
-		   need a side channel that survives a successful close. */
+		/* Stash the outcome on persistent meta-state so HuntSummary
+		   can gate the "Start a new hunt" continuation link on it --
+		   $run is cleared by end() below, so the passage needs a
+		   side channel that survives a successful close. */
 		metaState().lastWasSuccess = !!success;
 		if (setup.HauntedHouses) {
 			if (typeof setup.HauntedHouses.commitTempCorruption === 'function') {

@@ -44,7 +44,7 @@ The core gameplay revolves around investigating haunted locations to identify an
   * [NudityEvent.tw](../passages/haunted_houses/general/NudityEvent.tw) - Nudity event triggers
   * [NudityEventTwo.tw](../passages/haunted_houses/general/NudityEventTwo.tw) - Second nudity event
 
-* **Hunt-house plumbing** - The hunt lifecycle composes its floor plan from the catalogues in [passages/hunt/](../passages/hunt/) — see [hunt-mode.md](hunt-mode.md) for the full lifecycle, modifiers, and meta-shop. Shared room / cursed-item / monkey-paw plumbing still lives here:
+* **Hunt-house plumbing** - The hunt lifecycle composes its floor plan from the catalogues in [passages/hunt/](../passages/hunt/) — see [hunt-mode.md](hunt-mode.md) for the full lifecycle, modifiers, and the witch's ectoplasm storefront. Shared room / cursed-item / monkey-paw plumbing still lives here:
   * [HauntedHousesController.tw](../passages/haunted_houses/HauntedHousesController.tw) - Shared haunted-house state and helpers (cursed-item placement, prowl roll, drift hooks)
   * [RoomsController.tw](../passages/haunted_houses/RoomsController.tw) - `setup.Rooms` namespace for per-room state (`byId`, `templateOf`, `isDark`, `setBackground`, `seed`); each room state object carries a `template` field so hunts can mint extra rooms with arbitrary ids
   * [MonkeyPaw.tw](../passages/haunted_houses/general/MonkeyPaw.tw) / [MonkeyPawController.tw](../passages/haunted_houses/MonkeyPawController.tw) - Monkey's Paw cursed wish item
