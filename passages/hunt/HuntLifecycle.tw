@@ -31,7 +31,6 @@
 	<<set _huntStaticHouseId to $pendingHuntHouseId or null>>
 	<<set $pendingHuntHouseId to null>>
 	<<run setup.HuntController.startHunt({ seed: _huntSeed, staticHouseId: _huntStaticHouseId })>>
-	<<run setup.HuntJournal.recordHuntStart()>>
 <</if>>
 <<set _run to setup.HuntController.active()>>
 <<set _modifiers to setup.Modifiers.activeList()>>
@@ -169,7 +168,6 @@
 	@@.backbtn; [[Back|CityMap]]@@
 <<else>>
 	<<set _success to setup.HuntController.isSuccess()>>
-	<<run setup.HuntJournal.recordHuntEnd()>>
 	<<set _summary to setup.HuntController.endHunt(_success)>>
 	<<set _FR to setup.HuntController.FailureReason>>
 
@@ -257,14 +255,12 @@
 	<<timed 6s>>
 		<<if setup.HuntController.ghostName() eq setup.Ghosts.ghostTypeSelected()>>
 			<<run setup.HuntController.markSuccess()>>
-			<<run setup.HuntJournal.recordPayout(true)>>
 			<div class="hunt-reveal hunt-reveal-text">@@.notmc-speech; The ghost fades peacefully into the ether.@@</div>
 			<div class="hunt-reveal hunt-reveal-buttons">
 				@@.movebtn; [[Continue|HuntSummary]]@@<br>
 				@@.movebtn; [[Go home|HuntSummary]]@@
 			</div>
 		<<else>>
-			<<run setup.HuntJournal.recordPayout(false)>>
 			<div class="hunt-reveal hunt-reveal-text">@@.mc-thoughts; Your heart sinks as the ghost roughly grabs your helpless form.@@</div>
 			<div class="hunt-reveal hunt-reveal-buttons">
 				@@.movebtn; [[Continue|HuntEnd]]@@

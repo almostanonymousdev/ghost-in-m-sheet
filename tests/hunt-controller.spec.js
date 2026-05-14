@@ -261,15 +261,4 @@ test.describe('HuntController', () => {
     expect(await callSetup(page, 'setup.HuntController.realGhostName()')).toBe(huntGhost);
   });
 
-  test('payoutForGuess() returns zero (ectoplasm is paid on HuntSummary)', async () => {
-    expect(await callSetup(page, 'setup.HuntController.payoutForGuess(true)'))
-      .toEqual({ money: 0, xp: 0 });
-
-    await goToPassage(page, 'GhostStreet');
-    await clickHuntCard(page);
-    expect(await callSetup(page, 'setup.HuntController.payoutForGuess(true)'))
-      .toEqual({ money: 0, xp: 0 });
-    expect(await callSetup(page, 'setup.HuntController.payoutForGuess(false)'))
-      .toEqual({ money: 0, xp: 0 });
-  });
 });

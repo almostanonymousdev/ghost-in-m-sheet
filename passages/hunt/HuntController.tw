@@ -1553,13 +1553,6 @@ setup.HuntController = (function () {
 		return roomId;
 	}
 
-	/* Per-guess payout summary. Runs pay ectoplasm via endHunt and
-	   surface it on HuntSummary, so the journal shouldn't double-bill
-	   -- payout is {0,0}. Used by HuntJournal. */
-	function payoutForGuess(correct) {
-		return { money: 0, xp: 0 };
-	}
-
 	/* "Ghost catches the MC" exit target that HuntEnd's <<huntEndExit>>
 	   widget routes through. Stamps a CAUGHT failure on the run and
 	   routes to HuntSummary. */
@@ -1801,7 +1794,6 @@ setup.HuntController = (function () {
 		huntOverPassage: huntOverPassage,
 		realGhostName: realGhostName,
 		ghostRoomLabel: ghostRoomLabel,
-		payoutForGuess: payoutForGuess,
 		huntCaughtPassage: huntCaughtPassage,
 		onCaughtCleanup: onCaughtCleanup,
 		shuffleGhostRoom: shuffleGhostRoom,
