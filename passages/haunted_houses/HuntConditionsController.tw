@@ -242,11 +242,11 @@ setup.HauntConditions = (function () {
 			/* Cap-overflow during bait routes to BaitOrgasm — see
 			 * consumeBaitOrgasm. Only the bait flow flags this; other
 			 * lust sources (topless/nude clothing tick) just clamp. */
-			var baitAtCap = snap.baitActive && mc.lust >= 100;
-			setup.Mc.applyLustDelta(snap.lustPerStep);
+			var baitAtCap = snap.baitActive && (mc.lust + snap.lustPerStep) >= 100;
 			if (baitAtCap) {
 				V.baitOrgasmPending = 1;
 			}
+			setup.Mc.applyLustDelta(snap.lustPerStep);
 		}
 		if (snap.energyPerStep !== 0) {
 			setup.Mc.applyEnergyDelta(snap.energyPerStep);

@@ -414,13 +414,6 @@ sugarcube-2:
         and $currentFurniture value, e.g. 'bedroom_table')."
     companionCard:
       name: companionCard
-    huntHouseCard:
-      name: huntHouseCard
-      description: "Renders one .housecard tile on GhostStreet using the
-        setup.HauntedHouses catalogue. Handles the level gate, the
-        street-passage link, and the per-click contract/flag/furniture/room side
-        effects. Args: houseId (string, 'owaissa' | 'elm' | 'enigma' |
-        'ironclad')."
     huntCard:
       name: huntCard
       description: Drops a hunt entry into the GhostStreet flexgrid. Same
