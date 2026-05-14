@@ -143,4 +143,32 @@ test.describe('Hunt lifecycle helpers', () => {
     expect(result).toBeNull();
     expect(await callSetup(page, 'setup.HuntController.ectoplasm()')).toBe(0);
   });
+
+  /* HuntSummary reads summary.exitPassage to wire its Continue link;
+     each FailureReason routes to its matching HuntOver* screen and the
+     remaining outcomes fall back to CityMap. */
+  test('endHunt summary.exitPassage maps each failure reason to its HuntOver* screen', async () => {
+    const cases = [
+      { success: true,  reason: null,         exitPassage: 'CityMap' },
+      { success: false, reason: 'sanity',     exitPassage: 'HuntOverSanity' },
+      { success: false, reason: 'exhaustion', exitPassage: 'HuntOverExhaustion' },
+      { success: false, reason: 'time',       exitPassage: 'HuntOverTime' },
+      { success: false, reason: 'caught',     exitPassage: 'CityMap' },
+      { success: false, reason: 'fled',       exitPassage: 'CityMap' },
+      { success: false, reason: 'abandon',    exitPassage: 'CityMap' },
+      { success: false, reason: null,         exitPassage: 'CityMap' }
+    ];
+    for (const c of cases) {
+      await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
+      if (c.success) {
+        await page.evaluate(() => SugarCube.setup.HuntController.markSuccess());
+      } else if (c.reason) {
+        await page.evaluate(reason => SugarCube.setup.HuntController.markFailure(reason), c.reason);
+      } else {
+        await page.evaluate(() => SugarCube.setup.HuntController.markFailure());
+      }
+      const summary = await page.evaluate(success => SugarCube.setup.HuntController.endHunt(success), c.success);
+      expect(summary.exitPassage).toBe(c.exitPassage);
+    }
+  });
 });

@@ -193,7 +193,8 @@
 	<<if _summary.success>>
 		@@.movebtn; [[Start a new hunt|HuntStart]]@@<br>
 	<</if>>
-	@@.backbtn; [[Back to the city|CityMap]]@@
+	@@.backbtn;<<link "Continue" _summary.exitPassage>>
+	<</link>>@@
 <</if>>
 
 :: HuntOutside [nobr] {"position":"3100,300","size":"100,100"}

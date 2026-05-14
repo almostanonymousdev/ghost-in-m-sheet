@@ -1358,6 +1358,18 @@ setup.HuntController = (function () {
 		if (reason) run.failureReason = reason;
 	}
 
+	/* Map a (success, failureReason) pair to the passage HuntSummary's
+	   Continue link should target. Successful runs and failures without
+	   a dedicated HuntOver* screen fall back to CityMap. Centralizing
+	   the lookup keeps HuntSummary free of FailureReason branches. */
+	function exitPassageForOutcome(success, reason) {
+		if (success) return "CityMap";
+		if (reason === FailureReason.SANITY) return "HuntOverSanity";
+		if (reason === FailureReason.EXHAUSTION) return "HuntOverExhaustion";
+		if (reason === FailureReason.TIME) return "HuntOverTime";
+		return "CityMap";
+	}
+
 	/* End the active run, paying out ectoplasm (mL) based on
 	   whether it was a success and how many modifiers the run carried.
 	   Returns a small summary record the result passage can render
@@ -1383,7 +1395,8 @@ setup.HuntController = (function () {
 			objective: run.objective,
 			failureReason: run.failureReason || null,
 			success: !!success,
-			payout: payout
+			payout: payout,
+			exitPassage: exitPassageForOutcome(!!success, run.failureReason || null)
 		};
 		/* Stash the outcome on persistent meta-state so HuntSummary
 		   can gate the "Start a new hunt" continuation link on it --
