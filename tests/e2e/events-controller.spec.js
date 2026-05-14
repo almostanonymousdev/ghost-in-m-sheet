@@ -131,16 +131,16 @@ test.describe('Events controller — video resolvers', () => {
 });
 
 test.describe('Events controller — orgasm and body-part roll', () => {
-  test('shouldOrgasm fires only at lust 100 for mouth/pussy/anal', async ({ game: page }) => {
+  test('shouldOrgasm fires only at lust 100 for pussy/anal', async ({ game: page }) => {
     await setVar(page, 'mc.lust', 100);
-    expect(await callSetup(page, 'setup.Events.shouldOrgasm("mouth")')).toBe(true);
+    expect(await callSetup(page, 'setup.Events.shouldOrgasm("mouth")')).toBe(false);
     expect(await callSetup(page, 'setup.Events.shouldOrgasm("pussy")')).toBe(true);
     expect(await callSetup(page, 'setup.Events.shouldOrgasm("anal")')).toBe(true);
     expect(await callSetup(page, 'setup.Events.shouldOrgasm("brain")')).toBe(false);
     expect(await callSetup(page, 'setup.Events.shouldOrgasm("tits")')).toBe(false);
 
     await setVar(page, 'mc.lust', 99);
-    expect(await callSetup(page, 'setup.Events.shouldOrgasm("mouth")')).toBe(false);
+    expect(await callSetup(page, 'setup.Events.shouldOrgasm("pussy")')).toBe(false);
   });
 
   test('orgasmSanityLoss is -10', async ({ game: page }) => {

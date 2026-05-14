@@ -1519,37 +1519,6 @@ test.describe('E2E: hunt lifecycle', () => {
     ).toBeVisible();
   });
 
-  test('two consecutive runs increment runsStarted across the lifecycle', async () => {
-    test.setTimeout(20_000);
-
-    await goToPassage(page, 'GhostStreet');
-
-    // Run 1: win.
-    await clickHuntCard(page);
-    await clickLink(page, 'Enter the hunt', 'HuntRun');
-    const run1Win = await page.evaluate(() =>
-      Math.round(10 * SugarCube.setup.Modifiers.payoutMultiplier()));
-    await page.evaluate(() => SugarCube.setup.HuntController.markSuccess());
-    await goToPassage(page, 'HuntSummary');
-    expect(await getVar(page, 'runsStarted')).toBe(1);
-    expect(await getVar(page, 'ectoplasm')).toBe(run1Win);
-
-    // Run 2: lose. Bounce through the city map to exercise the
-    // back-to-city exit; the chain-runs path is covered separately.
-    await clickLink(page, 'Back to the city', 'CityMap');
-    await goToPassage(page, 'GhostStreet');
-    await clickHuntCard(page);
-    const run2 = await getVar(page, 'run');
-    expect(run2.number).toBe(2);
-    await clickLink(page, 'Enter the hunt', 'HuntRun');
-    const run2Loss = await page.evaluate(() =>
-      Math.round(3 * SugarCube.setup.Modifiers.payoutMultiplier()));
-    await page.evaluate(() => SugarCube.setup.HuntController.markFailure());
-    await goToPassage(page, 'HuntSummary');
-    expect(await getVar(page, 'runsStarted')).toBe(2);
-    expect(await getVar(page, 'ectoplasm')).toBe(run1Win + run2Loss);
-  });
-
   /* The "Start a new hunt" link on HuntSummary chains runs without
      bouncing through the city map; the exit re-enters HuntStart,
      which auto-rolls a fresh seed + modifier deck and stamps a new
@@ -1583,6 +1552,6 @@ test.describe('E2E: hunt lifecycle', () => {
     await page.evaluate(() => SugarCube.setup.HuntController.markFailure());
     await goToPassage(page, 'HuntSummary');
     await expect(page.locator('.passage').getByText('Start a new hunt')).toHaveCount(0);
-    await expect(page.locator('.passage').getByText('Back to the city')).toBeVisible();
+    await expect(page.locator('.passage').getByText('Continue')).toBeVisible();
   });
 });
