@@ -5,22 +5,20 @@
 	<<print setup.Events.eventTextFor(_bodyPart, _ct)>>
 
 	<<if setup.Events.shouldOrgasm(_bodyPart)>>
-		<<addSanity -10>>
+		<<addSanity -25>>
 		<<addLust -100>>
 		<<run setup.Events.setOrgasmCooldown(3)>>
 		<br>
 		<<if _bodyPart eq "pussy">>
+			<<randRangeVideo "mechanics/orgasm/pussy" 1 5 ".mp4">>
 			@@.mc-thoughts; A violent wave of pleasure crashes through your entire body. Your legs buckle and your vision blurs as an uncontrollable orgasm tears through you. Every nerve is on fire, your pussy clenching and spasming around him as you scream out, unable to stop yourself.@@<br>
 			@@.mc-speech; AHH~ I-I'm cumming!! Oh god, I'm cumming so hard~!!@@<br>
 			@@.mc-thoughts; The intensity overwhelms your mind. For a moment, everything goes white. When the sensation finally fades, you feel something slipping away inside you — a piece of yourself you can't quite hold onto.@@<br>
 		<<elseif _bodyPart eq "anal">>
+			<<randRangeVideo "mechanics/orgasm/anal" 1 6 ".mp4">>
 			@@.mc-thoughts; Your whole body seizes up as a deep, shameful orgasm rips through you from behind. Your back arches violently and your mouth falls open in a silent scream. You never imagined you could cum from this — but your body betrays you completely, trembling and convulsing around him.@@<br>
 			@@.mc-speech; N-no... I'm... I'm cumming from my ass~?! This can't be happening~!!@@<br>
 			@@.mc-thoughts; The humiliation mixes with the overwhelming pleasure, drowning out your thoughts. Your mind feels foggy, fragile — like something inside you just cracked.@@<br>
-		<<elseif _bodyPart eq "mouth">>
-			@@.mc-thoughts; With his cock still stuffing your throat, an orgasm hits you out of nowhere. Your thighs press together as your whole body shudders, wetness dripping down your legs. Your eyes roll back and muffled moans vibrate around him as you cum helplessly on your knees.@@<br>
-			@@.mc-speech; ~Mmph~Mmmm~!!@@<br>
-			@@.mc-thoughts; You can barely breathe, barely think. The pleasure is so intense it feels like it's erasing your thoughts one by one. When it finally passes, you feel emptier — hollowed out, like a part of your mind just went dark.@@<br>
 		<</if>>
 	<</if>>
 <</widget>>

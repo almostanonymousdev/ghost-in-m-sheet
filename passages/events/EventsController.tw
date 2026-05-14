@@ -271,11 +271,11 @@ setup.Events = (function () {
 		/*
 		* Returns true if the MC should orgasm during a sexual encounter.
 		* Triggers when lust is at max (100) and the body part is
-		* mouth, pussy, or anal.
+		* pussy or anal.
 		*/
 		shouldOrgasm: function (bodyPart) {
 			if (setup.Mc.lust() < 100) return false;
-			return bodyPart === 'mouth' || bodyPart === 'pussy' || bodyPart === 'anal';
+			return bodyPart === 'pussy' || bodyPart === 'anal';
 		},
 
 		/*
