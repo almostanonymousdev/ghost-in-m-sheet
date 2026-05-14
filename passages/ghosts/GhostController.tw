@@ -407,19 +407,17 @@
     }
 
     /* Lifecycle stages of $hunt.mode. Use HuntMode.X instead of magic
-       ints, and prefer the predicate helpers (isHunting, hasContract, …)
+       ints, and prefer the predicate helpers (isHunting, isPossessed, …)
        to compare values. */
     var HuntMode = Object.freeze({
-        NONE:      0,   // no contract bought (represented by $hunt === null)
-        CONTRACT:  1,   // contract bought, not yet entered the house
+        NONE:      0,   // no hunt active (represented by $hunt === null)
         ACTIVE:    2,   // player is inside the house, hunt in progress
-        POSSESSED: 3    // hunt ended (manual exit, sanity-over, pills); witch
-                        //    contract must be closed before starting another
+        POSSESSED: 3    // hunt ended (manual exit, sanity-over, pills)
     });
 
-    /* Build a fresh $hunt object for a new contract. All lifecycle-
-       coupled hunt state lives here so WitchEndContract can clean up with
-       a single `$hunt = null` instead of unsetting each field. */
+    /* Build a fresh $hunt object. All lifecycle-coupled hunt state
+       lives here so a single `$hunt = null` can clean it up instead
+       of unsetting each field. */
     function buildHunt(name) {
         var cat = setup.Ghosts.getByName(name);
         var evIds = cat ? cat.evidence.map(function (e) { return e.id; }) : [];
@@ -429,7 +427,7 @@
             evidence: evIds,    // evidence ids; DeleteEvidence shrinks this
             room:     null,     // the ghost's favorite room (set in GhostStreet)
             trapped:  false,    // $hunt.trapped replaces $ghostIsTrapped
-            mode:     HuntMode.CONTRACT
+            mode:     HuntMode.ACTIVE
         };
     }
 
@@ -582,23 +580,21 @@
             if (g) g.onEnterHouse();
         },
 
-        /* $hunt lifecycle. startHunt creates the object (witch contract
-           bought) and clears stale per-hunt ability flags; endContract
-           nulls it out (contract closed at witch). Use hunt() to read
-           it — null means "no contract". */
+        /* $hunt lifecycle. startHunt creates the object and clears
+           stale per-hunt ability flags. Use hunt() to read it — null
+           means "no hunt in progress". */
         hunt:         function ()     { return State.variables.hunt || null; },
         startHunt:    function (name) {
             State.variables.hunt = buildHunt(name);
             setup.Ghosts.clearHuntFlags();
         },
-        endContract:  function ()     { State.variables.hunt = null; },
 
         /* Wipe the per-hunt ability flags that ride alongside $hunt but
            can't be folded into it without chasing down every consumer.
            $highpriestess burns on use but lingers if the player saved
            between draw and use; $bansheeAbility / $cthulionAbility are
            event-local and cleared by EventMC, but defensive wipes at
-           hunt start keep them from leaking across contracts. */
+           hunt start keep them from leaking across hunts. */
         clearHuntFlags: function () {
             var V = State.variables;
             delete V.highpriestess;
@@ -611,12 +607,10 @@
            passages and give each stage a readable predicate. */
         huntMode:    function ()     { var h = State.variables.hunt; return h ? h.mode : HuntMode.NONE; },
         setHuntMode: function (mode) { var h = State.variables.hunt; if (h) h.mode = mode; },
-        isInactive:  function ()     { return this.huntMode() === HuntMode.NONE; },
-        hasContract: function ()     { return this.huntMode() === HuntMode.CONTRACT; },
         isHunting:   function ()     { return this.huntMode() === HuntMode.ACTIVE; },
         isPossessed: function ()     { return this.huntMode() === HuntMode.POSSESSED; },
-        /* True for any stage past NONE — "a contract exists, regardless of
-           whether the player is pre-entry, inside, or post-hunt". */
+        /* True for any stage past NONE — "a hunt object exists, regardless
+           of whether the player is inside the house or post-hunt". */
         isAnyMode:   function ()     { return this.huntMode() !== HuntMode.NONE; },
 
         /* True when this hunt is actually a Mimic in disguise. Replaces

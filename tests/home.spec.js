@@ -217,18 +217,7 @@ test.describe('Home Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('hasHuntContract true when ghostHuntingMode is 1', async ({ game: page }) => {
-    // arrange
-    await setHuntMode(page, 1);
-
-    // act
-    const result = await callSetup(page, 'setup.Ghosts.hasContract()');
-
-    // assert
-    expect(result).toBe(true);
-  });
-
-  test('needsWitch true when ghostHuntingMode is 3', async ({ game: page }) => {
+  test('isPossessed true when ghostHuntingMode is 3', async ({ game: page }) => {
     // arrange
     await setHuntMode(page, 3);
 
@@ -237,28 +226,6 @@ test.describe('Home Controller', () => {
 
     // assert
     expect(result).toBe(true);
-  });
-
-  test('canGoHunting requires contract and dressed', async ({ game: page }) => {
-    // arrange
-    await setHuntMode(page, 1);
-
-    // act
-    const result = await callSetup(page, 'setup.Home.canGoHunting()');
-
-    // assert
-    expect(result).toBe(true);
-  });
-
-  test('canGoHunting false without contract', async ({ game: page }) => {
-    // arrange
-    await setHuntMode(page, 0);
-
-    // act
-    const result = await callSetup(page, 'setup.Home.canGoHunting()');
-
-    // assert
-    expect(result).toBe(false);
   });
 
   // --- Succubus events ---

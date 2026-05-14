@@ -138,9 +138,9 @@ function setVar(page, varName, value) {
 }
 
 /**
- * Set $hunt.mode (0 = none/null-hunt, 1 = contract, 2 = active, 3 = possessed).
- * Auto-creates a stub hunt for modes >= 1 so tests can exercise mode
- * transitions without calling setupHunt first.
+ * Set $hunt.mode (0 = none/null-hunt, 2 = active, 3 = possessed).
+ * Auto-creates a stub hunt for non-zero modes so tests can exercise
+ * mode transitions without calling setupHunt first.
  */
 function setHuntMode(page, mode) {
   return page.evaluate((m) => {

@@ -226,10 +226,10 @@ test.describe('Witch — passage rendering with mixed state', () => {
     await expectCleanPassage(page);
   });
 
-  test('WitchInside renders without error after contract turn-in', async ({ game: page }) => {
+  test('WitchInside renders without error when no hunt is active', async ({ game: page }) => {
     await setVar(page, 'hours', 12);
     await setVar(page, 'firstVisitWitchShop', false);
-    await page.evaluate(() => { SugarCube.setup.Ghosts.endContract(); });
+    await page.evaluate(() => { SugarCube.State.variables.hunt = null; });
     await goToPassage(page, 'WitchInside');
     await expectCleanPassage(page);
   });

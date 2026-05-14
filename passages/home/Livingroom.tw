@@ -50,20 +50,13 @@
 <</if>>
 
 <<if setup.Home.isNightForHunt()>>
-	<<if not setup.Ghosts.hasContract() and not setup.Ghosts.isPossessed() and setup.Ghosts.isInactive()>>
-		@@.mc-thoughts; I don't have a contract@@
-	<<elseif setup.Ghosts.hasContract()>>
-
-		<<if not setup.Wardrobe.isDressedForStreet()>>
-			@@.mc-thoughts; I can't go outside naked @@
-
-		<<elseif setup.Home.isDirty()>>
-			@@.mc-thoughts; I need to go to the bathroom first@@
-		<<elseif setup.Home.isCorruptEnoughToSkipUnderwear()>>@@.movebtn;[[Ghost hunting|GhostStreet]]@@
-		<<elseif not setup.Wardrobe.isWearingUnderwear()>>@@.mc-thoughts; I can't go outside without underwear @@
-		<<else>>@@.movebtn;[[Ghost hunting|GhostStreet]]@@
-		<</if>>
-	<<elseif setup.Ghosts.isPossessed()>>@@.mc-thoughts; I need to go to the witch first@@
+	<<if not setup.Wardrobe.isDressedForStreet()>>
+		@@.mc-thoughts; I can't go outside naked @@
+	<<elseif setup.Home.isDirty()>>
+		@@.mc-thoughts; I need to go to the bathroom first@@
+	<<elseif setup.Home.isCorruptEnoughToSkipUnderwear()>>@@.movebtn;[[Ghost hunting|GhostStreet]]@@
+	<<elseif not setup.Wardrobe.isWearingUnderwear()>>@@.mc-thoughts; I can't go outside without underwear @@
+	<<else>>@@.movebtn;[[Ghost hunting|GhostStreet]]@@
 	<</if>>
 <<else>> @@.mc-thoughts;Not appropriate time for ghost hunting@@
 <</if>>

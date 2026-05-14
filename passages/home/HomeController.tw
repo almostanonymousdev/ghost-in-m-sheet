@@ -87,9 +87,6 @@ setup.Home = (function () {
 		isNightForHunt: function () {
 			return setup.Time.hours() >= 23;
 		},
-		canGoHunting: function () {
-			return setup.Ghosts.hasContract() && this.canLeaveHome();
-		},
 
 		// --- Brooke -----------------------------------------
 		// (isBrookePossessed / markBrookePossessedActive / markBrookePossessedInactive

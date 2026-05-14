@@ -239,6 +239,8 @@
 		// ($ghost, $ghostName, $ghostEvidence, $ghostRoom, $ghostIsTrapped,
 		// $ghostHuntingMode, $saveMimic). Consolidate into $hunt so
 		// setup.Ghosts.active()/hunt() can read a single object.
+		// Legacy mode 1 (CONTRACT) is dropped — contracts no longer
+		// gate hunts, so any pre-entry contract collapses to "no hunt".
 		if (vars.hunt === undefined) {
 			var legacyName = undefined;
 			var legacyEvidence = undefined;
@@ -249,14 +251,16 @@
 			}
 			if (legacyName === undefined && typeof vars.ghostName === 'string') legacyName = vars.ghostName;
 			if (legacyEvidence === undefined && Array.isArray(vars.ghostEvidence)) legacyEvidence = vars.ghostEvidence.slice();
-			if (legacyName) {
+			var legacyMode = typeof vars.ghostHuntingMode === 'number' ? vars.ghostHuntingMode : 0;
+			if (legacyMode === 1) legacyMode = 0;
+			if (legacyName && legacyMode !== 0) {
 				vars.hunt = {
 					name:     legacyName,
 					realName: vars.saveMimic === 1 ? 'Mimic' : legacyName,
 					evidence: legacyEvidence || [],
 					room:     vars.ghostRoom || null,
 					trapped:  vars.ghostIsTrapped === 1,
-					mode:     typeof vars.ghostHuntingMode === 'number' ? vars.ghostHuntingMode : 0
+					mode:     legacyMode
 				};
 			} else {
 				vars.hunt = null;

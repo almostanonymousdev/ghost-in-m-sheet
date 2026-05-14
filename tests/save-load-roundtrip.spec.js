@@ -247,7 +247,7 @@ test.describe('Save/load round-trip', () => {
       const legacy = {
         ghostName:        'Shade',          // what the player saw
         ghostEvidence:    ['emf', 'gwb', 'glass'],
-        ghostHuntingMode: 1,
+        ghostHuntingMode: 2,                // active hunt
         saveMimic:        1,                // it's actually a Mimic
       };
       SugarCube.setup.applySaveDefaults(legacy);
