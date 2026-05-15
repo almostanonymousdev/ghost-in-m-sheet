@@ -1,7 +1,7 @@
 :: LibraryGirl {"position":"2925,2000","size":"100,100"}
 <<nobr>>
 You wander from shelf to shelf, searching for something interesting. Suddenly, you notice a beautiful girl.
-<<randomImage "scenes/library/woman1.jpg" "scenes/library/woman2.jpg" "scenes/library/woman3.jpg" "scenes/library/woman4.jpg" "scenes/library/woman5.jpg" "50%">><br>
+<<randRangeImg "scenes/library/woman" 1 5 ".jpg">><br>
 @@.mc-thoughts;All your attention is focused on her. @@<br>
 @@.mc-speech; You watch until she leaves.@@<br>
 <<addLust 30>>

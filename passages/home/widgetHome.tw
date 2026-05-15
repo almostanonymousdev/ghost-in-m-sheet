@@ -1,11 +1,4 @@
 :: widgetHome [widget nobr] {"position":"600,800","size":"100,100"}
-<<widget "randomImage">>
-	<<set _ri to random(1, _args.length - 2)>>
-	<<set _riPath to _args[_ri]>>
-	<<set _riWidth to _args[_args.length - 1]>>
-	<<image _riPath { width: _riWidth }>>
-<</widget>>
-
 <<widget "wipeMakeup">>
 	<<run setup.Home.wipeMakeupWithPenalty(_args[0])>>
 <</widget>>

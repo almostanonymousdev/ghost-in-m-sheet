@@ -45,7 +45,7 @@
 <</if>>
 <<if setup.Home.returningFromHuntDefeat()>>
 	@@.mc-speech; Am I home? I don't remember how I got back here. My whole body aches and is <<linkappend "covered with something">>
-		<<randomImage "characters/mc/1.webp" "characters/mc/2.webp" "characters/mc/3.webp" "40%">><br>
+		<<randRangeImg "characters/mc/" 1 17 ".webp">><br>
 		It seems like I'm starting to remember... I lost the battle, but not the war. Next time, I'll be more careful. <br>
 		I don't feel well, my whole body aches... I need to buy some medicine from the store, as hunting ghosts will be much harder without it. <br>
 		<<if setup.CursedItems.isActive()>>
@@ -57,7 +57,7 @@
 
 <<elseif setup.Home.returningFromMareEnd()>>
 	@@.mc-thoughts; You wake up and see the@@ <<linkappend "@@.mc-thoughtsLink;aftermath of last night on yourself...@@">><br>
-		<<randomImage "characters/mc/4.webp" "characters/mc/5.webp" "characters/mc/6.webp" "40%">><br>
+		<<randRangeImg "characters/mc/" 1 17 ".webp">><br>
 		<<run setup.Mc.clearPenalty()>>
 		@@.mc-speech; Weirdly enough, I feel great, maybe even a bit better than usual, hehe. I suppose I should still head to the [[bathroom|Bathroom]].@@
 	<</linkappend>>

@@ -541,8 +541,6 @@ sugarcube-2:
         Phone, Bag, Evidence, ChangeLog). No args.
     gymFitnessGain:
       name: gymFitnessGain
-    randomImage:
-      name: randomImage
     washClean:
       name: washClean
     wipeMakeup:
