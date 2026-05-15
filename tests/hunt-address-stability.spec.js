@@ -187,7 +187,7 @@ test.describe('Hunt address stability across save/reload', () => {
     const labelBefore = await callSetup(page, 'setup.HuntController.address().formatted');
     const seedBefore = await callSetup(page, 'setup.HuntController.seed()');
     const houseBefore = await callSetup(page, 'setup.HuntController.staticHouseId()');
-    expect(labelBefore).toBe('Owaissa');
+    expect(labelBefore).toBe('Owaissa Avenue');
     expect(houseBefore).toBe('owaissa');
 
     await commitToSave(page);

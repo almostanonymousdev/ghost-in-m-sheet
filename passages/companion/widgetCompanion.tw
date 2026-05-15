@@ -17,6 +17,37 @@
 	<<include "StyleCompanionMini">>
 <</widget>>
 
+/* Footer-card portrait: clickable companion thumbnail in the lower-right
+   of the HuntRun toolbar. The image rotates with the companion's
+   in-hunt status, so the player can tell at a glance what's pending:
+     VISIBLE       -> portrait, links to CompanionMain (talk / replan)
+     ATTACK_FAILED -> question-mark, links to CompanionFailed
+                      (the ghost grabbed her -- "go check on them")
+     ATTACK_SAFE   -> portrait, links to CompanionSucceeded
+                      (the attack window passed -- collect the result)
+   Mirrors the classic-hunt companionCard widget that lived on
+   widgetHauntedHouseRoom before the classic flow was retired. */
+<<widget "companionCard">>
+	<<if setup.Companion.canShowCompanionMiniPanel()>>
+		<<set _ac to setup.Companion.active()>>
+		<<set _sc to State.variables.showComp>>
+		<<set _CS to setup.CompanionShow>>
+		<<if _ac and _sc eq _CS.VISIBLE>>
+			<a data-passage="CompanionMain" class="companion-card-link">
+				<<image _ac.portraitPath() "companion-image">>
+			</a>
+		<<elseif _ac and _sc eq _CS.ATTACK_FAILED>>
+			<a data-passage="CompanionFailed" class="companion-card-link">
+				<<image "ui/img/question-mark.png" "companion-image">>
+			</a>
+		<<elseif _ac and _sc eq _CS.ATTACK_SAFE>>
+			<a data-passage="CompanionSucceeded" class="companion-card-link">
+				<<image _ac.portraitPath() "companion-imageSucceeded">>
+			</a>
+		<</if>>
+	<</if>>
+<</widget>>
+
 <<widget "sanityPills">>
 	<<set _ac to setup.Companion.active()>>
 	<<set _obj to _ac ? _ac.pronObj : "her">>

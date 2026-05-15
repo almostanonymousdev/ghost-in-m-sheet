@@ -1389,6 +1389,41 @@ body.ui-bar-stowed .hunt-run-layout {
 	text-align: right;
 	gap: 0.25em;
 }
+/* Companion icon slot in the toolbar. Sits absolutely between the
+   centered tools cluster and the right-edge nav: anchored to the right
+   with enough offset to clear hunt-run-nav's natural width, vertically
+   centered against the tools row. Holds a single thumbnail (companion
+   portrait or question-mark) wrapped in a clickable link -- the
+   companion mini-panel with sanity/lust meters stays in StoryCaption,
+   not here. */
+.hunt-run-companion {
+	position: absolute;
+	top: 50%;
+	right: 8em;
+	transform: translateY(-50%);
+	width: 64px;
+	height: 64px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	pointer-events: auto;
+}
+.hunt-run-companion .companion-card-link {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+/* Override the wide sidebar styling for the toolbar slot: shrink to
+   a square thumbnail and keep the hover/border affordances. */
+.hunt-run-companion .companion-image,
+.hunt-run-companion .companion-imageSucceeded {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	padding: 0;
+	border-width: 2px;
+	border-radius: 6px;
+}
 /* When the current room has more than 3 exits the column overruns the
    tool row's vertical budget; the compact variant shrinks the link
    text and tightens the gap so all exits stay visible without

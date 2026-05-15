@@ -154,7 +154,7 @@ setup.HuntHouses = (function () {
 	var CATALOGUE = Object.freeze([
 		Object.freeze({
 			id:               'owaissa',
-			label:            'Owaissa',
+			label:            'Owaissa Avenue',
 			image:            'ui/img/owaissa-house.jpg',
 			levelGate:        0,
 			allowsCompanions: true,
@@ -163,7 +163,7 @@ setup.HuntHouses = (function () {
 		}),
 		Object.freeze({
 			id:               'elm',
-			label:            'Elm',
+			label:            'Elm Street',
 			image:            'ui/img/elm-house.jpg',
 			levelGate:        3,
 			allowsCompanions: true,
@@ -193,7 +193,7 @@ setup.HuntHouses = (function () {
 			   warden-outfit gate behind the GhostStreet card is enforced
 			   via the `gate` predicate. */
 			id:               'ironclad',
-			label:            'Ironclad',
+			label:            'Ironclad Prison',
 			image:            'scenes/room/ironclad/ironclad.webp',
 			levelGate:        4,
 			allowsCompanions: false,

@@ -301,4 +301,178 @@ test.describe('Companions — hunt setup integration', () => {
     await expectCleanPassage(page);
     expect(await callSetup(page, 'setup.Companion.canShowCompanionMiniPanel()')).toBe(true);
   });
+
+  // Bridging regression: HuntController.startHunt needs to stamp the
+  // legacy $hunt object so setup.Ghosts.isHunting() returns true during
+  // a dynamic run. Without this the companion mini panel, the
+  // walk-home gate, and the per-tick companion machinery all stay
+  // dark — they all key off Ghosts.isHunting().
+  test('HuntController.startHunt lights up Ghosts.isHunting()', async ({ game: page }) => {
+    expect(await callSetup(page, 'setup.Ghosts.isHunting()')).toBe(false);
+    await page.evaluate(() =>
+      SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: 'owaissa' }));
+    expect(await callSetup(page, 'setup.Ghosts.isHunting()')).toBe(true);
+    expect(await getVar(page, 'hunt.mode')).toBe(2);
+  });
+
+  // endHunt teardown: zeroes the companion plan/showComp/isCompChosen
+  // flags so the next contract starts from a clean slate.
+  test('HuntController.endHunt clears companion plan/showComp/isCompChosen', async ({ game: page }) => {
+    await selectCompanion(page, 'Alice');
+    await page.evaluate(() =>
+      SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: 'owaissa' }));
+    await setVar(page, 'isCompChosen', 1);
+    await setVar(page, 'chosenPlan', 'Plan1');
+    await setVar(page, 'showComp', 1);
+    await page.evaluate(() => SugarCube.setup.HuntController.endHunt(true));
+    expect(await getVar(page, 'isCompChosen')).toBe(0);
+    expect(await getVar(page, 'chosenPlan')).toBe(0);
+    expect(await getVar(page, 'showComp')).toBe(0);
+  });
+
+  // Drive HuntStart through setupHunt() so the run is already active
+  // when the passage renders -- this skips the in-passage auto-roll and
+  // the per-test cross-pollution that occasionally trips startHunt's
+  // applyMetaUnlocksAtStart on $mc fields.
+  test('HuntStart shows the "Talk to <companion>" link for Owaissa', async ({ game: page }) => {
+    await selectCompanion(page, 'Alice');
+    await setupHunt(page, 'Shade', 'owaissa');
+    await goToPassage(page, 'HuntStart');
+    await expectCleanPassage(page);
+    const text = await page.locator('#passages').innerText();
+    expect(text).toContain('Talk to');
+    expect(text).toContain('Alice is waiting');
+  });
+
+  test('HuntStart shows the "Talk to <companion>" link for Elm', async ({ game: page }) => {
+    await selectCompanion(page, 'Brook');
+    await setupHunt(page, 'Shade', 'elm');
+    await goToPassage(page, 'HuntStart');
+    await expectCleanPassage(page);
+    const text = await page.locator('#passages').innerText();
+    expect(text).toContain('Talk to');
+  });
+
+  test('HuntStart does NOT show the companion link for Ironclad (prison)', async ({ game: page }) => {
+    await selectCompanion(page, 'Alice');
+    await setupHunt(page, 'Shade', 'ironclad');
+    await goToPassage(page, 'HuntStart');
+    await expectCleanPassage(page);
+    const text = await page.locator('#passages').innerText();
+    expect(text).not.toContain('Talk to');
+    expect(text).not.toContain('is waiting for you out front');
+  });
+
+  test('HuntStart does NOT show the companion link with no companion selected', async ({ game: page }) => {
+    await page.evaluate(() => SugarCube.setup.Companion.clearCompanionSelection());
+    await setVar(page, 'companion', null);
+    await setupHunt(page, 'Shade', 'owaissa');
+    await goToPassage(page, 'HuntStart');
+    await expectCleanPassage(page);
+    const text = await page.locator('#passages').innerText();
+    expect(text).not.toContain('Talk to');
+  });
+
+  test('HuntStart with Owaissa marks the companion flag active', async ({ game: page }) => {
+    await selectCompanion(page, 'Alice');
+    await setVar(page, 'isCompChosen', 0);
+    await setupHunt(page, 'Shade', 'owaissa');
+    await goToPassage(page, 'HuntStart');
+    expect(await getVar(page, 'isCompChosen')).toBe(1);
+  });
+
+  // The companion icon must render in the lower-right of the HuntRun
+  // toolbar -- between the centered tools cluster and the right-edge
+  // nav links. The slot holds the clickable portrait/questionMark
+  // <<companionCard>> widget (the sanity/lust mini panel stays in the
+  // sidebar via StoryCaption).
+  test('HuntRun renders the companion card in the toolbar between tools and nav', async ({ game: page }) => {
+    await selectCompanion(page, 'Alice');
+    await setupHunt(page, 'Shade', 'owaissa');
+    await setVar(page, 'isCompChosen', 1);
+    await setVar(page, 'chosenPlan', 'Plan1');
+    await page.evaluate(() => {
+      SugarCube.State.variables.showComp = SugarCube.setup.CompanionShow.VISIBLE;
+    });
+    await goToPassage(page, 'HuntRun');
+    await expectCleanPassage(page);
+
+    const slot = page.locator('.hunt-run-toolbar .hunt-run-companion');
+    await expect(slot).toHaveCount(1);
+    // VISIBLE state -> clickable portrait that links to CompanionMain.
+    const link = slot.locator('a.companion-card-link');
+    await expect(link).toHaveCount(1);
+    expect(await link.getAttribute('data-passage')).toBe('CompanionMain');
+
+    // Order check: tools, then companion, then nav within the toolbar.
+    const order = await page.evaluate(() => {
+      const bar = document.querySelector('.hunt-run-toolbar');
+      if (!bar) return null;
+      return Array.from(bar.children).map((el) => el.className.split(' ')[0]);
+    });
+    expect(order).not.toBeNull();
+    const tools = order.indexOf('hunt-run-tools');
+    const comp  = order.indexOf('hunt-run-companion');
+    const nav   = order.indexOf('hunt-run-nav');
+    expect(tools).toBeGreaterThanOrEqual(0);
+    expect(comp).toBeGreaterThan(tools);
+    expect(nav).toBeGreaterThan(comp);
+  });
+
+  test('HuntRun companion card swaps to question-mark on ATTACK_FAILED', async ({ game: page }) => {
+    await selectCompanion(page, 'Alice');
+    await setupHunt(page, 'Shade', 'owaissa');
+    await setVar(page, 'isCompChosen', 1);
+    await setVar(page, 'chosenPlan', 'Plan1');
+    await page.evaluate(() => {
+      SugarCube.State.variables.showComp = SugarCube.setup.CompanionShow.ATTACK_FAILED;
+    });
+    await goToPassage(page, 'HuntRun');
+    await expectCleanPassage(page);
+    const link = page.locator('.hunt-run-companion a.companion-card-link');
+    await expect(link).toHaveCount(1);
+    expect(await link.getAttribute('data-passage')).toBe('CompanionFailed');
+    // Question-mark image, not the companion portrait.
+    expect(await link.locator('img').getAttribute('src') || '').toMatch(/question-mark/);
+  });
+
+  test('HuntRun companion card links to CompanionSucceeded on ATTACK_SAFE', async ({ game: page }) => {
+    await selectCompanion(page, 'Alice');
+    await setupHunt(page, 'Shade', 'owaissa');
+    await setVar(page, 'isCompChosen', 1);
+    await setVar(page, 'chosenPlan', 'Plan1');
+    await page.evaluate(() => {
+      SugarCube.State.variables.showComp = SugarCube.setup.CompanionShow.ATTACK_SAFE;
+    });
+    await goToPassage(page, 'HuntRun');
+    await expectCleanPassage(page);
+    const link = page.locator('.hunt-run-companion a.companion-card-link');
+    await expect(link).toHaveCount(1);
+    expect(await link.getAttribute('data-passage')).toBe('CompanionSucceeded');
+  });
+
+  test('HuntRun companion card slot is empty when no companion is selected', async ({ game: page }) => {
+    await page.evaluate(() => SugarCube.setup.Companion.clearCompanionSelection());
+    await setVar(page, 'companion', null);
+    await setVar(page, 'chosenPlan', 0);
+    await setupHunt(page, 'Shade', 'owaissa');
+    await goToPassage(page, 'HuntRun');
+    await expectCleanPassage(page);
+    // The slot div still exists (it's part of the toolbar layout) but
+    // contains no card link when there's no active companion.
+    await expect(page.locator('.hunt-run-companion a.companion-card-link')).toHaveCount(0);
+  });
+
+  // Cancel from HuntStart calls HuntController.end() directly. Without
+  // the cleanup that pairs with startHunt's $hunt stamp, the legacy
+  // mode would stay ACTIVE and the per-passage tick would punt the
+  // player to HuntOverTime as soon as the in-game clock crossed 06:00.
+  test('HuntController.end() resets Ghosts.huntMode to NONE', async ({ game: page }) => {
+    await page.evaluate(() =>
+      SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: 'owaissa' }));
+    expect(await callSetup(page, 'setup.Ghosts.isHunting()')).toBe(true);
+    await page.evaluate(() => SugarCube.setup.HuntController.end());
+    expect(await callSetup(page, 'setup.Ghosts.isHunting()')).toBe(false);
+    expect(await callSetup(page, 'setup.Ghosts.huntMode()')).toBe(0);
+  });
 });

@@ -416,10 +416,23 @@ setup.HuntController = (function () {
 
 	/* End the current run. Preserves the run number so the next
 	   start() picks up where we left off; the new run will overwrite
-	   the rest of the fields. */
+	   the rest of the fields. Also tears down the legacy $hunt /
+	   companion bookkeeping that startHunt stamped, so a Cancel from
+	   the HuntStart lobby (which calls this directly, not endHunt)
+	   doesn't leave Ghosts.isHunting() stuck on -- which would let the
+	   post-passage tick redirect the player into HuntOverTime once the
+	   clock crossed 06:00. */
 	function end() {
 		var prior = sv().run;
 		sv().run = null;
+		if (setup.Ghosts && typeof setup.Ghosts.setHuntMode === 'function') {
+			setup.Ghosts.setHuntMode(setup.Ghosts.HuntMode.NONE);
+		}
+		if (setup.Companion) {
+			if (typeof setup.Companion.clearBlakeCursedItem === 'function') setup.Companion.clearBlakeCursedItem();
+			if (typeof setup.Companion.resetAliceWorkIfNeeded === 'function') setup.Companion.resetAliceWorkIfNeeded();
+			if (typeof setup.Companion.resetHuntState === 'function') setup.Companion.resetHuntState();
+		}
 		return prior;
 	}
 
@@ -899,6 +912,22 @@ setup.HuntController = (function () {
 		setField('floorplan', floorplan);
 		setField('ghostName', ghostName);
 		setField('evidence', evidenceIds);
+		/* Stamp the legacy $hunt object too so the per-hunt machinery
+		   that still keys off setup.Ghosts.isHunting() / setup.Ghosts.active()
+		   (companion mini panel + walk-home gate, Mimic rotation, Bag tabs,
+		   tick-side morning/possessed checks) lights up during a dynamic
+		   run. buildHunt sets HuntMode.ACTIVE, so isHunting() flips true
+		   immediately. */
+		setup.Ghosts.startHunt(ghostName);
+		/* Pin the in-game clock to midnight so the post-passage tick
+		   doesn't punt the player into HuntOverTime the moment they
+		   land on HuntStart/HuntRun. In production this matches what
+		   GhostStreet already does on entry; here we keep the controller
+		   self-consistent so callers that bypass GhostStreet (tests,
+		   future entry points) still see a well-defined clock. */
+		if (setup.Time && typeof setup.Time.resetToMidnight === 'function') {
+			setup.Time.resetToMidnight();
+		}
 		/* Same shared-state reset classic did at GhostRandomize:
 		   tarot deck back to HIDDEN, monkey paw back to 3 wishes /
 		   not-yet-found / no banned houses, knowledge-evidence
@@ -1416,6 +1445,19 @@ setup.HuntController = (function () {
 			if (typeof setup.HauntedHouses.resetCursedItemState === 'function') {
 				setup.HauntedHouses.resetCursedItemState();
 			}
+		}
+		/* Tear down the legacy hunt-mode state stamped at startHunt so
+		   the next contract starts from HuntMode.NONE and the per-tick
+		   companion machinery (mini panel, attack roll, leave-after-event)
+		   sees a clean slate. resetHuntState zeroes the per-companion
+		   plan / showComp flags; clearBlakeCursedItem / resetAliceWorkIfNeeded
+		   undo the Blake-cursed-item / Alice-work bookkeeping that the
+		   per-companion flow plants. */
+		setup.Ghosts.setHuntMode(setup.Ghosts.HuntMode.POSSESSED);
+		if (setup.Companion) {
+			setup.Companion.clearBlakeCursedItem();
+			setup.Companion.resetAliceWorkIfNeeded();
+			setup.Companion.resetHuntState();
 		}
 		/* Auto-redress slots the MC undressed herself during the run.
 		   The caught path runs this through cleanupAfterHunt; the

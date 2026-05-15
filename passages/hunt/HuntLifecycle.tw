@@ -57,6 +57,18 @@
 @@.location; Objective@@<br>
 @@.mc-thoughts; <<= setup.HuntController.objectiveDescription(_run.objective) || _run.objective>>@@<br>
 <br>
+<<if _staticHouse and _staticHouse.allowsCompanions and setup.Companion and setup.Companion.hasActiveCompanion()>>
+	<<set _ac to setup.Companion.active()>>
+	<<if _ac>>
+		<<run setup.Companion.markCompanionFlagActive()>>
+		@@.mc-thoughts; <<= _ac.name>> is waiting for you out front.@@<br>
+		@@.usebtn;
+			<<link `"Talk to " + _ac.pronObj` "CompanionMain">>
+			<</link>>
+		@@<br>
+		<br>
+	<</if>>
+<</if>>
 @@.movebtn; [[Enter the hunt|HuntRun]]@@<br>
 @@.backbtn; [[Cancel|CityMap][setup.HuntController.end()]]@@
 
@@ -133,6 +145,9 @@
 			<div class="hunt-run-toolbar">
 				<div class="hunt-run-tools">
 					<<huntToolBar>>
+				</div>
+				<div class="hunt-run-companion">
+					<<companionCard>>
 				</div>
 				<div @class="'hunt-run-nav' + (_cr and _cr.neighbors.length gt 3 ? ' hunt-run-nav-compact' : '')">
 					<<if _cr and _cr.neighbors.length>>
