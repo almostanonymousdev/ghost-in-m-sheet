@@ -1036,6 +1036,17 @@ setup.HuntController = (function () {
 		return !!(id && setup.HuntHouses
 			&& setup.HuntHouses.allowsCompanions(id));
 	}
+	/* True when companions are eligible for the active hunt at all.
+	   Procedural runs (no staticHouseId) are companion-eligible by
+	   default; static-plan houses opt in or out via the catalogue's
+	   allowsCompanions flag. Drives both the HuntStart "Talk to her"
+	   gate and the in-hunt HUD via Companion.inHauntedHouseLocation. */
+	function huntAllowsCompanions() {
+		if (!isActive()) return false;
+		var id = staticHouseId();
+		if (!id) return true;
+		return !!(setup.HuntHouses && setup.HuntHouses.allowsCompanions(id));
+	}
 	/* Evidence id list for the active ghost. Returns the
 	   per-run override stamped at startHunt (so Fog of War's spliced
 	   list survives reads), or null when no run is active or no
@@ -1804,6 +1815,7 @@ setup.HuntController = (function () {
 		staticHouseId: staticHouseId,
 		staticHouse: staticHouse,
 		staticHouseAllowsCompanions: staticHouseAllowsCompanions,
+		huntAllowsCompanions: huntAllowsCompanions,
 		runEvidence: runEvidence,
 		ghostRoomId: ghostRoomId,
 		isInGhostRoom: isInGhostRoom,

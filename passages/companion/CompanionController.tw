@@ -419,11 +419,30 @@ setup.Companion = (function () {
 		},
 
 		// --- House / room / street helpers -----------------------
-		/* True when the active hunt's static-plan house opts into
-		   companions. Catalogue-driven so adding a new house never
-		   touches this predicate. */
+		/* True when the active hunt is companion-eligible. Procedural
+		   runs are eligible by default; static-plan houses opt in or
+		   out via the catalogue's allowsCompanions flag. Catalogue-
+		   driven so adding a new house never touches this predicate. */
 		inHauntedHouseLocation: function () {
-			return !!(setup.HuntController && setup.HuntController.staticHouseAllowsCompanions());
+			return !!(setup.HuntController && setup.HuntController.huntAllowsCompanions());
+		},
+		/* Called from HuntStart when the player has a companion picked.
+		   Flags the companion as actively joining the run, and if no
+		   specific plan was chosen yet, defaults to "stick together"
+		   (Plan1 + HUD card visible) so the companion follows the MC
+		   into the haunt and the in-hunt card is available for later
+		   reassignment. Plans the player already picked (Plan2..Plan4)
+		   are preserved. No-op when no companion is selected or the
+		   hunt opts out of companions. */
+		autoAttachOnHuntStart: function () {
+			if (!this.hasActiveCompanion()) return false;
+			if (!setup.HuntController || !setup.HuntController.huntAllowsCompanions()) return false;
+			this.markCompanionFlagActive();
+			var plan = State.variables.chosenPlan;
+			var picked = plan === 'Plan1' || plan === 'Plan2'
+				|| plan === 'Plan3' || plan === 'Plan4';
+			if (!picked) this.setStayTogetherPlan();
+			return true;
 		},
 		canShowCompanionMiniPanel: function () {
 			return State.variables.chosenPlan !== undefined

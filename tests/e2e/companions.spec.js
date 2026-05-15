@@ -363,6 +363,71 @@ test.describe('Companions — hunt setup integration', () => {
     expect(text).not.toContain('is waiting for you out front');
   });
 
+  test('HuntStart shows the "Talk to <companion>" link for a procedural (random) hunt', async ({ game: page }) => {
+    await selectCompanion(page, 'Alice');
+    // Drive a procedural run (no staticHouseId) so the companion gate
+    // is exercised on the random-house path.
+    await page.evaluate(() => {
+      SugarCube.setup.HuntController.startHunt({ seed: 1 });
+      SugarCube.setup.HuntController.setField('ghostName', 'Shade');
+      SugarCube.setup.Ghosts.startHunt('Shade');
+      SugarCube.setup.Ghosts.setHuntMode(SugarCube.setup.Ghosts.HuntMode.ACTIVE);
+    });
+    await goToPassage(page, 'HuntStart');
+    await expectCleanPassage(page);
+    const text = await page.locator('#passages').innerText();
+    expect(text).toContain('Talk to');
+    expect(text).toContain('Alice is waiting');
+  });
+
+  // Auto-attach: entering HuntStart without clicking "Talk to" should
+  // still flag the companion as joining the hunt + light up the HUD
+  // card with Plan1 ("stick together"), so the player can re-assign
+  // her later via the in-hunt companion icon.
+  test('HuntStart auto-attaches the companion when player skips "Talk to"', async ({ game: page }) => {
+    await selectCompanion(page, 'Alice');
+    await setVar(page, 'isCompChosen', 0);
+    await setVar(page, 'chosenPlan', 0);
+    await setVar(page, 'showComp', 0);
+    await setupHunt(page, 'Shade', 'owaissa');
+    await goToPassage(page, 'HuntStart');
+    expect(await getVar(page, 'isCompChosen')).toBe(1);
+    expect(await getVar(page, 'chosenPlan')).toBe('Plan1');
+    expect(await getVar(page, 'showComp')).toBe(1); // CompanionShow.VISIBLE
+  });
+
+  test('HuntStart auto-attach preserves a player-picked plan', async ({ game: page }) => {
+    await selectCompanion(page, 'Alice');
+    await setVar(page, 'isCompChosen', 1);
+    await setVar(page, 'chosenPlan', 'Plan3');
+    await setVar(page, 'showComp', 0);
+    await setupHunt(page, 'Shade', 'owaissa');
+    await goToPassage(page, 'HuntStart');
+    expect(await getVar(page, 'chosenPlan')).toBe('Plan3');
+  });
+
+  // Procedural hunt: companion icon must render in the HuntRun toolbar
+  // when the player enters the random house with a companion picked.
+  test('HuntRun renders the companion card on a procedural hunt', async ({ game: page }) => {
+    await selectCompanion(page, 'Alice');
+    await page.evaluate(() => {
+      SugarCube.setup.HuntController.startHunt({ seed: 1 });
+      SugarCube.setup.HuntController.setField('ghostName', 'Shade');
+      SugarCube.setup.Ghosts.startHunt('Shade');
+      SugarCube.setup.Ghosts.setHuntMode(SugarCube.setup.Ghosts.HuntMode.ACTIVE);
+    });
+    await setVar(page, 'isCompChosen', 1);
+    await setVar(page, 'chosenPlan', 'Plan1');
+    await page.evaluate(() => {
+      SugarCube.State.variables.showComp = SugarCube.setup.CompanionShow.VISIBLE;
+    });
+    await goToPassage(page, 'HuntRun');
+    await expectCleanPassage(page);
+    const link = page.locator('.hunt-run-companion a.companion-card-link');
+    await expect(link).toHaveCount(1);
+    expect(await link.getAttribute('data-passage')).toBe('CompanionMain');
+  });
+
   test('HuntStart does NOT show the companion link with no companion selected', async ({ game: page }) => {
     await page.evaluate(() => SugarCube.setup.Companion.clearCompanionSelection());
     await setVar(page, 'companion', null);

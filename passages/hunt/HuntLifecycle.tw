@@ -57,10 +57,10 @@
 @@.location; Objective@@<br>
 @@.mc-thoughts; <<= setup.HuntController.objectiveDescription(_run.objective) || _run.objective>>@@<br>
 <br>
-<<if _staticHouse and _staticHouse.allowsCompanions and setup.Companion and setup.Companion.hasActiveCompanion()>>
+<<if setup.HuntController.huntAllowsCompanions() and setup.Companion and setup.Companion.hasActiveCompanion()>>
 	<<set _ac to setup.Companion.active()>>
 	<<if _ac>>
-		<<run setup.Companion.markCompanionFlagActive()>>
+		<<run setup.Companion.autoAttachOnHuntStart()>>
 		@@.mc-thoughts; <<= _ac.name>> is waiting for you out front.@@<br>
 		@@.usebtn;
 			<<link `"Talk to " + _ac.pronObj` "CompanionMain">>
