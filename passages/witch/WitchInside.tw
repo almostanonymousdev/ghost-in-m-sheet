@@ -37,12 +37,11 @@
 			<<run setup.Witch.resetExorcismQuestStage()>>
 		<</linkreplace>><br>
 	<</if>>
-	<<done>>
-		<<if setup.Mc.lvl() lt 4>>
-			<<addclass ".rescueGirlsDisabled" "disabled-link">>
-		<</if>>
-	<</done>>
-	<<if setup.Witch.canOfferRescueQuest()>><span class="rescueGirlsDisabled">
+	<<if setup.Witch.canOfferRescueQuest()>>
+		<span class="rescueGirlsDisabled
+		<<if !setup.Witch.rescueQuestUnlocked()>>
+			disabled-link
+		<</if>>">
 		<<linkreplace "@@.usebtn; Missing girls@@">>
 			<<run setup.MissingWomen.resetQuestToAvailable()>>
 			@@.notmc-speech; Oh, <<= setup.Mc.name()>>, you've come at just the right time. I can see you're getting more and more experienced with each passing day, and I've got an important task for you. My old friend, a nun named Rain from the church, needs some help<br>
@@ -51,7 +50,7 @@
 			@@.notmc-speech; Great! I'll let her know you're on board. Head to the church -- I'm sure she'll find you and explain what to do next.@@<br>
 			<br>
 			@@.mc-action; You need to talk to Sister Rain at the church.@@<br>
-		<</linkreplace>><<if setup.Mc.lvl() lt 4>>@@.warningtext; (Req. lvl 4+)@@
+		<</linkreplace>><<if !setup.Witch.rescueQuestUnlocked()>>@@.warningtext; (Req. lvl 4+)@@
 		<</if>><br></span>
 	<</if>>
 
