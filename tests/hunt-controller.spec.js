@@ -235,9 +235,17 @@ test.describe('HuntController', () => {
       .click();
     await page.waitForFunction(() => SugarCube.State.passage === 'HuntRun');
 
-    // Player starts in room_0 (hallway); lair is non-hallway.
+    // Pick a non-lair room so the initial false-check is meaningful
+    // regardless of which room the seed dropped the ghost into.
     const lair = await callSetup(page, 'setup.HuntController.ghostRoomId()');
-    expect(lair).not.toBe('room_0');
+    const nonLair = await page.evaluate(l => {
+      const fp = SugarCube.State.variables.run.floorplan;
+      const other = fp.rooms.find(r => r.id !== l);
+      return other ? other.id : null;
+    }, lair);
+    expect(nonLair).not.toBeNull();
+    await page.evaluate(id => SugarCube.setup.HuntController.setCurrentRoom(id), nonLair);
+    await goToPassage(page, 'HuntRun');
     expect(await callSetup(page, 'setup.HuntController.isGhostHere()')).toBe(false);
 
     // Walk into the lair, re-render HuntRun, expect true.
