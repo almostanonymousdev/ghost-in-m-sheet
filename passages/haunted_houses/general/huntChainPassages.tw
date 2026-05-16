@@ -1,5 +1,5 @@
 /* Per-tick dispatchers included by the search-tool event chains in
-   StoryScript.tw. Each is a thin <<goto>> wrapper around a controller
+   StoryScript.js. Each is a thin <<goto>> wrapper around a controller
    call -- the actual logic lives in setup.Events / setup.HauntedHouses.
    Bundled here because the per-tick chain is conceptually one unit. */
 

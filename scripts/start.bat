@@ -8,7 +8,7 @@ cd /d "%~dp0\.."
 
 set OUTPUT_FILE=ghost-in-msheet.html
 set STORY_INIT=passages\StoryInit.tw
-set STORY_SCRIPT=passages\StoryScript.tw
+set STORY_SCRIPT=passages\StoryScript.js
 
 :: Parse arguments
 set DEBUG_MODE=false
@@ -42,8 +42,7 @@ copy "%STORY_SCRIPT%" "%STORY_SCRIPT%.bak" >nul
 > "%TEMP%\_gims_debug.ps1" echo param($f)
 >> "%TEMP%\_gims_debug.ps1" echo $c = Get-Content $f -Raw
 >> "%TEMP%\_gims_debug.ps1" echo $d = "Config.debug = true;" + [char]10 + "`$(document).one(':storyready', function() { document.documentElement.removeAttribute('data-debug-view'); });"
->> "%TEMP%\_gims_debug.ps1" echo $i = $c.IndexOf([char]10)
->> "%TEMP%\_gims_debug.ps1" echo $r = if ($i -ge 0) { $c.Substring(0,$i+1) + $d + [char]10 + $c.Substring($i+1) } else { $c + [char]10 + $d }
+>> "%TEMP%\_gims_debug.ps1" echo $r = $d + [char]10 + $c
 >> "%TEMP%\_gims_debug.ps1" echo Set-Content $f $r -NoNewline
 powershell -ExecutionPolicy Bypass -File "%TEMP%\_gims_debug.ps1" "%STORY_SCRIPT%"
 del "%TEMP%\_gims_debug.ps1"

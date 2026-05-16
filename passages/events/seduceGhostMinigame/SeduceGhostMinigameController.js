@@ -1,0 +1,381 @@
+/*
+ * Centralized state queries, mutations, and data for the seduce-ghost
+ * minigame. Manages state transitions, arousal-meter math, action
+ * handlers, and video-list lookups. Widget passages call into
+ * setup.SeduceGhostMinigame instead of inlining the underlying logic.
+ */
+setup.SeduceGhostMinigame = (function () {
+	function sv() { return State.variables; }
+
+	/* Variables owned by this controller. Other controllers should
+	   query these only through the API methods below. */
+	var OWNED_VARS = Object.freeze([
+		'minigameVideo',
+		'minigameEventFailed',
+		'ghostOrgasmMeter'
+	]);
+
+	function img(src) { return { type: "image", src: src }; }
+	function vid(src) { return { type: "video", src: src }; }
+
+	function imgRange(prefix, start, end) {
+		var arr = [];
+		for (var i = start; i <= end; i++) arr.push(img(prefix + i + ".webp"));
+		return arr;
+	}
+	function vidRange(prefix, start, end, ext) {
+		ext = ext || ".mp4";
+		var arr = [];
+		for (var i = start; i <= end; i++) arr.push(vid(prefix + i + ext));
+		return arr;
+	}
+	function imgList(prefix, nums) {
+		return nums.map(function (n) { return img(prefix + n + ".webp"); });
+	}
+
+	function pickRandom(arr) {
+		return arr[random(0, arr.length - 1)];
+	}
+
+	function clampMeters() {
+		if (setup.Mc.orgasmMeter() < 0) setup.Mc.setOrgasmMeter(0);
+		if ((sv().ghostOrgasmMeter || 0) < 0) sv().ghostOrgasmMeter = 0;
+	}
+
+	function ghostWin() { return (sv().ghostOrgasmMeter || 0) >= 100; }
+	function mcWin() { return setup.Mc.orgasmMeter() >= 100; }
+
+	// ----------------------------------------------------------------
+	// Video data -- keyed by state, each entry has ghostWin/mcWin/normal
+	// ----------------------------------------------------------------
+
+	var TEASE = "mechanics/minigame/tease/";
+	var BLOWJOB = "mechanics/minigame/blowjob/";
+	var PENETRATE = "mechanics/minigame/penetrate/";
+	var SEX = "mechanics/minigame/sex/";
+
+	// Shared video pools reused across multiple states
+	var TEASE_NORMAL = vidRange(TEASE, 1, 9).concat(imgList(TEASE, [1, 4, 10]));
+	var TEASE_MC_WIN_A = [
+		img("mechanics/minigame/tease/end1.webp"), img("mechanics/minigame/tease/end2.webp"),
+		vid("mechanics/minigame/tease/end9.mp4")
+	];
+	var TEASE_MC_WIN_B = [
+		img("mechanics/minigame/tease/end3.webp"), img("mechanics/minigame/tease/end2.webp"),
+		img("mechanics/minigame/tease/end5.webp"), vid("mechanics/minigame/tease/end9.mp4")
+	];
+	var BJ_MC_WIN = [
+		img("mechanics/minigame/blowjob/bjend10.webp"), img("mechanics/minigame/blowjob/bjend11.webp"),
+		img("mechanics/minigame/blowjob/bjend12.webp"), img("mechanics/minigame/blowjob/bjend13.webp")
+	];
+
+	var VIDEOS = {
+		seduceFailed: { normal: TEASE_NORMAL },
+		seduce: {
+			ghostWin: imgRange(TEASE + "slapend", 1, 2).concat(imgRange(TEASE + "end", 4, 7)),
+			mcWin: TEASE_MC_WIN_A,
+			normal: TEASE_NORMAL
+		},
+		slapface: {
+			ghostWin: imgRange(TEASE + "slapend", 1, 2),
+			mcWin: TEASE_MC_WIN_A,
+			normal: imgRange(TEASE, 70, 77)
+		},
+		subdueslapface: {
+			ghostWin: imgRange(TEASE + "slapend", 3, 4),
+			mcWin: TEASE_MC_WIN_A,
+			normal: imgRange(TEASE, 80, 84)
+		},
+		assjob: {
+			ghostWin: imgList(TEASE + "end", [4, 6, 7]),
+			mcWin: TEASE_MC_WIN_B,
+			normal: imgList(TEASE, [11, 17, 18])
+				.concat(vidRange(TEASE, 12, 16))
+				.concat([vid(TEASE + "19.mp4")])
+		},
+		subdueassjob: {
+			ghostWin: imgRange(TEASE + "end", 6, 8),
+			mcWin: TEASE_MC_WIN_B,
+			normal: imgList(TEASE, [20, 22, 23, 25, 26]).concat([
+				vid(TEASE + "21.webm"),
+				vid(TEASE + "24.mp4"),
+				vid(TEASE + "27.mp4")
+			])
+		},
+		titjob: {
+			ghostWin: imgRange(TEASE + "30end", 1, 2),
+			mcWin: TEASE_MC_WIN_A,
+			normal: imgRange(TEASE, 30, 38)
+		},
+		subduetitjob: {
+			ghostWin: imgRange(TEASE + "30end", 3, 5),
+			mcWin: TEASE_MC_WIN_A,
+			normal: imgRange(TEASE, 40, 49)
+		},
+		rimjob: {
+			ghostWin: [img(TEASE + "60end1.webp")],
+			mcWin: TEASE_MC_WIN_A,
+			normal: imgRange(TEASE, 50, 56)
+		},
+		subduerimjob: {
+			ghostWin: [img(TEASE + "60end1.webp")],
+			mcWin: TEASE_MC_WIN_A,
+			normal: imgRange(TEASE, 60, 65)
+		},
+		blowjob: {
+			ghostWin: vidRange(BLOWJOB + "bjend", 5, 6).concat(imgRange(BLOWJOB + "bjend", 7, 8)),
+			mcWin: BJ_MC_WIN,
+			normal: imgRange(BLOWJOB, 30, 41).concat(vidRange(BLOWJOB, 42, 47))
+		},
+		subdueblowjob: {
+			ghostWin: imgRange(BLOWJOB + "bjend", 1, 3),
+			mcWin: BJ_MC_WIN,
+			normal: imgRange(BLOWJOB, 50, 58).concat([vid(BLOWJOB + "59.mp4")])
+		},
+		penetratepussy: {
+			ghostWin: imgList(PENETRATE + "end", [1, 2, 5]),
+			mcWin: imgRange(PENETRATE + "end", 3, 4),
+			normal: imgRange(PENETRATE, 1, 6).concat(vidRange(PENETRATE, 7, 14))
+		},
+		penetrateanal: {
+			ghostWin: imgRange(PENETRATE + "end", 8, 9).concat([vid(PENETRATE + "end11.mp4")]),
+			mcWin: imgList(PENETRATE + "end", [6, 7, 10]),
+			normal: imgRange(PENETRATE, 20, 25)
+				.concat([vid(PENETRATE + "26.mp4")])
+				.concat(imgRange(PENETRATE, 27, 31))
+		},
+		fuckpussy: {
+			ghostWin: imgList(SEX + "end", [5, 6, 7, 9]),
+			mcWin: imgRange(SEX + "end", 1, 4),
+			normal: imgRange(SEX, 1, 10).concat(vidRange(SEX, 11, 17))
+		},
+		fuckanal: {
+			ghostWin: imgRange(SEX + "end", 17, 22),
+			mcWin: imgRange(SEX + "end", 10, 16),
+			normal: imgRange(SEX, 20, 36)
+		}
+	};
+
+	// ----------------------------------------------------------------
+	// State transition tables
+	// ----------------------------------------------------------------
+
+	var TEASE_POOL = ["slapface", "assjob", "titjob"];
+
+	/*
+	* Resist transitions: each state maps to { success: [...], fail: [...] }.
+	* One entry is picked at random from the combined pool; entries from
+	* `success` set minigameEventFailed=0, entries from `fail` set it to 1.
+	*/
+	var RESIST = {
+		slapface:       { success: ["seduce"], fail: ["slapface", "titjob", "assjob"] },
+		assjob:         { success: ["seduce"], fail: ["slapface", "titjob", "assjob"] },
+		titjob:         { success: ["seduce"], fail: ["slapface", "titjob", "assjob"] },
+		subdueslapface: { success: ["seduce"], fail: ["slapface", "titjob", "assjob"] },
+		subduetitjob:   { success: ["seduce"], fail: ["slapface", "titjob", "assjob"] },
+		subdueassjob:   { success: ["seduce"], fail: ["slapface", "titjob", "assjob"] },
+		rimjob:         { success: ["seduce", "slapface", "titjob", "assjob"], fail: ["rimjob", "blowjob"] },
+		blowjob:        { success: ["seduce", "slapface", "titjob", "assjob"], fail: ["rimjob", "blowjob"] },
+		subduerimjob:   { success: ["seduce", "slapface", "titjob", "assjob"], fail: ["rimjob", "blowjob"] },
+		subdueblowjob:  { success: ["seduce", "slapface", "titjob", "assjob"], fail: ["rimjob", "blowjob"] },
+		penetratepussy: { success: ["seduce", "slapface", "titjob", "assjob", "rimjob", "blowjob"], fail: ["penetratepussy", "penetrateanal"] },
+		penetrateanal:  { success: ["seduce", "slapface", "titjob", "assjob", "rimjob", "blowjob"], fail: ["penetratepussy", "penetrateanal"] },
+		fuckpussy:      { success: ["seduce", "slapface", "titjob", "assjob", "rimjob", "blowjob", "penetratepussy", "penetrateanal"], fail: ["fuckpussy"] },
+		fuckanal:       { success: ["seduce", "slapface", "titjob", "assjob", "rimjob", "blowjob", "penetratepussy", "penetrateanal"], fail: [] }
+	};
+
+	/*
+	* Submit transitions: the pool of next states (all count as success).
+	* pickRandom gives equal weight to each entry, so duplicates raise
+	* the probability of that state (e.g. fuckpussy appears 3x = 75%).
+	*/
+	var SUBMIT_NEXT = {
+		seduce:         TEASE_POOL,
+		slapface:       ["rimjob", "blowjob", "penetratepussy", "penetrateanal"],
+		assjob:         ["rimjob", "blowjob", "penetratepussy", "penetrateanal"],
+		titjob:         ["rimjob", "blowjob", "penetratepussy", "penetrateanal"],
+		subdueslapface: ["rimjob", "blowjob", "penetratepussy", "penetrateanal"],
+		subduetitjob:   ["rimjob", "blowjob", "penetratepussy", "penetrateanal"],
+		subdueassjob:   ["rimjob", "blowjob", "penetratepussy", "penetrateanal"],
+		rimjob:         ["penetratepussy", "penetrateanal"],
+		blowjob:        ["penetratepussy", "penetrateanal"],
+		subduerimjob:   ["penetratepussy", "penetrateanal"],
+		subdueblowjob:  ["penetratepussy", "penetrateanal"],
+		penetratepussy: ["fuckpussy", "penetrateanal"],
+		penetrateanal:  ["fuckanal", "penetratepussy"],
+		fuckpussy:      ["fuckpussy", "penetrateanal", "fuckpussy", "fuckpussy"],
+		fuckanal:       ["penetratepussy", "fuckanal"]
+	};
+
+	/*
+	* Subdue transitions: 2/3 chance of success (go to subdue variant),
+	* 1/3 chance of failure (stay in base state).
+	*/
+	var SUBDUE = {
+		slapface:       { success: "subdueslapface", fail: "slapface" },
+		assjob:         { success: "subdueassjob",   fail: "assjob" },
+		titjob:         { success: "subduetitjob",   fail: "titjob" },
+		subdueslapface: { success: "subdueslapface", fail: "slapface" },
+		subduetitjob:   { success: "subduetitjob",   fail: "titjob" },
+		subdueassjob:   { success: "subdueassjob",   fail: "assjob" },
+		rimjob:         { success: "subduerimjob",   fail: "rimjob" },
+		blowjob:        { success: "subdueblowjob",  fail: "blowjob" },
+		subduerimjob:   { success: "subduerimjob",   fail: "rimjob" },
+		subdueblowjob:  { success: "subdueblowjob",  fail: "blowjob" }
+	};
+
+	// States where resist costs no energy and does not change meters
+	var FREE_RESIST = ["subdueslapface", "subduetitjob", "subdueassjob"];
+
+	// ----------------------------------------------------------------
+	// Transition helpers
+	// ----------------------------------------------------------------
+
+	function rollResist(state) {
+		var t = RESIST[state];
+		if (!t) return;
+		var pool = [];
+		t.success.forEach(function (s) { pool.push({ state: s, failed: 0 }); });
+		t.fail.forEach(function (s) { pool.push({ state: s, failed: 1 }); });
+		if (pool.length === 0) return;
+		var pick = pickRandom(pool);
+		sv().minigameVideo = pick.state;
+		sv().minigameEventFailed = pick.failed;
+	}
+
+	function rollSubmit(state) {
+		var pool = SUBMIT_NEXT[state];
+		if (!pool || pool.length === 0) return;
+		sv().minigameVideo = pickRandom(pool);
+		sv().minigameEventFailed = 0;
+	}
+
+	function rollSubdue(state) {
+		var t = SUBDUE[state];
+		if (!t) return;
+		if (random(1, 3) <= 2) {
+			sv().minigameVideo = t.success;
+			sv().minigameEventFailed = 0;
+		} else {
+			sv().minigameVideo = t.fail;
+			sv().minigameEventFailed = 1;
+		}
+	}
+
+	// ----------------------------------------------------------------
+	// Public API
+	// ----------------------------------------------------------------
+	return {
+		OWNED_VARS: OWNED_VARS,
+		// --- Meter queries ---
+		isGhostFinished: function () { return ghostWin(); },
+		isMcFinished:    function () { return mcWin(); },
+		isFinished:      function () { return ghostWin() || mcWin(); },
+
+		// --- State queries ---
+		hasSubdue:          function (s) { return SUBDUE.hasOwnProperty(s || sv().minigameVideo); },
+		resistCostsEnergy:  function (s) { return FREE_RESIST.indexOf(s || sv().minigameVideo) === -1; },
+		minigameVideo:       function () { return sv().minigameVideo; },
+		minigameEventFailed: function () { return sv().minigameEventFailed; },
+		clearMinigameEventFailed: function () { delete sv().minigameEventFailed; },
+		ghostOrgasmMeter:    function () { return sv().ghostOrgasmMeter; },
+		clampGhostOrgasmFloor: function () {
+			if ((sv().ghostOrgasmMeter || 0) <= 0) sv().ghostOrgasmMeter = 0;
+		},
+
+		// --- Video lookup ---
+		videoList: function () {
+			var state = sv().minigameVideo;
+			if (state === "start") {
+				var mi = setup.Mc.makeupImg();
+				var src = mi === 1 ? "ui/img/makeup1.jpg"
+						: mi === 2 ? "ui/img/makeup2.jpg"
+						: mi === 3 ? "ui/img/makeup3.jpg"
+						: "ui/img/mc.jpg";
+				return [img(src)];
+			}
+			var data = VIDEOS[state];
+			if (!data) return [img("ui/img/mc.jpg")];
+			if (ghostWin() && data.ghostWin) return data.ghostWin;
+			if (mcWin() && data.mcWin) return data.mcWin;
+			return data.normal || [];
+		},
+
+		// --- Actions ---
+		init: function () {
+			sv().minigameVideo = "start";
+			sv().ghostOrgasmMeter = 0;
+			setup.Mc.setOrgasmMeter(0);
+		},
+
+		leave: function () {
+			delete State.variables.minigameVideo;
+		},
+
+		tryAttract: function () {
+			if (random(30, 100) <= setup.Mc.beauty()) {
+				sv().minigameEventFailed = 0;
+				sv().minigameVideo = "seduce";
+			} else {
+				sv().minigameEventFailed = 1;
+				sv().minigameVideo = "seduceFailed";
+			}
+		},
+
+		tryAgain: function () {
+			if (random(30, 100) <= setup.Mc.beauty()) {
+				sv().minigameEventFailed = 0;
+				sv().minigameVideo = pickRandom(TEASE_POOL);
+			} else {
+				sv().minigameEventFailed = 1;
+				sv().minigameVideo = "seduceFailed";
+			}
+		},
+
+		continueSeduce: function () {
+			setup.Mc.setOrgasmMeter(setup.Mc.orgasmMeter() + random(4, 8));
+			sv().ghostOrgasmMeter = (sv().ghostOrgasmMeter || 0) + random(2, 6);
+			if (!ghostWin() && !mcWin()) {
+				sv().minigameEventFailed = 0;
+				sv().minigameVideo = pickRandom(TEASE_POOL);
+			}
+		},
+
+		tryLeave: function () {
+			if (random(1, 2) === 1) {
+				delete State.variables.minigameVideo;
+			} else {
+				sv().minigameEventFailed = 1;
+				sv().minigameVideo = pickRandom(TEASE_POOL);
+			}
+		},
+
+		resist: function () {
+			var state = sv().minigameVideo;
+			if (FREE_RESIST.indexOf(state) === -1) {
+				setup.Mc.setOrgasmMeter(setup.Mc.orgasmMeter() - random(2, 6));
+				sv().ghostOrgasmMeter = (sv().ghostOrgasmMeter || 0) - random(0, 5);
+				clampMeters();
+			}
+			rollResist(state);
+		},
+
+		submit: function () {
+			var state = sv().minigameVideo;
+			setup.Mc.setOrgasmMeter(setup.Mc.orgasmMeter() + random(4, 8));
+			var ghostInc = (state === "subduetitjob") ? random(2, 5) : random(2, 6);
+			sv().ghostOrgasmMeter = (sv().ghostOrgasmMeter || 0) + ghostInc;
+			sv().minigameEventFailed = 0;
+			if (!ghostWin() && !mcWin()) {
+				rollSubmit(state);
+			}
+		},
+
+		subdue: function () {
+			var state = sv().minigameVideo;
+			setup.Mc.setOrgasmMeter(setup.Mc.orgasmMeter() + random(2, 6));
+			sv().ghostOrgasmMeter = (sv().ghostOrgasmMeter || 0) + random(5, 10);
+			rollSubdue(state);
+		}
+	};
+})();

@@ -3,7 +3,7 @@
 Ghost data integrity checker for Better Ghost Hunter.
 
 Validates that:
-  - All 18 ghosts are defined in setup.Ghosts (GhostController.tw)
+  - All 18 ghosts are defined in setup.Ghosts (GhostController.js)
   - Each ghost has exactly 3 evidence types
   - Each evidence type is from the known valid set
   - No ghost has duplicate evidence types
@@ -14,13 +14,13 @@ import re
 import sys
 from pathlib import Path
 
-from lib_repo import iter_passages, passages_dir, read_passage, repo_root
+from lib_repo import iter_sources, passages_dir, read_passage, repo_root
 
 VALID_EVIDENCE = {"emf", "gwb", "temperature", "glass", "spiritbox", "uvl"}
 EXPECTED_GHOST_COUNT = 18
 EVIDENCE_PER_GHOST = 3
 
-# Mirrors setup.Ghosts.EvidenceType defined in GhostController.tw
+# Mirrors setup.Ghosts.EvidenceType defined in GhostController.js
 EVIDENCE_TYPE_ENUM = {
     "EMF":         "emf",
     "SPIRITBOX":   "spiritbox",
@@ -59,22 +59,22 @@ def extract_evidence(bracketed: str) -> list[str]:
 
 def parse_ghosts() -> list[dict]:
     """
-    Scan all .tw files and return a list of {name, evidence, file} entries for
-    every ghost object literal encountered.
+    Scan every source file (.tw + .js) and return a list of
+    {name, evidence, file} entries for every ghost object literal encountered.
     """
     ghosts: list[dict] = []
-    for tw_file in iter_passages():
-        text = read_passage(tw_file)
+    for src_file in iter_sources():
+        text = read_passage(src_file)
         for m in GHOST_OBJECT.finditer(text):
             name = m.group(1)
             evidence = extract_evidence(m.group(2))
-            ghosts.append({"name": name, "evidence": evidence, "file": tw_file})
+            ghosts.append({"name": name, "evidence": evidence, "file": src_file})
     return ghosts
 
 
 def randomizer_uses_setup_ghosts() -> bool:
     """Verify hunt startup draws its ghost from setup.Ghosts."""
-    hunt_file = passages_dir() / "hunt" / "HuntController.tw"
+    hunt_file = passages_dir() / "hunt" / "HuntController.js"
     if not hunt_file.exists():
         return False
     return "setup.Ghosts.names" in read_passage(hunt_file)
@@ -110,7 +110,7 @@ def main():
     if not randomizer_uses_setup_ghosts():
         failed = True
         print(
-            "RANDOMIZER MISMATCH: HuntController.tw does not reference setup.Ghosts.names"
+            "RANDOMIZER MISMATCH: HuntController.js does not reference setup.Ghosts.names"
         )
 
     evidence_errors: list[str] = []

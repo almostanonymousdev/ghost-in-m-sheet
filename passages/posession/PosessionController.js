@@ -1,0 +1,95 @@
+/*
+ * Centralized state queries for the possession event sequence.
+ * Passages should call into setup.Posession instead of testing the
+ * underlying $variables directly, so the conditions live in one place.
+ */
+setup.Posession = (function () {
+	function sv() { return State.variables; }
+
+	/* Variables owned by this controller. Other controllers should
+	   query these only through the API methods below. */
+	var OWNED_VARS = Object.freeze([
+		'checkChosenLocation',
+		'hotAct',
+		'addtemptorealhouse'
+	]);
+
+	// Stages at which the player can resist a given tier of scene.
+	// Naming follows the existing breakFreePossession widget threshold:
+	// higher mc possession means the player has surrendered further and
+	// will follow through to harder scenes.
+	return {
+		OWNED_VARS: OWNED_VARS,
+		canResistFirstAttempt: function () {
+			return setup.Mc.possession() >= 4;
+		},
+		canResistSecondAttempt: function () {
+			return setup.Mc.possession() >= 7;
+		},
+		canResistFinalAttempt: function () {
+			return setup.Mc.possession() >= 11;
+		},
+
+		// --- Brooke rescue ---------------------------------------
+		canPepperSprayBrookeAttacker: function () {
+			return setup.Mall.hasPepperSprayCharges();
+		},
+		analIsVeryLoose: function () {
+			return setup.Mc.bodyPartSensitivity('anal') >= 5;
+		},
+		analIsTrained: function () {
+			return setup.Mc.bodyPartSensitivity('anal') >= 3;
+		},
+
+		// --- Post-possession hunt cleanup ------------------------
+		isBlakeHuntWithCursedItem: function () {
+			return setup.Companion.isCompanionFlagActive() &&
+				setup.Companion.activeCompanionName() === 'Blake' &&
+				setup.Witch.hasCursedItemToTurnIn();
+		},
+
+		// --- Surrender-to-possession meter ------------------------
+		meter: function () { return setup.Mc.possession(); },
+		raiseMeter: function (cap) {
+			if ((setup.Mc.possession() || 0) <= cap) {
+				setup.Mc.ensurePossession();
+				setup.Mc.addPossession(1);
+				return true;
+			}
+			return false;
+		},
+		meterAtLeast: function (n) { return (setup.Mc.possession() || 0) >= n; },
+
+		// --- Location choice storage ------------------------------
+		locationChoice: function () { return sv().checkChosenLocation; },
+		setLocationChoice: function (name) { sv().checkChosenLocation = name; },
+
+		// --- Mimic room randomizer --------------------------------
+		// Generates a 30-minute interval key from current minutes and, when
+		// the interval changes, picks a fresh random ghost type for the
+		// mimic. Returns the new name if the roll actually changed; null
+		// otherwise.
+		rollMimicType: function (ghostTypes) {
+			return setup.Ghosts.rollMimicType(ghostTypes);
+		},
+
+		// --- "Hot" event flags ------------------------------------
+		pantiesState: function () { return setup.Wardrobe.state(setup.WardrobeSlot.PANTIES); },
+		braState:     function () { return setup.Wardrobe.state(setup.WardrobeSlot.BRA); },
+		clearHotFlags: function () {
+			sv().hotAct = 0;
+			sv().addtemptorealhouse = 0;
+		},
+
+		// --- PossessedBrooke helpers ------------------------------
+		consumePepperSprayCharge: function () {
+			setup.Mall.consumePepperSprayCharge();
+		},
+		skipRandomHours: function () {
+			setup.Time.addHours(2 + Math.floor(Math.random() * 5));
+		},
+		markBrookePossessedInactive: function () {
+			setup.Home.markBrookePossessedInactive();
+		}
+	};
+})();

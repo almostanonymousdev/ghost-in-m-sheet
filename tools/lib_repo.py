@@ -28,8 +28,26 @@ def passages_dir() -> Path:
 
 
 def iter_passages() -> list[Path]:
-    """Return every .tw file under passages/ in sorted order."""
+    """Return every .tw passage file under passages/ in sorted order.
+
+    Standalone `.js` script files are excluded so passage-syntax-aware
+    tools (link checkers, macro linters, twee formatters) don't try to
+    parse raw JavaScript as twee. Tools that need to scan script bodies
+    should use iter_sources() instead.
+    """
     return sorted(_PASSAGES_DIR.rglob("*.tw"))
+
+
+def iter_sources() -> list[Path]:
+    """Return every source file (.tw + .js) under passages/ in sorted order.
+
+    Used by checkers whose patterns may appear in either twee passages
+    or standalone `.js` controller files (e.g. ghost-data integrity,
+    undefined-variable detection).
+    """
+    return sorted(
+        list(_PASSAGES_DIR.rglob("*.tw")) + list(_PASSAGES_DIR.rglob("*.js"))
+    )
 
 
 def read_passage(path: Path) -> str:

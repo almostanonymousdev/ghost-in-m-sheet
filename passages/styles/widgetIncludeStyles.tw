@@ -1,5 +1,5 @@
 :: widgetIncludeStyles [widget nobr] {"position":"300,1900","size":"100,100"}
-/% All room metadata lives in setup.Styles (see StyleController.tw).
+/% All room metadata lives in setup.Styles (see StyleController.js).
    These widgets are thin renderers over that data. %/
 
 /% <<bodyBackground url>>

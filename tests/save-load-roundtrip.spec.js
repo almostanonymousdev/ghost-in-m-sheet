@@ -4,7 +4,7 @@ const { goToPassage, setVar, getVar, resetGame } = require('./helpers');
 /*
  * Save/load round-trip tests.
  *
- * SaveMigration.tw runs on every save (scrub) and load (apply defaults
+ * SaveMigration.js runs on every save (scrub) and load (apply defaults
  * + migrate legacy shapes). These tests lock in three guarantees that
  * are otherwise easy to silently regress when someone refactors a
  * variable name or class shape:
@@ -13,7 +13,7 @@ const { goToPassage, setVar, getVar, resetGame } = require('./helpers');
  *      visibly identical game. Catches class-instance dehydration,
  *      undefined survival, scrub side-effects on live state.
  *   2. GHOST PROTOTYPE — Ghost is a prototype-based class
- *      (passages/ghosts/GhostController.tw:227). Plain-object
+ *      (passages/ghosts/GhostController.js:227). Plain-object
  *      "regressions" look fine in console but lose every method.
  *   3. LEGACY MIGRATION — old saves stored hunt state as a scatter of
  *      flat $ghost / $ghostName / $ghostEvidence / etc. variables;
@@ -140,7 +140,7 @@ test.describe('Save/load round-trip', () => {
   test('Ghost behaviour survives a save/load round-trip', async ({ game: page }) => {
     // The codebase deliberately stores $hunt as plain serializable data
     // (name, evidence ids, mode, ...) and projects to a Ghost instance
-    // on demand via setup.Ghosts.active() — see GhostController.tw:447
+    // on demand via setup.Ghosts.active() — see GhostController.js:447
     // and the comment at line 441-446. That sidesteps class-rehydration
     // entirely. The contract this test pins: after round-trip,
     // setup.Ghosts.active() returns a working Ghost instance with the
@@ -202,7 +202,7 @@ test.describe('Save/load round-trip', () => {
 
     const migrated = await page.evaluate(() => {
       // The legacy shape, exactly as documented in
-      // passages/updates/SaveMigration.tw lines 114-148.
+      // passages/updates/SaveMigration.js lines 114-148.
       const legacy = {
         ghost:            { name: 'Shade', evidence: ['emf', 'temperature', 'gwb'] },
         ghostName:        'Shade',

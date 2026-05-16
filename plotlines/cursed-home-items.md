@@ -12,7 +12,7 @@ After losing a haunted house run (passing out from sanity loss), there is a 40% 
 
 ## Controller
 
-- [CursedItemsController.tw](../passages/home/cursedItems/CursedItemsController.tw) — `setup.CursedItems` namespace with `rollForCursedItem()`, `isItemCursed(key)`, `clearCurse()`, and `cursedItemLabel()`
+- [CursedItemsController.js](../passages/home/cursedItems/CursedItemsController.js) — `setup.CursedItems` namespace with `rollForCursedItem()`, `isItemCursed(key)`, `clearCurse()`, and `cursedItemLabel()`
 
 ## Events
 

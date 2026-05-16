@@ -32,7 +32,7 @@ a failure before rolling fresh.
   the modifier list and the floor plan before they commit.
   `setup.HuntController.startHunt({ seed, staticHouseId })` does the actual
   composition; passing a `staticHouseId` from the
-  [`setup.HuntHouses`](../passages/hunt/HuntHousesController.tw)
+  [`setup.HuntHouses`](../passages/hunt/HuntHousesController.js)
   catalogue substitutes the authored plan for the procedural roll.
 * **[HuntRun](../passages/hunt/HuntLifecycle.tw)** — in-progress
   view. The SVG minimap
@@ -66,7 +66,7 @@ a failure before rolling fresh.
 
 Run-level state lives on `$run` and meta-progression state on
 `$ectoplasm` / `$runsStarted`. Both are owned by
-[`setup.HuntController`](../passages/hunt/HuntController.tw).
+[`setup.HuntController`](../passages/hunt/HuntController.js).
 
 ```
 $run = {
@@ -89,7 +89,7 @@ $runsStarted   // lifetime attempt counter
 
 ## Floor-plan generator
 
-[`setup.FloorPlan.generate(seed, opts)`](../passages/hunt/FloorPlanController.tw)
+[`setup.FloorPlan.generate(seed, opts)`](../passages/hunt/FloorPlanController.js)
 builds a deterministic floor plan: same seed, same plan. The
 generator uses an internal Mulberry32 PRNG, so the result is
 independent of the global `Math.random` patching that tests
@@ -127,7 +127,7 @@ plan = {
 
 Templates available for non-hallway slots come from the
 procedural-eligible filter on
-[`setup.Templates`](../passages/hunt/TemplatesController.tw)
+[`setup.Templates`](../passages/hunt/TemplatesController.js)
 (`kitchen`, `bathroom`, `bedroom`, `livingroom`, `nursery`,
 `basement`, `attic`, `dining-room`, `sauna`, `sex-dungeon`,
 `walk-in-closet`). Static-house templates (Ironclad cells, Elm's
@@ -136,7 +136,7 @@ nursery) stay catalogue-only and don't roll into the procedural pool.
 ## Hunt facade
 
 The tool / evidence / event stack all reads through
-[`setup.HuntController`](../passages/hunt/HuntController.tw), so
+[`setup.HuntController`](../passages/hunt/HuntController.js), so
 passages and widgets never branch on hunt-active-vs-not internally
 — they just call the facade and let it return the right thing for
 the current run state:
@@ -235,7 +235,7 @@ keep working without churn.
 
 ## Modifier registry
 
-[`setup.Modifiers`](../passages/hunt/ModifiersController.tw)
+[`setup.Modifiers`](../passages/hunt/ModifiersController.js)
 catalogues every run modifier with a draft weight; weight 0
 keeps a modifier out of the random draw (reserved for witch
 ectoplasm unlocks, debug, etc.). `setup.Modifiers.draft(seed, n)` does a
@@ -261,11 +261,11 @@ links use to decide whether to render an unlock as active.
 
 ## File map
 
-* [HuntController.tw](../passages/hunt/HuntController.tw) — `setup.HuntController`: lifecycle, accessors, ectoplasm, composition (`startHunt`/`endHunt`), `minimapData()` / `minimapSvg()` / `currentRoomData()`, and current-room nav (`currentRoomId` / `setCurrentRoom`).
-* [FloorPlanController.tw](../passages/hunt/FloorPlanController.tw) — `setup.FloorPlan`: seeded generator, neighbour / connectivity helpers, BFS layout for the minimap.
-* [ModifiersController.tw](../passages/hunt/ModifiersController.tw) — `setup.Modifiers`: catalogue + weighted draft.
-* [TemplatesController.tw](../passages/hunt/TemplatesController.tw) — `setup.Templates`: room-template metadata + slot-id helpers.
-* [HuntHousesController.tw](../passages/hunt/HuntHousesController.tw) — `setup.HuntHouses`: static-house catalogue (Owaissa / Elm / Ironclad) with authored floor plans and per-house overrides.
+* [HuntController.js](../passages/hunt/HuntController.js) — `setup.HuntController`: lifecycle, accessors, ectoplasm, composition (`startHunt`/`endHunt`), `minimapData()` / `minimapSvg()` / `currentRoomData()`, and current-room nav (`currentRoomId` / `setCurrentRoom`).
+* [FloorPlanController.js](../passages/hunt/FloorPlanController.js) — `setup.FloorPlan`: seeded generator, neighbour / connectivity helpers, BFS layout for the minimap.
+* [ModifiersController.js](../passages/hunt/ModifiersController.js) — `setup.Modifiers`: catalogue + weighted draft.
+* [TemplatesController.js](../passages/hunt/TemplatesController.js) — `setup.Templates`: room-template metadata + slot-id helpers.
+* [HuntHousesController.js](../passages/hunt/HuntHousesController.js) — `setup.HuntHouses`: static-house catalogue (Owaissa / Elm / Ironclad) with authored floor plans and per-house overrides.
 * [HuntLifecycle.tw](../passages/hunt/HuntLifecycle.tw) — `HuntStart`, `HuntRun`, `HuntSummary` passages.
 * [WitchEctoplasm.tw](../passages/witch/WitchEctoplasm.tw) — persistent-unlock storefront, priced in ectoplasm; reached from `WitchInside`.
 * [widgetHuntMinimap.tw](../passages/hunt/widgetHuntMinimap.tw) — `<<huntMinimap>>` SVG floor-plan view.
@@ -274,7 +274,7 @@ links use to decide whether to render an unlock as active.
 ## Save migration
 
 `$run`, `$ectoplasm`, and `$runsStarted` are seeded on legacy saves
-by [SaveMigration.tw](../passages/updates/SaveMigration.tw)'s
+by [SaveMigration.js](../passages/updates/SaveMigration.js)'s
 `DEFAULTS` map (default values: `null`, `0`, `0`). `SAVE_VERSION`
 is bumped each time the hunt-state schema changes so downstream
 tooling can tell which schema generation a save was last written

@@ -5,7 +5,7 @@ The witch is a mysterious character who sells supernatural items and runs throug
 * **Witch location and access** - The witch's house is accessible only between 10 AM and midnight (`setup.Witch.isDayTime()` returns true for hours 10–23). Outside these hours, the house appears abandoned or locked, though sneaking in is possible once the MC has stolen her key.
   * [Witch.tw](../passages/witch/Witch.tw) - Witch's house exterior and entry
   * [WitchInside.tw](../passages/witch/WitchInside.tw) - Witch's house interior and main interaction
-  * [WitchController.tw](../passages/witch/WitchController.tw) - `setup.Witch` namespace with hours and access helpers
+  * [WitchController.js](../passages/witch/WitchController.js) - `setup.Witch` namespace with hours and access helpers
   * [widgetWitch.tw](../passages/witch/widgetWitch.tw) - Shared witch-related widgets
   * [WitchInsideNight.tw](../passages/witch/WitchInsideNight.tw) - Night-time witch interactions
 

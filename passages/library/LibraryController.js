@@ -1,0 +1,208 @@
+/*
+ * Centralized state queries for the city library location.
+ * Opening hours, Brook-meeting availability, and the random-find
+ * pool are exposed through setup.Library so passages don't have to
+ * inline the underlying $variable checks.
+ */
+setup.Library = (function () {
+	/* Variables owned by this controller. Other controllers should
+	   query these only through the API methods below. */
+	var OWNED_VARS = Object.freeze([
+		'meetBrook', 'foundTips', 'foundComics', 'foundBrook',
+		'foundGirl', 'foundGuy',
+		// $comicsReading: 0 = none, 1..4 = currently-open issue. Replaces
+		// the four mutually-exclusive $comics<N> flags. SaveMigration
+		// folds existing $comics<N> into this single field.
+		'comicsReading',
+		// Torn-page tip drop. $foundDesecratedBook unlocks the search
+		// pool entry; $tornPagesFound is an array of indices into
+		// TORN_PAGE_TIPS for pages the MC has recovered.
+		'foundDesecratedBook', 'tornPagesFound'
+	]);
+
+	/* Comic catalogue. `prefix` is appended with a 3-digit zero-padded
+	   page number (001..count) and the .jpg extension to form the asset
+	   path -- so cover = prefix + "001.jpg". Add a new entry here and
+	   both the Comics rack and the ReadComics slider pick it up. */
+	var COMICS = Object.freeze([
+		{ prefix: "scenes/library/getting-in-shape",                  count: 31 },
+		{ prefix: "scenes/library/closed-investigation-journal-colorized", count: 31 },
+		{ prefix: "scenes/library/the-naughty-in-law-1-zero",          count: 31 },
+		{ prefix: "scenes/library/a-dumb-comic",                       count: 32 }
+	]);
+
+	/* Torn-page tip catalogue lives in setup.LibraryData (LibraryData.js),
+	   following the same pattern as setup.CompanionData. Read lazily so
+	   load order between the two [script] passages doesn't matter. */
+	function tornPageCatalogue() {
+		return (setup.LibraryData && setup.LibraryData.tornPageTips) || [];
+	}
+
+	function sv() { return State.variables; }
+
+	return {
+		OWNED_VARS: OWNED_VARS,
+		// --- Hours ------------------------------------------------
+		isOpen: function () {
+			var h = setup.Time.hours();
+			return h > 7 && h < 22;
+		},
+		hasEnergyToSearch: function () {
+			return setup.Mc.energy() >= 1;
+		},
+
+		// --- Brook / library-search encounter pool ---------------
+		hasMetBrook: function () {
+			return sv().meetBrook !== undefined;
+		},
+		meetBrookFlag: function () { return sv().meetBrook; },
+		brookIsPossessed: function () {
+			return setup.Home.isBrookePossessed();
+		},
+		brookIsWithRain: function () {
+			return !setup.Home.isBrookePossessed() && setup.Home.brookePossessedCDLow();
+		},
+		canMeetBrookAtLibrary: function () {
+			return !this.brookIsPossessed() && !this.brookIsWithRain();
+		},
+
+		// --- Discovered content (used to enable menu entries) ----
+		hasFoundTipsBook: function () { return sv().foundTips !== undefined; },
+		hasFoundComics:   function () { return sv().foundComics !== undefined; },
+		hasFoundBrook:    function () { return sv().foundBrook !== undefined; },
+		hasFoundGirl:     function () { return sv().foundGirl !== undefined; },
+		hasFoundGuy:      function () { return sv().foundGuy !== undefined; },
+		hasFoundDesecratedBook: function () { return sv().foundDesecratedBook !== undefined; },
+
+		availableSearchResults: function () {
+			var out = [];
+			if (!this.hasFoundTipsBook()) out.push('book');
+			if (!this.hasFoundComics()) out.push('Comics');
+			if (!this.hasFoundGirl()) out.push('girl');
+			if (!this.hasFoundGuy()) out.push('guy');
+			if (!this.hasFoundBrook() && this.canMeetBrookAtLibrary()) out.push('brook');
+			if (!this.hasFoundDesecratedBook()) out.push('desecratedBook');
+			else if (this.hasTornPagesRemaining()) out.push('tornPage');
+			return out;
+		},
+
+		// --- libraryGuy clothing branch --------------------------
+		/* Library groping event uses pants/shorts vs skirt to pick
+		* the pose; unified here for reuse. */
+		wearingPants: function () {
+			return setup.Wardrobe.worn(setup.WardrobeSlot.JEANS) || setup.Wardrobe.worn(setup.WardrobeSlot.SHORTS);
+		},
+		wearingSkirt: function () {
+			return setup.Wardrobe.worn(setup.WardrobeSlot.SKIRT);
+		},
+
+		// --- Brook solo-hunt chances (duplicated in BrookInfo) --
+		brookSoloOwaissaChance: function () {
+			var lvl = setup.Companion.companionLvl('Brook');
+			if (lvl >= 5) return 70;
+			if (lvl === 4) return 55;
+			if (lvl === 3) return 40;
+			if (lvl === 2) return 25;
+			return 0;
+		},
+		brookSoloElmChance: function () {
+			var lvl = setup.Companion.companionLvl('Brook');
+			if (lvl >= 5) return 55;
+			if (lvl === 4) return 40;
+			if (lvl === 3) return 25;
+			if (lvl === 2) return 10;
+			return 0;
+		},
+
+		// --- Mutations previously inline in library passages ------
+		spendEnergyToSearch: function () { setup.Mc.removeEnergy(1); },
+		markTipsBookFound:   function () { State.variables.foundTips = 1; },
+		markComicsFound:     function () { State.variables.foundComics = 1; },
+		markBrookFound:      function () { State.variables.foundBrook = 1; },
+		meetBrookFirstTime:  function () { State.variables.meetBrook = 1; },
+		markDesecratedBookFound: function () { State.variables.foundDesecratedBook = 1; },
+
+		// --- Torn pages -------------------------------------------
+		tornPageTips: function () { return tornPageCatalogue(); },
+		tornPagesFound: function () {
+			var arr = sv().tornPagesFound;
+			return Array.isArray(arr) ? arr : [];
+		},
+		hasFoundAnyTornPage: function () { return this.tornPagesFound().length > 0; },
+		availableTornPageIndices: function () {
+			var found = this.tornPagesFound();
+			var tips = tornPageCatalogue();
+			var out = [];
+			for (var i = 0; i < tips.length; i++) {
+				if (found.indexOf(i) === -1) out.push(i);
+			}
+			return out;
+		},
+		hasTornPagesRemaining: function () {
+			return this.availableTornPageIndices().length > 0;
+		},
+		/* Pick one unfound torn-page index, mark it found, return the
+		   tip object plus its index. Returns null if nothing remains. */
+		pickRandomTornPage: function () {
+			var available = this.availableTornPageIndices();
+			if (available.length === 0) return null;
+			var idx = available[Math.floor(Math.random() * available.length)];
+			var V = State.variables;
+			if (!Array.isArray(V.tornPagesFound)) V.tornPagesFound = [];
+			V.tornPagesFound.push(idx);
+			return { index: idx, tip: tornPageCatalogue()[idx] };
+		},
+		/* Pick one already-collected page at random, for re-reading. */
+		randomCollectedTornPage: function () {
+			var found = this.tornPagesFound();
+			if (found.length === 0) return null;
+			var idx = found[Math.floor(Math.random() * found.length)];
+			return { index: idx, tip: tornPageCatalogue()[idx] };
+		},
+
+		// Library groping gains a bit of corruption each round; these
+		// are the three different "cap < x, gain y" pairs used across
+		// LibraryGirl.tw and LibraryGuy1.tw.
+		gainSmallCorruption: function () {
+			if (setup.Mc.corruption() < 3) { setup.Mc.addCorruption(0.1); }
+		},
+		tryGainGropingCorruption: function (cap, delta) {
+			if (setup.Mc.corruption() <= cap) {
+				setup.Mc.addCorruption(delta);
+			}
+		},
+
+		// --- Comics selection --------------------------------------
+		// One slot at a time: $comicsReading holds the active issue (1..N)
+		// or 0 when none is open.
+		comics:        COMICS,
+		selectComics:  function (idx) { sv().comicsReading = idx; },
+		resetComics:   function ()    { sv().comicsReading = 0; },
+		// activeComic() returns the catalogue entry currently being read,
+		// or null when none is selected. ReadComics uses this to render
+		// the slider without needing to know which issue is active.
+		activeComic:   function () {
+			var idx = sv().comicsReading;
+			return idx >= 1 && idx <= COMICS.length ? COMICS[idx - 1] : null;
+		},
+
+		// --- Brook solo-hunt selection ----------------------------
+		chanceBrookAloneOwaissa: function () { return setup.Companion.soloHuntChanceOwaissa('Brook'); },
+		chanceBrookAloneElm:     function () { return setup.Companion.soloHuntChanceElm('Brook'); },
+		brookSoloHuntReporting:  function () {
+			return setup.Companion.hasFinishedSoloHunt('Brook');
+		},
+		refreshBrookSoloChances: function () {
+			setup.Companion.setSoloHuntChances('Brook', this.brookSoloOwaissaChance(), this.brookSoloElmChance());
+		},
+		pickBrookAsCompanion: function () {
+			setup.Companion.pickCisCompanion('Brook');
+		},
+		pickBrookForSoloOwaissa: function () {
+			setup.Companion.sendCompanionSolo('Brook', 'Owaissa');
+		},
+		pickBrookForSoloElm: function () {
+			setup.Companion.sendCompanionSolo('Brook', 'Elm');
+		}
+	};
+})();

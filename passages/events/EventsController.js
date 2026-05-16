@@ -1,0 +1,495 @@
+/*
+ * Centralized state queries for the haunting event passages.
+ * Passages should call into setup.Events instead of testing the
+ * underlying $variables directly, so the conditions live in one place.
+ */
+setup.Events = (function () {
+	function sv() { return State.variables; }
+
+	/* Variables owned by this controller. Other controllers should
+	   query these only through the API methods below. */
+	var OWNED_VARS = Object.freeze([
+		'argForRandomizer', 'videoEvent',
+		'ghostSanityEventDecreased', 'decreasingSanity', 'cleanedUp',
+		'chanceToAttractFailed',
+		'sanityIfHot', 'sanityInTheDark'
+	]);
+
+	// Room metadata (passage name → { stateKey, light/dark URLs,
+	// body class }) lives in setup.Styles. isDarkRoom() and
+	// turnOffLightHere() below delegate to that single source.
+
+	// --- Sanity thresholds by lust tier (private) ----------------
+	// Index 0 is unused; tiers 1-7 map to the decreasingSanity
+	// stage values.
+	var sanityThresholds = [0, 4, 5, 5, 6, 7, 8, 9];
+
+	// Body-part keys in escalation order (event numbers 1-7).
+	var bodyPartKeys = ['brain', 'tits', 'ass', 'bottom', 'mouth', 'pussy', 'anal'];
+
+	function pickRandom(arr) {
+		if (!arr || !arr.length) return null;
+		return arr[Math.floor(Math.random() * arr.length)];
+	}
+
+	// Cthulion ability video pools, keyed by tier (1-4). Tiers 1-3
+	// are sanity-banded (used by SaveEventPassage); tier 4 is used by
+	// the companion-help passages (BlakeHelp, BrookHelp).
+	var CTHULION_RANGES = { 1: 7, 2: 5, 3: 8, 4: 10 };
+	function cthulionVideos(tier) {
+		var n = CTHULION_RANGES[tier];
+		if (!n) return [];
+		var out = [];
+		for (var i = 0; i < n; i++) {
+			out.push("characters/ghosts/cthulion/" + tier + "." + i + ".mp4");
+		}
+		return out;
+	}
+	function cthulionTierForSanity(sanity) {
+		if (sanity >= 50) return 1;
+		if (sanity >= 30) return 2;
+		if (sanity >= 1)  return 3;
+		return 0;
+	}
+
+	// Video tables live in :: EventVideos (setup.EventVideos and
+	// setup.BansheeVideos).
+
+	return {
+		OWNED_VARS: OWNED_VARS,
+		// --- Companion state -------------------------------------
+		hasCompanionOnPlan1: function () {
+			return setup.Companion.isCompanionFlagActive() && setup.Companion.chosenPlan() === 'Plan1';
+		},
+		companionIsAroused: function () {
+			return setup.Companion.lust() >= 60;
+		},
+		companionIs: function (name) {
+			return setup.Companion.name() === name;
+		},
+		companionIsInlineFriend: function () {
+			var n = setup.Companion.name();
+			return n === 'Alex' || n === 'Taylor' || n === 'Casey';
+		},
+
+		// --- Dark-room filter (delegates to setup.Styles) --------
+		isDarkRoom: function (passageName) {
+			return setup.Styles.isDarkRoom(passageName);
+		},
+		turnOffLightHere: function () {
+			return setup.Styles.turnOffLightHere();
+		},
+		/* :: LightPassageGhost entry: 1-in-65 chance per tick that a
+		   light-capable ghost activates EMF and darkens the room.
+		   Returns the destination passage to <<goto>>, or null.
+		   EMF only arms when a lit hunt room was actually flipped to
+		   dark — otherwise the player saw no in-world cause for the
+		   reading and the window appeared to open on its own. */
+		maybeTurnOffLights: function () {
+			var g = setup.Ghosts.active();
+			if (!g || !g.canTurnOffLights) return null;
+			if (Math.floor(Math.random() * 65) !== 0) return null;
+			var dest = this.turnOffLightHere();
+			if (!dest) return null;
+			setup.activateTool("emf");
+			return dest;
+		},
+
+		// --- Lust tiers ------------------------------------------
+		lustTier: function () {
+			var l = setup.Mc.lust();
+			if (l >= 90) return 7;
+			if (l >= 75) return 6;
+			if (l >= 60) return 5;
+			if (l >= 45) return 4;
+			if (l >= 30) return 3;
+			if (l >= 15) return 2;
+			return 1;
+		},
+
+		// --- Corruption tiers ------------------------------------
+		corruptionTier: function () {
+			var c = setup.Mc.corruption();
+			if (c >= 8) return 8;
+			if (c >= 6) return 6;
+			if (c >= 4) return 4;
+			if (c >= 3) return 3;
+			if (c >= 2) return 2;
+			if (c >= 1) return 1;
+			return 0;
+		},
+
+		// --- MC energy / escape ----------------------------------
+		hasEnergyToRunAway: function () {
+			return setup.Mc.energy() >= 1;
+		},
+
+		// --- Event randomizer helpers ----------------------------
+
+		/* Set up common event state and mark the per-tick "event
+		   already fired" flag so search-tool chains skip
+		   StealClothesEvent / CheckHuntStart for the rest of the
+		   passage. The flag is per-passage temp state — SugarCube
+		   resets State.temporary on every passage navigation, and
+		   PassageDone defensively resets it again. */
+		initEvent: function (eventKey) {
+			sv().argForRandomizer = eventKey;
+			this.markEventTriggered();
+		},
+
+		/* Per-tick "event already fired" flag, owned by setup.Events
+		   so passages don't share a leaky `_eventTriggered` temp var
+		   directly. Backed by State.temporary so it resets between
+		   passages without ceremony. */
+		eventTriggered:      function () { return State.temporary.eventTriggered === true; },
+		markEventTriggered:  function () { State.temporary.eventTriggered = true; },
+		resetEventTriggered: function () { State.temporary.eventTriggered = false; },
+
+		/*
+		* Look up videos for a given event and clothing type, resolving
+		* the location (owaissa/elm) automatically.
+		* Returns a flat array if the entry is a prison/mind list,
+		* or the location-appropriate array from { owaissa, elm }.
+		*/
+		getVideos: function (eventKey, clothingType) {
+			var ev = setup.EventVideos[eventKey];
+			if (!ev) return [];
+			var entry = ev[clothingType];
+			if (!entry) return [];
+			if (Array.isArray(entry)) return entry;
+			return this.pickByLocation(entry.owaissa, entry.elm);
+		},
+
+		/*
+		* Pick from an { owaissa, elm } pair based on the active
+		* static hunt-house id ('owaissa' / 'elm').
+		* Procedural runs default to owaissa art.
+		*/
+		pickByLocation: function (owaissaList, elmList) {
+			if (setup.HauntedHouses.isElm()) return elmList || [];
+			return owaissaList || [];
+		},
+
+		/*
+		* Determine the correct clothing type for lower-body events
+		* and return the matching video list.
+		*/
+		bottomClothingVideos: function (eventKey) {
+			if (setup.HauntedHouses.isIronclad()) return this.getVideos(eventKey, 'prison');
+			var jw = setup.Wardrobe.worn(setup.WardrobeSlot.JEANS);
+			var sw = setup.Wardrobe.worn(setup.WardrobeSlot.SHORTS);
+			var kw = setup.Wardrobe.worn(setup.WardrobeSlot.SKIRT);
+			var pw = setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES);
+			var ev = setup.EventVideos[eventKey];
+
+			if (jw) {
+				if (ev.jeansNP && !pw)
+					return this.getVideos(eventKey, 'jeansNP');
+				return this.getVideos(eventKey, 'jeans');
+			}
+			if (sw)
+				return this.getVideos(eventKey, 'shorts');
+			if (kw) {
+				if (!pw && ev.skirtNP)
+					return this.getVideos(eventKey, 'skirtNP');
+				return this.getVideos(eventKey, 'skirt');
+			}
+			// No outerwear → underwear / naked branch
+			if (pw) return this.getVideos(eventKey, 'panties');
+			return this.getVideos(eventKey, 'naked');
+		},
+
+		/*
+		* Determine the correct clothing type for upper-body events
+		* and return the matching video list.
+		*/
+		topClothingVideos: function (eventKey) {
+			if (setup.HauntedHouses.isIronclad()) return this.getVideos(eventKey, 'prison');
+			var ts = setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT);
+			var br = setup.Wardrobe.worn(setup.WardrobeSlot.BRA);
+			var ev = setup.EventVideos[eventKey];
+
+			if (ts) {
+				if (ev.tshirtNB && !br)
+					return this.getVideos(eventKey, 'tshirtNB');
+				return this.getVideos(eventKey, 'tshirt');
+			}
+			if (br && ev.bra) return this.getVideos(eventKey, 'bra');
+			if (ev.noBra)     return this.getVideos(eventKey, 'noBra');
+			return [];
+		},
+
+		/*
+		* One-call entry point: sets up event state and returns the
+		* resolved video list for the given body-part key
+		* ('brain', 'tits', 'ass', 'bottom', 'mouth', 'pussy', 'anal').
+		*/
+		videoListForEvent: function (eventKey) {
+			this.initEvent(eventKey);
+			var ev = setup.EventVideos[eventKey];
+			if (!ev) return [];
+			if (ev._type === 'flat')   return ev.mind || [];
+			if (ev._type === 'top')    return this.topClothingVideos(eventKey);
+			if (ev._type === 'bottom') return this.bottomClothingVideos(eventKey);
+			return [];
+		},
+
+		/*
+		* Return the Banshee-ability video list (location-aware).
+		*/
+		bansheeVideos: function () {
+			return setup.HauntedHouses.isIronclad()
+				? setup.BansheeVideos.prison.slice()
+				: setup.BansheeVideos.house.slice();
+		},
+
+		// --- Per-tier prose --------------------------------------
+		/*
+		* Look up the corruption-tier prose for a body-part event.
+		* Falls back to the highest defined tier <= the requested
+		* tier so sparse maps (mouth/pussy/anal) don't need every
+		* tier listed. Returns '' if the body part is unknown.
+		*
+		* Embedded newlines (and the indentation that follows them)
+		* are stripped so multi-line template literals render the
+		* same as the original `nobr` widget body.
+		*/
+		eventTextFor: function (bodyPart, tier) {
+			var entries = setup.EventText && setup.EventText[bodyPart];
+			if (!entries) return '';
+			var match = null;
+			Object.keys(entries).forEach(function (k) {
+				var n = Number(k);
+				if (n <= tier && (match === null || n > match)) match = n;
+			});
+			if (match === null) return '';
+			return entries[match].replace(/\n\s*/g, '');
+		},
+
+		// --- Orgasm check ----------------------------------------
+		/*
+		* Returns true if the MC should orgasm during a sexual encounter.
+		* Triggers when lust is at max (100) and the body part is
+		* pussy or anal.
+		*/
+		shouldOrgasm: function (bodyPart) {
+			if (setup.Mc.lust() < 100) return false;
+			return bodyPart === 'pussy' || bodyPart === 'anal';
+		},
+
+		/*
+		* Orgasm sanity penalty.
+		*/
+		orgasmSanityLoss: -10,
+
+		/*
+		* Pick a random body-part event based on lust tier and
+		* a sanity-chance roll.  Returns a body-part key string
+		* ('brain', 'tits', etc.) or '' if no event triggers.
+		*
+		* @param {number} chance - a value in [0, 100] (the caller's
+		*   random roll, shared with Banshee/Cthulion checks).
+		*/
+		/*
+		* SaveEventPassage sanity-stage video lookup. The stage→body-part
+		* mapping reuses eventVideos so the clothing-aware resolvers
+		* (bottomClothingVideos / topClothingVideos) stay the single
+		* source of truth.
+		*
+		*   stage 1 "touching"  → bottom: 'ass', top: 'tits' (caller picks)
+		*   stage 2 "grinding"  → 'bottom'
+		*   stage 3 "blowjob"   → 'mouth'
+		*   stage 4 "explicit"  → 'pussy' ∪ 'anal'
+		*/
+		saveEventBottomVideos: function (stage) {
+			if (stage === 1) return this.bottomClothingVideos('ass');
+			if (stage === 2) return this.bottomClothingVideos('bottom');
+			if (stage === 4) {
+				return this.bottomClothingVideos('pussy')
+					.concat(this.bottomClothingVideos('anal'));
+			}
+			return [];
+		},
+		saveEventTopVideos: function (stage) {
+			if (stage === 1) return this.topClothingVideos('tits');
+			if (stage === 3) return this.topClothingVideos('mouth');
+			return [];
+		},
+
+		// --- Ghost special-ability flags (Banshee / Cthulion) ----
+		enableBanshee:    function () { setup.Ghosts.enableBanshee(); },
+		enableCthulion:   function () { setup.Ghosts.enableCthulion(); },
+		clearBanshee:     function () { setup.Ghosts.clearBanshee(); },
+		clearCthulion:    function () { setup.Ghosts.clearCthulion(); },
+		bansheeActive:    function () { return setup.Ghosts.bansheeActive(); },
+		cthulionActive:   function () { return setup.Ghosts.cthulionActive(); },
+
+		// --- Argument randomizer (body-part key) -----------------
+		currentArgForRandomizer: function () { return sv().argForRandomizer; },
+
+		// --- Event video selection -------------------------------
+		setVideoEvent:    function (video) { sv().videoEvent = video; },
+		videoEvent:       function () { return sv().videoEvent; },
+		videoEventIsMp4:  function () {
+			var ve = sv().videoEvent;
+			return typeof ve === 'string' && ve.indexOf('.mp4') !== -1;
+		},
+
+		/* Public Cthulion-tier video lookup. Used by rollSaveEvent
+		   below (passes the full list to its picker). */
+		cthulionVideos: function (tier) { return cthulionVideos(tier); },
+
+		/* Pick one Cthulion video at random for the given tier. The
+		   <<cthulionAbility>> widget delegates here so callers don't
+		   have to read a list out of widget temp scope. */
+		randomCthulionVideo: function (tier) {
+			return pickRandom(cthulionVideos(tier));
+		},
+
+		/* :: Event entry: generic per-tick haunt event roll. Picks a
+		   video (Banshee / Cthulion / body-part) and writes it to
+		   $videoEvent. Returns true when the caller should <<goto
+		   "EventMC">>. Body-part fallback delegates to
+		   videoListForEvent() so the clothing-aware resolvers stay
+		   the single source. */
+		rollProwlEvent: function () {
+			var g           = setup.Ghosts.active();
+			var chance      = Math.floor(Math.random() * 101);
+			var bansheeRoll = 1 + Math.floor(Math.random() * 10);
+			var ctRoll      = 1 + Math.floor(Math.random() * 10);
+			var videoList = [];
+
+			if (g && g.canKiss && bansheeRoll === 1 && chance <= 5) {
+				this.enableBanshee();
+				videoList = this.bansheeVideos();
+			} else if (g && g.canTentacles && ctRoll === 1 && chance <= 5) {
+				this.enableCthulion();
+				var lt = this.lustTier();
+				var tier = lt >= 7 ? 3 : lt === 6 ? 2 : lt === 5 ? 1 : 0;
+				if (tier) videoList = cthulionVideos(tier);
+			} else {
+				var key = this.rollBodyPartEvent(chance);
+				if (key) videoList = this.videoListForEvent(key);
+			}
+
+			if (!videoList.length) return false;
+			sv().videoEvent = pickRandom(videoList);
+			return true;
+		},
+
+		/* SaveEventPassage entry: runs the sanity-stage / Banshee /
+		   Cthulion dispatch, picks a video, writes it to $videoEvent,
+		   and returns true if a video was selected (caller <<goto>>s
+		   EventMC). Encapsulates the entire flow that SaveEventPassage
+		   used to inline. */
+		rollSaveEvent: function () {
+			var g = setup.Ghosts.active();
+			this.setDecreasingSanity(
+				g && g.invertedSanityStages
+					? { stage1: 9, stage2: 7, stage3: 5, stage4: 3 }
+					: { stage1: 3, stage2: 5, stage3: 7, stage4: 9 }
+			);
+			var ds = this.decreasingSanity();
+			var sanity = setup.Mc.sanity();
+			var chance      = Math.floor(Math.random() * 101);
+			var bansheeRoll = 1 + Math.floor(Math.random() * 6);
+			var ctRoll      = 1 + Math.floor(Math.random() * 6);
+			var videoList = [];
+
+			if (chance <= ds.stage2 && bansheeRoll === 1 && g && g.canKiss) {
+				this.enableBanshee();
+				videoList = this.bansheeVideos();
+			} else if (chance <= ds.stage2 && ctRoll === 1 && g && g.canTentacles) {
+				var tier = cthulionTierForSanity(sanity);
+				if (tier) videoList = cthulionVideos(tier);
+			} else if (sanity >= 75 && chance <= ds.stage1) {
+				var inside = 1 + Math.floor(Math.random() * 5);
+				videoList = (inside <= 3)
+					? this.saveEventBottomVideos(1)
+					: this.saveEventTopVideos(1);
+			} else if (sanity >= 50 && sanity < 75 && chance <= ds.stage2) {
+				videoList = this.saveEventBottomVideos(2);
+			} else if (sanity >= 30 && sanity < 50 && chance <= ds.stage3) {
+				videoList = this.saveEventTopVideos(3);
+			} else if (sanity >= 1 && sanity < 30 && chance <= ds.stage4) {
+				videoList = this.saveEventBottomVideos(4);
+			}
+
+			var picked = pickRandom(videoList);
+			sv().videoEvent = picked || null;
+			return !!picked;
+		},
+
+		// --- Ghost sanity-event decreased amount -----------------
+		rollGhostSanityEventDecreased: function () {
+			var g = setup.Ghosts.active();
+			sv().ghostSanityEventDecreased = g ? g.rollEventSanityLoss() : 0;
+		},
+		ghostSanityEventDecreased: function () { return sv().ghostSanityEventDecreased; },
+
+		// --- Decreasing-sanity stage table -----------------------
+		setDecreasingSanity: function (obj) { sv().decreasingSanity = obj; },
+		decreasingSanity:    function () { return sv().decreasingSanity; },
+
+		// --- Clothing-state convenience --------------------------
+		jeansWorn:   function () { return setup.Wardrobe.worn(setup.WardrobeSlot.JEANS); },
+		shortsWorn:  function () { return setup.Wardrobe.worn(setup.WardrobeSlot.SHORTS); },
+		skirtWorn:   function () { return setup.Wardrobe.worn(setup.WardrobeSlot.SKIRT); },
+		pantiesWorn: function () { return setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES); },
+
+		// --- Orgasm cooldown flag --------------------------------
+		setOrgasmCooldown: function (n) { setup.Mc.setOrgasmCooldown(n); },
+
+		// --- Companion lust/sanity mutators (used by eventWidget) ---
+		companionDrainForHelp: function () {
+			setup.Companion.drainSanity(3);
+			setup.Companion.addLust(10);
+		},
+
+		// --- Minigame state (SeduceGhost) ------------------------
+		minigameVideo:       function () { return setup.SeduceGhostMinigame.minigameVideo(); },
+		minigameEventFailed: function () { return setup.SeduceGhostMinigame.minigameEventFailed(); },
+		clearMinigameEventFailed: function () { setup.SeduceGhostMinigame.clearMinigameEventFailed(); },
+		ghostOrgasmMeter:    function () { return setup.SeduceGhostMinigame.ghostOrgasmMeter(); },
+		mcOrgasmMeter:       function () { return setup.Mc.orgasmMeter(); },
+		clampGhostOrgasmFloor: function () { setup.SeduceGhostMinigame.clampGhostOrgasmFloor(); },
+		clampMcOrgasmFloor: function () {
+			if ((setup.Mc.orgasmMeter() || 0) <= 0) setup.Mc.setOrgasmMeter(0);
+		},
+		chanceToAttractFailedFlag: function () { return sv().chanceToAttractFailed; },
+
+		// --- Weaken-ghost minigame reward ------------------------
+		recordWeakenReward: function () {
+			setup.Witch.recordWeakenReward(30);
+		},
+
+		// --- Room cleanup flag -----------------------------------
+		setCleanedUp: function (val) { sv().cleanedUp = !!val; },
+
+		rollBodyPartEvent: function (chance) {
+			var tier      = this.lustTier();
+			var threshold = sanityThresholds[tier];
+			if (chance > threshold) return '';
+
+			var parts      = bodyPartKeys.slice(0, tier);
+			var bp         = setup.Intro.currentSensualBodyPart();
+			var weights    = [];
+			var totalWeight = 0;
+
+			for (var i = 0; i < parts.length; i++) {
+				var w = bp[parts[i]] || 0;
+				weights.push(w);
+				totalWeight += w;
+			}
+			if (totalWeight <= 0) return '';
+
+			var roll = Math.floor(Math.random() * totalWeight) + 1;
+			var cumulative = 0;
+			for (var i = 0; i < weights.length; i++) {
+				cumulative += weights[i];
+				if (roll <= cumulative) return parts[i];
+			}
+			return parts[parts.length - 1];
+		}
+	};
+})();

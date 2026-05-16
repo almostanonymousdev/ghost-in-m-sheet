@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 
 OUTPUT_FILE="ghost-in-msheet.html"
 STORY_INIT="passages/StoryInit.tw"
-STORY_SCRIPT="passages/StoryScript.tw"
+STORY_SCRIPT="passages/StoryScript.js"
 
 # Parse arguments
 DEBUG_MODE=false
@@ -46,7 +46,7 @@ fi
 if [ "$DEBUG_MODE" = true ]; then
     cp "$STORY_SCRIPT" "$STORY_SCRIPT.bak"
     RESTORE_FILES+=("$STORY_SCRIPT")
-    sed -i '2i Config.debug = true;\n$(document).one(":storyready", function() { document.documentElement.removeAttribute("data-debug-view"); });' "$STORY_SCRIPT"
+    sed -i '1i Config.debug = true;\n$(document).one(":storyready", function() { document.documentElement.removeAttribute("data-debug-view"); });' "$STORY_SCRIPT"
     echo -e "${YELLOW}SugarCube debug mode enabled${NC}"
 fi
 

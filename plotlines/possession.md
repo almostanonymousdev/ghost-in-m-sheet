@@ -4,7 +4,7 @@ Ghost possession is a dangerous mechanic that can occur during hunts. When posse
 
 * **Core possession mechanics** - The main possession system that handles becoming possessed and the resulting state.
   * [possessed.tw](../passages/posession/possessed.tw) - Main possession state and effects
-  * [PosessionController.tw](../passages/posession/PosessionController.tw) - Shared possession state and helpers
+  * [PosessionController.js](../passages/posession/PosessionController.js) - Shared possession state and helpers
 
 * **Possession locations** - Possession events that trigger based on where the player is during a hunt.
   * [possessedLocation.tw](../passages/posession/possessedLocation.tw) - Location-based possession event entry

@@ -40,7 +40,7 @@
    from StoryInit. The per-room search<Room><Tool> meters and the
    sidebar HUD meters (mclust / companionsanity / companionlust /
    ghostlust) are registered via Meter.add from their owning
-   controllers — see ToolController.tw and the *Controller.tw files
+   controllers — see ToolController.js and the *Controller.tw files
    for each domain. */
 <<newmeter 'energy'>>
     <<sizing '220px'>>

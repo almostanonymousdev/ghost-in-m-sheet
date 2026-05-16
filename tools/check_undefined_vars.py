@@ -17,8 +17,8 @@ A variable name is considered DEFINED if any of these appear anywhere:
   * <<unset $foo>> (treated as a definition for our purposes — it
     implies the var is recognised by the codebase)
   * State.variables.foo = ... in JS
-  * s.foo = ...  or  V.foo = ...  in [script] passages, where s/V is
-    the conventional alias for State.variables
+  * s.foo = ...  or  V.foo = ...  in [script] passages or .js files,
+    where s/V is the conventional alias for State.variables
   * One of the AUTO_DEFINED names below (engine-managed)
 
 A variable name is considered USED if `$foo` appears anywhere in any
@@ -32,7 +32,7 @@ import re
 import sys
 from pathlib import Path
 
-from lib_repo import iter_passages, passages_dir, read_passage, repo_root
+from lib_repo import iter_passages, iter_sources, passages_dir, read_passage, repo_root
 
 
 # Engine-managed or otherwise auto-populated story variables. Referencing
@@ -71,7 +71,7 @@ SCRIPT_ALIAS_PATTERNS = [
 # string array, the static analyzer can't follow the dynamic key. We
 # look for that pattern explicitly and treat each literal name in the
 # array as a definition. Limited to setup.Game.initState() in
-# passages/mc/GameInit.tw — generalising further would cost more in
+# passages/mc/GameInit.js — generalising further would cost more in
 # parser complexity than it would save in real-world coverage.
 DYNAMIC_KEY_DEFS = re.compile(
     r"\[([^\]]+)\]\.forEach\s*\(\s*function\s*\(\s*([a-zA-Z_]\w*)\s*\)\s*\{[^}]*?\bs\[\s*\2\s*\]\s*="
@@ -110,14 +110,27 @@ def parse_header(line):
 
 
 def collect_passages():
-    """Return a list of dicts: name, file, tags, body."""
+    """Return a list of dicts: name, file, tags, body.
+
+    Standalone `.js` files (the controller scripts that used to live in
+    `[script]`-tagged passages) are treated as a single synthetic
+    `[script]` passage named after the file stem.
+    """
     passages = []
-    for tw_file in iter_passages():
-        text = read_passage(tw_file)
+    for src_file in iter_sources():
+        text = read_passage(src_file)
+        if src_file.suffix == ".js":
+            passages.append({
+                "name": src_file.stem,
+                "file": src_file,
+                "tags": {"script"},
+                "header_line": 0,
+                "body": text,
+            })
+            continue
         lines = text.splitlines()
         current = None
         body_lines = []
-        line_offset = 0
         for i, line in enumerate(lines):
             parsed = parse_header(line)
             if parsed:
@@ -129,7 +142,7 @@ def collect_passages():
                 name, tags = parsed
                 current = {
                     "name": name,
-                    "file": tw_file,
+                    "file": src_file,
                     "tags": tags,
                     "header_line": i + 1,
                 }

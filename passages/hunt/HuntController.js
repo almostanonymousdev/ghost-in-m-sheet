@@ -1,0 +1,1863 @@
+/*
+ * Hunt lifecycle + facade controller.
+ *
+ * Owns the predicates and dispatch points the shared tool / evidence /
+ * event stack queries: "is a hunt in flight", "which ghost is active",
+ * "is the player in the ghost's room", "where should the per-tick
+ * chain route on a hunt-over condition". Each hunt is represented by
+ * a single $run object holding everything that varies between hunts:
+ *
+ *   $run = {
+ *     seed,        // int, drives the floor-plan generator + any
+ *                  //      other deterministic per-run rolls
+ *     number,      // int, monotonically incremented per attempt
+ *     modifiers,   // [<modifier_id>, ...] active modifier deck
+ *     loadout,     // { tools: [...], money: n, ... }
+ *     objective,   // string id (catalogue below)
+ *     floorplan    // populated by setup.FloorPlan
+ *   }
+ *
+ * `$ectoplasm` is the meta-progression currency that survives runs,
+ * measured in mL. Spent in the meta-shop on permanent unlocks.
+ *
+ * Per-run state lives on $run. Persistent meta-state lives on
+ * $ectoplasm (and any future $meta.* keys). Both keys are owned here
+ * so other controllers can query through this API rather than
+ * reaching into State directly.
+ */
+setup.HuntController = (function () {
+	var OWNED_VARS = Object.freeze([
+		'run', 'ectoplasm', 'runsStarted', 'meta',
+		'nextHuntSeed', 'pendingHuntHouseId',
+		// Ghost-room shuffle interval gates -- written only by
+		// shuffleGhostRoom (below) and reset when a run starts/ends.
+		'currentIntervalRoom', 'lastChangeIntervalRoom'
+	]);
+
+	function sv() { return State.variables; }
+
+	/* Street-address vocabulary used to render a seed as a human
+	   "123 Hollow Lane"-style label. The seed maps deterministically
+	   to (number, road, suffix) so the same run always shows the same
+	   address. Lists start small; expanding either is non-breaking
+	   because the seed -> index hash uses the current list length. */
+	var ROAD_NAMES = Object.freeze([
+		'Hollow', 'Marrow', 'Wraith', 'Cinder', 'Blackthorn',
+		'Moan Manor', 'Penetration Point', 'Ectoplasm',
+		'Haunted Hole-in-One', 'Thrust & Spirit', 'Apparition Ass',
+		'Creaky Bedpost', 'Bump-in-the-Night', 'Wailing Wall',
+		'Poltergeist Pound Town', 'Spectre Spread Eagle',
+		'Banshee Backdoor', 'Scream-and-Cream', 'Phantom Phallus',
+		'Ghoul G-Spot', 'Uninvited Thrust', 'Missionary Position',
+		'Ethereal Entry Point', 'She-Came', 'Shrieking Sheets',
+		'Possession Point', 'Haunted Hump', 'Ectoplasmic Release',
+		'Exorcism Exit', 'Seance and Sensuality', 'Wailing Banshee',
+		'Poltergeist', 'Screaming', 'Possession', 'Shrieking Spectre',
+		'Haunting', 'Apparition', 'Phantom Flesh', 'Corpse Bride',
+		'Exorcism', "Demon's Doorstep", 'Hellmouth', 'Seance',
+		'Witching Hour', "Grave Robber's", 'Coven', 'Cursed',
+		'Blood Moon', 'Damned', 'Climax Crypt', 'Wail and Wail Again',
+		'Throbbing', 'Uninvited Entry', 'Creak and Peak',
+		'Restless and Relentless', 'Paranormal Pound Town',
+		'Poltergeist Pleasure', 'Spirit Thrust',
+		'Exorcised and Satisfied', 'Demon Seed', 'Hellfire and Hips',
+		"Crypt Keeper's Climax", 'Succubus', 'Incubus',
+		'Horny Haunting', 'Lust and Lament', 'Eternal Thrust',
+		'Screaming Flesh', 'Damnation', 'Hellfire',
+		'Writhing Wraith', 'Tormented', 'Bleeding Veil',
+		'Cursed Cavity', 'Howling Pit', 'Mortuary Moan',
+		'Coffin Creak', 'Rotting Rose', 'Shadowflesh',
+		'Wretched Wail', 'Corpse Light', 'Smothering Dark',
+		'Shroud and Shudder', 'Gaping Grave', 'Blackblood',
+		'Throbbing Phantom', 'Dripping Ectoplasm', 'Spectral Thrust',
+		'Pulsing Portal', 'Grinding Ghoul', 'Slick Specter',
+		'Wet Wraith', 'Moaning Mortuary', 'Thrusting',
+		'Paranormal Pleasure', 'Pounding Poltergeist',
+		'Lust of the Damned', 'Heaving Haunted',
+		'Seance and Submission', 'Restless Flesh', 'Demonic Desire',
+		'Hungry Haunting', 'Flesh and Phantom', 'Grinding Grave',
+		'Wail of the Willing', 'Shuddering Specter',
+		'Damned and Dripping', 'Howling Hips', 'Possession and Pleasure',
+		'Lament and Lust', 'Exorcised Ecstasy', 'Sinful Specter',
+		'Hellbound Hips', 'Wailing and Wanting', 'Cursed Climax',
+		'Dripping Dark', 'Forbidden Flesh', 'Moaning Mist',
+		'Phantom and Fornication', 'Grinding Grimoire', 'Bloody Bliss',
+		'Howling Hunger', 'Damned Desire', 'Oozing Oracle',
+		"Witch's Wet", 'Possessed and Pleasured', 'Coven Climax',
+		'Screeching Satisfaction', 'Hellcat Hips', 'Rotting Rapture',
+		'Banshee and Breathless', 'Throbbing Tomb', 'Sinister Slick',
+		'Wretched and Wanting', 'Grave Grinding'
+	]);
+	var ROAD_SUFFIXES = Object.freeze([
+		'Lane', 'Court', 'Drive', 'Row', 'Way',
+		'Boulevard', 'Avenue', 'Circle', 'Street', 'Road', 'Crossing',
+		'Freeway', 'Grove', 'Terrace', 'Highway', 'Place', 'Pass',
+		'Hollow', 'Expressway', 'Square', 'Passage', 'Alley', 'Ground',
+		'District', 'Threshold', 'Mile', 'Strip', 'Intersection',
+		'Sprawl', 'Inlet', 'Drag', 'Overpass',
+		'Trail', 'Path', 'Bypass', 'Parkway', 'Turnpike', 'Causeway',
+		'Mews', 'Close', 'Walk', 'Promenade', 'Plaza', 'Junction',
+		'Loop', 'Ridge', 'Heights', 'Gardens', 'Glen', 'Vale',
+		'Crescent', 'Gate', 'Yard', 'End', 'Wynd', 'Mire', 'Bog',
+		'Cul-de-sac', 'Bend', 'Reach', 'Spur', 'Slope',
+		'Boo-ties', 'Scroo-levard', 'Moan-or', 'Thrust-errace',
+		'Lay-ne', 'Stroke-street', 'Cliti-court', 'Shaft-way',
+		'Gush-grove', 'Climax-crossing', 'Ride-way', 'Groan-grove',
+		'Cum-court', 'Stroke-square', 'Suck-cessway', 'Drip-drive',
+		'Wet-walk', 'Squirt-street', 'Pulseway', 'Lick-lane',
+		'Thrust-through', 'Plunge-place', 'Grind-gate', 'Swell-square',
+		'Gape-grove', 'Pound-pass'
+	]);
+
+	/* xorshift-style 32-bit mix, salted so the three address fields
+	   pull from independent bit streams of the same seed. */
+	function mix32(seed, salt) {
+		var x = ((seed >>> 0) ^ (salt >>> 0)) >>> 0;
+		x = Math.imul(x, 0x85ebca6b) >>> 0;
+		x = (x ^ (x >>> 13)) >>> 0;
+		x = Math.imul(x, 0xc2b2ae35) >>> 0;
+		x = (x ^ (x >>> 16)) >>> 0;
+		return x >>> 0;
+	}
+
+	function addressFromSeed(seed) {
+		var s = (seed >>> 0);
+		var num = (mix32(s, 0xa3c59ac3) % 999) + 1;
+		var road = ROAD_NAMES[mix32(s, 0x6b79f5d1) % ROAD_NAMES.length];
+		var suffix = ROAD_SUFFIXES[mix32(s, 0x1f83d9ab) % ROAD_SUFFIXES.length];
+		return {
+			number: num,
+			road: road,
+			suffix: suffix,
+			formatted: num + ' ' + road + ' ' + suffix
+		};
+	}
+
+	/* Enum constants for the run's stringly-typed fields. The values
+	   are the on-disk strings; saves and tests work against them
+	   transparently. Callers should reference the enum (e.g.
+	   setup.HuntController.Outcome.SUCCESS) rather than the literal so
+	   a typo surfaces at parse time instead of as a silently-failing eq. */
+	var Outcome = Object.freeze({
+		SUCCESS: 'success',
+		FAILURE: 'failure'
+	});
+	var FailureReason = Object.freeze({
+		SANITY:     'sanity',
+		EXHAUSTION: 'exhaustion',
+		TIME:       'time',
+		CAUGHT:     'caught',
+		ABANDON:    'abandon',
+		POSSESSED:  'possessed',
+		FLED:       'fled'
+	});
+	/* Run-objective catalogue. Each entry carries an `id` (the string
+	   stamped onto $run.objective and on-disk saves) and a
+	   `description` shown to the player when the run starts. Callers
+	   that need the id should reference Objective.<NAME>.id; saves
+	   continue to round-trip the id string verbatim. */
+	var Objective = Object.freeze({
+		IDENTIFY: Object.freeze({
+			id: 'identify',
+			description: 'Identify the ghost then banish it from the house. Chanting its name will keep you safe.'
+		}),
+		RESCUE: Object.freeze({
+			id: 'rescue',
+			description: ''
+		})
+	});
+
+	function objectiveDescription(id) {
+		var keys = Object.keys(Objective);
+		for (var i = 0; i < keys.length; i++) {
+			if (Objective[keys[i]].id === id) return Objective[keys[i]].description;
+		}
+		return '';
+	}
+
+	/* Meta-shop catalogue. Each entry is the player-facing record for
+	   one persistent unlock (or stackable charge). Effects are wired
+	   wherever they apply: startHunt honors most of them, the lobby
+	   reads rerollCharges, the minimap reads loot_sense / reliable_recon,
+	   and endHunt restores the stat-cap bumps. Costs are paid in mL
+	   of $ectoplasm; `max` caps how many copies the player may own
+	   (1 for one-time unlocks, n for stackable ones, Infinity for
+	   uncapped consumables). Adding a new unlock is just an entry
+	   here plus the matching effect site. */
+	var ShopItem = Object.freeze({
+		BANLIST_SLOT:       'banlist_slot',
+		REROLL_CHARGE:      'reroll_charge',
+		WITCHS_BLESSING:    'witchs_blessing',
+		MONKEYS_FAVOR:      'monkeys_favor',
+		SMALLER_HOUSE:      'smaller_house',
+		LOOT_SENSE:         'loot_sense',
+		STEELED_HAND:       'steeled_hand',
+		CALVES_OF_STEEL:    'calves_of_steel',
+		INTENSE_INTUITION:  'intense_intuition',
+		RELIABLE_RECON:     'reliable_recon'
+	});
+
+	var SHOP_CATALOGUE = Object.freeze([
+		{
+			id: ShopItem.BANLIST_SLOT,
+			name: 'Banlist Slot',
+			cost: 25,
+			max: 3,
+			description: 'Permanently ban one modifier from each run\'s draft pool. Stack up to 3 slots.'
+		},
+		{
+			id: ShopItem.REROLL_CHARGE,
+			name: 'Reroll Charge',
+			cost: 5,
+			max: Infinity,
+			description: 'Consumable. Spend at the lobby to redraft your modifiers once.'
+		},
+		{
+			id: ShopItem.WITCHS_BLESSING,
+			name: 'Witch\'s Blessing',
+			cost: 30,
+			max: 1,
+			description: 'Start every run with the tarot deck already in your bag.'
+		},
+		{
+			id: ShopItem.MONKEYS_FAVOR,
+			name: 'Monkey\'s Favor',
+			cost: 30,
+			max: 1,
+			description: 'Start every run with the monkey paw already found.'
+		},
+		{
+			id: ShopItem.SMALLER_HOUSE,
+			name: 'Smaller House',
+			cost: 20,
+			max: 1,
+			description: 'Each haunt has one fewer room to search.'
+		},
+		{
+			id: ShopItem.LOOT_SENSE,
+			name: 'Loot Sense',
+			cost: 20,
+			max: 1,
+			description: 'Rooms with uncollected loot are highlighted on the minimap.'
+		},
+		{
+			id: ShopItem.STEELED_HAND,
+			name: 'Steeled Hand',
+			cost: 25,
+			max: 1,
+			description: 'Begin each run with +25 sanity (max + current).'
+		},
+		{
+			id: ShopItem.CALVES_OF_STEEL,
+			name: 'Calves of Steel',
+			cost: 25,
+			max: 1,
+			description: 'Begin each run with +5 stamina (max + current).'
+		},
+		{
+			id: ShopItem.INTENSE_INTUITION,
+			name: 'Intense Intuition',
+			cost: 30,
+			max: 1,
+			description: 'One of the ghost\'s evidences is checked off in your notebook from the start.'
+		},
+		{
+			id: ShopItem.RELIABLE_RECON,
+			name: 'Reliable Recon',
+			cost: 25,
+			max: 1,
+			description: 'The ghost\'s starting room is highlighted on the minimap. The mark fades the first time the ghost relocates.'
+		}
+	]);
+
+	function shopItemById(id) {
+		for (var i = 0; i < SHOP_CATALOGUE.length; i++) {
+			if (SHOP_CATALOGUE[i].id === id) return SHOP_CATALOGUE[i];
+		}
+		return null;
+	}
+
+	// --- Persistent meta-shop state ---------------------------
+	/* Backstop accessor that lazily fills in $meta on saves predating
+	   the meta-shop. SaveMigration also handles this on load, but
+	   reading through here keeps every getter safe even before the
+	   migration pass runs. */
+	function metaState() {
+		var s = sv();
+		if (!s.meta || typeof s.meta !== 'object') {
+			s.meta = { unlocks: {}, bannedModifiers: [], rerollCharges: 0 };
+		}
+		if (!s.meta.unlocks || typeof s.meta.unlocks !== 'object') s.meta.unlocks = {};
+		if (!Array.isArray(s.meta.bannedModifiers)) s.meta.bannedModifiers = [];
+		if (typeof s.meta.rerollCharges !== 'number') s.meta.rerollCharges = 0;
+		return s.meta;
+	}
+	function metaUnlock(id) {
+		return metaState().unlocks[id] || 0;
+	}
+	function hasUnlock(id) { return metaUnlock(id) > 0; }
+	function shopCatalogue() { return SHOP_CATALOGUE.slice(); }
+	function shopItem(id)   { return shopItemById(id); }
+	function lastWasSuccess() { return !!metaState().lastWasSuccess; }
+
+	/* Spend ectoplasm and increment the unlock count. Caps at the
+	   item's `max`; rejects unknown ids and broke players (no partial
+	   deductions). Returns true on success. */
+	function buyUnlock(id) {
+		var item = shopItemById(id);
+		if (!item) return false;
+		var owned = metaUnlock(id);
+		if (owned >= item.max) return false;
+		if (!canAffordEctoplasm(item.cost)) return false;
+		spendEctoplasm(item.cost);
+		var m = metaState();
+		m.unlocks[id] = owned + 1;
+		if (id === ShopItem.REROLL_CHARGE) m.rerollCharges = (m.rerollCharges || 0) + 1;
+		return true;
+	}
+
+	function bannedModifiers() { return metaState().bannedModifiers.slice(); }
+	function bannedSlotsTotal()    { return metaUnlock(ShopItem.BANLIST_SLOT); }
+	function bannedSlotsUsed()     { return metaState().bannedModifiers.length; }
+	function bannedSlotsRemaining() {
+		return Math.max(0, bannedSlotsTotal() - bannedSlotsUsed());
+	}
+	/* Toggle a modifier on the banlist. Adds when there's a free slot
+	   and the id is unique; removes when already banned. Unknown
+	   modifier ids are rejected. Returns true if the list changed. */
+	function toggleBannedModifier(id) {
+		if (!setup.Modifiers || !setup.Modifiers.byId(id)) return false;
+		var m = metaState();
+		var idx = m.bannedModifiers.indexOf(id);
+		if (idx !== -1) {
+			m.bannedModifiers.splice(idx, 1);
+			return true;
+		}
+		if (bannedSlotsUsed() >= bannedSlotsTotal()) return false;
+		m.bannedModifiers.push(id);
+		return true;
+	}
+	function isBanned(id) { return metaState().bannedModifiers.indexOf(id) !== -1; }
+
+	function rerollCharges() { return metaState().rerollCharges || 0; }
+	/* Decrement the stockpile. Returns true if a charge was actually
+	   spent. The caller is responsible for the redraft itself; see
+	   redraftRunModifiers below for the in-lobby flow. */
+	function consumeRerollCharge() {
+		var m = metaState();
+		if ((m.rerollCharges || 0) <= 0) return false;
+		m.rerollCharges -= 1;
+		// Mirror the unlocks count so /buy and consume agree.
+		var u = (m.unlocks[ShopItem.REROLL_CHARGE] || 0) - 1;
+		m.unlocks[ShopItem.REROLL_CHARGE] = u > 0 ? u : 0;
+		return true;
+	}
+
+	/* Redraft modifiers for the active run, honoring the banlist.
+	   Bumps an internal $run.rerolls counter so the new draft seed
+	   never collides with the original. Returns the new modifier id
+	   list, or null when no run is active. */
+	function redraftRunModifiers() {
+		var run = sv().run;
+		if (!run || !setup.Modifiers) return null;
+		run.rerolls = (run.rerolls || 0) + 1;
+		var seed = ((run.seed >>> 0) ^ 0x9e3779b9 ^ Math.imul(run.rerolls, 0x85ebca6b)) >>> 0;
+		var draft = setup.Modifiers.draft(seed, (run.modifiers || []).length || 2, {
+			banned: bannedModifiers()
+		});
+		run.modifiers = draft.map(function (m) { return m.id; });
+		return run.modifiers.slice();
+	}
+
+	// --- Run lifecycle ----------------------------------------
+	/* Start a fresh run. opts:
+		seed       -- int; if omitted, a random seed is rolled.
+		modifiers  -- array of modifier ids; defaults to [].
+		loadout    -- starting loadout object; defaults to {}.
+		objective  -- objective id string; defaults to Objective.IDENTIFY.
+	   The run number increments from $runsStarted, which persists
+	   across end() so attempt counts survive between runs. The
+	   floorplan field is left undefined for the floor-plan
+	   generator to fill in. */
+	function start(opts) {
+		opts = opts || {};
+		sv().runsStarted = (sv().runsStarted || 0) + 1;
+		sv().run = {
+			seed: opts.seed != null ? opts.seed : Math.floor(Math.random() * 1e9),
+			number: sv().runsStarted,
+			modifiers: Array.isArray(opts.modifiers) ? opts.modifiers.slice() : [],
+			loadout: opts.loadout || {},
+			objective: opts.objective || Objective.IDENTIFY.id,
+			// Static-plan houses (setup.HuntHouses) stamp their
+			// catalogue id here so downstream consumers can ask which
+			// frozen plan the run is using -- HUD label override, the
+			// companion gate, save migration. Procedural runs leave it
+			// null and behave exactly as before.
+			staticHouseId: opts.staticHouseId || null,
+			// Player starts in the hallway. Nav links in HuntRun
+			// update this via setCurrentRoom() before re-rendering.
+			currentRoomId: 'room_0',
+			// Furniture-search state. searchedFurniture is the
+			// {room, suffix} pair the player just clicked, read by
+			// FurnitureSearch. collectedLoot tracks which
+			// loot kinds have already been picked up this run, so
+			// repeat searches at the same spot find nothing.
+			searchedFurniture: null,
+			collectedLoot: [],
+			/* Per-room light state, keyed by floor-plan room id. Missing
+			   entries default to dark (matches classic, where every room
+			   starts dark on house entry); the hunt light widget toggles
+			   them via setRoomLight. */
+			lights: {}
+		};
+		return sv().run;
+	}
+
+	/* End the current run. Preserves the run number so the next
+	   start() picks up where we left off; the new run will overwrite
+	   the rest of the fields. Also tears down the legacy $hunt /
+	   companion bookkeeping that startHunt stamped, so a Cancel from
+	   the HuntStart lobby (which calls this directly, not endHunt)
+	   doesn't leave Ghosts.isHunting() stuck on -- which would let the
+	   post-passage tick redirect the player into HuntOverTime once the
+	   clock crossed 06:00. */
+	function end() {
+		var prior = sv().run;
+		sv().run = null;
+		if (setup.Ghosts && typeof setup.Ghosts.setHuntMode === 'function') {
+			setup.Ghosts.setHuntMode(setup.Ghosts.HuntMode.NONE);
+		}
+		if (setup.Companion) {
+			if (typeof setup.Companion.clearBlakeCursedItem === 'function') setup.Companion.clearBlakeCursedItem();
+			if (typeof setup.Companion.resetAliceWorkIfNeeded === 'function') setup.Companion.resetAliceWorkIfNeeded();
+			if (typeof setup.Companion.resetHuntState === 'function') setup.Companion.resetHuntState();
+		}
+		return prior;
+	}
+
+	function active()    { return sv().run || null; }
+	function isActive()  { return !!sv().run; }
+
+	// --- Field accessors --------------------------------------
+	function seed()       { return sv().run ? sv().run.seed : null; }
+	function number()     { return sv().run ? sv().run.number : 0; }
+	function modifiers()  { return sv().run ? sv().run.modifiers.slice() : []; }
+	function loadout()    { return sv().run ? sv().run.loadout : null; }
+	function objective()  { return sv().run ? sv().run.objective : null; }
+	function currentRoomId() {
+		var run = sv().run;
+		return run ? (run.currentRoomId || 'room_0') : null;
+	}
+	/* Furniture-search bookkeeping. The HuntRun layout wraps each
+	   furniture image in a link that calls setSearchedFurniture(suffix)
+	   then routes to FurnitureSearch, which reads the {room,
+	   suffix} pair via searchedFurniture() and looks up what (if
+	   anything) is hidden there with lootAt(). takeLoot() marks a
+	   kind as collected so a follow-up search of the same spot finds
+	   nothing. */
+	function setSearchedFurniture(suffix) {
+		var run = sv().run;
+		if (!run) return;
+		run.searchedFurniture = { room: run.currentRoomId || 'room_0', suffix: suffix };
+	}
+	function searchedFurniture() {
+		var run = sv().run;
+		return run ? (run.searchedFurniture || null) : null;
+	}
+	function collectedLoot() {
+		var run = sv().run;
+		return run && Array.isArray(run.collectedLoot) ? run.collectedLoot.slice() : [];
+	}
+	function hasCollected(kind) {
+		var run = sv().run;
+		return !!(run && Array.isArray(run.collectedLoot)
+			&& run.collectedLoot.indexOf(kind) !== -1);
+	}
+	function takeLoot(kind) {
+		var run = sv().run;
+		if (!run || !kind) return false;
+		if (!Array.isArray(run.collectedLoot)) run.collectedLoot = [];
+		if (run.collectedLoot.indexOf(kind) !== -1) return false;
+		run.collectedLoot.push(kind);
+		return true;
+	}
+	/* All (uncollected) loot kinds hidden in `roomId`'s `suffix`
+	   furniture slot, in the order they were stamped onto the plan.
+	   The floor-plan generator prefers distinct slots but can fall
+	   back to sharing one when the room runs out of unique furniture
+	   (forced-furniture loot kinds: tarotCards, monkeyPaw, tool_<id>),
+	   so a single search may legitimately surface several items at
+	   once. Returns []  when no run is active. */
+	function lootKindsAt(roomId, suffix) {
+		var run = sv().run;
+		if (!run || !run.floorplan) return [];
+		var fp = run.floorplan;
+		var loot = fp.loot || {};
+		var furn = fp.lootFurniture || {};
+		var collected = Array.isArray(run.collectedLoot) ? run.collectedLoot : [];
+		var out = [];
+		Object.keys(loot).forEach(function (k) {
+			if (loot[k] === roomId && furn[k] === suffix && collected.indexOf(k) === -1) {
+				out.push(k);
+			}
+		});
+		return out;
+	}
+
+	/* Single-kind variant -- returns the first uncollected loot kind
+	   at the slot, or null. Kept for callers that only need to know
+	   "is there anything here"; multi-kind sites use lootKindsAt. */
+	function lootAt(roomId, suffix) {
+		var kinds = lootKindsAt(roomId, suffix);
+		return kinds.length ? kinds[0] : null;
+	}
+
+	/* Stash stolen clothes onto a furniture slot somewhere on the
+	   floor plan, using the same loot/lootFurniture pipeline as
+	   cursedItem / tarotCards / monkeyPaw -- so a normal furniture
+	   search reveals them via setup.HuntController.lootKindsAt. The
+	   stash is weighted by BFS distance from the player's current
+	   room: ~50% chance to land in the current room (when it has any
+	   furniture), with the remainder split among reachable rooms
+	   on a 1/distance falloff (so a neighbor is twice as likely as
+	   a room two hops away). When the current room has no furniture
+	   the full weight redistributes onto the rest of the house.
+	   The slot picker prefers furniture pieces that aren't already
+	   pinned to other loot, so co-located stashes are rare. Returns
+	   `{ roomId, suffix }` on success or null when the floor plan
+	   has no furniture-bearing rooms.
+
+	   Also clears any prior 'clothesStolen' entry from collectedLoot
+	   so a re-steal during the same run is findable again. */
+	function stashStolenClothes(rngOpt) {
+		var run = sv().run;
+		if (!run || !run.floorplan) return null;
+		var fp = run.floorplan;
+		var rand = (typeof rngOpt === 'function') ? rngOpt : Math.random;
+
+		var furnitureRooms = fp.rooms.filter(function (r) {
+			var t = setup.Templates && setup.Templates.byId(r.template);
+			return !!(t && Array.isArray(t.furniture) && t.furniture.length);
+		});
+		if (!furnitureRooms.length) return null;
+
+		var current = run.currentRoomId || 'room_0';
+		var distances = setup.FloorPlan.bfsDistances(fp, current);
+
+		// Weight rooms: distance-0 absorbs 50% (when reachable +
+		// has furniture), the rest splits the remaining 50% by 1/d.
+		var hasCurrent = furnitureRooms.some(function (r) { return r.id === current; });
+		var falloff = furnitureRooms.map(function (r) {
+			var d = distances[r.id];
+			if (d == null) return 0;        // unreachable
+			if (d === 0)   return 0;        // current-room handled separately
+			return 1 / d;
+		});
+		var falloffSum = falloff.reduce(function (a, b) { return a + b; }, 0);
+
+		var weights;
+		if (hasCurrent && falloffSum > 0) {
+			weights = furnitureRooms.map(function (r, i) {
+				return r.id === current ? 0.5 : 0.5 * (falloff[i] / falloffSum);
+			});
+		} else if (hasCurrent) {
+			// Only the current room is furnitured & reachable.
+			weights = furnitureRooms.map(function (r) {
+				return r.id === current ? 1 : 0;
+			});
+		} else if (falloffSum > 0) {
+			// No furniture in current room: redistribute 100% by 1/d.
+			weights = falloff.map(function (w) { return w / falloffSum; });
+		} else {
+			// Nothing reachable from current room had furniture --
+			// fall back to a uniform pick across all furniture rooms
+			// (covers degenerate plans where current is isolated).
+			weights = furnitureRooms.map(function () { return 1 / furnitureRooms.length; });
+		}
+
+		var roll = rand();
+		var cum = 0;
+		var pickedIdx = furnitureRooms.length - 1;
+		for (var i = 0; i < weights.length; i++) {
+			cum += weights[i];
+			if (roll < cum) { pickedIdx = i; break; }
+		}
+		var picked = furnitureRooms[pickedIdx];
+		var t = setup.Templates.byId(picked.template);
+
+		// Avoid (room, suffix) collisions with already-placed loot
+		// when there's a free slot to use.
+		var lootFurn = fp.lootFurniture || {};
+		var taken = {};
+		Object.keys(fp.loot || {}).forEach(function (k) {
+			if (k === 'clothesStolen') return;
+			if (fp.loot[k] === picked.id && lootFurn[k]) taken[lootFurn[k]] = true;
+		});
+		var available = t.furniture.filter(function (f) { return !taken[f]; });
+		var pool = available.length ? available : t.furniture.slice();
+		var suffix = pool[Math.floor(rand() * pool.length)];
+
+		if (!fp.loot) fp.loot = {};
+		if (!fp.lootFurniture) fp.lootFurniture = {};
+		fp.loot.clothesStolen = picked.id;
+		fp.lootFurniture.clothesStolen = suffix;
+
+		// A previous steal in the same run may have left
+		// 'clothesStolen' in collectedLoot; clear it so the new
+		// stash is searchable.
+		if (Array.isArray(run.collectedLoot)) {
+			var idx = run.collectedLoot.indexOf('clothesStolen');
+			if (idx !== -1) run.collectedLoot.splice(idx, 1);
+		}
+
+		return { roomId: picked.id, suffix: suffix };
+	}
+
+	/* Move the player into `roomId`. No-op when no run is active or
+	   the id isn't on the current floor plan; nav links call this
+	   before re-entering HuntRun. */
+	function setCurrentRoom(roomId) {
+		var run = sv().run;
+		if (!run || !run.floorplan) return false;
+		var found = run.floorplan.rooms.some(function (r) { return r.id === roomId; });
+		if (!found) return false;
+		run.currentRoomId = roomId;
+		return true;
+	}
+
+	/* Per-room light state. Hunt rooms are not seeded into setup.Rooms,
+	   so the light/dark flag lives on $run.lights keyed by floor-plan
+	   room id; missing entries default to DARK (matches classic-mode
+	   defaults from setup.Rooms.seed). The huntFooterLight widget toggles
+	   this and re-navigates HuntRun, which re-resolves the body
+	   background through setup.Styles.bgUrlForTemplate(template, dark). */
+	function isRoomDark(roomId) {
+		var run = sv().run;
+		if (!run || !roomId) return false;
+		var lights = run.lights || {};
+		var v = lights[roomId];
+		if (v == null) return true;
+		return v === setup.RoomLight.DARK;
+	}
+	function setRoomLight(roomId, lightConst) {
+		var run = sv().run;
+		if (!run || !roomId) return;
+		if (!run.lights) run.lights = {};
+		run.lights[roomId] = lightConst;
+	}
+	function isCurrentRoomDark() {
+		return isRoomDark(currentRoomId());
+	}
+
+	function hasModifier(id) {
+		var run = sv().run;
+		return !!(run && run.modifiers && run.modifiers.indexOf(id) !== -1);
+	}
+
+	/* Tool keys the hunt toolbar should render this run, in canonical
+	   setup.searchToolOrder. Resolution order:
+	     1. Build the "starting" base set:
+	        a. Empty Bag modifier (Modifiers.LOCKED_TOOLS) -> [].
+	        b. loadout.tools array -> intersection with searchToolOrder.
+	        c. Default -> all six tools.
+	     2. Union with any tool the player has picked up from
+	        furniture this run ($run.collectedLoot entries shaped as
+	        'tool_<id>'). Tools placed in the floor plan and clicked
+	        through FurnitureSearch land in collectedLoot via takeLoot,
+	        so a started-empty bag fills back in as the player
+	        searches the rooms.
+	   Order is always the canonical setup.searchToolOrder regardless
+	   of the order tools were picked up. Returns [] when no run is
+	   active. */
+	function startingTools() {
+		var run = sv().run;
+		if (!run) return [];
+		var order = (setup.searchToolOrder || []).slice();
+		var base;
+		if (hasModifier(setup.Modifiers.LOCKED_TOOLS)) {
+			base = [];
+		} else if (Array.isArray((run.loadout || {}).tools)) {
+			base = order.filter(function (t) {
+				return run.loadout.tools.indexOf(t) !== -1;
+			});
+		} else {
+			base = order.slice();
+		}
+		var collected = Array.isArray(run.collectedLoot) ? run.collectedLoot : [];
+		return order.filter(function (t) {
+			if (base.indexOf(t) !== -1) return true;
+			return collected.indexOf(setup.FloorPlan.toolLootKind(t)) !== -1;
+		});
+	}
+
+	/* Compute the tool-pickup loot kinds the floor-plan generator
+	   should place this run -- exactly the tools the player would
+	   otherwise be missing from the toolbar. Reads from the same
+	   modifiers / loadout the toolbar resolution does, so the player
+	   can always recover a full kit by exploring the house.
+	   Returns an array of tool ids (not loot keys); the FloorPlan
+	   generator wraps them with the 'tool_' prefix. */
+	function startingToolsBase(modifierIds, loadout) {
+		var order = (setup.searchToolOrder || []).slice();
+		var ids = Array.isArray(modifierIds) ? modifierIds : [];
+		if (ids.indexOf(setup.Modifiers.LOCKED_TOOLS) !== -1) return [];
+		if (loadout && Array.isArray(loadout.tools)) {
+			return order.filter(function (t) {
+				return loadout.tools.indexOf(t) !== -1;
+			});
+		}
+		return order;
+	}
+	function missingToolsToPlace(modifierIds, loadout) {
+		var order = (setup.searchToolOrder || []).slice();
+		var base = startingToolsBase(modifierIds, loadout);
+		return order.filter(function (t) { return base.indexOf(t) === -1; });
+	}
+
+	function setObjective(id) {
+		if (sv().run) sv().run.objective = id;
+	}
+
+	/* Add a modifier to the active run if not already present.
+	   Returns true if it was added. */
+	function addModifier(id) {
+		var run = sv().run;
+		if (!run || !id) return false;
+		if (!Array.isArray(run.modifiers)) run.modifiers = [];
+		if (run.modifiers.indexOf(id) !== -1) return false;
+		run.modifiers.push(id);
+		return true;
+	}
+
+	/* Stow arbitrary generator output (e.g. floor plan) on the run
+	   so the floor-plan generator can hand state back without
+	   needing a top-level $variable. Subsystems read the field via
+	   this API rather than via $run directly. */
+	function setField(key, value) {
+		var run = sv().run;
+		if (!run) return;
+		run[key] = value;
+	}
+	function field(key) {
+		var run = sv().run;
+		return run ? run[key] : undefined;
+	}
+
+	// --- Meta-progression: ectoplasm (mL) ---------------------
+	function ectoplasm() { return sv().ectoplasm || 0; }
+	function addEctoplasm(n) {
+		sv().ectoplasm = (sv().ectoplasm || 0) + (n || 0);
+		return sv().ectoplasm;
+	}
+	/* Spend `n` mL of ectoplasm. Returns true on success, false if
+	   the player can't afford it. No partial deductions. */
+	function spendEctoplasm(n) {
+		var have = sv().ectoplasm || 0;
+		if (have < n) return false;
+		sv().ectoplasm = have - n;
+		return true;
+	}
+	function canAffordEctoplasm(n) { return (sv().ectoplasm || 0) >= n; }
+
+	// --- Per-cycle hunt seed ---------------------------------
+	/* Seed for the *next* run. The GhostStreet card preview
+	   and HuntStart's auto-roll both read this so the previewed
+	   address always matches the address the lobby renders.
+	   Persisted between visits so the player can leave and return
+	   without the haunt reshuffling under them; rolled fresh once a
+	   run finishes (endHunt) so the next attempt gets a new seed.
+	   Lazily initialised when first read on saves predating the
+	   field. */
+	function rollFreshSeed() {
+		return Math.floor(Math.random() * 0x100000000);
+	}
+	function nextSeed() {
+		var s = sv();
+		if (typeof s.nextHuntSeed !== 'number') {
+			s.nextHuntSeed = rollFreshSeed();
+		}
+		return s.nextHuntSeed;
+	}
+	function rollNextSeed() {
+		sv().nextHuntSeed = rollFreshSeed();
+		return sv().nextHuntSeed;
+	}
+
+	// --- Composition helpers for the lifecycle passages -------
+	/* Roll a fresh run end-to-end: seed, modifier draft,
+	   floor-plan generation, and $run population. opts:
+		seed          -- explicit seed (default = random in [0,1e9));
+		                 also drives the modifier draft, offset by a
+		                 32-bit constant so it differs from the
+		                 floor-plan rng stream.
+		modifierCount -- how many modifiers to draft. Resolution order:
+		                 1. opts.modifierCount when set (caller wins);
+		                 2. catalogue entry's modifierCount when
+		                    staticHouseId points at a setup.HuntHouses
+		                    record carrying that field;
+		                 3. fallback default of 2 (procedural runs).
+		floorPlanOpts -- forwarded to setup.FloorPlan.generate.
+		loadout       -- forwarded to start().
+		objective     -- forwarded to start() (default Objective.IDENTIFY). */
+	function startHunt(opts) {
+		opts = opts || {};
+		var seed = opts.seed != null ? opts.seed : Math.floor(Math.random() * 1e9);
+		/* Resolve modifierCount through the catalogue when a static
+		   house is in play and the caller didn't pin a value
+		   explicitly -- keeps "this house has no modifier deck" as
+		   data on the catalogue entry instead of a per-house branch
+		   in the lifecycle. */
+		var staticHouseEntry = (opts.staticHouseId && setup.HuntHouses)
+			? setup.HuntHouses.byId(opts.staticHouseId)
+			: null;
+		var modifierCount;
+		if (opts.modifierCount != null) {
+			modifierCount = opts.modifierCount;
+		} else if (staticHouseEntry && typeof staticHouseEntry.modifierCount === 'number') {
+			modifierCount = staticHouseEntry.modifierCount;
+		} else {
+			modifierCount = 2;
+		}
+
+		/* Modifier draft honors the player's banlist. Banned ids are
+		   stripped from the draft pool before weighting; banlist slots
+		   are bought from the meta-shop (ShopItem.BANLIST_SLOT). */
+		var draft = setup.Modifiers.draft(
+			(seed ^ 0x9e3779b9) >>> 0,
+			modifierCount,
+			{ banned: bannedModifiers() }
+		);
+		var modifierIds = draft.map(function (m) { return m.id; });
+
+		/* Compose the floor-plan options. Tools the player would
+		   otherwise be missing from the toolbar (Empty Bag modifier or
+		   a restricted loadout.tools) get placed in furniture so the
+		   run is recoverable -- the player can explore, find them, and
+		   the toolbar fills in via startingTools()'s collected-loot
+		   union. Bump the room count when there's tool loot to place
+		   so the per-room furniture pool has slack for the extra
+		   pins; default 5 rooms isn't enough headroom for all six
+		   tools in the worst-case Empty Bag run. */
+		var fpOpts = Object.assign({}, opts.floorPlanOpts || {});
+		var toolKinds = missingToolsToPlace(modifierIds, opts.loadout);
+		if (toolKinds.length && fpOpts.toolKinds == null) {
+			fpOpts.toolKinds = toolKinds;
+		}
+		if (fpOpts.toolKinds && fpOpts.toolKinds.length && fpOpts.roomCount == null) {
+			fpOpts.roomCount = Math.max(5, 4 + Math.ceil(fpOpts.toolKinds.length / 2));
+		}
+		/* Maze: three extra rooms on top of whatever the base
+		   plan would have rolled. */
+		if (modifierIds.indexOf(setup.Modifiers.MAZE) !== -1) {
+			fpOpts.roomCount = (fpOpts.roomCount || 5) + 3;
+		}
+		/* Smaller House meta-unlock shaves one room off the haunt.
+		   Applied last so it composes with Maze (still net +2) and the
+		   tool-loot expansion (still keeps a slot per missing tool).
+		   Floor floor at the generator's hard min of 2 (hallway + 1). */
+		if (hasUnlock(ShopItem.SMALLER_HOUSE)) {
+			fpOpts.roomCount = Math.max(2, (fpOpts.roomCount || 5) - 1);
+		}
+		/* Static houses (setup.HuntHouses) freeze the topology to
+		   a catalogue blueprint -- same rooms, same edges every run,
+		   regardless of seed or modifiers. Spawn / loot / boss still
+		   roll off the seed because they're local concerns; the room
+		   set + edge graph come from the catalogue. Procedural runs
+		   leave staticHouseId null and behave exactly as before. */
+		if (opts.staticHouseId && setup.HuntHouses) {
+			var staticPlan = setup.HuntHouses.planFor(opts.staticHouseId);
+			if (staticPlan) {
+				fpOpts.staticPlan = staticPlan;
+			}
+		}
+		var floorplan = setup.FloorPlan.generate(seed, fpOpts);
+		/* Snapshot the spawn room id for Reliable Recon. driftGhostRoom
+		   mutates floorplan.spawnRoomId; comparing against this snapshot
+		   lets the minimap drop the recon highlight the moment the ghost
+		   relocates for the first time. */
+		floorplan.originalSpawnRoomId = floorplan.spawnRoomId;
+
+		/* Pick the haunting ghost from the catalogue using a seed-derived
+		   index so a given seed reproduces the same ghost across replays.
+		   The lair room is whichever room the floor-plan generator picked
+		   as the spawn -- room_0 is always the hallway the player starts
+		   in, so this guarantees the ghost lives at least one nav-hop
+		   away from spawn. */
+		var ghostNames = setup.Ghosts.names();
+		var ghostName = ghostNames[((seed ^ 0x85ebca6b) >>> 0) % ghostNames.length];
+
+		/* Build the per-run evidence list. By default ghosts answer to
+		   their catalogue evidence verbatim; Fog of War splices one of
+		   the three out so identification is harder. The picked
+		   evidence is seed-derived so a given seed always loses the
+		   same one across replays. */
+		var ghostCat = setup.Ghosts.getByName(ghostName);
+		var evidenceIds = (ghostCat && Array.isArray(ghostCat.evidence))
+			? ghostCat.evidence.map(function (e) { return e.id; })
+			: [];
+		if (modifierIds.indexOf(setup.Modifiers.FOG_OF_WAR) !== -1
+			&& evidenceIds.length > 0) {
+			var dropIdx = ((seed ^ 0xdeadbeef) >>> 0) % evidenceIds.length;
+			evidenceIds.splice(dropIdx, 1);
+		}
+
+		start({
+			seed: seed,
+			modifiers: modifierIds,
+			loadout: opts.loadout || {},
+			objective: opts.objective || Objective.IDENTIFY.id,
+			staticHouseId: opts.staticHouseId || null
+		});
+		setField('floorplan', floorplan);
+		setField('ghostName', ghostName);
+		setField('evidence', evidenceIds);
+		/* Stamp the legacy $hunt object too so the per-hunt machinery
+		   that still keys off setup.Ghosts.isHunting() / setup.Ghosts.active()
+		   (companion mini panel + walk-home gate, Mimic rotation, Bag tabs,
+		   tick-side morning/possessed checks) lights up during a dynamic
+		   run. buildHunt sets HuntMode.ACTIVE, so isHunting() flips true
+		   immediately. */
+		setup.Ghosts.startHunt(ghostName);
+		/* Pin the in-game clock to midnight so the post-passage tick
+		   doesn't punt the player into HuntOverTime the moment they
+		   land on HuntStart/HuntRun. In production this matches what
+		   GhostStreet already does on entry; here we keep the controller
+		   self-consistent so callers that bypass GhostStreet (tests,
+		   future entry points) still see a well-defined clock. */
+		if (setup.Time && typeof setup.Time.resetToMidnight === 'function') {
+			setup.Time.resetToMidnight();
+		}
+		/* Same shared-state reset classic did at GhostRandomize:
+		   tarot deck back to HIDDEN, monkey paw back to 3 wishes /
+		   not-yet-found / no banned houses, knowledge-evidence
+		   overlay cleared. The cursed-item carry pickup reuses
+		   markTarotCarrying / markFound, so both items feed
+		   into the same Bag link + TarotCards / MonkeyPaw passages. */
+		if (setup.HauntedHouses && setup.HauntedHouses.resetCursedItemState) {
+			setup.HauntedHouses.resetCursedItemState();
+		}
+		/* Notebook checkboxes also reset so Intense Intuition's
+		   pre-check below isn't joined by leftover ticks from a
+		   previous run. */
+		if (setup.Ghosts && setup.Ghosts.resetEvidenceChecks) {
+			setup.Ghosts.resetEvidenceChecks();
+		}
+		applyMetaUnlocksAtStart(floorplan, seed, evidenceIds);
+		return active();
+	}
+
+	/* Stamp meta-shop unlocks onto the freshly-built run. Splits the
+	   side-effect block out of startHunt() so the lifecycle code stays
+	   focused on roll/draft/floor-plan composition. The run object is
+	   already populated when this runs, so the pre-stamps land on the
+	   right $run.collectedLoot list. */
+	function applyMetaUnlocksAtStart(floorplan, seed, evidenceIds) {
+		var run = sv().run;
+		if (!run) return;
+
+		/* Witch's Blessing: tarot deck already in the bag. Mirrors the
+		   FurnitureSearch pickup -- markTarotCarrying flips the stage
+		   so Bag exposes the tarot link, and stamping 'tarotCards' onto
+		   collectedLoot prevents the floor-plan tarot pickup from
+		   double-granting. We leave the floor-plan pin intact so a
+		   re-search of that slot still reports nothing (already-collected). */
+		if (hasUnlock(ShopItem.WITCHS_BLESSING)
+			&& setup.HauntedHouses
+			&& typeof setup.HauntedHouses.markTarotCarrying === 'function') {
+			setup.HauntedHouses.markTarotCarrying();
+			takeLoot('tarotCards');
+		}
+
+		/* Monkey's Favor: paw already found, ready for its first wish.
+		   Same pattern as Witch's Blessing, against MonkeyPaw.markFound. */
+		if (hasUnlock(ShopItem.MONKEYS_FAVOR)
+			&& setup.MonkeyPaw
+			&& typeof setup.MonkeyPaw.markFound === 'function') {
+			setup.MonkeyPaw.markFound();
+			takeLoot('monkeyPaw');
+		}
+
+		/* Stat-cap bumps. Snapshot the prior caps so endHunt can
+		   restore them; the player's $mc.sanityMax / energyMax are
+		   long-lived and must come back unchanged. setup.Mc owns
+		   $mc, so reads/writes route through its get/set API. */
+		if (setup.Mc && typeof setup.Mc.get === 'function') {
+			run.preRunStatCaps = {
+				sanityMax: setup.Mc.get('sanityMax'),
+				sanity:    setup.Mc.get('sanity'),
+				energyMax: setup.Mc.get('energyMax'),
+				energy:    setup.Mc.get('energy')
+			};
+			if (hasUnlock(ShopItem.STEELED_HAND)) {
+				setup.Mc.set('sanityMax', (setup.Mc.get('sanityMax') || 0) + 25);
+				setup.Mc.set('sanity',    (setup.Mc.get('sanity')    || 0) + 25);
+			}
+			if (hasUnlock(ShopItem.CALVES_OF_STEEL)) {
+				setup.Mc.set('energyMax', (setup.Mc.get('energyMax') || 0) + 5);
+				setup.Mc.set('energy',    (setup.Mc.get('energy')    || 0) + 5);
+			}
+		}
+
+		/* Intense Intuition: pre-check one of the ghost's true evidence
+		   ids in the Notebook. Picked seed-deterministically from the
+		   per-run evidence list (already trimmed by Fog of War, so the
+		   pre-check never reveals a hidden one). */
+		if (hasUnlock(ShopItem.INTENSE_INTUITION)
+			&& Array.isArray(evidenceIds) && evidenceIds.length
+			&& setup.Ghosts && typeof setup.Ghosts.setEvidenceCheck === 'function') {
+			var idx = ((seed ^ 0x27d4eb2f) >>> 0) % evidenceIds.length;
+			setup.Ghosts.setEvidenceCheck(evidenceIds[idx], true);
+		}
+	}
+
+	function ghostName() {
+		var run = sv().run;
+		return run ? (run.ghostName || null) : null;
+	}
+	/* Catalogue id of the static house powering the active run,
+	   or null when the run is procedural. Mirrors ghostName() in
+	   shape: stamped at startHunt() and surfaced read-only here. */
+	function staticHouseId() {
+		var run = sv().run;
+		return run ? (run.staticHouseId || null) : null;
+	}
+	function staticHouse() {
+		var id = staticHouseId();
+		return id && setup.HuntHouses ? setup.HuntHouses.byId(id) : null;
+	}
+	/* True when the active run is bound to a static-plan house
+	   that opts into companions. Procedural runs return false.
+	   Drives Companion.inHauntedHouseLocation through a data-driven
+	   catalogue lookup so adding new houses (or flipping the flag on
+	   an existing one) doesn't require touching the predicate. */
+	function staticHouseAllowsCompanions() {
+		var id = staticHouseId();
+		return !!(id && setup.HuntHouses
+			&& setup.HuntHouses.allowsCompanions(id));
+	}
+	/* True when companions are eligible for the active hunt at all.
+	   Procedural runs (no staticHouseId) are companion-eligible by
+	   default; static-plan houses opt in or out via the catalogue's
+	   allowsCompanions flag. Drives both the HuntStart "Talk to her"
+	   gate and the in-hunt HUD via Companion.inHauntedHouseLocation. */
+	function huntAllowsCompanions() {
+		if (!isActive()) return false;
+		var id = staticHouseId();
+		if (!id) return true;
+		return !!(setup.HuntHouses && setup.HuntHouses.allowsCompanions(id));
+	}
+	/* Evidence id list for the active ghost. Returns the
+	   per-run override stamped at startHunt (so Fog of War's spliced
+	   list survives reads), or null when no run is active or no
+	   override was set. setup.Ghosts._activeFromCatalogue consults
+	   this to overlay evidence onto the catalogue Ghost. */
+	function runEvidence() {
+		var run = sv().run;
+		if (!run || !Array.isArray(run.evidence)) return null;
+		return run.evidence.slice();
+	}
+	/* Seed-derived street address shown in the lobby/HUD instead of
+	   the raw seed. Returns null off-run; callers that need a label
+	   for an arbitrary seed can call addressFromSeed() directly.
+
+	   Static-plan houses (setup.HuntHouses) override the `formatted`
+	   label with their catalogue label so the HUD reads the house
+	   name ("Owaissa") instead of a generated street address. The
+	   seed-derived number/road/suffix fields stay so callers that
+	   want the underlying address (rng-seed displays, diagnostics)
+	   can still read them. */
+	function address() {
+		var run = sv().run;
+		if (!run) return null;
+		var addr = addressFromSeed(run.seed);
+		var house = staticHouse();
+		if (house && house.label) {
+			return {
+				number: addr.number,
+				road: addr.road,
+				suffix: addr.suffix,
+				formatted: house.label
+			};
+		}
+		return addr;
+	}
+	function ghostRoomId() {
+		var run = sv().run;
+		return run && run.floorplan ? (run.floorplan.spawnRoomId || null) : null;
+	}
+	function isInGhostRoom() {
+		var run = sv().run;
+		if (!run) return false;
+		return (run.currentRoomId || 'room_0') === ghostRoomId();
+	}
+
+	/* Ghost-room drift. Picks a fresh room (any template,
+	   including the hallway) from the floor plan and updates
+	   floorplan.spawnRoomId. Called by shuffleGhostRoom() once the
+	   shared interval gate + 45% roll have passed; the controller
+	   already filtered for `staysInOneRoom`, so all that's left here
+	   is the rule "prefer to drift somewhere different from the
+	   current lair". */
+	function driftGhostRoom() {
+		var run = sv().run;
+		if (!run || !run.floorplan) return;
+		if (run.trapped) return;
+		var fp = run.floorplan;
+		if (!Array.isArray(fp.rooms) || !fp.rooms.length) return;
+		var allIds = fp.rooms.map(function (r) { return r.id; });
+		// Prefer drifting somewhere new; fall back to the full pool
+		// when there's only one room in the plan.
+		var others = allIds.filter(function (id) { return id !== fp.spawnRoomId; });
+		var pool = others.length ? others : allIds;
+		fp.spawnRoomId = pool[Math.floor(Math.random() * pool.length)];
+	}
+
+	/* View-layer summary of the active run's floor plan, denormalised
+	   for the minimap / room-list widget. Returns one record per
+	   room with its template label, spawn/boss flags, any loot kinds
+	   living on it, the BFS position for map layout, and the list of
+	   neighbouring room ids. Null when no run is active. */
+	function minimapData() {
+		var run = active();
+		if (!run || !run.floorplan) return null;
+		var fp = run.floorplan;
+		var lootByRoom = {};
+		Object.keys(fp.loot || {}).forEach(function (kind) {
+			var room = fp.loot[kind];
+			if (!room) return;
+			if (!lootByRoom[room]) lootByRoom[room] = [];
+			lootByRoom[room].push(kind);
+		});
+		var positions = setup.FloorPlan.layout(fp);
+		return fp.rooms.map(function (r) {
+			var t = (setup.Templates && setup.Templates.byId)
+				? setup.Templates.byId(r.template) : null;
+			return {
+				id: r.id,
+				template: r.template,
+				label: t ? t.label : r.template,
+				isSpawn: r.id === fp.spawnRoomId,
+				isBoss: r.id === fp.bossRoomId,
+				lootKinds: lootByRoom[r.id] || [],
+				position: positions[r.id] || { col: 0, row: 0 },
+				connections: setup.FloorPlan.neighborsOf(fp, r.id)
+			};
+		});
+	}
+
+	/* Per-session UI flag: when the player clicks the minimap it
+	   collapses to a small top-left thumbnail; clicking again expands.
+	   Module-level so the choice survives passage re-renders (room
+	   navigation rebuilds HuntRun, which would otherwise pop the map
+	   back to full size every step). Reset on endHunt so a fresh run
+	   always starts expanded. */
+	var minimapCollapsed = false;
+	function isMinimapCollapsed() { return minimapCollapsed; }
+	function toggleMinimapCollapsed() {
+		minimapCollapsed = !minimapCollapsed;
+		return minimapCollapsed;
+	}
+
+	/* Build the hunt minimap as an inline SVG: one labeled rect per
+	   room, one line per edge. Layout comes from setup.FloorPlan.layout
+	   (BFS depth -> column, sibling order -> row). The current room is
+	   tagged for highlighting; spawn/boss rooms get marker classes the
+	   stylesheet tints. Returns an empty string when no run is active. */
+	function minimapSvg() {
+		var run = active();
+		if (!run || !run.floorplan) return '';
+		var fp = run.floorplan;
+		var positions = setup.FloorPlan.layout(fp);
+		var CELL_W = 110, CELL_H = 70, ROOM_W = 90, ROOM_H = 50, PAD = 10;
+
+		// Canvas dims: span the right-most col and the deepest row used.
+		var maxCol = 0, maxRow = 0;
+		Object.keys(positions).forEach(function (id) {
+			if (positions[id].col > maxCol) maxCol = positions[id].col;
+			if (positions[id].row > maxRow) maxRow = positions[id].row;
+		});
+		var w = (maxCol + 1) * CELL_W + PAD * 2;
+		var h = (maxRow + 1) * CELL_H + PAD * 2;
+
+		function center(id) {
+			var p = positions[id] || { col: 0, row: 0 };
+			return {
+				x: PAD + p.col * CELL_W + ROOM_W / 2,
+				y: PAD + p.row * CELL_H + ROOM_H / 2
+			};
+		}
+		function escapeXml(s) {
+			return String(s)
+				.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+				.replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+		}
+
+		// Edges first so rooms render on top of the lines.
+		var seen = {};
+		var lines = [];
+		(fp.edges || []).forEach(function (e) {
+			var key = e[0] < e[1] ? e[0] + '--' + e[1] : e[1] + '--' + e[0];
+			if (seen[key]) return;
+			seen[key] = true;
+			var a = center(e[0]), b = center(e[1]);
+			lines.push('<line class="hunt-minimap-edge" x1="' + a.x +
+				'" y1="' + a.y + '" x2="' + b.x + '" y2="' + b.y + '"/>');
+		});
+
+		// Rooms.
+		var currentId = run.currentRoomId || 'room_0';
+		/* Loot Sense: rooms with at least one uncollected loot kind get
+		   the hunt-minimap-loot class. Re-checks collectedLoot per
+		   render so a slot the player just emptied stops glowing on
+		   the next nav. Tool pickups count as loot too -- finding the
+		   last EMF reader clears the room's highlight. */
+		var lootSenseRooms = {};
+		if (hasUnlock(ShopItem.LOOT_SENSE)) {
+			var collected = Array.isArray(run.collectedLoot) ? run.collectedLoot : [];
+			Object.keys(fp.loot || {}).forEach(function (kind) {
+				if (collected.indexOf(kind) !== -1) return;
+				var rid = fp.loot[kind];
+				if (rid) lootSenseRooms[rid] = true;
+			});
+		}
+		/* Reliable Recon: highlight the ghost's starting room until
+		   it relocates for the first time. driftGhostRoom mutates
+		   floorplan.spawnRoomId; once spawnRoomId no longer matches
+		   originalSpawnRoomId, the recon highlight drops permanently. */
+		var reconActive = hasUnlock(ShopItem.RELIABLE_RECON)
+			&& fp.originalSpawnRoomId
+			&& fp.spawnRoomId === fp.originalSpawnRoomId;
+		var reconRoomId = reconActive ? fp.originalSpawnRoomId : null;
+		var nodes = fp.rooms.map(function (r) {
+			var p = positions[r.id] || { col: 0, row: 0 };
+			var x = PAD + p.col * CELL_W;
+			var y = PAD + p.row * CELL_H;
+			var t = setup.Templates ? setup.Templates.byId(r.template) : null;
+			var label = t ? t.label : r.template;
+			var classes = ['hunt-minimap-room'];
+			if (r.id === currentId)        classes.push('hunt-minimap-current');
+			if (r.id === fp.bossRoomId)    classes.push('hunt-minimap-boss');
+			if (lootSenseRooms[r.id])      classes.push('hunt-minimap-loot');
+			if (r.id === reconRoomId)      classes.push('hunt-minimap-recon');
+			return '<g class="' + classes.join(' ') + '" data-room="' + escapeXml(r.id) + '">' +
+				'<rect x="' + x + '" y="' + y + '" width="' + ROOM_W +
+				'" height="' + ROOM_H + '" rx="4" ry="4"/>' +
+				'<text x="' + (x + ROOM_W / 2) + '" y="' + (y + ROOM_H / 2 + 4) +
+				'" text-anchor="middle">' + escapeXml(label) + '</text>' +
+				'</g>';
+		});
+
+		return '<svg class="hunt-minimap-svg" width="' + w + '" height="' + h +
+			'" xmlns="http://www.w3.org/2000/svg">' +
+			lines.join('') + nodes.join('') + '</svg>';
+	}
+
+	/* Humanise a loot kind ("cursedItem" -> "Cursed item"). Tool
+	   loot kinds ('tool_emf', 'tool_uvl', ...) resolve to the
+	   per-tool label in setup.searchToolDefs so the picked-up beat
+	   reads as "EMF reader" rather than "Tool emf". */
+	function humanizeLootKind(kind) {
+		if (!kind) return '';
+		var toolId = setup.FloorPlan.toolIdFromLootKind(kind);
+		if (toolId) {
+			var def = setup.searchToolDefs && setup.searchToolDefs[toolId];
+			// def.label is markup like "Use EM@@color:yellow;F@@"; strip
+			// the colour markers and the leading "Use " prefix so the
+			// result is plain text.
+			if (def && def.label) {
+				return def.label
+					.replace(/@@[^@]*@@/g, function (m) {
+						return m.replace(/^@@[^;]*;|@@$/g, '');
+					})
+					.replace(/^Use\s+/, '');
+			}
+			return toolId.toUpperCase();
+		}
+		return kind
+			.replace(/([A-Z])/g, ' $1')
+			.replace(/^./, function (c) { return c.toUpperCase(); });
+	}
+
+	/* Humanise a furniture suffix ("wmachine" -> "Washing machine",
+	   "sink1" -> "Sink"). Strips trailing digits, then maps known
+	   abbreviations; falls back to title-case for unknown suffixes. */
+	var FURNITURE_LABELS = {
+		desk: 'Desk', table: 'Table', sink: 'Sink', wmachine: 'Washing machine',
+		bathtub: 'Bathtub', bed: 'Bed', wardrobe: 'Wardrobe',
+		coatrack: 'Coat rack', carpet: 'Carpet', sofa: 'Sofa', shelves: 'Shelves'
+	};
+	function humanizeFurniture(suffix) {
+		if (!suffix) return '';
+		var key = suffix.replace(/[0-9]+$/, '');
+		return FURNITURE_LABELS[key] || (key.charAt(0).toUpperCase() + key.slice(1));
+	}
+
+	/* View-layer summary of the player's current room: name, the
+	   furniture list (with any loot annotated), the loot kinds in
+	   this room that aren't pinned to a specific piece of furniture,
+	   and the adjacent-room nav links. HuntRun renders the furniture
+	   strip and exit links from this record, so coverage here locks
+	   in the structure. Returns null when no run is active. */
+	function currentRoomData() {
+		var run = active();
+		if (!run || !run.floorplan) return null;
+		var fp = run.floorplan;
+		var roomId = run.currentRoomId || 'room_0';
+		var room = fp.rooms.filter(function (r) { return r.id === roomId; })[0];
+		if (!room) return null;
+		var t = setup.Templates ? setup.Templates.byId(room.template) : null;
+		var lootFurn = fp.lootFurniture || {};
+
+		// Furniture entries with optional loot annotations. Collected
+		// loot kinds are filtered out so a re-search of the same
+		// slot reports nothing. lootKinds is the full uncollected
+		// list (the floor-plan generator may stack multiple kinds on
+		// the same slot when distinct slots run out); lootKind /
+		// lootLabel keep the legacy single-value shape for callers
+		// that only need a quick "is anything here".
+		var collected = Array.isArray(run.collectedLoot) ? run.collectedLoot : [];
+		var furniture = (t && Array.isArray(t.furniture) ? t.furniture : []).map(function (f) {
+			var kinds = [];
+			Object.keys(fp.loot || {}).forEach(function (k) {
+				if (fp.loot[k] === roomId && lootFurn[k] === f && collected.indexOf(k) === -1) {
+					kinds.push(k);
+				}
+			});
+			var first = kinds.length ? kinds[0] : null;
+			return {
+				suffix: f,
+				label: humanizeFurniture(f),
+				lootKind: first,
+				lootLabel: first ? humanizeLootKind(first) : null,
+				lootKinds: kinds
+			};
+		});
+
+		// Loot assigned to this room but with no furniture pin
+		// (templates without any furniture, e.g. roomA/B/C).
+		var lootWithoutFurniture = [];
+		Object.keys(fp.loot || {}).forEach(function (k) {
+			if (fp.loot[k] === roomId && !lootFurn[k]) {
+				lootWithoutFurniture.push({
+					kind: k,
+					label: humanizeLootKind(k)
+				});
+			}
+		});
+
+		// Adjacent-room nav links.
+		var neighbors = setup.FloorPlan.neighborsOf(fp, roomId).map(function (id) {
+			var nr = fp.rooms.filter(function (r) { return r.id === id; })[0];
+			var nt = nr && setup.Templates ? setup.Templates.byId(nr.template) : null;
+			return {
+				id: id,
+				template: nr ? nr.template : null,
+				label: nt ? nt.label : (nr ? nr.template : id)
+			};
+		});
+
+		return {
+			id: roomId,
+			template: room.template,
+			label: t ? t.label : room.template,
+			isSpawn: roomId === fp.spawnRoomId,
+			isBoss: roomId === fp.bossRoomId,
+			furniture: furniture,
+			lootWithoutFurniture: lootWithoutFurniture,
+			neighbors: neighbors
+		};
+	}
+
+	/* Outcome / failure-reason readers and writers. Callers go
+	   through these instead of touching $run.outcome / $run.failureReason
+	   directly so the field names + Outcome enum stay in one place.
+	   markSuccess / markFailure cover the common "stamp the result on
+	   the run before navigating to HuntSummary" flow. */
+	function outcome() {
+		var run = sv().run;
+		return run ? (run.outcome || null) : null;
+	}
+	function failureReason() {
+		var run = sv().run;
+		return run ? (run.failureReason || null) : null;
+	}
+	function isSuccess() {
+		return outcome() === Outcome.SUCCESS;
+	}
+	function markSuccess() {
+		var run = sv().run;
+		if (!run) return;
+		run.outcome = Outcome.SUCCESS;
+		run.failureReason = null;
+	}
+	function markFailure(reason) {
+		var run = sv().run;
+		if (!run) return;
+		run.outcome = Outcome.FAILURE;
+		if (reason) run.failureReason = reason;
+	}
+
+	/* Map a (success, failureReason) pair to the passage HuntSummary's
+	   Continue link should target. Successful runs and failures without
+	   a dedicated HuntOver* screen fall back to CityMap. Centralizing
+	   the lookup keeps HuntSummary free of FailureReason branches. */
+	function exitPassageForOutcome(success, reason) {
+		if (success) return "CityMap";
+		if (reason === FailureReason.SANITY) return "HuntOverSanity";
+		if (reason === FailureReason.EXHAUSTION) return "HuntOverExhaustion";
+		if (reason === FailureReason.TIME) return "HuntOverTime";
+		return "CityMap";
+	}
+
+	/* End the active run, paying out ectoplasm (mL) based on
+	   whether it was a success and how many modifiers the run carried.
+	   Returns a small summary record the result passage can render
+	   without needing to peek at $run state.
+
+	   Run cleanup mirrors the classic HuntOver* passages: commit any
+	   tempCorr the run accumulated, reset bait/overcharged/exhaustion
+	   flags, and reset timed-tool activations. setup.HauntedHouses
+	   owns those helpers because the cleanup is shared. */
+	function endHunt(success) {
+		var run = active();
+		if (!run) return null;
+		var base = success ? 10 : 3;
+		var mult = (setup.Modifiers && setup.Modifiers.payoutMultiplier)
+			? setup.Modifiers.payoutMultiplier()
+			: 1;
+		var payout = Math.round(base * mult);
+		addEctoplasm(payout);
+		var summary = {
+			seed: run.seed,
+			number: run.number,
+			modifiers: (run.modifiers || []).slice(),
+			objective: run.objective,
+			failureReason: run.failureReason || null,
+			success: !!success,
+			payout: payout,
+			exitPassage: exitPassageForOutcome(!!success, run.failureReason || null)
+		};
+		/* Stash the outcome on persistent meta-state so HuntSummary
+		   can gate the "Start a new hunt" continuation link on it --
+		   $run is cleared by end() below, so the passage needs a
+		   side channel that survives a successful close. */
+		metaState().lastWasSuccess = !!success;
+		if (setup.HauntedHouses) {
+			if (typeof setup.HauntedHouses.commitTempCorruption === 'function') {
+				setup.HauntedHouses.commitTempCorruption();
+			}
+			if (typeof setup.HauntedHouses.resetToolTimers === 'function') {
+				setup.HauntedHouses.resetToolTimers();
+			}
+			/* Hand the deck and paw back so a follow-up run starts
+			   from HIDDEN / 3 wishes instead of inheriting whatever
+			   the run left them in. */
+			if (typeof setup.HauntedHouses.resetCursedItemState === 'function') {
+				setup.HauntedHouses.resetCursedItemState();
+			}
+		}
+		/* Tear down the legacy hunt-mode state stamped at startHunt so
+		   the next contract starts from HuntMode.NONE and the per-tick
+		   companion machinery (mini panel, attack roll, leave-after-event)
+		   sees a clean slate. resetHuntState zeroes the per-companion
+		   plan / showComp flags; clearBlakeCursedItem / resetAliceWorkIfNeeded
+		   undo the Blake-cursed-item / Alice-work bookkeeping that the
+		   per-companion flow plants. */
+		setup.Ghosts.setHuntMode(setup.Ghosts.HuntMode.POSSESSED);
+		if (setup.Companion) {
+			setup.Companion.clearBlakeCursedItem();
+			setup.Companion.resetAliceWorkIfNeeded();
+			setup.Companion.resetHuntState();
+		}
+		/* Auto-redress slots the MC undressed herself during the run.
+		   The caught path runs this through cleanupAfterHunt; the
+		   clean-exit paths (success / flee) skip that helper, so
+		   we redress here too. Stolen / lost items are already filtered. */
+		if (setup.Wardrobe && typeof setup.Wardrobe.redressAfterHunt === 'function') {
+			setup.Wardrobe.redressAfterHunt();
+		}
+		/* Restore the pre-run sanity / energy caps if the run bumped
+		   them via Steeled Hand / Calves of Steel. Caps are long-lived
+		   (energyMax in particular is bumped by permanent fitness
+		   gains), so we always snap back to whatever the player walked
+		   in with. Current sanity/energy follow the delta: clamp to
+		   the restored cap so a fresh hunt doesn't start with a
+		   125-out-of-100 bar. setup.Mc owns the underlying $mc
+		   bundle, so we go through its get/set API. */
+		var caps = run.preRunStatCaps;
+		if (caps && setup.Mc && typeof setup.Mc.set === 'function') {
+			setup.Mc.set('sanityMax', caps.sanityMax);
+			setup.Mc.set('energyMax', caps.energyMax);
+			if (setup.Mc.get('sanity') > caps.sanityMax) setup.Mc.set('sanity', caps.sanityMax);
+			if (setup.Mc.get('energy') > caps.energyMax) setup.Mc.set('energy', caps.energyMax);
+		}
+		end();
+		/* Roll the next-run seed so the GhostStreet card preview and
+		   the HuntStart lobby pick a different address / floor plan
+		   for the next attempt. Without this the card stayed pinned
+		   to the in-game daily seed and showed the same address until
+		   the player slept. */
+		rollNextSeed();
+		minimapCollapsed = false;
+		return summary;
+	}
+
+	// --- Facade / dispatch helpers ----------------------------
+	/* The active Ghost instance, or null when no hunt is in flight.
+	   Hands back the catalogue ghost as-is, since the evidence list
+	   isn't mutated per run. */
+	function activeGhost() {
+		if (!isActive()) return null;
+		return setup.Ghosts._activeFromCatalogue(ghostName());
+	}
+
+	/* True iff the player is in the same room as the active ghost.
+	   The optional `houses` filter is silently ignored -- runs aren't
+	   house-specific. */
+	function isGhostHere(houses) {
+		if (!isActive()) return false;
+		if (passage() !== "HuntRun") return false;
+		return isInGhostRoom();
+	}
+
+	/* True iff the per-tick effects + event chain should fire on
+	   this tool-tick / nav-step. A run is in flight AND the player is
+	   on the HuntRun passage (so the lobby / end / shop don't drain
+	   stats or roll events). */
+	function isHuntActive() {
+		if (!isActive()) return false;
+		return passage() === "HuntRun";
+	}
+
+	/* { image, tip } override for the MC sidebar wardrobe strip,
+	   sourced from the active static house's catalogue entry. Returns
+	   null when no run is active or the catalogue entry doesn't carry
+	   a sidebarOutfit override. Drives widgetMcStatus's fixed-outfit
+	   tile branch. */
+	function sidebarOutfit() {
+		if (!isActive()) return null;
+		var rid = staticHouseId();
+		if (!rid || !setup.HuntHouses) return null;
+		var rh = setup.HuntHouses.byId(rid);
+		return (rh && rh.sidebarOutfit) || null;
+	}
+
+	/* Random hunt-event roll. Uses the shared threshold + ghost.canProwl
+	   gate -- the predicate works off $prowlActivated / $elapsedTimeProwl /
+	   $prowlTimeRemain, which the per-tick TickController maintenance
+	   keeps fresh. When a roll comes back true the per-tick chain in
+	   widgetInclude routes to GhostHuntEvent (Hide / RunFast / PrayHunt /
+	   FreezeHunt / HuntEventSuccubus all return through huntCaughtPassage
+	   or $return so they land back on the right passage). */
+	function shouldStartRandomProwl() {
+		if (!isActive()) return false;
+		return setup.HauntedHouses.shouldStartRandomProwl();
+	}
+
+	/* Steal-clothes roll. The wardrobe / stash side-effects are
+	   shared, so once a steal fires the StealClothes cascade works.
+	   Ironclad opts out via the static catalogue's runsStealClothes
+	   flag, so the prison hunt skips the steal step. */
+	function shouldTriggerSteal() {
+		if (!isActive()) return false;
+		var rid = staticHouseId();
+		if (rid && setup.HuntHouses) {
+			var rh = setup.HuntHouses.byId(rid);
+			if (rh && rh.runsStealClothes === false) return false;
+		}
+		return setup.HauntedHouses.shouldTriggerSteal();
+	}
+
+	/* Passage to <<goto>> when the per-tick chain detects a
+	   hunt-over condition. `reason` is one of FailureReason.SANITY |
+	   EXHAUSTION | TIME. Stamps the run as a failure with the reason
+	   and returns "HuntSummary" so the chain widget can route there
+	   with one <<goto>>. */
+	function huntOverPassage(reason) {
+		if (!isActive()) return null;
+		markFailure(reason);
+		return "HuntSummary";
+	}
+
+	/* The ghost's true identity for the active hunt. Hunts don't
+	   disguise, so $run.ghostName is always the real name. Returns ''
+	   when no run is active. */
+	function realGhostName() {
+		return ghostName() || '';
+	}
+
+	/* Display label for the ghost's current room. Resolves the
+	   floor-plan spawn room id back through the template catalogue
+	   so the cheat panel sees a human label ("Bedroom") instead of
+	   the internal id ("room_3"). Returns '' when no run is active. */
+	function ghostRoomLabel() {
+		if (!isActive()) return '';
+		var run = active();
+		var roomId = ghostRoomId();
+		if (!run || !roomId || !run.floorplan) return '';
+		var rooms = run.floorplan.rooms || [];
+		for (var i = 0; i < rooms.length; i++) {
+			if (rooms[i].id === roomId) {
+				var t = setup.Templates && setup.Templates.byId(rooms[i].template);
+				return t ? t.label : rooms[i].template;
+			}
+		}
+		return roomId;
+	}
+
+	/* "Ghost catches the MC" exit target that HuntEnd's <<huntEndExit>>
+	   widget routes through. Stamps a CAUGHT failure on the run and
+	   routes to HuntSummary. */
+	function huntCaughtPassage() {
+		if (isActive()) {
+			markFailure(FailureReason.CAUGHT);
+			return "HuntSummary";
+		}
+		return "Sleep";
+	}
+
+	/* Periodic ghost-room shuffle. Roughly every 20 in-game minutes
+	   the ghost has a chance to drift to a different room. The
+	   interval gate (`$lastChangeIntervalRoom`) lives at the
+	   controller level. Drift chance scales with MC beauty: base 45%
+	   at beauty <= 30, losing 0.5% per point above 30, floored at 20%.
+
+	   Skips when:
+	   - no hunt is active;
+	   - the ghost's catalogue marks it `staysInOneRoom`;
+	   - the same 20-minute interval has already rolled this run. */
+	function shuffleGhostRoom() {
+		if (!isHuntActive()) return;
+		var ghost = activeGhost();
+		if (!ghost || ghost.staysInOneRoom) return;
+		// Bait pins the ghost to the player for its window; skip the
+		// drift roll so the bait spend doesn't get undone by a shuffle.
+		if (setup.HauntConditions && setup.HauntConditions.isBaitActive
+			&& setup.HauntConditions.isBaitActive()) return;
+		var mins = setup.Time.minutes() || 0;
+		var interval = mins < 20 ? "0-19" : mins < 40 ? "20-39" : "40-59";
+		var s = sv();
+		s.currentIntervalRoom = interval;
+		if (interval === s.lastChangeIntervalRoom) return;
+		if (Math.random() < driftChance()) {
+			driftGhostRoom();
+		}
+		s.lastChangeIntervalRoom = interval;
+	}
+
+	function driftChance() {
+		var beauty = (setup.Mc && setup.Mc.beauty) ? (setup.Mc.beauty() || 0) : 0;
+		var bonus = Math.max(0, beauty - 30);
+		return Math.max(0.20, 0.45 - bonus * 0.005);
+	}
+
+	/* End-of-HuntEnd cleanup. Wraps the wardrobe / companion /
+	   tool-timer reset. Caller wraps this in
+	   `not setup.Ghosts.hasHighPriestess()` so the priestess reprieve
+	   still skips the cleanup entirely. The hunt lifecycle handles
+	   its own $run teardown when the player clicks the huntEndExit
+	   link through to HuntSummary. */
+	function onCaughtCleanup() {
+		setup.HauntedHouses.cleanupAfterHunt({ loseStolen: true });
+	}
+
+	/* Pin the active ghost to the player's current room. Used by the
+	   Monkey Paw activity-tier-3 and trapTheGhost-tier-3 wishes.
+	   Snaps floorplan.spawnRoomId to $run.currentRoomId. Returns true
+	   on success, false when no run is active. */
+	function snapGhostToCurrentRoom() {
+		if (!isActive()) return false;
+		var run = active();
+		if (!run || !run.floorplan) return false;
+		var roomId = run.currentRoomId || 'room_0';
+		run.floorplan.spawnRoomId = roomId;
+		return true;
+	}
+
+	/* Pin the ghost in place + lock the player's exit. Stamps
+	   run.trapped + run.exitLock so the nav layer can refuse exits
+	   until the lock is cleared. The trapped flag also opts the run
+	   out of the periodic ghost-room drift roll. */
+	function trapGhost(unlockBy) {
+		if (!isActive()) return false;
+		var run = active();
+		if (!run) return false;
+		run.trapped = true;
+		run.exitLock = { unlockBy: unlockBy };
+		return true;
+	}
+
+	/* True iff the run's ghost is currently trapped. driftGhostRoom
+	   uses this to skip the shuffle for trapped ghosts. */
+	function isGhostTrapped() {
+		if (!isActive()) return false;
+		var run = active();
+		return !!(run && run.trapped);
+	}
+
+	/* Runs are one-shot, so banning a house is a no-op. */
+	function banActiveContext() {
+		return null;
+	}
+
+	/* "Get me out of here" exit target -- the goto used by the
+	   Monkey Paw leave wish. Stamps an ABANDON failure on the run
+	   and returns HuntSummary so the leave wish forfeits the run cleanly. */
+	function streetExitPassage() {
+		if (!isActive()) return null;
+		markFailure(FailureReason.ABANDON);
+		return "HuntSummary";
+	}
+
+	/* "The MC has been possessed" target -- the goto used by the Tarot
+	   Possession card. Stamps a POSSESSED failure on the run and ends
+	   it before the player lands on CityMapPossessed (so a fresh hunt
+	   isn't bleeding into the payout summary). Jumps to a daytime
+	   hour so the city-map render makes sense after the possession.
+	   The widget caller wraps the link around the returned passage so
+	   the imperative side effects fire as part of the link click. */
+	function possessionPassage() {
+		if (!isActive()) return null;
+		markFailure(FailureReason.POSSESSED);
+		endHunt(false);
+		setup.Time.setHours(Math.floor(Math.random() * (20 - 12 + 1)) + 12);
+		return "CityMapPossessed";
+	}
+
+	/* "Remove one piece of evidence" -- used by the Tarot Knowledge
+	   card and the Monkey Paw knowledge wish. Picks a random
+	   evidence the active ghost doesn't have. Writes the result via
+	   setup.Ghosts setters so the $knowledgeUsed / $chosenEvidence
+	   state stays owned by GhostController. */
+	function consumeKnowledgeEvidence() {
+		if (setup.Ghosts.knowledgeUsed()) return;
+		if (!isActive()) return;
+		setup.Ghosts.markKnowledgeUsed();
+		var ghost = activeGhost();
+		var owned = [];
+		if (ghost && Array.isArray(ghost.evidence)) {
+			owned = ghost.evidence.map(function (e) {
+				return e && e.id ? e.id : e;
+			});
+		}
+		var all = ['emf', 'spiritbox', 'gwb', 'uvl', 'glass', 'temperature'];
+		var missing = all.filter(function (e) { return owned.indexOf(e) === -1; });
+		setup.Ghosts.setChosenEvidence(missing.length
+			? missing[Math.floor(Math.random() * missing.length)]
+			: null);
+	}
+
+	/* True iff the Bag was just opened from inside a hunt-context
+	   passage -- gates the carry links for the tarot deck and the
+	   monkey paw. Accepts the HuntRun passage. */
+	function isInsideHuntPassage() {
+		var prev = previous(1);
+		if (!prev) return false;
+		return prev === "HuntRun";
+	}
+
+	return {
+		OWNED_VARS: OWNED_VARS,
+		Outcome: Outcome,
+		FailureReason: FailureReason,
+		Objective: Objective,
+		start: start,
+		end: end,
+		active: active,
+		isActive: isActive,
+		seed: seed,
+		number: number,
+		modifiers: modifiers,
+		hasModifier: hasModifier,
+		addModifier: addModifier,
+		loadout: loadout,
+		startingTools: startingTools,
+		objective: objective,
+		objectiveDescription: objectiveDescription,
+		setObjective: setObjective,
+		setField: setField,
+		field: field,
+		outcome: outcome,
+		failureReason: failureReason,
+		isSuccess: isSuccess,
+		lastWasSuccess: lastWasSuccess,
+		markSuccess: markSuccess,
+		markFailure: markFailure,
+		currentRoomId: currentRoomId,
+		setCurrentRoom: setCurrentRoom,
+		isRoomDark: isRoomDark,
+		isCurrentRoomDark: isCurrentRoomDark,
+		setRoomLight: setRoomLight,
+		setSearchedFurniture: setSearchedFurniture,
+		searchedFurniture: searchedFurniture,
+		stashStolenClothes: stashStolenClothes,
+		lootAt: lootAt,
+		lootKindsAt: lootKindsAt,
+		takeLoot: takeLoot,
+		hasCollected: hasCollected,
+		collectedLoot: collectedLoot,
+		ectoplasm: ectoplasm,
+		addEctoplasm: addEctoplasm,
+		spendEctoplasm: spendEctoplasm,
+		canAffordEctoplasm: canAffordEctoplasm,
+		nextSeed: nextSeed,
+		rollNextSeed: rollNextSeed,
+		startHunt: startHunt,
+		endHunt: endHunt,
+		minimapData: minimapData,
+		minimapSvg: minimapSvg,
+		isMinimapCollapsed: isMinimapCollapsed,
+		toggleMinimapCollapsed: toggleMinimapCollapsed,
+		currentRoomData: currentRoomData,
+		humanizeLootKind: humanizeLootKind,
+		ghostName: ghostName,
+		staticHouseId: staticHouseId,
+		staticHouse: staticHouse,
+		staticHouseAllowsCompanions: staticHouseAllowsCompanions,
+		huntAllowsCompanions: huntAllowsCompanions,
+		runEvidence: runEvidence,
+		ghostRoomId: ghostRoomId,
+		isInGhostRoom: isInGhostRoom,
+		driftGhostRoom: driftGhostRoom,
+		address: address,
+		addressFromSeed: addressFromSeed,
+		ROAD_NAMES: ROAD_NAMES,
+		ROAD_SUFFIXES: ROAD_SUFFIXES,
+		ShopItem: ShopItem,
+		shopCatalogue: shopCatalogue,
+		shopItem: shopItem,
+		metaUnlock: metaUnlock,
+		hasUnlock: hasUnlock,
+		buyUnlock: buyUnlock,
+		bannedModifiers: bannedModifiers,
+		bannedSlotsTotal: bannedSlotsTotal,
+		bannedSlotsUsed: bannedSlotsUsed,
+		bannedSlotsRemaining: bannedSlotsRemaining,
+		toggleBannedModifier: toggleBannedModifier,
+		isBanned: isBanned,
+		rerollCharges: rerollCharges,
+		consumeRerollCharge: consumeRerollCharge,
+		redraftRunModifiers: redraftRunModifiers,
+		activeGhost: activeGhost,
+		isGhostHere: isGhostHere,
+		isHuntActive: isHuntActive,
+		sidebarOutfit: sidebarOutfit,
+		shouldStartRandomProwl: shouldStartRandomProwl,
+		shouldTriggerSteal: shouldTriggerSteal,
+		huntOverPassage: huntOverPassage,
+		realGhostName: realGhostName,
+		ghostRoomLabel: ghostRoomLabel,
+		huntCaughtPassage: huntCaughtPassage,
+		onCaughtCleanup: onCaughtCleanup,
+		shuffleGhostRoom: shuffleGhostRoom,
+		driftChance: driftChance,
+		snapGhostToCurrentRoom: snapGhostToCurrentRoom,
+		trapGhost: trapGhost,
+		isGhostTrapped: isGhostTrapped,
+		banActiveContext: banActiveContext,
+		streetExitPassage: streetExitPassage,
+		possessionPassage: possessionPassage,
+		consumeKnowledgeEvidence: consumeKnowledgeEvidence,
+		isInsideHuntPassage: isInsideHuntPassage
+	};
+})();

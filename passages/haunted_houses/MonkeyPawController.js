@@ -1,0 +1,457 @@
+/*
+ * Centralized state and behavior for the Monkey Paw cursed item.
+ * Passages call into setup.MonkeyPaw instead of poking the underlying
+ * $MonkeyPawStage / $wishesCount / $wish* flags directly, so the
+ * invariants live in one place.
+ *
+ * Owns the canonical wish catalogue (WISHES) -- each entry declares
+ * its id, the keyword that matches textbox input, the button label,
+ * the effect widget name (in widgetText.tw), a description shown
+ * once the player has "learned" the wish, and an activate() function
+ * that applies the gameplay state mutations and returns presentation
+ * hints for the calling widget to render.
+ *
+ * Severity scaling: activate() reads $wishesCount BEFORE spending and
+ * derives a tier in [1..3] -- tier 1 with 3 wishes left is the
+ * baseline cost, tier 3 with 1 wish left is the catastrophic finale.
+ * Each wish's escalation is defined inline in its activate(); the
+ * shape of the return is { tier, video?, narrative?, goto?,
+ * gotoDelay?, <statDelta>?, alreadyUsed? } and the widget renders
+ * off those hints.
+ *
+ * Design note on hidden effects: by default a wish is unknown -- the
+ * player sees nothing in the menu except what they can type into the
+ * textbox. Firing a wish (either by typing its keyword or via the
+ * witch's guide) flips its `learned` bit, which unlocks both a button
+ * and the description for subsequent visits. This is what makes the
+ * 400-coin guide actually valuable: it buys the spoilers up front
+ * rather than just a UI shortcut.
+ */
+/* Lifecycle of $MonkeyPawStage. HIDDEN: paw still tucked away in
+   furniture, FurnitureSearch can discover it. FOUND: player found it
+   and is carrying it through the hunt. RETIRED: hunt ended, paw is
+   spent for the session. */
+setup.MonkeyPawStage = Object.freeze({
+	HIDDEN:  0,
+	FOUND:   1,
+	RETIRED: 2
+});
+
+/* Lifecycle of $boughtMonkeyPawGuide. NOT_ASKED: witch shop hasn't
+   been queried about the guide. ASKED: player asked about it but
+   declined to buy. PURCHASED: guide bought, every wish learned. */
+setup.MonkeyPawGuide = Object.freeze({
+	NOT_ASKED: 0,
+	ASKED:     1,
+	PURCHASED: 2
+});
+
+setup.MonkeyPaw = (function () {
+	function sv() { return State.variables; }
+
+	/* Variables owned by this controller. Other controllers should
+	   query these only through the API methods below. */
+	var OWNED_VARS = Object.freeze([
+		'wishesCount',
+		'monkeyPawLearned',
+		'MonkeyPawStage', 'wishAnything',
+		'boughtMonkeyPawGuide'
+	]);
+
+	// --- Private state mutators (shared by activate() and the
+	// public API so there is exactly one implementation per op). ---
+
+	function removeWish() {
+		var s = sv();
+		s.wishesCount = (s.wishesCount || 0) - 1;
+		if (s.wishesCount < 0) s.wishesCount = 0;
+	}
+
+	function wishesLeft() { return sv().wishesCount || 0; }
+
+	/* Severity tier derived from wishes-remaining before activation.
+	   3 left -> tier 1 (baseline), 2 -> 2 (bite), 1 -> 3 (catastrophe).
+	   Clamped so unexpected state (e.g. cheats) still returns a valid
+	   tier and never indexes out of the per-tier tables below. */
+	function currentTier() {
+		return Math.max(1, Math.min(3, 4 - wishesLeft()));
+	}
+
+	function applySanity(delta) {
+		var max = setup.Mc.sanityMax() || 100;
+		var current = setup.Mc.sanity();
+		setup.Mc.setSanity(Math.max(1, Math.min(max, current + delta)));
+	}
+
+	function applyEnergy(delta) {
+		var max = setup.Mc.energyMax() || 100;
+		var current = setup.Mc.energy();
+		setup.Mc.setEnergy(Math.max(0, Math.min(max, current + delta)));
+	}
+
+	function addTempCorr(amount) {
+		setup.HauntedHouses.addTempCorruption(amount);
+	}
+
+	function pickActivityVideo() {
+		var base = [
+			'mechanics/cursedpossessions/slap1.mp4', 'mechanics/cursedpossessions/slap2.mp4',
+			'mechanics/cursedpossessions/slap3.mp4', 'mechanics/cursedpossessions/slap4.mp4',
+			'mechanics/cursedpossessions/passion1.mp4', 'mechanics/cursedpossessions/passion2.mp4',
+			'mechanics/cursedpossessions/passion3.mp4', 'mechanics/cursedpossessions/passion4.mp4',
+			'mechanics/cursedpossessions/pulse1.mp4', 'mechanics/cursedpossessions/pulse2.mp4',
+			'mechanics/cursedpossessions/pulse3.mp4', 'mechanics/cursedpossessions/pulse4.mp4'
+		];
+		var g = setup.Ghosts && setup.Ghosts.active && setup.Ghosts.active();
+		if (g && g.cursedActivityVideos) base = base.concat(g.cursedActivityVideos);
+		return base[Math.floor(Math.random() * base.length)];
+	}
+
+	function hasCursedItem() {
+		return setup.Witch.hasCursedItemToTurnIn();
+	}
+
+	function learnedMap() {
+		var s = sv();
+		if (!s.monkeyPawLearned) s.monkeyPawLearned = {};
+		return s.monkeyPawLearned;
+	}
+
+	// --- Wish catalogue -------------------------------------------
+
+	var WISHES = [
+		{
+			id: 'activity',
+			input: 'activity',
+			label: 'I wish for activity',
+			widget: 'activity',
+			description: "The paw grants motion -- not the kind you wanted. Sanity falls, lust climbs.",
+			/* Scaling:
+			   t1: +15 lust, -15 sanity
+			   t2: +25 lust, -25 sanity, +0.2 tempCorr
+			   t3: +40 lust, -40 sanity, +0.4 tempCorr, ghost lands on you */
+			activate: function () {
+				var t = currentTier();
+				var lust   = [15, 25, 40][t - 1];
+				var sanity = -[15, 25, 40][t - 1];
+				var corr   = [0, 0.2, 0.4][t - 1];
+
+				setup.addLust(lust);
+				applySanity(sanity);
+				if (corr) addTempCorr(corr);
+				var drewGhost = false;
+				if (t >= 3) {
+					setup.HuntController.snapGhostToCurrentRoom();
+					drewGhost = true;
+				}
+
+				removeWish();
+
+				return {
+					tier: t,
+					video: pickActivityVideo(),
+					narrative: [
+						"Shit! I shouldn't have asked this....",
+						"God, it's even worse this time. I shouldn't have asked again....",
+						"Something in the room just... noticed me. It's here. It's here."
+					][t - 1],
+					lustDelta: lust,
+					sanityDelta: sanity,
+					corrDelta: corr,
+					drewGhost: drewGhost
+				};
+			}
+		},
+		{
+			id: 'trapTheGhost',
+			input: 'trap the ghost',
+			label: 'I wish to trap the ghost',
+			widget: 'trapTheGhost',
+			description: "The ghost is bound to one room -- and the front door seals behind the wish.",
+			/* Scaling (all tiers pin the ghost to one room and lock the
+			   front door; unlock condition and ghost placement escalate):
+			   t1: -15 sanity, door unlocks only for a cursed-item sacrifice
+			   t2: -25 sanity, +0.2 tempCorr, door unlocks at dawn
+			   t3: -40 sanity, +0.4 tempCorr, ghost snapped to player's room,
+			       door wants a cursed item but the player can also scream
+			       for help (companion fetches, or noise draws the ghost) */
+			activate: function () {
+				var t = currentTier();
+				var sanity = -[15, 25, 40][t - 1];
+				var corr   = [0, 0.2, 0.4][t - 1];
+				var unlockBy = t === 2 ? 'dawn' : 'cursedItem';
+
+				applySanity(sanity);
+				if (corr) addTempCorr(corr);
+				setup.HuntController.trapGhost(unlockBy);
+				var drewGhost = false;
+				if (t >= 3) {
+					setup.HuntController.snapGhostToCurrentRoom();
+					drewGhost = true;
+				}
+
+				removeWish();
+
+				return {
+					tier: t,
+					narrative: [
+						"The ghost is pinned to one room.<br>The front door seals itself behind the wish -- only a cursed offering will open it.",
+						"The ghost is bound. The front door sinks into the frame until dawn.<br>I'll have to wait out the dark.",
+						"I nailed the ghost in place -- here, with me. The doors around me thunk shut.<br>I'll need a cursed offering, or a loud voice."
+					][t - 1],
+					sanityDelta: sanity,
+					corrDelta: corr,
+					doorUnlockBy: unlockBy,
+					drewGhost: drewGhost
+				};
+			}
+		},
+		{
+			id: 'sanity',
+			input: 'be sane',
+			label: 'I wish to be sane',
+			widget: 'sanity',
+			description: "Your mind is set to exactly fifty. No higher. No lower.",
+			/* Scaling:
+			   t1: sanity = 50
+			   t2: sanity = 50, +10 lust, +0.2 tempCorr
+			   t3: sanity = 50, +20 lust, +0.4 tempCorr */
+			activate: function () {
+				var t = currentTier();
+				var lust = [0, 10, 20][t - 1];
+				var corr = [0, 0.2, 0.4][t - 1];
+
+				setup.Mc.setSanity(50);
+				if (lust) setup.addLust(lust);
+				if (corr) addTempCorr(corr);
+
+				removeWish();
+
+				return {
+					tier: t,
+					narrative: [
+						"I shouldn't have expected anything better...",
+						"My mind is quiet. Too quiet. My body isn't.",
+						"Clarity, bought in full. Something else in me is paying it down."
+					][t - 1],
+					sanitySet: 50,
+					lustDelta: lust,
+					corrDelta: corr
+				};
+			}
+		},
+		{
+			id: 'leave',
+			input: 'leave',
+			label: 'I wish to leave',
+			widget: 'leave',
+			description: "You are cast out of the house -- but not the way you came in.",
+			/* Scaling (every tier strips clothes via the leave widget,
+			   which <<include>>s the canonical Steal* passages so the
+			   $is*Stolen flags, numbered sub-states, and $remember*
+			   markers all line up with a normal theft):
+			   t1: exit + clothes stolen
+			   t2: exit + clothes stolen + guaranteed cursed home item
+			   t3: exit + clothes stolen + cursed home item
+			       + this haunted house is sealed for the rest of the contract */
+			activate: function () {
+				var t = currentTier();
+				var cursedItem = null;
+				var bannedHouse = null;
+
+				if (t >= 2) cursedItem = setup.CursedItems.forceCursedItem();
+				if (t >= 3) bannedHouse = setup.HuntController.banActiveContext();
+
+				removeWish();
+
+				return {
+					tier: t,
+					goto: setup.HuntController.streetExitPassage(),
+					clothesStolen: true,
+					cursedItem: cursedItem,
+					bannedHouse: bannedHouse
+				};
+			}
+		},
+		{
+			id: 'knowledge',
+			input: 'knowledge',
+			label: 'I wish for knowledge',
+			widget: 'knowledge',
+			description: "One entry is struck from your diary. Once only -- and something hears.",
+			/* Scaling:
+			   t1: remove evidence, ghost event on click
+			   t2: remove evidence, ghost event on click, -15 sanity
+			   t3: remove evidence, ghost event on click, -30 sanity
+			   No-ops if the wish has already been used this hunt. */
+			activate: function () {
+				if (setup.Ghosts.knowledgeUsed()) {
+					return { tier: 0, alreadyUsed: true };
+				}
+
+				var t = currentTier();
+				var sanity = [0, -15, -30][t - 1];
+
+				setup.HuntController.consumeKnowledgeEvidence();
+				if (sanity) applySanity(sanity);
+
+				removeWish();
+
+				return {
+					tier: t,
+					narrative: [
+						"It worked! One evidence has been removed from my diary!<br>Wait...I hear someone's footsteps...",
+						"The knowledge comes with a voice. It's already in the hallway.",
+						"The paw takes my memory and gives me its tenant in trade."
+					][t - 1],
+					sanityDelta: sanity,
+					goto: 'GhostHuntEvent'
+				};
+			}
+		},
+		{
+			id: 'dawn',
+			input: 'dawn',
+			label: 'I wish for dawn',
+			widget: 'dawn',
+			description: "Morning comes, ready or not. The hunt ends.",
+			/* Scaling:
+			   t1: jump to 6 AM, end hunt
+			   t2: jump to 6 AM, end hunt, +0.2 tempCorr
+			   t3: jump to 6 AM, end hunt, +0.4 tempCorr */
+			activate: function () {
+				var t = currentTier();
+				var corr = [0, 0.2, 0.4][t - 1];
+
+				setup.Time.setHours(6);
+				if (corr) addTempCorr(corr);
+
+				removeWish();
+
+				return {
+					tier: t,
+					goto: setup.HuntController.huntOverPassage('time'),
+					corrDelta: corr
+				};
+			}
+		}
+	];
+
+	return {
+		OWNED_VARS: OWNED_VARS,
+		// --- Catalogue --------------------------------------------
+		list: function () { return WISHES.slice(); },
+		byId: function (id) {
+			for (var i = 0; i < WISHES.length; i++) {
+				if (WISHES[i].id === id) return WISHES[i];
+			}
+			return null;
+		},
+		/* Match a textbox entry to a canonical wish by keyword.
+		   Case- and whitespace-insensitive. Returns null on miss. */
+		byInput: function (text) {
+			var q = (text || '').toString().toLowerCase().trim();
+			for (var i = 0; i < WISHES.length; i++) {
+				if (WISHES[i].input === q) return WISHES[i];
+			}
+			return null;
+		},
+		/* Pick one of the real wishes uniformly -- used by the
+		   "I wish for anything" meta-button. */
+		rollAnything: function () {
+			return WISHES[Math.floor(Math.random() * WISHES.length)];
+		},
+		/* Apply a wish's effect by id and return the presentation
+		   hints for the widget to render. Convenience wrapper around
+		   byId(id).activate() so callers don't need to null-check. */
+		activate: function (id) {
+			var w = this.byId(id);
+			return w && w.activate ? w.activate() : null;
+		},
+
+		// --- Hunt-scoped lifecycle --------------------------------
+		/* Reset hunt-scoped paw state. Called from GhostRandomize at
+		   the start of every new contract. Does NOT touch `learned`
+		   or guide flags -- those persist across hunts. */
+		resetHunt: function () {
+			var s = sv();
+			s.MonkeyPawStage = setup.MonkeyPawStage.HIDDEN;
+			s.wishesCount = 3;
+			setup.Ghosts.clearKnowledgeUsed();
+		},
+		/* Furniture search calls this when the paw is discovered. */
+		markFound: function () { sv().MonkeyPawStage = setup.MonkeyPawStage.FOUND; },
+		/* Hunt-end cleanup. The paw is consumed for the session. */
+		retire: function () { sv().MonkeyPawStage = setup.MonkeyPawStage.RETIRED; },
+		isFound: function () { return sv().MonkeyPawStage === setup.MonkeyPawStage.FOUND; },
+		/* HIDDEN stage: paw is still sitting in a furniture slot waiting
+		   to be discovered this hunt. FurnitureSearch and the map
+		   highlight logic gate on this. */
+		isDiscoverable: function () { return (sv().MonkeyPawStage || 0) === setup.MonkeyPawStage.HIDDEN; },
+		/* The Bag icon shows only when carrying the paw AND the
+		   player just stepped into the HuntRun passage -- so the paw
+		   doesn't appear when Bag is opened from the city, the witch
+		   street, or the hunt lobby. */
+		isCarrying: function () {
+			if (!this.isFound()) return false;
+			return setup.HuntController.isInsideHuntPassage();
+		},
+
+		// --- Wish economy -----------------------------------------
+		wishesLeft: wishesLeft,
+		hasWishes: function () { return wishesLeft() > 0; },
+		removeWish: removeWish,
+		/* Severity tier the next activate() would use, for UIs that
+		   want to warn the player before they click. */
+		tier: currentTier,
+
+		hasCursedItem: hasCursedItem,
+
+		// --- Learned state ----------------------------------------
+		isLearned: function (id) { return learnedMap()[id] === true; },
+		markLearned: function (id) { learnedMap()[id] = true; },
+		learnAll: function () {
+			for (var i = 0; i < WISHES.length; i++) {
+				learnedMap()[WISHES[i].id] = true;
+			}
+		},
+		/* Short description of what a wish does, or null when the
+		   player hasn't learned it yet. Menu code renders the
+		   description next to the button iff this returns non-null. */
+		describe: function (id) {
+			if (!this.isLearned(id)) return null;
+			var w = this.byId(id);
+			return w ? w.description : null;
+		},
+
+		// --- "Anything" meta-wish ---------------------------------
+		hasAnything: function () { return sv().wishAnything === 1; },
+		grantAnything: function () { sv().wishAnything = 1; },
+
+		// --- Witch's guide ----------------------------------------
+		/* Guide states: see setup.MonkeyPawGuide. undefined coerces
+		   to NOT_ASKED so legacy/missing saves Just Work. */
+		guideStage: function () {
+			var g = sv().boughtMonkeyPawGuide;
+			return g === undefined ? setup.MonkeyPawGuide.NOT_ASKED : g;
+		},
+		ensureGuideInit: function () {
+			if (sv().boughtMonkeyPawGuide === undefined) {
+				sv().boughtMonkeyPawGuide = setup.MonkeyPawGuide.NOT_ASKED;
+			}
+		},
+		hasGuide: function () { return this.guideStage() === setup.MonkeyPawGuide.PURCHASED; },
+		isGuideAsked: function () { return this.guideStage() === setup.MonkeyPawGuide.ASKED; },
+		markGuideAsked: function () { sv().boughtMonkeyPawGuide = setup.MonkeyPawGuide.ASKED; },
+		/* Witch-side purchase effect: reveal everything. Money is
+		   deducted by the caller (WitchSale). */
+		purchaseGuide: function () {
+			sv().boughtMonkeyPawGuide = setup.MonkeyPawGuide.PURCHASED;
+			this.learnAll();
+			this.grantAnything();
+		},
+
+		// --- Tarot deck carry stage (Bag display) -----------------
+		tarotCarryStage: function () { return setup.HauntedHouses.tarotCardsStage(); }
+	};
+})();

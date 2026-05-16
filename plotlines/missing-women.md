@@ -6,7 +6,7 @@ This plotline involves rescuing missing women (Victoria, Julia, Jade, Nadia, and
   * [RescueTaskBoard.tw](../passages/missing_women/RescueTaskBoard.tw) - Task board where you take missing posters
   * [RescueMap.tw](../passages/missing_women/RescueMap.tw) - Map for rescue missions
   * [RescueHouse.tw](../passages/missing_women/RescueHouse.tw) - Rescue house locations
-  * [MissingWomenController.tw](../passages/missing_women/MissingWomenController.tw) - Shared rescue state and helpers
+  * [MissingWomenController.js](../passages/missing_women/MissingWomenController.js) - Shared rescue state and helpers
   * [widgetRescue.tw](../passages/missing_women/widgetRescue.tw) - Shared rescue widgets (hosts `randomizeRescueHouse`)
 
 * **Multi-stage rescue process** - Each rescue involves finding the haunted location, investigating the ghost, completing specific objectives, and surviving ghost encounters. Some rescues have multiple stages with possession events and dangerous situations.

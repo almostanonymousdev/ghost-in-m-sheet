@@ -1,0 +1,94 @@
+/*
+ * Centralized helpers for the in-game clock / weather state:
+ *   $hours, $minutes, $meridiem, $temperature, $dailySeed
+ *
+ * Any passage that needs to read or set the clock should route
+ * through setup.Time. The mutation widgets <<addTime>> / <<addLust>>
+ * (in widgetGuiCommon) used to read State directly -- this controller
+ * gives passages a way to do the same without touching $hours/$minutes.
+ *
+ * Rollover plumbing lives entirely in writeHook callbacks attached to
+ * the hours/minutes accessors:
+ *   - addMinutes(60) cascades into addHours(1) via the minutes hook.
+ *   - addHours(N) wraps past 24, regenerates $dailySeed, and returns
+ *     a "did the day roll over?" boolean for the caller. Callers that
+ *     advance the clock through setup.Time.addMinutes / addHours
+ *     therefore never need to re-implement the wrap-and-reseed dance.
+ */
+setup.Time = (function () {
+	/* Variables owned by this controller. Other controllers should
+	   query/mutate these only through the API methods below. */
+	var OWNED_VARS = Object.freeze([
+		'hours', 'minutes', 'meridiem', 'temperature', 'dailySeed'
+	]);
+
+	function sv() { return State.variables; }
+
+	function freshSeed() {
+		return Math.floor(Math.random() * 0x100000000);
+	}
+
+	var api = {
+		OWNED_VARS: OWNED_VARS,
+
+		// --- Derived / totals --------------------------------
+		totalMinutes: function () { return sv().hours * 60 + sv().minutes; },
+		display: function () {
+			var h = sv().hours < 10 ? '0' + sv().hours : sv().hours;
+			var m = Math.floor(sv().minutes) < 10 ?
+				'0' + Math.floor(sv().minutes) : Math.floor(sv().minutes);
+			return h + ':' + m;
+		},
+
+		// --- Windows used by multiple callers ----------------
+		isLate:        function () { return sv().hours <= 5; },
+		isEarlyMorning: function () { return sv().hours < 6; },
+		isMorningPlus:  function () { return sv().hours >= 6; },
+		isNight:        function () { return sv().hours >= 23; },
+
+		// --- Scheduled in-world actions ---------------------
+		// Reset the clock to midnight (used when a hunt starts
+		// from the haunted-house street). Bypasses the rollover
+		// hook: this is a discontinuous reset, not a wraparound.
+		resetToMidnight: function () {
+			sv().hours = 0;
+			sv().minutes = 0;
+		},
+		// Sleep/wake paths advance N hours and want a "did the
+		// day roll over" answer. addHours already returns it via
+		// the writeHook; this thin wrapper coerces the hook's
+		// return to a strict bool for legacy callers.
+		sleepAdvanceHours: function (n) {
+			return api.addHours(n) === true;
+		}
+	};
+
+	setup.defineAccessors(api, sv, [
+		// 24h rollover: wrap and reseed the per-day PRNG. The
+		// inner sv().hours assignment bypasses the hook, so no
+		// recursion. Returning true lets callers (sleep, addTime)
+		// know the day flipped without re-reading the clock.
+		{ name: 'hours', add: 'addHours', writeHook: function (oldV, newV) {
+			if (newV >= 24) {
+				sv().hours = newV - 24;
+				sv().dailySeed = freshSeed();
+				return true;
+			}
+			return false;
+		} },
+		// Minute rollover cascades into +1 hour, propagating the
+		// hours hook's day-rollover signal back to the caller.
+		{ name: 'minutes', add: 'addMinutes', writeHook: function (oldV, newV) {
+			if (newV >= 60) {
+				sv().minutes = newV - 60;
+				return api.addHours(1);
+			}
+			return false;
+		} },
+		{ name: 'meridiem' },
+		{ name: 'temperature', add: 'addTemperature' },
+		{ name: 'dailySeed' }
+	]);
+
+	return api;
+})();

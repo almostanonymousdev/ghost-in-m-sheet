@@ -1,0 +1,202 @@
+/*
+ * Room-template catalogue.
+ *
+ * Each authored haunted-house room (`<<roomShell>>` instances under
+ * passages/haunted_houses/<house>/<house>_rooms.tw) is shaped from
+ * a reusable template -- a kitchen, a bathroom, a bedroom, etc. The
+ * existing rendering ties template *visuals* to per-house passages
+ * (via setup.Styles), but the template's structural data -- its
+ * furniture-slot suffixes, whether it has a hideSpot, whether it's
+ * eligible to appear in a procedurally-generated floor plan -- is
+ * the same wherever it shows up.
+ *
+ * setup.Templates is that single source of truth. The hunt
+ * controller reads from here when building floor plans (see
+ * FloorPlanController); future per-template encounter hooks (a
+ * library rolls a cursed-book hook, a kitchen rolls a cooking-
+ * corruption hook) will hang off these entries.
+ *
+ * Each entry:
+ *   id                 -- canonical template key (also used as the
+ *                         room state-var name in static-plan houses).
+ *   label              -- human-facing name for nav / minimap.
+ *   furniture          -- ordered list of slot suffixes (e.g.
+ *                         ['table', 'sink1']). Slot ids in concrete
+ *                         rooms are formed as `<roomId>_<suffix>`,
+ *                         so a kitchen at run-local id `room_3`
+ *                         exposes `room_3_table`, `room_3_sink1`,
+ *                         etc.
+ *   hideSpot           -- suffix of the slot that doubles as a
+ *                         hide-spot during cursed hunts, or null.
+ *   proceduralEligible -- true if the floor-plan generator is
+ *                         allowed to slot this template into a
+ *                         procedural hunt. Story-locked templates
+ *                         (ironclad cells, upstairs hallways) stay
+ *                         false.
+ */
+setup.Templates = (function () {
+	/* Authored-house furniture sets vary slightly between houses
+	   (Owaissa bathroom has a carpet, Elm's doesn't; Elm bedroom
+	   uses bed1.png while Owaissa uses bed2.png). The canonical
+	   set here picks the more featureful/Owaissa-style variant so
+	   procedural rooms feel comparably furnished to authored ones. */
+	var TEMPLATES = Object.freeze({
+		// --- Procedural-only templates with dedicated backgrounds
+		// (see setup.Styles.bgUrlForTemplate). Kept distinct from the
+		// authored-house templates below so the procedural floor plan
+		// renders its own scene set instead of reusing static-plan art.
+		attic: {
+			id: 'attic', label: 'Attic',
+			furniture: ['shelves', 'wardrobe', 'table'],
+			hideSpot: 'wardrobe',
+			proceduralEligible: true
+		},
+		'dining-room': {
+			id: 'dining-room', label: 'Dining Room',
+			furniture: ['table', 'desk', 'sofa'],
+			hideSpot: null,
+			proceduralEligible: true
+		},
+		sauna: {
+			id: 'sauna', label: 'Sauna',
+			furniture: ['bathtub', 'sink', 'carpet'],
+			hideSpot: null,
+			proceduralEligible: true
+		},
+		'sex-dungeon': {
+			id: 'sex-dungeon', label: 'Sex Dungeon',
+			furniture: ['bed', 'table', 'wardrobe1'],
+			hideSpot: 'bed',
+			proceduralEligible: true
+		},
+		'walk-in-closet': {
+			id: 'walk-in-closet', label: 'Walk-In Closet',
+			furniture: ['wardrobe1', 'wardrobe', 'shelves'],
+			hideSpot: 'wardrobe1',
+			proceduralEligible: true
+		},
+
+		// --- Authored-house templates -----------------------------
+		// Kept in the catalogue so static-plan houses keep working
+		// (id is used as the room state-var name in those houses).
+		kitchen: {
+			id: 'kitchen', label: 'Kitchen',
+			furniture: ['desk', 'table', 'sink1'],
+			hideSpot: null,
+			proceduralEligible: true
+		},
+		bathroom: {
+			id: 'bathroom', label: 'Bathroom',
+			furniture: ['bathtub', 'carpet', 'sink', 'wmachine'],
+			hideSpot: null,
+			proceduralEligible: true
+		},
+		bedroom: {
+			id: 'bedroom', label: 'Bedroom',
+			furniture: ['bed', 'table', 'wardrobe1'],
+			hideSpot: 'bed',
+			proceduralEligible: true
+		},
+		livingroom: {
+			id: 'livingroom', label: 'Livingroom',
+			furniture: ['table', 'sofa'],
+			hideSpot: null,
+			proceduralEligible: true
+		},
+		nursery: {
+			id: 'nursery', label: 'Nursery',
+			furniture: ['desk', 'table', 'bed'],
+			hideSpot: 'bed',
+			proceduralEligible: true
+		},
+		basement: {
+			id: 'basement', label: 'Basement',
+			furniture: ['table', 'shelves'],
+			hideSpot: null,
+			proceduralEligible: true
+		},
+
+		// --- Backbone: hallway is always present in hunt plans ----
+		hallway: {
+			id: 'hallway', label: 'Hallway',
+			furniture: ['carpet', 'wardrobe', 'coatrack'],
+			hideSpot: null,
+			proceduralEligible: false
+		},
+
+		// --- Story-locked: static-plan houses only ----------------
+		// Multi-storey hallway -- only Elm has it; procedural plans
+		// use a single hallway as the backbone.
+		hallwayUpstairs: {
+			id: 'hallwayUpstairs', label: 'Hallway Upstairs',
+			furniture: ['carpet', 'shelves'],
+			hideSpot: null,
+			proceduralEligible: false
+		},
+		bathroomTwo: {
+			id: 'bathroomTwo', label: 'Bathroom Upstairs',
+			furniture: ['sink', 'carpet'],
+			hideSpot: null,
+			proceduralEligible: false
+		},
+		bedroomTwo: {
+			id: 'bedroomTwo', label: 'Bedroom Upstairs',
+			furniture: ['table', 'bed2', 'shelves'],
+			hideSpot: null,
+			proceduralEligible: false
+		},
+		// Ironclad prison rooms: cell-block layout is uniquely structural.
+		reception: {
+			id: 'reception', label: 'Reception',
+			furniture: [], hideSpot: null, proceduralEligible: false
+		},
+		BlockA: { id: 'BlockA', label: 'Block A', furniture: [], hideSpot: null, proceduralEligible: false },
+		BlockB: { id: 'BlockB', label: 'Block B', furniture: [], hideSpot: null, proceduralEligible: false },
+		BlockACellA: { id: 'BlockACellA', label: 'Cell A', furniture: [], hideSpot: null, proceduralEligible: false },
+		BlockACellB: { id: 'BlockACellB', label: 'Cell B', furniture: [], hideSpot: null, proceduralEligible: false },
+		BlockACellC: { id: 'BlockACellC', label: 'Cell C', furniture: [], hideSpot: null, proceduralEligible: false },
+		BlockBCellA: { id: 'BlockBCellA', label: 'Cell A', furniture: [], hideSpot: null, proceduralEligible: false },
+		BlockBCellB: { id: 'BlockBCellB', label: 'Cell B', furniture: [], hideSpot: null, proceduralEligible: false },
+		BlockBCellC: { id: 'BlockBCellC', label: 'Cell C', furniture: [], hideSpot: null, proceduralEligible: false }
+	});
+
+	function byId(id) { return TEMPLATES[id] || null; }
+
+	function list() {
+		return Object.keys(TEMPLATES).map(function (k) { return TEMPLATES[k]; });
+	}
+
+	function ids() { return Object.keys(TEMPLATES); }
+
+	function proceduralEligibleIds() {
+		return Object.keys(TEMPLATES).filter(function (k) {
+			return TEMPLATES[k].proceduralEligible;
+		});
+	}
+
+	/* Build the full slot-id list for a room of `templateId` whose
+	   run-local id is `roomId`. So `slotIdsFor('kitchen', 'room_3')`
+	   returns ['room_3_desk', 'room_3_table', 'room_3_sink1']. */
+	function slotIdsFor(templateId, roomId) {
+		var t = byId(templateId);
+		if (!t || !roomId) return [];
+		return t.furniture.map(function (f) { return roomId + '_' + f; });
+	}
+
+	function hideSpotIdFor(templateId, roomId) {
+		var t = byId(templateId);
+		if (!t || !t.hideSpot || !roomId) return null;
+		return roomId + '_' + t.hideSpot;
+	}
+
+	return {
+		OWNED_VARS: Object.freeze([]),
+		CATALOGUE: TEMPLATES,
+		list: list,
+		byId: byId,
+		ids: ids,
+		proceduralEligibleIds: proceduralEligibleIds,
+		slotIdsFor: slotIdsFor,
+		hideSpotIdFor: hideSpotIdFor
+	};
+})();
