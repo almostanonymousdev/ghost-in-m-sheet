@@ -943,6 +943,9 @@ setup.HuntController = (function () {
 			setup.Ghosts.resetEvidenceChecks();
 		}
 		applyMetaUnlocksAtStart(floorplan, seed, evidenceIds);
+		if (setup.Hunt && setup.Hunt.emit) {
+			setup.Hunt.emit(setup.Hunt.Event.START, { ghostName: ghostName, seed: seed });
+		}
 		return active();
 	}
 
