@@ -91,6 +91,19 @@ test.describe('Tarot cards', () => {
     expect(await getVar(page, 'chosenCard.name')).toBe('passion');
   });
 
+  test('cheatTarotCard setting forces drawAndStampTarotCard to a specific card', async ({ game: page }) => {
+    await page.evaluate(() => {
+      delete SugarCube.State.variables.chosenCard;
+      SugarCube.settings.cheatTarotCard = 'death';
+      // Random would otherwise return 'passion' at roll=0; cheat must override.
+      const orig = Math.random;
+      Math.random = () => 0;
+      try { SugarCube.setup.HauntedHouses.drawAndStampTarotCard(); }
+      finally { Math.random = orig; SugarCube.settings.cheatTarotCard = '—'; }
+    });
+    expect(await getVar(page, 'chosenCard.name')).toBe('death');
+  });
+
   test('incrementDrawnCards increments the counter', async ({ game: page }) => {
     await page.evaluate(() => {
       SugarCube.State.variables.drawnCards = 0;
