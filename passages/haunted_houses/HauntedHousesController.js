@@ -132,15 +132,22 @@ setup.HauntedHouses = (function () {
 		   the passage should <<goto "StealClothes">>. */
 		shouldTriggerSteal: function () {
 			/* STEAL_CHECK filter lets modifiers (Swiper) and contracts
-			   bypass or scale the roll. Subscribers set forceTrigger=true
-			   to skip the roll outright; the caller still gates on
-			   canStealAnyItem so we never steal when nothing is wearable. */
+			   bypass or scale the roll, and lets static houses opt out
+			   entirely. Subscribers set forceTrigger=true to skip the
+			   roll, or suppress=true to cancel the steal step outright
+			   (Ironclad: runsStealClothes=false). suppress wins over
+			   forceTrigger -- a house that doesn't run clothes-stealing
+			   shouldn't have Swiper bypass that. The caller still gates
+			   on canStealAnyItem so we never steal when nothing is
+			   wearable. */
 			var modifierIds = (setup.HuntController && setup.HuntController.modifiers)
 				? setup.HuntController.modifiers() : [];
 			var ctx = setup.Hunt.applyFilter(setup.Hunt.Event.STEAL_CHECK, {
 				forceTrigger: false,
-				modifierIds: modifierIds
+				suppress:     false,
+				modifierIds:  modifierIds
 			});
+			if (ctx.suppress) return false;
 			if (ctx.forceTrigger) return this.canStealAnyItem();
 			var roll = 1 + Math.floor(Math.random() * 100);
 			if (roll > this.stealChance()) return false;

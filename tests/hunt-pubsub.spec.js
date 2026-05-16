@@ -631,6 +631,68 @@ test.describe('setup.Hunt pubsub', () => {
       expect(result.none).toEqual({ lustPerStep: 0, prowlChanceBonus: 0 });
     });
 
+    test('STEAL_CHECK filter: Ironclad runsStealClothes=false sets ctx.suppress', async () => {
+      await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+      const result = await page.evaluate(() => {
+        const HC = SugarCube.setup.HuntController;
+        const { Hunt } = SugarCube.setup;
+        function probe() {
+          return Hunt.applyFilter(Hunt.Event.STEAL_CHECK, {
+            forceTrigger: false, suppress: false, modifierIds: []
+          });
+        }
+        HC.startHunt({ seed: 1, staticHouseId: 'ironclad' });
+        const iron = probe();
+        HC.endHunt(false);
+        HC.startHunt({ seed: 1, staticHouseId: 'owaissa' });
+        const owai = probe();
+        HC.endHunt(false);
+        HC.startHunt({ seed: 1 });
+        const proc = probe();
+        return { iron: iron.suppress, owai: owai.suppress, proc: proc.suppress };
+      });
+      expect(result.iron).toBe(true);
+      expect(result.owai).toBe(false);
+      expect(result.proc).toBe(false);
+    });
+
+    test('STEAL_CHECK filter: house suppress wins over Swiper forceTrigger', async () => {
+      await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+      const result = await page.evaluate(() => {
+        const HC = SugarCube.setup.HuntController;
+        const M = SugarCube.setup.Modifiers;
+        HC.startHunt({ seed: 1, staticHouseId: 'ironclad' });
+        HC.active().modifiers = [M.SWIPER];
+        // shouldTriggerSteal honors suppress before consulting forceTrigger.
+        return SugarCube.setup.HauntedHouses.shouldTriggerSteal();
+      });
+      expect(result).toBe(false);
+    });
+
+    test('COMPANION_ALLOWED filter: Ironclad opts out, owaissa/elm/procedural opt in', async () => {
+      await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+      const result = await page.evaluate(() => {
+        const HC = SugarCube.setup.HuntController;
+        function probe() { return HC.huntAllowsCompanions(); }
+        HC.startHunt({ seed: 1, staticHouseId: 'ironclad' });
+        const iron = probe();
+        HC.endHunt(false);
+        HC.startHunt({ seed: 1, staticHouseId: 'owaissa' });
+        const owai = probe();
+        HC.endHunt(false);
+        HC.startHunt({ seed: 1, staticHouseId: 'elm' });
+        const elm = probe();
+        HC.endHunt(false);
+        HC.startHunt({ seed: 1 });
+        const proc = probe();
+        return { iron, owai, elm, proc };
+      });
+      expect(result.iron).toBe(false);
+      expect(result.owai).toBe(true);
+      expect(result.elm).toBe(true);
+      expect(result.proc).toBe(true);
+    });
+
     test('tick() is a no-op when no run is active', async () => {
       const seen = await page.evaluate(() => {
         const HC = SugarCube.setup.HuntController;

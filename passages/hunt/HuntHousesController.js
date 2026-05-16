@@ -265,6 +265,36 @@ setup.HuntHouses = (function () {
 		return h.roomBackgrounds[templateId] || null;
 	}
 
+	/* Catalogue lookup helper for the active run. Returns the static
+	   house entry (or null) without each subscriber having to reach
+	   into HuntController + byId itself. */
+	function activeHouse() {
+		var id = setup.HuntController && setup.HuntController.staticHouseId
+			? setup.HuntController.staticHouseId() : null;
+		return id ? byId(id) : null;
+	}
+
+	/* Static-house filter wiring. Each per-house override that previously
+	   lived as a branch in HuntController is registered here against the
+	   relevant filter event, so adding a new override = one catalogue
+	   field + one subscriber, no HuntController edit. */
+	setup.Hunt.filter(setup.Hunt.Event.STEAL_CHECK, function (ctx) {
+		/* Houses with runsStealClothes:false (Ironclad) skip the
+		   steal-clothes per-tick roll entirely. Wins over modifier
+		   forceTrigger -- a house that doesn't run clothes-stealing
+		   shouldn't have Swiper bypass that. */
+		var h = activeHouse();
+		if (h && h.runsStealClothes === false) ctx.suppress = true;
+	});
+
+	setup.Hunt.filter(setup.Hunt.Event.COMPANION_ALLOWED, function (ctx) {
+		/* Static houses opt in/out of the companion plan flow via the
+		   allowsCompanions catalogue flag. Procedural runs leave
+		   ctx.allowed untouched (default true). */
+		var h = activeHouse();
+		if (h && !h.allowsCompanions) ctx.allowed = false;
+	});
+
 	return {
 		OWNED_VARS:        Object.freeze([]),
 		CATALOGUE:         CATALOGUE,

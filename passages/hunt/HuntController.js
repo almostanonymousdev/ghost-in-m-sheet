@@ -1044,15 +1044,18 @@ setup.HuntController = (function () {
 			&& setup.HuntHouses.allowsCompanions(id));
 	}
 	/* True when companions are eligible for the active hunt at all.
-	   Procedural runs (no staticHouseId) are companion-eligible by
-	   default; static-plan houses opt in or out via the catalogue's
-	   allowsCompanions flag. Drives both the HuntStart "Talk to her"
-	   gate and the in-hunt HUD via Companion.inHauntedHouseLocation. */
+	   Procedural runs default to allowed; static-plan houses opt in
+	   or out via the catalogue's allowsCompanions flag, surfaced by
+	   the COMPANION_ALLOWED filter subscriber in HuntHousesController.
+	   Drives both the HuntStart "Talk to her" gate and the in-hunt
+	   HUD via Companion.inHauntedHouseLocation. */
 	function huntAllowsCompanions() {
 		if (!isActive()) return false;
-		var id = staticHouseId();
-		if (!id) return true;
-		return !!(setup.HuntHouses && setup.HuntHouses.allowsCompanions(id));
+		var ctx = setup.Hunt.applyFilter(setup.Hunt.Event.COMPANION_ALLOWED, {
+			allowed:       true,
+			staticHouseId: staticHouseId()
+		});
+		return !!ctx.allowed;
 	}
 	/* Evidence id list for the active ghost. Returns the
 	   per-run override stamped at startHunt (so Fog of War's spliced
@@ -1590,15 +1593,11 @@ setup.HuntController = (function () {
 
 	/* Steal-clothes roll. The wardrobe / stash side-effects are
 	   shared, so once a steal fires the StealClothes cascade works.
-	   Ironclad opts out via the static catalogue's runsStealClothes
-	   flag, so the prison hunt skips the steal step. */
+	   Per-house opt-outs (Ironclad's runsStealClothes=false) and
+	   modifier overrides (Swiper) live as STEAL_CHECK filter
+	   subscribers applied inside HauntedHouses.shouldTriggerSteal. */
 	function shouldTriggerSteal() {
 		if (!isActive()) return false;
-		var rid = staticHouseId();
-		if (rid && setup.HuntHouses) {
-			var rh = setup.HuntHouses.byId(rid);
-			if (rh && rh.runsStealClothes === false) return false;
-		}
 		return setup.HauntedHouses.shouldTriggerSteal();
 	}
 
