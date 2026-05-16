@@ -661,11 +661,14 @@ setup.HuntController = (function () {
 
 	/* Tool keys the hunt toolbar should render this run, in canonical
 	   setup.searchToolOrder. Resolution order:
-	     1. Build the "starting" base set:
-	        a. Empty Bag modifier (Modifiers.LOCKED_TOOLS) -> [].
-	        b. loadout.tools array -> intersection with searchToolOrder.
-	        c. Default -> all six tools.
-	     2. Union with any tool the player has picked up from
+	     1. Build the "starting" base set: loadout.tools intersected
+	        with searchToolOrder, or all six tools when loadout.tools
+	        is unset.
+	     2. Run the base through the STARTING_TOOLS filter so
+	        modifiers (Empty Bag clears to []) and static-house quirks
+	        can mutate the set without HuntController branching on
+	        each one.
+	     3. Union with any tool the player has picked up from
 	        furniture this run ($run.collectedLoot entries shaped as
 	        'tool_<id>'). Tools placed in the floor plan and clicked
 	        through FurnitureSearch land in collectedLoot via takeLoot,
@@ -678,16 +681,7 @@ setup.HuntController = (function () {
 		var run = sv().run;
 		if (!run) return [];
 		var order = (setup.searchToolOrder || []).slice();
-		var base;
-		if (hasModifier(setup.Modifiers.LOCKED_TOOLS)) {
-			base = [];
-		} else if (Array.isArray((run.loadout || {}).tools)) {
-			base = order.filter(function (t) {
-				return run.loadout.tools.indexOf(t) !== -1;
-			});
-		} else {
-			base = order.slice();
-		}
+		var base = startingToolsBase(run.modifiers || [], run.loadout || null);
 		var collected = Array.isArray(run.collectedLoot) ? run.collectedLoot : [];
 		return order.filter(function (t) {
 			if (base.indexOf(t) !== -1) return true;
@@ -697,21 +691,27 @@ setup.HuntController = (function () {
 
 	/* Compute the tool-pickup loot kinds the floor-plan generator
 	   should place this run -- exactly the tools the player would
-	   otherwise be missing from the toolbar. Reads from the same
-	   modifiers / loadout the toolbar resolution does, so the player
-	   can always recover a full kit by exploring the house.
-	   Returns an array of tool ids (not loot keys); the FloorPlan
+	   otherwise be missing from the toolbar. The base set is the
+	   loadout intersection (or full kit), then the STARTING_TOOLS
+	   filter runs so modifier / static-house subscribers can mutate
+	   it. Returns an array of tool ids (not loot keys); the FloorPlan
 	   generator wraps them with the 'tool_' prefix. */
 	function startingToolsBase(modifierIds, loadout) {
 		var order = (setup.searchToolOrder || []).slice();
-		var ids = Array.isArray(modifierIds) ? modifierIds : [];
-		if (ids.indexOf(setup.Modifiers.LOCKED_TOOLS) !== -1) return [];
+		var base;
 		if (loadout && Array.isArray(loadout.tools)) {
-			return order.filter(function (t) {
+			base = order.filter(function (t) {
 				return loadout.tools.indexOf(t) !== -1;
 			});
+		} else {
+			base = order.slice();
 		}
-		return order;
+		var ctx = setup.Hunt.applyFilter(setup.Hunt.Event.STARTING_TOOLS, {
+			tools: base,
+			modifierIds: Array.isArray(modifierIds) ? modifierIds : [],
+			loadout: loadout || null
+		});
+		return Array.isArray(ctx.tools) ? ctx.tools : [];
 	}
 	function missingToolsToPlace(modifierIds, loadout) {
 		var order = (setup.searchToolOrder || []).slice();
@@ -1804,6 +1804,8 @@ setup.HuntController = (function () {
 		addModifier: addModifier,
 		loadout: loadout,
 		startingTools: startingTools,
+		startingToolsBase: startingToolsBase,
+		missingToolsToPlace: missingToolsToPlace,
 		objective: objective,
 		objectiveDescription: objectiveDescription,
 		setObjective: setObjective,

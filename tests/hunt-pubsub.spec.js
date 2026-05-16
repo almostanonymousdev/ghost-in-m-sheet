@@ -432,6 +432,67 @@ test.describe('setup.Hunt pubsub', () => {
       expect(typeof seen[0].roomId === 'string' || seen[0].roomId === null).toBe(true);
     });
 
+    test('STARTING_TOOLS filter empties the toolbar when LOCKED_TOOLS is active', async () => {
+      await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+      const result = await page.evaluate(() => {
+        const HC = SugarCube.setup.HuntController;
+        HC.startHunt({ seed: 8181 });
+        const run = HC.active();
+        run.modifiers = [SugarCube.setup.Modifiers.LOCKED_TOOLS];
+        run.loadout = null;
+        return {
+          tools: HC.startingTools(),
+          base: HC.startingToolsBase([SugarCube.setup.Modifiers.LOCKED_TOOLS], null),
+          order: SugarCube.setup.searchToolOrder
+        };
+      });
+      expect(result.tools).toEqual([]);
+      expect(result.base).toEqual([]);
+      expect(Array.isArray(result.order) && result.order.length > 0).toBe(true);
+    });
+
+    test('STARTING_TOOLS filter is a no-op without LOCKED_TOOLS; full kit + loadout intersection survive', async () => {
+      await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+      const result = await page.evaluate(() => {
+        const HC = SugarCube.setup.HuntController;
+        const order = SugarCube.setup.searchToolOrder.slice();
+        const subset = [order[0], order[2]];
+        const full = HC.startingToolsBase([], null);
+        const intersected = HC.startingToolsBase([], { tools: subset });
+        return { full, intersected, order, subset };
+      });
+      expect(result.full).toEqual(result.order);
+      // Intersection preserves canonical order.
+      expect(result.intersected).toEqual(result.order.filter(t => result.subset.indexOf(t) !== -1));
+    });
+
+    test('LOCKED_TOOLS overrides loadout (Empty Bag wins even with a loadout)', async () => {
+      await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+      const tools = await page.evaluate(() => {
+        const HC = SugarCube.setup.HuntController;
+        const M = SugarCube.setup.Modifiers;
+        const order = SugarCube.setup.searchToolOrder;
+        return HC.startingToolsBase([M.LOCKED_TOOLS], { tools: [order[0], order[1]] });
+      });
+      expect(tools).toEqual([]);
+    });
+
+    test('LOCKED_TOOLS empties base but collected loot still fills the toolbar', async () => {
+      await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+      const result = await page.evaluate(() => {
+        const HC = SugarCube.setup.HuntController;
+        const M = SugarCube.setup.Modifiers;
+        HC.startHunt({ seed: 9191 });
+        const run = HC.active();
+        run.modifiers = [M.LOCKED_TOOLS];
+        run.loadout = null;
+        const firstTool = SugarCube.setup.searchToolOrder[0];
+        run.collectedLoot = [SugarCube.setup.FloorPlan.toolLootKind(firstTool)];
+        return { tools: HC.startingTools(), expected: [firstTool] };
+      });
+      expect(result.tools).toEqual(result.expected);
+    });
+
     test('tick() is a no-op when no run is active', async () => {
       const seen = await page.evaluate(() => {
         const HC = SugarCube.setup.HuntController;

@@ -204,6 +204,20 @@ setup.Modifiers = (function () {
 		}, 1);
 	}
 
+	/* Modifier effect wiring. Each modifier whose effect can be expressed
+	   as a filter mutation registers a subscriber here so HuntController
+	   never has to branch on a specific modifier id. Subscribers are
+	   no-ops when their modifier isn't in the active deck. */
+	setup.Hunt.filter(setup.Hunt.Event.STARTING_TOOLS, function (ctx) {
+		/* Empty Bag: the player starts with no tools. Tools the player
+		   would otherwise be missing get placed in furniture by the
+		   floor-plan generator so the run is recoverable. */
+		var ids = ctx && ctx.modifierIds;
+		if (Array.isArray(ids) && ids.indexOf(LOCKED_TOOLS) !== -1) {
+			if (Array.isArray(ctx.tools)) ctx.tools.length = 0;
+		}
+	});
+
 	return {
 		OWNED_VARS: Object.freeze([]),
 		CATALOGUE: CATALOGUE,
