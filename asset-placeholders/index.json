@@ -13584,6 +13584,42 @@
       "height": 30,
       "kind": "image"
     },
+    "ui/icons/sens-anus.png": {
+      "label": "anus",
+      "width": 20,
+      "height": 20,
+      "kind": "image"
+    },
+    "ui/icons/sens-ass.png": {
+      "label": "ass",
+      "width": 20,
+      "height": 20,
+      "kind": "image"
+    },
+    "ui/icons/sens-boobs.png": {
+      "label": "boobs",
+      "width": 20,
+      "height": 20,
+      "kind": "image"
+    },
+    "ui/icons/sens-mind.png": {
+      "label": "mind",
+      "width": 20,
+      "height": 20,
+      "kind": "image"
+    },
+    "ui/icons/sens-pussy.png": {
+      "label": "pussy",
+      "width": 20,
+      "height": 20,
+      "kind": "image"
+    },
+    "ui/icons/sens-tongue.png": {
+      "label": "tongue",
+      "width": 20,
+      "height": 20,
+      "kind": "image"
+    },
     "ui/icons/shorts.jpg": {
       "label": "",
       "width": 30,

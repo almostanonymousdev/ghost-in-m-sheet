@@ -21,6 +21,14 @@
 <<= setup.Mc.corruption().toFixed(2)>>
 <b><<image "ui/img/beauty.png" { style: "position: relative; top: 0.375em; width:11%; display: inline; margin: 0;" }>><<= setup.Mc.beauty()>></b>
 <b><<image "ui/icons/lvl.png" { style: "position: relative; top: 0.375em; width:11%; display: inline; margin: 0;" }>><<= setup.Mc.lvl()>></b> <br>
+<span class="body-sens-row" style="display:flex; justify-content:space-between; align-items:center; gap:0.2em; font-size:0.85em; white-space:nowrap; margin:0.2em 0;">
+<span title="Mind"><<image "ui/icons/sens-mind.png" { style: "width:20px; height:20px; vertical-align:middle;" }>><<= setup.Mc.bodyPartSensitivity('brain').toFixed(1)>></span>
+<span title="Boobs"><<image "ui/icons/sens-boobs.png" { style: "width:20px; height:20px; vertical-align:middle;" }>><<= setup.Mc.bodyPartSensitivity('tits').toFixed(1)>></span>
+<span title="Ass"><<image "ui/icons/sens-ass.png" { style: "width:20px; height:20px; vertical-align:middle;" }>><<= setup.Mc.bodyPartSensitivity('ass').toFixed(1)>></span>
+<span title="Tongue"><<image "ui/icons/sens-tongue.png" { style: "width:20px; height:20px; vertical-align:middle;" }>><<= setup.Mc.bodyPartSensitivity('mouth').toFixed(1)>></span>
+<span title="Pussy"><<image "ui/icons/sens-pussy.png" { style: "width:20px; height:20px; vertical-align:middle;" }>><<= setup.Mc.bodyPartSensitivity('pussy').toFixed(1)>></span>
+<span title="Anus"><<image "ui/icons/sens-anus.png" { style: "width:20px; height:20px; vertical-align:middle;" }>><<= setup.Mc.bodyPartSensitivity('anal').toFixed(1)>></span>
+</span>
 <a class="linkselector" data-passage="Bag"><<image "ui/img/bag.png" { width: "30%" }>></a><a class="linkselector" data-passage="Notebook"><<image "ui/img/notebook.png" { width: "30%" }>></a><a class="linkselector" data-passage="Evidence"><<image "ui/img/evidence-icon.png" { width: "30%" }>></a><br>
 <<if setup.Gui.phoneBought()>><a class="linkselector" data-passage="Phone"><<image "ui/img/phone.png" { width: "30%" }>></a>
 <</if>>
