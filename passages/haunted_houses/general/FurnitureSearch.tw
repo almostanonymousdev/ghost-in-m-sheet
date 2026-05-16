@@ -21,10 +21,7 @@
 	<<set _kind to _kinds[0]>>
 	<<set _toolId to setup.FloorPlan.toolIdFromLootKind(_kind)>>
 	<<if _kind eq "cursedItem">>
-		@@.mc-thoughts; You find a cursed item tucked into the furniture.@@<br>
-		<<run setup.HuntController.takeLoot("cursedItem")>>
-		<br>
-		@@.backbtn; [[Back|$return]]@@
+		<<include "PickupCursedItem">>
 	<<elseif _kind eq "rescueClue">>
 		@@.mc-thoughts; You find a clue about one of the missing women.@@<br>
 		<<run setup.HuntController.takeLoot("rescueClue")>>
@@ -79,6 +76,38 @@
 <br><br>
 @@.backbtn; [[Back|$return]]@@
 
+:: PickupCursedItem [nobr] {"position":"1950,300","size":"100,100"}
+/* Pickup beat for a cursed item turned up by a normal furniture
+   search during a hunt. Rolls the type (dildo / buttplug / beads /
+   huge dildo) via setup.Companion.rollFoundCursedItem, which stamps
+   the isCI<Type> + gotCursedItem flags the witch turn-in flow keys
+   off. A "Use it" linkreplace mirrors the companion-found
+   FindCursedItem passage so the player can fire the immediate-use
+   video without walking back to the home cursed-item events. */
+<<run setup.HuntController.takeLoot("cursedItem")>>
+<<if setup.Witch.hasCursedItemToTurnIn()>>
+	@@.mc-thoughts; You come across another cursed object, but you're already carrying one. Best leave this one for now.@@<br>
+	<br>
+	@@.backbtn; [[Back|$return]]@@
+<<else>>
+	<<set _ci to setup.Companion.rollFoundCursedItem()>>
+	@@.mc-thoughts; You feel an unusual warmth from one of the objects, and as you reach in, the heat spreads through your fingers. You realize@@ <<linkappend "@@.usebtn; it's a cursed item.@@">><br>
+		@@.mc-speech; <<= _ci.speech>>@@<br>
+		<<image _ci.img "displayCentredImgs">>
+		<br>
+		@@.mc-speech; The witch will want to see this. Just touching it has me feeling... worked up.@@<br>
+		+30 <<statIcon setup.StatIcon.HEALTH>><br><<addLust 30>>
+		<br>
+		@@.mc-action; You put the cursed item in your bag@@<br>
+		<br>
+		Or perhaps... <<linkreplace "Use it">>
+			<<include "UseCursedItem">>
+		<</linkreplace>><br>
+	<</linkappend>>
+	<br><br>
+	@@.backbtn; [[Back|$return]]@@
+<</if>>
+
 :: PickupMonkeyPaw [nobr] {"position":"2050,200","size":"100,100"}
 /* Pickup beat for the monkey paw. The setup.MonkeyPaw.markFound()
    flip feeds Bag's monkey-paw link + the MonkeyPaw wish menu. */
@@ -113,7 +142,15 @@
 	<<set _kind to _args[0]>>
 	<<set _toolId to setup.FloorPlan.toolIdFromLootKind(_kind)>>
 	<<if _kind eq "cursedItem">>
-		@@.mc-thoughts; A cursed item, tucked into the furniture.@@<br><br>
+		<<if setup.Witch.hasCursedItemToTurnIn()>>
+			@@.mc-thoughts; Another cursed item, tucked into the furniture -- you're already carrying one, so this one stays.@@<br><br>
+		<<else>>
+			<<set _ci to setup.Companion.rollFoundCursedItem()>>
+			@@.mc-thoughts; A cursed item, tucked into the furniture.@@<br>
+			@@.mc-speech; <<= _ci.speech>>@@<br>
+			<<image _ci.img "iconsOnMap">><br>
+			@@.mc-action; You put it in your bag.@@<br><br>
+		<</if>>
 		<<run setup.HuntController.takeLoot("cursedItem")>>
 	<<elseif _kind eq "rescueClue">>
 		@@.mc-thoughts; A clue about one of the missing women.@@<br><br>
