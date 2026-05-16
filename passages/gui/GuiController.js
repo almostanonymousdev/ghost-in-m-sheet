@@ -367,7 +367,7 @@ window.UpdateHoverTipTxt = function (container) {
 		} else {
 			container = $(container);
 		}
-		var i, id, top, left, parent, elementList, element, hoverPos, boxPos, zindex;
+		var i, id, top, left, parent, parentCenter, elementList, element, hoverPos, boxPos, zindex;
 		elementList = container.find('span[id^="hoverTipTxt"]');
 		for (i = 0; i < elementList.length; i++) {
 			element = $(elementList[i]);
@@ -377,7 +377,8 @@ window.UpdateHoverTipTxt = function (container) {
 			/* Position bottom of hoverTipTxt just above the parent. */
 			top = Math.round(-element.outerHeight() - 6);
 			/* Center hoverTipTxt horizontally over parent. */
-			left = Math.round((parent.outerWidth() - element.outerWidth()) / 2);
+			parentCenter = parent.outerWidth() / 2;
+			left = Math.round(parentCenter - element.outerWidth() / 2);
 			/* See if the hoverTip is contained by something with a higher z-index. */
 			zindex = element.css("z-index");
 			if (zindex === "auto") {
@@ -444,6 +445,9 @@ window.UpdateHoverTipTxt = function (container) {
 				/* Update position. */
 				element.css({ top: Math.round(top), left: Math.round(left) });
 			}
+			/* Keep the tail pointed at the parent icon even after the
+			   screen-edge / box-edge clamps slid the bubble sideways. */
+			element[0].style.setProperty("--tail-left", Math.round(parentCenter - left) + "px");
 		}
 	} else {
 		clearInterval(HTTIntervalID);

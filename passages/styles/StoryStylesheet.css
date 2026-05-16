@@ -84,7 +84,7 @@ html:not([data-debug-view]) .debug:not(.hidden) {
 	content: "";
 	position: absolute;
 	top: 100%;
-	left: 50%;
+	left: var(--tail-left, 50%);
 	margin-left: -5px;
 	border-width: 8px;
 	border-style: solid;

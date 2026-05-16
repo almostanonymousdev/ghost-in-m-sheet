@@ -11,12 +11,11 @@
 <<widget "mcStatusBody">>
 	<<set _outfit to setup.HuntController.sidebarOutfit()>>
 	<<set _hunting to setup.HuntController.isHuntActive() and not _outfit>>
-	<div id="inPainImg">
-	<<hovertip "Need to buy medicine">><<if setup.Mc.isPenalized()>>
-		<<image "ui/icons/pain.jpg">>
+	<<if setup.Mc.isPenalized()>>
+		<div id="inPainImg">
+		<<hovertip "Need to buy medicine">><<image "ui/icons/pain.jpg">><</hovertip>>
+		</div>
 	<</if>>
-	<</hovertip>>
-	</div>
 	<<if _outfit>>
 		<<hovertip _outfit.tip>><<image _outfit.image>>
 		<</hovertip>>
