@@ -851,18 +851,18 @@ setup.HuntController = (function () {
 		if (fpOpts.toolKinds && fpOpts.toolKinds.length && fpOpts.roomCount == null) {
 			fpOpts.roomCount = Math.max(5, 4 + Math.ceil(fpOpts.toolKinds.length / 2));
 		}
-		/* Maze: three extra rooms on top of whatever the base
-		   plan would have rolled. */
-		if (modifierIds.indexOf(setup.Modifiers.MAZE) !== -1) {
-			fpOpts.roomCount = (fpOpts.roomCount || 5) + 3;
-		}
-		/* Smaller House meta-unlock shaves one room off the haunt.
-		   Applied last so it composes with Maze (still net +2) and the
-		   tool-loot expansion (still keeps a slot per missing tool).
-		   Floor floor at the generator's hard min of 2 (hallway + 1). */
-		if (hasUnlock(ShopItem.SMALLER_HOUSE)) {
-			fpOpts.roomCount = Math.max(2, (fpOpts.roomCount || 5) - 1);
-		}
+		/* Hand the floor-plan options to the filter bus so modifiers
+		   (Maze) and meta-unlocks (Smaller House) can mutate roomCount
+		   without HuntController branching on their ids. Subscribers
+		   live in ModifiersController and the meta-unlock subscriber
+		   registered below. */
+		var fpCtx = setup.Hunt.applyFilter(setup.Hunt.Event.FLOORPLAN_OPTIONS, {
+			fpOpts: fpOpts,
+			modifierIds: modifierIds,
+			seed: seed,
+			loadout: opts.loadout || null
+		});
+		fpOpts = fpCtx.fpOpts || fpOpts;
 		/* Static houses (setup.HuntHouses) freeze the topology to
 		   a catalogue blueprint -- same rooms, same edges every run,
 		   regardless of seed or modifiers. Spawn / loot / boss still
@@ -900,11 +900,13 @@ setup.HuntController = (function () {
 		var evidenceIds = (ghostCat && Array.isArray(ghostCat.evidence))
 			? ghostCat.evidence.map(function (e) { return e.id; })
 			: [];
-		if (modifierIds.indexOf(setup.Modifiers.FOG_OF_WAR) !== -1
-			&& evidenceIds.length > 0) {
-			var dropIdx = ((seed ^ 0xdeadbeef) >>> 0) % evidenceIds.length;
-			evidenceIds.splice(dropIdx, 1);
-		}
+		var evCtx = setup.Hunt.applyFilter(setup.Hunt.Event.EVIDENCE_POOL, {
+			evidence: evidenceIds,
+			modifierIds: modifierIds,
+			seed: seed,
+			ghostName: ghostName
+		});
+		evidenceIds = Array.isArray(evCtx.evidence) ? evCtx.evidence : evidenceIds;
 
 		start({
 			seed: seed,
@@ -1430,9 +1432,12 @@ setup.HuntController = (function () {
 		var run = active();
 		if (!run) return null;
 		var base = success ? 10 : 3;
-		var mult = (setup.Modifiers && setup.Modifiers.payoutMultiplier)
-			? setup.Modifiers.payoutMultiplier()
-			: 1;
+		var payCtx = setup.Hunt.applyFilter(setup.Hunt.Event.PAYOUT, {
+			multiplier: 1,
+			modifierIds: (run.modifiers || []).slice(),
+			success: !!success
+		});
+		var mult = (typeof payCtx.multiplier === 'number') ? payCtx.multiplier : 1;
 		var payout = Math.round(base * mult);
 		addEctoplasm(payout);
 		var summary = {
@@ -1778,6 +1783,20 @@ setup.HuntController = (function () {
 			? missing[Math.floor(Math.random() * missing.length)]
 			: null);
 	}
+
+	/* Meta-shop unlock effects wire into the same filter bus the
+	   modifiers use. The buildHunt path stays agnostic; each unlock
+	   that mutates a lifecycle ctx registers its own subscriber. */
+	setup.Hunt.filter(setup.Hunt.Event.FLOORPLAN_OPTIONS, function (ctx) {
+		/* Smaller House meta-unlock shaves one room off the haunt.
+		   Applied after any modifier room-count bumps so it composes
+		   with Maze (still net +2) and the tool-loot expansion (still
+		   keeps a slot per missing tool). Floor at the generator's
+		   hard min of 2 (hallway + 1). */
+		if (!hasUnlock(ShopItem.SMALLER_HOUSE)) return;
+		if (!ctx || !ctx.fpOpts) return;
+		ctx.fpOpts.roomCount = Math.max(2, (ctx.fpOpts.roomCount || 5) - 1);
+	});
 
 	/* True iff the Bag was just opened from inside a hunt-context
 	   passage -- gates the carry links for the tarot deck and the

@@ -208,14 +208,67 @@ setup.Modifiers = (function () {
 	   as a filter mutation registers a subscriber here so HuntController
 	   never has to branch on a specific modifier id. Subscribers are
 	   no-ops when their modifier isn't in the active deck. */
+	function hasMod(ctx, id) {
+		var ids = ctx && ctx.modifierIds;
+		return Array.isArray(ids) && ids.indexOf(id) !== -1;
+	}
+
 	setup.Hunt.filter(setup.Hunt.Event.STARTING_TOOLS, function (ctx) {
 		/* Empty Bag: the player starts with no tools. Tools the player
 		   would otherwise be missing get placed in furniture by the
 		   floor-plan generator so the run is recoverable. */
-		var ids = ctx && ctx.modifierIds;
-		if (Array.isArray(ids) && ids.indexOf(LOCKED_TOOLS) !== -1) {
-			if (Array.isArray(ctx.tools)) ctx.tools.length = 0;
+		if (hasMod(ctx, LOCKED_TOOLS) && Array.isArray(ctx.tools)) {
+			ctx.tools.length = 0;
 		}
+	});
+
+	setup.Hunt.filter(setup.Hunt.Event.FLOORPLAN_OPTIONS, function (ctx) {
+		/* Maze: three extra rooms on top of whatever the base plan
+		   would have rolled. Composes with Smaller House (still +2). */
+		if (!hasMod(ctx, MAZE)) return;
+		if (!ctx || !ctx.fpOpts) return;
+		ctx.fpOpts.roomCount = (ctx.fpOpts.roomCount || 5) + 3;
+	});
+
+	setup.Hunt.filter(setup.Hunt.Event.EVIDENCE_POOL, function (ctx) {
+		/* Fog of War splices one evidence out of the three so
+		   identification is harder. Deterministic from the run seed so
+		   replays drop the same evidence. */
+		if (!hasMod(ctx, FOG_OF_WAR)) return;
+		if (!ctx || !Array.isArray(ctx.evidence) || ctx.evidence.length === 0) return;
+		var seed = (typeof ctx.seed === 'number') ? ctx.seed : 0;
+		var dropIdx = ((seed ^ 0xdeadbeef) >>> 0) % ctx.evidence.length;
+		ctx.evidence.splice(dropIdx, 1);
+	});
+
+	setup.Hunt.filter(setup.Hunt.Event.PAYOUT, function (ctx) {
+		/* Multiplicative payout scaling for the active deck. Each
+		   modifier's catalogue `payoutMultiplier` field stacks. */
+		if (!ctx || !Array.isArray(ctx.modifierIds)) return;
+		for (var i = 0; i < ctx.modifierIds.length; i++) {
+			var m = byId(ctx.modifierIds[i]);
+			if (m && typeof m.payoutMultiplier === 'number') {
+				ctx.multiplier *= m.payoutMultiplier;
+			}
+		}
+	});
+
+	setup.Hunt.filter(setup.Hunt.Event.STEAL_CHECK, function (ctx) {
+		/* Swiper: every tick with stealable clothes triggers a steal,
+		   bypassing the roll entirely. */
+		if (hasMod(ctx, SWIPER)) ctx.forceTrigger = true;
+	});
+
+	setup.Hunt.filter(setup.Hunt.Event.SNAPSHOT, function (ctx) {
+		/* Per-step hunt-condition mutations from modifiers. The snap
+		   object is HuntConditionsController's aggregated readout; we
+		   only bump the numeric fields, never push contributor chips
+		   (the Active Modifiers panel already lists the modifier with
+		   a hover tooltip). */
+		if (!ctx || !ctx.snap || !ctx.inHouse) return;
+		if (hasMod(ctx, PHEROMONES))    ctx.snap.lustPerStep      += 1;
+		if (hasMod(ctx, COLD_SWEAT))    ctx.snap.prowlChanceBonus += 4;
+		if (hasMod(ctx, OH_BUGGER))     ctx.snap.prowlChanceBonus += 15;
 	});
 
 	return {

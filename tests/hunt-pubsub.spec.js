@@ -493,6 +493,144 @@ test.describe('setup.Hunt pubsub', () => {
       expect(result.tools).toEqual(result.expected);
     });
 
+    test('FLOORPLAN_OPTIONS filter: MAZE adds 3 rooms', async () => {
+      const result = await page.evaluate(() => {
+        const { Hunt, Modifiers } = SugarCube.setup;
+        const baseline = Hunt.applyFilter(Hunt.Event.FLOORPLAN_OPTIONS, {
+          fpOpts: { roomCount: 5 },
+          modifierIds: [],
+          seed: 1
+        });
+        const mazed = Hunt.applyFilter(Hunt.Event.FLOORPLAN_OPTIONS, {
+          fpOpts: { roomCount: 5 },
+          modifierIds: [Modifiers.MAZE],
+          seed: 1
+        });
+        return { baseline: baseline.fpOpts.roomCount, mazed: mazed.fpOpts.roomCount };
+      });
+      expect(result.baseline).toBe(5);
+      expect(result.mazed).toBe(8);
+    });
+
+    test('FLOORPLAN_OPTIONS filter: SMALLER_HOUSE unlock shaves one room, floor 2', async () => {
+      const result = await page.evaluate(() => {
+        const { Hunt } = SugarCube.setup;
+        // Reach into meta-state directly: buyUnlock has a cost gate, and
+        // this test only cares about the filter wiring, not the shop UI.
+        const s = SugarCube.State.variables;
+        s.meta = s.meta || { unlocks: {}, bannedModifiers: [], rerollCharges: 0 };
+        s.meta.unlocks = s.meta.unlocks || {};
+        const had = s.meta.unlocks.smaller_house || 0;
+        s.meta.unlocks.smaller_house = 1;
+        try {
+          const normal = Hunt.applyFilter(Hunt.Event.FLOORPLAN_OPTIONS, {
+            fpOpts: { roomCount: 5 }, modifierIds: [], seed: 0
+          });
+          const tiny = Hunt.applyFilter(Hunt.Event.FLOORPLAN_OPTIONS, {
+            fpOpts: { roomCount: 2 }, modifierIds: [], seed: 0
+          });
+          return { normal: normal.fpOpts.roomCount, tiny: tiny.fpOpts.roomCount };
+        } finally {
+          s.meta.unlocks.smaller_house = had;
+        }
+      });
+      expect(result.normal).toBe(4);
+      expect(result.tiny).toBe(2);
+    });
+
+    test('EVIDENCE_POOL filter: FOG_OF_WAR drops one evidence; no-op without it', async () => {
+      const result = await page.evaluate(() => {
+        const { Hunt, Modifiers } = SugarCube.setup;
+        const noFog = Hunt.applyFilter(Hunt.Event.EVIDENCE_POOL, {
+          evidence: ['emf', 'gwb', 'uvl'], modifierIds: [], seed: 123
+        });
+        const withFog = Hunt.applyFilter(Hunt.Event.EVIDENCE_POOL, {
+          evidence: ['emf', 'gwb', 'uvl'], modifierIds: [Modifiers.FOG_OF_WAR], seed: 123
+        });
+        const withFogAgain = Hunt.applyFilter(Hunt.Event.EVIDENCE_POOL, {
+          evidence: ['emf', 'gwb', 'uvl'], modifierIds: [Modifiers.FOG_OF_WAR], seed: 123
+        });
+        return { noFog: noFog.evidence, withFog: withFog.evidence, withFogAgain: withFogAgain.evidence };
+      });
+      expect(result.noFog).toEqual(['emf', 'gwb', 'uvl']);
+      expect(result.withFog.length).toBe(2);
+      // Deterministic from seed: same seed drops the same evidence.
+      expect(result.withFog).toEqual(result.withFogAgain);
+    });
+
+    test('PAYOUT filter: modifier multipliers stack through endHunt', async () => {
+      await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+      const result = await page.evaluate(() => {
+        const HC = SugarCube.setup.HuntController;
+        const M = SugarCube.setup.Modifiers;
+        HC.startHunt({ seed: 11111 });
+        const run = HC.active();
+        // Force a known modifier deck: FOG_OF_WAR (1.5x) + SWIPER (1.4x) = 2.1x.
+        run.modifiers = [M.FOG_OF_WAR, M.SWIPER];
+        const summary = HC.endHunt(true);
+        return { payout: summary.payout, expected: Math.round(10 * 1.5 * 1.4) };
+      });
+      expect(result.payout).toBe(result.expected);
+    });
+
+    test('PAYOUT filter: no modifiers means base payout (round(base * 1))', async () => {
+      await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+      const result = await page.evaluate(() => {
+        const HC = SugarCube.setup.HuntController;
+        HC.startHunt({ seed: 12121 });
+        const run = HC.active();
+        run.modifiers = [];
+        return { success: HC.endHunt(true).payout, fail: (function () {
+          HC.startHunt({ seed: 12122 });
+          HC.active().modifiers = [];
+          return HC.endHunt(false).payout;
+        })() };
+      });
+      expect(result.success).toBe(10);
+      expect(result.fail).toBe(3);
+    });
+
+    test('STEAL_CHECK filter: SWIPER forces a steal trigger', async () => {
+      const result = await page.evaluate(() => {
+        const { Hunt, Modifiers } = SugarCube.setup;
+        const off = Hunt.applyFilter(Hunt.Event.STEAL_CHECK, {
+          forceTrigger: false, modifierIds: []
+        });
+        const on = Hunt.applyFilter(Hunt.Event.STEAL_CHECK, {
+          forceTrigger: false, modifierIds: [Modifiers.SWIPER]
+        });
+        return { off: off.forceTrigger, on: on.forceTrigger };
+      });
+      expect(result.off).toBe(false);
+      expect(result.on).toBe(true);
+    });
+
+    test('SNAPSHOT filter: PHEROMONES / COLD_SWEAT / OH_BUGGER mutate snap when inHouse', async () => {
+      const result = await page.evaluate(() => {
+        const { Hunt, Modifiers } = SugarCube.setup;
+        function snap() { return { lustPerStep: 0, prowlChanceBonus: 0 }; }
+        const all = Hunt.applyFilter(Hunt.Event.SNAPSHOT, {
+          snap: snap(),
+          modifierIds: [Modifiers.PHEROMONES, Modifiers.COLD_SWEAT, Modifiers.OH_BUGGER],
+          inHouse: true
+        });
+        const outsideHouse = Hunt.applyFilter(Hunt.Event.SNAPSHOT, {
+          snap: snap(),
+          modifierIds: [Modifiers.PHEROMONES, Modifiers.COLD_SWEAT, Modifiers.OH_BUGGER],
+          inHouse: false
+        });
+        const none = Hunt.applyFilter(Hunt.Event.SNAPSHOT, {
+          snap: snap(), modifierIds: [], inHouse: true
+        });
+        return { all: all.snap, outside: outsideHouse.snap, none: none.snap };
+      });
+      expect(result.all.lustPerStep).toBe(1);
+      expect(result.all.prowlChanceBonus).toBe(19);
+      // Outside the house: filter is a no-op even if modifiers active.
+      expect(result.outside).toEqual({ lustPerStep: 0, prowlChanceBonus: 0 });
+      expect(result.none).toEqual({ lustPerStep: 0, prowlChanceBonus: 0 });
+    });
+
     test('tick() is a no-op when no run is active', async () => {
       const seen = await page.evaluate(() => {
         const HC = SugarCube.setup.HuntController;

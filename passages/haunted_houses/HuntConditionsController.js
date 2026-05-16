@@ -94,25 +94,21 @@ setup.HauntConditions = (function () {
 			var hasCompanion = V.isCompChosen === 1;
 			var contractDrain = hasCompanion ? 0.2 : 0.4;
 			snap.sanityPerStep -= contractDrain;
-
-			/* Hunt modifiers fold into the aggregated readouts
-			   (lust/step, prowl%, etc.) but do NOT push their own
-			   contributor chip — the modifier name already shows in
-			   the Active Modifiers panel with a hover tooltip
-			   describing the effect, so a chip here would duplicate. */
-			if (setup.HuntController && setup.HuntController.hasModifier
-				&& setup.HuntController.hasModifier(setup.Modifiers.PHEROMONES)) {
-				snap.lustPerStep += 1;
-			}
-			if (setup.HuntController && setup.HuntController.hasModifier
-				&& setup.HuntController.hasModifier(setup.Modifiers.COLD_SWEAT)) {
-				snap.prowlChanceBonus += 4;
-			}
-			if (setup.HuntController && setup.HuntController.hasModifier
-				&& setup.HuntController.hasModifier(setup.Modifiers.OH_BUGGER)) {
-				snap.prowlChanceBonus += 15;
-			}
 		}
+
+		/* Hunt modifiers fold into the aggregated readouts
+		   (lust/step, prowl%, etc.) via the SNAPSHOT filter so each
+		   modifier's effect lives in ModifiersController, not here.
+		   Filter subscribers do NOT push their own contributor chip —
+		   the modifier name already shows in the Active Modifiers
+		   panel with a hover tooltip describing the effect. */
+		var modifierIds = (setup.HuntController && setup.HuntController.modifiers)
+			? setup.HuntController.modifiers() : [];
+		setup.Hunt.applyFilter(setup.Hunt.Event.SNAPSHOT, {
+			snap: snap,
+			modifierIds: modifierIds,
+			inHouse: inHouse
+		});
 
 		if (isCurrentRoomDark()) {
 			snap.dark = true;

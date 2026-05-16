@@ -39,7 +39,8 @@ setup.Hunt = (function () {
 		STEAL_CHECK:       'steal-check',
 		PROWL_CHECK:       'prowl-check',
 		OBJECTIVE:         'objective',
-		COMPANION_ALLOWED: 'companion-allowed'
+		COMPANION_ALLOWED: 'companion-allowed',
+		SNAPSHOT:          'snapshot'
 	});
 
 	var listeners = {};
