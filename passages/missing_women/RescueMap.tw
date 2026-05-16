@@ -11,8 +11,9 @@
 <</capture>>
 <</for>>
 </div>
-<<include "StyleRescueMap">>
+<<addclass "body" "style-rescue-map">>
+<<bodyBackground "assets/characters/rescue/house/rescue-map.jpg">>
 
 <<if setup.Gui.isCityNightOverlayActive()>>
-<<include "StyleRescueNightOverlay">>
+<<addclass "body" "style-rescue-night-overlay">>
 		<</if>>

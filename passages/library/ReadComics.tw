@@ -5,7 +5,7 @@
 	<<comicSlider _comic.prefix _comic.count>>
 <</if>>
 
-<<include "StyleReadComics">>
+<<addclass "body" "style-read-comics">>
 <script>
 var slideIndex = 0;
 

@@ -3,9 +3,9 @@
    These widgets are thin renderers over that data. %/
 
 /% <<bodyBackground url>>
-   Emit a body-background <style> block for the given image URL.
-   Uses <<print>> because SugarCube does not interpolate variables
-   inside raw <style> tags. %/
+   Emit a body-background style block for the given image URL.
+   Uses print because SugarCube does not interpolate variables
+   inside raw style tags. %/
 <<widget "bodyBackground">>
 	<<if _args[0]>>
 		<<print '<style>' + setup.Styles.bodyBackgroundCss(_args[0]) + '</style>'>>
@@ -44,7 +44,7 @@
    preceding FurnitureSearch came out of an unlit room. %/
 <<widget "includeStyleEventMC">>
 	<<if previous() is "FurnitureSearch" and setup.Styles.isDarkRoom(previous(2))>>
-		<<include "StyleEventMCDark">>
+		<<addclass "body" "style-event-mc-dark">>
 	<</if>>
 <</widget>>
 

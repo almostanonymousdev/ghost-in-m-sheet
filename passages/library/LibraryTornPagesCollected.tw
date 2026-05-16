@@ -1,5 +1,4 @@
-:: LibraryTornPagesCollected {"position":"3325,2100","size":"100,100"}
-<<nobr>>
+:: LibraryTornPagesCollected [nobr] {"position":"3325,2100","size":"100,100"}
 @@.mc-thoughts; You smooth out the pages you've recovered so far and look them over again.@@<br>
 <<image "scenes/library/torn-page.png" "libraryCenteredImg">><br>
 <br>
@@ -15,7 +14,5 @@
 <br>
 @@.backbtn; [[Leave|LibraryInside]]@@<br>
 <<done>>
-<<addclass ".linkselector" "disabled-link">>
+	<<addclass ".linkselector" "disabled-link">>
 <</done>>
-<</nobr>>
-<<include "StyleLibraryCenteredImg">>

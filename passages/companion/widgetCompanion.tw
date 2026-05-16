@@ -14,7 +14,7 @@
 		</div>
 	<</if>>
 
-	<<include "StyleCompanionMini">>
+	<<addclass "body" "style-companion-mini">>
 <</widget>>
 
 /* Footer-card portrait: clickable companion thumbnail in the lower-right

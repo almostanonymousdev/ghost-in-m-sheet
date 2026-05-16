@@ -42,6 +42,6 @@
 <</done>>
 
 <<if setup.Events.isDarkRoom(previous())>>
-	<<include "StyleEventMCDark">>
+	<<addclass "body" "style-event-mc-dark">>
 <</if>>
 	<<includeStyleEventMC>>

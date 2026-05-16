@@ -1,0 +1,35 @@
+body.style-read-comics .slide {
+	display: none;
+}
+
+body.style-read-comics .active {
+	display: block;
+}
+
+body.style-read-comics .slide-container {
+	position: relative;
+	width: 100%;
+	max-width: 600px;
+	margin: auto;
+}
+
+body.style-read-comics .prev,
+body.style-read-comics .next {
+	cursor: pointer;
+	position: absolute;
+	top: 50%;
+	width: auto;
+	padding: 16px;
+	margin-top: -22px;
+	color: white;
+	font-weight: bold;
+	font-size: 18px;
+	border-radius: 0 3px 3px 0;
+	user-select: none;
+	background-color: rgba(0, 0, 0, 0.5);
+}
+
+body.style-read-comics .next {
+	right: 0;
+	border-radius: 3px 0 0 3px;
+}

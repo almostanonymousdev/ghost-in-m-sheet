@@ -1,0 +1,15 @@
+#availableClothes img,
+#availableOuterwear img,
+#currentOuterwearTop img,
+#currentOuterwearBottom img,
+#currentUnderwearTop img,
+#currentUnderwearBottom img {
+	width: 100px;
+	height: 100px;
+	margin: 1%;
+}
+
+.itemwrapperWardrobe {
+	display: flex;
+	gap: 1%;
+}

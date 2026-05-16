@@ -1,5 +1,4 @@
-:: Wardrobe {"position":"500,100","size":"100,100"}
-<<nobr>>
+:: Wardrobe [nobr] {"position":"500,100","size":"100,100"}
 <div class="wrapper">
   <div class="itemwrapperWardrobe">
   <div>
@@ -61,8 +60,4 @@
 <div id="availablePiercing"></div><br>
 
 <<run setup.Wardrobe.normalizeOuterRememberTokens()>>
-
-<<include "StyleWardrobe">>
-<</nobr>>
-
 @@.backbtn;[[Back|Bedroom]]@@

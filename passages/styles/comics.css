@@ -1,0 +1,9 @@
+body.style-comics .housecardComics {
+	width: 30%;
+	text-align: center;
+	z-index: 2;
+	line-height: 1.3;
+}
+body.style-comics .gap {
+	gap: 1%;
+}

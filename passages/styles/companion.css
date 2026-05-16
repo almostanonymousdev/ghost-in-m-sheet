@@ -1,0 +1,8 @@
+body.style-companion-mini .containerMini {
+	display: flex;
+	align-items: center;
+}
+body.style-companion-mini .containerMini img {
+	width: 30%;
+	margin-right: 5%;
+}

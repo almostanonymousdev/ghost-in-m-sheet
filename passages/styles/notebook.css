@@ -1,7 +1,4 @@
-:: StyleNotebook
-<<bodyBackground "assets/ui/img/journal-inside.webp">>
-<style>
-.blackColor {
+body.style-notebook .blackColor {
 	background-color: rgba(0, 0, 0, 0.5);
 	color: rgba(255, 255, 255, 0.9);
 	mix-blend-mode: multiply;
@@ -15,7 +12,7 @@
 	);
 	z-index: 10;
 }
-.journal-container {
+body.style-notebook .journal-container {
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
 	gap: 10px;
@@ -24,15 +21,15 @@
 	border-radius: 10px;
 	font-size: 1.2em;
 }
-.journal-container span {
+body.style-notebook .journal-container span {
 	text-align: center;
 }
-.backgroundForTextNotebook {
+body.style-notebook .backgroundForTextNotebook {
 	background-color: rgba(0, 0, 0, 0.5);
 	border-radius: 10px;
 	padding: 1%;
 }
-.flexwrapperNotebook {
+body.style-notebook .flexwrapperNotebook {
 	display: flex;
 	flex-wrap: wrap;
 	align-content: space-around;
@@ -41,4 +38,3 @@
 	justify-content: space-around;
 	align-items: stretch;
 }
-</style>

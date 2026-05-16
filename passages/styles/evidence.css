@@ -1,0 +1,59 @@
+#guide b {
+	font-size: 1em;
+	color: orange;
+}
+
+#guide dt {
+	font-size: 1.5em;
+	margin-top: 1em;
+}
+#guide summary {
+	border-radius: 5px;
+	padding: 10px;
+	background-color: rgba(255, 255, 255, 0.8);
+	font-size: 1.2em;
+	font-weight: bold;
+	color: var(--color-back-blue);
+	text-decoration: none;
+	transition: var(--btn-transition);
+	-webkit-text-stroke: 0.7px black;
+	text-shadow: var(--btn-shadow-light);
+	margin-bottom: 2em;
+	cursor: pointer;
+}
+
+#guide summary:hover {
+	-webkit-text-stroke: 1px black;
+}
+
+#guide tr:nth-child(even) {
+	background-color: #333;
+}
+
+#guide tr:nth-child(odd) {
+	background-color: #555;
+}
+
+#guide table {
+	border-collapse: collapse;
+	width: 100%;
+	margin: 1em 0;
+}
+
+#guide th, #guide td {
+	padding: 8px 12px;
+	text-align: left;
+	border-right: 1px solid #aaa;
+}
+
+#guide th {
+	text-align: center
+}
+
+#guide td {
+	padding-left: 1em;
+}
+
+#guide th:last-child, #guide td:last-child {
+	border-right: none;
+}

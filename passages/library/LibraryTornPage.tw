@@ -1,5 +1,4 @@
-:: LibraryTornPage {"position":"3225,2100","size":"100,100"}
-<<nobr>>
+:: LibraryTornPage [nobr] {"position":"3225,2100","size":"100,100"}
 <<set _found to setup.Library.pickRandomTornPage()>>
 <<if _found is null>>
 	@@.mc-thoughts; You search the stacks again, but you've already collected every page that was hidden here.@@<br>
@@ -13,7 +12,5 @@
 <br>
 @@.backbtn; [[Leave|LibraryInside]]@@<br>
 <<done>>
-<<addclass ".linkselector" "disabled-link">>
+	<<addclass ".linkselector" "disabled-link">>
 <</done>>
-<</nobr>>
-<<include "StyleLibraryCenteredImg">>

@@ -84,6 +84,6 @@
 <<nobr>>
 
 <<if setup.Gui.isCityNightOverlayActive()>>
-<<include "StyleCityNightOverlay">>
+<<addclass "body" "style-city-night-overlay">>
 		<</if>>
 <</nobr>>

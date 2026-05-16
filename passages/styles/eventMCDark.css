@@ -1,0 +1,7 @@
+body.style-event-mc-dark .eventVideo-container {
+	position: relative;
+	overflow: hidden;
+}
+body.style-event-mc-dark #eventVideo {
+	filter: brightness(0.8) contrast(1.1) grayscale(0.95);
+}

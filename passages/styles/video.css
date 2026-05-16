@@ -1,0 +1,4 @@
+body.style-video-height video {
+	max-height: 500px;
+	height: auto;
+}

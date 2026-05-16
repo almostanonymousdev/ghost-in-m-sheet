@@ -1,18 +1,15 @@
-:: LibraryGirl {"position":"2925,2000","size":"100,100"}
-<<nobr>>
+:: LibraryGirl [nobr] {"position":"2925,2000","size":"100,100"}
 You wander from shelf to shelf, searching for something interesting. Suddenly, you notice a beautiful girl.
 <<randRangeImg "scenes/library/woman" 1 5 ".jpg">><br>
 @@.mc-thoughts;All your attention is focused on her. @@<br>
 @@.mc-speech; You watch until she leaves.@@<br>
 <<addLust 30>>
 <<if setup.Mc.corruption() lt 3>><<run setup.Library.gainSmallCorruption()>>
-+ 0.1 <<statIcon setup.StatIcon.CORRUPTION>><br>
+	+ 0.1 <<statIcon setup.StatIcon.CORRUPTION>><br>
 <</if>>
 + 30 <<statIcon setup.StatIcon.HEALTH>><br>
 <br>
 @@.backbtn; [[Leave|LibraryInside]]@@ <br>
 <<done>>
-<<addclass ".linkselector" "disabled-link">>
+	<<addclass ".linkselector" "disabled-link">>
 <</done>>
-<</nobr>>
-<<include "StyleLibraryCenteredImg">>

@@ -1,21 +1,15 @@
-:: StyleCityNightOverlay
-<style>
-.city:before {
+body.style-city-night-overlay .city:before {
 	content: '';
 	position: fixed;
 	inset: 0;
 	background-color: rgba(0, 0, 0, .4);
 	z-index: 1;
 }
-</style>
 
-:: StyleRescueNightOverlay
-<style>
-body:before {
+body.style-rescue-night-overlay:before {
 	content: '';
 	position: fixed;
 	inset: 0;
 	background-color: rgba(0, 0, 0, .4);
 	z-index: 1;
 }
-</style>

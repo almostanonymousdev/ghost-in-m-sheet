@@ -40,7 +40,8 @@
 </div>
 </div>
 
-<<include "StyleNotebook">>
+<<addclass "body" "style-notebook">>
+<<bodyBackground "assets/ui/img/journal-inside.webp">>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 	<<script>>

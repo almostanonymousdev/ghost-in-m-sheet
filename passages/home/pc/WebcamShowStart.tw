@@ -13,4 +13,4 @@
 <br>
 @@.backbtn; [[Back|WebcamShow]]@@<br>
 
-<<include "StyleVideoHeight">>
+<<addclass "body" "style-video-height">>

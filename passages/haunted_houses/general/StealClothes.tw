@@ -31,7 +31,7 @@
 
 <<includeStyle>>
 <<includeStyle2>>
-<<include "StyleStealClothes">>
+<<addclass "body" "style-steal-clothes">>
 
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>

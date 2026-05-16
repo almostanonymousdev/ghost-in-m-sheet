@@ -1,5 +1,5 @@
 :: DeliveryMap [city nobr] {"position":"800,1500","size":"100,100"}
-<<include "StyleDeliveryMap">>
+<<addclass "body" "style-delivery-map">>
 <span id="endShift" class="btnendshift btnendcolor clickable">End the shift</span>
 <div class="flexwrapper">
 <<for _cell range setup.deliveryMapLayout>>

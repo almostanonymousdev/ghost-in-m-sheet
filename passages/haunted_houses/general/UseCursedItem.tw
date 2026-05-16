@@ -7,7 +7,7 @@
 	@@.mc-thoughts; You play with yourself until you cum @@<br>@@.mc-speech; Ohh, I feel wonderful.@@<br>
 
 <</if>>
-<<include "StyleVideoHeight">>
+<<addclass "body" "style-video-height">>
 <br>
 @@.backbtn; [[Back|previous()]]@@
 <<done>>

@@ -12,7 +12,7 @@
 </div>
 <br>
 @@.backbtn;[[Leave|LibraryInside]] @@<br>
-<<include "StyleComics">>
+<<addclass "body" "style-comics">>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 <</done>>
