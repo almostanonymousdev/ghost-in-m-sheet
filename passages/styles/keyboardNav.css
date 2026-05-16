@@ -43,6 +43,22 @@ body.show-hotkeys #ui-bar a[data-hotkey-letter]::before {
 	background: rgba(40, 80, 130, 0.95);
 }
 
+/* ===== Intro banner ===== */
+.kbnav-banner {
+	display: inline-block;
+	padding: 0.4em 0.9em;
+	margin: 0.3em 0;
+	background: linear-gradient(135deg, #2a4a78, #3d6db0);
+	border: 1px solid #6fa3e0;
+	border-radius: 6px;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+	color: #f0f6ff;
+	font-size: 0.95em;
+}
+.kbnav-banner b {
+	color: #ffd870;
+}
+
 /* ===== First-load hint ===== */
 #kbnav-hint {
 	position: fixed;

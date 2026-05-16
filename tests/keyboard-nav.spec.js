@@ -88,6 +88,33 @@ test.describe('KeyboardNav', () => {
     expect(result).toEqual({ down: true, up: true });
   });
 
+  test('Meta also reveals badges but does NOT preventDefault (so Cmd+R etc. keep working)', async ({ game: page }) => {
+    // arrange
+    await goToPassage(page, 'Home');
+    // act
+    const result = await page.evaluate(() => {
+      const down = new KeyboardEvent('keydown', { key: 'Meta', bubbles: true, cancelable: true });
+      const up   = new KeyboardEvent('keyup',   { key: 'Meta', bubbles: true, cancelable: true });
+      document.dispatchEvent(down);
+      const revealedWhileHeld = document.body.classList.contains('show-hotkeys');
+      document.dispatchEvent(up);
+      const revealedAfterRelease = document.body.classList.contains('show-hotkeys');
+      return {
+        downPrevented: down.defaultPrevented,
+        upPrevented: up.defaultPrevented,
+        revealedWhileHeld,
+        revealedAfterRelease,
+      };
+    });
+    // assert
+    expect(result).toEqual({
+      downPrevented: false,
+      upPrevented: false,
+      revealedWhileHeld: true,
+      revealedAfterRelease: false,
+    });
+  });
+
   test('Alt keydown is NOT preventDefault-ed while typing in an input', async ({ game: page }) => {
     // arrange
     await goToPassage(page, 'Home');
@@ -113,6 +140,30 @@ test.describe('KeyboardNav', () => {
     const keys = await page.evaluate(() => SugarCube.setup.KeyboardNav._numberHotkeys());
     // assert
     expect(keys).toEqual([]);
+  });
+
+  test('Escape backs out of the Bag (modal passage with no number hotkeys)', async ({ game: page }) => {
+    // arrange — Bag uses <<backOrReturn>> which emits a .backbtn link.
+    await goToPassage(page, 'Home');
+    await page.keyboard.press('b'); // sidebar letter shortcut
+    await page.waitForFunction(() => SugarCube.State.passage === 'Bag');
+    // act
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(() => SugarCube.State.passage !== 'Bag');
+    // assert
+    const passage = await page.evaluate(() => SugarCube.State.passage);
+    expect(passage).toBe('Home');
+  });
+
+  test('Escape clicks the .backbtn link on a regular passage too', async ({ game: page }) => {
+    // arrange
+    await goToPassage(page, 'Livingroom');
+    // act
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(() => SugarCube.State.passage === 'Home');
+    // assert
+    const passage = await page.evaluate(() => SugarCube.State.passage);
+    expect(passage).toBe('Home');
   });
 
   test('sidebar links get letter shortcuts (Bag → b, Notebook → n, Evidence → v)', async ({ game: page }) => {

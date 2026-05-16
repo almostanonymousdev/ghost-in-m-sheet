@@ -95,6 +95,16 @@ setup.KeyboardNav = (function () {
 		return true;
 	}
 
+	function findBackLink() {
+		var root = document.getElementById("passages");
+		if (!root) return null;
+		var candidates = root.querySelectorAll(".backbtn a, a.backbtn");
+		for (var i = 0; i < candidates.length; i++) {
+			if (isLinkVisible(candidates[i])) return candidates[i];
+		}
+		return null;
+	}
+
 	function clearAttr(map, attr) {
 		Object.keys(map).forEach(function (k) {
 			var el = map[k];
@@ -170,21 +180,40 @@ setup.KeyboardNav = (function () {
 	}
 
 	function onKeyDown(ev) {
-		// Alt is the reveal toggle. preventDefault() here suppresses
-		// Firefox's "focus the menu bar on Alt-hold" behavior. The
-		// corresponding keyup also preventDefaults so Chrome/Edge
-		// (which pop the menu on Alt-release) stay quiet too. We only
-		// swallow plain Alt — Ctrl+Alt / Shift+Alt / OS-level combos
-		// (Alt+Tab, Alt+F4) pass through untouched, and we never
-		// swallow keys while the user is typing into an input.
+		// Alt reveals the hotkey badges. preventDefault() suppresses
+		// Firefox's "focus the menu bar on Alt-hold" behavior; the
+		// matching keyup handler suppresses Chrome/Edge's release-pop.
+		// Other modifier combos (Ctrl+Alt, Shift+Alt, OS-level Alt+Tab)
+		// pass through untouched, and we never swallow keys while
+		// typing into an input.
 		if (ev.key === "Alt" && !ev.ctrlKey && !ev.shiftKey && !ev.metaKey) {
 			document.body.classList.add("show-hotkeys");
 			if (!isTypingTarget(ev.target)) ev.preventDefault();
 			return;
 		}
+		// Meta (Cmd on macOS, Win key on Windows) is the second reveal
+		// trigger — Mac users tend to reach for Cmd before Option.
+		// We do NOT preventDefault here: Cmd+R / Cmd+S / Cmd+W are all
+		// real browser shortcuts and must keep working.
+		if (ev.key === "Meta" && !ev.ctrlKey && !ev.shiftKey && !ev.altKey) {
+			document.body.classList.add("show-hotkeys");
+			return;
+		}
 		if (isTypingTarget(ev.target)) return;
 		if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
 		if (isDialogOpen()) return; // SugarCube dialogs handle their own keys
+
+		// Escape backs out via the passage's .backbtn link. Works on
+		// modal screens (Bag/Notebook/etc., where number keys are
+		// intentionally not assigned) as well as regular passages.
+		if (ev.key === "Escape") {
+			var back = findBackLink();
+			if (back) {
+				ev.preventDefault();
+				back.click();
+			}
+			return;
+		}
 
 		var key = ev.key;
 		var target = numberMap[key];
@@ -207,6 +236,8 @@ setup.KeyboardNav = (function () {
 			// Mirror the keydown suppression — Chrome/Edge trigger the
 			// menu on Alt-release rather than Alt-hold.
 			if (!isTypingTarget(ev.target)) ev.preventDefault();
+		} else if (ev.key === "Meta") {
+			document.body.classList.remove("show-hotkeys");
 		}
 	}
 
