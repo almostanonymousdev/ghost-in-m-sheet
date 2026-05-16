@@ -208,6 +208,11 @@ $(document).one(":storyready", function () {
 	});
 
 	var GHOST_PICKER_NULL = "—";
+	Setting.addList("cheatTarotCard", {
+		label: "Force next tarot card drawn",
+		list: [GHOST_PICKER_NULL].concat((setup.tarotDeck || []).map(function (c) { return c.name; })),
+		default: GHOST_PICKER_NULL
+	});
 	Setting.addList("cheatGhostType", {
 		label: "Force ghost type — needs active contract or hunt",
 		list: [GHOST_PICKER_NULL].concat(setup.Ghosts.list().map(function (g) { return g.name; })),

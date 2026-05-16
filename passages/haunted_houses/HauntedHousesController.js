@@ -17,6 +17,35 @@ setup.TarotStage = Object.freeze({
 	SPENT:     2
 });
 
+/* Canonical tarot deck. `effect` names the widget invoked after the card
+   is drawn (defined in widgetTarot.tw); draw-time dispatch in TarotCards.tw
+   is a single line that wikifies <<effectName>>. Fool has no effect widget --
+   its reveal-then-swap flow is handled directly by the draw logic. */
+setup.tarotDeck = [
+	{ name: "passion",       chance: 20, image: "mechanics/cursedpossessions/tarot-cards/passion.jpg",       effect: "tarotPassion" },
+	{ name: "pulse",         chance: 20, image: "mechanics/cursedpossessions/tarot-cards/pulse.jpg",         effect: "tarotPulse" },
+	{ name: "oblivion",      chance:  1, image: "mechanics/cursedpossessions/tarot-cards/oblivion.jpg",      effect: "tarotOblivion" },
+	{ name: "knowledge",     chance: 10, image: "mechanics/cursedpossessions/tarot-cards/knowledge.jpg",     effect: "tarotKnowledge" },
+	{ name: "power",         chance: 12, image: "mechanics/cursedpossessions/tarot-cards/power.jpg",         effect: "tarotPower" },
+	{ name: "whore",         chance: 10, image: "mechanics/cursedpossessions/tarot-cards/whore.jpg",         effect: "tarotWhore" },
+	{ name: "death",         chance:  5, image: "mechanics/cursedpossessions/tarot-cards/death.jpg",         effect: "tarotDeath" },
+	{ name: "possession",    chance:  1, image: "mechanics/cursedpossessions/tarot-cards/possession.jpg",    effect: "tarotPossession" },
+	{ name: "highpriestess", chance:  2, image: "mechanics/cursedpossessions/tarot-cards/highpriestess.jpg", effect: "tarotHighpriestess" },
+	{ name: "fool",          chance: 19, image: "mechanics/cursedpossessions/tarot-cards/fool.jpg" }
+];
+
+/* Weighted pick: roll once against the accumulated chances, return the
+   first card whose running total covers the roll. */
+setup.drawTarotCard = function (deck) {
+	var roll = Math.floor(Math.random() * 101);
+	var acc = 0;
+	for (var i = 0; i < deck.length; i++) {
+		acc += deck[i].chance;
+		if (roll <= acc) return deck[i];
+	}
+	return deck[deck.length - 1];
+};
+
 setup.HauntedHouses = (function () {
 	function sv() { return State.variables; }
 
@@ -241,9 +270,18 @@ setup.HauntedHouses = (function () {
 		incrementDrawnCards: function () {
 			sv().drawnCards = (sv().drawnCards || 0) + 1;
 		},
-		/* Pull & stamp a fresh tarot card from setup.tarotDeck. */
+		/* Pull & stamp a fresh tarot card from setup.tarotDeck. The
+		   `cheatTarotCard` setting (if set to a card name) forces the
+		   draw to that card instead of rolling. */
 		drawAndStampTarotCard: function () {
-			sv().chosenCard = setup.drawTarotCard(setup.tarotDeck);
+			var forced = null;
+			var pick = (typeof settings !== "undefined") ? settings.cheatTarotCard : null;
+			if (pick && pick !== "—") {
+				forced = setup.tarotDeck.filter(function (c) {
+					return c.name === pick;
+				})[0] || null;
+			}
+			sv().chosenCard = forced || setup.drawTarotCard(setup.tarotDeck);
 			return sv().chosenCard;
 		},
 		crucifixAmount: function () { return setup.ToolController.crucifixAmount() || 0; },

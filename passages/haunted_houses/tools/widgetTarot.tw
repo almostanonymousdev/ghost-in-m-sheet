@@ -65,6 +65,16 @@
 	@@.mc-speech; This can't be a good card. Oh no, I'm scared...I need to hide somewhere!@@<br>
 	@@.enterbtn; <<link "Hide" "GhostHuntEvent">>
 	<</link>>@@
+	/* Once Death is drawn, Back and "Pull a card" both lead straight to
+	   the caught-during-prowl ending — only "Hide" escapes. */
+	<<replace "#tarotCardsEnd">>
+		<<link "@@.usebtn;Pull a card@@" `setup.HuntController.huntCaughtPassage()`>>
+		<</link>>
+	<</replace>>
+	<<replace "#tarotBack">>
+		@@.backbtn; <<link "Back" `setup.HuntController.huntCaughtPassage()`>>
+		<</link>>@@
+	<</replace>>
 <</widget>>
 
 <<widget "tarotPossession">>
