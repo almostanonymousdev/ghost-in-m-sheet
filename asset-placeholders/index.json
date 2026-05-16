@@ -1866,6 +1866,72 @@
       "height": 720,
       "kind": "video"
     },
+    "characters/mc/10.webp": {
+      "label": "MC 10",
+      "width": 640,
+      "height": 360,
+      "kind": "image"
+    },
+    "characters/mc/11.webp": {
+      "label": "MC 11",
+      "width": 640,
+      "height": 360,
+      "kind": "image"
+    },
+    "characters/mc/12.webp": {
+      "label": "MC 12",
+      "width": 640,
+      "height": 360,
+      "kind": "image"
+    },
+    "characters/mc/13.webp": {
+      "label": "MC 13",
+      "width": 640,
+      "height": 360,
+      "kind": "image"
+    },
+    "characters/mc/14.webp": {
+      "label": "MC 14",
+      "width": 640,
+      "height": 360,
+      "kind": "image"
+    },
+    "characters/mc/15.webp": {
+      "label": "MC 15",
+      "width": 640,
+      "height": 360,
+      "kind": "image"
+    },
+    "characters/mc/16.webp": {
+      "label": "MC 16",
+      "width": 640,
+      "height": 360,
+      "kind": "image"
+    },
+    "characters/mc/17.webp": {
+      "label": "MC 17",
+      "width": 640,
+      "height": 360,
+      "kind": "image"
+    },
+    "characters/mc/7.webp": {
+      "label": "MC 7",
+      "width": 640,
+      "height": 360,
+      "kind": "image"
+    },
+    "characters/mc/8.webp": {
+      "label": "MC 8",
+      "width": 640,
+      "height": 360,
+      "kind": "image"
+    },
+    "characters/mc/9.webp": {
+      "label": "MC 9",
+      "width": 640,
+      "height": 360,
+      "kind": "image"
+    },
     "characters/mc/bra-off.webm": {
       "label": "",
       "width": 540,
