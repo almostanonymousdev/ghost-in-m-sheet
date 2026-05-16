@@ -357,12 +357,13 @@ setup.Events = (function () {
 			var chance      = Math.floor(Math.random() * 101);
 			var bansheeRoll = 1 + Math.floor(Math.random() * 10);
 			var ctRoll      = 1 + Math.floor(Math.random() * 10);
+			var abilityGate = Math.max(0, 5 - Math.floor(setup.Wardrobe.coverage() / 30));
 			var videoList = [];
 
-			if (g && g.canKiss && bansheeRoll === 1 && chance <= 5) {
+			if (g && g.canKiss && bansheeRoll === 1 && chance <= abilityGate) {
 				this.enableBanshee();
 				videoList = this.bansheeVideos();
-			} else if (g && g.canTentacles && ctRoll === 1 && chance <= 5) {
+			} else if (g && g.canTentacles && ctRoll === 1 && chance <= abilityGate) {
 				this.enableCthulion();
 				var lt = this.lustTier();
 				var tier = lt >= 7 ? 3 : lt === 6 ? 2 : lt === 5 ? 1 : 0;
@@ -390,6 +391,13 @@ setup.Events = (function () {
 					: { stage1: 3, stage2: 5, stage3: 7, stage4: 9 }
 			);
 			var ds = this.decreasingSanity();
+			var damp = Math.floor(setup.Wardrobe.coverage() / 15);
+			ds = {
+				stage1: Math.max(0, ds.stage1 - damp),
+				stage2: Math.max(0, ds.stage2 - damp),
+				stage3: Math.max(0, ds.stage3 - damp),
+				stage4: Math.max(0, ds.stage4 - damp)
+			};
 			var sanity = setup.Mc.sanity();
 			var chance      = Math.floor(Math.random() * 101);
 			var bansheeRoll = 1 + Math.floor(Math.random() * 6);
@@ -466,18 +474,30 @@ setup.Events = (function () {
 		// --- Room cleanup flag -----------------------------------
 		setCleanedUp: function (val) { sv().cleanedUp = !!val; },
 
+		/* Threshold reduction from how dressed the MC is. Each ~12
+		   coverage points (range 0-100) trims one off the
+		   lust-tier event threshold, so a fully covered MC is ~8
+		   harder to harass per tick than a naked one. */
+		coverageDamp: function () {
+			return Math.floor(setup.Wardrobe.coverage() / 12);
+		},
+
 		rollBodyPartEvent: function (chance) {
 			var tier      = this.lustTier();
-			var threshold = sanityThresholds[tier];
+			var threshold = sanityThresholds[tier] - this.coverageDamp();
+			if (threshold < 0) threshold = 0;
 			if (chance > threshold) return '';
 
-			var parts      = bodyPartKeys.slice(0, tier);
-			var bp         = setup.Intro.currentSensualBodyPart();
-			var weights    = [];
+			var parts       = bodyPartKeys.slice(0, tier);
+			var bp          = setup.Intro.currentSensualBodyPart();
+			var mult        = setup.Wardrobe.exposureMultipliers();
+			var weights     = [];
 			var totalWeight = 0;
 
 			for (var i = 0; i < parts.length; i++) {
-				var w = bp[parts[i]] || 0;
+				var raw = (bp[parts[i]] || 0) * 100;
+				var m   = mult[parts[i]];
+				var w   = typeof m === 'number' ? Math.round(raw * m) : raw;
 				weights.push(w);
 				totalWeight += w;
 			}

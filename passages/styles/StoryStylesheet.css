@@ -1561,3 +1561,11 @@ body.ui-bar-stowed .hunt-run-layout {
 	background: rgba(255, 153, 221, 0.15);
 	border-radius: 3px;
 }
+
+.huntHarassmentReadout {
+	margin: 0.5em 0;
+	font-style: italic;
+}
+.huntHarassment-Low    { color: #2E8B57; font-weight: bold; }
+.huntHarassment-Medium { color: #ffd166; font-weight: bold; }
+.huntHarassment-High   { color: #ff6666; font-weight: bold; }

@@ -60,4 +60,9 @@
 <div id="availablePiercing"></div><br>
 
 <<run setup.Wardrobe.normalizeOuterRememberTokens()>>
+<<run setup.Wardrobe.refreshAggregateStates()>>
+<<set _hh to setup.Wardrobe.harassmentLevel()>>
+<div id="huntHarassmentReadout" class="huntHarassmentReadout">
+Estimated hunt harassment: <<= '<span class="huntHarassment-' + _hh + '">' + _hh + '</span>'>>
+</div>
 @@.backbtn;[[Back|Bedroom]]@@

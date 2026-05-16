@@ -184,6 +184,67 @@ test.describe('Events controller — orgasm and body-part roll', () => {
     expect(r).toBe('');
   });
 
+  test('coverageDamp tracks setup.Wardrobe.coverage()/12', async ({ game: page }) => {
+    // Strip MC fully naked.
+    for (const v of ['tshirtState', 'braState', 'pantiesState', 'jeansState', 'shortsState', 'skirtState']) {
+      await setVar(page, v, 'not worn');
+    }
+    expect(await callSetup(page, 'setup.Wardrobe.coverage()')).toBe(0);
+    expect(await callSetup(page, 'setup.Events.coverageDamp()')).toBe(0);
+
+    // Fully dressed.
+    for (const v of ['tshirtState', 'braState', 'pantiesState', 'jeansState']) {
+      await setVar(page, v, 'worn');
+    }
+    expect(await callSetup(page, 'setup.Wardrobe.coverage()')).toBe(100);
+    expect(await callSetup(page, 'setup.Events.coverageDamp()')).toBe(8);
+  });
+
+  test('rollBodyPartEvent threshold drops by coverageDamp', async ({ game: page }) => {
+    // Tier 1 threshold is 4. Fully dressed coverage = 100 → damp = 8 →
+    // effective threshold is 0, so chance=1 must return ''.
+    await setVar(page, 'mc.lust', 0);
+    for (const v of ['tshirtState', 'braState', 'pantiesState', 'jeansState']) {
+      await setVar(page, v, 'worn');
+    }
+    await page.evaluate(() => {
+      SugarCube.State.variables.sensualBodyPart = {
+        brain: 5, tits: 0, ass: 0, bottom: 0,
+        mouth: 0, pussy: 0, anal: 0,
+      };
+    });
+    expect(await callSetup(page, 'setup.Events.rollBodyPartEvent(1)')).toBe('');
+    // Stripping back to naked restores threshold 4, so chance=1 fires brain.
+    for (const v of ['tshirtState', 'braState', 'pantiesState', 'jeansState']) {
+      await setVar(page, v, 'not worn');
+    }
+    expect(await callSetup(page, 'setup.Events.rollBodyPartEvent(1)')).toBe('brain');
+  });
+
+  test('exposureMultipliers downweights covered body parts', async ({ game: page }) => {
+    // Jeans + panties: ass/bottom/pussy/anal heavily damped, tits with
+    // tshirt + bra also low. Weight tits and pussy equally; force
+    // Math.random() to 0 so the roll picks the first non-zero weight.
+    for (const v of ['tshirtState', 'braState', 'pantiesState', 'jeansState']) {
+      await setVar(page, v, 'worn');
+    }
+    await setVar(page, 'shortsState', 'not worn');
+    await setVar(page, 'skirtState', 'not worn');
+    const mult = await page.evaluate(() => SugarCube.setup.Wardrobe.exposureMultipliers());
+    expect(mult.tits).toBeLessThan(0.5);   // tshirt+bra → 0.3
+    expect(mult.ass).toBeLessThan(0.5);    // jeans → 0.3
+    expect(mult.pussy).toBeLessThan(0.3);  // jeans → 0.2
+
+    // Skirt without panties amplifies ass weight above 1.
+    for (const v of ['tshirtState', 'braState', 'jeansState', 'shortsState', 'pantiesState']) {
+      await setVar(page, v, 'not worn');
+    }
+    await setVar(page, 'skirtState', 'worn');
+    const mult2 = await page.evaluate(() => SugarCube.setup.Wardrobe.exposureMultipliers());
+    expect(mult2.ass).toBeGreaterThan(1);
+    expect(mult2.pussy).toBe(1);
+  });
+
   test('rollBodyPartEvent at tier 7 (lust 90+) can pick any of 7 keys', async ({ game: page }) => {
     await setVar(page, 'mc.lust', 95);
     await page.evaluate(() => {

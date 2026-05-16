@@ -247,6 +247,81 @@
             var CS = setup.ClothingState;
             return s.braState !== CS.NOT_WORN && s.pantiesState !== CS.NOT_WORN;
         },
+
+        /* Coverage score (0-100) summarising how dressed the MC is.
+         * Consumed by the hunt event roller to dampen harassment
+         * frequency and to surface a "Hunt harassment" estimate in
+         * the Wardrobe passage. Tops contribute roughly half the
+         * total; bottoms the other half. A fully dressed outfit
+         * (tshirt + bra + bottoms + panties) lands at 100. */
+        coverage: function () {
+            var n = 0;
+            if (this.worn(setup.WardrobeSlot.TSHIRT))  n += 30;
+            if (this.worn(setup.WardrobeSlot.BRA))     n += 20;
+            if (this.worn(setup.WardrobeSlot.JEANS))   n += 30;
+            else if (this.worn(setup.WardrobeSlot.SHORTS)) n += 20;
+            else if (this.worn(setup.WardrobeSlot.SKIRT))  n += 10;
+            if (this.worn(setup.WardrobeSlot.PANTIES)) n += 20;
+            return n > 100 ? 100 : n;
+        },
+
+        /* Per-body-part multipliers driven by what the MC is wearing.
+         * rollBodyPartEvent scales each body-part's weight by these
+         * values so dressing strategically redirects which events
+         * fire — covered zones become rare, exposed ones stay full
+         * weight (or amplify for skirt-no-panties). Returns floats;
+         * caller rounds. */
+        exposureMultipliers: function () {
+            var t  = this.worn(setup.WardrobeSlot.TSHIRT);
+            var b  = this.worn(setup.WardrobeSlot.BRA);
+            var j  = this.worn(setup.WardrobeSlot.JEANS);
+            var s  = this.worn(setup.WardrobeSlot.SHORTS);
+            var k  = this.worn(setup.WardrobeSlot.SKIRT);
+            var p  = this.worn(setup.WardrobeSlot.PANTIES);
+
+            var tits;
+            if (t && b)      tits = 0.3;
+            else if (t)      tits = 0.5;
+            else if (b)      tits = 0.7;
+            else             tits = 1.0;
+
+            var ass;
+            if (j)           ass = 0.3;
+            else if (s)      ass = 0.6;
+            else if (k && p) ass = 0.7;
+            else if (k)      ass = 1.2;
+            else if (p)      ass = 0.8;
+            else             ass = 1.0;
+
+            var pussy;
+            if (j)           pussy = 0.2;
+            else if (s)      pussy = 0.3;
+            else if (k && p) pussy = 0.4;
+            else if (k)      pussy = 1.0;
+            else if (p)      pussy = 0.25;
+            else             pussy = 1.0;
+
+            return {
+                brain:  1.0,
+                tits:   tits,
+                ass:    ass,
+                bottom: ass,
+                mouth:  1.0,
+                pussy:  pussy,
+                anal:   pussy
+            };
+        },
+
+        /* Coarse string label for the Wardrobe UI readout. Maps the
+         * 0-100 coverage score to High / Medium / Low so the player
+         * can see how their outfit will influence hunt event
+         * frequency without having to learn the underlying numbers. */
+        harassmentLevel: function () {
+            var c = this.coverage();
+            if (c >= 70) return 'Low';
+            if (c >= 35) return 'Medium';
+            return 'High';
+        },
         /* Strip the MC down to NOT_WORN across every wardrobe slot.
            Used by the MonkeyPaw tier-3 sealed-room branch. */
         stripToNaked: function () {

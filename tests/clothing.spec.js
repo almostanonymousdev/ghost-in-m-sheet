@@ -118,6 +118,91 @@ test.describe('Clothing — Purchase and Beauty', () => {
   });
 });
 
+test.describe('Clothing — Coverage and harassment readout', () => {
+  test.beforeEach(async ({ game: page }) => {
+    for (const v of ['tshirtState', 'braState', 'pantiesState', 'jeansState', 'shortsState', 'skirtState']) {
+      await setVar(page, v, 'not worn');
+    }
+  });
+
+  test('coverage() is 0 when naked and 100 when fully dressed', async ({ game: page }) => {
+    expect(await callSetup(page, 'setup.Wardrobe.coverage()')).toBe(0);
+    for (const v of ['tshirtState', 'braState', 'pantiesState', 'jeansState']) {
+      await setVar(page, v, 'worn');
+    }
+    expect(await callSetup(page, 'setup.Wardrobe.coverage()')).toBe(100);
+  });
+
+  test('coverage() distinguishes bottoms (jeans > shorts > skirt)', async ({ game: page }) => {
+    await setVar(page, 'jeansState', 'worn');
+    expect(await callSetup(page, 'setup.Wardrobe.coverage()')).toBe(30);
+    await setVar(page, 'jeansState', 'not worn');
+    await setVar(page, 'shortsState', 'worn');
+    expect(await callSetup(page, 'setup.Wardrobe.coverage()')).toBe(20);
+    await setVar(page, 'shortsState', 'not worn');
+    await setVar(page, 'skirtState', 'worn');
+    expect(await callSetup(page, 'setup.Wardrobe.coverage()')).toBe(10);
+  });
+
+  test('harassmentLevel() maps coverage to High / Medium / Low', async ({ game: page }) => {
+    expect(await callSetup(page, 'setup.Wardrobe.harassmentLevel()')).toBe('High');
+    await setVar(page, 'tshirtState', 'worn');
+    await setVar(page, 'jeansState', 'worn');
+    // coverage = 60 → Medium
+    expect(await callSetup(page, 'setup.Wardrobe.harassmentLevel()')).toBe('Medium');
+    await setVar(page, 'braState', 'worn');
+    await setVar(page, 'pantiesState', 'worn');
+    // coverage = 100 → Low
+    expect(await callSetup(page, 'setup.Wardrobe.harassmentLevel()')).toBe('Low');
+  });
+
+  /* Equip/unequip only writes the per-tier $<slot>State<N> flag; the
+     aggregate $<slot>State that coverage() reads is rolled up by
+     refreshAggregateStates. The Wardrobe passage must refresh before
+     rendering, otherwise the readout lags one click behind. */
+  test('readout reflects the click that just happened (no one-action lag)', async ({ game: page }) => {
+    // Start fully dressed in tier-1 garments. Slot 0 is the base outfit
+    // and defaults to "worn"; equip(tier1) clears it as a sibling — we
+    // mirror that by setting slot 0 to NOT_WORN here.
+    await page.evaluate(() => {
+      const V = SugarCube.State.variables;
+      V.tshirtState0  = 'not worn'; V.tshirtState1  = 'worn'; V.tshirtState  = 'worn';
+      V.jeansState0   = 'not worn'; V.jeansState1   = 'worn'; V.jeansState   = 'worn';
+      V.braState0     = 'not worn'; V.braState1     = 'worn'; V.braState     = 'worn';
+      V.pantiesState0 = 'not worn'; V.pantiesState1 = 'worn'; V.pantiesState = 'worn';
+    });
+    await goToPassage(page, 'Wardrobe');
+    await expect(page.locator('#huntHarassmentReadout .huntHarassment-Low')).toContainText('Low');
+
+    // Simulate the equip path the link click takes: unequip jeans + tshirt
+    // (each sets only the tier flag, not the aggregate that worn() reads).
+    // Re-rendering Wardrobe must roll the aggregates up; otherwise the
+    // readout will lag one click behind.
+    await page.evaluate(() => {
+      const groups = SugarCube.setup.WARDROBE_GROUPS;
+      const jGrp = groups.find(g => g.name === 'bottomOuter');
+      SugarCube.setup.Wardrobe.unequip(jGrp, jGrp.items.find(i => i.var === 'jeansState1'));
+      const tGrp = groups.find(g => g.name === 'tshirt');
+      SugarCube.setup.Wardrobe.unequip(tGrp, tGrp.items.find(i => i.var === 'tshirtState1'));
+    });
+    // Bounce via Bedroom so Engine.play actually re-renders Wardrobe.
+    await goToPassage(page, 'Bedroom');
+    await goToPassage(page, 'Wardrobe');
+    await expect(page.locator('#huntHarassmentReadout .huntHarassment-Medium')).toContainText('Medium');
+  });
+
+  test('Wardrobe passage renders the harassment readout', async ({ game: page }) => {
+    await setVar(page, 'tshirtState', 'worn');
+    await setVar(page, 'jeansState', 'worn');
+    await setVar(page, 'braState', 'worn');
+    await setVar(page, 'pantiesState', 'worn');
+    await goToPassage(page, 'Wardrobe');
+    const readout = page.locator('#huntHarassmentReadout');
+    await expect(readout).toContainText('Estimated hunt harassment');
+    await expect(readout.locator('.huntHarassment-Low')).toContainText('Low');
+  });
+});
+
 test.describe('Clothing — Lost-clothing buyback', () => {
   test.beforeEach(async ({ game: page }) => {
     await setVar(page, 'hours', 12);
