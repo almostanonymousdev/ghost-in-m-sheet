@@ -31,7 +31,6 @@ setup.Hunt = (function () {
 		EVIDENCE_TRIGGER: 'evidence-trigger',
 		LOOT_TAKEN:       'loot-taken',
 		ROOM_ENTER:       'room-enter',
-
 		FLOORPLAN_OPTIONS: 'floorplan-options',
 		EVIDENCE_POOL:     'evidence-pool',
 		STARTING_TOOLS:    'starting-tools',
@@ -42,7 +41,11 @@ setup.Hunt = (function () {
 		COMPANION_ALLOWED: 'companion-allowed',
 		SNAPSHOT:          'snapshot',
 		MODIFIER_COUNT:    'modifier-count',
-		SIDEBAR_OUTFIT:    'sidebar-outfit'
+		SIDEBAR_OUTFIT:    'sidebar-outfit',
+		AFTERSHOCK_COOLDOWN: 'aftershock-cooldown',
+		BAIT_ALLOWED:      'bait-allowed',
+		SANITY_EVENT_MULT: 'sanity-event-mult',
+		ADDRESS:           'address'
 	});
 
 	var listeners = {};

@@ -261,12 +261,16 @@ setup.HauntConditions = (function () {
 			}
 		}
 		if ((V.orgasmCooldownSteps || 0) > 0) {
-			/* Glass Bones modifier halves the per-tick decrement so the
-			   aftershock window lasts twice as long. */
-			var dec = (setup.HuntController && setup.HuntController.hasModifier
-				&& setup.HuntController.hasModifier(setup.Modifiers.GLASS_BONES))
-				? 0.5 : 1;
-			V.orgasmCooldownSteps -= dec;
+			/* Per-tick decrement is filterable so modifiers (Glass Bones)
+			   and future contracts can stretch the aftershock window
+			   without HuntConditions branching on each one. */
+			var modifierIds = (setup.HuntController && setup.HuntController.modifiers)
+				? setup.HuntController.modifiers() : [];
+			var coolCtx = setup.Hunt.applyFilter(setup.Hunt.Event.AFTERSHOCK_COOLDOWN, {
+				dec: 1,
+				modifierIds: modifierIds
+			});
+			V.orgasmCooldownSteps -= coolCtx.dec;
 			if (V.orgasmCooldownSteps < 0) V.orgasmCooldownSteps = 0;
 		}
 		if (inHouse && typeof setup.addTime === 'function') {
@@ -340,14 +344,20 @@ setup.HauntConditions = (function () {
 
 	function canBait() {
 		var V = State.variables;
-		if (setup.HuntController && setup.HuntController.hasModifier
-			&& setup.HuntController.hasModifier(setup.Modifiers.NOT_THEIR_TYPE)) {
-			return false;
-		}
 		if (!setup.HuntController || !setup.HuntController.isHuntActive
 			|| !setup.HuntController.isHuntActive()) {
 			return false;
 		}
+		/* Modifiers (Not Their Type) and future contracts can veto bait
+		   via the BAIT_ALLOWED filter. Default allowed; subscriber sets
+		   ctx.allowed=false to gate the action out. */
+		var modifierIds = setup.HuntController.modifiers
+			? setup.HuntController.modifiers() : [];
+		var baitCtx = setup.Hunt.applyFilter(setup.Hunt.Event.BAIT_ALLOWED, {
+			allowed: true,
+			modifierIds: modifierIds
+		});
+		if (!baitCtx.allowed) return false;
 		return !!(V.mc
 			&& (V.mc.energy || 0) >= ENERGY_COST_BAIT
 			&& V.baitActive !== 1);
@@ -375,11 +385,18 @@ setup.HauntConditions = (function () {
 		var mult = 1;
 		if (isCurrentRoomDark())  mult += 0.5;
 		if (isOverchargedMode())  mult += 0.25;
-		if (setup.HuntController && setup.HuntController.hasModifier
-			&& setup.HuntController.hasModifier(setup.Modifiers.BRITTLE_MIND)) {
-			mult += 0.5;
-		}
-		return mult;
+		/* Modifier contributions (Brittle Mind) and future event-drain
+		   stackers live in ModifiersController subscribers. They read
+		   the dark/overcharged context to decide whether to compound. */
+		var modifierIds = (setup.HuntController && setup.HuntController.modifiers)
+			? setup.HuntController.modifiers() : [];
+		var ctx = setup.Hunt.applyFilter(setup.Hunt.Event.SANITY_EVENT_MULT, {
+			mult: mult,
+			modifierIds: modifierIds,
+			dark: isCurrentRoomDark(),
+			overcharged: isOverchargedMode()
+		});
+		return ctx.mult;
 	}
 
 	/* Called from HuntEnd / HuntOverManual / HuntOverTime / HuntOverSanity

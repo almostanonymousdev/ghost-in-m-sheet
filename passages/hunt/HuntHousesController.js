@@ -331,6 +331,16 @@ setup.HuntHouses = (function () {
 		if (h && h.sidebarOutfit) ctx.outfit = h.sidebarOutfit;
 	});
 
+	setup.Hunt.filter(setup.Hunt.Event.ADDRESS, function (ctx) {
+		/* Static houses override the seed-derived `formatted` label
+		   with their catalogue label so the HUD reads the house name
+		   ("Owaissa") instead of a generated street address. Other
+		   fields (number/road/suffix) stay untouched. */
+		if (!ctx || !ctx.addr || !ctx.staticHouseId) return;
+		var h = byId(ctx.staticHouseId);
+		if (h && h.label) ctx.addr.formatted = h.label;
+	});
+
 	return {
 		OWNED_VARS:        Object.freeze([]),
 		CATALOGUE:         CATALOGUE,

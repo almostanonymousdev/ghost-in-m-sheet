@@ -255,8 +255,29 @@ setup.Modifiers = (function () {
 
 	setup.Hunt.filter(setup.Hunt.Event.STEAL_CHECK, function (ctx) {
 		/* Swiper: every tick with stealable clothes triggers a steal,
-		   bypassing the roll entirely. */
+		   bypassing the roll entirely.
+		   Sticky Fingers: doubles the chance the per-tick roll passes.
+		   Multiplier stacks; subscribers may push it further. */
 		if (hasMod(ctx, SWIPER)) ctx.forceTrigger = true;
+		if (hasMod(ctx, STICKY_FINGERS)) ctx.chanceMult = (ctx.chanceMult || 1) * 2;
+	});
+
+	setup.Hunt.filter(setup.Hunt.Event.AFTERSHOCK_COOLDOWN, function (ctx) {
+		/* Glass Bones halves the per-tick cooldown decrement so the
+		   orgasm aftershock window lasts twice as long. */
+		if (hasMod(ctx, GLASS_BONES)) ctx.dec = (ctx.dec != null ? ctx.dec : 1) * 0.5;
+	});
+
+	setup.Hunt.filter(setup.Hunt.Event.BAIT_ALLOWED, function (ctx) {
+		/* Not Their Type: the ghost will not bite. Baiting is
+		   unavailable for the rest of the run. */
+		if (hasMod(ctx, NOT_THEIR_TYPE)) ctx.allowed = false;
+	});
+
+	setup.Hunt.filter(setup.Hunt.Event.SANITY_EVENT_MULT, function (ctx) {
+		/* Brittle Mind: event-time sanity drains hit 50% harder, on
+		   top of dark/overcharged stacking. */
+		if (hasMod(ctx, BRITTLE_MIND)) ctx.mult = (ctx.mult || 1) + 0.5;
 	});
 
 	setup.Hunt.filter(setup.Hunt.Event.SNAPSHOT, function (ctx) {

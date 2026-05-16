@@ -1014,10 +1014,6 @@ setup.HuntController = (function () {
 		var run = sv().run;
 		return run ? (run.staticHouseId || null) : null;
 	}
-	function staticHouse() {
-		var id = staticHouseId();
-		return id && setup.HuntHouses ? setup.HuntHouses.byId(id) : null;
-	}
 	/* True when companions are eligible for the active hunt at all.
 	   Procedural runs default to allowed; static-plan houses opt in
 	   or out via the catalogue's allowsCompanions flag, surfaced by
@@ -1046,26 +1042,20 @@ setup.HuntController = (function () {
 	   the raw seed. Returns null off-run; callers that need a label
 	   for an arbitrary seed can call addressFromSeed() directly.
 
-	   Static-plan houses (setup.HuntHouses) override the `formatted`
-	   label with their catalogue label so the HUD reads the house
-	   name ("Owaissa") instead of a generated street address. The
-	   seed-derived number/road/suffix fields stay so callers that
-	   want the underlying address (rng-seed displays, diagnostics)
-	   can still read them. */
+	   Per-house label overrides (Owaissa, Elm, Ironclad) ride the
+	   ADDRESS filter -- HuntHousesController stamps `addr.formatted`
+	   off its catalogue label. The seed-derived number/road/suffix
+	   fields stay so callers that want the underlying address
+	   (rng-seed displays, diagnostics) can still read them. */
 	function address() {
 		var run = sv().run;
 		if (!run) return null;
 		var addr = addressFromSeed(run.seed);
-		var house = staticHouse();
-		if (house && house.label) {
-			return {
-				number: addr.number,
-				road: addr.road,
-				suffix: addr.suffix,
-				formatted: house.label
-			};
-		}
-		return addr;
+		var ctx = setup.Hunt.applyFilter(setup.Hunt.Event.ADDRESS, {
+			addr:          addr,
+			staticHouseId: staticHouseId()
+		});
+		return ctx.addr;
 	}
 	function ghostRoomId() {
 		var run = sv().run;
@@ -1841,7 +1831,6 @@ setup.HuntController = (function () {
 		humanizeLootKind: humanizeLootKind,
 		ghostName: ghostName,
 		staticHouseId: staticHouseId,
-		staticHouse: staticHouse,
 		huntAllowsCompanions: huntAllowsCompanions,
 		runEvidence: runEvidence,
 		ghostRoomId: ghostRoomId,

@@ -145,12 +145,13 @@ setup.HauntedHouses = (function () {
 			var ctx = setup.Hunt.applyFilter(setup.Hunt.Event.STEAL_CHECK, {
 				forceTrigger: false,
 				suppress:     false,
+				chanceMult:   1,
 				modifierIds:  modifierIds
 			});
 			if (ctx.suppress) return false;
 			if (ctx.forceTrigger) return this.canStealAnyItem();
 			var roll = 1 + Math.floor(Math.random() * 100);
-			if (roll > this.stealChance()) return false;
+			if (roll > this.stealChance() * (ctx.chanceMult || 1)) return false;
 			return this.canStealAnyItem();
 		},
 

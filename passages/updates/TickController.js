@@ -102,11 +102,12 @@ setup.Tick = (function () {
 
 	// --- Steal-chance recompute ---------------------------------
 	function recomputeStealChance() {
+		/* Base chance derives from sanity + stealChanceMult only.
+		   Per-tick modifier scaling (Sticky Fingers) is applied by the
+		   STEAL_CHECK filter at the roll site so all per-tick steal
+		   knobs converge in one place. */
 		var s = sv();
-		var modifierMult = (setup.HuntController && setup.HuntController.hasModifier
-			&& setup.HuntController.hasModifier(setup.Modifiers.STICKY_FINGERS))
-			? 2 : 1;
-		s.stealChance = (1 + (Math.log(101 - s.mc.sanity) / Math.log(101)) * 1) * s.stealChanceMult * modifierMult;
+		s.stealChance = (1 + (Math.log(101 - s.mc.sanity) / Math.log(101)) * 1) * s.stealChanceMult;
 	}
 
 	// --- PassageDone tick setup ---------------------------------

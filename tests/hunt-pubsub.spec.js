@@ -815,6 +815,203 @@ test.describe('setup.Hunt pubsub', () => {
       expect(result.proc).toBe(null);
     });
 
+    test('AFTERSHOCK_COOLDOWN filter: Glass Bones halves the per-tick decrement', async () => {
+      const result = await page.evaluate(() => {
+        const { Hunt, Modifiers } = SugarCube.setup;
+        return {
+          base: Hunt.applyFilter(Hunt.Event.AFTERSHOCK_COOLDOWN,
+            { dec: 1, modifierIds: [] }).dec,
+          glass: Hunt.applyFilter(Hunt.Event.AFTERSHOCK_COOLDOWN,
+            { dec: 1, modifierIds: [Modifiers.GLASS_BONES] }).dec,
+          other: Hunt.applyFilter(Hunt.Event.AFTERSHOCK_COOLDOWN,
+            { dec: 1, modifierIds: [Modifiers.PHEROMONES] }).dec
+        };
+      });
+      expect(result.base).toBe(1);
+      expect(result.glass).toBe(0.5);
+      expect(result.other).toBe(1);
+    });
+
+    test('AFTERSHOCK_COOLDOWN applied: Glass Bones stretches V.orgasmCooldownSteps across two ticks', async () => {
+      await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+      const result = await page.evaluate(() => {
+        const HC = SugarCube.setup.HuntController;
+        const HCo = SugarCube.setup.HauntConditions;
+        const V = SugarCube.State.variables;
+        HC.startHunt({ seed: 1 });
+        // Clear drafted modifiers so the test pins the only one we care about.
+        V.run.modifiers = [];
+        HC.addModifier(SugarCube.setup.Modifiers.GLASS_BONES);
+        V.orgasmCooldownSteps = 2;
+        HCo.applyTickEffects();
+        const afterFirst = V.orgasmCooldownSteps;
+        HCo.applyTickEffects();
+        const afterSecond = V.orgasmCooldownSteps;
+        HC.endHunt(false);
+        // baseline -- no modifier, one tick drops by 1
+        HC.startHunt({ seed: 1 });
+        V.run.modifiers = [];
+        V.orgasmCooldownSteps = 2;
+        HCo.applyTickEffects();
+        const baselineAfterFirst = V.orgasmCooldownSteps;
+        HC.endHunt(false);
+        return { afterFirst, afterSecond, baselineAfterFirst };
+      });
+      expect(result.afterFirst).toBe(1.5);
+      expect(result.afterSecond).toBe(1);
+      expect(result.baselineAfterFirst).toBe(1);
+    });
+
+    test('BAIT_ALLOWED filter: Not Their Type vetoes; default is allowed', async () => {
+      const result = await page.evaluate(() => {
+        const { Hunt, Modifiers } = SugarCube.setup;
+        return {
+          base: Hunt.applyFilter(Hunt.Event.BAIT_ALLOWED,
+            { allowed: true, modifierIds: [] }).allowed,
+          ntt: Hunt.applyFilter(Hunt.Event.BAIT_ALLOWED,
+            { allowed: true, modifierIds: [Modifiers.NOT_THEIR_TYPE] }).allowed,
+          other: Hunt.applyFilter(Hunt.Event.BAIT_ALLOWED,
+            { allowed: true, modifierIds: [Modifiers.PHEROMONES] }).allowed
+        };
+      });
+      expect(result.base).toBe(true);
+      expect(result.ntt).toBe(false);
+      expect(result.other).toBe(true);
+    });
+
+    test('BAIT_ALLOWED applied: HauntConditions.canBait returns false under Not Their Type', async () => {
+      await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+      await page.evaluate(() => {
+        const HC = SugarCube.setup.HuntController;
+        const V = SugarCube.State.variables;
+        V.mc.energy = 10;
+        V.baitActive = 0;
+        HC.startHunt({ seed: 1 });
+        V.run.modifiers = [];
+      });
+      // canBait gates on passage === "HuntRun"; navigate so isHuntActive() is true.
+      await page.evaluate(() => SugarCube.Engine.play('HuntRun'));
+      const baseline = await page.evaluate(() => SugarCube.setup.HauntConditions.canBait());
+      await page.evaluate(() => {
+        SugarCube.setup.HuntController.addModifier(SugarCube.setup.Modifiers.NOT_THEIR_TYPE);
+      });
+      const vetoed = await page.evaluate(() => SugarCube.setup.HauntConditions.canBait());
+      await page.evaluate(() => SugarCube.setup.HuntController.endHunt(false));
+      expect(baseline).toBe(true);
+      expect(vetoed).toBe(false);
+    });
+
+    test('SANITY_EVENT_MULT filter: Brittle Mind adds 0.5 on top of the base', async () => {
+      const result = await page.evaluate(() => {
+        const { Hunt, Modifiers } = SugarCube.setup;
+        return {
+          base: Hunt.applyFilter(Hunt.Event.SANITY_EVENT_MULT,
+            { mult: 1, modifierIds: [], dark: false, overcharged: false }).mult,
+          brittle: Hunt.applyFilter(Hunt.Event.SANITY_EVENT_MULT,
+            { mult: 1, modifierIds: [Modifiers.BRITTLE_MIND], dark: false, overcharged: false }).mult,
+          stacked: Hunt.applyFilter(Hunt.Event.SANITY_EVENT_MULT,
+            { mult: 1.5, modifierIds: [Modifiers.BRITTLE_MIND], dark: true, overcharged: false }).mult
+        };
+      });
+      expect(result.base).toBe(1);
+      expect(result.brittle).toBe(1.5);
+      expect(result.stacked).toBe(2);
+    });
+
+    test('SANITY_EVENT_MULT applied: HauntConditions.eventSanityMultiplier stacks with Brittle Mind', async () => {
+      await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+      const result = await page.evaluate(() => {
+        const HC = SugarCube.setup.HuntController;
+        const HCo = SugarCube.setup.HauntConditions;
+        HC.startHunt({ seed: 1 });
+        const baseline = HCo.eventSanityMultiplier();
+        HC.addModifier(SugarCube.setup.Modifiers.BRITTLE_MIND);
+        const brittle = HCo.eventSanityMultiplier();
+        HC.endHunt(false);
+        return { baseline, brittle };
+      });
+      expect(result.baseline).toBe(1);
+      expect(result.brittle).toBe(1.5);
+    });
+
+    test('STEAL_CHECK filter: Sticky Fingers doubles chanceMult; Swiper still forces', async () => {
+      const result = await page.evaluate(() => {
+        const { Hunt, Modifiers } = SugarCube.setup;
+        return {
+          base: Hunt.applyFilter(Hunt.Event.STEAL_CHECK,
+            { forceTrigger: false, suppress: false, chanceMult: 1, modifierIds: [] }).chanceMult,
+          sticky: Hunt.applyFilter(Hunt.Event.STEAL_CHECK,
+            { forceTrigger: false, suppress: false, chanceMult: 1, modifierIds: [Modifiers.STICKY_FINGERS] }).chanceMult,
+          swiper: Hunt.applyFilter(Hunt.Event.STEAL_CHECK,
+            { forceTrigger: false, suppress: false, chanceMult: 1, modifierIds: [Modifiers.SWIPER] }).forceTrigger,
+          stacked: Hunt.applyFilter(Hunt.Event.STEAL_CHECK,
+            { forceTrigger: false, suppress: false, chanceMult: 1, modifierIds: [Modifiers.STICKY_FINGERS, Modifiers.SWIPER] })
+        };
+      });
+      expect(result.base).toBe(1);
+      expect(result.sticky).toBe(2);
+      expect(result.swiper).toBe(true);
+      expect(result.stacked.chanceMult).toBe(2);
+      expect(result.stacked.forceTrigger).toBe(true);
+    });
+
+    test('STEAL_CHECK applied: TickController.recomputeStealChance no longer bakes in modifier mult', async () => {
+      await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+      const result = await page.evaluate(() => {
+        const HC = SugarCube.setup.HuntController;
+        const T = SugarCube.setup.Tick;
+        const V = SugarCube.State.variables;
+        HC.startHunt({ seed: 1 });
+        T.initTick();
+        V.mc.sanity = 50;
+        T.recomputeStealChance();
+        const baseline = V.stealChance;
+        HC.addModifier(SugarCube.setup.Modifiers.STICKY_FINGERS);
+        T.recomputeStealChance();
+        const withSticky = V.stealChance;
+        HC.endHunt(false);
+        return { baseline, withSticky };
+      });
+      // Modifier no longer multiplies the precomputed chance --
+      // the multiplier is applied at the per-tick STEAL_CHECK roll.
+      expect(result.withSticky).toBe(result.baseline);
+    });
+
+    test('ADDRESS filter: static house labels override formatted; procedural keeps seed-derived label', async () => {
+      const result = await page.evaluate(() => {
+        const { Hunt } = SugarCube.setup;
+        const seedAddr = { number: 12, road: 'Hollow', suffix: 'Lane', formatted: '12 Hollow Lane' };
+        return {
+          iron: Hunt.applyFilter(Hunt.Event.ADDRESS,
+            { addr: Object.assign({}, seedAddr), staticHouseId: 'ironclad' }).addr,
+          owai: Hunt.applyFilter(Hunt.Event.ADDRESS,
+            { addr: Object.assign({}, seedAddr), staticHouseId: 'owaissa' }).addr,
+          proc: Hunt.applyFilter(Hunt.Event.ADDRESS,
+            { addr: Object.assign({}, seedAddr), staticHouseId: null }).addr
+        };
+      });
+      expect(result.iron.formatted).not.toBe('12 Hollow Lane');
+      expect(result.iron.number).toBe(12);
+      expect(result.owai.formatted).not.toBe('12 Hollow Lane');
+      expect(result.proc.formatted).toBe('12 Hollow Lane');
+    });
+
+    test('ADDRESS applied: HuntController.address swaps formatted to the catalogue label for Owaissa', async () => {
+      await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+      const result = await page.evaluate(() => {
+        const HC = SugarCube.setup.HuntController;
+        HC.startHunt({ seed: 99, staticHouseId: 'owaissa' });
+        const owai = HC.address();
+        HC.endHunt(false);
+        HC.startHunt({ seed: 99 });
+        const proc = HC.address();
+        HC.endHunt(false);
+        return { owaiFormatted: owai && owai.formatted, procFormatted: proc && proc.formatted };
+      });
+      expect(result.owaiFormatted).toMatch(/owaissa/i);
+      expect(result.procFormatted).not.toMatch(/owaissa/i);
+    });
+
     test('tick() is a no-op when no run is active', async () => {
       const seen = await page.evaluate(() => {
         const HC = SugarCube.setup.HuntController;
