@@ -40,6 +40,7 @@
    chain. */
 <<widget "huntTickStep">>
 	<<applyTickEffects>>
+	<<run setup.HuntController.tick()>>
 	<<if setup.Mc.isSanityCollapsed() or setup.Mc.sanity() lte 0>>
 		<<goto setup.HuntController.huntOverPassage("sanity")>>
 	<<elseif setup.Mc.isExhausted()>>

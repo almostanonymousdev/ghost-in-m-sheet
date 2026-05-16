@@ -260,5 +260,188 @@ test.describe('setup.Hunt pubsub', () => {
       const runGhostName = await callSetup(page, 'setup.HuntController.ghostName()');
       expect(capture[0].ghostName).toBe(runGhostName);
     });
+
+    test('setCurrentRoom emits Event.ROOM_ENTER with from/to room ids', async () => {
+      await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+      const capture = await page.evaluate(() => {
+        const HC = SugarCube.setup.HuntController;
+        const { Hunt } = SugarCube.setup;
+        HC.startHunt({ seed: 7777 });
+        const seen = [];
+        window.__huntSubs.push(Hunt.on(Hunt.Event.ROOM_ENTER, (ctx) => seen.push(ctx)));
+        const run = HC.active();
+        const ids = run.floorplan.rooms.map(r => r.id);
+        const target = ids.find(id => id !== run.currentRoomId);
+        const startRoom = run.currentRoomId;
+        HC.setCurrentRoom(target);
+        // Calling setCurrentRoom with the same id should NOT emit.
+        HC.setCurrentRoom(target);
+        return { seen, startRoom, target };
+      });
+      expect(capture.seen.length).toBe(1);
+      expect(capture.seen[0].roomId).toBe(capture.target);
+      expect(capture.seen[0].fromRoomId).toBe(capture.startRoom);
+    });
+
+    test('takeLoot emits Event.LOOT_TAKEN with the kind; duplicate take is a no-op', async () => {
+      await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+      const capture = await page.evaluate(() => {
+        const HC = SugarCube.setup.HuntController;
+        const { Hunt } = SugarCube.setup;
+        HC.startHunt({ seed: 4242 });
+        const seen = [];
+        window.__huntSubs.push(Hunt.on(Hunt.Event.LOOT_TAKEN, (ctx) => seen.push(ctx)));
+        const first = HC.takeLoot('tarotCards');
+        const second = HC.takeLoot('tarotCards');
+        return { seen, first, second, roomId: HC.currentRoomId() };
+      });
+      expect(capture.first).toBe(true);
+      expect(capture.second).toBe(false);
+      expect(capture.seen.length).toBe(1);
+      expect(capture.seen[0].kind).toBe('tarotCards');
+      expect(capture.seen[0].roomId).toBe(capture.roomId);
+    });
+
+    test('driftGhostRoom emits Event.DRIFT with from/to room ids', async () => {
+      await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+      const capture = await page.evaluate(() => {
+        const HC = SugarCube.setup.HuntController;
+        const { Hunt } = SugarCube.setup;
+        HC.startHunt({ seed: 1010 });
+        const seen = [];
+        window.__huntSubs.push(Hunt.on(Hunt.Event.DRIFT, (ctx) => seen.push(ctx)));
+        const before = HC.active().floorplan.spawnRoomId;
+        HC.driftGhostRoom();
+        const after = HC.active().floorplan.spawnRoomId;
+        return { seen, before, after };
+      });
+      expect(capture.seen.length).toBe(1);
+      expect(capture.seen[0].fromRoom).toBe(capture.before);
+      expect(capture.seen[0].toRoom).toBe(capture.after);
+    });
+
+    test('trapGhost emits Event.TRAP with unlockBy + ghost roomId', async () => {
+      await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+      const capture = await page.evaluate(() => {
+        const HC = SugarCube.setup.HuntController;
+        const { Hunt } = SugarCube.setup;
+        HC.startHunt({ seed: 2020 });
+        const seen = [];
+        window.__huntSubs.push(Hunt.on(Hunt.Event.TRAP, (ctx) => seen.push(ctx)));
+        const ok = HC.trapGhost('monkeyPaw');
+        return { seen, ok, ghostRoom: HC.active().floorplan.spawnRoomId };
+      });
+      expect(capture.ok).toBe(true);
+      expect(capture.seen.length).toBe(1);
+      expect(capture.seen[0].unlockBy).toBe('monkeyPaw');
+      expect(capture.seen[0].roomId).toBe(capture.ghostRoom);
+    });
+
+    test('endHunt emits Event.END with success, payout, ghostName, seed', async () => {
+      await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+      const capture = await page.evaluate(() => {
+        const HC = SugarCube.setup.HuntController;
+        const { Hunt } = SugarCube.setup;
+        HC.startHunt({ seed: 3030 });
+        const run = HC.active();
+        const ghostName = run.ghostName;
+        const seed = run.seed;
+        const number = run.number;
+        const seen = [];
+        window.__huntSubs.push(Hunt.on(Hunt.Event.END, (ctx) => seen.push(ctx)));
+        const summary = HC.endHunt(true);
+        return { seen, summary, ghostName, seed, number };
+      });
+      expect(capture.seen.length).toBe(1);
+      expect(capture.seen[0].success).toBe(true);
+      expect(capture.seen[0].payout).toBe(capture.summary.payout);
+      expect(capture.seen[0].ghostName).toBe(capture.ghostName);
+      expect(capture.seen[0].seed).toBe(capture.seed);
+      expect(capture.seen[0].number).toBe(capture.number);
+    });
+
+    test('endHunt with failure passes the failureReason through', async () => {
+      await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+      const capture = await page.evaluate(() => {
+        const HC = SugarCube.setup.HuntController;
+        const { Hunt } = SugarCube.setup;
+        HC.startHunt({ seed: 4040 });
+        HC.markFailure(HC.FailureReason.CAUGHT);
+        const seen = [];
+        window.__huntSubs.push(Hunt.on(Hunt.Event.END, (ctx) => seen.push(ctx)));
+        HC.endHunt(false);
+        return seen;
+      });
+      expect(capture.length).toBe(1);
+      expect(capture[0].success).toBe(false);
+      expect(capture[0].failureReason).toBe('caught');
+    });
+
+    test('huntCaughtPassage emits Event.CAUGHT before stamping failure', async () => {
+      await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+      const capture = await page.evaluate(() => {
+        const HC = SugarCube.setup.HuntController;
+        const { Hunt } = SugarCube.setup;
+        HC.startHunt({ seed: 5050 });
+        const ghostName = HC.ghostName();
+        const seen = [];
+        window.__huntSubs.push(Hunt.on(Hunt.Event.CAUGHT, (ctx) => seen.push(ctx)));
+        const dest = HC.huntCaughtPassage();
+        return { seen, ghostName, dest };
+      });
+      expect(capture.dest).toBe('HuntSummary');
+      expect(capture.seen.length).toBe(1);
+      expect(capture.seen[0].ghostName).toBe(capture.ghostName);
+    });
+
+    test('possessionPassage emits Event.POSSESS before endHunt', async () => {
+      await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+      const capture = await page.evaluate(() => {
+        const HC = SugarCube.setup.HuntController;
+        const { Hunt } = SugarCube.setup;
+        HC.startHunt({ seed: 6060 });
+        const ghostName = HC.ghostName();
+        const order = [];
+        window.__huntSubs.push(Hunt.on(Hunt.Event.POSSESS, (ctx) => order.push({ kind: 'possess', ctx })));
+        window.__huntSubs.push(Hunt.on(Hunt.Event.END, (ctx) => order.push({ kind: 'end', ctx })));
+        const dest = HC.possessionPassage();
+        return { order, ghostName, dest };
+      });
+      expect(capture.dest).toBe('CityMapPossessed');
+      expect(capture.order.map(e => e.kind)).toEqual(['possess', 'end']);
+      expect(capture.order[0].ctx.ghostName).toBe(capture.ghostName);
+      expect(capture.order[1].ctx.failureReason).toBe('possessed');
+    });
+
+    test('huntTickStep widget emits Event.TICK once per nav step', async () => {
+      await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+      const seen = await page.evaluate(() => {
+        const HC = SugarCube.setup.HuntController;
+        const { Hunt } = SugarCube.setup;
+        HC.startHunt({ seed: 7070 });
+        SugarCube.State.variables.mc.sanity = 100;
+        SugarCube.State.variables.mc.energy = 100;
+        SugarCube.Engine.play('HuntRun');
+        const log = [];
+        window.__huntSubs.push(Hunt.on(Hunt.Event.TICK, (ctx) => log.push(ctx)));
+        HC.tick();
+        HC.tick();
+        return log;
+      });
+      expect(seen.length).toBe(2);
+      expect(typeof seen[0].roomId === 'string' || seen[0].roomId === null).toBe(true);
+    });
+
+    test('tick() is a no-op when no run is active', async () => {
+      const seen = await page.evaluate(() => {
+        const HC = SugarCube.setup.HuntController;
+        const { Hunt } = SugarCube.setup;
+        const log = [];
+        window.__huntSubs.push(Hunt.on(Hunt.Event.TICK, (ctx) => log.push(ctx)));
+        HC.tick();
+        return log;
+      });
+      expect(seen).toEqual([]);
+    });
   });
 });

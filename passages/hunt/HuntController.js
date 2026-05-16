@@ -479,6 +479,7 @@ setup.HuntController = (function () {
 		if (!Array.isArray(run.collectedLoot)) run.collectedLoot = [];
 		if (run.collectedLoot.indexOf(kind) !== -1) return false;
 		run.collectedLoot.push(kind);
+		setup.Hunt.emit(setup.Hunt.Event.LOOT_TAKEN, { kind: kind, roomId: run.currentRoomId || null });
 		return true;
 	}
 	/* All (uncollected) loot kinds hidden in `roomId`'s `suffix`
@@ -621,7 +622,11 @@ setup.HuntController = (function () {
 		if (!run || !run.floorplan) return false;
 		var found = run.floorplan.rooms.some(function (r) { return r.id === roomId; });
 		if (!found) return false;
+		var prev = run.currentRoomId || null;
 		run.currentRoomId = roomId;
+		if (prev !== roomId) {
+			setup.Hunt.emit(setup.Hunt.Event.ROOM_ENTER, { roomId: roomId, fromRoomId: prev });
+		}
 		return true;
 	}
 
@@ -943,9 +948,7 @@ setup.HuntController = (function () {
 			setup.Ghosts.resetEvidenceChecks();
 		}
 		applyMetaUnlocksAtStart(floorplan, seed, evidenceIds);
-		if (setup.Hunt && setup.Hunt.emit) {
-			setup.Hunt.emit(setup.Hunt.Event.START, { ghostName: ghostName, seed: seed });
-		}
+		setup.Hunt.emit(setup.Hunt.Event.START, { ghostName: ghostName, seed: seed });
 		return active();
 	}
 
@@ -1112,7 +1115,9 @@ setup.HuntController = (function () {
 		// when there's only one room in the plan.
 		var others = allIds.filter(function (id) { return id !== fp.spawnRoomId; });
 		var pool = others.length ? others : allIds;
+		var fromRoom = fp.spawnRoomId;
 		fp.spawnRoomId = pool[Math.floor(Math.random() * pool.length)];
+		setup.Hunt.emit(setup.Hunt.Event.DRIFT, { fromRoom: fromRoom, toRoom: fp.spawnRoomId });
 	}
 
 	/* View-layer summary of the active run's floor plan, denormalised
@@ -1502,6 +1507,14 @@ setup.HuntController = (function () {
 		   the player slept. */
 		rollNextSeed();
 		minimapCollapsed = false;
+		setup.Hunt.emit(setup.Hunt.Event.END, {
+			success: !!success,
+			payout: payout,
+			failureReason: summary.failureReason,
+			ghostName: run.ghostName || null,
+			seed: run.seed,
+			number: run.number
+		});
 		return summary;
 	}
 
@@ -1530,6 +1543,19 @@ setup.HuntController = (function () {
 	function isHuntActive() {
 		if (!isActive()) return false;
 		return passage() === "HuntRun";
+	}
+
+	/* Hunt tick entry point. Called from the <<huntTickStep>> widget
+	   once per nav-step / tool-tick during a hunt. Fires Event.TICK so
+	   subscribers (per-tick stat drains, event-roll modifiers, etc.)
+	   can hook in without HuntController having to know about them.
+	   No-op when no run is active so widget-side guards stay simple. */
+	function tick() {
+		if (!isActive()) return;
+		var minutes = (setup.Time && typeof setup.Time.minutes === 'function')
+			? setup.Time.minutes()
+			: null;
+		setup.Hunt.emit(setup.Hunt.Event.TICK, { roomId: currentRoomId(), minutes: minutes });
 	}
 
 	/* { image, tip } override for the MC sidebar wardrobe strip,
@@ -1613,6 +1639,7 @@ setup.HuntController = (function () {
 	   routes to HuntSummary. */
 	function huntCaughtPassage() {
 		if (isActive()) {
+			setup.Hunt.emit(setup.Hunt.Event.CAUGHT, { ghostName: ghostName() });
 			markFailure(FailureReason.CAUGHT);
 			return "HuntSummary";
 		}
@@ -1687,6 +1714,7 @@ setup.HuntController = (function () {
 		if (!run) return false;
 		run.trapped = true;
 		run.exitLock = { unlockBy: unlockBy };
+		setup.Hunt.emit(setup.Hunt.Event.TRAP, { unlockBy: unlockBy, roomId: run.floorplan && run.floorplan.spawnRoomId });
 		return true;
 	}
 
@@ -1721,6 +1749,7 @@ setup.HuntController = (function () {
 	   the imperative side effects fire as part of the link click. */
 	function possessionPassage() {
 		if (!isActive()) return null;
+		setup.Hunt.emit(setup.Hunt.Event.POSSESS, { ghostName: ghostName() });
 		markFailure(FailureReason.POSSESSED);
 		endHunt(false);
 		setup.Time.setHours(Math.floor(Math.random() * (20 - 12 + 1)) + 12);
@@ -1844,6 +1873,7 @@ setup.HuntController = (function () {
 		activeGhost: activeGhost,
 		isGhostHere: isGhostHere,
 		isHuntActive: isHuntActive,
+		tick: tick,
 		sidebarOutfit: sidebarOutfit,
 		shouldStartRandomProwl: shouldStartRandomProwl,
 		shouldTriggerSteal: shouldTriggerSteal,
