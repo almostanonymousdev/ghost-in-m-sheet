@@ -807,22 +807,17 @@ setup.HuntController = (function () {
 	function startHunt(opts) {
 		opts = opts || {};
 		var seed = opts.seed != null ? opts.seed : Math.floor(Math.random() * 1e9);
-		/* Resolve modifierCount through the catalogue when a static
-		   house is in play and the caller didn't pin a value
-		   explicitly -- keeps "this house has no modifier deck" as
-		   data on the catalogue entry instead of a per-house branch
-		   in the lifecycle. */
-		var staticHouseEntry = (opts.staticHouseId && setup.HuntHouses)
-			? setup.HuntHouses.byId(opts.staticHouseId)
-			: null;
-		var modifierCount;
-		if (opts.modifierCount != null) {
-			modifierCount = opts.modifierCount;
-		} else if (staticHouseEntry && typeof staticHouseEntry.modifierCount === 'number') {
-			modifierCount = staticHouseEntry.modifierCount;
-		} else {
-			modifierCount = 2;
-		}
+		/* Resolve modifierCount through the MODIFIER_COUNT filter so
+		   per-house overrides ("this house has no modifier deck") live
+		   on the catalogue entry, not as a branch here. Caller's
+		   opts.modifierCount wins unconditionally; otherwise the
+		   subscriber may set ctx.count from the static-house entry;
+		   otherwise the procedural default (2) applies. */
+		var mcCtx = setup.Hunt.applyFilter(setup.Hunt.Event.MODIFIER_COUNT, {
+			count:         opts.modifierCount != null ? opts.modifierCount : null,
+			staticHouseId: opts.staticHouseId || null
+		});
+		var modifierCount = (mcCtx.count != null) ? mcCtx.count : 2;
 
 		/* Modifier draft honors the player's banlist. Banned ids are
 		   stripped from the draft pool before weighting; banlist slots
@@ -852,29 +847,19 @@ setup.HuntController = (function () {
 			fpOpts.roomCount = Math.max(5, 4 + Math.ceil(fpOpts.toolKinds.length / 2));
 		}
 		/* Hand the floor-plan options to the filter bus so modifiers
-		   (Maze) and meta-unlocks (Smaller House) can mutate roomCount
-		   without HuntController branching on their ids. Subscribers
-		   live in ModifiersController and the meta-unlock subscriber
-		   registered below. */
+		   (Maze), meta-unlocks (Smaller House), and static houses
+		   (frozen plan injection) can mutate fpOpts without
+		   HuntController branching on their ids. Subscribers live in
+		   ModifiersController, HuntHousesController, and the meta-unlock
+		   subscriber registered below. */
 		var fpCtx = setup.Hunt.applyFilter(setup.Hunt.Event.FLOORPLAN_OPTIONS, {
-			fpOpts: fpOpts,
-			modifierIds: modifierIds,
-			seed: seed,
-			loadout: opts.loadout || null
+			fpOpts:        fpOpts,
+			modifierIds:   modifierIds,
+			seed:          seed,
+			loadout:       opts.loadout || null,
+			staticHouseId: opts.staticHouseId || null
 		});
 		fpOpts = fpCtx.fpOpts || fpOpts;
-		/* Static houses (setup.HuntHouses) freeze the topology to
-		   a catalogue blueprint -- same rooms, same edges every run,
-		   regardless of seed or modifiers. Spawn / loot / boss still
-		   roll off the seed because they're local concerns; the room
-		   set + edge graph come from the catalogue. Procedural runs
-		   leave staticHouseId null and behave exactly as before. */
-		if (opts.staticHouseId && setup.HuntHouses) {
-			var staticPlan = setup.HuntHouses.planFor(opts.staticHouseId);
-			if (staticPlan) {
-				fpOpts.staticPlan = staticPlan;
-			}
-		}
 		var floorplan = setup.FloorPlan.generate(seed, fpOpts);
 		/* Snapshot the spawn room id for Reliable Recon. driftGhostRoom
 		   mutates floorplan.spawnRoomId; comparing against this snapshot
@@ -1032,16 +1017,6 @@ setup.HuntController = (function () {
 	function staticHouse() {
 		var id = staticHouseId();
 		return id && setup.HuntHouses ? setup.HuntHouses.byId(id) : null;
-	}
-	/* True when the active run is bound to a static-plan house
-	   that opts into companions. Procedural runs return false.
-	   Drives Companion.inHauntedHouseLocation through a data-driven
-	   catalogue lookup so adding new houses (or flipping the flag on
-	   an existing one) doesn't require touching the predicate. */
-	function staticHouseAllowsCompanions() {
-		var id = staticHouseId();
-		return !!(id && setup.HuntHouses
-			&& setup.HuntHouses.allowsCompanions(id));
 	}
 	/* True when companions are eligible for the active hunt at all.
 	   Procedural runs default to allowed; static-plan houses opt in
@@ -1567,16 +1542,18 @@ setup.HuntController = (function () {
 	}
 
 	/* { image, tip } override for the MC sidebar wardrobe strip,
-	   sourced from the active static house's catalogue entry. Returns
-	   null when no run is active or the catalogue entry doesn't carry
-	   a sidebarOutfit override. Drives widgetMcStatus's fixed-outfit
-	   tile branch. */
+	   sourced through the SIDEBAR_OUTFIT filter so per-house overrides
+	   live on the catalogue entry (HuntHousesController subscriber)
+	   instead of branching here. Returns null when no run is active or
+	   no subscriber stamps an outfit. Drives widgetMcStatus's
+	   fixed-outfit tile branch. */
 	function sidebarOutfit() {
 		if (!isActive()) return null;
-		var rid = staticHouseId();
-		if (!rid || !setup.HuntHouses) return null;
-		var rh = setup.HuntHouses.byId(rid);
-		return (rh && rh.sidebarOutfit) || null;
+		var ctx = setup.Hunt.applyFilter(setup.Hunt.Event.SIDEBAR_OUTFIT, {
+			outfit:        null,
+			staticHouseId: staticHouseId()
+		});
+		return ctx.outfit || null;
 	}
 
 	/* Random hunt-event roll. Uses the shared threshold + ghost.canProwl
@@ -1865,7 +1842,6 @@ setup.HuntController = (function () {
 		ghostName: ghostName,
 		staticHouseId: staticHouseId,
 		staticHouse: staticHouse,
-		staticHouseAllowsCompanions: staticHouseAllowsCompanions,
 		huntAllowsCompanions: huntAllowsCompanions,
 		runEvidence: runEvidence,
 		ghostRoomId: ghostRoomId,

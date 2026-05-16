@@ -295,6 +295,42 @@ setup.HuntHouses = (function () {
 		if (h && !h.allowsCompanions) ctx.allowed = false;
 	});
 
+	setup.Hunt.filter(setup.Hunt.Event.FLOORPLAN_OPTIONS, function (ctx) {
+		/* Static houses freeze the topology to a catalogue blueprint --
+		   same rooms, same edges every run, regardless of seed or
+		   modifiers. Spawn / loot / boss still roll off the seed; the
+		   room set + edge graph come from the catalogue. The frozen
+		   plan is deep-cloned by planFor so downstream mutations
+		   (FloorPlan.generate stamps spawn/loot/boss) don't trample the
+		   catalogue. ctx.staticHouseId is set by startHunt at the time
+		   FLOORPLAN_OPTIONS fires -- $run.staticHouseId isn't stamped
+		   yet, so we read from ctx, not activeHouse(). */
+		if (!ctx || !ctx.fpOpts || !ctx.staticHouseId) return;
+		var plan = planFor(ctx.staticHouseId);
+		if (plan) ctx.fpOpts.staticPlan = plan;
+	});
+
+	setup.Hunt.filter(setup.Hunt.Event.MODIFIER_COUNT, function (ctx) {
+		/* Per-house modifier-count override. Caller's opts.modifierCount
+		   wins (ctx.count is non-null on entry then); only when the
+		   caller didn't pin a value do we consult the catalogue. The
+		   ctx.staticHouseId comes from startHunt -- $run isn't stamped
+		   yet at this point in the lifecycle. */
+		if (!ctx || ctx.count != null || !ctx.staticHouseId) return;
+		var h = byId(ctx.staticHouseId);
+		if (h && typeof h.modifierCount === 'number') ctx.count = h.modifierCount;
+	});
+
+	setup.Hunt.filter(setup.Hunt.Event.SIDEBAR_OUTFIT, function (ctx) {
+		/* Static house catalogue may carry a { image, tip } override
+		   for the MC sidebar wardrobe strip (Ironclad's warden outfit).
+		   Procedural runs and houses without an override leave
+		   ctx.outfit null. */
+		if (!ctx || !ctx.staticHouseId) return;
+		var h = byId(ctx.staticHouseId);
+		if (h && h.sidebarOutfit) ctx.outfit = h.sidebarOutfit;
+	});
+
 	return {
 		OWNED_VARS:        Object.freeze([]),
 		CATALOGUE:         CATALOGUE,

@@ -693,6 +693,128 @@ test.describe('setup.Hunt pubsub', () => {
       expect(result.proc).toBe(true);
     });
 
+    test('MODIFIER_COUNT filter: static house with modifierCount=0 wins over default', async () => {
+      await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+      const result = await page.evaluate(() => {
+        const { Hunt } = SugarCube.setup;
+        return {
+          owai: Hunt.applyFilter(Hunt.Event.MODIFIER_COUNT,
+            { count: null, staticHouseId: 'owaissa' }).count,
+          iron: Hunt.applyFilter(Hunt.Event.MODIFIER_COUNT,
+            { count: null, staticHouseId: 'ironclad' }).count,
+          proc: Hunt.applyFilter(Hunt.Event.MODIFIER_COUNT,
+            { count: null, staticHouseId: null }).count,
+          // caller pin wins -- subscriber must not overwrite a non-null count
+          pinned: Hunt.applyFilter(Hunt.Event.MODIFIER_COUNT,
+            { count: 3, staticHouseId: 'owaissa' }).count
+        };
+      });
+      expect(result.owai).toBe(0);
+      expect(result.iron).toBe(0);
+      expect(result.proc).toBe(null);
+      expect(result.pinned).toBe(3);
+    });
+
+    test('MODIFIER_COUNT applied: static-house run drafts 0 modifiers', async () => {
+      await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+      const result = await page.evaluate(() => {
+        const HC = SugarCube.setup.HuntController;
+        HC.startHunt({ seed: 7, staticHouseId: 'owaissa' });
+        const owai = HC.modifiers().length;
+        HC.endHunt(false);
+        HC.startHunt({ seed: 7 });
+        const proc = HC.modifiers().length;
+        HC.endHunt(false);
+        // caller wins even on a static house
+        HC.startHunt({ seed: 7, staticHouseId: 'owaissa', modifierCount: 2 });
+        const pinned = HC.modifiers().length;
+        HC.endHunt(false);
+        return { owai, proc, pinned };
+      });
+      expect(result.owai).toBe(0);
+      expect(result.proc).toBe(2);
+      expect(result.pinned).toBe(2);
+    });
+
+    test('FLOORPLAN_OPTIONS filter: static house stamps fpOpts.staticPlan', async () => {
+      const result = await page.evaluate(() => {
+        const { Hunt } = SugarCube.setup;
+        const iron = Hunt.applyFilter(Hunt.Event.FLOORPLAN_OPTIONS, {
+          fpOpts: {}, modifierIds: [], seed: 1, loadout: null,
+          staticHouseId: 'ironclad'
+        });
+        const proc = Hunt.applyFilter(Hunt.Event.FLOORPLAN_OPTIONS, {
+          fpOpts: {}, modifierIds: [], seed: 1, loadout: null,
+          staticHouseId: null
+        });
+        return {
+          ironRooms: iron.fpOpts.staticPlan && iron.fpOpts.staticPlan.rooms.length,
+          ironEdges: iron.fpOpts.staticPlan && iron.fpOpts.staticPlan.edges.length,
+          procHasPlan: !!proc.fpOpts.staticPlan
+        };
+      });
+      expect(result.ironRooms).toBe(11);
+      expect(result.ironEdges).toBe(10);
+      expect(result.procHasPlan).toBe(false);
+    });
+
+    test('FLOORPLAN_OPTIONS applied: Ironclad run has the frozen plan in the floor plan', async () => {
+      await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+      const result = await page.evaluate(() => {
+        const HC = SugarCube.setup.HuntController;
+        HC.startHunt({ seed: 42, staticHouseId: 'ironclad' });
+        const fp = HC.active().floorplan || SugarCube.State.variables.run.floorplan;
+        const roomCount = fp.rooms.length;
+        const templates = fp.rooms.map(r => r.template).sort();
+        HC.endHunt(false);
+        return { roomCount, templates };
+      });
+      expect(result.roomCount).toBe(11);
+      expect(result.templates).toContain('reception');
+      expect(result.templates).toContain('BlockA');
+      expect(result.templates).toContain('BlockB');
+    });
+
+    test('SIDEBAR_OUTFIT filter: Ironclad stamps warden override; procedural is null', async () => {
+      const result = await page.evaluate(() => {
+        const { Hunt } = SugarCube.setup;
+        return {
+          iron: Hunt.applyFilter(Hunt.Event.SIDEBAR_OUTFIT,
+            { outfit: null, staticHouseId: 'ironclad' }).outfit,
+          owai: Hunt.applyFilter(Hunt.Event.SIDEBAR_OUTFIT,
+            { outfit: null, staticHouseId: 'owaissa' }).outfit,
+          proc: Hunt.applyFilter(Hunt.Event.SIDEBAR_OUTFIT,
+            { outfit: null, staticHouseId: null }).outfit
+        };
+      });
+      expect(result.iron).toBeTruthy();
+      expect(result.iron.image).toMatch(/warden/);
+      expect(result.owai).toBe(null);
+      expect(result.proc).toBe(null);
+    });
+
+    test('SIDEBAR_OUTFIT applied: HuntController.sidebarOutfit reads through the filter', async () => {
+      await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+      const result = await page.evaluate(() => {
+        const HC = SugarCube.setup.HuntController;
+        const off = HC.sidebarOutfit(); // no run -> null
+        HC.startHunt({ seed: 1, staticHouseId: 'ironclad' });
+        const iron = HC.sidebarOutfit();
+        HC.endHunt(false);
+        HC.startHunt({ seed: 1, staticHouseId: 'owaissa' });
+        const owai = HC.sidebarOutfit();
+        HC.endHunt(false);
+        HC.startHunt({ seed: 1 });
+        const proc = HC.sidebarOutfit();
+        HC.endHunt(false);
+        return { off: off, ironTip: iron && iron.tip, owai, proc };
+      });
+      expect(result.off).toBe(null);
+      expect(result.ironTip).toMatch(/warden/i);
+      expect(result.owai).toBe(null);
+      expect(result.proc).toBe(null);
+    });
+
     test('tick() is a no-op when no run is active', async () => {
       const seen = await page.evaluate(() => {
         const HC = SugarCube.setup.HuntController;

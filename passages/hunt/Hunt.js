@@ -40,7 +40,9 @@ setup.Hunt = (function () {
 		PROWL_CHECK:       'prowl-check',
 		OBJECTIVE:         'objective',
 		COMPANION_ALLOWED: 'companion-allowed',
-		SNAPSHOT:          'snapshot'
+		SNAPSHOT:          'snapshot',
+		MODIFIER_COUNT:    'modifier-count',
+		SIDEBAR_OUTFIT:    'sidebar-outfit'
 	});
 
 	var listeners = {};
