@@ -488,32 +488,6 @@
             return setup.HuntController.activeGhost();
         },
 
-        /* Internal: build the regular-hunt ghost from $hunt. Called by
-           HuntController; passages should still use setup.Ghosts.active().
-           Cached on (name, evidence-ids) since per-render call counts run
-           into the dozens. */
-        _activeFromHunt: function () {
-            var h = State.variables.hunt;
-            if (!h || !h.name) {
-                activeCache.key = null;
-                activeCache.ghost = null;
-                return null;
-            }
-            var key = "hunt|" + h.name + "|" + (h.evidence ? h.evidence.join(",") : "");
-            if (activeCache.key === key) return activeCache.ghost;
-            var ghost = setup.Ghosts.getByName(h.name);
-            if (!ghost) return null;
-            var g = Object.create(Ghost.prototype);
-            /* Copy every own property from the catalogue entry (static fields
-               plus any behaviour overrides like onHuntEnd), then overlay the
-               mutable per-hunt evidence from state. */
-            Object.keys(ghost).forEach(function (k) { g[k] = ghost[k]; });
-            g.evidence = rehydrateEvidence(h.evidence);
-            activeCache.key = key;
-            activeCache.ghost = g;
-            return g;
-        },
-
         /* Internal: hand back the catalogue Ghost named `name`. Used by
            HuntController for hunts. When the active hunt
            carries an `evidence` override (e.g. Fog of War splices one
@@ -674,9 +648,22 @@
         forceHuntGhost: function (g) {
             var h = State.variables.hunt;
             if (!h || !g) return;
+            var ids = g.evidence.map(function (e) { return e.id; });
             h.name     = g.name;
             h.realName = g.name;
-            h.evidence = g.evidence.map(function (e) { return e.id; });
+            h.evidence = ids;
+            /* During a procedural run the active ghost is sourced from
+               $run.ghostName (HuntController.activeGhost → _activeFromCatalogue),
+               not $hunt.name — so rewriting $hunt alone leaves the run still
+               pointing at the originally-rolled ghost. Mirror the override
+               onto $run as well so setup.Ghosts.active() and per-tick hunt
+               machinery pick up the cheat immediately. */
+            if (setup.HuntController
+                && typeof setup.HuntController.isActive === "function"
+                && setup.HuntController.isActive()) {
+                setup.HuntController.setField('ghostName', g.name);
+                setup.HuntController.setField('evidence', ids);
+            }
         },
         huntName: function () {
             var h = State.variables.hunt;
@@ -810,52 +797,6 @@
             if (s.deleteOneEvidence === 1)    return 1;
             return 0;
         },
-        /* Pull one random evidence id from the ghost's hunt list and
-           stash it in $hiddenEvidence (or $hiddenEvidence1 /
-           $hiddenEvidence2 for follow-on deletes gated by the witch
-           contract tier). Used by GhostRandomize to bake the witch's
-           requested evidence "removals" into the live hunt. */
-        deleteEvidenceFromHunt: function () {
-            var s = State.variables;
-            var hunt = s.hunt;
-            if (!hunt || !hunt.evidence || !hunt.evidence.length) return;
-            function pick() {
-                var i = Math.floor(Math.random() * hunt.evidence.length);
-                var picked = hunt.evidence[i];
-                hunt.evidence.deleteAt(i);
-                return picked;
-            }
-            s.hiddenEvidence = pick();
-            if (s.deleteSecondEvidence === 1 && hunt.evidence.length) {
-                s.hiddenEvidence1 = pick();
-            }
-            if (s.deleteThirdEvidence === 1 && hunt.evidence.length) {
-                s.hiddenEvidence2 = pick();
-            }
-        },
-        /* Shared "pick an evidence type that the ghost does NOT
-           have" roll. Called by the Tarot Knowledge card to stamp
-           $chosenEvidence + $knowledgeUsed so the Notebook can
-           mark the evidence-cross. Mirrors the exclusion list used
-           in MonkeyPawController: skip ghost-owned evidence and
-           anything the witch has hidden. */
-        consumeKnowledgeEvidence: function () {
-            if (State.variables.knowledgeUsed === 1) return;
-            State.variables.knowledgeUsed = 1;
-            var all = ["emf", "spiritbox", "gwb", "uvl", "glass", "temperature"];
-            var s = State.variables;
-            var hunt = s.hunt;
-            var owned = hunt && hunt.evidence ? hunt.evidence : [];
-            var missing = all.filter(function (e) {
-                return owned.indexOf(e) === -1
-                    && e !== s.hiddenEvidence
-                    && e !== s.hiddenEvidence1
-                    && e !== s.hiddenEvidence2;
-            });
-            State.variables.chosenEvidence = missing.length
-                ? missing[Math.floor(Math.random() * missing.length)]
-                : null;
-        }
     };
 
     // Pure $variable passthrough accessors. elapsedTimeProwl /

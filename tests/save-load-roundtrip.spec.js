@@ -487,6 +487,35 @@ test.describe('Save/load round-trip', () => {
     expect(after).toEqual(before);
   });
 
+  test('load redirects a moment pointing at a removed passage to Livingroom', async ({ game: page }) => {
+    // When a release renames or removes a passage, existing saves
+    // whose current moment.title points at the gone passage would
+    // otherwise hit SugarCube's "passage does not exist" error and
+    // refuse to load at all. SaveMigration rewrites any such moment
+    // to a known-safe fallback (Livingroom) so the player keeps their
+    // progress and lands somewhere benign.
+    await goToPassage(page, 'CityMap');
+    await setVar(page, 'mc.money', 999);
+    await commitToSave(page);
+
+    const passage = await page.evaluate(() => {
+      const blob = SugarCube.Save.serialize();
+      // Mutate the moment title to a passage that doesn't exist.
+      // Save serialization is opaque, so go via the in-memory object
+      // surface instead: rewrite history, then re-serialize.
+      const idx = SugarCube.State.activeIndex !== undefined
+        ? SugarCube.State.activeIndex
+        : SugarCube.State.history.length - 1;
+      SugarCube.State.history[idx].title = 'PassageThatDoesNotExist_' + Date.now();
+      const mutated = SugarCube.Save.serialize();
+      SugarCube.Save.deserialize(mutated);
+      return SugarCube.State.passage;
+    });
+
+    expect(passage).toBe('Livingroom');
+    expect(await getVar(page, 'mc.money')).toBe(999);
+  });
+
   test('SAVE_VERSION marker is at the hunt-aware schema version', async ({ game: page }) => {
     // Bumped to 3 when the hunt-mode subsystem landed. Future
     // downstream tooling can read this off save.metadata.version.
