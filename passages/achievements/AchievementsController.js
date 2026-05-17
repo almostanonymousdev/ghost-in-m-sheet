@@ -43,7 +43,13 @@ setup.Achievements = setup.Achievements || {};
 		{ id: 'disc.trap',      name: 'Pinned',         hint: 'Trap a ghost mid-hunt.',         category: 'discovery' },
 		{ id: 'disc.drift',     name: 'It Moved',       hint: 'Watch the favorite room shift.', category: 'discovery' },
 		{ id: 'disc.loot.cash', name: 'Sticky Fingers', hint: 'Pocket cash off a haunted shelf.', category: 'discovery' },
-		{ id: 'disc.loot.ecto', name: 'Green Thumb',    hint: 'Bottle ectoplasm.',              category: 'discovery' }
+		{ id: 'disc.loot.ecto', name: 'Green Thumb',    hint: 'Bottle ectoplasm.',              category: 'discovery' },
+
+		// repeatable:true entries re-fire UNLOCKED every time unlock()
+		// is called, regardless of stored state -- the player-button
+		// gag in the bedroom is the canonical example.
+		{ id: 'fun.sploosh', name: 'sploosh', hint: '???', hidden: true, repeatable: true, category: 'fun',
+		  icon: 'ui/achievements/sploosh.png' }
 	]);
 
 	function bestiaryCatalogue() {
@@ -84,13 +90,14 @@ setup.Achievements = setup.Achievements || {};
 			return false;
 		}
 		var s = store();
-		if (s[id]) {
+		var firstTime = !s[id];
+		if (firstTime) s[id] = { at: Date.now() };
+		if (firstTime || entry.repeatable) {
+			setup.Achievements.emit(setup.Achievements.Event.UNLOCKED, { id: id, entry: entry });
+		} else {
 			setup.Achievements.emit(setup.Achievements.Event.ALREADY_HAD, { id: id, entry: entry });
-			return false;
 		}
-		s[id] = { at: Date.now() };
-		setup.Achievements.emit(setup.Achievements.Event.UNLOCKED, { id: id, entry: entry });
-		return true;
+		return firstTime;
 	}
 
 	function all()    { return fullCatalogue(); }
@@ -112,58 +119,71 @@ setup.Achievements = setup.Achievements || {};
 		huntFlags = { caughtThisRun: false, toolsUsedThisRun: false };
 	}
 
-	var E = setup.Hunt.Event;
-
-	setup.Hunt.on(E.START, function () { resetHuntFlags(); });
-
-	setup.Hunt.on(E.CAUGHT, function () {
-		if (huntFlags) huntFlags.caughtThisRun = true;
-		unlock('fail.caught');
-	});
-
-	setup.Hunt.on(E.POSSESS, function () { unlock('fail.possessed'); });
-	setup.Hunt.on(E.TRAP,    function () { unlock('disc.trap'); });
-	setup.Hunt.on(E.DRIFT,   function () { unlock('disc.drift'); });
-
-	setup.Hunt.on(E.LOOT_TAKEN, function (ctx) {
-		if (!ctx) return;
-		if (ctx.kind === 'cash')      unlock('disc.loot.cash');
-		if (ctx.kind === 'ectoplasm') unlock('disc.loot.ecto');
-	});
-
-	/* No "tool activated" event exists; sample tool state every TICK.
-	   TICK fires on every nav step / tool tick during a hunt, so this
-	   catches activation within a tick of it happening. */
-	setup.Hunt.on(E.TICK, function () {
-		if (!huntFlags) return;
-		var t = sv().tools;
-		if (t && ((t.emf && t.emf.activated) || (t.uvl && t.uvl.activated))) {
-			huntFlags.toolsUsedThisRun = true;
+	/* Hunt-bus wiring is deferred to :storyready because Tweego's
+	   script-passage concatenation order is filesystem-driven --
+	   passages/achievements/ sorts ahead of passages/hunt/, so setup.Hunt
+	   does not exist yet at the moment this IIFE runs. By :storyready
+	   every script passage has eval'd and every setup.* facade is
+	   populated. */
+	function registerHuntSubscriptions() {
+		if (!setup.Hunt || !setup.Hunt.Event) {
+			console.error('Achievements: setup.Hunt missing at :storyready; subscriptions skipped.');
+			return;
 		}
-	});
+		var E = setup.Hunt.Event;
 
-	setup.Hunt.on(E.END, function (ctx) {
-		var FR = setup.HuntController && setup.HuntController.FailureReason;
-		if (!ctx) { huntFlags = null; return; }
-		if (ctx.success) {
-			unlock('win.first');
-			if (huntFlags && !huntFlags.caughtThisRun)    unlock('win.nocaught');
-			if (huntFlags && !huntFlags.toolsUsedThisRun) unlock('win.notools');
+		setup.Hunt.on(E.START, function () { resetHuntFlags(); });
 
-			var hunt = (setup.Ghosts && setup.Ghosts.hunt && setup.Ghosts.hunt()) || null;
-			var realName = hunt && hunt.realName;
-			if (realName === 'Mimic') unlock('win.mimic');
-			if (realName)             unlock(bestiaryId(realName));
-		} else if (FR) {
-			if (ctx.failureReason === FR.SANITY)     unlock('fail.sanity');
-			if (ctx.failureReason === FR.EXHAUSTION) unlock('fail.exhaustion');
-			if (ctx.failureReason === FR.TIME)       unlock('fail.time');
-			if (ctx.failureReason === FR.FLED)       unlock('fail.fled');
-			if (ctx.failureReason === FR.ABANDON)    unlock('fail.abandon');
-			// CAUGHT / POSSESSED already unlocked via their dedicated events.
-		}
-		huntFlags = null;
-	});
+		setup.Hunt.on(E.CAUGHT, function () {
+			if (huntFlags) huntFlags.caughtThisRun = true;
+			unlock('fail.caught');
+		});
+
+		setup.Hunt.on(E.POSSESS, function () { unlock('fail.possessed'); });
+		setup.Hunt.on(E.TRAP,    function () { unlock('disc.trap'); });
+		setup.Hunt.on(E.DRIFT,   function () { unlock('disc.drift'); });
+
+		setup.Hunt.on(E.LOOT_TAKEN, function (ctx) {
+			if (!ctx) return;
+			if (ctx.kind === 'cash')      unlock('disc.loot.cash');
+			if (ctx.kind === 'ectoplasm') unlock('disc.loot.ecto');
+		});
+
+		/* No "tool activated" event exists; sample tool state every TICK.
+		   TICK fires on every nav step / tool tick during a hunt, so this
+		   catches activation within a tick of it happening. */
+		setup.Hunt.on(E.TICK, function () {
+			if (!huntFlags) return;
+			var t = sv().tools;
+			if (t && ((t.emf && t.emf.activated) || (t.uvl && t.uvl.activated))) {
+				huntFlags.toolsUsedThisRun = true;
+			}
+		});
+
+		setup.Hunt.on(E.END, function (ctx) {
+			var FR = setup.HuntController && setup.HuntController.FailureReason;
+			if (!ctx) { huntFlags = null; return; }
+			if (ctx.success) {
+				unlock('win.first');
+				if (huntFlags && !huntFlags.caughtThisRun)    unlock('win.nocaught');
+				if (huntFlags && !huntFlags.toolsUsedThisRun) unlock('win.notools');
+
+				var hunt = (setup.Ghosts && setup.Ghosts.hunt && setup.Ghosts.hunt()) || null;
+				var realName = hunt && hunt.realName;
+				if (realName === 'Mimic') unlock('win.mimic');
+				if (realName)             unlock(bestiaryId(realName));
+			} else if (FR) {
+				if (ctx.failureReason === FR.SANITY)     unlock('fail.sanity');
+				if (ctx.failureReason === FR.EXHAUSTION) unlock('fail.exhaustion');
+				if (ctx.failureReason === FR.TIME)       unlock('fail.time');
+				if (ctx.failureReason === FR.FLED)       unlock('fail.fled');
+				if (ctx.failureReason === FR.ABANDON)    unlock('fail.abandon');
+				// CAUGHT / POSSESSED already unlocked via their dedicated events.
+			}
+			huntFlags = null;
+		});
+	}
+	$(document).one(':storyready', registerHuntSubscriptions);
 
 	setup.Achievements.OWNED_VARS = OWNED_VARS;
 	setup.Achievements.unlock   = unlock;

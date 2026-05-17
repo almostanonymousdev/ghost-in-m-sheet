@@ -98,6 +98,9 @@
 			@@.mc-speech; This should help. Now I can sleep peacefully.@@
 		<</linkreplace>>
 	<</if>>
+	@@.usebtn;<<link "Push your endorphin button">>
+		<<run setup.Achievements.unlock("fun.sploosh")>>
+	<</link>>@@<br>
 	<br>
 	<br>
 	@@.backbtn;[[Livingroom][setup.Time.addMinutes(1)]]@@<br>
