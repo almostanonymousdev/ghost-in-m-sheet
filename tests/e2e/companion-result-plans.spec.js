@@ -34,6 +34,38 @@ test.describe('Companion result plans', () => {
     expect(picked).toBeNull();
   });
 
+  /* Regression: during a procedural run, Fog of War splices one of the
+     ghost's three evidences out of $run.evidence — but startHunt also
+     stamps $hunt.evidence with the *full* catalogue list. The companion
+     must roll from the trimmed run list, not the wider $hunt list, or
+     Plan3 can announce evidence the player can never actually find. */
+  test('pickRandomHuntEvidence picks from $run.evidence (not $hunt) when the two diverge', async ({ game: page }) => {
+    await page.evaluate(() => {
+      // Roll a vanilla run, then simulate Fog of War by trimming
+      // $run.evidence to a single id while leaving $hunt.evidence
+      // (catalogue, all 3) intact.
+      SugarCube.setup.HuntController.startHunt({ seed: 1 });
+      SugarCube.setup.HuntController.setField('ghostName', 'Spirit');
+      SugarCube.setup.HuntController.setField('evidence', ['emf']);
+      SugarCube.setup.Ghosts.startHunt('Spirit');
+      // $hunt.evidence is now ['emf','spiritbox','gwb'] from buildHunt;
+      // $run.evidence is ['emf'].
+    });
+
+    const huntEv = await callSetup(page, 'setup.Ghosts.huntEvidence()');
+    const runEv = await callSetup(page, 'setup.HuntController.runEvidence()');
+    expect(huntEv.slice().sort()).toEqual(['emf', 'gwb', 'spiritbox']);
+    expect(runEv).toEqual(['emf']);
+
+    // 50 rolls; every result must come from $run.evidence (= just 'emf').
+    for (let i = 0; i < 50; i++) {
+      const picked = await callSetup(page, 'setup.Companion.pickRandomHuntEvidence()');
+      expect(picked).toBe('emf');
+    }
+
+    await page.evaluate(() => SugarCube.setup.HuntController.end());
+  });
+
   test('pickGwbImage returns a 1..18 path under mechanics/gwb', async ({ game: page }) => {
     const seen = new Set();
     for (let i = 0; i < 100; i++) {

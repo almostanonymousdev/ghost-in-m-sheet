@@ -6,8 +6,9 @@ const { openGame, resetGame, callSetup, getVar, setHuntMode } = require('./helpe
    onChange handler calls setup.Ghosts.forceHuntGhost(ghost). Two distinct
    bundles back the active ghost:
 
-     - $hunt.name / $hunt.evidence      — witch-contract phase, read by
-                                          setup.Ghosts._activeFromHunt
+     - $hunt.name / $hunt.evidence      — witch-contract phase, surfaced
+                                          via setup.Ghosts.huntName /
+                                          huntEvidence
      - $run.ghostName / $run.evidence   — procedural hunt run, read by
                                           HuntController.activeGhost
                                           (the path setup.Ghosts.active()
