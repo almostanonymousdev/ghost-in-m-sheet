@@ -1,0 +1,47 @@
+/* ===== Rescue / Furniture Search ===== */
+.rescueClueStyle {
+	width: 10px;
+	height: 10px;
+}
+
+.furnitureSearch {
+	display: flex;
+	justify-content: center;
+	gap: 10%;
+	/* Match the .footertools column (80% left-aligned) so the
+	   furniture strip sits visually over the tools instead of
+	   being centered across the whole room. */
+	width: 80%;
+}
+
+.furnitureSearch a {
+	width: 2.5vw;
+}
+
+.furnitureSearch img {
+	max-width: 40%;
+	height: auto;
+	background-color: rgba(169, 169, 169, 0.5);
+}
+
+.furnitureSearch span {
+	display: inline-block;
+}
+
+.furnitureSearch span a {
+	display: block;
+}
+
+.furnitureSearch span img {
+	display: block;
+	max-width: 100%;
+	height: auto;
+}
+
+.highlighted-furniture {
+	border: 2px solid pink;
+}
+
+.highlighted-furnitureDetector {
+	border: 2px solid green;
+}

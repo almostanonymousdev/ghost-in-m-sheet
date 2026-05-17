@@ -1,13 +1,14 @@
 :: widgetHauntedHouseRoom [widget nobr] {"position":"7000,100","size":"100,100"}
 /* huntConditions -- single-row HUD above the tool bar. Renders the live
-per-step deltas, contributor chips, and the spendable-action buttons
-(bait the ghost, toggle overcharged tools) on ONE row. Numbers come
-from setup.HauntConditions.snapshot() so the HUD, the tool-card
-hovertip, and the actual tool/hunt rolls all read the same source.
-Renders contents only -- the .hunt-conditions wrapper lives on the
-HuntRun layout so re-renders via <<replace ".hunt-conditions">>
-don't double-nest the wrapper class (which compounds its 80%
-font-size). */
+per-step deltas and bonuses. Contributor chips render separately via
+<<huntEffectsList>> (left-side vertical list); the spendable-action
+buttons render separately via <<huntActionBar>> (below the tool row).
+Numbers come from setup.HauntConditions.snapshot() so the HUD, the
+tool-card hovertip, and the actual tool/hunt rolls all read the same
+source. Renders contents only -- the .hunt-conditions wrapper lives
+on the HuntRun layout so re-renders via <<replace ".hunt-conditions">>
+don't double-nest the wrapper class. Use <<refreshHuntHud>> to refresh
+all three slots together. */
 <<widget "huntConditions">>
 	<<set _hc to setup.HauntConditions.snapshot()>>
 	<<set _sanityVal to Math.round(_hc.sanityPerStep * 100) / 100>>
@@ -29,25 +30,33 @@ font-size). */
 		<</if>>
 		· prowl +<<= _hc.prowlChanceBonus>>%
 	<</if>>
-	<<for _c range _hc.contributors>>
-		<<capture _c>>
-			· <span @style="'color:' + _c.color + ';font-weight:bold;'" @title="_c.detail">[<<= _c.label>>]</span>
-		<</capture>>
-	<</for>>
-	<<huntActionBar>>
 <</widget>>
 
-/* huntActionBar -- spendable-resource action buttons rendered inline at
-the end of <<huntConditions>>: bait the ghost (lust spend) and toggle
-overcharged tools on/off. Each click re-renders <<huntConditions>> as a
-whole (which contains the action bar), so we only need the one
-<<replace ".hunt-conditions">> per callback. Renders whenever the
-shared hunt is active on HuntRun; the canBait predicate self-gates
-against hunts that have no $hunt. */
+/* huntEffectsList -- vertical chip list of active hunt contributors
+(lust thresholds, exhaustion drain, modifier effects, etc.). Lives on
+the left edge of the hunt-run-bottom region, above the divider. Reads
+the same setup.HauntConditions.snapshot() the stats row consumes, so
+the per-tick refresh keeps both in sync via <<refreshHuntHud>>. */
+<<widget "huntEffectsList">>
+	<<set _hc to setup.HauntConditions.snapshot()>>
+	<<for _c range _hc.contributors>>
+		<<capture _c>>
+			<div><span @style="'color:' + _c.color + ';font-weight:bold;'" @title="_c.detail">[<<= _c.label>>]</span></div>
+		<</capture>>
+	<</for>>
+<</widget>>
+
+/* huntActionBar -- spendable-resource action buttons rendered below
+the tool row: bait the ghost (lust spend) and toggle overcharged
+tools on/off. Each click refreshes the full HUD trio via
+<<refreshHuntHud>>, since the bait/overcharge state feeds back into
+the stats and contributor list. Renders whenever the shared hunt is
+active on HuntRun; the canBait predicate self-gates against hunts
+that have no $hunt. */
 <<widget "huntActionBar">>
 	<<if setup.HuntController.isHuntActive()>>
 		<<if setup.HauntConditions.canBait()>>
-			· @@.huntActionLink;<<link `"Bait ghost (+" + setup.HauntConditions.BAIT_INITIAL_LUST + " lust, -" + setup.HauntConditions.ENERGY_COST_BAIT + " energy)"`>>
+			<span @title="'+' + setup.HauntConditions.BAIT_INITIAL_LUST + ' lust, -' + setup.HauntConditions.ENERGY_COST_BAIT + ' energy'">@@.huntActionLink;<<link "Bait ghost">>
 				<<run setup.HauntConditions.startBait()>>
 				<<updatemeter 'sanity' `setup.Mc.sanityPct()`>>
 				<<updatemeter 'energy' `setup.Mc.energyPct()`>>
@@ -57,24 +66,35 @@ against hunts that have no $hunt. */
 				<<elseif setup.Mc.isExhausted()>>
 					<<goto "HuntOverExhaustion">>
 				<<else>>
-					<<replace ".hunt-conditions">><<huntConditions>><</replace>>
+					<<refreshHuntHud>>
 				<</if>>
-			<</link>>@@
+			<</link>>@@</span>
 		<<elseif setup.HauntConditions.snapshot().baitActive>>
-			· <span class="hunt-actions-note">Baiting: <<= setup.HauntConditions.snapshot().baitStepsRemain>> left</span>
+			<span class="hunt-actions-note">Baiting: <<= setup.HauntConditions.snapshot().baitStepsRemain>> Actions Left</span>
 		<</if>>
 		<<if setup.HauntConditions.isOverchargedMode()>>
-			· @@.huntActionLink;<<link "Tools: Overcharged (revert)">>
+			@@.huntActionLink.huntActionLink-active;<<link "Overcharge">>
 				<<run setup.HauntConditions.toggleOverchargedTools()>>
-				<<replace ".hunt-conditions">><<huntConditions>><</replace>>
+				<<refreshHuntHud>>
 			<</link>>@@
 		<<else>>
-			· @@.huntActionLink;<<link "Tools: Standard (overcharge)">>
+			@@.huntActionLink;<<link "Overcharge">>
 				<<run setup.HauntConditions.toggleOverchargedTools()>>
-				<<replace ".hunt-conditions">><<huntConditions>><</replace>>
+				<<refreshHuntHud>>
 			<</link>>@@
 		<</if>>
 	<</if>>
+<</widget>>
+
+/* refreshHuntHud -- shared refresh helper for the hunt HUD trio
+(conditions stats, effects list, action bar). The three slots render
+into independent containers in HuntRun, so any state change that
+affects one (tool tick, bait click, overcharge toggle) refreshes all
+three to keep them in sync. */
+<<widget "refreshHuntHud">>
+	<<replace ".hunt-conditions">><<huntConditions>><</replace>>
+	<<replace ".hunt-run-effects">><<huntEffectsList>><</replace>>
+	<<replace ".hunt-run-actions">><<huntActionBar>><</replace>>
 <</widget>>
 
 /* randRangeImg -- args: pathPrefix, start, end, ext, cssClass?

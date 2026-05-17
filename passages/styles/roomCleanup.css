@@ -1,0 +1,24 @@
+/* ===== Room Cleanup Minigame ===== */
+.room-container {
+	position: relative;
+	padding-bottom: 66.67%;
+	width: 100%;
+	background-image: url('assets/ui/img/hotel-room.jpeg');
+	background-size: cover;
+	background-position: center;
+	overflow: hidden;
+}
+
+.trash {
+	position: absolute;
+	cursor: pointer;
+	width: 5%;
+	height: auto;
+}
+
+#cleanup-message {
+	display: none;
+	margin-top: 20px;
+	font-weight: bold;
+	color: green;
+}

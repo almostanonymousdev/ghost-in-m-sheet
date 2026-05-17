@@ -1,0 +1,102 @@
+/* ===== Map / Delivery Layout ===== */
+.deliverywrapper {
+	display: flex;
+	flex-direction: row;
+	gap: 5%;
+}
+
+.flexwrapper {
+	display: flex;
+	flex-wrap: wrap;
+	align-content: space-around;
+	height: 100%;
+	row-gap: 10px;
+}
+
+.housecard {
+	width: 16.5%;
+	text-align: center;
+	z-index: 2;
+	line-height: 1.3;
+}
+
+.housecard img {
+	display: block;
+	margin: 0 auto;
+}
+
+.itemwrapper {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 5%;
+}
+
+/* ===== Map Icon Styles ===== */
+.icon {
+	max-width: 50%;
+	height: auto;
+	border-radius: 30%;
+}
+
+.iconsOnMap {
+	max-width: 50%;
+	max-height: 90%;
+	border-radius: 30%;
+}
+
+.iconPx {
+	width: 90px;
+	height: 90px;
+	border-radius: 30%;
+}
+
+/* Map icon text — shared font size */
+.icontext,
+.icontextcity,
+.icontextdelivery {
+	font-size: 25px;
+}
+
+.icontext {
+	font-family: 'Special Elite', cursive;
+	letter-spacing: 0.5px;
+	text-shadow:
+		0 0 2px rgba(255, 255, 255, 0.9),
+		0 0 6px rgba(255, 255, 255, 0.6),
+		0 0 12px rgba(255, 255, 255, 0.4);
+}
+
+.icontextcity {
+	font-family: 'Amatic SC', sans-serif;
+	font-weight: bold;
+}
+
+.icontextcity a {
+	text-decoration: none;
+}
+
+.icontextdelivery {
+	font-family: 'Cormorant', serif;
+}
+
+.icontext a,
+.icontextdelivery a {
+	text-decoration: none;
+	transition: color 0.4s ease;
+}
+
+.icontext a {
+	color: var(--color-ghost-green);
+}
+
+.icontextdelivery a {
+	color: var(--color-delivery-purple);
+}
+
+.icontextdelivery a:hover {
+	color: #d01de0;
+}
+
+.icontext a:hover {
+	color: #2E8B57;
+}

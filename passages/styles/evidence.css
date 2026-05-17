@@ -57,3 +57,44 @@
 #guide th:last-child, #guide td:last-child {
 	border-right: none;
 }
+
+/* ===== Evidence ===== */
+.evidenceImgs {
+	width: auto;
+	max-height: 67vh;
+}
+
+.evidenceText {
+	font-size: clamp(0.75rem, 2.2vh, 1rem);
+}
+
+#ghostTypeSelected {
+	overflow-y: auto;
+}
+
+.evidenceFlex {
+	display: flex;
+	flex-direction: column;
+}
+
+.evidenceWrapper {
+	display: flex;
+	border: 2px solid #000;
+	padding: 10px;
+}
+
+.evidenceDesc {
+	align-self: center;
+	flex-basis: 70%;
+}
+
+.evidenceCardIcon {
+	flex-basis: 20%;
+}
+
+.evidenceshadowtext {
+	color: var(--color-mc-pink);
+	text-decoration: none;
+	text-shadow: var(--btn-shadow);
+	-webkit-text-stroke: 0.5px pink;
+}
