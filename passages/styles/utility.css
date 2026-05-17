@@ -1,0 +1,36 @@
+/* ===== Visibility / Utility ===== */
+.hidden {
+	visibility: hidden;
+}
+
+.visible {
+	visibility: visible;
+}
+
+.disabled-link {
+	pointer-events: none;
+	opacity: 0.5;
+}
+
+.disabled-linkSpecial a {
+	pointer-events: none;
+	opacity: 0.5;
+}
+
+.nightTime {
+	filter: brightness(0.7);
+}
+
+.hideRescueHouse {
+	display: none;
+}
+
+.hideMainScreen {
+	color: rgba(255, 255, 255, 0.8);
+}
+
+.right {
+	display: inline-block;
+	background-color: green;
+	border-radius: 30%;
+}

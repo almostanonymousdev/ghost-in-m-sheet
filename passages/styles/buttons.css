@@ -1,0 +1,121 @@
+/* ===== End Shift / Clickable ===== */
+.btnendshift {
+	position: fixed;
+	top: 2%;
+	right: 2%;
+}
+
+.btnendcolor {
+	background-color: #ff6666;
+	color: #333333;
+	padding: 15px;
+	border-radius: 5px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	font-weight: bold;
+}
+
+.clickable {
+	cursor: pointer;
+	transition: color 0.4s ease, background-color 0.4s ease;
+}
+
+.clickable:hover {
+	color: #595959;
+	background-color: #ff9999;
+}
+
+/* ===== Navigation Buttons — Shared Base ===== */
+.adaptiveLink a,
+.movebtn a,
+.backbtn a,
+.enterbtn a,
+.usebtn a,
+.usebtn {
+	font-weight: bold;
+	text-decoration: none;
+	transition: var(--btn-transition);
+	-webkit-text-stroke: 0.8px black;
+}
+
+/* Navigation Buttons — Individual Styles */
+.adaptiveLink a {
+	color: var(--color-nav-blue);
+	text-shadow: var(--outline-shadow);
+}
+
+.movebtn a {
+	font-size: 1.2em;
+	color: var(--color-nav-blue);
+	text-shadow: var(--btn-shadow);
+}
+
+.movebtn a:hover {
+	color: #91a5c2;
+}
+
+.backbtn a {
+	display: inline-block;
+	border: 3px solid black;
+	border-radius: 5px;
+	padding: 10px;
+	margin: 8px 4px;
+	background-color: rgba(255, 255, 255, 0.9);
+	font-size: 1.2em;
+	color: var(--color-back-blue);
+	text-shadow: var(--btn-shadow-light);
+}
+
+.backbtn a:hover {
+	color: #5dade2;
+	text-shadow: var(--btn-shadow);
+}
+
+.enterbtn a {
+	font-size: 1.1em;
+	color: var(--color-enter-blue);
+	text-shadow: var(--btn-shadow);
+}
+
+.enterbtn a:hover {
+	color: #1882c4;
+}
+
+.usebtn a,
+.usebtn {
+	font-style: italic;
+	font-size: 1.05em;
+	color: var(--color-use-yellow);
+}
+
+.usebtn a {
+	text-shadow: var(--outline-shadow);
+}
+
+.usebtn {
+	text-shadow: var(--btn-shadow);
+}
+
+.usebtn a:hover,
+.usebtn:hover {
+	color: var(--color-use-yellow-hover);
+	text-shadow: var(--btn-shadow);
+}
+
+.alertbtn a {
+	display: inline-block;
+	padding: 6px 14px;
+	margin: 2px 0;
+	border: 2px solid #c0364d;
+	border-radius: 6px;
+	background: linear-gradient(135deg, #ff5a7a, #c0364d);
+	color: #fff;
+	font-size: 1.05em;
+	font-weight: bold;
+	text-shadow: var(--btn-shadow);
+	box-shadow: var(--card-shadow);
+}
+
+.alertbtn a:hover {
+	background: linear-gradient(135deg, #ff7e96, #d94a63);
+	box-shadow: var(--card-shadow-hover);
+}

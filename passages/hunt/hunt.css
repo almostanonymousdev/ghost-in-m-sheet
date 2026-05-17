@@ -1,0 +1,433 @@
+/* ===== Hunt layout =====
+ * Top half: two-column grid (minimap on the left, modifiers +
+ * Win/Lose/Abandon on the right). Bottom half: furniture-icon
+ * strip, run HUD line, and a toolbar whose left 80% is the
+ * (placeholder) tool bar and whose right 20% is the exit nav
+ * links.
+ *
+ * Position fixed so the layout breaks out of #passages's
+ * max-width: 864px / margin: 0 auto centering -- it spans the
+ * full area to the right of #ui-bar all the way to the viewport
+ * edge. left: 17.5em matches SugarCube's default ui-bar width;
+ * .ui-bar-stowed flips left to 0 when the player collapses the
+ * sidebar so we don't leave dead space on the left either. */
+/* HuntIdentifyResolve fade reveal. Both the result line and the
+   exit links start invisible; the passage adds .show to each in turn
+   so the text fades in first and the buttons fade in after the text
+   has fully settled. */
+.hunt-reveal {
+	opacity: 0;
+	transition: opacity 1s ease;
+}
+
+.hunt-reveal.show {
+	opacity: 1;
+}
+
+.hunt-run-layout {
+	position: fixed;
+	top: 0;
+	left: 17.5em;
+	right: 0;
+	bottom: 0;
+	overflow-x: hidden;
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+	padding: 1em 2.5em;
+	gap: 0.5em;
+}
+
+/* Top-center tray for tool readouts. The toolbar's replace macro
+ * targets #hunt-tool-result, so each tool click overwrites the prior
+ * reading here instead of inlining under the icon. Absolute positioning
+ * keeps it from disturbing the hunt-run-top grid; pointer-events:none
+ * lets clicks fall through to the top-row UI when the tray is empty. */
+.hunt-tool-result {
+	position: absolute;
+	top: 0.5em;
+	left: 50%;
+	transform: translateX(-50%);
+	max-width: 32em;
+	max-height: 60vh;
+	overflow: auto;
+	text-align: center;
+	z-index: 10;
+	pointer-events: none;
+}
+
+.hunt-tool-result:empty {
+	display: none;
+}
+
+.hunt-tool-result>* {
+	pointer-events: auto;
+}
+
+body.ui-bar-stowed .hunt-run-layout {
+	left: 0;
+}
+
+.hunt-run-top {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1em;
+	flex: 1 1 auto;
+	min-height: 0;
+}
+
+.hunt-run-tl,
+.hunt-run-tr {
+	display: flex;
+	flex-direction: column;
+	overflow: auto;
+}
+
+.hunt-run-tr {
+	align-items: flex-end;
+	text-align: right;
+}
+
+.hunt-modifier-chip {
+	cursor: help;
+	border-bottom: 1px dotted currentColor;
+}
+
+.hunt-run-furniture {
+	display: flex;
+	justify-content: center;
+	gap: 1.5em;
+	padding: 0.25em 0;
+	flex: 0 0 auto;
+}
+
+.hunt-furniture-item {
+	display: inline-flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+	min-width: 64px;
+}
+
+.hunt-furniture-item img {
+	width: 56px;
+	height: 56px;
+	object-fit: contain;
+	background-color: rgba(169, 169, 169, 0.5);
+}
+
+.hunt-furniture-label {
+	font-size: 0.75em;
+	opacity: 0.85;
+	line-height: 1;
+}
+
+.hunt-furniture-loot {
+	font-size: 0.7em;
+	line-height: 1;
+}
+
+.hunt-run-bottom {
+	display: flex;
+	flex-direction: column;
+	flex: 0 0 auto;
+	gap: 0.5em;
+}
+
+/* The hunt tool row is full-width and content-centered, so the
+   hunt-conditions HUD inside .hunt-run-bottom spans full width
+   to align with the tool row beside it. */
+.hunt-run-bottom .hunt-conditions {
+	width: 100%;
+}
+
+/* Vertical contributor-chip list anchored to the .hunt-run-hud's
+   top-left edge so the chips float just above the hud's border-top
+   divider on the left, mirroring how .hunt-run-lights anchors on
+   the right. Pulled out of the flex flow with absolute positioning
+   so the chips can't push the stats row away from the divider.
+   Each chip renders on its own line; the wrapper collapses to
+   nothing when no contributors are active. */
+.hunt-run-effects {
+	position: absolute;
+	left: 0;
+	bottom: calc(100% + 4px);
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 0.15em;
+	font-size: 80%;
+	opacity: 0.9;
+	z-index: 5;
+	pointer-events: none;
+	text-shadow: 0 0 7px black;
+}
+
+.hunt-run-effects>* {
+	pointer-events: auto;
+}
+
+.hunt-run-effects:empty {
+	display: none;
+}
+
+/* Bait + overcharge buttons sit on their own row below the centered
+   tool cards, with enough gap to keep accidental clicks from landing
+   on the wrong button. */
+.hunt-run-actions {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 2.5em;
+	padding: 0.125em 0 0.5em;
+	min-height: 1.5em;
+}
+
+.hunt-run-actions:empty {
+	display: none;
+}
+
+.hunt-run-hud {
+	min-height: 1px;
+	border-top: 1px solid #444;
+	position: relative;
+}
+
+/* Light on/off buttons. Anchored to .hunt-run-hud's top-right edge so
+   they float just above the HUD's border-top divider on the far right
+   side. Pulled out of the flex flow with absolute positioning so the
+   HUD's centered-stat layout keeps its symmetry. */
+.hunt-run-lights {
+	position: absolute;
+	right: 0;
+	bottom: calc(100% + 4px);
+	display: flex;
+	gap: 4px;
+	z-index: 5;
+}
+
+/* Explicit square height (matching width) so the wrapping anchor keeps
+   a clickable area even when the icon fails to load — without this,
+   `height: auto` collapses to 0 and downstream layout (or test
+   harnesses that block media) can let neighbouring nav links steal the
+   click. */
+.hunt-run-lights img {
+	width: 32px;
+	height: 32px;
+}
+
+/* The toolbar is a positioned wrapper so .hunt-run-tools can span
+ * the full width and center its cluster on the same vertical axis as
+ * the furniture strip above it; .hunt-run-nav overlays the right
+ * edge as an absolute child. */
+.hunt-run-toolbar {
+	position: relative;
+}
+
+.hunt-run-tools {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5em;
+	padding: 0.5em 0.5em 0.25em;
+	min-height: 60px;
+}
+
+.hunt-tool-card {
+	flex: 0 0 auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+}
+
+.hunt-tool-icon {
+	width: 64px;
+	height: 64px;
+	object-fit: contain;
+}
+
+.hunt-tool-card-label {
+	font-size: 0.75em;
+	opacity: 0.85;
+	line-height: 1.1;
+	text-align: center;
+}
+
+/* Shared tool-tick progress bar. Sits at the top of the layout
+ * (sibling of #hunt-tool-result) rather than under each tool card,
+ * so the toolbar row stays compact whether or not a tick is in
+ * flight. Only the active tool renders its meter element here; on
+ * completion the slot empties the wrapper and :empty hides it. */
+.hunt-tool-meter {
+	position: absolute;
+	top: 0.25em;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 18em;
+	max-width: 60vw;
+	z-index: 11;
+	pointer-events: none;
+}
+
+.hunt-tool-meter:empty {
+	display: none;
+}
+
+.hunt-run-nav {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	justify-content: center;
+	text-align: right;
+	gap: 0.25em;
+}
+
+/* Companion icon slot in the toolbar. Sits absolutely between the
+   centered tools cluster and the right-edge nav: anchored to the right
+   with enough offset to clear hunt-run-nav's natural width, vertically
+   centered against the tools row. Holds a single thumbnail (companion
+   portrait or question-mark) wrapped in a clickable link -- the
+   companion mini-panel with sanity/lust meters stays in StoryCaption,
+   not here. */
+.hunt-run-companion {
+	position: absolute;
+	top: 50%;
+	right: 8em;
+	transform: translateY(-50%);
+	width: 64px;
+	height: 64px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	pointer-events: auto;
+}
+
+.hunt-run-companion .companion-card-link {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+/* Override the wide sidebar styling for the toolbar slot: shrink to
+   a square thumbnail and keep the hover/border affordances. */
+.hunt-run-companion .companion-image,
+.hunt-run-companion .companion-imageSucceeded {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	padding: 0;
+	border-width: 2px;
+	border-radius: 6px;
+}
+
+/* When the current room has more than 3 exits the column overruns the
+   tool row's vertical budget; the compact variant shrinks the link
+   text and tightens the gap so all exits stay visible without
+   overlapping the toolbar. */
+.hunt-run-nav-compact {
+	gap: 0.1em;
+}
+
+.hunt-run-nav-compact .movebtn a {
+	font-size: 0.85em;
+}
+
+.hunt-run-nav-compact br {
+	display: none;
+}
+
+/* ===== Hunt minimap ===== */
+/* Click-to-collapse: scaling the wrapper with transform-origin top
+   left shrinks the visual map toward its top-left corner without
+   changing its layout box, so the rest of the hunt-run-tl column
+   stays anchored. Click anywhere on the (still-original-sized) box
+   to expand it back. */
+.hunt-minimap {
+	cursor: pointer;
+	transform-origin: top left;
+	transition: transform 0.2s ease;
+}
+
+.hunt-minimap.hunt-minimap-collapsed {
+	transform: scale(0.35);
+}
+
+.hunt-minimap-svg {
+	display: block;
+	margin: 8px 0;
+	max-width: 100%;
+	height: auto;
+}
+
+.hunt-minimap-edge {
+	stroke: #777;
+	stroke-width: 2;
+}
+
+.hunt-minimap-room rect {
+	fill: #2a2a2a;
+	stroke: #888;
+	stroke-width: 2;
+}
+
+.hunt-minimap-room text {
+	fill: #cdcdcd;
+	font-size: 12px;
+	font-family: 'Cormorant', serif;
+	pointer-events: none;
+}
+
+.hunt-minimap-room.hunt-minimap-boss rect {
+	stroke: gold;
+	stroke-width: 3;
+}
+
+.hunt-minimap-room.hunt-minimap-current rect {
+	fill: #444;
+	stroke: var(--color-nav-blue);
+	stroke-width: 3;
+}
+
+/* Loot Sense (meta-shop unlock): rooms with at least one uncollected
+   loot kind glow lime-green. Stacks with the current-room blue stroke
+   via stroke-width precedence -- the cascade picks whichever rule lands
+   later, so authors can reorder these for the intended highlight. */
+.hunt-minimap-room.hunt-minimap-loot rect {
+	fill: #2c3a23;
+	stroke: #9ee27a;
+	stroke-width: 3;
+}
+
+/* Reliable Recon (meta-shop unlock): the ghost's original lair until
+   it drifts. Magenta so it reads distinctly from boss-gold and
+   loot-green at a glance. */
+.hunt-minimap-room.hunt-minimap-recon rect {
+	stroke: #d870ff;
+	stroke-width: 3;
+}
+
+/* ===== Hunt harassment readout ===== */
+.huntHarassmentReadout {
+	margin: 0.5em 0;
+	font-style: italic;
+}
+
+.huntHarassment-Low {
+	color: #2E8B57;
+	font-weight: bold;
+}
+
+.huntHarassment-Medium {
+	color: #ffd166;
+	font-weight: bold;
+}
+
+.huntHarassment-High {
+	color: #ff6666;
+	font-weight: bold;
+}

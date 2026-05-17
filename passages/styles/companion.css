@@ -6,3 +6,60 @@ body.style-companion-mini .containerMini img {
 	width: 30%;
 	margin-right: 5%;
 }
+
+/* ===== Companion Images — Shared Base ===== */
+.companion-image,
+.companion-imageSucceeded {
+	width: 70%;
+	border-radius: 8px;
+	padding: 5px;
+	box-shadow: var(--card-shadow);
+	cursor: pointer;
+	transition: all 0.3s ease;
+	border: 3px solid #007BFF;
+}
+
+.companion-imageSucceeded {
+	border-color: #FF69B4;
+}
+
+.companion-image:hover {
+	border-color: #0056b3;
+	box-shadow: var(--card-shadow-hover);
+}
+
+.companion-imageSucceeded:hover {
+	border-color: var(--color-mc-pink-link);
+	box-shadow: var(--card-shadow-hover);
+}
+
+/* ===== Companion Layout — Shared Base ===== */
+.flexwrapperCompanionMain,
+.flexwrapperCompanionMainInfo {
+	display: flex;
+	align-content: stretch;
+	height: 100%;
+	row-gap: 10px;
+	justify-content: space-between;
+}
+
+.flexwrapperCompanionMain {
+	align-items: center;
+}
+
+.companionImageMain {
+	flex: 1;
+	min-width: 40%;
+}
+
+.companionTextMain {
+	flex: 1;
+	min-width: 40%;
+	margin-left: 5%;
+	white-space: normal;
+}
+
+.toolsTextCentered {
+	margin-left: 15%;
+	-webkit-text-stroke: 1px black;
+}

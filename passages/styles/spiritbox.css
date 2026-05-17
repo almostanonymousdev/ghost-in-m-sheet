@@ -1,0 +1,34 @@
+/* ===== Spirit Box / Info Containers — Shared Base ===== */
+.spiritbox-container,
+.notFound-container {
+	padding: 10px;
+	border-radius: 10px;
+	margin-bottom: 10px;
+	display: flex;
+	flex-direction: column;
+}
+
+.spiritbox-container {
+	border: 2px solid #333;
+	font-weight: bold;
+}
+
+.notFound-container {
+	border: 2px solid white;
+}
+
+.spiritbox-question {
+	font-weight: bold;
+	color: #ff3366;
+}
+
+.spiritbox-answer {
+	font-style: italic;
+	color: #3399ff;
+	margin-top: 5px;
+}
+
+.spiritbox-no-response {
+	color: white;
+	font-style: italic;
+}
