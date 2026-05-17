@@ -84,12 +84,22 @@ setup.Achievements = setup.Achievements || {};
 
 	function has(id) { return !!store()[id]; }
 
+	/* Cheats poison the save for future unlocks. Once any cheat has fired,
+	   no new achievement can be earned -- previously-unlocked entries stay
+	   unlocked, but unlock() silently no-ops on fresh ids. The lone
+	   exception is 'fun.cheat' itself: the joke entry is *the* artifact
+	   that proves the save has been cheated, so the CHEAT_USED handler
+	   still needs to grant it after marking the save. */
+	function hasCheated() { return !!store().cheatedSave; }
+	function markCheated() { store().cheatedSave = true; }
+
 	function unlock(id) {
 		var entry = byId(id);
 		if (!entry) {
 			console.warn('Achievements.unlock: unknown id', id);
 			return false;
 		}
+		if (hasCheated() && id !== 'fun.cheat') return false;
 		var s = store();
 		var firstTime = !s[id];
 		if (firstTime) s[id] = { at: Date.now() };
@@ -198,16 +208,20 @@ setup.Achievements = setup.Achievements || {};
 			return;
 		}
 		setup.StoryEvents.on(setup.StoryEvents.Event.CHEAT_USED, function () {
+			/* Mark first so the unlock() gate sees a cheated save -- the
+			   'fun.cheat' exception is what lets the joke still grant. */
+			markCheated();
 			unlock('fun.cheat');
 		});
 	}
 	$(document).one(':storyready', registerStoryEventSubscriptions);
 
-	setup.Achievements.OWNED_VARS = OWNED_VARS;
-	setup.Achievements.unlock   = unlock;
-	setup.Achievements.has      = has;
-	setup.Achievements.all      = all;
-	setup.Achievements.locked   = locked;
-	setup.Achievements.unlocked = unlocked;
-	setup.Achievements.byId     = byId;
+	setup.Achievements.OWNED_VARS  = OWNED_VARS;
+	setup.Achievements.unlock     = unlock;
+	setup.Achievements.has        = has;
+	setup.Achievements.all        = all;
+	setup.Achievements.locked     = locked;
+	setup.Achievements.unlocked   = unlocked;
+	setup.Achievements.byId       = byId;
+	setup.Achievements.hasCheated = hasCheated;
 })();

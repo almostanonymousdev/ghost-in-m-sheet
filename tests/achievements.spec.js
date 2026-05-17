@@ -329,4 +329,75 @@ test.describe('setup.Achievements', () => {
 		});
 		expect(result).toBe(true);
 	});
+
+	test('cheated save blocks future unlocks but preserves prior ones', async () => {
+		const result = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const SE = SugarCube.setup.StoryEvents;
+			A.unlock('fail.sanity');
+			const preCheatKept = A.has('fail.sanity');
+			SE.emit(SE.Event.CHEAT_USED, { source: 'test' });
+			const cheated = A.hasCheated();
+			const cheatGranted = A.has('fun.cheat');
+			const returned = A.unlock('disc.trap');
+			return {
+				preCheatKept: preCheatKept,
+				cheated: cheated,
+				cheatGranted: cheatGranted,
+				postCheatReturn: returned,
+				postCheatStored: A.has('disc.trap')
+			};
+		});
+		expect(result.preCheatKept).toBe(true);
+		expect(result.cheated).toBe(true);
+		expect(result.cheatGranted).toBe(true);
+		expect(result.postCheatReturn).toBe(false);
+		expect(result.postCheatStored).toBe(false);
+	});
+
+	test('cheated save still allows fun.cheat to re-fire its own unlock path', async () => {
+		/* fun.cheat is the documented exception to the cheated-save gate
+		   because it's the artifact OF the cheat. Calling unlock('fun.cheat')
+		   directly after a cheat must keep working, otherwise the joke
+		   achievement breaks for any subsequent CHEAT_USED emit. */
+		const result = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const SE = SugarCube.setup.StoryEvents;
+			SE.emit(SE.Event.CHEAT_USED, { source: 'first' });
+			SugarCube.State.variables.achievements['fun.cheat'] = undefined;
+			delete SugarCube.State.variables.achievements['fun.cheat'];
+			return { reUnlocked: A.unlock('fun.cheat') };
+		});
+		expect(result.reUnlocked).toBe(true);
+	});
+
+	test('cheated flag persists across save/load', async () => {
+		await goToPassage(page, 'CityMap');
+		await page.evaluate(() => {
+			SugarCube.State.variables.achievements = {};
+			SugarCube.setup.StoryEvents.emit(
+				SugarCube.setup.StoryEvents.Event.CHEAT_USED,
+				{ source: 'test' }
+			);
+			var idx = SugarCube.State.activeIndex !== undefined
+				? SugarCube.State.activeIndex
+				: SugarCube.State.history.length - 1;
+			var moment = SugarCube.State.history[idx];
+			if (moment) moment.variables = JSON.parse(JSON.stringify(SugarCube.State.variables));
+		});
+		const serialised = await page.evaluate(() => SugarCube.Save.serialize());
+
+		await resetGame(page);
+		await page.waitForFunction(() => SugarCube.setup.Achievements && SugarCube.setup.Achievements.unlock);
+		expect(await page.evaluate(() => SugarCube.setup.Achievements.hasCheated())).toBe(false);
+
+		await page.evaluate((s) => SugarCube.Save.deserialize(s), serialised);
+		expect(await page.evaluate(() => SugarCube.setup.Achievements.hasCheated())).toBe(true);
+		/* And the gate is live after reload: a brand-new unlock attempt
+		   on the restored save should be blocked. */
+		const blocked = await page.evaluate(() => {
+			return SugarCube.setup.Achievements.unlock('disc.drift');
+		});
+		expect(blocked).toBe(false);
+	});
 });
