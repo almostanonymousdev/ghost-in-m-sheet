@@ -2,29 +2,29 @@
 
 /* ===== CSS Custom Properties ===== */
 :root {
-  --color-mc-pink: #ff99dd;
-  --color-mc-pink-link: #FF1493;
-  --color-mc-pink-hover: #f663b2;
-  --color-mc-thoughts: #eee;
-  --color-mc-thoughts-link: #777777;
-  --color-npc-blue: #3486eb;
-  --color-npc-blue-link: #0036ce;
-  --color-npc-blue-muted: #114d96;
-  --color-nav-blue: #3498db;
-  --color-back-blue: #428ec2;
-  --color-enter-blue: #84a0e4;
-  --color-use-yellow: #c2cc51;
-  --color-use-yellow-hover: #d9ddad;
-  --color-price-green: #17B169;
-  --color-ghost-green: #8FBC8F;
-  --color-delivery-purple: #643069;
-  --outline-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-  --btn-transition: color 0.3s, border-color 0.3s;
-  --btn-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-  --btn-shadow-light: 1px 1px 2px rgba(0, 0, 0, 0.3);
-  --hover-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
-  --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  --card-shadow-hover: 0 6px 12px rgba(0, 0, 0, 0.3);
+	--color-mc-pink: #ff99dd;
+	--color-mc-pink-link: #FF1493;
+	--color-mc-pink-hover: #f663b2;
+	--color-mc-thoughts: #eee;
+	--color-mc-thoughts-link: #777777;
+	--color-npc-blue: #3486eb;
+	--color-npc-blue-link: #0036ce;
+	--color-npc-blue-muted: #114d96;
+	--color-nav-blue: #3498db;
+	--color-back-blue: #428ec2;
+	--color-enter-blue: #84a0e4;
+	--color-use-yellow: #c2cc51;
+	--color-use-yellow-hover: #d9ddad;
+	--color-price-green: #17B169;
+	--color-ghost-green: #8FBC8F;
+	--color-delivery-purple: #643069;
+	--outline-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+	--btn-transition: color 0.3s, border-color 0.3s;
+	--btn-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+	--btn-shadow-light: 1px 1px 2px rgba(0, 0, 0, 0.3);
+	--hover-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+	--card-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+	--card-shadow-hover: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* ===== Base Elements ===== */
@@ -55,18 +55,23 @@ html:not([data-debug-view]) .debug:not(.hidden) {
 	top: 4px;
 	border-width: 0px;
 }
+
 .hoverTipTxt {
 	position: relative;
 	vertical-align: text-bottom;
 	line-height: initial;
 }
+
 .hoverTipTxt .hoverBox {
 	position: absolute;
 	visibility: hidden;
 }
-.hoverTipTxt:hover .hoverBox, .hoverTipTxt:focus .hoverBox {
+
+.hoverTipTxt:hover .hoverBox,
+.hoverTipTxt:focus .hoverBox {
 	visibility: visible;
 }
+
 .hoverBox {
 	padding: 3px 10px;
 	width: max-content;
@@ -80,6 +85,7 @@ html:not([data-debug-view]) .debug:not(.hidden) {
 	box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.75);
 	z-index: 100;
 }
+
 .hoverTail::after {
 	content: "";
 	position: absolute;
@@ -91,9 +97,11 @@ html:not([data-debug-view]) .debug:not(.hidden) {
 	border-color: #7f7f7f transparent transparent transparent;
 	z-index: 100;
 }
+
 .hoverBox a {
 	transition-duration: unset;
 }
+
 #ui-bar .hoverBox {
 	max-width: 230px;
 }
@@ -109,6 +117,7 @@ body.ghoststreet {
 	background-size: cover;
 	background-attachment: fixed;
 }
+
 body.city {
 	background-image: url('assets/ui/img/city.jpg');
 	background-size: cover;
@@ -116,31 +125,56 @@ body.city {
 }
 
 /* ===== Room Backgrounds — Shared Base ===== */
-.owaissaKitchenDark, .owaissaKitchenLight,
-.owaissaHallwayLight, .owaissaHallwayDark,
-.owaissaLivingroomLight, .owaissaLivingroomDark,
-.owaissaBedroomLight, .owaissaBedroomDark,
-.owaissaBathroomLight, .owaissaBathroomDark,
-.elmBasementLight, .elmBasementDark,
-.elmKitchenLight, .elmKitchenDark,
-.elmBathroomLight, .elmBathroomDark,
-.elmBathroomTwoLight, .elmBathroomTwoDark,
-.elmBedroomLight, .elmBedroomDark,
-.elmBedroomTwoLight, .elmBedroomTwoDark,
-.elmNurseryLight, .elmNurseryDark,
-.elmHallwayLight, .elmHallwayDark,
-.elmHallwayTwoLight, .elmHallwayTwoDark,
-.IroncladReceptionLight, .IroncladReceptionDark,
-.IroncladKitchenLight, .IroncladKitchenDark,
-.IroncladHallwayLight, .IroncladHallwayDark,
-.IroncladBlockALight, .IroncladBlockADark,
-.IroncladBlockBLight, .IroncladBlockBDark,
-.IroncladBlockACellALight, .IroncladBlockACellADark,
-.IroncladBlockACellBLight, .IroncladBlockACellBDark,
-.IroncladBlockACellCLight, .IroncladBlockACellCDark,
-.IroncladBlockBCellALight, .IroncladBlockBCellADark,
-.IroncladBlockBCellBLight, .IroncladBlockBCellBDark,
-.IroncladBlockBCellCLight, .IroncladBlockBCellCDark {
+.owaissaKitchenDark,
+.owaissaKitchenLight,
+.owaissaHallwayLight,
+.owaissaHallwayDark,
+.owaissaLivingroomLight,
+.owaissaLivingroomDark,
+.owaissaBedroomLight,
+.owaissaBedroomDark,
+.owaissaBathroomLight,
+.owaissaBathroomDark,
+.elmBasementLight,
+.elmBasementDark,
+.elmKitchenLight,
+.elmKitchenDark,
+.elmBathroomLight,
+.elmBathroomDark,
+.elmBathroomTwoLight,
+.elmBathroomTwoDark,
+.elmBedroomLight,
+.elmBedroomDark,
+.elmBedroomTwoLight,
+.elmBedroomTwoDark,
+.elmNurseryLight,
+.elmNurseryDark,
+.elmHallwayLight,
+.elmHallwayDark,
+.elmHallwayTwoLight,
+.elmHallwayTwoDark,
+.IroncladReceptionLight,
+.IroncladReceptionDark,
+.IroncladKitchenLight,
+.IroncladKitchenDark,
+.IroncladHallwayLight,
+.IroncladHallwayDark,
+.IroncladBlockALight,
+.IroncladBlockADark,
+.IroncladBlockBLight,
+.IroncladBlockBDark,
+.IroncladBlockACellALight,
+.IroncladBlockACellADark,
+.IroncladBlockACellBLight,
+.IroncladBlockACellBDark,
+.IroncladBlockACellCLight,
+.IroncladBlockACellCDark,
+.IroncladBlockBCellALight,
+.IroncladBlockBCellADark,
+.IroncladBlockBCellBLight,
+.IroncladBlockBCellBDark,
+.IroncladBlockBCellCLight,
+.IroncladBlockBCellCDark {
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-attachment: fixed;
@@ -148,20 +182,34 @@ body.city {
 }
 
 /* Owaissa + Elm get full viewport sizing */
-.owaissaKitchenDark, .owaissaKitchenLight,
-.owaissaHallwayLight, .owaissaHallwayDark,
-.owaissaLivingroomLight, .owaissaLivingroomDark,
-.owaissaBedroomLight, .owaissaBedroomDark,
-.owaissaBathroomLight, .owaissaBathroomDark,
-.elmBasementLight, .elmBasementDark,
-.elmKitchenLight, .elmKitchenDark,
-.elmBathroomLight, .elmBathroomDark,
-.elmBathroomTwoLight, .elmBathroomTwoDark,
-.elmBedroomLight, .elmBedroomDark,
-.elmBedroomTwoLight, .elmBedroomTwoDark,
-.elmNurseryLight, .elmNurseryDark,
-.elmHallwayLight, .elmHallwayDark,
-.elmHallwayTwoLight, .elmHallwayTwoDark {
+.owaissaKitchenDark,
+.owaissaKitchenLight,
+.owaissaHallwayLight,
+.owaissaHallwayDark,
+.owaissaLivingroomLight,
+.owaissaLivingroomDark,
+.owaissaBedroomLight,
+.owaissaBedroomDark,
+.owaissaBathroomLight,
+.owaissaBathroomDark,
+.elmBasementLight,
+.elmBasementDark,
+.elmKitchenLight,
+.elmKitchenDark,
+.elmBathroomLight,
+.elmBathroomDark,
+.elmBathroomTwoLight,
+.elmBathroomTwoDark,
+.elmBedroomLight,
+.elmBedroomDark,
+.elmBedroomTwoLight,
+.elmBedroomTwoDark,
+.elmNurseryLight,
+.elmNurseryDark,
+.elmHallwayLight,
+.elmHallwayDark,
+.elmHallwayTwoLight,
+.elmHallwayTwoDark {
 	overflow: hidden;
 	height: 100vh;
 	height: 100dvh;
@@ -169,65 +217,213 @@ body.city {
 }
 
 /* Owaissa kitchen transition */
-.owaissaKitchenDark, .owaissaKitchenLight {
+.owaissaKitchenDark,
+.owaissaKitchenLight {
 	transition: filter 1s ease;
 }
 
 /* Room Backgrounds — Owaissa */
-.owaissaKitchenDark   { background-image: url('assets/scenes/room/kitchen-dark.jpg'); }
-.owaissaKitchenLight  { background-image: url('assets/scenes/room/kitchen.jpg'); }
-.owaissaHallwayLight  { background-image: url('assets/scenes/room/hallway.jpg'); }
-.owaissaHallwayDark   { background-image: url('assets/scenes/room/hallway-dark.jpg'); }
-.owaissaLivingroomLight { background-image: url('assets/scenes/room/livingroom.jpg'); }
-.owaissaLivingroomDark  { background-image: url('assets/scenes/room/livingroom-dark.jpg'); }
-.owaissaBedroomLight  { background-image: url('assets/scenes/room/bedroom.jpg'); }
-.owaissaBedroomDark   { background-image: url('assets/scenes/room/bedroom-dark.jpg'); }
-.owaissaBathroomLight { background-image: url('assets/scenes/room/bathroom.jpg'); }
-.owaissaBathroomDark  { background-image: url('assets/scenes/room/bathroom-dark.jpg'); }
+.owaissaKitchenDark {
+	background-image: url('assets/scenes/room/kitchen-dark.jpg');
+}
+
+.owaissaKitchenLight {
+	background-image: url('assets/scenes/room/kitchen.jpg');
+}
+
+.owaissaHallwayLight {
+	background-image: url('assets/scenes/room/hallway.jpg');
+}
+
+.owaissaHallwayDark {
+	background-image: url('assets/scenes/room/hallway-dark.jpg');
+}
+
+.owaissaLivingroomLight {
+	background-image: url('assets/scenes/room/livingroom.jpg');
+}
+
+.owaissaLivingroomDark {
+	background-image: url('assets/scenes/room/livingroom-dark.jpg');
+}
+
+.owaissaBedroomLight {
+	background-image: url('assets/scenes/room/bedroom.jpg');
+}
+
+.owaissaBedroomDark {
+	background-image: url('assets/scenes/room/bedroom-dark.jpg');
+}
+
+.owaissaBathroomLight {
+	background-image: url('assets/scenes/room/bathroom.jpg');
+}
+
+.owaissaBathroomDark {
+	background-image: url('assets/scenes/room/bathroom-dark.jpg');
+}
 
 /* Room Backgrounds — Elm */
-.elmBasementLight     { background-image: url('assets/scenes/room/elm/basement.jpg'); }
-.elmBasementDark      { background-image: url('assets/scenes/room/elm/basement-dark.jpg'); }
-.elmKitchenLight      { background-image: url('assets/scenes/room/elm/kitchen.jpg'); }
-.elmKitchenDark       { background-image: url('assets/scenes/room/elm/kitchen-dark.jpg'); }
-.elmBathroomLight     { background-image: url('assets/scenes/room/elm/bathroom.jpg'); }
-.elmBathroomDark      { background-image: url('assets/scenes/room/elm/bathroom-dark.jpg'); }
-.elmBathroomTwoLight  { background-image: url('assets/scenes/room/elm/bathroom1.jpg'); }
-.elmBathroomTwoDark   { background-image: url('assets/scenes/room/elm/bathroom1-dark.jpg'); }
-.elmBedroomLight      { background-image: url('assets/scenes/room/elm/bedroom.jpg'); }
-.elmBedroomDark       { background-image: url('assets/scenes/room/elm/bedroom-dark.jpg'); }
-.elmBedroomTwoLight   { background-image: url('assets/scenes/room/elm/bedroom1.jpg'); }
-.elmBedroomTwoDark    { background-image: url('assets/scenes/room/elm/bedroom1-dark.jpg'); }
-.elmNurseryLight      { background-image: url('assets/scenes/room/elm/nursery.jpg'); }
-.elmNurseryDark       { background-image: url('assets/scenes/room/elm/nursery-dark.jpg'); }
-.elmHallwayLight      { background-image: url('assets/scenes/room/elm/hallway.jpg'); }
-.elmHallwayDark       { background-image: url('assets/scenes/room/elm/hallway-dark.jpg'); }
-.elmHallwayTwoLight   { background-image: url('assets/scenes/room/elm/hallway1.jpg'); }
-.elmHallwayTwoDark    { background-image: url('assets/scenes/room/elm/hallway1-dark.jpg'); }
+.elmBasementLight {
+	background-image: url('assets/scenes/room/elm/basement.jpg');
+}
+
+.elmBasementDark {
+	background-image: url('assets/scenes/room/elm/basement-dark.jpg');
+}
+
+.elmKitchenLight {
+	background-image: url('assets/scenes/room/elm/kitchen.jpg');
+}
+
+.elmKitchenDark {
+	background-image: url('assets/scenes/room/elm/kitchen-dark.jpg');
+}
+
+.elmBathroomLight {
+	background-image: url('assets/scenes/room/elm/bathroom.jpg');
+}
+
+.elmBathroomDark {
+	background-image: url('assets/scenes/room/elm/bathroom-dark.jpg');
+}
+
+.elmBathroomTwoLight {
+	background-image: url('assets/scenes/room/elm/bathroom1.jpg');
+}
+
+.elmBathroomTwoDark {
+	background-image: url('assets/scenes/room/elm/bathroom1-dark.jpg');
+}
+
+.elmBedroomLight {
+	background-image: url('assets/scenes/room/elm/bedroom.jpg');
+}
+
+.elmBedroomDark {
+	background-image: url('assets/scenes/room/elm/bedroom-dark.jpg');
+}
+
+.elmBedroomTwoLight {
+	background-image: url('assets/scenes/room/elm/bedroom1.jpg');
+}
+
+.elmBedroomTwoDark {
+	background-image: url('assets/scenes/room/elm/bedroom1-dark.jpg');
+}
+
+.elmNurseryLight {
+	background-image: url('assets/scenes/room/elm/nursery.jpg');
+}
+
+.elmNurseryDark {
+	background-image: url('assets/scenes/room/elm/nursery-dark.jpg');
+}
+
+.elmHallwayLight {
+	background-image: url('assets/scenes/room/elm/hallway.jpg');
+}
+
+.elmHallwayDark {
+	background-image: url('assets/scenes/room/elm/hallway-dark.jpg');
+}
+
+.elmHallwayTwoLight {
+	background-image: url('assets/scenes/room/elm/hallway1.jpg');
+}
+
+.elmHallwayTwoDark {
+	background-image: url('assets/scenes/room/elm/hallway1-dark.jpg');
+}
 
 /* Room Backgrounds — Ironclad */
-.IroncladReceptionLight   { background-image: url('assets/scenes/room/ironclad/reception.webp'); }
-.IroncladReceptionDark    { background-image: url('assets/scenes/room/ironclad/reception-dark.webp'); }
-.IroncladKitchenLight     { background-image: url('assets/scenes/room/ironclad/kitchen.webp'); }
-.IroncladKitchenDark      { background-image: url('assets/scenes/room/ironclad/kitchen-dark.webp'); }
-.IroncladHallwayLight     { background-image: url('assets/scenes/room/ironclad/entrance.webp'); }
-.IroncladHallwayDark      { background-image: url('assets/scenes/room/ironclad/entrance-dark.webp'); }
-.IroncladBlockALight      { background-image: url('assets/scenes/room/ironclad/block-a.webp'); }
-.IroncladBlockADark       { background-image: url('assets/scenes/room/ironclad/block-a-dark.webp'); }
-.IroncladBlockBLight      { background-image: url('assets/scenes/room/ironclad/block-b.webp'); }
-.IroncladBlockBDark       { background-image: url('assets/scenes/room/ironclad/block-b-dark.webp'); }
-.IroncladBlockACellALight { background-image: url('assets/scenes/room/ironclad/block-a-cell-a.webp'); }
-.IroncladBlockACellADark  { background-image: url('assets/scenes/room/ironclad/block-a-cell-a-dark.webp'); }
-.IroncladBlockACellBLight { background-image: url('assets/scenes/room/ironclad/block-a-cell-b.webp'); }
-.IroncladBlockACellBDark  { background-image: url('assets/scenes/room/ironclad/block-a-cell-b-dark.webp'); }
-.IroncladBlockACellCLight { background-image: url('assets/scenes/room/ironclad/block-a-cell-c.webp'); }
-.IroncladBlockACellCDark  { background-image: url('assets/scenes/room/ironclad/block-a-cell-c-dark.webp'); }
-.IroncladBlockBCellALight { background-image: url('assets/scenes/room/ironclad/block-b-cell-a.webp'); }
-.IroncladBlockBCellADark  { background-image: url('assets/scenes/room/ironclad/block-b-cell-a-dark.webp'); }
-.IroncladBlockBCellBLight { background-image: url('assets/scenes/room/ironclad/block-b-cell-b.webp'); }
-.IroncladBlockBCellBDark  { background-image: url('assets/scenes/room/ironclad/block-b-cell-b-dark.webp'); }
-.IroncladBlockBCellCLight { background-image: url('assets/scenes/room/ironclad/block-b-cell-c.webp'); }
-.IroncladBlockBCellCDark  { background-image: url('assets/scenes/room/ironclad/block-b-cell-c-dark.webp'); }
+.IroncladReceptionLight {
+	background-image: url('assets/scenes/room/ironclad/reception.webp');
+}
+
+.IroncladReceptionDark {
+	background-image: url('assets/scenes/room/ironclad/reception-dark.webp');
+}
+
+.IroncladKitchenLight {
+	background-image: url('assets/scenes/room/ironclad/kitchen.webp');
+}
+
+.IroncladKitchenDark {
+	background-image: url('assets/scenes/room/ironclad/kitchen-dark.webp');
+}
+
+.IroncladHallwayLight {
+	background-image: url('assets/scenes/room/ironclad/entrance.webp');
+}
+
+.IroncladHallwayDark {
+	background-image: url('assets/scenes/room/ironclad/entrance-dark.webp');
+}
+
+.IroncladBlockALight {
+	background-image: url('assets/scenes/room/ironclad/block-a.webp');
+}
+
+.IroncladBlockADark {
+	background-image: url('assets/scenes/room/ironclad/block-a-dark.webp');
+}
+
+.IroncladBlockBLight {
+	background-image: url('assets/scenes/room/ironclad/block-b.webp');
+}
+
+.IroncladBlockBDark {
+	background-image: url('assets/scenes/room/ironclad/block-b-dark.webp');
+}
+
+.IroncladBlockACellALight {
+	background-image: url('assets/scenes/room/ironclad/block-a-cell-a.webp');
+}
+
+.IroncladBlockACellADark {
+	background-image: url('assets/scenes/room/ironclad/block-a-cell-a-dark.webp');
+}
+
+.IroncladBlockACellBLight {
+	background-image: url('assets/scenes/room/ironclad/block-a-cell-b.webp');
+}
+
+.IroncladBlockACellBDark {
+	background-image: url('assets/scenes/room/ironclad/block-a-cell-b-dark.webp');
+}
+
+.IroncladBlockACellCLight {
+	background-image: url('assets/scenes/room/ironclad/block-a-cell-c.webp');
+}
+
+.IroncladBlockACellCDark {
+	background-image: url('assets/scenes/room/ironclad/block-a-cell-c-dark.webp');
+}
+
+.IroncladBlockBCellALight {
+	background-image: url('assets/scenes/room/ironclad/block-b-cell-a.webp');
+}
+
+.IroncladBlockBCellADark {
+	background-image: url('assets/scenes/room/ironclad/block-b-cell-a-dark.webp');
+}
+
+.IroncladBlockBCellBLight {
+	background-image: url('assets/scenes/room/ironclad/block-b-cell-b.webp');
+}
+
+.IroncladBlockBCellBDark {
+	background-image: url('assets/scenes/room/ironclad/block-b-cell-b-dark.webp');
+}
+
+.IroncladBlockBCellCLight {
+	background-image: url('assets/scenes/room/ironclad/block-b-cell-c.webp');
+}
+
+.IroncladBlockBCellCDark {
+	background-image: url('assets/scenes/room/ironclad/block-b-cell-c-dark.webp');
+}
 
 /* ===== Room Layout ===== */
 .room {
@@ -238,6 +434,7 @@ body.city {
 	overflow-x: hidden;
 	display: flex;
 }
+
 .room-wrapper {
 	line-height: 1;
 	width: 100%;
@@ -247,6 +444,7 @@ body.city {
 	box-sizing: border-box;
 	padding-bottom: 5%;
 }
+
 .content {
 	height: calc(100%/1.25);
 	max-width: 80%;
@@ -254,17 +452,20 @@ body.city {
 	box-sizing: border-box;
 	padding: 0;
 }
+
 .footer {
 	display: flex;
 	flex-direction: column;
 	max-height: 20%;
 }
+
 .footer-row {
 	display: flex;
 	align-items: flex-end;
 	flex: 1 1 auto;
 	min-height: 0;
 }
+
 .hunt-conditions {
 	display: flex;
 	justify-content: center;
@@ -285,36 +486,56 @@ body.city {
 	flex-wrap: wrap;
 	white-space: normal;
 	row-gap: 0.15em;
+	text-shadow: 0 0 6px black;
 }
+
 .hunt-conditions-icon {
 	width: 14px;
 	height: 14px;
 	vertical-align: middle;
 }
+
 .hunt-actions-note {
 	opacity: 0.7;
 	font-style: italic;
 }
+
 .huntActionLink a {
 	color: #ffd166;
 	font-weight: bold;
 	text-decoration: none;
 }
+
 .huntActionLink a:hover {
 	color: #ffe49b;
-	text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
 }
+
+/* Active state for toggleable action links (currently the overcharge
+   toggle): the link's color flips to blue so the active state reads
+   visually without a separate "(revert)" hint in the label. */
+.huntActionLink-active a {
+	color: var(--color-nav-blue, #5bc0ff);
+}
+
+.huntActionLink-active a:hover {
+	color: #9ad8ff;
+	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+}
+
 .footer-card {
 	display: flex;
 	flex-wrap: wrap;
 	flex-direction: column;
 	width: calc(100% / 7);
 }
+
 .footertools {
 	display: flex;
 	width: 80%;
 	align-items: center;
 }
+
 /* Cards in .footertools share the row evenly regardless of how many
  * children appear -- 6 tools + light = 7 slots; +companion = 8 slots.
  * Originally the hovertip wrapper got a fixed calc(100%/7) share while
@@ -340,26 +561,31 @@ body.city {
 	flex: 1 1 0;
 	min-width: 0;
 }
+
 .footertools .hoverTipTxt .footer-card {
 	width: 100%;
 }
+
 .footeraction {
 	line-height: 1.6;
 	width: 20%;
 	display: flex;
 	flex-direction: column;
 }
+
 .cardlink {
 	line-height: 1;
 	height: 30px;
 	font-size: 80%;
 }
+
 .footer-light {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
 	align-items: center;
 }
+
 .footer-light img {
 	width: 40%;
 	margin: 1px;
@@ -371,6 +597,7 @@ body.city {
 	flex-direction: row;
 	gap: 5%;
 }
+
 .flexwrapper {
 	display: flex;
 	flex-wrap: wrap;
@@ -378,16 +605,19 @@ body.city {
 	height: 100%;
 	row-gap: 10px;
 }
+
 .housecard {
 	width: 16.5%;
 	text-align: center;
 	z-index: 2;
 	line-height: 1.3;
 }
+
 .housecard img {
 	display: block;
 	margin: 0 auto;
 }
+
 .itemwrapper {
 	display: flex;
 	flex-wrap: wrap;
@@ -400,11 +630,13 @@ body.city {
 	height: auto;
 	border-radius: 30%;
 }
+
 .iconsOnMap {
 	max-width: 50%;
 	max-height: 90%;
 	border-radius: 30%;
 }
+
 .iconPx {
 	width: 90px;
 	height: 90px;
@@ -412,9 +644,12 @@ body.city {
 }
 
 /* Map icon text — shared font size */
-.icontext, .icontextcity, .icontextdelivery {
+.icontext,
+.icontextcity,
+.icontextdelivery {
 	font-size: 25px;
 }
+
 .icontext {
 	font-family: 'Special Elite', cursive;
 	letter-spacing: 0.5px;
@@ -423,29 +658,38 @@ body.city {
 		0 0 6px rgba(255, 255, 255, 0.6),
 		0 0 12px rgba(255, 255, 255, 0.4);
 }
+
 .icontextcity {
 	font-family: 'Amatic SC', sans-serif;
 	font-weight: bold;
 }
+
 .icontextcity a {
 	text-decoration: none;
 }
+
 .icontextdelivery {
 	font-family: 'Cormorant', serif;
 }
-.icontext a, .icontextdelivery a {
+
+.icontext a,
+.icontextdelivery a {
 	text-decoration: none;
 	transition: color 0.4s ease;
 }
+
 .icontext a {
 	color: var(--color-ghost-green);
 }
+
 .icontextdelivery a {
 	color: var(--color-delivery-purple);
 }
+
 .icontextdelivery a:hover {
 	color: #d01de0;
 }
+
 .icontext a:hover {
 	color: #2E8B57;
 }
@@ -456,6 +700,7 @@ body.city {
 	top: 2%;
 	right: 2%;
 }
+
 .btnendcolor {
 	background-color: #ff6666;
 	color: #333333;
@@ -464,10 +709,12 @@ body.city {
 	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 	font-weight: bold;
 }
+
 .clickable {
 	cursor: pointer;
 	transition: color 0.4s ease, background-color 0.4s ease;
 }
+
 .clickable:hover {
 	color: #595959;
 	background-color: #ff9999;
@@ -497,6 +744,7 @@ body.city {
 	color: var(--color-nav-blue);
 	text-shadow: var(--btn-shadow);
 }
+
 .movebtn a:hover {
 	color: #91a5c2;
 }
@@ -512,6 +760,7 @@ body.city {
 	color: var(--color-back-blue);
 	text-shadow: var(--btn-shadow-light);
 }
+
 .backbtn a:hover {
 	color: #5dade2;
 	text-shadow: var(--btn-shadow);
@@ -522,22 +771,28 @@ body.city {
 	color: var(--color-enter-blue);
 	text-shadow: var(--btn-shadow);
 }
+
 .enterbtn a:hover {
 	color: #1882c4;
 }
 
-.usebtn a, .usebtn {
+.usebtn a,
+.usebtn {
 	font-style: italic;
 	font-size: 1.05em;
 	color: var(--color-use-yellow);
 }
+
 .usebtn a {
 	text-shadow: var(--outline-shadow);
 }
+
 .usebtn {
 	text-shadow: var(--btn-shadow);
 }
-.usebtn a:hover, .usebtn:hover {
+
+.usebtn a:hover,
+.usebtn:hover {
 	color: var(--color-use-yellow-hover);
 	text-shadow: var(--btn-shadow);
 }
@@ -555,6 +810,7 @@ body.city {
 	text-shadow: var(--btn-shadow);
 	box-shadow: var(--card-shadow);
 }
+
 .alertbtn a:hover {
 	background: linear-gradient(135deg, #ff7e96, #d94a63);
 	box-shadow: var(--card-shadow-hover);
@@ -575,15 +831,20 @@ body.city {
 	font-size: 1rem;
 	text-shadow: var(--outline-shadow);
 }
+
 .mc-speech:hover {
 	text-decoration: none;
 	text-shadow: var(--hover-shadow);
 }
-.mc-speech a, .mc-speechLink a, .mc-speechLink {
+
+.mc-speech a,
+.mc-speechLink a,
+.mc-speechLink {
 	color: var(--color-mc-pink-link);
 	font-style: italic;
 	text-decoration: none;
 }
+
 .mc-speech a:hover {
 	color: var(--color-mc-pink-hover);
 	text-shadow: var(--hover-shadow);
@@ -597,7 +858,9 @@ body.city {
 	text-decoration: none;
 	text-shadow: var(--outline-shadow);
 }
-.mc-thoughts a, .mc-thoughtsLink {
+
+.mc-thoughts a,
+.mc-thoughtsLink {
 	color: var(--color-mc-thoughts-link);
 	font-style: italic;
 	text-decoration: none;
@@ -610,16 +873,19 @@ body.city {
 	font-size: 1rem;
 	text-shadow: var(--outline-shadow);
 }
+
 .notmc-speech a {
 	font-size: 1.1em;
 	color: var(--color-npc-blue-link);
 	font-style: italic;
 	text-decoration: none;
 }
+
 .notmc-speechLink {
 	color: var(--color-npc-blue-muted);
 	font-style: italic;
 }
+
 .notmc-speechLink:hover {
 	color: var(--color-npc-blue);
 	text-decoration: none;
@@ -640,29 +906,35 @@ body.city {
 }
 
 /* ===== Spirit Box / Info Containers — Shared Base ===== */
-.spiritbox-container, .notFound-container {
+.spiritbox-container,
+.notFound-container {
 	padding: 10px;
 	border-radius: 10px;
 	margin-bottom: 10px;
 	display: flex;
 	flex-direction: column;
 }
+
 .spiritbox-container {
 	border: 2px solid #333;
 	font-weight: bold;
 }
+
 .notFound-container {
 	border: 2px solid white;
 }
+
 .spiritbox-question {
 	font-weight: bold;
 	color: #ff3366;
 }
+
 .spiritbox-answer {
 	font-style: italic;
 	color: #3399ff;
 	margin-top: 5px;
 }
+
 .spiritbox-no-response {
 	color: white;
 	font-style: italic;
@@ -677,48 +949,57 @@ body.city {
 	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 	vertical-align: middle;
 }
+
 .buyItemLink a {
 	color: black;
 	background-color: #f0f0f0;
 	padding: 1px 15px;
 	border-radius: 30%;
 }
+
 .address-item {
 	font-size: 1.4em;
 	font-style: italic;
 	font-weight: bold;
 }
+
 .order-container {
 	display: flex;
 	align-items: center;
 	gap: 0.5em;
 }
+
 .special-order {
 	border: 2px solid gold;
 	background: rgba(255, 215, 0, 0.15);
 	padding: 5px 10px;
 	border-radius: 8px;
 }
+
 .rush-pay {
 	font-weight: bold;
 	color: gold;
 	font-size: 1.3em;
 }
+
 .rush-icon {
 	border: 2px solid gold;
 	box-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
 }
+
 .mapOrderIcons {
 	display: flex;
 	justify-content: center;
 	gap: 2px;
 	margin-top: 2px;
 }
+
 .mapOrderIcon {
 	width: 28px;
 	height: 28px;
 	border-radius: 20%;
 }
+
 .delivery-stats {
 	background: rgba(100, 48, 105, 0.2);
 	border: 1px solid var(--color-delivery-purple);
@@ -728,44 +1009,60 @@ body.city {
 }
 
 /* ===== Highlighted Houses — Shared Base ===== */
-.familiar-house, .special-house {
+.familiar-house,
+.special-house {
 	border-radius: 8px;
 }
+
 .familiar-house {
 	border: 2px solid #4CAF50;
 	background: rgba(76, 175, 80, 0.1);
 }
+
 .familiar-house .iconsOnMap {
 	box-shadow: 0 0 6px #4CAF50;
 }
+
 .special-house {
 	border: 2px solid gold;
 	background: rgba(255, 215, 0, 0.1);
 }
+
 .special-house .iconsOnMap {
 	box-shadow: 0 0 8px gold;
 }
 
 /* ===== Visibility / Utility ===== */
-.hidden { visibility: hidden; }
-.visible { visibility: visible; }
+.hidden {
+	visibility: hidden;
+}
+
+.visible {
+	visibility: visible;
+}
+
 .disabled-link {
 	pointer-events: none;
 	opacity: 0.5;
 }
+
 .disabled-linkSpecial a {
 	pointer-events: none;
 	opacity: 0.5;
 }
+
 .nightTime {
 	filter: brightness(0.7);
 }
+
 .hideRescueHouse {
 	display: none;
 }
+
 .hideMainScreen {
 	color: rgba(255, 255, 255, 0.8);
 }
+
 .right {
 	display: inline-block;
 	background-color: green;
@@ -773,25 +1070,31 @@ body.city {
 }
 
 /* ===== Images — Centred Display (shared base) ===== */
-.displayCentredImgs, .displayCentredImgsEvent {
+.displayCentredImgs,
+.displayCentredImgsEvent {
 	width: auto;
 	display: block;
 	margin-inline: auto;
 }
+
 .displayCentredImgs {
 	max-height: 70vh;
 }
+
 .displayCentredImgsEvent {
 	max-height: 61vh;
 }
+
 .UVLimg {
 	max-width: 100%;
 	height: auto;
 	display: block;
 }
+
 .GWBimgs {
 	max-width: 50%;
 }
+
 .action {
 	display: flex;
 	flex-direction: column;
@@ -803,28 +1106,35 @@ body.city {
 	width: auto;
 	max-height: 67vh;
 }
+
 .evidenceText {
 	font-size: clamp(0.75rem, 2.2vh, 1rem);
 }
+
 #ghostTypeSelected {
 	overflow-y: auto;
 }
+
 .evidenceFlex {
 	display: flex;
 	flex-direction: column;
 }
+
 .evidenceWrapper {
 	display: flex;
 	border: 2px solid #000;
 	padding: 10px;
 }
+
 .evidenceDesc {
 	align-self: center;
 	flex-basis: 70%;
 }
+
 .evidenceCardIcon {
 	flex-basis: 20%;
 }
+
 .evidenceshadowtext {
 	color: var(--color-mc-pink);
 	text-decoration: none;
@@ -838,12 +1148,14 @@ body.city {
 	width: 100%;
 	height: auto;
 }
+
 .wrapperPC {
 	position: relative;
 	width: 100%;
 	max-width: 1000px;
 	overflow: hidden;
 }
+
 .iconContainer {
 	position: absolute;
 	top: 25%;
@@ -859,6 +1171,7 @@ body.city {
 	justify-content: flex-start;
 	align-items: flex-start;
 }
+
 .iconContainer a {
 	display: flex;
 	align-items: center;
@@ -867,6 +1180,7 @@ body.city {
 	max-width: 100px;
 	height: auto;
 }
+
 .iconContainer img {
 	width: 100%;
 	height: auto;
@@ -875,6 +1189,7 @@ body.city {
 	display: block;
 	border-radius: 50%;
 }
+
 .iconPC {
 	border-radius: 50%;
 	margin-bottom: 1%;
@@ -890,12 +1205,14 @@ body.city {
 	background-position: center;
 	overflow: hidden;
 }
+
 .trash {
 	position: absolute;
 	cursor: pointer;
 	width: 5%;
 	height: auto;
 }
+
 #cleanup-message {
 	display: none;
 	margin-top: 20px;
@@ -929,14 +1246,17 @@ body.city {
 	font-size: 12px;
 	margin-top: 4px;
 }
+
 #tool-timers:empty {
 	display: none;
 }
+
 .tool-timer {
 	color: #fff;
 	font-weight: bold;
 	text-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
 }
+
 .tool-timer--low {
 	color: #ff5252;
 	font-weight: bold;
@@ -951,7 +1271,8 @@ body.city {
 }
 
 /* ===== Companion Images — Shared Base ===== */
-.companion-image, .companion-imageSucceeded {
+.companion-image,
+.companion-imageSucceeded {
 	width: 70%;
 	border-radius: 8px;
 	padding: 5px;
@@ -960,39 +1281,47 @@ body.city {
 	transition: all 0.3s ease;
 	border: 3px solid #007BFF;
 }
+
 .companion-imageSucceeded {
 	border-color: #FF69B4;
 }
+
 .companion-image:hover {
 	border-color: #0056b3;
 	box-shadow: var(--card-shadow-hover);
 }
+
 .companion-imageSucceeded:hover {
 	border-color: var(--color-mc-pink-link);
 	box-shadow: var(--card-shadow-hover);
 }
 
 /* ===== Companion Layout — Shared Base ===== */
-.flexwrapperCompanionMain, .flexwrapperCompanionMainInfo {
+.flexwrapperCompanionMain,
+.flexwrapperCompanionMainInfo {
 	display: flex;
 	align-content: stretch;
 	height: 100%;
 	row-gap: 10px;
 	justify-content: space-between;
 }
+
 .flexwrapperCompanionMain {
 	align-items: center;
 }
+
 .companionImageMain {
 	flex: 1;
 	min-width: 40%;
 }
+
 .companionTextMain {
 	flex: 1;
 	min-width: 40%;
 	margin-left: 5%;
 	white-space: normal;
 }
+
 .toolsTextCentered {
 	margin-left: 15%;
 	-webkit-text-stroke: 1px black;
@@ -1003,26 +1332,59 @@ body.city {
 	font-weight: bold;
 	font-size: 1.2em;
 }
+
 .warningtext {
 	color: red;
 	font-style: italic;
 }
+
 .comic-cover {
 	width: 100%;
 	height: 90%;
 }
 
 /* ===== Torn Paper Effects ===== */
-.torn-style-1  { clip-path: polygon(1% 0, 50% 30%, 10% 70%, 0 30%); box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.5), -5px -5px 10px rgba(255, 255, 255, 0.5) inset; }
-.torn-style-2  { clip-path: polygon(100% 0, 30% 40%, 10% 70%, 0 30%); }
-.torn-style-3  { clip-path: polygon(80% 0, 30% 80%, 30% 50%, 0 30%); }
-.torn-style-4  { clip-path: polygon(50% 0, 30% 40%, 30% 50%, 0 10%); }
-.torn-style-5  { clip-path: polygon(50% 0, 100% 80%, 50% 50%, 0 10%); }
-.torn-style-6  { clip-path: polygon(70% 0, 70% 10%, 50% 80%, 0 70%); }
-.torn-style-7  { clip-path: polygon(30% 10%, 50% 40%, 50% 70%, 0 70%); }
-.torn-style-8  { clip-path: polygon(78% 100%, 44% 43%, 0 70%); }
-.torn-style-9  { clip-path: polygon(77% 1%, 67% 44%, 50% 100%, 0 50%); }
-.torn-style-10 { clip-path: polygon(20% 1%, 67% 44%, 50% 100%, 30% 50%); }
+.torn-style-1 {
+	clip-path: polygon(1% 0, 50% 30%, 10% 70%, 0 30%);
+	box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.5), -5px -5px 10px rgba(255, 255, 255, 0.5) inset;
+}
+
+.torn-style-2 {
+	clip-path: polygon(100% 0, 30% 40%, 10% 70%, 0 30%);
+}
+
+.torn-style-3 {
+	clip-path: polygon(80% 0, 30% 80%, 30% 50%, 0 30%);
+}
+
+.torn-style-4 {
+	clip-path: polygon(50% 0, 30% 40%, 30% 50%, 0 10%);
+}
+
+.torn-style-5 {
+	clip-path: polygon(50% 0, 100% 80%, 50% 50%, 0 10%);
+}
+
+.torn-style-6 {
+	clip-path: polygon(70% 0, 70% 10%, 50% 80%, 0 70%);
+}
+
+.torn-style-7 {
+	clip-path: polygon(30% 10%, 50% 40%, 50% 70%, 0 70%);
+}
+
+.torn-style-8 {
+	clip-path: polygon(78% 100%, 44% 43%, 0 70%);
+}
+
+.torn-style-9 {
+	clip-path: polygon(77% 1%, 67% 44%, 50% 100%, 0 50%);
+}
+
+.torn-style-10 {
+	clip-path: polygon(20% 1%, 67% 44%, 50% 100%, 30% 50%);
+}
+
 .torn-effect {
 	filter: grayscale(100%);
 }
@@ -1032,6 +1394,7 @@ body.city {
 	width: 10px;
 	height: 10px;
 }
+
 .furnitureSearch {
 	display: flex;
 	justify-content: center;
@@ -1041,34 +1404,42 @@ body.city {
 	   being centered across the whole room. */
 	width: 80%;
 }
+
 .furnitureSearch a {
 	width: 2.5vw;
 }
+
 .furnitureSearch img {
 	max-width: 40%;
 	height: auto;
 	background-color: rgba(169, 169, 169, 0.5);
 }
+
 .furnitureSearch span {
 	display: inline-block;
 }
+
 .furnitureSearch span a {
 	display: block;
 }
+
 .furnitureSearch span img {
 	display: block;
 	max-width: 100%;
 	height: auto;
 }
+
 .highlighted-furniture {
 	border: 2px solid pink;
 }
+
 .highlighted-furnitureDetector {
 	border: 2px solid green;
 }
 
 /* ===== Navigation Pointers — Shared Base ===== */
-.downPointer, .upPointer {
+.downPointer,
+.upPointer {
 	position: fixed;
 	right: 2%;
 	z-index: 10;
@@ -1076,9 +1447,11 @@ body.city {
 	height: 50px;
 	border-radius: 30%;
 }
+
 .downPointer {
 	bottom: 2%;
 }
+
 .upPointer {
 	top: 2%;
 	transform: rotate(180deg);
@@ -1091,6 +1464,7 @@ body.city {
 	margin: 5px;
 	max-width: 100%;
 }
+
 .addGap5 {
 	gap: 5%;
 }
@@ -1103,6 +1477,7 @@ body.city {
 	height: 100dvh;
 	background-position: center;
 }
+
 .noreturn {
 	background-attachment: fixed;
 }
@@ -1113,21 +1488,27 @@ body.city {
 	transform: scale(0.8);
 	transition: opacity 3s ease, transform 1s ease;
 }
+
 .fadeInScaleFool {
 	opacity: 0;
 	transition: opacity 1s ease;
 }
+
 .tarotCardsShow {
 	opacity: 1;
 	transform: scale(1);
 }
+
 .smooth-transition {
 	transition: background-image 0.9s ease;
 }
 
 /* ===== Reduced Motion ===== */
 @media (prefers-reduced-motion: reduce) {
-	*, *::before, *::after {
+
+	*,
+	*::before,
+	*::after {
 		animation-duration: 0.01ms !important;
 		animation-iteration-count: 1 !important;
 		transition-duration: 0.01ms !important;
@@ -1159,9 +1540,11 @@ body.city {
 .debug {
 	display: contents !important;
 }
+
 .debug.hidden {
 	display: none !important;
 }
+
 html[data-debug-view] .debug[data-name][data-type]::before,
 html[data-debug-view] .debug[data-name][data-type].nonvoid::after {
 	content: none !important;
@@ -1188,6 +1571,7 @@ html[data-debug-view] .debug[data-name][data-type].nonvoid::after {
 	opacity: 0;
 	transition: opacity 1s ease;
 }
+
 .hunt-reveal.show {
 	opacity: 1;
 }
@@ -1205,6 +1589,7 @@ html[data-debug-view] .debug[data-name][data-type].nonvoid::after {
 	padding: 1em 2.5em;
 	gap: 0.5em;
 }
+
 /* Top-center tray for tool readouts. The toolbar's replace macro
  * targets #hunt-tool-result, so each tool click overwrites the prior
  * reading here instead of inlining under the icon. Absolute positioning
@@ -1222,15 +1607,19 @@ html[data-debug-view] .debug[data-name][data-type].nonvoid::after {
 	z-index: 10;
 	pointer-events: none;
 }
+
 .hunt-tool-result:empty {
 	display: none;
 }
-.hunt-tool-result > * {
+
+.hunt-tool-result>* {
 	pointer-events: auto;
 }
+
 body.ui-bar-stowed .hunt-run-layout {
 	left: 0;
 }
+
 .hunt-run-top {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
@@ -1238,20 +1627,24 @@ body.ui-bar-stowed .hunt-run-layout {
 	flex: 1 1 auto;
 	min-height: 0;
 }
+
 .hunt-run-tl,
 .hunt-run-tr {
 	display: flex;
 	flex-direction: column;
 	overflow: auto;
 }
+
 .hunt-run-tr {
 	align-items: flex-end;
 	text-align: right;
 }
+
 .hunt-modifier-chip {
 	cursor: help;
 	border-bottom: 1px dotted currentColor;
 }
+
 .hunt-run-furniture {
 	display: flex;
 	justify-content: center;
@@ -1259,6 +1652,7 @@ body.ui-bar-stowed .hunt-run-layout {
 	padding: 0.25em 0;
 	flex: 0 0 auto;
 }
+
 .hunt-furniture-item {
 	display: inline-flex;
 	flex-direction: column;
@@ -1266,44 +1660,91 @@ body.ui-bar-stowed .hunt-run-layout {
 	gap: 4px;
 	min-width: 64px;
 }
+
 .hunt-furniture-item img {
 	width: 56px;
 	height: 56px;
 	object-fit: contain;
 	background-color: rgba(169, 169, 169, 0.5);
 }
+
 .hunt-furniture-label {
 	font-size: 0.75em;
 	opacity: 0.85;
 	line-height: 1;
 }
+
 .hunt-furniture-loot {
 	font-size: 0.7em;
 	line-height: 1;
 }
+
 .hunt-run-bottom {
 	display: flex;
 	flex-direction: column;
 	flex: 0 0 auto;
 	gap: 0.5em;
 }
+
 /* The hunt tool row is full-width and content-centered, so the
    hunt-conditions HUD inside .hunt-run-bottom spans full width
    to align with the tool row beside it. */
 .hunt-run-bottom .hunt-conditions {
 	width: 100%;
 }
-.hunt-run-hud {
+
+/* Vertical contributor-chip list anchored to the .hunt-run-hud's
+   top-left edge so the chips float just above the hud's border-top
+   divider on the left, mirroring how .hunt-run-lights anchors on
+   the right. Pulled out of the flex flow with absolute positioning
+   so the chips can't push the stats row away from the divider.
+   Each chip renders on its own line; the wrapper collapses to
+   nothing when no contributors are active. */
+.hunt-run-effects {
+	position: absolute;
+	left: 0;
+	bottom: calc(100% + 4px);
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 0.15em;
+	font-size: 80%;
+	opacity: 0.9;
+	z-index: 5;
+	pointer-events: none;
+	text-shadow: 0 0 7px black;
+}
+
+.hunt-run-effects>* {
+	pointer-events: auto;
+}
+
+.hunt-run-effects:empty {
+	display: none;
+}
+
+/* Bait + overcharge buttons sit on their own row below the centered
+   tool cards, with enough gap to keep accidental clicks from landing
+   on the wrong button. */
+.hunt-run-actions {
 	display: flex;
 	justify-content: center;
-	gap: 2em;
-	font-size: 80%;
-	opacity: 0.85;
+	align-items: center;
+	gap: 2.5em;
+	padding: 0.125em 0 0.5em;
+	min-height: 1.5em;
+}
+
+.hunt-run-actions:empty {
+	display: none;
+}
+
+.hunt-run-hud {
+	min-height: 1px;
 	border-top: 1px solid #444;
-	padding-top: 0.25em;
-	flex-wrap: wrap;
 	position: relative;
 }
+
 /* Light on/off buttons. Anchored to .hunt-run-hud's top-right edge so
    they float just above the HUD's border-top divider on the far right
    side. Pulled out of the flex flow with absolute positioning so the
@@ -1316,6 +1757,7 @@ body.ui-bar-stowed .hunt-run-layout {
 	gap: 4px;
 	z-index: 5;
 }
+
 /* Explicit square height (matching width) so the wrapping anchor keeps
    a clickable area even when the icon fails to load — without this,
    `height: auto` collapses to 0 and downstream layout (or test
@@ -1325,6 +1767,7 @@ body.ui-bar-stowed .hunt-run-layout {
 	width: 32px;
 	height: 32px;
 }
+
 /* The toolbar is a positioned wrapper so .hunt-run-tools can span
  * the full width and center its cluster on the same vertical axis as
  * the furniture strip above it; .hunt-run-nav overlays the right
@@ -1332,14 +1775,16 @@ body.ui-bar-stowed .hunt-run-layout {
 .hunt-run-toolbar {
 	position: relative;
 }
+
 .hunt-run-tools {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	gap: 0.5em;
-	padding: 0.5em;
+	padding: 0.5em 0.5em 0.25em;
 	min-height: 60px;
 }
+
 .hunt-tool-card {
 	flex: 0 0 auto;
 	display: flex;
@@ -1347,17 +1792,20 @@ body.ui-bar-stowed .hunt-run-layout {
 	align-items: center;
 	gap: 4px;
 }
+
 .hunt-tool-icon {
 	width: 64px;
 	height: 64px;
 	object-fit: contain;
 }
+
 .hunt-tool-card-label {
 	font-size: 0.75em;
 	opacity: 0.85;
 	line-height: 1.1;
 	text-align: center;
 }
+
 /* Shared tool-tick progress bar. Sits at the top of the layout
  * (sibling of #hunt-tool-result) rather than under each tool card,
  * so the toolbar row stays compact whether or not a tick is in
@@ -1373,9 +1821,11 @@ body.ui-bar-stowed .hunt-run-layout {
 	z-index: 11;
 	pointer-events: none;
 }
+
 .hunt-tool-meter:empty {
 	display: none;
 }
+
 .hunt-run-nav {
 	position: absolute;
 	top: 0;
@@ -1388,6 +1838,7 @@ body.ui-bar-stowed .hunt-run-layout {
 	text-align: right;
 	gap: 0.25em;
 }
+
 /* Companion icon slot in the toolbar. Sits absolutely between the
    centered tools cluster and the right-edge nav: anchored to the right
    with enough offset to clear hunt-run-nav's natural width, vertically
@@ -1407,11 +1858,13 @@ body.ui-bar-stowed .hunt-run-layout {
 	justify-content: center;
 	pointer-events: auto;
 }
+
 .hunt-run-companion .companion-card-link {
 	display: block;
 	width: 100%;
 	height: 100%;
 }
+
 /* Override the wide sidebar styling for the toolbar slot: shrink to
    a square thumbnail and keep the hover/border affordances. */
 .hunt-run-companion .companion-image,
@@ -1423,6 +1876,7 @@ body.ui-bar-stowed .hunt-run-layout {
 	border-width: 2px;
 	border-radius: 6px;
 }
+
 /* When the current room has more than 3 exits the column overruns the
    tool row's vertical budget; the compact variant shrinks the link
    text and tightens the gap so all exits stay visible without
@@ -1430,9 +1884,11 @@ body.ui-bar-stowed .hunt-run-layout {
 .hunt-run-nav-compact {
 	gap: 0.1em;
 }
+
 .hunt-run-nav-compact .movebtn a {
 	font-size: 0.85em;
 }
+
 .hunt-run-nav-compact br {
 	display: none;
 }
@@ -1448,39 +1904,47 @@ body.ui-bar-stowed .hunt-run-layout {
 	transform-origin: top left;
 	transition: transform 0.2s ease;
 }
+
 .hunt-minimap.hunt-minimap-collapsed {
 	transform: scale(0.35);
 }
+
 .hunt-minimap-svg {
 	display: block;
 	margin: 8px 0;
 	max-width: 100%;
 	height: auto;
 }
+
 .hunt-minimap-edge {
 	stroke: #777;
 	stroke-width: 2;
 }
+
 .hunt-minimap-room rect {
 	fill: #2a2a2a;
 	stroke: #888;
 	stroke-width: 2;
 }
+
 .hunt-minimap-room text {
 	fill: #cdcdcd;
 	font-size: 12px;
 	font-family: 'Cormorant', serif;
 	pointer-events: none;
 }
+
 .hunt-minimap-room.hunt-minimap-boss rect {
 	stroke: gold;
 	stroke-width: 3;
 }
+
 .hunt-minimap-room.hunt-minimap-current rect {
 	fill: #444;
 	stroke: var(--color-nav-blue);
 	stroke-width: 3;
 }
+
 /* Loot Sense (meta-shop unlock): rooms with at least one uncollected
    loot kind glow lime-green. Stacks with the current-room blue stroke
    via stroke-width precedence -- the cascade picks whichever rule lands
@@ -1490,6 +1954,7 @@ body.ui-bar-stowed .hunt-run-layout {
 	stroke: #9ee27a;
 	stroke-width: 3;
 }
+
 /* Reliable Recon (meta-shop unlock): the ghost's original lair until
    it drifts. Magenta so it reads distinctly from boss-gold and
    loot-green at a glance. */
@@ -1507,34 +1972,41 @@ body.ui-bar-stowed .hunt-run-layout {
 	padding-top: 1em;
 	border-top: 1px solid var(--color-mc-thoughts-link);
 }
+
 .cheat-actions-h {
 	margin: 0 0 .25em;
 	font-size: 1.1em;
 }
+
 .cheat-actions-note {
 	font-style: italic;
 	font-size: .9em;
 	margin: 0 0 1em;
 	opacity: .8;
 }
+
 .cheat-actions-group {
 	margin-bottom: .9em;
 }
+
 .cheat-actions-gh {
 	margin: 0 0 .25em;
 	font-size: 1em;
 }
+
 .cheat-actions-gh-note {
 	font-size: .85em;
 	font-style: italic;
 	opacity: .7;
 	margin: 0 0 .35em;
 }
+
 .cheat-actions-btns {
 	display: flex;
 	flex-wrap: wrap;
 	gap: .35em;
 }
+
 .cheat-btn {
 	padding: .35em .8em;
 	background: var(--color-mc-pink);
@@ -1545,16 +2017,20 @@ body.ui-bar-stowed .hunt-run-layout {
 	font: inherit;
 	transition: var(--btn-transition), background 0.2s;
 }
+
 .cheat-btn:hover:not(:disabled) {
 	background: var(--color-mc-pink-hover);
 }
+
 .cheat-btn:disabled {
 	opacity: .45;
 	cursor: not-allowed;
 }
+
 .cheat-reveal {
 	margin: .25em 0;
 }
+
 .cheat-reveal-result {
 	display: inline-block;
 	padding: .25em .5em;
@@ -1566,6 +2042,18 @@ body.ui-bar-stowed .hunt-run-layout {
 	margin: 0.5em 0;
 	font-style: italic;
 }
-.huntHarassment-Low    { color: #2E8B57; font-weight: bold; }
-.huntHarassment-Medium { color: #ffd166; font-weight: bold; }
-.huntHarassment-High   { color: #ff6666; font-weight: bold; }
+
+.huntHarassment-Low {
+	color: #2E8B57;
+	font-weight: bold;
+}
+
+.huntHarassment-Medium {
+	color: #ffd166;
+	font-weight: bold;
+}
+
+.huntHarassment-High {
+	color: #ff6666;
+	font-weight: bold;
+}

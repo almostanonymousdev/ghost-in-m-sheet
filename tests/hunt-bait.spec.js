@@ -59,6 +59,30 @@ test.describe('HauntConditions bait', () => {
     expect(await getVar(page, 'return')).toBe('HuntRun');
   });
 
+  test('consumeBaitOrgasm() seeds the aftershock cooldown so the HUD chip lands', async () => {
+    /* Regression: the bait orgasm path zeroed lust + bled sanity but
+       never called setOrgasmCooldown, so after a bait-triggered orgasm
+       the Aftershock contributor chip never appeared in the hunt HUD —
+       even though the equivalent widgetEvent.tw orgasm trigger always
+       seeds a 3-step window. The bait flow now seeds the same window so
+       both orgasm paths produce identical aftershock UI. */
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
+    await goToPassage(page, 'HuntRun');
+
+    expect(await getVar(page, 'orgasmCooldownSteps')).toBe(0);
+
+    await page.evaluate(() => {
+      SugarCube.State.variables.mc.lust = 100;
+      SugarCube.State.variables.baitOrgasmPending = 1;
+    });
+    expect(await callSetup(page, 'setup.HauntConditions.consumeBaitOrgasm()')).toBe(true);
+
+    expect(await getVar(page, 'orgasmCooldownSteps')).toBeGreaterThan(0);
+    const contributors = await callSetup(page, 'setup.HauntConditions.snapshot().contributors');
+    const labels = contributors.map(c => c.label);
+    expect(labels.some(l => l.startsWith('Aftershock'))).toBe(true);
+  });
+
   test('startBait() pins the ghost to the player\'s current room', async () => {
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
     await goToPassage(page, 'HuntRun');

@@ -120,7 +120,7 @@
 						<</replace>>
 						<<replace "#hunt-tool-meter">><</replace>>
 						<<applyTickEffects>>
-						<<replace ".hunt-conditions">><<huntConditions>><</replace>>
+						<<refreshHuntHud>>
 						<<set $currentsearchHunt[_t] to 0>>
 						<<removeclass ".cardlink" "disabled-link">>
 						<<if setup.Mc.isSanityCollapsed() or setup.Mc.sanity() lte 0>>
