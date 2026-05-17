@@ -152,3 +152,104 @@
 	}
 	.achievement-toast.hide { transform: none; }
 }
+
+/* ===== Trophy shelf (bedroom passage) ===== */
+
+.trophy-shelf-summary {
+	font-size: 1rem;
+	color: #c8c8c8;
+	letter-spacing: 0.04em;
+}
+
+.trophy-shelf {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	max-width: 50rem;
+}
+
+.trophy-section-title {
+	margin: 0.25rem 0 0.5rem 0;
+	font-size: 1.05rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: #d4d4d4;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+	padding-bottom: 0.2rem;
+}
+
+.trophy-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+	gap: 0.5rem;
+}
+
+.trophy-card {
+	display: flex;
+	align-items: center;
+	padding: 0.45rem 0.6rem;
+	background: linear-gradient(180deg, #1c1c1c 0%, #0a0a0a 100%);
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 0.4rem;
+	box-shadow:
+		0 0 0 1px rgba(0, 0, 0, 0.5),
+		inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.trophy-card.locked {
+	opacity: 0.55;
+	filter: grayscale(0.8);
+}
+
+.trophy-card-orb {
+	flex: 0 0 auto;
+	width: 2.2rem;
+	height: 2.2rem;
+	margin-right: 0.6rem;
+	border-radius: 50%;
+	background:
+		radial-gradient(circle at 50% 115%, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 55%),
+		radial-gradient(circle at 50% 50%, #6cd44a 0%, #3aa11e 55%, #1c5e0e 100%);
+	box-shadow:
+		inset 0 0 0 1px rgba(0, 0, 0, 0.5),
+		0 0 6px rgba(108, 212, 74, 0.35);
+	overflow: hidden;
+	position: relative;
+}
+
+.trophy-card.locked .trophy-card-orb {
+	background:
+		radial-gradient(circle at 50% 115%, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0) 55%),
+		radial-gradient(circle at 50% 50%, #444 0%, #222 100%);
+	box-shadow:
+		inset 0 0 0 1px rgba(0, 0, 0, 0.5);
+}
+
+.trophy-card-icon {
+	width: 100%;
+	height: 100%;
+	border-radius: 50%;
+	object-fit: cover;
+	display: block;
+}
+
+.trophy-card-text {
+	display: flex;
+	flex-direction: column;
+	line-height: 1.2;
+	overflow: hidden;
+}
+
+.trophy-card-name {
+	font-size: 0.95rem;
+	font-weight: 600;
+	color: #ffffff;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.trophy-card-hint {
+	font-size: 0.78rem;
+	color: #b8b8b8;
+}

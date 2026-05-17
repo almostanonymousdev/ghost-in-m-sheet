@@ -11,7 +11,7 @@
  *     the gag is the toast firing, so a silent second press would be a bug.
  */
 const { test, expect } = require('@playwright/test');
-const { openGame, resetGame } = require('./helpers');
+const { openGame, resetGame, goToPassage } = require('./helpers');
 
 test.describe('setup.Achievements', () => {
 	let page;
@@ -233,6 +233,91 @@ test.describe('setup.Achievements', () => {
 			};
 		});
 		expect(counts.visible).toBe(1);
+	});
+
+	test('TrophyShelf passage lists every catalogue entry', async () => {
+		await goToPassage(page, 'TrophyShelf');
+		const view = await page.evaluate(() => {
+			const total = SugarCube.setup.Achievements.all().length;
+			const cards = document.querySelectorAll('.trophy-card').length;
+			return { total, cards };
+		});
+		expect(view.cards).toBe(view.total);
+	});
+
+	test('TrophyShelf renders an unlocked entry as unlocked, with name + hint', async () => {
+		await page.evaluate(() => {
+			SugarCube.setup.Achievements.unlock('fail.sanity');
+		});
+		await goToPassage(page, 'TrophyShelf');
+		const view = await page.evaluate(() => {
+			const cards = Array.from(document.querySelectorAll('.trophy-card'));
+			const unlocked = cards.filter((c) => c.classList.contains('unlocked'));
+			const named = cards.find((c) =>
+				c.querySelector('.trophy-card-name') &&
+				c.querySelector('.trophy-card-name').textContent.trim() === 'Lost the Plot'
+			);
+			return {
+				anyUnlocked: unlocked.length > 0,
+				foundEntry: !!named,
+				entryHint: named && named.querySelector('.trophy-card-hint').textContent.trim(),
+				entryUnlocked: !!(named && named.classList.contains('unlocked'))
+			};
+		});
+		expect(view.anyUnlocked).toBe(true);
+		expect(view.foundEntry).toBe(true);
+		expect(view.entryUnlocked).toBe(true);
+		expect(view.entryHint).toContain('End a hunt');
+	});
+
+	test('TrophyShelf hides hidden+locked entries behind ???', async () => {
+		await goToPassage(page, 'TrophyShelf');
+		const view = await page.evaluate(() => {
+			/* win.nocaught is `hidden: true` in the catalogue. Locked + hidden
+			   should render as "???" rather than spoiling the name. */
+			const cards = Array.from(document.querySelectorAll('.trophy-card'));
+			const byName = function (n) {
+				return cards.find((c) => c.querySelector('.trophy-card-name').textContent.trim() === n);
+			};
+			return {
+				hasUntouched: !!byName('Untouched'),
+				hasMystery: !!byName('???')
+			};
+		});
+		expect(view.hasUntouched).toBe(false);
+		expect(view.hasMystery).toBe(true);
+	});
+
+	test('TrophyShelf persists unlocks across save/load (browser migration)', async () => {
+		/* The achievements bundle lives in $State.variables.achievements; the
+		   save migration's DEFAULTS keep old saves loadable. Unlock something,
+		   serialise the save, restart the game, deserialise — the unlock
+		   should survive the round-trip exactly like any other $variable. */
+		await goToPassage(page, 'CityMap');
+		await page.evaluate(() => {
+			SugarCube.State.variables.achievements = {};
+			SugarCube.setup.Achievements.unlock('disc.trap');
+			/* Flush to history: SugarCube reads Save.serialize from history,
+			   not the live State.variables working copy. A normal passage
+			   transition does this implicitly; here we mutated in place. */
+			var idx = SugarCube.State.activeIndex !== undefined
+				? SugarCube.State.activeIndex
+				: SugarCube.State.history.length - 1;
+			var moment = SugarCube.State.history[idx];
+			if (moment) moment.variables = JSON.parse(JSON.stringify(SugarCube.State.variables));
+		});
+		expect(await page.evaluate(() => SugarCube.setup.Achievements.has('disc.trap'))).toBe(true);
+
+		const serialised = await page.evaluate(() => SugarCube.Save.serialize());
+
+		await resetGame(page);
+		await page.waitForFunction(() => SugarCube.setup.Achievements && SugarCube.setup.Achievements.unlock);
+		/* Sanity: reset wiped the unlock so the round-trip below can't
+		   pass as a no-op. */
+		expect(await page.evaluate(() => SugarCube.setup.Achievements.has('disc.trap'))).toBe(false);
+
+		await page.evaluate((s) => SugarCube.Save.deserialize(s), serialised);
+		expect(await page.evaluate(() => SugarCube.setup.Achievements.has('disc.trap'))).toBe(true);
 	});
 
 	test('Hunt-bus integration: Event.CAUGHT unlocks fail.caught', async () => {

@@ -1,0 +1,50 @@
+:: TrophyShelf [nobr] {"position":"700,900","size":"100,100"}
+<<set _all = setup.Achievements.all()>>
+<<set _unlockedCount = setup.Achievements.unlocked().length>>
+<<set _totalCount = _all.length>>
+
+@@.location;Trophy Shelf@@<br>
+<br>
+<div class="trophy-shelf-summary">Unlocked: _unlockedCount / _totalCount</div>
+<br>
+
+<<set _sections = [
+	{ key: "win",       label: "Wins" },
+	{ key: "failure",   label: "Failures" },
+	{ key: "discovery", label: "Discoveries" },
+	{ key: "bestiary",  label: "Bestiary" },
+	{ key: "fun",       label: "Curiosities" }
+]>>
+
+<div class="trophy-shelf">
+<<for _section range _sections>>
+	<<set _items = _all.filter(function (a) { return a.category === _section.key; })>>
+	<<if _items.length gt 0>>
+		<div class="trophy-section">
+			<h3 class="trophy-section-title">_section.label</h3>
+			<div class="trophy-grid">
+				<<for _entry range _items>>
+					<<set _owned = setup.Achievements.has(_entry.id)>>
+					<<set _show  = _owned or not _entry.hidden>>
+					<<set _name  = _show ? _entry.name : "???">>
+					<<set _hint  = _show ? _entry.hint : "Hidden -- unlock to reveal.">>
+					<div @class="'trophy-card ' + (_owned ? 'unlocked' : 'locked')">
+						<div class="trophy-card-orb">
+							<<if _owned and _entry.icon>>
+								<<image _entry.icon "trophy-card-icon">>
+							<</if>>
+						</div>
+						<div class="trophy-card-text">
+							<div class="trophy-card-name">_name</div>
+							<div class="trophy-card-hint">_hint</div>
+						</div>
+					</div>
+				<</for>>
+			</div>
+		</div>
+	<</if>>
+<</for>>
+</div>
+
+<br>
+@@.backbtn;[[Bedroom]]@@<br>
