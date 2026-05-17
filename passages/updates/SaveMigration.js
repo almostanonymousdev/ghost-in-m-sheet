@@ -593,6 +593,19 @@
 					applyDefaults(moment.variables);
 				}
 
+				// Redirect any moment whose passage was renamed or removed
+				// to a known-safe fallback. Otherwise SugarCube throws
+				// "the passage X does not exist" and refuses the load.
+				var FALLBACK_PASSAGE = 'Livingroom';
+				if (typeof Story !== 'undefined' && typeof Story.has === 'function'
+					&& Story.has(FALLBACK_PASSAGE)) {
+					save.state.history.forEach(function (m) {
+						if (m && typeof m.title === 'string' && !Story.has(m.title)) {
+							m.title = FALLBACK_PASSAGE;
+						}
+					});
+				}
+
 				// Record what version the save was loaded at, so later code
 				// can tell "this was a v1 save, run one-time fixups".
 				save.metadata = save.metadata || {};
