@@ -73,6 +73,7 @@ setup.Witch = (function () {
 			return sv().succubus !== undefined;
 		},
 		succubusVisited: function () { return sv().succubus === 1; },
+		setSuccubusVisited: function (v) { sv().succubus = v; },
 		// (markExorcismReferred / markSuccubusSummoned / resetExorcismQuestStage
 		// fold into the defineStageAccessors block at the bottom.)
 		exorcismQuestNotStarted: function () {
