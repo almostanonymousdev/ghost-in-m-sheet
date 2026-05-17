@@ -98,6 +98,10 @@
 		ectoplasm:     function () { return 0; },
 		runsStarted:   function () { return 0; },
 		meta:          function () { return { unlocks: {}, bannedModifiers: [], rerollCharges: 0 }; },
+		// Persistent unlock map for setup.Achievements. Keys are
+		// catalogue ids; values are { at: <epoch-ms> }. Absent on
+		// saves predating the achievement system -- defaults to none.
+		achievements:  function () { return {}; },
 		// Seed for the *next* hunt. Rotated after each run end so
 		// the GhostStreet card / HuntStart lobby preview a fresh
 		// address every attempt.

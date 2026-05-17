@@ -1,0 +1,105 @@
+/* ===== Achievement toast (Xbox-360-styled slab) ===== */
+
+.achievement-toast-stack {
+	position: fixed;
+	left: 1.25rem;
+	bottom: 1.25rem;
+	z-index: 9999;
+	pointer-events: none;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.achievement-toast {
+	display: flex;
+	align-items: center;
+	min-width: 22rem;
+	max-width: 28rem;
+	padding: 0.55rem 1rem 0.55rem 0.55rem;
+	background: linear-gradient(180deg, #1c1c1c 0%, #0a0a0a 100%);
+	color: #f4f4f4;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 999px;
+	box-shadow:
+		0 0 0 1px rgba(0, 0, 0, 0.6),
+		0 10px 28px rgba(0, 0, 0, 0.55),
+		inset 0 1px 0 rgba(255, 255, 255, 0.08);
+	font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+	opacity: 0;
+	transform: translateX(-120%);
+	transition:
+		transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1),
+		opacity 220ms ease-out;
+}
+
+.achievement-toast.show {
+	opacity: 1;
+	transform: translateX(0);
+}
+
+.achievement-toast.hide {
+	opacity: 0;
+	transform: translateX(-120%);
+}
+
+/* The 360's green orb. Layered radial gradients build the glassy
+   sphere; a second :before/inner element produces the bright highlight. */
+.achievement-toast-orb {
+	flex: 0 0 auto;
+	width: 2.6rem;
+	height: 2.6rem;
+	margin-right: 0.85rem;
+	border-radius: 50%;
+	background:
+		radial-gradient(circle at 50% 115%, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 55%),
+		radial-gradient(circle at 50% 50%, #6cd44a 0%, #3aa11e 55%, #1c5e0e 100%);
+	box-shadow:
+		inset 0 0 0 1px rgba(0, 0, 0, 0.55),
+		inset 0 -2px 6px rgba(0, 0, 0, 0.55),
+		0 0 12px rgba(108, 212, 74, 0.45);
+	position: relative;
+}
+
+.achievement-toast-orb-inner {
+	position: absolute;
+	top: 12%;
+	left: 18%;
+	width: 60%;
+	height: 38%;
+	border-radius: 50%;
+	background: radial-gradient(ellipse at 50% 30%, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0) 70%);
+	pointer-events: none;
+}
+
+.achievement-toast-text {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	line-height: 1.15;
+	overflow: hidden;
+}
+
+.achievement-toast-label {
+	font-size: 0.72rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: #c8c8c8;
+}
+
+.achievement-toast-name {
+	font-size: 1rem;
+	font-weight: 600;
+	color: #ffffff;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.achievement-toast {
+		transition: opacity 120ms linear;
+		transform: none;
+	}
+	.achievement-toast.hide { transform: none; }
+}
