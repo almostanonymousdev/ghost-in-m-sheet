@@ -330,6 +330,42 @@ test.describe('setup.Achievements', () => {
 		expect(result).toBe(true);
 	});
 
+	test('Hunt-bus integration: LOOT_TAKEN with kind="cash" unlocks disc.loot.cash', async () => {
+		const result = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			H.emit(H.Event.LOOT_TAKEN, { kind: 'cash', roomId: 'room_1' });
+			return A.has('disc.loot.cash');
+		});
+		expect(result).toBe(true);
+	});
+
+	test('Hunt-bus integration: LOOT_TAKEN with kind="ectoplasm" unlocks disc.loot.ecto', async () => {
+		const result = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			H.emit(H.Event.LOOT_TAKEN, { kind: 'ectoplasm', roomId: 'room_1' });
+			return A.has('disc.loot.ecto');
+		});
+		expect(result).toBe(true);
+	});
+
+	test('Hunt-bus integration: LOOT_TAKEN with non-rare kind does not unlock either loot achievement', async () => {
+		/* Guards against the wiring accidentally over-firing -- only
+		   the cash and ectoplasm kinds should trip these discovery
+		   achievements, not the always-present cursedItem / rescueClue
+		   / tarotCards / monkeyPaw / tool_* kinds. */
+		const result = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			H.emit(H.Event.LOOT_TAKEN, { kind: 'tarotCards', roomId: 'room_1' });
+			H.emit(H.Event.LOOT_TAKEN, { kind: 'tool_emf',   roomId: 'room_1' });
+			return { cash: A.has('disc.loot.cash'), ecto: A.has('disc.loot.ecto') };
+		});
+		expect(result.cash).toBe(false);
+		expect(result.ecto).toBe(false);
+	});
+
 	test('cheated save blocks future unlocks but preserves prior ones', async () => {
 		const result = await page.evaluate(() => {
 			const A = SugarCube.setup.Achievements;

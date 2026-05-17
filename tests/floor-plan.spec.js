@@ -290,6 +290,73 @@ test.describe('Floor-plan generator', () => {
     expect(fails).toEqual([]);
   });
 
+  test('rare loot kinds (cash, ectoplasm) appear in roughly 10% of hunts', async () => {
+    /* RARE_LOOT_KINDS are rolled independently at RARE_LOOT_CHANCE
+       per kind, so over many seeds each kind's placement rate should
+       hover near 10%. Fuzz across 1000 seeds and bound the rate to
+       a wide tolerance so the test isn't flaky against future PRNG
+       changes -- the goal is "rare, not absent, not common", not a
+       precise rate match. */
+    test.setTimeout(20_000);
+    const counts = await page.evaluate(() => {
+      const out = { cash: 0, ectoplasm: 0, total: 0 };
+      for (let seed = 1; seed <= 1000; seed++) {
+        const plan = SugarCube.setup.FloorPlan.generate(seed, { roomCount: 5 });
+        out.total++;
+        if (plan.loot.cash)      out.cash++;
+        if (plan.loot.ectoplasm) out.ectoplasm++;
+      }
+      return out;
+    });
+    expect(counts.cash / counts.total).toBeGreaterThan(0.05);
+    expect(counts.cash / counts.total).toBeLessThan(0.18);
+    expect(counts.ectoplasm / counts.total).toBeGreaterThan(0.05);
+    expect(counts.ectoplasm / counts.total).toBeLessThan(0.18);
+  });
+
+  test('rare loot, when placed, lands on a furniture-bearing room with a pin', async () => {
+    /* Same forced-furniture pipeline as tarotCards / tool_* -- the
+       player needs a clickable slot to find them. Fuzz across seeds
+       and verify every placed rare-loot kind has both a furniture
+       room and a valid suffix pin. */
+    test.setTimeout(20_000);
+    const fails = await page.evaluate(() => {
+      const out = [];
+      for (let seed = 1; seed <= 500; seed++) {
+        const plan = SugarCube.setup.FloorPlan.generate(seed, { roomCount: 5 });
+        ['cash', 'ectoplasm'].forEach((k) => {
+          if (!plan.loot[k]) return; // miss, fine
+          const room = plan.rooms.find(r => r.id === plan.loot[k]);
+          const t = SugarCube.setup.Templates.byId(room.template);
+          if (!t || !Array.isArray(t.furniture) || !t.furniture.length) {
+            out.push(`seed ${seed}: ${k} on furniture-less ${room.template}`);
+            return;
+          }
+          if (!plan.lootFurniture[k]) {
+            out.push(`seed ${seed}: ${k} missing furniture pin`);
+            return;
+          }
+          if (t.furniture.indexOf(plan.lootFurniture[k]) === -1) {
+            out.push(`seed ${seed}: ${k} pin ${plan.lootFurniture[k]} not in ${room.template}`);
+          }
+        });
+      }
+      return out;
+    });
+    expect(fails).toEqual([]);
+  });
+
+  test('rare loot placement is deterministic per seed', async () => {
+    /* The rare-loot rolls consume the same RNG stream as everything
+       else in the plan, so same-seed plans must include or exclude
+       cash / ectoplasm identically -- otherwise replays and shared
+       seed strings would drift. */
+    const a = await gen(7);
+    const b = await gen(7);
+    expect(Boolean(a.loot.cash)).toBe(Boolean(b.loot.cash));
+    expect(Boolean(a.loot.ectoplasm)).toBe(Boolean(b.loot.ectoplasm));
+  });
+
   test('bossRoomId is null when includeBoss is false (default)', async () => {
     const plan = await gen(1);
     expect(plan.bossRoomId).toBeNull();
