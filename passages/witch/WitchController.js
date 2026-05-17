@@ -292,7 +292,10 @@ setup.Witch = (function () {
 	setup.defineStageAccessors(api, sv, 'wardenClothesStage', setup.WardenClothesStage, {
 		mark: { markWardenOutfitHintOpened: 'HINT_OFFERED' }
 	});
-	setup.Cooldowns.registerDaily('witchNight');
-	setup.Cooldowns.registerDaily('stealItemsFromWitch');
 	return api;
 })();
+/* Deferred to :storyready -- see ChurchController for rationale. */
+$(document).one(':storyready', function () {
+	setup.Cooldowns.registerDaily('witchNight');
+	setup.Cooldowns.registerDaily('stealItemsFromWitch');
+});

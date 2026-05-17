@@ -49,7 +49,8 @@ setup.Achievements = setup.Achievements || {};
 		// is called, regardless of stored state -- the player-button
 		// gag in the bedroom is the canonical example.
 		{ id: 'fun.sploosh', name: 'sploosh', hint: '???', hidden: true, repeatable: true, category: 'fun',
-		  icon: 'ui/achievements/sploosh.png' }
+		  icon: 'ui/achievements/sploosh.png' },
+		{ id: 'fun.cheat',   name: 'all achievements disabled.   ...wait', hint: '???', hidden: true, category: 'fun' }
 	]);
 
 	function bestiaryCatalogue() {
@@ -184,6 +185,23 @@ setup.Achievements = setup.Achievements || {};
 		});
 	}
 	$(document).one(':storyready', registerHuntSubscriptions);
+
+	/* StoryEvents-bus wiring -- same :storyready deferral rationale as
+	   the Hunt subscriptions above. StoryEvents loads from
+	   passages/StoryEvents.js, which alphabetically precedes
+	   passages/achievements/, so it's available by module-eval time
+	   today -- but registering at :storyready keeps the pattern
+	   consistent and survives any future filesystem-order shuffling. */
+	function registerStoryEventSubscriptions() {
+		if (!setup.StoryEvents || !setup.StoryEvents.Event) {
+			console.error('Achievements: setup.StoryEvents missing at :storyready; subscriptions skipped.');
+			return;
+		}
+		setup.StoryEvents.on(setup.StoryEvents.Event.CHEAT_USED, function () {
+			unlock('fun.cheat');
+		});
+	}
+	$(document).one(':storyready', registerStoryEventSubscriptions);
 
 	setup.Achievements.OWNED_VARS = OWNED_VARS;
 	setup.Achievements.unlock   = unlock;

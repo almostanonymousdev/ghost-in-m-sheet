@@ -4,7 +4,10 @@
 	position: fixed;
 	left: 1.25rem;
 	bottom: 1.25rem;
-	z-index: 9999;
+	/* Must sit above SugarCube's #ui-dialog (z-index 100100) so toasts
+	   for actions taken inside the Settings dialog (cheat toggles,
+	   one-shot cheat buttons) are visible to the player. */
+	z-index: 100200;
 	pointer-events: none;
 	display: flex;
 	flex-direction: column;

@@ -104,4 +104,7 @@ setup.SpecialEvent = (function () {
 		}
 	};
 })();
-setup.Cooldowns.registerDaily('ghostSpecialEventSpirit');
+/* Deferred to :storyready -- see ChurchController for rationale. */
+$(document).one(':storyready', function () {
+	setup.Cooldowns.registerDaily('ghostSpecialEventSpirit');
+});

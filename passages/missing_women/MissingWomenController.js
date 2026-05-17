@@ -328,7 +328,10 @@ setup.MissingWomen = (function () {
 		mark: { resetQuestToAvailable: 'AVAILABLE', markQuestFailed: 'FAILED',
 				markQuestSucceeded: 'SUCCEEDED' }
 	});
-	setup.Cooldowns.registerDaily('rescue');
-	setup.Cooldowns.registerDaily('rescueQuest');
 	return api;
 })();
+/* Deferred to :storyready -- see ChurchController for rationale. */
+$(document).one(':storyready', function () {
+	setup.Cooldowns.registerDaily('rescue');
+	setup.Cooldowns.registerDaily('rescueQuest');
+});

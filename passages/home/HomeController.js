@@ -643,8 +643,11 @@ setup.Home = (function () {
 		mark: { markBrookePossessedActive: 'POSSESSED',
 				markBrookePossessedInactive: 'RECOVERED' }
 	});
+	return api;
+})();
+/* Deferred to :storyready -- see ChurchController for rationale. */
+$(document).one(':storyready', function () {
 	setup.Cooldowns.registerDaily('exorcism');
 	setup.Cooldowns.registerDaily('masturbation');
 	setup.Cooldowns.registerDaily('findGhostInfo');
-	return api;
-})();
+});

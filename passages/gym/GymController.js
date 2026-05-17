@@ -194,5 +194,8 @@ setup.Gym = (function () {
 		}
 	};
 })();
-setup.Cooldowns.registerDaily('trainer1Sex');
-setup.Cooldowns.registerDaily('trainer2Sex');
+/* Deferred to :storyready -- see ChurchController for rationale. */
+$(document).one(':storyready', function () {
+	setup.Cooldowns.registerDaily('trainer1Sex');
+	setup.Cooldowns.registerDaily('trainer2Sex');
+});

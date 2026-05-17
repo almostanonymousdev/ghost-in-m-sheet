@@ -84,4 +84,7 @@ setup.Park = (function () {
 		}
 	};
 })();
-setup.Cooldowns.registerDaily('jogging');
+/* Deferred to :storyready -- see ChurchController for rationale. */
+$(document).one(':storyready', function () {
+	setup.Cooldowns.registerDaily('jogging');
+});

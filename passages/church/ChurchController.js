@@ -152,4 +152,10 @@ setup.Church = (function () {
 		}
 	};
 })();
-setup.Cooldowns.registerDaily('churchSex');
+/* Deferred to :storyready because Tweego's script-passage concatenation
+   order isn't a guaranteed early load for gui/MeterController.js (where
+   setup.Cooldowns is defined). Registering at :storyready means
+   setup.Cooldowns is populated regardless of who got concatenated first. */
+$(document).one(':storyready', function () {
+	setup.Cooldowns.registerDaily('churchSex');
+});
