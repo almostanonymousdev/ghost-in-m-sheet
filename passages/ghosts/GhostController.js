@@ -674,9 +674,22 @@
         forceHuntGhost: function (g) {
             var h = State.variables.hunt;
             if (!h || !g) return;
+            var ids = g.evidence.map(function (e) { return e.id; });
             h.name     = g.name;
             h.realName = g.name;
-            h.evidence = g.evidence.map(function (e) { return e.id; });
+            h.evidence = ids;
+            /* During a procedural run the active ghost is sourced from
+               $run.ghostName (HuntController.activeGhost → _activeFromCatalogue),
+               not $hunt.name — so rewriting $hunt alone leaves the run still
+               pointing at the originally-rolled ghost. Mirror the override
+               onto $run as well so setup.Ghosts.active() and per-tick hunt
+               machinery pick up the cheat immediately. */
+            if (setup.HuntController
+                && typeof setup.HuntController.isActive === "function"
+                && setup.HuntController.isActive()) {
+                setup.HuntController.setField('ghostName', g.name);
+                setup.HuntController.setField('evidence', ids);
+            }
         },
         huntName: function () {
             var h = State.variables.hunt;
