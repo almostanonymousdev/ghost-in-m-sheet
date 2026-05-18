@@ -31,6 +31,9 @@
 	<<run setup.Mc.addTempCorr(0.5)>>
 	<<run setup.activateTool("emf")>>
 	<<run setup.activateTool("uvl")>>
+	/% Mirror StealClothes: stash a clothesStolen pin onto the floor plan and flip isClothesStolen=1 so the find-stolen-clothes UI surfaces the dropped garment somewhere in the house. %/
+	<<run setup.HuntController.stashStolenClothes()>>
+	<<run setup.HauntedHouses.markClothesStolen()>>
 	&emsp;&emsp;You don't run. You don't hide. You hold perfectly still and let it pass THROUGH you. Icy fingers slide over you; the ghost pauses, curious — and tears a garment loose before drifting on. Your skin crawls, but you can feel the residue it left behind. Every tool you were carrying picks up the trail.
 	<br>
 	<<switch _freezeSlot>>

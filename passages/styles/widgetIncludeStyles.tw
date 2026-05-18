@@ -40,10 +40,17 @@
 <</widget>>
 
 /% <<includeStyleEventMC>>
-   Dark-room filter for the EventMC video, triggered when the
-   preceding FurnitureSearch came out of an unlit room. %/
+   Dark-room filter for the EventMC video. Two sources of "the room
+   is dark":
+   - Procedural / unified hunt: the player's current $run.lights
+     entry is DARK (HuntController.isCurrentRoomDark).
+   - Static-house FurnitureSearch chain: previous() is FurnitureSearch
+     and the room two steps back is unlit. Kept for parity with
+     legacy houses where the room state lives on setup.Rooms. %/
 <<widget "includeStyleEventMC">>
-	<<if previous() is "FurnitureSearch" and setup.Styles.isDarkRoom(previous(2))>>
+	<<if setup.HuntController.isActive() and setup.HuntController.isCurrentRoomDark()>>
+		<<addclass "body" "style-event-mc-dark">>
+	<<elseif previous() is "FurnitureSearch" and setup.Styles.isDarkRoom(previous(2))>>
 		<<addclass "body" "style-event-mc-dark">>
 	<</if>>
 <</widget>>
