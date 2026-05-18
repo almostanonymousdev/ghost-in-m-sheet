@@ -200,27 +200,81 @@ test.describe('TickController helpers', () => {
     expect(await callSetup(page, 'setup.Tick.companionAttackActiveHit()')).toBe(false);
   });
 
-  test('resolveCompanionAttack flags ATTACK_SAFE when roll >= chanceToAttack', async ({ game: page }) => {
-    // Pin Math.random so the roll is deterministic.
+  /* Regression: prior to v0.5.4 the mission was driven by two compounded
+     rolls — chanceToAttack at plan elapse, then chanceToSuccess in
+     CompanionSucceeded.tw / widgetFriends.tw. With a displayed plan
+     chance of 30 % and a clothing tier exposing chanceToAttack=40 the
+     player's *actual* success rate collapsed to ~18 %, far below the
+     displayed number. The single-roll model rolls chanceToSuccess once
+     at plan elapse: success → ATTACK_SAFE (companion returns with the
+     prize); failure → ATTACK_FAILED (companion ambushed). Downstream
+     passages render the outcome directly with no further roll. */
+  test('resolveCompanionAttack rolls chanceToSuccess, not chanceToAttack', async ({ game: page }) => {
     await seedRandom(page, 0xCA51);
     const CS = await callSetup(page, 'setup.CompanionShow');
-    await setVar(page, 'chanceToAttack', 0); // any roll succeeds
+    // chanceToAttack=0 used to force "safe"; with the new model only
+    // chanceToSuccess matters. Set chanceToSuccess=100 → always safe.
+    await setVar(page, 'chanceToAttack', 100);
+    await setVar(page, 'chanceToSuccess', 100);
     const result = await page.evaluate(
       () => SugarCube.setup.Tick.resolveCompanionAttack());
     expect(result).toBe('safe');
     expect(await getVar(page, 'showComp')).toBe(CS.ATTACK_SAFE);
   });
 
-  test('resolveCompanionAttack flags ATTACK_FAILED + zeroes stepCount when the roll fails', async ({ game: page }) => {
+  test('resolveCompanionAttack flags ATTACK_FAILED + zeroes stepCount when the success roll fails', async ({ game: page }) => {
     await seedRandom(page, 0xCA51);
     const CS = await callSetup(page, 'setup.CompanionShow');
-    await setVar(page, 'chanceToAttack', 101); // any roll fails
+    // chanceToAttack high (would have meant "always attacked" in the
+    // old model) — irrelevant now. chanceToSuccess=0 → mission always
+    // fails.
+    await setVar(page, 'chanceToAttack', 0);
+    await setVar(page, 'chanceToSuccess', 0);
     await setVar(page, 'stepCount', 7);
     const result = await page.evaluate(
       () => SugarCube.setup.Tick.resolveCompanionAttack());
     expect(result).toBe('hit');
     expect(await getVar(page, 'showComp')).toBe(CS.ATTACK_FAILED);
     expect(await getVar(page, 'stepCount')).toBe(0);
+  });
+
+  /* Single-roll contract: the *displayed* plan chance % equals the
+     observed success rate over many runs. The companion mission must
+     not perform a second downstream roll. */
+  test('resolveCompanionAttack outcome rate matches the displayed plan chance over many trials', async ({ game: page }) => {
+    const CS = await callSetup(page, 'setup.CompanionShow');
+    await setVar(page, 'chanceToSuccess', 30);
+    let safe = 0;
+    const N = 400;
+    for (let i = 0; i < N; i++) {
+      await setVar(page, 'showComp', CS.HIDDEN);
+      const r = await page.evaluate(
+        () => SugarCube.setup.Tick.resolveCompanionAttack());
+      if (r === 'safe') safe += 1;
+    }
+    const rate = safe / N;
+    // Expect ~30% safe; allow a wide tolerance for sampling noise.
+    expect(rate).toBeGreaterThan(0.18);
+    expect(rate).toBeLessThan(0.42);
+  });
+
+  /* Single-roll contract guard: Math.random is consumed exactly once by
+     resolveCompanionAttack. Any future regression that compounds a
+     second roll into the resolution will trip this. */
+  test('resolveCompanionAttack consumes exactly one random() call', async ({ game: page }) => {
+    await setVar(page, 'chanceToSuccess', 50);
+    const count = await page.evaluate(() => {
+      const orig = Math.random;
+      let n = 0;
+      Math.random = function () { n += 1; return orig(); };
+      try {
+        SugarCube.setup.Tick.resolveCompanionAttack();
+      } finally {
+        Math.random = orig;
+      }
+      return n;
+    });
+    expect(count).toBe(1);
   });
 
   // --- Daily cooldown rollover ----------------------------------

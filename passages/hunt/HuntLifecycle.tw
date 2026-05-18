@@ -203,6 +203,7 @@
 	<br>
 	<span class="mc-action">+<<= _summary.payout>> mL of ectoplasm</span><br>
 	<span class="mc-thoughts">Ectoplasm: <<= setup.HuntController.ectoplasm()>> mL</span><br>
+	<span class="mc-action">+<<= _summary.xp>> exp</span><br>
 	<br>
 	<<if _summary.success>>
 		@@.movebtn; [[Start a new hunt|HuntStart]]@@<br>

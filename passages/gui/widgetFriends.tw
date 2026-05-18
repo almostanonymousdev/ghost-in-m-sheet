@@ -57,43 +57,30 @@
 <</widget>>
 
 <<widget "isCompanionContinue">>
+	/* Reached after the ghost ambushed the companion (showComp =
+	   ATTACK_FAILED from the single mission roll in
+	   setup.Tick.resolveCompanionAttack). The mission was already
+	   decided as a failure there, so no second success roll happens
+	   here — the companion always returns empty-handed. */
 	<<linkappend "@@.mc-speechLink; Will you be able to continue?@@">><br>
 
 		<<if _args[0] gte _args[1] or (setup.Companion.sanity() gte _args[2] and setup.Companion.sanity() lte _args[3])>>
 			<<run setup.Companion.resumeHunt()>>
 			@@.notmc-speech; I think I can continue. @@
-			<<set _checkChance to random(1,100)>>
-			<<if _checkChance lte setup.Companion.chanceToSuccess()>>
-				@@.notmc-speech; Oh, by the way, before the ghost... attacked me, I found something...@@
-				<<include "CompanionResult">>
-				<<run setup.Companion.setChosenPlan("Plan1")>>
-			<<else>>
-				<<run setup.Companion.setChosenPlan("Plan1")>>
-				@@.notmc-speech; <<= setup.Mc.name()>>, I'm sorry, I wasn't able to find what you asked for...@@<br>
-				@@.mc-speech; Don't worry about it, it's okay. The main thing is that you're fine@@<br>
-				<<companionExp 2>>
-				<br>
-
-			<</if>>
+			<<run setup.Companion.setChosenPlan("Plan1")>>
+			@@.notmc-speech; <<= setup.Mc.name()>>, I'm sorry, I wasn't able to find what you asked for...@@<br>
+			@@.mc-speech; Don't worry about it, it's okay. The main thing is that you're fine@@<br>
+			<<companionExp 2>>
+			<br>
 			@@.notmc-speech; Thank you... I think I'm ready. [[Let's continue.|$return]]@@<br>
 		<<else>>
 
 			<<run setup.Companion.resumeHunt()>>
 			@@.notmc-speech; You know... I'm not sure I can keep going. I need to rest for a bit...@@<br>
-			<<set _checkChance to random(1,100)>>
-			<<if _checkChance lte setup.Companion.chanceToSuccess()>>
-				@@.notmc-speech; Oh, by the way, before the ghost... attacked me, i found something...@@
-				<<include "CompanionResult">>
-
-			<<else>>
-				@@.notmc-speech; <<= setup.Mc.name()>>, I'm sorry, I wasn't able to find what you asked for...@@<br>
-				@@.mc-speech; Don't worry about it, it's okay. The main thing is that you're fine@@<br>
-
-				<<companionExp 2>>
-
-				<br>
-
-			<</if>>
+			@@.notmc-speech; <<= setup.Mc.name()>>, I'm sorry, I wasn't able to find what you asked for...@@<br>
+			@@.mc-speech; Don't worry about it, it's okay. The main thing is that you're fine@@<br>
+			<<companionExp 2>>
+			<br>
 			@@.mc-speech; Alright, then I'll [[continue|$return][setup.Companion.dismissCompanion()]] on my own...@@ <<if _args[0] lte 4>>@@.warningtext; Req. higher lvl@@
 			<</if>><br>
 		<</if>>

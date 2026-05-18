@@ -1408,6 +1408,10 @@ setup.HuntController = (function () {
 		var mult = (typeof payCtx.multiplier === 'number') ? payCtx.multiplier : 1;
 		var payout = Math.round(base * mult);
 		addEctoplasm(payout);
+		var xpReward = Math.round((success ? 20 : 5) * mult);
+		if (setup.Mc && typeof setup.Mc.grantExp === 'function') {
+			setup.Mc.grantExp(xpReward);
+		}
 		var summary = {
 			seed: run.seed,
 			number: run.number,
@@ -1416,6 +1420,7 @@ setup.HuntController = (function () {
 			failureReason: run.failureReason || null,
 			success: !!success,
 			payout: payout,
+			xp: xpReward,
 			exitPassage: exitPassageForOutcome(!!success, run.failureReason || null)
 		};
 		/* Stash the outcome on persistent meta-state so HuntSummary
