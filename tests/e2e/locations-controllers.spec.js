@@ -5,7 +5,7 @@ const { expectCleanPassage } = require('./e2e-helpers');
 test.describe('Gym — fitness gain mechanics', () => {
   test('applyFitnessGain raises fit and beauty proportionally', async ({ game: page }) => {
     await setVar(page, 'mc.fit', 0);
-    await setVar(page, 'mc.beauty', 10);
+    await callSetup(page, `setup.Mc.setBeauty(10)`);
     await setVar(page, 'mc.energyMax', 10);
     await setVar(page, 'mc.energyPoints', 0);
 
@@ -18,7 +18,7 @@ test.describe('Gym — fitness gain mechanics', () => {
 
   test('applyFitnessGain caps fit at 100 and unlocks energy bonus', async ({ game: page }) => {
     await setVar(page, 'mc.fit', 95);
-    await setVar(page, 'mc.beauty', 50);
+    await callSetup(page, `setup.Mc.setBeauty(50)`);
     await setVar(page, 'mc.energyMax', 12);
     await setVar(page, 'mc.energyPoints', 9);
 
@@ -31,7 +31,7 @@ test.describe('Gym — fitness gain mechanics', () => {
 
   test('applyFitnessGain leaves stats clamped at 0', async ({ game: page }) => {
     await setVar(page, 'mc.fit', 5);
-    await setVar(page, 'mc.beauty', 5);
+    await callSetup(page, `setup.Mc.setBeauty(5)`);
     await setVar(page, 'mc.energyMax', 10);
     await setVar(page, 'mc.energyPoints', 0);
 
@@ -101,7 +101,7 @@ test.describe('Gym — passage rendering with progression state', () => {
       test.setTimeout(10_000);
       await setVar(page, 'hours', 10);
       await setVar(page, 'mc.fit', 30);
-      await setVar(page, 'mc.beauty', 50);
+      await callSetup(page, `setup.Mc.setBeauty(50)`);
       await setVar(page, 'mc.lust', 50);
       await setVar(page, 'mc.energy', 10);
       await setVar(page, 'mc.money', 200);
@@ -135,10 +135,10 @@ test.describe('Park — controller mutations', () => {
   });
 
   test('isBeautyBelow flips around the threshold', async ({ game: page }) => {
-    await setVar(page, 'mc.beauty', 30);
+    await callSetup(page, `setup.Mc.setBeauty(30)`);
     expect(await callSetup(page, 'setup.Park.isBeautyBelow(30)')).toBe(true);
     expect(await callSetup(page, 'setup.Park.isBeautyBelow(40)')).toBe(false);
-    await setVar(page, 'mc.beauty', 40);
+    await callSetup(page, `setup.Mc.setBeauty(40)`);
     expect(await callSetup(page, 'setup.Park.isBeautyBelow(40)')).toBe(true);
   });
 
@@ -194,7 +194,7 @@ test.describe('Park — event passages', () => {
       await setVar(page, 'hours', 10);
       await setVar(page, 'sportswear', 1);
       await setVar(page, 'mc.energy', 5);
-      await setVar(page, 'mc.beauty', 50);
+      await callSetup(page, `setup.Mc.setBeauty(50)`);
       await setVar(page, 'mc.exhibitionism', 1);
       await goToPassage(page, passage);
       await expectCleanPassage(page);

@@ -69,6 +69,22 @@ setup.Mc = (function () {
 		// just display a bar divide by 100.
 		fitPct: function () { return mc().fit / 100; },
 
+		// --- Beauty: split into base + modifier -----------------
+		// `beautyBase` is the immutable starting value seeded at
+		// game init; every gameplay-driven change (wardrobe, makeup,
+		// tattoos, gym, piercings, ...) writes only `beautyModifier`.
+		// Reads come through beauty() so callers see the sum.
+		beauty: function () {
+			var m = mc();
+			return (m.beautyBase || 0) + (m.beautyModifier || 0);
+		},
+		setBeauty: function (v) {
+			mc().beautyModifier = v - (mc().beautyBase || 0);
+		},
+		addBeauty: function (n) {
+			mc().beautyModifier = (mc().beautyModifier || 0) + n;
+		},
+
 		// --- Penalty (sleep / assault debuff flag) --------------
 		isPenalized:    function () { return sv().isPenaltyOn === 1; },
 		setPenalized:   function (on) { sv().isPenaltyOn = on ? 1 : 0; },
@@ -187,7 +203,7 @@ setup.Mc = (function () {
 			var previousFit = m.fit;
 			m.fit += delta;
 			var beautyIncrease = Math.floor(m.fit / 5) - Math.floor(previousFit / 5);
-			if (beautyIncrease > 0) { m.beauty += beautyIncrease; }
+			if (beautyIncrease > 0) { setup.Mc.addBeauty(beautyIncrease); }
 			if (!m.energyPoints) { m.energyPoints = Math.floor(previousFit / 10); }
 			var prevEp = m.energyPoints;
 			var curEp  = Math.floor(m.fit / 10);
@@ -198,10 +214,10 @@ setup.Mc = (function () {
 				m.energyPoints = curEp;
 			}
 			if (previousFit >= 5 && (previousFit - 1) % 5 === 0 && m.fit < 5) {
-				m.beauty -= 1;
+				setup.Mc.addBeauty(-1);
 			}
-			m.fit    = Math.max(0, Math.min(100, m.fit));
-			m.beauty = Math.max(0, m.beauty);
+			m.fit = Math.max(0, Math.min(100, m.fit));
+			if (setup.Mc.beauty() < 0) { setup.Mc.setBeauty(0); }
 			var hitEnergyCap = false;
 			if (m.fit === 100 && m.energyMax < 20) {
 				m.energyMax  = 20;
@@ -210,7 +226,7 @@ setup.Mc = (function () {
 			}
 			return {
 				fit:             m.fit,
-				beauty:          m.beauty,
+				beauty:          setup.Mc.beauty(),
 				beautyIncrease:  beautyIncrease > 0 ? beautyIncrease : 0,
 				energyMaxDelta:  energyMaxDelta,
 				energyMax:       m.energyMax,
@@ -285,7 +301,6 @@ setup.Mc = (function () {
 		{ name: 'energyMax' },
 		{ name: 'energyPoints',  add: 'addEnergyPoints' },
 		{ name: 'corruption',    add: 'addCorruption' },
-		{ name: 'beauty',        add: 'addBeauty' },
 		{ name: 'lust',          add: 'addLust' },
 		{ name: 'name' },
 		{ name: 'fit',           add: 'addFit' },

@@ -1,5 +1,5 @@
 const { test, expect } = require('../fixtures');
-const { goToPassage, getVar, setVar } = require('../helpers');
+const { goToPassage, getVar, setVar, callSetup } = require('../helpers');
 
 /**
  * Wait until SugarCube navigates to the given passage.
@@ -191,7 +191,7 @@ test.describe('Delivery E2E — Manager return visits', () => {
 
   test('payment discussion shows beauty requirement when beauty < 45', async ({ game: page }) => {
     await setupReadyWorker(page);
-    await setVar(page, 'mc.beauty', 30);
+    await callSetup(page, `setup.Mc.setBeauty(30)`);
     await goToPassage(page, 'DeliveryManager');
 
     // Click the linkreplace trigger "Ask about payment"
@@ -210,7 +210,7 @@ test.describe('Delivery E2E — Manager return visits', () => {
 
   test('payment discussion shows corruption requirement when beauty >= 45 but corruption < 2', async ({ game: page }) => {
     await setupReadyWorker(page);
-    await setVar(page, 'mc.beauty', 50);
+    await callSetup(page, `setup.Mc.setBeauty(50)`);
     await setVar(page, 'mc.corruption', 1);
     await goToPassage(page, 'DeliveryManager');
 
@@ -227,7 +227,7 @@ test.describe('Delivery E2E — Manager return visits', () => {
 
   test('BJ option appears when beauty >= 45 and corruption >= 2', async ({ game: page }) => {
     await setupReadyWorker(page);
-    await setVar(page, 'mc.beauty', 50);
+    await callSetup(page, `setup.Mc.setBeauty(50)`);
     await setVar(page, 'mc.corruption', 3);
     await goToPassage(page, 'DeliveryManager');
 
@@ -244,7 +244,7 @@ test.describe('Delivery E2E — Manager return visits', () => {
 
   test('BJ event grants money, exp, corruption and sets cooldown', async ({ game: page }) => {
     await setupReadyWorker(page);
-    await setVar(page, 'mc.beauty', 50);
+    await callSetup(page, `setup.Mc.setBeauty(50)`);
     await setVar(page, 'mc.corruption', 3);
     const startMoney = await getVar(page, 'mc.money');
     const startCorruption = await getVar(page, 'mc.corruption');
@@ -259,7 +259,7 @@ test.describe('Delivery E2E — Manager return visits', () => {
 
   test('manager shows cooldown message after BJ event', async ({ game: page }) => {
     await setupReadyWorker(page);
-    await setVar(page, 'mc.beauty', 50);
+    await callSetup(page, `setup.Mc.setBeauty(50)`);
     await setVar(page, 'mc.corruption', 3);
     await setVar(page, 'deliveryBJ', 1);
     await goToPassage(page, 'DeliveryManager');
