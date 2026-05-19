@@ -181,7 +181,7 @@ setup.Gym = (function () {
 		payForCoach: function () {
 			setup.Mc.removeMoney(State.variables.trainingCost);
 		},
-		spendEnergyToTrain: function () {
+		removeEnergyToTrain: function () {
 			setup.Mc.removeEnergy(TRAIN_COST);
 		},
 

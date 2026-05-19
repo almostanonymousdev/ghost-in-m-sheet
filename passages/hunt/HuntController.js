@@ -309,7 +309,7 @@ setup.HuntController = (function () {
 		var owned = metaUnlock(id);
 		if (owned >= item.max) return false;
 		if (!canAffordEctoplasm(item.cost)) return false;
-		spendEctoplasm(item.cost);
+		removeEctoplasm(item.cost);
 		var m = metaState();
 		m.unlocks[id] = owned + 1;
 		if (id === ShopItem.REROLL_CHARGE) m.rerollCharges = (m.rerollCharges || 0) + 1;
@@ -410,6 +410,7 @@ setup.HuntController = (function () {
 			   them via setRoomLight. */
 			lights: {}
 		};
+		sv().stepCount = 0;
 		return sv().run;
 	}
 
@@ -498,11 +499,33 @@ setup.HuntController = (function () {
 		var collected = Array.isArray(run.collectedLoot) ? run.collectedLoot : [];
 		var out = [];
 		Object.keys(loot).forEach(function (k) {
-			if (loot[k] === roomId && furn[k] === suffix && collected.indexOf(k) === -1) {
+			if (loot[k] === roomId && furn[k] === suffix && collected.indexOf(k) === -1 && isLootKindAvailable(k)) {
 				out.push(k);
 			}
 		});
 		return out;
+	}
+
+	/* Is the given loot kind currently *retrievable*? Some kinds are
+	   stamped onto the floor plan but gated by external state that can
+	   flip mid-run (clothesStolen → restored elsewhere; tarot deck moved
+	   out of HIDDEN; monkey paw retired). FurnitureSearch already
+	   refuses to hand out these pickups when the gate is closed, but
+	   without filtering at lootKindsAt the detector kept highlighting
+	   the slot ("highlighted furniture says nothing in it"). Centralize
+	   the gates here so the highlight and the pickup stay in lockstep. */
+	function isLootKindAvailable(kind) {
+		if (kind === 'clothesStolen') {
+			return !!(setup.HauntedHouses && setup.HauntedHouses.hasClothesStolen && setup.HauntedHouses.hasClothesStolen());
+		}
+		if (kind === 'tarotCards') {
+			return !!(setup.HauntedHouses && setup.HauntedHouses.tarotCardsStage &&
+				setup.HauntedHouses.tarotCardsStage() === setup.TarotStage.HIDDEN);
+		}
+		if (kind === 'monkeyPaw') {
+			return !!(setup.MonkeyPaw && setup.MonkeyPaw.isDiscoverable && setup.MonkeyPaw.isDiscoverable());
+		}
+		return true;
 	}
 
 	/* Single-kind variant -- returns the first uncollected loot kind
@@ -625,6 +648,11 @@ setup.HuntController = (function () {
 		var prev = run.currentRoomId || null;
 		run.currentRoomId = roomId;
 		if (prev !== roomId) {
+			/* Hunt-mode replacement for the classic stepCount bump that
+			   used to live in widgetHauntedHouseRoom. Companion event
+			   lust gain (setup.Companion.eventLustGain) scales off this,
+			   so missing the bump zeroes every event payout. */
+			setup.Tick.incrementStepCount();
 			setup.Hunt.emit(setup.Hunt.Event.ROOM_ENTER, { roomId: roomId, fromRoomId: prev });
 		}
 		return true;
@@ -756,7 +784,7 @@ setup.HuntController = (function () {
 	}
 	/* Spend `n` mL of ectoplasm. Returns true on success, false if
 	   the player can't afford it. No partial deductions. */
-	function spendEctoplasm(n) {
+	function removeEctoplasm(n) {
 		var have = sv().ectoplasm || 0;
 		if (have < n) return false;
 		sv().ectoplasm = have - n;
@@ -971,23 +999,20 @@ setup.HuntController = (function () {
 
 		/* Stat-cap bumps. Snapshot the prior caps so endHunt can
 		   restore them; the player's $mc.sanityMax / energyMax are
-		   long-lived and must come back unchanged. setup.Mc owns
-		   $mc, so reads/writes route through its get/set API. */
-		if (setup.Mc && typeof setup.Mc.get === 'function') {
-			run.preRunStatCaps = {
-				sanityMax: setup.Mc.get('sanityMax'),
-				sanity:    setup.Mc.get('sanity'),
-				energyMax: setup.Mc.get('energyMax'),
-				energy:    setup.Mc.get('energy')
-			};
-			if (hasUnlock(ShopItem.STEELED_HAND)) {
-				setup.Mc.set('sanityMax', (setup.Mc.get('sanityMax') || 0) + 25);
-				setup.Mc.set('sanity',    (setup.Mc.get('sanity')    || 0) + 25);
-			}
-			if (hasUnlock(ShopItem.CALVES_OF_STEEL)) {
-				setup.Mc.set('energyMax', (setup.Mc.get('energyMax') || 0) + 5);
-				setup.Mc.set('energy',    (setup.Mc.get('energy')    || 0) + 5);
-			}
+		   long-lived and must come back unchanged. */
+		run.preRunStatCaps = {
+			sanityMax: setup.Mc.sanityMax(),
+			sanity:    setup.Mc.sanity(),
+			energyMax: setup.Mc.energyMax(),
+			energy:    setup.Mc.energy()
+		};
+		if (hasUnlock(ShopItem.STEELED_HAND)) {
+			setup.Mc.setSanityMax(setup.Mc.sanityMax() + 25);
+			setup.Mc.addSanity(25);
+		}
+		if (hasUnlock(ShopItem.CALVES_OF_STEEL)) {
+			setup.Mc.setEnergyMax(setup.Mc.energyMax() + 5);
+			setup.Mc.addEnergy(5);
 		}
 
 		/* Intense Intuition: pre-check one of the ghost's true evidence
@@ -1292,14 +1317,12 @@ setup.HuntController = (function () {
 		// the same slot when distinct slots run out); lootKind /
 		// lootLabel keep the legacy single-value shape for callers
 		// that only need a quick "is anything here".
-		var collected = Array.isArray(run.collectedLoot) ? run.collectedLoot : [];
 		var furniture = (t && Array.isArray(t.furniture) ? t.furniture : []).map(function (f) {
-			var kinds = [];
-			Object.keys(fp.loot || {}).forEach(function (k) {
-				if (fp.loot[k] === roomId && lootFurn[k] === f && collected.indexOf(k) === -1) {
-					kinds.push(k);
-				}
-			});
+			/* lootKindsAt already filters collected entries and applies
+			   the per-kind availability gates (tarot/monkeyPaw/
+			   clothesStolen), so the highlight matches what
+			   FurnitureSearch will actually hand out. */
+			var kinds = lootKindsAt(roomId, f);
 			var first = kinds.length ? kinds[0] : null;
 			return {
 				suffix: f,
@@ -1407,6 +1430,10 @@ setup.HuntController = (function () {
 		var mult = (typeof payCtx.multiplier === 'number') ? payCtx.multiplier : 1;
 		var payout = Math.round(base * mult);
 		addEctoplasm(payout);
+		var xpReward = Math.round((success ? 20 : 5) * mult);
+		if (setup.Mc && typeof setup.Mc.grantExp === 'function') {
+			setup.Mc.grantExp(xpReward);
+		}
 		var summary = {
 			seed: run.seed,
 			number: run.number,
@@ -1415,6 +1442,7 @@ setup.HuntController = (function () {
 			failureReason: run.failureReason || null,
 			success: !!success,
 			payout: payout,
+			xp: xpReward,
 			exitPassage: exitPassageForOutcome(!!success, run.failureReason || null)
 		};
 		/* Stash the outcome on persistent meta-state so HuntSummary
@@ -1462,14 +1490,13 @@ setup.HuntController = (function () {
 		   gains), so we always snap back to whatever the player walked
 		   in with. Current sanity/energy follow the delta: clamp to
 		   the restored cap so a fresh hunt doesn't start with a
-		   125-out-of-100 bar. setup.Mc owns the underlying $mc
-		   bundle, so we go through its get/set API. */
+		   125-out-of-100 bar. */
 		var caps = run.preRunStatCaps;
-		if (caps && setup.Mc && typeof setup.Mc.set === 'function') {
-			setup.Mc.set('sanityMax', caps.sanityMax);
-			setup.Mc.set('energyMax', caps.energyMax);
-			if (setup.Mc.get('sanity') > caps.sanityMax) setup.Mc.set('sanity', caps.sanityMax);
-			if (setup.Mc.get('energy') > caps.energyMax) setup.Mc.set('energy', caps.energyMax);
+		if (caps) {
+			setup.Mc.setSanityMax(caps.sanityMax);
+			setup.Mc.setEnergyMax(caps.energyMax);
+			if (setup.Mc.sanity() > caps.sanityMax) setup.Mc.setSanity(caps.sanityMax);
+			if (setup.Mc.energy() > caps.energyMax) setup.Mc.setEnergy(caps.energyMax);
 		}
 		end();
 		/* Roll the next-run seed so the GhostStreet card preview and
@@ -1816,7 +1843,7 @@ setup.HuntController = (function () {
 		collectedLoot: collectedLoot,
 		ectoplasm: ectoplasm,
 		addEctoplasm: addEctoplasm,
-		spendEctoplasm: spendEctoplasm,
+		removeEctoplasm: removeEctoplasm,
 		canAffordEctoplasm: canAffordEctoplasm,
 		nextSeed: nextSeed,
 		rollNextSeed: rollNextSeed,

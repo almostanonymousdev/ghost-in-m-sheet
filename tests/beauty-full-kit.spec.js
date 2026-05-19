@@ -44,7 +44,7 @@ test.describe('Beauty — full-kit stack (fit 100 + stylish makeup + all tattoos
     await callSetup(page, 'setup.Home.applyMakeupTier(2)'); // stylish: +10
     await buyAllTattoos(page);                                   // +14
 
-    const beauty = await getVar(page, 'mc.beauty');
+    const beauty = await callSetup(page, 'setup.Mc.beauty()');
     // 30 (start) + 0 (cheat skips fit bonus) + 10 (makeup) + 14 (tattoos) = 54.
     expect(beauty).toBe(54);
   });
@@ -58,7 +58,7 @@ test.describe('Beauty — full-kit stack (fit 100 + stylish makeup + all tattoos
     await callSetup(page, 'setup.Home.applyMakeupTier(2)'); // +10
     await buyAllTattoos(page);                                   // +14
 
-    const beauty = await getVar(page, 'mc.beauty');
+    const beauty = await callSetup(page, 'setup.Mc.beauty()');
     // 30 + 20 + 10 + 14 = 74
     expect(beauty).toBe(74);
   });
@@ -71,7 +71,7 @@ test.describe('Beauty — full-kit stack (fit 100 + stylish makeup + all tattoos
     // 15 cycles starting from beauty=74 drives the stat to -1 while the
     // user still sees stylish makeup applied.
     await setVar(page, 'makeupAmount', 100);
-    await setVar(page, 'mc.beauty', 74);
+    await callSetup(page, `setup.Mc.setBeauty(74)`);
     await setVar(page, 'mc.makeupImg', 2);
     await setVar(page, 'makeupApplied', 1);
 
@@ -80,7 +80,7 @@ test.describe('Beauty — full-kit stack (fit 100 + stylish makeup + all tattoos
       await callSetup(page, 'setup.Home.applyMakeupTier(2)');          // re-apply
     }
 
-    const beauty = await getVar(page, 'mc.beauty');
+    const beauty = await callSetup(page, 'setup.Mc.beauty()');
     expect(beauty).toBeGreaterThanOrEqual(0);
   });
 });

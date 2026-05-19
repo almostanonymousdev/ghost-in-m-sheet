@@ -534,16 +534,17 @@
  *
  *   host: function returning the underlying object (e.g. mc(), sv())
  *   spec: array of either a bare string ("money" → get + setMoney) or
- *         { name, key?, get?, set?, add?, spend?, writeHook? } where
+ *         { name, key?, get?, set?, add?, remove?, writeHook? } where
  *         each verb key is the method name to expose; falsy disables
  *         that verb.
  *
- * Defaults: get = name, set = "set" + Capitalised(name); add and spend
- * are off unless explicitly named. `key` overrides the underlying
- * field name when it differs from the public method root (e.g.
- * possession()/$mcpossession).
+ * Defaults: get = name, set = "set" + Cap(name), add = "add" + Cap(name),
+ * remove = "remove" + Cap(name). Pass `false` to suppress any one (or
+ * a custom string to override the method name). `key` overrides the
+ * underlying field name when it differs from the public method root
+ * (e.g. possession()/$mcpossession).
  *
- * `writeHook(oldV, newV)` fires after every set/add/spend with the
+ * `writeHook(oldV, newV)` fires after every set/add/remove with the
  * pre-write and post-write values. It may mutate the underlying
  * field directly (e.g. to wrap or clamp) -- those mutations bypass
  * the hook, so it is safe to re-write `host()[key]` from inside.
@@ -555,9 +556,9 @@ setup.defineAccessors = function (api, host, spec) {
         var f      = (typeof entry === 'string') ? { name: entry } : entry;
         var key    = f.key || f.name;
         var getNm  = (f.get   !== undefined) ? f.get   : f.name;
-        var setNm  = (f.set   !== undefined) ? f.set   : 'set' + cap(f.name);
-        var addNm  = f.add;
-        var subNm  = f.spend;
+        var setNm  = (f.set   !== undefined) ? f.set   : 'set'    + cap(f.name);
+        var addNm  = (f.add    !== undefined) ? f.add    : 'add'    + cap(f.name);
+        var subNm  = (f.remove !== undefined) ? f.remove : 'remove' + cap(f.name);
         var hook   = f.writeHook;
         function write(v) {
             var oldV = host()[key];

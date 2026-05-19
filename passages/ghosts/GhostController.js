@@ -665,20 +665,15 @@
             var run = State.variables.run;
             return run ? (run.ghostName || null) : null;
         },
-        /* Raw template id of the ghost's current room (e.g. "kitchen",
-           "bedroomTwo"). The <<ghostRoom>> widget keys off this id to
-           emit a human-friendly label, so this MUST return the id, not
-           ghostRoomLabel()'s human string. Returns '' when no run. */
+        /* Human-friendly label for the ghost's current room
+           ("Bedroom Upstairs", "Kitchen"). Resolves through the floor-plan
+           template catalogue; returns '' when no run is active. The
+           <<ghostRoom>> widget lowercases the result. */
         huntRoomName: function () {
-            if (!setup.HuntController) return '';
-            var roomId = setup.HuntController.ghostRoomId();
-            if (!roomId) return '';
-            var run = State.variables.run;
-            var rooms = (run && run.floorplan && run.floorplan.rooms) || [];
-            for (var i = 0; i < rooms.length; i++) {
-                if (rooms[i].id === roomId) return rooms[i].template || roomId;
+            if (setup.HuntController && typeof setup.HuntController.ghostRoomLabel === 'function') {
+                return setup.HuntController.ghostRoomLabel();
             }
-            return roomId;
+            return '';
         },
         /* True if the witch contract scheduled at least one
            evidence-removal for this hunt. Used by witch-end-contract

@@ -1,5 +1,5 @@
 const { test, expect } = require('./fixtures');
-const { goToPassage, getVar, setVar } = require('./helpers');
+const { goToPassage, getVar, setVar, callSetup } = require('./helpers');
 
 test.describe('Beauty Salon — Piercing Purchase', () => {
   test.beforeEach(async ({ game: page }) => {
@@ -22,13 +22,13 @@ test.describe('Beauty Salon — Piercing Purchase', () => {
     expect(piercingBefore).toBeUndefined();
     expect(await getVar(page, 'mc.money')).toBe(startingMoney - 50);
     expect(await getVar(page, 'earsPiercing')).toBe('worn');
-    expect(await getVar(page, 'mc.beauty')).toBe(32); // 30 (base) + 2 from ears piercing
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(32); // 30 (base) + 2 from ears piercing
   });
 
   test('purchasing nose piercing deducts $70 and adds +3 beauty', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.money', 200);
-    const startBeauty = await getVar(page, 'mc.beauty');
+    const startBeauty = await callSetup(page, 'setup.Mc.beauty()');
     await goToPassage(page, 'BeautySalonPiercing');
     const noseBuyLink = page.locator('.buyItemLink a').nth(1);
 
@@ -39,7 +39,7 @@ test.describe('Beauty Salon — Piercing Purchase', () => {
     // assert
     expect(await getVar(page, 'mc.money')).toBe(200 - 70);
     expect(await getVar(page, 'nosePiercing')).toBe('worn');
-    expect(await getVar(page, 'mc.beauty')).toBe(startBeauty + 3);
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(startBeauty + 3);
   });
 
   test('cannot purchase when money is insufficient', async ({ game: page }) => {

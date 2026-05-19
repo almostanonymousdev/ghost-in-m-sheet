@@ -1,25 +1,10 @@
 :: widgetNames [widget nobr] {"position":"300,1600","size":"100,100"}
 <<widget "ghostRoom">>
-	<<set _roomName to setup.Ghosts.huntRoomName()>>
-	<<if _roomName eq "basement">>
-		<b><<print "basement">></b>
-	<<elseif _roomName eq "bedroomTwo">>
-		<b><<print "bedroom upstairs">></b>
-	<<elseif _roomName eq "nursery">>
-		<b><<print "nursery">></b>
-	<<elseif _roomName eq "bathroomTwo">>
-		<b><<print "bathroom upstairs">></b>
-	<<elseif _roomName eq "hallwayUpstairs">>
-		<b><<print "hallway upstairs">></b>
-	<<elseif _roomName eq "kitchen">>
-		<b><<print "kitchen">></b>
-	<<elseif _roomName eq "bathroom">>
-		<b><<print "bathroom">></b>
-	<<elseif _roomName eq "bedroom">>
-		<b><<print "bedroom">></b>
-	<<elseif _roomName eq "hallway">>
-		<b><<print "hallway">></b>
-	<<elseif _roomName eq "livingroom">>
-		<b><<print "livingroom">></b>
+	<<set _roomLabel to setup.Ghosts.huntRoomName()>>
+	<<if _roomLabel eq "">>
+		<<set _roomLabel to setup.HuntController.ghostRoomLabel()>>
+	<</if>>
+	<<if _roomLabel neq "">>
+		<b><<= _roomLabel.toLowerCase()>></b>
 	<</if>>
 <</widget>>

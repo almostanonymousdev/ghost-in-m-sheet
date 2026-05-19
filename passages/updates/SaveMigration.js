@@ -128,9 +128,11 @@
 
 	// mc sub-fields added after launch -- missing on very old saves
 	var MC_DEFAULTS = {
-		fit:           0,
-		exhibitionism: 0,
-		lustMax:       100
+		fit:            0,
+		exhibitionism:  0,
+		lustMax:        100,
+		beautyBase:     30,
+		beautyModifier: 0
 	};
 
 	function applyDefaults (vars) {
@@ -157,6 +159,17 @@
 				vars.mc.exhibitionism = vars.mc.exhib;
 			}
 			delete vars.mc.exhib;
+
+			// One-time split: flat mc.beauty -> mc.beautyBase + mc.beautyModifier.
+			// Old saves preserve their displayed beauty: base stays at 30,
+			// modifier soaks the rest so beauty() still returns the same total.
+			if (vars.mc.beauty !== undefined) {
+				if (vars.mc.beautyBase === undefined)     { vars.mc.beautyBase = 30; }
+				if (vars.mc.beautyModifier === undefined) {
+					vars.mc.beautyModifier = vars.mc.beauty - vars.mc.beautyBase;
+				}
+			}
+			delete vars.mc.beauty;
 
 			Object.keys(MC_DEFAULTS).forEach(function (key) {
 				if (vars.mc[key] === undefined || vars.mc[key] === null) {

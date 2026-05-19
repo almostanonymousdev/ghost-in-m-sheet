@@ -119,6 +119,26 @@ test.describe('Companion result plans', () => {
     );
   });
 
+  /* Regression: Plan4 once rendered "ghost's favorite room is " with a
+     blank trailing room name because the source it read could be missing
+     even mid-hunt. The widget must always emit a non-empty room name
+     that matches setup.HuntController.ghostRoomLabel(). */
+  test('Plan4 result renders a room name that matches HuntController.ghostRoomLabel()', async ({ game: page }) => {
+    await setupHunt(page, 'Spirit');
+    await page.evaluate(() => {
+      SugarCube.State.variables.chosenPlan = 'Plan4';
+      SugarCube.State.variables.companion = { name: 'Alex' };
+    });
+    const label = await callSetup(page, 'setup.HuntController.ghostRoomLabel()');
+    expect(typeof label).toBe('string');
+    expect(label.length).toBeGreaterThan(0);
+
+    await goToPassage(page, 'CompanionResult');
+    const text = await page.evaluate(() => document.querySelector('.passage').textContent);
+    expect(text).toMatch(/favorite room/);
+    expect(text.toLowerCase()).toContain(label.toLowerCase());
+  });
+
   test('Plan3 result renders an evidence block matching the picked id', async ({ game: page }) => {
     await setupHunt(page, 'Spirit');
     await page.evaluate(() => {

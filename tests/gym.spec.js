@@ -394,11 +394,11 @@ test.describe('Gym Controller', () => {
 
   test('meetsBeautyForGroupEvent requires beauty >= 50', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'mc.beauty', 49);
+    await callSetup(page, `setup.Mc.setBeauty(49)`);
 
     // act
     const belowGate = await callSetup(page, 'setup.Gym.meetsBeautyForGroupEvent()');
-    await setVar(page, 'mc.beauty', 50);
+    await callSetup(page, `setup.Mc.setBeauty(50)`);
     const atGate = await callSetup(page, 'setup.Gym.meetsBeautyForGroupEvent()');
 
     // assert

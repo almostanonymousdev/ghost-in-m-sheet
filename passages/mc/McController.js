@@ -6,10 +6,8 @@
  * level-progress counters, and the possession meter).
  *
  * Any passage that previously read/wrote $mc.x directly should route
- * through setup.Mc. Every method comes in both a semantic shortcut
- * (setup.Mc.money(), setup.Mc.addMoney(n)) and a generic form
- * (setup.Mc.get('money'), setup.Mc.set('money', v), setup.Mc.add('money', n))
- * so mass rewrites can pick whichever fits best.
+ * through setup.Mc via its semantic accessors
+ * (setup.Mc.money(), setup.Mc.setMoney(v), setup.Mc.addMoney(n)).
  */
 /* Discrete results returned by setup.Mc.applySanityDelta. The
    addSanity widget compares against these to decide whether to fire
@@ -50,24 +48,30 @@ setup.Mc = (function () {
 	]);
 
 	function sv()  { return State.variables; }
-	function mc()  { return State.variables.mc; }
-
-	function get(field)        { return mc()[field]; }
-	function set(field, value) { mc()[field] = value; }
-	function add(field, delta) { mc()[field] += delta; }
 
 	var api = {
 		OWNED_VARS: OWNED_VARS,
-		mc: mc,
-
-		get: get,
-		set: set,
-		add: add,
 
 		// --- Fit percent shorthand ------------------------------
 		// $mc.fit is clamped to [0, 100]; plenty of callers that
 		// just display a bar divide by 100.
-		fitPct: function () { return mc().fit / 100; },
+		fitPct: function () { return sv().mc.fit / 100; },
+
+		// --- Beauty: split into base + modifier -----------------
+		// `beautyBase` is the immutable starting value seeded at
+		// game init; every gameplay-driven change (wardrobe, makeup,
+		// tattoos, gym, piercings, ...) writes only `beautyModifier`.
+		// Reads come through beauty() so callers see the sum.
+		beauty: function () {
+			var m = sv().mc;
+			return (m.beautyBase || 0) + (m.beautyModifier || 0);
+		},
+		setBeauty: function (v) {
+			sv().mc.beautyModifier = v - (sv().mc.beautyBase || 0);
+		},
+		addBeauty: function (n) {
+			sv().mc.beautyModifier = (sv().mc.beautyModifier || 0) + n;
+		},
 
 		// --- Penalty (sleep / assault debuff flag) --------------
 		isPenalized:    function () { return sv().isPenaltyOn === 1; },
@@ -85,7 +89,7 @@ setup.Mc = (function () {
 
 		// --- Earned-money accumulator (compound mutation) -------
 		earn: function (n) {
-			mc().money += n;
+			sv().mc.money += n;
 			sv().earnedMoney += n;
 		},
 
@@ -94,7 +98,7 @@ setup.Mc = (function () {
 		useEnergyDrink: function () {
 			if (sv().energyDrinkAmount > 0) {
 				sv().energyDrinkAmount -= 1;
-				mc().energy = mc().energyMax;
+				sv().mc.energy = sv().mc.energyMax;
 				return true;
 			}
 			return false;
@@ -123,7 +127,7 @@ setup.Mc = (function () {
 		// etc. XP grants. Returns true iff at least one level-up fired.
 		grantExp: function (amount) {
 			var s = sv();
-			var m = mc();
+			var m = s.mc;
 			m.exp += amount;
 			s.percentageOfLevel = Math.floor((m.exp / s.neededForNextLevel) * 100);
 			var leveled = false;
@@ -139,7 +143,7 @@ setup.Mc = (function () {
 
 		// --- Lust helpers --------------------------------------
 		clampLust: function () {
-			mc().lust = Number(mc().lust.toFixed(2));
+			sv().mc.lust = Number(sv().mc.lust.toFixed(2));
 		},
 
 		// --- addSanity widget core --------------------------------
@@ -149,7 +153,7 @@ setup.Mc = (function () {
 		// NORMAL otherwise.
 		applySanityDelta: function (delta) {
 			var R = setup.SanityDeltaResult;
-			var m = mc();
+			var m = sv().mc;
 			m.sanity += delta;
 			if (m.sanity >= m.sanityMax) {
 				m.sanity = m.sanityMax;
@@ -164,7 +168,7 @@ setup.Mc = (function () {
 
 		// --- addEnergy widget core --------------------------------
 		applyEnergyDelta: function (delta) {
-			var m = mc();
+			var m = sv().mc;
 			m.energy += delta;
 			if (m.energy >= m.energyMax) { m.energy = m.energyMax; }
 			if (m.energy <= 0)           { m.energy = 0; }
@@ -172,7 +176,7 @@ setup.Mc = (function () {
 
 		// --- addLust widget core --------------------------------
 		applyLustDelta: function (delta) {
-			var m = mc();
+			var m = sv().mc;
 			m.lust += delta;
 			if (m.lust >= m.lustMax) { m.lust = m.lustMax; }
 			if (m.lust <= 0)         { m.lust = 0; }
@@ -183,11 +187,11 @@ setup.Mc = (function () {
 		// Same shape as setup.Gym.applyFitnessGain, but the gym controller
 		// imports this method so both widgets share logic.
 		applyFitnessDelta: function (delta) {
-			var m = mc();
+			var m = sv().mc;
 			var previousFit = m.fit;
 			m.fit += delta;
 			var beautyIncrease = Math.floor(m.fit / 5) - Math.floor(previousFit / 5);
-			if (beautyIncrease > 0) { m.beauty += beautyIncrease; }
+			if (beautyIncrease > 0) { setup.Mc.addBeauty(beautyIncrease); }
 			if (!m.energyPoints) { m.energyPoints = Math.floor(previousFit / 10); }
 			var prevEp = m.energyPoints;
 			var curEp  = Math.floor(m.fit / 10);
@@ -198,10 +202,10 @@ setup.Mc = (function () {
 				m.energyPoints = curEp;
 			}
 			if (previousFit >= 5 && (previousFit - 1) % 5 === 0 && m.fit < 5) {
-				m.beauty -= 1;
+				setup.Mc.addBeauty(-1);
 			}
-			m.fit    = Math.max(0, Math.min(100, m.fit));
-			m.beauty = Math.max(0, m.beauty);
+			m.fit = Math.max(0, Math.min(100, m.fit));
+			if (setup.Mc.beauty() < 0) { setup.Mc.setBeauty(0); }
 			var hitEnergyCap = false;
 			if (m.fit === 100 && m.energyMax < 20) {
 				m.energyMax  = 20;
@@ -210,7 +214,7 @@ setup.Mc = (function () {
 			}
 			return {
 				fit:             m.fit,
-				beauty:          m.beauty,
+				beauty:          setup.Mc.beauty(),
 				beautyIncrease:  beautyIncrease > 0 ? beautyIncrease : 0,
 				energyMaxDelta:  energyMaxDelta,
 				energyMax:       m.energyMax,
@@ -273,45 +277,45 @@ setup.Mc = (function () {
 		}
 	};
 
-	/* Trivial $mc.<field> accessors. Each row exposes the named root
-	   as a getter, "set"+Cap as a setter, and (where listed) "add" /
-	   "spend" mutators with the literal method name. */
-	setup.defineAccessors(api, mc, [
-		{ name: 'money',         add: 'addMoney',         spend: 'removeMoney' },
-		{ name: 'sanity',        add: 'addSanity',        spend: 'removeSanity' },
-		{ name: 'sanityMax' },
-		{ name: 'sanityUp' },
-		{ name: 'energy',        add: 'addEnergy',        spend: 'removeEnergy' },
-		{ name: 'energyMax' },
-		{ name: 'energyPoints',  add: 'addEnergyPoints' },
-		{ name: 'corruption',    add: 'addCorruption' },
-		{ name: 'beauty',        add: 'addBeauty' },
-		{ name: 'lust',          add: 'addLust' },
-		{ name: 'name' },
-		{ name: 'fit',           add: 'addFit' },
-		{ name: 'lvl',           add: 'addLvl' },
-		{ name: 'exp',           add: 'addExp' },
-		{ name: 'exhibitionism', add: 'addExhibitionism' },
-		{ name: 'makeupImg' },
-		{ name: 'dirty' }
+	/* Trivial $mc.<field> accessors. Each row gets get/set/add/remove
+	   with the conventional names; pass `false` to suppress one. */
+	setup.defineAccessors(api, function () { return sv().mc; }, [
+		'money',
+		'sanity',
+		'sanityMax',
+		'sanityUp',
+		'energy',
+		'energyMax',
+		'energyPoints',
+		'corruption',
+		'lust',
+		'name',
+		'fit',
+		'lvl',
+		'exp',
+		'exhibitionism',
+		'makeupImg',
+		'dirty'
 	]);
 
 	/* Trivial top-level State.variables accessors. `key` overrides the
 	   underlying $variable name when the public method root differs;
-	   `get` overrides the getter name. addMedicine / addSanityPills are
-	   defined manually above (they tolerate an undefined counter). */
+	   `get` overrides the getter name. sanityPillsAmount / medicineAmount
+	   opt out of the auto-generated add/remove because addMedicine /
+	   addSanityPills (defined manually above) tolerate an undefined
+	   counter on legacy saves; the auto helpers would NaN-out. */
 	setup.defineAccessors(api, sv, [
-		{ name: 'tempCorr',           add: 'addTempCorr' },
-		{ name: 'earnedMoney',        add: 'addEarnedMoney' },
-		{ name: 'percentageOfLevel' },
-		{ name: 'neededForNextLevel' },
-		{ name: 'makeupApplied' },
+		'tempCorr',
+		'earnedMoney',
+		'percentageOfLevel',
+		'neededForNextLevel',
+		'makeupApplied',
 		{ name: 'energyDrinkAmount',  add: 'addEnergyDrink' },
-		{ name: 'sanityPillsAmount' },
-		{ name: 'medicineAmount' },
-		{ name: 'makeupAmount',       add: 'addMakeup', spend: 'removeMakeup' },
+		{ name: 'sanityPillsAmount',  add: false, remove: false },
+		{ name: 'medicineAmount',     add: false, remove: false },
+		{ name: 'makeupAmount',       add: 'addMakeup', remove: 'removeMakeup' },
 		// Public method root differs from $variable name:
-		{ name: 'possession',     key: 'mcpossession',         add: 'addPossession' },
+		{ name: 'possession',     key: 'mcpossession' },
 		{ name: 'orgasmMeter',    key: 'mcOrgasmMeter' },
 		{ name: 'orgasmCooldown', key: 'orgasmCooldownSteps' }
 	]);
@@ -329,9 +333,9 @@ setup.Mc = (function () {
 	api.clearSanityCollapse = function () { sv().sanityCollapse = 0; };
 	api.isExhausted = function () { return sv().exhausted === 1; };
 	api.clearExhausted = function () { sv().exhausted = 0; };
-	api.lustPct = function () { return mc().lust / 100; };
-	api.sanityPct = function () { return mc().sanity / mc().sanityMax; };
-	api.energyPct = function () { return mc().energy / mc().energyMax; };
+	api.lustPct = function () { return sv().mc.lust / 100; };
+	api.sanityPct = function () { return sv().mc.sanity / sv().mc.sanityMax; };
+	api.energyPct = function () { return sv().mc.energy / sv().mc.energyMax; };
 	return api;
 })();
 

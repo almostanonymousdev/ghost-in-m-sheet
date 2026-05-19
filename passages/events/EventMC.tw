@@ -41,7 +41,6 @@
 	<<addclass ".linkselector" "disabled-link">>
 <</done>>
 
-<<if setup.Events.isDarkRoom(previous())>>
-	<<addclass "body" "style-event-mc-dark">>
-<</if>>
-	<<includeStyleEventMC>>
+/% includeStyleEventMC handles both the static-house FurnitureSearch
+   chain and the procedural-hunt current-room-dark case. %/
+<<includeStyleEventMC>>

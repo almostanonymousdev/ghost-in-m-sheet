@@ -7,6 +7,7 @@
 <<run setup.Home.installAutoSaveGate()>>
 <<run setup.ImagePath = "asset-placeholders">>
 <<run setup.Game.initState()>>
+<<run setup.Game.resetPersistentCheats()>>
 <<run setup.deliveryHouses = {
 	"Honeywood Court 3":    "house1.jpg",
 	"Onyx Place 10":        "house2.jpg",

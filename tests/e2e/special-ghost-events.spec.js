@@ -106,9 +106,9 @@ test.describe('Special ghost events — controller', () => {
     }
   });
 
-  test('spendEscapeEnergy zeroes mc.energy', async ({ game: page }) => {
+  test('removeEscapeEnergy zeroes mc.energy', async ({ game: page }) => {
     await setVar(page, 'mc.energy', 5);
-    await page.evaluate(() => SugarCube.setup.SpecialEvent.spendEscapeEnergy());
+    await page.evaluate(() => SugarCube.setup.SpecialEvent.removeEscapeEnergy());
     expect(await getVar(page, 'mc.energy')).toBe(0);
   });
 

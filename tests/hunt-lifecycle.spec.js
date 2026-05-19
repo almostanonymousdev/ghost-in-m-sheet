@@ -138,6 +138,55 @@ test.describe('Hunt lifecycle helpers', () => {
     expect(summary.modifiers.length).toBe(2);
   });
 
+  /* XP reward: a finished run should grant exp to the MC and surface
+     the amount on the summary so HuntSummary can render it. Failures
+     still pay something so a wipe isn't a total loss. */
+  test('endHunt on success grants mc exp and reports it on the summary', async () => {
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({
+      seed: 1, modifierCount: 2
+    }));
+    const expectedXp = await page.evaluate(() =>
+      Math.round(20 * SugarCube.setup.Modifiers.payoutMultiplier()));
+    const before = await callSetup(page, 'setup.Mc.exp()');
+
+    const summary = await page.evaluate(() => SugarCube.setup.HuntController.endHunt(true));
+
+    expect(summary.xp).toBe(expectedXp);
+    expect(summary.xp).toBeGreaterThan(0);
+    const after = await callSetup(page, 'setup.Mc.exp()');
+    // grantExp may roll over into a level-up; the exp pool grows by xp
+    // delta (mod level threshold), but the simple invariant is that
+    // either exp or lvl moved.
+    const lvlBefore = await page.evaluate(() => 0);
+    const lvlAfter = await callSetup(page, 'setup.Mc.lvl()');
+    expect(after > before || lvlAfter > 1).toBe(true);
+  });
+
+  test('endHunt on failure still grants a smaller xp award', async () => {
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({
+      seed: 1, modifierCount: 2
+    }));
+    const expectedXp = await page.evaluate(() =>
+      Math.round(5 * SugarCube.setup.Modifiers.payoutMultiplier()));
+
+    const summary = await page.evaluate(() => SugarCube.setup.HuntController.endHunt(false));
+
+    expect(summary.xp).toBe(expectedXp);
+    expect(summary.xp).toBeGreaterThan(0);
+  });
+
+  test('endHunt success xp is larger than failure xp', async () => {
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({
+      seed: 1, modifierCount: 2
+    }));
+    const success = await page.evaluate(() => SugarCube.setup.HuntController.endHunt(true));
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({
+      seed: 1, modifierCount: 2
+    }));
+    const failure = await page.evaluate(() => SugarCube.setup.HuntController.endHunt(false));
+    expect(success.xp).toBeGreaterThan(failure.xp);
+  });
+
   test('endHunt is a no-op (returns null) when no run is active', async () => {
     const result = await page.evaluate(() => SugarCube.setup.HuntController.endHunt(true));
     expect(result).toBeNull();

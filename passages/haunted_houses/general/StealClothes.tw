@@ -1,13 +1,14 @@
 :: StealClothes [nobr noreturn] {"position":"4125,950","size":"100,100"}
-<<run setup.HuntController.stashStolenClothes()>>
-<<run setup.HauntedHouses.markClothesStolen()>>
 <<run setup.activateTool("uvl")>>
 @@.mc-thoughts; While focusing on your device, you suddenly felt a hard push from behind. Before you could understand what happened, the ground came veeeeery close. *Bang*@@<br>
 @@.mc-speech; Ouch! @@ @@.mc-thoughts;You tried to break the fall with your hands, but you didn't react in time. The impact was too strong, and it knocked you out for a few moments. @@
 
 <<set _stealOptions to setup.HauntedHouses.availableStealTargets()>>
 
+/% Only stash + mark when something is actually taken. A previous version fired both unconditionally at the top of the passage, flipping isClothesStolen=1 and planting a phantom clothesStolen pin on the floor plan even when the MC had nothing left to steal. %/
 <<if _stealOptions.length gt 0>>
+	<<run setup.HuntController.stashStolenClothes()>>
+	<<run setup.HauntedHouses.markClothesStolen()>>
 	<<set _stealOption to _stealOptions.random()>>
 
 	<<if _stealOption is "panties">>

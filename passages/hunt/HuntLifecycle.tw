@@ -113,12 +113,13 @@
 			</div>
 		</div>
 
+		<<set _detectorOn to setup.ToolController.detectorBought()>>
 		<div class="hunt-run-bottom">
 			<div class="hunt-run-furniture">
 				<<if _cr and _cr.furniture.length>>
 					<<for _f range _cr.furniture>>
 						<<capture _f>>
-							<span class="hunt-furniture-item">
+							<span @class="'hunt-furniture-item' + (_detectorOn and _f.lootKinds.length ? ' highlighted-furnitureDetector' : '')">
 								<<link `'<<image "scenes/furniture/' + _f.suffix + '.png">>'` "FurnitureSearch">>
 									<<run setup.HuntController.setSearchedFurniture(_f.suffix)>>
 									<<addTime 1>>
@@ -199,6 +200,7 @@
 	<br>
 	<span class="mc-action">+<<= _summary.payout>> mL of ectoplasm</span><br>
 	<span class="mc-thoughts">Ectoplasm: <<= setup.HuntController.ectoplasm()>> mL</span><br>
+	<span class="mc-action">+<<= _summary.xp>> exp</span><br>
 	<br>
 	<<if _summary.success>>
 		@@.movebtn; [[Start a new hunt|HuntStart]]@@<br>
@@ -273,7 +275,8 @@
 				@@.movebtn; [[Go home|HuntSummary]]@@
 			</div>
 		<<else>>
-			<div class="hunt-reveal hunt-reveal-text">@@.mc-thoughts; Your heart sinks as the ghost roughly grabs your helpless form.@@</div>
+			<<set _trueGhost to setup.Ghosts.active()>>
+			<div class="hunt-reveal hunt-reveal-text">@@.mc-thoughts; Your heart sinks. It wasn't what you'd guessed -- it's a <<= _trueGhost.name>> bearing down on you, and every sign you talked yourself out of slams back into focus: <<= _trueGhost.evidenceLabels()>>. The ghost roughly grabs your helpless form before you can run.@@</div>
 			<div class="hunt-reveal hunt-reveal-buttons">
 				@@.movebtn; [[Continue|HuntEnd]]@@
 			</div>

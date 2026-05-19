@@ -29,7 +29,7 @@
 					<<addclass ".linkselector" "disabled-link">>
 				<</done>>
 				<br><br>
-				@@.backbtn; [[Leave|CityMap][setup.Park.spendJoggingEnergy()]] @@<br>
+				@@.backbtn; [[Leave|CityMap][setup.Park.removeJoggingEnergy()]] @@<br>
 			<</if>>
 		<</if>>
 	<</linkreplace>>

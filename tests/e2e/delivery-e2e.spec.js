@@ -1,5 +1,5 @@
 const { test, expect } = require('../fixtures');
-const { goToPassage, getVar, setVar } = require('../helpers');
+const { goToPassage, getVar, setVar, callSetup } = require('../helpers');
 
 /**
  * Wait until SugarCube navigates to the given passage.
@@ -191,7 +191,7 @@ test.describe('Delivery E2E — Manager return visits', () => {
 
   test('payment discussion shows beauty requirement when beauty < 45', async ({ game: page }) => {
     await setupReadyWorker(page);
-    await setVar(page, 'mc.beauty', 30);
+    await callSetup(page, `setup.Mc.setBeauty(30)`);
     await goToPassage(page, 'DeliveryManager');
 
     // Click the linkreplace trigger "Ask about payment"
@@ -210,7 +210,7 @@ test.describe('Delivery E2E — Manager return visits', () => {
 
   test('payment discussion shows corruption requirement when beauty >= 45 but corruption < 2', async ({ game: page }) => {
     await setupReadyWorker(page);
-    await setVar(page, 'mc.beauty', 50);
+    await callSetup(page, `setup.Mc.setBeauty(50)`);
     await setVar(page, 'mc.corruption', 1);
     await goToPassage(page, 'DeliveryManager');
 
@@ -227,7 +227,7 @@ test.describe('Delivery E2E — Manager return visits', () => {
 
   test('BJ option appears when beauty >= 45 and corruption >= 2', async ({ game: page }) => {
     await setupReadyWorker(page);
-    await setVar(page, 'mc.beauty', 50);
+    await callSetup(page, `setup.Mc.setBeauty(50)`);
     await setVar(page, 'mc.corruption', 3);
     await goToPassage(page, 'DeliveryManager');
 
@@ -244,7 +244,7 @@ test.describe('Delivery E2E — Manager return visits', () => {
 
   test('BJ event grants money, exp, corruption and sets cooldown', async ({ game: page }) => {
     await setupReadyWorker(page);
-    await setVar(page, 'mc.beauty', 50);
+    await callSetup(page, `setup.Mc.setBeauty(50)`);
     await setVar(page, 'mc.corruption', 3);
     const startMoney = await getVar(page, 'mc.money');
     const startCorruption = await getVar(page, 'mc.corruption');
@@ -259,7 +259,7 @@ test.describe('Delivery E2E — Manager return visits', () => {
 
   test('manager shows cooldown message after BJ event', async ({ game: page }) => {
     await setupReadyWorker(page);
-    await setVar(page, 'mc.beauty', 50);
+    await callSetup(page, `setup.Mc.setBeauty(50)`);
     await setVar(page, 'mc.corruption', 3);
     await setVar(page, 'deliveryBJ', 1);
     await goToPassage(page, 'DeliveryManager');
@@ -411,6 +411,88 @@ test.describe('Delivery E2E — Correct delivery', () => {
 
     const counts = await getVar(page, 'deliveryVisitCounts');
     expect(counts[address]).toBe(1);
+  });
+});
+
+// ─── Pizza event apology streak ────────────────────────────────
+
+test.describe('Delivery E2E — Pizza apology preserves streak', () => {
+  /* Regression: pizza (and the other ON_DONE encounters) only call
+     <<deliveryTrackCorrect>> on the "deal" branch via deliveryThanks.
+     A player who apologized for the dented box used to leave with
+     deliveryCorrectThisShift unincremented, so a 3/3 shift dropped
+     to 2/3 the moment one box got dented -- breaking the streak even
+     though the player did the honest thing. The fix tracks the apology
+     as a correct delivery for streak purposes. */
+  test('pizza apology (corruption < 3) increments deliveryCorrectThisShift', async ({ game: page }) => {
+    await setupReadyWorker(page);
+    await setVar(page, 'mc.corruption', 0);
+
+    // Force one of the orders to pizza so currentEventType() resolves.
+    await goToPassage(page, 'WorkDelivery');
+    await waitForPassage(page, 'WorkDelivery');
+    await page.evaluate(() => {
+      const v = SugarCube.State.variables;
+      v.orders[0].item = 'pizza';
+      v.orders[0].image = v.itemImages.pizza;
+      v.order1.item = 'pizza';
+      v.order1.image = v.itemImages.pizza;
+    });
+
+    // Pin currentOrder/currentHouse and visit the event passage.
+    await setVar(page, 'currentOrder', 1);
+    await setVar(page, 'currentHouse', (await page.evaluate(() => SugarCube.State.variables.order1.address)));
+    await setVar(page, 'deliveryCorrectThisShift', 0);
+
+    await goToPassage(page, 'DeliveryEventChoose');
+    await waitForPassage(page, 'DeliveryEventChoose');
+
+    // Click the "Umm... yeah sure" linkreplace to expand the failed
+    // pizza branch, then verify the apology path tracked correct.
+    await passage(page).getByText('Umm').click();
+    await page.waitForFunction(() => {
+      const el = document.querySelector('#passages');
+      return el && /right, it's my fault|I guess I was unlucky/.test(el.innerText);
+    });
+
+    expect(await getVar(page, 'deliveryCorrectThisShift')).toBe(1);
+  });
+
+  /* The high-corruption "say sorry and leave" link in the deal branch
+     also has to count as correct -- it's the same outcome (player
+     apologized, no deal). */
+  test('pizza high-corruption "say sorry and leave" link increments correct count', async ({ game: page }) => {
+    await setupReadyWorker(page);
+    await setVar(page, 'mc.corruption', 5);
+
+    await goToPassage(page, 'WorkDelivery');
+    await waitForPassage(page, 'WorkDelivery');
+    await page.evaluate(() => {
+      const v = SugarCube.State.variables;
+      v.orders[0].item = 'pizza';
+      v.orders[0].image = v.itemImages.pizza;
+      v.order1.item = 'pizza';
+      v.order1.image = v.itemImages.pizza;
+    });
+
+    await setVar(page, 'currentOrder', 1);
+    await setVar(page, 'currentHouse', (await page.evaluate(() => SugarCube.State.variables.order1.address)));
+    await setVar(page, 'deliveryCorrectThisShift', 0);
+
+    await goToPassage(page, 'DeliveryEventChoose');
+    await waitForPassage(page, 'DeliveryEventChoose');
+
+    await passage(page).getByText('Umm').click();
+    await page.waitForFunction(() => {
+      return !!document.querySelector('#passages a[data-passage="DeliveryMap"]');
+    });
+
+    // Click the "Nah, Just say sorry and leave" link -- it goes back to
+    // DeliveryMap and should bump correctThisShift via the wikilink setter.
+    await passage(page).getByText('Nah, Just say sorry and leave').click();
+    await waitForPassage(page, 'DeliveryMap');
+
+    expect(await getVar(page, 'deliveryCorrectThisShift')).toBe(1);
   });
 });
 

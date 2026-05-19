@@ -76,9 +76,9 @@ test.describe('Gym — hours and training gates', () => {
   });
 
   test('group-class gates: beauty >= 50 for event, lust >= 50 for orgy', async ({ game: page }) => {
-    await setVar(page, 'mc.beauty', 49);
+    await callSetup(page, `setup.Mc.setBeauty(49)`);
     expect(await callSetup(page, 'setup.Gym.meetsBeautyForGroupEvent()')).toBe(false);
-    await setVar(page, 'mc.beauty', 50);
+    await callSetup(page, `setup.Mc.setBeauty(50)`);
     expect(await callSetup(page, 'setup.Gym.meetsBeautyForGroupEvent()')).toBe(true);
 
     await setVar(page, 'mc.lust', 49);

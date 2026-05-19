@@ -3,7 +3,7 @@ const { setVar, getVar, callSetup, resetGame } = require('../helpers');
 
 test.describe('Wardrobe — equip / unequip / beauty roundtrip', () => {
   test('equipping a bra adds beauty; unequipping removes it', async ({ game: page }) => {
-    await setVar(page, 'mc.beauty', 10);
+    await callSetup(page, `setup.Mc.setBeauty(10)`);
     await setVar(page, 'braState1', 'not worn');
     await page.evaluate(() => {
       const grp = SugarCube.setup.WARDROBE_GROUPS.find(g => g.name === 'bra');
@@ -11,7 +11,7 @@ test.describe('Wardrobe — equip / unequip / beauty roundtrip', () => {
       SugarCube.setup.Wardrobe.equip(grp, item);
     });
     expect(await getVar(page, 'braState1')).toBe('worn');
-    expect(await getVar(page, 'mc.beauty')).toBe(12);
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(12);
 
     await page.evaluate(() => {
       const grp = SugarCube.setup.WARDROBE_GROUPS.find(g => g.name === 'bra');
@@ -19,11 +19,11 @@ test.describe('Wardrobe — equip / unequip / beauty roundtrip', () => {
       SugarCube.setup.Wardrobe.unequip(grp, item);
     });
     expect(await getVar(page, 'braState1')).toBe('not worn');
-    expect(await getVar(page, 'mc.beauty')).toBe(10);
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(10);
   });
 
   test('equipping a higher tier swaps off the previous tier', async ({ game: page }) => {
-    await setVar(page, 'mc.beauty', 10);
+    await callSetup(page, `setup.Mc.setBeauty(10)`);
     await setVar(page, 'braState1', 'not worn');
     await setVar(page, 'braState2', 'not worn');
 
@@ -32,7 +32,7 @@ test.describe('Wardrobe — equip / unequip / beauty roundtrip', () => {
       const item = grp.items.find(i => i.var === 'braState1');
       SugarCube.setup.Wardrobe.equip(grp, item);
     });
-    expect(await getVar(page, 'mc.beauty')).toBe(12);
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(12);
 
     await page.evaluate(() => {
       const grp = SugarCube.setup.WARDROBE_GROUPS.find(g => g.name === 'bra');
@@ -40,7 +40,7 @@ test.describe('Wardrobe — equip / unequip / beauty roundtrip', () => {
       SugarCube.setup.Wardrobe.equip(grp, item);
     });
     // Old bra-1 (+2) gone, bra-2 (+4) on → net +4 from baseline 10
-    expect(await getVar(page, 'mc.beauty')).toBe(14);
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(14);
     expect(await getVar(page, 'braState1')).toBe('not worn');
     expect(await getVar(page, 'braState2')).toBe('worn');
   });
@@ -56,15 +56,15 @@ test.describe('Wardrobe — steal / restore mechanics', () => {
   }
 
   test('stealWornInGroup steals a worn bra and refunds its beauty', async ({ game: page }) => {
-    await setVar(page, 'mc.beauty', 10);
+    await callSetup(page, `setup.Mc.setBeauty(10)`);
     await equip(page, 'bra', 'braState1');
-    expect(await getVar(page, 'mc.beauty')).toBe(12);
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(12);
     await setVar(page, 'braState', 'worn');
 
     const stole = await page.evaluate(() =>
       SugarCube.setup.Wardrobe.stealWornInGroup('bra', 'braState', 'isBraStolen'));
     expect(stole).toBe(true);
-    expect(await getVar(page, 'mc.beauty')).toBe(10);
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(10);
     expect(await getVar(page, 'isBraStolen')).toBe(1);
     expect(await getVar(page, 'braState1')).toBe('not worn');
     expect(await getVar(page, 'rememberTopUnder')).toBe('nobra1');
@@ -78,20 +78,20 @@ test.describe('Wardrobe — steal / restore mechanics', () => {
   });
 
   test('restoreStolenInGroup restores worn flag, beauty, and clears stolen marker', async ({ game: page }) => {
-    await setVar(page, 'mc.beauty', 10);
+    await callSetup(page, `setup.Mc.setBeauty(10)`);
     await equip(page, 'bra', 'braState1');
-    expect(await getVar(page, 'mc.beauty')).toBe(12);
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(12);
     await setVar(page, 'braState', 'worn');
 
     await page.evaluate(() =>
       SugarCube.setup.Wardrobe.stealWornInGroup('bra', 'braState', 'isBraStolen'));
-    expect(await getVar(page, 'mc.beauty')).toBe(10);
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(10);
 
     const restored = await page.evaluate(() =>
       SugarCube.setup.Wardrobe.restoreStolenInGroup('bra', 'isBraStolen'));
     expect(restored).toBe(true);
     expect(await getVar(page, 'braState1')).toBe('worn');
-    expect(await getVar(page, 'mc.beauty')).toBe(12);
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(12);
     expect(await getVar(page, 'isBraStolen')).toBe(0);
     expect(await getVar(page, 'rememberTopUnder')).toBe('bra1');
   });
@@ -104,7 +104,7 @@ test.describe('Wardrobe — steal / restore mechanics', () => {
     ];
     for (const c of cases) {
       await resetGame(page);
-      await setVar(page, 'mc.beauty', 10);
+      await callSetup(page, `setup.Mc.setBeauty(10)`);
       await equip(page, 'bottomOuter', c.var);
 
       const result = await page.evaluate(() =>
@@ -123,7 +123,7 @@ test.describe('Wardrobe — steal / restore mechanics', () => {
   });
 
   test('loseAllStolen marks "not bought" only on stolen-flag groups', async ({ game: page }) => {
-    await setVar(page, 'mc.beauty', 10);
+    await callSetup(page, `setup.Mc.setBeauty(10)`);
     await equip(page, 'bra', 'braState1');
     await equip(page, 'panties', 'pantiesState1');
     await page.evaluate(() => {

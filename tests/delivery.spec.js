@@ -211,7 +211,7 @@ test.describe('Delivery Controller', () => {
 
   test('meetsBeautyForManagerFlirt true at beauty >= 45', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'mc.beauty', 45);
+    await callSetup(page, `setup.Mc.setBeauty(45)`);
 
     // act
     const result = await callSetup(page, 'setup.Delivery.meetsBeautyForManagerFlirt()');
@@ -222,7 +222,7 @@ test.describe('Delivery Controller', () => {
 
   test('meetsBeautyForManagerFlirt false at beauty < 45', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'mc.beauty', 44);
+    await callSetup(page, `setup.Mc.setBeauty(44)`);
 
     // act
     const result = await callSetup(page, 'setup.Delivery.meetsBeautyForManagerFlirt()');

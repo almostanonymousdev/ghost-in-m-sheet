@@ -733,7 +733,7 @@ test.describe('Home Controller', () => {
     // event (TheTwinsEvent, which does clear both flags).
     await setVar(page, 'twinsEventActive', 1);
     await setVar(page, 'twinsEvent', 0);
-    await setVar(page, 'mc.beauty', 10); // random(30,100) always beats this → weak branch
+    await callSetup(page, `setup.Mc.setBeauty(10)`); // random(30,100) always beats this → weak branch
     await goToPassage(page, 'Mirror');
     await page.locator('.passage .macro-linkappend').filter({ hasText: 'through the glass' }).first().click();
     await page.waitForTimeout(100);
@@ -744,7 +744,7 @@ test.describe('Home Controller', () => {
 
   test('twinsEventTriggered true when beauty roll <= mc beauty', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'mc.beauty', 50);
+    await callSetup(page, `setup.Mc.setBeauty(50)`);
 
     // act
     const rollBelow = await callSetup(page, 'setup.Home.twinsEventTriggered(40)');

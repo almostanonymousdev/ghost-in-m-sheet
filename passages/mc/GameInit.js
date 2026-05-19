@@ -106,7 +106,8 @@ setup.Game = (function () {
 			lvl: 0,
 			exp: 0,
 			dirty: 0,
-			beauty: 30
+			beautyBase: 30,
+			beautyModifier: 0
 		};
 
 		// --- Cursed home item ---------------------------------
@@ -153,5 +154,15 @@ setup.Game = (function () {
 		s.pendingHuntHouseId = null;
 	}
 
-	return { initState: initState };
+	function resetPersistentCheats() {
+		// Reset all persistent cheats to their defaults when starting a new game
+		if (typeof settings !== 'undefined') {
+			settings.highlightRescueHouse = false;
+			settings.fastToolTimers = false;
+			settings.cheatTarotCard = "—";
+			settings.cheatGhostType = "—";
+		}
+	}
+
+	return { initState: initState, resetPersistentCheats: resetPersistentCheats };
 })();

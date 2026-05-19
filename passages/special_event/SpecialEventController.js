@@ -75,7 +75,7 @@ setup.SpecialEvent = (function () {
 			var chance = Math.floor(Math.random() * 100) + 1;
 			return chance <= setup.Mc.energy() * 5;
 		},
-		spendEscapeEnergy: function () {
+		removeEscapeEnergy: function () {
 			setup.Mc.setEnergy(0);
 		},
 

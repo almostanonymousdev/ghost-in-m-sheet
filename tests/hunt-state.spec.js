@@ -171,17 +171,17 @@ test.describe('Hunt Controller', () => {
     expect(await callSetup(page, 'setup.HuntController.ectoplasm()')).toBe(12);
   });
 
-  test('spendEctoplasm rejects when the player cannot afford the cost', async () => {
+  test('removeEctoplasm rejects when the player cannot afford the cost', async () => {
     await page.evaluate(() => SugarCube.setup.HuntController.addEctoplasm(3));
 
-    expect(await callSetup(page, 'setup.HuntController.spendEctoplasm(5)')).toBe(false);
+    expect(await callSetup(page, 'setup.HuntController.removeEctoplasm(5)')).toBe(false);
     expect(await callSetup(page, 'setup.HuntController.ectoplasm()')).toBe(3); // unchanged
   });
 
-  test('spendEctoplasm deducts on success', async () => {
+  test('removeEctoplasm deducts on success', async () => {
     await page.evaluate(() => SugarCube.setup.HuntController.addEctoplasm(10));
 
-    expect(await callSetup(page, 'setup.HuntController.spendEctoplasm(4)')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntController.removeEctoplasm(4)')).toBe(true);
     expect(await callSetup(page, 'setup.HuntController.ectoplasm()')).toBe(6);
   });
 
@@ -845,8 +845,12 @@ test.describe('Hunt Controller — stashStolenClothes', () => {
   test('FurnitureSearch can find the stash via lootKindsAt', async () => {
     /* The whole point of plumbing the stash through the loot
        pipeline is that the existing furniture-search lookup picks
-       it up without a special case. */
+       it up without a special case. lootKindsAt also gates on the
+       isClothesStolen flag (matches FurnitureSearch's hasClothesStolen
+       precondition) so the detector doesn't keep highlighting a stash
+       the player can't actually pick up. */
     await startWithPlan();
+    await page.evaluate(() => SugarCube.setup.HauntedHouses.markClothesStolen());
     const stash = await page.evaluate(() =>
       SugarCube.setup.HuntController.stashStolenClothes());
     const kinds = await page.evaluate(({ r, s }) =>
