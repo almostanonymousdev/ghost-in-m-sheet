@@ -34,7 +34,12 @@
 	//       $pendingHuntHouseId, $currentsearchRogue →
 	//       $currentsearchHunt, and the "rogue-" prefix is stripped
 	//       from static house ids ('rogue-owaissa' → 'owaissa', etc.).
-	var SAVE_VERSION = 5;
+	//   v6: $companion stopped being a per-pick clone of the active
+	//       companion's stat row -- it's now a {name} marker, and
+	//       the per-companion $brook/... rows are the single source
+	//       of truth for sanity/lust/chanceToAttack/etc. Old clone
+	//       fields get ported back onto the backing row on load.
+	var SAVE_VERSION = 6;
 	setup.SAVE_VERSION = SAVE_VERSION;
 
 	/*
@@ -185,6 +190,24 @@
 		// it owns the catalogue and the per-companion stat shape, so the
 		// migration table belongs there too.
 		setup.Companion.migrateLegacyKeys(vars);
+
+		// v6: collapse the per-pick $companion clone to a {name}
+		// marker. Old saves carrying a full clone (sanity / lust /
+		// chanceToAttack / decreaseSanity / ...) are the source-of-
+		// truth for live in-hunt values; port those fields onto the
+		// backing stat row, then strip the clone down to {name}.
+		if (vars.companion && typeof vars.companion === 'object' && vars.companion.name) {
+			var marker = vars.companion;
+			var rowKey = String(marker.name).toLowerCase();
+			var row    = vars[rowKey];
+			if (row && typeof row === 'object') {
+				Object.keys(marker).forEach(function (k) {
+					if (k === 'name') return;
+					if (marker[k] !== undefined) row[k] = marker[k];
+				});
+			}
+			vars.companion = { name: marker.name };
+		}
 
 		// Library: 4 mutually-exclusive $comics<N> flags collapsed into a
 		// single $comicsReading slot (0 = none, 1..4 = active issue).

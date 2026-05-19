@@ -50,13 +50,17 @@ setup.Companion = (function () {
 		if (extra) Object.keys(extra).forEach(function (k) { s[k] = extra[k]; });
 	}
 
-	/* $companion (the active-companion clone) and the per-companion
-	   stat objects ($brook/$alice/$blake/$alex/$taylor/$casey) are
-	   owned by this controller. Methods reach them via the semantic
-	   accessors api.activeState() and api.stateFor(name). Anything
-	   else (player money/sanity-pills, hours, hunt state, haunted-
-	   house flags, witch-quest flags) goes through the owning
-	   controller's API. */
+	/* $companion is a one-field marker { name } pointing at whichever
+	   per-companion stat object ($brook/$alice/$blake/$alex/$taylor/
+	   $casey) is currently active. The stat objects themselves are
+	   the single source of truth for sanity/lust/chanceToAttack/...
+	   api.activeState() resolves the marker to that backing object,
+	   so reads and writes never diverge between a clone and the
+	   source. (The clone shape was retired in SAVE_VERSION 6; the
+	   migration ports old saves' clone fields back onto the backing
+	   stat object.) Anything else (player money/sanity-pills, hours,
+	   hunt state, haunted-house flags, witch-quest flags) goes
+	   through the owning controller's API. */
 	/* Per-companion mutable state used to live in a forest of dynamically-
 	   named top-level variables ($isCompChosen<Name>, $chanceToAttack<Name>,
 	   $is<Name>GoingForHuntingAlone, $<key>ChooseOwaissa, $payForHuntAlone<Name>,
@@ -284,15 +288,19 @@ setup.Companion = (function () {
 		// --- Catalogue -------------------------------------------
 		list: function () { return companions(); },
 		getByName: getByName,
-		// The mutable state object for the active companion (the
-		// clone stamped onto $companion by pickCisCompanion /
-		// pickTransCompanion), or undefined if none. Carries .name,
-		// .sanity, .lust, .decreaseSanity, etc.
-		activeState: function () { return State.variables.companion; },
+		// The mutable stat object for the active companion (the
+		// per-companion stat row $brook / $alice / $blake / $alex /
+		// $taylor / $casey, resolved through the $companion marker),
+		// or undefined if none. Carries .name, .sanity, .lust,
+		// .decreaseSanity, etc.
+		activeState: function () {
+			var marker = State.variables.companion;
+			if (!marker || !marker.name) return undefined;
+			return this.stateFor(marker.name);
+		},
 		// The mutable per-companion stat object ($brook / $alice /
 		// $blake / $alex / $taylor / $casey) by name (any case).
-		// This is the source-of-truth row; activeState() is a clone
-		// of one of these.
+		// Same object activeState() returns when this name is active.
 		stateFor: function (name) {
 			if (!name) return undefined;
 			return State.variables[String(name).toLowerCase()];
@@ -302,8 +310,8 @@ setup.Companion = (function () {
 		// widgets (sanityPills, companionMain) that need pronouns or
 		// image paths without caring which companion is active.
 		active: function () {
-			var c = this.activeState();
-			return c ? getByName(c.name) : null;
+			var marker = State.variables.companion;
+			return marker && marker.name ? getByName(marker.name) : null;
 		},
 		// Fresh stat object for a named companion. Used by SaveMigration
 		// to seed $brook/$alice/$blake/$alex/$taylor/$casey on new games
@@ -373,18 +381,37 @@ setup.Companion = (function () {
 			var c = this.stateFor(name);
 			if (c) c.chosen = 1;
 		},
-		pickTransCompanion: function (name) {
-			// Used by the Internet passage when choosing a trans companion
-			// (Alex / Taylor / Casey). Clones the source NPC object onto
-			// $companion, toggles the selection flags, and resets the
-			// per-hunt trans-event bookkeeping.
+		// Stamp the $companion marker onto `name` and reset the
+		// per-hunt scratch fields (sanity, lust, chanceToAttack +
+		// any solo/trans bookkeeping) on the backing stat object so
+		// a fresh hunt always starts from full sanity / no lust.
+		// Returns true if the companion was found; false otherwise.
+		pick: function (name) {
+			var c = getByName(name);
+			var stats = this.stateFor(name);
+			if (!c || !stats) return false;
 			var s = State.variables;
-			s.companion = clone(this.stateFor(name));
-			this.selectCompanion(name);
+			s.companion = { name: c.name };
+			this.selectCompanion(c.name);
 			s.chosenPlan = 0;
-			s.transStart = 0;
-			s.transPicture = 0;
-			delete s.transFirstStage;
+			stats.sanity         = 100;
+			stats.lust           = 0;
+			stats.chanceToAttack = 25;
+			if (c.isTrans) {
+				s.transStart   = 0;
+				s.transPicture = 0;
+				delete s.transFirstStage;
+			} else {
+				stats.goingSolo     = 0;
+				stats.chooseOwaissa = 0;
+				stats.chooseElm     = 0;
+			}
+			return true;
+		},
+		pickTransCompanion: function (name) {
+			// Internet passage entrypoint for Alex / Taylor / Casey.
+			// Thin shim over pick() so the call sites read intent.
+			this.pick(name);
 		},
 
 		// --- Sanity / lust tiers used by compEvent / *Help / Init -
@@ -592,20 +619,9 @@ setup.Companion = (function () {
 		},
 
 		// --- Pick companion for tonight's hunt ------------------
-		// Clone the specified companion's stats onto $companion,
-		// clear all other selection flags, reset chosenPlan and
-		// per-companion solo-hunt bookkeeping.
-		pickCisCompanion: function (name) {
-			var s = State.variables;
-			var c = this.stateFor(name);
-			if (!c) return;
-			s.companion = clone(c);
-			this.selectCompanion(name);
-			s.chosenPlan = 0;
-			c.goingSolo     = 0;
-			c.chooseOwaissa = 0;
-			c.chooseElm     = 0;
-		},
+		// Library / Mall entrypoints for Brook / Alice / Blake. Thin
+		// shims over pick() so the call sites read intent.
+		pickCisCompanion: function (name) { this.pick(name); },
 		deselectCisCompanion: function (name) {
 			var c = this.stateFor(name);
 			if (c) c.chosen = 0;
@@ -680,13 +696,12 @@ setup.Companion = (function () {
 			var s = (this.activeState() || {}).sanity || 0;
 			return s >= 75 ? 1 : s >= 50 ? 2 : s >= 25 ? 3 : s >= 1 ? 4 : 0;
 		},
-		/* Active companion's level (pre-clone, reading from
-		   $<key>). Used by <<isCompanionContinue>> as the "lvl
-		   check" arg; all trans companions are locked at 5. */
+		/* Active companion's level. Used by <<isCompanionContinue>>
+		   as the "lvl check" arg; all trans companions are locked
+		   at 5. */
 		activeCompanionLvl: function () {
-			var c = this.activeState(); if (!c) return 0;
-			var src = this.stateFor(c.name);
-			return src ? src.lvl : 0;
+			var c = this.activeState();
+			return c ? c.lvl : 0;
 		},
 
 		/* Portrait path for CompanionSucceeded, by outcome. The
@@ -810,23 +825,15 @@ setup.Companion = (function () {
 		   run for them. */
 		chanceToAttack: function () {
 			var c = this.activeState();
-			if (!c) return 25;
-			var stats = this.stateFor(c.name);
-			return stats && stats.chanceToAttack !== undefined ? stats.chanceToAttack : 25;
+			return c && c.chanceToAttack !== undefined ? c.chanceToAttack : 25;
 		},
 		ensureChanceToAttack: function () {
 			var c = this.activeState();
-			if (!c) return;
-			var stats = this.stateFor(c.name);
-			if (stats && stats.chanceToAttack === undefined) {
-				stats.chanceToAttack = 25;
-			}
+			if (c && c.chanceToAttack === undefined) c.chanceToAttack = 25;
 		},
 		setChanceToAttack: function (n) {
 			var c = this.activeState();
-			if (!c) return;
-			var stats = this.stateFor(c.name);
-			if (stats) stats.chanceToAttack = n;
+			if (c) c.chanceToAttack = n;
 		},
 
 		/* Companion "help" event side-effects: zero lust, bank a
@@ -983,6 +990,9 @@ setup.Companion = (function () {
 })();
 
 /* HUD meters for the active companion's sanity / lust shown in the
- * sidebar while a companion is on a hunt with the MC. */
-Meter.add('companionsanity', { label: '$companion.sanity', width: '100%' }, 1);
-Meter.add('companionlust',   { label: '$companion.lust',   width: '100%' }, 1);
+ * sidebar while a companion is on a hunt with the MC. Labels are
+ * wikified every refresh (Chapel meters call .wiki(label) per tick),
+ * so the <<= ...>> macros resolve through the active companion's
+ * source-of-truth stat row. */
+Meter.add('companionsanity', { label: '<<= setup.Companion.sanity()>>', width: '100%' }, 1);
+Meter.add('companionlust',   { label: '<<= setup.Companion.lust()>>',   width: '100%' }, 1);

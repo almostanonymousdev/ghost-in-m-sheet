@@ -93,9 +93,9 @@
 		@@.notmc-speech;Good, I'll stay close to you.@@
 	<</replace>>
 <</link>>@@<br>
-<span id="checkQuestForCursedItem">@@.usebtn;<<link `"I need you to find the cursed item @@.warningtext; (" + State.variables.companion.chanceOfSuccessCI + " %, " + State.variables.companion.plan2TimeReq + " min)@@"`>>
+<span id="checkQuestForCursedItem">@@.usebtn;<<link `"I need you to find the cursed item @@.warningtext; (" + _state.chanceOfSuccessCI + " %, " + _state.plan2TimeReq + " min)@@"`>>
 	<<if not setup.Companion.hasCursedItem()>>
-		<<run setup.Companion.setHuntPlan("Plan2", State.variables.companion.chanceOfSuccessCI, State.variables.companion.plan2TimeReq)>>
+		<<run setup.Companion.setHuntPlan("Plan2", _state.chanceOfSuccessCI, _state.plan2TimeReq)>>
 		<<replace "#compResponse">>
 			@@.notmc-speech;Alright, I'll look for the cursed item.@@
 		<</replace>>
@@ -106,14 +106,14 @@
 	<</if>>
 <</link>>@@</span> <<if not setup.Companion.cursedItemQuestUnlocked()>>@@.warningtext; Req. quest from the witch@@
 <</if>><br>
-@@.usebtn;<<link `"I want you to look for any ghost evidence @@.warningtext; (" + State.variables.companion.chanceOfSuccessAnyEvidence + " %, " + State.variables.companion.plan3TimeReq + " min@@)"`>>
-	<<run setup.Companion.setHuntPlan("Plan3", State.variables.companion.chanceOfSuccessAnyEvidence, State.variables.companion.plan3TimeReq)>>
+@@.usebtn;<<link `"I want you to look for any ghost evidence @@.warningtext; (" + _state.chanceOfSuccessAnyEvidence + " %, " + _state.plan3TimeReq + " min@@)"`>>
+	<<run setup.Companion.setHuntPlan("Plan3", _state.chanceOfSuccessAnyEvidence, _state.plan3TimeReq)>>
 	<<replace "#compResponse">>
 		@@.notmc-speech;Sure, I'll search for any ghost evidence.@@
 	<</replace>>
 <</link>>@@<br>
-@@.usebtn;<<link `"It would be nice if you found the ghost's favorite room @@.warningtext; (" + State.variables.companion.chanceOfSuccessGR + " %, " + State.variables.companion.plan4TimeReq + " min@@)"`>>
-	<<run setup.Companion.setHuntPlan("Plan4", State.variables.companion.chanceOfSuccessGR, State.variables.companion.plan4TimeReq)>>
+@@.usebtn;<<link `"It would be nice if you found the ghost's favorite room @@.warningtext; (" + _state.chanceOfSuccessGR + " %, " + _state.plan4TimeReq + " min@@)"`>>
+	<<run setup.Companion.setHuntPlan("Plan4", _state.chanceOfSuccessGR, _state.plan4TimeReq)>>
 	<<replace "#compResponse">>
 		@@.notmc-speech; Got it, I'll try to find the ghost's favorite room.@@
 	<</replace>>
