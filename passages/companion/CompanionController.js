@@ -89,6 +89,7 @@ setup.Companion = (function () {
 	     { get: name, key: field, miss?: fallback }    one-arg getter
 	     { set: name, key: field }                     two-arg setter
 	     { is:  name, key: field, value: stage }       predicate
+	     { writes: name, sets: { k1: v1, k2: v2 } }    one-arg bulk-write of constants
 	*/
 	function defineCompanionAccessors(api, spec) {
 		spec.forEach(function (entry) {
@@ -108,6 +109,43 @@ setup.Companion = (function () {
 				api[entry.is] = function (name) {
 					var c = api.stateFor(name);
 					return !!(c && c[entry.key] === entry.value);
+				};
+			}
+			if (entry.writes) {
+				var keys = Object.keys(entry.sets);
+				api[entry.writes] = function (name) {
+					var c = api.stateFor(name);
+					if (!c) return;
+					for (var i = 0; i < keys.length; i++) c[keys[i]] = entry.sets[keys[i]];
+				};
+			}
+		});
+	}
+
+	/* Same idea as defineCompanionAccessors but each method targets the
+	   active companion (api.activeState()) instead of a passed-in name:
+	     { get: name, key: field, miss?: fallback }     zero-arg getter
+	     { set: name, key: field }                      one-arg setter
+	     { add: name, key: field, sign?: 1|-1 }         one-arg additive mutator
+	*/
+	function defineActiveAccessors(api, spec) {
+		spec.forEach(function (entry) {
+			if (entry.get) {
+				api[entry.get] = function () {
+					var c = api.activeState();
+					return c ? c[entry.key] : entry.miss;
+				};
+			}
+			if (entry.set) {
+				api[entry.set] = function (v) {
+					var c = api.activeState();
+					if (c) c[entry.key] = v;
+				};
+			}
+			if (entry.add) {
+				api[entry.add] = function (n) {
+					var c = api.activeState();
+					if (c) c[entry.key] += entry.sign === -1 ? -n : n;
 				};
 			}
 		});
@@ -580,18 +618,7 @@ setup.Companion = (function () {
 			var CS = setup.CompanionShow;
 			return sc === CS.VISIBLE || sc === CS.ATTACK_SAFE;
 		},
-		sanityPercent: function () {
-			var c = this.activeState();
-			return c ? c.sanity / 100 : 0;
-		},
-		drainSanity: function (n) {
-			var c = this.activeState();
-			if (c) { c.sanity -= n; }
-		},
-		addLust: function (n) {
-			var c = this.activeState();
-			if (c) { c.lust += n; }
-		},
+		sanityPercent: function () { return this.sanity() / 100; },
 		cheatSetLvl: function (key, lvl) {
 			var obj = this.stateFor(key);
 			if (obj) { obj.lvl = lvl; }
@@ -647,10 +674,6 @@ setup.Companion = (function () {
 		// into the defineCompanionAccessors call at the bottom.)
 		isCompanionFlagActive: function () { return State.variables.isCompChosen === 1; },
 		markCompanionFlagActive: function () { State.variables.isCompChosen = 1; },
-		setActiveLust: function (n) {
-			var c = this.activeState();
-			if (c) c.lust = n;
-		},
 		/* Pick a video/image descriptor for the CompanionEvent
 		   passage. Each companion has a 4-tier sanity ladder
 		   (75+, 50–74, 25–49, 0–24); some tiers split further on
@@ -695,13 +718,6 @@ setup.Companion = (function () {
 		eventSanityTier: function () {
 			var s = (this.activeState() || {}).sanity || 0;
 			return s >= 75 ? 1 : s >= 50 ? 2 : s >= 25 ? 3 : s >= 1 ? 4 : 0;
-		},
-		/* Active companion's level. Used by <<isCompanionContinue>>
-		   as the "lvl check" arg; all trans companions are locked
-		   at 5. */
-		activeCompanionLvl: function () {
-			var c = this.activeState();
-			return c ? c.lvl : 0;
 		},
 
 		/* Portrait path for CompanionSucceeded, by outcome. The
@@ -846,26 +862,11 @@ setup.Companion = (function () {
 			c.sanity += 2;
 		},
 
-		/* Reset the "paid" flag + solo-hunt-in-progress flag when
-		   the player queries the HuntEndAlone passage (which runs
-		   the next morning). Called on entry to *HuntEndAlone. */
-		acknowledgeSoloHuntEnd: function (name) {
-			var c = this.stateFor(name);
-			if (!c) return;
-			c.paidForSolo = 0;
-			c.goingSolo   = 0;
-		},
-		/* Which street did this companion solo-hunt on? companionChoseOwaissa
-		   and companionChoseElm fold into the defineCompanionAccessors call
-		   at the bottom. Used to key into the success-chance table. */
-		/* Clear the per-companion Owaissa/Elm choice flags. Called
-		   at the end of HuntEndAlone after the result is narrated. */
-		clearSoloHuntStreet: function (name) {
-			var c = this.stateFor(name);
-			if (!c) return;
-			c.chooseOwaissa = 0;
-			c.chooseElm     = 0;
-		},
+		/* acknowledgeSoloHuntEnd (paid/goingSolo reset on the morning-after
+		   HuntEndAlone) and clearSoloHuntStreet (Owaissa/Elm choice reset
+		   after narration) fold into the defineCompanionAccessors `writes`
+		   spec at the bottom. companionChoseOwaissa / companionChoseElm
+		   predicates fold into the same call. */
 		/* Pay out the solo-hunt reward to $mc.money. Per-street figures
 		   live in data().soloRewards. Called from *HuntEndAlone when the
 		   success roll lands. */
@@ -888,22 +889,11 @@ setup.Companion = (function () {
 		},
 
 		// --- Active-companion HUD / event helpers ----------------
-		decreaseSanity: function () {
-			var c = this.activeState();
-			return c ? c.decreaseSanity : 0;
-		},
-		lust: function () {
-			var c = this.activeState();
-			return c ? c.lust : 0;
-		},
-		sanity: function () {
-			var c = this.activeState();
-			return c ? c.sanity : 0;
-		},
-		lvl: function () {
-			var c = this.activeState();
-			return c ? c.lvl : 0;
-		},
+		// (sanity / lust / lvl / decreaseSanity / setActiveLust / addLust /
+		// drainSanity fold into the defineActiveAccessors call at the
+		// bottom. lvl() is the canonical active-companion level reader --
+		// callers used to also reach activeCompanionLvl() for the same
+		// thing.)
 		/* For a given companion slot (key = "brook" / "alice" / "blake")
 		   is the companion at the max level 5? Used by the companionExp
 		   widget to short-circuit xp gain. */
@@ -973,8 +963,9 @@ setup.Companion = (function () {
 	]);
 	// Per-companion stat accessors. Each call resolves the target
 	// companion's mutable state object via api.stateFor(name) and reads
-	// or writes a single field; folded here so the wrapper bodies
-	// don't have to repeat the null-check / fallback boilerplate.
+	// or writes a single field (or, for `writes`, a fixed set of
+	// constants); folded here so the wrapper bodies don't have to
+	// repeat the null-check / fallback boilerplate.
 	defineCompanionAccessors(api, [
 		{ get: 'companionLvl',           key: 'lvl',                miss: 0 },
 		{ get: 'companionExp',           key: 'exp',                miss: 0 },
@@ -984,7 +975,20 @@ setup.Companion = (function () {
 		{ get: 'soloHuntPaymentState',   key: 'paidForSolo' },
 		{ is:  'hasFinishedSoloHunt',    key: 'goingSolo',     value: 2 },
 		{ is:  'companionChoseOwaissa',  key: 'chooseOwaissa', value: 1 },
-		{ is:  'companionChoseElm',      key: 'chooseElm',     value: 1 }
+		{ is:  'companionChoseElm',      key: 'chooseElm',     value: 1 },
+		{ writes: 'acknowledgeSoloHuntEnd',  sets: { paidForSolo: 0, goingSolo: 0 } },
+		{ writes: 'clearSoloHuntStreet',     sets: { chooseOwaissa: 0, chooseElm: 0 } }
+	]);
+	// Active-companion accessors. Bound against api.activeState() so the
+	// fallback / null-check is one place instead of one per method body.
+	defineActiveAccessors(api, [
+		{ get: 'sanity',         key: 'sanity',         miss: 0 },
+		{ get: 'lust',           key: 'lust',           miss: 0 },
+		{ get: 'lvl',            key: 'lvl',            miss: 0 },
+		{ get: 'decreaseSanity', key: 'decreaseSanity', miss: 0 },
+		{ set: 'setActiveLust',  key: 'lust' },
+		{ add: 'addLust',        key: 'lust' },
+		{ add: 'drainSanity',    key: 'sanity', sign: -1 }
 	]);
 	return api;
 })();

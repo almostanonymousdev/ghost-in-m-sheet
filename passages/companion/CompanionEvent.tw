@@ -12,7 +12,7 @@
 <</if>>
 
 <<set _tier to setup.Companion.eventSanityTier()>>
-<<set _lvl  to setup.Companion.activeCompanionLvl()>>
+<<set _lvl  to setup.Companion.lvl()>>
 <<if _tier is 1>>
 	<<companionTextEvent 1>>
 	<<isCompanionContinue _lvl 2 75 100>>
