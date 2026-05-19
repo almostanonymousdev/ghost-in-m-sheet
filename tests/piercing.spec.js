@@ -1,5 +1,5 @@
 const { test, expect } = require('./fixtures');
-const { goToPassage, getVar, setVar } = require('./helpers');
+const { goToPassage, getVar, setVar, callSetup } = require('./helpers');
 
 test.describe('Piercing — Purchase and Beauty', () => {
   test.beforeEach(async ({ game: page }) => {
@@ -16,7 +16,7 @@ test.describe('Piercing — Purchase and Beauty', () => {
 
     expect(await getVar(page, 'mc.money')).toBe(200 - 50);
     expect(await getVar(page, 'earsPiercing')).toBe('worn');
-    expect(await getVar(page, 'mc.beauty')).toBe(30 + 2);
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(30 + 2);
   });
 
   test('purchasing nose piercing adds +3 beauty at purchase', async ({ game: page }) => {
@@ -29,12 +29,12 @@ test.describe('Piercing — Purchase and Beauty', () => {
 
     expect(await getVar(page, 'mc.money')).toBe(200 - 70);
     expect(await getVar(page, 'nosePiercing')).toBe('worn');
-    expect(await getVar(page, 'mc.beauty')).toBe(30 + 3);
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(30 + 3);
   });
 
   test('purchasing tongue piercing sets sensitivity modifier, no beauty', async ({ game: page }) => {
     await setVar(page, 'mc.money', 200);
-    const startBeauty = await getVar(page, 'mc.beauty');
+    const startBeauty = await callSetup(page, 'setup.Mc.beauty()');
     await goToPassage(page, 'BeautySalonPiercing');
     const buyLink = page.locator('.buyItemLink a').nth(2);
 
@@ -44,12 +44,12 @@ test.describe('Piercing — Purchase and Beauty', () => {
     expect(await getVar(page, 'mc.money')).toBe(200 - 100);
     expect(await getVar(page, 'tonguePiercing')).toBe('worn');
     expect(await getVar(page, 'piercingTongueAddSens')).toBe(0.1);
-    expect(await getVar(page, 'mc.beauty')).toBe(startBeauty);
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(startBeauty);
   });
 
   test('removing ears piercing in wardrobe subtracts beauty', async ({ game: page }) => {
     await setVar(page, 'earsPiercing', 'worn');
-    await setVar(page, 'mc.beauty', 32);
+    await callSetup(page, `setup.Mc.setBeauty(32)`);
 
     await goToPassage(page, 'Wardrobe');
 
@@ -58,12 +58,12 @@ test.describe('Piercing — Purchase and Beauty', () => {
     await page.waitForFunction(() => SugarCube.State.passage === 'Wardrobe');
 
     expect(await getVar(page, 'earsPiercing')).toBe('not worn');
-    expect(await getVar(page, 'mc.beauty')).toBe(30);
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(30);
   });
 
   test('re-wearing ears piercing in wardrobe adds beauty back', async ({ game: page }) => {
     await setVar(page, 'earsPiercing', 'not worn');
-    await setVar(page, 'mc.beauty', 30);
+    await callSetup(page, `setup.Mc.setBeauty(30)`);
 
     await goToPassage(page, 'Wardrobe');
 
@@ -72,7 +72,7 @@ test.describe('Piercing — Purchase and Beauty', () => {
     await page.waitForFunction(() => SugarCube.State.passage === 'Wardrobe');
 
     expect(await getVar(page, 'earsPiercing')).toBe('worn');
-    expect(await getVar(page, 'mc.beauty')).toBe(32);
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(32);
   });
 
   test('removing tongue piercing clears sensitivity modifier', async ({ game: page }) => {

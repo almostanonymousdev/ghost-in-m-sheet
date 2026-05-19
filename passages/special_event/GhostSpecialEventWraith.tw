@@ -8,7 +8,7 @@
 
 		<<set _escapeOk to setup.SpecialEvent.rollEscapeSuccess()>>
 		<<if _escapeOk>>
-			<<run setup.SpecialEvent.spendEscapeEnergy()>>
+			<<run setup.SpecialEvent.removeEscapeEnergy()>>
 			<<updatemeter 'energy' `setup.Mc.energy() / setup.Mc.energyMax()`>>
 			<<replace "#divSpecialEventReplace">>
 				@@.mc-speech; I did it! I need to get dressed and [[go sleep home.|Sleep]]@@

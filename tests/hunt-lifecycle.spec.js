@@ -147,18 +147,18 @@ test.describe('Hunt lifecycle helpers', () => {
     }));
     const expectedXp = await page.evaluate(() =>
       Math.round(20 * SugarCube.setup.Modifiers.payoutMultiplier()));
-    const before = await callSetup(page, 'setup.Mc.get("exp")');
+    const before = await callSetup(page, 'setup.Mc.exp()');
 
     const summary = await page.evaluate(() => SugarCube.setup.HuntController.endHunt(true));
 
     expect(summary.xp).toBe(expectedXp);
     expect(summary.xp).toBeGreaterThan(0);
-    const after = await callSetup(page, 'setup.Mc.get("exp")');
+    const after = await callSetup(page, 'setup.Mc.exp()');
     // grantExp may roll over into a level-up; the exp pool grows by xp
     // delta (mod level threshold), but the simple invariant is that
     // either exp or lvl moved.
     const lvlBefore = await page.evaluate(() => 0);
-    const lvlAfter = await callSetup(page, 'setup.Mc.get("lvl")');
+    const lvlAfter = await callSetup(page, 'setup.Mc.lvl()');
     expect(after > before || lvlAfter > 1).toBe(true);
   });
 

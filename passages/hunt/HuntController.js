@@ -309,7 +309,7 @@ setup.HuntController = (function () {
 		var owned = metaUnlock(id);
 		if (owned >= item.max) return false;
 		if (!canAffordEctoplasm(item.cost)) return false;
-		spendEctoplasm(item.cost);
+		removeEctoplasm(item.cost);
 		var m = metaState();
 		m.unlocks[id] = owned + 1;
 		if (id === ShopItem.REROLL_CHARGE) m.rerollCharges = (m.rerollCharges || 0) + 1;
@@ -784,7 +784,7 @@ setup.HuntController = (function () {
 	}
 	/* Spend `n` mL of ectoplasm. Returns true on success, false if
 	   the player can't afford it. No partial deductions. */
-	function spendEctoplasm(n) {
+	function removeEctoplasm(n) {
 		var have = sv().ectoplasm || 0;
 		if (have < n) return false;
 		sv().ectoplasm = have - n;
@@ -1000,23 +1000,20 @@ setup.HuntController = (function () {
 
 		/* Stat-cap bumps. Snapshot the prior caps so endHunt can
 		   restore them; the player's $mc.sanityMax / energyMax are
-		   long-lived and must come back unchanged. setup.Mc owns
-		   $mc, so reads/writes route through its get/set API. */
-		if (setup.Mc && typeof setup.Mc.get === 'function') {
-			run.preRunStatCaps = {
-				sanityMax: setup.Mc.get('sanityMax'),
-				sanity:    setup.Mc.get('sanity'),
-				energyMax: setup.Mc.get('energyMax'),
-				energy:    setup.Mc.get('energy')
-			};
-			if (hasUnlock(ShopItem.STEELED_HAND)) {
-				setup.Mc.set('sanityMax', (setup.Mc.get('sanityMax') || 0) + 25);
-				setup.Mc.set('sanity',    (setup.Mc.get('sanity')    || 0) + 25);
-			}
-			if (hasUnlock(ShopItem.CALVES_OF_STEEL)) {
-				setup.Mc.set('energyMax', (setup.Mc.get('energyMax') || 0) + 5);
-				setup.Mc.set('energy',    (setup.Mc.get('energy')    || 0) + 5);
-			}
+		   long-lived and must come back unchanged. */
+		run.preRunStatCaps = {
+			sanityMax: setup.Mc.sanityMax(),
+			sanity:    setup.Mc.sanity(),
+			energyMax: setup.Mc.energyMax(),
+			energy:    setup.Mc.energy()
+		};
+		if (hasUnlock(ShopItem.STEELED_HAND)) {
+			setup.Mc.setSanityMax(setup.Mc.sanityMax() + 25);
+			setup.Mc.addSanity(25);
+		}
+		if (hasUnlock(ShopItem.CALVES_OF_STEEL)) {
+			setup.Mc.setEnergyMax(setup.Mc.energyMax() + 5);
+			setup.Mc.addEnergy(5);
 		}
 
 		/* Intense Intuition: pre-check one of the ghost's true evidence
@@ -1494,14 +1491,13 @@ setup.HuntController = (function () {
 		   gains), so we always snap back to whatever the player walked
 		   in with. Current sanity/energy follow the delta: clamp to
 		   the restored cap so a fresh hunt doesn't start with a
-		   125-out-of-100 bar. setup.Mc owns the underlying $mc
-		   bundle, so we go through its get/set API. */
+		   125-out-of-100 bar. */
 		var caps = run.preRunStatCaps;
-		if (caps && setup.Mc && typeof setup.Mc.set === 'function') {
-			setup.Mc.set('sanityMax', caps.sanityMax);
-			setup.Mc.set('energyMax', caps.energyMax);
-			if (setup.Mc.get('sanity') > caps.sanityMax) setup.Mc.set('sanity', caps.sanityMax);
-			if (setup.Mc.get('energy') > caps.energyMax) setup.Mc.set('energy', caps.energyMax);
+		if (caps) {
+			setup.Mc.setSanityMax(caps.sanityMax);
+			setup.Mc.setEnergyMax(caps.energyMax);
+			if (setup.Mc.sanity() > caps.sanityMax) setup.Mc.setSanity(caps.sanityMax);
+			if (setup.Mc.energy() > caps.energyMax) setup.Mc.setEnergy(caps.energyMax);
 		}
 		end();
 		/* Roll the next-run seed so the GhostStreet card preview and
@@ -1848,7 +1844,7 @@ setup.HuntController = (function () {
 		collectedLoot: collectedLoot,
 		ectoplasm: ectoplasm,
 		addEctoplasm: addEctoplasm,
-		spendEctoplasm: spendEctoplasm,
+		removeEctoplasm: removeEctoplasm,
 		canAffordEctoplasm: canAffordEctoplasm,
 		nextSeed: nextSeed,
 		rollNextSeed: rollNextSeed,

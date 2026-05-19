@@ -8,7 +8,7 @@ test.describe('Clothing — Purchase and Beauty', () => {
 
   test('purchasing jeans1 deducts $30 and sets state to "not worn"', async ({ game: page }) => {
     await setVar(page, 'mc.money', 200);
-    const startBeauty = await getVar(page, 'mc.beauty');
+    const startBeauty = await callSetup(page, 'setup.Mc.beauty()');
     await goToPassage(page, 'ClothingSection');
     const buyLink = page.locator('.buyItemLink a').first();
 
@@ -17,7 +17,7 @@ test.describe('Clothing — Purchase and Beauty', () => {
 
     expect(await getVar(page, 'mc.money')).toBe(200 - 30);
     expect(await getVar(page, 'jeansState1')).toBe('not worn');
-    expect(await getVar(page, 'mc.beauty')).toBe(startBeauty);
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(startBeauty);
   });
 
   test('purchasing tshirt1 deducts $30 and sets state to "not worn"', async ({ game: page }) => {
@@ -65,7 +65,7 @@ test.describe('Clothing — Purchase and Beauty', () => {
     await setVar(page, 'jeansState1', 'not worn');
     await setVar(page, 'jeansState0', 'not worn');
     await setVar(page, 'rememberBottomOuter', 'nojeans0');
-    const startBeauty = await getVar(page, 'mc.beauty');
+    const startBeauty = await callSetup(page, 'setup.Mc.beauty()');
 
     await goToPassage(page, 'Wardrobe');
 
@@ -76,14 +76,14 @@ test.describe('Clothing — Purchase and Beauty', () => {
     await page.waitForFunction(() => SugarCube.State.passage === 'Wardrobe');
 
     expect(await getVar(page, 'jeansState1')).toBe('worn');
-    expect(await getVar(page, 'mc.beauty')).toBe(startBeauty + 5);
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(startBeauty + 5);
   });
 
   test('wearing bra1 in wardrobe adds +2 beauty', async ({ game: page }) => {
     await setVar(page, 'braState1', 'not worn');
     await setVar(page, 'braState0', 'not worn');
     await setVar(page, 'rememberTopUnder', 'nobra0');
-    const startBeauty = await getVar(page, 'mc.beauty');
+    const startBeauty = await callSetup(page, 'setup.Mc.beauty()');
 
     await goToPassage(page, 'Wardrobe');
 
@@ -94,7 +94,7 @@ test.describe('Clothing — Purchase and Beauty', () => {
     await page.waitForFunction(() => SugarCube.State.passage === 'Wardrobe');
 
     expect(await getVar(page, 'braState1')).toBe('worn');
-    expect(await getVar(page, 'mc.beauty')).toBe(startBeauty + 2);
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(startBeauty + 2);
   });
 
   test('switching from jeans1 (+5) to jeans2 (+8) nets +3 beauty', async ({ game: page }) => {
@@ -102,7 +102,7 @@ test.describe('Clothing — Purchase and Beauty', () => {
     await setVar(page, 'jeansState1', 'worn');
     await setVar(page, 'jeansState2', 'not worn');
     await setVar(page, 'rememberBottomOuter', 'jeans1');
-    await setVar(page, 'mc.beauty', 35);
+    await callSetup(page, `setup.Mc.setBeauty(35)`);
 
     await goToPassage(page, 'Wardrobe');
 
@@ -114,7 +114,7 @@ test.describe('Clothing — Purchase and Beauty', () => {
 
     expect(await getVar(page, 'jeansState2')).toBe('worn');
     expect(await getVar(page, 'jeansState1')).toBe('not worn');
-    expect(await getVar(page, 'mc.beauty')).toBe(35 + 8 - 5);
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(35 + 8 - 5);
   });
 });
 
@@ -392,26 +392,26 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
     await setVar(page, 'tshirtState1', 'worn');
     await setVar(page, 'tshirtState',  'worn');
     await setVar(page, 'rememberTopOuter', 'tshirt1');
-    await setVar(page, 'mc.beauty', 30);
+    await callSetup(page, `setup.Mc.setBeauty(30)`);
 
     const ok = await callSetup(page, 'setup.Wardrobe.quickUndress("tshirt")');
 
     expect(ok).toBe(true);
     expect(await getVar(page, 'tshirtState1')).toBe('not worn');
     expect(await getVar(page, 'rememberTopOuter')).toBe('notshirt1');
-    expect(await getVar(page, 'mc.beauty')).toBe(30 - 5);
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(30 - 5);
   });
 
   test('quickUndress no-ops when the slot already has nothing on', async ({ game: page }) => {
     await setVar(page, 'braState0', 'not worn');
     await setVar(page, 'braState1', 'not worn');
     await setVar(page, 'braState',  'not worn');
-    const startBeauty = await getVar(page, 'mc.beauty');
+    const startBeauty = await callSetup(page, 'setup.Mc.beauty()');
 
     const ok = await callSetup(page, 'setup.Wardrobe.quickUndress("bra")');
 
     expect(ok).toBe(false);
-    expect(await getVar(page, 'mc.beauty')).toBe(startBeauty);
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(startBeauty);
   });
 
   test('quickRedress restores the previously worn item and re-applies its beauty', async ({ game: page }) => {
@@ -419,14 +419,14 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
     await setVar(page, 'pantiesState2', 'not worn');
     await setVar(page, 'pantiesState',  'not worn');
     await setVar(page, 'rememberBottomUnder', 'nopanties2');
-    await setVar(page, 'mc.beauty', 20);
+    await callSetup(page, `setup.Mc.setBeauty(20)`);
 
     const ok = await callSetup(page, 'setup.Wardrobe.quickRedress("panties")');
 
     expect(ok).toBe(true);
     expect(await getVar(page, 'pantiesState2')).toBe('worn');
     expect(await getVar(page, 'rememberBottomUnder')).toBe('panties2');
-    expect(await getVar(page, 'mc.beauty')).toBe(20 + 4);
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(20 + 4);
   });
 
   test('quickRedress refuses to put back a now-NOT_BOUGHT (stolen) item', async ({ game: page }) => {
@@ -514,18 +514,18 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
     await setVar(page, 'jeansState1', 'worn');
     await setVar(page, 'jeansState',  'worn');
     await setVar(page, 'rememberBottomOuter', 'jeans1');
-    await setVar(page, 'mc.beauty', 35);
+    await callSetup(page, `setup.Mc.setBeauty(35)`);
 
     expect(await callSetup(page, 'setup.Wardrobe.quickUndress("jeans")')).toBe(true);
     expect(await getVar(page, 'jeansState1')).toBe('not worn');
     expect(await getVar(page, 'rememberBottomOuter')).toBe('nojeans1');
-    expect(await getVar(page, 'mc.beauty')).toBe(35 - 5);
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(35 - 5);
 
     expect(await callSetup(page, 'setup.Wardrobe.canQuickRedress("jeans")')).toBe(true);
     expect(await callSetup(page, 'setup.Wardrobe.quickRedress("jeans")')).toBe(true);
     expect(await getVar(page, 'jeansState1')).toBe('worn');
     expect(await getVar(page, 'rememberBottomOuter')).toBe('jeans1');
-    expect(await getVar(page, 'mc.beauty')).toBe(35);
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(35);
   });
 
   test('currentBottomSlotName reports the worn outer-bottom or null', async ({ game: page }) => {
@@ -748,7 +748,7 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
     await setVar(page, 'tshirtState1', 'worn');
     await setVar(page, 'tshirtState',  'worn');
     await setVar(page, 'rememberTopOuter', 'tshirt1');
-    await setVar(page, 'mc.beauty', 30);
+    await callSetup(page, `setup.Mc.setBeauty(30)`);
     await startActiveHunt(page);
 
     await page.evaluate(() => jQuery('#statusOuterTop a').trigger('click'));
@@ -758,7 +758,7 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
      * tshirtState still "worn" and quickUndress no-ops. */
     expect(await getVar(page, 'tshirtState')).toBe('not worn');
     expect(await getVar(page, 'rememberTopOuter')).toBe('notshirt1');
-    expect(await getVar(page, 'mc.beauty')).toBe(30 - 5);
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(30 - 5);
 
     const html = await page.locator('#statusOuterTop').innerHTML();
     expect(html).toMatch(/img src="[^"]+\/empty\.jpg"/);
@@ -770,7 +770,7 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
     await setVar(page, 'tshirtState1', 'not worn');
     await setVar(page, 'tshirtState',  'not worn');
     await setVar(page, 'rememberTopOuter', 'notshirt1');
-    await setVar(page, 'mc.beauty', 25);
+    await callSetup(page, `setup.Mc.setBeauty(25)`);
     await startActiveHunt(page);
 
     await page.evaluate(() => jQuery('#statusOuterTop a').trigger('click'));
@@ -778,7 +778,7 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
     expect(await getVar(page, 'tshirtState1')).toBe('worn');
     expect(await getVar(page, 'tshirtState')).toBe('worn');
     expect(await getVar(page, 'rememberTopOuter')).toBe('tshirt1');
-    expect(await getVar(page, 'mc.beauty')).toBe(25 + 5);
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(25 + 5);
 
     const html = await page.locator('#statusOuterTop').innerHTML();
     expect(html).toMatch(/img src="[^"]+\/top\.jpg"/);
@@ -790,20 +790,20 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
     await setVar(page, 'tshirtState1', 'worn');
     await setVar(page, 'tshirtState',  'worn');
     await setVar(page, 'rememberTopOuter', 'tshirt1');
-    await setVar(page, 'mc.beauty', 30);
+    await callSetup(page, `setup.Mc.setBeauty(30)`);
     await startActiveHunt(page);
 
     // First click: take off
     await page.evaluate(() => jQuery('#statusOuterTop a').trigger('click'));
     expect(await getVar(page, 'tshirtState1')).toBe('not worn');
-    expect(await getVar(page, 'mc.beauty')).toBe(30 - 5);
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(30 - 5);
 
     // Second click on the now-empty slot: put back on
     await page.evaluate(() => jQuery('#statusOuterTop a').trigger('click'));
     expect(await getVar(page, 'tshirtState1')).toBe('worn');
     expect(await getVar(page, 'tshirtState')).toBe('worn');
     expect(await getVar(page, 'rememberTopOuter')).toBe('tshirt1');
-    expect(await getVar(page, 'mc.beauty')).toBe(30);
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(30);
   });
 
   /* The HUD shortcut gates on HuntController.isHuntActive() so it

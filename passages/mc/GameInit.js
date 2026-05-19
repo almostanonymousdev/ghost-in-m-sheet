@@ -105,7 +105,8 @@ setup.Game = (function () {
 			lvl: 0,
 			exp: 0,
 			dirty: 0,
-			beauty: 30
+			beautyBase: 30,
+			beautyModifier: 0
 		};
 
 		// --- Cursed home item ---------------------------------

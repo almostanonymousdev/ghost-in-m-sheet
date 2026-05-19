@@ -47,7 +47,7 @@ setup.Park = (function () {
 		startJoggingCooldown: function () {
 			setup.Cooldowns.start('jogging');
 		},
-		spendJoggingEnergy: function () {
+		removeJoggingEnergy: function () {
 			// Jogging consumes 2 energy at start and again on continue.
 			setup.Mc.removeEnergy(2);
 		},

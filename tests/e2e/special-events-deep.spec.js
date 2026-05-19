@@ -223,7 +223,7 @@ test.describe('Special events — Twins event mirror', () => {
   });
 
   test('twinsEventTriggered compares beautyRoll <= mc.beauty', async ({ game: page }) => {
-    await setVar(page, 'mc.beauty', 50);
+    await callSetup(page, `setup.Mc.setBeauty(50)`);
     expect(await callSetup(page, 'setup.Home.twinsEventTriggered(30)')).toBe(true);
     expect(await callSetup(page, 'setup.Home.twinsEventTriggered(50)')).toBe(true);
     expect(await callSetup(page, 'setup.Home.twinsEventTriggered(60)')).toBe(false);
