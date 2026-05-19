@@ -52,7 +52,7 @@ tools on/off. Each click refreshes the full HUD trio via
 <<refreshHuntHud>>, since the bait/overcharge state feeds back into
 the stats and contributor list. Renders whenever the shared hunt is
 active on HuntRun; the canBait predicate self-gates against hunts
-that have no $hunt. */
+with no active $run. */
 <<widget "huntActionBar">>
 	<<if setup.HuntController.isHuntActive()>>
 		<<if setup.HauntConditions.canBait()>>

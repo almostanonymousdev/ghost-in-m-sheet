@@ -138,8 +138,8 @@
             prowlCondition:     function (mc) { return mc.sanity <= 70; },
             prowlConditionText: "Can start a prowl if you have <= 70 sanity",
             onEnterHouse: function () {
-                /* Seed the rotation clock; realName is already "Mimic"
-                   from startHunt, so isMimicHunt() already returns true. */
+                /* Seed the rotation clock; $run.ghostName is already
+                   "Mimic", so isMimicHunt() already returns true. */
                 State.variables.lastChangeIntervalMimic = " ";
             }
         },
@@ -405,30 +405,15 @@
         return out;
     }
 
-    /* Lifecycle stages of $hunt.mode. Use HuntMode.X instead of magic
-       ints, and prefer the predicate helpers (isHunting, isPossessed, …)
-       to compare values. */
+    /* Lifecycle stages of the current hunt. Stored as the top-level
+       $huntMode integer (default 0 = NONE) and accessed through the
+       huntMode()/setHuntMode() helpers below. Prefer the predicate
+       helpers (isHunting, isPossessed, …) to comparing raw ints. */
     var HuntMode = Object.freeze({
-        NONE:      0,   // no hunt active (represented by $hunt === null)
+        NONE:      0,   // no hunt active
         ACTIVE:    2,   // player is inside the house, hunt in progress
         POSSESSED: 3    // hunt ended (manual exit, sanity-over, pills)
     });
-
-    /* Build a fresh $hunt object. All lifecycle-coupled hunt state
-       lives here so a single `$hunt = null` can clean it up instead
-       of unsetting each field. */
-    function buildHunt(name) {
-        var cat = setup.Ghosts.getByName(name);
-        var evIds = cat ? cat.evidence.map(function (e) { return e.id; }) : [];
-        return {
-            name:     name,     // visible name — rotates for Mimic hunts
-            realName: name,     // true identity — never changes during a hunt
-            evidence: evIds,    // evidence ids; DeleteEvidence shrinks this
-            room:     null,     // the ghost's favorite room (set in GhostStreet)
-            trapped:  false,    // $hunt.trapped replaces $ghostIsTrapped
-            mode:     HuntMode.ACTIVE
-        };
-    }
 
     /* Memoisation for active(): during a render it's called from every
        evidence tool, hoverHtml, CheckHuntStart, etc. The rebuild (catalogue
@@ -444,7 +429,7 @@
     /* Variables owned by this controller. Other controllers should
        query/mutate these only through the API methods below. */
     var OWNED_VARS = Object.freeze([
-        'hunt',
+        'huntMode',
         'prowlActivated', 'prowlActivationTime',
         'elapsedTimeProwl', 'prowlTimeRemain',
         'EMF5Check', 'SpiritboxCheck', 'GWBCheck', 'EctoglassCheck',
@@ -474,16 +459,10 @@
             return GHOSTS;
         },
 
-        /* The ghost currently being hunted. Returns a Ghost instance whose
-           static fields come from the catalogue entry named $hunt.name,
-           but whose `evidence` is rehydrated from $hunt.evidence (mutable
-           per hunt — DeleteEvidence prunes it; for Mimic hunts $hunt.name
-           rotates while $hunt.evidence stays the real Mimic set). null
+        /* The ghost currently being hunted. Returns a Ghost instance
+           keyed off $run.ghostName via setup.HuntController, with the
+           per-run evidence override (Fog of War etc.) applied. null
            when no hunt is active. Cached across calls; see activeCache. */
-        /* The active ghost. Delegates to setup.HuntController so both
-           regular witch contracts ($hunt) and hunts ($run.ghostName)
-           share one entry point; the controller calls into the helpers
-           below for the per-mode build. */
         active: function () {
             return setup.HuntController.activeGhost();
         },
@@ -553,21 +532,41 @@
             if (g) g.onEnterHouse();
         },
 
-        /* $hunt lifecycle. startHunt creates the object and clears
-           stale per-hunt ability flags. Use hunt() to read it — null
-           means "no hunt in progress". */
-        hunt:         function ()     { return State.variables.hunt || null; },
-        startHunt:    function (name) {
-            State.variables.hunt = buildHunt(name);
+        /* Hunt lifecycle. activateHunt() flips $huntMode to ACTIVE and
+           clears stale per-hunt ability flags. Called from
+           setup.HuntController.startHunt once $run is stamped. */
+        activateHunt: function () {
+            State.variables.huntMode = HuntMode.ACTIVE;
             setup.Ghosts.clearHuntFlags();
         },
 
-        /* Wipe the per-hunt ability flags that ride alongside $hunt but
-           can't be folded into it without chasing down every consumer.
-           $highpriestess burns on use but lingers if the player saved
-           between draw and use; $bansheeAbility / $cthulionAbility are
-           event-local and cleared by EventMC, but defensive wipes at
-           hunt start keep them from leaking across hunts. */
+        /* Test / cheat shortcut. Stamps a minimal $run with the named
+           ghost as both real identity and current disguise, copies in
+           the catalogue evidence, and flips $huntMode to ACTIVE.
+           Production hunt flow goes through setup.HuntController.startHunt
+           for the full floorplan / modifiers / starting-tools / event
+           bus setup; this helper exists so unit specs and the cheat
+           menu can park the player in an "active hunt" state without
+           spinning up a procedural run. */
+        startHunt: function (name) {
+            var ghost = setup.Ghosts.getByName(name);
+            if (!ghost) return false;
+            var V = State.variables;
+            if (!V.run || typeof V.run !== 'object') V.run = {};
+            V.run.ghostName    = name;
+            V.run.disguiseName = name;
+            V.run.evidence     = ghost.evidence.map(function (e) { return e.id; });
+            if (V.run.trapped === undefined) V.run.trapped = false;
+            setup.Ghosts.activateHunt();
+            return true;
+        },
+
+        /* Wipe the per-hunt ability flags that ride alongside the hunt
+           but live as their own top-level vars. $highpriestess burns on
+           use but lingers if the player saved between draw and use;
+           $bansheeAbility / $cthulionAbility are event-local and cleared
+           by EventMC, but defensive wipes at hunt start keep them from
+           leaking across hunts. */
         clearHuntFlags: function () {
             var V = State.variables;
             delete V.highpriestess;
@@ -576,22 +575,22 @@
         },
 
         /* Hunt-mode query/mutation helpers. Prefer these to raw
-           $hunt.mode comparisons — they keep the magic ints out of
+           $huntMode comparisons — they keep the magic ints out of
            passages and give each stage a readable predicate. */
-        huntMode:    function ()     { var h = State.variables.hunt; return h ? h.mode : HuntMode.NONE; },
-        setHuntMode: function (mode) { var h = State.variables.hunt; if (h) h.mode = mode; },
+        huntMode:    function ()     { return State.variables.huntMode || HuntMode.NONE; },
+        setHuntMode: function (mode) { State.variables.huntMode = mode; },
         isHunting:   function ()     { return this.huntMode() === HuntMode.ACTIVE; },
         isPossessed: function ()     { return this.huntMode() === HuntMode.POSSESSED; },
-        /* True for any stage past NONE — "a hunt object exists, regardless
-           of whether the player is inside the house or post-hunt". */
+        /* True for any stage past NONE — "a hunt is in progress or in
+           its post-mortem (possessed) phase". */
         isAnyMode:   function ()     { return this.huntMode() !== HuntMode.NONE; },
 
-        /* True when this hunt is actually a Mimic in disguise. Replaces
-           the $saveMimic flag: the Mimic's real identity lives in
-           $hunt.realName, while $hunt.name rotates through disguises. */
+        /* True when this hunt is actually a Mimic. $run.ghostName holds
+           the true identity (never rotates); $run.disguiseName rotates
+           through cover identities for display. */
         isMimicHunt: function () {
-            var h = State.variables.hunt;
-            return !!(h && h.realName === "Mimic");
+            var run = State.variables.run;
+            return !!(run && run.ghostName === "Mimic");
         },
 
         /* Info-collected flag helpers. Callers should never touch the
@@ -646,37 +645,40 @@
 
         /* Cheat-menu helpers (StoryCaption) */
         forceHuntGhost: function (g) {
-            var h = State.variables.hunt;
-            if (!h || !g) return;
-            var ids = g.evidence.map(function (e) { return e.id; });
-            h.name     = g.name;
-            h.realName = g.name;
-            h.evidence = ids;
-            /* During a procedural run the active ghost is sourced from
-               $run.ghostName (HuntController.activeGhost → _activeFromCatalogue),
-               not $hunt.name — so rewriting $hunt alone leaves the run still
-               pointing at the originally-rolled ghost. Mirror the override
-               onto $run as well so setup.Ghosts.active() and per-tick hunt
-               machinery pick up the cheat immediately. */
-            if (setup.HuntController
-                && typeof setup.HuntController.isActive === "function"
-                && setup.HuntController.isActive()) {
-                setup.HuntController.setField('ghostName', g.name);
-                setup.HuntController.setField('evidence', ids);
+            if (!g) return;
+            if (!setup.HuntController
+                || typeof setup.HuntController.isActive !== "function"
+                || !setup.HuntController.isActive()) {
+                return;
             }
+            var ids = g.evidence.map(function (e) { return e.id; });
+            setup.HuntController.setField('ghostName', g.name);
+            setup.HuntController.setField('evidence', ids);
+            setup.HuntController.setField('disguiseName', g.name);
         },
         huntName: function () {
-            var h = State.variables.hunt;
-            return h ? h.name : '';
+            var run = State.variables.run;
+            if (!run) return '';
+            return run.disguiseName || run.ghostName || '';
         },
         huntRealName: function () {
-            var h = State.variables.hunt;
-            return h && h.realName;
+            var run = State.variables.run;
+            return run ? (run.ghostName || null) : null;
         },
+        /* Raw template id of the ghost's current room (e.g. "kitchen",
+           "bedroomTwo"). The <<ghostRoom>> widget keys off this id to
+           emit a human-friendly label, so this MUST return the id, not
+           ghostRoomLabel()'s human string. Returns '' when no run. */
         huntRoomName: function () {
-            var h = State.variables.hunt;
-            if (h && h.room && h.room.name) { return h.room.name; }
-            return '';
+            if (!setup.HuntController) return '';
+            var roomId = setup.HuntController.ghostRoomId();
+            if (!roomId) return '';
+            var run = State.variables.run;
+            var rooms = (run && run.floorplan && run.floorplan.rooms) || [];
+            for (var i = 0; i < rooms.length; i++) {
+                if (rooms[i].id === roomId) return rooms[i].template || roomId;
+            }
+            return roomId;
         },
         /* True if the witch contract scheduled at least one
            evidence-removal for this hunt. Used by witch-end-contract
@@ -752,7 +754,7 @@
             var interval = (m >= 0 && m < 30) ? '0-29' : '30-59';
             if (interval !== V.lastChangeIntervalMimic) {
                 var name = ghostTypes[Math.floor(Math.random() * ghostTypes.length)];
-                if (V.hunt) { V.hunt.name = name; }
+                if (V.run) { V.run.disguiseName = name; }
                 V.currentIntervalMimic = interval;
                 V.lastChangeIntervalMimic = interval;
                 return name;
@@ -775,11 +777,11 @@
         /* Drop the Notebook's crossed-out-evidence overlay (set by
            the Tarot Knowledge card / Monkey Paw knowledge wish). The
            overlay is hunt-scoped, so the cursed-item shared-state
-           reset clears it on every fresh contract / hunt. */
+           reset clears it on every fresh hunt. */
         clearChosenEvidence: function () { delete State.variables.chosenEvidence; },
         huntEvidence: function () {
-            var h = State.variables.hunt;
-            return h && h.evidence ? h.evidence : [];
+            var run = State.variables.run;
+            return run && Array.isArray(run.evidence) ? run.evidence : [];
         },
         /* Read-only accessors for the per-hunt hidden-evidence slots
            the witch contract may have stashed; consumers that need to

@@ -29,32 +29,29 @@ test.describe('Companion result plans', () => {
   });
 
   test('pickRandomHuntEvidence returns null when no hunt is active', async ({ game: page }) => {
-    await page.evaluate(() => { SugarCube.State.variables.hunt = null; });
+    await page.evaluate(() => {
+      SugarCube.State.variables.huntMode = 0;
+      SugarCube.State.variables.run = null;
+    });
     const picked = await callSetup(page, 'setup.Companion.pickRandomHuntEvidence()');
     expect(picked).toBeNull();
   });
 
-  /* Regression: during a procedural run, Fog of War splices one of the
-     ghost's three evidences out of $run.evidence — but startHunt also
-     stamps $hunt.evidence with the *full* catalogue list. The companion
-     must roll from the trimmed run list, not the wider $hunt list, or
-     Plan3 can announce evidence the player can never actually find. */
-  test('pickRandomHuntEvidence picks from $run.evidence (not $hunt) when the two diverge', async ({ game: page }) => {
+  /* During a procedural run, Fog of War splices one of the ghost's
+     three evidences out of $run.evidence. pickRandomHuntEvidence must
+     roll from the trimmed run list, or Plan3 can announce evidence
+     the player can never actually find. */
+  test('pickRandomHuntEvidence picks from the trimmed $run.evidence', async ({ game: page }) => {
     await page.evaluate(() => {
-      // Roll a vanilla run, then simulate Fog of War by trimming
-      // $run.evidence to a single id while leaving $hunt.evidence
-      // (catalogue, all 3) intact.
       SugarCube.setup.HuntController.startHunt({ seed: 1 });
       SugarCube.setup.HuntController.setField('ghostName', 'Spirit');
+      SugarCube.setup.HuntController.setField('disguiseName', 'Spirit');
+      // Simulate Fog of War trimming the evidence list down to a single id.
       SugarCube.setup.HuntController.setField('evidence', ['emf']);
-      SugarCube.setup.Ghosts.startHunt('Spirit');
-      // $hunt.evidence is now ['emf','spiritbox','gwb'] from buildHunt;
-      // $run.evidence is ['emf'].
+      SugarCube.setup.Ghosts.setHuntMode(SugarCube.setup.Ghosts.HuntMode.ACTIVE);
     });
 
-    const huntEv = await callSetup(page, 'setup.Ghosts.huntEvidence()');
     const runEv = await callSetup(page, 'setup.HuntController.runEvidence()');
-    expect(huntEv.slice().sort()).toEqual(['emf', 'gwb', 'spiritbox']);
     expect(runEv).toEqual(['emf']);
 
     // 50 rolls; every result must come from $run.evidence (= just 'emf').
@@ -109,13 +106,17 @@ test.describe('Companion result plans', () => {
     await page.evaluate(() => {
       SugarCube.State.variables.chosenPlan = 'Plan4';
       SugarCube.State.variables.companion = { name: 'Alex' };
-      // Plan4 prints $hunt.room.name via <<ghostRoom>>; setupHunt pinned it.
+      // Plan4 prints the floor-plan room label via <<ghostRoom>>; setupHunt's
+      // procedural startHunt seeded the floorplan.
     });
     await goToPassage(page, 'CompanionResult');
     const text = await page.evaluate(() => document.querySelector('.passage').textContent);
     expect(text).toMatch(/favorite room/);
-    // <<ghostRoom>> emits the pinned room name.
-    expect(text.toLowerCase()).toMatch(/kitchen|hallway/);
+    // <<ghostRoom>> emits the room template id (lowercase). The procedural
+    // floorplan picks one of the real template ids — accept any of them.
+    expect(text.toLowerCase()).toMatch(
+      /kitchen|hallway|bedroom|bathroom|livingroom|basement|nursery|attic/
+    );
   });
 
   test('Plan3 result renders an evidence block matching the picked id', async ({ game: page }) => {

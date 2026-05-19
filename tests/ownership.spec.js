@@ -45,8 +45,11 @@ const UNOWNED_ALLOWLIST = new Set([
    then `delete`d. They never exist in fresh games and aren't
    owned by any controller. */
 const LEGACY_SAVE_VARS = new Set([
-	'ghostName', 'ghostEvidence', 'ghostRoom',
+	'ghost', 'ghostName', 'ghostEvidence', 'ghostRoom',
 	'ghostIsTrapped', 'ghostHuntingMode', 'saveMimic',
+	// v2-v5 $hunt bundle — folded onto $huntMode + $run by v6
+	// SaveMigration and deleted; never owned by any controller.
+	'hunt',
 	// Pre-bundle home event flags — folded into $succubusEvent /
 	// $tentacles / $webcam / $summoning by SaveMigration.
 	'succubusEventCD', 'succubusPCEventStage',

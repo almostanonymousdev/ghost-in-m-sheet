@@ -229,7 +229,10 @@ test.describe('Witch — passage rendering with mixed state', () => {
   test('WitchInside renders without error when no hunt is active', async ({ game: page }) => {
     await setVar(page, 'hours', 12);
     await setVar(page, 'firstVisitWitchShop', false);
-    await page.evaluate(() => { SugarCube.State.variables.hunt = null; });
+    await page.evaluate(() => {
+      SugarCube.State.variables.huntMode = 0;
+      SugarCube.State.variables.run = null;
+    });
     await goToPassage(page, 'WitchInside');
     await expectCleanPassage(page);
   });

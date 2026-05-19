@@ -17,8 +17,8 @@ const { goToPassage, setVar, getVar, resetGame } = require('./helpers');
  *      "regressions" look fine in console but lose every method.
  *   3. LEGACY MIGRATION — old saves stored hunt state as a scatter of
  *      flat $ghost / $ghostName / $ghostEvidence / etc. variables;
- *      SaveMigration consolidates them into $hunt. If that logic
- *      breaks, players with old saves silently lose progress.
+ *      SaveMigration folds them onto $huntMode + the $run bundle. If
+ *      that logic breaks, players with old saves silently lose progress.
  *
  * The "snapshot only what we care about" pattern keeps tests robust
  * against drift in timestamps, random nonces, and other state that
@@ -138,20 +138,21 @@ test.describe('Save/load round-trip', () => {
   });
 
   test('Ghost behaviour survives a save/load round-trip', async ({ game: page }) => {
-    // The codebase deliberately stores $hunt as plain serializable data
-    // (name, evidence ids, mode, ...) and projects to a Ghost instance
-    // on demand via setup.Ghosts.active() — see GhostController.js:447
-    // and the comment at line 441-446. That sidesteps class-rehydration
-    // entirely. The contract this test pins: after round-trip,
+    // The codebase deliberately stores hunt state as plain serializable
+    // data ($run.ghostName, $run.evidence ids, $huntMode integer, ...)
+    // and projects to a Ghost instance on demand via
+    // setup.Ghosts.active(). That sidesteps class-rehydration entirely.
+    // The contract this test pins: after round-trip,
     // setup.Ghosts.active() returns a working Ghost instance with the
     // same observable behaviour.
     await goToPassage(page, 'CityMap');
     await page.evaluate(() => {
       SugarCube.setup.HuntController.startHunt({ seed: 1 });
       SugarCube.setup.HuntController.setField('ghostName', 'Shade');
+      SugarCube.setup.HuntController.setField('disguiseName', 'Shade');
       const g = SugarCube.setup.Ghosts.getByName('Shade');
       SugarCube.setup.HuntController.setField('evidence', g.evidence.map(e => e.id));
-      SugarCube.setup.Ghosts.startHunt('Shade');
+      SugarCube.setup.Ghosts.setHuntMode(SugarCube.setup.Ghosts.HuntMode.ACTIVE);
     });
     await commitToSave(page);
 
@@ -197,13 +198,19 @@ test.describe('Save/load round-trip', () => {
     expect(restored).toEqual(live);
   });
 
-  test('legacy v1 save migrates flat $ghost* vars into $hunt via setup.applySaveDefaults', async ({ game: page }) => {
+  test('legacy v1 save migrates flat $ghost* vars onto $huntMode + $run via setup.applySaveDefaults', async ({ game: page }) => {
     await goToPassage(page, 'CityMap');
 
     const migrated = await page.evaluate(() => {
-      // The legacy shape, exactly as documented in
-      // passages/updates/SaveMigration.js lines 114-148.
+      // The legacy shape, exactly as documented in SaveMigration.js.
       const legacy = {
+        // A mid-hunt $run with the procedural fields already populated;
+        // SaveMigration patches in the ghost-side fields from the flat
+        // legacy vars.
+        run: {
+          seed: 1, number: 1, modifiers: [], loadout: null, objective: null,
+          floorplan: { rooms: [], edges: [], spawnRoomId: null }
+        },
         ghost:            { name: 'Shade', evidence: ['emf', 'temperature', 'gwb'] },
         ghostName:        'Shade',
         ghostEvidence:    ['emf', 'temperature', 'gwb'],
@@ -218,16 +225,18 @@ test.describe('Save/load round-trip', () => {
       return legacy;
     });
 
-    // New consolidated shape exists.
-    expect(migrated.hunt).toBeTruthy();
-    expect(migrated.hunt.name).toBe('Shade');
-    expect(migrated.hunt.realName).toBe('Shade');           // saveMimic=0 → realName == name
-    expect(migrated.hunt.evidence).toEqual(['emf', 'temperature', 'gwb']);
-    expect(migrated.hunt.mode).toBe(2);
-    expect(migrated.hunt.trapped).toBe(true);
-    expect(migrated.hunt.room).toEqual({ name: 'kitchen' });
+    // Mode lifted to top-level $huntMode.
+    expect(migrated.huntMode).toBe(2);
 
-    // Legacy fields deleted (they're documented as removed at lines 141-148).
+    // Ghost identity / evidence / trapped flag folded onto $run.
+    expect(migrated.run).toBeTruthy();
+    expect(migrated.run.ghostName).toBe('Shade');     // saveMimic=0 → real name = displayed name
+    expect(migrated.run.disguiseName).toBe('Shade');
+    expect(migrated.run.evidence).toEqual(['emf', 'temperature', 'gwb']);
+    expect(migrated.run.trapped).toBe(true);
+
+    // $hunt bundle and the flat legacy fields are deleted.
+    expect(migrated.hunt).toBeUndefined();
     for (const key of [
       'ghost', 'ghostName', 'ghostEvidence', 'ghostRoom',
       'ghostIsTrapped', 'ghostHuntingMode', 'saveMimic',
@@ -237,25 +246,63 @@ test.describe('Save/load round-trip', () => {
     }
   });
 
-  test('saveMimic=1 in legacy save preserves the visible name as Mimic-cover', async ({ game: page }) => {
+  test('saveMimic=1 in legacy save preserves the visible name as Mimic-cover on $run', async ({ game: page }) => {
     // The Mimic ghost masquerades as another ghost; legacy saves stored
     // the cover name in $ghostName and the real type in $saveMimic. The
-    // migration must preserve both: visible name vs. realName.
+    // migration must preserve both on $run: ghostName = real identity,
+    // disguiseName = displayed cover.
     await goToPassage(page, 'CityMap');
 
     const migrated = await page.evaluate(() => {
       const legacy = {
+        run: {
+          seed: 1, number: 1, modifiers: [], loadout: null, objective: null,
+          floorplan: { rooms: [], edges: [], spawnRoomId: null }
+        },
         ghostName:        'Shade',          // what the player saw
         ghostEvidence:    ['emf', 'gwb', 'glass'],
         ghostHuntingMode: 2,                // active hunt
         saveMimic:        1,                // it's actually a Mimic
       };
       SugarCube.setup.applySaveDefaults(legacy);
-      return legacy.hunt;
+      return legacy.run;
     });
 
-    expect(migrated.name).toBe('Shade');
-    expect(migrated.realName).toBe('Mimic');
+    expect(migrated.disguiseName).toBe('Shade');
+    expect(migrated.ghostName).toBe('Mimic');
+  });
+
+  test('legacy v5 $hunt bundle is flattened onto $huntMode + $run on load', async ({ game: page }) => {
+    // v2-v5 saves stored hunt state as a single $hunt object. v6
+    // removes the bundle: $hunt.mode lifts to top-level $huntMode and
+    // the per-hunt fields fold onto $run.
+    await goToPassage(page, 'CityMap');
+
+    const migrated = await page.evaluate(() => {
+      const legacy = {
+        run: {
+          seed: 9, number: 4, modifiers: [], loadout: null, objective: null,
+          floorplan: { rooms: [], edges: [], spawnRoomId: null }
+        },
+        hunt: {
+          name:     'Phantom',
+          realName: 'Mimic',
+          evidence: ['uvl', 'temperature', 'spiritbox'],
+          room:     { name: 'bedroom' },
+          trapped:  true,
+          mode:     2,
+        }
+      };
+      SugarCube.setup.applySaveDefaults(legacy);
+      return legacy;
+    });
+
+    expect(migrated.hunt).toBeUndefined();
+    expect(migrated.huntMode).toBe(2);
+    expect(migrated.run.ghostName).toBe('Mimic');
+    expect(migrated.run.disguiseName).toBe('Phantom');
+    expect(migrated.run.evidence).toEqual(['uvl', 'temperature', 'spiritbox']);
+    expect(migrated.run.trapped).toBe(true);
   });
 
   test('legacy $wish<Name> flags migrate into $monkeyPawLearned', async ({ game: page }) => {
@@ -517,10 +564,11 @@ test.describe('Save/load round-trip', () => {
   });
 
   test('SAVE_VERSION marker is at the hunt-aware schema version', async ({ game: page }) => {
-    // Bumped to 3 when the hunt-mode subsystem landed. Future
-    // downstream tooling can read this off save.metadata.version.
+    // v3 = hunt-mode subsystem landed. v6 = $hunt bundle removed
+    // (state folded onto $huntMode + $run). Future downstream tooling
+    // can read this off save.metadata.version.
     await goToPassage(page, 'CityMap');
     const v = await page.evaluate(() => SugarCube.setup.SAVE_VERSION);
-    expect(v).toBeGreaterThanOrEqual(3);
+    expect(v).toBeGreaterThanOrEqual(6);
   });
 });

@@ -32,7 +32,8 @@ setup.Game = (function () {
 			emf: { activated: 0, activationTime: 0 },
 			uvl: { activated: 0, activationTime: 0 }
 		};
-		s.hunt = null;
+		// $huntMode defaults to 0 (HuntMode.NONE) via the accessor;
+		// no explicit seed required.
 
 		// --- Active haunted house -----------------------------
 		// 'owaissa' | 'elm' | 'ironclad' | null. Replaces the old

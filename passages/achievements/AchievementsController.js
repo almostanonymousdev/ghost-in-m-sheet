@@ -179,8 +179,7 @@ setup.Achievements = setup.Achievements || {};
 				if (huntFlags && !huntFlags.caughtThisRun)    unlock('win.nocaught');
 				if (huntFlags && !huntFlags.toolsUsedThisRun) unlock('win.notools');
 
-				var hunt = (setup.Ghosts && setup.Ghosts.hunt && setup.Ghosts.hunt()) || null;
-				var realName = hunt && hunt.realName;
+				var realName = setup.Ghosts && setup.Ghosts.huntRealName && setup.Ghosts.huntRealName();
 				if (realName === 'Mimic') unlock('win.mimic');
 				if (realName)             unlock(bestiaryId(realName));
 			} else if (FR) {

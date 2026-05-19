@@ -82,7 +82,7 @@ test.describe('Ghost hunt conditions', () => {
     expect(await callSetup(page,
       'setup.Ghosts.getByName("Moroi").canProwl(SugarCube.State.variables.mc)')).toBe(true);
 
-    const evidence = await page.evaluate(() => SugarCube.State.variables.hunt.evidence);
+    const evidence = await page.evaluate(() => SugarCube.State.variables.run.evidence);
     expect(evidence).toContain('spiritbox');
 
     await goToPassage(page, 'HuntRun');

@@ -1,23 +1,11 @@
 const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, callSetup, getVar, setHuntMode } = require('./helpers');
+const { openGame, resetGame, callSetup, getVar } = require('./helpers');
 
 /* The Settings/Cheats dialog exposes a "Force ghost type" list (see
    GuiController.cheatGhostType). When the player picks a name, the
-   onChange handler calls setup.Ghosts.forceHuntGhost(ghost). Two distinct
-   bundles back the active ghost:
-
-     - $hunt.name / $hunt.evidence      — witch-contract phase, surfaced
-                                          via setup.Ghosts.huntName /
-                                          huntEvidence
-     - $run.ghostName / $run.evidence   — procedural hunt run, read by
-                                          HuntController.activeGhost
-                                          (the path setup.Ghosts.active()
-                                          delegates to during a run)
-
-   The cheat used to update only $hunt — so during an actual hunt run the
-   active ghost stayed pointed at the originally-rolled name, and the
-   cheat was a no-op for the most common use case. These specs pin both
-   the contract path and the hunt-run path. */
+   onChange handler calls setup.Ghosts.forceHuntGhost(ghost), which
+   rewrites $run.ghostName / $run.disguiseName / $run.evidence so the
+   active hunt now reads as the chosen catalogue entry. */
 test.describe('cheatGhostType — forceHuntGhost', () => {
   let page;
 
@@ -30,7 +18,8 @@ test.describe('cheatGhostType — forceHuntGhost', () => {
       if (SugarCube.setup.HuntController.isActive()) {
         SugarCube.setup.HuntController.end();
       }
-      SugarCube.State.variables.hunt = null;
+      SugarCube.State.variables.huntMode = 0;
+      SugarCube.State.variables.run = null;
     });
   });
 
@@ -42,36 +31,21 @@ test.describe('cheatGhostType — forceHuntGhost', () => {
     expect(names.length).toBe(18);
   });
 
-  test('no-op when no contract or hunt is active', async () => {
-    expect(await getVar(page, 'hunt')).toBeNull();
+  test('no-op when no hunt is active', async () => {
+    expect(await getVar(page, 'run')).toBeNull();
     await page.evaluate(() => {
       const g = SugarCube.setup.Ghosts.getByName('Banshee');
       SugarCube.setup.Ghosts.forceHuntGhost(g);
     });
-    expect(await getVar(page, 'hunt')).toBeNull();
-  });
-
-  test('contract phase: rewrites $hunt.name, realName, and evidence', async () => {
-    await setHuntMode(page, 1);
-    expect(await getVar(page, 'hunt.name')).toBe('Shade');
-
-    await page.evaluate(() => {
-      const g = SugarCube.setup.Ghosts.getByName('Banshee');
-      SugarCube.setup.Ghosts.forceHuntGhost(g);
-    });
-
-    expect(await getVar(page, 'hunt.name')).toBe('Banshee');
-    expect(await getVar(page, 'hunt.realName')).toBe('Banshee');
-    const ids = await getVar(page, 'hunt.evidence');
-    expect(ids.slice().sort()).toEqual(['glass', 'gwb', 'uvl']);
+    expect(await getVar(page, 'run')).toBeNull();
   });
 
   /* Regression: during a hunt run the active ghost is sourced from
-     $run.ghostName, not $hunt.name. Updating only $hunt left
-     setup.Ghosts.active() / HuntController.ghostName() / runEvidence()
-     all pointing at the originally-rolled ghost, so the cheat appeared
-     to do nothing. */
-  test('hunt run: also rewrites $run.ghostName, evidence, and active()', async () => {
+     $run.ghostName. The cheat must rewrite the $run fields (ghostName,
+     disguiseName, evidence) so setup.Ghosts.active() /
+     HuntController.ghostName() / runEvidence() all repoint at the
+     newly-chosen catalogue entry. */
+  test('hunt run: rewrites $run.ghostName, evidence, and active()', async () => {
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 42 }));
 
     const initialName = await callSetup(page, 'setup.HuntController.ghostName()');
@@ -91,8 +65,8 @@ test.describe('cheatGhostType — forceHuntGhost', () => {
       SugarCube.setup.Ghosts.getByName(name).evidence.map(e => e.id), target);
     expect(runEv.slice().sort()).toEqual(expected.slice().sort());
 
-    expect(await getVar(page, 'hunt.name')).toBe(target);
-    expect(await getVar(page, 'hunt.realName')).toBe(target);
+    expect(await getVar(page, 'run.ghostName')).toBe(target);
+    expect(await getVar(page, 'run.disguiseName')).toBe(target);
   });
 
   /* End-to-end through the settings onChange path: invoking the same
