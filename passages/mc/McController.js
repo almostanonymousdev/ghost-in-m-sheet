@@ -6,10 +6,8 @@
  * level-progress counters, and the possession meter).
  *
  * Any passage that previously read/wrote $mc.x directly should route
- * through setup.Mc. Every method comes in both a semantic shortcut
- * (setup.Mc.money(), setup.Mc.addMoney(n)) and a generic form
- * (setup.Mc.get('money'), setup.Mc.set('money', v), setup.Mc.add('money', n))
- * so mass rewrites can pick whichever fits best.
+ * through setup.Mc via its semantic accessors
+ * (setup.Mc.money(), setup.Mc.setMoney(v), setup.Mc.addMoney(n)).
  */
 /* Discrete results returned by setup.Mc.applySanityDelta. The
    addSanity widget compares against these to decide whether to fire
@@ -50,24 +48,14 @@ setup.Mc = (function () {
 	]);
 
 	function sv()  { return State.variables; }
-	function mc()  { return State.variables.mc; }
-
-	function get(field)        { return mc()[field]; }
-	function set(field, value) { mc()[field] = value; }
-	function add(field, delta) { mc()[field] += delta; }
 
 	var api = {
 		OWNED_VARS: OWNED_VARS,
-		mc: mc,
-
-		get: get,
-		set: set,
-		add: add,
 
 		// --- Fit percent shorthand ------------------------------
 		// $mc.fit is clamped to [0, 100]; plenty of callers that
 		// just display a bar divide by 100.
-		fitPct: function () { return mc().fit / 100; },
+		fitPct: function () { return sv().mc.fit / 100; },
 
 		// --- Beauty: split into base + modifier -----------------
 		// `beautyBase` is the immutable starting value seeded at
@@ -75,14 +63,14 @@ setup.Mc = (function () {
 		// tattoos, gym, piercings, ...) writes only `beautyModifier`.
 		// Reads come through beauty() so callers see the sum.
 		beauty: function () {
-			var m = mc();
+			var m = sv().mc;
 			return (m.beautyBase || 0) + (m.beautyModifier || 0);
 		},
 		setBeauty: function (v) {
-			mc().beautyModifier = v - (mc().beautyBase || 0);
+			sv().mc.beautyModifier = v - (sv().mc.beautyBase || 0);
 		},
 		addBeauty: function (n) {
-			mc().beautyModifier = (mc().beautyModifier || 0) + n;
+			sv().mc.beautyModifier = (sv().mc.beautyModifier || 0) + n;
 		},
 
 		// --- Penalty (sleep / assault debuff flag) --------------
@@ -101,7 +89,7 @@ setup.Mc = (function () {
 
 		// --- Earned-money accumulator (compound mutation) -------
 		earn: function (n) {
-			mc().money += n;
+			sv().mc.money += n;
 			sv().earnedMoney += n;
 		},
 
@@ -110,7 +98,7 @@ setup.Mc = (function () {
 		useEnergyDrink: function () {
 			if (sv().energyDrinkAmount > 0) {
 				sv().energyDrinkAmount -= 1;
-				mc().energy = mc().energyMax;
+				sv().mc.energy = sv().mc.energyMax;
 				return true;
 			}
 			return false;
@@ -139,7 +127,7 @@ setup.Mc = (function () {
 		// etc. XP grants. Returns true iff at least one level-up fired.
 		grantExp: function (amount) {
 			var s = sv();
-			var m = mc();
+			var m = s.mc;
 			m.exp += amount;
 			s.percentageOfLevel = Math.floor((m.exp / s.neededForNextLevel) * 100);
 			var leveled = false;
@@ -155,7 +143,7 @@ setup.Mc = (function () {
 
 		// --- Lust helpers --------------------------------------
 		clampLust: function () {
-			mc().lust = Number(mc().lust.toFixed(2));
+			sv().mc.lust = Number(sv().mc.lust.toFixed(2));
 		},
 
 		// --- addSanity widget core --------------------------------
@@ -165,7 +153,7 @@ setup.Mc = (function () {
 		// NORMAL otherwise.
 		applySanityDelta: function (delta) {
 			var R = setup.SanityDeltaResult;
-			var m = mc();
+			var m = sv().mc;
 			m.sanity += delta;
 			if (m.sanity >= m.sanityMax) {
 				m.sanity = m.sanityMax;
@@ -180,7 +168,7 @@ setup.Mc = (function () {
 
 		// --- addEnergy widget core --------------------------------
 		applyEnergyDelta: function (delta) {
-			var m = mc();
+			var m = sv().mc;
 			m.energy += delta;
 			if (m.energy >= m.energyMax) { m.energy = m.energyMax; }
 			if (m.energy <= 0)           { m.energy = 0; }
@@ -188,7 +176,7 @@ setup.Mc = (function () {
 
 		// --- addLust widget core --------------------------------
 		applyLustDelta: function (delta) {
-			var m = mc();
+			var m = sv().mc;
 			m.lust += delta;
 			if (m.lust >= m.lustMax) { m.lust = m.lustMax; }
 			if (m.lust <= 0)         { m.lust = 0; }
@@ -199,7 +187,7 @@ setup.Mc = (function () {
 		// Same shape as setup.Gym.applyFitnessGain, but the gym controller
 		// imports this method so both widgets share logic.
 		applyFitnessDelta: function (delta) {
-			var m = mc();
+			var m = sv().mc;
 			var previousFit = m.fit;
 			m.fit += delta;
 			var beautyIncrease = Math.floor(m.fit / 5) - Math.floor(previousFit / 5);
@@ -292,7 +280,7 @@ setup.Mc = (function () {
 	/* Trivial $mc.<field> accessors. Each row exposes the named root
 	   as a getter, "set"+Cap as a setter, and (where listed) "add" /
 	   "spend" mutators with the literal method name. */
-	setup.defineAccessors(api, mc, [
+	setup.defineAccessors(api, function () { return sv().mc; }, [
 		{ name: 'money',         add: 'addMoney',         spend: 'removeMoney' },
 		{ name: 'sanity',        add: 'addSanity',        spend: 'removeSanity' },
 		{ name: 'sanityMax' },
@@ -344,9 +332,9 @@ setup.Mc = (function () {
 	api.clearSanityCollapse = function () { sv().sanityCollapse = 0; };
 	api.isExhausted = function () { return sv().exhausted === 1; };
 	api.clearExhausted = function () { sv().exhausted = 0; };
-	api.lustPct = function () { return mc().lust / 100; };
-	api.sanityPct = function () { return mc().sanity / mc().sanityMax; };
-	api.energyPct = function () { return mc().energy / mc().energyMax; };
+	api.lustPct = function () { return sv().mc.lust / 100; };
+	api.sanityPct = function () { return sv().mc.sanity / sv().mc.sanityMax; };
+	api.energyPct = function () { return sv().mc.energy / sv().mc.energyMax; };
 	return api;
 })();
 
