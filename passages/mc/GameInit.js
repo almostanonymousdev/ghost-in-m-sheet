@@ -152,5 +152,15 @@ setup.Game = (function () {
 		s.pendingHuntHouseId = null;
 	}
 
-	return { initState: initState };
+	function resetPersistentCheats() {
+		// Reset all persistent cheats to their defaults when starting a new game
+		if (typeof settings !== 'undefined') {
+			settings.highlightRescueHouse = false;
+			settings.fastToolTimers = false;
+			settings.cheatTarotCard = "—";
+			settings.cheatGhostType = "—";
+		}
+	}
+
+	return { initState: initState, resetPersistentCheats: resetPersistentCheats };
 })();
