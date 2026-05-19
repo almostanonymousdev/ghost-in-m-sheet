@@ -249,19 +249,79 @@ test.describe('Special events — Twins event mirror', () => {
   });
 });
 
-test.describe('Special events — Spirit hunt-end hook', () => {
-  test('Spirit ghost has an onHuntEnd hook that resets the stage', async ({ game: page }) => {
+test.describe('Special events — Spirit hunt-end subscriber', () => {
+  test('Spirit subscribes to HUNT_END_GRACEFUL and resets the stage', async ({ game: page }) => {
     await setupHunt(page, 'Spirit');
     await setVar(page, 'ghostSpiritEventStage', 1);
-    await page.evaluate(() => SugarCube.setup.Ghosts.fireActiveHuntEnd());
+    await page.evaluate(() =>
+      SugarCube.setup.Hunt.emit(SugarCube.setup.Hunt.Event.HUNT_END_GRACEFUL)
+    );
     expect(await getVar(page, 'ghostSpiritEventStage')).toBe(0);
   });
 
   test('non-Spirit ghosts leave the spirit stage alone on hunt end', async ({ game: page }) => {
     await setupHunt(page, 'Shade');
     await setVar(page, 'ghostSpiritEventStage', 1);
-    await page.evaluate(() => SugarCube.setup.Ghosts.fireActiveHuntEnd());
+    await page.evaluate(() =>
+      SugarCube.setup.Hunt.emit(SugarCube.setup.Hunt.Event.HUNT_END_GRACEFUL)
+    );
     expect(await getVar(page, 'ghostSpiritEventStage')).toBe(1);
+  });
+});
+
+test.describe('Per-ghost hunt-bus subscribers', () => {
+  test('Mimic subscribes to HOUSE_ENTER and seeds the rotation clock', async ({ game: page }) => {
+    await setupHunt(page, 'Mimic');
+    await page.evaluate(() => { delete SugarCube.State.variables.lastChangeIntervalMimic; });
+    await page.evaluate(() =>
+      SugarCube.setup.Hunt.emit(SugarCube.setup.Hunt.Event.HOUSE_ENTER)
+    );
+    expect(await getVar(page, 'lastChangeIntervalMimic')).toBe(' ');
+  });
+
+  test('non-Mimic ghosts do not touch the rotation clock on HOUSE_ENTER', async ({ game: page }) => {
+    await setupHunt(page, 'Shade');
+    await page.evaluate(() => { delete SugarCube.State.variables.lastChangeIntervalMimic; });
+    await page.evaluate(() =>
+      SugarCube.setup.Hunt.emit(SugarCube.setup.Hunt.Event.HOUSE_ENTER)
+    );
+    expect(await getVar(page, 'lastChangeIntervalMimic')).toBeUndefined();
+  });
+
+  test('Mare on HOUSE_ENTER advances mareEventStart 0 → 1', async ({ game: page }) => {
+    await setupHunt(page, 'Mare');
+    await setVar(page, 'ghostMareEventStart', 0);
+    await page.evaluate(() =>
+      SugarCube.setup.Hunt.emit(SugarCube.setup.Hunt.Event.HOUSE_ENTER)
+    );
+    expect(await getVar(page, 'ghostMareEventStart')).toBe(1);
+  });
+
+  test('Mare HOUSE_ENTER is a no-op when stage is not 0 and GhostSpecialEventMare unplayed', async ({ game: page }) => {
+    await setupHunt(page, 'Mare');
+    await setVar(page, 'ghostMareEventStart', 2);
+    await page.evaluate(() =>
+      SugarCube.setup.Hunt.emit(SugarCube.setup.Hunt.Event.HOUSE_ENTER)
+    );
+    expect(await getVar(page, 'ghostMareEventStart')).toBe(2);
+  });
+
+  test('Twins on PROWL_EVENT stamps twinsEventActive', async ({ game: page }) => {
+    await setupHunt(page, 'The Twins');
+    await setVar(page, 'twinsEventActive', 0);
+    await page.evaluate(() =>
+      SugarCube.setup.Hunt.emit(SugarCube.setup.Hunt.Event.PROWL_EVENT)
+    );
+    expect(await getVar(page, 'twinsEventActive')).toBe(1);
+  });
+
+  test('non-Twins ghosts leave twinsEventActive alone on PROWL_EVENT', async ({ game: page }) => {
+    await setupHunt(page, 'Shade');
+    await setVar(page, 'twinsEventActive', 0);
+    await page.evaluate(() =>
+      SugarCube.setup.Hunt.emit(SugarCube.setup.Hunt.Event.PROWL_EVENT)
+    );
+    expect(await getVar(page, 'twinsEventActive')).toBe(0);
   });
 });
 

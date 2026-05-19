@@ -20,7 +20,7 @@
 <br><br>
 @@.backbtn;[[Continue|$return]]@@
 
-<<run setup.Ghosts.markActiveProwlEvent()>>
+<<run setup.Hunt.emit(setup.Hunt.Event.PROWL_EVENT)>>
 <<run setup.HauntedHouses.rearmHuntTimer()>>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>

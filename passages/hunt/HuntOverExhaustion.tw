@@ -17,8 +17,8 @@
  * ish item was stolen, only the shirt/bra grabs are offered. With both
  * exposed and both kinds available, any covering grab is shown. "Leave
  * with nothing" is hidden whenever the gate forces a covering grab. */
-<<run setup.Ghosts.markActiveProwlEvent()>>
-<<run setup.Ghosts.fireActiveHuntEnd()>>
+<<run setup.Hunt.emit(setup.Hunt.Event.PROWL_EVENT)>>
+<<run setup.Hunt.emit(setup.Hunt.Event.HUNT_END_GRACEFUL)>>
 <<run setup.HauntedHouses.endHunt()>>
 <<run setup.HauntedHouses.cleanupAfterHunt()>>
 
