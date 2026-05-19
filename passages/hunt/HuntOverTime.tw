@@ -1,6 +1,6 @@
 :: HuntOverTime [nobr] {"position":"1500,1350","size":"100,100"}
-<<run setup.Ghosts.markActiveProwlEvent()>>
-<<run setup.Ghosts.fireActiveHuntEnd()>>
+<<run setup.Hunt.emit(setup.Hunt.Event.PROWL_EVENT)>>
+<<run setup.Hunt.emit(setup.Hunt.Event.HUNT_END_GRACEFUL)>>
 <<image "ui/img/dawn.jpg" { width: "100%" }>>
 <br>
 @@.mc-thoughts; Ah, dawn. The ghostly activity has ceased. I need to summarize the gathered information and identify the type of ghost.@@<br>

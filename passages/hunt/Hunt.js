@@ -45,7 +45,22 @@ setup.Hunt = (function () {
 		AFTERSHOCK_COOLDOWN: 'aftershock-cooldown',
 		BAIT_ALLOWED:      'bait-allowed',
 		SANITY_EVENT_MULT: 'sanity-event-mult',
-		ADDRESS:           'address'
+		ADDRESS:           'address',
+		/* Player picked a haunted house off GhostStreet. Fires once per
+		   hunt, before any in-house ticks. Per-ghost setup that needs to
+		   run on house entry (Mimic disguise clock, Mare event-stage
+		   progression) subscribes here. */
+		HOUSE_ENTER:       'house-enter',
+		/* Player walked out of a hunt without being caught or losing all
+		   sanity (HuntOverTime / HuntOverExhaustion / HuntOverManual).
+		   Distinct from END (which fires on every termination including
+		   caught / possessed / sanity-out) so per-ghost cleanup that
+		   should only run on a peaceful exit can subscribe here. */
+		HUNT_END_GRACEFUL: 'hunt-end-graceful',
+		/* A prowl event resolved against the player (NudityEvent, prayer
+		   miss, freeze, on-tick prowl, hunt-over passages). Ghosts that
+		   stamp a per-prowl flag (e.g. Twins) subscribe here. */
+		PROWL_EVENT:       'prowl-event'
 	});
 
 	var listeners = {};

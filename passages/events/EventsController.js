@@ -24,8 +24,52 @@ setup.Events = (function () {
 	// stage values.
 	var sanityThresholds = [0, 4, 5, 5, 6, 7, 8, 9];
 
+	/* Typed key constants. Mirroring setup.Hunt.Event: lookups throw
+	   on unknown keys so a typo surfaces at the call site instead of
+	   silently returning undefined / []. Callers may reference these
+	   instead of bare strings. */
+	var EventKey = Object.freeze({
+		BRAIN:  'brain',
+		TITS:   'tits',
+		ASS:    'ass',
+		BOTTOM: 'bottom',
+		MOUTH:  'mouth',
+		PUSSY:  'pussy',
+		ANAL:   'anal'
+	});
+
+	var ClothingKey = Object.freeze({
+		JEANS:     'jeans',
+		JEANS_NP:  'jeansNP',
+		SHORTS:    'shorts',
+		SKIRT:     'skirt',
+		SKIRT_NP:  'skirtNP',
+		PANTIES:   'panties',
+		NAKED:     'naked',
+		TSHIRT:    'tshirt',
+		TSHIRT_NB: 'tshirtNB',
+		BRA:       'bra',
+		NO_BRA:    'noBra',
+		PRISON:    'prison',
+		MIND:      'mind'
+	});
+
+	var CthulionTier = Object.freeze({ S1: 1, S2: 2, S3: 3, COMPANION: 4 });
+
+	var EVENT_KEY_SET    = Object.freeze(Object.keys(EventKey).reduce(function (s, k) { s[EventKey[k]] = true; return s; }, {}));
+	var CLOTHING_KEY_SET = Object.freeze(Object.keys(ClothingKey).reduce(function (s, k) { s[ClothingKey[k]] = true; return s; }, {}));
+
+	function assertKnownKey(key, validSet, label) {
+		if (!validSet[key]) {
+			throw new Error('setup.Events: unknown ' + label + ' "' + key + '"');
+		}
+	}
+
 	// Body-part keys in escalation order (event numbers 1-7).
-	var bodyPartKeys = ['brain', 'tits', 'ass', 'bottom', 'mouth', 'pussy', 'anal'];
+	var bodyPartKeys = [
+		EventKey.BRAIN, EventKey.TITS, EventKey.ASS, EventKey.BOTTOM,
+		EventKey.MOUTH, EventKey.PUSSY, EventKey.ANAL
+	];
 
 	function pickRandom(arr) {
 		if (!arr || !arr.length) return null;
@@ -34,11 +78,13 @@ setup.Events = (function () {
 
 	// Cthulion ability video pools, keyed by tier (1-4). Tiers 1-3
 	// are sanity-banded (used by SaveEventPassage); tier 4 is used by
-	// the companion-help passages (BlakeHelp, BrookHelp).
+	// the companion-help passages (BlakeHelp, BrookHelp). Tier 0 is
+	// the "no Cthulion this sanity band" sentinel.
 	var CTHULION_RANGES = { 1: 7, 2: 5, 3: 8, 4: 10 };
 	function cthulionVideos(tier) {
+		if (tier === 0) return [];
 		var n = CTHULION_RANGES[tier];
-		if (!n) return [];
+		if (!n) throw new Error('setup.Events: unknown Cthulion tier "' + tier + '"');
 		var out = [];
 		for (var i = 0; i < n; i++) {
 			out.push("characters/ghosts/cthulion/" + tier + "." + i + ".mp4");
@@ -57,6 +103,9 @@ setup.Events = (function () {
 
 	return {
 		OWNED_VARS: OWNED_VARS,
+		EventKey: EventKey,
+		ClothingKey: ClothingKey,
+		CthulionTier: CthulionTier,
 		// --- Companion state -------------------------------------
 		hasCompanionOnPlan1: function () {
 			return setup.Companion.isCompanionFlagActive() && setup.Companion.chosenPlan() === 'Plan1';
@@ -133,6 +182,7 @@ setup.Events = (function () {
 		   resets State.temporary on every passage navigation, and
 		   PassageDone defensively resets it again. */
 		initEvent: function (eventKey) {
+			assertKnownKey(eventKey, EVENT_KEY_SET, 'event key');
 			sv().argForRandomizer = eventKey;
 			this.markEventTriggered();
 		},
@@ -152,8 +202,9 @@ setup.Events = (function () {
 		* or the location-appropriate array from { owaissa, elm }.
 		*/
 		getVideos: function (eventKey, clothingType) {
+			assertKnownKey(eventKey, EVENT_KEY_SET, 'event key');
+			assertKnownKey(clothingType, CLOTHING_KEY_SET, 'clothing key');
 			var ev = setup.EventVideos[eventKey];
-			if (!ev) return [];
 			var entry = ev[clothingType];
 			if (!entry) return [];
 			if (Array.isArray(entry)) return entry;
@@ -175,7 +226,8 @@ setup.Events = (function () {
 		* and return the matching video list.
 		*/
 		bottomClothingVideos: function (eventKey) {
-			if (setup.HauntedHouses.isIronclad()) return this.getVideos(eventKey, 'prison');
+			assertKnownKey(eventKey, EVENT_KEY_SET, 'event key');
+			if (setup.HauntedHouses.isIronclad()) return this.getVideos(eventKey, ClothingKey.PRISON);
 			var jw = setup.Wardrobe.worn(setup.WardrobeSlot.JEANS);
 			var sw = setup.Wardrobe.worn(setup.WardrobeSlot.SHORTS);
 			var kw = setup.Wardrobe.worn(setup.WardrobeSlot.SKIRT);
@@ -184,19 +236,19 @@ setup.Events = (function () {
 
 			if (jw) {
 				if (ev.jeansNP && !pw)
-					return this.getVideos(eventKey, 'jeansNP');
-				return this.getVideos(eventKey, 'jeans');
+					return this.getVideos(eventKey, ClothingKey.JEANS_NP);
+				return this.getVideos(eventKey, ClothingKey.JEANS);
 			}
 			if (sw)
-				return this.getVideos(eventKey, 'shorts');
+				return this.getVideos(eventKey, ClothingKey.SHORTS);
 			if (kw) {
 				if (!pw && ev.skirtNP)
-					return this.getVideos(eventKey, 'skirtNP');
-				return this.getVideos(eventKey, 'skirt');
+					return this.getVideos(eventKey, ClothingKey.SKIRT_NP);
+				return this.getVideos(eventKey, ClothingKey.SKIRT);
 			}
 			// No outerwear → underwear / naked branch
-			if (pw) return this.getVideos(eventKey, 'panties');
-			return this.getVideos(eventKey, 'naked');
+			if (pw) return this.getVideos(eventKey, ClothingKey.PANTIES);
+			return this.getVideos(eventKey, ClothingKey.NAKED);
 		},
 
 		/*
@@ -204,18 +256,19 @@ setup.Events = (function () {
 		* and return the matching video list.
 		*/
 		topClothingVideos: function (eventKey) {
-			if (setup.HauntedHouses.isIronclad()) return this.getVideos(eventKey, 'prison');
+			assertKnownKey(eventKey, EVENT_KEY_SET, 'event key');
+			if (setup.HauntedHouses.isIronclad()) return this.getVideos(eventKey, ClothingKey.PRISON);
 			var ts = setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT);
 			var br = setup.Wardrobe.worn(setup.WardrobeSlot.BRA);
 			var ev = setup.EventVideos[eventKey];
 
 			if (ts) {
 				if (ev.tshirtNB && !br)
-					return this.getVideos(eventKey, 'tshirtNB');
-				return this.getVideos(eventKey, 'tshirt');
+					return this.getVideos(eventKey, ClothingKey.TSHIRT_NB);
+				return this.getVideos(eventKey, ClothingKey.TSHIRT);
 			}
-			if (br && ev.bra) return this.getVideos(eventKey, 'bra');
-			if (ev.noBra)     return this.getVideos(eventKey, 'noBra');
+			if (br && ev.bra) return this.getVideos(eventKey, ClothingKey.BRA);
+			if (ev.noBra)     return this.getVideos(eventKey, ClothingKey.NO_BRA);
 			return [];
 		},
 
@@ -227,11 +280,10 @@ setup.Events = (function () {
 		videoListForEvent: function (eventKey) {
 			this.initEvent(eventKey);
 			var ev = setup.EventVideos[eventKey];
-			if (!ev) return [];
 			if (ev._type === 'flat')   return ev.mind || [];
 			if (ev._type === 'top')    return this.topClothingVideos(eventKey);
 			if (ev._type === 'bottom') return this.bottomClothingVideos(eventKey);
-			return [];
+			throw new Error('setup.Events: EventVideos["' + eventKey + '"] has unknown _type "' + ev._type + '"');
 		},
 
 		/*
@@ -255,6 +307,7 @@ setup.Events = (function () {
 		* same as the original `nobr` widget body.
 		*/
 		eventTextFor: function (bodyPart, tier) {
+			assertKnownKey(bodyPart, EVENT_KEY_SET, 'event key');
 			var entries = setup.EventText && setup.EventText[bodyPart];
 			if (!entries) return '';
 			var match = null;
@@ -302,17 +355,23 @@ setup.Events = (function () {
 		*   stage 4 "explicit"  → 'pussy' ∪ 'anal'
 		*/
 		saveEventBottomVideos: function (stage) {
-			if (stage === 1) return this.bottomClothingVideos('ass');
-			if (stage === 2) return this.bottomClothingVideos('bottom');
+			if (stage !== 1 && stage !== 2 && stage !== 3 && stage !== 4) {
+				throw new Error('setup.Events: unknown SaveEvent stage "' + stage + '"');
+			}
+			if (stage === 1) return this.bottomClothingVideos(EventKey.ASS);
+			if (stage === 2) return this.bottomClothingVideos(EventKey.BOTTOM);
 			if (stage === 4) {
-				return this.bottomClothingVideos('pussy')
-					.concat(this.bottomClothingVideos('anal'));
+				return this.bottomClothingVideos(EventKey.PUSSY)
+					.concat(this.bottomClothingVideos(EventKey.ANAL));
 			}
 			return [];
 		},
 		saveEventTopVideos: function (stage) {
-			if (stage === 1) return this.topClothingVideos('tits');
-			if (stage === 3) return this.topClothingVideos('mouth');
+			if (stage !== 1 && stage !== 2 && stage !== 3 && stage !== 4) {
+				throw new Error('setup.Events: unknown SaveEvent stage "' + stage + '"');
+			}
+			if (stage === 1) return this.topClothingVideos(EventKey.TITS);
+			if (stage === 3) return this.topClothingVideos(EventKey.MOUTH);
 			return [];
 		},
 

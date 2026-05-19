@@ -73,7 +73,6 @@ test.describe('Possession — Mimic ghost rotation', () => {
     expect(typeof result).toBe('string');
     expect(result).not.toBe('Mimic');
     expect(await getVar(page, 'lastChangeIntervalMimic')).toBe('0-29');
-    expect(await getVar(page, 'currentIntervalMimic')).toBe('0-29');
   });
 
   test('rollMimicType returns null when interval unchanged', async ({ game: page }) => {
@@ -85,7 +84,6 @@ test.describe('Possession — Mimic ghost rotation', () => {
       return SugarCube.setup.Posession.rollMimicType(names);
     });
     expect(result).toBeNull();
-    expect(await getVar(page, 'currentIntervalMimic')).toBe('0-29');
   });
 
   test('rollMimicType distinguishes 0-29 and 30-59 intervals', async ({ game: page }) => {
@@ -100,7 +98,7 @@ test.describe('Possession — Mimic ghost rotation', () => {
     expect(await getVar(page, 'lastChangeIntervalMimic')).toBe('30-59');
   });
 
-  test('rollMimicType updates $hunt.name to the rolled identity', async ({ game: page }) => {
+  test('rollMimicType updates $run.disguiseName to the rolled identity', async ({ game: page }) => {
     await setupHunt(page, 'Mimic');
     await setVar(page, 'minutes', 20);
     await page.evaluate(() => { delete SugarCube.State.variables.lastChangeIntervalMimic; });
@@ -108,9 +106,9 @@ test.describe('Possession — Mimic ghost rotation', () => {
       const names = SugarCube.setup.Ghosts.names({ exclude: ['Mimic'] });
       return SugarCube.setup.Posession.rollMimicType(names);
     });
-    expect(await getVar(page, 'hunt.name')).toBe(rolled);
-    // realName stays Mimic
-    expect(await getVar(page, 'hunt.realName')).toBe('Mimic');
+    expect(await getVar(page, 'run.disguiseName')).toBe(rolled);
+    // ghostName stays Mimic — that's the true identity, disguiseName rotates.
+    expect(await getVar(page, 'run.ghostName')).toBe('Mimic');
   });
 
   test('Mimic passage runs rollMimicType when active mimic hunt', async ({ game: page }) => {

@@ -75,8 +75,8 @@ setup.Companion = (function () {
 		'isCompChosen',
 		'chosenPlan', 'chosenPlanActivated', 'chosenPlanActivatedTime',
 		'chanceToSuccess',
-		'isCompRoomChosen', 'currentGhostPassage', 'filteredGhostPassages',
-		'randomGhostPassage', 'showComp',
+		'chanceToAttack',
+		'isCompRoomChosen', 'randomGhostPassage', 'showComp',
 		'transFirstStage', 'transPicture', 'transStart',
 		'aliceWorkDone',
 		'meetAlice',
@@ -656,12 +656,12 @@ setup.Companion = (function () {
 			return "mechanics/gwb/" + setup.Rng.intInclusive(1, 18) + ".jpg";
 		},
 		/* Pick a random evidence type id from the current hunt.
-		   Used by the Plan3 "look for evidence" result. During a
-		   procedural hunt run prefer $run.evidence (the post-modifier
-		   pool — Fog of War splices one of $hunt.evidence's three out,
-		   so $hunt.evidence and $run.evidence diverge). Falls back to
-		   $hunt.evidence for witch-contract / classic flows where no
-		   run is active. */
+		   Used by the Plan3 "look for evidence" result. Prefer the
+		   post-modifier $run.evidence pool — Fog of War can splice one
+		   of the catalogue evidences out, so the run pool can be a
+		   subset of the catalogue list. Falls back to the catalogue's
+		   raw evidence list (huntEvidence reads the same $run field
+		   but returns [] when no run is active). */
 		pickRandomHuntEvidence: function () {
 			var ev = null;
 			if (setup.HuntController
@@ -694,8 +694,6 @@ setup.Companion = (function () {
 				.filter(function (id) { return id !== current; });
 			var pick = setup.Rng.pickFrom(rooms);
 			if (!pick) return;
-			State.variables.currentGhostPassage = current;
-			State.variables.filteredGhostPassages = rooms;
 			State.variables.randomGhostPassage = pick;
 		},
 

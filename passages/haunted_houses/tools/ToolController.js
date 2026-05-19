@@ -347,7 +347,15 @@
         },
         /* Unlock the haunted-house detector. Set by witch purchase. */
         buyDetector:     function () { State.variables.boughtDetector = 1; },
-        detectorBought:  function () { return State.variables.boughtDetector !== undefined; }
+        detectorBought:  function () { return State.variables.boughtDetector !== undefined; },
+        /* Pure-read predicate: is this timed tool currently flagged
+           active? Unlike setup.tickTimedTool, does NOT side-effect on
+           expiry — callers that just want to sample state without
+           consuming the activation window use this. */
+        isActivated: function (tool) {
+            var t = State.variables.tools;
+            return !!(t && t[tool] && t[tool].activated);
+        }
     };
 
     /* <<toolCheck tool>> -- thin macro that delegates to the controller
@@ -588,15 +596,6 @@ setup.searchableRooms.forEach(function (room) {
      * signature every haunted-house tool / event passage already calls. */
     setup.isGhostHere = function (houses) {
         return setup.HuntController.isGhostHere(houses);
-    };
-    setup._isGhostHereInClassic = function (houses) {
-        var h = setup.Ghosts.hunt();
-        if (!h || !h.room || !h.room.name) return false;
-        var cur = passage();
-        return setup.hauntedPassages.some(function (e) {
-            if (houses && houses.indexOf(e.house) === -1) return false;
-            return e.passage === cur && e.bgRoom === h.room.name;
-        });
     };
 
     /* Shared equipment-tier chance table used by the gwb / plasm / spiritbox

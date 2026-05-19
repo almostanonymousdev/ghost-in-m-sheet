@@ -41,8 +41,7 @@
             description: "Spirit is a rather shy ghost. Unlike others, if it doesn't achieve its goal, it will relentlessly follow its victim. However, once it gets what it wants, it will vanish and cease to disturb, leaving its target in peace.",
             prowlCondition:     function (mc) { return mc.lust >= 30; },
             prowlConditionText: "Can start a prowl if you have >= 30 lust",
-            walkHomePassage:   "GhostSpecialEventSpirit",
-            onHuntEnd:         function () { setup.SpecialEvent.clearSpiritEventStage(); }
+            walkHomePassage:   "GhostSpecialEventSpirit"
         },
         {
             name: "Poltergeist", image: "poltergeist.webp",
@@ -136,12 +135,7 @@
             hint: "Mimic always has an extra evidence -- ectoplasm",
             description: "Mimic is a ghost that can mimic nearly all the abilities of other ghosts, making it extremely unpredictable and difficult to identify. Additionally, The Mimic always has an extra evidence -- ectoplasm. Although ectoplasm is not considered evidence for identifying the ghost, its presence can aid in its identification.",
             prowlCondition:     function (mc) { return mc.sanity <= 70; },
-            prowlConditionText: "Can start a prowl if you have <= 70 sanity",
-            onEnterHouse: function () {
-                /* Seed the rotation clock; realName is already "Mimic"
-                   from startHunt, so isMimicHunt() already returns true. */
-                State.variables.lastChangeIntervalMimic = " ";
-            }
+            prowlConditionText: "Can start a prowl if you have <= 70 sanity"
         },
         {
             name: "The Twins", image: "the-twins.webp",
@@ -149,8 +143,7 @@
             hint: "",
             description: "",
             prowlCondition:     function (mc) { return mc.lust >= 30; },
-            prowlConditionText: "Can start a prowl if you have >= 30 lust",
-            prowlEventFlag:     "twinsEventActive"
+            prowlConditionText: "Can start a prowl if you have >= 30 lust"
         },
         {
             name: "Wraith", image: "wraith.webp",
@@ -167,14 +160,7 @@
             hint: "Mare visits your house while you sleep",
             description: "Mare visits my house while I sleep. It's quite easy to get rid of; I just need to sprinkle holy water in the room where I sleep. It becomes more aggressive each day, so it's best not to delay. Although, someone online mentioned that it might stop haunting after a few days.",
             prowlCondition:     function (mc) { return mc.lust >= 30; },
-            prowlConditionText: "Can start a prowl if you have >= 30 lust",
-            onEnterHouse: function () {
-                if (setup.SpecialEvent.mareEventStart() === 0) {
-                    setup.SpecialEvent.setMareEventStart(1);
-                } else if (State.hasPlayed("GhostSpecialEventMare")) {
-                    setup.SpecialEvent.setMareEventStart(4);
-                }
-            }
+            prowlConditionText: "Can start a prowl if you have >= 30 lust"
         },
         {
             name: "Cthulion", image: "cthulion.webp",
@@ -252,7 +238,6 @@
         this.goHomePassage        = cfg.goHomePassage        || null;   // Myling: "GhostSpecialEventMyling"
         this.companionHuntPassage = cfg.companionHuntPassage || null;   // Myling: "GhostSpecialEventMylingTwo"
         this.sanityEventLossRange = cfg.sanityEventLossRange || [1, 5]; // Oni:    [3, 8]
-        this.prowlEventFlag        = cfg.prowlEventFlag        || null;   // Twins:  "twinsEventActive"
 
         /* Sensor-glitch chance denominators (1/N per tool reading). */
         this.emfGlitchChance         = cfg.emfGlitchChance         || 0; // Raiju: 3
@@ -269,9 +254,6 @@
         /* Extra video clips this ghost contributes to the cursed-activity
            video pool (widgetText). */
         this.cursedActivityVideos = cfg.cursedActivityVideos || null;
-
-        if (typeof cfg.onHuntEnd    === "function") this.onHuntEnd    = cfg.onHuntEnd;
-        if (typeof cfg.onEnterHouse === "function") this.onEnterHouse = cfg.onEnterHouse;
     }
 
     /* All "have I read about this ghost in Ghostopedia yet?" flags share
@@ -353,21 +335,6 @@
         return r[0] + Math.floor(Math.random() * (r[1] - r[0] + 1));
     };
 
-    /* If this ghost has a per-hunt-event marker flag (e.g. Twins →
-       $twinsEventActive), set it to 1. Called from HuntOver* and the
-       NudityEvent passages so the flag doesn't need inline name branching. */
-    Ghost.prototype.markProwlEvent = function () {
-        if (this.prowlEventFlag) State.variables[this.prowlEventFlag] = 1;
-    };
-
-    /* Default hook — Spirit overrides this to reset $ghostSpiritEventStage
-       at graceful hunt ends. */
-    Ghost.prototype.onHuntEnd = function () {};
-
-    /* Default hook fired from GhostStreet when the player enters a haunted
-       house. Mare/Mimic override to advance their per-hunt progression. */
-    Ghost.prototype.onEnterHouse = function () {};
-
     /* Sensor-glitch rolls — return true when the tool should display a
        bogus reading this tick. Default denominators are 0 (no glitches);
        Raiju overrides via cfg.emfGlitchChance / cfg.temperatureGlitchChance. */
@@ -405,30 +372,15 @@
         return out;
     }
 
-    /* Lifecycle stages of $hunt.mode. Use HuntMode.X instead of magic
-       ints, and prefer the predicate helpers (isHunting, isPossessed, …)
-       to compare values. */
+    /* Lifecycle stages of the current hunt. Stored as the top-level
+       $huntMode integer (default 0 = NONE) and accessed through the
+       huntMode()/setHuntMode() helpers below. Prefer the predicate
+       helpers (isHunting, isPossessed, …) to comparing raw ints. */
     var HuntMode = Object.freeze({
-        NONE:      0,   // no hunt active (represented by $hunt === null)
+        NONE:      0,   // no hunt active
         ACTIVE:    2,   // player is inside the house, hunt in progress
         POSSESSED: 3    // hunt ended (manual exit, sanity-over, pills)
     });
-
-    /* Build a fresh $hunt object. All lifecycle-coupled hunt state
-       lives here so a single `$hunt = null` can clean it up instead
-       of unsetting each field. */
-    function buildHunt(name) {
-        var cat = setup.Ghosts.getByName(name);
-        var evIds = cat ? cat.evidence.map(function (e) { return e.id; }) : [];
-        return {
-            name:     name,     // visible name — rotates for Mimic hunts
-            realName: name,     // true identity — never changes during a hunt
-            evidence: evIds,    // evidence ids; DeleteEvidence shrinks this
-            room:     null,     // the ghost's favorite room (set in GhostStreet)
-            trapped:  false,    // $hunt.trapped replaces $ghostIsTrapped
-            mode:     HuntMode.ACTIVE
-        };
-    }
 
     /* Memoisation for active(): during a render it's called from every
        evidence tool, hoverHtml, CheckHuntStart, etc. The rebuild (catalogue
@@ -444,7 +396,7 @@
     /* Variables owned by this controller. Other controllers should
        query/mutate these only through the API methods below. */
     var OWNED_VARS = Object.freeze([
-        'hunt',
+        'huntMode',
         'prowlActivated', 'prowlActivationTime',
         'elapsedTimeProwl', 'prowlTimeRemain',
         'EMF5Check', 'SpiritboxCheck', 'GWBCheck', 'EctoglassCheck',
@@ -457,7 +409,7 @@
         'knowledgeUsed', 'chosenEvidence',
         'deleteOneEvidence', 'deleteSecondEvidence', 'deleteThirdEvidence',
         'hiddenEvidence', 'hiddenEvidence1', 'hiddenEvidence2',
-        'lastChangeIntervalMimic', 'currentIntervalMimic',
+        'lastChangeIntervalMimic',
         'twinsEventActive', 'twinsEvent',
         'highpriestess', 'bansheeAbility', 'cthulionAbility',
         'ghostTypeSelected'
@@ -474,16 +426,10 @@
             return GHOSTS;
         },
 
-        /* The ghost currently being hunted. Returns a Ghost instance whose
-           static fields come from the catalogue entry named $hunt.name,
-           but whose `evidence` is rehydrated from $hunt.evidence (mutable
-           per hunt — DeleteEvidence prunes it; for Mimic hunts $hunt.name
-           rotates while $hunt.evidence stays the real Mimic set). null
+        /* The ghost currently being hunted. Returns a Ghost instance
+           keyed off $run.ghostName via setup.HuntController, with the
+           per-run evidence override (Fog of War etc.) applied. null
            when no hunt is active. Cached across calls; see activeCache. */
-        /* The active ghost. Delegates to setup.HuntController so both
-           regular witch contracts ($hunt) and hunts ($run.ghostName)
-           share one entry point; the controller calls into the helpers
-           below for the per-mode build. */
         active: function () {
             return setup.HuntController.activeGhost();
         },
@@ -531,43 +477,44 @@
             return null;
         },
 
-        /* Shorthand for "if a hunt is active, call markProwlEvent on the
-           ghost". Saves passages from the active()-null dance. */
-        markActiveProwlEvent: function () {
-            var g = setup.Ghosts.active();
-            if (g) g.markProwlEvent();
-        },
-        /* Fires the active ghost's onHuntEnd hook on graceful hunt exits
-           (HuntOverManual / HuntOverTime). Default is a no-op; Spirit uses
-           it to reset $ghostSpiritEventStage. */
-        fireActiveHuntEnd: function () {
-            var g = setup.Ghosts.active();
-            if (g) g.onHuntEnd();
-        },
-
-        /* Fires the active ghost's onEnterHouse hook when the player picks a
-           house in GhostStreet. Default is a no-op; Mare/Mimic override it
-           to advance their per-hunt progression. */
-        fireActiveOnEnterHouse: function () {
-            var g = setup.Ghosts.active();
-            if (g) g.onEnterHouse();
-        },
-
-        /* $hunt lifecycle. startHunt creates the object and clears
-           stale per-hunt ability flags. Use hunt() to read it — null
-           means "no hunt in progress". */
-        hunt:         function ()     { return State.variables.hunt || null; },
-        startHunt:    function (name) {
-            State.variables.hunt = buildHunt(name);
+        /* Hunt lifecycle. activateHunt() flips $huntMode to ACTIVE and
+           clears stale per-hunt ability flags. Called from
+           setup.HuntController.startHunt once $run is stamped. */
+        activateHunt: function () {
+            State.variables.huntMode = HuntMode.ACTIVE;
             setup.Ghosts.clearHuntFlags();
         },
 
-        /* Wipe the per-hunt ability flags that ride alongside $hunt but
-           can't be folded into it without chasing down every consumer.
-           $highpriestess burns on use but lingers if the player saved
-           between draw and use; $bansheeAbility / $cthulionAbility are
-           event-local and cleared by EventMC, but defensive wipes at
-           hunt start keep them from leaking across hunts. */
+        /* Test / cheat shortcut. Stamps a minimal $run with the named
+           ghost as both real identity and current disguise, copies in
+           the catalogue evidence, and flips $huntMode to ACTIVE.
+           Production hunt flow goes through setup.HuntController.start
+           for the full floorplan / modifiers / starting-tools / event
+           bus setup; this helper exists so unit specs and the cheat
+           menu can park the player in an "active hunt" state without
+           spinning up a procedural run.
+
+           The `cheat` prefix marks this as cheat/test-only — see
+           tests/cheat-method-lint.spec.js, which forbids production
+           passages from calling any setup.X.cheat* method outside the
+           cheat dialog. */
+        cheatStartHunt: function (name) {
+            var ghost = setup.Ghosts.getByName(name);
+            if (!ghost) return false;
+            setup.HuntController.cheatStampMinimalRun({
+                ghostName: name,
+                evidence:  ghost.evidence.map(function (e) { return e.id; })
+            });
+            setup.Ghosts.activateHunt();
+            return true;
+        },
+
+        /* Wipe the per-hunt ability flags that ride alongside the hunt
+           but live as their own top-level vars. $highpriestess burns on
+           use but lingers if the player saved between draw and use;
+           $bansheeAbility / $cthulionAbility are event-local and cleared
+           by EventMC, but defensive wipes at hunt start keep them from
+           leaking across hunts. */
         clearHuntFlags: function () {
             var V = State.variables;
             delete V.highpriestess;
@@ -576,22 +523,21 @@
         },
 
         /* Hunt-mode query/mutation helpers. Prefer these to raw
-           $hunt.mode comparisons — they keep the magic ints out of
+           $huntMode comparisons — they keep the magic ints out of
            passages and give each stage a readable predicate. */
-        huntMode:    function ()     { var h = State.variables.hunt; return h ? h.mode : HuntMode.NONE; },
-        setHuntMode: function (mode) { var h = State.variables.hunt; if (h) h.mode = mode; },
+        huntMode:    function ()     { return State.variables.huntMode || HuntMode.NONE; },
+        setHuntMode: function (mode) { State.variables.huntMode = mode; },
         isHunting:   function ()     { return this.huntMode() === HuntMode.ACTIVE; },
         isPossessed: function ()     { return this.huntMode() === HuntMode.POSSESSED; },
-        /* True for any stage past NONE — "a hunt object exists, regardless
-           of whether the player is inside the house or post-hunt". */
+        /* True for any stage past NONE — "a hunt is in progress or in
+           its post-mortem (possessed) phase". */
         isAnyMode:   function ()     { return this.huntMode() !== HuntMode.NONE; },
 
-        /* True when this hunt is actually a Mimic in disguise. Replaces
-           the $saveMimic flag: the Mimic's real identity lives in
-           $hunt.realName, while $hunt.name rotates through disguises. */
+        /* True when this hunt is actually a Mimic. $run.ghostName holds
+           the true identity (never rotates); $run.disguiseName rotates
+           through cover identities for display. */
         isMimicHunt: function () {
-            var h = State.variables.hunt;
-            return !!(h && h.realName === "Mimic");
+            return setup.HuntController.field('ghostName') === "Mimic";
         },
 
         /* Info-collected flag helpers. Callers should never touch the
@@ -644,38 +590,37 @@
             if (count >= 3) s.deleteThirdEvidence = 1;
         },
 
-        /* Cheat-menu helpers (StoryCaption) */
-        forceHuntGhost: function (g) {
-            var h = State.variables.hunt;
-            if (!h || !g) return;
-            var ids = g.evidence.map(function (e) { return e.id; });
-            h.name     = g.name;
-            h.realName = g.name;
-            h.evidence = ids;
-            /* During a procedural run the active ghost is sourced from
-               $run.ghostName (HuntController.activeGhost → _activeFromCatalogue),
-               not $hunt.name — so rewriting $hunt alone leaves the run still
-               pointing at the originally-rolled ghost. Mirror the override
-               onto $run as well so setup.Ghosts.active() and per-tick hunt
-               machinery pick up the cheat immediately. */
-            if (setup.HuntController
-                && typeof setup.HuntController.isActive === "function"
-                && setup.HuntController.isActive()) {
-                setup.HuntController.setField('ghostName', g.name);
-                setup.HuntController.setField('evidence', ids);
+        /* Cheat-menu helpers (StoryCaption). The `cheat` prefix marks
+           these as cheat-only — tests/cheat-method-lint.spec.js
+           restricts the call sites. */
+        cheatForceHuntGhost: function (g) {
+            if (!g) return;
+            if (!setup.HuntController
+                || typeof setup.HuntController.isActive !== "function"
+                || !setup.HuntController.isActive()) {
+                return;
             }
+            var ids = g.evidence.map(function (e) { return e.id; });
+            setup.HuntController.setField('ghostName', g.name);
+            setup.HuntController.setField('evidence', ids);
+            setup.HuntController.setField('disguiseName', g.name);
         },
         huntName: function () {
-            var h = State.variables.hunt;
-            return h ? h.name : '';
+            return setup.HuntController.field('disguiseName')
+                || setup.HuntController.field('ghostName')
+                || '';
         },
         huntRealName: function () {
-            var h = State.variables.hunt;
-            return h && h.realName;
+            return setup.HuntController.field('ghostName') || null;
         },
+        /* Human-friendly label for the ghost's current room
+           ("Bedroom Upstairs", "Kitchen"). Resolves through the floor-plan
+           template catalogue; returns '' when no run is active. The
+           <<ghostRoom>> widget lowercases the result. */
         huntRoomName: function () {
-            var h = State.variables.hunt;
-            if (h && h.room && h.room.name) { return h.room.name; }
+            if (setup.HuntController && typeof setup.HuntController.ghostRoomLabel === 'function') {
+                return setup.HuntController.ghostRoomLabel();
+            }
             return '';
         },
         /* True if the witch contract scheduled at least one
@@ -752,12 +697,10 @@
             var interval = (m >= 0 && m < 30) ? '0-29' : '30-59';
             if (interval !== V.lastChangeIntervalMimic) {
                 var name = ghostTypes[Math.floor(Math.random() * ghostTypes.length)];
-                if (V.hunt) { V.hunt.name = name; }
-                V.currentIntervalMimic = interval;
+                setup.HuntController.setField('disguiseName', name);
                 V.lastChangeIntervalMimic = interval;
                 return name;
             }
-            V.currentIntervalMimic = interval;
             return null;
         },
         // twinsEvent is registered with setup.Cooldowns at the
@@ -775,11 +718,11 @@
         /* Drop the Notebook's crossed-out-evidence overlay (set by
            the Tarot Knowledge card / Monkey Paw knowledge wish). The
            overlay is hunt-scoped, so the cursed-item shared-state
-           reset clears it on every fresh contract / hunt. */
+           reset clears it on every fresh hunt. */
         clearChosenEvidence: function () { delete State.variables.chosenEvidence; },
         huntEvidence: function () {
-            var h = State.variables.hunt;
-            return h && h.evidence ? h.evidence : [];
+            var ev = setup.HuntController.field('evidence');
+            return Array.isArray(ev) ? ev : [];
         },
         /* Read-only accessors for the per-hunt hidden-evidence slots
            the witch contract may have stashed; consumers that need to
@@ -811,6 +754,68 @@
     ]);
     setup.Cooldowns.registerDaily('twinsEvent');
     setup.Ghosts = api;
+
+    /* Per-ghost behaviour on hunt-bus events.
+     *
+     * Each ghost-specific reaction (Spirit clearing its event stage,
+     * Mimic seeding the disguise clock, Mare advancing its progression,
+     * Twins stamping its prowl flag) lives here as a small subscriber
+     * keyed on the active ghost's real name. Replaces the old onHuntEnd /
+     * onEnterHouse / prowlEventFlag fields that used to sit on each
+     * GHOST_CONFIG entry. Adding a new per-ghost reaction means appending
+     * one block below; the catalogue stays purely declarative.
+     *
+     * Registration is deferred to :storyready because Tweego concatenates
+     * passages/ghosts/ before passages/hunt/, so setup.Hunt isn't yet
+     * defined when this IIFE runs. */
+    $(document).one(':storyready', function () {
+        if (!setup.Hunt || !setup.Hunt.Event) {
+            console.error('GhostController: setup.Hunt missing at :storyready; per-ghost subscriptions skipped.');
+            return;
+        }
+        var E = setup.Hunt.Event;
+
+        function activeRealName() {
+            return setup.Ghosts.huntRealName();
+        }
+
+        /* Spirit: reset its event-stage tracker when the hunt ends without
+           a catch (HuntOverTime / HuntOverExhaustion / HuntOverManual emit
+           HUNT_END_GRACEFUL; HuntOverSanity intentionally does not). */
+        setup.Hunt.on(E.HUNT_END_GRACEFUL, function () {
+            if (activeRealName() !== 'Spirit') return;
+            setup.SpecialEvent.clearSpiritEventStage();
+        });
+
+        /* Mimic: seed the rotation clock when entering the haunted house
+           so the next tick rolls a fresh disguise. $run.ghostName is
+           already "Mimic" by this point, so isMimicHunt() returns true. */
+        setup.Hunt.on(E.HOUSE_ENTER, function () {
+            if (activeRealName() !== 'Mimic') return;
+            State.variables.lastChangeIntervalMimic = " ";
+        });
+
+        /* Mare: advance the multi-day Mare event chain on house entry.
+           Stage 0 → 1 on first encounter; once the player has read the
+           initial GhostSpecialEventMare passage, subsequent entries jump
+           straight to stage 4. */
+        setup.Hunt.on(E.HOUSE_ENTER, function () {
+            if (activeRealName() !== 'Mare') return;
+            if (setup.SpecialEvent.mareEventStart() === 0) {
+                setup.SpecialEvent.setMareEventStart(1);
+            } else if (State.hasPlayed("GhostSpecialEventMare")) {
+                setup.SpecialEvent.setMareEventStart(4);
+            }
+        });
+
+        /* The Twins: stamp the per-prowl event flag. PROWL_EVENT fires
+           from HuntOver*, NudityEvent, FreezeHunt, PrayHunt -- anywhere
+           the player resolves a prowl. */
+        setup.Hunt.on(E.PROWL_EVENT, function () {
+            if (activeRealName() !== 'The Twins') return;
+            State.variables.twinsEventActive = 1;
+        });
+    });
 })();
 
 /* Ghost-lust meter shown by the seduce-ghost minigame; the bare

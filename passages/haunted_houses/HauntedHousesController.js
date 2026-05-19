@@ -65,9 +65,9 @@ setup.HauntedHouses = (function () {
 		// through setup.Rooms.byId() rather than reaching into State
 		// directly.
 		//
-		// Ghost-room shuffle interval gates ($currentIntervalRoom,
-		// $lastChangeIntervalRoom) are owned by HuntController, which
-		// owns shuffleGhostRoom and the run lifecycle that resets them.
+		// Ghost-room shuffle interval gate ($lastChangeIntervalRoom) is
+		// owned by HuntController, which owns shuffleGhostRoom and the
+		// run lifecycle that resets it.
 	]);
 
 	var api = {

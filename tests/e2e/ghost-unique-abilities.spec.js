@@ -30,7 +30,7 @@ test.describe('Ghost unique abilities — Phantom, Goryo, Deogen, Jinn', () => {
     await goToPassage(page, 'HuntRun');
 
     const canTurnOff = await page.evaluate(() =>
-      SugarCube.State.variables.hunt.name !== 'Phantom'
+      SugarCube.State.variables.run.disguiseName !== 'Phantom'
     );
     expect(canTurnOff).toBe(true);
     await expectCleanPassage(page);
@@ -40,14 +40,17 @@ test.describe('Ghost unique abilities — Phantom, Goryo, Deogen, Jinn', () => {
 
   test('Goryo: ghost room never changes', async ({ game: page }) => {
     await setupHunt(page, 'Goryo');
-    const initialRoom = await getVar(page, 'hunt.room.name');
+    const getRoom = () => page.evaluate(() =>
+      SugarCube.setup.HuntController.ghostRoomLabel()
+    );
+    const initialRoom = await getRoom();
 
     for (const min of [5, 25, 45]) {
       await setVar(page, 'minutes', min);
       await setVar(page, 'lastChangeIntervalRoom', '');
       await goToPassage(page, 'ChangeGhostRoom');
 
-      const room = await getVar(page, 'hunt.room.name');
+      const room = await getRoom();
       expect(room, `Goryo room changed at minute ${min}`).toBe(initialRoom);
     }
 
@@ -59,8 +62,8 @@ test.describe('Ghost unique abilities — Phantom, Goryo, Deogen, Jinn', () => {
     await setupHunt(page, 'Spirit');
 
     const canChangeRoom = await page.evaluate(() => {
-      const h = SugarCube.State.variables.hunt;
-      return h && h.name !== 'Goryo' && !h.trapped;
+      const run = SugarCube.State.variables.run;
+      return !!run && run.disguiseName !== 'Goryo' && !run.trapped;
     });
     expect(canChangeRoom).toBe(true);
   });
@@ -116,13 +119,13 @@ test.describe('Ghost unique abilities — Phantom, Goryo, Deogen, Jinn', () => {
     await setupHunt(page, 'Deogen');
 
     const deogenCatchesHidden = await page.evaluate(() => {
-      const isDeogen = SugarCube.State.variables.hunt.name === 'Deogen';
+      const isDeogen = SugarCube.State.variables.run.disguiseName === 'Deogen';
       return isDeogen === true; // isDeogen === isHidden
     });
     expect(deogenCatchesHidden).toBe(true);
 
     const deogenMissesNotHidden = await page.evaluate(() => {
-      const isDeogen = SugarCube.State.variables.hunt.name === 'Deogen';
+      const isDeogen = SugarCube.State.variables.run.disguiseName === 'Deogen';
       return isDeogen === false; // isDeogen === isHidden
     });
     expect(deogenMissesNotHidden).toBe(false);

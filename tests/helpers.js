@@ -138,27 +138,27 @@ function setVar(page, varName, value) {
 }
 
 /**
- * Set $hunt.mode (0 = none/null-hunt, 2 = active, 3 = possessed).
- * Auto-creates a stub hunt for non-zero modes so tests can exercise
+ * Set $huntMode (0 = none, 2 = active, 3 = possessed).
+ * Auto-creates a stub $run for non-zero modes so tests can exercise
  * mode transitions without calling setupHunt first.
  */
 function setHuntMode(page, mode) {
   return page.evaluate((m) => {
     const V = SugarCube.State.variables;
     if (m === 0) {
-      V.hunt = null;
+      V.huntMode = 0;
+      V.run = null;
       return;
     }
-    if (!V.hunt) SugarCube.setup.Ghosts.startHunt('Shade');
-    V.hunt.mode = m;
+    if (!V.run || !V.run.ghostName) SugarCube.setup.Ghosts.cheatStartHunt('Shade');
+    V.huntMode = m;
   }, mode);
 }
 
-/** Read $hunt.mode (0 when no hunt is active). */
+/** Read $huntMode (0 when no hunt is active). */
 function getHuntMode(page) {
   return page.evaluate(() => {
-    const h = SugarCube.State.variables.hunt;
-    return h ? h.mode : 0;
+    return SugarCube.State.variables.huntMode || 0;
   });
 }
 

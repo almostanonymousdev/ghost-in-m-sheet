@@ -34,11 +34,20 @@
 	//       $pendingHuntHouseId, $currentsearchRogue →
 	//       $currentsearchHunt, and the "rogue-" prefix is stripped
 	//       from static house ids ('rogue-owaissa' → 'owaissa', etc.).
-	//   v6: $companion stopped being a per-pick clone of the active
-	//       companion's stat row -- it's now a {name} marker, and
-	//       the per-companion $brook/... rows are the single source
-	//       of truth for sanity/lust/chanceToAttack/etc. Old clone
-	//       fields get ported back onto the backing row on load.
+	//   v6: two unrelated shape changes landed together.
+	//       (a) $hunt bundle removed. Hunt-lifecycle state lives on
+	//           top-level $huntMode (the integer formerly at
+	//           $hunt.mode) and per-hunt ghost name / evidence /
+	//           favourite-room / trapped-flag fold into the $run
+	//           bundle as ghostName / evidence / favouriteRoomName /
+	//           trapped (plus a new disguiseName for Mimic display
+	//           rotation).
+	//       (b) $companion stopped being a per-pick clone of the
+	//           active companion's stat row -- it's now a {name}
+	//           marker, and the per-companion $brook/... rows are
+	//           the single source of truth for sanity/lust/
+	//           chanceToAttack/etc. Old clone fields get ported
+	//           back onto the backing row on load.
 	var SAVE_VERSION = 6;
 	setup.SAVE_VERSION = SAVE_VERSION;
 
@@ -274,37 +283,71 @@
 			delete vars[oldKey];
 		});
 
-		// Older saves stored hunt state as a scatter of variables
-		// ($ghost, $ghostName, $ghostEvidence, $ghostRoom, $ghostIsTrapped,
-		// $ghostHuntingMode, $saveMimic). Consolidate into $hunt so
-		// setup.Ghosts.active()/hunt() can read a single object.
-		// Legacy mode 1 (CONTRACT) is dropped — contracts no longer
-		// gate hunts, so any pre-entry contract collapses to "no hunt".
-		if (vars.hunt === undefined) {
-			var legacyName = undefined;
-			var legacyEvidence = undefined;
-			if (vars.ghost && typeof vars.ghost === 'object') {
-				if (typeof vars.ghost.name === 'string') legacyName = vars.ghost.name;
-				if (Array.isArray(vars.ghost.evidence)) legacyEvidence = vars.ghost.evidence.slice();
-				delete vars.ghost;
+		// Older saves stored hunt state as a scatter of top-level
+		// variables ($ghost, $ghostName, $ghostEvidence, $ghostRoom,
+		// $ghostIsTrapped, $ghostHuntingMode, $saveMimic). The v2-v5
+		// shape briefly consolidated them onto a $hunt bundle; v6
+		// flattens the bundle back out: $hunt.mode lives at top-level
+		// $huntMode, and the per-hunt ghost name / real-name (Mimic
+		// disguise) / evidence / trapped-flag move into the $run
+		// bundle (ghostName / disguiseName / evidence / trapped),
+		// which setup.Ghosts.active() now reads through. Legacy mode
+		// 1 (CONTRACT) is dropped — contracts no longer gate hunts,
+		// so any pre-entry contract collapses to "no hunt".
+		var legacyName = undefined;
+		var legacyRealName = undefined;
+		var legacyEvidence = undefined;
+		var legacyTrapped = false;
+		var legacyMode = 0;
+		if (vars.hunt && typeof vars.hunt === 'object') {
+			if (typeof vars.hunt.name === 'string') legacyName = vars.hunt.name;
+			if (typeof vars.hunt.realName === 'string') legacyRealName = vars.hunt.realName;
+			if (Array.isArray(vars.hunt.evidence)) legacyEvidence = vars.hunt.evidence.slice();
+			legacyTrapped = vars.hunt.trapped === true;
+			if (typeof vars.hunt.mode === 'number') legacyMode = vars.hunt.mode;
+		}
+		if (vars.ghost && typeof vars.ghost === 'object') {
+			if (legacyName === undefined && typeof vars.ghost.name === 'string') legacyName = vars.ghost.name;
+			if (legacyEvidence === undefined && Array.isArray(vars.ghost.evidence)) legacyEvidence = vars.ghost.evidence.slice();
+		}
+		if (legacyName === undefined && typeof vars.ghostName === 'string') legacyName = vars.ghostName;
+		if (legacyEvidence === undefined && Array.isArray(vars.ghostEvidence)) legacyEvidence = vars.ghostEvidence.slice();
+		if (legacyMode === 0 && typeof vars.ghostHuntingMode === 'number') legacyMode = vars.ghostHuntingMode;
+		if (legacyMode === 1) legacyMode = 0;
+		if (!legacyTrapped && vars.ghostIsTrapped === 1) legacyTrapped = true;
+		if (legacyRealName === undefined) {
+			legacyRealName = vars.saveMimic === 1 ? 'Mimic' : legacyName;
+		}
+
+		if (vars.huntMode === undefined) {
+			vars.huntMode = legacyName && legacyMode !== 0 ? legacyMode : 0;
+		}
+
+		// Fold the legacy ghost identity / evidence / trapped flag
+		// into $run when a hunt was actually active on the save. The
+		// $run bundle's other fields (floorplan / currentRoomId /
+		// modifiers / etc.) only exist on saves that already had a
+		// $run, so we only patch the ghost-side fields here.
+		// $run.ghostName is the *real* identity; $run.disguiseName is
+		// the currently-displayed name (only differs for Mimic). Old
+		// $hunt mapped name=display, realName=real — flip them.
+		if (vars.run && typeof vars.run === 'object') {
+			if (legacyRealName && vars.run.ghostName === undefined) {
+				vars.run.ghostName = legacyRealName;
 			}
-			if (legacyName === undefined && typeof vars.ghostName === 'string') legacyName = vars.ghostName;
-			if (legacyEvidence === undefined && Array.isArray(vars.ghostEvidence)) legacyEvidence = vars.ghostEvidence.slice();
-			var legacyMode = typeof vars.ghostHuntingMode === 'number' ? vars.ghostHuntingMode : 0;
-			if (legacyMode === 1) legacyMode = 0;
-			if (legacyName && legacyMode !== 0) {
-				vars.hunt = {
-					name:     legacyName,
-					realName: vars.saveMimic === 1 ? 'Mimic' : legacyName,
-					evidence: legacyEvidence || [],
-					room:     vars.ghostRoom || null,
-					trapped:  vars.ghostIsTrapped === 1,
-					mode:     legacyMode
-				};
-			} else {
-				vars.hunt = null;
+			if (legacyName && vars.run.disguiseName === undefined) {
+				vars.run.disguiseName = legacyName;
+			}
+			if (legacyEvidence && vars.run.evidence === undefined) {
+				vars.run.evidence = legacyEvidence;
+			}
+			if (legacyTrapped && vars.run.trapped === undefined) {
+				vars.run.trapped = true;
 			}
 		}
+
+		delete vars.hunt;
+		delete vars.ghost;
 		delete vars.ghostName;
 		delete vars.ghostEvidence;
 		delete vars.ghostRoom;

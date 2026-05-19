@@ -165,8 +165,8 @@ setup.Achievements = setup.Achievements || {};
 		   catches activation within a tick of it happening. */
 		setup.Hunt.on(E.TICK, function () {
 			if (!huntFlags) return;
-			var t = sv().tools;
-			if (t && ((t.emf && t.emf.activated) || (t.uvl && t.uvl.activated))) {
+			if (setup.ToolController.isActivated('emf')
+				|| setup.ToolController.isActivated('uvl')) {
 				huntFlags.toolsUsedThisRun = true;
 			}
 		});
@@ -179,8 +179,7 @@ setup.Achievements = setup.Achievements || {};
 				if (huntFlags && !huntFlags.caughtThisRun)    unlock('win.nocaught');
 				if (huntFlags && !huntFlags.toolsUsedThisRun) unlock('win.notools');
 
-				var hunt = (setup.Ghosts && setup.Ghosts.hunt && setup.Ghosts.hunt()) || null;
-				var realName = hunt && hunt.realName;
+				var realName = setup.Ghosts && setup.Ghosts.huntRealName && setup.Ghosts.huntRealName();
 				if (realName === 'Mimic') unlock('win.mimic');
 				if (realName)             unlock(bestiaryId(realName));
 			} else if (FR) {
