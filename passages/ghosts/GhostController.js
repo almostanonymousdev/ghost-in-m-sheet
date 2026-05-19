@@ -409,7 +409,7 @@
         'knowledgeUsed', 'chosenEvidence',
         'deleteOneEvidence', 'deleteSecondEvidence', 'deleteThirdEvidence',
         'hiddenEvidence', 'hiddenEvidence1', 'hiddenEvidence2',
-        'lastChangeIntervalMimic', 'currentIntervalMimic',
+        'lastChangeIntervalMimic',
         'twinsEventActive', 'twinsEvent',
         'highpriestess', 'bansheeAbility', 'cthulionAbility',
         'ghostTypeSelected'
@@ -698,11 +698,9 @@
             if (interval !== V.lastChangeIntervalMimic) {
                 var name = ghostTypes[Math.floor(Math.random() * ghostTypes.length)];
                 setup.HuntController.setField('disguiseName', name);
-                V.currentIntervalMimic = interval;
                 V.lastChangeIntervalMimic = interval;
                 return name;
             }
-            V.currentIntervalMimic = interval;
             return null;
         },
         // twinsEvent is registered with setup.Cooldowns at the

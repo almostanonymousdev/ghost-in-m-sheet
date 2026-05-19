@@ -29,9 +29,9 @@ setup.HuntController = (function () {
 	var OWNED_VARS = Object.freeze([
 		'run', 'ectoplasm', 'runsStarted', 'meta',
 		'nextHuntSeed', 'pendingHuntHouseId',
-		// Ghost-room shuffle interval gates -- written only by
+		// Ghost-room shuffle interval gate -- written only by
 		// shuffleGhostRoom (below) and reset when a run starts/ends.
-		'currentIntervalRoom', 'lastChangeIntervalRoom'
+		'lastChangeIntervalRoom'
 	]);
 
 	function sv() { return State.variables; }
@@ -1687,7 +1687,6 @@ setup.HuntController = (function () {
 		var mins = setup.Time.minutes() || 0;
 		var interval = mins < 20 ? "0-19" : mins < 40 ? "20-39" : "40-59";
 		var s = sv();
-		s.currentIntervalRoom = interval;
 		if (interval === s.lastChangeIntervalRoom) return;
 		if (Math.random() < driftChance()) {
 			driftGhostRoom();
