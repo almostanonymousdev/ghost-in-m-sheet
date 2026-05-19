@@ -17,17 +17,18 @@ setup.CompanionShow = Object.freeze({
 setup.Companion = (function () {
 	/* $companion (the active-companion clone) and the per-companion
 	   stat objects ($brook/$alice/$blake/$alex/$taylor/$casey) are
-	   owned by this controller, so we read them directly via comp()
-	   / State.variables. Anything else (player money/sanity-pills,
-	   hours, hunt state, haunted-house flags, witch-quest flags)
-	   goes through the owning controller's API. */
+	   owned by this controller. Methods reach them via the semantic
+	   accessors api.activeState() and api.stateFor(name). Anything
+	   else (player money/sanity-pills, hours, hunt state, haunted-
+	   house flags, witch-quest flags) goes through the owning
+	   controller's API. */
 	/* Per-companion mutable state used to live in a forest of dynamically-
 	   named top-level variables ($isCompChosen<Name>, $chanceToAttack<Name>,
 	   $is<Name>GoingForHuntingAlone, $<key>ChooseOwaissa, $payForHuntAlone<Name>,
 	   $chanceToSuccessAloneOwaissa<Name>, etc.). They've been moved onto the
 	   per-companion stat object ($brook / $alice / $blake / $alex / $taylor /
 	   $casey) so every dynamic key concatenation collapses to a normal field
-	   read on whatever compFor(name) returns. api.migrateLegacyKeys (called
+	   read on whatever api.stateFor(name) returns. api.migrateLegacyKeys (called
 	   from SaveMigration) carries the legacy keys forward off old saves. */
 	var OWNED_VARS = Object.freeze([
 		'companion',
@@ -44,12 +45,9 @@ setup.Companion = (function () {
 		'videoEventCompanion', 'randomPassageOwaissa'
 	]);
 
-	function comp()    { return State.variables.companion; }
-	function compFor(name) { return State.variables[name.toLowerCase()]; }
-
 	/* Generate per-companion stat accessors that all share the
-	   `compFor(name) -> object[field]` shape. Each entry produces one
-	   method on `api`:
+	   `api.stateFor(name) -> object[field]` shape. Each entry produces
+	   one method on `api`:
 	     { get: name, key: field, miss?: fallback }    one-arg getter
 	     { set: name, key: field }                     two-arg setter
 	     { is:  name, key: field, value: stage }       predicate
@@ -58,19 +56,19 @@ setup.Companion = (function () {
 		spec.forEach(function (entry) {
 			if (entry.get) {
 				api[entry.get] = function (name) {
-					var c = compFor(name);
+					var c = api.stateFor(name);
 					return c ? c[entry.key] : entry.miss;
 				};
 			}
 			if (entry.set) {
 				api[entry.set] = function (name, v) {
-					var c = compFor(name);
+					var c = api.stateFor(name);
 					if (c) c[entry.key] = v;
 				};
 			}
 			if (entry.is) {
 				api[entry.is] = function (name) {
-					var c = compFor(name);
+					var c = api.stateFor(name);
 					return !!(c && c[entry.key] === entry.value);
 				};
 			}
@@ -79,7 +77,6 @@ setup.Companion = (function () {
 
 	var TRANS_NAMES = ["Alex", "Taylor", "Casey"];
 
-	function isName(n) { var c = comp(); return c && c.name === n; }
 	function isTrans(n) { return TRANS_NAMES.indexOf(n) !== -1; }
 
 	// Pure data lives in CompanionData.js (loaded after this script
@@ -234,12 +231,25 @@ setup.Companion = (function () {
 		// --- Catalogue -------------------------------------------
 		list: function () { return companions(); },
 		getByName: getByName,
+		// The mutable state object for the active companion (the
+		// clone stamped onto $companion by pickCisCompanion /
+		// pickTransCompanion), or undefined if none. Carries .name,
+		// .sanity, .lust, .decreaseSanity, etc.
+		activeState: function () { return State.variables.companion; },
+		// The mutable per-companion stat object ($brook / $alice /
+		// $blake / $alex / $taylor / $casey) by name (any case).
+		// This is the source-of-truth row; activeState() is a clone
+		// of one of these.
+		stateFor: function (name) {
+			if (!name) return undefined;
+			return State.variables[String(name).toLowerCase()];
+		},
 		// The companion currently selected by the player, or null if
 		// none. Mirrors setup.Ghosts.active() in shape; used by shared
 		// widgets (sanityPills, companionMain) that need pronouns or
 		// image paths without caring which companion is active.
 		active: function () {
-			var c = comp();
+			var c = this.activeState();
 			return c ? getByName(c.name) : null;
 		},
 		// Fresh stat object for a named companion. Used by SaveMigration
@@ -285,9 +295,9 @@ setup.Companion = (function () {
 		},
 
 		// --- Identity --------------------------------------------
-		name: function () { var c = comp(); return c && c.name; },
+		name: function () { var c = this.activeState(); return c && c.name; },
 		isTransCompanion: function () { return isTrans(this.name()); },
-		isName: isName,
+		isName: function (n) { return this.name() === n; },
 
 		// --- Selection ("chosen" flag on each $<key> stat object) --
 		anyCompanionSelected: function () {
@@ -306,7 +316,7 @@ setup.Companion = (function () {
 		},
 		selectCompanion: function (name) {
 			this.clearCompanionSelection();
-			var c = compFor(name);
+			var c = this.stateFor(name);
 			if (c) c.chosen = 1;
 		},
 		pickTransCompanion: function (name) {
@@ -315,7 +325,7 @@ setup.Companion = (function () {
 			// $companion, toggles the selection flags, and resets the
 			// per-hunt trans-event bookkeeping.
 			var s = State.variables;
-			s.companion = clone(s[name.toLowerCase()]);
+			s.companion = clone(this.stateFor(name));
 			this.selectCompanion(name);
 			s.chosenPlan = 0;
 			s.transStart = 0;
@@ -325,7 +335,7 @@ setup.Companion = (function () {
 
 		// --- Sanity / lust tiers used by compEvent / *Help / Init -
 		sanityTier: function () {
-			var c = comp(); if (!c) return "none";
+			var c = this.activeState(); if (!c) return "none";
 			var s = c.sanity;
 			if (s >= 75) return "high";
 			if (s >= 50) return "mid";
@@ -333,7 +343,7 @@ setup.Companion = (function () {
 			return "critical";
 		},
 		isLustHigh: function () {
-			var c = comp();
+			var c = this.activeState();
 			return c && c.lust >= 50;
 		},
 
@@ -360,13 +370,13 @@ setup.Companion = (function () {
 			return (setup.Mc.sanityPillsAmount() || 0) >= 1;
 		},
 		companionNeedsSanity: function () {
-			var c = comp();
+			var c = this.activeState();
 			return c && c.sanity < 100;
 		},
 		giveSanityPill: function () {
 			if (!this.hasSanityPills() || !this.companionNeedsSanity()) return false;
 			if (!setup.Mc.useSanityPill()) return false;
-			var c = comp();
+			var c = this.activeState();
 			c.sanity += 30;
 			if (c.sanity > 100) c.sanity = 100;
 			return true;
@@ -380,7 +390,7 @@ setup.Companion = (function () {
 			return setup.Mc.money() < 20;
 		},
 		payForSoloContract: function (name) {
-			var c = compFor(name);
+			var c = this.stateFor(name);
 			if (!c) return false;
 			if (!c.paidForSolo && setup.Mc.money() >= 20) {
 				setup.Mc.removeMoney(20);
@@ -393,7 +403,7 @@ setup.Companion = (function () {
 		// --- Hunt-end cleanup (shared across huntEnd / HuntOver*) --
 		/* Blake drops the cursed item on a bad hunt-end. */
 		blakeDropsCursedItem: function () {
-			return isName("Blake")
+			return this.isName("Blake")
 				&& State.variables.isCompChosen === 1
 				&& setup.Witch.hasCursedItemToTurnIn();
 		},
@@ -401,8 +411,8 @@ setup.Companion = (function () {
 			if (this.blakeDropsCursedItem()) setup.Witch.clearCursedItemHeld();
 		},
 		aliceResetsWork: function () {
-			var alice = compFor('Alice');
-			return isName("Alice") && alice && alice.goingSolo === 0;
+			var alice = this.stateFor('Alice');
+			return this.isName("Alice") && alice && alice.goingSolo === 0;
 		},
 		resetAliceWorkIfNeeded: function () {
 			if (this.aliceResetsWork()) State.variables.aliceWorkDone = 0;
@@ -481,7 +491,7 @@ setup.Companion = (function () {
 		activeCompanionShouldLeave: function () {
 			var c = this.active();
 			if (!c) return false;
-			var live = State.variables.companion;
+			var live = this.activeState();
 			if (!live || typeof live.sanity !== 'number') return false;
 			return live.sanity <= this.activeCompanionSanityCap();
 		},
@@ -503,19 +513,19 @@ setup.Companion = (function () {
 			return sc === CS.VISIBLE || sc === CS.ATTACK_SAFE;
 		},
 		sanityPercent: function () {
-			var c = comp();
+			var c = this.activeState();
 			return c ? c.sanity / 100 : 0;
 		},
 		drainSanity: function (n) {
-			var c = comp();
+			var c = this.activeState();
 			if (c) { c.sanity -= n; }
 		},
 		addLust: function (n) {
-			var c = comp();
+			var c = this.activeState();
 			if (c) { c.lust += n; }
 		},
 		cheatSetLvl: function (key, lvl) {
-			var obj = State.variables[key];
+			var obj = this.stateFor(key);
 			if (obj) { obj.lvl = lvl; }
 		},
 
@@ -525,7 +535,7 @@ setup.Companion = (function () {
 		   link labels can still interpolate them. Called on Info
 		   passage entry. The skill curve lives in CompanionData. */
 		refreshSoloOdds: function (name) {
-			var c = compFor(name);
+			var c = this.stateFor(name);
 			if (!c) return;
 			var table = data().soloSkillCurve[name] || {};
 			var lvl = c.lvl || 0;
@@ -535,7 +545,7 @@ setup.Companion = (function () {
 			c.soloChanceElm     = pair[1];
 		},
 		soloOdds: function (name, street) {
-			var c = compFor(name);
+			var c = this.stateFor(name);
 			if (!c) return undefined;
 			return street === 'Owaissa' ? c.soloChanceOwaissa : c.soloChanceElm;
 		},
@@ -546,7 +556,7 @@ setup.Companion = (function () {
 		// per-companion solo-hunt bookkeeping.
 		pickCisCompanion: function (name) {
 			var s = State.variables;
-			var c = compFor(name);
+			var c = this.stateFor(name);
 			if (!c) return;
 			s.companion = clone(c);
 			this.selectCompanion(name);
@@ -556,7 +566,7 @@ setup.Companion = (function () {
 			c.chooseElm     = 0;
 		},
 		deselectCisCompanion: function (name) {
-			var c = compFor(name);
+			var c = this.stateFor(name);
 			if (c) c.chosen = 0;
 		},
 		// Send the given companion solo to `street` (either
@@ -566,7 +576,7 @@ setup.Companion = (function () {
 		// paid this run. Callers should gate on canAffordSoloContract()
 		// for the warning path.
 		sendCompanionSolo: function (name, street) {
-			var c = compFor(name);
+			var c = this.stateFor(name);
 			if (!c) return;
 			c.chosen        = 0;
 			c.chooseOwaissa = (street === 'Owaissa') ? 1 : 0;
@@ -581,7 +591,7 @@ setup.Companion = (function () {
 		isCompanionFlagActive: function () { return State.variables.isCompChosen === 1; },
 		markCompanionFlagActive: function () { State.variables.isCompChosen = 1; },
 		setActiveLust: function (n) {
-			var c = comp();
+			var c = this.activeState();
 			if (c) c.lust = n;
 		},
 		/* Pick a video/image descriptor for the CompanionEvent
@@ -592,7 +602,7 @@ setup.Companion = (function () {
 		   just picks the right tier and rolls. Returns
 		   {src, type:"video"/"image"}. */
 		pickEventMedia: function () {
-			var c = comp(); if (!c) return null;
+			var c = this.activeState(); if (!c) return null;
 			var sanity = c.sanity;
 			var lust   = c.lust;
 			var inElm  = previous() === 'ElmBasement';
@@ -626,15 +636,15 @@ setup.Companion = (function () {
 		   which <<companionTextEventN>> variant + <<isCompanionContinue>>
 		   threshold set applies. */
 		eventSanityTier: function () {
-			var s = (comp() || {}).sanity || 0;
+			var s = (this.activeState() || {}).sanity || 0;
 			return s >= 75 ? 1 : s >= 50 ? 2 : s >= 25 ? 3 : s >= 1 ? 4 : 0;
 		},
 		/* Active companion's level (pre-clone, reading from
 		   $<key>). Used by <<isCompanionContinue>> as the "lvl
 		   check" arg; all trans companions are locked at 5. */
 		activeCompanionLvl: function () {
-			var c = comp(); if (!c) return 0;
-			var src = compFor(c.name);
+			var c = this.activeState(); if (!c) return 0;
+			var src = this.stateFor(c.name);
 			return src ? src.lvl : 0;
 		},
 
@@ -650,15 +660,15 @@ setup.Companion = (function () {
 		aliceWorkDone: function () { return State.variables.aliceWorkDone === 1; },
 		// (hasFinishedSoloHunt / soloHuntPaymentState fold into the
 		// defineCompanionAccessors call at the bottom.)
-		hasActiveCompanion: function () { return !!(State.variables.companion && State.variables.companion.name); },
+		hasActiveCompanion: function () { var c = this.activeState(); return !!(c && c.name); },
 		activeCompanionName: function () {
-			var c = State.variables.companion;
+			var c = this.activeState();
 			return c && c.name;
 		},
 		// (soloHuntChanceOwaissa / soloHuntChanceElm fold into the
 		// defineCompanionAccessors call at the bottom.)
 		setSoloHuntChances: function (name, owaissa, elm) {
-			var c = compFor(name);
+			var c = this.stateFor(name);
 			if (!c) return;
 			c.soloChanceOwaissa = owaissa;
 			c.soloChanceElm     = elm;
@@ -674,8 +684,8 @@ setup.Companion = (function () {
 			s.isCompRoomChosen = 0;
 			s.showComp = setup.CompanionShow.HIDDEN;
 			s.isCompChosen = 0;
-			var alice = compFor('Alice');
-			if (isName('Alice') && alice && alice.goingSolo === 0) {
+			var alice = this.stateFor('Alice');
+			if (this.isName('Alice') && alice && alice.goingSolo === 0) {
 				s.aliceWorkDone = 0;
 			}
 		},
@@ -745,7 +755,7 @@ setup.Companion = (function () {
 		},
 
 		outcomePortrait: function (success) {
-			var c = comp(); if (!c) return null;
+			var c = this.activeState(); if (!c) return null;
 			if (c.name === "Brook" || c.name === "Alice" || c.name === "Blake") {
 				return "characters/" + c.name.toLowerCase() + "/" + c.name.toLowerCase() + (success ? "-happy" : "-sad") + ".png";
 			}
@@ -782,23 +792,23 @@ setup.Companion = (function () {
 		   on $<key>.chanceToAttack with a top-level $chanceToAttack
 		   mirror that the tick handler reads (see TickController). */
 		chanceToAttack: function () {
-			var c = comp();
+			var c = this.activeState();
 			if (!c) return State.variables.chanceToAttack;
-			var stats = compFor(c.name);
+			var stats = this.stateFor(c.name);
 			return stats ? stats.chanceToAttack : State.variables.chanceToAttack;
 		},
 		ensureChanceToAttack: function () {
-			var c = comp();
+			var c = this.activeState();
 			if (!c) return;
-			var stats = compFor(c.name);
+			var stats = this.stateFor(c.name);
 			if (stats && stats.chanceToAttack === undefined) {
 				stats.chanceToAttack = 25;
 			}
 		},
 		setChanceToAttack: function (n) {
-			var c = comp();
+			var c = this.activeState();
 			if (c) {
-				var stats = compFor(c.name);
+				var stats = this.stateFor(c.name);
 				if (stats) stats.chanceToAttack = n;
 			}
 			State.variables.chanceToAttack = n;
@@ -808,7 +818,7 @@ setup.Companion = (function () {
 		   small sanity top-up. Shared across Alice/Blake/Brook
 		   Help passages. */
 		helpEventEaseActive: function () {
-			var c = comp();
+			var c = this.activeState();
 			if (!c) return;
 			c.lust = 0;
 			c.sanity += 2;
@@ -818,7 +828,7 @@ setup.Companion = (function () {
 		   the player queries the HuntEndAlone passage (which runs
 		   the next morning). Called on entry to *HuntEndAlone. */
 		acknowledgeSoloHuntEnd: function (name) {
-			var c = compFor(name);
+			var c = this.stateFor(name);
 			if (!c) return;
 			c.paidForSolo = 0;
 			c.goingSolo   = 0;
@@ -829,7 +839,7 @@ setup.Companion = (function () {
 		/* Clear the per-companion Owaissa/Elm choice flags. Called
 		   at the end of HuntEndAlone after the result is narrated. */
 		clearSoloHuntStreet: function (name) {
-			var c = compFor(name);
+			var c = this.stateFor(name);
 			if (!c) return;
 			c.chooseOwaissa = 0;
 			c.chooseElm     = 0;
@@ -850,50 +860,41 @@ setup.Companion = (function () {
 		   ticks to "finished" (goingSolo === 2) so the next morning's
 		   *HuntEndAlone passage runs. Called from setup.Tick.resetCooldowns. */
 		advanceSoloHuntsAtMidnight: function () {
+			var self = this;
 			['Brook', 'Alice', 'Blake'].forEach(function (name) {
-				var c = compFor(name);
+				var c = self.stateFor(name);
 				if (c && c.goingSolo === 1) c.goingSolo = 2;
 			});
 		},
 
-		// --- Companion stat object getter ------------------------
-		// Return the mutable state object for a companion by their
-		// name key ("alex" / "taylor" / "casey" / "brook" / ...).
-		// Used by passages that render a companion card without
-		// knowing which companion is currently active (e.g. the
-		// Internet trans-companion picker).
-		stateFor: function (nameKey) {
-			return State.variables[nameKey];
-		},
-
 		// --- Active-companion HUD / event helpers ----------------
 		decreaseSanity: function () {
-			var c = comp();
+			var c = this.activeState();
 			return c ? c.decreaseSanity : 0;
 		},
 		lust: function () {
-			var c = comp();
+			var c = this.activeState();
 			return c ? c.lust : 0;
 		},
 		sanity: function () {
-			var c = comp();
+			var c = this.activeState();
 			return c ? c.sanity : 0;
 		},
 		lvl: function () {
-			var c = comp();
+			var c = this.activeState();
 			return c ? c.lvl : 0;
 		},
 		/* For a given companion slot (key = "brook" / "alice" / "blake")
 		   is the companion at the max level 5? Used by the companionExp
 		   widget to short-circuit xp gain. */
 		isAtMaxLvl: function (name) {
-			var obj = compFor(name);
+			var obj = this.stateFor(name);
 			return obj && obj.lvl >= 5;
 		},
 		/* Add exp to a specific companion by name (used by the shared
 		   companionExp widget). Does nothing if the target is maxed out. */
 		grantExpTo: function (name, amount) {
-			var obj = compFor(name);
+			var obj = this.stateFor(name);
 			if (!obj || obj.lvl >= 5) return;
 			obj.exp += amount;
 		},
@@ -914,7 +915,7 @@ setup.Companion = (function () {
 		/* Apply the standard "$companion.sanity/lust change" side-effects
 		   from the shared companionTextEvent widgets. */
 		applyEventStatDeltas: function () {
-			var c = comp();
+			var c = this.activeState();
 			if (!c) return;
 			c.sanity -= c.decreaseSanity;
 			c.lust   += this.eventLustGain();
@@ -924,7 +925,7 @@ setup.Companion = (function () {
 		   stamp the transFirstStage flag and set transPicture to the
 		   matching portrait index. */
 		markTransFirstStage: function () {
-			var c = comp();
+			var c = this.activeState();
 			if (!c) return;
 			var idx = { Alex: 1, Taylor: 2, Casey: 3 }[c.name];
 			if (!idx) return;
@@ -965,7 +966,7 @@ setup.Companion = (function () {
 		{ name: 'transFirstStage',    get: false, set: 'setTransFirstStage' }
 	]);
 	// Per-companion stat accessors. Each call resolves the target
-	// companion's mutable state object via compFor(name) and reads
+	// companion's mutable state object via api.stateFor(name) and reads
 	// or writes a single field; folded here so the wrapper bodies
 	// don't have to repeat the null-check / fallback boilerplate.
 	defineCompanionAccessors(api, [
