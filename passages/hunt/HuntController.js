@@ -416,12 +416,12 @@ setup.HuntController = (function () {
 
 	/* End the current run. Preserves the run number so the next
 	   start() picks up where we left off; the new run will overwrite
-	   the rest of the fields. Also tears down the legacy $hunt /
-	   companion bookkeeping that startHunt stamped, so a Cancel from
-	   the HuntStart lobby (which calls this directly, not endHunt)
-	   doesn't leave Ghosts.isHunting() stuck on -- which would let the
-	   post-passage tick redirect the player into HuntOverTime once the
-	   clock crossed 06:00. */
+	   the rest of the fields. Also flips $huntMode back to NONE and
+	   tears down companion bookkeeping that startHunt stamped, so a
+	   Cancel from the HuntStart lobby (which calls this directly, not
+	   endHunt) doesn't leave Ghosts.isHunting() stuck on -- which
+	   would let the post-passage tick redirect the player into
+	   HuntOverTime once the clock crossed 06:00. */
 	function end() {
 		var prior = sv().run;
 		sv().run = null;
@@ -931,13 +931,12 @@ setup.HuntController = (function () {
 		setField('floorplan', floorplan);
 		setField('ghostName', ghostName);
 		setField('evidence', evidenceIds);
-		/* Stamp the legacy $hunt object too so the per-hunt machinery
-		   that still keys off setup.Ghosts.isHunting() / setup.Ghosts.active()
-		   (companion mini panel + walk-home gate, Mimic rotation, Bag tabs,
-		   tick-side morning/possessed checks) lights up during a dynamic
-		   run. buildHunt sets HuntMode.ACTIVE, so isHunting() flips true
-		   immediately. */
-		setup.Ghosts.startHunt(ghostName);
+		setField('disguiseName', ghostName);
+		/* Flip $huntMode to ACTIVE so the per-hunt machinery
+		   (setup.Ghosts.isHunting() / active(), companion mini panel +
+		   walk-home gate, Mimic rotation, Bag tabs, tick-side morning /
+		   possessed checks) lights up immediately. */
+		setup.Ghosts.activateHunt();
 		/* Pin the in-game clock to midnight so the post-passage tick
 		   doesn't punt the player into HuntOverTime the moment they
 		   land on HuntStart/HuntRun. In production this matches what

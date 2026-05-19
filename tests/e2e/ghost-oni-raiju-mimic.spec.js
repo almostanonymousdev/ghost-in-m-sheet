@@ -119,7 +119,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
     await setupHunt(page, 'Mimic');
 
     expect(await page.evaluate(() =>
-      SugarCube.State.variables.hunt.realName === 'Mimic'
+      SugarCube.State.variables.run.ghostName === 'Mimic'
     )).toBe(true);
     expect(await callSetup(page, 'setup.Ghosts.isMimicHunt()')).toBe(true);
 
@@ -135,7 +135,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
     await goToPassage(page, 'Mimic');
     expect(await getVar(page, 'lastChangeIntervalMimic')).toBe('0-29');
     expect(await page.evaluate(() =>
-      SugarCube.State.variables.hunt.name
+      SugarCube.State.variables.run.disguiseName
     )).toBeTruthy();
 
     await setVar(page, 'minutes', 35);
@@ -147,7 +147,7 @@ test.describe('Ghost abilities — Oni, Raiju, Mimic', () => {
     await setupHunt(page, 'Mimic');
 
     const evidence = await page.evaluate(() =>
-      SugarCube.State.variables.hunt.evidence
+      SugarCube.State.variables.run.evidence
     );
     expect(evidence).toContain('spiritbox');
     expect(evidence).toContain('temperature');

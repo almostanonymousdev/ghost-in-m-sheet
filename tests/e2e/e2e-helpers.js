@@ -2,27 +2,27 @@ const { expect } = require('@playwright/test');
 const { setVar } = require('../helpers');
 
 /**
- * Set the hunt mode (0 = none, 1 = contract, 2 = active, 3 = possessed).
- * Auto-creates a stub hunt for modes >= 1 so tests that haven't called
+ * Set the hunt mode (0 = none, 2 = active, 3 = possessed).
+ * Auto-creates a stub $run for modes >= 2 so tests that haven't called
  * setupHunt can still exercise mode transitions.
  */
 async function setHuntMode(page, mode) {
   await page.evaluate((m) => {
     const V = SugarCube.State.variables;
     if (m === 0) {
-      V.hunt = null;
+      V.huntMode = 0;
+      V.run = null;
       return;
     }
-    if (!V.hunt) SugarCube.setup.Ghosts.startHunt('Shade');
-    V.hunt.mode = m;
+    if (!V.run || !V.run.ghostName) SugarCube.setup.Ghosts.startHunt('Shade');
+    V.huntMode = m;
   }, mode);
 }
 
 /** Read the hunt mode (0 when no hunt is active). */
 async function getHuntMode(page) {
   return await page.evaluate(() => {
-    const h = SugarCube.State.variables.hunt;
-    return h ? h.mode : 0;
+    return SugarCube.State.variables.huntMode || 0;
   });
 }
 
@@ -96,9 +96,9 @@ async function expectCleanPassage(page) {
  * helpers (`isOwaissa`/`isElm`/`isIronclad`) resolve off the active
  * run's `staticHouseId`.
  *
- * The function leaves $hunt in HuntMode.ACTIVE with the requested ghost
- * pinned so shared ghost helpers (canProwl, hasEvidence, etc.) resolve
- * against a real catalogue entry.
+ * The function leaves $huntMode = ACTIVE with $run pinned to the
+ * requested ghost so shared ghost helpers (canProwl, hasEvidence, etc.)
+ * resolve against a real catalogue entry.
  */
 async function setupHunt(page, ghostName, house = 'owaissa') {
   if (!['owaissa', 'elm', 'ironclad'].includes(house)) {
@@ -109,27 +109,26 @@ async function setupHunt(page, ghostName, house = 'owaissa') {
     // Roll a hunt with the requested static house plan so the
     // location helpers resolve.
     SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: staticHouseId });
-    // Pin the hunt ghost to the requested catalogue entry.
+    // Pin the hunt ghost to the requested catalogue entry. setField
+    // writes ghostName / disguiseName / evidence; activateHunt flips
+    // $huntMode to ACTIVE.
+    const ghost = SugarCube.setup.Ghosts.getByName(name);
     SugarCube.setup.HuntController.setField('ghostName', name);
-    // Mirror the catalogue evidence onto $hunt so shared callers
-    // (canProwl, hasEvidence) work without depending on hunt internals.
-    SugarCube.setup.Ghosts.startHunt(name);
+    SugarCube.setup.HuntController.setField('disguiseName', name);
+    SugarCube.setup.HuntController.setField(
+      'evidence',
+      ghost ? ghost.evidence.map(function (e) { return e.id; }) : []
+    );
     SugarCube.setup.Ghosts.setHuntMode(SugarCube.setup.Ghosts.HuntMode.ACTIVE);
   }, { name: ghostName, staticHouseId: house });
 
   const assigned = await page.evaluate(() => {
-    const h = SugarCube.State.variables.hunt;
-    return h ? h.name : null;
+    const run = SugarCube.State.variables.run;
+    return run ? (run.ghostName || null) : null;
   });
   if (assigned !== ghostName) {
     throw new Error(`Failed to assign ghost "${ghostName}", got "${assigned}"`);
   }
-
-  // Give the hunt a sensible room name so any classic widget that
-  // still reads $hunt.room.name doesn't blow up.
-  await page.evaluate((n) => {
-    SugarCube.State.variables.hunt.room = { name: n };
-  }, house === 'ironclad' ? 'hallway' : 'kitchen');
 
   if (house === 'ironclad') {
     await setVar(page, 'wardenClothesStage', 2);

@@ -589,15 +589,6 @@ setup.searchableRooms.forEach(function (room) {
     setup.isGhostHere = function (houses) {
         return setup.HuntController.isGhostHere(houses);
     };
-    setup._isGhostHereInClassic = function (houses) {
-        var h = setup.Ghosts.hunt();
-        if (!h || !h.room || !h.room.name) return false;
-        var cur = passage();
-        return setup.hauntedPassages.some(function (e) {
-            if (houses && houses.indexOf(e.house) === -1) return false;
-            return e.passage === cur && e.bgRoom === h.room.name;
-        });
-    };
 
     /* Shared equipment-tier chance table used by the gwb / plasm / spiritbox
      * checks: tier 5 = 15%, tier 4 = 25%, tier 3 = 35%. Returns true when the

@@ -302,17 +302,17 @@ test.describe('Companions — hunt setup integration', () => {
     expect(await callSetup(page, 'setup.Companion.canShowCompanionMiniPanel()')).toBe(true);
   });
 
-  // Bridging regression: HuntController.startHunt needs to stamp the
-  // legacy $hunt object so setup.Ghosts.isHunting() returns true during
-  // a dynamic run. Without this the companion mini panel, the
-  // walk-home gate, and the per-tick companion machinery all stay
-  // dark — they all key off Ghosts.isHunting().
+  // Bridging regression: HuntController.startHunt needs to flip
+  // $huntMode to ACTIVE so setup.Ghosts.isHunting() returns true
+  // during a dynamic run. Without this the companion mini panel,
+  // the walk-home gate, and the per-tick companion machinery all
+  // stay dark — they all key off Ghosts.isHunting().
   test('HuntController.startHunt lights up Ghosts.isHunting()', async ({ game: page }) => {
     expect(await callSetup(page, 'setup.Ghosts.isHunting()')).toBe(false);
     await page.evaluate(() =>
       SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: 'owaissa' }));
     expect(await callSetup(page, 'setup.Ghosts.isHunting()')).toBe(true);
-    expect(await getVar(page, 'hunt.mode')).toBe(2);
+    expect(await getVar(page, 'huntMode')).toBe(2);
   });
 
   // endHunt teardown: zeroes the companion plan/showComp/isCompChosen
@@ -529,9 +529,9 @@ test.describe('Companions — hunt setup integration', () => {
   });
 
   // Cancel from HuntStart calls HuntController.end() directly. Without
-  // the cleanup that pairs with startHunt's $hunt stamp, the legacy
-  // mode would stay ACTIVE and the per-passage tick would punt the
-  // player to HuntOverTime as soon as the in-game clock crossed 06:00.
+  // the cleanup that pairs with startHunt's $huntMode flip, the mode
+  // would stay ACTIVE and the per-passage tick would punt the player
+  // to HuntOverTime as soon as the in-game clock crossed 06:00.
   test('HuntController.end() resets Ghosts.huntMode to NONE', async ({ game: page }) => {
     await page.evaluate(() =>
       SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: 'owaissa' }));
