@@ -551,12 +551,10 @@
         startHunt: function (name) {
             var ghost = setup.Ghosts.getByName(name);
             if (!ghost) return false;
-            var V = State.variables;
-            if (!V.run || typeof V.run !== 'object') V.run = {};
-            V.run.ghostName    = name;
-            V.run.disguiseName = name;
-            V.run.evidence     = ghost.evidence.map(function (e) { return e.id; });
-            if (V.run.trapped === undefined) V.run.trapped = false;
+            setup.HuntController.stampMinimalRun({
+                ghostName: name,
+                evidence:  ghost.evidence.map(function (e) { return e.id; })
+            });
             setup.Ghosts.activateHunt();
             return true;
         },
@@ -589,8 +587,7 @@
            the true identity (never rotates); $run.disguiseName rotates
            through cover identities for display. */
         isMimicHunt: function () {
-            var run = State.variables.run;
-            return !!(run && run.ghostName === "Mimic");
+            return setup.HuntController.field('ghostName') === "Mimic";
         },
 
         /* Info-collected flag helpers. Callers should never touch the
@@ -657,13 +654,12 @@
             setup.HuntController.setField('disguiseName', g.name);
         },
         huntName: function () {
-            var run = State.variables.run;
-            if (!run) return '';
-            return run.disguiseName || run.ghostName || '';
+            return setup.HuntController.field('disguiseName')
+                || setup.HuntController.field('ghostName')
+                || '';
         },
         huntRealName: function () {
-            var run = State.variables.run;
-            return run ? (run.ghostName || null) : null;
+            return setup.HuntController.field('ghostName') || null;
         },
         /* Human-friendly label for the ghost's current room
            ("Bedroom Upstairs", "Kitchen"). Resolves through the floor-plan
@@ -749,7 +745,7 @@
             var interval = (m >= 0 && m < 30) ? '0-29' : '30-59';
             if (interval !== V.lastChangeIntervalMimic) {
                 var name = ghostTypes[Math.floor(Math.random() * ghostTypes.length)];
-                if (V.run) { V.run.disguiseName = name; }
+                setup.HuntController.setField('disguiseName', name);
                 V.currentIntervalMimic = interval;
                 V.lastChangeIntervalMimic = interval;
                 return name;
@@ -775,8 +771,8 @@
            reset clears it on every fresh hunt. */
         clearChosenEvidence: function () { delete State.variables.chosenEvidence; },
         huntEvidence: function () {
-            var run = State.variables.run;
-            return run && Array.isArray(run.evidence) ? run.evidence : [];
+            var ev = setup.HuntController.field('evidence');
+            return Array.isArray(ev) ? ev : [];
         },
         /* Read-only accessors for the per-hunt hidden-evidence slots
            the witch contract may have stashed; consumers that need to

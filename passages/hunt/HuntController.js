@@ -410,8 +410,27 @@ setup.HuntController = (function () {
 			   them via setRoomLight. */
 			lights: {}
 		};
-		sv().stepCount = 0;
+		setup.Tick.resetStepCount();
 		return sv().run;
+	}
+
+	/* Test / cheat shortcut: stamp a minimal $run with the named ghost
+	   as both real identity and current disguise, copy in evidence ids,
+	   and default trapped to false. Production hunt flow goes through
+	   start() above (full procedural startup). This exists so unit specs
+	   and the cheat menu can park the player in an "active hunt" state
+	   without spinning up a floorplan / modifiers / starting tools. */
+	function stampMinimalRun(opts) {
+		opts = opts || {};
+		var run = sv().run;
+		if (!run || typeof run !== 'object') {
+			sv().run = {};
+			run = sv().run;
+		}
+		run.ghostName    = opts.ghostName;
+		run.disguiseName = opts.ghostName;
+		run.evidence     = Array.isArray(opts.evidence) ? opts.evidence.slice() : [];
+		if (run.trapped === undefined) run.trapped = false;
 	}
 
 	/* End the current run. Preserves the run number so the next
@@ -1805,6 +1824,7 @@ setup.HuntController = (function () {
 		FailureReason: FailureReason,
 		Objective: Objective,
 		start: start,
+		stampMinimalRun: stampMinimalRun,
 		end: end,
 		active: active,
 		isActive: isActive,

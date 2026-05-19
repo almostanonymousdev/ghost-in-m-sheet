@@ -133,6 +133,7 @@ setup.Tick = (function () {
 	function incrementStepCount() {
 		sv().stepCount = (sv().stepCount || 0) + 1;
 	}
+	function resetStepCount() { sv().stepCount = 0; }
 
 	// --- Midnight rollover (resetCooldowns helper) --------------
 	/* Called once per day-change (via addTime crossing 24). Resets
@@ -287,6 +288,7 @@ setup.Tick = (function () {
 		twinsEventFired: twinsEventFired,
 		stepCount: stepCount,
 		incrementStepCount: incrementStepCount,
+		resetStepCount: resetStepCount,
 		resetCooldowns: resetCooldowns,
 		onPassageReady: onPassageReady,
 		onPassageDone: onPassageDone

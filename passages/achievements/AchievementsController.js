@@ -165,8 +165,8 @@ setup.Achievements = setup.Achievements || {};
 		   catches activation within a tick of it happening. */
 		setup.Hunt.on(E.TICK, function () {
 			if (!huntFlags) return;
-			var t = sv().tools;
-			if (t && ((t.emf && t.emf.activated) || (t.uvl && t.uvl.activated))) {
+			if (setup.ToolController.isActivated('emf')
+				|| setup.ToolController.isActivated('uvl')) {
 				huntFlags.toolsUsedThisRun = true;
 			}
 		});
