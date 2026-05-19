@@ -680,12 +680,16 @@ setup.Companion = (function () {
 		   companion lust or recent-ElmBasement flag. Tables live in
 		   CompanionData.eventMediaCis / .eventMediaTrans; this method
 		   just picks the right tier and rolls. Returns
-		   {src, type:"video"/"image"}. */
-		pickEventMedia: function () {
+		   {src, type:"video"/"image"}.
+		   `inElm` defaults to `previous() === 'ElmBasement'` so the in-
+		   passage call site (CompanionEvent.tw) doesn't need to pass it,
+		   but unit/e2e specs can pin it explicitly without faking the
+		   passage history. */
+		pickEventMedia: function (inElm) {
 			var c = this.activeState(); if (!c) return null;
+			if (inElm === undefined) inElm = previous() === 'ElmBasement';
 			var sanity = c.sanity;
 			var lust   = c.lust;
-			var inElm  = previous() === 'ElmBasement';
 			var tierKey = sanity >= 75 ? "high"
 				: sanity >= 50 ? "mid"
 				: sanity >= 25 ? "low"
@@ -706,8 +710,8 @@ setup.Companion = (function () {
 					list = transVids(cfg.idx, "sex", cfg.critMax);
 				}
 			}
-			if (!list || !list.length) return null;
-			var pick = list[Math.floor(Math.random() * list.length)];
+			var pick = setup.Rng.pickFrom(list);
+			if (!pick) return null;
 			State.variables.videoEventCompanion = pick.src;
 			return pick;
 		},
@@ -762,8 +766,8 @@ setup.Companion = (function () {
 		   Keyed by the existing $isCI<Type> save flags. The catalogue
 		   of types lives in CompanionData. */
 		rollFoundCursedItem: function () {
-			var list = data().cursedItemTypes;
-			var pick = list[Math.floor(Math.random() * list.length)];
+			var pick = setup.Rng.pickFrom(data().cursedItemTypes);
+			if (!pick) return null;
 			setup.Witch.setCursedItemFlag(pick.key);
 			setup.Witch.setCursedItemHeld();
 			return pick;
@@ -771,7 +775,7 @@ setup.Companion = (function () {
 		/* Random GWB evidence image (for Plan3 GWB result). Returns
 		   "mechanics/gwb/<1..18>.jpg". */
 		pickGwbImage: function () {
-			return "mechanics/gwb/" + (Math.floor(Math.random() * 18) + 1) + ".jpg";
+			return "mechanics/gwb/" + setup.Rng.intInclusive(1, 18) + ".jpg";
 		},
 		/* Pick a random evidence type id from the current hunt.
 		   Used by the Plan3 "look for evidence" result. During a
@@ -788,8 +792,7 @@ setup.Companion = (function () {
 				ev = setup.HuntController.runEvidence();
 			}
 			if (!ev || !ev.length) ev = setup.Ghosts.huntEvidence();
-			if (!ev || !ev.length) return null;
-			return ev[Math.floor(Math.random() * ev.length)];
+			return setup.Rng.pickFrom(ev);
 		},
 
 		/* Pick a hunt room id for the companion to wander into.
@@ -811,10 +814,11 @@ setup.Companion = (function () {
 			var rooms = run.floorplan.rooms
 				.map(function (r) { return r.id; })
 				.filter(function (id) { return id !== current; });
-			if (!rooms.length) return;
+			var pick = setup.Rng.pickFrom(rooms);
+			if (!pick) return;
 			State.variables.currentGhostPassage = current;
 			State.variables.filteredGhostPassages = rooms;
-			State.variables.randomGhostPassage = rooms[Math.floor(Math.random() * rooms.length)];
+			State.variables.randomGhostPassage = pick;
 		},
 
 		outcomePortrait: function (success) {
