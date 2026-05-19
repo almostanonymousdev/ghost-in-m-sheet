@@ -557,6 +557,16 @@
             V.run.disguiseName = name;
             V.run.evidence     = ghost.evidence.map(function (e) { return e.id; });
             if (V.run.trapped === undefined) V.run.trapped = false;
+            /* Stamp the field-accessor contract that HuntController.modifiers /
+               objective / loadout / currentRoomId expect, so passages rendered
+               with only this shortcut don't trip on `run.modifiers.slice()` and
+               friends. Mirrors the defaults in HuntController.start(). */
+            if (!Array.isArray(V.run.modifiers)) V.run.modifiers = [];
+            if (V.run.loadout == null)           V.run.loadout = {};
+            if (V.run.objective == null)         V.run.objective = 'identify';
+            if (V.run.currentRoomId == null)     V.run.currentRoomId = 'room_0';
+            if (!Array.isArray(V.run.collectedLoot)) V.run.collectedLoot = [];
+            if (V.run.lights == null)            V.run.lights = {};
             setup.Ghosts.activateHunt();
             return true;
         },
