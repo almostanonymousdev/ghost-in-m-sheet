@@ -62,6 +62,15 @@ setup.FloorPlan = (function () {
 		'cursedItem', 'rescueClue', 'tarotCards', 'monkeyPaw'
 	]);
 
+	/* Rare loot kinds rolled independently at RARE_LOOT_CHANCE per
+	   hunt. Each kind that hits its roll is forced onto a
+	   furniture-bearing room (so the player can find it via a normal
+	   furniture click). Kept distinct from LOOT_KINDS because every
+	   LOOT_KINDS entry is guaranteed per run, while these two are
+	   sometimes-absent. */
+	var RARE_LOOT_KINDS = Object.freeze(['cash', 'ectoplasm']);
+	var RARE_LOOT_CHANCE = 0.10;
+
 	/* Mulberry32 PRNG. Self-contained so the generator is
 	   deterministic regardless of any global Math.random patching. */
 	function makeRng(seed) {
@@ -243,6 +252,21 @@ setup.FloorPlan = (function () {
 			placeKind(k, lootRooms[0], true);
 		});
 
+		/* Rare furniture finds: each kind is rolled independently at
+		   RARE_LOOT_CHANCE. Hits go through the same furniture-pin
+		   pipeline as tarotCards / tool_* (forced furniture room +
+		   takenSlots dedupe), so they show up as a normal click on a
+		   piece of furniture. Misses leave the kind out of loot
+		   entirely, which is what makes the find feel rare to the
+		   player. */
+		if (furnitureRoomIds.length) {
+			RARE_LOOT_KINDS.forEach(function (k) {
+				if (rng() < RARE_LOOT_CHANCE) {
+					placeKind(k, lootRooms[0], true);
+				}
+			});
+		}
+
 		// Boss room: optional, picked uniformly from non-hallway.
 		var bossRoomId = null;
 		if (includeBoss && rooms.length > 1) {
@@ -351,6 +375,8 @@ setup.FloorPlan = (function () {
 		OWNED_VARS: Object.freeze([]),
 		HALLWAY_TEMPLATE: HALLWAY_TEMPLATE,
 		LOOT_KINDS: LOOT_KINDS,
+		RARE_LOOT_KINDS: RARE_LOOT_KINDS,
+		RARE_LOOT_CHANCE: RARE_LOOT_CHANCE,
 		TOOL_LOOT_PREFIX: TOOL_LOOT_PREFIX,
 		toolLootKind: toolLootKind,
 		toolIdFromLootKind: toolIdFromLootKind,

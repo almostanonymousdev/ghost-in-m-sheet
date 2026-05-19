@@ -97,14 +97,14 @@
 		<div id="hunt-tool-meter" class="hunt-tool-meter"></div>
 		<div class="hunt-run-top">
 			<div class="hunt-run-tl">
-				@@.location; <<= setup.HuntController.address().formatted>>@@<br>
-				<<if _cr>>
-					@@.mc-thoughts; <<= _cr.label>>@@<br>
-				<</if>>
 				<<huntMinimap>>
 			</div>
 			<div class="hunt-run-tr">
+				@@.location; Objective@@<br>
+				<span class="hunt-run-objective"><<= _run.objective>></span><br>
+				@@.location; <<= setup.HuntController.address().formatted>>@@<br>
 				<<if _modifiers.length>>
+					<br>
 					@@.location; Active modifiers@@<br>
 					<<for _m range _modifiers>>
 						<span class="usebtn hunt-modifier-chip" @title="_m.description"><<= _m.name>></span><br>
@@ -114,39 +114,36 @@
 		</div>
 
 		<<set _detectorOn to setup.ToolController.detectorBought()>>
-		<div class="hunt-run-furniture">
-			<<if _cr and _cr.furniture.length>>
-				<<for _f range _cr.furniture>>
-					<<capture _f>>
-						<span @class="'hunt-furniture-item' + (_detectorOn and _f.lootKinds.length ? ' highlighted-furnitureDetector' : '')">
-							<<link `'<<image "scenes/furniture/' + _f.suffix + '.png">>'` "FurnitureSearch">>
-								<<run setup.HuntController.setSearchedFurniture(_f.suffix)>>
-								<<addTime 1>>
-							<</link>>
-							<span class="hunt-furniture-label"><<= _f.label>></span>
-						</span>
-					<</capture>>
-				<</for>>
-			<<elseif _cr>>
-				@@.mc-thoughts; (bare room)@@
-			<<else>>
-				/% _cr is null only when currentRoomId points to a non-existent room (corrupted save). Render nothing; the outer isActive gate is the player-visible recovery path for a missing $run. %/
-			<</if>>
-		</div>
-
 		<div class="hunt-run-bottom">
+			<div class="hunt-run-furniture">
+				<<if _cr and _cr.furniture.length>>
+					<<for _f range _cr.furniture>>
+						<<capture _f>>
+							<span @class="'hunt-furniture-item' + (_detectorOn and _f.lootKinds.length ? ' highlighted-furnitureDetector' : '')">
+								<<link `'<<image "scenes/furniture/' + _f.suffix + '.png">>'` "FurnitureSearch">>
+									<<run setup.HuntController.setSearchedFurniture(_f.suffix)>>
+									<<addTime 1>>
+								<</link>>
+								<span class="hunt-furniture-label"><<= _f.label>></span>
+							</span>
+						<</capture>>
+					<</for>>
+				<<elseif _cr>>
+					@@.mc-thoughts; (bare room)@@
+				<<else>>
+					/% _cr is null only when currentRoomId points to a non-existent room (corrupted save). Render nothing; the outer isActive gate is the player-visible recovery path for a missing $run. %/
+				<</if>>
+			</div>
 			<div class="hunt-conditions"><<huntConditions>></div>
 			<div class="hunt-run-hud">
+				<div class="hunt-run-effects"><<huntEffectsList>></div>
 				<<huntFooterLight>>
-				<span><<= setup.HuntController.address().formatted>></span>
-				<span>Room: <<= _cr ? _cr.label : "—">></span>
-				<span>Objective: <<= _run.objective>></span>
-				<span>Ectoplasm: <<= setup.HuntController.ectoplasm()>> mL</span>
 			</div>
 			<div class="hunt-run-toolbar">
 				<div class="hunt-run-tools">
 					<<huntToolBar>>
 				</div>
+				<div class="hunt-run-actions"><<huntActionBar>></div>
 				<div class="hunt-run-companion">
 					<<companionCard>>
 				</div>

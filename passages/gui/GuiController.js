@@ -193,36 +193,83 @@ $(document).one(":storyready", function () {
 	   the :dialogopened handler below. */
 	$("#menu-item-settings a").text(SETTINGS_DIALOG_TITLE);
 
+	/* Notify the StoryEvents bus whenever a cheat is toggled or
+	   selected. Real player settings (muteAllVideos) deliberately do
+	   not call this. Subscribers (e.g. the cheat achievement) live
+	   elsewhere and re-register on script re-eval.
+
+	   SugarCube's settings dialog calls Setting.setValue(name, default)
+	   the first time a control renders without a stored value, which
+	   fires onChange even though the user hasn't touched anything.
+	   ifCheatChanged() guards against that by remembering the value we
+	   last observed and only emitting when it actually moves -- so
+	   merely opening the dialog never grants the cheat achievement. */
+	var _lastCheatValue = {};
+	function ifCheatChanged(source, action) {
+		var current = (typeof settings !== 'undefined') ? settings[source] : undefined;
+		if (_lastCheatValue[source] === current) return;
+		_lastCheatValue[source] = current;
+		if (action) action();
+		if (setup.StoryEvents && setup.StoryEvents.Event) {
+			setup.StoryEvents.emit(setup.StoryEvents.Event.CHEAT_USED, { source: source });
+		}
+	}
 	Setting.addHeader(
 		"Cheats",
 		"Toggles + the ghost-type picker persist across reloads. The button list further down fires one-shot mutations on $state.variables — back/forward arrows can rewind those."
 	);
+	/* Seed the baseline with each cheat's CURRENT value if one is
+	   persisted, otherwise the registered default. The default seed
+	   matters: SugarCube's first dialog-open does
+	   `Setting.setValue(name, default)` for any control without a
+	   stored value, which fires onChange. We want that to look like a
+	   no-op against the baseline. Reading settings[X] alone returns
+	   undefined here (the default hasn't been written yet), so undefined
+	   would not match the about-to-be-written default and the guard
+	   would mis-fire on first open. */
+	function seedCheat(source, defaultValue) {
+		var current = (typeof settings !== 'undefined') ? settings[source] : undefined;
+		_lastCheatValue[source] = (current === undefined) ? defaultValue : current;
+	}
+	seedCheat('highlightRescueHouse', false);
+	seedCheat('fastToolTimers', false);
+
 	Setting.addToggle("highlightRescueHouse", {
 		label: "Highlight correct rescue house on map",
-		default: false
+		default: false,
+		onChange: function () { ifCheatChanged("highlightRescueHouse"); }
 	});
 	Setting.addToggle("fastToolTimers", {
 		label: "Remove tool timers (instant)",
 		default: false,
-		onChange: function () { setup.Gui.refreshToolTimer(); }
+		onChange: function () {
+			ifCheatChanged("fastToolTimers", function () {
+				setup.Gui.refreshToolTimer();
+			});
+		}
 	});
 
 	var GHOST_PICKER_NULL = "—";
+	seedCheat('cheatTarotCard', GHOST_PICKER_NULL);
+	seedCheat('cheatGhostType', GHOST_PICKER_NULL);
 	Setting.addList("cheatTarotCard", {
 		label: "Force next tarot card drawn",
 		list: [GHOST_PICKER_NULL].concat((setup.tarotDeck || []).map(function (c) { return c.name; })),
-		default: GHOST_PICKER_NULL
+		default: GHOST_PICKER_NULL,
+		onChange: function () { ifCheatChanged("cheatTarotCard"); }
 	});
 	Setting.addList("cheatGhostType", {
 		label: "Force ghost type — needs active contract or hunt",
 		list: [GHOST_PICKER_NULL].concat(setup.Ghosts.list().map(function (g) { return g.name; })),
 		default: GHOST_PICKER_NULL,
 		onChange: function () {
-			var name = settings.cheatGhostType;
-			if (name === GHOST_PICKER_NULL) return;
-			if (!setup.Ghosts.isAnyMode()) return;
-			var ghost = setup.Ghosts.list().filter(function (g) { return g.name === name; })[0];
-			if (ghost) setup.Ghosts.forceHuntGhost(ghost);
+			ifCheatChanged("cheatGhostType", function () {
+				var name = settings.cheatGhostType;
+				if (name === GHOST_PICKER_NULL) return;
+				if (!setup.Ghosts.isAnyMode()) return;
+				var ghost = setup.Ghosts.list().filter(function (g) { return g.name === name; })[0];
+				if (ghost) setup.Ghosts.forceHuntGhost(ghost);
+			});
 		}
 	});
 });
@@ -252,7 +299,12 @@ $(document).one(":storyready", function () {
 		if (enabled === false) {
 			$btn.prop("disabled", true);
 		} else {
-			$btn.on("click", onClick);
+			$btn.on("click", function (evt) {
+				onClick.call(this, evt);
+				if (setup.StoryEvents && setup.StoryEvents.Event) {
+					setup.StoryEvents.emit(setup.StoryEvents.Event.CHEAT_USED, { source: label });
+				}
+			});
 		}
 		return $btn;
 	}

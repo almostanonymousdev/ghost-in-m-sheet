@@ -1,0 +1,88 @@
+/* ===== Dialogue Text ===== */
+.location {
+	font-size: 1.5em;
+	font-style: italic;
+	color: #f2f5f7;
+	text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* MC speech */
+.mc-speech {
+	color: var(--color-mc-pink);
+	text-decoration: none;
+	font-size: 1rem;
+	text-shadow: var(--outline-shadow);
+}
+
+.mc-speech:hover {
+	text-decoration: none;
+	text-shadow: var(--hover-shadow);
+}
+
+.mc-speech a,
+.mc-speechLink a,
+.mc-speechLink {
+	color: var(--color-mc-pink-link);
+	font-style: italic;
+	text-decoration: none;
+}
+
+.mc-speech a:hover {
+	color: var(--color-mc-pink-hover);
+	text-shadow: var(--hover-shadow);
+}
+
+/* MC thoughts */
+.mc-thoughts {
+	color: var(--color-mc-thoughts);
+	font-style: italic;
+	font-size: 1rem;
+	text-decoration: none;
+	text-shadow: var(--outline-shadow);
+}
+
+.mc-thoughts a,
+.mc-thoughtsLink {
+	color: var(--color-mc-thoughts-link);
+	font-style: italic;
+	text-decoration: none;
+}
+
+/* NPC speech */
+.notmc-speech {
+	color: var(--color-npc-blue);
+	text-decoration: none;
+	font-size: 1rem;
+	text-shadow: var(--outline-shadow);
+}
+
+.notmc-speech a {
+	font-size: 1.1em;
+	color: var(--color-npc-blue-link);
+	font-style: italic;
+	text-decoration: none;
+}
+
+.notmc-speechLink {
+	color: var(--color-npc-blue-muted);
+	font-style: italic;
+}
+
+.notmc-speechLink:hover {
+	color: var(--color-npc-blue);
+	text-decoration: none;
+}
+
+/* ===== MC Action ===== */
+.mc-action {
+	display: inline-block;
+	margin: 0.5em 0;
+	background-color: #ffe6f2;
+	padding: 10px;
+	border-radius: 10px;
+	border: 2px solid #ff66b2;
+	font-family: 'Arial', sans-serif;
+	font-size: 1.125rem;
+	color: #99004d;
+	text-align: center;
+}

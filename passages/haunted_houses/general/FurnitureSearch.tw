@@ -37,6 +37,10 @@
 		<br>
 		<br>
 		@@.backbtn; [[Back|$return]]@@<br>
+	<<elseif _kind eq "cash">>
+		<<include "PickupHiddenCache">>
+	<<elseif _kind eq "ectoplasm">>
+		<<include "PickupGooeyGold">>
 	<<elseif _toolId>>
 		<<include "PickupHuntTool">>
 	<<else>>
@@ -171,6 +175,19 @@
 			<<run setup.MonkeyPaw.markFound()>>
 		<</if>>
 		<<run setup.HuntController.takeLoot("monkeyPaw")>>
+	<<elseif _kind eq "cash">>
+		<<set _amt to 100 + Math.floor(Math.random() * 201)>>
+		@@.mc-thoughts; A hidden cache -- $<<= _amt>> tucked into the furniture.@@<br>
+		@@.mc-thoughts; if they're still haunting the place, it's not grave robbing...right?@@<br>
+		@@.mc-action; You pocket the cash.@@<br><br>
+		<<run setup.Mc.addMoney(_amt)>>
+		<<run setup.HuntController.takeLoot("cash")>>
+	<<elseif _kind eq "ectoplasm">>
+		@@.mc-thoughts; A jar of translucent, purified ectoplasm -- gooey gold, 10mL.@@<br>
+		@@.mc-thoughts; I wonder what it tastes like?@@<br>
+		@@.mc-action; You put the jar in your bag.@@<br><br>
+		<<run setup.HuntController.addEctoplasm(10)>>
+		<<run setup.HuntController.takeLoot("ectoplasm")>>
 	<<elseif _kind eq "clothesStolen" and setup.HauntedHouses.hasClothesStolen()>>
 		@@.mc-thoughts; Your stolen clothes, balled up out of sight.@@<br>
 		@@.mc-action; You put them back on.@@<br><br>
@@ -188,6 +205,46 @@
 		<<run setup.HuntController.takeLoot(_kind)>>
 	<</if>>
 <</widget>>
+
+:: PickupHiddenCache [nobr] {"position":"2050,300","size":"100,100"}
+/* Rare furniture find: a stash of cash. The floor-plan generator
+   pins this at roughly 10% chance per hunt; takeLoot stamps the
+   slot collected and emits LOOT_TAKEN with kind="cash", which the
+   achievement bus listens for ('disc.loot.cash'). The dollar
+   amount rolls $100-300 at pickup -- not driven by the run seed,
+   so re-searching after a save scrub doesn't lock in the same
+   number (the takeLoot dedupe already prevents re-grabbing the
+   same slot, so there's no exploit). */
+<<set _amt to 100 + Math.floor(Math.random() * 201)>>
+@@.mc-thoughts; You feel something stiff wedged in the back of the@@ <<linkappend "@@.usebtn; drawer.@@">><br>
+	@@.mc-thoughts; A roll of bills -- $<<= _amt>>.@@<br>
+	@@.mc-speech; ((if they're still haunting the place, it's not grave robbing...right?))@@<br>
+	<br>
+	@@.mc-action; You pocket the cash.@@<br>
+	+$<<= _amt>><br>
+	<<run setup.Mc.addMoney(_amt)>>
+	<<run setup.HuntController.takeLoot("cash")>>
+<</linkappend>>
+<br><br>
+@@.backbtn; [[Back|$return]]@@
+
+:: PickupGooeyGold [nobr] {"position":"2150,300","size":"100,100"}
+/* Rare furniture find: a 10mL jar of purified ectoplasm. Adds to
+   the meta-progression $ectoplasm bank via
+   setup.HuntController.addEctoplasm, then takeLoot stamps the slot
+   collected and emits LOOT_TAKEN with kind="ectoplasm", which the
+   achievement bus listens for ('disc.loot.ecto'). */
+@@.mc-thoughts; Something glints from inside the@@ <<linkappend "@@.usebtn; furniture.@@">><br>
+	@@.mc-thoughts; A small glass jar of translucent, faintly glowing slime. Gooey gold -- 10mL of purified ectoplasm.@@<br>
+	@@.mc-speech; ((I wonder what it tastes like?))@@<br>
+	<br>
+	@@.mc-action; You put the jar in your bag.@@<br>
+	+10mL ectoplasm<br>
+	<<run setup.HuntController.addEctoplasm(10)>>
+	<<run setup.HuntController.takeLoot("ectoplasm")>>
+<</linkappend>>
+<br><br>
+@@.backbtn; [[Back|$return]]@@
 
 :: PickupHuntTool [nobr] {"position":"2150,200","size":"100,100"}
 /* Pickup beat for a hunting tool found in furniture during a hunt.

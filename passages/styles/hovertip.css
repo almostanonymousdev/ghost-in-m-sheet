@@ -1,0 +1,56 @@
+/* ===== Hovertip v2.0 ===== */
+.hoverTip {
+	display: inline-block;
+	top: 4px;
+	border-width: 0px;
+}
+
+.hoverTipTxt {
+	position: relative;
+	vertical-align: text-bottom;
+	line-height: initial;
+}
+
+.hoverTipTxt .hoverBox {
+	position: absolute;
+	visibility: hidden;
+}
+
+.hoverTipTxt:hover .hoverBox,
+.hoverTipTxt:focus .hoverBox {
+	visibility: visible;
+}
+
+.hoverBox {
+	padding: 3px 10px;
+	width: max-content;
+	max-width: 330px;
+	line-height: initial;
+	text-align: left;
+	color: white;
+	background-color: black;
+	border: #7f7f7f solid 2px;
+	border-radius: 6px;
+	box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.75);
+	z-index: 100;
+}
+
+.hoverTail::after {
+	content: "";
+	position: absolute;
+	top: 100%;
+	left: var(--tail-left, 50%);
+	margin-left: -5px;
+	border-width: 8px;
+	border-style: solid;
+	border-color: #7f7f7f transparent transparent transparent;
+	z-index: 100;
+}
+
+.hoverBox a {
+	transition-duration: unset;
+}
+
+#ui-bar .hoverBox {
+	max-width: 230px;
+}

@@ -1,0 +1,45 @@
+/* ===== Torn Paper Effects ===== */
+.torn-style-1 {
+	clip-path: polygon(1% 0, 50% 30%, 10% 70%, 0 30%);
+	box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.5), -5px -5px 10px rgba(255, 255, 255, 0.5) inset;
+}
+
+.torn-style-2 {
+	clip-path: polygon(100% 0, 30% 40%, 10% 70%, 0 30%);
+}
+
+.torn-style-3 {
+	clip-path: polygon(80% 0, 30% 80%, 30% 50%, 0 30%);
+}
+
+.torn-style-4 {
+	clip-path: polygon(50% 0, 30% 40%, 30% 50%, 0 10%);
+}
+
+.torn-style-5 {
+	clip-path: polygon(50% 0, 100% 80%, 50% 50%, 0 10%);
+}
+
+.torn-style-6 {
+	clip-path: polygon(70% 0, 70% 10%, 50% 80%, 0 70%);
+}
+
+.torn-style-7 {
+	clip-path: polygon(30% 10%, 50% 40%, 50% 70%, 0 70%);
+}
+
+.torn-style-8 {
+	clip-path: polygon(78% 100%, 44% 43%, 0 70%);
+}
+
+.torn-style-9 {
+	clip-path: polygon(77% 1%, 67% 44%, 50% 100%, 0 50%);
+}
+
+.torn-style-10 {
+	clip-path: polygon(20% 1%, 67% 44%, 50% 100%, 30% 50%);
+}
+
+.torn-effect {
+	filter: grayscale(100%);
+}

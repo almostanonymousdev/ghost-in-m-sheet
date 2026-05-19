@@ -1,0 +1,31 @@
+/* ===== Images — Centred Display (shared base) ===== */
+.displayCentredImgs,
+.displayCentredImgsEvent {
+	width: auto;
+	display: block;
+	margin-inline: auto;
+}
+
+.displayCentredImgs {
+	max-height: 70vh;
+}
+
+.displayCentredImgsEvent {
+	max-height: 61vh;
+}
+
+.UVLimg {
+	max-width: 100%;
+	height: auto;
+	display: block;
+}
+
+.GWBimgs {
+	max-width: 50%;
+}
+
+.action {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}

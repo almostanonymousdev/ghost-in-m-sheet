@@ -16,6 +16,7 @@ setup.HauntConditions = (function () {
 	var BAIT_LUST_PER_STEP  = 10;   // lust accrued each remaining bait step
 	var BAIT_STEPS          = 3;    // nav ticks the ghost is pinned to you
 	var BAIT_ORGASM_SANITY  = 10;   // sanity lost when bait pushes lust past the cap
+	var ORGASM_COOLDOWN_STEPS = 3;  // aftershock window seeded after any orgasm trigger
 
 	/* Energy as the pacing gate: every nav tick inside a haunted house
 	 * burns ENERGY_PER_STEP, capping the total room-search budget per
@@ -294,10 +295,13 @@ setup.HauntConditions = (function () {
 		return true;
 	}
 
-	/* Resolve a pending bait orgasm: drop sanity, reset lust to zero. The
-	 * bait counter is intentionally NOT cleared — the ghost stays pinned
-	 * for the rest of the contract window per spec. Returns true when an
-	 * orgasm was actually pending so callers can branch on the result. */
+	/* Resolve a pending bait orgasm: drop sanity, reset lust to zero, and
+	 * seed the aftershock cooldown so the HUD's Aftershock chip and the
+	 * per-step drain land the same way they do after a widgetEvent.tw
+	 * orgasm trigger. The bait counter is intentionally NOT cleared — the
+	 * ghost stays pinned for the rest of the contract window per spec.
+	 * Returns true when an orgasm was actually pending so callers can
+	 * branch on the result. */
 	function consumeBaitOrgasm() {
 		var V = State.variables;
 		if (V.baitOrgasmPending !== 1) return false;
@@ -310,6 +314,7 @@ setup.HauntConditions = (function () {
 		if (outcome === setup.SanityDeltaResult.COLLAPSED) {
 			V.sanityCollapse = 1;
 		}
+		setup.Mc.setOrgasmCooldown(ORGASM_COOLDOWN_STEPS);
 		return true;
 	}
 

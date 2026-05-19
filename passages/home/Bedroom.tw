@@ -77,6 +77,7 @@
 	<</if>>
 	@@.enterbtn;[[Bathroom]]@@<br>
 	@@.enterbtn;[[Alarm clock|AlarmClock]]@@<br>
+	@@.enterbtn;[[Trophy shelf|TrophyShelf]]@@<br>
 	<<if setup.CursedItems.isItemCursed("bed")>>
 		@@.usebtn;<<link "Sleep" "CursedBedEvent">>
 		<</link>>@@<br>
@@ -97,6 +98,11 @@
 		<<linkreplace "@@.usebtn; Use holy water@@">><<run setup.Home.useHolyWaterOnMare()>>
 			@@.mc-speech; This should help. Now I can sleep peacefully.@@
 		<</linkreplace>>
+	<</if>>
+	<<if setup.Achievements.hasCheated() eq false>>
+		@@.usebtn;<<link "Push your endorphin button">>
+			<<run setup.Achievements.unlock("fun.sploosh")>>
+		<</link>>@@<br>
 	<</if>>
 	<br>
 	<br>

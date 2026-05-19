@@ -394,21 +394,24 @@ test.describe('E2E: hunt lifecycle', () => {
     await stubPerTickGatesQuiet(page);
     await fastToolTicks(page);
 
-    const hud = page.locator('.hunt-run-bottom .hunt-conditions');
+    // Contributor chips render in their own vertical list on the left
+    // edge of the bottom region (.hunt-run-effects); the centered stats
+    // row (.hunt-conditions) carries only the per-step deltas.
+    const effects = page.locator('.hunt-run-bottom .hunt-run-effects');
     // Baseline: no Lust contributor chip (mc.lust starts at 0).
-    await expect(hud).not.toContainText('Lust ≥');
+    await expect(effects).not.toContainText('Lust ≥');
 
     // Cross the LUST_FUEL_THRESHOLD (50) without re-rendering the
     // passage -- the HUD should pick this up only after the tool-tick
     // refresh, which mirrors classic's nav re-render.
     await page.evaluate(() => { SugarCube.State.variables.mc.lust = 60; });
 
-    // Click any tool; the huntToolSlot re-renders .hunt-conditions
-    // after applyTickEffects.
+    // Click any tool; the huntToolSlot refreshes the full HUD trio
+    // (stats / effects / actions) after applyTickEffects.
     await page.locator('.hunt-tool-card').first().locator('a').click();
     await page.waitForFunction(() => SugarCube.State.variables.minutes >= 6);
 
-    await expect(hud).toContainText('Lust ≥ 50');
+    await expect(effects).toContainText('Lust ≥ 50');
   });
 
   test('toolbar renders one card per setup.searchToolOrder entry', async () => {

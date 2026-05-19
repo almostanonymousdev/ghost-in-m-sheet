@@ -1,0 +1,255 @@
+/* ===== Achievement toast (Xbox-360-styled slab) ===== */
+
+.achievement-toast-stack {
+	position: fixed;
+	left: 1.25rem;
+	bottom: 1.25rem;
+	/* Must sit above SugarCube's #ui-dialog (z-index 100100) so toasts
+	   for actions taken inside the Settings dialog (cheat toggles,
+	   one-shot cheat buttons) are visible to the player. */
+	z-index: 100200;
+	pointer-events: none;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.achievement-toast {
+	display: flex;
+	align-items: center;
+	min-width: 22rem;
+	max-width: 28rem;
+	padding: 0.55rem 1rem 0.55rem 0.55rem;
+	background: linear-gradient(180deg, #1c1c1c 0%, #0a0a0a 100%);
+	color: #f4f4f4;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 999px;
+	box-shadow:
+		0 0 0 1px rgba(0, 0, 0, 0.6),
+		0 10px 28px rgba(0, 0, 0, 0.55),
+		inset 0 1px 0 rgba(255, 255, 255, 0.08);
+	font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+	opacity: 0;
+	transform: translateX(-120%);
+	transition:
+		transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1),
+		opacity 220ms ease-out;
+}
+
+.achievement-toast.show {
+	opacity: 1;
+	transform: translateX(0);
+}
+
+.achievement-toast.hide {
+	opacity: 0;
+	transform: translateX(-120%);
+}
+
+/* The 360's green orb. Three stacked layers so the green->icon
+   handoff can cross-fade:
+     .orb-bg    the green glass gradient (fades out on .show-icon)
+     .orb-img   the per-achievement icon (fades in on .show-icon)
+     .orb-inner the white specular highlight (fades out on .show-icon)
+   The orb itself is just the circular container + outer glow. */
+.achievement-toast-orb {
+	flex: 0 0 auto;
+	width: 2.6rem;
+	height: 2.6rem;
+	margin-right: 0.85rem;
+	border-radius: 50%;
+	background: #0a0a0a;
+	box-shadow:
+		inset 0 0 0 1px rgba(0, 0, 0, 0.55),
+		inset 0 -2px 6px rgba(0, 0, 0, 0.55),
+		0 0 12px rgba(108, 212, 74, 0.45);
+	position: relative;
+	overflow: hidden;
+}
+
+.achievement-toast-orb-bg {
+	position: absolute;
+	inset: 0;
+	border-radius: 50%;
+	background:
+		radial-gradient(circle at 50% 115%, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 55%),
+		radial-gradient(circle at 50% 50%, #6cd44a 0%, #3aa11e 55%, #1c5e0e 100%);
+	opacity: 1;
+	transition: opacity 320ms ease-out;
+	z-index: 1;
+	pointer-events: none;
+}
+
+.achievement-toast-orb-inner {
+	position: absolute;
+	top: 12%;
+	left: 18%;
+	width: 60%;
+	height: 38%;
+	border-radius: 50%;
+	background: radial-gradient(ellipse at 50% 30%, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0) 70%);
+	pointer-events: none;
+	z-index: 3;
+	transition: opacity 320ms ease-out;
+}
+
+.achievement-toast-orb-img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	border-radius: 50%;
+	object-fit: cover;
+	z-index: 2;
+	display: block;
+	opacity: 0;
+	transition: opacity 320ms ease-in;
+}
+
+/* Cross-fade: green out, icon in, highlight out. Only fires on the
+   has-icon variant; iconless toasts never get .show-icon and stay
+   green for the full hold. */
+.achievement-toast-orb.show-icon .achievement-toast-orb-bg    { opacity: 0; }
+.achievement-toast-orb.show-icon .achievement-toast-orb-img   { opacity: 1; }
+.achievement-toast-orb.show-icon .achievement-toast-orb-inner { opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+	.achievement-toast-orb-bg,
+	.achievement-toast-orb-img,
+	.achievement-toast-orb-inner {
+		transition: none;
+	}
+}
+
+.achievement-toast-text {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	line-height: 1.15;
+	overflow: hidden;
+}
+
+.achievement-toast-label {
+	font-size: 0.72rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: #c8c8c8;
+}
+
+.achievement-toast-name {
+	font-size: 1rem;
+	font-weight: 600;
+	color: #ffffff;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.achievement-toast {
+		transition: opacity 120ms linear;
+		transform: none;
+	}
+	.achievement-toast.hide { transform: none; }
+}
+
+/* ===== Trophy shelf (bedroom passage) ===== */
+
+.trophy-shelf-summary {
+	font-size: 1rem;
+	color: #c8c8c8;
+	letter-spacing: 0.04em;
+}
+
+.trophy-shelf {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	max-width: 50rem;
+}
+
+.trophy-section-title {
+	margin: 0.25rem 0 0.5rem 0;
+	font-size: 1.05rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: #d4d4d4;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+	padding-bottom: 0.2rem;
+}
+
+.trophy-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+	gap: 0.5rem;
+}
+
+.trophy-card {
+	display: flex;
+	align-items: center;
+	padding: 0.45rem 0.6rem;
+	background: linear-gradient(180deg, #1c1c1c 0%, #0a0a0a 100%);
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 0.4rem;
+	box-shadow:
+		0 0 0 1px rgba(0, 0, 0, 0.5),
+		inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.trophy-card.locked {
+	opacity: 0.55;
+	filter: grayscale(0.8);
+}
+
+.trophy-card-orb {
+	flex: 0 0 auto;
+	width: 2.2rem;
+	height: 2.2rem;
+	margin-right: 0.6rem;
+	border-radius: 50%;
+	background:
+		radial-gradient(circle at 50% 115%, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 55%),
+		radial-gradient(circle at 50% 50%, #6cd44a 0%, #3aa11e 55%, #1c5e0e 100%);
+	box-shadow:
+		inset 0 0 0 1px rgba(0, 0, 0, 0.5),
+		0 0 6px rgba(108, 212, 74, 0.35);
+	overflow: hidden;
+	position: relative;
+}
+
+.trophy-card.locked .trophy-card-orb {
+	background:
+		radial-gradient(circle at 50% 115%, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0) 55%),
+		radial-gradient(circle at 50% 50%, #444 0%, #222 100%);
+	box-shadow:
+		inset 0 0 0 1px rgba(0, 0, 0, 0.5);
+}
+
+.trophy-card-icon {
+	width: 100%;
+	height: 100%;
+	border-radius: 50%;
+	object-fit: cover;
+	display: block;
+}
+
+.trophy-card-text {
+	display: flex;
+	flex-direction: column;
+	line-height: 1.2;
+	overflow: hidden;
+}
+
+.trophy-card-name {
+	font-size: 0.95rem;
+	font-weight: 600;
+	color: #ffffff;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.trophy-card-hint {
+	font-size: 0.78rem;
+	color: #b8b8b8;
+}

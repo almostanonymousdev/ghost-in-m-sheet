@@ -331,6 +331,17 @@ sugarcube-2:
         bait the ghost (lust spend), toggle overcharged tools on/off. Only
         renders when a hunt is active (setup.HauntedHouses.isInsideHouse()). No
         args."
+    huntEffectsList:
+      name: huntEffectsList
+      description: Renders the active hunt contributor chips as a vertical list
+        (lust thresholds, exhaustion drain, modifier effects, etc.). Reads the
+        same setup.HauntConditions.snapshot() that the stats row consumes. No
+        args.
+    refreshHuntHud:
+      name: refreshHuntHud
+      description: Refreshes the hunt HUD trio (.hunt-conditions stats,
+        .hunt-run-effects chips, .hunt-run-actions buttons) in a single call so
+        any state change that affects one keeps the others in sync. No args.
     navLink:
       name: navLink
       description: "Renders an @@.adaptiveLink;<<link>>...<</link>>@@ navigation link

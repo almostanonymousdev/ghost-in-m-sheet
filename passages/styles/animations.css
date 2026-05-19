@@ -1,0 +1,32 @@
+/* ===== Animations ===== */
+.fadeInScale {
+	opacity: 0;
+	transform: scale(0.8);
+	transition: opacity 3s ease, transform 1s ease;
+}
+
+.fadeInScaleFool {
+	opacity: 0;
+	transition: opacity 1s ease;
+}
+
+.tarotCardsShow {
+	opacity: 1;
+	transform: scale(1);
+}
+
+.smooth-transition {
+	transition: background-image 0.9s ease;
+}
+
+/* ===== Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}

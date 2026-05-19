@@ -343,11 +343,14 @@ setup.Delivery = (function () {
 		}
 	};
 })();
-setup.Cooldowns.registerDaily('deliveryPizzaEvent');
-setup.Cooldowns.registerDaily('deliveryPackageEvent');
-setup.Cooldowns.registerDaily('deliveryBurgerEvent');
-setup.Cooldowns.registerDaily('deliveryPapersEvent');
-setup.Cooldowns.registerDaily('deliveryBJ');
+/* Deferred to :storyready -- see ChurchController for rationale. */
+$(document).one(':storyready', function () {
+	setup.Cooldowns.registerDaily('deliveryPizzaEvent');
+	setup.Cooldowns.registerDaily('deliveryPackageEvent');
+	setup.Cooldowns.registerDaily('deliveryBurgerEvent');
+	setup.Cooldowns.registerDaily('deliveryPapersEvent');
+	setup.Cooldowns.registerDaily('deliveryBJ');
+});
 
 /* Delivery-event catalogue. Each entry holds the metadata the unified
    dispatch passages (DeliveryEventChoose / Start / Event1 / Event2)
