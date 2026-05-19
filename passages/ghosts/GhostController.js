@@ -543,15 +543,20 @@
         /* Test / cheat shortcut. Stamps a minimal $run with the named
            ghost as both real identity and current disguise, copies in
            the catalogue evidence, and flips $huntMode to ACTIVE.
-           Production hunt flow goes through setup.HuntController.startHunt
+           Production hunt flow goes through setup.HuntController.start
            for the full floorplan / modifiers / starting-tools / event
            bus setup; this helper exists so unit specs and the cheat
            menu can park the player in an "active hunt" state without
-           spinning up a procedural run. */
-        startHunt: function (name) {
+           spinning up a procedural run.
+
+           The `cheat` prefix marks this as cheat/test-only — see
+           tests/cheat-method-lint.spec.js, which forbids production
+           passages from calling any setup.X.cheat* method outside the
+           cheat dialog. */
+        cheatStartHunt: function (name) {
             var ghost = setup.Ghosts.getByName(name);
             if (!ghost) return false;
-            setup.HuntController.stampMinimalRun({
+            setup.HuntController.cheatStampMinimalRun({
                 ghostName: name,
                 evidence:  ghost.evidence.map(function (e) { return e.id; })
             });
@@ -640,8 +645,10 @@
             if (count >= 3) s.deleteThirdEvidence = 1;
         },
 
-        /* Cheat-menu helpers (StoryCaption) */
-        forceHuntGhost: function (g) {
+        /* Cheat-menu helpers (StoryCaption). The `cheat` prefix marks
+           these as cheat-only — tests/cheat-method-lint.spec.js
+           restricts the call sites. */
+        cheatForceHuntGhost: function (g) {
             if (!g) return;
             if (!setup.HuntController
                 || typeof setup.HuntController.isActive !== "function"

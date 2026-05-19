@@ -370,7 +370,7 @@ test.describe('Companions — hunt setup integration', () => {
     await page.evaluate(() => {
       SugarCube.setup.HuntController.startHunt({ seed: 1 });
       SugarCube.setup.HuntController.setField('ghostName', 'Shade');
-      SugarCube.setup.Ghosts.startHunt('Shade');
+      SugarCube.setup.Ghosts.cheatStartHunt('Shade');
       SugarCube.setup.Ghosts.setHuntMode(SugarCube.setup.Ghosts.HuntMode.ACTIVE);
     });
     await goToPassage(page, 'HuntStart');
@@ -413,7 +413,7 @@ test.describe('Companions — hunt setup integration', () => {
     await page.evaluate(() => {
       SugarCube.setup.HuntController.startHunt({ seed: 1 });
       SugarCube.setup.HuntController.setField('ghostName', 'Shade');
-      SugarCube.setup.Ghosts.startHunt('Shade');
+      SugarCube.setup.Ghosts.cheatStartHunt('Shade');
       SugarCube.setup.Ghosts.setHuntMode(SugarCube.setup.Ghosts.HuntMode.ACTIVE);
     });
     await setVar(page, 'isCompChosen', 1);

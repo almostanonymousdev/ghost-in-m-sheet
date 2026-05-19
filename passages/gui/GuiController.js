@@ -268,7 +268,7 @@ $(document).one(":storyready", function () {
 				if (name === GHOST_PICKER_NULL) return;
 				if (!setup.Ghosts.isAnyMode()) return;
 				var ghost = setup.Ghosts.list().filter(function (g) { return g.name === name; })[0];
-				if (ghost) setup.Ghosts.forceHuntGhost(ghost);
+				if (ghost) setup.Ghosts.cheatForceHuntGhost(ghost);
 			});
 		}
 	});
@@ -369,7 +369,7 @@ $(document).one(":storyready", function () {
 			{ label: "Perfect body (fit = 100)",       fire: function () { setup.Mc.setFit(100); } },
 			{ label: "Exhibitionism = 5",              fire: function () { setup.Mc.setExhibitionism(5); } },
 			{ label: "Surrender to possession = 11",   fire: function () { setup.Mc.setPossession(11); } },
-			{ label: "Maximize body part sensitivity", fire: function () { setup.Intro.maximizeSensualBodyParts(setup.Intro.currentSensualBodyPart()); } }
+			{ label: "Maximize body part sensitivity", fire: function () { setup.Intro.cheatMaximizeSensualBodyParts(setup.Intro.currentSensualBodyPart()); } }
 		]);
 
 		appendGroup($root, "Companions", [

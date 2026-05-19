@@ -150,7 +150,7 @@ function setHuntMode(page, mode) {
       V.run = null;
       return;
     }
-    if (!V.run || !V.run.ghostName) SugarCube.setup.Ghosts.startHunt('Shade');
+    if (!V.run || !V.run.ghostName) SugarCube.setup.Ghosts.cheatStartHunt('Shade');
     V.huntMode = m;
   }, mode);
 }

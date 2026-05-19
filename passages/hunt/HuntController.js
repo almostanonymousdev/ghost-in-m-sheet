@@ -419,8 +419,12 @@ setup.HuntController = (function () {
 	   and default trapped to false. Production hunt flow goes through
 	   start() above (full procedural startup). This exists so unit specs
 	   and the cheat menu can park the player in an "active hunt" state
-	   without spinning up a floorplan / modifiers / starting tools. */
-	function stampMinimalRun(opts) {
+	   without spinning up a floorplan / modifiers / starting tools.
+
+	   The `cheat` prefix marks this as cheat/test-only — see
+	   tests/cheat-method-lint.spec.js, which forbids production passages
+	   from calling any setup.X.cheat* method outside the cheat dialog. */
+	function cheatStampMinimalRun(opts) {
 		opts = opts || {};
 		var run = sv().run;
 		if (!run || typeof run !== 'object') {
@@ -1824,7 +1828,7 @@ setup.HuntController = (function () {
 		FailureReason: FailureReason,
 		Objective: Objective,
 		start: start,
-		stampMinimalRun: stampMinimalRun,
+		cheatStampMinimalRun: cheatStampMinimalRun,
 		end: end,
 		active: active,
 		isActive: isActive,
