@@ -278,7 +278,8 @@
 				@@.movebtn; [[Go home|HuntSummary]]@@
 			</div>
 		<<else>>
-			<div class="hunt-reveal hunt-reveal-text">@@.mc-thoughts; Your heart sinks as the ghost roughly grabs your helpless form.@@</div>
+			<<set _trueGhost to setup.Ghosts.active()>>
+			<div class="hunt-reveal hunt-reveal-text">@@.mc-thoughts; Your heart sinks. It wasn't what you'd guessed -- it's a <<= _trueGhost.name>> bearing down on you, and every sign you talked yourself out of slams back into focus: <<= _trueGhost.evidenceLabels()>>. The ghost roughly grabs your helpless form before you can run.@@</div>
 			<div class="hunt-reveal hunt-reveal-buttons">
 				@@.movebtn; [[Continue|HuntEnd]]@@
 			</div>

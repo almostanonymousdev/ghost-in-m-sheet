@@ -169,6 +169,21 @@ test.describe('E2E: Hunt Outside menu', () => {
       page.locator('.passage').getByText(/heart sinks/i)
     ).toBeVisible({ timeout: 10_000 });
 
+    // The reveal now names the real ghost and lists its evidence so the
+    // player knows what they missed.
+    const trueLabels = await callSetup(
+      page,
+      'setup.Ghosts.active().evidenceLabels()'
+    );
+    await expect(
+      page.locator('.passage').getByText(new RegExp(ghost, 'i'))
+    ).toBeVisible();
+    for (const label of trueLabels.split(/,\s*/)) {
+      await expect(
+        page.locator('.passage').getByText(label, { exact: false })
+      ).toBeVisible();
+    }
+
     // Continue routes to HuntEnd; the run is still alive at that point
     // (huntEndExit -> huntCaughtPassage closes it on the next click).
     await clickLink(page, 'Continue', 'HuntEnd');
