@@ -87,9 +87,8 @@ setup.HauntedHouses = (function () {
 		cleanupAfterHunt: function (opts) {
 			opts = opts || {};
 			this.resetToolTimers();
-			setup.Companion.clearBlakeCursedItem();
+			setup.Companion.runHuntFailHooks();
 			setup.Companion.resetHuntState();
-			setup.Companion.resetAliceWorkIfNeeded();
 			if (opts.loseStolen) setup.Wardrobe.loseAllStolen();
 			setup.Wardrobe.redressAfterHunt();
 		},

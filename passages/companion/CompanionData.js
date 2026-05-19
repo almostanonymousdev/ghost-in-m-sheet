@@ -20,6 +20,13 @@ setup.CompanionData = (function () {
 			isTrans: false, canWalkHome: true, hasExpSystem: true,
 			pronObj: "her", pronPos: "her",
 			neutralResp: "Let's just focus on the task.",
+			// Brook's "have I met her" / "is she available" gates live on
+			// the Library/Home controllers (they own meetBrook + the
+			// brooke-with-Rain cooldown). Hooks delegate so the companion
+			// controller never reads other controllers' $vars by name.
+			hasMet:        function () { return setup.Library.hasMetBrook(); },
+			isPossessed:   function () { return setup.Library.brookIsPossessed(); },
+			isUnavailable: function () { return setup.Home.brookePossessedCDLow(); },
 			// Per-companion stat overrides merged over cisBaseStats by
 			// Companion.prototype.defaultState(). Only the fields that
 			// differ from the shared cis defaults live here.
@@ -53,6 +60,16 @@ setup.CompanionData = (function () {
 			isTrans: false, canWalkHome: true, hasExpSystem: true,
 			pronObj: "her", pronPos: "her",
 			neutralResp: "Let's just focus on the task.",
+			// Alice owns the $meetAlice flag and $aliceWorkDone. hasMet/
+			// markMet wrap the former; onHuntFail (called only on the
+			// active companion) zeroes workDone unless Alice was on a
+			// solo run -- a botched joint hunt invalidates the delivery.
+			hasMet:  function () { return State.variables.meetAlice !== undefined; },
+			markMet: function () { State.variables.meetAlice = 1; },
+			onHuntFail: function () {
+				var stats = State.variables.alice;
+				if (stats && stats.goingSolo === 0) State.variables.aliceWorkDone = 0;
+			},
 			initStats: {
 				plan2TimeReq: 15, plan3TimeReq: 15, plan4TimeReq: 10,
 				chanceOfSuccessCI: 30, chanceOfSuccessGR: 50
@@ -80,6 +97,14 @@ setup.CompanionData = (function () {
 			isTrans: false, canWalkHome: true, hasExpSystem: true,
 			pronObj: "her", pronPos: "her",
 			neutralResp: "Let's just focus on the task.",
+			// If Blake was the active companion and the hunt ended badly
+			// while she was carrying a cursed item for the Witch, she
+			// drops it. Witch owns the gotCursedItem flag.
+			onHuntFail: function () {
+				if (State.variables.isCompChosen !== 1) return;
+				if (!setup.Witch.hasCursedItemToTurnIn()) return;
+				setup.Witch.clearCursedItemHeld();
+			},
 			initStats: {
 				plan2TimeReq: 10, plan3TimeReq: 15, plan4TimeReq: 10,
 				chanceOfSuccessCI: 30, chanceOfSuccessGR: 20,
@@ -108,6 +133,10 @@ setup.CompanionData = (function () {
 			isTrans: true, canWalkHome: false, hasExpSystem: false,
 			pronObj: "him", pronPos: "his",
 			neutralResp: "Let's just focus on the task.",
+			// Index into the rotating $transPicture portrait file; stamped
+			// by setup.Companion.markTransFirstStage when this companion
+			// is active.
+			portraitIndex: 1,
 			initStats: { chanceOfSuccessAnyEvidence: 25 },
 			clothingTiers: [
 				{ mc: "You can take off your shirt, it'll make it easier for you to move.",
@@ -126,6 +155,7 @@ setup.CompanionData = (function () {
 			isTrans: true, canWalkHome: false, hasExpSystem: false,
 			pronObj: "her", pronPos: "her",
 			neutralResp: "Let's just focus on the task.",
+			portraitIndex: 2,
 			initStats: { chanceOfSuccessAnyEvidence: 35 },
 			clothingTiers: [
 				{ mc: "You can take off your top, it'll make it easier for you to move.",
@@ -144,6 +174,7 @@ setup.CompanionData = (function () {
 			isTrans: true, canWalkHome: false, hasExpSystem: false,
 			pronObj: "them", pronPos: "their",
 			neutralResp: "Let's just focus on the task.",
+			portraitIndex: 3,
 			initStats: { chanceOfSuccessAnyEvidence: 50 },
 			clothingTiers: [
 				{ mc: "You can take off your top, it'll make it easier for you to move.",
@@ -268,6 +299,14 @@ setup.CompanionData = (function () {
 		Blake: { 2: [25, 10], 3: [40, 25], 4: [55, 40], 5: [70, 55] }
 	};
 
+	// Payout for a successful solo hunt, keyed by street. Owaissa is the
+	// safer / lower-paying contract; Elm is riskier. Driven from data so
+	// the controller's payoutSoloHunt doesn't hardcode the figures.
+	var soloRewards     = { Owaissa: 50, Elm: 100 };
+	// Up-front cost to dispatch a companion solo. Charged by
+	// payForSoloContract from $mc.money; canAffordSoloContract gates UI.
+	var soloContractFee = 20;
+
 	// CompanionEvent dialog shared by all trans companions (Alex / Taylor /
 	// Casey). Tier-1 has pre/post variants keyed off
 	// setup.Companion.isTransFirstStageSet(); tiers 2-4 are flat strings.
@@ -303,6 +342,8 @@ setup.CompanionData = (function () {
 		eventMediaTrans:  eventMediaTrans,
 		transEventCopy:   transEventCopy,
 		soloSkillCurve:   soloSkillCurve,
+		soloRewards:      soloRewards,
+		soloContractFee:  soloContractFee,
 		cursedItemTypes:  cursedItemTypes
 	};
 })();

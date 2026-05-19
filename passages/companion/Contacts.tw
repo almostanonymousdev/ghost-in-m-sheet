@@ -2,7 +2,7 @@
 <div class="flexwrapper addGap5">
 
 <div class="housecard">
-<<if setup.Companion.hasMetBrook()>>
+<<if setup.Companion.hasMet("Brook")>>
 	<<set _brook to setup.Companion.stateFor("brook")>>
 	@@.notmc-speech; <<= _brook.name>> @@<br>
 	<<= _brook.lvl>> lvl <<if _brook.lvl gte 5>> (max. lvl)
@@ -20,7 +20,7 @@
 			<<linkreplace "@@.enterbtn;Text her@@">>She's not answering... Strange, she usually responds right away...
 			<</linkreplace>>
 		<<else>>
-			<<if setup.Companion.isBrookeCurrentlyUnavailable()>>
+			<<if setup.Companion.isUnavailable("Brook")>>
 				@@.mc-thoughts;She's probably still with Rain. Maybe it's worth waiting a couple of days. @@
 			<<else>>
 				@@.enterbtn;[[Text her|BrookInfo]]@@<br>
@@ -36,7 +36,7 @@
 </div>
 
 <div class="housecard">
-<<if setup.Companion.hasMetAlice()>>
+<<if setup.Companion.hasMet("Alice")>>
 	<<set _alice to setup.Companion.stateFor("alice")>>
 	@@.notmc-speech; <<= _alice.name>> @@<br>
 	<<= _alice.lvl>> lvl <<if _alice.lvl gte 5>> (max. lvl)

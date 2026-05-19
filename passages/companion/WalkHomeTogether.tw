@@ -127,8 +127,6 @@
 
 <<run setup.resetTools()>>
 
-<<run setup.Companion.clearBlakeCursedItem()>>
+<<run setup.Companion.runHuntFailHooks()>>
 
 <<run setup.Companion.resetHuntState()>>
-
-<<run setup.Companion.resetAliceWorkIfNeeded()>>

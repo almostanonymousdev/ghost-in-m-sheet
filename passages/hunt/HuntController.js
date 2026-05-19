@@ -429,8 +429,7 @@ setup.HuntController = (function () {
 			setup.Ghosts.setHuntMode(setup.Ghosts.HuntMode.NONE);
 		}
 		if (setup.Companion) {
-			if (typeof setup.Companion.clearBlakeCursedItem === 'function') setup.Companion.clearBlakeCursedItem();
-			if (typeof setup.Companion.resetAliceWorkIfNeeded === 'function') setup.Companion.resetAliceWorkIfNeeded();
+			if (typeof setup.Companion.runHuntFailHooks === 'function') setup.Companion.runHuntFailHooks();
 			if (typeof setup.Companion.resetHuntState === 'function') setup.Companion.resetHuntState();
 		}
 		return prior;
@@ -1468,14 +1467,12 @@ setup.HuntController = (function () {
 		/* Tear down the legacy hunt-mode state stamped at startHunt so
 		   the next contract starts from HuntMode.NONE and the per-tick
 		   companion machinery (mini panel, attack roll, leave-after-event)
-		   sees a clean slate. resetHuntState zeroes the per-companion
-		   plan / showComp flags; clearBlakeCursedItem / resetAliceWorkIfNeeded
-		   undo the Blake-cursed-item / Alice-work bookkeeping that the
-		   per-companion flow plants. */
+		   sees a clean slate. runHuntFailHooks gives the active companion
+		   (if any) a chance to clean up their own state; resetHuntState
+		   then zeroes the shared plan / showComp / isCompChosen flags. */
 		setup.Ghosts.setHuntMode(setup.Ghosts.HuntMode.POSSESSED);
 		if (setup.Companion) {
-			setup.Companion.clearBlakeCursedItem();
-			setup.Companion.resetAliceWorkIfNeeded();
+			setup.Companion.runHuntFailHooks();
 			setup.Companion.resetHuntState();
 		}
 		/* Auto-redress slots the MC undressed herself during the run.

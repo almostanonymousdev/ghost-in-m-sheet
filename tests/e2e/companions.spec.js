@@ -227,13 +227,28 @@ test.describe('Companions — hunt-side events', () => {
     expect(await getVar(page, 'alice.paidForSolo')).toBe(1);
   });
 
-  test('blakeDropsCursedItem only fires when Blake + chosen + cursed item', async ({ game: page }) => {
+  test('Blake onHuntFail drops the cursed item when chosen + holding one', async ({ game: page }) => {
     await setVar(page, 'companion', { name: 'Blake' });
     await setVar(page, 'isCompChosen', 1);
     await setVar(page, 'gotCursedItem', 1);
-    expect(await callSetup(page, 'setup.Companion.blakeDropsCursedItem()')).toBe(true);
-    await page.evaluate(() => SugarCube.setup.Companion.clearBlakeCursedItem());
+    await page.evaluate(() => SugarCube.setup.Companion.runHuntFailHooks());
     expect(await getVar(page, 'gotCursedItem')).toBe(0);
+  });
+
+  test('runHuntFailHooks is a no-op when Blake is active but not chosen', async ({ game: page }) => {
+    await setVar(page, 'companion', { name: 'Blake' });
+    await setVar(page, 'isCompChosen', 0);
+    await setVar(page, 'gotCursedItem', 1);
+    await page.evaluate(() => SugarCube.setup.Companion.runHuntFailHooks());
+    expect(await getVar(page, 'gotCursedItem')).toBe(1);
+  });
+
+  test('runHuntFailHooks is a no-op when a non-Blake companion is active', async ({ game: page }) => {
+    await setVar(page, 'companion', { name: 'Alice' });
+    await setVar(page, 'isCompChosen', 1);
+    await setVar(page, 'gotCursedItem', 1);
+    await page.evaluate(() => SugarCube.setup.Companion.runHuntFailHooks());
+    expect(await getVar(page, 'gotCursedItem')).toBe(1);
   });
 
   test('resetHuntState zeroes plan/flags for clean post-hunt state', async ({ game: page }) => {

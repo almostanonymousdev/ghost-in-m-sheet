@@ -75,10 +75,6 @@ setup.Companion = (function () {
 		});
 	}
 
-	var TRANS_NAMES = ["Alex", "Taylor", "Casey"];
-
-	function isTrans(n) { return TRANS_NAMES.indexOf(n) !== -1; }
-
 	// Pure data lives in CompanionData.js (loaded after this script
 	// alphabetically). data() is the single accessor — every read goes
 	// through it so callers don't need to remember which sub-table they
@@ -111,6 +107,18 @@ setup.Companion = (function () {
 		this.clothingTiers = cfg.clothingTiers;
 		this.initStats     = cfg.initStats || {};
 		this.eventCopy     = cfg.eventCopy || null;
+		// Trans companions stamp this index onto $transPicture when they
+		// become the active companion (see api.markTransFirstStage).
+		this.portraitIndex = cfg.portraitIndex || 0;
+		// Per-companion hooks. Defaults make every companion "available
+		// and uneventful"; catalogue entries override the ones they own.
+		// onHuntFail runs only for the active companion at hunt-end (see
+		// api.runHuntFailHooks) so each hook can assume "I was active."
+		this.hasMet        = cfg.hasMet        || function () { return true; };
+		this.markMet       = cfg.markMet       || function () {};
+		this.isPossessed   = cfg.isPossessed   || function () { return false; };
+		this.isUnavailable = cfg.isUnavailable || function () { return false; };
+		this.onHuntFail    = cfg.onHuntFail    || function () {};
 	}
 
 	// Fresh mutable stat object for a brand-new save. Merges the shared
@@ -179,6 +187,17 @@ setup.Companion = (function () {
 			return "characters/trans/" + (State.variables.transPicture || 1) + ".jpg";
 		}
 		return "characters/" + this.imageFolder + "/" + this.imagePrefix + ".png";
+	};
+
+	// Hunt-result portrait shown by CompanionSucceeded. Cis companions
+	// have dedicated -happy / -sad PNGs alongside their folder; trans
+	// companions reuse the rotating $transPicture file.
+	Companion.prototype.outcomePortrait = function (success) {
+		if (this.isTrans) {
+			return "characters/trans/" + (State.variables.transPicture || 1) + ".jpg";
+		}
+		return "characters/" + this.imageFolder + "/" + this.imagePrefix
+			+ (success ? "-happy" : "-sad") + ".png";
 	};
 
 	// Lazy because setup.CompanionData is populated by a script that
@@ -296,7 +315,8 @@ setup.Companion = (function () {
 
 		// --- Identity --------------------------------------------
 		name: function () { var c = this.activeState(); return c && c.name; },
-		isTransCompanion: function () { return isTrans(this.name()); },
+		isTransCompanion: function () { var c = this.active(); return !!(c && c.isTrans); },
+		isTransByName:    function (n) { var c = getByName(n); return !!(c && c.isTrans); },
 		isName: function (n) { return this.name() === n; },
 
 		// --- Selection ("chosen" flag on each $<key> stat object) --
@@ -384,16 +404,17 @@ setup.Companion = (function () {
 
 		// --- Solo hunt --------------------------------------------
 		canAffordSoloContract: function () {
-			return setup.Mc.money() >= 20;
+			return setup.Mc.money() >= data().soloContractFee;
 		},
 		cannotAffordSoloContract: function () {
-			return setup.Mc.money() < 20;
+			return setup.Mc.money() < data().soloContractFee;
 		},
 		payForSoloContract: function (name) {
 			var c = this.stateFor(name);
 			if (!c) return false;
-			if (!c.paidForSolo && setup.Mc.money() >= 20) {
-				setup.Mc.removeMoney(20);
+			var fee = data().soloContractFee;
+			if (!c.paidForSolo && setup.Mc.money() >= fee) {
+				setup.Mc.removeMoney(fee);
 				c.paidForSolo = 1;
 				return true;
 			}
@@ -401,21 +422,15 @@ setup.Companion = (function () {
 		},
 
 		// --- Hunt-end cleanup (shared across huntEnd / HuntOver*) --
-		/* Blake drops the cursed item on a bad hunt-end. */
-		blakeDropsCursedItem: function () {
-			return this.isName("Blake")
-				&& State.variables.isCompChosen === 1
-				&& setup.Witch.hasCursedItemToTurnIn();
-		},
-		clearBlakeCursedItem: function () {
-			if (this.blakeDropsCursedItem()) setup.Witch.clearCursedItemHeld();
-		},
-		aliceResetsWork: function () {
-			var alice = this.stateFor('Alice');
-			return this.isName("Alice") && alice && alice.goingSolo === 0;
-		},
-		resetAliceWorkIfNeeded: function () {
-			if (this.aliceResetsWork()) State.variables.aliceWorkDone = 0;
+		/* Run the active companion's onHuntFail hook (no-op when no
+		   companion is active). Each catalogue entry decides what
+		   "I was active when the hunt ended badly" means -- Blake
+		   drops her cursed item, Alice clears her work-done flag,
+		   etc. Callers stack this with resetHuntState() which clears
+		   the plan/showComp/isCompChosen flags afterwards. */
+		runHuntFailHooks: function () {
+			var c = this.active();
+			if (c) c.onHuntFail();
 		},
 		resetHuntState: function () {
 			var s = State.variables;
@@ -652,10 +667,12 @@ setup.Companion = (function () {
 		   non-trans companions have dedicated -happy / -sad PNGs;
 		   trans companions reuse the rotating $transPicture file. */
 		/* Contacts.tw flags -- used on the MC's phone home screen
-		   to gate the per-companion contact row. */
-		hasMetBrook: function () { return setup.Library.hasMetBrook(); },
-		hasMetAlice: function () { return State.variables.meetAlice !== undefined; },
-		markMetAlice: function () { State.variables.meetAlice = 1; },
+		   to gate the per-companion contact row. Catalogue hooks own
+		   the per-companion logic; these are generic dispatchers. */
+		hasMet:        function (name) { var c = getByName(name); return c ? c.hasMet() : false; },
+		markMet:       function (name) { var c = getByName(name); if (c) c.markMet(); },
+		isPossessed:   function (name) { var c = getByName(name); return c ? c.isPossessed() : false; },
+		isUnavailable: function (name) { var c = getByName(name); return c ? c.isUnavailable() : false; },
 		blakeUnlocked: function () { return setup.Mall.blakeIsCompanionCandidate(); },
 		aliceWorkDone: function () { return State.variables.aliceWorkDone === 1; },
 		// (hasFinishedSoloHunt / soloHuntPaymentState fold into the
@@ -674,9 +691,11 @@ setup.Companion = (function () {
 			c.soloChanceElm     = elm;
 		},
 		/* Reset hunt plan/companion flags after a Myling event scares the
-		   companion away mid-hunt. If Alice was the active companion and
-		   she wasn't on a solo hunt, also clear her work-done flag. */
+		   companion away mid-hunt. The active companion's onHuntFail hook
+		   takes care of any per-companion bookkeeping (Alice resetting
+		   workDone, etc.). */
 		resetHuntPlansAfterMyling: function () {
+			this.runHuntFailHooks();
 			var s = State.variables;
 			s.chosenPlan = 0;
 			s.chosenPlanActivated = 0;
@@ -684,13 +703,6 @@ setup.Companion = (function () {
 			s.isCompRoomChosen = 0;
 			s.showComp = setup.CompanionShow.HIDDEN;
 			s.isCompChosen = 0;
-			var alice = this.stateFor('Alice');
-			if (this.isName('Alice') && alice && alice.goingSolo === 0) {
-				s.aliceWorkDone = 0;
-			}
-		},
-		isBrookeCurrentlyUnavailable: function () {
-			return setup.Home.brookePossessedCDLow();
 		},
 
 		/* When Plan2 succeeds with no cursed item in hand, roll a
@@ -755,11 +767,8 @@ setup.Companion = (function () {
 		},
 
 		outcomePortrait: function (success) {
-			var c = this.activeState(); if (!c) return null;
-			if (c.name === "Brook" || c.name === "Alice" || c.name === "Blake") {
-				return "characters/" + c.name.toLowerCase() + "/" + c.name.toLowerCase() + (success ? "-happy" : "-sad") + ".png";
-			}
-			return "characters/trans/" + (State.variables.transPicture || 1) + ".jpg";
+			var c = this.active();
+			return c ? c.outcomePortrait(success) : null;
 		},
 		/* Completed-hunt cleanup: restore Plan1 / clear per-turn
 		   hunt scratch flags. Used at the end of CompanionSucceeded. */
@@ -844,26 +853,24 @@ setup.Companion = (function () {
 			c.chooseOwaissa = 0;
 			c.chooseElm     = 0;
 		},
-		/* Pay out the solo-hunt reward to $mc.money. Owaissa hunts
-		   pay $50, Elm hunts pay $100. Called from *HuntEndAlone
-		   when the success roll lands. */
+		/* Pay out the solo-hunt reward to $mc.money. Per-street figures
+		   live in data().soloRewards. Called from *HuntEndAlone when the
+		   success roll lands. */
 		payoutSoloHunt: function (name) {
-			var reward = this.companionChoseElm(name) ? 100 : 50;
+			var street = this.companionChoseElm(name) ? 'Elm' : 'Owaissa';
+			var reward = data().soloRewards[street];
 			setup.Mc.addMoney(reward);
 			return reward;
 		},
-		isCompanionPossessed: function (name) {
-			if (name === 'Brook') { return setup.Library.brookIsPossessed(); }
-			return false;
-		},
-		/* Midnight rollover: any cis companion mid-solo-hunt (goingSolo === 1)
+		/* Midnight rollover: any companion mid-solo-hunt (goingSolo === 1)
 		   ticks to "finished" (goingSolo === 2) so the next morning's
-		   *HuntEndAlone passage runs. Called from setup.Tick.resetCooldowns. */
+		   *HuntEndAlone passage runs. Iterates every catalogue entry
+		   with an exp system (the ones that can do solo contracts). */
 		advanceSoloHuntsAtMidnight: function () {
-			var self = this;
-			['Brook', 'Alice', 'Blake'].forEach(function (name) {
-				var c = self.stateFor(name);
-				if (c && c.goingSolo === 1) c.goingSolo = 2;
+			companions().forEach(function (c) {
+				if (!c.hasExpSystem) return;
+				var stats = c.state();
+				if (stats && stats.goingSolo === 1) stats.goingSolo = 2;
 			});
 		},
 
@@ -923,16 +930,13 @@ setup.Companion = (function () {
 		/* Per-name bookkeeping called from the shared
 		   <<companionTextEvent>> dispatcher: for a trans companion,
 		   stamp the transFirstStage flag and set transPicture to the
-		   matching portrait index. */
+		   catalogue-defined portrait index. */
 		markTransFirstStage: function () {
-			var c = this.activeState();
-			if (!c) return;
-			var idx = { Alex: 1, Taylor: 2, Casey: 3 }[c.name];
-			if (!idx) return;
+			var c = this.active();
+			if (!c || !c.portraitIndex) return;
 			State.variables.transFirstStage = 1;
-			State.variables.transPicture = idx;
+			State.variables.transPicture = c.portraitIndex;
 		},
-		isTransByName: function (n) { return isTrans(n); },
 
 		// --- isCompanionContinue flow (widgetFriends) ---------
 		/* When the companion decides to continue: reset the per-hunt

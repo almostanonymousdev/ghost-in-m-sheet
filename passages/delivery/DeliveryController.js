@@ -237,8 +237,8 @@ setup.Delivery = (function () {
 			var order = sv()['order' + slot];
 			return order ? this.eventNameForItem(order.item) : null;
 		},
-		markMetAlice:     function () { setup.Companion.markMetAlice(); },
-		hasMetAlice:      function () { return setup.Companion.hasMetAlice(); },
+		markMetAlice:     function () { setup.Companion.markMet("Alice"); },
+		hasMetAlice:      function () { return setup.Companion.hasMet("Alice"); },
 		markFirstVisited: function () { sv().firstVisitDeliveryHub = false; },
 
 		// --- Active-icon flags for the three daily orders ---------
