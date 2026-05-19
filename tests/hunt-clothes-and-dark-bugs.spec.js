@@ -93,6 +93,11 @@ test.describe('Hunt — clothes + dark-room bugs', () => {
       seed: 7, floorPlanOpts: { roomCount: 5 }
     }));
     await page.evaluate(() => SugarCube.setup.Witch.buyDetector());
+    /* lootKindsAt gates clothesStolen on isClothesStolen=1 (the same
+       precondition FurnitureSearch's hasClothesStolen guard checks) so
+       the detector highlight matches what the pickup will actually
+       hand out. Mark it before stashing. */
+    await page.evaluate(() => SugarCube.setup.HauntedHouses.markClothesStolen());
     const stash = await page.evaluate(() =>
       SugarCube.setup.HuntController.stashStolenClothes());
     expect(stash).not.toBeNull();
@@ -112,6 +117,7 @@ test.describe('Hunt — clothes + dark-room bugs', () => {
       seed: 7, floorPlanOpts: { roomCount: 5 }
     }));
     await page.evaluate(() => { delete SugarCube.State.variables.boughtDetector; });
+    await page.evaluate(() => SugarCube.setup.HauntedHouses.markClothesStolen());
     const stash = await page.evaluate(() =>
       SugarCube.setup.HuntController.stashStolenClothes());
     await page.evaluate(rid => SugarCube.setup.HuntController.setCurrentRoom(rid), stash.roomId);

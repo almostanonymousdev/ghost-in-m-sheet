@@ -5,7 +5,7 @@
 		<<if setup.Companion.isAtMaxLvl(_cName)>>
 			<<= _cName>> is already at the maximum level!
 		<<else>>
-			<<= _cName>> 's exp: + _args[0]
+			<<= _cName>>'s exp: + <<= _args[0]>>
 			<<run setup.Companion.grantExpTo(_cName, _args[0])>>
 		<</if>>
 	<</if>>

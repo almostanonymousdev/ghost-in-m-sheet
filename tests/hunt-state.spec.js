@@ -845,8 +845,12 @@ test.describe('Hunt Controller — stashStolenClothes', () => {
   test('FurnitureSearch can find the stash via lootKindsAt', async () => {
     /* The whole point of plumbing the stash through the loot
        pipeline is that the existing furniture-search lookup picks
-       it up without a special case. */
+       it up without a special case. lootKindsAt also gates on the
+       isClothesStolen flag (matches FurnitureSearch's hasClothesStolen
+       precondition) so the detector doesn't keep highlighting a stash
+       the player can't actually pick up. */
     await startWithPlan();
+    await page.evaluate(() => SugarCube.setup.HauntedHouses.markClothesStolen());
     const stash = await page.evaluate(() =>
       SugarCube.setup.HuntController.stashStolenClothes());
     const kinds = await page.evaluate(({ r, s }) =>
