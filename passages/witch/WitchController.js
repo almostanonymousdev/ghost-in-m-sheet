@@ -237,7 +237,7 @@ setup.Witch = (function () {
 		},
 
 		// --- Tentacles event (anti-midnight wraparound) ----------
-		spend2HoursHandleMidnight: function () {
+		remove2HoursHandleMidnight: function () {
 			return setup.Time.sleepAdvanceHours(2);
 		},
 		hasWeakenTheGhostQuest: function () {

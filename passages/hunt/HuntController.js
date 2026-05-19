@@ -309,7 +309,7 @@ setup.HuntController = (function () {
 		var owned = metaUnlock(id);
 		if (owned >= item.max) return false;
 		if (!canAffordEctoplasm(item.cost)) return false;
-		spendEctoplasm(item.cost);
+		removeEctoplasm(item.cost);
 		var m = metaState();
 		m.unlocks[id] = owned + 1;
 		if (id === ShopItem.REROLL_CHARGE) m.rerollCharges = (m.rerollCharges || 0) + 1;
@@ -784,7 +784,7 @@ setup.HuntController = (function () {
 	}
 	/* Spend `n` mL of ectoplasm. Returns true on success, false if
 	   the player can't afford it. No partial deductions. */
-	function spendEctoplasm(n) {
+	function removeEctoplasm(n) {
 		var have = sv().ectoplasm || 0;
 		if (have < n) return false;
 		sv().ectoplasm = have - n;
@@ -1844,7 +1844,7 @@ setup.HuntController = (function () {
 		collectedLoot: collectedLoot,
 		ectoplasm: ectoplasm,
 		addEctoplasm: addEctoplasm,
-		spendEctoplasm: spendEctoplasm,
+		removeEctoplasm: removeEctoplasm,
 		canAffordEctoplasm: canAffordEctoplasm,
 		nextSeed: nextSeed,
 		rollNextSeed: rollNextSeed,

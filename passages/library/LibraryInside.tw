@@ -2,7 +2,7 @@
 <<image "ui/img/library-inside.jpg" { width: "100%" }>>
 <br>
 <<if setup.Library.hasEnergyToSearch()>>
-	@@.usebtn; [[Search for information about ghosts in books|LibrarySearchResult][setup.Library.spendEnergyToSearch()]] @@<<statIcon setup.StatIcon.ENERGY>>
+	@@.usebtn; [[Search for information about ghosts in books|LibrarySearchResult][setup.Library.removeEnergyToSearch()]] @@<<statIcon setup.StatIcon.ENERGY>>
 <<else>>@@.mc-thoughts; I'm too tired@@
 	<span><<statIcon setup.StatIcon.ENERGY true>></span>
 <</if>>

@@ -277,44 +277,45 @@ setup.Mc = (function () {
 		}
 	};
 
-	/* Trivial $mc.<field> accessors. Each row exposes the named root
-	   as a getter, "set"+Cap as a setter, and (where listed) "add" /
-	   "spend" mutators with the literal method name. */
+	/* Trivial $mc.<field> accessors. Each row gets get/set/add/remove
+	   with the conventional names; pass `false` to suppress one. */
 	setup.defineAccessors(api, function () { return sv().mc; }, [
-		{ name: 'money',         add: 'addMoney',         spend: 'removeMoney' },
-		{ name: 'sanity',        add: 'addSanity',        spend: 'removeSanity' },
-		{ name: 'sanityMax' },
-		{ name: 'sanityUp' },
-		{ name: 'energy',        add: 'addEnergy',        spend: 'removeEnergy' },
-		{ name: 'energyMax' },
-		{ name: 'energyPoints',  add: 'addEnergyPoints' },
-		{ name: 'corruption',    add: 'addCorruption' },
-		{ name: 'lust',          add: 'addLust' },
-		{ name: 'name' },
-		{ name: 'fit',           add: 'addFit' },
-		{ name: 'lvl',           add: 'addLvl' },
-		{ name: 'exp',           add: 'addExp' },
-		{ name: 'exhibitionism', add: 'addExhibitionism' },
-		{ name: 'makeupImg' },
-		{ name: 'dirty' }
+		'money',
+		'sanity',
+		'sanityMax',
+		'sanityUp',
+		'energy',
+		'energyMax',
+		'energyPoints',
+		'corruption',
+		'lust',
+		'name',
+		'fit',
+		'lvl',
+		'exp',
+		'exhibitionism',
+		'makeupImg',
+		'dirty'
 	]);
 
 	/* Trivial top-level State.variables accessors. `key` overrides the
 	   underlying $variable name when the public method root differs;
-	   `get` overrides the getter name. addMedicine / addSanityPills are
-	   defined manually above (they tolerate an undefined counter). */
+	   `get` overrides the getter name. sanityPillsAmount / medicineAmount
+	   opt out of the auto-generated add/remove because addMedicine /
+	   addSanityPills (defined manually above) tolerate an undefined
+	   counter on legacy saves; the auto helpers would NaN-out. */
 	setup.defineAccessors(api, sv, [
-		{ name: 'tempCorr',           add: 'addTempCorr' },
-		{ name: 'earnedMoney',        add: 'addEarnedMoney' },
-		{ name: 'percentageOfLevel' },
-		{ name: 'neededForNextLevel' },
-		{ name: 'makeupApplied' },
+		'tempCorr',
+		'earnedMoney',
+		'percentageOfLevel',
+		'neededForNextLevel',
+		'makeupApplied',
 		{ name: 'energyDrinkAmount',  add: 'addEnergyDrink' },
-		{ name: 'sanityPillsAmount' },
-		{ name: 'medicineAmount' },
-		{ name: 'makeupAmount',       add: 'addMakeup', spend: 'removeMakeup' },
+		{ name: 'sanityPillsAmount',  add: false, remove: false },
+		{ name: 'medicineAmount',     add: false, remove: false },
+		{ name: 'makeupAmount',       add: 'addMakeup', remove: 'removeMakeup' },
 		// Public method root differs from $variable name:
-		{ name: 'possession',     key: 'mcpossession',         add: 'addPossession' },
+		{ name: 'possession',     key: 'mcpossession' },
 		{ name: 'orgasmMeter',    key: 'mcOrgasmMeter' },
 		{ name: 'orgasmCooldown', key: 'orgasmCooldownSteps' }
 	]);

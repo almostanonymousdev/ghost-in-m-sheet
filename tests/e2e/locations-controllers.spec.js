@@ -40,7 +40,7 @@ test.describe('Gym — fitness gain mechanics', () => {
     expect(result.beauty).toBeGreaterThanOrEqual(0);
   });
 
-  test('payForCoach and spendEnergyToTrain mutate $mc accordingly', async ({ game: page }) => {
+  test('payForCoach and removeEnergyToTrain mutate $mc accordingly', async ({ game: page }) => {
     await setVar(page, 'mc.money', 100);
     await setVar(page, 'mc.energy', 10);
     await setVar(page, 'trainingCost', 15);
@@ -48,7 +48,7 @@ test.describe('Gym — fitness gain mechanics', () => {
     await page.evaluate(() => SugarCube.setup.Gym.payForCoach());
     expect(await getVar(page, 'mc.money')).toBe(85);
 
-    await page.evaluate(() => SugarCube.setup.Gym.spendEnergyToTrain());
+    await page.evaluate(() => SugarCube.setup.Gym.removeEnergyToTrain());
     expect(await getVar(page, 'mc.energy')).toBe(5);
   });
 
@@ -122,9 +122,9 @@ test.describe('Park — controller mutations', () => {
     expect(await getVar(page, 'jogging')).toBe(1);
   });
 
-  test('spendJoggingEnergy subtracts 2 from energy', async ({ game: page }) => {
+  test('removeJoggingEnergy subtracts 2 from energy', async ({ game: page }) => {
     await setVar(page, 'mc.energy', 10);
-    await page.evaluate(() => SugarCube.setup.Park.spendJoggingEnergy());
+    await page.evaluate(() => SugarCube.setup.Park.removeJoggingEnergy());
     expect(await getVar(page, 'mc.energy')).toBe(8);
   });
 

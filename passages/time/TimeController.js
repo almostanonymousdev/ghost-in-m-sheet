@@ -68,7 +68,7 @@ setup.Time = (function () {
 		// inner sv().hours assignment bypasses the hook, so no
 		// recursion. Returning true lets callers (sleep, addTime)
 		// know the day flipped without re-reading the clock.
-		{ name: 'hours', add: 'addHours', writeHook: function (oldV, newV) {
+		{ name: 'hours', writeHook: function (oldV, newV) {
 			if (newV >= 24) {
 				sv().hours = newV - 24;
 				sv().dailySeed = freshSeed();
@@ -78,16 +78,16 @@ setup.Time = (function () {
 		} },
 		// Minute rollover cascades into +1 hour, propagating the
 		// hours hook's day-rollover signal back to the caller.
-		{ name: 'minutes', add: 'addMinutes', writeHook: function (oldV, newV) {
+		{ name: 'minutes', writeHook: function (oldV, newV) {
 			if (newV >= 60) {
 				sv().minutes = newV - 60;
 				return api.addHours(1);
 			}
 			return false;
 		} },
-		{ name: 'meridiem' },
-		{ name: 'temperature', add: 'addTemperature' },
-		{ name: 'dailySeed' }
+		'meridiem',
+		'temperature',
+		'dailySeed'
 	]);
 
 	return api;
