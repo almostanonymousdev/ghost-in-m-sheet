@@ -25,10 +25,11 @@
 			<div class="trophy-grid">
 				<<for _entry range _items>>
 					<<set _owned = setup.Achievements.has(_entry.id)>>
-					<<set _show  = _owned or not _entry.hidden>>
-					<<set _name  = _show ? _entry.name : "???">>
-					<<set _hint  = _show ? _entry.hint : "Hidden -- unlock to reveal.">>
-					<div @class="'trophy-card ' + (_owned ? 'unlocked' : 'locked')">
+					<<set _show = _owned or not _entry.hidden>>
+					<<set _name = _show ? _entry.name : "???">>
+					<<set _hint = _show ? _entry.hint : "Hidden -- unlock to reveal.">>
+					<<set _tooltip = _name + "\n" + _hint>>
+					<div @class="'trophy-card ' + (_owned ? 'unlocked' : 'locked')" @title="_tooltip">
 						<div class="trophy-card-orb">
 							<<if _owned and _entry.icon>>
 								<<image _entry.icon "trophy-card-icon">>

@@ -50,7 +50,7 @@ setup.Achievements = setup.Achievements || {};
 		// gag in the bedroom is the canonical example.
 		{ id: 'fun.sploosh', name: 'sploosh', hint: '???', hidden: true, repeatable: true, category: 'fun',
 		  icon: 'ui/achievements/sploosh.png' },
-		{ id: 'fun.cheat',   name: 'all achievements disabled.   ...wait', hint: '???', hidden: true, category: 'fun' }
+		{ id: 'fun.cheat',   name: 'all achievements disabled.   ...wait.', hint: 'sit upon your throne of lies', hidden: true, category: 'fun' }
 	]);
 
 	function bestiaryCatalogue() {
