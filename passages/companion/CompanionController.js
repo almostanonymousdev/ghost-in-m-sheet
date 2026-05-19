@@ -15,6 +15,41 @@ setup.CompanionShow = Object.freeze({
 });
 
 setup.Companion = (function () {
+	var CS = setup.CompanionShow;
+
+	/* Hunt-plan lifecycle: each named transition writes a fixed subset
+	   of {chosenPlan, chosenPlanActivated, randomGhostPassage,
+	   isCompRoomChosen, showComp, isCompChosen} plus a couple of
+	   resolve-only mop-up fields. Public methods like resetHuntState
+	   / dismissCompanion / resumeHunt / setStayTogetherPlan are
+	   one-line wrappers over applyTransition so the field-write
+	   matrix lives in one place and is diff-friendly when a new
+	   transition needs to nudge one of the same fields. STAY_TOGETHER
+	   and RESOLVE both land on Plan1; the difference is RESOLVE also
+	   stamps the Owaissa-passage scratch flag clear after a successful
+	   mission. START_PLAN takes the planKey / chance / timer through
+	   the `extra` arg since those vary per call. */
+	var KNOWN_PLANS = Object.freeze(['Plan1', 'Plan2', 'Plan3', 'Plan4']);
+	var TRANSITIONS = {
+		reset:        { chosenPlan: 0,       chosenPlanActivated: 0, randomGhostPassage: 0,
+		                isCompRoomChosen: 0, showComp: CS.HIDDEN,    isCompChosen: 0 },
+		dismiss:      { chosenPlan: 0,                                                       showComp: CS.HIDDEN, isCompChosen: 0 },
+		resume:       { chosenPlanActivated: 0, randomGhostPassage: 0,
+		                isCompRoomChosen: 0,    showComp: CS.VISIBLE },
+		resolve:      { chosenPlan: 'Plan1', chosenPlanActivated: 0, randomPassageOwaissa: 0,
+		                isCompRoomChosen: 0, showComp: CS.VISIBLE },
+		stayTogether: { chosenPlan: 'Plan1', chosenPlanActivated: 0, showComp: CS.VISIBLE },
+		startPlan:    { chosenPlanActivated: 1, showComp: CS.HIDDEN }
+	};
+
+	function applyTransition(name, extra) {
+		var spec = TRANSITIONS[name];
+		if (!spec) return;
+		var s = State.variables;
+		Object.keys(spec).forEach(function (k) { s[k] = spec[k]; });
+		if (extra) Object.keys(extra).forEach(function (k) { s[k] = extra[k]; });
+	}
+
 	/* $companion (the active-companion clone) and the per-companion
 	   stat objects ($brook/$alice/$blake/$alex/$taylor/$casey) are
 	   owned by this controller. Methods reach them via the semantic
@@ -36,7 +71,6 @@ setup.Companion = (function () {
 		'isCompChosen',
 		'chosenPlan', 'chosenPlanActivated', 'chosenPlanActivatedTime',
 		'chanceToSuccess',
-		'chanceToAttack',
 		'isCompRoomChosen', 'currentGhostPassage', 'filteredGhostPassages',
 		'randomGhostPassage', 'showComp',
 		'transFirstStage', 'transPicture', 'transStart',
@@ -432,15 +466,7 @@ setup.Companion = (function () {
 			var c = this.active();
 			if (c) c.onHuntFail();
 		},
-		resetHuntState: function () {
-			var s = State.variables;
-			s.chosenPlan = 0;
-			s.chosenPlanActivated = 0;
-			s.randomGhostPassage = 0;
-			s.isCompRoomChosen = 0;
-			s.showComp = setup.CompanionShow.HIDDEN;
-			s.isCompChosen = 0;
-		},
+		resetHuntState: function () { applyTransition('reset'); },
 
 		// --- House / room / street helpers -----------------------
 		/* True when the active hunt is companion-eligible. Procedural
@@ -512,13 +538,13 @@ setup.Companion = (function () {
 		},
 
 		// --- Street-passage "see your companion" test ------------
+		/* True when a companion is attached but their hunt-plan has
+		   already been cleared (eg. after a Myling event reset, or
+		   before a plan is picked) -- visually they're "out on the
+		   street" rather than off on a Plan2-4 task. */
 		companionAtStreet: function () {
 			var s = State.variables;
-			return s.isCompChosen === 1
-				&& s.chosenPlan !== 'Plan1'
-				&& s.chosenPlan !== 'Plan2'
-				&& s.chosenPlan !== 'Plan3'
-				&& s.chosenPlan !== 'Plan4';
+			return s.isCompChosen === 1 && KNOWN_PLANS.indexOf(s.chosenPlan) === -1;
 		},
 
 		// --- StoryCaption / HUD helpers ---------------------------
@@ -696,13 +722,7 @@ setup.Companion = (function () {
 		   workDone, etc.). */
 		resetHuntPlansAfterMyling: function () {
 			this.runHuntFailHooks();
-			var s = State.variables;
-			s.chosenPlan = 0;
-			s.chosenPlanActivated = 0;
-			s.randomGhostPassage = 0;
-			s.isCompRoomChosen = 0;
-			s.showComp = setup.CompanionShow.HIDDEN;
-			s.isCompChosen = 0;
+			applyTransition('reset');
 		},
 
 		/* When Plan2 succeeds with no cursed item in hand, roll a
@@ -772,39 +792,27 @@ setup.Companion = (function () {
 		},
 		/* Completed-hunt cleanup: restore Plan1 / clear per-turn
 		   hunt scratch flags. Used at the end of CompanionSucceeded. */
-		acknowledgeCompanionResult: function () {
-			var s = State.variables;
-			s.chosenPlan = "Plan1";
-			s.chosenPlanActivated = 0;
-			s.randomPassageOwaissa = 0;
-			s.showComp = setup.CompanionShow.VISIBLE;
-			s.isCompRoomChosen = 0;
-		},
+		acknowledgeCompanionResult: function () { applyTransition('resolve'); },
 
 		/* Pick the chosenPlan-N result: bank the plan id, grace
 		   period, timer and success chance into save vars. */
 		setHuntPlan: function (planKey, chancePct, minutes) {
-			var s = State.variables;
-			s.chosenPlan = planKey;
-			s.chanceToSuccess = chancePct;
-			s.showComp = setup.CompanionShow.HIDDEN;
-			s.chosenPlanActivated = 1;
-			s.chosenPlanActivatedTime = setup.Time.totalMinutes() + (minutes || 0);
+			applyTransition('startPlan', {
+				chosenPlan: planKey,
+				chanceToSuccess: chancePct,
+				chosenPlanActivatedTime: setup.Time.totalMinutes() + (minutes || 0)
+			});
 		},
-		setStayTogetherPlan: function () {
-			var s = State.variables;
-			s.chosenPlan = "Plan1";
-			s.showComp = setup.CompanionShow.VISIBLE;
-			s.chosenPlanActivated = 0;
-		},
-		/* Ghost-encounter chance for the active companion. Persists
-		   on $<key>.chanceToAttack with a top-level $chanceToAttack
-		   mirror that the tick handler reads (see TickController). */
+		setStayTogetherPlan: function () { applyTransition('stayTogether'); },
+		/* Ghost-encounter chance for the active companion. Persists on
+		   $<key>.chanceToAttack. The 25 fallback covers the brief window
+		   before a freshly-picked companion has had ensureChanceToAttack
+		   run for them. */
 		chanceToAttack: function () {
 			var c = this.activeState();
-			if (!c) return State.variables.chanceToAttack;
+			if (!c) return 25;
 			var stats = this.stateFor(c.name);
-			return stats ? stats.chanceToAttack : State.variables.chanceToAttack;
+			return stats && stats.chanceToAttack !== undefined ? stats.chanceToAttack : 25;
 		},
 		ensureChanceToAttack: function () {
 			var c = this.activeState();
@@ -816,11 +824,9 @@ setup.Companion = (function () {
 		},
 		setChanceToAttack: function (n) {
 			var c = this.activeState();
-			if (c) {
-				var stats = this.stateFor(c.name);
-				if (stats) stats.chanceToAttack = n;
-			}
-			State.variables.chanceToAttack = n;
+			if (!c) return;
+			var stats = this.stateFor(c.name);
+			if (stats) stats.chanceToAttack = n;
 		},
 
 		/* Companion "help" event side-effects: zero lust, bank a
@@ -941,21 +947,10 @@ setup.Companion = (function () {
 		// --- isCompanionContinue flow (widgetFriends) ---------
 		/* When the companion decides to continue: reset the per-hunt
 		   scratch flags so the normal hunt tick can resume. */
-		resumeHunt: function () {
-			var s = State.variables;
-			s.chosenPlanActivated = 0;
-			s.randomGhostPassage = 0;
-			s.showComp = setup.CompanionShow.VISIBLE;
-			s.isCompRoomChosen = 0;
-		},
+		resumeHunt: function () { applyTransition('resume'); },
 		/* "Continue alone" path: clears showComp + isCompChosen as
 		   well so the companion is no longer tagged as active. */
-		dismissCompanion: function () {
-			var s = State.variables;
-			s.showComp = setup.CompanionShow.HIDDEN;
-			s.isCompChosen = 0;
-			s.chosenPlan = 0;
-		}
+		dismissCompanion: function () { applyTransition('dismiss'); }
 	};
 
 	// Pure $variable passthrough accessors. Read-only fields use
