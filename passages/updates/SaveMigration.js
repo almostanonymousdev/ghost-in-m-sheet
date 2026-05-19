@@ -49,6 +49,9 @@
 		sensualBodyPart: function () {
 			return setup.Intro.defaultSensualBodyParts();
 		},
+		sensualBodyPartChoice: function () {
+			return setup.Intro.defaultSensualBodyPartChoice();
+		},
 		ghostSpecialEventSpirit:  function () { return 0; },
 		relationshipBlake:          function () { return 0; },
 		crucifixAmount:             function () { return 0; },

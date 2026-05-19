@@ -39,6 +39,7 @@ setup.Mc = (function () {
 		'medicineAmount',
 		'sanityPillsAmount',
 		'sensualBodyPart',
+		'sensualBodyPartChoice',
 		'sanityCollapse',
 		'exhausted',
 		'piercingTitsAddSens',

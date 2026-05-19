@@ -14,13 +14,34 @@ setup.Intro = (function () {
 	var BASE_SENSITIVITY   = 1;
 	var MAX_SENSITIVITY    = 6;
 	var CHOSEN_SENSITIVITY = 3;
+	var DEFAULT_CHOICE     = 'brain';
 
 	function defaultSensualBodyParts() {
 		var out = {};
 		for (var i = 0; i < BODY_PARTS.length; i++) {
 			out[BODY_PARTS[i]] = BASE_SENSITIVITY;
 		}
+		out[DEFAULT_CHOICE] = CHOSEN_SENSITIVITY;
 		return out;
+	}
+
+	function defaultSensualBodyPartChoice() {
+		return DEFAULT_CHOICE;
+	}
+
+	function applyChoice() {
+		// Mirror $sensualBodyPartChoice into the sensitivity map.
+		// Uses max-merge so toggling the radio in Guide mid-game
+		// never nerfs a part the player has already trained up.
+		var sv = State.variables;
+		if (!sv) return;
+		var c = sv.sensualBodyPartChoice;
+		if (BODY_PARTS.indexOf(c) === -1) return;
+		if (!sv.sensualBodyPart || typeof sv.sensualBodyPart !== 'object') return;
+		var current = Number(sv.sensualBodyPart[c]) || 0;
+		if (current < CHOSEN_SENSITIVITY) {
+			sv.sensualBodyPart[c] = CHOSEN_SENSITIVITY;
+		}
 	}
 
 	function clampSensualBodyParts(obj) {
@@ -51,23 +72,42 @@ setup.Intro = (function () {
 		if (!sv.sensualBodyPart || typeof sv.sensualBodyPart !== 'object') {
 			sv.sensualBodyPart = defaultSensualBodyParts();
 		}
+		if (typeof sv.sensualBodyPartChoice !== 'string' ||
+			BODY_PARTS.indexOf(sv.sensualBodyPartChoice) === -1) {
+			sv.sensualBodyPartChoice = DEFAULT_CHOICE;
+		}
 	}
 
+	// When the player toggles a body-part radio (Intro or Guide), the
+	// <<radiobutton>> macro writes $sensualBodyPartChoice. We delegate
+	// on the slugged input name to mirror the new choice into the
+	// $sensualBodyPart sensitivity map. The delegate fires after the
+	// macro's own change.macros listener because element-bound handlers
+	// run before bubbled delegates.
+	$(document).on(
+		'change.sensualBodyPartChoice',
+		'input[name="radiobutton-sensualbodypartchoice"]',
+		applyChoice
+	);
+
 	return {
-		BODY_PARTS:               BODY_PARTS,
-		BASE_SENSITIVITY:         BASE_SENSITIVITY,
-		MAX_SENSITIVITY:          MAX_SENSITIVITY,
-		CHOSEN_SENSITIVITY:       CHOSEN_SENSITIVITY,
-		defaultSensualBodyParts:  defaultSensualBodyParts,
-		clampSensualBodyParts:    clampSensualBodyParts,
-		maximizeSensualBodyParts: maximizeSensualBodyParts,
-		ensureSensualBodyParts:   ensureSensualBodyParts,
-		currentSensualBodyPart:   function () { return State.variables.sensualBodyPart; },
-		bodyPart:                 function (part) {
+		BODY_PARTS:                    BODY_PARTS,
+		BASE_SENSITIVITY:              BASE_SENSITIVITY,
+		MAX_SENSITIVITY:               MAX_SENSITIVITY,
+		CHOSEN_SENSITIVITY:            CHOSEN_SENSITIVITY,
+		DEFAULT_CHOICE:                DEFAULT_CHOICE,
+		defaultSensualBodyParts:       defaultSensualBodyParts,
+		defaultSensualBodyPartChoice:  defaultSensualBodyPartChoice,
+		clampSensualBodyParts:         clampSensualBodyParts,
+		maximizeSensualBodyParts:      maximizeSensualBodyParts,
+		ensureSensualBodyParts:        ensureSensualBodyParts,
+		applyChoice:                   applyChoice,
+		currentSensualBodyPart:        function () { return State.variables.sensualBodyPart; },
+		bodyPart:                      function (part) {
 			var sv = State.variables.sensualBodyPart;
 			return sv ? sv[part] : 0;
 		},
-		adjustBodyPart:           function (part, delta) {
+		adjustBodyPart:                function (part, delta) {
 			var sv = State.variables.sensualBodyPart;
 			if (sv) { sv[part] += delta; }
 		}
