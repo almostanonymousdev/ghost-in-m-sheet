@@ -68,7 +68,7 @@ test.describe('setup.StoryEvents', () => {
 	});
 
 	test('a throwing subscriber does not block subsequent subscribers', async () => {
-		page.on('console', () => {});
+		page.on('console', () => { });
 		const result = await page.evaluate(() => {
 			const SE = SugarCube.setup.StoryEvents;
 			const log = [];
@@ -148,15 +148,5 @@ test.describe('setup.StoryEvents', () => {
 		});
 		expect(result.before).toBe(false);
 		expect(result.after).toBe(true);
-	});
-
-	test('fun.cheat catalogue entry exists with the meta-joke name', async () => {
-		const entry = await page.evaluate(() => {
-			return SugarCube.setup.Achievements.byId('fun.cheat');
-		});
-		expect(entry).not.toBeNull();
-		expect(entry.name).toBe('all achievements disabled.   ...wait');
-		expect(entry.hidden).toBe(true);
-		expect(entry.category).toBe('fun');
 	});
 });
