@@ -410,6 +410,7 @@ setup.HuntController = (function () {
 			   them via setRoomLight. */
 			lights: {}
 		};
+		sv().stepCount = 0;
 		return sv().run;
 	}
 
@@ -498,11 +499,33 @@ setup.HuntController = (function () {
 		var collected = Array.isArray(run.collectedLoot) ? run.collectedLoot : [];
 		var out = [];
 		Object.keys(loot).forEach(function (k) {
-			if (loot[k] === roomId && furn[k] === suffix && collected.indexOf(k) === -1) {
+			if (loot[k] === roomId && furn[k] === suffix && collected.indexOf(k) === -1 && isLootKindAvailable(k)) {
 				out.push(k);
 			}
 		});
 		return out;
+	}
+
+	/* Is the given loot kind currently *retrievable*? Some kinds are
+	   stamped onto the floor plan but gated by external state that can
+	   flip mid-run (clothesStolen → restored elsewhere; tarot deck moved
+	   out of HIDDEN; monkey paw retired). FurnitureSearch already
+	   refuses to hand out these pickups when the gate is closed, but
+	   without filtering at lootKindsAt the detector kept highlighting
+	   the slot ("highlighted furniture says nothing in it"). Centralize
+	   the gates here so the highlight and the pickup stay in lockstep. */
+	function isLootKindAvailable(kind) {
+		if (kind === 'clothesStolen') {
+			return !!(setup.HauntedHouses && setup.HauntedHouses.hasClothesStolen && setup.HauntedHouses.hasClothesStolen());
+		}
+		if (kind === 'tarotCards') {
+			return !!(setup.HauntedHouses && setup.HauntedHouses.tarotCardsStage &&
+				setup.HauntedHouses.tarotCardsStage() === setup.TarotStage.HIDDEN);
+		}
+		if (kind === 'monkeyPaw') {
+			return !!(setup.MonkeyPaw && setup.MonkeyPaw.isDiscoverable && setup.MonkeyPaw.isDiscoverable());
+		}
+		return true;
 	}
 
 	/* Single-kind variant -- returns the first uncollected loot kind
@@ -625,6 +648,11 @@ setup.HuntController = (function () {
 		var prev = run.currentRoomId || null;
 		run.currentRoomId = roomId;
 		if (prev !== roomId) {
+			/* Hunt-mode replacement for the classic stepCount bump that
+			   used to live in widgetHauntedHouseRoom. Companion event
+			   lust gain (setup.Companion.eventLustGain) scales off this,
+			   so missing the bump zeroes every event payout. */
+			setup.Tick.incrementStepCount();
 			setup.Hunt.emit(setup.Hunt.Event.ROOM_ENTER, { roomId: roomId, fromRoomId: prev });
 		}
 		return true;
@@ -1293,14 +1321,12 @@ setup.HuntController = (function () {
 		// the same slot when distinct slots run out); lootKind /
 		// lootLabel keep the legacy single-value shape for callers
 		// that only need a quick "is anything here".
-		var collected = Array.isArray(run.collectedLoot) ? run.collectedLoot : [];
 		var furniture = (t && Array.isArray(t.furniture) ? t.furniture : []).map(function (f) {
-			var kinds = [];
-			Object.keys(fp.loot || {}).forEach(function (k) {
-				if (fp.loot[k] === roomId && lootFurn[k] === f && collected.indexOf(k) === -1) {
-					kinds.push(k);
-				}
-			});
+			/* lootKindsAt already filters collected entries and applies
+			   the per-kind availability gates (tarot/monkeyPaw/
+			   clothesStolen), so the highlight matches what
+			   FurnitureSearch will actually hand out. */
+			var kinds = lootKindsAt(roomId, f);
 			var first = kinds.length ? kinds[0] : null;
 			return {
 				suffix: f,
@@ -1408,6 +1434,10 @@ setup.HuntController = (function () {
 		var mult = (typeof payCtx.multiplier === 'number') ? payCtx.multiplier : 1;
 		var payout = Math.round(base * mult);
 		addEctoplasm(payout);
+		var xpReward = Math.round((success ? 20 : 5) * mult);
+		if (setup.Mc && typeof setup.Mc.grantExp === 'function') {
+			setup.Mc.grantExp(xpReward);
+		}
 		var summary = {
 			seed: run.seed,
 			number: run.number,
@@ -1416,6 +1446,7 @@ setup.HuntController = (function () {
 			failureReason: run.failureReason || null,
 			success: !!success,
 			payout: payout,
+			xp: xpReward,
 			exitPassage: exitPassageForOutcome(!!success, run.failureReason || null)
 		};
 		/* Stash the outcome on persistent meta-state so HuntSummary

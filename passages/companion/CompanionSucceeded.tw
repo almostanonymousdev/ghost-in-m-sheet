@@ -1,34 +1,22 @@
 :: CompanionSucceeded [noreturn nobr] {"position":"2150,3125","size":"100,100"}
-<<set _checkChance to random(1,100)>>
-<<if _checkChance gte setup.Companion.chanceToSuccess()>>
-	<<set _portrait to setup.Companion.outcomePortrait(false)>>
-	<<if setup.Companion.isTransCompanion()>>
-		<<image _portrait "displayCentredImgs">><br>
-	<<else>>
-		<<image _portrait { width: "50%" }>><br>
-	<</if>>
-	@@.notmc-speech; <<= setup.Mc.name()>>, I'm sorry, I wasn't able to find what you asked for...@@<br>
-	@@.mc-speech; Don't worry about it, it's okay. The main thing is that you're alright@@<br>
-	<<companionExp 2>>
-	<br>
-	@@.mc-speech; Let's [[keep going.|$return]]@@<br>
+/* Reached only when the single mission roll in
+   setup.Tick.resolveCompanionAttack landed safe (showComp = ATTACK_SAFE),
+   so the success path is unconditional here — no second roll. */
+<<set _portrait to setup.Companion.outcomePortrait(true)>>
+<<if setup.Companion.isTransCompanion()>>
+	<<image _portrait "displayCentredImgs">><br>
 <<else>>
-	<<set _portrait to setup.Companion.outcomePortrait(true)>>
-	<<if setup.Companion.isTransCompanion()>>
-		<<image _portrait "displayCentredImgs">><br>
-	<<else>>
-		<<image _portrait { width: "50%" }>><br>
-	<</if>>
-	<<if State.variables.chosenPlan eq "Plan2" and setup.Companion.hasCursedItem()>>
-		<<include "CompanionResult">>
-		<br>
-		@@.mc-speech; Yeah, let's just [[continue|$return]]@@<br>
-	<<else>>
-		@@.notmc-speech; Hey! I have great news, I found...@@<br>
-		<<include "CompanionResult">>
-		<br>
-		@@.mc-speech; Yeah, great job. Let's [[keep going.|$return]]@@<br>
-	<</if>>
+	<<image _portrait { width: "50%" }>><br>
+<</if>>
+<<if State.variables.chosenPlan eq "Plan2" and setup.Companion.hasCursedItem()>>
+	<<include "CompanionResult">>
+	<br>
+	@@.mc-speech; Yeah, let's just [[continue|$return]]@@<br>
+<<else>>
+	@@.notmc-speech; Hey! I have great news, I found...@@<br>
+	<<include "CompanionResult">>
+	<br>
+	@@.mc-speech; Yeah, great job. Let's [[keep going.|$return]]@@<br>
 <</if>>
 <<run setup.Companion.acknowledgeCompanionResult()>>
 <<done>>

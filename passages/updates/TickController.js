@@ -81,11 +81,21 @@ setup.Tick = (function () {
 			((s.hours * 60 + s.minutes) >= s.chosenPlanActivatedTime) &&
 			s.showComp !== CS.ATTACK_FAILED && s.showComp !== CS.ATTACK_SAFE;
 	}
+	/* Single mission roll: at plan-timer elapse, decide the entire
+	   outcome once against the *displayed* plan chance (chanceToSuccess,
+	   stamped by Companion.setHuntPlan from the Plan2/3/4 link). Success
+	   → companion returns safely with the prize; failure → companion
+	   ambushed and the MC has to track them down. Downstream passages
+	   (CompanionSucceeded, isCompanionContinue widget) read this single
+	   outcome via showComp and do NOT roll again, so the player's stated
+	   "X %" chance equals their observed success rate. The old model
+	   rolled chanceToAttack here and then chanceToSuccess downstream,
+	   compounding into a much lower effective success rate. */
 	function resolveCompanionAttack() {
 		var s = sv();
 		var CS = setup.CompanionShow;
 		var roll = Math.floor(Math.random() * 100) + 1;
-		if (roll >= s.chanceToAttack) {
+		if (roll <= s.chanceToSuccess) {
 			s.showComp = CS.ATTACK_SAFE;
 			return 'safe';
 		}
