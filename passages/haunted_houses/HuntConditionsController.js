@@ -95,6 +95,26 @@ setup.HauntConditions = (function () {
 			var hasCompanion = V.isCompChosen === 1;
 			var contractDrain = hasCompanion ? 0.2 : 0.4;
 			snap.sanityPerStep -= contractDrain;
+
+			/* Time-of-hunt prowl ramp. Hunts start at midnight
+			   (totalMinutes = 0) and run to hour 6 = 360 minutes.
+			   +1% prowl chance per 20 elapsed minutes, capped at
+			   +18%, makes time the dominant driver of escalation —
+			   early hunt is quiet, late hunt is dangerous. Stat /
+			   clothing contributors below layer smaller bumps on
+			   top. */
+			var elapsed = (setup.Time && setup.Time.totalMinutes)
+				? setup.Time.totalMinutes() : 0;
+			var timeBonus = Math.min(18, Math.floor(elapsed / 20));
+			if (timeBonus > 0) {
+				snap.prowlChanceBonus += timeBonus;
+				snap.contributors.push({
+					label: "Time (" + Math.floor(elapsed / 60) + "h"
+						+ (elapsed % 60 < 10 ? "0" : "") + (elapsed % 60) + ")",
+					color: "#88aaff",
+					detail: "prowl +" + timeBonus + "% (escalates with elapsed hunt time)"
+				});
+			}
 		}
 
 		/* Hunt modifiers fold into the aggregated readouts
