@@ -45,14 +45,13 @@
 	<br>
 	<<run setup.Witch.markShopVisited()>>
 <<elseif not setup.Witch.isFirstVisit()>>
-	@@.notmc-speech; Hey <<= setup.Mc.name()>>, how are you?@@<br>
+	@@.notmc-speech; <<= setup.Mc.name()>>. Still upright. Good.@@<br>
 	<<if setup.Witch.hasSuccubusEncounter() and (hasVisited("SuccubusEventTV") or hasVisited("SuccubusPCEvent")) and setup.Witch.exorcismQuestNotStarted()>>
 		<<linkreplace "@@.usebtn; Ask about a ghost in the house@@">>
-			@@.mc-speech; I am disturbed by someone or something in my own home! <br>
-			Something is living in my house, sometimes it seems to possess me. This has been going on for some time.<br>
-			I thought it would leave me alone after a while, like other ghosts, but it's not like that.@@<br>
-			@@.notmc-speech; Hm... if this has been going on for a long time, you need an exorcism ritual. Go to a church and ask for a nun named Rain - she knows about these things.@@<br><br>
-			@@.mc-action; You need to visit a church and ask about exorcism from a nun named Rain.@@<br><br>
+			@@.mc-speech; Something's living in my house. It's been a while. I thought it'd get bored.@@<br>
+			@@.mc-speech; Sometimes it wears me.@@<br>
+			@@.notmc-speech; Then it's not going to get bored. You want Sister Rain at the church. She does exorcisms. Tell her I sent you, she'll be less suspicious.@@<br><br>
+			@@.mc-action; Visit the church and ask Sister Rain about an exorcism.@@<br><br>
 			<<run setup.Witch.resetExorcismQuestStage()>>
 		<</linkreplace>><br>
 	<</if>>
@@ -63,79 +62,85 @@
 		<</if>>">
 		<<linkreplace "@@.usebtn; Missing girls@@">>
 			<<run setup.MissingWomen.resetQuestToAvailable()>>
-			@@.notmc-speech; Oh, <<= setup.Mc.name()>>, you've come at just the right time. I can see you're getting more and more experienced with each passing day, and I've got an important task for you. My old friend, a nun named Rain from the church, needs some help<br>
-			She told me that recently, her girls -- who, like you, are also ghost hunters--have started disappearing. She needs help finding them, and I thought you might be the one to assist her.<br>@@
-			@@.mc-speech; Of course, I think I can help her.@@<br>
-			@@.notmc-speech; Great! I'll let her know you're on board. Head to the church -- I'm sure she'll find you and explain what to do next.@@<br>
+			@@.notmc-speech; Sit. I have something for you.@@<br>
+			&emsp;She slides the clipboard across. There are names. There are lines through more than half of them.<br>
+			@@.notmc-speech; Sister Rain's hunters. She used to send me five new ones a year. I haven't crossed a name off because someone retired in eighteen months.@@<br>
+			@@.mc-speech; You want me to find them.@@<br>
+			@@.notmc-speech; I want you to try. Rain doesn't know I'm asking. Go to her, let her think it was her idea. She'll work with you faster that way.@@<br>
 			<br>
-			@@.mc-action; You need to talk to Sister Rain at the church.@@<br>
+			@@.mc-action; Go to the church and find Sister Rain.@@<br>
 		<</linkreplace>><<if !setup.Witch.rescueQuestUnlocked()>>@@.warningtext; (Req. lvl 4+)@@
 		<</if>><br></span>
 	<</if>>
 
 	<<if setup.Mc.lvl() lte 1>>
-		@@.mc-speech; I just need to correctly identify the ghost, right?@@<br>
-		@@.notmc-speech; Yes, as long as you're inexperienced, that's enough for you.@@ <br>
+		@@.mc-speech; I just need to call the type, right?@@<br>
+		@@.notmc-speech; For now. We'll add more once you stop almost getting killed.@@ <br>
 		@@.warningtext; (Req. lvl 2+)@@<br>
 	<<else>>
 		<<if setup.Witch.canOfferCursedItemQuest()>>
 			<<linkreplace "@@.usebtn;I have a small task for you.@@">>
 				<<run setup.Witch.startCursedItemQuest()>>
-				@@.notmc-speech; It seems you've gained some experience and are ready for new challenges. So listen:<br>
-				In every house with a ghost, there is a cursed object. It could be in any room. Find it and bring it to me, and I'll reward you. Deal?<br>@@
-				@@.mc-speech; How will I know if the object is cursed and not just an ordinary one?@@<br>
-				@@.notmc-speech;The cursed object has a very strong aura. You'll feel it when you pick it up.@@<br>
+				@@.notmc-speech; Side job, if you want it.@@<br>
+				@@.mc-speech; What's the catch?@@<br>
+				@@.notmc-speech; No catch. Every house I send you to has a cursed object somewhere in it. Bring it back. I'll pay.@@<br>
+				@@.mc-speech; How do I know which one?@@<br>
+				@@.notmc-speech; Pick it up. You'll feel it. If you don't feel it, it isn't.@@<br>
 				<br>
-				@@.mc-action; I need to search the haunted house for the cursed object. It could be in any room.@@
+				@@.mc-action; Search haunted houses for the cursed object. It could be in any room.@@
 				<br>
 			<</linkreplace>>
 		<<elseif setup.Witch.cursedItemQuestActive()>>
-			@@.mc-thoughts; I need to bring the witch a cursed object. It could be in any room.<br>
+			@@.mc-thoughts; Find the cursed object in the haunted house. Bring it to Khadija.<br>
 		<<elseif setup.Witch.hasCursedItemToTurnIn()>>
 			<<linkreplace "@@.usebtn; I found the cursed object.@@">>
-				@@.notmc-speech;Oh, thank you. Here is your reward. @@<br>
+				@@.notmc-speech; Hand it here. Carefully.@@<br>
+				&emsp;She takes it with both hands and sets it in a drawer you didn't know was there. The drawer closes itself.<br>
 				<span> Money: +$30 $ </span><br>
 				<<run setup.Witch.collectCursedItemReward()>>
 				<<if setup.Witch.shouldAwardGwb3OnTurnIn()>>
 					<<run setup.Witch.upgradeGwbToLvl3()>>
 					@@.mc-action; You get a lvl 3 Ghost Writing Book @@<<image "ui/img/gwb.png" { style: "max-width:5%" }>><br>
 					<br>
-					@@.mc-speech; But why do you need them?@@<br>
-					@@.notmc-speech; It's a powerful magical artifact. I think you felt just how potent it is yourself.@@ @@.mc-thoughts;<br> She ran her tongue over the toy and smiled slightly@@<br>
+					@@.mc-speech; What do you do with them?@@<br>
+					@@.notmc-speech; My work.@@<br>
+					&emsp;@@.mc-thoughts; She runs her thumb along the binding of the book before she hands it over, slow, like she's testing whether it remembers her.@@<br>
 
-					@@.notmc-speech;And by the way, you can bring me cursed objects, and I'll pay you for them. It'll be like an additional task, apart from identifying the type of ghost.@@<br>
+					@@.notmc-speech; Bring me more when you find them. I pay per piece. The toys are nicer if they've been with someone.@@<br>
 				<<else>>
-					@@.notmc-speech;Don't forget to bring me the cursed items. I'll pay you for them.@@<br>
+					@@.notmc-speech; Keep them coming when you find them. I pay per piece.@@<br>
 				<</if>>
 
-				@@.mc-speech; Alright, extra money never hurts.@@
+				@@.mc-speech; Alright. Money's money.@@
 			<</linkreplace>>
 		<</if>>
 	<</if>>
 
 	<br>
-	@@.mc-speech;<<linkreplace "Do you have anything for sale?">>
+	@@.mc-speech;<<linkreplace "Show me what you've got.">>
 		<<goto "WitchSale">>
 	<</linkreplace>>@@<br>
-	@@.mc-speech;<<linkreplace "What can I get for ectoplasm?">>
+	@@.mc-speech;<<linkreplace "What's ectoplasm worth?">>
 		<<goto "WitchEctoplasm">>
 	<</linkreplace>>@@<br>
 	<<if setup.Witch.canAskAboutLevel3Tools()>>
-		@@.mc-speech;<<linkreplace "Do you sell level 3 tools?">>
+		@@.mc-speech;<<linkreplace "Anything in level 3 gear?">>
 			@@.notmc-speech; <<if setup.Witch.ownsLevel3Gwb()>>
-			<<else>>I only have a level 3 ghostwriting book, but I'm not planning to sell it yet. Also,
-			<</if>>I know that the priest has some level 3 tool. Ask him about it@@
+			<<else>>I have a level 3 ghostwriting book. Not for sale. Also,
+			<</if>>Father Ibrahim at the church keeps one of the others. Ask him.@@
 			<<run setup.Witch.restartToolEvent()>>
 		<</linkreplace>>@@<br>
 	<</if>>
 <</if>>
 <<if setup.Witch.canAskAboutMonkeyPaw()>>
 	<<linkreplace "@@.usebtn; Ask about Monkey Paw@@">>
-		@@.notmc-speech; Oh, I see you found that in the haunted house. If you'd like to know what kinds of wishes the monkey paw can grant, I can sell you a little guide. Let's say... for $400. @@<br>
-		@@.mc-speech; That's so expensive!!!@@<br>
-		@@.notmc-speech; You see, it took a lot of effort to acquire it. So it's up to you to decide.@@<br>
-		@@.mc-speech; Alright, I'll think about it for now...@@<br>
-		@@.notmc-speech; No problem, just take a look at my wares if you decide to buy it.@@<br>
+		@@.notmc-speech; The paw. So you found it.@@<br>
+		@@.mc-speech; What's it do.@@<br>
+		@@.notmc-speech; Grants wishes. Badly. Three of them.@@<br>
+		@@.mc-speech; And if I want to know how badly?@@<br>
+		@@.notmc-speech; I have a guide. Four hundred.@@<br>
+		@@.mc-speech; Four hundred is steep.@@<br>
+		@@.notmc-speech; So's a wish you can't take back. Shelf's open whenever you decide.@@<br>
 		<<run setup.Witch.markMonkeyPawGuideBought()>>
 	<</linkreplace>><br>
 
@@ -143,24 +148,26 @@
 <<if setup.Witch.canAskAboutIronclad()>>
 	<<linkreplace "@@.usebtn; Ask about Prison 'Ironclad'@@">>
 		<<if hasVisited("Ironclad Prison")>>
-			@@.mc-speech; I went there, but I didn't find any paranormal activity. @@<br>
+			@@.mc-speech; I went to Ironclad. Nothing tripped. Place is silent as a brick.@@<br>
 		<<else>>
-			@@.mc-speech; What can you tell me about Ironclad prison? I've heard it's haunted, but I haven't been there yet. @@<br>
+			@@.mc-speech; Ironclad. The prison. I hear it's haunted.@@<br>
 		<</if>>
-		@@.notmc-speech; The thing is, some places have a special influence on ghosts. This includes the "Ironclad" prison. You won't be able to catch their attention unless you... fit in with the place. Perhaps you should think about how to become a part of this environment, how to make them notice you.@@<br>
-		@@.mc-thoughts; It seems like the ghosts are drawn to those who belong to this place... A specific outfit might help me blend in. Perhaps I could find something suitable at the Mall. @@<br>
+		@@.notmc-speech; It is. The ghosts there are particular about audience. Most of them were guards once. A few were inmates. They notice who's wearing what.@@<br>
+		@@.notmc-speech; Look like someone who belongs there, they'll show themselves. The mall sells the uniforms cheap. Nobody else wants them.@@<br>
+		@@.mc-thoughts; Wardens. Of course. The mall.@@<br>
 		<<run setup.Witch.markWardenOutfitHintOpened()>>
 	<</linkreplace>>
 <</if>><br>
 <<if setup.Witch.canOfferWeakenQuest()>>
 	<<linkreplace "@@.usebtn; Weaken the Ghost@@">>
-		@@.notmc-speech;Now that you've gained experience, I'm ready to give you an extra task. I want you not only to identify the ghost but also to weaken him...@@<br>
-		@@.mc-speech;And how do I do that?@@<br>
-		@@.notmc-speech;Use your body to arouse him. Show who's in charge in this haunted house.@@<br>
-		@@.mc-speech;I think I get what you mean... I'm not sure I can do it...@@<br>
-		@@.notmc-speech;I'll pay you extra for this task.@@<br>
-		@@.mc-speech;Okay, I'll think about it.@@<br><br>
-		@@.mc-action; Now you can perform the witch's additional task: weaken the ghost.@@<br>
+		@@.notmc-speech; Another job, if you want it. Different shape.@@<br>
+		@@.mc-speech; Tell me.@@<br>
+		@@.notmc-speech; A distracted ghost is a weaker ghost. Distract them. With whatever you've got.@@<br>
+		@@.mc-speech; Whatever I've got.@@<br>
+		@@.notmc-speech; You're smart, <<= setup.Mc.name()>>. You know what I'm asking.@@<br>
+		@@.mc-speech; I know what you're asking. Not sure I'm built for it.@@<br>
+		@@.notmc-speech; You'd be surprised what you're built for. I pay extra. Think about it.@@<br><br>
+		@@.mc-action; You can now take Khadija's side task: weaken the ghost.@@<br>
 		<<run setup.Witch.markWeakenQuestStarted()>>
 	<</linkreplace>>
 <</if>>
