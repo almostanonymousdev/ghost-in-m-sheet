@@ -27,7 +27,7 @@
  */
 setup.HuntController = (function () {
 	var OWNED_VARS = Object.freeze([
-		'run', 'ectoplasm', 'runsStarted', 'meta',
+		'run', 'ectoplasm', 'runsStarted',
 		'nextHuntSeed', 'pendingHuntHouseId',
 		// Ghost-room shuffle interval gate -- written only by
 		// shuffleGhostRoom (below) and reset when a run starts/ends.
@@ -173,200 +173,6 @@ setup.HuntController = (function () {
 			if (Objective[keys[i]].id === id) return Objective[keys[i]].description;
 		}
 		return '';
-	}
-
-	/* Meta-shop catalogue. Each entry is the player-facing record for
-	   one persistent unlock (or stackable charge). Effects are wired
-	   wherever they apply: startHunt honors most of them, the lobby
-	   reads rerollCharges, the minimap reads loot_sense / reliable_recon,
-	   and endHunt restores the stat-cap bumps. Costs are paid in mL
-	   of $ectoplasm; `max` caps how many copies the player may own
-	   (1 for one-time unlocks, n for stackable ones, Infinity for
-	   uncapped consumables). Adding a new unlock is just an entry
-	   here plus the matching effect site. */
-	var ShopItem = Object.freeze({
-		BANLIST_SLOT:       'banlist_slot',
-		REROLL_CHARGE:      'reroll_charge',
-		WITCHS_BLESSING:    'witchs_blessing',
-		MONKEYS_FAVOR:      'monkeys_favor',
-		SMALLER_HOUSE:      'smaller_house',
-		LOOT_SENSE:         'loot_sense',
-		STEELED_HAND:       'steeled_hand',
-		CALVES_OF_STEEL:    'calves_of_steel',
-		INTENSE_INTUITION:  'intense_intuition',
-		RELIABLE_RECON:     'reliable_recon'
-	});
-
-	var SHOP_CATALOGUE = Object.freeze([
-		{
-			id: ShopItem.BANLIST_SLOT,
-			name: 'Banlist Slot',
-			cost: 25,
-			max: 3,
-			description: 'Permanently ban one modifier from each run\'s draft pool. Stack up to 3 slots.'
-		},
-		{
-			id: ShopItem.REROLL_CHARGE,
-			name: 'Reroll Charge',
-			cost: 5,
-			max: Infinity,
-			description: 'Consumable. Spend at the lobby to redraft your modifiers once.'
-		},
-		{
-			id: ShopItem.WITCHS_BLESSING,
-			name: 'Witch\'s Blessing',
-			cost: 30,
-			max: 1,
-			description: 'Start every run with the tarot deck already in your bag.'
-		},
-		{
-			id: ShopItem.MONKEYS_FAVOR,
-			name: 'Monkey\'s Favor',
-			cost: 30,
-			max: 1,
-			description: 'Start every run with the monkey paw already found.'
-		},
-		{
-			id: ShopItem.SMALLER_HOUSE,
-			name: 'Smaller House',
-			cost: 20,
-			max: 1,
-			description: 'Each haunt has one fewer room to search.'
-		},
-		{
-			id: ShopItem.LOOT_SENSE,
-			name: 'Loot Sense',
-			cost: 20,
-			max: 1,
-			description: 'Rooms with uncollected loot are highlighted on the minimap.'
-		},
-		{
-			id: ShopItem.STEELED_HAND,
-			name: 'Steeled Hand',
-			cost: 25,
-			max: 1,
-			description: 'Begin each run with +25 sanity (max + current).'
-		},
-		{
-			id: ShopItem.CALVES_OF_STEEL,
-			name: 'Calves of Steel',
-			cost: 25,
-			max: 1,
-			description: 'Begin each run with +5 stamina (max + current).'
-		},
-		{
-			id: ShopItem.INTENSE_INTUITION,
-			name: 'Intense Intuition',
-			cost: 30,
-			max: 1,
-			description: 'One of the ghost\'s evidences is checked off in your notebook from the start.'
-		},
-		{
-			id: ShopItem.RELIABLE_RECON,
-			name: 'Reliable Recon',
-			cost: 25,
-			max: 1,
-			description: 'The ghost\'s starting room is highlighted on the minimap. The mark fades the first time the ghost relocates.'
-		}
-	]);
-
-	function shopItemById(id) {
-		for (var i = 0; i < SHOP_CATALOGUE.length; i++) {
-			if (SHOP_CATALOGUE[i].id === id) return SHOP_CATALOGUE[i];
-		}
-		return null;
-	}
-
-	// --- Persistent meta-shop state ---------------------------
-	/* Backstop accessor that lazily fills in $meta on saves predating
-	   the meta-shop. SaveMigration also handles this on load, but
-	   reading through here keeps every getter safe even before the
-	   migration pass runs. */
-	function metaState() {
-		var s = sv();
-		if (!s.meta || typeof s.meta !== 'object') {
-			s.meta = { unlocks: {}, bannedModifiers: [], rerollCharges: 0 };
-		}
-		if (!s.meta.unlocks || typeof s.meta.unlocks !== 'object') s.meta.unlocks = {};
-		if (!Array.isArray(s.meta.bannedModifiers)) s.meta.bannedModifiers = [];
-		if (typeof s.meta.rerollCharges !== 'number') s.meta.rerollCharges = 0;
-		return s.meta;
-	}
-	function metaUnlock(id) {
-		return metaState().unlocks[id] || 0;
-	}
-	function hasUnlock(id) { return metaUnlock(id) > 0; }
-	function shopCatalogue() { return SHOP_CATALOGUE.slice(); }
-	function shopItem(id)   { return shopItemById(id); }
-	function lastWasSuccess() { return !!metaState().lastWasSuccess; }
-
-	/* Spend ectoplasm and increment the unlock count. Caps at the
-	   item's `max`; rejects unknown ids and broke players (no partial
-	   deductions). Returns true on success. */
-	function buyUnlock(id) {
-		var item = shopItemById(id);
-		if (!item) return false;
-		var owned = metaUnlock(id);
-		if (owned >= item.max) return false;
-		if (!canAffordEctoplasm(item.cost)) return false;
-		removeEctoplasm(item.cost);
-		var m = metaState();
-		m.unlocks[id] = owned + 1;
-		if (id === ShopItem.REROLL_CHARGE) m.rerollCharges = (m.rerollCharges || 0) + 1;
-		return true;
-	}
-
-	function bannedModifiers() { return metaState().bannedModifiers.slice(); }
-	function bannedSlotsTotal()    { return metaUnlock(ShopItem.BANLIST_SLOT); }
-	function bannedSlotsUsed()     { return metaState().bannedModifiers.length; }
-	function bannedSlotsRemaining() {
-		return Math.max(0, bannedSlotsTotal() - bannedSlotsUsed());
-	}
-	/* Toggle a modifier on the banlist. Adds when there's a free slot
-	   and the id is unique; removes when already banned. Unknown
-	   modifier ids are rejected. Returns true if the list changed. */
-	function toggleBannedModifier(id) {
-		if (!setup.Modifiers || !setup.Modifiers.byId(id)) return false;
-		var m = metaState();
-		var idx = m.bannedModifiers.indexOf(id);
-		if (idx !== -1) {
-			m.bannedModifiers.splice(idx, 1);
-			return true;
-		}
-		if (bannedSlotsUsed() >= bannedSlotsTotal()) return false;
-		m.bannedModifiers.push(id);
-		return true;
-	}
-	function isBanned(id) { return metaState().bannedModifiers.indexOf(id) !== -1; }
-
-	function rerollCharges() { return metaState().rerollCharges || 0; }
-	/* Decrement the stockpile. Returns true if a charge was actually
-	   spent. The caller is responsible for the redraft itself; see
-	   redraftRunModifiers below for the in-lobby flow. */
-	function consumeRerollCharge() {
-		var m = metaState();
-		if ((m.rerollCharges || 0) <= 0) return false;
-		m.rerollCharges -= 1;
-		// Mirror the unlocks count so /buy and consume agree.
-		var u = (m.unlocks[ShopItem.REROLL_CHARGE] || 0) - 1;
-		m.unlocks[ShopItem.REROLL_CHARGE] = u > 0 ? u : 0;
-		return true;
-	}
-
-	/* Redraft modifiers for the active run, honoring the banlist.
-	   Bumps an internal $run.rerolls counter so the new draft seed
-	   never collides with the original. Returns the new modifier id
-	   list, or null when no run is active. */
-	function redraftRunModifiers() {
-		var run = sv().run;
-		if (!run || !setup.Modifiers) return null;
-		run.rerolls = (run.rerolls || 0) + 1;
-		var seed = ((run.seed >>> 0) ^ 0x9e3779b9 ^ Math.imul(run.rerolls, 0x85ebca6b)) >>> 0;
-		var draft = setup.Modifiers.draft(seed, (run.modifiers || []).length || 2, {
-			banned: bannedModifiers()
-		});
-		run.modifiers = draft.map(function (m) { return m.id; });
-		return run.modifiers.slice();
 	}
 
 	// --- Run lifecycle ----------------------------------------
@@ -871,11 +677,11 @@ setup.HuntController = (function () {
 
 		/* Modifier draft honors the player's banlist. Banned ids are
 		   stripped from the draft pool before weighting; banlist slots
-		   are bought from the meta-shop (ShopItem.BANLIST_SLOT). */
+		   are bought from the meta-shop (setup.HuntShop.ShopItem.BANLIST_SLOT). */
 		var draft = setup.Modifiers.draft(
 			(seed ^ 0x9e3779b9) >>> 0,
 			modifierCount,
-			{ banned: bannedModifiers() }
+			{ banned: setup.HuntShop.bannedModifiers() }
 		);
 		var modifierIds = draft.map(function (m) { return m.id; });
 
@@ -996,6 +802,8 @@ setup.HuntController = (function () {
 	function applyMetaUnlocksAtStart(floorplan, seed, evidenceIds) {
 		var run = sv().run;
 		if (!run) return;
+		var Shop = setup.HuntShop;
+		var Item = Shop.ShopItem;
 
 		/* Witch's Blessing: tarot deck already in the bag. Mirrors the
 		   FurnitureSearch pickup -- markTarotCarrying flips the stage
@@ -1003,7 +811,7 @@ setup.HuntController = (function () {
 		   collectedLoot prevents the floor-plan tarot pickup from
 		   double-granting. We leave the floor-plan pin intact so a
 		   re-search of that slot still reports nothing (already-collected). */
-		if (hasUnlock(ShopItem.WITCHS_BLESSING)
+		if (Shop.hasUnlock(Item.WITCHS_BLESSING)
 			&& setup.HauntedHouses
 			&& typeof setup.HauntedHouses.markTarotCarrying === 'function') {
 			setup.HauntedHouses.markTarotCarrying();
@@ -1012,7 +820,7 @@ setup.HuntController = (function () {
 
 		/* Monkey's Favor: paw already found, ready for its first wish.
 		   Same pattern as Witch's Blessing, against MonkeyPaw.markFound. */
-		if (hasUnlock(ShopItem.MONKEYS_FAVOR)
+		if (Shop.hasUnlock(Item.MONKEYS_FAVOR)
 			&& setup.MonkeyPaw
 			&& typeof setup.MonkeyPaw.markFound === 'function') {
 			setup.MonkeyPaw.markFound();
@@ -1028,11 +836,11 @@ setup.HuntController = (function () {
 			energyMax: setup.Mc.energyMax(),
 			energy:    setup.Mc.energy()
 		};
-		if (hasUnlock(ShopItem.STEELED_HAND)) {
+		if (Shop.hasUnlock(Item.STEELED_HAND)) {
 			setup.Mc.setSanityMax(setup.Mc.sanityMax() + 25);
 			setup.Mc.addSanity(25);
 		}
-		if (hasUnlock(ShopItem.CALVES_OF_STEEL)) {
+		if (Shop.hasUnlock(Item.CALVES_OF_STEEL)) {
 			setup.Mc.setEnergyMax(setup.Mc.energyMax() + 5);
 			setup.Mc.addEnergy(5);
 		}
@@ -1041,7 +849,7 @@ setup.HuntController = (function () {
 		   ids in the Notebook. Picked seed-deterministically from the
 		   per-run evidence list (already trimmed by Fog of War, so the
 		   pre-check never reveals a hidden one). */
-		if (hasUnlock(ShopItem.INTENSE_INTUITION)
+		if (Shop.hasUnlock(Item.INTENSE_INTUITION)
 			&& Array.isArray(evidenceIds) && evidenceIds.length
 			&& setup.Ghosts && typeof setup.Ghosts.setEvidenceCheck === 'function') {
 			var idx = ((seed ^ 0x27d4eb2f) >>> 0) % evidenceIds.length;
@@ -1236,7 +1044,7 @@ setup.HuntController = (function () {
 		   the next nav. Tool pickups count as loot too -- finding the
 		   last EMF reader clears the room's highlight. */
 		var lootSenseRooms = {};
-		if (hasUnlock(ShopItem.LOOT_SENSE)) {
+		if (setup.HuntShop.hasUnlock(setup.HuntShop.ShopItem.LOOT_SENSE)) {
 			var collected = Array.isArray(run.collectedLoot) ? run.collectedLoot : [];
 			Object.keys(fp.loot || {}).forEach(function (kind) {
 				if (collected.indexOf(kind) !== -1) return;
@@ -1248,7 +1056,7 @@ setup.HuntController = (function () {
 		   it relocates for the first time. driftGhostRoom mutates
 		   floorplan.spawnRoomId; once spawnRoomId no longer matches
 		   originalSpawnRoomId, the recon highlight drops permanently. */
-		var reconActive = hasUnlock(ShopItem.RELIABLE_RECON)
+		var reconActive = setup.HuntShop.hasUnlock(setup.HuntShop.ShopItem.RELIABLE_RECON)
 			&& fp.originalSpawnRoomId
 			&& fp.spawnRoomId === fp.originalSpawnRoomId;
 		var reconRoomId = reconActive ? fp.originalSpawnRoomId : null;
@@ -1471,7 +1279,7 @@ setup.HuntController = (function () {
 		   can gate the "Start a new hunt" continuation link on it --
 		   $run is cleared by end() below, so the passage needs a
 		   side channel that survives a successful close. */
-		metaState().lastWasSuccess = !!success;
+		setup.HuntShop.markLastWasSuccess(success);
 		if (setup.HauntedHouses) {
 			if (typeof setup.HauntedHouses.commitTempCorruption === 'function') {
 				setup.HauntedHouses.commitTempCorruption();
@@ -1804,7 +1612,7 @@ setup.HuntController = (function () {
 		   with Maze (still net +2) and the tool-loot expansion (still
 		   keeps a slot per missing tool). Floor at the generator's
 		   hard min of 2 (hallway + 1). */
-		if (!hasUnlock(ShopItem.SMALLER_HOUSE)) return;
+		if (!setup.HuntShop.hasUnlock(setup.HuntShop.ShopItem.SMALLER_HOUSE)) return;
 		if (!ctx || !ctx.fpOpts) return;
 		ctx.fpOpts.roomCount = Math.max(2, (ctx.fpOpts.roomCount || 5) - 1);
 	});
@@ -1845,7 +1653,6 @@ setup.HuntController = (function () {
 		outcome: outcome,
 		failureReason: failureReason,
 		isSuccess: isSuccess,
-		lastWasSuccess: lastWasSuccess,
 		markSuccess: markSuccess,
 		markFailure: markFailure,
 		currentRoomId: currentRoomId,
@@ -1886,21 +1693,6 @@ setup.HuntController = (function () {
 		addressFromSeed: addressFromSeed,
 		ROAD_NAMES: ROAD_NAMES,
 		ROAD_SUFFIXES: ROAD_SUFFIXES,
-		ShopItem: ShopItem,
-		shopCatalogue: shopCatalogue,
-		shopItem: shopItem,
-		metaUnlock: metaUnlock,
-		hasUnlock: hasUnlock,
-		buyUnlock: buyUnlock,
-		bannedModifiers: bannedModifiers,
-		bannedSlotsTotal: bannedSlotsTotal,
-		bannedSlotsUsed: bannedSlotsUsed,
-		bannedSlotsRemaining: bannedSlotsRemaining,
-		toggleBannedModifier: toggleBannedModifier,
-		isBanned: isBanned,
-		rerollCharges: rerollCharges,
-		consumeRerollCharge: consumeRerollCharge,
-		redraftRunModifiers: redraftRunModifiers,
 		activeGhost: activeGhost,
 		isGhostHere: isGhostHere,
 		isHuntActive: isHuntActive,

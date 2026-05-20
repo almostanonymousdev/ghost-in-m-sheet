@@ -10,6 +10,52 @@
 // runs, both scripts have executed.
 
 setup.CompanionData = (function () {
+	// Per-companion CompanionEvent video/image tables. Each tier key
+	// (high/mid/low/crit) maps either to an array of {type, src} entries
+	// or to a {default, inElm?, lustHigh?} bundle whose keys are picked at
+	// runtime by Companion.pickEventMediaList. Hoisted here so the catalogue
+	// config below can inline them onto each cis entry's eventMedia field.
+	var eventMediaBrook = {
+		high: {
+			default: [{type:"image",src:"characters/brook/1.0.jpg"},{type:"image",src:"characters/brook/1.1.jpg"},{type:"video",src:"characters/brook/1.2.mp4"},{type:"video",src:"characters/brook/1.3.mp4"},{type:"video",src:"characters/brook/1.4.mp4"},{type:"video",src:"characters/brook/1.5.mp4"}],
+			inElm:   [{type:"image",src:"characters/brook/1.6.jpg"},{type:"image",src:"characters/brook/1.7.jpg"},{type:"video",src:"characters/brook/1.8.mp4"}]
+		},
+		mid: {
+			default: [{type:"video",src:"characters/brook/2.0.mp4"},{type:"video",src:"characters/brook/2.1.mp4"},{type:"video",src:"characters/brook/2.2.mp4"},{type:"video",src:"characters/brook/2.3.mp4"},{type:"image",src:"characters/brook/2.4.jpg"}],
+			inElm:   [{type:"video",src:"characters/brook/2.5.mp4"},{type:"video",src:"characters/brook/2.6.mp4"},{type:"video",src:"characters/brook/2.7.mp4"},{type:"video",src:"characters/brook/2.8.mp4"}]
+		},
+		low: {
+			default: [{type:"video",src:"characters/brook/3.0.mp4"},{type:"video",src:"characters/brook/3.1.mp4"},{type:"video",src:"characters/brook/3.2.mp4"},{type:"video",src:"characters/brook/3.3.mp4"}],
+			inElm:   [{type:"video",src:"characters/brook/3.6.mp4"},{type:"video",src:"characters/brook/3.7.mp4"}]
+		},
+		crit: {
+			default: [{type:"video",src:"characters/brook/4.0.mp4"},{type:"video",src:"characters/brook/4.1.mp4"},{type:"video",src:"characters/brook/4.2.mp4"},{type:"video",src:"characters/brook/4.3.mp4"}],
+			inElm:   [{type:"video",src:"characters/brook/4.4.mp4"},{type:"video",src:"characters/brook/4.5.mp4"},{type:"video",src:"characters/brook/4.6.mp4"},{type:"video",src:"characters/brook/4.7.mp4"}]
+		}
+	};
+	var eventMediaAlice = {
+		high: [{type:"image",src:"characters/alice/1.0.jpg"},{type:"video",src:"characters/alice/1.1.mp4"},{type:"video",src:"characters/alice/1.2.mp4"},{type:"video",src:"characters/alice/1.3.mp4"},{type:"image",src:"characters/alice/1.4.jpg"},{type:"video",src:"characters/alice/1.5.mp4"}],
+		mid: {
+			default:  [{type:"video",src:"characters/alice/2.0.mp4"},{type:"video",src:"characters/alice/2.1.mp4"},{type:"video",src:"characters/alice/2.2.mp4"},{type:"video",src:"characters/alice/2.3.mp4"},{type:"video",src:"characters/alice/2.4.mp4"},{type:"video",src:"characters/alice/2.5.mp4"}],
+			lustHigh: [{type:"video",src:"characters/alice/2.6.mp4"},{type:"video",src:"characters/alice/2.7.mp4"},{type:"video",src:"characters/alice/2.8.mp4"},{type:"video",src:"characters/alice/2.9.mp4"},{type:"video",src:"characters/alice/2.10.mp4"},{type:"video",src:"characters/alice/2.11.mp4"},{type:"video",src:"characters/alice/2.12.mp4"}]
+		},
+		low: {
+			default:  [{type:"video",src:"characters/alice/3.0.mp4"},{type:"video",src:"characters/alice/3.1.mp4"},{type:"video",src:"characters/alice/3.2.mp4"},{type:"video",src:"characters/alice/3.3.mp4"},{type:"video",src:"characters/alice/3.4.mp4"}],
+			inElm:    [{type:"video",src:"characters/alice/3.5.mp4"},{type:"video",src:"characters/alice/3.6.mp4"},{type:"video",src:"characters/alice/3.7.mp4"}],
+			lustHigh: [{type:"video",src:"characters/alice/3.8.mp4"},{type:"video",src:"characters/alice/3.9.mp4"},{type:"video",src:"characters/alice/3.10.mp4"},{type:"video",src:"characters/alice/3.11.mp4"},{type:"video",src:"characters/alice/3.12.mp4"}]
+		},
+		crit: {
+			default:  [{type:"video",src:"characters/alice/4.0.mp4"},{type:"video",src:"characters/alice/4.1.mp4"},{type:"video",src:"characters/alice/4.2.mp4"},{type:"video",src:"characters/alice/4.3.mp4"},{type:"video",src:"characters/alice/4.4.mp4"},{type:"video",src:"characters/alice/4.5.mp4"}],
+			lustHigh: [{type:"video",src:"characters/alice/4.6.mp4"},{type:"video",src:"characters/alice/4.7.mp4"},{type:"video",src:"characters/alice/4.8.mp4"},{type:"video",src:"characters/alice/4.9.mp4"},{type:"video",src:"characters/alice/4.10.mp4"},{type:"video",src:"characters/alice/4.11.mp4"}]
+		}
+	};
+	var eventMediaBlake = {
+		high: [{type:"video",src:"characters/blake/1.1.mp4"},{type:"video",src:"characters/blake/1.2.mp4"},{type:"video",src:"characters/blake/1.3.mp4"},{type:"video",src:"characters/blake/1.4.mp4"},{type:"video",src:"characters/blake/1.5.mp4"}],
+		mid:  [{type:"video",src:"characters/blake/2.0.mp4"},{type:"video",src:"characters/blake/2.1.mp4"},{type:"video",src:"characters/blake/2.2.mp4"},{type:"video",src:"characters/blake/2.3.mp4"},{type:"video",src:"characters/blake/2.4.mp4"},{type:"video",src:"characters/blake/2.5.mp4"}],
+		low:  [{type:"video",src:"characters/blake/3.0.mp4"},{type:"video",src:"characters/blake/3.1.mp4"},{type:"video",src:"characters/blake/3.2.mp4"},{type:"video",src:"characters/blake/3.3.mp4"},{type:"video",src:"characters/blake/3.4.mp4"}],
+		crit: [{type:"video",src:"characters/blake/4.0.mp4"},{type:"video",src:"characters/blake/4.1.mp4"},{type:"video",src:"characters/blake/4.2.mp4"},{type:"video",src:"characters/blake/4.3.mp4"},{type:"video",src:"characters/blake/4.4.mp4"},{type:"video",src:"characters/blake/4.5.mp4"},{type:"video",src:"characters/blake/4.6.mp4"},{type:"video",src:"characters/blake/4.7.mp4"},{type:"video",src:"characters/blake/4.8.mp4"}]
+	};
+
 	// Canonical companion catalogue. Static per-companion metadata. The
 	// six near-identical Main passages collapse into a single
 	// <<companionMain>> dispatch by keying off these entries.
@@ -20,6 +66,7 @@ setup.CompanionData = (function () {
 			isTrans: false, canWalkHome: true, hasExpSystem: true,
 			pronObj: "her", pronPos: "her",
 			neutralResp: "Let's just focus on the task.",
+			eventMedia: eventMediaBrook,
 			// Brook's "have I met her" / "is she available" gates live on
 			// the Library/Home controllers (they own meetBrook + the
 			// brooke-with-Rain cooldown). Hooks delegate so the companion
@@ -60,6 +107,7 @@ setup.CompanionData = (function () {
 			isTrans: false, canWalkHome: true, hasExpSystem: true,
 			pronObj: "her", pronPos: "her",
 			neutralResp: "Let's just focus on the task.",
+			eventMedia: eventMediaAlice,
 			// Alice owns the $meetAlice flag and $aliceWorkDone. hasMet/
 			// markMet wrap the former; onHuntFail (called only on the
 			// active companion) zeroes workDone unless Alice was on a
@@ -97,6 +145,7 @@ setup.CompanionData = (function () {
 			isTrans: false, canWalkHome: true, hasExpSystem: true,
 			pronObj: "her", pronPos: "her",
 			neutralResp: "Let's just focus on the task.",
+			eventMedia: eventMediaBlake,
 			// If Blake was the active companion and the hunt ended badly
 			// while she was carrying a cursed item for the Witch, she
 			// drops it. Witch owns the gotCursedItem flag.
@@ -137,6 +186,7 @@ setup.CompanionData = (function () {
 			// by setup.Companion.markTransFirstStage when this companion
 			// is active.
 			portraitIndex: 1,
+			transMedia: { idx: 1, name: "alex", critMax: 22, bjMax: 5 },
 			initStats: { chanceOfSuccessAnyEvidence: 25 },
 			clothingTiers: [
 				{ mc: "You can take off your shirt, it'll make it easier for you to move.",
@@ -156,6 +206,7 @@ setup.CompanionData = (function () {
 			pronObj: "her", pronPos: "her",
 			neutralResp: "Let's just focus on the task.",
 			portraitIndex: 2,
+			transMedia: { idx: 2, name: "taylor", critMax: 21, bjMax: 5 },
 			initStats: { chanceOfSuccessAnyEvidence: 35 },
 			clothingTiers: [
 				{ mc: "You can take off your top, it'll make it easier for you to move.",
@@ -175,6 +226,7 @@ setup.CompanionData = (function () {
 			pronObj: "them", pronPos: "their",
 			neutralResp: "Let's just focus on the task.",
 			portraitIndex: 3,
+			transMedia: { idx: 3, name: "casey", critMax: 22, bjMax: 6 },
 			initStats: { chanceOfSuccessAnyEvidence: 50 },
 			clothingTiers: [
 				{ mc: "You can take off your top, it'll make it easier for you to move.",
@@ -235,61 +287,6 @@ setup.CompanionData = (function () {
 	var tierChances = [40, 55, 70, 90];
 	var baseChance  = 25;
 
-	// Per-companion CompanionEvent video/image tables. Each tier key
-	// (high/mid/low/crit) maps either to an array of {type, src} entries
-	// or to a {default, inElm?, lustHigh?} bundle whose keys are picked at
-	// runtime by Companion.pickEventMedia.
-	var eventMediaBrook = {
-		high: {
-			default: [{type:"image",src:"characters/brook/1.0.jpg"},{type:"image",src:"characters/brook/1.1.jpg"},{type:"video",src:"characters/brook/1.2.mp4"},{type:"video",src:"characters/brook/1.3.mp4"},{type:"video",src:"characters/brook/1.4.mp4"},{type:"video",src:"characters/brook/1.5.mp4"}],
-			inElm:   [{type:"image",src:"characters/brook/1.6.jpg"},{type:"image",src:"characters/brook/1.7.jpg"},{type:"video",src:"characters/brook/1.8.mp4"}]
-		},
-		mid: {
-			default: [{type:"video",src:"characters/brook/2.0.mp4"},{type:"video",src:"characters/brook/2.1.mp4"},{type:"video",src:"characters/brook/2.2.mp4"},{type:"video",src:"characters/brook/2.3.mp4"},{type:"image",src:"characters/brook/2.4.jpg"}],
-			inElm:   [{type:"video",src:"characters/brook/2.5.mp4"},{type:"video",src:"characters/brook/2.6.mp4"},{type:"video",src:"characters/brook/2.7.mp4"},{type:"video",src:"characters/brook/2.8.mp4"}]
-		},
-		low: {
-			default: [{type:"video",src:"characters/brook/3.0.mp4"},{type:"video",src:"characters/brook/3.1.mp4"},{type:"video",src:"characters/brook/3.2.mp4"},{type:"video",src:"characters/brook/3.3.mp4"}],
-			inElm:   [{type:"video",src:"characters/brook/3.6.mp4"},{type:"video",src:"characters/brook/3.7.mp4"}]
-		},
-		crit: {
-			default: [{type:"video",src:"characters/brook/4.0.mp4"},{type:"video",src:"characters/brook/4.1.mp4"},{type:"video",src:"characters/brook/4.2.mp4"},{type:"video",src:"characters/brook/4.3.mp4"}],
-			inElm:   [{type:"video",src:"characters/brook/4.4.mp4"},{type:"video",src:"characters/brook/4.5.mp4"},{type:"video",src:"characters/brook/4.6.mp4"},{type:"video",src:"characters/brook/4.7.mp4"}]
-		}
-	};
-	var eventMediaAlice = {
-		high: [{type:"image",src:"characters/alice/1.0.jpg"},{type:"video",src:"characters/alice/1.1.mp4"},{type:"video",src:"characters/alice/1.2.mp4"},{type:"video",src:"characters/alice/1.3.mp4"},{type:"image",src:"characters/alice/1.4.jpg"},{type:"video",src:"characters/alice/1.5.mp4"}],
-		mid: {
-			default:  [{type:"video",src:"characters/alice/2.0.mp4"},{type:"video",src:"characters/alice/2.1.mp4"},{type:"video",src:"characters/alice/2.2.mp4"},{type:"video",src:"characters/alice/2.3.mp4"},{type:"video",src:"characters/alice/2.4.mp4"},{type:"video",src:"characters/alice/2.5.mp4"}],
-			lustHigh: [{type:"video",src:"characters/alice/2.6.mp4"},{type:"video",src:"characters/alice/2.7.mp4"},{type:"video",src:"characters/alice/2.8.mp4"},{type:"video",src:"characters/alice/2.9.mp4"},{type:"video",src:"characters/alice/2.10.mp4"},{type:"video",src:"characters/alice/2.11.mp4"},{type:"video",src:"characters/alice/2.12.mp4"}]
-		},
-		low: {
-			default:  [{type:"video",src:"characters/alice/3.0.mp4"},{type:"video",src:"characters/alice/3.1.mp4"},{type:"video",src:"characters/alice/3.2.mp4"},{type:"video",src:"characters/alice/3.3.mp4"},{type:"video",src:"characters/alice/3.4.mp4"}],
-			inElm:    [{type:"video",src:"characters/alice/3.5.mp4"},{type:"video",src:"characters/alice/3.6.mp4"},{type:"video",src:"characters/alice/3.7.mp4"}],
-			lustHigh: [{type:"video",src:"characters/alice/3.8.mp4"},{type:"video",src:"characters/alice/3.9.mp4"},{type:"video",src:"characters/alice/3.10.mp4"},{type:"video",src:"characters/alice/3.11.mp4"},{type:"video",src:"characters/alice/3.12.mp4"}]
-		},
-		crit: {
-			default:  [{type:"video",src:"characters/alice/4.0.mp4"},{type:"video",src:"characters/alice/4.1.mp4"},{type:"video",src:"characters/alice/4.2.mp4"},{type:"video",src:"characters/alice/4.3.mp4"},{type:"video",src:"characters/alice/4.4.mp4"},{type:"video",src:"characters/alice/4.5.mp4"}],
-			lustHigh: [{type:"video",src:"characters/alice/4.6.mp4"},{type:"video",src:"characters/alice/4.7.mp4"},{type:"video",src:"characters/alice/4.8.mp4"},{type:"video",src:"characters/alice/4.9.mp4"},{type:"video",src:"characters/alice/4.10.mp4"},{type:"video",src:"characters/alice/4.11.mp4"}]
-		}
-	};
-	var eventMediaBlake = {
-		high: [{type:"video",src:"characters/blake/1.1.mp4"},{type:"video",src:"characters/blake/1.2.mp4"},{type:"video",src:"characters/blake/1.3.mp4"},{type:"video",src:"characters/blake/1.4.mp4"},{type:"video",src:"characters/blake/1.5.mp4"}],
-		mid:  [{type:"video",src:"characters/blake/2.0.mp4"},{type:"video",src:"characters/blake/2.1.mp4"},{type:"video",src:"characters/blake/2.2.mp4"},{type:"video",src:"characters/blake/2.3.mp4"},{type:"video",src:"characters/blake/2.4.mp4"},{type:"video",src:"characters/blake/2.5.mp4"}],
-		low:  [{type:"video",src:"characters/blake/3.0.mp4"},{type:"video",src:"characters/blake/3.1.mp4"},{type:"video",src:"characters/blake/3.2.mp4"},{type:"video",src:"characters/blake/3.3.mp4"},{type:"video",src:"characters/blake/3.4.mp4"}],
-		crit: [{type:"video",src:"characters/blake/4.0.mp4"},{type:"video",src:"characters/blake/4.1.mp4"},{type:"video",src:"characters/blake/4.2.mp4"},{type:"video",src:"characters/blake/4.3.mp4"},{type:"video",src:"characters/blake/4.4.mp4"},{type:"video",src:"characters/blake/4.5.mp4"},{type:"video",src:"characters/blake/4.6.mp4"},{type:"video",src:"characters/blake/4.7.mp4"},{type:"video",src:"characters/blake/4.8.mp4"}]
-	};
-	var eventMediaCis = { Brook: eventMediaBrook, Alice: eventMediaAlice, Blake: eventMediaBlake };
-
-	// Trans companions share a tease/bj/sex video directory layout. Each
-	// gets a fixed portrait index (1..3), a directory name, and a critMax
-	// describing how many sex-tier videos are catalogued.
-	var eventMediaTrans = {
-		Alex:   { idx: 1, name: "alex",   critMax: 22, bjMax: 5 },
-		Taylor: { idx: 2, name: "taylor", critMax: 21, bjMax: 5 },
-		Casey:  { idx: 3, name: "casey",  critMax: 22, bjMax: 6 }
-	};
-
 	// Per-companion solo-hunt skill curve: level -> {owaissa, elm} success %.
 	// Drives the three near-identical Companion Info passages off a single
 	// table. Index by lvl: 0/1 defaults to 0%.
@@ -338,8 +335,6 @@ setup.CompanionData = (function () {
 		transBaseStats:   transBaseStats,
 		tierChances:      tierChances,
 		baseChance:       baseChance,
-		eventMediaCis:    eventMediaCis,
-		eventMediaTrans:  eventMediaTrans,
 		transEventCopy:   transEventCopy,
 		soloSkillCurve:   soloSkillCurve,
 		soloRewards:      soloRewards,

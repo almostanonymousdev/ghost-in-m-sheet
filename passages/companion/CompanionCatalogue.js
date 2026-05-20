@@ -9,6 +9,29 @@
 setup.CompanionCatalogue = (function () {
 	function data() { return setup.CompanionData; }
 
+	// Resolve a cis tier entry (array or {default, inElm?, lustHigh?} bundle)
+	// to a concrete list. inElm wins over lustHigh when both are set.
+	function resolveCisTier(entry, lust, inElm) {
+		if (Array.isArray(entry)) return entry;
+		if (!entry) return null;
+		if (inElm && entry.inElm) return entry.inElm;
+		if (lust >= 50 && entry.lustHigh) return entry.lustHigh;
+		return entry.default || null;
+	}
+	function transVids(base, dir, maxIndex) {
+		var out = [];
+		for (var i = 0; i <= maxIndex; i++) {
+			out.push({type:"video",src:"characters/trans/"+dir+"/"+base+"."+i+".mp4"});
+		}
+		return out;
+	}
+	function transStills(name, firstStage) {
+		if (firstStage) {
+			return [{type:"image",src:"characters/trans/"+name+"4.png"},{type:"image",src:"characters/trans/"+name+"5.png"}];
+		}
+		return [{type:"image",src:"characters/trans/"+name+"1.png"},{type:"image",src:"characters/trans/"+name+"2.png"},{type:"image",src:"characters/trans/"+name+"3.png"}];
+	}
+
 	// Companion is a prototype-based class so per-companion behaviour
 	// (image paths, clothing responses, walk-home eligibility) lives on
 	// instances rather than as free functions. The mutable stats still
@@ -28,6 +51,12 @@ setup.CompanionCatalogue = (function () {
 		this.clothingTiers = cfg.clothingTiers;
 		this.initStats     = cfg.initStats || {};
 		this.eventCopy     = cfg.eventCopy || null;
+		// CompanionEvent media. Cis companions own a tier table keyed
+		// by high/mid/low/crit. Trans companions own a small directory
+		// descriptor ({idx, name, critMax, bjMax}) consumed by the
+		// shared transVids / transStills builders.
+		this.eventMedia    = cfg.eventMedia || null;
+		this.transMedia    = cfg.transMedia || null;
 		// Trans companions stamp this index onto $transPicture when they
 		// become the active companion (see setup.Companion.markTransFirstStage).
 		this.portraitIndex = cfg.portraitIndex || 0;
@@ -80,6 +109,27 @@ setup.CompanionCatalogue = (function () {
 
 	Companion.prototype.tierChance = function (idx) { return data().tierChances[idx]; };
 	Companion.prototype.tierCount  = function ()    { return data().tierChances.length; };
+
+	// CompanionEvent media list for a sanity tier ('high' / 'mid' / 'low' /
+	// 'crit'). Cis companions resolve their tier table through resolveCisTier
+	// (lust + ElmBasement variants); trans companions splice their per-
+	// directory descriptor through the transStills / transVids builders.
+	// ctx is {lust, inElm, isTransFirstStageSet}. Returns null when no media
+	// is catalogued for the (companion, tier) pair.
+	Companion.prototype.pickEventMediaList = function (tierKey, ctx) {
+		ctx = ctx || {};
+		if (this.eventMedia) {
+			return resolveCisTier(this.eventMedia[tierKey], ctx.lust || 0, !!ctx.inElm);
+		}
+		if (this.transMedia) {
+			var t = this.transMedia;
+			if (tierKey === "high") return transStills(t.name, !!ctx.isTransFirstStageSet);
+			if (tierKey === "mid")  return transVids(t.idx, "tease", 9);
+			if (tierKey === "low")  return transVids(t.idx, "bj", t.bjMax);
+			return transVids(t.idx, "sex", t.critMax);
+		}
+		return null;
+	};
 
 	// CompanionEvent dialog markup for sanity tier (1..4). Cis companions
 	// store their own eventCopy on the catalogue entry; trans companions

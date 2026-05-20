@@ -173,32 +173,6 @@ setup.Companion = (function () {
 		return caps[lvl];
 	}
 
-	function transVids(base, dir, maxIndex) {
-		var out = [];
-		for (var i = 0; i <= maxIndex; i++) {
-			out.push({type:"video",src:"characters/trans/"+dir+"/"+base+"."+i+".mp4"});
-		}
-		return out;
-	}
-	function transStills(name, firstStage) {
-		if (firstStage) {
-			return [{type:"image",src:"characters/trans/"+name+"4.png"},{type:"image",src:"characters/trans/"+name+"5.png"}];
-		}
-		return [{type:"image",src:"characters/trans/"+name+"1.png"},{type:"image",src:"characters/trans/"+name+"2.png"},{type:"image",src:"characters/trans/"+name+"3.png"}];
-	}
-
-	// Resolve the tier entry to a concrete list. A bare array passes
-	// through; a {default, inElm?, lustHigh?} bundle picks based on the
-	// runtime flags (inElm wins over lustHigh when both are set, which
-	// matches the original branching).
-	function resolveCisTier(entry, lust, inElm) {
-		if (Array.isArray(entry)) return entry;
-		if (!entry) return null;
-		if (inElm && entry.inElm) return entry.inElm;
-		if (lust >= 50 && entry.lustHigh) return entry.lustHigh;
-		return entry.default || null;
-	}
-
 	var api = {
 		OWNED_VARS: OWNED_VARS,
 		// --- Catalogue -------------------------------------------
@@ -554,40 +528,28 @@ setup.Companion = (function () {
 		markCompanionFlagActive: function () { State.variables.isCompChosen = 1; },
 		/* Pick a video/image descriptor for the CompanionEvent
 		   passage. Each companion has a 4-tier sanity ladder
-		   (75+, 50–74, 25–49, 0–24); some tiers split further on
-		   companion lust or recent-ElmBasement flag. Tables live in
-		   CompanionData.eventMediaCis / .eventMediaTrans; this method
-		   just picks the right tier and rolls. Returns
+		   (75+, 50–74, 25–49, 0–24); the per-companion tier table /
+		   trans-directory descriptor lives on the catalogue entry and
+		   the resolver is Companion.pickEventMediaList. This method
+		   just maps sanity to a tier key and rolls. Returns
 		   {src, type:"video"/"image"}.
 		   `inElm` defaults to `previous() === 'ElmBasement'` so the in-
 		   passage call site (CompanionEvent.tw) doesn't need to pass it,
 		   but unit/e2e specs can pin it explicitly without faking the
 		   passage history. */
 		pickEventMedia: function (inElm) {
-			var c = this.activeState(); if (!c) return null;
+			var stats = this.activeState(); if (!stats) return null;
+			var c = this.active(); if (!c) return null;
 			if (inElm === undefined) inElm = previous() === 'ElmBasement';
-			var sanity = c.sanity;
-			var lust   = c.lust;
-			var tierKey = sanity >= 75 ? "high"
-				: sanity >= 50 ? "mid"
-				: sanity >= 25 ? "low"
+			var tierKey = stats.sanity >= 75 ? "high"
+				: stats.sanity >= 50 ? "mid"
+				: stats.sanity >= 25 ? "low"
 				: "crit";
-			var d = data();
-			var list = null;
-			if (d.eventMediaCis[c.name]) {
-				list = resolveCisTier(d.eventMediaCis[c.name][tierKey], lust, inElm);
-			} else if (d.eventMediaTrans[c.name]) {
-				var cfg = d.eventMediaTrans[c.name];
-				if (tierKey === "high") {
-					list = transStills(cfg.name, this.isTransFirstStageSet());
-				} else if (tierKey === "mid") {
-					list = transVids(cfg.idx, "tease", 9);
-				} else if (tierKey === "low") {
-					list = transVids(cfg.idx, "bj", cfg.bjMax);
-				} else {
-					list = transVids(cfg.idx, "sex", cfg.critMax);
-				}
-			}
+			var list = c.pickEventMediaList(tierKey, {
+				lust: stats.lust,
+				inElm: inElm,
+				isTransFirstStageSet: this.isTransFirstStageSet()
+			});
 			var pick = setup.Rng.pickFrom(list);
 			if (!pick) return null;
 			State.variables.videoEventCompanion = pick.src;

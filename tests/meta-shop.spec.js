@@ -25,7 +25,7 @@ test.describe('Hunt persistent unlocks (witch ectoplasm shop)', () => {
   });
 
   test('shopCatalogue exposes every advertised unlock id', async () => {
-    const ids = (await callSetup(page, 'setup.HuntController.shopCatalogue()')).map(i => i.id);
+    const ids = (await callSetup(page, 'setup.HuntShop.catalogue()')).map(i => i.id);
     expect(ids).toEqual(expect.arrayContaining([
       'banlist_slot', 'reroll_charge', 'witchs_blessing', 'monkeys_favor',
       'smaller_house', 'loot_sense', 'steeled_hand', 'calves_of_steel',
@@ -37,56 +37,56 @@ test.describe('Hunt persistent unlocks (witch ectoplasm shop)', () => {
 
   test('buyUnlock deducts ectoplasm and increments the owned count', async () => {
     await page.evaluate(() => SugarCube.setup.HuntController.addEctoplasm(40));
-    expect(await callSetup(page, 'setup.HuntController.buyUnlock("witchs_blessing")')).toBe(true);
-    expect(await callSetup(page, 'setup.HuntController.metaUnlock("witchs_blessing")')).toBe(1);
-    expect(await callSetup(page, 'setup.HuntController.hasUnlock("witchs_blessing")')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntShop.buyUnlock("witchs_blessing")')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntShop.unlock("witchs_blessing")')).toBe(1);
+    expect(await callSetup(page, 'setup.HuntShop.hasUnlock("witchs_blessing")')).toBe(true);
     expect(await callSetup(page, 'setup.HuntController.ectoplasm()')).toBe(10); // 40 - 30
   });
 
   test('buyUnlock rejects when the player cannot afford the cost', async () => {
     await page.evaluate(() => SugarCube.setup.HuntController.addEctoplasm(5));
-    expect(await callSetup(page, 'setup.HuntController.buyUnlock("witchs_blessing")')).toBe(false);
-    expect(await callSetup(page, 'setup.HuntController.hasUnlock("witchs_blessing")')).toBe(false);
+    expect(await callSetup(page, 'setup.HuntShop.buyUnlock("witchs_blessing")')).toBe(false);
+    expect(await callSetup(page, 'setup.HuntShop.hasUnlock("witchs_blessing")')).toBe(false);
     expect(await callSetup(page, 'setup.HuntController.ectoplasm()')).toBe(5);
   });
 
   test('buyUnlock caps one-time unlocks at max=1', async () => {
     await page.evaluate(() => SugarCube.setup.HuntController.addEctoplasm(1000));
-    expect(await callSetup(page, 'setup.HuntController.buyUnlock("witchs_blessing")')).toBe(true);
-    expect(await callSetup(page, 'setup.HuntController.buyUnlock("witchs_blessing")')).toBe(false);
-    expect(await callSetup(page, 'setup.HuntController.metaUnlock("witchs_blessing")')).toBe(1);
+    expect(await callSetup(page, 'setup.HuntShop.buyUnlock("witchs_blessing")')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntShop.buyUnlock("witchs_blessing")')).toBe(false);
+    expect(await callSetup(page, 'setup.HuntShop.unlock("witchs_blessing")')).toBe(1);
   });
 
   test('buyUnlock allows stacking the banlist slot up to its cap', async () => {
     await page.evaluate(() => SugarCube.setup.HuntController.addEctoplasm(1000));
-    expect(await callSetup(page, 'setup.HuntController.buyUnlock("banlist_slot")')).toBe(true);
-    expect(await callSetup(page, 'setup.HuntController.buyUnlock("banlist_slot")')).toBe(true);
-    expect(await callSetup(page, 'setup.HuntController.buyUnlock("banlist_slot")')).toBe(true);
-    expect(await callSetup(page, 'setup.HuntController.buyUnlock("banlist_slot")')).toBe(false);
-    expect(await callSetup(page, 'setup.HuntController.bannedSlotsTotal()')).toBe(3);
+    expect(await callSetup(page, 'setup.HuntShop.buyUnlock("banlist_slot")')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntShop.buyUnlock("banlist_slot")')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntShop.buyUnlock("banlist_slot")')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntShop.buyUnlock("banlist_slot")')).toBe(false);
+    expect(await callSetup(page, 'setup.HuntShop.bannedSlotsTotal()')).toBe(3);
   });
 
   // --- Banlist ---
 
   test('toggleBannedModifier respects available slots', async () => {
     // No slots owned -> ban refused.
-    expect(await callSetup(page, 'setup.HuntController.toggleBannedModifier("pheromones")')).toBe(false);
+    expect(await callSetup(page, 'setup.HuntShop.toggleBannedModifier("pheromones")')).toBe(false);
 
     await page.evaluate(() => SugarCube.setup.HuntController.addEctoplasm(100));
-    await page.evaluate(() => SugarCube.setup.HuntController.buyUnlock('banlist_slot'));
+    await page.evaluate(() => SugarCube.setup.HuntShop.buyUnlock('banlist_slot'));
 
-    expect(await callSetup(page, 'setup.HuntController.toggleBannedModifier("pheromones")')).toBe(true);
-    expect(await callSetup(page, 'setup.HuntController.bannedModifiers()')).toEqual(['pheromones']);
+    expect(await callSetup(page, 'setup.HuntShop.toggleBannedModifier("pheromones")')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntShop.bannedModifiers()')).toEqual(['pheromones']);
     // Toggling again removes it (frees the slot).
-    expect(await callSetup(page, 'setup.HuntController.toggleBannedModifier("pheromones")')).toBe(true);
-    expect(await callSetup(page, 'setup.HuntController.bannedModifiers()')).toEqual([]);
+    expect(await callSetup(page, 'setup.HuntShop.toggleBannedModifier("pheromones")')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntShop.bannedModifiers()')).toEqual([]);
   });
 
   test('toggleBannedModifier rejects unknown modifier ids', async () => {
     await page.evaluate(() => SugarCube.setup.HuntController.addEctoplasm(100));
-    await page.evaluate(() => SugarCube.setup.HuntController.buyUnlock('banlist_slot'));
-    expect(await callSetup(page, 'setup.HuntController.toggleBannedModifier("not_a_real_modifier")')).toBe(false);
-    expect(await callSetup(page, 'setup.HuntController.bannedModifiers()')).toEqual([]);
+    await page.evaluate(() => SugarCube.setup.HuntShop.buyUnlock('banlist_slot'));
+    expect(await callSetup(page, 'setup.HuntShop.toggleBannedModifier("not_a_real_modifier")')).toBe(false);
+    expect(await callSetup(page, 'setup.HuntShop.bannedModifiers()')).toEqual([]);
   });
 
   test('startHunt strips banned modifiers from the draft pool', async () => {
@@ -98,16 +98,16 @@ test.describe('Hunt persistent unlocks (witch ectoplasm shop)', () => {
       // Ban every modifier; the draft should fall back to fewer picks.
       // Buy enough slots first.
       // (We need 3 slots max -> ban 3 of 11 ids: enough for the smoke test.)
-      SugarCube.setup.HuntController.buyUnlock('banlist_slot');
-      SugarCube.setup.HuntController.buyUnlock('banlist_slot');
-      SugarCube.setup.HuntController.buyUnlock('banlist_slot');
-      SugarCube.setup.HuntController.toggleBannedModifier(all[0]);
-      SugarCube.setup.HuntController.toggleBannedModifier(all[1]);
-      SugarCube.setup.HuntController.toggleBannedModifier(all[2]);
+      SugarCube.setup.HuntShop.buyUnlock('banlist_slot');
+      SugarCube.setup.HuntShop.buyUnlock('banlist_slot');
+      SugarCube.setup.HuntShop.buyUnlock('banlist_slot');
+      SugarCube.setup.HuntShop.toggleBannedModifier(all[0]);
+      SugarCube.setup.HuntShop.toggleBannedModifier(all[1]);
+      SugarCube.setup.HuntShop.toggleBannedModifier(all[2]);
     });
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 42 }));
     const drafted = await callSetup(page, 'setup.HuntController.modifiers()');
-    const banned  = await callSetup(page, 'setup.HuntController.bannedModifiers()');
+    const banned  = await callSetup(page, 'setup.HuntShop.bannedModifiers()');
     drafted.forEach(id => expect(banned).not.toContain(id));
   });
 
@@ -115,28 +115,28 @@ test.describe('Hunt persistent unlocks (witch ectoplasm shop)', () => {
 
   test('reroll charge is consumed and modifies the active run\'s deck', async () => {
     await page.evaluate(() => SugarCube.setup.HuntController.addEctoplasm(100));
-    await page.evaluate(() => SugarCube.setup.HuntController.buyUnlock('reroll_charge'));
-    expect(await callSetup(page, 'setup.HuntController.rerollCharges()')).toBe(1);
+    await page.evaluate(() => SugarCube.setup.HuntShop.buyUnlock('reroll_charge'));
+    expect(await callSetup(page, 'setup.HuntShop.rerollCharges()')).toBe(1);
 
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 9001 }));
     const before = await callSetup(page, 'setup.HuntController.modifiers()');
 
-    expect(await callSetup(page, 'setup.HuntController.consumeRerollCharge()')).toBe(true);
-    const newDraft = await callSetup(page, 'setup.HuntController.redraftRunModifiers()');
+    expect(await callSetup(page, 'setup.HuntShop.consumeRerollCharge()')).toBe(true);
+    const newDraft = await callSetup(page, 'setup.HuntShop.redraftRunModifiers()');
     expect(newDraft).not.toEqual(before);
     expect(await callSetup(page, 'setup.HuntController.modifiers()')).toEqual(newDraft);
-    expect(await callSetup(page, 'setup.HuntController.rerollCharges()')).toBe(0);
+    expect(await callSetup(page, 'setup.HuntShop.rerollCharges()')).toBe(0);
   });
 
   test('consumeRerollCharge fails when stockpile is empty', async () => {
-    expect(await callSetup(page, 'setup.HuntController.consumeRerollCharge()')).toBe(false);
+    expect(await callSetup(page, 'setup.HuntShop.consumeRerollCharge()')).toBe(false);
   });
 
   // --- startHunt effect wiring per unlock ---
 
   test('Witch\'s Blessing pre-stamps tarot deck onto collectedLoot', async () => {
     await page.evaluate(() => SugarCube.setup.HuntController.addEctoplasm(100));
-    await page.evaluate(() => SugarCube.setup.HuntController.buyUnlock('witchs_blessing'));
+    await page.evaluate(() => SugarCube.setup.HuntShop.buyUnlock('witchs_blessing'));
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
 
     expect(await callSetup(page, 'setup.HuntController.hasCollected("tarotCards")')).toBe(true);
@@ -147,7 +147,7 @@ test.describe('Hunt persistent unlocks (witch ectoplasm shop)', () => {
 
   test('Monkey\'s Favor pre-stamps the paw onto collectedLoot', async () => {
     await page.evaluate(() => SugarCube.setup.HuntController.addEctoplasm(100));
-    await page.evaluate(() => SugarCube.setup.HuntController.buyUnlock('monkeys_favor'));
+    await page.evaluate(() => SugarCube.setup.HuntShop.buyUnlock('monkeys_favor'));
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
 
     expect(await callSetup(page, 'setup.HuntController.hasCollected("monkeyPaw")')).toBe(true);
@@ -162,7 +162,7 @@ test.describe('Hunt persistent unlocks (witch ectoplasm shop)', () => {
     // End and re-roll with the unlock active.
     await page.evaluate(() => SugarCube.setup.HuntController.end());
     await page.evaluate(() => SugarCube.setup.HuntController.addEctoplasm(100));
-    await page.evaluate(() => SugarCube.setup.HuntController.buyUnlock('smaller_house'));
+    await page.evaluate(() => SugarCube.setup.HuntShop.buyUnlock('smaller_house'));
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
     const after = (await callSetup(page, 'setup.HuntController.field("floorplan")')).rooms.length;
 
@@ -173,7 +173,7 @@ test.describe('Hunt persistent unlocks (witch ectoplasm shop)', () => {
     const baseMax = await getVar(page, 'mc.sanityMax');
 
     await page.evaluate(() => SugarCube.setup.HuntController.addEctoplasm(100));
-    await page.evaluate(() => SugarCube.setup.HuntController.buyUnlock('steeled_hand'));
+    await page.evaluate(() => SugarCube.setup.HuntShop.buyUnlock('steeled_hand'));
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
 
     expect(await getVar(page, 'mc.sanityMax')).toBe(baseMax + 25);
@@ -187,7 +187,7 @@ test.describe('Hunt persistent unlocks (witch ectoplasm shop)', () => {
     const baseMax = await getVar(page, 'mc.energyMax');
 
     await page.evaluate(() => SugarCube.setup.HuntController.addEctoplasm(100));
-    await page.evaluate(() => SugarCube.setup.HuntController.buyUnlock('calves_of_steel'));
+    await page.evaluate(() => SugarCube.setup.HuntShop.buyUnlock('calves_of_steel'));
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
 
     expect(await getVar(page, 'mc.energyMax')).toBe(baseMax + 5);
@@ -198,7 +198,7 @@ test.describe('Hunt persistent unlocks (witch ectoplasm shop)', () => {
 
   test('Intense Intuition pre-checks one of the ghost\'s true evidences', async () => {
     await page.evaluate(() => SugarCube.setup.HuntController.addEctoplasm(100));
-    await page.evaluate(() => SugarCube.setup.HuntController.buyUnlock('intense_intuition'));
+    await page.evaluate(() => SugarCube.setup.HuntShop.buyUnlock('intense_intuition'));
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
 
     const evidence = await callSetup(page, 'setup.HuntController.runEvidence()');
@@ -212,7 +212,7 @@ test.describe('Hunt persistent unlocks (witch ectoplasm shop)', () => {
 
   test('Loot Sense adds hunt-minimap-loot to rooms with uncollected loot', async () => {
     await page.evaluate(() => SugarCube.setup.HuntController.addEctoplasm(100));
-    await page.evaluate(() => SugarCube.setup.HuntController.buyUnlock('loot_sense'));
+    await page.evaluate(() => SugarCube.setup.HuntShop.buyUnlock('loot_sense'));
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
 
     const svg = await callSetup(page, 'setup.HuntController.minimapSvg()');
@@ -221,7 +221,7 @@ test.describe('Hunt persistent unlocks (witch ectoplasm shop)', () => {
 
   test('Loot Sense drops the highlight once every loot kind in a room is collected', async () => {
     await page.evaluate(() => SugarCube.setup.HuntController.addEctoplasm(100));
-    await page.evaluate(() => SugarCube.setup.HuntController.buyUnlock('loot_sense'));
+    await page.evaluate(() => SugarCube.setup.HuntShop.buyUnlock('loot_sense'));
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
 
     // Mark every floor-plan loot kind collected.
@@ -235,7 +235,7 @@ test.describe('Hunt persistent unlocks (witch ectoplasm shop)', () => {
 
   test('Reliable Recon highlights spawn until the ghost relocates', async () => {
     await page.evaluate(() => SugarCube.setup.HuntController.addEctoplasm(100));
-    await page.evaluate(() => SugarCube.setup.HuntController.buyUnlock('reliable_recon'));
+    await page.evaluate(() => SugarCube.setup.HuntShop.buyUnlock('reliable_recon'));
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
 
     let svg = await callSetup(page, 'setup.HuntController.minimapSvg()');
@@ -284,9 +284,9 @@ test.describe('Hunt persistent unlocks (witch ectoplasm shop)', () => {
 
   test('reading API on a save without $meta lazily backfills the bundle', async () => {
     await page.evaluate(() => { delete SugarCube.State.variables.meta; });
-    expect(await callSetup(page, 'setup.HuntController.metaUnlock("witchs_blessing")')).toBe(0);
-    expect(await callSetup(page, 'setup.HuntController.bannedModifiers()')).toEqual([]);
-    expect(await callSetup(page, 'setup.HuntController.rerollCharges()')).toBe(0);
+    expect(await callSetup(page, 'setup.HuntShop.unlock("witchs_blessing")')).toBe(0);
+    expect(await callSetup(page, 'setup.HuntShop.bannedModifiers()')).toEqual([]);
+    expect(await callSetup(page, 'setup.HuntShop.rerollCharges()')).toBe(0);
     // The lazy fill should have populated the bundle for subsequent writes.
     expect(await getVar(page, 'meta.unlocks')).toEqual({});
   });
