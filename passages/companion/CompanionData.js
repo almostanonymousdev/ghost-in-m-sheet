@@ -252,7 +252,7 @@ setup.CompanionData = (function () {
 	var cisBaseStats = {
 		sanity: 100, sanityMax: 100, corruption: 0,
 		lust: 0, lvl: 1, exp: 0, expForNextLvl: 20,
-		decreaseSanity: 10,
+		eventSanityLoss: 10,
 		chanceOfSuccessEMF: 15, chanceOfSuccessECTO: 15,
 		chanceOfSuccessGWB: 15, chanceOfSuccessSB: 15,
 		chanceOfSuccessTEMP: 15, chanceOfSuccessUVL: 15,
@@ -276,7 +276,7 @@ setup.CompanionData = (function () {
 		sanity: 100, sanityMax: 100,
 		lust: 0, lvl: 5,
 		plan2TimeReq: 5, plan3TimeReq: 5, plan4TimeReq: 5,
-		decreaseSanity: 10,
+		eventSanityLoss: 10,
 		chanceOfSuccessCI: 50, chanceOfSuccessGR: 50,
 		chosen: 0, chanceToAttack: 25
 	};

@@ -222,7 +222,7 @@ test.describe('rendered image/video refs resolve to files', () => {
         setup: () => {
           const V = SugarCube.State.variables;
           V.companion = { name: 'Brook' };
-          if (V.brook) Object.assign(V.brook, { chosen: 1, sanity: 100, lust: 0, decreaseSanity: 10, lvl: 3, exp: 0, expForNextLvl: 60 });
+          if (V.brook) Object.assign(V.brook, { chosen: 1, sanity: 100, lust: 0, eventSanityLoss: 10, lvl: 3, exp: 0, expForNextLvl: 60 });
           V.isCompChosen = 1;
           V.showComp = 1;
           V.chosenPlan = 'Plan1';
@@ -234,7 +234,7 @@ test.describe('rendered image/video refs resolve to files', () => {
         setup: () => {
           const V = SugarCube.State.variables;
           V.companion = { name: 'Alice' };
-          if (V.alice) Object.assign(V.alice, { chosen: 1, sanity: 60, lust: 20, decreaseSanity: 10, lvl: 3, exp: 0, expForNextLvl: 60 });
+          if (V.alice) Object.assign(V.alice, { chosen: 1, sanity: 60, lust: 20, eventSanityLoss: 10, lvl: 3, exp: 0, expForNextLvl: 60 });
           V.isCompChosen = 1;
           V.showComp = 1;
           V.chosenPlan = 'Plan1';
@@ -246,7 +246,7 @@ test.describe('rendered image/video refs resolve to files', () => {
         setup: () => {
           const V = SugarCube.State.variables;
           V.companion = { name: 'Blake' };
-          if (V.blake) Object.assign(V.blake, { chosen: 1, sanity: 30, lust: 60, decreaseSanity: 10, lvl: 4, exp: 0, expForNextLvl: 100 });
+          if (V.blake) Object.assign(V.blake, { chosen: 1, sanity: 30, lust: 60, eventSanityLoss: 10, lvl: 4, exp: 0, expForNextLvl: 100 });
           V.isCompChosen = 1;
           V.showComp = 1;
           V.chosenPlan = 'Plan1';
@@ -258,7 +258,7 @@ test.describe('rendered image/video refs resolve to files', () => {
         setup: () => {
           const V = SugarCube.State.variables;
           V.companion = { name: 'Casey' };
-          if (V.casey) Object.assign(V.casey, { chosen: 1, sanity: 80, lust: 30, decreaseSanity: 10, lvl: 5 });
+          if (V.casey) Object.assign(V.casey, { chosen: 1, sanity: 80, lust: 30, eventSanityLoss: 10, lvl: 5 });
           V.isCompChosen = 1;
           V.showComp = 1;
           V.transPicture = 3;

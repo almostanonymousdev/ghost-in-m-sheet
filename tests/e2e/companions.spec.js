@@ -31,7 +31,7 @@ async function selectCompanion(page, name) {
   // *Info passages (which read chanceOfSuccess* / plan*TimeReq) render.
   const overlay = {
     name, sanity: 100, sanityMax: 100, corruption: 0, lust: 0,
-    lvl: 1, exp: 0, expForNextLvl: 20, decreaseSanity: 10,
+    lvl: 1, exp: 0, expForNextLvl: 20, eventSanityLoss: 10,
     plan2TimeReq: 15, plan3TimeReq: 15, plan4TimeReq: 10,
     chanceOfSuccessCI: 30, chanceOfSuccessEMF: 15, chanceOfSuccessECTO: 15,
     chanceOfSuccessGWB: 15, chanceOfSuccessSB: 15, chanceOfSuccessTEMP: 15,

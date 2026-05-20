@@ -83,74 +83,6 @@ setup.Companion = (function () {
 		'videoEventCompanion', 'randomPassageOwaissa'
 	]);
 
-	/* Generate per-companion stat accessors that all share the
-	   `api.stateFor(name) -> object[field]` shape. Each entry produces
-	   one method on `api`:
-	     { get: name, key: field, miss?: fallback }    one-arg getter
-	     { set: name, key: field }                     two-arg setter
-	     { is:  name, key: field, value: stage }       predicate
-	     { writes: name, sets: { k1: v1, k2: v2 } }    one-arg bulk-write of constants
-	*/
-	function defineCompanionAccessors(api, spec) {
-		spec.forEach(function (entry) {
-			if (entry.get) {
-				api[entry.get] = function (name) {
-					var c = api.stateFor(name);
-					return c ? c[entry.key] : entry.miss;
-				};
-			}
-			if (entry.set) {
-				api[entry.set] = function (name, v) {
-					var c = api.stateFor(name);
-					if (c) c[entry.key] = v;
-				};
-			}
-			if (entry.is) {
-				api[entry.is] = function (name) {
-					var c = api.stateFor(name);
-					return !!(c && c[entry.key] === entry.value);
-				};
-			}
-			if (entry.writes) {
-				var keys = Object.keys(entry.sets);
-				api[entry.writes] = function (name) {
-					var c = api.stateFor(name);
-					if (!c) return;
-					for (var i = 0; i < keys.length; i++) c[keys[i]] = entry.sets[keys[i]];
-				};
-			}
-		});
-	}
-
-	/* Same idea as defineCompanionAccessors but each method targets the
-	   active companion (api.activeState()) instead of a passed-in name:
-	     { get: name, key: field, miss?: fallback }     zero-arg getter
-	     { set: name, key: field }                      one-arg setter
-	     { add: name, key: field, sign?: 1|-1 }         one-arg additive mutator
-	*/
-	function defineActiveAccessors(api, spec) {
-		spec.forEach(function (entry) {
-			if (entry.get) {
-				api[entry.get] = function () {
-					var c = api.activeState();
-					return c ? c[entry.key] : entry.miss;
-				};
-			}
-			if (entry.set) {
-				api[entry.set] = function (v) {
-					var c = api.activeState();
-					if (c) c[entry.key] = v;
-				};
-			}
-			if (entry.add) {
-				api[entry.add] = function (n) {
-					var c = api.activeState();
-					if (c) c[entry.key] += entry.sign === -1 ? -n : n;
-				};
-			}
-		});
-	}
-
 	// Pure data lives in CompanionData.js (loaded after this script
 	// alphabetically). data() is the single accessor — every read goes
 	// through it so callers don't need to remember which sub-table they
@@ -182,7 +114,7 @@ setup.Companion = (function () {
 		// per-companion stat row $brook / $alice / $blake / $alex /
 		// $taylor / $casey, resolved through the $companion marker),
 		// or undefined if none. Carries .name, .sanity, .lust,
-		// .decreaseSanity, etc.
+		// .eventSanityLoss, etc.
 		activeState: function () {
 			var marker = State.variables.companion;
 			if (!marker || !marker.name) return undefined;
@@ -242,6 +174,11 @@ setup.Companion = (function () {
 					}
 					delete vars[oldKey];
 				});
+				// Field rename on the stat row itself: decreaseSanity → eventSanityLoss.
+				if (stats.eventSanityLoss === undefined && stats.decreaseSanity !== undefined) {
+					stats.eventSanityLoss = stats.decreaseSanity;
+				}
+				delete stats.decreaseSanity;
 			});
 		},
 
@@ -523,7 +460,7 @@ setup.Companion = (function () {
 
 		// --- Per-companion state accessors ----------------------
 		// (companionLvl / companionExp / companionExpForNextLvl fold
-		// into the defineCompanionAccessors call at the bottom.)
+		// into the setup.defineAccessors call at the bottom.)
 		isCompanionFlagActive: function () { return State.variables.isCompChosen === 1; },
 		markCompanionFlagActive: function () { State.variables.isCompChosen = 1; },
 		/* Pick a video/image descriptor for the CompanionEvent
@@ -577,14 +514,14 @@ setup.Companion = (function () {
 		blakeUnlocked: function () { return setup.Mall.blakeIsCompanionCandidate(); },
 		aliceWorkDone: function () { return State.variables.aliceWorkDone === 1; },
 		// (hasFinishedSoloHunt / soloHuntPaymentState fold into the
-		// defineCompanionAccessors call at the bottom.)
+		// setup.defineAccessors call at the bottom.)
 		hasActiveCompanion: function () { var c = this.activeState(); return !!(c && c.name); },
 		activeCompanionName: function () {
 			var c = this.activeState();
 			return c && c.name;
 		},
 		// (soloHuntChanceOwaissa / soloHuntChanceElm fold into the
-		// defineCompanionAccessors call at the bottom.)
+		// setup.defineAccessors call at the bottom.)
 		setSoloHuntChances: function (name, owaissa, elm) {
 			var c = this.stateFor(name);
 			if (!c) return;
@@ -706,7 +643,7 @@ setup.Companion = (function () {
 
 		/* acknowledgeSoloHuntEnd (paid/goingSolo reset on the morning-after
 		   HuntEndAlone) and clearSoloHuntStreet (Owaissa/Elm choice reset
-		   after narration) fold into the defineCompanionAccessors `writes`
+		   after narration) fold into the setup.defineAccessors `writes`
 		   spec at the bottom. companionChoseOwaissa / companionChoseElm
 		   predicates fold into the same call. */
 		/* Pay out the solo-hunt reward to $mc.money. Per-street figures
@@ -731,8 +668,8 @@ setup.Companion = (function () {
 		},
 
 		// --- Active-companion HUD / event helpers ----------------
-		// (sanity / lust / lvl / decreaseSanity / setActiveLust / addLust /
-		// drainSanity fold into the defineActiveAccessors call at the
+		// (sanity / lust / lvl / setActiveLust / addLust /
+		// drainSanity fold into the setup.defineAccessors call at the
 		// bottom. lvl() is the canonical active-companion level reader --
 		// callers used to also reach activeCompanionLvl() for the same
 		// thing.)
@@ -763,13 +700,17 @@ setup.Companion = (function () {
 		   display and applyEventStatDeltas() to mutate state — both
 		   read this single source so they can't drift. */
 		eventLustGain: function () { return setup.Tick.stepCount() * 3; },
+		/* Sanity hit applied to the active companion when a CompanionEvent
+		   fires. Per-companion constant on the stat row (defaults 10,
+		   tunable per character via cisBaseStats/transBaseStats). */
+		eventSanityLoss: function () { var c = this.activeState(); return c ? c.eventSanityLoss : 0; },
 
 		/* Apply the standard "$companion.sanity/lust change" side-effects
 		   from the shared companionTextEvent widgets. */
 		applyEventStatDeltas: function () {
 			var c = this.activeState();
 			if (!c) return;
-			c.sanity -= c.decreaseSanity;
+			c.sanity -= this.eventSanityLoss();
 			c.lust   += this.eventLustGain();
 		},
 		/* Per-name bookkeeping called from the shared
@@ -803,12 +744,11 @@ setup.Companion = (function () {
 		{ name: 'showComp',           set: false },
 		{ name: 'transFirstStage',    get: false, set: 'setTransFirstStage' }
 	]);
-	// Per-companion stat accessors. Each call resolves the target
-	// companion's mutable state object via api.stateFor(name) and reads
-	// or writes a single field (or, for `writes`, a fixed set of
-	// constants); folded here so the wrapper bodies don't have to
-	// repeat the null-check / fallback boilerplate.
-	defineCompanionAccessors(api, [
+	// Per-companion stat accessors. Parametric host: each generated
+	// method takes the companion name and resolves its mutable stat row
+	// via api.stateFor(name); null-check / fallback boilerplate lives
+	// inside setup.defineAccessors instead of once per method body.
+	setup.defineAccessors(api, function (name) { return api.stateFor(name); }, [
 		{ get: 'companionLvl',           key: 'lvl',                miss: 0 },
 		{ get: 'companionExp',           key: 'exp',                miss: 0 },
 		{ get: 'companionExpForNextLvl', key: 'expForNextLvl',      miss: 0 },
@@ -823,14 +763,13 @@ setup.Companion = (function () {
 	]);
 	// Active-companion accessors. Bound against api.activeState() so the
 	// fallback / null-check is one place instead of one per method body.
-	defineActiveAccessors(api, [
+	setup.defineAccessors(api, function () { return api.activeState(); }, [
 		{ get: 'sanity',         key: 'sanity',         miss: 0 },
 		{ get: 'lust',           key: 'lust',           miss: 0 },
 		{ get: 'lvl',            key: 'lvl',            miss: 0 },
-		{ get: 'decreaseSanity', key: 'decreaseSanity', miss: 0 },
 		{ set: 'setActiveLust',  key: 'lust' },
 		{ add: 'addLust',        key: 'lust' },
-		{ add: 'drainSanity',    key: 'sanity', sign: -1 }
+		{ remove: 'drainSanity', key: 'sanity' }
 	]);
 	return api;
 })();

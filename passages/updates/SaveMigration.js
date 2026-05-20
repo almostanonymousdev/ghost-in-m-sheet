@@ -202,7 +202,7 @@
 
 		// v6: collapse the per-pick $companion clone to a {name}
 		// marker. Old saves carrying a full clone (sanity / lust /
-		// chanceToAttack / decreaseSanity / ...) are the source-of-
+		// chanceToAttack / eventSanityLoss / ...) are the source-of-
 		// truth for live in-hunt values; port those fields onto the
 		// backing stat row, then strip the clone down to {name}.
 		if (vars.companion && typeof vars.companion === 'object' && vars.companion.name) {
