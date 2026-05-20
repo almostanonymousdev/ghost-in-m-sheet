@@ -8,7 +8,7 @@
 <<huntCard>>
 </div>
 <<nobr>>
-<<run setup.Ghosts.fireActiveOnEnterHouse()>>
+<<run setup.Hunt.emit(setup.Hunt.Event.HOUSE_ENTER)>>
 <<run setup.Time.resetToMidnight()>><<run setup.Tick.resetCooldowns()>>
 <<done>>
 <<replace "#time">><<= setup.Time.display()>><</replace>>

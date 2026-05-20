@@ -29,9 +29,9 @@ setup.HuntController = (function () {
 	var OWNED_VARS = Object.freeze([
 		'run', 'ectoplasm', 'runsStarted', 'meta',
 		'nextHuntSeed', 'pendingHuntHouseId',
-		// Ghost-room shuffle interval gates -- written only by
+		// Ghost-room shuffle interval gate -- written only by
 		// shuffleGhostRoom (below) and reset when a run starts/ends.
-		'currentIntervalRoom', 'lastChangeIntervalRoom'
+		'lastChangeIntervalRoom'
 	]);
 
 	function sv() { return State.variables; }
@@ -410,8 +410,37 @@ setup.HuntController = (function () {
 			   them via setRoomLight. */
 			lights: {}
 		};
-		sv().stepCount = 0;
+		setup.Tick.resetStepCount();
 		return sv().run;
+	}
+
+	/* Test / cheat shortcut: stamp a minimal $run with the named ghost
+	   as both real identity and current disguise, copy in evidence ids,
+	   and default trapped to false. Production hunt flow goes through
+	   start() above (full procedural startup). This exists so unit specs
+	   and the cheat menu can park the player in an "active hunt" state
+	   without spinning up a floorplan / modifiers / starting tools.
+
+	   The `cheat` prefix marks this as cheat/test-only — see
+	   tests/cheat-method-lint.spec.js, which forbids production passages
+	   from calling any setup.X.cheat* method outside the cheat dialog. */
+	function cheatStampMinimalRun(opts) {
+		opts = opts || {};
+		var run = sv().run;
+		if (!run || typeof run !== 'object') {
+			sv().run = {};
+			run = sv().run;
+		}
+		run.ghostName    = opts.ghostName;
+		run.disguiseName = opts.ghostName;
+		run.evidence     = Array.isArray(opts.evidence) ? opts.evidence.slice() : [];
+		if (run.trapped === undefined) run.trapped = false;
+		if (!Array.isArray(run.modifiers))     run.modifiers = [];
+		if (run.loadout == null)               run.loadout = {};
+		if (run.objective == null)             run.objective = Objective.IDENTIFY.id;
+		if (run.currentRoomId == null)         run.currentRoomId = 'room_0';
+		if (!Array.isArray(run.collectedLoot)) run.collectedLoot = [];
+		if (run.lights == null)                run.lights = {};
 	}
 
 	/* End the current run. Preserves the run number so the next
@@ -1664,7 +1693,6 @@ setup.HuntController = (function () {
 		var mins = setup.Time.minutes() || 0;
 		var interval = mins < 20 ? "0-19" : mins < 40 ? "20-39" : "40-59";
 		var s = sv();
-		s.currentIntervalRoom = interval;
 		if (interval === s.lastChangeIntervalRoom) return;
 		if (Math.random() < driftChance()) {
 			driftGhostRoom();
@@ -1805,6 +1833,7 @@ setup.HuntController = (function () {
 		FailureReason: FailureReason,
 		Objective: Objective,
 		start: start,
+		cheatStampMinimalRun: cheatStampMinimalRun,
 		end: end,
 		active: active,
 		isActive: isActive,

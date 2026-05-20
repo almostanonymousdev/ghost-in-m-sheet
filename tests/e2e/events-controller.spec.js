@@ -415,10 +415,6 @@ test.describe('Events controller — eventTextFor lookup', () => {
       SugarCube.setup.Events.eventTextFor(bp, t), [bodyPart, tier]);
   }
 
-  test('returns "" for an unknown body part', async ({ game: page }) => {
-    expect(await lookup('nope', 0)).toBe('');
-  });
-
   test('all corruption tiers resolve to non-empty prose for every body part', async ({ game: page }) => {
     const parts = ['brain', 'tits', 'ass', 'bottom', 'mouth', 'pussy', 'anal'];
     const tiers = [0, 1, 2, 3, 4, 6, 8];
@@ -464,4 +460,76 @@ test.describe('Events controller — eventTextFor lookup', () => {
     }
   });
 
+});
+
+test.describe('Events controller — typed key registry', () => {
+  /* setup.Events exposes EventKey/ClothingKey/CthulionTier constants
+     and the lookup methods throw on unknown keys (instead of silently
+     returning []/undefined like they used to). The static lint catches
+     typos in source; this runtime suite covers the throw path itself
+     so the behavior can't drift back. */
+
+  async function callThrows(page, expr) {
+    return page.evaluate((e) => {
+      try { eval(e); return null; } catch (err) { return err && err.message ? err.message : String(err); }
+    }, expr);
+  }
+
+  test('EventKey values exactly equal Object.keys(setup.EventVideos)', async ({ game: page }) => {
+    const got = await page.evaluate(() => ({
+      keys: Object.values(SugarCube.setup.Events.EventKey).sort(),
+      data: Object.keys(SugarCube.setup.EventVideos).sort(),
+    }));
+    expect(got.keys).toEqual(got.data);
+  });
+
+  test('ClothingKey covers every clothing sub-key in setup.EventVideos', async ({ game: page }) => {
+    const got = await page.evaluate(() => {
+      const sub = new Set();
+      for (const k of Object.keys(SugarCube.setup.EventVideos)) {
+        for (const c of Object.keys(SugarCube.setup.EventVideos[k])) {
+          if (c !== '_type') sub.add(c);
+        }
+      }
+      return {
+        sub: [...sub].sort(),
+        ck: Object.values(SugarCube.setup.Events.ClothingKey).sort(),
+      };
+    });
+    const missing = got.sub.filter((k) => !got.ck.includes(k));
+    expect(missing).toEqual([]);
+  });
+
+  test('videoListForEvent throws on unknown key', async ({ game: page }) => {
+    const msg = await callThrows(page, "SugarCube.setup.Events.videoListForEvent('bogus')"); // lint-skip: events-keys
+    expect(msg).toContain('unknown event key');
+    expect(msg).toContain('bogus');
+  });
+
+  test('getVideos throws on unknown event key and unknown clothing key', async ({ game: page }) => {
+    expect(await callThrows(page, "SugarCube.setup.Events.getVideos('bogus', 'jeans')")).toContain('unknown event key'); // lint-skip: events-keys
+    expect(await callThrows(page, "SugarCube.setup.Events.getVideos('tits', 'kilt')")).toContain('unknown clothing key'); // lint-skip: events-keys
+  });
+
+  test('eventTextFor throws on unknown body part', async ({ game: page }) => {
+    const msg = await callThrows(page, "SugarCube.setup.Events.eventTextFor('elbow', 4)"); // lint-skip: events-keys
+    expect(msg).toContain('unknown event key');
+  });
+
+  test('saveEventBottomVideos / saveEventTopVideos throw on unknown stage', async ({ game: page }) => {
+    expect(await callThrows(page, "SugarCube.setup.Events.saveEventBottomVideos(7)")).toContain('SaveEvent stage');
+    expect(await callThrows(page, "SugarCube.setup.Events.saveEventTopVideos(0)")).toContain('SaveEvent stage');
+  });
+
+  test('cthulionVideos: tier 0 returns [], known tier returns videos, unknown throws', async ({ game: page }) => {
+    expect(await page.evaluate(() => SugarCube.setup.Events.cthulionVideos(0))).toEqual([]);
+    const t1 = await page.evaluate(() => SugarCube.setup.Events.cthulionVideos(1));
+    expect(t1.length).toBeGreaterThan(0);
+    expect(await callThrows(page, "SugarCube.setup.Events.cthulionVideos(7)")).toContain('Cthulion tier');
+  });
+
+  test('CthulionTier constants match the runtime tier ranges', async ({ game: page }) => {
+    const t = await page.evaluate(() => SugarCube.setup.Events.CthulionTier);
+    expect(t).toEqual({ S1: 1, S2: 2, S3: 3, COMPANION: 4 });
+  });
 });

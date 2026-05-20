@@ -3,7 +3,7 @@ const { openGame, resetGame, callSetup, getVar } = require('./helpers');
 
 /* The Settings/Cheats dialog exposes a "Force ghost type" list (see
    GuiController.cheatGhostType). When the player picks a name, the
-   onChange handler calls setup.Ghosts.forceHuntGhost(ghost), which
+   onChange handler calls setup.Ghosts.cheatForceHuntGhost(ghost), which
    rewrites $run.ghostName / $run.disguiseName / $run.evidence so the
    active hunt now reads as the chosen catalogue entry. */
 test.describe('cheatGhostType — forceHuntGhost', () => {
@@ -35,7 +35,7 @@ test.describe('cheatGhostType — forceHuntGhost', () => {
     expect(await getVar(page, 'run')).toBeNull();
     await page.evaluate(() => {
       const g = SugarCube.setup.Ghosts.getByName('Banshee');
-      SugarCube.setup.Ghosts.forceHuntGhost(g);
+      SugarCube.setup.Ghosts.cheatForceHuntGhost(g);
     });
     expect(await getVar(page, 'run')).toBeNull();
   });
@@ -54,7 +54,7 @@ test.describe('cheatGhostType — forceHuntGhost', () => {
 
     await page.evaluate((name) => {
       const g = SugarCube.setup.Ghosts.getByName(name);
-      SugarCube.setup.Ghosts.forceHuntGhost(g);
+      SugarCube.setup.Ghosts.cheatForceHuntGhost(g);
     }, target);
 
     expect(await callSetup(page, 'setup.HuntController.ghostName()')).toBe(target);
@@ -86,7 +86,7 @@ test.describe('cheatGhostType — forceHuntGhost', () => {
       if (name === '—') return;
       if (!SugarCube.setup.Ghosts.isAnyMode()) return;
       const ghost = SugarCube.setup.Ghosts.list().filter(g => g.name === name)[0];
-      if (ghost) SugarCube.setup.Ghosts.forceHuntGhost(ghost);
+      if (ghost) SugarCube.setup.Ghosts.cheatForceHuntGhost(ghost);
     }, target);
 
     expect(await callSetup(page, 'setup.Ghosts.active().name')).toBe(target);

@@ -347,7 +347,15 @@
         },
         /* Unlock the haunted-house detector. Set by witch purchase. */
         buyDetector:     function () { State.variables.boughtDetector = 1; },
-        detectorBought:  function () { return State.variables.boughtDetector !== undefined; }
+        detectorBought:  function () { return State.variables.boughtDetector !== undefined; },
+        /* Pure-read predicate: is this timed tool currently flagged
+           active? Unlike setup.tickTimedTool, does NOT side-effect on
+           expiry — callers that just want to sample state without
+           consuming the activation window use this. */
+        isActivated: function (tool) {
+            var t = State.variables.tools;
+            return !!(t && t[tool] && t[tool].activated);
+        }
     };
 
     /* <<toolCheck tool>> -- thin macro that delegates to the controller

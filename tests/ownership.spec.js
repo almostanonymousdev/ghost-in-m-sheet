@@ -198,7 +198,7 @@ test.describe('Variable ownership', () => {
 		const SV_RE = /\bsv\(\)\.([a-zA-Z_][a-zA-Z0-9_]*)/g;
 		for (const file of files) {
 			const text = fs.readFileSync(file, 'utf8');
-			for (const passage of splitPassages(text)) {
+			for (const passage of splitSource(file, text)) {
 				const stripped = stripJsCommentsAndStrings(passage.body);
 				// STATE_RE / SV_RE are unambiguous and run on the full
 				// passage body. TWEE_RE only fires in Twee context: skip
@@ -271,7 +271,7 @@ test.describe('Variable ownership', () => {
 		const violations = [];
 		for (const file of files) {
 			const text = fs.readFileSync(file, 'utf8');
-			for (const passage of splitPassages(text)) {
+			for (const passage of splitSource(file, text)) {
 				/* The scannable body is either the full passage body
 				   (for [script] passages) or just the contents of every
 				   <<script>>...<</script>> block (everything else is
@@ -370,18 +370,37 @@ test.describe('Variable ownership', () => {
 	});
 });
 
-/* Recursively collect every .tw file under `dir`. */
+/* Recursively collect every .tw and .js source file under `dir`. Both
+   participate in the static-scan lints below: .tw files are split into
+   passages by their `:: Name` headers, while each .js file is treated
+   as a single synthetic script-context passage (see splitSource). */
 function collectTwFiles(dir) {
 	const out = [];
 	for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
 		const full = path.join(dir, entry.name);
 		if (entry.isDirectory()) {
 			out.push(...collectTwFiles(full));
-		} else if (entry.name.endsWith('.tw')) {
+		} else if (entry.name.endsWith('.tw') || entry.name.endsWith('.js')) {
 			out.push(full);
 		}
 	}
 	return out;
+}
+
+/* Yield passages for a source file. For .tw files, delegates to
+   splitPassages (which scans for `:: Name` headers). For .js files,
+   returns a single synthetic passage covering the whole file body,
+   tagged isScript: true so the existing script-region checks fire. */
+function splitSource(file, text) {
+	if (file.endsWith('.js')) {
+		return [{
+			name: path.basename(file),
+			isScript: true,
+			body: text,
+			headerLine: 1
+		}];
+	}
+	return splitPassages(text);
 }
 
 /* Split a .tw file into its individual passages. Each passage starts

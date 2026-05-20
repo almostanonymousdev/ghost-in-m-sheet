@@ -36,8 +36,10 @@ setup.Intro = (function () {
 		}
 	}
 
-	function maximizeSensualBodyParts(obj) {
+	function cheatMaximizeSensualBodyParts(obj) {
 		// Cheat-menu helper (StoryCaption "Maximize body part sensitivity").
+		// The `cheat` prefix marks this as cheat-only; see
+		// tests/cheat-method-lint.spec.js for the call-site restriction.
 		if (!obj || typeof obj !== 'object') { return; }
 		for (var i = 0; i < BODY_PARTS.length; i++) {
 			obj[BODY_PARTS[i]] = MAX_SENSITIVITY;
@@ -60,7 +62,7 @@ setup.Intro = (function () {
 		CHOSEN_SENSITIVITY:       CHOSEN_SENSITIVITY,
 		defaultSensualBodyParts:  defaultSensualBodyParts,
 		clampSensualBodyParts:    clampSensualBodyParts,
-		maximizeSensualBodyParts: maximizeSensualBodyParts,
+		cheatMaximizeSensualBodyParts: cheatMaximizeSensualBodyParts,
 		ensureSensualBodyParts:   ensureSensualBodyParts,
 		currentSensualBodyPart:   function () { return State.variables.sensualBodyPart; },
 		bodyPart:                 function (part) {

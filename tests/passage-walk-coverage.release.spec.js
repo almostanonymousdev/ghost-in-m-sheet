@@ -463,7 +463,7 @@ async function walkPassages(browser, passages, label) {
   // is selected, an event video is queued) can render. Without this we
   // surface ~200 "passage X errors when entered cold" findings, almost
   // all of which are state-not-initialized rather than real bugs. The
-  // canonical initializers (setup.Ghosts.startHunt, setup.Delivery.initShift,
+  // canonical initializers (setup.Ghosts.cheatStartHunt, setup.Delivery.initShift,
   // setup.Companion.defaultStateFor, setup.applySaveDefaults) are the
   // same ones invoked by GhostRandomize / WorkDelivery / SaveMigration
   // in normal play, so the resulting state matches what a player sees
@@ -482,7 +482,7 @@ async function walkPassages(browser, passages, label) {
 
       // Active hunt — needed by everything that reads $hunt or branches
       // on huntMode. Shade is a generic ghost with no special quirks.
-      setup.Ghosts.startHunt('Shade');
+      setup.Ghosts.cheatStartHunt('Shade');
 
       // Per-hunt search bags (every haunted-house room reads
       // $currentsearch<Room>). GhostRandomize does this in the real flow.
@@ -521,6 +521,12 @@ async function walkPassages(browser, passages, label) {
       // require non-empty path strings. ui/img/witch-girl.jpg is a
       // real asset under both asset-placeholders/ and assets/.
       V.videoEvent = 'ui/img/witch-girl.jpg';
+
+      // Body-part event randomizer key. EventMC cold-renders
+      // <<eventRandomizerText setup.Events.currentArgForRandomizer()>>;
+      // without a prior Event → rollProwlEvent → initEvent call, the
+      // arg is undefined and the assertion in eventTextFor throws.
+      V.argForRandomizer = setup.Events.EventKey.PUSSY;
 
       // Default to "inside Owaissa house" so haunted-house rooms have
       // a recognised location flag set. Most location-aware passages

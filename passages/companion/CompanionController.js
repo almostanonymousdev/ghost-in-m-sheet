@@ -36,8 +36,7 @@ setup.Companion = (function () {
 		'chosenPlan', 'chosenPlanActivated', 'chosenPlanActivatedTime',
 		'chanceToSuccess',
 		'chanceToAttack',
-		'isCompRoomChosen', 'currentGhostPassage', 'filteredGhostPassages',
-		'randomGhostPassage', 'showComp',
+		'isCompRoomChosen', 'randomGhostPassage', 'showComp',
 		'transFirstStage', 'transPicture', 'transStart',
 		'aliceWorkDone',
 		'meetAlice',
@@ -739,8 +738,6 @@ setup.Companion = (function () {
 				.map(function (r) { return r.id; })
 				.filter(function (id) { return id !== current; });
 			if (!rooms.length) return;
-			State.variables.currentGhostPassage = current;
-			State.variables.filteredGhostPassages = rooms;
 			State.variables.randomGhostPassage = rooms[Math.floor(Math.random() * rooms.length)];
 		},
 
