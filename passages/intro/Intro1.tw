@@ -1,16 +1,18 @@
 :: Intro1 {"position":"700,100","size":"100,100"}
 <div style="display: flex; align-items: center;">
   <div style="flex: 1;">
-&emsp;&emsp;	You are <<= setup.Mc.name()>>, a brave young woman who has devoted much of her free time to studying esoterics, mysticism, and the unexplainable. Somehow, it drew you more than anything else, perhaps because in your world, incredible creatures, from ghosts to demons, have started appearing. This has been going on for quite some time.
-&emsp;&emsp;The world has changed, and society has changed with it. People have grown accustomed to such anomalies, but there are cases when certain measures have to be taken. This led to the emergence of new professions: ghost hunters, witches, exorcists, and so on.</div>
+&emsp;&emsp;The kettle clicks off before it whistles. Six months in Mossheath and your kitchen is a thing your hands know better than your eyes: same chipped mug, same drawer that sticks unless you lift it. The radio on top of the fridge is halfway through the regional bulletin. Another woman gone missing in Halewick, two towns east. They already used the word //another// once tonight.
+&emsp;&emsp;The EMF reader on the counter chirps once and goes quiet.
+&emsp;&emsp;You watch it for a long second. Townie habit by now: log the blip, don't name it. The little house you inherited sits on a thin patch of Mossheath, the kind locals call M'Sheet when they want to sound like they're from here. Thin patches blip. Aunt Lou's house. Aunt Lou's blips.</div>
  <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
 <<image "ui/img/mc.jpg" { width: "80%" }>><br>  </div>
 </div>
-&emsp;&emsp;@@.mc-speech; Such professions are quite dangerous, but the risk is worth it: they pay quite well@@ - you think.
-&emsp;&emsp;And so, you have dedicated yourself to this. You are a ghost hunter. Of course, you lack experience; you have some knowledge and minimal inexpensive equipment, but you have a strong desire to start contributing to society and, well, to earn some money.
-&emsp;&emsp;You live alone in a small town. However, even here, there is work for you. They say there's a witch nearby who can help you with your job. She provides contracts for ghosts. Most likely, she is a middleman or something similar.
-&emsp;&emsp;@@.mc-speech; I think it's best to head to the witch first. She should advise me on what to do.@@
+&emsp;&emsp;Three freelance jobs in six months, <<= setup.Mc.name()>>. Cleared an attic Shade for the landlady on Birch Street. Talked a Spirit out of someone's Bluetooth speaker. Sold one vial of ectoplasm to a man in the mall parking lot who didn't ask your name. That one paid the heating bill.
+&emsp;&emsp;@@.mc-speech; Freelance is going to get me killed before it gets me paid.@@
+&emsp;&emsp;You turn the radio off mid-sentence. There's a witch on the edge of town who brokers contracts. Proper ones, with names and addresses and payouts that aren't a fold of bills from a stranger. Everyone in Mossheath who hunts goes through her eventually. You've been putting it off because she's supposed to be the kind of person who notices things, and being noticed is not, historically, what you're good at.
+&emsp;&emsp;The EMF blips again. Same single chirp. Aunt Lou's house, telling you to get on with it.
+&emsp;&emsp;@@.mc-speech; Alright. Witch first.@@
 
-@@.mc-action; Visit the witch, she should provide details.@@
+@@.mc-action; Go see the witch. She brokers contracts.@@
 
 @@.enterbtn;[[Start|CityMap]] @@
