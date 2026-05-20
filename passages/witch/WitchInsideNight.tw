@@ -3,10 +3,10 @@
 <br>
 
 <<if hasVisited("WitchBedroom")>>
-	@@.mc-thoughts;You entered the witch's house using the key. The house is quiet. The door to her bedroom is slightly open, as if she was expecting you. A faint sound of breathing comes from behind the door.@@
+	@@.mc-thoughts; You let yourself in. The bedroom door is open a crack again. Same breathing. You've stopped pretending it's a surprise.@@
 <<else>>
-	@@.mc-thoughts; You enter the witch's house, trying to move as quietly as possible. The room is shrouded in twilight, the air heavy, as if soaked in ancient mysteries. Occult objects are scattered everywhere -- strange dolls, darkened books with mysterious symbols, candles flickering with a dim light. You feel the gaze of invisible eyes watching your every step.<br>
-	Your attention is drawn to a slightly open door at the back of the room. It looks like a bedroom. A faint sound of breathing comes from behind the door. She's probably asleep.@@
+	@@.mc-thoughts; You let yourself in. Same room as daytime, different temperature. Curtains drawn, candles down to nubs. The clipboard is still on the desk, face down where she left it. The cards in the front window face the wrong way around at night.<br>
+	The bedroom door is open a crack. You can hear her breathing.@@
 <</if>>
 <br>
 <<if setup.Witch.canStealItemsFromWitch()>>
@@ -17,18 +17,18 @@
 		<<if _check eq 1>>
 			<<if not setup.Ghosts.hasDiscovered("Myling")>>
 				<<run setup.Ghosts.markDiscovered("Myling")>>
-				You found information about the ghost Myling
+				A loose page on Myling, dog-eared. You pocket it.
 			<<else>>
-				You found 30$
+				Thirty bucks under a candle. You pocket it. Sorry, Khadija.
 				<<run setup.Mc.addMoney(30)>>
 			<</if>>
 		<<elseif _check eq 2>>
-			You didn't find anything
+			Nothing useful. Or nothing she lets you find.
 		<<elseif _check eq 3>>
-			You found sanity pillls!
+			Sanity pills. You pocket them, no idea where she gets them from.
 			<<run setup.Mc.addSanityPills(1)>>
 		<<elseif _check eq 4>>
-			You found a crusifix!
+			A crucifix. Older than the church, by the weight of it.
 			<<run setup.ToolController.addCrucifix()>>
 		<<elseif _check eq 5>>
 			<<goto "WitchTentaclesEvent">>
@@ -36,12 +36,12 @@
 		@@
 	<</linkreplace>>
 <<else>>
-	@@.mc-speech; Enough stealing for today.@@
+	@@.mc-speech; Enough stealing for one night.@@
 <</if>>
 
 <br>
 <<if not setup.Witch.canVisitWitchBedroomNight()>>
-	@@.mc-speech; Enough for today.@@
+	@@.mc-speech; Enough for one night.@@
 <<else>>
 	@@.enterbtn; [[Bedroom|WitchBedroom]]@@
 <</if>>

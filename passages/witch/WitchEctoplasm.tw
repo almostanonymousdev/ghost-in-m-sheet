@@ -9,8 +9,8 @@
 <<set _balanceLine to function () {
 	return 'Ectoplasm: ' + setup.HuntController.ectoplasm() + ' mL';
 }>>
-@@.location; The Witch's Ectoplasm Wares@@<br>
-@@.notmc-speech; Ectoplasm fetches a different sort of favor than coin does. Pick what you want.@@<br>
+@@.location; Ectoplasm Wares@@<br>
+@@.notmc-speech; Ectoplasm buys a different sort of favor than coin. Pick what you want.@@<br>
 <span class="meta-shop-balance"><<= _balanceLine()>></span><br>
 <br>
 <div id="hunt-shop-list">

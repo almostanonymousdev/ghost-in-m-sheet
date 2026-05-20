@@ -1,13 +1,13 @@
 :: Witch [nobr] {"position":"1250,25","size":"100,100"}
 <<image "ui/img/witchhouse.jpg" { width: "85%" }>><br>
 @@.location; The Witch's House@@<br>
-@@.mc-thoughts; Doesn't look as scary as it sounds@@<br>
+@@.mc-thoughts; Doesn't look the part. Front garden, peeling green door. The cards in the front window are the only tell.@@<br>
 <br>
 <<if not setup.Witch.isDayTime()>>
 	<<if setup.Witch.canSneakInAtNight()>>
 		@@.enterbtn; [[Use the stolen key to sneak into the house|WitchInsideNight]]@@
 	<<else>>
-		@@.mc-thoughts;I don't think it's worth going to her now. I'll check in later (from 10 in the morning to midnight)@@
+		@@.mc-thoughts; Curtains drawn. She keeps shop hours, ten to midnight, and you're outside them. Come back later.@@
 	<</if>>
 <<else>>
 	<<set _check to random(1,7)>>
