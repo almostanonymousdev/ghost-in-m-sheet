@@ -14,7 +14,7 @@ setup.CursedItems = (function () {
 
 	var ITEMS = ["tv", "pc", "bed", "shower", "bath"];
 
-	function sv() { return State.variables; }
+	var sv = setup.sv;
 
 	return {
 		OWNED_VARS: OWNED_VARS,

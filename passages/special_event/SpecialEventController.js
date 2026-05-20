@@ -5,7 +5,7 @@
  * thresholds, companion identity, mare progression, wraith escape).
  */
 setup.SpecialEvent = (function () {
-	function sv() { return State.variables; }
+	var sv = setup.sv;
 	function companionName() { return setup.Companion.activeCompanionName(); }
 
 	/* Variables owned by this controller. Other controllers should
@@ -104,7 +104,4 @@ setup.SpecialEvent = (function () {
 		}
 	};
 })();
-/* Deferred to :storyready -- see ChurchController for rationale. */
-$(document).one(':storyready', function () {
-	setup.Cooldowns.registerDaily('ghostSpecialEventSpirit');
-});
+setup.Cooldowns.registerDaily('ghostSpecialEventSpirit');

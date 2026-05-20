@@ -16,15 +16,12 @@ setup.Church = (function () {
 		'churchSex'
 	]);
 
-	function sv() { return State.variables; }
+	var sv = setup.sv;
 
 	return {
 		OWNED_VARS: OWNED_VARS,
 		// --- Hours -------------------------------------------------
-		isOpen: function () {
-			var h = setup.Time.hours();
-			return h > 5 && h < 22;
-		},
+		isOpen: setup.LocationHours(6, 21),
 
 		// --- Rescue / Rain quest line -----------------------------
 		hasMetRain: function () {
@@ -152,10 +149,4 @@ setup.Church = (function () {
 		}
 	};
 })();
-/* Deferred to :storyready because Tweego's script-passage concatenation
-   order isn't a guaranteed early load for gui/MeterController.js (where
-   setup.Cooldowns is defined). Registering at :storyready means
-   setup.Cooldowns is populated regardless of who got concatenated first. */
-$(document).one(':storyready', function () {
-	setup.Cooldowns.registerDaily('churchSex');
-});
+setup.Cooldowns.registerDaily('churchSex');

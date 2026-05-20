@@ -38,15 +38,12 @@ setup.Library = (function () {
 		return (setup.LibraryData && setup.LibraryData.tornPageTips) || [];
 	}
 
-	function sv() { return State.variables; }
+	var sv = setup.sv;
 
 	return {
 		OWNED_VARS: OWNED_VARS,
 		// --- Hours ------------------------------------------------
-		isOpen: function () {
-			var h = setup.Time.hours();
-			return h > 7 && h < 22;
-		},
+		isOpen: setup.LocationHours(8, 21),
 		hasEnergyToSearch: function () {
 			return setup.Mc.energy() >= 1;
 		},

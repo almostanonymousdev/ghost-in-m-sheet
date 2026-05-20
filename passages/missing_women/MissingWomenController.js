@@ -14,7 +14,7 @@ setup.RescueQuestState = Object.freeze({
 });
 
 setup.MissingWomen = (function () {
-	function sv() { return State.variables; }
+	var sv = setup.sv;
 	function pickRandom(arr) {
 		return arr[Math.floor(Math.random() * arr.length)];
 	}
@@ -328,10 +328,7 @@ setup.MissingWomen = (function () {
 		mark: { resetQuestToAvailable: 'AVAILABLE', markQuestFailed: 'FAILED',
 				markQuestSucceeded: 'SUCCEEDED' }
 	});
-	return api;
-})();
-/* Deferred to :storyready -- see ChurchController for rationale. */
-$(document).one(':storyready', function () {
 	setup.Cooldowns.registerDaily('rescue');
 	setup.Cooldowns.registerDaily('rescueQuest');
-});
+	return api;
+})();

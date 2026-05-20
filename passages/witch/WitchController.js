@@ -48,7 +48,7 @@ setup.Witch = (function () {
 		'amulet'
 	]);
 
-	function sv() { return State.variables; }
+	var sv = setup.sv;
 
 	var api = {
 		OWNED_VARS: OWNED_VARS,
@@ -293,10 +293,7 @@ setup.Witch = (function () {
 	setup.defineStageAccessors(api, sv, 'wardenClothesStage', setup.WardenClothesStage, {
 		mark: { markWardenOutfitHintOpened: 'HINT_OFFERED' }
 	});
-	return api;
-})();
-/* Deferred to :storyready -- see ChurchController for rationale. */
-$(document).one(':storyready', function () {
 	setup.Cooldowns.registerDaily('witchNight');
 	setup.Cooldowns.registerDaily('stealItemsFromWitch');
-});
+	return api;
+})();

@@ -47,7 +47,7 @@ setup.Mc = (function () {
 		'addLustPiercingTongue'
 	]);
 
-	function sv()  { return State.variables; }
+	var sv = setup.sv;
 
 	var api = {
 		OWNED_VARS: OWNED_VARS,

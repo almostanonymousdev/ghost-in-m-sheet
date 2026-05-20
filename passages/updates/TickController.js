@@ -11,7 +11,7 @@ setup.Tick = (function () {
 		'stepCount'
 	]);
 
-	function sv() { return State.variables; }
+	var sv = setup.sv;
 
 
 	// --- Rescue quest expiry --------------------------------------

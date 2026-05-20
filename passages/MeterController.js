@@ -528,6 +528,46 @@
     });
 }());
 
+/* Shorthand for State.variables. Each controller used to declare its
+ * own `function sv() { return State.variables; }`; they now alias this
+ * with `var sv = setup.sv;` at the top of their IIFE so the short
+ * call-site syntax (`sv().foo`) stays unchanged. */
+setup.sv = function () { return State.variables; };
+
+/* Lazy bundle accessor — returns a thunk that ensures
+ * `State.variables[key]` exists (as a plain object) before returning
+ * it. Replaces the per-bundle helper pattern that every controller used
+ * to hand-roll for nested $-vars:
+ *
+ *     function webcam() { var s = sv(); if (!s.webcam) s.webcam = {}; return s.webcam; }
+ *
+ * collapses to:
+ *
+ *     var webcam = setup.lazyBundle('webcam');
+ *
+ * Pass `defaults` to seed the bundle with starting keys on first
+ * creation (shallow-cloned per call so callers can't share a prototype). */
+setup.lazyBundle = function (key, defaults) {
+    return function () {
+        var s = State.variables;
+        if (!s[key]) s[key] = defaults ? Object.assign({}, defaults) : {};
+        return s[key];
+    };
+};
+
+/* setup.LocationHours(open, close) — factory for the `isOpen` predicate
+ * that every location controller used to hand-roll. Both bounds
+ * inclusive: `setup.LocationHours(8, 21)` is open at 08:00 through
+ * 21:59, closed at 22:00. Plugs straight into the api object as
+ *
+ *     isOpen: setup.LocationHours(8, 21)
+ *
+ * The factory returns a thunk so setup.Time only has to exist at the
+ * point the method is actually called (not at module-load). */
+setup.LocationHours = function (open, close) {
+    return function () { return setup.Time.isBetween(open, close); };
+};
+
 /* Generates trivial accessors on a controller's `api` object so the
  * eight-line wall of `foo() / setFoo() / addFoo() / removeFoo()` for
  * each owned field collapses into a one-row spec.
@@ -610,7 +650,7 @@ setup.defineStageAccessors = function (api, host, key, stages, spec) {
  * the binary-day-cooldown common case. */
 setup.Cooldowns = (function () {
     var DAILY = [];
-    function sv() { return State.variables; }
+    var sv = setup.sv;
     return {
         /* Add `name` to the daily-zero list. Idempotent so controllers
            can call this from both module-load and tests without

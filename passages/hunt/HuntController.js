@@ -34,7 +34,7 @@ setup.HuntController = (function () {
 		'lastChangeIntervalRoom'
 	]);
 
-	function sv() { return State.variables; }
+	var sv = setup.sv;
 
 	/* Street-address vocabulary used to render a seed as a human
 	   "123 Hollow Lane"-style label. The seed maps deterministically

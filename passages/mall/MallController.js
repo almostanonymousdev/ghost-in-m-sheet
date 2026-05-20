@@ -12,15 +12,12 @@ setup.Mall = (function () {
 		'isPhoneBought'
 	]);
 
-	function sv() { return State.variables; }
+	var sv = setup.sv;
 
 	return {
 		OWNED_VARS: OWNED_VARS,
 		// --- Hours -----------------------------------------------
-		isOpen: function () {
-			var h = setup.Time.hours();
-			return h > 7 && h < 22;
-		},
+		isOpen: setup.LocationHours(8, 21),
 
 		// --- Blake / adult shop ----------------------------------
 		blakeUnlocked: function () {

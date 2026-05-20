@@ -41,19 +41,15 @@ setup.Home = (function () {
 		'holyWaterIsCollected'
 	]);
 
-	function sv() { return State.variables; }
-	/* Lazy bundle-record helpers: every access through these functions
-	   guarantees the bundle exists (covers fresh games, mid-refactor
-	   saves, and tests that bypass GameInit). */
-	function succEvent() { var s = sv(); if (!s.succubusEvent) s.succubusEvent = {}; return s.succubusEvent; }
-	function tentacles() { var s = sv(); if (!s.tentacles)     s.tentacles    = {}; return s.tentacles; }
-	function webcam()    { var s = sv(); if (!s.webcam)        s.webcam       = {}; return s.webcam; }
-	function summoning() { var s = sv(); if (!s.summoning)     s.summoning    = {}; return s.summoning; }
-	function alarm()     {
-		var s = sv();
-		if (!s.alarm) s.alarm = { enabled: false, hour: 7 };
-		return s.alarm;
-	}
+	var sv = setup.sv;
+	/* Lazy bundle accessors: every access guarantees the bundle exists
+	   (covers fresh games, mid-refactor saves, and tests that bypass
+	   GameInit). See setup.lazyBundle in MeterController.js. */
+	var succEvent = setup.lazyBundle('succubusEvent');
+	var tentacles = setup.lazyBundle('tentacles');
+	var webcam    = setup.lazyBundle('webcam');
+	var summoning = setup.lazyBundle('summoning');
+	var alarm     = setup.lazyBundle('alarm', { enabled: false, hour: 7 });
 
 	/* Closure flag for installAutoSaveGate() / sleepAdvance(). */
 	var allowAutoSave = false;
@@ -101,12 +97,10 @@ setup.Home = (function () {
 
 		// --- Succubus / door knocking -----------------------
 		succubusCanKnock: function () {
-			var h = setup.Time.hours();
-			return h >= 18 && h <= 20 && setup.Mc.corruption() >= 6 && !setup.Witch.hasSuccubusEncounter();
+			return setup.Time.isBetween(18, 20) && setup.Mc.corruption() >= 6 && !setup.Witch.hasSuccubusEncounter();
 		},
 		succubusTVEventReady: function () {
-			var h = setup.Time.hours();
-			return setup.Witch.succubusVisited() && succEvent().eventCD === 0 && h >= 18 && h <= 23;
+			return setup.Witch.succubusVisited() && succEvent().eventCD === 0 && setup.Time.isBetween(18, 23);
 		},
 
 		// --- Sleep / nap ghost hooks ------------------------
@@ -117,9 +111,8 @@ setup.Home = (function () {
 			return setup.Witch.hasCursedItemToTurnIn() && sv().gotCursedItemEventCD >= 3;
 		},
 		tentaclesSleepEventReady: function () {
-			var h = setup.Time.hours();
 			return setup.Witch.hasCursedItemToTurnIn() && sv().gotCursedItemEventCD >= 1 &&
-				h >= 18 && h <= 23;
+				setup.Time.isBetween(18, 23);
 		},
 
 		// --- Mare / exorcism --------------------------------
@@ -525,10 +518,9 @@ setup.Home = (function () {
 		// Doesn't wrap midnight because the events are short naps.
 		restForHours: function (n) { setup.Time.addHours(n); },
 		isSuccubusPCEventReady: function () {
-			var h = setup.Time.hours();
 			var e = succEvent();
 			return (setup.Witch.succubusVisited() && e.eventCD === 0) ||
-				(e.eventCD === 2 && h >= 18 && h <= 23);
+				(e.eventCD === 2 && setup.Time.isBetween(18, 23));
 		},
 
 		applyHuntDefeatWake: function () {
@@ -643,11 +635,8 @@ setup.Home = (function () {
 		mark: { markBrookePossessedActive: 'POSSESSED',
 				markBrookePossessedInactive: 'RECOVERED' }
 	});
-	return api;
-})();
-/* Deferred to :storyready -- see ChurchController for rationale. */
-$(document).one(':storyready', function () {
 	setup.Cooldowns.registerDaily('exorcism');
 	setup.Cooldowns.registerDaily('masturbation');
 	setup.Cooldowns.registerDaily('findGhostInfo');
-});
+	return api;
+})();

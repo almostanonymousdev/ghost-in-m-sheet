@@ -12,7 +12,7 @@ setup.DeliveryPayMode = Object.freeze({
 });
 
 setup.Delivery = (function () {
-	function sv() { return State.variables; }
+	var sv = setup.sv;
 
 	/* Variables owned by this controller. Other controllers should
 	   query these only through the API methods below. */
@@ -113,10 +113,7 @@ setup.Delivery = (function () {
 		},
 
 		// --- Hub hours / shift eligibility -----------------------
-		isOpen: function () {
-			var h = setup.Time.hours();
-			return h > 7 && h < 20;
-		},
+		isOpen: setup.LocationHours(8, 19),
 		isFirstVisit: function () {
 			return sv().firstVisitDeliveryHub !== false;
 		},
@@ -343,14 +340,11 @@ setup.Delivery = (function () {
 		}
 	};
 })();
-/* Deferred to :storyready -- see ChurchController for rationale. */
-$(document).one(':storyready', function () {
-	setup.Cooldowns.registerDaily('deliveryPizzaEvent');
-	setup.Cooldowns.registerDaily('deliveryPackageEvent');
-	setup.Cooldowns.registerDaily('deliveryBurgerEvent');
-	setup.Cooldowns.registerDaily('deliveryPapersEvent');
-	setup.Cooldowns.registerDaily('deliveryBJ');
-});
+setup.Cooldowns.registerDaily('deliveryPizzaEvent');
+setup.Cooldowns.registerDaily('deliveryPackageEvent');
+setup.Cooldowns.registerDaily('deliveryBurgerEvent');
+setup.Cooldowns.registerDaily('deliveryPapersEvent');
+setup.Cooldowns.registerDaily('deliveryBJ');
 
 /* Delivery-event catalogue. Each entry holds the metadata the unified
    dispatch passages (DeliveryEventChoose / Start / Event1 / Event2)

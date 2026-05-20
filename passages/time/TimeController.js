@@ -22,7 +22,7 @@ setup.Time = (function () {
 		'hours', 'minutes', 'meridiem', 'temperature', 'dailySeed'
 	]);
 
-	function sv() { return State.variables; }
+	var sv = setup.sv;
 
 	function freshSeed() {
 		return Math.floor(Math.random() * 0x100000000);
@@ -45,6 +45,16 @@ setup.Time = (function () {
 		isEarlyMorning: function () { return sv().hours < 6; },
 		isMorningPlus:  function () { return sv().hours >= 6; },
 		isNight:        function () { return sv().hours >= 23; },
+
+		/* Inclusive-on-both-ends window check over the current hour.
+		   `isBetween(8, 21)` covers 08:00 through 21:59, the natural
+		   "open from 8 to 9 PM" expression. Backs setup.LocationHours
+		   and the in-controller time-window predicates that used to
+		   compare $hours to literal endpoints inline. */
+		isBetween: function (lo, hi) {
+			var h = sv().hours;
+			return h >= lo && h <= hi;
+		},
 
 		// --- Scheduled in-world actions ---------------------
 		// Reset the clock to midnight (used when a hunt starts
