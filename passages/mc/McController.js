@@ -182,6 +182,16 @@ setup.Mc = (function () {
 			if (m.lust <= 0)         { m.lust = 0; }
 			setup.Mc.clampLust();
 		},
+		/* Absolute lust write, clamped to [0, lustMax]. Used by the
+		   per-tick choker floor and any caller that needs to pin lust
+		   to a specific value rather than nudge it by a delta. */
+		setLust: function (value) {
+			var m = sv().mc;
+			var v = Number(value) || 0;
+			if (v < 0) v = 0;
+			if (v > m.lustMax) v = m.lustMax;
+			m.lust = v;
+		},
 
 		// --- addFit widget core -----------------------------------
 		// Same shape as setup.Gym.applyFitnessGain, but the gym controller

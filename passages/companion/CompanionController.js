@@ -442,6 +442,11 @@ name: function () { var c = this.activeState(); return c && c.name; },
 		isUnavailable: function (name) { var c = getByName(name); return c ? c.isUnavailable() : false; },
 		blakeUnlocked: function () { return setup.Mall.blakeIsCompanionCandidate(); },
 		aliceWorkDone: function () { return State.variables.aliceWorkDone === 1; },
+		/* Low-level Alice-flag writers exposed for CompanionData's per-
+		   companion catalogue hooks; the controller stays the single
+		   writer of $meetAlice / $aliceWorkDone. */
+		markAliceMet: function () { State.variables.meetAlice = 1; },
+		clearAliceWorkDone: function () { State.variables.aliceWorkDone = 0; },
 		hasActiveCompanion: function () { var c = this.activeState(); return !!(c && c.name); },
 		activeCompanionName: function () {
 			var c = this.activeState();
@@ -642,7 +647,23 @@ name: function () { var c = this.activeState(); return c && c.name; },
 		resumeHunt: function () { applyTransition('resume'); },
 		/* "Continue alone" path: clears showComp + isCompChosen as
 		   well so the companion is no longer tagged as active. */
-		dismissCompanion: function () { applyTransition('dismiss'); }
+		dismissCompanion: function () { applyTransition('dismiss'); },
+
+		/* Per-tick companion-attack resolution. Rolls once against the
+		   displayed plan chance (chanceToSuccess), stamps showComp, and
+		   returns 'safe' | 'hit'. The MC step-counter reset on a 'hit'
+		   is the caller's responsibility (lives in Tick's OWNED_VARS). */
+		resolveHuntAttack: function () {
+			var s = State.variables;
+			var CS = setup.CompanionShow;
+			var roll = Math.floor(Math.random() * 100) + 1;
+			if (roll <= s.chanceToSuccess) {
+				s.showComp = CS.ATTACK_SAFE;
+				return 'safe';
+			}
+			s.showComp = CS.ATTACK_FAILED;
+			return 'hit';
+		}
 	};
 
 	// Pure $variable passthrough accessors. Read-only fields use

@@ -113,10 +113,10 @@ setup.CompanionData = (function () {
 			// active companion) zeroes workDone unless Alice was on a
 			// solo run -- a botched joint hunt invalidates the delivery.
 			hasMet:  function () { return State.variables.meetAlice !== undefined; },
-			markMet: function () { State.variables.meetAlice = 1; },
+			markMet: function () { setup.Companion.markAliceMet(); },
 			onHuntFail: function () {
 				var stats = State.variables.alice;
-				if (stats && stats.goingSolo === 0) State.variables.aliceWorkDone = 0;
+				if (stats && stats.goingSolo === 0) setup.Companion.clearAliceWorkDone();
 			},
 			initStats: {
 				plan2TimeReq: 15, plan3TimeReq: 15, plan4TimeReq: 10,

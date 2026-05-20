@@ -20,13 +20,6 @@ sugarcube-2:
       description: "Updates a named meter's value without re-rendering it. If the
         meter is currently on the page it updates in place with animation. Args:
         meterName (string), value (number, 0-1)."
-    eventRandomizer:
-      name: eventRandomizer
-      description: "Triggers a ghost interaction event for the given body-part key.
-        Args: eventKey (string, one of 'brain', 'tits', 'ass', 'bottom',
-        'mouth', 'pussy', 'anal'). Sets $argForRandomizer to the key and
-        _eventTriggered to true. Selects a video based on current clothing state
-        and active haunted house."
     eventRandomizerText:
       name: eventRandomizerText
       description: "Displays the text and stat changes for the current ghost
@@ -200,10 +193,6 @@ sugarcube-2:
       description: Monkey Paw wish view widget. Calls setup.MonkeyPaw.activate('dawn')
         which jumps to 6 AM, ends the cursed hunt, and <<goto>>s HuntOverTime.
         Higher tiers bank corruption.
-    anything:
-      name: anything
-      description: "Monkey Paw wish: rolls a random number (1-6) into _check. The
-        result is used by the calling passage to determine a random outcome."
     tarotPassion:
       name: tarotPassion
       description: "Tarot effect widget dispatched by TarotCards when the passion card
@@ -291,33 +280,6 @@ sugarcube-2:
         false to disable or a CSS time value (e.g. "0.4s") to set duration.
         Args: timeOrBool (CSS time string | false), [easing ("swing" |
         "linear")].'
-    roomShell:
-      name: roomShell
-      container: true
-      description: "Container widget that wraps a haunted-house room with the standard
-        .room/.room-wrapper/.content/.action scaffolding. Sets shared _shell*
-        temp vars consumed by the inner <<roomFooter>> widget. Args: passage
-        (string, e.g. 'ElmBedroom' or 'IroncladHallway'), bgRoomVar (string, the
-        room state variable whose .background is toggled, e.g. 'bedroom' or
-        'BlockACellA'), [variant (string, 'basic' for enigma's simple light + no
-        companion; default = full)]. Inner content should be an optional
-        <<furnitureRow>> followed by a <<roomFooter>>."
-    furnitureRow:
-      name: furnitureRow
-      container: true
-      description: Container widget that wraps its contents in <div
-        class="furnitureSearch">. Use inside <<roomShell>> for the small set of
-        <<furnitureItem>>/<<hideSpot>> calls a room exposes; omit entirely for
-        rooms with no furniture.
-    roomFooter:
-      name: roomFooter
-      container: true
-      description: "Container widget that emits the .footer block for a haunted-house
-        room: a .footertools div with <<roomToolBar>> + the appropriate light
-        widget, plus a .footeraction div whose body comes from the inner content
-        (the per-room navigation links). Reads the _shell* temp vars set by the
-        enclosing <<roomShell>> for passage, bgRoomVar, and variant. Prepends a
-        <<huntConditions>> HUD above the footer."
     huntConditions:
       name: huntConditions
       description: Renders the hunt HUD row above the tool bar showing the live
@@ -342,21 +304,6 @@ sugarcube-2:
       description: Refreshes the hunt HUD trio (.hunt-conditions stats,
         .hunt-run-effects chips, .hunt-run-actions buttons) in a single call so
         any state change that affects one keeps the others in sync. No args.
-    navLink:
-      name: navLink
-      description: "Renders an @@.adaptiveLink;<<link>>...<</link>>@@ navigation link
-        that fires the appropriate include-time-event chain and increments
-        $stepCount. Args: label (string), targetPassage (string), [mode (string,
-        'hunt' for ironclad's includeTimeEventHunt; default = elm/owaissa
-        includeTimeEventClothesHunt)]."
-    navExits:
-      name: navExits
-      description: Reads the active house's exits map (HOUSE_CONFIG.exits[passage()])
-        and emits one <<navLink>> per outgoing exit using the house's default
-        navMode (e.g. ironclad's 'hunt'). Lets each room declare its outgoing
-        nav links in HOUSE_CONFIG instead of hardcoding a column of <<navLink>>
-        calls. Returns nothing for houses without an exits map (enigma) or
-        passages not listed. No args.
     huntMinimap:
       name: huntMinimap
       description: Renders the active hunt's floor plan as a compact room list
@@ -378,51 +325,6 @@ sugarcube-2:
         consumes a charge, redrafts the run's modifiers, repaints the modifier
         list, and re-invokes itself so the button's visibility and "(you have
         N)" label stay current. No args.
-    leaveLink:
-      name: leaveLink
-      description: "Wraps a plain @@.adaptiveLink;<<link>> in the
-        .cursedHuntLinkDisable span used by the elm and owaissa hallways'
-        leave/Outside exits. No event chain or step increment. Args: label
-        (string), targetPassage (string)."
-    roomToolCard:
-      name: roomToolCard
-      description: "Renders one tool slot inside <<roomToolBar>>. Derives the image,
-        picture id, and searchTool config from setup.searchToolDefs and
-        setup.searchPrefixIndex. Args: tool (string, key into searchToolDefs),
-        prefix (string, room prefix from searchRoomPrefixes)."
-    roomToolBar:
-      name: roomToolBar
-      description: "Emits the canonical six tool slots (EMF, Ectoplasm, GWB,
-        Spiritbox, Thermometer, UVL) for one haunted-house room, plus the
-        companion card. Args: prefix (string, room prefix from
-        searchRoomPrefixes), [noCompanion (string, pass 'noCompanion' to
-        suppress the companion card — used by enigma rooms)]."
-    roomFooterLight:
-      name: roomFooterLight
-      description: "Renders the lights-on/off + heart minigame block for elm, owaissa,
-        and ironclad rooms (cursedHuntLinkDisable wrapper, plus the seduction
-        minigame trigger when $mc.lust gte 80). Args: passage (string, link
-        target — usually the current passage name), bgRoomVar (string, name of
-        the room state variable whose .background is toggled, e.g. 'bedroom' or
-        'BlockACellA')."
-    roomFooterLightBasic:
-      name: roomFooterLightBasic
-      description: "Enigma's simpler lights-only footer block: no
-        cursedHuntLinkDisable wrapper, no minigame trigger. Args: passage
-        (string), bgRoomVar (string)."
-    hideSpot:
-      name: hideSpot
-      description: "Furniture item that doubles as a hide spot during cursed hunts.
-        When $cursedHuntActive is 1 the image highlights and clicking replaces
-        the room with the hide-spot scene; otherwise it acts as a normal
-        furniture span. Args: passage (string, link target), imageFile (string,
-        filename under img/furniture/), id (string, span id, e.g.
-        'bedroom_bed1')."
-    furnitureItem:
-      name: furnitureItem
-      description: "Plain furniture span that opens furnitureSearch on click. Args:
-        imageFile (string, filename under img/furniture/), id (string, span id
-        and $currentFurniture value, e.g. 'bedroom_table')."
     companionCard:
       name: companionCard
     huntCard:
@@ -441,16 +343,6 @@ sugarcube-2:
         to HuntStart -- the lifecycle reads + clears the staging slot and
         forwards staticHouseId to setup.HuntController.startHunt. Args: houseId (string
         from setup.HuntHouses.list(), e.g. 'owaissa')."
-    huntHouseStreet:
-      name: huntHouseStreet
-      container: true
-      description: "Shared body for the per-house street passages (Owaissa, Elm,
-        Enigma, Ironclad): header image, location/description, optional
-        companion talk branch, default Go-inside link (overridable by passing
-        inner content, as Ironclad does for the wardenClothesStage gate), and
-        the End-the-hunt link while inside a hunt. Args: houseId (string),
-        locationLabel (string, e.g. 'Owaissa Street'), description (string,
-        mc-thoughts body)."
     companionStreetTalk:
       name: companionStreetTalk
       description: Renders the '@@.usebtn; [[Talk to her/him|<Name>Main]]' link block
@@ -605,6 +497,27 @@ sugarcube-2:
         PlasmCheck[Art], SpiritboxCheck, TemperatureHigh, UVLcheck[Art]) via
         setup.ToolController. Args: tool (key into setup.searchToolDefs),
         optional variant ("standard" or "art").'
+    deferGoto:
+      name: deferGoto
+      description: "Schedules Engine.play(targetPassage) on the next event-loop
+        tick (setTimeout 0). Used by renderPlasm / renderGwb so their meter-
+        completion cleanup finishes synchronously before the navigation -- a
+        synchronous <<goto>> would interrupt mid-stream and leave the meter
+        stuck full + the cardlink disabled on return. Args: targetPassage
+        (string)."
+    toolTick:
+      name: toolTick
+      description: Per-tool-meter-tick widget fired from inside the <<repeat>>
+        loop in setup.searchToolMarkup. Burns one in-game minute, refreshes
+        the sidebar clock and the tool-timer strip (which linkreplace cannot
+        re-render), and routes to setup.HuntController.huntOverPassage("time")
+        if the tick pushed the clock past 6 AM during an active hunt. No args.
+    disableLinks:
+      name: disableLinks
+      description: Library widget that disables every link with class
+        .linkselector once the surrounding passage finishes rendering
+        (<<done>> + addclass disabled-link). Used to lock click targets after
+        a one-shot interaction. No args.
     addLustPussy:
       name: addLustPussy
     addLustByPart:

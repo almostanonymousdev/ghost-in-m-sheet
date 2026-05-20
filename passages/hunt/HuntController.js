@@ -222,10 +222,12 @@ setup.HuntController = (function () {
 
 	/* Test / cheat shortcut: stamp a minimal $run with the named ghost
 	   as both real identity and current disguise, copy in evidence ids,
-	   and default trapped to false. Production hunt flow goes through
-	   start() above (full procedural startup). This exists so unit specs
-	   and the cheat menu can park the player in an "active hunt" state
-	   without spinning up a floorplan / modifiers / starting tools.
+	   and default the rest of the shape to match what production start()
+	   produces. This exists so unit specs and the cheat menu can park
+	   the player in an "active hunt" state without spinning up a
+	   floorplan / modifiers / starting tools — but the resulting $run
+	   must satisfy every accessor below (modifiers(), loadout(), etc.)
+	   so cold passage renders don't trip on undefined fields.
 
 	   The `cheat` prefix marks this as cheat/test-only — see
 	   tests/cheat-method-lint.spec.js, which forbids production passages
@@ -237,10 +239,18 @@ setup.HuntController = (function () {
 			sv().run = {};
 			run = sv().run;
 		}
-		run.ghostName    = opts.ghostName;
-		run.disguiseName = opts.ghostName;
-		run.evidence     = Array.isArray(opts.evidence) ? opts.evidence.slice() : [];
+		run.ghostName     = opts.ghostName;
+		run.disguiseName  = opts.ghostName;
+		run.evidence      = Array.isArray(opts.evidence) ? opts.evidence.slice() : [];
 		if (run.trapped === undefined) run.trapped = false;
+		if (run.modifiers     === undefined) run.modifiers     = [];
+		if (run.loadout       === undefined) run.loadout       = {};
+		if (run.objective     === undefined) run.objective     = Objective.IDENTIFY.id;
+		if (run.staticHouseId === undefined) run.staticHouseId = null;
+		if (run.currentRoomId === undefined) run.currentRoomId = 'room_0';
+		if (run.searchedFurniture === undefined) run.searchedFurniture = null;
+		if (run.collectedLoot === undefined) run.collectedLoot = [];
+		if (run.lights        === undefined) run.lights        = {};
 	}
 
 	/* End the current run. Preserves the run number so the next

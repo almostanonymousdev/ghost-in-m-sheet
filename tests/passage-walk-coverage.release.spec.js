@@ -522,6 +522,12 @@ async function walkPassages(browser, passages, label) {
       // real asset under both asset-placeholders/ and assets/.
       V.videoEvent = 'ui/img/witch-girl.jpg';
 
+      // Seed argForRandomizer so EventMC's <<eventRandomizerText>>
+      // resolves to a known body-part key on cold render. In normal
+      // play setup.Events.videoListForEvent(key) calls initEvent
+      // before any caller forwards the player to EventMC.
+      setup.Events.initEvent('brain');
+
       // Default to "inside Owaissa house" so haunted-house rooms have
       // a recognised location flag set. Most location-aware passages
       // pick up either Owaissa or Elm; rooms in either renders cleanly

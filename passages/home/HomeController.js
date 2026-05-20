@@ -95,6 +95,41 @@ setup.Home = (function () {
 			sv().isBrookePossessedCD = 0;
 		},
 
+		// --- Midnight rollover ------------------------------
+		/* Called once per day-change from Tick.resetCooldowns. Bundles
+		   every Home-owned per-day tick: webcam show cooldown, Brooke
+		   possession recovery, succubus event cooldown + summoned-timer
+		   decay, and the cursed-item event cooldown. Reads $succubus
+		   (Witch) and $exorcismQuestStage (Witch) as inputs but writes
+		   only Home-owned fields. */
+		tickHomeMidnight: function () {
+			var s = sv();
+			if (s.webcam) s.webcam.showCD = 0;
+
+			if (s.isBrookePossessed === setup.BrookePossession.INACTIVE) {
+				s.isBrookePossessedCD = (s.isBrookePossessedCD || 0) + 1;
+				if (s.isBrookePossessedCD >= setup.BROOKE_POSSESSED_RECOVERY_DAYS) {
+					delete s.isBrookePossessedCD;
+					s.isBrookePossessed = setup.BrookePossession.RECOVERED;
+				}
+			}
+
+			if (setup.Witch.succubusVisited()) {
+				var se = succEvent();
+				if (se.eventCD !== 0) { se.eventCD = (se.eventCD || 0) + 1; }
+				if (se.eventCD >= 3)  { se.eventCD = 0; }
+			}
+
+			if (setup.Witch.exorcismQuestStage() === setup.ExorcismQuestStage.SUCCUBUS_SUMMONED
+				&& s.succubusEvent && s.succubusEvent.eventTimer >= 1) {
+				s.succubusEvent.eventTimer -= 1;
+			}
+
+			if (setup.Witch.cursedItemState() === 1 && s.gotCursedItemEventCD < 3) {
+				s.gotCursedItemEventCD += 1;
+			}
+		},
+
 		// --- Succubus / door knocking -----------------------
 		succubusCanKnock: function () {
 			return setup.Time.isBetween(18, 20) && setup.Mc.corruption() >= 6 && !setup.Witch.hasSuccubusEncounter();

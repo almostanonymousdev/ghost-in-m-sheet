@@ -82,6 +82,16 @@ setup.SpecialEvent = (function () {
 		// --- Mare stage ------------------------------------
 		mareStage: function () { return sv().ghostMareEventStage; },
 		setMareStage: function (n) { sv().ghostMareEventStage = n; },
+		/* Midnight rollover: while the Mare arc is active, advance the
+		   stage clock by one day; otherwise zero it out. */
+		tickMareStageMidnight: function () {
+			var s = sv();
+			if (s.ghostMareEventStart >= 1) {
+				s.ghostMareEventStage += 1;
+			} else {
+				s.ghostMareEventStage = 0;
+			}
+		},
 		mareStageAtLeast: function (n) {
 			return (sv().ghostMareEventStage || 0) >= n;
 		},

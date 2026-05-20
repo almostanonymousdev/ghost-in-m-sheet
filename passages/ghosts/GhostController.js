@@ -706,6 +706,17 @@
         isProwlActivated: function () {
             return State.variables.prowlActivated === 1;
         },
+        /* Per-tick prowl-timer accounting. Either the prowl has exceeded
+           its window (clear the flag) or update the elapsed counter from
+           the wall clock so the UI/predicates can read it directly. */
+        tickProwlTimer: function () {
+            var s = State.variables;
+            if (s.elapsedTimeProwl > s.prowlTimeRemain) {
+                s.prowlActivated = 0;
+            } else {
+                s.elapsedTimeProwl = setup.Time.totalMinutes() - s.prowlActivationTime;
+            }
+        },
         knowledgeUsed: function () { return State.variables.knowledgeUsed === 1; },
         markKnowledgeUsed: function () { State.variables.knowledgeUsed = 1; },
         // `|| 0` getters are kept inline (callers do arithmetic and

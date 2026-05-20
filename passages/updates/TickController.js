@@ -14,30 +14,12 @@ setup.Tick = (function () {
 	var sv = setup.sv;
 
 
-	// --- Rescue quest expiry --------------------------------------
-	/* When the rescue quest is active and the player either ran out of
-	   stages or let the day slip past 5 PM, fail the quest and reset
-	   the per-attempt vars. */
-	function tickRescueQuestExpiry() {
-		var s = sv();
-		var Q = setup.RescueQuestState;
-		if (s.hasQuestForRescue !== Q.ACTIVE) return;
-		var ranOut = s.rescueStage >= 2 || (s.rescueStage === 1 && s.hours > 17);
-		if (!ranOut) return;
-		s.hasQuestForRescue = Q.FAILED;
-		s.rescueStage = 0;
-		s.hasRescueClue = 0;
-	}
-
-	// --- Haunt timer accounting ----------------------------------
-	function tickProwlTimer() {
-		var s = sv();
-		if (s.elapsedTimeProwl > s.prowlTimeRemain) {
-			s.prowlActivated = 0;
-		} else {
-			s.elapsedTimeProwl = (s.hours * 60 + s.minutes) - s.prowlActivationTime;
-		}
-	}
+	// --- Delegating wrappers -------------------------------------
+	/* Per-tick maintenance for state owned by other controllers.
+	   Tick keeps a thin wrapper so the orchestration call sites
+	   (onPassageDone, tests) read as a flat tick pipeline. */
+	function tickRescueQuestExpiry() { setup.MissingWomen.tickQuestExpiry(); }
+	function tickProwlTimer() { setup.Ghosts.tickProwlTimer(); }
 
 	// --- Choker lust floor ---------------------------------------
 	/* The collar/choker keeps lust at >=15 while worn. Returns true
@@ -46,14 +28,14 @@ setup.Tick = (function () {
 		var s = sv();
 		if (s.neckChokerState1 !== setup.ClothingState.WORN) return false;
 		if (!s.mc || s.mc.lust > 15) return false;
-		s.mc.lust = 15;
+		setup.Mc.setLust(15);
 		return true;
 	}
 
 	// --- Possession / tarot cleanup ------------------------------
 	function applyPossessionTarotCleanup() {
 		if (setup.Ghosts.isPossessed()) {
-			sv().tarotCardsStage = setup.TarotStage.SPENT;
+			setup.HauntedHouses.markTarotSpent();
 			setup.MonkeyPaw.retire();
 		}
 	}
@@ -92,16 +74,9 @@ setup.Tick = (function () {
 	   rolled chanceToAttack here and then chanceToSuccess downstream,
 	   compounding into a much lower effective success rate. */
 	function resolveCompanionAttack() {
-		var s = sv();
-		var CS = setup.CompanionShow;
-		var roll = Math.floor(Math.random() * 100) + 1;
-		if (roll <= s.chanceToSuccess) {
-			s.showComp = CS.ATTACK_SAFE;
-			return 'safe';
-		}
-		s.showComp = CS.ATTACK_FAILED;
-		s.stepCount = 0;
-		return 'hit';
+		var outcome = setup.Companion.resolveHuntAttack();
+		if (outcome === 'hit') resetStepCount();
+		return outcome;
 	}
 	function atRandomGhostPassage() {
 		var target = sv().randomGhostPassage;
@@ -112,12 +87,7 @@ setup.Tick = (function () {
 
 	// --- Steal-chance recompute ---------------------------------
 	function recomputeStealChance() {
-		/* Base chance derives from sanity + stealChanceMult only.
-		   Per-tick modifier scaling (Sticky Fingers) is applied by the
-		   STEAL_CHECK filter at the roll site so all per-tick steal
-		   knobs converge in one place. */
-		var s = sv();
-		s.stealChance = (1 + (Math.log(101 - s.mc.sanity) / Math.log(101)) * 1) * s.stealChanceMult;
+		setup.HauntedHouses.recomputeStealChance(sv().stealChanceMult);
 	}
 
 	// --- PassageDone tick setup ---------------------------------
@@ -143,47 +113,11 @@ setup.Tick = (function () {
 	   adding a new daily cooldown is one registerDaily() line in the
 	   owning controller (not a fan-out edit here). */
 	function resetCooldowns() {
-		var s = sv();
 		setup.Cooldowns.resetDaily();
-		// webcam.showCD lives inside the $webcam bundle, not at the
-		// $-root, so the registry's flat-key reset can't see it. Reset
-		// it inline — the bundle is owned by HomeController.
-		if (s.webcam) s.webcam.showCD = 0;
-
+		setup.Home.tickHomeMidnight();
 		setup.Companion.advanceSoloHuntsAtMidnight();
-
-		if (s.ghostMareEventStart >= 1) {
-			s.ghostMareEventStage += 1;
-		} else {
-			s.ghostMareEventStage = 0;
-		}
-
-		if (s.rescueStage === 0 || s.rescueStage === 1) {
-			s.rescueStage += 1;
-		}
-
-		if (s.isBrookePossessed === setup.BrookePossession.INACTIVE) {
-			s.isBrookePossessedCD = (s.isBrookePossessedCD || 0) + 1;
-			if (s.isBrookePossessedCD >= setup.BROOKE_POSSESSED_RECOVERY_DAYS) {
-				delete s.isBrookePossessedCD;
-				s.isBrookePossessed = setup.BrookePossession.RECOVERED;
-			}
-		}
-
-		if (s.succubus === 1) {
-			if (!s.succubusEvent) s.succubusEvent = {};
-			var se = s.succubusEvent;
-			if (se.eventCD !== 0) { se.eventCD = (se.eventCD || 0) + 1; }
-			if (se.eventCD >= 3)  { se.eventCD = 0; }
-		}
-
-		if (s.exorcismQuestStage === setup.ExorcismQuestStage.SUCCUBUS_SUMMONED && s.succubusEvent && s.succubusEvent.eventTimer >= 1) {
-			s.succubusEvent.eventTimer -= 1;
-		}
-
-		if (s.gotCursedItem === 1 && s.gotCursedItemEventCD < 3) {
-			s.gotCursedItemEventCD += 1;
-		}
+		setup.SpecialEvent.tickMareStageMidnight();
+		setup.MissingWomen.tickRescueClockMidnight();
 	}
 
 	/* :: PassageReady lifecycle hook. Bundles the per-tick setup that
