@@ -65,7 +65,7 @@ setup.CompanionData = (function () {
 			imageFolder: "brook", imagePrefix: "brook",
 			isTrans: false, canWalkHome: true, hasExpSystem: true,
 			pronObj: "her", pronPos: "her",
-			neutralResp: "Let's just focus on the task.",
+			neutralResp: "Let's keep it simple.",
 			eventMedia: eventMediaBrook,
 			// Brook's "have I met her" / "is she available" gates live on
 			// the Library/Home controllers (they own meetBrook + the
@@ -82,14 +82,14 @@ setup.CompanionData = (function () {
 				chanceOfSuccessCI: 20, chanceOfSuccessGR: 30
 			},
 			clothingTiers: [
-				{ mc: "You can take off your top, it'll make it easier for you to move.",
-				resp: "It'll be easier to move if I take off my top? How exactly? Well, alright, if you say so..." },
-				{ mc: "Stay in just your underwear, it might help us get through this.",
-				resp: "I actually feel better wearing just my underwear." },
-				{ mc: "Just keep your panties on, it'll be easier for both of us.",
-				resp: "I feel like I'm making things easier for the ghost, but I don't really mind..." },
-				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
-				resp: "Fine, he's going to get to my pussy anyway." }
+				{ mc: "Lose the top -- it'll be easier to move.",
+				resp: "Lose the top. Sure. Library work didn't prepare me for this part of the job, but okay." },
+				{ mc: "Down to your underwear. It'll thin the air a little.",
+				resp: "Honestly? I move better like this. Don't ask me why." },
+				{ mc: "Panties only. Keep it light.",
+				resp: "I'm making it easier for the ghost. I know. I don't actually mind." },
+				{ mc: "Everything. Make it pay attention to you, not me.",
+				resp: "Strip down, draw fire. Got it. Fair warning, I'm not subtle about it." }
 			],
 			// Per-companion CompanionEvent dialog by sanity tier (1..4).
 			// Strings are wikified by <<companionTextEvent>>: $mc.name and
@@ -106,7 +106,7 @@ setup.CompanionData = (function () {
 			imageFolder: "alice", imagePrefix: "alice",
 			isTrans: false, canWalkHome: true, hasExpSystem: true,
 			pronObj: "her", pronPos: "her",
-			neutralResp: "Let's just focus on the task.",
+			neutralResp: "Tell me where you want me.",
 			eventMedia: eventMediaAlice,
 			// Alice owns the $meetAlice flag and $aliceWorkDone. hasMet/
 			// markMet wrap the former; onHuntFail (called only on the
@@ -123,14 +123,14 @@ setup.CompanionData = (function () {
 				chanceOfSuccessCI: 30, chanceOfSuccessGR: 50
 			},
 			clothingTiers: [
-				{ mc: "You can take off your top, it'll make it easier for you to move.",
-				resp: "Take my top off? Well... alright, if you think it'll help." },
-				{ mc: "Stay in just your underwear, it might help us get through this.",
-				resp: "Down to my underwear? Okay, I trust you." },
-				{ mc: "Just keep your panties on, it'll be easier for both of us.",
-				resp: "Just my panties? This is so embarrassing, but fine..." },
-				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
-				resp: "Completely naked? You're lucky I like you, $mc.name." }
+				{ mc: "Lose the top -- it'll be easier to move.",
+				resp: "Top off. Right. I trust you, $mc.name, but you're definitely buying coffee after this." },
+				{ mc: "Down to your underwear. It'll thin the air a little.",
+				resp: "Underwear. Sure. Tell anyone at the office and I'll kill you twice." },
+				{ mc: "Panties only. Keep it light.",
+				resp: "Just my panties? God. Okay. Don't look at me like that, just keep moving." },
+				{ mc: "Everything. Make it pay attention to you, not me.",
+				resp: "Completely naked. Cool. Cool cool cool. You owe me forever, $mc.name." }
 			],
 			eventCopy: [
 				"@@.mc-thoughts; When you entered the room, you saw her.@@<br> @@.mc-speech; Are you alright?@@<br> @@.notmc-speech; I'm fine. It's just a ghost, nothing to worry about. And it looks like I almost beat it.@@<br> @@.mc-thoughts; It seems I can see the marks of that fight on her...@@<br> @@.mc-speech; Well done, I'm proud of you.@@<br>",
@@ -144,7 +144,7 @@ setup.CompanionData = (function () {
 			imageFolder: "blake", imagePrefix: "blake",
 			isTrans: false, canWalkHome: true, hasExpSystem: true,
 			pronObj: "her", pronPos: "her",
-			neutralResp: "Let's just focus on the task.",
+			neutralResp: "Point me at it.",
 			eventMedia: eventMediaBlake,
 			// If Blake was the active companion and the hunt ended badly
 			// while she was carrying a cursed item for the Witch, she
@@ -160,14 +160,14 @@ setup.CompanionData = (function () {
 				chanceOfSuccessAnyEvidence: 15
 			},
 			clothingTiers: [
-				{ mc: "You can take off your top, it'll make it easier for you to move.",
-				resp: "Take my top off? Well... alright, if you think it'll help." },
-				{ mc: "Stay in just your underwear, it might help us get through this.",
-				resp: "Down to my underwear? Okay, I trust you." },
-				{ mc: "Just keep your panties on, it'll be easier for both of us.",
-				resp: "Just my panties? This is so embarrassing, but fine..." },
-				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
-				resp: "Completely naked? You're lucky I like you, $mc.name." }
+				{ mc: "Lose the top -- it'll be easier to move.",
+				resp: "Top off, sure. Honestly half the reason I'm in this is the view." },
+				{ mc: "Down to your underwear. It'll thin the air a little.",
+				resp: "Underwear's fine. Bait and switch is a perfectly respectable strategy." },
+				{ mc: "Panties only. Keep it light.",
+				resp: "Just panties. Don't say I never went the extra mile for the cause." },
+				{ mc: "Everything. Make it pay attention to you, not me.",
+				resp: "Naked it is. If the ghost's got pockets, we're getting paid extra, $mc.name." }
 			],
 			eventCopy: [
 				"@@.mc-thoughts; When you entered the room, you saw her.@@<br> @@.mc-speech; What are you doing?@@<br> @@.notmc-speech; I thought I could attract the ghost this way.@@<br> @@.mc-speech; Why?@@<br> @@.notmc-speech; Well, maybe it would have more cursed items, and I could take them for myself.@@<br>\n@@.mc-speech; I don't think that's how it works, or the ghost would probably not want to share with you.@@<br>\n@@.notmc-speech; I still think my plan will work.@@<br>\n@@.mc-speech; Alright, let's keep looking.@@<br>",

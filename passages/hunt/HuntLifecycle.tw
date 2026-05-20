@@ -41,7 +41,7 @@
 <<if _staticHouse and _staticHouse.description>>
 	@@.mc-thoughts; <<= _staticHouse.description>>@@<br>
 <<else>>
-	@@.mc-thoughts; A fresh hunt is waiting.@@<br>
+	@@.mc-thoughts; You stand on the porch a beat longer than you need to. Key in your pocket, still cold. That part won't last.@@<br>
 <</if>>
 <br>
 <<if _modifiers.length>>
@@ -185,17 +185,17 @@
 	<<set _FR to setup.HuntController.FailureReason>>
 
 	<<if _summary.success>>
-		@@.notmc-speech; The ghosts were no match for you. Hunt #<<= _summary.number>> closes clean.@@<br>
+		@@.notmc-speech; Clean exit. Hunt #<<= _summary.number>> filed away.@@<br>
 	<<elseif _summary.failureReason eq _FR.SANITY>>
-		@@.notmc-speech; Your mind gives out. Hunt #<<= _summary.number>> ends with sanity gone.@@<br>
+		@@.notmc-speech; Head goes first. Hunt #<<= _summary.number>> closes on a stretcher.@@<br>
 	<<elseif _summary.failureReason eq _FR.EXHAUSTION>>
-		@@.notmc-speech; Your legs give out. Hunt #<<= _summary.number>> ends in exhaustion.@@<br>
+		@@.notmc-speech; Legs went out from under you. Hunt #<<= _summary.number>> closes in a slump.@@<br>
 	<<elseif _summary.failureReason eq _FR.TIME>>
-		@@.notmc-speech; Dawn breaks before the answer does. Hunt #<<= _summary.number>> ends with the clock.@@<br>
+		@@.notmc-speech; Dawn beat you to the answer. Hunt #<<= _summary.number>> closes with the sun up.@@<br>
 	<<elseif _summary.failureReason eq _FR.FLED>>
-		@@.notmc-speech; You walk away from the haunt. Hunt #<<= _summary.number>> ends with the door at your back.@@<br>
+		@@.notmc-speech; You walked. Hunt #<<= _summary.number>> closes unfinished.@@<br>
 	<<else>>
-		@@.notmc-speech; The haunt swallows you. Hunt #<<= _summary.number>> ends in failure.@@<br>
+		@@.notmc-speech; The house won. Hunt #<<= _summary.number>> goes to the house.@@<br>
 	<</if>>
 	<br>
 	<<if _summary.isContractHunt>>
@@ -246,7 +246,7 @@
 	<<set _staticId to setup.HuntController.staticHouseId()>>
 	<<set _isContractHunt to _staticId and _heldId eq _staticId>>
 	@@.location; Outside the haunt@@<br>
-	@@.mc-thoughts; The front door is at your back. You can size up what you've found, walk away, or step back inside.@@<br>
+	@@.mc-thoughts; The yard is cold. The house knows you're still here. Name what's in there, walk, or go back in.@@<br>
 	<br>
 	<<if _isContractHunt>>
 		@@.movebtn; [[Take your findings to Khadija|WitchInside]]@@<br>
@@ -268,7 +268,7 @@
 	@@.backbtn; [[Back|CityMap]]@@
 <<else>>
 	@@.location; Name the ghost@@<br>
-	@@.mc-speech; I think it was:@@<br>
+	@@.mc-speech; Calling it. It was --@@<br>
 	<<ghostTypeDropdown>><br>
 	@@.movebtn; [[Choose|HuntIdentifyResolve]]@@<br>
 	<br>
@@ -292,18 +292,18 @@
 	@@.mc-thoughts; No active hunt.@@<br>
 	@@.backbtn; [[Back|CityMap]]@@
 <<else>>
-	@@.mc-thoughts; You prepare, then confidently re-enter, ready to subdue the ghost and cleanse the house.@@<br>
+	@@.mc-thoughts; You set your jaw and walk back in. Subdue the ghost. Close the house. That's the order.@@<br>
 	<<timed 6s>>
 		<<if setup.HuntController.ghostName() eq setup.Ghosts.ghostTypeSelected()>>
 			<<run setup.HuntController.markSuccess()>>
-			<div class="hunt-reveal hunt-reveal-text">@@.notmc-speech; The ghost fades peacefully into the ether.@@</div>
+			<div class="hunt-reveal hunt-reveal-text">@@.notmc-speech; The shape thins out and goes. The house cools behind it.@@</div>
 			<div class="hunt-reveal hunt-reveal-buttons">
 				@@.movebtn; [[Continue|HuntSummary]]@@<br>
 				@@.movebtn; [[Go home|HuntSummary]]@@
 			</div>
 		<<else>>
 			<<set _trueGhost to setup.Ghosts.active()>>
-			<div class="hunt-reveal hunt-reveal-text">@@.mc-thoughts; Your heart sinks. It wasn't what you'd guessed -- it's a <<= _trueGhost.name>> bearing down on you, and every sign you talked yourself out of slams back into focus: <<= _trueGhost.evidenceLabels()>>. The ghost roughly grabs your helpless form before you can run.@@</div>
+			<div class="hunt-reveal hunt-reveal-text">@@.mc-thoughts; Wrong call. It's a <<= _trueGhost.name>>, and every sign you talked yourself out of -- <<= _trueGhost.evidenceLabels()>> -- snaps back into place at once. It's on you before you reach the door.@@</div>
 			<div class="hunt-reveal hunt-reveal-buttons">
 				@@.movebtn; [[Continue|HuntEnd]]@@
 			</div>

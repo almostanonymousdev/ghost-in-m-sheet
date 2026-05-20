@@ -25,10 +25,10 @@
 	<</if>>
 <</if>><br>
 
-@@.mc-thoughts; I could ask <<= _c.pronObj>> to take off some of <<= _c.pronPos>> clothes. Maybe that way I could distract the ghost by drawing its attention to <<= _c.pronObj>>. Plus, it would make it easier for <<= _c.pronObj>> to move and stay less distracted...@@<br>
+@@.mc-thoughts; The ghost will fixate on whoever's wearing less. If she's down to skin, she's the lightning rod -- and a moving target is harder to grab than a still one. Cruel math, but math.@@<br>
 @@.mc-speech;
 <br>
-<<link "You'll be more comfortable in your regular clothes.">>
+<<link "Stay in your regular clothes.">>
 	<<run setup.Companion.setChanceToAttack(25)>>
 	<<redo "companionAnswers">><<redo>>
 <</link>><br>
@@ -82,40 +82,40 @@
 <br>
 </div>
 </div>
-@@.notmc-speech; Oh~, I'm feeling a bit nervous. What's our plan?@@<br>
+@@.notmc-speech; So. What's the plan?@@<br>
 
 <br>
 <<sanityPills>>
 <br>
-@@.usebtn;<<link "Let's stick together for now">>
+@@.usebtn;<<link "Stay with me.">>
 	<<run setup.Companion.setStayTogetherPlan()>>
 	<<replace "#compResponse">>
-		@@.notmc-speech;Good, I'll stay close to you.@@
+		@@.notmc-speech; Good. I'll stick to your shoulder.@@
 	<</replace>>
 <</link>>@@<br>
-<span id="checkQuestForCursedItem">@@.usebtn;<<link `"I need you to find the cursed item @@.warningtext; (" + _state.chanceOfSuccessCI + " %, " + _state.plan2TimeReq + " min)@@"`>>
+<span id="checkQuestForCursedItem">@@.usebtn;<<link `"Find the cursed object for Khadija. @@.warningtext; (" + _state.chanceOfSuccessCI + " %, " + _state.plan2TimeReq + " min)@@"`>>
 	<<if not setup.Companion.hasCursedItem()>>
 		<<run setup.Companion.setHuntPlan("Plan2", _state.chanceOfSuccessCI, _state.plan2TimeReq)>>
 		<<replace "#compResponse">>
-			@@.notmc-speech;Alright, I'll look for the cursed item.@@
+			@@.notmc-speech; On it. I'll know it when I touch it.@@
 		<</replace>>
 	<<else>>
 		<<replace "#compResponse">>
-			@@.notmc-speech; We already have a cursed item.@@
+			@@.notmc-speech; We've already got one. One's the limit.@@
 		<</replace>>
 	<</if>>
 <</link>>@@</span> <<if not setup.Companion.cursedItemQuestUnlocked()>>@@.warningtext; Req. quest from the witch@@
 <</if>><br>
-@@.usebtn;<<link `"I want you to look for any ghost evidence @@.warningtext; (" + _state.chanceOfSuccessAnyEvidence + " %, " + _state.plan3TimeReq + " min@@)"`>>
+@@.usebtn;<<link `"Sweep for evidence. Anything you can flag. @@.warningtext; (" + _state.chanceOfSuccessAnyEvidence + " %, " + _state.plan3TimeReq + " min@@)"`>>
 	<<run setup.Companion.setHuntPlan("Plan3", _state.chanceOfSuccessAnyEvidence, _state.plan3TimeReq)>>
 	<<replace "#compResponse">>
-		@@.notmc-speech;Sure, I'll search for any ghost evidence.@@
+		@@.notmc-speech; Sweep. Got it. I'll yell if I find anything.@@
 	<</replace>>
 <</link>>@@<br>
-@@.usebtn;<<link `"It would be nice if you found the ghost's favorite room @@.warningtext; (" + _state.chanceOfSuccessGR + " %, " + _state.plan4TimeReq + " min@@)"`>>
+@@.usebtn;<<link `"Find me the room it likes best. @@.warningtext; (" + _state.chanceOfSuccessGR + " %, " + _state.plan4TimeReq + " min@@)"`>>
 	<<run setup.Companion.setHuntPlan("Plan4", _state.chanceOfSuccessGR, _state.plan4TimeReq)>>
 	<<replace "#compResponse">>
-		@@.notmc-speech; Got it, I'll try to find the ghost's favorite room.@@
+		@@.notmc-speech; Favorite room. I'll know which one feels worst.@@
 	<</replace>>
 <</link>>@@<br>
 
@@ -123,9 +123,9 @@
 	@@.usebtn;<<link `"Ask " + _c.pronObj + " to walk you home."`>>
 
 		<<replace "#compResponse">>
-			@@.mc-speech; I think that's enough. Can you walk me home, please?@@<br>
+			@@.mc-speech; I'm done. Walk me out.@@<br>
 			<<if setup.Companion.canWalkHomeWithCompanion()>>
-				@@.notmc-speech; Of course. Are you sure you want to leave now?@@<br>
+				@@.notmc-speech; Yeah. You sure? We can still finish.@@<br>
 				<<set _hg to setup.Ghosts.active()>>
 				<<if _hg and _hg.companionHuntPassage and setup.Ghosts.isHunting()>>
 					@@.mc-speech; Yes, <<link "let's go together" `_hg.companionHuntPassage`>>

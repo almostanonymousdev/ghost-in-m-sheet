@@ -3,9 +3,9 @@
 <<run setup.Hunt.emit(setup.Hunt.Event.HUNT_END_GRACEFUL)>>
 <<image "ui/img/dawn.jpg" { width: "100%" }>>
 <br>
-@@.mc-thoughts; Ah, dawn. The ghostly activity has ceased. I need to summarize the gathered information and identify the type of ghost.@@<br>
+@@.mc-thoughts; Dawn. The house quiets like someone hung up. Time to add up what you have and name it.@@<br>
 <<if setup.HauntedHouses.hasClothesStolen()>>
-	@@.mc-thoughts; Now that you're no longer in danger, you can retrieve your clothes. After finding them, you head away from this cursed place.@@
+	@@.mc-thoughts; And -- right -- your clothes. You sweep the rooms it stashed them in, dress on the move, and don't look back at the door.@@
 	<<if setup.Wardrobe.isPantiesStolen()>><<run setup.Wardrobe.restoreStolenInGroup("panties", "isPantiesStolen")>><</if>>
 	<<if setup.Wardrobe.isBottomStolen()>><<run setup.Wardrobe.restoreStolenInGroup("bottomOuter")>><<run State.variables.isBottomStolen = 0>><<run State.variables.isJeansStolen = 0>><<run State.variables.isShortsStolen = 0>><<run State.variables.isSkirtStolen = 0>><</if>>
 	<<if setup.Wardrobe.isShirtStolen()>><<run setup.Wardrobe.restoreStolenInGroup("tshirt", "isShirtStolen")>><</if>>

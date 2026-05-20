@@ -1,16 +1,17 @@
 :: WitchInsideMast [nobr] {"position":"1250,150","size":"100,100"}
 <<randomVideo "characters/witch/1.mp4" "characters/witch/2.mp4">>
-@@.mc-speech;Oops, she seems a little busy, I'd better come back later@@<br>
-@@.mc-thoughts; She's so hot though@@<br>
+@@.mc-thoughts; She didn't hear the door. She's preoccupied.@@<br>
+@@.mc-thoughts; Khadija. Hand between her legs, eyes closed. You should leave. You don't leave for a second.@@<br>
+@@.mc-thoughts; Get out before she opens them.@@<br>
 <<if not setup.Witch.hasStolenKey()>>
-	@@.mc-thoughts; You see a key lying nearby, it looks like it might be for her house...@@<br>
+	@@.mc-thoughts; There's a key on the desk. Brass. Familiar shape. House key, by the bow of it.@@<br>
 	<<if setup.Witch.canStealKeyFromWitch()>>
 		@@.usebtn;<<linkreplace "Steal the key">>
 			<<run setup.Witch.markKeyFromWitchStolen()>>
-			@@.mc-thoughts; Now i can enter the witch's house at night@@
+			@@.mc-thoughts; You take it. Your hand decides before your head does. Apparently you're the kind of person who does this now. The drawer slides shut behind your fingers like it doesn't mind.@@
 		<</linkreplace>>@@
 	<<else>>
-		@@.mc-thoughts; I can't steal the key from her, it's wrong...@@
+		@@.mc-thoughts; Not while she's like that. Not yet. You're not someone who lifts a key off a friend.@@<br>
 		@@.warningtext; (Req. <<statIcon setup.StatIcon.CORRUPTION>> ≥ 3)@@
 	<</if>>
 <</if>>
