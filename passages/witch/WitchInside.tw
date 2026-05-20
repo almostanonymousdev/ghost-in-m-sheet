@@ -7,7 +7,7 @@
 
 	@@.mc-speech;Hi, I'm <<= setup.Mc.name()>>. I was told I could get a contract here... for ghosts@@<br>
 
-	&emsp;@@.notmc-speech;Are you really a ghost hunter? I wouldn't have guessed that looking at you... And how's the "interaction" with ghosts going? *She smiled* @@<br>
+	&emsp;@@.notmc-speech;Khadija. Are you really a ghost hunter? I wouldn't have guessed that looking at you... And how's the "interaction" with ghosts going? *She smiled* @@<br>
 
 	&emsp;@@.mc-speech; Let's just say I haven't really started yet...@@<br>
 

@@ -7,7 +7,7 @@
  <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
 <<image "ui/img/mc.jpg" { width: "80%" }>><br>  </div>
 </div>
-&emsp;&emsp;Three freelance jobs in six months, <<= setup.Mc.name()>>. Cleared an attic Shade for the landlady on Birch Street. Talked a Spirit out of someone's Bluetooth speaker. Sold one vial of ectoplasm to a man in the mall parking lot who didn't ask your name. That one paid the heating bill.
+&emsp;&emsp;Three freelance jobs in six months, <<= setup.Mc.name()>>. Cleared an attic Shade for the landlady on Birch Street — the cold spot was a busted vent, and her nephew stopped coming around once you turned up with the EMF. Talked a Spirit out of someone's Bluetooth speaker that had been paired, somehow, to a phone three doors down, by a teenager who knew exactly what he was doing. Sold one vial of ectoplasm to a man in the mall parking lot who didn't ask your name. The back of his van had a rubber mask and a fog machine on the floor. You didn't ask either. That one paid the heating bill.
 &emsp;&emsp;@@.mc-speech; Freelance is going to get me killed before it gets me paid.@@
 &emsp;&emsp;You turn the radio off mid-sentence. There's a witch on the edge of town who brokers contracts. Proper ones, with names and addresses and payouts that aren't a fold of bills from a stranger. Everyone in Mossheath who hunts goes through her eventually. You've been putting it off because she's supposed to be the kind of person who notices things, and being noticed is not, historically, what you're good at.
 &emsp;&emsp;The EMF blips again. Same single chirp. Aunt Lou's house, telling you to get on with it.

@@ -1,7 +1,7 @@
 :: Church [nobr] {"position":"1975,1400","size":"100,100"}
 <<image "ui/img/church.jpg" { width: "100%" }>>
 @@.location; Church@@<br>
-@@.mc-thoughts; You are standing in front of an old church. Near the entrance, there is a fountain with crystal-clear water. The church is a place of tranquility and humility. Here, one can find solace and peace, achieve inner harmony and worship. Perhaps I should visit here more often.@@<br>
+@@.mc-thoughts; Oldest building in Mossheath, and it shows. Stone facade older than the Emergence, a stained-glass St. Michael missing a chip of his halo, a fountain by the door that's never been turned off in living memory. Father Ibrahim does the six o'clock Mass for an audience of two pensioners. //First time I asked him about the name, he just smiled. Long story, he said. My mother had opinions.//@@<br>
 <br>
 <<if not setup.Church.isOpen()>>
 	@@.mc-thoughts; I came at an inappropriate time (open from 6 AM to 10 PM)@@<br>

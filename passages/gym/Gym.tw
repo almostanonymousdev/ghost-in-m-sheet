@@ -2,7 +2,7 @@
 <<image "ui/img/gym.jpg" { width: "85%" }>>
 <br>
 @@.location; Gym@@<br>
-@@.mc-thoughts; This gym is the only one in the city. It is well-equipped and suitable for both beginners and professionals. Overall, it has everything needed to achieve a fit and athletic body.
+@@.mc-thoughts; The only gym in Mossheath, which means everyone here knows everyone else by the back of the head. Free weights, two ellipticals, a heavy bag in the corner that mostly gets used by people who don't know how to hit it. You come for the running and the lifting that keeps you from getting dragged out of attics. You leave before anyone tries to talk.
 @@<br>
 <br>
 <<if not setup.Gym.isOpen()>>

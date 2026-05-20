@@ -2,7 +2,7 @@
 <<image "ui/img/library.jpg" { width: "100%" }>>
 <br>
 @@.location; Library@@<br>
-@@.mc-thoughts; This library boasts a diverse collection of books, including both modern publications and rare antique editions. Although most people prefer to search for information online, a few still visit, perhaps in search of more unusual and unique insights.@@<br>
+@@.mc-thoughts; Two floors. The first is what people picture when they hear //library//: paperbacks, reading lamps, a kid's corner with the same three books face-out. The second floor is why you actually come. Latin liturgical, Slavic folklore, three shelves of Emergence-era pamphlets nobody's reshelved since whoever did it last. The librarian doesn't ask what you're researching. You appreciate that.@@<br>
 <br>
 <<if setup.Library.isOpen()>>
 	@@.enterbtn;[[Enter the library|LibraryInside]]@@

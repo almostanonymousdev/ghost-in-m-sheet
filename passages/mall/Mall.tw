@@ -1,7 +1,7 @@
 :: Mall [nobr] {"position":"2800,1700","size":"100,100"}
 <<image "ui/img/mall.jpg" { width: "100%" }>>
 @@.location; Mall@@<br>
-@@.mc-thoughts; This mall is a fantastic place for purchases. I believe I won't find any items related to my profession here, but there's plenty of everything else.
+@@.mc-thoughts; Three floors of the same chain stores you'd find in any town that hasn't given up on itself. Phone repair, fast food, a cinema still showing movies from two summers ago, a clothing place where everything's either thirty percent off or rebranded as vintage. Nothing here for the job. Plenty here for the parts of life that aren't the job.
 @@<br>
 <br>
 <<if not setup.Mall.isOpen()>>
