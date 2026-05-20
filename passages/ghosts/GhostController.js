@@ -488,7 +488,7 @@
         /* Test / cheat shortcut. Stamps a minimal $run with the named
            ghost as both real identity and current disguise, copies in
            the catalogue evidence, and flips $huntMode to ACTIVE.
-           Production hunt flow goes through setup.HuntController.start
+           Production hunt flow goes through setup.HuntController.startHunt
            for the full floorplan / modifiers / starting-tools / event
            bus setup; this helper exists so unit specs and the cheat
            menu can park the player in an "active hunt" state without
