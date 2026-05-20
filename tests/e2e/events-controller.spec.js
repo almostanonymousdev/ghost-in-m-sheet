@@ -297,9 +297,13 @@ test.describe('Events controller — companion checks', () => {
   });
 
   test('companionIsAroused requires lust >= 60', async ({ game: page }) => {
-    await page.evaluate(() => { SugarCube.State.variables.companion = { lust: 59 }; });
+    await page.evaluate(() => {
+      const V = SugarCube.State.variables;
+      V.companion = { name: 'Alice' };
+      V.alice.lust = 59;
+    });
     expect(await callSetup(page, 'setup.Events.companionIsAroused()')).toBe(false);
-    await page.evaluate(() => { SugarCube.State.variables.companion.lust = 60; });
+    await page.evaluate(() => { SugarCube.State.variables.alice.lust = 60; });
     expect(await callSetup(page, 'setup.Events.companionIsAroused()')).toBe(true);
   });
 
@@ -314,11 +318,14 @@ test.describe('Events controller — companion checks', () => {
 
   test('companionDrainForHelp drains 3 sanity, gains 10 lust', async ({ game: page }) => {
     await page.evaluate(() => {
-      SugarCube.State.variables.companion = { name: 'Alice', sanity: 80, lust: 30 };
+      const V = SugarCube.State.variables;
+      V.companion = { name: 'Alice' };
+      V.alice.sanity = 80;
+      V.alice.lust   = 30;
     });
     await page.evaluate(() => SugarCube.setup.Events.companionDrainForHelp());
-    expect(await getVar(page, 'companion.sanity')).toBe(77);
-    expect(await getVar(page, 'companion.lust')).toBe(40);
+    expect(await getVar(page, 'alice.sanity')).toBe(77);
+    expect(await getVar(page, 'alice.lust')).toBe(40);
   });
 });
 

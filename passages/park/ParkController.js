@@ -13,10 +13,7 @@ setup.Park = (function () {
 	return {
 		OWNED_VARS: OWNED_VARS,
 		// --- Hours / access --------------------------------------
-		isOpen: function () {
-			var h = setup.Time.hours();
-			return h > 5 && h < 22;
-		},
+		isOpen: setup.LocationHours(6, 21),
 		hasSportswear: function () {
 			return setup.Gym.hasSportswear();
 		},
@@ -84,7 +81,4 @@ setup.Park = (function () {
 		}
 	};
 })();
-/* Deferred to :storyready -- see ChurchController for rationale. */
-$(document).one(':storyready', function () {
-	setup.Cooldowns.registerDaily('jogging');
-});
+setup.Cooldowns.registerDaily('jogging');

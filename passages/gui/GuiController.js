@@ -10,7 +10,7 @@
  * added but only some overlays got patched.
  */
 setup.Gui = (function () {
-	function sv() { return State.variables; }
+	var sv = setup.sv;
 
 	/* Variables owned by this controller. Other controllers should
 	   query these only through the API methods below. */

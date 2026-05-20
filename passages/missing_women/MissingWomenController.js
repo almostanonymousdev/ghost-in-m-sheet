@@ -14,7 +14,7 @@ setup.RescueQuestState = Object.freeze({
 });
 
 setup.MissingWomen = (function () {
-	function sv() { return State.variables; }
+	var sv = setup.sv;
 	function pickRandom(arr) {
 		return arr[Math.floor(Math.random() * arr.length)];
 	}
@@ -221,6 +221,30 @@ setup.MissingWomen = (function () {
 		setRescueClueFound: function () { sv().hasRescueClue = 1; },
 		clearRescueClue:   function () { sv().hasRescueClue = 0; },
 
+		/* Midnight rollover. Stages 0 and 1 advance one day so the
+		   "rescue today / give up tomorrow" timer keeps ticking even
+		   when the player ignores the quest board. */
+		tickRescueClockMidnight: function () {
+			var s = sv();
+			if (s.rescueStage === 0 || s.rescueStage === 1) {
+				s.rescueStage += 1;
+			}
+		},
+
+		/* Per-tick expiry. If the active quest ran out of stages or the
+		   in-game day slipped past 5 PM, fail it and wipe the per-attempt
+		   vars so the next acceptance starts clean. Called from Tick. */
+		tickQuestExpiry: function () {
+			var s = sv();
+			var Q = setup.RescueQuestState;
+			if (s.hasQuestForRescue !== Q.ACTIVE) return;
+			var ranOut = s.rescueStage >= 2 || (s.rescueStage === 1 && setup.Time.hours() > 17);
+			if (!ranOut) return;
+			s.hasQuestForRescue = Q.FAILED;
+			s.rescueStage = 0;
+			s.hasRescueClue = 0;
+		},
+
 		// --- Rescue quest state -----------------------------------
 		// (resetQuestToAvailable / markQuestFailed / markQuestSucceeded
 		// fold into the defineStageAccessors block at the bottom.)
@@ -328,10 +352,7 @@ setup.MissingWomen = (function () {
 		mark: { resetQuestToAvailable: 'AVAILABLE', markQuestFailed: 'FAILED',
 				markQuestSucceeded: 'SUCCEEDED' }
 	});
-	return api;
-})();
-/* Deferred to :storyready -- see ChurchController for rationale. */
-$(document).one(':storyready', function () {
 	setup.Cooldowns.registerDaily('rescue');
 	setup.Cooldowns.registerDaily('rescueQuest');
-});
+	return api;
+})();

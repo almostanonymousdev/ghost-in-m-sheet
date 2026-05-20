@@ -47,7 +47,7 @@ setup.drawTarotCard = function (deck) {
 };
 
 setup.HauntedHouses = (function () {
-	function sv() { return State.variables; }
+	var sv = setup.sv;
 
 	/* Variables owned by this controller. Other controllers should
 	   query these only through the API methods below. */
@@ -87,9 +87,8 @@ setup.HauntedHouses = (function () {
 		cleanupAfterHunt: function (opts) {
 			opts = opts || {};
 			this.resetToolTimers();
-			setup.Companion.clearBlakeCursedItem();
+			setup.Companion.runHuntFailHooks();
 			setup.Companion.resetHuntState();
-			setup.Companion.resetAliceWorkIfNeeded();
 			if (opts.loseStolen) setup.Wardrobe.loseAllStolen();
 			setup.Wardrobe.redressAfterHunt();
 		},
@@ -241,6 +240,14 @@ setup.HauntedHouses = (function () {
 		},
 		succubusEventTimer: function () { return setup.Home.succubusEventTimer() || 0; },
 		stealChance: function () { return sv().stealChance || 0; },
+		setStealChance: function (n) { sv().stealChance = n; },
+		/* Per-tick recompute. Base chance is sanity + stealChanceMult
+		   only; per-tick modifier scaling (Sticky Fingers, etc.) is
+		   applied by the STEAL_CHECK filter at the roll site. The
+		   multiplier is owned by Tick and passed in. */
+		recomputeStealChance: function (mult) {
+			sv().stealChance = (1 + (Math.log(101 - setup.Mc.sanity()) / Math.log(101)) * 1) * mult;
+		},
 		canStealAnyItem: function () {
 			return setup.Wardrobe.worn(setup.WardrobeSlot.BRA) || setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES) || this.hasBottomWorn();
 		},

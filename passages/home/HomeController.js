@@ -41,19 +41,15 @@ setup.Home = (function () {
 		'holyWaterIsCollected'
 	]);
 
-	function sv() { return State.variables; }
-	/* Lazy bundle-record helpers: every access through these functions
-	   guarantees the bundle exists (covers fresh games, mid-refactor
-	   saves, and tests that bypass GameInit). */
-	function succEvent() { var s = sv(); if (!s.succubusEvent) s.succubusEvent = {}; return s.succubusEvent; }
-	function tentacles() { var s = sv(); if (!s.tentacles)     s.tentacles    = {}; return s.tentacles; }
-	function webcam()    { var s = sv(); if (!s.webcam)        s.webcam       = {}; return s.webcam; }
-	function summoning() { var s = sv(); if (!s.summoning)     s.summoning    = {}; return s.summoning; }
-	function alarm()     {
-		var s = sv();
-		if (!s.alarm) s.alarm = { enabled: false, hour: 7 };
-		return s.alarm;
-	}
+	var sv = setup.sv;
+	/* Lazy bundle accessors: every access guarantees the bundle exists
+	   (covers fresh games, mid-refactor saves, and tests that bypass
+	   GameInit). See setup.lazyBundle in MeterController.js. */
+	var succEvent = setup.lazyBundle('succubusEvent');
+	var tentacles = setup.lazyBundle('tentacles');
+	var webcam    = setup.lazyBundle('webcam');
+	var summoning = setup.lazyBundle('summoning');
+	var alarm     = setup.lazyBundle('alarm', { enabled: false, hour: 7 });
 
 	/* Closure flag for installAutoSaveGate() / sleepAdvance(). */
 	var allowAutoSave = false;
@@ -99,14 +95,47 @@ setup.Home = (function () {
 			sv().isBrookePossessedCD = 0;
 		},
 
+		// --- Midnight rollover ------------------------------
+		/* Called once per day-change from Tick.resetCooldowns. Bundles
+		   every Home-owned per-day tick: webcam show cooldown, Brooke
+		   possession recovery, succubus event cooldown + summoned-timer
+		   decay, and the cursed-item event cooldown. Reads $succubus
+		   (Witch) and $exorcismQuestStage (Witch) as inputs but writes
+		   only Home-owned fields. */
+		tickHomeMidnight: function () {
+			var s = sv();
+			if (s.webcam) s.webcam.showCD = 0;
+
+			if (s.isBrookePossessed === setup.BrookePossession.INACTIVE) {
+				s.isBrookePossessedCD = (s.isBrookePossessedCD || 0) + 1;
+				if (s.isBrookePossessedCD >= setup.BROOKE_POSSESSED_RECOVERY_DAYS) {
+					delete s.isBrookePossessedCD;
+					s.isBrookePossessed = setup.BrookePossession.RECOVERED;
+				}
+			}
+
+			if (setup.Witch.succubusVisited()) {
+				var se = succEvent();
+				if (se.eventCD !== 0) { se.eventCD = (se.eventCD || 0) + 1; }
+				if (se.eventCD >= 3)  { se.eventCD = 0; }
+			}
+
+			if (setup.Witch.exorcismQuestStage() === setup.ExorcismQuestStage.SUCCUBUS_SUMMONED
+				&& s.succubusEvent && s.succubusEvent.eventTimer >= 1) {
+				s.succubusEvent.eventTimer -= 1;
+			}
+
+			if (setup.Witch.cursedItemState() === 1 && s.gotCursedItemEventCD < 3) {
+				s.gotCursedItemEventCD += 1;
+			}
+		},
+
 		// --- Succubus / door knocking -----------------------
 		succubusCanKnock: function () {
-			var h = setup.Time.hours();
-			return h >= 18 && h <= 20 && setup.Mc.corruption() >= 6 && !setup.Witch.hasSuccubusEncounter();
+			return setup.Time.isBetween(18, 20) && setup.Mc.corruption() >= 6 && !setup.Witch.hasSuccubusEncounter();
 		},
 		succubusTVEventReady: function () {
-			var h = setup.Time.hours();
-			return setup.Witch.succubusVisited() && succEvent().eventCD === 0 && h >= 18 && h <= 23;
+			return setup.Witch.succubusVisited() && succEvent().eventCD === 0 && setup.Time.isBetween(18, 23);
 		},
 
 		// --- Sleep / nap ghost hooks ------------------------
@@ -117,9 +146,8 @@ setup.Home = (function () {
 			return setup.Witch.hasCursedItemToTurnIn() && sv().gotCursedItemEventCD >= 3;
 		},
 		tentaclesSleepEventReady: function () {
-			var h = setup.Time.hours();
 			return setup.Witch.hasCursedItemToTurnIn() && sv().gotCursedItemEventCD >= 1 &&
-				h >= 18 && h <= 23;
+				setup.Time.isBetween(18, 23);
 		},
 
 		// --- Mare / exorcism --------------------------------
@@ -525,10 +553,9 @@ setup.Home = (function () {
 		// Doesn't wrap midnight because the events are short naps.
 		restForHours: function (n) { setup.Time.addHours(n); },
 		isSuccubusPCEventReady: function () {
-			var h = setup.Time.hours();
 			var e = succEvent();
 			return (setup.Witch.succubusVisited() && e.eventCD === 0) ||
-				(e.eventCD === 2 && h >= 18 && h <= 23);
+				(e.eventCD === 2 && setup.Time.isBetween(18, 23));
 		},
 
 		applyHuntDefeatWake: function () {
@@ -643,11 +670,8 @@ setup.Home = (function () {
 		mark: { markBrookePossessedActive: 'POSSESSED',
 				markBrookePossessedInactive: 'RECOVERED' }
 	});
-	return api;
-})();
-/* Deferred to :storyready -- see ChurchController for rationale. */
-$(document).one(':storyready', function () {
 	setup.Cooldowns.registerDaily('exorcism');
 	setup.Cooldowns.registerDaily('masturbation');
 	setup.Cooldowns.registerDaily('findGhostInfo');
-});
+	return api;
+})();

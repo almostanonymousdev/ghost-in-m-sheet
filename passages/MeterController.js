@@ -528,21 +528,73 @@
     });
 }());
 
+/* Shorthand for State.variables. Each controller used to declare its
+ * own `function sv() { return State.variables; }`; they now alias this
+ * with `var sv = setup.sv;` at the top of their IIFE so the short
+ * call-site syntax (`sv().foo`) stays unchanged. */
+setup.sv = function () { return State.variables; };
+
+/* Lazy bundle accessor — returns a thunk that ensures
+ * `State.variables[key]` exists (as a plain object) before returning
+ * it. Replaces the per-bundle helper pattern that every controller used
+ * to hand-roll for nested $-vars:
+ *
+ *     function webcam() { var s = sv(); if (!s.webcam) s.webcam = {}; return s.webcam; }
+ *
+ * collapses to:
+ *
+ *     var webcam = setup.lazyBundle('webcam');
+ *
+ * Pass `defaults` to seed the bundle with starting keys on first
+ * creation (shallow-cloned per call so callers can't share a prototype). */
+setup.lazyBundle = function (key, defaults) {
+    return function () {
+        var s = State.variables;
+        if (!s[key]) s[key] = defaults ? Object.assign({}, defaults) : {};
+        return s[key];
+    };
+};
+
+/* setup.LocationHours(open, close) — factory for the `isOpen` predicate
+ * that every location controller used to hand-roll. Both bounds
+ * inclusive: `setup.LocationHours(8, 21)` is open at 08:00 through
+ * 21:59, closed at 22:00. Plugs straight into the api object as
+ *
+ *     isOpen: setup.LocationHours(8, 21)
+ *
+ * The factory returns a thunk so setup.Time only has to exist at the
+ * point the method is actually called (not at module-load). */
+setup.LocationHours = function (open, close) {
+    return function () { return setup.Time.isBetween(open, close); };
+};
+
 /* Generates trivial accessors on a controller's `api` object so the
  * eight-line wall of `foo() / setFoo() / addFoo() / removeFoo()` for
  * each owned field collapses into a one-row spec.
  *
- *   host: function returning the underlying object (e.g. mc(), sv())
+ *   host: function returning the underlying object (e.g. mc(), sv()).
+ *         If `host.length >= 1` it's parametric — host(name) resolves
+ *         the row for a named entity, and every generated method takes
+ *         that name as its first arg (used by CompanionController's
+ *         per-companion stat rows).
  *   spec: array of either a bare string ("money" → get + setMoney) or
- *         { name, key?, get?, set?, add?, remove?, writeHook? } where
- *         each verb key is the method name to expose; falsy disables
+ *         an object with any combination of:
+ *           { name, key?, get?, set?, add?, remove?, writeHook?, miss? }
+ *           { is: methodName, key, value }              predicate
+ *           { writes: methodName, sets: { k: v, ... } } bulk-write of constants
+ *         Each verb key is the method name to expose; falsy disables
  *         that verb.
  *
  * Defaults: get = name, set = "set" + Cap(name), add = "add" + Cap(name),
  * remove = "remove" + Cap(name). Pass `false` to suppress any one (or
  * a custom string to override the method name). `key` overrides the
  * underlying field name when it differs from the public method root
- * (e.g. possession()/$mcpossession).
+ * (e.g. possession()/$mcpossession). When `name` is omitted, only
+ * explicitly-named verbs are emitted.
+ *
+ * `miss` (default `undefined`) is the fallback the getter returns when
+ * host() resolves to a falsy row (used by parametric hosts where the
+ * named entity may not exist).
  *
  * `writeHook(oldV, newV)` fires after every set/add/remove with the
  * pre-write and post-write values. It may mutate the underlying
@@ -551,24 +603,69 @@
  * The hook's return value propagates back through the public method,
  * letting callers receive a flag (e.g. "did the day roll over?"). */
 setup.defineAccessors = function (api, host, spec) {
+    var parametric = host.length >= 1;
     function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+    function makeGet(key, miss) {
+        return parametric
+            ? function (n) { var c = host(n); return c ? c[key] : miss; }
+            : function ()  { var c = host();  return c ? c[key] : miss; };
+    }
+    function makeWrite(key, hook, delta) {
+        // delta: undefined → set (newV = arg); +1 → add (newV = old + arg);
+        // -1 → remove (newV = old - arg).
+        return parametric
+            ? function (n, v) {
+                var c = host(n); if (!c) return;
+                var oldV = c[key];
+                var newV = delta === undefined ? v : oldV + delta * v;
+                c[key] = newV;
+                if (hook) return hook(oldV, newV);
+            }
+            : function (v) {
+                var c = host(); if (!c) return;
+                var oldV = c[key];
+                var newV = delta === undefined ? v : oldV + delta * v;
+                c[key] = newV;
+                if (hook) return hook(oldV, newV);
+            };
+    }
+    function makeIs(key, val) {
+        return parametric
+            ? function (n) { var c = host(n); return !!(c && c[key] === val); }
+            : function ()  { var c = host();  return !!(c && c[key] === val); };
+    }
+    function makeWrites(sets) {
+        var keys = Object.keys(sets);
+        return parametric
+            ? function (n) {
+                var c = host(n); if (!c) return;
+                for (var i = 0; i < keys.length; i++) c[keys[i]] = sets[keys[i]];
+            }
+            : function () {
+                var c = host(); if (!c) return;
+                for (var i = 0; i < keys.length; i++) c[keys[i]] = sets[keys[i]];
+            };
+    }
     spec.forEach(function (entry) {
-        var f      = (typeof entry === 'string') ? { name: entry } : entry;
-        var key    = f.key || f.name;
-        var getNm  = (f.get   !== undefined) ? f.get   : f.name;
-        var setNm  = (f.set   !== undefined) ? f.set   : 'set'    + cap(f.name);
-        var addNm  = (f.add    !== undefined) ? f.add    : 'add'    + cap(f.name);
-        var subNm  = (f.remove !== undefined) ? f.remove : 'remove' + cap(f.name);
-        var hook   = f.writeHook;
-        function write(v) {
-            var oldV = host()[key];
-            host()[key] = v;
-            if (hook) return hook(oldV, v);
+        var f = (typeof entry === 'string') ? { name: entry } : entry;
+        if (f.writes) { api[f.writes] = makeWrites(f.sets); return; }
+        if (f.is)     { api[f.is]     = makeIs(f.key || f.name, f.value); return; }
+        var key = f.key || f.name;
+        var hook = f.writeHook;
+        var miss = f.miss;
+        var getNm, setNm, addNm, subNm;
+        if (f.name) {
+            getNm = (f.get    !== undefined) ? f.get    : f.name;
+            setNm = (f.set    !== undefined) ? f.set    : 'set'    + cap(f.name);
+            addNm = (f.add    !== undefined) ? f.add    : 'add'    + cap(f.name);
+            subNm = (f.remove !== undefined) ? f.remove : 'remove' + cap(f.name);
+        } else {
+            getNm = f.get; setNm = f.set; addNm = f.add; subNm = f.remove;
         }
-        if (getNm) api[getNm]  = function ()  { return host()[key]; };
-        if (setNm) api[setNm]  = function (v) { return write(v); };
-        if (addNm) api[addNm]  = function (n) { return write(host()[key] + n); };
-        if (subNm) api[subNm]  = function (n) { return write(host()[key] - n); };
+        if (getNm) api[getNm] = makeGet(key, miss);
+        if (setNm) api[setNm] = makeWrite(key, hook);
+        if (addNm) api[addNm] = makeWrite(key, hook,  1);
+        if (subNm) api[subNm] = makeWrite(key, hook, -1);
     });
     return api;
 };
@@ -610,7 +707,7 @@ setup.defineStageAccessors = function (api, host, key, stages, spec) {
  * the binary-day-cooldown common case. */
 setup.Cooldowns = (function () {
     var DAILY = [];
-    function sv() { return State.variables; }
+    var sv = setup.sv;
     return {
         /* Add `name` to the daily-zero list. Idempotent so controllers
            can call this from both module-load and tests without

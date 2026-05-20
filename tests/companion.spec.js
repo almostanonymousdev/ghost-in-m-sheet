@@ -1,6 +1,19 @@
 const { test, expect } = require('./fixtures');
 const { setVar, getVar, callSetup } = require('./helpers');
 
+// Stamp the $companion marker and override the named companion's
+// sanity/lust on its backing stat row -- since $companion stopped
+// carrying its own per-pick clone in SAVE_VERSION 6, "give the
+// active companion these stats" is now a marker + row mutation.
+function setActiveCompanion(page, name, fields) {
+  return page.evaluate(({ n, f }) => {
+    const V = SugarCube.State.variables;
+    V.companion = { name: n };
+    const row = V[n.toLowerCase()];
+    if (row && f) Object.keys(f).forEach((k) => { row[k] = f[k]; });
+  }, { n: name, f: fields || {} });
+}
+
 test.describe('Companion Controller', () => {
   // --- Selection ---
 
@@ -49,7 +62,7 @@ test.describe('Companion Controller', () => {
 
   test('sanityTier returns "high" when companion sanity >= 75', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'companion', { name: 'Brook', sanity: 80, lust: 0 });
+    await setActiveCompanion(page, 'Brook', { sanity: 80, lust: 0 });
 
     // act
     const tier = await callSetup(page, 'setup.Companion.sanityTier()');
@@ -60,7 +73,7 @@ test.describe('Companion Controller', () => {
 
   test('sanityTier returns "mid" when companion sanity is 50-74', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'companion', { name: 'Brook', sanity: 60, lust: 0 });
+    await setActiveCompanion(page, 'Brook', { sanity: 60, lust: 0 });
 
     // act
     const tier = await callSetup(page, 'setup.Companion.sanityTier()');
@@ -71,7 +84,7 @@ test.describe('Companion Controller', () => {
 
   test('sanityTier returns "low" when companion sanity is 25-49', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'companion', { name: 'Brook', sanity: 30, lust: 0 });
+    await setActiveCompanion(page, 'Brook', { sanity: 30, lust: 0 });
 
     // act
     const tier = await callSetup(page, 'setup.Companion.sanityTier()');
@@ -82,7 +95,7 @@ test.describe('Companion Controller', () => {
 
   test('sanityTier returns "critical" when companion sanity < 25', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'companion', { name: 'Brook', sanity: 10, lust: 0 });
+    await setActiveCompanion(page, 'Brook', { sanity: 10, lust: 0 });
 
     // act
     const tier = await callSetup(page, 'setup.Companion.sanityTier()');
@@ -93,7 +106,7 @@ test.describe('Companion Controller', () => {
 
   test('sanityTier boundary: exactly 75 is "high"', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'companion', { name: 'Brook', sanity: 75, lust: 0 });
+    await setActiveCompanion(page, 'Brook', { sanity: 75, lust: 0 });
 
     // act
     const tier = await callSetup(page, 'setup.Companion.sanityTier()');
@@ -104,7 +117,7 @@ test.describe('Companion Controller', () => {
 
   test('sanityTier boundary: exactly 50 is "mid"', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'companion', { name: 'Brook', sanity: 50, lust: 0 });
+    await setActiveCompanion(page, 'Brook', { sanity: 50, lust: 0 });
 
     // act
     const tier = await callSetup(page, 'setup.Companion.sanityTier()');
@@ -115,7 +128,7 @@ test.describe('Companion Controller', () => {
 
   test('sanityTier boundary: exactly 25 is "low"', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'companion', { name: 'Brook', sanity: 25, lust: 0 });
+    await setActiveCompanion(page, 'Brook', { sanity: 25, lust: 0 });
 
     // act
     const tier = await callSetup(page, 'setup.Companion.sanityTier()');
@@ -128,7 +141,7 @@ test.describe('Companion Controller', () => {
 
   test('isLustHigh returns true when companion lust >= 50', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'companion', { name: 'Brook', sanity: 100, lust: 55 });
+    await setActiveCompanion(page, 'Brook', { sanity: 100, lust: 55 });
 
     // act
     const result = await callSetup(page, 'setup.Companion.isLustHigh()');
@@ -139,7 +152,7 @@ test.describe('Companion Controller', () => {
 
   test('isLustHigh returns false when companion lust < 50', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'companion', { name: 'Brook', sanity: 100, lust: 30 });
+    await setActiveCompanion(page, 'Brook', { sanity: 100, lust: 30 });
 
     // act
     const result = await callSetup(page, 'setup.Companion.isLustHigh()');
@@ -188,7 +201,7 @@ test.describe('Companion Controller', () => {
   test('giveSanityPill decrements pills and heals companion', async ({ game: page }) => {
     // arrange
     await setVar(page, 'sanityPillsAmount', 3);
-    await setVar(page, 'companion', { name: 'Brook', sanity: 50, lust: 0 });
+    await setActiveCompanion(page, 'Brook', { sanity: 50, lust: 0 });
 
     // act
     const result = await page.evaluate(() =>
@@ -198,25 +211,25 @@ test.describe('Companion Controller', () => {
     // assert
     expect(result).toBe(true);
     expect(await getVar(page, 'sanityPillsAmount')).toBe(2);
-    expect(await getVar(page, 'companion.sanity')).toBe(80);
+    expect(await getVar(page, 'brook.sanity')).toBe(80);
   });
 
   test('giveSanityPill caps sanity at 100', async ({ game: page }) => {
     // arrange
     await setVar(page, 'sanityPillsAmount', 1);
-    await setVar(page, 'companion', { name: 'Brook', sanity: 85, lust: 0 });
+    await setActiveCompanion(page, 'Brook', { sanity: 85, lust: 0 });
 
     // act
     await page.evaluate(() => SugarCube.setup.Companion.giveSanityPill());
 
     // assert
-    expect(await getVar(page, 'companion.sanity')).toBe(100);
+    expect(await getVar(page, 'brook.sanity')).toBe(100);
   });
 
   test('giveSanityPill fails with no pills', async ({ game: page }) => {
     // arrange
     await setVar(page, 'sanityPillsAmount', 0);
-    await setVar(page, 'companion', { name: 'Brook', sanity: 50, lust: 0 });
+    await setActiveCompanion(page, 'Brook', { sanity: 50, lust: 0 });
 
     // act
     const result = await page.evaluate(() =>
@@ -230,7 +243,7 @@ test.describe('Companion Controller', () => {
   test('giveSanityPill fails when companion at full sanity', async ({ game: page }) => {
     // arrange
     await setVar(page, 'sanityPillsAmount', 5);
-    await setVar(page, 'companion', { name: 'Brook', sanity: 100, lust: 0 });
+    await setActiveCompanion(page, 'Brook', { sanity: 100, lust: 0 });
 
     // act
     const result = await page.evaluate(() =>
