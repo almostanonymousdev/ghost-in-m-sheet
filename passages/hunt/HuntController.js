@@ -435,6 +435,12 @@ setup.HuntController = (function () {
 		run.disguiseName = opts.ghostName;
 		run.evidence     = Array.isArray(opts.evidence) ? opts.evidence.slice() : [];
 		if (run.trapped === undefined) run.trapped = false;
+		if (!Array.isArray(run.modifiers))     run.modifiers = [];
+		if (run.loadout == null)               run.loadout = {};
+		if (run.objective == null)             run.objective = Objective.IDENTIFY.id;
+		if (run.currentRoomId == null)         run.currentRoomId = 'room_0';
+		if (!Array.isArray(run.collectedLoot)) run.collectedLoot = [];
+		if (run.lights == null)                run.lights = {};
 	}
 
 	/* End the current run. Preserves the run number so the next
