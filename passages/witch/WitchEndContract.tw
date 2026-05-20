@@ -1,0 +1,63 @@
+:: WitchEndContract [nobr] {"position":"1350,275","size":"100,100"}
+/* The "call the type" desk. Reached from WitchInside while a contract
+   hunt is paused at HuntOutside (or anywhere between the haunt and
+   the witch's place -- the run stays active until endHunt fires).
+
+   Khadija's rule -- "one guess per contract" -- is enforced by the
+   resolve step: the dropdown selection is read on submit and the
+   held key is consumed either way. If the player wants to come back
+   later (don't guess until you know), they can <<Back>> out and the
+   contract stays held + the hunt stays active. The shop's other
+   surfaces (WitchSale / WitchContracts / WitchEctoplasm) remain
+   reachable from WitchInside in the meantime. */
+<<if not setup.HuntController.isActive() or not setup.WitchContract.hasHeldContract()>>
+	@@.mc-thoughts; Nothing to report.@@<br>
+	@@.backbtn; [[Back|WitchInside]]@@
+<<else>>
+	<<set _heldHouse to setup.HuntHouses.byId(setup.WitchContract.heldHouseId())>>
+	@@.location; Khadija's desk@@<br>
+	@@.notmc-speech; Well? <<= _heldHouse.label>>. What was in there.@@<br>
+	@@.mc-speech; I think it was:@@<br>
+	<<ghostTypeDropdown>><br>
+	<br>
+	@@.movebtn; [[Name the ghost|WitchEndContractResolve]]@@<br>
+	<br>
+	@@.backbtn; [[Not yet -- let me think|WitchInside]]@@
+<</if>>
+
+:: WitchEndContractResolve [nobr] {"position":"1350,400","size":"100,100"}
+/* Locks the player's guess in, settles the contract, and prints
+   Khadija's reaction. The endHunt(success) call routes through the
+   shared lifecycle cleanup -- pay cash on a correct call, burn the
+   key on a wrong one -- and also tears down the run state
+   (sanity/energy caps, wardrobe, modifiers, next-seed roll). After
+   this passage the player is no longer in-hunt; from WitchInside
+   they can buy a new key or walk away. */
+<<if not setup.HuntController.isActive() or not setup.WitchContract.hasHeldContract()>>
+	@@.mc-thoughts; Nothing to report.@@<br>
+	@@.backbtn; [[Back|WitchInside]]@@
+<<else>>
+	<<set _guess to setup.Ghosts.ghostTypeSelected()>>
+	<<set _trueName to setup.HuntController.ghostName()>>
+	<<set _correct to _guess eq _trueName>>
+	<<set _trueGhost to setup.Ghosts.active()>>
+	<<if _correct>>
+		<<run setup.HuntController.markSuccess()>>
+		<<set _summary to setup.HuntController.endHunt(true)>>
+		@@.notmc-speech; <<= _trueGhost.name>>. Good. Money on the way.@@<br>
+		<br>
+		<<if _summary.cashPayout gt 0>>
+			<span class="mc-action">+$<<= _summary.cashPayout>></span><br>
+		<</if>>
+		<span class="mc-thoughts">Money: $<<= setup.Mc.money()>></span><br>
+	<<else>>
+		<<run setup.HuntController.markFailure(setup.HuntController.FailureReason.WRONG_CALL)>>
+		<<set _summary to setup.HuntController.endHunt(false)>>
+		@@.notmc-speech; <<= _guess>>? No. It was a <<= _trueGhost.name>>. <<= _trueGhost.evidenceLabels()>>. Key's spent. Try again with a fresh one.@@<br>
+		<br>
+		<span class="mc-thoughts">No payout. The key's spent.</span><br>
+	<</if>>
+	<span class="mc-action">+<<= _summary.xp>> exp</span><br>
+	<br>
+	@@.backbtn; [[Back|WitchInside]]@@
+<</if>>

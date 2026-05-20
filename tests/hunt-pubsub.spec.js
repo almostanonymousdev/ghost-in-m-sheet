@@ -568,26 +568,37 @@ test.describe('setup.Hunt pubsub', () => {
         // Force a known modifier deck: FOG_OF_WAR (1.5x) + SWIPER (1.4x) = 2.1x.
         run.modifiers = [M.FOG_OF_WAR, M.SWIPER];
         const summary = HC.endHunt(true);
-        return { payout: summary.payout, expected: Math.round(10 * 1.5 * 1.4) };
+        return {
+          cashPayout:     summary.cashPayout,
+          ectoplasmPayout: summary.ectoplasmPayout,
+          expectedCash:    Math.round(50 * 1.5 * 1.4),
+          expectedEcto:    Math.round(10 * 1.5 * 1.4)
+        };
       });
-      expect(result.payout).toBe(result.expected);
+      expect(result.cashPayout).toBe(result.expectedCash);
+      expect(result.ectoplasmPayout).toBe(result.expectedEcto);
     });
 
-    test('PAYOUT filter: no modifiers means base payout (round(base * 1))', async () => {
+    test('PAYOUT filter: no modifiers means base payout (cash 50 + ecto 10 success, ecto 3 failure)', async () => {
       await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
       const result = await page.evaluate(() => {
         const HC = SugarCube.setup.HuntController;
         HC.startHunt({ seed: 12121 });
         const run = HC.active();
         run.modifiers = [];
-        return { success: HC.endHunt(true).payout, fail: (function () {
-          HC.startHunt({ seed: 12122 });
-          HC.active().modifiers = [];
-          return HC.endHunt(false).payout;
-        })() };
+        const success = HC.endHunt(true);
+        HC.startHunt({ seed: 12122 });
+        HC.active().modifiers = [];
+        const fail = HC.endHunt(false);
+        return {
+          successCash: success.cashPayout, successEcto: success.ectoplasmPayout,
+          failCash:    fail.cashPayout,    failEcto:    fail.ectoplasmPayout
+        };
       });
-      expect(result.success).toBe(10);
-      expect(result.fail).toBe(3);
+      expect(result.successCash).toBe(50);
+      expect(result.successEcto).toBe(10);
+      expect(result.failCash).toBe(0);
+      expect(result.failEcto).toBe(3);
     });
 
     test('STEAL_CHECK filter: SWIPER forces a steal trigger', async () => {

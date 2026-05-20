@@ -641,33 +641,37 @@ test.describe('Hunt Controller', () => {
 
   // --- endHunt payout multiplier ---
 
-  test('endHunt payout = base * sum of payoutMultipliers (success)', async () => {
+  test('endHunt rogue success payout = (cash 50 + ecto 10) * sum of payoutMultipliers', async () => {
     await page.evaluate(() => SugarCube.setup.HuntController.start({
       seed: 1, modifiers: ['locked_tools', 'pheromones']
     }));
     const lt = await callSetup(page, 'setup.Modifiers.byId("locked_tools").payoutMultiplier');
     const ph = await callSetup(page, 'setup.Modifiers.byId("pheromones").payoutMultiplier');
     const summary = await page.evaluate(() => SugarCube.setup.HuntController.endHunt(true));
-    expect(summary.payout).toBe(Math.round(10 * lt * ph));
+    expect(summary.cashPayout).toBe(Math.round(50 * lt * ph));
+    expect(summary.ectoplasmPayout).toBe(Math.round(10 * lt * ph));
   });
 
-  test('endHunt payout = base * multiplier (failure base 3)', async () => {
+  test('endHunt rogue failure pays consolation ectoplasm scaled by multiplier (base 3)', async () => {
     await page.evaluate(() => SugarCube.setup.HuntController.start({
       seed: 1, modifiers: ['fog_of_war']
     }));
     const fow = await callSetup(page, 'setup.Modifiers.byId("fog_of_war").payoutMultiplier');
     const summary = await page.evaluate(() => SugarCube.setup.HuntController.endHunt(false));
-    expect(summary.payout).toBe(Math.round(3 * fow));
+    expect(summary.cashPayout).toBe(0);
+    expect(summary.ectoplasmPayout).toBe(Math.round(3 * fow));
   });
 
-  test('endHunt payout for a no-modifier run is exactly 10 (success) or 3 (failure)', async () => {
+  test('endHunt rogue no-modifier payout = cash 50 + ecto 10 (success) or 0 + ecto 3 (failure)', async () => {
     await page.evaluate(() => SugarCube.setup.HuntController.start({ seed: 1, modifiers: [] }));
     let summary = await page.evaluate(() => SugarCube.setup.HuntController.endHunt(true));
-    expect(summary.payout).toBe(10);
+    expect(summary.cashPayout).toBe(50);
+    expect(summary.ectoplasmPayout).toBe(10);
 
     await page.evaluate(() => SugarCube.setup.HuntController.start({ seed: 2, modifiers: [] }));
     summary = await page.evaluate(() => SugarCube.setup.HuntController.endHunt(false));
-    expect(summary.payout).toBe(3);
+    expect(summary.cashPayout).toBe(0);
+    expect(summary.ectoplasmPayout).toBe(3);
   });
 
   test('endHunt auto-redresses slots the MC took off during the run', async () => {

@@ -40,6 +40,8 @@
 				@@.mc-thoughts; Level _rshGate+ required@@
 			<<elseif typeof _rsh.gate eq "function" and not _rsh.gate()>>
 				@@.mc-thoughts; <<= _rsh.gateMessage or "Locked">>@@
+			<<elseif not setup.WitchContract.canEnterHouse(_rsh.id)>>
+				@@.mc-thoughts; Need a key from Khadija@@
 			<<else>>
 				<<capture _rsh>>
 					@@.icontext;<<link _rsh.label "HuntStart">>

@@ -87,32 +87,35 @@ test.describe('Hunt lifecycle helpers', () => {
 
   // --- endHunt ---
 
-  test('endHunt on a successful run pays out base * deck payoutMultiplier (success base 10)', async () => {
+  test('endHunt on a successful rogue run pays out cash 50 + ecto 10, each scaled by deck multiplier', async () => {
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({
       seed: 1, modifierCount: 2
     }));
-    const expected = await page.evaluate(() =>
-      Math.round(10 * SugarCube.setup.Modifiers.payoutMultiplier()));
+    const mult = await page.evaluate(() => SugarCube.setup.Modifiers.payoutMultiplier());
+    const expectedCash = Math.round(50 * mult);
+    const expectedEcto = Math.round(10 * mult);
 
     const summary = await page.evaluate(() => SugarCube.setup.HuntController.endHunt(true));
 
-    expect(summary.payout).toBe(expected);
+    expect(summary.cashPayout).toBe(expectedCash);
+    expect(summary.ectoplasmPayout).toBe(expectedEcto);
     expect(summary.success).toBe(true);
-    expect(await callSetup(page, 'setup.HuntController.ectoplasm()')).toBe(expected);
+    expect(await callSetup(page, 'setup.HuntController.ectoplasm()')).toBe(expectedEcto);
   });
 
-  test('endHunt on a failed run pays out base * deck payoutMultiplier (failure base 3)', async () => {
+  test('endHunt on a failed rogue run pays out cash 0 + ecto 3, scaled by deck multiplier', async () => {
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({
       seed: 1, modifierCount: 2
     }));
-    const expected = await page.evaluate(() =>
-      Math.round(3 * SugarCube.setup.Modifiers.payoutMultiplier()));
+    const mult = await page.evaluate(() => SugarCube.setup.Modifiers.payoutMultiplier());
+    const expectedEcto = Math.round(3 * mult);
 
     const summary = await page.evaluate(() => SugarCube.setup.HuntController.endHunt(false));
 
-    expect(summary.payout).toBe(expected);
+    expect(summary.cashPayout).toBe(0);
+    expect(summary.ectoplasmPayout).toBe(expectedEcto);
     expect(summary.success).toBe(false);
-    expect(await callSetup(page, 'setup.HuntController.ectoplasm()')).toBe(expected);
+    expect(await callSetup(page, 'setup.HuntController.ectoplasm()')).toBe(expectedEcto);
   });
 
   test('endHunt clears the active run', async () => {

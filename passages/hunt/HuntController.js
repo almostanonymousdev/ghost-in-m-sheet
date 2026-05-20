@@ -883,10 +883,20 @@ setup.HuntController = (function () {
 		return "CityMap";
 	}
 
-	/* End the active run, paying out ectoplasm (mL) based on
-	   whether it was a success and how many modifiers the run carried.
-	   Returns a small summary record the result passage can render
-	   without needing to peek at $run state.
+	/* End the active run, paying out cash (contract hunt) or cash
+	   plus ectoplasm (rogue hunt) based on whether the MC walked in
+	   with a key from Khadija. Returns a small summary record the
+	   result passage can render without needing to peek at $run state.
+
+	   Payout split:
+	     * Contract hunt -- $run.staticHouseId matches the key the
+	       player is holding from setup.WitchContract. Success pays
+	       the contract's cash payout (modifier multiplier applies).
+	       Any failure burns the key for no money. No ectoplasm.
+	     * Rogue hunt -- no contract held, or the held key is for a
+	       different house. Pays cash on success and ectoplasm on
+	       any outcome (small consolation on failure). Cash is the
+	       steady-income side, ectoplasm feeds the meta-shop.
 
 	   Run cleanup mirrors the classic HuntOver* passages: commit any
 	   tempCorr the run accumulated, reset bait/overcharged/exhaustion
@@ -895,15 +905,32 @@ setup.HuntController = (function () {
 	function endHunt(success) {
 		var run = active();
 		if (!run) return null;
-		var base = success ? 10 : 3;
 		var payCtx = setup.Hunt.applyFilter(setup.Hunt.Event.PAYOUT, {
 			multiplier: 1,
 			modifierIds: (run.modifiers || []).slice(),
 			success: !!success
 		});
 		var mult = (typeof payCtx.multiplier === 'number') ? payCtx.multiplier : 1;
-		var payout = Math.round(base * mult);
-		addEctoplasm(payout);
+
+		var heldId = (setup.WitchContract && typeof setup.WitchContract.heldHouseId === 'function')
+			? setup.WitchContract.heldHouseId()
+			: null;
+		var isContractHunt = !!run.staticHouseId && heldId === run.staticHouseId;
+
+		var cashPayout = 0;
+		var ectoplasmPayout = 0;
+		var contractPayout = 0;
+		if (isContractHunt) {
+			contractPayout = setup.WitchContract.resolveHeld(!!success);
+			cashPayout = Math.round(contractPayout * mult);
+		} else {
+			cashPayout = Math.round((success ? 50 : 0) * mult);
+			ectoplasmPayout = Math.round((success ? 10 : 3) * mult);
+		}
+		if (cashPayout > 0 && setup.Mc && typeof setup.Mc.addMoney === 'function') {
+			setup.Mc.addMoney(cashPayout);
+		}
+		if (ectoplasmPayout > 0) addEctoplasm(ectoplasmPayout);
 		var xpReward = Math.round((success ? 20 : 5) * mult);
 		if (setup.Mc && typeof setup.Mc.grantExp === 'function') {
 			setup.Mc.grantExp(xpReward);
@@ -915,7 +942,10 @@ setup.HuntController = (function () {
 			objective: run.objective,
 			failureReason: run.failureReason || null,
 			success: !!success,
-			payout: payout,
+			isContractHunt: isContractHunt,
+			cashPayout: cashPayout,
+			ectoplasmPayout: ectoplasmPayout,
+			payout: cashPayout + ectoplasmPayout,
 			xp: xpReward,
 			exitPassage: exitPassageForOutcome(!!success, run.failureReason || null)
 		};
@@ -979,7 +1009,10 @@ setup.HuntController = (function () {
 		rollNextSeed();
 		setup.Hunt.emit(setup.Hunt.Event.END, {
 			success: !!success,
-			payout: payout,
+			isContractHunt: isContractHunt,
+			cashPayout: cashPayout,
+			ectoplasmPayout: ectoplasmPayout,
+			payout: cashPayout + ectoplasmPayout,
 			failureReason: summary.failureReason,
 			ghostName: run.ghostName || null,
 			seed: run.seed,

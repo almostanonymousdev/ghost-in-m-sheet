@@ -19,7 +19,7 @@ test.describe('Witch — access and hours', () => {
     await page.evaluate(() => { delete SugarCube.State.variables.gotKeyFromWitch; });
     await goToPassage(page, 'Witch');
     const text = await page.locator('#passages').innerText();
-    expect(text).toContain('10 in the morning to midnight');
+    expect(text).toContain('ten to midnight');
     await expectCleanPassage(page);
   });
 

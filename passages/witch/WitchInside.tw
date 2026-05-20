@@ -46,6 +46,17 @@
 	<<run setup.Witch.markShopVisited()>>
 <<elseif not setup.Witch.isFirstVisit()>>
 	@@.notmc-speech; <<= setup.Mc.name()>>. Still upright. Good.@@<br>
+	/* Pending contract -- the player walked out of the house with a
+	   contract still in flight. Surface a prominent link to the
+	   guess desk so the next click closes the loop. The check
+	   matches HuntController's isContractHunt: held key + active
+	   run + the run's static house lines up with the held key. */
+	<<if setup.HuntController.isActive() and setup.WitchContract.hasHeldContract() and setup.HuntController.staticHouseId() eq setup.WitchContract.heldHouseId()>>
+		<<set _pendingHouse to setup.HuntHouses.byId(setup.WitchContract.heldHouseId())>>
+		@@.usebtn;<<linkreplace `'You have findings from ' + _pendingHouse.label + '.'`>>
+			<<goto "WitchEndContract">>
+		<</linkreplace>>@@<br>
+	<</if>>
 	<<if setup.Witch.hasSuccubusEncounter() and (hasVisited("SuccubusEventTV") or hasVisited("SuccubusPCEvent")) and setup.Witch.exorcismQuestNotStarted()>>
 		<<linkreplace "@@.usebtn; Ask about a ghost in the house@@">>
 			@@.mc-speech; Something's living in my house. It's been a while. I thought it'd get bored.@@<br>
@@ -117,6 +128,9 @@
 	<</if>>
 
 	<br>
+	@@.mc-speech;<<linkreplace "What's on the board?">>
+		<<goto "WitchContracts">>
+	<</linkreplace>>@@<br>
 	@@.mc-speech;<<linkreplace "Show me what you've got.">>
 		<<goto "WitchSale">>
 	<</linkreplace>>@@<br>

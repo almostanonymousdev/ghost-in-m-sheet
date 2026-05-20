@@ -198,8 +198,21 @@
 		@@.notmc-speech; The haunt swallows you. Hunt #<<= _summary.number>> ends in failure.@@<br>
 	<</if>>
 	<br>
-	<span class="mc-action">+<<= _summary.payout>> mL of ectoplasm</span><br>
-	<span class="mc-thoughts">Ectoplasm: <<= setup.HuntController.ectoplasm()>> mL</span><br>
+	<<if _summary.isContractHunt>>
+		<<if _summary.cashPayout gt 0>>
+			<span class="mc-action">+$<<= _summary.cashPayout>></span><br>
+		<<else>>
+			<span class="mc-thoughts">No payout. The key's spent.</span><br>
+		<</if>>
+	<<else>>
+		<<if _summary.cashPayout gt 0>>
+			<span class="mc-action">+$<<= _summary.cashPayout>></span><br>
+		<</if>>
+		<<if _summary.ectoplasmPayout gt 0>>
+			<span class="mc-action">+<<= _summary.ectoplasmPayout>> mL of ectoplasm</span><br>
+		<</if>>
+	<</if>>
+	<span class="mc-thoughts">Money: $<<= setup.Mc.money()>> &middot; Ectoplasm: <<= setup.HuntController.ectoplasm()>> mL</span><br>
 	<span class="mc-action">+<<= _summary.xp>> exp</span><br>
 	<br>
 	<<if _summary.success>>
@@ -212,20 +225,34 @@
 :: HuntOutside [nobr] {"position":"3100,300","size":"100,100"}
 /* The yard outside the haunt. Reached from HuntRun's hallway via the
    Outside nav link; only the hallway exposes that link. The run is
-   still active here -- the player can pick the ghost (HuntIdentify),
-   forfeit the run on the spot, or step back into the hallway and keep
-   exploring. The hunt event chain is paused while the player is on
-   this passage (HuntController.isHuntActive() answers off HuntRun
-   only), matching the in-house ticks pausing when the player leaves
-   the house. */
+   still active here -- the player can pick the ghost (HuntIdentify
+   for a rogue hunt, or carry the findings back to Khadija for a
+   contract hunt), forfeit the run on the spot, or step back into the
+   hallway and keep exploring. The hunt event chain is paused while
+   the player is on this passage (HuntController.isHuntActive()
+   answers off HuntRun only), matching the in-house ticks pausing
+   when the player leaves the house.
+
+   The identify path forks on whether the run is a contract hunt.
+   Khadija's deal -- "I sell keys, not jobs. You come back and tell me
+   what was in there." -- means contract hunts settle at the witch's
+   desk, not at the front yard. Rogue hunts (no key in hand for this
+   house) still resolve on the spot through HuntIdentify. */
 <<if not setup.HuntController.isActive()>>
 	@@.mc-thoughts; No active hunt.@@<br>
 	@@.backbtn; [[Back|CityMap]]@@
 <<else>>
+	<<set _heldId to setup.WitchContract.heldHouseId()>>
+	<<set _staticId to setup.HuntController.staticHouseId()>>
+	<<set _isContractHunt to _staticId and _heldId eq _staticId>>
 	@@.location; Outside the haunt@@<br>
 	@@.mc-thoughts; The front door is at your back. You can size up what you've found, walk away, or step back inside.@@<br>
 	<br>
-	@@.movebtn; [[Identify the ghost|HuntIdentify]]@@<br>
+	<<if _isContractHunt>>
+		@@.movebtn; [[Take your findings to Khadija|WitchInside]]@@<br>
+	<<else>>
+		@@.movebtn; [[Identify the ghost|HuntIdentify]]@@<br>
+	<</if>>
 	@@.movebtn; [[Flee the hunt|HuntSummary][setup.HuntController.markFailure(setup.HuntController.FailureReason.FLED)]]@@<br>
 	@@.movebtn; [[Go back inside|HuntRun]]@@
 <</if>>

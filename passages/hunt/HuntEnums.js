@@ -27,7 +27,8 @@ setup.HuntEnums = (function () {
 		CAUGHT:     'caught',
 		ABANDON:    'abandon',
 		POSSESSED:  'possessed',
-		FLED:       'fled'
+		FLED:       'fled',
+		WRONG_CALL: 'wrong_call'
 	});
 
 	/* Run-objective catalogue. Each entry carries an `id` (the string

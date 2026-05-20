@@ -1,0 +1,49 @@
+:: WitchContracts [nobr] {"position":"1350,150","size":"100,100"}
+/* Khadija's contract board. Lists the keys she's currently willing
+   to sell, gated by setup.WitchContract.offered() (level / unlock
+   filters live there). Buying a key sets the held contract; the
+   GhostStreet card for the matching house unlocks until a run
+   resolves. Only one key in hand at a time. */
+<<run setup.WitchContract.ensureFresh()>>
+@@.location; Khadija's Board@@<br>
+@@.notmc-speech; Pick the house. Pay the fee. Come back with a name.@@<br>
+<span class="mc-thoughts">Money: $<<= setup.Mc.money()>></span><br>
+<br>
+
+<<if setup.WitchContract.hasHeldContract()>>
+	<<set _held to setup.WitchContract.held()>>
+	<<set _heldHouse to setup.HuntHouses.byId(_held.houseId)>>
+	@@.location; Key in hand@@<br>
+	<span class="mc-action"><<= _heldHouse.label>></span><br>
+	<span class="mc-thoughts">Payout on a correct call: $<<= _held.payout>>.</span><br>
+	@@.notmc-speech; You've already paid for that one. Use it, lose it, or wait. Doesn't matter to me which.@@<br>
+<<else>>
+	<<set _offered to setup.WitchContract.offered()>>
+	<<if _offered.length eq 0>>
+		@@.notmc-speech; Board's empty today. Come back tomorrow.@@<br>
+	<<else>>
+		<div id="contract-board">
+			<<for _c range _offered>>
+				<<capture _c>>
+					<<set _house to setup.HuntHouses.byId(_c.houseId)>>
+					<div class="contract-row">
+						<b><<= _house.label>></b><br>
+						<span class="mc-thoughts">Fee $<<= _c.fee>> &middot; pays $<<= _c.payout>> on a correct call.</span><br>
+						<<if setup.Mc.money() gte _c.fee>>
+							@@.usebtn;<<link `'Buy key ($' + _c.fee + ')'`>>
+								<<run setup.WitchContract.buyContract(_c.houseId)>>
+								<<goto "WitchContracts">>
+							<</link>>@@
+						<<else>>
+							<span class="disabled-link">Buy key ($<<= _c.fee>> &mdash; short $<<= _c.fee - setup.Mc.money()>>)</span>
+						<</if>>
+						<br>
+					</div>
+				<</capture>>
+			<</for>>
+		</div>
+	<</if>>
+<</if>>
+
+<br>
+@@.backbtn;[[Back|WitchInside]]@@<br>
