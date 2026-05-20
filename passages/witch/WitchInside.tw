@@ -3,24 +3,43 @@
 <br>
 
 <<if setup.Witch.isFirstVisit()>>
-	&emsp;@@.notmc-speech;Hello, sweetheart, got lost? @@<br>
+	&emsp;Khadija is at the desk with a clipboard when you come in, drawing a careful line through a name near the top of the page. She finishes the line before she looks up.<br>
 
-	@@.mc-speech;Hi, I'm <<= setup.Mc.name()>>. I was told I could get a contract here... for ghosts@@<br>
+	&emsp;@@.notmc-speech; You're the one who's been putting it off.@@<br>
 
-	&emsp;@@.notmc-speech;Khadija. Are you really a ghost hunter? I wouldn't have guessed that looking at you... And how's the "interaction" with ghosts going? *She smiled* @@<br>
+	&emsp;@@.mc-speech; ...How'd you know?@@<br>
 
-	&emsp;@@.mc-speech; Let's just say I haven't really started yet...@@<br>
+	&emsp;@@.notmc-speech; Mossheath's small, and you've been on my list a while. Sit, if you want. Don't if you don't.@@<br>
 
-	&emsp;@@.notmc-speech; Well, I won't discourage you, but listen to the rules carefully:<br>
-	&emsp;First - to get a contract for a ghost, you need to come to me. I'll give you the key to the house with the ghost for a certain fee, of course. I don't want any losses.<br>
-	&emsp;Second - you determine the type of this ghost. That's all I need for now. If you correctly determine the type of the ghost - I give you money, if not - I don't. It's that simple.<br>
-	&emsp;Third - you have only one night to determine the type of the ghost. You won't be able to enter the house the next day with the same contract.<br>
-	&emsp;Fourth - you can only tell me the type of the ghost once per contract. Even if you failed to determine it, you have one chance to guess it.@@<br>
+	&emsp;She turns the clipboard face-down on the desk like it's a private letter.<br>
 
-	&emsp;@@.mc-speech; It seems I've got it...@@<br>
+	&emsp;@@.mc-speech; I'm <<= setup.Mc.name()>>. I was told I could pick up contracts here. For ghosts.@@<br>
+
+	&emsp;@@.notmc-speech; Khadija. And yes. Show me your hands.@@<br>
+
+	&emsp;@@.mc-thoughts; ...What?@@<br>
+
+	&emsp;You hold them out anyway. She doesn't take them. Just looks. Then nods, once, like she's seen something either reassuring or annoying.<br>
+
+	&emsp;@@.notmc-speech; Steady. You'll do for a first hunt. Whether you'll do for a second is up to the first.@@<br>
+
+	&emsp;@@.mc-speech; That's a low bar.@@<br>
+
+	&emsp;@@.notmc-speech; It's the only one I bother with. Here's how this works.@@<br>
+
+	&emsp;@@.notmc-speech; I sell keys, not jobs. You give me a fee, I give you a key, you spend one night in the house with it. You come back and you tell me what was in there. Get the type right, there's money. Get it wrong, there isn't, and the key doesn't work twice.@@<br>
+
+	&emsp;@@.mc-speech; One guess per contract?@@<br>
+
+	&emsp;@@.notmc-speech; One guess per contract. Don't guess until you know.@@<br>
+
+	&emsp;@@.notmc-speech; I won't lecture you about the rest. The girls before you taught me lecturing doesn't take.@@<br>
+
+	&emsp;You glance at the upturned clipboard. She doesn't move it.<br>
+
+	&emsp;@@.notmc-speech; Come back when you want a key. I'll be here. I'm always here.@@<br>
 	<br>
-	&emsp;@@.mc-thoughts;
-	Okay, here I can get a ghost contract. It costs money. I receive a key to the house with the ghost and at night I go there. After determining the ghost, I have to return to her and name it. If I'm right - then I get money, if not, well, then no.@@<br>
+	&emsp;@@.mc-thoughts; Right. Buy a key, spend the night, name what's in there. One guess only. Don't guess until I know.@@<br>
 	<br>
 	@@.mc-action; Now you can receive contracts for identifying the type of ghost.@@
 	<br>
