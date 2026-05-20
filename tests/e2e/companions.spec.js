@@ -25,18 +25,23 @@ async function selectCompanion(page, name) {
     }
   });
   await page.evaluate((n) => SugarCube.setup.Companion.selectCompanion(n), name);
-  const stats = {
+  // $companion is a {name} marker post-SAVE_VERSION-6; the per-companion
+  // stat row ($alice/$blake/...) is the source of truth. Stamp the marker
+  // and overlay enough plan-related fields on the backing row that the
+  // *Info passages (which read chanceOfSuccess* / plan*TimeReq) render.
+  const overlay = {
     name, sanity: 100, sanityMax: 100, corruption: 0, lust: 0,
-    lvl: 1, exp: 0, expForNextLvl: 20, decreaseSanity: 10,
+    lvl: 1, exp: 0, expForNextLvl: 20, eventSanityLoss: 10,
     plan2TimeReq: 15, plan3TimeReq: 15, plan4TimeReq: 10,
     chanceOfSuccessCI: 30, chanceOfSuccessEMF: 15, chanceOfSuccessECTO: 15,
     chanceOfSuccessGWB: 15, chanceOfSuccessSB: 15, chanceOfSuccessTEMP: 15,
     chanceOfSuccessUVL: 15, chanceOfSuccessGR: 50, chanceOfSuccessAnyEvidence: 25,
   };
-  await setVar(page, 'companion', stats);
-  // Passages like AliceInfo / BlakeInfo / BrookInfo read $alice, $blake, $brook
-  // directly; mirror the stats onto the backing story var so those still work.
-  await setVar(page, name.toLowerCase(), stats);
+  await setVar(page, 'companion', { name });
+  await page.evaluate(({ k, o }) => {
+    const V = SugarCube.State.variables;
+    if (V[k]) Object.assign(V[k], o); else V[k] = o;
+  }, { k: name.toLowerCase(), o: overlay });
 }
 
 test.describe('Companions — selection controller', () => {
@@ -62,20 +67,22 @@ test.describe('Companions — selection controller', () => {
   });
 
   test('sanityTier breaks at 75/50/25', async ({ game: page }) => {
-    await setVar(page, 'companion', { sanity: 80 });
+    await setVar(page, 'companion', { name: 'Brook' });
+    await setVar(page, 'brook.sanity', 80);
     expect(await callSetup(page, 'setup.Companion.sanityTier()')).toBe('high');
-    await setVar(page, 'companion', { sanity: 60 });
+    await setVar(page, 'brook.sanity', 60);
     expect(await callSetup(page, 'setup.Companion.sanityTier()')).toBe('mid');
-    await setVar(page, 'companion', { sanity: 40 });
+    await setVar(page, 'brook.sanity', 40);
     expect(await callSetup(page, 'setup.Companion.sanityTier()')).toBe('low');
-    await setVar(page, 'companion', { sanity: 10 });
+    await setVar(page, 'brook.sanity', 10);
     expect(await callSetup(page, 'setup.Companion.sanityTier()')).toBe('critical');
   });
 
   test('isLustHigh triggers at lust >= 50', async ({ game: page }) => {
-    await setVar(page, 'companion', { lust: 49 });
+    await setVar(page, 'companion', { name: 'Brook' });
+    await setVar(page, 'brook.lust', 49);
     expect(await callSetup(page, 'setup.Companion.isLustHigh()')).toBe(false);
-    await setVar(page, 'companion', { lust: 50 });
+    await setVar(page, 'brook.lust', 50);
     expect(await callSetup(page, 'setup.Companion.isLustHigh()')).toBe(true);
   });
 });
@@ -188,30 +195,34 @@ test.describe('Companions — hunt-side events', () => {
 
   test('giveSanityPill raises companion sanity and decrements pills', async ({ game: page }) => {
     await setVar(page, 'sanityPillsAmount', 2);
-    await setVar(page, 'companion', { name: 'Alice', sanity: 40 });
+    await setVar(page, 'companion', { name: 'Alice' });
+    await setVar(page, 'alice.sanity', 40);
     const used = await page.evaluate(() => SugarCube.setup.Companion.giveSanityPill());
     expect(used).toBe(true);
     expect(await getVar(page, 'sanityPillsAmount')).toBe(1);
-    expect(await getVar(page, 'companion.sanity')).toBe(70);
+    expect(await getVar(page, 'alice.sanity')).toBe(70);
   });
 
   test('giveSanityPill clamps companion sanity at 100', async ({ game: page }) => {
     await setVar(page, 'sanityPillsAmount', 1);
-    await setVar(page, 'companion', { name: 'Alice', sanity: 85 });
+    await setVar(page, 'companion', { name: 'Alice' });
+    await setVar(page, 'alice.sanity', 85);
     await page.evaluate(() => SugarCube.setup.Companion.giveSanityPill());
-    expect(await getVar(page, 'companion.sanity')).toBe(100);
+    expect(await getVar(page, 'alice.sanity')).toBe(100);
   });
 
   test('giveSanityPill returns false when no pills remain', async ({ game: page }) => {
     await setVar(page, 'sanityPillsAmount', 0);
-    await setVar(page, 'companion', { name: 'Alice', sanity: 50 });
+    await setVar(page, 'companion', { name: 'Alice' });
+    await setVar(page, 'alice.sanity', 50);
     const used = await page.evaluate(() => SugarCube.setup.Companion.giveSanityPill());
     expect(used).toBe(false);
   });
 
   test('giveSanityPill returns false when companion is already at full sanity', async ({ game: page }) => {
     await setVar(page, 'sanityPillsAmount', 3);
-    await setVar(page, 'companion', { name: 'Alice', sanity: 100 });
+    await setVar(page, 'companion', { name: 'Alice' });
+    await setVar(page, 'alice.sanity', 100);
     const used = await page.evaluate(() => SugarCube.setup.Companion.giveSanityPill());
     expect(used).toBe(false);
     expect(await getVar(page, 'sanityPillsAmount')).toBe(3);
@@ -227,13 +238,28 @@ test.describe('Companions — hunt-side events', () => {
     expect(await getVar(page, 'alice.paidForSolo')).toBe(1);
   });
 
-  test('blakeDropsCursedItem only fires when Blake + chosen + cursed item', async ({ game: page }) => {
+  test('Blake onHuntFail drops the cursed item when chosen + holding one', async ({ game: page }) => {
     await setVar(page, 'companion', { name: 'Blake' });
     await setVar(page, 'isCompChosen', 1);
     await setVar(page, 'gotCursedItem', 1);
-    expect(await callSetup(page, 'setup.Companion.blakeDropsCursedItem()')).toBe(true);
-    await page.evaluate(() => SugarCube.setup.Companion.clearBlakeCursedItem());
+    await page.evaluate(() => SugarCube.setup.Companion.runHuntFailHooks());
     expect(await getVar(page, 'gotCursedItem')).toBe(0);
+  });
+
+  test('runHuntFailHooks is a no-op when Blake is active but not chosen', async ({ game: page }) => {
+    await setVar(page, 'companion', { name: 'Blake' });
+    await setVar(page, 'isCompChosen', 0);
+    await setVar(page, 'gotCursedItem', 1);
+    await page.evaluate(() => SugarCube.setup.Companion.runHuntFailHooks());
+    expect(await getVar(page, 'gotCursedItem')).toBe(1);
+  });
+
+  test('runHuntFailHooks is a no-op when a non-Blake companion is active', async ({ game: page }) => {
+    await setVar(page, 'companion', { name: 'Alice' });
+    await setVar(page, 'isCompChosen', 1);
+    await setVar(page, 'gotCursedItem', 1);
+    await page.evaluate(() => SugarCube.setup.Companion.runHuntFailHooks());
+    expect(await getVar(page, 'gotCursedItem')).toBe(1);
   });
 
   test('resetHuntState zeroes plan/flags for clean post-hunt state', async ({ game: page }) => {
@@ -252,7 +278,7 @@ test.describe('Companions — hunt-side events', () => {
 test.describe('Companions — home/intimate events', () => {
   test('WalkHomeTogether renders cleanly for Brook with high lust', async ({ game: page }) => {
     await selectCompanion(page, 'Brook');
-    await setVar(page, 'companion.lust', 80);
+    await setVar(page, 'brook.lust', 80);
     await setupHunt(page, 'Shade');
     await goToPassage(page, 'WalkHomeTogether');
     await expectCleanPassage(page);

@@ -15,7 +15,7 @@
  * fresh ids without any caller knowing the difference.
  */
 setup.Rooms = (function () {
-	function sv() { return State.variables; }
+	var sv = setup.sv;
 
 	/* Room state-var ids owned by this controller. Each id maps to
 	   a top-level state var ($<id>) holding the room's

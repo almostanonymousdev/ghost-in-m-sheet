@@ -13,7 +13,7 @@ setup.Gym = (function () {
 		'sportswear', 'trainingCost'
 	]);
 
-	function sv() { return State.variables; }
+	var sv = setup.sv;
 
 	var TRAIN_COST = 5;
 	var DEFAULT_TRAINING_PRICE = 15;
@@ -21,51 +21,26 @@ setup.Gym = (function () {
 	return {
 		OWNED_VARS: OWNED_VARS,
 		// --- Hours / open state --------------------------------
-		isOpen: function () {
-			var h = setup.Time.hours();
-			return h > 7 && h < 22;
-		},
-		isMorning: function () {
-			var h = setup.Time.hours();
-			return h >= 8 && h < 12;
-		},
-		isAfternoon: function () {
-			var h = setup.Time.hours();
-			return h >= 12 && h < 17;
-		},
-		isEvening: function () {
-			var h = setup.Time.hours();
-			return h >= 17 && h < 23;
-		},
-		isGroupClassTime: function () {
-			var h = setup.Time.hours();
-			return h >= 12 && h <= 13;
-		},
+		isOpen:           setup.LocationHours(8, 21),
+		isMorning:        setup.LocationHours(8, 11),
+		isAfternoon:      setup.LocationHours(12, 16),
+		isEvening:        setup.LocationHours(17, 22),
+		isGroupClassTime: setup.LocationHours(12, 13),
 
 		// --- Solo video buckets (keyed slightly differently) --
-		soloSlotMorning: function () {
-			var h = setup.Time.hours();
-			return h >= 8 && h < 13;
-		},
-		soloSlotAfternoon: function () {
-			var h = setup.Time.hours();
-			return h >= 13 && h < 18;
-		},
-		soloSlotEvening: function () {
-			var h = setup.Time.hours();
-			return h >= 18 && h < 23;
-		},
+		soloSlotMorning:   setup.LocationHours(8, 12),
+		soloSlotAfternoon: setup.LocationHours(13, 17),
+		soloSlotEvening:   setup.LocationHours(18, 22),
 
 		// --- Training cost (depends on time + discounts) -----
 		computeTrainingCost: function () {
-			var h = setup.Time.hours();
-			if (h >= 8 && h < 12) {
+			if (this.isMorning()) {
 				return sv().trainer1CoachingCost === undefined ? DEFAULT_TRAINING_PRICE : 0;
 			}
-			if (h >= 12 && h < 17) {
+			if (this.isAfternoon()) {
 				return DEFAULT_TRAINING_PRICE;
 			}
-			if (h >= 17 && h < 23) {
+			if (this.isEvening()) {
 				return sv().trainer3CoachingCost === undefined ? DEFAULT_TRAINING_PRICE : 0;
 			}
 			return DEFAULT_TRAINING_PRICE;
@@ -194,8 +169,5 @@ setup.Gym = (function () {
 		}
 	};
 })();
-/* Deferred to :storyready -- see ChurchController for rationale. */
-$(document).one(':storyready', function () {
-	setup.Cooldowns.registerDaily('trainer1Sex');
-	setup.Cooldowns.registerDaily('trainer2Sex');
-});
+setup.Cooldowns.registerDaily('trainer1Sex');
+setup.Cooldowns.registerDaily('trainer2Sex');

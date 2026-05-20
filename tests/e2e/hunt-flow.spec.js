@@ -137,7 +137,7 @@ test.describe('E2E: hunt lifecycle', () => {
       remaining => SugarCube.State.variables.ectoplasm === remaining,
       ectoplasm - 5
     );
-    expect(await page.evaluate(() => SugarCube.setup.HuntController.rerollCharges())).toBe(1);
+    expect(await page.evaluate(() => SugarCube.setup.HuntShop.rerollCharges())).toBe(1);
   });
 
   test('losing a run still pays out failure-base * deck multiplier of ectoplasm', async () => {

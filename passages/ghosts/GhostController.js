@@ -41,7 +41,16 @@
             description: "Spirit is a rather shy ghost. Unlike others, if it doesn't achieve its goal, it will relentlessly follow its victim. However, once it gets what it wants, it will vanish and cease to disturb, leaving its target in peace.",
             prowlCondition:     function (mc) { return mc.lust >= 30; },
             prowlConditionText: "Can start a prowl if you have >= 30 lust",
-            walkHomePassage:   "GhostSpecialEventSpirit"
+            walkHomePassage:   "GhostSpecialEventSpirit",
+            /* Reset the event-stage tracker when a hunt ends without a
+               catch (HuntOverTime / HuntOverExhaustion / HuntOverManual
+               emit HUNT_END_GRACEFUL; HuntOverSanity intentionally does
+               not). */
+            huntHooks: {
+                HUNT_END_GRACEFUL: function () {
+                    setup.SpecialEvent.clearSpiritEventStage();
+                }
+            }
         },
         {
             name: "Poltergeist", image: "poltergeist.webp",
@@ -135,7 +144,14 @@
             hint: "Mimic always has an extra evidence -- ectoplasm",
             description: "Mimic is a ghost that can mimic nearly all the abilities of other ghosts, making it extremely unpredictable and difficult to identify. Additionally, The Mimic always has an extra evidence -- ectoplasm. Although ectoplasm is not considered evidence for identifying the ghost, its presence can aid in its identification.",
             prowlCondition:     function (mc) { return mc.sanity <= 70; },
-            prowlConditionText: "Can start a prowl if you have <= 70 sanity"
+            prowlConditionText: "Can start a prowl if you have <= 70 sanity",
+            /* Seed the rotation clock when entering the haunted house so
+               the next tick rolls a fresh disguise. */
+            huntHooks: {
+                HOUSE_ENTER: function () {
+                    State.variables.lastChangeIntervalMimic = " ";
+                }
+            }
         },
         {
             name: "The Twins", image: "the-twins.webp",
@@ -143,7 +159,15 @@
             hint: "",
             description: "",
             prowlCondition:     function (mc) { return mc.lust >= 30; },
-            prowlConditionText: "Can start a prowl if you have >= 30 lust"
+            prowlConditionText: "Can start a prowl if you have >= 30 lust",
+            /* Stamp the per-prowl event flag. PROWL_EVENT fires from
+               HuntOver*, NudityEvent, FreezeHunt, PrayHunt -- anywhere
+               the player resolves a prowl. */
+            huntHooks: {
+                PROWL_EVENT: function () {
+                    State.variables.twinsEventActive = 1;
+                }
+            }
         },
         {
             name: "Wraith", image: "wraith.webp",
@@ -160,7 +184,20 @@
             hint: "Mare visits your house while you sleep",
             description: "Mare visits my house while I sleep. It's quite easy to get rid of; I just need to sprinkle holy water in the room where I sleep. It becomes more aggressive each day, so it's best not to delay. Although, someone online mentioned that it might stop haunting after a few days.",
             prowlCondition:     function (mc) { return mc.lust >= 30; },
-            prowlConditionText: "Can start a prowl if you have >= 30 lust"
+            prowlConditionText: "Can start a prowl if you have >= 30 lust",
+            /* Advance the multi-day Mare event chain on house entry.
+               Stage 0 -> 1 on first encounter; once the player has read
+               the initial GhostSpecialEventMare passage, subsequent
+               entries jump straight to stage 4. */
+            huntHooks: {
+                HOUSE_ENTER: function () {
+                    if (setup.SpecialEvent.mareEventStart() === 0) {
+                        setup.SpecialEvent.setMareEventStart(1);
+                    } else if (State.hasPlayed("GhostSpecialEventMare")) {
+                        setup.SpecialEvent.setMareEventStart(4);
+                    }
+                }
+            }
         },
         {
             name: "Cthulion", image: "cthulion.webp",
@@ -254,6 +291,13 @@
         /* Extra video clips this ghost contributes to the cursed-activity
            video pool (widgetText). */
         this.cursedActivityVideos = cfg.cursedActivityVideos || null;
+
+        /* Per-ghost reactions to hunt-bus events. Map of `setup.Hunt.Event`
+           key -> callback. Callbacks only fire when this ghost is the
+           active hunt; gating happens generically in the registrar at
+           the bottom of this file. Adding a per-ghost lifecycle reaction
+           is a one-edit catalogue change. */
+        this.huntHooks = cfg.huntHooks || null;
     }
 
     /* All "have I read about this ghost in Ghostopedia yet?" flags share
@@ -415,7 +459,7 @@
         'ghostTypeSelected'
     ]);
 
-    function sv() { return State.variables; }
+    var sv = setup.sv;
 
     var api = {
         OWNED_VARS: OWNED_VARS,
@@ -662,6 +706,17 @@
         isProwlActivated: function () {
             return State.variables.prowlActivated === 1;
         },
+        /* Per-tick prowl-timer accounting. Either the prowl has exceeded
+           its window (clear the flag) or update the elapsed counter from
+           the wall clock so the UI/predicates can read it directly. */
+        tickProwlTimer: function () {
+            var s = State.variables;
+            if (s.elapsedTimeProwl > s.prowlTimeRemain) {
+                s.prowlActivated = 0;
+            } else {
+                s.elapsedTimeProwl = setup.Time.totalMinutes() - s.prowlActivationTime;
+            }
+        },
         knowledgeUsed: function () { return State.variables.knowledgeUsed === 1; },
         markKnowledgeUsed: function () { State.variables.knowledgeUsed = 1; },
         // `|| 0` getters are kept inline (callers do arithmetic and
@@ -757,13 +812,10 @@
 
     /* Per-ghost behaviour on hunt-bus events.
      *
-     * Each ghost-specific reaction (Spirit clearing its event stage,
-     * Mimic seeding the disguise clock, Mare advancing its progression,
-     * Twins stamping its prowl flag) lives here as a small subscriber
-     * keyed on the active ghost's real name. Replaces the old onHuntEnd /
-     * onEnterHouse / prowlEventFlag fields that used to sit on each
-     * GHOST_CONFIG entry. Adding a new per-ghost reaction means appending
-     * one block below; the catalogue stays purely declarative.
+     * Each per-ghost reaction lives on its catalogue entry as a
+     * `huntHooks: { EVENT_KEY: fn }` map (see Spirit / Mimic / Mare /
+     * The Twins). Adding a new reaction means appending a hook to the
+     * relevant catalogue entry -- no edits to this registrar.
      *
      * Registration is deferred to :storyready because Tweego concatenates
      * passages/ghosts/ before passages/hunt/, so setup.Hunt isn't yet
@@ -774,46 +826,20 @@
             return;
         }
         var E = setup.Hunt.Event;
-
-        function activeRealName() {
-            return setup.Ghosts.huntRealName();
-        }
-
-        /* Spirit: reset its event-stage tracker when the hunt ends without
-           a catch (HuntOverTime / HuntOverExhaustion / HuntOverManual emit
-           HUNT_END_GRACEFUL; HuntOverSanity intentionally does not). */
-        setup.Hunt.on(E.HUNT_END_GRACEFUL, function () {
-            if (activeRealName() !== 'Spirit') return;
-            setup.SpecialEvent.clearSpiritEventStage();
-        });
-
-        /* Mimic: seed the rotation clock when entering the haunted house
-           so the next tick rolls a fresh disguise. $run.ghostName is
-           already "Mimic" by this point, so isMimicHunt() returns true. */
-        setup.Hunt.on(E.HOUSE_ENTER, function () {
-            if (activeRealName() !== 'Mimic') return;
-            State.variables.lastChangeIntervalMimic = " ";
-        });
-
-        /* Mare: advance the multi-day Mare event chain on house entry.
-           Stage 0 → 1 on first encounter; once the player has read the
-           initial GhostSpecialEventMare passage, subsequent entries jump
-           straight to stage 4. */
-        setup.Hunt.on(E.HOUSE_ENTER, function () {
-            if (activeRealName() !== 'Mare') return;
-            if (setup.SpecialEvent.mareEventStart() === 0) {
-                setup.SpecialEvent.setMareEventStart(1);
-            } else if (State.hasPlayed("GhostSpecialEventMare")) {
-                setup.SpecialEvent.setMareEventStart(4);
-            }
-        });
-
-        /* The Twins: stamp the per-prowl event flag. PROWL_EVENT fires
-           from HuntOver*, NudityEvent, FreezeHunt, PrayHunt -- anywhere
-           the player resolves a prowl. */
-        setup.Hunt.on(E.PROWL_EVENT, function () {
-            if (activeRealName() !== 'The Twins') return;
-            State.variables.twinsEventActive = 1;
+        setup.Ghosts.list().forEach(function (g) {
+            if (!g.huntHooks) return;
+            Object.keys(g.huntHooks).forEach(function (evKey) {
+                var evConst = E[evKey];
+                if (evConst === undefined) {
+                    console.error('GhostController: unknown Hunt.Event "' + evKey + '" on ghost ' + g.name);
+                    return;
+                }
+                var fn = g.huntHooks[evKey];
+                setup.Hunt.on(evConst, function () {
+                    if (setup.Ghosts.huntRealName() !== g.name) return;
+                    fn();
+                });
+            });
         });
     });
 })();

@@ -12,7 +12,7 @@ setup.Achievements = setup.Achievements || {};
 (function () {
 	var OWNED_VARS = Object.freeze(['achievements']);
 
-	function sv() { return State.variables; }
+	var sv = setup.sv;
 	function store() {
 		var s = sv();
 		if (!s.achievements) s.achievements = {};

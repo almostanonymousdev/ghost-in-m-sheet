@@ -12,15 +12,12 @@ setup.Mall = (function () {
 		'isPhoneBought'
 	]);
 
-	function sv() { return State.variables; }
+	var sv = setup.sv;
 
-	return {
+	var api = {
 		OWNED_VARS: OWNED_VARS,
 		// --- Hours -----------------------------------------------
-		isOpen: function () {
-			var h = setup.Time.hours();
-			return h > 7 && h < 22;
-		},
+		isOpen: setup.LocationHours(8, 21),
 
 		// --- Blake / adult shop ----------------------------------
 		blakeUnlocked: function () {
@@ -80,7 +77,7 @@ setup.Mall = (function () {
 			sv().hasPSprayCharges -= 1;
 		},
 		buyPepperSpray: function () {
-			var s = State.variables;
+			var s = sv();
 			s.hasPSpray = 1;
 			s.hasPSprayCharges = 3;
 			setup.Mc.removeMoney(10);
@@ -95,16 +92,15 @@ setup.Mall = (function () {
 		// --- Phone purchase --------------------------------------
 		phoneBought: function () { return sv().isPhoneBought !== undefined; },
 
-		// --- Blake dialogue state --------------------------------
-		blakeDialogStage: function () { return sv().dialogBlake; },
-		setBlakeDialogStage: function (v) { State.variables.dialogBlake = v; },
-
-		// --- Blake relationship ----------------------------------
-		blakeRelationship: function () { return sv().relationshipBlake; },
+		// --- Blake dialogue state / relationship -----------------
+		// (blakeDialogStage / setBlakeDialogStage / blakeRelationship /
+		// setBlakeRelationship fold into the setup.defineAccessors block
+		// at the bottom; raiseBlakeRelationship stays inline because
+		// it's a no-arg bump with a `|| 0` fallback that doesn't model
+		// cleanly as add(n).)
 		raiseBlakeRelationship: function () {
-			State.variables.relationshipBlake = (sv().relationshipBlake || 0) + 1;
+			sv().relationshipBlake = (sv().relationshipBlake || 0) + 1;
 		},
-		setBlakeRelationship: function (n) { State.variables.relationshipBlake = n; },
 
 		// --- Chance-aloneHunt display values ---------------------
 		chanceBlakeAloneOwaissa: function () { return setup.Companion.soloHuntChanceOwaissa('Blake'); },
@@ -123,4 +119,14 @@ setup.Mall = (function () {
 			setup.Companion.sendCompanionSolo('Blake', 'Elm');
 		}
 	};
+
+	// Pure $variable passthrough accessors. Both fields are bumped via
+	// the inline raiseBlakeRelationship helper above (no-arg, `|| 0`
+	// fallback); only the get/set pair folds here.
+	setup.defineAccessors(api, sv, [
+		{ name: 'blakeDialogStage',  key: 'dialogBlake',       add: false, remove: false },
+		{ name: 'blakeRelationship', key: 'relationshipBlake', add: false, remove: false }
+	]);
+
+	return api;
 })();

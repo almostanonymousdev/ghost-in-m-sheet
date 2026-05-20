@@ -14,9 +14,6 @@ setup.Salon = (function () {
 	return {
 		OWNED_VARS: OWNED_VARS,
 		// --- Hours -----------------------------------------------
-		isOpen: function () {
-			var h = setup.Time.hours();
-			return h > 7 && h < 22;
-		}
+		isOpen: setup.LocationHours(8, 21)
 	};
 })();

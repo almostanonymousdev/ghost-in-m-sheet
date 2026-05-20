@@ -49,7 +49,7 @@
 	<</if>>
 	<<run setup.Companion.applyEventStatDeltas()>>
 	<<= setup.Companion.name()>>'s lust: + <<= setup.Companion.eventLustGain()>> <<statIcon setup.StatIcon.HEALTH>><br>
-	<<= setup.Companion.name()>>'s sanity: - <<= setup.Companion.decreaseSanity()>><<statIcon setup.StatIcon.SANITY>><br>
+	<<= setup.Companion.name()>>'s sanity: - <<= setup.Companion.eventSanityLoss()>><<statIcon setup.StatIcon.SANITY>><br>
 	<<if _tier gte 2>>
 		Your <<statIcon setup.StatIcon.HEALTH>> +15<br>
 		<<addLust 15>>

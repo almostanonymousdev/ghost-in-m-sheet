@@ -8,10 +8,10 @@
    #hunt-lobby-reroll) so the click handler's <<replace>> can drop the
    button entirely once charges hit 0. */
 <<widget "huntLobbyRerollControl">>
-	<<if setup.HuntController.rerollCharges() gt 0>>
-		@@.movebtn; <<link "Spend reroll charge (you have <<= setup.HuntController.rerollCharges()>>)">>
-			<<run setup.HuntController.consumeRerollCharge()>>
-			<<run setup.HuntController.redraftRunModifiers()>>
+	<<if setup.HuntShop.rerollCharges() gt 0>>
+		@@.movebtn; <<link "Spend reroll charge (you have <<= setup.HuntShop.rerollCharges()>>)">>
+			<<run setup.HuntShop.consumeRerollCharge()>>
+			<<run setup.HuntShop.redraftRunModifiers()>>
 			<<replace "#hunt-lobby-modifiers">>
 				<<set _modifiers to setup.Modifiers.activeList()>>
 				<<for _m range _modifiers>>

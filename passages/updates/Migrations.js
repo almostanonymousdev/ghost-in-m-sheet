@@ -21,7 +21,7 @@ setup.Migrations = (function () {
 		'updatePiercingBodyPartSens', 'fixSave'
 	]);
 
-	function sv() { return State.variables; }
+	var sv = setup.sv;
 
 	// --- Save-version guards -------------------------------------
 	function update22Applied()   { return sv().update22  !== undefined; }

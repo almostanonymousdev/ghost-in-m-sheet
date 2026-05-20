@@ -27,354 +27,31 @@
  */
 setup.HuntController = (function () {
 	var OWNED_VARS = Object.freeze([
-		'run', 'ectoplasm', 'runsStarted', 'meta',
+		'run', 'ectoplasm', 'runsStarted',
 		'nextHuntSeed', 'pendingHuntHouseId',
 		// Ghost-room shuffle interval gate -- written only by
 		// shuffleGhostRoom (below) and reset when a run starts/ends.
 		'lastChangeIntervalRoom'
 	]);
 
-	function sv() { return State.variables; }
+	var sv = setup.sv;
 
-	/* Street-address vocabulary used to render a seed as a human
-	   "123 Hollow Lane"-style label. The seed maps deterministically
-	   to (number, road, suffix) so the same run always shows the same
-	   address. Lists start small; expanding either is non-breaking
-	   because the seed -> index hash uses the current list length. */
-	var ROAD_NAMES = Object.freeze([
-		'Hollow', 'Marrow', 'Wraith', 'Cinder', 'Blackthorn',
-		'Moan Manor', 'Penetration Point', 'Ectoplasm',
-		'Haunted Hole-in-One', 'Thrust & Spirit', 'Apparition Ass',
-		'Creaky Bedpost', 'Bump-in-the-Night', 'Wailing Wall',
-		'Poltergeist Pound Town', 'Spectre Spread Eagle',
-		'Banshee Backdoor', 'Scream-and-Cream', 'Phantom Phallus',
-		'Ghoul G-Spot', 'Uninvited Thrust', 'Missionary Position',
-		'Ethereal Entry Point', 'She-Came', 'Shrieking Sheets',
-		'Possession Point', 'Haunted Hump', 'Ectoplasmic Release',
-		'Exorcism Exit', 'Seance and Sensuality', 'Wailing Banshee',
-		'Poltergeist', 'Screaming', 'Possession', 'Shrieking Spectre',
-		'Haunting', 'Apparition', 'Phantom Flesh', 'Corpse Bride',
-		'Exorcism', "Demon's Doorstep", 'Hellmouth', 'Seance',
-		'Witching Hour', "Grave Robber's", 'Coven', 'Cursed',
-		'Blood Moon', 'Damned', 'Climax Crypt', 'Wail and Wail Again',
-		'Throbbing', 'Uninvited Entry', 'Creak and Peak',
-		'Restless and Relentless', 'Paranormal Pound Town',
-		'Poltergeist Pleasure', 'Spirit Thrust',
-		'Exorcised and Satisfied', 'Demon Seed', 'Hellfire and Hips',
-		"Crypt Keeper's Climax", 'Succubus', 'Incubus',
-		'Horny Haunting', 'Lust and Lament', 'Eternal Thrust',
-		'Screaming Flesh', 'Damnation', 'Hellfire',
-		'Writhing Wraith', 'Tormented', 'Bleeding Veil',
-		'Cursed Cavity', 'Howling Pit', 'Mortuary Moan',
-		'Coffin Creak', 'Rotting Rose', 'Shadowflesh',
-		'Wretched Wail', 'Corpse Light', 'Smothering Dark',
-		'Shroud and Shudder', 'Gaping Grave', 'Blackblood',
-		'Throbbing Phantom', 'Dripping Ectoplasm', 'Spectral Thrust',
-		'Pulsing Portal', 'Grinding Ghoul', 'Slick Specter',
-		'Wet Wraith', 'Moaning Mortuary', 'Thrusting',
-		'Paranormal Pleasure', 'Pounding Poltergeist',
-		'Lust of the Damned', 'Heaving Haunted',
-		'Seance and Submission', 'Restless Flesh', 'Demonic Desire',
-		'Hungry Haunting', 'Flesh and Phantom', 'Grinding Grave',
-		'Wail of the Willing', 'Shuddering Specter',
-		'Damned and Dripping', 'Howling Hips', 'Possession and Pleasure',
-		'Lament and Lust', 'Exorcised Ecstasy', 'Sinful Specter',
-		'Hellbound Hips', 'Wailing and Wanting', 'Cursed Climax',
-		'Dripping Dark', 'Forbidden Flesh', 'Moaning Mist',
-		'Phantom and Fornication', 'Grinding Grimoire', 'Bloody Bliss',
-		'Howling Hunger', 'Damned Desire', 'Oozing Oracle',
-		"Witch's Wet", 'Possessed and Pleasured', 'Coven Climax',
-		'Screeching Satisfaction', 'Hellcat Hips', 'Rotting Rapture',
-		'Banshee and Breathless', 'Throbbing Tomb', 'Sinister Slick',
-		'Wretched and Wanting', 'Grave Grinding'
-	]);
-	var ROAD_SUFFIXES = Object.freeze([
-		'Lane', 'Court', 'Drive', 'Row', 'Way',
-		'Boulevard', 'Avenue', 'Circle', 'Street', 'Road', 'Crossing',
-		'Freeway', 'Grove', 'Terrace', 'Highway', 'Place', 'Pass',
-		'Hollow', 'Expressway', 'Square', 'Passage', 'Alley', 'Ground',
-		'District', 'Threshold', 'Mile', 'Strip', 'Intersection',
-		'Sprawl', 'Inlet', 'Drag', 'Overpass',
-		'Trail', 'Path', 'Bypass', 'Parkway', 'Turnpike', 'Causeway',
-		'Mews', 'Close', 'Walk', 'Promenade', 'Plaza', 'Junction',
-		'Loop', 'Ridge', 'Heights', 'Gardens', 'Glen', 'Vale',
-		'Crescent', 'Gate', 'Yard', 'End', 'Wynd', 'Mire', 'Bog',
-		'Cul-de-sac', 'Bend', 'Reach', 'Spur', 'Slope',
-		'Boo-ties', 'Scroo-levard', 'Moan-or', 'Thrust-errace',
-		'Lay-ne', 'Stroke-street', 'Cliti-court', 'Shaft-way',
-		'Gush-grove', 'Climax-crossing', 'Ride-way', 'Groan-grove',
-		'Cum-court', 'Stroke-square', 'Suck-cessway', 'Drip-drive',
-		'Wet-walk', 'Squirt-street', 'Pulseway', 'Lick-lane',
-		'Thrust-through', 'Plunge-place', 'Grind-gate', 'Swell-square',
-		'Gape-grove', 'Pound-pass'
-	]);
+	/* Street-address vocabulary lives in HuntAddresses.js so the
+	   ~100-line tables don't bloat the lifecycle file. Re-exported
+	   on the api below for existing call sites + tests. */
+	var addressFromSeed = setup.HuntAddresses.addressFromSeed;
 
-	/* xorshift-style 32-bit mix, salted so the three address fields
-	   pull from independent bit streams of the same seed. */
-	function mix32(seed, salt) {
-		var x = ((seed >>> 0) ^ (salt >>> 0)) >>> 0;
-		x = Math.imul(x, 0x85ebca6b) >>> 0;
-		x = (x ^ (x >>> 13)) >>> 0;
-		x = Math.imul(x, 0xc2b2ae35) >>> 0;
-		x = (x ^ (x >>> 16)) >>> 0;
-		return x >>> 0;
-	}
-
-	function addressFromSeed(seed) {
-		var s = (seed >>> 0);
-		var num = (mix32(s, 0xa3c59ac3) % 999) + 1;
-		var road = ROAD_NAMES[mix32(s, 0x6b79f5d1) % ROAD_NAMES.length];
-		var suffix = ROAD_SUFFIXES[mix32(s, 0x1f83d9ab) % ROAD_SUFFIXES.length];
-		return {
-			number: num,
-			road: road,
-			suffix: suffix,
-			formatted: num + ' ' + road + ' ' + suffix
-		};
-	}
-
-	/* Enum constants for the run's stringly-typed fields. The values
-	   are the on-disk strings; saves and tests work against them
-	   transparently. Callers should reference the enum (e.g.
-	   setup.HuntController.Outcome.SUCCESS) rather than the literal so
-	   a typo surfaces at parse time instead of as a silently-failing eq. */
-	var Outcome = Object.freeze({
-		SUCCESS: 'success',
-		FAILURE: 'failure'
-	});
-	var FailureReason = Object.freeze({
-		SANITY:     'sanity',
-		EXHAUSTION: 'exhaustion',
-		TIME:       'time',
-		CAUGHT:     'caught',
-		ABANDON:    'abandon',
-		POSSESSED:  'possessed',
-		FLED:       'fled'
-	});
-	/* Run-objective catalogue. Each entry carries an `id` (the string
-	   stamped onto $run.objective and on-disk saves) and a
-	   `description` shown to the player when the run starts. Callers
-	   that need the id should reference Objective.<NAME>.id; saves
-	   continue to round-trip the id string verbatim. */
-	var Objective = Object.freeze({
-		IDENTIFY: Object.freeze({
-			id: 'identify',
-			description: 'Identify the ghost then banish it from the house. Chanting its name will keep you safe.'
-		}),
-		RESCUE: Object.freeze({
-			id: 'rescue',
-			description: ''
-		})
-	});
-
-	function objectiveDescription(id) {
-		var keys = Object.keys(Objective);
-		for (var i = 0; i < keys.length; i++) {
-			if (Objective[keys[i]].id === id) return Objective[keys[i]].description;
-		}
-		return '';
-	}
-
-	/* Meta-shop catalogue. Each entry is the player-facing record for
-	   one persistent unlock (or stackable charge). Effects are wired
-	   wherever they apply: startHunt honors most of them, the lobby
-	   reads rerollCharges, the minimap reads loot_sense / reliable_recon,
-	   and endHunt restores the stat-cap bumps. Costs are paid in mL
-	   of $ectoplasm; `max` caps how many copies the player may own
-	   (1 for one-time unlocks, n for stackable ones, Infinity for
-	   uncapped consumables). Adding a new unlock is just an entry
-	   here plus the matching effect site. */
-	var ShopItem = Object.freeze({
-		BANLIST_SLOT:       'banlist_slot',
-		REROLL_CHARGE:      'reroll_charge',
-		WITCHS_BLESSING:    'witchs_blessing',
-		MONKEYS_FAVOR:      'monkeys_favor',
-		SMALLER_HOUSE:      'smaller_house',
-		LOOT_SENSE:         'loot_sense',
-		STEELED_HAND:       'steeled_hand',
-		CALVES_OF_STEEL:    'calves_of_steel',
-		INTENSE_INTUITION:  'intense_intuition',
-		RELIABLE_RECON:     'reliable_recon'
-	});
-
-	var SHOP_CATALOGUE = Object.freeze([
-		{
-			id: ShopItem.BANLIST_SLOT,
-			name: 'Banlist Slot',
-			cost: 25,
-			max: 3,
-			description: 'Permanently ban one modifier from each run\'s draft pool. Stack up to 3 slots.'
-		},
-		{
-			id: ShopItem.REROLL_CHARGE,
-			name: 'Reroll Charge',
-			cost: 5,
-			max: Infinity,
-			description: 'Consumable. Spend at the lobby to redraft your modifiers once.'
-		},
-		{
-			id: ShopItem.WITCHS_BLESSING,
-			name: 'Witch\'s Blessing',
-			cost: 30,
-			max: 1,
-			description: 'Start every run with the tarot deck already in your bag.'
-		},
-		{
-			id: ShopItem.MONKEYS_FAVOR,
-			name: 'Monkey\'s Favor',
-			cost: 30,
-			max: 1,
-			description: 'Start every run with the monkey paw already found.'
-		},
-		{
-			id: ShopItem.SMALLER_HOUSE,
-			name: 'Smaller House',
-			cost: 20,
-			max: 1,
-			description: 'Each haunt has one fewer room to search.'
-		},
-		{
-			id: ShopItem.LOOT_SENSE,
-			name: 'Loot Sense',
-			cost: 20,
-			max: 1,
-			description: 'Rooms with uncollected loot are highlighted on the minimap.'
-		},
-		{
-			id: ShopItem.STEELED_HAND,
-			name: 'Steeled Hand',
-			cost: 25,
-			max: 1,
-			description: 'Begin each run with +25 sanity (max + current).'
-		},
-		{
-			id: ShopItem.CALVES_OF_STEEL,
-			name: 'Calves of Steel',
-			cost: 25,
-			max: 1,
-			description: 'Begin each run with +5 stamina (max + current).'
-		},
-		{
-			id: ShopItem.INTENSE_INTUITION,
-			name: 'Intense Intuition',
-			cost: 30,
-			max: 1,
-			description: 'One of the ghost\'s evidences is checked off in your notebook from the start.'
-		},
-		{
-			id: ShopItem.RELIABLE_RECON,
-			name: 'Reliable Recon',
-			cost: 25,
-			max: 1,
-			description: 'The ghost\'s starting room is highlighted on the minimap. The mark fades the first time the ghost relocates.'
-		}
-	]);
-
-	function shopItemById(id) {
-		for (var i = 0; i < SHOP_CATALOGUE.length; i++) {
-			if (SHOP_CATALOGUE[i].id === id) return SHOP_CATALOGUE[i];
-		}
-		return null;
-	}
-
-	// --- Persistent meta-shop state ---------------------------
-	/* Backstop accessor that lazily fills in $meta on saves predating
-	   the meta-shop. SaveMigration also handles this on load, but
-	   reading through here keeps every getter safe even before the
-	   migration pass runs. */
-	function metaState() {
-		var s = sv();
-		if (!s.meta || typeof s.meta !== 'object') {
-			s.meta = { unlocks: {}, bannedModifiers: [], rerollCharges: 0 };
-		}
-		if (!s.meta.unlocks || typeof s.meta.unlocks !== 'object') s.meta.unlocks = {};
-		if (!Array.isArray(s.meta.bannedModifiers)) s.meta.bannedModifiers = [];
-		if (typeof s.meta.rerollCharges !== 'number') s.meta.rerollCharges = 0;
-		return s.meta;
-	}
-	function metaUnlock(id) {
-		return metaState().unlocks[id] || 0;
-	}
-	function hasUnlock(id) { return metaUnlock(id) > 0; }
-	function shopCatalogue() { return SHOP_CATALOGUE.slice(); }
-	function shopItem(id)   { return shopItemById(id); }
-	function lastWasSuccess() { return !!metaState().lastWasSuccess; }
-
-	/* Spend ectoplasm and increment the unlock count. Caps at the
-	   item's `max`; rejects unknown ids and broke players (no partial
-	   deductions). Returns true on success. */
-	function buyUnlock(id) {
-		var item = shopItemById(id);
-		if (!item) return false;
-		var owned = metaUnlock(id);
-		if (owned >= item.max) return false;
-		if (!canAffordEctoplasm(item.cost)) return false;
-		removeEctoplasm(item.cost);
-		var m = metaState();
-		m.unlocks[id] = owned + 1;
-		if (id === ShopItem.REROLL_CHARGE) m.rerollCharges = (m.rerollCharges || 0) + 1;
-		return true;
-	}
-
-	function bannedModifiers() { return metaState().bannedModifiers.slice(); }
-	function bannedSlotsTotal()    { return metaUnlock(ShopItem.BANLIST_SLOT); }
-	function bannedSlotsUsed()     { return metaState().bannedModifiers.length; }
-	function bannedSlotsRemaining() {
-		return Math.max(0, bannedSlotsTotal() - bannedSlotsUsed());
-	}
-	/* Toggle a modifier on the banlist. Adds when there's a free slot
-	   and the id is unique; removes when already banned. Unknown
-	   modifier ids are rejected. Returns true if the list changed. */
-	function toggleBannedModifier(id) {
-		if (!setup.Modifiers || !setup.Modifiers.byId(id)) return false;
-		var m = metaState();
-		var idx = m.bannedModifiers.indexOf(id);
-		if (idx !== -1) {
-			m.bannedModifiers.splice(idx, 1);
-			return true;
-		}
-		if (bannedSlotsUsed() >= bannedSlotsTotal()) return false;
-		m.bannedModifiers.push(id);
-		return true;
-	}
-	function isBanned(id) { return metaState().bannedModifiers.indexOf(id) !== -1; }
-
-	function rerollCharges() { return metaState().rerollCharges || 0; }
-	/* Decrement the stockpile. Returns true if a charge was actually
-	   spent. The caller is responsible for the redraft itself; see
-	   redraftRunModifiers below for the in-lobby flow. */
-	function consumeRerollCharge() {
-		var m = metaState();
-		if ((m.rerollCharges || 0) <= 0) return false;
-		m.rerollCharges -= 1;
-		// Mirror the unlocks count so /buy and consume agree.
-		var u = (m.unlocks[ShopItem.REROLL_CHARGE] || 0) - 1;
-		m.unlocks[ShopItem.REROLL_CHARGE] = u > 0 ? u : 0;
-		return true;
-	}
-
-	/* Redraft modifiers for the active run, honoring the banlist.
-	   Bumps an internal $run.rerolls counter so the new draft seed
-	   never collides with the original. Returns the new modifier id
-	   list, or null when no run is active. */
-	function redraftRunModifiers() {
-		var run = sv().run;
-		if (!run || !setup.Modifiers) return null;
-		run.rerolls = (run.rerolls || 0) + 1;
-		var seed = ((run.seed >>> 0) ^ 0x9e3779b9 ^ Math.imul(run.rerolls, 0x85ebca6b)) >>> 0;
-		var draft = setup.Modifiers.draft(seed, (run.modifiers || []).length || 2, {
-			banned: bannedModifiers()
-		});
-		run.modifiers = draft.map(function (m) { return m.id; });
-		return run.modifiers.slice();
-	}
+	/* Outcome / FailureReason / Objective enums live in HuntEnums.js
+	   (loaded after this file alphabetically) and are spliced back
+	   onto setup.HuntController for callers. Internal references go
+	   through setup.HuntEnums.X at call time. */
 
 	// --- Run lifecycle ----------------------------------------
 	/* Start a fresh run. opts:
 		seed       -- int; if omitted, a random seed is rolled.
 		modifiers  -- array of modifier ids; defaults to [].
 		loadout    -- starting loadout object; defaults to {}.
-		objective  -- objective id string; defaults to Objective.IDENTIFY.
+		objective  -- objective id string; defaults to setup.HuntEnums.Objective.IDENTIFY.
 	   The run number increments from $runsStarted, which persists
 	   across end() so attempt counts survive between runs. The
 	   floorplan field is left undefined for the floor-plan
@@ -387,7 +64,7 @@ setup.HuntController = (function () {
 			number: sv().runsStarted,
 			modifiers: Array.isArray(opts.modifiers) ? opts.modifiers.slice() : [],
 			loadout: opts.loadout || {},
-			objective: opts.objective || Objective.IDENTIFY.id,
+			objective: opts.objective || setup.HuntEnums.Objective.IDENTIFY.id,
 			// Static-plan houses (setup.HuntHouses) stamp their
 			// catalogue id here so downstream consumers can ask which
 			// frozen plan the run is using -- HUD label override, the
@@ -416,10 +93,12 @@ setup.HuntController = (function () {
 
 	/* Test / cheat shortcut: stamp a minimal $run with the named ghost
 	   as both real identity and current disguise, copy in evidence ids,
-	   and default trapped to false. Production hunt flow goes through
-	   start() above (full procedural startup). This exists so unit specs
-	   and the cheat menu can park the player in an "active hunt" state
-	   without spinning up a floorplan / modifiers / starting tools.
+	   and default the rest of the shape to match what production start()
+	   produces. This exists so unit specs and the cheat menu can park
+	   the player in an "active hunt" state without spinning up a
+	   floorplan / modifiers / starting tools — but the resulting $run
+	   must satisfy every accessor below (modifiers(), loadout(), etc.)
+	   so cold passage renders don't trip on undefined fields.
 
 	   The `cheat` prefix marks this as cheat/test-only — see
 	   tests/cheat-method-lint.spec.js, which forbids production passages
@@ -431,16 +110,18 @@ setup.HuntController = (function () {
 			sv().run = {};
 			run = sv().run;
 		}
-		run.ghostName    = opts.ghostName;
-		run.disguiseName = opts.ghostName;
-		run.evidence     = Array.isArray(opts.evidence) ? opts.evidence.slice() : [];
+		run.ghostName     = opts.ghostName;
+		run.disguiseName  = opts.ghostName;
+		run.evidence      = Array.isArray(opts.evidence) ? opts.evidence.slice() : [];
 		if (run.trapped === undefined) run.trapped = false;
-		if (!Array.isArray(run.modifiers))     run.modifiers = [];
-		if (run.loadout == null)               run.loadout = {};
-		if (run.objective == null)             run.objective = Objective.IDENTIFY.id;
-		if (run.currentRoomId == null)         run.currentRoomId = 'room_0';
-		if (!Array.isArray(run.collectedLoot)) run.collectedLoot = [];
-		if (run.lights == null)                run.lights = {};
+		if (run.modifiers     === undefined) run.modifiers     = [];
+		if (run.loadout       === undefined) run.loadout       = {};
+		if (run.objective     === undefined) run.objective     = setup.HuntEnums.Objective.IDENTIFY.id;
+		if (run.staticHouseId === undefined) run.staticHouseId = null;
+		if (run.currentRoomId === undefined) run.currentRoomId = 'room_0';
+		if (run.searchedFurniture === undefined) run.searchedFurniture = null;
+		if (run.collectedLoot === undefined) run.collectedLoot = [];
+		if (run.lights        === undefined) run.lights        = {};
 	}
 
 	/* End the current run. Preserves the run number so the next
@@ -458,8 +139,7 @@ setup.HuntController = (function () {
 			setup.Ghosts.setHuntMode(setup.Ghosts.HuntMode.NONE);
 		}
 		if (setup.Companion) {
-			if (typeof setup.Companion.clearBlakeCursedItem === 'function') setup.Companion.clearBlakeCursedItem();
-			if (typeof setup.Companion.resetAliceWorkIfNeeded === 'function') setup.Companion.resetAliceWorkIfNeeded();
+			if (typeof setup.Companion.runHuntFailHooks === 'function') setup.Companion.runHuntFailHooks();
 			if (typeof setup.Companion.resetHuntState === 'function') setup.Companion.resetHuntState();
 		}
 		return prior;
@@ -467,6 +147,17 @@ setup.HuntController = (function () {
 
 	function active()    { return sv().run || null; }
 	function isActive()  { return !!sv().run; }
+
+	/* Wrap a function body in the "bail out when no run is active" guard.
+	   Replaces the `if (!isActive()) return <fallback>;` first-line pattern
+	   so the no-run branch is declarative and impossible to forget.
+	   Usage: var foo = guarded(false, function () { ... }); */
+	function guarded(fallback, fn) {
+		return function () {
+			if (!isActive()) return fallback;
+			return fn.apply(null, arguments);
+		};
+	}
 
 	// --- Field accessors --------------------------------------
 	function seed()       { return sv().run ? sv().run.seed : null; }
@@ -860,7 +551,7 @@ setup.HuntController = (function () {
 		                 3. fallback default of 2 (procedural runs).
 		floorPlanOpts -- forwarded to setup.FloorPlan.generate.
 		loadout       -- forwarded to start().
-		objective     -- forwarded to start() (default Objective.IDENTIFY). */
+		objective     -- forwarded to start() (default setup.HuntEnums.Objective.IDENTIFY). */
 	function startHunt(opts) {
 		opts = opts || {};
 		var seed = opts.seed != null ? opts.seed : Math.floor(Math.random() * 1e9);
@@ -878,11 +569,11 @@ setup.HuntController = (function () {
 
 		/* Modifier draft honors the player's banlist. Banned ids are
 		   stripped from the draft pool before weighting; banlist slots
-		   are bought from the meta-shop (ShopItem.BANLIST_SLOT). */
+		   are bought from the meta-shop (setup.HuntShop.ShopItem.BANLIST_SLOT). */
 		var draft = setup.Modifiers.draft(
 			(seed ^ 0x9e3779b9) >>> 0,
 			modifierCount,
-			{ banned: bannedModifiers() }
+			{ banned: setup.HuntShop.bannedModifiers() }
 		);
 		var modifierIds = draft.map(function (m) { return m.id; });
 
@@ -954,7 +645,7 @@ setup.HuntController = (function () {
 			seed: seed,
 			modifiers: modifierIds,
 			loadout: opts.loadout || {},
-			objective: opts.objective || Objective.IDENTIFY.id,
+			objective: opts.objective || setup.HuntEnums.Objective.IDENTIFY.id,
 			staticHouseId: opts.staticHouseId || null
 		});
 		setField('floorplan', floorplan);
@@ -1003,6 +694,8 @@ setup.HuntController = (function () {
 	function applyMetaUnlocksAtStart(floorplan, seed, evidenceIds) {
 		var run = sv().run;
 		if (!run) return;
+		var Shop = setup.HuntShop;
+		var Item = Shop.ShopItem;
 
 		/* Witch's Blessing: tarot deck already in the bag. Mirrors the
 		   FurnitureSearch pickup -- markTarotCarrying flips the stage
@@ -1010,7 +703,7 @@ setup.HuntController = (function () {
 		   collectedLoot prevents the floor-plan tarot pickup from
 		   double-granting. We leave the floor-plan pin intact so a
 		   re-search of that slot still reports nothing (already-collected). */
-		if (hasUnlock(ShopItem.WITCHS_BLESSING)
+		if (Shop.hasUnlock(Item.WITCHS_BLESSING)
 			&& setup.HauntedHouses
 			&& typeof setup.HauntedHouses.markTarotCarrying === 'function') {
 			setup.HauntedHouses.markTarotCarrying();
@@ -1019,7 +712,7 @@ setup.HuntController = (function () {
 
 		/* Monkey's Favor: paw already found, ready for its first wish.
 		   Same pattern as Witch's Blessing, against MonkeyPaw.markFound. */
-		if (hasUnlock(ShopItem.MONKEYS_FAVOR)
+		if (Shop.hasUnlock(Item.MONKEYS_FAVOR)
 			&& setup.MonkeyPaw
 			&& typeof setup.MonkeyPaw.markFound === 'function') {
 			setup.MonkeyPaw.markFound();
@@ -1035,11 +728,11 @@ setup.HuntController = (function () {
 			energyMax: setup.Mc.energyMax(),
 			energy:    setup.Mc.energy()
 		};
-		if (hasUnlock(ShopItem.STEELED_HAND)) {
+		if (Shop.hasUnlock(Item.STEELED_HAND)) {
 			setup.Mc.setSanityMax(setup.Mc.sanityMax() + 25);
 			setup.Mc.addSanity(25);
 		}
-		if (hasUnlock(ShopItem.CALVES_OF_STEEL)) {
+		if (Shop.hasUnlock(Item.CALVES_OF_STEEL)) {
 			setup.Mc.setEnergyMax(setup.Mc.energyMax() + 5);
 			setup.Mc.addEnergy(5);
 		}
@@ -1048,7 +741,7 @@ setup.HuntController = (function () {
 		   ids in the Notebook. Picked seed-deterministically from the
 		   per-run evidence list (already trimmed by Fog of War, so the
 		   pre-check never reveals a hidden one). */
-		if (hasUnlock(ShopItem.INTENSE_INTUITION)
+		if (Shop.hasUnlock(Item.INTENSE_INTUITION)
 			&& Array.isArray(evidenceIds) && evidenceIds.length
 			&& setup.Ghosts && typeof setup.Ghosts.setEvidenceCheck === 'function') {
 			var idx = ((seed ^ 0x27d4eb2f) >>> 0) % evidenceIds.length;
@@ -1073,14 +766,13 @@ setup.HuntController = (function () {
 	   the COMPANION_ALLOWED filter subscriber in HuntHousesController.
 	   Drives both the HuntStart "Talk to her" gate and the in-hunt
 	   HUD via Companion.inHauntedHouseLocation. */
-	function huntAllowsCompanions() {
-		if (!isActive()) return false;
+	var huntAllowsCompanions = guarded(false, function () {
 		var ctx = setup.Hunt.applyFilter(setup.Hunt.Event.COMPANION_ALLOWED, {
 			allowed:       true,
 			staticHouseId: staticHouseId()
 		});
 		return !!ctx.allowed;
-	}
+	});
 	/* Evidence id list for the active ghost. Returns the
 	   per-run override stamped at startHunt (so Fog of War's spliced
 	   list survives reads), or null when no run is active or no
@@ -1143,259 +835,11 @@ setup.HuntController = (function () {
 		setup.Hunt.emit(setup.Hunt.Event.DRIFT, { fromRoom: fromRoom, toRoom: fp.spawnRoomId });
 	}
 
-	/* View-layer summary of the active run's floor plan, denormalised
-	   for the minimap / room-list widget. Returns one record per
-	   room with its template label, spawn/boss flags, any loot kinds
-	   living on it, the BFS position for map layout, and the list of
-	   neighbouring room ids. Null when no run is active. */
-	function minimapData() {
-		var run = active();
-		if (!run || !run.floorplan) return null;
-		var fp = run.floorplan;
-		var lootByRoom = {};
-		Object.keys(fp.loot || {}).forEach(function (kind) {
-			var room = fp.loot[kind];
-			if (!room) return;
-			if (!lootByRoom[room]) lootByRoom[room] = [];
-			lootByRoom[room].push(kind);
-		});
-		var positions = setup.FloorPlan.layout(fp);
-		return fp.rooms.map(function (r) {
-			var t = (setup.Templates && setup.Templates.byId)
-				? setup.Templates.byId(r.template) : null;
-			return {
-				id: r.id,
-				template: r.template,
-				label: t ? t.label : r.template,
-				isSpawn: r.id === fp.spawnRoomId,
-				isBoss: r.id === fp.bossRoomId,
-				lootKinds: lootByRoom[r.id] || [],
-				position: positions[r.id] || { col: 0, row: 0 },
-				connections: setup.FloorPlan.neighborsOf(fp, r.id)
-			};
-		});
-	}
-
-	/* Per-session UI flag: when the player clicks the minimap it
-	   collapses to a small top-left thumbnail; clicking again expands.
-	   Module-level so the choice survives passage re-renders (room
-	   navigation rebuilds HuntRun, which would otherwise pop the map
-	   back to full size every step). Reset on endHunt so a fresh run
-	   always starts expanded. */
-	var minimapCollapsed = false;
-	function isMinimapCollapsed() { return minimapCollapsed; }
-	function toggleMinimapCollapsed() {
-		minimapCollapsed = !minimapCollapsed;
-		return minimapCollapsed;
-	}
-
-	/* Build the hunt minimap as an inline SVG: one labeled rect per
-	   room, one line per edge. Layout comes from setup.FloorPlan.layout
-	   (BFS depth -> column, sibling order -> row). The current room is
-	   tagged for highlighting; spawn/boss rooms get marker classes the
-	   stylesheet tints. Returns an empty string when no run is active. */
-	function minimapSvg() {
-		var run = active();
-		if (!run || !run.floorplan) return '';
-		var fp = run.floorplan;
-		var positions = setup.FloorPlan.layout(fp);
-		var CELL_W = 110, CELL_H = 70, ROOM_W = 90, ROOM_H = 50, PAD = 10;
-
-		// Canvas dims: span the right-most col and the deepest row used.
-		var maxCol = 0, maxRow = 0;
-		Object.keys(positions).forEach(function (id) {
-			if (positions[id].col > maxCol) maxCol = positions[id].col;
-			if (positions[id].row > maxRow) maxRow = positions[id].row;
-		});
-		var w = (maxCol + 1) * CELL_W + PAD * 2;
-		var h = (maxRow + 1) * CELL_H + PAD * 2;
-
-		function center(id) {
-			var p = positions[id] || { col: 0, row: 0 };
-			return {
-				x: PAD + p.col * CELL_W + ROOM_W / 2,
-				y: PAD + p.row * CELL_H + ROOM_H / 2
-			};
-		}
-		function escapeXml(s) {
-			return String(s)
-				.replace(/&/g, '&amp;').replace(/</g, '&lt;')
-				.replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-		}
-
-		// Edges first so rooms render on top of the lines.
-		var seen = {};
-		var lines = [];
-		(fp.edges || []).forEach(function (e) {
-			var key = e[0] < e[1] ? e[0] + '--' + e[1] : e[1] + '--' + e[0];
-			if (seen[key]) return;
-			seen[key] = true;
-			var a = center(e[0]), b = center(e[1]);
-			lines.push('<line class="hunt-minimap-edge" x1="' + a.x +
-				'" y1="' + a.y + '" x2="' + b.x + '" y2="' + b.y + '"/>');
-		});
-
-		// Rooms.
-		var currentId = run.currentRoomId || 'room_0';
-		/* Loot Sense: rooms with at least one uncollected loot kind get
-		   the hunt-minimap-loot class. Re-checks collectedLoot per
-		   render so a slot the player just emptied stops glowing on
-		   the next nav. Tool pickups count as loot too -- finding the
-		   last EMF reader clears the room's highlight. */
-		var lootSenseRooms = {};
-		if (hasUnlock(ShopItem.LOOT_SENSE)) {
-			var collected = Array.isArray(run.collectedLoot) ? run.collectedLoot : [];
-			Object.keys(fp.loot || {}).forEach(function (kind) {
-				if (collected.indexOf(kind) !== -1) return;
-				var rid = fp.loot[kind];
-				if (rid) lootSenseRooms[rid] = true;
-			});
-		}
-		/* Reliable Recon: highlight the ghost's starting room until
-		   it relocates for the first time. driftGhostRoom mutates
-		   floorplan.spawnRoomId; once spawnRoomId no longer matches
-		   originalSpawnRoomId, the recon highlight drops permanently. */
-		var reconActive = hasUnlock(ShopItem.RELIABLE_RECON)
-			&& fp.originalSpawnRoomId
-			&& fp.spawnRoomId === fp.originalSpawnRoomId;
-		var reconRoomId = reconActive ? fp.originalSpawnRoomId : null;
-		var nodes = fp.rooms.map(function (r) {
-			var p = positions[r.id] || { col: 0, row: 0 };
-			var x = PAD + p.col * CELL_W;
-			var y = PAD + p.row * CELL_H;
-			var t = setup.Templates ? setup.Templates.byId(r.template) : null;
-			var label = t ? t.label : r.template;
-			var classes = ['hunt-minimap-room'];
-			if (r.id === currentId)        classes.push('hunt-minimap-current');
-			if (r.id === fp.bossRoomId)    classes.push('hunt-minimap-boss');
-			if (lootSenseRooms[r.id])      classes.push('hunt-minimap-loot');
-			if (r.id === reconRoomId)      classes.push('hunt-minimap-recon');
-			return '<g class="' + classes.join(' ') + '" data-room="' + escapeXml(r.id) + '">' +
-				'<rect x="' + x + '" y="' + y + '" width="' + ROOM_W +
-				'" height="' + ROOM_H + '" rx="4" ry="4"/>' +
-				'<text x="' + (x + ROOM_W / 2) + '" y="' + (y + ROOM_H / 2 + 4) +
-				'" text-anchor="middle">' + escapeXml(label) + '</text>' +
-				'</g>';
-		});
-
-		return '<svg class="hunt-minimap-svg" width="' + w + '" height="' + h +
-			'" xmlns="http://www.w3.org/2000/svg">' +
-			lines.join('') + nodes.join('') + '</svg>';
-	}
-
-	/* Humanise a loot kind ("cursedItem" -> "Cursed item"). Tool
-	   loot kinds ('tool_emf', 'tool_uvl', ...) resolve to the
-	   per-tool label in setup.searchToolDefs so the picked-up beat
-	   reads as "EMF reader" rather than "Tool emf". */
-	function humanizeLootKind(kind) {
-		if (!kind) return '';
-		var toolId = setup.FloorPlan.toolIdFromLootKind(kind);
-		if (toolId) {
-			var def = setup.searchToolDefs && setup.searchToolDefs[toolId];
-			// def.label is markup like "Use EM@@color:yellow;F@@"; strip
-			// the colour markers and the leading "Use " prefix so the
-			// result is plain text.
-			if (def && def.label) {
-				return def.label
-					.replace(/@@[^@]*@@/g, function (m) {
-						return m.replace(/^@@[^;]*;|@@$/g, '');
-					})
-					.replace(/^Use\s+/, '');
-			}
-			return toolId.toUpperCase();
-		}
-		return kind
-			.replace(/([A-Z])/g, ' $1')
-			.replace(/^./, function (c) { return c.toUpperCase(); });
-	}
-
-	/* Humanise a furniture suffix ("wmachine" -> "Washing machine",
-	   "sink1" -> "Sink"). Strips trailing digits, then maps known
-	   abbreviations; falls back to title-case for unknown suffixes. */
-	var FURNITURE_LABELS = {
-		desk: 'Desk', table: 'Table', sink: 'Sink', wmachine: 'Washing machine',
-		bathtub: 'Bathtub', bed: 'Bed', wardrobe: 'Wardrobe',
-		coatrack: 'Coat rack', carpet: 'Carpet', sofa: 'Sofa', shelves: 'Shelves'
-	};
-	function humanizeFurniture(suffix) {
-		if (!suffix) return '';
-		var key = suffix.replace(/[0-9]+$/, '');
-		return FURNITURE_LABELS[key] || (key.charAt(0).toUpperCase() + key.slice(1));
-	}
-
-	/* View-layer summary of the player's current room: name, the
-	   furniture list (with any loot annotated), the loot kinds in
-	   this room that aren't pinned to a specific piece of furniture,
-	   and the adjacent-room nav links. HuntRun renders the furniture
-	   strip and exit links from this record, so coverage here locks
-	   in the structure. Returns null when no run is active. */
-	function currentRoomData() {
-		var run = active();
-		if (!run || !run.floorplan) return null;
-		var fp = run.floorplan;
-		var roomId = run.currentRoomId || 'room_0';
-		var room = fp.rooms.filter(function (r) { return r.id === roomId; })[0];
-		if (!room) return null;
-		var t = setup.Templates ? setup.Templates.byId(room.template) : null;
-		var lootFurn = fp.lootFurniture || {};
-
-		// Furniture entries with optional loot annotations. Collected
-		// loot kinds are filtered out so a re-search of the same
-		// slot reports nothing. lootKinds is the full uncollected
-		// list (the floor-plan generator may stack multiple kinds on
-		// the same slot when distinct slots run out); lootKind /
-		// lootLabel keep the legacy single-value shape for callers
-		// that only need a quick "is anything here".
-		var furniture = (t && Array.isArray(t.furniture) ? t.furniture : []).map(function (f) {
-			/* lootKindsAt already filters collected entries and applies
-			   the per-kind availability gates (tarot/monkeyPaw/
-			   clothesStolen), so the highlight matches what
-			   FurnitureSearch will actually hand out. */
-			var kinds = lootKindsAt(roomId, f);
-			var first = kinds.length ? kinds[0] : null;
-			return {
-				suffix: f,
-				label: humanizeFurniture(f),
-				lootKind: first,
-				lootLabel: first ? humanizeLootKind(first) : null,
-				lootKinds: kinds
-			};
-		});
-
-		// Loot assigned to this room but with no furniture pin
-		// (templates without any furniture, e.g. roomA/B/C).
-		var lootWithoutFurniture = [];
-		Object.keys(fp.loot || {}).forEach(function (k) {
-			if (fp.loot[k] === roomId && !lootFurn[k]) {
-				lootWithoutFurniture.push({
-					kind: k,
-					label: humanizeLootKind(k)
-				});
-			}
-		});
-
-		// Adjacent-room nav links.
-		var neighbors = setup.FloorPlan.neighborsOf(fp, roomId).map(function (id) {
-			var nr = fp.rooms.filter(function (r) { return r.id === id; })[0];
-			var nt = nr && setup.Templates ? setup.Templates.byId(nr.template) : null;
-			return {
-				id: id,
-				template: nr ? nr.template : null,
-				label: nt ? nt.label : (nr ? nr.template : id)
-			};
-		});
-
-		return {
-			id: roomId,
-			template: room.template,
-			label: t ? t.label : room.template,
-			isSpawn: roomId === fp.spawnRoomId,
-			isBoss: roomId === fp.bossRoomId,
-			furniture: furniture,
-			lootWithoutFurniture: lootWithoutFurniture,
-			neighbors: neighbors
-		};
-	}
+	/* Minimap data (minimapData / minimapSvg / collapse state),
+	   currentRoomData, and humanizeLootKind / humanizeFurniture
+	   helpers live in HuntMinimap.js and splice onto this api at
+	   load time. Hosted there so view-layer SVG-building doesn't
+	   bloat the lifecycle file. */
 
 	/* Outcome / failure-reason readers and writers. Callers go
 	   through these instead of touching $run.outcome / $run.failureReason
@@ -1411,18 +855,18 @@ setup.HuntController = (function () {
 		return run ? (run.failureReason || null) : null;
 	}
 	function isSuccess() {
-		return outcome() === Outcome.SUCCESS;
+		return outcome() === setup.HuntEnums.Outcome.SUCCESS;
 	}
 	function markSuccess() {
 		var run = sv().run;
 		if (!run) return;
-		run.outcome = Outcome.SUCCESS;
+		run.outcome = setup.HuntEnums.Outcome.SUCCESS;
 		run.failureReason = null;
 	}
 	function markFailure(reason) {
 		var run = sv().run;
 		if (!run) return;
-		run.outcome = Outcome.FAILURE;
+		run.outcome = setup.HuntEnums.Outcome.FAILURE;
 		if (reason) run.failureReason = reason;
 	}
 
@@ -1432,9 +876,10 @@ setup.HuntController = (function () {
 	   the lookup keeps HuntSummary free of FailureReason branches. */
 	function exitPassageForOutcome(success, reason) {
 		if (success) return "CityMap";
-		if (reason === FailureReason.SANITY) return "HuntOverSanity";
-		if (reason === FailureReason.EXHAUSTION) return "HuntOverExhaustion";
-		if (reason === FailureReason.TIME) return "HuntOverTime";
+		var FR = setup.HuntEnums.FailureReason;
+		if (reason === FR.SANITY) return "HuntOverSanity";
+		if (reason === FR.EXHAUSTION) return "HuntOverExhaustion";
+		if (reason === FR.TIME) return "HuntOverTime";
 		return "CityMap";
 	}
 
@@ -1478,7 +923,7 @@ setup.HuntController = (function () {
 		   can gate the "Start a new hunt" continuation link on it --
 		   $run is cleared by end() below, so the passage needs a
 		   side channel that survives a successful close. */
-		metaState().lastWasSuccess = !!success;
+		setup.HuntShop.markLastWasSuccess(success);
 		if (setup.HauntedHouses) {
 			if (typeof setup.HauntedHouses.commitTempCorruption === 'function') {
 				setup.HauntedHouses.commitTempCorruption();
@@ -1496,14 +941,12 @@ setup.HuntController = (function () {
 		/* Tear down the legacy hunt-mode state stamped at startHunt so
 		   the next contract starts from HuntMode.NONE and the per-tick
 		   companion machinery (mini panel, attack roll, leave-after-event)
-		   sees a clean slate. resetHuntState zeroes the per-companion
-		   plan / showComp flags; clearBlakeCursedItem / resetAliceWorkIfNeeded
-		   undo the Blake-cursed-item / Alice-work bookkeeping that the
-		   per-companion flow plants. */
+		   sees a clean slate. runHuntFailHooks gives the active companion
+		   (if any) a chance to clean up their own state; resetHuntState
+		   then zeroes the shared plan / showComp / isCompChosen flags. */
 		setup.Ghosts.setHuntMode(setup.Ghosts.HuntMode.POSSESSED);
 		if (setup.Companion) {
-			setup.Companion.clearBlakeCursedItem();
-			setup.Companion.resetAliceWorkIfNeeded();
+			setup.Companion.runHuntFailHooks();
 			setup.Companion.resetHuntState();
 		}
 		/* Auto-redress slots the MC undressed herself during the run.
@@ -1534,7 +977,6 @@ setup.HuntController = (function () {
 		   to the in-game daily seed and showed the same address until
 		   the player slept. */
 		rollNextSeed();
-		minimapCollapsed = false;
 		setup.Hunt.emit(setup.Hunt.Event.END, {
 			success: !!success,
 			payout: payout,
@@ -1550,41 +992,37 @@ setup.HuntController = (function () {
 	/* The active Ghost instance, or null when no hunt is in flight.
 	   Hands back the catalogue ghost as-is, since the evidence list
 	   isn't mutated per run. */
-	function activeGhost() {
-		if (!isActive()) return null;
+	var activeGhost = guarded(null, function () {
 		return setup.Ghosts._activeFromCatalogue(ghostName());
-	}
+	});
 
 	/* True iff the player is in the same room as the active ghost.
 	   The optional `houses` filter is silently ignored -- runs aren't
 	   house-specific. */
-	function isGhostHere(houses) {
-		if (!isActive()) return false;
+	var isGhostHere = guarded(false, function (houses) {
 		if (passage() !== "HuntRun") return false;
 		return isInGhostRoom();
-	}
+	});
 
 	/* True iff the per-tick effects + event chain should fire on
 	   this tool-tick / nav-step. A run is in flight AND the player is
 	   on the HuntRun passage (so the lobby / end / shop don't drain
 	   stats or roll events). */
-	function isHuntActive() {
-		if (!isActive()) return false;
+	var isHuntActive = guarded(false, function () {
 		return passage() === "HuntRun";
-	}
+	});
 
 	/* Hunt tick entry point. Called from the <<huntTickStep>> widget
 	   once per nav-step / tool-tick during a hunt. Fires Event.TICK so
 	   subscribers (per-tick stat drains, event-roll modifiers, etc.)
 	   can hook in without HuntController having to know about them.
 	   No-op when no run is active so widget-side guards stay simple. */
-	function tick() {
-		if (!isActive()) return;
+	var tick = guarded(undefined, function () {
 		var minutes = (setup.Time && typeof setup.Time.minutes === 'function')
 			? setup.Time.minutes()
 			: null;
 		setup.Hunt.emit(setup.Hunt.Event.TICK, { roomId: currentRoomId(), minutes: minutes });
-	}
+	});
 
 	/* { image, tip } override for the MC sidebar wardrobe strip,
 	   sourced through the SIDEBAR_OUTFIT filter so per-house overrides
@@ -1592,14 +1030,13 @@ setup.HuntController = (function () {
 	   instead of branching here. Returns null when no run is active or
 	   no subscriber stamps an outfit. Drives widgetMcStatus's
 	   fixed-outfit tile branch. */
-	function sidebarOutfit() {
-		if (!isActive()) return null;
+	var sidebarOutfit = guarded(null, function () {
 		var ctx = setup.Hunt.applyFilter(setup.Hunt.Event.SIDEBAR_OUTFIT, {
 			outfit:        null,
 			staticHouseId: staticHouseId()
 		});
 		return ctx.outfit || null;
-	}
+	});
 
 	/* Random hunt-event roll. Uses the shared threshold + ghost.canProwl
 	   gate -- the predicate works off $prowlActivated / $elapsedTimeProwl /
@@ -1608,31 +1045,28 @@ setup.HuntController = (function () {
 	   widgetInclude routes to GhostHuntEvent (Hide / RunFast / PrayHunt /
 	   FreezeHunt / HuntEventSuccubus all return through huntCaughtPassage
 	   or $return so they land back on the right passage). */
-	function shouldStartRandomProwl() {
-		if (!isActive()) return false;
+	var shouldStartRandomProwl = guarded(false, function () {
 		return setup.HauntedHouses.shouldStartRandomProwl();
-	}
+	});
 
 	/* Steal-clothes roll. The wardrobe / stash side-effects are
 	   shared, so once a steal fires the StealClothes cascade works.
 	   Per-house opt-outs (Ironclad's runsStealClothes=false) and
 	   modifier overrides (Swiper) live as STEAL_CHECK filter
 	   subscribers applied inside HauntedHouses.shouldTriggerSteal. */
-	function shouldTriggerSteal() {
-		if (!isActive()) return false;
+	var shouldTriggerSteal = guarded(false, function () {
 		return setup.HauntedHouses.shouldTriggerSteal();
-	}
+	});
 
 	/* Passage to <<goto>> when the per-tick chain detects a
-	   hunt-over condition. `reason` is one of FailureReason.SANITY |
+	   hunt-over condition. `reason` is one of setup.HuntEnums.FailureReason.SANITY |
 	   EXHAUSTION | TIME. Stamps the run as a failure with the reason
 	   and returns "HuntSummary" so the chain widget can route there
 	   with one <<goto>>. */
-	function huntOverPassage(reason) {
-		if (!isActive()) return null;
+	var huntOverPassage = guarded(null, function (reason) {
 		markFailure(reason);
 		return "HuntSummary";
-	}
+	});
 
 	/* The ghost's true identity for the active hunt. Hunts don't
 	   disguise, so $run.ghostName is always the real name. Returns ''
@@ -1645,8 +1079,7 @@ setup.HuntController = (function () {
 	   floor-plan spawn room id back through the template catalogue
 	   so the cheat panel sees a human label ("Bedroom") instead of
 	   the internal id ("room_3"). Returns '' when no run is active. */
-	function ghostRoomLabel() {
-		if (!isActive()) return '';
+	var ghostRoomLabel = guarded('', function () {
 		var run = active();
 		var roomId = ghostRoomId();
 		if (!run || !roomId || !run.floorplan) return '';
@@ -1658,7 +1091,7 @@ setup.HuntController = (function () {
 			}
 		}
 		return roomId;
-	}
+	});
 
 	/* "Ghost catches the MC" exit target that HuntEnd's <<huntEndExit>>
 	   widget routes through. Stamps a CAUGHT failure on the run and
@@ -1666,7 +1099,7 @@ setup.HuntController = (function () {
 	function huntCaughtPassage() {
 		if (isActive()) {
 			setup.Hunt.emit(setup.Hunt.Event.CAUGHT, { ghostName: ghostName() });
-			markFailure(FailureReason.CAUGHT);
+			markFailure(setup.HuntEnums.FailureReason.CAUGHT);
 			return "HuntSummary";
 		}
 		return "Sleep";
@@ -1720,36 +1153,33 @@ setup.HuntController = (function () {
 	   Monkey Paw activity-tier-3 and trapTheGhost-tier-3 wishes.
 	   Snaps floorplan.spawnRoomId to $run.currentRoomId. Returns true
 	   on success, false when no run is active. */
-	function snapGhostToCurrentRoom() {
-		if (!isActive()) return false;
+	var snapGhostToCurrentRoom = guarded(false, function () {
 		var run = active();
 		if (!run || !run.floorplan) return false;
 		var roomId = run.currentRoomId || 'room_0';
 		run.floorplan.spawnRoomId = roomId;
 		return true;
-	}
+	});
 
 	/* Pin the ghost in place + lock the player's exit. Stamps
 	   run.trapped + run.exitLock so the nav layer can refuse exits
 	   until the lock is cleared. The trapped flag also opts the run
 	   out of the periodic ghost-room drift roll. */
-	function trapGhost(unlockBy) {
-		if (!isActive()) return false;
+	var trapGhost = guarded(false, function (unlockBy) {
 		var run = active();
 		if (!run) return false;
 		run.trapped = true;
 		run.exitLock = { unlockBy: unlockBy };
 		setup.Hunt.emit(setup.Hunt.Event.TRAP, { unlockBy: unlockBy, roomId: run.floorplan && run.floorplan.spawnRoomId });
 		return true;
-	}
+	});
 
 	/* True iff the run's ghost is currently trapped. driftGhostRoom
 	   uses this to skip the shuffle for trapped ghosts. */
-	function isGhostTrapped() {
-		if (!isActive()) return false;
+	var isGhostTrapped = guarded(false, function () {
 		var run = active();
 		return !!(run && run.trapped);
-	}
+	});
 
 	/* Runs are one-shot, so banning a house is a no-op. */
 	function banActiveContext() {
@@ -1759,11 +1189,10 @@ setup.HuntController = (function () {
 	/* "Get me out of here" exit target -- the goto used by the
 	   Monkey Paw leave wish. Stamps an ABANDON failure on the run
 	   and returns HuntSummary so the leave wish forfeits the run cleanly. */
-	function streetExitPassage() {
-		if (!isActive()) return null;
-		markFailure(FailureReason.ABANDON);
+	var streetExitPassage = guarded(null, function () {
+		markFailure(setup.HuntEnums.FailureReason.ABANDON);
 		return "HuntSummary";
-	}
+	});
 
 	/* "The MC has been possessed" target -- the goto used by the Tarot
 	   Possession card. Stamps a POSSESSED failure on the run and ends
@@ -1772,23 +1201,21 @@ setup.HuntController = (function () {
 	   hour so the city-map render makes sense after the possession.
 	   The widget caller wraps the link around the returned passage so
 	   the imperative side effects fire as part of the link click. */
-	function possessionPassage() {
-		if (!isActive()) return null;
+	var possessionPassage = guarded(null, function () {
 		setup.Hunt.emit(setup.Hunt.Event.POSSESS, { ghostName: ghostName() });
-		markFailure(FailureReason.POSSESSED);
+		markFailure(setup.HuntEnums.FailureReason.POSSESSED);
 		endHunt(false);
 		setup.Time.setHours(Math.floor(Math.random() * (20 - 12 + 1)) + 12);
 		return "CityMapPossessed";
-	}
+	});
 
 	/* "Remove one piece of evidence" -- used by the Tarot Knowledge
 	   card and the Monkey Paw knowledge wish. Picks a random
 	   evidence the active ghost doesn't have. Writes the result via
 	   setup.Ghosts setters so the $knowledgeUsed / $chosenEvidence
 	   state stays owned by GhostController. */
-	function consumeKnowledgeEvidence() {
+	var consumeKnowledgeEvidence = guarded(undefined, function () {
 		if (setup.Ghosts.knowledgeUsed()) return;
-		if (!isActive()) return;
 		setup.Ghosts.markKnowledgeUsed();
 		var ghost = activeGhost();
 		var owned = [];
@@ -1802,7 +1229,7 @@ setup.HuntController = (function () {
 		setup.Ghosts.setChosenEvidence(missing.length
 			? missing[Math.floor(Math.random() * missing.length)]
 			: null);
-	}
+	});
 
 	/* Meta-shop unlock effects wire into the same filter bus the
 	   modifiers use. The buildHunt path stays agnostic; each unlock
@@ -1813,7 +1240,7 @@ setup.HuntController = (function () {
 		   with Maze (still net +2) and the tool-loot expansion (still
 		   keeps a slot per missing tool). Floor at the generator's
 		   hard min of 2 (hallway + 1). */
-		if (!hasUnlock(ShopItem.SMALLER_HOUSE)) return;
+		if (!setup.HuntShop.hasUnlock(setup.HuntShop.ShopItem.SMALLER_HOUSE)) return;
 		if (!ctx || !ctx.fpOpts) return;
 		ctx.fpOpts.roomCount = Math.max(2, (ctx.fpOpts.roomCount || 5) - 1);
 	});
@@ -1829,9 +1256,9 @@ setup.HuntController = (function () {
 
 	return {
 		OWNED_VARS: OWNED_VARS,
-		Outcome: Outcome,
-		FailureReason: FailureReason,
-		Objective: Objective,
+		/* Outcome / FailureReason / Objective / objectiveDescription
+		   are spliced onto this api by HuntEnums.js after this file
+		   evaluates -- see the splice block at the bottom of HuntEnums.js. */
 		start: start,
 		cheatStampMinimalRun: cheatStampMinimalRun,
 		end: end,
@@ -1847,14 +1274,12 @@ setup.HuntController = (function () {
 		startingToolsBase: startingToolsBase,
 		missingToolsToPlace: missingToolsToPlace,
 		objective: objective,
-		objectiveDescription: objectiveDescription,
 		setObjective: setObjective,
 		setField: setField,
 		field: field,
 		outcome: outcome,
 		failureReason: failureReason,
 		isSuccess: isSuccess,
-		lastWasSuccess: lastWasSuccess,
 		markSuccess: markSuccess,
 		markFailure: markFailure,
 		currentRoomId: currentRoomId,
@@ -1878,12 +1303,10 @@ setup.HuntController = (function () {
 		rollNextSeed: rollNextSeed,
 		startHunt: startHunt,
 		endHunt: endHunt,
-		minimapData: minimapData,
-		minimapSvg: minimapSvg,
-		isMinimapCollapsed: isMinimapCollapsed,
-		toggleMinimapCollapsed: toggleMinimapCollapsed,
-		currentRoomData: currentRoomData,
-		humanizeLootKind: humanizeLootKind,
+		/* minimapData / minimapSvg / isMinimapCollapsed /
+		   toggleMinimapCollapsed / currentRoomData / humanizeLootKind
+		   are spliced onto this api by HuntMinimap.js after this file
+		   evaluates -- see the splice block at the bottom of HuntMinimap.js. */
 		ghostName: ghostName,
 		staticHouseId: staticHouseId,
 		huntAllowsCompanions: huntAllowsCompanions,
@@ -1892,24 +1315,9 @@ setup.HuntController = (function () {
 		isInGhostRoom: isInGhostRoom,
 		driftGhostRoom: driftGhostRoom,
 		address: address,
-		addressFromSeed: addressFromSeed,
-		ROAD_NAMES: ROAD_NAMES,
-		ROAD_SUFFIXES: ROAD_SUFFIXES,
-		ShopItem: ShopItem,
-		shopCatalogue: shopCatalogue,
-		shopItem: shopItem,
-		metaUnlock: metaUnlock,
-		hasUnlock: hasUnlock,
-		buyUnlock: buyUnlock,
-		bannedModifiers: bannedModifiers,
-		bannedSlotsTotal: bannedSlotsTotal,
-		bannedSlotsUsed: bannedSlotsUsed,
-		bannedSlotsRemaining: bannedSlotsRemaining,
-		toggleBannedModifier: toggleBannedModifier,
-		isBanned: isBanned,
-		rerollCharges: rerollCharges,
-		consumeRerollCharge: consumeRerollCharge,
-		redraftRunModifiers: redraftRunModifiers,
+		addressFromSeed: setup.HuntAddresses.addressFromSeed,
+		ROAD_NAMES: setup.HuntAddresses.ROAD_NAMES,
+		ROAD_SUFFIXES: setup.HuntAddresses.ROAD_SUFFIXES,
 		activeGhost: activeGhost,
 		isGhostHere: isGhostHere,
 		isHuntActive: isHuntActive,

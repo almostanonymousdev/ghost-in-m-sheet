@@ -10,204 +10,11 @@
 // runs, both scripts have executed.
 
 setup.CompanionData = (function () {
-	// Canonical companion catalogue. Static per-companion metadata. The
-	// six near-identical Main passages collapse into a single
-	// <<companionMain>> dispatch by keying off these entries.
-	var config = [
-		{
-			name: "Brook", key: "brook",
-			imageFolder: "brook", imagePrefix: "brook",
-			isTrans: false, canWalkHome: true, hasExpSystem: true,
-			pronObj: "her", pronPos: "her",
-			neutralResp: "Let's just focus on the task.",
-			// Per-companion stat overrides merged over cisBaseStats by
-			// Companion.prototype.defaultState(). Only the fields that
-			// differ from the shared cis defaults live here.
-			initStats: {
-				plan2TimeReq: 15, plan3TimeReq: 10, plan4TimeReq: 10,
-				chanceOfSuccessCI: 20, chanceOfSuccessGR: 30
-			},
-			clothingTiers: [
-				{ mc: "You can take off your top, it'll make it easier for you to move.",
-				resp: "It'll be easier to move if I take off my top? How exactly? Well, alright, if you say so..." },
-				{ mc: "Stay in just your underwear, it might help us get through this.",
-				resp: "I actually feel better wearing just my underwear." },
-				{ mc: "Just keep your panties on, it'll be easier for both of us.",
-				resp: "I feel like I'm making things easier for the ghost, but I don't really mind..." },
-				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
-				resp: "Fine, he's going to get to my pussy anyway." }
-			],
-			// Per-companion CompanionEvent dialog by sanity tier (1..4).
-			// Strings are wikified by <<companionTextEvent>>: $mc.name and
-			// $companion.name are substituted at render time.
-			eventCopy: [
-				"@@.mc-thoughts; As you entered the room, you immediately saw her. She was naked and visibly shaken.@@<br>\n@@.mc-speech; Oh God, what happened to you?@@<br>\n@@.notmc-speech; I don't want to talk about it... Just help me@@<br>\n@@.mc-thoughts; You walked over to her, carefully helping her up.@@<br>",
-				"@@.mc-thoughts; As you entered the room, you immediately saw her. But she wasn't alone. Fortunately, you entered just in time, and as soon as you did, the ghost let her go and vanished@@<br>\n@@.mc-speech; $companion.name , are you alright? I saw the ghost trying to...@@<br>\n@@.notmc-speech; Thank you, $mc.name, you came just in time.@@<br>\n@@.mc-thoughts; You walked over to her, carefully helping her up.@@<br>",
-				"@@.mc-thoughts; As you entered the room, you immediately saw her. But she wasn't alone. Fortunately, you entered just in time, and as soon as you did, the ghost let her go and vanished@@<br>\n@@.mc-speech; $companion.name, are you alright? I saw what the ghost was doing to you...@@<br>\n@@.notmc-speech; Thank you, $mc.name, you came just in time.@@<br>\n@@.mc-thoughts; You walked over to her, carefully helping her up.@@<br>",
-				"@@.mc-thoughts; As you entered the room, you immediately saw her. But she wasn't alone. Fortunately, you entered just in time, and as soon as you did, the ghost let her go and vanished@@<br>\n@@.mc-speech; $companion.name, are you alright? I saw what the ghost was doing to you...@@<br>\n@@.notmc-speech; Thank you, $mc.name, you came just in time.@@<br>\n@@.mc-thoughts; You walked over to her, carefully helping her up.@@<br>"
-			]
-		},
-		{
-			name: "Alice", key: "alice",
-			imageFolder: "alice", imagePrefix: "alice",
-			isTrans: false, canWalkHome: true, hasExpSystem: true,
-			pronObj: "her", pronPos: "her",
-			neutralResp: "Let's just focus on the task.",
-			initStats: {
-				plan2TimeReq: 15, plan3TimeReq: 15, plan4TimeReq: 10,
-				chanceOfSuccessCI: 30, chanceOfSuccessGR: 50
-			},
-			clothingTiers: [
-				{ mc: "You can take off your top, it'll make it easier for you to move.",
-				resp: "Take my top off? Well... alright, if you think it'll help." },
-				{ mc: "Stay in just your underwear, it might help us get through this.",
-				resp: "Down to my underwear? Okay, I trust you." },
-				{ mc: "Just keep your panties on, it'll be easier for both of us.",
-				resp: "Just my panties? This is so embarrassing, but fine..." },
-				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
-				resp: "Completely naked? You're lucky I like you, $mc.name." }
-			],
-			eventCopy: [
-				"@@.mc-thoughts; When you entered the room, you saw her.@@<br> @@.mc-speech; Are you alright?@@<br> @@.notmc-speech; I'm fine. It's just a ghost, nothing to worry about. And it looks like I almost beat it.@@<br> @@.mc-thoughts; It seems I can see the marks of that fight on her...@@<br> @@.mc-speech; Well done, I'm proud of you.@@<br>",
-				"@@.mc-thoughts; As you entered the room, you immediately saw her. But she wasn't alone. <br>The ghost, noticing you, disappeared instantly.@@<br>\n@@.mc-speech; $companion.name, are you alright?@@<br>\n@@.notmc-speech; Yes, I think I'm fine.@@<br>\n@@.mc-thoughts; A faint smile remained on her face, as if she had enjoyed the encounter. @@<br>\n@@.notmc-speech; I hope it comes back so I can teach it a lesson...@@<br>",
-				"@@.mc-thoughts; Before entering the room, you hear strange sounds coming from inside. <br>\nAs you entered the room, you immediately saw her. But she wasn't alone. You walked in just in time to see what was happening...<br>\nIt seems she doesn't want to be interrupted. But as soon as the ghost saw you, it disappeared. @@<br>\n@@.mc-speech; $companion.name, are you alright? I heard strange noises...@@<br>\n@@.notmc-speech; Don't worry, it just caught me by surprise.@@<br>\n@@.mc-speech; Sure...@@<br>",
-				"@@.mc-thoughts; Before entering the room, you hear soft moans coming from inside. <br>\nAs you entered the room, you immediately saw her. But she wasn't alone. You walked in just in time to see what was happening...<br>\nIt seems she doesn't want to be interrupted. But as soon as the ghost saw you, it disappeared. @@<br>"
-			]
-		},
-		{
-			name: "Blake", key: "blake",
-			imageFolder: "blake", imagePrefix: "blake",
-			isTrans: false, canWalkHome: true, hasExpSystem: true,
-			pronObj: "her", pronPos: "her",
-			neutralResp: "Let's just focus on the task.",
-			initStats: {
-				plan2TimeReq: 10, plan3TimeReq: 15, plan4TimeReq: 10,
-				chanceOfSuccessCI: 30, chanceOfSuccessGR: 20,
-				chanceOfSuccessAnyEvidence: 15
-			},
-			clothingTiers: [
-				{ mc: "You can take off your top, it'll make it easier for you to move.",
-				resp: "Take my top off? Well... alright, if you think it'll help." },
-				{ mc: "Stay in just your underwear, it might help us get through this.",
-				resp: "Down to my underwear? Okay, I trust you." },
-				{ mc: "Just keep your panties on, it'll be easier for both of us.",
-				resp: "Just my panties? This is so embarrassing, but fine..." },
-				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
-				resp: "Completely naked? You're lucky I like you, $mc.name." }
-			],
-			eventCopy: [
-				"@@.mc-thoughts; When you entered the room, you saw her.@@<br> @@.mc-speech; What are you doing?@@<br> @@.notmc-speech; I thought I could attract the ghost this way.@@<br> @@.mc-speech; Why?@@<br> @@.notmc-speech; Well, maybe it would have more cursed items, and I could take them for myself.@@<br>\n@@.mc-speech; I don't think that's how it works, or the ghost would probably not want to share with you.@@<br>\n@@.notmc-speech; I still think my plan will work.@@<br>\n@@.mc-speech; Alright, let's keep looking.@@<br>",
-				"@@.mc-thoughts; As you entered the room, you immediately saw her. But she wasn't alone. <br>The ghost, noticing you, disappeared instantly.@@<br>\n@@.mc-speech; $companion.name, are you alright?@@<br>\n@@.notmc-speech; Yes, I saw it! I think you scared it away.@@<br>\n@@.mc-speech; Are you disappointed? I just saved you.@@<br>\n@@.notmc-speech; Well, yeah, of course...@@<br>\n@@.mc-speech; Alright, let's continue.@@<br>",
-				"@@.mc-thoughts; Before entering the room, you hear strange sounds coming from inside. <br>\nAs you entered the room, you immediately saw her. But she wasn't alone. You walked in just in time to see what was happening...<br>\nIt seems she doesn't want to be interrupted. But as soon as the ghost saw you, it disappeared. @@<br>\n@@.mc-speech; $companion.name, are you alright? I heard strange noises...@@<br>\n@@.notmc-speech; Don't worry, it just caught me by surprise.@@<br>\n@@.mc-speech; Sure...@@<br>",
-				"@@.mc-thoughts; Before entering the room, you hear soft moans coming from inside. <br>\nAs you entered the room, you immediately saw her. But she wasn't alone. You walked in just in time to see what was happening...<br>\nIt seems she doesn't want to be interrupted. But as soon as the ghost saw you, it disappeared. @@<br>\n\n@@.mc-speech; $companion.name, are you alright? I heard screaming...@@<br>\n@@.notmc-speech; Don't worry, it just caught me by surprise.@@<br>\n@@.mc-speech; Sure...@@<br>"
-			]
-		},
-		{
-			name: "Alex", key: "alex",
-			imageFolder: "trans", imagePrefix: "alex",
-			isTrans: true, canWalkHome: false, hasExpSystem: false,
-			pronObj: "him", pronPos: "his",
-			neutralResp: "Let's just focus on the task.",
-			initStats: { chanceOfSuccessAnyEvidence: 25 },
-			clothingTiers: [
-				{ mc: "You can take off your shirt, it'll make it easier for you to move.",
-				resp: "Shirt off? Sure, if you say it helps." },
-				{ mc: "Stay in just your underwear, it might help us get through this.",
-				resp: "Down to my underwear? Alright, I trust you." },
-				{ mc: "Just keep your briefs on, it'll be easier for both of us.",
-				resp: "Just my briefs? This feels a bit ridiculous, but fine." },
-				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
-				resp: "Completely naked? You owe me one, $mc.name." }
-			]
-		},
-		{
-			name: "Taylor", key: "taylor",
-			imageFolder: "trans", imagePrefix: "taylor",
-			isTrans: true, canWalkHome: false, hasExpSystem: false,
-			pronObj: "her", pronPos: "her",
-			neutralResp: "Let's just focus on the task.",
-			initStats: { chanceOfSuccessAnyEvidence: 35 },
-			clothingTiers: [
-				{ mc: "You can take off your top, it'll make it easier for you to move.",
-				resp: "Top off? Alright, if you think it'll help." },
-				{ mc: "Stay in just your underwear, it might help us get through this.",
-				resp: "Down to my underwear? Okay, I trust you." },
-				{ mc: "Just keep your panties on, it'll be easier for both of us.",
-				resp: "Just my panties? Embarrassing, but fine..." },
-				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
-				resp: "Completely naked? You're lucky I like you, $mc.name." }
-			]
-		},
-		{
-			name: "Casey", key: "casey",
-			imageFolder: "trans", imagePrefix: "casey",
-			isTrans: true, canWalkHome: false, hasExpSystem: false,
-			pronObj: "them", pronPos: "their",
-			neutralResp: "Let's just focus on the task.",
-			initStats: { chanceOfSuccessAnyEvidence: 50 },
-			clothingTiers: [
-				{ mc: "You can take off your top, it'll make it easier for you to move.",
-				resp: "Top off? Alright, if you say so." },
-				{ mc: "Stay in just your underwear, it might help us get through this.",
-				resp: "Down to my underwear? Okay, I trust you." },
-				{ mc: "Just keep your underwear on, it'll be easier for both of us.",
-				resp: "Just my underwear? A bit much, but fine..." },
-				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
-				resp: "Completely naked? You're really pushing it, $mc.name." }
-			]
-		}
-	];
-
-	// Sanity threshold below which the active companion leaves you mid-event
-	// for a given level. Index by companion lvl (1..5+). lvl >= 5 is "no
-	// floor": trust is total.
-	var sanityCapByLevel = [75, 75, 50, 25, 0, 0];
-
-	// Shared stat defaults baked into every fresh $brook/$alice/$blake
-	// companion state. Per-companion overrides live in COMPANION_CONFIG's
-	// initStats field.
-	var cisBaseStats = {
-		sanity: 100, sanityMax: 100, corruption: 0,
-		lust: 0, lvl: 1, exp: 0, expForNextLvl: 20,
-		decreaseSanity: 10,
-		chanceOfSuccessEMF: 15, chanceOfSuccessECTO: 15,
-		chanceOfSuccessGWB: 15, chanceOfSuccessSB: 15,
-		chanceOfSuccessTEMP: 15, chanceOfSuccessUVL: 15,
-		chanceOfSuccessAnyEvidence: 25,
-		// Per-companion flags formerly stored as top-level $isCompChosen<Name>,
-		// $chanceToAttack<Name>, $is<Name>GoingForHuntingAlone,
-		// $<key>Choose<Street>, $payForHuntAlone<Name>,
-		// $chanceToSuccessAlone<Street><Name>. setup.Companion.migrateLegacyKeys
-		// folds those forward off old saves.
-		chosen: 0, chanceToAttack: 25,
-		goingSolo: 0, paidForSolo: 0,
-		chooseOwaissa: 0, chooseElm: 0,
-		soloChanceOwaissa: 0, soloChanceElm: 0
-	};
-
-	// Shared defaults for trans companions ($alex/$taylor/$casey). No
-	// corruption / exp fields (locked at lvl 5 with no progression), and
-	// the plan* times are uniformly 5 minutes. Trans companions also have
-	// no solo-hunt path, so the *Solo* fields are omitted.
-	var transBaseStats = {
-		sanity: 100, sanityMax: 100,
-		lust: 0, lvl: 5,
-		plan2TimeReq: 5, plan3TimeReq: 5, plan4TimeReq: 5,
-		decreaseSanity: 10,
-		chanceOfSuccessCI: 50, chanceOfSuccessGR: 50,
-		chosen: 0, chanceToAttack: 25
-	};
-
-	// The 4 non-zero attack-chance tiers, indexed the same as clothingTiers.
-	// Shared across all six companions: slider values are game-balance, not
-	// character dialogue.
-	var tierChances = [40, 55, 70, 90];
-	var baseChance  = 25;
-
 	// Per-companion CompanionEvent video/image tables. Each tier key
 	// (high/mid/low/crit) maps either to an array of {type, src} entries
 	// or to a {default, inElm?, lustHigh?} bundle whose keys are picked at
-	// runtime by Companion.pickEventMedia.
+	// runtime by Companion.pickEventMediaList. Hoisted here so the catalogue
+	// config below can inline them onto each cis entry's eventMedia field.
 	var eventMediaBrook = {
 		high: {
 			default: [{type:"image",src:"characters/brook/1.0.jpg"},{type:"image",src:"characters/brook/1.1.jpg"},{type:"video",src:"characters/brook/1.2.mp4"},{type:"video",src:"characters/brook/1.3.mp4"},{type:"video",src:"characters/brook/1.4.mp4"},{type:"video",src:"characters/brook/1.5.mp4"}],
@@ -248,16 +55,232 @@ setup.CompanionData = (function () {
 		low:  [{type:"video",src:"characters/blake/3.0.mp4"},{type:"video",src:"characters/blake/3.1.mp4"},{type:"video",src:"characters/blake/3.2.mp4"},{type:"video",src:"characters/blake/3.3.mp4"},{type:"video",src:"characters/blake/3.4.mp4"}],
 		crit: [{type:"video",src:"characters/blake/4.0.mp4"},{type:"video",src:"characters/blake/4.1.mp4"},{type:"video",src:"characters/blake/4.2.mp4"},{type:"video",src:"characters/blake/4.3.mp4"},{type:"video",src:"characters/blake/4.4.mp4"},{type:"video",src:"characters/blake/4.5.mp4"},{type:"video",src:"characters/blake/4.6.mp4"},{type:"video",src:"characters/blake/4.7.mp4"},{type:"video",src:"characters/blake/4.8.mp4"}]
 	};
-	var eventMediaCis = { Brook: eventMediaBrook, Alice: eventMediaAlice, Blake: eventMediaBlake };
 
-	// Trans companions share a tease/bj/sex video directory layout. Each
-	// gets a fixed portrait index (1..3), a directory name, and a critMax
-	// describing how many sex-tier videos are catalogued.
-	var eventMediaTrans = {
-		Alex:   { idx: 1, name: "alex",   critMax: 22, bjMax: 5 },
-		Taylor: { idx: 2, name: "taylor", critMax: 21, bjMax: 5 },
-		Casey:  { idx: 3, name: "casey",  critMax: 22, bjMax: 6 }
+	// Canonical companion catalogue. Static per-companion metadata. The
+	// six near-identical Main passages collapse into a single
+	// <<companionMain>> dispatch by keying off these entries.
+	var config = [
+		{
+			name: "Brook", key: "brook",
+			imageFolder: "brook", imagePrefix: "brook",
+			isTrans: false, canWalkHome: true, hasExpSystem: true,
+			pronObj: "her", pronPos: "her",
+			neutralResp: "Let's just focus on the task.",
+			eventMedia: eventMediaBrook,
+			// Brook's "have I met her" / "is she available" gates live on
+			// the Library/Home controllers (they own meetBrook + the
+			// brooke-with-Rain cooldown). Hooks delegate so the companion
+			// controller never reads other controllers' $vars by name.
+			hasMet:        function () { return setup.Library.hasMetBrook(); },
+			isPossessed:   function () { return setup.Library.brookIsPossessed(); },
+			isUnavailable: function () { return setup.Home.brookePossessedCDLow(); },
+			// Per-companion stat overrides merged over cisBaseStats by
+			// Companion.prototype.defaultState(). Only the fields that
+			// differ from the shared cis defaults live here.
+			initStats: {
+				plan2TimeReq: 15, plan3TimeReq: 10, plan4TimeReq: 10,
+				chanceOfSuccessCI: 20, chanceOfSuccessGR: 30
+			},
+			clothingTiers: [
+				{ mc: "You can take off your top, it'll make it easier for you to move.",
+				resp: "It'll be easier to move if I take off my top? How exactly? Well, alright, if you say so..." },
+				{ mc: "Stay in just your underwear, it might help us get through this.",
+				resp: "I actually feel better wearing just my underwear." },
+				{ mc: "Just keep your panties on, it'll be easier for both of us.",
+				resp: "I feel like I'm making things easier for the ghost, but I don't really mind..." },
+				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
+				resp: "Fine, he's going to get to my pussy anyway." }
+			],
+			// Per-companion CompanionEvent dialog by sanity tier (1..4).
+			// Strings are wikified by <<companionTextEvent>>: $mc.name and
+			// $companion.name are substituted at render time.
+			eventCopy: [
+				"@@.mc-thoughts; As you entered the room, you immediately saw her. She was naked and visibly shaken.@@<br>\n@@.mc-speech; Oh God, what happened to you?@@<br>\n@@.notmc-speech; I don't want to talk about it... Just help me@@<br>\n@@.mc-thoughts; You walked over to her, carefully helping her up.@@<br>",
+				"@@.mc-thoughts; As you entered the room, you immediately saw her. But she wasn't alone. Fortunately, you entered just in time, and as soon as you did, the ghost let her go and vanished@@<br>\n@@.mc-speech; $companion.name , are you alright? I saw the ghost trying to...@@<br>\n@@.notmc-speech; Thank you, $mc.name, you came just in time.@@<br>\n@@.mc-thoughts; You walked over to her, carefully helping her up.@@<br>",
+				"@@.mc-thoughts; As you entered the room, you immediately saw her. But she wasn't alone. Fortunately, you entered just in time, and as soon as you did, the ghost let her go and vanished@@<br>\n@@.mc-speech; $companion.name, are you alright? I saw what the ghost was doing to you...@@<br>\n@@.notmc-speech; Thank you, $mc.name, you came just in time.@@<br>\n@@.mc-thoughts; You walked over to her, carefully helping her up.@@<br>",
+				"@@.mc-thoughts; As you entered the room, you immediately saw her. But she wasn't alone. Fortunately, you entered just in time, and as soon as you did, the ghost let her go and vanished@@<br>\n@@.mc-speech; $companion.name, are you alright? I saw what the ghost was doing to you...@@<br>\n@@.notmc-speech; Thank you, $mc.name, you came just in time.@@<br>\n@@.mc-thoughts; You walked over to her, carefully helping her up.@@<br>"
+			]
+		},
+		{
+			name: "Alice", key: "alice",
+			imageFolder: "alice", imagePrefix: "alice",
+			isTrans: false, canWalkHome: true, hasExpSystem: true,
+			pronObj: "her", pronPos: "her",
+			neutralResp: "Let's just focus on the task.",
+			eventMedia: eventMediaAlice,
+			// Alice owns the $meetAlice flag and $aliceWorkDone. hasMet/
+			// markMet wrap the former; onHuntFail (called only on the
+			// active companion) zeroes workDone unless Alice was on a
+			// solo run -- a botched joint hunt invalidates the delivery.
+			hasMet:  function () { return State.variables.meetAlice !== undefined; },
+			markMet: function () { setup.Companion.markAliceMet(); },
+			onHuntFail: function () {
+				var stats = State.variables.alice;
+				if (stats && stats.goingSolo === 0) setup.Companion.clearAliceWorkDone();
+			},
+			initStats: {
+				plan2TimeReq: 15, plan3TimeReq: 15, plan4TimeReq: 10,
+				chanceOfSuccessCI: 30, chanceOfSuccessGR: 50
+			},
+			clothingTiers: [
+				{ mc: "You can take off your top, it'll make it easier for you to move.",
+				resp: "Take my top off? Well... alright, if you think it'll help." },
+				{ mc: "Stay in just your underwear, it might help us get through this.",
+				resp: "Down to my underwear? Okay, I trust you." },
+				{ mc: "Just keep your panties on, it'll be easier for both of us.",
+				resp: "Just my panties? This is so embarrassing, but fine..." },
+				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
+				resp: "Completely naked? You're lucky I like you, $mc.name." }
+			],
+			eventCopy: [
+				"@@.mc-thoughts; When you entered the room, you saw her.@@<br> @@.mc-speech; Are you alright?@@<br> @@.notmc-speech; I'm fine. It's just a ghost, nothing to worry about. And it looks like I almost beat it.@@<br> @@.mc-thoughts; It seems I can see the marks of that fight on her...@@<br> @@.mc-speech; Well done, I'm proud of you.@@<br>",
+				"@@.mc-thoughts; As you entered the room, you immediately saw her. But she wasn't alone. <br>The ghost, noticing you, disappeared instantly.@@<br>\n@@.mc-speech; $companion.name, are you alright?@@<br>\n@@.notmc-speech; Yes, I think I'm fine.@@<br>\n@@.mc-thoughts; A faint smile remained on her face, as if she had enjoyed the encounter. @@<br>\n@@.notmc-speech; I hope it comes back so I can teach it a lesson...@@<br>",
+				"@@.mc-thoughts; Before entering the room, you hear strange sounds coming from inside. <br>\nAs you entered the room, you immediately saw her. But she wasn't alone. You walked in just in time to see what was happening...<br>\nIt seems she doesn't want to be interrupted. But as soon as the ghost saw you, it disappeared. @@<br>\n@@.mc-speech; $companion.name, are you alright? I heard strange noises...@@<br>\n@@.notmc-speech; Don't worry, it just caught me by surprise.@@<br>\n@@.mc-speech; Sure...@@<br>",
+				"@@.mc-thoughts; Before entering the room, you hear soft moans coming from inside. <br>\nAs you entered the room, you immediately saw her. But she wasn't alone. You walked in just in time to see what was happening...<br>\nIt seems she doesn't want to be interrupted. But as soon as the ghost saw you, it disappeared. @@<br>"
+			]
+		},
+		{
+			name: "Blake", key: "blake",
+			imageFolder: "blake", imagePrefix: "blake",
+			isTrans: false, canWalkHome: true, hasExpSystem: true,
+			pronObj: "her", pronPos: "her",
+			neutralResp: "Let's just focus on the task.",
+			eventMedia: eventMediaBlake,
+			// If Blake was the active companion and the hunt ended badly
+			// while she was carrying a cursed item for the Witch, she
+			// drops it. Witch owns the gotCursedItem flag.
+			onHuntFail: function () {
+				if (State.variables.isCompChosen !== 1) return;
+				if (!setup.Witch.hasCursedItemToTurnIn()) return;
+				setup.Witch.clearCursedItemHeld();
+			},
+			initStats: {
+				plan2TimeReq: 10, plan3TimeReq: 15, plan4TimeReq: 10,
+				chanceOfSuccessCI: 30, chanceOfSuccessGR: 20,
+				chanceOfSuccessAnyEvidence: 15
+			},
+			clothingTiers: [
+				{ mc: "You can take off your top, it'll make it easier for you to move.",
+				resp: "Take my top off? Well... alright, if you think it'll help." },
+				{ mc: "Stay in just your underwear, it might help us get through this.",
+				resp: "Down to my underwear? Okay, I trust you." },
+				{ mc: "Just keep your panties on, it'll be easier for both of us.",
+				resp: "Just my panties? This is so embarrassing, but fine..." },
+				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
+				resp: "Completely naked? You're lucky I like you, $mc.name." }
+			],
+			eventCopy: [
+				"@@.mc-thoughts; When you entered the room, you saw her.@@<br> @@.mc-speech; What are you doing?@@<br> @@.notmc-speech; I thought I could attract the ghost this way.@@<br> @@.mc-speech; Why?@@<br> @@.notmc-speech; Well, maybe it would have more cursed items, and I could take them for myself.@@<br>\n@@.mc-speech; I don't think that's how it works, or the ghost would probably not want to share with you.@@<br>\n@@.notmc-speech; I still think my plan will work.@@<br>\n@@.mc-speech; Alright, let's keep looking.@@<br>",
+				"@@.mc-thoughts; As you entered the room, you immediately saw her. But she wasn't alone. <br>The ghost, noticing you, disappeared instantly.@@<br>\n@@.mc-speech; $companion.name, are you alright?@@<br>\n@@.notmc-speech; Yes, I saw it! I think you scared it away.@@<br>\n@@.mc-speech; Are you disappointed? I just saved you.@@<br>\n@@.notmc-speech; Well, yeah, of course...@@<br>\n@@.mc-speech; Alright, let's continue.@@<br>",
+				"@@.mc-thoughts; Before entering the room, you hear strange sounds coming from inside. <br>\nAs you entered the room, you immediately saw her. But she wasn't alone. You walked in just in time to see what was happening...<br>\nIt seems she doesn't want to be interrupted. But as soon as the ghost saw you, it disappeared. @@<br>\n@@.mc-speech; $companion.name, are you alright? I heard strange noises...@@<br>\n@@.notmc-speech; Don't worry, it just caught me by surprise.@@<br>\n@@.mc-speech; Sure...@@<br>",
+				"@@.mc-thoughts; Before entering the room, you hear soft moans coming from inside. <br>\nAs you entered the room, you immediately saw her. But she wasn't alone. You walked in just in time to see what was happening...<br>\nIt seems she doesn't want to be interrupted. But as soon as the ghost saw you, it disappeared. @@<br>\n\n@@.mc-speech; $companion.name, are you alright? I heard screaming...@@<br>\n@@.notmc-speech; Don't worry, it just caught me by surprise.@@<br>\n@@.mc-speech; Sure...@@<br>"
+			]
+		},
+		{
+			name: "Alex", key: "alex",
+			imageFolder: "trans", imagePrefix: "alex",
+			isTrans: true, canWalkHome: false, hasExpSystem: false,
+			pronObj: "him", pronPos: "his",
+			neutralResp: "Let's just focus on the task.",
+			// Index into the rotating $transPicture portrait file; stamped
+			// by setup.Companion.markTransFirstStage when this companion
+			// is active.
+			portraitIndex: 1,
+			transMedia: { idx: 1, name: "alex", critMax: 22, bjMax: 5 },
+			initStats: { chanceOfSuccessAnyEvidence: 25 },
+			clothingTiers: [
+				{ mc: "You can take off your shirt, it'll make it easier for you to move.",
+				resp: "Shirt off? Sure, if you say it helps." },
+				{ mc: "Stay in just your underwear, it might help us get through this.",
+				resp: "Down to my underwear? Alright, I trust you." },
+				{ mc: "Just keep your briefs on, it'll be easier for both of us.",
+				resp: "Just my briefs? This feels a bit ridiculous, but fine." },
+				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
+				resp: "Completely naked? You owe me one, $mc.name." }
+			]
+		},
+		{
+			name: "Taylor", key: "taylor",
+			imageFolder: "trans", imagePrefix: "taylor",
+			isTrans: true, canWalkHome: false, hasExpSystem: false,
+			pronObj: "her", pronPos: "her",
+			neutralResp: "Let's just focus on the task.",
+			portraitIndex: 2,
+			transMedia: { idx: 2, name: "taylor", critMax: 21, bjMax: 5 },
+			initStats: { chanceOfSuccessAnyEvidence: 35 },
+			clothingTiers: [
+				{ mc: "You can take off your top, it'll make it easier for you to move.",
+				resp: "Top off? Alright, if you think it'll help." },
+				{ mc: "Stay in just your underwear, it might help us get through this.",
+				resp: "Down to my underwear? Okay, I trust you." },
+				{ mc: "Just keep your panties on, it'll be easier for both of us.",
+				resp: "Just my panties? Embarrassing, but fine..." },
+				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
+				resp: "Completely naked? You're lucky I like you, $mc.name." }
+			]
+		},
+		{
+			name: "Casey", key: "casey",
+			imageFolder: "trans", imagePrefix: "casey",
+			isTrans: true, canWalkHome: false, hasExpSystem: false,
+			pronObj: "them", pronPos: "their",
+			neutralResp: "Let's just focus on the task.",
+			portraitIndex: 3,
+			transMedia: { idx: 3, name: "casey", critMax: 22, bjMax: 6 },
+			initStats: { chanceOfSuccessAnyEvidence: 50 },
+			clothingTiers: [
+				{ mc: "You can take off your top, it'll make it easier for you to move.",
+				resp: "Top off? Alright, if you say so." },
+				{ mc: "Stay in just your underwear, it might help us get through this.",
+				resp: "Down to my underwear? Okay, I trust you." },
+				{ mc: "Just keep your underwear on, it'll be easier for both of us.",
+				resp: "Just my underwear? A bit much, but fine..." },
+				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
+				resp: "Completely naked? You're really pushing it, $mc.name." }
+			]
+		}
+	];
+
+	// Sanity threshold below which the active companion leaves you mid-event
+	// for a given level. Index by companion lvl (1..5+). lvl >= 5 is "no
+	// floor": trust is total.
+	var sanityCapByLevel = [75, 75, 50, 25, 0, 0];
+
+	// Shared stat defaults baked into every fresh $brook/$alice/$blake
+	// companion state. Per-companion overrides live in COMPANION_CONFIG's
+	// initStats field.
+	var cisBaseStats = {
+		sanity: 100, sanityMax: 100, corruption: 0,
+		lust: 0, lvl: 1, exp: 0, expForNextLvl: 20,
+		eventSanityLoss: 10,
+		chanceOfSuccessEMF: 15, chanceOfSuccessECTO: 15,
+		chanceOfSuccessGWB: 15, chanceOfSuccessSB: 15,
+		chanceOfSuccessTEMP: 15, chanceOfSuccessUVL: 15,
+		chanceOfSuccessAnyEvidence: 25,
+		chosen: 0, chanceToAttack: 25,
+		goingSolo: 0, paidForSolo: 0,
+		chooseOwaissa: 0, chooseElm: 0,
+		soloChanceOwaissa: 0, soloChanceElm: 0
 	};
+
+	// Shared defaults for trans companions ($alex/$taylor/$casey). No
+	// corruption / exp fields (locked at lvl 5 with no progression), and
+	// the plan* times are uniformly 5 minutes. Trans companions also have
+	// no solo-hunt path, so the *Solo* fields are omitted.
+	var transBaseStats = {
+		sanity: 100, sanityMax: 100,
+		lust: 0, lvl: 5,
+		plan2TimeReq: 5, plan3TimeReq: 5, plan4TimeReq: 5,
+		eventSanityLoss: 10,
+		chanceOfSuccessCI: 50, chanceOfSuccessGR: 50,
+		chosen: 0, chanceToAttack: 25
+	};
+
+	// The 4 non-zero attack-chance tiers, indexed the same as clothingTiers.
+	// Shared across all six companions: slider values are game-balance, not
+	// character dialogue.
+	var tierChances = [40, 55, 70, 90];
+	var baseChance  = 25;
 
 	// Per-companion solo-hunt skill curve: level -> {owaissa, elm} success %.
 	// Drives the three near-identical Companion Info passages off a single
@@ -267,6 +290,14 @@ setup.CompanionData = (function () {
 		Alice: { 2: [20, 10], 3: [40, 20], 4: [50, 40], 5: [75, 65] },
 		Blake: { 2: [25, 10], 3: [40, 25], 4: [55, 40], 5: [70, 55] }
 	};
+
+	// Payout for a successful solo hunt, keyed by street. Owaissa is the
+	// safer / lower-paying contract; Elm is riskier. Driven from data so
+	// the controller's payoutSoloHunt doesn't hardcode the figures.
+	var soloRewards     = { Owaissa: 50, Elm: 100 };
+	// Up-front cost to dispatch a companion solo. Charged by
+	// payForSoloContract from $mc.money; canAffordSoloContract gates UI.
+	var soloContractFee = 20;
 
 	// CompanionEvent dialog shared by all trans companions (Alex / Taylor /
 	// Casey). Tier-1 has pre/post variants keyed off
@@ -299,10 +330,10 @@ setup.CompanionData = (function () {
 		transBaseStats:   transBaseStats,
 		tierChances:      tierChances,
 		baseChance:       baseChance,
-		eventMediaCis:    eventMediaCis,
-		eventMediaTrans:  eventMediaTrans,
 		transEventCopy:   transEventCopy,
 		soloSkillCurve:   soloSkillCurve,
+		soloRewards:      soloRewards,
+		soloContractFee:  soloContractFee,
 		cursedItemTypes:  cursedItemTypes
 	};
 })();

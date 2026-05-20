@@ -14,7 +14,7 @@ test.describe('Ectoplasm shop', () => {
   test.describe.configure({ timeout: 20_000 });
 
   test('shopCatalogue lists every advertised item with cost+max', async ({ game: page }) => {
-    const catalogue = await callSetup(page, 'setup.HuntController.shopCatalogue()');
+    const catalogue = await callSetup(page, 'setup.HuntShop.catalogue()');
     const ids = catalogue.map(i => i.id).sort();
     expect(ids).toEqual([
       'banlist_slot', 'calves_of_steel', 'intense_intuition',
@@ -45,11 +45,11 @@ test.describe('Ectoplasm shop', () => {
       SugarCube.State.variables.ectoplasm = 50;
       SugarCube.State.variables.meta = { unlocks: {}, bannedModifiers: [], rerollCharges: 0 };
     });
-    const ok = await callSetup(page, 'setup.HuntController.buyUnlock("smaller_house")');
+    const ok = await callSetup(page, 'setup.HuntShop.buyUnlock("smaller_house")');
     expect(ok).toBe(true);
     expect(await callSetup(page, 'setup.HuntController.ectoplasm()')).toBe(30); // 50 - 20
-    expect(await callSetup(page, 'setup.HuntController.metaUnlock("smaller_house")')).toBe(1);
-    expect(await callSetup(page, 'setup.HuntController.hasUnlock("smaller_house")')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntShop.unlock("smaller_house")')).toBe(1);
+    expect(await callSetup(page, 'setup.HuntShop.hasUnlock("smaller_house")')).toBe(true);
   });
 
   test('buyUnlock refuses when unaffordable (no partial deduction)', async ({ game: page }) => {
@@ -57,10 +57,10 @@ test.describe('Ectoplasm shop', () => {
       SugarCube.State.variables.ectoplasm = 10;
       SugarCube.State.variables.meta = { unlocks: {}, bannedModifiers: [], rerollCharges: 0 };
     });
-    const ok = await callSetup(page, 'setup.HuntController.buyUnlock("smaller_house")');
+    const ok = await callSetup(page, 'setup.HuntShop.buyUnlock("smaller_house")');
     expect(ok).toBe(false);
     expect(await callSetup(page, 'setup.HuntController.ectoplasm()')).toBe(10);
-    expect(await callSetup(page, 'setup.HuntController.metaUnlock("smaller_house")')).toBe(0);
+    expect(await callSetup(page, 'setup.HuntShop.unlock("smaller_house")')).toBe(0);
   });
 
   test('buyUnlock refuses to exceed max for bool unlocks', async ({ game: page }) => {
@@ -68,9 +68,9 @@ test.describe('Ectoplasm shop', () => {
       SugarCube.State.variables.ectoplasm = 1000;
       SugarCube.State.variables.meta = { unlocks: {}, bannedModifiers: [], rerollCharges: 0 };
     });
-    expect(await callSetup(page, 'setup.HuntController.buyUnlock("smaller_house")')).toBe(true);
-    expect(await callSetup(page, 'setup.HuntController.buyUnlock("smaller_house")')).toBe(false);
-    expect(await callSetup(page, 'setup.HuntController.metaUnlock("smaller_house")')).toBe(1);
+    expect(await callSetup(page, 'setup.HuntShop.buyUnlock("smaller_house")')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntShop.buyUnlock("smaller_house")')).toBe(false);
+    expect(await callSetup(page, 'setup.HuntShop.unlock("smaller_house")')).toBe(1);
   });
 
   test('REROLL_CHARGE stacks indefinitely and increments rerollCharges', async ({ game: page }) => {
@@ -79,11 +79,11 @@ test.describe('Ectoplasm shop', () => {
       SugarCube.State.variables.meta = { unlocks: {}, bannedModifiers: [], rerollCharges: 0 };
     });
     for (let i = 0; i < 4; i++) {
-      const ok = await callSetup(page, 'setup.HuntController.buyUnlock("reroll_charge")');
+      const ok = await callSetup(page, 'setup.HuntShop.buyUnlock("reroll_charge")');
       expect(ok).toBe(true);
     }
-    expect(await callSetup(page, 'setup.HuntController.metaUnlock("reroll_charge")')).toBe(4);
-    expect(await callSetup(page, 'setup.HuntController.rerollCharges()')).toBe(4);
+    expect(await callSetup(page, 'setup.HuntShop.unlock("reroll_charge")')).toBe(4);
+    expect(await callSetup(page, 'setup.HuntShop.rerollCharges()')).toBe(4);
     expect(await callSetup(page, 'setup.HuntController.ectoplasm()')).toBe(80); // 100 - 4*5
   });
 
@@ -92,22 +92,22 @@ test.describe('Ectoplasm shop', () => {
       SugarCube.State.variables.ectoplasm = 1000;
       SugarCube.State.variables.meta = { unlocks: {}, bannedModifiers: [], rerollCharges: 0 };
     });
-    expect(await callSetup(page, 'setup.HuntController.buyUnlock("banlist_slot")')).toBe(true);
-    expect(await callSetup(page, 'setup.HuntController.buyUnlock("banlist_slot")')).toBe(true);
-    expect(await callSetup(page, 'setup.HuntController.buyUnlock("banlist_slot")')).toBe(true);
-    expect(await callSetup(page, 'setup.HuntController.buyUnlock("banlist_slot")')).toBe(false); // cap
-    expect(await callSetup(page, 'setup.HuntController.bannedSlotsTotal()')).toBe(3);
+    expect(await callSetup(page, 'setup.HuntShop.buyUnlock("banlist_slot")')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntShop.buyUnlock("banlist_slot")')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntShop.buyUnlock("banlist_slot")')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntShop.buyUnlock("banlist_slot")')).toBe(false); // cap
+    expect(await callSetup(page, 'setup.HuntShop.bannedSlotsTotal()')).toBe(3);
 
     // Ban two modifiers, then unban one.
-    expect(await callSetup(page, 'setup.HuntController.toggleBannedModifier("pheromones")')).toBe(true);
-    expect(await callSetup(page, 'setup.HuntController.toggleBannedModifier("locked_tools")')).toBe(true);
-    expect(await callSetup(page, 'setup.HuntController.bannedSlotsUsed()')).toBe(2);
-    expect(await callSetup(page, 'setup.HuntController.bannedSlotsRemaining()')).toBe(1);
+    expect(await callSetup(page, 'setup.HuntShop.toggleBannedModifier("pheromones")')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntShop.toggleBannedModifier("locked_tools")')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntShop.bannedSlotsUsed()')).toBe(2);
+    expect(await callSetup(page, 'setup.HuntShop.bannedSlotsRemaining()')).toBe(1);
 
     // Toggle off pheromones.
-    expect(await callSetup(page, 'setup.HuntController.toggleBannedModifier("pheromones")')).toBe(true);
-    expect(await callSetup(page, 'setup.HuntController.isBanned("pheromones")')).toBe(false);
-    expect(await callSetup(page, 'setup.HuntController.isBanned("locked_tools")')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntShop.toggleBannedModifier("pheromones")')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntShop.isBanned("pheromones")')).toBe(false);
+    expect(await callSetup(page, 'setup.HuntShop.isBanned("locked_tools")')).toBe(true);
   });
 
   test('toggleBannedModifier rejects unknown modifier ids', async ({ game: page }) => {
@@ -115,7 +115,7 @@ test.describe('Ectoplasm shop', () => {
       SugarCube.State.variables.ectoplasm = 1000;
       SugarCube.State.variables.meta = { unlocks: { banlist_slot: 3 }, bannedModifiers: [], rerollCharges: 0 };
     });
-    expect(await callSetup(page, 'setup.HuntController.toggleBannedModifier("not_a_real_modifier")')).toBe(false);
+    expect(await callSetup(page, 'setup.HuntShop.toggleBannedModifier("not_a_real_modifier")')).toBe(false);
   });
 
   test('toggleBannedModifier refuses when no slots available', async ({ game: page }) => {
@@ -123,13 +123,13 @@ test.describe('Ectoplasm shop', () => {
       SugarCube.State.variables.ectoplasm = 0;
       SugarCube.State.variables.meta = { unlocks: {}, bannedModifiers: [], rerollCharges: 0 };
     });
-    expect(await callSetup(page, 'setup.HuntController.bannedSlotsTotal()')).toBe(0);
-    expect(await callSetup(page, 'setup.HuntController.toggleBannedModifier("pheromones")')).toBe(false);
+    expect(await callSetup(page, 'setup.HuntShop.bannedSlotsTotal()')).toBe(0);
+    expect(await callSetup(page, 'setup.HuntShop.toggleBannedModifier("pheromones")')).toBe(false);
   });
 
   test('unknown shop ids are rejected by buyUnlock', async ({ game: page }) => {
     await page.evaluate(() => { SugarCube.State.variables.ectoplasm = 100; });
-    expect(await callSetup(page, 'setup.HuntController.buyUnlock("phantom_item")')).toBe(false);
+    expect(await callSetup(page, 'setup.HuntShop.buyUnlock("phantom_item")')).toBe(false);
     expect(await callSetup(page, 'setup.HuntController.ectoplasm()')).toBe(100);
   });
 });

@@ -5,7 +5,7 @@
  * thresholds, companion identity, mare progression, wraith escape).
  */
 setup.SpecialEvent = (function () {
-	function sv() { return State.variables; }
+	var sv = setup.sv;
 	function companionName() { return setup.Companion.activeCompanionName(); }
 
 	/* Variables owned by this controller. Other controllers should
@@ -82,6 +82,16 @@ setup.SpecialEvent = (function () {
 		// --- Mare stage ------------------------------------
 		mareStage: function () { return sv().ghostMareEventStage; },
 		setMareStage: function (n) { sv().ghostMareEventStage = n; },
+		/* Midnight rollover: while the Mare arc is active, advance the
+		   stage clock by one day; otherwise zero it out. */
+		tickMareStageMidnight: function () {
+			var s = sv();
+			if (s.ghostMareEventStart >= 1) {
+				s.ghostMareEventStage += 1;
+			} else {
+				s.ghostMareEventStage = 0;
+			}
+		},
 		mareStageAtLeast: function (n) {
 			return (sv().ghostMareEventStage || 0) >= n;
 		},
@@ -104,7 +114,4 @@ setup.SpecialEvent = (function () {
 		}
 	};
 })();
-/* Deferred to :storyready -- see ChurchController for rationale. */
-$(document).one(':storyready', function () {
-	setup.Cooldowns.registerDaily('ghostSpecialEventSpirit');
-});
+setup.Cooldowns.registerDaily('ghostSpecialEventSpirit');

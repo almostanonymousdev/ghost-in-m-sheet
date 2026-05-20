@@ -34,12 +34,25 @@
 	//       $pendingHuntHouseId, $currentsearchRogue →
 	//       $currentsearchHunt, and the "rogue-" prefix is stripped
 	//       from static house ids ('rogue-owaissa' → 'owaissa', etc.).
-	//   v6: $hunt bundle removed. Hunt-lifecycle state lives on
-	//       top-level $huntMode (the integer formerly at $hunt.mode)
-	//       and per-hunt ghost name / evidence / favourite-room /
-	//       trapped-flag fold into the $run bundle as ghostName /
-	//       evidence / favouriteRoomName / trapped (plus a new
-	//       disguiseName for Mimic display rotation).
+	//   v6: two unrelated shape changes landed together.
+	//       (a) $hunt bundle removed. Hunt-lifecycle state lives on
+	//           top-level $huntMode (the integer formerly at
+	//           $hunt.mode) and per-hunt ghost name / evidence /
+	//           favourite-room / trapped-flag fold into the $run
+	//           bundle as ghostName / evidence / favouriteRoomName /
+	//           trapped (plus a new disguiseName for Mimic display
+	//           rotation).
+	//       (b) $companion stopped being a per-pick clone of the
+	//           active companion's stat row -- it's now a {name}
+	//           marker, and the per-companion $brook/... rows are
+	//           the single source of truth for sanity/lust/
+	//           chanceToAttack/etc. Old clone fields get ported
+	//           back onto the backing row on load.
+	//       (c) pre-v6 per-companion legacy-key forwarding retired.
+	//	      	 Saves predating v6 ($isCompChosen<Name>,
+	//  	     $chanceToSuccessAlone<Street><Name>, $decreaseSanity, ...)
+	//      	 no longer carry per-companion solo-hunt state forward;
+	//     	 	 fresh per-companion stat rows are seeded from defaults.
 	var SAVE_VERSION = 6;
 	setup.SAVE_VERSION = SAVE_VERSION;
 
@@ -185,12 +198,23 @@
 		}
 		delete vars.checkChoosenLocation;
 
-		// Per-companion legacy-key forwarding (the dynamically-named
-		// $isCompChosen<Name>, $chanceToSuccessAlone<Street><Name>, etc.
-		// that used to scatter across $vars) lives on the controller —
-		// it owns the catalogue and the per-companion stat shape, so the
-		// migration table belongs there too.
-		setup.Companion.migrateLegacyKeys(vars);
+		// v6: collapse the per-pick $companion clone to a {name}
+		// marker. Old saves carrying a full clone (sanity / lust /
+		// chanceToAttack / eventSanityLoss / ...) are the source-of-
+		// truth for live in-hunt values; port those fields onto the
+		// backing stat row, then strip the clone down to {name}.
+		if (vars.companion && typeof vars.companion === 'object' && vars.companion.name) {
+			var marker = vars.companion;
+			var rowKey = String(marker.name).toLowerCase();
+			var row    = vars[rowKey];
+			if (row && typeof row === 'object') {
+				Object.keys(marker).forEach(function (k) {
+					if (k === 'name') return;
+					if (marker[k] !== undefined) row[k] = marker[k];
+				});
+			}
+			vars.companion = { name: marker.name };
+		}
 
 		// Library: 4 mutually-exclusive $comics<N> flags collapsed into a
 		// single $comicsReading slot (0 = none, 1..4 = active issue).
