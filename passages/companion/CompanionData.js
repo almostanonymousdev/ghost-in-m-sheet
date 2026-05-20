@@ -257,11 +257,6 @@ setup.CompanionData = (function () {
 		chanceOfSuccessGWB: 15, chanceOfSuccessSB: 15,
 		chanceOfSuccessTEMP: 15, chanceOfSuccessUVL: 15,
 		chanceOfSuccessAnyEvidence: 25,
-		// Per-companion flags formerly stored as top-level $isCompChosen<Name>,
-		// $chanceToAttack<Name>, $is<Name>GoingForHuntingAlone,
-		// $<key>Choose<Street>, $payForHuntAlone<Name>,
-		// $chanceToSuccessAlone<Street><Name>. setup.Companion.migrateLegacyKeys
-		// folds those forward off old saves.
 		chosen: 0, chanceToAttack: 25,
 		goingSolo: 0, paidForSolo: 0,
 		chooseOwaissa: 0, chooseElm: 0,

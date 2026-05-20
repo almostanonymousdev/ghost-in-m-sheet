@@ -54,21 +54,7 @@ setup.Companion = (function () {
 	   per-companion stat object ($brook/$alice/$blake/$alex/$taylor/
 	   $casey) is currently active. The stat objects themselves are
 	   the single source of truth for sanity/lust/chanceToAttack/...
-	   api.activeState() resolves the marker to that backing object,
-	   so reads and writes never diverge between a clone and the
-	   source. (The clone shape was retired in SAVE_VERSION 6; the
-	   migration ports old saves' clone fields back onto the backing
-	   stat object.) Anything else (player money/sanity-pills, hours,
-	   hunt state, haunted-house flags, witch-quest flags) goes
-	   through the owning controller's API. */
-	/* Per-companion mutable state used to live in a forest of dynamically-
-	   named top-level variables ($isCompChosen<Name>, $chanceToAttack<Name>,
-	   $is<Name>GoingForHuntingAlone, $<key>ChooseOwaissa, $payForHuntAlone<Name>,
-	   $chanceToSuccessAloneOwaissa<Name>, etc.). They've been moved onto the
-	   per-companion stat object ($brook / $alice / $blake / $alex / $taylor /
-	   $casey) so every dynamic key concatenation collapses to a normal field
-	   read on whatever api.stateFor(name) returns. api.migrateLegacyKeys (called
-	   from SaveMigration) carries the legacy keys forward off old saves. */
+	   api.activeState() resolves the marker to that backing object. */
 	var OWNED_VARS = Object.freeze([
 		'companion',
 		'brook', 'alice', 'blake', 'alex', 'taylor', 'casey',
@@ -107,7 +93,6 @@ setup.Companion = (function () {
 
 	var api = {
 		OWNED_VARS: OWNED_VARS,
-		// --- Catalogue -------------------------------------------
 		list: function () { return companions(); },
 		getByName: getByName,
 		// The mutable stat object for the active companion (the
@@ -143,52 +128,11 @@ setup.Companion = (function () {
 			return c ? c.defaultState() : null;
 		},
 
-		/* Per-companion flags formerly stored as a forest of dynamically-
-		   named top-level vars ($isCompChosen<Name>,
-		   $is<Name>GoingForHuntingAlone, $payForHuntAlone<Name>,
-		   $<key>Choose<Street>, $chanceToAttack<Name>,
-		   $chanceToSuccessAlone<Street><Name>) now live on the per-
-		   companion stat object. Carry whatever the old save had forward
-		   so existing players don't lose their solo-hunt progress, then
-		   strip the legacy keys. Called from SaveMigration.applyDefaults
-		   so this controller owns the full save-shape story for companions. */
-		migrateLegacyKeys: function (vars) {
-			if (!vars || typeof vars !== 'object') return;
-			companions().forEach(function (c) {
-				var stats = vars[c.key];
-				if (!stats || typeof stats !== 'object') return;
-				var legacy = {
-					chosen:            'isCompChosen' + c.name,
-					chanceToAttack:    'chanceToAttack' + c.name,
-					goingSolo:         'is' + c.name + 'GoingForHuntingAlone',
-					paidForSolo:       'payForHuntAlone' + c.name,
-					chooseOwaissa:     c.key + 'ChooseOwaissa',
-					chooseElm:         c.key + 'ChooseElm',
-					soloChanceOwaissa: 'chanceToSuccessAloneOwaissa' + c.name,
-					soloChanceElm:     'chanceToSuccessAloneElm' + c.name
-				};
-				Object.keys(legacy).forEach(function (newKey) {
-					var oldKey = legacy[newKey];
-					if (stats[newKey] === undefined && vars[oldKey] !== undefined) {
-						stats[newKey] = vars[oldKey];
-					}
-					delete vars[oldKey];
-				});
-				// Field rename on the stat row itself: decreaseSanity → eventSanityLoss.
-				if (stats.eventSanityLoss === undefined && stats.decreaseSanity !== undefined) {
-					stats.eventSanityLoss = stats.decreaseSanity;
-				}
-				delete stats.decreaseSanity;
-			});
-		},
-
-		// --- Identity --------------------------------------------
-		name: function () { var c = this.activeState(); return c && c.name; },
+name: function () { var c = this.activeState(); return c && c.name; },
 		isTransCompanion: function () { var c = this.active(); return !!(c && c.isTrans); },
 		isTransByName:    function (n) { var c = getByName(n); return !!(c && c.isTrans); },
 		isName: function (n) { return this.name() === n; },
 
-		// --- Selection ("chosen" flag on each $<key> stat object) --
 		anyCompanionSelected: function () {
 			var list = companions();
 			for (var i = 0; i < list.length; i++) {
@@ -241,7 +185,6 @@ setup.Companion = (function () {
 			this.pick(name);
 		},
 
-		// --- Sanity / lust tiers used by compEvent / *Help / Init -
 		sanityTier: function () {
 			var c = this.activeState(); if (!c) return "none";
 			var s = c.sanity;
@@ -255,7 +198,6 @@ setup.Companion = (function () {
 			return c && c.lust >= 50;
 		},
 
-		// --- Walk-home eligibility --------------------------------
 		hasBottomWorn: function () {
 			return setup.Wardrobe.worn(setup.WardrobeSlot.JEANS)
 				|| setup.Wardrobe.worn(setup.WardrobeSlot.SKIRT)
@@ -265,7 +207,6 @@ setup.Companion = (function () {
 			return this.hasBottomWorn();
 		},
 
-		// --- Hunt plans -------------------------------------------
 		cursedItemQuestUnlocked: function () {
 			return setup.Witch.cursedItemQuestStarted();
 		},
@@ -273,7 +214,6 @@ setup.Companion = (function () {
 			return setup.Witch.hasCursedItemToTurnIn();
 		},
 
-		// --- Sanity pills -----------------------------------------
 		hasSanityPills: function () {
 			return (setup.Mc.sanityPillsAmount() || 0) >= 1;
 		},
@@ -290,7 +230,6 @@ setup.Companion = (function () {
 			return true;
 		},
 
-		// --- Solo hunt --------------------------------------------
 		canAffordSoloContract: function () {
 			return setup.Mc.money() >= data().soloContractFee;
 		},
@@ -309,7 +248,6 @@ setup.Companion = (function () {
 			return false;
 		},
 
-		// --- Hunt-end cleanup (shared across huntEnd / HuntOver*) --
 		/* Run the active companion's onHuntFail hook (no-op when no
 		   companion is active). Each catalogue entry decides what
 		   "I was active when the hunt ended badly" means -- Blake
@@ -322,7 +260,6 @@ setup.Companion = (function () {
 		},
 		resetHuntState: function () { applyTransition('reset'); },
 
-		// --- House / room / street helpers -----------------------
 		/* True when the active hunt is companion-eligible. Procedural
 		   runs are eligible by default; static-plan houses opt in or
 		   out via the catalogue's allowsCompanions flag. Catalogue-
@@ -354,7 +291,6 @@ setup.Companion = (function () {
 				&& this.inHauntedHouseLocation();
 		},
 
-		// --- Per-tick progression (called from PassageDone) -------
 		/* For each cis companion (hasExpSystem true) with stat object on
 		   $<key>, roll any banked exp into level-ups while lvl < 5, then
 		   refresh maxSanityCap from the new level. Trans companions are
@@ -391,7 +327,6 @@ setup.Companion = (function () {
 			return live.sanity <= this.activeCompanionSanityCap();
 		},
 
-		// --- Street-passage "see your companion" test ------------
 		/* True when a companion is attached but their hunt-plan has
 		   already been cleared (eg. after a Myling event reset, or
 		   before a plan is picked) -- visually they're "out on the
@@ -401,7 +336,6 @@ setup.Companion = (function () {
 			return s.isCompChosen === 1 && KNOWN_PLANS.indexOf(s.chosenPlan) === -1;
 		},
 
-		// --- StoryCaption / HUD helpers ---------------------------
 		shouldRenderMini: function () {
 			var sc = State.variables.showComp;
 			var CS = setup.CompanionShow;
@@ -413,7 +347,6 @@ setup.Companion = (function () {
 			if (obj) { obj.lvl = lvl; }
 		},
 
-		// --- Solo-hunt success chances --------------------------
 		/* Roll & stash the per-street solo-hunt odds for the given
 		   cis companion into the backing save-field names so the
 		   link labels can still interpolate them. Called on Info
@@ -434,7 +367,6 @@ setup.Companion = (function () {
 			return street === 'Owaissa' ? c.soloChanceOwaissa : c.soloChanceElm;
 		},
 
-		// --- Pick companion for tonight's hunt ------------------
 		// Library / Mall entrypoints for Brook / Alice / Blake. Thin
 		// shims over pick() so the call sites read intent.
 		pickCisCompanion: function (name) { this.pick(name); },
@@ -458,9 +390,6 @@ setup.Companion = (function () {
 			this.payForSoloContract(name);
 		},
 
-		// --- Per-companion state accessors ----------------------
-		// (companionLvl / companionExp / companionExpForNextLvl fold
-		// into the setup.defineAccessors call at the bottom.)
 		isCompanionFlagActive: function () { return State.variables.isCompChosen === 1; },
 		markCompanionFlagActive: function () { State.variables.isCompChosen = 1; },
 		/* Pick a video/image descriptor for the CompanionEvent
@@ -513,15 +442,11 @@ setup.Companion = (function () {
 		isUnavailable: function (name) { var c = getByName(name); return c ? c.isUnavailable() : false; },
 		blakeUnlocked: function () { return setup.Mall.blakeIsCompanionCandidate(); },
 		aliceWorkDone: function () { return State.variables.aliceWorkDone === 1; },
-		// (hasFinishedSoloHunt / soloHuntPaymentState fold into the
-		// setup.defineAccessors call at the bottom.)
 		hasActiveCompanion: function () { var c = this.activeState(); return !!(c && c.name); },
 		activeCompanionName: function () {
 			var c = this.activeState();
 			return c && c.name;
 		},
-		// (soloHuntChanceOwaissa / soloHuntChanceElm fold into the
-		// setup.defineAccessors call at the bottom.)
 		setSoloHuntChances: function (name, owaissa, elm) {
 			var c = this.stateFor(name);
 			if (!c) return;
@@ -641,11 +566,6 @@ setup.Companion = (function () {
 			c.sanity += 2;
 		},
 
-		/* acknowledgeSoloHuntEnd (paid/goingSolo reset on the morning-after
-		   HuntEndAlone) and clearSoloHuntStreet (Owaissa/Elm choice reset
-		   after narration) fold into the setup.defineAccessors `writes`
-		   spec at the bottom. companionChoseOwaissa / companionChoseElm
-		   predicates fold into the same call. */
 		/* Pay out the solo-hunt reward to $mc.money. Per-street figures
 		   live in data().soloRewards. Called from *HuntEndAlone when the
 		   success roll lands. */
@@ -667,12 +587,6 @@ setup.Companion = (function () {
 			});
 		},
 
-		// --- Active-companion HUD / event helpers ----------------
-		// (sanity / lust / lvl / setActiveLust / addLust /
-		// drainSanity fold into the setup.defineAccessors call at the
-		// bottom. lvl() is the canonical active-companion level reader --
-		// callers used to also reach activeCompanionLvl() for the same
-		// thing.)
 		/* For a given companion slot (key = "brook" / "alice" / "blake")
 		   is the companion at the max level 5? Used by the companionExp
 		   widget to short-circuit xp gain. */
@@ -688,7 +602,6 @@ setup.Companion = (function () {
 			obj.exp += amount;
 		},
 
-		// --- Trans-companion first-encounter bookkeeping ----------
 		// $transFirstStage gates the companionTextEvent* dispatcher: on
 		// the initial trigger it sets to 1 so the follow-up text plays
 		// the "post-change" variant. $transPicture records which of the
@@ -724,7 +637,6 @@ setup.Companion = (function () {
 			State.variables.transPicture = c.portraitIndex;
 		},
 
-		// --- isCompanionContinue flow (widgetFriends) ---------
 		/* When the companion decides to continue: reset the per-hunt
 		   scratch flags so the normal hunt tick can resume. */
 		resumeHunt: function () { applyTransition('resume'); },

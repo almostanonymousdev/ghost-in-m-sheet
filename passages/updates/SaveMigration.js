@@ -48,6 +48,11 @@
 	//           the single source of truth for sanity/lust/
 	//           chanceToAttack/etc. Old clone fields get ported
 	//           back onto the backing row on load.
+	//       (c) pre-v6 per-companion legacy-key forwarding retired.
+	//	      	 Saves predating v6 ($isCompChosen<Name>,
+	//  	     $chanceToSuccessAlone<Street><Name>, $decreaseSanity, ...)
+	//      	 no longer carry per-companion solo-hunt state forward;
+	//     	 	 fresh per-companion stat rows are seeded from defaults.
 	var SAVE_VERSION = 6;
 	setup.SAVE_VERSION = SAVE_VERSION;
 
@@ -192,13 +197,6 @@
 			vars.checkChosenLocation = vars.checkChoosenLocation;
 		}
 		delete vars.checkChoosenLocation;
-
-		// Per-companion legacy-key forwarding (the dynamically-named
-		// $isCompChosen<Name>, $chanceToSuccessAlone<Street><Name>, etc.
-		// that used to scatter across $vars) lives on the controller —
-		// it owns the catalogue and the per-companion stat shape, so the
-		// migration table belongs there too.
-		setup.Companion.migrateLegacyKeys(vars);
 
 		// v6: collapse the per-pick $companion clone to a {name}
 		// marker. Old saves carrying a full clone (sanity / lust /
