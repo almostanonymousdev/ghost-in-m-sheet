@@ -28,7 +28,7 @@ setup.Delivery = (function () {
 		'order1', 'order2', 'order3',
 		'jobMoneySuccessed', 'jobMoneyFailed',
 		'deliveryBJ', 'deliveryPapersEvent', 'deliveryBurgerEvent',
-		'deliveryPackageEvent', 'deliveryPizzaEvent',
+		'deliveryPackageEvent', 'deliveryPizzaEvent', 'deliveryShiftDone',
 		'deliverySpecialOrder', 'deliverySpecialOrderAddress',
 		'deliverySpecialOrderType', 'deliverySpecialOrderPay',
 		'deliveryTotalTips', 'firstVisitDeliveryHub',
@@ -120,11 +120,14 @@ setup.Delivery = (function () {
 		hasEnergyForShift: function () {
 			return setup.Mc.energy() >= 2;
 		},
+		shiftDoneToday: function () {
+			return setup.Cooldowns.onCooldown('deliveryShiftDone');
+		},
 		canStartShift: function () {
-			return !this.isFirstVisit() && this.isOpen() && this.hasEnergyForShift();
+			return !this.isFirstVisit() && this.isOpen() && this.hasEnergyForShift() && !this.shiftDoneToday();
 		},
 		tooTiredForShift: function () {
-			return !this.isFirstVisit() && this.isOpen() && !this.hasEnergyForShift();
+			return !this.isFirstVisit() && this.isOpen() && !this.hasEnergyForShift() && !this.shiftDoneToday();
 		},
 
 		// --- Manager: flirt / BJ quest ---------------------------
@@ -294,7 +297,10 @@ setup.Delivery = (function () {
 		// --- Shift initialization (WorkDelivery passage) --------
 		// Rolls the 3 randomized orders + optional special "rush" order
 		// for the upcoming shift and seeds the per-shift counters.
+		// Also stamps the once-per-day cooldown so the player can't
+		// re-roll a fresh shift after starting one.
 		initShift: function () {
+			setup.Cooldowns.start('deliveryShiftDone');
 			var s = sv();
 			s.itemImages = {
 				pizza:      "ui/img/pizza.jpg",
@@ -345,6 +351,7 @@ setup.Cooldowns.registerDaily('deliveryPackageEvent');
 setup.Cooldowns.registerDaily('deliveryBurgerEvent');
 setup.Cooldowns.registerDaily('deliveryPapersEvent');
 setup.Cooldowns.registerDaily('deliveryBJ');
+setup.Cooldowns.registerDaily('deliveryShiftDone');
 
 /* Delivery-event catalogue. Each entry holds the metadata the unified
    dispatch passages (DeliveryEventChoose / Start / Event1 / Event2)

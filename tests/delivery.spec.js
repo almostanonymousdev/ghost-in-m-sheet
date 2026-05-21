@@ -207,6 +207,69 @@ test.describe('Delivery Controller', () => {
     expect(result).toBe(false);
   });
 
+  // --- Once-per-day shift cap ---
+
+  test('shiftDoneToday false when cooldown is clear', async ({ game: page }) => {
+    // arrange
+    await setVar(page, 'deliveryShiftDone', 0);
+
+    // act
+    const result = await callSetup(page, 'setup.Delivery.shiftDoneToday()');
+
+    // assert
+    expect(result).toBe(false);
+  });
+
+  test('shiftDoneToday true after initShift stamps the cooldown', async ({ game: page }) => {
+    // arrange
+    await setVar(page, 'deliveryShiftDone', 0);
+
+    // act
+    await callSetup(page, 'setup.Delivery.initShift()');
+    const result = await callSetup(page, 'setup.Delivery.shiftDoneToday()');
+
+    // assert
+    expect(result).toBe(true);
+  });
+
+  test('canStartShift false when shift already done today', async ({ game: page }) => {
+    // arrange — all other gates open
+    await setVar(page, 'firstVisitDeliveryHub', false);
+    await setVar(page, 'hours', 12);
+    await setVar(page, 'mc.energy', 5);
+    await setVar(page, 'deliveryShiftDone', 1);
+
+    // act
+    const result = await callSetup(page, 'setup.Delivery.canStartShift()');
+
+    // assert
+    expect(result).toBe(false);
+  });
+
+  test('tooTiredForShift false when shift already done today (no double-message)', async ({ game: page }) => {
+    // shiftDoneToday should suppress the "too tired" branch so the
+    // hub doesn't show both messages at once.
+    // arrange
+    await setVar(page, 'firstVisitDeliveryHub', false);
+    await setVar(page, 'hours', 12);
+    await setVar(page, 'mc.energy', 0);
+    await setVar(page, 'deliveryShiftDone', 1);
+
+    // act
+    const result = await callSetup(page, 'setup.Delivery.tooTiredForShift()');
+
+    // assert
+    expect(result).toBe(false);
+  });
+
+  test('deliveryShiftDone is registered as a daily cooldown', async ({ game: page }) => {
+    // act
+    const list = await callSetup(page, 'setup.Cooldowns.listDaily()');
+
+    // assert
+    expect(list).toContain('deliveryShiftDone');
+  });
+
   // --- Manager event ---
 
   test('meetsBeautyForManagerFlirt true at beauty >= 45', async ({ game: page }) => {
