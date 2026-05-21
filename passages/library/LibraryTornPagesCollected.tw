@@ -2,13 +2,15 @@
 @@.mc-thoughts; You smooth out the pages you've recovered so far and look them over again.@@<br>
 <<image "scenes/library/torn-page.png" "libraryCenteredImg">><br>
 <br>
-<<set _picked to setup.Library.randomCollectedTornPage()>>
-<<if _picked is null>>
+<<set _pages to setup.Library.collectedTornPages()>>
+<<if _pages.length is 0>>
 	@@.mc-thoughts; ...nothing yet. The pages must still be tucked somewhere on the shelves.@@<br>
 <<else>>
-	''<<= _picked.tip.title>>''<br>
-	<<= _picked.tip.body>><br>
-	<br>
+	<<for _page range _pages>>
+		''<<= _page.tip.title>>''<br>
+		<<= _page.tip.body>><br>
+		<br>
+	<</for>>
 	@@.mc-thoughts; (<<= setup.Library.tornPagesFound().length>> of <<= setup.Library.tornPageTips().length>> pages recovered.)@@<br>
 <</if>>
 <br>

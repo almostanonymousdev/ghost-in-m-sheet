@@ -256,14 +256,16 @@ test.describe('Library — controller helpers', () => {
     expect(await page.evaluate(() => SugarCube.setup.Library.pickRandomTornPage())).toBeNull();
   });
 
-  test('randomCollectedTornPage returns null until at least one is found', async ({ game: page }) => {
+  test('collectedTornPages returns every found page in order', async ({ game: page }) => {
     await page.evaluate(() => { SugarCube.State.variables.tornPagesFound = []; });
-    expect(await page.evaluate(() => SugarCube.setup.Library.randomCollectedTornPage())).toBeNull();
+    expect(await page.evaluate(() => SugarCube.setup.Library.collectedTornPages())).toEqual([]);
     expect(await callSetup(page, 'setup.Library.hasFoundAnyTornPage()')).toBe(false);
-    await page.evaluate(() => { SugarCube.State.variables.tornPagesFound = [0]; });
-    const picked = await page.evaluate(() => SugarCube.setup.Library.randomCollectedTornPage());
-    expect(picked).not.toBeNull();
-    expect(picked.index).toBe(0);
+    await page.evaluate(() => { SugarCube.State.variables.tornPagesFound = [2, 0]; });
+    const pages = await page.evaluate(() => SugarCube.setup.Library.collectedTornPages());
+    expect(pages).toHaveLength(2);
+    expect(pages[0].index).toBe(2);
+    expect(pages[1].index).toBe(0);
+    expect(pages[0].tip).toBeTruthy();
     expect(await callSetup(page, 'setup.Library.hasFoundAnyTornPage()')).toBe(true);
   });
 

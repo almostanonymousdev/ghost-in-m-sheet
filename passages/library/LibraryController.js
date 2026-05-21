@@ -149,12 +149,16 @@ setup.Library = (function () {
 			V.tornPagesFound.push(idx);
 			return { index: idx, tip: tornPageCatalogue()[idx] };
 		},
-		/* Pick one already-collected page at random, for re-reading. */
-		randomCollectedTornPage: function () {
+		/* Every already-collected page, in the order they were found,
+		   for the recovered-pages review screen. */
+		collectedTornPages: function () {
 			var found = this.tornPagesFound();
-			if (found.length === 0) return null;
-			var idx = found[Math.floor(Math.random() * found.length)];
-			return { index: idx, tip: tornPageCatalogue()[idx] };
+			var tips = tornPageCatalogue();
+			var out = [];
+			for (var i = 0; i < found.length; i++) {
+				out.push({ index: found[i], tip: tips[found[i]] });
+			}
+			return out;
 		},
 
 		// Library groping gains a bit of corruption each round; these
