@@ -15,7 +15,7 @@ test.describe('Game Initialization (StoryInit)', () => {
     expect(mc.lust).toBe(0);
     expect(mc.energy).toBe(10);
     expect(mc.energyMax).toBe(10);
-    expect(mc.lvl).toBe(0);
+    expect(mc.lvl).toBe(1);
     expect(mc.exp).toBe(0);
     expect(mc.beautyBase).toBe(30);
     expect(mc.beautyModifier).toBe(0);

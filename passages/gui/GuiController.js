@@ -111,8 +111,8 @@ setup.Gui = (function () {
 	// player levels up. Writing here centralises the lookup so the
 	// scaling table lives in one place.
 	var TOOL_TIMER_BY_LVL = {
-		0: "1s", 1: "900ms", 2: "800ms", 3: "650ms",
-		4: "500ms", 5: "350ms", 6: "200ms"
+		1: "1s", 2: "900ms", 3: "800ms", 4: "650ms",
+		5: "500ms", 6: "350ms", 7: "200ms"
 	};
 	function refreshToolTimer() {
 		// Settings-dialog override (persists across save/load and history

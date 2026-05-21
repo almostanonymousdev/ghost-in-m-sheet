@@ -124,6 +124,42 @@ function collectPassages() {
   return out;
 }
 
+// Scan every .tw file for `@@.className;` custom-style openers and return
+// the set of class names referenced. Used to build a runtime check that
+// catches when those tags leak through as literal text — e.g. a dropped
+// leading `@@` in `@@.mc-thoughts; ...` renders the string ".mc-thoughts;"
+// straight into the player's view. The source-level lint
+// (tw-source-lint.spec.js) catches structurally broken @@-blocks; this
+// runtime check catches anything that slips past — malformed adjacent
+// markup, widget-rendered prose that emits an unwrapped selector, etc.
+function collectCustomStyleClassNames() {
+  const names = new Set();
+  const re = /@@\.([A-Za-z_][\w-]*);/g;
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) { walk(full); continue; }
+      if (!entry.name.endsWith('.tw')) continue;
+      const text = fs.readFileSync(full, 'utf-8');
+      for (const m of text.matchAll(re)) names.add(m[1]);
+    }
+  };
+  walk(PASSAGES_DIR);
+  return names;
+}
+
+function escapeRe(s) {
+  return s.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+}
+
+// Build the regex source once at module load. The class list is small
+// (~20 entries) and stable across shards, so doing it eagerly costs
+// nothing and avoids re-scanning the tree per shard.
+const LEAKY_CLASS_NAMES = [...collectCustomStyleClassNames()].sort();
+const LEAKY_CLASS_RE_SRC = LEAKY_CLASS_NAMES.length
+  ? '\\.(?:' + LEAKY_CLASS_NAMES.map(escapeRe).join('|') + ');'
+  : null;
+
 // Read .tw source for a passage and report whether its body contains a
 // <<widget>> definition. Files like widgetGym.tw declare reusable
 // widgets; the file gets a top-level :: header but the body is purely
@@ -210,8 +246,8 @@ function applyEnvFilters(passages) {
 // all <img>/<source> srcs, and any visible macro-error markup. The
 // click-each-link loop pulls from this snapshot rather than re-querying
 // the DOM each iteration.
-async function snapshotPage(page) {
-  return await page.evaluate(() => {
+async function snapshotPage(page, leakyClassReSrc) {
+  return await page.evaluate((leakyReSrc) => {
     const passageEl = document.querySelector('.passage');
     const root = document.querySelector('#passages') || document.body;
     const result = {
@@ -258,6 +294,21 @@ async function snapshotPage(page) {
     }
     const varLeak = txt.match(/\$[a-zA-Z_]\w*\.\w+/);
     if (varLeak) result.issues.push('visible-variable: ' + varLeak[0]);
+
+    // SugarCube custom-style openers `@@.mc-thoughts; ... @@` get
+    // compiled to <span class="mc-thoughts">…</span>. If the leading
+    // `@@` is dropped (typo, widget output that forgets the wrapper,
+    // unbalanced inner @@-pair), the parser doesn't recognize the
+    // selector and the literal string ".mc-thoughts;" lands in the
+    // player's view. Class list is whitelisted from the source so we
+    // don't flag unrelated ".something;" prose.
+    if (leakyReSrc) {
+      const classLeak = txt.match(new RegExp(leakyReSrc, 'g'));
+      if (classLeak) {
+        const unique = [...new Set(classLeak)];
+        result.issues.push('leaky-class-tag: ' + unique.slice(0, 3).join(' | '));
+      }
+    }
 
     passageEl.querySelectorAll('img, source').forEach((el) => {
       const src = el.getAttribute('src');
@@ -613,7 +664,7 @@ async function walkPassages(browser, passages, label) {
       continue;
     }
 
-    const snap = await snapshotPage(page);
+    const snap = await snapshotPage(page, LEAKY_CLASS_RE_SRC);
     const consoleAtRender = drainConsole();
     const issues = [
       ...snap.issues,
@@ -666,7 +717,7 @@ async function walkPassages(browser, passages, label) {
       // passage consumes RNG or time. Re-fetch the link by its
       // (text, target) signature rather than trusting the original
       // index blindly.
-      const reSnap = await snapshotPage(page);
+      const reSnap = await snapshotPage(page, LEAKY_CLASS_RE_SRC);
       const match = reSnap.links.find(
         (l) => l.text === link.text && l.target === link.target
       );
@@ -680,7 +731,7 @@ async function walkPassages(browser, passages, label) {
 
       stats.clicksTried++;
       const dest = await clickAndSettle(page, match.idx);
-      const destSnap = await snapshotPage(page);
+      const destSnap = await snapshotPage(page, LEAKY_CLASS_RE_SRC);
       const consoleAtClick = drainConsole();
       const destIssues = [
         ...destSnap.issues,
