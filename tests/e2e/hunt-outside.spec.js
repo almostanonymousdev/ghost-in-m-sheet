@@ -104,7 +104,7 @@ test.describe('E2E: Hunt Outside menu', () => {
     expect(await getVar(page, 'run')).toBeNull();
     expect(await getVar(page, 'ectoplasm')).toBe(expected);
     await expect(
-      page.locator('.passage').getByText(/door at your back/i)
+      page.locator('.passage').getByText(/you walked/i)
     ).toBeVisible();
   });
 
@@ -114,7 +114,7 @@ test.describe('E2E: Hunt Outside menu', () => {
     await clickLink(page, 'Identify the ghost', 'HuntIdentify');
     await clickLink(page, 'Choose', 'HuntIdentifyResolve');
     await expect(
-      page.locator('.passage').getByText(/confidently re-enter/i)
+      page.locator('.passage').getByText(/set your jaw and walk back in/i)
     ).toBeVisible();
   });
 
@@ -137,7 +137,7 @@ test.describe('E2E: Hunt Outside menu', () => {
     // Prep beat is visible immediately; the reveal is gated on a 6s
     // <<timed>> block.
     await expect(
-      page.locator('.passage').getByText(/fades peacefully/i)
+      page.locator('.passage').getByText(/shape thins out and goes/i)
     ).toBeVisible({ timeout: 10_000 });
     expect(await callSetup(page, 'setup.HuntController.field("outcome")')).toBe('success');
 
@@ -166,7 +166,7 @@ test.describe('E2E: Hunt Outside menu', () => {
 
     // Wait for the timed reveal to surface the wrong-guess line.
     await expect(
-      page.locator('.passage').getByText(/heart sinks/i)
+      page.locator('.passage').getByText(/wrong call/i)
     ).toBeVisible({ timeout: 10_000 });
 
     // The reveal now names the real ghost and lists its evidence so the

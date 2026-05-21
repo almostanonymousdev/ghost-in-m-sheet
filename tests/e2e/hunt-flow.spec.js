@@ -941,7 +941,7 @@ test.describe('E2E: hunt lifecycle', () => {
     // The run is closed and stamped with the sanity reason.
     expect(await getVar(page, 'run')).toBeNull();
     await expect(
-      page.locator('.passage').getByText(/sanity gone/i)
+      page.locator('.passage').getByText(/head goes first/i)
     ).toBeVisible();
   });
 
@@ -1060,7 +1060,7 @@ test.describe('E2E: hunt lifecycle', () => {
 
     expect(await getVar(page, 'run')).toBeNull();
     await expect(
-      page.locator('.passage').getByText(/sanity gone/i)
+      page.locator('.passage').getByText(/head goes first/i)
     ).toBeVisible();
   });
 
@@ -1142,7 +1142,7 @@ test.describe('E2E: hunt lifecycle', () => {
     expect(await getVar(page, 'run')).toBeNull();
     expect(await getVar(page, 'ectoplasm')).toBe(expectedFailure);
     await expect(
-      page.locator('.passage').getByText(/ends in failure/i)
+      page.locator('.passage').getByText(/house won/i)
     ).toBeVisible();
   });
 
@@ -1361,7 +1361,7 @@ test.describe('E2E: hunt lifecycle', () => {
     await page.waitForFunction(() => SugarCube.State.passage === 'HuntSummary');
     expect(await getVar(page, 'run')).toBeNull();
     await expect(
-      page.locator('.passage').getByText(/clock/i)
+      page.locator('.passage').getByText(/dawn beat you/i)
     ).toBeVisible();
   });
 

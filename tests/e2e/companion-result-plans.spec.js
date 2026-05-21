@@ -139,6 +139,30 @@ test.describe('Companion result plans', () => {
     expect(text.toLowerCase()).toContain(label.toLowerCase());
   });
 
+  /* The <<ghostRoom>> widget derives the favorite-room label from
+     $run.floorplan (via setup.HuntController.ghostRoomLabel). Plan4
+     was rendering "ghost's favorite room is " with a blank trailing
+     room name back when the widget read from a separate $hunt.room
+     field — pinning the controller-derived label here guards against
+     a future regression. */
+  test('Plan4 result renders a non-empty room name from the controller', async ({ game: page }) => {
+    await setupHunt(page, 'Spirit');
+    await page.evaluate(() => {
+      SugarCube.State.variables.chosenPlan = 'Plan4';
+      SugarCube.State.variables.companion = { name: 'Alex' };
+    });
+    // Sanity: the controller-derived label must exist for this fixture.
+    const fallback = await callSetup(page, 'setup.HuntController.ghostRoomLabel()');
+    expect(typeof fallback).toBe('string');
+    expect(fallback.length).toBeGreaterThan(0);
+
+    await goToPassage(page, 'CompanionResult');
+    const text = await page.evaluate(() => document.querySelector('.passage').textContent);
+    expect(text).toMatch(/favorite room/);
+    // The widget should have emitted the controller-derived room name.
+    expect(text.toLowerCase()).toContain(fallback.toLowerCase());
+  });
+
   test('Plan3 result renders an evidence block matching the picked id', async ({ game: page }) => {
     await setupHunt(page, 'Spirit');
     await page.evaluate(() => {

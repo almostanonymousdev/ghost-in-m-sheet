@@ -129,7 +129,7 @@ test.describe('Save/load round-trip', () => {
     await resetGame(page);
     // Reset wiped at least one tracked field back to default; otherwise
     // the deserialise step below could pass as a no-op.
-    expect(await getVar(page, 'mc.lvl')).toBe(0);
+    expect(await getVar(page, 'mc.lvl')).toBe(1);
     expect(await getVar(page, 'dailySeed')).not.toBe(NON_DEFAULTS.dailySeed);
 
     await page.evaluate((b) => SugarCube.Save.deserialize(b), blob);

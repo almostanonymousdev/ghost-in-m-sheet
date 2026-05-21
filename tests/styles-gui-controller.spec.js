@@ -164,8 +164,8 @@ test.describe('GuiController (setup.Gui)', () => {
 
   test('refreshToolTimer maps each MC level to the documented duration', async ({ game: page }) => {
     const expected = {
-      0: '1s', 1: '900ms', 2: '800ms', 3: '650ms',
-      4: '500ms', 5: '350ms', 6: '200ms'
+      1: '1s', 2: '900ms', 3: '800ms', 4: '650ms',
+      5: '500ms', 6: '350ms', 7: '200ms'
     };
     for (const lvl of Object.keys(expected)) {
       await page.evaluate((n) => SugarCube.setup.Mc.setLvl(n), Number(lvl));
