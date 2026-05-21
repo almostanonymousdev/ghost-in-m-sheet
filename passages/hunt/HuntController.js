@@ -1054,7 +1054,7 @@ setup.HuntController = (function () {
 	   gate -- the predicate works off $prowlActivated / $elapsedTimeProwl /
 	   $prowlTimeRemain, which the per-tick TickController maintenance
 	   keeps fresh. When a roll comes back true the per-tick chain in
-	   widgetInclude routes to GhostHuntEvent (Hide / RunFast / PrayHunt /
+	   widgetInclude routes to GhostProwlEvent (Hide / RunFast / PrayHunt /
 	   FreezeHunt / HuntEventSuccubus all return through huntCaughtPassage
 	   or $return so they land back on the right passage). */
 	var shouldStartProwl = guarded(false, function () {

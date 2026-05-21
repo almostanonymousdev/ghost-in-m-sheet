@@ -873,7 +873,7 @@ test.describe('E2E: hunt lifecycle', () => {
     await clickLink(page, 'Enter the hunt', 'HuntRun');
 
     /* Pin event randomness off so the click only exercises the
-       per-tick drain branch (not Event / StealClothes / GhostHuntEvent
+       per-tick drain branch (not Event / StealClothes / GhostProwlEvent
        gotos). The chain still calls Event but rollRandomEvent's
        chance-roll is gated on Math.random; pre-seeding all rolls
        to 1.0 keeps every roll above its threshold. */
@@ -945,13 +945,13 @@ test.describe('E2E: hunt lifecycle', () => {
     ).toBeVisible();
   });
 
-  test('per-tick chain in the hunt triggers GhostHuntEvent when shouldStartProwl fires', async () => {
+  test('per-tick chain in the hunt triggers GhostProwlEvent when shouldStartProwl fires', async () => {
     test.setTimeout(15_000);
 
     /* The huntTickStep widget calls huntTickEventChain, which goes
        through HuntController.shouldStartProwl. With timer
        state pre-stamped past the threshold and Math.random pinned
-       low, a single tool tick should land on GhostHuntEvent. */
+       low, a single tool tick should land on GhostProwlEvent. */
     await goToPassage(page, 'GhostStreet');
     await clickHuntCard(page);
     await ensureNotEmptyBag(page);
@@ -983,19 +983,19 @@ test.describe('E2E: hunt lifecycle', () => {
     await fastToolTicks(page);
 
     // Click any tool. Each meter tick runs huntTickEventChain, which
-    // may <<goto>> us to GhostHuntEvent / EventMC / StealClothes
+    // may <<goto>> us to GhostProwlEvent / EventMC / StealClothes
     // depending on which roll trips first. Any of those is a valid
     // "the per-tick chain DID fire sanity-driven side content".
     await page.locator('.hunt-tool-card').first().locator('a').click();
     await page.waitForFunction(() =>
-      ['GhostHuntEvent', 'EventMC', 'StealClothes'].includes(SugarCube.State.passage),
+      ['GhostProwlEvent', 'EventMC', 'StealClothes'].includes(SugarCube.State.passage),
       null,
       { timeout: 10_000 }
     );
     expect(await getVar(page, 'run')).not.toBeNull();
   });
 
-  test('hunt-survival options in GhostHuntEvent are reachable in hunt mode', async () => {
+  test('hunt-survival options in GhostProwlEvent are reachable in hunt mode', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
@@ -1003,7 +1003,7 @@ test.describe('E2E: hunt lifecycle', () => {
     await clickLink(page, 'Enter the hunt', 'HuntRun');
 
     // Drop straight into the hunt event UI.
-    await goToPassage(page, 'GhostHuntEvent');
+    await goToPassage(page, 'GhostProwlEvent');
     await expect(
       page.locator('.passage').getByText('Run away', { exact: true })
     ).toBeVisible();

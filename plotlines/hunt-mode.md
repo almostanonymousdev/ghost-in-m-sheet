@@ -160,7 +160,7 @@ the current run state:
   per-static-house `runsStealClothes: false` opt-out (Ironclad,
   since prison ghosts have their own warden-clothes mechanic).
 * `shouldStartProwl()` — gates `CheckHuntStart`'s
-  `<<goto "GhostHuntEvent">>`. Delegates to
+  `<<goto "GhostProwlEvent">>`. Delegates to
   `HauntedHouses.shouldStartProwl()` (prowl-timer window +
   `prowlChanceBonus` + `g.canProwl(mc)`).
 * `huntOverPassage(reason)` — stamps the run as a failure with
@@ -224,7 +224,7 @@ shared between nav-link steps and tool clicks:
   `EventMC`), a steal-clothes event may roll
   (`HuntController.shouldTriggerSteal` → `StealClothes`), and a
   random prowl may start (`HuntController.shouldStartProwl`
-  → `GhostHuntEvent`).
+  → `GhostProwlEvent`).
 
 The hunt nav links in `HuntRun` and the `<<huntToolBar>>` widget
 all call `<<huntTickStep>>`.

@@ -382,7 +382,7 @@ setup.HauntConditions = (function () {
 			&& V.baitActive !== 1);
 	}
 
-	/* Pray (used by GhostHuntEvent). Costs sanity AND energy. */
+	/* Pray (used by GhostProwlEvent). Costs sanity AND energy. */
 	function canPray() {
 		var V = State.variables;
 		return !!(V.mc

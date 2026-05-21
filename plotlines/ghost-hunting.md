@@ -27,7 +27,7 @@ The core gameplay revolves around investigating haunted locations to identify an
 
 * **Ghost behavior and randomization** - The ghost type is rolled at the start of each hunt from a seed-derived index into `setup.Ghosts.names()`; the spawn room comes from the floor-plan generator. Mid-run room changes are handled by `setup.HuntController.shuffleGhostRoom()` → `setup.HuntController.driftGhostRoom()`.
   * [GhostStreet.tw](../passages/haunted_houses/general/GhostStreet.tw) - Ghost street assignment (entry point for the Hunt card)
-  * [GhostHuntEvent.tw](../passages/haunted_houses/general/GhostHuntEvent.tw) - Ghost hunt event triggers
+  * [GhostProwlEvent.tw](../passages/haunted_houses/general/GhostProwlEvent.tw) - Ghost hunt event triggers
   * [FreezeHunt.tw](../passages/haunted_houses/general/FreezeHunt.tw) - Freeze-state / stall handling during a hunt
 
 * **Sanity and survival mechanics** - Environmental and ghost interactions affect the player's state and can force the hunt to end.
