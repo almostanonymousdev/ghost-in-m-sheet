@@ -142,6 +142,12 @@ setup.HuntController = (function () {
 			if (typeof setup.Companion.runHuntFailHooks === 'function') setup.Companion.runHuntFailHooks();
 			if (typeof setup.Companion.resetHuntState === 'function') setup.Companion.resetHuntState();
 		}
+		/* Pair with freezeBeauty() in startHunt. No-op when nothing is
+		   frozen, so the lobby-cancel path (which never reached the freeze)
+		   stays correct. */
+		if (setup.Mc && typeof setup.Mc.unfreezeBeauty === 'function') {
+			setup.Mc.unfreezeBeauty();
+		}
 		return prior;
 	}
 
@@ -682,6 +688,12 @@ setup.HuntController = (function () {
 			setup.Ghosts.resetEvidenceChecks();
 		}
 		applyMetaUnlocksAtStart(floorplan, seed, evidenceIds);
+		/* Pin MC beauty for the duration of the hunt so drift chance,
+		   event rolls, and other beauty-driven checks see a stable
+		   value even if clothes get torn off / makeup wipes mid-run.
+		   end() clears it on both the success-payout path and the
+		   lobby-cancel path. */
+		setup.Mc.freezeBeauty();
 		setup.Hunt.emit(setup.Hunt.Event.START, { ghostName: ghostName, seed: seed });
 		return active();
 	}

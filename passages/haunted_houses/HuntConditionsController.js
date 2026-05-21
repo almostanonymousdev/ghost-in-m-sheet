@@ -112,7 +112,7 @@ setup.HauntConditions = (function () {
 					label: "Time (" + Math.floor(elapsed / 60) + "h"
 						+ (elapsed % 60 < 10 ? "0" : "") + (elapsed % 60) + ")",
 					color: "#88aaff",
-					detail: "prowl +" + timeBonus + "% (escalates with elapsed hunt time)"
+					detail: "prowl +" + timeBonus + "%"
 				});
 			}
 		}
