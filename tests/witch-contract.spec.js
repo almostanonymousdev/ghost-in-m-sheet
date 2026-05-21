@@ -94,6 +94,56 @@ test.describe('WitchContract storefront', () => {
     expect(second).toEqual(first);
   });
 
+  test('refresh() rebuilds the board even when the day has not advanced', async () => {
+    /* Prime the cache; offered() reflects $mc.lvl = 3 (owaissa + elm). */
+    await page.evaluate(() => SugarCube.setup.WitchContract.ensureFresh());
+    const before = (await callSetup(page, 'setup.WitchContract.offered()'))
+      .map(c => c.houseId).sort();
+    expect(before).toEqual(['elm', 'owaissa']);
+
+    /* Drop the level under elm's gate without touching $dailySeed.
+       ensureFresh() would short-circuit on lastRefreshDay; refresh()
+       must reroll anyway -- this is the sleep-time guarantee. */
+    await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 0; });
+    await page.evaluate(() => SugarCube.setup.WitchContract.refresh());
+    const after = (await callSetup(page, 'setup.WitchContract.offered()'))
+      .map(c => c.houseId);
+    expect(after).toEqual(['owaissa']);
+  });
+
+  test('sleepAdvance() rerolls the board on a sub-midnight nap', async () => {
+    /* Hold the clock at 18:00 + sleep only 1 hour so $dailySeed never
+       reseeds. Without the sleep-time refresh hook the board would
+       remain stale until the next midnight rollover. */
+    await page.evaluate(() => {
+      SugarCube.setup.Time.setHours(18);
+      SugarCube.setup.Time.setMinutes(0);
+    });
+    const seedBefore = await getVar(page, 'dailySeed');
+
+    /* Prime the board at lvl 3 (owaissa + elm), then drop the level
+       under elm's gate before sleeping. The post-sleep board should
+       reflect the new level. */
+    await page.evaluate(() => SugarCube.setup.WitchContract.ensureFresh());
+    await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 0; });
+
+    await page.evaluate(() => SugarCube.setup.Home.sleepAdvance(1));
+
+    expect(await getVar(page, 'dailySeed')).toBe(seedBefore);
+    const offered = (await callSetup(page, 'setup.WitchContract.offered()'))
+      .map(c => c.houseId);
+    expect(offered).toEqual(['owaissa']);
+  });
+
+  test('sleepAdvance() leaves the held contract intact', async () => {
+    /* The held key is the player's purchased contract; sleeping must
+       reroll the offered list but never burn what the MC already paid
+       for. */
+    await page.evaluate(() => SugarCube.setup.WitchContract.cheatGrantContract('owaissa'));
+    await page.evaluate(() => SugarCube.setup.Home.sleepAdvance(8));
+    expect(await callSetup(page, 'setup.WitchContract.heldHouseId()')).toBe('owaissa');
+  });
+
   // --- Buying a key ------------------------------------------------------
 
   test('buyContract() deducts the fee, removes the offering, stamps held', async () => {

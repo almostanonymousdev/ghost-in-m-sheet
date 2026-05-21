@@ -476,6 +476,11 @@ setup.Home = (function () {
 			var rollover = setup.Time.sleepAdvanceHours(n);
 			setup.Time.setMinutes(0);
 			if (rollover) { setup.Tick.resetCooldowns(); }
+			/* Reroll the witch's contract board on every sleep, not only
+			   on midnight rollover. Khadija works the board over the
+			   night; an alarm-shortened nap counts as a fresh start
+			   too. */
+			setup.WitchContract.refresh();
 			/* Resync beauty from canonical state (worn wardrobe / piercings /
 			   tattoos / fit / makeup) on every wake. Guards against any
 			   incremental ±delta bookkeeping bug elsewhere that left

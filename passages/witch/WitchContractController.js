@@ -105,6 +105,17 @@ setup.WitchContract = (function () {
 			s.offered = buildOffered();
 			s.lastRefreshDay = day;
 		},
+		/* Force a board reroll regardless of whether the day cursor
+		   advanced. Called from setup.Home.sleepAdvance so every sleep
+		   brings a fresh slate -- including alarm-shortened naps that
+		   wake before midnight and so wouldn't otherwise reseed
+		   $dailySeed. The held key is untouched; it survives sleep
+		   until a hunt resolves it. */
+		refresh: function () {
+			var s = state();
+			s.offered = buildOffered();
+			s.lastRefreshDay = todayKey();
+		},
 
 		// --- Mutations --------------------------------------------
 		/* Buy the contract for `houseId`. Deducts the fee, removes
