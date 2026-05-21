@@ -1,5 +1,4 @@
 :: widgetInclude [widget nobr] {"position":"300,1800","size":"100,100"}
-
 <<widget "applyTickEffects">>
 	/* Wrapper for applying tick effects and updating the UI in one call.
 	The tool-timer strip refresh is here too because tool-check completions
@@ -22,15 +21,12 @@
    may start. */
 <<widget "huntTickEventChain">>
 	<<include "LightPassageGhost">>
-	<<include "Event">>
-	<<if not setup.Events.eventTriggered() and setup.HuntController.shouldTriggerSteal()>>
-		<<run setup.HauntedHouses.markStealClothesTriggered()>>
+	<<if setup.Events.rollRandomEvent()>>
+		<<goto "EventMC">>
+	<<elseif setup.HuntController.shouldTriggerSteal()>>
 		<<goto "StealClothes">>
-	<</if>>
-	<<if not setup.HauntedHouses.stealClothesTriggered()
-			and not setup.Events.eventTriggered()
-			and setup.HuntController.shouldStartRandomProwl()>>
-		<<goto "GhostHuntEvent">>
+	<<elseif setup.HuntController.shouldStartProwl()>>
+		<<goto "GhostProwlEvent">>
 	<</if>>
 <</widget>>
 
@@ -75,16 +71,16 @@
 
 <<widget "monkeyPawWishInput">>
 	/* <<textbox>> needs the backing var as a literal "$name"
-	   string, so the $ref is corralled here. Binds to
-	   $inputWish; the MonkeyPaw passage reads it via
-	   setup.Gui.monkeyPawWishInput(). */
+		string, so the $ref is corralled here. Binds to
+		$inputWish; the MonkeyPaw passage reads it via
+		setup.Gui.monkeyPawWishInput(). */
 	<<textbox "$inputWish" "">>
 <</widget>>
 
 <<widget "evidenceCheckbox">>
 	/* UI-binding wrapper: <<checkbox>> needs the backing var as a
-	   literal "$name" string, so the $ref has to live here. _args[0]
-	   is the State.variables key (e.g. "EMF5Check"). */
+		literal "$name" string, so the $ref has to live here. _args[0]
+		is the State.variables key (e.g. "EMF5Check"). */
 	<<checkbox `"$" + _args[0]` false true autocheck>>
 <</widget>>
 

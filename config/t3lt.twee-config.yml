@@ -82,7 +82,7 @@ sugarcube-2:
       description: Inner per-tick chain run from <<huntTickStep>> and from
         searchToolMarkup's repeat body. Includes LightPassageGhost + Event, then
         conditionally StealClothes (HuntController.shouldTriggerSteal) and
-        GhostHuntEvent (HuntController.shouldStartRandomHunt). All branching is
+        GhostProwlEvent (HuntController.shouldStartRandomHunt). All branching is
         dispatched via HuntController.
     includeTimeEventClothesHunt:
       name: includeTimeEventClothesHunt
@@ -220,7 +220,7 @@ sugarcube-2:
     tarotDeath:
       name: tarotDeath
       description: "Tarot effect widget for the death card: triggers the cursed hunt
-        flow or, if already opted out, jumps to GhostHuntEvent."
+        flow or, if already opted out, jumps to GhostProwlEvent."
     tarotPossession:
       name: tarotPossession
       description: "Tarot effect widget for the possession card: sets hunt mode to

@@ -142,6 +142,12 @@ setup.HuntController = (function () {
 			if (typeof setup.Companion.runHuntFailHooks === 'function') setup.Companion.runHuntFailHooks();
 			if (typeof setup.Companion.resetHuntState === 'function') setup.Companion.resetHuntState();
 		}
+		/* Pair with freezeBeauty() in startHunt. No-op when nothing is
+		   frozen, so the lobby-cancel path (which never reached the freeze)
+		   stays correct. */
+		if (setup.Mc && typeof setup.Mc.unfreezeBeauty === 'function') {
+			setup.Mc.unfreezeBeauty();
+		}
 		return prior;
 	}
 
@@ -682,6 +688,12 @@ setup.HuntController = (function () {
 			setup.Ghosts.resetEvidenceChecks();
 		}
 		applyMetaUnlocksAtStart(floorplan, seed, evidenceIds);
+		/* Pin MC beauty for the duration of the hunt so drift chance,
+		   event rolls, and other beauty-driven checks see a stable
+		   value even if clothes get torn off / makeup wipes mid-run.
+		   end() clears it on both the success-payout path and the
+		   lobby-cancel path. */
+		setup.Mc.freezeBeauty();
 		setup.Hunt.emit(setup.Hunt.Event.START, { ghostName: ghostName, seed: seed });
 		return active();
 	}
@@ -1075,11 +1087,11 @@ setup.HuntController = (function () {
 	   gate -- the predicate works off $prowlActivated / $elapsedTimeProwl /
 	   $prowlTimeRemain, which the per-tick TickController maintenance
 	   keeps fresh. When a roll comes back true the per-tick chain in
-	   widgetInclude routes to GhostHuntEvent (Hide / RunFast / PrayHunt /
+	   widgetInclude routes to GhostProwlEvent (Hide / RunFast / PrayHunt /
 	   FreezeHunt / HuntEventSuccubus all return through huntCaughtPassage
 	   or $return so they land back on the right passage). */
-	var shouldStartRandomProwl = guarded(false, function () {
-		return setup.HauntedHouses.shouldStartRandomProwl();
+	var shouldStartProwl = guarded(false, function () {
+		return setup.HauntedHouses.shouldStartProwl();
 	});
 
 	/* Steal-clothes roll. The wardrobe / stash side-effects are
@@ -1356,7 +1368,7 @@ setup.HuntController = (function () {
 		isHuntActive: isHuntActive,
 		tick: tick,
 		sidebarOutfit: sidebarOutfit,
-		shouldStartRandomProwl: shouldStartRandomProwl,
+		shouldStartProwl: shouldStartProwl,
 		shouldTriggerSteal: shouldTriggerSteal,
 		huntOverPassage: huntOverPassage,
 		realGhostName: realGhostName,

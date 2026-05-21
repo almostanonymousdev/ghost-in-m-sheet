@@ -166,9 +166,9 @@ test.describe('Clothing — Coverage and harassment readout', () => {
     // mirror that by setting slot 0 to NOT_WORN here.
     await page.evaluate(() => {
       const V = SugarCube.State.variables;
-      V.tshirtState0  = 'not worn'; V.tshirtState1  = 'worn'; V.tshirtState  = 'worn';
-      V.jeansState0   = 'not worn'; V.jeansState1   = 'worn'; V.jeansState   = 'worn';
-      V.braState0     = 'not worn'; V.braState1     = 'worn'; V.braState     = 'worn';
+      V.tshirtState0 = 'not worn'; V.tshirtState1 = 'worn'; V.tshirtState = 'worn';
+      V.jeansState0 = 'not worn'; V.jeansState1 = 'worn'; V.jeansState = 'worn';
+      V.braState0 = 'not worn'; V.braState1 = 'worn'; V.braState = 'worn';
       V.pantiesState0 = 'not worn'; V.pantiesState1 = 'worn'; V.pantiesState = 'worn';
     });
     await goToPassage(page, 'Wardrobe');
@@ -370,14 +370,14 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
     const map = await page.evaluate(() => {
       const W = SugarCube.setup.Wardrobe;
       return {
-        tshirt:  W.groupForSlot('tshirt').name,
-        bra:     W.groupForSlot('bra').name,
+        tshirt: W.groupForSlot('tshirt').name,
+        bra: W.groupForSlot('bra').name,
         panties: W.groupForSlot('panties').name,
-        jeans:   W.groupForSlot('jeans').name,
-        shorts:  W.groupForSlot('shorts').name,
-        skirt:   W.groupForSlot('skirt').name,
-        bottom:  W.groupForSlot('bottomOuter').name,
-        bogus:   W.groupForSlot('nope'),
+        jeans: W.groupForSlot('jeans').name,
+        shorts: W.groupForSlot('shorts').name,
+        skirt: W.groupForSlot('skirt').name,
+        bottom: W.groupForSlot('bottomOuter').name,
+        bogus: W.groupForSlot('nope'),
       };
     });
     expect(map).toEqual({
@@ -390,7 +390,7 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
   test('quickUndress(tshirt) on a worn tier-1 t-shirt unequips it and refunds beauty', async ({ game: page }) => {
     await setVar(page, 'tshirtState0', 'not worn');
     await setVar(page, 'tshirtState1', 'worn');
-    await setVar(page, 'tshirtState',  'worn');
+    await setVar(page, 'tshirtState', 'worn');
     await setVar(page, 'rememberTopOuter', 'tshirt1');
     await callSetup(page, `setup.Mc.setBeauty(30)`);
 
@@ -405,7 +405,7 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
   test('quickUndress no-ops when the slot already has nothing on', async ({ game: page }) => {
     await setVar(page, 'braState0', 'not worn');
     await setVar(page, 'braState1', 'not worn');
-    await setVar(page, 'braState',  'not worn');
+    await setVar(page, 'braState', 'not worn');
     const startBeauty = await callSetup(page, 'setup.Mc.beauty()');
 
     const ok = await callSetup(page, 'setup.Wardrobe.quickUndress("bra")');
@@ -417,7 +417,7 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
   test('quickRedress restores the previously worn item and re-applies its beauty', async ({ game: page }) => {
     await setVar(page, 'pantiesState0', 'not worn');
     await setVar(page, 'pantiesState2', 'not worn');
-    await setVar(page, 'pantiesState',  'not worn');
+    await setVar(page, 'pantiesState', 'not worn');
     await setVar(page, 'rememberBottomUnder', 'nopanties2');
     await callSetup(page, `setup.Mc.setBeauty(20)`);
 
@@ -432,11 +432,11 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
   test('quickRedress refuses to put back a now-NOT_BOUGHT (stolen) item', async ({ game: page }) => {
     await setVar(page, 'tshirtState0', 'not worn');
     await setVar(page, 'tshirtState2', 'not bought');
-    await setVar(page, 'tshirtState',  'not worn');
+    await setVar(page, 'tshirtState', 'not worn');
     await setVar(page, 'rememberTopOuter', 'notshirt2');
 
     const can = await callSetup(page, 'setup.Wardrobe.canQuickRedress("tshirt")');
-    const ok  = await callSetup(page, 'setup.Wardrobe.quickRedress("tshirt")');
+    const ok = await callSetup(page, 'setup.Wardrobe.quickRedress("tshirt")');
 
     expect(can).toBe(false);
     expect(ok).toBe(false);
@@ -450,12 +450,12 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
      * the HUD shortcut must refuse. */
     await setVar(page, 'tshirtState0', 'not worn');
     await setVar(page, 'tshirtState1', 'not worn');
-    await setVar(page, 'tshirtState',  'not worn');
+    await setVar(page, 'tshirtState', 'not worn');
     await setVar(page, 'rememberTopOuter', 'notshirt1');
     await setVar(page, 'isShirtStolen', 1);
 
     const can = await callSetup(page, 'setup.Wardrobe.canQuickRedress("tshirt")');
-    const ok  = await callSetup(page, 'setup.Wardrobe.quickRedress("tshirt")');
+    const ok = await callSetup(page, 'setup.Wardrobe.quickRedress("tshirt")');
 
     expect(can).toBe(false);
     expect(ok).toBe(false);
@@ -466,7 +466,7 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
   test('quickRedress refuses bottomOuter when the in-hunt $isBottomStolen aggregate is set', async ({ game: page }) => {
     await setVar(page, 'jeansState0', 'not worn');
     await setVar(page, 'jeansState1', 'not worn');
-    await setVar(page, 'jeansState',  'not worn');
+    await setVar(page, 'jeansState', 'not worn');
     await setVar(page, 'rememberBottomOuter', 'nojeans1');
     await setVar(page, 'isBottomStolen', 1);
 
@@ -477,22 +477,22 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
   });
 
   test('isSlotStolen maps each slot to the right $is<Garment>Stolen flag', async ({ game: page }) => {
-    await setVar(page, 'isShirtStolen',   1);
-    await setVar(page, 'isBraStolen',     0);
+    await setVar(page, 'isShirtStolen', 1);
+    await setVar(page, 'isBraStolen', 0);
     await setVar(page, 'isPantiesStolen', 1);
-    await setVar(page, 'isBottomStolen',  1);
+    await setVar(page, 'isBottomStolen', 1);
 
     const map = await page.evaluate(() => {
       const W = SugarCube.setup.Wardrobe;
       return {
-        tshirt:      W.isSlotStolen('tshirt'),
-        bra:         W.isSlotStolen('bra'),
-        panties:     W.isSlotStolen('panties'),
-        jeans:       W.isSlotStolen('jeans'),
-        shorts:      W.isSlotStolen('shorts'),
-        skirt:       W.isSlotStolen('skirt'),
+        tshirt: W.isSlotStolen('tshirt'),
+        bra: W.isSlotStolen('bra'),
+        panties: W.isSlotStolen('panties'),
+        jeans: W.isSlotStolen('jeans'),
+        shorts: W.isSlotStolen('shorts'),
+        skirt: W.isSlotStolen('skirt'),
         bottomOuter: W.isSlotStolen('bottomOuter'),
-        bogus:       W.isSlotStolen('nope'),
+        bogus: W.isSlotStolen('nope'),
       };
     });
     expect(map).toEqual({
@@ -512,7 +512,7 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
   test('undress + redress on bottomOuter (jeans) round-trips', async ({ game: page }) => {
     await setVar(page, 'jeansState0', 'not worn');
     await setVar(page, 'jeansState1', 'worn');
-    await setVar(page, 'jeansState',  'worn');
+    await setVar(page, 'jeansState', 'worn');
     await setVar(page, 'rememberBottomOuter', 'jeans1');
     await callSetup(page, `setup.Mc.setBeauty(35)`);
 
@@ -529,9 +529,9 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
   });
 
   test('currentBottomSlotName reports the worn outer-bottom or null', async ({ game: page }) => {
-    await setVar(page, 'jeansState',  'not worn');
+    await setVar(page, 'jeansState', 'not worn');
     await setVar(page, 'shortsState', 'worn');
-    await setVar(page, 'skirtState',  'not worn');
+    await setVar(page, 'skirtState', 'not worn');
     expect(await callSetup(page, 'setup.Wardrobe.currentBottomSlotName()')).toBe('shorts');
 
     await setVar(page, 'shortsState', 'not worn');
@@ -543,13 +543,13 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
      * put them back on. End-of-hunt cleanup should restore them. */
     await setVar(page, 'jeansState0', 'not worn');
     await setVar(page, 'jeansState1', 'not worn');
-    await setVar(page, 'jeansState',  'not worn');
+    await setVar(page, 'jeansState', 'not worn');
     await setVar(page, 'rememberBottomOuter', 'nojeans1');
     await setVar(page, 'isBottomStolen', 0);
 
     await setVar(page, 'braState0', 'not worn');
     await setVar(page, 'braState2', 'not worn');
-    await setVar(page, 'braState',  'not worn');
+    await setVar(page, 'braState', 'not worn');
     await setVar(page, 'rememberTopUnder', 'nobra2');
     await setVar(page, 'isBraStolen', 0);
 
@@ -567,7 +567,7 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
      * recovery has to go through FindStolenClothes / loseAllStolen. */
     await setVar(page, 'tshirtState0', 'not worn');
     await setVar(page, 'tshirtState1', 'not worn');
-    await setVar(page, 'tshirtState',  'not worn');
+    await setVar(page, 'tshirtState', 'not worn');
     await setVar(page, 'rememberTopOuter', 'notshirt1');
     await setVar(page, 'isShirtStolen', 1);
 
@@ -584,7 +584,7 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
      * a no-longer-owned garment back on. */
     await setVar(page, 'pantiesState0', 'not worn');
     await setVar(page, 'pantiesState2', 'not bought');
-    await setVar(page, 'pantiesState',  'not worn');
+    await setVar(page, 'pantiesState', 'not worn');
     await setVar(page, 'rememberBottomUnder', 'nopanties2');
     await setVar(page, 'isPantiesStolen', 0);
 
@@ -595,7 +595,7 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
 
   test('redressAfterHunt is a no-op when nothing was undressed', async ({ game: page }) => {
     await setVar(page, 'tshirtState0', 'worn');
-    await setVar(page, 'tshirtState',  'worn');
+    await setVar(page, 'tshirtState', 'worn');
     await setVar(page, 'rememberTopOuter', 'tshirt0');
 
     const restored = await callSetup(page, 'setup.Wardrobe.redressAfterHunt()');
@@ -610,13 +610,13 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
      * - tshirt permanently lost (NOT_BOUGHT, on $lostClothing). */
     await setVar(page, 'jeansState0', 'not worn');
     await setVar(page, 'jeansState1', 'not worn');
-    await setVar(page, 'jeansState',  'not worn');
+    await setVar(page, 'jeansState', 'not worn');
     await setVar(page, 'rememberBottomOuter', 'nojeans1');
     await setVar(page, 'isBottomStolen', 0);
 
     await setVar(page, 'tshirtState0', 'not worn');
     await setVar(page, 'tshirtState1', 'not worn');
-    await setVar(page, 'tshirtState',  'not worn');
+    await setVar(page, 'tshirtState', 'not worn');
     await setVar(page, 'rememberTopOuter', 'notshirt1');
     await setVar(page, 'isShirtStolen', 1);
     await setVar(page, 'lostClothing', []);
@@ -665,7 +665,7 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
   test('outside a hunt the t-shirt icon has no click handler', async ({ game: page }) => {
     await setHuntMode(page, 0);
     await setVar(page, 'tshirtState0', 'worn');
-    await setVar(page, 'tshirtState',  'worn');
+    await setVar(page, 'tshirtState', 'worn');
 
     const html = await renderStrip(page);
     expect(html).toContain('id="statusOuterTop"');
@@ -675,7 +675,7 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
   test('during a hunt the t-shirt slot becomes a take-off link', async ({ game: page }) => {
     await setVar(page, 'tshirtState0', 'not worn');
     await setVar(page, 'tshirtState1', 'worn');
-    await setVar(page, 'tshirtState',  'worn');
+    await setVar(page, 'tshirtState', 'worn');
     await setVar(page, 'rememberTopOuter', 'tshirt1');
     await startActiveHunt(page);
 
@@ -687,7 +687,7 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
   test('during a hunt with a remembered item the empty bra slot becomes a put-back-on link', async ({ game: page }) => {
     await setVar(page, 'braState0', 'not worn');
     await setVar(page, 'braState2', 'not worn');
-    await setVar(page, 'braState',  'not worn');
+    await setVar(page, 'braState', 'not worn');
     await setVar(page, 'rememberTopUnder', 'nobra2');
     await startActiveHunt(page);
 
@@ -698,7 +698,7 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
 
   test('during a hunt with no remembered item the empty bra slot stays a plain image', async ({ game: page }) => {
     await setVar(page, 'braState0', 'not worn');
-    await setVar(page, 'braState',  'not worn');
+    await setVar(page, 'braState', 'not worn');
     await setVar(page, 'rememberTopUnder', 'bra0');
     await startActiveHunt(page);
 
@@ -713,7 +713,7 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
      * suppress the put-back-on shortcut. */
     await setVar(page, 'tshirtState0', 'not worn');
     await setVar(page, 'tshirtState1', 'not worn');
-    await setVar(page, 'tshirtState',  'not worn');
+    await setVar(page, 'tshirtState', 'not worn');
     await setVar(page, 'rememberTopOuter', 'notshirt1');
     await setVar(page, 'isShirtStolen', 1);
     await startActiveHunt(page);
@@ -746,7 +746,7 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
   test('clicking the worn t-shirt icon in the sidebar takes it off and re-renders', async ({ game: page }) => {
     await setVar(page, 'tshirtState0', 'not worn');
     await setVar(page, 'tshirtState1', 'worn');
-    await setVar(page, 'tshirtState',  'worn');
+    await setVar(page, 'tshirtState', 'worn');
     await setVar(page, 'rememberTopOuter', 'tshirt1');
     await callSetup(page, `setup.Mc.setBeauty(30)`);
     await startActiveHunt(page);
@@ -758,7 +758,12 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
      * tshirtState still "worn" and quickUndress no-ops. */
     expect(await getVar(page, 'tshirtState')).toBe('not worn');
     expect(await getVar(page, 'rememberTopOuter')).toBe('notshirt1');
-    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(30 - 5);
+    /* Beauty is frozen for the duration of the hunt, so the displayed
+     * value stays pinned at the pre-hunt snapshot. The underlying
+     * modifier still moves (-5) so the live value resurfaces after
+     * the hunt ends. */
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(30);
+    expect(await getVar(page, 'mc.beautyModifier')).toBe(-5);
 
     const html = await page.locator('#statusOuterTop').innerHTML();
     expect(html).toMatch(/img src="[^"]+\/empty\.jpg"/);
@@ -768,7 +773,7 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
   test('clicking the empty t-shirt icon puts the remembered tier back on', async ({ game: page }) => {
     await setVar(page, 'tshirtState0', 'not worn');
     await setVar(page, 'tshirtState1', 'not worn');
-    await setVar(page, 'tshirtState',  'not worn');
+    await setVar(page, 'tshirtState', 'not worn');
     await setVar(page, 'rememberTopOuter', 'notshirt1');
     await callSetup(page, `setup.Mc.setBeauty(25)`);
     await startActiveHunt(page);
@@ -778,7 +783,10 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
     expect(await getVar(page, 'tshirtState1')).toBe('worn');
     expect(await getVar(page, 'tshirtState')).toBe('worn');
     expect(await getVar(page, 'rememberTopOuter')).toBe('tshirt1');
-    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(25 + 5);
+    /* Frozen during the hunt — displayed value stays at the snapshot;
+     * modifier moved (+5) and will surface after the hunt ends. */
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(25);
+    expect(await getVar(page, 'mc.beautyModifier')).toBe(0);
 
     const html = await page.locator('#statusOuterTop').innerHTML();
     expect(html).toMatch(/img src="[^"]+\/top\.jpg"/);
@@ -788,7 +796,7 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
   test('toggle round-trip: take off → put back on lands on the original state', async ({ game: page }) => {
     await setVar(page, 'tshirtState0', 'not worn');
     await setVar(page, 'tshirtState1', 'worn');
-    await setVar(page, 'tshirtState',  'worn');
+    await setVar(page, 'tshirtState', 'worn');
     await setVar(page, 'rememberTopOuter', 'tshirt1');
     await callSetup(page, `setup.Mc.setBeauty(30)`);
     await startActiveHunt(page);
@@ -796,7 +804,10 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
     // First click: take off
     await page.evaluate(() => jQuery('#statusOuterTop a').trigger('click'));
     expect(await getVar(page, 'tshirtState1')).toBe('not worn');
-    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(30 - 5);
+    /* Frozen at the pre-hunt snapshot; underlying modifier tracks
+     * the take-off delta so the live value will resurface post-hunt. */
+    expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(30);
+    expect(await getVar(page, 'mc.beautyModifier')).toBe(-5);
 
     // Second click on the now-empty slot: put back on
     await page.evaluate(() => jQuery('#statusOuterTop a').trigger('click'));
@@ -804,6 +815,7 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
     expect(await getVar(page, 'tshirtState')).toBe('worn');
     expect(await getVar(page, 'rememberTopOuter')).toBe('tshirt1');
     expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(30);
+    expect(await getVar(page, 'mc.beautyModifier')).toBe(0);
   });
 
   /* The HUD shortcut gates on HuntController.isHuntActive() so it
@@ -814,7 +826,7 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
     await setHuntMode(page, 0);
     await setVar(page, 'tshirtState0', 'not worn');
     await setVar(page, 'tshirtState1', 'worn');
-    await setVar(page, 'tshirtState',  'worn');
+    await setVar(page, 'tshirtState', 'worn');
     await setVar(page, 'rememberTopOuter', 'tshirt1');
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
     await page.evaluate(() => SugarCube.Engine.play('HuntRun'));

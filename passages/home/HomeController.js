@@ -476,6 +476,11 @@ setup.Home = (function () {
 			var rollover = setup.Time.sleepAdvanceHours(n);
 			setup.Time.setMinutes(0);
 			if (rollover) { setup.Tick.resetCooldowns(); }
+			/* Resync beauty from canonical state (worn wardrobe / piercings /
+			   tattoos / fit / makeup) on every wake. Guards against any
+			   incremental ±delta bookkeeping bug elsewhere that left
+			   beautyModifier out of sync with the actual worn kit. */
+			setup.Mc.recomputeBeauty();
 			setTimeout(function () {
 				try {
 					if (typeof Save !== 'undefined' && Save.browser

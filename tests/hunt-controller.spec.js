@@ -6,7 +6,7 @@ const { openGame, resetGame, callSetup, goToPassage, getVar } = require('./helpe
      - activeGhost()            Ghost instance or null
      - isGhostHere()            bool
      - isHuntActive()           per-tick chain gate (hunt + on HuntRun)
-     - shouldStartRandomProwl()  CheckHuntStart gate
+     - shouldStartProwl()       CheckHuntStart gate
      - shouldTriggerSteal()     StealClothesEvent gate
      - huntOverPassage(reason)  routes sanity / exhaustion / time
                                 runouts to HuntSummary with a failure stamp
@@ -117,7 +117,7 @@ test.describe('HuntController', () => {
     expect(await callSetup(page, 'setup.HuntController.field("failureReason")')).toBe('caught');
   });
 
-  test('shouldStartRandomProwl() fires when the predicate is met', async () => {
+  test('shouldStartProwl() fires when the predicate is met', async () => {
     /* Predicate: !prowlActivated && elapsedTimeProwl >= prowlTimeRemain
        && roll <= threshold && ghost.canProwl(mc). We pre-stamp
        prowlTimeRemain=0 so the timer is already past, lower MC sanity
@@ -136,7 +136,7 @@ test.describe('HuntController', () => {
     });
 
     // No active hunt: predicate is suppressed.
-    expect(await callSetup(page, 'setup.HuntController.shouldStartRandomProwl()')).toBe(false);
+    expect(await callSetup(page, 'setup.HuntController.shouldStartProwl()')).toBe(false);
 
     // Active hunt: pin the ghost to Shade so canProwl(sanity<=55) is met
     // regardless of seed.
@@ -145,7 +145,7 @@ test.describe('HuntController', () => {
       SugarCube.setup.HuntController.setField('ghostName', 'Shade');
     });
     await goToPassage(page, 'HuntRun');
-    expect(await callSetup(page, 'setup.HuntController.shouldStartRandomProwl()')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntController.shouldStartProwl()')).toBe(true);
 
     await page.evaluate(() => window.__restoreRandom && window.__restoreRandom());
   });

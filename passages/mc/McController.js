@@ -63,8 +63,15 @@ setup.Mc = (function () {
 		// game init; every gameplay-driven change (wardrobe, makeup,
 		// tattoos, gym, piercings, ...) writes only `beautyModifier`.
 		// Reads come through beauty() so callers see the sum.
+		//
+		// During a hunt, `mc.frozenBeauty` overrides reads so drift
+		// chance / event rolls see a stable value while clothes get
+		// torn off, makeup wipes, etc. Writes pass through unchanged --
+		// the freeze is read-side only. HuntController calls
+		// freezeBeauty()/unfreezeBeauty() through the hunt lifecycle.
 		beauty: function () {
 			var m = sv().mc;
+			if (m.frozenBeauty != null) { return m.frozenBeauty; }
 			return (m.beautyBase || 0) + (m.beautyModifier || 0);
 		},
 		setBeauty: function (v) {
@@ -72,6 +79,66 @@ setup.Mc = (function () {
 		},
 		addBeauty: function (n) {
 			sv().mc.beautyModifier = (sv().mc.beautyModifier || 0) + n;
+		},
+		freezeBeauty: function () {
+			var m = sv().mc;
+			m.frozenBeauty = (m.beautyBase || 0) + (m.beautyModifier || 0);
+		},
+		unfreezeBeauty: function () {
+			sv().mc.frozenBeauty = null;
+		},
+		isBeautyFrozen: function () {
+			return sv().mc.frozenBeauty != null;
+		},
+
+		/* Rebuild beautyModifier from canonical state (worn wardrobe,
+		   piercings, tattoos, fit-derived bonus, applied makeup) as a
+		   defensive resync. Called from setup.Home.sleepAdvance() so
+		   every wake snaps beauty back to a derivable value, papering
+		   over any incremental ±delta bookkeeping bug elsewhere. */
+		recomputeBeauty: function () {
+			var s    = sv();
+			var m    = s.mc;
+			var WORN = setup.ClothingState && setup.ClothingState.WORN;
+			var total = (m.beautyBase || 0);
+
+			total += Math.floor((m.fit || 0) / 5);
+
+			if (Array.isArray(setup.WARDROBE_GROUPS)) {
+				setup.WARDROBE_GROUPS.forEach(function (grp) {
+					(grp.items || []).forEach(function (item) {
+						if (item.beauty && s[item.var] === WORN) {
+							total += item.beauty;
+						}
+					});
+				});
+			}
+
+			if (Array.isArray(setup.piercingList)) {
+				setup.piercingList.forEach(function (p) {
+					if (p.beauty && s[p.var] === WORN) {
+						total += p.beauty;
+					}
+				});
+			}
+
+			/* Tattoo catalogue is hardcoded in BeautySalonTattoos.tw
+			   widget calls; mirror the +amounts here. */
+			var TATTOOS = {
+				tattooFace:  2, tattooNeck:  2, tattooHand: 1,
+				tattooChest: 3, tattooPussy: 3, tattooAss:  3
+			};
+			Object.keys(TATTOOS).forEach(function (key) {
+				if (s[key] === WORN) total += TATTOOS[key];
+			});
+
+			if (s.makeupApplied === 1) {
+				var tier = m.makeupImg;
+				total += tier === 1 ? 5 : tier === 2 ? 10 : tier === 3 ? 15 : 0;
+			}
+
+			if (total < 0) total = 0;
+			m.beautyModifier = total - (m.beautyBase || 0);
 		},
 
 		// --- Penalty (sleep / assault debuff flag) --------------

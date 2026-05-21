@@ -19,10 +19,19 @@ setup.Events = (function () {
 	// body class }) lives in setup.Styles. isDarkRoom() and
 	// turnOffLightHere() below delegate to that single source.
 
-	// --- Sanity thresholds by lust tier (private) ----------------
-	// Index 0 is unused; tiers 1-7 map to the decreasingSanity
-	// stage values.
-	var sanityThresholds = [0, 4, 5, 5, 6, 7, 8, 9];
+	// --- Per-tier per-tick body-part event chance (private) ------
+	// Index 0 is unused; tiers 1-7 map to the per-tick % chance a
+	// body-part event fires. Tier is now time-driven (see
+	// eventTier) so the chance naturally ramps up as the hunt
+	// progresses: at the start the ghost can only mess with the
+	// MC's mind (tier 1, 4%); by the late hours every body part
+	// is on the table and events fire ~12% per tick.
+	var sanityThresholds = [0, 4, 5, 6, 7, 8, 10, 12];
+
+	// Minutes of elapsed hunt time per tier step. Hunts run from
+	// midnight (totalMinutes = 0) to hour 6 = 360 minutes, so 50
+	// minutes per tier gives a 1→7 sweep over the full hunt window.
+	var MINUTES_PER_TIER = 50;
 
 	/* Typed key constants. Mirroring setup.Hunt.Event: lookups throw
 	   on unknown keys so a typo surfaces at the call site instead of
@@ -144,16 +153,35 @@ setup.Events = (function () {
 			return dest;
 		},
 
-		// --- Lust tiers ------------------------------------------
-		lustTier: function () {
-			var l = setup.Mc.lust();
-			if (l >= 90) return 7;
-			if (l >= 75) return 6;
-			if (l >= 60) return 5;
-			if (l >= 45) return 4;
-			if (l >= 30) return 3;
-			if (l >= 15) return 2;
-			return 1;
+		// --- Event escalation tier -------------------------------
+		// Time is the primary driver: the longer the hunt has been
+		// running, the more body parts the ghost can target.
+		// lust/corruption/beauty layer a small (<= +2 tier) bump on
+		// top so the player's state still nudges escalation without
+		// drowning out the time signal. Outside a hunt the tier
+		// floors at 1 (mind only) — body-part rolls are only ever
+		// called from hunt event passages so this just keeps the
+		// off-hunt fallback well-defined.
+		elapsedHuntMinutes: function () {
+			if (!setup.HuntController || !setup.HuntController.isHuntActive
+				|| !setup.HuntController.isHuntActive()) return 0;
+			return (setup.Time && setup.Time.totalMinutes)
+				? setup.Time.totalMinutes() : 0;
+		},
+		statTierBonus: function () {
+			var lustW   = Math.min(1, (setup.Mc.lust()       || 0) / 100);
+			var corrW   = Math.min(1, (setup.Mc.corruption() || 0) / 8);
+			var beautyW = Math.min(1, (setup.Mc.beauty()     || 0) / 100);
+			// Sum is 0-3 across the three axes; (sum * 2 / 3) maps
+			// 1 maxed → 0, 2 maxed → 1, 3 maxed → 2.
+			return Math.min(2, Math.floor((lustW + corrW + beautyW) * 2 / 3));
+		},
+		eventTier: function () {
+			var base = Math.floor(this.elapsedHuntMinutes() / MINUTES_PER_TIER) + 1;
+			if (base < 1) base = 1;
+			var tier = base + this.statTierBonus();
+			if (tier > 7) tier = 7;
+			return tier;
 		},
 
 		// --- Corruption tiers ------------------------------------
@@ -411,7 +439,7 @@ setup.Events = (function () {
 		   "EventMC">>. Body-part fallback delegates to
 		   videoListForEvent() so the clothing-aware resolvers stay
 		   the single source. */
-		rollProwlEvent: function () {
+		rollRandomEvent: function () {
 			var g           = setup.Ghosts.active();
 			var chance      = Math.floor(Math.random() * 101);
 			var bansheeRoll = 1 + Math.floor(Math.random() * 10);
@@ -424,8 +452,8 @@ setup.Events = (function () {
 				videoList = this.bansheeVideos();
 			} else if (g && g.canTentacles && ctRoll === 1 && chance <= abilityGate) {
 				this.enableCthulion();
-				var lt = this.lustTier();
-				var tier = lt >= 7 ? 3 : lt === 6 ? 2 : lt === 5 ? 1 : 0;
+				var et = this.eventTier();
+				var tier = et >= 7 ? 3 : et === 6 ? 2 : et === 5 ? 1 : 0;
 				if (tier) videoList = cthulionVideos(tier);
 			} else {
 				var key = this.rollBodyPartEvent(chance);
@@ -534,15 +562,17 @@ setup.Events = (function () {
 		setCleanedUp: function (val) { sv().cleanedUp = !!val; },
 
 		/* Threshold reduction from how dressed the MC is. Each ~12
-		   coverage points (range 0-100) trims one off the
-		   lust-tier event threshold, so a fully covered MC is ~8
-		   harder to harass per tick than a naked one. */
+		   coverage points (range 0-100) trims one off the event
+		   threshold, capped at 3 so a fully covered MC can never
+		   wipe out the entire base — early-hunt tier 1 (threshold 4)
+		   still passes with at least 1 effective threshold so the
+		   ghost can mess with her mind. */
 		coverageDamp: function () {
-			return Math.floor(setup.Wardrobe.coverage() / 12);
+			return Math.min(3, Math.floor(setup.Wardrobe.coverage() / 12));
 		},
 
 		rollBodyPartEvent: function (chance) {
-			var tier      = this.lustTier();
+			var tier      = this.eventTier();
 			var threshold = sanityThresholds[tier] - this.coverageDamp();
 			if (threshold < 0) threshold = 0;
 			if (chance > threshold) return '';

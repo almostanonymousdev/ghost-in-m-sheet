@@ -12,10 +12,10 @@
  * and the underlying mechanics never drift apart. */
 setup.HauntConditions = (function () {
 	var LUST_FUEL_THRESHOLD = 50;   // passive evidence bonus when lust >= this
-	var BAIT_INITIAL_LUST   = 20;   // lust the bait click stamps onto the MC
-	var BAIT_LUST_PER_STEP  = 10;   // lust accrued each remaining bait step
-	var BAIT_STEPS          = 3;    // nav ticks the ghost is pinned to you
-	var BAIT_ORGASM_SANITY  = 10;   // sanity lost when bait pushes lust past the cap
+	var BAIT_INITIAL_LUST = 20;   // lust the bait click stamps onto the MC
+	var BAIT_LUST_PER_STEP = 10;   // lust accrued each remaining bait step
+	var BAIT_STEPS = 3;    // nav ticks the ghost is pinned to you
+	var BAIT_ORGASM_SANITY = 10;   // sanity lost when bait pushes lust past the cap
 	var ORGASM_COOLDOWN_STEPS = 3;  // aftershock window seeded after any orgasm trigger
 
 	/* Energy as the pacing gate: every nav tick inside a haunted house
@@ -23,9 +23,9 @@ setup.HauntConditions = (function () {
 	 * contract. Spendable actions (bait, pray) charge their own energy
 	 * on top of their named cost. Energy at 0 kicks the player out via
 	 * HuntOverExhaustion. */
-	var ENERGY_PER_STEP    = 0.125;
-	var ENERGY_COST_BAIT   = 0.5;
-	var ENERGY_COST_PRAY   = 0.5;
+	var ENERGY_PER_STEP = 0.125;
+	var ENERGY_COST_BAIT = 0.5;
+	var ENERGY_COST_PRAY = 0.5;
 
 	var passageBgIndex = null;
 	function bgIndex() {
@@ -53,19 +53,19 @@ setup.HauntConditions = (function () {
 	function clothingState() {
 		var V = State.variables;
 		var WORN = setup.ClothingState.WORN;
-		var topOn    = V.tshirtState === WORN;
+		var topOn = V.tshirtState === WORN;
 		var bottomOn = V.jeansState === WORN
 			|| V.shortsState === WORN
 			|| V.skirtState === WORN;
 		var pantiesOn = V.pantiesState === WORN;
 		if (!topOn && !bottomOn && !pantiesOn) return "nude";
-		if (!topOn && bottomOn)                return "topless";
-		if (topOn && bottomOn)                 return "dressed";
+		if (!topOn && bottomOn) return "topless";
+		if (topOn && bottomOn) return "dressed";
 		return "partial";
 	}
 
-	function isBaitActive()       { return State.variables.baitActive === 1; }
-	function isOverchargedMode()  { return State.variables.overchargedTools === 1; }
+	function isBaitActive() { return State.variables.baitActive === 1; }
+	function isOverchargedMode() { return State.variables.overchargedTools === 1; }
 
 	/* Combined per-tick deltas + tool/hunt bonuses, plus a contributors
 	 * array used by the HUD widget to show "why". */
@@ -74,20 +74,20 @@ setup.HauntConditions = (function () {
 		var inHouse = !!(setup.HuntController && setup.HuntController.isHuntActive
 			&& setup.HuntController.isHuntActive());
 		var snap = {
-			dark:              false,
-			clothing:          clothingState(),
-			overchargedTools:  isOverchargedMode(),
-			baitActive:        isBaitActive(),
-			baitStepsRemain:   V.baitStepsRemain || 0,
-			sanityPerStep:     0,
-			lustPerStep:       0,
-			energyPerStep:     inHouse ? -ENERGY_PER_STEP : 0,
+			dark: false,
+			clothing: clothingState(),
+			overchargedTools: isOverchargedMode(),
+			baitActive: isBaitActive(),
+			baitStepsRemain: V.baitStepsRemain || 0,
+			sanityPerStep: 0,
+			lustPerStep: 0,
+			energyPerStep: inHouse ? -ENERGY_PER_STEP : 0,
 			corruptionPending: 0,
-			timeLabel:         "paused",
-			prowlChanceBonus:   0,
-			toolChanceBonus:   0,
-			toolWindowBonus:   0,
-			contributors:      []
+			timeLabel: "paused",
+			prowlChanceBonus: 0,
+			toolChanceBonus: 0,
+			toolWindowBonus: 0,
+			contributors: []
 		};
 
 		if (inHouse) {
@@ -95,6 +95,20 @@ setup.HauntConditions = (function () {
 			var hasCompanion = V.isCompChosen === 1;
 			var contractDrain = hasCompanion ? 0.2 : 0.4;
 			snap.sanityPerStep -= contractDrain;
+
+			/* Time-of-hunt prowl ramp. Hunts start at midnight
+			   (totalMinutes = 0) and run to hour 6 = 360 minutes.
+			   +1% prowl chance per 20 elapsed minutes, capped at
+			   +18%, makes time the dominant driver of escalation —
+			   early hunt is quiet, late hunt is dangerous. Stat /
+			   clothing contributors below layer smaller bumps on
+			   top. */
+			var elapsed = (setup.Time && setup.Time.totalMinutes)
+				? setup.Time.totalMinutes() : 0;
+			var timeBonus = Math.min(18, Math.floor(elapsed / 20));
+			if (timeBonus > 0) {
+				snap.prowlChanceBonus += timeBonus;
+			}
 		}
 
 		/* Hunt modifiers fold into the aggregated readouts
@@ -113,7 +127,7 @@ setup.HauntConditions = (function () {
 
 		if (isCurrentRoomDark()) {
 			snap.dark = true;
-			snap.sanityPerStep   -= 1;
+			snap.sanityPerStep -= 1;
 			snap.prowlChanceBonus += 6;
 			snap.toolChanceBonus += 10;
 			snap.toolWindowBonus += 5;
@@ -126,7 +140,7 @@ setup.HauntConditions = (function () {
 
 		if (snap.clothing === "topless") {
 			snap.toolChanceBonus += 5;
-			snap.lustPerStep     += 1;
+			snap.lustPerStep += 1;
 			snap.prowlChanceBonus += 3;
 			snap.contributors.push({
 				label: "Topless",
@@ -134,10 +148,10 @@ setup.HauntConditions = (function () {
 				detail: "tools +5% · lust +1/step · prowl +3%"
 			});
 		} else if (snap.clothing === "nude") {
-			snap.toolChanceBonus   += 10;
-			snap.lustPerStep       += 2;
+			snap.toolChanceBonus += 10;
+			snap.lustPerStep += 2;
 			snap.corruptionPending += 0.1;
-			snap.prowlChanceBonus   += 5;
+			snap.prowlChanceBonus += 5;
 			snap.contributors.push({
 				label: "Nude",
 				color: "#ff66aa",
@@ -147,10 +161,10 @@ setup.HauntConditions = (function () {
 
 		var mc = V.mc;
 		if (mc && mc.lust >= LUST_FUEL_THRESHOLD) {
-			snap.toolChanceBonus   += 5;
-			snap.prowlChanceBonus   += 3;
+			snap.toolChanceBonus += 5;
+			snap.prowlChanceBonus += 3;
 			snap.corruptionPending += 0.05;
-			snap.sanityPerStep     -= 0.2;
+			snap.sanityPerStep -= 0.2;
 			snap.contributors.push({
 				label: "Lust ≥ " + LUST_FUEL_THRESHOLD,
 				color: "#e84aa4",
@@ -163,7 +177,7 @@ setup.HauntConditions = (function () {
 		 * widgetEvent.tw (shouldOrgasm), which also seeds the aftershock
 		 * cooldown below. */
 		if (mc && mc.lust >= 100) {
-			snap.sanityPerStep     -= 1;
+			snap.sanityPerStep -= 1;
 			snap.corruptionPending += 0.05;
 			snap.contributors.push({
 				label: "OrgasmRisk",
@@ -190,7 +204,7 @@ setup.HauntConditions = (function () {
 			snap.toolChanceBonus += 10;
 			snap.toolWindowBonus += 5;
 			snap.prowlChanceBonus += 5;
-			snap.sanityPerStep   -= 1;
+			snap.sanityPerStep -= 1;
 			snap.contributors.push({
 				label: "Overcharged",
 				color: "#ffaa33",
@@ -201,8 +215,8 @@ setup.HauntConditions = (function () {
 		if (snap.baitActive) {
 			snap.toolChanceBonus += 20;
 			snap.prowlChanceBonus += 20;
-			snap.sanityPerStep   -= 1;
-			snap.lustPerStep     += BAIT_LUST_PER_STEP;
+			snap.sanityPerStep -= 1;
+			snap.lustPerStep += BAIT_LUST_PER_STEP;
 			snap.contributors.push({
 				label: "Baiting (" + snap.baitStepsRemain + ")",
 				color: "#cc66ff",
@@ -230,7 +244,7 @@ setup.HauntConditions = (function () {
 		var snap = snapshot();
 
 		if (snap.sanityPerStep !== 0) {
-			if(setup.Mc.applySanityDelta(snap.sanityPerStep) == setup.SanityDeltaResult.COLLAPSED){
+			if (setup.Mc.applySanityDelta(snap.sanityPerStep) == setup.SanityDeltaResult.COLLAPSED) {
 				V.sanityCollapse = 1;
 			}
 		}
@@ -368,7 +382,7 @@ setup.HauntConditions = (function () {
 			&& V.baitActive !== 1);
 	}
 
-	/* Pray (used by GhostHuntEvent). Costs sanity AND energy. */
+	/* Pray (used by GhostProwlEvent). Costs sanity AND energy. */
 	function canPray() {
 		var V = State.variables;
 		return !!(V.mc
@@ -388,8 +402,8 @@ setup.HauntConditions = (function () {
 	 * reading the same state. */
 	function eventSanityMultiplier() {
 		var mult = 1;
-		if (isCurrentRoomDark())  mult += 0.5;
-		if (isOverchargedMode())  mult += 0.25;
+		if (isCurrentRoomDark()) mult += 0.5;
+		if (isOverchargedMode()) mult += 0.25;
 		/* Modifier contributions (Brittle Mind) and future event-drain
 		   stackers live in ModifiersController subscribers. They read
 		   the dark/overcharged context to decide whether to compound. */
@@ -409,39 +423,39 @@ setup.HauntConditions = (function () {
 	 * starts clean. */
 	function resetHuntFlags() {
 		var V = State.variables;
-		V.baitActive          = 0;
-		V.baitStepsRemain     = 0;
-		V.baitOrgasmPending   = 0;
-		V.overchargedTools    = 0;
-		V.exhausted           = 0;
-		V.sanityCollapse      = 0;
+		V.baitActive = 0;
+		V.baitStepsRemain = 0;
+		V.baitOrgasmPending = 0;
+		V.overchargedTools = 0;
+		V.exhausted = 0;
+		V.sanityCollapse = 0;
 		V.orgasmCooldownSteps = 0;
 	}
 
 	return {
-		LUST_FUEL_THRESHOLD:    LUST_FUEL_THRESHOLD,
-		BAIT_INITIAL_LUST:      BAIT_INITIAL_LUST,
-		BAIT_LUST_PER_STEP:     BAIT_LUST_PER_STEP,
-		BAIT_STEPS:             BAIT_STEPS,
-		BAIT_ORGASM_SANITY:     BAIT_ORGASM_SANITY,
-		ENERGY_PER_STEP:        ENERGY_PER_STEP,
-		ENERGY_COST_BAIT:       ENERGY_COST_BAIT,
-		ENERGY_COST_PRAY:       ENERGY_COST_PRAY,
-		currentBgVar:           currentBgVar,
-		isCurrentRoomDark:      isCurrentRoomDark,
-		clothingState:          clothingState,
-		snapshot:               snapshot,
-		applyTickEffects:       applyTickEffects,
-		removeEnergy:           removeEnergy,
-		isBaitActive:           isBaitActive,
-		startBait:              startBait,
-		canBait:                canBait,
-		canPray:                canPray,
-		isBaitOrgasmPending:    isBaitOrgasmPending,
-		consumeBaitOrgasm:      consumeBaitOrgasm,
+		LUST_FUEL_THRESHOLD: LUST_FUEL_THRESHOLD,
+		BAIT_INITIAL_LUST: BAIT_INITIAL_LUST,
+		BAIT_LUST_PER_STEP: BAIT_LUST_PER_STEP,
+		BAIT_STEPS: BAIT_STEPS,
+		BAIT_ORGASM_SANITY: BAIT_ORGASM_SANITY,
+		ENERGY_PER_STEP: ENERGY_PER_STEP,
+		ENERGY_COST_BAIT: ENERGY_COST_BAIT,
+		ENERGY_COST_PRAY: ENERGY_COST_PRAY,
+		currentBgVar: currentBgVar,
+		isCurrentRoomDark: isCurrentRoomDark,
+		clothingState: clothingState,
+		snapshot: snapshot,
+		applyTickEffects: applyTickEffects,
+		removeEnergy: removeEnergy,
+		isBaitActive: isBaitActive,
+		startBait: startBait,
+		canBait: canBait,
+		canPray: canPray,
+		isBaitOrgasmPending: isBaitOrgasmPending,
+		consumeBaitOrgasm: consumeBaitOrgasm,
 		toggleOverchargedTools: toggleOverchargedTools,
-		isOverchargedMode:      isOverchargedMode,
-		eventSanityMultiplier:  eventSanityMultiplier,
-		resetHuntFlags:         resetHuntFlags
+		isOverchargedMode: isOverchargedMode,
+		eventSanityMultiplier: eventSanityMultiplier,
+		resetHuntFlags: resetHuntFlags
 	};
 })();

@@ -305,7 +305,7 @@ setup.MonkeyPaw = (function () {
 						"The paw takes my memory and gives me its tenant in trade."
 					][t - 1],
 					sanityDelta: sanity,
-					goto: 'GhostHuntEvent'
+					goto: 'GhostProwlEvent'
 				};
 			}
 		},
