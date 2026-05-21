@@ -203,7 +203,13 @@ test.describe('WitchEndContract — dropdown gate', () => {
 });
 
 test.describe('WitchEndContractResolve — correct guess', () => {
+  /* The resolve passage now plays Khadija's "give me a minute" video
+     while a 6s <<timed>> wait runs, then fades in the result line.
+     markSuccess + endHunt happen *inside* the timed block, so each
+     test below waits on the reveal text before reading state. */
+
   test('correct guess pays contract cash, clears held key, ends the hunt', async ({ game: page }) => {
+    test.setTimeout(20_000);
     await setupContractHunt(page, 'owaissa');
     await setVar(page, 'mc.money', 0);
     const trueName = await callSetup(page, 'setup.HuntController.ghostName()');
@@ -211,8 +217,10 @@ test.describe('WitchEndContractResolve — correct guess', () => {
 
     await goToPassage(page, 'WitchEndContractResolve');
 
+    await expect(
+      page.locator('#passages').getByText(/Good\. Money on the way/i)
+    ).toBeVisible({ timeout: 10_000 });
     const text = await page.locator('#passages').innerText();
-    expect(text).toMatch(/Good\. Money on the way/i);
     expect(text).toContain(`+$200`);
     /* Cash paid to MC. */
     expect(await getVar(page, 'mc.money')).toBe(200);
@@ -223,6 +231,7 @@ test.describe('WitchEndContractResolve — correct guess', () => {
   });
 
   test('correct guess on elm pays the higher contract payout', async ({ game: page }) => {
+    test.setTimeout(20_000);
     await setupContractHunt(page, 'elm');
     await setVar(page, 'mc.money', 0);
     const trueName = await callSetup(page, 'setup.HuntController.ghostName()');
@@ -230,12 +239,16 @@ test.describe('WitchEndContractResolve — correct guess', () => {
 
     await goToPassage(page, 'WitchEndContractResolve');
 
+    await expect(
+      page.locator('#passages').getByText(/Money on the way/i)
+    ).toBeVisible({ timeout: 10_000 });
     expect(await getVar(page, 'mc.money')).toBe(500); // elm contract payout
     expect(await callSetup(page, 'setup.WitchContract.hasHeldContract()')).toBe(false);
     await expectCleanPassage(page);
   });
 
   test('correct guess does NOT pay ectoplasm (contract hunts are cash-only)', async ({ game: page }) => {
+    test.setTimeout(20_000);
     await setupContractHunt(page, 'owaissa');
     const ectoBefore = await callSetup(page, 'setup.HuntController.ectoplasm()');
     const trueName = await callSetup(page, 'setup.HuntController.ghostName()');
@@ -243,28 +256,38 @@ test.describe('WitchEndContractResolve — correct guess', () => {
 
     await goToPassage(page, 'WitchEndContractResolve');
 
+    await expect(
+      page.locator('#passages').getByText(/Money on the way/i)
+    ).toBeVisible({ timeout: 10_000 });
     /* Cash branch on, but ectoplasm balance unchanged. */
     expect(await callSetup(page, 'setup.HuntController.ectoplasm()')).toBe(ectoBefore);
     await expectCleanPassage(page);
   });
 
   test('correct guess shows the +exp line', async ({ game: page }) => {
+    test.setTimeout(20_000);
     await setupContractHunt(page, 'owaissa');
     const trueName = await callSetup(page, 'setup.HuntController.ghostName()');
     await setVar(page, 'ghostTypeSelected', trueName);
 
     await goToPassage(page, 'WitchEndContractResolve');
-    expect(await page.locator('#passages').innerText()).toMatch(/\+\d+\s*exp/);
+    await expect(
+      page.locator('#passages').getByText(/\+\d+\s*exp/)
+    ).toBeVisible({ timeout: 10_000 });
     await expectCleanPassage(page);
   });
 
   test('Back link from WitchEndContractResolve points at WitchInside', async ({ game: page }) => {
+    test.setTimeout(20_000);
     await setupContractHunt(page, 'owaissa');
     const trueName = await callSetup(page, 'setup.HuntController.ghostName()');
     await setVar(page, 'ghostTypeSelected', trueName);
     await goToPassage(page, 'WitchEndContractResolve');
-    /* The .backbtn link routes back to WitchInside so the player can
-       continue browsing the shop after closing the contract. */
+    /* The .backbtn link is inside the timed reveal block; wait for it
+       to fade in before clicking. */
+    await expect(
+      page.locator('#passages').getByText('Back', { exact: true })
+    ).toBeVisible({ timeout: 10_000 });
     await page.locator('#passages').getByText('Back', { exact: true }).first().click();
     await page.waitForFunction(() =>
       SugarCube.State.passage === 'WitchInside'
@@ -276,6 +299,7 @@ test.describe('WitchEndContractResolve — correct guess', () => {
 
 test.describe('WitchEndContractResolve — wrong guess', () => {
   test('wrong guess burns the key, pays nothing, ends the hunt', async ({ game: page }) => {
+    test.setTimeout(20_000);
     await setupContractHunt(page, 'owaissa');
     await setVar(page, 'mc.money', 0);
     const trueName = await callSetup(page, 'setup.HuntController.ghostName()');
@@ -287,8 +311,10 @@ test.describe('WitchEndContractResolve — wrong guess', () => {
 
     await goToPassage(page, 'WitchEndContractResolve');
 
+    await expect(
+      page.locator('#passages').getByText(/No payout\. The key's spent/i)
+    ).toBeVisible({ timeout: 10_000 });
     const text = await page.locator('#passages').innerText();
-    expect(text).toContain("Key's spent");
     expect(text).toContain('No payout');
     expect(await getVar(page, 'mc.money')).toBe(0);
     expect(await callSetup(page, 'setup.WitchContract.hasHeldContract()')).toBe(false);
@@ -301,6 +327,7 @@ test.describe('WitchEndContractResolve — wrong guess', () => {
     /* The "It was a <ghost>. <evidence labels>." line is the player's
        only debrief on what they missed; without it, wrong calls
        become opaque. */
+    test.setTimeout(20_000);
     await setupContractHunt(page, 'elm');
     const trueName = await callSetup(page, 'setup.HuntController.ghostName()');
     const wrongName = await page.evaluate(real => {
@@ -310,12 +337,14 @@ test.describe('WitchEndContractResolve — wrong guess', () => {
     await setVar(page, 'ghostTypeSelected', wrongName);
 
     await goToPassage(page, 'WitchEndContractResolve');
-    const text = await page.locator('#passages').innerText();
-    expect(text).toContain(trueName);
+    await expect(
+      page.locator('#passages').getByText(new RegExp(trueName, 'i'))
+    ).toBeVisible({ timeout: 10_000 });
     await expectCleanPassage(page);
   });
 
   test('wrong guess does NOT pay ectoplasm either', async ({ game: page }) => {
+    test.setTimeout(20_000);
     await setupContractHunt(page, 'owaissa');
     const ectoBefore = await callSetup(page, 'setup.HuntController.ectoplasm()');
     const trueName = await callSetup(page, 'setup.HuntController.ghostName()');
@@ -326,6 +355,9 @@ test.describe('WitchEndContractResolve — wrong guess', () => {
     await setVar(page, 'ghostTypeSelected', wrongName);
 
     await goToPassage(page, 'WitchEndContractResolve');
+    await expect(
+      page.locator('#passages').getByText(/No payout\. The key's spent/i)
+    ).toBeVisible({ timeout: 10_000 });
     expect(await callSetup(page, 'setup.HuntController.ectoplasm()')).toBe(ectoBefore);
     await expectCleanPassage(page);
   });
@@ -383,11 +415,18 @@ test.describe('WitchEndContract — navigation continuity', () => {
   });
 
   test('pending link disappears after the contract is resolved (success)', async ({ game: page }) => {
+    test.setTimeout(20_000);
     await setupContractHunt(page, 'owaissa');
     const trueName = await callSetup(page, 'setup.HuntController.ghostName()');
     await setVar(page, 'ghostTypeSelected', trueName);
 
     await goToPassage(page, 'WitchEndContractResolve');
+    /* Wait for the timed reveal to fire (markSuccess + endHunt run
+       inside the <<timed>> block; navigating away before then would
+       leave the contract held and skip the test's premise). */
+    await expect(
+      page.locator('#passages').getByText(/Money on the way/i)
+    ).toBeVisible({ timeout: 10_000 });
     await goToPassage(page, 'WitchInside');
 
     /* Sanity: held cleared and link gone. */
@@ -397,6 +436,7 @@ test.describe('WitchEndContract — navigation continuity', () => {
   });
 
   test('pending link disappears after a wrong guess too', async ({ game: page }) => {
+    test.setTimeout(20_000);
     await setupContractHunt(page, 'elm');
     const trueName = await callSetup(page, 'setup.HuntController.ghostName()');
     const wrongName = await page.evaluate(real => {
@@ -406,6 +446,9 @@ test.describe('WitchEndContract — navigation continuity', () => {
     await setVar(page, 'ghostTypeSelected', wrongName);
 
     await goToPassage(page, 'WitchEndContractResolve');
+    await expect(
+      page.locator('#passages').getByText(/No payout\. The key's spent/i)
+    ).toBeVisible({ timeout: 10_000 });
     await goToPassage(page, 'WitchInside');
 
     expect(await callSetup(page, 'setup.WitchContract.hasHeldContract()')).toBe(false);
