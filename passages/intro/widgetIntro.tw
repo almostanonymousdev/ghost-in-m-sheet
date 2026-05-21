@@ -9,8 +9,11 @@
  */
 
 <<widget "bodyPartRadio">>
-	/* _args[0] = body-part key, _args[1] = display label */
-	<label><<radiobutton `"$sensualBodyPart." + _args[0]` setup.Intro.CHOSEN_SENSITIVITY autocheck>> _args[1]</label><br>
+	/* _args[0] = body-part key, _args[1] = display label.
+	   All six radios share $sensualBodyPartChoice so HTML treats
+	   them as one mutually-exclusive group. The setup.Intro change
+	   handler mirrors the choice into $sensualBodyPart[part]. */
+	<label><<radiobutton "$sensualBodyPartChoice" _args[0] autocheck>> _args[1]</label><br>
 <</widget>>
 
 <<widget "mcNameTextbox">>
