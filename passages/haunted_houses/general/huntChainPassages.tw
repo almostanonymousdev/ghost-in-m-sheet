@@ -15,6 +15,6 @@
 <</if>>
 
 :: CheckHuntStart [noreturn nobr] {"position":"2500,1100","size":"100,100"}
-<<if setup.HauntedHouses.shouldStartRandomProwl()>>
+<<if setup.HauntedHouses.shouldStartProwl()>>
 	<<goto "GhostHuntEvent">>
 <</if>>

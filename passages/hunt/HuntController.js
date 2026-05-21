@@ -1057,8 +1057,8 @@ setup.HuntController = (function () {
 	   widgetInclude routes to GhostHuntEvent (Hide / RunFast / PrayHunt /
 	   FreezeHunt / HuntEventSuccubus all return through huntCaughtPassage
 	   or $return so they land back on the right passage). */
-	var shouldStartRandomProwl = guarded(false, function () {
-		return setup.HauntedHouses.shouldStartRandomProwl();
+	var shouldStartProwl = guarded(false, function () {
+		return setup.HauntedHouses.shouldStartProwl();
 	});
 
 	/* Steal-clothes roll. The wardrobe / stash side-effects are
@@ -1335,7 +1335,7 @@ setup.HuntController = (function () {
 		isHuntActive: isHuntActive,
 		tick: tick,
 		sidebarOutfit: sidebarOutfit,
-		shouldStartRandomProwl: shouldStartRandomProwl,
+		shouldStartProwl: shouldStartProwl,
 		shouldTriggerSteal: shouldTriggerSteal,
 		huntOverPassage: huntOverPassage,
 		realGhostName: realGhostName,

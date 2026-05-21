@@ -579,7 +579,7 @@ test.describe('E2E: hunt lifecycle', () => {
       SugarCube.setup.Events.rollRandomEvent     = () => false;
       SugarCube.setup.Events.maybeTurnOffLights  = () => null;
       SugarCube.setup.HuntController.shouldTriggerSteal     = () => false;
-      SugarCube.setup.HuntController.shouldStartRandomProwl = () => false;
+      SugarCube.setup.HuntController.shouldStartProwl = () => false;
     });
   }
 
@@ -945,11 +945,11 @@ test.describe('E2E: hunt lifecycle', () => {
     ).toBeVisible();
   });
 
-  test('per-tick chain in the hunt triggers GhostHuntEvent when shouldStartRandomProwl fires', async () => {
+  test('per-tick chain in the hunt triggers GhostHuntEvent when shouldStartProwl fires', async () => {
     test.setTimeout(15_000);
 
     /* The huntTickStep widget calls huntTickEventChain, which goes
-       through HuntController.shouldStartRandomProwl. With timer
+       through HuntController.shouldStartProwl. With timer
        state pre-stamped past the threshold and Math.random pinned
        low, a single tool tick should land on GhostHuntEvent. */
     await goToPassage(page, 'GhostStreet');

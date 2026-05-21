@@ -159,10 +159,10 @@ the current run state:
 * `shouldTriggerSteal()` — wardrobe-state roll. Honours a
   per-static-house `runsStealClothes: false` opt-out (Ironclad,
   since prison ghosts have their own warden-clothes mechanic).
-* `shouldStartRandomProwl()` — gates `CheckHuntStart`'s
+* `shouldStartProwl()` — gates `CheckHuntStart`'s
   `<<goto "GhostHuntEvent">>`. Delegates to
-  `HauntedHouses.shouldStartRandomProwl()`
-  (`canStartRandomProwl` + `prowlChanceBonus` + `g.canProwl(mc)`).
+  `HauntedHouses.shouldStartProwl()` (prowl-timer window +
+  `prowlChanceBonus` + `g.canProwl(mc)`).
 * `huntOverPassage(reason)` — stamps the run as a failure with
   the reason and returns `HuntSummary`. Also called by
   `FreezeHunt`'s "Surrender to the cold" link so the
@@ -223,7 +223,7 @@ shared between nav-link steps and tool clicks:
   (`LightPassageGhost`), a ghost event may roll (`Event` →
   `EventMC`), a steal-clothes event may roll
   (`HuntController.shouldTriggerSteal` → `StealClothes`), and a
-  random prowl may start (`HuntController.shouldStartRandomProwl`
+  random prowl may start (`HuntController.shouldStartProwl`
   → `GhostHuntEvent`).
 
 The hunt nav links in `HuntRun` and the `<<huntToolBar>>` widget
