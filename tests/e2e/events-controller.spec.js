@@ -48,14 +48,17 @@ test.describe('Events controller — tier classification', () => {
     expect(await callSetup(page, 'setup.Events.eventTier()')).toBe(1);
   });
 
-  test('statTierBonus adds at most +1 tier from high lust+corr+beauty', async ({ game: page }) => {
-    /* Stat bump caps at +1 even when all three stats are maxed,
-       so time stays the dominant escalation driver. */
+  test('statTierBonus adds at most +2 tier from high lust+corr+beauty', async ({ game: page }) => {
+    /* Stat bump caps at +2 even when all three stats are maxed,
+       so time stays the dominant escalation driver. The hunt freezes
+       beauty at start, so unfreeze first so setBeauty(100) flows
+       through to the read path. */
     await page.evaluate(() => {
       if (SugarCube.setup.HuntController.active()) SugarCube.setup.HuntController.end();
       SugarCube.setup.HuntController.startHunt({ seed: 1 });
       const V = SugarCube.State.variables;
       V.hours = 0; V.minutes = 0; // base tier 1
+      SugarCube.setup.Mc.unfreezeBeauty();
     });
     await goToPassage(page, 'HuntRun');
 
@@ -67,17 +70,17 @@ test.describe('Events controller — tier classification', () => {
     });
     expect(await callSetup(page, 'setup.Events.statTierBonus()')).toBe(0);
 
-    // Single maxed stat → still 0 (weight 1.0 / 2 floors to 0).
+    // Single maxed stat → still 0 (floor(1 * 2 / 3) = 0).
     await page.evaluate(() => { SugarCube.State.variables.mc.lust = 100; });
     expect(await callSetup(page, 'setup.Events.statTierBonus()')).toBe(0);
 
-    // Two maxed stats → +1.
+    // Two maxed stats → +1 (floor(2 * 2 / 3) = 1).
     await page.evaluate(() => { SugarCube.State.variables.mc.corruption = 8; });
     expect(await callSetup(page, 'setup.Events.statTierBonus()')).toBe(1);
 
-    // All three maxed → still +1 (capped).
+    // All three maxed → +2 (floor(3 * 2 / 3) = 2, capped at 2).
     await page.evaluate(() => { SugarCube.setup.Mc.setBeauty(100); });
-    expect(await callSetup(page, 'setup.Events.statTierBonus()')).toBe(1);
+    expect(await callSetup(page, 'setup.Events.statTierBonus()')).toBe(2);
   });
 
   test('eventTier never exceeds 7 even with late hunt + stat bump', async ({ game: page }) => {

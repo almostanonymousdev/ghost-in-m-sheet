@@ -5,7 +5,7 @@ const { openGame, resetGame, callSetup, goToPassage } = require('./helpers');
    should unlock more body parts to target AND prowl events should fire
    more often. Stat axes (lust / corruption / beauty) still nudge things
    but only as a small bump on top of the time signal — see
-   setup.Events.statTierBonus (capped at +1 tier) and the per-tick
+   setup.Events.statTierBonus (capped at +2 tier) and the per-tick
    "Time (HHMM)" contributor that HauntConditions.snapshot stamps onto
    prowlChanceBonus. */
 test.describe('Hunt time-driven escalation', () => {

@@ -156,7 +156,7 @@ setup.Events = (function () {
 		// --- Event escalation tier -------------------------------
 		// Time is the primary driver: the longer the hunt has been
 		// running, the more body parts the ghost can target.
-		// lust/corruption/beauty layer a small (<= +1 tier) bump on
+		// lust/corruption/beauty layer a small (<= +2 tier) bump on
 		// top so the player's state still nudges escalation without
 		// drowning out the time signal. Outside a hunt the tier
 		// floors at 1 (mind only) — body-part rolls are only ever
@@ -172,7 +172,9 @@ setup.Events = (function () {
 			var lustW   = Math.min(1, (setup.Mc.lust()       || 0) / 100);
 			var corrW   = Math.min(1, (setup.Mc.corruption() || 0) / 8);
 			var beautyW = Math.min(1, (setup.Mc.beauty()     || 0) / 100);
-			return Math.min(1, Math.floor((lustW + corrW + beautyW) / 2));
+			// Sum is 0-3 across the three axes; (sum * 2 / 3) maps
+			// 1 maxed → 0, 2 maxed → 1, 3 maxed → 2.
+			return Math.min(2, Math.floor((lustW + corrW + beautyW) * 2 / 3));
 		},
 		eventTier: function () {
 			var base = Math.floor(this.elapsedHuntMinutes() / MINUTES_PER_TIER) + 1;
