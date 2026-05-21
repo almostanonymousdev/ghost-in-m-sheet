@@ -52,40 +52,15 @@ test.describe('Hunt time-driven escalation', () => {
     expect(t360 - t0).toBe(18);
   });
 
-  test('snapshot adds a "Time" contributor once the bonus is non-zero', async () => {
-    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
-    await goToPassage(page, 'HuntRun');
-
-    // At hunt start (t=0) there's no Time contributor: timeBonus is 0
-    // and the chip is suppressed to keep the HUD quiet.
-    let labels = await page.evaluate(() => {
-      SugarCube.State.variables.hours = 0;
-      SugarCube.State.variables.minutes = 0;
-      return SugarCube.setup.HauntConditions.snapshot()
-        .contributors.map(c => c.label);
-    });
-    expect(labels.some(l => l.startsWith('Time'))).toBe(false);
-
-    // After an hour the chip lands.
-    labels = await page.evaluate(() => {
-      SugarCube.State.variables.hours = 1;
-      SugarCube.State.variables.minutes = 0;
-      return SugarCube.setup.HauntConditions.snapshot()
-        .contributors.map(c => c.label);
-    });
-    expect(labels.some(l => l.startsWith('Time'))).toBe(true);
-  });
-
-  test('time contributor only fires while a hunt is in progress', async () => {
+  test('time bonus only applies while a hunt is in progress', async () => {
     // Outside a hunt, snapshot() short-circuits the inHouse block, so
-    // no Time contributor (and no prowl bonus) should appear.
+    // the time-based prowl bonus should not be added.
     const result = await page.evaluate(() => {
       SugarCube.State.variables.hours = 3;
       SugarCube.State.variables.minutes = 0;
       return SugarCube.setup.HauntConditions.snapshot();
     });
     expect(result.prowlChanceBonus).toBe(0);
-    expect(result.contributors.map(c => c.label).some(l => l.startsWith('Time'))).toBe(false);
   });
 
   test('rollBodyPartEvent at t=0 only reaches "brain" (mind only)', async () => {

@@ -562,11 +562,13 @@ setup.Events = (function () {
 		setCleanedUp: function (val) { sv().cleanedUp = !!val; },
 
 		/* Threshold reduction from how dressed the MC is. Each ~12
-		   coverage points (range 0-100) trims one off the
-		   lust-tier event threshold, so a fully covered MC is ~8
-		   harder to harass per tick than a naked one. */
+		   coverage points (range 0-100) trims one off the event
+		   threshold, capped at 3 so a fully covered MC can never
+		   wipe out the entire base — early-hunt tier 1 (threshold 4)
+		   still passes with at least 1 effective threshold so the
+		   ghost can mess with her mind. */
 		coverageDamp: function () {
-			return Math.floor(setup.Wardrobe.coverage() / 12);
+			return Math.min(3, Math.floor(setup.Wardrobe.coverage() / 12));
 		},
 
 		rollBodyPartEvent: function (chance) {

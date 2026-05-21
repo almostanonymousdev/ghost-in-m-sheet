@@ -263,7 +263,7 @@ test.describe('Events controller — orgasm and body-part roll', () => {
     expect(r).toBe('');
   });
 
-  test('coverageDamp tracks setup.Wardrobe.coverage()/12', async ({ game: page }) => {
+  test('coverageDamp tracks setup.Wardrobe.coverage()/12 capped at 3', async ({ game: page }) => {
     // Strip MC fully naked.
     for (const v of ['tshirtState', 'braState', 'pantiesState', 'jeansState', 'shortsState', 'skirtState']) {
       await setVar(page, v, 'not worn');
@@ -271,17 +271,18 @@ test.describe('Events controller — orgasm and body-part roll', () => {
     expect(await callSetup(page, 'setup.Wardrobe.coverage()')).toBe(0);
     expect(await callSetup(page, 'setup.Events.coverageDamp()')).toBe(0);
 
-    // Fully dressed.
+    // Fully dressed: raw damp would be 8, but the cap at 3 keeps a
+    // clothed MC from wiping out the entire base threshold.
     for (const v of ['tshirtState', 'braState', 'pantiesState', 'jeansState']) {
       await setVar(page, v, 'worn');
     }
     expect(await callSetup(page, 'setup.Wardrobe.coverage()')).toBe(100);
-    expect(await callSetup(page, 'setup.Events.coverageDamp()')).toBe(8);
+    expect(await callSetup(page, 'setup.Events.coverageDamp()')).toBe(3);
   });
 
   test('rollBodyPartEvent threshold drops by coverageDamp', async ({ game: page }) => {
-    // Tier 1 threshold is 4. Fully dressed coverage = 100 → damp = 8 →
-    // effective threshold is 0, so chance=1 must return ''.
+    // Tier 1 threshold is 4. Fully dressed coverage = 100 → damp = 3
+    // (capped) → effective threshold is 1, so chance=2 must return ''.
     await setVar(page, 'mc.lust', 0);
     for (const v of ['tshirtState', 'braState', 'pantiesState', 'jeansState']) {
       await setVar(page, v, 'worn');
@@ -292,12 +293,12 @@ test.describe('Events controller — orgasm and body-part roll', () => {
         mouth: 0, pussy: 0, anal: 0,
       };
     });
-    expect(await callSetup(page, 'setup.Events.rollBodyPartEvent(1)')).toBe('');
-    // Stripping back to naked restores threshold 4, so chance=1 fires brain.
+    expect(await callSetup(page, 'setup.Events.rollBodyPartEvent(2)')).toBe('');
+    // Stripping back to naked restores threshold 4, so chance=2 fires brain.
     for (const v of ['tshirtState', 'braState', 'pantiesState', 'jeansState']) {
       await setVar(page, v, 'not worn');
     }
-    expect(await callSetup(page, 'setup.Events.rollBodyPartEvent(1)')).toBe('brain');
+    expect(await callSetup(page, 'setup.Events.rollBodyPartEvent(2)')).toBe('brain');
   });
 
   test('exposureMultipliers downweights covered body parts', async ({ game: page }) => {
