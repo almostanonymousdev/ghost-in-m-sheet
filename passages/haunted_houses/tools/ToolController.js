@@ -304,6 +304,7 @@
     var OWNED_VARS = Object.freeze([
         'equipment',
         'tools',
+        'temperature',
         'spiritboxLvl',
         'crucifixAmount',
         'boughtDetector',
@@ -333,6 +334,15 @@
                 State.variables.crucifixAmount = 0;
             }
         },
+        /* Ambient temperature offset added to thermometer readings
+           on top of the 13..16 base + room offset. Currently always
+           0; reserved for future weather / season hooks. Lives here
+           (not on setup.Time) because the thermometer is the only
+           consumer. */
+        temperature:    function () { return State.variables.temperature; },
+        setTemperature: function (n) { State.variables.temperature = n; },
+        addTemperature: function (n) { State.variables.temperature += n; },
+
         /* Tier (1..5) of a given tool. Currently stored on
            $equipment.<toolKey>; the passages that read the tier
            should go through this getter instead of naming the

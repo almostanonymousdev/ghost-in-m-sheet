@@ -1,6 +1,6 @@
 /*
- * Centralized helpers for the in-game clock / weather state:
- *   $hours, $minutes, $meridiem, $temperature, $dailySeed
+ * Centralized helpers for the in-game clock state:
+ *   $hours, $minutes, $meridiem, $dailySeed
  *
  * Any passage that needs to read or set the clock should route
  * through setup.Time. The mutation widgets <<addTime>> / <<addLust>>
@@ -19,7 +19,7 @@ setup.Time = (function () {
 	/* Variables owned by this controller. Other controllers should
 	   query/mutate these only through the API methods below. */
 	var OWNED_VARS = Object.freeze([
-		'hours', 'minutes', 'meridiem', 'temperature', 'dailySeed'
+		'hours', 'minutes', 'meridiem', 'dailySeed'
 	]);
 
 	var sv = setup.sv;
@@ -96,7 +96,6 @@ setup.Time = (function () {
 			return false;
 		} },
 		'meridiem',
-		'temperature',
 		'dailySeed'
 	]);
 

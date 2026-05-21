@@ -9,7 +9,7 @@
 <</if>>
 <<if _check eq 2>>
 	Temperature<br>
-	A simple way to find the "favorite room" or evidence of "Increased Temperature" is to use a thermometer. If the temperature is between 13 and 16°C, it is a normal room with no ghost presence. If the temperature is between 16 and 21°C, it is a "favorite room" of the ghost, but without the evidence of "High Temperature." If the temperature ranges from 19 to 24°C, it is the "favorite room" with evidence of "High Temperature."<br>
+	A simple way to find the "favorite room" or evidence of "Increased Temperature" is to use a thermometer. If the temperature is between 13 and 16°C, it is a normal room with no ghost presence. If the temperature is between 18 and 21°C, it is a "favorite room" of the ghost, but without the evidence of "High Temperature." If the temperature ranges from 21 to 24°C, it is the "favorite room" with evidence of "High Temperature." A reading of exactly 21°C is ambiguous between the two favorite-room cases.<br>
 <</if>>
 <<if _check eq 3>>
 	Hunting<br>

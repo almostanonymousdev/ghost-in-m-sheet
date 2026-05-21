@@ -19,10 +19,10 @@
 * <span class="gwb"><<evidenceCheckbox "GWBCheck">> Ghost writing book</span><br>
 * <span class="spiritbox"><<evidenceCheckbox "SpiritboxCheck">> Spiritbox</span><br>
 * <span class="temperature"><<evidenceCheckbox "TemperatureCheck">> High temperature </span><<linkreplace "Tips:">><br>
-	Normal temperature: 13 - 18.<br>
-	Ghost's favorite room: 18 - 23.<br>
-	Evidence "High temperature": 21 - 26.<br>
-	If you have a level 2 or 3 thermometer -  color is added. (See the guide).
+	Normal room: 13 - 16°C.<br>
+	Ghost's favorite room (no High Temperature evidence): 18 - 21°C.<br>
+	Evidence "High Temperature": 21 - 24°C.<br>
+	A tier 4 or 3 thermometer color-codes the reading. (See the guide.)
 <</linkreplace>>
 <br>* <span class="uvl"><<evidenceCheckbox "UVLCheck">> UVL Fingerprints</span><br>
 </b>

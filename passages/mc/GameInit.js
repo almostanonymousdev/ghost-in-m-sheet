@@ -57,14 +57,16 @@ setup.Game = (function () {
 		// instead of advancing a fixed 8 hours.
 		s.alarm = { enabled: false, hour: 7 };
 
-		// --- Clock / environment ------------------------------
-		s.temperature = 0;
+		// --- Clock --------------------------------------------
 		s.meridiem = 'AM';
 		s.hours = 12;
 		s.minutes = 0;
 		s.dailySeed = Math.floor(Math.random() * 0x100000000);
 
 		// --- Equipment ----------------------------------------
+		// Ambient temperature offset for thermometer readings;
+		// owned by setup.ToolController.
+		s.temperature = 0;
 		s.spiritboxLvl = 1;
 
 		// --- Delivery / shift flags ---------------------------
