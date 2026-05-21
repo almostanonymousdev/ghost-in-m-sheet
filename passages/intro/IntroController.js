@@ -97,13 +97,11 @@ setup.Intro = (function () {
 		BASE_SENSITIVITY:              BASE_SENSITIVITY,
 		MAX_SENSITIVITY:               MAX_SENSITIVITY,
 		CHOSEN_SENSITIVITY:            CHOSEN_SENSITIVITY,
-		DEFAULT_CHOICE:                DEFAULT_CHOICE,
 		defaultSensualBodyParts:       defaultSensualBodyParts,
 		defaultSensualBodyPartChoice:  defaultSensualBodyPartChoice,
 		clampSensualBodyParts:         clampSensualBodyParts,
 		cheatMaximizeSensualBodyParts: cheatMaximizeSensualBodyParts,
 		ensureSensualBodyParts:        ensureSensualBodyParts,
-		applyChoice:                   applyChoice,
 		currentSensualBodyPart:        function () { return State.variables.sensualBodyPart; },
 		bodyPart:                      function (part) {
 			var sv = State.variables.sensualBodyPart;
