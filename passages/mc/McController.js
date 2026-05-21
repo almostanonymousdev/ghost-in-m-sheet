@@ -44,7 +44,8 @@ setup.Mc = (function () {
 		'piercingTongueAddSens',
 		'addLustPiercingTits',
 		'addLustPiercingPussy',
-		'addLustPiercingTongue'
+		'addLustPiercingTongue',
+		'possessionResidue'
 	]);
 
 	var sv = setup.sv;
@@ -85,6 +86,18 @@ setup.Mc = (function () {
 		},
 		ensurePossession: function () {
 			if (sv().mcpossession === undefined) { sv().mcpossession = 0; }
+		},
+
+		/* Persistent residue counter. Bumps once per possession outcome
+		   (HuntEnd catch, HuntOverSanity collapse) and never decays.
+		   Threshold prose in those passages gates on the returned count
+		   crossing 1 / 3 / 7. Distinct from $mcpossession, which is a
+		   per-scene surrender meter. */
+		possessionResidue: function () { return sv().mc.possessionResidue || 0; },
+		addPossessionResidue: function () {
+			var cur = sv().mc.possessionResidue || 0;
+			sv().mc.possessionResidue = cur + 1;
+			return cur + 1;
 		},
 
 		// --- Earned-money accumulator (compound mutation) -------

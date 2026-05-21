@@ -148,11 +148,12 @@
 
 	// mc sub-fields added after launch -- missing on very old saves
 	var MC_DEFAULTS = {
-		fit:            0,
-		exhibitionism:  0,
-		lustMax:        100,
-		beautyBase:     30,
-		beautyModifier: 0
+		fit:               0,
+		exhibitionism:     0,
+		lustMax:           100,
+		beautyBase:        30,
+		beautyModifier:    0,
+		possessionResidue: 0
 	};
 
 	function applyDefaults (vars) {

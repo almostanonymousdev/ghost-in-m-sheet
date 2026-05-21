@@ -1,8 +1,10 @@
 :: RainHelps [nobr] {"position":"1275,3200","size":"100,100"}
 <<image "characters/rescue/rain.jpg" { class: "displayCentredImgs", width: "50%" }>><br>
-@@.mc-thoughts; Rain looks at Brooke and calmly says@@<br>
-@@.notmc-speech; Don't worry, I'll help her. Everything will be fine. But you should go home and get some rest. @@<br>
-@@.mc-thoughts; She leads Brooke behind the church. @@<Br>
+@@.mc-thoughts; Rain looks at Brook the way you look at a wound, her face an unreadable wall of stoicism.@@<br>
+@@.notmc-speech; I'll take her. Go home.@@<br>
+@@.mc-speech; She'll be alright?@@<br>
+@@.notmc-speech; She'll be ours by morning. Don't watch.@@<br>
+@@.mc-thoughts; She gets a hand under Brook's elbow and walks her toward the back of the church without as much as a glance your way.@@<br>
 <<run setup.Church.clearBrookePossession()>>
 <br>
 @@.enterbtn; [[Follow her|ChurchBasementEntrance]]@@ <b>or</b> @@.enterbtn;[[go home|Sleep]]@@<br>

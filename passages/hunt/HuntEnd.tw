@@ -152,6 +152,7 @@
 
 <<if not setup.Ghosts.hasHighPriestess()>>
 	<<run setup.HuntController.onCaughtCleanup()>>
+	<<include "HuntResidue">>
 	<<done>>
 		<<addclass ".linkselector" "disabled-link">>
 	<</done>>

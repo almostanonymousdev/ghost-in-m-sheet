@@ -1,26 +1,27 @@
 :: RainExorcism [nobr] {"position":"2175,1500","size":"100,100"}
 <<image "characters/rescue/rain.jpg" { class: "displayCentredImgs", width: "50%" }>><br>
-@@.mc-speech; Hi, Rain. A witch told me you could help me...@@<br>
+@@.mc-speech; Khadija said you could help.@@<br>
 <<if setup.Church.rainTrustsForExorcism()>>
-	@@.notmc-speech; Yes, of course. You've helped me before, and I'm ready to assist you. What's the matter?@@<br>
-	@@.mc-speech; There's some kind of ghost or entity in my house. It's been there for a while, unlike the others, which would leave... once they got what they wanted.@@<br>
-	@@.notmc-speech; If it doesn't leave, it's more complicated. Holy water won't help...<br>
-	I think an exorcism is necessary. Here's what we can do: I'll give you a book that will allow you to summon this entity. Once it appears, you'll need to recite a spell from the  book. That should make it disappear.<br>@@
-	@@.mc-speech; That sounds too easy.@@<br>
-	@@.notmc-speech; There are some... nuances: you must ensure no one else is in the house when you do this, or you might summon the wrong spirit...@@<br>
-	@@.mc-speech; Uh... How can I be sure of that? What if I'm not even aware there's a ghost in my house?<br>@@
-	@@.notmc-speech; I'll give you an amulet - it's made from a special material. If there's any entity in your home, the amulet will grow warm and change color. If there's nothing, it'll remain unchanged.@@<br>
-	@@.mc-speech; Oh, thank you. I'll do my best to get rid of this entity.@@<br>
-	@@.notmc-speech; Unfortunately, I can't help directly. This ghost seems to be connected to you in some way, and my interference might complicate things. You must do this alone.@@<br>
-	@@.mc-speech; Understood. Thanks again.@@<br>
-	@@.notmc-speech; Good luck.@@<br><br>
+	@@.notmc-speech; Yes. You've been useful, so what's your problem?@@<br>
+	@@.mc-speech; Something in my house. It hasn't left. The others always left once they got what they wanted out of me.@@<br>
+	@@.notmc-speech; Then it wants something it isn't getting, or it isn't there for that. If holy water won't move it, this beast needs an exorcism.@@<br>
+	@@.notmc-speech; Take these. The book can summon it to you, since it won't stand in one place. The next passage you'll read banishes it.@@<br>
+	@@.mc-speech; That's it?@@<br>
+	@@.notmc-speech; That's the easy part. <em><b>You need to do it alone in the house.</b></em> If there's another person breathing under your roof, the book pulls in whatever's nearest, and that's almost never the one you wanted.@@<br>
+	@@.mc-speech; How do I even know there's something to summon?@@<br>
+	@@.notmc-speech; Take this amulet.@@<br>
+	@@.mc-thoughts; With a frigid hand, she slides a stone across the table without looking up.@@<br>
+	@@.notmc-speech; It will warm and turn color if there's an other-worldly presence. She stays cold if there isn't.@@<br>
+	@@.mc-speech; You're not coming with?@@<br>
+	@@.notmc-speech; No. Whatever's in your house is attached to you, and I'd be another corrupted soul for it. I'd make it worse even being in the house.@@<br>
+	<br>
+	@@.notmc-speech; Read it exactly the way it's written. Don't get cute.@@<br><br>
 	@@.mc-action; I need to summon a ghost in my house using the book Rain gave me@@<br>
 	<<run setup.Church.startExorcismQuest()>>
 <<else>>
-	@@.notmc-speech; I'm sorry, I'm swamped right now - I need to find some missing nuns. If you help me with this, I'll be glad to assist you in return. You know what to do, so come back to me once you've helped me find a few of my girls.@@<br>
-
+	@@.notmc-speech; Not now. I'm short hunters and I'm losing girls. Bring me a few back and we'll talk.@@<br>
 	@@.mc-speech; Alright.@@<br>
-	@@.mc-thoughts; I need to help her <<print setup.Church.rescuesNeededForExorcism()>> more times.@@<br>
+	@@.mc-thoughts; <<print setup.Church.rescuesNeededForExorcism()>> more.@@<br>
 <</if>>
 <br>
 @@.backbtn; [[Leave|Church]] @@<br>

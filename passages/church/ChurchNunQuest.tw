@@ -2,21 +2,20 @@
 <<image "characters/rescue/rain.jpg" { class: "displayCentredImgs", width: "50%" }>><br>
 <<if not setup.Church.hasMetRain()>>
 	<<run setup.Church.initRainIfNeeded()>>
-	@@.notmc-speech; <<= setup.Mc.name()>>, hey. I'm Rain. The witch told me about you. Thanks for agreeing to help.@@<br>
-	@@.mc-speech; Of course. Though it's kind of strange that you know a witch.@@<br>
-	@@.notmc-speech; Well, she used to serve the church but left the order for some reasons.@@<br>
-	@@.mc-speech;An order?@@<br>
-	@@.notmc-speech; We help people who are haunted by them, day after day. Sometimes we just perform cleansing rituals, and sometimes we have to do an exorcism. Basically, we're doing what you do, but with an organization behind it.@@<br>
-	@@.mc-speech;Sounds interesting. Can I join?@@<br>
-	@@.notmc-speech; Not right now. But if you prove yourself to be a good ghost hunter, we might consider it.@@<br>
-	@@.mc-speech; Alright, but I'm here for something else. Tell me about the missing girls.@@<br>
-	@@.notmc-speech; Listen closely. There's a board with photos of the missing girls right outside the church. It has their names and pictures. <br><em><b>We update it every day at 6 PM</b></em>, since some girls get found and some stay missing.<br><br>
-	If you want to help, just take one of the posters from the board.<br>
-	Now, about where to look: there are lots of old, abandoned houses in the southern part of the city. Most of the missing girls end up there, but none of them originally went that way. They went to places on Owaissa Street or Elm Street and somehow ended up south.<br><br>
-	<em><b>You've got two options: either head straight south and search every house, which will take a while, or start on Owaissa or Elm and try to find clues that point to a specific house in the south.</b></em><br>
-	But remember, you've got limited time. <em><b>You need to find the girl by 6 PM the next day.</b></em> After that, it's too late, and we'll have to send in more experienced hunters.<br><br>
-	<em><b>And one more thing: the longer the girl stays missing, the worse things could get. Take a bottle of holy water, just in case.</b></em>@@<br>
-	@@.mc-speech; Alright, I think I got it. Thanks.@@<br>
+	@@.notmc-speech; You came. Sit.@@<br>
+	@@.mc-thoughts; She's already sitting. There's nowhere else to sit. You stand.@@<br>
+	@@.notmc-speech; I'm Rain. Khadija sent you, so we'll skip the part where I explain what I do.@@<br>
+	@@.mc-speech; She said you knew her?@@<br>
+	@@.notmc-speech; She wore this collar before I did. We don't talk about it.@@<br>
+	@@.mc-speech; Is there an order? Could I join?@@<br>
+	@@.notmc-speech; Ask me in six months. If you're still alive.@@<br>
+	@@.mc-thoughts; She doesn't blink when she says it. You're not sure she blinks at all.@@<br>
+	@@.mc-speech; The missing girls?@@<br>
+	@@.notmc-speech; Board's outside, left of the door. Posters with names and pictures. <em><b>I refresh it at 6 PM every day</b></em>, after I hear which ones came home. Take a poster, and that's your assignment.<br><br>
+	They get taken on <em><b>Owaissa or Elm</b></em>, then they end up <em><b>south, in the abandoned houses</b></em>. They don't walk there themselves. You can sweep the south door to door and burn a day on it, or you can <em><b>start on Owaissa or Elm and look for what points you to which house in the south</b></em>. Pick whichever you can afford.<br><br>
+	<em><b>You have until 6 PM the next day.</b></em> After that I send hunters who can actually get her out, so don't be later than that.<br><br>
+	<em><b>The longer she's down there, the less of her is left to bring back. Take holy water. It's free.</b></em>@@<br>
+	@@.mc-speech; Got it.@@<br>
 	<br>
 	@@.mc-action; Now I can assist Rain in the search for the missing girls.@@<br>
 <</if>>

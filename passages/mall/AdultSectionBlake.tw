@@ -3,27 +3,24 @@
 
 <<if setup.Mall.blakeUnlocked()>>
 	<<if setup.Mall.blakeFirstMeeting()>>
-		@@.notmc-speech; Hey, you're not <<= setup.Mc.name()>> by any chance, are you? Alice told me you went ghost hunting together.@@<br>
-		@@.mc-speech;Yeah, that's right.@@<br>
+		@@.notmc-speech; You <<= setup.Mc.name()>>?@@<br>
+		@@.mc-speech; Depends.@@<br>
+		@@.notmc-speech; Alice said you'd say that. I'm Blake. She talks about you.@@<br>
+		@@.mc-thoughts; From her coy smile and building blush, you suspect the conversation wasn't strictly professional.@@<br>
 		<<run setup.Mall.setBlakeDialogStage(0)>>
 		<<if setup.Mall.blakeCanIntroduceCursedItemBuyback()>>
-			@@.notmc-speech;Alice mentioned that sometimes you come across... hmm, let's say, "something special." Some toys with, well, "a magical aura"?@@<br>
-			@@.mc-speech;Yeah, you're right. But I usually give them to the witch in exchange for a fee.@@<br>
-			@@.notmc-speech;How about selling them to me instead? I'll pay you more than the witch@@<br>
-			@@.mc-speech;Why do you need them?@@<br>
-			@@.notmc-speech;Well, you know, these toys aren't exactly ordinary, and I could sell them as exclusives. My shop is known for unique items, so they'll definitely find their buyer.@@<br>
-			@@.mc-speech;Hmm... I'll think about it.@@<br>
-			<br>
-			@@.mc-action;Now you can bring cursed items to the adult store and sell them for a higher price.@@<br>
-			<<run setup.Mall.setBlakeDialogStage(1)>>
+			<<include "BlakeCursedItemOffer">>
 		<<else>>
-			@@.notmc-speech;Wow! It's amazing that you're into this stuff. Good luck!@@<br>
+			@@.notmc-speech; A lot of men seem to walks into those houses, but you're one of the few women who keep making it out. Good. That'd be such a waste of a pretty face.@@<br>
 		<</if>>
 	<<else>>
 		@@.notmc-speech; Hi <<= setup.Mc.name()>>, need any help?@@<br>
+		<<if setup.Mall.blakeCanIntroduceCursedItemBuyback()>>
+			<<include "BlakeCursedItemOffer">>
+		<</if>>
 		<<if setup.Mall.blakeHasCursedItemToSell()>>
 			<<linkreplace "@@.usebtn;Give her the cursed item@@">>
-				@@.notmc-speech; Wow, thanks. Here's your money. Feel free to bring more, I'll gladly buy them from you.@@<br>
+				@@.notmc-speech; Thanks, gorgeous. Here's your money. Feel free to bring more, I'll gladly buy them from you.@@<br>
 				Money: +60 $ <br>
 
 				<<if setup.Mall.canRaiseBlakeRelationship()>>
@@ -33,17 +30,6 @@
 				<<run setup.Mall.sellCursedItemToBlake()>>
 			<</linkreplace>>
 		<<else>>
-		<</if>>
-		<<if setup.Mall.blakeCanIntroduceCursedItemBuyback()>>
-			@@.notmc-speech;Alice mentioned that sometimes you come across... hmm, let's say, "something special." Some toys with, well, "a magical aura"?@@<br>
-			@@.mc-speech;Yeah, you're right. But I usually give them to the witch in exchange for a fee.@@<br>
-			@@.notmc-speech;How about selling them to me instead? I'll pay you more than the witch@@<br>
-			@@.mc-speech;Why do you need them?@@<br>
-			@@.notmc-speech;Well, you know, these toys aren't exactly ordinary, and I could sell them as exclusives. My shop is known for unique items, so they'll definitely find their buyer.@@<br>
-			@@.mc-speech;Hmm... I'll think about it.@@<br>
-			<br>
-			@@.mc-action;Now you can bring cursed items to the adult store and sell them for a higher price.@@<br>
-			<<run setup.Mall.setBlakeDialogStage(1)>>
 		<</if>>
 	<</if>>
 
@@ -118,3 +104,18 @@
 <br>
 <br>
 @@.backbtn; [[Back|AdultSection]]@@
+
+:: BlakeCursedItemOffer {"position":"3000,1750","size":"100,100"}
+@@.notmc-speech; I heard you and the witch trade in objects nobody else wants. Heavy in the hand without looking heavy? The ones that make a room feel wrong?@@
+@@.mc-speech; Or very right...@@
+@@.mc-speech; Some of them. I bring them to her.@@
+@@.notmc-speech; I pay more.@@
+@@.mc-speech; Why?@@
+@@.notmc-speech; My patrons aren't all here for the inflatables. They're here for my shelf in back that has a waiting list. If I keep that shelf full, my rent gets paid.@@
+@@.mc-speech; I don't think that Khadija would like that.@@
+@@.notmc-speech; She won't be told. Or she will and she'll be over it in a week. She's a big girl.@@
+@@.mc-speech; I'll think on it.@@
+@@.notmc-speech; Think quicker than you usually do. I tend to get bored of my toys fast.@@
+
+@@.mc-action;Now you can bring cursed items to the adult store and sell them for a higher price.@@
+<<run setup.Mall.setBlakeDialogStage(1)>>

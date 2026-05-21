@@ -15,23 +15,26 @@
 		<br>
 		<<if not setup.Library.hasMetBrook()>>
 			<<run setup.Library.meetBrookFirstTime()>>
-			@@.mc-thoughts; You are absorbed in searching for a book in the library when you suddenly notice a girl approaching you.@@<br>
-			@@.notmc-speech; It's so hard to find the right book, isn't it?@@<br>
-			@@.mc-speech; Yeah, especially when you're looking for books about ghosts@@<br>
-			@@.notmc-speech; Oh, you're into that? I wouldn't have guessed... I've always dreamed of ghost hunting. I forgot to introduce myself, my name is Brook.<br>
-			By the way, I found some information about a rare ghost here in the library. @@<br>
-			@@.mc-speech; Nice to meet you, I'm <<= setup.Mc.name()>>. <br>Brook, that's exactly what I'm looking for. Can you share it with me?@@<br>
-			@@.notmc-speech; Well... how about a deal? I'll give you the information, and in return, we go ghost hunting together?@@<br>
-			@@.mc-speech; Sure, of course. Actually, I could use a helper@@<br>
-			@@.notmc-speech; Yay! Thank you so much! I usually spend entire days here in the library, so when you're ready to go ghost hunting, just find me here.@@<br>
-			@@.mc-speech; Alright. See you then!@@<br>
+			@@.mc-thoughts; You're tracking down a call number in the 133.1s when a mousey yet somehow stunningly beautiful girl steps into the aisle and parks an elbow on the shelf at your eyeline.@@<br>
+			@@.notmc-speech; 133.1. You're looking for ghosts.@@<br>
+			@@.mc-speech; I'm looking for books, actually.@@<br>
+			@@.notmc-speech; No, you're not just browsing. I reshelved this row yesterday and I put the rare-circulation pull tag inside Hauberk's, which is the only book in here worth opening. You're the third person this week who's stopped at exactly that spine.@@<br>
+			@@.mc-thoughts; She's holding a photocopy with the corners squared. There are pen dashes on the top right that look deliberate, like she's marking which entries she's already vetted.@@<br>
+			@@.notmc-speech; I'm Brook, by the way. I work in reference, mostly. But I do ghost research on the side, since nobody is willing to pay me to.@@<br>
+			@@.mc-speech; I'm <<= setup.Mc.name()>>. What's on the paper.@@<br>
+			@@.notmc-speech; A Mimic. Hauberk has the only first-hand account in English and the library won't let me check it out. I'll trade.@@<br>
+			@@.mc-speech; Trade what?@@<br>
+			@@.notmc-speech; I copy the page, you take me on a hunt. A real hunt. Then we see whether either of us wants a round two.@@<br>
+			@@.mc-thoughts; She's waiting, apprehensive but determined. I didn't expect this, but the other women here sure seem to cling onto ghost hunters...@@<br>
+			@@.mc-speech; Done.@@<br>
+			@@.notmc-speech; I'm here most days. Find me when you've got a night for me.@@<br>
 			<br>
-			@@.mc-thoughts; She handed you some papers and left. It turns out she found information about the ghost Mimic.@@<br>
+			@@.mc-speech; I'll be sure to keep you in mind.@@<br>
+			@@.mc-thoughts; She hands you the photocopy and goes back to whatever she was doing before she chose to be standing here. A mimic. You'd been hearing the word but couldn't find anything concrete.@@<br>
 			<br>
 			@@.mc-action; The information about the Mimic ghost has been added to your Ghostopedia.@@<br>
 			<br>
 			<<run setup.Ghosts.markDiscovered("Mimic")>>
-			@@.mc-thoughts; So now, I can go ghost hunting with my new friend, Brook. I just need to head to the library and find her.@@<br>
 			<br>
 			@@.mc-action; You can now ask Brook to join you on a ghost hunt!@@<br>
 		<<else>>
@@ -42,9 +45,9 @@
 			<<else>>
 				@@.mc-speech;<<link "Ask Brooke to join you for ghost hunting tonight.">>
 					<<run setup.Library.pickBrookAsCompanion()>>
-					<<replace "#brookInfoAnswer">>@@.mc-speech; I want you to join me for ghost hunting today@@<br>
+					<<replace "#brookInfoAnswer">>@@.mc-speech; I want you to join me for ghost hunting tonight@@<br>
 						@@.notmc-speech; Yes, of course. I'll be ready. Let's meet by the entrance to the haunted house, okay?@@<br>
-						@@.mc-speech; Yeah, let's do that.@@
+						@@.mc-speech; Yeah, I'll write down the address.@@
 					<</replace>>
 				<</link>>@@<br>
 

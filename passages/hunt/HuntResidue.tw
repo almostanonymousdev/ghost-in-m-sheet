@@ -1,0 +1,9 @@
+:: HuntResidue [noreturn nobr] {"position":"2500,1350","size":"100,100"}
+<<set _residue to setup.Mc.addPossessionResidue()>>
+<<if _residue eq 1>>
+    <br>@@.mc-thoughts; You come back to your mind one fragment at a time. There's a thread of something on the inside of your wrist, pencil-line dark. You scrub it with the heel of your hand, but it stays put. You decide it's a paper cut; it couldn't be anything else.@@<br>
+<<elseif _residue eq 3>>
+    <br>@@.mc-thoughts; Three of them in a row now. I can't pretend it's an accident. Khadija once said you'd do for a first hunt; the second was up to the first. You think about how the math is unsure whose side to be on.@@<br>
+<<elseif _residue eq 7>>
+    <br>@@.mc-thoughts; Seven. You stop counting them one at a time. They've started reading as a pattern your wrist has, not a series of things that happened to it. You roll your sleeve down and take a deep breath.@@<br>
+<</if>>

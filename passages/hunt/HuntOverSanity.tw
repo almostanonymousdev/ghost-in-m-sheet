@@ -20,6 +20,7 @@
 		@@.usebtn; [[Next|$return][setup.Ghosts.consumeHighPriestess()]]@@
 	<<else>>
 		<<run setup.HauntedHouses.cleanupAfterHunt({ loseStolen: true })>>
+		<<include "HuntResidue">>
 		<<done>>
 			<<addclass ".linkselector" "disabled-link">>
 		<</done>>
