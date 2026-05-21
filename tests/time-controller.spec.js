@@ -107,4 +107,22 @@ test.describe('TimeController', () => {
     expect(await getVar(page, 'hours')).toBe(3);
     expect(await getVar(page, 'dailySeed')).not.toBe(42);
   });
+
+  test('setup.Time.resetToMidnight reseeds $dailySeed so day-keyed content sees a new day', async () => {
+    /* resetToMidnight is the "new day starts" hook for the hunt loop
+       (GhostStreet + HuntController.startHunt both call it). Without
+       a reseed here, day-keyed content like setup.WitchContract's
+       contract board stays pinned to the same lastRefreshDay even
+       after a full hunt-and-sleep cycle, because sleeping from an
+       early-morning post-hunt hour doesn't cross 24h. */
+    await setVar(page, 'hours', 22);
+    await setVar(page, 'minutes', 30);
+    await setVar(page, 'dailySeed', 42);
+
+    await callSetup(page, 'setup.Time.resetToMidnight()');
+
+    expect(await getVar(page, 'hours')).toBe(0);
+    expect(await getVar(page, 'minutes')).toBe(0);
+    expect(await getVar(page, 'dailySeed')).not.toBe(42);
+  });
 });

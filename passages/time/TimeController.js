@@ -58,11 +58,16 @@ setup.Time = (function () {
 
 		// --- Scheduled in-world actions ---------------------
 		// Reset the clock to midnight (used when a hunt starts
-		// from the haunted-house street). Bypasses the rollover
-		// hook: this is a discontinuous reset, not a wraparound.
+		// from the haunted-house street). Bypasses the hours
+		// writeHook to skip its 24h wraparound branch -- this is
+		// a discontinuous reset, not a wraparound -- but still
+		// reseeds $dailySeed so day-keyed content (the witch's
+		// contract board, future per-day cursors) treats the
+		// reset as the start of a fresh day.
 		resetToMidnight: function () {
 			sv().hours = 0;
 			sv().minutes = 0;
+			sv().dailySeed = freshSeed();
 		},
 		// Sleep/wake paths advance N hours and want a "did the
 		// day roll over" answer. addHours already returns it via
