@@ -576,7 +576,7 @@ test.describe('E2E: hunt lifecycle', () => {
      branches on the active ghost's flags. */
   async function stubPerTickGatesQuiet(page) {
     await page.evaluate(() => {
-      SugarCube.setup.Events.rollProwlEvent      = () => false;
+      SugarCube.setup.Events.rollRandomEvent     = () => false;
       SugarCube.setup.Events.maybeTurnOffLights  = () => null;
       SugarCube.setup.HuntController.shouldTriggerSteal     = () => false;
       SugarCube.setup.HuntController.shouldStartRandomProwl = () => false;
@@ -874,7 +874,7 @@ test.describe('E2E: hunt lifecycle', () => {
 
     /* Pin event randomness off so the click only exercises the
        per-tick drain branch (not Event / StealClothes / GhostHuntEvent
-       gotos). The chain still calls Event but rollProwlEvent's
+       gotos). The chain still calls Event but rollRandomEvent's
        chance-roll is gated on Math.random; pre-seeding all rolls
        to 1.0 keeps every roll above its threshold. */
     await page.evaluate(() => { Math.random = () => 0.99; });
@@ -970,7 +970,7 @@ test.describe('E2E: hunt lifecycle', () => {
       SugarCube.setup.HuntController.setField('ghostName', 'Shade');
       // Force every Math.random call to 0 so:
       //   - LightPassageGhost roll: 0 (no light flicker dest)
-      //   - rollProwlEvent's various rolls all round-trip: chance=0,
+      //   - rollRandomEvent's various rolls all round-trip: chance=0,
       //     bansheeRoll/ctRoll = 1 (≠ 1 disables those branches),
       //     body part roll picks the first option.
       //   - shouldTriggerSteal: roll 1, > stealChance? -- with

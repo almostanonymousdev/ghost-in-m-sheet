@@ -437,7 +437,7 @@ setup.Events = (function () {
 		   "EventMC">>. Body-part fallback delegates to
 		   videoListForEvent() so the clothing-aware resolvers stay
 		   the single source. */
-		rollProwlEvent: function () {
+		rollRandomEvent: function () {
 			var g           = setup.Ghosts.active();
 			var chance      = Math.floor(Math.random() * 101);
 			var bansheeRoll = 1 + Math.floor(Math.random() * 10);
