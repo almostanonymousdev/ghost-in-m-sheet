@@ -16,7 +16,7 @@ The core gameplay revolves around investigating haunted locations to identify an
   * [GhostController.js](../passages/ghosts/GhostController.js) - `setup.Ghost` namespace; owns per-ghost evidence lists and the shrink/prune logic that used to live in DeleteEvidence
   * [FindCursedItem.tw](../passages/haunted_houses/general/FindCursedItem.tw) - Searching for cursed items in haunted houses
 
-* **Hunt flow** - The core loop of starting, running, and ending a ghost hunt. Per-tick events (light flicker, ghost event, clothes-steal roll, random prowl trigger) and per-step stat drain run through the shared `<<huntTickStep>>` / `<<huntTickEventChain>>` widgets in [widgetInclude.tw](../passages/gui/widgetInclude.tw); hunt nav links and the `<<huntToolBar>>` widget all fire the same chain through `setup.HuntController` predicates (`isHuntActive`, `shouldTriggerSteal`, `shouldStartRandomProwl`, `huntOverPassage`). The legacy `<<includeTimeEventClothesHunt>>` / `<<includeTimeEventHunt>>` widgets are kept as thin aliases for `<<huntTickStep>>`.
+* **Hunt flow** - The core loop of starting, running, and ending a ghost hunt. Per-tick events (light flicker, ghost event, clothes-steal roll, random prowl trigger) and per-step stat drain run through the shared `<<huntTickStep>>` / `<<huntTickEventChain>>` widgets in [widgetInclude.tw](../passages/gui/widgetInclude.tw); hunt nav links and the `<<huntToolBar>>` widget all fire the same chain through `setup.HuntController` predicates (`isHuntActive`, `shouldTriggerSteal`, `shouldStartProwl`, `huntOverPassage`). The legacy `<<includeTimeEventClothesHunt>>` / `<<includeTimeEventHunt>>` widgets are kept as thin aliases for `<<huntTickStep>>`.
   * [HuntController.js](../passages/hunt/HuntController.js) - Hunt facade — owns `isActive()`/`activeGhost()`/`isGhostHere()` and the hunt-over routing helpers
   * [HuntEnd.tw](../passages/haunted_houses/hunt/HuntEnd.tw) - Ending a hunt normally
   * [HuntOverManual.tw](../passages/haunted_houses/hunt/HuntOverManual.tw) - Manually ending a hunt
@@ -27,7 +27,7 @@ The core gameplay revolves around investigating haunted locations to identify an
 
 * **Ghost behavior and randomization** - The ghost type is rolled at the start of each hunt from a seed-derived index into `setup.Ghosts.names()`; the spawn room comes from the floor-plan generator. Mid-run room changes are handled by `setup.HuntController.shuffleGhostRoom()` → `setup.HuntController.driftGhostRoom()`.
   * [GhostStreet.tw](../passages/haunted_houses/general/GhostStreet.tw) - Ghost street assignment (entry point for the Hunt card)
-  * [GhostHuntEvent.tw](../passages/haunted_houses/general/GhostHuntEvent.tw) - Ghost hunt event triggers
+  * [GhostProwlEvent.tw](../passages/haunted_houses/general/GhostProwlEvent.tw) - Ghost hunt event triggers
   * [FreezeHunt.tw](../passages/haunted_houses/general/FreezeHunt.tw) - Freeze-state / stall handling during a hunt
 
 * **Sanity and survival mechanics** - Environmental and ghost interactions affect the player's state and can force the hunt to end.

@@ -8,7 +8,7 @@ const { setupHunt } = require('./e2e-helpers');
  *
  *   - Shade        invertedSanityStages
  *   - Moroi        spiritboxPossessionChance (possession + menacing)
- *   - Banshee      canKiss (bansheeRoll branch in rollProwlEvent)
+ *   - Banshee      canKiss (bansheeRoll branch in rollRandomEvent)
  *   - Cthulion     canTentacles + cursedActivityVideos
  *   - Raiju        spiritboxStaticChance + emf/temperature glitch rolls
  */

@@ -87,7 +87,7 @@ test.describe('Monkey Paw wishes', () => {
     expect(await getVar(page, 'hours')).toBe(6);
   });
 
-  test('knowledge wish: first activation removes evidence and goes to GhostHuntEvent', async ({ game: page }) => {
+  test('knowledge wish: first activation removes evidence and goes to GhostProwlEvent', async ({ game: page }) => {
     await setupHunt(page, 'Shade');
     await page.evaluate(() => {
       SugarCube.setup.MonkeyPaw.resetHunt();
@@ -96,7 +96,7 @@ test.describe('Monkey Paw wishes', () => {
     });
     const result = await callSetup(page, 'setup.MonkeyPaw.activate("knowledge")');
     expect(result.tier).toBe(1);
-    expect(result.goto).toBe('GhostHuntEvent');
+    expect(result.goto).toBe('GhostProwlEvent');
     expect(result.alreadyUsed).toBeUndefined();
     expect(await callSetup(page, 'setup.Ghosts.knowledgeUsed()')).toBe(true);
 

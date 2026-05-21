@@ -1,4 +1,4 @@
-:: GhostHuntEvent [noreturn nobr] {"position":"2600,1100","size":"100,100"}
+:: GhostProwlEvent [noreturn nobr] {"position":"2600,1100","size":"100,100"}
 <<run setup.HauntedHouses.beginProwlEvent()>>
 <<set _check to random(1,3)>>
 <<if _check eq 1>>

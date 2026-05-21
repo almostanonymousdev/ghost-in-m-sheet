@@ -1,21 +1,100 @@
 const { test, expect } = require('../fixtures');
-const { setVar, getVar, callSetup, openGame } = require('../helpers');
+const { setVar, getVar, callSetup, openGame, goToPassage } = require('../helpers');
 
 test.describe('Events controller — tier classification', () => {
-  test('lustTier maps lust ranges to 1-7', async ({ game: page }) => {
+  test('eventTier maps elapsed hunt minutes 1→7 with 50-minute steps', async ({ game: page }) => {
+    /* Stat axes at zero so statTierBonus stays at 0 — we're
+       isolating the time component here. Hunt running so
+       elapsedHuntMinutes reads the in-game clock. */
+    await page.evaluate(() => {
+      const V = SugarCube.State.variables;
+      V.mc.lust = 0;
+      V.mc.corruption = 0;
+      SugarCube.setup.Mc.setBeauty(0);
+      if (SugarCube.setup.HuntController.active()) SugarCube.setup.HuntController.end();
+      SugarCube.setup.HuntController.startHunt({ seed: 1 });
+    });
+    await goToPassage(page, 'HuntRun');
     const cases = [
-      [0, 1], [14, 1],
-      [15, 2], [29, 2],
-      [30, 3], [44, 3],
-      [45, 4], [59, 4],
-      [60, 5], [74, 5],
-      [75, 6], [89, 6],
-      [90, 7], [100, 7],
+      [0, 1], [49, 1],
+      [50, 2], [99, 2],
+      [100, 3], [149, 3],
+      [150, 4], [199, 4],
+      [200, 5], [249, 5],
+      [250, 6], [299, 6],
+      [300, 7], [350, 7],
     ];
-    for (const [lust, tier] of cases) {
-      await setVar(page, 'mc.lust', lust);
-      expect(await callSetup(page, 'setup.Events.lustTier()')).toBe(tier);
+    for (const [elapsed, tier] of cases) {
+      await page.evaluate((m) => {
+        SugarCube.State.variables.hours   = Math.floor(m / 60);
+        SugarCube.State.variables.minutes = m % 60;
+      }, elapsed);
+      expect(await callSetup(page, 'setup.Events.eventTier()')).toBe(tier);
     }
+  });
+
+  test('eventTier floors at 1 outside a hunt (mind only)', async ({ game: page }) => {
+    /* Outside a hunt, elapsedHuntMinutes is 0 regardless of the
+       world clock, so the tier should always be 1 — the ghost
+       can't escalate past mind-games when no hunt is running. */
+    await page.evaluate(() => {
+      if (SugarCube.setup.HuntController.active()) SugarCube.setup.HuntController.end();
+      const V = SugarCube.State.variables;
+      V.mc.lust = 0;
+      V.mc.corruption = 0;
+      SugarCube.setup.Mc.setBeauty(0);
+      V.hours = 18; V.minutes = 0;
+    });
+    expect(await callSetup(page, 'setup.Events.eventTier()')).toBe(1);
+  });
+
+  test('statTierBonus adds at most +2 tier from high lust+corr+beauty', async ({ game: page }) => {
+    /* Stat bump caps at +2 even when all three stats are maxed,
+       so time stays the dominant escalation driver. The hunt freezes
+       beauty at start, so unfreeze first so setBeauty(100) flows
+       through to the read path. */
+    await page.evaluate(() => {
+      if (SugarCube.setup.HuntController.active()) SugarCube.setup.HuntController.end();
+      SugarCube.setup.HuntController.startHunt({ seed: 1 });
+      const V = SugarCube.State.variables;
+      V.hours = 0; V.minutes = 0; // base tier 1
+      SugarCube.setup.Mc.unfreezeBeauty();
+    });
+    await goToPassage(page, 'HuntRun');
+
+    // No stats → no bump.
+    await page.evaluate(() => {
+      const V = SugarCube.State.variables;
+      V.mc.lust = 0; V.mc.corruption = 0;
+      SugarCube.setup.Mc.setBeauty(0);
+    });
+    expect(await callSetup(page, 'setup.Events.statTierBonus()')).toBe(0);
+
+    // Single maxed stat → still 0 (floor(1 * 2 / 3) = 0).
+    await page.evaluate(() => { SugarCube.State.variables.mc.lust = 100; });
+    expect(await callSetup(page, 'setup.Events.statTierBonus()')).toBe(0);
+
+    // Two maxed stats → +1 (floor(2 * 2 / 3) = 1).
+    await page.evaluate(() => { SugarCube.State.variables.mc.corruption = 8; });
+    expect(await callSetup(page, 'setup.Events.statTierBonus()')).toBe(1);
+
+    // All three maxed → +2 (floor(3 * 2 / 3) = 2, capped at 2).
+    await page.evaluate(() => { SugarCube.setup.Mc.setBeauty(100); });
+    expect(await callSetup(page, 'setup.Events.statTierBonus()')).toBe(2);
+  });
+
+  test('eventTier never exceeds 7 even with late hunt + stat bump', async ({ game: page }) => {
+    await page.evaluate(() => {
+      if (SugarCube.setup.HuntController.active()) SugarCube.setup.HuntController.end();
+      SugarCube.setup.HuntController.startHunt({ seed: 1 });
+      const V = SugarCube.State.variables;
+      V.hours = 5; V.minutes = 30;            // 330 elapsed → base tier 7
+      V.mc.lust = 100;                         // +1 from stats
+      V.mc.corruption = 8;
+      SugarCube.setup.Mc.setBeauty(100);
+    });
+    await goToPassage(page, 'HuntRun');
+    expect(await callSetup(page, 'setup.Events.eventTier()')).toBe(7);
   });
 
   test('corruptionTier maps corruption to discrete buckets', async ({ game: page }) => {
@@ -184,7 +263,7 @@ test.describe('Events controller — orgasm and body-part roll', () => {
     expect(r).toBe('');
   });
 
-  test('coverageDamp tracks setup.Wardrobe.coverage()/12', async ({ game: page }) => {
+  test('coverageDamp tracks setup.Wardrobe.coverage()/12 capped at 3', async ({ game: page }) => {
     // Strip MC fully naked.
     for (const v of ['tshirtState', 'braState', 'pantiesState', 'jeansState', 'shortsState', 'skirtState']) {
       await setVar(page, v, 'not worn');
@@ -192,17 +271,18 @@ test.describe('Events controller — orgasm and body-part roll', () => {
     expect(await callSetup(page, 'setup.Wardrobe.coverage()')).toBe(0);
     expect(await callSetup(page, 'setup.Events.coverageDamp()')).toBe(0);
 
-    // Fully dressed.
+    // Fully dressed: raw damp would be 8, but the cap at 3 keeps a
+    // clothed MC from wiping out the entire base threshold.
     for (const v of ['tshirtState', 'braState', 'pantiesState', 'jeansState']) {
       await setVar(page, v, 'worn');
     }
     expect(await callSetup(page, 'setup.Wardrobe.coverage()')).toBe(100);
-    expect(await callSetup(page, 'setup.Events.coverageDamp()')).toBe(8);
+    expect(await callSetup(page, 'setup.Events.coverageDamp()')).toBe(3);
   });
 
   test('rollBodyPartEvent threshold drops by coverageDamp', async ({ game: page }) => {
-    // Tier 1 threshold is 4. Fully dressed coverage = 100 → damp = 8 →
-    // effective threshold is 0, so chance=1 must return ''.
+    // Tier 1 threshold is 4. Fully dressed coverage = 100 → damp = 3
+    // (capped) → effective threshold is 1, so chance=2 must return ''.
     await setVar(page, 'mc.lust', 0);
     for (const v of ['tshirtState', 'braState', 'pantiesState', 'jeansState']) {
       await setVar(page, v, 'worn');
@@ -213,12 +293,12 @@ test.describe('Events controller — orgasm and body-part roll', () => {
         mouth: 0, pussy: 0, anal: 0,
       };
     });
-    expect(await callSetup(page, 'setup.Events.rollBodyPartEvent(1)')).toBe('');
-    // Stripping back to naked restores threshold 4, so chance=1 fires brain.
+    expect(await callSetup(page, 'setup.Events.rollBodyPartEvent(2)')).toBe('');
+    // Stripping back to naked restores threshold 4, so chance=2 fires brain.
     for (const v of ['tshirtState', 'braState', 'pantiesState', 'jeansState']) {
       await setVar(page, v, 'not worn');
     }
-    expect(await callSetup(page, 'setup.Events.rollBodyPartEvent(1)')).toBe('brain');
+    expect(await callSetup(page, 'setup.Events.rollBodyPartEvent(2)')).toBe('brain');
   });
 
   test('exposureMultipliers downweights covered body parts', async ({ game: page }) => {
@@ -245,14 +325,22 @@ test.describe('Events controller — orgasm and body-part roll', () => {
     expect(mult2.pussy).toBe(1);
   });
 
-  test('rollBodyPartEvent at tier 7 (lust 90+) can pick any of 7 keys', async ({ game: page }) => {
-    await setVar(page, 'mc.lust', 95);
+  test('rollBodyPartEvent at tier 7 (late hunt) can pick any of 7 keys', async ({ game: page }) => {
+    /* Tier 7 is gated on elapsed hunt time now, not lust. Start a
+       hunt and push the clock to 300+ minutes so eventTier() lands
+       at 7 even with all stats at zero. */
     await page.evaluate(() => {
-      SugarCube.State.variables.sensualBodyPart = {
+      if (SugarCube.setup.HuntController.active()) SugarCube.setup.HuntController.end();
+      SugarCube.setup.HuntController.startHunt({ seed: 1 });
+      const V = SugarCube.State.variables;
+      V.hours = 5; V.minutes = 0;  // 300 elapsed → tier 7
+      V.mc.lust = 0; V.mc.corruption = 0; V.mc.beauty = 0;
+      V.sensualBodyPart = {
         brain: 1, tits: 1, ass: 1, bottom: 1,
         mouth: 1, pussy: 1, anal: 5,
       };
     });
+    await goToPassage(page, 'HuntRun');
     // Force random to 1.0 → roll = totalWeight = 11, picks last (anal)
     await page.evaluate(() => { window._origRandom = Math.random; Math.random = () => 0.9999; });
     try {

@@ -141,15 +141,13 @@ setup.HauntedHouses = (function () {
 		},
 
 		// --- Hunt triggers --------------------------------------
-		canStartRandomProwl: function () {
-			return !setup.Ghosts.isProwlActivated()
-				&& setup.Ghosts.elapsedTimeProwl() >= setup.Ghosts.prowlTimeRemain();
-		},
 		/* :: CheckHuntStart entry: gates random hunt start by the
-		   hunt-conditions threshold + ghost canProwl check. Returns
-		   true when the passage should <<goto "GhostHuntEvent">>. */
-		shouldStartRandomProwl: function () {
-			if (!this.canStartRandomProwl()) return false;
+		   prowl-timer window, hunt-conditions threshold, and ghost
+		   canProwl check. Returns true when the passage should
+		   <<goto "GhostProwlEvent">>. */
+		shouldStartProwl: function () {
+			if (setup.Ghosts.isProwlActivated()) return false;
+			if (setup.Ghosts.elapsedTimeProwl() < setup.Ghosts.prowlTimeRemain()) return false;
 			var threshold = 6 + setup.HauntConditions.snapshot().prowlChanceBonus;
 			if (Math.floor(Math.random() * 101) > threshold) return false;
 			var g = setup.Ghosts.active();
@@ -232,7 +230,7 @@ setup.HauntedHouses = (function () {
 		},
 		/* Start-of-hunt-event bookkeeping: reset elapsedTimeProwl
 		   window + stamp the activation time. Called by the first
-		   frame of GhostHuntEvent before the player picks
+		   frame of GhostProwlEvent before the player picks
 		   run/hide/freeze/pray. */
 		beginProwlEvent: function () {
 			setup.Ghosts.activateProwl();
