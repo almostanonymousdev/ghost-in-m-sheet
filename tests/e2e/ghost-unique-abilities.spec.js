@@ -75,7 +75,10 @@ test.describe('Ghost unique abilities — Phantom, Goryo, Deogen, Jinn', () => {
 
     for (const min of [5, 25, 45]) {
       await setVar(page, 'minutes', min);
-      await setVar(page, 'lastChangeIntervalRoom', '');
+      // Park the drift deadline well in the past so the gate would
+      // otherwise let a non-Goryo ghost drift; Goryo's
+      // staysInOneRoom must still block the shuffle.
+      await setVar(page, 'nextDriftAtMinute', 0);
       await goToPassage(page, 'ChangeGhostRoom');
 
       const room = await getRoom();

@@ -1155,10 +1155,11 @@ test.describe('E2E: hunt lifecycle', () => {
     test.setTimeout(15_000);
 
     /* PassageDone calls setup.HuntController.shuffleGhostRoom which
-       gates on a 20-minute interval and a 45% roll. We start a run,
-       force the roll to 0 (drift fires) and walk the clock through
-       interval boundaries; the ghost room must end up somewhere
-       different from where it started. */
+       gates on the next-drift deadline (15-35 min after startHunt /
+       the last shuffle) and a 45% roll. We start a run, force the
+       roll to 0 (drift fires) and park the clock past the deadline;
+       the ghost room must end up somewhere different from where it
+       started. */
     await goToPassage(page, 'GhostStreet');
     await clickHuntCard(page);
     await ensureNotEmptyBag(page);
@@ -1171,10 +1172,10 @@ test.describe('E2E: hunt lifecycle', () => {
 
     const initial = await callSetup(page, 'setup.HuntController.ghostRoomId()');
 
-    // Force a fresh interval window + the drift roll.
+    // Park the clock past the drift deadline and force the roll.
     await page.evaluate(() => {
-      SugarCube.State.variables.lastChangeIntervalRoom = '';
-      SugarCube.State.variables.minutes = 25; // 20-39 window
+      SugarCube.State.variables.minutes = 35;
+      SugarCube.State.variables.nextDriftAtMinute = 0;
       Math.random = () => 0;
     });
     await page.evaluate(() => SugarCube.setup.HuntController.shuffleGhostRoom());
@@ -1204,11 +1205,11 @@ test.describe('E2E: hunt lifecycle', () => {
 
     const initial = await callSetup(page, 'setup.HuntController.ghostRoomId()');
 
-    // Even with the roll forced + a fresh interval, Goryo's lair
-    // mustn't move.
+    // Even with the roll forced + the drift deadline already passed,
+    // Goryo's lair mustn't move.
     await page.evaluate(() => {
-      SugarCube.State.variables.lastChangeIntervalRoom = '';
-      SugarCube.State.variables.minutes = 25;
+      SugarCube.State.variables.minutes = 35;
+      SugarCube.State.variables.nextDriftAtMinute = 0;
       Math.random = () => 0;
     });
     await page.evaluate(() => SugarCube.setup.HuntController.shuffleGhostRoom());
