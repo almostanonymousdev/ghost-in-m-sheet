@@ -205,6 +205,28 @@ test.describe('HuntController', () => {
     expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(false);
   });
 
+  test('startHunt seeds the drift interval gate so the first tick does not drift', async () => {
+    // Regression: the 'It Moved' (disc.drift) achievement was firing
+    // immediately on hunt start because lastChangeIntervalRoom was
+    // never initialized -- the first shuffleGhostRoom() pass would
+    // see an undefined gate, fall through the interval check, and
+    // roll the drift.
+    await page.evaluate(() => {
+      SugarCube.setup.HuntController.startHunt({ seed: 7 });
+      // Force the random roll so a drift WOULD happen if the gate
+      // weren't seeded.
+      Math.random = () => 0;
+    });
+    const before = await page.evaluate(
+      () => SugarCube.State.variables.run.floorplan.spawnRoomId
+    );
+    await page.evaluate(() => SugarCube.setup.HuntController.shuffleGhostRoom());
+    const after = await page.evaluate(
+      () => SugarCube.State.variables.run.floorplan.spawnRoomId
+    );
+    expect(after).toBe(before);
+  });
+
   test('driftChance() shrinks as MC beauty rises (ghost lingers near a prettier MC)', async () => {
     // Default beauty is 30 -> base 45% drift chance.
     await page.evaluate(() => SugarCube.setup.Mc.setBeauty(30));

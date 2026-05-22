@@ -672,6 +672,11 @@ setup.HuntController = (function () {
 		if (setup.Time && typeof setup.Time.resetToMidnight === 'function') {
 			setup.Time.resetToMidnight();
 		}
+		/* Seed the drift interval gate so the first post-passage tick
+		   after hunt start doesn't immediately roll a drift (which would
+		   fire the 'It Moved' achievement before the ghost has actually
+		   moved). The gate is consumed by shuffleGhostRoom(). */
+		sv().lastChangeIntervalRoom = currentDriftInterval();
 		/* Same shared-state reset classic did at GhostRandomize:
 		   tarot deck back to HIDDEN, monkey paw back to 3 wishes /
 		   not-yet-found / no banned houses, knowledge-evidence
@@ -1168,14 +1173,18 @@ setup.HuntController = (function () {
 		// drift roll so the bait spend doesn't get undone by a shuffle.
 		if (setup.HauntConditions && setup.HauntConditions.isBaitActive
 			&& setup.HauntConditions.isBaitActive()) return;
-		var mins = setup.Time.minutes() || 0;
-		var interval = mins < 20 ? "0-19" : mins < 40 ? "20-39" : "40-59";
+		var interval = currentDriftInterval();
 		var s = sv();
 		if (interval === s.lastChangeIntervalRoom) return;
 		if (Math.random() < driftChance()) {
 			driftGhostRoom();
 		}
 		s.lastChangeIntervalRoom = interval;
+	}
+
+	function currentDriftInterval() {
+		var mins = (setup.Time && setup.Time.minutes()) || 0;
+		return mins < 20 ? "0-19" : mins < 40 ? "20-39" : "40-59";
 	}
 
 	function driftChance() {
