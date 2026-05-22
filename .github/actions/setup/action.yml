@@ -1,0 +1,45 @@
+name: Setup
+description: Install Node, Python, Playwright, and Tweego/SugarCube for test jobs.
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Install npm dependencies
+      shell: bash
+      run: npm ci
+
+    - name: Cache Playwright browsers
+      id: playwright-cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/ms-playwright
+        key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+
+    - name: Install Playwright browsers
+      if: steps.playwright-cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: npx playwright install --with-deps chromium
+
+    - name: Install Playwright system deps
+      if: steps.playwright-cache.outputs.cache-hit == 'true'
+      shell: bash
+      run: npx playwright install-deps chromium
+
+    - name: Cache Tweego + SugarCube
+      uses: actions/cache@v4
+      with:
+        path: tweego-2.1.1-linux-x64
+        key: ${{ runner.os }}-tweego-2.1.1-sugarcube-2.37.3
+
+    - name: Set up Tweego and SugarCube
+      shell: bash
+      run: ./scripts/setup.sh

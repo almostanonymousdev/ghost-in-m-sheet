@@ -6,49 +6,39 @@ on:
     branches: [main]
 
 jobs:
-  test:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
+      - name: Python format lint
+        run: python3 tools/check_format.py
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
+      - name: Playwright lint project
+        run: npx playwright test --config=config/playwright.config.js --project=lint
 
-      - name: Install npm dependencies
-        run: npm ci
+  chromium:
+    needs: lint
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    name: chromium (${{ matrix.shard }}/4)
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
 
-      - name: Cache Playwright browsers
-        id: playwright-cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+      - name: Run chromium tests (shard ${{ matrix.shard }}/4)
+        run: npx playwright test --config=config/playwright.config.js --project=chromium --shard=${{ matrix.shard }}/4 --no-deps
 
-      - name: Install Playwright browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium
-
-      - name: Install Playwright system deps
-        if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps chromium
-
-      - name: Cache Tweego + SugarCube
-        uses: actions/cache@v4
-        with:
-          path: tweego-2.1.1-linux-x64
-          key: ${{ runner.os }}-tweego-2.1.1-sugarcube-2.37.3
-
-      - name: Set up Tweego and SugarCube
-        run: ./scripts/setup.sh
-
-      - name: Run tests
-        run: npm run test
+  release:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
 
       - name: Run release tests
-        run: npm run test:release
+        run: npx playwright test --config=config/playwright.config.js --project=release --no-deps
