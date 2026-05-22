@@ -19,7 +19,7 @@
 <div class="housecard">
 <<image "ui/img/sanity-pills.png" "iconPx">><br>
 <<if setup.Mc.sanityPillsAmount() gte 1>>You have <<= setup.Mc.sanityPillsAmount()>> sanity pills<br>
-<<if setup.Ghosts.isHunting()>>
+<<if setup.HuntController.isHunting()>>
 @@.usebtn;<<link "Use sanity pills" "Bag">>
 <<run setup.Mc.useSanityPill()>>
 <<run setup.Mc.applySanityDelta(30)>>

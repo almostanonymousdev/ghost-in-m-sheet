@@ -287,7 +287,7 @@ name: function () { var c = this.activeState(); return c && c.name; },
 		},
 		canShowCompanionMiniPanel: function () {
 			return State.variables.chosenPlan !== undefined
-				&& setup.Ghosts.isHunting()
+				&& setup.HuntController.isHunting()
 				&& this.inHauntedHouseLocation();
 		},
 

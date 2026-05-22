@@ -34,7 +34,7 @@ setup.Tick = (function () {
 
 	// --- Possession / tarot cleanup ------------------------------
 	function applyPossessionTarotCleanup() {
-		if (setup.Ghosts.isPossessed()) {
+		if (setup.HuntController.isPossessed()) {
 			setup.HauntedHouses.markTarotSpent();
 			setup.MonkeyPaw.retire();
 		}
@@ -125,7 +125,7 @@ setup.Tick = (function () {
 	   passage. Returns a passage name to <<goto>>, or null. The
 	   passage stays a thin wrapper that just routes the goto. */
 	function onPassageReady() {
-		if (setup.Ghosts.isHunting()
+		if (setup.HuntController.isHunting()
 			&& companionAttackActiveHit()
 			&& resolveCompanionAttack() === "hit") {
 			setup.Companion.pickRandomCompanionRoomFromContext();
@@ -164,7 +164,7 @@ setup.Tick = (function () {
 	function onPassageDone() {
 		setup.Wardrobe.refreshAggregateStates();
 
-		if (setup.Ghosts.isMimicHunt() && setup.Ghosts.isHunting()) {
+		if (setup.Ghosts.isMimicHunt() && setup.HuntController.isHunting()) {
 			setup.Posession.rollMimicType(
 				setup.Ghosts.names({ exclude: ["Mimic"] })
 			);
@@ -172,7 +172,7 @@ setup.Tick = (function () {
 
 		setup.HuntController.shuffleGhostRoom();
 
-		if (setup.Time.isMorningPlus() && setup.Ghosts.isHunting()) {
+		if (setup.Time.isMorningPlus() && setup.HuntController.isHunting()) {
 			return { goto: "HuntOverTime" };
 		}
 

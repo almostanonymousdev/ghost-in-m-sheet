@@ -222,7 +222,7 @@ test.describe('Home Controller', () => {
     await setHuntMode(page, 3);
 
     // act
-    const result = await callSetup(page, 'setup.Ghosts.isPossessed()');
+    const result = await callSetup(page, 'setup.HuntController.isPossessed()');
 
     // assert
     expect(result).toBe(true);
@@ -670,7 +670,7 @@ test.describe('Home Controller', () => {
       SugarCube.setup.HuntController.setField('ghostName', 'Wraith');
       SugarCube.setup.HuntController.setField('disguiseName', 'Wraith');
       SugarCube.setup.HuntController.setField('evidence', g.evidence.map(e => e.id));
-      SugarCube.setup.Ghosts.setHuntMode(SugarCube.setup.Ghosts.HuntMode.ACTIVE);
+      SugarCube.setup.HuntController.setHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
     });
     await setVar(page, 'hours', 22);
     await page.evaluate(() => SugarCube.setup.Home.setAlarm(7));

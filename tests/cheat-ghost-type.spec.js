@@ -84,7 +84,7 @@ test.describe('cheatGhostType — forceHuntGhost', () => {
       // diverges from that handler, update both — they share the same
       // contract.
       if (name === '—') return;
-      if (!SugarCube.setup.Ghosts.isAnyMode()) return;
+      if (!SugarCube.setup.HuntController.isAnyMode()) return;
       const ghost = SugarCube.setup.Ghosts.list().filter(g => g.name === name)[0];
       if (ghost) SugarCube.setup.Ghosts.cheatForceHuntGhost(ghost);
     }, target);

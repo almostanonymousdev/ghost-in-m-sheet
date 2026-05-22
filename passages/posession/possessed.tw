@@ -57,7 +57,7 @@
 				<br>
 				@@.backbtn; [[Go home|Sleep]]@@<br>
 
-				<<if setup.Ghosts.isHunting()>>
+				<<if setup.HuntController.isHunting()>>
 					<<run setup.Companion.runHuntFailHooks()>>
 					<<set _tempCorrGained to setup.HauntedHouses.commitTempCorruption()>>
 					Corruption is increased (+ <<= _tempCorrGained.toFixed(2)>>) : <<= setup.Mc.corruption().toFixed(2)>><br>

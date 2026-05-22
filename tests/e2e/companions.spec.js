@@ -329,15 +329,15 @@ test.describe('Companions — hunt setup integration', () => {
   });
 
   // Bridging regression: HuntController.startHunt needs to flip
-  // $huntMode to ACTIVE so setup.Ghosts.isHunting() returns true
+  // $huntMode to ACTIVE so setup.HuntController.isHunting() returns true
   // during a dynamic run. Without this the companion mini panel,
   // the walk-home gate, and the per-tick companion machinery all
-  // stay dark — they all key off Ghosts.isHunting().
-  test('HuntController.startHunt lights up Ghosts.isHunting()', async ({ game: page }) => {
-    expect(await callSetup(page, 'setup.Ghosts.isHunting()')).toBe(false);
+  // stay dark — they all key off HuntController.isHunting().
+  test('HuntController.startHunt lights up HuntController.isHunting()', async ({ game: page }) => {
+    expect(await callSetup(page, 'setup.HuntController.isHunting()')).toBe(false);
     await page.evaluate(() =>
       SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: 'owaissa' }));
-    expect(await callSetup(page, 'setup.Ghosts.isHunting()')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntController.isHunting()')).toBe(true);
     expect(await getVar(page, 'huntMode')).toBe(2);
   });
 
@@ -397,7 +397,7 @@ test.describe('Companions — hunt setup integration', () => {
       SugarCube.setup.HuntController.startHunt({ seed: 1 });
       SugarCube.setup.HuntController.setField('ghostName', 'Shade');
       SugarCube.setup.Ghosts.cheatStartHunt('Shade');
-      SugarCube.setup.Ghosts.setHuntMode(SugarCube.setup.Ghosts.HuntMode.ACTIVE);
+      SugarCube.setup.HuntController.setHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
     });
     await goToPassage(page, 'HuntStart');
     await expectCleanPassage(page);
@@ -440,7 +440,7 @@ test.describe('Companions — hunt setup integration', () => {
       SugarCube.setup.HuntController.startHunt({ seed: 1 });
       SugarCube.setup.HuntController.setField('ghostName', 'Shade');
       SugarCube.setup.Ghosts.cheatStartHunt('Shade');
-      SugarCube.setup.Ghosts.setHuntMode(SugarCube.setup.Ghosts.HuntMode.ACTIVE);
+      SugarCube.setup.HuntController.setHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
     });
     await setVar(page, 'isCompChosen', 1);
     await setVar(page, 'chosenPlan', 'Plan1');
@@ -558,12 +558,12 @@ test.describe('Companions — hunt setup integration', () => {
   // the cleanup that pairs with startHunt's $huntMode flip, the mode
   // would stay ACTIVE and the per-passage tick would punt the player
   // to HuntOverTime as soon as the in-game clock crossed 06:00.
-  test('HuntController.end() resets Ghosts.huntMode to NONE', async ({ game: page }) => {
+  test('HuntController.end() resets huntMode to NONE', async ({ game: page }) => {
     await page.evaluate(() =>
       SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: 'owaissa' }));
-    expect(await callSetup(page, 'setup.Ghosts.isHunting()')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntController.isHunting()')).toBe(true);
     await page.evaluate(() => SugarCube.setup.HuntController.end());
-    expect(await callSetup(page, 'setup.Ghosts.isHunting()')).toBe(false);
-    expect(await callSetup(page, 'setup.Ghosts.huntMode()')).toBe(0);
+    expect(await callSetup(page, 'setup.HuntController.isHunting()')).toBe(false);
+    expect(await callSetup(page, 'setup.HuntController.huntMode()')).toBe(0);
   });
 });

@@ -119,7 +119,7 @@ async function setupHunt(page, ghostName, house = 'owaissa') {
       'evidence',
       ghost ? ghost.evidence.map(function (e) { return e.id; }) : []
     );
-    SugarCube.setup.Ghosts.setHuntMode(SugarCube.setup.Ghosts.HuntMode.ACTIVE);
+    SugarCube.setup.HuntController.setHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
   }, { name: ghostName, staticHouseId: house });
 
   const assigned = await page.evaluate(() => {

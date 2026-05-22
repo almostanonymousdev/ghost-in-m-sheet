@@ -48,7 +48,7 @@ test.describe('Companion result plans', () => {
       SugarCube.setup.HuntController.setField('disguiseName', 'Spirit');
       // Simulate Fog of War trimming the evidence list down to a single id.
       SugarCube.setup.HuntController.setField('evidence', ['emf']);
-      SugarCube.setup.Ghosts.setHuntMode(SugarCube.setup.Ghosts.HuntMode.ACTIVE);
+      SugarCube.setup.HuntController.setHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
     });
 
     const runEv = await callSetup(page, 'setup.HuntController.runEvidence()');

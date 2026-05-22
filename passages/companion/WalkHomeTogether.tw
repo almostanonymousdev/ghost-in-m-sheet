@@ -123,7 +123,7 @@
 <</if>>
 
 <<run setup.Mc.bankTempCorruption()>>
-<<run setup.Ghosts.setHuntMode(setup.Ghosts.HuntMode.POSSESSED)>>
+<<run setup.HuntController.setHuntMode(setup.HuntController.HuntMode.POSSESSED)>>
 
 <<run setup.resetTools()>>
 

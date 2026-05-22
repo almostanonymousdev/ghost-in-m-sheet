@@ -119,7 +119,7 @@
 	<</replace>>
 <</link>>@@<br>
 
-<<if _c.canWalkHome and setup.Ghosts.isHunting()>>
+<<if _c.canWalkHome and setup.HuntController.isHunting()>>
 	@@.usebtn;<<link `"Ask " + _c.pronObj + " to walk you home."`>>
 
 		<<replace "#compResponse">>
@@ -127,7 +127,7 @@
 			<<if setup.Companion.canWalkHomeWithCompanion()>>
 				@@.notmc-speech; Yeah. You sure? We can still finish.@@<br>
 				<<set _hg to setup.HuntController.activeGhost()>>
-				<<if _hg and _hg.companionHuntPassage and setup.Ghosts.isHunting()>>
+				<<if _hg and _hg.companionHuntPassage and setup.HuntController.isHunting()>>
 					@@.mc-speech; Yes, <<link "let's go together" `_hg.companionHuntPassage`>>
 					<</link>> @@
 				<<else>>

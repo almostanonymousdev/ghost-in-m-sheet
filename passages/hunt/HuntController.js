@@ -29,12 +29,19 @@ setup.HuntController = (function () {
 	var OWNED_VARS = Object.freeze([
 		'run', 'ectoplasm', 'runsStarted',
 		'nextHuntSeed', 'pendingHuntHouseId',
-		// Absolute total-minute clock value when the next ghost-room
-		// drift roll should fire. Written by startHunt (seed) and
-		// shuffleGhostRoom (re-roll after each pass), read by
-		// shuffleGhostRoom only.
-		'nextDriftAtMinute'
+		'nextDriftAtMinute',
+		'huntMode'
 	]);
+
+	/* Lifecycle stages of the current hunt. Stored as the top-level
+	   $huntMode integer (default 0 = NONE) and accessed through the
+	   huntMode()/setHuntMode() helpers below. Prefer the predicate
+	   helpers (isHunting, isPossessed, …) to comparing raw ints. */
+	var HuntMode = Object.freeze({
+		NONE:      0,   // no hunt active
+		ACTIVE:    2,   // player is inside the house, hunt in progress
+		POSSESSED: 3    // hunt ended (manual exit, sanity-over, pills)
+	});
 
 	var sv = setup.sv;
 
@@ -131,15 +138,13 @@ setup.HuntController = (function () {
 	   the rest of the fields. Also flips $huntMode back to NONE and
 	   tears down companion bookkeeping that startHunt stamped, so a
 	   Cancel from the HuntStart lobby (which calls this directly, not
-	   endHunt) doesn't leave Ghosts.isHunting() stuck on -- which
-	   would let the post-passage tick redirect the player into
-	   HuntOverTime once the clock crossed 06:00. */
+	   endHunt) doesn't leave isHunting() stuck on -- which would let
+	   the post-passage tick redirect the player into HuntOverTime once
+	   the clock crossed 06:00. */
 	function end() {
 		var prior = sv().run;
 		sv().run = null;
-		if (setup.Ghosts && typeof setup.Ghosts.setHuntMode === 'function') {
-			setup.Ghosts.setHuntMode(setup.Ghosts.HuntMode.NONE);
-		}
+		setHuntMode(HuntMode.NONE);
 		if (setup.Companion) {
 			if (typeof setup.Companion.runHuntFailHooks === 'function') setup.Companion.runHuntFailHooks();
 			if (typeof setup.Companion.resetHuntState === 'function') setup.Companion.resetHuntState();
@@ -155,6 +160,27 @@ setup.HuntController = (function () {
 
 	function active()    { return sv().run || null; }
 	function isActive()  { return !!sv().run; }
+
+	/* Hunt-mode query/mutation helpers. Prefer these to raw
+	   $huntMode comparisons — they keep the magic ints out of
+	   passages and give each stage a readable predicate. */
+	function huntMode()    { return sv().huntMode || HuntMode.NONE; }
+	function setHuntMode(mode) { sv().huntMode = mode; }
+	function isHunting()   { return huntMode() === HuntMode.ACTIVE; }
+	function isPossessed() { return huntMode() === HuntMode.POSSESSED; }
+	/* True for any stage past NONE — "a hunt is in progress or in
+	   its post-mortem (possessed) phase". */
+	function isAnyMode()   { return huntMode() !== HuntMode.NONE; }
+
+	/* Flip $huntMode to ACTIVE and clear stale per-hunt ability flags
+	   (highpriestess / banshee / cthulion live on setup.Ghosts as
+	   per-hunt singletons). Called from startHunt once $run is stamped. */
+	function activateHunt() {
+		setHuntMode(HuntMode.ACTIVE);
+		if (setup.Ghosts && typeof setup.Ghosts.clearHuntFlags === 'function') {
+			setup.Ghosts.clearHuntFlags();
+		}
+	}
 
 	/* Wrap a function body in the "bail out when no run is active" guard.
 	   Replaces the `if (!isActive()) return <fallback>;` first-line pattern
@@ -655,10 +681,10 @@ setup.HuntController = (function () {
 		setField('evidence', evidenceIds);
 		setField('disguiseName', ghostName);
 		/* Flip $huntMode to ACTIVE so the per-hunt machinery
-		   (setup.Ghosts.isHunting() / active(), companion mini panel +
+		   (isHunting() / activeGhost(), companion mini panel +
 		   walk-home gate, Mimic rotation, Bag tabs, tick-side morning /
 		   possessed checks) lights up immediately. */
-		setup.Ghosts.activateHunt();
+		activateHunt();
 		/* Pin the in-game clock to midnight so the post-passage tick
 		   doesn't punt the player into HuntOverTime the moment they
 		   land on HuntStart/HuntRun. In production this matches what
@@ -987,7 +1013,7 @@ setup.HuntController = (function () {
 		   sees a clean slate. runHuntFailHooks gives the active companion
 		   (if any) a chance to clean up their own state; resetHuntState
 		   then zeroes the shared plan / showComp / isCompChosen flags. */
-		setup.Ghosts.setHuntMode(setup.Ghosts.HuntMode.POSSESSED);
+		setHuntMode(HuntMode.POSSESSED);
 		if (setup.Companion) {
 			setup.Companion.runHuntFailHooks();
 			setup.Companion.resetHuntState();
@@ -1323,6 +1349,7 @@ setup.HuntController = (function () {
 
 	return {
 		OWNED_VARS: OWNED_VARS,
+		HuntMode: HuntMode,
 		/* Outcome / FailureReason / Objective / objectiveDescription
 		   are spliced onto this api by HuntEnums.js after this file
 		   evaluates -- see the splice block at the bottom of HuntEnums.js. */
@@ -1331,6 +1358,12 @@ setup.HuntController = (function () {
 		end: end,
 		active: active,
 		isActive: isActive,
+		huntMode: huntMode,
+		setHuntMode: setHuntMode,
+		isHunting: isHunting,
+		isPossessed: isPossessed,
+		isAnyMode: isAnyMode,
+		activateHunt: activateHunt,
 		seed: seed,
 		number: number,
 		modifiers: modifiers,

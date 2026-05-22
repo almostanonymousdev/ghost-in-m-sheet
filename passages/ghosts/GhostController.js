@@ -416,16 +416,6 @@
         return out;
     }
 
-    /* Lifecycle stages of the current hunt. Stored as the top-level
-       $huntMode integer (default 0 = NONE) and accessed through the
-       huntMode()/setHuntMode() helpers below. Prefer the predicate
-       helpers (isHunting, isPossessed, …) to comparing raw ints. */
-    var HuntMode = Object.freeze({
-        NONE:      0,   // no hunt active
-        ACTIVE:    2,   // player is inside the house, hunt in progress
-        POSSESSED: 3    // hunt ended (manual exit, sanity-over, pills)
-    });
-
     /* Memoisation for active(): during a render it's called from every
        evidence tool, hoverHtml, CheckHuntStart, etc. The rebuild (catalogue
        lookup + field copy + evidence rehydrate) is cheap but happens dozens
@@ -440,7 +430,6 @@
     /* Variables owned by this controller. Other controllers should
        query/mutate these only through the API methods below. */
     var OWNED_VARS = Object.freeze([
-        'huntMode',
         'prowlActivated', 'prowlActivationTime',
         'elapsedTimeProwl', 'prowlTimeRemain',
         'EMF5Check', 'SpiritboxCheck', 'GWBCheck', 'EctoglassCheck',
@@ -464,7 +453,6 @@
     var api = {
         OWNED_VARS: OWNED_VARS,
         Evidence: Evidence,
-        HuntMode: HuntMode,
 
         list: function () {
             return GHOSTS;
@@ -513,14 +501,6 @@
             return null;
         },
 
-        /* Hunt lifecycle. activateHunt() flips $huntMode to ACTIVE and
-           clears stale per-hunt ability flags. Called from
-           setup.HuntController.startHunt once $run is stamped. */
-        activateHunt: function () {
-            State.variables.huntMode = HuntMode.ACTIVE;
-            setup.Ghosts.clearHuntFlags();
-        },
-
         /* Test / cheat shortcut. Stamps a minimal $run with the named
            ghost as both real identity and current disguise, copies in
            the catalogue evidence, and flips $huntMode to ACTIVE.
@@ -541,7 +521,7 @@
                 ghostName: name,
                 evidence:  ghost.evidence.map(function (e) { return e.id; })
             });
-            setup.Ghosts.activateHunt();
+            setup.HuntController.activateHunt();
             return true;
         },
 
@@ -557,17 +537,6 @@
             delete V.bansheeAbility;
             delete V.cthulionAbility;
         },
-
-        /* Hunt-mode query/mutation helpers. Prefer these to raw
-           $huntMode comparisons — they keep the magic ints out of
-           passages and give each stage a readable predicate. */
-        huntMode:    function ()     { return State.variables.huntMode || HuntMode.NONE; },
-        setHuntMode: function (mode) { State.variables.huntMode = mode; },
-        isHunting:   function ()     { return this.huntMode() === HuntMode.ACTIVE; },
-        isPossessed: function ()     { return this.huntMode() === HuntMode.POSSESSED; },
-        /* True for any stage past NONE — "a hunt is in progress or in
-           its post-mortem (possessed) phase". */
-        isAnyMode:   function ()     { return this.huntMode() !== HuntMode.NONE; },
 
         /* True when this hunt is actually a Mimic. $run.ghostName holds
            the true identity (never rotates); $run.disguiseName rotates

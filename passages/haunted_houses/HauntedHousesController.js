@@ -75,7 +75,7 @@ setup.HauntedHouses = (function () {
 
 		endHunt: function () {
 			this.commitTempCorruption();
-			setup.Ghosts.setHuntMode(setup.Ghosts.HuntMode.POSSESSED);
+			setup.HuntController.setHuntMode(setup.HuntController.HuntMode.POSSESSED);
 		},
 
 		/* Common end-of-hunt cleanup shared by the hunt lifecycle and

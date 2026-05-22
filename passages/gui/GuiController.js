@@ -266,7 +266,7 @@ $(document).one(":storyready", function () {
 			ifCheatChanged("cheatGhostType", function () {
 				var name = settings.cheatGhostType;
 				if (name === GHOST_PICKER_NULL) return;
-				if (!setup.Ghosts.isAnyMode()) return;
+				if (!setup.HuntController.isAnyMode()) return;
 				var ghost = setup.Ghosts.list().filter(function (g) { return g.name === name; })[0];
 				if (ghost) setup.Ghosts.cheatForceHuntGhost(ghost);
 			});
