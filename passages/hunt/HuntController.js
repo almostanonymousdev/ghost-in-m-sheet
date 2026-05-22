@@ -246,7 +246,7 @@ setup.HuntController = (function () {
 		if (kind === 'clothesStolen') return setup.HauntedHouses.hasClothesStolen();
 		if (kind === 'tarotCards')    return setup.HauntedHouses.tarotCardsStage() === setup.TarotStage.HIDDEN;
 		if (kind === 'monkeyPaw')     return setup.MonkeyPaw.isDiscoverable();
-    if (kind === 'cursedItem)     return setup.Witch.cursedItemQuestStarted();
+		if (kind === 'cursedItem')    return setup.Witch.cursedItemQuestStarted();
 		return true;
 	}
 
