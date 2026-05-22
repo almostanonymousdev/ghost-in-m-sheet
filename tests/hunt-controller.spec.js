@@ -291,4 +291,43 @@ test.describe('HuntController', () => {
     expect(await callSetup(page, 'setup.HuntController.realGhostName()')).toBe(huntGhost);
   });
 
+  test('cursedItem loot slots stay inert until Khadija opens the quest', async () => {
+    // Regression: cursed sex toys were showing up in furniture during
+    // hunts before the witch had even mentioned the quest. The
+    // floor-plan generator still stamps a cursedItem slot at hunt
+    // start, but lootKindsAt should filter it out until
+    // setup.Witch.cursedItemQuestStarted() is true.
+    await page.evaluate(() => {
+      SugarCube.setup.HuntController.startHunt({ seed: 13 });
+    });
+
+    // Fresh save: gotCursedItem is undefined, quest not started.
+    expect(await callSetup(page, 'setup.Witch.cursedItemQuestStarted()')).toBe(false);
+
+    const ciSlot = await page.evaluate(() => {
+      var run = SugarCube.State.variables.run;
+      var roomId = run.floorplan.loot.cursedItem;
+      var suffix = run.floorplan.lootFurniture.cursedItem;
+      return roomId ? { room: roomId, suffix: suffix } : null;
+    });
+    expect(ciSlot).not.toBeNull();
+
+    // With the quest still locked, the slot reads as empty.
+    const kindsBefore = await page.evaluate(s =>
+      SugarCube.setup.HuntController.lootKindsAt(s.room, s.suffix),
+      ciSlot
+    );
+    expect(kindsBefore).not.toContain('cursedItem');
+
+    // Opening the quest (Khadija sets gotCursedItem = 0) flips the gate.
+    await page.evaluate(() => SugarCube.setup.Witch.clearCursedItemHeld());
+    expect(await callSetup(page, 'setup.Witch.cursedItemQuestStarted()')).toBe(true);
+
+    const kindsAfter = await page.evaluate(s =>
+      SugarCube.setup.HuntController.lootKindsAt(s.room, s.suffix),
+      ciSlot
+    );
+    expect(kindsAfter).toContain('cursedItem');
+  });
+
 });

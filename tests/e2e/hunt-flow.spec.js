@@ -793,6 +793,11 @@ test.describe('E2E: hunt lifecycle', () => {
        expects. modifierCount:0 keeps the floor plan to its base layout
        so the click target is unambiguous. */
     await ensureNotEmptyBag(page);
+    /* Open the cursed-item quest so the cursedItem loot gate (see
+       setup.HuntController.isLootKindAvailable) lets the slot light
+       up — this test exercises a generic "find loot" flow and picks
+       whichever base kind happens to land on a furniture slot. */
+    await page.evaluate(() => SugarCube.setup.Witch.clearCursedItemHeld());
 
     // Place the player in the room+slot one of the four base loot
     // kinds is hidden in. The floor-plan generator might land

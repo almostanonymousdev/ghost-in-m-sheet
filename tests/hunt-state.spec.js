@@ -260,6 +260,11 @@ test.describe('Hunt Controller', () => {
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({
       seed: 31, floorPlanOpts: { roomCount: 6 }
     }));
+    /* Open the cursed-item quest so the cursedItem loot gate (see
+       setup.HuntController.isLootKindAvailable) lets the slot light
+       up — this test just needs *some* loot kind to be visible on a
+       furniture slot and picks the first one keyed in lootFurniture. */
+    await page.evaluate(() => SugarCube.setup.Witch.clearCursedItemHeld());
     const fp = await callSetup(page, 'setup.HuntController.field("floorplan")');
     const kind = Object.keys(fp.lootFurniture)[0];
     const roomId = fp.loot[kind];

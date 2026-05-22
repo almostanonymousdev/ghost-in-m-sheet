@@ -251,6 +251,13 @@ setup.HuntController = (function () {
 		if (kind === 'monkeyPaw') {
 			return !!(setup.MonkeyPaw && setup.MonkeyPaw.isDiscoverable && setup.MonkeyPaw.isDiscoverable());
 		}
+		if (kind === 'cursedItem') {
+			/* Cursed sex toys only start showing up in haunted houses
+			   once Khadija has briefed the player on what to look for.
+			   Before the quest is offered ($gotCursedItem === undefined)
+			   the slot stamped by the floor-plan generator stays inert. */
+			return !!(setup.Witch && setup.Witch.cursedItemQuestStarted && setup.Witch.cursedItemQuestStarted());
+		}
 		return true;
 	}
 
