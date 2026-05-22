@@ -11,8 +11,8 @@
  */
 setup.Game = (function () {
 
-	function initState() {
-		var s = State.variables;
+	function initState(target) {
+		var s = target || State.variables;
 
 		// --- Sanity / hunt tuning -----------------------------
 		s.sanityIfHot = 0.3;

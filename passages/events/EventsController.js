@@ -135,7 +135,22 @@ setup.Events = (function () {
 			return setup.Styles.isDarkRoom(passageName);
 		},
 		turnOffLightHere: function () {
-			return setup.Styles.turnOffLightHere();
+			/* Static-house rooms render through dedicated passages
+			   (OwaissaKitchen, ElmHallway, ...) and setup.Styles owns
+			   that map. Procedural-hunt rooms all render through
+			   HuntRun and the lit/dark flag lives on $run.lights, so
+			   setup.Styles can't see them — fall through to the hunt
+			   path when an active run is in a lit room. */
+			var dest = setup.Styles.turnOffLightHere();
+			if (dest) return dest;
+			if (setup.HuntController.isHuntActive()) {
+				var roomId = setup.HuntController.currentRoomId();
+				if (roomId && !setup.HuntController.isRoomDark(roomId)) {
+					setup.HuntController.setRoomLight(roomId, setup.RoomLight.DARK);
+					return "HuntRun";
+				}
+			}
+			return null;
 		},
 		/* :: LightPassageGhost entry: 1-in-65 chance per tick that a
 		   light-capable ghost activates EMF and darkens the room.

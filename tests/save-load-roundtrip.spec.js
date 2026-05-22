@@ -563,6 +563,163 @@ test.describe('Save/load round-trip', () => {
     expect(await getVar(page, 'mc.money')).toBe(999);
   });
 
+  test('resetSaveToFallback preserves progression and resets transient state', async ({ game: page }) => {
+    // Cross-version fallback contract: when a save's metadata.version
+    // doesn't match the running build's SAVE_VERSION, we carry the
+    // player's earned progression forward but throw away anything
+    // transient. Driven directly on a synthetic vars object so the
+    // assertions don't depend on Save serialization details.
+    await goToPassage(page, 'CityMap');
+
+    const after = await page.evaluate(() => {
+      const vars = {
+        // Progression that must survive:
+        mc: {
+          name: 'Maud', money: 777, sanity: 50, lust: 60,
+          corruption: 7, lvl: 4, exp: 33,
+          energy: 6, energyMax: 12,
+          beautyBase: 30, beautyModifier: 12,
+          frozenBeauty: 88,         // hunt-only override -- must drop
+          possessionResidue: 3,
+        },
+        ectoplasm: 250,
+        runsStarted: 14,
+        equipment: { emf: 3, spiritbox: 3, gwb: 5, glass: 5, temperature: 5, uvl: 5 },
+        spiritboxLvl: 3,
+        crucifixAmount: 2,
+        hasPSpray: 1, hasPSprayCharges: 4,
+        meta: { unlocks: { 'foo': 1 }, bannedModifiers: ['bar'], rerollCharges: 2 },
+        achievements: { 'first-hunt': { at: 1 } },
+        monkeyPawLearned: { activity: true, knowledge: true },
+        ghostInfoCollected: { Shade: 1, Spirit: 1 },
+        ectoplasmQuestStage: 3,
+        relationshipBlake: 4,
+        lostClothing: ['jeansState'],
+        rememberTopOuter: 'tshirt0', rememberBottomOuter: 'jeans0',
+        // Companion stat row + marker:
+        companion: { name: 'Brook' },
+        brook: { sanity: 80, lust: 20, chanceToAttack: 5 },
+
+        // Transient state that must be wiped:
+        run: { seed: 99, number: 5, modifiers: [], floorplan: { rooms: [], edges: [], spawnRoomId: null } },
+        huntMode: 2,                                       // POSSESSED
+        tools: { emf: { activated: 1, activationTime: 42 }, uvl: { activated: 1, activationTime: 7 } },
+        succubusEvent: { eventCD: 1, pcStage: 3 },
+        tentacles: { stageAll: 2 },
+        webcam: { showCD: 1, money: 999 },                 // not the MC's wallet -- webcam pay
+        summoning: { text: 'whoosh' },
+        cursedHomeItem: 'tv', cursedHomeItemActive: 1,
+        temperature: -8,
+        deliverySpecialOrder: true,
+        deliveryCorrectThisShift: 2, deliveryStreak: 5,
+        pendingHuntHouseId: 'owaissa',
+        hauntedHouse: 'owaissa',
+        prowlActivated: 1, prowlActivationTime: 60, elapsedTimeProwl: 30,
+        twinsEventActive: 1,
+        // Clock somewhere weird:
+        hours: 23, minutes: 45, meridiem: 'PM',
+      };
+      SugarCube.setup.resetSaveToFallback(vars);
+      return vars;
+    });
+
+    // --- Preserved fields survive intact -----------------------
+    expect(after.mc.name).toBe('Maud');
+    expect(after.mc.money).toBe(777);
+    expect(after.mc.sanity).toBe(50);
+    expect(after.mc.lvl).toBe(4);
+    expect(after.mc.exp).toBe(33);
+    expect(after.mc.corruption).toBe(7);
+    expect(after.mc.possessionResidue).toBe(3);
+    expect(after.mc.beautyBase).toBe(30);
+    expect(after.mc.beautyModifier).toBe(12);
+    expect(after.ectoplasm).toBe(250);
+    expect(after.runsStarted).toBe(14);
+    expect(after.equipment.emf).toBe(3);
+    expect(after.spiritboxLvl).toBe(3);
+    expect(after.crucifixAmount).toBe(2);
+    expect(after.hasPSpray).toBe(1);
+    expect(after.hasPSprayCharges).toBe(4);
+    expect(after.meta.unlocks.foo).toBe(1);
+    expect(after.meta.rerollCharges).toBe(2);
+    expect(after.achievements['first-hunt']).toEqual({ at: 1 });
+    expect(after.monkeyPawLearned.knowledge).toBe(true);
+    expect(after.ghostInfoCollected.Shade).toBe(1);
+    expect(after.ectoplasmQuestStage).toBe(3);
+    expect(after.relationshipBlake).toBe(4);
+    expect(after.lostClothing).toEqual(['jeansState']);
+    expect(after.rememberTopOuter).toBe('tshirt0');
+    expect(after.companion).toEqual({ name: 'Brook' });
+    expect(after.brook.sanity).toBe(80);
+
+    // --- mc.frozenBeauty is stripped (hunt-only override) ------
+    expect(after.mc.frozenBeauty).toBeUndefined();
+
+    // --- Transient state is reset ------------------------------
+    expect(after.run).toBeNull();
+    expect(after.huntMode).toBe(0);
+    expect(after.tools.emf.activated).toBe(0);
+    expect(after.tools.emf.activationTime).toBe(0);
+    expect(after.tools.uvl.activated).toBe(0);
+    expect(after.succubusEvent).toEqual({});
+    expect(after.tentacles).toEqual({});
+    expect(after.webcam).toEqual({});
+    expect(after.summoning).toEqual({});
+    expect(after.cursedHomeItem).toBe('');
+    expect(after.cursedHomeItemActive).toBe(0);
+    expect(after.temperature).toBe(0);
+    expect(after.deliverySpecialOrder).toBe(false);
+    expect(after.deliveryCorrectThisShift).toBe(0);
+    expect(after.deliveryStreak).toBe(0);
+    expect(after.pendingHuntHouseId).toBeNull();
+    expect(after.hauntedHouse).toBeNull();
+
+    // --- Clock parked at 11 AM ---------------------------------
+    expect(after.hours).toBe(11);
+    expect(after.minutes).toBe(0);
+    expect(after.meridiem).toBe('AM');
+  });
+
+  test('cross-version save load drops the MC in the Livingroom at 11 AM', async ({ game: page }) => {
+    // End-to-end check on the Save.onLoad wiring: a save whose
+    // metadata.version doesn't match SAVE_VERSION should come back
+    // with the player's MC stats intact but the clock + passage reset.
+    // SaveMigration's onSave handler stamps metadata.version on every
+    // serialize; we register a one-shot follow-up onSave that downgrades
+    // the stamp to v1 so the next load sees a "legacy" save.
+    await goToPassage(page, 'CityMap');
+    await setVar(page, 'mc.money', 555);
+    await setVar(page, 'mc.lvl', 9);
+    await setVar(page, 'ectoplasm', 88);
+    await setVar(page, 'hours', 22);
+    await setVar(page, 'minutes', 17);
+    await setVar(page, 'huntMode', 2);
+    await commitToSave(page);
+
+    const blob = await page.evaluate(() => {
+      const downgrade = function (save) {
+        save.metadata = save.metadata || {};
+        save.metadata.version = 1;
+        SugarCube.Save.onSave.delete(downgrade);
+      };
+      SugarCube.Save.onSave.add(downgrade);
+      return SugarCube.Save.serialize();
+    });
+
+    await resetGame(page);
+    await page.evaluate((b) => SugarCube.Save.deserialize(b), blob);
+
+    expect(await page.evaluate(() => SugarCube.State.passage)).toBe('Livingroom');
+    expect(await getVar(page, 'hours')).toBe(11);
+    expect(await getVar(page, 'minutes')).toBe(0);
+    expect(await getVar(page, 'meridiem')).toBe('AM');
+    expect(await getVar(page, 'mc.money')).toBe(555);
+    expect(await getVar(page, 'mc.lvl')).toBe(9);
+    expect(await getVar(page, 'ectoplasm')).toBe(88);
+    expect(await getVar(page, 'run')).toBeNull();
+    expect(await getVar(page, 'huntMode')).toBe(0);
+  });
+
   test('SAVE_VERSION marker is at the hunt-aware schema version', async ({ game: page }) => {
     // v3 = hunt-mode subsystem landed. v6 = $hunt bundle removed
     // (state folded onto $huntMode + $run). Future downstream tooling

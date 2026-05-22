@@ -25,12 +25,16 @@ test.describe('HuntController', () => {
 
   test.beforeEach(async () => {
     await resetGame(page);
-    /* GhostStreet's huntCard gates the link behind setup.Mc.lvl() >= 4
-       (new games start at lvl 0). resetGame only blocks until the first
-       passage renders, which can race the $mc rebind, so wait for the
+    /* GhostStreet's huntCard is hidden until the witch's ectoplasm-
+       unlock quest is complete (new games start with the quest
+       NOT_OFFERED). resetGame only blocks until the first passage
+       renders, which can race the $mc rebind, so wait for the
        variable bag before mutating. */
     await page.waitForFunction(() => SugarCube.State.variables.mc != null);
-    await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+    await page.evaluate(() => {
+      SugarCube.State.variables.mc.lvl = 4;
+      SugarCube.setup.Witch.completeEctoplasmQuest();
+    });
   });
 
   /* The hunt card's link text is the per-cycle randomised street address.
@@ -184,7 +188,9 @@ test.describe('HuntController', () => {
     await page.evaluate(() => {
       SugarCube.setup.HuntController.startHunt({ seed: 1 });
       SugarCube.setup.HuntController.setField('ghostName', 'Goryo');
-      SugarCube.State.variables.lastChangeIntervalRoom = '';
+      // Past the drift deadline (totalMinutes() = 25, deadline = 0)
+      // so a non-Goryo ghost would otherwise roll a drift here.
+      SugarCube.State.variables.nextDriftAtMinute = 0;
       SugarCube.State.variables.minutes = 25;
       Math.random = () => 0; // would otherwise fire the drift
     });
@@ -203,6 +209,104 @@ test.describe('HuntController', () => {
     // No run -> nothing to shuffle, no error.
     await page.evaluate(() => SugarCube.setup.HuntController.shuffleGhostRoom());
     expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(false);
+  });
+
+  test('startHunt seeds the drift deadline so the first tick does not drift', async () => {
+    // Regression: the 'It Moved' (disc.drift) achievement was firing
+    // immediately on hunt start because the drift deadline was never
+    // initialized -- the first shuffleGhostRoom() pass would fall
+    // through the interval check and roll the drift.
+    await page.evaluate(() => {
+      SugarCube.setup.HuntController.startHunt({ seed: 7 });
+      // Force the random roll so a drift WOULD happen if the gate
+      // weren't seeded.
+      Math.random = () => 0;
+    });
+    const before = await page.evaluate(
+      () => SugarCube.State.variables.run.floorplan.spawnRoomId
+    );
+    await page.evaluate(() => SugarCube.setup.HuntController.shuffleGhostRoom());
+    const after = await page.evaluate(
+      () => SugarCube.State.variables.run.floorplan.spawnRoomId
+    );
+    expect(after).toBe(before);
+  });
+
+  test('drift deadline is re-rolled inside 15-35 minutes after each shuffle', async () => {
+    // Each shuffleGhostRoom pass reschedules the next deadline at
+    // totalMinutes() + Rng.intInclusive(15, 35), so a player can't
+    // time movements off a fixed 20-minute cadence.
+    await page.evaluate(() => {
+      SugarCube.setup.HuntController.startHunt({ seed: 11 });
+      SugarCube.setup.HuntController.setField('ghostName', 'Spirit');
+    });
+    // shuffleGhostRoom gates on passage() === 'HuntRun'; without it
+    // the function bails before the reroll.
+    await goToPassage(page, 'HuntRun');
+
+    /* Sample the reschedule with a varying RNG so every offset in
+       [15, 35] gets exercised. The drift-vs-skip roll inside
+       shuffleGhostRoom consumes one Math.random call before the
+       reroll, so we cycle through enough phases to land both above
+       and below driftChance() and to cover the full int range. */
+    const samples = await page.evaluate(() => {
+      var picks = [];
+      var seq = 0;
+      // 21 samples × 2 random calls per pass = enough to hit every
+      // integer in [0, 20] for the reroll path.
+      Math.random = function () {
+        var v = (seq % 42) / 41;
+        seq++;
+        return v;
+      };
+      for (var i = 0; i < 21; i++) {
+        SugarCube.State.variables.hours = 0;
+        SugarCube.State.variables.minutes = 0;
+        SugarCube.State.variables.nextDriftAtMinute = 0;
+        SugarCube.setup.HuntController.shuffleGhostRoom();
+        picks.push(SugarCube.State.variables.nextDriftAtMinute);
+      }
+      return picks;
+    });
+
+    samples.forEach((offset, i) => {
+      expect(offset, `sample ${i} offset out of [15,35]`).toBeGreaterThanOrEqual(15);
+      expect(offset, `sample ${i} offset out of [15,35]`).toBeLessThanOrEqual(35);
+    });
+    // Spread check: more than one distinct offset across the samples
+    // (a degenerate fixed roll would all collapse to the same value).
+    const distinct = new Set(samples);
+    expect(distinct.size).toBeGreaterThan(1);
+  });
+
+  test('shuffleGhostRoom does nothing until the clock crosses the drift deadline', async () => {
+    await page.evaluate(() => {
+      SugarCube.setup.HuntController.startHunt({ seed: 13 });
+      SugarCube.setup.HuntController.setField('ghostName', 'Spirit');
+    });
+    // shuffleGhostRoom gates on passage() === 'HuntRun'.
+    await goToPassage(page, 'HuntRun');
+    await page.evaluate(() => {
+      // Park the clock 5 minutes shy of the deadline -- the shuffle
+      // must bail without re-rolling the deadline or moving the ghost.
+      SugarCube.State.variables.hours = 0;
+      SugarCube.State.variables.minutes = 10;
+      SugarCube.State.variables.nextDriftAtMinute = 15;
+      // Would otherwise fire if the gate let us through.
+      Math.random = () => 0;
+    });
+    const beforeRoom = await page.evaluate(
+      () => SugarCube.State.variables.run.floorplan.spawnRoomId
+    );
+    await page.evaluate(() => SugarCube.setup.HuntController.shuffleGhostRoom());
+    const afterRoom = await page.evaluate(
+      () => SugarCube.State.variables.run.floorplan.spawnRoomId
+    );
+    const afterDeadline = await page.evaluate(
+      () => SugarCube.State.variables.nextDriftAtMinute
+    );
+    expect(afterRoom).toBe(beforeRoom);
+    expect(afterDeadline).toBe(15);
   });
 
   test('driftChance() shrinks as MC beauty rises (ghost lingers near a prettier MC)', async () => {
@@ -267,6 +371,45 @@ test.describe('HuntController', () => {
     await clickHuntCard(page);
     const huntGhost = await callSetup(page, 'setup.HuntController.ghostName()');
     expect(await callSetup(page, 'setup.HuntController.realGhostName()')).toBe(huntGhost);
+  });
+
+  test('cursedItem loot slots stay inert until Khadija opens the quest', async () => {
+    // Regression: cursed sex toys were showing up in furniture during
+    // hunts before the witch had even mentioned the quest. The
+    // floor-plan generator still stamps a cursedItem slot at hunt
+    // start, but lootKindsAt should filter it out until
+    // setup.Witch.cursedItemQuestStarted() is true.
+    await page.evaluate(() => {
+      SugarCube.setup.HuntController.startHunt({ seed: 13 });
+    });
+
+    // Fresh save: gotCursedItem is undefined, quest not started.
+    expect(await callSetup(page, 'setup.Witch.cursedItemQuestStarted()')).toBe(false);
+
+    const ciSlot = await page.evaluate(() => {
+      var run = SugarCube.State.variables.run;
+      var roomId = run.floorplan.loot.cursedItem;
+      var suffix = run.floorplan.lootFurniture.cursedItem;
+      return roomId ? { room: roomId, suffix: suffix } : null;
+    });
+    expect(ciSlot).not.toBeNull();
+
+    // With the quest still locked, the slot reads as empty.
+    const kindsBefore = await page.evaluate(s =>
+      SugarCube.setup.HuntController.lootKindsAt(s.room, s.suffix),
+      ciSlot
+    );
+    expect(kindsBefore).not.toContain('cursedItem');
+
+    // Opening the quest (Khadija sets gotCursedItem = 0) flips the gate.
+    await page.evaluate(() => SugarCube.setup.Witch.clearCursedItemHeld());
+    expect(await callSetup(page, 'setup.Witch.cursedItemQuestStarted()')).toBe(true);
+
+    const kindsAfter = await page.evaluate(s =>
+      SugarCube.setup.HuntController.lootKindsAt(s.room, s.suffix),
+      ciSlot
+    );
+    expect(kindsAfter).toContain('cursedItem');
   });
 
 });

@@ -37,14 +37,18 @@ test.describe('E2E: hunt lifecycle', () => {
       page = await openGame(savedBrowser);
       await resetGame(page);
     }
-    /* GhostStreet's huntCard gates the link behind setup.Mc.lvl() >= 4.
-       New games start at lvl 0, so without this every test would land on
-       the "Level 4+ required" placeholder instead of a clickable link.
-       Wait for $mc to be re-initialised by StoryInit before mutating it —
-       resetGame only blocks until the first passage renders, which can
-       race the variable rebind. */
+    /* GhostStreet's huntCard is hidden until the witch's ectoplasm-
+       unlock quest is complete. New games start with the quest
+       NOT_OFFERED, so without flipping it every test would land on a
+       GhostStreet with no rogue card to click. Wait for $mc to be
+       re-initialised by StoryInit before mutating it -- resetGame only
+       blocks until the first passage renders, which can race the
+       variable rebind. */
     await page.waitForFunction(() => SugarCube.State.variables.mc != null);
-    await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+    await page.evaluate(() => {
+      SugarCube.State.variables.mc.lvl = 4;
+      SugarCube.setup.Witch.completeEctoplasmQuest();
+    });
     /* Pin Math.random per-test so HuntStart's auto-roll (nextSeed,
        floor-plan generator, modifier draft) lands on the same layout
        every run. Without this the floor-plan layout flips between
@@ -793,6 +797,11 @@ test.describe('E2E: hunt lifecycle', () => {
        expects. modifierCount:0 keeps the floor plan to its base layout
        so the click target is unambiguous. */
     await ensureNotEmptyBag(page);
+    /* Open the cursed-item quest so the cursedItem loot gate (see
+       setup.HuntController.isLootKindAvailable) lets the slot light
+       up — this test exercises a generic "find loot" flow and picks
+       whichever base kind happens to land on a furniture slot. */
+    await page.evaluate(() => SugarCube.setup.Witch.clearCursedItemHeld());
 
     // Place the player in the room+slot one of the four base loot
     // kinds is hidden in. The floor-plan generator might land
@@ -1150,10 +1159,11 @@ test.describe('E2E: hunt lifecycle', () => {
     test.setTimeout(15_000);
 
     /* PassageDone calls setup.HuntController.shuffleGhostRoom which
-       gates on a 20-minute interval and a 45% roll. We start a run,
-       force the roll to 0 (drift fires) and walk the clock through
-       interval boundaries; the ghost room must end up somewhere
-       different from where it started. */
+       gates on the next-drift deadline (15-35 min after startHunt /
+       the last shuffle) and a 45% roll. We start a run, force the
+       roll to 0 (drift fires) and park the clock past the deadline;
+       the ghost room must end up somewhere different from where it
+       started. */
     await goToPassage(page, 'GhostStreet');
     await clickHuntCard(page);
     await ensureNotEmptyBag(page);
@@ -1166,10 +1176,10 @@ test.describe('E2E: hunt lifecycle', () => {
 
     const initial = await callSetup(page, 'setup.HuntController.ghostRoomId()');
 
-    // Force a fresh interval window + the drift roll.
+    // Park the clock past the drift deadline and force the roll.
     await page.evaluate(() => {
-      SugarCube.State.variables.lastChangeIntervalRoom = '';
-      SugarCube.State.variables.minutes = 25; // 20-39 window
+      SugarCube.State.variables.minutes = 35;
+      SugarCube.State.variables.nextDriftAtMinute = 0;
       Math.random = () => 0;
     });
     await page.evaluate(() => SugarCube.setup.HuntController.shuffleGhostRoom());
@@ -1199,11 +1209,11 @@ test.describe('E2E: hunt lifecycle', () => {
 
     const initial = await callSetup(page, 'setup.HuntController.ghostRoomId()');
 
-    // Even with the roll forced + a fresh interval, Goryo's lair
-    // mustn't move.
+    // Even with the roll forced + the drift deadline already passed,
+    // Goryo's lair mustn't move.
     await page.evaluate(() => {
-      SugarCube.State.variables.lastChangeIntervalRoom = '';
-      SugarCube.State.variables.minutes = 25;
+      SugarCube.State.variables.minutes = 35;
+      SugarCube.State.variables.nextDriftAtMinute = 0;
       Math.random = () => 0;
     });
     await page.evaluate(() => SugarCube.setup.HuntController.shuffleGhostRoom());

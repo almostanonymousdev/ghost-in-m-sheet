@@ -1,0 +1,40 @@
+:: WitchEctoplasmQuest [nobr] {"position":"1450,275","size":"100,100"}
+/* Placeholder for the witch's ectoplasm-unlock quest. The real beats
+   land later; for now the passage exists to keep the unlock loop
+   closed -- one click here flips ectoplasmQuestStage to COMPLETED,
+   which is the single gate the rest of the codebase reads
+   (setup.Witch.ectoplasmUnlocked) for the rogue/random hunt card,
+   the ectoplasm sidebar line, the WitchSummary payout, and the
+   meta-shop link. */
+<<if setup.Witch.ectoplasmQuestComplete()>>
+	@@.notmc-speech; That ledger's open between us now. Don't waste the line.@@<br>
+	<br>
+	@@.backbtn; [[Back|WitchInside]]@@
+<<else>>
+	@@.location; Khadija's back room@@<br>
+	@@.notmc-speech; Sit. This part isn't for the contract board.@@<br>
+	@@.mc-speech; What is it?@@<br>
+	@@.notmc-speech; A favor. Quiet kind. When you've done it, we'll have a different way of doing business -- you'll see what I mean.@@<br>
+	@@.mc-thoughts; [Placeholder quest. The witch hands you a one-step errand to stand in for the real arc.]@@<br>
+	<br>
+	@@.usebtn;<<link "Handle it.">>
+		<<run setup.Witch.completeEctoplasmQuest()>>
+		<<goto "WitchEctoplasmQuestDone">>
+	<</link>>@@<br>
+	<br>
+	@@.backbtn; [[Not now|WitchInside]]@@
+<</if>>
+
+:: WitchEctoplasmQuestDone [nobr] {"position":"1550,275","size":"100,100"}
+/* Single-shot turn-in screen for the placeholder quest. By the time
+   the player lands here the unlock has already flipped (setup.Witch
+   .completeEctoplasmQuest fires on the click in WitchEctoplasmQuest),
+   so the witch acknowledges and the ectoplasm UI starts surfacing
+   from here on. */
+@@.notmc-speech; Done. Cleaner than I thought.@@<br>
+@@.mc-speech; And the other ledger?@@<br>
+@@.notmc-speech; Houses bleed something the rest of the town doesn't see. You'll start spotting it. Bring me jars -- I'll trade.@@<br>
+<br>
+@@.mc-action; The ectoplasm economy is now open. Rogue addresses appear on the map; Khadija's ectoplasm wares are stocked.@@<br>
+<br>
+@@.backbtn; [[Back|WitchInside]]@@

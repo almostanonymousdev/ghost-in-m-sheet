@@ -29,9 +29,11 @@ setup.HuntController = (function () {
 	var OWNED_VARS = Object.freeze([
 		'run', 'ectoplasm', 'runsStarted',
 		'nextHuntSeed', 'pendingHuntHouseId',
-		// Ghost-room shuffle interval gate -- written only by
-		// shuffleGhostRoom (below) and reset when a run starts/ends.
-		'lastChangeIntervalRoom'
+		// Absolute total-minute clock value when the next ghost-room
+		// drift roll should fire. Written by startHunt (seed) and
+		// shuffleGhostRoom (re-roll after each pass), read by
+		// shuffleGhostRoom only.
+		'nextDriftAtMinute'
 	]);
 
 	var sv = setup.sv;
@@ -244,6 +246,7 @@ setup.HuntController = (function () {
 		if (kind === 'clothesStolen') return setup.HauntedHouses.hasClothesStolen();
 		if (kind === 'tarotCards')    return setup.HauntedHouses.tarotCardsStage() === setup.TarotStage.HIDDEN;
 		if (kind === 'monkeyPaw')     return setup.MonkeyPaw.isDiscoverable();
+    if (kind === 'cursedItem)     return setup.Witch.cursedItemQuestStarted();
 		return true;
 	}
 
@@ -665,6 +668,11 @@ setup.HuntController = (function () {
 		if (setup.Time && typeof setup.Time.resetToMidnight === 'function') {
 			setup.Time.resetToMidnight();
 		}
+		/* Seed the drift-roll clock so the first post-passage tick
+		   after hunt start doesn't immediately roll a drift (which would
+		   fire the 'It Moved' achievement before the ghost has actually
+		   moved). The gate is consumed by shuffleGhostRoom(). */
+		sv().nextDriftAtMinute = rollNextDriftMinute();
 		/* Same shared-state reset classic did at GhostRandomize:
 		   tarot deck back to HIDDEN, monkey paw back to 3 wishes /
 		   not-yet-found / no banned houses, knowledge-evidence
@@ -820,7 +828,7 @@ setup.HuntController = (function () {
 	/* Ghost-room drift. Picks a fresh room (any template,
 	   including the hallway) from the floor plan and updates
 	   floorplan.spawnRoomId. Called by shuffleGhostRoom() once the
-	   shared interval gate + 45% roll have passed; the controller
+	   next-drift deadline + 45% roll have passed; the controller
 	   already filtered for `staysInOneRoom`, so all that's left here
 	   is the rule "prefer to drift somewhere different from the
 	   current lair". */
@@ -1143,16 +1151,18 @@ setup.HuntController = (function () {
 		return "Sleep";
 	}
 
-	/* Periodic ghost-room shuffle. Roughly every 20 in-game minutes
-	   the ghost has a chance to drift to a different room. The
-	   interval gate (`$lastChangeIntervalRoom`) lives at the
-	   controller level. Drift chance scales with MC beauty: base 45%
-	   at beauty <= 30, losing 0.5% per point above 30, floored at 20%.
+	/* Periodic ghost-room shuffle. Every 15-35 in-game minutes the
+	   ghost has a chance to drift to a different room; the exact
+	   spacing is re-rolled after each pass so the player can't time
+	   movements off a fixed clock. The next-roll deadline
+	   (`$nextDriftAtMinute`) lives at the controller level. Drift
+	   chance scales with MC beauty: base 45% at beauty <= 30, losing
+	   0.5% per point above 30, floored at 20%.
 
 	   Skips when:
 	   - no hunt is active;
 	   - the ghost's catalogue marks it `staysInOneRoom`;
-	   - the same 20-minute interval has already rolled this run. */
+	   - the clock hasn't yet reached `nextDriftAtMinute`. */
 	function shuffleGhostRoom() {
 		if (!isHuntActive()) return;
 		var ghost = activeGhost();
@@ -1161,14 +1171,33 @@ setup.HuntController = (function () {
 		// drift roll so the bait spend doesn't get undone by a shuffle.
 		if (setup.HauntConditions && setup.HauntConditions.isBaitActive
 			&& setup.HauntConditions.isBaitActive()) return;
-		var mins = setup.Time.minutes() || 0;
-		var interval = mins < 20 ? "0-19" : mins < 40 ? "20-39" : "40-59";
 		var s = sv();
-		if (interval === s.lastChangeIntervalRoom) return;
+		// Defensive seed for saves from before this field existed and
+		// for any code path that started a hunt without going through
+		// startHunt (older e2e setups). Don't drift on the first tick
+		// after seeding — schedule the next roll and bail.
+		if (typeof s.nextDriftAtMinute !== 'number') {
+			s.nextDriftAtMinute = rollNextDriftMinute();
+			return;
+		}
+		if (totalMinutes() < s.nextDriftAtMinute) return;
 		if (Math.random() < driftChance()) {
 			driftGhostRoom();
 		}
-		s.lastChangeIntervalRoom = interval;
+		s.nextDriftAtMinute = rollNextDriftMinute();
+	}
+
+	function totalMinutes() {
+		return (setup.Time && typeof setup.Time.totalMinutes === 'function')
+			? setup.Time.totalMinutes()
+			: 0;
+	}
+
+	/* Next-drift deadline = the current clock plus a uniform 15-35
+	   minute offset. Re-rolled after every shuffleGhostRoom pass so
+	   the cadence stays unpredictable. */
+	function rollNextDriftMinute() {
+		return totalMinutes() + setup.Rng.intInclusive(15, 35);
 	}
 
 	function driftChance() {

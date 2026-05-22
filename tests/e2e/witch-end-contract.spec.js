@@ -40,6 +40,31 @@ async function setupContractHunt(page, houseId) {
   await setVar(page, 'minutes', 0);
 }
 
+test.describe('HuntStart — contract objective text', () => {
+  test('Owaissa start screen shows the gather-evidence objective, not the generic banish-it text', async ({ game: page }) => {
+    // Regression: HuntStart was always showing the IDENTIFY objective
+    // ("Identify the ghost then banish it from the house...") even on
+    // contract hunts where the player has to bring proof back to
+    // Khadija. The static-house catalogue carries its own objective
+    // string so contract briefings read correctly.
+    await setupContractHunt(page, 'owaissa');
+    await goToPassage(page, 'HuntStart');
+    const text = await page.locator('#passages').innerText();
+    expect(text).toMatch(/bring it back to the witch/i);
+    expect(text).not.toMatch(/banish it from the house/i);
+    await expectCleanPassage(page);
+  });
+
+  test('Elm start screen shows the gather-evidence objective', async ({ game: page }) => {
+    await setupContractHunt(page, 'elm');
+    await goToPassage(page, 'HuntStart');
+    const text = await page.locator('#passages').innerText();
+    expect(text).toMatch(/bring it back to the witch/i);
+    expect(text).not.toMatch(/banish it from the house/i);
+    await expectCleanPassage(page);
+  });
+});
+
 test.describe('WitchInside — pending contract surface link', () => {
   test('renders "You have findings from Owaissa" link when contract is pending', async ({ game: page }) => {
     await setupContractHunt(page, 'owaissa');

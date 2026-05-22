@@ -134,9 +134,11 @@
 	@@.mc-speech;<<linkreplace "Show me what you've got.">>
 		<<goto "WitchSale">>
 	<</linkreplace>>@@<br>
-	@@.mc-speech;<<linkreplace "What's ectoplasm worth?">>
-		<<goto "WitchEctoplasm">>
-	<</linkreplace>>@@<br>
+	<<if setup.Witch.ectoplasmUnlocked()>>
+		@@.mc-speech;<<linkreplace "What's ectoplasm worth?">>
+			<<goto "WitchEctoplasm">>
+		<</linkreplace>>@@<br>
+	<</if>>
 	<<if setup.Witch.canAskAboutLevel3Tools()>>
 		@@.mc-speech;<<linkreplace "Anything in level 3 gear?">>
 			@@.notmc-speech; <<if setup.Witch.ownsLevel3Gwb()>>
@@ -184,6 +186,20 @@
 		@@.mc-action; You can now take Khadija's side task: weaken the ghost.@@<br>
 		<<run setup.Witch.markWeakenQuestStarted()>>
 	<</linkreplace>>
+<</if>>
+<<if setup.Witch.canOfferEctoplasmQuest()>>
+	<<linkreplace "@@.usebtn; You're ready for something bigger.@@">>
+		@@.notmc-speech; You've cleared enough houses. There's a thing I should have asked you about already.@@<br>
+		@@.mc-speech; Asked me what?@@<br>
+		@@.notmc-speech; A favor. Off the contract board. Quiet. The kind that opens up a different ledger between us.@@<br>
+		@@.mc-speech; Different how?@@<br>
+		@@.notmc-speech; Different in what I'll trade you for. Coin's coin. There's another thing the houses bleed. We'll talk about it when you've handled this.@@<br><br>
+		@@.mc-action; Khadija has a new task for you. (Placeholder quest.)@@<br>
+		@@.movebtn; [[Hear her out|WitchEctoplasmQuest]]@@<br>
+		<<run setup.Witch.markEctoplasmQuestStarted()>>
+	<</linkreplace>>
+<<elseif setup.Witch.ectoplasmQuestStarted()>>
+	@@.usebtn;[[Khadija's favor|WitchEctoplasmQuest]]@@<br>
 <</if>>
 <br><br>
 @@.backbtn;[[Leave|Witch]] <br>
