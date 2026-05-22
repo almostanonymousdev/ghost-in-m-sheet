@@ -55,6 +55,11 @@ const { openGame, goToPassage, resetGame } = require('./helpers');
  *   PWC_SHARDS      — number of parallel shards (default: floor(cpus/2),
  *                     min 1). Set to 1 to run sequentially (useful when
  *                     debugging — failures interleave less in the log).
+ *   PWC_SHARD_INDEX — 1-based shard to run in isolation. When set, only
+ *                     that one shard's test block is generated; the
+ *                     others are skipped at registration time. Used by
+ *                     CI to fan PWC_SHARDS test blocks across separate
+ *                     matrix jobs so each runner owns exactly one shard.
  */
 
 const REPO_ROOT = path.join(__dirname, '..');
@@ -762,6 +767,13 @@ const SHARD_COUNT = Math.max(
   process.env.PWC_SHARDS ? Number(process.env.PWC_SHARDS) : Math.floor(os.cpus().length / 2)
 );
 
+// 1-based: when set, only that one shard's test block is registered.
+// Lets CI fan SHARD_COUNT shards across SHARD_COUNT matrix jobs (each
+// runner owns exactly one shard) instead of one runner doing them all.
+const ONLY_SHARD_INDEX = process.env.PWC_SHARD_INDEX
+  ? Math.max(1, Number(process.env.PWC_SHARD_INDEX))
+  : null;
+
 // Allow the per-test blocks below to run concurrently. Without this the
 // shards would still serialize within the file (fullyParallel: false in
 // playwright.config.js).
@@ -769,6 +781,7 @@ test.describe.configure({ mode: 'parallel' });
 
 test.describe('passage walk coverage', () => {
   for (let shardIdx = 0; shardIdx < SHARD_COUNT; shardIdx++) {
+    if (ONLY_SHARD_INDEX !== null && shardIdx + 1 !== ONLY_SHARD_INDEX) continue;
     const shardLabel = `shard-${shardIdx + 1}-of-${SHARD_COUNT}`;
     test(`${shardLabel}: every passage renders cold and every visible link transitions cleanly`,
       async ({ browser }) => {

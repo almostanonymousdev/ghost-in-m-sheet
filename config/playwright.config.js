@@ -8,6 +8,10 @@ module.exports = defineConfig({
      passages with dozens of <<do>>/<<redo>> tags) when workers contend for
      CPU. Tests that need more budget raise it individually. */
   timeout: 10_000,
+  /* Every test gets one retry on failure. Browser specs share a page via
+     beforeAll, but the `game` fixture resets SugarCube state between tests
+     so a retry starts from a clean slate. */
+  retries: 1,
   /* Each spec file shares a page via beforeAll, so tests within a file
      must stay serial — but files themselves are independent.  Let
      Playwright spin up one worker per spec file (up to ~70% the cores
