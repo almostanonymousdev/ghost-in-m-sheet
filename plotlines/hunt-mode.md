@@ -159,7 +159,7 @@ the current run state:
 * `shouldTriggerSteal()` — wardrobe-state roll. Honours a
   per-static-house `runsStealClothes: false` opt-out (Ironclad,
   since prison ghosts have their own warden-clothes mechanic).
-* `shouldStartProwl()` — gates `CheckHuntStart`'s
+* `shouldStartProwl()` — gates the hunt-tick chain's
   `<<goto "GhostProwlEvent">>`. Delegates to
   `HauntedHouses.shouldStartProwl()` (prowl-timer window +
   `prowlChanceBonus` + `g.canProwl(mc)`).
@@ -219,9 +219,9 @@ shared between nav-link steps and tool clicks:
   the per-tick stat drains, routes to
   `HuntController.huntOverPassage("sanity"|"exhaustion")` if the
   MC ran out, and otherwise dispatches to the inner chain.
-* `<<huntTickEventChain>>` — inner chain. Lights flicker
-  (`LightPassageGhost`), a ghost event may roll (`Event` →
-  `EventMC`), a steal-clothes event may roll
+* `<<huntTickEventChain>>` — inner chain. Lights may flicker
+  (`Events.maybeTurnOffLights()`), a ghost event may roll
+  (`Event` → `EventMC`), a steal-clothes event may roll
   (`HuntController.shouldTriggerSteal` → `StealClothes`), and a
   random prowl may start (`HuntController.shouldStartProwl`
   → `GhostProwlEvent`).

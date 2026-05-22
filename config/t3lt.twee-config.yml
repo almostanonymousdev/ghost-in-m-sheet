@@ -80,10 +80,11 @@ sugarcube-2:
     huntTickEventChain:
       name: huntTickEventChain
       description: Inner per-tick chain run from <<huntTickStep>> and from
-        searchToolMarkup's repeat body. Includes LightPassageGhost + Event, then
-        conditionally StealClothes (HuntController.shouldTriggerSteal) and
-        GhostProwlEvent (HuntController.shouldStartRandomHunt). All branching is
-        dispatched via HuntController.
+        searchToolMarkup's repeat body. Rolls Events.maybeTurnOffLights() and
+        an Event step, then conditionally routes to StealClothes
+        (HuntController.shouldTriggerSteal) and GhostProwlEvent
+        (HuntController.shouldStartProwl). All branching is dispatched via
+        controller methods.
     includeTimeEventClothesHunt:
       name: includeTimeEventClothesHunt
       description: Backwards-compat alias for <<huntTickStep>>; preserved so existing

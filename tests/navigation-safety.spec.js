@@ -152,7 +152,6 @@ function parseIfBlocks(body) {
 // Remove entries from this list as they get fixed.
 const KNOWN_MISSING_ELSE = new Set([
   'GymTrainer',
-  'LightPassageGhost',
   'SuccubusPCEvent',
   'SummoningStart',
   'LibrarySearchResult',

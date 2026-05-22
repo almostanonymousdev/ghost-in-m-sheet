@@ -152,12 +152,13 @@ setup.Events = (function () {
 			}
 			return null;
 		},
-		/* :: LightPassageGhost entry: 1-in-65 chance per tick that a
-		   light-capable ghost activates EMF and darkens the room.
-		   Returns the destination passage to <<goto>>, or null.
-		   EMF only arms when a lit hunt room was actually flipped to
-		   dark — otherwise the player saw no in-world cause for the
-		   reading and the window appeared to open on its own. */
+		/* Inlined into the huntTickEventChain widget: 1-in-65 chance
+		   per tick that a light-capable ghost activates EMF and
+		   darkens the room. Returns the destination passage to
+		   <<goto>>, or null. EMF only arms when a lit hunt room was
+		   actually flipped to dark — otherwise the player saw no
+		   in-world cause for the reading and the window appeared to
+		   open on its own. */
 		maybeTurnOffLights: function () {
 			var g = setup.Ghosts.active();
 			if (!g || !g.canTurnOffLights) return null;
@@ -219,10 +220,10 @@ setup.Events = (function () {
 		// --- Event randomizer helpers ----------------------------
 
 		/* Set up common event state and mark the per-tick "event
-		   already fired" flag so search-tool chains skip
-		   StealClothesEvent / CheckHuntStart for the rest of the
-		   passage. The flag is per-passage temp state — SugarCube
-		   resets State.temporary on every passage navigation, and
+		   already fired" flag so search-tool chains skip the steal
+		   and random-hunt rolls for the rest of the passage. The
+		   flag is per-passage temp state — SugarCube resets
+		   State.temporary on every passage navigation, and
 		   PassageDone defensively resets it again. */
 		initEvent: function (eventKey) {
 			assertKnownKey(eventKey, EVENT_KEY_SET, 'event key');

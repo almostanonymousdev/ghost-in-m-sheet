@@ -978,7 +978,7 @@ test.describe('E2E: hunt lifecycle', () => {
       // Pin the hunt ghost to Shade so its prowlCondition (sanity<=55) trips.
       SugarCube.setup.HuntController.setField('ghostName', 'Shade');
       // Force every Math.random call to 0 so:
-      //   - LightPassageGhost roll: 0 (no light flicker dest)
+      //   - maybeTurnOffLights roll: 0 (no light flicker dest)
       //   - rollRandomEvent's various rolls all round-trip: chance=0,
       //     bansheeRoll/ctRoll = 1 (≠ 1 disables those branches),
       //     body part roll picks the first option.

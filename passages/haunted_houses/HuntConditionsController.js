@@ -5,7 +5,7 @@
  *   - huntConditions HUD (per-step stat deltas above the tool bar)
  *   - setup.ToolController.toolSuccessRate (hover tooltip on each tool card)
  *   - setup.ToolController.chanceByTier / .toolTimeRemain (actual tool rolls)
- *   - CheckHuntStart (random-hunt threshold)
+ *   - huntTickEventChain (random-hunt threshold)
  *   - applyTickEffects (per-nav-step sanity/lust/corruption drain)
  * Each axis pushes into contributors[] so the HUD can render a badge row
  * alongside the aggregated numbers. Keep new knobs HERE so the HUD numbers

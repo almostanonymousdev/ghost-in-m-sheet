@@ -251,6 +251,24 @@ setup.Delivery = (function () {
 			arr[0] = arr[1] = arr[2] = true;
 		},
 
+		/* Toggle .visible / .hidden on the three order-slot containers in
+		   the DeliveryHouse view. Called from PassageDone so the icons
+		   stay in sync with the activeIcon flags after a delivery /
+		   reset. No-op outside DeliveryHouse since the targets don't
+		   exist anywhere else. */
+		applyActiveIconClasses: function () {
+			if (passage() !== "DeliveryHouse") return;
+			var slots = [".itemAvailableOne", ".itemAvailableTwo", ".itemAvailableThree"];
+			for (var i = 0; i < slots.length; i++) {
+				var $el = $(slots[i]);
+				if (this.activeIcon(i)) {
+					$el.removeClass("hidden").addClass("visible");
+				} else {
+					$el.removeClass("visible").addClass("hidden");
+				}
+			}
+		},
+
 		// --- Per-shift counters --------------------------------
 		completedShifts: function () { return sv().deliveryCompletedShifts; },
 		correctThisShift: function () { return sv().deliveryCorrectThisShift; },

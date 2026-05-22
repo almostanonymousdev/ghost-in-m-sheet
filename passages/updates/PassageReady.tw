@@ -1,5 +1,0 @@
-:: PassageReady {"position":"200,200","size":"100,100"}
-<<set _go to setup.Tick.onPassageReady()>>
-<<if _go>>
-	<<goto _go>>
-<</if>>

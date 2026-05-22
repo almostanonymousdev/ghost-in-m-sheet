@@ -262,8 +262,9 @@
 
         /* Per-ghost behaviour fields. Consumers check these instead of
            branching on this.name; see passages/gui/Notebook, Hide, RunFast,
-           LightPassageGhost, ChangeGhostRoom, EventMC, WalkHomeTogether,
-           Sleep, companion Main files, and the HuntOver* flow for examples. */
+           the huntTickEventChain widget, ChangeGhostRoom, EventMC,
+           WalkHomeTogether, Sleep, companion Main files, and the HuntOver*
+           flow for examples. */
         this.canTurnOffLights     = cfg.canTurnOffLights !== false;     // default true
         this.staysInOneRoom       = !!cfg.staysInOneRoom;
         /* null = roll normally; true = always succeeds; false = never. */
@@ -427,7 +428,7 @@
     });
 
     /* Memoisation for active(): during a render it's called from every
-       evidence tool, hoverHtml, CheckHuntStart, etc. The rebuild (catalogue
+       evidence tool, hoverHtml, hunt-tick chain, etc. The rebuild (catalogue
        lookup + field copy + evidence rehydrate) is cheap but happens dozens
        of times per passage. Keying on (name, evidence-ids) invalidates the
        cache correctly when Mimic rotates its disguise or DeleteEvidence

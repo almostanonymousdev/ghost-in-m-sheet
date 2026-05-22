@@ -1,9 +1,11 @@
 /*
- * Per-tick maintenance helpers, called from :: PassageDone and
- * :: PassageReady. These run on every passage transition, so the
- * goal is "cheap predicates + small idempotent state nudges". One-
- * shot save migrations live in :: Migrations; load-time defaulting
- * lives in :: SaveMigration.
+ * Per-tick maintenance helpers. onPassageReady runs from the
+ * :passagestart event handler at the bottom of this file; onPassageDone
+ * is still wired through :: PassageDone (it does DOM-render work that
+ * has to happen inline with the passage render). These run on every
+ * passage transition, so the goal is "cheap predicates + small
+ * idempotent state nudges". One-shot save migrations live in
+ * :: Migrations; load-time defaulting lives in :: SaveMigration.
  */
 setup.Tick = (function () {
 	var OWNED_VARS = Object.freeze([
@@ -120,10 +122,10 @@ setup.Tick = (function () {
 		setup.MissingWomen.tickRescueClockMidnight();
 	}
 
-	/* :: PassageReady lifecycle hook. Bundles the per-tick setup that
-	   used to live as a long stack of <<run>> calls in the lifecycle
-	   passage. Returns a passage name to <<goto>>, or null. The
-	   passage stays a thin wrapper that just routes the goto. */
+	/* :passagestart lifecycle hook. Bundles the per-tick setup that
+	   used to live as a long stack of <<run>> calls in the PassageReady
+	   passage. Returns a passage name for the caller to Engine.play(),
+	   or null. */
 	function onPassageReady() {
 		if (setup.Ghosts.isHunting()
 			&& companionAttackActiveHit()
@@ -229,13 +231,20 @@ setup.Tick = (function () {
 	};
 })();
 
-/* Per-navigation $return tracker. Every time the engine starts a new
- * passage, stamp its name into $return — that's what `<<return>>`
- * links and the GUI overlays read to jump back to where the player
- * was. Passages that shouldn't be returned to (modal/event chains,
- * dialog popovers) opt out with the "noreturn" tag. */
+/* Per-navigation lifecycle hook. Replaces the old :: PassageReady
+ * dispatcher passage. Two responsibilities:
+ *  - $return tracker: stamp the current passage into $return so
+ *    `<<return>>` links and GUI overlays know where to send the player.
+ *    Passages tagged `noreturn` (modal/event chains, dialogs) opt out.
+ *  - Per-tick setup: setup.Tick.onPassageReady() runs the migration /
+ *    ensure-defaults / refresh stack and may return a passage name to
+ *    redirect to. Engine.play() aborts the current navigation and
+ *    starts the redirect, which re-fires :passagestart for the new
+ *    passage and stamps $return correctly. */
 $(document).on(':passagestart', function (ev) {
 	if (!ev.passage.tags.includes('noreturn')) {
 		State.variables.return = ev.passage.name;
 	}
+	var redirect = setup.Tick.onPassageReady();
+	if (redirect) Engine.play(redirect);
 });

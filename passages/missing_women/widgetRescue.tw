@@ -1,6 +1,3 @@
-:: RandomizeRescueHouse [nobr] {"position":"2075,1800","size":"100,100"}
-<<run setup.MissingWomen.seedTornStyle()>>
-
 :: widgetRescue [widget nobr] {"position":"2275,1700","size":"100,100"}
 <<widget "rescueGirlLink">>
 	<<set _girlName to setup.MissingWomen.currentRescueGirl()>>

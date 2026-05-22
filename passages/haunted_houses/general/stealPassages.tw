@@ -1,9 +1,3 @@
-:: StealClothesEvent [nobr] {"position":"4025,950","size":"100,100"}
-<<if setup.HauntedHouses.shouldTriggerSteal()>>
-	<<run setup.HauntedHouses.markStealClothesTriggered()>>
-	<<goto "StealClothes">>
-<</if>>
-
 :: StealPanties [nobr] {"position":"3975,1050","size":"100,100"}
 <<image setup.Wardrobe.stealPantiesImage() "displayCentredImgs">>
 <<run setup.Wardrobe.stealWornInGroup("panties", "pantiesState", "isPantiesStolen")>>

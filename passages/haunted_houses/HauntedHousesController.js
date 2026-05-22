@@ -141,10 +141,10 @@ setup.HauntedHouses = (function () {
 		},
 
 		// --- Hunt triggers --------------------------------------
-		/* :: CheckHuntStart entry: gates random hunt start by the
-		   prowl-timer window, hunt-conditions threshold, and ghost
-		   canProwl check. Returns true when the passage should
-		   <<goto "GhostProwlEvent">>. */
+		/* Used by the huntTickEventChain widget to gate random hunt
+		   start by the prowl-timer window, hunt-conditions threshold,
+		   and ghost canProwl check. Returns true when the chain
+		   should <<goto "GhostProwlEvent">>. */
 		shouldStartProwl: function () {
 			if (setup.Ghosts.isProwlActivated()) return false;
 			if (setup.Ghosts.elapsedTimeProwl() < setup.Ghosts.prowlTimeRemain()) return false;
@@ -153,9 +153,9 @@ setup.HauntedHouses = (function () {
 			var g = setup.Ghosts.active();
 			return !!(g && g.canProwl({ sanity: setup.Mc.sanity(), lust: setup.Mc.lust() }));
 		},
-		/* :: StealClothesEvent entry: rolls the steal chance and gates
-		   on whether anything is actually stealable. Returns true when
-		   the passage should <<goto "StealClothes">>. */
+		/* Used by the huntTickEventChain widget: rolls the steal chance
+		   and gates on whether anything is actually stealable. Returns
+		   true when the chain should <<goto "StealClothes">>. */
 		shouldTriggerSteal: function () {
 			/* STEAL_CHECK filter lets modifiers (Swiper) and contracts
 			   bypass or scale the roll, and lets static houses opt out
