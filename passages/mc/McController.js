@@ -157,7 +157,7 @@ setup.Mc = (function () {
 		},
 
 		/* Persistent residue counter. Bumps once per possession outcome
-		   (HuntEnd catch, HuntOverSanity collapse) and never decays.
+		   (HuntOverProwl catch, HuntOverSanity collapse) and never decays.
 		   Threshold prose in those passages gates on the returned count
 		   crossing 1 / 3 / 7. Distinct from $mcpossession, which is a
 		   per-scene surrender meter. */

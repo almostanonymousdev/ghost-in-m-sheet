@@ -1,4 +1,4 @@
-:: HuntEnd [noreturn nobr] {"position":"2500,1350","size":"100,100"}
+:: HuntOverProwl [noreturn nobr] {"position":"2500,1350","size":"100,100"}
 <<run setup.Hunt.emit(setup.Hunt.Event.PROWL_EVENT)>>
 <<set _hg to setup.Ghosts.active()>>
 <<if _hg and _hg.canTentacles>>
@@ -10,7 +10,7 @@
 		The tentacles penetrate you more deeply, their movements growing bolder. You give in to them, feeling the white fluid they release flowing <<linkappend "@@.usebtn; out of you.@@">>
 			<<video "mechanics/tentacles/3." + _check + ".mp4">>
 			The sensations drive you wild -- hot waves of pleasure surge through your body, making you lose control. A bright, almost unbearable wave of ecstasy ignites within you, and soon your consciousness fades,
-			<<huntEndExit "plunging you into darkness">>
+			<<huntBlackoutExit "plunging you into darkness">>
 		<</linkappend>>
 	<</linkappend>>
 
@@ -34,7 +34,7 @@
 		It's unclear how long <<linkreplace "@@.usebtn; this went on@@">>
 			<<video "characters/alice/hunt-end2.mp4">>
 			Darkness overwhelms your senses as your vision fades, and then...
-			<<huntEndExit "nothing">>
+			<<huntBlackoutExit "nothing">>
 			<br>
 		<</linkreplace>>
 	<<else>>
@@ -46,7 +46,7 @@
 				<<randomVideoFromList _jeansFinale>>
 				&emsp;&emsp; Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 				Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
-				Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
+				Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntBlackoutExit "fading into darkness">><br>
 			<</linkappend>>
 
 		<<elseif setup.Wardrobe.worn(setup.WardrobeSlot.SHORTS)>>
@@ -56,7 +56,7 @@
 				<<video "mechanics/hunting/shorts1." + _check + ".mp4">>
 				&emsp;&emsp; The ghost started fucking you. Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 				Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
-				Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
+				Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntBlackoutExit "fading into darkness">><br>
 			<</linkappend>>
 
 		<<elseif setup.Wardrobe.worn(setup.WardrobeSlot.SKIRT)>>
@@ -69,7 +69,7 @@
 					<<video "mechanics/hunting/skirt1." + _checkScene + ".mp4">>
 					&emsp;&emsp; The ghost started fucking you. Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 					Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
-					Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
+					Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntBlackoutExit "fading into darkness">><br>
 				<</linkappend>>
 			<<elseif _check eq 2>>
 				<<video "mechanics/hunting/skirt2.mp4">>
@@ -77,14 +77,14 @@
 					<<video "mechanics/hunting/skirt2.1.mp4">>
 					&emsp;&emsp; The ghost started fucking you. Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 					Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
-					Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
+					Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntBlackoutExit "fading into darkness">><br>
 				<</linkappend>>
 			<<elseif _check eq 3>>
 				<<video "mechanics/hunting/skirt3.mp4">>
 				It wasn't even just one ghost, but you didn't care. They fucked you and you liked it. <<linkappend "@@.usebtn; This continued for some time@@">>
 					<<video "mechanics/hunting/skirt4.mp4">>
 					&emsp;&emsp;Each touch sent shivers of pleasure throughout your body.
-					Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
+					Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntBlackoutExit "fading into darkness">><br>
 				<</linkappend>>
 			<</if>>
 		<<else>>
@@ -97,7 +97,7 @@
 						<<video "mechanics/hunting/underwear1." + _checkScene + ".mp4">>
 						&emsp;&emsp; The ghost started fucking you. Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 						Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
-						Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
+						Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntBlackoutExit "fading into darkness">><br>
 					<</linkappend>>
 				<<elseif _check eq 2>>
 					<<video "mechanics/hunting/underwear2.mp4">>
@@ -106,7 +106,7 @@
 						<<video "mechanics/hunting/underwear2." + _checkScene + ".mp4">>
 						&emsp;&emsp; The ghost started fucking you. Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 						Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
-						Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
+						Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntBlackoutExit "fading into darkness">><br>
 					<</linkappend>>
 				<</if>>
 
@@ -118,7 +118,7 @@
 						<<video "mechanics/hunting/naked1.1.mp4">>
 						&emsp;&emsp;  Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 						Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
-						Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
+						Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntBlackoutExit "fading into darkness">><br>
 					<</linkappend>>
 
 				<<elseif _check eq 2>>
@@ -127,7 +127,7 @@
 						<<video "mechanics/hunting/naked2.2.mp4">>
 						&emsp;&emsp; The ghost started fucking you. Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 						Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
-						Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
+						Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntBlackoutExit "fading into darkness">><br>
 					<</linkappend>>
 
 				<<elseif _check eq 3>>
@@ -135,13 +135,13 @@
 					<<randomVideoFromList _nakedFinale>>
 					It wasn't even just one ghost, but you didn't care. They fucked you and you liked it. At the end they started cumming on your pretty face, <<linkappend "@@.usebtn; covering it with their cum@@">>
 						<<video "mechanics/hunting/naked4-end.mp4">>
-						Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
+						Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntBlackoutExit "fading into darkness">><br>
 					<</linkappend>>
 				<</if>>
 			<<else>>
 				&emsp;&emsp; Your mind was hazy, but your body responded to its movements. You became a puppet in unyielding embrace.
 				Time lost all meaning. Each touch sent shivers of pleasure throughout your body.
-				Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntEndExit "fading into darkness">><br>
+				Finally, having had its fill of playing with you, the ghost left, leaving you exhausted. <br>&emsp;&emsp; Slipping into a deep sleep, you felt the remnants of pleasure <<huntBlackoutExit "fading into darkness">><br>
 			<</if>>
 
 		<</if>>

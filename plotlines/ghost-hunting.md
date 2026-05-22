@@ -18,7 +18,7 @@ The core gameplay revolves around investigating haunted locations to identify an
 
 * **Hunt flow** - The core loop of starting, running, and ending a ghost hunt. Per-tick events (light flicker, ghost event, clothes-steal roll, random prowl trigger) and per-step stat drain run through the shared `<<huntTickStep>>` / `<<huntTickEventChain>>` widgets in [widgetInclude.tw](../passages/gui/widgetInclude.tw); hunt nav links and the `<<huntToolBar>>` widget all fire the same chain through `setup.HuntController` predicates (`isHuntActive`, `shouldTriggerSteal`, `shouldStartProwl`, `huntOverPassage`). The legacy `<<includeTimeEventClothesHunt>>` / `<<includeTimeEventHunt>>` widgets are kept as thin aliases for `<<huntTickStep>>`.
   * [HuntController.js](../passages/hunt/HuntController.js) - Hunt facade — owns `isActive()`/`activeGhost()`/`isGhostHere()` and the hunt-over routing helpers
-  * [HuntEnd.tw](../passages/haunted_houses/hunt/HuntEnd.tw) - Ending a hunt normally
+  * [HuntOverProwl.tw](../passages/hunt/HuntOverProwl.tw) - Ghost catches the MC at the end of a prowl
   * [HuntOverManual.tw](../passages/haunted_houses/hunt/HuntOverManual.tw) - Manually ending a hunt
   * [HuntOverSanity.tw](../passages/haunted_houses/hunt/HuntOverSanity.tw) - Hunt ending due to sanity loss
   * [HuntOverTime.tw](../passages/haunted_houses/hunt/HuntOverTime.tw) - Hunt ending due to time limit

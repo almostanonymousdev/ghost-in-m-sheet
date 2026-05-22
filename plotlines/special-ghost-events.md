@@ -25,7 +25,7 @@ Specific ghost types have unique special events that fire outside the normal hun
   * [GhostSpecialEventTVSpirit.tw](../passages/special_event/GhostSpecialEventTVSpirit.tw) - Entry; branches on `hasMinCorruptionForTVSpirit()`
   * [GhostSpecialEventTVSpirit1.tw](../passages/special_event/GhostSpecialEventTVSpirit1.tw) - Corruption ≥ 3 continuation
 
-* **Wraith events** - Triggered via the Wraith's `sleepPassage` after a hunt: the MC wakes up bound in a forest. Fires from [Sleep.tw](../passages/home/Sleep.tw) when `previous()` is `HuntOverSanity`, `HuntEnd`, or `CursedHuntStart` and the active ghost has a `sleepPassage` (Wraith). Entry branches on energy: if `canTryEscape()` (energy ≥ 1) the MC can roll to free herself (5% per energy point, spending all energy on success). Failure triggers a fake-rescue scene.
+* **Wraith events** - Triggered via the Wraith's `sleepPassage` after a hunt: the MC wakes up bound in a forest. Fires from [Sleep.tw](../passages/home/Sleep.tw) when `previous()` is `HuntOverSanity`, `HuntOverProwl`, or `CursedHuntStart` and the active ghost has a `sleepPassage` (Wraith). Entry branches on energy: if `canTryEscape()` (energy ≥ 1) the MC can roll to free herself (5% per energy point, spending all energy on success). Failure triggers a fake-rescue scene.
   * [GhostSpecialEventWraith.tw](../passages/special_event/GhostSpecialEventWraith.tw) - Entry / escape attempt
   * [GhostSpecialEventWraithStart.tw](../passages/special_event/GhostSpecialEventWraithStart.tw) - Fake-rescuers assault scene
   * [GhostSpecialEventWraithEnd.tw](../passages/special_event/GhostSpecialEventWraithEnd.tw) - Event conclusion

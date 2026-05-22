@@ -1139,7 +1139,7 @@ setup.HuntController = (function () {
 		return roomId;
 	});
 
-	/* "Ghost catches the MC" exit target that HuntEnd's <<huntEndExit>>
+	/* "Ghost catches the MC" exit target that HuntOverProwl's <<huntBlackoutExit>>
 	   widget routes through. Stamps a CAUGHT failure on the run and
 	   routes to HuntSummary. */
 	function huntCaughtPassage() {
@@ -1206,11 +1206,11 @@ setup.HuntController = (function () {
 		return Math.max(0.20, 0.45 - bonus * 0.005);
 	}
 
-	/* End-of-HuntEnd cleanup. Wraps the wardrobe / companion /
+	/* End-of-HuntOverProwl cleanup. Wraps the wardrobe / companion /
 	   tool-timer reset. Caller wraps this in
 	   `not setup.Ghosts.hasHighPriestess()` so the priestess reprieve
 	   still skips the cleanup entirely. The hunt lifecycle handles
-	   its own $run teardown when the player clicks the huntEndExit
+	   its own $run teardown when the player clicks the huntBlackoutExit
 	   link through to HuntSummary. */
 	function onCaughtCleanup() {
 		setup.HauntedHouses.cleanupAfterHunt({ loseStolen: true });

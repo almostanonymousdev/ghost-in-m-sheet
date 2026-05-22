@@ -148,7 +148,7 @@ test.describe('E2E: Hunt Outside menu', () => {
     expect(await getVar(page, 'ectoplasm')).toBe(expectedSuccess);
   });
 
-  test('Identify with the wrong ghost routes into HuntEnd and ends as caught', async () => {
+  test('Identify with the wrong ghost routes into HuntOverProwl and ends as caught', async () => {
     test.setTimeout(20_000);
     await startRun(page);
     const ghost = await callSetup(page, 'setup.HuntController.ghostName()');
@@ -184,9 +184,9 @@ test.describe('E2E: Hunt Outside menu', () => {
       ).toBeVisible();
     }
 
-    // Continue routes to HuntEnd; the run is still alive at that point
-    // (huntEndExit -> huntCaughtPassage closes it on the next click).
-    await clickLink(page, 'Continue', 'HuntEnd');
+    // Continue routes to HuntOverProwl; the run is still alive at that point
+    // (huntBlackoutExit -> huntCaughtPassage closes it on the next click).
+    await clickLink(page, 'Continue', 'HuntOverProwl');
     expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(true);
 
     // huntCaughtPassage stamps the failure reason on the run as soon as

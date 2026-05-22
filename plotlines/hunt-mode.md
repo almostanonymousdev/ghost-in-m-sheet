@@ -175,7 +175,7 @@ the current run state:
 * `onCaughtCleanup()` — wardrobe / companion / tool-timer reset.
   The matching `$run` cleanup is deferred to
   `setup.HuntController.endHunt`, fired when the player clicks the
-  huntEndExit link through to `HuntSummary`.
+  huntBlackoutExit link through to `HuntSummary`.
 * `shuffleGhostRoom()` — periodic ghost-room drift. Owns the
   shared 20-minute interval gate and the 45% roll, then
   dispatches to `setup.HuntController.driftGhostRoom` for the actual

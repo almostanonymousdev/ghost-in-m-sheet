@@ -1114,11 +1114,11 @@ test.describe('E2E: hunt lifecycle', () => {
       .toContainText(/UVL/);
   });
 
-  test('hunt ghost catch routes through HuntEnd → HuntSummary as a "caught" failure', async () => {
+  test('hunt ghost catch routes through HuntOverProwl → HuntSummary as a "caught" failure', async () => {
     test.setTimeout(20_000);
 
-    /* HuntEnd's bottom-of-passage cleanup runs through
-       setup.HuntController.onCaughtCleanup() and the huntEndExit
+    /* HuntOverProwl's bottom-of-passage cleanup runs through
+       setup.HuntController.onCaughtCleanup() and the huntBlackoutExit
        widget routes its post-scene exit through huntCaughtPassage();
        in hunt mode that stamps a "caught" failure and returns
        "HuntSummary". The e2e check here is that those helpers route

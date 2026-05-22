@@ -418,7 +418,7 @@ setup.HauntConditions = (function () {
 		return ctx.mult;
 	}
 
-	/* Called from HuntEnd / HuntOverManual / HuntOverTime / HuntOverSanity
+	/* Called from HuntOverProwl / HuntOverManual / HuntOverTime / HuntOverSanity
 	 * /HuntOverExhaustion to scrub hunt-only flags so the next contract
 	 * starts clean. */
 	function resetHuntFlags() {

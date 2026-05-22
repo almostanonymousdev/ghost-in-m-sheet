@@ -675,7 +675,7 @@ test.describe('Home Controller', () => {
     await setVar(page, 'hours', 22);
     await page.evaluate(() => SugarCube.setup.Home.setAlarm(7));
     const fromDefeat = await page.evaluate(
-      () => SugarCube.setup.Home.resolveSleepWake('HuntEnd')
+      () => SugarCube.setup.Home.resolveSleepWake('HuntOverProwl')
     );
     expect(fromDefeat.hours).toBe(3);
     expect(fromDefeat.postWake).toBe('huntDefeat');

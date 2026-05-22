@@ -108,7 +108,7 @@ test.describe('HuntController', () => {
   });
 
   test('huntCaughtPassage() stamps a caught failure and routes to HuntSummary', async () => {
-    /* HuntEnd's <<huntEndExit>> widget delegates the post-scene exit
+    /* HuntOverProwl's <<huntBlackoutExit>> widget delegates the post-scene exit
        target to this helper. Hunt mode stamps a "caught" failure and
        routes to HuntSummary. Outside a hunt, falls back to Sleep. */
     expect(await callSetup(page, 'setup.HuntController.huntCaughtPassage()')).toBe('Sleep');
@@ -171,7 +171,7 @@ test.describe('HuntController', () => {
   });
 
   test('onCaughtCleanup() clears stolen-garment flags without throwing', async () => {
-    /* HuntEnd's bottom-of-passage cleanup goes through this helper.
+    /* HuntOverProwl's bottom-of-passage cleanup goes through this helper.
        No $hunt to mutate; cleanup still runs and clears the
        stolen-garment flags so the player walks out clean. */
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));

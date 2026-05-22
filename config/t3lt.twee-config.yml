@@ -229,9 +229,9 @@ sugarcube-2:
       name: tarotHighpriestess
       description: "Tarot effect widget for the high priestess card: sets
         $highpriestess to 1."
-    huntEndExit:
-      name: huntEndExit
-      description: "Shared exit link for HuntEnd hunt-ending scenes. Renders a .usebtn
+    huntBlackoutExit:
+      name: huntBlackoutExit
+      description: "Shared exit link for HuntOverProwl hunt-ending scenes. Renders a .usebtn
         link whose destination forks on $highpriestess: when set, the tarot
         burns itself (clears the flag, restores sanity to 25) and routes back to
         $return; otherwise, the link routes to Sleep. Args: linkText (string) --

@@ -179,7 +179,7 @@ setup.Home = (function () {
 		},
 		returningFromHuntDefeat: function () {
 			var p2 = previous(2);
-			return p2 === 'HuntOverSanity' || p2 === 'HuntEnd';
+			return p2 === 'HuntOverSanity' || p2 === 'HuntOverProwl';
 		},
 		returningFromMareEnd: function () {
 			return previous(2) === 'GhostSpecialEventMareEnd';
@@ -460,7 +460,7 @@ setup.Home = (function () {
 		},
 
 		// --- Hunt-defeat / mare wake-up state ------------
-		// HuntEnd* / Sleep set these flags so the Bedroom passage can
+		// HuntOver* / Sleep set these flags so the Bedroom passage can
 		// render the correct "you wake up" banner and apply the
 		// sanity/energy/lust penalties below.
 		// Shared sleep-advance: wraps midnight, fires
@@ -576,13 +576,13 @@ setup.Home = (function () {
 		},
 
 		/* "Came from a hunt-defeat" predicate. The three passages that
-		   route the player to Sleep with a defeat outcome -- HuntEnd,
+		   route the player to Sleep with a defeat outcome -- HuntOverProwl,
 		   HuntOverSanity, and CursedHuntStart -- all need the same
 		   penalized / cursed-item-roll prep and the same per-ghost
 		   sleep-passage routing. */
 		cameFromHuntDefeat: function (prev) {
 			return prev === 'HuntOverSanity'
-				|| prev === 'HuntEnd'
+				|| prev === 'HuntOverProwl'
 				|| prev === 'CursedHuntStart';
 		},
 		applyHuntDefeatPreSleep: function () {
