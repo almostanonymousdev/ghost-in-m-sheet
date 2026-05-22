@@ -36,6 +36,34 @@ test.describe('Ghost unique abilities — Phantom, Goryo, Deogen, Jinn', () => {
     await expectCleanPassage(page);
   });
 
+  test('non-Phantom ghost turns off lights in a procedural hunt room', async ({ game: page }) => {
+    // Regression: maybeTurnOffLights only flipped static-house room
+    // background flags; procedural hunts (HuntRun + $run.lights)
+    // never had their lights turned off, so EMF-via-darkness never
+    // fired during a procedural run.
+    await page.evaluate(() => {
+      SugarCube.setup.HuntController.startHunt({ seed: 1 });
+      SugarCube.setup.HuntController.setField('ghostName', 'Spirit');
+      SugarCube.setup.HuntController.setField('disguiseName', 'Spirit');
+      SugarCube.setup.Ghosts.setHuntMode(SugarCube.setup.Ghosts.HuntMode.ACTIVE);
+    });
+    await goToPassage(page, 'HuntRun');
+    await page.evaluate(() => {
+      var HC = SugarCube.setup.HuntController;
+      HC.setRoomLight(HC.currentRoomId(), SugarCube.setup.RoomLight.LIT);
+      // Force the 1-in-65 random gate to fire deterministically.
+      Math.random = () => 0;
+    });
+    const dest = await page.evaluate(() =>
+      SugarCube.setup.Events.maybeTurnOffLights()
+    );
+    expect(dest).toBe('HuntRun');
+    const dark = await page.evaluate(() =>
+      SugarCube.setup.HuntController.isCurrentRoomDark()
+    );
+    expect(dark).toBe(true);
+  });
+
   // ── Goryo ──────────────────────────────────────────────────────
 
   test('Goryo: ghost room never changes', async ({ game: page }) => {
