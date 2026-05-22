@@ -73,12 +73,15 @@ test.describe('Cursed-item hunt facade', () => {
 
   // --- HuntController.streetExitPassage ---
 
-  test('streetExitPassage stamps abandon failure + HuntSummary', async () => {
+  test('streetExitPassage stamps abandon failure + routes to CityMap', async () => {
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
+    /* The helper now settles the run itself before returning a goto
+       target, so the outcome lives on $meta (lastWasSuccess) rather
+       than on $run. */
     expect(await callSetup(page, 'setup.HuntController.streetExitPassage()'))
-      .toBe('HuntSummary');
-    expect(await callSetup(page, 'setup.HuntController.field("outcome")')).toBe('failure');
-    expect(await callSetup(page, 'setup.HuntController.field("failureReason")')).toBe('abandon');
+      .toBe('CityMap');
+    expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(false);
+    expect(await getVar(page, 'meta').then(m => m.lastWasSuccess)).toBe(false);
   });
 
   // --- HuntController.possessionPassage ---
@@ -202,22 +205,24 @@ test.describe('Cursed-item hunt facade', () => {
 
   // --- MonkeyPaw wish results route through HuntController ---
 
-  test('dawn wish routes the goto through huntOverPassage("time") -> HuntSummary', async () => {
+  test('dawn wish routes the goto through huntOverPassage("time") -> HuntOverTime', async () => {
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
     const out = await page.evaluate(
       () => SugarCube.setup.MonkeyPaw.activate('dawn')
     );
-    expect(out.goto).toBe('HuntSummary');
-    expect(await callSetup(page, 'setup.HuntController.field("failureReason")')).toBe('time');
+    /* huntOverPassage now settles the run inline and returns the
+       exit-passage for the failure reason; "time" maps to HuntOverTime. */
+    expect(out.goto).toBe('HuntOverTime');
+    expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(false);
   });
 
-  test('leave wish routes the goto through streetExitPassage -> HuntSummary', async () => {
+  test('leave wish routes the goto through streetExitPassage -> CityMap', async () => {
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
     const out = await page.evaluate(
       () => SugarCube.setup.MonkeyPaw.activate('leave')
     );
-    expect(out.goto).toBe('HuntSummary');
-    expect(await callSetup(page, 'setup.HuntController.field("failureReason")')).toBe('abandon');
+    expect(out.goto).toBe('CityMap');
+    expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(false);
   });
 
   test('trapTheGhost wish marks run.trapped + run.exitLock', async () => {
@@ -255,6 +260,6 @@ test.describe('Cursed-item hunt facade', () => {
   test('tarot Oblivion card target routes via HuntController.huntOverPassage("sanity")', async () => {
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
     expect(await callSetup(page, 'setup.HuntController.huntOverPassage("sanity")'))
-      .toBe('HuntSummary');
+      .toBe('HuntOverSanity');
   });
 });

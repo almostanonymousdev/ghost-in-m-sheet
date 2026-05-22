@@ -70,7 +70,8 @@
      * Routes the completion check into #hunt-tool-result rather than
        a per-tool actionSel -- the layout has one shared readout area.
      * Adds a sanity/exhaustion guard after <<applyTickEffects>> so a
-       stat-collapse landed by the click routes to HuntSummary
+       stat-collapse landed by the click routes through huntOverPassage
+       (which settles the run and goes to the HuntOver* narrative)
        immediately instead of waiting for the next nav.
      * Refreshes the .hunt-conditions HUD after the tick so per-step
        deltas + contributor chips track stat changes from the click.

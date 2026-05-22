@@ -901,7 +901,7 @@ setup.HuntController = (function () {
 	   through these instead of touching $run.outcome / $run.failureReason
 	   directly so the field names + Outcome enum stay in one place.
 	   markSuccess / markFailure cover the common "stamp the result on
-	   the run before navigating to HuntSummary" flow. */
+	   the run before the lifecycle helper calls endHunt" flow. */
 	function outcome() {
 		var run = sv().run;
 		return run ? (run.outcome || null) : null;
@@ -926,10 +926,12 @@ setup.HuntController = (function () {
 		if (reason) run.failureReason = reason;
 	}
 
-	/* Map a (success, failureReason) pair to the passage HuntSummary's
-	   Continue link should target. Successful runs and failures without
-	   a dedicated HuntOver* screen fall back to CityMap. Centralizing
-	   the lookup keeps HuntSummary free of FailureReason branches. */
+	/* Map a (success, failureReason) pair to the passage the hunt
+	   should land on after endHunt fires. Successful runs and failures
+	   without a dedicated HuntOver* screen fall back to CityMap. The
+	   per-helper exit routers (huntOverPassage / huntCaughtPassage /
+	   streetExitPassage) all funnel through this so the failure-reason
+	   → passage mapping lives in one place. */
 	function exitPassageForOutcome(success, reason) {
 		if (success) return "CityMap";
 		var FR = setup.HuntEnums.FailureReason;
@@ -1005,9 +1007,9 @@ setup.HuntController = (function () {
 			xp: xpReward,
 			exitPassage: exitPassageForOutcome(!!success, run.failureReason || null)
 		};
-		/* Stash the outcome on persistent meta-state so HuntSummary
-		   can gate the "Start a new hunt" continuation link on it --
-		   $run is cleared by end() below, so the passage needs a
+		/* Stash the outcome on persistent meta-state so any post-hunt
+		   surface that cares about the last result can gate on it --
+		   $run is cleared by end() below, so anyone reading needs a
 		   side channel that survives a successful close. */
 		setup.HuntShop.markLastWasSuccess(success);
 		if (setup.HauntedHouses) {
@@ -1154,12 +1156,14 @@ setup.HuntController = (function () {
 
 	/* Passage to <<goto>> when the per-tick chain detects a
 	   hunt-over condition. `reason` is one of setup.HuntEnums.FailureReason.SANITY |
-	   EXHAUSTION | TIME. Stamps the run as a failure with the reason
-	   and returns "HuntSummary" so the chain widget can route there
+	   EXHAUSTION | TIME. Stamps the failure, runs endHunt() to settle
+	   the run (payout + state teardown), and returns the dedicated
+	   HuntOver* narrative passage so the chain widget can route there
 	   with one <<goto>>. */
 	var huntOverPassage = guarded(null, function (reason) {
 		markFailure(reason);
-		return "HuntSummary";
+		var summary = endHunt(false);
+		return summary ? summary.exitPassage : exitPassageForOutcome(false, reason);
 	});
 
 	/* The ghost's true identity for the active hunt. Hunts don't
@@ -1188,13 +1192,15 @@ setup.HuntController = (function () {
 	});
 
 	/* "Ghost catches the MC" exit target that HuntOverProwl's <<huntBlackoutExit>>
-	   widget routes through. Stamps a CAUGHT failure on the run and
-	   routes to HuntSummary. */
+	   widget routes through. Stamps a CAUGHT failure on the run, runs
+	   endHunt() to settle payout + teardown, and returns the exit
+	   passage (CityMap by default). Outside a hunt, falls back to Sleep. */
 	function huntCaughtPassage() {
 		if (isActive()) {
 			setup.Hunt.emit(setup.Hunt.Event.CAUGHT, { ghostName: ghostName() });
 			markFailure(setup.HuntEnums.FailureReason.CAUGHT);
-			return "HuntSummary";
+			var summary = endHunt(false);
+			return summary ? summary.exitPassage : "CityMap";
 		}
 		return "Sleep";
 	}
@@ -1257,9 +1263,9 @@ setup.HuntController = (function () {
 	/* End-of-HuntOverProwl cleanup. Wraps the wardrobe / companion /
 	   tool-timer reset. Caller wraps this in
 	   `not setup.Ghosts.hasHighPriestess()` so the priestess reprieve
-	   still skips the cleanup entirely. The hunt lifecycle handles
-	   its own $run teardown when the player clicks the huntBlackoutExit
-	   link through to HuntSummary. */
+	   still skips the cleanup entirely. $run teardown lives on
+	   huntCaughtPassage, which is what the huntBlackoutExit link
+	   eventually routes through. */
 	function onCaughtCleanup() {
 		setup.HauntedHouses.cleanupAfterHunt({ loseStolen: true });
 	}
@@ -1302,11 +1308,13 @@ setup.HuntController = (function () {
 	}
 
 	/* "Get me out of here" exit target -- the goto used by the
-	   Monkey Paw leave wish. Stamps an ABANDON failure on the run
-	   and returns HuntSummary so the leave wish forfeits the run cleanly. */
+	   Monkey Paw leave wish. Stamps an ABANDON failure on the run,
+	   runs endHunt() to settle payout + teardown, and returns the exit
+	   passage so the leave wish forfeits the run cleanly. */
 	var streetExitPassage = guarded(null, function () {
 		markFailure(setup.HuntEnums.FailureReason.ABANDON);
-		return "HuntSummary";
+		var summary = endHunt(false);
+		return summary ? summary.exitPassage : "CityMap";
 	});
 
 	/* "The MC has been possessed" target -- the goto used by the Tarot

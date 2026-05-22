@@ -169,63 +169,6 @@
 	</div>
 <</if>>
 
-:: HuntSummary [nobr] {"position":"3200,200","size":"100,100"}
-/* Closes the active hunt, pays out ectoplasm (mL), and prints the
-   summary. The calling link stamps the outcome via
-   setup.HuntController.markSuccess() / markFailure(reason); anything
-   other than Outcome.SUCCESS counts as a failure so the player can
-   never lose ectoplasm by navigating in via a stale link.
-   Persistent unlocks are spent with the witch (WitchEctoplasm). */
-<<if not setup.HuntController.isActive()>>
-	@@.mc-thoughts; No run to end.@@<br>
-	@@.backbtn; [[Back|CityMap]]@@
-<<else>>
-	<<set _success to setup.HuntController.isSuccess()>>
-	<<set _summary to setup.HuntController.endHunt(_success)>>
-	<<set _FR to setup.HuntController.FailureReason>>
-
-	<<if _summary.success>>
-		@@.notmc-speech; Clean exit. Hunt #<<= _summary.number>> filed away.@@<br>
-	<<elseif _summary.failureReason eq _FR.SANITY>>
-		@@.notmc-speech; Head goes first. Hunt #<<= _summary.number>> closes on a stretcher.@@<br>
-	<<elseif _summary.failureReason eq _FR.EXHAUSTION>>
-		@@.notmc-speech; Legs went out from under you. Hunt #<<= _summary.number>> closes in a slump.@@<br>
-	<<elseif _summary.failureReason eq _FR.TIME>>
-		@@.notmc-speech; Dawn beat you to the answer. Hunt #<<= _summary.number>> closes with the sun up.@@<br>
-	<<elseif _summary.failureReason eq _FR.FLED>>
-		@@.notmc-speech; You walked. Hunt #<<= _summary.number>> closes unfinished.@@<br>
-	<<else>>
-		@@.notmc-speech; The house won. Hunt #<<= _summary.number>> goes to the house.@@<br>
-	<</if>>
-	<br>
-	<<if _summary.isContractHunt>>
-		<<if _summary.cashPayout gt 0>>
-			<span class="mc-action">+$<<= _summary.cashPayout>></span><br>
-		<<else>>
-			<span class="mc-thoughts">No payout. The key's spent.</span><br>
-		<</if>>
-	<<else>>
-		<<if _summary.cashPayout gt 0>>
-			<span class="mc-action">+$<<= _summary.cashPayout>></span><br>
-		<</if>>
-		<<if _summary.ectoplasmPayout gt 0 and setup.Witch.ectoplasmUnlocked()>>
-			<span class="mc-action">+<<= _summary.ectoplasmPayout>> mL of ectoplasm</span><br>
-		<</if>>
-	<</if>>
-	<<if setup.Witch.ectoplasmUnlocked()>>
-		<span class="mc-thoughts">Money: $<<= setup.Mc.money()>> &middot; Ectoplasm: <<= setup.HuntController.ectoplasm()>> mL</span><br>
-	<<else>>
-		<span class="mc-thoughts">Money: $<<= setup.Mc.money()>></span><br>
-	<</if>>
-	<span class="mc-action">+<<= _summary.xp>> exp</span><br>
-	<br>
-	<<if _summary.success>>
-		@@.movebtn; [[Start a new hunt|HuntStart]]@@<br>
-	<</if>>
-	@@.backbtn;<<link "Continue" _summary.exitPassage>>
-	<</link>>@@
-<</if>>
-
 :: HuntOutside [nobr] {"position":"3100,300","size":"100,100"}
 /* The yard outside the haunt. Reached from HuntRun's hallway via the
    Outside nav link; only the hallway exposes that link. The run is
@@ -257,7 +200,12 @@
 	<<else>>
 		@@.movebtn; [[Identify the ghost|HuntIdentify]]@@<br>
 	<</if>>
-	@@.movebtn; [[Flee the hunt|HuntSummary][setup.HuntController.markFailure(setup.HuntController.FailureReason.FLED)]]@@<br>
+	@@.movebtn;<<link "Flee the hunt">>
+		<<run setup.HuntController.markFailure(setup.HuntController.FailureReason.FLED)>>
+		<<set _flee to setup.HuntController.endHunt(false)>>
+		<<set _fleeDest to _flee ? _flee.exitPassage : "CityMap">>
+		<<goto _fleeDest>>
+	<</link>>@@<br>
 	@@.movebtn; [[Go back inside|HuntRun]]@@
 <</if>>
 
@@ -282,8 +230,8 @@
 :: HuntIdentifyResolve [nobr] {"position":"3300,300","size":"100,100"}
 /* Resolves an identify attempt. The MC re-enters the haunt to subdue
    the ghost; after a short pause the run either closes peacefully
-   (correct guess -- markSuccess + Continue/Go home) or the ghost
-   catches the MC (wrong guess -- routes to HuntOverProwl, whose
+   (correct guess -- markSuccess + endHunt + goto exitPassage) or the
+   ghost catches the MC (wrong guess -- routes to HuntOverProwl, whose
    huntBlackoutExit widget stamps a CAUGHT failure).
 
    Reveal staging: the result line and exit links are wrapped in
@@ -299,10 +247,12 @@
 	<<timed 6s>>
 		<<if setup.HuntController.ghostName() eq setup.Ghosts.ghostTypeSelected()>>
 			<<run setup.HuntController.markSuccess()>>
+			<<set _winSummary to setup.HuntController.endHunt(true)>>
+			<<set _winDest to _winSummary ? _winSummary.exitPassage : "CityMap">>
 			<div class="hunt-reveal hunt-reveal-text">@@.notmc-speech; The shape thins out and goes. The house cools behind it.@@</div>
 			<div class="hunt-reveal hunt-reveal-buttons">
-				@@.movebtn; [[Continue|HuntSummary]]@@<br>
-				@@.movebtn; [[Go home|HuntSummary]]@@
+				@@.movebtn;<<link "Go home" _winDest>>
+				<</link>>@@
 			</div>
 		<<else>>
 			<<set _trueGhost to setup.HuntController.activeGhost()>>

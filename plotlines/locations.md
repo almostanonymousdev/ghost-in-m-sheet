@@ -80,7 +80,7 @@ The game world includes several city locations the player can visit between hunt
   * [FloorPlanController.js](../passages/hunt/FloorPlanController.js) - Seeded floor-plan generator (Mulberry32 PRNG, star topology, stash placement)
   * [ModifiersController.js](../passages/hunt/ModifiersController.js) - Run-modifier catalogue and weighted draft
   * [TemplatesController.js](../passages/hunt/TemplatesController.js) - Room-template metadata and slot-id helpers
-  * [HuntLifecycle.tw](../passages/hunt/HuntLifecycle.tw) - HuntStart, HuntRun, HuntSummary passages
+  * [HuntLifecycle.tw](../passages/hunt/HuntLifecycle.tw) - HuntStart, HuntRun, HuntOutside, HuntIdentify, HuntIdentifyResolve passages
   * [WitchEctoplasm.tw](../passages/witch/WitchEctoplasm.tw) - Persistent-unlock storefront priced in ectoplasm
   * [widgetHuntMinimap.tw](../passages/hunt/widgetHuntMinimap.tw) - `<<huntMinimap>>` floor-plan view
 

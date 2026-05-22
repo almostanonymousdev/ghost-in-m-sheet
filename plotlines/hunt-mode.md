@@ -49,12 +49,15 @@ a failure before rolling fresh.
   in-game minute, the same renderer the haunted-house tools use
   (see [Hunt facade](#hunt-facade) for how hunts plug into
   that machinery).
-* **[HuntSummary](../passages/hunt/HuntLifecycle.tw)** — result
-  screen. `setup.HuntController.endHunt(success)` clears `$run` and pays out
-  ectoplasm (5 mL base + 5 mL if successful + 1 mL per active
-  modifier). The player can chain straight into a fresh run via
-  "Start a new hunt" (re-enters `HuntStart`) or fall back to the
-  city; persistent unlocks are bought separately from the witch.
+* **End of run** — no dedicated summary screen. The exit-router
+  helpers (`huntOverPassage` / `huntCaughtPassage` / `streetExitPassage`)
+  call `setup.HuntController.endHunt(success)` themselves, which
+  clears `$run`, pays out cash + ectoplasm, and returns the
+  destination passage via `exitPassageForOutcome` (HuntOverSanity /
+  HuntOverExhaustion / HuntOverTime / CityMap). The success path on
+  `HuntIdentifyResolve` and the Flee link on `HuntOutside` follow
+  the same shape. Persistent unlocks are bought separately from the
+  witch.
 * **[WitchEctoplasm](../passages/witch/WitchEctoplasm.tw)** —
   ectoplasm-spending storefront, reached from `WitchInside`.
   Lists every entry in `setup.HuntController.shopCatalogue()`
@@ -164,18 +167,20 @@ the current run state:
   `HauntedHouses.shouldStartProwl()` (prowl-timer window +
   `prowlChanceBonus` + `g.canProwl(mc)`).
 * `huntOverPassage(reason)` — stamps the run as a failure with
-  the reason and returns `HuntSummary`. Also called by
-  `FreezeHunt`'s "Surrender to the cold" link so the
-  no-clothes-left branch ends the run cleanly.
-* `huntCaughtPassage()` — stamps a `caught` failure on the run
-  and returns `HuntSummary`. The High-Priestess tarot override (a
-  draw that lets the MC walk away from a catch) is handled
-  inside the widget, so the helper isn't reached when the
-  priestess is in play.
+  the reason, runs `endHunt(false)` (payout + state teardown), and
+  returns the HuntOver* narrative passage to `<<goto>>` (HuntOverSanity /
+  HuntOverExhaustion / HuntOverTime). Also called by `FreezeHunt`'s
+  "Surrender to the cold" link so the no-clothes-left branch ends
+  the run cleanly.
+* `huntCaughtPassage()` — stamps a `caught` failure on the run,
+  runs `endHunt(false)`, and returns the exit passage (`CityMap` by
+  default). Outside a hunt, falls back to `Sleep`. The High-Priestess
+  tarot override (a draw that lets the MC walk away from a catch)
+  is handled inside the widget, so the helper isn't reached when
+  the priestess is in play.
 * `onCaughtCleanup()` — wardrobe / companion / tool-timer reset.
-  The matching `$run` cleanup is deferred to
-  `setup.HuntController.endHunt`, fired when the player clicks the
-  huntBlackoutExit link through to `HuntSummary`.
+  The matching `$run` cleanup lives on `huntCaughtPassage`, which
+  is what the huntBlackoutExit link routes through.
 * `shuffleGhostRoom()` — periodic ghost-room drift. Owns the
   shared 20-minute interval gate and the 45% roll, then
   dispatches to `setup.HuntController.driftGhostRoom` for the actual
@@ -190,11 +195,12 @@ the current run state:
   `run.trapped` and `run.exitLock` so the lair doesn't drift and
   the player's exit is locked.
 * `streetExitPassage()` / `banActiveContext()` — used by the
-  Monkey Paw leave wish. Stamps an `abandon` failure + returns
-  `HuntSummary` (the run forfeits) and bans nothing.
+  Monkey Paw leave wish. Stamps an `abandon` failure, runs
+  `endHunt(false)`, and returns the exit passage (`CityMap` by
+  default); bans nothing.
 * `possessionPassage()` — used by the Tarot Possession card.
-  Stamps a `possessed` failure on the run and routes to
-  `HuntSummary`.
+  Stamps a `possessed` failure on the run, runs `endHunt(false)`,
+  and routes to `CityMapPossessed`.
 * `consumeKnowledgeEvidence()` — used by the Tarot Knowledge
   card and the Monkey Paw knowledge wish. Picks a random
   evidence the ghost doesn't have and stamps it on
@@ -266,7 +272,7 @@ links use to decide whether to render an unlock as active.
 * [ModifiersController.js](../passages/hunt/ModifiersController.js) — `setup.Modifiers`: catalogue + weighted draft.
 * [TemplatesController.js](../passages/hunt/TemplatesController.js) — `setup.Templates`: room-template metadata + slot-id helpers.
 * [HuntHousesController.js](../passages/hunt/HuntHousesController.js) — `setup.HuntHouses`: static-house catalogue (Owaissa / Elm / Ironclad) with authored floor plans and per-house overrides.
-* [HuntLifecycle.tw](../passages/hunt/HuntLifecycle.tw) — `HuntStart`, `HuntRun`, `HuntSummary` passages.
+* [HuntLifecycle.tw](../passages/hunt/HuntLifecycle.tw) — `HuntStart`, `HuntRun`, `HuntOutside`, `HuntIdentify`, `HuntIdentifyResolve` passages.
 * [WitchEctoplasm.tw](../passages/witch/WitchEctoplasm.tw) — persistent-unlock storefront, priced in ectoplasm; reached from `WitchInside`.
 * [widgetHuntMinimap.tw](../passages/hunt/widgetHuntMinimap.tw) — `<<huntMinimap>>` SVG floor-plan view.
 * [widgetHuntToolBar.tw](../passages/hunt/widgetHuntToolBar.tw) — `<<huntToolBar>>` tool grid; renders one card per `setup.HuntController.startingTools()` entry (default = all six). Empty Bag (`locked_tools`) collapses the strip to a "your bag is empty" placeholder; `loadout.tools` filters to a subset while preserving canonical order. Tools the player picks up from `tool_<id>` furniture loot get unioned back in, so a started-empty bag fills back in as the player searches the rooms.

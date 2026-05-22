@@ -4,8 +4,8 @@ const { openGame, resetGame, getVar, goToPassage, callSetup, ensureOpenPage } = 
 /* HuntOutside / HuntIdentify: from the hunt hallway, the player can
    step Outside and choose to identify the ghost, flee the haunt, or
    walk back in. The Outside link is hallway-gated; the menu options
-   route through the same HuntSummary lifecycle exit the win/lose links
-   already use. */
+   settle the run via endHunt() inline and goto the appropriate exit
+   passage (CityMap on success/abandon, HuntOverProwl on a wrong call). */
 test.describe('E2E: Hunt Outside menu', () => {
   let page;
   let savedBrowser;
@@ -99,13 +99,13 @@ test.describe('E2E: Hunt Outside menu', () => {
        robust against retuned modifier rates. */
     const expected = await page.evaluate(() =>
       Math.round(3 * SugarCube.setup.Modifiers.payoutMultiplier()));
-    await clickLink(page, 'Flee the hunt', 'HuntSummary');
+    /* Flee now settles the run inline and routes straight to CityMap
+       (the HuntSummary intermediary was removed; the payout still
+       lands on $ectoplasm). */
+    await clickLink(page, 'Flee the hunt', 'CityMap');
 
     expect(await getVar(page, 'run')).toBeNull();
     expect(await getVar(page, 'ectoplasm')).toBe(expected);
-    await expect(
-      page.locator('.passage').getByText(/you walked/i)
-    ).toBeVisible();
   });
 
   test('Choose routes through the prep beat to HuntIdentifyResolve', async () => {
@@ -134,16 +134,21 @@ test.describe('E2E: Hunt Outside menu', () => {
 
     await clickLink(page, 'Choose', 'HuntIdentifyResolve');
 
+    /* The correct-guess branch settles the run inline (endHunt) BEFORE
+       the reveal text + Go-home button appear, so snapshot the payout
+       before the timed reveal fires (the active modifier deck zeroes
+       out on endHunt) and verify after the goto. */
+    const expectedSuccess = await page.evaluate(() =>
+      Math.round(10 * SugarCube.setup.Modifiers.payoutMultiplier()));
+
     // Prep beat is visible immediately; the reveal is gated on a 6s
     // <<timed>> block.
     await expect(
       page.locator('.passage').getByText(/shape thins out and goes/i)
     ).toBeVisible({ timeout: 10_000 });
-    expect(await callSetup(page, 'setup.HuntController.field("outcome")')).toBe('success');
+    expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(false);
 
-    const expectedSuccess = await page.evaluate(() =>
-      Math.round(10 * SugarCube.setup.Modifiers.payoutMultiplier()));
-    await clickLink(page, 'Continue', 'HuntSummary');
+    await clickLink(page, 'Go home', 'CityMap');
     expect(await getVar(page, 'run')).toBeNull();
     expect(await getVar(page, 'ectoplasm')).toBe(expectedSuccess);
   });
@@ -189,12 +194,11 @@ test.describe('E2E: Hunt Outside menu', () => {
     await clickLink(page, 'Continue', 'HuntOverProwl');
     expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(true);
 
-    // huntCaughtPassage stamps the failure reason on the run as soon as
-    // it's invoked (well before HuntSummary consumes it).
+    // huntCaughtPassage settles the run (endHunt) before returning a
+    // goto target; the player now lands on CityMap directly.
     const target = await callSetup(page, 'setup.HuntController.huntCaughtPassage()');
-    expect(target).toBe('HuntSummary');
-    expect(await callSetup(page, 'setup.HuntController.field("outcome")')).toBe('failure');
-    expect(await callSetup(page, 'setup.HuntController.field("failureReason")')).toBe('caught');
+    expect(target).toBe('CityMap');
+    expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(false);
   });
 
   test('HuntIdentify Back link returns to HuntOutside', async () => {

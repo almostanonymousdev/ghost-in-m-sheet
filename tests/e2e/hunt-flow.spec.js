@@ -1,11 +1,11 @@
 const { test, expect } = require('@playwright/test');
 const { openGame, resetGame, getVar, goToPassage, callSetup, ensureOpenPage, seedRandom } = require('../helpers');
 
-/* End-to-end hunt lifecycle: GhostStreet → HuntStart → HuntRun
-   → HuntSummary, plus the witch's ectoplasm storefront
-   (WitchEctoplasm). Exercises the actual passage flow so any
-   wiring break (missing link text, broken setField call, wrong
-   passage transition) shows up here. */
+/* End-to-end hunt lifecycle: GhostStreet → HuntStart → HuntRun →
+   HuntOver* / CityMap (endings settle the run inline via endHunt),
+   plus the witch's ectoplasm storefront (WitchEctoplasm). Exercises
+   the actual passage flow so any wiring break (missing link text,
+   broken setField call, wrong passage transition) shows up here. */
 test.describe('E2E: hunt lifecycle', () => {
   /* Click-driven hunt navigation hits dozens of passages with heavy
      <<do>>/<<redo>> chains. Under parallel worker load the renderer can OOM
@@ -111,14 +111,15 @@ test.describe('E2E: hunt lifecycle', () => {
     // 2. Enter the hunt (HuntRun).
     await clickLink(page, 'Enter the hunt', 'HuntRun');
 
-    // 3. Win the run. Stamp the success outcome and navigate to the
-    // end-passage; the in-game flow gates this behind a correct ghost
-    // identification, but for lifecycle coverage we drive the outcome
-    // directly.
+    // 3. Win the run. Stamp the success outcome and settle the run
+    // through endHunt; the in-game flow gates this behind a correct
+    // ghost identification, but for lifecycle coverage we drive the
+    // outcome directly. (HuntSummary was removed -- the helpers now
+    // settle the run inline and route straight to the city map.)
     await page.evaluate(() => SugarCube.setup.HuntController.markSuccess());
-    await goToPassage(page, 'HuntSummary');
+    await page.evaluate(() => SugarCube.setup.HuntController.endHunt(true));
 
-    // The end-passage clears the run and pays out ectoplasm (mL).
+    // endHunt clears the run and pays out ectoplasm (mL).
     run = await getVar(page, 'run');
     expect(run).toBeNull();
     const ectoplasm = await getVar(page, 'ectoplasm');
@@ -153,7 +154,7 @@ test.describe('E2E: hunt lifecycle', () => {
     const expected = await page.evaluate(() =>
       Math.round(3 * SugarCube.setup.Modifiers.payoutMultiplier()));
     await page.evaluate(() => SugarCube.setup.HuntController.markFailure());
-    await goToPassage(page, 'HuntSummary');
+    await page.evaluate(() => SugarCube.setup.HuntController.endHunt(false));
 
     expect(await getVar(page, 'ectoplasm')).toBe(expected);
     expect(await getVar(page, 'run')).toBeNull();
@@ -927,7 +928,7 @@ test.describe('E2E: hunt lifecycle', () => {
     expect(await getVar(page, 'minutes')).toBe(1);
   });
 
-  test('sanity collapse during a hunt tool tick routes to HuntSummary as failure', async () => {
+  test('sanity collapse during a hunt tool tick routes to HuntOverSanity as failure', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
@@ -944,13 +945,14 @@ test.describe('E2E: hunt lifecycle', () => {
     await page.locator('.hunt-tool-card').first().locator('a').click();
 
     // The widget's post-applyTickEffects guard routes to
-    // huntOverPassage("sanity") -> HuntSummary.
-    await page.waitForFunction(() => SugarCube.State.passage === 'HuntSummary');
+    // huntOverPassage("sanity") -> HuntOverSanity (which settles
+    // the run inline via endHunt).
+    await page.waitForFunction(() => SugarCube.State.passage === 'HuntOverSanity');
 
-    // The run is closed and stamped with the sanity reason.
+    // The run is closed and the sanity-collapse beat is on-screen.
     expect(await getVar(page, 'run')).toBeNull();
     await expect(
-      page.locator('.passage').getByText(/head goes first/i)
+      page.locator('.passage').getByText(/tips sideways/i)
     ).toBeVisible();
   });
 
@@ -1045,7 +1047,7 @@ test.describe('E2E: hunt lifecycle', () => {
     await page.waitForFunction(() => SugarCube.State.passage === 'HuntRun');
   });
 
-  test('FreezeHunt with no garments routes to HuntSummary as a "sanity" failure in hunt mode', async () => {
+  test('FreezeHunt with no garments routes to HuntOverSanity as a "sanity" failure in hunt mode', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
@@ -1059,17 +1061,17 @@ test.describe('E2E: hunt lifecycle', () => {
     await goToPassage(page, 'FreezeHunt');
 
     // The "Surrender to the cold" link delegates its target to
-    // setup.HuntController.huntOverPassage("sanity") which returns
-    // "HuntSummary" in hunt mode and stamps failureReason="sanity"
-    // on the run before it's cleared by HuntSummary's endHunt call.
-    // We assert on the HuntSummary-rendered text since the run record
-    // is null by the time the assertion runs.
+    // setup.HuntController.huntOverPassage("sanity") which settles
+    // the run inline (endHunt) and routes to HuntOverSanity. The
+    // failure stamping happens before the run is cleared, but $run
+    // is null by the time the assertion runs -- we assert on the
+    // HuntOverSanity-rendered beat instead.
     await page.locator('.passage').getByText(/Surrender to the cold/i).click();
-    await page.waitForFunction(() => SugarCube.State.passage === 'HuntSummary');
+    await page.waitForFunction(() => SugarCube.State.passage === 'HuntOverSanity');
 
     expect(await getVar(page, 'run')).toBeNull();
     await expect(
-      page.locator('.passage').getByText(/head goes first/i)
+      page.locator('.passage').getByText(/tips sideways/i)
     ).toBeVisible();
   });
 
@@ -1114,45 +1116,38 @@ test.describe('E2E: hunt lifecycle', () => {
       .toContainText(/UVL/);
   });
 
-  test('hunt ghost catch routes through HuntOverProwl → HuntSummary as a "caught" failure', async () => {
+  test('hunt ghost catch routes through HuntOverProwl → CityMap as a "caught" failure', async () => {
     test.setTimeout(20_000);
 
     /* HuntOverProwl's bottom-of-passage cleanup runs through
        setup.HuntController.onCaughtCleanup() and the huntBlackoutExit
        widget routes its post-scene exit through huntCaughtPassage();
-       in hunt mode that stamps a "caught" failure and returns
-       "HuntSummary". The e2e check here is that those helpers route
-       a real run end-to-end -- the widget rendering + linkappend
+       in hunt mode that settles the run inline (endHunt) and returns
+       the exit passage. The e2e check here is that those helpers
+       route a real run end-to-end -- the widget rendering + linkappend
        fan-out is covered by the classic hunt-flow tests. */
     await goToPassage(page, 'GhostStreet');
     await clickHuntCard(page);
     await clickLink(page, 'Enter the hunt', 'HuntRun');
 
-    // huntCaughtPassage() in hunt mode stamps the failure reason
-    // and returns the destination passage.
-    const target = await callSetup(page, 'setup.HuntController.huntCaughtPassage()');
-    expect(target).toBe('HuntSummary');
-    expect(await callSetup(page, 'setup.HuntController.field("outcome")')).toBe('failure');
-    expect(await callSetup(page, 'setup.HuntController.field("failureReason")')).toBe('caught');
-
-    // onCaughtCleanup is a no-op in the hunt (cleanup happens on
-    // HuntSummary via setup.HuntController.endHunt) -- crucially, it must NOT
-    // try to call setup.HauntedHouses.endHunt() (which would crash
-    // when $hunt is null).
-    await page.evaluate(() => SugarCube.setup.HuntController.onCaughtCleanup());
-    expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(true);
-
-    // Snapshot the failure payout BEFORE HuntSummary clears the run.
+    // Snapshot the expected failure payout BEFORE huntCaughtPassage
+    // settles the run (it zeroes the active modifier deck on endHunt).
     const expectedFailure = await page.evaluate(() =>
       Math.round(3 * SugarCube.setup.Modifiers.payoutMultiplier()));
 
-    // Walking into HuntSummary closes the run as a failure.
-    await goToPassage(page, 'HuntSummary');
+    /* Sanity-check that onCaughtCleanup (called from HuntOverProwl)
+       does not crash and does not close the run on its own -- the
+       run must still be active here so huntCaughtPassage can do the
+       inline endHunt. */
+    await page.evaluate(() => SugarCube.setup.HuntController.onCaughtCleanup());
+    expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(true);
+
+    // huntCaughtPassage() in hunt mode stamps the "caught" failure,
+    // settles the run via endHunt, and returns the exit passage.
+    const target = await callSetup(page, 'setup.HuntController.huntCaughtPassage()');
+    expect(target).toBe('CityMap');
     expect(await getVar(page, 'run')).toBeNull();
     expect(await getVar(page, 'ectoplasm')).toBe(expectedFailure);
-    await expect(
-      page.locator('.passage').getByText(/house won/i)
-    ).toBeVisible();
   });
 
   test('ghost-room drift fires for the hunt ghost across 20-minute intervals', async () => {
@@ -1367,11 +1362,11 @@ test.describe('E2E: hunt lifecycle', () => {
     await page.locator('.passage').getByText('I wish for dawn', { exact: true }).click();
 
     // The dawn wish goto resolves through HuntController.huntOverPassage("time")
-    // which in the hunt stamps "time" failure + returns "HuntSummary".
-    await page.waitForFunction(() => SugarCube.State.passage === 'HuntSummary');
+    // which settles the run inline and routes to HuntOverTime.
+    await page.waitForFunction(() => SugarCube.State.passage === 'HuntOverTime');
     expect(await getVar(page, 'run')).toBeNull();
     await expect(
-      page.locator('.passage').getByText(/dawn beat you/i)
+      page.locator('.passage').getByText(/dawn/i)
     ).toBeVisible();
   });
 
@@ -1532,39 +1527,4 @@ test.describe('E2E: hunt lifecycle', () => {
     ).toBeVisible();
   });
 
-  /* The "Start a new hunt" link on HuntSummary chains runs without
-     bouncing through the city map; the exit re-enters HuntStart,
-     which auto-rolls a fresh seed + modifier deck and stamps a new
-     $run. */
-  test('HuntSummary offers Start a new hunt that rolls a fresh run', async () => {
-    test.setTimeout(15_000);
-    await goToPassage(page, 'GhostStreet');
-    await clickHuntCard(page);
-    await clickLink(page, 'Enter the hunt', 'HuntRun');
-    await page.evaluate(() => SugarCube.setup.HuntController.markSuccess());
-    await goToPassage(page, 'HuntSummary');
-    expect(await getVar(page, 'run')).toBeNull();
-    expect(await getVar(page, 'runsStarted')).toBe(1);
-
-    await clickLink(page, 'Start a new hunt', 'HuntStart');
-    const run = await getVar(page, 'run');
-    expect(run).not.toBeNull();
-    expect(run.number).toBe(2);
-    expect(await getVar(page, 'runsStarted')).toBe(2);
-  });
-
-  /* Continuation gate: a failed identify (or any non-success exit
-     like FLED / SANITY / TIME / EXHAUSTION) hides the "Start a new
-     hunt" link on HuntSummary, so the player has to step through
-     the city map before queueing the next run. */
-  test('HuntSummary hides Start a new hunt after a failed run', async () => {
-    test.setTimeout(15_000);
-    await goToPassage(page, 'GhostStreet');
-    await clickHuntCard(page);
-    await clickLink(page, 'Enter the hunt', 'HuntRun');
-    await page.evaluate(() => SugarCube.setup.HuntController.markFailure());
-    await goToPassage(page, 'HuntSummary');
-    await expect(page.locator('.passage').getByText('Start a new hunt')).toHaveCount(0);
-    await expect(page.locator('.passage').getByText('Continue')).toBeVisible();
-  });
 });

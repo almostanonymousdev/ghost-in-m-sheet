@@ -83,7 +83,10 @@ test.describe('Monkey Paw wishes', () => {
     });
     const result = await callSetup(page, 'setup.MonkeyPaw.activate("dawn")');
     expect(result.tier).toBe(1);
-    expect(result.goto).toBe('HuntSummary');
+    /* The wish routes through huntOverPassage("time"), which now
+       settles the run inline and lands on HuntOverTime instead of
+       the removed HuntSummary intermediary. */
+    expect(result.goto).toBe('HuntOverTime');
     expect(await getVar(page, 'hours')).toBe(6);
   });
 

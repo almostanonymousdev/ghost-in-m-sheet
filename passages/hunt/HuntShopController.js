@@ -4,8 +4,8 @@
  * Owns `$meta` -- the persistent meta-shop state that survives
  * individual runs. Holds the catalogue of player-facing unlocks,
  * the banlist (modifier ids excluded from a run's draft pool), the
- * stockpile of reroll charges, and the "last run was a success"
- * gate read by HuntSummary's continuation link.
+ * stockpile of reroll charges, and a "last run was a success" gate
+ * that any post-hunt surface can read off `$meta.lastWasSuccess`.
  *
  * Unlock effects wire into the hunt lifecycle from elsewhere
  * (HuntController honors most of them; the minimap reads loot_sense /
