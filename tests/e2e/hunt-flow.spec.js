@@ -37,14 +37,18 @@ test.describe('E2E: hunt lifecycle', () => {
       page = await openGame(savedBrowser);
       await resetGame(page);
     }
-    /* GhostStreet's huntCard gates the link behind setup.Mc.lvl() >= 4.
-       New games start at lvl 0, so without this every test would land on
-       the "Level 4+ required" placeholder instead of a clickable link.
-       Wait for $mc to be re-initialised by StoryInit before mutating it —
-       resetGame only blocks until the first passage renders, which can
-       race the variable rebind. */
+    /* GhostStreet's huntCard is hidden until the witch's ectoplasm-
+       unlock quest is complete. New games start with the quest
+       NOT_OFFERED, so without flipping it every test would land on a
+       GhostStreet with no rogue card to click. Wait for $mc to be
+       re-initialised by StoryInit before mutating it -- resetGame only
+       blocks until the first passage renders, which can race the
+       variable rebind. */
     await page.waitForFunction(() => SugarCube.State.variables.mc != null);
-    await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+    await page.evaluate(() => {
+      SugarCube.State.variables.mc.lvl = 4;
+      SugarCube.setup.Witch.completeEctoplasmQuest();
+    });
     /* Pin Math.random per-test so HuntStart's auto-roll (nextSeed,
        floor-plan generator, modifier draft) lands on the same layout
        every run. Without this the floor-plan layout flips between

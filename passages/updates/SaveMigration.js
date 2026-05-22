@@ -146,7 +146,13 @@
 		// Buyback for clothes lost during a hunt. Older saves
 		// have no array; default to empty.
 		lostClothing:  function () { return []; },
-		tornPagesFound: function () { return []; }
+		tornPagesFound: function () { return []; },
+
+		// Witch's ectoplasm-unlock quest. Gates the rogue/random
+		// hunt card + every visible reference to the ectoplasm
+		// currency and meta-shop. Defaults to NOT_OFFERED (0); the
+		// witch surfaces the quest once the MC hits level 5.
+		ectoplasmQuestStage: function () { return 0; }
 	};
 
 	// mc sub-fields added after launch -- missing on very old saves

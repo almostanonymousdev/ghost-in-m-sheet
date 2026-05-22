@@ -208,11 +208,15 @@
 		<<if _summary.cashPayout gt 0>>
 			<span class="mc-action">+$<<= _summary.cashPayout>></span><br>
 		<</if>>
-		<<if _summary.ectoplasmPayout gt 0>>
+		<<if _summary.ectoplasmPayout gt 0 and setup.Witch.ectoplasmUnlocked()>>
 			<span class="mc-action">+<<= _summary.ectoplasmPayout>> mL of ectoplasm</span><br>
 		<</if>>
 	<</if>>
-	<span class="mc-thoughts">Money: $<<= setup.Mc.money()>> &middot; Ectoplasm: <<= setup.HuntController.ectoplasm()>> mL</span><br>
+	<<if setup.Witch.ectoplasmUnlocked()>>
+		<span class="mc-thoughts">Money: $<<= setup.Mc.money()>> &middot; Ectoplasm: <<= setup.HuntController.ectoplasm()>> mL</span><br>
+	<<else>>
+		<span class="mc-thoughts">Money: $<<= setup.Mc.money()>></span><br>
+	<</if>>
 	<span class="mc-action">+<<= _summary.xp>> exp</span><br>
 	<br>
 	<<if _summary.success>>

@@ -28,6 +28,21 @@ setup.WardenClothesStage = Object.freeze({
 	OUTFIT_OWNED:     2
 });
 
+/* Lifecycle of $ectoplasmQuestStage. Gates every visible reference
+   to the ectoplasm currency + meta-shop and the rogue/random hunt
+   card on GhostStreet. The witch offers the quest once the MC hits
+   level 5; only after she clears it does the ectoplasm economy come
+   out of hiding.
+     NOT_OFFERED: witch hasn't surfaced the lead.
+     OFFERED:     witch told the MC; quest is open but unfinished.
+     COMPLETED:   MC turned in the quest; rogue card + ectoplasm UI
+                  + shop link all unhide. */
+setup.EctoplasmQuestStage = Object.freeze({
+	NOT_OFFERED: 0,
+	OFFERED:     1,
+	COMPLETED:   2
+});
+
 setup.Witch = (function () {
 	/* Variables owned by this controller. Other controllers should
 	   query/mutate these only through the API methods below. */
@@ -45,7 +60,8 @@ setup.Witch = (function () {
 		'weakenTheGhostQuest',
 		'isWeakenGhost',
 		'moneyFromWeakenTheGhost',
-		'amulet'
+		'amulet',
+		'ectoplasmQuestStage'
 	]);
 
 	var sv = setup.sv;
@@ -173,6 +189,28 @@ setup.Witch = (function () {
 			return setup.Mc.lvl() >= 5 && sv().weakenTheGhostQuest === undefined;
 		},
 
+		// --- Ectoplasm-unlock quest ------------------------------
+		/* Witch surfaces the quest the first time the MC visits at
+		   level 5+; the offer goes away once she takes it. */
+		canOfferEctoplasmQuest: function () {
+			var stage = sv().ectoplasmQuestStage;
+			var E = setup.EctoplasmQuestStage;
+			return setup.Mc.lvl() >= 5
+				&& (stage === undefined || stage === E.NOT_OFFERED);
+		},
+		ectoplasmQuestStarted: function () {
+			return sv().ectoplasmQuestStage === setup.EctoplasmQuestStage.OFFERED;
+		},
+		ectoplasmQuestComplete: function () {
+			return sv().ectoplasmQuestStage === setup.EctoplasmQuestStage.COMPLETED;
+		},
+		/* Single read-side gate the rest of the codebase calls when
+		   deciding whether to show ectoplasm UI / the rogue card /
+		   the meta-shop link. */
+		ectoplasmUnlocked: function () {
+			return this.ectoplasmQuestComplete();
+		},
+
 		// --- Night exploration -----------------------------------
 		// (witchNight / stealItemsFromWitch are registered with
 		// setup.Cooldowns at the bottom of this file; the daily reset
@@ -292,6 +330,12 @@ setup.Witch = (function () {
 	});
 	setup.defineStageAccessors(api, sv, 'wardenClothesStage', setup.WardenClothesStage, {
 		mark: { markWardenOutfitHintOpened: 'HINT_OFFERED' }
+	});
+	setup.defineStageAccessors(api, sv, 'ectoplasmQuestStage', setup.EctoplasmQuestStage, {
+		mark: {
+			markEctoplasmQuestStarted: 'OFFERED',
+			completeEctoplasmQuest:    'COMPLETED'
+		}
 	});
 	setup.Cooldowns.registerDaily('witchNight');
 	setup.Cooldowns.registerDaily('stealItemsFromWitch');

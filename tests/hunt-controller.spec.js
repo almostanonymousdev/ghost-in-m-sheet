@@ -25,12 +25,16 @@ test.describe('HuntController', () => {
 
   test.beforeEach(async () => {
     await resetGame(page);
-    /* GhostStreet's huntCard gates the link behind setup.Mc.lvl() >= 4
-       (new games start at lvl 0). resetGame only blocks until the first
-       passage renders, which can race the $mc rebind, so wait for the
+    /* GhostStreet's huntCard is hidden until the witch's ectoplasm-
+       unlock quest is complete (new games start with the quest
+       NOT_OFFERED). resetGame only blocks until the first passage
+       renders, which can race the $mc rebind, so wait for the
        variable bag before mutating. */
     await page.waitForFunction(() => SugarCube.State.variables.mc != null);
-    await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+    await page.evaluate(() => {
+      SugarCube.State.variables.mc.lvl = 4;
+      SugarCube.setup.Witch.completeEctoplasmQuest();
+    });
   });
 
   /* The hunt card's link text is the per-cycle randomised street address.
