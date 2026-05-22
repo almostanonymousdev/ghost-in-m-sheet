@@ -596,6 +596,132 @@
 	setup.applySaveDefaults = applyDefaults;
 
 	/*
+	 * Hard-reset fallback for saves stamped with a different
+	 * SAVE_VERSION. Per-version migrations (applyDefaults +
+	 * setup.Migrations) are best-effort; partial migration of an
+	 * older save can leave the world in a worse state than a fresh
+	 * one. When we detect a version mismatch we rebuild the save
+	 * from initState() defaults and carry forward only the player-
+	 * persistent fields below -- progression that the player earned
+	 * (stats, money, ectoplasm, purchases, quest stages, ghost
+	 * info, achievements, wardrobe, companion stat rows). Anything
+	 * transient (per-hunt state, tool timers, home event bundles,
+	 * daily cooldowns, clock) goes back to defaults, and the MC
+	 * is dropped in the Livingroom at 11 AM.
+	 */
+	var PRESERVE_KEYS = [
+		// --- MC core / status / consumables / piercings ---------
+		'mc',
+		'mcpossession', 'mcOrgasmMeter',
+		'percentageOfLevel', 'neededForNextLevel', 'tempCorr',
+		'earnedMoney',
+		'energyDrinkAmount', 'makeupAmount', 'makeupApplied',
+		'medicineAmount', 'sanityPillsAmount',
+		'sensualBodyPart', 'sensualBodyPartChoice',
+		'piercingTitsAddSens', 'piercingPussyAddSens', 'piercingTongueAddSens',
+		'addLustPiercingTits', 'addLustPiercingPussy', 'addLustPiercingTongue',
+		'earsPiercing', 'nosePiercing', 'tonguePiercing', 'titsPiercing', 'pussyPiercing',
+
+		// --- Currency / lifetime counters ------------------------
+		'ectoplasm', 'runsStarted',
+
+		// --- Equipment / purchases -------------------------------
+		'equipment', 'spiritboxLvl',
+		'crucifixAmount', 'hasPSpray', 'hasPSprayCharges',
+		'boughtDetector', 'boughtMonkeyPawGuide',
+		'isPhoneBought', 'isCameraBought', 'dildoPurchased',
+		'sportswear',
+
+		// --- Wardrobe (ownership + outer/under memory) ----------
+		'tshirtState', 'braState', 'pantiesState', 'jeansState',
+		'shortsState', 'skirtState',
+		'stockingsState1', 'stockingsState2', 'stockingsState3',
+		'footState1', 'footState2', 'footState3',
+		'tshirtState0', 'tshirtState1', 'tshirtState2', 'tshirtState3',
+		'braState0', 'braState1', 'braState2', 'braState3',
+		'pantiesState0', 'pantiesState1', 'pantiesState2', 'pantiesState3',
+		'jeansState0', 'jeansState1', 'jeansState2', 'jeansState3',
+		'shortsState0', 'shortsState1', 'shortsState2', 'shortsState3',
+		'skirtState0', 'skirtState1', 'skirtState2', 'skirtState3',
+		'neckChokerState1', 'neckChokerState2', 'neckChokerState3',
+		'rememberTopOuter', 'rememberBottomOuter',
+		'rememberTopUnder', 'rememberBottomUnder',
+		'rememberBottomStockings',
+		'lostClothing',
+
+		// --- Quest / story progression --------------------------
+		'firstVisitWitchShop', 'firstVisitDeliveryHub',
+		'gotKeyFromWitch', 'succubus', 'exorcismQuestStage',
+		'gotCursedItem', 'isCIDildo', 'isCIButtplug', 'isCIBeads', 'isCIHDildo',
+		'eventToolsOneStart', 'wardenClothesStage',
+		'weakenTheGhostQuest', 'isWeakenGhost', 'moneyFromWeakenTheGhost',
+		'amulet', 'ectoplasmQuestStage', 'contracts',
+		'wishesCount', 'monkeyPawLearned', 'MonkeyPawStage', 'wishAnything',
+		'hasQuestForRescue', 'rescueStage', 'hasRescueClue',
+		'rescueJadePossessed', 'rescueVictoriaPossessed', 'rescueGirls',
+		'ghostSpiritEventStage', 'ghostMareEventStart', 'ghostMareEventStage',
+		'videoEventSpecialMyling',
+		'relationshipWithRain',
+		'trainer1TipReceived', 'trainer1CoachingCost',
+		'isDiscountTrainer1', 'trainer3CoachingCost',
+		'relationEmily', 'trainingCost',
+		'dialogBlake', 'relationshipBlake',
+		'meetBrook', 'foundTips', 'foundComics', 'foundBrook',
+		'foundGirl', 'foundGuy', 'comicsReading',
+		'foundDesecratedBook', 'tornPagesFound',
+		'isBrookePossessed', 'mcSleptWithCameraOn', 'holyWaterIsCollected',
+		'deliveryCompletedShifts', 'deliveryBestStreak', 'deliveryTotalTips',
+		'deliveryVisitCounts', 'jobMoneySuccessed', 'jobMoneyFailed',
+		'ghostInfoCollected', 'knowledgeUsed',
+		'highpriestess', 'bansheeAbility', 'cthulionAbility',
+		'achievements', 'meta',
+
+		// --- Companion stat rows + relationship flags -----------
+		'companion',
+		'brook', 'alice', 'blake', 'alex', 'taylor', 'casey',
+		'isCompChosen', 'meetAlice', 'aliceWorkDone',
+		'transFirstStage', 'transPicture', 'transStart'
+	];
+
+	function resetToFallback(vars) {
+		if (!vars || typeof vars !== 'object') { return; }
+
+		// Snapshot only the keys we carry forward.
+		var preserved = {};
+		PRESERVE_KEYS.forEach(function (k) {
+			if (vars[k] !== undefined) { preserved[k] = vars[k]; }
+		});
+
+		// Wipe every existing field, then re-seed defaults via the
+		// canonical initState() path so we automatically pick up any
+		// new fields it adds in the future.
+		Object.keys(vars).forEach(function (k) { delete vars[k]; });
+		try {
+			setup.Game.initState(vars);
+		}
+		catch (ex) {
+			console.error('SaveMigration.resetToFallback: initState failed', ex);
+		}
+
+		// Restore preserved fields. mc.frozenBeauty is a hunt-only
+		// override; stripping it ensures the post-reset MC shows a
+		// real beauty value.
+		Object.keys(preserved).forEach(function (k) { vars[k] = preserved[k]; });
+		if (vars.mc && typeof vars.mc === 'object') {
+			delete vars.mc.frozenBeauty;
+		}
+
+		// Drop her in the Livingroom at 11 AM, regardless of where
+		// the old save left her.
+		vars.hours    = 11;
+		vars.minutes  = 0;
+		vars.meridiem = 'AM';
+		vars.huntMode = 0;
+		vars.run      = null;
+	}
+	setup.resetSaveToFallback = resetToFallback;
+
+	/*
 	* Strip values that can't survive a JSON round-trip. These show up when
 	* someone accidentally does `<<set $foo to $('#bar')>>` or stashes a
 	* function on a variable. SugarCube's own clone() will usually drop them
@@ -687,10 +813,29 @@
 					applyDefaults(moment.variables);
 				}
 
+				// Cross-version fallback. Per-version migrations cover the
+				// shape changes we know about, but a save stamped with a
+				// different SAVE_VERSION than the running build has been
+				// through (or *will go through*) edits we can't audit at
+				// load time. Carry the player's earned progression forward
+				// and reset the rest -- safer than trusting a partial
+				// migration to a build whose schema this save predates.
+				var FALLBACK_PASSAGE = 'Livingroom';
+				save.metadata = save.metadata || {};
+				var loadedFrom = Number(save.metadata.version) || 1;
+				if (moment && moment.variables && loadedFrom !== SAVE_VERSION) {
+					resetToFallback(moment.variables);
+					// Throw away undo history -- post-reset, older moments
+					// hold variable snapshots that are inconsistent with the
+					// reset present, so "Back" would leak stale state.
+					moment.title = FALLBACK_PASSAGE;
+					save.state.history = [moment];
+					save.state.index   = 0;
+				}
+
 				// Redirect any moment whose passage was renamed or removed
 				// to a known-safe fallback. Otherwise SugarCube throws
 				// "the passage X does not exist" and refuses the load.
-				var FALLBACK_PASSAGE = 'Livingroom';
 				if (typeof Story !== 'undefined' && typeof Story.has === 'function'
 					&& Story.has(FALLBACK_PASSAGE)) {
 					save.state.history.forEach(function (m) {
@@ -702,8 +847,6 @@
 
 				// Record what version the save was loaded at, so later code
 				// can tell "this was a v1 save, run one-time fixups".
-				save.metadata = save.metadata || {};
-				var loadedFrom = Number(save.metadata.version) || 1;
 				save.metadata.loadedFromVersion = loadedFrom;
 				save.metadata.version = SAVE_VERSION;
 			}
