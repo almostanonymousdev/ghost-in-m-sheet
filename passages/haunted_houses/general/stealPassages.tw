@@ -1,4 +1,4 @@
-:: StealClothesEvent [nobr] {"position":"4025,950","size":"100,100"}
+:: StealClothesEvent [noreturn nobr] {"position":"4025,950","size":"100,100"}
 <<if setup.HauntedHouses.shouldTriggerSteal()>>
 	<<run setup.HauntedHouses.markStealClothesTriggered()>>
 	<<goto "StealClothes">>

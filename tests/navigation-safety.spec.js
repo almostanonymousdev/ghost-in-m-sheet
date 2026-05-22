@@ -366,4 +366,89 @@ test.describe('navigation safety', () => {
     expect(violations, violations.join('\n')).toHaveLength(0);
   });
 
+  test('button-less auto-progress passages must be tagged [noreturn]', () => {
+    /* Regression: the :passagestart $return tracker stamps the current
+       passage name into $return on every visit. If a passage has no
+       player-facing navigation and instead auto-progresses via <<goto>>
+       (or <<deferGoto>>), it gets stamped into $return on the way
+       through — and any later "Back"/<<return>> from the destination
+       lands back here, which immediately re-fires the <<goto>>. The
+       player is then trapped: pressing Back appears to do nothing
+       because the auto-progress fires again before they can react.
+       The "noreturn" tag opts the passage out of the $return tracker
+       so Back from the destination skips over it.
+
+       This rule flags passages that have an auto-firing <<goto>>
+       outside any user-interaction wrapper (<<link>>, <<linkreplace>>,
+       <<button>>, <<onClick>>, <<done>>) and no player-driven exit
+       (link, <<link>>, <<return>>, <<back>>, <<backOrReturn>>). */
+
+    /* Strip out the bodies of macros whose contents only run on user
+       interaction — a <<goto>> inside <<link>>...<<</link>> doesn't
+       fire on passage load, so it doesn't trap the player. */
+    function stripDeferredBodies(body) {
+      const wrappers = ['link', 'linkappend', 'linkprepend', 'linkreplace',
+                        'button', 'onClick', 'done'];
+      let out = body;
+      for (const w of wrappers) {
+        const re = new RegExp(`<<${w}\\b[^>]*>>[\\s\\S]*?<<\\/${w}>>`, 'g');
+        out = out.replace(re, '');
+      }
+      return out;
+    }
+
+    function stripComments(body) {
+      return body.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/%[\s\S]*?%\//g, '');
+    }
+
+    function hasAutoGoto(body) {
+      const stripped = stripDeferredBodies(stripComments(body));
+      return /<<goto\b/.test(stripped) || /<<deferGoto\b/.test(stripped);
+    }
+
+    /* Strict "player can choose to leave" check. Unlike the loose
+       hasNavigation() helper above, this deliberately excludes <<goto>>
+       (which is the *problem*, not an exit) and includes <<return>> /
+       <<back>> / <<backOrReturn>> (which the loose helper omits). */
+    function hasPlayerExit(body) {
+      const stripped = stripComments(body);
+      return /\[\[/.test(stripped) ||
+        /<<link\b/.test(stripped) ||
+        /<<linkreplace\b/.test(stripped) ||
+        /<<linkappend\b/.test(stripped) ||
+        /<<linkprepend\b/.test(stripped) ||
+        /<<button\b/.test(stripped) ||
+        /<<return\b/.test(stripped) ||
+        /<<back\b/.test(stripped) ||
+        /<<backOrReturn\b/.test(stripped);
+    }
+
+    /* SugarCube lifecycle passages run inside the engine's transition
+       hook on every navigation; they're never the destination of a
+       <<goto>> or link, so they can never appear in $return. */
+    const LIFECYCLE_PASSAGES = new Set(['PassageReady', 'PassageDone', 'StoryReady']);
+
+    const violations = [];
+
+    for (const p of allPassages) {
+      if (shouldSkip(p)) continue;
+      if (LIFECYCLE_PASSAGES.has(p.name)) continue;
+
+      // Player has a way to choose when/where to leave?
+      if (hasPlayerExit(p.body)) continue;
+
+      // Does the passage auto-progress?
+      if (!hasAutoGoto(p.body)) continue;
+
+      violations.push(
+        `${loc(p)} "${p.name}" auto-progresses via <<goto>> with no ` +
+        `player-facing navigation but is missing the [noreturn] tag — ` +
+        `pressing Back from the destination will land back here and ` +
+        `re-fire the goto, trapping the player`
+      );
+    }
+
+    expect(violations, violations.join('\n')).toHaveLength(0);
+  });
+
 });

@@ -3,7 +3,7 @@
    call -- the actual logic lives in setup.Events / setup.HauntedHouses.
    Bundled here because the per-tick chain is conceptually one unit. */
 
-:: LightPassageGhost [nobr] {"position":"1700,1500","size":"100,100"}
+:: LightPassageGhost [noreturn nobr] {"position":"1700,1500","size":"100,100"}
 <<set _dest to setup.Events.maybeTurnOffLights()>>
 <<if _dest>>
 	<<goto _dest>>
