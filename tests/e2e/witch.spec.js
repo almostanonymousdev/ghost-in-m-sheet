@@ -123,10 +123,20 @@ test.describe('Witch — side quests', () => {
   });
 
   test('canAskAboutMonkeyPaw requires $boughtMonkeyPawGuide === 0', async ({ game: page }) => {
+    await setVar(page, 'mc.lvl', 3);
     await setVar(page, 'boughtMonkeyPawGuide', 0);
     expect(await callSetup(page, 'setup.Witch.canAskAboutMonkeyPaw()')).toBe(true);
     await setVar(page, 'boughtMonkeyPawGuide', 1);
     expect(await callSetup(page, 'setup.Witch.canAskAboutMonkeyPaw()')).toBe(false);
+  });
+
+  test('canAskAboutMonkeyPaw is closed below MonkeyPaw.levelRequired', async ({ game: page }) => {
+    await setVar(page, 'boughtMonkeyPawGuide', 0);
+    const req = await callSetup(page, 'setup.MonkeyPaw.levelRequired()');
+    await setVar(page, 'mc.lvl', req - 1);
+    expect(await callSetup(page, 'setup.Witch.canAskAboutMonkeyPaw()')).toBe(false);
+    await setVar(page, 'mc.lvl', req);
+    expect(await callSetup(page, 'setup.Witch.canAskAboutMonkeyPaw()')).toBe(true);
   });
 
   test('unlockMonkeyPawWishes marks every wish learned and deducts $400', async ({ game: page }) => {

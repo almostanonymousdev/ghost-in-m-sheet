@@ -154,7 +154,11 @@ test.describe('Cursed-item hunt facade', () => {
 
   test('startHunt resets tarot stage + monkey paw wish count to fresh-hunt defaults', async () => {
     /* Pre-stamp dirty state from a prior session, then start a hunt
-       run and verify the carry-stage globals come back clean. */
+       run and verify the carry-stage globals come back clean. Bump
+       mc.lvl past the paw's level gate so isDiscoverable can fairly
+       report that the reset succeeded (otherwise the level gate would
+       mask the per-hunt stage flip). */
+    await setVar(page, 'mc.lvl', await callSetup(page, 'setup.MonkeyPaw.levelRequired()'));
     await page.evaluate(() => {
       const V = SugarCube.State.variables;
       V.tarotCardsStage = SugarCube.setup.TarotStage.CARRYING;
@@ -176,6 +180,7 @@ test.describe('Cursed-item hunt facade', () => {
   });
 
   test('endHunt resets shared state so the next run starts clean', async () => {
+    await setVar(page, 'mc.lvl', await callSetup(page, 'setup.MonkeyPaw.levelRequired()'));
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
     // Simulate the player picking up the deck + paw mid-run and using a wish.
     await page.evaluate(() => {

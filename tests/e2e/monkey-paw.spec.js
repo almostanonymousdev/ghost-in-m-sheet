@@ -164,4 +164,73 @@ test.describe('Monkey Paw wishes', () => {
     expect(await callSetup(page, 'setup.MonkeyPaw.hasAnything()')).toBe(true);
     expect(await callSetup(page, 'setup.MonkeyPaw.hasGuide()')).toBe(true);
   });
+
+  /* Level gate: the paw is supposed to be invisible (no furniture
+     pickups, no witch dialog) below MonkeyPaw.levelRequired. The two
+     guarantees below pin both halves -- isDiscoverable goes false even
+     when the per-hunt stage is HIDDEN, and HuntController.lootKindsAt
+     filters the kind out so a furniture search never surfaces it. */
+  test('isDiscoverable returns false when MC is below the level gate', async ({ game: page }) => {
+    await page.evaluate(() => SugarCube.setup.MonkeyPaw.resetHunt());
+    const req = await callSetup(page, 'setup.MonkeyPaw.levelRequired()');
+    await setVar(page, 'mc.lvl', req - 1);
+    expect(await callSetup(page, 'setup.MonkeyPaw.isDiscoverable()')).toBe(false);
+    await setVar(page, 'mc.lvl', req);
+    expect(await callSetup(page, 'setup.MonkeyPaw.isDiscoverable()')).toBe(true);
+  });
+
+  test('floor-plan furniture search hides monkeyPaw below level gate', async ({ game: page }) => {
+    /* startHunt with a seed known to land monkeyPaw on a furniture
+       slot. Below the level gate, HuntController.lootKindsAt() filters
+       monkeyPaw out so the player searching that slot finds nothing
+       (or the other co-located loot kinds, just not the paw). At/above
+       the gate the paw reappears in the same slot. */
+    await setVar(page, 'mc.lvl', 1);
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
+    const slot = await page.evaluate(() => {
+      const fp = SugarCube.State.variables.run.floorplan;
+      return fp.loot.monkeyPaw
+        ? { room: fp.loot.monkeyPaw, suffix: fp.lootFurniture.monkeyPaw }
+        : null;
+    });
+    expect(slot).not.toBeNull();
+    expect(slot.suffix).toBeTruthy();
+
+    const lockedKinds = await page.evaluate(
+      (s) => SugarCube.setup.HuntController.lootKindsAt(s.room, s.suffix),
+      slot
+    );
+    expect(lockedKinds).not.toContain('monkeyPaw');
+
+    const req = await callSetup(page, 'setup.MonkeyPaw.levelRequired()');
+    await setVar(page, 'mc.lvl', req);
+    const unlockedKinds = await page.evaluate(
+      (s) => SugarCube.setup.HuntController.lootKindsAt(s.room, s.suffix),
+      slot
+    );
+    expect(unlockedKinds).toContain('monkeyPaw');
+  });
+
+  test('Monkey\'s Favor meta-shop unlock does not pre-stamp the paw below level gate', async ({ game: page }) => {
+    /* The meta-shop "Monkey's Favor" perk normally hands the player a
+       found-paw at hunt start. That hand-off must also respect the
+       level gate -- buying the perk early shouldn't smuggle the paw
+       into the inventory before LEVEL_REQUIRED. */
+    await setVar(page, 'mc.lvl', 1);
+    await page.evaluate(() => {
+      const id = SugarCube.setup.HuntShop.ShopItem.MONKEYS_FAVOR;
+      SugarCube.State.variables.meta = { unlocks: {}, bannedModifiers: [], rerollCharges: 0 };
+      SugarCube.State.variables.meta.unlocks[id] = 1;
+      SugarCube.setup.MonkeyPaw.resetHunt();
+    });
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
+    expect(await callSetup(page, 'setup.MonkeyPaw.isFound()')).toBe(false);
+
+    /* Same setup at level-gate now lets the perk fire. */
+    const req = await callSetup(page, 'setup.MonkeyPaw.levelRequired()');
+    await setVar(page, 'mc.lvl', req);
+    await page.evaluate(() => SugarCube.setup.MonkeyPaw.resetHunt());
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
+    expect(await callSetup(page, 'setup.MonkeyPaw.isFound()')).toBe(true);
+  });
 });

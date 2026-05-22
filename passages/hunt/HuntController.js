@@ -241,16 +241,9 @@ setup.HuntController = (function () {
 	   the slot ("highlighted furniture says nothing in it"). Centralize
 	   the gates here so the highlight and the pickup stay in lockstep. */
 	function isLootKindAvailable(kind) {
-		if (kind === 'clothesStolen') {
-			return !!(setup.HauntedHouses && setup.HauntedHouses.hasClothesStolen && setup.HauntedHouses.hasClothesStolen());
-		}
-		if (kind === 'tarotCards') {
-			return !!(setup.HauntedHouses && setup.HauntedHouses.tarotCardsStage &&
-				setup.HauntedHouses.tarotCardsStage() === setup.TarotStage.HIDDEN);
-		}
-		if (kind === 'monkeyPaw') {
-			return !!(setup.MonkeyPaw && setup.MonkeyPaw.isDiscoverable && setup.MonkeyPaw.isDiscoverable());
-		}
+		if (kind === 'clothesStolen') return setup.HauntedHouses.hasClothesStolen();
+		if (kind === 'tarotCards')    return setup.HauntedHouses.tarotCardsStage() === setup.TarotStage.HIDDEN;
+		if (kind === 'monkeyPaw')     return setup.MonkeyPaw.isDiscoverable();
 		return true;
 	}
 
@@ -715,18 +708,18 @@ setup.HuntController = (function () {
 		   collectedLoot prevents the floor-plan tarot pickup from
 		   double-granting. We leave the floor-plan pin intact so a
 		   re-search of that slot still reports nothing (already-collected). */
-		if (Shop.hasUnlock(Item.WITCHS_BLESSING)
-			&& setup.HauntedHouses
-			&& typeof setup.HauntedHouses.markTarotCarrying === 'function') {
+		if (Shop.hasUnlock(Item.WITCHS_BLESSING)) {
 			setup.HauntedHouses.markTarotCarrying();
 			takeLoot('tarotCards');
 		}
 
 		/* Monkey's Favor: paw already found, ready for its first wish.
-		   Same pattern as Witch's Blessing, against MonkeyPaw.markFound. */
-		if (Shop.hasUnlock(Item.MONKEYS_FAVOR)
-			&& setup.MonkeyPaw
-			&& typeof setup.MonkeyPaw.markFound === 'function') {
+		   Same pattern as Witch's Blessing, against MonkeyPaw.markFound.
+		   Gated on MonkeyPaw.isUnlocked() so an early meta-shop purchase
+		   doesn't pre-stamp the paw before the player reaches the
+		   level that the rest of the paw machinery (furniture pickup,
+		   witch dialog) requires. */
+		if (Shop.hasUnlock(Item.MONKEYS_FAVOR) && setup.MonkeyPaw.isUnlocked()) {
 			setup.MonkeyPaw.markFound();
 			takeLoot('monkeyPaw');
 		}

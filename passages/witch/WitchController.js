@@ -152,8 +152,13 @@ setup.Witch = (function () {
 		},
 
 		// --- Monkey paw guide ------------------------------------
+		/* Witch only engages with paw questions once the MC is
+		   high-enough level that the paw can actually appear in
+		   hunts (setup.MonkeyPaw.isUnlocked). Otherwise the dialog
+		   shouldn't exist -- there's nothing for her to react to. */
 		canAskAboutMonkeyPaw: function () {
-			return setup.MonkeyPaw.guideStage() === setup.MonkeyPawGuide.NOT_ASKED;
+			return setup.MonkeyPaw.isUnlocked()
+				&& setup.MonkeyPaw.guideStage() === setup.MonkeyPawGuide.NOT_ASKED;
 		},
 
 		// --- Warden/Ironclad hint --------------------------------

@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, getVar, callSetup } = require('./helpers');
+const { openGame, resetGame, getVar, setVar, callSetup } = require('./helpers');
 
 /* Persistent hunt unlocks bought from the witch with ectoplasm.
    setup.HuntController exposes a catalogue (shopCatalogue), per-id
@@ -146,6 +146,10 @@ test.describe('Hunt persistent unlocks (witch ectoplasm shop)', () => {
   });
 
   test('Monkey\'s Favor pre-stamps the paw onto collectedLoot', async () => {
+    /* The perk respects MonkeyPaw.isUnlocked() so a player who bought
+       it under-leveled doesn't smuggle the paw in early; bump mc.lvl
+       to the gate before kicking off the run. */
+    await setVar(page, 'mc.lvl', await callSetup(page, 'setup.MonkeyPaw.levelRequired()'));
     await page.evaluate(() => SugarCube.setup.HuntController.addEctoplasm(100));
     await page.evaluate(() => SugarCube.setup.HuntShop.buyUnlock('monkeys_favor'));
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));

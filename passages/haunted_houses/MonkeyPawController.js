@@ -49,6 +49,13 @@ setup.MonkeyPawGuide = Object.freeze({
 setup.MonkeyPaw = (function () {
 	var sv = setup.sv;
 
+	/* Player level at which the paw becomes part of the game: floor-plan
+	   pickups stop being filtered out by isLootKindAvailable, and the
+	   witch will engage with questions about it. Matches the basic
+	   cursed-item quest gate at the witch (lvl 2) so the paw enters
+	   the rotation alongside the rest of the cursed-item economy. */
+	var LEVEL_REQUIRED = 2;
+
 	/* Variables owned by this controller. Other controllers should
 	   query these only through the API methods below. */
 	var OWNED_VARS = Object.freeze([
@@ -384,10 +391,23 @@ setup.MonkeyPaw = (function () {
 		/* Hunt-end cleanup. The paw is consumed for the session. */
 		retire: function () { sv().MonkeyPawStage = setup.MonkeyPawStage.RETIRED; },
 		isFound: function () { return sv().MonkeyPawStage === setup.MonkeyPawStage.FOUND; },
-		/* HIDDEN stage: paw is still sitting in a furniture slot waiting
-		   to be discovered this hunt. FurnitureSearch and the map
-		   highlight logic gate on this. */
-		isDiscoverable: function () { return (sv().MonkeyPawStage || 0) === setup.MonkeyPawStage.HIDDEN; },
+		/* True when the paw is currently retrievable from a furniture
+		   slot. Combines the per-hunt stage gate (HIDDEN means the paw
+		   hasn't been picked up yet this hunt) with the player-level
+		   gate (the paw stops appearing in furniture below
+		   LEVEL_REQUIRED). FurnitureSearch and the map highlight logic
+		   gate on this; the witch's canAskAboutMonkeyPaw gates on
+		   isUnlocked alone since asking about the paw doesn't require
+		   it to be sitting in furniture right now. */
+		isDiscoverable: function () {
+			return this.isUnlocked()
+				&& (sv().MonkeyPawStage || 0) === setup.MonkeyPawStage.HIDDEN;
+		},
+		/* Player-level gate. The paw stops appearing in furniture and
+		   the witch will not answer questions about it until the MC has
+		   reached LEVEL_REQUIRED. */
+		levelRequired: function () { return LEVEL_REQUIRED; },
+		isUnlocked: function () { return setup.Mc.lvl() >= LEVEL_REQUIRED; },
 		/* The Bag icon shows only when carrying the paw AND the
 		   player just stepped into the HuntRun passage -- so the paw
 		   doesn't appear when Bag is opened from the city, the witch

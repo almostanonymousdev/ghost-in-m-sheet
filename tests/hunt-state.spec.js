@@ -385,7 +385,9 @@ test.describe('Hunt Controller', () => {
        loot onto a furniture-bearing room and prefers distinct slots,
        but falls back to sharing one when the room runs out. The
        lookup helper must surface every uncollected kind so a single
-       search can pull them all. */
+       search can pull them all. Bump mc.lvl past the paw's level
+       gate so isLootKindAvailable doesn't filter it. */
+    await setVar(page, 'mc.lvl', await callSetup(page, 'setup.MonkeyPaw.levelRequired()'));
     await page.evaluate(() => SugarCube.setup.HuntController.start({ seed: 1 }));
     await page.evaluate(() => {
       // Hand-crafted multi-item slot: room_1 / desk holds three kinds.
@@ -409,6 +411,7 @@ test.describe('Hunt Controller', () => {
   });
 
   test('lootKindsAt drops kinds that have already been collected', async () => {
+    await setVar(page, 'mc.lvl', await callSetup(page, 'setup.MonkeyPaw.levelRequired()'));
     await page.evaluate(() => SugarCube.setup.HuntController.start({ seed: 1 }));
     await page.evaluate(() => {
       SugarCube.setup.HuntController.setField('floorplan', {
