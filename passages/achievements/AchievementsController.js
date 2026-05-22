@@ -24,7 +24,7 @@ setup.Achievements = setup.Achievements || {};
 	   with a hint). Bestiary entries are derived from the ghost
 	   catalogue at lookup time -- see fullCatalogue() below. */
 	var STATIC_CATALOGUE = Object.freeze([
-		// --- Failure suite (Hunt.Event.END + CAUGHT + POSSESS) ---
+		// --- Failure suite (Hunt.Event.HUNT_END_ASSAULTED + CAUGHT + POSSESS) ---
 		{ id: 'fail.sanity',     name: 'Lost the Plot',         hint: 'End a hunt with your mind frayed.',     category: 'failure' },
 		{ id: 'fail.exhaustion', name: 'Dead on Your Feet',     hint: 'Collapse mid-hunt.',                    category: 'failure' },
 		{ id: 'fail.time',       name: 'Sunrise, Sunrise',      hint: 'Run out the clock.',                    category: 'failure' },
@@ -33,7 +33,7 @@ setup.Achievements = setup.Achievements || {};
 		{ id: 'fail.fled',       name: 'Better Part of Valor',  hint: 'Leave a house in a hurry.',             category: 'failure' },
 		{ id: 'fail.abandon',    name: 'Cold Feet',             hint: 'Walk away from a contract.',            category: 'failure' },
 
-		// --- Wins with a twist (Hunt.Event.END) ---
+		// --- Wins with a twist (Hunt.Event.HUNT_END_ASSAULTED) ---
 		{ id: 'win.first',    name: 'First Blood',     hint: 'Banish your first ghost.',                      category: 'win' },
 		{ id: 'win.nocaught', name: 'Untouched',       hint: 'Win without ever being grabbed.', hidden: true, category: 'win' },
 		{ id: 'win.notools',  name: 'Bare Hands',      hint: 'Win without activating EMF or UVL.', hidden: true, category: 'win' },
@@ -171,7 +171,7 @@ setup.Achievements = setup.Achievements || {};
 			}
 		});
 
-		setup.Hunt.on(E.END, function (ctx) {
+		setup.Hunt.on(E.HUNT_END_ASSAULTED, function (ctx) {
 			var FR = setup.HuntController && setup.HuntController.FailureReason;
 			if (!ctx) { huntFlags = null; return; }
 			if (ctx.success) {

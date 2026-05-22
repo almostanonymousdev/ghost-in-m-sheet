@@ -1020,7 +1020,7 @@ setup.HuntController = (function () {
 		   to the in-game daily seed and showed the same address until
 		   the player slept. */
 		rollNextSeed();
-		setup.Hunt.emit(setup.Hunt.Event.END, {
+		setup.Hunt.emit(setup.Hunt.Event.HUNT_END_ASSAULTED, {
 			success: !!success,
 			isContractHunt: isContractHunt,
 			cashPayout: cashPayout,

@@ -1,5 +1,203 @@
+:: HuntOverExhaustion [nobr] {"position":"1300,1350","size":"100,100"}
+/* Energy as the pacing gate: the per-step energy drain in
+ * setup.HauntConditions.applyTickEffects sets $exhausted = 1 when
+ * mc.energy bottoms out, and the includeTimeEvent* widgets route here.
+ * Cleans up like HuntOverManual / HuntOverTime — graceful exit, no
+ * ghost catch — so the player keeps whatever evidence they gathered.
+ *
+ * Departure from the other hunt-over branches: the player only has the
+ * strength to grab ONE stolen piece before stumbling out. Picking one
+ * runs the matching restore then loseAllStolen nukes the rest.
+ *
+ * Exhibitionism gate: a low-exhibitionism player (< 5, the same
+ * threshold CompanionMain / FindStolenClothes / NudityEvent use for
+ * their "you don't mind being seen naked" branches) won't walk out
+ * exposed. If they're bottomless AND a bottom-ish item was stolen, only
+ * the panties/bottoms grabs are offered. If they're top-bare AND a top-
+ * ish item was stolen, only the shirt/bra grabs are offered. With both
+ * exposed and both kinds available, any covering grab is shown. "Leave
+ * with nothing" is hidden whenever the gate forces a covering grab. */
+<<run setup.Hunt.emit(setup.Hunt.Event.HUNT_END_GRACEFUL)>>
+<<run setup.HauntedHouses.endHunt()>>
+<<run setup.HauntedHouses.cleanupAfterHunt()>>
+
+<<set _bottomless to setup.HauntedHouses.isBottomless()>>
+<<set _topBare to setup.HauntedHouses.isTopBare()>>
+<<set _modest to (setup.Mc.exhibitionism() || 0) lt 5>>
+<<set _canCoverBottom to _bottomless and (setup.Wardrobe.isPantiesStolen() or setup.Wardrobe.isBottomStolen())>>
+<<set _canCoverTop to _topBare and (setup.Wardrobe.isShirtStolen() or setup.Wardrobe.isBraStolen())>>
+<<set _forceCover to _modest and (_canCoverBottom or _canCoverTop)>>
+<<set _showBottom to not _forceCover or _canCoverBottom>>
+<<set _showTop to not _forceCover or _canCoverTop>>
+
+<<image "ui/img/dawn.jpg" { width: "100%" }>>
+<br>
+@@.mc-thoughts; My legs are shaking. I can barely keep my eyes open. I have to leave this place — I'm running on empty.@@<br>
+
+<<if setup.HauntedHouses.hasClothesStolen()>>
+	@@.mc-thoughts; The ghost stripped me earlier; my things are scattered around. I only have the energy to grab one piece before stumbling for the exit.@@<br>
+	<<if _forceCover>>
+		@@.mc-thoughts;
+		<<if _canCoverBottom and _canCoverTop>>
+			...and there's no way I'm walking out like this. I have to cover up — top or bottom, something.
+		<<elseif _canCoverBottom>>
+			...and there's no way I'm walking out bottomless. I need something to put on down there.
+		<<else>>
+			...and there's no way I'm walking out topless. I need something to cover my chest.
+		<</if>>
+		@@<br>
+	<</if>>
+	<span id="exhaustionGrab">
+	<<if setup.Wardrobe.isPantiesStolen() and _showBottom>>
+		@@.usebtn;<<link "Grab your panties">><<replace "#exhaustionGrab">>
+			<<run setup.Wardrobe.restoreStolenInGroup("panties", "isPantiesStolen")>>
+			<<run setup.Wardrobe.loseAllStolen()>>
+			<<run setup.HauntedHouses.clearStolenClothesFlag()>>
+			@@.mc-action; You snatch your panties and stumble for the exit. The rest stays behind.@@<br>
+			@@.movebtn;[[Drag yourself home|CityMap][setup.Time.addHours(1)]]@@
+		<</replace>>
+		<</link>>@@<br>
+	<</if>>
+	<<if setup.Wardrobe.isBottomStolen() and _showBottom>>
+		@@.usebtn;<<link "Grab your bottoms">><<replace "#exhaustionGrab">>
+			<<run setup.Wardrobe.restoreStolenInGroup("bottomOuter")>><<run State.variables.isBottomStolen = 0>><<run State.variables.isJeansStolen = 0>><<run State.variables.isShortsStolen = 0>><<run State.variables.isSkirtStolen = 0>>
+			<<run setup.Wardrobe.loseAllStolen()>>
+			<<run setup.HauntedHouses.clearStolenClothesFlag()>>
+			@@.mc-action; You snatch your bottoms and stumble for the exit. The rest stays behind.@@<br>
+			@@.movebtn;[[Drag yourself home|CityMap][setup.Time.addHours(1)]]@@
+		<</replace>>
+		<</link>>@@<br>
+	<</if>>
+	<<if setup.Wardrobe.isShirtStolen() and _showTop>>
+		@@.usebtn;<<link "Grab your shirt">><<replace "#exhaustionGrab">>
+			<<run setup.Wardrobe.restoreStolenInGroup("tshirt", "isShirtStolen")>>
+			<<run setup.Wardrobe.loseAllStolen()>>
+			<<run setup.HauntedHouses.clearStolenClothesFlag()>>
+			@@.mc-action; You snatch your shirt and stumble for the exit. The rest stays behind.@@<br>
+			@@.movebtn;[[Drag yourself home|CityMap][setup.Time.addHours(1)]]@@
+		<</replace>>
+		<</link>>@@<br>
+	<</if>>
+	<<if setup.Wardrobe.isBraStolen() and _showTop>>
+		@@.usebtn;<<link "Grab your bra">><<replace "#exhaustionGrab">>
+			<<run setup.Wardrobe.restoreStolenInGroup("bra", "isBraStolen")>>
+			<<run setup.Wardrobe.loseAllStolen()>>
+			<<run setup.HauntedHouses.clearStolenClothesFlag()>>
+			@@.mc-action; You snatch your bra and stumble for the exit. The rest stays behind.@@<br>
+			@@.movebtn;[[Drag yourself home|CityMap][setup.Time.addHours(1)]]@@
+		<</replace>>
+		<</link>>@@<br>
+	<</if>>
+	<<if not _forceCover>>
+		@@.usebtn;<<link "Leave with nothing">><<replace "#exhaustionGrab">>
+			<<run setup.Wardrobe.loseAllStolen()>>
+			<<run setup.HauntedHouses.clearStolenClothesFlag()>>
+			@@.mc-action; You can't even manage that. You stagger for the door empty-handed.@@<br>
+			@@.movebtn;[[Drag yourself home|CityMap][setup.Time.addHours(1)]]@@
+		<</replace>>
+		<</link>>@@<br>
+	<</if>>
+	</span>
+<<else>>
+	@@.movebtn;[[Drag yourself home|CityMap][setup.Time.addHours(1)]]@@<br>
+<</if>>
+<<done>>
+	<<addclass ".linkselector" "disabled-link">>
+<</done>>
+
+:: HuntOverManual [nobr] {"position":"1600,1350","size":"100,100"}
+<<run setup.Hunt.emit(setup.Hunt.Event.HUNT_END_GRACEFUL)>>
+@@.mc-speech; Enough. You've got what you've got. Time to be on the porch instead of in here.@@<br>
+
+<<if setup.HauntedHouses.hasClothesStolen()>>
+	<<image "ui/img/confused-img.jpg" "displayCentredImgs">>
+	@@.mc-speech; Christ. It took my clothes. Of course it took my clothes. Do I go back in for them, or just live with what that means.@@<br>
+	/% Don't clear the stolen-clothes flag here -- the "Return to the
+	house" branch needs FurnitureSearch's hasClothesStolen() guard to
+	still pass so the player can recover the stash. The "Leave without
+	taking your clothes" branch calls loseAllStolen, which clears the
+	flag itself. %/
+	@@.movebtn; <<back "Return to the house">>@@<br>
+	Or<br>
+	<<if setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT) and setup.Companion.hasBottomWorn()>>
+		@@.movebtn;<<link "Leave without taking your clothes" "Livingroom">><<run setup.Wardrobe.loseAllStolen()>>
+		<</link>>@@
+	<<else>>
+		@@.movebtn;<<link "Leave without taking your clothes" "NudityEvent">><<run setup.Wardrobe.loseAllStolen()>>
+		<</link>>@@
+	<</if>>
+<<else>>
+	<<set _hg to setup.Ghosts.active()>>
+	<<if _hg and _hg.goHomePassage>>
+		@@.movebtn;<<link "Go home" `_hg.goHomePassage`>>
+		<<run setup.Wardrobe.loseAllStolen()>><<run setup.Time.addHours(1)>><</link>>@@
+	<<else>>
+		@@.movebtn;[[Go home|Livingroom][setup.Time.addHours(1)]]@@<br>
+	<</if>>
+<</if>>
+<br>
+<<run setup.HauntedHouses.endHunt()>>
+<<run setup.HauntedHouses.cleanupAfterHunt()>>
+<<done>>
+	<<addclass ".linkselector" "disabled-link">>
+<</done>>
+
+:: HuntOverSanity [noreturn nobr] {"position":"1400,1350","size":"100,100"}
+<<run setup.Hunt.emit(setup.Hunt.Event.HUNT_END_ASSAULTED)>>
+<<set _hg to setup.Ghosts.active()>>
+&emsp;@@.mc-thoughts; Something in you gives. The house tips sideways. The wallpaper goes black before your eyes do.@@<br>
+@@.enterbtn;<<linkreplace "Next">>
+	<<if _hg and _hg.canTentacles>>
+		<<set _sanityTentacleVids to ["mechanics/tentacles/2.0.mp4", "mechanics/tentacles/1.2.mp4", "mechanics/tentacles/2.2.mp4", "mechanics/tentacles/2.3.mp4", "mechanics/tentacles/2.1.mp4"]>>
+		<<randomVideoFromList _sanityTentacleVids>>
+	<<elseif setup.HauntedHouses.isIronclad()>>
+		<<set _check to random(1,3)>>
+		<<video "scenes/prison/sanity" + _check + ".mp4">>
+	<<else>>
+		<<set _check to random(1,7)>>
+		<<video "mechanics/sanityover/" + _check + ".mp4">>
+	<</if>>
+	<br>
+	&emsp;@@.mc-thoughts; You come up in pieces. Something's using you. Then a long stretch of not-you. Then a pulse of pleasure that doesn't belong to anyone and a stretch of dark. Your body does its honest job without you in it. You stop tracking. Then you stop.@@<br>
+
+	<<if setup.Ghosts.hasHighPriestess()>>
+		@@.usebtn; [[Next|$return][setup.Ghosts.consumeHighPriestess()]]@@
+	<<else>>
+		<<run setup.HauntedHouses.cleanupAfterHunt({ loseStolen: true })>>
+		<<include "HuntResidue">>
+		<<done>>
+			<<addclass ".linkselector" "disabled-link">>
+		<</done>>
+		@@.movebtn;[[Next|Sleep]]@@
+
+	<</if>>
+<</linkreplace>>@@
+
+<<run setup.HauntedHouses.endHunt()>>
+
+:: HuntOverTime [nobr] {"position":"1500,1350","size":"100,100"}
+<<run setup.Hunt.emit(setup.Hunt.Event.HUNT_END_GRACEFUL)>>
+<<image "ui/img/dawn.jpg" { width: "100%" }>>
+<br>
+@@.mc-thoughts; Dawn. The house quiets like someone hung up. Time to add up what you have and name it.@@<br>
+<<if setup.HauntedHouses.hasClothesStolen()>>
+	@@.mc-thoughts; And -- right -- your clothes. You sweep the rooms it stashed them in, dress on the move, and don't look back at the door.@@
+	<<if setup.Wardrobe.isPantiesStolen()>><<run setup.Wardrobe.restoreStolenInGroup("panties", "isPantiesStolen")>><</if>>
+	<<if setup.Wardrobe.isBottomStolen()>><<run setup.Wardrobe.restoreStolenInGroup("bottomOuter")>><<run State.variables.isBottomStolen = 0>><<run State.variables.isJeansStolen = 0>><<run State.variables.isShortsStolen = 0>><<run State.variables.isSkirtStolen = 0>><</if>>
+	<<if setup.Wardrobe.isShirtStolen()>><<run setup.Wardrobe.restoreStolenInGroup("tshirt", "isShirtStolen")>><</if>>
+	<<if setup.Wardrobe.isBraStolen()>><<run setup.Wardrobe.restoreStolenInGroup("bra", "isBraStolen")>><</if>>
+	<<run setup.HauntedHouses.clearStolenClothesFlag()>>
+<</if>>
+
+<<run setup.HauntedHouses.endHunt()>>
+<<run setup.HauntedHouses.cleanupAfterHunt()>>
+@@.movebtn;[[Leave|CityMap][setup.Time.addHours(1)]]@@<br>
+<<done>>
+	<<addclass ".linkselector" "disabled-link">>
+<</done>>
+
 :: HuntOverProwl [noreturn nobr] {"position":"2500,1350","size":"100,100"}
-<<run setup.Hunt.emit(setup.Hunt.Event.PROWL_EVENT)>>
+<<run setup.Hunt.emit(setup.Hunt.Event.HUNT_END_ASSAULTED)>>
 <<set _hg to setup.Ghosts.active()>>
 <<if _hg and _hg.canTentacles>>
 	<<set _check to random(0,3)>>
@@ -152,7 +350,7 @@
 
 <<if not setup.Ghosts.hasHighPriestess()>>
 	<<run setup.HuntController.onCaughtCleanup()>>
-	<<include "HuntResidue">>
+	<<run setup.Mc.addPossessionResidue()>>
 	<<done>>
 		<<addclass ".linkselector" "disabled-link">>
 	<</done>>

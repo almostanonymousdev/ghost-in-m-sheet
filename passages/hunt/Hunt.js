@@ -22,7 +22,7 @@
 setup.Hunt = (function () {
 	var Event = Object.freeze({
 		START:            'start',
-		END:              'end',
+		HUNT_END_ASSAULTED: 'hunt-end-assaulted',
 		TICK:             'tick',
 		DRIFT:            'drift',
 		CAUGHT:           'caught',
@@ -53,9 +53,10 @@ setup.Hunt = (function () {
 		HOUSE_ENTER:       'house-enter',
 		/* Player walked out of a hunt without being caught or losing all
 		   sanity (HuntOverTime / HuntOverExhaustion / HuntOverManual).
-		   Distinct from END (which fires on every termination including
-		   caught / possessed / sanity-out) so per-ghost cleanup that
-		   should only run on a peaceful exit can subscribe here. */
+		   Distinct from HUNT_END_ASSAULTED (which fires on every
+		   termination including caught / possessed / sanity-out) so
+		   per-ghost cleanup that should only run on a peaceful exit can
+		   subscribe here. */
 		HUNT_END_GRACEFUL: 'hunt-end-graceful',
 		/* A prowl event resolved against the player (NudityEvent, prayer
 		   miss, freeze, on-tick prowl, hunt-over passages). Ghosts that

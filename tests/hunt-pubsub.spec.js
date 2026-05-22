@@ -98,7 +98,7 @@ test.describe('setup.Hunt pubsub', () => {
       const threw = await page.evaluate(() => {
         const { Hunt } = SugarCube.setup;
         try {
-          Hunt.emit(Hunt.Event.END, { outcome: 'success' });
+          Hunt.emit(Hunt.Event.HUNT_END_ASSAULTED, { outcome: 'success' });
           return false;
         } catch (e) {
           return true;
@@ -112,10 +112,10 @@ test.describe('setup.Hunt pubsub', () => {
         const { Hunt } = SugarCube.setup;
         let starts = 0, ends = 0;
         window.__huntSubs.push(Hunt.on(Hunt.Event.START, () => { starts++; }));
-        window.__huntSubs.push(Hunt.on(Hunt.Event.END, () => { ends++; }));
+        window.__huntSubs.push(Hunt.on(Hunt.Event.HUNT_END_ASSAULTED, () => { ends++; }));
         Hunt.emit(Hunt.Event.START, {});
         Hunt.emit(Hunt.Event.START, {});
-        Hunt.emit(Hunt.Event.END, {});
+        Hunt.emit(Hunt.Event.HUNT_END_ASSAULTED, {});
         return { starts, ends };
       });
       expect(counts).toEqual({ starts: 2, ends: 1 });
@@ -207,7 +207,7 @@ test.describe('setup.Hunt pubsub', () => {
         const E = SugarCube.setup.Hunt.Event;
         return {
           START: E.START,
-          END: E.END,
+          HUNT_END_ASSAULTED: E.HUNT_END_ASSAULTED,
           TICK: E.TICK,
           DRIFT: E.DRIFT,
           CAUGHT: E.CAUGHT,
@@ -337,7 +337,7 @@ test.describe('setup.Hunt pubsub', () => {
       expect(capture.seen[0].roomId).toBe(capture.ghostRoom);
     });
 
-    test('endHunt emits Event.END with success, payout, ghostName, seed', async () => {
+    test('endHunt emits Event.HUNT_END_ASSAULTED with success, payout, ghostName, seed', async () => {
       await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
       const capture = await page.evaluate(() => {
         const HC = SugarCube.setup.HuntController;
@@ -348,7 +348,7 @@ test.describe('setup.Hunt pubsub', () => {
         const seed = run.seed;
         const number = run.number;
         const seen = [];
-        window.__huntSubs.push(Hunt.on(Hunt.Event.END, (ctx) => seen.push(ctx)));
+        window.__huntSubs.push(Hunt.on(Hunt.Event.HUNT_END_ASSAULTED, (ctx) => seen.push(ctx)));
         const summary = HC.endHunt(true);
         return { seen, summary, ghostName, seed, number };
       });
@@ -368,7 +368,7 @@ test.describe('setup.Hunt pubsub', () => {
         HC.startHunt({ seed: 4040 });
         HC.markFailure(HC.FailureReason.CAUGHT);
         const seen = [];
-        window.__huntSubs.push(Hunt.on(Hunt.Event.END, (ctx) => seen.push(ctx)));
+        window.__huntSubs.push(Hunt.on(Hunt.Event.HUNT_END_ASSAULTED, (ctx) => seen.push(ctx)));
         HC.endHunt(false);
         return seen;
       });
@@ -403,7 +403,7 @@ test.describe('setup.Hunt pubsub', () => {
         const ghostName = HC.ghostName();
         const order = [];
         window.__huntSubs.push(Hunt.on(Hunt.Event.POSSESS, (ctx) => order.push({ kind: 'possess', ctx })));
-        window.__huntSubs.push(Hunt.on(Hunt.Event.END, (ctx) => order.push({ kind: 'end', ctx })));
+        window.__huntSubs.push(Hunt.on(Hunt.Event.HUNT_END_ASSAULTED, (ctx) => order.push({ kind: 'end', ctx })));
         const dest = HC.possessionPassage();
         return { order, ghostName, dest };
       });

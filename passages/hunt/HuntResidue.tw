@@ -1,5 +1,4 @@
 :: HuntResidue [noreturn nobr] {"position":"2500,1350","size":"100,100"}
-<<set _residue to setup.Mc.addPossessionResidue()>>
 <<if _residue eq 1>>
     <br>@@.mc-thoughts; You come back to your mind one fragment at a time. There's a thread of something on the inside of your wrist, pencil-line dark. You scrub it with the heel of your hand, but it stays put. You decide it's a paper cut; it couldn't be anything else.@@<br>
 <<elseif _residue eq 3>>
