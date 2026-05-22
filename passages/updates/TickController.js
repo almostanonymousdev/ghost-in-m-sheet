@@ -33,7 +33,11 @@ setup.Tick = (function () {
 	}
 
 	// --- Possession / tarot cleanup ------------------------------
-	function applyPossessionTarotCleanup() {
+	/* mark the tarot deck spent and retire the monkey paw, since
+	the MC drops her cursed items when the ghost takes her body.
+	Graceful hunt-end paths leave the deck/paw in whatever state
+	resetCursedItemState() restored them to.*/
+	function applyPossessionItemCleanup() {
 		if (setup.HuntController.isPossessed()) {
 			setup.HauntedHouses.markTarotSpent();
 			setup.MonkeyPaw.retire();
@@ -143,7 +147,7 @@ setup.Tick = (function () {
 
 		setup.Migrations.ensureZeroDefaults();
 		setup.Migrations.seedTornStyles();
-		applyPossessionTarotCleanup();
+		applyPossessionItemCleanup();
 		setup.Migrations.ensureMcFit();
 		setup.Intro.ensureSensualBodyParts();
 		setup.Intro.clampSensualBodyParts(setup.Intro.currentSensualBodyPart());
@@ -212,7 +216,7 @@ setup.Tick = (function () {
 		tickRescueQuestExpiry: tickRescueQuestExpiry,
 		tickProwlTimer: tickProwlTimer,
 		applyChokerLustFloor: applyChokerLustFloor,
-		applyPossessionTarotCleanup: applyPossessionTarotCleanup,
+		applyPossessionItemCleanup: applyPossessionItemCleanup,
 		activeCompanionShouldLeaveAfterEvent: activeCompanionShouldLeaveAfterEvent,
 		companionAttackActiveHit: companionAttackActiveHit,
 		resolveCompanionAttack: resolveCompanionAttack,

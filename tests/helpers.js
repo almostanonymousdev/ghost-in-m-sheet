@@ -138,7 +138,7 @@ function setVar(page, varName, value) {
 }
 
 /**
- * Set $huntMode (0 = none, 2 = active, 3 = possessed).
+ * Set $huntMode (0 = none, 2 = active, 3 = possessed, 4 = ended).
  * Auto-creates a stub $run for non-zero modes so tests can exercise
  * mode transitions without calling setupHunt first.
  */

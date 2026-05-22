@@ -73,9 +73,17 @@ setup.HauntedHouses = (function () {
 	var api = {
 		OWNED_VARS: OWNED_VARS,
 
-		endHunt: function () {
+		/* Shared hunt-over tail. Commits any temp corruption the run
+		   accumulated and flips $huntMode out of ACTIVE. Defaults to
+		   the ENDED catch-all; pass { possessed: true } from the
+		   Possessed passage to land in POSSESSED instead, which keys
+		   possession-specific cleanup (tarot mark-spent, monkey paw
+		   retire) via setup.Tick.applyPossessionItemCleanup. */
+		endHunt: function (opts) {
+			opts = opts || {};
 			this.commitTempCorruption();
-			setup.HuntController.setHuntMode(setup.HuntController.HuntMode.POSSESSED);
+			var HM = setup.HuntController.HuntMode;
+			setup.HuntController.setHuntMode(opts.possessed ? HM.POSSESSED : HM.ENDED);
 		},
 
 		/* Common end-of-hunt cleanup shared by the hunt lifecycle and

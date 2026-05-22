@@ -63,7 +63,7 @@
 					Corruption is increased (+ <<= _tempCorrGained.toFixed(2)>>) : <<= setup.Mc.corruption().toFixed(2)>><br>
 					<<run setup.Mc.setDirty(1)>>
 					<<run setup.HauntedHouses.resetToolTimers()>>
-					<<run setup.HauntedHouses.endHunt()>>
+					<<run setup.HauntedHouses.endHunt({ possessed: true })>>
 					<<run setup.Wardrobe.loseAllStolen()>>
 
 					<<done>>

@@ -36,11 +36,23 @@ setup.HuntController = (function () {
 	/* Lifecycle stages of the current hunt. Stored as the top-level
 	   $huntMode integer (default 0 = NONE) and accessed through the
 	   huntMode()/setHuntMode() helpers below. Prefer the predicate
-	   helpers (isHunting, isPossessed, …) to comparing raw ints. */
+	   helpers (isHunting, isPossessed, isEnded, …) to comparing
+	   raw ints.
+
+	   ENDED vs POSSESSED: ENDED is the catch-all "the hunt is over"
+	   state — graceful exits (manual leave, exhaustion, sanity-out,
+	   contract close, walk home). POSSESSED is the narrower "the
+	   ghost actually caught and possessed the MC" state, reached only
+	   through the Possessed passage. Post-hunt cleanup that only
+	   applies to genuine possession (e.g. retiring the monkey paw
+	   and marking the tarot deck spent — see
+	   setup.Tick.applyPossessionItemCleanup) keys off POSSESSED;
+	   anything that just needs "the hunt is over" keys off isEnded(). */
 	var HuntMode = Object.freeze({
 		NONE:      0,   // no hunt active
 		ACTIVE:    2,   // player is inside the house, hunt in progress
-		POSSESSED: 3    // hunt ended (manual exit, sanity-over, pills)
+		POSSESSED: 3,   // ghost caught + possessed the MC (Possessed passage)
+		ENDED:     4    // hunt ended without possession (graceful exits)
 	});
 
 	var sv = setup.sv;
@@ -168,8 +180,13 @@ setup.HuntController = (function () {
 	function setHuntMode(mode) { sv().huntMode = mode; }
 	function isHunting()   { return huntMode() === HuntMode.ACTIVE; }
 	function isPossessed() { return huntMode() === HuntMode.POSSESSED; }
+	/* True once the hunt is over for any reason — graceful exit or
+	   genuine possession. Use when the caller only cares that the
+	   run has wrapped; key off isPossessed() for possession-specific
+	   cleanup. */
+	function isEnded()     { var m = huntMode(); return m === HuntMode.ENDED || m === HuntMode.POSSESSED; }
 	/* True for any stage past NONE — "a hunt is in progress or in
-	   its post-mortem (possessed) phase". */
+	   its post-mortem (ended/possessed) phase". */
 	function isAnyMode()   { return huntMode() !== HuntMode.NONE; }
 
 	/* Flip $huntMode to ACTIVE and clear stale per-hunt ability flags
@@ -1012,8 +1029,13 @@ setup.HuntController = (function () {
 		   companion machinery (mini panel, attack roll, leave-after-event)
 		   sees a clean slate. runHuntFailHooks gives the active companion
 		   (if any) a chance to clean up their own state; resetHuntState
-		   then zeroes the shared plan / showComp / isCompChosen flags. */
-		setHuntMode(HuntMode.POSSESSED);
+		   then zeroes the shared plan / showComp / isCompChosen flags.
+
+		   This is the catch-all lifecycle ending (witch contract close,
+		   exhaustion/sanity exits, manual leave). Genuine possession
+		   transitions to POSSESSED separately from the Possessed
+		   passage; see passages/posession/possessed.tw. */
+		setHuntMode(HuntMode.ENDED);
 		if (setup.Companion) {
 			setup.Companion.runHuntFailHooks();
 			setup.Companion.resetHuntState();
@@ -1362,6 +1384,7 @@ setup.HuntController = (function () {
 		setHuntMode: setHuntMode,
 		isHunting: isHunting,
 		isPossessed: isPossessed,
+		isEnded: isEnded,
 		isAnyMode: isAnyMode,
 		activateHunt: activateHunt,
 		seed: seed,

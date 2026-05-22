@@ -106,22 +106,22 @@ test.describe('TickController helpers', () => {
 
   // --- Possession / tarot cleanup -------------------------------
 
-  test('applyPossessionTarotCleanup spends the tarot deck and retires the monkey paw on possession', async ({ game: page }) => {
+  test('applyPossessionItemCleanup spends the tarot deck and retires the monkey paw on possession', async ({ game: page }) => {
     // Drive the ghost into POSSESSED so the cleanup branch fires.
     await page.evaluate(() => {
       SugarCube.setup.Ghosts.cheatStartHunt('Spirit');
       SugarCube.setup.HuntController.setHuntMode(SugarCube.setup.HuntController.HuntMode.POSSESSED);
     });
     await setVar(page, 'tarotCardsStage', 'CARRYING');
-    await page.evaluate(() => SugarCube.setup.Tick.applyPossessionTarotCleanup());
+    await page.evaluate(() => SugarCube.setup.Tick.applyPossessionItemCleanup());
     const SPENT = await callSetup(page, 'setup.TarotStage.SPENT');
     expect(await getVar(page, 'tarotCardsStage')).toBe(SPENT);
   });
 
-  test('applyPossessionTarotCleanup is a no-op when ghost is not possessed', async ({ game: page }) => {
+  test('applyPossessionItemCleanup is a no-op when ghost is not possessed', async ({ game: page }) => {
     await page.evaluate(() => SugarCube.setup.Ghosts.cheatStartHunt('Spirit'));
     const initial = await callSetup(page, 'setup.HauntedHouses.tarotCardsStage()');
-    await page.evaluate(() => SugarCube.setup.Tick.applyPossessionTarotCleanup());
+    await page.evaluate(() => SugarCube.setup.Tick.applyPossessionItemCleanup());
     expect(await callSetup(page, 'setup.HauntedHouses.tarotCardsStage()')).toBe(initial);
   });
 
