@@ -1,10 +1,8 @@
 :: widgetGuiCommon [widget nobr] {"position":"0,1900","size":"100,100"}
 <<script>>
-/* Thin <<addTime>>/<<addLust>> shims. Real logic lives in the owning
-   controllers; these stay only because the widgets pass the Twee
-   numeric arg straight through. */
+/* Thin <<addTime>> shim. Real logic lives in setup.Time; this stays
+   only because the widget passes the Twee numeric arg straight through. */
 setup.addTime = function (mins) { return setup.Time.addMinutes(mins); };
-setup.addLust = function (amount) { setup.Mc.applyLustDelta(amount); };
 
 /* Stat icon ids. Values double as the asset slug under ui/img/<id>.png,
    so the <<statIcon>> widget can resolve the image with no extra map. */
@@ -17,6 +15,69 @@ setup.StatIcon = Object.freeze({
     SANITY:     "sanity",
     UVL:        "uvl"
 });
+
+/* Single source of truth for stat-delta widgets (<<addLust>>,
+   <<addSanity>>, <<addEnergy>>, <<addFit>>). Each row pairs a stat
+   name with the controller mutator, the HUD meter id, and a
+   fill-ratio thunk. Optional hooks: outcomeGoto(outcome) returns a
+   passage name to <<goto>> (sanity-collapse → hunt-over), and
+   outcomeMessages(outcome) returns a list of {style, icon?, text}
+   rows that <<addStat>> renders inline (fitness prose). The generic
+   <<addStat>> widget reads from this table, the named widgets are
+   one-line forwarders, and adding a new stat widget is a row +
+   a forwarder. */
+setup.STAT_CONFIG = {
+    lust: {
+        meter: 'mclust',
+        pct:   function () { return setup.Mc.lustPct(); },
+        apply: function (d) { return setup.Mc.addLust(d); }
+    },
+    sanity: {
+        meter: 'sanity',
+        pct:   function () { return setup.Mc.sanityPct(); },
+        apply: function (d) { return setup.Mc.addSanity(d); },
+        outcomeGoto: function (outcome) {
+            if (outcome === setup.SanityDeltaResult.COLLAPSED && setup.HuntController.isActive()) {
+                return setup.HuntController.huntOverPassage('sanity');
+            }
+            return null;
+        }
+    },
+    energy: {
+        meter: 'energy',
+        pct:   function () { return setup.Mc.energyPct(); },
+        apply: function (d) { return setup.Mc.addEnergy(d); }
+    },
+    fit: {
+        meter: 'energy',
+        pct:   function () { return setup.Mc.energyPct(); },
+        apply: function (d) { return setup.Mc.addFit(d); },
+        /* Returns an array of {style, icon?, text} message rows. The
+           addStat widget renders each: with an icon, prepends "Your"
+           plus the icon; otherwise just the text. Macro markup is
+           kept out of JS strings because the IDE linter parses .tw
+           files literally and chokes on macro tokens inside strings. */
+        outcomeMessages: function (o) {
+            var I = setup.StatIcon;
+            var msgs = [];
+            if (o.beautyIncrease > 0) {
+                msgs.push({ style: 'mc-speech', icon: I.BEAUTY, text: 'has improved (+1): ' + o.beauty + ' now!' });
+            }
+            if (o.energyMaxDelta > 0 && !o.hitEnergyCap) {
+                msgs.push({ style: 'mc-speech', icon: I.ENERGY, text: 'has increased (+' + o.energyMaxDelta + '): ' + o.energyMax + ' now!' });
+            }
+            if (o.hitEnergyCap) {
+                msgs.push({ style: 'mc-speech', icon: I.ENERGY, text: 'has reached the maximum of 20!' });
+            }
+            if (o.reachedFitCap) {
+                msgs.push({ style: 'mc-thoughts', text: 'Your fitness level is perfect - 100' });
+            } else {
+                msgs.push({ style: 'mc-thoughts', text: 'Your fitness level has improved (+1): ' + o.fit + ' now!' });
+            }
+            return msgs;
+        }
+    }
+};
 <</script>>
 
 <<widget "statIcon">>
@@ -42,56 +103,35 @@ setup.StatIcon = Object.freeze({
 	<</done>>
 <</widget>>
 
-<<widget "addLust">>
-	<<set _amount to _args[0]>>
-	<<run setup.addLust(_amount)>>
-	<<updatemeter 'mclust' `setup.Mc.lust() / 100`>>
+<<widget "addStat">>
+	<<set _statCfg to setup.STAT_CONFIG[_args[0]]>>
+	<<set _statOutcome to _statCfg.apply(_args[1])>>
+	<<updatemeter _statCfg.meter _statCfg.pct()>>
+	<<if _statCfg.outcomeGoto>>
+		<<set _statTarget to _statCfg.outcomeGoto(_statOutcome)>>
+		<<if _statTarget>><<goto _statTarget>><</if>>
+	<</if>>
+	<<if _statCfg.outcomeMessages>>
+		<<for _statMsg range _statCfg.outcomeMessages(_statOutcome)>>
+			<<if _statMsg.icon>>
+				<span @class="_statMsg.style"><span class="evidenceText">Your <<statIcon _statMsg.icon>> <<= _statMsg.text>></span></span><br>
+			<<else>>
+				<span @class="_statMsg.style"><span class="evidenceText"><<= _statMsg.text>></span></span><br>
+			<</if>>
+		<</for>>
+	<</if>>
 <</widget>>
 
-<<widget "addLustTits">>
-	<<run setup.Mc.addLustByPart("tits", _args[0])>>
-	<<updatemeter 'mclust' `setup.Mc.lust() / 100`>>
-<</widget>>
+<<widget "addLust">><<addStat 'lust' _args[0]>><</widget>>
 
-<<widget "addLustPussy">>
-	<<run setup.Mc.addLustByPart("pussy", _args[0])>>
-	<<updatemeter 'mclust' `setup.Mc.lust() / 100`>>
-<</widget>>
+<<widget "addSanity">><<addStat 'sanity' _args[0]>><</widget>>
+
+<<widget "addEnergy">><<addStat 'energy' _args[0]>><</widget>>
 
 <<widget "addLustByPart">>
 	<<set _lustBase to _args[0] !== undefined ? _args[0] : 2>>
 	<<run setup.Mc.addLustByPart(setup.Events.currentArgForRandomizer(), _lustBase)>>
-	<<updatemeter 'mclust' `setup.Mc.lust() / 100`>>
+	<<updatemeter setup.STAT_CONFIG.lust.meter setup.STAT_CONFIG.lust.pct()>>
 <</widget>>
 
-<<widget "addSanity">>
-	<<set _outcome to setup.Mc.applySanityDelta(_args[0])>>
-	<<updatemeter 'sanity' `setup.Mc.sanity() / setup.Mc.sanityMax()`>>
-	<<if _outcome is setup.SanityDeltaResult.COLLAPSED and setup.HuntController.isActive()>>
-		<<goto setup.HuntController.huntOverPassage("sanity")>>
-	<</if>>
-<</widget>>
-
-<<widget "addEnergy">>
-	<<run setup.Mc.applyEnergyDelta(_args[0])>>
-	<<updatemeter 'energy' `setup.Mc.energy() / setup.Mc.energyMax()`>>
-<</widget>>
-
-<<widget "addFit">>
-	<<set _delta to _args[0]>>
-	<<set _fitDelta to setup.Mc.applyFitnessDelta(_delta)>>
-	<<if _fitDelta.beautyIncrease gt 0>>
-		@@.mc-speech; <span class="evidenceText">Your <<statIcon setup.StatIcon.BEAUTY>> has improved (+1): <<= _fitDelta.beauty>> now!</span>@@<br>
-	<</if>>
-	<<if _fitDelta.energyMaxDelta gt 0 and not _fitDelta.hitEnergyCap>>
-		@@.mc-speech; <span class="evidenceText">Your <<statIcon setup.StatIcon.ENERGY>> has increased (+<<= _fitDelta.energyMaxDelta>>): <<= _fitDelta.energyMax>> now!</span>@@<br>
-	<</if>>
-	<<if _fitDelta.hitEnergyCap>>
-		@@.mc-speech; <span class="evidenceText">Your <<statIcon setup.StatIcon.ENERGY>> has reached the maximum of 20!</span>@@<br>
-	<</if>>
-	<<if _fitDelta.reachedFitCap>>
-		@@.mc-thoughts; <span class="evidenceText">Your fitness level is perfect - 100</span>@@
-	<<else>>
-		@@.mc-thoughts; <span class="evidenceText">Your fitness level has improved (+1): <<= _fitDelta.fit>> now!</span>@@
-	<</if>>
-<</widget>>
+<<widget "addFit">><<addStat 'fit' _args[0]>><</widget>>

@@ -518,18 +518,22 @@ sugarcube-2:
         .linkselector once the surrounding passage finishes rendering
         (<<done>> + addclass disabled-link). Used to lock click targets after
         a one-shot interaction. No args.
-    addLustPussy:
-      name: addLustPussy
     addLustByPart:
       name: addLustByPart
-    addLustTits:
-      name: addLustTits
     addSanity:
       name: addSanity
     addEnergy:
       name: addEnergy
     addFit:
       name: addFit
+    addStat:
+      name: addStat
+      description: Generic stat-delta widget. Args - stat name
+        ("lust" / "sanity" / "energy"), numeric delta. Routes through
+        setup.STAT_CONFIG to apply the mutation and refresh the matching
+        HUD meter. Named widgets (<<addLust>>, <<addSanity>>, <<addEnergy>>)
+        forward to this; call it directly only when the stat name is
+        dynamic.
     deliveryTrackCorrect:
       name: deliveryTrackCorrect
     deliveryTipCheck:

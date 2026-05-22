@@ -292,7 +292,6 @@ setup.Delivery = (function () {
 
 		// --- Manager event lust snippet (previously inline) -------
 		clearLust: function () { setup.Mc.setLust(0); },
-		addLust:   function (n) { setup.addLust(n); },
 
 		// --- Shift initialization (WorkDelivery passage) --------
 		// Rolls the 3 randomized orders + optional special "rush" order

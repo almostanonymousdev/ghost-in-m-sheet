@@ -244,7 +244,7 @@ setup.HauntConditions = (function () {
 		var snap = snapshot();
 
 		if (snap.sanityPerStep !== 0) {
-			if (setup.Mc.applySanityDelta(snap.sanityPerStep) == setup.SanityDeltaResult.COLLAPSED) {
+			if (setup.Mc.addSanity(snap.sanityPerStep) == setup.SanityDeltaResult.COLLAPSED) {
 				V.sanityCollapse = 1;
 			}
 		}
@@ -256,10 +256,10 @@ setup.HauntConditions = (function () {
 			if (baitAtCap) {
 				V.baitOrgasmPending = 1;
 			}
-			setup.Mc.applyLustDelta(snap.lustPerStep);
+			setup.Mc.addLust(snap.lustPerStep);
 		}
 		if (snap.energyPerStep !== 0) {
-			setup.Mc.applyEnergyDelta(snap.energyPerStep);
+			setup.Mc.addEnergy(snap.energyPerStep);
 			/* Per-step drain mirrors HauntConditions.removeEnergy: zero
 			   energy stamps V.exhausted so includeTimeEvent* widgets can
 			   route the next nav tick to HuntOverExhaustion. */
@@ -324,7 +324,7 @@ setup.HauntConditions = (function () {
 		if (!mc) return true;
 		mc.lust = 0;
 		setup.Mc.clampLust();
-		var outcome = setup.Mc.applySanityDelta(-BAIT_ORGASM_SANITY);
+		var outcome = setup.Mc.addSanity(-BAIT_ORGASM_SANITY);
 		if (outcome === setup.SanityDeltaResult.COLLAPSED) {
 			V.sanityCollapse = 1;
 		}
@@ -354,7 +354,7 @@ setup.HauntConditions = (function () {
 		V.baitActive = 1;
 		V.baitStepsRemain = BAIT_STEPS;
 		var atCap = mc.lust >= 100;
-		setup.Mc.applyLustDelta(BAIT_INITIAL_LUST);
+		setup.Mc.addLust(BAIT_INITIAL_LUST);
 		if (atCap) {
 			V.baitOrgasmPending = 1;
 		}

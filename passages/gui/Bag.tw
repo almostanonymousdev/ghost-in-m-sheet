@@ -22,7 +22,7 @@
 <<if setup.Ghosts.isHunting()>>
 @@.usebtn;<<link "Use sanity pills" "Bag">>
 <<run setup.Mc.useSanityPill()>>
-<<run setup.Mc.applySanityDelta(30)>>
+<<run setup.Mc.addSanity(30)>>
 <</link>>@@
 <</if>>
 <<else>>You don't have sanity pills

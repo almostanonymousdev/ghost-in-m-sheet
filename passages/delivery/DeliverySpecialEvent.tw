@@ -46,7 +46,7 @@
 @@.backbtn;[[Back|DeliveryMap]]@@
 
 :: DeliverySpecialUnsafe [event nobr] {"position":"1500,1700","size":"100,100"}
-<<run setup.Delivery.addLust(45)>>
+<<run setup.Mc.addLust(45)>>
 <<image "scenes/deliveryhub/specialevent/2.jpg" { style: "max-width: 100%; height: auto; display: block; margin: 0 auto;" }>>
 @@.mc-thoughts; He locks the door behind me. Shit.@@<br>
 @@.notmc-speech; You want to get paid? Earn it.@@<br>

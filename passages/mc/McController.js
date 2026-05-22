@@ -9,7 +9,7 @@
  * through setup.Mc via its semantic accessors
  * (setup.Mc.money(), setup.Mc.setMoney(v), setup.Mc.addMoney(n)).
  */
-/* Discrete results returned by setup.Mc.applySanityDelta. The
+/* Discrete results returned by setup.Mc.addSanity. The
    addSanity widget compares against these to decide whether to fire
    the HuntOverSanity transition. */
 setup.SanityDeltaResult = Object.freeze({
@@ -232,7 +232,7 @@ setup.Mc = (function () {
 		// setup.SanityDeltaResult: COLLAPSED if sanity hit 0 (caller
 		// should jump to HuntOverSanity), CLAMPED if clamped to max,
 		// NORMAL otherwise.
-		applySanityDelta: function (delta) {
+		addSanity: function (delta) {
 			var R = setup.SanityDeltaResult;
 			var m = sv().mc;
 			m.sanity += delta;
@@ -248,7 +248,7 @@ setup.Mc = (function () {
 		},
 
 		// --- addEnergy widget core --------------------------------
-		applyEnergyDelta: function (delta) {
+		addEnergy: function (delta) {
 			var m = sv().mc;
 			m.energy += delta;
 			if (m.energy >= m.energyMax) { m.energy = m.energyMax; }
@@ -256,7 +256,7 @@ setup.Mc = (function () {
 		},
 
 		// --- addLust widget core --------------------------------
-		applyLustDelta: function (delta) {
+		addLust: function (delta) {
 			var m = sv().mc;
 			m.lust += delta;
 			if (m.lust >= m.lustMax) { m.lust = m.lustMax; }
@@ -277,7 +277,7 @@ setup.Mc = (function () {
 		// --- addFit widget core -----------------------------------
 		// Same shape as setup.Gym.applyFitnessGain, but the gym controller
 		// imports this method so both widgets share logic.
-		applyFitnessDelta: function (delta) {
+		addFit: function (delta) {
 			var m = sv().mc;
 			var previousFit = m.fit;
 			m.fit += delta;
@@ -317,71 +317,61 @@ setup.Mc = (function () {
 		// --- addLustByPart core -----------------------------------
 		// Escalates the chosen body part's sensitivity and feeds
 		// the (base + new sens) total into setup.Mc.addLust.
+		//
+		// Per-part rules are a table: each row lists the sensitivity
+		// keys to bump (and which piercing-sens var, if any, adds to
+		// the bump) and which key's post-bump value is read back to
+		// scale the lust delta.
+		//
+		// Tuning sensitivity formula: SENS_MULT should be between 0.9
+		// and 0.1 for square-root behavior. With SENS_BASE = 0.2 and
+		// SENS_MULT = 0.99 behavior is almost linear — adding 0.2 each
+		// time for the first ~50 calls, tapering off near 20.
 		addLustByPart: function (part, base) {
+			var SENS_BASE = 0.2;
+			var SENS_MULT = 0.99;
+			var BODY_PART_RULES = {
+				brain:  { bump: [['brain']],                                                             readback: 'brain'  },
+				tits:   { bump: [['tits',   'piercingTitsAddSens']],                                     readback: 'tits'   },
+				ass:    { bump: [['ass']],                                                               readback: 'ass'    },
+				bottom: { bump: [['bottom'], ['ass'], ['pussy', 'piercingPussyAddSens'], ['anal']],      readback: 'bottom' },
+				mouth:  { bump: [['mouth',  'piercingTongueAddSens']],                                   readback: 'mouth'  },
+				pussy:  { bump: [['pussy',  'piercingPussyAddSens']],                                    readback: 'pussy'  },
+				anal:   { bump: [['anal']],                                                              readback: 'anal'   }
+			};
+
 			var sv = State.variables;
+			var rule = BODY_PART_RULES[part];
+			if (!rule) return;
+
 			var lustBase = (base !== undefined) ? base : 2;
 			var bp = sv.sensualBodyPart || {};
 
-			// Tuning sensitivity formula: sensMult should be between 0.9 and 0.1 for square root function behavior.
-			// With sensBase = 0.2 and sensMult = 0.99 behavior is almost linear:
-			//  adding 0.2 each time for the first 50 or so calls, tapering off as sensitivity nears 20.
-			var sensBase = 0.2;
-			var sensMult = 0.99;
-
-			function bump(key, extra) {
-				extra = extra || 0;
-				bp[key] = sensMult * (bp[key] || 0) + sensBase + extra;
-			}
-			switch (part) {
-				case 'brain':
-					bump('brain');
-					setup.Mc.applyLustDelta(lustBase + bp.brain);
-					break;
-				case 'tits':
-					bump('tits', sv.piercingTitsAddSens || 0);
-					setup.Mc.applyLustDelta(lustBase + bp.tits);
-					break;
-				case 'ass':
-					bump('ass');
-					setup.Mc.applyLustDelta(lustBase + bp.ass);
-					break;
-				case 'bottom':
-					bump('bottom');
-					bump('ass');
-					bump('pussy', sv.piercingPussyAddSens || 0);
-					bump('anal');
-					setup.Mc.applyLustDelta(lustBase + bp.bottom);
-					break;
-				case 'mouth':
-					bump('mouth', sv.piercingTongueAddSens || 0);
-					setup.Mc.applyLustDelta(lustBase + bp.mouth);
-					break;
-				case 'pussy':
-					bump('pussy', sv.piercingPussyAddSens || 0);
-					setup.Mc.applyLustDelta(lustBase + bp.pussy);
-					break;
-				case 'anal':
-					bump('anal');
-					setup.Mc.applyLustDelta(lustBase + bp.anal);
-					break;
-			}
+			rule.bump.forEach(function (row) {
+				var key = row[0];
+				var extra = row[1] ? (sv[row[1]] || 0) : 0;
+				bp[key] = SENS_MULT * (bp[key] || 0) + SENS_BASE + extra;
+			});
+			setup.Mc.addLust(lustBase + bp[rule.readback]);
 		}
 	};
 
 	/* Trivial $mc.<field> accessors. Each row gets get/set/add/remove
-	   with the conventional names; pass `false` to suppress one. */
+	   with the conventional names; pass `false` to suppress one.
+	   lust/sanity/energy/fit suppress the auto-generated add — the
+	   clamped/cascade versions defined manually above are canonical. */
 	setup.defineAccessors(api, function () { return sv().mc; }, [
 		'money',
-		'sanity',
+		{ name: 'sanity', add: false },
 		'sanityMax',
 		'sanityUp',
-		'energy',
+		{ name: 'energy', add: false },
 		'energyMax',
 		'energyPoints',
 		'corruption',
-		'lust',
+		{ name: 'lust', add: false },
 		'name',
-		'fit',
+		{ name: 'fit', add: false },
 		'lvl',
 		'exp',
 		'exhibitionism',
