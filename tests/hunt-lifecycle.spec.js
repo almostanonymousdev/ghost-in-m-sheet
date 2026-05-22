@@ -196,6 +196,62 @@ test.describe('Hunt lifecycle helpers', () => {
     expect(await callSetup(page, 'setup.HuntController.ectoplasm()')).toBe(0);
   });
 
+  /* If a companion accompanied the MC into the hunt their stat row
+     can carry leftover lust / drained sanity / a worked-up attack
+     chance. Hunt cleanup resets those per-hunt fields so the next
+     contract starts the companion at full sanity / no lust regardless
+     of whether the player re-picks them. Solo-hunt flags live on a
+     separate timeline and must stay untouched. */
+  test('endHunt resets the active companion\'s per-hunt stats', async () => {
+    await page.evaluate(() => SugarCube.setup.Companion.pick('Brook'));
+    await page.evaluate(() => {
+      const stats = SugarCube.State.variables.brook;
+      stats.sanity = 20;
+      stats.lust = 80;
+      stats.chanceToAttack = 75;
+    });
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
+
+    await page.evaluate(() => SugarCube.setup.HuntController.endHunt(true));
+
+    expect(await getVar(page, 'brook.sanity')).toBe(100);
+    expect(await getVar(page, 'brook.lust')).toBe(0);
+    expect(await getVar(page, 'brook.chanceToAttack')).toBe(25);
+  });
+
+  test('endHunt does not touch the active companion\'s solo-hunt flags', async () => {
+    await page.evaluate(() => SugarCube.setup.Companion.pick('Brook'));
+    await page.evaluate(() => {
+      const stats = SugarCube.State.variables.brook;
+      stats.goingSolo = 1;
+      stats.chooseOwaissa = 1;
+      stats.chooseElm = 0;
+      stats.paidForSolo = 1;
+    });
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
+
+    await page.evaluate(() => SugarCube.setup.HuntController.endHunt(false));
+
+    expect(await getVar(page, 'brook.goingSolo')).toBe(1);
+    expect(await getVar(page, 'brook.chooseOwaissa')).toBe(1);
+    expect(await getVar(page, 'brook.paidForSolo')).toBe(1);
+  });
+
+  test('endHunt with no companion picked leaves unrelated companion stats alone', async () => {
+    // Brook is mid-recovery on her own time -- player never picked her
+    await page.evaluate(() => {
+      const stats = SugarCube.State.variables.brook;
+      stats.sanity = 40;
+      stats.lust = 30;
+    });
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
+
+    await page.evaluate(() => SugarCube.setup.HuntController.endHunt(true));
+
+    expect(await getVar(page, 'brook.sanity')).toBe(40);
+    expect(await getVar(page, 'brook.lust')).toBe(30);
+  });
+
   /* HuntSummary reads summary.exitPassage to wire its Continue link;
      each FailureReason routes to its matching HuntOver* screen and the
      remaining outcomes fall back to CityMap. */

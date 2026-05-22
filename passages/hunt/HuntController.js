@@ -142,6 +142,7 @@ setup.HuntController = (function () {
 		}
 		if (setup.Companion) {
 			if (typeof setup.Companion.runHuntFailHooks === 'function') setup.Companion.runHuntFailHooks();
+			if (typeof setup.Companion.resetActiveCompanionStats === 'function') setup.Companion.resetActiveCompanionStats();
 			if (typeof setup.Companion.resetHuntState === 'function') setup.Companion.resetHuntState();
 		}
 		/* Pair with freezeBeauty() in startHunt. No-op when nothing is

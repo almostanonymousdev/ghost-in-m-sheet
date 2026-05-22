@@ -152,6 +152,38 @@ name: function () { var c = this.activeState(); return c && c.name; },
 			var c = this.stateFor(name);
 			if (c) c.chosen = 1;
 		},
+		// Reset the per-hunt scratch fields (sanity, lust,
+		// chanceToAttack + trans narrative flags) on the named
+		// companion's backing stat row. Shared between pick() and
+		// hunt cleanup so the companion always ends a hunt at full
+		// sanity / no lust regardless of whether the player re-picks
+		// them next run. Solo-hunt flags (goingSolo/chooseOwaissa/
+		// chooseElm) live on a separate timeline -- the companion's
+		// own solo run isn't bounded by the player's hunt -- so this
+		// helper leaves them alone; pick() clears them itself when
+		// rolling a fresh selection.
+		resetCompanionStats: function (name) {
+			var c = getByName(name);
+			var stats = this.stateFor(name);
+			if (!c || !stats) return false;
+			stats.sanity         = 100;
+			stats.lust           = 0;
+			stats.chanceToAttack = 25;
+			if (c.isTrans) {
+				var s = State.variables;
+				s.transStart   = 0;
+				s.transPicture = 0;
+				delete s.transFirstStage;
+			}
+			return true;
+		},
+		// Hunt-cleanup hook: reset the currently-active companion's
+		// per-hunt stats. No-op when no companion is on the marker.
+		resetActiveCompanionStats: function () {
+			var marker = State.variables.companion;
+			if (!marker || !marker.name) return false;
+			return this.resetCompanionStats(marker.name);
+		},
 		// Stamp the $companion marker onto `name` and reset the
 		// per-hunt scratch fields (sanity, lust, chanceToAttack +
 		// any solo/trans bookkeeping) on the backing stat object so
@@ -165,14 +197,8 @@ name: function () { var c = this.activeState(); return c && c.name; },
 			s.companion = { name: c.name };
 			this.selectCompanion(c.name);
 			s.chosenPlan = 0;
-			stats.sanity         = 100;
-			stats.lust           = 0;
-			stats.chanceToAttack = 25;
-			if (c.isTrans) {
-				s.transStart   = 0;
-				s.transPicture = 0;
-				delete s.transFirstStage;
-			} else {
+			this.resetCompanionStats(c.name);
+			if (!c.isTrans) {
 				stats.goingSolo     = 0;
 				stats.chooseOwaissa = 0;
 				stats.chooseElm     = 0;
