@@ -127,7 +127,7 @@
 		<</link>>@@
 	<</if>>
 <<else>>
-	<<set _hg to setup.Ghosts.active()>>
+	<<set _hg to setup.HuntController.activeGhost()>>
 	<<if _hg and _hg.goHomePassage>>
 		@@.movebtn;<<link "Go home" `_hg.goHomePassage`>>
 		<<run setup.Wardrobe.loseAllStolen()>><<run setup.Time.addHours(1)>><</link>>@@
@@ -144,7 +144,7 @@
 
 :: HuntOverSanity [noreturn nobr] {"position":"1400,1350","size":"100,100"}
 <<run setup.Hunt.emit(setup.Hunt.Event.HUNT_END_ASSAULTED)>>
-<<set _hg to setup.Ghosts.active()>>
+<<set _hg to setup.HuntController.activeGhost()>>
 &emsp;@@.mc-thoughts; Something in you gives. The house tips sideways. The wallpaper goes black before your eyes do.@@<br>
 @@.enterbtn;<<linkreplace "Next">>
 	<<if _hg and _hg.canTentacles>>
@@ -198,7 +198,7 @@
 
 :: HuntOverProwl [noreturn nobr] {"position":"2500,1350","size":"100,100"}
 <<run setup.Hunt.emit(setup.Hunt.Event.HUNT_END_ASSAULTED)>>
-<<set _hg to setup.Ghosts.active()>>
+<<set _hg to setup.HuntController.activeGhost()>>
 <<if _hg and _hg.canTentacles>>
 	<<set _check to random(0,3)>>
 	@@.mc-thoughts; For a moment, you black out. When you come to, a strange, unsettling feeling lingers -- like someone is close by. Suddenly, movements appear from the shadows, and you notice tentacles. They slowly coil around you, sliding across your skin. You try to resist, but their touches grow more insistent, keeping you captive.@@

@@ -173,7 +173,7 @@ test.describe('E2E: Hunt Outside menu', () => {
     // player knows what they missed.
     const trueLabels = await callSetup(
       page,
-      'setup.Ghosts.active().evidenceLabels()'
+      'setup.HuntController.activeGhost().evidenceLabels()'
     );
     await expect(
       page.locator('.passage').getByText(new RegExp(ghost, 'i'))

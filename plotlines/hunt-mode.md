@@ -204,8 +204,8 @@ the current run state:
   `previous(1)` is `HuntRun`, so the tarot deck and monkey paw
   don't appear in Bag from the city or hunt lobby.
 
-`setup.Ghosts.active()` and `setup.isGhostHere()` are thin
-adapters that delegate to the facade. The hunt's ghost is rolled
+`setup.HuntController.activeGhost()` and `setup.isGhostHere()` are
+thin adapters that delegate to the facade. The hunt's ghost is rolled
 in `setup.HuntController.startHunt()` from a seed-derived index into
 `setup.Ghosts.names()` and stamped onto `$run.ghostName`, so the
 same seed reproduces the same ghost.

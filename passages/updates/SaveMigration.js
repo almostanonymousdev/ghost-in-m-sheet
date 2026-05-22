@@ -306,7 +306,7 @@
 		// $huntMode, and the per-hunt ghost name / real-name (Mimic
 		// disguise) / evidence / trapped-flag move into the $run
 		// bundle (ghostName / disguiseName / evidence / trapped),
-		// which setup.Ghosts.active() now reads through. Legacy mode
+		// which setup.HuntController.activeGhost() now reads through. Legacy mode
 		// 1 (CONTRACT) is dropped — contracts no longer gate hunts,
 		// so any pre-entry contract collapses to "no hunt".
 		var legacyName = undefined;

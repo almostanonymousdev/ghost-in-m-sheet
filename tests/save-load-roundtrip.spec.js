@@ -141,9 +141,9 @@ test.describe('Save/load round-trip', () => {
     // The codebase deliberately stores hunt state as plain serializable
     // data ($run.ghostName, $run.evidence ids, $huntMode integer, ...)
     // and projects to a Ghost instance on demand via
-    // setup.Ghosts.active(). That sidesteps class-rehydration entirely.
+    // setup.HuntController.activeGhost(). That sidesteps class-rehydration entirely.
     // The contract this test pins: after round-trip,
-    // setup.Ghosts.active() returns a working Ghost instance with the
+    // setup.HuntController.activeGhost() returns a working Ghost instance with the
     // same observable behaviour.
     await goToPassage(page, 'CityMap');
     await page.evaluate(() => {
@@ -161,7 +161,7 @@ test.describe('Save/load round-trip', () => {
     // entries from setup.Ghosts.list() (which are constructed via
     // `new Ghost(...)` at module load).
     const live = await page.evaluate(() => {
-      const g = SugarCube.setup.Ghosts.active();
+      const g = SugarCube.setup.HuntController.activeGhost();
       const refProto = Object.getPrototypeOf(SugarCube.setup.Ghosts.list()[0]);
       return {
         name: g && g.name,
@@ -184,7 +184,7 @@ test.describe('Save/load round-trip', () => {
     await page.evaluate((b) => SugarCube.Save.deserialize(b), blob);
 
     const restored = await page.evaluate(() => {
-      const g = SugarCube.setup.Ghosts.active();
+      const g = SugarCube.setup.HuntController.activeGhost();
       const refProto = Object.getPrototypeOf(SugarCube.setup.Ghosts.list()[0]);
       return {
         name: g && g.name,

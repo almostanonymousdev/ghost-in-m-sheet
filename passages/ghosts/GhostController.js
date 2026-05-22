@@ -470,20 +470,12 @@
             return GHOSTS;
         },
 
-        /* The ghost currently being hunted. Returns a Ghost instance
-           keyed off $run.ghostName via setup.HuntController, with the
-           per-run evidence override (Fog of War etc.) applied. null
-           when no hunt is active. Cached across calls; see activeCache. */
-        active: function () {
-            return setup.HuntController.activeGhost();
-        },
-
         /* Internal: hand back the catalogue Ghost named `name`. Used by
-           HuntController for hunts. When the active hunt
-           carries an `evidence` override (e.g. Fog of War splices one
-           id at run start), wrap the catalogue entry so the rehydrated
-           evidence list reflects the override without mutating the
-           shared catalogue object. */
+           setup.HuntController.activeGhost() to resolve the ghost for
+           the active hunt. When the active hunt carries an `evidence`
+           override (e.g. Fog of War splices one id at run start), wrap
+           the catalogue entry so the rehydrated evidence list reflects
+           the override without mutating the shared catalogue object. */
         _activeFromCatalogue: function (name) {
             if (!name) return null;
             var override = (setup.HuntController && setup.HuntController.runEvidence)

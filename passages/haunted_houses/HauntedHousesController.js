@@ -150,7 +150,7 @@ setup.HauntedHouses = (function () {
 			if (setup.Ghosts.elapsedTimeProwl() < setup.Ghosts.prowlTimeRemain()) return false;
 			var threshold = 6 + setup.HauntConditions.snapshot().prowlChanceBonus;
 			if (Math.floor(Math.random() * 101) > threshold) return false;
-			var g = setup.Ghosts.active();
+			var g = setup.HuntController.activeGhost();
 			return !!(g && g.canProwl({ sanity: setup.Mc.sanity(), lust: setup.Mc.lust() }));
 		},
 		/* :: StealClothesEvent entry: rolls the steal chance and gates

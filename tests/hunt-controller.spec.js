@@ -68,7 +68,7 @@ test.describe('HuntController', () => {
     const huntGhostName = await callSetup(page, 'setup.HuntController.ghostName()');
     expect(huntGhostName).toBeTruthy();
     expect(await callSetup(page, 'setup.HuntController.activeGhost().name')).toBe(huntGhostName);
-    expect(await callSetup(page, 'setup.Ghosts.active().name')).toBe(huntGhostName);
+    expect(await callSetup(page, 'setup.HuntController.activeGhost().name')).toBe(huntGhostName);
   });
 
   test('isHuntActive() requires the player to be on HuntRun', async () => {

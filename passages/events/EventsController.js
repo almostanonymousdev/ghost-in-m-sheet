@@ -159,7 +159,7 @@ setup.Events = (function () {
 		   dark — otherwise the player saw no in-world cause for the
 		   reading and the window appeared to open on its own. */
 		maybeTurnOffLights: function () {
-			var g = setup.Ghosts.active();
+			var g = setup.HuntController.activeGhost();
 			if (!g || !g.canTurnOffLights) return null;
 			if (Math.floor(Math.random() * 65) !== 0) return null;
 			var dest = this.turnOffLightHere();
@@ -455,7 +455,7 @@ setup.Events = (function () {
 		   videoListForEvent() so the clothing-aware resolvers stay
 		   the single source. */
 		rollRandomEvent: function () {
-			var g           = setup.Ghosts.active();
+			var g           = setup.HuntController.activeGhost();
 			var chance      = Math.floor(Math.random() * 101);
 			var bansheeRoll = 1 + Math.floor(Math.random() * 10);
 			var ctRoll      = 1 + Math.floor(Math.random() * 10);
@@ -486,7 +486,7 @@ setup.Events = (function () {
 		   EventMC). Encapsulates the entire flow that SaveEventPassage
 		   used to inline. */
 		rollSaveEvent: function () {
-			var g = setup.Ghosts.active();
+			var g = setup.HuntController.activeGhost();
 			this.setDecreasingSanity(
 				g && g.invertedSanityStages
 					? { stage1: 9, stage2: 7, stage3: 5, stage4: 3 }
@@ -532,7 +532,7 @@ setup.Events = (function () {
 
 		// --- Ghost sanity-event decreased amount -----------------
 		rollGhostSanityEventDecreased: function () {
-			var g = setup.Ghosts.active();
+			var g = setup.HuntController.activeGhost();
 			sv().ghostSanityEventDecreased = g ? g.rollEventSanityLoss() : 0;
 		},
 		ghostSanityEventDecreased: function () { return sv().ghostSanityEventDecreased; },

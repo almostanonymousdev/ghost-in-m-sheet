@@ -47,7 +47,7 @@
 	<<set _guess to setup.Ghosts.ghostTypeSelected()>>
 	<<set _trueName to setup.HuntController.ghostName()>>
 	<<set _correct to _guess eq _trueName>>
-	<<set _trueGhost to setup.Ghosts.active()>>
+	<<set _trueGhost to setup.HuntController.activeGhost()>>
 	@@.mc-speech; <<= _guess>>.@@<br>
 	<<video "characters/witch/witch-result.mp4" { controls: false, loop: false }>>
 	@@.notmc-speech; Let's see. Give me a minute.@@<br>

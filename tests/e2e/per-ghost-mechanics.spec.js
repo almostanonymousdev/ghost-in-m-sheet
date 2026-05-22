@@ -105,7 +105,7 @@ test.describe('Per-ghost mechanics', () => {
 
   test('Cthulion: cursedActivityVideos pool is exposed on the active ghost', async ({ game: page }) => {
     await setupHunt(page, 'Cthulion');
-    const videos = await page.evaluate(() => SugarCube.setup.Ghosts.active().cursedActivityVideos);
+    const videos = await page.evaluate(() => SugarCube.setup.HuntController.activeGhost().cursedActivityVideos);
     expect(Array.isArray(videos)).toBe(true);
     expect(videos.length).toBeGreaterThan(0);
     videos.forEach((v) => expect(v).toMatch(/^characters\/ghosts\/cthulion\//));
@@ -130,7 +130,7 @@ test.describe('Per-ghost mechanics', () => {
     // 1500 rolls each, expect within ±40% of theoretical (1/3 and 1/8) —
     // a deterministic seed plus large sample size keeps this stable.
     const { emfHits, tempHits } = await page.evaluate(() => {
-      const g = SugarCube.setup.Ghosts.active();
+      const g = SugarCube.setup.HuntController.activeGhost();
       let emf = 0, temp = 0;
       for (let i = 0; i < 1500; i++) if (g.rollEmfGlitch()) emf++;
       for (let i = 0; i < 1500; i++) if (g.rollTemperatureGlitch()) temp++;
@@ -146,7 +146,7 @@ test.describe('Per-ghost mechanics', () => {
   test('Phantom (control): no sensor glitches', async ({ game: page }) => {
     await setupHunt(page, 'Phantom');
     const { emfHits, tempHits } = await page.evaluate(() => {
-      const g = SugarCube.setup.Ghosts.active();
+      const g = SugarCube.setup.HuntController.activeGhost();
       let emf = 0, temp = 0;
       for (let i = 0; i < 200; i++) {
         if (g.rollEmfGlitch()) emf++;

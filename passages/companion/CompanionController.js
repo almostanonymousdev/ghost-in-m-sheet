@@ -113,7 +113,7 @@ setup.Companion = (function () {
 			return State.variables[String(name).toLowerCase()];
 		},
 		// The companion currently selected by the player, or null if
-		// none. Mirrors setup.Ghosts.active() in shape; used by shared
+		// none. Mirrors setup.HuntController.activeGhost() in shape; used by shared
 		// widgets (sanityPills, companionMain) that need pronouns or
 		// image paths without caring which companion is active.
 		active: function () {

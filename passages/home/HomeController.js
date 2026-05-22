@@ -605,7 +605,7 @@ setup.Home = (function () {
 			return prev === 'Bedroom' && this.tentaclesSleepEventReady();
 		},
 		resolveSleepWake: function (prev) {
-			var hg = setup.Ghosts.active();
+			var hg = setup.HuntController.activeGhost();
 			if (this.cameFromHuntDefeat(prev) && hg && hg.sleepPassage) {
 				return { passage: hg.sleepPassage, hours: 3, postWake: 'huntDefeat' };
 			}

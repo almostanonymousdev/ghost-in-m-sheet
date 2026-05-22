@@ -432,7 +432,7 @@ test.describe('E2E: hunt lifecycle', () => {
       .toHaveCount(toolOrder.length);
   });
 
-  test('startHunt stamps a ghost on $run and Ghosts.active() returns it', async () => {
+  test('startHunt stamps a ghost on $run and HuntController.activeGhost() returns it', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
@@ -441,10 +441,10 @@ test.describe('E2E: hunt lifecycle', () => {
     const run = await getVar(page, 'run');
     expect(run.ghostName).toBeTruthy();
 
-    // No witch contract is open, but setup.Ghosts.active() must hand
+    // No witch contract is open, but setup.HuntController.activeGhost() must hand
     // back the hunt ghost so the shared <<toolCheck>> path can read
     // its evidence list.
-    const activeName = await callSetup(page, 'setup.Ghosts.active().name');
+    const activeName = await callSetup(page, 'setup.HuntController.activeGhost().name');
     expect(activeName).toBe(run.ghostName);
 
     // Same ghost is reachable via the controller-side accessor.

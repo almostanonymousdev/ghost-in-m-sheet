@@ -1,6 +1,6 @@
 :: BrookHelp [noreturn nobr] {"position":"2350,3225","size":"100,100"}
 <<set _checkRandomCthulion to random(1,3)>>
-<<set _hg to setup.Ghosts.active()>>
+<<set _hg to setup.HuntController.activeGhost()>>
 
 <<if _hg and _hg.canTentacles and _checkRandomCthulion eq 1>>
 	<<cthulionAbility 4>>

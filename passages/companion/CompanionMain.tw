@@ -126,7 +126,7 @@
 			@@.mc-speech; I'm done. Walk me out.@@<br>
 			<<if setup.Companion.canWalkHomeWithCompanion()>>
 				@@.notmc-speech; Yeah. You sure? We can still finish.@@<br>
-				<<set _hg to setup.Ghosts.active()>>
+				<<set _hg to setup.HuntController.activeGhost()>>
 				<<if _hg and _hg.companionHuntPassage and setup.Ghosts.isHunting()>>
 					@@.mc-speech; Yes, <<link "let's go together" `_hg.companionHuntPassage`>>
 					<</link>> @@

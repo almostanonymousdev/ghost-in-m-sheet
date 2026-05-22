@@ -47,10 +47,10 @@
 <<elseif not setup.Witch.isFirstVisit()>>
 	@@.notmc-speech; <<= setup.Mc.name()>>. Still upright. Good.@@<br>
 	/* Pending contract -- the player walked out of the house with a
-	   contract still in flight. Surface a prominent link to the
-	   guess desk so the next click closes the loop. The check
-	   matches HuntController's isContractHunt: held key + active
-	   run + the run's static house lines up with the held key. */
+		contract still in flight. Surface a prominent link to the
+		guess desk so the next click closes the loop. The check
+		matches HuntController's isContractHunt: held key + active
+		run + the run's static house lines up with the held key. */
 	<<if setup.HuntController.isActive() and setup.WitchContract.hasHeldContract() and setup.HuntController.staticHouseId() eq setup.WitchContract.heldHouseId()>>
 		<<set _pendingHouse to setup.HuntHouses.byId(setup.WitchContract.heldHouseId())>>
 		@@.usebtn;<<linkreplace `'You have findings from ' + _pendingHouse.label + '.'`>>

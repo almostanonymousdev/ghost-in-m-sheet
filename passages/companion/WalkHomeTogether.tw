@@ -1,6 +1,6 @@
 :: WalkHomeTogether [nobr] {"position":"2450,3550","size":"100,100"}
 <<set _videoToggle to true>>
-<<set _hg to setup.Ghosts.active()>>
+<<set _hg to setup.HuntController.activeGhost()>>
 <<if _hg and _hg.walkHomePassage>>
 	<<image "ui/img/mchouse.jpg" { width: "100%" }>>
 	@@.notmc-speech; I have a strange feeling. Like something is following us...@@<br>

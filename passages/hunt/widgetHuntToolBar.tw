@@ -74,7 +74,7 @@
        immediately instead of waiting for the next nav.
      * Refreshes the .hunt-conditions HUD after the tick so per-step
        deltas + contributor chips track stat changes from the click.
-   The shared bridges (setup.Ghosts.active / setup.isGhostHere /
+   The shared bridges (setup.HuntController.activeGhost / setup.isGhostHere /
    setup.HuntController.huntOverPassage) make the per-tick chain
    reusable.
 

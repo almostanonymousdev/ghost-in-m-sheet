@@ -661,7 +661,7 @@ test.describe('Home Controller', () => {
     // sleeps cut short by the event, not full nights. Wraith is the only
     // catalogue ghost with a sleepPassage, so it's the branch we can
     // exercise here.
-    // resolveSleepWake reads setup.Ghosts.active(), which pulls the
+    // resolveSleepWake reads setup.HuntController.activeGhost(), which pulls the
     // ghost name off $run.ghostName, so we need a real $run pinned to
     // Wraith.
     await page.evaluate(() => {

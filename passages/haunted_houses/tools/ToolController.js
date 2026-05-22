@@ -52,7 +52,7 @@
        <<coloredText>> call so the widget's text styling stays the one knob. */
     function renderEmf() {
         var state = setup.tickTimedTool("emf");
-        var g     = setup.Ghosts.active();
+        var g     = setup.HuntController.activeGhost();
         if (state === setup.ToolState.READY && g && g.hasEvidence("emf")) {
             return g.rollEmfGlitch()
                 ? '<<coloredText "red" ' + randInt(0, 100) + '>>'
@@ -171,7 +171,7 @@
 
     function renderUvl() {
         var state = setup.tickTimedTool("uvl");
-        var g     = setup.Ghosts.active();
+        var g     = setup.HuntController.activeGhost();
         if (state !== setup.ToolState.READY || !(g && g.hasEvidence("uvl"))) {
             return notFoundMarkup("uvl");
         }
@@ -246,7 +246,7 @@
     function renderSpiritbox() {
         var V    = State.variables;
         var roll = randInt(1, 100);
-        var g    = setup.Ghosts.active();
+        var g    = setup.HuntController.activeGhost();
 
         if (g && g.spiritboxPossessionChance > 0 && roll <= g.spiritboxPossessionChance) {
             maybeSetBrookPossessed();
@@ -739,7 +739,7 @@ setup.searchableRooms.forEach(function (room) {
      * haunted passage matching `houses` (or any house when `houses` is
      * omitted). Consumers still supply their own presentation. */
     setup.evidenceAvailable = function (id, tier, houses) {
-        var g = setup.Ghosts.active();
+        var g = setup.HuntController.activeGhost();
         if (!g || !g.hasEvidence(id)) return false;
         var roll = Math.floor(Math.random() * 100) + 1;
         if (!setup.chanceByTier(tier, roll)) return false;

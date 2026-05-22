@@ -42,7 +42,7 @@ test.describe('cheatGhostType — forceHuntGhost', () => {
 
   /* Regression: during a hunt run the active ghost is sourced from
      $run.ghostName. The cheat must rewrite the $run fields (ghostName,
-     disguiseName, evidence) so setup.Ghosts.active() /
+     disguiseName, evidence) so setup.HuntController.activeGhost() /
      HuntController.ghostName() / runEvidence() all repoint at the
      newly-chosen catalogue entry. */
   test('hunt run: rewrites $run.ghostName, evidence, and active()', async () => {
@@ -58,7 +58,7 @@ test.describe('cheatGhostType — forceHuntGhost', () => {
     }, target);
 
     expect(await callSetup(page, 'setup.HuntController.ghostName()')).toBe(target);
-    expect(await callSetup(page, 'setup.Ghosts.active().name')).toBe(target);
+    expect(await callSetup(page, 'setup.HuntController.activeGhost().name')).toBe(target);
 
     const runEv = await callSetup(page, 'setup.HuntController.runEvidence()');
     const expected = await page.evaluate((name) =>
@@ -71,7 +71,7 @@ test.describe('cheatGhostType — forceHuntGhost', () => {
 
   /* End-to-end through the settings onChange path: invoking the same
      handler the SugarCube Setting list calls should propagate the cheat
-     all the way to setup.Ghosts.active(). Mirrors the body of the
+     all the way to setup.HuntController.activeGhost(). Mirrors the body of the
      onChange registered in GuiController.cheatGhostType. */
   test('settings.cheatGhostType onChange path applies the override during a hunt', async () => {
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 7 }));
@@ -89,7 +89,7 @@ test.describe('cheatGhostType — forceHuntGhost', () => {
       if (ghost) SugarCube.setup.Ghosts.cheatForceHuntGhost(ghost);
     }, target);
 
-    expect(await callSetup(page, 'setup.Ghosts.active().name')).toBe(target);
+    expect(await callSetup(page, 'setup.HuntController.activeGhost().name')).toBe(target);
     expect(await callSetup(page, 'setup.HuntController.ghostName()')).toBe(target);
   });
 });

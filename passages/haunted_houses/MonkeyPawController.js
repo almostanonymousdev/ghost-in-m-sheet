@@ -109,7 +109,7 @@ setup.MonkeyPaw = (function () {
 			'mechanics/cursedpossessions/pulse1.mp4', 'mechanics/cursedpossessions/pulse2.mp4',
 			'mechanics/cursedpossessions/pulse3.mp4', 'mechanics/cursedpossessions/pulse4.mp4'
 		];
-		var g = setup.Ghosts && setup.Ghosts.active && setup.Ghosts.active();
+		var g = setup.HuntController && setup.HuntController.activeGhost && setup.HuntController.activeGhost();
 		if (g && g.cursedActivityVideos) base = base.concat(g.cursedActivityVideos);
 		return base[Math.floor(Math.random() * base.length)];
 	}
