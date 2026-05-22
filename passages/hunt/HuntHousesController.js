@@ -158,6 +158,7 @@ setup.HuntHouses = (function () {
 			levelGate:        0,
 			allowsCompanions: true,
 			modifierCount:    0,
+			objectiveDescription: 'Gather evidence on the ghost, then bring it back to the witch and name the type.',
 			plan:             OWAISSA_PLAN
 		}),
 		Object.freeze({
@@ -167,6 +168,7 @@ setup.HuntHouses = (function () {
 			levelGate:        3,
 			allowsCompanions: true,
 			modifierCount:    0,
+			objectiveDescription: 'Gather evidence on the ghost, then bring it back to the witch and name the type.',
 			/* Pin elm's downstairs templates to Elm's classic art so the
 			   body-background pipeline shows the Elm variants instead
 			   of the Owaissa-defaulted globals in setup.Styles.huntRooms.

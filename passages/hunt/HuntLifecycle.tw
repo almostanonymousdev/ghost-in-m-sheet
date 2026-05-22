@@ -55,7 +55,7 @@
 	<br>
 <</if>>
 @@.location; Objective@@<br>
-@@.mc-thoughts; <<= setup.HuntController.objectiveDescription(_run.objective) || _run.objective>>@@<br>
+@@.mc-thoughts; <<= (_staticHouse and _staticHouse.objectiveDescription) || setup.HuntController.objectiveDescription(_run.objective) || _run.objective>>@@<br>
 <br>
 <<if setup.HuntController.huntAllowsCompanions() and setup.Companion and setup.Companion.hasActiveCompanion()>>
 	<<set _ac to setup.Companion.active()>>
