@@ -52,21 +52,6 @@
 <br>
 <<addTime `setup.Delivery.deliveryTime()`>>
 
-:: DeliveryActiveIcon {"position":"1100,1100","size":"100,100"}
-<<if passage() is "DeliveryHouse">>
-<<set _slotClasses to [".itemAvailableOne", ".itemAvailableTwo", ".itemAvailableThree"]>>
-<<for _i to 0; _i lt 3; _i++>>
-<<set _cls to _slotClasses[_i]>>
-<<if setup.Delivery.activeIcon(_i)>>
-<<addclass _cls "visible">>
-<<removeclass _cls "hidden">>
-<<else>>
-<<addclass _cls "hidden">>
-<<removeclass _cls "visible">>
-<</if>>
-<</for>>
-<</if>>
-
 :: EndShiftDelivery [nobr] {"position":"1200,1200","size":"100,100"}
 <<run setup.Delivery.resetActiveIcons()>>
 <<run setup.Delivery.endShift()>>

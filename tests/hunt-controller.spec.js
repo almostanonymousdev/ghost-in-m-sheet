@@ -6,8 +6,8 @@ const { openGame, resetGame, callSetup, goToPassage, getVar } = require('./helpe
      - activeGhost()            Ghost instance or null
      - isGhostHere()            bool
      - isHuntActive()           per-tick chain gate (hunt + on HuntRun)
-     - shouldStartProwl()       CheckHuntStart gate
-     - shouldTriggerSteal()     StealClothesEvent gate
+     - shouldStartProwl()       hunt-tick-chain prowl gate
+     - shouldTriggerSteal()     hunt-tick-chain steal-clothes gate
      - huntOverPassage(reason)  routes sanity / exhaustion / time
                                 runouts to HuntSummary with a failure stamp
    These tests pin the contract so a future caller can rely on the

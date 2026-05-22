@@ -20,8 +20,10 @@
    event may roll, a steal-clothes event may roll, and a random hunt
    may start. */
 <<widget "huntTickEventChain">>
-	<<include "LightPassageGhost">>
-	<<if setup.Events.rollRandomEvent()>>
+	<<set _lightsDest to setup.Events.maybeTurnOffLights()>>
+	<<if _lightsDest>>
+		<<goto _lightsDest>>
+	<<elseif setup.Events.rollRandomEvent()>>
 		<<goto "EventMC">>
 	<<elseif setup.HuntController.shouldTriggerSteal()>>
 		<<goto "StealClothes">>

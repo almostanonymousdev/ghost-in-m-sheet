@@ -143,7 +143,7 @@ setup.MonkeyPaw = (function () {
 				var sanity = -[15, 25, 40][t - 1];
 				var corr   = [0, 0.2, 0.4][t - 1];
 
-				setup.addLust(lust);
+				setup.Mc.addLust(lust);
 				applySanity(sanity);
 				if (corr) addTempCorr(corr);
 				var drewGhost = false;
@@ -229,7 +229,7 @@ setup.MonkeyPaw = (function () {
 				var corr = [0, 0.2, 0.4][t - 1];
 
 				setup.Mc.setSanity(50);
-				if (lust) setup.addLust(lust);
+				if (lust) setup.Mc.addLust(lust);
 				if (corr) addTempCorr(corr);
 
 				removeWish();

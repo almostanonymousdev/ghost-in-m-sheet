@@ -21,7 +21,8 @@
 				@@.usebtn; <<link "Take" "Church">>
 					<<run setup.MissingWomen.setCurrentRescueGirl(_girl.name)>>
 					<<run setup.MissingWomen.setQuestForRescueStarted()>>
-				<<include "RandomizeRescueHouse">><</link>>@@
+					<<run setup.MissingWomen.seedTornStyle()>>
+				<</link>>@@
 				</div>
 			<</capture>>
 		<</for>>

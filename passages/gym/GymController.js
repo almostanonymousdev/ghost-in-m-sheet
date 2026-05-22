@@ -165,7 +165,7 @@ setup.Gym = (function () {
 		// renders: how much beauty went up (or down), how much energyMax
 		// rose, and whether fitness hit the 100 cap.
 		applyFitnessGain: function (fitGain) {
-			return setup.Mc.applyFitnessDelta(fitGain);
+			return setup.Mc.addFit(fitGain);
 		}
 	};
 })();

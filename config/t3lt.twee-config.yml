@@ -80,10 +80,11 @@ sugarcube-2:
     huntTickEventChain:
       name: huntTickEventChain
       description: Inner per-tick chain run from <<huntTickStep>> and from
-        searchToolMarkup's repeat body. Includes LightPassageGhost + Event, then
-        conditionally StealClothes (HuntController.shouldTriggerSteal) and
-        GhostProwlEvent (HuntController.shouldStartRandomHunt). All branching is
-        dispatched via HuntController.
+        searchToolMarkup's repeat body. Rolls Events.maybeTurnOffLights() and
+        an Event step, then conditionally routes to StealClothes
+        (HuntController.shouldTriggerSteal) and GhostProwlEvent
+        (HuntController.shouldStartProwl). All branching is dispatched via
+        controller methods.
     includeTimeEventClothesHunt:
       name: includeTimeEventClothesHunt
       description: Backwards-compat alias for <<huntTickStep>>; preserved so existing
@@ -518,18 +519,22 @@ sugarcube-2:
         .linkselector once the surrounding passage finishes rendering
         (<<done>> + addclass disabled-link). Used to lock click targets after
         a one-shot interaction. No args.
-    addLustPussy:
-      name: addLustPussy
     addLustByPart:
       name: addLustByPart
-    addLustTits:
-      name: addLustTits
     addSanity:
       name: addSanity
     addEnergy:
       name: addEnergy
     addFit:
       name: addFit
+    addStat:
+      name: addStat
+      description: Generic stat-delta widget. Args - stat name
+        ("lust" / "sanity" / "energy"), numeric delta. Routes through
+        setup.STAT_CONFIG to apply the mutation and refresh the matching
+        HUD meter. Named widgets (<<addLust>>, <<addSanity>>, <<addEnergy>>)
+        forward to this; call it directly only when the stat name is
+        dynamic.
     deliveryTrackCorrect:
       name: deliveryTrackCorrect
     deliveryTipCheck:

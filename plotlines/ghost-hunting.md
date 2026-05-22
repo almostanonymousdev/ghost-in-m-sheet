@@ -33,7 +33,7 @@ The core gameplay revolves around investigating haunted locations to identify an
 * **Sanity and survival mechanics** - Environmental and ghost interactions affect the player's state and can force the hunt to end.
   * [Hide.tw](../passages/haunted_houses/general/Hide.tw) - Hiding from the ghost
   * [RunFast.tw](../passages/haunted_houses/general/RunFast.tw) - Running from the ghost
-  * [LightPassageGhost.tw](../passages/haunted_houses/general/LightPassageGhost.tw) - Ghost-controlled lighting (manual light toggles are driven by the `<<addclass>>`/`<<removeclass>>` switch hosted in [StyleController.js](../passages/styles/StyleController.js); no standalone manual-light passage)
+  * `setup.Events.maybeTurnOffLights()` in [EventsController.js](../passages/events/EventsController.js) - Ghost-controlled lighting (inlined into the `<<huntTickEventChain>>` widget; manual light toggles are driven by the `<<addclass>>`/`<<removeclass>>` switch hosted in [StyleController.js](../passages/styles/StyleController.js); no standalone manual-light passage)
   * [FrontDoorLocked.tw](../passages/haunted_houses/general/FrontDoorLocked.tw) - Locked-door / trapped-inside handling
   * [PrayHunt.tw](../passages/haunted_houses/general/PrayHunt.tw) - Praying during a hunt
 

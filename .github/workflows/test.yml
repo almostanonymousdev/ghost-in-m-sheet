@@ -36,9 +36,17 @@ jobs:
   release:
     needs: lint
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    name: release (${{ matrix.shard }}/4)
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
 
-      - name: Run release tests
+      - name: Run release tests (shard ${{ matrix.shard }}/4)
+        env:
+          PWC_SHARDS: 4
+          PWC_SHARD_INDEX: ${{ matrix.shard }}
         run: npx playwright test --config=config/playwright.config.js --project=release --no-deps

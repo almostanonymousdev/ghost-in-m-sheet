@@ -135,8 +135,8 @@ async function setupHunt(page, ghostName, house = 'owaissa') {
   }
 
   // Navigation links run <<includeTimeEventClothesHunt>>, which can roll
-  // StealClothesEvent and <<Event>> body-part events. Pin both to no-op
-  // so tests get deterministic navigation.
+  // a steal-clothes step and <<Event>> body-part events. Pin both to
+  // no-op so tests get deterministic navigation.
   await setVar(page, 'stealChance', 0);
   await page.evaluate(() => {
     SugarCube.State.variables.sensualBodyPart = {

@@ -16,7 +16,10 @@ test.describe('Ghost unique abilities — Phantom, Goryo, Deogen, Jinn', () => {
     await setVar(page, 'hallway.background', 1);
 
     for (let i = 0; i < 20; i++) {
-      await goToPassage(page, 'LightPassageGhost');
+      const dest = await page.evaluate(() =>
+        SugarCube.setup.Events.maybeTurnOffLights()
+      );
+      expect(dest, 'Phantom triggered lights-off on iteration ' + i).toBeNull();
       const bg = await getVar(page, 'hallway.background');
       expect(bg, 'Phantom turned off lights on iteration ' + i).toBe(1);
     }
