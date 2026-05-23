@@ -171,6 +171,21 @@ test.describe('Floor-plan generator', () => {
     });
   });
 
+  test('excludeLootKinds skips listed kinds and leaves the rest in place', async () => {
+    /* Gated loot (e.g. rescueClue when the missing-women quest
+       hasn't been accepted) gets routed through this opt so the
+       slot is freed for something else rather than landing as a
+       dead drop. */
+    const plan = await gen(31, { roomCount: 6, excludeLootKinds: ['rescueClue'] });
+    expect(plan.loot.rescueClue).toBeUndefined();
+    expect(plan.lootFurniture.rescueClue).toBeUndefined();
+    // The remaining base kinds still get placed.
+    ['cursedItem', 'tarotCards', 'monkeyPaw'].forEach((k) => {
+      expect(plan.loot[k]).toBeDefined();
+      expect(plan.loot[k]).not.toBe('room_0');
+    });
+  });
+
   test('lootFurniture pins each loot kind to a real furniture suffix on its room', async () => {
     const plan = await gen(31, { roomCount: 6 });
     const kinds = await callSetup(page, 'setup.FloorPlan.LOOT_KINDS');

@@ -1605,6 +1605,77 @@ test.describe('E2E: hunt lifecycle', () => {
     expect(await callSetup(page, 'setup.MonkeyPaw.isCarrying()')).toBe(true);
   });
 
+  test('hunt rescueClue pickup flips hasRescueClue and upgrades EMF to lvl 3', async () => {
+    test.setTimeout(20_000);
+
+    /* Rescue-clue pickup parity: the hunt's FurnitureSearch branch
+       includes RescueClueFound, which sets $hasRescueClue and pushes
+       EMF to level 3 when the player clicks the photo reveal. Gate
+       requires an active rescue quest -- without one, the loot kind
+       is filtered out of the floor plan by MissingWomenController. */
+    await page.evaluate(() => {
+      const V = SugarCube.State.variables;
+      V.hasQuestForRescue = 1;       // ACTIVE
+      V.rescueStage = 0;
+      V.currentRescueGirl = 'Victoria';
+      V.randomRescuePhotoNumber = 5;
+      V.tornStyleRandom = 'torn-style-1 torn-effect';
+      V.relationshipWithRain = 1;
+    });
+    await goToPassage(page, 'GhostStreet');
+    await clickHuntCard(page);
+    await ensureNotEmptyBag(page);
+
+    // EMF starts below lvl 3 so we can see the upgrade fire.
+    await page.evaluate(() => { SugarCube.State.variables.equipment.emf = 1; });
+    await page.evaluate(() => { SugarCube.State.variables.hasRescueClue = 0; });
+
+    const fp = await getVar(page, 'run').then(r => r.floorplan);
+    const clueRoom      = fp.loot.rescueClue;
+    const clueFurniture = fp.lootFurniture.rescueClue;
+    expect(clueRoom).toBeDefined();
+    expect(clueFurniture).toBeDefined();
+
+    await page.evaluate(id => SugarCube.setup.HuntController.setCurrentRoom(id), clueRoom);
+    await goToPassage(page, 'HuntRun');
+
+    const fLabel = await callSetup(page,
+      `setup.HuntController.currentRoomData().furniture.find(f => f.suffix === "${clueFurniture}").label`);
+    await page.locator('.hunt-furniture-item')
+      .filter({ hasText: fLabel })
+      .first()
+      .click();
+    await page.waitForFunction(() => SugarCube.State.passage === 'FurnitureSearch');
+
+    // Slot is marked collected as soon as the player searches.
+    expect(await callSetup(page, 'setup.HuntController.hasCollected("rescueClue")')).toBe(true);
+
+    // Click the linkappend "fragment of the old photo." reveal --
+    // that's what RescueClueFound's body calls setRescueClueFound +
+    // upgradeEmfToLvl3 inside.
+    await page.locator('.passage').getByText('fragment of the old photo.', { exact: true }).click();
+    await page.waitForFunction(() => SugarCube.State.variables.hasRescueClue === 1);
+    expect(await getVar(page, 'hasRescueClue')).toBe(1);
+    expect(await callSetup(page, 'setup.MissingWomen.emfLevel()')).toBe(3);
+  });
+
+  test('hunt without active rescue quest does not place rescueClue loot', async () => {
+    test.setTimeout(15_000);
+
+    /* Gate check: with no active rescue quest the
+       FLOORPLAN_OPTIONS filter strips rescueClue from the placement
+       pool, so the slot is freed for something else and the player
+       can't stumble onto a dead-drop clue. */
+    await page.evaluate(() => { SugarCube.State.variables.hasQuestForRescue = 0; });
+    await goToPassage(page, 'GhostStreet');
+    await clickHuntCard(page);
+    await ensureNotEmptyBag(page);
+
+    const fp = await getVar(page, 'run').then(r => r.floorplan);
+    expect(fp.loot.rescueClue).toBeUndefined();
+    expect(fp.lootFurniture.rescueClue).toBeUndefined();
+  });
+
   test('hunt tarot draw fires the Knowledge effect and stamps $chosenEvidence', async () => {
     test.setTimeout(20_000);
 
