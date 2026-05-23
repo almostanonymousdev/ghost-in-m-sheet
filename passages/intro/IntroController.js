@@ -15,13 +15,13 @@ setup.Intro = (function () {
 	var MAX_SENSITIVITY    = 6;
 	var CHOSEN_SENSITIVITY = 3;
 	var DEFAULT_CHOICE     = 'brain';
+	var CHOICE_PASSAGES    = ['Intro', 'Guide'];
 
 	function defaultSensualBodyParts() {
 		var out = {};
 		for (var i = 0; i < BODY_PARTS.length; i++) {
 			out[BODY_PARTS[i]] = BASE_SENSITIVITY;
 		}
-		out[DEFAULT_CHOICE] = CHOSEN_SENSITIVITY;
 		return out;
 	}
 
@@ -31,8 +31,8 @@ setup.Intro = (function () {
 
 	function applyChoice() {
 		// Mirror $sensualBodyPartChoice into the sensitivity map.
-		// Uses max-merge so toggling the radio in Guide mid-game
-		// never nerfs a part the player has already trained up.
+		// Uses max-merge so re-visiting Guide mid-game never nerfs
+		// a part the player has already trained up.
 		var sv = State.variables;
 		if (!sv) return;
 		var c = sv.sensualBodyPartChoice;
@@ -80,17 +80,15 @@ setup.Intro = (function () {
 		}
 	}
 
-	// When the player toggles a body-part radio (Intro or Guide), the
-	// <<radiobutton>> macro writes $sensualBodyPartChoice. We delegate
-	// on the slugged input name to mirror the new choice into the
-	// $sensualBodyPart sensitivity map. The delegate fires after the
-	// macro's own change.macros listener because element-bound handlers
-	// run before bubbled delegates.
-	$(document).on(
-		'change.sensualBodyPartChoice',
-		'input[name="radiobutton-sensualbodypartchoice"]',
-		applyChoice
-	);
+	// The chosen body part is committed when the player leaves the
+	// Intro / Guide screen — picking a radio only stages the choice in
+	// $sensualBodyPartChoice. This way a brand-new game shows every part
+	// at the BASE_SENSITIVITY of 1 until the player actually moves on.
+	$(document).on(':passagestart.sensualBodyPartChoice', function () {
+		if (CHOICE_PASSAGES.indexOf(previous()) !== -1) {
+			applyChoice();
+		}
+	});
 
 	return {
 		BODY_PARTS:                    BODY_PARTS,
