@@ -80,7 +80,7 @@ setup.Mall = (function () {
 			var s = sv();
 			s.hasPSpray = 1;
 			s.hasPSprayCharges = 3;
-			setup.Mc.removeMoney(10);
+			setup.Mc.removeMoney(30);
 		},
 
 		// --- Warden costume purchase -----------------------------

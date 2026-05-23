@@ -179,7 +179,7 @@ setup.Mc = (function () {
 		useEnergyDrink: function () {
 			if (sv().energyDrinkAmount > 0) {
 				sv().energyDrinkAmount -= 1;
-				sv().mc.energy = sv().mc.energyMax;
+				sv().mc.energy = Math.min(sv().mc.energyMax, sv().mc.energy + 3);
 				return true;
 			}
 			return false;
