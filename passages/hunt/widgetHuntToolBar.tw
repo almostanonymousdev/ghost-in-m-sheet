@@ -116,6 +116,7 @@
 	<<set _countdownSel to '.hunt-tool-countdown[data-tool="' + _t + '"]'>>
 	<<capture _t, _def, _meterName, _equipField, _countdownSel>>
 		<span class="hunt-tool-card-label cardlink" @data-tool="_t">@@.adaptiveLink;<<link `_def.label`>>
+			<<run setup.ToolController.clearAllHuntCards()>>
 			<<if _def.needsLightCheck and not setup.HuntController.isCurrentRoomDark()>>
 				<<replace "#hunt-tool-result">>
 					<div class="spiritbox-container mc-thoughts">I need to turn off the light first</div>
@@ -144,7 +145,7 @@
 							<</if>>
 						<</replace>>
 						<<replace "#hunt-tool-meter">><</replace>>
-						<<replace `_countdownSel`>><</replace>>
+						<<run $(_countdownSel).empty().wiki(setup.ToolController.huntCardMarkup())>>
 						<<applyTickEffects>>
 						<<refreshHuntHud>>
 						<<set $currentsearchHunt[_t] to 0>>

@@ -517,7 +517,10 @@ test.describe('E2E: hunt lifecycle', () => {
     // 6 in-game minutes.
     await page.waitForFunction(() => SugarCube.State.variables.minutes === 6);
     await expect(tray.locator('.boldText')).toHaveCount(1);
-    await expect(emfCard.locator('.boldText')).toHaveCount(0);
+    // The same coloredText reading is mirrored into the per-card
+    // countdown overlay (.hunt-tool-card-number) so the result stays
+    // visible above the EMF icon for as long as the tray holds it.
+    await expect(emfCard.locator('.hunt-tool-card-number .boldText')).toHaveCount(1);
     await expect(emfCard).not.toHaveClass(/disabled-link/);
 
     // Re-clicking the same tool reopens the meter and overwrites the
@@ -597,12 +600,13 @@ test.describe('E2E: hunt lifecycle', () => {
     // transition is captured — Playwright's toHaveText poll can miss
     // intermediate values when ticks pass faster than its sample rate.
     // The observer keeps logging the trimmed number text and the pie's
-    // --pie-pct value until it sees the post-run empty string; tests
-    // await __countdownDone before reading the log so the final mutation
-    // isn't lost to the microtask gap between toBeEmpty() resolving and
-    // the next evaluate. textContent is trimmed because the widget body
-    // ends with a newline before <</widget>> that nobr renders as a
-    // trailing space — invisible in the UI but visible to textContent.
+    // --pie-pct value until the pie disappears (the slot widget swaps
+    // the pie+number tick frame for the in-card result on completion);
+    // tests await __countdownDone before reading the log so the final
+    // mutation isn't lost to the microtask gap. textContent is trimmed
+    // because the widget body ends with a newline before <</widget>>
+    // that nobr renders as a trailing space — invisible in the UI but
+    // visible to textContent.
     await page.evaluate(() => {
       window.__countdownLog = [];
       window.__pieLog = [];
@@ -615,7 +619,7 @@ test.describe('E2E: hunt lifecycle', () => {
           const pie = el.querySelector('.hunt-tool-pie');
           window.__pieLog.push(pie ? pie.style.getPropertyValue('--pie-pct') : null);
           window.__colorLog.push(pie ? pie.style.getPropertyValue('--pie-color') : null);
-          if (t === '' && window.__countdownLog.length > 1) resolve();
+          if (!pie && window.__countdownLog.length > 1) resolve();
         }).observe(el, { childList: true, characterData: true, subtree: true });
       });
     });
@@ -626,16 +630,17 @@ test.describe('E2E: hunt lifecycle', () => {
     const log = await page.evaluate(() => window.__countdownLog);
     const pieLog = await page.evaluate(() => window.__pieLog);
     const colorLog = await page.evaluate(() => window.__colorLog);
-    // For a tier-5 EMF the captured sequence is 5,4,3,2,1,0,'' — the
-    // last visible number is 0, then the overlay empties one tick
-    // later when the result drops.
-    const expected = [];
-    for (let n = equip; n >= 0; n--) expected.push(String(n));
-    expected.push('');
-    expect(log).toEqual(expected);
+    // For a tier-5 EMF the captured tick sequence is 5,4,3,2,1,0 —
+    // the last frame in the run drops the pie and swaps in the
+    // EMF result number (a 1-3 digit coloredText reading).
+    const expectedTicks = [];
+    for (let n = equip; n >= 0; n--) expectedTicks.push(String(n));
+    expect(log.slice(0, equip + 1)).toEqual(expectedTicks);
+    expect(log).toHaveLength(equip + 2);
+    expect(log[log.length - 1]).toMatch(/^\d+$/);
     // Pie fill walks 0,20,40,60,80,100 in step with the countdown
     // (one (100/equip)% slice per tick); the final entry is null
-    // because the overlay is empty and the pie div is gone.
+    // because the in-card result frame has no pie.
     const expectedPie = [];
     for (let n = equip; n >= 0; n--) expectedPie.push(String((equip - n) * (100 / equip)));
     expectedPie.push(null);
@@ -701,8 +706,135 @@ test.describe('E2E: hunt lifecycle', () => {
       pct: String(resumeFrom * (100 / equip)),
     });
 
-    // Run completes normally from the resume point.
-    await expect(countdown).toBeEmpty();
+    // Run completes — the in-card EMF reading replaces the pie+number
+    // tick frame (the overlay stays populated, matching the shared
+    // #hunt-tool-result tray).
+    await expect(countdown.locator('.hunt-tool-card-number')).toHaveCount(1);
+    await expect(countdown.locator('.hunt-tool-pie')).toHaveCount(0);
+  });
+
+  test('EMF run leaves the reading in the tool card overlay', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickHuntCard(page);
+    await ensureNotEmptyBag(page);
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
+    await stubPerTickGatesQuiet(page);
+    await fastToolTicks(page);
+
+    const emfCard = page.locator('.hunt-tool-card').first();
+    const countdown = emfCard.locator('.hunt-tool-countdown');
+
+    await emfCard.locator('a').click();
+
+    // EMF is a numeric tool, so the card carries a coloredText number
+    // (not a thumbs-down).
+    await expect(countdown.locator('.hunt-tool-card-number')).toHaveCount(1);
+    await expect(countdown.locator('.hunt-tool-card-thumbsdown')).toHaveCount(0);
+    await expect(countdown.locator('.hunt-tool-pie')).toHaveCount(0);
+
+    // The same reading lands in #hunt-tool-result.
+    const cardText = (await countdown.innerText()).trim();
+    expect(cardText).toMatch(/^\d+$/);
+    const trayText = (await page.locator('#hunt-tool-result').innerText()).trim();
+    expect(trayText).toBe(cardText);
+  });
+
+  test('thermometer reading carries its color into the tool card overlay', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickHuntCard(page);
+    await ensureNotEmptyBag(page);
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
+    await stubPerTickGatesQuiet(page);
+    await fastToolTicks(page);
+
+    // TemperatureHigh's colour branch only fires below tier 5 (tier 5
+    // is plain). Tier 3 in the ghost's room without temperature
+    // evidence picks the yellow branch — testable without rolling RNG
+    // because we pin the player into the lair room first.
+    await page.evaluate(() => {
+      SugarCube.State.variables.equipment.temperature = 3;
+      const ghost = SugarCube.setup.HuntController.activeGhost();
+      ghost.evidence = ghost.evidence.filter(e => e !== 'temperature');
+      SugarCube.setup.isGhostHere = () => true;
+    });
+
+    const thermoCard = page.locator('.hunt-tool-card').filter({ hasText: 'Thermometr' });
+    const countdown = thermoCard.locator('.hunt-tool-countdown');
+
+    await thermoCard.locator('a').click();
+
+    await expect(countdown.locator('.hunt-tool-card-number')).toHaveCount(1);
+    // The same coloredText span lands in both the tray and the card —
+    // its inline `color:` attribute is what overrides the countdown's
+    // default white text, so assert on the style directly. The tray
+    // wraps coloredText in an outer .toolsTextCentered.boldText, so
+    // pick out the inner span via the inline style filter.
+    const cardSpan = countdown.locator('.hunt-tool-card-number .boldText');
+    const traySpan = page.locator('#hunt-tool-result .boldText[style*="color"]');
+    await expect(cardSpan).toHaveCount(1);
+    await expect(traySpan).toHaveCount(1);
+    const cardColor = await cardSpan.evaluate(el => el.style.color);
+    const trayColor = await traySpan.evaluate(el => el.style.color);
+    expect(cardColor).toBe('yellow');
+    expect(trayColor).toBe(cardColor);
+  });
+
+  test('GWB miss drops a thumbs-down into the tool card overlay', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickHuntCard(page);
+    await ensureNotEmptyBag(page);
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
+    await stubPerTickGatesQuiet(page);
+    await fastToolTicks(page);
+
+    // Force the renderer down the not-found branch.
+    await page.evaluate(() => {
+      SugarCube.setup.ToolController.findGwb = () => null;
+    });
+
+    const gwbCard = page.locator('.hunt-tool-card').filter({ hasText: 'GWB' });
+    const countdown = gwbCard.locator('.hunt-tool-countdown');
+
+    await gwbCard.locator('a').click();
+
+    await expect(countdown.locator('.hunt-tool-card-thumbsdown')).toHaveCount(1);
+    await expect(countdown.locator('.hunt-tool-card-number')).toHaveCount(0);
+    await expect(countdown.locator('.hunt-tool-pie')).toHaveCount(0);
+  });
+
+  test('clicking a second tool clears the previous tool\'s in-card result', async () => {
+    test.setTimeout(20_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickHuntCard(page);
+    await ensureNotEmptyBag(page);
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
+    await stubPerTickGatesQuiet(page);
+    await fastToolTicks(page);
+    await page.evaluate(() => {
+      SugarCube.setup.ToolController.findGwb = () => null;
+    });
+
+    const emfCard = page.locator('.hunt-tool-card').first();
+    const emfCountdown = emfCard.locator('.hunt-tool-countdown');
+    const gwbCard = page.locator('.hunt-tool-card').filter({ hasText: 'GWB' });
+    const gwbCountdown = gwbCard.locator('.hunt-tool-countdown');
+
+    // Run EMF first; card fills with the reading.
+    await emfCard.locator('a').click();
+    await expect(emfCountdown.locator('.hunt-tool-card-number')).toHaveCount(1);
+
+    // Click GWB — the slot's first action is clearAllHuntCards(), so
+    // the EMF card empties out before GWB's tick starts.
+    await gwbCard.locator('a').click();
+    await expect(emfCountdown.locator('.hunt-tool-card-number')).toHaveCount(0);
+    await expect(gwbCountdown.locator('.hunt-tool-card-thumbsdown')).toHaveCount(1);
   });
 
 

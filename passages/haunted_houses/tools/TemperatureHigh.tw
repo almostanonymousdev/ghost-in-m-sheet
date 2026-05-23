@@ -26,4 +26,9 @@ to a random 0..50 value on tier <= 4 thermometers. */
 <<set _glitch to (_hg and _hg.rollTemperatureGlitch())>>
 <<set _reading to _glitch ? random(0, 50) : (random(13, 16) + setup.ToolController.temperature() + _offset)>>
 
+/* Mirror the reading into the hunt-toolbar card overlay so the slot
+   widget can keep the number visible over the thermometer icon for
+   as long as the shared #hunt-tool-result tray holds it. */
+<<run setup.ToolController.setHuntCardMarkup(setup.ToolController.huntCardNumberMarkup('<<coloredText "' + _color + '" ' + _reading + '>>'))>>
+
 <span class="toolsTextCentered boldText"><<coloredText _color _reading>></span>

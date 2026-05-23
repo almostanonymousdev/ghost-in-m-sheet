@@ -307,6 +307,28 @@ body.ui-bar-stowed .hunt-run-layout {
 	text-shadow: 0 0 4px rgba(0, 0, 0, 0.9);
 }
 
+/* Per-tool result rendered into the countdown overlay after a tick
+ * run completes. EMF/Thermometer carry the same <<coloredText>>
+ * number that drops into the shared #hunt-tool-result tray; the
+ * other tools show a thumbs-down image when nothing was detected.
+ * Both sit above the (now-empty) pie layer via the same z-index as
+ * .hunt-tool-countdown-num, and shrink to fit the 64px icon box. */
+.hunt-tool-card-number {
+	position: relative;
+	z-index: 1;
+	text-shadow: 0 0 4px rgba(0, 0, 0, 0.9);
+	font-size: 1.4em;
+	line-height: 1;
+}
+
+.hunt-tool-card-thumbsdown {
+	position: relative;
+	z-index: 1;
+	width: 44px;
+	height: 44px;
+	object-fit: contain;
+}
+
 .hunt-tool-card-label {
 	font-size: 0.75em;
 	opacity: 0.85;
