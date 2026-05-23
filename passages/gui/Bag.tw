@@ -5,7 +5,7 @@
 <div class="housecard">
 <<image "ui/img/energy-drink.png" "icon">><br>
 <<if setup.Mc.energyDrinkAmount() gte 1>>
-@@.usebtn;<<link `"Drink (+3 energy) - " + setup.Mc.energyDrinkAmount() + " left"` "Bag">><<run setup.Mc.useEnergyDrink()>>
+@@.usebtn;<<link `"Drink (+3 energy) - " + setup.Mc.energyDrinkAmount() + " left"` "Bag">><<run setup.Mc.consumeEnergyDrink()>>
 <</link>>@@
 <<else>>You don't have energy drink
 <</if>>
@@ -21,8 +21,7 @@
 <<if setup.Mc.sanityPillsAmount() gte 1>>You have <<= setup.Mc.sanityPillsAmount()>> sanity pills<br>
 <<if setup.HuntController.isHunting()>>
 @@.usebtn;<<link "Use sanity pills" "Bag">>
-<<run setup.Mc.useSanityPill()>>
-<<run setup.Mc.addSanity(30)>>
+<<run setup.Mc.consumeSanityPill()>>
 <</link>>@@
 <</if>>
 <<else>>You don't have sanity pills
@@ -40,8 +39,7 @@
 <</if>><br>
 <<if setup.Mc.isPenalized()>>
 @@.usebtn;<<link "Use health pills" "Bag">>
-<<run setup.Mc.useMedicine()>>
-<<run setup.Mc.clearPenalty()>>
+<<run setup.Mc.consumeMedicine()>>
 <</link>>@@
 <</if>>
 <<else>>You have <<= setup.Mc.medicineAmount()>> health pill<<if setup.Mc.medicineAmount() gte 1>><<print "s">>
