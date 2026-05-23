@@ -116,9 +116,14 @@ setup.Gui = (function () {
 	};
 	function refreshToolTimer() {
 		// Settings-dialog override (persists across save/load and history
-		// navigation, unlike a one-shot cheat link).
+		// navigation, unlike a one-shot cheat link). Emit CHEAT_USED on
+		// consumption so loading a save with the toggle already on still
+		// marks the save as cheated.
 		if (typeof settings !== 'undefined' && settings.fastToolTimers) {
 			sv().timerToolsDecreased = "10ms";
+			if (setup.StoryEvents && setup.StoryEvents.Event) {
+				setup.StoryEvents.emit(setup.StoryEvents.Event.CHEAT_USED, { source: 'fastToolTimers' });
+			}
 			return;
 		}
 		var lvl = setup.Mc.lvl();

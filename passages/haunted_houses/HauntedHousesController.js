@@ -298,7 +298,10 @@ setup.HauntedHouses = (function () {
 		},
 		/* Pull & stamp a fresh tarot card from setup.tarotDeck. The
 		   `cheatTarotCard` setting (if set to a card name) forces the
-		   draw to that card instead of rolling. */
+		   draw to that card instead of rolling -- and emits CHEAT_USED
+		   so the achievement / cheated-save marker fire on consumption,
+		   not just on toggle (loading a save with the picker already
+		   set would otherwise sidestep it). */
 		drawAndStampTarotCard: function () {
 			var forced = null;
 			var pick = (typeof settings !== "undefined") ? settings.cheatTarotCard : null;
@@ -306,6 +309,9 @@ setup.HauntedHouses = (function () {
 				forced = setup.tarotDeck.filter(function (c) {
 					return c.name === pick;
 				})[0] || null;
+				if (forced && setup.StoryEvents && setup.StoryEvents.Event) {
+					setup.StoryEvents.emit(setup.StoryEvents.Event.CHEAT_USED, { source: 'cheatTarotCard' });
+				}
 			}
 			sv().chosenCard = forced || setup.drawTarotCard(setup.tarotDeck);
 			return sv().chosenCard;

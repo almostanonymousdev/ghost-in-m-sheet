@@ -149,4 +149,90 @@ test.describe('setup.StoryEvents', () => {
 		expect(result.before).toBe(false);
 		expect(result.after).toBe(true);
 	});
+
+	/* Persistent cheats (toggles + the list pickers) fire CHEAT_USED on
+	   toggle, but a save loaded with the setting already on would
+	   otherwise sidestep that emit. These cases pin that the cheats
+	   ALSO fire CHEAT_USED whenever the cheat actually takes effect,
+	   so consumption alone is enough to mark the save as cheated. */
+	test('drawAndStampTarotCard with cheatTarotCard set emits CHEAT_USED', async () => {
+		const result = await page.evaluate(() => {
+			const SE = SugarCube.setup.StoryEvents;
+			const sources = [];
+			window.__seSubs.push(SE.on(SE.Event.CHEAT_USED, (ctx) => sources.push(ctx && ctx.source)));
+			delete SugarCube.State.variables.chosenCard;
+			SugarCube.settings.cheatTarotCard = 'death';
+			try { SugarCube.setup.HauntedHouses.drawAndStampTarotCard(); }
+			finally { SugarCube.settings.cheatTarotCard = '—'; }
+			return sources;
+		});
+		expect(result).toContain('cheatTarotCard');
+	});
+
+	test('drawAndStampTarotCard with no cheatTarotCard set does NOT emit CHEAT_USED', async () => {
+		const result = await page.evaluate(() => {
+			const SE = SugarCube.setup.StoryEvents;
+			const sources = [];
+			window.__seSubs.push(SE.on(SE.Event.CHEAT_USED, (ctx) => sources.push(ctx && ctx.source)));
+			delete SugarCube.State.variables.chosenCard;
+			SugarCube.settings.cheatTarotCard = '—';
+			const orig = Math.random;
+			Math.random = () => 0;
+			try { SugarCube.setup.HauntedHouses.drawAndStampTarotCard(); }
+			finally { Math.random = orig; }
+			return sources;
+		});
+		expect(result).not.toContain('cheatTarotCard');
+	});
+
+	test('refreshToolTimer with fastToolTimers on emits CHEAT_USED', async () => {
+		const result = await page.evaluate(() => {
+			const SE = SugarCube.setup.StoryEvents;
+			const sources = [];
+			window.__seSubs.push(SE.on(SE.Event.CHEAT_USED, (ctx) => sources.push(ctx && ctx.source)));
+			SugarCube.settings.fastToolTimers = true;
+			try { SugarCube.setup.Gui.refreshToolTimer(); }
+			finally { SugarCube.settings.fastToolTimers = false; }
+			return sources;
+		});
+		expect(result).toContain('fastToolTimers');
+	});
+
+	test('refreshToolTimer with fastToolTimers off does NOT emit CHEAT_USED', async () => {
+		const result = await page.evaluate(() => {
+			const SE = SugarCube.setup.StoryEvents;
+			const sources = [];
+			window.__seSubs.push(SE.on(SE.Event.CHEAT_USED, (ctx) => sources.push(ctx && ctx.source)));
+			SugarCube.settings.fastToolTimers = false;
+			SugarCube.setup.Gui.refreshToolTimer();
+			return sources;
+		});
+		expect(result).not.toContain('fastToolTimers');
+	});
+
+	test('RescueMap render with highlightRescueHouse on emits CHEAT_USED', async () => {
+		const result = await page.evaluate(async () => {
+			const SE = SugarCube.setup.StoryEvents;
+			const sources = [];
+			window.__seSubs.push(SE.on(SE.Event.CHEAT_USED, (ctx) => sources.push(ctx && ctx.source)));
+			SugarCube.settings.highlightRescueHouse = true;
+			try { SugarCube.Engine.play('RescueMap'); await new Promise((r) => setTimeout(r, 30)); }
+			finally { SugarCube.settings.highlightRescueHouse = false; }
+			return sources;
+		});
+		expect(result).toContain('highlightRescueHouse');
+	});
+
+	test('RescueMap render with highlightRescueHouse off does NOT emit CHEAT_USED', async () => {
+		const result = await page.evaluate(async () => {
+			const SE = SugarCube.setup.StoryEvents;
+			const sources = [];
+			window.__seSubs.push(SE.on(SE.Event.CHEAT_USED, (ctx) => sources.push(ctx && ctx.source)));
+			SugarCube.settings.highlightRescueHouse = false;
+			SugarCube.Engine.play('RescueMap');
+			await new Promise((r) => setTimeout(r, 30));
+			return sources;
+		});
+		expect(result).not.toContain('highlightRescueHouse');
+	});
 });
