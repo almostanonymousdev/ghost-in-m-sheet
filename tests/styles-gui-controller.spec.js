@@ -158,6 +158,67 @@ test.describe('StyleController (setup.Styles)', () => {
   });
 });
 
+/* The <<video>> macro lives in StyleController's IIFE and installs a
+   capture-phase 'play' listener that mutes every other <video> on the
+   page when an unmuted one starts. Two simultaneous audio tracks is the
+   most common video bug players report -- pin the behaviour here. */
+test.describe('Exclusive video audio', () => {
+
+  async function withVideos(page, html, fn) {
+    await page.evaluate((markup) => {
+      var holder = document.createElement('div');
+      holder.id = '__video_test_holder';
+      holder.innerHTML = markup;
+      document.body.appendChild(holder);
+    }, html);
+    try {
+      await fn();
+    } finally {
+      await page.evaluate(() => {
+        var h = document.getElementById('__video_test_holder');
+        if (h) h.remove();
+      });
+    }
+  }
+
+  test('starting an unmuted video mutes every other video', async ({ game: page }) => {
+    await withVideos(page,
+      '<video id="va"></video><video id="vb"></video><video id="vc"></video>',
+      async () => {
+        // All three start unmuted.
+        expect(await page.evaluate(() => [
+          document.getElementById('va').muted,
+          document.getElementById('vb').muted,
+          document.getElementById('vc').muted,
+        ])).toEqual([false, false, false]);
+
+        await page.evaluate(() => {
+          document.getElementById('vb').dispatchEvent(new Event('play'));
+        });
+
+        expect(await page.evaluate(() => [
+          document.getElementById('va').muted,
+          document.getElementById('vb').muted,
+          document.getElementById('vc').muted,
+        ])).toEqual([true, false, true]);
+      });
+  });
+
+  test('a muted video starting still mutes the others', async ({ game: page }) => {
+    await withVideos(page,
+      '<video id="va" muted></video><video id="vb"></video>',
+      async () => {
+        await page.evaluate(() => {
+          document.getElementById('va').dispatchEvent(new Event('play'));
+        });
+        expect(await page.evaluate(() => [
+          document.getElementById('va').muted,
+          document.getElementById('vb').muted,
+        ])).toEqual([true, true]);
+      });
+  });
+});
+
 test.describe('GuiController (setup.Gui)', () => {
 
   // --- Tool timer scaling ----------------------------------------
