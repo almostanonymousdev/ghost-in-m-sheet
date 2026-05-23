@@ -150,6 +150,53 @@ test.describe('setup.StoryEvents', () => {
 		expect(result.after).toBe(true);
 	});
 
+	/* Toggling a cheat OFF (back to its disabled/default value) must not
+	   emit CHEAT_USED. A player who forgot a persistent cheat was on from
+	   a previous session and is turning it back off would otherwise get
+	   re-charged for the cheat just for cleaning up. */
+	test('toggling a cheat OFF does NOT emit CHEAT_USED', async () => {
+		const sources = await page.evaluate(async () => {
+			const SE = SugarCube.setup.StoryEvents;
+			const seen = [];
+			window.__seSubs.push(SE.on(SE.Event.CHEAT_USED, (ctx) => seen.push(ctx && ctx.source)));
+			SugarCube.UI.settings();
+			await new Promise((r) => setTimeout(r, 50));
+			SugarCube.Setting.setValue('highlightRescueHouse', true);
+			await new Promise((r) => setTimeout(r, 30));
+			const afterOn = seen.slice();
+			SugarCube.Setting.setValue('highlightRescueHouse', false);
+			await new Promise((r) => setTimeout(r, 30));
+			const afterOff = seen.slice();
+			SugarCube.Dialog.close();
+			return { afterOn: afterOn, afterOff: afterOff };
+		});
+		expect(sources.afterOn).toEqual(['highlightRescueHouse']);
+		expect(sources.afterOff).toEqual(['highlightRescueHouse']);
+	});
+
+	/* Same rule for the list pickers: changing back to "—" (the off
+	   sentinel) is "turning the cheat off" and must not fire CHEAT_USED.
+	   Switching between two non-off picks still fires. */
+	test('setting a ghost-type picker back to "—" does NOT emit CHEAT_USED', async () => {
+		const sources = await page.evaluate(async () => {
+			const SE = SugarCube.setup.StoryEvents;
+			const seen = [];
+			window.__seSubs.push(SE.on(SE.Event.CHEAT_USED, (ctx) => seen.push(ctx && ctx.source)));
+			SugarCube.UI.settings();
+			await new Promise((r) => setTimeout(r, 50));
+			SugarCube.Setting.setValue('cheatGhostType', 'Spirit');
+			await new Promise((r) => setTimeout(r, 30));
+			const afterOn = seen.slice();
+			SugarCube.Setting.setValue('cheatGhostType', '—');
+			await new Promise((r) => setTimeout(r, 30));
+			const afterOff = seen.slice();
+			SugarCube.Dialog.close();
+			return { afterOn: afterOn, afterOff: afterOff };
+		});
+		expect(sources.afterOn).toEqual(['cheatGhostType']);
+		expect(sources.afterOff).toEqual(['cheatGhostType']);
+	});
+
 	/* Persistent cheats (toggles + the list pickers) fire CHEAT_USED on
 	   toggle, but a save loaded with the setting already on would
 	   otherwise sidestep that emit. These cases pin that the cheats
@@ -234,5 +281,55 @@ test.describe('setup.StoryEvents', () => {
 			return sources;
 		});
 		expect(result).not.toContain('highlightRescueHouse');
+	});
+
+	/* The back/forward arrows let players rewind one-shot mutations
+	   (e.g. spent cooldowns, granted money), so any click on the
+	   history navigation has to mark the save as cheated -- AND the
+	   mark has to land on the rewound moment, not the moment being
+	   discarded, so a save taken right after pressing back still
+	   carries the cheated flag. */
+	test('clicking #history-backward emits CHEAT_USED on the rewound moment', async () => {
+		const result = await page.evaluate(async () => {
+			const SE = SugarCube.setup.StoryEvents;
+			const A = SugarCube.setup.Achievements;
+			const sources = [];
+			window.__seSubs.push(SE.on(SE.Event.CHEAT_USED, (ctx) => sources.push(ctx && ctx.source)));
+			SugarCube.Engine.play('CityMap');
+			await new Promise((r) => setTimeout(r, 30));
+			SugarCube.Engine.play('RescueMap');
+			await new Promise((r) => setTimeout(r, 30));
+			document.getElementById('history-backward').click();
+			await new Promise((r) => setTimeout(r, 30));
+			return {
+				sources: sources,
+				passage: SugarCube.State.passage,
+				cheatedSaveFlag: SugarCube.State.variables.achievements && SugarCube.State.variables.achievements.cheatedSave,
+				funCheat: A.has('fun.cheat')
+			};
+		});
+		expect(result.sources).toContain('historyBackward');
+		expect(result.passage).toBe('CityMap'); // confirms the click actually rewound
+		expect(result.cheatedSaveFlag).toBe(true);
+		expect(result.funCheat).toBe(true);
+	});
+
+	test('clicking #history-forward emits CHEAT_USED', async () => {
+		const result = await page.evaluate(async () => {
+			const SE = SugarCube.setup.StoryEvents;
+			const sources = [];
+			window.__seSubs.push(SE.on(SE.Event.CHEAT_USED, (ctx) => sources.push(ctx && ctx.source)));
+			/* Force-enable the button: jQuery (and the browser) skip
+			   click events on disabled form controls, and the freshly-
+			   reset save has no forward history to enable it organically.
+			   We're pinning the click→emit wiring, not the engine's
+			   navigation gating. */
+			const fwd = document.getElementById('history-forward');
+			fwd.disabled = false;
+			fwd.removeAttribute('aria-disabled');
+			fwd.click();
+			return sources;
+		});
+		expect(result).toContain('historyForward');
 	});
 });

@@ -146,7 +146,7 @@
 				<div class="hunt-run-companion">
 					<<companionCard>>
 				</div>
-				<div @class="'hunt-run-nav' + (_cr and _cr.neighbors.length gt 3 ? ' hunt-run-nav-compact' : '')">
+				<div class="hunt-run-nav">
 					<<if _cr and _cr.neighbors.length>>
 						<<for _n range _cr.neighbors>>
 							<<capture _n>>

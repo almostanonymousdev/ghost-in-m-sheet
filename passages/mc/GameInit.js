@@ -157,7 +157,12 @@ setup.Game = (function () {
 	}
 
 	function resetPersistentCheats() {
-		// Reset all persistent cheats to their defaults when starting a new game
+		// Reset all persistent cheats to their defaults when starting a new game.
+		// $showHistoryControls is deliberately excluded — the toggle is meant to
+		// survive across sessions, and StoryInit fires on every fresh page load
+		// (before any autosave restore), so wiping it here would turn the back/
+		// forward buttons off every time the player reopened the game even
+		// though localStorage still has the toggle ON.
 		if (typeof settings !== 'undefined') {
 			settings.highlightRescueHouse = false;
 			settings.fastToolTimers = false;

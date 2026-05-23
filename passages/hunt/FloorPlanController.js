@@ -139,6 +139,11 @@ setup.FloorPlan = (function () {
 		               like tarotCards / monkeyPaw), pinned to a
 		               distinct slot when one is available so the
 		               player can find them by clicking furniture.
+		excludeLootKinds -- array of LOOT_KINDS ids to skip placing
+		               this run. Used by gated content (e.g.
+		               rescueClue is skipped when the missing-women
+		               quest isn't active); subscribers to
+		               FLOORPLAN_OPTIONS can push ids onto this list.
 		staticPlan  -- when present, freezes the room set + edge graph
 		               to the supplied blueprint instead of rolling a
 		               procedural spanning tree. Shape:
@@ -160,6 +165,12 @@ setup.FloorPlan = (function () {
 		var toolKinds = Array.isArray(opts.toolKinds)
 			? opts.toolKinds.map(toolLootKind)
 			: [];
+		var excludeLootKinds = Array.isArray(opts.excludeLootKinds)
+			? opts.excludeLootKinds
+			: [];
+		var kindsToPlace = LOOT_KINDS.filter(function (k) {
+			return excludeLootKinds.indexOf(k) === -1;
+		});
 
 		var rooms;
 		var edges;
@@ -202,7 +213,7 @@ setup.FloorPlan = (function () {
 		// but the per-slot suffix pick avoids exact (room, suffix)
 		// collisions whenever an alternative exists.
 		var nonHallwayIds = rooms.slice(1).map(function (r) { return r.id; });
-		var lootRooms = pickN(rng, nonHallwayIds, LOOT_KINDS.length);
+		var lootRooms = pickN(rng, nonHallwayIds, kindsToPlace.length);
 		var furnitureRoomIds = nonHallwayIds.filter(function (id) {
 			var r = rooms.filter(function (rm) { return rm.id === id; })[0];
 			var t = setup.Templates && setup.Templates.byId(r.template);
@@ -238,7 +249,7 @@ setup.FloorPlan = (function () {
 			}
 		}
 
-		LOOT_KINDS.forEach(function (k, idx) {
+		kindsToPlace.forEach(function (k, idx) {
 			if (!lootRooms.length) return;
 			var force = (k === 'tarotCards' || k === 'monkeyPaw');
 			placeKind(k, lootRooms[idx % lootRooms.length], force);

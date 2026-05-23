@@ -202,8 +202,10 @@ body.ui-bar-stowed .hunt-run-layout {
 
 /* The toolbar is a positioned wrapper so .hunt-run-tools can span
  * the full width and center its cluster on the same vertical axis as
- * the furniture strip above it; .hunt-run-nav overlays the right
- * edge as an absolute child. */
+ * the furniture strip above it; .hunt-run-companion overlays the
+ * right edge as an absolute child. (.hunt-run-nav lives outside the
+ * toolbar -- see below -- so it can stretch all the way down to the
+ * screen edge, not just to the toolbar's bottom.) */
 .hunt-run-toolbar {
 	position: relative;
 }
@@ -319,17 +321,46 @@ body.ui-bar-stowed .hunt-run-layout {
 	text-align: center;
 }
 
+/* Bounded box for the room-exit nav, anchored to the viewport (not
+   the toolbar) so it occupies the full vertical strip from just
+   below the HUD bar -- the "lower bar," beneath the light icons --
+   down to the bottom of the screen. The top edge and height are set
+   by HuntNavFit at :passagedisplay time so the box always tracks the
+   live HUD bottom; CSS owns the right/bottom anchor and the flex
+   layout, JS owns the vertical bounds and font-size scaling that
+   shrinks the labels until every exit fits inside the box. */
 .hunt-run-nav {
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
+	position: fixed;
+	right: 2.5em;
+	bottom: 0.5em;
 	display: flex;
 	flex-direction: column;
 	align-items: flex-end;
 	justify-content: center;
 	text-align: right;
 	gap: 0.25em;
+	min-height: 0;
+	overflow: hidden;
+	z-index: 4;
+	pointer-events: none;
+	/* Tight line-height so the box's vertical budget actually
+	   scales with font-size when HuntNavFit shrinks it. The
+	   inherited .passage line-height of 1.75 leaves so much
+	   leading that small-font lines still overrun the box. */
+	line-height: 1.1;
+}
+
+.hunt-run-nav > * {
+	pointer-events: auto;
+}
+
+/* The exit list is authored as `<span>...</span><br>` so non-flex
+   call sites render one link per line. In our flex column each <br>
+   would land as its own zero-content row -- doubling the apparent
+   item count and blowing the height budget -- so suppress them
+   here. The spans alone give us one flex row per link. */
+.hunt-run-nav > br {
+	display: none;
 }
 
 /* Companion icon slot in the toolbar. Sits absolutely between the
@@ -368,22 +399,6 @@ body.ui-bar-stowed .hunt-run-layout {
 	padding: 0;
 	border-width: 2px;
 	border-radius: 6px;
-}
-
-/* When the current room has more than 3 exits the column overruns the
-   tool row's vertical budget; the compact variant shrinks the link
-   text and tightens the gap so all exits stay visible without
-   overlapping the toolbar. */
-.hunt-run-nav-compact {
-	gap: 0.1em;
-}
-
-.hunt-run-nav-compact .movebtn a {
-	font-size: 0.85em;
-}
-
-.hunt-run-nav-compact br {
-	display: none;
 }
 
 /* ===== Hunt minimap ===== */

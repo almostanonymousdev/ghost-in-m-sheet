@@ -97,6 +97,46 @@ setup.HuntMinimap = (function () {
 				.replace(/&/g, '&amp;').replace(/</g, '&lt;')
 				.replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 		}
+		/* Build the per-room <text> markup so labels stay inside the
+		   rect. Multi-word labels ("Dining Room") wrap to one tspan
+		   per word; long single words fall back to font-size scaling.
+		   Width is estimated from character count rather than measured
+		   (the SVG isn't in the DOM yet at build time); the heuristic
+		   uses 0.5 * fontSize since the .hunt-minimap-room text CSS
+		   sets a narrow serif (Cormorant) -- a sans-serif heuristic
+		   (0.55-0.6) would over-shrink. */
+		var TEXT_BASE_FONT = 12;            // matches hunt.css
+		var TEXT_CHAR_W = 0.5;              // narrow serif heuristic
+		var TEXT_MAX_LINE_PX = ROOM_W - 8;  // 4px padding each side
+		var TEXT_MIN_FONT = 7;              // readability floor
+		var TEXT_LINE_SPACING = 1.1;        // em
+		function labelMarkup(label, cx, cy) {
+			var lines = String(label || '').split(/\s+/).filter(Boolean);
+			if (!lines.length) lines = [String(label || '')];
+
+			var longestChars = lines.reduce(function (m, l) {
+				return Math.max(m, l.length);
+			}, 1);
+			var naturalW = longestChars * TEXT_CHAR_W * TEXT_BASE_FONT;
+			var fontSize = naturalW <= TEXT_MAX_LINE_PX
+				? TEXT_BASE_FONT
+				: Math.max(TEXT_MIN_FONT, TEXT_BASE_FONT * (TEXT_MAX_LINE_PX / naturalW));
+			var fontAttr = fontSize === TEXT_BASE_FONT
+				? ''
+				: ' font-size="' + fontSize.toFixed(2) + 'px"';
+
+			var n = lines.length;
+			var startDy = -((n - 1) / 2) * TEXT_LINE_SPACING;
+			var tspans = lines.map(function (line, i) {
+				var dy = (i === 0 ? startDy : TEXT_LINE_SPACING) + 'em';
+				return '<tspan x="' + cx + '" dy="' + dy + '">' +
+					escapeXml(line) + '</tspan>';
+			}).join('');
+
+			return '<text x="' + cx + '" y="' + cy +
+				'" text-anchor="middle" dominant-baseline="central"' +
+				fontAttr + '>' + tspans + '</text>';
+		}
 
 		// Edges first so rooms render on top of the lines.
 		var seen = {};
@@ -148,8 +188,7 @@ setup.HuntMinimap = (function () {
 			return '<g class="' + classes.join(' ') + '" data-room="' + escapeXml(r.id) + '">' +
 				'<rect x="' + x + '" y="' + y + '" width="' + ROOM_W +
 				'" height="' + ROOM_H + '" rx="4" ry="4"/>' +
-				'<text x="' + (x + ROOM_W / 2) + '" y="' + (y + ROOM_H / 2 + 4) +
-				'" text-anchor="middle">' + escapeXml(label) + '</text>' +
+				labelMarkup(label, x + ROOM_W / 2, y + ROOM_H / 2) +
 				'</g>';
 		});
 

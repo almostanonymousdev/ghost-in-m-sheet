@@ -119,7 +119,7 @@ setup.Gui = (function () {
 		// navigation, unlike a one-shot cheat link). Emit CHEAT_USED on
 		// consumption so loading a save with the toggle already on still
 		// marks the save as cheated.
-		if (typeof settings !== 'undefined' && settings.fastToolTimers) {
+		if (settings.fastToolTimers) {
 			sv().timerToolsDecreased = "10ms";
 			setup.StoryEvents.emit(setup.StoryEvents.Event.CHEAT_USED, { source: 'fastToolTimers' });
 			return;
@@ -130,6 +130,17 @@ setup.Gui = (function () {
 	}
 	function timerToolsInitialized() {
 		return sv().timerToolsDecreased !== undefined;
+	}
+
+	// --- Back/forward history controls ---------------------------
+	// SugarCube's back/forward/jumpto arrows would let the player
+	// rewind one-shot mutations (granted money, consumed cooldowns),
+	// so #ui-bar-history is hidden by CSS unless the body carries the
+	// `show-history` class. The "Show back/forward buttons" cheat in
+	// the Settings dialog toggles this method which adds/removes the
+	// class to match `settings.showHistoryControls`.
+	function applyHistoryControlsVisibility() {
+		$(document.body).toggleClass("show-history", !!settings.showHistoryControls);
 	}
 
 	// --- Mirror render -------------------------------------------
@@ -161,6 +172,7 @@ setup.Gui = (function () {
 		setGuideReturnPassage: setGuideReturnPassage,
 		refreshToolTimer: refreshToolTimer,
 		timerToolsInitialized: timerToolsInitialized,
+		applyHistoryControlsVisibility: applyHistoryControlsVisibility,
 		mirrorMakeupImagePath: mirrorMakeupImagePath,
 		mirrorMakeupHasWidth: mirrorMakeupHasWidth,
 		monkeyPawWishInput: function () { return sv().inputWish; }
@@ -206,13 +218,21 @@ $(document).one(":storyready", function () {
 	   fires onChange even though the user hasn't touched anything.
 	   ifCheatChanged() guards against that by remembering the value we
 	   last observed and only emitting when it actually moves -- so
-	   merely opening the dialog never grants the cheat achievement. */
+	   merely opening the dialog never grants the cheat achievement.
+
+	   Toggling a cheat back to its OFF / default value also suppresses
+	   the emit: a player who forgot a cheat was on from a previous
+	   session and is turning it off shouldn't be charged for it. The
+	   action() side-effect still runs (e.g. removing the show-history
+	   class) -- only the CHEAT_USED notification is gated. */
 	var _lastCheatValue = {};
+	var _offCheatValue = {};
 	function ifCheatChanged(source, action) {
-		var current = (typeof settings !== 'undefined') ? settings[source] : undefined;
+		var current = settings[source];
 		if (_lastCheatValue[source] === current) return;
 		_lastCheatValue[source] = current;
 		if (action) action();
+		if (current === _offCheatValue[source]) return;
 		setup.StoryEvents.emit(setup.StoryEvents.Event.CHEAT_USED, { source: source });
 	}
 	Setting.addHeader(
@@ -229,11 +249,13 @@ $(document).one(":storyready", function () {
 	   would not match the about-to-be-written default and the guard
 	   would mis-fire on first open. */
 	function seedCheat(source, defaultValue) {
-		var current = (typeof settings !== 'undefined') ? settings[source] : undefined;
+		var current = settings[source];
 		_lastCheatValue[source] = (current === undefined) ? defaultValue : current;
+		_offCheatValue[source] = defaultValue;
 	}
 	seedCheat('highlightRescueHouse', false);
 	seedCheat('fastToolTimers', false);
+	seedCheat('showHistoryControls', false);
 
 	Setting.addToggle("highlightRescueHouse", {
 		label: "Highlight correct rescue house on map",
@@ -249,6 +271,27 @@ $(document).one(":storyready", function () {
 			});
 		}
 	});
+	Setting.addToggle("showHistoryControls", {
+		label: "Show back/forward buttons",
+		default: false,
+		onChange: function () {
+			ifCheatChanged("showHistoryControls", setup.Gui.applyHistoryControlsVisibility);
+		}
+	});
+	setup.Gui.applyHistoryControlsVisibility();
+
+	/* Any click on the history arrows has to mark the save as cheated.
+	   We can't wrap Engine.backward/forward directly (SugarCube defines
+	   them as non-writable properties), so we delegate on the document
+	   instead: SugarCube's own click handler runs first, rewinds the
+	   state synchronously, and only then the event bubbles up here --
+	   so markCheated() lands on the new (rewound/advanced) moment's
+	   State.variables rather than the moment being discarded. */
+	function emitHistoryCheat(source) {
+		setup.StoryEvents.emit(setup.StoryEvents.Event.CHEAT_USED, { source: source });
+	}
+	$(document).on('click', '#history-backward', function () { emitHistoryCheat('historyBackward'); });
+	$(document).on('click', '#history-forward',  function () { emitHistoryCheat('historyForward'); });
 
 	var GHOST_PICKER_NULL = "—";
 	seedCheat('cheatTarotCard', GHOST_PICKER_NULL);
@@ -285,7 +328,6 @@ $(document).one(":storyready", function () {
    "stay hidden until cheat is used" behavior we want. */
 (function () {
 	function isSettingsDialog() {
-		if (typeof SugarCube === "undefined" || !SugarCube.L10n) return false;
 		var titleEl = document.getElementById("ui-dialog-title");
 		if (!titleEl) return false;
 		// Match either the original L10n string (set by Dialog.setup)

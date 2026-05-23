@@ -354,5 +354,20 @@ setup.MissingWomen = (function () {
 	});
 	setup.Cooldowns.registerDaily('rescue');
 	setup.Cooldowns.registerDaily('rescueQuest');
+
+	/* Gate rescueClue loot on the quest being active. Before the
+	   player takes a missing poster, the torn-photo clue has nothing
+	   to point at (randomRescuePhotoNumber isn't seeded until poster
+	   pickup) and the in-bag photo viewer is hidden, so finding one
+	   in a hunt does nothing useful. Stripping the kind from
+	   FloorPlan.generate keeps the slot free for cursedItem /
+	   tarotCards / monkeyPaw instead of wasting it on a dead drop. */
+	setup.Hunt.filter(setup.Hunt.Event.FLOORPLAN_OPTIONS, function (ctx) {
+		if (!ctx || !ctx.fpOpts) return;
+		if (api.hasActiveQuest()) return;
+		var ex = ctx.fpOpts.excludeLootKinds = ctx.fpOpts.excludeLootKinds || [];
+		if (ex.indexOf('rescueClue') === -1) ex.push('rescueClue');
+	});
+
 	return api;
 })();

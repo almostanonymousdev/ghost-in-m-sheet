@@ -304,7 +304,7 @@ setup.HauntedHouses = (function () {
 		   set would otherwise sidestep it). */
 		drawAndStampTarotCard: function () {
 			var forced = null;
-			var pick = (typeof settings !== "undefined") ? settings.cheatTarotCard : null;
+			var pick = settings.cheatTarotCard;
 			if (pick && pick !== "—") {
 				forced = setup.tarotDeck.filter(function (c) {
 					return c.name === pick;

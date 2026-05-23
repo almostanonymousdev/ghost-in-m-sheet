@@ -197,6 +197,48 @@ test.describe('Missing Women — rescue success roll', () => {
   });
 });
 
+test.describe('Missing Women — rescueClue placement gate', () => {
+  /* The rescueClue loot kind is a torn photo that points the player
+     at the right address for an active rescue quest. Until they take
+     a poster from the church board, the photo number isn't seeded
+     and the in-bag photo viewer is hidden, so finding clues in
+     furniture before the quest exists is just a wasted slot. The
+     FLOORPLAN_OPTIONS filter in MissingWomenController.js strips
+     rescueClue out of the loot pool unless hasActiveQuest() is true. */
+
+  async function generatePlanWithFilter(page, seed, baseOpts) {
+    return page.evaluate(({ s, o }) => {
+      const ctx = SugarCube.setup.Hunt.applyFilter(
+        SugarCube.setup.Hunt.Event.FLOORPLAN_OPTIONS,
+        { fpOpts: Object.assign({}, o || {}), modifierIds: [], seed: s }
+      );
+      return SugarCube.setup.FloorPlan.generate(s, ctx.fpOpts);
+    }, { s: seed, o: baseOpts });
+  }
+
+  test('rescueClue is excluded from the floor plan when no quest is active', async ({ game: page }) => {
+    await setVar(page, 'hasQuestForRescue', 0);
+    const plan = await generatePlanWithFilter(page, 1234, { roomCount: 6 });
+    expect(plan.loot.rescueClue).toBeUndefined();
+    expect(plan.lootFurniture.rescueClue).toBeUndefined();
+  });
+
+  test('rescueClue is placed when the rescue quest is active', async ({ game: page }) => {
+    await setupActiveQuest(page, 'Victoria');
+    const plan = await generatePlanWithFilter(page, 1234, { roomCount: 6 });
+    expect(plan.loot.rescueClue).toBeDefined();
+    expect(plan.loot.rescueClue).not.toBe('room_0');
+  });
+
+  test('rescueClue stays excluded after the quest has failed or succeeded', async ({ game: page }) => {
+    for (const stage of [2 /* FAILED */, 3 /* SUCCEEDED */]) {
+      await setVar(page, 'hasQuestForRescue', stage);
+      const plan = await generatePlanWithFilter(page, 4321, { roomCount: 6 });
+      expect(plan.loot.rescueClue).toBeUndefined();
+    }
+  });
+});
+
 test.describe('Missing Women — RescueSuccess and RescueMap rendering', () => {
   test('RescueSuccess renders for each girl', async ({ game: page }) => {
     for (const girl of ['Victoria', 'Jade', 'Julia', 'Nadia', 'Ash']) {

@@ -23,10 +23,8 @@
 	<<if _kind eq "cursedItem">>
 		<<include "PickupCursedItem">>
 	<<elseif _kind eq "rescueClue">>
-		@@.mc-thoughts; You find a clue about one of the missing women.@@<br>
 		<<run setup.HuntController.takeLoot("rescueClue")>>
-		<br>
-		@@.backbtn; [[Back|$return]]@@
+		<<include "RescueClueFound">>
 	<<elseif _kind eq "tarotCards" and setup.HauntedHouses.tarotCardsStage() eq setup.TarotStage.HIDDEN>>
 		<<include "PickupTarotCards">>
 	<<elseif _kind eq "monkeyPaw" and setup.MonkeyPaw.isDiscoverable()>>
@@ -157,7 +155,15 @@
 		<</if>>
 		<<run setup.HuntController.takeLoot("cursedItem")>>
 	<<elseif _kind eq "rescueClue">>
-		@@.mc-thoughts; A clue about one of the missing women.@@<br><br>
+		@@.mc-thoughts; A torn fragment of an old photo, tucked alongside someone's EMF reader. The reader spikes the moment you bring it close.@@<br>
+		<<image 'characters/rescue/house/' + setup.MissingWomen.randomRescuePhotoNumber() + '.jpg' { class: setup.MissingWomen.tornStyleRandom() + ' iconsOnMap' }>><br>
+		@@.mc-action; You pocket the photo fragment.@@<br>
+		<<run setup.MissingWomen.setRescueClueFound()>>
+		<<if setup.MissingWomen.emfLevel() neq 3>>
+			<<run setup.MissingWomen.upgradeEmfToLvl3()>>
+			@@.mc-action; You picked up an EMF reader <<statIcon setup.StatIcon.EMF>> (Level 3).@@<br>
+		<</if>>
+		<br>
 		<<run setup.HuntController.takeLoot("rescueClue")>>
 	<<elseif _kind eq "tarotCards">>
 		@@.mc-thoughts; A strange deck of tarot cards.@@<br>

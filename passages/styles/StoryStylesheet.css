@@ -54,6 +54,16 @@ html:not([data-debug-view]) .debug:not(.hidden) {
 	overflow-x: hidden;
 }
 
+/* Hide the SugarCube back/forward/jumpto history buttons by default;
+   the "Show back/forward buttons" cheat in the Settings dialog adds
+   the `show-history` body class to opt back in. */
+#ui-bar-history {
+	display: none;
+}
+body.show-history #ui-bar-history {
+	display: block;
+}
+
 /* ===== Debug-view overrides =====
  * SugarCube debug builds (Config.debug = true, or tweego -t) wrap every
  * macro and include in <span class="debug" ...> elements. When the
