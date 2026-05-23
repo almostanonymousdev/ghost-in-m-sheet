@@ -113,7 +113,7 @@ function extractRefs(filePath) {
       for (let n = start; n <= end; n++) push('scenes/deliveryhub/' + cat + '/' + n + '.mp4', lineno);
     }
     // Any string literal that contains a "/" and ends in a media extension:
-    // catches { src: "trans/pics/1.0.jpg" }, ["skirt1/1.mp4", ...], and
+    // catches { src: "characters/brook/1.jpg" }, ["skirt1/1.mp4", ...], and
     // the image: / img: / icon: keys whose values are real paths.
     // (Bare filenames like "spirit.webp" are skipped — the caller's site-
     // specific prefix varies, so we can't verify them without a map.)

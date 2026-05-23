@@ -3,11 +3,7 @@
    setup.Tick.resolveCompanionAttack landed safe (showComp = ATTACK_SAFE),
    so the success path is unconditional here — no second roll. */
 <<set _portrait to setup.Companion.outcomePortrait(true)>>
-<<if setup.Companion.isTransCompanion()>>
-	<<image _portrait "displayCentredImgs">><br>
-<<else>>
-	<<image _portrait { width: "50%" }>><br>
-<</if>>
+<<image _portrait { width: "50%" }>><br>
 <<if State.variables.chosenPlan eq "Plan2" and setup.Companion.hasCursedItem()>>
 	<<include "CompanionResult">>
 	<br>

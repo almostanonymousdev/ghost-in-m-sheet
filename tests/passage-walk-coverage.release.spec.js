@@ -552,15 +552,15 @@ async function walkPassages(browser, passages, label) {
       V.currentHouse = setup.deliveryStreets[0];
       V.currentOrder = 1;
 
-      // Companion: pick Brook (cis) and seed $companion. Mirrors what
+      // Companion: pick Brook and seed $companion. Mirrors what
       // the player sees after picking a companion at the witch.
       V.companion = setup.Companion.defaultStateFor('Brook');
       setup.Companion.selectCompanion('Brook');
       V.chosenPlan = 'Plan1';
 
-      // Force the post-solo-return branch on for all three cis
+      // Force the post-solo-return branch on for all three
       // companions so the walker exercises the
-      // <<cisCompanionSoloPicker>> "Ask … how … went" link in
+      // <<companionSoloPicker>> "Ask … how … went" link in
       // BrookInfo / AliceInfo / BlakeInfo. Otherwise the cold render
       // always takes the else-branch and a regression like the one
       // fixed in widgetCompanion.tw (raw "<<= _cName>>" leak) would go

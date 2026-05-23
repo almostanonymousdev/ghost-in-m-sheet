@@ -25,7 +25,7 @@
 		@@.notmc-speech; Thanks a lot, now I'm free and ready to join you on the ghost hunt!@@<br>
 	<</if>>
 
-	<<cisCompanionSoloPicker "Alice" "her">>
+	<<companionSoloPicker "Alice" "her">>
 
 <</if>>
 </div>

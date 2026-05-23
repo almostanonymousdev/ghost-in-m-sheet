@@ -50,10 +50,9 @@ sugarcube-2:
     companionTextEvent:
       name: companionTextEvent
       description: "Sanity-tier dispatcher for the CompanionEvent passage. Renders
-        companion-specific dialog from the catalogue (eventCopy /
-        transEventCopy) and applies the standard sanity/lust deltas; tiers 2-4
-        also grant +15 MC lust. Trans companions stamp transFirstStage on every
-        render. Args: tier (1..4)."
+        companion-specific dialog from the catalogue (eventCopy) and applies the
+        standard sanity/lust deltas; tiers 2-4 also grant +15 MC lust. Args:
+        tier (1..4)."
     isCompanionContinue:
       name: isCompanionContinue
       description: 'Renders a linkappend asking whether the companion can continue the
@@ -559,8 +558,8 @@ sugarcube-2:
       name: monkeyPawWishInput
       description: Textbox bound to $inputWish for the free-form Monkey Paw wish
         field. No args.
-    cisCompanionSoloPicker:
-      name: cisCompanionSoloPicker
+    companionSoloPicker:
+      name: companionSoloPicker
       description: "Shared Info-card body for Brook/Alice/Blake: pick the companion
         for a hunt or send her solo to Owaissa/Elm Street. Args: companionName
         (string, 'Brook'/'Alice'/'Blake'), possessivePronoun (string, e.g.

@@ -414,4 +414,19 @@ $(document).one(':storyready', function () {
 			$(this.output).append('<img ' + attrs.join(' ') + '>');
 		}
 	});
+
+	/* Exclusive audio: when any <video> starts playing, mute every other
+	   <video> on the page so two clips never overlap. `play` doesn't
+	   bubble, so the listener runs in capture phase. Muted-on-start
+	   videos still kick the others -- the "newest video wins" rule
+	   applies regardless of whether the new one carries sound. */
+	document.addEventListener('play', function (ev) {
+		var v = ev.target;
+		if (!v || v.tagName !== 'VIDEO') return;
+		var all = document.getElementsByTagName('video');
+		for (var i = 0; i < all.length; i++) {
+			var other = all[i];
+			if (other !== v && !other.muted) other.muted = true;
+		}
+	}, true);
 }());

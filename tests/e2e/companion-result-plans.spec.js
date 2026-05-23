@@ -89,7 +89,7 @@ test.describe('Companion result plans', () => {
     await setupHunt(page, 'Spirit');
     await page.evaluate(() => {
       SugarCube.State.variables.chosenPlan = 'Plan2';
-      SugarCube.State.variables.companion = { name: 'Alex' };
+      SugarCube.State.variables.companion = { name: 'Alice' };
       const v = SugarCube.State.variables;
       Object.keys(v).forEach(k => { if (/^isCI/.test(k)) v[k] = 0; });
       v.cursedItemHeld = 0;
@@ -105,7 +105,7 @@ test.describe('Companion result plans', () => {
     await setupHunt(page, 'Spirit');
     await page.evaluate(() => {
       SugarCube.State.variables.chosenPlan = 'Plan4';
-      SugarCube.State.variables.companion = { name: 'Alex' };
+      SugarCube.State.variables.companion = { name: 'Alice' };
       // Plan4 prints the floor-plan room label via <<ghostRoom>>; setupHunt's
       // procedural startHunt seeded the floorplan.
     });
@@ -127,7 +127,7 @@ test.describe('Companion result plans', () => {
     await setupHunt(page, 'Spirit');
     await page.evaluate(() => {
       SugarCube.State.variables.chosenPlan = 'Plan4';
-      SugarCube.State.variables.companion = { name: 'Alex' };
+      SugarCube.State.variables.companion = { name: 'Alice' };
     });
     const label = await callSetup(page, 'setup.HuntController.ghostRoomLabel()');
     expect(typeof label).toBe('string');
@@ -149,7 +149,7 @@ test.describe('Companion result plans', () => {
     await setupHunt(page, 'Spirit');
     await page.evaluate(() => {
       SugarCube.State.variables.chosenPlan = 'Plan4';
-      SugarCube.State.variables.companion = { name: 'Alex' };
+      SugarCube.State.variables.companion = { name: 'Alice' };
     });
     // Sanity: the controller-derived label must exist for this fixture.
     const fallback = await callSetup(page, 'setup.HuntController.ghostRoomLabel()');
@@ -167,7 +167,7 @@ test.describe('Companion result plans', () => {
     await setupHunt(page, 'Spirit');
     await page.evaluate(() => {
       SugarCube.State.variables.chosenPlan = 'Plan3';
-      SugarCube.State.variables.companion = { name: 'Alex' };
+      SugarCube.State.variables.companion = { name: 'Alice' };
       // Pin Math.random=0 to force the first hunt evidence.
       window._origRandom = Math.random;
       Math.random = () => 0;
@@ -185,33 +185,33 @@ test.describe('Companion result plans', () => {
   test('grantExpTo bumps the named companion exp by amount', async ({ game: page }) => {
     await page.evaluate(() => {
       const v = SugarCube.State.variables;
-      v.alex = v.alex || { name: 'Alex', lvl: 1, exp: 0 };
-      v.alex.lvl = 1;
-      v.alex.exp = 0;
+      v.alice = v.alice || { name: 'Alice', lvl: 1, exp: 0 };
+      v.alice.lvl = 1;
+      v.alice.exp = 0;
     });
-    await callSetup(page, 'setup.Companion.grantExpTo("Alex", 5)');
-    expect(await callSetup(page, 'SugarCube.State.variables.alex.exp')).toBe(5);
+    await callSetup(page, 'setup.Companion.grantExpTo("Alice", 5)');
+    expect(await callSetup(page, 'SugarCube.State.variables.alice.exp')).toBe(5);
   });
 
   test('grantExpTo is a no-op when companion is maxed out at lvl 5', async ({ game: page }) => {
     await page.evaluate(() => {
       const v = SugarCube.State.variables;
-      v.alex = v.alex || { name: 'Alex', lvl: 5, exp: 0 };
-      v.alex.lvl = 5;
-      v.alex.exp = 50;
+      v.alice = v.alice || { name: 'Alice', lvl: 5, exp: 0 };
+      v.alice.lvl = 5;
+      v.alice.exp = 50;
     });
-    await callSetup(page, 'setup.Companion.grantExpTo("Alex", 10)');
-    expect(await callSetup(page, 'SugarCube.State.variables.alex.exp')).toBe(50);
+    await callSetup(page, 'setup.Companion.grantExpTo("Alice", 10)');
+    expect(await callSetup(page, 'SugarCube.State.variables.alice.exp')).toBe(50);
   });
 
   test('isAtMaxLvl detects level 5', async ({ game: page }) => {
     await page.evaluate(() => {
       const v = SugarCube.State.variables;
-      v.alex = v.alex || { name: 'Alex' };
-      v.alex.lvl = 4;
+      v.alice = v.alice || { name: 'Alice' };
+      v.alice.lvl = 4;
     });
-    expect(await callSetup(page, 'setup.Companion.isAtMaxLvl("Alex")')).toBe(false);
-    await page.evaluate(() => { SugarCube.State.variables.alex.lvl = 5; });
-    expect(await callSetup(page, 'setup.Companion.isAtMaxLvl("Alex")')).toBe(true);
+    expect(await callSetup(page, 'setup.Companion.isAtMaxLvl("Alice")')).toBe(false);
+    await page.evaluate(() => { SugarCube.State.variables.alice.lvl = 5; });
+    expect(await callSetup(page, 'setup.Companion.isAtMaxLvl("Alice")')).toBe(true);
   });
 });

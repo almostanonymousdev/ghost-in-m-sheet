@@ -1,7 +1,7 @@
 // Static catalogue + lookup tables consumed by CompanionController.
 // Pure data only: no behavior, no closures over State.variables. Pulled
 // out of CompanionController so that file is "behavior only" and the
-// six-companion catalogue + per-companion event media tables live in
+// companion catalogue + per-companion event media tables live in
 // one place.
 //
 // Loaded after CompanionController.js alphabetically; the controller
@@ -14,7 +14,7 @@ setup.CompanionData = (function () {
 	// (high/mid/low/crit) maps either to an array of {type, src} entries
 	// or to a {default, inElm?, lustHigh?} bundle whose keys are picked at
 	// runtime by Companion.pickEventMediaList. Hoisted here so the catalogue
-	// config below can inline them onto each cis entry's eventMedia field.
+	// config below can inline them onto each entry's eventMedia field.
 	var eventMediaBrook = {
 		high: {
 			default: [{type:"image",src:"characters/brook/1.0.jpg"},{type:"image",src:"characters/brook/1.1.jpg"},{type:"video",src:"characters/brook/1.2.mp4"},{type:"video",src:"characters/brook/1.3.mp4"},{type:"video",src:"characters/brook/1.4.mp4"},{type:"video",src:"characters/brook/1.5.mp4"}],
@@ -57,13 +57,13 @@ setup.CompanionData = (function () {
 	};
 
 	// Canonical companion catalogue. Static per-companion metadata. The
-	// six near-identical Main passages collapse into a single
+	// near-identical Main passages collapse into a single
 	// <<companionMain>> dispatch by keying off these entries.
 	var config = [
 		{
 			name: "Brook", key: "brook",
 			imageFolder: "brook", imagePrefix: "brook",
-			isTrans: false, canWalkHome: true, hasExpSystem: true,
+			canWalkHome: true, hasExpSystem: true,
 			pronObj: "her", pronPos: "her",
 			neutralResp: "Let's keep it simple.",
 			eventMedia: eventMediaBrook,
@@ -74,9 +74,9 @@ setup.CompanionData = (function () {
 			hasMet:        function () { return setup.Library.hasMetBrook(); },
 			isPossessed:   function () { return setup.Library.brookIsPossessed(); },
 			isUnavailable: function () { return setup.Home.brookePossessedCDLow(); },
-			// Per-companion stat overrides merged over cisBaseStats by
+			// Per-companion stat overrides merged over baseStats by
 			// Companion.prototype.defaultState(). Only the fields that
-			// differ from the shared cis defaults live here.
+			// differ from the shared defaults live here.
 			initStats: {
 				plan2TimeReq: 15, plan3TimeReq: 10, plan4TimeReq: 10,
 				chanceOfSuccessCI: 20, chanceOfSuccessGR: 30
@@ -104,7 +104,7 @@ setup.CompanionData = (function () {
 		{
 			name: "Alice", key: "alice",
 			imageFolder: "alice", imagePrefix: "alice",
-			isTrans: false, canWalkHome: true, hasExpSystem: true,
+			canWalkHome: true, hasExpSystem: true,
 			pronObj: "her", pronPos: "her",
 			neutralResp: "Tell me where you want me.",
 			eventMedia: eventMediaAlice,
@@ -142,7 +142,7 @@ setup.CompanionData = (function () {
 		{
 			name: "Blake", key: "blake",
 			imageFolder: "blake", imagePrefix: "blake",
-			isTrans: false, canWalkHome: true, hasExpSystem: true,
+			canWalkHome: true, hasExpSystem: true,
 			pronObj: "her", pronPos: "her",
 			neutralResp: "Point me at it.",
 			eventMedia: eventMediaBlake,
@@ -175,69 +175,6 @@ setup.CompanionData = (function () {
 				"@@.mc-thoughts; Before entering the room, you hear strange sounds coming from inside. <br>\nAs you entered the room, you immediately saw her. But she wasn't alone. You walked in just in time to see what was happening...<br>\nIt seems she doesn't want to be interrupted. But as soon as the ghost saw you, it disappeared. @@<br>\n@@.mc-speech; $companion.name, are you alright? I heard strange noises...@@<br>\n@@.notmc-speech; Don't worry, it just caught me by surprise.@@<br>\n@@.mc-speech; Sure...@@<br>",
 				"@@.mc-thoughts; Before entering the room, you hear soft moans coming from inside. <br>\nAs you entered the room, you immediately saw her. But she wasn't alone. You walked in just in time to see what was happening...<br>\nIt seems she doesn't want to be interrupted. But as soon as the ghost saw you, it disappeared. @@<br>\n\n@@.mc-speech; $companion.name, are you alright? I heard screaming...@@<br>\n@@.notmc-speech; Don't worry, it just caught me by surprise.@@<br>\n@@.mc-speech; Sure...@@<br>"
 			]
-		},
-		{
-			name: "Alex", key: "alex",
-			imageFolder: "trans", imagePrefix: "alex",
-			isTrans: true, canWalkHome: false, hasExpSystem: false,
-			pronObj: "him", pronPos: "his",
-			neutralResp: "Let's just focus on the task.",
-			// Index into the rotating $transPicture portrait file; stamped
-			// by setup.Companion.markTransFirstStage when this companion
-			// is active.
-			portraitIndex: 1,
-			transMedia: { idx: 1, name: "alex", critMax: 22, bjMax: 5 },
-			initStats: { chanceOfSuccessAnyEvidence: 25 },
-			clothingTiers: [
-				{ mc: "You can take off your shirt, it'll make it easier for you to move.",
-				resp: "Shirt off? Sure, if you say it helps." },
-				{ mc: "Stay in just your underwear, it might help us get through this.",
-				resp: "Down to my underwear? Alright, I trust you." },
-				{ mc: "Just keep your briefs on, it'll be easier for both of us.",
-				resp: "Just my briefs? This feels a bit ridiculous, but fine." },
-				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
-				resp: "Completely naked? You owe me one, $mc.name." }
-			]
-		},
-		{
-			name: "Taylor", key: "taylor",
-			imageFolder: "trans", imagePrefix: "taylor",
-			isTrans: true, canWalkHome: false, hasExpSystem: false,
-			pronObj: "her", pronPos: "her",
-			neutralResp: "Let's just focus on the task.",
-			portraitIndex: 2,
-			transMedia: { idx: 2, name: "taylor", critMax: 21, bjMax: 5 },
-			initStats: { chanceOfSuccessAnyEvidence: 35 },
-			clothingTiers: [
-				{ mc: "You can take off your top, it'll make it easier for you to move.",
-				resp: "Top off? Alright, if you think it'll help." },
-				{ mc: "Stay in just your underwear, it might help us get through this.",
-				resp: "Down to my underwear? Okay, I trust you." },
-				{ mc: "Just keep your panties on, it'll be easier for both of us.",
-				resp: "Just my panties? Embarrassing, but fine..." },
-				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
-				resp: "Completely naked? You're lucky I like you, $mc.name." }
-			]
-		},
-		{
-			name: "Casey", key: "casey",
-			imageFolder: "trans", imagePrefix: "casey",
-			isTrans: true, canWalkHome: false, hasExpSystem: false,
-			pronObj: "them", pronPos: "their",
-			neutralResp: "Let's just focus on the task.",
-			portraitIndex: 3,
-			transMedia: { idx: 3, name: "casey", critMax: 22, bjMax: 6 },
-			initStats: { chanceOfSuccessAnyEvidence: 50 },
-			clothingTiers: [
-				{ mc: "You can take off your top, it'll make it easier for you to move.",
-				resp: "Top off? Alright, if you say so." },
-				{ mc: "Stay in just your underwear, it might help us get through this.",
-				resp: "Down to my underwear? Okay, I trust you." },
-				{ mc: "Just keep your underwear on, it'll be easier for both of us.",
-				resp: "Just my underwear? A bit much, but fine..." },
-				{ mc: "Take everything off, I think it'll distract the ghost and give us an advantage.",
-				resp: "Completely naked? You're really pushing it, $mc.name." }
-			]
 		}
 	];
 
@@ -247,9 +184,9 @@ setup.CompanionData = (function () {
 	var sanityCapByLevel = [75, 75, 50, 25, 0, 0];
 
 	// Shared stat defaults baked into every fresh $brook/$alice/$blake
-	// companion state. Per-companion overrides live in COMPANION_CONFIG's
+	// companion state. Per-companion overrides live in the catalogue's
 	// initStats field.
-	var cisBaseStats = {
+	var baseStats = {
 		sanity: 100, sanityMax: 100, corruption: 0,
 		lust: 0, lvl: 1, exp: 0, expForNextLvl: 20,
 		eventSanityLoss: 10,
@@ -263,21 +200,8 @@ setup.CompanionData = (function () {
 		soloChanceOwaissa: 0, soloChanceElm: 0
 	};
 
-	// Shared defaults for trans companions ($alex/$taylor/$casey). No
-	// corruption / exp fields (locked at lvl 5 with no progression), and
-	// the plan* times are uniformly 5 minutes. Trans companions also have
-	// no solo-hunt path, so the *Solo* fields are omitted.
-	var transBaseStats = {
-		sanity: 100, sanityMax: 100,
-		lust: 0, lvl: 5,
-		plan2TimeReq: 5, plan3TimeReq: 5, plan4TimeReq: 5,
-		eventSanityLoss: 10,
-		chanceOfSuccessCI: 50, chanceOfSuccessGR: 50,
-		chosen: 0, chanceToAttack: 25
-	};
-
 	// The 4 non-zero attack-chance tiers, indexed the same as clothingTiers.
-	// Shared across all six companions: slider values are game-balance, not
+	// Shared across all companions: slider values are game-balance, not
 	// character dialogue.
 	var tierChances = [40, 55, 70, 90];
 	var baseChance  = 25;
@@ -299,21 +223,6 @@ setup.CompanionData = (function () {
 	// payForSoloContract from $mc.money; canAffordSoloContract gates UI.
 	var soloContractFee = 20;
 
-	// CompanionEvent dialog shared by all trans companions (Alex / Taylor /
-	// Casey). Tier-1 has pre/post variants keyed off
-	// setup.Companion.isTransFirstStageSet(); tiers 2-4 are flat strings.
-	// Wikified by <<companionTextEvent>> with $companion.name interpolated
-	// at render time.
-	var transEventCopy = [
-		{
-			pre:  "@@.mc-thoughts; You enter the room and see a figure that clearly belongs to a female body. You don't recognize it until it turns around, revealing $companion.name's face.@@<br>\n@@.mc-speech; $companion.name, are you okay? You look...@@<br>\n@@.notmc-speech; Yeah, it's weird. Maybe this house is doing something to me.<br> Let's find the evidence quickly and get out of here.@@<br>",
-			post: "@@.mc-thoughts; You stumble upon $companion.name, the body has become irresistibly feminine, movements now full of seduction.@@<br>\n@@.mc-speech; $companion.name, you've changed so much... How do you feel with these changes?@@<br>\n@@.mc-speech; I... I don't know... I feel completely different... I can't explain it.@@<br>"
-		},
-		"@@.mc-thoughts; You enter and see the ghost defiling $companion.name, taking every opportunity to satisfy its desires. Its touches and actions make $companion.name moan, sending him into a spiral of wild ecstasy and taboo pleasure.<br>\nSeeing you, the ghost vanishes, leaving $companion.name panting and disheveled, a mix of relief and lingering desire evident on his face.@@<br>\n@@.mc-speech; $companion.name, are you okay?@@<br>\n@@.notmc-speech; Oh~ he touched me, and I... I don't understand what was happening to me.@@<br>",
-		"@@.mc-thoughts; You suddenly burst into the room and see $companion.name engaging in oral sex with the ghost. His movements are full of enthusiasm, but as soon as you enter, the ghost vanishes, leaving $companion.name with wet lips and a face full of confusion.@@<br>\n@@.mc-speech; $companion.name, what the hell is going on here?!@@<br>\n@@.notmc-speech; I... I don't know, he appeared so suddenly, and it seemed like I had no control over my actions. It all happened so fast, I didn't even get to understand anything.@@<br>",
-		"@@.mc-thoughts; You burst into the room and see the ghost fucking $companion.name hard in the ass, his cock going all the way in, making $companion.name 's body shake with each powerful thrust. The ghost disappears upon your arrival, leaving $companion.name with flushed skin and traces of ecstasy on his face.@@<br>\n@@.mc-speech; $companion.name, what's wrong with you? Are you okay after this?@@<br>\n@@.notmc-speech; I... I don't know... He used me, my body... It seems I didn't understand what was happening... It was like I wasn't in my own body, the sensations were so... intense, incredible.@@<br>"
-	];
-
 	// When Plan2 succeeds with no cursed item in hand, one of these is
 	// rolled and the matching $isCI<Type> save flag is set.
 	var cursedItemTypes = [
@@ -326,11 +235,9 @@ setup.CompanionData = (function () {
 	return {
 		config:           config,
 		sanityCapByLevel: sanityCapByLevel,
-		cisBaseStats:     cisBaseStats,
-		transBaseStats:   transBaseStats,
+		baseStats:        baseStats,
 		tierChances:      tierChances,
 		baseChance:       baseChance,
-		transEventCopy:   transEventCopy,
 		soloSkillCurve:   soloSkillCurve,
 		soloRewards:      soloRewards,
 		soloContractFee:  soloContractFee,

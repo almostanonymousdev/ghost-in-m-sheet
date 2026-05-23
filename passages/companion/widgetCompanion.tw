@@ -66,7 +66,7 @@
 	<</linkreplace>>
 <</widget>>
 
-<<widget "cisCompanionSoloPicker">>
+<<widget "companionSoloPicker">>
 	/* Shared body for per-companion Info passages: renders the
 	   "pick her for hunt | send her solo" UI branch that's
 	   identical across Brook, Alice, Blake. Args: companion key
@@ -88,13 +88,13 @@
 	<<else>>
 		/* <<capture>> snapshots _cName into each deferred link's payload —
 		   without it, the click-time callback reads State.temporary._cName,
-		   which holds whatever the last cisCompanionSoloPicker call wrote
+		   which holds whatever the last companionSoloPicker call wrote
 		   (currently only ever called once per passage, but a second call
 		   added later would silently route every Ask-to-Join click to the
 		   wrong companion). */
 		<<capture _cName>>
 			@@.mc-speech;<<link `"Ask " + _cName + " to join you for ghost hunting tonight."`>>
-				<<run setup.Companion.pickCisCompanion(_cName)>>
+				<<run setup.Companion.pickCompanion(_cName)>>
 				<<replace "#companionInfoAnswer">>@@.mc-speech; I want you to join me for ghost hunting today@@<br>
 					@@.notmc-speech; Yes, of course. I'll be ready. Let's meet by the entrance to the haunted house, okay?@@<br>
 					@@.mc-speech; Yeah, let's do that.@@
@@ -108,7 +108,7 @@
 			<</done>>
 			<span class="CompanionInfoAskForHuntAlone">
 			@@.mc-speech;<<link "I'd like you to go ghost hunting alone.">>
-				<<run setup.Companion.deselectCisCompanion(_cName)>>
+				<<run setup.Companion.deselectCompanion(_cName)>>
 				<<replace "#companionInfoAnswer">>@@.notmc-speech; I think I'm already experienced enough to do it on my own. Where should I go?@@<br>
 
 					@@.enterbtn;<<link `"Owaissa Street - " + setup.Companion.soloOdds(_cName, "Owaissa") + " %"`>>

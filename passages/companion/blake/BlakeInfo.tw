@@ -9,7 +9,7 @@
 <span style="color: yellow; font-weight: bold; font-size: 1.2em;"><<= _blake.name>> :</span> <<= _blake.lvl>> lvl <<if _blake.lvl gte 5>> (max. lvl)
 <<else>>(<<= _blake.exp>> / <<= _blake.expForNextLvl>>)
 <</if>><br>
-<<cisCompanionSoloPicker "Blake" "her">>
+<<companionSoloPicker "Blake" "her">>
 </div>
 </div>
 <br>
