@@ -189,7 +189,7 @@ setup.Mc = (function () {
 		addMedicine:    function (n) { sv().medicineAmount    = (sv().medicineAmount    || 0) + n; },
 		addSanityPills: function (n) {
 			sv().sanityPillsAmount = (sv().sanityPillsAmount || 0) + n;
-			if (n > 0 && setup.StoryEvents && setup.StoryEvents.Event) {
+			if (n > 0) {
 				var day = (setup.Time && setup.Time.dailySeed) ? setup.Time.dailySeed() : 0;
 				setup.StoryEvents.emit(setup.StoryEvents.Event.SANITY_PILL_GAINED, { day: day });
 			}
@@ -204,10 +204,8 @@ setup.Mc = (function () {
 		useSanityPill: function () {
 			if (sv().sanityPillsAmount > 0) {
 				sv().sanityPillsAmount -= 1;
-				if (setup.StoryEvents && setup.StoryEvents.Event) {
-					var day = (setup.Time && setup.Time.dailySeed) ? setup.Time.dailySeed() : 0;
-					setup.StoryEvents.emit(setup.StoryEvents.Event.SANITY_PILL_USED, { day: day });
-				}
+				var day = (setup.Time && setup.Time.dailySeed) ? setup.Time.dailySeed() : 0;
+				setup.StoryEvents.emit(setup.StoryEvents.Event.SANITY_PILL_USED, { day: day });
 				return true;
 			}
 			return false;

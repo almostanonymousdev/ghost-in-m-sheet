@@ -309,7 +309,7 @@ setup.HauntedHouses = (function () {
 				forced = setup.tarotDeck.filter(function (c) {
 					return c.name === pick;
 				})[0] || null;
-				if (forced && setup.StoryEvents && setup.StoryEvents.Event) {
+				if (forced) {
 					setup.StoryEvents.emit(setup.StoryEvents.Event.CHEAT_USED, { source: 'cheatTarotCard' });
 				}
 			}

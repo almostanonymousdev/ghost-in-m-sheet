@@ -139,10 +139,8 @@ setup.WitchContract = (function () {
 			setup.Mc.removeMoney(t.fee);
 			s.held = Object.assign({}, t);
 			s.offered.splice(idx, 1);
-			if (setup.StoryEvents && setup.StoryEvents.Event) {
-				setup.StoryEvents.emit(setup.StoryEvents.Event.CONTRACT_SIGNED,
-					{ houseId: t.houseId, fee: t.fee, payout: t.payout });
-			}
+			setup.StoryEvents.emit(setup.StoryEvents.Event.CONTRACT_SIGNED,
+				{ houseId: t.houseId, fee: t.fee, payout: t.payout });
 			return true;
 		},
 		/* Resolve the currently-held contract. `success` true pays the

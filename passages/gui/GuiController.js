@@ -121,9 +121,7 @@ setup.Gui = (function () {
 		// marks the save as cheated.
 		if (typeof settings !== 'undefined' && settings.fastToolTimers) {
 			sv().timerToolsDecreased = "10ms";
-			if (setup.StoryEvents && setup.StoryEvents.Event) {
-				setup.StoryEvents.emit(setup.StoryEvents.Event.CHEAT_USED, { source: 'fastToolTimers' });
-			}
+			setup.StoryEvents.emit(setup.StoryEvents.Event.CHEAT_USED, { source: 'fastToolTimers' });
 			return;
 		}
 		var lvl = setup.Mc.lvl();
@@ -215,9 +213,7 @@ $(document).one(":storyready", function () {
 		if (_lastCheatValue[source] === current) return;
 		_lastCheatValue[source] = current;
 		if (action) action();
-		if (setup.StoryEvents && setup.StoryEvents.Event) {
-			setup.StoryEvents.emit(setup.StoryEvents.Event.CHEAT_USED, { source: source });
-		}
+		setup.StoryEvents.emit(setup.StoryEvents.Event.CHEAT_USED, { source: source });
 	}
 	Setting.addHeader(
 		"Cheats",
@@ -306,9 +302,7 @@ $(document).one(":storyready", function () {
 		} else {
 			$btn.on("click", function (evt) {
 				onClick.call(this, evt);
-				if (setup.StoryEvents && setup.StoryEvents.Event) {
-					setup.StoryEvents.emit(setup.StoryEvents.Event.CHEAT_USED, { source: label });
-				}
+				setup.StoryEvents.emit(setup.StoryEvents.Event.CHEAT_USED, { source: label });
 			});
 		}
 		return $btn;
