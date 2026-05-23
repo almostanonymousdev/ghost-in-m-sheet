@@ -400,18 +400,6 @@ test.describe('Delivery E2E — Correct delivery', () => {
     expect(await getVar(page, 'deliveryCorrectThisShift')).toBeGreaterThanOrEqual(1);
   });
 
-  test('correct delivery tracks visit count', async ({ game: page }) => {
-    await setupReadyWorker(page);
-    const orders = await startShiftWithKnownOrders(page);
-    const address = orders[0].address;
-
-    await setVar(page, 'currentHouse', address);
-    await page.evaluate(() => SugarCube.Engine.play('DeliveryAutoDeliver'));
-    await page.waitForFunction(() => SugarCube.State.passage === 'DeliveryEvent');
-
-    const counts = await getVar(page, 'deliveryVisitCounts');
-    expect(counts[address]).toBe(1);
-  });
 });
 
 // ─── Pizza event apology streak ────────────────────────────────
@@ -858,28 +846,3 @@ test.describe('Delivery E2E — Special order', () => {
   });
 });
 
-// ─── Route familiarity on map ───────────────────────────────────
-
-test.describe('Delivery E2E — Route familiarity display', () => {
-  test('familiar routes get visual indicator on map', async ({ game: page }) => {
-    await setupReadyWorker(page);
-    await setVar(page, 'deliveryVisitCounts', { 'Star Street 25': 3 });
-
-    await startShiftWithKnownOrders(page);
-    await goToPassage(page, 'DeliveryMap');
-
-    const familiarHouse = page.locator('.familiar-house');
-    await expect(familiarHouse).toHaveCount(1);
-  });
-
-  test('unfamiliar routes have no familiar-house class', async ({ game: page }) => {
-    await setupReadyWorker(page);
-    await setVar(page, 'deliveryVisitCounts', {});
-
-    await startShiftWithKnownOrders(page);
-    await goToPassage(page, 'DeliveryMap');
-
-    const familiarHouse = page.locator('.familiar-house');
-    await expect(familiarHouse).toHaveCount(0);
-  });
-});

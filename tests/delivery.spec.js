@@ -595,44 +595,6 @@ test.describe('Delivery Controller', () => {
     expect(time).toBe(20);
   });
 
-  // --- Route familiarity ---
-
-  test('isRouteFamiliar false with no visits', async ({ game: page }) => {
-    // arrange
-    await setVar(page, 'deliveryVisitCounts', {});
-
-    // act
-    const result = await callSetup(page, "setup.Delivery.isRouteFamiliar('Star Street 25')");
-
-    // assert
-    expect(result).toBe(false);
-  });
-
-  test('isRouteFamiliar true after 3 visits', async ({ game: page }) => {
-    // arrange
-    await setVar(page, 'deliveryVisitCounts', { 'Star Street 25': 3 });
-
-    // act
-    const result = await callSetup(page, "setup.Delivery.isRouteFamiliar('Star Street 25')");
-
-    // assert
-    expect(result).toBe(true);
-  });
-
-  test('trackVisit increments visit count', async ({ game: page }) => {
-    // arrange
-    await setVar(page, 'deliveryVisitCounts', {});
-    await setVar(page, 'currentHouse', 'Star Street 25');
-
-    // act
-    await callSetup(page, "setup.Delivery.trackVisit('Star Street 25')");
-    await callSetup(page, "setup.Delivery.trackVisit('Star Street 25')");
-    const counts = await getVar(page, 'deliveryVisitCounts');
-
-    // assert
-    expect(counts['Star Street 25']).toBe(2);
-  });
-
   // --- Unified delivery-event catalogue & dispatch helpers ---
 
   test('eventNameForItem maps order items to catalogue keys', async ({ game: page }) => {

@@ -180,13 +180,4 @@ test.describe('Delivery manager events', () => {
     expect(await callSetup(page, 'setup.Delivery.deliveryTime()')).toBe(20);
   });
 
-  test('isRouteFamiliar fires after 3 trackVisit calls to the same address', async ({ game: page }) => {
-    await page.evaluate(() => { delete SugarCube.State.variables.deliveryVisitCounts; });
-    expect(await callSetup(page, 'setup.Delivery.isRouteFamiliar("ElmSt")')).toBeFalsy();
-    await callSetup(page, 'setup.Delivery.trackVisit("ElmSt")');
-    await callSetup(page, 'setup.Delivery.trackVisit("ElmSt")');
-    expect(await callSetup(page, 'setup.Delivery.isRouteFamiliar("ElmSt")')).toBe(false);
-    await callSetup(page, 'setup.Delivery.trackVisit("ElmSt")');
-    expect(await callSetup(page, 'setup.Delivery.isRouteFamiliar("ElmSt")')).toBe(true);
-  });
 });

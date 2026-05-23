@@ -23,7 +23,6 @@ setup.Delivery = (function () {
 		// $deliveryActiveIcon{1,2,3} flat flags. SaveMigration folds the
 		// legacy keys into this array.
 		'deliveryActiveIcons',
-		'deliveryVisitCounts',
 		'currentHouse', 'currentOrder', 'orders', 'shuffledOrders',
 		'order1', 'order2', 'order3',
 		'jobMoneySuccessed', 'jobMoneyFailed',
@@ -98,18 +97,6 @@ setup.Delivery = (function () {
 		},
 		deliveryTime: function () {
 			return this.reputationLevel() >= 3 ? 20 : 30;
-		},
-
-		// --- Route familiarity -----------------------------------
-		isRouteFamiliar: function (address) {
-			var counts = sv().deliveryVisitCounts;
-			return counts && counts[address] >= 3;
-		},
-		trackVisit: function (address) {
-			var counts = sv().deliveryVisitCounts;
-			if (!counts) { counts = {}; sv().deliveryVisitCounts = counts; }
-			if (!counts[address]) { counts[address] = 0; }
-			counts[address] += 1;
 		},
 
 		// --- Hub hours / shift eligibility -----------------------

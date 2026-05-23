@@ -109,7 +109,6 @@ integer in [start, end]. Replaces the 4-10 line <<if>> ladders each
 	/* Track a correct delivery for perfect-shift bonus. */
 	<<widget "deliveryTrackCorrect">>
 		<<run setup.Delivery.incrementCorrectThisShift()>>
-		<<run setup.Delivery.trackVisit(setup.Delivery.currentHouse())>>
 	<</widget>>
 
 	/* Generic successful-delivery block: used when the matched item has no

@@ -66,24 +66,10 @@
 	display: inline-block;
 }
 
-/* ===== Highlighted Houses — Shared Base ===== */
-.familiar-house,
-.special-house {
-	border-radius: 8px;
-}
-
-.familiar-house {
-	border: 2px solid #4CAF50;
-	background: rgba(76, 175, 80, 0.1);
-}
-
-.familiar-house .iconsOnMap {
-	box-shadow: 0 0 6px #4CAF50;
-}
-
 .special-house {
 	border: 2px solid gold;
 	background: rgba(255, 215, 0, 0.1);
+	border-radius: 8px;
 }
 
 .special-house .iconsOnMap {

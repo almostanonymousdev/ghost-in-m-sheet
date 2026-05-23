@@ -671,7 +671,7 @@
 		'foundDesecratedBook', 'tornPagesFound',
 		'isBrookePossessed', 'mcSleptWithCameraOn', 'holyWaterIsCollected',
 		'deliveryCompletedShifts', 'deliveryBestStreak', 'deliveryTotalTips',
-		'deliveryVisitCounts', 'jobMoneySuccessed', 'jobMoneyFailed',
+		'jobMoneySuccessed', 'jobMoneyFailed',
 		'ghostInfoCollected', 'knowledgeUsed',
 		'highpriestess', 'bansheeAbility', 'cthulionAbility',
 		'achievements', 'meta',

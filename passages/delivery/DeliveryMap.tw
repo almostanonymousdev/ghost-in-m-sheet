@@ -5,9 +5,8 @@
 <<for _cell range setup.deliveryMapLayout>>
 	<<capture _cell>>
 		<<if _cell neq "">>
-			<<set _familiar to setup.Delivery.isRouteFamiliar(_cell)>>
 			<<set _isSpecial to (setup.Delivery.specialOrderActive() and _cell is setup.Delivery.specialOrderAddress())>>
-			<div @class="'housecard' + (_familiar ? ' familiar-house' : '') + (_isSpecial ? ' special-house' : '')">
+			<div @class="'housecard' + (_isSpecial ? ' special-house' : '')">
 			<<set _sp to _cell.lastIndexOf(" ")>>
 			<<set _label to _cell.substr(0, _sp) + ", " + _cell.substr(_sp + 1)>>
 			<<image "ui/img/delivery1.png" "iconsOnMap">>

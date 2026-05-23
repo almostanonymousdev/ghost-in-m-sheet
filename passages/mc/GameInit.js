@@ -82,7 +82,6 @@ setup.Game = (function () {
 		s.deliveryStreak = 0;
 		s.deliveryBestStreak = 0;
 		s.deliveryTotalTips = 0;
-		s.deliveryVisitCounts = {};
 		s.deliverySpecialOrder = false;
 		s.deliverySpecialOrderAddress = '';
 		s.deliverySpecialOrderPay = 0;
