@@ -3,11 +3,11 @@ const { openGame, resetGame, getVar, setVar, callSetup } = require('./helpers');
 
 /* setup.WitchContract is Khadija's contract storefront. State is
    bundled under $contracts ({ offered, held, lastRefreshDay }). The
-   board refreshes whenever $dailySeed advances; buying a key deducts
-   cash + stamps held; resolving a key on success pays the contract
-   payout, on failure burns it. HuntController.endHunt() splits the
-   payout: contract hunts pay cash only, rogue hunts pay cash AND
-   ectoplasm. */
+   board refreshes whenever $dailySeed advances; buying a contract
+   deducts cash + stamps held; resolving a contract on success pays
+   the contract payout, on failure burns it. HuntController.endHunt()
+   splits the payout: contract hunts pay cash only, rogue hunts pay
+   cash AND ectoplasm. */
 test.describe('WitchContract storefront', () => {
   let page;
 
@@ -136,15 +136,14 @@ test.describe('WitchContract storefront', () => {
   });
 
   test('sleepAdvance() leaves the held contract intact', async () => {
-    /* The held key is the player's purchased contract; sleeping must
-       reroll the offered list but never burn what the MC already paid
-       for. */
+    /* The held contract is what the player has paid for; sleeping
+       must reroll the offered list but never burn it. */
     await page.evaluate(() => SugarCube.setup.WitchContract.cheatGrantContract('owaissa'));
     await page.evaluate(() => SugarCube.setup.Home.sleepAdvance(8));
     expect(await callSetup(page, 'setup.WitchContract.heldHouseId()')).toBe('owaissa');
   });
 
-  // --- Buying a key ------------------------------------------------------
+  // --- Buying a contract -------------------------------------------------
 
   test('buyContract() deducts the fee, removes the offering, stamps held', async () => {
     await page.evaluate(() => { SugarCube.setup.Mc.setMoney(500); });
@@ -168,8 +167,8 @@ test.describe('WitchContract storefront', () => {
   test('buyContract() refuses when a contract is already held', async () => {
     await page.evaluate(() => { SugarCube.setup.Mc.setMoney(500); });
     expect(await callSetup(page, 'setup.WitchContract.buyContract("owaissa")')).toBe(true);
-    /* Second purchase must be refused -- the witch sells one key at a
-       time. Elm is still on the board but the held slot is occupied. */
+    /* Second purchase must be refused -- the witch sells one contract
+       at a time. Elm is still on the board but the held slot is occupied. */
     expect(await callSetup(page, 'setup.WitchContract.buyContract("elm")')).toBe(false);
     expect(await callSetup(page, 'setup.WitchContract.heldHouseId()')).toBe('owaissa');
     expect(await callSetup(page, 'setup.Mc.money()')).toBe(470);
@@ -193,7 +192,7 @@ test.describe('WitchContract storefront', () => {
 
   // --- canEnterHouse predicate ------------------------------------------
 
-  test('canEnterHouse() gates static houses on the matching held key', async () => {
+  test('canEnterHouse() gates static houses on the matching held contract', async () => {
     expect(await callSetup(page, 'setup.WitchContract.canEnterHouse("owaissa")')).toBe(false);
     expect(await callSetup(page, 'setup.WitchContract.canEnterHouse("elm")')).toBe(false);
 
@@ -211,7 +210,7 @@ test.describe('WitchContract storefront', () => {
     expect(await callSetup(page, 'setup.WitchContract.hasHeldContract()')).toBe(false);
   });
 
-  test('resolveHeld(false) burns the key for 0 and clears held', async () => {
+  test('resolveHeld(false) burns the contract for 0 and clears held', async () => {
     await page.evaluate(() => SugarCube.setup.WitchContract.cheatGrantContract('elm'));
     const pay = await callSetup(page, 'setup.WitchContract.resolveHeld(false)');
     expect(pay).toBe(0);
@@ -251,9 +250,9 @@ test.describe('HuntController.endHunt() payout split', () => {
   });
 
   test('contract hunt (success) pays cash only -- no ectoplasm', async () => {
-    /* Stamp the held key first, then start a static-house run so
-       $run.staticHouseId matches heldHouseId. endHunt(true) pays the
-       owaissa payout (200) and nothing else. */
+    /* Stamp the held contract first, then start a static-house run
+       so $run.staticHouseId matches heldHouseId. endHunt(true) pays
+       the owaissa payout (200) and nothing else. */
     await page.evaluate(() => SugarCube.setup.WitchContract.cheatGrantContract('owaissa'));
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: 'owaissa' }));
 
@@ -267,11 +266,11 @@ test.describe('HuntController.endHunt() payout split', () => {
     expect(summary.ectoplasmPayout).toBe(0);
     expect(await callSetup(page, 'setup.Mc.money()')).toBe(moneyBefore + 200);
     expect(await callSetup(page, 'setup.HuntController.ectoplasm()')).toBe(ectoplasmBefore);
-    /* Resolving consumes the held key. */
+    /* Resolving consumes the held contract. */
     expect(await callSetup(page, 'setup.WitchContract.hasHeldContract()')).toBe(false);
   });
 
-  test('contract hunt (failure) burns the key for no payout', async () => {
+  test('contract hunt (failure) burns the contract for no payout', async () => {
     await page.evaluate(() => SugarCube.setup.WitchContract.cheatGrantContract('elm'));
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: 'elm' }));
 
@@ -322,10 +321,10 @@ test.describe('HuntController.endHunt() payout split', () => {
     expect(await callSetup(page, 'setup.HuntController.ectoplasm()')).toBe(ectoplasmBefore + 3);
   });
 
-  test('held key for a different house falls back to the rogue payout', async () => {
-    /* Hold owaissa key, run elm. heldHouseId !== run.staticHouseId so
-       isContractHunt is false; payout is rogue (cash + ectoplasm).
-       The owaissa key stays held -- nothing consumes it. Elm's
+  test('held contract for a different house falls back to the rogue payout', async () => {
+    /* Hold owaissa contract, run elm. heldHouseId !== run.staticHouseId
+       so isContractHunt is false; payout is rogue (cash + ectoplasm).
+       The owaissa contract stays held -- nothing consumes it. Elm's
        catalogue entry pins modifierCount to 0, so the payout multiplier
        stays at the baseline (1). */
     await page.evaluate(() => SugarCube.setup.WitchContract.cheatGrantContract('owaissa'));

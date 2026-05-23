@@ -18,7 +18,12 @@
  */
 setup.StoryEvents = (function () {
 	var Event = Object.freeze({
-		CHEAT_USED: 'cheat-used'  // ctx: { source } -- any cheat toggled or fired
+		CHEAT_USED:         'cheat-used',         // ctx: { source } -- any cheat toggled or fired
+		CONTRACT_SIGNED:    'contract-signed',    // ctx: { houseId, fee, payout }
+		MODIFIER_BANNED:    'modifier-banned',    // ctx: { id }
+		REROLL_USED:        'reroll-used',        // ctx: {}
+		SANITY_PILL_GAINED: 'sanity-pill-gained', // ctx: { day } -- day = setup.Time.dailySeed() at time of gain
+		SANITY_PILL_USED:   'sanity-pill-used'    // ctx: { day }
 	});
 
 	var listeners = {};

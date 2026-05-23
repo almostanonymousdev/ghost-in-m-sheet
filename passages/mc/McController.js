@@ -187,7 +187,13 @@ setup.Mc = (function () {
 		// addMedicine / addSanityPills tolerate undefined so callers
 		// don't have to bootstrap the counter on legacy saves.
 		addMedicine:    function (n) { sv().medicineAmount    = (sv().medicineAmount    || 0) + n; },
-		addSanityPills: function (n) { sv().sanityPillsAmount = (sv().sanityPillsAmount || 0) + n; },
+		addSanityPills: function (n) {
+			sv().sanityPillsAmount = (sv().sanityPillsAmount || 0) + n;
+			if (n > 0 && setup.StoryEvents && setup.StoryEvents.Event) {
+				var day = (setup.Time && setup.Time.dailySeed) ? setup.Time.dailySeed() : 0;
+				setup.StoryEvents.emit(setup.StoryEvents.Event.SANITY_PILL_GAINED, { day: day });
+			}
+		},
 		useMedicine: function () {
 			if (sv().medicineAmount > 0) {
 				sv().medicineAmount -= 1;
@@ -198,6 +204,10 @@ setup.Mc = (function () {
 		useSanityPill: function () {
 			if (sv().sanityPillsAmount > 0) {
 				sv().sanityPillsAmount -= 1;
+				if (setup.StoryEvents && setup.StoryEvents.Event) {
+					var day = (setup.Time && setup.Time.dailySeed) ? setup.Time.dailySeed() : 0;
+					setup.StoryEvents.emit(setup.StoryEvents.Event.SANITY_PILL_USED, { day: day });
+				}
 				return true;
 			}
 			return false;

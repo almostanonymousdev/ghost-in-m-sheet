@@ -5,9 +5,9 @@
 
    Khadija's rule -- "one guess per contract" -- is enforced by the
    resolve step: the dropdown selection is read on submit and the
-   held key is consumed either way. If the player wants to come back
-   later (don't guess until you know), they can <<Back>> out and the
-   contract stays held + the hunt stays active. The shop's other
+   held contract is consumed either way. If the player wants to come
+   back later (don't guess until you know), they can <<Back>> out and
+   the contract stays held + the hunt stays active. The shop's other
    surfaces (WitchSale / WitchContracts / WitchEctoplasm) remain
    reachable from WitchInside in the meantime. */
 <<if not setup.HuntController.isActive() or not setup.WitchContract.hasHeldContract()>>
@@ -29,10 +29,10 @@
 /* Locks the player's guess in, settles the contract, and prints
    Khadija's reaction. The endHunt(success) call routes through the
    shared lifecycle cleanup -- pay cash on a correct call, burn the
-   key on a wrong one -- and also tears down the run state
+   contract on a wrong one -- and also tears down the run state
    (sanity/energy caps, wardrobe, modifiers, next-seed roll). After
    this passage the player is no longer in-hunt; from WitchInside
-   they can buy a new key or walk away.
+   they can buy a new contract or walk away.
 
    Reveal staging mirrors HuntIdentifyResolve: Khadija's "give me a
    minute" video plays while the 6s <<timed>> wait runs, then the
@@ -65,9 +65,9 @@
 		<<else>>
 			<<run setup.HuntController.markFailure(setup.HuntController.FailureReason.WRONG_CALL)>>
 			<<set _summary to setup.HuntController.endHunt(false)>>
-			<div class="hunt-reveal hunt-reveal-text">@@.notmc-speech; <<= _guess>>? No. It was a <<= _trueGhost.name>>. <<= _trueGhost.evidenceLabels()>>. Key's spent. Try again with a fresh one.@@<br>
+			<div class="hunt-reveal hunt-reveal-text">@@.notmc-speech; <<= _guess>>? No. It was a <<= _trueGhost.name>>. <<= _trueGhost.evidenceLabels()>>. Contract's spent. Try again with a fresh one.@@<br>
 				<br>
-				<span class="mc-thoughts">No payout. The key's spent.</span><br>
+				<span class="mc-thoughts">No payout. The contract's spent.</span><br>
 				<span class="mc-action">+<<= _summary.xp>> exp</span></div>
 		<</if>>
 		<div class="hunt-reveal hunt-reveal-buttons">@@.backbtn; [[Back|WitchInside]]@@</div>

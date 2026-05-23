@@ -382,12 +382,20 @@
        bogus reading this tick. Default denominators are 0 (no glitches);
        Raiju overrides via cfg.emfGlitchChance / cfg.temperatureGlitchChance. */
     Ghost.prototype.rollEmfGlitch = function () {
-        return this.emfGlitchChance > 0 &&
+        var hit = this.emfGlitchChance > 0 &&
             Math.floor(Math.random() * this.emfGlitchChance) === 0;
+        if (hit && setup.Hunt && setup.Hunt.Event) {
+            setup.Hunt.emit(setup.Hunt.Event.SENSOR_GLITCH, { tool: 'emf' });
+        }
+        return hit;
     };
     Ghost.prototype.rollTemperatureGlitch = function () {
-        return this.temperatureGlitchChance > 0 &&
+        var hit = this.temperatureGlitchChance > 0 &&
             Math.floor(Math.random() * this.temperatureGlitchChance) === 0;
+        if (hit && setup.Hunt && setup.Hunt.Event) {
+            setup.Hunt.emit(setup.Hunt.Event.SENSOR_GLITCH, { tool: 'temperature' });
+        }
+        return hit;
     };
 
     var GHOSTS = GHOST_CONFIG.map(function (cfg) { return new Ghost(cfg); });
@@ -714,6 +722,9 @@
                 var name = ghostTypes[Math.floor(Math.random() * ghostTypes.length)];
                 setup.HuntController.setField('disguiseName', name);
                 V.lastChangeIntervalMimic = interval;
+                if (setup.Hunt && setup.Hunt.Event) {
+                    setup.Hunt.emit(setup.Hunt.Event.MIMIC_ROTATE, { disguiseName: name });
+                }
                 return name;
             }
             return null;

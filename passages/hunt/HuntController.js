@@ -944,17 +944,19 @@ setup.HuntController = (function () {
 
 	/* End the active run, paying out cash (contract hunt) or cash
 	   plus ectoplasm (rogue hunt) based on whether the MC walked in
-	   with a key from Khadija. Returns a small summary record the
-	   result passage can render without needing to peek at $run state.
+	   with a contract from Khadija. Returns a small summary record
+	   the result passage can render without needing to peek at $run
+	   state.
 
 	   Payout split:
-	     * Contract hunt -- $run.staticHouseId matches the key the
-	       player is holding from setup.WitchContract. Success pays
-	       the contract's cash payout (modifier multiplier applies).
-	       Any failure burns the key for no money. No ectoplasm.
-	     * Rogue hunt -- no contract held, or the held key is for a
-	       different house. Pays cash on success and ectoplasm on
-	       any outcome (small consolation on failure). Cash is the
+	     * Contract hunt -- $run.staticHouseId matches the contract
+	       the player is holding from setup.WitchContract. Success
+	       pays the contract's cash payout (modifier multiplier
+	       applies). Any failure burns the contract for no money. No
+	       ectoplasm.
+	     * Rogue hunt -- no contract held, or the held contract is
+	       for a different house. Pays cash on success and ectoplasm
+	       on any outcome (small consolation on failure). Cash is the
 	       steady-income side, ectoplasm feeds the meta-shop.
 
 	   Run cleanup mirrors the classic HuntOver* passages: commit any

@@ -11,7 +11,7 @@
    Hidden entirely until the witch's ectoplasm-unlock quest is
    complete -- pre-quest the rogue economy (random addresses +
    ectoplasm payout) is gated off, and the player only hunts the
-   static contract houses via Khadija's keys. */
+   static contract houses via Khadija's contracts. */
 <<widget "huntCard">>
 	<<if setup.Witch.ectoplasmUnlocked()>>
 		<<set _huntAddr to setup.HuntController.addressFromSeed(setup.HuntController.nextSeed()).formatted>>
@@ -43,7 +43,7 @@
 			<<elseif typeof _rsh.gate eq "function" and not _rsh.gate()>>
 				@@.mc-thoughts; <<= _rsh.gateMessage or "Locked">>@@
 			<<elseif not setup.WitchContract.canEnterHouse(_rsh.id)>>
-				@@.mc-thoughts; Need a key from Khadija@@
+				@@.mc-thoughts; Need a contract from Khadija@@
 			<<else>>
 				<<capture _rsh>>
 					@@.icontext;<<link _rsh.label "HuntStart">>

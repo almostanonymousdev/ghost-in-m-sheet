@@ -1,16 +1,16 @@
 /*
  * Witch contract storefront.
  *
- * Khadija sells "keys" to specific haunted houses. The MC pays the
- * fee up front, holds one key at a time, and the GhostStreet card
- * for the matching house unlocks until the run resolves. On a
- * correct call she pays cash; on any other outcome the key is
- * gone and no payout.
+ * Khadija sells contracts on specific haunted houses. The MC pays
+ * the fee up front, holds one contract at a time, and the
+ * GhostStreet card for the matching house unlocks until the run
+ * resolves. On a correct call she pays cash; on any other outcome
+ * the contract is spent and no payout.
  *
  * Contract hunts pay only in cash. Procedural ("rogue") hunts -- no
- * key held, MC walks into a stranger's house on her own -- pay both
- * cash AND ectoplasm. The split is intentional: contracts are the
- * steady-income loop, rogue runs are the meta-progression loop.
+ * contract held, MC walks into a stranger's house on her own -- pay
+ * both cash AND ectoplasm. The split is intentional: contracts are
+ * the steady-income loop, rogue runs are the meta-progression loop.
  *
  * State shape:
  *   $contracts = {
@@ -109,7 +109,7 @@ setup.WitchContract = (function () {
 		   advanced. Called from setup.Home.sleepAdvance so every sleep
 		   brings a fresh slate -- including alarm-shortened naps that
 		   wake before midnight and so wouldn't otherwise reseed
-		   $dailySeed. The held key is untouched; it survives sleep
+		   $dailySeed. The held contract is untouched; it survives sleep
 		   until a hunt resolves it. */
 		refresh: function () {
 			var s = state();
@@ -139,14 +139,18 @@ setup.WitchContract = (function () {
 			setup.Mc.removeMoney(t.fee);
 			s.held = Object.assign({}, t);
 			s.offered.splice(idx, 1);
+			if (setup.StoryEvents && setup.StoryEvents.Event) {
+				setup.StoryEvents.emit(setup.StoryEvents.Event.CONTRACT_SIGNED,
+					{ houseId: t.houseId, fee: t.fee, payout: t.payout });
+			}
 			return true;
 		},
 		/* Resolve the currently-held contract. `success` true pays the
-		   contract's cash payout; anything else burns the key for no
-		   money. Either way the held slot clears and the player can
-		   buy a new key next time the board refreshes. Returns the
-		   cash amount paid (0 on burnt-key). No-op when no contract
-		   is held -- safe to call from endHunt for every hunt. */
+		   contract's cash payout; anything else burns the contract for
+		   no money. Either way the held slot clears and the player can
+		   buy a new contract next time the board refreshes. Returns
+		   the cash amount paid (0 on a spent contract). No-op when no
+		   contract is held -- safe to call from endHunt for every hunt. */
 		resolveHeld: function (success) {
 			var s = state();
 			var contract = s.held;

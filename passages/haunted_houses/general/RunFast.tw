@@ -18,6 +18,7 @@
 		<<set _check to 0>>
 	<</if>>
 	<<if _check lte 30>>
+		<<run setup.Achievements.noteRunOutcome(false)>>
 
 		You decide to look back, and your heart freezes with terror. The ghost is still there, closer than you thought.
 		Cold air surrounds you, and you feel an icy hand reaching for you. You have a little time to
@@ -37,6 +38,7 @@
 		<</if>>
 
 	<<else>>
+		<<run setup.Achievements.noteRunOutcome(true)>>
 		You decide to look back, and to your relief, you see that the ghost has disappeared. The footsteps are no longer audible, and the shadows have stopped closing in around you. You slow down, trying to catch your breath, and feel the adrenaline slowly leaving your body. You managed to escape, and @@.enterbtn;[[you are safe -- for now.|$return]]@@<br>
 		<br>
 	<</if>>

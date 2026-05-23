@@ -31,19 +31,39 @@ setup.Achievements = setup.Achievements || {};
 		{ id: 'fail.caught',     name: 'Caught Cold',           hint: 'Get taken by something hungry.',        category: 'failure' },
 		{ id: 'fail.possessed',  name: 'Not Yourself',          hint: 'Wear another voice home.',              category: 'failure' },
 		{ id: 'fail.fled',       name: 'Better Part of Valor',  hint: 'Leave a house in a hurry.',             category: 'failure' },
-		{ id: 'fail.abandon',    name: 'Cold Feet',             hint: 'Walk away from a contract.',            category: 'failure' },
+		// `fail.abandon` fires on FailureReason.ABANDON, which today only
+		// stamps from the Monkey Paw "leave wish" exit -- not a generic
+		// contract walk-out. Distinct from `disc.cold_feet` below.
+		{ id: 'fail.abandon',    name: 'Out the Back',          hint: 'Wish your way out of a hunt.',          category: 'failure' },
 
 		// --- Wins with a twist (Hunt.Event.HUNT_END_ASSAULTED) ---
 		{ id: 'win.first',    name: 'First Blood',     hint: 'Banish your first ghost.',                      category: 'win' },
 		{ id: 'win.nocaught', name: 'Untouched',       hint: 'Win without ever being grabbed.', hidden: true, category: 'win' },
 		{ id: 'win.notools',  name: 'Bare Hands',      hint: 'Win without activating EMF or UVL.', hidden: true, category: 'win' },
 		{ id: 'win.mimic',    name: 'Pierce the Veil', hint: 'Banish a Mimic.',                  hidden: true, category: 'win' },
+		{ id: 'win.pacifist',    name: 'Used My Words',                 hint: 'Win without pressing the spiritbox once.',                    hidden: true, category: 'win' },
+		{ id: 'win.no_wishes',   name: "No, I've Read That Story",      hint: 'Carry the monkey paw through a winning hunt without burning a wish.', hidden: true, category: 'win' },
+		{ id: 'win.empty_bag',   name: 'Improvise, Adapt, Get Felt Up', hint: 'Win a hunt rolled with Empty Bag.',                            hidden: true, category: 'win' },
+		{ id: 'win.speed_banish',name: "Home Before the Coffee's Cold", hint: 'Banish a ghost in under an hour of in-house time.',           hidden: true, category: 'win' },
+		{ id: 'win.faceoff',     name: 'Face/Off',                      hint: 'Banish a Mimic before it changes face.',                      hidden: true, category: 'win' },
+		{ id: 'win.knocks',      name: "I'm the One Who Knocks",        hint: 'Outlast the Mare.',                                           hidden: true, category: 'win' },
 
 		// --- Discovery (one-shot the first time something rare fires) ---
 		{ id: 'disc.trap',      name: 'Pinned',         hint: 'Trap a ghost mid-hunt.',         category: 'discovery' },
 		{ id: 'disc.drift',     name: 'It Moved',       hint: 'Watch the favorite room shift.', category: 'discovery' },
 		{ id: 'disc.loot.cash', name: 'Sticky Fingers', hint: 'Pocket cash off a haunted shelf.', category: 'discovery' },
 		{ id: 'disc.loot.ecto', name: 'Green Thumb',    hint: 'Bottle ectoplasm.',              category: 'discovery' },
+		{ id: 'disc.three_am',     name: 'Three A.M. Somewhere',                hint: 'Be out at the witching hour.',                                 category: 'discovery' },
+		{ id: 'disc.trap_twice',   name: 'Stay. Sit. Stay. Again.',             hint: 'Trap the same ghost twice in one hunt.',                       category: 'discovery' },
+		{ id: 'disc.pants_on_fire',name: 'Pants on Fire',                       hint: 'Catch a sensor lying to you.',                                 category: 'discovery' },
+		{ id: 'disc.drift_twice',  name: "Can't Stop Won't Stop Moving",        hint: 'Watch the favorite room shift twice in one hunt.',             category: 'discovery' },
+		{ id: 'disc.naughty_list', name: 'On the Naughty List',                 hint: 'Permanently ban a modifier from your draft pool.',             category: 'discovery' },
+		{ id: 'disc.tempting_fate',name: 'Tempting Fate',                       hint: 'Spend a reroll charge.',                                       category: 'discovery' },
+		{ id: 'disc.take_two',     name: 'Take Two and Call Me in the Morning', hint: 'Get a sanity pill and swallow one before midnight.',           category: 'discovery' },
+		{ id: 'disc.library_card', name: "Havin' Fun Ain't Hard",               hint: 'Crack open one of the deep-shelf books.',                      category: 'discovery' },
+		{ id: 'disc.good_girl',    name: 'Good Girl',                           hint: 'Sign your first contract with Khadija.',                       category: 'discovery' },
+		{ id: 'disc.cold_feet',    name: 'Cold Feet',                           hint: 'Walk out of a contracted house without facing the ghost.',     category: 'discovery' },
+		{ id: 'disc.hide_and_seek',name: 'Hide and Seek',                       hint: 'Learn which ghosts will not be hidden from, and which you must outrun.', hidden: true, category: 'discovery' },
 
 		// repeatable:true entries re-fire UNLOCKED every time unlock()
 		// is called, regardless of stored state -- the player-button

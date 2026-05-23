@@ -176,6 +176,9 @@ setup.HuntShop = (function () {
 		}
 		if (bannedSlotsUsed() >= bannedSlotsTotal()) return false;
 		m.bannedModifiers.push(id);
+		if (setup.StoryEvents && setup.StoryEvents.Event) {
+			setup.StoryEvents.emit(setup.StoryEvents.Event.MODIFIER_BANNED, { id: id });
+		}
 		return true;
 	}
 	function isBanned(id) { return metaState().bannedModifiers.indexOf(id) !== -1; }
@@ -191,6 +194,9 @@ setup.HuntShop = (function () {
 		// Mirror the unlocks count so /buy and consume agree.
 		var u = (m.unlocks[ShopItem.REROLL_CHARGE] || 0) - 1;
 		m.unlocks[ShopItem.REROLL_CHARGE] = u > 0 ? u : 0;
+		if (setup.StoryEvents && setup.StoryEvents.Event) {
+			setup.StoryEvents.emit(setup.StoryEvents.Event.REROLL_USED, {});
+		}
 		return true;
 	}
 

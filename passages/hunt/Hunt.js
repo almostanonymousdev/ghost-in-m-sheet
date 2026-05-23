@@ -61,7 +61,16 @@ setup.Hunt = (function () {
 		/* A prowl event resolved against the player (NudityEvent, prayer
 		   miss, freeze, on-tick prowl, hunt-over passages). Ghosts that
 		   stamp a per-prowl flag (e.g. Twins) subscribe here. */
-		PROWL_EVENT:       'prowl-event'
+		PROWL_EVENT:       'prowl-event',
+		/* Raiju-style sensor glitch rolled true on this tick.
+		   ctx: { tool: 'emf' | 'temperature' }. */
+		SENSOR_GLITCH:     'sensor-glitch',
+		/* Mimic disguise actually swapped (rollMimicType fired and
+		   changed disguiseName). ctx: { disguiseName }. */
+		MIMIC_ROTATE:      'mimic-rotate',
+		/* renderSpiritbox was invoked this tick (player pressed the
+		   spiritbox tool in a haunted house). ctx: {}. */
+		SPIRITBOX_USED:    'spiritbox-used'
 	});
 
 	var listeners = {};

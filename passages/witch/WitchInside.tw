@@ -27,7 +27,7 @@
 
 	&emsp;@@.notmc-speech; It's the only one I bother with. Here's how this works.@@<br>
 
-	&emsp;@@.notmc-speech; I sell keys, not jobs. You give me a fee, I give you a key, you spend one night in the house with it. You come back and you tell me what was in there. Get the type right, there's money. Get it wrong, there isn't, and the key doesn't work twice.@@<br>
+	&emsp;@@.notmc-speech; I sell contracts, not jobs. You give me a fee, I give you the contract, you spend one night in the house. You come back and you tell me what was in there. Get the type right, there's money. Get it wrong, there isn't, and the contract doesn't pay twice.@@<br>
 
 	&emsp;@@.mc-speech; One guess per contract?@@<br>
 
@@ -37,9 +37,9 @@
 
 	&emsp;You glance at the upturned clipboard. She doesn't move it.<br>
 
-	&emsp;@@.notmc-speech; Come back when you want a key. I'll be here. I'm always here.@@<br>
+	&emsp;@@.notmc-speech; Come back when you want a contract. I'll be here. I'm always here.@@<br>
 	<br>
-	&emsp;@@.mc-thoughts; Right. Buy a key, spend the night, name what's in there. One guess only. Don't guess until I know.@@<br>
+	&emsp;@@.mc-thoughts; Right. Buy a contract, spend the night, name what's in there. One guess only. Don't guess until I know.@@<br>
 	<br>
 	@@.mc-action; Now you can receive contracts for identifying the type of ghost.@@
 	<br>
@@ -49,8 +49,8 @@
 	/* Pending contract -- the player walked out of the house with a
 		contract still in flight. Surface a prominent link to the
 		guess desk so the next click closes the loop. The check
-		matches HuntController's isContractHunt: held key + active
-		run + the run's static house lines up with the held key. */
+		matches HuntController's isContractHunt: held contract + active
+		run + the run's static house lines up with the held contract. */
 	<<if setup.HuntController.isActive() and setup.WitchContract.hasHeldContract() and setup.HuntController.staticHouseId() eq setup.WitchContract.heldHouseId()>>
 		<<set _pendingHouse to setup.HuntHouses.byId(setup.WitchContract.heldHouseId())>>
 		@@.usebtn;<<linkreplace `'You have findings from ' + _pendingHouse.label + '.'`>>

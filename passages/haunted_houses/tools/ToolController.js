@@ -283,6 +283,11 @@
         var roll = randInt(1, 100);
         var g    = setup.HuntController.activeGhost();
 
+        if (setup.Hunt && setup.Hunt.Event) {
+            setup.Hunt.emit(setup.Hunt.Event.SPIRITBOX_USED, {});
+        }
+
+
         if (g && g.spiritboxPossessionChance > 0 && roll <= g.spiritboxPossessionChance) {
             maybeSetBrookPossessed();
             _huntCardMarkup = '';
