@@ -64,7 +64,7 @@ test.describe('Beauty — hunt freeze + wake recompute', () => {
     await setVar(page, 'tattooFace', 'worn');                     // +2
     await setVar(page, 'tattooHand', 'worn');                     // +1
     await setVar(page, 'mc.makeupImg', 2);
-    await setVar(page, 'makeupApplied', 1);                       // tier 2 = +10
+    await setVar(page, 'makeupApplied', true);                    // tier 2 = +10
 
     /* Garbage modifier; recompute must override. */
     await setVar(page, 'mc.beautyModifier', 99999);

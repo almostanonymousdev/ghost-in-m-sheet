@@ -60,7 +60,7 @@ test.describe('Gym — hours and training gates', () => {
   });
 
   test('canTriggerTrainer1Event requires tip + no cooldown + sexy lingerie', async ({ game: page }) => {
-    await setVar(page, 'trainer1TipReceived', 1);
+    await setVar(page, 'trainer1TipReceived', true);
     await setVar(page, 'trainer1Sex', 0);
     await setVar(page, 'rememberBottomStockings', 'stockings2');
     await setVar(page, 'rememberTopUnder', 'bra2');
@@ -298,7 +298,7 @@ test.describe('Church — rescue hub and priest routes', () => {
   test('Church shows "Take holy water" when Rain is met and none collected', async ({ game: page }) => {
     await setVar(page, 'hours', 10);
     await setVar(page, 'relationshipWithRain', 1);
-    await setVar(page, 'holyWaterIsCollected', 0);
+    await setVar(page, 'holyWaterIsCollected', false);
     await goToPassage(page, 'Church');
     const text = await page.locator('#passages').innerText();
     expect(text).toContain('Take holy water');
@@ -307,14 +307,14 @@ test.describe('Church — rescue hub and priest routes', () => {
   test('Church holy water link sets $holyWaterIsCollected on click', async ({ game: page }) => {
     await setVar(page, 'hours', 10);
     await setVar(page, 'relationshipWithRain', 1);
-    await setVar(page, 'holyWaterIsCollected', 0);
+    await setVar(page, 'holyWaterIsCollected', false);
     await goToPassage(page, 'Church');
     await page.locator('#passages')
       .getByText('Take holy water', { exact: false })
       .first()
       .click();
-    await page.waitForFunction(() => SugarCube.State.variables.holyWaterIsCollected === 1);
-    expect(await getVar(page, 'holyWaterIsCollected')).toBe(1);
+    await page.waitForFunction(() => SugarCube.State.variables.holyWaterIsCollected === true);
+    expect(await getVar(page, 'holyWaterIsCollected')).toBe(true);
   });
 
   test('priest-flirt gates: lust >= 40 AND eventToolsOneStart === 1', async ({ game: page }) => {

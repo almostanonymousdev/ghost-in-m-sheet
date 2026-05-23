@@ -57,7 +57,7 @@ test.describe('Missing Women — map, house search, events, clue, nun', () => {
   test('photo comparison — correct house', async ({ game: page }) => {
     test.setTimeout(10_000);
     await setupActiveQuest(page, 'Victoria');
-    await setVar(page, 'hasRescueClue', 1);
+    await setVar(page, 'hasRescueClue', true);
     await setVar(page, 'randomRescuePhotoNumber', 5);
     await setVar(page, 'rescueHouse', 5);
 
@@ -78,7 +78,7 @@ test.describe('Missing Women — map, house search, events, clue, nun', () => {
   test('photo comparison — wrong house', async ({ game: page }) => {
     test.setTimeout(10_000);
     await setupActiveQuest(page, 'Victoria');
-    await setVar(page, 'hasRescueClue', 1);
+    await setVar(page, 'hasRescueClue', true);
     await setVar(page, 'randomRescuePhotoNumber', 5);
     await setVar(page, 'rescueHouse', 3);
 
@@ -150,9 +150,9 @@ test.describe('Missing Women — map, house search, events, clue, nun', () => {
 
   // ── Clue discovery ─────────────────────────────────────────────
 
-  test('rescueClueFound sets hasRescueClue to 1', async ({ game: page }) => {
+  test('rescueClueFound sets hasRescueClue to true', async ({ game: page }) => {
     await setupActiveQuest(page, 'Victoria');
-    await setVar(page, 'hasRescueClue', 0);
+    await setVar(page, 'hasRescueClue', false);
     await setVar(page, 'return', 'OwaissaHallway');
     await setVar(page, 'equipment.emf', 2);
 
@@ -160,13 +160,13 @@ test.describe('Missing Women — map, house search, events, clue, nun', () => {
     await expectCleanPassage(page);
 
     await page.locator('.passage .usebtn').first().click();
-    await page.waitForFunction(() => SugarCube.State.variables.hasRescueClue === 1);
-    expect(await getVar(page, 'hasRescueClue')).toBe(1);
+    await page.waitForFunction(() => SugarCube.State.variables.hasRescueClue === true);
+    expect(await getVar(page, 'hasRescueClue')).toBe(true);
   });
 
   test('rescueClueFound upgrades EMF to level 3', async ({ game: page }) => {
     await setupActiveQuest(page, 'Victoria');
-    await setVar(page, 'hasRescueClue', 0);
+    await setVar(page, 'hasRescueClue', false);
     await setVar(page, 'return', 'OwaissaHallway');
     await setVar(page, 'equipment.emf', 1);
 
@@ -182,7 +182,7 @@ test.describe('Missing Women — map, house search, events, clue, nun', () => {
   test('ChurchNunQuest shows failure text when quest is 2', async ({ game: page }) => {
     await setVar(page, 'relationshipWithRain', 3);
     await setVar(page, 'hasQuestForRescue', 2);
-    await setVar(page, 'hasRescueClue', 0);
+    await setVar(page, 'hasRescueClue', false);
     await setVar(page, 'hours', 12);
 
     await goToPassage(page, 'ChurchNunQuest');
@@ -193,7 +193,7 @@ test.describe('Missing Women — map, house search, events, clue, nun', () => {
   test('ChurchNunQuest shows success text when quest is 3', async ({ game: page }) => {
     await setVar(page, 'relationshipWithRain', 3);
     await setVar(page, 'hasQuestForRescue', 3);
-    await setVar(page, 'hasRescueClue', 0);
+    await setVar(page, 'hasRescueClue', false);
     await setVar(page, 'hours', 12);
     await setVar(page, 'equipment.spiritbox', 3);
 
@@ -202,21 +202,21 @@ test.describe('Missing Women — map, house search, events, clue, nun', () => {
     expect(await page.locator('.passage').textContent()).toContain('thank you');
   });
 
-  test('ChurchNunQuest resets hasRescueClue to 0', async ({ game: page }) => {
+  test('ChurchNunQuest resets hasRescueClue to false', async ({ game: page }) => {
     await setVar(page, 'relationshipWithRain', 3);
     await setVar(page, 'hasQuestForRescue', 3);
-    await setVar(page, 'hasRescueClue', 1);
+    await setVar(page, 'hasRescueClue', true);
     await setVar(page, 'hours', 12);
     await setVar(page, 'equipment.spiritbox', 3);
 
     await goToPassage(page, 'ChurchNunQuest');
-    expect(await getVar(page, 'hasRescueClue')).toBe(0);
+    expect(await getVar(page, 'hasRescueClue')).toBe(false);
   });
 
   test('failure decreases relationship with Rain', async ({ game: page }) => {
     await setVar(page, 'relationshipWithRain', 3);
     await setVar(page, 'hasQuestForRescue', 2);
-    await setVar(page, 'hasRescueClue', 0);
+    await setVar(page, 'hasRescueClue', false);
     await setVar(page, 'hours', 12);
 
     await goToPassage(page, 'ChurchNunQuest');
@@ -226,7 +226,7 @@ test.describe('Missing Women — map, house search, events, clue, nun', () => {
   test('failure at relationship 0 does not go negative', async ({ game: page }) => {
     await setVar(page, 'relationshipWithRain', 0);
     await setVar(page, 'hasQuestForRescue', 2);
-    await setVar(page, 'hasRescueClue', 0);
+    await setVar(page, 'hasRescueClue', false);
     await setVar(page, 'hours', 12);
 
     await goToPassage(page, 'ChurchNunQuest');

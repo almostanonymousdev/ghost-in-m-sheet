@@ -358,7 +358,7 @@ test.describe('Save/load round-trip', () => {
         wishLeave:        1,
         wishKnowledge:    1,
         wishDawn:         1,
-        wishAnything:     1,
+        wishAnything:     true,
       };
       SugarCube.setup.applySaveDefaults(legacy);
       return legacy;
@@ -372,7 +372,7 @@ test.describe('Save/load round-trip', () => {
       knowledge:    true,
       dawn:         true,
     });
-    expect(migrated.wishAnything).toBe(1);
+    expect(migrated.wishAnything).toBe(true);
     expect(migrated.boughtMonkeyPawGuide).toBe(2);
   });
 
@@ -397,7 +397,7 @@ test.describe('Save/load round-trip', () => {
       knowledge:    true,
       dawn:         true,
     });
-    expect(migrated.wishAnything).toBe(1);
+    expect(migrated.wishAnything).toBe(true);
   });
 
   test('after migration, every wish in the catalogue reports as learned', async ({ game: page }) => {
@@ -624,7 +624,7 @@ test.describe('Save/load round-trip', () => {
         meta: { unlocks: { 'foo': 1 }, bannedModifiers: ['bar'], rerollCharges: 2 },
         achievements: { 'first-hunt': { at: 1 } },
         monkeyPawLearned: { activity: true, knowledge: true },
-        ghostInfoCollected: { Shade: 1, Spirit: 1 },
+        ghostInfoCollected: { Shade: true, Spirit: true },
         ectoplasmQuestStage: 3,
         relationshipBlake: 4,
         lostClothing: ['jeansState'],
@@ -641,14 +641,14 @@ test.describe('Save/load round-trip', () => {
         tentacles: { stageAll: 2 },
         webcam: { showCD: 1, money: 999 },                 // not the MC's wallet -- webcam pay
         summoning: { text: 'whoosh' },
-        cursedHomeItem: 'tv', cursedHomeItemActive: 1,
+        cursedHomeItem: 'tv', cursedHomeItemActive: true,
         temperature: -8,
         deliverySpecialOrder: true,
         deliveryCorrectThisShift: 2, deliveryStreak: 5,
         pendingHuntHouseId: 'owaissa',
         hauntedHouse: 'owaissa',
-        prowlActivated: 1, prowlActivationTime: 60, elapsedTimeProwl: 30,
-        twinsEventActive: 1,
+        prowlActivated: true, prowlActivationTime: 60, elapsedTimeProwl: 30,
+        twinsEventActive: true,
         // Clock somewhere weird:
         hours: 23, minutes: 45, meridiem: 'PM',
       };
@@ -677,7 +677,7 @@ test.describe('Save/load round-trip', () => {
     expect(after.meta.rerollCharges).toBe(2);
     expect(after.achievements['first-hunt']).toEqual({ at: 1 });
     expect(after.monkeyPawLearned.knowledge).toBe(true);
-    expect(after.ghostInfoCollected.Shade).toBe(1);
+    expect(after.ghostInfoCollected.Shade).toBe(true);
     expect(after.ectoplasmQuestStage).toBe(3);
     expect(after.relationshipBlake).toBe(4);
     expect(after.lostClothing).toEqual(['jeansState']);
@@ -699,7 +699,7 @@ test.describe('Save/load round-trip', () => {
     expect(after.webcam).toEqual({});
     expect(after.summoning).toEqual({});
     expect(after.cursedHomeItem).toBe('');
-    expect(after.cursedHomeItemActive).toBe(0);
+    expect(after.cursedHomeItemActive).toBe(false);
     expect(after.temperature).toBe(0);
     expect(after.deliverySpecialOrder).toBe(false);
     expect(after.deliveryCorrectThisShift).toBe(0);

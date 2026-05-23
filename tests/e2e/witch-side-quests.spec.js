@@ -20,16 +20,16 @@ test.describe('Witch — cursed-item quest lifecycle', () => {
     expect(await callSetup(page, 'setup.Witch.hasCursedItemToTurnIn()')).toBe(true);
 
     await setVar(page, 'mc.money', 50);
-    await setVar(page, 'isCIDildo', 1);
-    await setVar(page, 'isCIButtplug', 0);
-    await setVar(page, 'isCIBeads', 0);
-    await setVar(page, 'isCIHDildo', 1);
+    await setVar(page, 'isCIDildo', true);
+    await setVar(page, 'isCIButtplug', false);
+    await setVar(page, 'isCIBeads', false);
+    await setVar(page, 'isCIHDildo', true);
     await page.evaluate(() => SugarCube.setup.Witch.collectCursedItemReward());
 
     expect(await getVar(page, 'mc.money')).toBe(80);
     expect(await getVar(page, 'gotCursedItem')).toBe(0);
-    expect(await getVar(page, 'isCIDildo')).toBe(0);
-    expect(await getVar(page, 'isCIHDildo')).toBe(0);
+    expect(await getVar(page, 'isCIDildo')).toBe(false);
+    expect(await getVar(page, 'isCIHDildo')).toBe(false);
   });
 
   test('shouldAwardGwb3OnTurnIn fires upgradeGwbToLvl3', async ({ game: page }) => {
@@ -97,10 +97,10 @@ test.describe('Witch — weaken ghost quest', () => {
   });
 
   test('markGhostWeakened reflects in isGhostWeakened', async ({ game: page }) => {
-    await setVar(page, 'isWeakenGhost', 0);
+    await setVar(page, 'isWeakenGhost', false);
     expect(await callSetup(page, 'setup.Witch.isGhostWeakened()')).toBe(false);
     await page.evaluate(() => SugarCube.setup.Witch.markGhostWeakened());
-    expect(await getVar(page, 'isWeakenGhost')).toBe(1);
+    expect(await getVar(page, 'isWeakenGhost')).toBe(true);
     expect(await callSetup(page, 'setup.Witch.isGhostWeakened()')).toBe(true);
   });
 
@@ -155,9 +155,9 @@ test.describe('Witch — tool upgrades and crucifix', () => {
     await setVar(page, 'hiddenEvidence', 1);
     await setVar(page, 'hiddenEvidence1', 1);
     await setVar(page, 'hiddenEvidence2', 1);
-    await setVar(page, 'deleteSecondEvidence', 1);
-    await setVar(page, 'deleteThirdEvidence', 1);
-    await setVar(page, 'deleteOneEvidence', 1);
+    await setVar(page, 'deleteSecondEvidence', true);
+    await setVar(page, 'deleteThirdEvidence', true);
+    await setVar(page, 'deleteOneEvidence', true);
     await page.evaluate(() => SugarCube.setup.Ghosts.clearHiddenEvidence());
     const V = await page.evaluate(() => ({
       a: SugarCube.State.variables.hiddenEvidence,

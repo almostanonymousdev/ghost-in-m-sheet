@@ -20,7 +20,7 @@ test.describe('Beauty — full-kit stack (fit 100 + stylish makeup + all tattoos
     await setVar(page, 'mc.money', 5000);
     await setVar(page, 'mc.corruption', 10);
     await setVar(page, 'makeupAmount', 5);
-    await setVar(page, 'makeupApplied', 0);
+    await setVar(page, 'makeupApplied', false);
   });
 
   async function buyAllTattoos(page) {
@@ -73,7 +73,7 @@ test.describe('Beauty — full-kit stack (fit 100 + stylish makeup + all tattoos
     await setVar(page, 'makeupAmount', 100);
     await callSetup(page, `setup.Mc.setBeauty(74)`);
     await setVar(page, 'mc.makeupImg', 2);
-    await setVar(page, 'makeupApplied', 1);
+    await setVar(page, 'makeupApplied', true);
 
     for (let i = 0; i < 15; i++) {
       await callSetup(page, 'setup.Home.wipeMakeupWithPenalty(10)'); // shower

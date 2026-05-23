@@ -54,7 +54,7 @@ setup.Tick = (function () {
 		var s = sv();
 		return previous() === 'EventMC'
 			&& s.chosenPlan === 'Plan1'
-			&& s.isCompChosen === 1;
+			&& s.isCompChosen === true;
 	}
 	function activeCompanionShouldLeaveAfterEvent() {
 		if (!justFinishedSharedEvent()) return false;
@@ -102,7 +102,7 @@ setup.Tick = (function () {
 	}
 
 	// --- Twins event guard --------------------------------------
-	function twinsEventFired() { return sv().twinsEventActive === 1; }
+	function twinsEventFired() { return sv().twinsEventActive === true; }
 
 	// --- Step counter -------------------------------------------
 	function stepCount() { return sv().stepCount || 0; }

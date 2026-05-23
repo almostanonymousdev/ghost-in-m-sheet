@@ -229,10 +229,10 @@
         },
         // (Pure $-variable getters for remember* fields fold into the
         // defineAccessors block at the bottom.)
-        isPantiesStolen: function () { return State.variables.isPantiesStolen === 1; },
-        isBottomStolen:  function () { return State.variables.isBottomStolen === 1; },
-        isShirtStolen:   function () { return State.variables.isShirtStolen === 1; },
-        isBraStolen:     function () { return State.variables.isBraStolen === 1; },
+        isPantiesStolen: function () { return State.variables.isPantiesStolen === true; },
+        isBottomStolen:  function () { return State.variables.isBottomStolen === true; },
+        isShirtStolen:   function () { return State.variables.isShirtStolen === true; },
+        isBraStolen:     function () { return State.variables.isBraStolen === true; },
         isDressedForStreet: function () {
             var s = State.variables;
             var CS = setup.ClothingState;
@@ -361,15 +361,15 @@
                     }
                 });
             }
-            if (V.isPantiesStolen === 1) discardFromGroup("panties");
-            if (V.isBottomStolen  === 1) discardFromGroup("bottomOuter");
-            if (V.isShirtStolen   === 1) discardFromGroup("tshirt");
-            if (V.isBraStolen     === 1) discardFromGroup("bra");
+            if (V.isPantiesStolen === true) discardFromGroup("panties");
+            if (V.isBottomStolen  === true) discardFromGroup("bottomOuter");
+            if (V.isShirtStolen   === true) discardFromGroup("tshirt");
+            if (V.isBraStolen     === true) discardFromGroup("bra");
             setup.HauntedHouses.clearStolenClothesFlag();
-            V.isPantiesStolen = 0;
-            V.isBottomStolen = 0;
-            V.isShirtStolen = 0;
-            V.isBraStolen = 0;
+            V.isPantiesStolen = false;
+            V.isBottomStolen = false;
+            V.isShirtStolen = false;
+            V.isBraStolen = false;
         },
 
         /* Lookup an item descriptor by its save-file state var. Used
@@ -437,7 +437,7 @@
                     V[group.rememberVar] = originalKey;
                 }
             });
-            if (stolenMarkerKey) { V[stolenMarkerKey] = 0; }
+            if (stolenMarkerKey) { V[stolenMarkerKey] = false; }
             return true;
         },
 
@@ -490,7 +490,7 @@
                     V[group.rememberVar] = "no" + item.key;
                 }
             });
-            if (stolenMarkerKey) { V[stolenMarkerKey] = 1; }
+            if (stolenMarkerKey) { V[stolenMarkerKey] = true; }
             return true;
         },
         /* Bottom-outer is the ugly case: the group holds jeans,
@@ -515,10 +515,10 @@
                     else if (item.key.indexOf("skirt")  === 0) stolenCategory = "skirt";
                 }
             });
-            if (stolenCategory === "jeans")  V.isJeansStolen  = 1;
-            if (stolenCategory === "shorts") V.isShortsStolen = 1;
-            if (stolenCategory === "skirt")  V.isSkirtStolen  = 1;
-            if (stolenCategory)              V.isBottomStolen = 1;
+            if (stolenCategory === "jeans")  V.isJeansStolen  = true;
+            if (stolenCategory === "shorts") V.isShortsStolen = true;
+            if (stolenCategory === "skirt")  V.isSkirtStolen  = true;
+            if (stolenCategory)              V.isBottomStolen = true;
             return stolenCategory;
         },
 
@@ -640,7 +640,7 @@
 
         /* End-of-hunt auto-redress for clothes the MC took off herself
          * via the side-panel quickUndress shortcut. Voluntarily-removed
-         * slots leave isXxxStolen at 0 (only the steal events flip those),
+         * slots leave isXxxStolen at false (only the steal events flip those),
          * so quickRedress' stolen/NOT_BOUGHT filters do the work: any slot
          * that still has a re-equippable remembered item gets it back on.
          * Stolen items either ran through loseAllStolen (now NOT_BOUGHT)
@@ -679,13 +679,13 @@
         isSlotStolen: function (slot) {
             var V = State.variables;
             switch (slot) {
-                case 'tshirt':      return V.isShirtStolen   === 1;
-                case 'bra':         return V.isBraStolen     === 1;
-                case 'panties':     return V.isPantiesStolen === 1;
+                case 'tshirt':      return V.isShirtStolen   === true;
+                case 'bra':         return V.isBraStolen     === true;
+                case 'panties':     return V.isPantiesStolen === true;
                 case 'bottomOuter':
                 case 'jeans':
                 case 'shorts':
-                case 'skirt':       return V.isBottomStolen  === 1;
+                case 'skirt':       return V.isBottomStolen  === true;
                 default:            return false;
             }
         }

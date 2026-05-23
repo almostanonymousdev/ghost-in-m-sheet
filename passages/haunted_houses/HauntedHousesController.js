@@ -121,9 +121,9 @@ setup.HauntedHouses = (function () {
 		},
 
 		// --- Stolen clothes -------------------------------------
-		hasClothesStolen: function () { return sv().isClothesStolen === 1; },
+		hasClothesStolen: function () { return sv().isClothesStolen === true; },
 		clearStolenClothesFlag: function () {
-			sv().isClothesStolen = 0;
+			sv().isClothesStolen = false;
 		},
 
 		// --- Timed tool activations -----------------------------
@@ -209,7 +209,7 @@ setup.HauntedHouses = (function () {
 				&& !this.hasBottomWorn();
 		},
 
-		markClothesStolen: function () { sv().isClothesStolen = 1; },
+		markClothesStolen: function () { sv().isClothesStolen = true; },
 
 		// --- Which static hunt house is active? --------------------
 		// Resolves against the hunt's staticHouseId so legacy
@@ -378,7 +378,7 @@ setup.HauntedHouses = (function () {
 			if (isSkirt(ro) && noPanties(ru))   return "characters/mc/skirtnp.mp4";
 			return null;
 		},
-		clearClothesStolenFlag: function () { sv().isClothesStolen = 0; },
+		clearClothesStolenFlag: function () { sv().isClothesStolen = false; },
 		isBottomless: function () {
 			return !setup.Wardrobe.worn(setup.WardrobeSlot.JEANS) && !setup.Wardrobe.worn(setup.WardrobeSlot.SHORTS)
 				&& !setup.Wardrobe.worn(setup.WardrobeSlot.SKIRT) && !setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES);

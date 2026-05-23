@@ -59,7 +59,7 @@ test.describe('Migrations (setup.Migrations)', () => {
       expect(room, `room ${id} should exist after seed`).toBeTruthy();
     }
 
-    expect(await getVar(page, 'prowlActivated')).toBe(0);
+    expect(await getVar(page, 'prowlActivated')).toBe(false);
     expect(await getVar(page, 'rememberTopOuter')).toBe('tshirt0');
     expect(await getVar(page, 'rememberBottomOuter')).toBe('jeans0');
     expect(await getVar(page, 'prowlTimeRemain')).toBe(60);

@@ -120,7 +120,7 @@ setup.Witch = (function () {
 		},
 		clearCursedItemHeld: function () { sv().gotCursedItem = 0; },
 		setCursedItemHeld:   function () { sv().gotCursedItem = 1; },
-		setCursedItemFlag: function (key) { sv()[key] = 1; },
+		setCursedItemFlag: function (key) { sv()[key] = true; },
 		/* Consume the cursed item the player is carrying. Clears whichever
 		   of the four type flags is set and the held flag, returning the
 		   name of the cleared type flag (or null if nothing was carried).
@@ -131,8 +131,8 @@ setup.Witch = (function () {
 			var TYPE_FLAGS = ['isCIDildo', 'isCIButtplug', 'isCIBeads', 'isCIHDildo'];
 			var cleared = null;
 			for (var i = 0; i < TYPE_FLAGS.length; i++) {
-				if (s[TYPE_FLAGS[i]] === 1) {
-					s[TYPE_FLAGS[i]] = 0;
+				if (s[TYPE_FLAGS[i]] === true) {
+					s[TYPE_FLAGS[i]] = false;
 					cleared = TYPE_FLAGS[i];
 					break;
 				}
@@ -147,10 +147,10 @@ setup.Witch = (function () {
 			var s = sv();
 			setup.Mc.addMoney(30);
 			s.gotCursedItem = 0;
-			s.isCIDildo = 0;
-			s.isCIButtplug = 0;
-			s.isCIBeads = 0;
-			s.isCIHDildo = 0;
+			s.isCIDildo = false;
+			s.isCIButtplug = false;
+			s.isCIBeads = false;
+			s.isCIHDildo = false;
 		},
 		unlockMonkeyPawWishes: function () {
 			setup.MonkeyPaw.purchaseGuide();
@@ -162,7 +162,7 @@ setup.Witch = (function () {
 			var s = sv().eventToolsOneStart;
 			return s === undefined || s === 0;
 		},
-		grantAmulet: function () { sv().amulet = 1; },
+		grantAmulet: function () { sv().amulet = true; },
 		ownsLevel3Gwb: function () {
 			return setup.ToolController.tierOf('gwb') === 3;
 		},
@@ -235,7 +235,7 @@ setup.Witch = (function () {
 		// --- Mutations previously inline in witch passages -------
 		startWitchNightCooldown: function () { setup.Cooldowns.start('witchNight'); },
 		startStealItemsCooldown: function () { setup.Cooldowns.start('stealItemsFromWitch'); },
-		markKeyFromWitchStolen:  function () { sv().gotKeyFromWitch = 1; },
+		markKeyFromWitchStolen:  function () { sv().gotKeyFromWitch = true; },
 		markShopVisited:         function () { sv().firstVisitWitchShop = false; },
 
 		// --- Witch sale (tool upgrades) --------------------------
@@ -287,12 +287,12 @@ setup.Witch = (function () {
 			return sv().weakenTheGhostQuest === 1;
 		},
 		isGhostWeakened: function () {
-			return sv().isWeakenGhost === 1;
+			return sv().isWeakenGhost === true;
 		},
-		markGhostWeakened: function () { sv().isWeakenGhost = 1; },
+		markGhostWeakened: function () { sv().isWeakenGhost = true; },
 		moneyFromWeakenGhost: function () { return sv().moneyFromWeakenTheGhost || 0; },
 		recordWeakenReward: function (amount) {
-			sv().isWeakenGhost = 1;
+			sv().isWeakenGhost = true;
 			sv().moneyFromWeakenTheGhost = amount;
 		},
 		clearWeakenGhostState: function () {
@@ -304,20 +304,20 @@ setup.Witch = (function () {
 		sellCarriedCursedItem: function (amount) {
 			var s = sv();
 			s.gotCursedItem = 0;
-			s.isCIDildo = 0;
-			s.isCIButtplug = 0;
-			s.isCIBeads = 0;
-			s.isCIHDildo = 0;
+			s.isCIDildo = false;
+			s.isCIButtplug = false;
+			s.isCIBeads = false;
+			s.isCIHDildo = false;
 			setup.Mc.addMoney(amount);
 		},
 		/* Which of the four cursed-item variants is the MC carrying?
 		   Returns "dildo" / "buttplug" / "beads" / "hdildo" or "". */
 		carriedCursedItemType: function () {
 			var s = sv();
-			if (s.isCIDildo === 1)    return 'dildo';
-			if (s.isCIButtplug === 1) return 'buttplug';
-			if (s.isCIBeads === 1)    return 'beads';
-			if (s.isCIHDildo === 1)   return 'hdildo';
+			if (s.isCIDildo === true)    return 'dildo';
+			if (s.isCIButtplug === true) return 'buttplug';
+			if (s.isCIBeads === true)    return 'beads';
+			if (s.isCIHDildo === true)   return 'hdildo';
 			return '';
 		}
 	};

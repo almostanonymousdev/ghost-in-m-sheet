@@ -170,11 +170,11 @@ setup.Home = (function () {
 			return setup.SpecialEvent.mareStage() <= 2;
 		},
 		canUseHolyWaterOnMare: function () {
-			return sv().holyWaterIsCollected === 1 && setup.SpecialEvent.mareEventActive();
+			return sv().holyWaterIsCollected === true && setup.SpecialEvent.mareEventActive();
 		},
 		useHolyWaterOnMare: function () {
 			setup.SpecialEvent.setMareEventStart(0);
-			sv().holyWaterIsCollected = 0;
+			sv().holyWaterIsCollected = false;
 			setup.SpecialEvent.setMareStage(0);
 		},
 		returningFromHuntDefeat: function () {
@@ -244,7 +244,7 @@ setup.Home = (function () {
 
 		// --- Makeup -------------------------------------
 		canApplyMakeup: function (charges) {
-			return setup.Mc.makeupApplied() === 0 && setup.Mc.makeupAmount() >= charges;
+			return setup.Mc.makeupApplied() === false && setup.Mc.makeupAmount() >= charges;
 		},
 
 		// --- Webcam show --------------------------------
@@ -321,7 +321,7 @@ setup.Home = (function () {
 			if (w.subscribers === undefined) w.subscribers = 0;
 			if (w.showCount   === undefined) w.showCount   = 0;
 		},
-		dildoPurchased: function () { return sv().dildoPurchased === 1; },
+		dildoPurchased: function () { return sv().dildoPurchased === true; },
 		subscribers: function () { return webcam().subscribers || 0; },
 		addSubscribers: function (n) {
 			var w = webcam(); w.subscribers = (w.subscribers || 0) + n;
@@ -503,16 +503,16 @@ setup.Home = (function () {
 			}, 0);
 			return rollover;
 		},
-		cameraBought: function () { return sv().isCameraBought === 1; },
+		cameraBought: function () { return sv().isCameraBought === true; },
 		isCameraBoughtFlagSet: function () { return sv().isCameraBought !== undefined; },
-		setCameraBought: function () { sv().isCameraBought = 1; },
-		markSleptWithCameraOn: function () { sv().mcSleptWithCameraOn = 1; },
+		setCameraBought: function () { sv().isCameraBought = true; },
+		markSleptWithCameraOn: function () { sv().mcSleptWithCameraOn = true; },
 
 		// --- PC desktop helpers -------------------------
-		sleptWithCameraOn: function () { return sv().mcSleptWithCameraOn === 1; },
+		sleptWithCameraOn: function () { return sv().mcSleptWithCameraOn === true; },
 		mareStageLow: function () { return setup.SpecialEvent.mareStage() <= 2; },
-		webcamAccountCreated: function () { return webcam().accountCreated === 1; },
-		createWebcamAccount: function () { webcam().accountCreated = 1; },
+		webcamAccountCreated: function () { return webcam().accountCreated === true; },
+		createWebcamAccount: function () { webcam().accountCreated = true; },
 
 		// --- Summoning / succubus ritual -----------------
 		bumpSuccubusPCEventStage: function () {
@@ -630,9 +630,9 @@ setup.Home = (function () {
 			// 'mareEnd' / 'spirit' have no extra wake-up mutation here;
 			// they hand off to their own follow-up passage.
 		},
-		hasHolyWater: function () { return sv().holyWaterIsCollected === 1; },
-		collectHolyWater: function () { sv().holyWaterIsCollected = 1; },
-		consumeHolyWater: function () { sv().holyWaterIsCollected = 0; }
+		hasHolyWater: function () { return sv().holyWaterIsCollected === true; },
+		collectHolyWater: function () { sv().holyWaterIsCollected = true; },
+		consumeHolyWater: function () { sv().holyWaterIsCollected = false; }
 	};
 
 	// Pure $variable passthrough setters (no getter exposed: callers

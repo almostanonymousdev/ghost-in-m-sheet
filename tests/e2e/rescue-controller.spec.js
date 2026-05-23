@@ -62,12 +62,12 @@ test.describe('Missing Women — controller + church integration', () => {
   });
 
   test('hasHolyWater and useHolyWater', async ({ game: page }) => {
-    await setVar(page, 'holyWaterIsCollected', 0);
+    await setVar(page, 'holyWaterIsCollected', false);
     expect(await callSetup(page, 'setup.MissingWomen.hasHolyWater()')).toBe(false);
-    await setVar(page, 'holyWaterIsCollected', 1);
+    await setVar(page, 'holyWaterIsCollected', true);
     expect(await callSetup(page, 'setup.MissingWomen.hasHolyWater()')).toBe(true);
     await page.evaluate(() => SugarCube.setup.MissingWomen.useHolyWater());
-    expect(await getVar(page, 'holyWaterIsCollected')).toBe(0);
+    expect(await getVar(page, 'holyWaterIsCollected')).toBe(false);
   });
 
   test('isCorrectHouse compares rescueHouse to randomRescuePhotoNumber', async ({ game: page }) => {
@@ -167,15 +167,15 @@ test.describe('Missing Women — controller + church integration', () => {
 
   test('holy water available when Rain met and not already collected', async ({ game: page }) => {
     await setVar(page, 'relationshipWithRain', 1);
-    await setVar(page, 'holyWaterIsCollected', 0);
+    await setVar(page, 'holyWaterIsCollected', false);
     expect(await callSetup(page, 'setup.Church.holyWaterAvailable()')).toBe(true);
-    await setVar(page, 'holyWaterIsCollected', 1);
+    await setVar(page, 'holyWaterIsCollected', true);
     expect(await callSetup(page, 'setup.Church.holyWaterAvailable()')).toBe(false);
   });
 
-  test('collectHolyWater sets holyWaterIsCollected to 1', async ({ game: page }) => {
-    await setVar(page, 'holyWaterIsCollected', 0);
+  test('collectHolyWater sets holyWaterIsCollected to true', async ({ game: page }) => {
+    await setVar(page, 'holyWaterIsCollected', false);
     await page.evaluate(() => SugarCube.setup.Church.collectHolyWater());
-    expect(await getVar(page, 'holyWaterIsCollected')).toBe(1);
+    expect(await getVar(page, 'holyWaterIsCollected')).toBe(true);
   });
 });

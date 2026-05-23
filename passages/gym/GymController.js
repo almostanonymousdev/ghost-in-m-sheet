@@ -79,12 +79,12 @@ setup.Gym = (function () {
 				(bu === 'panties2' || bu === 'panties3');
 		},
 		canTriggerTrainer1Event: function () {
-			return sv().trainer1TipReceived === 1 &&
+			return sv().trainer1TipReceived === true &&
 				!this.trainer1OnCooldown() &&
 				this.hasSexyLingerieForTrainer1();
 		},
 		trainer1GaveTip: function () {
-			return sv().trainer1TipReceived === 1;
+			return sv().trainer1TipReceived === true;
 		},
 
 		// --- Trainer 2 (afternoon) event conditions ---------
@@ -111,10 +111,10 @@ setup.Gym = (function () {
 			return sv().relationEmily || 0;
 		},
 		emilyOnCooldown: function () {
-			return sv().relationEmilyCD === 1;
+			return sv().relationEmilyCD === true;
 		},
 		startEmilyCooldown: function () {
-			State.variables.relationEmilyCD = 1;
+			State.variables.relationEmilyCD = true;
 		},
 		greetEmilyFirstTime: function () {
 			// First conversation with Emily in the gym.
@@ -128,10 +128,10 @@ setup.Gym = (function () {
 			return false;
 		},
 		trainer1Tipped: function () {
-			return sv().trainer1TipReceived === 1;
+			return sv().trainer1TipReceived === true;
 		},
 		markTrainer1Tipped: function () {
-			State.variables.trainer1TipReceived = 1;
+			State.variables.trainer1TipReceived = true;
 		},
 		trainer1Discounted: function () {
 			return sv().isDiscountTrainer1 !== undefined;

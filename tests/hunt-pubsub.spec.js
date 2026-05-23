@@ -896,7 +896,7 @@ test.describe('setup.Hunt pubsub', () => {
         const HC = SugarCube.setup.HuntController;
         const V = SugarCube.State.variables;
         V.mc.energy = 10;
-        V.baitActive = 0;
+        V.baitActive = false;
         HC.startHunt({ seed: 1 });
         V.run.modifiers = [];
       });

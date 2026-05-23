@@ -215,7 +215,7 @@ test.describe('Succubus — summoning ritual (Witch referral path)', () => {
     await page.evaluate(() => {
       const V = SugarCube.State.variables;
       V.ghostSpecialEventSpirit = 1;
-      V.twinsEventActive = 0;
+      V.twinsEventActive = false;
       V.ghostMareEventStart = 0;
       V.exorcismQuestStage = SugarCube.setup.ExorcismQuestStage.REFERRED;
       delete V.gotCursedItem;
@@ -281,7 +281,7 @@ test.describe('Succubus — re-summon menu (post-binding)', () => {
     await page.evaluate(() => {
       const V = SugarCube.State.variables;
       V.ghostSpecialEventSpirit = 1;
-      V.twinsEventActive = 0;
+      V.twinsEventActive = false;
       V.ghostMareEventStart = 0;
       V.exorcismQuestStage = SugarCube.setup.ExorcismQuestStage.SUCCUBUS_SUMMONED;
       delete V.gotCursedItem;

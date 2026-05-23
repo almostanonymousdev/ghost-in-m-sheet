@@ -24,7 +24,7 @@ setup.Game = (function () {
 		s.percentageOfLevel = 0;
 		s.neededForNextLevel = 100;
 		s.makeupAmount = 0;
-		s.makeupApplied = 0;
+		s.makeupApplied = false;
 		s.energyDrinkAmount = 0;
 
 		// --- Tools / hunt state -------------------------------
@@ -114,7 +114,7 @@ setup.Game = (function () {
 
 		// --- Cursed home item ---------------------------------
 		s.cursedHomeItem = '';
-		s.cursedHomeItemActive = 0;
+		s.cursedHomeItemActive = false;
 
 		// --- Starting wardrobe --------------------------------
 		var CS = setup.ClothingState;

@@ -78,12 +78,12 @@ test.describe('Possession — Brooke rescue', () => {
 
 test.describe('Possession — hunt cleanup', () => {
   test('isBlakeHuntWithCursedItem requires Blake + chosen + cursed item', async ({ game: page }) => {
-    await setVar(page, 'isCompChosen', 0);
+    await setVar(page, 'isCompChosen', false);
     await setVar(page, 'companion', { name: 'Blake' });
     await setVar(page, 'gotCursedItem', 1);
     expect(await callSetup(page, 'setup.Posession.isBlakeHuntWithCursedItem()')).toBe(false);
 
-    await setVar(page, 'isCompChosen', 1);
+    await setVar(page, 'isCompChosen', true);
     expect(await callSetup(page, 'setup.Posession.isBlakeHuntWithCursedItem()')).toBe(true);
 
     await setVar(page, 'gotCursedItem', 0);

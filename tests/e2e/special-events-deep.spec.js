@@ -33,21 +33,21 @@ test.describe('Special events — Mare progression state machine', () => {
   test('useHolyWaterOnMare clears mare and consumes water', async ({ game: page }) => {
     await setVar(page, 'ghostMareEventStart', 4);
     await setVar(page, 'ghostMareEventStage', 3);
-    await setVar(page, 'holyWaterIsCollected', 1);
+    await setVar(page, 'holyWaterIsCollected', true);
     expect(await callSetup(page, 'setup.Home.canUseHolyWaterOnMare()')).toBe(true);
     await page.evaluate(() => SugarCube.setup.Home.useHolyWaterOnMare());
     expect(await getVar(page, 'ghostMareEventStart')).toBe(0);
     expect(await getVar(page, 'ghostMareEventStage')).toBe(0);
-    expect(await getVar(page, 'holyWaterIsCollected')).toBe(0);
+    expect(await getVar(page, 'holyWaterIsCollected')).toBe(false);
     expect(await callSetup(page, 'setup.Home.canUseHolyWaterOnMare()')).toBe(false);
   });
 
   test('canUseHolyWaterOnMare requires both flags', async ({ game: page }) => {
     await setVar(page, 'ghostMareEventStart', 0);
-    await setVar(page, 'holyWaterIsCollected', 1);
+    await setVar(page, 'holyWaterIsCollected', true);
     expect(await callSetup(page, 'setup.Home.canUseHolyWaterOnMare()')).toBe(false);
     await setVar(page, 'ghostMareEventStart', 2);
-    await setVar(page, 'holyWaterIsCollected', 0);
+    await setVar(page, 'holyWaterIsCollected', false);
     expect(await callSetup(page, 'setup.Home.canUseHolyWaterOnMare()')).toBe(false);
   });
 
@@ -177,7 +177,7 @@ test.describe('Special events — Spirit corruption / energy gates', () => {
     for (const comp of ['Alice', 'Brook', 'Blake']) {
       await resetGame(page);
       await setVar(page, 'companion', { name: comp, lust: 30, sanity: 80 });
-      await setVar(page, 'isCompChosen', 1);
+      await setVar(page, 'isCompChosen', true);
       await setVar(page, 'mc.corruption', 5);
       await setVar(page, 'mc.energy', 8);
       await goToPassage(page, 'GhostSpecialEventNapSpirit');
@@ -196,12 +196,12 @@ test.describe('Special events — Myling video record', () => {
     for (const comp of ['Alice', 'Blake', 'Brook']) {
       await resetGame(page);
       await setVar(page, 'companion', { name: comp });
-      await setVar(page, 'isCompChosen', 1);
+      await setVar(page, 'isCompChosen', true);
       await goToPassage(page, 'GhostSpecialEventMyling');
       await expectCleanPassage(page);
       await resetGame(page);
       await setVar(page, 'companion', { name: comp });
-      await setVar(page, 'isCompChosen', 1);
+      await setVar(page, 'isCompChosen', true);
       await goToPassage(page, 'GhostSpecialEventMylingTwo');
       await expectCleanPassage(page);
     }
@@ -210,11 +210,11 @@ test.describe('Special events — Myling video record', () => {
 
 test.describe('Special events — Twins event mirror', () => {
   test('twinsEventAvailable requires the flag set and CD off', async ({ game: page }) => {
-    await setVar(page, 'twinsEventActive', 0);
+    await setVar(page, 'twinsEventActive', false);
     await setVar(page, 'twinsEvent', 0);
     expect(await callSetup(page, 'setup.Ghosts.twinsEventReady()')).toBe(false);
 
-    await setVar(page, 'twinsEventActive', 1);
+    await setVar(page, 'twinsEventActive', true);
     await setVar(page, 'twinsEvent', 0);
     expect(await callSetup(page, 'setup.Ghosts.twinsEventReady()')).toBe(true);
 
@@ -230,10 +230,10 @@ test.describe('Special events — Twins event mirror', () => {
   });
 
   test('consumeTwinsEvent flips flag and starts cooldown', async ({ game: page }) => {
-    await setVar(page, 'twinsEventActive', 1);
+    await setVar(page, 'twinsEventActive', true);
     await setVar(page, 'twinsEvent', 0);
     await page.evaluate(() => SugarCube.setup.Ghosts.consumeTwinsEvent());
-    expect(await getVar(page, 'twinsEventActive')).toBe(0);
+    expect(await getVar(page, 'twinsEventActive')).toBe(false);
     expect(await getVar(page, 'twinsEvent')).toBe(1);
   });
 
@@ -243,9 +243,9 @@ test.describe('Special events — Twins event mirror', () => {
   });
 
   test('clearTwinsEvent zeroes the flag', async ({ game: page }) => {
-    await setVar(page, 'twinsEventActive', 1);
+    await setVar(page, 'twinsEventActive', true);
     await page.evaluate(() => SugarCube.setup.Ghosts.clearTwinsEvent());
-    expect(await getVar(page, 'twinsEventActive')).toBe(0);
+    expect(await getVar(page, 'twinsEventActive')).toBe(false);
   });
 });
 
@@ -308,20 +308,20 @@ test.describe('Per-ghost hunt-bus subscribers', () => {
 
   test('Twins on PROWL_EVENT stamps twinsEventActive', async ({ game: page }) => {
     await setupHunt(page, 'The Twins');
-    await setVar(page, 'twinsEventActive', 0);
+    await setVar(page, 'twinsEventActive', false);
     await page.evaluate(() =>
       SugarCube.setup.Hunt.emit(SugarCube.setup.Hunt.Event.PROWL_EVENT)
     );
-    expect(await getVar(page, 'twinsEventActive')).toBe(1);
+    expect(await getVar(page, 'twinsEventActive')).toBe(true);
   });
 
   test('non-Twins ghosts leave twinsEventActive alone on PROWL_EVENT', async ({ game: page }) => {
     await setupHunt(page, 'Shade');
-    await setVar(page, 'twinsEventActive', 0);
+    await setVar(page, 'twinsEventActive', false);
     await page.evaluate(() =>
       SugarCube.setup.Hunt.emit(SugarCube.setup.Hunt.Event.PROWL_EVENT)
     );
-    expect(await getVar(page, 'twinsEventActive')).toBe(0);
+    expect(await getVar(page, 'twinsEventActive')).toBe(false);
   });
 });
 
@@ -330,9 +330,9 @@ test.describe('Special events — myling reset of hunt plan', () => {
     await setVar(page, 'chosenPlan', 'Plan2');
     await setVar(page, 'chosenPlanActivated', 1);
     await setVar(page, 'randomGhostPassage', 5);
-    await setVar(page, 'isCompRoomChosen', 1);
+    await setVar(page, 'isCompRoomChosen', true);
     await setVar(page, 'showComp', 1);
-    await setVar(page, 'isCompChosen', 1);
+    await setVar(page, 'isCompChosen', true);
     await setVar(page, 'companion', { name: 'Brook' });
 
     await page.evaluate(() => SugarCube.setup.SpecialEvent.resetHuntPlansAfterMyling());
@@ -340,8 +340,8 @@ test.describe('Special events — myling reset of hunt plan', () => {
     expect(await getVar(page, 'chosenPlan')).toBe(0);
     expect(await getVar(page, 'chosenPlanActivated')).toBe(0);
     expect(await getVar(page, 'randomGhostPassage')).toBe(0);
-    expect(await getVar(page, 'isCompRoomChosen')).toBe(0);
+    expect(await getVar(page, 'isCompRoomChosen')).toBe(false);
     expect(await getVar(page, 'showComp')).toBe(0);
-    expect(await getVar(page, 'isCompChosen')).toBe(0);
+    expect(await getVar(page, 'isCompChosen')).toBe(false);
   });
 });

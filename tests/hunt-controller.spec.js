@@ -131,7 +131,7 @@ test.describe('HuntController', () => {
        the threshold roll always passes. */
     await page.evaluate(() => {
       const V = SugarCube.State.variables;
-      V.prowlActivated = 0;
+      V.prowlActivated = false;
       V.prowlTimeRemain = 0;
       V.elapsedTimeProwl = 0;
       V.prowlActivationTime = 0;
@@ -177,7 +177,7 @@ test.describe('HuntController', () => {
        No $hunt to mutate; cleanup still runs and clears the
        stolen-garment flags so the player walks out clean. */
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
-    await page.evaluate(() => { SugarCube.State.variables.isClothesStolen = 1; });
+    await page.evaluate(() => { SugarCube.State.variables.isClothesStolen = true; });
 
     // Should not throw even with no $hunt object.
     await page.evaluate(() => SugarCube.setup.HuntController.onCaughtCleanup());

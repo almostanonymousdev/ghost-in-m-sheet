@@ -1,8 +1,8 @@
 :: ElectronicsSection {"position":"2800,1800","size":"100,100"}
 <<nobr>>
 <div class="flexwrapper backgroundForText">
-<<shopCardConditional `setup.Mall.canBuyCamera()` "isCameraBought" "ui/img/webcamera.png" 100 "ElectronicsSection" 1>>
-<<shopCard "isPhoneBought" "ui/img/phone.png" 200 "ElectronicsSection" "" 1>>
+<<shopCardConditional `setup.Mall.canBuyCamera()` "isCameraBought" "ui/img/webcamera.png" 100 "ElectronicsSection" true>>
+<<shopCard "isPhoneBought" "ui/img/phone.png" 200 "ElectronicsSection" "" true>>
 <div class="housecard">
 
 </div>

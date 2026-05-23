@@ -7,7 +7,7 @@ const { setVar, getVar, callSetup } = require('../helpers');
  *   hasSexyLingerieForTrainer1() — requires stockings2/3, bra2/3, panties2/3
  *   canTriggerTrainer1Event() — tipReceived + not on cooldown + lingerie
  *   applyTrainer1Discount() — flips isDiscountTrainer1 + coachingCost=1
- *   markTrainer1Tipped() — sets trainer1TipReceived = 1
+ *   markTrainer1Tipped() — sets trainer1TipReceived = true
  *   meetsFitForTrainer2Event() — fit >= 30
  *
  * Also exercises the time-of-day open windows + training cost lookups.
@@ -68,7 +68,7 @@ test.describe('Gym trainer events', () => {
     await setTopUnder(page, 'bra3');
     await setBottomUnder(page, 'panties3');
     await page.evaluate(() => {
-      SugarCube.State.variables.trainer1TipReceived = 0;
+      SugarCube.State.variables.trainer1TipReceived = false;
       SugarCube.State.variables.trainer1Sex = 0;
     });
     try {

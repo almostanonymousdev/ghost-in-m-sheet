@@ -42,7 +42,7 @@ setup.Migrations = (function () {
 
 		if (setup.initWardrobe) { setup.initWardrobe(s); }
 
-		s.prowlActivated       = 0;
+		s.prowlActivated       = false;
 		s.rememberTopOuter     = 'tshirt0';
 		s.rememberBottomOuter  = 'jeans0';
 		s.prowlTimeRemain      = 60;

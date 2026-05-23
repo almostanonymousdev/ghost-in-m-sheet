@@ -151,7 +151,7 @@ test.describe('Companion event + detector regressions', () => {
       const W = SugarCube.setup.Wardrobe;
       W.stealWornInGroup('tshirt',  'tshirtState',  'isShirtStolen');
       W.stealBottomOuter();
-      SugarCube.State.variables.isBottomStolen = 1;
+      SugarCube.State.variables.isBottomStolen = true;
       W.stealWornInGroup('panties', 'pantiesState', 'isPantiesStolen');
       W.stealWornInGroup('bra',     'braState',     'isBraStolen');
     });
@@ -163,7 +163,7 @@ test.describe('Companion event + detector regressions', () => {
       const V = SugarCube.State.variables;
       W.restoreStolenInGroup('panties', 'isPantiesStolen');
       W.restoreStolenInGroup('bottomOuter');
-      V.isBottomStolen = 0; V.isJeansStolen = 0; V.isShortsStolen = 0; V.isSkirtStolen = 0;
+      V.isBottomStolen = false; V.isJeansStolen = false; V.isShortsStolen = false; V.isSkirtStolen = false;
       W.restoreStolenInGroup('tshirt', 'isShirtStolen');
       W.restoreStolenInGroup('bra',    'isBraStolen');
     });
@@ -183,6 +183,6 @@ test.describe('Companion event + detector regressions', () => {
     /* Land on HuntOverManual: the bug was the flag flipping to 0 on
        render, killing FurnitureSearch's gate before the player chose. */
     await goToPassage(game, 'HuntOverManual');
-    expect(await getVar(game, 'isClothesStolen')).toBe(1);
+    expect(await getVar(game, 'isClothesStolen')).toBe(true);
   });
 });

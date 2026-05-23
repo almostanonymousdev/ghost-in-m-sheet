@@ -64,8 +64,8 @@ setup.HauntConditions = (function () {
 		return "partial";
 	}
 
-	function isBaitActive() { return State.variables.baitActive === 1; }
-	function isOverchargedMode() { return State.variables.overchargedTools === 1; }
+	function isBaitActive() { return State.variables.baitActive === true; }
+	function isOverchargedMode() { return State.variables.overchargedTools === true; }
 
 	/* Combined per-tick deltas + tool/hunt bonuses, plus a contributors
 	 * array used by the HUD widget to show "why". */
@@ -92,7 +92,7 @@ setup.HauntConditions = (function () {
 
 		if (inHouse) {
 			snap.timeLabel = "+1 min/step";
-			var hasCompanion = V.isCompChosen === 1;
+			var hasCompanion = V.isCompChosen === true;
 			var contractDrain = hasCompanion ? 0.2 : 0.4;
 			snap.sanityPerStep -= contractDrain;
 
@@ -245,7 +245,7 @@ setup.HauntConditions = (function () {
 
 		if (snap.sanityPerStep !== 0) {
 			if (setup.Mc.addSanity(snap.sanityPerStep) == setup.SanityDeltaResult.COLLAPSED) {
-				V.sanityCollapse = 1;
+				V.sanityCollapse = true;
 			}
 		}
 		if (snap.lustPerStep !== 0) {
@@ -254,7 +254,7 @@ setup.HauntConditions = (function () {
 			 * lust sources (topless/nude clothing tick) just clamp. */
 			var baitAtCap = snap.baitActive && (mc.lust + snap.lustPerStep) >= 100;
 			if (baitAtCap) {
-				V.baitOrgasmPending = 1;
+				V.baitOrgasmPending = true;
 			}
 			setup.Mc.addLust(snap.lustPerStep);
 		}
@@ -263,7 +263,7 @@ setup.HauntConditions = (function () {
 			/* Per-step drain mirrors HauntConditions.removeEnergy: zero
 			   energy stamps V.exhausted so includeTimeEvent* widgets can
 			   route the next nav tick to HuntOverExhaustion. */
-			if ((mc.energy || 0) <= 0) { V.exhausted = 1; }
+			if ((mc.energy || 0) <= 0) { V.exhausted = true; }
 		}
 		if (snap.corruptionPending !== 0) {
 			V.tempCorr = (V.tempCorr || 0) + snap.corruptionPending;
@@ -271,7 +271,7 @@ setup.HauntConditions = (function () {
 		if (snap.baitActive) {
 			V.baitStepsRemain = Math.max(0, (V.baitStepsRemain || 0) - 1);
 			if (V.baitStepsRemain <= 0) {
-				V.baitActive = 0;
+				V.baitActive = false;
 				V.baitStepsRemain = 0;
 			}
 		}
@@ -304,7 +304,7 @@ setup.HauntConditions = (function () {
 		mc.energy -= amount;
 		if (mc.energy <= 0) {
 			mc.energy = 0;
-			V.exhausted = 1;
+			V.exhausted = true;
 		}
 		return true;
 	}
@@ -318,22 +318,22 @@ setup.HauntConditions = (function () {
 	 * branch on the result. */
 	function consumeBaitOrgasm() {
 		var V = State.variables;
-		if (V.baitOrgasmPending !== 1) return false;
-		V.baitOrgasmPending = 0;
+		if (V.baitOrgasmPending !== true) return false;
+		V.baitOrgasmPending = false;
 		var mc = V.mc;
 		if (!mc) return true;
 		mc.lust = 0;
 		setup.Mc.clampLust();
 		var outcome = setup.Mc.addSanity(-BAIT_ORGASM_SANITY);
 		if (outcome === setup.SanityDeltaResult.COLLAPSED) {
-			V.sanityCollapse = 1;
+			V.sanityCollapse = true;
 		}
 		setup.Mc.setOrgasmCooldown(ORGASM_COOLDOWN_STEPS);
 		return true;
 	}
 
 	function isBaitOrgasmPending() {
-		return State.variables.baitOrgasmPending === 1;
+		return State.variables.baitOrgasmPending === true;
 	}
 
 	/* Player-driven bait: spend energy, pin the ghost to the player's
@@ -351,12 +351,12 @@ setup.HauntConditions = (function () {
 			return false;
 		}
 		removeEnergy(ENERGY_COST_BAIT);
-		V.baitActive = 1;
+		V.baitActive = true;
 		V.baitStepsRemain = BAIT_STEPS;
 		var atCap = mc.lust >= 100;
 		setup.Mc.addLust(BAIT_INITIAL_LUST);
 		if (atCap) {
-			V.baitOrgasmPending = 1;
+			V.baitOrgasmPending = true;
 		}
 		return true;
 	}
@@ -379,7 +379,7 @@ setup.HauntConditions = (function () {
 		if (!baitCtx.allowed) return false;
 		return !!(V.mc
 			&& (V.mc.energy || 0) >= ENERGY_COST_BAIT
-			&& V.baitActive !== 1);
+			&& V.baitActive !== true);
 	}
 
 	/* Pray (used by GhostProwlEvent). Costs sanity AND energy. */
@@ -392,8 +392,8 @@ setup.HauntConditions = (function () {
 
 	function toggleOverchargedTools() {
 		var V = State.variables;
-		V.overchargedTools = V.overchargedTools === 1 ? 0 : 1;
-		return V.overchargedTools === 1;
+		V.overchargedTools = !(V.overchargedTools === true);
+		return V.overchargedTools === true;
 	}
 
 	/* Point-of-event sanity multiplier. Used by ArtEvent / EventMC "embrace"
@@ -423,12 +423,12 @@ setup.HauntConditions = (function () {
 	 * starts clean. */
 	function resetHuntFlags() {
 		var V = State.variables;
-		V.baitActive = 0;
+		V.baitActive = false;
 		V.baitStepsRemain = 0;
-		V.baitOrgasmPending = 0;
-		V.overchargedTools = 0;
-		V.exhausted = 0;
-		V.sanityCollapse = 0;
+		V.baitOrgasmPending = false;
+		V.overchargedTools = false;
+		V.exhausted = false;
+		V.sanityCollapse = false;
 		V.orgasmCooldownSteps = 0;
 	}
 

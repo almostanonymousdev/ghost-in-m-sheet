@@ -65,7 +65,7 @@ test.describe('Wardrobe — steal / restore mechanics', () => {
       SugarCube.setup.Wardrobe.stealWornInGroup('bra', 'braState', 'isBraStolen'));
     expect(stole).toBe(true);
     expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(10);
-    expect(await getVar(page, 'isBraStolen')).toBe(1);
+    expect(await getVar(page, 'isBraStolen')).toBe(true);
     expect(await getVar(page, 'braState1')).toBe('not worn');
     expect(await getVar(page, 'rememberTopUnder')).toBe('nobra1');
   });
@@ -92,7 +92,7 @@ test.describe('Wardrobe — steal / restore mechanics', () => {
     expect(restored).toBe(true);
     expect(await getVar(page, 'braState1')).toBe('worn');
     expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(12);
-    expect(await getVar(page, 'isBraStolen')).toBe(0);
+    expect(await getVar(page, 'isBraStolen')).toBe(false);
     expect(await getVar(page, 'rememberTopUnder')).toBe('bra1');
   });
 
@@ -110,7 +110,7 @@ test.describe('Wardrobe — steal / restore mechanics', () => {
       const result = await page.evaluate(() =>
         SugarCube.setup.Wardrobe.stealBottomOuter());
       expect(result).toBe(c.expected);
-      expect(await getVar(page, c.flag)).toBe(1);
+      expect(await getVar(page, c.flag)).toBe(true);
       expect(await getVar(page, c.var)).toBe('not worn');
     }
   });
@@ -140,9 +140,9 @@ test.describe('Wardrobe — steal / restore mechanics', () => {
 
     expect(await getVar(page, 'braState1')).toBe('not bought');
     expect(await getVar(page, 'pantiesState1')).toBe('not bought');
-    expect(await getVar(page, 'isBraStolen')).toBe(0);
-    expect(await getVar(page, 'isPantiesStolen')).toBe(0);
-    expect(await getVar(page, 'isClothesStolen')).toBe(0);
+    expect(await getVar(page, 'isBraStolen')).toBe(false);
+    expect(await getVar(page, 'isPantiesStolen')).toBe(false);
+    expect(await getVar(page, 'isClothesStolen')).toBe(false);
   });
 });
 

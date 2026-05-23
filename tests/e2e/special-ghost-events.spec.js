@@ -116,24 +116,24 @@ test.describe('Special ghost events — controller', () => {
     await setVar(page, 'chosenPlan', 'Plan2');
     await setVar(page, 'chosenPlanActivated', 1);
     await setVar(page, 'randomGhostPassage', 1);
-    await setVar(page, 'isCompRoomChosen', 1);
+    await setVar(page, 'isCompRoomChosen', true);
     await setVar(page, 'showComp', 1);
-    await setVar(page, 'isCompChosen', 1);
+    await setVar(page, 'isCompChosen', true);
     await setVar(page, 'companion', { name: 'Alice' });
     await setVar(page, 'alice.goingSolo', 0);
-    await setVar(page, 'aliceWorkDone', 1);
+    await setVar(page, 'aliceWorkDone', true);
     await page.evaluate(() => SugarCube.setup.SpecialEvent.resetHuntPlansAfterMyling());
     expect(await getVar(page, 'chosenPlan')).toBe(0);
-    expect(await getVar(page, 'isCompChosen')).toBe(0);
-    expect(await getVar(page, 'aliceWorkDone')).toBe(0);
+    expect(await getVar(page, 'isCompChosen')).toBe(false);
+    expect(await getVar(page, 'aliceWorkDone')).toBe(false);
   });
 
   test('resetHuntPlansAfterMyling leaves aliceWorkDone untouched when Alice is hunting alone', async ({ game: page }) => {
     await setVar(page, 'companion', { name: 'Alice' });
     await setVar(page, 'alice.goingSolo', 1);
-    await setVar(page, 'aliceWorkDone', 1);
+    await setVar(page, 'aliceWorkDone', true);
     await page.evaluate(() => SugarCube.setup.SpecialEvent.resetHuntPlansAfterMyling());
-    expect(await getVar(page, 'aliceWorkDone')).toBe(1);
+    expect(await getVar(page, 'aliceWorkDone')).toBe(true);
   });
 });
 

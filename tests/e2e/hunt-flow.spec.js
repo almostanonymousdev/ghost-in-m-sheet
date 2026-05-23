@@ -1275,7 +1275,7 @@ test.describe('E2E: hunt lifecycle', () => {
 
     await page.evaluate(() => {
       const V = SugarCube.State.variables;
-      V.prowlActivated = 0;
+      V.prowlActivated = false;
       V.prowlTimeRemain = 0;
       V.elapsedTimeProwl = 0;
       V.prowlActivationTime = 0;
@@ -1628,7 +1628,7 @@ test.describe('E2E: hunt lifecycle', () => {
 
     // EMF starts below lvl 3 so we can see the upgrade fire.
     await page.evaluate(() => { SugarCube.State.variables.equipment.emf = 1; });
-    await page.evaluate(() => { SugarCube.State.variables.hasRescueClue = 0; });
+    await page.evaluate(() => { SugarCube.State.variables.hasRescueClue = false; });
 
     const fp = await getVar(page, 'run').then(r => r.floorplan);
     const clueRoom      = fp.loot.rescueClue;
@@ -1654,8 +1654,8 @@ test.describe('E2E: hunt lifecycle', () => {
     // that's what RescueClueFound's body calls setRescueClueFound +
     // upgradeEmfToLvl3 inside.
     await page.locator('.passage').getByText('fragment of the old photo.', { exact: true }).click();
-    await page.waitForFunction(() => SugarCube.State.variables.hasRescueClue === 1);
-    expect(await getVar(page, 'hasRescueClue')).toBe(1);
+    await page.waitForFunction(() => SugarCube.State.variables.hasRescueClue === true);
+    expect(await getVar(page, 'hasRescueClue')).toBe(true);
     expect(await callSetup(page, 'setup.MissingWomen.emfLevel()')).toBe(3);
   });
 
@@ -1707,9 +1707,9 @@ test.describe('E2E: hunt lifecycle', () => {
     // The knowledge widget runs setup.HuntController.consumeKnowledgeEvidence
     // inside <<timed 2s>>; wait for the side effect.
     await page.waitForFunction(() =>
-      SugarCube.State.variables.knowledgeUsed === 1, null, { timeout: 5000 });
+      SugarCube.State.variables.knowledgeUsed === true, null, { timeout: 5000 });
 
-    expect(await getVar(page, 'knowledgeUsed')).toBe(1);
+    expect(await getVar(page, 'knowledgeUsed')).toBe(true);
     const chosen = await getVar(page, 'chosenEvidence');
     // Shade lacks spiritbox/uvl/glass; hunt knowledge picks one.
     expect(['spiritbox', 'uvl', 'glass']).toContain(chosen);

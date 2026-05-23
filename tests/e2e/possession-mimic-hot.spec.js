@@ -219,7 +219,7 @@ test.describe('Possession — Brooke rescue path', () => {
   });
 
   test('isBlakeHuntWithCursedItem requires Blake as companion + cursed item', async ({ game: page }) => {
-    await setVar(page, 'isCompChosen', 1);
+    await setVar(page, 'isCompChosen', true);
     await setVar(page, 'companion', { name: 'Blake' });
     await setVar(page, 'gotCursedItem', 1);
     expect(await callSetup(page, 'setup.Posession.isBlakeHuntWithCursedItem()')).toBe(true);

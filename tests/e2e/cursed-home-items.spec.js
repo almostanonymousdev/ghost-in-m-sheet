@@ -12,12 +12,12 @@ const CURSED_ITEMS = [
 
 async function primeCurse(page, itemKey) {
   await setVar(page, 'cursedHomeItem', itemKey);
-  await setVar(page, 'cursedHomeItemActive', 1);
+  await setVar(page, 'cursedHomeItemActive', true);
 }
 
 test.describe('Cursed Home Items — controller', () => {
   test('isItemCursed is false when no curse is active', async ({ game: page }) => {
-    await setVar(page, 'cursedHomeItemActive', 0);
+    await setVar(page, 'cursedHomeItemActive', false);
     for (const { key } of CURSED_ITEMS) {
       expect(
         await callSetup(page, `setup.CursedItems.isItemCursed("${key}")`)
@@ -48,7 +48,7 @@ test.describe('Cursed Home Items — controller', () => {
     await primeCurse(page, 'bed');
     await page.evaluate(() => SugarCube.setup.CursedItems.clearCurse());
     expect(await getVar(page, 'cursedHomeItem')).toBe('');
-    expect(await getVar(page, 'cursedHomeItemActive')).toBe(0);
+    expect(await getVar(page, 'cursedHomeItemActive')).toBe(false);
     expect(await callSetup(page, 'setup.CursedItems.isItemCursed("bed")')).toBe(false);
   });
 
@@ -57,7 +57,7 @@ test.describe('Cursed Home Items — controller', () => {
     await page.evaluate(() => { window._origRandom = Math.random; Math.random = () => 0; });
     try {
       await page.evaluate(() => SugarCube.setup.CursedItems.rollForCursedItem());
-      expect(await getVar(page, 'cursedHomeItemActive')).toBe(1);
+      expect(await getVar(page, 'cursedHomeItemActive')).toBe(true);
       expect(['tv', 'pc', 'bed', 'shower', 'bath'])
         .toContain(await getVar(page, 'cursedHomeItem'));
     } finally {
@@ -69,10 +69,10 @@ test.describe('Cursed Home Items — controller', () => {
     // Force Math.random to 0.99 so the < 0.4 branch never fires.
     await page.evaluate(() => { window._origRandom = Math.random; Math.random = () => 0.99; });
     try {
-      await setVar(page, 'cursedHomeItemActive', 0);
+      await setVar(page, 'cursedHomeItemActive', false);
       await setVar(page, 'cursedHomeItem', '');
       await page.evaluate(() => SugarCube.setup.CursedItems.rollForCursedItem());
-      expect(await getVar(page, 'cursedHomeItemActive')).toBe(0);
+      expect(await getVar(page, 'cursedHomeItemActive')).toBe(false);
       expect(await getVar(page, 'cursedHomeItem')).toBe('');
     } finally {
       await page.evaluate(() => { Math.random = window._origRandom; });
@@ -109,7 +109,7 @@ test.describe('Cursed Home Items — home hub integration', () => {
   });
 
   test('Livingroom without curse shows normal Use PC link (no redirect)', async ({ game: page }) => {
-    await setVar(page, 'cursedHomeItemActive', 0);
+    await setVar(page, 'cursedHomeItemActive', false);
     await setVar(page, 'cursedHomeItem', '');
     await goToPassage(page, 'Livingroom');
     await expectCleanPassage(page);

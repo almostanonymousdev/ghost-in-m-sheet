@@ -150,7 +150,7 @@ setup.CompanionData = (function () {
 			// while she was carrying a cursed item for the Witch, she
 			// drops it. Witch owns the gotCursedItem flag.
 			onHuntFail: function () {
-				if (State.variables.isCompChosen !== 1) return;
+				if (State.variables.isCompChosen !== true) return;
 				if (!setup.Witch.hasCursedItemToTurnIn()) return;
 				setup.Witch.clearCursedItemHeld();
 			},

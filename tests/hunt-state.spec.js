@@ -692,7 +692,7 @@ test.describe('Hunt Controller', () => {
       V.tshirtState1 = 'not worn';
       V.tshirtState  = 'not worn';
       V.rememberTopOuter = 'notshirt1';
-      V.isShirtStolen = 0;
+      V.isShirtStolen = false;
     });
 
     await page.evaluate(() => SugarCube.setup.HuntController.endHunt(true));

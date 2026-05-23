@@ -446,13 +446,13 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
   test('quickRedress refuses to put back an in-hunt stolen item even though the tier is still purchased', async ({ game: page }) => {
     /* In-hunt steal: stealWornInGroup flips tshirtState1 to NOT_WORN
      * (still purchased — it's not gone for good yet) and stamps
-     * isShirtStolen=1. Recovery has to happen via FindStolenClothes;
+     * isShirtStolen=true. Recovery has to happen via FindStolenClothes;
      * the HUD shortcut must refuse. */
     await setVar(page, 'tshirtState0', 'not worn');
     await setVar(page, 'tshirtState1', 'not worn');
     await setVar(page, 'tshirtState', 'not worn');
     await setVar(page, 'rememberTopOuter', 'notshirt1');
-    await setVar(page, 'isShirtStolen', 1);
+    await setVar(page, 'isShirtStolen', true);
 
     const can = await callSetup(page, 'setup.Wardrobe.canQuickRedress("tshirt")');
     const ok = await callSetup(page, 'setup.Wardrobe.quickRedress("tshirt")');
@@ -460,7 +460,7 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
     expect(can).toBe(false);
     expect(ok).toBe(false);
     expect(await getVar(page, 'tshirtState1')).toBe('not worn');
-    expect(await getVar(page, 'isShirtStolen')).toBe(1);
+    expect(await getVar(page, 'isShirtStolen')).toBe(true);
   });
 
   test('quickRedress refuses bottomOuter when the in-hunt $isBottomStolen aggregate is set', async ({ game: page }) => {
@@ -468,7 +468,7 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
     await setVar(page, 'jeansState1', 'not worn');
     await setVar(page, 'jeansState', 'not worn');
     await setVar(page, 'rememberBottomOuter', 'nojeans1');
-    await setVar(page, 'isBottomStolen', 1);
+    await setVar(page, 'isBottomStolen', true);
 
     expect(await callSetup(page, 'setup.Wardrobe.canQuickRedress("jeans")')).toBe(false);
     expect(await callSetup(page, 'setup.Wardrobe.canQuickRedress("bottomOuter")')).toBe(false);
@@ -477,10 +477,10 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
   });
 
   test('isSlotStolen maps each slot to the right $is<Garment>Stolen flag', async ({ game: page }) => {
-    await setVar(page, 'isShirtStolen', 1);
-    await setVar(page, 'isBraStolen', 0);
-    await setVar(page, 'isPantiesStolen', 1);
-    await setVar(page, 'isBottomStolen', 1);
+    await setVar(page, 'isShirtStolen', true);
+    await setVar(page, 'isBraStolen', false);
+    await setVar(page, 'isPantiesStolen', true);
+    await setVar(page, 'isBottomStolen', true);
 
     const map = await page.evaluate(() => {
       const W = SugarCube.setup.Wardrobe;
@@ -545,13 +545,13 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
     await setVar(page, 'jeansState1', 'not worn');
     await setVar(page, 'jeansState', 'not worn');
     await setVar(page, 'rememberBottomOuter', 'nojeans1');
-    await setVar(page, 'isBottomStolen', 0);
+    await setVar(page, 'isBottomStolen', false);
 
     await setVar(page, 'braState0', 'not worn');
     await setVar(page, 'braState2', 'not worn');
     await setVar(page, 'braState', 'not worn');
     await setVar(page, 'rememberTopUnder', 'nobra2');
-    await setVar(page, 'isBraStolen', 0);
+    await setVar(page, 'isBraStolen', false);
 
     const restored = await callSetup(page, 'setup.Wardrobe.redressAfterHunt()');
     expect(restored.sort()).toEqual(['bottomOuter', 'bra']);
@@ -563,18 +563,18 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
 
   test('redressAfterHunt skips slots flagged as stolen', async ({ game: page }) => {
     /* The ghost stole the tier-1 tshirt during the hunt
-     * (isShirtStolen=1) — auto-redress must not put it back on, the
+     * (isShirtStolen=true) — auto-redress must not put it back on, the
      * recovery has to go through FindStolenClothes / loseAllStolen. */
     await setVar(page, 'tshirtState0', 'not worn');
     await setVar(page, 'tshirtState1', 'not worn');
     await setVar(page, 'tshirtState', 'not worn');
     await setVar(page, 'rememberTopOuter', 'notshirt1');
-    await setVar(page, 'isShirtStolen', 1);
+    await setVar(page, 'isShirtStolen', true);
 
     const restored = await callSetup(page, 'setup.Wardrobe.redressAfterHunt()');
     expect(restored).toEqual([]);
     expect(await getVar(page, 'tshirtState1')).toBe('not worn');
-    expect(await getVar(page, 'isShirtStolen')).toBe(1);
+    expect(await getVar(page, 'isShirtStolen')).toBe(true);
   });
 
   test('redressAfterHunt skips slots whose item is now NOT_BOUGHT (lost)', async ({ game: page }) => {
@@ -586,7 +586,7 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
     await setVar(page, 'pantiesState2', 'not bought');
     await setVar(page, 'pantiesState', 'not worn');
     await setVar(page, 'rememberBottomUnder', 'nopanties2');
-    await setVar(page, 'isPantiesStolen', 0);
+    await setVar(page, 'isPantiesStolen', false);
 
     const restored = await callSetup(page, 'setup.Wardrobe.redressAfterHunt()');
     expect(restored).toEqual([]);
@@ -612,13 +612,13 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
     await setVar(page, 'jeansState1', 'not worn');
     await setVar(page, 'jeansState', 'not worn');
     await setVar(page, 'rememberBottomOuter', 'nojeans1');
-    await setVar(page, 'isBottomStolen', 0);
+    await setVar(page, 'isBottomStolen', false);
 
     await setVar(page, 'tshirtState0', 'not worn');
     await setVar(page, 'tshirtState1', 'not worn');
     await setVar(page, 'tshirtState', 'not worn');
     await setVar(page, 'rememberTopOuter', 'notshirt1');
-    await setVar(page, 'isShirtStolen', 1);
+    await setVar(page, 'isShirtStolen', true);
     await setVar(page, 'lostClothing', []);
 
     await callSetup(page, 'setup.HauntedHouses.cleanupAfterHunt({ loseStolen: true })');
@@ -715,7 +715,7 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
     await setVar(page, 'tshirtState1', 'not worn');
     await setVar(page, 'tshirtState', 'not worn');
     await setVar(page, 'rememberTopOuter', 'notshirt1');
-    await setVar(page, 'isShirtStolen', 1);
+    await setVar(page, 'isShirtStolen', true);
     await startActiveHunt(page);
 
     const html = await renderStrip(page);

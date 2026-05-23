@@ -445,8 +445,8 @@ setup.MonkeyPaw = (function () {
 		},
 
 		// --- "Anything" meta-wish ---------------------------------
-		hasAnything: function () { return sv().wishAnything === 1; },
-		grantAnything: function () { sv().wishAnything = 1; },
+		hasAnything: function () { return sv().wishAnything === true; },
+		grantAnything: function () { sv().wishAnything = true; },
 
 		// --- Witch's guide ----------------------------------------
 		/* Guide states: see setup.MonkeyPawGuide. undefined coerces

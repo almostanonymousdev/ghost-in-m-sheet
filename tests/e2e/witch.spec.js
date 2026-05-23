@@ -27,7 +27,7 @@ test.describe('Witch — access and hours', () => {
     await setVar(page, 'hours', 3);
     await page.evaluate(() => { delete SugarCube.State.variables.gotKeyFromWitch; });
     expect(await callSetup(page, 'setup.Witch.canSneakInAtNight()')).toBe(false);
-    await setVar(page, 'gotKeyFromWitch', 1);
+    await setVar(page, 'gotKeyFromWitch', true);
     expect(await callSetup(page, 'setup.Witch.canSneakInAtNight()')).toBe(true);
     await setVar(page, 'hours', 12);
     expect(await callSetup(page, 'setup.Witch.canSneakInAtNight()')).toBe(false);
@@ -39,20 +39,20 @@ test.describe('Witch — access and hours', () => {
     expect(await callSetup(page, 'setup.Witch.canStealKeyFromWitch()')).toBe(false);
     await setVar(page, 'mc.corruption', 3);
     expect(await callSetup(page, 'setup.Witch.canStealKeyFromWitch()')).toBe(true);
-    await setVar(page, 'gotKeyFromWitch', 1);
+    await setVar(page, 'gotKeyFromWitch', true);
     expect(await callSetup(page, 'setup.Witch.canStealKeyFromWitch()')).toBe(false);
   });
 
   test('WitchInsideNight passage renders cleanly for a night sneak-in', async ({ game: page }) => {
     await setVar(page, 'hours', 2);
-    await setVar(page, 'gotKeyFromWitch', 1);
+    await setVar(page, 'gotKeyFromWitch', true);
     await goToPassage(page, 'WitchInsideNight');
     await expectCleanPassage(page);
   });
 
   test('WitchBedroom passage renders cleanly for bedroom events', async ({ game: page }) => {
     await setVar(page, 'hours', 2);
-    await setVar(page, 'gotKeyFromWitch', 1);
+    await setVar(page, 'gotKeyFromWitch', true);
     await setVar(page, 'witchNight', 0);
     await goToPassage(page, 'WitchBedroom');
     await expectCleanPassage(page);
@@ -96,13 +96,13 @@ test.describe('Witch — side quests', () => {
   test('collectCursedItemReward pays $30, clears gotCursedItem and CI flags', async ({ game: page }) => {
     await setVar(page, 'gotCursedItem', 1);
     await setVar(page, 'mc.money', 100);
-    await setVar(page, 'isCIDildo', 1);
-    await setVar(page, 'isCIButtplug', 1);
+    await setVar(page, 'isCIDildo', true);
+    await setVar(page, 'isCIButtplug', true);
     await page.evaluate(() => SugarCube.setup.Witch.collectCursedItemReward());
     expect(await getVar(page, 'mc.money')).toBe(130);
     expect(await getVar(page, 'gotCursedItem')).toBe(0);
-    expect(await getVar(page, 'isCIDildo')).toBe(0);
-    expect(await getVar(page, 'isCIButtplug')).toBe(0);
+    expect(await getVar(page, 'isCIDildo')).toBe(false);
+    expect(await getVar(page, 'isCIButtplug')).toBe(false);
   });
 
   test('shouldAwardGwb3OnTurnIn reflects current gwb level', async ({ game: page }) => {

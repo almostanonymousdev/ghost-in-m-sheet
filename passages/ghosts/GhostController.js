@@ -163,7 +163,7 @@
                the player resolves a prowl. */
             huntHooks: {
                 PROWL_EVENT: function () {
-                    State.variables.twinsEventActive = 1;
+                    State.variables.twinsEventActive = true;
                 }
             }
         },
@@ -317,7 +317,7 @@
         enumerable: true,
         get: function () { return !!ghostInfoMap()[this.name]; },
         set: function (v) {
-            if (v) { ghostInfoMap()[this.name] = 1; }
+            if (v) { ghostInfoMap()[this.name] = true; }
             else { delete ghostInfoMap()[this.name]; }
         }
     });
@@ -597,9 +597,9 @@
            1-3 evidence types to hide from the next hunt. */
         scheduleHideEvidence: function (count) {
             var s = State.variables;
-            s.deleteOneEvidence = 1;
-            if (count >= 2) s.deleteSecondEvidence = 1;
-            if (count >= 3) s.deleteThirdEvidence = 1;
+            s.deleteOneEvidence = true;
+            if (count >= 2) s.deleteSecondEvidence = true;
+            if (count >= 3) s.deleteThirdEvidence = true;
         },
 
         /* Cheat-menu helpers (StoryCaption). The `cheat` prefix marks
@@ -641,9 +641,9 @@
            should run. */
         hasScheduledHiddenEvidence: function () {
             var s = State.variables;
-            return s.deleteOneEvidence === 1
-                || s.deleteSecondEvidence === 1
-                || s.deleteThirdEvidence === 1
+            return s.deleteOneEvidence === true
+                || s.deleteSecondEvidence === true
+                || s.deleteThirdEvidence === true
                 || s.hiddenEvidence !== undefined
                 || s.hiddenEvidence1 !== undefined
                 || s.hiddenEvidence2 !== undefined;
@@ -665,14 +665,14 @@
            Stamps the time using TimeController. */
         activateProwl: function () {
             var s = State.variables;
-            s.prowlActivated = 1;
+            s.prowlActivated = true;
             s.prowlActivationTime = setup.Time.totalMinutes();
         },
         clearProwlActivation: function () {
-            State.variables.prowlActivated = 0;
+            State.variables.prowlActivated = false;
         },
         isProwlActivated: function () {
-            return State.variables.prowlActivated === 1;
+            return State.variables.prowlActivated === true;
         },
         /* Per-tick prowl-timer accounting. Either the prowl has exceeded
            its window (clear the flag) or update the elapsed counter from
@@ -680,13 +680,13 @@
         tickProwlTimer: function () {
             var s = State.variables;
             if (s.elapsedTimeProwl > s.prowlTimeRemain) {
-                s.prowlActivated = 0;
+                s.prowlActivated = false;
             } else {
                 s.elapsedTimeProwl = setup.Time.totalMinutes() - s.prowlActivationTime;
             }
         },
-        knowledgeUsed: function () { return State.variables.knowledgeUsed === 1; },
-        markKnowledgeUsed: function () { State.variables.knowledgeUsed = 1; },
+        knowledgeUsed: function () { return State.variables.knowledgeUsed === true; },
+        markKnowledgeUsed: function () { State.variables.knowledgeUsed = true; },
         // `|| 0` getters are kept inline (callers do arithmetic and
         // unguarded comparisons that need 0 on fresh saves); only the
         // raw setters fold into the defineAccessors block.
@@ -701,16 +701,16 @@
             s.TemperatureCheck = false;
             s.UVLCheck = false;
         },
-        hasHighPriestess: function () { return State.variables.highpriestess === 1; },
-        setHighPriestess: function (on) { State.variables.highpriestess = on ? 1 : 0; },
-        consumeHighPriestess: function () { State.variables.highpriestess = 0; },
-        twinsEventActive: function () { return State.variables.twinsEventActive === 1; },
-        enableBanshee: function () { State.variables.bansheeAbility = 1; },
-        enableCthulion: function () { State.variables.cthulionAbility = 1; },
+        hasHighPriestess: function () { return State.variables.highpriestess === true; },
+        setHighPriestess: function (on) { State.variables.highpriestess = !!on; },
+        consumeHighPriestess: function () { State.variables.highpriestess = false; },
+        twinsEventActive: function () { return State.variables.twinsEventActive === true; },
+        enableBanshee: function () { State.variables.bansheeAbility = true; },
+        enableCthulion: function () { State.variables.cthulionAbility = true; },
         clearBanshee: function () { delete State.variables.bansheeAbility; },
         clearCthulion: function () { delete State.variables.cthulionAbility; },
-        bansheeActive: function () { return State.variables.bansheeAbility === 1; },
-        cthulionActive: function () { return State.variables.cthulionAbility === 1; },
+        bansheeActive: function () { return State.variables.bansheeAbility === true; },
+        cthulionActive: function () { return State.variables.cthulionAbility === true; },
         /* Mimic rotation: every 30 in-game minutes the mimic disguises itself
            as a different ghost. Returns the new disguise name when the
            interval flipped, null otherwise. */
@@ -733,13 +733,13 @@
         // bottom of this file; daily reset flows through
         // setup.Tick.resetCooldowns.
         twinsEventReady: function () {
-            return State.variables.twinsEventActive === 1 && setup.Cooldowns.available('twinsEvent');
+            return State.variables.twinsEventActive === true && setup.Cooldowns.available('twinsEvent');
         },
         consumeTwinsEvent: function () {
-            State.variables.twinsEventActive = 0;
+            State.variables.twinsEventActive = false;
             setup.Cooldowns.start('twinsEvent');
         },
-        clearTwinsEvent: function () { State.variables.twinsEventActive = 0; },
+        clearTwinsEvent: function () { State.variables.twinsEventActive = false; },
         clearKnowledgeUsed: function () { State.variables.knowledgeUsed = undefined; },
         /* Drop the Notebook's crossed-out-evidence overlay (set by
            the Tarot Knowledge card / Monkey Paw knowledge wish). The
@@ -761,9 +761,9 @@
            0/1/2/3. Used by HauntedHouses to pick a contract reward tier. */
         scheduledDeletionCount: function () {
             var s = State.variables;
-            if (s.deleteThirdEvidence === 1) return 3;
-            if (s.deleteSecondEvidence === 1) return 2;
-            if (s.deleteOneEvidence === 1) return 1;
+            if (s.deleteThirdEvidence === true) return 3;
+            if (s.deleteSecondEvidence === true) return 2;
+            if (s.deleteOneEvidence === true) return 1;
             return 0;
         },
     };

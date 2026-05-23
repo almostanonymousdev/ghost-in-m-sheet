@@ -1,6 +1,6 @@
 :: AdultSectionPurchase [nobr] {"position":"3000,1850","size":"100,100"}
 <div class="flexwrapper backgroundForText">
-<<shopCardCorruption "dildoPurchased" "ui/img/dildo.jpg" 30 "AdultSectionPurchase" 3 1>>
+<<shopCardCorruption "dildoPurchased" "ui/img/dildo.jpg" 30 "AdultSectionPurchase" 3 true>>
 <div class="housecard">
 <<if setup.Mall.canBuyWardenOutfit()>>
 	<<image "outfits/wardrobe/warden.webp" "iconPx">><br>

@@ -155,6 +155,58 @@
 		ectoplasmQuestStage: function () { return 0; }
 	};
 
+	// Flags that flipped from 0/1 integers to true/false booleans.
+	// Old saves carry the integer form; this list lets applyDefaults
+	// coerce them back to the boolean shape so === true / === false
+	// predicates on the new code path keep working without a version bump.
+	var BOOLEAN_FLAGS = [
+		// wardrobe stolen markers
+		'isJeansStolen', 'isSkirtStolen', 'isShortsStolen', 'isTshirtStolen',
+		'isBraStolen', 'isPantiesStolen', 'isStockingsStolen',
+		'isShirtStolen', 'isBottomStolen',
+		// haunted-house + hunt-conditions flags
+		'hasClothesStolen', 'isClothesStolen', 'isBaitActive', 'isOverchargedMode',
+		'baitOrgasmPending', 'overchargedTools', 'sanityCollapse', 'exhausted',
+		'baitActive',
+		// home
+		'dildoPurchased', 'cameraBought', 'mcSleptWithCameraOn',
+		'webcamAccountCreated', 'holyWaterIsCollected',
+		// witch
+		'isCIDildo', 'isCIButtplug', 'isCIBeads', 'isCIHDildo',
+		'amulet', 'gotKeyFromWitch', 'isWeakenGhost',
+		// missing women
+		'hasRescueClue',
+		// ghosts
+		'twinsEventActive', 'knowledgeUsed', 'prowlActivated',
+		'highpriestess', 'bansheeAbility', 'cthulionAbility',
+		'deleteOneEvidence', 'deleteSecondEvidence', 'deleteThirdEvidence',
+		// mc
+		'isPenaltyOn', 'makeupApplied',
+		// companion
+		'isCompChosen', 'aliceWorkDone', 'isCompRoomChosen',
+		'transFirstStage', 'meetAlice',
+		// gym
+		'trainer1TipReceived', 'relationEmilyCD',
+		// cursed home items + monkey paw
+		'cursedHomeItemActive', 'wishAnything'
+	];
+
+	function normalizeBooleanFlags(vars) {
+		for (var i = 0; i < BOOLEAN_FLAGS.length; i++) {
+			var k = BOOLEAN_FLAGS[i];
+			var v = vars[k];
+			if (v === 1) vars[k] = true;
+			else if (v === 0) vars[k] = false;
+		}
+		// $ghostInfoCollected is a map of name -> 1/true; normalize values.
+		var g = vars.ghostInfoCollected;
+		if (g && typeof g === 'object') {
+			Object.keys(g).forEach(function (gk) {
+				if (g[gk] === 1) g[gk] = true;
+			});
+		}
+	}
+
 	// mc sub-fields added after launch -- missing on very old saves
 	var MC_DEFAULTS = {
 		fit:               0,
@@ -180,6 +232,8 @@
 				}
 			}
 		});
+
+		normalizeBooleanFlags(vars);
 
 		if (vars.mc && typeof vars.mc === 'object') {
 			// One-time rename: mc.exhib -> mc.exhibitionism. Carry the old
@@ -271,7 +325,7 @@
 			'Mimic', 'Oni', 'Obake', 'TheTwins', 'HighPriestess', 'Cthulion'
 		].forEach(function (gname) {
 			var legacyKey = 'ghost' + gname + 'InfoCollected';
-			if (vars[legacyKey]) vars.ghostInfoCollected[gname] = 1;
+			if (vars[legacyKey]) vars.ghostInfoCollected[gname] = true;
 			delete vars[legacyKey];
 		});
 
@@ -432,7 +486,7 @@
 				Object.keys(WISH_FLAG_TO_ID).forEach(function (flag) {
 					vars.monkeyPawLearned[WISH_FLAG_TO_ID[flag]] = true;
 				});
-				if (vars.wishAnything !== 1) vars.wishAnything = 1;
+				if (vars.wishAnything !== true) vars.wishAnything = true;
 			}
 		}
 		Object.keys(WISH_FLAG_TO_ID).forEach(function (flag) { delete vars[flag]; });

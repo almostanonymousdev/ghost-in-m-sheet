@@ -6,14 +6,14 @@ test.describe('Missing Women — clue / EMF upgrade flow', () => {
   test('hasRescueClue reflects $hasRescueClue', async ({ game: page }) => {
     await page.evaluate(() => { delete SugarCube.State.variables.hasRescueClue; });
     expect(await callSetup(page, 'setup.MissingWomen.hasRescueClue()')).toBe(false);
-    await setVar(page, 'hasRescueClue', 1);
+    await setVar(page, 'hasRescueClue', true);
     expect(await callSetup(page, 'setup.MissingWomen.hasRescueClue()')).toBe(true);
   });
 
   test('setRescueClueFound flips $hasRescueClue', async ({ game: page }) => {
     await page.evaluate(() => { delete SugarCube.State.variables.hasRescueClue; });
     await page.evaluate(() => SugarCube.setup.MissingWomen.setRescueClueFound());
-    expect(await getVar(page, 'hasRescueClue')).toBe(1);
+    expect(await getVar(page, 'hasRescueClue')).toBe(true);
   });
 
   test('emfLevel reads equipment.emf', async ({ game: page }) => {

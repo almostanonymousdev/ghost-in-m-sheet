@@ -64,7 +64,7 @@ test.describe('Trans companion unlock', () => {
 
   test('pickTransCompanion("Alex") sets $companion + selection flags', async ({ game: page }) => {
     await page.evaluate(() => {
-      SugarCube.State.variables.transFirstStage = 1;
+      SugarCube.State.variables.transFirstStage = true;
       SugarCube.State.variables.chosenPlan = 4;
       SugarCube.State.variables.transStart = 5;
       SugarCube.State.variables.transPicture = 3;

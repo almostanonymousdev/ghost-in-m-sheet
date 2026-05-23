@@ -148,13 +148,13 @@ test.describe('Hunt — clothes + dark-room bugs', () => {
       V.skirtState   = NOT_WORN;
       V.braState     = NOT_WORN;
       V.pantiesState = WORN;
-      V.isClothesStolen = 0;
+      V.isClothesStolen = false;
     });
 
     await goToPassage(page, 'FreezeHunt');
 
     const isStolen = await getVar(page, 'isClothesStolen');
-    expect(isStolen).toBe(1);
+    expect(isStolen).toBe(true);
 
     const fp = await callSetup(page, 'setup.HuntController.field("floorplan")');
     expect(fp.loot && fp.loot.clothesStolen).toBeTruthy();
@@ -174,12 +174,12 @@ test.describe('Hunt — clothes + dark-room bugs', () => {
       V.skirtState   = NOT_WORN;
       V.braState     = NOT_WORN;
       V.pantiesState = NOT_WORN;
-      V.isClothesStolen = 0;
+      V.isClothesStolen = false;
     });
 
     await goToPassage(page, 'FreezeHunt');
 
-    expect(await getVar(page, 'isClothesStolen')).toBe(0);
+    expect(await getVar(page, 'isClothesStolen')).toBe(false);
     const fp = await callSetup(page, 'setup.HuntController.field("floorplan")');
     expect(fp && fp.loot && fp.loot.clothesStolen).toBeFalsy();
   });
@@ -203,12 +203,12 @@ test.describe('Hunt — clothes + dark-room bugs', () => {
       V.jeansState   = WORN;
       V.shortsState  = SugarCube.setup.ClothingState.NOT_WORN;
       V.skirtState   = SugarCube.setup.ClothingState.NOT_WORN;
-      V.isClothesStolen = 0;
+      V.isClothesStolen = false;
     });
 
     await goToPassage(page, 'StealClothes');
 
-    expect(await getVar(page, 'isClothesStolen')).toBe(1);
+    expect(await getVar(page, 'isClothesStolen')).toBe(true);
     const fp = await callSetup(page, 'setup.HuntController.field("floorplan")');
     expect(fp.loot && fp.loot.clothesStolen).toBeTruthy();
     /* The stash must land on a real furniture-bearing room. */
@@ -235,12 +235,12 @@ test.describe('Hunt — clothes + dark-room bugs', () => {
       V.skirtState   = NOT_WORN;
       V.braState     = NOT_WORN;
       V.pantiesState = NOT_WORN;
-      V.isClothesStolen = 0;
+      V.isClothesStolen = false;
     });
 
     await goToPassage(page, 'StealClothes');
 
-    expect(await getVar(page, 'isClothesStolen')).toBe(0);
+    expect(await getVar(page, 'isClothesStolen')).toBe(false);
     const fp = await callSetup(page, 'setup.HuntController.field("floorplan")');
     expect(fp && fp.loot && fp.loot.clothesStolen).toBeFalsy();
   });

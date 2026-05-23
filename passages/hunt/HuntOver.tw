@@ -59,7 +59,7 @@
 	<</if>>
 	<<if setup.Wardrobe.isBottomStolen() and _showBottom>>
 		@@.usebtn;<<link "Grab your bottoms">><<replace "#exhaustionGrab">>
-			<<run setup.Wardrobe.restoreStolenInGroup("bottomOuter")>><<run State.variables.isBottomStolen = 0>><<run State.variables.isJeansStolen = 0>><<run State.variables.isShortsStolen = 0>><<run State.variables.isSkirtStolen = 0>>
+			<<run setup.Wardrobe.restoreStolenInGroup("bottomOuter")>><<run State.variables.isBottomStolen = false>><<run State.variables.isJeansStolen = false>><<run State.variables.isShortsStolen = false>><<run State.variables.isSkirtStolen = false>>
 			<<run setup.Wardrobe.loseAllStolen()>>
 			@@.mc-action; You snatch your bottoms and stumble for the exit. The rest stays behind.@@<br>
 			@@.movebtn;[[Drag yourself home|CityMap][setup.Time.addHours(1)]]@@
@@ -178,7 +178,7 @@
 <<if setup.HauntedHouses.hasClothesStolen()>>
 	@@.mc-thoughts; And -- right -- your clothes. You sweep the rooms it stashed them in, dress on the move, and don't look back at the door.@@
 	<<if setup.Wardrobe.isPantiesStolen()>><<run setup.Wardrobe.restoreStolenInGroup("panties", "isPantiesStolen")>><</if>>
-	<<if setup.Wardrobe.isBottomStolen()>><<run setup.Wardrobe.restoreStolenInGroup("bottomOuter")>><<run State.variables.isBottomStolen = 0>><<run State.variables.isJeansStolen = 0>><<run State.variables.isShortsStolen = 0>><<run State.variables.isSkirtStolen = 0>><</if>>
+	<<if setup.Wardrobe.isBottomStolen()>><<run setup.Wardrobe.restoreStolenInGroup("bottomOuter")>><<run State.variables.isBottomStolen = false>><<run State.variables.isJeansStolen = false>><<run State.variables.isShortsStolen = false>><<run State.variables.isSkirtStolen = false>><</if>>
 	<<if setup.Wardrobe.isShirtStolen()>><<run setup.Wardrobe.restoreStolenInGroup("tshirt", "isShirtStolen")>><</if>>
 	<<if setup.Wardrobe.isBraStolen()>><<run setup.Wardrobe.restoreStolenInGroup("bra", "isBraStolen")>><</if>>
 	<<run setup.HauntedHouses.clearStolenClothesFlag()>>

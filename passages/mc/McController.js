@@ -133,7 +133,7 @@ setup.Mc = (function () {
 				if (s[key] === WORN) total += TATTOOS[key];
 			});
 
-			if (s.makeupApplied === 1) {
+			if (s.makeupApplied === true) {
 				var tier = m.makeupImg;
 				total += tier === 1 ? 5 : tier === 2 ? 10 : tier === 3 ? 15 : 0;
 			}
@@ -143,9 +143,9 @@ setup.Mc = (function () {
 		},
 
 		// --- Penalty (sleep / assault debuff flag) --------------
-		isPenalized:    function () { return sv().isPenaltyOn === 1; },
-		setPenalized:   function (on) { sv().isPenaltyOn = on ? 1 : 0; },
-		clearPenalty:   function () { sv().isPenaltyOn = 0; },
+		isPenalized:    function () { return sv().isPenaltyOn === true; },
+		setPenalized:   function (on) { sv().isPenaltyOn = !!on; },
+		clearPenalty:   function () { sv().isPenaltyOn = false; },
 
 		sensualBodyPart: function () { return sv().sensualBodyPart; },
 		bodyPartSensitivity: function (part) {
@@ -199,7 +199,7 @@ setup.Mc = (function () {
 		consumeMedicine: function () {
 			if (sv().medicineAmount > 0) {
 				sv().medicineAmount -= 1;
-				sv().isPenaltyOn = 0;
+				sv().isPenaltyOn = false;
 				return true;
 			}
 			return false;
@@ -426,10 +426,10 @@ setup.Mc = (function () {
 		s.mc.corruption += (s.tempCorr || 0);
 		s.tempCorr = 0;
 	};
-	api.isSanityCollapsed = function () { return sv().sanityCollapse === 1; };
-	api.clearSanityCollapse = function () { sv().sanityCollapse = 0; };
-	api.isExhausted = function () { return sv().exhausted === 1; };
-	api.clearExhausted = function () { sv().exhausted = 0; };
+	api.isSanityCollapsed = function () { return sv().sanityCollapse === true; };
+	api.clearSanityCollapse = function () { sv().sanityCollapse = false; };
+	api.isExhausted = function () { return sv().exhausted === true; };
+	api.clearExhausted = function () { sv().exhausted = false; };
 	api.lustPct = function () { return sv().mc.lust / 100; };
 	api.sanityPct = function () { return sv().mc.sanity / sv().mc.sanityMax; };
 	api.energyPct = function () { return sv().mc.energy / sv().mc.energyMax; };

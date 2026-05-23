@@ -107,7 +107,7 @@ test.describe('Gym — passage rendering with progression state', () => {
       await setVar(page, 'mc.money', 200);
       await setVar(page, 'sportswear', 1);
       await setVar(page, 'trainingCost', 15);
-      await setVar(page, 'trainer1TipReceived', 1);
+      await setVar(page, 'trainer1TipReceived', true);
       await setVar(page, 'relationEmily', 1);
       await goToPassage(page, passage);
       await expectCleanPassage(page);
@@ -352,13 +352,13 @@ test.describe('Mall — Blake content and warden outfit', () => {
 
   test('sellCursedItemToBlake clears CI flags and adds $60', async ({ game: page }) => {
     await setVar(page, 'gotCursedItem', 1);
-    await setVar(page, 'isCIDildo', 1);
-    await setVar(page, 'isCIButtplug', 1);
+    await setVar(page, 'isCIDildo', true);
+    await setVar(page, 'isCIButtplug', true);
     await setVar(page, 'mc.money', 10);
     await page.evaluate(() => SugarCube.setup.Mall.sellCursedItemToBlake());
     expect(await getVar(page, 'mc.money')).toBe(70);
     expect(await getVar(page, 'gotCursedItem')).toBe(0);
-    expect(await getVar(page, 'isCIDildo')).toBe(0);
+    expect(await getVar(page, 'isCIDildo')).toBe(false);
   });
 
   test('warden outfit: gate, purchase, completion', async ({ game: page }) => {
@@ -449,7 +449,7 @@ test.describe('Church — relationship & exorcism levers', () => {
     await page.evaluate(() => { delete SugarCube.State.variables.amulet; });
     await page.evaluate(() => SugarCube.setup.Church.startExorcismQuest());
     expect(await getVar(page, 'exorcismQuestStage')).toBe(1);
-    expect(await getVar(page, 'amulet')).toBe(1);
+    expect(await getVar(page, 'amulet')).toBe(true);
   });
 
   test('startPriestToolEvent sets eventToolsOneStart and upgrades temperature', async ({ game: page }) => {

@@ -172,17 +172,17 @@ test.describe('Body mods — home mirror and wardrobe', () => {
 
   test('Mirror applies regular makeup: +5 beauty, -1 charge', async ({ game: page }) => {
     await setVar(page, 'makeupAmount', 3);
-    await setVar(page, 'makeupApplied', 0);
+    await setVar(page, 'makeupApplied', false);
     await callSetup(page, `setup.Mc.setBeauty(10)`);
     // Suppress the twins mirror branch so we reliably hit the makeup UI.
-    await setVar(page, 'twinsEventActive', 0);
+    await setVar(page, 'twinsEventActive', false);
     await setVar(page, 'twinsEvent', 1);
     await goToPassage(page, 'Mirror');
     await page.locator('#passages')
       .getByText('Apply regular makeup', { exact: false })
       .first()
       .click();
-    await page.waitForFunction(() => SugarCube.State.variables.makeupApplied === 1);
+    await page.waitForFunction(() => SugarCube.State.variables.makeupApplied === true);
     expect(await getVar(page, 'makeupAmount')).toBe(2);
     expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(15);
   });

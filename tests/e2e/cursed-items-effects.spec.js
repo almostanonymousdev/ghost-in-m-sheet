@@ -5,7 +5,7 @@ const { expectCleanPassage } = require('./e2e-helpers');
 test.describe('Cursed home items — applyCurseEventEffects payload', () => {
   test('applyCurseEventEffects: -15 sanity, +0.5 corruption, lust=100, curse cleared', async ({ game: page }) => {
     await setVar(page, 'cursedHomeItem', 'tv');
-    await setVar(page, 'cursedHomeItemActive', 1);
+    await setVar(page, 'cursedHomeItemActive', true);
     await setVar(page, 'mc.sanity', 80);
     await setVar(page, 'mc.corruption', 2);
     await setVar(page, 'mc.lust', 0);
@@ -16,7 +16,7 @@ test.describe('Cursed home items — applyCurseEventEffects payload', () => {
     expect(await getVar(page, 'mc.corruption')).toBe(2.5);
     expect(await getVar(page, 'mc.lust')).toBe(100);
     expect(await getVar(page, 'cursedHomeItem')).toBe('');
-    expect(await getVar(page, 'cursedHomeItemActive')).toBe(0);
+    expect(await getVar(page, 'cursedHomeItemActive')).toBe(false);
   });
 
   test('applyCurseEventEffects pegs lust to 100 even from already-high lust', async ({ game: page }) => {
@@ -33,7 +33,7 @@ test.describe('Cursed home items — applyCurseEventEffects payload', () => {
       const item = await page.evaluate(() => SugarCube.setup.CursedItems.forceCursedItem());
       expect(['tv', 'pc', 'bed', 'shower', 'bath']).toContain(item);
       expect(await getVar(page, 'cursedHomeItem')).toBe(item);
-      expect(await getVar(page, 'cursedHomeItemActive')).toBe(1);
+      expect(await getVar(page, 'cursedHomeItemActive')).toBe(true);
     } finally {
       await page.evaluate(() => { Math.random = window._origRandom; });
     }
@@ -58,7 +58,7 @@ test.describe('Cursed home items — applyCurseEventEffects payload', () => {
 
   test('curse persists between hub visit and event trigger', async ({ game: page }) => {
     await setVar(page, 'cursedHomeItem', 'tv');
-    await setVar(page, 'cursedHomeItemActive', 1);
+    await setVar(page, 'cursedHomeItemActive', true);
     await goToPassage(page, 'Livingroom');
     expect(await callSetup(page, 'setup.CursedItems.isItemCursed("tv")')).toBe(true);
     await goToPassage(page, 'CursedTVEvent');
@@ -66,9 +66,9 @@ test.describe('Cursed home items — applyCurseEventEffects payload', () => {
   });
 
   test('CursedItems.isActive reflects $cursedHomeItemActive', async ({ game: page }) => {
-    await setVar(page, 'cursedHomeItemActive', 0);
+    await setVar(page, 'cursedHomeItemActive', false);
     expect(await callSetup(page, 'setup.CursedItems.isActive()')).toBe(false);
-    await setVar(page, 'cursedHomeItemActive', 1);
+    await setVar(page, 'cursedHomeItemActive', true);
     expect(await callSetup(page, 'setup.CursedItems.isActive()')).toBe(true);
   });
 });

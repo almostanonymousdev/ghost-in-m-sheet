@@ -145,7 +145,7 @@ setup.CompanionCatalogue = (function () {
 			: (this.eventCopy || [])[tier - 1];
 		if (!entry) return null;
 		if (typeof entry === 'object' && entry.pre && entry.post) {
-			return State.variables.transFirstStage === 1 ? entry.post : entry.pre;
+			return State.variables.transFirstStage === true ? entry.post : entry.pre;
 		}
 		return entry;
 	};

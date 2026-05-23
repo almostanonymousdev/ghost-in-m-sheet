@@ -107,10 +107,10 @@ test.describe('Mall Controller', () => {
   test('sellCursedItemToBlake clears item flags and adds $60', async ({ game: page }) => {
     // arrange
     await setVar(page, 'gotCursedItem', 1);
-    await setVar(page, 'isCIDildo', 1);
-    await setVar(page, 'isCIButtplug', 1);
-    await setVar(page, 'isCIBeads', 1);
-    await setVar(page, 'isCIHDildo', 1);
+    await setVar(page, 'isCIDildo', true);
+    await setVar(page, 'isCIButtplug', true);
+    await setVar(page, 'isCIBeads', true);
+    await setVar(page, 'isCIHDildo', true);
     await setVar(page, 'mc.money', 50);
 
     // act
@@ -118,10 +118,10 @@ test.describe('Mall Controller', () => {
 
     // assert
     expect(await getVar(page, 'gotCursedItem')).toBe(0);
-    expect(await getVar(page, 'isCIDildo')).toBe(0);
-    expect(await getVar(page, 'isCIButtplug')).toBe(0);
-    expect(await getVar(page, 'isCIBeads')).toBe(0);
-    expect(await getVar(page, 'isCIHDildo')).toBe(0);
+    expect(await getVar(page, 'isCIDildo')).toBe(false);
+    expect(await getVar(page, 'isCIButtplug')).toBe(false);
+    expect(await getVar(page, 'isCIBeads')).toBe(false);
+    expect(await getVar(page, 'isCIHDildo')).toBe(false);
     expect(await getVar(page, 'mc.money')).toBe(110);
   });
 

@@ -358,7 +358,7 @@ test.describe('Events controller — banshee / cthulion abilities', () => {
     expect(await callSetup(page, 'setup.Events.bansheeActive()')).toBe(false);
     await page.evaluate(() => SugarCube.setup.Events.enableBanshee());
     expect(await callSetup(page, 'setup.Events.bansheeActive()')).toBe(true);
-    expect(await getVar(page, 'bansheeAbility')).toBe(1);
+    expect(await getVar(page, 'bansheeAbility')).toBe(true);
     await page.evaluate(() => SugarCube.setup.Events.clearBanshee());
     expect(await callSetup(page, 'setup.Events.bansheeActive()')).toBe(false);
   });
@@ -375,10 +375,10 @@ test.describe('Events controller — banshee / cthulion abilities', () => {
 
 test.describe('Events controller — companion checks', () => {
   test('hasCompanionOnPlan1 requires both flags set', async ({ game: page }) => {
-    await setVar(page, 'isCompChosen', 0);
+    await setVar(page, 'isCompChosen', false);
     await setVar(page, 'chosenPlan', 0);
     expect(await callSetup(page, 'setup.Events.hasCompanionOnPlan1()')).toBe(false);
-    await setVar(page, 'isCompChosen', 1);
+    await setVar(page, 'isCompChosen', true);
     expect(await callSetup(page, 'setup.Events.hasCompanionOnPlan1()')).toBe(false);
     await setVar(page, 'chosenPlan', 'Plan1');
     expect(await callSetup(page, 'setup.Events.hasCompanionOnPlan1()')).toBe(true);
@@ -473,7 +473,7 @@ test.describe('Events controller — event flags / videos', () => {
 
   test('recordWeakenReward sets weaken flag and money', async ({ game: page }) => {
     await page.evaluate(() => SugarCube.setup.Events.recordWeakenReward());
-    expect(await getVar(page, 'isWeakenGhost')).toBe(1);
+    expect(await getVar(page, 'isWeakenGhost')).toBe(true);
     expect(await getVar(page, 'moneyFromWeakenTheGhost')).toBe(30);
   });
 

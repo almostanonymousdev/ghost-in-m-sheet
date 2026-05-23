@@ -11,7 +11,7 @@ test.describe('Missing Women — rescue girls, possession, stay', () => {
     test(`${girl}: passage renders without errors (with holy water)`, async ({ game: page }) => {
       test.setTimeout(10_000);
       await setupActiveQuest(page, girl);
-      await setVar(page, 'holyWaterIsCollected', 1);
+      await setVar(page, 'holyWaterIsCollected', true);
 
       await goToPassage(page, 'RescueScene');
       await expectCleanPassage(page);
@@ -21,7 +21,7 @@ test.describe('Missing Women — rescue girls, possession, stay', () => {
     test(`${girl}: holy water option appears when collected`, async ({ game: page }) => {
       test.setTimeout(10_000);
       await setupActiveQuest(page, girl);
-      await setVar(page, 'holyWaterIsCollected', 1);
+      await setVar(page, 'holyWaterIsCollected', true);
 
       await goToPassage(page, 'RescueScene');
       await expectCleanPassage(page);
@@ -31,7 +31,7 @@ test.describe('Missing Women — rescue girls, possession, stay', () => {
     test(`${girl}: no holy water shows missing message`, async ({ game: page }) => {
       test.setTimeout(10_000);
       await setupActiveQuest(page, girl);
-      await setVar(page, 'holyWaterIsCollected', 0);
+      await setVar(page, 'holyWaterIsCollected', false);
 
       await goToPassage(page, 'RescueScene');
       await expectCleanPassage(page);

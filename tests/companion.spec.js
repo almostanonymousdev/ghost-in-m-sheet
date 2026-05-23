@@ -314,9 +314,9 @@ test.describe('Companion Controller', () => {
     await setVar(page, 'chosenPlan', 'Plan1');
     await setVar(page, 'chosenPlanActivated', 1);
     await setVar(page, 'randomGhostPassage', 5);
-    await setVar(page, 'isCompRoomChosen', 1);
+    await setVar(page, 'isCompRoomChosen', true);
     await setVar(page, 'showComp', 1);
-    await setVar(page, 'isCompChosen', 1);
+    await setVar(page, 'isCompChosen', true);
 
     // act
     await page.evaluate(() => SugarCube.setup.Companion.resetHuntState());
@@ -325,9 +325,9 @@ test.describe('Companion Controller', () => {
     expect(await getVar(page, 'chosenPlan')).toBe(0);
     expect(await getVar(page, 'chosenPlanActivated')).toBe(0);
     expect(await getVar(page, 'randomGhostPassage')).toBe(0);
-    expect(await getVar(page, 'isCompRoomChosen')).toBe(0);
+    expect(await getVar(page, 'isCompRoomChosen')).toBe(false);
     expect(await getVar(page, 'showComp')).toBe(0);
-    expect(await getVar(page, 'isCompChosen')).toBe(0);
+    expect(await getVar(page, 'isCompChosen')).toBe(false);
   });
 
   // --- Cursed item ---
@@ -439,7 +439,7 @@ test.describe('Companion Controller', () => {
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
     const attached = await callSetup(page, 'setup.Companion.autoAttachOnHuntStart()');
     expect(attached).toBe(true);
-    expect(await getVar(page, 'isCompChosen')).toBe(1);
+    expect(await getVar(page, 'isCompChosen')).toBe(true);
     expect(await getVar(page, 'chosenPlan')).toBe('Plan1');
     expect(await getVar(page, 'showComp')).toBe(1); // CompanionShow.VISIBLE
     await page.evaluate(() => SugarCube.setup.HuntController.end());
@@ -499,13 +499,13 @@ test.describe('Companion Controller', () => {
   });
 
   test('eventTextForTier picks trans post-stage once flag is set', async ({ game: page }) => {
-    await setVar(page, 'transFirstStage', 1);
+    await setVar(page, 'transFirstStage', true);
     const text = await callSetup(page, 'setup.Companion.getByName("Alex").eventTextForTier(1)');
     expect(text).toContain('the body has become irresistibly feminine');
   });
 
   test('eventTextForTier returns same trans copy for all trans companions', async ({ game: page }) => {
-    await setVar(page, 'transFirstStage', 1);
+    await setVar(page, 'transFirstStage', true);
     const alex   = await callSetup(page, 'setup.Companion.getByName("Alex").eventTextForTier(2)');
     const taylor = await callSetup(page, 'setup.Companion.getByName("Taylor").eventTextForTier(2)');
     const casey  = await callSetup(page, 'setup.Companion.getByName("Casey").eventTextForTier(2)');

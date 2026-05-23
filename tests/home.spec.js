@@ -400,7 +400,7 @@ test.describe('Home Controller', () => {
   test('useHolyWaterOnMare clears mare and holy water state', async ({ game: page }) => {
     // arrange
     await setVar(page, 'ghostMareEventStart', 2);
-    await setVar(page, 'holyWaterIsCollected', 1);
+    await setVar(page, 'holyWaterIsCollected', true);
     await setVar(page, 'ghostMareEventStage', 3);
 
     // act
@@ -408,13 +408,13 @@ test.describe('Home Controller', () => {
 
     // assert
     expect(await getVar(page, 'ghostMareEventStart')).toBe(0);
-    expect(await getVar(page, 'holyWaterIsCollected')).toBe(0);
+    expect(await getVar(page, 'holyWaterIsCollected')).toBe(false);
     expect(await getVar(page, 'ghostMareEventStage')).toBe(0);
   });
 
   test('canUseHolyWaterOnMare requires holy water and active mare', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'holyWaterIsCollected', 1);
+    await setVar(page, 'holyWaterIsCollected', true);
     await setVar(page, 'ghostMareEventStart', 1);
 
     // act
@@ -426,7 +426,7 @@ test.describe('Home Controller', () => {
 
   test('canUseHolyWaterOnMare false without holy water', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'holyWaterIsCollected', 0);
+    await setVar(page, 'holyWaterIsCollected', false);
     await setVar(page, 'ghostMareEventStart', 1);
 
     // act
@@ -703,7 +703,7 @@ test.describe('Home Controller', () => {
 
   test('twinsEventAvailable requires flag and no cooldown', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'twinsEventActive', 1);
+    await setVar(page, 'twinsEventActive', true);
     await setVar(page, 'twinsEvent', 0);
 
     // act
@@ -715,7 +715,7 @@ test.describe('Home Controller', () => {
 
   test('twinsEventAvailable false on cooldown', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'twinsEventActive', 1);
+    await setVar(page, 'twinsEventActive', true);
     await setVar(page, 'twinsEvent', 1);
 
     // act
@@ -727,18 +727,18 @@ test.describe('Home Controller', () => {
 
   test('weak Mirror branch clears twinsEventActive so it does not re-fire daily', async ({ game: page }) => {
     // Regression: the Mirror passage's weak branch (beauty roll beats MC) used
-    // to set only $twinsEvent, leaving $twinsEventActive=1. ResetCooldowns
+    // to set only $twinsEvent, leaving $twinsEventActive=true. ResetCooldowns
     // zeros the CD on every day-wrap, so the event re-fired every morning —
     // an infinite loop players can only escape by eventually rolling the full
     // event (TheTwinsEvent, which does clear both flags).
-    await setVar(page, 'twinsEventActive', 1);
+    await setVar(page, 'twinsEventActive', true);
     await setVar(page, 'twinsEvent', 0);
     await callSetup(page, `setup.Mc.setBeauty(10)`); // random(30,100) always beats this → weak branch
     await goToPassage(page, 'Mirror');
     await page.locator('.passage .macro-linkappend').filter({ hasText: 'through the glass' }).first().click();
     await page.waitForTimeout(100);
 
-    expect(await getVar(page, 'twinsEventActive')).toBe(0);
+    expect(await getVar(page, 'twinsEventActive')).toBe(false);
     expect(await getVar(page, 'twinsEvent')).toBe(1);
   });
 
@@ -761,7 +761,7 @@ test.describe('Home Controller', () => {
 
   test('canApplyMakeup requires not already applied and enough charges', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'makeupApplied', 0);
+    await setVar(page, 'makeupApplied', false);
     await setVar(page, 'makeupAmount', 3);
 
     // act
@@ -773,7 +773,7 @@ test.describe('Home Controller', () => {
 
   test('canApplyMakeup false if already applied', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'makeupApplied', 1);
+    await setVar(page, 'makeupApplied', true);
     await setVar(page, 'makeupAmount', 3);
 
     // act
@@ -785,7 +785,7 @@ test.describe('Home Controller', () => {
 
   test('canApplyMakeup false if not enough charges', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'makeupApplied', 0);
+    await setVar(page, 'makeupApplied', false);
     await setVar(page, 'makeupAmount', 1);
 
     // act

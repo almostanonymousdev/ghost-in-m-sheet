@@ -25,7 +25,7 @@
 	@@.mc-speech; Looking pretty good. I'm ready to take on the world!@@<br>
 	<b>Beauty: </b> <<= setup.Mc.beauty()>>
 	<br>
-	<<if setup.Mc.makeupApplied() eq 0>>
+	<<if setup.Mc.makeupApplied() eq false>>
 		<<if setup.Mc.makeupAmount() gte 1>>
 			@@.usebtn;<<link "Apply regular makeup (1 charge)" "Mirror">><<run setup.Home.applyMakeupTier(1)>>
 			<</link>>@@<br>

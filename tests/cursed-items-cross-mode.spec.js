@@ -107,7 +107,7 @@ test.describe('Cursed-item hunt facade', () => {
     });
     await page.evaluate(() => SugarCube.setup.HuntController.consumeKnowledgeEvidence());
 
-    expect(await getVar(page, 'knowledgeUsed')).toBe(1);
+    expect(await getVar(page, 'knowledgeUsed')).toBe(true);
     const chosen = await getVar(page, 'chosenEvidence');
     expect(['spiritbox', 'uvl', 'glass']).toContain(chosen);
   });
@@ -168,7 +168,7 @@ test.describe('Cursed-item hunt facade', () => {
       V.drawnCards = 4;
       V.MonkeyPawStage = SugarCube.setup.MonkeyPawStage.FOUND;
       V.wishesCount = 1;
-      V.knowledgeUsed = 1;
+      V.knowledgeUsed = true;
       V.chosenEvidence = 'emf';
     });
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));

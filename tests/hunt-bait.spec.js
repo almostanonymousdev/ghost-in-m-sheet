@@ -73,7 +73,7 @@ test.describe('HauntConditions bait', () => {
 
     await page.evaluate(() => {
       SugarCube.State.variables.mc.lust = 100;
-      SugarCube.State.variables.baitOrgasmPending = 1;
+      SugarCube.State.variables.baitOrgasmPending = true;
     });
     expect(await callSetup(page, 'setup.HauntConditions.consumeBaitOrgasm()')).toBe(true);
 

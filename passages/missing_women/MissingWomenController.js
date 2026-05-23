@@ -149,7 +149,7 @@ setup.MissingWomen = (function () {
 			return sv().rescueStage < 2 && this.isCorrectHouse() && this.hasActiveQuest();
 		},
 		hasRescueClue: function () {
-			return sv().hasRescueClue === 1;
+			return sv().hasRescueClue === true;
 		},
 
 		// --- Rescue event outcome ---------------------------------
@@ -218,8 +218,8 @@ setup.MissingWomen = (function () {
 		rescueHouseImage: function (n) {
 			return "characters/rescue/house/" + n + ".jpg";
 		},
-		setRescueClueFound: function () { sv().hasRescueClue = 1; },
-		clearRescueClue:   function () { sv().hasRescueClue = 0; },
+		setRescueClueFound: function () { sv().hasRescueClue = true; },
+		clearRescueClue:   function () { sv().hasRescueClue = false; },
 
 		/* Midnight rollover. Stages 0 and 1 advance one day so the
 		   "rescue today / give up tomorrow" timer keeps ticking even
@@ -242,7 +242,7 @@ setup.MissingWomen = (function () {
 			if (!ranOut) return;
 			s.hasQuestForRescue = Q.FAILED;
 			s.rescueStage = 0;
-			s.hasRescueClue = 0;
+			s.hasRescueClue = false;
 		},
 
 		// --- Rescue quest state -----------------------------------

@@ -23,7 +23,7 @@ setup.CursedItems = (function () {
 		rollForCursedItem: function () {
 			if (Math.random() < 0.4) {
 				sv().cursedHomeItem = ITEMS[Math.floor(Math.random() * ITEMS.length)];
-				sv().cursedHomeItemActive = 1;
+				sv().cursedHomeItemActive = true;
 			}
 		},
 
@@ -33,20 +33,20 @@ setup.CursedItems = (function () {
 		forceCursedItem: function () {
 			var pick = ITEMS[Math.floor(Math.random() * ITEMS.length)];
 			sv().cursedHomeItem = pick;
-			sv().cursedHomeItemActive = 1;
+			sv().cursedHomeItemActive = true;
 			return pick;
 		},
 
 		/* Check whether a specific item is currently cursed. */
 		isItemCursed: function (itemKey) {
-			return sv().cursedHomeItemActive === 1 && sv().cursedHomeItem === itemKey;
+			return sv().cursedHomeItemActive === true && sv().cursedHomeItem === itemKey;
 		},
-		isActive: function () { return sv().cursedHomeItemActive === 1; },
+		isActive: function () { return sv().cursedHomeItemActive === true; },
 
 		/* Clear the curse after the event has been triggered. */
 		clearCurse: function () {
 			sv().cursedHomeItem = "";
-			sv().cursedHomeItemActive = 0;
+			sv().cursedHomeItemActive = false;
 		},
 
 		/* Shared stat payload for all 5 cursed-home events

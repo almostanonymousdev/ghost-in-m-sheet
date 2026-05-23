@@ -16,11 +16,11 @@ test.describe('TickController helpers', () => {
     const Q = await callSetup(page, 'setup.RescueQuestState');
     await setVar(page, 'hasQuestForRescue', Q.ACTIVE);
     await setVar(page, 'rescueStage', 2);
-    await setVar(page, 'hasRescueClue', 1);
+    await setVar(page, 'hasRescueClue', true);
     await page.evaluate(() => SugarCube.setup.Tick.tickRescueQuestExpiry());
     expect(await getVar(page, 'hasQuestForRescue')).toBe(Q.FAILED);
     expect(await getVar(page, 'rescueStage')).toBe(0);
-    expect(await getVar(page, 'hasRescueClue')).toBe(0);
+    expect(await getVar(page, 'hasRescueClue')).toBe(false);
   });
 
   test('tickRescueQuestExpiry fails the quest when stage 1 outlasts 5 PM', async ({ game: page }) => {
@@ -55,7 +55,7 @@ test.describe('TickController helpers', () => {
   // --- Prowl timer ----------------------------------------------
 
   test('tickProwlTimer advances elapsedTimeProwl while inside the window', async ({ game: page }) => {
-    await setVar(page, 'prowlActivated', 1);
+    await setVar(page, 'prowlActivated', true);
     await setVar(page, 'prowlActivationTime', 600);   // 10:00
     await setVar(page, 'hours', 10);
     await setVar(page, 'minutes', 30);
@@ -63,16 +63,16 @@ test.describe('TickController helpers', () => {
     await setVar(page, 'elapsedTimeProwl', 0);
     await page.evaluate(() => SugarCube.setup.Tick.tickProwlTimer());
     expect(await getVar(page, 'elapsedTimeProwl')).toBe(30);
-    expect(await getVar(page, 'prowlActivated')).toBe(1);
+    expect(await getVar(page, 'prowlActivated')).toBe(true);
   });
 
   test('tickProwlTimer expires the prowl flag once elapsed exceeds remain', async ({ game: page }) => {
-    await setVar(page, 'prowlActivated', 1);
+    await setVar(page, 'prowlActivated', true);
     await setVar(page, 'prowlActivationTime', 600);
     await setVar(page, 'prowlTimeRemain', 30);
     await setVar(page, 'elapsedTimeProwl', 31);
     await page.evaluate(() => SugarCube.setup.Tick.tickProwlTimer());
-    expect(await getVar(page, 'prowlActivated')).toBe(0);
+    expect(await getVar(page, 'prowlActivated')).toBe(false);
   });
 
   // --- Choker lust floor ----------------------------------------

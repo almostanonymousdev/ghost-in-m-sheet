@@ -31,4 +31,4 @@ or @@.usebtn; [[Try to hide|Hide]]@@
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 <</done>>
-<<run State.variables.prowlActivated = 1>>
+<<run State.variables.prowlActivated = true>>

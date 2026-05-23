@@ -158,7 +158,7 @@ test.describe('Monkey Paw wishes', () => {
   test('purchaseGuide marks every wish learned and grants anything-wish', async ({ game: page }) => {
     await page.evaluate(() => {
       SugarCube.State.variables.monkeyPawLearned = {};
-      SugarCube.State.variables.wishAnything = 0;
+      SugarCube.State.variables.wishAnything = false;
       SugarCube.setup.MonkeyPaw.purchaseGuide();
     });
     for (const id of ['activity', 'trapTheGhost', 'sanity', 'leave', 'knowledge', 'dawn']) {

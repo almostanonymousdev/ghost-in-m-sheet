@@ -12,7 +12,7 @@ const { setVar, getVar, callSetup, goToPassage } = require('../helpers');
  *   - otherwise -> normal makeup mirror
  *
  * Both branches call setup.Ghosts.consumeTwinsEvent() which flips
- * twinsEventActive to 0 and starts the daily cooldown.
+ * twinsEventActive to false and starts the daily cooldown.
  */
 test.describe('Twins mirror event', () => {
   test.describe.configure({ timeout: 20_000 });
@@ -35,7 +35,7 @@ test.describe('Twins mirror event', () => {
 
   test('low beauty branch: random ≥ beauty triggers twins1 fail (no TheTwinsEvent link)', async ({ game: page }) => {
     await page.evaluate(() => {
-      SugarCube.State.variables.twinsEventActive = 1;
+      SugarCube.State.variables.twinsEventActive = true;
       // Reset daily cooldown so twinsEventReady() returns true.
       SugarCube.State.variables.twinsEvent = 0;
     });
@@ -62,7 +62,7 @@ test.describe('Twins mirror event', () => {
 
   test('high beauty branch: random ≤ beauty triggers twins success with TheTwinsEvent link', async ({ game: page }) => {
     await page.evaluate(() => {
-      SugarCube.State.variables.twinsEventActive = 1;
+      SugarCube.State.variables.twinsEventActive = true;
       SugarCube.State.variables.twinsEvent = 0;
     });
     await setMcBeauty(page, 100);
@@ -93,7 +93,7 @@ test.describe('Twins mirror event', () => {
 
   test('twinsEventReady=false renders normal mirror, no twins markup', async ({ game: page }) => {
     await page.evaluate(() => {
-      SugarCube.State.variables.twinsEventActive = 0;
+      SugarCube.State.variables.twinsEventActive = false;
     });
     expect(await callSetup(page, 'setup.Ghosts.twinsEventReady()')).toBe(false);
     await goToPassage(page, 'Mirror');
@@ -104,20 +104,20 @@ test.describe('Twins mirror event', () => {
 
   test('consumeTwinsEvent clears the active flag and starts cooldown', async ({ game: page }) => {
     await page.evaluate(() => {
-      SugarCube.State.variables.twinsEventActive = 1;
+      SugarCube.State.variables.twinsEventActive = true;
       SugarCube.State.variables.twinsEvent = 0;
     });
     expect(await callSetup(page, 'setup.Ghosts.twinsEventReady()')).toBe(true);
     await callSetup(page, 'setup.Ghosts.consumeTwinsEvent()');
-    expect(await getVar(page, 'twinsEventActive')).toBe(0);
+    expect(await getVar(page, 'twinsEventActive')).toBe(false);
     expect(await callSetup(page, 'setup.Ghosts.twinsEventReady()')).toBe(false);
   });
 
   test('clearTwinsEvent zeroes the flag without touching cooldown', async ({ game: page }) => {
     await page.evaluate(() => {
-      SugarCube.State.variables.twinsEventActive = 1;
+      SugarCube.State.variables.twinsEventActive = true;
     });
     await callSetup(page, 'setup.Ghosts.clearTwinsEvent()');
-    expect(await getVar(page, 'twinsEventActive')).toBe(0);
+    expect(await getVar(page, 'twinsEventActive')).toBe(false);
   });
 });
