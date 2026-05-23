@@ -183,7 +183,16 @@
    Khadija's deal -- "I sell keys, not jobs. You come back and tell me
    what was in there." -- means contract hunts settle at the witch's
    desk, not at the front yard. Rogue hunts (no key in hand for this
-   house) still resolve on the spot through HuntIdentify. */
+   house) still resolve on the spot through HuntIdentify.
+
+   Exhibitionism gate: if the ghost stripped the MC and she's still
+   exposed (bottomless and/or top-bare with a stolen piece available
+   to recover), a low-exhibitionism MC (< 5, the same threshold
+   HuntOverExhaustion / CompanionMain / FindStolenClothes / NudityEvent
+   use) refuses to walk out of the yard. The identify / contract /
+   flee options are hidden and only "Go back inside" remains -- she
+   has to retrace her steps and find her clothes before settling the
+   run. */
 <<if not setup.HuntController.isActive()>>
 	@@.mc-thoughts; No active hunt.@@<br>
 	@@.backbtn; [[Back|CityMap]]@@
@@ -191,21 +200,41 @@
 	<<set _heldId to setup.WitchContract.heldHouseId()>>
 	<<set _staticId to setup.HuntController.staticHouseId()>>
 	<<set _isContractHunt to _staticId and _heldId eq _staticId>>
+	<<set _bottomless to setup.HauntedHouses.isBottomless()>>
+	<<set _topBare to setup.HauntedHouses.isTopBare()>>
+	<<set _modest to (setup.Mc.exhibitionism() || 0) lt 5>>
+	<<set _canCoverBottom to _bottomless and (setup.Wardrobe.isPantiesStolen() or setup.Wardrobe.isBottomStolen())>>
+	<<set _canCoverTop to _topBare and (setup.Wardrobe.isShirtStolen() or setup.Wardrobe.isBraStolen())>>
+	<<set _forceCover to _modest and (_canCoverBottom or _canCoverTop)>>
 	@@.location; Outside the haunt@@<br>
-	@@.mc-thoughts; The yard is cold. The house knows you're still here. Name what's in there, walk, or go back in.@@<br>
-	<br>
-	<<if _isContractHunt>>
-		@@.movebtn; [[Take your findings to Khadija|WitchInside]]@@<br>
+	<<if _forceCover>>
+		@@.mc-thoughts;
+		<<if _canCoverBottom and _canCoverTop>>
+			The yard is cold. The wind finds every inch of you the ghost left bare. No -- you're not walking off down a public street like this. Go back in. Find your clothes.
+		<<elseif _canCoverBottom>>
+			The yard is cold and there's nothing on your lower half. You're not stepping past the gate bottomless. Back inside. Find what it took.
+		<<else>>
+			The yard is cold. Your arms cross over your chest on their own. You're not walking out half-undressed where anyone could see. Back inside. Find what it took.
+		<</if>>
+		@@<br>
+		<br>
+		@@.movebtn; [[Go back inside|HuntRun]]@@
 	<<else>>
-		@@.movebtn; [[Identify the ghost|HuntIdentify]]@@<br>
+		@@.mc-thoughts; The yard is cold. The house knows you're still here. Name what's in there, walk, or go back in.@@<br>
+		<br>
+		<<if _isContractHunt>>
+			@@.movebtn; [[Take your findings to Khadija|WitchInside]]@@<br>
+		<<else>>
+			@@.movebtn; [[Identify the ghost|HuntIdentify]]@@<br>
+		<</if>>
+		@@.movebtn;<<link "Flee the hunt">>
+			<<run setup.HuntController.markFailure(setup.HuntController.FailureReason.FLED)>>
+			<<set _flee to setup.HuntController.endHunt(false)>>
+			<<set _fleeDest to _flee ? _flee.exitPassage : "CityMap">>
+			<<goto _fleeDest>>
+		<</link>>@@<br>
+		@@.movebtn; [[Go back inside|HuntRun]]@@
 	<</if>>
-	@@.movebtn;<<link "Flee the hunt">>
-		<<run setup.HuntController.markFailure(setup.HuntController.FailureReason.FLED)>>
-		<<set _flee to setup.HuntController.endHunt(false)>>
-		<<set _fleeDest to _flee ? _flee.exitPassage : "CityMap">>
-		<<goto _fleeDest>>
-	<</link>>@@<br>
-	@@.movebtn; [[Go back inside|HuntRun]]@@
 <</if>>
 
 :: HuntIdentify [nobr] {"position":"3200,300","size":"100,100"}

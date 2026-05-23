@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, getVar, goToPassage, callSetup, ensureOpenPage } = require('../helpers');
+const { openGame, resetGame, getVar, setVar, goToPassage, callSetup, ensureOpenPage } = require('../helpers');
 
 /* HuntOutside / HuntIdentify: from the hunt hallway, the player can
    step Outside and choose to identify the ghost, flee the haunt, or
@@ -220,6 +220,137 @@ test.describe('E2E: Hunt Outside menu', () => {
     await goToPassage(page, 'HuntIdentify');
     await expect(
       page.locator('.passage').getByText(/no active hunt/i)
+    ).toBeVisible();
+  });
+
+  /* Exhibitionism gate on HuntOutside: a low-exhibitionism MC (< 5)
+     who is exposed (bottomless and/or top-bare with a stolen piece
+     available to recover) refuses to settle the run from the yard.
+     The identify/contract/flee options drop out and only "Go back
+     inside" remains. Mirrors the same gate in HuntOverExhaustion. */
+  async function stripBottomAndStash(page) {
+    await page.evaluate(() => {
+      const V = SugarCube.State.variables;
+      const NW = SugarCube.setup.ClothingState.NOT_WORN;
+      const WORN = SugarCube.setup.ClothingState.WORN;
+      V.tshirtState  = WORN;
+      V.braState     = WORN;
+      V.jeansState   = NW;
+      V.shortsState  = NW;
+      V.skirtState   = NW;
+      V.pantiesState = NW;
+      V.isPantiesStolen = true;
+      V.isBottomStolen  = false;
+      V.isShirtStolen   = false;
+      V.isBraStolen     = false;
+      V.isClothesStolen = true;
+    });
+  }
+
+  test('low exhibitionism + bottom stripped: leave options hidden, only Go back inside remains', async () => {
+    await startRun(page);
+    await stripBottomAndStash(page);
+    await setVar(page, 'mc.exhibitionism', 0);
+
+    await clickLink(page, 'Outside', 'HuntOutside');
+
+    await expect(
+      page.locator('.passage').getByText('Identify the ghost', { exact: true })
+    ).toHaveCount(0);
+    await expect(
+      page.locator('.passage').getByText('Take your findings to Khadija', { exact: true })
+    ).toHaveCount(0);
+    await expect(
+      page.locator('.passage').getByText('Flee the hunt', { exact: true })
+    ).toHaveCount(0);
+    await expect(
+      page.locator('.passage').getByText('Go back inside', { exact: true })
+    ).toBeVisible();
+    expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(true);
+
+    // The single remaining link still walks the MC back into the hallway.
+    await clickLink(page, 'Go back inside', 'HuntRun');
+    expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(true);
+  });
+
+  test('high exhibitionism + bottom stripped: full leave menu still rendered', async () => {
+    await startRun(page);
+    await stripBottomAndStash(page);
+    await setVar(page, 'mc.exhibitionism', 5);
+
+    await clickLink(page, 'Outside', 'HuntOutside');
+
+    await expect(
+      page.locator('.passage').getByText('Identify the ghost', { exact: true })
+    ).toBeVisible();
+    await expect(
+      page.locator('.passage').getByText('Flee the hunt', { exact: true })
+    ).toBeVisible();
+    await expect(
+      page.locator('.passage').getByText('Go back inside', { exact: true })
+    ).toBeVisible();
+  });
+
+  test('low exhibitionism + fully clothed: gate does not fire, full menu rendered', async () => {
+    await startRun(page);
+    await page.evaluate(() => {
+      const V = SugarCube.State.variables;
+      const WORN = SugarCube.setup.ClothingState.WORN;
+      const NW = SugarCube.setup.ClothingState.NOT_WORN;
+      V.tshirtState  = WORN;
+      V.braState     = WORN;
+      V.jeansState   = WORN;
+      V.shortsState  = NW;
+      V.skirtState   = NW;
+      V.pantiesState = WORN;
+      V.isPantiesStolen = false;
+      V.isBottomStolen  = false;
+      V.isShirtStolen   = false;
+      V.isBraStolen     = false;
+      V.isClothesStolen = false;
+    });
+    await setVar(page, 'mc.exhibitionism', 0);
+
+    await clickLink(page, 'Outside', 'HuntOutside');
+
+    await expect(
+      page.locator('.passage').getByText('Identify the ghost', { exact: true })
+    ).toBeVisible();
+    await expect(
+      page.locator('.passage').getByText('Flee the hunt', { exact: true })
+    ).toBeVisible();
+  });
+
+  test('low exhibitionism + top stripped + still has bottoms: top-only gate fires', async () => {
+    await startRun(page);
+    await page.evaluate(() => {
+      const V = SugarCube.State.variables;
+      const WORN = SugarCube.setup.ClothingState.WORN;
+      const NW = SugarCube.setup.ClothingState.NOT_WORN;
+      V.tshirtState  = NW;
+      V.braState     = NW;
+      V.jeansState   = WORN;
+      V.shortsState  = NW;
+      V.skirtState   = NW;
+      V.pantiesState = WORN;
+      V.isPantiesStolen = false;
+      V.isBottomStolen  = false;
+      V.isShirtStolen   = true;
+      V.isBraStolen     = false;
+      V.isClothesStolen = true;
+    });
+    await setVar(page, 'mc.exhibitionism', 0);
+
+    await clickLink(page, 'Outside', 'HuntOutside');
+
+    await expect(
+      page.locator('.passage').getByText('Identify the ghost', { exact: true })
+    ).toHaveCount(0);
+    await expect(
+      page.locator('.passage').getByText('Flee the hunt', { exact: true })
+    ).toHaveCount(0);
+    await expect(
+      page.locator('.passage').getByText('Go back inside', { exact: true })
     ).toBeVisible();
   });
 });
