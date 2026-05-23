@@ -15,11 +15,11 @@
 <div class="housecard">
 <<run setup.ToolController.initCrucifixIfNeeded()>>
 <<image "ui/img/crucifix.webp" "iconPx">><br>
-<span class="priceAmount">30$</span><br>
-<<if setup.Mc.money() gte 30>>
+<span class="priceAmount">50$</span><br>
+<<if setup.Mc.money() gte 50>>
 	@@.buyItemLink;<<link "Buy" "WitchSale">>
 		<<run setup.ToolController.addCrucifix()>>
-		<<run setup.Mc.removeMoney(30)>>
+		<<run setup.Mc.removeMoney(50)>>
 	<</link>>@@<br>
 <<else>>@@.mc-thoughts; I don't have enough money@@
 <</if>>
