@@ -144,14 +144,20 @@ test.describe('Floor-plan generator', () => {
 
   // --- Spawn / loot / boss ---
 
-  test('ghost spawns in a non-hallway room', async () => {
-    for (const seed of [1, 2, 3, 4, 5]) {
+  test('ghost spawn resolves to a real room', async () => {
+    // Spawn is uniform across all rooms, hallway included. Verify
+    // every seed lands on a real room id, and that across a small
+    // span of seeds at least one drops the ghost in the hallway --
+    // a regression where spawn skipped room_0 would fail this.
+    let sawHallway = false;
+    for (let seed = 1; seed <= 30; seed++) {
       const plan = await gen(seed);
-      expect(plan.spawnRoomId).not.toBe('room_0');
       const room = await page.evaluate(({ p, i }) =>
         SugarCube.setup.FloorPlan.roomById(p, i), { p: plan, i: plan.spawnRoomId });
       expect(room).not.toBeNull();
+      if (plan.spawnRoomId === 'room_0') sawHallway = true;
     }
+    expect(sawHallway).toBe(true);
   });
 
   test('every loot kind is placed on a real non-hallway room', async () => {

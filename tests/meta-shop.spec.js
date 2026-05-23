@@ -246,8 +246,9 @@ test.describe('Hunt persistent unlocks (witch ectoplasm shop)', () => {
     expect(svg).toMatch(/hunt-minimap-recon/);
 
     // Force the ghost to drift so spawnRoomId diverges from
-    // originalSpawnRoomId. The driftGhostRoom helper picks a fresh
-    // non-hallway room; rerun until the spawn actually moves.
+    // originalSpawnRoomId. driftGhostRoom prefers a room other than
+    // the current lair but may pick any room (hallway included);
+    // rerun until the spawn actually moves.
     await page.evaluate(() => {
       const fp = SugarCube.setup.HuntController.field('floorplan');
       const orig = fp.spawnRoomId;

@@ -52,7 +52,6 @@ test.describe('Hunt minimap data', () => {
     const mm = await callSetup(page, 'setup.HuntController.minimapData()');
     const spawns = mm.filter(r => r.isSpawn);
     expect(spawns.length).toBe(1);
-    expect(spawns[0].id).not.toBe('room_0');
   });
 
   test('boss room is flagged when includeBoss is on, otherwise no rooms are', async () => {

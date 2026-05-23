@@ -460,10 +460,16 @@ test.describe('E2E: hunt lifecycle', () => {
     await clickHuntCard(page);
     await clickLink(page, 'Enter the hunt', 'HuntRun');
 
-    // Player starts in room_0 (hallway); the lair is whichever room
-    // the floor-plan generator picked as the spawn (always non-hallway).
-    const ghostRoom = await callSetup(page, 'setup.HuntController.ghostRoomId()');
-    expect(ghostRoom).not.toBe('room_0');
+    // The floor-plan generator can place the ghost in any room
+    // (including the hallway where the player starts). Pin the
+    // ghost to a non-hallway room so the "elsewhere vs. lair"
+    // distinction is meaningful for this test.
+    const ghostRoom = await page.evaluate(() => {
+      const fp = SugarCube.State.variables.run.floorplan;
+      const target = fp.rooms.find(r => r.id !== 'room_0').id;
+      fp.spawnRoomId = target;
+      return target;
+    });
 
     // Outside the lair: false.
     expect(await callSetup(page, 'setup.isGhostHere()')).toBe(false);
