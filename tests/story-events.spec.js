@@ -150,6 +150,53 @@ test.describe('setup.StoryEvents', () => {
 		expect(result.after).toBe(true);
 	});
 
+	/* Toggling a cheat OFF (back to its disabled/default value) must not
+	   emit CHEAT_USED. A player who forgot a persistent cheat was on from
+	   a previous session and is turning it back off would otherwise get
+	   re-charged for the cheat just for cleaning up. */
+	test('toggling a cheat OFF does NOT emit CHEAT_USED', async () => {
+		const sources = await page.evaluate(async () => {
+			const SE = SugarCube.setup.StoryEvents;
+			const seen = [];
+			window.__seSubs.push(SE.on(SE.Event.CHEAT_USED, (ctx) => seen.push(ctx && ctx.source)));
+			SugarCube.UI.settings();
+			await new Promise((r) => setTimeout(r, 50));
+			SugarCube.Setting.setValue('highlightRescueHouse', true);
+			await new Promise((r) => setTimeout(r, 30));
+			const afterOn = seen.slice();
+			SugarCube.Setting.setValue('highlightRescueHouse', false);
+			await new Promise((r) => setTimeout(r, 30));
+			const afterOff = seen.slice();
+			SugarCube.Dialog.close();
+			return { afterOn: afterOn, afterOff: afterOff };
+		});
+		expect(sources.afterOn).toEqual(['highlightRescueHouse']);
+		expect(sources.afterOff).toEqual(['highlightRescueHouse']);
+	});
+
+	/* Same rule for the list pickers: changing back to "—" (the off
+	   sentinel) is "turning the cheat off" and must not fire CHEAT_USED.
+	   Switching between two non-off picks still fires. */
+	test('setting a ghost-type picker back to "—" does NOT emit CHEAT_USED', async () => {
+		const sources = await page.evaluate(async () => {
+			const SE = SugarCube.setup.StoryEvents;
+			const seen = [];
+			window.__seSubs.push(SE.on(SE.Event.CHEAT_USED, (ctx) => seen.push(ctx && ctx.source)));
+			SugarCube.UI.settings();
+			await new Promise((r) => setTimeout(r, 50));
+			SugarCube.Setting.setValue('cheatGhostType', 'Spirit');
+			await new Promise((r) => setTimeout(r, 30));
+			const afterOn = seen.slice();
+			SugarCube.Setting.setValue('cheatGhostType', '—');
+			await new Promise((r) => setTimeout(r, 30));
+			const afterOff = seen.slice();
+			SugarCube.Dialog.close();
+			return { afterOn: afterOn, afterOff: afterOff };
+		});
+		expect(sources.afterOn).toEqual(['cheatGhostType']);
+		expect(sources.afterOff).toEqual(['cheatGhostType']);
+	});
+
 	/* Persistent cheats (toggles + the list pickers) fire CHEAT_USED on
 	   toggle, but a save loaded with the setting already on would
 	   otherwise sidestep that emit. These cases pin that the cheats

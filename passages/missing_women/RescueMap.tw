@@ -1,6 +1,6 @@
 :: RescueMap {"position":"2175,1600","size":"100,100"}
 <<image "characters/rescue/down.png" { class: "upPointer clickable", onclick: "SugarCube.Engine.play('CityMap');" }>>
-<<if settings.highlightRescueHouse && setup.StoryEvents && setup.StoryEvents.Event>>
+<<if settings.highlightRescueHouse>>
 <<run setup.StoryEvents.emit(setup.StoryEvents.Event.CHEAT_USED, { source: 'highlightRescueHouse' })>>
 <</if>>
 <div class="flexwrapper">

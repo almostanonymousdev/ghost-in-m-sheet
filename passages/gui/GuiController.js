@@ -119,11 +119,9 @@ setup.Gui = (function () {
 		// navigation, unlike a one-shot cheat link). Emit CHEAT_USED on
 		// consumption so loading a save with the toggle already on still
 		// marks the save as cheated.
-		if (typeof settings !== 'undefined' && settings.fastToolTimers) {
+		if (settings.fastToolTimers) {
 			sv().timerToolsDecreased = "10ms";
-			if (setup.StoryEvents && setup.StoryEvents.Event) {
-				setup.StoryEvents.emit(setup.StoryEvents.Event.CHEAT_USED, { source: 'fastToolTimers' });
-			}
+			setup.StoryEvents.emit(setup.StoryEvents.Event.CHEAT_USED, { source: 'fastToolTimers' });
 			return;
 		}
 		var lvl = setup.Mc.lvl();
@@ -142,8 +140,7 @@ setup.Gui = (function () {
 	// the Settings dialog toggles this method which adds/removes the
 	// class to match `settings.showHistoryControls`.
 	function applyHistoryControlsVisibility() {
-		var on = (typeof settings !== 'undefined') && !!settings.showHistoryControls;
-		$(document.body).toggleClass("show-history", on);
+		$(document.body).toggleClass("show-history", !!settings.showHistoryControls);
 	}
 
 	// --- Mirror render -------------------------------------------
@@ -221,16 +218,22 @@ $(document).one(":storyready", function () {
 	   fires onChange even though the user hasn't touched anything.
 	   ifCheatChanged() guards against that by remembering the value we
 	   last observed and only emitting when it actually moves -- so
-	   merely opening the dialog never grants the cheat achievement. */
+	   merely opening the dialog never grants the cheat achievement.
+
+	   Toggling a cheat back to its OFF / default value also suppresses
+	   the emit: a player who forgot a cheat was on from a previous
+	   session and is turning it off shouldn't be charged for it. The
+	   action() side-effect still runs (e.g. removing the show-history
+	   class) -- only the CHEAT_USED notification is gated. */
 	var _lastCheatValue = {};
+	var _offCheatValue = {};
 	function ifCheatChanged(source, action) {
-		var current = (typeof settings !== 'undefined') ? settings[source] : undefined;
+		var current = settings[source];
 		if (_lastCheatValue[source] === current) return;
 		_lastCheatValue[source] = current;
 		if (action) action();
-		if (setup.StoryEvents && setup.StoryEvents.Event) {
-			setup.StoryEvents.emit(setup.StoryEvents.Event.CHEAT_USED, { source: source });
-		}
+		if (current === _offCheatValue[source]) return;
+		setup.StoryEvents.emit(setup.StoryEvents.Event.CHEAT_USED, { source: source });
 	}
 	Setting.addHeader(
 		"Cheats",
@@ -246,8 +249,9 @@ $(document).one(":storyready", function () {
 	   would not match the about-to-be-written default and the guard
 	   would mis-fire on first open. */
 	function seedCheat(source, defaultValue) {
-		var current = (typeof settings !== 'undefined') ? settings[source] : undefined;
+		var current = settings[source];
 		_lastCheatValue[source] = (current === undefined) ? defaultValue : current;
+		_offCheatValue[source] = defaultValue;
 	}
 	seedCheat('highlightRescueHouse', false);
 	seedCheat('fastToolTimers', false);
@@ -284,9 +288,7 @@ $(document).one(":storyready", function () {
 	   so markCheated() lands on the new (rewound/advanced) moment's
 	   State.variables rather than the moment being discarded. */
 	function emitHistoryCheat(source) {
-		if (setup.StoryEvents && setup.StoryEvents.Event) {
-			setup.StoryEvents.emit(setup.StoryEvents.Event.CHEAT_USED, { source: source });
-		}
+		setup.StoryEvents.emit(setup.StoryEvents.Event.CHEAT_USED, { source: source });
 	}
 	$(document).on('click', '#history-backward', function () { emitHistoryCheat('historyBackward'); });
 	$(document).on('click', '#history-forward',  function () { emitHistoryCheat('historyForward'); });
@@ -326,7 +328,6 @@ $(document).one(":storyready", function () {
    "stay hidden until cheat is used" behavior we want. */
 (function () {
 	function isSettingsDialog() {
-		if (typeof SugarCube === "undefined" || !SugarCube.L10n) return false;
 		var titleEl = document.getElementById("ui-dialog-title");
 		if (!titleEl) return false;
 		// Match either the original L10n string (set by Dialog.setup)
@@ -343,9 +344,7 @@ $(document).one(":storyready", function () {
 		} else {
 			$btn.on("click", function (evt) {
 				onClick.call(this, evt);
-				if (setup.StoryEvents && setup.StoryEvents.Event) {
-					setup.StoryEvents.emit(setup.StoryEvents.Event.CHEAT_USED, { source: label });
-				}
+				setup.StoryEvents.emit(setup.StoryEvents.Event.CHEAT_USED, { source: label });
 			});
 		}
 		return $btn;

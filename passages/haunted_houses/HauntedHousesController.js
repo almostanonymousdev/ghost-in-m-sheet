@@ -304,12 +304,12 @@ setup.HauntedHouses = (function () {
 		   set would otherwise sidestep it). */
 		drawAndStampTarotCard: function () {
 			var forced = null;
-			var pick = (typeof settings !== "undefined") ? settings.cheatTarotCard : null;
+			var pick = settings.cheatTarotCard;
 			if (pick && pick !== "—") {
 				forced = setup.tarotDeck.filter(function (c) {
 					return c.name === pick;
 				})[0] || null;
-				if (forced && setup.StoryEvents && setup.StoryEvents.Event) {
+				if (forced) {
 					setup.StoryEvents.emit(setup.StoryEvents.Event.CHEAT_USED, { source: 'cheatTarotCard' });
 				}
 			}
