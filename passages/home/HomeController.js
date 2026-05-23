@@ -665,11 +665,19 @@ setup.Home = (function () {
 	// The text-banner clear* methods stay inline because they `delete`.
 	setup.defineAccessors(api, tentacles, [
 		{ name: 'tentaclesStageAll',       key: 'stageAll',       get: false },
-		{ name: 'tentaclesStageSleep',     key: 'stageSleep',     get: false },
+		{ name: 'tentaclesStageSleep',     key: 'stageSleep',     get: false, set: false },
 		{ name: 'tentaclesAfterSleepText', key: 'afterSleepText' },
 		{ name: 'tentaclesPCText',         key: 'pcText' },
 		{ name: 'tentaclesTVText',         key: 'tvText' }
 	]);
+	// Sleep-stage and its after-sleep narration key always move in
+	// lock-step (each TentaclesEventSleep beat sets both to the same N).
+	// Fold them into one write so passages can't drift them apart.
+	api.setTentaclesStageSleep = function (n) {
+		var t = tentacles();
+		t.stageSleep = n;
+		t.afterSleepText = n;
+	};
 	// Summoning-bundle accessors.
 	setup.defineAccessors(api, summoning, [
 		{ name: 'summoningChoice', key: 'choice' },
