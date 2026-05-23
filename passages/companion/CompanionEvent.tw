@@ -4,11 +4,7 @@
 <<if _pick and _pick.type eq "video">>
 	<<video _pick.src>>
 <<elseif _pick>>
-	<<if setup.Companion.isTransCompanion()>>
-		<<image _pick.src { class: "displayCentredImgs", alt: "Image" }>><br>
-	<<else>>
-		<<image _pick.src { width: "100%", alt: "Image" }>><br>
-	<</if>>
+	<<image _pick.src { width: "100%", alt: "Image" }>><br>
 <</if>>
 
 <<set _tier to setup.Companion.eventSanityTier()>>

@@ -39,8 +39,6 @@
 				or @@.usebtn;<<link `_cName + " helps you"`>><<run setup.Events.companionDrainForHelp()>><<replace "#videoContainer">><<include "BlakeHelp">>
 				<</replace>>
 				<</link>>@@
-			<<elseif setup.Events.companionIsInlineFriend()>>
-				or @@.usebtn; [["Call "+_cName + " for help"|$return][setup.Events.companionDrainForHelp()]]@@
 			<</if>>
 		<<else>>
 			or @@.usebtn; [["Call "+_cName + " for help"|$return][setup.Events.companionDrainForHelp()]]@@

@@ -39,7 +39,7 @@ setup.Mall = (function () {
 			setup.Witch.sellCarriedCursedItem(60);
 		},
 		pickBlakeForHunt: function () {
-			setup.Companion.pickCisCompanion('Blake');
+			setup.Companion.pickCompanion('Blake');
 		},
 		blakeIsCompanionCandidate: function () {
 			return sv().relationshipBlake >= 5;

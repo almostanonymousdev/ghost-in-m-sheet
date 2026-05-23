@@ -1,7 +1,6 @@
 // Centralized state queries and mutations for the companion system
-// (Brook, Alice, Blake, Alex, Taylor, Casey). Passages should call
-// into setup.Companion instead of testing the underlying companion
-// $variables directly.
+// (Brook, Alice, Blake). Passages should call into setup.Companion
+// instead of testing the underlying companion $variables directly.
 
 /* Discrete states for $showComp — drives which footer card the
    companion HUD renders (HIDDEN = no card, VISIBLE = normal card,
@@ -51,19 +50,18 @@ setup.Companion = (function () {
 	}
 
 	/* $companion is a one-field marker { name } pointing at whichever
-	   per-companion stat object ($brook/$alice/$blake/$alex/$taylor/
-	   $casey) is currently active. The stat objects themselves are
-	   the single source of truth for sanity/lust/chanceToAttack/...
-	   api.activeState() resolves the marker to that backing object. */
+	   per-companion stat object ($brook/$alice/$blake) is currently
+	   active. The stat objects themselves are the single source of
+	   truth for sanity/lust/chanceToAttack/... api.activeState()
+	   resolves the marker to that backing object. */
 	var OWNED_VARS = Object.freeze([
 		'companion',
-		'brook', 'alice', 'blake', 'alex', 'taylor', 'casey',
+		'brook', 'alice', 'blake',
 		'isCompChosen',
 		'chosenPlan', 'chosenPlanActivated', 'chosenPlanActivatedTime',
 		'chanceToSuccess',
 		'chanceToAttack',
 		'isCompRoomChosen', 'randomGhostPassage', 'showComp',
-		'transFirstStage', 'transPicture', 'transStart',
 		'aliceWorkDone',
 		'meetAlice',
 		'videoEventCompanion', 'randomPassageOwaissa'
@@ -96,18 +94,17 @@ setup.Companion = (function () {
 		list: function () { return companions(); },
 		getByName: getByName,
 		// The mutable stat object for the active companion (the
-		// per-companion stat row $brook / $alice / $blake / $alex /
-		// $taylor / $casey, resolved through the $companion marker),
-		// or undefined if none. Carries .name, .sanity, .lust,
-		// .eventSanityLoss, etc.
+		// per-companion stat row $brook / $alice / $blake, resolved
+		// through the $companion marker), or undefined if none.
+		// Carries .name, .sanity, .lust, .eventSanityLoss, etc.
 		activeState: function () {
 			var marker = State.variables.companion;
 			if (!marker || !marker.name) return undefined;
 			return this.stateFor(marker.name);
 		},
 		// The mutable per-companion stat object ($brook / $alice /
-		// $blake / $alex / $taylor / $casey) by name (any case).
-		// Same object activeState() returns when this name is active.
+		// $blake) by name (any case). Same object activeState()
+		// returns when this name is active.
 		stateFor: function (name) {
 			if (!name) return undefined;
 			return State.variables[String(name).toLowerCase()];
@@ -121,16 +118,14 @@ setup.Companion = (function () {
 			return marker && marker.name ? getByName(marker.name) : null;
 		},
 		// Fresh stat object for a named companion. Used by SaveMigration
-		// to seed $brook/$alice/$blake/$alex/$taylor/$casey on new games
-		// and old saves that predate the companion's introduction.
+		// to seed $brook/$alice/$blake on new games and old saves that
+		// predate the companion's introduction.
 		defaultStateFor: function (name) {
 			var c = getByName(name);
 			return c ? c.defaultState() : null;
 		},
 
-name: function () { var c = this.activeState(); return c && c.name; },
-		isTransCompanion: function () { var c = this.active(); return !!(c && c.isTrans); },
-		isTransByName:    function (n) { var c = getByName(n); return !!(c && c.isTrans); },
+		name: function () { var c = this.activeState(); return c && c.name; },
 		isName: function (n) { return this.name() === n; },
 
 		anyCompanionSelected: function () {
@@ -153,15 +148,14 @@ name: function () { var c = this.activeState(); return c && c.name; },
 			if (c) c.chosen = 1;
 		},
 		// Reset the per-hunt scratch fields (sanity, lust,
-		// chanceToAttack + trans narrative flags) on the named
-		// companion's backing stat row. Shared between pick() and
-		// hunt cleanup so the companion always ends a hunt at full
-		// sanity / no lust regardless of whether the player re-picks
-		// them next run. Solo-hunt flags (goingSolo/chooseOwaissa/
-		// chooseElm) live on a separate timeline -- the companion's
-		// own solo run isn't bounded by the player's hunt -- so this
-		// helper leaves them alone; pick() clears them itself when
-		// rolling a fresh selection.
+		// chanceToAttack) on the named companion's backing stat row.
+		// Shared between pick() and hunt cleanup so the companion
+		// always ends a hunt at full sanity / no lust regardless of
+		// whether the player re-picks them next run. Solo-hunt flags
+		// (goingSolo/chooseOwaissa/chooseElm) live on a separate
+		// timeline -- the companion's own solo run isn't bounded by
+		// the player's hunt -- so this helper leaves them alone;
+		// pick() clears them itself when rolling a fresh selection.
 		resetCompanionStats: function (name) {
 			var c = getByName(name);
 			var stats = this.stateFor(name);
@@ -169,12 +163,6 @@ name: function () { var c = this.activeState(); return c && c.name; },
 			stats.sanity         = 100;
 			stats.lust           = 0;
 			stats.chanceToAttack = 25;
-			if (c.isTrans) {
-				var s = State.variables;
-				s.transStart   = 0;
-				s.transPicture = 0;
-				delete s.transFirstStage;
-			}
 			return true;
 		},
 		// Hunt-cleanup hook: reset the currently-active companion's
@@ -186,8 +174,8 @@ name: function () { var c = this.activeState(); return c && c.name; },
 		},
 		// Stamp the $companion marker onto `name` and reset the
 		// per-hunt scratch fields (sanity, lust, chanceToAttack +
-		// any solo/trans bookkeeping) on the backing stat object so
-		// a fresh hunt always starts from full sanity / no lust.
+		// any solo bookkeeping) on the backing stat object so a
+		// fresh hunt always starts from full sanity / no lust.
 		// Returns true if the companion was found; false otherwise.
 		pick: function (name) {
 			var c = getByName(name);
@@ -198,17 +186,10 @@ name: function () { var c = this.activeState(); return c && c.name; },
 			this.selectCompanion(c.name);
 			s.chosenPlan = 0;
 			this.resetCompanionStats(c.name);
-			if (!c.isTrans) {
-				stats.goingSolo     = 0;
-				stats.chooseOwaissa = 0;
-				stats.chooseElm     = 0;
-			}
+			stats.goingSolo     = 0;
+			stats.chooseOwaissa = 0;
+			stats.chooseElm     = 0;
 			return true;
-		},
-		pickTransCompanion: function (name) {
-			// Internet passage entrypoint for Alex / Taylor / Casey.
-			// Thin shim over pick() so the call sites read intent.
-			this.pick(name);
 		},
 
 		sanityTier: function () {
@@ -317,10 +298,9 @@ name: function () { var c = this.activeState(); return c && c.name; },
 				&& this.inHauntedHouseLocation();
 		},
 
-		/* For each cis companion (hasExpSystem true) with stat object on
-		   $<key>, roll any banked exp into level-ups while lvl < 5, then
-		   refresh maxSanityCap from the new level. Trans companions are
-		   already at lvl 5 with no exp track and use a flat 0 cap. */
+		/* For each companion (hasExpSystem true) with stat object on
+		   $<key>, roll any banked exp into level-ups while lvl < 5,
+		   then refresh maxSanityCap from the new level. */
 		tickAllCompanionProgression: function () {
 			companions().forEach(function (c) {
 				if (!c.hasExpSystem) return;
@@ -335,9 +315,8 @@ name: function () { var c = this.activeState(); return c && c.name; },
 			});
 		},
 		sanityCapForLevel: sanityCapForLevel,
-		/* Sanity cap that triggers "companion leaves" mid-event. Cis
-		   companions key off their own lvl; trans companions tolerate
-		   any non-zero sanity. */
+		/* Sanity cap that triggers "companion leaves" mid-event;
+		   keyed off the companion's own lvl. */
 		activeCompanionSanityCap: function () {
 			var c = this.active();
 			if (!c) return 0;
@@ -374,9 +353,9 @@ name: function () { var c = this.activeState(); return c && c.name; },
 		},
 
 		/* Roll & stash the per-street solo-hunt odds for the given
-		   cis companion into the backing save-field names so the
-		   link labels can still interpolate them. Called on Info
-		   passage entry. The skill curve lives in CompanionData. */
+		   companion into the backing save-field names so the link
+		   labels can still interpolate them. Called on Info passage
+		   entry. The skill curve lives in CompanionData. */
 		refreshSoloOdds: function (name) {
 			var c = this.stateFor(name);
 			if (!c) return;
@@ -395,8 +374,8 @@ name: function () { var c = this.activeState(); return c && c.name; },
 
 		// Library / Mall entrypoints for Brook / Alice / Blake. Thin
 		// shims over pick() so the call sites read intent.
-		pickCisCompanion: function (name) { this.pick(name); },
-		deselectCisCompanion: function (name) {
+		pickCompanion: function (name) { this.pick(name); },
+		deselectCompanion: function (name) {
 			var c = this.stateFor(name);
 			if (c) c.chosen = 0;
 		},
@@ -420,11 +399,10 @@ name: function () { var c = this.activeState(); return c && c.name; },
 		markCompanionFlagActive: function () { State.variables.isCompChosen = 1; },
 		/* Pick a video/image descriptor for the CompanionEvent
 		   passage. Each companion has a 4-tier sanity ladder
-		   (75+, 50–74, 25–49, 0–24); the per-companion tier table /
-		   trans-directory descriptor lives on the catalogue entry and
-		   the resolver is Companion.pickEventMediaList. This method
-		   just maps sanity to a tier key and rolls. Returns
-		   {src, type:"video"/"image"}.
+		   (75+, 50–74, 25–49, 0–24); the per-companion tier table
+		   lives on the catalogue entry and the resolver is
+		   Companion.pickEventMediaList. This method just maps sanity
+		   to a tier key and rolls. Returns {src, type:"video"/"image"}.
 		   `inElm` defaults to `previous() === 'ElmBasement'` so the in-
 		   passage call site (CompanionEvent.tw) doesn't need to pass it,
 		   but unit/e2e specs can pin it explicitly without faking the
@@ -439,8 +417,7 @@ name: function () { var c = this.activeState(); return c && c.name; },
 				: "crit";
 			var list = c.pickEventMediaList(tierKey, {
 				lust: stats.lust,
-				inElm: inElm,
-				isTransFirstStageSet: this.isTransFirstStageSet()
+				inElm: inElm
 			});
 			var pick = setup.Rng.pickFrom(list);
 			if (!pick) return null;
@@ -456,9 +433,6 @@ name: function () { var c = this.activeState(); return c && c.name; },
 			return s >= 75 ? 1 : s >= 50 ? 2 : s >= 25 ? 3 : s >= 1 ? 4 : 0;
 		},
 
-		/* Portrait path for CompanionSucceeded, by outcome. The
-		   non-trans companions have dedicated -happy / -sad PNGs;
-		   trans companions reuse the rotating $transPicture file. */
 		/* Contacts.tw flags -- used on the MC's phone home screen
 		   to gate the per-companion contact row. Catalogue hooks own
 		   the per-companion logic; these are generic dispatchers. */
@@ -633,11 +607,6 @@ name: function () { var c = this.activeState(); return c && c.name; },
 			obj.exp += amount;
 		},
 
-		// $transFirstStage gates the companionTextEvent* dispatcher: on
-		// the initial trigger it sets to 1 so the follow-up text plays
-		// the "post-change" variant. $transPicture records which of the
-		// three trans portraits to render (1 Alex / 2 Taylor / 3 Casey).
-		isTransFirstStageSet: function () { return State.variables.transFirstStage === 1; },
 		/* Lust gain applied to the active companion when a CompanionEvent
 		   fires. Scales with the per-hunt step count so longer hunts
 		   build up arousal faster. The widgets call eventLustGain() for
@@ -646,7 +615,7 @@ name: function () { var c = this.activeState(); return c && c.name; },
 		eventLustGain: function () { return setup.Tick.stepCount() * 3; },
 		/* Sanity hit applied to the active companion when a CompanionEvent
 		   fires. Per-companion constant on the stat row (defaults 10,
-		   tunable per character via cisBaseStats/transBaseStats). */
+		   tunable per character via the catalogue's base stats). */
 		eventSanityLoss: function () { var c = this.activeState(); return c ? c.eventSanityLoss : 0; },
 
 		/* Apply the standard "$companion.sanity/lust change" side-effects
@@ -656,16 +625,6 @@ name: function () { var c = this.activeState(); return c && c.name; },
 			if (!c) return;
 			c.sanity -= this.eventSanityLoss();
 			c.lust   += this.eventLustGain();
-		},
-		/* Per-name bookkeeping called from the shared
-		   <<companionTextEvent>> dispatcher: for a trans companion,
-		   stamp the transFirstStage flag and set transPicture to the
-		   catalogue-defined portrait index. */
-		markTransFirstStage: function () {
-			var c = this.active();
-			if (!c || !c.portraitIndex) return;
-			State.variables.transFirstStage = 1;
-			State.variables.transPicture = c.portraitIndex;
 		},
 
 		/* When the companion decides to continue: reset the per-hunt
@@ -693,15 +652,12 @@ name: function () { var c = this.activeState(); return c && c.name; },
 	};
 
 	// Pure $variable passthrough accessors. Read-only fields use
-	// `set: false`; setTransFirstStage is paired with the semantic
-	// isTransFirstStageSet getter, so only the setter folds.
+	// `set: false`.
 	setup.defineAccessors(api, function () { return State.variables; }, [
 		'chosenPlan',
-		'transPicture',
 		{ name: 'aliceWorkState',     key: 'aliceWorkDone' },
 		{ name: 'chanceToSuccess',    set: false },
-		{ name: 'showComp',           set: false },
-		{ name: 'transFirstStage',    get: false, set: 'setTransFirstStage' }
+		{ name: 'showComp',           set: false }
 	]);
 	// Per-companion stat accessors. Parametric host: each generated
 	// method takes the companion name and resolves its mutable stat row

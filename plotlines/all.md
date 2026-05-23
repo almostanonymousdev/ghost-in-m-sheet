@@ -4,7 +4,7 @@ This document provides high-level overviews of all the plotlines in Ghost in M'S
 
 ## [Companion/Relationship Plotlines](companions.md)
 
-The game features multiple companion characters (Alice, Blake, Brook, Alex, Casey, Taylor) who can join you on ghost hunts. Each companion has their own personality, skills, and relationship mechanics. Companions can help with various tasks like finding evidence, locating the ghost's favorite room, or searching for cursed items. They also have personal storylines that develop as you build relationships with them through shared experiences and interactions. Some companions have unique endings depending on your choices and progression.
+The game features three companion characters (Alice, Blake, Brook) who can join you on ghost hunts. Each companion has their own personality, skills, and relationship mechanics. Companions can help with various tasks like finding evidence, locating the ghost's favorite room, or searching for cursed items. They also have personal storylines that develop as you build relationships with them through shared experiences and interactions. Some companions have unique endings depending on your choices and progression.
 
 ## [Missing Women Rescue Plotline](missing-women.md)
 

@@ -108,7 +108,7 @@ test.describe('rendered image/video refs resolve to files', () => {
   // to e.g. asset-placeholders/brook/brook.png (missing) instead of
   // .../characters/brook/brook.png. Exercise every catalogue entry through
   // the actual macros that consume the path.
-  for (const name of ['Brook', 'Alice', 'Blake', 'Alex', 'Taylor', 'Casey']) {
+  for (const name of ['Brook', 'Alice', 'Blake']) {
     test(`${name} portrait + tier images resolve via Companion methods`, async () => {
       await resetGame(page);
       const paths = await page.evaluate((n) => {
@@ -125,7 +125,7 @@ test.describe('rendered image/video refs resolve to files', () => {
   }
 
   // The footer companionLinks card is what shows in haunted-house rooms while
-  // the companion is "with you" (showComp == 1). A regression in the cis
+  // the companion is "with you" (showComp == 1). A regression in the
   // portrait path (missing "characters/" prefix) made Brook's small portrait
   // 404 here while every static reference elsewhere kept working.
   for (const name of ['Brook', 'Alice', 'Blake']) {
@@ -175,10 +175,9 @@ test.describe('rendered image/video refs resolve to files', () => {
   //
   // Scenarios cover the major branches that swap which assets get rendered:
   //   default            — fresh game, no companion, no hunt
-  //   companion=Brook    — cis companion active, in Owaissa, MC dressed
-  //   companion=Alice    — same shape, different cis (Alice files differ)
-  //   companion=Blake    — same shape, third cis variant
-  //   companion=Casey    — trans companion, transPicture set, in Elm
+  //   companion=Brook    — companion active, in Owaissa, MC dressed
+  //   companion=Alice    — same shape, different companion (Alice files differ)
+  //   companion=Blake    — same shape, third companion variant
   //   hunt               — active hunt + possessed mode (different room art)
   test('every passage in every scenario emits only resolvable srcs', async () => {
     test.setTimeout(180000);
@@ -250,19 +249,6 @@ test.describe('rendered image/video refs resolve to files', () => {
           V.isCompChosen = 1;
           V.showComp = 1;
           V.chosenPlan = 'Plan1';
-          V.hauntedHouse = 'elm';
-        },
-      },
-      {
-        label: 'companion=Casey (trans) in Elm',
-        setup: () => {
-          const V = SugarCube.State.variables;
-          V.companion = { name: 'Casey' };
-          if (V.casey) Object.assign(V.casey, { chosen: 1, sanity: 80, lust: 30, eventSanityLoss: 10, lvl: 5 });
-          V.isCompChosen = 1;
-          V.showComp = 1;
-          V.transPicture = 3;
-          V.transFirstStage = 1;
           V.hauntedHouse = 'elm';
         },
       },

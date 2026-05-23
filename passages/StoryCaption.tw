@@ -11,11 +11,7 @@
 <<include "BodyModification">><br>
 <<if setup.Companion.shouldRenderMini()>>
 	<<set _comp to setup.Companion.active()>>
-	<<if _comp.isTrans>>
-		<<companionMini `"characters/trans/" + setup.Companion.transPicture() + ".jpg"` _comp.name>>
-	<<else>>
-		<<companionMini _comp.portraitPath() _comp.name>>
-	<</if>>
+	<<companionMini _comp.portraitPath() _comp.name>>
 <</if>>
 <br>
 <span id="time"><<= setup.Time.display()>></span><br>

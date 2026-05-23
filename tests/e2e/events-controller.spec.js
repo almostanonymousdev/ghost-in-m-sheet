@@ -395,15 +395,6 @@ test.describe('Events controller — companion checks', () => {
     expect(await callSetup(page, 'setup.Events.companionIsAroused()')).toBe(true);
   });
 
-  test('companionIsInlineFriend matches Alex / Taylor / Casey', async ({ game: page }) => {
-    for (const name of ['Alex', 'Taylor', 'Casey']) {
-      await page.evaluate((n) => { SugarCube.State.variables.companion = { name: n }; }, name);
-      expect(await callSetup(page, 'setup.Events.companionIsInlineFriend()')).toBe(true);
-    }
-    await page.evaluate(() => { SugarCube.State.variables.companion = { name: 'Alice' }; });
-    expect(await callSetup(page, 'setup.Events.companionIsInlineFriend()')).toBe(false);
-  });
-
   test('companionDrainForHelp drains 3 sanity, gains 10 lust', async ({ game: page }) => {
     await page.evaluate(() => {
       const V = SugarCube.State.variables;

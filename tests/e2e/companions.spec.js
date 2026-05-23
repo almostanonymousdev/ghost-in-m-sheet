@@ -8,17 +8,16 @@ const COMPANIONS = [
   { name: 'Brook', passages: ['BrookHelp', 'BrookInfo', 'BrookHuntEndAlone'] },
 ];
 
-const TRANS_COMPANIONS = ['Alex', 'Taylor', 'Casey'];
-const ALL_COMPANIONS = ['Brook', 'Alice', 'Blake', 'Alex', 'Taylor', 'Casey'];
+const ALL_COMPANIONS = ['Brook', 'Alice', 'Blake'];
 
 async function selectCompanion(page, name) {
-  // Force defaults for $brook/$alice/$blake/$alex/$taylor/$casey before
-  // selectCompanion runs. PassageReady normally seeds these via
-  // applySaveDefaults, but order of operations after Engine.restart() can
-  // leave a window where the store still holds undefined for some slots —
-  // tests that touch every companion's `chanceToAttack` then fail with
-  // "Cannot set properties of undefined". Calling applySaveDefaults
-  // explicitly makes that deterministic and removes the need for retries.
+  // Force defaults for $brook/$alice/$blake before selectCompanion runs.
+  // PassageReady normally seeds these via applySaveDefaults, but order
+  // of operations after Engine.restart() can leave a window where the
+  // store still holds undefined for some slots — tests that touch every
+  // companion's `chanceToAttack` then fail with "Cannot set properties
+  // of undefined". Calling applySaveDefaults explicitly makes that
+  // deterministic and removes the need for retries.
   await page.evaluate(() => {
     if (SugarCube.setup.applySaveDefaults) {
       SugarCube.setup.applySaveDefaults(SugarCube.State.variables);
@@ -45,24 +44,13 @@ async function selectCompanion(page, name) {
 }
 
 test.describe('Companions — selection controller', () => {
-  test('selectCompanion is mutually exclusive across all six names', async ({ game: page }) => {
-    for (const name of ['Alice', 'Blake', 'Brook', 'Alex', 'Taylor', 'Casey']) {
+  test('selectCompanion is mutually exclusive across all companion names', async ({ game: page }) => {
+    for (const name of ALL_COMPANIONS) {
       await page.evaluate((n) => SugarCube.setup.Companion.selectCompanion(n), name);
       expect(await getVar(page, name.toLowerCase() + '.chosen')).toBe(1);
-      for (const other of ['Alice', 'Blake', 'Brook', 'Alex', 'Taylor', 'Casey']) {
+      for (const other of ALL_COMPANIONS) {
         if (other !== name) expect(await getVar(page, other.toLowerCase() + '.chosen')).toBe(0);
       }
-    }
-  });
-
-  test('isTransCompanion detects Alex/Taylor/Casey only', async ({ game: page }) => {
-    for (const name of TRANS_COMPANIONS) {
-      await setVar(page, 'companion', { name });
-      expect(await callSetup(page, 'setup.Companion.isTransCompanion()')).toBe(true);
-    }
-    for (const name of ['Alice', 'Blake', 'Brook']) {
-      await setVar(page, 'companion', { name });
-      expect(await callSetup(page, 'setup.Companion.isTransCompanion()')).toBe(false);
     }
   });
 
@@ -110,7 +98,7 @@ test.describe('Companions — passage rendering', () => {
     }
   }
 
-  // Regression: the <<cisCompanionSoloPicker>> widget's
+  // Regression: the <<companionSoloPicker>> widget's
   // "isCompanionFinishedSoloHunting" branch used to render a wikilink
   // whose display text contained "<<= _cName>>" / "<<= _args[1]>>".
   // SugarCube did not evaluate those macros in display text and the
@@ -142,9 +130,6 @@ test.describe('Companions — passage rendering', () => {
       await setVar(page, 'brook.chanceToAttack', 25);
       await setVar(page, 'alice.chanceToAttack', 25);
       await setVar(page, 'blake.chanceToAttack', 25);
-      await setVar(page, 'alex.chanceToAttack', 25);
-      await setVar(page, 'taylor.chanceToAttack', 25);
-      await setVar(page, 'casey.chanceToAttack', 25);
       await setVar(page, 'isCompChosen', 1);
       await setHuntMode(page, 2);
       await setVar(page, 'ghost', { name: 'Shade' });

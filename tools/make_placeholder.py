@@ -20,7 +20,7 @@ the visible content lines up with the eventual real asset.
 
 Examples:
     python3 make_placeholder.py "Alice 1" characters/alice/1.png 640 360
-    python3 make_placeholder.py "Trans Alex 3" characters/trans/alex/3.jpg 640 360
+    python3 make_placeholder.py "Brook 3" characters/brook/3.jpg 640 360
     python3 make_placeholder.py "Blake intro" characters/blake/home/1.mp4 640 360
 
 Each successful generation also adds/updates an entry in

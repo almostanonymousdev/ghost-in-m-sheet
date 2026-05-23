@@ -197,7 +197,7 @@ setup.Library = (function () {
 			setup.Companion.setSoloHuntChances('Brook', this.brookSoloOwaissaChance(), this.brookSoloElmChance());
 		},
 		pickBrookAsCompanion: function () {
-			setup.Companion.pickCisCompanion('Brook');
+			setup.Companion.pickCompanion('Brook');
 		},
 		pickBrookForSoloOwaissa: function () {
 			setup.Companion.sendCompanionSolo('Brook', 'Owaissa');

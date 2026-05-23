@@ -125,10 +125,6 @@ setup.Events = (function () {
 		companionIs: function (name) {
 			return setup.Companion.name() === name;
 		},
-		companionIsInlineFriend: function () {
-			var n = setup.Companion.name();
-			return n === 'Alex' || n === 'Taylor' || n === 'Casey';
-		},
 
 		// --- Dark-room filter (delegates to setup.Styles) --------
 		isDarkRoom: function (passageName) {

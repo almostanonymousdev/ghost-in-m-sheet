@@ -87,16 +87,13 @@
 		orgasmCooldownSteps:        function () { return 0; },
 		baitOrgasmPending:          function () { return 0; },
 
-		// Companion state objects. Per-companion defaults live in
-		// COMPANION_CONFIG.initStats (see CompanionController.js); these
-		// wrappers pull them through setup.Companion so SaveMigration
-		// doesn't need a second copy of the stat tables.
+		// Companion state objects. Per-companion defaults live in the
+		// catalogue's initStats (see CompanionData.js); these wrappers
+		// pull them through setup.Companion so SaveMigration doesn't
+		// need a second copy of the stat tables.
 		brook:  function () { return setup.Companion.defaultStateFor('Brook'); },
 		alice:  function () { return setup.Companion.defaultStateFor('Alice'); },
 		blake:  function () { return setup.Companion.defaultStateFor('Blake'); },
-		alex:   function () { return setup.Companion.defaultStateFor('Alex'); },
-		taylor: function () { return setup.Companion.defaultStateFor('Taylor'); },
-		casey:  function () { return setup.Companion.defaultStateFor('Casey'); },
 
 		// Home event bundles -- collapse the old flat $succubusEventCD /
 		// $tentaclesEventStageAll / $webcamEvent / $summonText forests
@@ -682,9 +679,8 @@
 
 		// --- Companion stat rows + relationship flags -----------
 		'companion',
-		'brook', 'alice', 'blake', 'alex', 'taylor', 'casey',
-		'isCompChosen', 'meetAlice', 'aliceWorkDone',
-		'transFirstStage', 'transPicture', 'transStart'
+		'brook', 'alice', 'blake',
+		'isCompChosen', 'meetAlice', 'aliceWorkDone'
 	];
 
 	function resetToFallback(vars) {

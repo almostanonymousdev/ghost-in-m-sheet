@@ -31,20 +31,14 @@
 
 <<widget "companionTextEvent">>
 	/* Sanity-tier (1..4) dispatcher for the CompanionEvent passage.
-	   Per-companion dialog lives on the catalogue (eventCopy) and the
-	   shared transEventCopy table; this widget just renders it. Trans
-	   companions also stamp the transFirstStage flag on every render so
-	   the next event picks the post-stage portrait + tier-1 variant.
-	   Tiers 2-4 add a +15 lust hit on the MC. */
+	   Per-companion dialog lives on the catalogue (eventCopy); this
+	   widget just renders it. Tiers 2-4 add a +15 lust hit on the MC. */
 	<<set _tier to _args[0]>>
 	<<set _ac to setup.Companion.active()>>
 	<<if _ac>>
 		<<set _markup to _ac.eventTextForTier(_tier)>>
 		<<if _markup>>
 			<<= _markup>>
-			<<if _ac.isTrans>>
-				<<run setup.Companion.markTransFirstStage()>>
-			<</if>>
 		<</if>>
 	<</if>>
 	<<run setup.Companion.applyEventStatDeltas()>>

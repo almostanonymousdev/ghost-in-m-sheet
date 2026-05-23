@@ -1,6 +1,6 @@
 # Companion/Relationship Plotlines
 
-The game features multiple companion characters (Alice, Blake, Brook, Alex, Casey, Taylor) who can join you on ghost hunts. Each companion has their own personality, skills, and relationship mechanics. Companions can help with various tasks like finding evidence, locating the ghost's favorite room, or searching for cursed items. They also have personal storylines that develop as you build relationships with them through shared experiences and interactions. Some companions have unique endings depending on your choices and progression.
+The game features three companion characters (Alice, Blake, Brook) who can join you on ghost hunts. Each companion has their own personality, skills, and relationship mechanics. Companions can help with various tasks like finding evidence, locating the ghost's favorite room, or searching for cursed items. They also have personal storylines that develop as you build relationships with them through shared experiences and interactions. Some companions have unique endings depending on your choices and progression.
 
 * **Alice** - A nervous but determined companion who can become more confident as your relationship progresses. She's particularly useful for finding cursed items and has unique interactions during ghost hunts and at home, including intimate moments when her anxiety is soothed.
   * [AliceHelp.tw](../passages/companion/alice/AliceHelp.tw) - Alice's assistance during hunts
@@ -22,10 +22,7 @@ The game features multiple companion characters (Alice, Blake, Brook, Alex, Case
   * [BrookHuntEndAlone.tw](../passages/companion/brook/BrookHuntEndAlone.tw) - Brook's ending if you hunt alone
   * Brook's mini panel is inlined in [StoryCaption.tw](../passages/StoryCaption.tw)
 
-* **Alex, Casey, and Taylor** - Additional companions with their own unique personalities and hunting specialties, each bringing different dynamics to your ghost hunting team and potential for intimate encounters.
-  * Alex/Casey/Taylor mini panels are inlined in [StoryCaption.tw](../passages/StoryCaption.tw)
-
-* **Companion data & main screen** - Per-companion metadata (pronouns, images, clothing tier text, stat defaults) lives in the `COMPANION_CONFIG` catalogue in [CompanionController.js](../passages/companion/CompanionController.js). The shared per-hunt interaction screen (portrait, clothing tiers, plan selection, walk-home) is rendered by [CompanionMain.tw](../passages/companion/CompanionMain.tw). Fresh `$brook/$alice/$blake/$alex/$taylor/$casey` stat objects are seeded by [SaveMigration.js](../passages/updates/SaveMigration.js)'s `DEFAULTS` map via `setup.Companion.defaultStateFor(name)` — no per-companion Init passages are needed.
+* **Companion data & main screen** - Per-companion metadata (pronouns, images, clothing tier text, stat defaults) lives in the `COMPANION_CONFIG` catalogue in [CompanionController.js](../passages/companion/CompanionController.js). The shared per-hunt interaction screen (portrait, clothing tiers, plan selection, walk-home) is rendered by [CompanionMain.tw](../passages/companion/CompanionMain.tw). Fresh `$brook/$alice/$blake` stat objects are seeded by [SaveMigration.js](../passages/updates/SaveMigration.js)'s `DEFAULTS` map via `setup.Companion.defaultStateFor(name)` — no per-companion Init passages are needed.
 
 * **Relationship mechanics** - Your choices during hunts, how you treat your companions, and shared experiences affect their loyalty and effectiveness. Companions may develop romantic or sexual feelings for you, leading to intimate encounters during hunts, at home, or when walking home together.
   * [CompanionEvent.tw](../passages/companion/CompanionEvent.tw) - Companion event triggers

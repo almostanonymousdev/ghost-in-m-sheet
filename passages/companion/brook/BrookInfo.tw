@@ -9,7 +9,7 @@
 <span style="color: yellow; font-weight: bold; font-size: 1.2em;"><<= _brook.name>> :</span> <<= _brook.lvl>> lvl <<if _brook.lvl gte 5>> (max. lvl)
 <<else>>(<<= _brook.exp>> / <<= _brook.expForNextLvl>>)
 <</if>><br>
-<<cisCompanionSoloPicker "Brook" "her">>
+<<companionSoloPicker "Brook" "her">>
 </div>
 </div>
 <br>
