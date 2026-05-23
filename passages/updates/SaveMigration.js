@@ -206,6 +206,10 @@
 					vars.mc[key] = MC_DEFAULTS[key];
 				}
 			});
+
+			if (typeof vars.mc.lvl !== 'number' || vars.mc.lvl < 1) {
+				vars.mc.lvl = 1;
+			}
 		}
 
 		// One-time rename: $checkChoosenLocation -> $checkChosenLocation

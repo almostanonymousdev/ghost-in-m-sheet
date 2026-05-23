@@ -44,12 +44,33 @@
 			<<set _def to setup.searchToolDefs[_t]>>
 			<<capture _t, _def>>
 				<div class="hunt-tool-card">
-					<<image "ui/img/" + _def.iconFile { class: "hunt-tool-icon" }>>
+					<div class="hunt-tool-icon-wrap">
+						<<image "ui/img/" + _def.iconFile { class: "hunt-tool-icon" }>>
+						<div class="hunt-tool-countdown" @data-tool="_t"></div>
+					</div>
 					<<huntToolSlot _t>>
 				</div>
 			<</capture>>
 		<</for>>
 	<</if>>
+<</widget>>
+
+:: widgetHuntToolCountdownContent [widget nobr] {"position":"3600,250","size":"100,100"}
+/* huntToolCountdownContent -- args[0] = equipment tier (total ticks),
+   args[1] = remaining ticks until the result drops. Renders the pie
+   fill (a conic-gradient circle that gains one slice per tick) behind
+   the countdown number; <<huntToolSlot>>'s tick replace targets the
+   wrapping .hunt-tool-countdown div, so each tick rebuilds both the
+   pie and the number in one shot. */
+<<widget "huntToolCountdownContent">><<silently>>
+	<<set _eq to _args[0]>>
+	<<set _rem to _args[1]>>
+	<<set _pct to (_eq gt 0) ? (((_eq - _rem) / _eq) * 100) : 0>>
+	/* Hue ramps from 0° (red) at 0% fill to 120° (green) at 100%, so
+	   the border + fill colour shifts as the pie completes. */
+	<<set _hue to Math.round(_pct * 1.2)>>
+	<<set _pieStyle to '--pie-pct: ' + _pct + '; --pie-color: hsl(' + _hue + ', 75%, 50%)'>>
+<</silently>><div class="hunt-tool-pie" @style="_pieStyle"></div><span class="hunt-tool-countdown-num"><<= _rem>></span>
 <</widget>>
 
 /* huntToolSlot -- args[0] = tool key. Renders the link for one hunt
@@ -92,7 +113,8 @@
 	<<set _def to setup.searchToolDefs[_t]>>
 	<<set _meterName to "searchHunt" + _def.meterField>>
 	<<set _equipField to _def.equipField>>
-	<<capture _t, _def, _meterName, _equipField>>
+	<<set _countdownSel to '.hunt-tool-countdown[data-tool="' + _t + '"]'>>
+	<<capture _t, _def, _meterName, _equipField, _countdownSel>>
 		<span class="hunt-tool-card-label cardlink" @data-tool="_t">@@.adaptiveLink;<<link `_def.label`>>
 			<<if _def.needsLightCheck and not setup.HuntController.isCurrentRoomDark()>>
 				<<replace "#hunt-tool-result">>
@@ -103,6 +125,7 @@
 				<<replace "#hunt-tool-meter">>
 					<<showmeter _meterName `$currentsearchHunt[_t] / $equipment[_equipField]`>>
 				<</replace>>
+				<<replace `_countdownSel`>><<huntToolCountdownContent `$equipment[_equipField]` `$equipment[_equipField] - $currentsearchHunt[_t]`>><</replace>>
 				<<repeat `$timerToolsDecreased`>>
 					<<if $currentsearchHunt[_t] neq $equipment[_equipField]>>
 						<<huntTickEventChain>>
@@ -111,6 +134,7 @@
 						<<toolTick>>
 						<<set $currentsearchHunt[_t] += 1>>
 						<<updatemeter _meterName `$currentsearchHunt[_t] / $equipment[_equipField]`>>
+						<<replace `_countdownSel`>><<huntToolCountdownContent `$equipment[_equipField]` `$equipment[_equipField] - $currentsearchHunt[_t]`>><</replace>>
 					<<elseif $currentsearchHunt[_t] gte $equipment[_equipField]>>
 						<<replace "#hunt-tool-result">>
 							<<if _t eq "temperature">>
@@ -120,6 +144,7 @@
 							<</if>>
 						<</replace>>
 						<<replace "#hunt-tool-meter">><</replace>>
+						<<replace `_countdownSel`>><</replace>>
 						<<applyTickEffects>>
 						<<refreshHuntHud>>
 						<<set $currentsearchHunt[_t] to 0>>

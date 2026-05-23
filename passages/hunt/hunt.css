@@ -241,10 +241,70 @@ body.ui-bar-stowed .hunt-run-layout {
 	gap: 4px;
 }
 
+.hunt-tool-icon-wrap {
+	position: relative;
+	width: 64px;
+	height: 64px;
+}
+
 .hunt-tool-icon {
 	width: 64px;
 	height: 64px;
 	object-fit: contain;
+}
+
+/* Countdown overlay rendered on top of the in-use tool's icon while
+ * its tick meter is running. <<huntToolSlot>> writes the remaining
+ * tick count into the data-tool-keyed div each iteration and empties
+ * it on completion; :not(:empty) toggles visibility so an idle card
+ * shows just the icon. */
+.hunt-tool-countdown {
+	position: absolute;
+	inset: 0;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	background-color: rgba(0, 0, 0, 0.78);
+	color: #fff;
+	font-family: 'Kode Mono', monospace;
+	font-weight: bold;
+	font-size: 2em;
+	line-height: 1;
+	border: 1px solid #888;
+	border-radius: 4px;
+	pointer-events: none;
+}
+
+.hunt-tool-countdown:not(:empty) {
+	display: flex;
+}
+
+/* Pie chart sandwiched between the countdown's dark backdrop and the
+ * number. Starts as a red-outlined empty circle (--pie-pct: 0) and
+ * fills one slice per tick via a conic-gradient; --pie-color is
+ * hue-interpolated red→green by the widget so the disc shifts colour
+ * as the run completes. The transparent half of the gradient lets
+ * the dark backdrop show through unfilled slices. */
+.hunt-tool-pie {
+	position: absolute;
+	top: 4px;
+	left: 4px;
+	right: 4px;
+	bottom: 4px;
+	border-radius: 50%;
+	border: 2px solid var(--pie-color, hsl(0, 75%, 50%));
+	box-sizing: border-box;
+	background: conic-gradient(
+		var(--pie-color, hsl(0, 75%, 50%)) calc(var(--pie-pct, 0) * 1%),
+		transparent calc(var(--pie-pct, 0) * 1%)
+	);
+	pointer-events: none;
+}
+
+.hunt-tool-countdown-num {
+	position: relative;
+	z-index: 1;
+	text-shadow: 0 0 4px rgba(0, 0, 0, 0.9);
 }
 
 .hunt-tool-card-label {

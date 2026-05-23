@@ -567,6 +567,12 @@ sugarcube-2:
         'her')."
     huntToolSlot:
       name: huntToolSlot
+    huntToolCountdownContent:
+      name: huntToolCountdownContent
+      description: "Inner markup for the hunt-tool countdown overlay: a conic-gradient
+        pie that fills one slice per tick (behind the number) plus the remaining
+        tick count (in front). Args: equipmentTier (int, total ticks), remaining
+        (int, ticks until result drops)."
     statIcon:
       name: statIcon
     mcStatusBody:

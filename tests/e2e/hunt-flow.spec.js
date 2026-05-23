@@ -571,6 +571,140 @@ test.describe('E2E: hunt lifecycle', () => {
     await expect(cardLabel).not.toHaveClass(/disabled-link/);
   });
 
+  test('a tool click renders a countdown square over the in-use icon', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickHuntCard(page);
+    await ensureNotEmptyBag(page);
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
+    await stubPerTickGatesQuiet(page);
+
+    // Slow the per-tick interval so the countdown stays visible long
+    // enough to assert mid-flight values.
+    await page.evaluate(() => {
+      SugarCube.State.variables.timerToolsDecreased = '200ms';
+    });
+
+    const emfCard = page.locator('.hunt-tool-card').first();
+    const countdown = emfCard.locator('.hunt-tool-countdown');
+    await expect(countdown).toHaveCount(1);
+    await expect(countdown).toBeEmpty();
+
+    const equip = await getVar(page, 'equipment.emf');
+
+    // Hook a MutationObserver onto the countdown so every textContent
+    // transition is captured — Playwright's toHaveText poll can miss
+    // intermediate values when ticks pass faster than its sample rate.
+    // The observer keeps logging the trimmed number text and the pie's
+    // --pie-pct value until it sees the post-run empty string; tests
+    // await __countdownDone before reading the log so the final mutation
+    // isn't lost to the microtask gap between toBeEmpty() resolving and
+    // the next evaluate. textContent is trimmed because the widget body
+    // ends with a newline before <</widget>> that nobr renders as a
+    // trailing space — invisible in the UI but visible to textContent.
+    await page.evaluate(() => {
+      window.__countdownLog = [];
+      window.__pieLog = [];
+      window.__colorLog = [];
+      window.__countdownDone = new Promise((resolve) => {
+        const el = document.querySelector('.hunt-tool-card .hunt-tool-countdown');
+        new MutationObserver(() => {
+          const t = el.textContent.trim();
+          window.__countdownLog.push(t);
+          const pie = el.querySelector('.hunt-tool-pie');
+          window.__pieLog.push(pie ? pie.style.getPropertyValue('--pie-pct') : null);
+          window.__colorLog.push(pie ? pie.style.getPropertyValue('--pie-color') : null);
+          if (t === '' && window.__countdownLog.length > 1) resolve();
+        }).observe(el, { childList: true, characterData: true, subtree: true });
+      });
+    });
+
+    await emfCard.locator('a').click();
+    await page.evaluate(() => window.__countdownDone);
+
+    const log = await page.evaluate(() => window.__countdownLog);
+    const pieLog = await page.evaluate(() => window.__pieLog);
+    const colorLog = await page.evaluate(() => window.__colorLog);
+    // For a tier-5 EMF the captured sequence is 5,4,3,2,1,0,'' — the
+    // last visible number is 0, then the overlay empties one tick
+    // later when the result drops.
+    const expected = [];
+    for (let n = equip; n >= 0; n--) expected.push(String(n));
+    expected.push('');
+    expect(log).toEqual(expected);
+    // Pie fill walks 0,20,40,60,80,100 in step with the countdown
+    // (one (100/equip)% slice per tick); the final entry is null
+    // because the overlay is empty and the pie div is gone.
+    const expectedPie = [];
+    for (let n = equip; n >= 0; n--) expectedPie.push(String((equip - n) * (100 / equip)));
+    expectedPie.push(null);
+    expect(pieLog).toEqual(expectedPie);
+    // Pie colour hue ramps 0°(red) → 120°(green) in step with the fill.
+    const expectedColor = [];
+    for (let n = equip; n >= 0; n--) {
+      const pct = (equip - n) * (100 / equip);
+      expectedColor.push(`hsl(${Math.round(pct * 1.2)}, 75%, 50%)`);
+    }
+    expectedColor.push(null);
+    expect(colorLog).toEqual(expectedColor);
+  });
+
+  test('a tool resumes from its interrupted progress (countdown + pie)', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickHuntCard(page);
+    await ensureNotEmptyBag(page);
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
+    await stubPerTickGatesQuiet(page);
+
+    // Park the EMF tool partway through its tick run as if a per-tick
+    // event-chain goto had pulled the player out mid-meter. The next
+    // click should resume from this point — countdown shows the
+    // remaining ticks, not the full equipment tier; pie starts
+    // partially filled to match.
+    const equip = await getVar(page, 'equipment.emf');
+    const resumeFrom = 2; // already done 2 of 5 ticks
+    await page.evaluate((rf) => {
+      SugarCube.State.variables.currentsearchHunt.emf = rf;
+    }, resumeFrom);
+
+    await page.evaluate(() => {
+      SugarCube.State.variables.timerToolsDecreased = '200ms';
+    });
+
+    const emfCard = page.locator('.hunt-tool-card').first();
+    const countdown = emfCard.locator('.hunt-tool-countdown');
+    const remainingAtResume = equip - resumeFrom;
+
+    // Snapshot the pre-click state of the pie at the resume point.
+    await page.evaluate(() => {
+      window.__resumeFirstFrame = null;
+      const el = document.querySelector('.hunt-tool-card .hunt-tool-countdown');
+      new MutationObserver(() => {
+        if (window.__resumeFirstFrame !== null) return;
+        const pie = el.querySelector('.hunt-tool-pie');
+        window.__resumeFirstFrame = {
+          num: el.textContent.trim(),
+          pct: pie ? pie.style.getPropertyValue('--pie-pct') : null,
+        };
+      }).observe(el, { childList: true, characterData: true, subtree: true });
+    });
+
+    await emfCard.locator('a').click();
+    // First rendered state must match the resume point, not a fresh run.
+    await expect.poll(
+      () => page.evaluate(() => window.__resumeFirstFrame)
+    ).toEqual({
+      num: String(remainingAtResume),
+      pct: String(resumeFrom * (100 / equip)),
+    });
+
+    // Run completes normally from the resume point.
+    await expect(countdown).toBeEmpty();
+  });
+
 
   /* Shared per-tick gate stub used by the evidence-find tests. The
      plasm/gwb hit paths emit a deferred goto to EctoglassFound /
