@@ -1,32 +1,28 @@
 :: DeliveryManager [nobr] {"position":"1100,1200","size":"100,100"}
-<<image "ui/img/john.jpg" { width: "70%" }>><br>
+<<image "ui/img/jerry.png" { width: "70%" }>><br>
 <<if setup.Delivery.isFirstVisit()>>
-	@@.mc-thoughts; You enter the manager's office and notice a man around forty. There's nothing particularly remarkable about him. As you make your presence known, he carefully assesses you, momentarily pausing his gaze on your chest. Nevertheless, you gather the courage to initiate the conversation.@@<br>
+	@@.mc-thoughts; You step into the manager's office. The man behind the desk is graying all over, settled low in his chair under a body gone heavy and slack. His skin is pale and dry, the color of old paper, and his lips look rough and cracked. His eyes have faded to nothing you'd put a name to. His mouth hangs open a fraction, resting that way like he forgot to close it. He drags his gaze up the length of you and parks on your chest a bit longer than it needs to. His expression barely shifts, giving a hint of a hungry smile. You take a breath and start anyway.@@<br>
 	<br>
 	@@.mc-speech;Hello, my name is <<= setup.Mc.name()>>, and I'm looking for a job. Perhaps you have something suitable for me?@@<br>
-	@@.notmc-speech; Hello, I'm John. We happen to need couriers, and I think you could be a good fit for the job.@@<br>
-	@@.mc-speech;
-	"Thank you! I'm ready to start working. What do I need to do for that?@@<br>
+	@@.notmc-speech; Jerry. <i>He sits up a fraction straighter, which is to say he no longer looks fully collapsed into the chair.</i> You're in luck. We've been short on couriers, and you've got the right energy for it. The customer-facing side. <i>He clears his throat.</i> I think you'd be an asset to the team.@@<br>
 
-	@@.notmc-speech; Great! "You can work from 08:00 to 20:00 any day of the week. During this time, you'll be able to take orders and deliver items to customers.@@<br>
+	@@.mc-speech;Thank you. I'm ready to start. What do I need to do?@@<br>
 
-	@@.mc-speech;
-	Understood. How will I receive orders?@@<br>
+	@@.notmc-speech; Eager. <i>His eyes catch on your mouth for half a second.</i> That's what we like to see. Hours are 08:00 to 20:00, any day. I run a flexible shop here, none of the rigid stuff. You come in when you can, you take what's on the board. We take care of our people.@@<br>
 
-	@@.notmc-speech; Orders will come to you automatically. You'll receive addresses and a list of items to deliver. Your task is to deliver the items correctly to the specified addresses.@@<br>
+	@@.mc-speech;Understood. How will I receive orders?@@<br>
 
-	@@.mc-speech;
-	"Got it. How much will I be paid for each order?@@<br>
+	@@.notmc-speech; The computer thing handles it. Addresses comes through, item list comes through, you handle the rest. The girls — <i>he catches himself</i> — the couriers we have, they don't have any trouble cause they've gotten used to it.@@<br>
 
-	@@.notmc-speech; For each correctly delivered item, you'll receive $<<= setup.Delivery.jobMoneySuccessed()>>. Not bad, right? But remember, if you make a mistake, you'll only get $<<= setup.Delivery.jobMoneyFailed()>> for that delivery.@@<br>
+	@@.mc-speech;Got it. How much will I be paid for each order?@@<br>
 
-	@@.mc-speech;
-	I'll do my best not to make mistakes. Ready to start working!@@<br>
+	@@.notmc-speech; $<<= setup.Delivery.jobMoneySuccessed()>> a successful drop. $<<= setup.Delivery.jobMoneyFailed()>> if it goes sideways. Not life-changing money, but it adds up for someone with the right work ethic. <i>He leans back, hands behind his head, then thinks better of it and folds them on the desk.</i> A lot of people your age don't have that in them anymore. You look like you do.@@<br>
 
-	@@.notmc-speech; Great, good luck with the deliveries. If you have any questions, feel free to ask.@@<br>
+	@@.mc-speech;I'll do my best. Ready to start.@@<br>
+
+	@@.notmc-speech; Great. <i>The chair creaks under him.</i> Door's always open. Anything you need, anything that's not clear, come find me. I'd rather you ask than guess. Doesn't have to be on the clock.@@<br>
 	<br>
-	@@.mc-thoughts;
-	It turned out to be quite simple. So, I just need to come here any day from 08:00 to 20:00 and fulfill orders. Sounds pretty straightforward.@@<br>
+	@@.mc-thoughts; He didn't ask for ID or a reference. He didn't ask anything except whether I could stand to be in a room with him for ten minutes, and apparently the answer was yes. The money is real. The rest, I can work around.@@<br>
 	<br>
 	@@.mc-action; Now you can work as a courier.@@
 	<br>
@@ -34,7 +30,7 @@
 <<elseif not setup.Delivery.isFirstVisit() and previous() isnot "DeliveryMap">>
 	<br>
 	<<if setup.Delivery.hasMetManagerEvent()>>
-		@@.notmc-speech; Oh, <<= setup.Mc.name()>>, come in, don't be shy. What do you want to talk about?@@
+		@@.notmc-speech; Oh, <<= setup.Mc.name()>>, come in, don't be shy. I've always got time for you.@@
 	<<else>>
 		@@.notmc-speech;
 		Hello, you're like umm... Susan? Milana? Doesn't matter, I'm a bit busy right now, let's talk later.
@@ -69,7 +65,7 @@
 	<</linkreplace>>
 
 <<elseif previous() is "DeliveryMap">>
-	@@.notmc-speech; Here are your hard-earned money for the shift. Not much, but it's something at least.@@ <br>
+	@@.notmc-speech; Here is your hard-earned money for the shift. Not much, but it's something at least.@@ <br>
 	<<include "EndShiftDelivery">>
 <</if>>
 <br>

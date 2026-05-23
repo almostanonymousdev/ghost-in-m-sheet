@@ -13224,6 +13224,12 @@
       "height": 800,
       "kind": "image"
     },
+    "ui/img/jerry.png": {
+      "label": "Jerry",
+      "width": 400,
+      "height": 400,
+      "kind": "image"
+    },
     "ui/img/john.jpg": {
       "label": "",
       "width": 612,
