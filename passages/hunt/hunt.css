@@ -38,30 +38,14 @@
 	gap: 0.5em;
 }
 
-/* Top-center tray for tool readouts. The toolbar's replace macro
- * targets #hunt-tool-result, so each tool click overwrites the prior
- * reading here instead of inlining under the icon. Absolute positioning
- * keeps it from disturbing the hunt-run-top grid; pointer-events:none
- * lets clicks fall through to the top-row UI when the tray is empty. */
-.hunt-tool-result {
-	position: absolute;
-	top: 0.5em;
-	left: 50%;
-	transform: translateX(-50%);
-	max-width: 32em;
-	max-height: 60vh;
-	overflow: auto;
-	text-align: center;
-	z-index: 10;
-	pointer-events: none;
-}
-
-.hunt-tool-result:empty {
+/* Hidden sink for tool-renderer output. The renderers still need to
+ * run on tick completion (state mutations, <<deferGoto>> hits,
+ * setup.activateTool / setup.tickTimedTool side effects), so the
+ * toolbar wikifies their markup into this off-screen div instead of a
+ * visible tray. Visible feedback lives entirely in the per-tool card
+ * overlay (.hunt-tool-card-number / .hunt-tool-card-thumbsdown). */
+.hunt-tool-sink {
 	display: none;
-}
-
-.hunt-tool-result>* {
-	pointer-events: auto;
 }
 
 body.ui-bar-stowed .hunt-run-layout {
@@ -308,8 +292,7 @@ body.ui-bar-stowed .hunt-run-layout {
 }
 
 /* Per-tool result rendered into the countdown overlay after a tick
- * run completes. EMF/Thermometer carry the same <<coloredText>>
- * number that drops into the shared #hunt-tool-result tray; the
+ * run completes. EMF/Thermometer carry a <<coloredText>> number; the
  * other tools show a thumbs-down image when nothing was detected.
  * Both sit above the (now-empty) pie layer via the same z-index as
  * .hunt-tool-countdown-num, and shrink to fit the 64px icon box. */
@@ -334,26 +317,6 @@ body.ui-bar-stowed .hunt-run-layout {
 	opacity: 0.85;
 	line-height: 1.1;
 	text-align: center;
-}
-
-/* Shared tool-tick progress bar. Sits at the top of the layout
- * (sibling of #hunt-tool-result) rather than under each tool card,
- * so the toolbar row stays compact whether or not a tick is in
- * flight. Only the active tool renders its meter element here; on
- * completion the slot empties the wrapper and :empty hides it. */
-.hunt-tool-meter {
-	position: absolute;
-	top: 0.25em;
-	left: 50%;
-	transform: translateX(-50%);
-	width: 18em;
-	max-width: 60vw;
-	z-index: 11;
-	pointer-events: none;
-}
-
-.hunt-tool-meter:empty {
-	display: none;
 }
 
 .hunt-run-nav {

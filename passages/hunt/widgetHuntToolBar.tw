@@ -76,20 +76,18 @@
 /* huntToolSlot -- args[0] = tool key. Renders the link for one hunt
    tool slot. Click starts a <<repeat>>-driven meter that mirrors
    <<searchTool>>: each tick fires <<huntTickEventChain>> + <<toolTick>>,
-   the meter completes after `$equipment.<tool>` ticks, and the result
-   is wikified into the shared #hunt-tool-result tray.
-
-   The meter element renders into the shared #hunt-tool-meter
-   container at the top of the layout (see HuntRun) -- not per-card --
-   so the toolbar row keeps its compact icon-plus-label sizing whether
-   or not a tick is in flight.
+   the meter completes after `$equipment.<tool>` ticks, and the renderer
+   output is fed to the hidden #hunt-tool-sink so its side-effect macros
+   (<<deferGoto>> for hits, evidenceFind stamping, tool activations)
+   still fire while no top-of-screen tray is rendered. The visible
+   completion signal lives entirely in the per-tool card overlay:
+   <<huntCardMarkup>> drops a number / colored reading / thumbs-down
+   into the countdown square via setup.ToolController.huntCardMarkup().
 
    Differences from the in-house <<searchTool>>:
      * Uses <<link>> (multi-use) so the player can re-fire the same
        tool without leaving HuntRun -- the in-house markup relies on
        the room re-rendering on nav, which doesn't happen here.
-     * Routes the completion check into #hunt-tool-result rather than
-       a per-tool actionSel -- the layout has one shared readout area.
      * Adds a sanity/exhaustion guard after <<applyTickEffects>> so a
        stat-collapse landed by the click routes through huntOverPassage
        (which settles the run and goes to the HuntOver* narrative)
@@ -103,11 +101,12 @@
    Tools whose searchToolDefs entry sets needsLightCheck (currently
    spiritbox) are gated on the current room being dark -- mirroring
    the lights-off guard the in-house <<searchTool>> markup emits.
-   When the room is lit the click routes a "turn the lights off
-   first" prompt into #hunt-tool-result instead of starting the
-   meter; the predicate reads through setup.HuntController.isCurrentRoomDark
-   so the catalogue flag drives the rule, no per-tool branch in
-   the widget. */
+   When the room is lit the click drops the thumbs-down marker into
+   the per-tool card (no meter starts), so the player still gets
+   immediate visual feedback that the click was rejected; the
+   predicate reads through setup.HuntController.isCurrentRoomDark so
+   the catalogue flag drives the rule, no per-tool branch in the
+   widget. */
 <<widget "huntToolSlot">>
 	<<set _t to _args[0]>>
 	<<set _def to setup.searchToolDefs[_t]>>
@@ -118,14 +117,10 @@
 		<span class="hunt-tool-card-label cardlink" @data-tool="_t">@@.adaptiveLink;<<link `_def.label`>>
 			<<run setup.ToolController.clearAllHuntCards()>>
 			<<if _def.needsLightCheck and not setup.HuntController.isCurrentRoomDark()>>
-				<<replace "#hunt-tool-result">>
-					<div class="spiritbox-container mc-thoughts">I need to turn off the light first</div>
-				<</replace>>
+				<<run setup.ToolController.setHuntCardMarkup(setup.ToolController.huntCardThumbsDownMarkup())>>
+				<<run $(_countdownSel).empty().wiki(setup.ToolController.huntCardMarkup())>>
 			<<else>>
 				<<addclass ".cardlink" "disabled-link">>
-				<<replace "#hunt-tool-meter">>
-					<<showmeter _meterName `$currentsearchHunt[_t] / $equipment[_equipField]`>>
-				<</replace>>
 				<<replace `_countdownSel`>><<huntToolCountdownContent `$equipment[_equipField]` `$equipment[_equipField] - $currentsearchHunt[_t]`>><</replace>>
 				<<repeat `$timerToolsDecreased`>>
 					<<if $currentsearchHunt[_t] neq $equipment[_equipField]>>
@@ -134,17 +129,15 @@
 					<<if $currentsearchHunt[_t] lte ($equipment[_equipField] - 1)>>
 						<<toolTick>>
 						<<set $currentsearchHunt[_t] += 1>>
-						<<updatemeter _meterName `$currentsearchHunt[_t] / $equipment[_equipField]`>>
 						<<replace `_countdownSel`>><<huntToolCountdownContent `$equipment[_equipField]` `$equipment[_equipField] - $currentsearchHunt[_t]`>><</replace>>
 					<<elseif $currentsearchHunt[_t] gte $equipment[_equipField]>>
-						<<replace "#hunt-tool-result">>
+						<<replace "#hunt-tool-sink">>
 							<<if _t eq "temperature">>
 								<<include "TemperatureHigh">>
 							<<else>>
 								<<toolCheck _t>>
 							<</if>>
 						<</replace>>
-						<<replace "#hunt-tool-meter">><</replace>>
 						<<run $(_countdownSel).empty().wiki(setup.ToolController.huntCardMarkup())>>
 						<<applyTickEffects>>
 						<<refreshHuntHud>>

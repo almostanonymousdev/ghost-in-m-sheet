@@ -289,10 +289,11 @@
             maybeSetBrookPossessed();
             _huntCardMarkup = '';
             if (setup.Mc.bodyPartSensitivity('brain') >= 3) {
-                return '<div class="spiritbox-container">\n'
-                     + '<b>Something\'s wrong, I think I\'m losing consciousness...</b>\n'
-                     + '</div>\n'
-                     + '<br>@@.enterbtn;<<link "Close your eyes" "CityMapPossessed">><</link>>@@';
+                /* The renderer output is wikified into the hidden
+                   #hunt-tool-sink, so a <<link>> here would be
+                   unclickable. Auto-route via <<deferGoto>> instead --
+                   matches the gwb/plasm hit paths. */
+                return '<<deferGoto "CityMapPossessed">>';
             }
             var threat = SPIRITBOX_MENACING[randInt(0, SPIRITBOX_MENACING.length - 1)];
             return '<span class="spiritbox-question">You ask through the Spiritbox: "What do you want?"</span>\n'
@@ -367,8 +368,7 @@
            countdown overlay on tick completion and TemperatureHigh
            writes through it via setHuntCardMarkup. clearAllHuntCards
            wipes both the buffer and every rendered overlay so only
-           the most-recently-clicked tool keeps its in-card result —
-           matching the shared #hunt-tool-result tray. */
+           the most-recently-clicked tool keeps its in-card result. */
         huntCardMarkup:    function () { return _huntCardMarkup; },
         setHuntCardMarkup: function (m) { _huntCardMarkup = m; },
         huntCardThumbsDownMarkup: huntCardThumbsDown,

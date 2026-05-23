@@ -483,7 +483,7 @@ test.describe('E2E: hunt lifecycle', () => {
     });
   }
 
-  test('clicking a tool kicks off the meter and lands the result in the tray', async () => {
+  test('clicking a tool kicks off the meter and lands the result in the card overlay', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
@@ -499,16 +499,12 @@ test.describe('E2E: hunt lifecycle', () => {
     // Baseline: GhostStreet resets to midnight.
     expect(await getVar(page, 'minutes')).toBe(0);
 
-    // The top-center result tray exists and is empty until a tool fires.
-    const tray = page.locator('#hunt-tool-result');
-    await expect(tray).toHaveCount(1);
-    await expect(tray).toBeEmpty();
-
     // Each tool card has a clickable label that, on click, starts a
     // <<repeat>>-driven meter under the icon. The meter ticks
     // $equipment.<tool> times (default tier 5) and on completion
-    // wikifies the tool result into the tray.
+    // drops the result into the per-tool card overlay.
     const emfCard = page.locator('.hunt-tool-card').first();
+    const emfCountdown = emfCard.locator('.hunt-tool-countdown');
     await expect(emfCard.locator('a')).toHaveCount(1);
     await emfCard.locator('a').click();
 
@@ -516,62 +512,18 @@ test.describe('E2E: hunt lifecycle', () => {
     // one applyTickEffects (1 min, since HuntRun is huntActive) =
     // 6 in-game minutes.
     await page.waitForFunction(() => SugarCube.State.variables.minutes === 6);
-    await expect(tray.locator('.boldText')).toHaveCount(1);
-    // The same coloredText reading is mirrored into the per-card
-    // countdown overlay (.hunt-tool-card-number) so the result stays
-    // visible above the EMF icon for as long as the tray holds it.
-    await expect(emfCard.locator('.hunt-tool-card-number .boldText')).toHaveCount(1);
+    // The coloredText reading lives in the per-card countdown overlay
+    // -- the only place hunt-tool results are surfaced now (the
+    // top-of-screen tray + meter were removed in favour of per-tool
+    // feedback in the toolbar row).
+    await expect(emfCountdown.locator('.hunt-tool-card-number .boldText')).toHaveCount(1);
     await expect(emfCard).not.toHaveClass(/disabled-link/);
 
     // Re-clicking the same tool reopens the meter and overwrites the
-    // tray with a fresh reading rather than appending to it.
+    // card with a fresh reading rather than appending to it.
     await emfCard.locator('a').click();
     await page.waitForFunction(() => SugarCube.State.variables.minutes === 12);
-    await expect(tray.locator('.boldText')).toHaveCount(1);
-  });
-
-  test('a tool click renders the shared top-of-screen meter while ticking', async () => {
-    test.setTimeout(15_000);
-
-    await goToPassage(page, 'GhostStreet');
-    await clickHuntCard(page);
-    await ensureNotEmptyBag(page);
-    await clickLink(page, 'Enter the hunt', 'HuntRun');
-    /* Pin event-chain gates off so a stray <<goto>> can't tear the
-       meter element out from under the assertions. */
-    await stubPerTickGatesQuiet(page);
-
-    // Slow the per-tick interval so the meter is visible long enough
-    // to assert against. Real play uses 150ms..1s.
-    await page.evaluate(() => {
-      SugarCube.State.variables.timerToolsDecreased = '200ms';
-    });
-
-    // The shared progress bar lives at the top of the layout
-    // (#hunt-tool-meter) and is empty pre-click.
-    const meter = page.locator('#hunt-tool-meter');
-    await expect(meter).toHaveCount(1);
-    await expect(meter.locator('[id^="meter-"]')).toHaveCount(0);
-
-    // The cardlink class lives on the inner label span (so the
-    // shared <<addclass>> path can disable the disabled state
-    // tool slots without leaking 30px-tall classic .cardlink
-    // styling onto the outer card).
-    const emfCard = page.locator('.hunt-tool-card').first();
-    const cardLabel = emfCard.locator('.hunt-tool-card-label');
-    await emfCard.locator('a').click();
-
-    // Mid-flight: the meter renders a SugarCube meter element (id
-    // prefixed with "meter-") into the shared top container, and
-    // the label cardlink picks up .disabled-link so the player can't
-    // double-fire while ticking.
-    await expect(meter.locator('[id^="meter-"]')).toHaveCount(1);
-    await expect(cardLabel).toHaveClass(/disabled-link/);
-
-    // Wait for the meter to clear at the end of the tick + the
-    // disabled-link guard to lift.
-    await expect(meter.locator('[id^="meter-"]')).toHaveCount(0);
-    await expect(cardLabel).not.toHaveClass(/disabled-link/);
+    await expect(emfCountdown.locator('.hunt-tool-card-number .boldText')).toHaveCount(1);
   });
 
   test('a tool click renders a countdown square over the in-use icon', async () => {
@@ -707,8 +659,7 @@ test.describe('E2E: hunt lifecycle', () => {
     });
 
     // Run completes — the in-card EMF reading replaces the pie+number
-    // tick frame (the overlay stays populated, matching the shared
-    // #hunt-tool-result tray).
+    // tick frame and stays populated as the visible result.
     await expect(countdown.locator('.hunt-tool-card-number')).toHaveCount(1);
     await expect(countdown.locator('.hunt-tool-pie')).toHaveCount(0);
   });
@@ -734,11 +685,9 @@ test.describe('E2E: hunt lifecycle', () => {
     await expect(countdown.locator('.hunt-tool-card-thumbsdown')).toHaveCount(0);
     await expect(countdown.locator('.hunt-tool-pie')).toHaveCount(0);
 
-    // The same reading lands in #hunt-tool-result.
+    // The card-overlay text is the displayed reading.
     const cardText = (await countdown.innerText()).trim();
     expect(cardText).toMatch(/^\d+$/);
-    const trayText = (await page.locator('#hunt-tool-result').innerText()).trim();
-    expect(trayText).toBe(cardText);
   });
 
   test('thermometer reading carries its color into the tool card overlay', async () => {
@@ -768,19 +717,13 @@ test.describe('E2E: hunt lifecycle', () => {
     await thermoCard.locator('a').click();
 
     await expect(countdown.locator('.hunt-tool-card-number')).toHaveCount(1);
-    // The same coloredText span lands in both the tray and the card —
-    // its inline `color:` attribute is what overrides the countdown's
-    // default white text, so assert on the style directly. The tray
-    // wraps coloredText in an outer .toolsTextCentered.boldText, so
-    // pick out the inner span via the inline style filter.
+    // The coloredText span's inline `color:` attribute is what
+    // overrides the countdown's default white text, so assert on the
+    // style directly.
     const cardSpan = countdown.locator('.hunt-tool-card-number .boldText');
-    const traySpan = page.locator('#hunt-tool-result .boldText[style*="color"]');
     await expect(cardSpan).toHaveCount(1);
-    await expect(traySpan).toHaveCount(1);
     const cardColor = await cardSpan.evaluate(el => el.style.color);
-    const trayColor = await traySpan.evaluate(el => el.style.color);
     expect(cardColor).toBe('yellow');
-    expect(trayColor).toBe(cardColor);
   });
 
   test('GWB miss drops a thumbs-down into the tool card overlay', async () => {
@@ -926,11 +869,11 @@ test.describe('E2E: hunt lifecycle', () => {
     await page.waitForFunction(() => SugarCube.State.passage === 'HuntRun');
   });
 
-  test('Spiritbox click with the lights on prompts the player to kill the lights first', async () => {
+  test('Spiritbox click with the lights on drops a thumbs-down into the card', async () => {
     /* Lights-off is a tool-wide rule
        (setup.searchToolDefs.spiritbox.needsLightCheck): the hunt
        tool slot must short-circuit a click while the room is lit
-       and route the catalogue prompt into the shared result tray
+       and surface a rejection marker in the per-tool card overlay
        instead of starting a meter. Mirrors classic <<searchTool>>'s
        lights-off guard so the rule is enforced in both modes. */
     test.setTimeout(15_000);
@@ -950,13 +893,14 @@ test.describe('E2E: hunt lifecycle', () => {
     expect(await callSetup(page, 'setup.HuntController.isCurrentRoomDark()')).toBe(false);
 
     const spiritboxCard = page.locator('.hunt-tool-card').filter({ hasText: 'Spiritbox' });
+    const countdown = spiritboxCard.locator('.hunt-tool-countdown');
     await expect(spiritboxCard).toHaveCount(1);
     await spiritboxCard.locator('a').click();
 
-    // Tray surfaces the lights-off prompt; meter never starts.
-    await expect(
-      page.locator('#hunt-tool-result').getByText(/turn off the light first/i)
-    ).toBeVisible();
+    // Card overlay carries the thumbs-down rejection marker; meter
+    // never starts and the player stays on HuntRun.
+    await expect(countdown.locator('.hunt-tool-card-thumbsdown')).toHaveCount(1);
+    await expect(countdown.locator('.hunt-tool-pie')).toHaveCount(0);
     expect(await page.evaluate(() => SugarCube.State.passage)).toBe('HuntRun');
   });
 
@@ -964,7 +908,7 @@ test.describe('E2E: hunt lifecycle', () => {
     /* Negative companion test of the lights-off guard: with the
        current room dark, the spiritbox click must drop into the
        same <<repeat>> meter loop the other tools use, not the
-       lights-off prompt. */
+       lights-off thumbs-down rejection. */
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
@@ -979,19 +923,18 @@ test.describe('E2E: hunt lifecycle', () => {
     expect(await callSetup(page, 'setup.HuntController.isCurrentRoomDark()')).toBe(true);
 
     const spiritboxCard = page.locator('.hunt-tool-card').filter({ hasText: 'Spiritbox' });
+    const countdown = spiritboxCard.locator('.hunt-tool-countdown');
     await spiritboxCard.locator('a').click();
 
-    // Lit-state prompt must NOT appear; the click landed in the
-    // meter branch instead. .disabled-link is added to .cardlink
-    // (the inner span the click handler annotates) for the
-    // duration of the cycle.
-    await expect(
-      page.locator('#hunt-tool-result').getByText(/turn off the light first/i)
-    ).toHaveCount(0);
+    // The rejection thumbs-down must NOT appear -- this click landed
+    // in the meter branch (pie is visible mid-tick). .disabled-link
+    // is added to .cardlink (the inner span the click handler
+    // annotates) for the duration of the cycle.
+    await expect(countdown.locator('.hunt-tool-card-thumbsdown')).toHaveCount(0);
     await expect(spiritboxCard.locator('.cardlink')).toHaveClass(/disabled-link/);
   });
 
-  test('Ectoglass miss in hunt mode renders not-found in the tray (no goto)', async () => {
+  test('Ectoglass miss in hunt mode drops a thumbs-down into the card (no goto)', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
@@ -1006,13 +949,12 @@ test.describe('E2E: hunt lifecycle', () => {
     });
 
     const ectoCard = page.locator('.hunt-tool-card').filter({ hasText: 'Ectoglass' });
+    const countdown = ectoCard.locator('.hunt-tool-countdown');
     await ectoCard.locator('a').click();
 
-    // Tray shows the canonical "no ectoplasm stains" copy after the
-    // meter completes; player stays on HuntRun.
-    await expect(
-      page.locator('#hunt-tool-result').getByText(/ectoplasm stains/i)
-    ).toBeVisible();
+    // Card overlay carries the thumbs-down miss marker; player stays
+    // on HuntRun.
+    await expect(countdown.locator('.hunt-tool-card-thumbsdown')).toHaveCount(1);
     expect(await page.evaluate(() => SugarCube.State.passage)).toBe('HuntRun');
   });
 
