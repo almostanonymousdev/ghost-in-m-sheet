@@ -244,10 +244,10 @@ setup.Achievements = setup.Achievements || {};
 	function noteRunOutcome(success)  { recordHideRunOutcome('runFail',  success); }
 	function recordHideRunOutcome(flag, success) {
 		if (success) return;
-		var s = store();
-		if (!s._hideRunFlags) s._hideRunFlags = {};
-		s._hideRunFlags[flag] = true;
-		if (s._hideRunFlags.hideFail && s._hideRunFlags.runFail) {
+		var bag = store();
+		if (!bag._hideRunFlags) bag._hideRunFlags = {};
+		bag._hideRunFlags[flag] = true;
+		if (bag._hideRunFlags.hideFail && bag._hideRunFlags.runFail) {
 			unlock('disc.hide_and_seek');
 		}
 	}
