@@ -229,46 +229,99 @@ test.describe('E2E: hunt lifecycle', () => {
     );
   });
 
-  test('hunt exit nav switches to compact layout when the current room has >3 neighbours', async () => {
+  test('hunt exit nav auto-shrinks to fit its bounding box when the current room has many neighbours', async () => {
     test.setTimeout(15_000);
 
     await goToPassage(page, 'GhostStreet');
     await clickHuntCard(page);
     await clickLink(page, 'Enter the hunt', 'HuntRun');
 
-    // Find a room with <=3 exits to serve as the low-exit baseline.
     // The procedurally-rolled floor plan doesn't reliably produce a
     // >3-exit room every run, so synthesise that case by injecting
     // extra edges; the live count is read from FloorPlan.neighborsOf
     // (the same source currentRoomData consults), so adding edges to
     // fp.edges is the minimum mutation needed.
-    const { lowId, hubId } = await page.evaluate(() => {
+    const hubId = await page.evaluate(() => {
       const fp = SugarCube.State.variables.run.floorplan;
-      // Pick a hub and connect it to four other rooms so the live
-      // neighbor count is guaranteed to exceed 3.
       const hub = fp.rooms[0];
       const others = fp.rooms.filter(r => r.id !== hub.id).slice(0, 4);
       others.forEach(o => fp.edges.push([hub.id, o.id]));
-      // Find a <=3-exit room AFTER the mutation so the four `others`
-      // we just bumped don't get picked.
-      let low = null;
-      for (const r of fp.rooms) {
-        if (r.id === hub.id) continue;
-        const n = SugarCube.setup.FloorPlan.neighborsOf(fp, r.id).length;
-        if (n <= 3) { low = r; break; }
-      }
-      return { lowId: low?.id ?? null, hubId: hub.id };
+      return hub.id;
     });
-
-    test.skip(!lowId, 'floorplan lacks a <=3-exit room');
 
     await page.evaluate(id => SugarCube.setup.HuntController.setCurrentRoom(id), hubId);
     await goToPassage(page, 'HuntRun');
-    await expect(page.locator('.hunt-run-nav')).toHaveClass(/hunt-run-nav-compact/);
 
-    await page.evaluate(id => SugarCube.setup.HuntController.setCurrentRoom(id), lowId);
-    await goToPassage(page, 'HuntRun');
-    await expect(page.locator('.hunt-run-nav')).not.toHaveClass(/hunt-run-nav-compact/);
+    // HuntNavFit runs in a requestAnimationFrame after :passagedisplay,
+    // so wait for it to finish shrinking before we measure overflow.
+    await page.waitForFunction(() => {
+      const nav = document.querySelector('.hunt-run-nav');
+      return nav && nav.style.height !== '';
+    });
+
+    const dims = await page.evaluate(() => {
+      const nav = document.querySelector('.hunt-run-nav');
+      if (!nav) return null;
+      return {
+        scrollHeight: nav.scrollHeight,
+        clientHeight: nav.clientHeight,
+        linkCount: nav.querySelectorAll('a').length,
+      };
+    });
+    expect(dims).not.toBeNull();
+    expect(dims.linkCount).toBeGreaterThan(3);
+    // Auto-fit shrinks the font until the natural content height fits
+    // inside the bounding box -- so scrollHeight should never exceed
+    // clientHeight (allow a 2px slack for sub-pixel rounding).
+    expect(dims.scrollHeight).toBeLessThanOrEqual(dims.clientHeight + 2);
+  });
+
+  /* The exit-nav box is fixed to the viewport and sized by HuntNavFit so
+     it occupies the strip between the HUD bar's bottom edge and the
+     viewport bottom. A regression where the HUD bar isn't measurable at
+     fit() time (or where the SVG/layout pushes the HUD off-screen) would
+     either stretch the nav over the whole viewport or collapse it to 0 --
+     both have shipped before. This locks the geometry. */
+  test('hunt exit nav stays anchored to the HUD bar bottom, not the full viewport', async () => {
+    test.setTimeout(15_000);
+
+    await goToPassage(page, 'GhostStreet');
+    await clickHuntCard(page);
+    await clickLink(page, 'Enter the hunt', 'HuntRun');
+
+    await page.waitForFunction(() => {
+      const nav = document.querySelector('.hunt-run-nav');
+      return nav && nav.style.height !== '';
+    });
+
+    const geom = await page.evaluate(() => {
+      const nav = document.querySelector('.hunt-run-nav');
+      const hud = document.querySelector('.hunt-run-hud');
+      if (!nav || !hud) return null;
+      const navR = nav.getBoundingClientRect();
+      const hudR = hud.getBoundingClientRect();
+      return {
+        viewportH: window.innerHeight,
+        navTop: navR.top,
+        navBottom: navR.bottom,
+        navHeight: navR.height,
+        hudBottom: hudR.bottom,
+        hudTop: hudR.top,
+      };
+    });
+    expect(geom).not.toBeNull();
+    /* Nav's top edge sits just below the HUD bar (HuntNavFit adds a small
+       4px gap). If a render-timing bug leaves hud unmeasured, fit() falls
+       back to topPx = 4 and the nav stretches over the whole viewport. */
+    expect(geom.navTop).toBeGreaterThanOrEqual(geom.hudBottom);
+    expect(geom.navTop - geom.hudBottom).toBeLessThanOrEqual(10);
+    /* Nav must not poke above the HUD bar. */
+    expect(geom.navTop).toBeGreaterThan(geom.hudTop);
+    /* Nav's bottom edge is near the viewport bottom (CSS bottom: 0.5em). */
+    expect(geom.viewportH - geom.navBottom).toBeLessThanOrEqual(20);
+    /* And it must actually have a non-trivial height -- a 0-height nav
+       would silently hide every exit link. */
+    expect(geom.navHeight).toBeGreaterThan(20);
   });
 
   test('clicking the minimap toggles the hunt-minimap-collapsed class and survives room moves', async () => {
