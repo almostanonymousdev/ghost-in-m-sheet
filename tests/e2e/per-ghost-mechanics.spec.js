@@ -43,9 +43,12 @@ test.describe('Per-ghost mechanics', () => {
       Math.random = () => 0;
     });
     try {
+      // High-brain possession auto-routes via <<deferGoto>> (no
+      // descriptive text -- the renderer output is wikified into the
+      // hidden #hunt-tool-sink, so a click-required link wouldn't be
+      // reachable).
       const html = await callSetup(page, 'setup.ToolController.render("spiritbox")');
-      expect(html).toContain('losing consciousness');
-      expect(html).toContain('CityMapPossessed');
+      expect(html).toContain('<<deferGoto "CityMapPossessed">>');
     } finally {
       await page.evaluate(() => { Math.random = window._origRandom; });
     }

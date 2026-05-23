@@ -93,8 +93,7 @@
 	<</if>>
 
 	<div class="hunt-run-layout">
-		<div id="hunt-tool-result" class="hunt-tool-result"></div>
-		<div id="hunt-tool-meter" class="hunt-tool-meter"></div>
+		<div id="hunt-tool-sink" class="hunt-tool-sink"></div>
 		<div class="hunt-run-top">
 			<div class="hunt-run-tl">
 				<<huntMinimap>>

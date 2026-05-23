@@ -38,30 +38,14 @@
 	gap: 0.5em;
 }
 
-/* Top-center tray for tool readouts. The toolbar's replace macro
- * targets #hunt-tool-result, so each tool click overwrites the prior
- * reading here instead of inlining under the icon. Absolute positioning
- * keeps it from disturbing the hunt-run-top grid; pointer-events:none
- * lets clicks fall through to the top-row UI when the tray is empty. */
-.hunt-tool-result {
-	position: absolute;
-	top: 0.5em;
-	left: 50%;
-	transform: translateX(-50%);
-	max-width: 32em;
-	max-height: 60vh;
-	overflow: auto;
-	text-align: center;
-	z-index: 10;
-	pointer-events: none;
-}
-
-.hunt-tool-result:empty {
+/* Hidden sink for tool-renderer output. The renderers still need to
+ * run on tick completion (state mutations, <<deferGoto>> hits,
+ * setup.activateTool / setup.tickTimedTool side effects), so the
+ * toolbar wikifies their markup into this off-screen div instead of a
+ * visible tray. Visible feedback lives entirely in the per-tool card
+ * overlay (.hunt-tool-card-number / .hunt-tool-card-thumbsdown). */
+.hunt-tool-sink {
 	display: none;
-}
-
-.hunt-tool-result>* {
-	pointer-events: auto;
 }
 
 body.ui-bar-stowed .hunt-run-layout {
@@ -243,9 +227,90 @@ body.ui-bar-stowed .hunt-run-layout {
 	gap: 4px;
 }
 
+.hunt-tool-icon-wrap {
+	position: relative;
+	width: 64px;
+	height: 64px;
+}
+
 .hunt-tool-icon {
 	width: 64px;
 	height: 64px;
+	object-fit: contain;
+}
+
+/* Countdown overlay rendered on top of the in-use tool's icon while
+ * its tick meter is running. <<huntToolSlot>> writes the remaining
+ * tick count into the data-tool-keyed div each iteration and empties
+ * it on completion; :not(:empty) toggles visibility so an idle card
+ * shows just the icon. */
+.hunt-tool-countdown {
+	position: absolute;
+	inset: 0;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	background-color: rgba(0, 0, 0, 0.78);
+	color: #fff;
+	font-family: 'Kode Mono', monospace;
+	font-weight: bold;
+	font-size: 2em;
+	line-height: 1;
+	border: 1px solid #888;
+	border-radius: 4px;
+	pointer-events: none;
+}
+
+.hunt-tool-countdown:not(:empty) {
+	display: flex;
+}
+
+/* Pie chart sandwiched between the countdown's dark backdrop and the
+ * number. Starts as a red-outlined empty circle (--pie-pct: 0) and
+ * fills one slice per tick via a conic-gradient; --pie-color is
+ * hue-interpolated red→green by the widget so the disc shifts colour
+ * as the run completes. The transparent half of the gradient lets
+ * the dark backdrop show through unfilled slices. */
+.hunt-tool-pie {
+	position: absolute;
+	top: 4px;
+	left: 4px;
+	right: 4px;
+	bottom: 4px;
+	border-radius: 50%;
+	border: 2px solid var(--pie-color, hsl(0, 75%, 50%));
+	box-sizing: border-box;
+	background: conic-gradient(
+		var(--pie-color, hsl(0, 75%, 50%)) calc(var(--pie-pct, 0) * 1%),
+		transparent calc(var(--pie-pct, 0) * 1%)
+	);
+	pointer-events: none;
+}
+
+.hunt-tool-countdown-num {
+	position: relative;
+	z-index: 1;
+	text-shadow: 0 0 4px rgba(0, 0, 0, 0.9);
+}
+
+/* Per-tool result rendered into the countdown overlay after a tick
+ * run completes. EMF/Thermometer carry a <<coloredText>> number; the
+ * other tools show a thumbs-down image when nothing was detected.
+ * Both sit above the (now-empty) pie layer via the same z-index as
+ * .hunt-tool-countdown-num, and shrink to fit the 64px icon box. */
+.hunt-tool-card-number {
+	position: relative;
+	z-index: 1;
+	text-shadow: 0 0 4px rgba(0, 0, 0, 0.9);
+	font-size: 1.4em;
+	line-height: 1;
+}
+
+.hunt-tool-card-thumbsdown {
+	position: relative;
+	z-index: 1;
+	width: 44px;
+	height: 44px;
 	object-fit: contain;
 }
 
@@ -254,26 +319,6 @@ body.ui-bar-stowed .hunt-run-layout {
 	opacity: 0.85;
 	line-height: 1.1;
 	text-align: center;
-}
-
-/* Shared tool-tick progress bar. Sits at the top of the layout
- * (sibling of #hunt-tool-result) rather than under each tool card,
- * so the toolbar row stays compact whether or not a tick is in
- * flight. Only the active tool renders its meter element here; on
- * completion the slot empties the wrapper and :empty hides it. */
-.hunt-tool-meter {
-	position: absolute;
-	top: 0.25em;
-	left: 50%;
-	transform: translateX(-50%);
-	width: 18em;
-	max-width: 60vw;
-	z-index: 11;
-	pointer-events: none;
-}
-
-.hunt-tool-meter:empty {
-	display: none;
 }
 
 /* Bounded box for the room-exit nav, anchored to the viewport (not

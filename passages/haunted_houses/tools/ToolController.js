@@ -38,14 +38,23 @@
     /* Render helpers that emit canonical Twine markup so the output path
        matches what the passages used to write by hand. */
 
-    function packMarkup(pack) {
-        var args = ['"' + pack.prefix + '"', pack.start, pack.end, '"' + pack.ext + '"'];
-        if (pack.cssClass) args.push('"' + pack.cssClass + '"');
-        return '<<randRangeImg ' + args.join(' ') + '>>';
-    }
-
     function notFoundMarkup(toolKey) {
         return '<<notFound "' + NOT_FOUND_COPY[toolKey] + '">>';
+    }
+
+    /* In-card result shown over the hunt-tool icon after a tick run
+       completes. EMF/Temperature carry the numeric reading; the other
+       tools show a thumbs-down placeholder on miss. Renderers stamp the
+       markup via setHuntCardMarkup before returning the tray markup; the
+       hunt-toolbar widget reads it on completion. */
+    var _huntCardMarkup = '';
+
+    function huntCardNumber(coloredTextMarkup) {
+        return '<span class="hunt-tool-card-number">' + coloredTextMarkup + '</span>';
+    }
+
+    function huntCardThumbsDown() {
+        return '<<image "ui/img/thumbsdown.png" { class: "hunt-tool-card-thumbsdown" }>>';
     }
 
     /* EMF: timed activation window + glitch roll. Colour/number emit a
@@ -53,13 +62,18 @@
     function renderEmf() {
         var state = setup.tickTimedTool("emf");
         var g     = setup.HuntController.activeGhost();
+        var markup;
         if (state === setup.ToolState.READY && g && g.hasEvidence("emf")) {
-            return g.rollEmfGlitch()
+            markup = g.rollEmfGlitch()
                 ? '<<coloredText "red" ' + randInt(0, 100) + '>>'
                 : '<<coloredText "red" 5>>';
+        } else if (state === setup.ToolState.READY) {
+            markup = '<<coloredText "yellow" ' + randInt(1, 4) + '>>';
+        } else {
+            markup = '<<coloredText "green" 0>>';
         }
-        if (state === setup.ToolState.READY) return '<<coloredText "yellow" ' + randInt(1, 4) + '>>';
-        return '<<coloredText "green" 0>>';
+        _huntCardMarkup = huntCardNumber(markup);
+        return markup;
     }
 
     /* GWB: shared tier-gated evidence check. Hits also open the EMF
@@ -79,7 +93,14 @@
 
     function renderGwb() {
         var r = setup.ToolController.findGwb();
-        if (!r) return notFoundMarkup("gwb");
+        if (!r) {
+            _huntCardMarkup = huntCardThumbsDown();
+            return notFoundMarkup("gwb");
+        }
+        /* Hit routes through <<deferGoto>> so the player leaves the
+           HuntRun screen; clear the card so a stale countdown number
+           from the running tick doesn't briefly flash before nav. */
+        _huntCardMarkup = '';
         return foundPassageMarkup("gwb", "GwbFound", r);
     }
 
@@ -116,7 +137,11 @@
            closure so tests can stub the find without monkey-patching
            internals. */
         var r = setup.ToolController.findPlasm();
-        if (!r) return notFoundMarkup("plasm");
+        if (!r) {
+            _huntCardMarkup = huntCardThumbsDown();
+            return notFoundMarkup("plasm");
+        }
+        _huntCardMarkup = '';
         return foundPassageMarkup("plasm", "EctoglassFound", r);
     }
 
@@ -173,17 +198,27 @@
         var state = setup.tickTimedTool("uvl");
         var g     = setup.HuntController.activeGhost();
         if (state !== setup.ToolState.READY || !(g && g.hasEvidence("uvl"))) {
+            _huntCardMarkup = huntCardThumbsDown();
             return notFoundMarkup("uvl");
         }
+        var pack;
         if (setup.HauntedHouses.isIronclad()) {
-            return packMarkup({ prefix: "mechanics/uvl/ironclad", start: 1, end: 6, ext: ".png" })
-                + '\n' + MESSAGES.uvl + '<br>';
+            pack = { prefix: "mechanics/uvl/ironclad", start: 1, end: 6, ext: ".png" };
+        } else {
+            /* Upper-vs-lower 50/50 (random 1..2). */
+            var useLower = (randInt(1, 2) === 1);
+            pack = useLower ? uvlLowerPack() : uvlUpperPack();
         }
-        /* Upper-vs-lower 50/50 (random 1..2). */
-        var useLower = (randInt(1, 2) === 1);
-        var pack = useLower ? uvlLowerPack() : uvlUpperPack();
-        if (!pack) return notFoundMarkup("uvl");
-        return packMarkup(pack) + '\n' + MESSAGES.uvl + '<br>';
+        if (!pack) {
+            _huntCardMarkup = huntCardThumbsDown();
+            return notFoundMarkup("uvl");
+        }
+        /* Hit routes to UvlFound so the picture pops up full-size --
+           the hunt-mode renderer output is wikified into the hidden
+           #hunt-tool-sink, so inlining the pack here would never be
+           visible. Same shape as gwb/plasm hits. */
+        _huntCardMarkup = '';
+        return foundPassageMarkup("uvl", "UvlFound", { pack: pack, message: MESSAGES.uvl });
     }
 
     /* Spiritbox: four mutually exclusive branches rolled off one d100.
@@ -250,11 +285,13 @@
 
         if (g && g.spiritboxPossessionChance > 0 && roll <= g.spiritboxPossessionChance) {
             maybeSetBrookPossessed();
+            _huntCardMarkup = '';
             if (setup.Mc.bodyPartSensitivity('brain') >= 3) {
-                return '<div class="spiritbox-container">\n'
-                     + '<b>Something\'s wrong, I think I\'m losing consciousness...</b>\n'
-                     + '</div>\n'
-                     + '<br>@@.enterbtn;<<link "Close your eyes" "CityMapPossessed">><</link>>@@';
+                /* The renderer output is wikified into the hidden
+                   #hunt-tool-sink, so a <<link>> here would be
+                   unclickable. Auto-route via <<deferGoto>> instead --
+                   matches the gwb/plasm hit paths. */
+                return '<<deferGoto "CityMapPossessed">>';
             }
             var threat = SPIRITBOX_MENACING[randInt(0, SPIRITBOX_MENACING.length - 1)];
             return '<span class="spiritbox-question">You ask through the Spiritbox: "What do you want?"</span>\n'
@@ -262,6 +299,7 @@
         }
 
         if (g && g.spiritboxStaticChance > 0 && roll <= g.spiritboxStaticChance) {
+            _huntCardMarkup = '';
             var burst = SPIRITBOX_STATIC[randInt(0, SPIRITBOX_STATIC.length - 1)];
             return '<span class="spiritbox-question">You ask through the Spiritbox: "What do you want?"</span>\n'
                  + '<span class="spiritbox-answer"><b>' + burst + '</b></span>';
@@ -271,6 +309,7 @@
             && setup.chanceByTier(V.equipment.spiritbox, roll)
             && setup.isGhostHere()) {
             setup.activateTool("emf");
+            _huntCardMarkup = '';
             var qa = SPIRITBOX_QA[randInt(0, SPIRITBOX_QA.length - 1)];
             return '<div class="spiritbox-container">\n'
                  + '<span class="spiritbox-question">You ask through the Spiritbox: "' + qa.q + '"</span>\n'
@@ -278,6 +317,7 @@
                  + '</div>';
         }
 
+        _huntCardMarkup = huntCardThumbsDown();
         return '<div class="spiritbox-container">\n'
              + '<span class="spiritbox-no-response">No one responds. Silence...</span>\n'
              + '</div>';
@@ -320,6 +360,21 @@
         render:         render,
         findPlasm:      findPlasm,
         findGwb:        findGwb,
+
+        /* In-card hunt-tool result buffer. Renderers stamp it as a
+           side effect; <<huntToolSlot>> wikifies it into the per-tool
+           countdown overlay on tick completion and TemperatureHigh
+           writes through it via setHuntCardMarkup. clearAllHuntCards
+           wipes both the buffer and every rendered overlay so only
+           the most-recently-clicked tool keeps its in-card result. */
+        huntCardMarkup:    function () { return _huntCardMarkup; },
+        setHuntCardMarkup: function (m) { _huntCardMarkup = m; },
+        huntCardThumbsDownMarkup: huntCardThumbsDown,
+        huntCardNumberMarkup:     huntCardNumber,
+        clearAllHuntCards: function () {
+            _huntCardMarkup = '';
+            if (typeof $ === 'function') $('.hunt-tool-countdown').empty();
+        },
 
         /* Crucifix consume: one shared place for the decrement + hunt-start
            trio so the passage is pure presentation. */

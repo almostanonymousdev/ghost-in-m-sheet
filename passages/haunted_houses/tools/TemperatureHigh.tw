@@ -26,4 +26,10 @@ to a random 0..50 value on tier <= 4 thermometers. */
 <<set _glitch to (_hg and _hg.rollTemperatureGlitch())>>
 <<set _reading to _glitch ? random(0, 50) : (random(13, 16) + setup.ToolController.temperature() + _offset)>>
 
+/* Stamp the reading into the hunt-toolbar card overlay. The visible
+   span below renders into the hidden #hunt-tool-sink (so this passage
+   stays a usable <<include>> from the in-house searchTool flow); the
+   card overlay is the only place the reading is visible during hunts. */
+<<run setup.ToolController.setHuntCardMarkup(setup.ToolController.huntCardNumberMarkup('<<coloredText "' + _color + '" ' + _reading + '>>'))>>
+
 <span class="toolsTextCentered boldText"><<coloredText _color _reading>></span>

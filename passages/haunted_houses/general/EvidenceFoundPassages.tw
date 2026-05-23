@@ -27,3 +27,17 @@
 @@.mc-speech; <span class="evidenceshadowtext"> Ohh... what is this...? Nevertheless, one more piece of evidence</span>@@<br>
 <br>
 @@.backbtn; [[Back|$return]]@@
+
+:: UvlFound [nobr noreturn] {"position":"2550,200","size":"100,100"}
+/* Shared landing for a UVL hit during a hunt.
+   setup.ToolController.renderUvl() picks the appropriate image pack
+   (ironclad / lower-body clothing ladder / upper-body fallback),
+   stamps it on $evidenceFind, and emits a deferred <<goto>> here.
+   The pack data is read straight off the find so this passage
+   doesn't have to re-derive the clothing branch. */
+<<set _pack to $evidenceFind.pack>>
+<<randRangeImg _pack.prefix _pack.start _pack.end _pack.ext _pack.cssClass>>
+<br>
+<<= $evidenceFind.message>><br>
+<br>
+@@.backbtn; [[Back|$return]]@@

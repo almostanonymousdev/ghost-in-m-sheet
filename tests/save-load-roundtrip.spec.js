@@ -433,6 +433,39 @@ test.describe('Save/load round-trip', () => {
     expect(migrated.wishAnything).toBeUndefined();
   });
 
+  test('migration floors mc.lvl at 1', async ({ game: page }) => {
+    // A save carrying a sub-1 level (corrupted, hand-edited, or
+    // damaged by an older bug) should be clamped back to 1 on load
+    // so downstream level-gated systems don't divide by zero or
+    // walk off the start of the XP table.
+    await goToPassage(page, 'CityMap');
+
+    const floored = await page.evaluate(() => {
+      const cases = [
+        { mc: { lvl: 0 } },
+        { mc: { lvl: -3 } },
+        { mc: { lvl: null } },
+        { mc: {} }
+      ];
+      cases.forEach(function (c) { SugarCube.setup.applySaveDefaults(c); });
+      return cases.map(function (c) { return c.mc.lvl; });
+    });
+
+    expect(floored).toEqual([1, 1, 1, 1]);
+  });
+
+  test('migration leaves mc.lvl untouched when already >= 1', async ({ game: page }) => {
+    await goToPassage(page, 'CityMap');
+
+    const preserved = await page.evaluate(() => {
+      const save = { mc: { lvl: 7 } };
+      SugarCube.setup.applySaveDefaults(save);
+      return save.mc.lvl;
+    });
+
+    expect(preserved).toBe(7);
+  });
+
   // --- Hunt-mode migration --------------------------------------
 
   test('legacy save (pre-hunt) gets $run/$ectoplasm/$runsStarted defaults', async ({ game: page }) => {

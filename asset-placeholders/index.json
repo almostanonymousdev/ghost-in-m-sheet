@@ -14376,6 +14376,12 @@
       "height": 512,
       "kind": "image"
     },
+    "ui/img/thumbsdown.png": {
+      "label": "thumbsdown",
+      "width": 64,
+      "height": 64,
+      "kind": "image"
+    },
     "ui/img/trash1.png": {
       "label": "",
       "width": 225,
