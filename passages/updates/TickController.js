@@ -129,7 +129,15 @@ setup.Tick = (function () {
 	/* :passagestart lifecycle hook. Bundles the per-tick setup that
 	   used to live as a long stack of <<run>> calls in the PassageReady
 	   passage. Returns a passage name for the caller to Engine.play(),
-	   or null. */
+	   or null.
+
+	   Note: redirects out of HuntRun (CompanionEvent, HuntOverTime, ...)
+	   are issued from onPassageDone via PassageDone.tw's <<goto>>, not
+	   from here. A direct Engine.play() at :passagestart races the outer
+	   enginePlay -- the outer continues rendering after our handler
+	   returns and overwrites the inner passage's DOM swap, so the
+	   player visually stays on HuntRun even though State.passage flipped.
+	   <<goto>> defers via setTimeout(Engine.DOM_DELAY) and avoids that. */
 	function onPassageReady() {
 		if (setup.HuntController.isHunting()
 			&& companionAttackActiveHit()
@@ -137,7 +145,15 @@ setup.Tick = (function () {
 			setup.Companion.pickRandomCompanionRoomFromContext();
 		}
 
-		if (atRandomGhostPassage()) return "CompanionEvent";
+		/* Self-heal: if the companion is "missing" (showComp = ATTACK_FAILED)
+		   but the per-tick handoff lost the room (initial pick failed, save
+		   carries a stale integer index, room id not in this floor plan),
+		   pick now so atRandomGhostPassage has something to match against
+		   when the MC walks into a room. */
+		if (setup.HuntController.isHunting()
+			&& setup.Companion.hasLostCompanionRoom()) {
+			setup.Companion.pickRandomCompanionRoomFromContext();
+		}
 
 		setup.Gui.refreshToolTimer();
 		recomputeStealChance();
@@ -180,6 +196,17 @@ setup.Tick = (function () {
 
 		if (setup.Time.isMorningPlus() && setup.HuntController.isHunting()) {
 			return { goto: "HuntOverTime" };
+		}
+
+		/* Companion-found redirect. Issued from PassageDone (not
+		   PassageReady) so PassageDone.tw's <<goto>> defers the
+		   Engine.play via setTimeout(Engine.DOM_DELAY). Running
+		   Engine.play synchronously from :passagestart races the
+		   outer enginePlay -- the outer continues rendering and
+		   overwrites the inner's DOM swap, leaving the player
+		   visually on HuntRun even though State.passage flipped. */
+		if (atRandomGhostPassage()) {
+			return { goto: "CompanionEvent" };
 		}
 
 		if (!setup.Migrations.update22Applied()) {

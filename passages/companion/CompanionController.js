@@ -506,24 +506,49 @@ setup.Companion = (function () {
 		   Stamps $randomGhostPassage with the picked room id so the
 		   next-tick "is the MC there yet?" check in TickController
 		   can fire the CompanionEvent. Excludes the current room.
-		   Tags $isCompRoomChosen as 1 so a given hunt step only
-		   resolves once. */
+		   Tags $isCompRoomChosen=true only on a successful pick so a
+		   no-floorplan / empty-rooms early-return leaves state untouched
+		   and the next tick can retry. Idempotent: if a previous call
+		   already stamped a valid in-floorplan room id, do nothing. */
 		pickRandomCompanionRoomFromContext: function () {
 			this.pickRandomCompanionRoom();
 		},
 		pickRandomCompanionRoom: function () {
-			if (State.variables.isCompRoomChosen === true) return;
-			State.variables.isCompRoomChosen = true;
 			if (!setup.HuntController) return;
 			var run = setup.HuntController.active();
-			if (!run || !run.floorplan) return;
+			if (!run || !run.floorplan || !Array.isArray(run.floorplan.rooms)) return;
 			var current = setup.HuntController.currentRoomId();
-			var rooms = run.floorplan.rooms
-				.map(function (r) { return r.id; })
-				.filter(function (id) { return id !== current; });
-			var pick = setup.Rng.pickFrom(rooms);
+			var roomIds = run.floorplan.rooms.map(function (r) { return r.id; });
+			var existing = State.variables.randomGhostPassage;
+			if (State.variables.isCompRoomChosen === true
+				&& existing
+				&& roomIds.indexOf(existing) !== -1) {
+				return;
+			}
+			var pick = setup.Rng.pickFrom(roomIds.filter(function (id) {
+				return id !== current;
+			}));
 			if (!pick) return;
 			State.variables.randomGhostPassage = pick;
+			State.variables.isCompRoomChosen = true;
+		},
+		/* True when the companion has been ambushed (showComp = ATTACK_FAILED)
+		   but the per-tick handoff lost track of which room they wandered
+		   into -- randomGhostPassage either never got set, points to an
+		   integer left over from a pre-floorplan-rebuild save, or names
+		   a room id that isn't in the current floor plan. TickController
+		   uses this to repair the state by re-picking a room so the MC
+		   actually has somewhere to find them. */
+		hasLostCompanionRoom: function () {
+			var s = State.variables;
+			var CS = setup.CompanionShow;
+			if (s.showComp !== CS.ATTACK_FAILED) return false;
+			var target = s.randomGhostPassage;
+			if (!target || typeof target !== 'string') return true;
+			if (!setup.HuntController) return false;
+			var run = setup.HuntController.active();
+			if (!run || !run.floorplan || !Array.isArray(run.floorplan.rooms)) return false;
+			return !run.floorplan.rooms.some(function (r) { return r.id === target; });
 		},
 
 		outcomePortrait: function (success) {
