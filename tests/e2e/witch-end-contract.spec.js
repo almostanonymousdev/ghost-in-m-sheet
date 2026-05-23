@@ -337,7 +337,7 @@ test.describe('WitchEndContractResolve — wrong guess', () => {
     await goToPassage(page, 'WitchEndContractResolve');
 
     await expect(
-      page.locator('#passages').getByText(/No payout\. The key's spent/i)
+      page.locator('#passages').getByText(/No payout\. The contract's spent/i)
     ).toBeVisible({ timeout: 10_000 });
     const text = await page.locator('#passages').innerText();
     expect(text).toContain('No payout');
@@ -381,7 +381,7 @@ test.describe('WitchEndContractResolve — wrong guess', () => {
 
     await goToPassage(page, 'WitchEndContractResolve');
     await expect(
-      page.locator('#passages').getByText(/No payout\. The key's spent/i)
+      page.locator('#passages').getByText(/No payout\. The contract's spent/i)
     ).toBeVisible({ timeout: 10_000 });
     expect(await callSetup(page, 'setup.HuntController.ectoplasm()')).toBe(ectoBefore);
     await expectCleanPassage(page);
@@ -472,7 +472,7 @@ test.describe('WitchEndContract — navigation continuity', () => {
 
     await goToPassage(page, 'WitchEndContractResolve');
     await expect(
-      page.locator('#passages').getByText(/No payout\. The key's spent/i)
+      page.locator('#passages').getByText(/No payout\. The contract's spent/i)
     ).toBeVisible({ timeout: 10_000 });
     await goToPassage(page, 'WitchInside');
 

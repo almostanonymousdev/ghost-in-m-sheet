@@ -235,12 +235,31 @@ setup.Achievements = setup.Achievements || {};
 	}
 	$(document).one(':storyready', registerStoryEventSubscriptions);
 
-	setup.Achievements.OWNED_VARS  = OWNED_VARS;
-	setup.Achievements.unlock     = unlock;
-	setup.Achievements.has        = has;
-	setup.Achievements.all        = all;
-	setup.Achievements.locked     = locked;
-	setup.Achievements.unlocked   = unlocked;
-	setup.Achievements.byId       = byId;
-	setup.Achievements.hasCheated = hasCheated;
+	/* `disc.hide_and_seek` unlocks once the player has personally
+	   seen both a Hide and a RunFast attempt fail -- the moment they
+	   learn that not every ghost yields to the same trick. Outcome
+	   flags ride alongside the unlock map; iterators key off catalogue
+	   ids so the extra entry stays invisible to locked()/unlocked(). */
+	function noteHideOutcome(success) { recordHideRunOutcome('hideFail', success); }
+	function noteRunOutcome(success)  { recordHideRunOutcome('runFail',  success); }
+	function recordHideRunOutcome(flag, success) {
+		if (success) return;
+		var s = store();
+		if (!s._hideRunFlags) s._hideRunFlags = {};
+		s._hideRunFlags[flag] = true;
+		if (s._hideRunFlags.hideFail && s._hideRunFlags.runFail) {
+			unlock('disc.hide_and_seek');
+		}
+	}
+
+	setup.Achievements.OWNED_VARS       = OWNED_VARS;
+	setup.Achievements.unlock           = unlock;
+	setup.Achievements.has              = has;
+	setup.Achievements.all              = all;
+	setup.Achievements.locked           = locked;
+	setup.Achievements.unlocked         = unlocked;
+	setup.Achievements.byId             = byId;
+	setup.Achievements.hasCheated       = hasCheated;
+	setup.Achievements.noteHideOutcome  = noteHideOutcome;
+	setup.Achievements.noteRunOutcome   = noteRunOutcome;
 })();
