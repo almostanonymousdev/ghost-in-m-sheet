@@ -34,10 +34,15 @@
    (ironclad / lower-body clothing ladder / upper-body fallback),
    stamps it on $evidenceFind, and emits a deferred <<goto>> here.
    The pack data is read straight off the find so this passage
-   doesn't have to re-derive the clothing branch. */
-<<set _pack to $evidenceFind.pack>>
-<<randRangeImg _pack.prefix _pack.start _pack.end _pack.ext _pack.cssClass>>
-<br>
-<<= $evidenceFind.message>><br>
-<br>
+   doesn't have to re-derive the clothing branch.
+   Guarded against $evidenceFind being undefined so the cold passage
+   walk (and any stray nav arriving here without a fresh find) doesn't
+   blow up on `.message` of undefined. */
+<<if $evidenceFind && $evidenceFind.pack>>
+	<<set _pack to $evidenceFind.pack>>
+	<<randRangeImg _pack.prefix _pack.start _pack.end _pack.ext _pack.cssClass>>
+	<br>
+	<<= $evidenceFind.message>><br>
+	<br>
+<</if>>
 @@.backbtn; [[Back|$return]]@@
