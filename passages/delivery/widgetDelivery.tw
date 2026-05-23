@@ -58,7 +58,6 @@ integer in [start, end]. Replaces the 4-10 line <<if>> ladders each
 	<<widget "deliveryLustOverflow">>
 		<<if setup.Mc.lust() gte 100>>
 			<<run setup.Mc.setLust(0)>>
-			<<run setup.Mc.clampLust()>>
 			<<updatemeter 'mclust' `setup.Mc.lust() / 100`>>
 		<</if>>
 	<</widget>>

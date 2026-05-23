@@ -230,7 +230,7 @@ setup.Companion = (function () {
 		},
 		giveSanityPill: function () {
 			if (!this.hasSanityPills() || !this.companionNeedsSanity()) return false;
-			if (!setup.Mc.useSanityPill()) return false;
+			if (!setup.Mc.removeSanityPill()) return false;
 			var c = this.activeState();
 			c.sanity += 30;
 			if (c.sanity > 100) c.sanity = 100;

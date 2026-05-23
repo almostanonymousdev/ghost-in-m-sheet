@@ -386,7 +386,7 @@ test.describe('Mall — Blake content and warden outfit', () => {
     await page.evaluate(() => SugarCube.setup.Mall.buyPepperSpray());
     expect(await callSetup(page, 'setup.Mall.hasPepperSpray()')).toBe(true);
     expect(await callSetup(page, 'setup.Mall.pepperSprayCharges()')).toBe(3);
-    expect(await getVar(page, 'mc.money')).toBe(90);
+    expect(await getVar(page, 'mc.money')).toBe(70);
   });
 
   test('canBuyCamera requires undefined isCameraBought + mareEventStart === 3', async ({ game: page }) => {

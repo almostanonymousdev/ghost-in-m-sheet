@@ -2,11 +2,11 @@
 <div class="flexwrapper">
 <div class="housecard">
 <<image "ui/img/sanity-pills.png" "iconPx">><br>
-<span class="priceAmount">10$</span><br>
-<<if setup.Mc.money() gte 10>>
+<span class="priceAmount">30$</span><br>
+<<if setup.Mc.money() gte 30>>
 	@@.buyItemLink;<<link "Buy" "WitchSale">>
 		<<run setup.Mc.addSanityPills(1)>>
-		<<run setup.Mc.removeMoney(10)>>
+		<<run setup.Mc.removeMoney(30)>>
 	<</link>>@@<br>
 <<else>>@@.mc-thoughts; I don't have enough money@@
 <</if>>
@@ -15,11 +15,11 @@
 <div class="housecard">
 <<run setup.ToolController.initCrucifixIfNeeded()>>
 <<image "ui/img/crucifix.webp" "iconPx">><br>
-<span class="priceAmount">10$</span><br>
-<<if setup.Mc.money() gte 10>>
+<span class="priceAmount">50$</span><br>
+<<if setup.Mc.money() gte 50>>
 	@@.buyItemLink;<<link "Buy" "WitchSale">>
 		<<run setup.ToolController.addCrucifix()>>
-		<<run setup.Mc.removeMoney(10)>>
+		<<run setup.Mc.removeMoney(50)>>
 	<</link>>@@<br>
 <<else>>@@.mc-thoughts; I don't have enough money@@
 <</if>>

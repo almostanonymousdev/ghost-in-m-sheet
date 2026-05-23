@@ -518,6 +518,7 @@
             if (stolenCategory === "jeans")  V.isJeansStolen  = 1;
             if (stolenCategory === "shorts") V.isShortsStolen = 1;
             if (stolenCategory === "skirt")  V.isSkirtStolen  = 1;
+            if (stolenCategory)              V.isBottomStolen = 1;
             return stolenCategory;
         },
 

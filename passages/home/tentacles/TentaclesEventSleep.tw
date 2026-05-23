@@ -5,7 +5,6 @@
 <<linkappend "@@.usebtn; Wake up@@">>
 	<<if setup.Home.tentaclesStageSleep() eq 0>>
 		<<run setup.Home.setTentaclesStageSleep(1)>>
-		<<run setup.Home.setTentaclesAfterSleepText(1)>>
 		<<goto "Bedroom">>
 	<<else>>
 		<<image "mechanics/tentacles/sleep2.jpg" { width: "100%" }>><br>
@@ -16,7 +15,6 @@
 		<<linkreplace "@@.usebtn; They slowly creep towards you@@">>
 			<<if setup.Home.tentaclesStageSleep() eq 1>>
 				<<run setup.Home.setTentaclesStageSleep(2)>>
-				<<run setup.Home.setTentaclesAfterSleepText(2)>>
 				<<goto "Bedroom">>
 			<<else>>
 				<span id ="tentaclesEventSleep">
@@ -42,7 +40,6 @@
 					<<linkappend "@@.usebtn; I'm c-cumming@@">>
 						<<if setup.Home.tentaclesStageSleep() eq 2>>
 							<<run setup.Home.setTentaclesStageSleep(3)>>
-							<<run setup.Home.setTentaclesAfterSleepText(3)>>
 							<<goto "Bedroom">>
 						<<else>>
 							<<goto "TentaclesEventSleep1">>

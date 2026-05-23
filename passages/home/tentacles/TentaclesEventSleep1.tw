@@ -12,7 +12,6 @@
 		<<linkreplace "@@.usebtn; Try to stand up@@">>
 			<<if setup.Home.tentaclesStageSleep() eq 3>>
 				<<run setup.Home.setTentaclesStageSleep(4)>>
-				<<run setup.Home.setTentaclesAfterSleepText(4)>>
 				<<goto "Bedroom">>
 			<<else>>
 				<<video "mechanics/tentacles/sleep9.mp4">>
@@ -27,7 +26,7 @@
 						<<if setup.Home.tentaclesStageAll() eq 0>>
 							<<run setup.Home.setTentaclesStageAll(1)>>
 						<</if>>
-						@@.enterbtn; [[Wake up|Bedroom][setup.Home.setTentaclesStageSleep(5); setup.Home.setTentaclesAfterSleepText(5)]]@@<br>
+						@@.enterbtn; [[Wake up|Bedroom][setup.Home.setTentaclesStageSleep(5)]]@@<br>
 					<</linkappend>>
 				<</linkappend>>
 			<</if>>

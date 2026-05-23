@@ -175,11 +175,13 @@ setup.Mc = (function () {
 		},
 
 		// --- Inventory consumables: amount-aware mutators -------
-		// useX returns true iff there was at least one to consume.
-		useEnergyDrink: function () {
+		// consumeX = MC consumes the item and gets its effect.
+		// removeX = the item is spent without an immediate MC benefit
+		// (e.g. it's given to a companion).
+		consumeEnergyDrink: function () {
 			if (sv().energyDrinkAmount > 0) {
 				sv().energyDrinkAmount -= 1;
-				sv().mc.energy = sv().mc.energyMax;
+				sv().mc.energy = Math.min(sv().mc.energyMax, sv().mc.energy + 3);
 				return true;
 			}
 			return false;
@@ -194,14 +196,15 @@ setup.Mc = (function () {
 				setup.StoryEvents.emit(setup.StoryEvents.Event.SANITY_PILL_GAINED, { day: day });
 			}
 		},
-		useMedicine: function () {
+		consumeMedicine: function () {
 			if (sv().medicineAmount > 0) {
 				sv().medicineAmount -= 1;
+				sv().isPenaltyOn = 0;
 				return true;
 			}
 			return false;
 		},
-		useSanityPill: function () {
+		removeSanityPill: function () {
 			if (sv().sanityPillsAmount > 0) {
 				sv().sanityPillsAmount -= 1;
 				var day = (setup.Time && setup.Time.dailySeed) ? setup.Time.dailySeed() : 0;
@@ -209,6 +212,11 @@ setup.Mc = (function () {
 				return true;
 			}
 			return false;
+		},
+		consumeSanityPill: function () {
+			if (!this.removeSanityPill()) return false;
+			this.addSanity(30);
+			return true;
 		},
 
 		// --- XP / level-up ---------------------------------------
