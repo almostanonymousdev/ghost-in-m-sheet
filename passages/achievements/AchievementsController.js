@@ -232,6 +232,10 @@ setup.Achievements = setup.Achievements || {};
 			markCheated();
 			unlock('fun.cheat');
 		});
+
+		setup.StoryEvents.on(setup.StoryEvents.Event.CONTRACT_SIGNED, function () {
+			unlock('disc.good_girl');
+		});
 	}
 	$(document).one(':storyready', registerStoryEventSubscriptions);
 

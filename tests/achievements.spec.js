@@ -366,6 +366,32 @@ test.describe('setup.Achievements', () => {
 		expect(result.ecto).toBe(false);
 	});
 
+	test('StoryEvents integration: CONTRACT_SIGNED unlocks disc.good_girl', async () => {
+		const result = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const SE = SugarCube.setup.StoryEvents;
+			SE.emit(SE.Event.CONTRACT_SIGNED, { houseId: 'owaissa', fee: 100, payout: 400 });
+			return A.has('disc.good_girl');
+		});
+		expect(result).toBe(true);
+	});
+
+	test('WitchContract.buyContract unlocks disc.good_girl end-to-end', async () => {
+		/* Full path: drive the controller the way the witch-contract passage
+		   does and confirm the StoryEvents → Achievements wiring fires. */
+		const result = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const W = SugarCube.setup.WitchContract;
+			SugarCube.setup.Mc.setMoney(10000);
+			W.refresh();
+			const houseId = W.offered()[0] && W.offered()[0].houseId;
+			const bought = W.buyContract(houseId);
+			return { bought: bought, hasAch: A.has('disc.good_girl') };
+		});
+		expect(result.bought).toBe(true);
+		expect(result.hasAch).toBe(true);
+	});
+
 	test('cheated save blocks future unlocks but preserves prior ones', async () => {
 		const result = await page.evaluate(() => {
 			const A = SugarCube.setup.Achievements;
