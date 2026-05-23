@@ -181,7 +181,7 @@
 		'isPenaltyOn', 'makeupApplied',
 		// companion
 		'isCompChosen', 'aliceWorkDone', 'isCompRoomChosen',
-		'transFirstStage', 'meetAlice',
+		'meetAlice',
 		// gym
 		'trainer1TipReceived', 'relationEmilyCD',
 		// cursed home items + monkey paw
