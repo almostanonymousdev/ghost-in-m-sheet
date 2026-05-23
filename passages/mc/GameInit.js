@@ -161,6 +161,7 @@ setup.Game = (function () {
 		if (typeof settings !== 'undefined') {
 			settings.highlightRescueHouse = false;
 			settings.fastToolTimers = false;
+			settings.showHistoryControls = false;
 			settings.cheatTarotCard = "—";
 			settings.cheatGhostType = "—";
 		}

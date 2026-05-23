@@ -194,6 +194,40 @@ test.describe('GuiController (setup.Gui)', () => {
     }
   });
 
+  // --- Back/forward history controls -----------------------------
+
+  test('history controls are hidden by default and revealed by the showHistoryControls cheat', async ({ game: page }) => {
+    // CSS rule pins #ui-bar-history to display:none unless body.show-history.
+    await page.evaluate(() => {
+      SugarCube.settings.showHistoryControls = false;
+      SugarCube.setup.Gui.applyHistoryControlsVisibility();
+    });
+    expect(await page.evaluate(() => document.body.classList.contains('show-history')))
+      .toBe(false);
+    expect(await page.evaluate(() => {
+      const el = document.getElementById('ui-bar-history');
+      return el ? getComputedStyle(el).display : null;
+    })).toBe('none');
+
+    await page.evaluate(() => {
+      SugarCube.settings.showHistoryControls = true;
+      SugarCube.setup.Gui.applyHistoryControlsVisibility();
+    });
+    try {
+      expect(await page.evaluate(() => document.body.classList.contains('show-history')))
+        .toBe(true);
+      expect(await page.evaluate(() => {
+        const el = document.getElementById('ui-bar-history');
+        return el ? getComputedStyle(el).display : null;
+      })).not.toBe('none');
+    } finally {
+      await page.evaluate(() => {
+        SugarCube.settings.showHistoryControls = false;
+        SugarCube.setup.Gui.applyHistoryControlsVisibility();
+      });
+    }
+  });
+
   test('timerToolsInitialized reflects whether refreshToolTimer ran', async ({ game: page }) => {
     await page.evaluate(() => { delete SugarCube.State.variables.timerToolsDecreased; });
     expect(await callSetup(page, 'setup.Gui.timerToolsInitialized()')).toBe(false);

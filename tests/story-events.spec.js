@@ -235,4 +235,54 @@ test.describe('setup.StoryEvents', () => {
 		});
 		expect(result).not.toContain('highlightRescueHouse');
 	});
+
+	/* The back/forward arrows let players rewind one-shot mutations
+	   (e.g. spent cooldowns, granted money), so any click on the
+	   history navigation has to mark the save as cheated -- AND the
+	   mark has to land on the rewound moment, not the moment being
+	   discarded, so a save taken right after pressing back still
+	   carries the cheated flag. */
+	test('clicking #history-backward emits CHEAT_USED on the rewound moment', async () => {
+		const result = await page.evaluate(async () => {
+			const SE = SugarCube.setup.StoryEvents;
+			const A = SugarCube.setup.Achievements;
+			const sources = [];
+			window.__seSubs.push(SE.on(SE.Event.CHEAT_USED, (ctx) => sources.push(ctx && ctx.source)));
+			SugarCube.Engine.play('CityMap');
+			await new Promise((r) => setTimeout(r, 30));
+			SugarCube.Engine.play('RescueMap');
+			await new Promise((r) => setTimeout(r, 30));
+			document.getElementById('history-backward').click();
+			await new Promise((r) => setTimeout(r, 30));
+			return {
+				sources: sources,
+				passage: SugarCube.State.passage,
+				cheatedSaveFlag: SugarCube.State.variables.achievements && SugarCube.State.variables.achievements.cheatedSave,
+				funCheat: A.has('fun.cheat')
+			};
+		});
+		expect(result.sources).toContain('historyBackward');
+		expect(result.passage).toBe('CityMap'); // confirms the click actually rewound
+		expect(result.cheatedSaveFlag).toBe(true);
+		expect(result.funCheat).toBe(true);
+	});
+
+	test('clicking #history-forward emits CHEAT_USED', async () => {
+		const result = await page.evaluate(async () => {
+			const SE = SugarCube.setup.StoryEvents;
+			const sources = [];
+			window.__seSubs.push(SE.on(SE.Event.CHEAT_USED, (ctx) => sources.push(ctx && ctx.source)));
+			/* Force-enable the button: jQuery (and the browser) skip
+			   click events on disabled form controls, and the freshly-
+			   reset save has no forward history to enable it organically.
+			   We're pinning the click→emit wiring, not the engine's
+			   navigation gating. */
+			const fwd = document.getElementById('history-forward');
+			fwd.disabled = false;
+			fwd.removeAttribute('aria-disabled');
+			fwd.click();
+			return sources;
+		});
+		expect(result).toContain('historyForward');
+	});
 });

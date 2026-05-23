@@ -134,6 +134,18 @@ setup.Gui = (function () {
 		return sv().timerToolsDecreased !== undefined;
 	}
 
+	// --- Back/forward history controls ---------------------------
+	// SugarCube's back/forward/jumpto arrows would let the player
+	// rewind one-shot mutations (granted money, consumed cooldowns),
+	// so #ui-bar-history is hidden by CSS unless the body carries the
+	// `show-history` class. The "Show back/forward buttons" cheat in
+	// the Settings dialog toggles this method which adds/removes the
+	// class to match `settings.showHistoryControls`.
+	function applyHistoryControlsVisibility() {
+		var on = (typeof settings !== 'undefined') && !!settings.showHistoryControls;
+		$(document.body).toggleClass("show-history", on);
+	}
+
 	// --- Mirror render -------------------------------------------
 	// PassageDone re-renders the mirror image after wash/apply makeup
 	// chains so the portrait stays in sync with $mc.makeupImg. The
@@ -163,6 +175,7 @@ setup.Gui = (function () {
 		setGuideReturnPassage: setGuideReturnPassage,
 		refreshToolTimer: refreshToolTimer,
 		timerToolsInitialized: timerToolsInitialized,
+		applyHistoryControlsVisibility: applyHistoryControlsVisibility,
 		mirrorMakeupImagePath: mirrorMakeupImagePath,
 		mirrorMakeupHasWidth: mirrorMakeupHasWidth,
 		monkeyPawWishInput: function () { return sv().inputWish; }
@@ -238,6 +251,7 @@ $(document).one(":storyready", function () {
 	}
 	seedCheat('highlightRescueHouse', false);
 	seedCheat('fastToolTimers', false);
+	seedCheat('showHistoryControls', false);
 
 	Setting.addToggle("highlightRescueHouse", {
 		label: "Highlight correct rescue house on map",
@@ -253,6 +267,29 @@ $(document).one(":storyready", function () {
 			});
 		}
 	});
+	Setting.addToggle("showHistoryControls", {
+		label: "Show back/forward buttons",
+		default: false,
+		onChange: function () {
+			ifCheatChanged("showHistoryControls", setup.Gui.applyHistoryControlsVisibility);
+		}
+	});
+	setup.Gui.applyHistoryControlsVisibility();
+
+	/* Any click on the history arrows has to mark the save as cheated.
+	   We can't wrap Engine.backward/forward directly (SugarCube defines
+	   them as non-writable properties), so we delegate on the document
+	   instead: SugarCube's own click handler runs first, rewinds the
+	   state synchronously, and only then the event bubbles up here --
+	   so markCheated() lands on the new (rewound/advanced) moment's
+	   State.variables rather than the moment being discarded. */
+	function emitHistoryCheat(source) {
+		if (setup.StoryEvents && setup.StoryEvents.Event) {
+			setup.StoryEvents.emit(setup.StoryEvents.Event.CHEAT_USED, { source: source });
+		}
+	}
+	$(document).on('click', '#history-backward', function () { emitHistoryCheat('historyBackward'); });
+	$(document).on('click', '#history-forward',  function () { emitHistoryCheat('historyForward'); });
 
 	var GHOST_PICKER_NULL = "—";
 	seedCheat('cheatTarotCard', GHOST_PICKER_NULL);
