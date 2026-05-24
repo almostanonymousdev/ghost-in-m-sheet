@@ -317,6 +317,12 @@
         }
 
         if (g && g.spiritboxStaticChance > 0 && roll <= g.spiritboxStaticChance) {
+            /* Static is the ghost interfering with the device, not a
+               non-response — open the EMF window the same way a clean
+               hit would. Without this, Raiju has no way to activate EMF
+               via spiritbox: the static branch eats the same roll the
+               tier check would use, so a Raiju hunt's EMF stays at 0. */
+            setup.activateTool("emf");
             _huntCardMarkup = '';
             var burst = SPIRITBOX_STATIC[randInt(0, SPIRITBOX_STATIC.length - 1)];
             var staticMarkup = '<div class="spiritbox-container">\n'

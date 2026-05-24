@@ -127,6 +127,26 @@ test.describe('Per-ghost mechanics', () => {
     }
   });
 
+  test('Raiju: spiritbox static branch opens the EMF window', async ({ game: page }) => {
+    // Without this, Raiju has no path to opening the EMF window: it has no
+    // GWB evidence, and its spiritboxStaticChance=20 short-circuits the
+    // spiritbox response before the tier roll can register a clean hit
+    // (the static check shares the same roll as the tier check). Result:
+    // EMF reads 0 for the entire Raiju hunt.
+    await setupHunt(page, 'Raiju');
+    await setVar(page, 'tools', {
+      emf: { activated: 0, activationTime: 0 },
+      uvl: { activated: 0, activationTime: 0 },
+    });
+    await page.evaluate(() => { window._origRandom = Math.random; Math.random = () => 0; });
+    try {
+      await callSetup(page, 'setup.ToolController.render("spiritbox")');
+      expect(await getVar(page, 'tools.emf.activated')).toBe(1);
+    } finally {
+      await page.evaluate(() => { Math.random = window._origRandom; });
+    }
+  });
+
   test('Raiju: EMF glitch fires ~1/3 of ticks, temperature glitch ~1/8', async ({ game: page }) => {
     await setupHunt(page, 'Raiju');
     await seedRandom(page, 42);
