@@ -90,22 +90,14 @@ test.describe('E2E: Hunt Outside menu', () => {
   test('Flee the hunt ends the run as failure with reason "fled"', async () => {
     await startRun(page);
     await clickLink(page, 'Outside', 'HuntOutside');
-    /* Snapshot the expected failure payout BEFORE Flee triggers
-       endHunt (which clears $run and zeroes the active modifier
-       deck). Failure payout = round(failure_base * deck multiplier);
-       failure_base is 3 in setup.HuntController.endHunt, and the multiplier
-       compounds the per-modifier payoutMultiplier values from the
-       active deck. Computing it from the live API keeps the test
-       robust against retuned modifier rates. */
-    const expected = await page.evaluate(() =>
-      Math.round(3 * SugarCube.setup.Modifiers.payoutMultiplier()));
-    /* Flee now settles the run inline and routes straight to CityMap
-       (the HuntSummary intermediary was removed; the payout still
-       lands on $ectoplasm). */
+    const ectoBefore = await getVar(page, 'ectoplasm');
+    /* Flee is a voluntary walk-away: endHunt pays no consolation
+       ectoplasm (and no XP). Routes straight to CityMap (the
+       HuntSummary intermediary was removed). */
     await clickLink(page, 'Flee the hunt', 'CityMap');
 
     expect(await getVar(page, 'run')).toBeNull();
-    expect(await getVar(page, 'ectoplasm')).toBe(expected);
+    expect(await getVar(page, 'ectoplasm')).toBe(ectoBefore);
   });
 
   test('Choose routes through the prep beat to HuntIdentifyResolve', async () => {
