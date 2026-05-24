@@ -686,6 +686,24 @@ test.describe('Hunt Controller', () => {
     expect(summary.ectoplasmPayout).toBe(3);
   });
 
+  test('endHunt rogue FLED pays nothing (no cash, no ecto, no XP)', async () => {
+    /* Flee is a voluntary walk-away, not a ghost-driven defeat --
+       so it skips the consolation ectoplasm and the failure-XP
+       trickle the other FailureReasons get. */
+    await page.evaluate(() => SugarCube.setup.HuntController.start({ seed: 4, modifiers: [] }));
+    const xpBefore = await callSetup(page, 'setup.Mc.exp()');
+    const ectoBefore = await callSetup(page, 'setup.HuntController.ectoplasm()');
+    await page.evaluate(() => SugarCube.setup.HuntController.markFailure(
+      SugarCube.setup.HuntController.FailureReason.FLED
+    ));
+    const summary = await page.evaluate(() => SugarCube.setup.HuntController.endHunt(false));
+    expect(summary.cashPayout).toBe(0);
+    expect(summary.ectoplasmPayout).toBe(0);
+    expect(summary.xp).toBe(0);
+    expect(await callSetup(page, 'setup.Mc.exp()')).toBe(xpBefore);
+    expect(await callSetup(page, 'setup.HuntController.ectoplasm()')).toBe(ectoBefore);
+  });
+
   test('endHunt auto-redresses slots the MC took off during the run', async () => {
     /* Hunt clean-exit paths (success / flee) skip cleanupAfterHunt,
        so redressAfterHunt has to fire from endHunt itself. */

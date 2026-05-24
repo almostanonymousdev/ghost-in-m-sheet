@@ -988,13 +988,21 @@ setup.HuntController = (function () {
 			: null;
 		var isContractHunt = !!run.staticHouseId && heldId === run.staticHouseId;
 
+		/* Flee on a rogue hunt is a deliberate walk-away, not a
+		   ghost-driven defeat -- pay nothing (no consolation ecto, no
+		   XP). The other failure reasons (sanity, exhaustion, time,
+		   caught) still get the small consolation. */
+		var fledRogue = !isContractHunt
+			&& !success
+			&& run.failureReason === setup.HuntEnums.FailureReason.FLED;
+
 		var cashPayout = 0;
 		var ectoplasmPayout = 0;
 		var contractPayout = 0;
 		if (isContractHunt) {
 			contractPayout = setup.WitchContract.resolveHeld(!!success);
 			cashPayout = Math.round(contractPayout * mult);
-		} else {
+		} else if (!fledRogue) {
 			cashPayout = Math.round((success ? 50 : 0) * mult);
 			ectoplasmPayout = Math.round((success ? 10 : 3) * mult);
 		}
@@ -1002,7 +1010,7 @@ setup.HuntController = (function () {
 			setup.Mc.addMoney(cashPayout);
 		}
 		if (ectoplasmPayout > 0) addEctoplasm(ectoplasmPayout);
-		var xpReward = Math.round((success ? 20 : 5) * mult);
+		var xpReward = fledRogue ? 0 : Math.round((success ? 20 : 5) * mult);
 		if (setup.Mc && typeof setup.Mc.grantExp === 'function') {
 			setup.Mc.grantExp(xpReward);
 		}
