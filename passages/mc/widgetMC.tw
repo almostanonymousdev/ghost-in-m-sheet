@@ -1,0 +1,31 @@
+:: widgetMC [widget nobr] {"position":"1975,1325","size":"100,100"}
+<<widget "gainXP">>
+	<<set _xpAmount to _args[0]>>
+	<<set _xpCorruption to _args[1]>>
+	<<set _xpMoney to _args[2]>>
+	<div class="wrapperGain">
+	<span>You gain:</span><br>
+	<<if _xpMoney>>
+		<span> Money: +<<= _xpMoney>>$ </span><br>
+		<<run setup.Mc.addMoney(_xpMoney)>>
+	<</if>>
+	<span>Experience: +<<= _xpAmount>> exp</span><br>
+	<<if _xpCorruption>>
+		<<if setup.Mc.corruption() lt 10>>
+			<<run setup.Mc.addCorruption(_xpCorruption)>>
+			<span><<statIcon setup.StatIcon.CORRUPTION>>: +<<= _xpCorruption>> </span>
+		<</if>>
+	<</if>>
+	<span class="reachedNewLvl"></span><br>
+	</div>
+	<span id="expBar"><<showmeter 'xpBar'>></span><br>
+	<<set _leveled to setup.Mc.grantExp(_xpAmount)>>
+	<<updatemeter 'xpBar' `setup.Mc.exp() / setup.Mc.neededForNextLevel()`>>
+	<<if _leveled>>
+		<<done>>
+			<<replace ".reachedNewLvl">>You reached a new level - <<= setup.Mc.lvl()>> !
+			<</replace>>
+		<</done>>
+		<<updatemeter 'xpBar' `setup.Mc.exp() / setup.Mc.neededForNextLevel()`>>
+	<</if>>
+<</widget>>

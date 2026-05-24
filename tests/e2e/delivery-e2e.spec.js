@@ -259,6 +259,23 @@ test.describe('Delivery E2E — Manager return visits', () => {
     expect(await getVar(page, 'deliveryBJ')).toBe(1);
   });
 
+  test('BJ event renders gain block with interpolated money/exp/corruption', async ({ game: page }) => {
+    await setupReadyWorker(page);
+    await callSetup(page, `setup.Mc.setBeauty(50)`);
+    await setVar(page, 'mc.corruption', 3);
+
+    await goToPassage(page, 'DeliveryManagerBlowjob');
+    await waitForPassage(page, 'DeliveryManagerBlowjob');
+
+    const text = await passageText(page);
+    expect(text).toContain('You gain:');
+    expect(text).toContain('+25$');
+    expect(text).toContain('+10 exp');
+    expect(text).toContain('+0.5');
+    expect(text).not.toMatch(/_xpMoney|_xpAmount|_xpCorruption|_args\[/);
+    expect(text).not.toMatch(/\\(\s|$)/);
+  });
+
   test('manager shows cooldown message after BJ event', async ({ game: page }) => {
     await setupReadyWorker(page);
     await callSetup(page, `setup.Mc.setBeauty(50)`);

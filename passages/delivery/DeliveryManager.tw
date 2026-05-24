@@ -118,7 +118,7 @@
 <br>
 @@.mc-thoughts; You wipe your hand on the inside of your coat where it won't show. You tell yourself you'll boil the lining later. You won't.@@<br>
 <br>
-<<set _r to setup.Delivery.managerSceneReward('handjob')>>\
+<<set _r to setup.Delivery.managerSceneReward('handjob')>>
 <<addLust _r.lust>>
 <<gainXP _r.exp _r.corruption _r.money>>
 @@.backbtn;[[Leave|DeliveryHub]] @@
@@ -142,14 +142,14 @@
 <br>
 @@.notmc-speech; ~Hnngh~ <i>He pulls back at the last second and finishes on your collarbone, which is worse.</i> Good. Good. That's enough for today.@@<br>
 <br>
-<<set _r to setup.Delivery.managerSceneReward('blowjob')>>\
+<<set _r to setup.Delivery.managerSceneReward('blowjob')>>
 <<addLust _r.lust>>
 <<gainXP _r.exp _r.corruption _r.money>>
 @@.backbtn;[[Leave|DeliveryHub]] @@
 <<run setup.Delivery.startManagerBJCooldown()>>
 
 :: DeliveryManagerSex [event nobr] {"position":"1300,1400","size":"100,100"}
-<<set _startLust to setup.Mc.lust()>>\
+<<set _startLust to setup.Mc.lust()>>
 <<randRangeVideo "scenes/deliveryhub/manager/sex" 1 2 ".mp4">><br>
 @@.notmc-speech; <i>Jerry steers you toward the couch shoved against the back wall of the office, the one you'd taken for decorative. The cushions are flattened in the exact shape of years of Jerry. He puts a hand on the small of your back and folds you over the armrest.</i> There you go. Atta girl.@@<br>
 <br>
@@ -177,7 +177,7 @@
 <br>
 @@.mc-thoughts; You straighten up. Your knees register a complaint. You pull your jeans up by the belt loops and don't look at the couch.@@<br>
 <br>
-<<set _r to setup.Delivery.managerSceneReward('sex')>>\
+<<set _r to setup.Delivery.managerSceneReward('sex')>>
 <<addLust _r.lust>>
 <<gainXP _r.exp _r.corruption _r.money>>
 @@.backbtn;[[Leave|DeliveryHub]] @@

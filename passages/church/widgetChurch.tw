@@ -5,36 +5,6 @@
 	<<video _rvPath>>
 <</widget>>
 
-<<widget "gainXP">>
-	<<set _xpAmount to _args[0]>>
-	<<set _xpMoney to _args[2]>>
-	<div class="wrapperGain">
-	<span>You gain:</span><br>
-	<<if _xpMoney>>
-		<span> Money: +_xpMoney$ </span><br>
-		<<run setup.Mc.addMoney(_xpMoney)>>
-	<</if>>
-	<span>Experience: +_xpAmount exp</span><br>
-	<<if _args[1]>>
-		<<if setup.Mc.corruption() lt 10>>
-			<<run setup.Mc.addCorruption(_args[1])>>
-			<span><<statIcon setup.StatIcon.CORRUPTION>>: +_args[1] </span>
-		<</if>>
-	<</if>>
-	<span class="reachedNewLvl"></span><br>
-	</div>
-	<span id="expBar"><<showmeter 'xpBar'>></span><br>
-	<<set _leveled to setup.Mc.grantExp(_xpAmount)>>
-	<<updatemeter 'xpBar' `setup.Mc.exp() / setup.Mc.neededForNextLevel()`>>
-	<<if _leveled>>
-		<<done>>
-			<<replace ".reachedNewLvl">>You reached a new level - <<= setup.Mc.lvl()>> !
-			<</replace>>
-		<</done>>
-		<<updatemeter 'xpBar' `setup.Mc.exp() / setup.Mc.neededForNextLevel()`>>
-	<</if>>
-<</widget>>
-
 <<widget "randomVideoFromList">>
 	<<set _rvList to _args[0]>>
 	<<set _rvIdx to random(0, _rvList.length - 1)>>
