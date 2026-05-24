@@ -135,12 +135,38 @@ test.describe('Hunt persistent unlocks (witch ectoplasm shop)', () => {
   // --- startHunt effect wiring per unlock ---
 
   test('Witch\'s Blessing pre-stamps tarot deck onto collectedLoot', async () => {
+    /* The perk respects HauntedHouses.isTarotUnlocked() so a player
+       who bought it under-leveled doesn't smuggle the deck in early;
+       bump mc.lvl to the gate before kicking off the run. */
+    await setVar(page, 'mc.lvl', await callSetup(page, 'setup.HauntedHouses.tarotLevelRequired()'));
     await page.evaluate(() => SugarCube.setup.HuntController.addEctoplasm(100));
     await page.evaluate(() => SugarCube.setup.HuntShop.buyUnlock('witchs_blessing'));
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
 
     expect(await callSetup(page, 'setup.HuntController.hasCollected("tarotCards")')).toBe(true);
     // Tarot deck stage should be CARRYING (the markTarotCarrying flip).
+    expect(await callSetup(page, 'setup.HauntedHouses.tarotCardsStage()'))
+      .toBe(await callSetup(page, 'setup.TarotStage.CARRYING'));
+  });
+
+  test('Witch\'s Blessing meta-shop unlock does not pre-stamp the deck below level gate', async () => {
+    /* Mirrors the Monkey's Favor level-gate guarantee: buying the
+       Witch's Blessing perk early shouldn't smuggle the tarot deck
+       into the inventory before TAROT_LEVEL_REQUIRED. */
+    await setVar(page, 'mc.lvl', 1);
+    await page.evaluate(() => SugarCube.setup.HuntController.addEctoplasm(100));
+    await page.evaluate(() => SugarCube.setup.HuntShop.buyUnlock('witchs_blessing'));
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
+    expect(await callSetup(page, 'setup.HuntController.hasCollected("tarotCards")')).toBe(false);
+    expect(await callSetup(page, 'setup.HauntedHouses.tarotCardsStage()'))
+      .toBe(await callSetup(page, 'setup.TarotStage.HIDDEN'));
+
+    /* At the level gate the same setup now lets the perk fire. */
+    await page.evaluate(() => SugarCube.setup.HuntController.end());
+    const req = await callSetup(page, 'setup.HauntedHouses.tarotLevelRequired()');
+    await setVar(page, 'mc.lvl', req);
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
+    expect(await callSetup(page, 'setup.HuntController.hasCollected("tarotCards")')).toBe(true);
     expect(await callSetup(page, 'setup.HauntedHouses.tarotCardsStage()'))
       .toBe(await callSetup(page, 'setup.TarotStage.CARRYING'));
   });

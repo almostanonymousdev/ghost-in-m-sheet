@@ -288,7 +288,7 @@ setup.HuntController = (function () {
 	   the gates here so the highlight and the pickup stay in lockstep. */
 	function isLootKindAvailable(kind) {
 		if (kind === 'clothesStolen') return setup.HauntedHouses.hasClothesStolen();
-		if (kind === 'tarotCards')    return setup.HauntedHouses.tarotCardsStage() === setup.TarotStage.HIDDEN;
+		if (kind === 'tarotCards')    return setup.HauntedHouses.isTarotDiscoverable();
 		if (kind === 'monkeyPaw')     return setup.MonkeyPaw.isDiscoverable();
 		if (kind === 'cursedItem')    return setup.Witch.cursedItemQuestStarted();
 		return true;
@@ -759,8 +759,11 @@ setup.HuntController = (function () {
 		   so Bag exposes the tarot link, and stamping 'tarotCards' onto
 		   collectedLoot prevents the floor-plan tarot pickup from
 		   double-granting. We leave the floor-plan pin intact so a
-		   re-search of that slot still reports nothing (already-collected). */
-		if (Shop.hasUnlock(Item.WITCHS_BLESSING)) {
+		   re-search of that slot still reports nothing (already-collected).
+		   Gated on isTarotUnlocked() so an early meta-shop purchase
+		   doesn't smuggle the deck in before the level gate the rest
+		   of the tarot pipeline (furniture pickup) requires. */
+		if (Shop.hasUnlock(Item.WITCHS_BLESSING) && setup.HauntedHouses.isTarotUnlocked()) {
 			setup.HauntedHouses.markTarotCarrying();
 			takeLoot('tarotCards');
 		}

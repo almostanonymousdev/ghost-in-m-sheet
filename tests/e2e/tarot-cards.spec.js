@@ -112,4 +112,50 @@ test.describe('Tarot cards', () => {
     await callSetup(page, 'setup.HauntedHouses.incrementDrawnCards()');
     expect(await callSetup(page, 'setup.HauntedHouses.drawnCards()')).toBe(2);
   });
+
+  /* Level gate: the deck is supposed to be invisible (no furniture
+     pickups, no Witch's Blessing pre-stamp) below
+     HauntedHouses.tarotLevelRequired. The two guarantees below pin
+     both halves -- isTarotDiscoverable goes false even when the
+     per-hunt stage is HIDDEN, and HuntController.lootKindsAt filters
+     the kind out so a furniture search never surfaces it. */
+  test('isTarotDiscoverable returns false when MC is below the level gate', async ({ game: page }) => {
+    await page.evaluate(() => SugarCube.setup.HauntedHouses.resetCursedItemState());
+    const req = await callSetup(page, 'setup.HauntedHouses.tarotLevelRequired()');
+    await setVar(page, 'mc.lvl', req - 1);
+    expect(await callSetup(page, 'setup.HauntedHouses.isTarotDiscoverable()')).toBe(false);
+    await setVar(page, 'mc.lvl', req);
+    expect(await callSetup(page, 'setup.HauntedHouses.isTarotDiscoverable()')).toBe(true);
+  });
+
+  test('floor-plan furniture search hides tarotCards below level gate', async ({ game: page }) => {
+    /* startHunt always places tarotCards on a furniture slot. Below
+       the level gate, HuntController.lootKindsAt() filters tarotCards
+       out so the player searching that slot finds nothing. At/above
+       the gate the deck reappears in the same slot. */
+    await setVar(page, 'mc.lvl', 1);
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
+    const slot = await page.evaluate(() => {
+      const fp = SugarCube.State.variables.run.floorplan;
+      return fp.loot.tarotCards
+        ? { room: fp.loot.tarotCards, suffix: fp.lootFurniture.tarotCards }
+        : null;
+    });
+    expect(slot).not.toBeNull();
+    expect(slot.suffix).toBeTruthy();
+
+    const lockedKinds = await page.evaluate(
+      (s) => SugarCube.setup.HuntController.lootKindsAt(s.room, s.suffix),
+      slot
+    );
+    expect(lockedKinds).not.toContain('tarotCards');
+
+    const req = await callSetup(page, 'setup.HauntedHouses.tarotLevelRequired()');
+    await setVar(page, 'mc.lvl', req);
+    const unlockedKinds = await page.evaluate(
+      (s) => SugarCube.setup.HuntController.lootKindsAt(s.room, s.suffix),
+      slot
+    );
+    expect(unlockedKinds).toContain('tarotCards');
+  });
 });

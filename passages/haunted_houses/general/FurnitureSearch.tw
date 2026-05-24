@@ -25,7 +25,7 @@
 	<<elseif _kind eq "rescueClue">>
 		<<run setup.HuntController.takeLoot("rescueClue")>>
 		<<include "RescueClueFound">>
-	<<elseif _kind eq "tarotCards" and setup.HauntedHouses.tarotCardsStage() eq setup.TarotStage.HIDDEN>>
+	<<elseif _kind eq "tarotCards" and setup.HauntedHouses.isTarotDiscoverable()>>
 		<<include "PickupTarotCards">>
 	<<elseif _kind eq "monkeyPaw" and setup.MonkeyPaw.isDiscoverable()>>
 		<<include "PickupMonkeyPaw">>
@@ -169,7 +169,7 @@
 		@@.mc-thoughts; A strange deck of tarot cards.@@<br>
 		<<image "mechanics/cursedpossessions/tarot-cards/tarot.png" "iconsOnMap">><br>
 		@@.mc-action; You put the tarot cards in your bag.@@<br><br>
-		<<if setup.HauntedHouses.tarotCardsStage() eq setup.TarotStage.HIDDEN>>
+		<<if setup.HauntedHouses.isTarotDiscoverable()>>
 			<<run setup.HauntedHouses.markTarotCarrying()>>
 		<</if>>
 		<<run setup.HuntController.takeLoot("tarotCards")>>

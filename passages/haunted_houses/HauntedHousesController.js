@@ -49,6 +49,14 @@ setup.drawTarotCard = function (deck) {
 setup.HauntedHouses = (function () {
 	var sv = setup.sv;
 
+	/* Player level at which the tarot deck enters the game: floor-plan
+	   pickups stop being filtered out by isLootKindAvailable, and the
+	   Witch's Blessing meta-shop perk stops pre-stamping the deck.
+	   Matches the monkey paw gate (lvl 2) so both cursed-possession
+	   items enter the rotation together alongside the witch's
+	   cursed-item quest. */
+	var TAROT_LEVEL_REQUIRED = 2;
+
 	/* Variables owned by this controller. Other controllers should
 	   query these only through the API methods below. */
 	var OWNED_VARS = Object.freeze([
@@ -274,6 +282,20 @@ setup.HauntedHouses = (function () {
 		// on fresh saves where the field is undefined).
 		tarotCardsStage: function () { return sv().tarotCardsStage || setup.TarotStage.HIDDEN; },
 		drawnCards: function () { return sv().drawnCards || 0; },
+		/* Player-level gate. The tarot deck stops appearing in
+		   furniture and the Witch's Blessing meta-shop perk skips its
+		   pre-stamp until the MC has reached TAROT_LEVEL_REQUIRED. */
+		tarotLevelRequired: function () { return TAROT_LEVEL_REQUIRED; },
+		isTarotUnlocked: function () { return setup.Mc.lvl() >= TAROT_LEVEL_REQUIRED; },
+		/* True when the deck is currently retrievable from a furniture
+		   slot. Combines the per-hunt stage gate (HIDDEN means the
+		   deck hasn't been picked up yet this hunt) with the player-
+		   level gate. FurnitureSearch + HuntController.isLootKindAvailable
+		   gate on this so the highlight and the pickup stay in lockstep. */
+		isTarotDiscoverable: function () {
+			return this.isTarotUnlocked()
+				&& this.tarotCardsStage() === setup.TarotStage.HIDDEN;
+		},
 		shouldDeleteOneEvidence: function () {
 			return setup.Ghosts.scheduledDeletionCount() >= 1;
 		},
