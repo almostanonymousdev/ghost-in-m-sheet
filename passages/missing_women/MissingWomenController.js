@@ -185,9 +185,15 @@ setup.MissingWomen = (function () {
 		},
 
 		// --- Mutations / accessors used by rescue passages --------
+		/* Accept the rescue quest. Also seeds the torn-photo state so
+		   the in-bag photo viewer / in-hunt clue image have something
+		   to render against -- without this, $randomRescuePhotoNumber
+		   stays undefined and every <<image>> on the clue path renders
+		   `assets/characters/rescue/house/undefined.jpg`. */
 		setQuestForRescueStarted: function () {
 			sv().hasQuestForRescue = setup.RescueQuestState.ACTIVE;
 			sv().rescueStage = 0;
+			api.seedTornStyle();
 		},
 		sleepOffHoursAfterEvent: function () {
 			setup.Time.addHours(3);
@@ -310,12 +316,24 @@ setup.MissingWomen = (function () {
 		},
 
 		// --- Torn-photo state (task board / clue display) ---------
+		/* Pick the torn-photo class + photo number used by the in-bag
+		   photo viewer, the rescue house compare overlay, and the
+		   in-hunt clue image. Always seeds the photo number -- the
+		   class pool is decorative, but the number is load-bearing
+		   (it's the path component for the .jpg). Falls back to the
+		   first torn-style if $tornStyles hasn't been populated yet
+		   (TickController seeds it on every passage ready, but a
+		   direct setup call before any passage has rendered would
+		   otherwise produce a stray `undefined` class on the photo). */
 		seedTornStyle: function () {
-			var styles = sv().tornStyles || [];
-			if (!styles.length) return;
-			var idx = Math.floor(Math.random() * styles.length);
-			sv().tornStyleRandom = styles[idx];
-			sv().randomRescuePhotoNumber = 1 + Math.floor(Math.random() * 16);
+			var s = sv();
+			s.randomRescuePhotoNumber = 1 + Math.floor(Math.random() * 16);
+			var styles = s.tornStyles || [];
+			if (styles.length) {
+				s.tornStyleRandom = styles[Math.floor(Math.random() * styles.length)];
+			} else if (!s.tornStyleRandom) {
+				s.tornStyleRandom = 'torn-style-1 torn-effect';
+			}
 		},
 
 		// --- EMF upgrade reward from clue --------------------------

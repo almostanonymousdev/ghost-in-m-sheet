@@ -43,6 +43,27 @@ test.describe('Missing Women — clue / EMF upgrade flow', () => {
     await goToPassage(page, 'RescueClueFound');
     await expectCleanPassage(page);
   });
+
+  test('RescueClueFound image src is never characters/rescue/house/undefined.jpg', async ({ game: page }) => {
+    /* Regression for the bug where accepting the quest didn't seed
+       $randomRescuePhotoNumber and the in-hunt clue image rendered
+       `assets/characters/rescue/house/undefined.jpg`. The fix moved
+       seedTornStyle into setQuestForRescueStarted; this asserts the
+       observable symptom (the rendered <img src>) is fine. */
+    await setupActiveQuest(page, 'Victoria');
+    await setVar(page, 'equipment', { emf: 1 });
+    // Clear the test-helper's pre-seeded value so we exercise the
+    // production accept path, not the test setup shortcut.
+    await page.evaluate(() => { delete SugarCube.State.variables.randomRescuePhotoNumber; });
+    await page.evaluate(() => SugarCube.setup.MissingWomen.setQuestForRescueStarted());
+
+    await goToPassage(page, 'RescueClueFound');
+    await page.locator('.passage .usebtn').first().click();
+    await page.waitForSelector('.passage img[src*="characters/rescue/house/"]');
+    const src = await page.locator('.passage img[src*="characters/rescue/house/"]').first().getAttribute('src');
+    expect(src).not.toContain('undefined');
+    expect(src).toMatch(/characters\/rescue\/house\/(?:1[0-6]|[1-9])\.jpg$/);
+  });
 });
 
 test.describe('Missing Women — task board', () => {
@@ -98,11 +119,27 @@ test.describe('Missing Women — task board', () => {
     expect(n).toBeLessThanOrEqual(16);
   });
 
-  test('seedTornStyle is a no-op when $tornStyles is empty', async ({ game: page }) => {
+  test('seedTornStyle always seeds the photo number even when $tornStyles is empty', async ({ game: page }) => {
+    /* Regression: the photo number is load-bearing -- it's the path
+       component for `assets/characters/rescue/house/<n>.jpg`. The
+       class pool is decorative, so it's fine to keep an existing
+       tornStyleRandom around when the styles list isn't populated. */
     await setVar(page, 'tornStyles', []);
     await setVar(page, 'tornStyleRandom', 'unchanged');
+    await page.evaluate(() => { delete SugarCube.State.variables.randomRescuePhotoNumber; });
     await page.evaluate(() => SugarCube.setup.MissingWomen.seedTornStyle());
     expect(await getVar(page, 'tornStyleRandom')).toBe('unchanged');
+    const n = await getVar(page, 'randomRescuePhotoNumber');
+    expect(n).toBeGreaterThanOrEqual(1);
+    expect(n).toBeLessThanOrEqual(16);
+  });
+
+  test('seedTornStyle picks a fallback torn-style when $tornStyles is empty and no class is set', async ({ game: page }) => {
+    await setVar(page, 'tornStyles', []);
+    await page.evaluate(() => { delete SugarCube.State.variables.tornStyleRandom; });
+    await page.evaluate(() => SugarCube.setup.MissingWomen.seedTornStyle());
+    expect(await getVar(page, 'tornStyleRandom')).toBeTruthy();
+    expect(typeof (await getVar(page, 'tornStyleRandom'))).toBe('string');
   });
 });
 
@@ -117,6 +154,20 @@ test.describe('Missing Women — rescue dispatch and accessors', () => {
     await page.evaluate(() => SugarCube.setup.MissingWomen.setQuestForRescueStarted());
     expect(await getVar(page, 'hasQuestForRescue')).toBe(1);
     expect(await getVar(page, 'rescueStage')).toBe(0);
+  });
+
+  test('setQuestForRescueStarted also seeds randomRescuePhotoNumber so the clue image never renders undefined.jpg', async ({ game: page }) => {
+    /* Regression: previously seedTornStyle was a separate call that
+       lived in RescueTaskBoard.tw. Any path that called
+       setQuestForRescueStarted without also calling seedTornStyle
+       left $randomRescuePhotoNumber undefined, and every <<image>>
+       on the clue path rendered `.../undefined.jpg`. */
+    await page.evaluate(() => { delete SugarCube.State.variables.randomRescuePhotoNumber; });
+    await setVar(page, 'hasQuestForRescue', 0);
+    await page.evaluate(() => SugarCube.setup.MissingWomen.setQuestForRescueStarted());
+    const n = await getVar(page, 'randomRescuePhotoNumber');
+    expect(n).toBeGreaterThanOrEqual(1);
+    expect(n).toBeLessThanOrEqual(16);
   });
 
   test('markQuestFailed / rescueQuestStage round-trip', async ({ game: page }) => {
