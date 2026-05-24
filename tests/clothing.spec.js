@@ -840,5 +840,73 @@ test.describe('MC HUD — Hunt-mode click handlers', () => {
     expect(html).toContain('take it off');
     expect(html).toMatch(/id="statusOuterTop"[\s\S]*?<a /);
   });
+
+  /* End-to-end coverage for the live sidebar HUD across every slot,
+     including slot-0 defaults. Earlier specs cover tshirt and bra
+     in detail; this loop catches per-slot regressions in the click
+     handler / re-render path without duplicating beauty-modifier
+     assertions for each one. */
+  for (const slot of [
+    { wornDiv: 'statusOuterTop',    flag: 'tshirtState'   },
+    { wornDiv: 'statusOuterBottom', flag: 'jeansState'    },
+    { wornDiv: 'statusUnderTop',    flag: 'braState'      },
+    { wornDiv: 'statusUnderBottom', flag: 'pantiesState'  },
+  ]) {
+    test(`fresh-game default outfit: ${slot.wornDiv} click toggles undress / redress`, async ({ game: page }) => {
+      /* Drive the actual sidebar -- not a wikified copy -- so a
+         regression in StoryCaption's #statusContainer / mcStatusBody
+         pipeline surfaces here. */
+      await startActiveHunt(page);
+
+      expect(await getVar(page, slot.flag)).toBe('worn');
+
+      await page.evaluate((sel) => jQuery('#statusContainer #' + sel + ' a').trigger('click'), slot.wornDiv);
+      expect(await getVar(page, slot.flag)).toBe('not worn');
+
+      /* The slot's <a> must still be there (now the redress link)
+         and clicking it must put the clothes back on. */
+      const redressLinks = await page.evaluate(
+        (sel) => jQuery('#statusContainer #' + sel + ' a').length,
+        slot.wornDiv
+      );
+      expect(redressLinks, `${slot.wornDiv} lost its click target after undress`).toBe(1);
+
+      await page.evaluate((sel) => jQuery('#statusContainer #' + sel + ' a').trigger('click'), slot.wornDiv);
+      expect(await getVar(page, slot.flag), `${slot.wornDiv} did not redress on second click`).toBe('worn');
+    });
+  }
+
+  /* The Wardrobe screen's slot-0 take-off route (takeOffSlotZero)
+     must leave the same "no<key>" remember marker that quickUndress
+     does -- otherwise the HUD on a later hunt sees an empty slot
+     with no remembered last-worn item and silently refuses to put
+     the default outfit back on. Failing this means the player can
+     take their default clothes off in the bedroom, walk into a
+     hunt, and find the side-panel redress button missing. */
+  test('takeOffSlotZero stamps the rememberVar so a later hunt-HUD redress works', async ({ game: page }) => {
+    for (const [slot0Key, rememberKey, expectedMarker] of [
+      ['tshirtState0',  'rememberTopOuter',   'notshirt0'],
+      ['jeansState0',   'rememberBottomOuter', 'nojeans0'],
+      ['braState0',     'rememberTopUnder',   'nobra0'],
+      ['pantiesState0', 'rememberBottomUnder', 'nopanties0'],
+    ]) {
+      await callSetup(page, `setup.Wardrobe.takeOffSlotZero("${slot0Key}")`);
+      expect(await getVar(page, slot0Key)).toBe('not worn');
+      expect(await getVar(page, rememberKey)).toBe(expectedMarker);
+    }
+
+    /* Cross-scenario regression: undress via the Wardrobe screen,
+       then start a hunt -- the HUD must offer a redress link for
+       each slot. */
+    await callSetup(page, 'setup.Wardrobe.refreshAggregateStates()');
+    await startActiveHunt(page);
+    const html = await renderStrip(page);
+    for (const id of ['statusOuterTop', 'statusOuterBottom', 'statusUnderTop', 'statusUnderBottom']) {
+      const section = html.match(new RegExp(`id="${id}"[\\s\\S]*?</div>`));
+      expect(section, `slot ${id} not rendered`).toBeTruthy();
+      expect(section[0], `slot ${id} has no redress link after wardrobe undress`).toContain('<a ');
+      expect(section[0], `slot ${id} redress tip missing after wardrobe undress`).toContain('put it back on');
+    }
+  });
 });
 

@@ -525,9 +525,19 @@
         /* Remove a single slot-0 item from the MC -- used by the
          * Wardrobe screen's "take off your default bottom / top /
          * bra / panties" links. `slot0Key` is the exact save-file
-         * var name for the slot-0 variant (e.g. "tshirtState0"). */
+         * var name for the slot-0 variant (e.g. "tshirtState0").
+         * Routes through unequip so the rememberVar gets stamped
+         * with the "no<key>" marker -- without that, a hunt that
+         * starts with the slot already empty has no redress link
+         * in the sidebar HUD (canQuickRedress checks the marker). */
         takeOffSlotZero: function (slot0Key) {
-            State.variables[slot0Key] = "not worn";
+            var grp = setup.WARDROBE_GROUPS.find(function (g) {
+                return g.items.some(function (it) { return it.var === slot0Key; });
+            });
+            if (!grp) return;
+            var item = grp.items.find(function (it) { return it.var === slot0Key; });
+            if (!item) return;
+            this.unequip(grp, item);
         },
         /* One-off legacy-save normalisation: older saves stored
          * "tshirt" / "jeans" in the rememberOuterXxx slot, but the
