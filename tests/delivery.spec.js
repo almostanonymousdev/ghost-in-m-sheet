@@ -272,9 +272,9 @@ test.describe('Delivery Controller', () => {
 
   // --- Manager event ---
 
-  test('meetsBeautyForManagerFlirt true at beauty >= 45', async ({ game: page }) => {
+  test('meetsBeautyForManagerFlirt true at beauty >= 35', async ({ game: page }) => {
     // arrange
-    await callSetup(page, `setup.Mc.setBeauty(45)`);
+    await callSetup(page, `setup.Mc.setBeauty(35)`);
 
     // act
     const result = await callSetup(page, 'setup.Delivery.meetsBeautyForManagerFlirt()');
@@ -283,9 +283,9 @@ test.describe('Delivery Controller', () => {
     expect(result).toBe(true);
   });
 
-  test('meetsBeautyForManagerFlirt false at beauty < 45', async ({ game: page }) => {
+  test('meetsBeautyForManagerFlirt false at beauty < 35', async ({ game: page }) => {
     // arrange
-    await callSetup(page, `setup.Mc.setBeauty(44)`);
+    await callSetup(page, `setup.Mc.setBeauty(34)`);
 
     // act
     const result = await callSetup(page, 'setup.Delivery.meetsBeautyForManagerFlirt()');
@@ -294,26 +294,75 @@ test.describe('Delivery Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('managerWillPayExtra true at corruption >= 2', async ({ game: page }) => {
+  test('canSeduceManager true at corruption >= 2', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.corruption', 2);
 
     // act
-    const result = await callSetup(page, 'setup.Delivery.managerWillPayExtra()');
+    const result = await callSetup(page, 'setup.Delivery.canSeduceManager()');
 
     // assert
     expect(result).toBe(true);
   });
 
-  test('managerWillPayExtra false at corruption < 2', async ({ game: page }) => {
+  test('canSeduceManager false at corruption < 2', async ({ game: page }) => {
     // arrange
     await setVar(page, 'mc.corruption', 1);
 
     // act
-    const result = await callSetup(page, 'setup.Delivery.managerWillPayExtra()');
+    const result = await callSetup(page, 'setup.Delivery.canSeduceManager()');
 
     // assert
     expect(result).toBe(false);
+  });
+
+  test('canOfferHandjob true at corruption >= 2', async ({ game: page }) => {
+    await setVar(page, 'mc.corruption', 2);
+    expect(await callSetup(page, 'setup.Delivery.canOfferHandjob()')).toBe(true);
+  });
+
+  test('canOfferHandjob false at corruption < 2', async ({ game: page }) => {
+    await setVar(page, 'mc.corruption', 1);
+    expect(await callSetup(page, 'setup.Delivery.canOfferHandjob()')).toBe(false);
+  });
+
+  test('canOfferBlowjob requires corruption >= 3 and beauty >= 40', async ({ game: page }) => {
+    await setVar(page, 'mc.corruption', 3);
+    await callSetup(page, 'setup.Mc.setBeauty(40)');
+    expect(await callSetup(page, 'setup.Delivery.canOfferBlowjob()')).toBe(true);
+
+    await setVar(page, 'mc.corruption', 2);
+    await callSetup(page, 'setup.Mc.setBeauty(40)');
+    expect(await callSetup(page, 'setup.Delivery.canOfferBlowjob()')).toBe(false);
+
+    await setVar(page, 'mc.corruption', 3);
+    await callSetup(page, 'setup.Mc.setBeauty(39)');
+    expect(await callSetup(page, 'setup.Delivery.canOfferBlowjob()')).toBe(false);
+  });
+
+  test('canOfferSex requires corruption >= 4 and beauty >= 45', async ({ game: page }) => {
+    await setVar(page, 'mc.corruption', 4);
+    await callSetup(page, 'setup.Mc.setBeauty(45)');
+    expect(await callSetup(page, 'setup.Delivery.canOfferSex()')).toBe(true);
+
+    await setVar(page, 'mc.corruption', 3);
+    await callSetup(page, 'setup.Mc.setBeauty(45)');
+    expect(await callSetup(page, 'setup.Delivery.canOfferSex()')).toBe(false);
+
+    await setVar(page, 'mc.corruption', 4);
+    await callSetup(page, 'setup.Mc.setBeauty(44)');
+    expect(await callSetup(page, 'setup.Delivery.canOfferSex()')).toBe(false);
+  });
+
+  test('managerSceneReward returns the per-kind reward bundle', async ({ game: page }) => {
+    const hj = await callSetup(page, 'setup.Delivery.managerSceneReward("handjob")');
+    expect(hj).toEqual({ money: 15, exp: 5, corruption: 0.25, lust: 10 });
+
+    const bj = await callSetup(page, 'setup.Delivery.managerSceneReward("blowjob")');
+    expect(bj).toEqual({ money: 25, exp: 10, corruption: 0.5, lust: 30 });
+
+    const sx = await callSetup(page, 'setup.Delivery.managerSceneReward("sex")');
+    expect(sx).toEqual({ money: 40, exp: 20, corruption: 1, lust: 50 });
   });
 
   test('managerBJOnCooldown checks deliveryBJ flag', async ({ game: page }) => {

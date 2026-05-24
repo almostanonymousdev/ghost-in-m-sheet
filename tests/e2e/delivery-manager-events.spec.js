@@ -4,8 +4,11 @@ const { setVar, getVar, callSetup } = require('../helpers');
 /**
  * Delivery hub gates from setup.Delivery:
  *
- *   meetsBeautyForManagerFlirt() -- beauty >= 45
- *   managerWillPayExtra()        -- corruption >= 2
+ *   meetsBeautyForManagerFlirt() -- beauty >= 35
+ *   canSeduceManager()           -- corruption >= 2
+ *   canOfferHandjob()            -- corruption >= 2
+ *   canOfferBlowjob()            -- corruption >= 3, beauty >= 40
+ *   canOfferSex()                -- corruption >= 4, beauty >= 45
  *   managerBJOnCooldown()        -- daily cooldown on 'deliveryBJ'
  *   canAcceptPizzaDeal()         -- corruption >= 3
  *   canAcceptPackageDeal()       -- corruption >= 3
@@ -33,11 +36,11 @@ test.describe('Delivery manager events', () => {
     });
   }
 
-  test('meetsBeautyForManagerFlirt flips at beauty 45', async ({ game: page }) => {
-    await setBeauty(page, 44);
+  test('meetsBeautyForManagerFlirt flips at beauty 35', async ({ game: page }) => {
+    await setBeauty(page, 34);
     try {
       expect(await callSetup(page, 'setup.Delivery.meetsBeautyForManagerFlirt()')).toBe(false);
-      await setBeauty(page, 45);
+      await setBeauty(page, 35);
       expect(await callSetup(page, 'setup.Delivery.meetsBeautyForManagerFlirt()')).toBe(true);
       await setBeauty(page, 80);
       expect(await callSetup(page, 'setup.Delivery.meetsBeautyForManagerFlirt()')).toBe(true);
@@ -46,11 +49,46 @@ test.describe('Delivery manager events', () => {
     }
   });
 
-  test('managerWillPayExtra flips at corruption 2', async ({ game: page }) => {
+  test('canSeduceManager flips at corruption 2', async ({ game: page }) => {
     await page.evaluate(() => { SugarCube.State.variables.mc.corruption = 1; });
-    expect(await callSetup(page, 'setup.Delivery.managerWillPayExtra()')).toBe(false);
+    expect(await callSetup(page, 'setup.Delivery.canSeduceManager()')).toBe(false);
     await page.evaluate(() => { SugarCube.State.variables.mc.corruption = 2; });
-    expect(await callSetup(page, 'setup.Delivery.managerWillPayExtra()')).toBe(true);
+    expect(await callSetup(page, 'setup.Delivery.canSeduceManager()')).toBe(true);
+  });
+
+  test('canOfferHandjob flips at corruption 2', async ({ game: page }) => {
+    await page.evaluate(() => { SugarCube.State.variables.mc.corruption = 1; });
+    expect(await callSetup(page, 'setup.Delivery.canOfferHandjob()')).toBe(false);
+    await page.evaluate(() => { SugarCube.State.variables.mc.corruption = 2; });
+    expect(await callSetup(page, 'setup.Delivery.canOfferHandjob()')).toBe(true);
+  });
+
+  test('canOfferBlowjob requires corruption >= 3 and beauty >= 40', async ({ game: page }) => {
+    await setBeauty(page, 40);
+    try {
+      await page.evaluate(() => { SugarCube.State.variables.mc.corruption = 2; });
+      expect(await callSetup(page, 'setup.Delivery.canOfferBlowjob()')).toBe(false);
+      await page.evaluate(() => { SugarCube.State.variables.mc.corruption = 3; });
+      expect(await callSetup(page, 'setup.Delivery.canOfferBlowjob()')).toBe(true);
+      await setBeauty(page, 39);
+      expect(await callSetup(page, 'setup.Delivery.canOfferBlowjob()')).toBe(false);
+    } finally {
+      await restoreBeauty(page);
+    }
+  });
+
+  test('canOfferSex requires corruption >= 4 and beauty >= 45', async ({ game: page }) => {
+    await setBeauty(page, 45);
+    try {
+      await page.evaluate(() => { SugarCube.State.variables.mc.corruption = 3; });
+      expect(await callSetup(page, 'setup.Delivery.canOfferSex()')).toBe(false);
+      await page.evaluate(() => { SugarCube.State.variables.mc.corruption = 4; });
+      expect(await callSetup(page, 'setup.Delivery.canOfferSex()')).toBe(true);
+      await setBeauty(page, 44);
+      expect(await callSetup(page, 'setup.Delivery.canOfferSex()')).toBe(false);
+    } finally {
+      await restoreBeauty(page);
+    }
   });
 
   test('managerBJOnCooldown reflects the daily cooldown', async ({ game: page }) => {

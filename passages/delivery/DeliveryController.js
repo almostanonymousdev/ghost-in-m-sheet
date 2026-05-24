@@ -7,7 +7,7 @@
    ON_DONE waits for the encounter to be marked complete (door 1 →
    thanks); ON_ENTRY pays as soon as the gate is opened. */
 setup.DeliveryPayMode = Object.freeze({
-	ON_DONE:  "done",
+	ON_DONE: "done",
 	ON_ENTRY: "always"
 });
 
@@ -46,8 +46,8 @@ setup.Delivery = (function () {
 		OWNED_VARS: OWNED_VARS,
 		// --- Pay tiers & progression -----------------------------
 		payTiers: [
-			{ minShifts: 0,  base: 10, fail: 3 },
-			{ minShifts: 5,  base: 12, fail: 4 },
+			{ minShifts: 0, base: 10, fail: 3 },
+			{ minShifts: 5, base: 12, fail: 4 },
 			{ minShifts: 12, base: 15, fail: 5 },
 			{ minShifts: 25, base: 18, fail: 6 },
 			{ minShifts: 50, base: 22, fail: 7 }
@@ -66,9 +66,9 @@ setup.Delivery = (function () {
 
 		// --- Reputation / streaks --------------------------------
 		reputationMilestones: [
-			{ streak: 5,  level: 1, label: "Reliable",     payBonus: 2 },
-			{ streak: 10, level: 2, label: "Trusted",       payBonus: 4 },
-			{ streak: 20, level: 3, label: "Star Courier",  payBonus: 6 }
+			{ streak: 5, level: 1, label: "Reliable", payBonus: 2 },
+			{ streak: 10, level: 2, label: "Trusted", payBonus: 4 },
+			{ streak: 20, level: 3, label: "Star Courier", payBonus: 6 }
 		],
 		reputationLevel: function () {
 			var best = sv().deliveryBestStreak;
@@ -125,13 +125,30 @@ setup.Delivery = (function () {
 			return setup.Cooldowns.onCooldown('deliveryBJ');
 		},
 		meetsBeautyForManagerFlirt: function () {
-			return setup.Mc.beauty() >= 45;
+			return setup.Mc.beauty() >= 35;
 		},
-		managerWillPayExtra: function () {
+		canSeduceManager: function () {
 			return setup.Mc.corruption() >= 2;
 		},
+		canOfferHandjob: function () {
+			return setup.Mc.corruption() >= 2;
+		},
+		canOfferBlowjob: function () {
+			return setup.Mc.corruption() >= 3 && setup.Mc.beauty() >= 40;
+		},
+		canOfferSex: function () {
+			return setup.Mc.corruption() >= 4 && setup.Mc.beauty() >= 45;
+		},
 		hasMetManagerEvent: function () {
-			return hasVisited('DeliveryManagerEventStart');
+			return hasVisited('DeliveryManagerBlowjob');
+		},
+		MANAGER_SCENE_REWARDS: Object.freeze({
+			handjob: { money: 15, exp: 5, corruption: 0.25, lust: 10 },
+			blowjob: { money: 25, exp: 10, corruption: 0.5, lust: 30 },
+			sex: { money: 40, exp: 20, corruption: 1, lust: 50 }
+		}),
+		managerSceneReward: function (kind) {
+			return setup.Delivery.MANAGER_SCENE_REWARDS[kind];
 		},
 
 		// --- Pizza / Package / Burger / Papers gate checks -------
@@ -162,12 +179,12 @@ setup.Delivery = (function () {
 		},
 
 		// --- State accessors / mutations previously inline --------
-		currentHouse:   function () { return sv().currentHouse; },
+		currentHouse: function () { return sv().currentHouse; },
 		setCurrentHouse: function (h) { sv().currentHouse = h; },
-		currentOrder:   function () { return sv().currentOrder; },
+		currentOrder: function () { return sv().currentOrder; },
 		setCurrentOrder: function (n) { sv().currentOrder = n; },
-		orders:         function () { return sv().orders; },
-		earnedMoney:    function () { return setup.Mc.earnedMoney(); },
+		orders: function () { return sv().orders; },
+		earnedMoney: function () { return setup.Mc.earnedMoney(); },
 		addEarnedMoney: function (n) { setup.Mc.addEarnedMoney(n); },
 		resetEarnedMoney: function () { setup.Mc.setEarnedMoney(0); },
 		addJobSuccessEarnings: function () {
@@ -177,14 +194,14 @@ setup.Delivery = (function () {
 			setup.Mc.addEarnedMoney(sv().jobMoneyFailed);
 		},
 		jobMoneySuccessed: function () { return sv().jobMoneySuccessed; },
-		jobMoneyFailed:    function () { return sv().jobMoneyFailed; },
+		jobMoneyFailed: function () { return sv().jobMoneyFailed; },
 
 		// --- Special order fields -------------------------------
-		specialOrderActive:  function () { return !!sv().deliverySpecialOrder; },
+		specialOrderActive: function () { return !!sv().deliverySpecialOrder; },
 		specialOrderAddress: function () { return sv().deliverySpecialOrderAddress; },
-		specialOrderType:    function () { return sv().deliverySpecialOrderType; },
-		specialOrderPay:     function () { return sv().deliverySpecialOrderPay; },
-		clearSpecialOrder:   function () { sv().deliverySpecialOrder = false; },
+		specialOrderType: function () { return sv().deliverySpecialOrderType; },
+		specialOrderPay: function () { return sv().deliverySpecialOrderPay; },
+		clearSpecialOrder: function () { sv().deliverySpecialOrder = false; },
 		bankSafeSpecialOrder: function () {
 			setup.Mc.addEarnedMoney(sv().deliverySpecialOrderPay);
 			sv().deliverySpecialOrder = false;
@@ -199,10 +216,10 @@ setup.Delivery = (function () {
 			var cfg = setup.deliveryEvents[name];
 			if (cfg) setup.Cooldowns.start(cfg.varName);
 		},
-		markPapersEvent:  function () { this.markEvent('papers'); },
-		markBurgerEvent:  function () { this.markEvent('burger'); },
+		markPapersEvent: function () { this.markEvent('papers'); },
+		markBurgerEvent: function () { this.markEvent('burger'); },
 		markPackageEvent: function () { this.markEvent('package'); },
-		markPizzaEvent:   function () { this.markEvent('pizza'); },
+		markPizzaEvent: function () { this.markEvent('pizza'); },
 		startManagerBJCooldown: function () { setup.Cooldowns.start('deliveryBJ'); },
 
 		// --- Delivery-event catalogue lookups -------------------
@@ -211,11 +228,11 @@ setup.Delivery = (function () {
 		// an encounter (books, generic).
 		eventNameForItem: function (item) {
 			switch (item) {
-				case 'pizza':      return 'pizza';
-				case 'package':    return 'package';
-				case 'burgers':    return 'burger';
+				case 'pizza': return 'pizza';
+				case 'package': return 'package';
+				case 'burgers': return 'burger';
 				case 'newspapers': return 'papers';
-				default:           return null;
+				default: return null;
 			}
 		},
 		// Event type for the order in the active currentOrder slot.
@@ -224,8 +241,8 @@ setup.Delivery = (function () {
 			var order = sv()['order' + slot];
 			return order ? this.eventNameForItem(order.item) : null;
 		},
-		markMetAlice:     function () { setup.Companion.markMet("Alice"); },
-		hasMetAlice:      function () { return setup.Companion.hasMet("Alice"); },
+		markMetAlice: function () { setup.Companion.markMet("Alice"); },
+		hasMetAlice: function () { return setup.Companion.hasMet("Alice"); },
 		markFirstVisited: function () { sv().firstVisitDeliveryHub = false; },
 
 		// --- Active-icon flags for the three daily orders ---------
@@ -260,7 +277,7 @@ setup.Delivery = (function () {
 		completedShifts: function () { return sv().deliveryCompletedShifts; },
 		correctThisShift: function () { return sv().deliveryCorrectThisShift; },
 		incrementCorrectThisShift: function () { sv().deliveryCorrectThisShift += 1; },
-		resetCorrectThisShift:     function () { sv().deliveryCorrectThisShift = 0; },
+		resetCorrectThisShift: function () { sv().deliveryCorrectThisShift = 0; },
 		streak: function () { return sv().deliveryStreak; },
 		bestStreak: function () { return sv().deliveryBestStreak; },
 		endShift: function () {
@@ -307,11 +324,11 @@ setup.Delivery = (function () {
 			setup.Cooldowns.start('deliveryShiftDone');
 			var s = sv();
 			s.itemImages = {
-				pizza:      "ui/img/pizza.jpg",
-				package:    "ui/img/package.jpg",
+				pizza: "ui/img/pizza.jpg",
+				package: "ui/img/package.jpg",
 				newspapers: "ui/img/newspapers.jpg",
-				burgers:    "ui/img/burger.jpg",
-				books:      "ui/img/books.jpg"
+				burgers: "ui/img/burger.jpg",
+				books: "ui/img/books.jpg"
 			};
 			s.items = ["pizza", "package", "newspapers", "books", "burgers"];
 			s.streets = setup.deliveryStreets.slice();
@@ -323,8 +340,8 @@ setup.Delivery = (function () {
 				var it = s.shuffledItems[i];
 				s.orders.push({
 					address: s.shuffledStreets[i],
-					item:    it,
-					image:   s.itemImages[it]
+					item: it,
+					image: s.itemImages[it]
 				});
 			}
 			s.shuffledOrders = s.orders.slice().shuffle();
@@ -344,7 +361,7 @@ setup.Delivery = (function () {
 		},
 		shuffledOrders: function () { return sv().shuffledOrders; },
 		trackCorrect: function () { sv().deliveryCorrectThisShift += 1; },
-		addTip:       function (n) {
+		addTip: function (n) {
 			setup.Mc.addEarnedMoney(n);
 			sv().deliveryTotalTips += n;
 		}
@@ -364,46 +381,46 @@ setup.Cooldowns.registerDaily('deliveryShiftDone');
    is the data the wrapper widgets consume.
 
    Fields:
-     varName       cooldown flag set by markEvent(name)
-     videoSubdir   /scenes/deliveryhub/<subdir>/N.mp4 root for the encounter
-     headerImg     image rendered above the gate dialog
-     payMode       DeliveryPayMode.ON_ENTRY pays the regular delivery
-                   fee as soon as the gate is shown; ON_DONE waits for
-                   the cooldown var to flip to 1 (encounter complete)
-     canAcceptFn   () -> bool, gate the offer dialog; false branch
-                   shows the corruption-required line and exits
-     gateCorrReq   number rendered by deliveryCorrReq next to the
-                   refusal link when canAcceptFn is false. */
+	 varName       cooldown flag set by markEvent(name)
+	 videoSubdir   /scenes/deliveryhub/<subdir>/N.mp4 root for the encounter
+	 headerImg     image rendered above the gate dialog
+	 payMode       DeliveryPayMode.ON_ENTRY pays the regular delivery
+				   fee as soon as the gate is shown; ON_DONE waits for
+				   the cooldown var to flip to 1 (encounter complete)
+	 canAcceptFn   () -> bool, gate the offer dialog; false branch
+				   shows the corruption-required line and exits
+	 gateCorrReq   number rendered by deliveryCorrReq next to the
+				   refusal link when canAcceptFn is false. */
 setup.deliveryEvents = Object.freeze({
 	pizza: Object.freeze({
-		varName:     "deliveryPizzaEvent",
+		varName: "deliveryPizzaEvent",
 		videoSubdir: "pizzaevent",
-		headerImg:   "pizzaevent/1.jpg",
-		payMode:     setup.DeliveryPayMode.ON_DONE,
+		headerImg: "pizzaevent/1.jpg",
+		payMode: setup.DeliveryPayMode.ON_DONE,
 		canAcceptFn: function () { return setup.Delivery.canAcceptPizzaDeal(); },
 		gateCorrReq: 3
 	}),
 	package: Object.freeze({
-		varName:     "deliveryPackageEvent",
+		varName: "deliveryPackageEvent",
 		videoSubdir: "packageevent",
-		headerImg:   "packageevent/1.jpg",
-		payMode:     setup.DeliveryPayMode.ON_ENTRY,
+		headerImg: "packageevent/1.jpg",
+		payMode: setup.DeliveryPayMode.ON_ENTRY,
 		canAcceptFn: function () { return setup.Delivery.canAcceptPackageDeal(); },
 		gateCorrReq: 3
 	}),
 	burger: Object.freeze({
-		varName:     "deliveryBurgerEvent",
+		varName: "deliveryBurgerEvent",
 		videoSubdir: "burgerevent",
-		headerImg:   "burgerevent/1.jpg",
-		payMode:     setup.DeliveryPayMode.ON_ENTRY,
+		headerImg: "burgerevent/1.jpg",
+		payMode: setup.DeliveryPayMode.ON_ENTRY,
 		canAcceptFn: function () { return setup.Delivery.canAcceptBurgerWeed(); },
 		gateCorrReq: 5
 	}),
 	papers: Object.freeze({
-		varName:     "deliveryPapersEvent",
+		varName: "deliveryPapersEvent",
 		videoSubdir: "papersevent",
-		headerImg:   "papersevent/1.jpg",
-		payMode:     setup.DeliveryPayMode.ON_ENTRY,
+		headerImg: "papersevent/1.jpg",
+		payMode: setup.DeliveryPayMode.ON_ENTRY,
 		canAcceptFn: function () { return setup.Delivery.canAcceptPapersFlirt(); },
 		gateCorrReq: 3
 	})

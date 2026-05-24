@@ -7,8 +7,13 @@
 
 <<widget "gainXP">>
 	<<set _xpAmount to _args[0]>>
+	<<set _xpMoney to _args[2]>>
 	<div class="wrapperGain">
 	<span>You gain:</span><br>
+	<<if _xpMoney>>
+		<span> Money: +_xpMoney$ </span><br>
+		<<run setup.Mc.addMoney(_xpMoney)>>
+	<</if>>
 	<span>Experience: +_xpAmount exp</span><br>
 	<<if _args[1]>>
 		<<if setup.Mc.corruption() lt 10>>

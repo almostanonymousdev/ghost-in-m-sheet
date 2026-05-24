@@ -189,7 +189,7 @@ test.describe('Delivery E2E — Manager return visits', () => {
     expect(text).toContain('Ask about payment');
   });
 
-  test('payment discussion shows beauty requirement when beauty < 45', async ({ game: page }) => {
+  test('payment discussion shows beauty requirement when beauty < 35', async ({ game: page }) => {
     await setupReadyWorker(page);
     await callSetup(page, `setup.Mc.setBeauty(30)`);
     await goToPassage(page, 'DeliveryManager');
@@ -205,7 +205,7 @@ test.describe('Delivery E2E — Manager return visits', () => {
 
     const text = await passageText(page);
     expect(text).toContain('catch his attention');
-    expect(text).toContain('45');
+    expect(text).toContain('35');
   });
 
   test('payment discussion shows corruption requirement when beauty >= 45 but corruption < 2', async ({ game: page }) => {
@@ -225,7 +225,7 @@ test.describe('Delivery E2E — Manager return visits', () => {
     expect(text).toContain('No fucking way');
   });
 
-  test('BJ option appears when beauty >= 45 and corruption >= 2', async ({ game: page }) => {
+  test('BJ option appears when beauty >= 40 and corruption >= 3', async ({ game: page }) => {
     await setupReadyWorker(page);
     await callSetup(page, `setup.Mc.setBeauty(50)`);
     await setVar(page, 'mc.corruption', 3);
@@ -233,12 +233,14 @@ test.describe('Delivery E2E — Manager return visits', () => {
 
     await passage(page).getByText('Ask about payment').click();
 
-    // Wait for the BJ link to appear in the replacement content
+    // "Ask about payment" reveals the SeduceManager link; follow it to find the BJ option.
     await page.waitForFunction(() => {
-      return !!document.querySelector('#passages a[data-passage="DeliveryManagerEventStart"]');
+      return !!document.querySelector('#passages a[data-passage="SeduceManager"]');
     });
+    await passage(page).locator('a[data-passage="SeduceManager"]').click();
+    await waitForPassage(page, 'SeduceManager');
 
-    const bjLink = passage(page).locator('a[data-passage="DeliveryManagerEventStart"]');
+    const bjLink = passage(page).locator('a[data-passage="DeliveryManagerBlowjob"]');
     await expect(bjLink).toHaveCount(1);
   });
 
@@ -249,8 +251,8 @@ test.describe('Delivery E2E — Manager return visits', () => {
     const startMoney = await getVar(page, 'mc.money');
     const startCorruption = await getVar(page, 'mc.corruption');
 
-    await goToPassage(page, 'DeliveryManagerEventStart');
-    await waitForPassage(page, 'DeliveryManagerEventStart');
+    await goToPassage(page, 'DeliveryManagerBlowjob');
+    await waitForPassage(page, 'DeliveryManagerBlowjob');
 
     expect(await getVar(page, 'mc.money')).toBe(startMoney + 10);
     expect(await getVar(page, 'mc.corruption')).toBe(startCorruption + 0.5);

@@ -5,8 +5,7 @@ The game world includes several city locations the player can visit between hunt
 * **Delivery Jobs** - A job system where the player delivers packages, pizzas, burgers, and papers to various addresses around the city. Includes delivery events with unique encounters and a manager storyline. Also serves as the location where the player first meets Alice.
   * [DeliveryHub.tw](../passages/delivery/DeliveryHub.tw) - Delivery job hub
   * [DeliveryController.js](../passages/delivery/DeliveryController.js) - Shared delivery state and helpers
-  * [DeliveryManager.tw](../passages/delivery/DeliveryManager.tw) - Manager interactions
-  * [DeliveryManagerEventStart.tw](../passages/delivery/DeliveryManagerEventStart.tw) - Manager event chain
+  * [DeliveryManager.tw](../passages/delivery/DeliveryManager.tw) - Manager interactions + seduction scenes (SeduceManager, DeliveryManagerHandjob, DeliveryManagerBlowjob, DeliveryManagerSex)
   * [DeliveryMap.tw](../passages/delivery/DeliveryMap.tw) - Delivery route map
   * [WorkDelivery.tw](../passages/delivery/WorkDelivery.tw) - Working a delivery shift
   * [deliverySmallPassages.tw](../passages/delivery/deliverySmallPassages.tw) - Routing passages (deliveryHouse, deliveryEvent, deliveryActiveIcon, endShiftDelivery)
