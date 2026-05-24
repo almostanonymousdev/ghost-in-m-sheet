@@ -195,9 +195,10 @@ test.describe('E2E: Hunt Outside menu', () => {
     expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(true);
 
     // huntCaughtPassage settles the run (endHunt) before returning a
-    // goto target; the player now lands on CityMap directly.
+    // goto target; the player now lands on Sleep, which routes
+    // through the bedroom cum-covered wake-up.
     const target = await callSetup(page, 'setup.HuntController.huntCaughtPassage()');
-    expect(target).toBe('CityMap');
+    expect(target).toBe('Sleep');
     expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(false);
   });
 

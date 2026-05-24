@@ -932,13 +932,20 @@ setup.HuntController = (function () {
 	   without a dedicated HuntOver* screen fall back to CityMap. The
 	   per-helper exit routers (huntOverPassage / huntCaughtPassage /
 	   streetExitPassage) all funnel through this so the failure-reason
-	   → passage mapping lives in one place. */
+	   → passage mapping lives in one place.
+
+	   CAUGHT routes to Sleep so the prowl-blackout narration ("fading
+	   into darkness", "plunging you into darkness") flows into the
+	   bedroom cum-covered wake-up (Bedroom.returningFromHuntDefeat)
+	   instead of dropping the MC -- still mid-blackout -- onto the
+	   city map. */
 	function exitPassageForOutcome(success, reason) {
 		if (success) return "CityMap";
 		var FR = setup.HuntEnums.FailureReason;
 		if (reason === FR.SANITY) return "HuntOverSanity";
 		if (reason === FR.EXHAUSTION) return "HuntOverExhaustion";
 		if (reason === FR.TIME) return "HuntOverTime";
+		if (reason === FR.CAUGHT) return "Sleep";
 		return "CityMap";
 	}
 
@@ -1197,13 +1204,14 @@ setup.HuntController = (function () {
 	/* "Ghost catches the MC" exit target that HuntOverProwl's <<huntBlackoutExit>>
 	   widget routes through. Stamps a CAUGHT failure on the run, runs
 	   endHunt() to settle payout + teardown, and returns the exit
-	   passage (CityMap by default). Outside a hunt, falls back to Sleep. */
+	   passage (Sleep — the prowl-blackout chain feeds the bedroom
+	   cum-covered wake-up). Outside a hunt, also falls back to Sleep. */
 	function huntCaughtPassage() {
 		if (isActive()) {
 			setup.Hunt.emit(setup.Hunt.Event.CAUGHT, { ghostName: ghostName() });
 			markFailure(setup.HuntEnums.FailureReason.CAUGHT);
 			var summary = endHunt(false);
-			return summary ? summary.exitPassage : "CityMap";
+			return summary ? summary.exitPassage : "Sleep";
 		}
 		return "Sleep";
 	}

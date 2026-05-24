@@ -1421,16 +1421,17 @@ test.describe('E2E: hunt lifecycle', () => {
       .toContainText(/UVL/);
   });
 
-  test('hunt ghost catch routes through HuntOverProwl → CityMap as a "caught" failure', async () => {
+  test('hunt ghost catch routes through HuntOverProwl → Sleep as a "caught" failure', async () => {
     test.setTimeout(20_000);
 
     /* HuntOverProwl's bottom-of-passage cleanup runs through
        setup.HuntController.onCaughtCleanup() and the huntBlackoutExit
        widget routes its post-scene exit through huntCaughtPassage();
        in hunt mode that settles the run inline (endHunt) and returns
-       the exit passage. The e2e check here is that those helpers
-       route a real run end-to-end -- the widget rendering + linkappend
-       fan-out is covered by the classic hunt-flow tests. */
+       Sleep so the blackout narration carries straight into the
+       bedroom cum-covered wake-up. The e2e check here is that those
+       helpers route a real run end-to-end -- the widget rendering +
+       linkappend fan-out is covered by the classic hunt-flow tests. */
     await goToPassage(page, 'GhostStreet');
     await clickHuntCard(page);
     await clickLink(page, 'Enter the hunt', 'HuntRun');
@@ -1448,9 +1449,9 @@ test.describe('E2E: hunt lifecycle', () => {
     expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(true);
 
     // huntCaughtPassage() in hunt mode stamps the "caught" failure,
-    // settles the run via endHunt, and returns the exit passage.
+    // settles the run via endHunt, and returns the exit passage (Sleep).
     const target = await callSetup(page, 'setup.HuntController.huntCaughtPassage()');
-    expect(target).toBe('CityMap');
+    expect(target).toBe('Sleep');
     expect(await getVar(page, 'run')).toBeNull();
     expect(await getVar(page, 'ectoplasm')).toBe(expectedFailure);
   });

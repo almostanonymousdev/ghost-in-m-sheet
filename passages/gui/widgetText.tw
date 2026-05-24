@@ -124,9 +124,10 @@
    return the MC to $return; absent that, the next-passage target is
    delegated to setup.HuntController.huntCaughtPassage(), which stamps
    a "caught" failure, settles payout + teardown via endHunt(), and
-   returns the exit passage (CityMap by default). `_args[0]` is the
-   link text ("fading into darkness", "plunging you into darkness",
-   "nothing"). */
+   returns Sleep so the blackout narration carries straight into the
+   bedroom cum-covered wake-up (Bedroom.returningFromHuntDefeat).
+   `_args[0]` is the link text ("fading into darkness", "plunging you
+   into darkness", "nothing"). */
 <<widget "huntBlackoutExit">>
 	<<if setup.Ghosts.hasHighPriestess()>>
 		@@.usebtn;<<link _args[0] $return>>

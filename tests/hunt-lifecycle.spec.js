@@ -261,7 +261,7 @@ test.describe('Hunt lifecycle helpers', () => {
       { success: false, reason: 'sanity',     exitPassage: 'HuntOverSanity' },
       { success: false, reason: 'exhaustion', exitPassage: 'HuntOverExhaustion' },
       { success: false, reason: 'time',       exitPassage: 'HuntOverTime' },
-      { success: false, reason: 'caught',     exitPassage: 'CityMap' },
+      { success: false, reason: 'caught',     exitPassage: 'Sleep' },
       { success: false, reason: 'fled',       exitPassage: 'CityMap' },
       { success: false, reason: 'abandon',    exitPassage: 'CityMap' },
       { success: false, reason: null,         exitPassage: 'CityMap' }

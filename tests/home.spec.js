@@ -682,6 +682,26 @@ test.describe('Home Controller', () => {
     await page.evaluate(() => SugarCube.setup.HuntController.end());
   });
 
+  test('prowl blackout chain lands in Bedroom with returningFromHuntDefeat() true', async ({ game: page }) => {
+    /* Regression: huntCaughtPassage() used to map CAUGHT to CityMap,
+       which dumped the MC -- still mid-"fading into darkness" -- onto
+       the city map instead of routing her to Sleep → Bedroom for the
+       cum-covered wake-up. The chain is HuntOverProwl click →
+       huntCaughtPassage → Sleep → wake link → Bedroom, and
+       returningFromHuntDefeat() (which gates the cum-covered banner)
+       reads previous(2) to detect the prowl origin two passages back. */
+    await page.evaluate(() => {
+      SugarCube.setup.HuntController.startHunt({ seed: 1 });
+      SugarCube.setup.HuntController.setHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
+    });
+    await goToPassage(page, 'HuntOverProwl');
+    const dest = await callSetup(page, 'setup.HuntController.huntCaughtPassage()');
+    expect(dest).toBe('Sleep');
+    await goToPassage(page, 'Sleep');
+    await goToPassage(page, 'Bedroom');
+    expect(await callSetup(page, 'setup.Home.returningFromHuntDefeat()')).toBe(true);
+  });
+
   test('sleepAdvance to alarm wakes the MC at the configured hour', async ({ game: page }) => {
     await page.evaluate(() => {
       SugarCube.State.variables.hours = 23;

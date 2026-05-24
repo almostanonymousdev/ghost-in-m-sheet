@@ -389,7 +389,7 @@ test.describe('setup.Hunt pubsub', () => {
         const dest = HC.huntCaughtPassage();
         return { seen, ghostName, dest };
       });
-      expect(capture.dest).toBe('CityMap');
+      expect(capture.dest).toBe('Sleep');
       expect(capture.seen.length).toBe(1);
       expect(capture.seen[0].ghostName).toBe(capture.ghostName);
     });

@@ -109,17 +109,19 @@ test.describe('HuntController', () => {
       .toBe('HuntOverTime');
   });
 
-  test('huntCaughtPassage() stamps a caught failure and routes to CityMap', async () => {
+  test('huntCaughtPassage() stamps a caught failure and routes to Sleep', async () => {
     /* HuntOverProwl's <<huntBlackoutExit>> widget delegates the post-scene exit
        target to this helper. Hunt mode stamps a "caught" failure,
-       settles the run via endHunt, and routes to the failure exit
-       passage (CityMap by default). Outside a hunt, falls back to Sleep. */
+       settles the run via endHunt, and routes to Sleep -- the
+       blackout narration ("fading into darkness") flows straight into
+       the bedroom cum-covered wake-up (Bedroom.returningFromHuntDefeat).
+       Outside a hunt, also falls back to Sleep. */
     expect(await callSetup(page, 'setup.HuntController.huntCaughtPassage()')).toBe('Sleep');
 
     await goToPassage(page, 'GhostStreet');
     await clickHuntCard(page);
 
-    expect(await callSetup(page, 'setup.HuntController.huntCaughtPassage()')).toBe('CityMap');
+    expect(await callSetup(page, 'setup.HuntController.huntCaughtPassage()')).toBe('Sleep');
     expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(false);
   });
 
