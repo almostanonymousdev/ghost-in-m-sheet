@@ -152,9 +152,22 @@ setup.Witch = (function () {
 			s.isCIBeads = false;
 			s.isCIHDildo = false;
 		},
-		unlockMonkeyPawWishes: function () {
+		// --- Monkey paw shop -------------------------------------
+		/* Two tiered items on the shelf: the 400-coin wishes list
+		   (labels only) and the 800-coin full guide (labels +
+		   descriptions + "anything" meta-wish). Either can be the
+		   first purchase; buying the full guide after the list
+		   leaves no overlap to refund. WitchSale gates the cards
+		   on MonkeyPaw.canBuyWishList / canBuyGuide. */
+		MONKEY_PAW_WISH_LIST_PRICE: 400,
+		MONKEY_PAW_GUIDE_PRICE:     800,
+		buyMonkeyPawWishList: function () {
+			setup.MonkeyPaw.purchaseWishList();
+			setup.Mc.removeMoney(this.MONKEY_PAW_WISH_LIST_PRICE);
+		},
+		buyMonkeyPawGuide: function () {
 			setup.MonkeyPaw.purchaseGuide();
-			setup.Mc.removeMoney(400);
+			setup.Mc.removeMoney(this.MONKEY_PAW_GUIDE_PRICE);
 		},
 
 		// --- Level 3 tools referral ------------------------------

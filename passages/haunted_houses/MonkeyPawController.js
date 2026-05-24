@@ -21,11 +21,14 @@
  *
  * Design note on hidden effects: by default a wish is unknown -- the
  * player sees nothing in the menu except what they can type into the
- * textbox. Firing a wish (either by typing its keyword or via the
- * witch's guide) flips its `learned` bit, which unlocks both a button
- * and the description for subsequent visits. This is what makes the
- * 400-coin guide actually valuable: it buys the spoilers up front
- * rather than just a UI shortcut.
+ * textbox. Knowledge is split into two bits per wish: `learned` (the
+ * keyword/label is known, so the button is visible) and `effectKnown`
+ * (the description below the button is visible). Firing a wish from
+ * the textbox flips BOTH bits, since the player has lived through the
+ * consequences. The witch sells the two halves separately -- a 400-
+ * coin wishes-list page reveals every label (purchaseWishList), and
+ * an 800-coin full guide reveals labels AND effects AND the "anything"
+ * meta-wish (purchaseGuide).
  */
 /* Lifecycle of $MonkeyPawStage. HIDDEN: paw still tucked away in
    furniture, FurnitureSearch can discover it. FOUND: player found it
@@ -38,12 +41,19 @@ setup.MonkeyPawStage = Object.freeze({
 });
 
 /* Lifecycle of $boughtMonkeyPawGuide. NOT_ASKED: witch shop hasn't
-   been queried about the guide. ASKED: player asked about it but
-   declined to buy. PURCHASED: guide bought, every wish learned. */
+   been queried about the guide. ASKED: player asked but bought
+   nothing yet. LIST_BOUGHT: bought the 400-coin wishes list -- every
+   label is revealed, no descriptions. FULL_BOUGHT: bought the 800-coin
+   full guide -- labels, descriptions, and the "anything" meta-wish.
+   FULL_BOUGHT supersedes LIST_BOUGHT; the values are NOT a linear
+   ordering, callers should compare by name. The integer value of
+   FULL_BOUGHT is preserved at 2 so 0.5.1 saves (which stored the
+   single "guide" sale here) keep working without a save-version bump. */
 setup.MonkeyPawGuide = Object.freeze({
-	NOT_ASKED: 0,
-	ASKED:     1,
-	PURCHASED: 2
+	NOT_ASKED:   0,
+	ASKED:       1,
+	FULL_BOUGHT: 2,
+	LIST_BOUGHT: 3
 });
 
 setup.MonkeyPaw = (function () {
@@ -61,6 +71,7 @@ setup.MonkeyPaw = (function () {
 	var OWNED_VARS = Object.freeze([
 		'wishesCount',
 		'monkeyPawLearned',
+		'monkeyPawEffectsKnown',
 		'MonkeyPawStage', 'wishAnything',
 		'boughtMonkeyPawGuide'
 	]);
@@ -122,6 +133,12 @@ setup.MonkeyPaw = (function () {
 		var s = sv();
 		if (!s.monkeyPawLearned) s.monkeyPawLearned = {};
 		return s.monkeyPawLearned;
+	}
+
+	function effectsKnownMap() {
+		var s = sv();
+		if (!s.monkeyPawEffectsKnown) s.monkeyPawEffectsKnown = {};
+		return s.monkeyPawEffectsKnown;
 	}
 
 	// --- Wish catalogue -------------------------------------------
@@ -428,6 +445,11 @@ setup.MonkeyPaw = (function () {
 		hasCursedItem: hasCursedItem,
 
 		// --- Learned state ----------------------------------------
+		/* "Learned" gates the button (label is known); "effect known"
+		   gates the description shown beneath the button. Firing a
+		   wish from the textbox sets both (player experienced it);
+		   the wishes-list shop item sets only labels; the full guide
+		   sets both for every wish. */
 		isLearned: function (id) { return learnedMap()[id] === true; },
 		markLearned: function (id) { learnedMap()[id] = true; },
 		learnAll: function () {
@@ -435,11 +457,18 @@ setup.MonkeyPaw = (function () {
 				learnedMap()[WISHES[i].id] = true;
 			}
 		},
+		isEffectKnown: function (id) { return effectsKnownMap()[id] === true; },
+		markEffectKnown: function (id) { effectsKnownMap()[id] = true; },
+		learnAllEffects: function () {
+			for (var i = 0; i < WISHES.length; i++) {
+				effectsKnownMap()[WISHES[i].id] = true;
+			}
+		},
 		/* Short description of what a wish does, or null when the
-		   player hasn't learned it yet. Menu code renders the
+		   player hasn't unlocked the effect yet. Menu code renders the
 		   description next to the button iff this returns non-null. */
 		describe: function (id) {
-			if (!this.isLearned(id)) return null;
+			if (!this.isEffectKnown(id)) return null;
 			var w = this.byId(id);
 			return w ? w.description : null;
 		},
@@ -460,14 +489,48 @@ setup.MonkeyPaw = (function () {
 				sv().boughtMonkeyPawGuide = setup.MonkeyPawGuide.NOT_ASKED;
 			}
 		},
-		hasGuide: function () { return this.guideStage() === setup.MonkeyPawGuide.PURCHASED; },
+		/* True iff the full guide has been bought (descriptions +
+		   "anything" meta-wish unlocked). */
+		hasGuide: function () {
+			return this.guideStage() === setup.MonkeyPawGuide.FULL_BOUGHT;
+		},
+		/* True if either of the two shop items has been bought --
+		   that is, every wish label is visible. The shop hides the
+		   wishes-list card once this is true. */
+		hasWishList: function () {
+			var g = this.guideStage();
+			return g === setup.MonkeyPawGuide.LIST_BOUGHT
+				|| g === setup.MonkeyPawGuide.FULL_BOUGHT;
+		},
 		isGuideAsked: function () { return this.guideStage() === setup.MonkeyPawGuide.ASKED; },
 		markGuideAsked: function () { sv().boughtMonkeyPawGuide = setup.MonkeyPawGuide.ASKED; },
-		/* Witch-side purchase effect: reveal everything. Money is
-		   deducted by the caller (WitchSale). */
-		purchaseGuide: function () {
-			sv().boughtMonkeyPawGuide = setup.MonkeyPawGuide.PURCHASED;
+		/* True iff the wishes-list shop card should still be offered
+		   (asked, but neither shop item bought). */
+		canBuyWishList: function () {
+			return this.guideStage() === setup.MonkeyPawGuide.ASKED;
+		},
+		/* True iff the full-guide shop card should still be offered
+		   (asked, full guide not yet bought; the wishes-list card may
+		   already have been bought). */
+		canBuyGuide: function () {
+			var g = this.guideStage();
+			return g === setup.MonkeyPawGuide.ASKED
+				|| g === setup.MonkeyPawGuide.LIST_BOUGHT;
+		},
+		/* Witch-side purchase effect for the 400-coin wishes-list
+		   page: reveal every label, nothing else. Money is deducted
+		   by the caller (Witch.buyMonkeyPawWishList). */
+		purchaseWishList: function () {
+			sv().boughtMonkeyPawGuide = setup.MonkeyPawGuide.LIST_BOUGHT;
 			this.learnAll();
+		},
+		/* Witch-side purchase effect for the 800-coin full guide:
+		   reveal everything (labels, descriptions, "anything"). Money
+		   is deducted by the caller (Witch.buyMonkeyPawGuide). */
+		purchaseGuide: function () {
+			sv().boughtMonkeyPawGuide = setup.MonkeyPawGuide.FULL_BOUGHT;
+			this.learnAll();
+			this.learnAllEffects();
 			this.grantAnything();
 		},
 

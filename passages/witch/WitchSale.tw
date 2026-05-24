@@ -98,12 +98,26 @@
 <</if>>
 </div>
 <div class="housecard">
-<<if setup.MonkeyPaw.isGuideAsked()>>
+<<if setup.MonkeyPaw.canBuyWishList()>>
 	<<image "mechanics/cursedpossessions/monkey-paw/monkeypaw-page.jpg" "iconPx">><br>
+	@@.mc-thoughts; Monkey paw -- wishes list@@<br>
 	<span class="priceAmount">400$</span><br>
 	<<if setup.Mc.money() gte 400>>
 		@@.buyItemLink;<<link "Buy" "WitchSale">>
-			<<run setup.Witch.unlockMonkeyPawWishes()>>
+			<<run setup.Witch.buyMonkeyPawWishList()>>
+		<</link>>@@<br>
+	<<else>>@@.mc-thoughts; I don't have enough money@@
+	<</if>>
+<</if>>
+</div>
+<div class="housecard">
+<<if setup.MonkeyPaw.canBuyGuide()>>
+	<<image "mechanics/cursedpossessions/monkey-paw/monkeypaw-page.jpg" "iconPx">><br>
+	@@.mc-thoughts; Monkey paw -- full guide@@<br>
+	<span class="priceAmount">800$</span><br>
+	<<if setup.Mc.money() gte 800>>
+		@@.buyItemLink;<<link "Buy" "WitchSale">>
+			<<run setup.Witch.buyMonkeyPawGuide()>>
 		<</link>>@@<br>
 	<<else>>@@.mc-thoughts; I don't have enough money@@
 	<</if>>
@@ -120,9 +134,6 @@
 	<<else>>@@.mc-thoughts; I don't have enough money@@
 	<</if>>
 <</if>>
-</div>
-<div class="housecard">
-
 </div>
 <div class="housecard">
 

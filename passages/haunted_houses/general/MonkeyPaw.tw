@@ -19,7 +19,9 @@
 				<<linkreplace `"@@.usebtn; " + _w.label + "@@"`>>
 					<<monkeyPawWish _w.widget>>
 				<</linkreplace>>
-				@@.mc-thoughts; <<= setup.MonkeyPaw.describe(_w.id)>>@@<br>
+				<<if setup.MonkeyPaw.isEffectKnown(_w.id)>>
+					@@.mc-thoughts; <<= setup.MonkeyPaw.describe(_w.id)>>@@<br>
+				<</if>>
 			<</capture>>
 		<</if>>
 	<</for>>
@@ -36,6 +38,7 @@
 			<<set _wish to setup.MonkeyPaw.byInput(_inputWish)>>
 			<<if _wish>>
 				<<run setup.MonkeyPaw.markLearned(_wish.id)>>
+				<<run setup.MonkeyPaw.markEffectKnown(_wish.id)>>
 				<<monkeyPawWish _wish.widget>>
 			<<elseif _inputWish.toLowerCase().trim() eq "anything">>
 				<<run setup.MonkeyPaw.grantAnything()>>

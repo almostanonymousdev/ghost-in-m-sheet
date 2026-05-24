@@ -154,9 +154,9 @@
 		@@.mc-speech; What's it do.@@<br>
 		@@.notmc-speech; Grants wishes. Badly. Three of them.@@<br>
 		@@.mc-speech; And if I want to know how badly?@@<br>
-		@@.notmc-speech; I have a guide. Four hundred.@@<br>
-		@@.mc-speech; Four hundred is steep.@@<br>
-		@@.notmc-speech; So's a wish you can't take back. Shelf's open whenever you decide.@@<br>
+		@@.notmc-speech; Two pages on the shelf. The first lists what it'll answer to. Four hundred. The second adds what each wish costs you. Eight hundred.@@<br>
+		@@.mc-speech; Eight hundred is steep.@@<br>
+		@@.notmc-speech; So's a wish you can't take back. Shelves are open whenever you decide.@@<br>
 		<<run setup.Witch.markMonkeyPawGuideBought()>>
 	<</linkreplace>><br>
 

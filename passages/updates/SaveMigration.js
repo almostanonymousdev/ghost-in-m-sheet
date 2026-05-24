@@ -469,19 +469,30 @@
 		var hasLegacyWishFlag = Object.keys(WISH_FLAG_TO_ID).some(function (k) {
 			return vars[k] !== undefined;
 		});
-		if (vars.boughtMonkeyPawGuide === setup.MonkeyPawGuide.PURCHASED || hasLegacyWishFlag) {
+		if (vars.boughtMonkeyPawGuide === setup.MonkeyPawGuide.FULL_BOUGHT || hasLegacyWishFlag) {
 			if (!vars.monkeyPawLearned || typeof vars.monkeyPawLearned !== 'object') {
 				vars.monkeyPawLearned = {};
 			}
+			if (!vars.monkeyPawEffectsKnown || typeof vars.monkeyPawEffectsKnown !== 'object') {
+				vars.monkeyPawEffectsKnown = {};
+			}
 			Object.keys(WISH_FLAG_TO_ID).forEach(function (flag) {
-				if (vars[flag] === 1) vars.monkeyPawLearned[WISH_FLAG_TO_ID[flag]] = true;
+				if (vars[flag] === 1) {
+					vars.monkeyPawLearned[WISH_FLAG_TO_ID[flag]] = true;
+					// Pre-split saves had a single "learned" bit; if a
+					// wish was learned at all, its effect was also
+					// visible. Preserve that by mirroring into the
+					// effects-known map.
+					vars.monkeyPawEffectsKnown[WISH_FLAG_TO_ID[flag]] = true;
+				}
 			});
 			// Buying the guide unlocked everything, including the
 			// "anything" meta-wish; some 0.5.1 paths set the per-wish
 			// flags but not $wishAnything when the guide was bought.
-			if (vars.boughtMonkeyPawGuide === setup.MonkeyPawGuide.PURCHASED) {
+			if (vars.boughtMonkeyPawGuide === setup.MonkeyPawGuide.FULL_BOUGHT) {
 				Object.keys(WISH_FLAG_TO_ID).forEach(function (flag) {
 					vars.monkeyPawLearned[WISH_FLAG_TO_ID[flag]] = true;
+					vars.monkeyPawEffectsKnown[WISH_FLAG_TO_ID[flag]] = true;
 				});
 				if (vars.wishAnything !== true) vars.wishAnything = true;
 			}
@@ -711,7 +722,8 @@
 		'eventToolsOneStart', 'wardenClothesStage',
 		'weakenTheGhostQuest', 'isWeakenGhost', 'moneyFromWeakenTheGhost',
 		'amulet', 'ectoplasmQuestStage', 'contracts',
-		'wishesCount', 'monkeyPawLearned', 'MonkeyPawStage', 'wishAnything',
+		'wishesCount', 'monkeyPawLearned', 'monkeyPawEffectsKnown',
+		'MonkeyPawStage', 'wishAnything',
 		'hasQuestForRescue', 'rescueStage', 'hasRescueClue',
 		'rescueJadePossessed', 'rescueVictoriaPossessed', 'rescueGirls',
 		'ghostSpiritEventStage', 'ghostMareEventStart', 'ghostMareEventStage',

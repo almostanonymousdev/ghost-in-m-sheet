@@ -139,21 +139,62 @@ test.describe('Witch — side quests', () => {
     expect(await callSetup(page, 'setup.Witch.canAskAboutMonkeyPaw()')).toBe(true);
   });
 
-  test('unlockMonkeyPawWishes marks every wish learned and deducts $400', async ({ game: page }) => {
+  test('buyMonkeyPawWishList unlocks labels for $400 and leaves descriptions hidden', async ({ game: page }) => {
     await setVar(page, 'mc.money', 500);
     await setVar(page, 'boughtMonkeyPawGuide', 1);
     await page.evaluate(() => { delete SugarCube.State.variables.monkeyPawLearned; });
+    await page.evaluate(() => { delete SugarCube.State.variables.monkeyPawEffectsKnown; });
     await page.evaluate(() => { delete SugarCube.State.variables.wishAnything; });
-    await page.evaluate(() => SugarCube.setup.Witch.unlockMonkeyPawWishes());
+    await page.evaluate(() => SugarCube.setup.Witch.buyMonkeyPawWishList());
     expect(await getVar(page, 'mc.money')).toBe(100);
+    expect(await callSetup(page, 'setup.MonkeyPaw.hasWishList()')).toBe(true);
+    expect(await callSetup(page, 'setup.MonkeyPaw.hasGuide()')).toBe(false);
+    expect(await callSetup(page, 'setup.MonkeyPaw.hasAnything()')).toBe(false);
+    const wishIds = await page.evaluate(() =>
+      SugarCube.setup.MonkeyPaw.list().map(w => w.id));
+    for (const id of wishIds) {
+      expect(await callSetup(page, `setup.MonkeyPaw.isLearned('${id}')`)).toBe(true);
+      expect(await callSetup(page, `setup.MonkeyPaw.isEffectKnown('${id}')`)).toBe(false);
+    }
+    // Full-guide card should still be available; wishes-list card hides.
+    expect(await callSetup(page, 'setup.MonkeyPaw.canBuyWishList()')).toBe(false);
+    expect(await callSetup(page, 'setup.MonkeyPaw.canBuyGuide()')).toBe(true);
+  });
+
+  test('buyMonkeyPawGuide unlocks everything for $800 and hides both shop cards', async ({ game: page }) => {
+    await setVar(page, 'mc.money', 1000);
+    await setVar(page, 'boughtMonkeyPawGuide', 1);
+    await page.evaluate(() => { delete SugarCube.State.variables.monkeyPawLearned; });
+    await page.evaluate(() => { delete SugarCube.State.variables.monkeyPawEffectsKnown; });
+    await page.evaluate(() => { delete SugarCube.State.variables.wishAnything; });
+    await page.evaluate(() => SugarCube.setup.Witch.buyMonkeyPawGuide());
+    expect(await getVar(page, 'mc.money')).toBe(200);
     expect(await getVar(page, 'boughtMonkeyPawGuide')).toBe(2);
     expect(await callSetup(page, 'setup.MonkeyPaw.hasGuide()')).toBe(true);
+    expect(await callSetup(page, 'setup.MonkeyPaw.hasWishList()')).toBe(true);
     expect(await callSetup(page, 'setup.MonkeyPaw.hasAnything()')).toBe(true);
     const wishIds = await page.evaluate(() =>
       SugarCube.setup.MonkeyPaw.list().map(w => w.id));
     for (const id of wishIds) {
       expect(await callSetup(page, `setup.MonkeyPaw.isLearned('${id}')`)).toBe(true);
+      expect(await callSetup(page, `setup.MonkeyPaw.isEffectKnown('${id}')`)).toBe(true);
     }
+    expect(await callSetup(page, 'setup.MonkeyPaw.canBuyWishList()')).toBe(false);
+    expect(await callSetup(page, 'setup.MonkeyPaw.canBuyGuide()')).toBe(false);
+  });
+
+  test('buying the wishes list first then the full guide costs $1200 total and unlocks everything', async ({ game: page }) => {
+    await setVar(page, 'mc.money', 1500);
+    await setVar(page, 'boughtMonkeyPawGuide', 1);
+    await page.evaluate(() => { delete SugarCube.State.variables.monkeyPawLearned; });
+    await page.evaluate(() => { delete SugarCube.State.variables.monkeyPawEffectsKnown; });
+    await page.evaluate(() => { delete SugarCube.State.variables.wishAnything; });
+    await page.evaluate(() => SugarCube.setup.Witch.buyMonkeyPawWishList());
+    expect(await getVar(page, 'mc.money')).toBe(1100);
+    await page.evaluate(() => SugarCube.setup.Witch.buyMonkeyPawGuide());
+    expect(await getVar(page, 'mc.money')).toBe(300);
+    expect(await callSetup(page, 'setup.MonkeyPaw.hasGuide()')).toBe(true);
+    expect(await callSetup(page, 'setup.MonkeyPaw.hasAnything()')).toBe(true);
   });
 
   test('canAskAboutIronclad matches wardenClothesStage 0 or 1', async ({ game: page }) => {

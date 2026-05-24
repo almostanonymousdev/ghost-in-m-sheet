@@ -155,17 +155,37 @@ test.describe('Monkey Paw wishes', () => {
     }
   });
 
-  test('purchaseGuide marks every wish learned and grants anything-wish', async ({ game: page }) => {
+  test('purchaseGuide marks every wish learned, every effect known, and grants anything-wish', async ({ game: page }) => {
     await page.evaluate(() => {
       SugarCube.State.variables.monkeyPawLearned = {};
+      SugarCube.State.variables.monkeyPawEffectsKnown = {};
       SugarCube.State.variables.wishAnything = false;
       SugarCube.setup.MonkeyPaw.purchaseGuide();
     });
     for (const id of ['activity', 'trapTheGhost', 'sanity', 'leave', 'knowledge', 'dawn']) {
       expect(await callSetup(page, `setup.MonkeyPaw.isLearned("${id}")`)).toBe(true);
+      expect(await callSetup(page, `setup.MonkeyPaw.isEffectKnown("${id}")`)).toBe(true);
     }
     expect(await callSetup(page, 'setup.MonkeyPaw.hasAnything()')).toBe(true);
     expect(await callSetup(page, 'setup.MonkeyPaw.hasGuide()')).toBe(true);
+    expect(await callSetup(page, 'setup.MonkeyPaw.hasWishList()')).toBe(true);
+  });
+
+  test('purchaseWishList reveals every label but no effects, and does not grant anything-wish', async ({ game: page }) => {
+    await page.evaluate(() => {
+      SugarCube.State.variables.monkeyPawLearned = {};
+      SugarCube.State.variables.monkeyPawEffectsKnown = {};
+      SugarCube.State.variables.wishAnything = false;
+      SugarCube.setup.MonkeyPaw.purchaseWishList();
+    });
+    for (const id of ['activity', 'trapTheGhost', 'sanity', 'leave', 'knowledge', 'dawn']) {
+      expect(await callSetup(page, `setup.MonkeyPaw.isLearned("${id}")`)).toBe(true);
+      expect(await callSetup(page, `setup.MonkeyPaw.isEffectKnown("${id}")`)).toBe(false);
+      expect(await callSetup(page, `setup.MonkeyPaw.describe("${id}")`)).toBe(null);
+    }
+    expect(await callSetup(page, 'setup.MonkeyPaw.hasAnything()')).toBe(false);
+    expect(await callSetup(page, 'setup.MonkeyPaw.hasGuide()')).toBe(false);
+    expect(await callSetup(page, 'setup.MonkeyPaw.hasWishList()')).toBe(true);
   });
 
   /* Level gate: the paw is supposed to be invisible (no furniture

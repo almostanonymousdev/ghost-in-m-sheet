@@ -372,6 +372,18 @@ test.describe('Save/load round-trip', () => {
       knowledge:    true,
       dawn:         true,
     });
+    // Pre-split saves had a single "learned" bit that gated both
+    // label and description; the migration mirrors that into the
+    // post-split monkeyPawEffectsKnown map so a 0.5.1 save still
+    // shows descriptions after upgrading.
+    expect(migrated.monkeyPawEffectsKnown).toEqual({
+      activity:     true,
+      trapTheGhost: true,
+      sanity:       true,
+      leave:        true,
+      knowledge:    true,
+      dawn:         true,
+    });
     expect(migrated.wishAnything).toBe(true);
     expect(migrated.boughtMonkeyPawGuide).toBe(2);
   });
