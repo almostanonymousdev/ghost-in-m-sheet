@@ -171,18 +171,23 @@ test.describe('ToolController renderers', () => {
     expect(uvl).toBe(1);
   });
 
-  test('beginProwlEvent arms EMF regardless of which branch the player picks', async () => {
-    /* EMF used to only activate when the player picked Freeze; Run /
-       Hide / Pray resolutions left the window shut. Centralised onto
-       beginProwlEvent so a prowl arms EMF the moment GhostProwlEvent
-       opens — every resolution path inherits a hot reader. */
+  test('beginProwlEvent arms EMF + UVL regardless of which branch the player picks', async () => {
+    /* EMF + UVL used to only activate when the player picked Freeze;
+       Run / Hide / Pray resolutions left both windows shut.
+       Centralised onto beginProwlEvent so a prowl arms both readers
+       the moment GhostProwlEvent opens — every resolution path
+       inherits hot tools. */
     await page.evaluate(() => {
       SugarCube.setup.toolsRecord('emf').activated = 0;
+      SugarCube.setup.toolsRecord('uvl').activated = 0;
     });
     await callSetup(page, 'setup.HauntedHouses.beginProwlEvent()');
     const emf = await page.evaluate(() =>
       SugarCube.setup.toolsRecord('emf').activated);
+    const uvl = await page.evaluate(() =>
+      SugarCube.setup.toolsRecord('uvl').activated);
     expect(emf).toBe(1);
+    expect(uvl).toBe(1);
   });
 
   test('cleanupAfterHunt resets EMF + UVL activation back to defaults', async () => {

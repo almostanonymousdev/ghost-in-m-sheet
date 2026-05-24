@@ -249,15 +249,17 @@ setup.HauntedHouses = (function () {
 		/* Start-of-hunt-event bookkeeping: reset elapsedTimeProwl
 		   window + stamp the activation time. Called by the first
 		   frame of GhostProwlEvent before the player picks
-		   run/hide/freeze/pray. Also opens the EMF activation window
-		   here -- a prowl disturbs the air enough for the reader to
-		   pick up, regardless of which branch the player resolves
-		   into. Hunt cleanup (cleanupAfterHunt -> resetTools) clears
-		   the activation back to defaults at hunt end. */
+		   run/hide/freeze/pray. Also opens the EMF + UVL activation
+		   windows here -- a prowl disturbs the air enough for the
+		   readers to pick up trail and residue, regardless of which
+		   branch the player resolves into. Hunt cleanup
+		   (cleanupAfterHunt -> resetTools) clears both activations
+		   back to defaults at hunt end. */
 		beginProwlEvent: function () {
 			setup.Ghosts.activateProwl();
 			setup.Ghosts.setElapsedTimeProwl(0);
 			setup.activateTool("emf");
+			setup.activateTool("uvl");
 		},
 		succubusEventTimer: function () { return setup.Home.succubusEventTimer() || 0; },
 		stealChance: function () { return sv().stealChance || 0; },

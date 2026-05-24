@@ -1,12 +1,10 @@
 :: FreezeHunt [noreturn nobr] {"position":"2700,1225","size":"100,100"}
 /* Freeze-and-let-it-pass: third branch alongside Run / Hide. Pays a
- * clothing item + a bank of tempCorr. Freeze-specific bonus: the
- * physical contact leaves UVL-readable residue on the player, so
- * activateTool("uvl") opens that window for the next tick. EMF is
- * already armed for every prowl path by beginProwlEvent, so it does
- * not need to be re-activated here. With nothing left to give, the
- * ghost takes the player instead and routes to HuntOverSanity. Strips
- * via the canonical Wardrobe.stealWornInGroup / StealBottomOuter /
+ * clothing item + a bank of tempCorr. EMF + UVL are already armed
+ * for every prowl path by beginProwlEvent, so they do not need to be
+ * re-activated here. With nothing left to give, the ghost takes the
+ * player instead and routes to HuntOverSanity. Strips via the
+ * canonical Wardrobe.stealWornInGroup / StealBottomOuter /
  * StealPanties / StealBra passages so wardrobe variant state +
  * rememberTopOuter/rememberBottomOuter stay consistent. */
 <<script>>
@@ -30,7 +28,6 @@
 	<</link>>@@
 <<else>>
 	<<run setup.Mc.addTempCorr(0.5)>>
-	<<run setup.activateTool("uvl")>>
 	/% Mirror StealClothes: stash a clothesStolen pin onto the floor plan and flip isClothesStolen=1 so the find-stolen-clothes UI surfaces the dropped garment somewhere in the house. %/
 	<<run setup.HuntController.stashStolenClothes()>>
 	<<run setup.HauntedHouses.markClothesStolen()>>
