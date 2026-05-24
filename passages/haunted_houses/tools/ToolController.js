@@ -760,6 +760,20 @@ setup.searchableRooms.forEach(function (room) {
         rec.activationTime = 0;
     }
 
+    /* setup.Time.totalMinutes() wraps to 0 at midnight, so the naive
+     * `now - activationTime` subtraction goes negative when a tool was
+     * armed before midnight and the in-game clock has since rolled into
+     * the next day. EMF/UVL windows are 10-20 minutes, far shorter than
+     * a day, so a single +1440 wrap-around correction is sufficient:
+     * within one day after activation the post-wrap elapsed lands in
+     * [0, 1440); multi-day gaps stay >= 1440 even after the +1440 and
+     * therefore still resolve as "expired" against the tiny window. */
+    function elapsedMinutesSince(activationTime) {
+        var elapsed = setup.Time.totalMinutes() - activationTime;
+        if (elapsed < 0) elapsed += 1440;
+        return elapsed;
+    }
+
     /* Mark a tool as just-activated (EMF/UVL); the activationTime timestamp
      * is used by tickTimedTool to compute the staleness window. */
     setup.activateTool = function (tool) {
@@ -789,7 +803,7 @@ setup.searchableRooms.forEach(function (room) {
         if (setup.TIMED_TOOLS.indexOf(tool) === -1) return TS.INACTIVE;
         var rec = setup.toolsRecord(tool);
         if (rec.activated !== 1) return TS.INACTIVE;
-        var elapsed = setup.Time.totalMinutes() - rec.activationTime;
+        var elapsed = elapsedMinutesSince(rec.activationTime);
         var remain = setup.toolTimeRemain(State.variables.equipment[tool]);
         if (elapsed > remain) {
             clearToolRecord(rec);
@@ -807,7 +821,7 @@ setup.searchableRooms.forEach(function (room) {
         if (setup.TIMED_TOOLS.indexOf(tool) === -1) return 0;
         var V = State.variables;
         if (!V.tools || !V.tools[tool] || V.tools[tool].activated !== 1) return 0;
-        var elapsed = setup.Time.totalMinutes() - V.tools[tool].activationTime;
+        var elapsed = elapsedMinutesSince(V.tools[tool].activationTime);
         var window = setup.toolTimeRemain((V.equipment || {})[tool]);
         var remain = window - elapsed;
         return remain > 0 ? remain : 0;

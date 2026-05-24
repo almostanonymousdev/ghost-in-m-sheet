@@ -171,6 +171,41 @@ test.describe('ToolController renderers', () => {
     expect(uvl).toBe(1);
   });
 
+  test('beginProwlEvent arms EMF regardless of which branch the player picks', async () => {
+    /* EMF used to only activate when the player picked Freeze; Run /
+       Hide / Pray resolutions left the window shut. Centralised onto
+       beginProwlEvent so a prowl arms EMF the moment GhostProwlEvent
+       opens — every resolution path inherits a hot reader. */
+    await page.evaluate(() => {
+      SugarCube.setup.toolsRecord('emf').activated = 0;
+    });
+    await callSetup(page, 'setup.HauntedHouses.beginProwlEvent()');
+    const emf = await page.evaluate(() =>
+      SugarCube.setup.toolsRecord('emf').activated);
+    expect(emf).toBe(1);
+  });
+
+  test('cleanupAfterHunt resets EMF + UVL activation back to defaults', async () => {
+    /* Hunt cleanup must scrub the timed-tool activation flags so the
+       EMF window opened by beginProwlEvent (or any other mid-hunt
+       arming) doesn't leak into the next hunt. */
+    await page.evaluate(() => {
+      SugarCube.setup.activateTool('emf');
+      SugarCube.setup.activateTool('uvl');
+    });
+    expect(await page.evaluate(() =>
+      SugarCube.setup.toolsRecord('emf').activated)).toBe(1);
+    expect(await page.evaluate(() =>
+      SugarCube.setup.toolsRecord('uvl').activated)).toBe(1);
+
+    await callSetup(page, 'setup.HauntedHouses.cleanupAfterHunt()');
+
+    expect(await page.evaluate(() =>
+      SugarCube.setup.toolsRecord('emf').activated)).toBe(0);
+    expect(await page.evaluate(() =>
+      SugarCube.setup.toolsRecord('uvl').activated)).toBe(0);
+  });
+
   test('clickHuntSearchTool fires the slot link only when not .disabled-link', async () => {
     /* Pin the disabled-state contract for the hunt keyboard-shortcut
        path. .disabled-link is added/removed on the
@@ -303,5 +338,79 @@ test.describe('ToolController renderers', () => {
       const exists = await page.evaluate(name => window.Meter.has(name), meterName);
       expect(exists).toBe(true);
     }
+  });
+
+  /* setup.Time.totalMinutes() wraps to 0 at midnight, so when a tool
+     was activated near the end of one in-game day and the clock has
+     since rolled over into the next, the naive `now - activationTime`
+     subtraction goes negative. Without a wrap-around fix the EMF/UVL
+     activation flag never expires and the sidebar HUD shows the
+     bogus minutes-remaining value `window - elapsed` (which balloons
+     to ~1440). Tools meant to live for 10-20 minutes effectively
+     "carry over" past midnight until the next activation overwrites
+     them. */
+  test('tickTimedTool expires an EMF activation after the day rolls past the window', async () => {
+    await page.evaluate(() => {
+      const V = SugarCube.State.variables;
+      V.equipment = V.equipment || {};
+      V.equipment.emf = 3;        // tier 3 → 20-minute window
+      V.hours = 23; V.minutes = 50;
+      SugarCube.setup.activateTool('emf');
+      // Roll past midnight by 25 minutes — well past the 20-minute window.
+      V.hours = 0; V.minutes = 15;
+    });
+
+    const state = await callSetup(page, "setup.tickTimedTool('emf')");
+    expect(state).toBe('expired');
+
+    const activated = await page.evaluate(() =>
+      SugarCube.setup.toolsRecord('emf').activated);
+    expect(activated).toBe(0);
+  });
+
+  test('tickTimedTool keeps an EMF activation READY across midnight while still within the window', async () => {
+    await page.evaluate(() => {
+      const V = SugarCube.State.variables;
+      V.equipment = V.equipment || {};
+      V.equipment.emf = 3;        // 20-minute window
+      V.hours = 23; V.minutes = 55;
+      SugarCube.setup.activateTool('emf');
+      // 10 in-game minutes later — still inside the 20-minute window.
+      V.hours = 0; V.minutes = 5;
+    });
+
+    const state = await callSetup(page, "setup.tickTimedTool('emf')");
+    expect(state).toBe('ready');
+  });
+
+  test('toolTimerRemain returns 0 (not a bogus 1000+) after the clock has wrapped past the activation window', async () => {
+    await page.evaluate(() => {
+      const V = SugarCube.State.variables;
+      V.equipment = V.equipment || {};
+      V.equipment.uvl = 3;        // 20-minute window
+      V.hours = 23; V.minutes = 50;
+      SugarCube.setup.activateTool('uvl');
+      // Many hours past midnight: elapsed = -ve under naive math, so
+      // window - elapsed would be ~1430. The HUD must clamp to 0.
+      V.hours = 9; V.minutes = 0;
+    });
+
+    const remain = await callSetup(page, "setup.toolTimerRemain('uvl')");
+    expect(remain).toBe(0);
+  });
+
+  test('toolTimerRemain returns the real minutes-left across midnight while still within the window', async () => {
+    await page.evaluate(() => {
+      const V = SugarCube.State.variables;
+      V.equipment = V.equipment || {};
+      V.equipment.uvl = 3;        // 20-minute window
+      V.hours = 23; V.minutes = 50;
+      SugarCube.setup.activateTool('uvl');
+      // 10 in-game minutes later → 10 minutes of the 20-min window left.
+      V.hours = 0; V.minutes = 0;
+    });
+
+    const remain = await callSetup(page, "setup.toolTimerRemain('uvl')");
+    expect(remain).toBe(10);
   });
 });
