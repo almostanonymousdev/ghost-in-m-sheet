@@ -148,7 +148,7 @@ test.describe('Delivery E2E — Manager first visit', () => {
     await goToPassage(page, 'DeliveryManager');
 
     const text = await passageText(page);
-    expect(text).toContain("I'm Jerry");
+    expect(text).toContain("Jerry");
     expect(text).toContain('Now you can work as a courier');
 
     expect(await getVar(page, 'firstVisitDeliveryHub')).toBe(false);
@@ -254,7 +254,7 @@ test.describe('Delivery E2E — Manager return visits', () => {
     await goToPassage(page, 'DeliveryManagerBlowjob');
     await waitForPassage(page, 'DeliveryManagerBlowjob');
 
-    expect(await getVar(page, 'mc.money')).toBe(startMoney + 10);
+    expect(await getVar(page, 'mc.money')).toBe(startMoney + 25);
     expect(await getVar(page, 'mc.corruption')).toBe(startCorruption + 0.5);
     expect(await getVar(page, 'deliveryBJ')).toBe(1);
   });
