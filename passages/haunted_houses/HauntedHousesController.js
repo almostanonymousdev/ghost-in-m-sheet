@@ -12,9 +12,9 @@
    FurnitureSearch can pick it up. CARRYING: player holds the deck and
    can draw cards. SPENT: every card drawn this hunt; deck is done. */
 setup.TarotStage = Object.freeze({
-	HIDDEN:    0,
-	CARRYING:  1,
-	SPENT:     2
+	HIDDEN: 0,
+	CARRYING: 1,
+	SPENT: 2
 });
 
 /* Canonical tarot deck. `effect` names the widget invoked after the card
@@ -22,29 +22,31 @@ setup.TarotStage = Object.freeze({
    is a single line that wikifies <<effectName>>. Fool has no effect widget --
    its reveal-then-swap flow is handled directly by the draw logic. */
 setup.tarotDeck = [
-	{ name: "passion",       chance: 20, image: "mechanics/cursedpossessions/tarot-cards/passion.jpg",       effect: "tarotPassion" },
-	{ name: "pulse",         chance: 20, image: "mechanics/cursedpossessions/tarot-cards/pulse.jpg",         effect: "tarotPulse" },
-	{ name: "oblivion",      chance:  1, image: "mechanics/cursedpossessions/tarot-cards/oblivion.jpg",      effect: "tarotOblivion" },
-	{ name: "knowledge",     chance: 10, image: "mechanics/cursedpossessions/tarot-cards/knowledge.jpg",     effect: "tarotKnowledge" },
-	{ name: "power",         chance: 12, image: "mechanics/cursedpossessions/tarot-cards/power.jpg",         effect: "tarotPower" },
-	{ name: "whore",         chance: 10, image: "mechanics/cursedpossessions/tarot-cards/whore.jpg",         effect: "tarotWhore" },
-	{ name: "death",         chance:  5, image: "mechanics/cursedpossessions/tarot-cards/death.jpg",         effect: "tarotDeath" },
-	{ name: "possession",    chance:  1, image: "mechanics/cursedpossessions/tarot-cards/possession.jpg",    effect: "tarotPossession" },
-	{ name: "highpriestess", chance:  2, image: "mechanics/cursedpossessions/tarot-cards/highpriestess.jpg", effect: "tarotHighpriestess" },
-	{ name: "fool",          chance: 19, image: "mechanics/cursedpossessions/tarot-cards/fool.jpg" }
+	{ name: "passion", chance: 20, image: "mechanics/cursedpossessions/tarot-cards/passion.jpg", effect: "tarotPassion" },
+	{ name: "pulse", chance: 20, image: "mechanics/cursedpossessions/tarot-cards/pulse.jpg", effect: "tarotPulse" },
+	{ name: "oblivion", chance: 1, image: "mechanics/cursedpossessions/tarot-cards/oblivion.jpg", effect: "tarotOblivion" },
+	{ name: "knowledge", chance: 10, image: "mechanics/cursedpossessions/tarot-cards/knowledge.jpg", effect: "tarotKnowledge" },
+	{ name: "power", chance: 12, image: "mechanics/cursedpossessions/tarot-cards/power.jpg", effect: "tarotPower" },
+	{ name: "whore", chance: 10, image: "mechanics/cursedpossessions/tarot-cards/whore.jpg", effect: "tarotWhore" },
+	{ name: "death", chance: 5, image: "mechanics/cursedpossessions/tarot-cards/death.jpg", effect: "tarotDeath" },
+	{ name: "possession", chance: 1, image: "mechanics/cursedpossessions/tarot-cards/possession.jpg", effect: "tarotPossession" },
+	{ name: "highpriestess", chance: 2, image: "mechanics/cursedpossessions/tarot-cards/highpriestess.jpg", effect: "tarotHighpriestess" },
+	{ name: "fool", chance: 19, image: "mechanics/cursedpossessions/tarot-cards/fool.jpg" }
 ];
 
 /* Weighted pick: roll once against the accumulated chances, return the
    first card whose running total covers the roll. */
 setup.drawTarotCard = function (deck) {
-	var roll = Math.floor(Math.random() * 101);
+	var total = deck.reduce(function (s, c) { return s + c.chance; }, 0);
+	var roll = Math.random() * total;
 	var acc = 0;
 	for (var i = 0; i < deck.length; i++) {
 		acc += deck[i].chance;
-		if (roll <= acc) return deck[i];
+		if (roll < acc) return deck[i];
 	}
 	return deck[deck.length - 1];
 };
+
 
 setup.HauntedHouses = (function () {
 	var sv = setup.sv;
@@ -178,9 +180,9 @@ setup.HauntedHouses = (function () {
 				? setup.HuntController.modifiers() : [];
 			var ctx = setup.Hunt.applyFilter(setup.Hunt.Event.STEAL_CHECK, {
 				forceTrigger: false,
-				suppress:     false,
-				chanceMult:   1,
-				modifierIds:  modifierIds
+				suppress: false,
+				chanceMult: 1,
+				modifierIds: modifierIds
 			});
 			if (ctx.suppress) return false;
 			if (ctx.forceTrigger) return this.canStealAnyItem();
@@ -193,8 +195,8 @@ setup.HauntedHouses = (function () {
 		   setup.Events.eventTriggered() — backed by State.temporary
 		   so passages don't have to share a leaky `_stealClothesTriggered`
 		   temp var across <<include>> boundaries. */
-		stealClothesTriggered:      function () { return State.temporary.stealClothesTriggered === true; },
-		markStealClothesTriggered:  function () { State.temporary.stealClothesTriggered = true; },
+		stealClothesTriggered: function () { return State.temporary.stealClothesTriggered === true; },
+		markStealClothesTriggered: function () { State.temporary.stealClothesTriggered = true; },
 		resetStealClothesTriggered: function () { State.temporary.stealClothesTriggered = false; },
 
 		// --- NudityEvent branch helpers -------------------------
@@ -371,11 +373,11 @@ setup.HauntedHouses = (function () {
 			function isSkirt(k) { return typeof k === "string" && k.indexOf("noskirt") === 0; }
 			function hasPanties(k) { return typeof k === "string" && k.indexOf("panties") === 0; }
 			function noPanties(k) { return typeof k === "string" && k.indexOf("nopanties") === 0; }
-			if (isJeans(ro) && hasPanties(ru))  return "characters/mc/jeansp.mp4";
-			if (isJeans(ro) && noPanties(ru))   return "characters/mc/jeansnp.mp4";
-			if (isShorts(ro))                   return "characters/mc/shorts.mp4";
-			if (isSkirt(ro) && hasPanties(ru))  return "characters/mc/skirtp.mp4";
-			if (isSkirt(ro) && noPanties(ru))   return "characters/mc/skirtnp.mp4";
+			if (isJeans(ro) && hasPanties(ru)) return "characters/mc/jeansp.mp4";
+			if (isJeans(ro) && noPanties(ru)) return "characters/mc/jeansnp.mp4";
+			if (isShorts(ro)) return "characters/mc/shorts.mp4";
+			if (isSkirt(ro) && hasPanties(ru)) return "characters/mc/skirtp.mp4";
+			if (isSkirt(ro) && noPanties(ru)) return "characters/mc/skirtnp.mp4";
 			return null;
 		},
 		clearClothesStolenFlag: function () { sv().isClothesStolen = false; },
@@ -392,9 +394,9 @@ setup.HauntedHouses = (function () {
 	// keep their inline getters above (the `||` fallback is load-bearing);
 	// only the bare setters fold here.
 	setup.defineAccessors(api, sv, [
-		{ name: 'chosenTarotCard',  key: 'chosenCard', set: false },
-		{ name: 'tarotCardsStage',  get: false },
-		{ name: 'drawnCards',       get: false }
+		{ name: 'chosenTarotCard', key: 'chosenCard', set: false },
+		{ name: 'tarotCardsStage', get: false },
+		{ name: 'drawnCards', get: false }
 	]);
 	setup.defineStageAccessors(api, sv, 'tarotCardsStage', setup.TarotStage, {
 		mark: { markTarotCarrying: 'CARRYING', markTarotSpent: 'SPENT' }
