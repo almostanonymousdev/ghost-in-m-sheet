@@ -1,5 +1,10 @@
 :: UseCursedItem [nobr] {"position":"2200,1250","size":"100,100"}
+/* Video lookup reads the carried type *before* we consume it, then
+   the run below clears the type flag + held marker so the player isn't
+   stuck holding a phantom item (which would otherwise block Brook from
+   fetching another and leave the witch unable to take a turn-in). */
 <<set _vid to setup.HauntedHouses.cursedItemVideo()>>
+<<run setup.Witch.consumeCarriedCursedItem()>>
 <br>
 <<if _vid>>
 	<<video _vid "displayCentredImgs">><br>

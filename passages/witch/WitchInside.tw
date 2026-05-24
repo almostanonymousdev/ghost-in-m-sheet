@@ -84,7 +84,31 @@
 		<</if>><br></span>
 	<</if>>
 
-	<<if setup.Mc.lvl() lte 1>>
+	/* Turn-in stays outside the lvl-2 gate so legacy saves (pre
+	   loot-gate, commit e2ebd835) can always offload an item the
+	   player picked up before the quest was officially offered. */
+	<<if setup.Witch.hasCursedItemToTurnIn()>>
+		<<linkreplace "@@.usebtn; I found the cursed object.@@">>
+			@@.notmc-speech; Hand it here. Carefully.@@<br>
+			&emsp;She takes it with both hands and sets it in a drawer you didn't know was there. The drawer closes itself.<br>
+			<span> Money: +$30 $ </span><br>
+			<<run setup.Witch.collectCursedItemReward()>>
+			<<if setup.Witch.shouldAwardGwb3OnTurnIn()>>
+				<<run setup.Witch.upgradeGwbToLvl3()>>
+				@@.mc-action; You get a lvl 3 Ghost Writing Book @@<<image "ui/img/gwb.png" { style: "max-width:5%" }>><br>
+				<br>
+				@@.mc-speech; What do you do with them?@@<br>
+				@@.notmc-speech; My work.@@<br>
+				&emsp;@@.mc-thoughts; She runs her thumb along the binding of the book before she hands it over, slow, like she's testing whether it remembers her.@@<br>
+
+				@@.notmc-speech; Bring me more when you find them. I pay per piece. The toys are nicer if they've been with someone.@@<br>
+			<<else>>
+				@@.notmc-speech; Keep them coming when you find them. I pay per piece.@@<br>
+			<</if>>
+
+			@@.mc-speech; Alright. Money's money.@@
+		<</linkreplace>>
+	<<elseif setup.Mc.lvl() lte 1>>
 		@@.mc-speech; I just need to call the type, right?@@<br>
 		@@.notmc-speech; For now. We'll add more once you stop almost getting killed.@@ <br>
 		@@.warningtext; (Req. lvl 2+)@@<br>
@@ -103,27 +127,6 @@
 			<</linkreplace>>
 		<<elseif setup.Witch.cursedItemQuestActive()>>
 			@@.mc-thoughts; Find the cursed object in the haunted house. Bring it to Khadija.<br>
-		<<elseif setup.Witch.hasCursedItemToTurnIn()>>
-			<<linkreplace "@@.usebtn; I found the cursed object.@@">>
-				@@.notmc-speech; Hand it here. Carefully.@@<br>
-				&emsp;She takes it with both hands and sets it in a drawer you didn't know was there. The drawer closes itself.<br>
-				<span> Money: +$30 $ </span><br>
-				<<run setup.Witch.collectCursedItemReward()>>
-				<<if setup.Witch.shouldAwardGwb3OnTurnIn()>>
-					<<run setup.Witch.upgradeGwbToLvl3()>>
-					@@.mc-action; You get a lvl 3 Ghost Writing Book @@<<image "ui/img/gwb.png" { style: "max-width:5%" }>><br>
-					<br>
-					@@.mc-speech; What do you do with them?@@<br>
-					@@.notmc-speech; My work.@@<br>
-					&emsp;@@.mc-thoughts; She runs her thumb along the binding of the book before she hands it over, slow, like she's testing whether it remembers her.@@<br>
-
-					@@.notmc-speech; Bring me more when you find them. I pay per piece. The toys are nicer if they've been with someone.@@<br>
-				<<else>>
-					@@.notmc-speech; Keep them coming when you find them. I pay per piece.@@<br>
-				<</if>>
-
-				@@.mc-speech; Alright. Money's money.@@
-			<</linkreplace>>
 		<</if>>
 	<</if>>
 

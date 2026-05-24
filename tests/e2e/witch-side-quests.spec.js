@@ -39,6 +39,49 @@ test.describe('Witch — cursed-item quest lifecycle', () => {
     expect(await callSetup(page, 'setup.Witch.ownsLevel3Gwb()')).toBe(true);
     expect(await callSetup(page, 'setup.Witch.shouldAwardGwb3OnTurnIn()')).toBe(false);
   });
+
+  /* Legacy-save recovery: before the cursed-item loot gate landed
+     (commit e2ebd835) a player could find a cursed item while still at
+     lvl 1, never having heard about the quest. The witch must accept
+     the turn-in regardless of level so they aren't stuck holding it. */
+  test('witch turn-in is reachable at lvl 1 with a stranded cursed item', async ({ game: page }) => {
+    await setVar(page, 'mc.lvl', 1);
+    await setVar(page, 'mc.money', 0);
+    await setVar(page, 'hours', 12);
+    await setVar(page, 'firstVisitWitchShop', false);
+    await setVar(page, 'gotCursedItem', 1);
+    await setVar(page, 'isCIDildo', true);
+    await page.evaluate(() => {
+      SugarCube.State.variables.huntMode = 0;
+      SugarCube.State.variables.run = null;
+    });
+
+    await goToPassage(page, 'WitchInside');
+    await expectCleanPassage(page);
+
+    const turnInVisible = await page.evaluate(() => {
+      return document.querySelector('.passage').textContent.includes('I found the cursed object');
+    });
+    expect(turnInVisible).toBe(true);
+  });
+
+  /* Using a cursed item via UseCursedItem must clear the held flags so
+     the player isn't left with phantom carry state -- otherwise Brook
+     refuses to fetch another and the witch can't accept a turn-in that
+     no longer exists. */
+  test('UseCursedItem consumes the held item', async ({ game: page }) => {
+    await setVar(page, 'gotCursedItem', 1);
+    await setVar(page, 'isCIDildo', true);
+    await setVar(page, 'isCIButtplug', false);
+    await setVar(page, 'isCIBeads', false);
+    await setVar(page, 'isCIHDildo', false);
+
+    await goToPassage(page, 'UseCursedItem');
+
+    expect(await callSetup(page, 'setup.Witch.hasCursedItemToTurnIn()')).toBe(false);
+    expect(await getVar(page, 'gotCursedItem')).toBe(0);
+    expect(await getVar(page, 'isCIDildo')).toBe(false);
+  });
 });
 
 test.describe('Witch — exorcism and rescue referrals', () => {
