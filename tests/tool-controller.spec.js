@@ -219,6 +219,78 @@ test.describe('ToolController renderers', () => {
     expect(threw).toBe(false);
   });
 
+  test('renderSpiritbox hit stamps huntInlineMarkup with the Q/A response', async () => {
+    /* In hunt mode the renderer output is wikified into the hidden
+       #hunt-tool-sink, so the player would never see the Q/A text
+       unless the renderer also stamps the visible-inline buffer. Pin
+       the contract on a forced hit: chanceByTier(5) = 15%, so a
+       pinned roll of 1 always passes; the spiritbox-container markup
+       must end up in both the returned markup AND
+       setup.ToolController.huntInlineMarkup() for the toolbar widget
+       to drop it into #hunt-tool-inline. */
+    await page.evaluate(() => {
+      const V = SugarCube.State.variables;
+      V.equipment = { emf: 5, spiritbox: 5, gwb: 5,
+                      glass: 5, temperature: 5, uvl: 5 };
+      Math.random = () => 0;
+      SugarCube.setup.ToolController.setHuntInlineMarkup('');
+      /* Banshee (the seeded ghost) doesn't carry spiritbox evidence;
+         swap to a ghost whose evidence list includes it so the hit
+         path's hasEvidence("spiritbox") check passes. */
+      SugarCube.setup.HuntController.setField('ghostName', 'Wraith');
+      SugarCube.setup.HuntController.setField('evidence',
+        ['emf', 'spiritbox', 'gwb']);
+    });
+
+    const markup = await callSetup(page, "setup.ToolController.render('spiritbox')");
+    expect(markup).toContain('spiritbox-container');
+    expect(markup).toContain('spiritbox-answer');
+
+    const inline = await callSetup(page, 'setup.ToolController.huntInlineMarkup()');
+    expect(inline).toContain('spiritbox-container');
+    expect(inline).toContain('spiritbox-answer');
+  });
+
+  test('renderSpiritbox no-response leaves huntInlineMarkup empty (thumbsdown card is the only signal)', async () => {
+    /* A silent click should not paint a "silence" line above the
+       furniture row -- the per-tool card thumbsdown is the only
+       player-visible signal that the click landed. */
+    await page.evaluate(() => {
+      const V = SugarCube.State.variables;
+      V.equipment = { emf: 5, spiritbox: 5, gwb: 5,
+                      glass: 5, temperature: 5, uvl: 5 };
+      /* Seed a stale inline buffer so the renderer has to actively
+         clear it -- guards against a future refactor that drops the
+         explicit reset. */
+      SugarCube.setup.ToolController.setHuntInlineMarkup('<div>stale</div>');
+      /* Pin random high so chanceByTier fails and the no-response
+         branch fires. */
+      Math.random = () => 0.99;
+    });
+
+    const markup = await callSetup(page, "setup.ToolController.render('spiritbox')");
+    /* The renderer still returns the silence markup so the hidden
+       hunt-tool-sink path stays valid (a future use might pipe it
+       somewhere); only the visible inline buffer is suppressed. */
+    expect(markup).toContain('spiritbox-no-response');
+
+    const inline = await callSetup(page, 'setup.ToolController.huntInlineMarkup()');
+    expect(inline).toBe('');
+  });
+
+  test('clearAllHuntCards wipes huntInlineMarkup along with the per-card buffer', async () => {
+    /* The toolbar widget calls clearAllHuntCards() at the top of every
+       slot click so a stale spiritbox response from the previous tool
+       press doesn't linger when the player switches to EMF/UVL/etc. */
+    await page.evaluate(() => {
+      SugarCube.setup.ToolController.setHuntInlineMarkup('<div>stale</div>');
+      SugarCube.setup.ToolController.setHuntCardMarkup('<span>stale</span>');
+    });
+    await page.evaluate(() => SugarCube.setup.ToolController.clearAllHuntCards());
+    expect(await callSetup(page, 'setup.ToolController.huntInlineMarkup()')).toBe('');
+    expect(await callSetup(page, 'setup.ToolController.huntCardMarkup()')).toBe('');
+  });
+
   test('Hunt meters are registered for every search tool', async () => {
     /* The hunt toolbar renders one <<showmeter searchHunt<Tool>>> per
        tool slot. Those meter names need to exist before the widget

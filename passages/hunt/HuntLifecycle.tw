@@ -114,6 +114,7 @@
 
 		<<set _detectorOn to setup.ToolController.detectorBought()>>
 		<div class="hunt-run-bottom">
+			<div id="hunt-tool-inline" class="hunt-tool-inline"></div>
 			<div class="hunt-run-furniture">
 				<<if _cr and _cr.furniture.length>>
 					<<for _f range _cr.furniture>>

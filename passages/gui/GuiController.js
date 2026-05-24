@@ -279,6 +279,11 @@ $(document).one(":storyready", function () {
 		}
 	});
 	setup.Gui.applyHistoryControlsVisibility();
+	/* SugarCube's Engine.play clears document.body.className on every
+	   navigation, which drops the show-history class. Re-apply it on
+	   each :passagestart so the buttons stay visible when the cheat is
+	   on. */
+	$(document).on(':passagestart', setup.Gui.applyHistoryControlsVisibility);
 
 	/* Any click on the history arrows has to mark the save as cheated.
 	   We can't wrap Engine.backward/forward directly (SugarCube defines

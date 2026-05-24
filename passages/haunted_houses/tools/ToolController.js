@@ -49,6 +49,15 @@
        hunt-toolbar widget reads it on completion. */
     var _huntCardMarkup = '';
 
+    /* Visible-inline result shown in #hunt-tool-inline below the tool
+       bar. Used by tools whose output is prose that doesn't fit in the
+       per-card countdown overlay (currently just spiritbox -- gwb/plasm/
+       uvl hits route through <<deferGoto>> to a dedicated full-screen
+       passage instead). Renderers stamp this via setHuntInlineMarkup
+       and the hunt-toolbar widget wikifies it into the visible region
+       on tick completion. */
+    var _huntInlineMarkup = '';
+
     function huntCardNumber(coloredTextMarkup) {
         return '<span class="hunt-tool-card-number">' + coloredTextMarkup + '</span>';
     }
@@ -299,15 +308,23 @@
                 return '<<deferGoto "CityMapPossessed">>';
             }
             var threat = SPIRITBOX_MENACING[randInt(0, SPIRITBOX_MENACING.length - 1)];
-            return '<span class="spiritbox-question">You ask through the Spiritbox: "What do you want?"</span>\n'
-                 + '<span class="spiritbox-answer"><b>' + threat + '</b></span>';
+            var menacingMarkup = '<div class="spiritbox-container">\n'
+                 + '<span class="spiritbox-question">You ask through the Spiritbox: "What do you want?"</span>\n'
+                 + '<span class="spiritbox-answer"><b>' + threat + '</b></span>\n'
+                 + '</div>';
+            _huntInlineMarkup = menacingMarkup;
+            return menacingMarkup;
         }
 
         if (g && g.spiritboxStaticChance > 0 && roll <= g.spiritboxStaticChance) {
             _huntCardMarkup = '';
             var burst = SPIRITBOX_STATIC[randInt(0, SPIRITBOX_STATIC.length - 1)];
-            return '<span class="spiritbox-question">You ask through the Spiritbox: "What do you want?"</span>\n'
-                 + '<span class="spiritbox-answer"><b>' + burst + '</b></span>';
+            var staticMarkup = '<div class="spiritbox-container">\n'
+                 + '<span class="spiritbox-question">You ask through the Spiritbox: "What do you want?"</span>\n'
+                 + '<span class="spiritbox-answer"><b>' + burst + '</b></span>\n'
+                 + '</div>';
+            _huntInlineMarkup = staticMarkup;
+            return staticMarkup;
         }
 
         if (g && g.hasEvidence("spiritbox")
@@ -316,13 +333,20 @@
             setup.activateTool("emf");
             _huntCardMarkup = '';
             var qa = SPIRITBOX_QA[randInt(0, SPIRITBOX_QA.length - 1)];
-            return '<div class="spiritbox-container">\n'
+            var hitMarkup = '<div class="spiritbox-container">\n'
                  + '<span class="spiritbox-question">You ask through the Spiritbox: "' + qa.q + '"</span>\n'
                  + '<span class="spiritbox-answer">The ghost responds: "' + qa.a + '"</span>\n'
                  + '</div>';
+            _huntInlineMarkup = hitMarkup;
+            return hitMarkup;
         }
 
+        /* No response: the thumbs-down on the per-tool card is the
+           player-visible signal; leave the inline region empty so a
+           silent click doesn't paint a "silence" line above the
+           furniture row. */
         _huntCardMarkup = huntCardThumbsDown();
+        _huntInlineMarkup = '';
         return '<div class="spiritbox-container">\n'
              + '<span class="spiritbox-no-response">No one responds. Silence...</span>\n'
              + '</div>';
@@ -376,9 +400,22 @@
         setHuntCardMarkup: function (m) { _huntCardMarkup = m; },
         huntCardThumbsDownMarkup: huntCardThumbsDown,
         huntCardNumberMarkup:     huntCardNumber,
+
+        /* Visible-inline result buffer for prose tool output (spiritbox
+           Q/A, no-response, menacing / static one-liners). <<huntToolSlot>>
+           wikifies it into #hunt-tool-inline on tick completion; the
+           region stays empty for tools that route hits through
+           <<deferGoto>>. */
+        huntInlineMarkup:    function () { return _huntInlineMarkup; },
+        setHuntInlineMarkup: function (m) { _huntInlineMarkup = m; },
+
         clearAllHuntCards: function () {
             _huntCardMarkup = '';
-            if (typeof $ === 'function') $('.hunt-tool-countdown').empty();
+            _huntInlineMarkup = '';
+            if (typeof $ === 'function') {
+                $('.hunt-tool-countdown').empty();
+                $('#hunt-tool-inline').empty();
+            }
         },
 
         /* Crucifix consume: one shared place for the decrement + hunt-start

@@ -289,6 +289,39 @@ test.describe('GuiController (setup.Gui)', () => {
     }
   });
 
+  test('showHistoryControls cheat survives a passage navigation', async ({ game: page }) => {
+    /* Regression: SugarCube's Engine.play wipes document.body.className
+       on every navigation, which dropped the show-history class so the
+       back/forward buttons disappeared after the first link click even
+       though the cheat was still on. The :passagestart handler in
+       GuiController.js re-applies the class. */
+    try {
+      await page.evaluate(() => {
+        SugarCube.settings.showHistoryControls = true;
+        SugarCube.setup.Gui.applyHistoryControlsVisibility();
+      });
+      expect(await page.evaluate(() => document.body.classList.contains('show-history')))
+        .toBe(true);
+
+      await goToPassage(page, 'Home');
+      expect(await page.evaluate(() => document.body.classList.contains('show-history')))
+        .toBe(true);
+      expect(await page.evaluate(() => {
+        const el = document.getElementById('ui-bar-history');
+        return el ? getComputedStyle(el).display : null;
+      })).not.toBe('none');
+
+      await goToPassage(page, 'CityMap');
+      expect(await page.evaluate(() => document.body.classList.contains('show-history')))
+        .toBe(true);
+    } finally {
+      await page.evaluate(() => {
+        SugarCube.settings.showHistoryControls = false;
+        SugarCube.setup.Gui.applyHistoryControlsVisibility();
+      });
+    }
+  });
+
   test('showHistoryControls cheat survives a page reload', async ({ game: page }) => {
     // Regression: StoryInit's resetPersistentCheats() used to wipe this
     // setting AFTER SugarCube restored it from localStorage, so reopening

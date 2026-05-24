@@ -42,9 +42,23 @@
  * run on tick completion (state mutations, <<deferGoto>> hits,
  * setup.activateTool / setup.tickTimedTool side effects), so the
  * toolbar wikifies their markup into this off-screen div instead of a
- * visible tray. Visible feedback lives entirely in the per-tool card
- * overlay (.hunt-tool-card-number / .hunt-tool-card-thumbsdown). */
+ * visible tray. Visible feedback for the small / iconic results lives
+ * in the per-tool card overlay (.hunt-tool-card-number /
+ * .hunt-tool-card-thumbsdown); prose results that don't fit in that
+ * overlay (spiritbox Q/A and no-response lines) render into the
+ * visible #hunt-tool-inline below. */
 .hunt-tool-sink {
+	display: none;
+}
+
+/* Visible inline output for tools whose result is multi-line prose
+ * (currently just spiritbox). Sits above the tool bar so the click
+ * and the response are vertically adjacent. Empty by default; the
+ * .spiritbox-container drop carries its own padding/border. */
+.hunt-tool-inline {
+	margin: 0.5em 0;
+}
+.hunt-tool-inline:empty {
 	display: none;
 }
 

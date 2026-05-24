@@ -139,6 +139,7 @@
 							<</if>>
 						<</replace>>
 						<<run $(_countdownSel).empty().wiki(setup.ToolController.huntCardMarkup())>>
+						<<run $("#hunt-tool-inline").empty().wiki(setup.ToolController.huntInlineMarkup())>>
 						<<applyTickEffects>>
 						<<refreshHuntHud>>
 						<<set $currentsearchHunt[_t] to 0>>
