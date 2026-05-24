@@ -225,6 +225,15 @@ setup.HauntConditions = (function () {
 			});
 		}
 
+		/* commitTempCorruption caps the per-hunt corruption commit
+		   at +1, so anything banked past that is silently discarded.
+		   Once $tempCorr has reached the ceiling, surface a 0/step
+		   reading so the HUD stops promising gains that the cap will
+		   eat -- and applyTickEffects below skips its no-op write. */
+		if ((V.tempCorr || 0) >= 1) {
+			snap.corruptionPending = 0;
+		}
+
 		return snap;
 	}
 
