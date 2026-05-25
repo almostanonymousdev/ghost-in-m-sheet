@@ -62,7 +62,6 @@ setup.HauntedHouses = (function () {
 	/* Variables owned by this controller. Other controllers should
 	   query these only through the API methods below. */
 	var OWNED_VARS = Object.freeze([
-		'isClothesStolen',
 		// Hunt-conditions flags driven by HuntConditionsController
 		// (bait spend, overcharged-tools toggle, bait countdown,
 		// pending bait orgasm trigger).
@@ -131,9 +130,16 @@ setup.HauntedHouses = (function () {
 		},
 
 		// --- Stolen clothes -------------------------------------
-		hasClothesStolen: function () { return sv().isClothesStolen === true; },
-		clearStolenClothesFlag: function () {
-			sv().isClothesStolen = false;
+		/* Aggregate "anything currently stolen?" gate. Derived from
+		   the four per-garment flags Wardrobe owns -- each piece is
+		   tracked + restored independently now (see
+		   setup.HuntController.stashStolenClothes), so this is just
+		   a convenience disjunction. */
+		hasClothesStolen: function () {
+			return setup.Wardrobe.isPantiesStolen()
+				|| setup.Wardrobe.isBraStolen()
+				|| setup.Wardrobe.isShirtStolen()
+				|| setup.Wardrobe.isBottomStolen();
 		},
 
 		// --- Timed tool activations -----------------------------
@@ -219,8 +225,6 @@ setup.HauntedHouses = (function () {
 				&& !this.hasBottomWorn();
 		},
 
-		markClothesStolen: function () { sv().isClothesStolen = true; },
-
 		// --- Which static hunt house is active? --------------------
 		// Resolves against the hunt's staticHouseId so legacy
 		// callers ("which house art / video list?") keep working
@@ -264,12 +268,15 @@ setup.HauntedHouses = (function () {
 		succubusEventTimer: function () { return setup.Home.succubusEventTimer() || 0; },
 		stealChance: function () { return sv().stealChance || 0; },
 		setStealChance: function (n) { sv().stealChance = n; },
-		/* Per-tick recompute. Base chance is sanity + stealChanceMult
-		   only; per-tick modifier scaling (Sticky Fingers, etc.) is
-		   applied by the STEAL_CHECK filter at the roll site. The
-		   multiplier is owned by Tick and passed in. */
-		recomputeStealChance: function (mult) {
-			sv().stealChance = (1 + (Math.log(101 - setup.Mc.sanity()) / Math.log(101)) * 1) * mult;
+		/* Per-tick recompute. Base chance is sanity-driven (lower
+		   sanity = higher chance, capped at 2x baseline at sanity 0)
+		   then scaled by baseline (Tick's stealChanceMult). Per-tick
+		   modifier scaling (Sticky Fingers, etc.) is applied by the
+		   STEAL_CHECK filter at the roll site, not here. */
+		recomputeStealChance: function (baseline) {
+			var sanity = setup.Mc.sanity();
+			var sanityScale = Math.log(101 - sanity) / Math.log(101);
+			sv().stealChance = (1 + sanityScale) * baseline;
 		},
 		canStealAnyItem: function () {
 			return setup.Wardrobe.worn(setup.WardrobeSlot.BRA) || setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES) || this.hasBottomWorn();
@@ -409,7 +416,6 @@ setup.HauntedHouses = (function () {
 			if (isSkirt(ro) && noPanties(ru)) return "characters/mc/skirtnp.mp4";
 			return null;
 		},
-		clearClothesStolenFlag: function () { sv().isClothesStolen = false; },
 		isBottomless: function () {
 			return !setup.Wardrobe.worn(setup.WardrobeSlot.JEANS) && !setup.Wardrobe.worn(setup.WardrobeSlot.SHORTS)
 				&& !setup.Wardrobe.worn(setup.WardrobeSlot.SKIRT) && !setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES);

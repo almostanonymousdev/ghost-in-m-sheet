@@ -280,19 +280,34 @@ setup.HuntController = (function () {
 
 	/* Is the given loot kind currently *retrievable*? Some kinds are
 	   stamped onto the floor plan but gated by external state that can
-	   flip mid-run (clothesStolen → restored elsewhere; tarot deck moved
-	   out of HIDDEN; monkey paw retired). FurnitureSearch already
-	   refuses to hand out these pickups when the gate is closed, but
-	   without filtering at lootKindsAt the detector kept highlighting
-	   the slot ("highlighted furniture says nothing in it"). Centralize
-	   the gates here so the highlight and the pickup stay in lockstep. */
+	   flip mid-run (clothesStolen<Piece> → restored elsewhere; tarot
+	   deck moved out of HIDDEN; monkey paw retired). FurnitureSearch
+	   already refuses to hand out these pickups when the gate is
+	   closed, but without filtering at lootKindsAt the detector kept
+	   highlighting the slot ("highlighted furniture says nothing in
+	   it"). Centralize the gates here so the highlight and the pickup
+	   stay in lockstep. */
 	function isLootKindAvailable(kind) {
-		if (kind === 'clothesStolen') return setup.HauntedHouses.hasClothesStolen();
-		if (kind === 'tarotCards')    return setup.HauntedHouses.isTarotDiscoverable();
-		if (kind === 'monkeyPaw')     return setup.MonkeyPaw.isDiscoverable();
-		if (kind === 'cursedItem')    return setup.Witch.cursedItemQuestStarted();
+		if (kind === 'clothesStolenPanties') return setup.Wardrobe.isPantiesStolen();
+		if (kind === 'clothesStolenBra')     return setup.Wardrobe.isBraStolen();
+		if (kind === 'clothesStolenShirt')   return setup.Wardrobe.isShirtStolen();
+		if (kind === 'clothesStolenBottom')  return setup.Wardrobe.isBottomStolen();
+		if (kind === 'tarotCards')           return setup.HauntedHouses.isTarotDiscoverable();
+		if (kind === 'monkeyPaw')            return setup.MonkeyPaw.isDiscoverable();
+		if (kind === 'cursedItem')           return setup.Witch.cursedItemQuestStarted();
 		return true;
 	}
+
+	/* Piece-name → loot-key map for the per-garment clothesStolen
+	   pins. The four stolen-clothes loot kinds are placed and
+	   retrieved independently, so each garment a steal event takes
+	   gets its own pin on the floor plan (overlaps allowed). */
+	var STOLEN_PIECE_KINDS = Object.freeze({
+		panties: 'clothesStolenPanties',
+		bra:     'clothesStolenBra',
+		shirt:   'clothesStolenShirt',
+		bottom:  'clothesStolenBottom'
+	});
 
 	/* Single-kind variant -- returns the first uncollected loot kind
 	   at the slot, or null. Kept for callers that only need to know
@@ -302,105 +317,86 @@ setup.HuntController = (function () {
 		return kinds.length ? kinds[0] : null;
 	}
 
-	/* Stash stolen clothes onto a furniture slot somewhere on the
+	/* Per-piece strip helper: routes to the right Wardrobe primitive
+	   for the named garment, then stashes a pin via stashStolenClothes
+	   so the corresponding clothesStolen<Piece> kind becomes findable
+	   in furniture. Single entry point for hunt-side steal paths
+	   (StealPanties / StealBra / StealBottomOuter leaf passages,
+	   the no-media shirt branch in StealClothes / FreezeHunt). No-op
+	   if the piece isn't currently worn -- stealWornInGroup /
+	   stealBottomOuter return false/null in that case, in which case
+	   we skip the stash so a missed strip doesn't drop a phantom pin. */
+	function stealClothes(piece) {
+		var ok = false;
+		if (piece === 'panties') {
+			ok = setup.Wardrobe.stealWornInGroup('panties', 'pantiesState', 'isPantiesStolen');
+		} else if (piece === 'bra') {
+			ok = setup.Wardrobe.stealWornInGroup('bra', 'braState', 'isBraStolen');
+		} else if (piece === 'shirt') {
+			ok = setup.Wardrobe.stealWornInGroup('tshirt', 'tshirtState', 'isShirtStolen');
+		} else if (piece === 'bottom') {
+			ok = setup.Wardrobe.stealBottomOuter() != null;
+		}
+		if (!ok) return null;
+		return stashStolenClothes(piece);
+	}
+
+	/* Stash one stolen garment onto a furniture slot somewhere on the
 	   floor plan, using the same loot/lootFurniture pipeline as
 	   cursedItem / tarotCards / monkeyPaw -- so a normal furniture
-	   search reveals them via setup.HuntController.lootKindsAt. The
-	   stash is weighted by BFS distance from the player's current
-	   room: ~50% chance to land in the current room (when it has any
-	   furniture), with the remainder split among reachable rooms
-	   on a 1/distance falloff (so a neighbor is twice as likely as
-	   a room two hops away). When the current room has no furniture
-	   the full weight redistributes onto the rest of the house.
-	   The slot picker prefers furniture pieces that aren't already
-	   pinned to other loot, so co-located stashes are rare. Returns
-	   `{ roomId, suffix }` on success or null when the floor plan
-	   has no furniture-bearing rooms.
+	   search reveals it via setup.HuntController.lootKindsAt. Each
+	   stolen piece (panties / bra / shirt / bottom) has its own pin
+	   key (clothesStolen<Piece>), is placed at a uniformly random
+	   furniture slot across the whole house, and is restored
+	   independently when found. Slots collide freely -- two pieces
+	   that happen to roll the same (room, suffix) just share the
+	   slot, and a single search reveals both via lootKindsAt.
 
-	   Also clears any prior 'clothesStolen' entry from collectedLoot
-	   so a re-steal during the same run is findable again. */
-	function stashStolenClothes(rngOpt) {
+	   Returns `{ roomId, suffix, kind }` on success, or null when
+	   the floor plan has no furniture-bearing rooms / the piece arg
+	   isn't a known garment.
+
+	   Also clears any prior entry for this piece's kind from
+	   collectedLoot so a re-steal during the same run is findable
+	   again. */
+	function stashStolenClothes(piece, rngOpt) {
 		var run = sv().run;
 		if (!run || !run.floorplan) return null;
+		var kind = STOLEN_PIECE_KINDS[piece];
+		if (!kind) return null;
 		var fp = run.floorplan;
 		var rand = (typeof rngOpt === 'function') ? rngOpt : Math.random;
 
-		var furnitureRooms = fp.rooms.filter(function (r) {
+		/* Build a flat (roomId, suffix) pool across the whole house
+		   so the uniform draw is over slots, not rooms -- a room with
+		   six furniture pieces is six times more likely than a room
+		   with one. No collision avoidance: overlapping with other
+		   loot pins (including a stolen sibling) is fine. */
+		var slots = [];
+		fp.rooms.forEach(function (r) {
 			var t = setup.Templates && setup.Templates.byId(r.template);
-			return !!(t && Array.isArray(t.furniture) && t.furniture.length);
-		});
-		if (!furnitureRooms.length) return null;
-
-		var current = run.currentRoomId || 'room_0';
-		var distances = setup.FloorPlan.bfsDistances(fp, current);
-
-		// Weight rooms: distance-0 absorbs 50% (when reachable +
-		// has furniture), the rest splits the remaining 50% by 1/d.
-		var hasCurrent = furnitureRooms.some(function (r) { return r.id === current; });
-		var falloff = furnitureRooms.map(function (r) {
-			var d = distances[r.id];
-			if (d == null) return 0;        // unreachable
-			if (d === 0)   return 0;        // current-room handled separately
-			return 1 / d;
-		});
-		var falloffSum = falloff.reduce(function (a, b) { return a + b; }, 0);
-
-		var weights;
-		if (hasCurrent && falloffSum > 0) {
-			weights = furnitureRooms.map(function (r, i) {
-				return r.id === current ? 0.5 : 0.5 * (falloff[i] / falloffSum);
+			if (!t || !Array.isArray(t.furniture) || !t.furniture.length) return;
+			t.furniture.forEach(function (suffix) {
+				slots.push({ roomId: r.id, suffix: suffix });
 			});
-		} else if (hasCurrent) {
-			// Only the current room is furnitured & reachable.
-			weights = furnitureRooms.map(function (r) {
-				return r.id === current ? 1 : 0;
-			});
-		} else if (falloffSum > 0) {
-			// No furniture in current room: redistribute 100% by 1/d.
-			weights = falloff.map(function (w) { return w / falloffSum; });
-		} else {
-			// Nothing reachable from current room had furniture --
-			// fall back to a uniform pick across all furniture rooms
-			// (covers degenerate plans where current is isolated).
-			weights = furnitureRooms.map(function () { return 1 / furnitureRooms.length; });
-		}
-
-		var roll = rand();
-		var cum = 0;
-		var pickedIdx = furnitureRooms.length - 1;
-		for (var i = 0; i < weights.length; i++) {
-			cum += weights[i];
-			if (roll < cum) { pickedIdx = i; break; }
-		}
-		var picked = furnitureRooms[pickedIdx];
-		var t = setup.Templates.byId(picked.template);
-
-		// Avoid (room, suffix) collisions with already-placed loot
-		// when there's a free slot to use.
-		var lootFurn = fp.lootFurniture || {};
-		var taken = {};
-		Object.keys(fp.loot || {}).forEach(function (k) {
-			if (k === 'clothesStolen') return;
-			if (fp.loot[k] === picked.id && lootFurn[k]) taken[lootFurn[k]] = true;
 		});
-		var available = t.furniture.filter(function (f) { return !taken[f]; });
-		var pool = available.length ? available : t.furniture.slice();
-		var suffix = pool[Math.floor(rand() * pool.length)];
+		if (!slots.length) return null;
+		var pick = slots[Math.floor(rand() * slots.length)];
 
 		if (!fp.loot) fp.loot = {};
 		if (!fp.lootFurniture) fp.lootFurniture = {};
-		fp.loot.clothesStolen = picked.id;
-		fp.lootFurniture.clothesStolen = suffix;
+		fp.loot[kind] = pick.roomId;
+		fp.lootFurniture[kind] = pick.suffix;
 
-		// A previous steal in the same run may have left
-		// 'clothesStolen' in collectedLoot; clear it so the new
-		// stash is searchable.
+		// A previous steal+find cycle for this same piece may have
+		// left the kind in collectedLoot; clear it so the new stash
+		// is searchable.
 		if (Array.isArray(run.collectedLoot)) {
-			var idx = run.collectedLoot.indexOf('clothesStolen');
+			var idx = run.collectedLoot.indexOf(kind);
 			if (idx !== -1) run.collectedLoot.splice(idx, 1);
 		}
 
-		return { roomId: picked.id, suffix: suffix };
+		return { roomId: pick.roomId, suffix: pick.suffix, kind: kind };
 	}
 
 	/* Move the player into `roomId`. No-op when no run is active or
@@ -1368,6 +1364,17 @@ setup.HuntController = (function () {
 			: null);
 	});
 
+	setup.Hunt.filter(setup.Hunt.Event.STEAL_CHECK, function (ctx) {
+		/* Lights-out on the player's current room doubles the
+		   per-tick steal chance. Stacks multiplicatively with the
+		   modifier filters (Sticky Fingers, etc.). The cap is the
+		   stealChance() * chanceMult comparison at the roll site --
+		   if the product exceeds 100, the 1..100 roll can never
+		   beat it, so darkness pushes a high-sanity baseline into
+		   guaranteed-steal territory. */
+		if (isCurrentRoomDark()) ctx.chanceMult = (ctx.chanceMult || 1) * 2;
+	});
+
 	/* Meta-shop unlock effects wire into the same filter bus the
 	   modifiers use. The buildHunt path stays agnostic; each unlock
 	   that mutates a lifecycle ctx registers its own subscriber. */
@@ -1435,6 +1442,7 @@ setup.HuntController = (function () {
 		setSearchedFurniture: setSearchedFurniture,
 		searchedFurniture: searchedFurniture,
 		stashStolenClothes: stashStolenClothes,
+		stealClothes: stealClothes,
 		lootAt: lootAt,
 		lootKindsAt: lootKindsAt,
 		takeLoot: takeLoot,

@@ -15,16 +15,17 @@ const { goToPassage, getVar, callSetup } = require('./helpers');
  *
  *   3. The Witch's Paranormal Detector highlights any loot-bearing
  *      furniture in HuntRun. The lootKindsAt scan was kind-agnostic, so
- *      it still highlighted clothesStolen/tarotCards/monkeyPaw pins
- *      whose pickup gates (hasClothesStolen / TarotStage.HIDDEN /
- *      MonkeyPaw.isDiscoverable) had already flipped — the player saw
- *      "highlighted furniture says nothing in it" when they clicked.
+ *      it still highlighted clothesStolen<Piece>/tarotCards/monkeyPaw
+ *      pins whose pickup gates (per-piece isXxxStolen /
+ *      TarotStage.HIDDEN / MonkeyPaw.isDiscoverable) had already
+ *      flipped — the player saw "highlighted furniture says nothing in
+ *      it" when they clicked.
  *
- *   4. HuntOverManual prematurely cleared isClothesStolen when the
- *      passage rendered, before the player had picked "Return to the
- *      house" vs "Leave without taking your clothes". Returning to the
- *      house then failed FurnitureSearch's hasClothesStolen guard, so
- *      the stash that was still on the floor plan could never be
+ *   4. HuntOverManual prematurely cleared the stolen-piece flags when
+ *      the passage rendered, before the player had picked "Return to
+ *      the house" vs "Leave without taking your clothes". Returning to
+ *      the house then failed FurnitureSearch's per-piece gate, so the
+ *      stash that was still on the floor plan could never be
  *      recovered. */
 test.describe('Companion event + detector regressions', () => {
   test('setCurrentRoom bumps stepCount once per real move', async ({ game }) => {
@@ -85,40 +86,40 @@ test.describe('Companion event + detector regressions', () => {
     expect(rendered).not.toContain('_args[0]');
   });
 
-  test('detector does NOT highlight a clothesStolen pin once the flag is cleared', async ({ game }) => {
+  test('detector does NOT highlight a clothesStolen<Piece> pin once the piece flag is cleared', async ({ game }) => {
     await game.evaluate(() => SugarCube.setup.HuntController.startHunt({
       seed: 21, floorPlanOpts: { roomCount: 5 }
     }));
     await game.evaluate(() => SugarCube.setup.Witch.buyDetector());
 
-    /* Plant a clothesStolen stash on the floor plan, then drop the flag
-       as if the player walked out of the hunt and back. The detector
-       must stop highlighting that furniture because the pickup gate is
-       closed -- otherwise the player keeps clicking and sees "nothing
-       of note". */
+    /* Plant a clothesStolenPanties stash on the floor plan, then drop
+       the piece flag as if the player retrieved the panties. The
+       detector must stop highlighting that furniture because the pickup
+       gate is closed -- otherwise the player keeps clicking and sees
+       "nothing of note". */
     const stash = await game.evaluate(() => {
-      SugarCube.setup.HauntedHouses.markClothesStolen();
-      return SugarCube.setup.HuntController.stashStolenClothes();
+      SugarCube.State.variables.isPantiesStolen = true;
+      return SugarCube.setup.HuntController.stashStolenClothes('panties');
     });
     expect(stash).not.toBeNull();
     /* Confirm the highlight is on while the flag is set. */
     await game.evaluate(rid => SugarCube.setup.HuntController.setCurrentRoom(rid), stash.roomId);
     let kinds = await game.evaluate(s =>
       SugarCube.setup.HuntController.lootKindsAt(s.roomId, s.suffix), stash);
-    expect(kinds).toContain('clothesStolen');
+    expect(kinds).toContain('clothesStolenPanties');
 
-    /* Clear the flag. */
-    await game.evaluate(() => SugarCube.setup.HauntedHouses.clearStolenClothesFlag());
+    /* Clear the per-piece flag. */
+    await game.evaluate(() => { SugarCube.State.variables.isPantiesStolen = false; });
     kinds = await game.evaluate(s =>
       SugarCube.setup.HuntController.lootKindsAt(s.roomId, s.suffix), stash);
-    expect(kinds).not.toContain('clothesStolen');
+    expect(kinds).not.toContain('clothesStolenPanties');
 
     /* The currentRoomData() furniture list (consumed by the HuntRun
        template that drives the highlight class) must drop the kind too. */
     const furniture = await callSetup(game, 'setup.HuntController.currentRoomData().furniture');
     const stashSlot = furniture.find(f => f.suffix === stash.suffix);
     expect(stashSlot).toBeTruthy();
-    expect(stashSlot.lootKinds).not.toContain('clothesStolen');
+    expect(stashSlot.lootKinds).not.toContain('clothesStolenPanties');
   });
 
   test('beauty round-trips through steal → restore (FindStolenClothes path)', async ({ game }) => {
@@ -171,18 +172,18 @@ test.describe('Companion event + detector regressions', () => {
     expect(restored).toBe(baseline);
   });
 
-  test('HuntOverManual leaves isClothesStolen alone on render so Return-to-house can recover', async ({ game }) => {
-    /* Boot a hunt and stamp a stolen-clothes stash. */
+  test('HuntOverManual leaves stolen-piece flags alone on render so Return-to-house can recover', async ({ game }) => {
+    /* Boot a hunt and stamp a stolen-panties stash. */
     await game.evaluate(() => SugarCube.setup.HuntController.startHunt({
       seed: 31, floorPlanOpts: { roomCount: 5 }
     }));
-    await game.evaluate(() => SugarCube.setup.HauntedHouses.markClothesStolen());
-    const stash = await game.evaluate(() => SugarCube.setup.HuntController.stashStolenClothes());
+    await game.evaluate(() => { SugarCube.State.variables.isPantiesStolen = true; });
+    const stash = await game.evaluate(() => SugarCube.setup.HuntController.stashStolenClothes('panties'));
     expect(stash).not.toBeNull();
 
     /* Land on HuntOverManual: the bug was the flag flipping to 0 on
        render, killing FurnitureSearch's gate before the player chose. */
     await goToPassage(game, 'HuntOverManual');
-    expect(await getVar(game, 'isClothesStolen')).toBe(true);
+    expect(await getVar(game, 'isPantiesStolen')).toBe(true);
   });
 });

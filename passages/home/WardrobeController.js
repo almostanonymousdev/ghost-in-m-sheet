@@ -365,7 +365,6 @@
             if (V.isBottomStolen  === true) discardFromGroup("bottomOuter");
             if (V.isShirtStolen   === true) discardFromGroup("tshirt");
             if (V.isBraStolen     === true) discardFromGroup("bra");
-            setup.HauntedHouses.clearStolenClothesFlag();
             V.isPantiesStolen = false;
             V.isBottomStolen = false;
             V.isShirtStolen = false;

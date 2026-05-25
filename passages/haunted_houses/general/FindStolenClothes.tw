@@ -1,37 +1,88 @@
-:: FindStolenClothes [nobr] {"position":"4225,950","size":"100,100"}
-@@.mc-thoughts; You found your stolen clothes.@@<br>
+:: FindStolenPanties [nobr] {"position":"4225,950","size":"100,100"}
+/* Recovery beat for a single stolen-panties pin. Each garment is
+   stashed + restored independently now (see stashStolenClothes), so
+   the four FindStolen* passages each undo just their own piece and
+   stamp their own clothesStolen<Piece> kind as collected. */
+@@.mc-thoughts; Your stolen panties, balled up in the furniture.@@<br>
 <br>
 <<if setup.Mc.exhibitionism() gte 5>>
-	@@.mc-speech; Or... maybe I shouldn't put on clothes... I've kind of gotten used to being naked...<br>
-	I can pick it up later. Hopefully, it won't disappear...@@<br>
+	@@.mc-speech; Or... maybe I shouldn't put them back on... I've kind of gotten used to being naked...<br>
+	I can pick them up later. Hopefully, they won't disappear...@@<br>
 
 	<<linkreplace "@@.mc-speechLink; Nah... I should get dressed@@">>
 		<br>
-		@@.mc-action; You put on your clothes.@@<br><br>
+		@@.mc-action; You slip your panties back on.@@<br><br>
+		<<run setup.Wardrobe.restoreStolenInGroup("panties", "isPantiesStolen")>>
+	<</linkreplace>>
+<<else>>
+	@@.mc-action; You slip your panties back on.@@<br><br>
+	<<run setup.Wardrobe.restoreStolenInGroup("panties", "isPantiesStolen")>>
+<</if>>
+<<run setup.HuntController.takeLoot("clothesStolenPanties")>>
+
+:: FindStolenBra [nobr] {"position":"4325,950","size":"100,100"}
+@@.mc-thoughts; Your stolen bra, balled up in the furniture.@@<br>
+<br>
+<<if setup.Mc.exhibitionism() gte 5>>
+	@@.mc-speech; Or... I could stay topless under this. I've kind of gotten used to it...@@<br>
+
+	<<linkreplace "@@.mc-speechLink; Nah... I should put it back on@@">>
+		<br>
+		@@.mc-action; You fasten the bra back on.@@<br><br>
+		<<run setup.Wardrobe.restoreStolenInGroup("bra", "isBraStolen")>>
+	<</linkreplace>>
+<<else>>
+	@@.mc-action; You fasten the bra back on.@@<br><br>
+	<<run setup.Wardrobe.restoreStolenInGroup("bra", "isBraStolen")>>
+<</if>>
+<<run setup.HuntController.takeLoot("clothesStolenBra")>>
+
+:: FindStolenShirt [nobr] {"position":"4425,950","size":"100,100"}
+@@.mc-thoughts; Your stolen top, balled up in the furniture.@@<br>
+<br>
+<<if setup.Mc.exhibitionism() gte 5>>
+	@@.mc-speech; Or... I could keep going without it. I've kind of gotten used to it...@@<br>
+
+	<<linkreplace "@@.mc-speechLink; Nah... I should put it back on@@">>
+		<br>
+		@@.mc-action; You pull the top back on.@@<br><br>
+		<<run setup.Wardrobe.restoreStolenInGroup("tshirt", "isShirtStolen")>>
+	<</linkreplace>>
+<<else>>
+	@@.mc-action; You pull the top back on.@@<br><br>
+	<<run setup.Wardrobe.restoreStolenInGroup("tshirt", "isShirtStolen")>>
+<</if>>
+<<run setup.HuntController.takeLoot("clothesStolenShirt")>>
+
+:: FindStolenBottom [nobr] {"position":"4525,950","size":"100,100"}
+@@.mc-thoughts; Your stolen bottoms, balled up in the furniture.@@<br>
+<br>
+<<if setup.Mc.exhibitionism() gte 5>>
+	@@.mc-speech; Or... maybe I leave them off. I've kind of gotten used to walking around bare...@@<br>
+
+	<<linkreplace "@@.mc-speechLink; Nah... I should get dressed@@">>
+		<br>
+		@@.mc-action; You step back into your bottoms.@@<br>
 		<<set _vid to setup.HauntedHouses.findStolenDressupVideo()>>
 		<<if _vid>>
 			<<video _vid "displayCentredImgs">>
 		<</if>>
-
-		<<if setup.Wardrobe.isPantiesStolen()>><<run setup.Wardrobe.restoreStolenInGroup("panties", "isPantiesStolen")>><</if>>
-		<<if setup.Wardrobe.isBottomStolen()>><<run setup.Wardrobe.restoreStolenInGroup("bottomOuter")>><<run State.variables.isBottomStolen = false>><<run State.variables.isJeansStolen = false>><<run State.variables.isShortsStolen = false>><<run State.variables.isSkirtStolen = false>><</if>>
-		<<if setup.Wardrobe.isShirtStolen()>><<run setup.Wardrobe.restoreStolenInGroup("tshirt", "isShirtStolen")>><</if>>
-		<<if setup.Wardrobe.isBraStolen()>><<run setup.Wardrobe.restoreStolenInGroup("bra", "isBraStolen")>><</if>>
-		<<run setup.HauntedHouses.clearClothesStolenFlag()>>
+		<<run setup.Wardrobe.restoreStolenInGroup("bottomOuter")>>
+		<<run State.variables.isBottomStolen = false>>
+		<<run State.variables.isJeansStolen = false>>
+		<<run State.variables.isShortsStolen = false>>
+		<<run State.variables.isSkirtStolen = false>>
 	<</linkreplace>>
 <<else>>
-	@@.mc-action; You put on your clothes.@@<br><br>
+	@@.mc-action; You step back into your bottoms.@@<br>
 	<<set _vid to setup.HauntedHouses.findStolenDressupVideo()>>
 	<<if _vid>>
 		<<video _vid "displayCentredImgs">>
 	<</if>>
-	<<if setup.Wardrobe.isPantiesStolen()>><<run setup.Wardrobe.restoreStolenInGroup("panties", "isPantiesStolen")>><</if>>
-	<<if setup.Wardrobe.isBottomStolen()>><<run setup.Wardrobe.restoreStolenInGroup("bottomOuter")>><<run State.variables.isBottomStolen = false>><<run State.variables.isJeansStolen = false>><<run State.variables.isShortsStolen = false>><<run State.variables.isSkirtStolen = false>><</if>>
-	<<if setup.Wardrobe.isShirtStolen()>><<run setup.Wardrobe.restoreStolenInGroup("tshirt", "isShirtStolen")>><</if>>
-	<<if setup.Wardrobe.isBraStolen()>><<run setup.Wardrobe.restoreStolenInGroup("bra", "isBraStolen")>><</if>>
-
-	<<run setup.HauntedHouses.clearClothesStolenFlag()>>
+	<<run setup.Wardrobe.restoreStolenInGroup("bottomOuter")>>
+	<<run State.variables.isBottomStolen = false>>
+	<<run State.variables.isJeansStolen = false>>
+	<<run State.variables.isShortsStolen = false>>
+	<<run State.variables.isSkirtStolen = false>>
 <</if>>
-<<done>>
-	<<addclass ".linkselector" "disabled-link">>
-<</done>>
+<<run setup.HuntController.takeLoot("clothesStolenBottom")>>

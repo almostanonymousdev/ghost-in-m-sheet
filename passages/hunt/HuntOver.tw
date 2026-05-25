@@ -181,7 +181,6 @@
 	<<if setup.Wardrobe.isBottomStolen()>><<run setup.Wardrobe.restoreStolenInGroup("bottomOuter")>><<run State.variables.isBottomStolen = false>><<run State.variables.isJeansStolen = false>><<run State.variables.isShortsStolen = false>><<run State.variables.isSkirtStolen = false>><</if>>
 	<<if setup.Wardrobe.isShirtStolen()>><<run setup.Wardrobe.restoreStolenInGroup("tshirt", "isShirtStolen")>><</if>>
 	<<if setup.Wardrobe.isBraStolen()>><<run setup.Wardrobe.restoreStolenInGroup("bra", "isBraStolen")>><</if>>
-	<<run setup.HauntedHouses.clearStolenClothesFlag()>>
 <</if>>
 
 <<run setup.HauntedHouses.endHunt()>>

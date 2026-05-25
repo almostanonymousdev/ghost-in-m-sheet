@@ -7,10 +7,8 @@
 
 <<set _stealOptions to setup.HauntedHouses.availableStealTargets()>>
 
-/% Only stash + mark when something is actually taken. A previous version fired both unconditionally at the top of the passage, flipping isClothesStolen=1 and planting a phantom clothesStolen pin on the floor plan even when the MC had nothing left to steal. %/
+/% Each Steal* include strips its garment + stashes a per-piece pin on the floor plan via setup.HuntController.stealClothes(piece), so the find-stolen-clothes UI surfaces each piece independently somewhere in the house (overlapping allowed). The shirt branch has no media so it calls stealClothes directly. %/
 <<if _stealOptions.length gt 0>>
-	<<run setup.HuntController.stashStolenClothes()>>
-	<<run setup.HauntedHouses.markClothesStolen()>>
 	<<set _stealOption to _stealOptions.random()>>
 
 	<<if _stealOption is "panties">>
@@ -22,8 +20,12 @@
 		@@.mc-speech; Ugh... My head... Did it just push me to the ground? Wait... Where is my bra? Did it take it? What an asshole.<br><b>Maybe I can find them somewhere in the house.</b>Shit. This place is driving me crazy.@@
 
 	<<elseif _stealOption is "outerwear">>
-		<<run setup.Wardrobe.stealWornInGroup("tshirt", "tshirtState", "isShirtStolen")>>
-		<<include "StealBottomOuter">>
+		<<if setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT)>>
+			<<run setup.HuntController.stealClothes("shirt")>>
+		<</if>>
+		<<if setup.HauntedHouses.hasBottomWorn()>>
+			<<include "StealBottomOuter">>
+		<</if>>
 		@@.mc-speech; Ugh... My head... Wait... Where are my clothes? Did it take them? What the hell?<br><b>Maybe I can find them somewhere in the house.</b>Shit. This place is driving me crazy.@@
 	<</if>>
 <</if>>

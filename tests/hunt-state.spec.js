@@ -805,10 +805,11 @@ test.describe('Hunt Controller', () => {
 });
 
 /* setup.HuntController.stashStolenClothes places the steal target on a
-   furniture slot using the same loot/lootFurniture pipeline as
-   the other hunt loot kinds, weighted by BFS distance from the
-   player's current room (~50% same room, then 1/distance
-   falloff). */
+   furniture slot using the same loot/lootFurniture pipeline as the
+   other hunt loot kinds. Each piece ("panties", "bra", "shirt",
+   "bottom") is stashed independently with a uniform-random pick over
+   every furniture slot on the floor plan -- overlaps between stolen
+   pieces (or with other loot) are allowed. */
 test.describe('Hunt Controller — stashStolenClothes', () => {
   let page;
 
@@ -824,12 +825,6 @@ test.describe('Hunt Controller — stashStolenClothes', () => {
     await resetGame(page);
   });
 
-  /* Build a deterministic floor plan whose hallway has furniture so
-     the "stash in current room" branch can be exercised. We force
-     the templates list through a fixed sequence by patching the
-     plan post-generation; the alternative would be hunting for a
-     seed whose hallway happens to satisfy the constraint, which is
-     brittle. */
   async function startWithPlan() {
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({
       seed: 42, floorPlanOpts: { roomCount: 5 }
@@ -838,18 +833,26 @@ test.describe('Hunt Controller — stashStolenClothes', () => {
 
   test('returns null when no run is active', async () => {
     const out = await page.evaluate(() =>
-      SugarCube.setup.HuntController.stashStolenClothes());
+      SugarCube.setup.HuntController.stashStolenClothes('panties'));
+    expect(out).toBeNull();
+  });
+
+  test('returns null for an unknown piece', async () => {
+    await startWithPlan();
+    const out = await page.evaluate(() =>
+      SugarCube.setup.HuntController.stashStolenClothes('socks'));
     expect(out).toBeNull();
   });
 
   test('stash lands somewhere on the active floor plan', async () => {
     await startWithPlan();
     const result = await page.evaluate(() =>
-      SugarCube.setup.HuntController.stashStolenClothes());
+      SugarCube.setup.HuntController.stashStolenClothes('panties'));
     expect(result).not.toBeNull();
+    expect(result.kind).toBe('clothesStolenPanties');
     const fp = await callSetup(page, 'setup.HuntController.field("floorplan")');
-    expect(fp.loot.clothesStolen).toBe(result.roomId);
-    expect(fp.lootFurniture.clothesStolen).toBe(result.suffix);
+    expect(fp.loot.clothesStolenPanties).toBe(result.roomId);
+    expect(fp.lootFurniture.clothesStolenPanties).toBe(result.suffix);
     // Picked room must have furniture and the picked suffix must
     // be in that template's furniture list.
     const room = fp.rooms.find(r => r.id === result.roomId);
@@ -858,30 +861,52 @@ test.describe('Hunt Controller — stashStolenClothes', () => {
     expect(tmpl.furniture).toContain(result.suffix);
   });
 
-  test('FurnitureSearch can find the stash via lootKindsAt', async () => {
-    /* The whole point of plumbing the stash through the loot
-       pipeline is that the existing furniture-search lookup picks
-       it up without a special case. lootKindsAt also gates on the
-       isClothesStolen flag (matches FurnitureSearch's hasClothesStolen
-       precondition) so the detector doesn't keep highlighting a stash
-       the player can't actually pick up. */
+  test('each piece gets its own independent pin', async () => {
+    /* Stash all four pieces and confirm the floor plan tracks each
+       under its own loot key. They are allowed to share a slot, but
+       each key must point at a real (room, suffix). */
     await startWithPlan();
-    await page.evaluate(() => SugarCube.setup.HauntedHouses.markClothesStolen());
-    const stash = await page.evaluate(() =>
-      SugarCube.setup.HuntController.stashStolenClothes());
-    const kinds = await page.evaluate(({ r, s }) =>
-      SugarCube.setup.HuntController.lootKindsAt(r, s), { r: stash.roomId, s: stash.suffix });
-    expect(kinds).toContain('clothesStolen');
+    const results = await page.evaluate(() => ({
+      panties: SugarCube.setup.HuntController.stashStolenClothes('panties'),
+      bra:     SugarCube.setup.HuntController.stashStolenClothes('bra'),
+      shirt:   SugarCube.setup.HuntController.stashStolenClothes('shirt'),
+      bottom:  SugarCube.setup.HuntController.stashStolenClothes('bottom')
+    }));
+    for (const r of Object.values(results)) expect(r).not.toBeNull();
+    const fp = await callSetup(page, 'setup.HuntController.field("floorplan")');
+    expect(fp.loot.clothesStolenPanties).toBe(results.panties.roomId);
+    expect(fp.loot.clothesStolenBra).toBe(results.bra.roomId);
+    expect(fp.loot.clothesStolenShirt).toBe(results.shirt.roomId);
+    expect(fp.loot.clothesStolenBottom).toBe(results.bottom.roomId);
+    expect(fp.lootFurniture.clothesStolenPanties).toBe(results.panties.suffix);
+    expect(fp.lootFurniture.clothesStolenBra).toBe(results.bra.suffix);
+    expect(fp.lootFurniture.clothesStolenShirt).toBe(results.shirt.suffix);
+    expect(fp.lootFurniture.clothesStolenBottom).toBe(results.bottom.suffix);
   });
 
-  test('current room (when furnitured) absorbs ~50% of the distribution', async () => {
-    /* Force the player into a room with furniture, then sample
-       the stash room many times. The current room should land
-       roughly half the time -- looser bounds (35-65%) to keep
-       the test robust against PRNG variance. */
+  test('FurnitureSearch can find the stash via lootKindsAt', async () => {
+    /* The whole point of plumbing each stash through the loot
+       pipeline is that the existing furniture-search lookup picks
+       it up without a special case. lootKindsAt gates on the
+       matching per-piece isXxxStolen flag so the detector doesn't
+       keep highlighting a stash the player can't pick up. */
     await startWithPlan();
+    // The corresponding per-piece stolen flag must be true for
+    // lootKindsAt to surface the stash.
+    await page.evaluate(() => { SugarCube.State.variables.isPantiesStolen = true; });
+    const stash = await page.evaluate(() =>
+      SugarCube.setup.HuntController.stashStolenClothes('panties'));
+    const kinds = await page.evaluate(({ r, s }) =>
+      SugarCube.setup.HuntController.lootKindsAt(r, s), { r: stash.roomId, s: stash.suffix });
+    expect(kinds).toContain('clothesStolenPanties');
+  });
 
-    // Pick a non-hallway room with furniture as the player's spot.
+  test('distribution is approximately uniform across furniture slots', async () => {
+    /* New placement is uniform-random over every furniture slot,
+       not BFS-weighted. Confirm no room dominates the
+       distribution and the player's current room has no special
+       weight. */
+    await startWithPlan();
     const fp = await callSetup(page, 'setup.HuntController.field("floorplan")');
     const furnitureRoom = await page.evaluate(plan => {
       for (const r of plan.rooms) {
@@ -894,158 +919,49 @@ test.describe('Hunt Controller — stashStolenClothes', () => {
     expect(furnitureRoom).not.toBeNull();
     await page.evaluate(id => SugarCube.setup.HuntController.setCurrentRoom(id), furnitureRoom);
 
-    const N = 400;
-    const counts = await page.evaluate(({ n, here }) => {
-      const c = {};
-      for (let i = 0; i < n; i++) {
-        const r = SugarCube.setup.HuntController.stashStolenClothes();
-        c[r.roomId] = (c[r.roomId] || 0) + 1;
+    // Total furniture slots across the plan, and how many are in
+    // the current room. Expected share = slotsInRoom / totalSlots.
+    const slotCounts = await page.evaluate(plan => {
+      let total = 0, inRoom = 0;
+      for (const r of plan.rooms) {
+        const t = SugarCube.setup.Templates.byId(r.template);
+        const n = (t && t.furniture) ? t.furniture.length : 0;
+        total += n;
+        if (r.id === SugarCube.setup.HuntController.currentRoomId()) inRoom += n;
       }
-      return c;
-    }, { n: N, here: furnitureRoom });
-    const hereShare = (counts[furnitureRoom] || 0) / N;
-    expect(hereShare).toBeGreaterThan(0.35);
-    expect(hereShare).toBeLessThan(0.65);
-  });
-
-  test('distance falloff: nearer rooms beat farther rooms over many samples', async () => {
-    /* Build a long-chain plan so distance 1 vs distance 3 is
-       unambiguous. The 1/distance weighting must produce
-       count(near) > count(far) when sampled many times. We sample
-       from a current room with no furniture so the 50%
-       "current-room" bucket isn't in play (the test isolates the
-       falloff curve, not the same-room bias). */
-    await page.evaluate(() => SugarCube.setup.HuntController.start({ seed: 1 }));
-    /* Hand-built plan: room_0 (hallway, no furniture) -- room_1 --
-       room_2 -- room_3, all in a straight chain, with room_1 and
-       room_3 carrying furniture. We use templates whose furniture
-       lists are non-empty by reading the catalogue. */
-    const plan = await page.evaluate(() => {
-      // Pick two real templates that have furniture.
-      const cat = SugarCube.setup.Templates;
-      const candidates = SugarCube.setup.FloorPlan.nonHallwayTemplates()
-        .map(id => ({ id, t: cat.byId(id) }))
-        .filter(x => x.t && x.t.furniture && x.t.furniture.length);
-      const a = candidates[0].id;
-      const b = candidates[1].id;
-      const c = candidates[2].id;
-      return {
-        seed: 1,
-        rooms: [
-          { id: 'room_0', template: 'hallway' },
-          { id: 'room_1', template: a },
-          { id: 'room_2', template: b },
-          { id: 'room_3', template: c }
-        ],
-        edges: [['room_0','room_1'], ['room_1','room_2'], ['room_2','room_3']],
-        spawnRoomId: 'room_3',
-        loot: {},
-        lootFurniture: {},
-        bossRoomId: null
-      };
-    });
-    await page.evaluate(p => SugarCube.setup.HuntController.setField('floorplan', p), plan);
-    // Player at hallway (room_0) -- which has no furniture, so the
-    // 50% same-room bucket isn't engaged. Distances: room_1=1,
-    // room_2=2, room_3=3.
-    await page.evaluate(() => SugarCube.setup.HuntController.setCurrentRoom('room_0'));
+      return { total, inRoom };
+    }, fp);
+    const expectedShare = slotCounts.inRoom / slotCounts.total;
 
     const N = 600;
     const counts = await page.evaluate(n => {
-      const c = { room_1: 0, room_2: 0, room_3: 0 };
+      const c = {};
       for (let i = 0; i < n; i++) {
-        const r = SugarCube.setup.HuntController.stashStolenClothes();
+        const r = SugarCube.setup.HuntController.stashStolenClothes('panties');
         c[r.roomId] = (c[r.roomId] || 0) + 1;
       }
       return c;
     }, N);
-
-    // Strict ordering by distance: distance 1 > distance 2 > distance 3.
-    expect(counts.room_1).toBeGreaterThan(counts.room_2);
-    expect(counts.room_2).toBeGreaterThan(counts.room_3);
-  });
-
-  test('falls back to non-current rooms when current room has no furniture', async () => {
-    /* Hallway typically has no furniture -- if the player is in
-       the hallway, the stash must land somewhere with furniture. */
-    await startWithPlan();
-    await page.evaluate(() => SugarCube.setup.HuntController.setCurrentRoom('room_0'));
-
-    // Confirm hallway has no furniture before stashing.
-    const fp = await callSetup(page, 'setup.HuntController.field("floorplan")');
-    const hallwayTmpl = await page.evaluate(() =>
-      SugarCube.setup.Templates.byId('hallway'));
-    if (hallwayTmpl && hallwayTmpl.furniture && hallwayTmpl.furniture.length) {
-      // Skip: this assumption only holds when hallway is empty.
-      return;
-    }
-
-    for (let i = 0; i < 20; i++) {
-      const r = await page.evaluate(() =>
-        SugarCube.setup.HuntController.stashStolenClothes());
-      expect(r.roomId).not.toBe('room_0');
-    }
-  });
-
-  test('avoids slots already occupied by other loot when an alternative exists', async () => {
-    /* Pin the only-other-loot kind to a specific (room, suffix),
-       then force the stash into that same room and check the
-       picker picks a different slot when the room has spare
-       furniture. */
-    await page.evaluate(() => SugarCube.setup.HuntController.start({ seed: 1 }));
-    // Find a template with at least 3 furniture slots so we can
-    // crowd one and still have room left over.
-    const tmplId = await page.evaluate(() => {
-      const cat = SugarCube.setup.Templates;
-      return SugarCube.setup.FloorPlan.nonHallwayTemplates()
-        .find(id => {
-          const t = cat.byId(id);
-          return t && t.furniture && t.furniture.length >= 3;
-        });
-    });
-    expect(tmplId).toBeTruthy();
-    const tmpl = await page.evaluate(id =>
-      SugarCube.setup.Templates.byId(id), tmplId);
-
-    const occupiedSuffix = tmpl.furniture[0];
-    const plan = {
-      seed: 1,
-      rooms: [
-        { id: 'room_0', template: 'hallway' },
-        { id: 'room_1', template: tmplId }
-      ],
-      edges: [['room_0', 'room_1']],
-      spawnRoomId: 'room_1',
-      loot: { cursedItem: 'room_1' },
-      lootFurniture: { cursedItem: occupiedSuffix },
-      bossRoomId: null
-    };
-    await page.evaluate(p =>
-      SugarCube.setup.HuntController.setField('floorplan', p), plan);
-    await page.evaluate(() => SugarCube.setup.HuntController.setCurrentRoom('room_1'));
-
-    // Sample many stashes; none should land on the occupied slot
-    // because the picker has free alternatives.
-    let collisions = 0;
-    for (let i = 0; i < 50; i++) {
-      const r = await page.evaluate(() =>
-        SugarCube.setup.HuntController.stashStolenClothes());
-      if (r.roomId === 'room_1' && r.suffix === occupiedSuffix) collisions++;
-    }
-    expect(collisions).toBe(0);
+    const hereShare = (counts[furnitureRoom] || 0) / N;
+    // Allow generous slack for PRNG variance.
+    expect(hereShare).toBeGreaterThan(expectedShare - 0.12);
+    expect(hereShare).toBeLessThan(expectedShare + 0.12);
   });
 
   test('re-stashing during the same run clears the prior collected flag', async () => {
     await startWithPlan();
-    await page.evaluate(() => SugarCube.setup.HuntController.stashStolenClothes());
+    await page.evaluate(() =>
+      SugarCube.setup.HuntController.stashStolenClothes('panties'));
     // Simulate the player having already searched / collected the
     // first stash.
-    await page.evaluate(() => SugarCube.setup.HuntController.takeLoot('clothesStolen'));
-    expect(await callSetup(page, 'setup.HuntController.hasCollected("clothesStolen")')).toBe(true);
+    await page.evaluate(() =>
+      SugarCube.setup.HuntController.takeLoot('clothesStolenPanties'));
+    expect(await callSetup(page, 'setup.HuntController.hasCollected("clothesStolenPanties")')).toBe(true);
 
-    await page.evaluate(() => SugarCube.setup.HuntController.stashStolenClothes());
+    await page.evaluate(() =>
+      SugarCube.setup.HuntController.stashStolenClothes('panties'));
     // After re-stashing, the new stash must be findable again --
-    // i.e. clothesStolen is no longer in collectedLoot.
-    expect(await callSetup(page, 'setup.HuntController.hasCollected("clothesStolen")')).toBe(false);
+    // i.e. the per-piece key is no longer in collectedLoot.
+    expect(await callSetup(page, 'setup.HuntController.hasCollected("clothesStolenPanties")')).toBe(false);
   });
 });

@@ -1,11 +1,11 @@
 :: StealPanties [nobr] {"position":"3975,1050","size":"100,100"}
 <<image setup.Wardrobe.stealPantiesImage() "displayCentredImgs">>
-<<run setup.Wardrobe.stealWornInGroup("panties", "pantiesState", "isPantiesStolen")>>
+<<run setup.HuntController.stealClothes("panties")>>
 
 :: StealBottomOuter [nobr] {"position":"4075,1050","size":"100,100"}
 <<image setup.Wardrobe.stealBottomOuterImage() "displayCentredImgs">>
-<<run setup.Wardrobe.stealBottomOuter()>>
+<<run setup.HuntController.stealClothes("bottom")>>
 
 :: StealBra [nobr] {"position":"4275,1050","size":"100,100"}
 <<video setup.Wardrobe.stealBraVideo() "displayCentredImgs">>
-<<run setup.Wardrobe.stealWornInGroup("bra", "braState", "isBraStolen")>>
+<<run setup.HuntController.stealClothes("bra")>>

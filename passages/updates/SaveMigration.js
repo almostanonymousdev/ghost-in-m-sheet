@@ -162,7 +162,7 @@
 		'isBraStolen', 'isPantiesStolen', 'isStockingsStolen',
 		'isShirtStolen', 'isBottomStolen',
 		// haunted-house + hunt-conditions flags
-		'hasClothesStolen', 'isClothesStolen', 'isBaitActive', 'isOverchargedMode',
+		'isBaitActive', 'isOverchargedMode',
 		'baitOrgasmPending', 'overchargedTools', 'sanityCollapse', 'exhausted',
 		'baitActive',
 		// home

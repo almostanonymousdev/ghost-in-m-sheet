@@ -1,25 +1,19 @@
 :: FreezeHunt [noreturn nobr] {"position":"2700,1225","size":"100,100"}
-/* Freeze-and-let-it-pass: third branch alongside Run / Hide. Pays a
- * clothing item + a bank of tempCorr. EMF + UVL are already armed
- * for every prowl path by beginProwlEvent, so they do not need to be
- * re-activated here. With nothing left to give, the ghost takes the
- * player instead and routes to HuntOverSanity. Strips via the
- * canonical Wardrobe.stealWornInGroup / StealBottomOuter /
- * StealPanties / StealBra passages so wardrobe variant state +
+/* Freeze-and-let-it-pass: third branch alongside Run / Hide. Pays
+ * every worn garment + a bank of tempCorr. EMF + UVL are already
+ * armed for every prowl path by beginProwlEvent, so they do not
+ * need to be re-activated here. With nothing left to give, the
+ * ghost takes the player instead and routes to HuntOverSanity.
+ * Strips via the canonical Steal* leaf passages (which own both
+ * the wardrobe strip + the floor-plan pin via
+ * setup.HuntController.stealClothes) so wardrobe variant state +
  * rememberTopOuter/rememberBottomOuter stay consistent. */
-<<script>>
-(function () {
-	var V = State.variables;
-	var WORN = setup.ClothingState.WORN;
-	var slots = [];
-	if (V.tshirtState === WORN) slots.push("top");
-	if (V.jeansState === WORN || V.shortsState === WORN || V.skirtState === WORN) slots.push("bottom");
-	if (V.pantiesState === WORN) slots.push("panties");
-	if (V.braState === WORN) slots.push("bra");
-	State.temporary.freezeSlot = slots.length ? slots[Math.floor(Math.random() * slots.length)] : "";
-})();
-<</script>>
-<<if _freezeSlot eq "">>
+<<set _hasTop     to setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT)>>
+<<set _hasBottom  to setup.HauntedHouses.hasBottomWorn()>>
+<<set _hasPanties to setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES)>>
+<<set _hasBra     to setup.Wardrobe.worn(setup.WardrobeSlot.BRA)>>
+<<set _anyWorn    to _hasTop or _hasBottom or _hasPanties or _hasBra>>
+<<if not _anyWorn>>
 	&emsp;&emsp;You don't run. You don't hide. You hold perfectly still and let it pass THROUGH you. Icy fingers slide over bare skin — and find nothing left to tear away. The ghost pauses. Then, curious and patient, it decides to take you instead.<br>
 	@@.mc-thoughts;You feel the cold close around you and pull. There is nothing left to give but yourself.@@
 	<<run setup.HauntedHouses.rearmHuntTimer()>>
@@ -28,17 +22,25 @@
 	<</link>>@@
 <<else>>
 	<<run setup.Mc.addTempCorr(0.5)>>
-	/% Mirror StealClothes: stash a clothesStolen pin onto the floor plan and flip isClothesStolen=1 so the find-stolen-clothes UI surfaces the dropped garment somewhere in the house. %/
-	<<run setup.HuntController.stashStolenClothes()>>
-	<<run setup.HauntedHouses.markClothesStolen()>>
-	&emsp;&emsp;You don't run. You don't hide. You hold perfectly still and let it pass THROUGH you. Icy fingers slide over you; the ghost pauses, curious — and tears a garment loose before drifting on. Your skin crawls, but you can feel the residue it left behind. Every tool you were carrying picks up the trail.
+	&emsp;&emsp;You don't run. You don't hide. You hold perfectly still and let it pass THROUGH you. Icy fingers slide over you; the ghost pauses, curious — and strips every stitch loose before drifting on. Your skin crawls, but you can feel the residue it left behind. Every tool you were carrying picks up the trail.
 	<br>
-	<<switch _freezeSlot>>
-	<<case "top">><<run setup.Wardrobe.stealWornInGroup("tshirt", "tshirtState", "isShirtStolen")>>@@.mc-action; Your top is gone.@@
-	<<case "bottom">><<include "StealBottomOuter">>@@.mc-action; Your bottoms are gone.@@
-	<<case "panties">><<include "StealPanties">>@@.mc-action; Your panties are gone.@@
-	<<case "bra">><<include "StealBra">>@@.mc-action; Your bra is gone.@@
-	<</switch>>
+	/% The freeze takes every worn garment; each Steal* leaf passage (and the no-media shirt branch) calls setup.HuntController.stealClothes(piece), which both strips the wardrobe slot and stashes a clothesStolen<Piece> pin on the floor plan. %/
+	<<if _hasTop>>
+		<<run setup.HuntController.stealClothes("shirt")>>
+		@@.mc-action; Your top is gone.@@<br>
+	<</if>>
+	<<if _hasBottom>>
+		<<include "StealBottomOuter">>
+		@@.mc-action; Your bottoms are gone.@@<br>
+	<</if>>
+	<<if _hasPanties>>
+		<<include "StealPanties">>
+		@@.mc-action; Your panties are gone.@@<br>
+	<</if>>
+	<<if _hasBra>>
+		<<include "StealBra">>
+		@@.mc-action; Your bra is gone.@@<br>
+	<</if>>
 	<br><br>
 	@@.backbtn;[[Continue|$return]]@@
 

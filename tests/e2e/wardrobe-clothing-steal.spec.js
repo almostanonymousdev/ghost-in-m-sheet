@@ -142,7 +142,6 @@ test.describe('Wardrobe — steal / restore mechanics', () => {
     expect(await getVar(page, 'pantiesState1')).toBe('not bought');
     expect(await getVar(page, 'isBraStolen')).toBe(false);
     expect(await getVar(page, 'isPantiesStolen')).toBe(false);
-    expect(await getVar(page, 'isClothesStolen')).toBe(false);
   });
 });
 

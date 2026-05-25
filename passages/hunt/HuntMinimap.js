@@ -201,8 +201,15 @@ setup.HuntMinimap = (function () {
 	   loot kinds ('tool_emf', 'tool_uvl', ...) resolve to the
 	   per-tool label in setup.searchToolDefs so the picked-up beat
 	   reads as "EMF reader" rather than "Tool emf". */
+	var STOLEN_PIECE_LABELS = {
+		clothesStolenPanties: 'Stolen panties',
+		clothesStolenBra:     'Stolen bra',
+		clothesStolenShirt:   'Stolen top',
+		clothesStolenBottom:  'Stolen bottoms'
+	};
 	function humanizeLootKind(kind) {
 		if (!kind) return '';
+		if (STOLEN_PIECE_LABELS[kind]) return STOLEN_PIECE_LABELS[kind];
 		var toolId = setup.FloorPlan.toolIdFromLootKind(kind);
 		if (toolId) {
 			var def = setup.searchToolDefs && setup.searchToolDefs[toolId];

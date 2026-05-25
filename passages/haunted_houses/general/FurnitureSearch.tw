@@ -29,11 +29,21 @@
 		<<include "PickupTarotCards">>
 	<<elseif _kind eq "monkeyPaw" and setup.MonkeyPaw.isDiscoverable()>>
 		<<include "PickupMonkeyPaw">>
-	<<elseif _kind eq "clothesStolen" and setup.HauntedHouses.hasClothesStolen()>>
-		<<run setup.HuntController.takeLoot("clothesStolen")>>
-		<<include "FindStolenClothes">>
-		<br>
-		<br>
+	<<elseif _kind eq "clothesStolenPanties" and setup.Wardrobe.isPantiesStolen()>>
+		<<include "FindStolenPanties">>
+		<br><br>
+		@@.backbtn; [[Back|$return]]@@<br>
+	<<elseif _kind eq "clothesStolenBra" and setup.Wardrobe.isBraStolen()>>
+		<<include "FindStolenBra">>
+		<br><br>
+		@@.backbtn; [[Back|$return]]@@<br>
+	<<elseif _kind eq "clothesStolenShirt" and setup.Wardrobe.isShirtStolen()>>
+		<<include "FindStolenShirt">>
+		<br><br>
+		@@.backbtn; [[Back|$return]]@@<br>
+	<<elseif _kind eq "clothesStolenBottom" and setup.Wardrobe.isBottomStolen()>>
+		<<include "FindStolenBottom">>
+		<br><br>
 		@@.backbtn; [[Back|$return]]@@<br>
 	<<elseif _kind eq "cash">>
 		<<include "PickupHiddenCache">>
@@ -194,15 +204,26 @@
 		@@.mc-action; You put the jar in your bag.@@<br><br>
 		<<run setup.HuntController.addEctoplasm(10)>>
 		<<run setup.HuntController.takeLoot("ectoplasm")>>
-	<<elseif _kind eq "clothesStolen" and setup.HauntedHouses.hasClothesStolen()>>
-		@@.mc-thoughts; Your stolen clothes, balled up out of sight.@@<br>
-		@@.mc-action; You put them back on.@@<br><br>
-		<<if setup.Wardrobe.isPantiesStolen()>><<run setup.Wardrobe.restoreStolenInGroup("panties", "isPantiesStolen")>><</if>>
-		<<if setup.Wardrobe.isBottomStolen()>><<run setup.Wardrobe.restoreStolenInGroup("bottomOuter")>><<run State.variables.isBottomStolen = false>><<run State.variables.isJeansStolen = false>><<run State.variables.isShortsStolen = false>><<run State.variables.isSkirtStolen = false>><</if>>
-		<<if setup.Wardrobe.isShirtStolen()>><<run setup.Wardrobe.restoreStolenInGroup("tshirt", "isShirtStolen")>><</if>>
-		<<if setup.Wardrobe.isBraStolen()>><<run setup.Wardrobe.restoreStolenInGroup("bra", "isBraStolen")>><</if>>
-		<<run setup.HauntedHouses.clearClothesStolenFlag()>>
-		<<run setup.HuntController.takeLoot("clothesStolen")>>
+	<<elseif _kind eq "clothesStolenPanties" and setup.Wardrobe.isPantiesStolen()>>
+		@@.mc-thoughts; Your stolen panties, balled up out of sight.@@<br>
+		@@.mc-action; You slip them back on.@@<br><br>
+		<<run setup.Wardrobe.restoreStolenInGroup("panties", "isPantiesStolen")>>
+	<<elseif _kind eq "clothesStolenBra" and setup.Wardrobe.isBraStolen()>>
+		@@.mc-thoughts; Your stolen bra, balled up out of sight.@@<br>
+		@@.mc-action; You fasten it back on.@@<br><br>
+		<<run setup.Wardrobe.restoreStolenInGroup("bra", "isBraStolen")>>
+	<<elseif _kind eq "clothesStolenShirt" and setup.Wardrobe.isShirtStolen()>>
+		@@.mc-thoughts; Your stolen top, balled up out of sight.@@<br>
+		@@.mc-action; You pull it back on.@@<br><br>
+		<<run setup.Wardrobe.restoreStolenInGroup("tshirt", "isShirtStolen")>>
+	<<elseif _kind eq "clothesStolenBottom" and setup.Wardrobe.isBottomStolen()>>
+		@@.mc-thoughts; Your stolen bottoms, balled up out of sight.@@<br>
+		@@.mc-action; You step back into them.@@<br><br>
+		<<run setup.Wardrobe.restoreStolenInGroup("bottomOuter")>>
+		<<run State.variables.isBottomStolen = false>>
+		<<run State.variables.isJeansStolen = false>>
+		<<run State.variables.isShortsStolen = false>>
+		<<run State.variables.isSkirtStolen = false>>
 	<<elseif _toolId>>
 		<<set _toolDef to setup.searchToolDefs[_toolId]>>
 		@@.mc-thoughts; A piece of hunting equipment -- the <<= setup.HuntController.humanizeLootKind(_kind)>>.@@<br>

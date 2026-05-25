@@ -16,16 +16,19 @@ const { openGame, resetGame, callSetup, goToPassage, getVar, setVar } = require(
  *      rendering to HuntController.currentRoomData() but never re-added
  *      the detector pass, so the purchase had no visible effect.
  *
- *   3. FreezeHunt strips a garment but used to skip the stash + mark
- *      pair, leaving the player permanently down a garment with
- *      nothing to find in the house.
+ *   3. FreezeHunt strips a garment but used to skip the stash, leaving
+ *      the player permanently down a garment with nothing to find in
+ *      the house. Each garment a steal site removes must get its own
+ *      per-piece pin (clothesStolen<Piece>) so the find-stolen-clothes
+ *      UI surfaces it.
  *
- *   4. StealClothes runs the stash + mark unconditionally at the top
- *      of the passage even when the available-targets list is empty,
- *      flipping isClothesStolen=1 without actually taking anything.
- *      Conversely, when something IS taken, the stash must always land
- *      somewhere on the floor plan -- a recurring report from players
- *      is "clothes were stolen but never appeared anywhere".
+ *   4. StealClothes runs the stash + per-piece stolen flips
+ *      unconditionally at the top of the passage even when the
+ *      available-targets list is empty, flipping the stolen flag
+ *      without actually taking anything. Conversely, when something IS
+ *      taken, the stash must always land somewhere on the floor plan
+ *      -- a recurring report from players is "clothes were stolen but
+ *      never appeared anywhere".
  */
 test.describe('Hunt — clothes + dark-room bugs', () => {
   let page;
@@ -93,13 +96,14 @@ test.describe('Hunt — clothes + dark-room bugs', () => {
       seed: 7, floorPlanOpts: { roomCount: 5 }
     }));
     await page.evaluate(() => SugarCube.setup.Witch.buyDetector());
-    /* lootKindsAt gates clothesStolen on isClothesStolen=1 (the same
-       precondition FurnitureSearch's hasClothesStolen guard checks) so
-       the detector highlight matches what the pickup will actually
-       hand out. Mark it before stashing. */
-    await page.evaluate(() => SugarCube.setup.HauntedHouses.markClothesStolen());
+    /* lootKindsAt gates clothesStolen<Piece> on the matching per-piece
+       isXxxStolen flag (the same precondition FurnitureSearch's
+       hasXxxStolen guard checks) so the detector highlight matches
+       what the pickup will actually hand out. Flip the panties-stolen
+       flag before stashing. */
+    await page.evaluate(() => { SugarCube.State.variables.isPantiesStolen = true; });
     const stash = await page.evaluate(() =>
-      SugarCube.setup.HuntController.stashStolenClothes());
+      SugarCube.setup.HuntController.stashStolenClothes('panties'));
     expect(stash).not.toBeNull();
     /* Move the player into the room with the stash so HuntRun renders
        that room's furniture strip. */
@@ -117,9 +121,9 @@ test.describe('Hunt — clothes + dark-room bugs', () => {
       seed: 7, floorPlanOpts: { roomCount: 5 }
     }));
     await page.evaluate(() => { delete SugarCube.State.variables.boughtDetector; });
-    await page.evaluate(() => SugarCube.setup.HauntedHouses.markClothesStolen());
+    await page.evaluate(() => { SugarCube.State.variables.isPantiesStolen = true; });
     const stash = await page.evaluate(() =>
-      SugarCube.setup.HuntController.stashStolenClothes());
+      SugarCube.setup.HuntController.stashStolenClothes('panties'));
     await page.evaluate(rid => SugarCube.setup.HuntController.setCurrentRoom(rid), stash.roomId);
 
     await goToPassage(page, 'HuntRun');
@@ -130,7 +134,8 @@ test.describe('Hunt — clothes + dark-room bugs', () => {
   });
 
   // -----------------------------------------------------------------
-  // Bug 3: FreezeHunt must stash + mark when it strips a garment
+  // Bug 3: FreezeHunt must stash the stripped garment under its
+  //        per-piece pin when it strips one.
   // -----------------------------------------------------------------
 
   test('FreezeHunt with a strippable garment stashes the steal target on the floor plan', async () => {
@@ -148,20 +153,57 @@ test.describe('Hunt — clothes + dark-room bugs', () => {
       V.skirtState   = NOT_WORN;
       V.braState     = NOT_WORN;
       V.pantiesState = WORN;
-      V.isClothesStolen = false;
+      V.isPantiesStolen = false;
     });
 
     await goToPassage(page, 'FreezeHunt');
 
-    const isStolen = await getVar(page, 'isClothesStolen');
-    expect(isStolen).toBe(true);
+    /* Panties was the only available garment -- it must come off and
+       leave a clothesStolenPanties pin on the floor plan. */
+    expect(await getVar(page, 'isPantiesStolen')).toBe(true);
 
     const fp = await callSetup(page, 'setup.HuntController.field("floorplan")');
-    expect(fp.loot && fp.loot.clothesStolen).toBeTruthy();
-    expect(fp.lootFurniture && fp.lootFurniture.clothesStolen).toBeTruthy();
+    expect(fp.loot && fp.loot.clothesStolenPanties).toBeTruthy();
+    expect(fp.lootFurniture && fp.lootFurniture.clothesStolenPanties).toBeTruthy();
   });
 
-  test('FreezeHunt with nothing left to give does not stash or mark', async () => {
+  test('FreezeHunt strips every worn piece and pins each one to the floor plan', async () => {
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({
+      seed: 11, floorPlanOpts: { roomCount: 5 }
+    }));
+    /* All four buckets worn at once -- the freeze should take all of
+       them and drop a per-piece pin for each. */
+    await page.evaluate(() => {
+      const V = SugarCube.State.variables;
+      const WORN = SugarCube.setup.ClothingState.WORN;
+      const NOT_WORN = SugarCube.setup.ClothingState.NOT_WORN;
+      V.tshirtState  = WORN;
+      V.jeansState   = WORN;
+      V.shortsState  = NOT_WORN;
+      V.skirtState   = NOT_WORN;
+      V.braState     = WORN;
+      V.pantiesState = WORN;
+      V.isPantiesStolen = false;
+      V.isBraStolen     = false;
+      V.isShirtStolen   = false;
+      V.isBottomStolen  = false;
+    });
+
+    await goToPassage(page, 'FreezeHunt');
+
+    expect(await getVar(page, 'isPantiesStolen')).toBe(true);
+    expect(await getVar(page, 'isBraStolen')).toBe(true);
+    expect(await getVar(page, 'isShirtStolen')).toBe(true);
+    expect(await getVar(page, 'isBottomStolen')).toBe(true);
+
+    const fp = await callSetup(page, 'setup.HuntController.field("floorplan")');
+    expect(fp.loot && fp.loot.clothesStolenPanties).toBeTruthy();
+    expect(fp.loot && fp.loot.clothesStolenBra).toBeTruthy();
+    expect(fp.loot && fp.loot.clothesStolenShirt).toBeTruthy();
+    expect(fp.loot && fp.loot.clothesStolenBottom).toBeTruthy();
+  });
+
+  test('FreezeHunt with nothing left to give does not stash or mark any piece', async () => {
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({
       seed: 12, floorPlanOpts: { roomCount: 5 }
     }));
@@ -174,20 +216,30 @@ test.describe('Hunt — clothes + dark-room bugs', () => {
       V.skirtState   = NOT_WORN;
       V.braState     = NOT_WORN;
       V.pantiesState = NOT_WORN;
-      V.isClothesStolen = false;
+      V.isPantiesStolen = false;
+      V.isBraStolen     = false;
+      V.isShirtStolen   = false;
+      V.isBottomStolen  = false;
     });
 
     await goToPassage(page, 'FreezeHunt');
 
-    expect(await getVar(page, 'isClothesStolen')).toBe(false);
+    expect(await getVar(page, 'isPantiesStolen')).toBe(false);
+    expect(await getVar(page, 'isBraStolen')).toBe(false);
+    expect(await getVar(page, 'isShirtStolen')).toBe(false);
+    expect(await getVar(page, 'isBottomStolen')).toBe(false);
     const fp = await callSetup(page, 'setup.HuntController.field("floorplan")');
-    expect(fp && fp.loot && fp.loot.clothesStolen).toBeFalsy();
+    const loot = (fp && fp.loot) || {};
+    expect(loot.clothesStolenPanties).toBeFalsy();
+    expect(loot.clothesStolenBra).toBeFalsy();
+    expect(loot.clothesStolenShirt).toBeFalsy();
+    expect(loot.clothesStolenBottom).toBeFalsy();
   });
 
   // -----------------------------------------------------------------
-  // Bug 4: StealClothes must only stash + mark on a real steal, and
-  //        the stash must always land somewhere on the plan when one
-  //        fires inside an active hunt.
+  // Bug 4: StealClothes must only stash + mark when something is
+  //        actually taken; when something IS taken, the matching
+  //        per-piece pin must land on the floor plan.
   // -----------------------------------------------------------------
 
   test('StealClothes with a real steal target stashes onto the floor plan', async () => {
@@ -197,35 +249,61 @@ test.describe('Hunt — clothes + dark-room bugs', () => {
     await page.evaluate(() => {
       const V = SugarCube.State.variables;
       const WORN = SugarCube.setup.ClothingState.WORN;
+      const NOT_WORN = SugarCube.setup.ClothingState.NOT_WORN;
       V.pantiesState = WORN;
       V.braState     = WORN;
       V.tshirtState  = WORN;
       V.jeansState   = WORN;
-      V.shortsState  = SugarCube.setup.ClothingState.NOT_WORN;
-      V.skirtState   = SugarCube.setup.ClothingState.NOT_WORN;
-      V.isClothesStolen = false;
+      V.shortsState  = NOT_WORN;
+      V.skirtState   = NOT_WORN;
+      V.isPantiesStolen = false;
+      V.isBraStolen     = false;
+      V.isShirtStolen   = false;
+      V.isBottomStolen  = false;
     });
 
     await goToPassage(page, 'StealClothes');
 
-    expect(await getVar(page, 'isClothesStolen')).toBe(true);
+    /* Whatever StealClothes picked, at least one per-piece stolen flag
+       must have flipped, and the matching loot pin must be present on
+       the floor plan, landing on a real furniture-bearing slot. */
+    const stolen = await page.evaluate(() => {
+      const V = SugarCube.State.variables;
+      return {
+        panties: V.isPantiesStolen === true,
+        bra:     V.isBraStolen     === true,
+        shirt:   V.isShirtStolen   === true,
+        bottom:  V.isBottomStolen  === true
+      };
+    });
+    const flipped = Object.entries(stolen).filter(([, v]) => v).map(([k]) => k);
+    expect(flipped.length).toBeGreaterThan(0);
+
     const fp = await callSetup(page, 'setup.HuntController.field("floorplan")');
-    expect(fp.loot && fp.loot.clothesStolen).toBeTruthy();
-    /* The stash must land on a real furniture-bearing room. */
-    const room = fp.rooms.find(r => r.id === fp.loot.clothesStolen);
-    expect(room).toBeTruthy();
-    const tmpl = await page.evaluate(t =>
-      SugarCube.setup.Templates.byId(t), room.template);
-    expect(tmpl.furniture).toContain(fp.lootFurniture.clothesStolen);
+    const PIECE_TO_KIND = {
+      panties: 'clothesStolenPanties',
+      bra:     'clothesStolenBra',
+      shirt:   'clothesStolenShirt',
+      bottom:  'clothesStolenBottom'
+    };
+    for (const piece of flipped) {
+      const kind = PIECE_TO_KIND[piece];
+      expect(fp.loot && fp.loot[kind]).toBeTruthy();
+      const room = fp.rooms.find(r => r.id === fp.loot[kind]);
+      expect(room).toBeTruthy();
+      const tmpl = await page.evaluate(t =>
+        SugarCube.setup.Templates.byId(t), room.template);
+      expect(tmpl.furniture).toContain(fp.lootFurniture[kind]);
+    }
   });
 
-  test('StealClothes with no available targets does not flip isClothesStolen', async () => {
+  test('StealClothes with no available targets does not flip any stolen flag', async () => {
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({
       seed: 14, floorPlanOpts: { roomCount: 5 }
     }));
     /* No worn garments -> availableStealTargets returns []. The
        passage should be a no-op for stolen-clothes state instead of
-       flipping the flag + planting a phantom stash. */
+       flipping any flag + planting a phantom stash. */
     await page.evaluate(() => {
       const V = SugarCube.State.variables;
       const NOT_WORN = SugarCube.setup.ClothingState.NOT_WORN;
@@ -235,36 +313,54 @@ test.describe('Hunt — clothes + dark-room bugs', () => {
       V.skirtState   = NOT_WORN;
       V.braState     = NOT_WORN;
       V.pantiesState = NOT_WORN;
-      V.isClothesStolen = false;
+      V.isPantiesStolen = false;
+      V.isBraStolen     = false;
+      V.isShirtStolen   = false;
+      V.isBottomStolen  = false;
     });
 
     await goToPassage(page, 'StealClothes');
 
-    expect(await getVar(page, 'isClothesStolen')).toBe(false);
+    expect(await getVar(page, 'isPantiesStolen')).toBe(false);
+    expect(await getVar(page, 'isBraStolen')).toBe(false);
+    expect(await getVar(page, 'isShirtStolen')).toBe(false);
+    expect(await getVar(page, 'isBottomStolen')).toBe(false);
     const fp = await callSetup(page, 'setup.HuntController.field("floorplan")');
-    expect(fp && fp.loot && fp.loot.clothesStolen).toBeFalsy();
+    const loot = (fp && fp.loot) || {};
+    expect(loot.clothesStolenPanties).toBeFalsy();
+    expect(loot.clothesStolenBra).toBeFalsy();
+    expect(loot.clothesStolenShirt).toBeFalsy();
+    expect(loot.clothesStolenBottom).toBeFalsy();
   });
 
   // -----------------------------------------------------------------
-  // Generalized invariant: any path that marks isClothesStolen=1
-  // inside an active hunt must also place a clothesStolen stash on
-  // the floor plan. This is a meta-test that audits the source so a
-  // future steal path doesn't drift back into the bug.
+  // Generalized invariant: any path that strips a piece via the
+  // wardrobe steal helpers inside an active hunt must also place a
+  // matching clothesStolen<Piece> pin on the floor plan via
+  // stashStolenClothes(piece). This is a meta-test that audits the
+  // source so a future steal path doesn't drift back into the bug.
   // -----------------------------------------------------------------
 
-  test('every in-hunt clothes-stealing site pairs markClothesStolen with stashStolenClothes', async () => {
-    /* lint-style scan: find each call to markClothesStolen() inside a
-       passage that runs during an active hunt and check the same
-       passage also runs stashStolenClothes(). The MonkeyPaw "leave"
-       wish is exempt because it abandons the run on the same tick --
-       so the clothes can't be recovered in-house and the stash would
-       be pointless. */
+  test('every in-hunt clothes-stealing site pairs its strip with a stash', async () => {
+    /* lint-style scan: find each passage that strips a garment via the
+       Steal* includes or stealWornInGroup helper, and confirm the
+       same file also stashes the piece on the floor plan -- either
+       directly (stashStolenClothes(piece)) or via the consolidated
+       HuntController.stealClothes(piece) wrapper. Exempt files that
+       legitimately don't need to stash. */
     const fs = require('fs');
     const path = require('path');
     const root = path.resolve(__dirname, '..', 'passages');
     const exempt = new Set([
-      // MonkeyPaw "leave" exits to HuntSummary; nothing to recover.
-      path.join(root, 'gui', 'widgetText.tw')
+      /* MonkeyPaw "leave" exits to HuntSummary; nothing to recover. */
+      path.join(root, 'gui', 'widgetText.tw'),
+      /* The Wardrobe controller defines stealWornInGroup itself --
+         doesn't strip anything by being read. */
+      path.join(root, 'home', 'WardrobeController.js'),
+      /* HuntController defines stealClothes() (which calls into
+         stealWornInGroup) plus the stash primitive -- doesn't strip
+         anything by being read. */
+      path.join(root, 'hunt', 'HuntController.js')
     ]);
 
     function walk(dir) {
@@ -276,15 +372,104 @@ test.describe('Hunt — clothes + dark-room bugs', () => {
       }
       return out;
     }
+    const STRIP_RE = /(<<include\s+"(StealBra|StealPanties|StealBottomOuter)">>|stealWornInGroup\s*\(|stealBottomOuter\s*\(|setup\.HuntController\.stealClothes\s*\()/;
+    const STASH_RE = /(stashStolenClothes\s*\(|setup\.HuntController\.stealClothes\s*\()/;
     const offenders = [];
     for (const file of walk(root)) {
       const src = fs.readFileSync(file, 'utf8');
-      if (!/markClothesStolen\s*\(/.test(src)) continue;
+      if (!STRIP_RE.test(src)) continue;
       if (exempt.has(file)) continue;
-      if (!/stashStolenClothes\s*\(/.test(src)) {
+      if (!STASH_RE.test(src)) {
         offenders.push(path.relative(root, file));
       }
     }
     expect(offenders).toEqual([]);
+  });
+});
+
+/* The STEAL_CHECK filter in HuntController doubles ctx.chanceMult when
+   the player's current room is dark, so clothing is twice as likely to
+   be lifted on a dark-room tick. This is a behaviour test against the
+   filter pipeline: stamp a known baseline chance + force the roll
+   outcome, then flip the current room between LIT and DARK and confirm
+   the steal verdict matches the doubled threshold. */
+test.describe('Hunt — lights-out doubles steal chance', () => {
+  let page;
+
+  test.beforeAll(async ({ browser }) => {
+    page = await openGame(browser);
+  });
+
+  test.afterAll(async () => {
+    await page.close();
+  });
+
+  test.beforeEach(async () => {
+    await resetGame(page);
+    await page.waitForFunction(() => SugarCube.State.variables.mc != null);
+  });
+
+  async function bootHuntWithWornGarment() {
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 8 }));
+    /* Drop the seeded modifier deck so neither Swiper (forceTrigger)
+       nor Sticky Fingers (chanceMult x2) accidentally biases the roll
+       in this filter test. */
+    await page.evaluate(() => { SugarCube.State.variables.run.modifiers = []; });
+    /* Need at least one stealable garment so canStealAnyItem() is true. */
+    await page.evaluate(() => {
+      const V = SugarCube.State.variables;
+      const WORN = SugarCube.setup.ClothingState.WORN;
+      const NW   = SugarCube.setup.ClothingState.NOT_WORN;
+      V.tshirtState  = NW;
+      V.braState     = NW;
+      V.jeansState   = NW;
+      V.shortsState  = NW;
+      V.skirtState   = NW;
+      V.pantiesState = WORN;
+    });
+  }
+
+  async function setCurrentRoomLight(state) {
+    await page.evaluate(s => {
+      const run = SugarCube.State.variables.run;
+      const rid = run.currentRoomId || run.floorplan.spawnRoomId || 'room_0';
+      SugarCube.setup.HuntController.setRoomLight(rid, s === 'dark'
+        ? SugarCube.setup.RoomLight.DARK
+        : SugarCube.setup.RoomLight.LIT);
+    }, state);
+  }
+
+  test('STEAL_CHECK filter doubles chanceMult when the current room is dark', async () => {
+    await bootHuntWithWornGarment();
+    /* The filter returns the ctx unchanged when lit, doubled when dark. */
+    await setCurrentRoomLight('lit');
+    const lit = await page.evaluate(() =>
+      SugarCube.setup.Hunt.applyFilter(SugarCube.setup.Hunt.Event.STEAL_CHECK, { chanceMult: 1 }).chanceMult
+    );
+    await setCurrentRoomLight('dark');
+    const dark = await page.evaluate(() =>
+      SugarCube.setup.Hunt.applyFilter(SugarCube.setup.Hunt.Event.STEAL_CHECK, { chanceMult: 1 }).chanceMult
+    );
+    expect(lit).toBe(1);
+    expect(dark).toBe(2);
+  });
+
+  test('shouldTriggerSteal: lit room with 30% chance + 0.5 roll → no steal; dark room → steal', async () => {
+    /* Roll is `1 + floor(random() * 100)`. Force Math.random to 0.5 →
+       roll = 51. Threshold = stealChance * chanceMult.
+         Lit:  30 * 1 = 30, 51 > 30 → no steal
+         Dark: 30 * 2 = 60, 51 <= 60 → steal
+       The doubling is what flips the outcome. */
+    await bootHuntWithWornGarment();
+    await page.evaluate(() => { SugarCube.State.variables.stealChance = 30; });
+    await page.evaluate(() => { Math.random = () => 0.5; });
+
+    await setCurrentRoomLight('lit');
+    const litTrigger = await callSetup(page, 'setup.HauntedHouses.shouldTriggerSteal()');
+    expect(litTrigger).toBe(false);
+
+    await setCurrentRoomLight('dark');
+    const darkTrigger = await callSetup(page, 'setup.HauntedHouses.shouldTriggerSteal()');
+    expect(darkTrigger).toBe(true);
   });
 });

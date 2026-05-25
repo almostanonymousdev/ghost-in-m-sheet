@@ -176,10 +176,11 @@ test.describe('HuntController', () => {
 
   test('onCaughtCleanup() clears stolen-garment flags without throwing', async () => {
     /* HuntOverProwl's bottom-of-passage cleanup goes through this helper.
-       No $hunt to mutate; cleanup still runs and clears the
-       stolen-garment flags so the player walks out clean. */
+       The per-piece stolen flags (isPantiesStolen, etc.) should fold
+       back through the wardrobe-restore flow without throwing, even
+       when none are set. */
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
-    await page.evaluate(() => { SugarCube.State.variables.isClothesStolen = true; });
+    await page.evaluate(() => { SugarCube.State.variables.isPantiesStolen = true; });
 
     // Should not throw even with no $hunt object.
     await page.evaluate(() => SugarCube.setup.HuntController.onCaughtCleanup());

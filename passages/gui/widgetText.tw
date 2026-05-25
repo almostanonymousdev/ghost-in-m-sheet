@@ -76,14 +76,20 @@
 
 <<widget "leave">>
 	<<set _out to setup.MonkeyPaw.activate("leave")>>
+	/* MonkeyPaw "leave" wish abandons the run on this tick (the
+	   <<goto _out.goto>> below exits to HuntSummary), so there's
+	   nothing to recover in-house -- bypass the Steal* leaf
+	   passages (which would also stash a floor-plan pin on a run
+	   that's about to be torn down) and just flip the wardrobe
+	   flags so the post-hunt strip-replacement flow sees what was
+	   lost. */
 	<<if _out.clothesStolen>>
-		<<run setup.HauntedHouses.markClothesStolen()>>
 		<<if setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT)>><<run setup.Wardrobe.stealWornInGroup("tshirt", "tshirtState", "isShirtStolen")>><</if>>
-		<<if setup.Wardrobe.worn(setup.WardrobeSlot.BRA)>><<include "StealBra">><</if>>
+		<<if setup.Wardrobe.worn(setup.WardrobeSlot.BRA)>><<run setup.Wardrobe.stealWornInGroup("bra", "braState", "isBraStolen")>><</if>>
 		<<if setup.Wardrobe.worn(setup.WardrobeSlot.JEANS) or setup.Wardrobe.worn(setup.WardrobeSlot.SHORTS) or setup.Wardrobe.worn(setup.WardrobeSlot.SKIRT)>>
-			<<include "StealBottomOuter">>
+			<<run setup.Wardrobe.stealBottomOuter()>>
 		<</if>>
-		<<if setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES)>><<include "StealPanties">><</if>>
+		<<if setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES)>><<run setup.Wardrobe.stealWornInGroup("panties", "pantiesState", "isPantiesStolen")>><</if>>
 	<</if>>
 	<<if _out.goto>>
 		<<goto _out.goto>>
