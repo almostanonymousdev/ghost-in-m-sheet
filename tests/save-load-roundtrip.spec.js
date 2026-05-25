@@ -662,7 +662,7 @@ test.describe('Save/load round-trip', () => {
         prowlActivated: true, prowlActivationTime: 60, elapsedTimeProwl: 30,
         twinsEventActive: true,
         // Clock somewhere weird:
-        hours: 23, minutes: 45, meridiem: 'PM',
+        hours: 23, minutes: 45,
       };
       SugarCube.setup.resetSaveToFallback(vars);
       return vars;
@@ -719,13 +719,12 @@ test.describe('Save/load round-trip', () => {
     expect(after.pendingHuntHouseId).toBeNull();
     expect(after.hauntedHouse).toBeNull();
 
-    // --- Clock parked at 11 AM ---------------------------------
+    // --- Clock parked at 11:00 ---------------------------------
     expect(after.hours).toBe(11);
     expect(after.minutes).toBe(0);
-    expect(after.meridiem).toBe('AM');
   });
 
-  test('cross-version save load drops the MC in the Livingroom at 11 AM', async ({ game: page }) => {
+  test('cross-version save load drops the MC in the Livingroom at 11:00', async ({ game: page }) => {
     // End-to-end check on the Save.onLoad wiring: a save whose
     // metadata.version doesn't match SAVE_VERSION should come back
     // with the player's MC stats intact but the clock + passage reset.
@@ -757,7 +756,6 @@ test.describe('Save/load round-trip', () => {
     expect(await page.evaluate(() => SugarCube.State.passage)).toBe('Livingroom');
     expect(await getVar(page, 'hours')).toBe(11);
     expect(await getVar(page, 'minutes')).toBe(0);
-    expect(await getVar(page, 'meridiem')).toBe('AM');
     expect(await getVar(page, 'mc.money')).toBe(555);
     expect(await getVar(page, 'mc.lvl')).toBe(9);
     expect(await getVar(page, 'ectoplasm')).toBe(88);

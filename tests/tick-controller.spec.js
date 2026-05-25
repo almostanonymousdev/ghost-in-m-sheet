@@ -23,7 +23,7 @@ test.describe('TickController helpers', () => {
     expect(await getVar(page, 'hasRescueClue')).toBe(false);
   });
 
-  test('tickRescueQuestExpiry fails the quest when stage 1 outlasts 5 PM', async ({ game: page }) => {
+  test('tickRescueQuestExpiry fails the quest when stage 1 outlasts 17:00', async ({ game: page }) => {
     const Q = await callSetup(page, 'setup.RescueQuestState');
     await setVar(page, 'hasQuestForRescue', Q.ACTIVE);
     await setVar(page, 'rescueStage', 1);
@@ -32,7 +32,7 @@ test.describe('TickController helpers', () => {
     expect(await getVar(page, 'hasQuestForRescue')).toBe(Q.FAILED);
   });
 
-  test('tickRescueQuestExpiry leaves a stage-1 quest alone before 5 PM', async ({ game: page }) => {
+  test('tickRescueQuestExpiry leaves a stage-1 quest alone before 17:00', async ({ game: page }) => {
     const Q = await callSetup(page, 'setup.RescueQuestState');
     await setVar(page, 'hasQuestForRescue', Q.ACTIVE);
     await setVar(page, 'rescueStage', 1);

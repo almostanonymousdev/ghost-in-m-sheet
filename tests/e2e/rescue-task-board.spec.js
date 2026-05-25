@@ -33,7 +33,7 @@ test.describe('Missing Women — task board', () => {
     expect(text).toContain('already taken the missing poster');
   });
 
-  test('shows daytime message when before 6 PM', async ({ game: page }) => {
+  test('shows daytime message when before 18:00', async ({ game: page }) => {
     await setVar(page, 'relationshipWithRain', 1);
     await setVar(page, 'hasQuestForRescue', 0);
     await setVar(page, 'rescueQuest', 0);
@@ -43,7 +43,7 @@ test.describe('Missing Women — task board', () => {
     await goToPassage(page, 'RescueTaskBoard');
     await expectCleanPassage(page);
 
-    expect(await page.locator('.passage').textContent()).toContain('6 PM');
+    expect(await page.locator('.passage').textContent()).toContain('18:00');
   });
 
   test('shows cooldown message when on cooldown', async ({ game: page }) => {

@@ -12,7 +12,7 @@ This plotline involves rescuing missing women (Victoria, Julia, Jade, Nadia, and
 
 ## [Witch Plotline](witch.md)
 
-The witch is a mysterious character who sells rare supernatural items and runs through her own intimate storyline. You can visit her house between 10 AM and midnight; outside those hours it appears abandoned (sneaking in is possible once you've stolen her key). Her role is the shopkeeper for cursed items and the focal point for her personal events.
+The witch is a mysterious character who sells rare supernatural items and runs through her own intimate storyline. You can visit her house between 10:00 and midnight; outside those hours it appears abandoned (sneaking in is possible once you've stolen her key). Her role is the shopkeeper for cursed items and the focal point for her personal events.
 
 ## [Ghost Hunting Plotline](ghost-hunting.md)
 

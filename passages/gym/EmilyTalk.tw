@@ -21,7 +21,7 @@
 	<</if>>
 
 	<<if _check eq 3>>
-		@@.notmc-speech; There are group classes here, held daily from 12 PM to 14 PM. They are free and very effective.<br>@@
+		@@.notmc-speech; There are group classes here, held daily from 12:00 to 14:00. They are free and very effective.<br>@@
 		@@.mc-speech; Thanks for mentioning it. I'll keep that in mind.<br>@@
 	<</if>>
 	<<if setup.Gym.raiseEmilyRelationship()>>

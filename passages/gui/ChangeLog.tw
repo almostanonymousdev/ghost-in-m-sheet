@@ -115,8 +115,8 @@ v.0.5.3
 	- Now fitness level affects energy. (Every 10 fitness points grants 1 energy)
 	- New Quest: Missing Girls. <<linkreplace "Spoiler">>\
 		There are currently 4 missing girls. The quest begins at the witch's house and continues at the church.
-		After speaking with the nun, a board displaying information about the missing girls appears. The board updates daily, and you can accept a quest from it after 6:00 PM.
-		You must complete the quest by 6:00 PM the following day. If the quest is not completed by 12:00 PM the next day, the girl will become possessed and can no longer be saved.
+		After speaking with the nun, a board displaying information about the missing girls appears. The board updates daily, and you can accept a quest from it after 18:00.
+		You must complete the quest by 18:00 the following day. If the quest is not completed by 12:00 the next day, the girl will become possessed and can no longer be saved.
 		<</linkreplace>>
 	- You can give sanity pills to your follower.
 	- Furniture has been added to haunted houses, where stolen clothes or cursed items can now be hidden.

@@ -18,7 +18,7 @@
 <</if>>
 <<addTime 20>>
 <<if setup.MissingWomen.searchTooLate()>>
-	@@.mc-speech; The nun said that after 6 p.m. it's pointless to keep searching. It seems I'm too late. I should go back to her and tell her I failed.@@<br>
+	@@.mc-speech; The nun said that after 18:00 it's pointless to keep searching. It seems I'm too late. I should go back to her and tell her I failed.@@<br>
 <<else>>
 	<<if setup.MissingWomen.canSearchHouse()>>
 		<<linkreplace '@@.usebtn; Search the house @@ <<statIcon setup.StatIcon.ENERGY>>'>>
@@ -29,7 +29,7 @@
 			<<elseif setup.MissingWomen.canResolveRescue()>>
 				<<goto "RescueEvent">>
 			<<elseif setup.MissingWomen.questFailed()>>
-				@@.mc-speech; The nun said that after 6 p.m. it's pointless to keep searching. It seems I'm too late. I should go back to her and tell her I failed.@@<br>
+				@@.mc-speech; The nun said that after 18:00 it's pointless to keep searching. It seems I'm too late. I should go back to her and tell her I failed.@@<br>
 			<<else>>
 				@@.mc-thoughts; You search around but can't find anything yet. Maybe you should come back later.@@
 			<</if>>

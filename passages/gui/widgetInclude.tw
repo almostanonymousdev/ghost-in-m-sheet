@@ -62,7 +62,7 @@
 	<<repeat>> loop in setup.searchToolMarkup so every meter increment
 	advances the clock. Updates the clock display and tool-timer strip
 	(linkreplace doesn't trigger StoryCaption re-render) and routes to
-	the mode-aware hunt-over-time passage if the tick pushed dawn past 6am. */
+	the mode-aware hunt-over-time passage if the tick pushed dawn past 06:00. */
 	<<run setup.addTime(1)>>
 	<<replace "#time">><<= setup.Time.display()>><</replace>>
 	<<replace "#tool-timers">><<= setup.toolTimerHudMarkup()>><</replace>>

@@ -340,9 +340,9 @@ setup.MonkeyPaw = (function () {
 			widget: 'dawn',
 			description: "Morning comes, ready or not. The hunt ends.",
 			/* Scaling:
-			   t1: jump to 6 AM, end hunt
-			   t2: jump to 6 AM, end hunt, +0.2 tempCorr
-			   t3: jump to 6 AM, end hunt, +0.4 tempCorr */
+			   t1: jump to 06:00, end hunt
+			   t2: jump to 06:00, end hunt, +0.2 tempCorr
+			   t3: jump to 06:00, end hunt, +0.4 tempCorr */
 			activate: function () {
 				var t = currentTier();
 				var corr = [0, 0.2, 0.4][t - 1];

@@ -673,7 +673,7 @@
 	 * info, achievements, wardrobe, companion stat rows). Anything
 	 * transient (per-hunt state, tool timers, home event bundles,
 	 * daily cooldowns, clock) goes back to defaults, and the MC
-	 * is dropped in the Livingroom at 11 AM.
+	 * is dropped in the Livingroom at 11:00.
 	 */
 	var PRESERVE_KEYS = [
 		// --- MC core / status / consumables / piercings ---------
@@ -777,11 +777,10 @@
 			delete vars.mc.frozenBeauty;
 		}
 
-		// Drop her in the Livingroom at 11 AM, regardless of where
+		// Drop her in the Livingroom at 11:00, regardless of where
 		// the old save left her.
 		vars.hours    = 11;
 		vars.minutes  = 0;
-		vars.meridiem = 'AM';
 		vars.huntMode = 0;
 		vars.run      = null;
 	}

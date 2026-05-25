@@ -20,7 +20,7 @@ const TATTOO_LIST = [
 ];
 
 test.describe('Body mods — salon access and hours', () => {
-  test('Salon.isOpen between 8 AM and 9 PM', async ({ game: page }) => {
+  test('Salon.isOpen between 08:00 and 21:00', async ({ game: page }) => {
     await setVar(page, 'hours', 7);
     expect(await callSetup(page, 'setup.Salon.isOpen()')).toBe(false);
     await setVar(page, 'hours', 8);
@@ -31,7 +31,7 @@ test.describe('Body mods — salon access and hours', () => {
     expect(await callSetup(page, 'setup.Salon.isOpen()')).toBe(false);
   });
 
-  test('BeautySalon exterior shows closed message before 8 AM', async ({ game: page }) => {
+  test('BeautySalon exterior shows closed message before 08:00', async ({ game: page }) => {
     await setVar(page, 'hours', 5);
     await goToPassage(page, 'BeautySalon');
     const text = await page.locator('#passages').innerText();

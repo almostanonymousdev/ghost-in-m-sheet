@@ -3,7 +3,7 @@ const { setVar, getVar, callSetup, goToPassage } = require('../helpers');
 const { expectCleanPassage } = require('./e2e-helpers');
 
 test.describe('Gym — hours and training gates', () => {
-  test('Gym exterior shows closed message at 5 AM', async ({ game: page }) => {
+  test('Gym exterior shows closed message at 05:00', async ({ game: page }) => {
     await setVar(page, 'hours', 5);
     await goToPassage(page, 'Gym');
     const text = await page.locator('#passages').innerText();
@@ -11,7 +11,7 @@ test.describe('Gym — hours and training gates', () => {
     await expectCleanPassage(page);
   });
 
-  test('Gym exterior shows "Inside" link at 10 AM', async ({ game: page }) => {
+  test('Gym exterior shows "Inside" link at 10:00', async ({ game: page }) => {
     await setVar(page, 'hours', 10);
     await goToPassage(page, 'Gym');
     const text = await page.locator('#passages').innerText();
@@ -110,7 +110,7 @@ test.describe('Gym — passages render cleanly', () => {
 });
 
 test.describe('Library — hours and meeting gates', () => {
-  test('Library exterior shows no "Enter" link before 8 AM', async ({ game: page }) => {
+  test('Library exterior shows no "Enter" link before 08:00', async ({ game: page }) => {
     await setVar(page, 'hours', 5);
     await goToPassage(page, 'Library');
     const text = await page.locator('#passages').innerText();
@@ -118,7 +118,7 @@ test.describe('Library — hours and meeting gates', () => {
     await expectCleanPassage(page);
   });
 
-  test('Library exterior shows "Enter the library" at 10 AM', async ({ game: page }) => {
+  test('Library exterior shows "Enter the library" at 10:00', async ({ game: page }) => {
     await setVar(page, 'hours', 10);
     await goToPassage(page, 'Library');
     const text = await page.locator('#passages').innerText();
@@ -270,7 +270,7 @@ test.describe('Park — jogging and events', () => {
 });
 
 test.describe('Church — rescue hub and priest routes', () => {
-  test('Church exterior shows closed message at 3 AM', async ({ game: page }) => {
+  test('Church exterior shows closed message at 03:00', async ({ game: page }) => {
     await setVar(page, 'hours', 3);
     await goToPassage(page, 'Church');
     const text = await page.locator('#passages').innerText();

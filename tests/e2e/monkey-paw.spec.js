@@ -74,7 +74,7 @@ test.describe('Monkey Paw wishes', () => {
     expect(t2.lustDelta).toBe(10);
   });
 
-  test('dawn wish jumps clock to 6 AM and ends the hunt', async ({ game: page }) => {
+  test('dawn wish jumps clock to 06:00 and ends the hunt', async ({ game: page }) => {
     await setupHunt(page, 'Shade');
     await page.evaluate(() => {
       SugarCube.setup.MonkeyPaw.resetHunt();

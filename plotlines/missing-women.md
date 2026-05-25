@@ -2,7 +2,7 @@
 
 This plotline involves rescuing missing women (Victoria, Julia, Jade, Nadia, and Ash) who have been taken by ghosts. The process begins at the church where you can take missing posters for these women. Each rescue mission requires you to locate their haunted house, investigate the ghost, and complete specific objectives to rescue the woman. The rescue missions have multiple stages and can involve ghost encounters, possession events, and special rescue scenarios. Successfully rescuing a woman completes her storyline and may unlock additional content.
 
-* **Rescue system** - Missing posters go up on the church task board from 6 PM onward (`setup.MissingWomen.boardPostingsOutToday()` returns true for hours 18–23), at which point the MC can take one for a random woman drawn from the pool of five. Only one quest is active at a time, with a daily cooldown (`rescueQuestCD`) between postings, and the MC must return to the nun once a quest succeeds or fails before a new one can be taken.
+* **Rescue system** - Missing posters go up on the church task board from 18:00 onward (`setup.MissingWomen.boardPostingsOutToday()` returns true for hours 18–23), at which point the MC can take one for a random woman drawn from the pool of five. Only one quest is active at a time, with a daily cooldown (`rescueQuestCD`) between postings, and the MC must return to the nun once a quest succeeds or fails before a new one can be taken.
   * [RescueTaskBoard.tw](../passages/missing_women/RescueTaskBoard.tw) - Task board where you take missing posters
   * [RescueMap.tw](../passages/missing_women/RescueMap.tw) - Map for rescue missions
   * [RescueHouse.tw](../passages/missing_women/RescueHouse.tw) - Rescue house locations

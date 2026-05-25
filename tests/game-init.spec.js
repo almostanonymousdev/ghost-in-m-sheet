@@ -61,13 +61,11 @@ test.describe('Game Initialization (StoryInit)', () => {
     // act
     const hours = await getVar(page, 'hours');
     const minutes = await getVar(page, 'minutes');
-    const meridiem = await getVar(page, 'meridiem');
     const mode = await getHuntMode(page);
 
     // assert
     expect(hours).toBe(12);
     expect(minutes).toBe(0);
-    expect(meridiem).toBe('AM');
     expect(mode).toBe(0);
   });
 

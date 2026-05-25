@@ -36,7 +36,7 @@ test.describe('Brook missing room bug', () => {
     });
 
     // Plant Brook on Plan2, force timer elapsed, hidden showComp.
-    // Use 2 AM so isMorningPlus() (>= 6) stays false and the post-event
+    // Use 02:00 so isMorningPlus() (>= 6) stays false and the post-event
     // tick doesn't reroute us into HuntOverTime.
     await setVar(page, 'chosenPlan', 'Plan2');
     await setVar(page, 'chosenPlanActivated', 1);

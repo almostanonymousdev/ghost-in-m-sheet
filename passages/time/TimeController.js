@@ -1,6 +1,6 @@
 /*
  * Centralized helpers for the in-game clock state:
- *   $hours, $minutes, $meridiem, $dailySeed
+ *   $hours, $minutes, $dailySeed
  *
  * Any passage that needs to read or set the clock should route
  * through setup.Time. The mutation widgets <<addTime>> / <<addLust>>
@@ -19,7 +19,7 @@ setup.Time = (function () {
 	/* Variables owned by this controller. Other controllers should
 	   query/mutate these only through the API methods below. */
 	var OWNED_VARS = Object.freeze([
-		'hours', 'minutes', 'meridiem', 'dailySeed'
+		'hours', 'minutes', 'dailySeed'
 	]);
 
 	var sv = setup.sv;
@@ -48,7 +48,7 @@ setup.Time = (function () {
 
 		/* Inclusive-on-both-ends window check over the current hour.
 		   `isBetween(8, 21)` covers 08:00 through 21:59, the natural
-		   "open from 8 to 9 PM" expression. Backs setup.LocationHours
+		   "open from 8 to 21" expression. Backs setup.LocationHours
 		   and the in-controller time-window predicates that used to
 		   compare $hours to literal endpoints inline. */
 		isBetween: function (lo, hi) {
@@ -100,7 +100,6 @@ setup.Time = (function () {
 			}
 			return false;
 		} },
-		'meridiem',
 		'dailySeed'
 	]);
 

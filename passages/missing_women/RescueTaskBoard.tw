@@ -29,7 +29,7 @@
 	<<elseif setup.MissingWomen.hasActiveQuest()>>
 		@@.mc-speech; I've already taken the missing poster for <<= setup.MissingWomen.currentRescueGirl()>>, I need to find her first.@@<br>
 	<<elseif setup.MissingWomen.isQuestAvailable()>>
-		@@.mc-speech; The nun said that the missing posters appear in the evening, around 6 PM.@@<br>
+		@@.mc-speech; The nun said that the missing posters appear in the evening, around 18:00.@@<br>
 	<<elseif setup.MissingWomen.mustReturnToNun()>>
 		@@.mc-speech;First, I need to go see the nun. She should be at the church. @@
 	<</if>>

@@ -138,7 +138,7 @@ setup.MissingWomen = (function () {
 			return setup.Mc.energy() >= 1;
 		},
 		searchTooLate: function () {
-			// Mirrors legacy "after 6 p.m. it's pointless" check on
+			// Mirrors legacy "after 18:00 it's pointless" check on
 			// rescueHouse, driven by the failed-quest state.
 			return this.questFailed();
 		},
@@ -238,7 +238,7 @@ setup.MissingWomen = (function () {
 		},
 
 		/* Per-tick expiry. If the active quest ran out of stages or the
-		   in-game day slipped past 5 PM, fail it and wipe the per-attempt
+		   in-game day slipped past 17:00, fail it and wipe the per-attempt
 		   vars so the next acceptance starts clean. Called from Tick. */
 		tickQuestExpiry: function () {
 			var s = sv();

@@ -14,7 +14,7 @@ test.describe('Witch — access and hours', () => {
     expect(await callSetup(page, 'setup.Witch.isDayTime()')).toBe(false);
   });
 
-  test('Witch exterior shows closed message before 10 AM without a stolen key', async ({ game: page }) => {
+  test('Witch exterior shows closed message before 10:00 without a stolen key', async ({ game: page }) => {
     await setVar(page, 'hours', 3);
     await page.evaluate(() => { delete SugarCube.State.variables.gotKeyFromWitch; });
     await goToPassage(page, 'Witch');

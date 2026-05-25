@@ -4,7 +4,7 @@
 @@.mc-thoughts; Oldest building in Mossheath, and it shows. Stone facade older than the Emergence, a stained-glass St. Michael missing a chip of his halo, a fountain by the door that's never been turned off in living memory. Father Ibrahim does the six o'clock Mass for an audience of two pensioners. //First time I asked him about the name, he just smiled. Long story, he said. My mother had opinions.//@@<br>
 <br>
 <<if not setup.Church.isOpen()>>
-	@@.mc-thoughts; I came at an inappropriate time (open from 6 AM to 10 PM)@@<br>
+	@@.mc-thoughts; I came at an inappropriate time (open from 06:00 to 22:00)@@<br>
 <<else>>
 	<<if setup.Church.canStartNunQuest()>>
 		@@.enterbtn;<<link "Confess your sins" "ChurchNunQuest">><<run setup.Church.clearRescueQuest()>>

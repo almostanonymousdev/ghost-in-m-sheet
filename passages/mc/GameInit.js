@@ -58,7 +58,6 @@ setup.Game = (function () {
 		s.alarm = { enabled: false, hour: 7 };
 
 		// --- Clock --------------------------------------------
-		s.meridiem = 'AM';
 		s.hours = 12;
 		s.minutes = 0;
 		s.dailySeed = Math.floor(Math.random() * 0x100000000);

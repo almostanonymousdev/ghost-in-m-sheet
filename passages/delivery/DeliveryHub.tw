@@ -5,7 +5,7 @@
 @@.mc-thoughts; This is a small office in the city specializing in the delivery of various goods. It's one of the few places where you can earn some money@@<br>
 <br>
 <<if not setup.Delivery.isOpen()>>
-	@@.mc-thoughts;The delivery hub is not open right now (open from 8 AM to 8 PM)@@
+	@@.mc-thoughts;The delivery hub is not open right now (open from 08:00 to 20:00)@@
 <<else>>
 	<<if setup.Delivery.completedShifts() gt 0>>
 		<div class="delivery-stats">
