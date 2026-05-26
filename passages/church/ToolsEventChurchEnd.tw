@@ -6,7 +6,7 @@
 	@@.notmc-speech; I think you deserve it, here you go. If you want, you can come to me sometimes for special confessions@@<br>
 	@@.mc-speech; Thanks, i'll think about that@@<br>
 	<<run setup.Church.startPriestToolEvent()>>
-	@@.mc-action; You get a lvl 3 Thermometr @@<<image "ui/img/thermometr.png" { style: "max-width:5%" }>>
+	@@.mc-action; You get a lvl 3 Thermometer @@<<image "ui/img/thermometr.png" { style: "max-width:5%" }>>
 	<br>
 	<br>
 <<else>>

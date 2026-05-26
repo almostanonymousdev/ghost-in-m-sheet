@@ -26,7 +26,7 @@
    setup.HuntController.startingTools(), which folds the run's loadout
    and the Empty Bag modifier into the canonical setup.searchToolOrder:
    default runs show all six (EMF, Ectoglass, GWB, Spiritbox,
-   Thermometr, UVL); a loadout that names a subset shows just those;
+   Thermometer, UVL); a loadout that names a subset shows just those;
    Empty Bag collapses the strip to a "no tools" placeholder.
 
    Per-slot markup lives in <<huntToolSlot>> below. setup.ensureHuntSearchBag

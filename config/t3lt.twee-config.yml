@@ -313,7 +313,7 @@ sugarcube-2:
     huntToolBar:
       name: huntToolBar
       description: Renders the six canonical investigation tool slots (EMF, Ectoglass,
-        GWB, Spiritbox, Thermometr, UVL) inside the HuntRun toolbar. Pulls
+        GWB, Spiritbox, Thermometer, UVL) inside the HuntRun toolbar. Pulls
         icons + labels from setup.searchToolDefs in setup.searchToolOrder so the
         hunt's placeholder stays in sync with the tool catalogue.
         Visual-only until the hunt room renderer wires up search bags / meters.

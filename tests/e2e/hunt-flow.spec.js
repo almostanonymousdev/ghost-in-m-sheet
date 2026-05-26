@@ -770,7 +770,7 @@ test.describe('E2E: hunt lifecycle', () => {
       SugarCube.setup.isGhostHere = () => true;
     });
 
-    const thermoCard = page.locator('.hunt-tool-card').filter({ hasText: 'Thermometr' });
+    const thermoCard = page.locator('.hunt-tool-card').filter({ hasText: 'Thermometer' });
     const countdown = thermoCard.locator('.hunt-tool-countdown');
 
     await thermoCard.locator('a').click();

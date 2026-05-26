@@ -553,7 +553,7 @@ setup.makeEmptySearchState = function () {
  * (<prefix><widgetSuffix>[Button]); picSuffix matches the toolCard
  * image id convention used by the global click-delegation handler
  * below. The two diverge for spiritbox (PicSB vs widgetSuffix
- * Spiritbox) and temperature (PicThermometr vs Temperature) -- that
+ * Spiritbox) and temperature (PicThermometer vs Temperature) -- that
  * asymmetry predates this refactor. iconFile is the toolCard image
  * filename under setup.ImagePath + "/img/". replaceMode and
  * needsLightCheck are tool-wide constants: emf and temperature are
@@ -602,10 +602,10 @@ setup.searchToolDefs = {
         meterField:      "Temperature",
         equipField:      "temperature",
         widgetSuffix:    "Temperature",
-        picSuffix:       "PicThermometr",
+        picSuffix:       "PicThermometer",
         iconFile:        "thermometr.png",
         replaceMode:     "single",
-        label:           "Use @@color:yellow;T@@hermometr",
+        label:           "Use @@color:yellow;T@@hermometer",
         checkPassage:    "TemperatureHigh"
     },
     uvl: {
