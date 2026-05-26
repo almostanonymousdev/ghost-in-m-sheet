@@ -7,6 +7,7 @@
 <div class="flexwrapper">
 <<huntCard>>
 </div>
+@@.backbtn;[[Return to city|CityMap]]@@
 <<nobr>>
 <<run setup.Hunt.emit(setup.Hunt.Event.HOUSE_ENTER)>>
 <<run setup.Time.resetToMidnight()>><<run setup.Tick.resetCooldowns()>>

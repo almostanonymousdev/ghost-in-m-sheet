@@ -44,6 +44,7 @@
 	@@.mc-action; Now you can receive contracts for identifying the type of ghost.@@
 	<br>
 	<<run setup.Witch.markShopVisited()>>
+	@@.backbtn;[[Continue|WitchInside]]@@
 <<elseif not setup.Witch.isFirstVisit()>>
 	@@.notmc-speech; <<= setup.Mc.name()>>. Still upright. Good.@@<br>
 	/* Pending contract -- the player walked out of the house with a
@@ -85,8 +86,8 @@
 	<</if>>
 
 	/* Turn-in stays outside the lvl-2 gate so legacy saves (pre
-	   loot-gate, commit e2ebd835) can always offload an item the
-	   player picked up before the quest was officially offered. */
+		loot-gate, commit e2ebd835) can always offload an item the
+		player picked up before the quest was officially offered. */
 	<<if setup.Witch.hasCursedItemToTurnIn()>>
 		<<linkreplace "@@.usebtn; I found the cursed object.@@">>
 			@@.notmc-speech; Hand it here. Carefully.@@<br>

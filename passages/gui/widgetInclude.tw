@@ -56,15 +56,24 @@
 <<widget "includeTimeEventHunt">><<huntTickStep>><</widget>>
 
 <<widget "toolTick">>
-	/* Tools burn 1 in-game minute per tick. Fired from inside the
-	<<repeat>> loop in setup.searchToolMarkup so every meter increment
-	advances the clock. Updates the clock display and tool-timer strip
-	(linkreplace doesn't trigger StoryCaption re-render) and routes to
-	the mode-aware hunt-over-time passage if the tick pushed dawn past 06:00. */
-	<<run setup.addTime(1)>>
+	/* Every meter increment counts as one step of snapshot drain
+	(sanity / lust / corruption) and advances the in-game clock by one
+	minute; the sidebar HUD bars are repainted so per-tick stat
+	changes are visible while the meter is still burning. Energy is
+	the deliberate exception -- one tool action = one energy step, so
+	the per-tick call passes skipEnergy and the meter's completion
+	<<applyTickEffects>> lands the single energy hit. Routes to the
+	matching hunt-over passage if sanity collapses mid-burn or the
+	clock crosses 06:00. */
+	<<run setup.HauntConditions.applyTickEffects({ skipEnergy: true })>>
+	<<refreshMeter 'sanity' 'energy' 'lust'>>
 	<<replace "#time">><<= setup.Time.display()>><</replace>>
 	<<replace "#tool-timers">><<= setup.toolTimerHudMarkup()>><</replace>>
-	<<if setup.Time.hours() gte 6 and setup.HuntController.isHuntActive()>>
+	<<if setup.HauntConditions.isBaitOrgasmPending()>>
+		<<goto "BaitOrgasm">>
+	<<elseif setup.Mc.isSanityCollapsed() or setup.Mc.sanity() lte 0>>
+		<<goto setup.HuntController.huntOverPassage("sanity")>>
+	<<elseif setup.Time.hours() gte 6 and setup.HuntController.isHuntActive()>>
 		<<goto setup.HuntController.huntOverPassage("time")>>
 	<</if>>
 <</widget>>

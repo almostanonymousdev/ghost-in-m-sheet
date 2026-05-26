@@ -567,9 +567,10 @@ test.describe('E2E: hunt lifecycle', () => {
     await expect(emfCard.locator('a')).toHaveCount(1);
     await emfCard.locator('a').click();
 
-    // Per click, the tier-5 EMF burns 5 toolTicks (1 min each) plus
-    // one applyTickEffects (1 min, since HuntRun is huntActive) =
-    // 6 in-game minutes.
+    // Per click, the tier-5 EMF burns 5 toolTicks (each advances
+    // the clock by +1 min in-house and lands a snapshot-drain step
+    // for sanity / lust / corruption) plus one applyTickEffects on
+    // completion (1 min, energy lands here) = 6 in-game minutes.
     await page.waitForFunction(() => SugarCube.State.variables.minutes === 6);
     // The coloredText reading lives in the per-card countdown overlay
     // -- the only place hunt-tool results are surfaced now (the
@@ -762,11 +763,14 @@ test.describe('E2E: hunt lifecycle', () => {
     // TemperatureHigh's colour branch only fires below tier 5 (tier 5
     // is plain). Tier 3 in the ghost's room without temperature
     // evidence picks the yellow branch — testable without rolling RNG
-    // because we pin the player into the lair room first.
+    // because we pin the player into the lair room first. Filter on
+    // the evidence object's .id (entries are Evidence objects, not
+    // raw strings) so the prune actually drops the temperature item
+    // regardless of which ghost the auto-roll lands on.
     await page.evaluate(() => {
       SugarCube.State.variables.equipment.temperature = 3;
       const ghost = SugarCube.setup.HuntController.activeGhost();
-      ghost.evidence = ghost.evidence.filter(e => e !== 'temperature');
+      ghost.evidence = ghost.evidence.filter(e => e.id !== 'temperature');
       SugarCube.setup.isGhostHere = () => true;
     });
 
@@ -1201,10 +1205,14 @@ test.describe('E2E: hunt lifecycle', () => {
       return { energy: mc.energy, sanity: mc.sanity };
     });
 
-    // A tool click runs the meter through `tier` ticks. Each tick
-    // burns 1 minute via <<toolTick>>; on completion <<applyTickEffects>>
-    // fires once (energy -0.125, sanity -<contractDrain>, +1 minute).
-    // Default equipment tier is 5, so 5 toolTicks + 1 applyTickEffects = 6.
+    // A tool click runs the meter through `tier` ticks. Each
+    // toolTick lands a snapshot-drain step (sanity, lust,
+    // corruption) and burns one in-game minute -- energy is the
+    // exception, deliberately deferred to a single hit on completion
+    // so a single tool action costs one step of energy regardless of
+    // tier. Default equipment tier is 5, so 5 toolTicks + 1
+    // completion = 6 minutes; sanity drains every tick, energy only
+    // on the final applyTickEffects.
     await page.locator('.hunt-tool-card').first().locator('a').click();
     await page.waitForFunction(() => SugarCube.State.variables.minutes >= 6);
 
