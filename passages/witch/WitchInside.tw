@@ -21,7 +21,7 @@
 
 	&emsp;You hold them out anyway. She doesn't take them. Just looks. Then nods, once, like she's seen something either reassuring or annoying.<br>
 
-	&emsp;@@.notmc-speech; Steady. You'll do for a first hunt. Whether you'll do for a second is up to the first.@@<br>
+	&emsp;@@.notmc-speech; Steady. You'll do for a first hunt. Whether you'll do for a second depends on surviving the first.@@<br>
 
 	&emsp;@@.mc-speech; That's a low bar.@@<br>
 
@@ -115,7 +115,7 @@
 		<</linkreplace>>
 	<<elseif setup.Mc.lvl() lte 1>>
 		@@.mc-speech; I just need to call the type, right?@@<br>
-		@@.notmc-speech; For now. We'll add more once you stop almost getting killed.@@ <br>
+		@@.notmc-speech; For now. We'll add more once I'm more confident you'll survive.@@ <br>
 		@@.warningtext; (Req. lvl 2+)@@<br>
 	<<else>>
 		<<if setup.Witch.canOfferCursedItemQuest()>>
@@ -139,7 +139,7 @@
 	@@.mc-speech;<<linkreplace "What's on the board?">>
 		<<goto "WitchContracts">>
 	<</linkreplace>>@@<br>
-	@@.mc-speech;<<linkreplace "Show me what you've got.">>
+	@@.mc-speech;<<linkreplace "What do you have that I can use?">>
 		<<goto "WitchSale">>
 	<</linkreplace>>@@<br>
 	<<if setup.Witch.ectoplasmUnlocked()>>
