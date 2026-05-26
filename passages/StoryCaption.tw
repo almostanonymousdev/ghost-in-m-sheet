@@ -27,7 +27,7 @@
 <b><<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:13%; display: inline; margin: 0;" }>>
 <<= setup.Mc.corruption().toFixed(2)>>
 <b><<image "ui/img/beauty.png" { style: "position: relative; top: 0.375em; width:11%; display: inline; margin: 0;" }>><<= setup.Mc.beauty()>></b>
-<b><<image "ui/icons/lvl.png" { style: "position: relative; top: 0.375em; width:11%; display: inline; margin: 0;" }>><<= setup.Mc.lvl()>></b> <br>
+<b><<lvlStar>><<= setup.Mc.lvl()>></b> <br>
 <a class="linkselector" data-passage="Bag"><<image "ui/img/bag.png" { width: "30%" }>></a><a class="linkselector" data-passage="Notebook"><<image "ui/img/notebook.png" { width: "30%" }>></a><a class="linkselector" data-passage="Evidence"><<image "ui/img/evidence-icon.png" { width: "30%" }>></a><br>
 <<if setup.Gui.phoneBought()>><a class="linkselector" data-passage="Phone"><<image "ui/img/phone.png" { width: "30%" }>></a>
 <</if>>

@@ -380,6 +380,12 @@ sugarcube-2:
       name: randomVideo
     gainXP:
       name: gainXP
+    lvlStar:
+      name: lvlStar
+      description: 'Sidebar level-icon star that also acts as an XP gauge. Layers
+        two copies of ui/icons/lvl.png: a desaturated base (always visible) and
+        a full-color overlay clipped from the top by (100 - pct)% so it fills
+        bottom-up as XP accumulates toward the next level. No args.'
     companionMini:
       name: companionMini
     companionExpGain:

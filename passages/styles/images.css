@@ -29,3 +29,32 @@
 	flex-direction: column;
 	align-items: center;
 }
+
+/* ===== Level star XP gauge =====
+ * Two copies of ui/icons/lvl.png stacked: the base layer is desaturated
+ * and always visible, the colored fill layer is clipped from the top by
+ * (100 - pct)% so it fills bottom-up as XP grows toward the next level.
+ * Geometry mirrors the inline style the sidebar used before this became
+ * a widget — relative positioning, 11% sidebar width, baseline nudge. */
+.lvl-star {
+	position: relative;
+	display: inline-block;
+	width: 11%;
+	top: 0.375em;
+	margin: 0;
+	line-height: 0;
+	vertical-align: baseline;
+}
+.lvl-star img {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+.lvl-star .lvl-star-base {
+	filter: grayscale(1) brightness(0.55);
+}
+.lvl-star .lvl-star-fill {
+	position: absolute;
+	left: 0;
+	top: 0;
+}

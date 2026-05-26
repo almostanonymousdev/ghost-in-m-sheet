@@ -22,7 +22,7 @@ or @@.usebtn; [[Try to hide|Hide]]@@
 	<</link>>@@
 <</if>>
 <<if setup.HauntedHouses.hasAnyGarmentWorn()>>
-	or @@.usebtn;<<link "Freeze and let it pass (lose a garment)" "FreezeHunt">>
+	or @@.usebtn;<<link "Freeze and let it pass (lose clothing)" "FreezeHunt">>
 	<</link>>@@
 <<else>>
 	or @@.usebtn;<<link "Freeze and let it pass (nothing left to give)" "FreezeHunt">>
