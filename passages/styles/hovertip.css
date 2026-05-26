@@ -21,6 +21,23 @@
 	visibility: hidden;
 }
 
+/* When the wrapper is hovered/focused, lift the whole atomic unit
+   AND its containing flex item into a high-z stacking context. The
+   wrapper alone isn't enough: containers like .housecard are flex
+   items, which honour z-index without needing position, so each
+   housecard's z-index: 2 traps the bubble inside the housecard's
+   own stacking context -- later-in-DOM housecards paint their icons
+   on top of the bubble. Lifting the housecard (via :has) on hover
+   pops the active card's stacking context above every peer. */
+.hoverTipTxt:hover,
+.hoverTipTxt:focus,
+.hoverTipTxt:focus-within,
+.housecard:has(.hoverTipTxt:hover),
+.housecard:has(.hoverTipTxt:focus),
+.housecard:has(.hoverTipTxt:focus-within) {
+	z-index: 100300;
+}
+
 .hoverTipTxt:hover .hoverBox,
 .hoverTipTxt:focus .hoverBox {
 	visibility: visible;

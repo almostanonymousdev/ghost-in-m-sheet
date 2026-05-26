@@ -330,6 +330,20 @@ test.describe('setup.Achievements', () => {
 		expect(result).toBe(true);
 	});
 
+	test('Hunt-bus integration: SENSOR_GLITCH unlocks disc.pants_on_fire', async () => {
+		/* Regression: the Raiju EMF glitch was emitting SENSOR_GLITCH but
+		   no subscriber was unlocking the matching catalogue entry, so
+		   players watching the sensor read 66 (or any other 0-100 glitch
+		   value) never got the achievement. */
+		const result = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			H.emit(H.Event.SENSOR_GLITCH, { tool: 'emf' });
+			return A.has('disc.pants_on_fire');
+		});
+		expect(result).toBe(true);
+	});
+
 	test('Hunt-bus integration: LOOT_TAKEN with kind="cash" unlocks disc.loot.cash', async () => {
 		const result = await page.evaluate(() => {
 			const A = SugarCube.setup.Achievements;

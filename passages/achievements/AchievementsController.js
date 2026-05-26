@@ -173,6 +173,7 @@ setup.Achievements = setup.Achievements || {};
 		setup.Hunt.on(E.POSSESS, function () { unlock('fail.possessed'); });
 		setup.Hunt.on(E.TRAP,    function () { unlock('disc.trap'); });
 		setup.Hunt.on(E.DRIFT,   function () { unlock('disc.drift'); });
+		setup.Hunt.on(E.SENSOR_GLITCH, function () { unlock('disc.pants_on_fire'); });
 
 		setup.Hunt.on(E.LOOT_TAKEN, function (ctx) {
 			if (!ctx) return;

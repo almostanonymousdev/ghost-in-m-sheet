@@ -237,24 +237,17 @@ setup.HauntConditions = (function () {
 		return snap;
 	}
 
-	/* Apply per-step effects. Called from includeTimeEvent* widgets on
-	 * nav AND from <<toolTick>> on every meter increment, so each tool
-	 * burn counts as N steps of sanity / lust / corruption drain (one
-	 * per tick). Energy is the exception: a single tool action burns
-	 * one step of energy regardless of tier, so callers fired from
-	 * inside a meter loop pass `{ skipEnergy: true }` to suppress the
-	 * per-tick energy drain -- the completion call lands the one-shot
-	 * energy hit. Mutates mc.sanity / mc.lust / mc.energy, accrues
-	 * tempCorr, decrements bait counter, and sets V.exhausted when
-	 * energy bottoms out (or V.sanityCollapse when sanity bottoms
-	 * out) so the calling widget can route to HuntOverExhaustion /
-	 * HuntOverSanity. Corresponding meters (sanity / energy) are
-	 * refreshed by the caller. */
-	function applyTickEffects(opts) {
+	/* Apply per-nav-step effects. Called from includeTimeEvent* widgets so
+	 * tool-tick spam doesn't double-charge stats. Mutates mc.sanity /
+	 * mc.lust / mc.energy, accrues tempCorr, decrements bait counter, and
+	 * sets V.exhausted when energy bottoms out (or V.sanityCollapse when
+	 * sanity bottoms out) so the includeTimeEvent widget can route to
+	 * HuntOverExhaustion / HuntOverSanity. Corresponding meters (sanity /
+	 * energy) are refreshed by the caller. */
+	function applyTickEffects() {
 		var V = State.variables;
 		var mc = V.mc;
 		if (!mc) return;
-		var skipEnergy = !!(opts && opts.skipEnergy);
 		var inHouse = !!(setup.HuntController && setup.HuntController.isHuntActive
 			&& setup.HuntController.isHuntActive());
 		var snap = snapshot();
@@ -274,7 +267,7 @@ setup.HauntConditions = (function () {
 			}
 			setup.Mc.addLust(snap.lustPerStep);
 		}
-		if (!skipEnergy && snap.energyPerStep !== 0) {
+		if (snap.energyPerStep !== 0) {
 			setup.Mc.addEnergy(snap.energyPerStep);
 			/* Per-step drain mirrors HauntConditions.removeEnergy: zero
 			   energy stamps V.exhausted so includeTimeEvent* widgets can
