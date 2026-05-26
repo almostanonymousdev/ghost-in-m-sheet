@@ -252,15 +252,16 @@ setup.Mc = (function () {
 			var R = setup.SanityDeltaResult;
 			var m = sv().mc;
 			m.sanity += delta;
+			var result = R.NORMAL;
 			if (m.sanity >= m.sanityMax) {
 				m.sanity = m.sanityMax;
-				return R.CLAMPED;
-			}
-			if (m.sanity < 0) {
+				result = R.CLAMPED;
+			} else if (m.sanity < 0) {
 				m.sanity = 0;
-				return R.COLLAPSED;
+				result = R.COLLAPSED;
 			}
-			return R.NORMAL;
+			m.sanityUp = m.sanity.toFixed(2);
+			return result;
 		},
 
 		// --- addEnergy widget core --------------------------------
@@ -378,7 +379,14 @@ setup.Mc = (function () {
 	   clamped/cascade versions defined manually above are canonical. */
 	setup.defineAccessors(api, function () { return sv().mc; }, [
 		'money',
-		{ name: 'sanity', add: false },
+		/* sanityUp is the rounded display string the sidebar sanity
+		   meter's label binds to ($mc.sanityUp). Every sanity mutation
+		   re-stamps it so the number on the bar stays in sync with the
+		   animated fill — without the hook, mid-passage refreshMeter
+		   calls would leave the label frozen at the previous value. */
+		{ name: 'sanity', add: false, writeHook: function (oldV, newV) {
+			sv().mc.sanityUp = Number(newV || 0).toFixed(2);
+		} },
 		'sanityMax',
 		'sanityUp',
 		{ name: 'energy', add: false },
