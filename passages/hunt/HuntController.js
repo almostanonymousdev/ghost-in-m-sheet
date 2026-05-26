@@ -1352,24 +1352,29 @@ setup.HuntController = (function () {
 
 	/* "Remove one piece of evidence" -- used by the Tarot Knowledge
 	   card and the Monkey Paw knowledge wish. Picks a random
-	   evidence the active ghost doesn't have. Writes the result via
-	   setup.Ghosts setters so the $knowledgeUsed / $chosenEvidence
-	   state stays owned by GhostController. */
+	   evidence the active ghost doesn't have so the Notebook can
+	   black it out. Writes the result via setup.Ghosts setters so
+	   the $knowledgeUsed / $chosenEvidence state stays owned by
+	   GhostController.
+
+	   Uses ghost.hasEvidence() (not the raw catalogue array) so
+	   Mimic's bonus ectoplasm is never picked as "false" -- the
+	   diary must not lie when the player can see ectoplasm in the
+	   room. Derives the candidate id list from setup.Ghosts.Evidence
+	   so adding a new evidence type to the catalogue automatically
+	   includes it here. */
 	var consumeKnowledgeEvidence = guarded(undefined, function () {
 		if (setup.Ghosts.knowledgeUsed()) return;
-		setup.Ghosts.markKnowledgeUsed();
 		var ghost = activeGhost();
-		var owned = [];
-		if (ghost && Array.isArray(ghost.evidence)) {
-			owned = ghost.evidence.map(function (e) {
-				return e && e.id ? e.id : e;
-			});
-		}
-		var all = ['emf', 'spiritbox', 'gwb', 'uvl', 'glass', 'temperature'];
-		var missing = all.filter(function (e) { return owned.indexOf(e) === -1; });
-		setup.Ghosts.setChosenEvidence(missing.length
-			? missing[Math.floor(Math.random() * missing.length)]
-			: null);
+		var allIds = Object.keys(setup.Ghosts.Evidence).map(function (k) {
+			return setup.Ghosts.Evidence[k].id;
+		});
+		var missing = allIds.filter(function (id) {
+			return ghost ? !ghost.hasEvidence(id) : true;
+		});
+		if (!missing.length) return;
+		setup.Ghosts.markKnowledgeUsed();
+		setup.Ghosts.setChosenEvidence(missing[Math.floor(Math.random() * missing.length)]);
 	});
 
 	setup.Hunt.filter(setup.Hunt.Event.STEAL_CHECK, function (ctx) {

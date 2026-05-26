@@ -99,10 +99,12 @@ test.describe('Cursed-item hunt facade', () => {
 
   test('consumeKnowledgeEvidence picks an evidence the hunt ghost lacks', async () => {
     await page.evaluate(() => {
-      SugarCube.setup.HuntController.startHunt({ seed: 1 });
-      // Pin the hunt ghost to Shade so the missing-evidence pool is known
-      // (Shade has emf/gwb/temperature -> missing is spiritbox/uvl/glass).
-      SugarCube.setup.HuntController.setField('ghostName', 'Shade');
+      // cheatStartHunt stamps both ghostName and run.evidence from the
+      // catalogue, so activeGhost() resolves to Shade's true evidence
+      // (emf/gwb/temperature) rather than whatever the random startHunt
+      // roll picked. Without this pin the missing-evidence pool depends
+      // on a prior random ghost and the assertion below is flaky.
+      SugarCube.setup.Ghosts.cheatStartHunt('Shade');
       Math.random = () => 0;
     });
     await page.evaluate(() => SugarCube.setup.HuntController.consumeKnowledgeEvidence());
@@ -114,8 +116,7 @@ test.describe('Cursed-item hunt facade', () => {
 
   test('consumeKnowledgeEvidence is idempotent within a single hunt', async () => {
     await page.evaluate(() => {
-      SugarCube.setup.HuntController.startHunt({ seed: 1 });
-      SugarCube.setup.HuntController.setField('ghostName', 'Shade');
+      SugarCube.setup.Ghosts.cheatStartHunt('Shade');
       Math.random = () => 0;
     });
     await page.evaluate(() => SugarCube.setup.HuntController.consumeKnowledgeEvidence());
@@ -125,6 +126,77 @@ test.describe('Cursed-item hunt facade', () => {
     await page.evaluate(() => { Math.random = () => 0.5; });
     await page.evaluate(() => SugarCube.setup.HuntController.consumeKnowledgeEvidence());
     expect(await getVar(page, 'chosenEvidence')).toBe(first);
+  });
+
+  /* Mimic's catalogue evidence is [uvl, temperature, spiritbox] but
+     setup.Ghosts.isMimicHunt() makes ectoplasm read positive too --
+     so Knowledge crossing out ectoplasm during a Mimic hunt would
+     lie to the player (their eyes see ectoplasm in the room while
+     the diary says it's been ruled out). Knowledge must consult
+     Ghost.hasEvidence(), not the raw catalogue array. */
+  test('consumeKnowledgeEvidence never strikes ectoplasm during a Mimic hunt', async () => {
+    await page.evaluate(() => {
+      SugarCube.setup.Ghosts.cheatStartHunt('Mimic');
+    });
+    // Exhaustively roll the random index across the missing-pool size
+    // so we catch the bug regardless of which slot glass occupies.
+    for (let r = 0; r < 6; r++) {
+      await page.evaluate((rv) => {
+        SugarCube.setup.Ghosts.clearKnowledgeUsed();
+        SugarCube.setup.Ghosts.clearChosenEvidence();
+        Math.random = () => rv / 6 + 0.001;
+      }, r);
+      await page.evaluate(() => SugarCube.setup.HuntController.consumeKnowledgeEvidence());
+      const chosen = await getVar(page, 'chosenEvidence');
+      expect(chosen, `roll ${r} struck ectoplasm during a Mimic hunt`).not.toBe('glass');
+    }
+  });
+
+  /* The function used to hardcode the evidence-id list as a literal,
+     duplicating the setup.Ghosts.Evidence catalogue. Pin the contract:
+     every chosen id must be a real Evidence enum id, regardless of
+     which ghost is active. Catches the duplication drift the moment a
+     new evidence type is added without updating the function. */
+  test('consumeKnowledgeEvidence only picks ids from setup.Ghosts.Evidence', async () => {
+    const validIds = await page.evaluate(() => {
+      return Object.keys(SugarCube.setup.Ghosts.Evidence).map(
+        (k) => SugarCube.setup.Ghosts.Evidence[k].id
+      );
+    });
+    const ghostNames = await page.evaluate(() => SugarCube.setup.Ghosts.names());
+    for (const name of ghostNames) {
+      await page.evaluate((n) => {
+        SugarCube.setup.Ghosts.cheatStartHunt(n);
+        SugarCube.setup.Ghosts.clearKnowledgeUsed();
+        SugarCube.setup.Ghosts.clearChosenEvidence();
+        Math.random = () => 0;
+      }, name);
+      await page.evaluate(() => SugarCube.setup.HuntController.consumeKnowledgeEvidence());
+      const chosen = await getVar(page, 'chosenEvidence');
+      expect(validIds, `chose unknown evidence "${chosen}" for ${name}`).toContain(chosen);
+    }
+  });
+
+  /* The wish/card promises "one entry struck from your diary". If no
+     entry can be struck (a ghost with every evidence id), the wish
+     should not burn -- otherwise the player loses the one-shot for
+     zero effect. Currently impossible in production (every ghost has
+     3/6 evidence) but the contract still has to hold for future
+     modifiers / contracts that expand the active evidence pool. */
+  test('consumeKnowledgeEvidence does not burn the wish when no evidence can be struck', async () => {
+    await page.evaluate(() => {
+      SugarCube.setup.Ghosts.cheatStartHunt('Shade');
+      SugarCube.setup.Ghosts.clearKnowledgeUsed();
+      SugarCube.setup.Ghosts.clearChosenEvidence();
+      // Override the active-ghost evidence to cover every catalogue id.
+      const allIds = Object.keys(SugarCube.setup.Ghosts.Evidence).map(
+        (k) => SugarCube.setup.Ghosts.Evidence[k].id
+      );
+      SugarCube.setup.HuntController.setField('evidence', allIds);
+    });
+    await page.evaluate(() => SugarCube.setup.HuntController.consumeKnowledgeEvidence());
+    expect(await getVar(page, 'chosenEvidence')).toBeFalsy();
+    expect(await getVar(page, 'knowledgeUsed')).toBeFalsy();
   });
 
   // --- HuntController.banActiveContext ---
@@ -236,8 +308,18 @@ test.describe('Cursed-item hunt facade', () => {
 
   test('knowledge wish stamps $chosenEvidence and burns one wish', async () => {
     await page.evaluate(() => {
+      // startHunt is required here (not cheatStartHunt) because it
+      // runs resetCursedItemState which reseeds MonkeyPaw.wishesCount
+      // to 3 -- without that activate() short-circuits on no-wishes.
+      // Then pin the ghost identity + evidence explicitly so the
+      // missing-evidence pool is Shade's, not the random startHunt roll.
       SugarCube.setup.HuntController.startHunt({ seed: 1 });
+      const shade = SugarCube.setup.Ghosts.getByName('Shade');
       SugarCube.setup.HuntController.setField('ghostName', 'Shade');
+      SugarCube.setup.HuntController.setField('disguiseName', 'Shade');
+      SugarCube.setup.HuntController.setField(
+        'evidence', shade.evidence.map((e) => e.id)
+      );
       Math.random = () => 0;
     });
     const out = await page.evaluate(
