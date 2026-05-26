@@ -6,10 +6,10 @@
  * the player — if so, route to HuntOverExhaustion instead of the room. */
 <<run setup.Mc.removeSanity(10)>>
 <<run setup.HauntConditions.removeEnergy(setup.HauntConditions.ENERGY_COST_PRAY)>>
-<<updatemeter 'energy' `setup.Mc.energyPct()`>>
+<<refreshMeter 'energy' 'sanity'>>
 <<if setup.Mc.sanity() lt 0>>
 	<<run setup.Mc.setSanity(0)>>
-	<<updatemeter 'sanity' `setup.Mc.sanityPct()`>>
+	<<refreshMeter 'sanity'>>
 	<<goto setup.HuntController.huntOverPassage("sanity")>>
 <<elseif setup.Mc.isExhausted()>>
 	<<goto setup.HuntController.huntOverPassage("exhaustion")>>

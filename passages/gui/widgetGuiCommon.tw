@@ -106,7 +106,7 @@ setup.STAT_CONFIG = {
 <<widget "addStat">>
 	<<set _statCfg to setup.STAT_CONFIG[_args[0]]>>
 	<<set _statOutcome to _statCfg.apply(_args[1])>>
-	<<updatemeter _statCfg.meter _statCfg.pct()>>
+	<<refreshMeter _args[0]>>
 	<<if _statCfg.outcomeGoto>>
 		<<set _statTarget to _statCfg.outcomeGoto(_statOutcome)>>
 		<<if _statTarget>><<goto _statTarget>><</if>>
@@ -131,7 +131,20 @@ setup.STAT_CONFIG = {
 <<widget "addLustByPart">>
 	<<set _lustBase to _args[0] !== undefined ? _args[0] : 2>>
 	<<run setup.Mc.addLustByPart(setup.Events.currentArgForRandomizer(), _lustBase)>>
-	<<updatemeter setup.STAT_CONFIG.lust.meter setup.STAT_CONFIG.lust.pct()>>
+	<<refreshMeter 'lust'>>
+<</widget>>
+
+/* refreshMeter -- repaint one or more sidebar HUD meters from the current
+   setup.Mc.<stat>Pct() value. Use after a direct setup.Mc.setLust(0) /
+   removeSanity / etc. mutation that bypasses the <<addStat>> wrappers, so
+   the sidebar bar animates to the new value without waiting for the next
+   passage transition. Accepts any number of stat keys ('lust', 'sanity',
+   'energy'); a no-arg call is a no-op. */
+<<widget "refreshMeter">>
+	<<for _refreshStat range _args>>
+		<<set _refreshCfg to setup.STAT_CONFIG[_refreshStat]>>
+		<<updatemeter _refreshCfg.meter _refreshCfg.pct()>>
+	<</for>>
 <</widget>>
 
 <<widget "addFit">><<addStat 'fit' _args[0]>><</widget>>

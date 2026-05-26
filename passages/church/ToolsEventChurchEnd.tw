@@ -13,7 +13,7 @@
 	@@.notmc-speech; You are the best. I need to go now, bye@@<br>
 <</if>>
 <<run setup.Church.confessFlushLust()>>
-<<updatemeter 'mclust' `setup.Mc.lust() / 100`>>
+<<refreshMeter 'lust'>>
 <<run setup.Church.startChurchSexCooldown()>>
 
 <<gainXP 10 0.5>>

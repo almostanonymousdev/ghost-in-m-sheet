@@ -534,6 +534,14 @@ sugarcube-2:
         HUD meter. Named widgets (<<addLust>>, <<addSanity>>, <<addEnergy>>)
         forward to this; call it directly only when the stat name is
         dynamic.
+    refreshMeter:
+      name: refreshMeter
+      description: Repaint one or more sidebar HUD meters from the current
+        setup.Mc.<stat>Pct() value. Use after a direct setup.Mc.setLust(0) /
+        removeSanity / etc. mutation that bypasses the <<addStat>> wrappers,
+        so the sidebar bar animates to the new value without waiting for the
+        next passage transition. Variadic - accepts any number of stat keys
+        from setup.STAT_CONFIG ('lust', 'sanity', 'energy').
     deliveryTrackCorrect:
       name: deliveryTrackCorrect
     deliveryTipCheck:

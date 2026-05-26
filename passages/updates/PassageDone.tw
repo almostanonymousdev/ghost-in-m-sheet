@@ -23,5 +23,5 @@
 <<run setup.HauntedHouses.resetStealClothesTriggered()>>
 
 <<if _done.lustChanged>>
-	<<updatemeter 'mclust' `setup.Mc.lust().toFixed(2) / 100`>>
+	<<refreshMeter 'lust'>>
 <</if>>

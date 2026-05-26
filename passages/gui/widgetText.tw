@@ -17,8 +17,7 @@
 /* Shared tail: meter refresh + Return button. Used by the in-place
    wish widgets (activity, trapTheGhost, sanity). */
 <<widget "monkeyPawTail">>
-	<<updatemeter 'mclust' `setup.Mc.lustPct()`>>
-	<<updatemeter 'sanity' `setup.Mc.sanityPct()`>>
+	<<refreshMeter 'lust' 'sanity'>>
 	<br>
 	@@.backbtn;<<link "Return" `passage()`>>
 	<</link>>@@
@@ -108,7 +107,7 @@
 			@@.mc-speech; <<= _out.narrative>>@@
 			<<if _out.sanityDelta>>
 				<br>@@.mc-thoughts; Sanity decreased: <<= _out.sanityDelta>> <<statIcon setup.StatIcon.SANITY>>@@
-				<<updatemeter 'sanity' `setup.Mc.sanityPct()`>>
+				<<refreshMeter 'sanity'>>
 			<</if>>
 			<<if _out.goto>>
 				<br>@@.enterbtn;<<link "Brace yourself" _out.goto>>

@@ -7,8 +7,7 @@
  * measurement) and in startBait (the +20 click), and is consumed here
  * exactly once per fire. */
 <<run setup.HauntConditions.consumeBaitOrgasm()>>
-<<updatemeter 'sanity' `setup.Mc.sanityPct()`>>
-<<updatemeter 'mclust' `setup.Mc.lust() / 100`>>
+<<refreshMeter 'sanity' 'lust'>>
 <<if setup.Mc.isSanityCollapsed() or setup.Mc.sanity() lte 0>>
 	<<goto setup.HuntController.huntOverPassage("sanity")>>
 <</if>>

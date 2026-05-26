@@ -5,9 +5,7 @@
 	(e.g. GWB hit -> EMF activated) land in this widget, and the sidebar
 	caption isn't re-rendered until the next passage transition. */
 	<<run setup.HauntConditions.applyTickEffects()>>
-	<<updatemeter 'sanity' `setup.Mc.sanity() / setup.Mc.sanityMax()`>>
-	<<updatemeter 'energy' `setup.Mc.energy() / setup.Mc.energyMax()`>>
-	<<updatemeter 'mclust' `setup.Mc.lust() / 100`>>
+	<<refreshMeter 'sanity' 'energy' 'lust'>>
 	<<replace "#time">><<= setup.Time.display()>><</replace>>
 	<<replace "#tool-timers">><<= setup.toolTimerHudMarkup()>><</replace>>
 	<<if setup.HauntConditions.isBaitOrgasmPending()>>
