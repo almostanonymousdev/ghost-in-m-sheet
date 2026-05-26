@@ -86,7 +86,7 @@
 			@@.mc-thoughts; You grab her arm, and the two of you bolt out of the house.<br>
 			She thanks you for saving her and says she'll tell the nun about your help.@@<br>
 			<br><br>
-			@@.backbtn; [[Leave|Church][setup.MissingWomen.markQuestSucceeded()]]@@<br>
+			@@.backbtn; [[Leave|Church][setup.MissingWomen.markQuestSucceeded(); setup.Mc.grantExp(30)]]@@<br>
 		<</linkreplace>>
 	<</if>></span>
 <</widget>>

@@ -313,7 +313,14 @@ setup.Home = (function () {
 			w.showCount   = (w.showCount || 0) + 1;
 			setup.Mc.addMoney(earned);
 
-			return { video: video, moneyEarned: earned, newSubs: newSubs };
+			// XP: 8 base for showing up, +2 bonus when the fit/corruption
+			// contribution clears 20 (a "competent show" by either fit
+			// conditioning or corruption-fueled escalation). WebcamShowStart
+			// renders this via <<gainXP _out.xp>> so the player sees the
+			// usual XP bar feedback.
+			var xp = 8 + ((fitBonus + corrBonus) >= 20 ? 2 : 0);
+
+			return { video: video, moneyEarned: earned, newSubs: newSubs, xp: xp };
 		},
 		initWebcamCounters: function () {
 			var w = webcam();

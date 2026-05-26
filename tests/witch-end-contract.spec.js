@@ -111,6 +111,48 @@ test.describe('WitchEndContract — gating + state machine', () => {
     expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(false);
   });
 
+  /* XP payout on a completed contract is the per-tier contract reward
+     (Owaissa 15 / Elm 25 / Ironclad 40), NOT the rogue-hunt 20 and NOT
+     scaled by the modifier payout multiplier -- the tier itself
+     already encodes the difficulty curve. The wrong-guess branch
+     tests the corresponding 0 below. */
+  test('correct guess pays tier xp (15 owaissa, no modifier mult)', async () => {
+    await page.evaluate(() => SugarCube.setup.WitchContract.cheatGrantContract('owaissa'));
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: 'owaissa' }));
+    const trueName = await callSetup(page, 'setup.HuntController.ghostName()');
+    await page.evaluate(name => { SugarCube.State.variables.ghostTypeSelected = name; }, trueName);
+
+    await page.evaluate(() => SugarCube.setup.HuntController.markSuccess());
+    const summary = await page.evaluate(() => SugarCube.setup.HuntController.endHunt(true));
+
+    expect(summary.isContractHunt).toBe(true);
+    expect(summary.xp).toBe(15);
+  });
+
+  test('correct guess pays tier xp (25 elm)', async () => {
+    await page.evaluate(() => SugarCube.setup.WitchContract.cheatGrantContract('elm'));
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: 'elm' }));
+    const trueName = await callSetup(page, 'setup.HuntController.ghostName()');
+    await page.evaluate(name => { SugarCube.State.variables.ghostTypeSelected = name; }, trueName);
+
+    await page.evaluate(() => SugarCube.setup.HuntController.markSuccess());
+    const summary = await page.evaluate(() => SugarCube.setup.HuntController.endHunt(true));
+
+    expect(summary.xp).toBe(25);
+  });
+
+  test('correct guess pays tier xp (40 ironclad)', async () => {
+    await page.evaluate(() => SugarCube.setup.WitchContract.cheatGrantContract('ironclad'));
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: 'ironclad' }));
+    const trueName = await callSetup(page, 'setup.HuntController.ghostName()');
+    await page.evaluate(name => { SugarCube.State.variables.ghostTypeSelected = name; }, trueName);
+
+    await page.evaluate(() => SugarCube.setup.HuntController.markSuccess());
+    const summary = await page.evaluate(() => SugarCube.setup.HuntController.endHunt(true));
+
+    expect(summary.xp).toBe(40);
+  });
+
   // --- markFailure(WRONG_CALL) + endHunt(false) (burn path) -------------
 
   test('wrong guess: markFailure(WRONG_CALL) + endHunt(false) burns key', async () => {
@@ -141,6 +183,29 @@ test.describe('WitchEndContract — gating + state machine', () => {
     expect(await callSetup(page, 'setup.Mc.money()')).toBe(0);
     expect(await callSetup(page, 'setup.WitchContract.hasHeldContract()')).toBe(false);
     expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(false);
+  });
+
+  /* Wrong guess on a contract hunt pays no XP -- mirrors the cash
+     side (a burned contract pays nothing). The contract IS the
+     achievement; failing it doesn't accrue progression. */
+  test('wrong guess pays 0 xp (burned contract, mirrors cash)', async () => {
+    await page.evaluate(() => SugarCube.setup.WitchContract.cheatGrantContract('elm'));
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: 'elm' }));
+    const trueName = await callSetup(page, 'setup.HuntController.ghostName()');
+    const wrongName = await page.evaluate(real => {
+      const list = SugarCube.setup.Ghosts.list();
+      const other = list.find(g => g.name !== real);
+      return other ? other.name : null;
+    }, trueName);
+    await page.evaluate(g => { SugarCube.State.variables.ghostTypeSelected = g; }, wrongName);
+
+    await page.evaluate(() => SugarCube.setup.HuntController.markFailure(
+      SugarCube.setup.HuntController.FailureReason.WRONG_CALL
+    ));
+    const summary = await page.evaluate(() => SugarCube.setup.HuntController.endHunt(false));
+
+    expect(summary.isContractHunt).toBe(true);
+    expect(summary.xp).toBe(0);
   });
 
   // --- WRONG_CALL failure reason ----------------------------------------

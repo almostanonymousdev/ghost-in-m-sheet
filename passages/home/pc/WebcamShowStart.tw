@@ -10,6 +10,7 @@
 
 <span id="showWeBCam">  You earned <<= _out.moneyEarned>> $ and attracted <<= _out.newSubs>> new subscribers.</span>
 <br>
+<<gainXP _out.xp>>
 <br>
 @@.backbtn; [[Back|WebcamShow]]@@<br>
 

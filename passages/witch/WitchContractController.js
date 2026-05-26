@@ -35,11 +35,13 @@ setup.WitchContract = (function () {
 	   ramp on setup.HuntHouses: Owaissa is the intro contract, Elm is
 	   mid-game, Ironclad is the late-game prize. Fee : payout sits
 	   around 1 : 6 so a single wrong call costs ~one sixth of a
-	   successful run -- enough to sting without bankrupting. */
+	   successful run -- enough to sting without bankrupting. xp scales
+	   with tier so a late-game contract is worth chasing for level
+	   progression, not just cash. */
 	var TEMPLATES = Object.freeze({
-		owaissa:  Object.freeze({ houseId: 'owaissa',  fee: 30,  payout: 200  }),
-		elm:      Object.freeze({ houseId: 'elm',      fee: 75,  payout: 500  }),
-		ironclad: Object.freeze({ houseId: 'ironclad', fee: 200, payout: 1200 })
+		owaissa:  Object.freeze({ houseId: 'owaissa',  fee: 30,  payout: 200,  xp: 15 }),
+		elm:      Object.freeze({ houseId: 'elm',      fee: 75,  payout: 500,  xp: 25 }),
+		ironclad: Object.freeze({ houseId: 'ironclad', fee: 200, payout: 1200, xp: 40 })
 	});
 
 	/* Build today's offered list off the HuntHouses catalogue. Khadija
@@ -92,6 +94,17 @@ setup.WitchContract = (function () {
 		payoutFor: function (houseId) {
 			var t = TEMPLATES[houseId];
 			return t ? t.payout : null;
+		},
+		/* XP awarded for completing a contract on `houseId`. Success
+		   pays the per-tier amount (Owaissa 15 / Elm 25 / Ironclad 40);
+		   failure pays nothing, mirroring the cash side. HuntController
+		   reads this for the contract-hunt XP bucket instead of the
+		   flat rogue-hunt formula. Returns 0 for an unknown houseId so
+		   the call site stays safe. */
+		xpRewardFor: function (houseId, success) {
+			var t = TEMPLATES[houseId];
+			if (!t) return 0;
+			return success ? t.xp : 0;
 		},
 
 		// --- Daily refresh ---------------------------------------

@@ -8,6 +8,8 @@
 	<br>
 	''<<= _found.tip.title>>''<br>
 	<<= _found.tip.body>><br>
+	<br>
+	<<gainXP 5>>
 <</if>>
 <br>
 @@.backbtn; [[Leave|LibraryInside]]@@<br>

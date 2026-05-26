@@ -22,6 +22,12 @@
 setup.Hunt = (function () {
 	var Event = Object.freeze({
 		START:            'start',
+		/* Hunt ended with the MC overpowered -- failureReason in
+		   {POSSESSED, CAUGHT, SANITY}. Dedicated CAUGHT / POSSESS
+		   events still fire alongside this for the catch/possession
+		   beats; ASSAULTED is the lifecycle-end notification for
+		   non-graceful exits. Paired with HUNT_END_GRACEFUL: every
+		   hunt-end emits exactly one of the two. */
 		HUNT_END_ASSAULTED: 'hunt-end-assaulted',
 		TICK:             'tick',
 		DRIFT:            'drift',
@@ -51,12 +57,12 @@ setup.Hunt = (function () {
 		   run on house entry (Mimic disguise clock, Mare event-stage
 		   progression) subscribes here. */
 		HOUSE_ENTER:       'house-enter',
-		/* Player walked out of a hunt without being caught or losing all
-		   sanity (HuntOverTime / HuntOverExhaustion / HuntOverManual).
-		   Distinct from HUNT_END_ASSAULTED (which fires on every
-		   termination including caught / possessed / sanity-out) so
-		   per-ghost cleanup that should only run on a peaceful exit can
-		   subscribe here. */
+		/* Hunt ended peacefully -- win, flee, wrong-call at the witch's
+		   desk, exhaustion, time-out, manual leave, monkey-paw abandon.
+		   Paired with HUNT_END_ASSAULTED: every hunt-end emits exactly
+		   one of the two. Per-ghost cleanup that should only run on a
+		   peaceful exit (e.g. Spirit's clearSpiritEventStage) subscribes
+		   here. */
 		HUNT_END_GRACEFUL: 'hunt-end-graceful',
 		/* A prowl event resolved against the player (NudityEvent, prayer
 		   miss, freeze, on-tick prowl, hunt-over passages). Ghosts that

@@ -83,11 +83,17 @@ setup.SpecialEvent = (function () {
 		mareStage: function () { return sv().ghostMareEventStage; },
 		setMareStage: function (n) { sv().ghostMareEventStage = n; },
 		/* Midnight rollover: while the Mare arc is active, advance the
-		   stage clock by one day; otherwise zero it out. */
+		   stage clock by one day; otherwise zero it out. Each survived
+		   night during an active arc grants a small XP nudge -- silent
+		   (no UI, fires during sleep) but compounding reward for not
+		   spending the holy water to short-circuit the arc. */
 		tickMareStageMidnight: function () {
 			var s = sv();
 			if (s.ghostMareEventStart >= 1) {
 				s.ghostMareEventStage += 1;
+				if (setup.Mc && typeof setup.Mc.grantExp === 'function') {
+					setup.Mc.grantExp(3);
+				}
 			} else {
 				s.ghostMareEventStage = 0;
 			}

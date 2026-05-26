@@ -55,8 +55,8 @@ setup.HuntMinimap = (function () {
 	   collapses to a small top-left thumbnail; clicking again expands.
 	   Module-level so the choice survives passage re-renders (room
 	   navigation rebuilds HuntRun, which would otherwise pop the map
-	   back to full size every step). Reset on Event.HUNT_END_ASSAULTED so
-	   a fresh run always starts expanded. */
+	   back to full size every step). Reset on either hunt-end event
+	   (ASSAULTED / GRACEFUL) so a fresh run always starts expanded. */
 	var minimapCollapsed = false;
 	function isMinimapCollapsed() { return minimapCollapsed; }
 	function toggleMinimapCollapsed() {
@@ -321,9 +321,9 @@ setup.HuntMinimap = (function () {
 	/* Reset collapse state on hunt end so a fresh run always starts
 	   expanded. Hooked here rather than from HuntController so the
 	   module owns its own lifecycle. */
-	setup.Hunt.on(setup.Hunt.Event.HUNT_END_ASSAULTED, function () {
-		minimapCollapsed = false;
-	});
+	function resetMinimapOnHuntEnd() { minimapCollapsed = false; }
+	setup.Hunt.on(setup.Hunt.Event.HUNT_END_ASSAULTED, resetMinimapOnHuntEnd);
+	setup.Hunt.on(setup.Hunt.Event.HUNT_END_GRACEFUL, resetMinimapOnHuntEnd);
 
 	return {
 		minimapData: minimapData,

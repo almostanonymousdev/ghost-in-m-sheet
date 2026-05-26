@@ -948,87 +948,123 @@ setup.HuntController = (function () {
 		return "CityMap";
 	}
 
-	/* End the active run, paying out cash (contract hunt) or cash
-	   plus ectoplasm (rogue hunt) based on whether the MC walked in
-	   with a contract from Khadija. Returns a small summary record
-	   the result passage can render without needing to peek at $run
-	   state.
+	/* Classify the run for payout purposes. Three buckets matter:
 
-	   Payout split:
-	     * Contract hunt -- $run.staticHouseId matches the contract
-	       the player is holding from setup.WitchContract. Success
-	       pays the contract's cash payout (modifier multiplier
-	       applies). Any failure burns the contract for no money. No
-	       ectoplasm.
-	     * Rogue hunt -- no contract held, or the held contract is
-	       for a different house. Pays cash on success and ectoplasm
-	       on any outcome (small consolation on failure). Cash is the
-	       steady-income side, ectoplasm feeds the meta-shop.
-
-	   Run cleanup mirrors the classic HuntOver* passages: commit any
-	   tempCorr the run accumulated, reset bait/overcharged/exhaustion
-	   flags, and reset timed-tool activations. setup.HauntedHouses
-	   owns those helpers because the cleanup is shared. */
-	function endHunt(success) {
-		var run = active();
-		if (!run) return null;
+	     * isContractHunt -- the held contract key matches the run's
+	       static house. Contract hunts pay the contract's cash and
+	       no ecto; rogue hunts pay cash + ecto.
+	     * fledRogue -- the player walked away from a rogue hunt
+	       (not a ghost-driven defeat). Pays nothing -- no consolation
+	       ecto, no xp. Other rogue failures (sanity, exhaustion,
+	       time, caught) still get the small consolation.
+	     * mult -- the PAYOUT filter's modifier multiplier on cash /
+	       ecto / xp. Default 1.0 when no modifier subscribes. */
+	function classifyHuntOutcome(run, success) {
 		var payCtx = setup.Hunt.applyFilter(setup.Hunt.Event.PAYOUT, {
 			multiplier: 1,
 			modifierIds: (run.modifiers || []).slice(),
 			success: !!success
 		});
 		var mult = (typeof payCtx.multiplier === 'number') ? payCtx.multiplier : 1;
-
 		var heldId = (setup.WitchContract && typeof setup.WitchContract.heldHouseId === 'function')
 			? setup.WitchContract.heldHouseId()
 			: null;
 		var isContractHunt = !!run.staticHouseId && heldId === run.staticHouseId;
-
-		/* Flee on a rogue hunt is a deliberate walk-away, not a
-		   ghost-driven defeat -- pay nothing (no consolation ecto, no
-		   XP). The other failure reasons (sanity, exhaustion, time,
-		   caught) still get the small consolation. */
 		var fledRogue = !isContractHunt
 			&& !success
 			&& run.failureReason === setup.HuntEnums.FailureReason.FLED;
+		return {
+			mult: mult,
+			isContractHunt: isContractHunt,
+			contractHouseId: isContractHunt ? heldId : null,
+			fledRogue: fledRogue
+		};
+	}
 
+	/* Settle and apply the run's rewards. Contract hunts burn the held
+	   contract for its cash payout on success / nothing on failure;
+	   rogue hunts pay base 50 cash + 10 ecto on success and 3 ecto on
+	   failure. XP splits: contract hunts pay the tier-scaled contract
+	   reward (Owaissa 15 / Elm 25 / Ironclad 40 on success, 0 on
+	   failure) instead of the flat rogue formula -- the contract IS
+	   the achievement, not the kill. Rogue hunts pay 20 success / 5
+	   fail / 0 flee. Contract XP is NOT multiplied by the modifier
+	   payout multiplier (the tier already encodes difficulty). */
+	function payHuntRewards(classification, success) {
+		var mult = classification.mult;
 		var cashPayout = 0;
 		var ectoplasmPayout = 0;
-		var contractPayout = 0;
-		if (isContractHunt) {
-			contractPayout = setup.WitchContract.resolveHeld(!!success);
+		var xpReward = 0;
+		if (classification.isContractHunt) {
+			var contractPayout = setup.WitchContract.resolveHeld(!!success);
 			cashPayout = Math.round(contractPayout * mult);
-		} else if (!fledRogue) {
+			xpReward = setup.WitchContract.xpRewardFor(classification.contractHouseId, !!success);
+		} else if (!classification.fledRogue) {
 			cashPayout = Math.round((success ? 50 : 0) * mult);
 			ectoplasmPayout = Math.round((success ? 10 : 3) * mult);
+			xpReward = Math.round((success ? 20 : 5) * mult);
 		}
 		if (cashPayout > 0 && setup.Mc && typeof setup.Mc.addMoney === 'function') {
 			setup.Mc.addMoney(cashPayout);
 		}
 		if (ectoplasmPayout > 0) addEctoplasm(ectoplasmPayout);
-		var xpReward = fledRogue ? 0 : Math.round((success ? 20 : 5) * mult);
-		if (setup.Mc && typeof setup.Mc.grantExp === 'function') {
+		if (xpReward > 0 && setup.Mc && typeof setup.Mc.grantExp === 'function') {
 			setup.Mc.grantExp(xpReward);
 		}
-		var summary = {
+		return { cashPayout: cashPayout, ectoplasmPayout: ectoplasmPayout, xpReward: xpReward };
+	}
+
+	/* Pure summary builder -- packages the data HuntSummary / result
+	   passages render. exitPassage routes the caller to the right
+	   HuntOver* screen based on success + failureReason. */
+	function buildHuntSummary(run, classification, payout, success) {
+		return {
 			seed: run.seed,
 			number: run.number,
 			modifiers: (run.modifiers || []).slice(),
 			objective: run.objective,
 			failureReason: run.failureReason || null,
 			success: !!success,
-			isContractHunt: isContractHunt,
-			cashPayout: cashPayout,
-			ectoplasmPayout: ectoplasmPayout,
-			payout: cashPayout + ectoplasmPayout,
-			xp: xpReward,
+			isContractHunt: classification.isContractHunt,
+			cashPayout: payout.cashPayout,
+			ectoplasmPayout: payout.ectoplasmPayout,
+			payout: payout.cashPayout + payout.ectoplasmPayout,
+			xp: payout.xpReward,
 			exitPassage: exitPassageForOutcome(!!success, run.failureReason || null)
 		};
-		/* Stash the outcome on persistent meta-state so any post-hunt
-		   surface that cares about the last result can gate on it --
-		   $run is cleared by end() below, so anyone reading needs a
-		   side channel that survives a successful close. */
-		setup.HuntShop.markLastWasSuccess(success);
+	}
+
+	/* Snap sanity / energy maxes back to whatever the player walked in
+	   with. Modifiers like Steeled Hand / Calves of Steel bump caps
+	   for the duration of a run; energyMax in particular can also be
+	   permanently raised by fitness, so we always restore from the
+	   per-run snapshot rather than guessing a baseline. Current values
+	   clamp to the restored cap so a fresh hunt doesn't start with a
+	   125-out-of-100 bar. */
+	function restorePreRunStatCaps(run) {
+		var caps = run.preRunStatCaps;
+		if (!caps) return;
+		setup.Mc.setSanityMax(caps.sanityMax);
+		setup.Mc.setEnergyMax(caps.energyMax);
+		if (setup.Mc.sanity() > caps.sanityMax) setup.Mc.setSanity(caps.sanityMax);
+		if (setup.Mc.energy() > caps.energyMax) setup.Mc.setEnergy(caps.energyMax);
+	}
+
+	/* Tear down per-run house / companion / wardrobe / stat-cap state.
+	   This is the catch-all lifecycle teardown -- witch contract close,
+	   exhaustion / sanity exits, manual leave, wrong-call. Genuine
+	   possession transitions to POSSESSED separately from the Possessed
+	   passage and skips this teardown.
+
+	   Mirrors the classic HuntOver* passages: commit tempCorr,
+	   reset tool timers, hand the deck / paw back to HIDDEN / 3
+	   wishes. runHuntFailHooks gives the active companion a chance
+	   to clean up its own state; resetHuntState zeroes the shared
+	   plan / showComp / isCompChosen flags. Auto-redress slots the MC
+	   undressed during the run (clean-exit paths skip cleanupAfterHunt,
+	   so we redress here too -- stolen / lost items are already
+	   filtered). */
+	function cleanupRunState(run) {
 		if (setup.HauntedHouses) {
 			if (typeof setup.HauntedHouses.commitTempCorruption === 'function') {
 				setup.HauntedHouses.commitTempCorruption();
@@ -1036,50 +1072,45 @@ setup.HuntController = (function () {
 			if (typeof setup.HauntedHouses.resetToolTimers === 'function') {
 				setup.HauntedHouses.resetToolTimers();
 			}
-			/* Hand the deck and paw back so a follow-up run starts
-			   from HIDDEN / 3 wishes instead of inheriting whatever
-			   the run left them in. */
 			if (typeof setup.HauntedHouses.resetCursedItemState === 'function') {
 				setup.HauntedHouses.resetCursedItemState();
 			}
 		}
-		/* Tear down the legacy hunt-mode state stamped at startHunt so
-		   the next contract starts from HuntMode.NONE and the per-tick
-		   companion machinery (mini panel, attack roll, leave-after-event)
-		   sees a clean slate. runHuntFailHooks gives the active companion
-		   (if any) a chance to clean up their own state; resetHuntState
-		   then zeroes the shared plan / showComp / isCompChosen flags.
-
-		   This is the catch-all lifecycle ending (witch contract close,
-		   exhaustion/sanity exits, manual leave). Genuine possession
-		   transitions to POSSESSED separately from the Possessed
-		   passage; see passages/posession/possessed.tw. */
 		setHuntMode(HuntMode.ENDED);
 		if (setup.Companion) {
 			setup.Companion.runHuntFailHooks();
 			setup.Companion.resetHuntState();
 		}
-		/* Auto-redress slots the MC undressed herself during the run.
-		   The caught path runs this through cleanupAfterHunt; the
-		   clean-exit paths (success / flee) skip that helper, so
-		   we redress here too. Stolen / lost items are already filtered. */
 		if (setup.Wardrobe && typeof setup.Wardrobe.redressAfterHunt === 'function') {
 			setup.Wardrobe.redressAfterHunt();
 		}
-		/* Restore the pre-run sanity / energy caps if the run bumped
-		   them via Steeled Hand / Calves of Steel. Caps are long-lived
-		   (energyMax in particular is bumped by permanent fitness
-		   gains), so we always snap back to whatever the player walked
-		   in with. Current sanity/energy follow the delta: clamp to
-		   the restored cap so a fresh hunt doesn't start with a
-		   125-out-of-100 bar. */
-		var caps = run.preRunStatCaps;
-		if (caps) {
-			setup.Mc.setSanityMax(caps.sanityMax);
-			setup.Mc.setEnergyMax(caps.energyMax);
-			if (setup.Mc.sanity() > caps.sanityMax) setup.Mc.setSanity(caps.sanityMax);
-			if (setup.Mc.energy() > caps.energyMax) setup.Mc.setEnergy(caps.energyMax);
-		}
+		restorePreRunStatCaps(run);
+	}
+
+	/* End the active run. Returns a summary record the result passage
+	   can render without peeking at $run state, or null when no run is
+	   active.
+
+	   Payout split:
+	     * Contract hunt -- $run.staticHouseId matches the contract
+	       the player is holding from setup.WitchContract. Success
+	       pays the contract's cash payout, no ecto. Failure burns
+	       the contract for nothing.
+	     * Rogue hunt -- no contract held, or held key mismatched.
+	       Pays cash on success and ecto on any non-flee outcome
+	       (small consolation on failure). Flee pays nothing. */
+	function endHunt(success) {
+		var run = active();
+		if (!run) return null;
+		var classification = classifyHuntOutcome(run, success);
+		var payout = payHuntRewards(classification, success);
+		var summary = buildHuntSummary(run, classification, payout, success);
+		/* Stash the outcome on persistent meta-state so any post-hunt
+		   surface that cares about the last result can gate on it --
+		   $run is cleared by end() below, so anyone reading needs a
+		   side channel that survives a successful close. */
+		setup.HuntShop.markLastWasSuccess(success);
+		cleanupRunState(run);
 		end();
 		/* Roll the next-run seed so the GhostStreet card preview and
 		   the HuntStart lobby pick a different address / floor plan
@@ -1087,18 +1118,33 @@ setup.HuntController = (function () {
 		   to the in-game daily seed and showed the same address until
 		   the player slept. */
 		rollNextSeed();
-		setup.Hunt.emit(setup.Hunt.Event.HUNT_END_ASSAULTED, {
+		setup.Hunt.emit(huntEndEventFor(summary.failureReason), {
 			success: !!success,
-			isContractHunt: isContractHunt,
-			cashPayout: cashPayout,
-			ectoplasmPayout: ectoplasmPayout,
-			payout: cashPayout + ectoplasmPayout,
+			isContractHunt: classification.isContractHunt,
+			cashPayout: payout.cashPayout,
+			ectoplasmPayout: payout.ectoplasmPayout,
+			payout: payout.cashPayout + payout.ectoplasmPayout,
 			failureReason: summary.failureReason,
 			ghostName: run.ghostName || null,
 			seed: run.seed,
 			number: run.number
 		});
 		return summary;
+	}
+
+	/* Pick the lifecycle-end event for a given failure reason.
+	   POSSESSED / CAUGHT / SANITY are "MC went down" outcomes and
+	   route through ASSAULTED; everything else (success, FLED,
+	   WRONG_CALL, ABANDON, no reason) is a peaceful exit and routes
+	   through GRACEFUL. */
+	function huntEndEventFor(failureReason) {
+		var FR = setup.HuntEnums.FailureReason;
+		var assaulted = failureReason === FR.POSSESSED
+			|| failureReason === FR.CAUGHT
+			|| failureReason === FR.SANITY;
+		return assaulted
+			? setup.Hunt.Event.HUNT_END_ASSAULTED
+			: setup.Hunt.Event.HUNT_END_GRACEFUL;
 	}
 
 	// --- Facade / dispatch helpers ----------------------------

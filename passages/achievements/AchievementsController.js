@@ -24,7 +24,7 @@ setup.Achievements = setup.Achievements || {};
 	   with a hint). Bestiary entries are derived from the ghost
 	   catalogue at lookup time -- see fullCatalogue() below. */
 	var STATIC_CATALOGUE = Object.freeze([
-		// --- Failure suite (Hunt.Event.HUNT_END_ASSAULTED + CAUGHT + POSSESS) ---
+		// --- Failure suite ---
 		{ id: 'fail.sanity',     name: 'Lost the Plot',         hint: 'End a hunt with your mind frayed.',     category: 'failure' },
 		{ id: 'fail.exhaustion', name: 'Dead on Your Feet',     hint: 'Collapse mid-hunt.',                    category: 'failure' },
 		{ id: 'fail.time',       name: 'Sunrise, Sunrise',      hint: 'Run out the clock.',                    category: 'failure' },
@@ -36,7 +36,7 @@ setup.Achievements = setup.Achievements || {};
 		// contract walk-out. Distinct from `disc.cold_feet` below.
 		{ id: 'fail.abandon',    name: 'Out the Back',          hint: 'Wish your way out of a hunt.',          category: 'failure' },
 
-		// --- Wins with a twist (Hunt.Event.HUNT_END_ASSAULTED) ---
+		// --- Wins with a twist (Hunt.Event.HUNT_END_GRACEFUL) ---
 		{ id: 'win.first',    name: 'First Blood',     hint: 'Banish your first ghost.',                      category: 'win' },
 		{ id: 'win.nocaught', name: 'Untouched',       hint: 'Win without ever being grabbed.', hidden: true, category: 'win' },
 		{ id: 'win.notools',  name: 'Bare Hands',      hint: 'Win without activating EMF or UVL.', hidden: true, category: 'win' },
@@ -191,7 +191,12 @@ setup.Achievements = setup.Achievements || {};
 			}
 		});
 
-		setup.Hunt.on(E.HUNT_END_ASSAULTED, function (ctx) {
+		/* Hunt-end achievements split across both end events: wins, flees,
+		   exhaustion, time-out, and abandon all arrive via GRACEFUL;
+		   sanity-out arrives via ASSAULTED. CAUGHT / POSSESSED already
+		   unlock via their dedicated events. Same handler runs on both
+		   since the dispatch keys off ctx.success / ctx.failureReason. */
+		function onHuntEnd(ctx) {
 			var FR = setup.HuntController && setup.HuntController.FailureReason;
 			if (!ctx) { huntFlags = null; return; }
 			if (ctx.success) {
@@ -208,10 +213,11 @@ setup.Achievements = setup.Achievements || {};
 				if (ctx.failureReason === FR.TIME)       unlock('fail.time');
 				if (ctx.failureReason === FR.FLED)       unlock('fail.fled');
 				if (ctx.failureReason === FR.ABANDON)    unlock('fail.abandon');
-				// CAUGHT / POSSESSED already unlocked via their dedicated events.
 			}
 			huntFlags = null;
-		});
+		}
+		setup.Hunt.on(E.HUNT_END_ASSAULTED, onHuntEnd);
+		setup.Hunt.on(E.HUNT_END_GRACEFUL, onHuntEnd);
 	}
 	$(document).one(':storyready', registerHuntSubscriptions);
 

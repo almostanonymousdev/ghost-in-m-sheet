@@ -55,7 +55,7 @@
 		@@.mc-thoughts; The succubus disappeared.@@<br>
 		@@.mc-speech; I don't know... if this is the right choice...@@<br>
 		@@.mc-thoughts; The succubus will protect me from ghost attacks for 5 days during the ghost hunt. But I need to summon her to renew her "protection"@@<br><br>
-		@@.backbtn; [[Back|Bedroom][setup.Witch.markSuccubusSummoned(); setup.Witch.setSuccubusVisited(2)]]@@<br>
+		@@.backbtn; [[Back|Bedroom][setup.Witch.markSuccubusSummoned(); setup.Witch.setSuccubusVisited(2); setup.Mc.grantExp(50)]]@@<br>
 	<</linkreplace>>
 	</span>
 	<span id="summoningOr">or</span>

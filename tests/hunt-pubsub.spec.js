@@ -337,7 +337,12 @@ test.describe('setup.Hunt pubsub', () => {
       expect(capture.seen[0].roomId).toBe(capture.ghostRoom);
     });
 
-    test('endHunt emits Event.HUNT_END_ASSAULTED with success, payout, ghostName, seed', async () => {
+    /* Hunt-end events split on whether the MC went down or walked
+       out: ASSAULTED for POSSESSED / CAUGHT / SANITY, GRACEFUL for
+       everything else (win, flee, wrong-call, abandon, no reason).
+       Both carry the same ctx shape; subscribers pick which channel
+       they care about. */
+    test('endHunt on success emits Event.HUNT_END_GRACEFUL (not ASSAULTED) with the full ctx', async () => {
       await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
       const capture = await page.evaluate(() => {
         const HC = SugarCube.setup.HuntController;
@@ -347,34 +352,59 @@ test.describe('setup.Hunt pubsub', () => {
         const ghostName = run.ghostName;
         const seed = run.seed;
         const number = run.number;
-        const seen = [];
-        window.__huntSubs.push(Hunt.on(Hunt.Event.HUNT_END_ASSAULTED, (ctx) => seen.push(ctx)));
+        const graceful = [];
+        const assaulted = [];
+        window.__huntSubs.push(Hunt.on(Hunt.Event.HUNT_END_GRACEFUL, (ctx) => graceful.push(ctx)));
+        window.__huntSubs.push(Hunt.on(Hunt.Event.HUNT_END_ASSAULTED, (ctx) => assaulted.push(ctx)));
         const summary = HC.endHunt(true);
-        return { seen, summary, ghostName, seed, number };
+        return { graceful, assaulted, summary, ghostName, seed, number };
       });
-      expect(capture.seen.length).toBe(1);
-      expect(capture.seen[0].success).toBe(true);
-      expect(capture.seen[0].payout).toBe(capture.summary.payout);
-      expect(capture.seen[0].ghostName).toBe(capture.ghostName);
-      expect(capture.seen[0].seed).toBe(capture.seed);
-      expect(capture.seen[0].number).toBe(capture.number);
+      expect(capture.graceful.length).toBe(1);
+      expect(capture.assaulted.length).toBe(0);
+      expect(capture.graceful[0].success).toBe(true);
+      expect(capture.graceful[0].payout).toBe(capture.summary.payout);
+      expect(capture.graceful[0].ghostName).toBe(capture.ghostName);
+      expect(capture.graceful[0].seed).toBe(capture.seed);
+      expect(capture.graceful[0].number).toBe(capture.number);
     });
 
-    test('endHunt with failure passes the failureReason through', async () => {
+    test('endHunt with CAUGHT failure emits Event.HUNT_END_ASSAULTED with the failureReason', async () => {
       await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
       const capture = await page.evaluate(() => {
         const HC = SugarCube.setup.HuntController;
         const { Hunt } = SugarCube.setup;
         HC.startHunt({ seed: 4040 });
         HC.markFailure(HC.FailureReason.CAUGHT);
-        const seen = [];
-        window.__huntSubs.push(Hunt.on(Hunt.Event.HUNT_END_ASSAULTED, (ctx) => seen.push(ctx)));
+        const graceful = [];
+        const assaulted = [];
+        window.__huntSubs.push(Hunt.on(Hunt.Event.HUNT_END_GRACEFUL, (ctx) => graceful.push(ctx)));
+        window.__huntSubs.push(Hunt.on(Hunt.Event.HUNT_END_ASSAULTED, (ctx) => assaulted.push(ctx)));
         HC.endHunt(false);
-        return seen;
+        return { graceful, assaulted };
       });
-      expect(capture.length).toBe(1);
-      expect(capture[0].success).toBe(false);
-      expect(capture[0].failureReason).toBe('caught');
+      expect(capture.assaulted.length).toBe(1);
+      expect(capture.graceful.length).toBe(0);
+      expect(capture.assaulted[0].success).toBe(false);
+      expect(capture.assaulted[0].failureReason).toBe('caught');
+    });
+
+    test('endHunt with FLED failure emits Event.HUNT_END_GRACEFUL (player walked, not assaulted)', async () => {
+      await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
+      const capture = await page.evaluate(() => {
+        const HC = SugarCube.setup.HuntController;
+        const { Hunt } = SugarCube.setup;
+        HC.startHunt({ seed: 4141 });
+        HC.markFailure(HC.FailureReason.FLED);
+        const graceful = [];
+        const assaulted = [];
+        window.__huntSubs.push(Hunt.on(Hunt.Event.HUNT_END_GRACEFUL, (ctx) => graceful.push(ctx)));
+        window.__huntSubs.push(Hunt.on(Hunt.Event.HUNT_END_ASSAULTED, (ctx) => assaulted.push(ctx)));
+        HC.endHunt(false);
+        return { graceful, assaulted };
+      });
+      expect(capture.graceful.length).toBe(1);
+      expect(capture.assaulted.length).toBe(0);
+      expect(capture.graceful[0].failureReason).toBe('fled');
     });
 
     test('huntCaughtPassage emits Event.CAUGHT before stamping failure', async () => {
