@@ -135,6 +135,8 @@
 	@@.mc-action; You put monkey paw in your bag@@<br>
 	<<run setup.MonkeyPaw.markFound()>>
 	<<run setup.HuntController.takeLoot("monkeyPaw")>>
+	<br>
+	@@.mc-thoughts; Khadija will know the rules on this thing. Better to ask before I try a wish.@@<br>
 <</linkappend>>
 <br><br>
 @@.backbtn; [[Back|$return]]@@

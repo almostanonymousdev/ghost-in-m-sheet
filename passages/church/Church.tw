@@ -2,6 +2,9 @@
 <<image "ui/img/church.jpg" { width: "100%" }>>
 @@.location; Church@@<br>
 @@.mc-thoughts; Oldest building in Mossheath, and it shows. Stone facade older than the Emergence, a stained-glass St. Michael missing a chip of his halo, a fountain by the door that's never been turned off in living memory. Father Ibrahim does the six o'clock Mass for an audience of two pensioners. //First time I asked him about the name, he just smiled. Long story, he said. My mother had opinions.//@@<br>
+<<if setup.Witch.hasSuccubusEncounter() and (hasVisited("SuccubusEventTV") or hasVisited("SuccubusPCEvent")) and setup.Witch.exorcismQuestNotStarted()>>
+	@@.mc-thoughts; I'm tempted to discuss what's been happening at home in here with Father Ibrahim. Though... he might not protect that information as closely as I'd like. Better to start with the witch.@@<br>
+<</if>>
 <br>
 <<if not setup.Church.isOpen()>>
 	@@.mc-thoughts; I came at an inappropriate time (open from 06:00 to 22:00)@@<br>

@@ -15,6 +15,10 @@
 	@@.mc-speech; How long did I sleep? Doesn't matter, I feel fantastic! Hehe~@@<br>
 	<<run setup.Home.clearTentaclesTVText()>>
 <</if>>
+<<if previous() is "Home" and setup.Witch.hasCursedItemToTurnIn()>>
+	As you walk into the house, it creaks and groans as if it's trying to warn you of something. Almost simultaneously, a splinter in the doorway snags your bag, stopping you in your tracks.<br>
+	<br>
+<</if>>
 @@.usebtn;<<link "Watch tv (30 min)" "Livingroom">>
 	<<addTime 30>>
 	<<if setup.CursedItems.isItemCursed("tv")>>
