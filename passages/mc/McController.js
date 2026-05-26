@@ -172,6 +172,7 @@ setup.Mc = (function () {
 		earn: function (n) {
 			sv().mc.money += n;
 			sv().earnedMoney += n;
+			setup.Ledger.recordMoney(sv().mc.money);
 		},
 
 		// --- Inventory consumables: amount-aware mutators -------
@@ -182,6 +183,7 @@ setup.Mc = (function () {
 			if (sv().energyDrinkAmount > 0) {
 				sv().energyDrinkAmount -= 1;
 				sv().mc.energy = Math.min(sv().mc.energyMax, sv().mc.energy + 3);
+				setup.Ledger.recordEnergy(sv().mc.energy);
 				return true;
 			}
 			return false;
@@ -241,6 +243,7 @@ setup.Mc = (function () {
 		// --- Lust helpers --------------------------------------
 		clampLust: function () {
 			sv().mc.lust = Number(sv().mc.lust.toFixed(2));
+			setup.Ledger.recordLust(sv().mc.lust);
 		},
 
 		// --- addSanity widget core --------------------------------
@@ -254,12 +257,15 @@ setup.Mc = (function () {
 			m.sanity += delta;
 			if (m.sanity >= m.sanityMax) {
 				m.sanity = m.sanityMax;
+				setup.Ledger.recordSanity(m.sanity);
 				return R.CLAMPED;
 			}
 			if (m.sanity < 0) {
 				m.sanity = 0;
+				setup.Ledger.recordSanity(m.sanity);
 				return R.COLLAPSED;
 			}
+			setup.Ledger.recordSanity(m.sanity);
 			return R.NORMAL;
 		},
 
@@ -269,6 +275,7 @@ setup.Mc = (function () {
 			m.energy += delta;
 			if (m.energy >= m.energyMax) { m.energy = m.energyMax; }
 			if (m.energy <= 0)           { m.energy = 0; }
+			setup.Ledger.recordEnergy(m.energy);
 		},
 
 		// --- addLust widget core --------------------------------
@@ -288,6 +295,7 @@ setup.Mc = (function () {
 			if (v < 0) v = 0;
 			if (v > m.lustMax) v = m.lustMax;
 			m.lust = v;
+			setup.Ledger.recordLust(m.lust);
 		},
 
 		// --- addFit widget core -----------------------------------
@@ -377,15 +385,23 @@ setup.Mc = (function () {
 	   lust/sanity/energy/fit suppress the auto-generated add — the
 	   clamped/cascade versions defined manually above are canonical. */
 	setup.defineAccessors(api, function () { return sv().mc; }, [
-		'money',
-		{ name: 'sanity', add: false },
+		{ name: 'money', writeHook: function (_oldV, newV) {
+			setup.Ledger.recordMoney(newV);
+		} },
+		{ name: 'sanity', add: false, writeHook: function (_oldV, newV) {
+			setup.Ledger.recordSanity(newV);
+		} },
 		'sanityMax',
 		'sanityUp',
-		{ name: 'energy', add: false },
+		{ name: 'energy', add: false, writeHook: function (_oldV, newV) {
+			setup.Ledger.recordEnergy(newV);
+		} },
 		'energyMax',
 		'energyPoints',
 		'corruption',
-		{ name: 'lust', add: false },
+		{ name: 'lust', add: false, writeHook: function (_oldV, newV) {
+			setup.Ledger.recordLust(newV);
+		} },
 		'name',
 		{ name: 'fit', add: false },
 		'lvl',

@@ -119,6 +119,9 @@ setup.Tick = (function () {
 	   adding a new daily cooldown is one registerDaily() line in the
 	   owning controller (not a fan-out edit here). */
 	function resetCooldowns() {
+		/* Shadow-ledger audit runs first to prevent cleanup interference */
+		setup.Ledger.auditAndReport();
+
 		setup.Cooldowns.resetDaily();
 		setup.Home.tickHomeMidnight();
 		setup.Companion.advanceSoloHuntsAtMidnight();

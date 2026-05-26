@@ -310,9 +310,8 @@ setup.HauntConditions = (function () {
 		var mc = V.mc;
 		if (!mc) return false;
 		if ((mc.energy || 0) < amount) return false;
-		mc.energy -= amount;
+		setup.Mc.addEnergy(-amount);
 		if (mc.energy <= 0) {
-			mc.energy = 0;
 			V.exhausted = true;
 		}
 		return true;
@@ -331,8 +330,7 @@ setup.HauntConditions = (function () {
 		V.baitOrgasmPending = false;
 		var mc = V.mc;
 		if (!mc) return true;
-		mc.lust = 0;
-		setup.Mc.clampLust();
+		setup.Mc.setLust(0);
 		var outcome = setup.Mc.addSanity(-BAIT_ORGASM_SANITY);
 		if (outcome === setup.SanityDeltaResult.COLLAPSED) {
 			V.sanityCollapse = true;

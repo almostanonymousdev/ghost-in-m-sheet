@@ -153,6 +153,12 @@ setup.Game = (function () {
 		// Static hunt-house id staged by a GhostStreet card (e.g.
 		// 'owaissa'). HuntStart consumes it once and clears it.
 		s.pendingHuntHouseId = null;
+
+		// Shadow ledger mirrors mc.money / ectoplasm; seeded here so
+		// the first midnight audit has an authoritative baseline and
+		// dev-console edits made before the first day-rollover can't
+		// poison a lazy-seed snapshot.
+		setup.Ledger.resync();
 	}
 
 	function resetPersistentCheats() {

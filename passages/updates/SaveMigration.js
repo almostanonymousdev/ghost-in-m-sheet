@@ -105,14 +105,7 @@
 		webcam:        function () { return {}; },
 		summoning:     function () { return {}; },
 		alarm:         function () { return { enabled: false, hour: 7 }; },
-
-		// Hunt-mode state: pre-hunt saves don't have these
-		// fields. $run is null when no hunt is active
-		// (classic mode). $ectoplasm starts at 0 mL. $runsStarted
-		// is the lifetime attempt counter, also 0 by default.
-		// $meta holds permanent meta-shop unlocks: per-id owned
-		// counts, the modifier banlist, and stockpiled reroll
-		// charges. Saves predating the meta-shop default to none.
+		ledger:        function () { return null; },
 		run:           function () { return null; },
 		ectoplasm:     function () { return 0; },
 		runsStarted:   function () { return 0; },

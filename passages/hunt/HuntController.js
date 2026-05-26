@@ -538,10 +538,11 @@ setup.HuntController = (function () {
 		return run ? run[key] : undefined;
 	}
 
-	// --- Meta-progression: ectoplasm (mL) ---------------------
+	// --- alt currency: ectoplasm (mL) ---------------------
 	function ectoplasm() { return sv().ectoplasm || 0; }
 	function addEctoplasm(n) {
 		sv().ectoplasm = (sv().ectoplasm || 0) + (n || 0);
+		setup.Ledger.recordEctoplasm(sv().ectoplasm);
 		return sv().ectoplasm;
 	}
 	/* Spend `n` mL of ectoplasm. Returns true on success, false if
@@ -550,6 +551,7 @@ setup.HuntController = (function () {
 		var have = sv().ectoplasm || 0;
 		if (have < n) return false;
 		sv().ectoplasm = have - n;
+		setup.Ledger.recordEctoplasm(sv().ectoplasm);
 		return true;
 	}
 	function canAffordEctoplasm(n) { return (sv().ectoplasm || 0) >= n; }
