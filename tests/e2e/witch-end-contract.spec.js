@@ -495,3 +495,130 @@ test.describe('WitchEndContract — navigation continuity', () => {
     await expectCleanPassage(page);
   });
 });
+
+/* Pending-guess flow: a contract hunt ended without the player making
+   her call (caught, sanity, exhaustion, time, fled, abandon -- any
+   failure except WRONG_CALL at the desk). The held contract retains
+   the true ghost identity so the player can sleep, wake up, and walk
+   back to Khadija the next day to settle the contract. */
+test.describe('Pending-guess contract (post-failure resolution)', () => {
+  /* Stamp a held contract, run + fail the hunt with the given failure
+     reason, then put the world clock at noon (well past the hunt-time
+     dawn intercept) so the next day's witch visit can render cleanly.
+     Returns the true ghost name so wrong/right tests can pick a guess. */
+  async function failContractHunt(page, houseId, failureReason) {
+    await page.evaluate(() => { SugarCube.setup.Witch.markShopVisited(); });
+    await page.evaluate(id => SugarCube.setup.WitchContract.cheatGrantContract(id), houseId);
+    await page.evaluate(id => SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: id }), houseId);
+    const trueName = await callSetup(page, 'setup.HuntController.ghostName()');
+    await page.evaluate(reason => SugarCube.setup.HuntController.markFailure(reason), failureReason);
+    await page.evaluate(() => SugarCube.setup.HuntController.endHunt(false));
+    /* World clock to a safe daylight hour -- no hunt active so the
+       dawn intercept won't fire, but keep it natural for the test. */
+    await setVar(page, 'hours', 12);
+    await setVar(page, 'minutes', 0);
+    /* Reset MC money / lvl for predictable assertions. */
+    await setVar(page, 'mc.money', 0);
+    await setVar(page, 'mc.lvl', 0);
+    return trueName;
+  }
+
+  test('caught failure stashes pending guess; WitchInside still surfaces the findings link', async ({ game: page }) => {
+    await failContractHunt(page, 'owaissa', 'caught');
+    expect(await callSetup(page, 'setup.WitchContract.hasPendingGuess()')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(false);
+
+    await goToPassage(page, 'WitchInside');
+    expect(await page.locator('#passages').innerText()).toMatch(/You have findings from .*Owaissa/i);
+    await expectCleanPassage(page);
+  });
+
+  test('sanity failure stashes pending guess just like caught', async ({ game: page }) => {
+    await failContractHunt(page, 'elm', 'sanity');
+    expect(await callSetup(page, 'setup.WitchContract.hasPendingGuess()')).toBe(true);
+    await goToPassage(page, 'WitchInside');
+    expect(await page.locator('#passages').innerText()).toMatch(/You have findings from .*Elm/i);
+    await expectCleanPassage(page);
+  });
+
+  test('WitchEndContract renders the dropdown for a pending guess (no active hunt)', async ({ game: page }) => {
+    await failContractHunt(page, 'owaissa', 'caught');
+    await goToPassage(page, 'WitchEndContract');
+    const selectCount = await page.locator('#passages select').count();
+    expect(selectCount).toBeGreaterThan(0);
+    const text = await page.locator('#passages').innerText();
+    expect(text).toContain('Name the ghost');
+    expect(text).not.toContain('Nothing to report');
+    await expectCleanPassage(page);
+  });
+
+  test('correct pending guess pays contract cash + tier XP and clears the held slot', async ({ game: page }) => {
+    test.setTimeout(20_000);
+    const trueName = await failContractHunt(page, 'owaissa', 'caught');
+    await setVar(page, 'ghostTypeSelected', trueName);
+
+    await goToPassage(page, 'WitchEndContractResolve');
+    await expect(
+      page.locator('#passages').getByText(/Good\. Money on the way/i)
+    ).toBeVisible({ timeout: 10_000 });
+
+    expect(await getVar(page, 'mc.money')).toBe(200); // owaissa payout
+    expect(await callSetup(page, 'setup.WitchContract.hasHeldContract()')).toBe(false);
+    expect(await callSetup(page, 'setup.WitchContract.hasPendingGuess()')).toBe(false);
+    await expectCleanPassage(page);
+  });
+
+  test('wrong pending guess burns the contract and pays nothing', async ({ game: page }) => {
+    test.setTimeout(20_000);
+    const trueName = await failContractHunt(page, 'elm', 'sanity');
+    const wrongName = await page.evaluate(real => {
+      const other = SugarCube.setup.Ghosts.list().find(g => g.name !== real);
+      return other ? other.name : null;
+    }, trueName);
+    await setVar(page, 'ghostTypeSelected', wrongName);
+
+    await goToPassage(page, 'WitchEndContractResolve');
+    await expect(
+      page.locator('#passages').getByText(/No payout\. The contract's spent/i)
+    ).toBeVisible({ timeout: 10_000 });
+
+    expect(await getVar(page, 'mc.money')).toBe(0);
+    expect(await callSetup(page, 'setup.WitchContract.hasHeldContract()')).toBe(false);
+    expect(await callSetup(page, 'setup.WitchContract.hasPendingGuess()')).toBe(false);
+    await expectCleanPassage(page);
+  });
+
+  test('pending-guess resolution prints the true ghost name + evidence on a wrong call', async ({ game: page }) => {
+    /* The debrief line on a wrong call ("It was a <ghost>. <evidence>")
+       has to keep working even though $run has been cleared and the
+       ghost identity now comes from the stashed pending-guess slot. */
+    test.setTimeout(20_000);
+    const trueName = await failContractHunt(page, 'elm', 'caught');
+    const wrongName = await page.evaluate(real => {
+      const other = SugarCube.setup.Ghosts.list().find(g => g.name !== real);
+      return other ? other.name : null;
+    }, trueName);
+    await setVar(page, 'ghostTypeSelected', wrongName);
+
+    await goToPassage(page, 'WitchEndContractResolve');
+    await expect(
+      page.locator('#passages').getByText(new RegExp(trueName, 'i'))
+    ).toBeVisible({ timeout: 10_000 });
+    await expectCleanPassage(page);
+  });
+
+  test('"Not yet" link keeps the pending guess intact when no hunt is active', async ({ game: page }) => {
+    /* A contract hunt failure left a pending guess. The player can
+       still back out of the desk without consuming the contract --
+       come back to it any time. */
+    await failContractHunt(page, 'owaissa', 'caught');
+    await goToPassage(page, 'WitchEndContract');
+    await page.locator('#passages').getByText('Not yet -- let me think', { exact: true }).first().click();
+    await page.waitForFunction(() => SugarCube.State.passage === 'WitchInside');
+
+    expect(await callSetup(page, 'setup.WitchContract.hasHeldContract()')).toBe(true);
+    expect(await callSetup(page, 'setup.WitchContract.hasPendingGuess()')).toBe(true);
+    expect(await page.locator('#passages').innerText()).toMatch(/You have findings from/i);
+    await expectCleanPassage(page);
+  });
+});

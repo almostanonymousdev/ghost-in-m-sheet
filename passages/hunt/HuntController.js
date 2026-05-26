@@ -982,23 +982,38 @@ setup.HuntController = (function () {
 	}
 
 	/* Settle and apply the run's rewards. Contract hunts burn the held
-	   contract for its cash payout on success / nothing on failure;
-	   rogue hunts pay base 50 cash + 10 ecto on success and 3 ecto on
-	   failure. XP splits: contract hunts pay the tier-scaled contract
-	   reward (Owaissa 15 / Elm 25 / Ironclad 40 on success, 0 on
-	   failure) instead of the flat rogue formula -- the contract IS
-	   the achievement, not the kill. Rogue hunts pay 20 success / 5
-	   fail / 0 flee. Contract XP is NOT multiplied by the modifier
-	   payout multiplier (the tier already encodes difficulty). */
-	function payHuntRewards(classification, success) {
+	   contract for its cash payout on success / nothing on a wrong
+	   call; any other failure (caught, sanity, exhaustion, time, fled,
+	   abandon) DEFERS resolution -- the true ghost identity is stashed
+	   on the held slot so the player can walk back to Khadija the
+	   next day and still make her call. Rogue hunts pay base 50 cash
+	   + 10 ecto on success and 3 ecto on failure. XP splits: contract
+	   hunts pay the tier-scaled contract reward (Owaissa 15 / Elm 25 /
+	   Ironclad 40 on success, 0 on failure) instead of the flat rogue
+	   formula -- the contract IS the achievement, not the kill. Rogue
+	   hunts pay 20 success / 5 fail / 0 flee. Contract XP is NOT
+	   multiplied by the modifier payout multiplier (the tier already
+	   encodes difficulty). */
+	function payHuntRewards(classification, success, run) {
 		var mult = classification.mult;
 		var cashPayout = 0;
 		var ectoplasmPayout = 0;
 		var xpReward = 0;
 		if (classification.isContractHunt) {
-			var contractPayout = setup.WitchContract.resolveHeld(!!success);
-			cashPayout = Math.round(contractPayout * mult);
-			xpReward = setup.WitchContract.xpRewardFor(classification.contractHouseId, !!success);
+			var FR = setup.HuntEnums.FailureReason;
+			var deferGuess = !success
+				&& run && run.failureReason !== FR.WRONG_CALL;
+			if (deferGuess) {
+				/* Hunt ended without a call -- stash the ghost identity
+				   so the player can come back to Khadija and guess at
+				   her desk. Contract stays held; no money or XP paid
+				   now (those settle at settlePendingGuess). */
+				setup.WitchContract.markHeldPendingGuess(run.ghostName);
+			} else {
+				var contractPayout = setup.WitchContract.resolveHeld(!!success);
+				cashPayout = Math.round(contractPayout * mult);
+				xpReward = setup.WitchContract.xpRewardFor(classification.contractHouseId, !!success);
+			}
 		} else if (!classification.fledRogue) {
 			cashPayout = Math.round((success ? 50 : 0) * mult);
 			ectoplasmPayout = Math.round((success ? 10 : 3) * mult);
@@ -1103,7 +1118,7 @@ setup.HuntController = (function () {
 		var run = active();
 		if (!run) return null;
 		var classification = classifyHuntOutcome(run, success);
-		var payout = payHuntRewards(classification, success);
+		var payout = payHuntRewards(classification, success, run);
 		var summary = buildHuntSummary(run, classification, payout, success);
 		/* Stash the outcome on persistent meta-state so any post-hunt
 		   surface that cares about the last result can gate on it --

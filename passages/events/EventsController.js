@@ -29,9 +29,10 @@ setup.Events = (function () {
 	var sanityThresholds = [0, 4, 5, 6, 7, 8, 10, 12];
 
 	// Minutes of elapsed hunt time per tier step. Hunts run from
-	// midnight (totalMinutes = 0) to hour 6 = 360 minutes, so 50
-	// minutes per tier gives a 1→7 sweep over the full hunt window.
-	var MINUTES_PER_TIER = 50;
+	// midnight (totalMinutes = 0) to hour 6 = 360 minutes; 25 minutes
+	// per tier sweeps 1→7 across the first 2.5 hours so the ghost
+	// reaches full body-part coverage by the midpoint of the hunt.
+	var MINUTES_PER_TIER = 25;
 
 	/* Typed key constants. Mirroring setup.Hunt.Event: lookups throw
 	   on unknown keys so a typo surfaces at the call site instead of

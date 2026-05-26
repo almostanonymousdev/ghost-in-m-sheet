@@ -2,7 +2,7 @@ const { test, expect } = require('../fixtures');
 const { setVar, getVar, callSetup, openGame, goToPassage } = require('../helpers');
 
 test.describe('Events controller — tier classification', () => {
-  test('eventTier maps elapsed hunt minutes 1→7 with 50-minute steps', async ({ game: page }) => {
+  test('eventTier maps elapsed hunt minutes 1→7 with 25-minute steps', async ({ game: page }) => {
     /* Stat axes at zero so statTierBonus stays at 0 — we're
        isolating the time component here. Hunt running so
        elapsedHuntMinutes reads the in-game clock. */
@@ -16,13 +16,13 @@ test.describe('Events controller — tier classification', () => {
     });
     await goToPassage(page, 'HuntRun');
     const cases = [
-      [0, 1], [49, 1],
-      [50, 2], [99, 2],
-      [100, 3], [149, 3],
-      [150, 4], [199, 4],
-      [200, 5], [249, 5],
-      [250, 6], [299, 6],
-      [300, 7], [350, 7],
+      [0, 1], [24, 1],
+      [25, 2], [49, 2],
+      [50, 3], [74, 3],
+      [75, 4], [99, 4],
+      [100, 5], [124, 5],
+      [125, 6], [149, 6],
+      [150, 7], [350, 7],
     ];
     for (const [elapsed, tier] of cases) {
       await page.evaluate((m) => {

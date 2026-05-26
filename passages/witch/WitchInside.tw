@@ -47,12 +47,16 @@
 	@@.backbtn;[[Continue|WitchInside]]@@
 <<elseif not setup.Witch.isFirstVisit()>>
 	@@.notmc-speech; <<= setup.Mc.name()>>. Still upright. Good.@@<br>
-	/* Pending contract -- the player walked out of the house with a
-		contract still in flight. Surface a prominent link to the
-		guess desk so the next click closes the loop. The check
-		matches HuntController's isContractHunt: held contract + active
-		run + the run's static house lines up with the held contract. */
-	<<if setup.HuntController.isActive() and setup.WitchContract.hasHeldContract() and setup.HuntController.staticHouseId() eq setup.WitchContract.heldHouseId()>>
+	/* Pending contract -- either the player walked out of the house
+		with the run still active (and the held key matches the run's
+		static house), or a prior contract hunt ended without a call
+		(caught, sanity, exhaustion, time, fled, abandon) and the
+		true-ghost identity is stashed on the held slot for a deferred
+		guess. Either way, surface the findings link so the next click
+		closes the loop. */
+	<<set _activeContractHunt to setup.HuntController.isActive() and setup.WitchContract.hasHeldContract() and setup.HuntController.staticHouseId() eq setup.WitchContract.heldHouseId()>>
+	<<set _pendingGuess to setup.WitchContract.hasPendingGuess()>>
+	<<if _activeContractHunt or _pendingGuess>>
 		<<set _pendingHouse to setup.HuntHouses.byId(setup.WitchContract.heldHouseId())>>
 		@@.usebtn;<<linkreplace `'You have findings from ' + _pendingHouse.label + '.'`>>
 			<<goto "WitchEndContract">>
