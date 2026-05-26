@@ -454,9 +454,11 @@ $(document).one(":storyready", function () {
  *
  * <<hovertip "tooltip text" [maxWidthPx]>>...<</hovertip>> — wraps the
  * payload in a span that shows a positioned tooltip on hover/focus. The
- * positioner reflows on passage end, window resize/scroll, and the
- * sidebar-toggle click so the bubble never overflows its containing
- * box (including z-index / overflow-clipping ancestors). */
+ * bubble is position:fixed so it escapes every ancestor stacking
+ * context (otherwise sibling .housecard / hunt-tool-card layers with
+ * their own z-index would trap the popup behind them); the positioner
+ * computes viewport-relative top/left here and reflows on passage end,
+ * window resize/scroll, and the sidebar-toggle click. */
 window.UpdateHoverTipTxt = function (container) {
 	if (Engine.isIdle()) {
 		clearInterval(HTTIntervalID);
@@ -465,37 +467,34 @@ window.UpdateHoverTipTxt = function (container) {
 		} else {
 			container = $(container);
 		}
-		var i, id, top, left, parent, parentCenter, elementList, element, hoverPos, boxPos, zindex;
+		var i, id, top, left, parent, parentRect, parentCenterX,
+			elementList, element, hoverPos, boxPos;
 		elementList = container.find('span[id^="hoverTipTxt"]');
 		for (i = 0; i < elementList.length; i++) {
 			element = $(elementList[i]);
 			id = elementList[i].id.substring(11);
 			/* Find parent hoverTip item on the page. */
 			parent = $(container).find("#hoverTip" + (id));
-			/* Position bottom of hoverTipTxt just above the parent. */
-			top = Math.round(-element.outerHeight() - 6);
-			/* Center hoverTipTxt horizontally over parent. */
-			parentCenter = parent.outerWidth() / 2;
-			left = Math.round(parentCenter - element.outerWidth() / 2);
-			/* See if the hoverTip is contained by something with a higher z-index. */
-			zindex = element.css("z-index");
-			if (zindex === "auto") {
-				zindex = 0;
-			} else {
-				zindex = parseInt(zindex, 10);
-			}
+			parentRect = parent[0].getBoundingClientRect();
+			parentCenterX = parentRect.left + parent.outerWidth() / 2;
+			/* Position bottom of bubble 6px above the parent's top edge,
+			   centered horizontally over the parent. Coords are
+			   viewport-relative because the bubble is position:fixed. */
+			top = Math.round(parentRect.top - element.outerHeight() - 6);
+			left = Math.round(parentCenterX - element.outerWidth() / 2);
+			/* The bubble itself escapes ancestor clipping/stacking via
+			   position:fixed, but we still want to keep it visually
+			   inside a dialog-like containing box when one exists, so
+			   the user doesn't end up with a tooltip floating off the
+			   side of the dialog. Walk up looking for an overflow-
+			   clipping ancestor and clamp inside its bounding rect. */
 			while (parent.parent()[0] !== document) {
 				var pp = parent.parent();
-				var higherZ = (pp.css("z-index") !== "auto") && (parseInt(pp.css("z-index"), 10) > zindex);
-				/* Also treat overflow-clipping ancestors (e.g. the tool bar's
-				   .room has overflow-x:hidden) as containing boxes, so a
-				   tooltip centered over a left-edge item doesn't vanish
-				   behind the clip. */
 				var clips =
 					pp.css("overflow-x") !== "visible" ||
 					pp.css("overflow-y") !== "visible" ||
 					pp.css("overflow")   !== "visible";
-				if (higherZ || clips) {
+				if (clips) {
 					boxPos = pp[0].getBoundingClientRect();
 					break;
 				}
@@ -544,8 +543,10 @@ window.UpdateHoverTipTxt = function (container) {
 				element.css({ top: Math.round(top), left: Math.round(left) });
 			}
 			/* Keep the tail pointed at the parent icon even after the
-			   screen-edge / box-edge clamps slid the bubble sideways. */
-			element[0].style.setProperty("--tail-left", Math.round(parentCenter - left) + "px");
+			   screen-edge / box-edge clamps slid the bubble sideways.
+			   tail-left is the bubble-local x of the parent's viewport
+			   center. */
+			element[0].style.setProperty("--tail-left", Math.round(parentCenterX - left) + "px");
 		}
 	} else {
 		clearInterval(HTTIntervalID);

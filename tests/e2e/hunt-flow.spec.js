@@ -762,11 +762,14 @@ test.describe('E2E: hunt lifecycle', () => {
     // TemperatureHigh's colour branch only fires below tier 5 (tier 5
     // is plain). Tier 3 in the ghost's room without temperature
     // evidence picks the yellow branch — testable without rolling RNG
-    // because we pin the player into the lair room first.
+    // because we pin the player into the lair room first. Filter on
+    // the evidence object's .id (entries are Evidence objects, not
+    // raw strings) so the prune actually drops the temperature item
+    // regardless of which ghost the auto-roll lands on.
     await page.evaluate(() => {
       SugarCube.State.variables.equipment.temperature = 3;
       const ghost = SugarCube.setup.HuntController.activeGhost();
-      ghost.evidence = ghost.evidence.filter(e => e !== 'temperature');
+      ghost.evidence = ghost.evidence.filter(e => e.id !== 'temperature');
       SugarCube.setup.isGhostHere = () => true;
     });
 

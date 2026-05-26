@@ -1,7 +1,7 @@
 :: WitchSale [nobr] {"position":"1350,150","size":"100,100"}
 <div class="flexwrapper">
 <div class="housecard">
-<<image "ui/img/sanity-pills.png" "iconPx">><br>
+<<hovertip "Sanity pills. Carry them in your bag and pop one during a hunt to top your sanity back up.">><<image "ui/img/sanity-pills.png" "iconPx">><</hovertip>><br>
 <span class="priceAmount">30$</span><br>
 <<if setup.Mc.money() gte 30>>
 	@@.buyItemLink;<<link "Buy" "WitchSale">>
@@ -14,7 +14,7 @@
 </div>
 <div class="housecard">
 <<run setup.ToolController.initCrucifixIfNeeded()>>
-<<image "ui/img/crucifix.webp" "iconPx">><br>
+<<hovertip "Crucifix. Burns up in your hand to block a ghost attack -- one use per crucifix.">><<image "ui/img/crucifix.webp" "iconPx">><</hovertip>><br>
 <span class="priceAmount">50$</span><br>
 <<if setup.Mc.money() gte 50>>
 	@@.buyItemLink;<<link "Buy" "WitchSale">>
@@ -27,7 +27,7 @@
 </div>
 <div class="housecard">
 <<if setup.Witch.toolLevel("emf") eq 5>>
-	<<image "ui/img/emf.png" "iconPx">><br>
+	<<hovertip "EMF reader upgrade. Reads electromagnetic spikes when the ghost meddles with the room -- the better tier catches more spikes and stays lit longer.">><<image "ui/img/emf.png" "iconPx">><</hovertip>><br>
 	<span class="priceAmount">200$</span><br>
 	<<if setup.Mc.money() gte 200>>
 		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
@@ -39,7 +39,7 @@
 </div>
 <div class="housecard">
 <<if setup.Witch.toolLevel("temperature") eq 5>>
-	<<image "ui/img/thermometr.png" "iconPx">><br>
+	<<hovertip "Thermometer upgrade. Reads the room temperature so you can pin down the High Temperature evidence -- the better tier shows a colored result.">><<image "ui/img/thermometr.png" "iconPx">><</hovertip>><br>
 	<span class="priceAmount">100$</span><br>
 	<<if setup.Mc.money() gte 100>>
 		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
@@ -51,7 +51,7 @@
 </div>
 <div class="housecard">
 <<if setup.Witch.toolLevel("spiritbox") eq 5>>
-	<<image "ui/img/spiritbox.png" "iconPx">><br>
+	<<hovertip "Spirit box upgrade. Lets you ask a ghost questions and hear it answer through the static -- the better tier hits more often.">><<image "ui/img/spiritbox.png" "iconPx">><</hovertip>><br>
 	<span class="priceAmount">500$</span><br>
 	<<if setup.Mc.money() gte 500>>
 		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
@@ -63,7 +63,7 @@
 </div>
 <div class="housecard">
 <<if setup.Witch.toolLevel("gwb") eq 5>>
-	<<image "ui/img/gwb.png" "iconPx">><br>
+	<<hovertip "Ghost-writing book upgrade. Left open in a room, it can catch the ghost putting pen to paper -- the better tier rolls more often.">><<image "ui/img/gwb.png" "iconPx">><</hovertip>><br>
 	<span class="priceAmount">400$</span><br>
 	<<if setup.Mc.money() gte 400>>
 		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
@@ -75,7 +75,7 @@
 </div>
 <div class="housecard">
 <<if setup.Witch.toolLevel("glass") eq 5>>
-	<<image "ui/img/glass.png" "iconPx">><br>
+	<<hovertip "Magnifying glass upgrade. Hunts for ectoplasm stains the ghost leaves behind -- the better tier spots them more reliably.">><<image "ui/img/glass.png" "iconPx">><</hovertip>><br>
 	<span class="priceAmount">300$</span><br>
 	<<if setup.Mc.money() gte 300>>
 		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
@@ -87,7 +87,7 @@
 </div>
 <div class="housecard">
 <<if setup.Witch.toolLevel("uvl") eq 5>>
-	<<image "ui/img/uvl.png" "iconPx">><br>
+	<<hovertip "UV light upgrade. Reveals ghost handprints on furniture and doors -- the better tier holds the glow longer per activation.">><<image "ui/img/uvl.png" "iconPx">><</hovertip>><br>
 	<span class="priceAmount">400$</span><br>
 	<<if setup.Mc.money() gte 400>>
 		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
@@ -99,7 +99,7 @@
 </div>
 <div class="housecard">
 <<if setup.MonkeyPaw.canBuyWishList()>>
-	<<image "mechanics/cursedpossessions/monkey-paw/monkeypaw-page.jpg" "iconPx">><br>
+	<<hovertip "A torn page listing every wish the monkey paw will grant. Names the wishes, not what each one costs you.">><<image "mechanics/cursedpossessions/monkey-paw/monkeypaw-page.jpg" "iconPx">><</hovertip>><br>
 	@@.mc-thoughts; Monkey paw -- wishes list@@<br>
 	<span class="priceAmount">400$</span><br>
 	<<if setup.Mc.money() gte 400>>
@@ -112,7 +112,7 @@
 </div>
 <div class="housecard">
 <<if setup.MonkeyPaw.canBuyGuide()>>
-	<<image "mechanics/cursedpossessions/monkey-paw/monkeypaw-page.jpg" "iconPx">><br>
+	<<hovertip "The full grimoire entry on the monkey paw -- every wish and the price each one carries.">><<image "mechanics/cursedpossessions/monkey-paw/monkeypaw-page.jpg" "iconPx">><</hovertip>><br>
 	@@.mc-thoughts; Monkey paw -- full guide@@<br>
 	<span class="priceAmount">800$</span><br>
 	<<if setup.Mc.money() gte 800>>
@@ -125,7 +125,7 @@
 </div>
 <div class="housecard">
 <<if not setup.Witch.detectorBought()>>
-	<<image "ui/img/detector.png" "iconPx">><br>
+	<<hovertip "Paranormal detector. Highlights any furniture hiding cursed possessions, stolen clothes, or other tucked-away items.">><<image "ui/img/detector.png" "iconPx">><</hovertip>><br>
 	<span class="priceAmount">200$</span><br>
 	<<if setup.Mc.money() gte 200>>
 		@@.buyItemLink;<<link "Buy" "WitchSale">>

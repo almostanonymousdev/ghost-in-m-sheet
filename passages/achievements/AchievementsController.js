@@ -147,7 +147,21 @@ setup.Achievements = setup.Achievements || {};
 	   if you reloaded mid-hunt, you don't get the no-tools award). */
 	var huntFlags = null;
 	function resetHuntFlags() {
-		huntFlags = { caughtThisRun: false, toolsUsedThisRun: false };
+		/* houseEnterMinutes stays null until HOUSE_ENTER stamps the
+		   in-house clock; win.speed_banish gates on a real timestamp so
+		   pre-house bailouts can't qualify. */
+		huntFlags = {
+			caughtThisRun: false,
+			toolsUsedThisRun: false,
+			spiritboxUsedThisRun: false,
+			trapCount: 0,
+			driftCount: 0,
+			mimicRotateCount: 0,
+			houseEnterMinutes: null,
+			hadContractAtStart: setup.WitchContract.hasHeldContract(),
+			pawHeldAtStart: setup.MonkeyPaw.isFound(),
+			threeAmUnlocked: false
+		};
 	}
 
 	/* Hunt-bus wiring is deferred to :storyready because Tweego's
@@ -171,8 +185,38 @@ setup.Achievements = setup.Achievements || {};
 		});
 
 		setup.Hunt.on(E.POSSESS, function () { unlock('fail.possessed'); });
-		setup.Hunt.on(E.TRAP,    function () { unlock('disc.trap'); });
-		setup.Hunt.on(E.DRIFT,   function () { unlock('disc.drift'); });
+		setup.Hunt.on(E.TRAP, function () {
+			unlock('disc.trap');
+			if (huntFlags) {
+				huntFlags.trapCount += 1;
+				if (huntFlags.trapCount >= 2) unlock('disc.trap_twice');
+			}
+		});
+		setup.Hunt.on(E.DRIFT, function () {
+			unlock('disc.drift');
+			if (huntFlags) {
+				huntFlags.driftCount += 1;
+				if (huntFlags.driftCount >= 2) unlock('disc.drift_twice');
+			}
+		});
+		setup.Hunt.on(E.SENSOR_GLITCH, function () { unlock('disc.pants_on_fire'); });
+
+		setup.Hunt.on(E.SPIRITBOX_USED, function () {
+			if (huntFlags) huntFlags.spiritboxUsedThisRun = true;
+		});
+
+		setup.Hunt.on(E.MIMIC_ROTATE, function () {
+			if (huntFlags) huntFlags.mimicRotateCount += 1;
+		});
+
+		/* Stamp the in-house clock for win.speed_banish. HOUSE_ENTER fires
+		   from GhostStreet before the first in-house tick; resetToMidnight
+		   has already run by then, so the captured timestamp is the true
+		   "minute 0" for the hunt. */
+		setup.Hunt.on(E.HOUSE_ENTER, function () {
+			if (!huntFlags) return;
+			huntFlags.houseEnterMinutes = setup.Time.totalMinutes();
+		});
 
 		setup.Hunt.on(E.LOOT_TAKEN, function (ctx) {
 			if (!ctx) return;
@@ -182,12 +226,18 @@ setup.Achievements = setup.Achievements || {};
 
 		/* No "tool activated" event exists; sample tool state every TICK.
 		   TICK fires on every nav step / tool tick during a hunt, so this
-		   catches activation within a tick of it happening. */
+		   catches activation within a tick of it happening. The same tick
+		   also gates the witching-hour discovery -- only one fire per
+		   hunt, so the threeAmUnlocked latch keeps idempotent. */
 		setup.Hunt.on(E.TICK, function () {
 			if (!huntFlags) return;
 			if (setup.ToolController.isActivated('emf')
 				|| setup.ToolController.isActivated('uvl')) {
 				huntFlags.toolsUsedThisRun = true;
+			}
+			if (!huntFlags.threeAmUnlocked && setup.Time.hours() === 3) {
+				huntFlags.threeAmUnlocked = true;
+				unlock('disc.three_am');
 			}
 		});
 
@@ -201,11 +251,47 @@ setup.Achievements = setup.Achievements || {};
 			if (!ctx) { huntFlags = null; return; }
 			if (ctx.success) {
 				unlock('win.first');
-				if (huntFlags && !huntFlags.caughtThisRun)    unlock('win.nocaught');
-				if (huntFlags && !huntFlags.toolsUsedThisRun) unlock('win.notools');
+				if (huntFlags && !huntFlags.caughtThisRun)        unlock('win.nocaught');
+				if (huntFlags && !huntFlags.toolsUsedThisRun)     unlock('win.notools');
+				if (huntFlags && !huntFlags.spiritboxUsedThisRun) unlock('win.pacifist');
+
+				/* Empty Bag is the LOCKED_TOOLS modifier id (see
+				   passages/hunt/ModifiersController.js). */
+				if (setup.HuntController.hasModifier('locked_tools')) {
+					unlock('win.empty_bag');
+				}
+
+				/* Speed banish: < 60 in-house minutes between HOUSE_ENTER
+				   and HUNT_END_GRACEFUL. Skip when the start timestamp
+				   never landed (defensive — should always be set by then). */
+				if (huntFlags
+					&& huntFlags.houseEnterMinutes !== null
+					&& setup.Time.totalMinutes() - huntFlags.houseEnterMinutes < 60) {
+					unlock('win.speed_banish');
+				}
+
+				/* Carried the paw through a win without burning a wish.
+				   wishesLeft starts at 3 on resetHunt(); a value of 3 at
+				   hunt-end means no wish fired. isFound() being true
+				   confirms the player is actually holding the paw rather
+				   than having never picked it up. */
+				if (setup.MonkeyPaw.isFound()
+					&& setup.MonkeyPaw.wishesLeft() === 3) {
+					unlock('win.no_wishes');
+				}
 
 				var realName = setup.Ghosts && setup.Ghosts.huntRealName && setup.Ghosts.huntRealName();
 				if (realName === 'Mimic') unlock('win.mimic');
+				if (realName === 'Mare')  unlock('win.knocks');
+				/* Mimic face-off: rotateCount <= 1 means the disguise has
+				   not yet swapped past its first rolled value. The first
+				   PassageDone during a Mimic hunt always emits one
+				   MIMIC_ROTATE (initial seeding from lastChangeIntervalMimic
+				   = " "), so 0 is the unreachable case and 1 is "first
+				   face, never changed." */
+				if (realName === 'Mimic' && huntFlags && huntFlags.mimicRotateCount <= 1) {
+					unlock('win.faceoff');
+				}
 				if (realName)             unlock(bestiaryId(realName));
 			} else if (FR) {
 				if (ctx.failureReason === FR.SANITY)     unlock('fail.sanity');
@@ -213,6 +299,13 @@ setup.Achievements = setup.Achievements || {};
 				if (ctx.failureReason === FR.TIME)       unlock('fail.time');
 				if (ctx.failureReason === FR.FLED)       unlock('fail.fled');
 				if (ctx.failureReason === FR.ABANDON)    unlock('fail.abandon');
+				/* Cold feet: the FLED branch of a contracted hunt --
+				   the player signed a contract then walked back out.
+				   Distinct from fail.abandon (monkey-paw "leave" wish). */
+				if (ctx.failureReason === FR.FLED
+					&& huntFlags && huntFlags.hadContractAtStart) {
+					unlock('disc.cold_feet');
+				}
 			}
 			huntFlags = null;
 		}
@@ -241,6 +334,30 @@ setup.Achievements = setup.Achievements || {};
 
 		setup.StoryEvents.on(setup.StoryEvents.Event.CONTRACT_SIGNED, function () {
 			unlock('disc.good_girl');
+		});
+
+		setup.StoryEvents.on(setup.StoryEvents.Event.MODIFIER_BANNED, function () {
+			unlock('disc.naughty_list');
+		});
+
+		setup.StoryEvents.on(setup.StoryEvents.Event.REROLL_USED, function () {
+			unlock('disc.tempting_fate');
+		});
+
+		/* Take Two: pick up a sanity pill and swallow it before midnight
+		   rolls the day cursor. Both events carry { day } = dailySeed at
+		   the moment of the event; matching days proves "same day." A
+		   gained-then-used sequence within one day fires once and the
+		   counter resets so a subsequent pill on another day doesn't
+		   incorrectly fire from stale state. */
+		var lastPillGainedDay = null;
+		setup.StoryEvents.on(setup.StoryEvents.Event.SANITY_PILL_GAINED, function (ctx) {
+			lastPillGainedDay = ctx && ctx.day;
+		});
+		setup.StoryEvents.on(setup.StoryEvents.Event.SANITY_PILL_USED, function (ctx) {
+			if (ctx && lastPillGainedDay !== null && ctx.day === lastPillGainedDay) {
+				unlock('disc.take_two');
+			}
 		});
 	}
 	$(document).one(':storyready', registerStoryEventSubscriptions);

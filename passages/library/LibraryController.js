@@ -113,11 +113,17 @@ setup.Library = (function () {
 
 		// --- Mutations previously inline in library passages ------
 		removeEnergyToSearch: function () { setup.Mc.removeEnergy(1); },
-		markTipsBookFound:   function () { State.variables.foundTips = 1; },
+		markTipsBookFound:   function () {
+			State.variables.foundTips = true;
+			setup.Achievements.unlock('disc.library_card');
+		},
 		markComicsFound:     function () { State.variables.foundComics = 1; },
 		markBrookFound:      function () { State.variables.foundBrook = 1; },
 		meetBrookFirstTime:  function () { State.variables.meetBrook = 1; },
-		markDesecratedBookFound: function () { State.variables.foundDesecratedBook = 1; },
+		markDesecratedBookFound: function () {
+			State.variables.foundDesecratedBook = true;
+			setup.Achievements.unlock('disc.library_card');
+		},
 
 		// --- Torn pages -------------------------------------------
 		tornPageTips: function () { return tornPageCatalogue(); },

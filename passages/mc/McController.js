@@ -255,18 +255,17 @@ setup.Mc = (function () {
 			var R = setup.SanityDeltaResult;
 			var m = sv().mc;
 			m.sanity += delta;
+			var result = R.NORMAL;
 			if (m.sanity >= m.sanityMax) {
 				m.sanity = m.sanityMax;
-				setup.Ledger.recordSanity(m.sanity);
-				return R.CLAMPED;
-			}
-			if (m.sanity < 0) {
+				result = R.CLAMPED;
+			} else if (m.sanity < 0) {
 				m.sanity = 0;
-				setup.Ledger.recordSanity(m.sanity);
-				return R.COLLAPSED;
+				result = R.COLLAPSED;
 			}
+			m.sanityUp = m.sanity.toFixed(2);
 			setup.Ledger.recordSanity(m.sanity);
-			return R.NORMAL;
+			return result;
 		},
 
 		// --- addEnergy widget core --------------------------------
@@ -388,7 +387,15 @@ setup.Mc = (function () {
 		{ name: 'money', writeHook: function (_oldV, newV) {
 			setup.Ledger.recordMoney(newV);
 		} },
+		/* sanityUp is the rounded display string the sidebar sanity
+		   meter's label binds to ($mc.sanityUp). Every sanity mutation
+		   re-stamps it so the number on the bar stays in sync with the
+		   animated fill — without the hook, mid-passage refreshMeter
+		   calls would leave the label frozen at the previous value.
+		   Also mirrors the new live value into the ledger so cheat
+		   detection stays in lockstep with any direct setSanity write. */
 		{ name: 'sanity', add: false, writeHook: function (_oldV, newV) {
+			sv().mc.sanityUp = Number(newV || 0).toFixed(2);
 			setup.Ledger.recordSanity(newV);
 		} },
 		'sanityMax',

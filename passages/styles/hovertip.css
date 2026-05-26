@@ -12,8 +12,30 @@
 }
 
 .hoverTipTxt .hoverBox {
-	position: absolute;
+	/* position: fixed (not absolute) so the bubble escapes every
+	   ancestor stacking context -- otherwise siblings like the next
+	   .housecard with its own z-index trap the popup behind them.
+	   UpdateHoverTipTxt computes top/left in viewport coords to
+	   match. */
+	position: fixed;
 	visibility: hidden;
+}
+
+/* When the wrapper is hovered/focused, lift the whole atomic unit
+   AND its containing flex item into a high-z stacking context. The
+   wrapper alone isn't enough: containers like .housecard are flex
+   items, which honour z-index without needing position, so each
+   housecard's z-index: 2 traps the bubble inside the housecard's
+   own stacking context -- later-in-DOM housecards paint their icons
+   on top of the bubble. Lifting the housecard (via :has) on hover
+   pops the active card's stacking context above every peer. */
+.hoverTipTxt:hover,
+.hoverTipTxt:focus,
+.hoverTipTxt:focus-within,
+.housecard:has(.hoverTipTxt:hover),
+.housecard:has(.hoverTipTxt:focus),
+.housecard:has(.hoverTipTxt:focus-within) {
+	z-index: 100300;
 }
 
 .hoverTipTxt:hover .hoverBox,
@@ -32,7 +54,10 @@
 	border: #7f7f7f solid 2px;
 	border-radius: 6px;
 	box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.75);
-	z-index: 100;
+	/* Sits above SugarCube's #ui-dialog backdrop (100100) and the
+	   achievements toast (100200) so a tooltip is never hidden behind
+	   a higher-stacked piece of chrome. */
+	z-index: 100300;
 }
 
 .hoverTail::after {
@@ -44,7 +69,7 @@
 	border-width: 8px;
 	border-style: solid;
 	border-color: #7f7f7f transparent transparent transparent;
-	z-index: 100;
+	z-index: 100300;
 }
 
 .hoverBox a {

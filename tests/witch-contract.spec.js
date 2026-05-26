@@ -222,6 +222,93 @@ test.describe('WitchContract storefront', () => {
     expect(await callSetup(page, 'setup.WitchContract.resolveHeld(false)')).toBe(0);
   });
 
+  // --- Pending guess (deferred contract resolution) --------------------
+
+  test('hasPendingGuess() / pendingGuessGhost() default to no pending guess', async () => {
+    expect(await callSetup(page, 'setup.WitchContract.hasPendingGuess()')).toBe(false);
+    expect(await callSetup(page, 'setup.WitchContract.pendingGuessGhost()')).toBeNull();
+  });
+
+  test('markHeldPendingGuess() stamps the ghost identity on the held contract', async () => {
+    await page.evaluate(() => SugarCube.setup.WitchContract.cheatGrantContract('owaissa'));
+    expect(await callSetup(page, 'setup.WitchContract.hasPendingGuess()')).toBe(false);
+
+    await page.evaluate(() => SugarCube.setup.WitchContract.markHeldPendingGuess('Mare'));
+
+    expect(await callSetup(page, 'setup.WitchContract.hasPendingGuess()')).toBe(true);
+    expect(await callSetup(page, 'setup.WitchContract.pendingGuessGhost()')).toBe('Mare');
+    /* Stamp is non-destructive -- the rest of the held contract is intact. */
+    expect(await callSetup(page, 'setup.WitchContract.heldHouseId()')).toBe('owaissa');
+  });
+
+  test('markHeldPendingGuess() is a no-op when no contract is held', async () => {
+    await page.evaluate(() => SugarCube.setup.WitchContract.markHeldPendingGuess('Mare'));
+    expect(await callSetup(page, 'setup.WitchContract.hasHeldContract()')).toBe(false);
+    expect(await callSetup(page, 'setup.WitchContract.hasPendingGuess()')).toBe(false);
+  });
+
+  test('markHeldPendingGuess() ignores empty names', async () => {
+    await page.evaluate(() => SugarCube.setup.WitchContract.cheatGrantContract('owaissa'));
+    await page.evaluate(() => SugarCube.setup.WitchContract.markHeldPendingGuess(''));
+    expect(await callSetup(page, 'setup.WitchContract.hasPendingGuess()')).toBe(false);
+  });
+
+  test('settlePendingGuess(true) pays cash + tier XP and clears the held slot', async () => {
+    await page.evaluate(() => SugarCube.setup.WitchContract.cheatGrantContract('elm'));
+    await page.evaluate(() => SugarCube.setup.WitchContract.markHeldPendingGuess('Mare'));
+    await page.evaluate(() => { SugarCube.setup.Mc.setMoney(0); });
+    const xpBefore = await callSetup(page, 'setup.Mc.exp()');
+
+    const summary = await page.evaluate(() => SugarCube.setup.WitchContract.settlePendingGuess(true));
+
+    expect(summary.cashPayout).toBe(500); // elm contract payout
+    expect(summary.xp).toBe(25);          // elm tier xp
+    expect(summary.ghostName).toBe('Mare');
+    expect(await callSetup(page, 'setup.Mc.money()')).toBe(500);
+    expect(await callSetup(page, 'setup.WitchContract.hasHeldContract()')).toBe(false);
+    expect(await callSetup(page, 'setup.WitchContract.hasPendingGuess()')).toBe(false);
+    /* XP was actually granted (grantExp can also push lvl up; just
+       assert it changed from the pre-settle baseline). */
+    expect(await callSetup(page, 'setup.Mc.exp()')).not.toBe(xpBefore);
+  });
+
+  test('settlePendingGuess(false) burns the contract for no cash + no XP', async () => {
+    await page.evaluate(() => SugarCube.setup.WitchContract.cheatGrantContract('owaissa'));
+    await page.evaluate(() => SugarCube.setup.WitchContract.markHeldPendingGuess('Spirit'));
+    await page.evaluate(() => { SugarCube.setup.Mc.setMoney(0); });
+
+    const summary = await page.evaluate(() => SugarCube.setup.WitchContract.settlePendingGuess(false));
+
+    expect(summary.cashPayout).toBe(0);
+    expect(summary.xp).toBe(0);
+    expect(summary.ghostName).toBe('Spirit');
+    expect(await callSetup(page, 'setup.Mc.money()')).toBe(0);
+    expect(await callSetup(page, 'setup.WitchContract.hasHeldContract()')).toBe(false);
+  });
+
+  test('settlePendingGuess() is a no-op when no pending guess is stashed', async () => {
+    /* Held contract with no ghost stamp shouldn't resolve -- only
+       contracts that survived a failed hunt can be settled at the
+       desk via this path. */
+    await page.evaluate(() => SugarCube.setup.WitchContract.cheatGrantContract('owaissa'));
+    const summary = await page.evaluate(() => SugarCube.setup.WitchContract.settlePendingGuess(true));
+    expect(summary).toEqual({ cashPayout: 0, xp: 0, ghostName: null });
+    /* Held slot untouched -- the contract remains buyable's-equivalent. */
+    expect(await callSetup(page, 'setup.WitchContract.hasHeldContract()')).toBe(true);
+  });
+
+  test('sleepAdvance() keeps the pending-guess stamp intact', async () => {
+    /* The whole point of the pending-guess mechanic: sleep, wake up,
+       come back to Khadija the next day. The held contract survives
+       sleep already (covered in another test); the ghost-identity
+       stamp must survive too. */
+    await page.evaluate(() => SugarCube.setup.WitchContract.cheatGrantContract('owaissa'));
+    await page.evaluate(() => SugarCube.setup.WitchContract.markHeldPendingGuess('Mare'));
+    await page.evaluate(() => SugarCube.setup.Home.sleepAdvance(8));
+    expect(await callSetup(page, 'setup.WitchContract.hasPendingGuess()')).toBe(true);
+    expect(await callSetup(page, 'setup.WitchContract.pendingGuessGhost()')).toBe('Mare');
+  });
+
   test('feeFor() / payoutFor() expose the templated terms', async () => {
     expect(await callSetup(page, 'setup.WitchContract.feeFor("owaissa")')).toBe(30);
     expect(await callSetup(page, 'setup.WitchContract.payoutFor("owaissa")')).toBe(200);
@@ -270,13 +357,21 @@ test.describe('HuntController.endHunt() payout split', () => {
     expect(await callSetup(page, 'setup.WitchContract.hasHeldContract()')).toBe(false);
   });
 
-  test('contract hunt (failure) burns the contract for no payout', async () => {
+  test('contract hunt (failure, no wrong-call) defers the contract for a later guess at the desk', async () => {
+    /* Non-WRONG_CALL contract failures (caught, sanity, exhaustion,
+       time, fled, abandon) stash the true ghost identity on the held
+       slot instead of burning the contract. The player can walk back
+       to Khadija the next day, make her call, and still earn the
+       contract payout. The hunt itself ends (no cash / no ecto at
+       endHunt time); money + XP only resolve at settlePendingGuess. */
     await page.evaluate(() => SugarCube.setup.WitchContract.cheatGrantContract('elm'));
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: 'elm' }));
+    const trueName = await callSetup(page, 'setup.HuntController.ghostName()');
 
     const moneyBefore = await callSetup(page, 'setup.Mc.money()');
     const ectoplasmBefore = await callSetup(page, 'setup.HuntController.ectoplasm()');
 
+    await page.evaluate(() => SugarCube.setup.HuntController.markFailure(SugarCube.setup.HuntController.FailureReason.CAUGHT));
     const summary = await page.evaluate(() => SugarCube.setup.HuntController.endHunt(false));
 
     expect(summary.isContractHunt).toBe(true);
@@ -284,7 +379,28 @@ test.describe('HuntController.endHunt() payout split', () => {
     expect(summary.ectoplasmPayout).toBe(0);
     expect(await callSetup(page, 'setup.Mc.money()')).toBe(moneyBefore);
     expect(await callSetup(page, 'setup.HuntController.ectoplasm()')).toBe(ectoplasmBefore);
+    /* Contract retained with pending-guess stamp -- run is gone but
+       the held slot keeps the ghost identity. */
+    expect(await callSetup(page, 'setup.WitchContract.hasHeldContract()')).toBe(true);
+    expect(await callSetup(page, 'setup.WitchContract.hasPendingGuess()')).toBe(true);
+    expect(await callSetup(page, 'setup.WitchContract.pendingGuessGhost()')).toBe(trueName);
+    expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(false);
+  });
+
+  test('contract hunt wrong-call burns the contract immediately (no pending guess)', async () => {
+    /* WRONG_CALL is the only contract failure that burns the contract
+       on endHunt -- the player already made her guess at the desk
+       and the contract is spent. */
+    await page.evaluate(() => SugarCube.setup.WitchContract.cheatGrantContract('elm'));
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: 'elm' }));
+
+    await page.evaluate(() => SugarCube.setup.HuntController.markFailure(SugarCube.setup.HuntController.FailureReason.WRONG_CALL));
+    const summary = await page.evaluate(() => SugarCube.setup.HuntController.endHunt(false));
+
+    expect(summary.isContractHunt).toBe(true);
+    expect(summary.cashPayout).toBe(0);
     expect(await callSetup(page, 'setup.WitchContract.hasHeldContract()')).toBe(false);
+    expect(await callSetup(page, 'setup.WitchContract.hasPendingGuess()')).toBe(false);
   });
 
   test('rogue hunt (success) pays cash AND ectoplasm', async () => {

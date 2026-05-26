@@ -330,6 +330,20 @@ test.describe('setup.Achievements', () => {
 		expect(result).toBe(true);
 	});
 
+	test('Hunt-bus integration: SENSOR_GLITCH unlocks disc.pants_on_fire', async () => {
+		/* Regression: the Raiju EMF glitch was emitting SENSOR_GLITCH but
+		   no subscriber was unlocking the matching catalogue entry, so
+		   players watching the sensor read 66 (or any other 0-100 glitch
+		   value) never got the achievement. */
+		const result = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			H.emit(H.Event.SENSOR_GLITCH, { tool: 'emf' });
+			return A.has('disc.pants_on_fire');
+		});
+		expect(result).toBe(true);
+	});
+
 	test('Hunt-bus integration: LOOT_TAKEN with kind="cash" unlocks disc.loot.cash', async () => {
 		const result = await page.evaluate(() => {
 			const A = SugarCube.setup.Achievements;
@@ -461,5 +475,362 @@ test.describe('setup.Achievements', () => {
 			return SugarCube.setup.Achievements.unlock('disc.drift');
 		});
 		expect(blocked).toBe(false);
+	});
+
+	/* --- Hunt-end win/discovery wiring --------------------------------
+	   Each test emits Hunt.START to reset the per-run tracker, sets up
+	   the state the trigger reads ($run modifiers, MonkeyPaw stage,
+	   clock), emits any mid-hunt events the achievement requires, then
+	   emits the matching HUNT_END_GRACEFUL / HUNT_END_ASSAULTED ctx.
+	   Direct .emit() rather than driving the real lifecycle keeps the
+	   spec focused on the subscriber contract, not on end-to-end flow. */
+
+	test('win.pacifist unlocks on a successful hunt with no spiritbox press', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			H.emit(H.Event.START, {});
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true });
+			return A.has('win.pacifist');
+		});
+		expect(has).toBe(true);
+	});
+
+	test('win.pacifist does NOT unlock when the spiritbox was pressed mid-hunt', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			H.emit(H.Event.START, {});
+			H.emit(H.Event.SPIRITBOX_USED, {});
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true });
+			return A.has('win.pacifist');
+		});
+		expect(has).toBe(false);
+	});
+
+	test('win.empty_bag unlocks on a successful hunt rolled with locked_tools', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			H.emit(H.Event.START, {});
+			SugarCube.State.variables.run = SugarCube.State.variables.run || {};
+			SugarCube.State.variables.run.modifiers = ['locked_tools'];
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true });
+			return A.has('win.empty_bag');
+		});
+		expect(has).toBe(true);
+	});
+
+	test('win.empty_bag does NOT unlock without the locked_tools modifier', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			H.emit(H.Event.START, {});
+			SugarCube.State.variables.run = SugarCube.State.variables.run || {};
+			SugarCube.State.variables.run.modifiers = ['pheromones'];
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true });
+			return A.has('win.empty_bag');
+		});
+		expect(has).toBe(false);
+	});
+
+	test('win.speed_banish unlocks when the hunt ends < 60 minutes after HOUSE_ENTER', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			SugarCube.State.variables.hours = 0;
+			SugarCube.State.variables.minutes = 0;
+			H.emit(H.Event.START, {});
+			H.emit(H.Event.HOUSE_ENTER, {});
+			SugarCube.State.variables.hours = 0;
+			SugarCube.State.variables.minutes = 45;
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true });
+			return A.has('win.speed_banish');
+		});
+		expect(has).toBe(true);
+	});
+
+	test('win.speed_banish does NOT unlock when the hunt drags past an in-house hour', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			SugarCube.State.variables.hours = 0;
+			SugarCube.State.variables.minutes = 0;
+			H.emit(H.Event.START, {});
+			H.emit(H.Event.HOUSE_ENTER, {});
+			SugarCube.State.variables.hours = 1;
+			SugarCube.State.variables.minutes = 5;
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true });
+			return A.has('win.speed_banish');
+		});
+		expect(has).toBe(false);
+	});
+
+	test('win.faceoff unlocks on a Mimic win when the disguise rotates at most once', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			H.emit(H.Event.START, {});
+			SugarCube.State.variables.run = { ghostName: 'Mimic', disguiseName: 'Mimic', evidence: [] };
+			/* One MIMIC_ROTATE is the initial seeding from the Mimic
+			   huntHook + the first PassageDone roll; that's the floor,
+			   not "the face changed." */
+			H.emit(H.Event.MIMIC_ROTATE, { disguiseName: 'Spirit' });
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true });
+			return A.has('win.faceoff');
+		});
+		expect(has).toBe(true);
+	});
+
+	test('win.faceoff does NOT unlock when the Mimic rotates a second time', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			H.emit(H.Event.START, {});
+			SugarCube.State.variables.run = { ghostName: 'Mimic', disguiseName: 'Mimic', evidence: [] };
+			H.emit(H.Event.MIMIC_ROTATE, { disguiseName: 'Spirit' });
+			H.emit(H.Event.MIMIC_ROTATE, { disguiseName: 'Shade' });
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true });
+			return A.has('win.faceoff');
+		});
+		expect(has).toBe(false);
+	});
+
+	test('win.knocks unlocks on a Mare banish', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			H.emit(H.Event.START, {});
+			SugarCube.State.variables.run = { ghostName: 'Mare', disguiseName: 'Mare', evidence: [] };
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true });
+			return A.has('win.knocks');
+		});
+		expect(has).toBe(true);
+	});
+
+	test('win.knocks does NOT unlock on a non-Mare banish', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			H.emit(H.Event.START, {});
+			SugarCube.State.variables.run = { ghostName: 'Phantom', disguiseName: 'Phantom', evidence: [] };
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true });
+			return A.has('win.knocks');
+		});
+		expect(has).toBe(false);
+	});
+
+	test('win.no_wishes unlocks when the paw is carried through a win without spending', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			SugarCube.setup.MonkeyPaw.resetHunt();
+			SugarCube.setup.MonkeyPaw.markFound();
+			H.emit(H.Event.START, {});
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true });
+			return A.has('win.no_wishes');
+		});
+		expect(has).toBe(true);
+	});
+
+	test('win.no_wishes does NOT unlock when a wish was burned mid-hunt', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			SugarCube.setup.MonkeyPaw.resetHunt();
+			SugarCube.setup.MonkeyPaw.markFound();
+			H.emit(H.Event.START, {});
+			SugarCube.State.variables.wishesCount = 2;
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true });
+			return A.has('win.no_wishes');
+		});
+		expect(has).toBe(false);
+	});
+
+	test('win.no_wishes does NOT unlock when the paw was never carried', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			SugarCube.setup.MonkeyPaw.resetHunt();
+			H.emit(H.Event.START, {});
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true });
+			return A.has('win.no_wishes');
+		});
+		expect(has).toBe(false);
+	});
+
+	test('disc.three_am unlocks on TICK when the clock reads hour 3', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			H.emit(H.Event.START, {});
+			SugarCube.State.variables.hours = 3;
+			SugarCube.State.variables.minutes = 15;
+			H.emit(H.Event.TICK, { roomId: 'room_1', minutes: 15 });
+			return A.has('disc.three_am');
+		});
+		expect(has).toBe(true);
+	});
+
+	test('disc.three_am does NOT unlock on TICKs outside the witching hour', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			H.emit(H.Event.START, {});
+			SugarCube.State.variables.hours = 2;
+			SugarCube.State.variables.minutes = 59;
+			H.emit(H.Event.TICK, { roomId: 'room_1', minutes: 59 });
+			SugarCube.State.variables.hours = 4;
+			SugarCube.State.variables.minutes = 0;
+			H.emit(H.Event.TICK, { roomId: 'room_1', minutes: 0 });
+			return A.has('disc.three_am');
+		});
+		expect(has).toBe(false);
+	});
+
+	test('disc.trap_twice unlocks on the second TRAP in one hunt (first TRAP fires only disc.trap)', async () => {
+		const result = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			H.emit(H.Event.START, {});
+			H.emit(H.Event.TRAP, {});
+			const afterFirst = A.has('disc.trap_twice');
+			H.emit(H.Event.TRAP, {});
+			const afterSecond = A.has('disc.trap_twice');
+			return { afterFirst, afterSecond, trap: A.has('disc.trap') };
+		});
+		expect(result.afterFirst).toBe(false);
+		expect(result.afterSecond).toBe(true);
+		expect(result.trap).toBe(true);
+	});
+
+	test('disc.drift_twice unlocks on the second DRIFT in one hunt', async () => {
+		const result = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			H.emit(H.Event.START, {});
+			H.emit(H.Event.DRIFT, {});
+			const afterFirst = A.has('disc.drift_twice');
+			H.emit(H.Event.DRIFT, {});
+			return { afterFirst, afterSecond: A.has('disc.drift_twice') };
+		});
+		expect(result.afterFirst).toBe(false);
+		expect(result.afterSecond).toBe(true);
+	});
+
+	test('disc.trap_twice / disc.drift_twice reset across hunts (counts do not carry over)', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			H.emit(H.Event.START, {});
+			H.emit(H.Event.TRAP, {});
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: false, failureReason: 'time' });
+			/* Fresh hunt: a single TRAP must not push it over the line. */
+			H.emit(H.Event.START, {});
+			H.emit(H.Event.TRAP, {});
+			return A.has('disc.trap_twice');
+		});
+		expect(has).toBe(false);
+	});
+
+	test('disc.cold_feet unlocks when a contracted hunt ends with FLED', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			SugarCube.setup.Mc.setMoney(10000);
+			SugarCube.setup.WitchContract.refresh();
+			const houseId = SugarCube.setup.WitchContract.offered()[0].houseId;
+			SugarCube.setup.WitchContract.buyContract(houseId);
+			H.emit(H.Event.START, {});
+			const FR = SugarCube.setup.HuntController.FailureReason;
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: false, failureReason: FR.FLED });
+			return A.has('disc.cold_feet');
+		});
+		expect(has).toBe(true);
+	});
+
+	test('disc.cold_feet does NOT unlock when no contract was held (rogue-hunt flee)', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			SugarCube.setup.WitchContract.clearHeld();
+			H.emit(H.Event.START, {});
+			const FR = SugarCube.setup.HuntController.FailureReason;
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: false, failureReason: FR.FLED });
+			return A.has('disc.cold_feet');
+		});
+		expect(has).toBe(false);
+	});
+
+	/* --- StoryEvents-bus wiring -------------------------------------- */
+
+	test('StoryEvents.MODIFIER_BANNED unlocks disc.naughty_list', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const SE = SugarCube.setup.StoryEvents;
+			SE.emit(SE.Event.MODIFIER_BANNED, { id: 'pheromones' });
+			return A.has('disc.naughty_list');
+		});
+		expect(has).toBe(true);
+	});
+
+	test('StoryEvents.REROLL_USED unlocks disc.tempting_fate', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const SE = SugarCube.setup.StoryEvents;
+			SE.emit(SE.Event.REROLL_USED, {});
+			return A.has('disc.tempting_fate');
+		});
+		expect(has).toBe(true);
+	});
+
+	test('disc.take_two unlocks when a sanity pill is gained and used on the same day', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const SE = SugarCube.setup.StoryEvents;
+			SE.emit(SE.Event.SANITY_PILL_GAINED, { day: 4242 });
+			SE.emit(SE.Event.SANITY_PILL_USED,   { day: 4242 });
+			return A.has('disc.take_two');
+		});
+		expect(has).toBe(true);
+	});
+
+	test('disc.take_two does NOT unlock when the pill is swallowed on a later day', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const SE = SugarCube.setup.StoryEvents;
+			SE.emit(SE.Event.SANITY_PILL_GAINED, { day: 4242 });
+			SE.emit(SE.Event.SANITY_PILL_USED,   { day: 9999 });
+			return A.has('disc.take_two');
+		});
+		expect(has).toBe(false);
+	});
+
+	test('disc.take_two does NOT unlock when SANITY_PILL_USED fires with no prior gain', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const SE = SugarCube.setup.StoryEvents;
+			SE.emit(SE.Event.SANITY_PILL_USED, { day: 4242 });
+			return A.has('disc.take_two');
+		});
+		expect(has).toBe(false);
+	});
+
+	/* --- Library wiring ---------------------------------------------- */
+
+	test('disc.library_card unlocks on markTipsBookFound', async () => {
+		const has = await page.evaluate(() => {
+			SugarCube.setup.Library.markTipsBookFound();
+			return SugarCube.setup.Achievements.has('disc.library_card');
+		});
+		expect(has).toBe(true);
+	});
+
+	test('disc.library_card unlocks on markDesecratedBookFound', async () => {
+		const has = await page.evaluate(() => {
+			SugarCube.setup.Library.markDesecratedBookFound();
+			return SugarCube.setup.Achievements.has('disc.library_card');
+		});
+		expect(has).toBe(true);
 	});
 });

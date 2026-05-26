@@ -21,7 +21,7 @@
 
 	&emsp;You hold them out anyway. She doesn't take them. Just looks. Then nods, once, like she's seen something either reassuring or annoying.<br>
 
-	&emsp;@@.notmc-speech; Steady. You'll do for a first hunt. Whether you'll do for a second is up to the first.@@<br>
+	&emsp;@@.notmc-speech; Steady. You'll do for a first hunt. Whether you'll do for a second depends on surviving the first.@@<br>
 
 	&emsp;@@.mc-speech; That's a low bar.@@<br>
 
@@ -44,14 +44,19 @@
 	@@.mc-action; Now you can receive contracts for identifying the type of ghost.@@
 	<br>
 	<<run setup.Witch.markShopVisited()>>
+	@@.backbtn;[[Continue|WitchInside]]@@
 <<elseif not setup.Witch.isFirstVisit()>>
 	@@.notmc-speech; <<= setup.Mc.name()>>. Still upright. Good.@@<br>
-	/* Pending contract -- the player walked out of the house with a
-		contract still in flight. Surface a prominent link to the
-		guess desk so the next click closes the loop. The check
-		matches HuntController's isContractHunt: held contract + active
-		run + the run's static house lines up with the held contract. */
-	<<if setup.HuntController.isActive() and setup.WitchContract.hasHeldContract() and setup.HuntController.staticHouseId() eq setup.WitchContract.heldHouseId()>>
+	/* Pending contract -- either the player walked out of the house
+		with the run still active (and the held key matches the run's
+		static house), or a prior contract hunt ended without a call
+		(caught, sanity, exhaustion, time, fled, abandon) and the
+		true-ghost identity is stashed on the held slot for a deferred
+		guess. Either way, surface the findings link so the next click
+		closes the loop. */
+	<<set _activeContractHunt to setup.HuntController.isActive() and setup.WitchContract.hasHeldContract() and setup.HuntController.staticHouseId() eq setup.WitchContract.heldHouseId()>>
+	<<set _pendingGuess to setup.WitchContract.hasPendingGuess()>>
+	<<if _activeContractHunt or _pendingGuess>>
 		<<set _pendingHouse to setup.HuntHouses.byId(setup.WitchContract.heldHouseId())>>
 		@@.usebtn;<<linkreplace `'You have findings from ' + _pendingHouse.label + '.'`>>
 			<<goto "WitchEndContract">>
@@ -85,8 +90,8 @@
 	<</if>>
 
 	/* Turn-in stays outside the lvl-2 gate so legacy saves (pre
-	   loot-gate, commit e2ebd835) can always offload an item the
-	   player picked up before the quest was officially offered. */
+		loot-gate, commit e2ebd835) can always offload an item the
+		player picked up before the quest was officially offered. */
 	<<if setup.Witch.hasCursedItemToTurnIn()>>
 		<<linkreplace "@@.usebtn; I found the cursed object.@@">>
 			@@.notmc-speech; Hand it here. Carefully.@@<br>
@@ -110,7 +115,7 @@
 		<</linkreplace>>
 	<<elseif setup.Mc.lvl() lte 1>>
 		@@.mc-speech; I just need to call the type, right?@@<br>
-		@@.notmc-speech; For now. We'll add more once you stop almost getting killed.@@ <br>
+		@@.notmc-speech; For now. We'll add more once I'm more confident you'll survive.@@ <br>
 		@@.warningtext; (Req. lvl 2+)@@<br>
 	<<else>>
 		<<if setup.Witch.canOfferCursedItemQuest()>>
@@ -134,7 +139,7 @@
 	@@.mc-speech;<<linkreplace "What's on the board?">>
 		<<goto "WitchContracts">>
 	<</linkreplace>>@@<br>
-	@@.mc-speech;<<linkreplace "Show me what you've got.">>
+	@@.mc-speech;<<linkreplace "What do you have that I can use?">>
 		<<goto "WitchSale">>
 	<</linkreplace>>@@<br>
 	<<if setup.Witch.ectoplasmUnlocked()>>

@@ -36,41 +36,58 @@
 <<set _modifiers to setup.Modifiers.activeList()>>
 <<set _staticHouseId to setup.HuntController.staticHouseId()>>
 <<set _staticHouse to _staticHouseId ? setup.HuntHouses.byId(_staticHouseId) : null>>
+<<set _huntHouseImage to (_staticHouse and _staticHouse.image) or 'ui/img/hunt-house.jpg'>>
 
-@@.location; <<= setup.HuntController.address().formatted>>@@<br>
-<<if _staticHouse and _staticHouse.description>>
-	@@.mc-thoughts; <<= _staticHouse.description>>@@<br>
-<<else>>
-	@@.mc-thoughts; You stand on the porch a beat longer than you need to. Key in your pocket, still cold. That part won't last.@@<br>
-<</if>>
-<br>
-<<if _modifiers.length>>
-	@@.location; Modifiers@@<br>
-	<div id="hunt-lobby-modifiers">
-		<<for _m range _modifiers>>
-			· <span class="usebtn" @title="_m.description"><<= _m.name>></span> -- <<= _m.description>><br>
-		<</for>>
+<<bodyBackground `'assets/' + _huntHouseImage`>>
+
+<div class="hunt-lobby">
+	<div class="hunt-lobby-panel">
+		<div class="hunt-lobby-header">
+			<div class="hunt-lobby-address">@@.location;<<= setup.HuntController.address().formatted>>@@</div>
+			<<if _staticHouse and _staticHouse.description>>
+				<div class="hunt-lobby-flavor">@@.mc-thoughts;<<= _staticHouse.description>>@@</div>
+			<<else>>
+				<div class="hunt-lobby-flavor">@@.mc-thoughts;You stand on the porch a beat longer than you need to. Key in your pocket, still cold. That part won't last.@@</div>
+			<</if>>
+		</div>
+
+		<<if _modifiers.length>>
+			<div class="hunt-lobby-section">
+				<div class="hunt-lobby-section-title">@@.location;Modifiers@@</div>
+				<div id="hunt-lobby-modifiers" class="hunt-lobby-modifiers">
+					<<for _m range _modifiers>>
+						· <span class="usebtn" @title="_m.description"><<= _m.name>></span> -- <<= _m.description>><br>
+					<</for>>
+				</div>
+				<span id="hunt-lobby-reroll" class="hunt-lobby-reroll"><<huntLobbyRerollControl>></span>
+			</div>
+		<</if>>
+
+		<div class="hunt-lobby-section">
+			<div class="hunt-lobby-section-title">@@.location;Objective@@</div>
+			<div class="hunt-lobby-objective">@@.mc-thoughts;<<= (_staticHouse and _staticHouse.objectiveDescription) || setup.HuntController.objectiveDescription(_run.objective) || _run.objective>>@@</div>
+		</div>
+
+		<<if setup.HuntController.huntAllowsCompanions() and setup.Companion and setup.Companion.hasActiveCompanion()>>
+			<<set _ac to setup.Companion.active()>>
+			<<if _ac>>
+				<<run setup.Companion.autoAttachOnHuntStart()>>
+				<div class="hunt-lobby-section hunt-lobby-companion-row">
+					@@.mc-thoughts;<<= _ac.name>> is waiting for you out front.@@<br>
+					@@.usebtn;
+						<<link `"Talk to " + _ac.pronObj` "CompanionMain">>
+						<</link>>
+					@@
+				</div>
+			<</if>>
+		<</if>>
+
+		<div class="hunt-lobby-actions">
+			@@.movebtn;[[Enter the hunt|HuntRun]]@@
+			@@.backbtn;[[Cancel|CityMap][setup.HuntController.end()]]@@
+		</div>
 	</div>
-	<span id="hunt-lobby-reroll"><<huntLobbyRerollControl>></span>
-	<br>
-<</if>>
-@@.location; Objective@@<br>
-@@.mc-thoughts; <<= (_staticHouse and _staticHouse.objectiveDescription) || setup.HuntController.objectiveDescription(_run.objective) || _run.objective>>@@<br>
-<br>
-<<if setup.HuntController.huntAllowsCompanions() and setup.Companion and setup.Companion.hasActiveCompanion()>>
-	<<set _ac to setup.Companion.active()>>
-	<<if _ac>>
-		<<run setup.Companion.autoAttachOnHuntStart()>>
-		@@.mc-thoughts; <<= _ac.name>> is waiting for you out front.@@<br>
-		@@.usebtn;
-			<<link `"Talk to " + _ac.pronObj` "CompanionMain">>
-			<</link>>
-		@@<br>
-		<br>
-	<</if>>
-<</if>>
-@@.movebtn; [[Enter the hunt|HuntRun]]@@<br>
-@@.backbtn; [[Cancel|CityMap][setup.HuntController.end()]]@@
+</div>
 
 :: HuntRun [nobr] {"position":"3100,200","size":"100,100"}
 /* Placeholder hunt gameplay laid out to mirror the regular ghost

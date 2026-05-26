@@ -38,6 +38,85 @@
 	gap: 0.5em;
 }
 
+/* ===== Hunt Lobby (HuntStart) =====
+   Arrival screen for a queued hunt. The body background carries the
+   house image via <<bodyBackground>>; this panel layers a translucent
+   dark scrim with backdrop blur so the address / modifiers / objective
+   / action stack stays readable against any exterior shot. */
+.hunt-lobby {
+	max-width: 640px;
+	margin: 1.5em auto 2em;
+	padding: 0 0.5em;
+}
+
+.hunt-lobby-panel {
+	background-color: rgba(10, 12, 18, 0.62);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 10px;
+	padding: 1.5em 1.75em;
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+	backdrop-filter: blur(6px);
+	-webkit-backdrop-filter: blur(6px);
+}
+
+.hunt-lobby-header {
+	border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+	padding-bottom: 0.85em;
+	margin-bottom: 1em;
+}
+
+.hunt-lobby-address {
+	margin-bottom: 0.35em;
+}
+
+.hunt-lobby-flavor {
+	margin-top: 0.25em;
+}
+
+.hunt-lobby-section {
+	margin-bottom: 1em;
+}
+
+.hunt-lobby-section:last-child {
+	margin-bottom: 0;
+}
+
+.hunt-lobby-section-title {
+	margin-bottom: 0.3em;
+}
+
+.hunt-lobby-modifiers {
+	padding-left: 0.25em;
+}
+
+.hunt-lobby-reroll {
+	display: inline-block;
+	margin-top: 0.35em;
+}
+
+.hunt-lobby-objective {
+	border-left: 3px solid var(--color-nav-blue);
+	padding: 0.35em 0.85em;
+	background-color: rgba(255, 255, 255, 0.04);
+	border-radius: 0 4px 4px 0;
+}
+
+.hunt-lobby-companion-row {
+	border-top: 1px dashed rgba(255, 255, 255, 0.12);
+	padding-top: 0.75em;
+}
+
+.hunt-lobby-actions {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 1em;
+	margin-top: 1.25em;
+	padding-top: 0.85em;
+	border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
 /* Hidden sink for tool-renderer output. The renderers still need to
  * run on tick completion (state mutations, <<deferGoto>> hits,
  * setup.activateTool / setup.tickTimedTool side effects), so the

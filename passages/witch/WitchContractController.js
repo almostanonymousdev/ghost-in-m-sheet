@@ -15,9 +15,15 @@
  * State shape:
  *   $contracts = {
  *     offered:        [{ houseId, fee, payout }, ...],
- *     held:           null | { houseId, fee, payout },
+ *     held:           null | { houseId, fee, payout, ghostName? },
  *     lastRefreshDay: int (last $dailySeed the offered list was rolled at)
  *   }
+ *
+ * `held.ghostName` is the "pending guess" marker. A held contract
+ * without it is a fresh, un-hunted contract; one with it survived a
+ * failed hunt (caught/possessed/sanity/exhaustion/time/fled/abandon --
+ * anything but a wrong call at the desk) and the player can still
+ * walk back to Khadija to make the call.
  */
 setup.WitchContract = (function () {
 	var OWNED_VARS = Object.freeze(['contracts']);
@@ -171,6 +177,52 @@ setup.WitchContract = (function () {
 			return payout;
 		},
 		clearHeld: function () { state().held = null; },
+
+		// --- Pending guess (deferred contract resolution) ---------
+		/* Stamp the true ghost identity onto the held contract so a
+		   contract hunt that ended without a call (caught, sanity,
+		   exhaustion, time, fled, abandon -- anything but a wrong
+		   call) can still be guessed at Khadija's desk the next day.
+		   No-op when no contract is held or no name was provided. */
+		markHeldPendingGuess: function (ghostName) {
+			var h = state().held;
+			if (!h || !ghostName) return;
+			h.ghostName = ghostName;
+		},
+		/* True iff the held contract carries a stashed ghost identity
+		   from a prior failed hunt -- the player can still call the
+		   ghost even though the run itself has ended. */
+		hasPendingGuess: function () {
+			var h = state().held;
+			return !!(h && h.ghostName);
+		},
+		/* The stashed true-ghost name on the held contract, or null. */
+		pendingGuessGhost: function () {
+			var h = state().held;
+			return (h && h.ghostName) || null;
+		},
+		/* Settle a pending-guess contract at Khadija's desk after a
+		   failed hunt. `success` (correct call) pays the contract's
+		   cash + tier XP; failure burns the contract for nothing.
+		   Clears the held slot either way. Returns a summary the
+		   caller can render: { cashPayout, xp, ghostName }. Pays
+		   money + XP directly so the call site doesn't need to
+		   re-derive them from the contract tier. */
+		settlePendingGuess: function (success) {
+			var h = state().held;
+			if (!h || !h.ghostName) return { cashPayout: 0, xp: 0, ghostName: null };
+			var ghostName = h.ghostName;
+			var cashPayout = success ? h.payout : 0;
+			var xp = this.xpRewardFor(h.houseId, success);
+			state().held = null;
+			if (cashPayout > 0 && setup.Mc && typeof setup.Mc.addMoney === 'function') {
+				setup.Mc.addMoney(cashPayout);
+			}
+			if (xp > 0 && setup.Mc && typeof setup.Mc.grantExp === 'function') {
+				setup.Mc.grantExp(xp);
+			}
+			return { cashPayout: cashPayout, xp: xp, ghostName: ghostName };
+		},
 
 		// --- Cheat / test helpers ---------------------------------
 		/* Stamp a held contract for `houseId` without charging the
