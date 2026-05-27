@@ -12,11 +12,17 @@
  * and the underlying mechanics never drift apart. */
 setup.HauntConditions = (function () {
 	var LUST_FUEL_THRESHOLD = 50;   // passive evidence bonus when lust >= this
-	var BAIT_INITIAL_LUST = 20;   // lust the bait click stamps onto the MC
-	var BAIT_LUST_PER_STEP = 10;   // lust accrued each remaining bait step
+	var BAIT_INITIAL_LUST_MIN = 10;   // lust the bait click stamps onto the MC (rolled)
+	var BAIT_INITIAL_LUST_MAX = 50;
+	var BAIT_LUST_PER_STEP_MIN = 5;   // lust accrued each remaining bait step (rolled per step)
+	var BAIT_LUST_PER_STEP_MAX = 15;
 	var BAIT_STEPS = 3;    // nav ticks the ghost is pinned to you
 	var BAIT_ORGASM_SANITY = 10;   // sanity lost when bait pushes lust past the cap
 	var ORGASM_COOLDOWN_STEPS = 3;  // aftershock window seeded after any orgasm trigger
+
+	function randInt(lo, hi) {
+		return lo + Math.floor(Math.random() * (hi - lo + 1));
+	}
 
 	/* Energy as the pacing gate: every nav tick inside a haunted house
 	 * burns ENERGY_PER_STEP, capping the total room-search budget per
@@ -213,15 +219,17 @@ setup.HauntConditions = (function () {
 		}
 
 		if (snap.baitActive) {
-			snap.toolChanceBonus += 20;
 			snap.prowlChanceBonus += 20;
 			snap.sanityPerStep -= 1;
-			snap.lustPerStep += BAIT_LUST_PER_STEP;
+			/* Per-step lust is rolled fresh in applyTickEffects so each tick
+			   varies; the HUD reads the midpoint here for a stable readout,
+			   and the contributor detail shows the range. */
+			snap.lustPerStep += (BAIT_LUST_PER_STEP_MIN + BAIT_LUST_PER_STEP_MAX) / 2;
 			snap.contributors.push({
 				label: "Baiting (" + snap.baitStepsRemain + ")",
 				color: "#cc66ff",
-				detail: "ghost pinned here · tools +20% · prowl +20% · lust +"
-					+ BAIT_LUST_PER_STEP + "/step"
+				detail: "ghost pinned here · prowl +20% · lust +"
+					+ BAIT_LUST_PER_STEP_MIN + "-" + BAIT_LUST_PER_STEP_MAX + "/step"
 			});
 		}
 
@@ -258,14 +266,23 @@ setup.HauntConditions = (function () {
 			}
 		}
 		if (snap.lustPerStep !== 0) {
+			/* Bait's per-step lust is variable: snapshot pushed the midpoint
+			   for HUD continuity, but the actual delta is rolled fresh here.
+			   Swap the midpoint out for the roll before applying so the cap
+			   check and the addLust call both see the real value. */
+			var lustDelta = snap.lustPerStep;
+			if (snap.baitActive) {
+				var midpoint = (BAIT_LUST_PER_STEP_MIN + BAIT_LUST_PER_STEP_MAX) / 2;
+				lustDelta = lustDelta - midpoint + randInt(BAIT_LUST_PER_STEP_MIN, BAIT_LUST_PER_STEP_MAX);
+			}
 			/* Cap-overflow during bait routes to BaitOrgasm — see
 			 * consumeBaitOrgasm. Only the bait flow flags this; other
 			 * lust sources (topless/nude clothing tick) just clamp. */
-			var baitAtCap = snap.baitActive && (mc.lust + snap.lustPerStep) >= 100;
+			var baitAtCap = snap.baitActive && (mc.lust + lustDelta) >= 100;
 			if (baitAtCap) {
 				V.baitOrgasmPending = true;
 			}
-			setup.Mc.addLust(snap.lustPerStep);
+			setup.Mc.addLust(lustDelta);
 		}
 		if (snap.energyPerStep !== 0) {
 			setup.Mc.addEnergy(snap.energyPerStep);
@@ -346,10 +363,11 @@ setup.HauntConditions = (function () {
 	}
 
 	/* Player-driven bait: spend energy, pin the ghost to the player's
-	 * room for BAIT_STEPS nav ticks, and stamp BAIT_INITIAL_LUST onto
-	 * the MC. The +20 can itself trip an orgasm when lust was already
-	 * at 100 — the caller should check isBaitOrgasmPending() right
-	 * after to route to BaitOrgasm. Returns true when the start fires. */
+	 * room for BAIT_STEPS nav ticks, and stamp a rolled chunk of lust
+	 * onto the MC. The initial dose can itself trip an orgasm when lust
+	 * was already at 100 — the caller should check isBaitOrgasmPending()
+	 * right after to route to BaitOrgasm. Returns true when the start
+	 * fires. */
 	function startBait() {
 		var V = State.variables;
 		var mc = V.mc;
@@ -363,7 +381,7 @@ setup.HauntConditions = (function () {
 		V.baitActive = true;
 		V.baitStepsRemain = BAIT_STEPS;
 		var atCap = mc.lust >= 100;
-		setup.Mc.addLust(BAIT_INITIAL_LUST);
+		setup.Mc.addLust(randInt(BAIT_INITIAL_LUST_MIN, BAIT_INITIAL_LUST_MAX));
 		if (atCap) {
 			V.baitOrgasmPending = true;
 		}
@@ -443,8 +461,10 @@ setup.HauntConditions = (function () {
 
 	return {
 		LUST_FUEL_THRESHOLD: LUST_FUEL_THRESHOLD,
-		BAIT_INITIAL_LUST: BAIT_INITIAL_LUST,
-		BAIT_LUST_PER_STEP: BAIT_LUST_PER_STEP,
+		BAIT_INITIAL_LUST_MIN: BAIT_INITIAL_LUST_MIN,
+		BAIT_INITIAL_LUST_MAX: BAIT_INITIAL_LUST_MAX,
+		BAIT_LUST_PER_STEP_MIN: BAIT_LUST_PER_STEP_MIN,
+		BAIT_LUST_PER_STEP_MAX: BAIT_LUST_PER_STEP_MAX,
 		BAIT_STEPS: BAIT_STEPS,
 		BAIT_ORGASM_SANITY: BAIT_ORGASM_SANITY,
 		ENERGY_PER_STEP: ENERGY_PER_STEP,

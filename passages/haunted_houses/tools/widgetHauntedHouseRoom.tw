@@ -56,7 +56,7 @@ with no active $run. */
 <<widget "huntActionBar">>
 	<<if setup.HuntController.isHuntActive()>>
 		<<if setup.HauntConditions.canBait()>>
-			<span @title="'+' + setup.HauntConditions.BAIT_INITIAL_LUST + ' lust, -' + setup.HauntConditions.ENERGY_COST_BAIT + ' energy'">@@.huntActionLink;<<link "Bait ghost">>
+			<span @title="'+' + setup.HauntConditions.BAIT_INITIAL_LUST_MIN + '-' + setup.HauntConditions.BAIT_INITIAL_LUST_MAX + ' lust, -' + setup.HauntConditions.ENERGY_COST_BAIT + ' energy'">@@.huntActionLink;<<link "Bait ghost">>
 				<<run setup.HauntConditions.startBait()>>
 				<<refreshMeter 'sanity' 'energy' 'lust'>>
 				<<if setup.HauntConditions.isBaitOrgasmPending()>>
