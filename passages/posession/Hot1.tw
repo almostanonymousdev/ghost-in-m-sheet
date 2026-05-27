@@ -1,13 +1,13 @@
 :: Hot1 [nobr] {"position":"1525,1150","size":"100,100"}
 <<switch setup.Posession.pantiesState() + "," + setup.Posession.braState()>>
 <<case "worn,worn">>
-	<<video "characters/mc/underwear-on.webm">>
+	<<video "characters/mc/jeansp.mp4">>
 <<case "worn,not worn">>
-	<<video "characters/mc/bra-off.webm" { width: "40%", controls: false }>>
+	<<video "mechanics/steal-clothes/3.mp4" { width: "40%", controls: false }>>
 <<case "not worn,worn">>
-	<<video "characters/mc/bra-on.webm">>
+	<<video "characters/mc/skirtnp.mp4">>
 <<case "not worn,not worn">>
-	<<video "characters/mc/underwear-off.webm" { width: "40%", controls: false }>>
+	<<video "mechanics/steal-clothes/2.mp4" { width: "40%", controls: false }>>
 <</switch>>
 <<run ["rememberBottomOuter", "rememberTopOuter"].forEach(function(k) {
 var v = State.variables[k];
