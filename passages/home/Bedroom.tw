@@ -78,6 +78,7 @@
 	@@.enterbtn;[[Bathroom]]@@<br>
 	@@.enterbtn;[[Alarm clock|AlarmClock]]@@<br>
 	@@.enterbtn;[[Trophy shelf|TrophyShelf]]@@<br>
+	@@.enterbtn;[[Flashbacks|Flashbacks]]@@<br>
 	<<if setup.CursedItems.isItemCursed("bed")>>
 		@@.usebtn;<<link "Sleep" "CursedBedEvent">>
 		<</link>>@@<br>

@@ -95,30 +95,34 @@ setup.STAT_CONFIG = {
 <</widget>>
 
 <<widget "addTime">>
-	<<set _mins to _args[0]>>
-	<<set _crossedMidnight to setup.addTime(_mins)>>
-	<<if _crossedMidnight>><<run setup.Tick.resetCooldowns()>><</if>>
-	<<done>>
-		<<replace "#time">><<= setup.Time.display()>><</replace>>
-	<</done>>
+	<<if not setup.Flashbacks.isReplaying()>>
+		<<set _mins to _args[0]>>
+		<<set _crossedMidnight to setup.addTime(_mins)>>
+		<<if _crossedMidnight>><<run setup.Tick.resetCooldowns()>><</if>>
+		<<done>>
+			<<replace "#time">><<= setup.Time.display()>><</replace>>
+		<</done>>
+	<</if>>
 <</widget>>
 
 <<widget "addStat">>
-	<<set _statCfg to setup.STAT_CONFIG[_args[0]]>>
-	<<set _statOutcome to _statCfg.apply(_args[1])>>
-	<<refreshMeter _args[0]>>
-	<<if _statCfg.outcomeGoto>>
-		<<set _statTarget to _statCfg.outcomeGoto(_statOutcome)>>
-		<<if _statTarget>><<goto _statTarget>><</if>>
-	<</if>>
-	<<if _statCfg.outcomeMessages>>
-		<<for _statMsg range _statCfg.outcomeMessages(_statOutcome)>>
-			<<if _statMsg.icon>>
-				<span @class="_statMsg.style"><span class="evidenceText">Your <<statIcon _statMsg.icon>> <<= _statMsg.text>></span></span><br>
-			<<else>>
-				<span @class="_statMsg.style"><span class="evidenceText"><<= _statMsg.text>></span></span><br>
-			<</if>>
-		<</for>>
+	<<if not setup.Flashbacks.isReplaying()>>
+		<<set _statCfg to setup.STAT_CONFIG[_args[0]]>>
+		<<set _statOutcome to _statCfg.apply(_args[1])>>
+		<<refreshMeter _args[0]>>
+		<<if _statCfg.outcomeGoto>>
+			<<set _statTarget to _statCfg.outcomeGoto(_statOutcome)>>
+			<<if _statTarget>><<goto _statTarget>><</if>>
+		<</if>>
+		<<if _statCfg.outcomeMessages>>
+			<<for _statMsg range _statCfg.outcomeMessages(_statOutcome)>>
+				<<if _statMsg.icon>>
+					<span @class="_statMsg.style"><span class="evidenceText">Your <<statIcon _statMsg.icon>> <<= _statMsg.text>></span></span><br>
+				<<else>>
+					<span @class="_statMsg.style"><span class="evidenceText"><<= _statMsg.text>></span></span><br>
+				<</if>>
+			<</for>>
+		<</if>>
 	<</if>>
 <</widget>>
 
@@ -129,9 +133,11 @@ setup.STAT_CONFIG = {
 <<widget "addEnergy">><<addStat 'energy' _args[0]>><</widget>>
 
 <<widget "addLustByPart">>
-	<<set _lustBase to _args[0] !== undefined ? _args[0] : 2>>
-	<<run setup.Mc.addLustByPart(setup.Events.currentArgForRandomizer(), _lustBase)>>
-	<<refreshMeter 'lust'>>
+	<<if not setup.Flashbacks.isReplaying()>>
+		<<set _lustBase to _args[0] !== undefined ? _args[0] : 2>>
+		<<run setup.Mc.addLustByPart(setup.Events.currentArgForRandomizer(), _lustBase)>>
+		<<refreshMeter 'lust'>>
+	<</if>>
 <</widget>>
 
 /* refreshMeter -- repaint one or more sidebar HUD meters from the current

@@ -114,6 +114,14 @@
 		// catalogue ids; values are { at: <epoch-ms> }. Absent on
 		// saves predating the achievement system -- defaults to none.
 		achievements:  function () { return {}; },
+		// Bedroom flashback gallery -- per-save map of scene ids the
+		// MC has lived through, plus the currently-replaying entry.
+		// Absent on saves predating the gallery; defaults to empty.
+		// No heuristic backfill from other controllers: legacy saves
+		// start the gallery empty and fill in as scenes are
+		// re-experienced. Unlock state is driven by the
+		// setup.SceneEvents.VIEWED bus.
+		flashbacks:    function () { return { seen: {}, active: null }; },
 		// Seed for the *next* hunt. Rotated after each run end so
 		// the GhostStreet card / HuntStart lobby preview a fresh
 		// address every attempt.
@@ -734,7 +742,7 @@
 		'jobMoneySuccessed', 'jobMoneyFailed',
 		'ghostInfoCollected', 'knowledgeUsed',
 		'highpriestess', 'bansheeAbility', 'cthulionAbility',
-		'achievements', 'meta',
+		'achievements', 'meta', 'flashbacks',
 
 		// --- Companion stat rows + relationship flags -----------
 		'companion',

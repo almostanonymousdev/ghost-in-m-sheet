@@ -50,6 +50,7 @@ setup.Game = (function () {
 		s.tentacles = {};
 		s.webcam = {};
 		s.summoning = {};
+		s.flashbacks = { seen: {}, active: null };
 
 		// --- Bedroom alarm clock ------------------------------
 		// When enabled, sleeping in the bedroom (and post-event

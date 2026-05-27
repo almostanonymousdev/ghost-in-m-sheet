@@ -1,0 +1,50 @@
+:: Flashbacks [nobr] {"position":"800,900","size":"100,100"}
+<<set _seen = setup.Flashbacks.seenCount()>>
+<<set _total = setup.Flashbacks.totalCount()>>
+<<set _groups = setup.Flashbacks.byLocation()>>
+
+@@.location;Flashbacks@@<br>
+<br>
+<div class="flashback-gallery-summary">Remembered: _seen / _total</div>
+<br>
+
+<<if _seen eq 0>>
+	@@.mc-thoughts; You sit on the edge of the bed and try to put your finger on a memory worth keeping. Nothing rises. Maybe later -- once you've actually lived something.@@<br>
+	<br>
+<<else>>
+	@@.mc-thoughts; You close your eyes. Pick one. Let it play.@@<br>
+	<br>
+<</if>>
+
+<div class="flashback-gallery">
+<<for _section, _entries range _groups>>
+	<div class="flashback-section">
+		<h3 class="flashback-section-title">_section</h3>
+		<div class="flashback-grid">
+			<<for _entry range _entries>>
+				<<capture _entry>>
+					<<set _seenFlag = setup.Flashbacks.hasSeen(_entry.id)>>
+					<<set _title = _seenFlag ? _entry.title : "???">>
+					<<set _hint  = _seenFlag ? _entry.hint  : "A memory you haven't earned yet.">>
+					<div @class="'flashback-card ' + (_seenFlag ? 'unlocked' : 'locked')" @title="_title + '\n' + _hint">
+						<div class="flashback-card-text">
+							<div class="flashback-card-name">_title</div>
+							<div class="flashback-card-hint">_hint</div>
+						</div>
+						<<if _seenFlag>>
+							<div class="flashback-card-action">
+								<<link "Replay" "FlashbackEnter">>
+									<<run setup.Flashbacks.enterReplay(_entry.id)>>
+								<</link>>
+							</div>
+						<</if>>
+					</div>
+				<</capture>>
+			<</for>>
+		</div>
+	</div>
+<</for>>
+</div>
+
+<br>
+@@.backbtn;[[Bedroom]]@@<br>

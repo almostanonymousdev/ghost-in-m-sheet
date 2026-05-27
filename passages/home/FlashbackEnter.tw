@@ -1,0 +1,12 @@
+:: FlashbackEnter [nobr noreturn] {"position":"900,900","size":"100,100"}
+/* Transition passage: the Flashbacks gallery stamps $flashbacks.active
+   via the link click handler, then SugarCube routes here. We forward
+   to the scene's source passage so the replay starts. The catalogued
+   scene is whitelisted by the Flashbacks replay-containment handler
+   so the redirect doesn't bounce us straight back. */
+<<set _flashbackEntry = setup.Flashbacks.activeEntry()>>
+<<if _flashbackEntry>>
+	<<goto _flashbackEntry.scenePassage>>
+<<else>>
+	<<goto "Flashbacks">>
+<</if>>
