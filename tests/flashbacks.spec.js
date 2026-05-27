@@ -241,6 +241,38 @@ test.describe('setup.Flashbacks', () => {
 		expect(await page.evaluate(() => SugarCube.setup.Flashbacks.isReplaying())).toBe(false);
 	});
 
+	test('cheatUnlockAll marks every catalogue entry as seen', async ({ game: page }) => {
+		const result = await page.evaluate(() => {
+			SugarCube.State.variables.flashbacks = { seen: {}, active: null };
+			const F = SugarCube.setup.Flashbacks;
+			const before = F.seenCount();
+			F.cheatUnlockAll();
+			return {
+				before:   before,
+				after:    F.seenCount(),
+				total:    F.totalCount(),
+				allSeen:  F.all().every(e => F.hasSeen(e.id))
+			};
+		});
+		expect(result.before).toBe(0);
+		expect(result.after).toBe(result.total);
+		expect(result.allSeen).toBe(true);
+	});
+
+	test('cheatUnlockAll is idempotent (running twice does not double-count)', async ({ game: page }) => {
+		const result = await page.evaluate(() => {
+			SugarCube.State.variables.flashbacks = { seen: {}, active: null };
+			const F = SugarCube.setup.Flashbacks;
+			F.cheatUnlockAll();
+			const first = F.seenCount();
+			F.cheatUnlockAll();
+			const second = F.seenCount();
+			return { first: first, second: second, total: F.totalCount() };
+		});
+		expect(result.first).toBe(result.total);
+		expect(result.second).toBe(result.total);
+	});
+
 	test('default state is seeded by initState for new games', async ({ game: page }) => {
 		const bundle = await getVar(page, 'flashbacks');
 		expect(bundle).toBeDefined();

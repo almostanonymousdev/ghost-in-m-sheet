@@ -426,6 +426,10 @@ $(document).one(":storyready", function () {
 			{ label: "Companion lust (+100)",               fire: function () { setup.Companion.addLust(100); } }
 		]);
 
+		appendGroup($root, "Flashbacks", [
+			{ label: "Unlock all flashback scenes", fire: function () { setup.Flashbacks.cheatUnlockAll(); } }
+		]);
+
 		appendGroup($root, "Hunting", [
 			{ label: "Sanity pills (+30)",            fire: function () { setup.Mc.addSanity(30); } },
 			{ label: "Drain companion sanity (-10)",  fire: function () { setup.Companion.drainSanity(10); } },

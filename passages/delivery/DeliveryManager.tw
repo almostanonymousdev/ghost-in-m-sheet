@@ -171,18 +171,24 @@
 		<br>
 		@@.mc-thoughts; When you come back to the room, you are still folded over an armrest in a delivery-company office, and Jerry is still inside you, disgustingly self-assured. The math is unchanged.@@<br>
 		<br>
+		<<include "DeliveryManagerSexOutro">>
 	<</linkreplace>>
 <<else>>
 	@@.mc-thoughts; Your body decides to participate, in the limited way it can be made to. You hate that about your body. Nerves don't ask if you like the person before they do their job. The couch creaks under both of you on a count you didn't agree to.@@<br>
 	<br>
+	<<include "DeliveryManagerSexOutro">>
 <</if>>
-<br>
-@@.notmc-speech; <i>He finishes with a sound like air leaving a couch cushion. Fitting.</i> Hnnng. Oof. Atta girl.@@<br>
-<br>
-@@.mc-thoughts; You straighten up. Your knees register a complaint. You pull your jeans up by the belt loops try to keep your mind off the invasion of Jerry's powdery soldiers.@@<br>
-<br>
-<<set _r to setup.Delivery.managerSceneReward('sex')>>
-<<addLust _r.lust>>
-<<gainXP _r.exp _r.corruption _r.money>>
-@@.backbtn;[[Leave|DeliveryHub]] @@
-<<run setup.Delivery.startManagerBJCooldown()>>
+
+:: DeliveryManagerSexOutro [nobr] {"position":"1300,1500","size":"100,100"}
+<<linkreplace "@@.mc-thoughts;~just be done with it~@@">>
+	<br>
+	@@.notmc-speech; <i>He finishes with a sound like air leaving a couch cushion. Fitting.</i> Hnnng. Oof. Atta girl.@@<br>
+	<br>
+	@@.mc-thoughts; You straighten up. Your knees register a complaint. You pull your jeans up by the belt loops try to keep your mind off the invasion of Jerry's powdery soldiers.@@<br>
+	<br>
+	<<set _r to setup.Delivery.managerSceneReward('sex')>>
+	<<addLust _r.lust>>
+	<<gainXP _r.exp _r.corruption _r.money>>
+	@@.backbtn;[[Leave|DeliveryHub]] @@
+	<<run setup.Delivery.startManagerBJCooldown()>>
+<</linkreplace>>

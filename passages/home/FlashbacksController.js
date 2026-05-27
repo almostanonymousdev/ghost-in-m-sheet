@@ -187,6 +187,16 @@ setup.Flashbacks = (function () {
 		b.active = null;
 	}
 
+	/* Cheat hook: mark every catalogued scene seen. Wired into the
+	   in-game cheat dialog so a tester can open the gallery without
+	   having to grind through each scene's unlock path. Goes through
+	   markSeen so the no-op-on-duplicate semantics are preserved. */
+	function cheatUnlockAll() {
+		CATALOGUE.forEach(function (entry) {
+			markSeen(entry.id);
+		});
+	}
+
 	/* Replay containment. Distinct from the auto-mark subscriber
 	   (which lives on the SceneEvents bus, below): this handler only
 	   exists to keep a replay pinned to its source passage. Any
@@ -250,6 +260,7 @@ setup.Flashbacks = (function () {
 		activeEntry:   activeEntry,
 		isReplaying:   isReplaying,
 		enterReplay:   enterReplay,
-		exitReplay:    exitReplay
+		exitReplay:    exitReplay,
+		cheatUnlockAll: cheatUnlockAll
 	};
 })();
