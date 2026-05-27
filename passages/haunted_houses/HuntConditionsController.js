@@ -210,11 +210,11 @@ setup.HauntConditions = (function () {
 			snap.toolChanceBonus += 10;
 			snap.toolWindowBonus += 5;
 			snap.prowlChanceBonus += 5;
-			snap.sanityPerStep -= 1;
+			snap.sanityPerStep -= 3;
 			snap.contributors.push({
 				label: "Overcharged",
 				color: "#ffaa33",
-				detail: "tools +10%, +5 min · prowl +5% · sanity -1/step"
+				detail: "tools +10%, +5 min · prowl +5% · sanity -3/step"
 			});
 		}
 
