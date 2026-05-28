@@ -1397,6 +1397,61 @@ setup.HuntController = (function () {
 		return (run && run.exitLock && run.exitLock.unlockBy) || null;
 	});
 
+	/* Drop the exit lock from the active run. The trap stays put
+	   (run.trapped still suppresses drift) so the ghost remains
+	   pinned even after the door is unsealed. Returns true if a
+	   lock was cleared, false if nothing was locked. */
+	var clearExitLock = guarded(false, function () {
+		var run = active();
+		if (!run || !run.exitLock) return false;
+		run.exitLock = null;
+		return true;
+	});
+
+	/* Trap the player in their current room. Used by Monkey Paw trap
+	   tier 3, where the wish drops the ghost on top of you and seals
+	   the room. Cleared by the same cursed-item sacrifice that opens
+	   the front door (both locks share the cursedItem key). */
+	var lockCurrentRoom = guarded(false, function () {
+		var run = active();
+		if (!run) return false;
+		run.roomLock = true;
+		return true;
+	});
+
+	/* True iff the player can't step out of the current room.
+	   HuntLifecycle reads this to hide every neighbor nav link. */
+	var isRoomLocked = guarded(false, function () {
+		var run = active();
+		return !!(run && run.roomLock);
+	});
+
+	/* Drop the room lock from the active run. Returns true if a
+	   lock was cleared, false otherwise. */
+	var clearRoomLock = guarded(false, function () {
+		var run = active();
+		if (!run || !run.roomLock) return false;
+		run.roomLock = false;
+		return true;
+	});
+
+	/* Sacrifice a carried cursed item to break a Monkey Paw seal.
+	   Valid only when at least one cursedItem-keyed lock is up
+	   (front-door exitLock and/or room lock). Clears both in one
+	   shot so trap tier 3 (door + room both sealed) costs a single
+	   item, not two. Refuses dawn-only exit locks. Returns the
+	   cleared type flag on success, null otherwise. */
+	var sacrificeCursedItemAtDoor = guarded(null, function () {
+		var doorOnCursedItem = exitLockReason() === 'cursedItem';
+		var roomLocked = isRoomLocked();
+		if (!doorOnCursedItem && !roomLocked) return null;
+		if (!setup.Witch.hasCursedItemToTurnIn()) return null;
+		var cleared = setup.Witch.consumeCarriedCursedItem();
+		if (doorOnCursedItem) clearExitLock();
+		if (roomLocked) clearRoomLock();
+		return cleared;
+	});
+
 	/* Runs are one-shot, so banning a house is a no-op. */
 	function banActiveContext() {
 		return null;
@@ -1580,6 +1635,11 @@ setup.HuntController = (function () {
 		isGhostTrapped: isGhostTrapped,
 		isExitLocked: isExitLocked,
 		exitLockReason: exitLockReason,
+		clearExitLock: clearExitLock,
+		lockCurrentRoom: lockCurrentRoom,
+		isRoomLocked: isRoomLocked,
+		clearRoomLock: clearRoomLock,
+		sacrificeCursedItemAtDoor: sacrificeCursedItemAtDoor,
 		banActiveContext: banActiveContext,
 		streetExitPassage: streetExitPassage,
 		possessionPassage: possessionPassage,

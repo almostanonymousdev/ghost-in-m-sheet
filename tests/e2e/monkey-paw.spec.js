@@ -121,7 +121,7 @@ test.describe('Monkey Paw wishes', () => {
     expect(await callSetup(page, 'setup.MonkeyPaw.wishesLeft()')).toBe(1);
   });
 
-  test('trapTheGhost tier 3: -40 sanity, +0.4 tempCorr, unlockBy cursedItem, snaps ghost into player room', async ({ game: page }) => {
+  test('trapTheGhost tier 3: -40 sanity, +0.4 tempCorr, unlockBy cursedItem, snaps ghost into player room, locks the room', async ({ game: page }) => {
     await setupHunt(page, 'Shade');
     await primeWish(page, { wishesCount: 1 });
     const target = await page.evaluate(() => {
@@ -136,12 +136,27 @@ test.describe('Monkey Paw wishes', () => {
     expect(result.corrDelta).toBe(0.4);
     expect(result.doorUnlockBy).toBe('cursedItem');
     expect(result.drewGhost).toBe(true);
+    expect(result.roomSealed).toBe(true);
     expect(await callSetup(page, 'setup.Mc.sanity()')).toBe(40);
     expect(await callSetup(page, 'setup.Mc.tempCorr()')).toBeCloseTo(0.4);
     expect(await callSetup(page, 'setup.HuntController.isGhostTrapped()')).toBe(true);
     expect(await getVar(page, 'run.exitLock')).toEqual({ unlockBy: 'cursedItem' });
+    expect(await callSetup(page, 'setup.HuntController.isRoomLocked()')).toBe(true);
     expect(await callSetup(page, 'setup.HuntController.ghostRoomId()')).toBe(target);
     expect(await callSetup(page, 'setup.MonkeyPaw.wishesLeft()')).toBe(0);
+  });
+
+  test('trapTheGhost tier 1 and 2 do not lock the player in their current room', async ({ game: page }) => {
+    /* Only tier 3 drops the ghost on you; tiers 1 and 2 still let
+       you walk the hallway. */
+    await setupHunt(page, 'Shade');
+    await primeWish(page, { wishesCount: 3 });
+    await callSetup(page, 'setup.MonkeyPaw.activate("trapTheGhost")');
+    expect(await callSetup(page, 'setup.HuntController.isRoomLocked()')).toBe(false);
+
+    await primeWish(page, { wishesCount: 2 });
+    await callSetup(page, 'setup.MonkeyPaw.activate("trapTheGhost")');
+    expect(await callSetup(page, 'setup.HuntController.isRoomLocked()')).toBe(false);
   });
 
   test('trapGhost stops periodic drift so the ghost stays put for the rest of the run', async ({ game: page }) => {
@@ -214,6 +229,209 @@ test.describe('Monkey Paw wishes', () => {
     const passageAfterTrap = await page.locator('#passages').innerHTML();
     expect(passageAfterTrap).not.toContain('HuntOutside');
     expect(passageAfterTrap).toMatch(/door is sealed/i);
+  });
+
+  test('sealed door (cursedItem lock) prompts for a sacrifice when the MC is carrying one', async ({ game: page }) => {
+    /* Trap t1/t3 stamp unlockBy=cursedItem. If the player is
+       carrying a witch-quest cursed item, the sealed-door hallway
+       must offer a way to give it up to break the seal. */
+    await setupHunt(page, 'Shade');
+    await primeWish(page, { wishesCount: 3 });
+    await callSetup(page, 'setup.HuntController.setCurrentRoom("room_0")');
+    await callSetup(page, 'setup.MonkeyPaw.activate("trapTheGhost")');
+    await callSetup(page, 'setup.Witch.cheatGrantCursedItem("dildo")');
+
+    await goToPassage(page, 'HuntRun');
+    const html = await page.locator('#passages').innerHTML();
+    expect(html).toMatch(/door is sealed/i);
+    expect(html).toMatch(/offer the cursed item to the door/i);
+  });
+
+  test('sealed door (cursedItem lock) hints at the cursed-item option when MC has none', async ({ game: page }) => {
+    /* When the lock is cursedItem-keyed but the MC is empty-handed
+       the door still seals; the UI flags the requirement so the
+       player knows what to look for. */
+    await setupHunt(page, 'Shade');
+    await primeWish(page, { wishesCount: 3 });
+    await callSetup(page, 'setup.HuntController.setCurrentRoom("room_0")');
+    await callSetup(page, 'setup.MonkeyPaw.activate("trapTheGhost")');
+    expect(await callSetup(page, 'setup.Witch.hasCursedItemToTurnIn()')).toBe(false);
+
+    await goToPassage(page, 'HuntRun');
+    const html = await page.locator('#passages').innerHTML();
+    expect(html).toMatch(/door is sealed/i);
+    expect(html).toMatch(/cursed object might break the seal/i);
+    expect(html).not.toMatch(/offer the cursed item to the door/i);
+  });
+
+  test('sealed door (dawn lock) tells the player to wait, never offers a sacrifice', async ({ game: page }) => {
+    /* Trap t2 locks the door until dawn; carrying a cursed item
+       must NOT bypass it, otherwise the dawn-only variant collapses
+       into the cursedItem variant. */
+    await setupHunt(page, 'Shade');
+    await primeWish(page, { wishesCount: 2 });
+    await callSetup(page, 'setup.HuntController.setCurrentRoom("room_0")');
+    await callSetup(page, 'setup.MonkeyPaw.activate("trapTheGhost")');
+    await callSetup(page, 'setup.Witch.cheatGrantCursedItem("dildo")');
+
+    await goToPassage(page, 'HuntRun');
+    const html = await page.locator('#passages').innerHTML();
+    expect(html).toMatch(/wait out the dark/i);
+    expect(html).not.toMatch(/offer the cursed item to the door/i);
+    expect(html).not.toContain('HuntOutside');
+  });
+
+  test('sacrificeCursedItemAtDoor consumes the carried item and unlocks the door (lock=cursedItem)', async ({ game: page }) => {
+    await setupHunt(page, 'Shade');
+    await primeWish(page, { wishesCount: 3 });
+    await callSetup(page, 'setup.MonkeyPaw.activate("trapTheGhost")');
+    await callSetup(page, 'setup.Witch.cheatGrantCursedItem("dildo")');
+    expect(await callSetup(page, 'setup.Witch.hasCursedItemToTurnIn()')).toBe(true);
+
+    const cleared = await callSetup(page, 'setup.HuntController.sacrificeCursedItemAtDoor()');
+    expect(cleared).toBe('isCIDildo');
+    expect(await callSetup(page, 'setup.Witch.hasCursedItemToTurnIn()')).toBe(false);
+    expect(await callSetup(page, 'setup.HuntController.isExitLocked()')).toBe(false);
+    /* The ghost is still trapped -- only the door reopens. */
+    expect(await callSetup(page, 'setup.HuntController.isGhostTrapped()')).toBe(true);
+  });
+
+  test('sacrificeCursedItemAtDoor refuses dawn-keyed locks even when the MC has a cursed item', async ({ game: page }) => {
+    await setupHunt(page, 'Shade');
+    await primeWish(page, { wishesCount: 2 });
+    await callSetup(page, 'setup.MonkeyPaw.activate("trapTheGhost")');
+    await callSetup(page, 'setup.Witch.cheatGrantCursedItem("dildo")');
+
+    const cleared = await callSetup(page, 'setup.HuntController.sacrificeCursedItemAtDoor()');
+    expect(cleared).toBe(null);
+    /* Item not consumed, lock still in place. */
+    expect(await callSetup(page, 'setup.Witch.hasCursedItemToTurnIn()')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntController.isExitLocked()')).toBe(true);
+  });
+
+  test('sacrificeCursedItemAtDoor refuses when the MC is empty-handed', async ({ game: page }) => {
+    await setupHunt(page, 'Shade');
+    await primeWish(page, { wishesCount: 3 });
+    await callSetup(page, 'setup.MonkeyPaw.activate("trapTheGhost")');
+
+    const cleared = await callSetup(page, 'setup.HuntController.sacrificeCursedItemAtDoor()');
+    expect(cleared).toBe(null);
+    expect(await callSetup(page, 'setup.HuntController.isExitLocked()')).toBe(true);
+  });
+
+  test('trap tier 3 HuntRun: neighbor links are gone and the room-seal message renders', async ({ game: page }) => {
+    /* The whole point of the new tier-3 escalation: the player can't
+       even walk to a neighboring room. HuntLifecycle hides every
+       neighbor link and prints the room-seal thought instead. */
+    await setupHunt(page, 'Shade');
+    await primeWish(page, { wishesCount: 1 });
+    /* Pin the player into a non-hallway room and capture its
+       neighbor labels via currentRoomData (which is what the
+       HuntLifecycle render also consumes). */
+    const neighborLabels = await page.evaluate(() => {
+      const fp = SugarCube.State.variables.run.floorplan;
+      const room = fp.rooms.find(r => r.template !== 'hallway');
+      SugarCube.setup.HuntController.setCurrentRoom(room.id);
+      const data = SugarCube.setup.HuntController.currentRoomData();
+      return (data && data.neighbors ? data.neighbors : []).map(n => n.label);
+    });
+    expect(neighborLabels.length).toBeGreaterThan(0);
+    await callSetup(page, 'setup.MonkeyPaw.activate("trapTheGhost")');
+
+    await goToPassage(page, 'HuntRun');
+    const navHtml = await page.locator('#passages .hunt-run-nav').innerHTML();
+    expect(navHtml).toMatch(/doors around you have fused shut/i);
+    /* None of the neighbor labels should appear as nav links. */
+    for (const label of neighborLabels) {
+      expect(navHtml).not.toContain(`>${label}<`);
+    }
+  });
+
+  test('trap tier 3 sealed-room: sacrifice link surfaces when the MC has a cursed item', async ({ game: page }) => {
+    await setupHunt(page, 'Shade');
+    await primeWish(page, { wishesCount: 1 });
+    await page.evaluate(() => {
+      const fp = SugarCube.State.variables.run.floorplan;
+      const room = fp.rooms.find(r => r.template !== 'hallway');
+      SugarCube.setup.HuntController.setCurrentRoom(room.id);
+    });
+    await callSetup(page, 'setup.MonkeyPaw.activate("trapTheGhost")');
+    await callSetup(page, 'setup.Witch.cheatGrantCursedItem("dildo")');
+
+    await goToPassage(page, 'HuntRun');
+    const html = await page.locator('#passages').innerHTML();
+    expect(html).toMatch(/doors around you have fused shut/i);
+    expect(html).toMatch(/offer the cursed item to the seal/i);
+  });
+
+  test('sacrificeCursedItemAtDoor on trap tier 3 clears both door and room locks with one item', async ({ game: page }) => {
+    /* Tier 3 stamps two locks (exitLock + roomLock). A single cursed
+       item must break both — players only ever carry one. */
+    await setupHunt(page, 'Shade');
+    await primeWish(page, { wishesCount: 1 });
+    await callSetup(page, 'setup.MonkeyPaw.activate("trapTheGhost")');
+    expect(await callSetup(page, 'setup.HuntController.isExitLocked()')).toBe(true);
+    expect(await callSetup(page, 'setup.HuntController.isRoomLocked()')).toBe(true);
+
+    await callSetup(page, 'setup.Witch.cheatGrantCursedItem("dildo")');
+    const cleared = await callSetup(page, 'setup.HuntController.sacrificeCursedItemAtDoor()');
+    expect(cleared).toBe('isCIDildo');
+    expect(await callSetup(page, 'setup.HuntController.isExitLocked()')).toBe(false);
+    expect(await callSetup(page, 'setup.HuntController.isRoomLocked()')).toBe(false);
+    expect(await callSetup(page, 'setup.Witch.hasCursedItemToTurnIn()')).toBe(false);
+    /* The ghost stays pinned even after the seals break. */
+    expect(await callSetup(page, 'setup.HuntController.isGhostTrapped()')).toBe(true);
+  });
+
+  test('sacrificeCursedItemAtDoor works for a room-only lock (e.g. exit unlocked elsewhere)', async ({ game: page }) => {
+    /* Defensive: if some future code path clears the exitLock but
+       leaves the room locked, sacrifice should still unblock the
+       room. Mirrors the symmetric case where the door is cursedItem
+       and the room is not. */
+    await setupHunt(page, 'Shade');
+    await primeWish(page, { wishesCount: 1 });
+    await callSetup(page, 'setup.MonkeyPaw.activate("trapTheGhost")');
+    /* Hand-clear the front door so only the room lock remains. */
+    await callSetup(page, 'setup.HuntController.clearExitLock()');
+    expect(await callSetup(page, 'setup.HuntController.isExitLocked()')).toBe(false);
+    expect(await callSetup(page, 'setup.HuntController.isRoomLocked()')).toBe(true);
+
+    await callSetup(page, 'setup.Witch.cheatGrantCursedItem("dildo")');
+    const cleared = await callSetup(page, 'setup.HuntController.sacrificeCursedItemAtDoor()');
+    expect(cleared).toBe('isCIDildo');
+    expect(await callSetup(page, 'setup.HuntController.isRoomLocked()')).toBe(false);
+  });
+
+  test('isRoomLocked() returns false with no active run (guarded fallback)', async ({ game: page }) => {
+    await page.evaluate(() => { SugarCube.State.variables.run = null; });
+    expect(await callSetup(page, 'setup.HuntController.isRoomLocked()')).toBe(false);
+  });
+
+  test('clicking the sacrifice link restores the Outside link on the next render', async ({ game: page }) => {
+    /* End-to-end: trap → grant item → render → click sacrifice →
+       the post-sacrifice HuntRun must show the Outside link again. */
+    await setupHunt(page, 'Shade');
+    await primeWish(page, { wishesCount: 3 });
+    await callSetup(page, 'setup.HuntController.setCurrentRoom("room_0")');
+    await callSetup(page, 'setup.MonkeyPaw.activate("trapTheGhost")');
+    await callSetup(page, 'setup.Witch.cheatGrantCursedItem("dildo")');
+
+    await goToPassage(page, 'HuntRun');
+    await page.locator('#passages').getByRole('button', { name: /offer the cursed item to the door/i }).click();
+    await page.waitForFunction(
+      () => SugarCube.State.passage === 'HuntRun'
+        && !SugarCube.setup.HuntController.isExitLocked(),
+      null,
+      { timeout: 3000 }
+    );
+    /* Pin the room back to the hallway so the post-sacrifice render
+       exposes the Outside link (huntTickStep can drift the player to
+       a different room mid-render via passage ticks). */
+    await callSetup(page, 'setup.HuntController.setCurrentRoom("room_0")');
+    await goToPassage(page, 'HuntRun');
+    const html = await page.locator('#passages').innerHTML();
+    expect(html).toContain('HuntOutside');
+    expect(html).not.toMatch(/door is sealed/i);
   });
 
   // --- sanity wish -----------------------------------------------

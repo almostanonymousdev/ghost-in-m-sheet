@@ -209,9 +209,12 @@ setup.MonkeyPaw = (function () {
 				if (corr) addTempCorr(corr);
 				setup.HuntController.trapGhost(unlockBy);
 				var drewGhost = false;
+				var roomSealed = false;
 				if (t >= 3) {
 					setup.HuntController.snapGhostToCurrentRoom();
+					setup.HuntController.lockCurrentRoom();
 					drewGhost = true;
+					roomSealed = true;
 				}
 
 				removeWish();
@@ -226,7 +229,8 @@ setup.MonkeyPaw = (function () {
 					sanityDelta: sanity,
 					corrDelta: corr,
 					doorUnlockBy: unlockBy,
-					drewGhost: drewGhost
+					drewGhost: drewGhost,
+					roomSealed: roomSealed
 				};
 			}
 		},

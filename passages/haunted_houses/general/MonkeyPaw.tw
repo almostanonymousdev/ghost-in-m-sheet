@@ -22,6 +22,7 @@
 				<<if setup.MonkeyPaw.isEffectKnown(_w.id)>>
 					@@.mc-thoughts; <<= setup.MonkeyPaw.describe(_w.id)>>@@<br>
 				<</if>>
+				<br>
 			<</capture>>
 		<</if>>
 	<</for>>
