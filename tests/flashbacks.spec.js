@@ -273,6 +273,24 @@ test.describe('setup.Flashbacks', () => {
 		expect(result.second).toBe(result.total);
 	});
 
+	test('seenCount ignores stale ids in the save (no "47 / 46")', async ({ game: page }) => {
+		/* Bug repro: a save written when the catalogue contained an entry
+		   that's since been renamed/removed will still carry the old id in
+		   $flashbacks.seen. seenCount() must count only catalogue members,
+		   otherwise the gallery header reads e.g. "Remembered: 47 / 46". */
+		const result = await page.evaluate(() => {
+			const F = SugarCube.setup.Flashbacks;
+			SugarCube.State.variables.flashbacks = {
+				seen: { ghost_of_features_past: true, another_dead_id: true },
+				active: null
+			};
+			F.cheatUnlockAll();
+			return { seen: F.seenCount(), total: F.totalCount() };
+		});
+		expect(result.seen).toBe(result.total);
+		expect(result.seen).toBeLessThanOrEqual(result.total);
+	});
+
 	test('default state is seeded by initState for new games', async ({ game: page }) => {
 		const bundle = await getVar(page, 'flashbacks');
 		expect(bundle).toBeDefined();
@@ -421,6 +439,23 @@ test.describe('setup.Flashbacks', () => {
 		// DeliveryEvent2 is also on the chain.
 		await goToPassage(page, 'DeliveryEvent2');
 		expect(await page.evaluate(() => SugarCube.State.passage)).toBe('DeliveryEvent2');
+		expect(await page.evaluate(() => SugarCube.setup.Flashbacks.isReplaying())).toBe(true);
+	});
+
+	test('delivery_special replay reaches DeliverySpecialUnsafe2 without bouncing', async ({ game: page }) => {
+		// The Unsafe scene's payout + Leave link live in DeliverySpecialUnsafe2,
+		// reached via a wikilink at the bottom of the linkreplace cascade in
+		// DeliverySpecialUnsafe. Without listing the sequel in replayPassages
+		// the containReplay guard bounces the player back to the gallery on
+		// the very last beat.
+		await page.evaluate(() => {
+			const F = SugarCube.setup.Flashbacks;
+			F.markSeen('delivery_special');
+			F.enterReplay('delivery_special');
+		});
+
+		await goToPassage(page, 'DeliverySpecialUnsafe2');
+		expect(await page.evaluate(() => SugarCube.State.passage)).toBe('DeliverySpecialUnsafe2');
 		expect(await page.evaluate(() => SugarCube.setup.Flashbacks.isReplaying())).toBe(true);
 	});
 
@@ -710,7 +745,7 @@ test.describe('setup.Flashbacks', () => {
 		expect(restored.brookLust).toBe(12);
 	});
 
-	test('HuntOverProwl replay stamps a Spirit run + activates hunt mode', async ({ game: page }) => {
+	test('HuntOverProwl replay stamps a Spirit run, leaves huntMode NONE', async ({ game: page }) => {
 		await page.evaluate(() => {
 			SugarCube.State.variables.flashbacks = { seen: {}, active: null };
 			// No active hunt pre-replay.
@@ -721,13 +756,21 @@ test.describe('setup.Flashbacks', () => {
 			F.enterReplay('hunt_caught_prowl');
 		});
 
+		// The setup() must leave huntMode at NONE -- flipping to ACTIVE
+		// trips TickController's PassageDone redirect ("isHunting && time
+		// past morning -> HuntOverTime"), which bounces the replay to the
+		// gallery before the scene renders. activeGhost is guarded on
+		// `$run` (isActive), so stamping the run alone gives the catalogue
+		// scene the ghost it needs without arming the redirect.
 		const planted = await page.evaluate(() => ({
 			ghostName: SugarCube.setup.Ghosts.huntRealName(),
 			isHunting: SugarCube.setup.HuntController.isHunting(),
+			isActive: SugarCube.setup.HuntController.isActive(),
 			activeGhost: SugarCube.setup.HuntController.activeGhost() && SugarCube.setup.HuntController.activeGhost().name
 		}));
 		expect(planted.ghostName).toBe('Spirit');
-		expect(planted.isHunting).toBe(true);
+		expect(planted.isHunting).toBe(false);
+		expect(planted.isActive).toBe(true);
 		expect(planted.activeGhost).toBe('Spirit');
 	});
 
@@ -761,7 +804,7 @@ test.describe('setup.Flashbacks', () => {
 		expect(restored.residue).toBe(0);
 	});
 
-	test('HuntOverSanity replay stamps a Spirit run + activates hunt mode', async ({ game: page }) => {
+	test('HuntOverSanity replay stamps a Spirit run, leaves huntMode NONE', async ({ game: page }) => {
 		await page.evaluate(() => {
 			SugarCube.State.variables.flashbacks = { seen: {}, active: null };
 			SugarCube.State.variables.run = null;
@@ -771,12 +814,16 @@ test.describe('setup.Flashbacks', () => {
 			F.enterReplay('hunt_caught_sanity');
 		});
 
+		// See HuntOverProwl test above for the rationale -- enterReplay
+		// must NOT call activateHunt() or the redirect bounces the scene.
 		const planted = await page.evaluate(() => ({
 			ghostName: SugarCube.setup.Ghosts.huntRealName(),
-			isHunting: SugarCube.setup.HuntController.isHunting()
+			isHunting: SugarCube.setup.HuntController.isHunting(),
+			isActive: SugarCube.setup.HuntController.isActive()
 		}));
 		expect(planted.ghostName).toBe('Spirit');
-		expect(planted.isHunting).toBe(true);
+		expect(planted.isHunting).toBe(false);
+		expect(planted.isActive).toBe(true);
 	});
 
 	test('replay-time achievement unlock is suppressed by isReplaying guard', async ({ game: page }) => {

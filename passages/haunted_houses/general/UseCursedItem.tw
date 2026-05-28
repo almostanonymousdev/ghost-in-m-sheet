@@ -14,7 +14,15 @@
 <</if>>
 <<addclass "body" "style-video-height">>
 <br>
-@@.backbtn; [[Back|previous()]]@@
+<<if setup.Flashbacks.isReplaying()>>
+	/* During gallery replay `previous()` resolves to FlashbackEnter,
+	   which immediately <<goto>>s back to UseCursedItem and traps the
+	   player. Route Back through Flashbacks instead -- containReplay
+	   sees the gallery target and runs exitReplay() cleanly. */
+	@@.backbtn; [[Back|Flashbacks]]@@
+<<else>>
+	@@.backbtn; [[Back|previous()]]@@
+<</if>>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 <</done>>

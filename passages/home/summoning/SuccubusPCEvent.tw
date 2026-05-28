@@ -9,11 +9,11 @@
 	<<image "characters/succubus/pc1.jpg" { width: "100%" }>><br>
 	@@.mc-thoughts; Suddenly, a girl appears before you, her eyes piercing through you as if she knows all your secrets. She just stares at you, her gaze so intense that@@
 	<<linkappend "@@.usebtn; you feel the heat rise@@">>
-		<<if setup.Home.succubusEventCD() eq 2>>
+		<<if setup.Home.succubusEventCD() neq 0>>
 			<br>@@.mc-thoughts; In a moment, she disappears, leaving you with a sense of something unexplored.@@<br>
 			@@.mc-speech; WHAT the fuck just happened... I hope this ghost doesn't bother me anymore. Maybe I should ask how to get rid of it if it keeps haunting me.@@<br><br>
 			@@.backbtn; [[Leave|Livingroom]]@@<br>
-		<<elseif setup.Home.succubusEventCD() eq 0>>
+		<<else>>
 			<<run setup.Home.setSuccubusEventCD(1)>>
 			<<video "characters/succubus/pc3.mp4">>
 			@@.mc-thoughts; Her hands unexpectedly wrapping around you from behind, turning you to face the desk. She bends you over, making you lean on the table, your ass now exposed for her to see and touch. Her hands glide over your ass, squeezing it, making you shiver with surprise and arousal.@@<br>

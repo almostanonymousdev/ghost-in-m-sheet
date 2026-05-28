@@ -119,6 +119,7 @@ setup.Flashbacks = (function () {
 		{
 			id: 'delivery_special', title: 'Earn the Tip', location: 'Delivery Events',
 			scenePassage: 'DeliverySpecialUnsafe',
+			replayPassages: ['DeliverySpecialUnsafe', 'DeliverySpecialUnsafe2'],
 			hint: 'A customer who wants more than the package.'
 		},
 		{
@@ -159,36 +160,71 @@ setup.Flashbacks = (function () {
 			setup: function () {
 				setup.Delivery.cheatReplayOrder('newspapers');
 				/* Papers gates the flirt branch on corruption >= 3 AND
-				   post-bump lust >= 40. Bump both above the line so the
-				   replay always plays the full scene -- the snapshot
-				   restores the player's real values on exit. */
+				   post-addLust lust >= 40. In replay mode <<addLust>> is
+				   a no-op (widgetGuiCommon's addStat short-circuits on
+				   Flashbacks.isReplaying), so the catalogue has to plant
+				   lust >= 40 directly -- the snapshot restores the
+				   player's real values on exit. */
 				if (setup.Mc.corruption() < 3) setup.Mc.setCorruption(3);
-				if (setup.Mc.lust() < 30) setup.Mc.setLust(30);
+				if (setup.Mc.lust() < 40) setup.Mc.setLust(40);
 			},
 			hint: 'A long lunch with a friendly customer.'
 		},
 
 		// Church
 		{
+			/* Chain: ToolsEventChurch -> ToolsEventChurch1 -> ToolsEventChurchEnd.
+			   ToolsEventChurchEnd reads priestToolEventStarted() to decide
+			   between the first-time "reward + thermometer" branch and the
+			   repeat "bye" branch. For a replay titled "Confession Reward"
+			   we want the reward branch to render every time, so the setup
+			   stub force-clears eventToolsOneStart and the extraSnapshot
+			   captures it for restore. */
 			id: 'church_priest', title: 'Confession Reward', location: 'Church',
 			scenePassage: 'ToolsEventChurch',
+			replayPassages: ['ToolsEventChurch', 'ToolsEventChurch1', 'ToolsEventChurchEnd'],
+			setup: function () {
+				setup.Witch.setEventToolsOneStart(0);
+			},
+			extraSnapshot: ['eventToolsOneStart'],
 			hint: "Father's gratitude in liquid form."
 		},
 
 		// Gym
 		{
+			/* Chain: GymTrainerEvent1Start -> ...Start1 -> ...Start2. */
 			id: 'gym_trainer_1', title: 'Personal Training', location: 'Gym',
 			scenePassage: 'GymTrainerEvent1Start',
+			replayPassages: ['GymTrainerEvent1Start', 'GymTrainerEvent1Start1', 'GymTrainerEvent1Start2'],
 			hint: "The trainer's idea of cool-down."
 		},
 		{
+			/* Chain: GymTrainerEvent2Start -> ...Start2. */
 			id: 'gym_trainer_2', title: 'Hands-On Coaching', location: 'Gym',
 			scenePassage: 'GymTrainerEvent2Start',
+			replayPassages: ['GymTrainerEvent2Start', 'GymTrainerEvent2Start2'],
 			hint: 'Anal cardio.'
 		},
 		{
+			/* The orgy scene actually opens inside GroupGymTraining --
+			   the linkappend reveal there plays grouptraining1.mp4 and
+			   contains the "I can't resist" link forward. Using
+			   GroupGymTraining as the entry recovers that lead-in. The
+			   passage gates the reveal on beauty >= 50 and lust >= 50,
+			   so the setup stub bumps both above the threshold (the
+			   stat snapshot restores them on exit). skipAutoRegister
+			   blocks the default register-by-scenePassage path because
+			   any gym workout visits GroupGymTraining; we register the
+			   uniquely-orgy passage GymGroupEvent1Start below the
+			   catalogue instead. */
 			id: 'gym_group', title: 'Group Session', location: 'Gym',
-			scenePassage: 'GymGroupEvent1Start',
+			scenePassage: 'GroupGymTraining',
+			replayPassages: ['GroupGymTraining', 'GymGroupEvent1Start', 'GymGroupEvent1Start2'],
+			skipAutoRegister: true,
+			setup: function () {
+				if (setup.Mc.beauty() < 50) setup.Mc.setBeauty(50);
+				if (setup.Mc.lust() < 50) setup.Mc.setLust(50);
+			},
 			hint: 'Toys for the whole class.'
 		},
 
@@ -204,6 +240,14 @@ setup.Flashbacks = (function () {
 			id: 'witch_tentacles', title: 'Sticky Fingers', location: "Witch's House",
 			scenePassage: 'WitchTentaclesEvent',
 			hint: 'Khadija keeps her own counsel about thieves.'
+		},
+		{
+			/* The linkreplace inside WitchBedroom plays one of two
+			   sleeping-lick videos depending on witchLateNightHour(); the
+			   scene stays in this single passage, no chain needed. */
+			id: 'witch_bedroom_lick', title: 'Lick Khadija', location: "Witch's House",
+			scenePassage: 'WitchBedroom',
+			hint: "She's asleep. You don't look away."
 		},
 
 		// Home -- Bedroom
@@ -248,8 +292,18 @@ setup.Flashbacks = (function () {
 			hint: 'You barely woke for that one.'
 		},
 		{
+			/* The intended scene needs hasEnergyForSleepSpirit() (energy >= 5)
+			   AND hasMinCorruptionForSleepSpirit() (corruption >= 5) so the
+			   linkappend cascade reaches GhostSpecialEventSleepSpirit1 with
+			   the orgasm + cum beats. Bump both above the threshold; the
+			   stat snapshot restores the player's real values on exit. */
 			id: 'home_sleep_spirit', title: 'Bedside Manners', location: 'Home -- Bedroom',
 			scenePassage: 'GhostSpecialEventSleepSpirit',
+			replayPassages: ['GhostSpecialEventSleepSpirit', 'GhostSpecialEventSleepSpirit1', 'GhostSpecialEventSleepSpirit2'],
+			setup: function () {
+				if (setup.Mc.corruption() < 5) setup.Mc.setCorruption(5);
+				if (setup.Mc.energy() < 5) setup.Mc.setEnergy(5);
+			},
 			hint: "Hands you can't quite see."
 		},
 
@@ -285,13 +339,34 @@ setup.Flashbacks = (function () {
 			hint: "She'll help you, baby."
 		},
 		{
+			/* PC-summon scene. SuccubusPCEvent's primary linkappend body
+			   reads succubusEvent.eventCD: only eventCD === 0 renders the
+			   full sequence (the other values play a 1-line "she
+			   disappears" wake-up). Plant eventCD = 0 + pcStage = 0 so the
+			   gallery always sees the rich first-time branch; deep-snap
+			   the succubusEvent bundle so the player's real cooldown /
+			   stage state isn't clobbered. */
 			id: 'home_succubus_pc', title: 'Succubus at the PC', location: 'Home -- Livingroom',
 			scenePassage: 'SuccubusPCEvent',
+			setup: function () {
+				setup.Home.setSuccubusEventCD(0);
+				setup.Home.setSuccubusPCEventStage(0);
+			},
+			extraSnapshot: [{ path: 'succubusEvent', deep: true }],
 			hint: 'Eyes piercing through you.'
 		},
 		{
+			/* TVSpirit gates the sex branch behind corruption >= 3; below
+			   that it renders a 1-line "ghost vanished" wake-up. Force the
+			   threshold so the gallery sees the chain (TVSpirit ->
+			   TVSpirit1 -> Livingroom). mc.corruption is in SNAPSHOT_PATHS
+			   already, so restore on exit is automatic. */
 			id: 'home_tv_spirit', title: 'Sofa Sleep Visitor', location: 'Home -- Livingroom',
 			scenePassage: 'GhostSpecialEventTVSpirit',
+			setup: function () {
+				if (setup.Mc.corruption() < 3) setup.Mc.setCorruption(3);
+			},
+			replayPassages: ['GhostSpecialEventTVSpirit1'],
 			hint: "A dick where it shouldn't be."
 		},
 		{
@@ -386,17 +461,20 @@ setup.Flashbacks = (function () {
 			/* Caught-by-ghost hunt-end. HuntOverProwl branches on
 			   ghost.canTentacles, isIronclad, Alice-companion, then
 			   wardrobe slot. Stamp a Spirit run (canTentacles false,
-			   non-Mimic) and activate the hunt so activeGhost() returns
-			   the planted ghost. Force a non-Alice companion so the
-			   default body-fucking branch renders. The passage runs
-			   onCaughtCleanup() + addPossessionResidue() on entry, so
-			   HUNT_PATHS captures $run / tools / possessionResidue and
-			   restores them on exit. */
+			   non-Mimic) so activeGhost() returns the planted ghost --
+			   isActive() guards activeGhost on `$run` alone, no need to
+			   flip huntMode to ACTIVE. (Doing so trips TickController's
+			   PassageDone redirect: "isHunting && morning >= 6" sends
+			   the player to HuntOverTime, which then bounces to the
+			   gallery before the scene's content can render.) Force a
+			   non-Alice companion so the default body-fucking branch
+			   renders. The passage runs onCaughtCleanup() + addPossessionResidue()
+			   on entry, so HUNT_PATHS captures $run / tools /
+			   possessionResidue and restores them on exit. */
 			id: 'hunt_caught_prowl', title: 'Caught: Ghost Prowl', location: 'Hunt',
 			scenePassage: 'HuntOverProwl',
 			setup: function () {
 				setup.HuntController.cheatStampMinimalRun({ ghostName: 'Spirit' });
-				setup.HuntController.activateHunt();
 				setup.Companion.cheatActivateCompanion('Brook');
 				setup.Wardrobe.cheatStripAll();
 			},
@@ -407,12 +485,12 @@ setup.Flashbacks = (function () {
 			/* Sanity-out hunt-end. HuntOverSanity branches on tentacles
 			   vs ironclad vs default. Spirit again -- canTentacles is
 			   false so the generic sanityover/N.mp4 video plays. Same
-			   onCaughtCleanup cascade fires; HUNT_PATHS covers it. */
+			   onCaughtCleanup cascade fires; HUNT_PATHS covers it. See
+			   hunt_caught_prowl above for why activateHunt is omitted. */
 			id: 'hunt_caught_sanity', title: 'Caught: Sanity Break', location: 'Hunt',
 			scenePassage: 'HuntOverSanity',
 			setup: function () {
 				setup.HuntController.cheatStampMinimalRun({ ghostName: 'Spirit' });
-				setup.HuntController.activateHunt();
 			},
 			extraSnapshot: HUNT_PATHS.concat(WARDROBE_PATHS).concat(COMPANION_PATHS),
 			hint: 'When the house finally tips you sideways.'
@@ -420,8 +498,14 @@ setup.Flashbacks = (function () {
 
 		// Hunt Aftermath
 		{
+			/* Wraith chains GhostSpecialEventWraith -> WraithStart ->
+			   WraithEnd -> Sleep. Whitelist the two intermediate passages
+			   so the containment guard doesn't bounce the walker back to
+			   the gallery mid-chain; Sleep is intentionally NOT in the
+			   list because hitting it is the clean exit signal. */
 			id: 'aftermath_wraith', title: 'Lost in the Forest', location: 'Hunt Aftermath',
 			scenePassage: 'GhostSpecialEventWraith',
+			replayPassages: ['GhostSpecialEventWraithStart', 'GhostSpecialEventWraithEnd'],
 			hint: 'Rope, woods, helpful strangers.'
 		},
 		{
@@ -430,8 +514,21 @@ setup.Flashbacks = (function () {
 			hint: 'They keep staring at you.'
 		},
 		{
+			/* GhostSpecialEventSpirit branches on companionIs("Brook" /
+			   "Alice" / "Blake") -- if no companion is active, every
+			   branch is false and the page renders blank (a trap). Plant
+			   Brook so the bedside-fucking branch always renders. The
+			   Blake variant chains to spiritBlake, so whitelist it for
+			   the rare case the player toggles companions before
+			   replaying. COMPANION_PATHS snapshots the active companion
+			   bundle. */
 			id: 'aftermath_spirit_walk', title: 'Companion Visitor', location: 'Hunt Aftermath',
 			scenePassage: 'GhostSpecialEventSpirit',
+			setup: function () {
+				setup.Companion.cheatActivateCompanion('Brook');
+			},
+			extraSnapshot: COMPANION_PATHS,
+			replayPassages: ['spiritBlake'],
 			hint: 'Someone joins you and your friend in bed.'
 		}
 	]);
@@ -470,9 +567,15 @@ setup.Flashbacks = (function () {
 	}
 
 	function seenCount() {
+		/* Iterate the catalogue, not the seen map: a save written when the
+		   catalogue contained an entry that has since been renamed/removed
+		   will still carry the old id in $flashbacks.seen, and counting raw
+		   map keys would push the gallery header past totalCount(). */
 		var m = seenMap();
 		var n = 0;
-		for (var k in m) if (Object.prototype.hasOwnProperty.call(m, k) && m[k]) n++;
+		for (var i = 0; i < CATALOGUE.length; i++) {
+			if (m[CATALOGUE[i].id]) n++;
+		}
 		return n;
 	}
 
@@ -681,6 +784,15 @@ setup.Flashbacks = (function () {
 		if (entry.skipAutoRegister) return;
 		setup.SceneEvents.register(entry.scenePassage, entry.id);
 	});
+
+	/* gym_group skips auto-register because its entry passage
+	   (GroupGymTraining) is the generic gym-workout passage -- any
+	   visit, gates-passed or not, would otherwise mark the scene seen.
+	   The orgy only actually unlocks once the player reaches
+	   GymGroupEvent1Start (post-"I can't resist" click, only reachable
+	   when both beauty and lust gates pass), so the unique credit
+	   point is registered directly here. */
+	setup.SceneEvents.register('GymGroupEvent1Start', 'gym_group');
 
 	setup.SceneEvents.on(setup.SceneEvents.Event.VIEWED, function (ctx) {
 		if (isReplaying()) return;

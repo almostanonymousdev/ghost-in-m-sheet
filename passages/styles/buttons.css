@@ -101,6 +101,23 @@
 	text-shadow: var(--btn-shadow);
 }
 
+a.macro-linkreplace,
+a.macro-linkappend {
+	font-style: italic;
+	font-size: 1.05em;
+	font-weight: bold;
+	color: var(--color-use-yellow);
+	text-shadow: var(--outline-shadow);
+	text-decoration: none;
+	transition: var(--btn-transition);
+}
+
+a.macro-linkreplace:hover,
+a.macro-linkappend:hover {
+	color: var(--color-use-yellow-hover);
+	text-shadow: var(--btn-shadow);
+}
+
 .alertbtn a {
 	display: inline-block;
 	padding: 6px 14px;
