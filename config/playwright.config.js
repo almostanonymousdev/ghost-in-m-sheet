@@ -46,13 +46,27 @@ module.exports = defineConfig({
     },
     {
       name: 'chromium',
-      testIgnore: [/.*-lint\.spec\.js/, /.*\.release\.spec\.js/],
+      testIgnore: [/.*-lint\.spec\.js/, /.*\.release\.spec\.js/, /.*\.mobile\.spec\.js/],
       use: { browserName: 'chromium' },
       dependencies: ['lint'],
     },
     {
       name: 'release',
       testMatch: /.*\.release\.spec\.js/,
+      use: { browserName: 'chromium' },
+      dependencies: ['lint'],
+    },
+    /* Mobile-rendering + tap-target specs. The desktop chromium project
+       runs everything at Playwright's default ~1280×720 viewport; nothing
+       there exercises the narrow-width layout or thumb-sized tap targets.
+       The mobile project re-runs a curated smoke set at iPhone-13-ish
+       dimensions (390×844) so layout overflow + tap-target regressions
+       fail loudly. Gated behind `npm run test:mobile` for now because the
+       game's CSS has only one @media rule — the initial run is expected
+       to surface real defects, not a steady-state pass. */
+    {
+      name: 'mobile',
+      testMatch: /.*\.mobile\.spec\.js/,
       use: { browserName: 'chromium' },
       dependencies: ['lint'],
     },
