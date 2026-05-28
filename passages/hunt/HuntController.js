@@ -1383,6 +1383,20 @@ setup.HuntController = (function () {
 		return !!(run && run.trapped);
 	});
 
+	/* True iff the front door is sealed by a trap wish. Read by
+	   HuntLifecycle to hide the Outside link while a lock is active. */
+	var isExitLocked = guarded(false, function () {
+		var run = active();
+		return !!(run && run.exitLock);
+	});
+
+	/* What clears the current exit lock — 'dawn' or 'cursedItem'.
+	   Returns null when nothing is locked. */
+	var exitLockReason = guarded(null, function () {
+		var run = active();
+		return (run && run.exitLock && run.exitLock.unlockBy) || null;
+	});
+
 	/* Runs are one-shot, so banning a house is a no-op. */
 	function banActiveContext() {
 		return null;
@@ -1564,6 +1578,8 @@ setup.HuntController = (function () {
 		snapGhostToCurrentRoom: snapGhostToCurrentRoom,
 		trapGhost: trapGhost,
 		isGhostTrapped: isGhostTrapped,
+		isExitLocked: isExitLocked,
+		exitLockReason: exitLockReason,
 		banActiveContext: banActiveContext,
 		streetExitPassage: streetExitPassage,
 		possessionPassage: possessionPassage,
