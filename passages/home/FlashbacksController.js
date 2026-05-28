@@ -634,15 +634,10 @@ setup.Flashbacks = (function () {
 		'hours', 'minutes', 'dailySeed',
 		'earnedMoney',
 		'currentOrder', 'order1', 'order2', 'order3',
-		/* Cursed-item carry state -- UseCursedItem reads the type flag
-		   to pick a video, then consumes the held flag. Snapshot so a
-		   replay doesn't clear a real carried item. */
 		'gotCursedItem',
 		'isCIDildo', 'isCIButtplug', 'isCIBeads', 'isCIHDildo',
-		/* Bait-orgasm flag -- BaitOrgasm reads this to gate consumption,
-		   and writes false on consume. Snapshot so a replay can't
-		   absorb a real pending orgasm the player was about to live. */
-		'baitOrgasmPending'
+		'baitOrgasmPending',
+		'isPenaltyOn'
 	]);
 
 	function pathSpec(entry) {
@@ -761,9 +756,20 @@ setup.Flashbacks = (function () {
 		   Engine.play during :passagestart loses to the outer
 		   enginePlay's DOM swap, leaving State.passage flipped but
 		   the DOM showing the would-be-target). Defer via
-		   Engine.DOM_DELAY so the outer play finishes first. */
-		exitReplay();
-		setTimeout(function () { Engine.play('Flashbacks'); }, Engine.DOM_DELAY || 40);
+		   Engine.DOM_DELAY so the outer play finishes first.
+
+		   exitReplay() rides in the same setTimeout so isReplaying()
+		   stays true through the transient bounce render. Otherwise
+		   the in-passage stat-delta widgets and any controller side
+		   effects gated on isReplaying() see a cleared active id and
+		   fire as if the player were really visiting the off-scene
+		   passage -- the canonical leak being Sleep.tw's
+		   applyHuntDefeatPreSleep() stamping isPenaltyOn=true on the
+		   way back from a hunt-defeat replay. */
+		setTimeout(function () {
+			exitReplay();
+			Engine.play('Flashbacks');
+		}, Engine.DOM_DELAY || 40);
 	}
 
 	/* Wire up the SceneEvents → unlock-map bridge and the replay

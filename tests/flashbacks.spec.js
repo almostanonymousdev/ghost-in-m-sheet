@@ -826,6 +826,50 @@ test.describe('setup.Flashbacks', () => {
 		expect(planted.isActive).toBe(true);
 	});
 
+	test('hunt-defeat replay does not leak isPenaltyOn through the Sleep bounce', async ({ game: page }) => {
+		/* Regression: replaying hunt_caught_prowl / hunt_caught_sanity
+		   ends in the huntBlackoutExit link, which routes through
+		   huntCaughtPassage() -> "Sleep". Sleep's body runs
+		   applyHuntDefeatPreSleep() whenever previous() is HuntOverProwl
+		   / HuntOverSanity, flipping isPenaltyOn=true and rolling a
+		   cursed item. isPenaltyOn isn't in SNAPSHOT_PATHS, so without a
+		   replay gate the flag survives exitReplay -- the player returns
+		   to the gallery wearing the "Need to buy medicine" injured
+		   status, even though they only re-watched a scene. */
+		for (const id of ['hunt_caught_prowl', 'hunt_caught_sanity']) {
+			const sceneName = id === 'hunt_caught_prowl' ? 'HuntOverProwl' : 'HuntOverSanity';
+			await page.evaluate((sceneId) => {
+				SugarCube.State.variables.flashbacks = { seen: {}, active: null };
+				SugarCube.State.variables.run = null;
+				SugarCube.State.variables.huntMode = SugarCube.setup.HuntController.HuntMode.NONE;
+				SugarCube.State.variables.isPenaltyOn = false;
+				const F = SugarCube.setup.Flashbacks;
+				F.markSeen(sceneId);
+				F.enterReplay(sceneId);
+			}, id);
+
+			// Walk via the live scene first so previous() resolves to the
+			// HuntOver* passage when Sleep renders -- that's what trips
+			// cameFromHuntDefeat() and arms the leak.
+			await page.evaluate((name) => SugarCube.Engine.play(name), sceneName);
+			await page.evaluate(() => SugarCube.Engine.play('Sleep'));
+			await page.waitForFunction(
+				() => SugarCube.State.passage === 'Flashbacks',
+				null,
+				{ timeout: 3000 }
+			);
+
+			const after = await page.evaluate(() => ({
+				isPenaltyOn: SugarCube.setup.Mc.isPenalized(),
+				passage: SugarCube.State.passage,
+				replaying: SugarCube.setup.Flashbacks.isReplaying()
+			}));
+			expect(after.passage, `[${id}] passage after bounce`).toBe('Flashbacks');
+			expect(after.replaying, `[${id}] still in replay`).toBe(false);
+			expect(after.isPenaltyOn, `[${id}] isPenaltyOn leaked`).toBe(false);
+		}
+	});
+
 	test('replay-time achievement unlock is suppressed by isReplaying guard', async ({ game: page }) => {
 		// HUNT_END_ASSAULTED with no ctx is a no-op in the onHuntEnd
 		// handler anyway, but unlock() must hard-reject any replay-time

@@ -3,25 +3,36 @@
 <<image "ui/img/sleeping.jpg" { width: "100%" }>>
 <br>
 <br>
-<<if setup.Home.shouldRouteToTentaclesSleep(previous())>>
-	<<run setup.Home.sleepAdvance(setup.Home.restHours())>>
-	<<goto "TentaclesEventSleep">>
+/* Hunt-defeat flashback replays exit through huntCaughtPassage() ->
+   "Sleep", which the containment guard bounces back to the gallery.
+   Without this gate every side effect below fires during the transient
+   render: applyHuntDefeatPreSleep stamps isPenaltyOn=true (NOT in
+   SNAPSHOT_PATHS) and rolls a cursed item, applySleepPostWake rewrites
+   sanity/lust, and markSleptWithCameraOn flips the camera flag --
+   leaving the player wearing "Need to buy medicine" after a pure
+   re-watch. isReplaying() stays true because containReplay defers
+   exitReplay() into the bounce setTimeout. */
+<<if not setup.Flashbacks.isReplaying()>>
+	<<if setup.Home.shouldRouteToTentaclesSleep(previous())>>
+		<<run setup.Home.sleepAdvance(setup.Home.restHours())>>
+		<<goto "TentaclesEventSleep">>
+	<</if>>
+
+	<<if setup.Home.cameFromHuntDefeat(previous())>>
+		<<run setup.Home.applyHuntDefeatPreSleep()>>
+	<</if>>
+
+	<<set _sleep to setup.Home.resolveSleepWake(previous())>>
+	@@.backbtn;<<link "Wake up" `_sleep.passage`>>
+		<<run setup.Home.sleepAdvance(_sleep.hours)>>
+	<</link>>@@
+	<<run setup.Home.applySleepPostWake(_sleep.postWake)>>
+
+	<<if previous() eq "GhostSpecialEventMareEnd">>
+		<<run setup.Mc.setEnergy(30)>>
+	<</if>>
+
+	<<if setup.Home.cameraBought()>><<run setup.Home.markSleptWithCameraOn()>><</if>>
 <</if>>
-
-<<if setup.Home.cameFromHuntDefeat(previous())>>
-	<<run setup.Home.applyHuntDefeatPreSleep()>>
-<</if>>
-
-<<set _sleep to setup.Home.resolveSleepWake(previous())>>
-@@.backbtn;<<link "Wake up" `_sleep.passage`>>
-	<<run setup.Home.sleepAdvance(_sleep.hours)>>
-<</link>>@@
-<<run setup.Home.applySleepPostWake(_sleep.postWake)>>
-
-<<if previous() eq "GhostSpecialEventMareEnd">>
-	<<run setup.Mc.setEnergy(30)>>
-<</if>>
-
-<<if setup.Home.cameraBought()>><<run setup.Home.markSleptWithCameraOn()>><</if>>
 <</nobr>>
-<<wipeMakeup 5>>
+<<if not setup.Flashbacks.isReplaying()>><<wipeMakeup 5>><</if>>
