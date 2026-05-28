@@ -120,6 +120,14 @@ setup.Achievements = setup.Achievements || {};
 			return false;
 		}
 		if (hasCheated() && id !== 'fun.cheat') return false;
+		/* Flashbacks replays re-render scenes that originally emitted
+		   unlock-triggering events. The achievements store is not in
+		   the replay snapshot (achievements persist across runs as a
+		   meta-progress record), so a replay-time unlock would stick
+		   past exitReplay and grant an achievement the player did not
+		   newly earn. Suppress every replay-time unlock -- the player
+		   is re-watching a memory, not earning fresh credit. */
+		if (setup.Flashbacks.isReplaying()) return false;
 		var s = store();
 		var firstTime = !s[id];
 		if (firstTime) s[id] = { at: Date.now() };

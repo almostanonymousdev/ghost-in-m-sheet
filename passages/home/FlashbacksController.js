@@ -28,6 +28,65 @@ setup.Flashbacks = (function () {
 	var sv = setup.sv;
 	var bundle = setup.lazyBundle('flashbacks', { seen: {}, active: null });
 
+	/* Shared extra-snapshot bundles. Entries that strip the wardrobe,
+	   activate a companion, or stamp a minimal $run reference these
+	   from their extraSnapshot field rather than re-listing the paths.
+	   Mirrors the relevant controller's OWNED_VARS so anything that
+	   cheatStripAll / cheatActivateCompanion / cheatStampMinimalRun can
+	   touch gets captured.
+
+	   Defined here (above CATALOGUE) because the catalogue's
+	   extraSnapshot fields call .concat() on them at IIFE-eval time --
+	   if these declarations sat below the catalogue, var-hoisting would
+	   leave them undefined at concat time and the whole controller
+	   would throw on load, taking down every script that loads after
+	   it (Hunt, Achievements). See the catalogue's nudity_walk_* /
+	   hunt_caught_* entries. */
+	var WARDROBE_PATHS = Object.freeze([
+		'tshirtState', 'braState', 'pantiesState',
+		'jeansState', 'shortsState', 'skirtState',
+		'tshirtState0', 'tshirtState1', 'tshirtState2', 'tshirtState3',
+		'braState0', 'braState1', 'braState2', 'braState3',
+		'pantiesState0', 'pantiesState1', 'pantiesState2', 'pantiesState3',
+		'jeansState0', 'jeansState1', 'jeansState2', 'jeansState3',
+		'shortsState1', 'shortsState2', 'shortsState3',
+		'skirtState1', 'skirtState2', 'skirtState3',
+		'stockingsState1', 'stockingsState2', 'stockingsState3',
+		'footState1', 'footState2', 'footState3',
+		'neckChokerState1',
+		'rememberTopOuter', 'rememberBottomOuter',
+		'rememberTopUnder', 'rememberBottomUnder',
+		'rememberBottomStockings',
+		'isPantiesStolen', 'isBottomStolen',
+		'isShirtStolen', 'isBraStolen',
+		'isJeansStolen', 'isShortsStolen', 'isSkirtStolen',
+		{ path: 'lostClothing', deep: true }
+	]);
+
+	/* Companion state is split across a marker ($companion = {name})
+	   and per-companion stat rows ($brook / $alice / $blake). Deep
+	   on all four so an in-replay setActiveLust / runHuntFailHooks
+	   mutation can be reversed. */
+	var COMPANION_PATHS = Object.freeze([
+		{ path: 'companion', deep: true },
+		{ path: 'brook', deep: true },
+		{ path: 'alice', deep: true },
+		{ path: 'blake', deep: true },
+		'isCompChosen', 'aliceWorkDone'
+	]);
+
+	/* Hunt-lifecycle state. $run must be deep because
+	   cheatStampMinimalRun mutates the existing object; huntMode is
+	   primitive. Possession residue and tool timers are reset by
+	   onCaughtCleanup, which the HuntOver* passages run on render. */
+	var HUNT_PATHS = Object.freeze([
+		{ path: 'run', deep: true },
+		'huntMode',
+		'exhausted',
+		'priestessFreezeTriggered',
+		{ path: 'tools', deep: true }
+	]);
+
 	/* Static catalogue. Each entry is one replayable scene.
 	   - id:          stable storage key; never rename without a migration
 	   - title:       gallery card label
@@ -51,17 +110,17 @@ setup.Flashbacks = (function () {
 			scenePassage: 'DeliveryManagerSex',
 			hint: 'The couch in the back, broken springs and all.'
 		},
-		{
-			id: 'delivery_special', title: 'Earn the Tip', location: 'Delivery Hub',
-			scenePassage: 'DeliverySpecialUnsafe',
-			hint: 'A customer who wants more than the package.'
-		},
 
 		/* Delivery Events -- the four item-keyed customer encounters
 		   that all dispatch through DeliveryEventStart. Each setup()
 		   plants the order state via setup.Delivery.cheatReplayOrder so
 		   the switch picks the right branch; replayPassages allows the
 		   multi-passage chains. */
+		{
+			id: 'delivery_special', title: 'Earn the Tip', location: 'Delivery Events',
+			scenePassage: 'DeliverySpecialUnsafe',
+			hint: 'A customer who wants more than the package.'
+		},
 		{
 			id: 'delivery_burger', title: 'Burgers and Bud', location: 'Delivery Events',
 			scenePassage: 'DeliveryEventStart',
@@ -294,6 +353,70 @@ setup.Flashbacks = (function () {
 			},
 			hint: 'The witch buys these back. For a reason.'
 		},
+		{
+			/* Solo walk home stripped. NudityEvent renders a video off
+			   the wardrobe state (naked / topless+panties / topless+bottoms)
+			   and writes exhibitionism. cheatStripAll plants the naked
+			   variant; the snapshot reverses both the strip and the
+			   exhibitionism increment. */
+			id: 'nudity_walk_solo', title: 'Walk Home Naked', location: 'Hunt',
+			scenePassage: 'NudityEvent',
+			setup: function () { setup.Wardrobe.cheatStripAll(); },
+			extraSnapshot: WARDROBE_PATHS,
+			hint: 'A long block home with nothing on.'
+		},
+		{
+			/* Same walk home, but with a companion. NudityEventTwo calls
+			   Companion.setActiveLust(100) on entry -- without a planted
+			   active companion the call no-ops and the prose reads
+			   wrong. Plant Brook so the active-stat row exists; snapshot
+			   the whole companion bundle so the lust spike unwinds.
+			   The wardrobe strip is for the same reason as the solo
+			   variant. */
+			id: 'nudity_walk_duo', title: 'Walk Home Together', location: 'Hunt',
+			scenePassage: 'NudityEventTwo',
+			setup: function () {
+				setup.Wardrobe.cheatStripAll();
+				setup.Companion.cheatActivateCompanion('Brook');
+			},
+			extraSnapshot: WARDROBE_PATHS.concat(COMPANION_PATHS),
+			hint: 'You and your friend in matching bathrobes.'
+		},
+		{
+			/* Caught-by-ghost hunt-end. HuntOverProwl branches on
+			   ghost.canTentacles, isIronclad, Alice-companion, then
+			   wardrobe slot. Stamp a Spirit run (canTentacles false,
+			   non-Mimic) and activate the hunt so activeGhost() returns
+			   the planted ghost. Force a non-Alice companion so the
+			   default body-fucking branch renders. The passage runs
+			   onCaughtCleanup() + addPossessionResidue() on entry, so
+			   HUNT_PATHS captures $run / tools / possessionResidue and
+			   restores them on exit. */
+			id: 'hunt_caught_prowl', title: 'Caught: Ghost Prowl', location: 'Hunt',
+			scenePassage: 'HuntOverProwl',
+			setup: function () {
+				setup.HuntController.cheatStampMinimalRun({ ghostName: 'Spirit' });
+				setup.HuntController.activateHunt();
+				setup.Companion.cheatActivateCompanion('Brook');
+				setup.Wardrobe.cheatStripAll();
+			},
+			extraSnapshot: HUNT_PATHS.concat(WARDROBE_PATHS).concat(COMPANION_PATHS),
+			hint: "What happens when the ghost wins the prowl."
+		},
+		{
+			/* Sanity-out hunt-end. HuntOverSanity branches on tentacles
+			   vs ironclad vs default. Spirit again -- canTentacles is
+			   false so the generic sanityover/N.mp4 video plays. Same
+			   onCaughtCleanup cascade fires; HUNT_PATHS covers it. */
+			id: 'hunt_caught_sanity', title: 'Caught: Sanity Break', location: 'Hunt',
+			scenePassage: 'HuntOverSanity',
+			setup: function () {
+				setup.HuntController.cheatStampMinimalRun({ ghostName: 'Spirit' });
+				setup.HuntController.activateHunt();
+			},
+			extraSnapshot: HUNT_PATHS.concat(WARDROBE_PATHS).concat(COMPANION_PATHS),
+			hint: 'When the house finally tips you sideways.'
+		},
 
 		// Hunt Aftermath
 		{
@@ -387,13 +510,24 @@ setup.Flashbacks = (function () {
 	   replay would burn the same-day real visit. We enumerate
 	   setup.Cooldowns.listDaily() at snapshot time rather than
 	   freezing a list here, so new cooldowns are picked up
-	   automatically as other controllers register them. */
+	   automatically as other controllers register them.
+
+	   Entries are either a dotted-path string (primitive leaf, stored
+	   by value) or { path, deep: true } for object/array leaves that
+	   the in-replay code mutates in place -- $run is the canonical
+	   case (HuntController.cheatStampMinimalRun rewrites fields on
+	   the existing run rather than replacing the reference), so a
+	   shallow capture would store a pointer to the same object that
+	   the cheat helper goes on to mutate, leaving nothing to restore.
+	   Deep entries pass through structured-clone (JSON round-trip)
+	   so the snapshot is independent of subsequent mutations. */
 	var SNAPSHOT_PATHS = Object.freeze([
 		'mc.lust', 'mc.sanity', 'mc.energy', 'mc.corruption',
 		'mc.money', 'mc.exp', 'mc.lvl',
 		'mc.percentageOfLevel', 'mc.neededForNextLevel',
 		'mc.sanityMax', 'mc.lustMax', 'mc.energyMax',
 		'mc.beautyBase', 'mc.beautyModifier',
+		'mc.exhibitionism', 'mc.possessionResidue',
 		'hours', 'minutes', 'dailySeed',
 		'earnedMoney',
 		'currentOrder', 'order1', 'order2', 'order3',
@@ -408,14 +542,43 @@ setup.Flashbacks = (function () {
 		'baitOrgasmPending'
 	]);
 
-	function takeSnapshot() {
+	function pathSpec(entry) {
+		if (typeof entry === 'string') return { path: entry, deep: false };
+		return { path: entry.path, deep: !!entry.deep };
+	}
+
+	function readLeaf(s, path) {
+		var parts = path.split('.');
+		var v = s;
+		for (var i = 0; i < parts.length && v != null; i++) v = v[parts[i]];
+		return v;
+	}
+
+	function writeLeaf(s, path, value) {
+		var parts = path.split('.');
+		var target = s;
+		for (var i = 0; i < parts.length - 1; i++) {
+			if (target == null) return;
+			target = target[parts[i]];
+		}
+		if (target == null) return;
+		target[parts[parts.length - 1]] = value;
+	}
+
+	function captureValue(v, deep) {
+		if (!deep) return v;
+		if (v === undefined || v === null) return v;
+		return JSON.parse(JSON.stringify(v));
+	}
+
+	function takeSnapshot(extras) {
 		var snap = {};
 		var s = sv();
-		SNAPSHOT_PATHS.forEach(function (p) {
-			var parts = p.split('.');
-			var v = s;
-			for (var i = 0; i < parts.length && v != null; i++) v = v[parts[i]];
-			snap[p] = v;
+		var all = SNAPSHOT_PATHS.slice();
+		if (Array.isArray(extras)) all = all.concat(extras);
+		all.forEach(function (raw) {
+			var spec = pathSpec(raw);
+			snap[spec.path] = captureValue(readLeaf(s, spec.path), spec.deep);
 		});
 		setup.Cooldowns.listDaily().forEach(function (name) {
 			snap[name] = s[name];
@@ -427,14 +590,7 @@ setup.Flashbacks = (function () {
 		if (!snap || typeof snap !== 'object') return;
 		var s = sv();
 		Object.keys(snap).forEach(function (p) {
-			var parts = p.split('.');
-			var target = s;
-			for (var i = 0; i < parts.length - 1; i++) {
-				if (target == null) return;
-				target = target[parts[i]];
-			}
-			if (target == null) return;
-			target[parts[parts.length - 1]] = snap[p];
+			writeLeaf(s, p, snap[p]);
 		});
 	}
 
@@ -443,7 +599,7 @@ setup.Flashbacks = (function () {
 		if (!entry) return false;
 		var b = store();
 		b.active = id;
-		b.snapshot = takeSnapshot();
+		b.snapshot = takeSnapshot(entry.extraSnapshot);
 		/* Optional per-entry stub. Catalogue entries that share a
 		   dispatcher passage (the four delivery-event scenes all start
 		   at DeliveryEventStart) or need contrived state planted

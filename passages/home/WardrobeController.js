@@ -334,6 +334,29 @@
             s.pantiesState = NOT_WORN;
             s.braState = NOT_WORN;
         },
+        /* Test / cheat shortcut: unequip whichever item is currently
+           worn in every wardrobe slot, going through the regular
+           unequip path so beauty deltas reverse and the rememberVar
+           "no<key>" markers get stamped. Used by the Flashbacks gallery
+           to plant a nude MC before replaying NudityEvent / HuntOverProwl
+           variants without forcing the player's real wardrobe to flip.
+           Caller snapshots wardrobe state and restores on exit.
+
+           The `cheat` prefix marks this as cheat/test-only — see
+           tests/cheat-method-lint.spec.js, which forbids production
+           passages from calling any setup.X.cheat* method outside the
+           cheat dialog. */
+        cheatStripAll: function () {
+            var V = State.variables;
+            var self = this;
+            setup.WARDROBE_GROUPS.forEach(function (grp) {
+                var worn = grp.items.find(function (it) {
+                    return V[it.var] === setup.ClothingState.WORN;
+                });
+                if (worn) self.unequip(grp, worn);
+            });
+            self.refreshAggregateStates();
+        },
         /* Permanently discard whatever garment the ghost stole
          * (mark as "not bought"). Fired when the MC leaves the
          * hunt without recovering her clothes. Works on every

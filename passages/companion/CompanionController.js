@@ -351,6 +351,26 @@ setup.Companion = (function () {
 			var obj = this.stateFor(key);
 			if (obj) { obj.lvl = lvl; }
 		},
+		/* Test / cheat shortcut: stamp $companion = { name } and flip
+		   $isCompChosen so setup.Companion.activeState() resolves to
+		   the named companion's stat row. Used by the Flashbacks
+		   gallery to plant an active companion for scenes that read
+		   the active stat row (NudityEventTwo's setActiveLust,
+		   HuntOverProwl's Alice branch) without re-running the
+		   production pick() flow — pick() resets unrelated hunt-plan
+		   fields, which would force the caller to snapshot more
+		   state than it needs to.
+
+		   The `cheat` prefix marks this as cheat/test-only — see
+		   tests/cheat-method-lint.spec.js, which forbids production
+		   passages from calling any setup.X.cheat* method outside
+		   the cheat dialog. */
+		cheatActivateCompanion: function (name) {
+			if (!this.stateFor(name)) return false;
+			State.variables.companion = { name: name };
+			State.variables.isCompChosen = true;
+			return true;
+		},
 
 		/* Roll & stash the per-street solo-hunt odds for the given
 		   companion into the backing save-field names so the link

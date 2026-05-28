@@ -583,6 +583,225 @@ test.describe('setup.Flashbacks', () => {
 			SugarCube.State.variables.baitOrgasmPending)).toBe(true);
 	});
 
+	/* ----- Stripped walk-home + hunt-end catch (NudityEvent / NudityEventTwo /
+	         HuntOverProwl / HuntOverSanity) ----- */
+
+	test('all four stripped/caught catalogue entries are present', async ({ game: page }) => {
+		const result = await page.evaluate(() => {
+			const F = SugarCube.setup.Flashbacks;
+			return {
+				solo:   F.byId('nudity_walk_solo'),
+				duo:    F.byId('nudity_walk_duo'),
+				prowl:  F.byId('hunt_caught_prowl'),
+				sanity: F.byId('hunt_caught_sanity')
+			};
+		});
+		expect(result.solo).not.toBeNull();
+		expect(result.solo.scenePassage).toBe('NudityEvent');
+		expect(result.duo).not.toBeNull();
+		expect(result.duo.scenePassage).toBe('NudityEventTwo');
+		expect(result.prowl).not.toBeNull();
+		expect(result.prowl.scenePassage).toBe('HuntOverProwl');
+		expect(result.sanity).not.toBeNull();
+		expect(result.sanity.scenePassage).toBe('HuntOverSanity');
+	});
+
+	test('NudityEvent replay strips the wardrobe so the passage picks the naked branch', async ({ game: page }) => {
+		await page.evaluate(() => {
+			SugarCube.State.variables.flashbacks = { seen: {}, active: null };
+			// Player is fully dressed -- without setup() the passage
+			// would <<goto>> Livingroom instead of rendering nude prose.
+			const groups = SugarCube.setup.WARDROBE_GROUPS;
+			const tshirtGrp = groups.find(g => g.name === 'tshirt');
+			SugarCube.setup.Wardrobe.equip(tshirtGrp, tshirtGrp.items.find(it => it.key === 'tshirt1'));
+			const F = SugarCube.setup.Flashbacks;
+			F.markSeen('nudity_walk_solo');
+			F.enterReplay('nudity_walk_solo');
+		});
+
+		const planted = await page.evaluate(() => ({
+			fullyNude: SugarCube.setup.HauntedHouses.isFullyNude(),
+			fullyDressed: SugarCube.setup.HauntedHouses.isFullyDressed(),
+			replaying: SugarCube.setup.Flashbacks.isReplaying()
+		}));
+		expect(planted.fullyNude).toBe(true);
+		expect(planted.fullyDressed).toBe(false);
+		expect(planted.replaying).toBe(true);
+	});
+
+	test('NudityEvent exitReplay restores a fully-dressed wardrobe and exhibitionism level', async ({ game: page }) => {
+		await page.evaluate(() => {
+			SugarCube.State.variables.flashbacks = { seen: {}, active: null };
+			// Pre-replay state: dressed, exhibitionism = 0.
+			const groups = SugarCube.setup.WARDROBE_GROUPS;
+			const tshirtGrp = groups.find(g => g.name === 'tshirt');
+			SugarCube.setup.Wardrobe.equip(tshirtGrp, tshirtGrp.items.find(it => it.key === 'tshirt1'));
+			const jeansGrp = groups.find(g => g.name === 'bottomOuter');
+			SugarCube.setup.Wardrobe.equip(jeansGrp, jeansGrp.items.find(it => it.key === 'jeans1'));
+			SugarCube.setup.Mc.setExhibitionism(0);
+			const F = SugarCube.setup.Flashbacks;
+			F.markSeen('nudity_walk_solo');
+			F.enterReplay('nudity_walk_solo');
+		});
+
+		// Mid-replay: scene-style writes to exhibitionism.
+		await page.evaluate(() => SugarCube.setup.Mc.setExhibitionism(7));
+
+		await page.evaluate(() => SugarCube.setup.Flashbacks.exitReplay());
+
+		const restored = await page.evaluate(() => ({
+			tshirtWorn: SugarCube.setup.Wardrobe.worn(SugarCube.setup.WardrobeSlot.TSHIRT),
+			jeansWorn:  SugarCube.setup.Wardrobe.worn(SugarCube.setup.WardrobeSlot.JEANS),
+			exhibitionism: SugarCube.setup.Mc.exhibitionism()
+		}));
+		expect(restored.tshirtWorn).toBe(true);
+		expect(restored.jeansWorn).toBe(true);
+		expect(restored.exhibitionism).toBe(0);
+	});
+
+	test('NudityEventTwo replay plants an active companion so setActiveLust has somewhere to land', async ({ game: page }) => {
+		await page.evaluate(() => {
+			SugarCube.State.variables.flashbacks = { seen: {}, active: null };
+			// No active companion pre-replay.
+			SugarCube.State.variables.companion = {};
+			SugarCube.State.variables.isCompChosen = false;
+			const F = SugarCube.setup.Flashbacks;
+			F.markSeen('nudity_walk_duo');
+			F.enterReplay('nudity_walk_duo');
+		});
+
+		const planted = await page.evaluate(() => ({
+			compName: SugarCube.State.variables.companion && SugarCube.State.variables.companion.name,
+			isCompChosen: SugarCube.State.variables.isCompChosen,
+			activeState: SugarCube.setup.Companion.activeState(),
+			fullyNude: SugarCube.setup.HauntedHouses.isFullyNude()
+		}));
+		expect(planted.compName).toBe('Brook');
+		expect(planted.isCompChosen).toBe(true);
+		expect(planted.activeState).toBeTruthy();
+		expect(planted.fullyNude).toBe(true);
+	});
+
+	test('NudityEventTwo exitReplay restores companion bundle even when in-replay lust spikes', async ({ game: page }) => {
+		await page.evaluate(() => {
+			SugarCube.State.variables.flashbacks = { seen: {}, active: null };
+			SugarCube.State.variables.companion = {};
+			SugarCube.State.variables.isCompChosen = false;
+			// Brook starts with some pre-replay lust value.
+			SugarCube.State.variables.brook.lust = 12;
+			const F = SugarCube.setup.Flashbacks;
+			F.markSeen('nudity_walk_duo');
+			F.enterReplay('nudity_walk_duo');
+		});
+
+		// Simulate the passage's setActiveLust(100) call mid-replay.
+		await page.evaluate(() => SugarCube.setup.Companion.setActiveLust(100));
+
+		await page.evaluate(() => SugarCube.setup.Flashbacks.exitReplay());
+
+		const restored = await page.evaluate(() => ({
+			compName: SugarCube.State.variables.companion && SugarCube.State.variables.companion.name,
+			isCompChosen: SugarCube.State.variables.isCompChosen,
+			brookLust: SugarCube.State.variables.brook.lust
+		}));
+		// Original companion was an empty marker; restore puts it back.
+		expect(restored.compName).toBeUndefined();
+		expect(restored.isCompChosen).toBe(false);
+		expect(restored.brookLust).toBe(12);
+	});
+
+	test('HuntOverProwl replay stamps a Spirit run + activates hunt mode', async ({ game: page }) => {
+		await page.evaluate(() => {
+			SugarCube.State.variables.flashbacks = { seen: {}, active: null };
+			// No active hunt pre-replay.
+			SugarCube.State.variables.run = null;
+			SugarCube.State.variables.huntMode = SugarCube.setup.HuntController.HuntMode.NONE;
+			const F = SugarCube.setup.Flashbacks;
+			F.markSeen('hunt_caught_prowl');
+			F.enterReplay('hunt_caught_prowl');
+		});
+
+		const planted = await page.evaluate(() => ({
+			ghostName: SugarCube.setup.Ghosts.huntRealName(),
+			isHunting: SugarCube.setup.HuntController.isHunting(),
+			activeGhost: SugarCube.setup.HuntController.activeGhost() && SugarCube.setup.HuntController.activeGhost().name
+		}));
+		expect(planted.ghostName).toBe('Spirit');
+		expect(planted.isHunting).toBe(true);
+		expect(planted.activeGhost).toBe('Spirit');
+	});
+
+	test('HuntOverProwl exitReplay clears the planted run and restores prior huntMode', async ({ game: page }) => {
+		await page.evaluate(() => {
+			SugarCube.State.variables.flashbacks = { seen: {}, active: null };
+			SugarCube.State.variables.run = null;
+			SugarCube.State.variables.huntMode = SugarCube.setup.HuntController.HuntMode.NONE;
+			SugarCube.State.variables.mc.possessionResidue = 0;
+			const F = SugarCube.setup.Flashbacks;
+			F.markSeen('hunt_caught_prowl');
+			F.enterReplay('hunt_caught_prowl');
+		});
+
+		// Simulate the passage's onCaughtCleanup + addPossessionResidue cascade.
+		await page.evaluate(() => {
+			SugarCube.setup.HuntController.onCaughtCleanup();
+			SugarCube.setup.Mc.addPossessionResidue();
+		});
+
+		await page.evaluate(() => SugarCube.setup.Flashbacks.exitReplay());
+
+		const restored = await page.evaluate(() => ({
+			run: SugarCube.State.variables.run,
+			huntMode: SugarCube.State.variables.huntMode,
+			residue: SugarCube.setup.Mc.possessionResidue(),
+			noneMode: SugarCube.setup.HuntController.HuntMode.NONE
+		}));
+		expect(restored.run).toBeNull();
+		expect(restored.huntMode).toBe(restored.noneMode);
+		expect(restored.residue).toBe(0);
+	});
+
+	test('HuntOverSanity replay stamps a Spirit run + activates hunt mode', async ({ game: page }) => {
+		await page.evaluate(() => {
+			SugarCube.State.variables.flashbacks = { seen: {}, active: null };
+			SugarCube.State.variables.run = null;
+			SugarCube.State.variables.huntMode = SugarCube.setup.HuntController.HuntMode.NONE;
+			const F = SugarCube.setup.Flashbacks;
+			F.markSeen('hunt_caught_sanity');
+			F.enterReplay('hunt_caught_sanity');
+		});
+
+		const planted = await page.evaluate(() => ({
+			ghostName: SugarCube.setup.Ghosts.huntRealName(),
+			isHunting: SugarCube.setup.HuntController.isHunting()
+		}));
+		expect(planted.ghostName).toBe('Spirit');
+		expect(planted.isHunting).toBe(true);
+	});
+
+	test('replay-time achievement unlock is suppressed by isReplaying guard', async ({ game: page }) => {
+		// HUNT_END_ASSAULTED with no ctx is a no-op in the onHuntEnd
+		// handler anyway, but unlock() must hard-reject any replay-time
+		// call to keep future hooks honest.
+		const result = await page.evaluate(() => {
+			SugarCube.State.variables.flashbacks = { seen: {}, active: null };
+			// Make sure save is not cheated -- that would shadow the
+			// new guard.
+			SugarCube.State.variables.achievements = {};
+			const F = SugarCube.setup.Flashbacks;
+			F.markSeen('hunt_caught_prowl');
+			F.enterReplay('hunt_caught_prowl');
+			// Try a direct unlock during replay; should be rejected.
+			const duringReplay = SugarCube.setup.Achievements.unlock('disc.trap');
+			F.exitReplay();
+			// After exit, the same unlock works.
+			const afterReplay = SugarCube.setup.Achievements.unlock('disc.trap');
+			return { duringReplay, afterReplay };
+		});
+		expect(result.duringReplay).toBe(false);
+		expect(result.afterReplay).toBe(true);
+	});
+
 	test('visiting DeliveryEventStart during replay does not double-credit', async ({ game: page }) => {
 		// Burger replay enters DeliveryEventStart in replay mode; the auto-mark
 		// path must not stamp seen on an unrelated catalogue entry, and must
