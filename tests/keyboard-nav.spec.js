@@ -9,27 +9,85 @@ const { goToPassage } = require('./helpers');
  */
 
 test.describe('KeyboardNav', () => {
-  test('Home assigns 1 to the .movebtn (Go inside) and 2 to .backbtn (Leave)', async ({ game: page }) => {
+  test('Home assigns 1 to .enterbtn (Go inside) and esc to .backbtn (Leave)', async ({ game: page }) => {
     // arrange
     await goToPassage(page, 'Home');
     // act
-    const keys = await page.evaluate(() => SugarCube.setup.KeyboardNav._numberHotkeys());
-    const byKey = Object.fromEntries(keys.map(k => [k.key, k.text]));
-    // assert — movebtn ("Go inside") wins priority, backbtn ("Leave") is next.
-    // Home uses .enterbtn for "Go inside" actually — let's just check both exist.
-    expect(byKey['1']).toBeTruthy();
-    expect(keys.length).toBeGreaterThanOrEqual(2);
+    const { numbers, escLink } = await page.evaluate(() => {
+      const keys = SugarCube.setup.KeyboardNav._numberHotkeys();
+      const root = document.getElementById('passages');
+      const esc  = root.querySelector('a[data-hotkey-letter="esc"]');
+      return {
+        numbers: keys,
+        escLink: esc ? (esc.textContent || '').trim() : null
+      };
+    });
+    // assert — backbtn ("Leave") is the esc target; enterbtn ("Go inside") is the sole number.
+    expect(numbers.length).toBe(1);
+    expect(numbers[0].key).toBe('1');
+    expect(numbers[0].text).toBe('Go inside');
+    expect(escLink).toBe('Leave');
   });
 
-  test('priority puts .movebtn ahead of .enterbtn ahead of .backbtn', async ({ game: page }) => {
-    // arrange
+  test('non-backbtn links sort by visual reading order; backbtn drops out for esc', async ({ game: page }) => {
+    // arrange — three block elements with explicit vertical positions
+    // and one inline plain link. The visual order is top-down (third
+    // → first → second), and DOM order is the inverse — the sort must
+    // follow getBoundingClientRect, not DOM order. We have to enter a
+    // real passage first so #passages is laid out (otherwise its
+    // ancestor chain is display:none and every rect returns zeros).
+    await goToPassage(page, 'Home');
+    // Wait one frame so Home's :passagedisplay refresh fires and any
+    // pending SugarCube transitions commit — otherwise #passages can
+    // still be display:none while transitioning and every rect we read
+    // back collapses to zero.
+    await page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
     await page.evaluate(() => {
       const root = document.getElementById('passages');
       root.innerHTML =
-        '<span class="enterbtn"><a href="javascript:void(0)" data-test="enter">Enter</a></span>' +
-        '<span class="movebtn"><a href="javascript:void(0)" data-test="move">Move</a></span>' +
-        '<span class="backbtn"><a href="javascript:void(0)" data-test="back">Back</a></span>' +
-        '<a href="javascript:void(0)" data-test="plain">Plain</a>';
+        '<div style="position:absolute; top:300px; left:10px;"><a data-test="bottom">Bottom</a></div>' +
+        '<div style="position:absolute; top:100px; left:10px;"><a data-test="top">Top</a></div>' +
+        '<div style="position:absolute; top:200px; left:10px;"><a data-test="middle">Middle</a></div>' +
+        '<span class="backbtn"><a data-test="back">Back</a></span>';
+      // Force a layout pass before the keymap is derived so
+      // getBoundingClientRect returns committed coords.
+      void root.offsetHeight;
+      SugarCube.setup.KeyboardNav.refresh();
+    });
+    // act
+    const { tags, escTag } = await page.evaluate(() => {
+      const m = SugarCube.setup.KeyboardNav._numberHotkeys();
+      const root = document.getElementById('passages');
+      const esc  = root.querySelector('a[data-hotkey-letter="esc"]');
+      return {
+        tags: m.map(({ key }) => ({
+          key,
+          tag: root.querySelector(`a[data-hotkey="${key}"]`).getAttribute('data-test')
+        })),
+        escTag: esc ? esc.getAttribute('data-test') : null
+      };
+    });
+    // assert — purely visual top-to-bottom; backbtn is excluded.
+    expect(tags[0]).toEqual({ key: '1', tag: 'top' });
+    expect(tags[1]).toEqual({ key: '2', tag: 'middle' });
+    expect(tags[2]).toEqual({ key: '3', tag: 'bottom' });
+    expect(escTag).toBe('back');
+  });
+
+  test('rows tie-break left-to-right', async ({ game: page }) => {
+    // arrange — three anchors on the same y, different x. Reverse the
+    // DOM order vs. the visual order so DOM-order fallback can't fake
+    // the result.
+    await goToPassage(page, 'Home');
+    await page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
+    await page.evaluate(() => {
+      const root = document.getElementById('passages');
+      root.innerHTML =
+        '<a style="position:absolute; top:100px; left:300px;" data-test="right">Right</a>' +
+        '<a style="position:absolute; top:100px; left:100px;" data-test="left">Left</a>' +
+        '<a style="position:absolute; top:100px; left:200px;" data-test="middle">Middle</a>';
+      // Force layout commit before reading rects.
+      void root.offsetHeight;
       SugarCube.setup.KeyboardNav.refresh();
     });
     // act
@@ -41,11 +99,86 @@ test.describe('KeyboardNav', () => {
         tag: root.querySelector(`a[data-hotkey="${key}"]`).getAttribute('data-test')
       }));
     });
-    // assert — movebtn → backbtn → enterbtn → plain
-    expect(tags[0]).toEqual({ key: '1', tag: 'move' });
-    expect(tags[1]).toEqual({ key: '2', tag: 'back' });
-    expect(tags[2]).toEqual({ key: '3', tag: 'enter' });
-    expect(tags[3]).toEqual({ key: '4', tag: 'plain' });
+    // assert — left → middle → right
+    expect(tags[0]).toEqual({ key: '1', tag: 'left' });
+    expect(tags[1]).toEqual({ key: '2', tag: 'middle' });
+    expect(tags[2]).toEqual({ key: '3', tag: 'right' });
+  });
+
+  test('huntNavLink pins to the front of the number list in top-down order', async ({ game: page }) => {
+    // arrange — three hunt-nav exits visually BELOW a regular .movebtn
+    // link. Reading order alone would put the movebtn first, but the
+    // hunt-nav pin keeps the exits at 1/2/3 (top-down) and pushes the
+    // movebtn to 4. Real passage first so #passages can lay out.
+    await goToPassage(page, 'Home');
+    await page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
+    await page.evaluate(() => {
+      const root = document.getElementById('passages');
+      root.innerHTML =
+        '<div style="position:absolute; top:50px; left:10px;">' +
+          '<span class="movebtn"><a data-test="otherMove">Other</a></span>' +
+        '</div>' +
+        '<div style="position:absolute; top:400px; left:10px;">' +
+          '<span class="movebtn huntNavLink"><a data-test="exit1">Exit1</a></span>' +
+        '</div>' +
+        '<div style="position:absolute; top:500px; left:10px;">' +
+          '<span class="movebtn huntNavLink"><a data-test="exit2">Exit2</a></span>' +
+        '</div>' +
+        '<div style="position:absolute; top:600px; left:10px;">' +
+          '<span class="movebtn huntNavLink"><a data-test="exit3">Exit3</a></span>' +
+        '</div>';
+      void root.offsetHeight;
+      SugarCube.setup.KeyboardNav.refresh();
+    });
+    // act
+    const tags = await page.evaluate(() => {
+      const m = SugarCube.setup.KeyboardNav._numberHotkeys();
+      const root = document.getElementById('passages');
+      return m.map(({ key }) => ({
+        key,
+        tag: root.querySelector(`a[data-hotkey="${key}"]`).getAttribute('data-test')
+      }));
+    });
+    // assert — hunt-nav stack pinned to 1/2/3 in top-down order; the
+    // other movebtn link drops to 4 even though it's visually higher.
+    expect(tags[0]).toEqual({ key: '1', tag: 'exit1' });
+    expect(tags[1]).toEqual({ key: '2', tag: 'exit2' });
+    expect(tags[2]).toEqual({ key: '3', tag: 'exit3' });
+    expect(tags[3]).toEqual({ key: '4', tag: 'otherMove' });
+  });
+
+  test('tool anchors get their permanent letter and are never numbered', async ({ game: page }) => {
+    // arrange — fake a hunt-style tool card (data-tool on the wrapping
+    // span) plus a regular movebtn link. The tool link must take its
+    // permanent letter (f for EMF) and stay off the number map; the
+    // movebtn link must still get 1.
+    await page.evaluate(() => {
+      const root = document.getElementById('passages');
+      root.innerHTML =
+        '<span class="hunt-tool-card-label cardlink" data-tool="emf"><a data-test="emf">Use EMF</a></span>' +
+        '<span data-tool="uvl"><a data-test="uvl">Use UVL</a></span>' +
+        '<span class="movebtn"><a data-test="move">Move</a></span>';
+      SugarCube.setup.KeyboardNav.refresh();
+    });
+    // act
+    const out = await page.evaluate(() => {
+      const root = document.getElementById('passages');
+      return {
+        numbers: SugarCube.setup.KeyboardNav._numberHotkeys(),
+        emf:  root.querySelector('a[data-test="emf"]').getAttribute('data-hotkey-letter'),
+        uvl:  root.querySelector('a[data-test="uvl"]').getAttribute('data-hotkey-letter'),
+        move: root.querySelector('a[data-test="move"]').getAttribute('data-hotkey'),
+        emfHotkey: root.querySelector('a[data-test="emf"]').getAttribute('data-hotkey'),
+        uvlHotkey: root.querySelector('a[data-test="uvl"]').getAttribute('data-hotkey')
+      };
+    });
+    // assert — tools carry their letter, no number; move is sole number.
+    expect(out.emf).toBe('f');
+    expect(out.uvl).toBe('u');
+    expect(out.emfHotkey).toBeNull();
+    expect(out.uvlHotkey).toBeNull();
+    expect(out.numbers.length).toBe(1);
+    expect(out.move).toBe('1');
   });
 
   test('pressing a number key clicks the bound link', async ({ game: page }) => {
@@ -71,6 +204,31 @@ test.describe('KeyboardNav', () => {
     await page.keyboard.up('Alt');
     hasClass = await page.evaluate(() => document.body.classList.contains('show-hotkeys'));
     expect(hasClass).toBe(false);
+  });
+
+  test('alwaysShowHotkeys setting inverts the Alt-hold behavior', async ({ game: page }) => {
+    // arrange — flip the player setting on, then refresh the visibility.
+    await goToPassage(page, 'Home');
+    await page.evaluate(() => {
+      SugarCube.settings.alwaysShowHotkeys = true;
+      SugarCube.setup.KeyboardNav.applyHotkeyVisibility();
+    });
+    // act + assert: the badges are visible at rest now
+    let hasClass = await page.evaluate(() => document.body.classList.contains('show-hotkeys'));
+    expect(hasClass).toBe(true);
+    // Alt held HIDES them
+    await page.keyboard.down('Alt');
+    hasClass = await page.evaluate(() => document.body.classList.contains('show-hotkeys'));
+    expect(hasClass).toBe(false);
+    // Releasing Alt restores visibility
+    await page.keyboard.up('Alt');
+    hasClass = await page.evaluate(() => document.body.classList.contains('show-hotkeys'));
+    expect(hasClass).toBe(true);
+    // cleanup so this leak doesn't bleed into the next test
+    await page.evaluate(() => {
+      SugarCube.settings.alwaysShowHotkeys = false;
+      SugarCube.setup.KeyboardNav.applyHotkeyVisibility();
+    });
   });
 
   test('Alt keydown/keyup are preventDefault-ed (suppresses browser menu focus)', async ({ game: page }) => {
@@ -166,7 +324,7 @@ test.describe('KeyboardNav', () => {
     expect(passage).toBe('Home');
   });
 
-  test('sidebar links get letter shortcuts (Bag → b, Notebook → n, Evidence → v)', async ({ game: page }) => {
+  test('sidebar links get letter shortcuts (Bag → b, Notebook → n, Evidence → v, ChangeLog → y)', async ({ game: page }) => {
     // arrange
     await goToPassage(page, 'Home');
     // act
@@ -176,6 +334,55 @@ test.describe('KeyboardNav', () => {
     expect(byPassage.Bag).toBe('b');
     expect(byPassage.Notebook).toBe('n');
     expect(byPassage.Evidence).toBe('v');
+    expect(byPassage.ChangeLog).toBe('y');
+  });
+
+  test('companion card link picks up the c in-passage letter shortcut', async ({ game: page }) => {
+    // arrange — drop a fake companion card anchor into the passage.
+    // The widget rotates through CompanionMain / CompanionFailed /
+    // CompanionSucceeded depending on hunt state; they all share the
+    // .companion-card-link class, so the selector binding catches
+    // whichever the widget rendered this tick.
+    await page.evaluate(() => {
+      const root = document.getElementById('passages');
+      root.innerHTML = '<a class="companion-card-link" data-test="card">card</a>';
+      SugarCube.setup.KeyboardNav.refresh();
+    });
+    // act
+    const letter = await page.evaluate(() => {
+      const root = document.getElementById('passages');
+      const a = root.querySelector('a.companion-card-link');
+      return a && a.getAttribute('data-hotkey-letter');
+    });
+    // assert
+    expect(letter).toBe('c');
+  });
+
+  test('hunt lights pick up l / o in-passage letter shortcuts', async ({ game: page }) => {
+    // arrange — fake the huntFooterLight markup directly so the test
+    // doesn't have to drive a real hunt to verify the binding.
+    await page.evaluate(() => {
+      const root = document.getElementById('passages');
+      root.innerHTML =
+        '<div class="hunt-run-lights">' +
+          '<span class="kbnav-light-on"><a data-test="on">on</a></span>' +
+          '<span class="kbnav-light-off"><a data-test="off">off</a></span>' +
+        '</div>';
+      SugarCube.setup.KeyboardNav.refresh();
+    });
+    // act
+    const map = await page.evaluate(() => {
+      const root = document.getElementById('passages');
+      const on  = root.querySelector('.kbnav-light-on a');
+      const off = root.querySelector('.kbnav-light-off a');
+      return {
+        on:  on  && on.getAttribute('data-hotkey-letter'),
+        off: off && off.getAttribute('data-hotkey-letter')
+      };
+    });
+    // assert
+    expect(map.on).toBe('l');
+    expect(map.off).toBe('o');
   });
 
   /* Regression guard: sidebar HUD letter shortcuts and the hunt search-tool
@@ -248,6 +455,63 @@ test.describe('KeyboardNav', () => {
     // assert
     expect(keys.length).toBe(1);
     expect(keys[0].text).toBe('On');
+  });
+
+  /* Regression: .disabled-link is typically applied to the link's
+   * parent span (the <<addclass ".cardlink" "disabled-link">> pattern
+   * used by hunt-tool-card-label and the in-room <<searchTool>> markup),
+   * not the <a> itself. The visibility check must walk ancestors.
+   * Same for .disabled-linkSpecial, aria-disabled="true", and the
+   * native [disabled] attribute — all four forms must exclude the
+   * link from both numbering and the esc/tool letter stamps. */
+  test('disabled ancestor forms (parent class, aria, native) all exclude the link', async ({ game: page }) => {
+    // arrange
+    await page.evaluate(() => {
+      const root = document.getElementById('passages');
+      root.innerHTML =
+        // parent .disabled-link
+        '<span class="movebtn disabled-link"><a data-test="parentDisabled">A</a></span>' +
+        // parent .disabled-linkSpecial
+        '<span class="disabled-linkSpecial"><a data-test="special">B</a></span>' +
+        // aria-disabled on the anchor
+        '<a aria-disabled="true" data-test="aria">C</a>' +
+        // native [disabled] attribute
+        '<a disabled data-test="native">D</a>' +
+        // grandparent disabled — must still propagate
+        '<div class="disabled-link"><span><a data-test="grandparent">E</a></span></div>' +
+        // disabled backbtn must NOT get the esc letter
+        '<span class="backbtn disabled-link"><a data-test="backDisabled">F</a></span>' +
+        // disabled tool anchor must NOT get its tool letter
+        '<span data-tool="emf" class="disabled-link"><a data-test="toolDisabled">G</a></span>' +
+        // sanity: an enabled link in the same DOM still gets numbered
+        '<span class="movebtn"><a data-test="ok">H</a></span>';
+      SugarCube.setup.KeyboardNav.refresh();
+    });
+    // act
+    const out = await page.evaluate(() => {
+      const root = document.getElementById('passages');
+      const tagsByNumber = SugarCube.setup.KeyboardNav._numberHotkeys().map(({ key }) => ({
+        key,
+        tag: root.querySelector(`a[data-hotkey="${key}"]`).getAttribute('data-test')
+      }));
+      const letters = ['parentDisabled', 'special', 'aria', 'native', 'grandparent', 'backDisabled', 'toolDisabled']
+        .reduce((acc, t) => {
+          const a = root.querySelector(`a[data-test="${t}"]`);
+          acc[t] = a ? a.getAttribute('data-hotkey-letter') : 'MISSING';
+          return acc;
+        }, {});
+      return { tagsByNumber, letters };
+    });
+    // assert — only the enabled movebtn link is numbered, and no
+    // disabled link picked up an esc / tool letter.
+    expect(out.tagsByNumber).toEqual([{ key: '1', tag: 'ok' }]);
+    expect(out.letters.parentDisabled).toBeNull();
+    expect(out.letters.special).toBeNull();
+    expect(out.letters.aria).toBeNull();
+    expect(out.letters.native).toBeNull();
+    expect(out.letters.grandparent).toBeNull();
+    expect(out.letters.backDisabled).toBeNull();
+    expect(out.letters.toolDisabled).toBeNull();
   });
 
   test('MutationObserver re-derives keymap after DOM changes (linkreplace simulation)', async ({ game: page }) => {

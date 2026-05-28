@@ -168,7 +168,7 @@
 					<<if _cr and _cr.neighbors.length>>
 						<<for _n range _cr.neighbors>>
 							<<capture _n>>
-								@@.movebtn;<<link _n.label "HuntRun">>
+								@@.movebtn.huntNavLink;<<link _n.label "HuntRun">>
 									<<run setup.HuntController.setCurrentRoom(_n.id)>>
 									<<huntTickStep>>
 								<</link>>@@<br>
@@ -178,7 +178,7 @@
 						@@.mc-thoughts; (no exits)@@<br>
 					<</if>>
 					<<if _cr and _cr.template eq setup.FloorPlan.HALLWAY_TEMPLATE>>
-						@@.movebtn; [[Outside|HuntOutside]]@@<br>
+						@@.movebtn.huntNavLink; [[Outside|HuntOutside]]@@<br>
 					<</if>>
 				</div>
 			</div>

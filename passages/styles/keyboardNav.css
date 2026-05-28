@@ -8,11 +8,13 @@
    position:relative on the anchor is set unconditionally so the
    badge has a positioning context the moment Alt is held. */
 #passages a[data-hotkey],
+#passages a[data-hotkey-letter],
 #ui-bar a[data-hotkey-letter] {
 	position: relative;
 }
 
 body.show-hotkeys #passages a[data-hotkey]::before,
+body.show-hotkeys #passages a[data-hotkey-letter]::before,
 body.show-hotkeys #ui-bar a[data-hotkey-letter]::before {
 	position: absolute;
 	top: -0.5em;
@@ -38,9 +40,27 @@ body.show-hotkeys #passages a[data-hotkey]::before {
 	content: attr(data-hotkey);
 }
 
+body.show-hotkeys #passages a[data-hotkey-letter]::before,
 body.show-hotkeys #ui-bar a[data-hotkey-letter]::before {
 	content: attr(data-hotkey-letter);
 	background: rgba(40, 80, 130, 0.95);
+}
+
+/* Tool badges (any [data-tool] ancestor) get a much bigger pill so
+   t/f/g/u/e/s read at a glance during a hunt — the tool icons are
+   the largest interactive targets in the strip and the corner badge
+   was getting lost on the artwork. Centered on the icon rather than
+   tucked into the corner so it doesn't fight the countdown overlay. */
+body.show-hotkeys #passages [data-tool] a[data-hotkey-letter]::before {
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	min-width: 1.6em;
+	padding: 0.1em 0.4em;
+	font-size: 1.6em;
+	line-height: 1.1;
+	border-width: 2px;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
 }
 
 /* ===== Intro banner ===== */

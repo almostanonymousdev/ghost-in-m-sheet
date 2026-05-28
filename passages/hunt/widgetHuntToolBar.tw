@@ -12,10 +12,9 @@
 	<<if _roomId>>
 		<<capture _roomId>>
 			<div class="hunt-run-lights">
-			<span class="cursedHuntLinkDisable"><<link "<<image \"ui/img/lighton.png\">>" "HuntRun">><<run setup.HuntController.setRoomLight(_roomId, setup.RoomLight.LIT)>>
-			<</link>>
-			<<link "<<image \"ui/img/lightoff.png\">>" "HuntRun">><<run setup.HuntController.setRoomLight(_roomId, setup.RoomLight.DARK)>>
-			<</link>></span>
+			<span class="cursedHuntLinkDisable"><span class="kbnav-light-on"><<link "<<image \"ui/img/lighton.png\">>" "HuntRun">><<run setup.HuntController.setRoomLight(_roomId, setup.RoomLight.LIT)>>
+			<</link>></span><span class="kbnav-light-off"><<link "<<image \"ui/img/lightoff.png\">>" "HuntRun">><<run setup.HuntController.setRoomLight(_roomId, setup.RoomLight.DARK)>>
+			<</link>></span></span>
 			</div>
 		<</capture>>
 	<</if>>

@@ -1054,8 +1054,13 @@ setup.searchableRooms.forEach(function (room) {
             inner = '<<addclass ".cardlink" "disabled-link">>\n' + coreBody;
         }
 
+        // data-tool tags the wrapping span with the canonical tool key
+        // (matches the hunt-tool-card-label pattern in widgetHuntToolBar).
+        // KeyboardNav uses that attribute to stamp the permanent letter
+        // badge (t/f/g/u/e/s) on every tool anchor and to skip those
+        // anchors when auto-numbering passage choices.
         return [
-            '<span id="' + ids.buttonId + '">@@.adaptiveLink;<<linkreplace "' + def.label + '">>',
+            '<span id="' + ids.buttonId + '" data-tool="' + cfg.tool + '">@@.adaptiveLink;<<linkreplace "' + def.label + '">>',
             inner,
             '<</linkreplace>>@@</span>'
         ].join('\n');
