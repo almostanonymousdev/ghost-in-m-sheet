@@ -9,10 +9,10 @@
 <br>
 
 <<if _seen eq 0>>
-	@@.mc-thoughts; You sit on the edge of the bed and try to put your finger on a memory worth keeping. Nothing rises. Maybe later -- once you've actually lived something.@@<br>
+	@@.mc-thoughts; You sit on the edge of the bed and try to put your finger on a memory worth recalling. Nothing rises. Perhaps later -- once you've actually lived something.@@<br>
 	<br>
 <<else>>
-	@@.mc-thoughts; You close your eyes. Pick one. Let it play.@@<br>
+	@@.mc-thoughts; You close your eyes and choose a memory, ruminating uselessly on your past.@@<br>
 	<br>
 <</if>>
 
@@ -25,7 +25,7 @@
 				<<capture _entry>>
 					<<set _seenFlag = setup.Flashbacks.hasSeen(_entry.id)>>
 					<<set _title = _seenFlag ? _entry.title : "???">>
-					<<set _hint  = _seenFlag ? _entry.hint  : "A memory you haven't earned yet.">>
+					<<set _hint = _seenFlag ? _entry.hint : "An event you haven't survived yet.">>
 					<div @class="'flashback-card ' + (_seenFlag ? 'unlocked' : 'locked')" @title="_title + '\n' + _hint">
 						<div class="flashback-card-text">
 							<div class="flashback-card-name">_title</div>

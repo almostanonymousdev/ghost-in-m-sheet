@@ -184,6 +184,10 @@ setup.Delivery = (function () {
 		currentOrder: function () { return sv().currentOrder; },
 		setCurrentOrder: function (n) { sv().currentOrder = n; },
 		orders: function () { return sv().orders; },
+		cheatReplayOrder: function (item) {
+			sv().currentOrder = 1;
+			sv().order1 = { item: item, address: 'Replay', image: '' };
+		},
 		earnedMoney: function () { return setup.Mc.earnedMoney(); },
 		addEarnedMoney: function (n) { setup.Mc.addEarnedMoney(n); },
 		resetEarnedMoney: function () { setup.Mc.setEarnedMoney(0); },

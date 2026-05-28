@@ -140,6 +140,14 @@ setup.Witch = (function () {
 			s.gotCursedItem = 0;
 			return cleared;
 		},
+		cheatGrantCursedItem: function (type) {
+			var s = sv();
+			s.gotCursedItem = 1;
+			s.isCIDildo    = (type === 'dildo');
+			s.isCIButtplug = (type === 'buttplug');
+			s.isCIBeads    = (type === 'beads');
+			s.isCIHDildo   = (type === 'hdildo');
+		},
 		shouldAwardGwb3OnTurnIn: function () {
 			return setup.ToolController.tierOf('gwb') !== 3;
 		},

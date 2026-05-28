@@ -39,7 +39,8 @@ const PASSAGES_ROOT = path.join(__dirname, '..', 'passages');
    reviewed: the point of the lint is that the in-game cheat menu is
    the only production caller. */
 const ALLOWED_CALLERS = new Set([
-	'gui/GuiController.js'
+	'gui/GuiController.js',
+	'home/FlashbacksController.js'
 ]);
 
 /* Recursively collect every .tw and .js source file under `dir`. */
@@ -119,9 +120,9 @@ test.describe('cheat method call sites', () => {
 		   opening `{` and balancing braces, ignoring braces inside
 		   strings/comments (already blanked by stripCommentsAndStrings).
 		   Patterns covered:
-		     `cheatX: function (...)`        — object-literal method
-		     `function cheatX(...)`          — function declaration
-		     `cheatX = function (...)`       — assignment form
+			 `cheatX: function (...)`        — object-literal method
+			 `function cheatX(...)`          — function declaration
+			 `cheatX = function (...)`       — assignment form
 		   The heuristic is intentionally simple: nested functions
 		   inside a cheat body remain inside its brace range and so
 		   are also exempt, which matches what we want (helpers a

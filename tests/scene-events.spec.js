@@ -34,14 +34,19 @@ test.describe('setup.SceneEvents', () => {
 	});
 
 	test('every Flashbacks catalogue entry is registered with the bus', async ({ game: page }) => {
+		// Entries that share a dispatcher passage (skipAutoRegister: true)
+		// can't fit in the 1:1 registry; the FlashbacksController wires
+		// their unlock side-band manually instead. Exempt those rows.
 		const data = await page.evaluate(() => {
 			const S = SugarCube.setup.SceneEvents;
 			const F = SugarCube.setup.Flashbacks;
-			return F.all().map(entry => ({
-				id: entry.id,
-				scenePassage: entry.scenePassage,
-				registeredId: S.sceneIdFor(entry.scenePassage)
-			}));
+			return F.all()
+				.filter(entry => !entry.skipAutoRegister)
+				.map(entry => ({
+					id: entry.id,
+					scenePassage: entry.scenePassage,
+					registeredId: S.sceneIdFor(entry.scenePassage)
+				}));
 		});
 		expect(data.length).toBeGreaterThan(0);
 		data.forEach(row => {

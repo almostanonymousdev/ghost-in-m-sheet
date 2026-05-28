@@ -22,19 +22,19 @@ test.describe('setup.Flashbacks', () => {
 		const shape = await page.evaluate(() => {
 			const F = SugarCube.setup.Flashbacks;
 			return {
-				all:                     typeof F.all === 'function',
-				byId:                    typeof F.byId === 'function',
-				byPassage:               typeof F.byPassage === 'function',
-				hasSeen:                 typeof F.hasSeen === 'function',
-				markSeen:                typeof F.markSeen === 'function',
-				seenCount:               typeof F.seenCount === 'function',
-				totalCount:              typeof F.totalCount === 'function',
-				byLocation:              typeof F.byLocation === 'function',
-				enterReplay:             typeof F.enterReplay === 'function',
-				exitReplay:              typeof F.exitReplay === 'function',
-				isReplaying:             typeof F.isReplaying === 'function',
-				activeId:                typeof F.activeId === 'function',
-				activeEntry:             typeof F.activeEntry === 'function'
+				all: typeof F.all === 'function',
+				byId: typeof F.byId === 'function',
+				byPassage: typeof F.byPassage === 'function',
+				hasSeen: typeof F.hasSeen === 'function',
+				markSeen: typeof F.markSeen === 'function',
+				seenCount: typeof F.seenCount === 'function',
+				totalCount: typeof F.totalCount === 'function',
+				byLocation: typeof F.byLocation === 'function',
+				enterReplay: typeof F.enterReplay === 'function',
+				exitReplay: typeof F.exitReplay === 'function',
+				isReplaying: typeof F.isReplaying === 'function',
+				activeId: typeof F.activeId === 'function',
+				activeEntry: typeof F.activeEntry === 'function'
 			};
 		});
 		Object.values(shape).forEach(v => expect(v).toBe(true));
@@ -248,10 +248,10 @@ test.describe('setup.Flashbacks', () => {
 			const before = F.seenCount();
 			F.cheatUnlockAll();
 			return {
-				before:   before,
-				after:    F.seenCount(),
-				total:    F.totalCount(),
-				allSeen:  F.all().every(e => F.hasSeen(e.id))
+				before: before,
+				after: F.seenCount(),
+				total: F.totalCount(),
+				allSeen: F.all().every(e => F.hasSeen(e.id))
 			};
 		});
 		expect(result.before).toBe(0);
@@ -279,5 +279,336 @@ test.describe('setup.Flashbacks', () => {
 		expect(bundle).not.toBeNull();
 		expect(bundle.seen).toEqual({});
 		expect(bundle.active).toBeNull();
+	});
+
+	/* ----- Unified-dispatcher (DeliveryEventStart) extension ----- */
+
+	test('all four delivery-event entries are present in the catalogue', async ({ game: page }) => {
+		const result = await page.evaluate(() => {
+			const F = SugarCube.setup.Flashbacks;
+			return {
+				burger: !!F.byId('delivery_burger'),
+				pizza: !!F.byId('delivery_pizza'),
+				package: !!F.byId('delivery_package'),
+				papers: !!F.byId('delivery_papers'),
+				allDispatchToStart: ['delivery_burger', 'delivery_pizza', 'delivery_package', 'delivery_papers']
+					.every(id => F.byId(id).scenePassage === 'DeliveryEventStart')
+			};
+		});
+		expect(result.burger).toBe(true);
+		expect(result.pizza).toBe(true);
+		expect(result.package).toBe(true);
+		expect(result.papers).toBe(true);
+		expect(result.allDispatchToStart).toBe(true);
+	});
+
+	test('skipAutoRegister entries do not register with SceneEvents', async ({ game: page }) => {
+		// DeliveryEventStart is the dispatcher for four scenes -- the 1:1
+		// SceneEvents registry can't represent that, so the catalogue
+		// entries opt out and the FlashbacksController dispatcher wires
+		// the unlock side-band manually.
+		const registered = await page.evaluate(() => SugarCube.setup.SceneEvents.registered());
+		expect(registered['DeliveryEventStart']).toBeUndefined();
+	});
+
+	test('visiting DeliveryEventStart marks the catalogue entry that matches the active order', async ({ game: page }) => {
+		await page.evaluate(() => {
+			SugarCube.State.variables.flashbacks = { seen: {}, active: null };
+			SugarCube.State.variables.currentOrder = 1;
+			SugarCube.State.variables.order1 = { item: 'burgers', address: 'Replay', image: '' };
+		});
+
+		await goToPassage(page, 'DeliveryEventStart');
+
+		const result = await page.evaluate(() => {
+			const F = SugarCube.setup.Flashbacks;
+			return {
+				burger: F.hasSeen('delivery_burger'),
+				pizza: F.hasSeen('delivery_pizza'),
+				package: F.hasSeen('delivery_package'),
+				papers: F.hasSeen('delivery_papers')
+			};
+		});
+		expect(result.burger).toBe(true);
+		expect(result.pizza).toBe(false);
+		expect(result.package).toBe(false);
+		expect(result.papers).toBe(false);
+	});
+
+	test('DeliveryEventStart dispatch maps each item to its catalogue id', async ({ game: page }) => {
+		const tags = [
+			{ item: 'pizza', id: 'delivery_pizza' },
+			{ item: 'package', id: 'delivery_package' },
+			{ item: 'newspapers', id: 'delivery_papers' },
+			{ item: 'burgers', id: 'delivery_burger' }
+		];
+		for (const t of tags) {
+			await page.evaluate((info) => {
+				SugarCube.State.variables.flashbacks = { seen: {}, active: null };
+				SugarCube.State.variables.currentOrder = 1;
+				SugarCube.State.variables.order1 = { item: info.item, address: 'Replay', image: '' };
+			}, t);
+			await goToPassage(page, 'DeliveryEventStart');
+			const seen = await page.evaluate((id) => SugarCube.setup.Flashbacks.hasSeen(id), t.id);
+			expect(seen).toBe(true);
+		}
+	});
+
+	test('enterReplay invokes the entry.setup() stub to plant dispatcher state', async ({ game: page }) => {
+		await page.evaluate(() => {
+			SugarCube.State.variables.flashbacks = { seen: {}, active: null };
+			SugarCube.State.variables.currentOrder = 99;
+			SugarCube.State.variables.order1 = { item: 'books', address: 'Real', image: 'x' };
+			const F = SugarCube.setup.Flashbacks;
+			F.markSeen('delivery_pizza');
+			F.enterReplay('delivery_pizza');
+		});
+
+		const state = await page.evaluate(() => ({
+			currentOrder: SugarCube.State.variables.currentOrder,
+			orderItem: SugarCube.State.variables.order1.item,
+			replaying: SugarCube.setup.Flashbacks.isReplaying()
+		}));
+		expect(state.replaying).toBe(true);
+		expect(state.currentOrder).toBe(1);
+		expect(state.orderItem).toBe('pizza');
+	});
+
+	test('exitReplay restores currentOrder / order1 / earnedMoney captured before setup()', async ({ game: page }) => {
+		await page.evaluate(() => {
+			SugarCube.State.variables.flashbacks = { seen: {}, active: null };
+			SugarCube.State.variables.currentOrder = 7;
+			SugarCube.State.variables.order1 = { item: 'books', address: 'Real', image: 'real.jpg' };
+			SugarCube.setup.Mc.setEarnedMoney(123);
+			const F = SugarCube.setup.Flashbacks;
+			F.markSeen('delivery_burger');
+			F.enterReplay('delivery_burger');
+		});
+
+		// Mutate state mid-replay -- exitReplay must roll it back.
+		await page.evaluate(() => {
+			SugarCube.State.variables.currentOrder = 2;
+			SugarCube.State.variables.order1 = { item: 'pizza', address: 'Mid', image: '' };
+			SugarCube.setup.Mc.setEarnedMoney(999);
+		});
+
+		await page.evaluate(() => SugarCube.setup.Flashbacks.exitReplay());
+
+		const restored = await page.evaluate(() => ({
+			currentOrder: SugarCube.State.variables.currentOrder,
+			orderItem: SugarCube.State.variables.order1.item,
+			orderAddress: SugarCube.State.variables.order1.address,
+			earnedMoney: SugarCube.setup.Mc.earnedMoney()
+		}));
+		expect(restored.currentOrder).toBe(7);
+		expect(restored.orderItem).toBe('books');
+		expect(restored.orderAddress).toBe('Real');
+		expect(restored.earnedMoney).toBe(123);
+	});
+
+	test('replayPassages allowlists multi-passage chains without bouncing', async ({ game: page }) => {
+		await page.evaluate(() => {
+			const F = SugarCube.setup.Flashbacks;
+			F.markSeen('delivery_burger');
+			F.enterReplay('delivery_burger');
+		});
+
+		// DeliveryEvent1 is on the chain -- containReplay must allow it.
+		await goToPassage(page, 'DeliveryEvent1');
+		expect(await page.evaluate(() => SugarCube.State.passage)).toBe('DeliveryEvent1');
+		expect(await page.evaluate(() => SugarCube.setup.Flashbacks.isReplaying())).toBe(true);
+
+		// DeliveryEvent2 is also on the chain.
+		await goToPassage(page, 'DeliveryEvent2');
+		expect(await page.evaluate(() => SugarCube.State.passage)).toBe('DeliveryEvent2');
+		expect(await page.evaluate(() => SugarCube.setup.Flashbacks.isReplaying())).toBe(true);
+	});
+
+	test('passages off the replayPassages chain still bounce back to the gallery', async ({ game: page }) => {
+		await page.evaluate(() => {
+			const F = SugarCube.setup.Flashbacks;
+			F.markSeen('delivery_burger');
+			F.enterReplay('delivery_burger');
+		});
+
+		// Livingroom is NOT on the chain -- containReplay must bounce.
+		await page.evaluate(() => SugarCube.Engine.play('Livingroom'));
+		await page.waitForFunction(
+			() => SugarCube.State.passage === 'Flashbacks',
+			null,
+			{ timeout: 3000 }
+		);
+
+		expect(await page.evaluate(() => SugarCube.State.passage)).toBe('Flashbacks');
+		expect(await page.evaluate(() => SugarCube.setup.Flashbacks.isReplaying())).toBe(false);
+	});
+
+	/* ----- Hunt scenes (BaitOrgasm / HuntEventSuccubus / UseCursedItem) ----- */
+
+	test('all three hunt-scene catalogue entries are present', async ({ game: page }) => {
+		const result = await page.evaluate(() => {
+			const F = SugarCube.setup.Flashbacks;
+			return {
+				succubus: F.byId('hunt_event_succubus'),
+				baitOrgasm: F.byId('hunt_bait_orgasm'),
+				cursedItem: F.byId('hunt_cursed_item')
+			};
+		});
+		expect(result.succubus).not.toBeNull();
+		expect(result.succubus.scenePassage).toBe('HuntEventSuccubus');
+		expect(result.baitOrgasm).not.toBeNull();
+		expect(result.baitOrgasm.scenePassage).toBe('BaitOrgasm');
+		expect(result.cursedItem).not.toBeNull();
+		expect(result.cursedItem.scenePassage).toBe('UseCursedItem');
+	});
+
+	test('hunt-scene entries auto-register with SceneEvents (no skipAutoRegister)', async ({ game: page }) => {
+		const registered = await page.evaluate(() => SugarCube.setup.SceneEvents.registered());
+		expect(registered['HuntEventSuccubus']).toBe('hunt_event_succubus');
+		expect(registered['BaitOrgasm']).toBe('hunt_bait_orgasm');
+		expect(registered['UseCursedItem']).toBe('hunt_cursed_item');
+	});
+
+	test('visiting HuntEventSuccubus marks the catalogue entry as seen', async ({ game: page }) => {
+		await page.evaluate(() => {
+			SugarCube.State.variables.flashbacks = { seen: {}, active: null };
+		});
+		await goToPassage(page, 'HuntEventSuccubus');
+		expect(await page.evaluate(() =>
+			SugarCube.setup.Flashbacks.hasSeen('hunt_event_succubus'))).toBe(true);
+	});
+
+	test('UseCursedItem replay plants a held cursed item via cheatGrantCursedItem', async ({ game: page }) => {
+		await page.evaluate(() => {
+			SugarCube.State.variables.flashbacks = { seen: {}, active: null };
+			// Start with no carried item -- setup() must plant one.
+			SugarCube.State.variables.gotCursedItem = 0;
+			SugarCube.State.variables.isCIDildo = false;
+			SugarCube.State.variables.isCIButtplug = false;
+			SugarCube.State.variables.isCIBeads = false;
+			SugarCube.State.variables.isCIHDildo = false;
+			const F = SugarCube.setup.Flashbacks;
+			F.markSeen('hunt_cursed_item');
+			F.enterReplay('hunt_cursed_item');
+		});
+
+		const planted = await page.evaluate(() => ({
+			held: SugarCube.State.variables.gotCursedItem,
+			dildo: SugarCube.State.variables.isCIDildo,
+			carriedType: SugarCube.setup.Witch.carriedCursedItemType(),
+			replaying: SugarCube.setup.Flashbacks.isReplaying()
+		}));
+		expect(planted.held).toBe(1);
+		expect(planted.dildo).toBe(true);
+		expect(planted.carriedType).toBe('dildo');
+		expect(planted.replaying).toBe(true);
+	});
+
+	test('exitReplay restores the player\'s real cursed-item carry state', async ({ game: page }) => {
+		// Player is mid-quest with a beads variant held; replay must not
+		// clobber that on entry, and exit must restore it after consume.
+		await page.evaluate(() => {
+			SugarCube.State.variables.flashbacks = { seen: {}, active: null };
+			SugarCube.setup.Witch.cheatGrantCursedItem('beads');
+			const F = SugarCube.setup.Flashbacks;
+			F.markSeen('hunt_cursed_item');
+			F.enterReplay('hunt_cursed_item');
+		});
+
+		// Mid-replay, the setup() planted dildo + the passage's consume
+		// would clear it. Simulate the consume directly.
+		await page.evaluate(() =>
+			SugarCube.setup.Witch.consumeCarriedCursedItem());
+
+		expect(await page.evaluate(() =>
+			SugarCube.State.variables.gotCursedItem)).toBe(0);
+
+		await page.evaluate(() => SugarCube.setup.Flashbacks.exitReplay());
+
+		const restored = await page.evaluate(() => ({
+			held: SugarCube.State.variables.gotCursedItem,
+			beads: SugarCube.State.variables.isCIBeads,
+			dildo: SugarCube.State.variables.isCIDildo,
+			carriedType: SugarCube.setup.Witch.carriedCursedItemType()
+		}));
+		expect(restored.held).toBe(1);
+		expect(restored.beads).toBe(true);
+		expect(restored.dildo).toBe(false);
+		expect(restored.carriedType).toBe('beads');
+	});
+
+	test('BaitOrgasm replay bumps sanity above 0 to skip the sanity-over goto', async ({ game: page }) => {
+		await page.evaluate(() => {
+			SugarCube.State.variables.flashbacks = { seen: {}, active: null };
+			SugarCube.setup.Mc.setSanity(0);
+			const F = SugarCube.setup.Flashbacks;
+			F.markSeen('hunt_bait_orgasm');
+			F.enterReplay('hunt_bait_orgasm');
+		});
+
+		const sanity = await page.evaluate(() => SugarCube.setup.Mc.sanity());
+		expect(sanity).toBeGreaterThan(0);
+	});
+
+	test('BaitOrgasm exitReplay restores pre-replay sanity (even when setup() bumped it)', async ({ game: page }) => {
+		await page.evaluate(() => {
+			SugarCube.State.variables.flashbacks = { seen: {}, active: null };
+			SugarCube.setup.Mc.setSanity(0);
+			const F = SugarCube.setup.Flashbacks;
+			F.markSeen('hunt_bait_orgasm');
+			F.enterReplay('hunt_bait_orgasm');
+		});
+
+		await page.evaluate(() => SugarCube.setup.Flashbacks.exitReplay());
+		expect(await page.evaluate(() => SugarCube.setup.Mc.sanity())).toBe(0);
+	});
+
+	test('exitReplay restores baitOrgasmPending captured before setup()', async ({ game: page }) => {
+		await page.evaluate(() => {
+			SugarCube.State.variables.flashbacks = { seen: {}, active: null };
+			SugarCube.State.variables.baitOrgasmPending = true;
+			const F = SugarCube.setup.Flashbacks;
+			F.markSeen('hunt_bait_orgasm');
+			F.enterReplay('hunt_bait_orgasm');
+		});
+
+		// Simulate a consume that flips the flag to false mid-replay.
+		await page.evaluate(() => {
+			SugarCube.State.variables.baitOrgasmPending = false;
+		});
+
+		await page.evaluate(() => SugarCube.setup.Flashbacks.exitReplay());
+
+		expect(await page.evaluate(() =>
+			SugarCube.State.variables.baitOrgasmPending)).toBe(true);
+	});
+
+	test('visiting DeliveryEventStart during replay does not double-credit', async ({ game: page }) => {
+		// Burger replay enters DeliveryEventStart in replay mode; the auto-mark
+		// path must not stamp seen on an unrelated catalogue entry, and must
+		// not re-stamp seen on the active one either (markSeen is idempotent
+		// but we still want to prove the dispatcher skips during replay).
+		const beforeReplay = await page.evaluate(() => {
+			SugarCube.State.variables.flashbacks = { seen: {}, active: null };
+			const F = SugarCube.setup.Flashbacks;
+			F.markSeen('delivery_burger');
+			F.enterReplay('delivery_burger');
+			return F.seenCount();
+		});
+
+		// Mid-replay, plant a different order item -- if the dispatcher
+		// fired during replay, this would incorrectly mark delivery_pizza.
+		await page.evaluate(() => {
+			SugarCube.State.variables.order1.item = 'pizza';
+		});
+
+		await goToPassage(page, 'DeliveryEventStart');
+
+		const after = await page.evaluate(() => ({
+			seenCount: SugarCube.setup.Flashbacks.seenCount(),
+			pizzaSeen: SugarCube.setup.Flashbacks.hasSeen('delivery_pizza')
+		}));
+		expect(after.seenCount).toBe(beforeReplay);
+		expect(after.pizzaSeen).toBe(false);
 	});
 });

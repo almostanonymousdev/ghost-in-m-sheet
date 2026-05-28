@@ -32,29 +32,285 @@ setup.Flashbacks = (function () {
 	   - id:          stable storage key; never rename without a migration
 	   - title:       gallery card label
 	   - location:    section header in the gallery
-	   - scenePassage:passage name that plays the scene
+	   - scenePassage:passage name that plays/initiates the scene
 	   - hint:        short teaser shown on locked cards */
 	var CATALOGUE = Object.freeze([
-		// Delivery manager arc -- linear scenes that end with a back link
-		{ id: 'delivery_manager_hj',  title: 'Office Handjob',  location: 'Delivery Hub',
-		  scenePassage: 'DeliveryManagerHandjob',
-		  hint: 'A back-room favor for the manager.' },
-		{ id: 'delivery_manager_bj',  title: 'Office Blowjob',  location: 'Delivery Hub',
-		  scenePassage: 'DeliveryManagerBlowjob',
-		  hint: 'Industrial carpet, certificates on the wall.' },
-		{ id: 'delivery_manager_sex', title: 'Office Sex',      location: 'Delivery Hub',
-		  scenePassage: 'DeliveryManagerSex',
-		  hint: 'The couch in the back, broken springs and all.' },
+		// Delivery Hub 
+		{
+			id: 'delivery_manager_hj', title: 'Office Handjob', location: 'Delivery Hub',
+			scenePassage: 'DeliveryManagerHandjob',
+			hint: 'A back-room favor for the manager.'
+		},
+		{
+			id: 'delivery_manager_bj', title: 'Office Blowjob', location: 'Delivery Hub',
+			scenePassage: 'DeliveryManagerBlowjob',
+			hint: 'Industrial carpet, certificates on the wall.'
+		},
+		{
+			id: 'delivery_manager_sex', title: 'Office Sex', location: 'Delivery Hub',
+			scenePassage: 'DeliveryManagerSex',
+			hint: 'The couch in the back, broken springs and all.'
+		},
+		{
+			id: 'delivery_special', title: 'Earn the Tip', location: 'Delivery Hub',
+			scenePassage: 'DeliverySpecialUnsafe',
+			hint: 'A customer who wants more than the package.'
+		},
 
-		// Home / Livingroom PC
-		{ id: 'home_masturbate',      title: 'Quiet Afternoon', location: 'Home',
-		  scenePassage: 'Masturbate',
-		  hint: 'A moment to yourself.' },
+		/* Delivery Events -- the four item-keyed customer encounters
+		   that all dispatch through DeliveryEventStart. Each setup()
+		   plants the order state via setup.Delivery.cheatReplayOrder so
+		   the switch picks the right branch; replayPassages allows the
+		   multi-passage chains. */
+		{
+			id: 'delivery_burger', title: 'Burgers and Bud', location: 'Delivery Events',
+			scenePassage: 'DeliveryEventStart',
+			replayPassages: ['DeliveryEventStart', 'DeliveryEvent1', 'DeliveryEvent2'],
+			skipAutoRegister: true,
+			setup: function () { setup.Delivery.cheatReplayOrder('burgers'); },
+			hint: 'A stoner with no cash and busy hands.'
+		},
+		{
+			id: 'delivery_pizza', title: 'Pizza, Pegged', location: 'Delivery Events',
+			scenePassage: 'DeliveryEventStart',
+			replayPassages: ['DeliveryEventStart', 'DeliveryEvent1', 'DeliveryEvent2'],
+			skipAutoRegister: true,
+			setup: function () { setup.Delivery.cheatReplayOrder('pizza'); },
+			hint: 'Her strap, the floor, the receipt.'
+		},
+		{
+			id: 'delivery_package', title: 'Package Negotiation', location: 'Delivery Events',
+			scenePassage: 'DeliveryEventStart',
+			replayPassages: ['DeliveryEventStart', 'DeliveryEvent1', 'DeliveryEvent2'],
+			skipAutoRegister: true,
+			setup: function () {
+				setup.Delivery.cheatReplayOrder('package');
+				/* Package's low-lust fork terminates inside DeliveryEventStart;
+				   the replay always takes the full Start -> Event1 -> Event2
+				   path so the gallery card matches one scene end-to-end. */
+				if (setup.Mc.lust() < 50) setup.Mc.setLust(50);
+			},
+			hint: 'A doorstep proposition with no exit.'
+		},
+		{
+			id: 'delivery_papers', title: 'Reading the News', location: 'Delivery Events',
+			scenePassage: 'DeliveryEventStart',
+			replayPassages: ['DeliveryEventStart', 'DeliveryEvent1'],
+			skipAutoRegister: true,
+			setup: function () {
+				setup.Delivery.cheatReplayOrder('newspapers');
+				/* Papers gates the flirt branch on corruption >= 3 AND
+				   post-bump lust >= 40. Bump both above the line so the
+				   replay always plays the full scene -- the snapshot
+				   restores the player's real values on exit. */
+				if (setup.Mc.corruption() < 3) setup.Mc.setCorruption(3);
+				if (setup.Mc.lust() < 30) setup.Mc.setLust(30);
+			},
+			hint: 'A long lunch with a friendly customer.'
+		},
 
 		// Church
-		{ id: 'church_priest_end',    title: 'Confession Reward', location: 'Church',
-		  scenePassage: 'ToolsEventChurchEnd',
-		  hint: "Father's gratitude in liquid form." }
+		{
+			id: 'church_priest', title: 'Confession Reward', location: 'Church',
+			scenePassage: 'ToolsEventChurch',
+			hint: "Father's gratitude in liquid form."
+		},
+
+		// Gym
+		{
+			id: 'gym_trainer_1', title: 'Personal Training', location: 'Gym',
+			scenePassage: 'GymTrainerEvent1Start',
+			hint: "The trainer's idea of cool-down."
+		},
+		{
+			id: 'gym_trainer_2', title: 'Hands-On Coaching', location: 'Gym',
+			scenePassage: 'GymTrainerEvent2Start',
+			hint: 'Anal cardio.'
+		},
+		{
+			id: 'gym_group', title: 'Group Session', location: 'Gym',
+			scenePassage: 'GymGroupEvent1Start',
+			hint: 'Toys for the whole class.'
+		},
+
+		// Park
+		{
+			id: 'park_mugging', title: 'Stripped on the Trail', location: 'Park',
+			scenePassage: 'ParkMugging',
+			hint: 'A gun, an empty path, and a long walk home.'
+		},
+
+		// Witch's House
+		{
+			id: 'witch_tentacles', title: 'Sticky Fingers', location: "Witch's House",
+			scenePassage: 'WitchTentaclesEvent',
+			hint: 'Khadija keeps her own counsel about thieves.'
+		},
+
+		// Home -- Bedroom
+		{
+			id: 'home_cursed_bed', title: 'Hole in the Mattress', location: 'Home -- Bedroom',
+			scenePassage: 'CursedBedEvent',
+			hint: 'Something glowing under the bed.'
+		},
+		{
+			id: 'home_tentacles_sleep', title: 'Tentacle Nightmare', location: 'Home -- Bedroom',
+			scenePassage: 'TentaclesEventSleep',
+			hint: 'The dark room with no exit.'
+		},
+		{
+			id: 'home_tentacles_nap', title: 'Afternoon Tentacles', location: 'Home -- Bedroom',
+			scenePassage: 'TentaclesEventNap',
+			hint: 'They cross the floor while you watch.'
+		},
+		{
+			id: 'home_summon_spirit', title: 'Summon: Spirit', location: 'Home -- Bedroom',
+			scenePassage: 'SummonSpirit',
+			hint: 'Roughed up by the spirit you called.'
+		},
+		{
+			id: 'home_summon_mare', title: 'Summon: Mare', location: 'Home -- Bedroom',
+			scenePassage: 'SummonMare',
+			hint: 'Paralyzed in your own bed.'
+		},
+		{
+			id: 'home_summon_tentacles', title: 'Summon: Tentacles', location: 'Home -- Bedroom',
+			scenePassage: 'SummonTentacles',
+			hint: 'You called them yourself.'
+		},
+		{
+			id: 'home_summon_twins', title: 'Summon: Twins', location: 'Home -- Bedroom',
+			scenePassage: 'SummonTwins',
+			hint: 'Two cocks, no resistance.'
+		},
+		{
+			id: 'home_nap_spirit', title: 'Naptime Visitor', location: 'Home -- Bedroom',
+			scenePassage: 'GhostSpecialEventNapSpirit',
+			hint: 'You barely woke for that one.'
+		},
+		{
+			id: 'home_sleep_spirit', title: 'Bedside Manners', location: 'Home -- Bedroom',
+			scenePassage: 'GhostSpecialEventSleepSpirit',
+			hint: "Hands you can't quite see."
+		},
+
+		// Home -- Livingroom
+		{
+			id: 'home_masturbate', title: 'Quiet Afternoon', location: 'Home -- Livingroom',
+			scenePassage: 'Masturbate',
+			hint: 'A moment to yourself.'
+		},
+		{
+			id: 'home_cursed_tv', title: 'Yourself On Screen', location: 'Home -- Livingroom',
+			scenePassage: 'CursedTVEvent',
+			hint: 'The channel changed to you.'
+		},
+		{
+			id: 'home_cursed_pc', title: 'The Old Tenant', location: 'Home -- Livingroom',
+			scenePassage: 'CursedPCEvent',
+			hint: 'A ghost too feeble to bother you. Until.'
+		},
+		{
+			id: 'home_tentacles_tv', title: 'TV Tentacles', location: 'Home -- Livingroom',
+			scenePassage: 'TentaclesEventTV',
+			hint: 'They came for the commercial break.'
+		},
+		{
+			id: 'home_tentacles_pc', title: 'Tentacles Online', location: 'Home -- Livingroom',
+			scenePassage: 'TentaclesEventPC',
+			hint: "They've stopped scaring you."
+		},
+		{
+			id: 'home_succubus_tv', title: 'Succubus on TV', location: 'Home -- Livingroom',
+			scenePassage: 'SuccubusEventTV',
+			hint: "She'll help you, baby."
+		},
+		{
+			id: 'home_succubus_pc', title: 'Succubus at the PC', location: 'Home -- Livingroom',
+			scenePassage: 'SuccubusPCEvent',
+			hint: 'Eyes piercing through you.'
+		},
+		{
+			id: 'home_tv_spirit', title: 'Sofa Sleep Visitor', location: 'Home -- Livingroom',
+			scenePassage: 'GhostSpecialEventTVSpirit',
+			hint: "A dick where it shouldn't be."
+		},
+		{
+			id: 'home_mare_dream', title: 'Mare on the Cam', location: 'Home -- Livingroom',
+			scenePassage: 'GhostSpecialEventMare',
+			hint: 'The hand on the cam was yours.'
+		},
+
+		// Home -- Bathroom
+		{
+			id: 'home_cursed_shower', title: 'Cursed Shower', location: 'Home -- Bathroom',
+			scenePassage: 'CursedShowerEvent',
+			hint: 'A dildo where the shampoo should be.'
+		},
+		{
+			id: 'home_cursed_bath', title: 'Black Bathwater', location: 'Home -- Bathroom',
+			scenePassage: 'CursedBathEvent',
+			hint: 'The tub drops into a void.'
+		},
+		{
+			id: 'home_twins_event', title: 'Twins in the Bath', location: 'Home -- Bathroom',
+			scenePassage: 'TheTwinsEvent',
+			hint: 'Both of them, in turns.'
+		},
+
+		/* Hunt -- scenes the MC lives through inside a haunted house.
+		   BaitOrgasm and UseCursedItem normally consume one-shot run
+		   state (baitOrgasmPending / gotCursedItem), so they snapshot
+		   those flags above and either rely on the no-op-when-absent
+		   semantics (BaitOrgasm) or plant the state via a cheat helper
+		   (UseCursedItem). HuntEventSuccubus is a pure video scene with
+		   no state writes -- it just registers and plays. */
+		{
+			id: 'hunt_event_succubus', title: 'Succubus Rescue', location: 'Hunt',
+			scenePassage: 'HuntEventSuccubus',
+			hint: 'She showed up before the ghost did.'
+		},
+		{
+			id: 'hunt_bait_orgasm', title: 'Bait Backfires', location: 'Hunt',
+			scenePassage: 'BaitOrgasm',
+			setup: function () {
+				/* BaitOrgasm gotos HuntOverSanity if sanity is at or
+				   below zero on entry. Snapshot already covers mc.sanity,
+				   so a real value of 0 is fine -- bump above the gate
+				   for the replay window; restore puts the player back. */
+				if (setup.Mc.sanity() <= 0) setup.Mc.setSanity(50);
+			},
+			hint: 'Lust at cap and the ghost on your back.'
+		},
+		{
+			id: 'hunt_cursed_item', title: 'Cursed Plaything', location: 'Hunt',
+			scenePassage: 'UseCursedItem',
+			setup: function () {
+				/* Plant a held cursed item so cursedItemVideo() resolves
+				   a video and the consume call has something to clear.
+				   The snapshot above captures all four type flags so
+				   the player's real carrier state is preserved. */
+				setup.Witch.cheatGrantCursedItem('dildo');
+			},
+			hint: 'The witch buys these back. For a reason.'
+		},
+
+		// Hunt Aftermath
+		{
+			id: 'aftermath_wraith', title: 'Lost in the Forest', location: 'Hunt Aftermath',
+			scenePassage: 'GhostSpecialEventWraith',
+			hint: 'Rope, woods, helpful strangers.'
+		},
+		{
+			id: 'aftermath_myling', title: 'Walk of Shame', location: 'Hunt Aftermath',
+			scenePassage: 'GhostSpecialEventMyling',
+			hint: 'They keep staring at you.'
+		},
+		{
+			id: 'aftermath_spirit_walk', title: 'Companion Visitor', location: 'Hunt Aftermath',
+			scenePassage: 'GhostSpecialEventSpirit',
+			hint: 'Someone joins you and your friend in bed.'
+		}
 	]);
 
 	function store() { return bundle(); }
@@ -138,7 +394,18 @@ setup.Flashbacks = (function () {
 		'mc.percentageOfLevel', 'mc.neededForNextLevel',
 		'mc.sanityMax', 'mc.lustMax', 'mc.energyMax',
 		'mc.beautyBase', 'mc.beautyModifier',
-		'hours', 'minutes', 'dailySeed'
+		'hours', 'minutes', 'dailySeed',
+		'earnedMoney',
+		'currentOrder', 'order1', 'order2', 'order3',
+		/* Cursed-item carry state -- UseCursedItem reads the type flag
+		   to pick a video, then consumes the held flag. Snapshot so a
+		   replay doesn't clear a real carried item. */
+		'gotCursedItem',
+		'isCIDildo', 'isCIButtplug', 'isCIBeads', 'isCIHDildo',
+		/* Bait-orgasm flag -- BaitOrgasm reads this to gate consumption,
+		   and writes false on consume. Snapshot so a replay can't
+		   absorb a real pending orgasm the player was about to live. */
+		'baitOrgasmPending'
 	]);
 
 	function takeSnapshot() {
@@ -172,10 +439,19 @@ setup.Flashbacks = (function () {
 	}
 
 	function enterReplay(id) {
-		if (!byId(id)) return false;
+		var entry = byId(id);
+		if (!entry) return false;
 		var b = store();
 		b.active = id;
 		b.snapshot = takeSnapshot();
+		/* Optional per-entry stub. Catalogue entries that share a
+		   dispatcher passage (the four delivery-event scenes all start
+		   at DeliveryEventStart) or need contrived state planted
+		   (UseCursedItem needs a held cursed item, BaitOrgasm needs
+		   sanity > 0) use setup() to prepare. Run after the snapshot
+		   so the writes are undone on exitReplay. Most entries omit
+		   the field; guard against the missing case. */
+		if (typeof entry.setup === 'function') entry.setup();
 		return true;
 	}
 	function exitReplay() {
@@ -213,6 +489,12 @@ setup.Flashbacks = (function () {
 		if (name === 'Flashbacks') { exitReplay(); return; }
 		var active = activeEntry();
 		if (active && name === active.scenePassage) return;
+		/* Multi-passage chains (e.g. DeliveryEventStart -> DeliveryEvent1
+		   -> DeliveryEvent2) declare every step in replayPassages so the
+		   containment check lets the player walk the chain without being
+		   bounced back to the gallery. */
+		if (active && Array.isArray(active.replayPassages) &&
+			active.replayPassages.indexOf(name) !== -1) return;
 
 		/* Off-scene navigation during replay: bounce back to the
 		   gallery. Engine.play() must be deferred (same race the
@@ -232,8 +514,15 @@ setup.Flashbacks = (function () {
 	   stamp credit twice). SceneEvents lives at top-level passages/
 	   and Tweego evaluates uppercase-prefixed files before descending
 	   into the lowercase home/ subdirectory, so setup.SceneEvents is
-	   guaranteed present at module-eval time. */
+	   guaranteed present at module-eval time.
+
+	   Entries with skipAutoRegister opt out: they share a dispatcher
+	   passage with other scenes (DeliveryEventStart routes burger /
+	   pizza / package / papers from one passage), and the 1:1
+	   passage→sceneId registry can't represent that fan-out. Their
+	   unlock side-band is wired by the dispatcher below. */
 	CATALOGUE.forEach(function (entry) {
+		if (entry.skipAutoRegister) return;
 		setup.SceneEvents.register(entry.scenePassage, entry.id);
 	});
 
@@ -242,25 +531,48 @@ setup.Flashbacks = (function () {
 		markSeen(ctx.sceneId);
 	});
 
+	/* The four delivery-event scenes share DeliveryEventStart. The
+	   1:1 SceneEvents registry can credit only one at a time, so we
+	   bypass the auto-register path (skipAutoRegister) and resolve the
+	   sceneId at runtime from the active order. We emit VIEWED via
+	   the bus rather than calling markSeen() directly so any future
+	   SceneEvents subscriber (achievements, etc.) still sees the
+	   canonical event. Replay-active visits skip -- the auto-mark
+	   subscriber would do the same. */
+	function dispatchDeliveryEventVisit(ev) {
+		var name = ev && ev.passage && ev.passage.name;
+		if (name !== 'DeliveryEventStart') return;
+		if (isReplaying()) return;
+		var type = setup.Delivery.currentEventType();
+		if (!type) return;
+		var sceneId = 'delivery_' + type;
+		if (!byId(sceneId)) return;
+		setup.SceneEvents.emit(setup.SceneEvents.Event.VIEWED, {
+			sceneId: sceneId,
+			passageName: name
+		});
+	}
+
 	if (typeof $ !== 'undefined') {
 		$(document).on(':passagestart', containReplay);
+		$(document).on(':passagestart', dispatchDeliveryEventVisit);
 	}
 
 	return {
-		OWNED_VARS:    OWNED_VARS,
-		all:           all,
-		byId:          byId,
-		byPassage:     byPassage,
-		hasSeen:       hasSeen,
-		markSeen:      markSeen,
-		seenCount:     seenCount,
-		totalCount:    totalCount,
-		byLocation:    byLocation,
-		activeId:      activeId,
-		activeEntry:   activeEntry,
-		isReplaying:   isReplaying,
-		enterReplay:   enterReplay,
-		exitReplay:    exitReplay,
+		OWNED_VARS: OWNED_VARS,
+		all: all,
+		byId: byId,
+		byPassage: byPassage,
+		hasSeen: hasSeen,
+		markSeen: markSeen,
+		seenCount: seenCount,
+		totalCount: totalCount,
+		byLocation: byLocation,
+		activeId: activeId,
+		activeEntry: activeEntry,
+		isReplaying: isReplaying,
+		enterReplay: enterReplay,
+		exitReplay: exitReplay,
 		cheatUnlockAll: cheatUnlockAll
 	};
 })();
