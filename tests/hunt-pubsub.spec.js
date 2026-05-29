@@ -672,14 +672,14 @@ test.describe('setup.Hunt pubsub', () => {
       expect(result.none).toEqual({ lustPerStep: 0, prowlChanceBonus: 0 });
     });
 
-    test('STEAL_CHECK filter: Ironclad runsStealClothes=false sets ctx.suppress', async () => {
+    test('STEAL_CHECK filter: Ironclad pins no_clothes_theft and sets ctx.suppress', async () => {
       await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
       const result = await page.evaluate(() => {
         const HC = SugarCube.setup.HuntController;
         const { Hunt } = SugarCube.setup;
         function probe() {
           return Hunt.applyFilter(Hunt.Event.STEAL_CHECK, {
-            forceTrigger: false, suppress: false, modifierIds: []
+            forceTrigger: false, suppress: false, modifierIds: HC.modifiers()
           });
         }
         HC.startHunt({ seed: 1, staticHouseId: 'ironclad' });
@@ -697,14 +697,15 @@ test.describe('setup.Hunt pubsub', () => {
       expect(result.proc).toBe(false);
     });
 
-    test('STEAL_CHECK filter: house suppress wins over Swiper forceTrigger', async () => {
+    test('STEAL_CHECK filter: forced no_clothes_theft suppress wins over Swiper forceTrigger', async () => {
       await page.evaluate(() => { SugarCube.State.variables.mc.lvl = 4; });
       const result = await page.evaluate(() => {
         const HC = SugarCube.setup.HuntController;
         const M = SugarCube.setup.Modifiers;
         HC.startHunt({ seed: 1, staticHouseId: 'ironclad' });
-        HC.active().modifiers = [M.SWIPER];
-        // shouldTriggerSteal honors suppress before consulting forceTrigger.
+        // Keep the forced no_clothes_theft pinned by the catalogue; layer
+        // Swiper on top to verify suppress wins over forceTrigger.
+        HC.active().modifiers = [M.NO_CLOTHES_THEFT, M.SWIPER];
         return SugarCube.setup.HauntedHouses.shouldTriggerSteal();
       });
       expect(result).toBe(false);
@@ -816,20 +817,20 @@ test.describe('setup.Hunt pubsub', () => {
       expect(result.templates).toContain('BlockB');
     });
 
-    test('SIDEBAR_OUTFIT filter: Ironclad stamps warden override; procedural is null', async () => {
+    test('SIDEBAR_OUTFIT filter: warden_outfit modifier stamps warden override; procedural is null', async () => {
       const result = await page.evaluate(() => {
-        const { Hunt } = SugarCube.setup;
+        const { Hunt, Modifiers } = SugarCube.setup;
         return {
-          iron: Hunt.applyFilter(Hunt.Event.SIDEBAR_OUTFIT,
-            { outfit: null, staticHouseId: 'ironclad' }).outfit,
+          warden: Hunt.applyFilter(Hunt.Event.SIDEBAR_OUTFIT,
+            { outfit: null, modifierIds: [Modifiers.WARDEN_OUTFIT] }).outfit,
           owai: Hunt.applyFilter(Hunt.Event.SIDEBAR_OUTFIT,
-            { outfit: null, staticHouseId: 'owaissa' }).outfit,
+            { outfit: null, modifierIds: [] }).outfit,
           proc: Hunt.applyFilter(Hunt.Event.SIDEBAR_OUTFIT,
-            { outfit: null, staticHouseId: null }).outfit
+            { outfit: null, modifierIds: [] }).outfit
         };
       });
-      expect(result.iron).toBeTruthy();
-      expect(result.iron.image).toMatch(/warden/);
+      expect(result.warden).toBeTruthy();
+      expect(result.warden.image).toMatch(/warden/);
       expect(result.owai).toBe(null);
       expect(result.proc).toBe(null);
     });

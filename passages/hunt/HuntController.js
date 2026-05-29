@@ -49,10 +49,10 @@ setup.HuntController = (function () {
 	   setup.Tick.applyPossessionItemCleanup) keys off POSSESSED;
 	   anything that just needs "the hunt is over" keys off isEnded(). */
 	var HuntMode = Object.freeze({
-		NONE:      0,   // no hunt active
-		ACTIVE:    2,   // player is inside the house, hunt in progress
+		NONE: 0,   // no hunt active
+		ACTIVE: 2,   // player is inside the house, hunt in progress
 		POSSESSED: 3,   // ghost caught + possessed the MC (Possessed passage)
-		ENDED:     4    // hunt ended without possession (graceful exits)
+		ENDED: 4    // hunt ended without possession (graceful exits)
 	});
 
 	var sv = setup.sv;
@@ -131,18 +131,18 @@ setup.HuntController = (function () {
 			sv().run = {};
 			run = sv().run;
 		}
-		run.ghostName     = opts.ghostName;
-		run.disguiseName  = opts.ghostName;
-		run.evidence      = Array.isArray(opts.evidence) ? opts.evidence.slice() : [];
+		run.ghostName = opts.ghostName;
+		run.disguiseName = opts.ghostName;
+		run.evidence = Array.isArray(opts.evidence) ? opts.evidence.slice() : [];
 		if (run.trapped === undefined) run.trapped = false;
-		if (run.modifiers     === undefined) run.modifiers     = [];
-		if (run.loadout       === undefined) run.loadout       = {};
-		if (run.objective     === undefined) run.objective     = setup.HuntEnums.Objective.IDENTIFY.id;
+		if (run.modifiers === undefined) run.modifiers = [];
+		if (run.loadout === undefined) run.loadout = {};
+		if (run.objective === undefined) run.objective = setup.HuntEnums.Objective.IDENTIFY.id;
 		if (run.staticHouseId === undefined) run.staticHouseId = null;
 		if (run.currentRoomId === undefined) run.currentRoomId = 'room_0';
 		if (run.searchedFurniture === undefined) run.searchedFurniture = null;
 		if (run.collectedLoot === undefined) run.collectedLoot = [];
-		if (run.lights        === undefined) run.lights        = {};
+		if (run.lights === undefined) run.lights = {};
 	}
 
 	/* End the current run. Preserves the run number so the next
@@ -171,24 +171,24 @@ setup.HuntController = (function () {
 		return prior;
 	}
 
-	function active()    { return sv().run || null; }
-	function isActive()  { return !!sv().run; }
+	function active() { return sv().run || null; }
+	function isActive() { return !!sv().run; }
 
 	/* Hunt-mode query/mutation helpers. Prefer these to raw
 	   $huntMode comparisons — they keep the magic ints out of
 	   passages and give each stage a readable predicate. */
-	function huntMode()    { return sv().huntMode || HuntMode.NONE; }
+	function huntMode() { return sv().huntMode || HuntMode.NONE; }
 	function setHuntMode(mode) { sv().huntMode = mode; }
-	function isHunting()   { return huntMode() === HuntMode.ACTIVE; }
+	function isHunting() { return huntMode() === HuntMode.ACTIVE; }
 	function isPossessed() { return huntMode() === HuntMode.POSSESSED; }
 	/* True once the hunt is over for any reason — graceful exit or
 	   genuine possession. Use when the caller only cares that the
 	   run has wrapped; key off isPossessed() for possession-specific
 	   cleanup. */
-	function isEnded()     { var m = huntMode(); return m === HuntMode.ENDED || m === HuntMode.POSSESSED; }
+	function isEnded() { var m = huntMode(); return m === HuntMode.ENDED || m === HuntMode.POSSESSED; }
 	/* True for any stage past NONE — "a hunt is in progress or in
 	   its post-mortem (ended/possessed) phase". */
-	function isAnyMode()   { return huntMode() !== HuntMode.NONE; }
+	function isAnyMode() { return huntMode() !== HuntMode.NONE; }
 
 	/* Flip $huntMode to ACTIVE and clear stale per-hunt ability flags
 	   (highpriestess / banshee / cthulion live on setup.Ghosts as
@@ -212,11 +212,11 @@ setup.HuntController = (function () {
 	}
 
 	// --- Field accessors --------------------------------------
-	function seed()       { return sv().run ? sv().run.seed : null; }
-	function number()     { return sv().run ? sv().run.number : 0; }
-	function modifiers()  { return sv().run ? sv().run.modifiers.slice() : []; }
-	function loadout()    { return sv().run ? sv().run.loadout : null; }
-	function objective()  { return sv().run ? sv().run.objective : null; }
+	function seed() { return sv().run ? sv().run.seed : null; }
+	function number() { return sv().run ? sv().run.number : 0; }
+	function modifiers() { return sv().run ? sv().run.modifiers.slice() : []; }
+	function loadout() { return sv().run ? sv().run.loadout : null; }
+	function objective() { return sv().run ? sv().run.objective : null; }
 	function currentRoomId() {
 		var run = sv().run;
 		return run ? (run.currentRoomId || 'room_0') : null;
@@ -289,12 +289,12 @@ setup.HuntController = (function () {
 	   stay in lockstep. */
 	function isLootKindAvailable(kind) {
 		if (kind === 'clothesStolenPanties') return setup.Wardrobe.isPantiesStolen();
-		if (kind === 'clothesStolenBra')     return setup.Wardrobe.isBraStolen();
-		if (kind === 'clothesStolenShirt')   return setup.Wardrobe.isShirtStolen();
-		if (kind === 'clothesStolenBottom')  return setup.Wardrobe.isBottomStolen();
-		if (kind === 'tarotCards')           return setup.HauntedHouses.isTarotDiscoverable();
-		if (kind === 'monkeyPaw')            return setup.MonkeyPaw.isDiscoverable();
-		if (kind === 'cursedItem')           return setup.Witch.cursedItemQuestStarted();
+		if (kind === 'clothesStolenBra') return setup.Wardrobe.isBraStolen();
+		if (kind === 'clothesStolenShirt') return setup.Wardrobe.isShirtStolen();
+		if (kind === 'clothesStolenBottom') return setup.Wardrobe.isBottomStolen();
+		if (kind === 'tarotCards') return setup.HauntedHouses.isTarotDiscoverable();
+		if (kind === 'monkeyPaw') return setup.MonkeyPaw.isDiscoverable();
+		if (kind === 'cursedItem') return setup.Witch.cursedItemQuestStarted();
 		return true;
 	}
 
@@ -304,9 +304,9 @@ setup.HuntController = (function () {
 	   gets its own pin on the floor plan (overlaps allowed). */
 	var STOLEN_PIECE_KINDS = Object.freeze({
 		panties: 'clothesStolenPanties',
-		bra:     'clothesStolenBra',
-		shirt:   'clothesStolenShirt',
-		bottom:  'clothesStolenBottom'
+		bra: 'clothesStolenBra',
+		shirt: 'clothesStolenShirt',
+		bottom: 'clothesStolenBottom'
 	});
 
 	/* Single-kind variant -- returns the first uncollected loot kind
@@ -451,19 +451,19 @@ setup.HuntController = (function () {
 
 	/* Tool keys the hunt toolbar should render this run, in canonical
 	   setup.searchToolOrder. Resolution order:
-	     1. Build the "starting" base set: loadout.tools intersected
-	        with searchToolOrder, or all six tools when loadout.tools
-	        is unset.
-	     2. Run the base through the STARTING_TOOLS filter so
-	        modifiers (Empty Bag clears to []) and static-house quirks
-	        can mutate the set without HuntController branching on
-	        each one.
-	     3. Union with any tool the player has picked up from
-	        furniture this run ($run.collectedLoot entries shaped as
-	        'tool_<id>'). Tools placed in the floor plan and clicked
-	        through FurnitureSearch land in collectedLoot via takeLoot,
-	        so a started-empty bag fills back in as the player
-	        searches the rooms.
+		 1. Build the "starting" base set: loadout.tools intersected
+			with searchToolOrder, or all six tools when loadout.tools
+			is unset.
+		 2. Run the base through the STARTING_TOOLS filter so
+			modifiers (Empty Bag clears to []) and static-house quirks
+			can mutate the set without HuntController branching on
+			each one.
+		 3. Union with any tool the player has picked up from
+			furniture this run ($run.collectedLoot entries shaped as
+			'tool_<id>'). Tools placed in the floor plan and clicked
+			through FurnitureSearch land in collectedLoot via takeLoot,
+			so a started-empty bag fills back in as the player
+			searches the rooms.
 	   Order is always the canonical setup.searchToolOrder regardless
 	   of the order tools were picked up. Returns [] when no run is
 	   active. */
@@ -584,15 +584,15 @@ setup.HuntController = (function () {
 	/* Roll a fresh run end-to-end: seed, modifier draft,
 	   floor-plan generation, and $run population. opts:
 		seed          -- explicit seed (default = random in [0,1e9));
-		                 also drives the modifier draft, offset by a
-		                 32-bit constant so it differs from the
-		                 floor-plan rng stream.
+						 also drives the modifier draft, offset by a
+						 32-bit constant so it differs from the
+						 floor-plan rng stream.
 		modifierCount -- how many modifiers to draft. Resolution order:
-		                 1. opts.modifierCount when set (caller wins);
-		                 2. catalogue entry's modifierCount when
-		                    staticHouseId points at a setup.HuntHouses
-		                    record carrying that field;
-		                 3. fallback default of 2 (procedural runs).
+						 1. opts.modifierCount when set (caller wins);
+						 2. catalogue entry's modifierCount when
+							staticHouseId points at a setup.HuntHouses
+							record carrying that field;
+						 3. fallback default of 2 (procedural runs).
 		floorPlanOpts -- forwarded to setup.FloorPlan.generate.
 		loadout       -- forwarded to start().
 		objective     -- forwarded to start() (default setup.HuntEnums.Objective.IDENTIFY). */
@@ -606,7 +606,7 @@ setup.HuntController = (function () {
 		   subscriber may set ctx.count from the static-house entry;
 		   otherwise the procedural default (2) applies. */
 		var mcCtx = setup.Hunt.applyFilter(setup.Hunt.Event.MODIFIER_COUNT, {
-			count:         opts.modifierCount != null ? opts.modifierCount : null,
+			count: opts.modifierCount != null ? opts.modifierCount : null,
 			staticHouseId: opts.staticHouseId || null
 		});
 		var modifierCount = (mcCtx.count != null) ? mcCtx.count : 2;
@@ -620,6 +620,26 @@ setup.HuntController = (function () {
 			{ banned: setup.HuntShop.bannedModifiers() }
 		);
 		var modifierIds = draft.map(function (m) { return m.id; });
+		/* Static hunt houses can pin extra modifiers (zero-weight
+		   catalogue entries that never appear in the random draft) via
+		   their catalogue's `forcedModifiers: [...]` field. Forced
+		   modifiers stack on top of the draft and are unaffected by
+		   the player's banlist -- the catalogue requires them for the
+		   house to play as designed (e.g. Ironclad's warden costume +
+		   prison visuals). Filter subscribers in ModifiersController
+		   then own the per-channel behaviour, so HuntController stays
+		   free of house-id branches. */
+		if (opts.staticHouseId) {
+			var staticHouse = setup.HuntHouses.byId(opts.staticHouseId);
+			var forced = staticHouse && staticHouse.forcedModifiers;
+			if (Array.isArray(forced)) {
+				for (var fi = 0; fi < forced.length; fi++) {
+					if (modifierIds.indexOf(forced[fi]) === -1) {
+						modifierIds.push(forced[fi]);
+					}
+				}
+			}
+		}
 
 		/* Compose the floor-plan options. Tools the player would
 		   otherwise be missing from the toolbar (Empty Bag modifier or
@@ -645,10 +665,10 @@ setup.HuntController = (function () {
 		   ModifiersController, HuntHousesController, and the meta-unlock
 		   subscriber registered below. */
 		var fpCtx = setup.Hunt.applyFilter(setup.Hunt.Event.FLOORPLAN_OPTIONS, {
-			fpOpts:        fpOpts,
-			modifierIds:   modifierIds,
-			seed:          seed,
-			loadout:       opts.loadout || null,
+			fpOpts: fpOpts,
+			modifierIds: modifierIds,
+			seed: seed,
+			loadout: opts.loadout || null,
 			staticHouseId: opts.staticHouseId || null
 		});
 		fpOpts = fpCtx.fpOpts || fpOpts;
@@ -782,9 +802,9 @@ setup.HuntController = (function () {
 		   long-lived and must come back unchanged. */
 		run.preRunStatCaps = {
 			sanityMax: setup.Mc.sanityMax(),
-			sanity:    setup.Mc.sanity(),
+			sanity: setup.Mc.sanity(),
 			energyMax: setup.Mc.energyMax(),
-			energy:    setup.Mc.energy()
+			energy: setup.Mc.energy()
 		};
 		if (Shop.hasUnlock(Item.STEELED_HAND)) {
 			setup.Mc.setSanityMax(setup.Mc.sanityMax() + 25);
@@ -819,15 +839,16 @@ setup.HuntController = (function () {
 		return run ? (run.staticHouseId || null) : null;
 	}
 	/* True when companions are eligible for the active hunt at all.
-	   Procedural runs default to allowed; static-plan houses opt in
-	   or out via the catalogue's allowsCompanions flag, surfaced by
-	   the COMPANION_ALLOWED filter subscriber in HuntHousesController.
-	   Drives both the HuntStart "Talk to her" gate and the in-hunt
-	   HUD via Companion.inHauntedHouseLocation. */
+	   Procedural runs default to allowed; static-plan houses opt out
+	   by pinning the `solo_only` forced modifier in the catalogue
+	   (its COMPANION_ALLOWED subscriber in ModifiersController sets
+	   ctx.allowed=false). Drives both the HuntStart "Talk to her"
+	   gate and the in-hunt HUD via Companion.inHauntedHouseLocation. */
 	var huntAllowsCompanions = guarded(false, function () {
 		var ctx = setup.Hunt.applyFilter(setup.Hunt.Event.COMPANION_ALLOWED, {
-			allowed:       true,
-			staticHouseId: staticHouseId()
+			allowed: true,
+			staticHouseId: staticHouseId(),
+			modifierIds: modifiers()
 		});
 		return !!ctx.allowed;
 	});
@@ -855,7 +876,7 @@ setup.HuntController = (function () {
 		if (!run) return null;
 		var addr = addressFromSeed(run.seed);
 		var ctx = setup.Hunt.applyFilter(setup.Hunt.Event.ADDRESS, {
-			addr:          addr,
+			addr: addr,
 			staticHouseId: staticHouseId()
 		});
 		return ctx.addr;
@@ -952,15 +973,15 @@ setup.HuntController = (function () {
 
 	/* Classify the run for payout purposes. Three buckets matter:
 
-	     * isContractHunt -- the held contract key matches the run's
-	       static house. Contract hunts pay the contract's cash and
-	       no ecto; rogue hunts pay cash + ecto.
-	     * fledRogue -- the player walked away from a rogue hunt
-	       (not a ghost-driven defeat). Pays nothing -- no consolation
-	       ecto, no xp. Other rogue failures (sanity, exhaustion,
-	       time, caught) still get the small consolation.
-	     * mult -- the PAYOUT filter's modifier multiplier on cash /
-	       ecto / xp. Default 1.0 when no modifier subscribes. */
+		 * isContractHunt -- the held contract key matches the run's
+		   static house. Contract hunts pay the contract's cash and
+		   no ecto; rogue hunts pay cash + ecto.
+		 * fledRogue -- the player walked away from a rogue hunt
+		   (not a ghost-driven defeat). Pays nothing -- no consolation
+		   ecto, no xp. Other rogue failures (sanity, exhaustion,
+		   time, caught) still get the small consolation.
+		 * mult -- the PAYOUT filter's modifier multiplier on cash /
+		   ecto / xp. Default 1.0 when no modifier subscribes. */
 	function classifyHuntOutcome(run, success) {
 		var payCtx = setup.Hunt.applyFilter(setup.Hunt.Event.PAYOUT, {
 			multiplier: 1,
@@ -1109,13 +1130,13 @@ setup.HuntController = (function () {
 	   active.
 
 	   Payout split:
-	     * Contract hunt -- $run.staticHouseId matches the contract
-	       the player is holding from setup.WitchContract. Success
-	       pays the contract's cash payout, no ecto. Failure burns
-	       the contract for nothing.
-	     * Rogue hunt -- no contract held, or held key mismatched.
-	       Pays cash on success and ecto on any non-flee outcome
-	       (small consolation on failure). Flee pays nothing. */
+		 * Contract hunt -- $run.staticHouseId matches the contract
+		   the player is holding from setup.WitchContract. Success
+		   pays the contract's cash payout, no ecto. Failure burns
+		   the contract for nothing.
+		 * Rogue hunt -- no contract held, or held key mismatched.
+		   Pays cash on success and ecto on any non-flee outcome
+		   (small consolation on failure). Flee pays nothing. */
 	function endHunt(success) {
 		var run = active();
 		if (!run) return null;
@@ -1201,15 +1222,17 @@ setup.HuntController = (function () {
 	});
 
 	/* { image, tip } override for the MC sidebar wardrobe strip,
-	   sourced through the SIDEBAR_OUTFIT filter so per-house overrides
-	   live on the catalogue entry (HuntHousesController subscriber)
-	   instead of branching here. Returns null when no run is active or
-	   no subscriber stamps an outfit. Drives widgetMcStatus's
-	   fixed-outfit tile branch. */
+	   sourced through the SIDEBAR_OUTFIT filter so overrides live on
+	   the relevant modifier definition (warden_outfit's catalogue
+	   sidebarOutfit field, surfaced by its ModifiersController
+	   subscriber) instead of branching here. Returns null when no
+	   run is active or no subscriber stamps an outfit. Drives
+	   widgetMcStatus's fixed-outfit tile branch. */
 	var sidebarOutfit = guarded(null, function () {
 		var ctx = setup.Hunt.applyFilter(setup.Hunt.Event.SIDEBAR_OUTFIT, {
-			outfit:        null,
-			staticHouseId: staticHouseId()
+			outfit: null,
+			staticHouseId: staticHouseId(),
+			modifierIds: modifiers()
 		});
 		return ctx.outfit || null;
 	});
@@ -1227,9 +1250,10 @@ setup.HuntController = (function () {
 
 	/* Steal-clothes roll. The wardrobe / stash side-effects are
 	   shared, so once a steal fires the StealClothes cascade works.
-	   Per-house opt-outs (Ironclad's runsStealClothes=false) and
-	   modifier overrides (Swiper) live as STEAL_CHECK filter
-	   subscribers applied inside HauntedHouses.shouldTriggerSteal. */
+	   Per-house opt-outs (Ironclad pins no_clothes_theft via its
+	   forcedModifiers list) and modifier overrides (Swiper) live as
+	   STEAL_CHECK filter subscribers applied inside
+	   HauntedHouses.shouldTriggerSteal. */
 	var shouldTriggerSteal = guarded(false, function () {
 		return setup.HauntedHouses.shouldTriggerSteal();
 	});

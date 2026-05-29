@@ -21,7 +21,7 @@
  */
 setup.Hunt = (function () {
 	var Event = Object.freeze({
-		START:            'start',
+		START: 'start',
 		/* Hunt ended with the MC overpowered -- failureReason in
 		   {POSSESSED, CAUGHT, SANITY}. Dedicated CAUGHT / POSSESS
 		   events still fire alongside this for the catch/possession
@@ -29,34 +29,34 @@ setup.Hunt = (function () {
 		   non-graceful exits. Paired with HUNT_END_GRACEFUL: every
 		   hunt-end emits exactly one of the two. */
 		HUNT_END_ASSAULTED: 'hunt-end-assaulted',
-		TICK:             'tick',
-		DRIFT:            'drift',
-		CAUGHT:           'caught',
-		POSSESS:          'possess',
-		TRAP:             'trap',
+		TICK: 'tick',
+		DRIFT: 'drift',
+		CAUGHT: 'caught',
+		POSSESS: 'possess',
+		TRAP: 'trap',
 		EVIDENCE_TRIGGER: 'evidence-trigger',
-		LOOT_TAKEN:       'loot-taken',
-		ROOM_ENTER:       'room-enter',
+		LOOT_TAKEN: 'loot-taken',
+		ROOM_ENTER: 'room-enter',
 		FLOORPLAN_OPTIONS: 'floorplan-options',
-		EVIDENCE_POOL:     'evidence-pool',
-		STARTING_TOOLS:    'starting-tools',
-		PAYOUT:            'payout',
-		STEAL_CHECK:       'steal-check',
-		PROWL_CHECK:       'prowl-check',
-		OBJECTIVE:         'objective',
+		EVIDENCE_POOL: 'evidence-pool',
+		STARTING_TOOLS: 'starting-tools',
+		PAYOUT: 'payout',
+		STEAL_CHECK: 'steal-check',
+		PROWL_CHECK: 'prowl-check',
+		OBJECTIVE: 'objective',
 		COMPANION_ALLOWED: 'companion-allowed',
-		SNAPSHOT:          'snapshot',
-		MODIFIER_COUNT:    'modifier-count',
-		SIDEBAR_OUTFIT:    'sidebar-outfit',
+		SNAPSHOT: 'snapshot',
+		MODIFIER_COUNT: 'modifier-count',
+		SIDEBAR_OUTFIT: 'sidebar-outfit',
 		AFTERSHOCK_COOLDOWN: 'aftershock-cooldown',
-		BAIT_ALLOWED:      'bait-allowed',
+		BAIT_ALLOWED: 'bait-allowed',
 		SANITY_EVENT_MULT: 'sanity-event-mult',
-		ADDRESS:           'address',
+		ADDRESS: 'address',
 		/* Player picked a haunted house off GhostStreet. Fires once per
 		   hunt, before any in-house ticks. Per-ghost setup that needs to
 		   run on house entry (Mimic disguise clock, Mare event-stage
 		   progression) subscribes here. */
-		HOUSE_ENTER:       'house-enter',
+		HOUSE_ENTER: 'house-enter',
 		/* Hunt ended peacefully -- win, flee, wrong-call at the witch's
 		   desk, exhaustion, time-out, manual leave, monkey-paw abandon.
 		   Paired with HUNT_END_ASSAULTED: every hunt-end emits exactly
@@ -67,23 +67,44 @@ setup.Hunt = (function () {
 		/* A prowl event resolved against the player (NudityEvent, prayer
 		   miss, freeze, on-tick prowl, hunt-over passages). Ghosts that
 		   stamp a per-prowl flag (e.g. Twins) subscribe here. */
-		PROWL_EVENT:       'prowl-event',
+		PROWL_EVENT: 'prowl-event',
 		/* Raiju-style sensor glitch rolled true on this tick.
 		   ctx: { tool: 'emf' | 'temperature' }. */
-		SENSOR_GLITCH:     'sensor-glitch',
+		SENSOR_GLITCH: 'sensor-glitch',
 		/* Mimic disguise actually swapped (rollMimicType fired and
 		   changed disguiseName). ctx: { disguiseName }. */
-		MIMIC_ROTATE:      'mimic-rotate',
+		MIMIC_ROTATE: 'mimic-rotate',
 		/* renderSpiritbox was invoked this tick (player pressed the
 		   spiritbox tool in a haunted house). ctx: {}. */
-		SPIRITBOX_USED:    'spiritbox-used'
+		SPIRITBOX_USED: 'spiritbox-used',
+		/* Outfit-video resolution for a body-part event. Producers
+		   (EventsController.bottomClothingVideos /
+		   topClothingVideos) emit before computing the default
+		   clothing-aware list; a modifier (e.g. prison_visuals) can
+		   set ctx.clothingOverride to a flat clothing key
+		   (ClothingKey.PRISON) so the producer returns that key's
+		   videos instead. ctx: { eventKey, clothingOverride }. */
+		OUTFIT_VIDEOS: 'outfit-videos',
+		/* Banshee-ability video pool resolver. Default returns
+		   BansheeVideos.house; modifiers can overwrite ctx.videos
+		   with a flat list (e.g. prison-themed). ctx: { videos }. */
+		BANSHEE_VIDEOS: 'banshee-videos',
+		/* UVL sprite pack for the in-house tool render. Default
+		   randomly rolls upper/lower wardrobe packs; modifiers can
+		   pin ctx.pack to a fixed sprite set (e.g. prison warden
+		   packs). ctx: { pack }. */
+		UVL_SPRITE_PACK: 'uvl-sprite-pack',
+		/* Hunt room background URL. Modifiers can pin ctx.url to a
+		   per-template background override (e.g. prison
+		   hallway/kitchen). ctx: { templateId, dark, url }. */
+		ROOM_BACKGROUND: 'room-background'
 	});
 
 	var listeners = {};
 	var filters = {};
 
 	function subscribe(table, event, fn) {
-		if (typeof fn !== 'function') return function () {};
+		if (typeof fn !== 'function') return function () { };
 		if (!table[event]) table[event] = [];
 		var bucket = table[event];
 		bucket.push(fn);

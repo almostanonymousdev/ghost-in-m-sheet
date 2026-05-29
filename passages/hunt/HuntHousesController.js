@@ -17,35 +17,36 @@
  *   label           -- player-facing card label (lobby + HUD).
  *   image           -- thumbnail URL for the GhostStreet card.
  *   levelGate       -- min Mc.lvl required to pick the card.
- *   allowsCompanions -- when true, gates the companion plan flow
- *                      onto this hunt house. Drives
- *                      Companion.inHauntedHouseLocation through
- *                      the catalogue lookup so adding a new house
- *                      doesn't require touching the predicate.
  *   modifierCount   -- number of modifiers to draft for runs in
  *                      this house. Omit to inherit the procedural
  *                      default (2). Set to 0 to opt out of the
  *                      modifier deck entirely -- the lobby renders
  *                      no modifier list and the run carries no
  *                      payout multiplier from modifiers.
+ *   forcedModifiers -- optional [id, id, ...] list of zero-weight
+ *                      modifier ids the catalogue pins onto every
+ *                      run in this house, on top of the random draft
+ *                      and ignoring the banlist. Each modifier's
+ *                      ModifiersController filter subscribers then
+ *                      own the per-channel behaviour (sidebar outfit,
+ *                      outfit videos, UVL sprite, room backgrounds,
+ *                      banshee scene, companion gate, steal gate),
+ *                      so house-unique behaviour stays out of the
+ *                      catalogue + downstream controllers.
  *   description     -- optional flavor blurb shown on the HuntStart
  *                      lobby in place of the generic
  *                      "A fresh hunt is waiting." line.
  *   roomBackgrounds -- optional per-template background override map:
  *                        { <templateId>: { light, dark }, ... }
- *                      bgUrlForTemplate consults this before falling
- *                      back to the global huntRooms map. Lets a
- *                      static hunt house pin its rooms to its
- *                      house's classic art when the global default
- *                      points at a different house's variant
- *                      (e.g. elm's kitchen needs Elm's kitchen.jpg,
- *                      not the Owaissa-default global).
- *   sidebarOutfit   -- optional { image, tip } override for the MC
- *                      sidebar wardrobe strip while a run is in
- *                      flight here. Read by HuntController.sidebarOutfit()
- *                      and rendered as a single fixed-outfit tile by
- *                      widgetMcStatus (used by Ironclad's warden
- *                      costume).
+ *                      The ROOM_BACKGROUND filter subscriber below
+ *                      consults this before falling back to the
+ *                      global huntRooms map. Lets a static hunt house
+ *                      pin its rooms to its house's classic art when
+ *                      the global default points at a different
+ *                      house's variant (e.g. elm's kitchen needs
+ *                      Elm's kitchen.jpg, not the Owaissa default).
+ *                      For prison-themed art the equivalent override
+ *                      lives on the prison_visuals modifier instead.
  *   plan            -- frozen floor-plan blueprint:
  *                        { rooms: [{ id, template }, ...],
  *                          edges: [[a, b], ...] }
@@ -67,11 +68,11 @@ setup.HuntHouses = (function () {
 	   up identical room visuals for free. */
 	var OWAISSA_PLAN = Object.freeze({
 		rooms: [
-			Object.freeze({ id: 'room_0', template: 'hallway'    }),
-			Object.freeze({ id: 'room_1', template: 'kitchen'    }),
+			Object.freeze({ id: 'room_0', template: 'hallway' }),
+			Object.freeze({ id: 'room_1', template: 'kitchen' }),
 			Object.freeze({ id: 'room_2', template: 'livingroom' }),
-			Object.freeze({ id: 'room_3', template: 'bedroom'    }),
-			Object.freeze({ id: 'room_4', template: 'bathroom'   })
+			Object.freeze({ id: 'room_3', template: 'bedroom' }),
+			Object.freeze({ id: 'room_4', template: 'bathroom' })
 		],
 		edges: [
 			Object.freeze(['room_0', 'room_1']),
@@ -87,21 +88,25 @@ setup.HuntHouses = (function () {
 	   branches to its three cells, mirroring the classic Ironclad
 	   navigation graph.
 
-	   allowsCompanions is false on the catalogue entry below to
-	   match Ironclad's design (companions don't engage in the prison
-	   hunt path). Catalogue lookup -- no per-house branch needed. */
+	   Prison-unique behaviour (no clothes-theft, no companions, the
+	   warden outfit on the sidebar, prison clothing-key for outfit
+	   videos, prison UVL sprite pack, prison room backgrounds,
+	   prison banshee scene) is driven by the `forcedModifiers`
+	   list on the catalogue entry below -- each forced modifier's
+	   filter subscribers in ModifiersController own its channel,
+	   so HuntHousesController stays free of house-id branches. */
 	var IRONCLAD_PLAN = Object.freeze({
 		rooms: [
-			Object.freeze({ id: 'room_0',  template: 'hallway'     }),
-			Object.freeze({ id: 'room_1',  template: 'reception'   }),
-			Object.freeze({ id: 'room_2',  template: 'kitchen'     }),
-			Object.freeze({ id: 'room_3',  template: 'BlockA'      }),
-			Object.freeze({ id: 'room_4',  template: 'BlockACellA' }),
-			Object.freeze({ id: 'room_5',  template: 'BlockACellB' }),
-			Object.freeze({ id: 'room_6',  template: 'BlockACellC' }),
-			Object.freeze({ id: 'room_7',  template: 'BlockB'      }),
-			Object.freeze({ id: 'room_8',  template: 'BlockBCellA' }),
-			Object.freeze({ id: 'room_9',  template: 'BlockBCellB' }),
+			Object.freeze({ id: 'room_0', template: 'hallway' }),
+			Object.freeze({ id: 'room_1', template: 'reception' }),
+			Object.freeze({ id: 'room_2', template: 'kitchen' }),
+			Object.freeze({ id: 'room_3', template: 'BlockA' }),
+			Object.freeze({ id: 'room_4', template: 'BlockACellA' }),
+			Object.freeze({ id: 'room_5', template: 'BlockACellB' }),
+			Object.freeze({ id: 'room_6', template: 'BlockACellC' }),
+			Object.freeze({ id: 'room_7', template: 'BlockB' }),
+			Object.freeze({ id: 'room_8', template: 'BlockBCellA' }),
+			Object.freeze({ id: 'room_9', template: 'BlockBCellB' }),
 			Object.freeze({ id: 'room_10', template: 'BlockBCellC' })
 		],
 		edges: [
@@ -128,15 +133,15 @@ setup.HuntHouses = (function () {
 	   templates). */
 	var ELM_PLAN = Object.freeze({
 		rooms: [
-			Object.freeze({ id: 'room_0', template: 'hallway'         }),
-			Object.freeze({ id: 'room_1', template: 'kitchen'         }),
-			Object.freeze({ id: 'room_2', template: 'bathroom'        }),
-			Object.freeze({ id: 'room_3', template: 'bedroom'         }),
-			Object.freeze({ id: 'room_4', template: 'basement'        }),
+			Object.freeze({ id: 'room_0', template: 'hallway' }),
+			Object.freeze({ id: 'room_1', template: 'kitchen' }),
+			Object.freeze({ id: 'room_2', template: 'bathroom' }),
+			Object.freeze({ id: 'room_3', template: 'bedroom' }),
+			Object.freeze({ id: 'room_4', template: 'basement' }),
 			Object.freeze({ id: 'room_5', template: 'hallwayUpstairs' }),
-			Object.freeze({ id: 'room_6', template: 'bathroomTwo'     }),
-			Object.freeze({ id: 'room_7', template: 'bedroomTwo'      }),
-			Object.freeze({ id: 'room_8', template: 'nursery'         })
+			Object.freeze({ id: 'room_6', template: 'bathroomTwo' }),
+			Object.freeze({ id: 'room_7', template: 'bedroomTwo' }),
+			Object.freeze({ id: 'room_8', template: 'nursery' })
 		],
 		edges: [
 			Object.freeze(['room_0', 'room_1']),
@@ -152,22 +157,20 @@ setup.HuntHouses = (function () {
 
 	var CATALOGUE = Object.freeze([
 		Object.freeze({
-			id:               'owaissa',
-			label:            'Owaissa Avenue',
-			image:            'ui/img/owaissa-house.jpg',
-			levelGate:        0,
-			allowsCompanions: true,
-			modifierCount:    0,
+			id: 'owaissa',
+			label: 'Owaissa Avenue',
+			image: 'ui/img/owaissa-house.jpg',
+			levelGate: 0,
+			modifierCount: 0,
 			objectiveDescription: 'Gather evidence on the ghost, then bring it back to the witch and name the type.',
-			plan:             OWAISSA_PLAN
+			plan: OWAISSA_PLAN
 		}),
 		Object.freeze({
-			id:               'elm',
-			label:            'Elm Street',
-			image:            'ui/img/elm-house.jpg',
-			levelGate:        3,
-			allowsCompanions: true,
-			modifierCount:    0,
+			id: 'elm',
+			label: 'Elm Street',
+			image: 'ui/img/elm-house.jpg',
+			levelGate: 3,
+			modifierCount: 0,
 			objectiveDescription: 'Gather evidence on the ghost, then bring it back to the witch and name the type.',
 			/* Pin elm's downstairs templates to Elm's classic art so the
 			   body-background pipeline shows the Elm variants instead
@@ -176,52 +179,45 @@ setup.HuntHouses = (function () {
 			   bedroomTwo, nursery) and basement already match Elm in the
 			   global map, so they don't need an override. */
 			roomBackgrounds: Object.freeze({
-				hallway:  Object.freeze({ light: 'assets/scenes/room/elm/hallway.jpg',  dark: 'assets/scenes/room/elm/hallway-dark.jpg'  }),
-				kitchen:  Object.freeze({ light: 'assets/scenes/room/elm/kitchen.jpg',  dark: 'assets/scenes/room/elm/kitchen-dark.jpg'  }),
+				hallway: Object.freeze({ light: 'assets/scenes/room/elm/hallway.jpg', dark: 'assets/scenes/room/elm/hallway-dark.jpg' }),
+				kitchen: Object.freeze({ light: 'assets/scenes/room/elm/kitchen.jpg', dark: 'assets/scenes/room/elm/kitchen-dark.jpg' }),
 				bathroom: Object.freeze({ light: 'assets/scenes/room/elm/bathroom.jpg', dark: 'assets/scenes/room/elm/bathroom-dark.jpg' }),
-				bedroom:  Object.freeze({ light: 'assets/scenes/room/elm/bedroom.jpg',  dark: 'assets/scenes/room/elm/bedroom-dark.jpg'  })
+				bedroom: Object.freeze({ light: 'assets/scenes/room/elm/bedroom.jpg', dark: 'assets/scenes/room/elm/bedroom-dark.jpg' })
 			}),
-			plan:             ELM_PLAN
+			plan: ELM_PLAN
 		}),
 		Object.freeze({
-			/* Ironclad opts out of the companion plan flow AND the
-			   steal-clothes per-tick roll (the prison hunt has its own
-			   warden-clothes mechanic and no companion-event choreography).
-			   The catalogue carries both gates so the companion / steal
-			   predicates are data-driven, no per-house branching needed.
-			   modifierCount=0 keeps the prison hunt off the modifier deck
-			   for now (matching the other static hunt houses); the
-			   warden-outfit gate behind the GhostStreet card is enforced
-			   via the `gate` predicate. */
-			id:               'ironclad',
-			label:            'Ironclad Prison',
-			image:            'scenes/room/ironclad/ironclad.webp',
-			levelGate:        4,
-			allowsCompanions: false,
-			runsStealClothes: false,
-			modifierCount:    0,
-			sidebarOutfit:    Object.freeze({
-				image: 'ui/icons/warden1.png',
-				tip:   'Wearing a sexy warden costume'
-			}),
-			description:      "Ironclad Prison, once a symbol of justice, now stands abandoned, its long and storied past cloaked in shadows. Whispers speak of restless spirits wandering its halls — a chilling reminder of the darkness it once held.",
-			/* Pin ironclad's hallway and kitchen to the prison's classic
-			   art (entrance.webp / ironclad/kitchen.webp) so every room
-			   in the plan renders the same scenery the player sees
-			   inside Ironclad. The cellblock templates (reception,
-			   BlockA/B, BlockA/B cells) already resolve to the prison
-			   art via the global huntRooms map. */
-			roomBackgrounds: Object.freeze({
-				hallway: Object.freeze({ light: 'assets/scenes/room/ironclad/entrance.webp', dark: 'assets/scenes/room/ironclad/entrance-dark.webp' }),
-				kitchen: Object.freeze({ light: 'assets/scenes/room/ironclad/kitchen.webp',  dark: 'assets/scenes/room/ironclad/kitchen-dark.webp'  })
-			}),
-			gate:             function () {
+			/* Prison-unique behaviour (no clothes-theft, no companions,
+			   warden sidebar outfit, prison-clothing outfit videos,
+			   prison UVL sprite pack, prison room backgrounds, prison
+			   banshee scene, prison hunt-over scenes) is driven by the
+			   `forcedModifiers` list below. Each forced modifier is a
+			   weight:0 entry in the catalogue, so it never appears in
+			   the random draft; the catalogue pins it on at startHunt
+			   time and its filter subscribers in ModifiersController
+			   own the per-channel behaviour. modifierCount=0 keeps the
+			   prison hunt off the random modifier deck (matching the
+			   other static hunt houses); the warden-outfit gate behind
+			   the GhostStreet card is enforced via the `gate` predicate. */
+			id: 'ironclad',
+			label: 'Ironclad Prison',
+			image: 'scenes/room/ironclad/ironclad.webp',
+			levelGate: 4,
+			modifierCount: 0,
+			forcedModifiers: Object.freeze([
+				'no_clothes_theft',
+				'solo_only',
+				'warden_outfit',
+				'prison_visuals'
+			]),
+			description: "Ironclad Prison, once a symbol of justice, now stands abandoned, its long and storied past cloaked in shadows. Whispers speak of restless spirits wandering its halls — a chilling reminder of the darkness it once held.",
+			gate: function () {
 				return setup.Witch && setup.Witch.wardenClothesStage
 					&& setup.Witch.wardenClothesStage()
-						=== setup.WardenClothesStage.OUTFIT_OWNED;
+					=== setup.WardenClothesStage.OUTFIT_OWNED;
 			},
-			gateMessage:      'Warden outfit required',
-			plan:             IRONCLAD_PLAN
+			gateMessage: 'Warden outfit required',
+			plan: IRONCLAD_PLAN
 		})
 	]);
 
@@ -252,50 +248,15 @@ setup.HuntHouses = (function () {
 		};
 	}
 
-	function allowsCompanions(id) {
-		var h = byId(id);
-		return !!(h && h.allowsCompanions);
-	}
-
-	/* Per-template { light, dark } background override stamped on the
-	   catalogue entry, or null when the house doesn't override that
-	   template. setup.Styles.bgUrlForTemplate consults this before the
-	   global huntRooms map. */
-	function backgroundOverride(id, templateId) {
-		var h = byId(id);
-		if (!h || !h.roomBackgrounds) return null;
-		return h.roomBackgrounds[templateId] || null;
-	}
-
-	/* Catalogue lookup helper for the active run. Returns the static
-	   house entry (or null) without each subscriber having to reach
-	   into HuntController + byId itself. */
-	function activeHouse() {
-		var id = setup.HuntController && setup.HuntController.staticHouseId
-			? setup.HuntController.staticHouseId() : null;
-		return id ? byId(id) : null;
-	}
-
-	/* Static-house filter wiring. Each per-house override that previously
-	   lived as a branch in HuntController is registered here against the
-	   relevant filter event, so adding a new override = one catalogue
-	   field + one subscriber, no HuntController edit. */
-	setup.Hunt.filter(setup.Hunt.Event.STEAL_CHECK, function (ctx) {
-		/* Houses with runsStealClothes:false (Ironclad) skip the
-		   steal-clothes per-tick roll entirely. Wins over modifier
-		   forceTrigger -- a house that doesn't run clothes-stealing
-		   shouldn't have Swiper bypass that. */
-		var h = activeHouse();
-		if (h && h.runsStealClothes === false) ctx.suppress = true;
-	});
-
-	setup.Hunt.filter(setup.Hunt.Event.COMPANION_ALLOWED, function (ctx) {
-		/* Static houses opt in/out of the companion plan flow via the
-		   allowsCompanions catalogue flag. Procedural runs leave
-		   ctx.allowed untouched (default true). */
-		var h = activeHouse();
-		if (h && !h.allowsCompanions) ctx.allowed = false;
-	});
+	/* Static-house filter wiring. Each per-house catalogue feature
+	   (frozen floor-plan, modifier-count override, sidebar address
+	   label) is registered here against the relevant filter event,
+	   so adding a new override = one catalogue field + one subscriber.
+	   Per-house behaviour that varies between specific houses (steal
+	   gate, companion gate, outfit chip, room art) flows through
+	   forcedModifiers instead -- the catalogue lists the modifier ids
+	   to pin, and ModifiersController owns the channel-specific
+	   subscribers. */
 
 	setup.Hunt.filter(setup.Hunt.Event.FLOORPLAN_OPTIONS, function (ctx) {
 		/* Static houses freeze the topology to a catalogue blueprint --
@@ -323,14 +284,18 @@ setup.HuntHouses = (function () {
 		if (h && typeof h.modifierCount === 'number') ctx.count = h.modifierCount;
 	});
 
-	setup.Hunt.filter(setup.Hunt.Event.SIDEBAR_OUTFIT, function (ctx) {
-		/* Static house catalogue may carry a { image, tip } override
-		   for the MC sidebar wardrobe strip (Ironclad's warden outfit).
-		   Procedural runs and houses without an override leave
-		   ctx.outfit null. */
+	setup.Hunt.filter(setup.Hunt.Event.ROOM_BACKGROUND, function (ctx) {
+		/* Static house catalogue may carry per-template { light, dark }
+		   overrides (Elm's downstairs templates) so the body background
+		   picks up the house's classic art. Templates not on the map
+		   fall through to the global huntRooms default (set by
+		   StyleController). House-id overrides apply to procedural and
+		   static runs equally -- staticHouseId is the gating field. */
 		if (!ctx || !ctx.staticHouseId) return;
 		var h = byId(ctx.staticHouseId);
-		if (h && h.sidebarOutfit) ctx.outfit = h.sidebarOutfit;
+		if (!h || !h.roomBackgrounds) return;
+		var override = h.roomBackgrounds[ctx.templateId];
+		if (override) ctx.url = ctx.dark ? override.dark : override.light;
 	});
 
 	setup.Hunt.filter(setup.Hunt.Event.ADDRESS, function (ctx) {
@@ -344,13 +309,11 @@ setup.HuntHouses = (function () {
 	});
 
 	return {
-		OWNED_VARS:        Object.freeze([]),
-		CATALOGUE:         CATALOGUE,
-		list:              list,
-		byId:              byId,
-		ids:               ids,
-		planFor:           planFor,
-		allowsCompanions:  allowsCompanions,
-		backgroundOverride: backgroundOverride
+		OWNED_VARS: Object.freeze([]),
+		CATALOGUE: CATALOGUE,
+		list: list,
+		byId: byId,
+		ids: ids,
+		planFor: planFor
 	};
 })();

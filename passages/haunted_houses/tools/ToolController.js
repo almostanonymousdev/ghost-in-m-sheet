@@ -16,16 +16,16 @@
 
     /* Hit-message library. */
     var MESSAGES = {
-        gwb:        '@@.mc-speech; <span class="evidenceshadowtext"> Ohh... what is this...? Nevertheless, one more piece of evidence</span>@@',
-        uvl:        '@@.mc-speech; <span class="evidenceshadowtext"> It seems I found fingerprints... one more piece of evidence</span>@@',
+        gwb: '@@.mc-speech; <span class="evidenceshadowtext"> Ohh... what is this...? Nevertheless, one more piece of evidence</span>@@',
+        uvl: '@@.mc-speech; <span class="evidenceshadowtext"> It seems I found fingerprints... one more piece of evidence</span>@@',
         plasmClean: '@@.evidenceshadowtext; It seems I found ectoplasm... one more piece of evidence@@',
-        plasmMess:  "@@.evidenceshadowtext; It seems I've found ectoplasm... Except somehow I managed to get myself completely covered in this mysterious substance. I don't even remember how it happened. Oh well, at least I've found another piece of evidence..@@"
+        plasmMess: "@@.evidenceshadowtext; It seems I've found ectoplasm... Except somehow I managed to get myself completely covered in this mysterious substance. I don't even remember how it happened. Oh well, at least I've found another piece of evidence..@@"
     };
 
     var NOT_FOUND_COPY = {
-        uvl:   "I didn't find any fingerprints",
+        uvl: "I didn't find any fingerprints",
         plasm: "I didn't find any ectoplasm stains",
-        gwb:   "I didn't find anything"
+        gwb: "I didn't find anything"
     };
 
     /* Houses the evidence tools cover. */
@@ -70,7 +70,7 @@
        <<coloredText>> call so the widget's text styling stays the one knob. */
     function renderEmf() {
         var state = setup.tickTimedTool("emf");
-        var g     = setup.HuntController.activeGhost();
+        var g = setup.HuntController.activeGhost();
         var markup;
         if (state === setup.ToolState.READY && g && g.hasEvidence("emf")) {
             markup = g.rollEmfGlitch()
@@ -95,7 +95,7 @@
         }
         setup.activateTool("emf");
         return {
-            pack:    { prefix: "mechanics/gwb/", start: 1, end: 18, ext: ".jpg" },
+            pack: { prefix: "mechanics/gwb/", start: 1, end: 18, ext: ".jpg" },
             message: MESSAGES.gwb
         };
     }
@@ -118,13 +118,13 @@
     function plasmPack() {
         if (randInt(1, 2) === 1) {
             return {
-                pack:    { prefix: "mechanics/plasm/", start: 1, end: 6, ext: ".png", cssClass: "displayCentredImgs" },
+                pack: { prefix: "mechanics/plasm/", start: 1, end: 6, ext: ".png", cssClass: "displayCentredImgs" },
                 message: MESSAGES.plasmClean
             };
         }
         var range = setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT) ? [1, 7] : [8, 14];
         return {
-            pack:    { prefix: "mechanics/plasm/mess/", start: range[0], end: range[1], ext: ".png", cssClass: "displayCentredImgs" },
+            pack: { prefix: "mechanics/plasm/mess/", start: range[0], end: range[1], ext: ".png", cssClass: "displayCentredImgs" },
             message: MESSAGES.plasmMess
         };
     }
@@ -165,8 +165,8 @@
        completes first. */
     function foundPassageMarkup(toolKey, dest, hit) {
         State.variables.evidenceFind = {
-            tool:    toolKey,
-            pack:    hit.pack,
+            tool: toolKey,
+            pack: hit.pack,
             message: hit.message
         };
         return '<<deferGoto "' + dest + '">>';
@@ -176,13 +176,13 @@
        Ironclad has a dedicated set that bypasses the clothing branch
        entirely. */
     function uvlLowerPack() {
-        var jeansW   = setup.Wardrobe.worn(setup.WardrobeSlot.JEANS);
-        var jeans    = setup.Wardrobe.state(setup.WardrobeSlot.JEANS);
-        var shortsW  = setup.Wardrobe.worn(setup.WardrobeSlot.SHORTS);
-        var skirtW   = setup.Wardrobe.worn(setup.WardrobeSlot.SKIRT);
+        var jeansW = setup.Wardrobe.worn(setup.WardrobeSlot.JEANS);
+        var jeans = setup.Wardrobe.state(setup.WardrobeSlot.JEANS);
+        var shortsW = setup.Wardrobe.worn(setup.WardrobeSlot.SHORTS);
+        var skirtW = setup.Wardrobe.worn(setup.WardrobeSlot.SKIRT);
         var pantiesW = setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES);
-        if (jeansW)   return { prefix: "mechanics/uvl/1.", start: 1, end: 4, ext: ".png" };
-        if (shortsW)  return { prefix: "mechanics/uvl/3.", start: 1, end: 6, ext: ".png" };
+        if (jeansW) return { prefix: "mechanics/uvl/1.", start: 1, end: 4, ext: ".png" };
+        if (shortsW) return { prefix: "mechanics/uvl/3.", start: 1, end: 6, ext: ".png" };
         if (skirtW) {
             return pantiesW
                 ? { prefix: "mechanics/uvl/4.", start: 1, end: 5, ext: ".png" }
@@ -197,23 +197,31 @@
     }
 
     function uvlUpperPack() {
-        if (setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT))     return { prefix: "mechanics/uvl/1.", start: 5, end:  7, ext: ".png" };
-        if (setup.Wardrobe.worn(setup.WardrobeSlot.BRA))          return { prefix: "mechanics/uvl/2.", start: 7, end: 12, ext: ".png" };
-        if (setup.Wardrobe.state(setup.WardrobeSlot.BRA) === setup.ClothingState.NOT_WORN) return { prefix: "mechanics/uvl/6.", start: 0, end:  4, ext: ".png" };
+        if (setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT)) return { prefix: "mechanics/uvl/1.", start: 5, end: 7, ext: ".png" };
+        if (setup.Wardrobe.worn(setup.WardrobeSlot.BRA)) return { prefix: "mechanics/uvl/2.", start: 7, end: 12, ext: ".png" };
+        if (setup.Wardrobe.state(setup.WardrobeSlot.BRA) === setup.ClothingState.NOT_WORN) return { prefix: "mechanics/uvl/6.", start: 0, end: 4, ext: ".png" };
         return null;
     }
 
     function renderUvl() {
         var state = setup.tickTimedTool("uvl");
-        var g     = setup.HuntController.activeGhost();
+        var g = setup.HuntController.activeGhost();
         if (state !== setup.ToolState.READY || !(g && g.hasEvidence("uvl"))) {
             _huntCardMarkup = huntCardThumbsDown();
             return notFoundMarkup("uvl");
         }
-        var pack;
-        if (setup.HauntedHouses.isIronclad()) {
-            pack = { prefix: "mechanics/uvl/ironclad", start: 1, end: 6, ext: ".png" };
-        } else {
+        /* Sprite pack: modifiers (warden_outfit) can pin a fixed pack
+           via the UVL_SPRITE_PACK filter so the prison hunt shows its
+           dedicated warden sprites instead of rolling the random
+           upper/lower wardrobe pack. */
+        var modifierIds = setup.HuntController.modifiers
+            ? setup.HuntController.modifiers() : [];
+        var packCtx = setup.Hunt.applyFilter(setup.Hunt.Event.UVL_SPRITE_PACK, {
+            pack: null,
+            modifierIds: modifierIds
+        });
+        var pack = packCtx.pack;
+        if (!pack) {
             /* Upper-vs-lower 50/50 (random 1..2). */
             var useLower = (randInt(1, 2) === 1);
             pack = useLower ? uvlLowerPack() : uvlUpperPack();
@@ -239,22 +247,22 @@
        The Brook possession side effect is set whenever the possession roll
        fires, matching the old passage's unconditional set. */
     var SPIRITBOX_QA = [
-        { q: "Where are you?",        a: "Behind you. Closer than you think." },
-        { q: "Where are you?",        a: "Inside the walls. Inside you, soon." },
-        { q: "Where are you?",        a: "Right between your legs." },
-        { q: "Are you here?",         a: "I've been watching you undress." },
-        { q: "Are you here?",         a: "I've had my hands on you for hours. You just didn't notice." },
-        { q: "What do you want?",     a: "You. On your knees." },
-        { q: "What do you want?",     a: "I'll use you until you can't stand." },
-        { q: "What do you want?",     a: "What's already mine." },
-        { q: "What do you want?",     a: "Every wet little sound you try to hold in." },
-        { q: "Who are you?",          a: "The ghoul who spreads you open tonight." },
-        { q: "Who are you?",          a: "The one you keep dreaming about." },
-        { q: "Why are you here?",     a: "Because you keep moaning my name in your sleep." },
-        { q: "Why are you here?",     a: "You called. I came." },
-        { q: "Are you alone?",        a: "Not anymore. Not with you here." },
-        { q: "Can you hear me?",      a: "I can hear how wet you are." },
-        { q: "Will you hurt me?",     a: "Only the way you want." },
+        { q: "Where are you?", a: "Behind you. Closer than you think." },
+        { q: "Where are you?", a: "Inside the walls. Inside you, soon." },
+        { q: "Where are you?", a: "Right between your legs." },
+        { q: "Are you here?", a: "I've been watching you undress." },
+        { q: "Are you here?", a: "I've had my hands on you for hours. You just didn't notice." },
+        { q: "What do you want?", a: "You. On your knees." },
+        { q: "What do you want?", a: "I'll use you until you can't stand." },
+        { q: "What do you want?", a: "What's already mine." },
+        { q: "What do you want?", a: "Every wet little sound you try to hold in." },
+        { q: "Who are you?", a: "The ghoul who spreads you open tonight." },
+        { q: "Who are you?", a: "The one you keep dreaming about." },
+        { q: "Why are you here?", a: "Because you keep moaning my name in your sleep." },
+        { q: "Why are you here?", a: "You called. I came." },
+        { q: "Are you alone?", a: "Not anymore. Not with you here." },
+        { q: "Can you hear me?", a: "I can hear how wet you are." },
+        { q: "Will you hurt me?", a: "Only the way you want." },
         { q: "Will you leave me alone?", a: "After I'm finished. Maybe." }
     ];
 
@@ -288,9 +296,9 @@
     }
 
     function renderSpiritbox() {
-        var V    = State.variables;
+        var V = State.variables;
         var roll = randInt(1, 100);
-        var g    = setup.HuntController.activeGhost();
+        var g = setup.HuntController.activeGhost();
 
         if (setup.Hunt && setup.Hunt.Event) {
             setup.Hunt.emit(setup.Hunt.Event.SPIRITBOX_USED, {});
@@ -309,9 +317,9 @@
             }
             var threat = SPIRITBOX_MENACING[randInt(0, SPIRITBOX_MENACING.length - 1)];
             var menacingMarkup = '<div class="spiritbox-container">\n'
-                 + '<span class="spiritbox-question">You ask through the Spiritbox: "What do you want?"</span>\n'
-                 + '<span class="spiritbox-answer"><b>' + threat + '</b></span>\n'
-                 + '</div>';
+                + '<span class="spiritbox-question">You ask through the Spiritbox: "What do you want?"</span>\n'
+                + '<span class="spiritbox-answer"><b>' + threat + '</b></span>\n'
+                + '</div>';
             _huntInlineMarkup = menacingMarkup;
             return menacingMarkup;
         }
@@ -326,9 +334,9 @@
             _huntCardMarkup = '';
             var burst = SPIRITBOX_STATIC[randInt(0, SPIRITBOX_STATIC.length - 1)];
             var staticMarkup = '<div class="spiritbox-container">\n'
-                 + '<span class="spiritbox-question">You ask through the Spiritbox: "What do you want?"</span>\n'
-                 + '<span class="spiritbox-answer"><b>' + burst + '</b></span>\n'
-                 + '</div>';
+                + '<span class="spiritbox-question">You ask through the Spiritbox: "What do you want?"</span>\n'
+                + '<span class="spiritbox-answer"><b>' + burst + '</b></span>\n'
+                + '</div>';
             _huntInlineMarkup = staticMarkup;
             return staticMarkup;
         }
@@ -340,9 +348,9 @@
             _huntCardMarkup = '';
             var qa = SPIRITBOX_QA[randInt(0, SPIRITBOX_QA.length - 1)];
             var hitMarkup = '<div class="spiritbox-container">\n'
-                 + '<span class="spiritbox-question">You ask through the Spiritbox: "' + qa.q + '"</span>\n'
-                 + '<span class="spiritbox-answer">The ghost responds: "' + qa.a + '"</span>\n'
-                 + '</div>';
+                + '<span class="spiritbox-question">You ask through the Spiritbox: "' + qa.q + '"</span>\n'
+                + '<span class="spiritbox-answer">The ghost responds: "' + qa.a + '"</span>\n'
+                + '</div>';
             _huntInlineMarkup = hitMarkup;
             return hitMarkup;
         }
@@ -354,17 +362,17 @@
         _huntCardMarkup = huntCardThumbsDown();
         _huntInlineMarkup = '';
         return '<div class="spiritbox-container">\n'
-             + '<span class="spiritbox-no-response">No one responds. Silence...</span>\n'
-             + '</div>';
+            + '<span class="spiritbox-no-response">No one responds. Silence...</span>\n'
+            + '</div>';
     }
 
     /* Dispatch table. Keeping it a lookup makes adding a new tool a
        one-line registration instead of touching a switch ladder. */
     var RENDERERS = {
-        emf:       renderEmf,
-        gwb:       renderGwb,
-        plasm:     renderPlasm,
-        uvl:       renderUvl,
+        emf: renderEmf,
+        gwb: renderGwb,
+        plasm: renderPlasm,
+        uvl: renderUvl,
         spiritbox: renderSpiritbox
     };
 
@@ -388,13 +396,13 @@
     ]);
 
     setup.ToolController = {
-        OWNED_VARS:     OWNED_VARS,
-        Messages:       MESSAGES,
-        NotFoundCopy:   NOT_FOUND_COPY,
+        OWNED_VARS: OWNED_VARS,
+        Messages: MESSAGES,
+        NotFoundCopy: NOT_FOUND_COPY,
         EvidenceHouses: EVIDENCE_HOUSES,
-        render:         render,
-        findPlasm:      findPlasm,
-        findGwb:        findGwb,
+        render: render,
+        findPlasm: findPlasm,
+        findGwb: findGwb,
 
         /* In-card hunt-tool result buffer. Renderers stamp it as a
            side effect; <<huntToolSlot>> wikifies it into the per-tool
@@ -402,17 +410,17 @@
            writes through it via setHuntCardMarkup. clearAllHuntCards
            wipes both the buffer and every rendered overlay so only
            the most-recently-clicked tool keeps its in-card result. */
-        huntCardMarkup:    function () { return _huntCardMarkup; },
+        huntCardMarkup: function () { return _huntCardMarkup; },
         setHuntCardMarkup: function (m) { _huntCardMarkup = m; },
         huntCardThumbsDownMarkup: huntCardThumbsDown,
-        huntCardNumberMarkup:     huntCardNumber,
+        huntCardNumberMarkup: huntCardNumber,
 
         /* Visible-inline result buffer for prose tool output (spiritbox
            Q/A, no-response, menacing / static one-liners). <<huntToolSlot>>
            wikifies it into #hunt-tool-inline on tick completion; the
            region stays empty for tools that route hits through
            <<deferGoto>>. */
-        huntInlineMarkup:    function () { return _huntInlineMarkup; },
+        huntInlineMarkup: function () { return _huntInlineMarkup; },
         setHuntInlineMarkup: function (m) { _huntInlineMarkup = m; },
 
         clearAllHuntCards: function () {
@@ -431,7 +439,7 @@
             setup.Ghosts.activateProwl();
         },
         crucifixAmount: function () { return State.variables.crucifixAmount; },
-        addCrucifix:    function () { State.variables.crucifixAmount += 1; },
+        addCrucifix: function () { State.variables.crucifixAmount += 1; },
         initCrucifixIfNeeded: function () {
             if (State.variables.crucifixAmount === undefined) {
                 State.variables.crucifixAmount = 0;
@@ -442,7 +450,7 @@
            0; reserved for future weather / season hooks. Lives here
            (not on setup.Time) because the thermometer is the only
            consumer. */
-        temperature:    function () { return State.variables.temperature; },
+        temperature: function () { return State.variables.temperature; },
         setTemperature: function (n) { State.variables.temperature = n; },
         addTemperature: function (n) { State.variables.temperature += n; },
 
@@ -459,8 +467,8 @@
             if (eq) { eq[toolKey] = n; }
         },
         /* Unlock the haunted-house detector. Set by witch purchase. */
-        buyDetector:     function () { State.variables.boughtDetector = 1; },
-        detectorBought:  function () { return State.variables.boughtDetector !== undefined; },
+        buyDetector: function () { State.variables.boughtDetector = 1; },
+        detectorBought: function () { return State.variables.boughtDetector !== undefined; },
         /* Pure-read predicate: is this timed tool currently flagged
            active? Unlike setup.tickTimedTool, does NOT side-effect on
            expiry — callers that just want to sample state without
@@ -539,12 +547,12 @@ setup.huntableRoomVars = [
 
 setup.makeEmptySearchState = function () {
     return {
-        emf:         0,
-        plasm:       0,
-        uvl:         0,
+        emf: 0,
+        plasm: 0,
+        uvl: 0,
         temperature: 0,
-        spiritbox:   0,
-        gwb:         0
+        spiritbox: 0,
+        gwb: 0
     };
 };
 
@@ -562,60 +570,60 @@ setup.makeEmptySearchState = function () {
  * spiritbox needs the lights-off guard. */
 setup.searchToolDefs = {
     emf: {
-        meterField:      "Emf",
-        equipField:      "emf",
-        widgetSuffix:    "EMF",
-        picSuffix:       "PicEMF",
-        iconFile:        "emf.png",
-        replaceMode:     "single",
-        label:           "Use EM@@color:yellow;F@@"
+        meterField: "Emf",
+        equipField: "emf",
+        widgetSuffix: "EMF",
+        picSuffix: "PicEMF",
+        iconFile: "emf.png",
+        replaceMode: "single",
+        label: "Use EM@@color:yellow;F@@"
     },
     plasm: {
-        meterField:      "Plasm",
-        equipField:      "glass",
-        widgetSuffix:    "Plasm",
-        picSuffix:       "PicPlasm",
-        iconFile:        "glass.png",
-        replaceMode:     "double",
-        label:           "Use @@color:yellow;E@@ctoglass"
+        meterField: "Plasm",
+        equipField: "glass",
+        widgetSuffix: "Plasm",
+        picSuffix: "PicPlasm",
+        iconFile: "glass.png",
+        replaceMode: "double",
+        label: "Use @@color:yellow;E@@ctoglass"
     },
     gwb: {
-        meterField:      "Gwb",
-        equipField:      "gwb",
-        widgetSuffix:    "GWB",
-        picSuffix:       "PicGWB",
-        iconFile:        "gwb.png",
-        replaceMode:     "double",
-        label:           "Use @@color:yellow;G@@WB"
+        meterField: "Gwb",
+        equipField: "gwb",
+        widgetSuffix: "GWB",
+        picSuffix: "PicGWB",
+        iconFile: "gwb.png",
+        replaceMode: "double",
+        label: "Use @@color:yellow;G@@WB"
     },
     spiritbox: {
-        meterField:      "Spiritbox",
-        equipField:      "spiritbox",
-        widgetSuffix:    "Spiritbox",
-        picSuffix:       "PicSB",
-        iconFile:        "spiritbox.png",
-        replaceMode:     "double",
+        meterField: "Spiritbox",
+        equipField: "spiritbox",
+        widgetSuffix: "Spiritbox",
+        picSuffix: "PicSB",
+        iconFile: "spiritbox.png",
+        replaceMode: "double",
         needsLightCheck: true,
-        label:           "Use @@color:yellow;S@@piritbox"
+        label: "Use @@color:yellow;S@@piritbox"
     },
     temperature: {
-        meterField:      "Temperature",
-        equipField:      "temperature",
-        widgetSuffix:    "Temperature",
-        picSuffix:       "PicThermometer",
-        iconFile:        "thermometr.png",
-        replaceMode:     "single",
-        label:           "Use @@color:yellow;T@@hermometer",
-        checkPassage:    "TemperatureHigh"
+        meterField: "Temperature",
+        equipField: "temperature",
+        widgetSuffix: "Temperature",
+        picSuffix: "PicThermometer",
+        iconFile: "thermometr.png",
+        replaceMode: "single",
+        label: "Use @@color:yellow;T@@hermometer",
+        checkPassage: "TemperatureHigh"
     },
     uvl: {
-        meterField:      "Uvl",
-        equipField:      "uvl",
-        widgetSuffix:    "UVL",
-        picSuffix:       "PicUVL",
-        iconFile:        "uvl.png",
-        replaceMode:     "double",
-        label:           "Use @@color:yellow;U@@VL"
+        meterField: "Uvl",
+        equipField: "uvl",
+        widgetSuffix: "UVL",
+        picSuffix: "PicUVL",
+        iconFile: "uvl.png",
+        replaceMode: "double",
+        label: "Use @@color:yellow;U@@VL"
     }
 };
 
@@ -636,27 +644,27 @@ setup.searchToolOrder = ["emf", "plasm", "gwb", "spiritbox", "temperature", "uvl
  */
 setup.searchRoomPrefixes = [
     // Owaissa -- meterTag div
-    { prefix: "owaissaBedroom",      bagRoom: "Bedroom",     bgRoom: "bedroom",    meterTag: "div" },
-    { prefix: "owaissaBathroom",     bagRoom: "Bathroom",    bgRoom: "bathroom",   meterTag: "div" },
-    { prefix: "owaissaKitchen",      bagRoom: "Kitchen",     bgRoom: "kitchen",    meterTag: "div" },
-    { prefix: "owaissaHallway",      bagRoom: "Hallway",     bgRoom: "hallway",    meterTag: "div" },
-    { prefix: "owaissaLivingroom",   bagRoom: "Livingroom",  bgRoom: "livingroom", meterTag: "div" },
+    { prefix: "owaissaBedroom", bagRoom: "Bedroom", bgRoom: "bedroom", meterTag: "div" },
+    { prefix: "owaissaBathroom", bagRoom: "Bathroom", bgRoom: "bathroom", meterTag: "div" },
+    { prefix: "owaissaKitchen", bagRoom: "Kitchen", bgRoom: "kitchen", meterTag: "div" },
+    { prefix: "owaissaHallway", bagRoom: "Hallway", bgRoom: "hallway", meterTag: "div" },
+    { prefix: "owaissaLivingroom", bagRoom: "Livingroom", bgRoom: "livingroom", meterTag: "div" },
     // Elm Street
-    { prefix: "elmBasement",         bagRoom: "Basement",        bgRoom: "basement"        },
-    { prefix: "elmBedroom",          bagRoom: "Bedroom",         bgRoom: "bedroom"         },
-    { prefix: "elmBedroomTwo",       bagRoom: "BedroomTwo",      bgRoom: "bedroomTwo"      },
-    { prefix: "elmBathroom",         bagRoom: "Bathroom",        bgRoom: "bathroom"        },
-    { prefix: "elmBathroomTwo",      bagRoom: "BathroomTwo",     bgRoom: "bathroomTwo"     },
-    { prefix: "elmKitchen",          bagRoom: "Kitchen",         bgRoom: "kitchen"         },
-    { prefix: "elmHallway",          bagRoom: "Hallway",         bgRoom: "hallway"         },
-    { prefix: "elmHallwayUpstairs",  bagRoom: "HallwayUpstairs", bgRoom: "hallwayUpstairs" },
-    { prefix: "elmNursery",          bagRoom: "Nursery",         bgRoom: "nursery"         },
+    { prefix: "elmBasement", bagRoom: "Basement", bgRoom: "basement" },
+    { prefix: "elmBedroom", bagRoom: "Bedroom", bgRoom: "bedroom" },
+    { prefix: "elmBedroomTwo", bagRoom: "BedroomTwo", bgRoom: "bedroomTwo" },
+    { prefix: "elmBathroom", bagRoom: "Bathroom", bgRoom: "bathroom" },
+    { prefix: "elmBathroomTwo", bagRoom: "BathroomTwo", bgRoom: "bathroomTwo" },
+    { prefix: "elmKitchen", bagRoom: "Kitchen", bgRoom: "kitchen" },
+    { prefix: "elmHallway", bagRoom: "Hallway", bgRoom: "hallway" },
+    { prefix: "elmHallwayUpstairs", bagRoom: "HallwayUpstairs", bgRoom: "hallwayUpstairs" },
+    { prefix: "elmNursery", bagRoom: "Nursery", bgRoom: "nursery" },
     // Ironclad -- eventChain ironclad; bag names carry an "Ironclad" suffix that the prefix does not
-    { prefix: "ironcladHallway",     bagRoom: "HallwayIronclad",     bgRoom: "hallway",     eventChain: "ironclad" },
-    { prefix: "ironcladReception",   bagRoom: "ReceptionIronclad",   bgRoom: "reception",   eventChain: "ironclad" },
-    { prefix: "ironcladKitchen",     bagRoom: "KitchenIronclad",     bgRoom: "kitchen",     eventChain: "ironclad" },
-    { prefix: "ironcladBlockA",      bagRoom: "BlockAIronclad",      bgRoom: "BlockA",      eventChain: "ironclad" },
-    { prefix: "ironcladBlockB",      bagRoom: "BlockBIronclad",      bgRoom: "BlockB",      eventChain: "ironclad" },
+    { prefix: "ironcladHallway", bagRoom: "HallwayIronclad", bgRoom: "hallway", eventChain: "ironclad" },
+    { prefix: "ironcladReception", bagRoom: "ReceptionIronclad", bgRoom: "reception", eventChain: "ironclad" },
+    { prefix: "ironcladKitchen", bagRoom: "KitchenIronclad", bgRoom: "kitchen", eventChain: "ironclad" },
+    { prefix: "ironcladBlockA", bagRoom: "BlockAIronclad", bgRoom: "BlockA", eventChain: "ironclad" },
+    { prefix: "ironcladBlockB", bagRoom: "BlockBIronclad", bgRoom: "BlockB", eventChain: "ironclad" },
     { prefix: "ironcladBlockACellA", bagRoom: "BlockACellAIronclad", bgRoom: "BlockACellA", eventChain: "ironclad" },
     { prefix: "ironcladBlockACellB", bagRoom: "BlockACellBIronclad", bgRoom: "BlockACellB", eventChain: "ironclad" },
     { prefix: "ironcladBlockACellC", bagRoom: "BlockACellCIronclad", bgRoom: "BlockACellC", eventChain: "ironclad" },
@@ -681,9 +689,9 @@ setup.searchPrefixIndex = (function () {
 setup.hauntedPassages = (function () {
     return setup.searchRoomPrefixes.map(function (e) {
         var house;
-        if (e.eventChain === "ironclad")      house = "ironclad";
+        if (e.eventChain === "ironclad") house = "ironclad";
         else if (e.prefix.indexOf("owaissa") === 0) house = "owaissa";
-        else                                  house = "elm";
+        else house = "elm";
         var passage = e.prefix.charAt(0).toUpperCase() + e.prefix.slice(1);
         return { passage: passage, bgRoom: e.bgRoom, house: house };
     });
@@ -741,8 +749,8 @@ setup.searchableRooms.forEach(function (room) {
     /* Discrete states returned by setup.tickTimedTool. Consumers compare
      * against these instead of bare string literals. */
     setup.ToolState = Object.freeze({
-        READY:    "ready",
-        EXPIRED:  "expired",
+        READY: "ready",
+        EXPIRED: "expired",
         INACTIVE: "inactive"
     });
 
@@ -913,14 +921,14 @@ setup.searchableRooms.forEach(function (room) {
         var def = setup.searchToolDefs[tool];
         if (!def) throw new Error("searchTool: unknown tool '" + tool + "'");
         var cfg = {
-            tool:        tool,
-            prefix:      prefix,
-            room:        entry.bagRoom,
-            bgRoom:      entry.bgRoom,
-            eventChain:  entry.eventChain || "standard",
+            tool: tool,
+            prefix: prefix,
+            room: entry.bagRoom,
+            bgRoom: entry.bgRoom,
+            eventChain: entry.eventChain || "standard",
             replaceMode: def.replaceMode
         };
-        if (entry.meterTag)      cfg.meterTag        = entry.meterTag;
+        if (entry.meterTag) cfg.meterTag = entry.meterTag;
         if (def.needsLightCheck) cfg.needsLightCheck = true;
         return cfg;
     };
@@ -945,11 +953,11 @@ setup.searchableRooms.forEach(function (room) {
     function completionReplaceMarkup(cfg, ids, check) {
         if (cfg.replaceMode === "double") {
             return '<<replace "#' + ids.actionSel + '">>' + check + '<</replace>>'
-                 + '<<replace "#' + ids.meterId + '">><</replace>>'
-                 + '<<applyTickEffects>>';
+                + '<<replace "#' + ids.meterId + '">><</replace>>'
+                + '<<applyTickEffects>>';
         }
         return '<<replace "#' + ids.meterId + '">>' + check + '<</replace>>'
-             + '<<applyTickEffects>>';
+            + '<<applyTickEffects>>';
     }
 
     /* Build the markup for one tool slot. Called by the <<searchTool>>
@@ -988,8 +996,8 @@ setup.searchableRooms.forEach(function (room) {
         }
 
         var ids = {
-            buttonId:  cfg.buttonId  || (cfg.prefix + def.widgetSuffix + "Button"),
-            meterId:   cfg.meterId   || (cfg.prefix + def.widgetSuffix),
+            buttonId: cfg.buttonId || (cfg.prefix + def.widgetSuffix + "Button"),
+            meterId: cfg.meterId || (cfg.prefix + def.widgetSuffix),
             actionSel: cfg.actionSel || (cfg.prefix + "Action")
         };
 
@@ -997,11 +1005,11 @@ setup.searchableRooms.forEach(function (room) {
             throw new Error("searchTool: replaceMode=double requires actionSel");
         }
 
-        var meterTag  = cfg.meterTag || "span";
-        var bag       = "$currentsearch" + cfg.room;
-        var bgRoom    = "$" + cfg.bgRoom;
-        var equip     = "$equipment." + def.equipField;
-        var field     = bag + "." + cfg.tool;
+        var meterTag = cfg.meterTag || "span";
+        var bag = "$currentsearch" + cfg.room;
+        var bgRoom = "$" + cfg.bgRoom;
+        var equip = "$equipment." + def.equipField;
+        var field = bag + "." + cfg.tool;
         var meterName = "search" + cfg.room + def.meterField;
         var meterExpr = "`" + field + " / " + equip + "`";
 
@@ -1013,17 +1021,17 @@ setup.searchableRooms.forEach(function (room) {
         // and burns one in-game minute via <<toolTick>>.
         var repeatBody = [
             '<<if ' + field + ' neq ' + equip + '>>',
-                eventChain,
+            eventChain,
             '<</if>>',
             '<<if ' + field + ' lte (' + equip + ' - 1)>>',
-                '<<toolTick>>',
-                '<<set ' + field + ' += 1>>',
-                '<<updatemeter \'' + meterName + '\' ' + meterExpr + '>>',
+            '<<toolTick>>',
+            '<<set ' + field + ' += 1>>',
+            '<<updatemeter \'' + meterName + '\' ' + meterExpr + '>>',
             '<<elseif ' + field + ' gte ' + equip + '>>',
-                completion,
-                '<<set ' + field + ' to 0>>',
-                '<<removeclass ".cardlink" "disabled-link">>',
-                '<<stop>>',
+            completion,
+            '<<set ' + field + ' to 0>>',
+            '<<removeclass ".cardlink" "disabled-link">>',
+            '<<stop>>',
             '<</if>>'
         ].join('\n');
 
@@ -1043,12 +1051,12 @@ setup.searchableRooms.forEach(function (room) {
             var lightOffSel = cfg.lightOffSel || ('#' + ids.actionSel);
             inner =
                 '<<if ' + bgRoom + '.background eq 1>>' +
-                    '<<replace "' + lightOffSel + '">>' +
-                        '<div class="spiritbox-container mc-thoughts">\nI need to turn off the light first</div>' +
-                    '<</replace>>' +
+                '<<replace "' + lightOffSel + '">>' +
+                '<div class="spiritbox-container mc-thoughts">\nI need to turn off the light first</div>' +
+                '<</replace>>' +
                 '<<else>>' +
-                    '<<addclass ".cardlink" "disabled-link">>\n' +
-                    coreBody + '\n' +
+                '<<addclass ".cardlink" "disabled-link">>\n' +
+                coreBody + '\n' +
                 '<</if>>';
         } else {
             inner = '<<addclass ".cardlink" "disabled-link">>\n' + coreBody;
@@ -1156,7 +1164,7 @@ setup.searchableRooms.forEach(function (room) {
      * per-room script blocks. */
     $(document).on('click.searchToolPic', '.footer-card .cardimg img.icon[id]', function () {
         var picId = this.id;
-        var defs  = setup.searchToolDefs;
+        var defs = setup.searchToolDefs;
         for (var key in defs) {
             if (!defs.hasOwnProperty(key)) continue;
             var d = defs[key];

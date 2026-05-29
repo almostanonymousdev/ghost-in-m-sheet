@@ -145,7 +145,7 @@
 	<<if _hg and _hg.canTentacles>>
 		<<set _sanityTentacleVids to ["mechanics/tentacles/2.0.mp4", "mechanics/tentacles/1.2.mp4", "mechanics/tentacles/2.2.mp4", "mechanics/tentacles/2.3.mp4", "mechanics/tentacles/2.1.mp4"]>>
 		<<randomVideoFromList _sanityTentacleVids>>
-	<<elseif setup.HauntedHouses.isIronclad()>>
+	<<elseif setup.HuntController.hasModifier(setup.Modifiers.PRISON_VISUALS)>>
 		<<set _check to random(1,3)>>
 		<<video "scenes/prison/sanity" + _check + ".mp4">>
 	<<else>>
@@ -206,7 +206,7 @@
 		<</linkappend>>
 	<</linkappend>>
 
-<<elseif setup.HauntedHouses.isIronclad()>>
+<<elseif setup.HuntController.hasModifier(setup.Modifiers.PRISON_VISUALS)>>
 	<<set _randomHuntEven to random(1,4)>>
 	<<video "scenes/prison/hunt" + _randomHuntEven + ".0.mp4">>
 	They caught you and dragged you into a dark room. There's no strength to resist. You feel yourself losing control as the ghosts begin to do whatever they want with you. You can't fight back -- all that's left is to

@@ -183,13 +183,14 @@ setup.HauntedHouses = (function () {
 		shouldTriggerSteal: function () {
 			/* STEAL_CHECK filter lets modifiers (Swiper) and contracts
 			   bypass or scale the roll, and lets static houses opt out
-			   entirely. Subscribers set forceTrigger=true to skip the
-			   roll, or suppress=true to cancel the steal step outright
-			   (Ironclad: runsStealClothes=false). suppress wins over
-			   forceTrigger -- a house that doesn't run clothes-stealing
-			   shouldn't have Swiper bypass that. The caller still gates
-			   on canStealAnyItem so we never steal when nothing is
-			   wearable. */
+			   entirely via forced modifiers. Subscribers set
+			   forceTrigger=true to skip the roll, or suppress=true to
+			   cancel the steal step outright (Ironclad pins
+			   no_clothes_theft via its forcedModifiers list). suppress
+			   wins over forceTrigger -- a house that doesn't run
+			   clothes-stealing shouldn't have Swiper bypass that. The
+			   caller still gates on canStealAnyItem so we never steal
+			   when nothing is wearable. */
 			var modifierIds = (setup.HuntController && setup.HuntController.modifiers)
 				? setup.HuntController.modifiers() : [];
 			var ctx = setup.Hunt.applyFilter(setup.Hunt.Event.STEAL_CHECK, {
@@ -238,10 +239,6 @@ setup.HauntedHouses = (function () {
 		isElm: function () {
 			return setup.HuntController && setup.HuntController.staticHouseId
 				&& setup.HuntController.staticHouseId() === 'elm';
-		},
-		isIronclad: function () {
-			return setup.HuntController && setup.HuntController.staticHouseId
-				&& setup.HuntController.staticHouseId() === 'ironclad';
 		},
 
 		/* Record that the MC just dodged a ghost event — stamps the

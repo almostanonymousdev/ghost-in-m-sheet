@@ -159,9 +159,10 @@ test.describe('HuntController', () => {
   });
 
   test('shouldTriggerSteal() opts ironclad out of the steal step', async () => {
-    /* Only the ironclad static hunt house opts out via the catalogue's
-       runsStealClothes:false flag. Procedural / other static hunt
-       houses always answer with the predicate. */
+    /* Ironclad's catalogue entry forces the no_clothes_theft modifier
+       at startHunt, whose STEAL_CHECK subscriber sets ctx.suppress=true.
+       Procedural / other static hunt houses always answer with the
+       predicate. */
     await page.evaluate(() => {
       SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: 'owaissa' });
       SugarCube.State.variables.stealChance = 100;

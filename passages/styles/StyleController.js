@@ -131,23 +131,30 @@ setup.Styles = (function () {
 		},
 
 		/*
-		 * Background image URL for a hunt-room template.  Hunt rooms
+		 * Background image URL for a hunt-room template. Hunt rooms
 		 * have no per-room light state, so callers pass `dark = true`
 		 * explicitly when they want the dark variant. Returns null
 		 * for templates without art.
 		 *
-		 * Optional `staticHouseId` lets a static-plan hunt house
-		 * (setup.HuntHouses) override the global default with its
-		 * own house art -- so 'elm's hallway pulls Elm's hallway.jpg
-		 * instead of the Owaissa default and 'ironclad's hallway
-		 * pulls the prison entrance.
+		 * Routes through the ROOM_BACKGROUND filter so per-house
+		 * overrides (Elm's catalogue roomBackgrounds field) and
+		 * modifier overrides (prison_visuals' roomBackgrounds map)
+		 * both compose without StyleController branching on the house
+		 * id. Subscribers stamp ctx.url to their override; if no
+		 * subscriber stamps a URL we fall back to the global huntRooms
+		 * map.
 		 */
 		bgUrlForTemplate: function (templateId, dark, staticHouseId) {
-			if (staticHouseId && setup.HuntHouses
-					&& typeof setup.HuntHouses.backgroundOverride === 'function') {
-				var override = setup.HuntHouses.backgroundOverride(staticHouseId, templateId);
-				if (override) return dark ? override.dark : override.light;
-			}
+			var modifierIds = setup.HuntController.modifiers
+				? setup.HuntController.modifiers() : [];
+			var ctx = setup.Hunt.applyFilter(setup.Hunt.Event.ROOM_BACKGROUND, {
+				templateId:    templateId,
+				dark:          !!dark,
+				staticHouseId: staticHouseId || null,
+				modifierIds:   modifierIds,
+				url:           null
+			});
+			if (ctx.url) return ctx.url;
 			var r = huntRooms[templateId];
 			if (!r) return null;
 			return dark ? r.dark : r.light;

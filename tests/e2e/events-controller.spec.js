@@ -198,7 +198,7 @@ test.describe('Events controller — video resolvers', () => {
     expect(list[0]).toContain('prison/');
   });
 
-  test('bansheeVideos returns ironclad list when isIronclad', async ({ game: page }) => {
+  test('bansheeVideos returns prison list when prison_visuals modifier active', async ({ game: page }) => {
     await setLocation(page, 'ironclad');
     let list = await page.evaluate(() => SugarCube.setup.Events.bansheeVideos());
     expect(list[0]).toContain('prison/banshee');

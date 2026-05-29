@@ -7,10 +7,10 @@
    ATTACK_FAILED = question-mark "go check on them" card,
    ATTACK_SAFE = success-link card). */
 setup.CompanionShow = Object.freeze({
-	HIDDEN:        0,
-	VISIBLE:       1,
+	HIDDEN: 0,
+	VISIBLE: 1,
 	ATTACK_FAILED: 2,
-	ATTACK_SAFE:   3
+	ATTACK_SAFE: 3
 });
 
 setup.Companion = (function () {
@@ -30,15 +30,21 @@ setup.Companion = (function () {
 	   the `extra` arg since those vary per call. */
 	var KNOWN_PLANS = Object.freeze(['Plan1', 'Plan2', 'Plan3', 'Plan4']);
 	var TRANSITIONS = {
-		reset:        { chosenPlan: 0,       chosenPlanActivated: 0, randomGhostPassage: 0,
-		                isCompRoomChosen: false, showComp: CS.HIDDEN,    isCompChosen: false },
-		dismiss:      { chosenPlan: 0,                                                       showComp: CS.HIDDEN, isCompChosen: false },
-		resume:       { chosenPlanActivated: 0, randomGhostPassage: 0,
-		                isCompRoomChosen: false,    showComp: CS.VISIBLE },
-		resolve:      { chosenPlan: 'Plan1', chosenPlanActivated: 0, randomPassageOwaissa: 0,
-		                isCompRoomChosen: false, showComp: CS.VISIBLE },
+		reset: {
+			chosenPlan: 0, chosenPlanActivated: 0, randomGhostPassage: 0,
+			isCompRoomChosen: false, showComp: CS.HIDDEN, isCompChosen: false
+		},
+		dismiss: { chosenPlan: 0, showComp: CS.HIDDEN, isCompChosen: false },
+		resume: {
+			chosenPlanActivated: 0, randomGhostPassage: 0,
+			isCompRoomChosen: false, showComp: CS.VISIBLE
+		},
+		resolve: {
+			chosenPlan: 'Plan1', chosenPlanActivated: 0, randomPassageOwaissa: 0,
+			isCompRoomChosen: false, showComp: CS.VISIBLE
+		},
 		stayTogether: { chosenPlan: 'Plan1', chosenPlanActivated: 0, showComp: CS.VISIBLE },
-		startPlan:    { chosenPlanActivated: 1, showComp: CS.HIDDEN }
+		startPlan: { chosenPlanActivated: 1, showComp: CS.HIDDEN }
 	};
 
 	function applyTransition(name, extra) {
@@ -160,8 +166,8 @@ setup.Companion = (function () {
 			var c = getByName(name);
 			var stats = this.stateFor(name);
 			if (!c || !stats) return false;
-			stats.sanity         = 100;
-			stats.lust           = 0;
+			stats.sanity = 100;
+			stats.lust = 0;
 			stats.chanceToAttack = 25;
 			return true;
 		},
@@ -186,9 +192,9 @@ setup.Companion = (function () {
 			this.selectCompanion(c.name);
 			s.chosenPlan = 0;
 			this.resetCompanionStats(c.name);
-			stats.goingSolo     = 0;
+			stats.goingSolo = 0;
 			stats.chooseOwaissa = 0;
-			stats.chooseElm     = 0;
+			stats.chooseElm = 0;
 			return true;
 		},
 
@@ -268,9 +274,11 @@ setup.Companion = (function () {
 		resetHuntState: function () { applyTransition('reset'); },
 
 		/* True when the active hunt is companion-eligible. Procedural
-		   runs are eligible by default; static-plan houses opt in or
-		   out via the catalogue's allowsCompanions flag. Catalogue-
-		   driven so adding a new house never touches this predicate. */
+		   runs are eligible by default; static-plan houses opt out
+		   by pinning the `solo_only` forced modifier in the catalogue
+		   (its COMPANION_ALLOWED subscriber sets ctx.allowed=false).
+		   Filter-driven so adding a new house never touches this
+		   predicate. */
 		inHauntedHouseLocation: function () {
 			return !!(setup.HuntController && setup.HuntController.huntAllowsCompanions());
 		},
@@ -384,7 +392,7 @@ setup.Companion = (function () {
 			var tier = lvl >= 5 ? 5 : (lvl >= 4 ? 4 : (lvl >= 3 ? 3 : (lvl >= 2 ? 2 : 0)));
 			var pair = table[tier] || [0, 0];
 			c.soloChanceOwaissa = pair[0];
-			c.soloChanceElm     = pair[1];
+			c.soloChanceElm = pair[1];
 		},
 		soloOdds: function (name, street) {
 			var c = this.stateFor(name);
@@ -408,10 +416,10 @@ setup.Companion = (function () {
 		sendCompanionSolo: function (name, street) {
 			var c = this.stateFor(name);
 			if (!c) return;
-			c.chosen        = 0;
+			c.chosen = 0;
 			c.chooseOwaissa = (street === 'Owaissa') ? 1 : 0;
-			c.chooseElm     = (street === 'Elm') ? 1 : 0;
-			c.goingSolo     = 1;
+			c.chooseElm = (street === 'Elm') ? 1 : 0;
+			c.goingSolo = 1;
 			this.payForSoloContract(name);
 		},
 
@@ -433,8 +441,8 @@ setup.Companion = (function () {
 			if (inElm === undefined) inElm = previous() === 'ElmBasement';
 			var tierKey = stats.sanity >= 75 ? "high"
 				: stats.sanity >= 50 ? "mid"
-				: stats.sanity >= 25 ? "low"
-				: "crit";
+					: stats.sanity >= 25 ? "low"
+						: "crit";
 			var list = c.pickEventMediaList(tierKey, {
 				lust: stats.lust,
 				inElm: inElm
@@ -456,9 +464,9 @@ setup.Companion = (function () {
 		/* Contacts.tw flags -- used on the MC's phone home screen
 		   to gate the per-companion contact row. Catalogue hooks own
 		   the per-companion logic; these are generic dispatchers. */
-		hasMet:        function (name) { var c = getByName(name); return c ? c.hasMet() : false; },
-		markMet:       function (name) { var c = getByName(name); if (c) c.markMet(); },
-		isPossessed:   function (name) { var c = getByName(name); return c ? c.isPossessed() : false; },
+		hasMet: function (name) { var c = getByName(name); return c ? c.hasMet() : false; },
+		markMet: function (name) { var c = getByName(name); if (c) c.markMet(); },
+		isPossessed: function (name) { var c = getByName(name); return c ? c.isPossessed() : false; },
 		isUnavailable: function (name) { var c = getByName(name); return c ? c.isUnavailable() : false; },
 		blakeUnlocked: function () { return setup.Mall.blakeIsCompanionCandidate(); },
 		aliceWorkDone: function () { return State.variables.aliceWorkDone === true; },
@@ -476,7 +484,7 @@ setup.Companion = (function () {
 			var c = this.stateFor(name);
 			if (!c) return;
 			c.soloChanceOwaissa = owaissa;
-			c.soloChanceElm     = elm;
+			c.soloChanceElm = elm;
 		},
 		/* Reset hunt plan/companion flags after a Myling event scares the
 		   companion away mid-hunt. The active companion's onHuntFail hook
@@ -669,7 +677,7 @@ setup.Companion = (function () {
 			var c = this.activeState();
 			if (!c) return;
 			c.sanity -= this.eventSanityLoss();
-			c.lust   += this.eventLustGain();
+			c.lust += this.eventLustGain();
 		},
 
 		/* When the companion decides to continue: reset the per-hunt
@@ -700,35 +708,35 @@ setup.Companion = (function () {
 	// `set: false`.
 	setup.defineAccessors(api, function () { return State.variables; }, [
 		'chosenPlan',
-		{ name: 'aliceWorkState',     key: 'aliceWorkDone' },
-		{ name: 'chanceToSuccess',    set: false },
-		{ name: 'showComp',           set: false }
+		{ name: 'aliceWorkState', key: 'aliceWorkDone' },
+		{ name: 'chanceToSuccess', set: false },
+		{ name: 'showComp', set: false }
 	]);
 	// Per-companion stat accessors. Parametric host: each generated
 	// method takes the companion name and resolves its mutable stat row
 	// via api.stateFor(name); null-check / fallback boilerplate lives
 	// inside setup.defineAccessors instead of once per method body.
 	setup.defineAccessors(api, function (name) { return api.stateFor(name); }, [
-		{ get: 'companionLvl',           key: 'lvl',                miss: 0 },
-		{ get: 'companionExp',           key: 'exp',                miss: 0 },
-		{ get: 'companionExpForNextLvl', key: 'expForNextLvl',      miss: 0 },
-		{ get: 'soloHuntChanceOwaissa',  key: 'soloChanceOwaissa' },
-		{ get: 'soloHuntChanceElm',      key: 'soloChanceElm' },
-		{ get: 'soloHuntPaymentState',   key: 'paidForSolo' },
-		{ is:  'hasFinishedSoloHunt',    key: 'goingSolo',     value: 2 },
-		{ is:  'companionChoseOwaissa',  key: 'chooseOwaissa', value: 1 },
-		{ is:  'companionChoseElm',      key: 'chooseElm',     value: 1 },
-		{ writes: 'acknowledgeSoloHuntEnd',  sets: { paidForSolo: 0, goingSolo: 0 } },
-		{ writes: 'clearSoloHuntStreet',     sets: { chooseOwaissa: 0, chooseElm: 0 } }
+		{ get: 'companionLvl', key: 'lvl', miss: 0 },
+		{ get: 'companionExp', key: 'exp', miss: 0 },
+		{ get: 'companionExpForNextLvl', key: 'expForNextLvl', miss: 0 },
+		{ get: 'soloHuntChanceOwaissa', key: 'soloChanceOwaissa' },
+		{ get: 'soloHuntChanceElm', key: 'soloChanceElm' },
+		{ get: 'soloHuntPaymentState', key: 'paidForSolo' },
+		{ is: 'hasFinishedSoloHunt', key: 'goingSolo', value: 2 },
+		{ is: 'companionChoseOwaissa', key: 'chooseOwaissa', value: 1 },
+		{ is: 'companionChoseElm', key: 'chooseElm', value: 1 },
+		{ writes: 'acknowledgeSoloHuntEnd', sets: { paidForSolo: 0, goingSolo: 0 } },
+		{ writes: 'clearSoloHuntStreet', sets: { chooseOwaissa: 0, chooseElm: 0 } }
 	]);
 	// Active-companion accessors. Bound against api.activeState() so the
 	// fallback / null-check is one place instead of one per method body.
 	setup.defineAccessors(api, function () { return api.activeState(); }, [
-		{ get: 'sanity',         key: 'sanity',         miss: 0 },
-		{ get: 'lust',           key: 'lust',           miss: 0 },
-		{ get: 'lvl',            key: 'lvl',            miss: 0 },
-		{ set: 'setActiveLust',  key: 'lust' },
-		{ add: 'addLust',        key: 'lust' },
+		{ get: 'sanity', key: 'sanity', miss: 0 },
+		{ get: 'lust', key: 'lust', miss: 0 },
+		{ get: 'lvl', key: 'lvl', miss: 0 },
+		{ set: 'setActiveLust', key: 'lust' },
+		{ add: 'addLust', key: 'lust' },
 		{ remove: 'drainSanity', key: 'sanity' }
 	]);
 	return api;
@@ -740,4 +748,4 @@ setup.Companion = (function () {
  * so the <<= ...>> macros resolve through the active companion's
  * source-of-truth stat row. */
 Meter.add('companionsanity', { label: '<<= setup.Companion.sanity()>>', width: '100%' }, 1);
-Meter.add('companionlust',   { label: '<<= setup.Companion.lust()>>',   width: '100%' }, 1);
+Meter.add('companionlust', { label: '<<= setup.Companion.lust()>>', width: '100%' }, 1);

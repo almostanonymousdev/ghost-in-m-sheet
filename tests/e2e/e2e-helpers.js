@@ -93,8 +93,9 @@ async function expectCleanPassage(page) {
  *
  * `house` is one of 'owaissa' (default), 'elm', 'ironclad' -- the
  * static hunt house used to seed the floor plan. `setup.HauntedHouses`
- * helpers (`isOwaissa`/`isElm`/`isIronclad`) resolve off the active
- * run's `staticHouseId`.
+ * helpers (`isOwaissa`/`isElm`) resolve off the active run's
+ * `staticHouseId`; prison-unique behaviour rides the `prison_visuals`
+ * (and friends) forced modifiers pinned by the catalogue entry.
  *
  * The function leaves $huntMode = ACTIVE with $run pinned to the
  * requested ghost so shared ghost helpers (canProwl, hasEvidence, etc.)

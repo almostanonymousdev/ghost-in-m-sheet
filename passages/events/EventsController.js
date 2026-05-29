@@ -39,34 +39,34 @@ setup.Events = (function () {
 	   silently returning undefined / []. Callers may reference these
 	   instead of bare strings. */
 	var EventKey = Object.freeze({
-		BRAIN:  'brain',
-		TITS:   'tits',
-		ASS:    'ass',
+		BRAIN: 'brain',
+		TITS: 'tits',
+		ASS: 'ass',
 		BOTTOM: 'bottom',
-		MOUTH:  'mouth',
-		PUSSY:  'pussy',
-		ANAL:   'anal'
+		MOUTH: 'mouth',
+		PUSSY: 'pussy',
+		ANAL: 'anal'
 	});
 
 	var ClothingKey = Object.freeze({
-		JEANS:     'jeans',
-		JEANS_NP:  'jeansNP',
-		SHORTS:    'shorts',
-		SKIRT:     'skirt',
-		SKIRT_NP:  'skirtNP',
-		PANTIES:   'panties',
-		NAKED:     'naked',
-		TSHIRT:    'tshirt',
+		JEANS: 'jeans',
+		JEANS_NP: 'jeansNP',
+		SHORTS: 'shorts',
+		SKIRT: 'skirt',
+		SKIRT_NP: 'skirtNP',
+		PANTIES: 'panties',
+		NAKED: 'naked',
+		TSHIRT: 'tshirt',
 		TSHIRT_NB: 'tshirtNB',
-		BRA:       'bra',
-		NO_BRA:    'noBra',
-		PRISON:    'prison',
-		MIND:      'mind'
+		BRA: 'bra',
+		NO_BRA: 'noBra',
+		PRISON: 'prison',
+		MIND: 'mind'
 	});
 
 	var CthulionTier = Object.freeze({ S1: 1, S2: 2, S3: 3, COMPANION: 4 });
 
-	var EVENT_KEY_SET    = Object.freeze(Object.keys(EventKey).reduce(function (s, k) { s[EventKey[k]] = true; return s; }, {}));
+	var EVENT_KEY_SET = Object.freeze(Object.keys(EventKey).reduce(function (s, k) { s[EventKey[k]] = true; return s; }, {}));
 	var CLOTHING_KEY_SET = Object.freeze(Object.keys(ClothingKey).reduce(function (s, k) { s[ClothingKey[k]] = true; return s; }, {}));
 
 	function assertKnownKey(key, validSet, label) {
@@ -104,12 +104,28 @@ setup.Events = (function () {
 	function cthulionTierForSanity(sanity) {
 		if (sanity >= 50) return 1;
 		if (sanity >= 30) return 2;
-		if (sanity >= 1)  return 3;
+		if (sanity >= 1) return 3;
 		return 0;
 	}
 
 	// Video tables live in :: EventVideos (setup.EventVideos and
 	// setup.BansheeVideos).
+
+	/* Resolve an active outfit override for the body-part resolver via
+	   the OUTFIT_VIDEOS filter. Modifiers (warden_outfit) pin
+	   ctx.clothingOverride to a flat clothing key so the resolver
+	   skips the wardrobe ladder and returns the override key's videos
+	   instead. Returns null when no modifier overrides for this event. */
+	function outfitClothingOverride(eventKey) {
+		var modifierIds = setup.HuntController.modifiers
+			? setup.HuntController.modifiers() : [];
+		var ctx = setup.Hunt.applyFilter(setup.Hunt.Event.OUTFIT_VIDEOS, {
+			eventKey: eventKey,
+			clothingOverride: null,
+			modifierIds: modifierIds
+		});
+		return ctx.clothingOverride || null;
+	}
 
 	return {
 		OWNED_VARS: OWNED_VARS,
@@ -182,9 +198,9 @@ setup.Events = (function () {
 				? setup.Time.totalMinutes() : 0;
 		},
 		statTierBonus: function () {
-			var lustW   = Math.min(1, (setup.Mc.lust()       || 0) / 100);
-			var corrW   = Math.min(1, (setup.Mc.corruption() || 0) / 8);
-			var beautyW = Math.min(1, (setup.Mc.beauty()     || 0) / 100);
+			var lustW = Math.min(1, (setup.Mc.lust() || 0) / 100);
+			var corrW = Math.min(1, (setup.Mc.corruption() || 0) / 8);
+			var beautyW = Math.min(1, (setup.Mc.beauty() || 0) / 100);
 			// Sum is 0-3 across the three axes; (sum * 2 / 3) maps
 			// 1 maxed → 0, 2 maxed → 1, 3 maxed → 2.
 			return Math.min(2, Math.floor((lustW + corrW + beautyW) * 2 / 3));
@@ -232,8 +248,8 @@ setup.Events = (function () {
 		   so passages don't share a leaky `_eventTriggered` temp var
 		   directly. Backed by State.temporary so it resets between
 		   passages without ceremony. */
-		eventTriggered:      function () { return State.temporary.eventTriggered === true; },
-		markEventTriggered:  function () { State.temporary.eventTriggered = true; },
+		eventTriggered: function () { return State.temporary.eventTriggered === true; },
+		markEventTriggered: function () { State.temporary.eventTriggered = true; },
 		resetEventTriggered: function () { State.temporary.eventTriggered = false; },
 
 		/*
@@ -268,7 +284,8 @@ setup.Events = (function () {
 		*/
 		bottomClothingVideos: function (eventKey) {
 			assertKnownKey(eventKey, EVENT_KEY_SET, 'event key');
-			if (setup.HauntedHouses.isIronclad()) return this.getVideos(eventKey, ClothingKey.PRISON);
+			var override = outfitClothingOverride(eventKey);
+			if (override) return this.getVideos(eventKey, override);
 			var jw = setup.Wardrobe.worn(setup.WardrobeSlot.JEANS);
 			var sw = setup.Wardrobe.worn(setup.WardrobeSlot.SHORTS);
 			var kw = setup.Wardrobe.worn(setup.WardrobeSlot.SKIRT);
@@ -298,7 +315,8 @@ setup.Events = (function () {
 		*/
 		topClothingVideos: function (eventKey) {
 			assertKnownKey(eventKey, EVENT_KEY_SET, 'event key');
-			if (setup.HauntedHouses.isIronclad()) return this.getVideos(eventKey, ClothingKey.PRISON);
+			var override = outfitClothingOverride(eventKey);
+			if (override) return this.getVideos(eventKey, override);
 			var ts = setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT);
 			var br = setup.Wardrobe.worn(setup.WardrobeSlot.BRA);
 			var ev = setup.EventVideos[eventKey];
@@ -309,7 +327,7 @@ setup.Events = (function () {
 				return this.getVideos(eventKey, ClothingKey.TSHIRT);
 			}
 			if (br && ev.bra) return this.getVideos(eventKey, ClothingKey.BRA);
-			if (ev.noBra)     return this.getVideos(eventKey, ClothingKey.NO_BRA);
+			if (ev.noBra) return this.getVideos(eventKey, ClothingKey.NO_BRA);
 			return [];
 		},
 
@@ -321,8 +339,8 @@ setup.Events = (function () {
 		videoListForEvent: function (eventKey) {
 			this.initEvent(eventKey);
 			var ev = setup.EventVideos[eventKey];
-			if (ev._type === 'flat')   return ev.mind || [];
-			if (ev._type === 'top')    return this.topClothingVideos(eventKey);
+			if (ev._type === 'flat') return ev.mind || [];
+			if (ev._type === 'top') return this.topClothingVideos(eventKey);
 			if (ev._type === 'bottom') return this.bottomClothingVideos(eventKey);
 			throw new Error('setup.Events: EventVideos["' + eventKey + '"] has unknown _type "' + ev._type + '"');
 		},
@@ -331,9 +349,18 @@ setup.Events = (function () {
 		* Return the Banshee-ability video list (location-aware).
 		*/
 		bansheeVideos: function () {
-			return setup.HauntedHouses.isIronclad()
-				? setup.BansheeVideos.prison.slice()
-				: setup.BansheeVideos.house.slice();
+			/* Banshee-ability video pool. Default = house pool;
+			   modifiers (prison_visuals) can swap to a flat list via
+			   the BANSHEE_VIDEOS filter so EventsController stays free
+			   of house-id branches. */
+			var modifierIds = setup.HuntController.modifiers
+				? setup.HuntController.modifiers() : [];
+			var ctx = setup.Hunt.applyFilter(setup.Hunt.Event.BANSHEE_VIDEOS, {
+				videos: null,
+				modifierIds: modifierIds
+			});
+			if (Array.isArray(ctx.videos)) return ctx.videos;
+			return setup.BansheeVideos.house.slice();
 		},
 
 		// --- Per-tier prose --------------------------------------
@@ -417,20 +444,20 @@ setup.Events = (function () {
 		},
 
 		// --- Ghost special-ability flags (Banshee / Cthulion) ----
-		enableBanshee:    function () { setup.Ghosts.enableBanshee(); },
-		enableCthulion:   function () { setup.Ghosts.enableCthulion(); },
-		clearBanshee:     function () { setup.Ghosts.clearBanshee(); },
-		clearCthulion:    function () { setup.Ghosts.clearCthulion(); },
-		bansheeActive:    function () { return setup.Ghosts.bansheeActive(); },
-		cthulionActive:   function () { return setup.Ghosts.cthulionActive(); },
+		enableBanshee: function () { setup.Ghosts.enableBanshee(); },
+		enableCthulion: function () { setup.Ghosts.enableCthulion(); },
+		clearBanshee: function () { setup.Ghosts.clearBanshee(); },
+		clearCthulion: function () { setup.Ghosts.clearCthulion(); },
+		bansheeActive: function () { return setup.Ghosts.bansheeActive(); },
+		cthulionActive: function () { return setup.Ghosts.cthulionActive(); },
 
 		// --- Argument randomizer (body-part key) -----------------
 		currentArgForRandomizer: function () { return sv().argForRandomizer; },
 
 		// --- Event video selection -------------------------------
-		setVideoEvent:    function (video) { sv().videoEvent = video; },
-		videoEvent:       function () { return sv().videoEvent; },
-		videoEventIsMp4:  function () {
+		setVideoEvent: function (video) { sv().videoEvent = video; },
+		videoEvent: function () { return sv().videoEvent; },
+		videoEventIsMp4: function () {
 			var ve = sv().videoEvent;
 			return typeof ve === 'string' && ve.indexOf('.mp4') !== -1;
 		},
@@ -453,10 +480,10 @@ setup.Events = (function () {
 		   videoListForEvent() so the clothing-aware resolvers stay
 		   the single source. */
 		rollRandomEvent: function () {
-			var g           = setup.HuntController.activeGhost();
-			var chance      = Math.floor(Math.random() * 101);
+			var g = setup.HuntController.activeGhost();
+			var chance = Math.floor(Math.random() * 101);
 			var bansheeRoll = 1 + Math.floor(Math.random() * 10);
-			var ctRoll      = 1 + Math.floor(Math.random() * 10);
+			var ctRoll = 1 + Math.floor(Math.random() * 10);
 			var abilityGate = Math.max(0, 5 - Math.floor(setup.Wardrobe.coverage() / 30));
 			var videoList = [];
 
@@ -499,9 +526,9 @@ setup.Events = (function () {
 				stage4: Math.max(0, ds.stage4 - damp)
 			};
 			var sanity = setup.Mc.sanity();
-			var chance      = Math.floor(Math.random() * 101);
+			var chance = Math.floor(Math.random() * 101);
 			var bansheeRoll = 1 + Math.floor(Math.random() * 6);
-			var ctRoll      = 1 + Math.floor(Math.random() * 6);
+			var ctRoll = 1 + Math.floor(Math.random() * 6);
 			var videoList = [];
 
 			if (chance <= ds.stage2 && bansheeRoll === 1 && g && g.canKiss) {
@@ -537,12 +564,12 @@ setup.Events = (function () {
 
 		// --- Decreasing-sanity stage table -----------------------
 		setDecreasingSanity: function (obj) { sv().decreasingSanity = obj; },
-		decreasingSanity:    function () { return sv().decreasingSanity; },
+		decreasingSanity: function () { return sv().decreasingSanity; },
 
 		// --- Clothing-state convenience --------------------------
-		jeansWorn:   function () { return setup.Wardrobe.worn(setup.WardrobeSlot.JEANS); },
-		shortsWorn:  function () { return setup.Wardrobe.worn(setup.WardrobeSlot.SHORTS); },
-		skirtWorn:   function () { return setup.Wardrobe.worn(setup.WardrobeSlot.SKIRT); },
+		jeansWorn: function () { return setup.Wardrobe.worn(setup.WardrobeSlot.JEANS); },
+		shortsWorn: function () { return setup.Wardrobe.worn(setup.WardrobeSlot.SHORTS); },
+		skirtWorn: function () { return setup.Wardrobe.worn(setup.WardrobeSlot.SKIRT); },
 		pantiesWorn: function () { return setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES); },
 
 		// --- Orgasm cooldown flag --------------------------------
@@ -555,11 +582,11 @@ setup.Events = (function () {
 		},
 
 		// --- Minigame state (SeduceGhost) ------------------------
-		minigameVideo:       function () { return setup.SeduceGhostMinigame.minigameVideo(); },
+		minigameVideo: function () { return setup.SeduceGhostMinigame.minigameVideo(); },
 		minigameEventFailed: function () { return setup.SeduceGhostMinigame.minigameEventFailed(); },
 		clearMinigameEventFailed: function () { setup.SeduceGhostMinigame.clearMinigameEventFailed(); },
-		ghostOrgasmMeter:    function () { return setup.SeduceGhostMinigame.ghostOrgasmMeter(); },
-		mcOrgasmMeter:       function () { return setup.Mc.orgasmMeter(); },
+		ghostOrgasmMeter: function () { return setup.SeduceGhostMinigame.ghostOrgasmMeter(); },
+		mcOrgasmMeter: function () { return setup.Mc.orgasmMeter(); },
 		clampGhostOrgasmFloor: function () { setup.SeduceGhostMinigame.clampGhostOrgasmFloor(); },
 		clampMcOrgasmFloor: function () {
 			if ((setup.Mc.orgasmMeter() || 0) <= 0) setup.Mc.setOrgasmMeter(0);
@@ -585,21 +612,21 @@ setup.Events = (function () {
 		},
 
 		rollBodyPartEvent: function (chance) {
-			var tier      = this.eventTier();
+			var tier = this.eventTier();
 			var threshold = sanityThresholds[tier] - this.coverageDamp();
 			if (threshold < 0) threshold = 0;
 			if (chance > threshold) return '';
 
-			var parts       = bodyPartKeys.slice(0, tier);
-			var bp          = setup.Intro.currentSensualBodyPart();
-			var mult        = setup.Wardrobe.exposureMultipliers();
-			var weights     = [];
+			var parts = bodyPartKeys.slice(0, tier);
+			var bp = setup.Intro.currentSensualBodyPart();
+			var mult = setup.Wardrobe.exposureMultipliers();
+			var weights = [];
 			var totalWeight = 0;
 
 			for (var i = 0; i < parts.length; i++) {
 				var raw = (bp[parts[i]] || 0) * 100;
-				var m   = mult[parts[i]];
-				var w   = typeof m === 'number' ? Math.round(raw * m) : raw;
+				var m = mult[parts[i]];
+				var w = typeof m === 'number' ? Math.round(raw * m) : raw;
 				weights.push(w);
 				totalWeight += w;
 			}

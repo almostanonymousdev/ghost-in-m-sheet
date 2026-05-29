@@ -38,6 +38,10 @@ setup.Modifiers = (function () {
 	var OH_BUGGER       = 'oh_bugger';
 	var STICKY_FINGERS  = 'sticky_fingers';
 	var MAZE            = 'maze';
+	var NO_CLOTHES_THEFT = 'no_clothes_theft';
+	var SOLO_ONLY        = 'solo_only';
+	var WARDEN_OUTFIT    = 'warden_outfit';
+	var PRISON_VISUALS   = 'prison_visuals';
 
 	/* Each entry's `weight` controls relative draft frequency.
 	   Anything <= 0 is excluded from random draws (reserved for
@@ -122,6 +126,77 @@ setup.Modifiers = (function () {
 			description: 'The house twists into three extra rooms.',
 			weight: 1,
 			payoutMultiplier: 1.3
+		},
+		{
+			id: NO_CLOTHES_THEFT,
+			name: 'Bolted Down',
+			description: 'The ghost will not strip you. The per-tick clothes-steal roll is suppressed.',
+			weight: 0.2,
+			payoutMultiplier: 0.9
+		},
+		{
+			id: SOLO_ONLY,
+			name: 'Solo Hunt',
+			description: 'No companion will join you on this hunt.',
+			weight: 0.2,
+			payoutMultiplier: 1.1
+		},
+		/* Forced-only modifiers (weight: 0). Pinned by static hunt
+		   houses via their catalogue's `forcedModifiers: [...]` field
+		   at startHunt time. Each modifier carries the data its
+		   filter subscriber needs (sidebar outfit chip, prison clothing
+		   key, UVL sprite pack, prison room backgrounds) so the
+		   subscriber can stay declarative -- no per-house branches in
+		   StyleController / EventsController / ToolController /
+		   HuntController. */
+		{
+			id: WARDEN_OUTFIT,
+			name: 'Warden Costume',
+			description: 'You wear a sexy warden costume for the duration of the hunt. Outfit videos and the UVL sprite reflect the costume.',
+			weight: 0,
+			payoutMultiplier: 1,
+			/* { image, tip } pinned onto the MC sidebar wardrobe strip
+			   by the SIDEBAR_OUTFIT subscriber below. */
+			sidebarOutfit: Object.freeze({
+				image: 'ui/icons/warden1.png',
+				tip:   'Wearing a sexy warden costume'
+			}),
+			/* Pinned by the OUTFIT_VIDEOS subscriber -- top/bottom event
+			   resolvers ignore the wardrobe ladder and return this
+			   flat key's videos instead. Matches ClothingKey.PRISON in
+			   EventsController. */
+			clothingKey: 'prison',
+			/* Pinned by the UVL_SPRITE_PACK subscriber -- the in-house
+			   UVL tool render uses this sprite set instead of rolling
+			   upper/lower wardrobe packs. */
+			uvlPack: Object.freeze({
+				prefix: 'mechanics/uvl/ironclad',
+				start:  1,
+				end:    6,
+				ext:    '.png'
+			})
+		},
+		{
+			id: PRISON_VISUALS,
+			name: 'Prison Setting',
+			description: 'The hunt unfolds in a prison: room backgrounds, banshee scene, and the sanity/prowl hunt-over scenes all swap to prison-themed art.',
+			weight: 0,
+			payoutMultiplier: 1,
+			/* Per-template { light, dark } map pinned onto the
+			   ROOM_BACKGROUND filter so the body background switches
+			   to the prison art for the listed templates. Templates
+			   not listed fall through to the global huntRooms map (the
+			   cellblock + reception + cell templates already point at
+			   the prison art there). */
+			roomBackgrounds: Object.freeze({
+				hallway: Object.freeze({ light: 'assets/scenes/room/ironclad/entrance.webp', dark: 'assets/scenes/room/ironclad/entrance-dark.webp' }),
+				kitchen: Object.freeze({ light: 'assets/scenes/room/ironclad/kitchen.webp',  dark: 'assets/scenes/room/ironclad/kitchen-dark.webp'  })
+			}),
+			/* Flat list pinned onto the BANSHEE_VIDEOS filter. The
+			   subscriber slices setup.BansheeVideos.prison so the data
+			   stays in EventVideos.js (one source of truth for the
+			   URLs); we just point at the named bucket here. */
+			bansheePool: 'prison'
 		}
 	]);
 
@@ -292,6 +367,73 @@ setup.Modifiers = (function () {
 		if (hasMod(ctx, OH_BUGGER))     ctx.snap.prowlChanceBonus += 15;
 	});
 
+	setup.Hunt.filter(setup.Hunt.Event.STEAL_CHECK, function (ctx) {
+		/* Bolted Down: the ghost won't strip you this run. Wins over
+		   modifier forceTrigger (Swiper) so the two together still
+		   suppress the steal step. Pinned by Ironclad's catalogue
+		   entry via forcedModifiers. */
+		if (hasMod(ctx, NO_CLOTHES_THEFT)) ctx.suppress = true;
+	});
+
+	setup.Hunt.filter(setup.Hunt.Event.COMPANION_ALLOWED, function (ctx) {
+		/* Solo Hunt: companions can't tag along this run. Drives the
+		   HuntStart "Talk to her" gate and the in-hunt HUD via
+		   Companion.inHauntedHouseLocation. Pinned by Ironclad's
+		   catalogue entry via forcedModifiers. */
+		if (hasMod(ctx, SOLO_ONLY)) ctx.allowed = false;
+	});
+
+	setup.Hunt.filter(setup.Hunt.Event.SIDEBAR_OUTFIT, function (ctx) {
+		/* Warden Costume pins a fixed-outfit tile on the MC sidebar
+		   wardrobe strip. The outfit { image, tip } lives on the
+		   modifier definition so the catalogue tells us what to render
+		   without HuntController branching. */
+		if (!hasMod(ctx, WARDEN_OUTFIT)) return;
+		var m = byId(WARDEN_OUTFIT);
+		if (m && m.sidebarOutfit) ctx.outfit = m.sidebarOutfit;
+	});
+
+	setup.Hunt.filter(setup.Hunt.Event.OUTFIT_VIDEOS, function (ctx) {
+		/* Warden Costume pins outfit videos to its flat clothing key
+		   (ClothingKey.PRISON). EventsController.top/bottomClothingVideos
+		   reads ctx.clothingOverride before walking the wardrobe ladder. */
+		if (!hasMod(ctx, WARDEN_OUTFIT)) return;
+		var m = byId(WARDEN_OUTFIT);
+		if (m && m.clothingKey) ctx.clothingOverride = m.clothingKey;
+	});
+
+	setup.Hunt.filter(setup.Hunt.Event.UVL_SPRITE_PACK, function (ctx) {
+		/* Warden Costume pins the UVL sprite pack. ToolController's
+		   renderUvl reads ctx.pack before the random upper/lower roll. */
+		if (!hasMod(ctx, WARDEN_OUTFIT)) return;
+		var m = byId(WARDEN_OUTFIT);
+		if (m && m.uvlPack) ctx.pack = m.uvlPack;
+	});
+
+	setup.Hunt.filter(setup.Hunt.Event.ROOM_BACKGROUND, function (ctx) {
+		/* Prison Setting pins per-template hallway/kitchen overrides.
+		   Templates not on the modifier's map fall through (cellblock
+		   and cell templates already resolve to prison art via the
+		   global huntRooms map; we only override the templates whose
+		   global default points at a non-prison variant). */
+		if (!hasMod(ctx, PRISON_VISUALS)) return;
+		var m = byId(PRISON_VISUALS);
+		if (!m || !m.roomBackgrounds) return;
+		var override = m.roomBackgrounds[ctx.templateId];
+		if (override) ctx.url = ctx.dark ? override.dark : override.light;
+	});
+
+	setup.Hunt.filter(setup.Hunt.Event.BANSHEE_VIDEOS, function (ctx) {
+		/* Prison Setting swaps the banshee video pool. The actual
+		   URL list lives on setup.BansheeVideos so EventVideos stays
+		   the single source of truth for the asset paths. */
+		if (!hasMod(ctx, PRISON_VISUALS)) return;
+		var m = byId(PRISON_VISUALS);
+		if (!m || !m.bansheePool) return;
+		var pool = setup.BansheeVideos && setup.BansheeVideos[m.bansheePool];
+		if (Array.isArray(pool)) ctx.videos = pool.slice();
+	});
+
 	return {
 		OWNED_VARS: Object.freeze([]),
 		CATALOGUE: CATALOGUE,
@@ -306,6 +448,10 @@ setup.Modifiers = (function () {
 		OH_BUGGER:      OH_BUGGER,
 		STICKY_FINGERS: STICKY_FINGERS,
 		MAZE:           MAZE,
+		NO_CLOTHES_THEFT: NO_CLOTHES_THEFT,
+		SOLO_ONLY:        SOLO_ONLY,
+		WARDEN_OUTFIT:    WARDEN_OUTFIT,
+		PRISON_VISUALS:   PRISON_VISUALS,
 		list: list,
 		byId: byId,
 		draftableList: draftableList,
