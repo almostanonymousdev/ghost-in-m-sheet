@@ -29,9 +29,7 @@ setup.HuntController = (function () {
 	var OWNED_VARS = Object.freeze([
 		'run', 'ectoplasm', 'runsStarted',
 		'nextHuntSeed', 'pendingHuntHouseId',
-		'nextDriftAtMinute',
 		'huntMode',
-		'stealChance',
 		'baitActive', 'baitStepsRemain', 'baitOrgasmPending', 'overchargedTools'
 	]);
 
@@ -223,184 +221,6 @@ setup.HuntController = (function () {
 		var run = sv().run;
 		return run ? (run.currentRoomId || 'room_0') : null;
 	}
-	/* Furniture-search bookkeeping. The HuntRun layout wraps each
-	   furniture image in a link that calls setSearchedFurniture(suffix)
-	   then routes to FurnitureSearch, which reads the {room,
-	   suffix} pair via searchedFurniture() and looks up what (if
-	   anything) is hidden there with lootAt(). takeLoot() marks a
-	   kind as collected so a follow-up search of the same spot finds
-	   nothing. */
-	function setSearchedFurniture(suffix) {
-		var run = sv().run;
-		if (!run) return;
-		run.searchedFurniture = { room: run.currentRoomId || 'room_0', suffix: suffix };
-	}
-	function searchedFurniture() {
-		var run = sv().run;
-		return run ? (run.searchedFurniture || null) : null;
-	}
-	function collectedLoot() {
-		var run = sv().run;
-		return run && Array.isArray(run.collectedLoot) ? run.collectedLoot.slice() : [];
-	}
-	function hasCollected(kind) {
-		var run = sv().run;
-		return !!(run && Array.isArray(run.collectedLoot)
-			&& run.collectedLoot.indexOf(kind) !== -1);
-	}
-	function takeLoot(kind) {
-		var run = sv().run;
-		if (!run || !kind) return false;
-		if (!Array.isArray(run.collectedLoot)) run.collectedLoot = [];
-		if (run.collectedLoot.indexOf(kind) !== -1) return false;
-		run.collectedLoot.push(kind);
-		setup.Hunt.emit(setup.Hunt.Event.LOOT_TAKEN, { kind: kind, roomId: run.currentRoomId || null });
-		return true;
-	}
-	/* All (uncollected) loot kinds hidden in `roomId`'s `suffix`
-	   furniture slot, in the order they were stamped onto the plan.
-	   The floor-plan generator prefers distinct slots but can fall
-	   back to sharing one when the room runs out of unique furniture
-	   (forced-furniture loot kinds: tarotCards, monkeyPaw, tool_<id>),
-	   so a single search may legitimately surface several items at
-	   once. Returns []  when no run is active. */
-	function lootKindsAt(roomId, suffix) {
-		var run = sv().run;
-		if (!run || !run.floorplan) return [];
-		var fp = run.floorplan;
-		var loot = fp.loot || {};
-		var furn = fp.lootFurniture || {};
-		var collected = Array.isArray(run.collectedLoot) ? run.collectedLoot : [];
-		var out = [];
-		Object.keys(loot).forEach(function (k) {
-			if (loot[k] === roomId && furn[k] === suffix && collected.indexOf(k) === -1 && isLootKindAvailable(k)) {
-				out.push(k);
-			}
-		});
-		return out;
-	}
-
-	/* Is the given loot kind currently *retrievable*? Some kinds are
-	   stamped onto the floor plan but gated by external state that can
-	   flip mid-run (clothesStolen<Piece> → restored elsewhere; tarot
-	   deck moved out of HIDDEN; monkey paw retired). FurnitureSearch
-	   already refuses to hand out these pickups when the gate is
-	   closed, but without filtering at lootKindsAt the detector kept
-	   highlighting the slot ("highlighted furniture says nothing in
-	   it"). Centralize the gates here so the highlight and the pickup
-	   stay in lockstep. */
-	function isLootKindAvailable(kind) {
-		if (kind === 'clothesStolenPanties') return setup.Wardrobe.isPantiesStolen();
-		if (kind === 'clothesStolenBra') return setup.Wardrobe.isBraStolen();
-		if (kind === 'clothesStolenShirt') return setup.Wardrobe.isShirtStolen();
-		if (kind === 'clothesStolenBottom') return setup.Wardrobe.isBottomStolen();
-		if (kind === 'tarotCards') return setup.Tarot.isTarotDiscoverable();
-		if (kind === 'monkeyPaw') return setup.MonkeyPaw.isDiscoverable();
-		if (kind === 'cursedItem') return setup.Witch.cursedItemQuestStarted();
-		return true;
-	}
-
-	/* Piece-name → loot-key map for the per-garment clothesStolen
-	   pins. The four stolen-clothes loot kinds are placed and
-	   retrieved independently, so each garment a steal event takes
-	   gets its own pin on the floor plan (overlaps allowed). */
-	var STOLEN_PIECE_KINDS = Object.freeze({
-		panties: 'clothesStolenPanties',
-		bra: 'clothesStolenBra',
-		shirt: 'clothesStolenShirt',
-		bottom: 'clothesStolenBottom'
-	});
-
-	/* Single-kind variant -- returns the first uncollected loot kind
-	   at the slot, or null. Kept for callers that only need to know
-	   "is there anything here"; multi-kind sites use lootKindsAt. */
-	function lootAt(roomId, suffix) {
-		var kinds = lootKindsAt(roomId, suffix);
-		return kinds.length ? kinds[0] : null;
-	}
-
-	/* Per-piece strip helper: routes to the right Wardrobe primitive
-	   for the named garment, then stashes a pin via stashStolenClothes
-	   so the corresponding clothesStolen<Piece> kind becomes findable
-	   in furniture. Single entry point for hunt-side steal paths
-	   (StealPanties / StealBra / StealBottomOuter leaf passages,
-	   the no-media shirt branch in StealClothes / FreezeHunt). No-op
-	   if the piece isn't currently worn -- stealWornInGroup /
-	   stealBottomOuter return false/null in that case, in which case
-	   we skip the stash so a missed strip doesn't drop a phantom pin. */
-	function stealClothes(piece) {
-		var ok = false;
-		if (piece === 'panties') {
-			ok = setup.Wardrobe.stealWornInGroup('panties', 'pantiesState', 'isPantiesStolen');
-		} else if (piece === 'bra') {
-			ok = setup.Wardrobe.stealWornInGroup('bra', 'braState', 'isBraStolen');
-		} else if (piece === 'shirt') {
-			ok = setup.Wardrobe.stealWornInGroup('tshirt', 'tshirtState', 'isShirtStolen');
-		} else if (piece === 'bottom') {
-			ok = setup.Wardrobe.stealBottomOuter() != null;
-		}
-		if (!ok) return null;
-		return stashStolenClothes(piece);
-	}
-
-	/* Stash one stolen garment onto a furniture slot somewhere on the
-	   floor plan, using the same loot/lootFurniture pipeline as
-	   cursedItem / tarotCards / monkeyPaw -- so a normal furniture
-	   search reveals it via setup.HuntController.lootKindsAt. Each
-	   stolen piece (panties / bra / shirt / bottom) has its own pin
-	   key (clothesStolen<Piece>), is placed at a uniformly random
-	   furniture slot across the whole house, and is restored
-	   independently when found. Slots collide freely -- two pieces
-	   that happen to roll the same (room, suffix) just share the
-	   slot, and a single search reveals both via lootKindsAt.
-
-	   Returns `{ roomId, suffix, kind }` on success, or null when
-	   the floor plan has no furniture-bearing rooms / the piece arg
-	   isn't a known garment.
-
-	   Also clears any prior entry for this piece's kind from
-	   collectedLoot so a re-steal during the same run is findable
-	   again. */
-	function stashStolenClothes(piece, rngOpt) {
-		var run = sv().run;
-		if (!run || !run.floorplan) return null;
-		var kind = STOLEN_PIECE_KINDS[piece];
-		if (!kind) return null;
-		var fp = run.floorplan;
-		var rand = (typeof rngOpt === 'function') ? rngOpt : Math.random;
-
-		/* Build a flat (roomId, suffix) pool across the whole house
-		   so the uniform draw is over slots, not rooms -- a room with
-		   six furniture pieces is six times more likely than a room
-		   with one. No collision avoidance: overlapping with other
-		   loot pins (including a stolen sibling) is fine. */
-		var slots = [];
-		fp.rooms.forEach(function (r) {
-			var t = setup.Templates && setup.Templates.byId(r.template);
-			if (!t || !Array.isArray(t.furniture) || !t.furniture.length) return;
-			t.furniture.forEach(function (suffix) {
-				slots.push({ roomId: r.id, suffix: suffix });
-			});
-		});
-		if (!slots.length) return null;
-		var pick = slots[Math.floor(rand() * slots.length)];
-
-		if (!fp.loot) fp.loot = {};
-		if (!fp.lootFurniture) fp.lootFurniture = {};
-		fp.loot[kind] = pick.roomId;
-		fp.lootFurniture[kind] = pick.suffix;
-
-		// A previous steal+find cycle for this same piece may have
-		// left the kind in collectedLoot; clear it so the new stash
-		// is searchable.
-		if (Array.isArray(run.collectedLoot)) {
-			var idx = run.collectedLoot.indexOf(kind);
-			if (idx !== -1) run.collectedLoot.splice(idx, 1);
-		}
-
-		return { roomId: pick.roomId, suffix: pick.suffix, kind: kind };
-	}
-
 	/* Move the player into `roomId`. No-op when no run is active or
 	   the id isn't on the current floor plan; nav links call this
 	   before re-entering HuntRun. */
@@ -735,8 +555,8 @@ setup.HuntController = (function () {
 		/* Seed the drift-roll clock so the first post-passage tick
 		   after hunt start doesn't immediately roll a drift (which would
 		   fire the 'It Moved' achievement before the ghost has actually
-		   moved). The gate is consumed by shuffleGhostRoom(). */
-		sv().nextDriftAtMinute = rollNextDriftMinute();
+		   moved). The gate is consumed by HuntDrift.shuffleGhostRoom(). */
+		setup.HuntDrift.seedNextDriftClock();
 		/* Same shared-state reset classic did at GhostRandomize:
 		   tarot deck back to HIDDEN, monkey paw back to 3 wishes /
 		   not-yet-found / no banned houses, knowledge-evidence
@@ -783,7 +603,7 @@ setup.HuntController = (function () {
 		   of the tarot pipeline (furniture pickup) requires. */
 		if (Shop.hasUnlock(Item.WITCHS_BLESSING) && setup.Tarot.isTarotUnlocked()) {
 			setup.Tarot.markTarotCarrying();
-			takeLoot('tarotCards');
+			setup.HuntLoot.takeLoot('tarotCards');
 		}
 
 		/* Monkey's Favor: paw already found, ready for its first wish.
@@ -794,7 +614,7 @@ setup.HuntController = (function () {
 		   witch dialog) requires. */
 		if (Shop.hasUnlock(Item.MONKEYS_FAVOR) && setup.MonkeyPaw.isUnlocked()) {
 			setup.MonkeyPaw.markFound();
-			takeLoot('monkeyPaw');
+			setup.HuntLoot.takeLoot('monkeyPaw');
 		}
 
 		/* Stat-cap bumps. Snapshot the prior caps so endHunt can
@@ -891,28 +711,9 @@ setup.HuntController = (function () {
 		return (run.currentRoomId || 'room_0') === ghostRoomId();
 	}
 
-	/* Ghost-room drift. Picks a fresh room (any template,
-	   including the hallway) from the floor plan and updates
-	   floorplan.spawnRoomId. Called by shuffleGhostRoom() once the
-	   next-drift deadline + 45% roll have passed; the controller
-	   already filtered for `staysInOneRoom`, so all that's left here
-	   is the rule "prefer to drift somewhere different from the
-	   current lair". */
-	function driftGhostRoom() {
-		var run = sv().run;
-		if (!run || !run.floorplan) return;
-		if (run.trapped) return;
-		var fp = run.floorplan;
-		if (!Array.isArray(fp.rooms) || !fp.rooms.length) return;
-		var allIds = fp.rooms.map(function (r) { return r.id; });
-		// Prefer drifting somewhere new; fall back to the full pool
-		// when there's only one room in the plan.
-		var others = allIds.filter(function (id) { return id !== fp.spawnRoomId; });
-		var pool = others.length ? others : allIds;
-		var fromRoom = fp.spawnRoomId;
-		fp.spawnRoomId = pool[Math.floor(Math.random() * pool.length)];
-		setup.Hunt.emit(setup.Hunt.Event.DRIFT, { fromRoom: fromRoom, toRoom: fp.spawnRoomId });
-	}
+	/* driftGhostRoom / shuffleGhostRoom / driftChance live in HuntDrift.js
+	   and splice onto this api at load time. The drift-clock state
+	   ($nextDriftAtMinute) is also owned there. */
 
 	/* Minimap data (minimapData / minimapSvg / collapse state),
 	   currentRoomData, and humanizeLootKind / humanizeFurniture
@@ -949,145 +750,6 @@ setup.HuntController = (function () {
 		if (reason) run.failureReason = reason;
 	}
 
-	/* Map a (success, failureReason) pair to the passage the hunt
-	   should land on after endHunt fires. Successful runs and failures
-	   without a dedicated HuntOver* screen fall back to CityMap. The
-	   per-helper exit routers (huntOverPassage / huntCaughtPassage /
-	   streetExitPassage) all funnel through this so the failure-reason
-	   → passage mapping lives in one place.
-
-	   CAUGHT routes to Sleep so the prowl-blackout narration ("fading
-	   into darkness", "plunging you into darkness") flows into the
-	   bedroom cum-covered wake-up (Bedroom.returningFromHuntDefeat)
-	   instead of dropping the MC -- still mid-blackout -- onto the
-	   city map. */
-	function exitPassageForOutcome(success, reason) {
-		if (success) return "CityMap";
-		var FR = setup.HuntEnums.FailureReason;
-		if (reason === FR.SANITY) return "HuntOverSanity";
-		if (reason === FR.EXHAUSTION) return "HuntOverExhaustion";
-		if (reason === FR.TIME) return "HuntOverTime";
-		if (reason === FR.CAUGHT) return "Sleep";
-		return "CityMap";
-	}
-
-	/* Classify the run for payout purposes. Three buckets matter:
-
-		 * isContractHunt -- the held contract key matches the run's
-		   static house. Contract hunts pay the contract's cash and
-		   no ecto; rogue hunts pay cash + ecto.
-		 * fledRogue -- the player walked away from a rogue hunt
-		   (not a ghost-driven defeat). Pays nothing -- no consolation
-		   ecto, no xp. Other rogue failures (sanity, exhaustion,
-		   time, caught) still get the small consolation.
-		 * mult -- the PAYOUT filter's modifier multiplier on cash /
-		   ecto / xp. Default 1.0 when no modifier subscribes. */
-	function classifyHuntOutcome(run, success) {
-		var payCtx = setup.Hunt.applyFilter(setup.Hunt.Event.PAYOUT, {
-			multiplier: 1,
-			modifierIds: (run.modifiers || []).slice(),
-			success: !!success
-		});
-		var mult = (typeof payCtx.multiplier === 'number') ? payCtx.multiplier : 1;
-		var heldId = (setup.WitchContract && typeof setup.WitchContract.heldHouseId === 'function')
-			? setup.WitchContract.heldHouseId()
-			: null;
-		var isContractHunt = !!run.staticHouseId && heldId === run.staticHouseId;
-		var fledRogue = !isContractHunt
-			&& !success
-			&& run.failureReason === setup.HuntEnums.FailureReason.FLED;
-		return {
-			mult: mult,
-			isContractHunt: isContractHunt,
-			contractHouseId: isContractHunt ? heldId : null,
-			fledRogue: fledRogue
-		};
-	}
-
-	/* Settle and apply the run's rewards. Contract hunts burn the held
-	   contract for its cash payout on success / nothing on a wrong
-	   call; any other failure (caught, sanity, exhaustion, time, fled,
-	   abandon) DEFERS resolution -- the true ghost identity is stashed
-	   on the held slot so the player can walk back to Khadija the
-	   next day and still make her call. Rogue hunts pay base 50 cash
-	   + 10 ecto on success and 3 ecto on failure. XP splits: contract
-	   hunts pay the tier-scaled contract reward (Owaissa 15 / Elm 25 /
-	   Ironclad 40 on success, 0 on failure) instead of the flat rogue
-	   formula -- the contract IS the achievement, not the kill. Rogue
-	   hunts pay 20 success / 5 fail / 0 flee. Contract XP is NOT
-	   multiplied by the modifier payout multiplier (the tier already
-	   encodes difficulty). */
-	function payHuntRewards(classification, success, run) {
-		var mult = classification.mult;
-		var cashPayout = 0;
-		var ectoplasmPayout = 0;
-		var xpReward = 0;
-		if (classification.isContractHunt) {
-			var FR = setup.HuntEnums.FailureReason;
-			var deferGuess = !success
-				&& run && run.failureReason !== FR.WRONG_CALL;
-			if (deferGuess) {
-				/* Hunt ended without a call -- stash the ghost identity
-				   so the player can come back to Khadija and guess at
-				   her desk. Contract stays held; no money or XP paid
-				   now (those settle at settlePendingGuess). */
-				setup.WitchContract.markHeldPendingGuess(run.ghostName);
-			} else {
-				var contractPayout = setup.WitchContract.resolveHeld(!!success);
-				cashPayout = Math.round(contractPayout * mult);
-				xpReward = setup.WitchContract.xpRewardFor(classification.contractHouseId, !!success);
-			}
-		} else if (!classification.fledRogue) {
-			cashPayout = Math.round((success ? 50 : 0) * mult);
-			ectoplasmPayout = Math.round((success ? 10 : 3) * mult);
-			xpReward = Math.round((success ? 20 : 5) * mult);
-		}
-		if (cashPayout > 0 && setup.Mc && typeof setup.Mc.addMoney === 'function') {
-			setup.Mc.addMoney(cashPayout);
-		}
-		if (ectoplasmPayout > 0) addEctoplasm(ectoplasmPayout);
-		if (xpReward > 0 && setup.Mc && typeof setup.Mc.grantExp === 'function') {
-			setup.Mc.grantExp(xpReward);
-		}
-		return { cashPayout: cashPayout, ectoplasmPayout: ectoplasmPayout, xpReward: xpReward };
-	}
-
-	/* Pure summary builder -- packages the data HuntSummary / result
-	   passages render. exitPassage routes the caller to the right
-	   HuntOver* screen based on success + failureReason. */
-	function buildHuntSummary(run, classification, payout, success) {
-		return {
-			seed: run.seed,
-			number: run.number,
-			modifiers: (run.modifiers || []).slice(),
-			objective: run.objective,
-			failureReason: run.failureReason || null,
-			success: !!success,
-			isContractHunt: classification.isContractHunt,
-			cashPayout: payout.cashPayout,
-			ectoplasmPayout: payout.ectoplasmPayout,
-			payout: payout.cashPayout + payout.ectoplasmPayout,
-			xp: payout.xpReward,
-			exitPassage: exitPassageForOutcome(!!success, run.failureReason || null)
-		};
-	}
-
-	/* Snap sanity / energy maxes back to whatever the player walked in
-	   with. Modifiers like Steeled Hand / Calves of Steel bump caps
-	   for the duration of a run; energyMax in particular can also be
-	   permanently raised by fitness, so we always restore from the
-	   per-run snapshot rather than guessing a baseline. Current values
-	   clamp to the restored cap so a fresh hunt doesn't start with a
-	   125-out-of-100 bar. */
-	function restorePreRunStatCaps(run) {
-		var caps = run.preRunStatCaps;
-		if (!caps) return;
-		setup.Mc.setSanityMax(caps.sanityMax);
-		setup.Mc.setEnergyMax(caps.energyMax);
-		if (setup.Mc.sanity() > caps.sanityMax) setup.Mc.setSanity(caps.sanityMax);
-		if (setup.Mc.energy() > caps.energyMax) setup.Mc.setEnergy(caps.energyMax);
-	}
-
 	/* Tear down per-run house / companion / wardrobe / stat-cap state.
 	   This is the catch-all lifecycle teardown -- witch contract close,
 	   exhaustion / sanity exits, manual leave, wrong-call. Genuine
@@ -1110,7 +772,7 @@ setup.HuntController = (function () {
 		setup.Companion.runHuntFailHooks();
 		setup.Companion.resetHuntState();
 		setup.Wardrobe.redressAfterHunt();
-		restorePreRunStatCaps(run);
+		setup.HuntPayout.restorePreRunStatCaps(run);
 	}
 
 	// --- Cursed-item lifecycle ---------------------------------
@@ -1181,90 +843,12 @@ setup.HuntController = (function () {
 		setup.Wardrobe.redressAfterHunt();
 	}
 
-	// --- Per-tick steal chance ---------------------------------
-	function stealChance() { return sv().stealChance || 0; }
-	function setStealChance(n) { sv().stealChance = n; }
-	/* Per-tick recompute. Base chance is sanity-driven (lower
-	   sanity = higher chance, capped at 2x baseline at sanity 0)
-	   then scaled by baseline (Tick's stealChanceMult). Per-tick
-	   modifier scaling (Sticky Fingers, etc.) is applied by the
-	   STEAL_CHECK filter at the roll site, not here. */
-	function recomputeStealChance(baseline) {
-		var sanity = setup.Mc.sanity();
-		var sanityScale = Math.log(101 - sanity) / Math.log(101);
-		sv().stealChance = (1 + sanityScale) * baseline;
-	}
-
-	// --- Random prowl + steal triggers -------------------------
-	/* Used by the huntTickEventChain widget to gate random hunt
-	   start by the prowl-timer window, hunt-conditions threshold,
-	   and ghost canProwl check. Returns true when the chain
-	   should <<goto "GhostProwlEvent">>. */
-	function shouldStartProwlRoll() {
-		if (setup.Ghosts.isProwlActivated()) return false;
-		if (setup.Ghosts.elapsedTimeProwl() < setup.Ghosts.prowlTimeRemain()) return false;
-		var threshold = 6 + setup.HauntConditions.snapshot().prowlChanceBonus;
-		if (Math.floor(Math.random() * 101) > threshold) return false;
-		var g = activeGhost();
-		return !!(g && g.canProwl({ sanity: setup.Mc.sanity(), lust: setup.Mc.lust() }));
-	}
-	/* Used by the huntTickEventChain widget: rolls the steal chance
-	   and gates on whether anything is actually stealable. Returns
-	   true when the chain should <<goto "StealClothes">>. */
-	function shouldTriggerStealRoll() {
-		/* STEAL_CHECK filter lets modifiers (Swiper) and contracts
-		   bypass or scale the roll, and lets static houses opt out
-		   entirely via forced modifiers. Subscribers set
-		   forceTrigger=true to skip the roll, or suppress=true to
-		   cancel the steal step outright (Ironclad pins
-		   no_clothes_theft via its forcedModifiers list). suppress
-		   wins over forceTrigger -- a house that doesn't run
-		   clothes-stealing shouldn't have Swiper bypass that. The
-		   caller still gates on canStealAnyItem so we never steal
-		   when nothing is wearable. */
-		var modifierIds = modifiers();
-		var ctx = setup.Hunt.applyFilter(setup.Hunt.Event.STEAL_CHECK, {
-			forceTrigger: false,
-			suppress: false,
-			chanceMult: 1,
-			modifierIds: modifierIds
-		});
-		if (ctx.suppress) return false;
-		if (ctx.forceTrigger) return setup.Wardrobe.canStealAnyItem();
-		var roll = 1 + Math.floor(Math.random() * 100);
-		if (roll > stealChance() * (ctx.chanceMult || 1)) return false;
-		return setup.Wardrobe.canStealAnyItem();
-	}
-
-	/* Per-tick "steal-clothes already fired" flag. Same shape as
-	   setup.Events.eventTriggered() — backed by State.temporary
-	   so passages don't have to share a leaky `_stealClothesTriggered`
-	   temp var across <<include>> boundaries. */
-	function stealClothesTriggered() { return State.temporary.stealClothesTriggered === true; }
-	function markStealClothesTriggered() { State.temporary.stealClothesTriggered = true; }
-	function resetStealClothesTriggered() { State.temporary.stealClothesTriggered = false; }
-
-	/* Record that the MC just dodged a ghost event — stamps the
-	   activation flag + timestamp the Hunt tick reads off when
-	   deciding if enough in-game time has passed to retry. */
-	function rearmHuntTimer() {
-		setup.Ghosts.activateProwl();
-	}
-	/* Start-of-hunt-event bookkeeping: reset elapsedTimeProwl
-	   window + stamp the activation time. Called by the first
-	   frame of GhostProwlEvent before the player picks
-	   run/hide/freeze/pray. Also opens the EMF + UVL activation
-	   windows here -- a prowl disturbs the air enough for the
-	   readers to pick up trail and residue, regardless of which
-	   branch the player resolves into. Hunt cleanup
-	   (cleanupAfterHunt -> resetTools) clears both activations
-	   back to defaults at hunt end. */
-	function beginProwlEvent() {
-		setup.Ghosts.activateProwl();
-		setup.Ghosts.setElapsedTimeProwl(0);
-		setup.activateTool("emf");
-		setup.activateTool("uvl");
-	}
+	/* Per-tick steal chance ($stealChance), the prowl/steal trigger
+	   rolls (shouldStartProwl, shouldTriggerSteal), the
+	   stealClothesTriggered latch, and the prowl-event bookkeeping
+	   (rearmHuntTimer, beginProwlEvent) live in HuntProwl.js and
+	   splice onto this api at load time. The STEAL_CHECK darkness
+	   filter is also registered there. */
 
 	// --- Static house identity helpers -------------------------
 	/* Convenience predicates over staticHouseId(). The two referenced
@@ -1291,9 +875,7 @@ setup.HuntController = (function () {
 	function endHunt(success) {
 		var run = active();
 		if (!run) return null;
-		var classification = classifyHuntOutcome(run, success);
-		var payout = payHuntRewards(classification, success, run);
-		var summary = buildHuntSummary(run, classification, payout, success);
+		var summary = setup.HuntPayout.settle(run, success);
 		/* Stash the outcome on persistent meta-state so any post-hunt
 		   surface that cares about the last result can gate on it --
 		   $run is cleared by end() below, so anyone reading needs a
@@ -1309,10 +891,10 @@ setup.HuntController = (function () {
 		rollNextSeed();
 		setup.Hunt.emit(huntEndEventFor(summary.failureReason), {
 			success: !!success,
-			isContractHunt: classification.isContractHunt,
-			cashPayout: payout.cashPayout,
-			ectoplasmPayout: payout.ectoplasmPayout,
-			payout: payout.cashPayout + payout.ectoplasmPayout,
+			isContractHunt: summary.isContractHunt,
+			cashPayout: summary.cashPayout,
+			ectoplasmPayout: summary.ectoplasmPayout,
+			payout: summary.payout,
 			failureReason: summary.failureReason,
 			ghostName: run.ghostName || null,
 			seed: run.seed,
@@ -1388,27 +970,6 @@ setup.HuntController = (function () {
 		return ctx.outfit || null;
 	});
 
-	/* Random hunt-event roll. Uses the shared threshold + ghost.canProwl
-	   gate -- the predicate works off $prowlActivated / $elapsedTimeProwl /
-	   $prowlTimeRemain, which the per-tick TickController maintenance
-	   keeps fresh. When a roll comes back true the per-tick chain in
-	   widgetInclude routes to GhostProwlEvent (Hide / RunFast / PrayHunt /
-	   FreezeHunt / HuntEventSuccubus all return through huntCaughtPassage
-	   or $return so they land back on the right passage). */
-	var shouldStartProwl = guarded(false, function () {
-		return shouldStartProwlRoll();
-	});
-
-	/* Steal-clothes roll. The wardrobe / stash side-effects are
-	   shared, so once a steal fires the StealClothes cascade works.
-	   Per-house opt-outs (Ironclad pins no_clothes_theft via its
-	   forcedModifiers list) and modifier overrides (Swiper) live as
-	   STEAL_CHECK filter subscribers applied inside
-	   shouldTriggerStealRoll. */
-	var shouldTriggerSteal = guarded(false, function () {
-		return shouldTriggerStealRoll();
-	});
-
 	/* Passage to <<goto>> when the per-tick chain detects a
 	   hunt-over condition. `reason` is one of setup.HuntEnums.FailureReason.SANITY |
 	   EXHAUSTION | TIME. Stamps the failure, runs endHunt() to settle
@@ -1418,7 +979,7 @@ setup.HuntController = (function () {
 	var huntOverPassage = guarded(null, function (reason) {
 		markFailure(reason);
 		var summary = endHunt(false);
-		return summary ? summary.exitPassage : exitPassageForOutcome(false, reason);
+		return summary ? summary.exitPassage : setup.HuntPayout.exitPassageForOutcome(false, reason);
 	});
 
 	/* The ghost's true identity for the active hunt. Hunts don't
@@ -1461,61 +1022,6 @@ setup.HuntController = (function () {
 		return "Sleep";
 	}
 
-	/* Periodic ghost-room shuffle. Every 15-35 in-game minutes the
-	   ghost has a chance to drift to a different room; the exact
-	   spacing is re-rolled after each pass so the player can't time
-	   movements off a fixed clock. The next-roll deadline
-	   (`$nextDriftAtMinute`) lives at the controller level. Drift
-	   chance scales with MC beauty: base 45% at beauty <= 30, losing
-	   0.5% per point above 30, floored at 20%.
-
-	   Skips when:
-	   - no hunt is active;
-	   - the ghost's catalogue marks it `staysInOneRoom`;
-	   - the clock hasn't yet reached `nextDriftAtMinute`. */
-	function shuffleGhostRoom() {
-		if (!isHuntActive()) return;
-		var ghost = activeGhost();
-		if (!ghost || ghost.staysInOneRoom) return;
-		// Bait pins the ghost to the player for its window; skip the
-		// drift roll so the bait spend doesn't get undone by a shuffle.
-		if (setup.HauntConditions && setup.HauntConditions.isBaitActive
-			&& setup.HauntConditions.isBaitActive()) return;
-		var s = sv();
-		// Defensive seed for saves from before this field existed and
-		// for any code path that started a hunt without going through
-		// startHunt (older e2e setups). Don't drift on the first tick
-		// after seeding — schedule the next roll and bail.
-		if (typeof s.nextDriftAtMinute !== 'number') {
-			s.nextDriftAtMinute = rollNextDriftMinute();
-			return;
-		}
-		if (totalMinutes() < s.nextDriftAtMinute) return;
-		if (Math.random() < driftChance()) {
-			driftGhostRoom();
-		}
-		s.nextDriftAtMinute = rollNextDriftMinute();
-	}
-
-	function totalMinutes() {
-		return (setup.Time && typeof setup.Time.totalMinutes === 'function')
-			? setup.Time.totalMinutes()
-			: 0;
-	}
-
-	/* Next-drift deadline = the current clock plus a uniform 15-35
-	   minute offset. Re-rolled after every shuffleGhostRoom pass so
-	   the cadence stays unpredictable. */
-	function rollNextDriftMinute() {
-		return totalMinutes() + setup.Rng.intInclusive(15, 35);
-	}
-
-	function driftChance() {
-		var beauty = (setup.Mc && setup.Mc.beauty) ? (setup.Mc.beauty() || 0) : 0;
-		var bonus = Math.max(0, beauty - 30);
-		return Math.max(0.20, 0.45 - bonus * 0.005);
-	}
-
 	/* End-of-HuntOverProwl cleanup. Wraps the wardrobe / companion /
 	   tool-timer reset. Caller wraps this in
 	   `not setup.Ghosts.hasHighPriestess()` so the priestess reprieve
@@ -1526,106 +1032,12 @@ setup.HuntController = (function () {
 		cleanupAfterHunt({ loseStolen: true });
 	}
 
-	/* Pin the active ghost to the player's current room. Used by the
-	   Monkey Paw activity-tier-3 and trapTheGhost-tier-3 wishes.
-	   Snaps floorplan.spawnRoomId to $run.currentRoomId. Returns true
-	   on success, false when no run is active. */
-	var snapGhostToCurrentRoom = guarded(false, function () {
-		var run = active();
-		if (!run || !run.floorplan) return false;
-		var roomId = run.currentRoomId || 'room_0';
-		run.floorplan.spawnRoomId = roomId;
-		return true;
-	});
-
-	/* Pin the ghost in place + lock the player's exit. Stamps
-	   run.trapped + run.exitLock so the nav layer can refuse exits
-	   until the lock is cleared. The trapped flag also opts the run
-	   out of the periodic ghost-room drift roll. */
-	var trapGhost = guarded(false, function (unlockBy) {
-		var run = active();
-		if (!run) return false;
-		run.trapped = true;
-		run.exitLock = { unlockBy: unlockBy };
-		setup.Hunt.emit(setup.Hunt.Event.TRAP, { unlockBy: unlockBy, roomId: run.floorplan && run.floorplan.spawnRoomId });
-		return true;
-	});
-
-	/* True iff the run's ghost is currently trapped. driftGhostRoom
-	   uses this to skip the shuffle for trapped ghosts. */
-	var isGhostTrapped = guarded(false, function () {
-		var run = active();
-		return !!(run && run.trapped);
-	});
-
-	/* True iff the front door is sealed by a trap wish. Read by
-	   HuntLifecycle to hide the Outside link while a lock is active. */
-	var isExitLocked = guarded(false, function () {
-		var run = active();
-		return !!(run && run.exitLock);
-	});
-
-	/* What clears the current exit lock — 'dawn' or 'cursedItem'.
-	   Returns null when nothing is locked. */
-	var exitLockReason = guarded(null, function () {
-		var run = active();
-		return (run && run.exitLock && run.exitLock.unlockBy) || null;
-	});
-
-	/* Drop the exit lock from the active run. The trap stays put
-	   (run.trapped still suppresses drift) so the ghost remains
-	   pinned even after the door is unsealed. Returns true if a
-	   lock was cleared, false if nothing was locked. */
-	var clearExitLock = guarded(false, function () {
-		var run = active();
-		if (!run || !run.exitLock) return false;
-		run.exitLock = null;
-		return true;
-	});
-
-	/* Trap the player in their current room. Used by Monkey Paw trap
-	   tier 3, where the wish drops the ghost on top of you and seals
-	   the room. Cleared by the same cursed-item sacrifice that opens
-	   the front door (both locks share the cursedItem key). */
-	var lockCurrentRoom = guarded(false, function () {
-		var run = active();
-		if (!run) return false;
-		run.roomLock = true;
-		return true;
-	});
-
-	/* True iff the player can't step out of the current room.
-	   HuntLifecycle reads this to hide every neighbor nav link. */
-	var isRoomLocked = guarded(false, function () {
-		var run = active();
-		return !!(run && run.roomLock);
-	});
-
-	/* Drop the room lock from the active run. Returns true if a
-	   lock was cleared, false otherwise. */
-	var clearRoomLock = guarded(false, function () {
-		var run = active();
-		if (!run || !run.roomLock) return false;
-		run.roomLock = false;
-		return true;
-	});
-
-	/* Sacrifice a carried cursed item to break a Monkey Paw seal.
-	   Valid only when at least one cursedItem-keyed lock is up
-	   (front-door exitLock and/or room lock). Clears both in one
-	   shot so trap tier 3 (door + room both sealed) costs a single
-	   item, not two. Refuses dawn-only exit locks. Returns the
-	   cleared type flag on success, null otherwise. */
-	var sacrificeCursedItemAtDoor = guarded(null, function () {
-		var doorOnCursedItem = exitLockReason() === 'cursedItem';
-		var roomLocked = isRoomLocked();
-		if (!doorOnCursedItem && !roomLocked) return null;
-		if (!setup.Witch.hasCursedItemToTurnIn()) return null;
-		var cleared = setup.Witch.consumeCarriedCursedItem();
-		if (doorOnCursedItem) clearExitLock();
-		if (roomLocked) clearRoomLock();
-		return cleared;
-	});
+	/* snapGhostToCurrentRoom / trapGhost / isGhostTrapped / isExitLocked /
+	   exitLockReason / clearExitLock / lockCurrentRoom / isRoomLocked /
+	   clearRoomLock / sacrificeCursedItemAtDoor are defined in
+	   HuntLocks.js and spliced onto this api at the bottom of that
+	   file. The trap-and-seal bookkeeping lives there so this file
+	   stays focused on hunt lifecycle. */
 
 	/* Runs are one-shot, so banning a house is a no-op. */
 	function banActiveContext() {
@@ -1692,17 +1104,6 @@ setup.HuntController = (function () {
 		setup.Ghosts.setChosenEvidence(missing[Math.floor(Math.random() * missing.length)]);
 	});
 
-	setup.Hunt.filter(setup.Hunt.Event.STEAL_CHECK, function (ctx) {
-		/* Lights-out on the player's current room doubles the
-		   per-tick steal chance. Stacks multiplicatively with the
-		   modifier filters (Sticky Fingers, etc.). The cap is the
-		   stealChance() * chanceMult comparison at the roll site --
-		   if the product exceeds 100, the 1..100 roll can never
-		   beat it, so darkness pushes a high-sanity baseline into
-		   guaranteed-steal territory. */
-		if (isCurrentRoomDark()) ctx.chanceMult = (ctx.chanceMult || 1) * 2;
-	});
-
 	/* Meta-shop unlock effects wire into the same filter bus the
 	   modifiers use. The buildHunt path stays agnostic; each unlock
 	   that mutates a lifecycle ctx registers its own subscriber. */
@@ -1767,15 +1168,11 @@ setup.HuntController = (function () {
 		isRoomDark: isRoomDark,
 		isCurrentRoomDark: isCurrentRoomDark,
 		setRoomLight: setRoomLight,
-		setSearchedFurniture: setSearchedFurniture,
-		searchedFurniture: searchedFurniture,
-		stashStolenClothes: stashStolenClothes,
-		stealClothes: stealClothes,
-		lootAt: lootAt,
-		lootKindsAt: lootKindsAt,
-		takeLoot: takeLoot,
-		hasCollected: hasCollected,
-		collectedLoot: collectedLoot,
+		/* setSearchedFurniture / searchedFurniture / collectedLoot /
+		   hasCollected / takeLoot / lootKindsAt / lootAt / stealClothes /
+		   stashStolenClothes are spliced onto this api by HuntLoot.js
+		   after this file evaluates -- see the splice block at the
+		   bottom of HuntLoot.js. */
 		ectoplasm: ectoplasm,
 		addEctoplasm: addEctoplasm,
 		removeEctoplasm: removeEctoplasm,
@@ -1794,7 +1191,9 @@ setup.HuntController = (function () {
 		runEvidence: runEvidence,
 		ghostRoomId: ghostRoomId,
 		isInGhostRoom: isInGhostRoom,
-		driftGhostRoom: driftGhostRoom,
+		/* driftGhostRoom / shuffleGhostRoom / driftChance are spliced
+		   onto this api by HuntDrift.js after this file evaluates --
+		   see the splice block at the bottom of HuntDrift.js. */
 		address: address,
 		addressFromSeed: setup.HuntAddresses.addressFromSeed,
 		ROAD_NAMES: setup.HuntAddresses.ROAD_NAMES,
@@ -1804,16 +1203,12 @@ setup.HuntController = (function () {
 		isHuntActive: isHuntActive,
 		tick: tick,
 		sidebarOutfit: sidebarOutfit,
-		shouldStartProwl: shouldStartProwl,
-		shouldTriggerSteal: shouldTriggerSteal,
-		stealClothesTriggered: stealClothesTriggered,
-		markStealClothesTriggered: markStealClothesTriggered,
-		resetStealClothesTriggered: resetStealClothesTriggered,
-		stealChance: stealChance,
-		setStealChance: setStealChance,
-		recomputeStealChance: recomputeStealChance,
-		rearmHuntTimer: rearmHuntTimer,
-		beginProwlEvent: beginProwlEvent,
+		/* shouldStartProwl / shouldTriggerSteal / stealClothesTriggered /
+		   markStealClothesTriggered / resetStealClothesTriggered /
+		   stealChance / setStealChance / recomputeStealChance /
+		   rearmHuntTimer / beginProwlEvent are spliced onto this api by
+		   HuntProwl.js after this file evaluates -- see the splice block
+		   at the bottom of HuntProwl.js. */
 		addTempCorruption: addTempCorruption,
 		tempCorruption: tempCorruption,
 		commitTempCorruption: commitTempCorruption,
@@ -1829,18 +1224,11 @@ setup.HuntController = (function () {
 		ghostRoomLabel: ghostRoomLabel,
 		huntCaughtPassage: huntCaughtPassage,
 		onCaughtCleanup: onCaughtCleanup,
-		shuffleGhostRoom: shuffleGhostRoom,
-		driftChance: driftChance,
-		snapGhostToCurrentRoom: snapGhostToCurrentRoom,
-		trapGhost: trapGhost,
-		isGhostTrapped: isGhostTrapped,
-		isExitLocked: isExitLocked,
-		exitLockReason: exitLockReason,
-		clearExitLock: clearExitLock,
-		lockCurrentRoom: lockCurrentRoom,
-		isRoomLocked: isRoomLocked,
-		clearRoomLock: clearRoomLock,
-		sacrificeCursedItemAtDoor: sacrificeCursedItemAtDoor,
+		/* snapGhostToCurrentRoom / trapGhost / isGhostTrapped / isExitLocked /
+		   exitLockReason / clearExitLock / lockCurrentRoom / isRoomLocked /
+		   clearRoomLock / sacrificeCursedItemAtDoor are spliced onto this api
+		   by HuntLocks.js after this file evaluates -- see the splice block
+		   at the bottom of HuntLocks.js. */
 		banActiveContext: banActiveContext,
 		streetExitPassage: streetExitPassage,
 		possessionPassage: possessionPassage,
