@@ -42,10 +42,12 @@ setup.Posession = (function () {
 		},
 
 		// --- Post-possession hunt cleanup ------------------------
-		isBlakeHuntWithCursedItem: function () {
-			return setup.Companion.isCompanionFlagActive() &&
-				setup.Companion.activeCompanionName() === 'Blake' &&
-				setup.Witch.hasCursedItemToTurnIn();
+		// True when the active companion's catalogue entry opts in to the
+		// "cursed-item return" path AND a cursed item is in hand. Catalogue-
+		// driven (Blake today via triggersPossessionCursedItem) so this stays
+		// agnostic to which companion owns the behaviour.
+		isCompanionCarryingCursedItem: function () {
+			return setup.Companion.activeHuntCarriesCursedItem();
 		},
 
 		// --- Surrender-to-possession meter ------------------------

@@ -1,0 +1,13 @@
+:: AliceHuntOver [nobr] {"position":"2550,3550","size":"100,100"}
+/* Alice's catch-sequence intercept. HuntOver.tw delegates to whichever
+   active-companion catalogue entry sets huntOverPassage; this passage is
+   the body that replaces the wardrobe-based default ghost-catch finale
+   when the active companion is Alice. */
+<<video "characters/alice/hunt-end1.mp4">>
+The last thing you remember is you and your friend sitting on the floor in front of the ghost, choking on his cock one after the other.<br>
+It's unclear how long <<linkreplace "@@.usebtn; this went on@@">>
+	<<video "characters/alice/hunt-end2.mp4">>
+	Darkness overwhelms your senses as your vision fades, and then...
+	<<huntBlackoutExit "nothing">>
+	<br>
+<</linkreplace>>

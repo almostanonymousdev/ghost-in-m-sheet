@@ -375,14 +375,12 @@ setup.Companion = (function () {
 		/* Roll & stash the per-street solo-hunt odds for the given
 		   companion into the backing save-field names so the link
 		   labels can still interpolate them. Called on Info passage
-		   entry. The skill curve lives in CompanionData. */
+		   entry. The skill curve lives on the catalogue entry. */
 		refreshSoloOdds: function (name) {
 			var c = this.stateFor(name);
-			if (!c) return;
-			var table = data().soloSkillCurve[name] || {};
-			var lvl = c.lvl || 0;
-			var tier = lvl >= 5 ? 5 : (lvl >= 4 ? 4 : (lvl >= 3 ? 3 : (lvl >= 2 ? 2 : 0)));
-			var pair = table[tier] || [0, 0];
+			var entry = setup.CompanionCatalogue.getByName(name);
+			if (!c || !entry) return;
+			var pair = entry.soloOddsFor(c.lvl);
 			c.soloChanceOwaissa = pair[0];
 			c.soloChanceElm     = pair[1];
 		},
@@ -460,8 +458,39 @@ setup.Companion = (function () {
 		markMet:       function (name) { var c = getByName(name); if (c) c.markMet(); },
 		isPossessed:   function (name) { var c = getByName(name); return c ? c.isPossessed() : false; },
 		isUnavailable: function (name) { var c = getByName(name); return c ? c.isUnavailable() : false; },
-		blakeUnlocked: function () { return setup.Mall.blakeIsCompanionCandidate(); },
+		isUnlocked:    function (name) { var c = getByName(name); return c ? c.isUnlocked() : false; },
 		aliceWorkDone: function () { return State.variables.aliceWorkDone === true; },
+		/* Catalogue-driven dispatch hooks. Every site that used to test
+		   `activeCompanionName() === "Brook"` etc. routes through a
+		   generic method here whose body iterates the catalogue and
+		   delegates to the entry's own hook. Adding a fourth companion
+		   that needs the same behaviour just sets the same field on its
+		   catalogue entry; no controller / passage code changes. */
+		// Called by ToolController when a spiritbox-possession or similar
+		// roll fires during a hunt. Lets the active companion's catalogue
+		// entry decide whether to mark itself "possessed at home" for the
+		// follow-up Home arc. No-op when no companion is active.
+		maybeActivatePossessionOnHuntTool: function () {
+			var c = this.active();
+			if (c) c.activatePossessionOnHuntTool();
+		},
+		// True when the active companion's catalogue entry opts in to the
+		// "post-possession cursed-item return" path (Blake today).
+		activeHuntCarriesCursedItem: function () {
+			if (!this.isCompanionFlagActive()) return false;
+			var c = this.active();
+			if (!c || !c.triggersPossessionCursedItem) return false;
+			return setup.Witch.hasCursedItemToTurnIn();
+		},
+		// HuntOver dispatch: returns the active companion's catalogue
+		// `huntOverPassage` if the companion flag is set and they own a
+		// custom catch-sequence passage; otherwise null. Lets HuntOver.tw
+		// branch generically without naming any companion.
+		activeHuntOverPassage: function () {
+			if (!this.isCompanionFlagActive()) return null;
+			var c = this.active();
+			return (c && c.huntOverPassage) ? c.huntOverPassage : null;
+		},
 		/* Low-level Alice-flag writers exposed for CompanionData's per-
 		   companion catalogue hooks; the controller stays the single
 		   writer of $meetAlice / $aliceWorkDone. */

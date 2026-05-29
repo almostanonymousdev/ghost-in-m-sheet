@@ -279,12 +279,12 @@
         "...interrupted. For half a second it sounds like someone gasping into the mic."
     ];
 
-    function maybeSetBrookPossessed() {
-        if (setup.Companion.activeCompanionName() === "Brook"
-            && setup.Companion.companionLvl('Brook') >= 2
-            && setup.Companion.isCompanionFlagActive()) {
-            setup.Home.markBrookePossessedActive();
-        }
+    /* Catalogue-driven dispatch: each companion's catalogue entry decides
+       whether a spiritbox-possession roll during their active hunt should
+       mark them "possessed at home" for the follow-up Home arc. Today this
+       only fires for Brook (lvl >= 2) but ToolController stays agnostic. */
+    function maybeActivatePossessionOnHuntTool() {
+        setup.Companion.maybeActivatePossessionOnHuntTool();
     }
 
     function renderSpiritbox() {
@@ -298,7 +298,7 @@
 
 
         if (g && g.spiritboxPossessionChance > 0 && roll <= g.spiritboxPossessionChance) {
-            maybeSetBrookPossessed();
+            maybeActivatePossessionOnHuntTool();
             _huntCardMarkup = '';
             if (setup.Mc.bodyPartSensitivity('brain') >= 3) {
                 /* The renderer output is wikified into the hidden

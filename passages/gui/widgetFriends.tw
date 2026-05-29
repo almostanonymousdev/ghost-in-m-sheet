@@ -1,7 +1,11 @@
 :: widgetFriends [widget nobr noreturn] {"position":"300,1500","size":"100,100"}
 <<widget "companionExp">>
+	/* Catalogue-membership gate: only catalogued companions earn xp. The
+		`setup.Companion.getByName(_cName)` lookup returns null for
+		ghosts / npcs that happen to be on the marker, keeping non-companion
+		strings from rendering an "exp" line. */
 	<<set _cName to setup.Companion.name()>>
-	<<if _cName eq "Brook" or _cName eq "Alice" or _cName eq "Blake">>
+	<<if setup.Companion.getByName(_cName)>>
 		<<if setup.Companion.isAtMaxLvl(_cName)>>
 			<<= _cName>> is already at the maximum level!
 		<<else>>
@@ -31,8 +35,8 @@
 
 <<widget "companionTextEvent">>
 	/* Sanity-tier (1..4) dispatcher for the CompanionEvent passage.
-	   Per-companion dialog lives on the catalogue (eventCopy); this
-	   widget just renders it. Tiers 2-4 add a +15 lust hit on the MC. */
+		Per-companion dialog lives on the catalogue (eventCopy); this
+		widget just renders it. Tiers 2-4 add a +15 lust hit on the MC. */
 	<<set _tier to _args[0]>>
 	<<set _ac to setup.Companion.active()>>
 	<<if _ac>>
@@ -52,10 +56,10 @@
 
 <<widget "isCompanionContinue">>
 	/* Reached after the ghost ambushed the companion (showComp =
-	   ATTACK_FAILED from the single mission roll in
-	   setup.Tick.resolveCompanionAttack). The mission was already
-	   decided as a failure there, so no second success roll happens
-	   here — the companion always returns empty-handed. */
+		ATTACK_FAILED from the single mission roll in
+		setup.Tick.resolveCompanionAttack). The mission was already
+		decided as a failure there, so no second success roll happens
+		here — the companion always returns empty-handed. */
 	<<linkappend "@@.mc-speechLink; Will you be able to continue?@@">><br>
 
 		<<if _args[0] gte _args[1] or (setup.Companion.sanity() gte _args[2] and setup.Companion.sanity() lte _args[3])>>
@@ -79,11 +83,4 @@
 			<</if>><br>
 		<</if>>
 	<</linkappend>>
-<</widget>>
-
-<<widget "aliceLustHighEvent">>
-	<<set _cName to setup.Companion.name()>>
-	or @@.usebtn;<<link `_cName + " helps you"`>><<run setup.Companion.drainSanity(3)>>
-		<<replace "#eventVideo">><<include "AliceHelp">><</replace>>
-	<</link>> @@ - <<= _cName>>'s <<statIcon setup.StatIcon.SANITY>>
 <</widget>>

@@ -1,0 +1,47 @@
+:: BrookSpiritEvent [nobr] {"position":"2550,3650","size":"100,100"}
+/* Brook's bedroom Spirit-ambush scene. Dispatched from the generic
+   GhostSpecialEventSpirit passage via the catalogue's spiritEventPassage
+   field. The dispatcher already stamps the Spirit-event stage so this
+   passage just owns the video chain + dialog. */
+<<set _videoToggle to true>>
+@@.mc-thoughts; You both wake up to a noise nearby. Next to you, you notice a vague figure with a hard cock near your face. Not fully realizing what's happening, you try to focus on the stranger, but your attention is completely drawn to the big dick, almost pressing against your mouth.@@<br>
+<<linkappend "@@.mc-speechLink; What the~@@">>
+	<span id ="walkhomebrookspirit">
+	<<video "characters/ghosts/specials/spiritbrooke2.mp4">></span>
+	@@.mc-thoughts; Before you can finish speaking, his thick cock slips into your mouth. <<= setup.Companion.name()>> doesn't stand by and moves in to lick it. <br>
+	He starts playing with you like dolls, using your mouths@@
+	<<link "@@.usebtn; one after the other@@">>
+		<<set _videoToggle to !_videoToggle>>
+		<<replace "#walkhomebrookspirit">>
+			<<if _videoToggle>>
+				<<video "characters/ghosts/specials/spiritbrooke2.mp4">>
+			<<else>>
+				<<video "characters/ghosts/specials/spiritbrooke1.mp4">>
+			<</if>>
+		<</replace>>
+	<</link>>
+	@@.notmc-speech; Mm~slurp~slurp~@@<br>
+	@@.mc-thoughts; Slurping sounds are heard throughout the room. You feel yourself beginning to give in to passionate desire, allowing this stranger@@ <<linkappend "@@.mc-thoughtsLink; to do whatever he wants.@@">><br>
+		<span id ="walkhomebrookspirit1">
+		<<video "characters/ghosts/specials/spiritbrooke3.mp4">></span>
+		@@.mc-thoughts; You both feel like you need to make this stranger cum. You decide to @@<<link "@@.usebtn; suck his cock in turns to catch your breath.@@">>
+			<<set _videoToggle to !_videoToggle>>
+			<<replace "#walkhomebrookspirit1">>
+				<<if _videoToggle>>
+					<<video "characters/ghosts/specials/spiritbrooke3.mp4">>
+				<<else>>
+					<<video "characters/ghosts/specials/spiritbrooke4.mp4">>
+				<</if>>
+			<</replace>>
+		<</link>>
+		@@.mc-thoughts; Eventually, the mysterious figure can't stand your passion and @@<<linkappend "@@.mc-thoughtsLink; cums on you.@@">>
+			<<video "characters/ghosts/specials/spiritbrooke5.mp4">>
+			@@.mc-thoughts; You're more pleased with yourself than ever before, and you start playing with his cum, kissing each other. When you finish playing with it, you notice that the stranger has disappeared.@@
+			@@.notmc-speech; Was it a dream?@@<br>
+			@@.mc-speech; I don't think so, it seems like we just gave someone a blowjob...@@<br>
+			@@.notmc-speech; What the fuck?@@<br>
+			@@.mc-speech;I want to forget this faster, let's go to sleep, I hope he left and doesn't come back@@<br><br>
+			@@.backbtn; [[Sleep]]@@<br>
+		<</linkappend>>
+	<</linkappend>>
+<</linkappend>>

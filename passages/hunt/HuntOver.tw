@@ -220,15 +220,9 @@
 	&emsp;&emsp; It grabbed you, and you felt its icy fingers tighten around your body. In the next moment, you were lifted onto its shoulders, the cold seeping into your bones. You tried to struggle, but your strength was quickly fading.<br>
 	&emsp;&emsp;The ghost dragged you through the dark hallways of the house, and time seemed to slow down. Images blurred before your eyes, sounds became distorted and distant. Your head hung limply, and you felt your consciousness slipping away. Your thoughts grew muddled, and reality seemed distant and unclear.<br>
 
-	<<if setup.Companion.isCompanionFlagActive() and setup.Companion.name() eq "Alice">>
-		<<video "characters/alice/hunt-end1.mp4">>
-		The last thing you remember is you and your friend sitting on the floor in front of the ghost, choking on his cock one after the other.<br>
-		It's unclear how long <<linkreplace "@@.usebtn; this went on@@">>
-			<<video "characters/alice/hunt-end2.mp4">>
-			Darkness overwhelms your senses as your vision fades, and then...
-			<<huntBlackoutExit "nothing">>
-			<br>
-		<</linkreplace>>
+	<<set _huntOverCompanionPassage to setup.Companion.activeHuntOverPassage()>>
+	<<if _huntOverCompanionPassage>>
+		<<include _huntOverCompanionPassage>>
 	<<else>>
 
 		<<if setup.Wardrobe.worn(setup.WardrobeSlot.JEANS)>>

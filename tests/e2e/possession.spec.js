@@ -77,21 +77,21 @@ test.describe('Possession — Brooke rescue', () => {
 });
 
 test.describe('Possession — hunt cleanup', () => {
-  test('isBlakeHuntWithCursedItem requires Blake + chosen + cursed item', async ({ game: page }) => {
+  test('isCompanionCarryingCursedItem requires cursed-item companion + chosen + cursed item', async ({ game: page }) => {
     await setVar(page, 'isCompChosen', false);
     await setVar(page, 'companion', { name: 'Blake' });
     await setVar(page, 'gotCursedItem', 1);
-    expect(await callSetup(page, 'setup.Posession.isBlakeHuntWithCursedItem()')).toBe(false);
+    expect(await callSetup(page, 'setup.Posession.isCompanionCarryingCursedItem()')).toBe(false);
 
     await setVar(page, 'isCompChosen', true);
-    expect(await callSetup(page, 'setup.Posession.isBlakeHuntWithCursedItem()')).toBe(true);
+    expect(await callSetup(page, 'setup.Posession.isCompanionCarryingCursedItem()')).toBe(true);
 
     await setVar(page, 'gotCursedItem', 0);
-    expect(await callSetup(page, 'setup.Posession.isBlakeHuntWithCursedItem()')).toBe(false);
+    expect(await callSetup(page, 'setup.Posession.isCompanionCarryingCursedItem()')).toBe(false);
 
     await setVar(page, 'gotCursedItem', 1);
     await setVar(page, 'companion', { name: 'Alice' });
-    expect(await callSetup(page, 'setup.Posession.isBlakeHuntWithCursedItem()')).toBe(false);
+    expect(await callSetup(page, 'setup.Posession.isCompanionCarryingCursedItem()')).toBe(false);
   });
 });
 

@@ -67,6 +67,41 @@ setup.CompanionData = (function () {
 			pronObj: "her", pronPos: "her",
 			neutralResp: "Let's keep it simple.",
 			eventMedia: eventMediaBrook,
+			// Per-companion content passages — each one is a slot in the
+			// generic dispatchers (CompanionHelp / Contacts /
+			// WalkHomeTogether / Phone) so callers never reference the
+			// per-name passage by literal. Brook has no home-continue
+			// follow-up scene; the walk-home video chain ends inline.
+			helpPassage:         "BrookHelp",
+			huntEndAlonePassage: "BrookHuntEndAlone",
+			infoPassage:         "BrookInfo",
+			walkHomePassage:     "BrookWalkHome",
+			homeContinuePassage: null,
+			spiritEventPassage:  "BrookSpiritEvent",
+			// Phone / Contacts row metadata: locked-state hint, possessed +
+			// with-rain hints (Brook's three transient states the GUI cards
+			// have to disambiguate), and whether the row is "unlocked" yet.
+			contactsLockedHint: "Need to search in the library",
+			isUnlocked:         function () { return setup.Library.hasMetBrook(); },
+			canText:            function () {
+				return !setup.Library.brookIsPossessed()
+					&& !setup.Library.brookIsWithRain();
+			},
+			possessedHint: "She's not answering... Strange, she usually responds right away...",
+			withRainHint:  "She's probably still with Rain. Maybe it's worth waiting a couple of days.",
+			isWithRain:    function () { return setup.Library.brookIsWithRain(); },
+			// While the MC is in a hunt and Brook is the active companion at
+			// lvl 2+, certain ToolController paths (eg. spiritbox-possession
+			// roll) stamp Brook as "possessed at home" so the Home arc fires.
+			// activatePossessionOnHuntTool fires from ToolController via
+			// setup.Companion.maybeActivatePossessionOnHuntTool, keeping the
+			// companion-name predicate inside the catalogue.
+			activatePossessionOnHuntTool: function () {
+				if (setup.Companion.companionLvl('Brook') >= 2
+					&& setup.Companion.isCompanionFlagActive()) {
+					setup.Home.markBrookePossessedActive();
+				}
+			},
 			// Brook's "have I met her" / "is she available" gates live on
 			// the Library/Home controllers (they own meetBrook + the
 			// brooke-with-Rain cooldown). Hooks delegate so the companion
@@ -81,6 +116,10 @@ setup.CompanionData = (function () {
 				plan2TimeReq: 15, plan3TimeReq: 10, plan4TimeReq: 10,
 				chanceOfSuccessCI: 20, chanceOfSuccessGR: 30
 			},
+			// Per-street solo-hunt odds keyed by companion level (2..5+).
+			// Owaissa is the safer / lower-paying street; Elm is the risk
+			// branch. lvl < 2 falls back to 0%/0%.
+			soloSkillCurve: { 2: [25, 10], 3: [40, 25], 4: [55, 40], 5: [70, 55] },
 			clothingTiers: [
 				{ mc: "Lose the top -- it'll be easier to move.",
 				resp: "Lose the top. Sure. Library work didn't prepare me for this part of the job, but okay." },
@@ -108,6 +147,25 @@ setup.CompanionData = (function () {
 			pronObj: "her", pronPos: "her",
 			neutralResp: "Tell me where you want me.",
 			eventMedia: eventMediaAlice,
+			helpPassage:         "AliceHelp",
+			huntEndAlonePassage: "AliceHuntEndAlone",
+			infoPassage:         "AliceInfo",
+			walkHomePassage:     "AliceWalkHome",
+			homeContinuePassage: "AliceContinue",
+			spiritEventPassage:  "AliceSpiritEvent",
+			contactsLockedHint:  "Deliver books to the correct address",
+			isUnlocked:          function () { return State.variables.meetAlice !== undefined; },
+			canText:             function () { return true; },
+			possessedHint:       "",
+			withRainHint:        "",
+			isWithRain:          function () { return false; },
+			// HuntOver intercept: Alice's catch animation runs a different
+			// final-blackout sequence than the wardrobe-based default. Each
+			// catalogue entry that wants to intercept the catch sets
+			// `huntOverPassage` to the per-companion passage and the
+			// HuntOver hook dispatcher in HuntOver.tw includes it instead
+			// of the wardrobe-based default.
+			huntOverPassage: "AliceHuntOver",
 			// Alice owns the $meetAlice flag and $aliceWorkDone. hasMet/
 			// markMet wrap the former; onHuntFail (called only on the
 			// active companion) zeroes workDone unless Alice was on a
@@ -122,6 +180,7 @@ setup.CompanionData = (function () {
 				plan2TimeReq: 15, plan3TimeReq: 15, plan4TimeReq: 10,
 				chanceOfSuccessCI: 30, chanceOfSuccessGR: 50
 			},
+			soloSkillCurve: { 2: [20, 10], 3: [40, 20], 4: [50, 40], 5: [75, 65] },
 			clothingTiers: [
 				{ mc: "Lose the top -- it'll be easier to move.",
 				resp: "Top off. Right. I trust you, $mc.name, but you're definitely buying coffee after this." },
@@ -146,6 +205,24 @@ setup.CompanionData = (function () {
 			pronObj: "her", pronPos: "her",
 			neutralResp: "Point me at it.",
 			eventMedia: eventMediaBlake,
+			helpPassage:         "BlakeHelp",
+			huntEndAlonePassage: "BlakeHuntEndAlone",
+			infoPassage:         "BlakeInfo",
+			walkHomePassage:     "BlakeWalkHome",
+			homeContinuePassage: "BlakeContinue",
+			spiritEventPassage:  "BlakeSpiritEvent",
+			contactsLockedHint:  "Befriend the assistant at the sex shop <br>(Relationship 5+)",
+			isUnlocked:          function () { return (setup.Mall.blakeRelationship() || 0) >= 5; },
+			canText:             function () { return true; },
+			possessedHint:       "",
+			withRainHint:        "",
+			isWithRain:          function () { return false; },
+			// While Blake is the active companion, post-possession cleanup
+			// needs to know if the hunt was "Blake with cursed item" so
+			// PosessionController can decide whether to return the item
+			// to the Witch. Catalogue-driven so PosessionController never
+			// hardcodes the companion name.
+			triggersPossessionCursedItem: true,
 			// If Blake was the active companion and the hunt ended badly
 			// while she was carrying a cursed item for the Witch, she
 			// drops it. Witch owns the gotCursedItem flag.
@@ -159,6 +236,7 @@ setup.CompanionData = (function () {
 				chanceOfSuccessCI: 30, chanceOfSuccessGR: 20,
 				chanceOfSuccessAnyEvidence: 15
 			},
+			soloSkillCurve: { 2: [25, 10], 3: [40, 25], 4: [55, 40], 5: [70, 55] },
 			clothingTiers: [
 				{ mc: "Lose the top -- it'll be easier to move.",
 				resp: "Top off, sure. Honestly half the reason I'm in this is the view." },
@@ -206,15 +284,6 @@ setup.CompanionData = (function () {
 	var tierChances = [40, 55, 70, 90];
 	var baseChance  = 25;
 
-	// Per-companion solo-hunt skill curve: level -> {owaissa, elm} success %.
-	// Drives the three near-identical Companion Info passages off a single
-	// table. Index by lvl: 0/1 defaults to 0%.
-	var soloSkillCurve = {
-		Brook: { 2: [25, 10], 3: [40, 25], 4: [55, 40], 5: [70, 55] },
-		Alice: { 2: [20, 10], 3: [40, 20], 4: [50, 40], 5: [75, 65] },
-		Blake: { 2: [25, 10], 3: [40, 25], 4: [55, 40], 5: [70, 55] }
-	};
-
 	// Payout for a successful solo hunt, keyed by street. Owaissa is the
 	// safer / lower-paying contract; Elm is riskier. Driven from data so
 	// the controller's payoutSoloHunt doesn't hardcode the figures.
@@ -238,7 +307,6 @@ setup.CompanionData = (function () {
 		baseStats:        baseStats,
 		tierChances:      tierChances,
 		baseChance:       baseChance,
-		soloSkillCurve:   soloSkillCurve,
 		soloRewards:      soloRewards,
 		soloContractFee:  soloContractFee,
 		cursedItemTypes:  cursedItemTypes

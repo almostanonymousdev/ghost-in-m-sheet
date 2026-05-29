@@ -1,0 +1,26 @@
+:: BlakeWalkHome [nobr] {"position":"2450,3650","size":"100,100"}
+/* Blake's lust>=50 walk-home scene. Generic dispatcher
+   WalkHomeTogether routes here via the catalogue's walkHomePassage
+   field; the toggle chain hands off to BlakeContinue (the
+   homeContinuePassage slot). */
+<<set _videoToggle to true>>
+<<video "characters/blake/home/1.mp4">>
+@@.mc-thoughts;As soon as you walked in, she pounced on you and started kissing you@@<br>
+@@.notmc-speech; I'm so turned on, <<= setup.Mc.name()>>. I want you right now.@@<br>
+@@.mc-thoughts; Her eagerness instantly aroused you, making your nipples harden, and your pussy crave attention.@@<br>
+@@.mc-speech; Yes~ @@<<linkappend "@@.mc-speechLink; let's do it. @@">>
+	<span id ="walkhomeblake">
+	<<video "characters/blake/home/2.mp4">></span>
+	@@.mc-thoughts; You took turns pleasuring
+	<<link "@@.usebtn;each other@@">>
+		<<set _videoToggle to !_videoToggle>>
+		<<replace "#walkhomeblake">>
+			<<if _videoToggle>>
+				<<video "characters/blake/home/2.mp4">>
+			<<else>>
+				<<video "characters/blake/home/3.mp4">>
+			<</if>>
+		<</replace>>
+	<</link>>
+	until you both [[cum at the same time.|BlakeContinue]]@@<br>
+<</linkappend>>

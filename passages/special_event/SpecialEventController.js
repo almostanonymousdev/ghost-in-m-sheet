@@ -66,6 +66,14 @@ setup.SpecialEvent = (function () {
 		hasCompanion: function () {
 			return !!companionName();
 		},
+		/* Catalogue dispatch: returns the active companion's spirit-event
+		   passage (the in-bedroom Spirit ambush has wildly different per-
+		   companion scenes -- each catalogue entry names its own passage).
+		   Returns null when no companion is active. */
+		activeSpiritEventPassage: function () {
+			var c = setup.Companion.active();
+			return c ? c.spiritEventPassage : null;
+		},
 
 		// --- Wraith escape ---------------------------------
 		canTryEscape: function () {

@@ -1,0 +1,37 @@
+:: BrookWalkHome [nobr] {"position":"2450,3450","size":"100,100"}
+/* Brook's lust>=50 walk-home scene. Routed to from the generic
+   WalkHomeTogether dispatcher via the catalogue's walkHomePassage
+   field. Brook's chain ends inline (no homeContinuePassage). */
+<<set _videoToggle to true>>
+<<video "characters/brook/home/1.mp4">>
+@@.mc-thoughts;As soon as you walked in, she pounced on you and started kissing you@@<br>
+@@.notmc-speech; I'm so turned on, <<= setup.Mc.name()>>. I want you right now.@@<br>
+@@.mc-thoughts; Her eagerness instantly aroused you, making your nipples harden, and your pussy crave attention.@@<br>
+@@.mc-speech; Yes~ let's do it. @@<br>
+@@.notmc-speech; I have something special for us. Here, let's use @@
+<<linkappend "@@.notmc-speechLink; this strap-on.@@">><br>
+	<span id ="walkhomebrook">
+	<<video "characters/brook/home/2.mp4">></span>
+	@@.mc-thoughts; You took turns pleasuring
+	<<link "@@.usebtn;each other@@">>
+		<<set _videoToggle to !_videoToggle>>
+		<<replace "#walkhomebrook">>
+			<<if _videoToggle>>
+				<<video "characters/brook/home/2.mp4">>
+			<<else>>
+				<<video "characters/brook/home/3.mp4">>
+			<</if>>
+		<</replace>>
+	<</link>>
+	with the strap-on until you were both completely spent.@@<br>
+	@@.notmc-speech; That was amazing.@@<br>
+	@@.mc-speech;Yeah~@@<br>
+	@@.notmc-speech; I'm really exhausted today. You rest up, and I'll head back. Hopefully, we'll meet again.@@<br>
+	@@.mc-speech;Alright, bye.@@<br>
+	<<if setup.Mc.corruption() lt 10>>
+		<<run setup.Mc.addCorruption(0.1)>>
+		+0.1 <<statIcon setup.StatIcon.CORRUPTION>><br><br>
+	<</if>>
+	<br>
+	@@.backbtn; [[Sleep]]@@<br>
+<</linkappend>>

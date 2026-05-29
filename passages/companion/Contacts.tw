@@ -1,88 +1,45 @@
 :: Contacts [nobr] {"position":"400,1000","size":"100,100"}
+/* Per-companion contacts cards. Every companion-specific bit (portrait
+   path, info passage, locked hint, possessed/with-rain transient hints,
+   unlock predicate) comes from the catalogue entry, so a new companion
+   just needs a CompanionData.js row and the card appears automatically. */
 <div class="flexwrapper addGap5">
-
-<div class="housecard">
-<<if setup.Companion.hasMet("Brook")>>
-	<<set _brook to setup.Companion.stateFor("brook")>>
-	@@.notmc-speech; <<= _brook.name>> @@<br>
-	<<= _brook.lvl>> lvl <<if _brook.lvl gte 5>> (max. lvl)
-	<<else>>(<<= _brook.exp>> / <<= _brook.expForNextLvl>>)
-	<</if>><br>
-	<<image "characters/brook/brook.png" "contactsImages">><br>
-	<<if setup.Time.hours() lte 5>>
-		<<if setup.Companion.hasFinishedSoloHunt("Brook")>>
-			@@.mc-thoughts; She is currently on a ghost hunt.@@
-		<<else>>
-			@@.mc-thoughts; She's sleeping@@<br>
-		<</if>>
-	<<else>>
-		<<if setup.Library.brookIsPossessed()>>
-			<<linkreplace "@@.enterbtn;Text her@@">>She's not answering... Strange, she usually responds right away...
-			<</linkreplace>>
-		<<else>>
-			<<if setup.Companion.isUnavailable("Brook")>>
-				@@.mc-thoughts;She's probably still with Rain. Maybe it's worth waiting a couple of days. @@
+<<for _i, _c range setup.Companion.list()>>
+	<div class="housecard">
+		<<set _name to _c.name>>
+		<<set _stats to setup.Companion.stateFor(_c.key)>>
+		<<if setup.Companion.isUnlocked(_name) and _stats>>
+			@@.notmc-speech; <<= _stats.name>> @@<br>
+			<<= _stats.lvl>> lvl
+			<<if _stats.lvl gte 5>> (max. lvl)
+			<<else>>(<<= _stats.exp>> / <<= _stats.expForNextLvl>>)
+			<</if>><br>
+			<<image _c.portraitPath() "contactsImages">><br>
+			<<if setup.Time.hours() lte 5>>
+				<<if setup.Companion.hasFinishedSoloHunt(_name)>>
+					@@.mc-thoughts; She is currently on a ghost hunt.@@
+				<<else>>
+					@@.mc-thoughts; She's sleeping@@<br>
+				<</if>>
+			<<elseif setup.Companion.isPossessed(_name)>>
+				<<capture _c>>
+					<<linkreplace "@@.enterbtn;Text her@@">><<= _c.possessedHint>>
+					<</linkreplace>>
+				<</capture>>
+			<<elseif setup.Companion.isUnavailable(_name)>>
+				@@.mc-thoughts;<<= _c.withRainHint>>@@
 			<<else>>
-				@@.enterbtn;[[Text her|BrookInfo]]@@<br>
+				<<capture _c>>
+					@@.enterbtn;<<link "Text her" `_c.infoPassage`>>
+					<</link>>@@<br>
+				<</capture>>
 			<</if>>
-
-		<</if>>
-	<</if>>
-<<else>>
-
-	@@.mc-thoughts; Need to search in the library@@<br>
-	<<image "ui/img/question-mark.png" "contactsImages">>
-<</if>>
-</div>
-
-<div class="housecard">
-<<if setup.Companion.hasMet("Alice")>>
-	<<set _alice to setup.Companion.stateFor("alice")>>
-	@@.notmc-speech; <<= _alice.name>> @@<br>
-	<<= _alice.lvl>> lvl <<if _alice.lvl gte 5>> (max. lvl)
-	<<else>>(<<= _alice.exp>> / <<= _alice.expForNextLvl>>)
-	<</if>><br>
-	<<image "characters/alice/alice.png" "contactsImages">><br>
-	<<if setup.Time.hours() lte 5>>
-		<<if setup.Companion.hasFinishedSoloHunt("Alice")>>
-			@@.mc-thoughts; She is currently on a ghost hunt.@@
 		<<else>>
-			@@.mc-thoughts; She's sleeping@@<br>
+			@@.mc-thoughts; <<= _c.contactsLockedHint>>@@<br>
+			<<image "ui/img/question-mark.png" "contactsImages">>
 		<</if>>
-	<<else>>
-		@@.enterbtn;[[Text her|AliceInfo]]@@<br>
-	<</if>>
-<<else>>
-
-	@@.mc-thoughts; Deliver books to the correct address@@<br>
-	<<image "ui/img/question-mark.png" "contactsImages">>
-<</if>>
-</div>
-
-<div class="housecard">
-<<if setup.Companion.blakeUnlocked()>>
-	<<set _blake to setup.Companion.stateFor("blake")>>
-	@@.notmc-speech; <<= _blake.name>> @@<br>
-	<<= _blake.lvl>> lvl <<if _blake.lvl gte 5>> (max. lvl)
-	<<else>>(<<= _blake.exp>> / <<= _blake.expForNextLvl>>)
-	<</if>><br>
-	<<image "characters/blake/blake.png" "contactsImages">><br>
-	<<if setup.Time.hours() lte 5>>
-		<<if setup.Companion.hasFinishedSoloHunt("Blake")>>
-			@@.mc-thoughts; She is currently on a ghost hunt.@@
-		<<else>>
-			@@.mc-thoughts; She's sleeping@@<br>
-		<</if>>
-	<<else>>
-		@@.enterbtn;[[Text her|BlakeInfo]]@@<br>
-	<</if>>
-<<else>>
-
-	@@.mc-thoughts; Befriend the assistant at the sex shop <br>(Relationship 5+)@@<br>
-	<<image "ui/img/question-mark.png" "contactsImages">>
-<</if>>
-</div>
-
+	</div>
+<</for>>
 </div>
 <br>
 @@.backbtn; [[Back|Use PC]]@@<br>

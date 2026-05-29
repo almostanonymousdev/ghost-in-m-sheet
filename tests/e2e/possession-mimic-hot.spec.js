@@ -218,15 +218,15 @@ test.describe('Possession — Brooke rescue path', () => {
     expect(after).toBeLessThanOrEqual(16);
   });
 
-  test('isBlakeHuntWithCursedItem requires Blake as companion + cursed item', async ({ game: page }) => {
+  test('isCompanionCarryingCursedItem requires a cursed-item companion + cursed item', async ({ game: page }) => {
     await setVar(page, 'isCompChosen', true);
     await setVar(page, 'companion', { name: 'Blake' });
     await setVar(page, 'gotCursedItem', 1);
-    expect(await callSetup(page, 'setup.Posession.isBlakeHuntWithCursedItem()')).toBe(true);
+    expect(await callSetup(page, 'setup.Posession.isCompanionCarryingCursedItem()')).toBe(true);
     await setVar(page, 'companion', { name: 'Alice' });
-    expect(await callSetup(page, 'setup.Posession.isBlakeHuntWithCursedItem()')).toBe(false);
+    expect(await callSetup(page, 'setup.Posession.isCompanionCarryingCursedItem()')).toBe(false);
     await setVar(page, 'companion', { name: 'Blake' });
     await setVar(page, 'gotCursedItem', 0);
-    expect(await callSetup(page, 'setup.Posession.isBlakeHuntWithCursedItem()')).toBe(false);
+    expect(await callSetup(page, 'setup.Posession.isCompanionCarryingCursedItem()')).toBe(false);
   });
 });

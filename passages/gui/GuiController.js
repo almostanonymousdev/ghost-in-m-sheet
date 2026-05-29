@@ -32,65 +32,29 @@ setup.Gui = (function () {
 	}
 
 	// --- Phone contacts -----------------------------------------
-	/* The three slots on the Phone passage all follow the same
+	/* The Phone passage's per-companion slots all follow the same
 	   "if unlocked, show name+lvl+exp+portrait+text-her link, else
-	   show a hint + question mark" structure. The only differences
-	   are the unlock predicate, the locked hint, and the hunting
-	   guard (Brook also gates on the possession state). Returns
-	   one descriptor per slot in stable display order. */
+	   show a hint + question mark" structure. Drive that off the
+	   companion catalogue so adding a new companion is "add a row in
+	   CompanionData.js" -- no GUI changes needed. Returns one descriptor
+	   per catalogue entry in catalogue order. */
 	function phoneContacts() {
-		var s = sv();
-
-		function meetFlag(name) { return s['meet' + name] !== undefined; }
-		function huntingAlone(name) { return setup.Companion.hasFinishedSoloHunt(name); }
-
-		return [
-			{
-				key:           'brook',
-				stateKey:      'brook',
-				portrait:      'characters/brook/brook.png',
-				infoPassage:   'BrookInfo',
-				lockedHint:    'Need to search in the library',
-				isUnlocked:    function () { return meetFlag('Brook'); },
-				isHuntingAlone: function () { return huntingAlone('Brook'); },
-				canText: function () {
-					return !setup.Library.brookIsPossessed()
-						&& !setup.Library.brookIsWithRain();
-				},
-				possessedHint: 'She\'s not answering... Strange, she usually responds right away...',
-				withRainHint:  'She\'s probably still with Rain. Maybe it\'s worth waiting a couple of days.',
-				isPossessed:   function () { return setup.Library.brookIsPossessed(); },
-				isWithRain:    function () { return setup.Library.brookIsWithRain(); }
-			},
-			{
-				key:           'alice',
-				stateKey:      'alice',
-				portrait:      'characters/alice/alice.png',
-				infoPassage:   'AliceInfo',
-				lockedHint:    'Deliver books to the correct address',
-				isUnlocked:    function () { return meetFlag('Alice'); },
-				isHuntingAlone: function () { return huntingAlone('Alice'); },
-				canText:       function () { return true; },
-				possessedHint: '',
-				withRainHint:  '',
-				isPossessed:   function () { return false; },
-				isWithRain:    function () { return false; }
-			},
-			{
-				key:           'blake',
-				stateKey:      'blake',
-				portrait:      'characters/blake/blake.png',
-				infoPassage:   'BlakeInfo',
-				lockedHint:    'Befriend the assistant at the sex shop <br>(Relationship 5+)',
-				isUnlocked:    function () { return (setup.Mall.blakeRelationship() || 0) >= 5; },
-				isHuntingAlone: function () { return huntingAlone('Blake'); },
-				canText:       function () { return true; },
-				possessedHint: '',
-				withRainHint:  '',
-				isPossessed:   function () { return false; },
-				isWithRain:    function () { return false; }
-			}
-		];
+		return setup.Companion.list().map(function (c) {
+			return {
+				key:            c.key,
+				stateKey:       c.key,
+				portrait:       c.portraitPath(),
+				infoPassage:    c.infoPassage,
+				lockedHint:     c.contactsLockedHint,
+				isUnlocked:     function () { return c.isUnlocked(); },
+				isHuntingAlone: function () { return setup.Companion.hasFinishedSoloHunt(c.name); },
+				canText:        function () { return c.canText(); },
+				possessedHint:  c.possessedHint,
+				withRainHint:   c.withRainHint,
+				isPossessed:    function () { return c.isPossessed(); },
+				isWithRain:     function () { return c.isWithRain(); }
+			};
+		});
 	}
 
 	// --- City-map night overlay --------------------------------

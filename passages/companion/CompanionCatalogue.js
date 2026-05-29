@@ -36,9 +36,42 @@ setup.CompanionCatalogue = (function () {
 		this.neutralResp   = cfg.neutralResp;
 		this.clothingTiers = cfg.clothingTiers;
 		this.initStats     = cfg.initStats || {};
+		// Per-street solo-hunt odds keyed by companion level (2..5+). Each
+		// entry is a [owaissaPct, elmPct] pair. Empty object falls back to
+		// 0%/0% in soloOddsFor below, which is what we want for any level
+		// the curve doesn't catalogue.
+		this.soloSkillCurve = cfg.soloSkillCurve || {};
 		this.eventCopy     = cfg.eventCopy || null;
 		// CompanionEvent media: tier table keyed by high/mid/low/crit.
 		this.eventMedia    = cfg.eventMedia || null;
+		// Generic-dispatch slots. Per-companion passages own the actual
+		// content (text + media); the generic CompanionHelp /
+		// CompanionHuntEndAlone / Contacts / WalkHomeTogether / Phone
+		// dispatchers look these up via the active companion. Null means
+		// "no scene of that kind for this companion" (eg. Brook has no
+		// home-continue follow-up after the walk-home).
+		this.helpPassage         = cfg.helpPassage         || null;
+		this.huntEndAlonePassage = cfg.huntEndAlonePassage || null;
+		this.infoPassage         = cfg.infoPassage         || null;
+		this.walkHomePassage     = cfg.walkHomePassage     || null;
+		this.homeContinuePassage = cfg.homeContinuePassage || null;
+		this.huntOverPassage     = cfg.huntOverPassage     || null;
+		this.spiritEventPassage  = cfg.spiritEventPassage  || null;
+		// Phone / Contacts row metadata. Default to "unlocked, no special
+		// states" so a freshly-added catalogue entry shows up
+		// immediately. Each per-companion hint is just a string.
+		this.contactsLockedHint = cfg.contactsLockedHint || "";
+		this.possessedHint      = cfg.possessedHint      || "";
+		this.withRainHint       = cfg.withRainHint       || "";
+		this.isUnlocked  = cfg.isUnlocked  || function () { return true; };
+		this.canText     = cfg.canText     || function () { return true; };
+		this.isWithRain  = cfg.isWithRain  || function () { return false; };
+		// Hunt-time / possession catalogue-driven predicates. Default
+		// no-op so callers can fire them across the whole roster without
+		// branching: only the companion that owns the behaviour actually
+		// does anything when it runs.
+		this.activatePossessionOnHuntTool = cfg.activatePossessionOnHuntTool || function () {};
+		this.triggersPossessionCursedItem = cfg.triggersPossessionCursedItem === true;
 		// Per-companion hooks. Defaults make every companion "available
 		// and uneventful"; catalogue entries override the ones they own.
 		// onHuntFail runs only for the active companion at hunt-end (see
@@ -87,6 +120,14 @@ setup.CompanionCatalogue = (function () {
 
 	Companion.prototype.tierChance = function (idx) { return data().tierChances[idx]; };
 	Companion.prototype.tierCount  = function ()    { return data().tierChances.length; };
+
+	// Per-street solo-hunt odds for a given companion level. Buckets lvl
+	// into the catalogue's [2,3,4,5+] tiers; lvl < 2 returns [0, 0].
+	Companion.prototype.soloOddsFor = function (lvl) {
+		var l = lvl || 0;
+		var tier = l >= 5 ? 5 : (l >= 4 ? 4 : (l >= 3 ? 3 : (l >= 2 ? 2 : 0)));
+		return this.soloSkillCurve[tier] || [0, 0];
+	};
 
 	// CompanionEvent media list for a sanity tier ('high' / 'mid' / 'low' /
 	// 'crit'). Resolves the per-companion tier table through resolveTier

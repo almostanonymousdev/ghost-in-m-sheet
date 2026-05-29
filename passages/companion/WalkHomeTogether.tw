@@ -1,6 +1,16 @@
 :: WalkHomeTogether [nobr] {"position":"2450,3550","size":"100,100"}
-<<set _videoToggle to true>>
+/* Generic walk-home dispatcher. Three exit paths:
+   1. The active GHOST has a walkHomePassage (haunted-house "something is
+      following us" path) -- route there, with a follow-up link.
+   2. The active COMPANION is lust>=50: include the catalogue's
+      walkHomePassage (eg. BrookWalkHome / AliceWalkHome / BlakeWalkHome).
+      That passage owns the lust>=50 sex scene + handoff to whatever
+      homeContinuePassage / Sleep target it wants.
+   3. Otherwise: shared low-lust "thanks for walking me back" block.
+   No companion or ghost name is mentioned anywhere -- per-character copy
+   lives in the per-character passages, dispatched via the catalogue. */
 <<set _hg to setup.HuntController.activeGhost()>>
+<<set _ac to setup.Companion.active()>>
 <<if _hg and _hg.walkHomePassage>>
 	<<image "ui/img/mchouse.jpg" { width: "100%" }>>
 	@@.notmc-speech; I have a strange feeling. Like something is following us...@@<br>
@@ -8,118 +18,15 @@
 	@@.notmc-speech; Yes, if you don't mind.@@<br><br>
 	@@.backbtn; <<link "Sleep together" `_hg.walkHomePassage`>>
 	<</link>>@@
+<<elseif _ac and setup.Companion.lust() gte 50 and _ac.walkHomePassage>>
+	<<include _ac.walkHomePassage>>
 <<else>>
-	<<if setup.Companion.name() eq "Brook">>
-		<<if setup.Companion.lust() gte 50>>
-			<<video "characters/brook/home/1.mp4">>
-			@@.mc-thoughts;As soon as you walked in, she pounced on you and started kissing you@@<br>
-			@@.notmc-speech; I'm so turned on, <<= setup.Mc.name()>>. I want you right now.@@<br>
-			@@.mc-thoughts; Her eagerness instantly aroused you, making your nipples harden, and your pussy crave attention.@@<br>
-			@@.mc-speech; Yes~ let's do it. @@<br>
-			@@.notmc-speech; I have something special for us. Here, let's use @@
-			<<linkappend "@@.notmc-speechLink; this strap-on.@@">><br>
-				<span id ="walkhomebrook">
-				<<video "characters/brook/home/2.mp4">></span>
-				@@.mc-thoughts; You took turns pleasuring
-				<<link "@@.usebtn;each other@@">>
-					<<set _videoToggle to !_videoToggle>>
-					<<replace "#walkhomebrook">>
-						<<if _videoToggle>>
-							<<video "characters/brook/home/2.mp4">>
-						<<else>>
-							<<video "characters/brook/home/3.mp4">>
-						<</if>>
-					<</replace>>
-				<</link>>
-				with the strap-on until you were both completely spent.@@<br>
-				@@.notmc-speech; That was amazing.@@<br>
-				@@.mc-speech;Yeah~@@<br>
-				@@.notmc-speech; I'm really exhausted today. You rest up, and I'll head back. Hopefully, we'll meet again.@@<br>
-				@@.mc-speech;Alright, bye.@@<br>
-				<<if setup.Mc.corruption() lt 10>>
-					<<run setup.Mc.addCorruption(0.1)>>
-					+0.1 <<statIcon setup.StatIcon.CORRUPTION>><br><br>
-				<</if>>
-				<br>
-				@@.backbtn; [[Sleep]]@@<br>
-			<</linkappend>>
-		<<else>>
-			<<image "ui/img/mchouse.jpg" { width: "100%" }>>
-			@@.mc-speech; We made it to my place. Thanks for walking me back@@<br>
-			@@.notmc-speech; No problem, hope we meet again. Bye.@@<br>
-			@@.warningtext; (Req. <<= setup.Companion.name()>>'s <<statIcon setup.StatIcon.HEALTH>> ≥ 50)@@
-			<br><br>
-			@@.backbtn; [[Sleep]]@@<br>
-		<</if>>
-
-	<<elseif setup.Companion.name() eq "Alice">>
-		<<if setup.Companion.lust() gte 50>>
-			<<video "characters/alice/home/1.mp4">>
-			@@.mc-thoughts;As soon as you walked in, she pounced on you and started kissing you@@<br>
-			@@.notmc-speech; I'm so turned on, <<= setup.Mc.name()>>. I want you right now.@@<br>
-			@@.mc-thoughts; Her eagerness instantly aroused you, making your nipples harden, and your pussy crave attention.@@<br>
-			@@.mc-speech; Yes~ @@<<linkappend "@@.mc-speechLink; let's do it. @@">>
-				<span id ="walkhomealice">
-				<<video "characters/alice/home/2.mp4">></span>
-				@@.mc-thoughts; You took turns pleasuring
-				<<link "@@.usebtn;each other@@">>
-					<<set _videoToggle to !_videoToggle>>
-					<<replace "#walkhomealice">>
-						<<if _videoToggle>>
-							<<video "characters/alice/home/2.mp4">>
-						<<else>>
-							<<video "characters/alice/home/3.mp4">>
-						<</if>>
-					<</replace>>
-				<</link>>
-				until you were both completely spent.@@<br>
-				@@.notmc-speech; That was amazing.@@<br>
-				<<if setup.Mc.corruption() lt 10>>
-					<<run setup.Mc.addCorruption(0.1)>>
-					+0.1 <<statIcon setup.StatIcon.CORRUPTION>>
-				<</if>><br>
-				@@.mc-speech;Yeah~Do you want to [[take a shower|AliceContinue]] with me?@@<br> <b>or</b> <br>
-				@@.mc-speech; I'm really tired already. I think I need to get some [[sleep|Sleep]].@@<br>
-			<</linkappend>>
-		<<else>>
-			<<image "ui/img/mchouse.jpg" { width: "100%" }>>
-			@@.mc-speech; We made it to my place. Thanks for walking me back@@<br>
-			@@.notmc-speech; No problem, hope we meet again. Bye.@@<br>
-			@@.warningtext; (Req. <<= setup.Companion.name()>>'s <<statIcon setup.StatIcon.HEALTH>> ≥ 50)@@
-			<br><br>
-			@@.backbtn; [[Sleep]]@@<br>
-		<</if>>
-	<<elseif setup.Companion.name() eq "Blake">>
-		<<if setup.Companion.lust() gte 50>>
-			<<video "characters/blake/home/1.mp4">>
-			@@.mc-thoughts;As soon as you walked in, she pounced on you and started kissing you@@<br>
-			@@.notmc-speech; I'm so turned on, <<= setup.Mc.name()>>. I want you right now.@@<br>
-			@@.mc-thoughts; Her eagerness instantly aroused you, making your nipples harden, and your pussy crave attention.@@<br>
-			@@.mc-speech; Yes~ @@<<linkappend "@@.mc-speechLink; let's do it. @@">>
-				<span id ="walkhomeblake">
-				<<video "characters/blake/home/2.mp4">></span>
-				@@.mc-thoughts; You took turns pleasuring
-				<<link "@@.usebtn;each other@@">>
-					<<set _videoToggle to !_videoToggle>>
-					<<replace "#walkhomeblake">>
-						<<if _videoToggle>>
-							<<video "characters/blake/home/2.mp4">>
-						<<else>>
-							<<video "characters/blake/home/3.mp4">>
-						<</if>>
-					<</replace>>
-				<</link>>
-				until you both [[cum at the same time.|BlakeContinue]]@@<br>
-			<</linkappend>>
-		<<else>>
-			<<image "ui/img/mchouse.jpg" { width: "100%" }>>
-			@@.mc-speech; We made it to my place. Thanks for walking me back@@<br>
-			@@.notmc-speech; No problem, hope we meet again. Bye.@@<br>
-			@@.warningtext; (Req. <<= setup.Companion.name()>>'s <<statIcon setup.StatIcon.HEALTH>> ≥ 50)@@
-			<br><br>
-			@@.backbtn; [[Sleep]]@@<br>
-		<</if>>
-	<</if>>
+	<<image "ui/img/mchouse.jpg" { width: "100%" }>>
+	@@.mc-speech; We made it to my place. Thanks for walking me back@@<br>
+	@@.notmc-speech; No problem, hope we meet again. Bye.@@<br>
+	@@.warningtext; (Req. <<= setup.Companion.name()>>'s <<statIcon setup.StatIcon.HEALTH>> ≥ 50)@@
+	<br><br>
+	@@.backbtn; [[Sleep]]@@<br>
 <</if>>
 
 <<run setup.Mc.bankTempCorruption()>>

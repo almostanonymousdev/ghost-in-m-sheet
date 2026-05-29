@@ -26,20 +26,13 @@
 <<widget "companionHelpOption">>
 	<<if setup.Events.hasCompanionOnPlan1()>>
 		<<set _cName to setup.Companion.name()>>
-		<<if setup.Events.companionIsAroused()>>
-			<<if _cName eq "Brook">>
-				or @@.usebtn;<<link `_cName + " helps you"`>><<run setup.Events.companionDrainForHelp()>><<replace "#videoContainer">><<include "BrookHelp">>
+		<<set _ac to setup.Companion.active()>>
+		<<if setup.Events.companionIsAroused() and _ac and _ac.helpPassage>>
+			<<capture _ac>>
+				or @@.usebtn;<<link `_cName + " helps you"`>><<run setup.Events.companionDrainForHelp()>><<replace "#videoContainer">><<include `_ac.helpPassage`>>
 				<</replace>>
 				<</link>>@@
-			<<elseif _cName eq "Alice">>
-				or @@.usebtn;<<link `_cName + " helps you"`>><<run setup.Events.companionDrainForHelp()>><<replace "#videoContainer">><<include "AliceHelp">>
-				<</replace>>
-				<</link>>@@
-			<<elseif _cName eq "Blake">>
-				or @@.usebtn;<<link `_cName + " helps you"`>><<run setup.Events.companionDrainForHelp()>><<replace "#videoContainer">><<include "BlakeHelp">>
-				<</replace>>
-				<</link>>@@
-			<</if>>
+			<</capture>>
 		<<else>>
 			or @@.usebtn; [["Call "+_cName + " for help"|$return][setup.Events.companionDrainForHelp()]]@@
 		<</if>>

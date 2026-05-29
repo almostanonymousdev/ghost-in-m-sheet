@@ -1,0 +1,34 @@
+:: AliceSpiritEvent [nobr] {"position":"2550,3450","size":"100,100"}
+/* Alice's bedroom Spirit-ambush scene. Dispatched from the generic
+   GhostSpecialEventSpirit passage via the catalogue's spiritEventPassage
+   field. */
+<<set _videoToggle to true>>
+@@.mc-thoughts; You both wake up to a noise nearby. Next to you, you notice a vague figure with a hard cock near your face. Not fully realizing what's happening, you try to focus on the stranger, but your attention is completely drawn to the big dick, almost pressing against your mouth.@@<br>
+<<linkappend "@@.mc-speechLink; What the~@@">>
+	<<video "characters/ghosts/specials/spiritalice1.mp4">>
+	@@.mc-thoughts; Before you can finish speaking, his thick cock slips into your mouth. <<= setup.Companion.name()>> doesn't stand by and moves in to lick it. <br>@@
+	@@.notmc-speech; Mm~slurp~slurp~@@<br>
+	@@.mc-thoughts; But he didn't stop at just your mouths. He shoved his hot cock into your pussies and @@ <<linkappend "@@.mc-thoughtsLink; started fucking you.@@">><br>
+		<span id ="walkhomealicespirit">
+		<<video "characters/ghosts/specials/spiritalice2.mp4">></span>
+		@@.mc-thoughts; He starts playing with you like dolls, using your pussies@@<<link "@@.usebtn;  in turn.@@">>
+			<<set _videoToggle to !_videoToggle>>
+			<<replace "#walkhomealicespirit">>
+				<<if _videoToggle>>
+					<<video "characters/ghosts/specials/spiritalice2.mp4">>
+				<<else>>
+					<<video "characters/ghosts/specials/spiritalice3.mp4">>
+				<</if>>
+			<</replace>>
+		<</link>>
+		@@.mc-thoughts; You feel that the stranger is about to cum and press against his penis, trying to catch @@<<linkappend "@@.mc-thoughtsLink; every drop of his sperm.@@">>
+			<<video "characters/ghosts/specials/spiritalice4.mp4">>
+			@@.mc-thoughts; You're more pleased with yourself than ever before, and you start playing with his cum, kissing each other. When you finish playing with it, you notice that the stranger has disappeared.@@<br>
+			@@.notmc-speech; Was it a dream?@@<br>
+			@@.mc-speech; I don't think so, Seems like someone just fucked us...@@<br>
+			@@.notmc-speech; What the fuck?@@<br>
+			@@.mc-speech;I want to forget this faster, let's go to sleep, I hope he left and doesn't come back@@<br><br>
+			@@.backbtn; [[Sleep]]@@<br>
+		<</linkappend>>
+	<</linkappend>>
+<</linkappend>>
