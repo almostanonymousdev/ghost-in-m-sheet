@@ -21,8 +21,8 @@ test.describe('Hunt modifiers', () => {
     );
     expect(ids).toEqual([
       'brittle_mind', 'cold_sweat', 'fog_of_war', 'glass_bones',
-      'locked_tools', 'maze', 'not_their_type', 'oh_bugger',
-      'pheromones', 'sticky_fingers', 'swiper'
+      'locked_tools', 'maze', 'no_clothes_theft', 'not_their_type',
+      'oh_bugger', 'pheromones', 'solo_only', 'sticky_fingers', 'swiper'
     ]);
   });
 
@@ -45,18 +45,18 @@ test.describe('Hunt modifiers', () => {
     const ids = await page.evaluate(() =>
       SugarCube.setup.Modifiers.draft(7, 50).map(m => m.id)
     );
-    expect(ids.length).toBe(11);
-    expect(new Set(ids).size).toBe(11);
+    expect(ids.length).toBe(13);
+    expect(new Set(ids).size).toBe(13);
   });
 
   test('draft({banned: [...]}) excludes banned ids from the pool', async ({ game: page }) => {
     const ids = await page.evaluate(() =>
-      SugarCube.setup.Modifiers.draft(123, 11, { banned: ['locked_tools', 'pheromones', 'maze'] }).map(m => m.id)
+      SugarCube.setup.Modifiers.draft(123, 13, { banned: ['locked_tools', 'pheromones', 'maze'] }).map(m => m.id)
     );
     expect(ids).not.toContain('locked_tools');
     expect(ids).not.toContain('pheromones');
     expect(ids).not.toContain('maze');
-    expect(ids.length).toBe(8);
+    expect(ids.length).toBe(10);
   });
 
   test('Empty Bag (LOCKED_TOOLS): startingTools returns [] when active', async ({ game: page }) => {

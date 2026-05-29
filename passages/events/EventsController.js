@@ -401,7 +401,7 @@ setup.Events = (function () {
 		/*
 		* Orgasm sanity penalty.
 		*/
-		orgasmSanityLoss: -10,
+		orgasmSanityLoss: -50,
 
 		/*
 		* Pick a random body-part event based on lust tier and

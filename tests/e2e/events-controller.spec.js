@@ -222,8 +222,8 @@ test.describe('Events controller — orgasm and body-part roll', () => {
     expect(await callSetup(page, 'setup.Events.shouldOrgasm("pussy")')).toBe(false);
   });
 
-  test('orgasmSanityLoss is -10', async ({ game: page }) => {
-    expect(await callSetup(page, 'setup.Events.orgasmSanityLoss')).toBe(-10);
+  test('orgasmSanityLoss is -50', async ({ game: page }) => {
+    expect(await callSetup(page, 'setup.Events.orgasmSanityLoss')).toBe(-50);
   });
 
   test('rollBodyPartEvent returns "" when chance exceeds the lust threshold', async ({ game: page }) => {
