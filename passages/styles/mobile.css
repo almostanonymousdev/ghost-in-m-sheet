@@ -271,4 +271,27 @@
 		transform: none;
 		margin: 0.25em auto;
 	}
+
+	/* ----- Notebook ghost grid -----
+	 * .journal-container is a 3-col grid (repeat(3, 1fr)) at
+	 * font-size:1.2em. The longest ghost name ("Poltergeist", 11
+	 * chars) measured against a CI fallback font (no system font
+	 * file available in the Playwright container) renders ~120px
+	 * wide. With 20px container padding, 10px column gap, and the
+	 * 1% padding on the .backgroundForTextNotebook wrapper, each
+	 * 1fr column at a 390px viewport is only ~107px — and grid
+	 * items refuse to shrink below their min-content. Result: the
+	 * .journal-container bursts the viewport by ~11px in CI but
+	 * fits locally (where the renderer falls back to a narrower
+	 * font). minmax(0, 1fr) lets the columns shrink below
+	 * min-content; word-break:break-word stops the spans from
+	 * pushing each cell wide.
+	 */
+	body.style-notebook .journal-container {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+	body.style-notebook .journal-container span {
+		min-width: 0;
+		word-break: break-word;
+	}
 }

@@ -55,14 +55,30 @@ test.describe(`mobile layout smoke @ ${MOBILE_VIEWPORT.width}×${MOBILE_VIEWPORT
       const geom = await page.evaluate(() => {
         /* Identify which element actually overflows so the failure
            message points at the culprit instead of just naming the
-           passage. We look one level deep — most overflows are a
-           direct child of <body> or #passages bleeding wide. */
+           passage. Filter out elements that can't actually contribute
+           to documentElement.scrollWidth: position:fixed/sticky are
+           taken out of normal flow (so SugarCube's stowed #ui-bar at
+           left:-248 isn't the cause even though its bounding rect is
+           off-screen), descendants of fixed/sticky ancestors live in
+           that same out-of-flow subtree, and visibility:hidden /
+           display:none elements don't paint. */
+        const isOutOfFlow = (el) => {
+          for (let n = el; n && n !== document.body; n = n.parentElement) {
+            const p = getComputedStyle(n).position;
+            if (p === 'fixed' || p === 'sticky') return true;
+          }
+          return false;
+        };
         const docW = document.documentElement.scrollWidth;
         const innerW = window.innerWidth;
         const culprits = [];
         if (docW > innerW) {
           for (const el of document.querySelectorAll('body *')) {
+            if (isOutOfFlow(el)) continue;
+            const style = getComputedStyle(el);
+            if (style.visibility === 'hidden' || style.display === 'none') continue;
             const r = el.getBoundingClientRect();
+            if (r.width === 0 && r.height === 0) continue;
             if (r.right > innerW + 1 || r.left < -1) {
               culprits.push({
                 tag: el.tagName.toLowerCase(),
