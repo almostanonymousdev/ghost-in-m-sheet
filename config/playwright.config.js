@@ -61,9 +61,10 @@ module.exports = defineConfig({
        there exercises the narrow-width layout or thumb-sized tap targets.
        The mobile project re-runs a curated smoke set at iPhone-13-ish
        dimensions (390×844) so layout overflow + tap-target regressions
-       fail loudly. Gated behind `npm run test:mobile` for now because the
-       game's CSS has only one @media rule — the initial run is expected
-       to surface real defects, not a steady-state pass. */
+       fail loudly. Bundled into `npm run test` alongside chromium now that
+       the responsive overrides in passages/styles/mobile.css cover the
+       hunt UI; CI runs it as a separate matrix job in parallel with the
+       chromium shards (.github/workflows/test.yml). */
     {
       name: 'mobile',
       testMatch: /.*\.mobile\.spec\.js/,

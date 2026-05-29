@@ -50,3 +50,13 @@ jobs:
           PWC_SHARDS: 4
           PWC_SHARD_INDEX: ${{ matrix.shard }}
         run: npx playwright test --config=config/playwright.config.js --project=release --no-deps
+
+  mobile:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+
+      - name: Run mobile tests
+        run: npx playwright test --config=config/playwright.config.js --project=mobile --no-deps
