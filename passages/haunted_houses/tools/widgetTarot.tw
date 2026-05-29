@@ -81,6 +81,18 @@
 	@@.mc-speech; Oh fuck.@@<br>
 	@@.enterbtn; <<link "Give in" `setup.HuntController.possessionPassage()`>>
 	<</link>>@@
+	/* Once Possession is drawn, "Pull a card" and Back both lead straight
+	   to the possession outcome -- only "Give in" advances directly. Without
+	   this, the timed re-enable on .tarotCardHidden lets the player keep
+	   drawing past the possession and then exit the deck normally. */
+	<<replace "#tarotCardsEnd">>
+		<<link "@@.usebtn;Pull a card@@" `setup.HuntController.possessionPassage()`>>
+		<</link>>
+	<</replace>>
+	<<replace "#tarotBack">>
+		@@.backbtn; <<link "Back" `setup.HuntController.possessionPassage()`>>
+		<</link>>@@
+	<</replace>>
 <</widget>>
 
 <<widget "tarotHighpriestess">>

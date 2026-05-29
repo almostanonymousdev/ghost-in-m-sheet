@@ -1403,15 +1403,23 @@ setup.HuntController = (function () {
 	   it before the player lands on CityMapPossessed (so a fresh hunt
 	   isn't bleeding into the payout summary). Jumps to a daytime
 	   hour so the city-map render makes sense after the possession.
-	   The widget caller wraps the link around the returned passage so
-	   the imperative side effects fire as part of the link click. */
-	var possessionPassage = guarded(null, function () {
-		setup.Hunt.emit(setup.Hunt.Event.POSSESS, { ghostName: ghostName() });
-		markFailure(setup.HuntEnums.FailureReason.POSSESSED);
-		endHunt(false);
-		setup.Time.setHours(Math.floor(Math.random() * (20 - 12 + 1)) + 12);
+
+	   Not wrapped in `guarded()` because tarotPossession renders three
+	   <<link ... `possessionPassage()`>> targets (Give in / Pull a card
+	   / Back) and SugarCube evaluates each backtick at link render
+	   time. The first call ends the run; the next two must still
+	   resolve to a real passage rather than null, otherwise the
+	   re-enabled "Pull a card" and Back stay dead and the player gets
+	   stuck on TarotCards. Mirrors huntCaughtPassage's pattern. */
+	function possessionPassage() {
+		if (isActive()) {
+			setup.Hunt.emit(setup.Hunt.Event.POSSESS, { ghostName: ghostName() });
+			markFailure(setup.HuntEnums.FailureReason.POSSESSED);
+			endHunt(false);
+			setup.Time.setHours(Math.floor(Math.random() * (20 - 12 + 1)) + 12);
+		}
 		return "CityMapPossessed";
-	});
+	}
 
 	/* "Remove one piece of evidence" -- used by the Tarot Knowledge
 	   card and the Monkey Paw knowledge wish. Picks a random

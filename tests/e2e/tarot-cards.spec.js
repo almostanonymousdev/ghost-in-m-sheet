@@ -158,4 +158,70 @@ test.describe('Tarot cards', () => {
     );
     expect(unlockedKinds).toContain('tarotCards');
   });
+
+  /* Regression: drawing the Possession card used to leave the "Pull a card"
+     and Back links wired to their original draw/$return targets, so a
+     player who kept clicking instead of "Give in" got more draws and then
+     exited the deck normally. tarotPossession now mirrors tarotDeath and
+     re-routes both links to possessionPassage(). */
+  test('after drawing Possession, "Pull a card" again routes to CityMapPossessed', async ({ game: page }) => {
+    test.setTimeout(15_000);
+
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
+    await page.evaluate(() => SugarCube.setup.HauntedHouses.markTarotCarrying());
+    await page.evaluate(() => { SugarCube.settings.cheatTarotCard = 'possession'; });
+    await goToPassage(page, 'TarotCards');
+
+    await page.locator('.passage').getByText('Pull a card', { exact: true }).click();
+    await expect(
+      page.locator('.passage').getByText('Give in', { exact: true })
+    ).toBeVisible();
+
+    // tarotPossession also re-routes Back; click it to confirm Back no
+    // longer escapes to $return after Possession is drawn.
+    await page.locator('.passage').getByText('Back', { exact: true }).click({ timeout: 5000 });
+    await page.waitForFunction(
+      () => SugarCube.State.passage === 'CityMapPossessed',
+      null,
+      { timeout: 5000 }
+    );
+    expect(await getVar(page, 'run')).toBeNull();
+
+    await page.evaluate(() => { SugarCube.settings.cheatTarotCard = '—'; });
+  });
+
+  test('after drawing Possession, the re-enabled "Pull a card" routes to CityMapPossessed instead of drawing again', async ({ game: page }) => {
+    test.setTimeout(15_000);
+
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
+    await page.evaluate(() => SugarCube.setup.HauntedHouses.markTarotCarrying());
+    await page.evaluate(() => { SugarCube.settings.cheatTarotCard = 'possession'; });
+    await goToPassage(page, 'TarotCards');
+
+    await page.locator('.passage').getByText('Pull a card', { exact: true }).click();
+    await expect(
+      page.locator('.passage').getByText('Give in', { exact: true })
+    ).toBeVisible();
+
+    // Wait for the 2s timed re-enable in TarotCards.tw so the
+    // .tarotCardHidden wrapper sheds .disabled-link.
+    await page.waitForFunction(
+      () => !document.querySelector('#tarotCardsEnd')?.classList.contains('disabled-link'),
+      null,
+      { timeout: 5000 }
+    );
+
+    await page.locator('.passage').getByText('Pull a card', { exact: true }).click();
+    await page.waitForFunction(
+      () => SugarCube.State.passage === 'CityMapPossessed',
+      null,
+      { timeout: 5000 }
+    );
+    expect(await getVar(page, 'run')).toBeNull();
+    // No additional draw should have been counted -- the only increment
+    // came from the click that drew Possession itself.
+    expect(await getVar(page, 'drawnCards')).toBe(1);
+
+    await page.evaluate(() => { SugarCube.settings.cheatTarotCard = '—'; });
+  });
 });
