@@ -10,7 +10,8 @@
 	@@.mc-thoughts; I came at an inappropriate time (open from 06:00 to 22:00)@@<br>
 <<else>>
 	<<if setup.Church.canStartNunQuest()>>
-		@@.enterbtn;<<link "Confess your sins" "ChurchNunQuest">><<run setup.Church.clearRescueQuest()>>
+		@@.mc-thoughts; Khadija sent me to find Sister Rain. Confession's how women get her in private.@@<br>
+		@@.enterbtn;<<link "Confess your sins to Sister Rain" "ChurchNunQuest">><<run setup.Church.clearRescueQuest()>>
 		<</link>>@@
 	<<else>>
 		@@.enterbtn;[[Confess your sins|ChurchPray]]@@<br>

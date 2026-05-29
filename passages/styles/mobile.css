@@ -1,0 +1,274 @@
+/* ===== Mobile (narrow-viewport) overrides =====
+ *
+ * The game is authored against a desktop layout (sidebar + wide passage
+ * column). At phone widths SugarCube auto-stows the sidebar, but the
+ * passage body still inherits desktop font/padding/icon dimensions, so
+ * tap targets fall under the 44×44 floor and a handful of fixed-width
+ * elements (the .iconPx evidence images, the .icontextcity map labels,
+ * the Evidence pamphlet table, hovertip popovers) burst the viewport
+ * horizontally.
+ *
+ * These rules apply only below the 480px breakpoint, so desktop renders
+ * are untouched. They're enforced by tests/tap-targets.mobile.spec.js
+ * and tests/smoke.mobile.spec.js — any new mobile-defect class should
+ * grow a rule here rather than being patched per-passage.
+ */
+@media (max-width: 480px) {
+
+	/* ----- Tap-target floor for the common link classes -----
+	 * Anchor classes the game uses for every clickable line in a passage.
+	 * inline-block + min-height brings the bounding rect to 44px on its
+	 * smaller dimension without rewriting every passage body. Padding on
+	 * each side gives the player slop on horizontal misses.
+	 */
+	.movebtn a,
+	.backbtn a,
+	.enterbtn a,
+	.usebtn a,
+	.alertbtn a,
+	.adaptiveLink a,
+	a.macro-link,
+	a.macro-linkreplace,
+	a.macro-linkappend {
+		display: inline-block;
+		min-height: 44px;
+		padding: 10px 6px;
+		line-height: 1.2;
+	}
+
+	/* ----- Sidebar HUD icons -----
+	 * <a class="linkselector"> wraps a 30%-of-sidebar-width image. At
+	 * stowed sidebar widths the resulting anchor measures ~16×22. The
+	 * sidebar is visibility:hidden when stowed, so the .linkselector
+	 * elements still register for measurement and need a usable hit
+	 * area even though only the user who un-stows the sidebar ever
+	 * sees them.
+	 */
+	.linkselector,
+	.linkselector a {
+		display: inline-block;
+		min-width: 44px;
+		min-height: 44px;
+		padding: 10px 8px;
+		line-height: 1.2;
+		box-sizing: border-box;
+	}
+
+	/* ----- CityMap labels -----
+	 * .icontextcity is a 25px Amatic-SC label that wraps a [[link]] over
+	 * the icon. At 390px width the longest labels ("Settings / Cheats",
+	 * "Witch's House") plus the 25px font tip the housecard past viewport.
+	 * Shrink the type, bump the anchor padding for the tap-target floor.
+	 */
+	.icontextcity {
+		font-size: 20px;
+	}
+	.icontextcity a {
+		display: inline-block;
+		min-height: 44px;
+		padding: 8px 6px;
+		line-height: 1.2;
+	}
+	.housecard {
+		max-width: 32%;
+		overflow-wrap: anywhere;
+	}
+
+	/* ----- iconPx (Bag + Evidence pamphlet) -----
+	 * 90px×90px desktop default, used heavily in the Bag inventory grid
+	 * and the Evidence pamphlet tool table. At 390px the icon plus the
+	 * 1ch text margin overshoots the viewport. Drop to a 60px square on
+	 * mobile so a row of [icon + label] still fits.
+	 */
+	.iconPx {
+		width: 60px;
+		height: 60px;
+	}
+
+	/* ----- Evidence pamphlet table -----
+	 * A 6-column desktop table; the natural width sits around 780px. No
+	 * stacking treatment without a major rewrite, so wrap it in an
+	 * overflow-x scroller and let the user pan. The container itself
+	 * stays within viewport; only the table can scroll.
+	 */
+	#guide table {
+		display: block;
+		overflow-x: auto;
+		max-width: 100%;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	/* ----- Hovertip popovers -----
+	 * .hoverBox is position:fixed with max-width:330px. On a 390px
+	 * viewport the bubble fits with room to spare on its own, but the
+	 * positioner clamps using the bubble's own .width — when a bubble's
+	 * content is wider than viewport (e.g. ghost lore strings), the
+	 * clamp can't recover because there's nowhere to clamp to. Cap
+	 * max-width against the viewport so the box is always positionable.
+	 */
+	.hoverBox {
+		max-width: calc(100vw - 40px);
+	}
+
+	/* ----- KeyboardNav hint dismiss button -----
+	 * The "×" close button on the first-load keyboard-shortcut hint
+	 * banner. Default is 1.3em with no padding — measures ~19×20.
+	 */
+	.kbnav-hint-close {
+		min-width: 44px;
+		min-height: 44px;
+		font-size: 1.8em;
+		padding: 0.3em 0.4em;
+	}
+
+	/* ----- SugarCube sidebar stow toggle -----
+	 * #ui-bar-toggle is the chevron button at the top of the stowed
+	 * sidebar (the only sidebar control the player can hit when the
+	 * panel is collapsed). SugarCube's default sizes it to ~31×32.
+	 */
+	button#ui-bar-toggle {
+		min-width: 44px;
+		min-height: 44px;
+	}
+
+	/* ----- SugarCube sidebar menu items -----
+	 * #menu-core renders "Saves", "Settings / Cheats", "Restart" as
+	 * 230×34 anchors. The sidebar is visible by default at boot (the
+	 * game doesn't auto-stow at narrow viewports), so the menu items
+	 * are reachable by tap and need the tap-target floor.
+	 */
+	#menu-core li a,
+	#menu-story li a {
+		display: block;
+		min-height: 44px;
+		padding: 10px 6px;
+		line-height: 1.2;
+		box-sizing: border-box;
+	}
+
+	/* ----- Generic clickable safety net -----
+	 * Anchors created from a [[wikilink]] without one of the project's
+	 * named button classes ship with no padding — at desktop they live
+	 * inline in a sentence and that's fine; at mobile the line-height
+	 * sized hit area drops to ~22. Force inline-block + min-height on
+	 * any anchor inside .icontextcity / .city / .noreturn flows.
+	 */
+	.city a.link-internal,
+	.noreturn a.link-internal {
+		display: inline-block;
+		min-height: 44px;
+		padding: 10px 6px;
+		line-height: 1.2;
+	}
+
+	/* ----- Icon-only data-passage anchors -----
+	 * <a data-passage="..."><<image ...>></a> wraps an image whose
+	 * natural width may be narrower than the tap floor (the
+	 * Ghostopedia entry on the Notebook is 28×240 — tall image,
+	 * thin column). SugarCube auto-stamps these anchors with
+	 * class="link-internal", so we can't filter by [class] —
+	 * instead, target by structure: anchor that contains an <img>.
+	 * Chromium 105+ supports :has, which the test runner uses.
+	 */
+	a[data-passage]:has(> img),
+	a[data-passage]:has(> br + img),
+	a[data-passage]:has(> img + br) {
+		display: inline-block;
+		min-width: 44px;
+		min-height: 44px;
+	}
+
+	/* ----- Hunt run layout =====
+	 * .hunt-run-layout is position:fixed left:17.5em on desktop to
+	 * sit beside the sidebar. On phone-width the sidebar is auto-
+	 * stowed (see GuiController.js :storyready) and only peeks 2em
+	 * from the left edge — leaving the full viewport for the hunt
+	 * UI to fill. Reset left:0, drop the desktop 2.5em padding to
+	 * 0.5em, and let scroll handle overflow if the bottom toolbar
+	 * runs long.
+	 */
+	.hunt-run-layout {
+		left: 0;
+		padding: 0.5em 0.5em;
+		overflow-y: auto;
+	}
+
+	/* Top half stacks vertically: minimap on top, objective +
+	 * modifiers below (text-aligned left instead of the desktop
+	 * right-side alignment, which reads awkwardly under the map).
+	 */
+	.hunt-run-top {
+		grid-template-columns: 1fr;
+		gap: 0.5em;
+	}
+	.hunt-run-tr {
+		align-items: flex-start;
+		text-align: left;
+	}
+
+	/* ----- Hunt minimap on phone -----
+	 * The SVG floor plan is authored against the desktop column
+	 * width and trivially overflows the 390px viewport. Cap the
+	 * wrapper at 100% and let the SVG scale its viewBox down via
+	 * the existing max-width:100% rule on .hunt-minimap-svg.
+	 */
+	.hunt-minimap {
+		max-width: 100%;
+		overflow: hidden;
+	}
+
+	/* ----- Hunt furniture strip -----
+	 * Three or four 56px icons + 1.5em gaps overflow horizontally
+	 * once you account for the .hunt-run-layout padding. Allow the
+	 * strip to wrap and tighten the gap.
+	 */
+	.hunt-run-furniture {
+		flex-wrap: wrap;
+		gap: 0.5em;
+	}
+	.hunt-furniture-item {
+		min-width: 56px;
+	}
+
+	/* ----- Hunt tool bar -----
+	 * Up to 6 tool cards at 64px + 0.5em gap = 384px just for the
+	 * cards before counting padding. Allow wrap, shrink the cards a
+	 * notch so a full toolbar fits on two rows. Each card's anchor
+	 * needs to hit the 44×44 floor; the icon-wrap sets the icon
+	 * size, but the anchor itself measured 28×64 (missing height in
+	 * one axis and width in the other). Force inline-block + min
+	 * dimensions so the tap target on every card is at least 44×44.
+	 */
+	.hunt-run-tools {
+		flex-wrap: wrap;
+		gap: 0.25em;
+		padding: 0.25em;
+	}
+	.hunt-tool-card a {
+		display: inline-block;
+		min-width: 44px;
+		min-height: 44px;
+	}
+
+	/* ----- Hunt exit nav -----
+	 * .hunt-run-nav is position:fixed right:2.5em on desktop to live
+	 * in the bottom-right corner. With reduced padding the labels
+	 * still fit, but the desktop offset wastes precious horizontal
+	 * pixels — pull the box closer to the edge.
+	 */
+	.hunt-run-nav {
+		right: 0.5em;
+	}
+
+	/* ----- Hunt companion thumbnail -----
+	 * .hunt-run-companion is anchored right:8em to clear the nav.
+	 * With nav at right:0.5em and toolbar wrapped, place the
+	 * companion as a static flex child below the tools so it gets
+	 * its own row instead of overlapping the wrapped tool cards.
+	 */
+	.hunt-run-companion {
+		position: static;
+		transform: none;
+		margin: 0.25em auto;
+	}
+}

@@ -13,6 +13,7 @@
     "lint": "python3 tools/check_format.py",
     "test": "python3 tools/check_format.py && npx playwright test --config=config/playwright.config.js --project=lint --project=chromium",
     "test:release": "python3 tools/check_format.py && npx playwright test --config=config/playwright.config.js --project=release",
+    "test:mobile": "python3 tools/check_format.py && npx playwright test --config=config/playwright.config.js --project=mobile",
     "prepare": "git config core.hooksPath .githooks"
   },
   "keywords": [

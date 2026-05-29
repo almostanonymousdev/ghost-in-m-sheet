@@ -208,6 +208,33 @@ $(document).one(":storyready", function () {
 	   the :dialogopened handler below. */
 	$("#menu-item-settings a").text(SETTINGS_DIALOG_TITLE);
 
+	/* Auto-stow the sidebar on phone-width viewports. SugarCube's
+	   default stylesheet shrinks #story margins at <768px but keeps
+	   #ui-bar at its full 17.5em width and left: 0, so the bar
+	   overlays the passage and intercepts clicks. Stowing slides
+	   #ui-bar to left: -15.5em; the peek at the right edge stays
+	   clickable so the player can un-stow on demand.
+
+	   Triggers: initial storyready (covers real-world page load on
+	   a phone), resize (covers rotation), and :passagestart (covers
+	   the worker-shared test fixture which resizes after page boot,
+	   plus belt-and-suspenders if a passage rewires the sidebar).
+	   Once the player explicitly toggles the bar at mobile width,
+	   `_userToggledSidebar` flips and we stop fighting them. */
+	var _userToggledSidebar = false;
+	function autoStowSidebarIfNarrow() {
+		if (_userToggledSidebar) return;
+		if (window.innerWidth <= 768) {
+			$("#ui-bar").addClass("stowed");
+		}
+	}
+	autoStowSidebarIfNarrow();
+	$(window).on("resize", autoStowSidebarIfNarrow);
+	$(document).on(":passagestart", autoStowSidebarIfNarrow);
+	$("#ui-bar-toggle").on("click", function () {
+		if (window.innerWidth <= 768) _userToggledSidebar = true;
+	});
+
 	/* Notify the StoryEvents bus whenever a cheat is toggled or
 	   selected. Real player settings (muteAllVideos) deliberately do
 	   not call this. Subscribers (e.g. the cheat achievement) live
