@@ -356,9 +356,14 @@ test.describe('Monkey Paw wishes', () => {
     await callSetup(page, 'setup.MonkeyPaw.activate("trapTheGhost")');
 
     await goToPassage(page, 'HuntRun');
+    /* The room-seal narrative lives in .hunt-run-messages (the panel
+       above the light buttons). The exit-nav box stays for actionable
+       links only -- so the nav must not list any neighbor labels, and
+       the seal prose must be in the messages panel. */
+    const messagesHtml = await page.locator('#passages .hunt-run-messages').innerHTML();
+    expect(messagesHtml).toMatch(/doors around you have fused shut/i);
     const navHtml = await page.locator('#passages .hunt-run-nav').innerHTML();
-    expect(navHtml).toMatch(/doors around you have fused shut/i);
-    /* None of the neighbor labels should appear as nav links. */
+    expect(navHtml).not.toMatch(/doors around you have fused shut/i);
     for (const label of neighborLabels) {
       expect(navHtml).not.toContain(`>${label}<`);
     }
@@ -687,7 +692,7 @@ test.describe('Monkey Paw wishes', () => {
     });
   }
 
-  test('leave tier 1: clothes-stolen flag set, no cursed item, no banned house', async ({ game: page }) => {
+  test('leave tier 1: clothes-stolen flag set, no cursed item, no banned house, hunt stays active', async ({ game: page }) => {
     await setupHunt(page, 'Shade');
     await primeWish(page, { wishesCount: 3 });
     /* Seed a baseline cursed-item state so we can prove t1 did NOT
@@ -701,17 +706,19 @@ test.describe('Monkey Paw wishes', () => {
     expect(result.clothesStolen).toBe(true);
     expect(result.cursedItem).toBeNull();
     expect(result.bannedHouse).toBeNull();
-    expect(result.goto).toBe('CityMap');
-    expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(false);
+    /* t1 dumps the MC in the yard with the hunt still active -- the
+       wish is a tactical reset (modesty gate, lights), not a run
+       forfeit. */
+    expect(result.goto).toBe('HuntOutside');
+    expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(true);
     expect(await getVar(page, 'cursedHomeItem')).toBe('');
     expect(await getVar(page, 'cursedHomeItemActive')).toBe(false);
-    /* The leave wish forfeits the hunt; endHunt's cleanupRunState runs
-       resetCursedItemState → MonkeyPaw.resetHunt(), so wishesCount
-       lands back at the fresh-contract default rather than holding at 2. */
-    expect(await callSetup(page, 'setup.MonkeyPaw.wishesLeft()')).toBe(3);
+    /* Hunt still active, so MonkeyPaw.resetHunt was NOT invoked --
+       wishesCount decremented normally. */
+    expect(await callSetup(page, 'setup.MonkeyPaw.wishesLeft()')).toBe(2);
   });
 
-  test('leave tier 2: clothes-stolen flag set + cursed home item stamped', async ({ game: page }) => {
+  test('leave tier 2: clothes-stolen flag set + cursed home item stamped, hunt stays active', async ({ game: page }) => {
     await setupHunt(page, 'Shade');
     await primeWish(page, { wishesCount: 2 });
     await page.evaluate(() => {
@@ -724,17 +731,18 @@ test.describe('Monkey Paw wishes', () => {
     expect(result.cursedItem).toBeTruthy();
     expect(['tv', 'pc', 'bed', 'shower', 'bath']).toContain(result.cursedItem);
     expect(result.bannedHouse).toBeNull();
-    expect(result.goto).toBe('CityMap');
-    expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(false);
+    /* Same dump-to-yard as t1; the t2 bite is the cursed item
+       waiting at home, not a forfeit. */
+    expect(result.goto).toBe('HuntOutside');
+    expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(true);
     /* CursedItems.forceCursedItem() stamps both the id and the active
        flag onto State. */
     expect(await getVar(page, 'cursedHomeItem')).toBe(result.cursedItem);
     expect(await getVar(page, 'cursedHomeItemActive')).toBe(true);
-    /* Same as t1: endHunt → resetHunt restores wishesCount. */
-    expect(await callSetup(page, 'setup.MonkeyPaw.wishesLeft()')).toBe(3);
+    expect(await callSetup(page, 'setup.MonkeyPaw.wishesLeft()')).toBe(1);
   });
 
-  test('leave tier 3: clothes-stolen flag set + cursed item + banActiveContext called', async ({ game: page }) => {
+  test('leave tier 3: clothes-stolen flag set + cursed item + banActiveContext called, hunt forfeited', async ({ game: page }) => {
     await setupHunt(page, 'Shade');
     await primeWish(page, { wishesCount: 1 });
     await page.evaluate(() => {
@@ -750,11 +758,14 @@ test.describe('Monkey Paw wishes', () => {
        bannedHouse is null, but the call must still happen without
        throwing. */
     expect(result.bannedHouse).toBeNull();
+    /* Tier 3 is the only tier that still forfeits the run -- goto
+       is the post-run summary destination, not HuntOutside. */
     expect(result.goto).toBe('CityMap');
     expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(false);
     expect(await getVar(page, 'cursedHomeItem')).toBe(result.cursedItem);
     expect(await getVar(page, 'cursedHomeItemActive')).toBe(true);
-    /* Same as t1/t2: endHunt → resetHunt restores wishesCount. */
+    /* endHunt → cleanupRunState → MonkeyPaw.resetHunt restores
+       wishesCount to the fresh-contract default. */
     expect(await callSetup(page, 'setup.MonkeyPaw.wishesLeft()')).toBe(3);
   });
 
@@ -871,7 +882,7 @@ test.describe('Monkey Paw wishes', () => {
     expect(await getVar(page, 'isPantiesStolen')).toBe(true);
   });
 
-  test('byInput matches case-insensitively with whitespace trim', async ({ game: page }) => {du -sh -- */ 2>/dev/null | sort -h
+  test('byInput matches case-insensitively with whitespace trim', async ({ game: page }) => {
     expect(await callSetup(page, 'setup.MonkeyPaw.byInput("activity") && setup.MonkeyPaw.byInput("activity").id')).toBe('activity');
     expect(await callSetup(page, 'setup.MonkeyPaw.byInput("  Activity  ") && setup.MonkeyPaw.byInput("  Activity  ").id')).toBe('activity');
     expect(await callSetup(page, 'setup.MonkeyPaw.byInput("TRAP THE GHOST") && setup.MonkeyPaw.byInput("TRAP THE GHOST").id')).toBe('trapTheGhost');

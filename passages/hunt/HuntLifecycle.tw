@@ -154,6 +154,21 @@
 			<div class="hunt-conditions"><<huntConditions>></div>
 			<div class="hunt-run-hud">
 				<div class="hunt-run-effects"><<huntEffectsList>></div>
+				<div class="hunt-run-messages">
+					<<if setup.HuntController.isRoomLocked()>>
+						@@.mc-thoughts; The doors around you have fused shut. There's no leaving this room.@@<br>
+						<<if not setup.Witch.hasCursedItemToTurnIn()>>
+							@@.mc-thoughts; A cursed object might break the seal -- you have none on you.@@<br>
+						<</if>>
+					<<elseif _cr and _cr.template eq setup.FloorPlan.HALLWAY_TEMPLATE and setup.HuntController.isExitLocked()>>
+						@@.mc-thoughts; The front door is sealed shut.@@<br>
+						<<if setup.HuntController.exitLockReason() eq "cursedItem" and not setup.Witch.hasCursedItemToTurnIn()>>
+							@@.mc-thoughts; A cursed object might break the seal -- you have none on you.@@<br>
+						<<elseif setup.HuntController.exitLockReason() eq "dawn">>
+							@@.mc-thoughts; You'll have to wait out the dark.@@<br>
+						<</if>>
+					<</if>>
+				</div>
 				<<huntFooterLight>>
 			</div>
 			<div class="hunt-run-toolbar">
@@ -166,45 +181,36 @@
 				</div>
 				<div class="hunt-run-nav">
 					<<if setup.HuntController.isRoomLocked()>>
-						@@.mc-thoughts; The doors around you have fused shut. There's no leaving this room.@@<br>
-					<<elseif _cr and _cr.neighbors.length>>
-						<<for _n range _cr.neighbors>>
-							<<capture _n>>
-								@@.movebtn.huntNavLink;<<link _n.label "HuntRun">>
-									<<run setup.HuntController.setCurrentRoom(_n.id)>>
-									<<huntTickStep>>
-								<</link>>@@<br>
-							<</capture>>
-						<</for>>
-					<<else>>
-						@@.mc-thoughts; (no exits)@@<br>
-					<</if>>
-					<<if setup.HuntController.isRoomLocked()>>
 						<<if setup.Witch.hasCursedItemToTurnIn()>>
 							@@.movebtn.huntNavLink;<<link "Offer the cursed item to the seal">>
 								<<run setup.HuntController.sacrificeCursedItemAtDoor()>>
 								<<goto "HuntRun">>
 							<</link>>@@<br>
-						<<else>>
-							@@.mc-thoughts; A cursed object might break the seal -- you have none on you.@@<br>
 						<</if>>
-					<<elseif _cr and _cr.template eq setup.FloorPlan.HALLWAY_TEMPLATE>>
-						<<if setup.HuntController.isExitLocked()>>
-							@@.mc-thoughts; The front door is sealed shut.@@<br>
-							<<if setup.HuntController.exitLockReason() eq "cursedItem">>
-								<<if setup.Witch.hasCursedItemToTurnIn()>>
+					<<else>>
+						<<if _cr and _cr.neighbors.length>>
+							<<for _n range _cr.neighbors>>
+								<<capture _n>>
+									@@.movebtn.huntNavLink;<<link _n.label "HuntRun">>
+										<<run setup.HuntController.setCurrentRoom(_n.id)>>
+										<<huntTickStep>>
+									<</link>>@@<br>
+								<</capture>>
+							<</for>>
+						<<else>>
+							@@.mc-thoughts; (no exits)@@<br>
+						<</if>>
+						<<if _cr and _cr.template eq setup.FloorPlan.HALLWAY_TEMPLATE>>
+							<<if setup.HuntController.isExitLocked()>>
+								<<if setup.HuntController.exitLockReason() eq "cursedItem" and setup.Witch.hasCursedItemToTurnIn()>>
 									@@.movebtn.huntNavLink;<<link "Offer the cursed item to the door">>
 										<<run setup.HuntController.sacrificeCursedItemAtDoor()>>
 										<<goto "HuntRun">>
 									<</link>>@@<br>
-								<<else>>
-									@@.mc-thoughts; A cursed object might break the seal -- you have none on you.@@<br>
 								<</if>>
-							<<elseif setup.HuntController.exitLockReason() eq "dawn">>
-								@@.mc-thoughts; You'll have to wait out the dark.@@<br>
+							<<else>>
+								@@.movebtn.huntNavLink; [[Outside|HuntOutside]]@@<br>
 							<</if>>
-						<<else>>
-							@@.movebtn.huntNavLink; [[Outside|HuntOutside]]@@<br>
 						<</if>>
 					<</if>>
 				</div>

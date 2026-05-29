@@ -278,10 +278,18 @@ setup.MonkeyPaw = (function () {
 			   which <<include>>s the canonical Steal* passages so the
 			   $is*Stolen flags, numbered sub-states, and $remember*
 			   markers all line up with a normal theft):
-			   t1: exit + clothes stolen
-			   t2: exit + clothes stolen + guaranteed cursed home item
-			   t3: exit + clothes stolen + cursed home item
-			       + this haunted house is sealed for the rest of the contract */
+			   t1: dumped outside (HuntOutside) + clothes stolen --
+			       hunt stays active, the MC can walk back in
+			   t2: same as t1 + a guaranteed cursed home item lands on
+			       her doorstep for the next trip home
+			   t3: full abandon -- clothes stolen + cursed home item
+			       + the run is forfeited (streetExitPassage closes the
+			       hunt and routes to the post-run summary)
+			   Tiers 1 and 2 keep the run alive so the player can use
+			   the wish as a tactical reset (out of the house, lights
+			   reset, modesty gate kicks in) without losing the contract
+			   payout; tier 3 keeps the original "the paw eats your
+			   run" bite. */
 			activate: function () {
 				var t = currentTier();
 				var cursedItem = null;
@@ -290,11 +298,20 @@ setup.MonkeyPaw = (function () {
 				if (t >= 2) cursedItem = setup.CursedItems.forceCursedItem();
 				if (t >= 3) bannedHouse = setup.HuntController.banActiveContext();
 
+				/* removeWish() must run before streetExitPassage() so the
+				   sequence stays "decrement, then forfeit" -- forfeit
+				   fires endHunt → cleanupRunState → resetHunt which
+				   restores wishesCount to the fresh-contract default,
+				   so a removeWish that ran after the forfeit would
+				   chip the count below 3 even though the wish has
+				   already been consumed. */
 				removeWish();
 
 				return {
 					tier: t,
-					goto: setup.HuntController.streetExitPassage(),
+					goto: t >= 3
+						? setup.HuntController.streetExitPassage()
+						: "HuntOutside",
 					clothesStolen: true,
 					cursedItem: cursedItem,
 					bannedHouse: bannedHouse

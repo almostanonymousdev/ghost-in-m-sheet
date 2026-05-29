@@ -283,6 +283,36 @@ body.ui-bar-stowed .hunt-run-layout {
 	z-index: 5;
 }
 
+/* Narrative status panel anchored above .hunt-run-lights on the same
+   right edge. Holds the locked-door / sealed-exit / dawn-gate prose
+   that used to share the lower-right nav box. Keeping these long
+   thought lines out of the nav lets HuntNavFit measure exits without
+   prose pushing the font down, and gives the player a stable place to
+   read the room's status without the lines wrapping into the exit
+   labels. The 40px bottom offset = 4px (HUD-to-lights gap) + 32px
+   (lights height) + 4px (lights-to-messages gap). */
+.hunt-run-messages {
+	position: absolute;
+	right: 0;
+	bottom: calc(100% + 40px);
+	max-width: 24em;
+	text-align: right;
+	font-size: 0.9em;
+	line-height: 1.25;
+	opacity: 0.95;
+	z-index: 5;
+	pointer-events: none;
+	text-shadow: 0 0 7px black;
+}
+
+.hunt-run-messages > * {
+	pointer-events: auto;
+}
+
+.hunt-run-messages:empty {
+	display: none;
+}
+
 /* Explicit square height (matching width) so the wrapping anchor keeps
    a clickable area even when the icon fails to load — without this,
    `height: auto` collapses to 0 and downstream layout (or test

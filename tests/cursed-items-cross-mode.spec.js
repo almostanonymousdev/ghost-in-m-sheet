@@ -288,11 +288,32 @@ test.describe('Cursed-item hunt facade', () => {
     expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(false);
   });
 
-  test('leave wish routes the goto through streetExitPassage -> CityMap', async () => {
+  test('leave wish at tier 1 dumps the MC at HuntOutside with the run still active', async () => {
+    /* Fresh startHunt seeds wishesCount = 3 -> currentTier = 1.
+       Tier 1 leave is the "tactical reset" branch: clothes stripped,
+       MC dumped in the yard, hunt still active so she can walk back
+       in. */
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
     const out = await page.evaluate(
       () => SugarCube.setup.MonkeyPaw.activate('leave')
     );
+    expect(out.tier).toBe(1);
+    expect(out.goto).toBe('HuntOutside');
+    expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(true);
+  });
+
+  test('leave wish at tier 3 routes the goto through streetExitPassage -> CityMap', async () => {
+    /* Burn down to wishesCount = 1 so currentTier returns 3, then
+       fire leave -- the run must forfeit and goto must be the
+       streetExitPassage destination, not HuntOutside. */
+    await page.evaluate(() => {
+      SugarCube.setup.HuntController.startHunt({ seed: 1 });
+      SugarCube.State.variables.wishesCount = 1;
+    });
+    const out = await page.evaluate(
+      () => SugarCube.setup.MonkeyPaw.activate('leave')
+    );
+    expect(out.tier).toBe(3);
     expect(out.goto).toBe('CityMap');
     expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(false);
   });

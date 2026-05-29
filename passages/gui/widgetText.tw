@@ -75,13 +75,15 @@
 
 <<widget "leave">>
 	<<set _out to setup.MonkeyPaw.activate("leave")>>
-	/* MonkeyPaw "leave" wish abandons the run on this tick (the
-	   <<goto _out.goto>> below exits to HuntSummary), so there's
-	   nothing to recover in-house -- bypass the Steal* leaf
-	   passages (which would also stash a floor-plan pin on a run
-	   that's about to be torn down) and just flip the wardrobe
-	   flags so the post-hunt strip-replacement flow sees what was
-	   lost. */
+	/* Tier 3 abandons the run (goto = streetExitPassage), tiers 1
+	   and 2 just dump the MC in the yard (goto = HuntOutside) with
+	   the run still active so she can re-enter through the front
+	   door. Either way the clothes-theft side of the wish has
+	   already landed, so bypass the Steal* leaf passages (which
+	   would also stash a floor-plan pin and re-render the room) and
+	   just flip the wardrobe flags directly -- the existing modesty
+	   gate on HuntOutside / FindStolenClothes / NudityEvent handles
+	   the rest. */
 	<<if _out.clothesStolen>>
 		<<if setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT)>><<run setup.Wardrobe.stealWornInGroup("tshirt", "tshirtState", "isShirtStolen")>><</if>>
 		<<if setup.Wardrobe.worn(setup.WardrobeSlot.BRA)>><<run setup.Wardrobe.stealWornInGroup("bra", "braState", "isBraStolen")>><</if>>

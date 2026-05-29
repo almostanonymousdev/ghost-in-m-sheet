@@ -352,7 +352,12 @@ test.describe('Hunt — clothes + dark-room bugs', () => {
     const path = require('path');
     const root = path.resolve(__dirname, '..', 'passages');
     const exempt = new Set([
-      /* MonkeyPaw "leave" exits to HuntSummary; nothing to recover. */
+      /* MonkeyPaw "leave" wish: at tier 3 the run forfeits to
+         HuntSummary (nothing to recover); at tier 1+2 the MC is
+         dumped at HuntOutside with the run still active, and the
+         wish itself "eats" the clothes -- they don't drop on the
+         floor plan to be recovered. Either way the widget never
+         stashes anything. */
       path.join(root, 'gui', 'widgetText.tw'),
       /* The Wardrobe controller defines stealWornInGroup itself --
          doesn't strip anything by being read. */
