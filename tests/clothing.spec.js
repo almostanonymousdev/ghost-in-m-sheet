@@ -621,7 +621,7 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
     await setVar(page, 'isShirtStolen', true);
     await setVar(page, 'lostClothing', []);
 
-    await callSetup(page, 'setup.HauntedHouses.cleanupAfterHunt({ loseStolen: true })');
+    await callSetup(page, 'setup.HuntController.cleanupAfterHunt({ loseStolen: true })');
 
     expect(await getVar(page, 'jeansState1')).toBe('worn');
     expect(await getVar(page, 'tshirtState1')).toBe('not bought');

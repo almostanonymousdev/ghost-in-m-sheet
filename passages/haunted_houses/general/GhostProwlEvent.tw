@@ -1,5 +1,5 @@
 :: GhostProwlEvent [noreturn nobr] {"position":"2600,1100","size":"100,100"}
-<<run setup.HauntedHouses.beginProwlEvent()>>
+<<run setup.HuntController.beginProwlEvent()>>
 <<set _check to random(1,3)>>
 <<if _check eq 1>>
 	<<video "mechanics/hunting/1.mp4" { controls: false, loop: false }>>
@@ -14,14 +14,14 @@
 
 @@.usebtn; [[Run away|RunFast]]@@
 or @@.usebtn; [[Try to hide|Hide]]@@
-<<if setup.HauntedHouses.succubusEventTimer() gte 1>>
+<<if setup.Home.succubusEventTimer() gte 1>>
 	or @@.usebtn; [[Summon the succubus|HuntEventSuccubus]]@@<br>
 <</if>>
 <<if setup.HauntConditions.canPray()>>
 	or @@.usebtn;<<link `"Pray it passes (−10 sanity, −" + setup.HauntConditions.ENERGY_COST_PRAY + " energy)"` "PrayHunt">>
 	<</link>>@@
 <</if>>
-<<if setup.HauntedHouses.hasAnyGarmentWorn()>>
+<<if setup.Wardrobe.hasAnyGarmentWorn()>>
 	or @@.usebtn;<<link "Freeze and let it pass (lose clothing)" "FreezeHunt">>
 	<</link>>@@
 <<else>>

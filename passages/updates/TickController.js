@@ -41,7 +41,7 @@ setup.Tick = (function () {
 	resetCursedItemState() restored them to.*/
 	function applyPossessionItemCleanup() {
 		if (setup.HuntController.isPossessed()) {
-			setup.HauntedHouses.markTarotSpent();
+			setup.Tarot.markTarotSpent();
 			setup.MonkeyPaw.retire();
 		}
 	}
@@ -93,7 +93,7 @@ setup.Tick = (function () {
 
 	// --- Steal-chance recompute ---------------------------------
 	function recomputeStealChance() {
-		setup.HauntedHouses.recomputeStealChance(sv().stealChanceMult);
+		setup.HuntController.recomputeStealChance(sv().stealChanceMult);
 	}
 
 	// --- PassageDone tick setup ---------------------------------

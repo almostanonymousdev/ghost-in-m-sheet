@@ -55,6 +55,7 @@ setup.Witch = (function () {
 		'exorcismQuestStage',
 		'gotCursedItem',
 		'isCIDildo', 'isCIButtplug', 'isCIBeads', 'isCIHDildo',
+		'cursedItemVide',
 		'eventToolsOneStart',
 		'wardenClothesStage',
 		'weakenTheGhostQuest',
@@ -340,6 +341,30 @@ setup.Witch = (function () {
 			if (s.isCIBeads === true)    return 'beads';
 			if (s.isCIHDildo === true)   return 'hdildo';
 			return '';
+		},
+		/* Random cursed-item usage video for the active item variant.
+		   Top-covered dildo has a longer gallery; the others share
+		   their own fixed set. Stamps the picked path on $cursedItemVide
+		   so re-renders within the same passage reuse the same clip. */
+		cursedItemVideo: function () {
+			var t = this.carriedCursedItemType();
+			var list;
+			if (t === 'dildo') {
+				list = setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT)
+					? ["mechanics/curseditems/1.0.mp4", "mechanics/curseditems/1.1.mp4", "mechanics/curseditems/1.2.mp4", "mechanics/curseditems/1.3.mp4"]
+					: ["mechanics/curseditems/1.0.mp4", "mechanics/curseditems/1.1.mp4"];
+			} else if (t === 'buttplug') {
+				list = ["mechanics/curseditems/2.0.mp4", "mechanics/curseditems/2.1.mp4", "mechanics/curseditems/2.2.mp4", "mechanics/curseditems/2.3.mp4"];
+			} else if (t === 'beads') {
+				list = ["mechanics/curseditems/3.0.mp4", "mechanics/curseditems/3.1.mp4", "mechanics/curseditems/3.2.mp4", "mechanics/curseditems/3.3.mp4"];
+			} else if (t === 'hdildo') {
+				list = ["mechanics/curseditems/4.0.mp4", "mechanics/curseditems/4.1.mp4", "mechanics/curseditems/4.2.mp4"];
+			} else {
+				return null;
+			}
+			var pick = list[Math.floor(Math.random() * list.length)];
+			sv().cursedItemVide = pick;
+			return pick;
 		}
 	};
 

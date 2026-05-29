@@ -181,7 +181,7 @@ test.describe('ToolController renderers', () => {
       SugarCube.setup.toolsRecord('emf').activated = 0;
       SugarCube.setup.toolsRecord('uvl').activated = 0;
     });
-    await callSetup(page, 'setup.HauntedHouses.beginProwlEvent()');
+    await callSetup(page, 'setup.HuntController.beginProwlEvent()');
     const emf = await page.evaluate(() =>
       SugarCube.setup.toolsRecord('emf').activated);
     const uvl = await page.evaluate(() =>
@@ -203,7 +203,7 @@ test.describe('ToolController renderers', () => {
     expect(await page.evaluate(() =>
       SugarCube.setup.toolsRecord('uvl').activated)).toBe(1);
 
-    await callSetup(page, 'setup.HauntedHouses.cleanupAfterHunt()');
+    await callSetup(page, 'setup.HuntController.cleanupAfterHunt()');
 
     expect(await page.evaluate(() =>
       SugarCube.setup.toolsRecord('emf').activated)).toBe(0);

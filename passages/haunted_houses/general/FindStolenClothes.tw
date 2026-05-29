@@ -63,7 +63,7 @@
 	<<linkreplace "@@.mc-speechLink; Nah... I should get dressed@@">>
 		<br>
 		@@.mc-action; You step back into your bottoms.@@<br>
-		<<set _vid to setup.HauntedHouses.findStolenDressupVideo()>>
+		<<set _vid to setup.Wardrobe.findStolenDressupVideo()>>
 		<<if _vid>>
 			<<video _vid "displayCentredImgs">>
 		<</if>>
@@ -75,7 +75,7 @@
 	<</linkreplace>>
 <<else>>
 	@@.mc-action; You step back into your bottoms.@@<br>
-	<<set _vid to setup.HauntedHouses.findStolenDressupVideo()>>
+	<<set _vid to setup.Wardrobe.findStolenDressupVideo()>>
 	<<if _vid>>
 		<<video _vid "displayCentredImgs">>
 	<</if>>

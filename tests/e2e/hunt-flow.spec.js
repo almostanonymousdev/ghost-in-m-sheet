@@ -1558,7 +1558,7 @@ test.describe('E2E: hunt lifecycle', () => {
     await page.locator('.passage').getByText('deck of cards.', { exact: true }).click();
 
     // Carry stage flipped (shared with classic).
-    expect(await callSetup(page, 'setup.HauntedHouses.tarotCardsStage()'))
+    expect(await callSetup(page, 'setup.Tarot.tarotCardsStage()'))
       .toBe(await callSetup(page, 'setup.TarotStage.CARRYING'));
     // Loot collected so a re-search at the same slot finds nothing.
     expect(await callSetup(page, 'setup.HuntController.hasCollected("tarotCards")')).toBe(true);
@@ -1697,7 +1697,7 @@ test.describe('E2E: hunt lifecycle', () => {
       const shade = SugarCube.setup.Ghosts.getByName('Shade');
       SugarCube.setup.HuntController.setField('evidence', shade.evidence.map(e => e.id));
     });
-    await page.evaluate(() => SugarCube.setup.HauntedHouses.markTarotCarrying());
+    await page.evaluate(() => SugarCube.setup.Tarot.markTarotCarrying());
     await goToPassage(page, 'HuntRun');
 
     // Pin the deck draw to "knowledge" -- a roll <= 50 (passion 20 +
@@ -1891,7 +1891,7 @@ test.describe('E2E: hunt lifecycle', () => {
     expect(await callSetup(page, 'setup.HuntController.hasCollected("tool_emf")')).toBe(true);
 
     // Carry-stage flips happened (Bag link surfaces the deck + paw).
-    expect(await callSetup(page, 'setup.HauntedHouses.tarotCardsStage()'))
+    expect(await callSetup(page, 'setup.Tarot.tarotCardsStage()'))
       .toBe(await callSetup(page, 'setup.TarotStage.CARRYING'));
     expect(await callSetup(page, 'setup.MonkeyPaw.isFound()')).toBe(true);
 

@@ -18,11 +18,11 @@
  * exposed and both kinds available, any covering grab is shown. "Leave
  * with nothing" is hidden whenever the gate forces a covering grab. */
 <<run setup.Hunt.emit(setup.Hunt.Event.HUNT_END_GRACEFUL)>>
-<<run setup.HauntedHouses.endHunt()>>
-<<run setup.HauntedHouses.cleanupAfterHunt()>>
+<<run setup.HuntController.markHuntOver()>>
+<<run setup.HuntController.cleanupAfterHunt()>>
 
-<<set _bottomless to setup.HauntedHouses.isBottomless()>>
-<<set _topBare to setup.HauntedHouses.isTopBare()>>
+<<set _bottomless to setup.Wardrobe.isBottomless()>>
+<<set _topBare to setup.Wardrobe.isTopBare()>>
 <<set _modest to (setup.Mc.exhibitionism() || 0) lt 5>>
 <<set _canCoverBottom to _bottomless and (setup.Wardrobe.isPantiesStolen() or setup.Wardrobe.isBottomStolen())>>
 <<set _canCoverTop to _topBare and (setup.Wardrobe.isShirtStolen() or setup.Wardrobe.isBraStolen())>>
@@ -34,7 +34,7 @@
 <br>
 @@.mc-thoughts; My legs are shaking. I can barely keep my eyes open. I have to leave this place — I'm running on empty.@@<br>
 
-<<if setup.HauntedHouses.hasClothesStolen()>>
+<<if setup.Wardrobe.hasClothesStolen()>>
 	@@.mc-thoughts; The ghost stripped me earlier; my things are scattered around. I only have the energy to grab one piece before stumbling for the exit.@@<br>
 	<<if _forceCover>>
 		@@.mc-thoughts;
@@ -104,7 +104,7 @@
 <<run setup.Hunt.emit(setup.Hunt.Event.HUNT_END_GRACEFUL)>>
 @@.mc-speech; Enough. You've got what you've got. Time to be on the porch instead of in here.@@<br>
 
-<<if setup.HauntedHouses.hasClothesStolen()>>
+<<if setup.Wardrobe.hasClothesStolen()>>
 	<<image "ui/img/confused-img.jpg" "displayCentredImgs">>
 	@@.mc-speech; Christ. It took my clothes. Of course it took my clothes. Do I go back in for them, or just live with what that means.@@<br>
 	/% Don't clear the stolen-clothes flag here -- the "Return to the
@@ -131,8 +131,8 @@
 	<</if>>
 <</if>>
 <br>
-<<run setup.HauntedHouses.endHunt()>>
-<<run setup.HauntedHouses.cleanupAfterHunt()>>
+<<run setup.HuntController.markHuntOver()>>
+<<run setup.HuntController.cleanupAfterHunt()>>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 <</done>>
@@ -158,7 +158,7 @@
 	<<if setup.Ghosts.hasHighPriestess()>>
 		@@.usebtn; [[Next|$return][setup.Ghosts.consumeHighPriestess()]]@@
 	<<else>>
-		<<run setup.HauntedHouses.cleanupAfterHunt({ loseStolen: true })>>
+		<<run setup.HuntController.cleanupAfterHunt({ loseStolen: true })>>
 		<<include "HuntResidue">>
 		<<done>>
 			<<addclass ".linkselector" "disabled-link">>
@@ -168,14 +168,14 @@
 	<</if>>
 <</linkreplace>>@@
 
-<<run setup.HauntedHouses.endHunt()>>
+<<run setup.HuntController.markHuntOver()>>
 
 :: HuntOverTime [nobr] {"position":"1500,1350","size":"100,100"}
 <<run setup.Hunt.emit(setup.Hunt.Event.HUNT_END_GRACEFUL)>>
 <<image "ui/img/dawn.jpg" { width: "100%" }>>
 <br>
 @@.mc-thoughts; Dawn. The house quiets like someone hung up. Time to add up what you have and name it.@@<br>
-<<if setup.HauntedHouses.hasClothesStolen()>>
+<<if setup.Wardrobe.hasClothesStolen()>>
 	@@.mc-thoughts; And -- right -- your clothes. You sweep the rooms it stashed them in, dress on the move, and don't look back at the door.@@
 	<<if setup.Wardrobe.isPantiesStolen()>><<run setup.Wardrobe.restoreStolenInGroup("panties", "isPantiesStolen")>><</if>>
 	<<if setup.Wardrobe.isBottomStolen()>><<run setup.Wardrobe.restoreStolenInGroup("bottomOuter")>><<run State.variables.isBottomStolen = false>><<run State.variables.isJeansStolen = false>><<run State.variables.isShortsStolen = false>><<run State.variables.isSkirtStolen = false>><</if>>
@@ -183,8 +183,8 @@
 	<<if setup.Wardrobe.isBraStolen()>><<run setup.Wardrobe.restoreStolenInGroup("bra", "isBraStolen")>><</if>>
 <</if>>
 
-<<run setup.HauntedHouses.endHunt()>>
-<<run setup.HauntedHouses.cleanupAfterHunt()>>
+<<run setup.HuntController.markHuntOver()>>
+<<run setup.HuntController.cleanupAfterHunt()>>
 @@.movebtn;[[Leave|CityMap][setup.Time.addHours(1)]]@@<br>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>

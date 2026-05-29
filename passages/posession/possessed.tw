@@ -59,11 +59,11 @@
 
 				<<if setup.HuntController.isHunting()>>
 					<<run setup.Companion.runHuntFailHooks()>>
-					<<set _tempCorrGained to setup.HauntedHouses.commitTempCorruption()>>
+					<<set _tempCorrGained to setup.HuntController.commitTempCorruption()>>
 					Corruption is increased (+ <<= _tempCorrGained.toFixed(2)>>) : <<= setup.Mc.corruption().toFixed(2)>><br>
 					<<run setup.Mc.setDirty(1)>>
-					<<run setup.HauntedHouses.resetToolTimers()>>
-					<<run setup.HauntedHouses.endHunt({ possessed: true })>>
+					<<run setup.HuntController.resetToolTimers()>>
+					<<run setup.HuntController.markHuntOver({ possessed: true })>>
 					<<run setup.Wardrobe.loseAllStolen()>>
 
 					<<done>>

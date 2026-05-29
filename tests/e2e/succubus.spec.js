@@ -357,16 +357,11 @@ test.describe('Succubus — TV wake-up banner', () => {
 });
 
 test.describe('Succubus — hunt-event protection', () => {
-  test('HauntedHouses.succubusEventTimer mirrors Home.succubusEventTimer', async ({ game: page }) => {
+  test('Home.succubusEventTimer reads back the eventTimer field', async ({ game: page }) => {
     await page.evaluate(() => {
       SugarCube.State.variables.succubusEvent = { eventTimer: 4 };
     });
-    expect(await callSetup(page, 'setup.HauntedHouses.succubusEventTimer()')).toBe(4);
-  });
-
-  test('HauntedHouses.succubusEventTimer falls back to 0 when bundle is empty', async ({ game: page }) => {
-    await page.evaluate(() => { SugarCube.State.variables.succubusEvent = {}; });
-    expect(await callSetup(page, 'setup.HauntedHouses.succubusEventTimer()')).toBe(0);
+    expect(await callSetup(page, 'setup.Home.succubusEventTimer()')).toBe(4);
   });
 
   test('HuntEventSuccubus passage renders without errors', async ({ game: page }) => {

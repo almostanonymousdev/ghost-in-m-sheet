@@ -20,7 +20,7 @@
 <</if>>
 
 <<run setup.Events.resetEventTriggered()>>
-<<run setup.HauntedHouses.resetStealClothesTriggered()>>
+<<run setup.HuntController.resetStealClothesTriggered()>>
 
 <<if _done.lustChanged>>
 	<<refreshMeter 'lust'>>

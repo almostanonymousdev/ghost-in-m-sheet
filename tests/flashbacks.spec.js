@@ -655,8 +655,8 @@ test.describe('setup.Flashbacks', () => {
 		});
 
 		const planted = await page.evaluate(() => ({
-			fullyNude: SugarCube.setup.HauntedHouses.isFullyNude(),
-			fullyDressed: SugarCube.setup.HauntedHouses.isFullyDressed(),
+			fullyNude: SugarCube.setup.Wardrobe.isFullyNude(),
+			fullyDressed: SugarCube.setup.Wardrobe.isFullyDressed(),
 			replaying: SugarCube.setup.Flashbacks.isReplaying()
 		}));
 		expect(planted.fullyNude).toBe(true);
@@ -709,7 +709,7 @@ test.describe('setup.Flashbacks', () => {
 			compName: SugarCube.State.variables.companion && SugarCube.State.variables.companion.name,
 			isCompChosen: SugarCube.State.variables.isCompChosen,
 			activeState: SugarCube.setup.Companion.activeState(),
-			fullyNude: SugarCube.setup.HauntedHouses.isFullyNude()
+			fullyNude: SugarCube.setup.Wardrobe.isFullyNude()
 		}));
 		expect(planted.compName).toBe('Brook');
 		expect(planted.isCompChosen).toBe(true);

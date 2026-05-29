@@ -108,7 +108,7 @@ setup.MonkeyPaw = (function () {
 	}
 
 	function addTempCorr(amount) {
-		setup.HauntedHouses.addTempCorruption(amount);
+		setup.HuntController.addTempCorruption(amount);
 	}
 
 	function pickActivityVideo() {
@@ -556,6 +556,6 @@ setup.MonkeyPaw = (function () {
 		},
 
 		// --- Tarot deck carry stage (Bag display) -----------------
-		tarotCarryStage: function () { return setup.HauntedHouses.tarotCardsStage(); }
+		tarotCarryStage: function () { return setup.Tarot.tarotCardsStage(); }
 	};
 })();

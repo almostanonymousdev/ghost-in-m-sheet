@@ -445,7 +445,7 @@ test.describe('Hunt Controller', () => {
     /* Bump mc.lvl past the tarot deck's level gate so
        isLootKindAvailable doesn't filter the hand-stamped tarotCards
        kind out of the slot list. */
-    await setVar(page, 'mc.lvl', await callSetup(page, 'setup.HauntedHouses.tarotLevelRequired()'));
+    await setVar(page, 'mc.lvl', await callSetup(page, 'setup.Tarot.tarotLevelRequired()'));
     await page.evaluate(() => SugarCube.setup.HuntController.start({ seed: 1 }));
     await page.evaluate(() => {
       SugarCube.setup.HuntController.setField('floorplan', {

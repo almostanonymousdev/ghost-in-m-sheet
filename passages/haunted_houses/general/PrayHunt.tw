@@ -21,7 +21,7 @@
 @@.backbtn;[[Continue|$return]]@@
 
 <<run setup.Hunt.emit(setup.Hunt.Event.PROWL_EVENT)>>
-<<run setup.HauntedHouses.rearmHuntTimer()>>
+<<run setup.HuntController.rearmHuntTimer()>>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 <</done>>

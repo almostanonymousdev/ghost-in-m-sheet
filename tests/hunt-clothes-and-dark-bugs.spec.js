@@ -470,11 +470,11 @@ test.describe('Hunt — lights-out doubles steal chance', () => {
     await page.evaluate(() => { Math.random = () => 0.5; });
 
     await setCurrentRoomLight('lit');
-    const litTrigger = await callSetup(page, 'setup.HauntedHouses.shouldTriggerSteal()');
+    const litTrigger = await callSetup(page, 'setup.HuntController.shouldTriggerSteal()');
     expect(litTrigger).toBe(false);
 
     await setCurrentRoomLight('dark');
-    const darkTrigger = await callSetup(page, 'setup.HauntedHouses.shouldTriggerSteal()');
+    const darkTrigger = await callSetup(page, 'setup.HuntController.shouldTriggerSteal()');
     expect(darkTrigger).toBe(true);
   });
 });

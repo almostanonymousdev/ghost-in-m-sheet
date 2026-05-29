@@ -92,7 +92,7 @@ async function expectCleanPassage(page) {
  * Bootstrap an active hunt pinned to a specific ghost.
  *
  * `house` is one of 'owaissa' (default), 'elm', 'ironclad' -- the
- * static hunt house used to seed the floor plan. `setup.HauntedHouses`
+ * static hunt house used to seed the floor plan. `setup.HuntController`
  * helpers (`isOwaissa`/`isElm`) resolve off the active run's
  * `staticHouseId`; prison-unique behaviour rides the `prison_visuals`
  * (and friends) forced modifiers pinned by the catalogue entry.

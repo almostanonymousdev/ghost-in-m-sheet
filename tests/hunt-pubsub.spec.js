@@ -706,7 +706,7 @@ test.describe('setup.Hunt pubsub', () => {
         // Keep the forced no_clothes_theft pinned by the catalogue; layer
         // Swiper on top to verify suppress wins over forceTrigger.
         HC.active().modifiers = [M.NO_CLOTHES_THEFT, M.SWIPER];
-        return SugarCube.setup.HauntedHouses.shouldTriggerSteal();
+        return SugarCube.setup.HuntController.shouldTriggerSteal();
       });
       expect(result).toBe(false);
     });

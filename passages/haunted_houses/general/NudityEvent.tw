@@ -1,7 +1,7 @@
 :: NudityEvent [nobr] {"position":"1700,1350","size":"100,100"}
 <<set _videoList to []>>
 <<run setup.Hunt.emit(setup.Hunt.Event.PROWL_EVENT)>>
-<<if setup.HauntedHouses.nudityNakedNoBottoms()>>
+<<if setup.Wardrobe.nudityNakedNoBottoms()>>
 	<<if setup.Mc.exhibitionism() lte 4>>
 		<<set _videoList to [
 		{type: "video", src: "outfits/bottoms/naked/1.mp4"},
@@ -15,7 +15,7 @@
 		{type: "video", src: "outfits/bottoms/naked/14.mp4"},
 		{type: "video", src: "outfits/bottoms/naked/15.mp4"}]>>
 	<</if>>
-<<elseif setup.HauntedHouses.nudityToplessWithPanties()>>
+<<elseif setup.Wardrobe.nudityToplessWithPanties()>>
 	<<if setup.Mc.exhibitionism() lte 4>>
 		<<if setup.Wardrobe.worn(setup.WardrobeSlot.BRA)>>
 			<<set _videoList to [
@@ -33,12 +33,12 @@
 		{type: "video", src: "outfits/bottoms/naked/31.mp4"},
 		{type: "video", src: "outfits/bottoms/naked/32.mp4"}]>>
 	<</if>>
-<<elseif setup.HauntedHouses.isTopless()>>
+<<elseif setup.Wardrobe.isTopless()>>
 	<<set _videoList to [
 	{type: "video", src: "outfits/bottoms/naked/20.mp4"},
 	{type: "video", src: "outfits/bottoms/naked/21.mp4"},
 	{type: "video", src: "outfits/bottoms/naked/22.mp4"}]>>
-<<elseif setup.HauntedHouses.isFullyDressed()>>
+<<elseif setup.Wardrobe.isFullyDressed()>>
 	<<goto "Livingroom">>
 <</if>>
 

@@ -3,8 +3,8 @@
 
 <div id="tarotCardsEnd" class="tarotCardHidden"><<link "@@.usebtn;Pull a card@@">>
 	<<replace "#tarotCard">>
-		<<if setup.HauntedHouses.drawnCards() lt 10>>
-			<<set _chosen to setup.HauntedHouses.drawAndStampTarotCard()>>
+		<<if setup.Tarot.drawnCards() lt 10>>
+			<<set _chosen to setup.Tarot.drawAndStampTarotCard()>>
 
 			<<if _chosen>>
 				<<if _chosen.name eq "fool">>
@@ -50,11 +50,11 @@
 			<<replace "#tarotCardsEnd">>
 				<br>
 				@@.mc-thoughts; There's no cards left @@<br>
-				<<run setup.HauntedHouses.markTarotSpent()>>
+				<<run setup.Tarot.markTarotSpent()>>
 			<</replace>>
 		<</if>>
 	<</replace>>
-<<run setup.HauntedHouses.incrementDrawnCards()>><</link>></div>
+<<run setup.Tarot.incrementDrawnCards()>><</link>></div>
 <br>
 <div id="tarotBack" class="tarotCardHidden">@@.backbtn; [[Back|$return]]@@</div>
 

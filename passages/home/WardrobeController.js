@@ -720,6 +720,114 @@
                 case 'skirt':       return V.isBottomStolen  === true;
                 default:            return false;
             }
+        },
+
+        // --- Aggregate worn-state predicates ----------------------
+        /* "Anything covering the legs?" -- true iff at least one of
+           the three bottom-outer slots is worn. */
+        hasBottomWorn: function () {
+            return this.worn(setup.WardrobeSlot.JEANS)
+                || this.worn(setup.WardrobeSlot.SKIRT)
+                || this.worn(setup.WardrobeSlot.SHORTS);
+        },
+        hasTopWorn: function () { return this.worn(setup.WardrobeSlot.TSHIRT); },
+        isFullyDressed: function () {
+            return this.hasTopWorn() && this.hasBottomWorn();
+        },
+        isFullyNude: function () {
+            return !this.worn(setup.WardrobeSlot.TSHIRT)
+                && !this.worn(setup.WardrobeSlot.PANTIES)
+                && !this.hasBottomWorn();
+        },
+        isTopless: function () {
+            return !this.worn(setup.WardrobeSlot.TSHIRT) && this.hasBottomWorn();
+        },
+        isBottomless: function () {
+            return !this.worn(setup.WardrobeSlot.JEANS)
+                && !this.worn(setup.WardrobeSlot.SHORTS)
+                && !this.worn(setup.WardrobeSlot.SKIRT)
+                && !this.worn(setup.WardrobeSlot.PANTIES);
+        },
+        isTopBare: function () {
+            return !this.worn(setup.WardrobeSlot.TSHIRT) && !this.worn(setup.WardrobeSlot.BRA);
+        },
+        hasAnyGarmentWorn: function () {
+            return this.hasBottomWorn() || this.hasTopWorn()
+                || this.worn(setup.WardrobeSlot.PANTIES) || this.worn(setup.WardrobeSlot.BRA);
+        },
+
+        // --- Stolen-clothes aggregate -----------------------------
+        /* Aggregate "anything currently stolen?" gate. Derived from
+           the four per-garment flags above -- each piece is tracked +
+           restored independently now (see
+           setup.HuntController.stashStolenClothes), so this is just
+           a convenience disjunction. */
+        hasClothesStolen: function () {
+            return this.isPantiesStolen()
+                || this.isBraStolen()
+                || this.isShirtStolen()
+                || this.isBottomStolen();
+        },
+
+        // --- Steal targeting --------------------------------------
+        /* True iff there is at least one garment a ghost steal event
+           can actually take this tick. Used as the gate at the roll
+           site so we never trigger a steal that would find nothing. */
+        canStealAnyItem: function () {
+            return this.worn(setup.WardrobeSlot.BRA)
+                || this.worn(setup.WardrobeSlot.PANTIES)
+                || this.hasBottomWorn();
+        },
+        /* Given the MC's current clothing state, return the list of
+           garment categories that are still available to steal
+           ("panties", "bra", "outerwear"). Used by StealClothes to
+           pick a random target. */
+        availableStealTargets: function () {
+            var opts = [];
+            if (this.worn(setup.WardrobeSlot.PANTIES)) opts.push('panties');
+            if (this.worn(setup.WardrobeSlot.BRA)) opts.push('bra');
+            if (this.worn(setup.WardrobeSlot.TSHIRT) || this.worn(setup.WardrobeSlot.JEANS)
+                || this.worn(setup.WardrobeSlot.SKIRT) || this.worn(setup.WardrobeSlot.SHORTS)) {
+                opts.push('outerwear');
+            }
+            return opts;
+        },
+
+        // --- Nudity event branch helpers --------------------------
+        /* The NudityEvent passage gates on whether the MC has lost
+           pants only vs lost everything below the waist. Same
+           predicates as isFullyNude / a partial variant, kept named
+           for the consuming branch. */
+        nudityNakedNoBottoms: function () {
+            return !this.worn(setup.WardrobeSlot.TSHIRT)
+                && !this.worn(setup.WardrobeSlot.PANTIES)
+                && !this.hasBottomWorn();
+        },
+        nudityToplessWithPanties: function () {
+            return !this.worn(setup.WardrobeSlot.TSHIRT)
+                && this.worn(setup.WardrobeSlot.PANTIES)
+                && !this.hasBottomWorn();
+        },
+
+        // --- Dressup video lookup ---------------------------------
+        /* Which dress-up video to show while the MC puts clothes
+           back on. Reads the current "no<key>" remember tokens to
+           figure out which bottom / underwear combo was stolen.
+           Returns a video path or null. */
+        findStolenDressupVideo: function () {
+            var ro = this.rememberBottomOuter();
+            var ru = this.rememberBottomUnder();
+            function isJeans(k) { return typeof k === "string" && k.indexOf("nojeans") === 0; }
+            function isShorts(k) { return typeof k === "string" && k.indexOf("noshorts") === 0; }
+            function isSkirt(k) { return typeof k === "string" && k.indexOf("noskirt") === 0; }
+            function hasPanties(k) { return typeof k === "string" && k.indexOf("panties") === 0; }
+            function noPanties(k) { return typeof k === "string" && k.indexOf("nopanties") === 0; }
+            if (isJeans(ro) && hasPanties(ru)) return "characters/mc/jeansp.mp4";
+            if (isJeans(ro) && noPanties(ru)) return "characters/mc/jeansnp.mp4";
+            if (isShorts(ro)) return "characters/mc/shorts.mp4";
+            if (isSkirt(ro) && hasPanties(ru)) return "characters/mc/skirtp.mp4";
+            if (isSkirt(ro) && noPanties(ru)) return "characters/mc/skirtnp.mp4";
+            return null;
         }
     };
 

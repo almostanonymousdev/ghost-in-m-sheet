@@ -251,8 +251,8 @@
 	<<set _heldId to setup.WitchContract.heldHouseId()>>
 	<<set _staticId to setup.HuntController.staticHouseId()>>
 	<<set _isContractHunt to _staticId and _heldId eq _staticId>>
-	<<set _bottomless to setup.HauntedHouses.isBottomless()>>
-	<<set _topBare to setup.HauntedHouses.isTopBare()>>
+	<<set _bottomless to setup.Wardrobe.isBottomless()>>
+	<<set _topBare to setup.Wardrobe.isTopBare()>>
 	<<set _modest to (setup.Mc.exhibitionism() || 0) lt 5>>
 	<<set _canCoverBottom to _bottomless and (setup.Wardrobe.isPantiesStolen() or setup.Wardrobe.isBottomStolen())>>
 	<<set _canCoverTop to _topBare and (setup.Wardrobe.isShirtStolen() or setup.Wardrobe.isBraStolen())>>

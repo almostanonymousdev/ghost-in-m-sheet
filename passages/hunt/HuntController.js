@@ -30,7 +30,9 @@ setup.HuntController = (function () {
 		'run', 'ectoplasm', 'runsStarted',
 		'nextHuntSeed', 'pendingHuntHouseId',
 		'nextDriftAtMinute',
-		'huntMode'
+		'huntMode',
+		'stealChance',
+		'baitActive', 'baitStepsRemain', 'baitOrgasmPending', 'overchargedTools'
 	]);
 
 	/* Lifecycle stages of the current hunt. Stored as the top-level
@@ -292,7 +294,7 @@ setup.HuntController = (function () {
 		if (kind === 'clothesStolenBra') return setup.Wardrobe.isBraStolen();
 		if (kind === 'clothesStolenShirt') return setup.Wardrobe.isShirtStolen();
 		if (kind === 'clothesStolenBottom') return setup.Wardrobe.isBottomStolen();
-		if (kind === 'tarotCards') return setup.HauntedHouses.isTarotDiscoverable();
+		if (kind === 'tarotCards') return setup.Tarot.isTarotDiscoverable();
 		if (kind === 'monkeyPaw') return setup.MonkeyPaw.isDiscoverable();
 		if (kind === 'cursedItem') return setup.Witch.cursedItemQuestStarted();
 		return true;
@@ -741,9 +743,7 @@ setup.HuntController = (function () {
 		   overlay cleared. The cursed-item carry pickup reuses
 		   markTarotCarrying / markFound, so both items feed
 		   into the same Bag link + TarotCards / MonkeyPaw passages. */
-		if (setup.HauntedHouses && setup.HauntedHouses.resetCursedItemState) {
-			setup.HauntedHouses.resetCursedItemState();
-		}
+		resetCursedItemState();
 		/* Notebook checkboxes also reset so Intense Intuition's
 		   pre-check below isn't joined by leftover ticks from a
 		   previous run. */
@@ -781,8 +781,8 @@ setup.HuntController = (function () {
 		   Gated on isTarotUnlocked() so an early meta-shop purchase
 		   doesn't smuggle the deck in before the level gate the rest
 		   of the tarot pipeline (furniture pickup) requires. */
-		if (Shop.hasUnlock(Item.WITCHS_BLESSING) && setup.HauntedHouses.isTarotUnlocked()) {
-			setup.HauntedHouses.markTarotCarrying();
+		if (Shop.hasUnlock(Item.WITCHS_BLESSING) && setup.Tarot.isTarotUnlocked()) {
+			setup.Tarot.markTarotCarrying();
 			takeLoot('tarotCards');
 		}
 
@@ -1103,27 +1103,178 @@ setup.HuntController = (function () {
 	   so we redress here too -- stolen / lost items are already
 	   filtered). */
 	function cleanupRunState(run) {
-		if (setup.HauntedHouses) {
-			if (typeof setup.HauntedHouses.commitTempCorruption === 'function') {
-				setup.HauntedHouses.commitTempCorruption();
-			}
-			if (typeof setup.HauntedHouses.resetToolTimers === 'function') {
-				setup.HauntedHouses.resetToolTimers();
-			}
-			if (typeof setup.HauntedHouses.resetCursedItemState === 'function') {
-				setup.HauntedHouses.resetCursedItemState();
-			}
-		}
+		commitTempCorruption();
+		resetToolTimers();
+		resetCursedItemState();
 		setHuntMode(HuntMode.ENDED);
-		if (setup.Companion) {
-			setup.Companion.runHuntFailHooks();
-			setup.Companion.resetHuntState();
-		}
-		if (setup.Wardrobe && typeof setup.Wardrobe.redressAfterHunt === 'function') {
-			setup.Wardrobe.redressAfterHunt();
-		}
+		setup.Companion.runHuntFailHooks();
+		setup.Companion.resetHuntState();
+		setup.Wardrobe.redressAfterHunt();
 		restorePreRunStatCaps(run);
 	}
+
+	// --- Cursed-item lifecycle ---------------------------------
+	/* Reset the cursed-item carry/use state shared across runs:
+	   tarot deck stage + draw count + drawn-card stamp, and the
+	   monkey-paw lifecycle (wishes count, found stage, learned
+	   knowledge, door lock, banned houses). The Notebook's
+	   crossed-out-evidence overlay also resets so the
+	   knowledge wish / tarot draw doesn't leak between hunts.
+	   Called from the hunt lifecycle start/end so a fresh hunt
+	   always starts with a fresh deck and an unfound paw. */
+	function resetCursedItemState() {
+		setup.Tarot.resetHunt();
+		setup.Ghosts.clearChosenEvidence();
+		setup.MonkeyPaw.resetHunt();
+	}
+
+	// --- Tool timers + transient hunt flags --------------------
+	/* Per-hunt reset of activatable tool windows (EMF / UVL) and
+	   the lust-fuel / overcharged-tools toggles that live under
+	   HuntConditions. */
+	function resetToolTimers() {
+		setup.resetTools();
+		setup.HauntConditions.resetHuntFlags();
+	}
+
+	// --- Temp corruption accumulator ---------------------------
+	/* Bank `amount` into the in-hunt temp corruption pool. Mc owns
+	   the underlying $tempCorr; the per-hunt commit drops it onto
+	   $mc.corruption (capped at +1) and resets the pool. */
+	function addTempCorruption(amount) {
+		setup.Mc.setTempCorr((setup.Mc.tempCorr() || 0) + amount);
+	}
+	function tempCorruption() { return setup.Mc.tempCorr() || 0; }
+	function commitTempCorruption() {
+		var amount = Math.min(1, setup.Mc.tempCorr() || 0);
+		setup.Mc.setTempCorr(amount);
+		setup.Mc.addCorruption(amount);
+		setup.Mc.setTempCorr(0);
+		return amount;
+	}
+
+	// --- Hunt-over lifecycle wrap-ups --------------------------
+	/* Shared "the hunt is over" tail used by the dedicated HuntOver
+	   passages and the Possessed passage. Commits any temp
+	   corruption the run accumulated and flips $huntMode out of
+	   ACTIVE. Defaults to the ENDED catch-all; pass { possessed:
+	   true } from the Possessed passage to land in POSSESSED
+	   instead, which keys possession-specific cleanup (tarot
+	   mark-spent, monkey paw retire) via
+	   setup.Tick.applyPossessionItemCleanup. */
+	function markHuntOver(opts) {
+		opts = opts || {};
+		commitTempCorruption();
+		setHuntMode(opts.possessed ? HuntMode.POSSESSED : HuntMode.ENDED);
+	}
+	/* Common end-of-hunt cleanup shared by the hunt lifecycle and
+	   the shared hunt-over passages. Does NOT call markHuntOver --
+	   callers vary in whether the mode-flip should fire at passage
+	   load or only when the ghost-catch branch resolves. Pass
+	   { loseStolen: true } to nuke any stolen-clothing flags. */
+	function cleanupAfterHunt(opts) {
+		opts = opts || {};
+		resetToolTimers();
+		setup.Companion.runHuntFailHooks();
+		setup.Companion.resetHuntState();
+		if (opts.loseStolen) setup.Wardrobe.loseAllStolen();
+		setup.Wardrobe.redressAfterHunt();
+	}
+
+	// --- Per-tick steal chance ---------------------------------
+	function stealChance() { return sv().stealChance || 0; }
+	function setStealChance(n) { sv().stealChance = n; }
+	/* Per-tick recompute. Base chance is sanity-driven (lower
+	   sanity = higher chance, capped at 2x baseline at sanity 0)
+	   then scaled by baseline (Tick's stealChanceMult). Per-tick
+	   modifier scaling (Sticky Fingers, etc.) is applied by the
+	   STEAL_CHECK filter at the roll site, not here. */
+	function recomputeStealChance(baseline) {
+		var sanity = setup.Mc.sanity();
+		var sanityScale = Math.log(101 - sanity) / Math.log(101);
+		sv().stealChance = (1 + sanityScale) * baseline;
+	}
+
+	// --- Random prowl + steal triggers -------------------------
+	/* Used by the huntTickEventChain widget to gate random hunt
+	   start by the prowl-timer window, hunt-conditions threshold,
+	   and ghost canProwl check. Returns true when the chain
+	   should <<goto "GhostProwlEvent">>. */
+	function shouldStartProwlRoll() {
+		if (setup.Ghosts.isProwlActivated()) return false;
+		if (setup.Ghosts.elapsedTimeProwl() < setup.Ghosts.prowlTimeRemain()) return false;
+		var threshold = 6 + setup.HauntConditions.snapshot().prowlChanceBonus;
+		if (Math.floor(Math.random() * 101) > threshold) return false;
+		var g = activeGhost();
+		return !!(g && g.canProwl({ sanity: setup.Mc.sanity(), lust: setup.Mc.lust() }));
+	}
+	/* Used by the huntTickEventChain widget: rolls the steal chance
+	   and gates on whether anything is actually stealable. Returns
+	   true when the chain should <<goto "StealClothes">>. */
+	function shouldTriggerStealRoll() {
+		/* STEAL_CHECK filter lets modifiers (Swiper) and contracts
+		   bypass or scale the roll, and lets static houses opt out
+		   entirely via forced modifiers. Subscribers set
+		   forceTrigger=true to skip the roll, or suppress=true to
+		   cancel the steal step outright (Ironclad pins
+		   no_clothes_theft via its forcedModifiers list). suppress
+		   wins over forceTrigger -- a house that doesn't run
+		   clothes-stealing shouldn't have Swiper bypass that. The
+		   caller still gates on canStealAnyItem so we never steal
+		   when nothing is wearable. */
+		var modifierIds = modifiers();
+		var ctx = setup.Hunt.applyFilter(setup.Hunt.Event.STEAL_CHECK, {
+			forceTrigger: false,
+			suppress: false,
+			chanceMult: 1,
+			modifierIds: modifierIds
+		});
+		if (ctx.suppress) return false;
+		if (ctx.forceTrigger) return setup.Wardrobe.canStealAnyItem();
+		var roll = 1 + Math.floor(Math.random() * 100);
+		if (roll > stealChance() * (ctx.chanceMult || 1)) return false;
+		return setup.Wardrobe.canStealAnyItem();
+	}
+
+	/* Per-tick "steal-clothes already fired" flag. Same shape as
+	   setup.Events.eventTriggered() — backed by State.temporary
+	   so passages don't have to share a leaky `_stealClothesTriggered`
+	   temp var across <<include>> boundaries. */
+	function stealClothesTriggered() { return State.temporary.stealClothesTriggered === true; }
+	function markStealClothesTriggered() { State.temporary.stealClothesTriggered = true; }
+	function resetStealClothesTriggered() { State.temporary.stealClothesTriggered = false; }
+
+	/* Record that the MC just dodged a ghost event — stamps the
+	   activation flag + timestamp the Hunt tick reads off when
+	   deciding if enough in-game time has passed to retry. */
+	function rearmHuntTimer() {
+		setup.Ghosts.activateProwl();
+	}
+	/* Start-of-hunt-event bookkeeping: reset elapsedTimeProwl
+	   window + stamp the activation time. Called by the first
+	   frame of GhostProwlEvent before the player picks
+	   run/hide/freeze/pray. Also opens the EMF + UVL activation
+	   windows here -- a prowl disturbs the air enough for the
+	   readers to pick up trail and residue, regardless of which
+	   branch the player resolves into. Hunt cleanup
+	   (cleanupAfterHunt -> resetTools) clears both activations
+	   back to defaults at hunt end. */
+	function beginProwlEvent() {
+		setup.Ghosts.activateProwl();
+		setup.Ghosts.setElapsedTimeProwl(0);
+		setup.activateTool("emf");
+		setup.activateTool("uvl");
+	}
+
+	// --- Static house identity helpers -------------------------
+	/* Convenience predicates over staticHouseId(). The two referenced
+	   externally today are owaissa (Events outfit table) and elm
+	   (Events outfit table); the rest of the static catalogue is
+	   covered by forced-modifier subscribers and the staticHouseId()
+	   getter directly. */
+	function isStaticHouse(id) { return staticHouseId() === id; }
+	function isOwaissa() { return isStaticHouse('owaissa'); }
+	function isElm() { return isStaticHouse('elm'); }
 
 	/* End the active run. Returns a summary record the result passage
 	   can render without peeking at $run state, or null when no run is
@@ -1245,7 +1396,7 @@ setup.HuntController = (function () {
 	   FreezeHunt / HuntEventSuccubus all return through huntCaughtPassage
 	   or $return so they land back on the right passage). */
 	var shouldStartProwl = guarded(false, function () {
-		return setup.HauntedHouses.shouldStartProwl();
+		return shouldStartProwlRoll();
 	});
 
 	/* Steal-clothes roll. The wardrobe / stash side-effects are
@@ -1253,9 +1404,9 @@ setup.HuntController = (function () {
 	   Per-house opt-outs (Ironclad pins no_clothes_theft via its
 	   forcedModifiers list) and modifier overrides (Swiper) live as
 	   STEAL_CHECK filter subscribers applied inside
-	   HauntedHouses.shouldTriggerSteal. */
+	   shouldTriggerStealRoll. */
 	var shouldTriggerSteal = guarded(false, function () {
-		return setup.HauntedHouses.shouldTriggerSteal();
+		return shouldTriggerStealRoll();
 	});
 
 	/* Passage to <<goto>> when the per-tick chain detects a
@@ -1372,7 +1523,7 @@ setup.HuntController = (function () {
 	   huntCaughtPassage, which is what the huntBlackoutExit link
 	   eventually routes through. */
 	function onCaughtCleanup() {
-		setup.HauntedHouses.cleanupAfterHunt({ loseStolen: true });
+		cleanupAfterHunt({ loseStolen: true });
 	}
 
 	/* Pin the active ghost to the player's current room. Used by the
@@ -1655,6 +1806,24 @@ setup.HuntController = (function () {
 		sidebarOutfit: sidebarOutfit,
 		shouldStartProwl: shouldStartProwl,
 		shouldTriggerSteal: shouldTriggerSteal,
+		stealClothesTriggered: stealClothesTriggered,
+		markStealClothesTriggered: markStealClothesTriggered,
+		resetStealClothesTriggered: resetStealClothesTriggered,
+		stealChance: stealChance,
+		setStealChance: setStealChance,
+		recomputeStealChance: recomputeStealChance,
+		rearmHuntTimer: rearmHuntTimer,
+		beginProwlEvent: beginProwlEvent,
+		addTempCorruption: addTempCorruption,
+		tempCorruption: tempCorruption,
+		commitTempCorruption: commitTempCorruption,
+		resetCursedItemState: resetCursedItemState,
+		resetToolTimers: resetToolTimers,
+		markHuntOver: markHuntOver,
+		cleanupAfterHunt: cleanupAfterHunt,
+		isStaticHouse: isStaticHouse,
+		isOwaissa: isOwaissa,
+		isElm: isElm,
 		huntOverPassage: huntOverPassage,
 		realGhostName: realGhostName,
 		ghostRoomLabel: ghostRoomLabel,

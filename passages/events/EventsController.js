@@ -274,7 +274,7 @@ setup.Events = (function () {
 		* Procedural runs default to owaissa art.
 		*/
 		pickByLocation: function (owaissaList, elmList) {
-			if (setup.HauntedHouses.isElm()) return elmList || [];
+			if (setup.HuntController.isElm()) return elmList || [];
 			return owaissaList || [];
 		},
 

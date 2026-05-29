@@ -209,7 +209,7 @@ test.describe('setup.StoryEvents', () => {
 			window.__seSubs.push(SE.on(SE.Event.CHEAT_USED, (ctx) => sources.push(ctx && ctx.source)));
 			delete SugarCube.State.variables.chosenCard;
 			SugarCube.settings.cheatTarotCard = 'death';
-			try { SugarCube.setup.HauntedHouses.drawAndStampTarotCard(); }
+			try { SugarCube.setup.Tarot.drawAndStampTarotCard(); }
 			finally { SugarCube.settings.cheatTarotCard = '—'; }
 			return sources;
 		});
@@ -225,7 +225,7 @@ test.describe('setup.StoryEvents', () => {
 			SugarCube.settings.cheatTarotCard = '—';
 			const orig = Math.random;
 			Math.random = () => 0;
-			try { SugarCube.setup.HauntedHouses.drawAndStampTarotCard(); }
+			try { SugarCube.setup.Tarot.drawAndStampTarotCard(); }
 			finally { Math.random = orig; }
 			return sources;
 		});

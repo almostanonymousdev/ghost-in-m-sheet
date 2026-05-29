@@ -22,7 +22,7 @@
 
 		You decide to look back, and your heart freezes with terror. The ghost is still there, closer than you thought.
 		Cold air surrounds you, and you feel an icy hand reaching for you. You have a little time to
-		<<if setup.HauntedHouses.crucifixAmount() gte 1>>
+		<<if setup.ToolController.crucifixAmount() gte 1>>
 			@@.usebtn; [[use the Crucifix|Crucifix]]@@
 			. Or perhaps, it might be best
 			<<done>>

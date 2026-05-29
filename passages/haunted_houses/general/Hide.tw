@@ -26,7 +26,7 @@
 		&emsp;&emsp; You slowly peek out from your hiding place, hoping the ghost has left. But your eyes meet its hollow sockets.
 		A chill grips your body, and you realize you've made a fatal mistake.<br>
 		You have a little time to
-		<<if setup.HauntedHouses.crucifixAmount() gte 1>>
+		<<if setup.ToolController.crucifixAmount() gte 1>>
 			@@.usebtn; [[use the Crucifix|Crucifix]]@@
 			. Or perhaps, it might be best
 			<<done>>

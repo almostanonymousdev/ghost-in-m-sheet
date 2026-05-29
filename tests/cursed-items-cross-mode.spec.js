@@ -4,7 +4,7 @@ const { openGame, resetGame, callSetup, getVar, setVar } = require('./helpers');
 /* The tarot deck and the monkey paw share a carry-state + wish/draw
    mechanism inside a hunt. Both pickup paths land on the same
    $tarotCardsStage / $MonkeyPawStage flags, and the hunt lifecycle
-   folds in setup.HauntedHouses.resetCursedItemState at start/end so
+   folds in setup.HuntController.resetCursedItemState at start/end so
    leftovers from a prior run never bleed into the next one. These
    tests pin the contract so future callers don't reintroduce ad-hoc
    forks at the call site. */
@@ -245,7 +245,7 @@ test.describe('Cursed-item hunt facade', () => {
     });
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
 
-    expect(await callSetup(page, 'setup.HauntedHouses.tarotCardsStage()'))
+    expect(await callSetup(page, 'setup.Tarot.tarotCardsStage()'))
       .toBe(await callSetup(page, 'setup.TarotStage.HIDDEN'));
     expect(await getVar(page, 'drawnCards')).toBe(0);
     expect(await callSetup(page, 'setup.MonkeyPaw.isDiscoverable()')).toBe(true);
@@ -259,7 +259,7 @@ test.describe('Cursed-item hunt facade', () => {
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
     // Simulate the player picking up the deck + paw mid-run and using a wish.
     await page.evaluate(() => {
-      SugarCube.setup.HauntedHouses.markTarotCarrying();
+      SugarCube.setup.Tarot.markTarotCarrying();
       SugarCube.setup.MonkeyPaw.markFound();
       SugarCube.setup.MonkeyPaw.removeWish();
     });
@@ -269,7 +269,7 @@ test.describe('Cursed-item hunt facade', () => {
 
     // Carry state is back to fresh defaults so the next hunt sees a
     // clean deck/paw rather than inheriting the prior run's leftovers.
-    expect(await callSetup(page, 'setup.HauntedHouses.tarotCardsStage()'))
+    expect(await callSetup(page, 'setup.Tarot.tarotCardsStage()'))
       .toBe(await callSetup(page, 'setup.TarotStage.HIDDEN'));
     expect(await callSetup(page, 'setup.MonkeyPaw.isDiscoverable()')).toBe(true);
     expect(await callSetup(page, 'setup.MonkeyPaw.wishesLeft()')).toBe(3);

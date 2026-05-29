@@ -758,7 +758,7 @@
             return [s.hiddenEvidence, s.hiddenEvidence1, s.hiddenEvidence2];
         },
         /* How many evidence-deletions the witch scheduled for this hunt:
-           0/1/2/3. Used by HauntedHouses to pick a contract reward tier. */
+           0/1/2/3. Used by HuntController to pick a contract reward tier. */
         scheduledDeletionCount: function () {
             var s = State.variables;
             if (s.deleteThirdEvidence === true) return 3;

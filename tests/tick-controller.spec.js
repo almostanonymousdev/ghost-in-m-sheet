@@ -120,9 +120,9 @@ test.describe('TickController helpers', () => {
 
   test('applyPossessionItemCleanup is a no-op when ghost is not possessed', async ({ game: page }) => {
     await page.evaluate(() => SugarCube.setup.Ghosts.cheatStartHunt('Spirit'));
-    const initial = await callSetup(page, 'setup.HauntedHouses.tarotCardsStage()');
+    const initial = await callSetup(page, 'setup.Tarot.tarotCardsStage()');
     await page.evaluate(() => SugarCube.setup.Tick.applyPossessionItemCleanup());
-    expect(await callSetup(page, 'setup.HauntedHouses.tarotCardsStage()')).toBe(initial);
+    expect(await callSetup(page, 'setup.Tarot.tarotCardsStage()')).toBe(initial);
   });
 
   // --- Step counter ---------------------------------------------

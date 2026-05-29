@@ -2,7 +2,7 @@ const { test, expect } = require('../fixtures');
 const { setVar, getVar, callSetup, goToPassage } = require('../helpers');
 
 /**
- * Tarot deck behavior (setup.drawTarotCard + setup.HauntedHouses.*):
+ * Tarot deck behavior (setup.drawTarotCard + setup.Tarot.*):
  *
  *   - drawTarotCard rolls Math.random()*101 against accumulated chances
  *   - The deck sums to 100 chance points (passion 20 + pulse 20 + oblivion 1
@@ -68,15 +68,15 @@ test.describe('Tarot cards', () => {
 
   test('drawnCards counter caps draws at 10', async ({ game: page }) => {
     // Pump drawnCards to 10 directly; TarotCards.tw guard reads via
-    // setup.HauntedHouses.drawnCards().
+    // setup.Tarot.drawnCards().
     await page.evaluate(() => {
       SugarCube.State.variables.drawnCards = 10;
     });
-    expect(await callSetup(page, 'setup.HauntedHouses.drawnCards()')).toBe(10);
-    expect(await callSetup(page, 'setup.HauntedHouses.drawnCards() < 10')).toBe(false);
+    expect(await callSetup(page, 'setup.Tarot.drawnCards()')).toBe(10);
+    expect(await callSetup(page, 'setup.Tarot.drawnCards() < 10')).toBe(false);
     // markTarotSpent should flip the stage to SPENT (=2).
-    await callSetup(page, 'setup.HauntedHouses.markTarotSpent()');
-    expect(await callSetup(page, 'setup.HauntedHouses.tarotCardsStage()')).toBe(2);
+    await callSetup(page, 'setup.Tarot.markTarotSpent()');
+    expect(await callSetup(page, 'setup.Tarot.tarotCardsStage()')).toBe(2);
     expect(await callSetup(page, 'setup.TarotStage.SPENT')).toBe(2);
   });
 
@@ -85,7 +85,7 @@ test.describe('Tarot cards', () => {
       delete SugarCube.State.variables.chosenCard;
       const orig = Math.random;
       Math.random = () => 0;
-      try { SugarCube.setup.HauntedHouses.drawAndStampTarotCard(); }
+      try { SugarCube.setup.Tarot.drawAndStampTarotCard(); }
       finally { Math.random = orig; }
     });
     expect(await getVar(page, 'chosenCard.name')).toBe('passion');
@@ -98,7 +98,7 @@ test.describe('Tarot cards', () => {
       // Random would otherwise return 'passion' at roll=0; cheat must override.
       const orig = Math.random;
       Math.random = () => 0;
-      try { SugarCube.setup.HauntedHouses.drawAndStampTarotCard(); }
+      try { SugarCube.setup.Tarot.drawAndStampTarotCard(); }
       finally { Math.random = orig; SugarCube.settings.cheatTarotCard = '—'; }
     });
     expect(await getVar(page, 'chosenCard.name')).toBe('death');
@@ -108,24 +108,24 @@ test.describe('Tarot cards', () => {
     await page.evaluate(() => {
       SugarCube.State.variables.drawnCards = 0;
     });
-    await callSetup(page, 'setup.HauntedHouses.incrementDrawnCards()');
-    await callSetup(page, 'setup.HauntedHouses.incrementDrawnCards()');
-    expect(await callSetup(page, 'setup.HauntedHouses.drawnCards()')).toBe(2);
+    await callSetup(page, 'setup.Tarot.incrementDrawnCards()');
+    await callSetup(page, 'setup.Tarot.incrementDrawnCards()');
+    expect(await callSetup(page, 'setup.Tarot.drawnCards()')).toBe(2);
   });
 
   /* Level gate: the deck is supposed to be invisible (no furniture
      pickups, no Witch's Blessing pre-stamp) below
-     HauntedHouses.tarotLevelRequired. The two guarantees below pin
+     Tarot.tarotLevelRequired. The two guarantees below pin
      both halves -- isTarotDiscoverable goes false even when the
      per-hunt stage is HIDDEN, and HuntController.lootKindsAt filters
      the kind out so a furniture search never surfaces it. */
   test('isTarotDiscoverable returns false when MC is below the level gate', async ({ game: page }) => {
-    await page.evaluate(() => SugarCube.setup.HauntedHouses.resetCursedItemState());
-    const req = await callSetup(page, 'setup.HauntedHouses.tarotLevelRequired()');
+    await page.evaluate(() => SugarCube.setup.HuntController.resetCursedItemState());
+    const req = await callSetup(page, 'setup.Tarot.tarotLevelRequired()');
     await setVar(page, 'mc.lvl', req - 1);
-    expect(await callSetup(page, 'setup.HauntedHouses.isTarotDiscoverable()')).toBe(false);
+    expect(await callSetup(page, 'setup.Tarot.isTarotDiscoverable()')).toBe(false);
     await setVar(page, 'mc.lvl', req);
-    expect(await callSetup(page, 'setup.HauntedHouses.isTarotDiscoverable()')).toBe(true);
+    expect(await callSetup(page, 'setup.Tarot.isTarotDiscoverable()')).toBe(true);
   });
 
   test('floor-plan furniture search hides tarotCards below level gate', async ({ game: page }) => {
@@ -150,7 +150,7 @@ test.describe('Tarot cards', () => {
     );
     expect(lockedKinds).not.toContain('tarotCards');
 
-    const req = await callSetup(page, 'setup.HauntedHouses.tarotLevelRequired()');
+    const req = await callSetup(page, 'setup.Tarot.tarotLevelRequired()');
     await setVar(page, 'mc.lvl', req);
     const unlockedKinds = await page.evaluate(
       (s) => SugarCube.setup.HuntController.lootKindsAt(s.room, s.suffix),
@@ -168,7 +168,7 @@ test.describe('Tarot cards', () => {
     test.setTimeout(15_000);
 
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
-    await page.evaluate(() => SugarCube.setup.HauntedHouses.markTarotCarrying());
+    await page.evaluate(() => SugarCube.setup.Tarot.markTarotCarrying());
     await page.evaluate(() => { SugarCube.settings.cheatTarotCard = 'possession'; });
     await goToPassage(page, 'TarotCards');
 
@@ -194,7 +194,7 @@ test.describe('Tarot cards', () => {
     test.setTimeout(15_000);
 
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
-    await page.evaluate(() => SugarCube.setup.HauntedHouses.markTarotCarrying());
+    await page.evaluate(() => SugarCube.setup.Tarot.markTarotCarrying());
     await page.evaluate(() => { SugarCube.settings.cheatTarotCard = 'possession'; });
     await goToPassage(page, 'TarotCards');
 

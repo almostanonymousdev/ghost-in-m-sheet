@@ -3,7 +3,7 @@
    the run below clears the type flag + held marker so the player isn't
    stuck holding a phantom item (which would otherwise block Brook from
    fetching another and leave the witch unable to take a turn-in). */
-<<set _vid to setup.HauntedHouses.cursedItemVideo()>>
+<<set _vid to setup.Witch.cursedItemVideo()>>
 <<run setup.Witch.consumeCarriedCursedItem()>>
 <br>
 <<if _vid>>
@@ -16,9 +16,9 @@
 <br>
 <<if setup.Flashbacks.isReplaying()>>
 	/* During gallery replay `previous()` resolves to FlashbackEnter,
-	   which immediately <<goto>>s back to UseCursedItem and traps the
-	   player. Route Back through Flashbacks instead -- containReplay
-	   sees the gallery target and runs exitReplay() cleanly. */
+		which immediately <<goto>>s back to UseCursedItem and traps the
+		player. Route Back through Flashbacks instead -- containReplay
+		sees the gallery target and runs exitReplay() cleanly. */
 	@@.backbtn; [[Back|Flashbacks]]@@
 <<else>>
 	@@.backbtn; [[Back|previous()]]@@

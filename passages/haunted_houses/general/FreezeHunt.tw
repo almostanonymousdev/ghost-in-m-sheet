@@ -8,15 +8,15 @@
  * the wardrobe strip + the floor-plan pin via
  * setup.HuntController.stealClothes) so wardrobe variant state +
  * rememberTopOuter/rememberBottomOuter stay consistent. */
-<<set _hasTop     to setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT)>>
-<<set _hasBottom  to setup.HauntedHouses.hasBottomWorn()>>
+<<set _hasTop to setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT)>>
+<<set _hasBottom to setup.Wardrobe.hasBottomWorn()>>
 <<set _hasPanties to setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES)>>
-<<set _hasBra     to setup.Wardrobe.worn(setup.WardrobeSlot.BRA)>>
-<<set _anyWorn    to _hasTop or _hasBottom or _hasPanties or _hasBra>>
+<<set _hasBra to setup.Wardrobe.worn(setup.WardrobeSlot.BRA)>>
+<<set _anyWorn to _hasTop or _hasBottom or _hasPanties or _hasBra>>
 <<if not _anyWorn>>
 	&emsp;&emsp;You don't run. You don't hide. You hold perfectly still and let it pass THROUGH you. Icy fingers slide over bare skin — and find nothing left to tear away. The ghost pauses. Then, curious and patient, it decides to take you instead.<br>
 	@@.mc-thoughts;You feel the cold close around you and pull. There is nothing left to give but yourself.@@
-	<<run setup.HauntedHouses.rearmHuntTimer()>>
+	<<run setup.HuntController.rearmHuntTimer()>>
 	<br><br>
 	@@.usebtn;<<link "Surrender to the cold" setup.HuntController.huntOverPassage("sanity")>>
 	<</link>>@@
@@ -45,7 +45,7 @@
 	@@.backbtn;[[Continue|$return]]@@
 
 	<<run setup.Hunt.emit(setup.Hunt.Event.PROWL_EVENT)>>
-	<<run setup.HauntedHouses.rearmHuntTimer()>>
+	<<run setup.HuntController.rearmHuntTimer()>>
 	<<done>>
 		<<addclass ".linkselector" "disabled-link">>
 	<</done>>
