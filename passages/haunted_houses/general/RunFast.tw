@@ -10,14 +10,8 @@
 &emsp;&emsp;The ghost's footsteps grow louder and closer, and you realize that every second counts. Your heart pounds wildly in your chest, and your breathing becomes more labored.<br>
 
 &emsp;&emsp;Finally, after running some distance, you decide to look back. Your heart skips a beat. Did you manage to <<linkappend "@@.usebtn; escape the pursuit, or is the ghost still close behind?@@">><br>
-	<<set _check to random(1,100)>>
-	<<set _hg to setup.HuntController.activeGhost()>>
-	<<if _hg and _hg.runningSucceeds eq true>>
-		<<set _check to 100>>
-	<<elseif _hg and _hg.runningSucceeds eq false>>
-		<<set _check to 0>>
-	<</if>>
-	<<if _check lte 30>>
+	<<set _runOutcome to setup.ActiveGhost.runResolution()>>
+	<<if not _runOutcome>>
 		<<run setup.Achievements.noteRunOutcome(false)>>
 
 		You decide to look back, and your heart freezes with terror. The ghost is still there, closer than you thought.

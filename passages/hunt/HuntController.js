@@ -697,7 +697,7 @@ setup.HuntController = (function () {
 	   wishes. runHuntFailHooks gives the active companion a chance
 	   to clean up its own state; resetHuntState zeroes the shared
 	   plan / showComp / isCompChosen flags. Auto-redress slots the MC
-	   undressed during the run (clean-exit paths skip cleanupAfterHunt,
+	   undressed during the run (clean-exit paths skip cleanupAfterHuntFinalized,
 	   so we redress here too -- stolen / lost items are already
 	   filtered). */
 	function cleanupRunState(run) {
@@ -754,23 +754,36 @@ setup.HuntController = (function () {
 	// --- Hunt-over lifecycle wrap-ups --------------------------
 	/* Shared "the hunt is over" tail used by the dedicated HuntOver
 	   passages and the Possessed passage. Commits any temp
-	   corruption the run accumulated and flips $huntMode out of
-	   ACTIVE. Defaults to the ENDED catch-all; pass { possessed:
-	   true } from the Possessed passage to land in POSSESSED
-	   instead, which keys possession-specific cleanup (tarot
-	   mark-spent, monkey paw retire) via
-	   setup.Tick.applyPossessionItemCleanup. */
+	   corruption the run accumulated, flips $huntMode out of
+	   ACTIVE, and (by default) runs cleanupAfterHuntFinalized so
+	   tool timers, companion hooks, and stolen-clothes redress all
+	   happen atomically. Options:
+		 * possessed: land in POSSESSED instead of the ENDED catch-all,
+		   which keys possession-specific cleanup (tarot mark-spent,
+		   monkey paw retire) via setup.Tick.applyPossessionItemCleanup.
+		 * loseStolen: forwarded to cleanupAfterHuntFinalized to nuke
+		   any stolen-clothing flags.
+		 * deferCleanup: skip the inline cleanup. Use when the
+		   mode-flip needs to fire at passage load but the cleanup
+		   should wait for a downstream branch (e.g. HuntOverSanity
+		   defers until the High Priestess reprieve resolves). */
 	function markHuntOver(opts) {
 		opts = opts || {};
 		commitTempCorruption();
 		setHuntMode(opts.possessed ? HuntMode.POSSESSED : HuntMode.ENDED);
+		if (!opts.deferCleanup) {
+			cleanupAfterHuntFinalized({ loseStolen: !!opts.loseStolen });
+		}
 	}
 	/* Common end-of-hunt cleanup shared by the hunt lifecycle and
-	   the shared hunt-over passages. Does NOT call markHuntOver --
-	   callers vary in whether the mode-flip should fire at passage
-	   load or only when the ghost-catch branch resolves. Pass
-	   { loseStolen: true } to nuke any stolen-clothing flags. */
-	function cleanupAfterHunt(opts) {
+	   the shared hunt-over passages. Does NOT flip $huntMode --
+	   markHuntOver owns that and (by default) chains into this
+	   function. Standalone callers are the ones that need cleanup
+	   without the mode-flip (onCaughtCleanup keeps $huntMode ACTIVE
+	   during the post-prowl reveal) or that deferred the cleanup
+	   step at markHuntOver time. Pass { loseStolen: true } to nuke
+	   any stolen-clothing flags. */
+	function cleanupAfterHuntFinalized(opts) {
 		opts = opts || {};
 		resetToolTimers();
 		setup.Companion.runHuntFailHooks();
@@ -965,7 +978,7 @@ setup.HuntController = (function () {
 	   huntCaughtPassage, which is what the huntBlackoutExit link
 	   eventually routes through. */
 	function onCaughtCleanup() {
-		cleanupAfterHunt({ loseStolen: true });
+		cleanupAfterHuntFinalized({ loseStolen: true });
 	}
 
 	/* snapGhostToCurrentRoom / trapGhost / isGhostTrapped / isExitLocked /
@@ -1139,7 +1152,7 @@ setup.HuntController = (function () {
 		resetCursedItemState: resetCursedItemState,
 		resetToolTimers: resetToolTimers,
 		markHuntOver: markHuntOver,
-		cleanupAfterHunt: cleanupAfterHunt,
+		cleanupAfterHuntFinalized: cleanupAfterHuntFinalized,
 		isStaticHouse: isStaticHouse,
 		isOwaissa: isOwaissa,
 		isElm: isElm,

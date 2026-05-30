@@ -173,8 +173,7 @@ setup.Events = (function () {
 		   in-world cause for the reading and the window appeared to
 		   open on its own. */
 		maybeTurnOffLights: function () {
-			var g = setup.HuntController.activeGhost();
-			if (!g || !g.canTurnOffLights) return null;
+			if (!setup.ActiveGhost.canTurnOffLights()) return null;
 			if (Math.floor(Math.random() * 65) !== 0) return null;
 			var dest = this.turnOffLightHere();
 			if (!dest) return null;
@@ -480,17 +479,16 @@ setup.Events = (function () {
 		   videoListForEvent() so the clothing-aware resolvers stay
 		   the single source. */
 		rollRandomEvent: function () {
-			var g = setup.HuntController.activeGhost();
 			var chance = Math.floor(Math.random() * 101);
 			var bansheeRoll = 1 + Math.floor(Math.random() * 10);
 			var ctRoll = 1 + Math.floor(Math.random() * 10);
 			var abilityGate = Math.max(0, 5 - Math.floor(setup.Wardrobe.coverage() / 30));
 			var videoList = [];
 
-			if (g && g.canKiss && bansheeRoll === 1 && chance <= abilityGate) {
+			if (setup.ActiveGhost.canUseKiss() && bansheeRoll === 1 && chance <= abilityGate) {
 				this.enableBanshee();
 				videoList = this.bansheeVideos();
-			} else if (g && g.canTentacles && ctRoll === 1 && chance <= abilityGate) {
+			} else if (setup.ActiveGhost.canUseTentacles() && ctRoll === 1 && chance <= abilityGate) {
 				this.enableCthulion();
 				var et = this.eventTier();
 				var tier = et >= 7 ? 3 : et === 6 ? 2 : et === 5 ? 1 : 0;
@@ -511,9 +509,8 @@ setup.Events = (function () {
 		   EventMC). Encapsulates the entire flow that SaveEventPassage
 		   used to inline. */
 		rollSaveEvent: function () {
-			var g = setup.HuntController.activeGhost();
 			this.setDecreasingSanity(
-				g && g.invertedSanityStages
+				setup.ActiveGhost.hasInvertedSanityStages()
 					? { stage1: 9, stage2: 7, stage3: 5, stage4: 3 }
 					: { stage1: 3, stage2: 5, stage3: 7, stage4: 9 }
 			);
@@ -531,10 +528,10 @@ setup.Events = (function () {
 			var ctRoll = 1 + Math.floor(Math.random() * 6);
 			var videoList = [];
 
-			if (chance <= ds.stage2 && bansheeRoll === 1 && g && g.canKiss) {
+			if (chance <= ds.stage2 && bansheeRoll === 1 && setup.ActiveGhost.canUseKiss()) {
 				this.enableBanshee();
 				videoList = this.bansheeVideos();
-			} else if (chance <= ds.stage2 && ctRoll === 1 && g && g.canTentacles) {
+			} else if (chance <= ds.stage2 && ctRoll === 1 && setup.ActiveGhost.canUseTentacles()) {
 				var tier = cthulionTierForSanity(sanity);
 				if (tier) videoList = cthulionVideos(tier);
 			} else if (sanity >= 75 && chance <= ds.stage1) {
@@ -557,8 +554,9 @@ setup.Events = (function () {
 
 		// --- Ghost sanity-event decreased amount -----------------
 		rollGhostSanityEventDecreased: function () {
-			var g = setup.HuntController.activeGhost();
-			sv().ghostSanityEventDecreased = g ? g.rollEventSanityLoss() : 0;
+			sv().ghostSanityEventDecreased = setup.HuntController.isHuntActive()
+				? setup.HuntController.activeGhost().rollEventSanityLoss()
+				: 0;
 		},
 		ghostSanityEventDecreased: function () { return sv().ghostSanityEventDecreased; },
 

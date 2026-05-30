@@ -578,7 +578,7 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
   });
 
   test('redressAfterHunt skips slots whose item is now NOT_BOUGHT (lost)', async ({ game: page }) => {
-    /* loseAllStolen runs first in cleanupAfterHunt and flips a stolen
+    /* loseAllStolen runs first in cleanupAfterHuntFinalized and flips a stolen
      * tier to NOT_BOUGHT. Even after isXxxStolen is cleared, the
      * NOT_BOUGHT filter in _rememberedItem keeps redress from putting
      * a no-longer-owned garment back on. */
@@ -603,9 +603,9 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
     expect(await getVar(page, 'tshirtState0')).toBe('worn');
   });
 
-  test('cleanupAfterHunt redresses voluntary removals and skips ghost-stolen ones', async ({ game: page }) => {
+  test('cleanupAfterHuntFinalized redresses voluntary removals and skips ghost-stolen ones', async ({ game: page }) => {
     /* Mixed end-of-hunt state: MC took off her own jeans, ghost
-     * stole her tier-1 tshirt. After cleanupAfterHunt({loseStolen:true}):
+     * stole her tier-1 tshirt. After cleanupAfterHuntFinalized({loseStolen:true}):
      * - jeans back on (voluntary removal),
      * - tshirt permanently lost (NOT_BOUGHT, on $lostClothing). */
     await setVar(page, 'jeansState0', 'not worn');
@@ -621,7 +621,7 @@ test.describe('Clothing — Hunt-mode quick undress/redress', () => {
     await setVar(page, 'isShirtStolen', true);
     await setVar(page, 'lostClothing', []);
 
-    await callSetup(page, 'setup.HuntController.cleanupAfterHunt({ loseStolen: true })');
+    await callSetup(page, 'setup.HuntController.cleanupAfterHuntFinalized({ loseStolen: true })');
 
     expect(await getVar(page, 'jeansState1')).toBe('worn');
     expect(await getVar(page, 'tshirtState1')).toBe('not bought');

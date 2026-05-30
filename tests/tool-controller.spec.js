@@ -138,8 +138,8 @@ test.describe('ToolController renderers', () => {
     await page.evaluate(() => {
       Math.random = () => 0;
       SugarCube.setup.toolsRecord('emf').activated = 0;
-      const g = SugarCube.setup.HuntController.activeGhost();
-      g.canTurnOffLights = true;
+      // Banshee's LIGHTS_OFF_ALLOWED default is true (no filter
+      // attached); only Phantom overrides it. No stamp needed.
       SugarCube.setup.Events.turnOffLightHere = () => null;
     });
     const dest1 = await callSetup(page, 'setup.Events.maybeTurnOffLights()');
@@ -190,7 +190,7 @@ test.describe('ToolController renderers', () => {
     expect(uvl).toBe(1);
   });
 
-  test('cleanupAfterHunt resets EMF + UVL activation back to defaults', async () => {
+  test('cleanupAfterHuntFinalized resets EMF + UVL activation back to defaults', async () => {
     /* Hunt cleanup must scrub the timed-tool activation flags so the
        EMF window opened by beginProwlEvent (or any other mid-hunt
        arming) doesn't leak into the next hunt. */
@@ -203,7 +203,7 @@ test.describe('ToolController renderers', () => {
     expect(await page.evaluate(() =>
       SugarCube.setup.toolsRecord('uvl').activated)).toBe(1);
 
-    await callSetup(page, 'setup.HuntController.cleanupAfterHunt()');
+    await callSetup(page, 'setup.HuntController.cleanupAfterHuntFinalized()');
 
     expect(await page.evaluate(() =>
       SugarCube.setup.toolsRecord('emf').activated)).toBe(0);

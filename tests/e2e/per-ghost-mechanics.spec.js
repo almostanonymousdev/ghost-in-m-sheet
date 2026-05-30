@@ -106,9 +106,9 @@ test.describe('Per-ghost mechanics', () => {
     }
   });
 
-  test('Cthulion: cursedActivityVideos pool is exposed on the active ghost', async ({ game: page }) => {
+  test('Cthulion: cursedActivityVideos pool is exposed via setup.ActiveGhost.cursedActivityVideos()', async ({ game: page }) => {
     await setupHunt(page, 'Cthulion');
-    const videos = await page.evaluate(() => SugarCube.setup.HuntController.activeGhost().cursedActivityVideos);
+    const videos = await page.evaluate(() => SugarCube.setup.ActiveGhost.cursedActivityVideos());
     expect(Array.isArray(videos)).toBe(true);
     expect(videos.length).toBeGreaterThan(0);
     videos.forEach((v) => expect(v).toMatch(/^characters\/ghosts\/cthulion\//));

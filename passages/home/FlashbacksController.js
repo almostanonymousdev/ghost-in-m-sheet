@@ -459,10 +459,10 @@ setup.Flashbacks = (function () {
 		},
 		{
 			/* Caught-by-ghost hunt-end. HuntOverProwl branches on
-			   ghost.canTentacles, the prison_visuals modifier,
+			   setup.ActiveGhost.canUseTentacles(), the prison_visuals modifier,
 			   Alice-companion, then wardrobe slot. Stamp a Spirit run
-			   (canTentacles false, non-Mimic) so activeGhost() returns
-			   the planted ghost --
+			   (Spirit has no GHOST_ABILITY filter so tentacles=false,
+			   non-Mimic) so activeGhost() returns the planted ghost --
 			   isActive() guards activeGhost on `$run` alone, no need to
 			   flip huntMode to ACTIVE. (Doing so trips TickController's
 			   PassageDone redirect: "isHunting && morning >= 6" sends
@@ -485,8 +485,8 @@ setup.Flashbacks = (function () {
 		{
 			/* Sanity-out hunt-end. HuntOverSanity branches on tentacles
 			   vs prison_visuals modifier vs default. Spirit again --
-			   canTentacles is
-			   false so the generic sanityover/N.mp4 video plays. Same
+			   no GHOST_ABILITY filter so tentacles=false and the
+			   generic sanityover/N.mp4 video plays. Same
 			   onCaughtCleanup cascade fires; HUNT_PATHS covers it. See
 			   hunt_caught_prowl above for why activateHunt is omitted. */
 			id: 'hunt_caught_sanity', title: 'Caught: Sanity Break', location: 'Hunt',

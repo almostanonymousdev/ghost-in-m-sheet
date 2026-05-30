@@ -188,9 +188,10 @@ test.describe('HuntController', () => {
     expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(true);
   });
 
-  test('shuffleGhostRoom() respects ghost.staysInOneRoom (Goryo)', async () => {
-    // Goryo's catalogue entry sets staysInOneRoom = true; the
-    // controller bails before any roll happens.
+  test('shuffleGhostRoom() respects setup.ActiveGhost.staysInOneRoom() (Goryo)', async () => {
+    // Goryo's GHOST_DRIFT_ALLOWED filter pins allowed=false, so
+    // setup.ActiveGhost.staysInOneRoom() returns true and the controller
+    // bails before any roll happens.
     await page.evaluate(() => {
       SugarCube.setup.HuntController.startHunt({ seed: 1 });
       SugarCube.setup.HuntController.setField('ghostName', 'Goryo');

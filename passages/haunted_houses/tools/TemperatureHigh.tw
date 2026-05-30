@@ -4,9 +4,9 @@
 +5 when in the ghost's room without that evidence,
 +0 otherwise.
 Colour is green outside the ghost's room (and for tier 5 -- plain), red in
-the ghost's room, yellow when the room has no temperature evidence. Ghosts
-with temperatureGlitchChance set (Raiju) occasionally glitch the reading
-to a random 0..50 value on tier <= 4 thermometers. */
+the ghost's room, yellow when the room has no temperature evidence. Ghosts whose huntFilters attach a SENSOR_GLITCH_CHANCE entry for the
+"temperature" tool (Raiju) occasionally glitch the reading to a random
+0..50 value on tier <= 4 thermometers (read via setup.ActiveGhost.sensorGlitchChance). */
 <<set _inGhostRoom to setup.isGhostHere()>>
 <<set _hg to setup.HuntController.activeGhost()>>
 <<set _hasTempEvidence to _hg and _hg.hasEvidence("temperature")>>

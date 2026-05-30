@@ -705,7 +705,7 @@ test.describe('Hunt Controller', () => {
   });
 
   test('endHunt auto-redresses slots the MC took off during the run', async () => {
-    /* Hunt clean-exit paths (success / flee) skip cleanupAfterHunt,
+    /* Hunt clean-exit paths (success / flee) skip cleanupAfterHuntFinalized,
        so redressAfterHunt has to fire from endHunt itself. */
     await page.evaluate(() => SugarCube.setup.HuntController.start({ seed: 3, modifiers: [] }));
     await page.evaluate(() => {

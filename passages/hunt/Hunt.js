@@ -97,7 +97,43 @@ setup.Hunt = (function () {
 		/* Hunt room background URL. Modifiers can pin ctx.url to a
 		   per-template background override (e.g. prison
 		   hallway/kitchen). ctx: { templateId, dark, url }. */
-		ROOM_BACKGROUND: 'room-background'
+		ROOM_BACKGROUND: 'room-background',
+		/* Per-event base sanity drain (EventMC roll). Oni broadens.
+		   ctx: { range: [lo, hi] }. */
+		SANITY_EVENT_LOSS_RANGE: 'sanity-event-loss-range',
+		/* SaveEventPassage decreasing-sanity stage table. Shade flips
+		   the curve so high sanity rolls more events.
+		   ctx: { inverted: false }. */
+		SANITY_STAGES_INVERTED: 'sanity-stages-inverted',
+		/* Hide.tw resolution. Deogen always finds you, Jinn never does.
+		   ctx: { outcome: null|true|false } (null = roll, true = success,
+		   false = guaranteed catch). */
+		HIDE_RESOLUTION: 'hide-resolution',
+		/* RunFast.tw resolution. Deogen can be outrun, Jinn can't.
+		   ctx: { outcome: null|true|false }. */
+		RUN_RESOLUTION: 'run-resolution',
+		/* EventsController.maybeTurnOffLights gate. Phantom can't flick
+		   the lights. ctx: { allowed: true }. */
+		LIGHTS_OFF_ALLOWED: 'lights-off-allowed',
+		/* HuntDrift.shuffleGhostRoom gate. Goryo stays put.
+		   ctx: { allowed: true }. */
+		GHOST_DRIFT_ALLOWED: 'ghost-drift-allowed',
+		/* Per-ghost ability flags consumed by EventsController.rollSaveEvent
+		   / rollRandomEvent and the HuntOver / companion-help passages.
+		   Cthulion sets tentacles=true, Banshee sets kiss=true.
+		   ctx: { tentacles: false, kiss: false }. */
+		GHOST_ABILITY: 'ghost-ability',
+		/* Sensor-glitch denominator. Raiju sets a non-zero denom on a
+		   per-tool query. Consumer rolls (1/denom) and emits SENSOR_GLITCH
+		   on hit. ctx: { tool: 'emf'|'temperature', denom: 0 }. */
+		SENSOR_GLITCH_CHANCE: 'sensor-glitch-chance',
+		/* Spiritbox response chances (0-100). Moroi sets possessionChance,
+		   Raiju sets staticChance. Consumer rolls a single d100 and tests
+		   each in turn. ctx: { possessionChance: 0, staticChance: 0 }. */
+		SPIRITBOX_RESPONSE: 'spiritbox-response',
+		/* Cthulion/Banshee contribute their extra clip pool to the Monkey
+		   Paw cursed-activity wish. ctx: { videos: [] }. */
+		CURSED_ACTIVITY_VIDEOS: 'cursed-activity-videos'
 	});
 
 	var listeners = {};

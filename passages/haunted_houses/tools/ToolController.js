@@ -299,13 +299,11 @@
         var V = State.variables;
         var roll = randInt(1, 100);
         var g = setup.HuntController.activeGhost();
+        var sbResponse = setup.ActiveGhost.spiritboxResponse();
 
-        if (setup.Hunt && setup.Hunt.Event) {
-            setup.Hunt.emit(setup.Hunt.Event.SPIRITBOX_USED, {});
-        }
+        setup.Hunt.emit(setup.Hunt.Event.SPIRITBOX_USED, {});
 
-
-        if (g && g.spiritboxPossessionChance > 0 && roll <= g.spiritboxPossessionChance) {
+        if (sbResponse.possessionChance > 0 && roll <= sbResponse.possessionChance) {
             maybeActivatePossessionOnHuntTool();
             _huntCardMarkup = '';
             if (setup.Mc.bodyPartSensitivity('brain') >= 3) {
@@ -324,7 +322,7 @@
             return menacingMarkup;
         }
 
-        if (g && g.spiritboxStaticChance > 0 && roll <= g.spiritboxStaticChance) {
+        if (sbResponse.staticChance > 0 && roll <= sbResponse.staticChance) {
             /* Static is the ghost interfering with the device, not a
                non-response — open the EMF window the same way a clean
                hit would. Without this, Raiju has no way to activate EMF

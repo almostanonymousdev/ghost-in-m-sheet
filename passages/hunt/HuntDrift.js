@@ -97,8 +97,7 @@ setup.HuntDrift = (function () {
 	   - the clock hasn't yet reached `nextDriftAtMinute`. */
 	function shuffleGhostRoom() {
 		if (!setup.HuntController.isHuntActive()) return;
-		var ghost = setup.HuntController.activeGhost();
-		if (!ghost || ghost.staysInOneRoom) return;
+		if (setup.ActiveGhost.staysInOneRoom()) return;
 		// Bait pins the ghost to the player for its window; skip the
 		// drift roll so the bait spend doesn't get undone by a shuffle.
 		if (setup.HauntConditions && setup.HauntConditions.isBaitActive

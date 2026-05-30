@@ -120,7 +120,7 @@ setup.HuntProwl = (function () {
 	   windows here -- a prowl disturbs the air enough for the
 	   readers to pick up trail and residue, regardless of which
 	   branch the player resolves into. Hunt cleanup
-	   (cleanupAfterHunt -> resetTools) clears both activations
+	   (cleanupAfterHuntFinalized -> resetTools) clears both activations
 	   back to defaults at hunt end. */
 	function beginProwlEvent() {
 		setup.Ghosts.activateProwl();

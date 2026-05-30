@@ -61,8 +61,7 @@
 					<<set _tempCorrGained to setup.HuntController.commitTempCorruption()>>
 					Corruption is increased (+ <<= _tempCorrGained.toFixed(2)>>) : <<= setup.Mc.corruption().toFixed(2)>><br>
 					<<run setup.Mc.setDirty(1)>>
-					<<run setup.HuntController.markHuntOver({ possessed: true })>>
-					<<run setup.HuntController.cleanupAfterHunt({ loseStolen: true })>>
+					<<run setup.HuntController.markHuntOver({ possessed: true, loseStolen: true })>>
 
 					<<done>>
 						<<addclass ".linkselector" "disabled-link">>

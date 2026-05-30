@@ -32,7 +32,9 @@
             description: "Shade -- one of the oldest types of ghosts. The main feature of the Shade is that the lower your sanity, the less likely the Shade is to show interest in you.",
             prowlCondition: function (mc) { return mc.sanity <= 55; },
             prowlConditionText: "Can start a prowl if you have <= 55 sanity",
-            invertedSanityStages: true
+            huntFilters: {
+                SANITY_STAGES_INVERTED: function (ctx) { ctx.inverted = true; }
+            }
         },
         {
             name: "Spirit", image: "spirit.webp",
@@ -65,7 +67,9 @@
             description: "This type of ghost cannot turn off the lights.",
             prowlCondition: function (mc) { return mc.sanity <= 70; },
             prowlConditionText: "Can start a prowl if you have <= 70 sanity",
-            canTurnOffLights: false
+            huntFilters: {
+                LIGHTS_OFF_ALLOWED: function (ctx) { ctx.allowed = false; }
+            }
         },
         {
             name: "Goryo", image: "goryo.webp",
@@ -74,7 +78,9 @@
             description: "Goryo is known for its attachment to a single room and cannot change it like other ghosts do. If you notice that the ghost's activity is focused exclusively in one area, you are likely dealing with a Goryo.",
             prowlCondition: function (mc) { return mc.lust >= 30; },
             prowlConditionText: "Can start a prowl if you have >= 30 lust",
-            staysInOneRoom: true
+            huntFilters: {
+                GHOST_DRIFT_ALLOWED: function (ctx) { ctx.allowed = false; }
+            }
         },
         {
             name: "Demon", image: "demon.webp",
@@ -93,8 +99,11 @@
             findableOnline: true,
             prowlCondition: function (mc) { return mc.sanity <= 70; },
             prowlConditionText: "Can start a prowl if you have <= 70 sanity",
-            hidingSucceeds: false,   // Deogen always finds you
-            runningSucceeds: true     // …but you can outrun it
+            // Deogen always finds you; you can outrun it.
+            huntFilters: {
+                HIDE_RESOLUTION: function (ctx) { ctx.outcome = false; },
+                RUN_RESOLUTION: function (ctx) { ctx.outcome = true; }
+            }
         },
         {
             name: "Jinn", image: "jinn.webp",
@@ -104,8 +113,11 @@
             findableOnline: true,
             prowlCondition: function (mc) { return mc.sanity <= 70; },
             prowlConditionText: "Can start a prowl if you have <= 70 sanity",
-            hidingSucceeds: true,    // Jinn can be hidden from
-            runningSucceeds: false    // …but never outrun
+            // Jinn can be hidden from; never outrun.
+            huntFilters: {
+                HIDE_RESOLUTION: function (ctx) { ctx.outcome = true; },
+                RUN_RESOLUTION: function (ctx) { ctx.outcome = false; }
+            }
         },
         {
             name: "Moroi", image: "moroi.webp",
@@ -114,7 +126,9 @@
             description: "The Moroi can invade the minds of weak-willed victims when using the Spirit Box. Be cautious when communicating, as this ghost may possess you.",
             prowlCondition: function (mc) { return mc.sanity <= 70; },
             prowlConditionText: "Can start a prowl if you have <= 70 sanity",
-            spiritboxPossessionChance: 30
+            huntFilters: {
+                SPIRITBOX_RESPONSE: function (ctx) { ctx.possessionChance = 30; }
+            }
         },
         {
             name: "Myling", image: "myling.webp",
@@ -134,7 +148,9 @@
             findableOnline: true,
             prowlCondition: function (mc) { return mc.lust >= 30; },
             prowlConditionText: "Can start a prowl if you have >= 30 lust",
-            sanityEventLossRange: [3, 8]
+            huntFilters: {
+                SANITY_EVENT_LOSS_RANGE: function (ctx) { ctx.range = [3, 8]; }
+            }
         },
         {
             name: "Mimic", image: "mimic.webp",
@@ -204,15 +220,19 @@
             description: "Cthulion is one of the oldest beings, with a history stretching far back before the dawn of humanity. Its true form is so alien to the human mind that most who encounter it can only describe it as \"unspeakable.\" However, Cthulion rarely reveals its true form, preferring to take on a human appearance. But when it needs to interact with its victims, it's not above using its tentacles.",
             prowlCondition: function (mc) { return mc.sanity <= 70; },
             prowlConditionText: "Can start a prowl if you have <= 70 sanity",
-            canTentacles: true,
-            cursedActivityVideos: [
-                "characters/ghosts/cthulion/1.0.mp4", "characters/ghosts/cthulion/1.1.mp4",
-                "characters/ghosts/cthulion/1.2.mp4", "characters/ghosts/cthulion/1.3.mp4",
-                "characters/ghosts/cthulion/1.4.mp4", "characters/ghosts/cthulion/1.5.mp4",
-                "characters/ghosts/cthulion/1.6.mp4", "characters/ghosts/cthulion/2.0.mp4",
-                "characters/ghosts/cthulion/2.1.mp4", "characters/ghosts/cthulion/2.2.mp4",
-                "characters/ghosts/cthulion/2.3.mp4", "characters/ghosts/cthulion/2.4.mp4"
-            ]
+            huntFilters: {
+                GHOST_ABILITY: function (ctx) { ctx.tentacles = true; },
+                CURSED_ACTIVITY_VIDEOS: function (ctx) {
+                    ctx.videos = ctx.videos.concat([
+                        "characters/ghosts/cthulion/1.0.mp4", "characters/ghosts/cthulion/1.1.mp4",
+                        "characters/ghosts/cthulion/1.2.mp4", "characters/ghosts/cthulion/1.3.mp4",
+                        "characters/ghosts/cthulion/1.4.mp4", "characters/ghosts/cthulion/1.5.mp4",
+                        "characters/ghosts/cthulion/1.6.mp4", "characters/ghosts/cthulion/2.0.mp4",
+                        "characters/ghosts/cthulion/2.1.mp4", "characters/ghosts/cthulion/2.2.mp4",
+                        "characters/ghosts/cthulion/2.3.mp4", "characters/ghosts/cthulion/2.4.mp4"
+                    ]);
+                }
+            }
         },
         {
             name: "Banshee", image: "banshee.webp",
@@ -221,14 +241,18 @@
             description: "The Banshee has a unique ability called the \"Kiss of the Banshee,\" which reduces sanity by 10 points.",
             prowlCondition: function (mc) { return mc.lust >= 30; },
             prowlConditionText: "Can start a prowl if you have >= 30 lust",
-            canKiss: true,
-            cursedActivityVideos: [
-                "characters/ghosts/banshee/1.mp4", "characters/ghosts/banshee/2.mp4",
-                "characters/ghosts/banshee/3.mp4", "characters/ghosts/banshee/4.mp4",
-                "characters/ghosts/banshee/5.mp4", "characters/ghosts/banshee/6.mp4",
-                "characters/ghosts/banshee/7.mp4", "characters/ghosts/banshee/8.mp4",
-                "characters/ghosts/banshee/9.mp4", "characters/ghosts/banshee/10.mp4"
-            ]
+            huntFilters: {
+                GHOST_ABILITY: function (ctx) { ctx.kiss = true; },
+                CURSED_ACTIVITY_VIDEOS: function (ctx) {
+                    ctx.videos = ctx.videos.concat([
+                        "characters/ghosts/banshee/1.mp4", "characters/ghosts/banshee/2.mp4",
+                        "characters/ghosts/banshee/3.mp4", "characters/ghosts/banshee/4.mp4",
+                        "characters/ghosts/banshee/5.mp4", "characters/ghosts/banshee/6.mp4",
+                        "characters/ghosts/banshee/7.mp4", "characters/ghosts/banshee/8.mp4",
+                        "characters/ghosts/banshee/9.mp4", "characters/ghosts/banshee/10.mp4"
+                    ]);
+                }
+            }
         },
         {
             name: "Raiju", image: "raiju.webp",
@@ -237,9 +261,13 @@
             description: "Raiju is a mysterious entity that occasionally exerts influence over electrical devices, causing them to display incorrect readings. This spectral presence can manipulate the behavior of electronics, leading to unpredictable and sometimes inexplicable malfunctions.",
             prowlCondition: function (mc) { return mc.sanity <= 70; },
             prowlConditionText: "Can start a prowl if you have <= 70 sanity",
-            emfGlitchChance: 3,
-            temperatureGlitchChance: 8,
-            spiritboxStaticChance: 20
+            huntFilters: {
+                SENSOR_GLITCH_CHANCE: function (ctx) {
+                    if (ctx.tool === 'emf') ctx.denom = 3;
+                    else if (ctx.tool === 'temperature') ctx.denom = 8;
+                },
+                SPIRITBOX_RESPONSE: function (ctx) { ctx.staticChance = 20; }
+            }
         }
     ];
 
@@ -247,7 +275,19 @@
        evidenceLabels, hoverHtml, matchesEvidence, …) lives on instances
        rather than as setup.Ghosts.xyz(ghost, …) free functions. The
        $ghostInfoCollected map is exposed as the `isInfoCollected`
-       accessor so callers never touch the raw map directly. */
+       accessor so callers never touch the raw map directly.
+
+       Per-ghost effect data (light-flicking, hide/run resolution,
+       sanity-event range, sensor-glitch chances, ability flags, cursed-
+       activity videos, …) no longer lives as constructor fields. The
+       catalogue entry attaches them as `huntFilters: { EVENT_KEY: fn }`
+       and the registrar at the bottom of this file wires each callback
+       through setup.Hunt.filter(...) gated on the active ghost. Consumers
+       read the effective value by calling setup.Hunt.applyFilter or one of
+       the setup.Ghosts.X() convenience helpers (which do the apply inline).
+       The non-effect passage routing (walkHomePassage, sleepPassage,
+       goHomePassage, companionHuntPassage) remains a static dispatch
+       table on the instance. */
     function Ghost(cfg) {
         this.name = cfg.name;
         this.image = cfg.image;
@@ -258,45 +298,18 @@
         this.prowlCondition = cfg.prowlCondition;
         this.prowlConditionText = cfg.prowlConditionText || "";
 
-        /* Per-ghost behaviour fields. Consumers check these instead of
-           branching on this.name; see passages/gui/Notebook, Hide, RunFast,
-           the huntTickEventChain widget, ChangeGhostRoom, EventMC,
-           WalkHomeTogether, Sleep, companion Main files, and the HuntOver*
-           flow for examples. */
-        this.canTurnOffLights = cfg.canTurnOffLights !== false;     // default true
-        this.staysInOneRoom = !!cfg.staysInOneRoom;
-        /* null = roll normally; true = always succeeds; false = never. */
-        this.hidingSucceeds = (cfg.hidingSucceeds !== undefined) ? cfg.hidingSucceeds : null;
-        this.runningSucceeds = (cfg.runningSucceeds !== undefined) ? cfg.runningSucceeds : null;
-        this.invertedSanityStages = !!cfg.invertedSanityStages;
         this.walkHomePassage = cfg.walkHomePassage || null;   // Spirit: "GhostSpecialEventSpirit"
         this.sleepPassage = cfg.sleepPassage || null;   // Wraith: "GhostSpecialEventWraith"
         this.goHomePassage = cfg.goHomePassage || null;   // Myling: "GhostSpecialEventMyling"
         this.companionHuntPassage = cfg.companionHuntPassage || null;   // Myling: "GhostSpecialEventMylingTwo"
-        this.sanityEventLossRange = cfg.sanityEventLossRange || [1, 5]; // Oni:    [3, 8]
 
-        /* Sensor-glitch chance denominators (1/N per tool reading). */
-        this.emfGlitchChance = cfg.emfGlitchChance || 0; // Raiju: 3
-        this.temperatureGlitchChance = cfg.temperatureGlitchChance || 0; // Raiju: 8
-
-        /* Spiritbox special-response percentages (0-100, rolled once). */
-        this.spiritboxPossessionChance = cfg.spiritboxPossessionChance || 0; // Moroi: 30
-        this.spiritboxStaticChance = cfg.spiritboxStaticChance || 0; // Raiju: 20
-
-        /* Ability flags — check these instead of comparing names. */
-        this.canTentacles = !!cfg.canTentacles;  // Cthulion
-        this.canKiss = !!cfg.canKiss;       // Banshee
-
-        /* Extra video clips this ghost contributes to the cursed-activity
-           video pool (widgetText). */
-        this.cursedActivityVideos = cfg.cursedActivityVideos || null;
-
-        /* Per-ghost reactions to hunt-bus events. Map of `setup.Hunt.Event`
-           key -> callback. Callbacks only fire when this ghost is the
-           active hunt; gating happens generically in the registrar at
-           the bottom of this file. Adding a per-ghost lifecycle reaction
-           is a one-edit catalogue change. */
+        /* Per-ghost reactions to hunt-bus events. Two maps:
+           - huntHooks  : { EVENT_KEY: fn } -> setup.Hunt.on(EVENT, fn)
+           - huntFilters: { EVENT_KEY: fn } -> setup.Hunt.filter(EVENT, fn)
+           Both gate on the active ghost name in the registrar at the
+           bottom of this file. */
         this.huntHooks = cfg.huntHooks || null;
+        this.huntFilters = cfg.huntFilters || null;
     }
 
     /* All "have I read about this ghost in Ghostopedia yet?" flags share
@@ -372,31 +385,26 @@
     };
 
     /* Roll the per-ghost sanity penalty that fires during MC events
-       (EventMC). Default 1-5; Oni 3-8. */
+       (EventMC). Default 1-5; Oni broadens via the SANITY_EVENT_LOSS_RANGE
+       filter to [3, 8]. */
     Ghost.prototype.rollEventSanityLoss = function () {
-        var r = this.sanityEventLossRange;
+        var r = setup.ActiveGhost.sanityEventLossRange();
         return r[0] + Math.floor(Math.random() * (r[1] - r[0] + 1));
     };
 
     /* Sensor-glitch rolls — return true when the tool should display a
-       bogus reading this tick. Default denominators are 0 (no glitches);
-       Raiju overrides via cfg.emfGlitchChance / cfg.temperatureGlitchChance. */
-    Ghost.prototype.rollEmfGlitch = function () {
-        var hit = this.emfGlitchChance > 0 &&
-            Math.floor(Math.random() * this.emfGlitchChance) === 0;
-        if (hit && setup.Hunt && setup.Hunt.Event) {
-            setup.Hunt.emit(setup.Hunt.Event.SENSOR_GLITCH, { tool: 'emf' });
+       bogus reading this tick. Default denominator is 0 (no glitches);
+       Raiju's SENSOR_GLITCH_CHANCE filter sets emf=3 / temperature=8. */
+    function rollSensorGlitch(tool) {
+        var denom = setup.ActiveGhost.sensorGlitchChance(tool);
+        var hit = denom > 0 && Math.floor(Math.random() * denom) === 0;
+        if (hit) {
+            setup.Hunt.emit(setup.Hunt.Event.SENSOR_GLITCH, { tool: tool });
         }
         return hit;
-    };
-    Ghost.prototype.rollTemperatureGlitch = function () {
-        var hit = this.temperatureGlitchChance > 0 &&
-            Math.floor(Math.random() * this.temperatureGlitchChance) === 0;
-        if (hit && setup.Hunt && setup.Hunt.Event) {
-            setup.Hunt.emit(setup.Hunt.Event.SENSOR_GLITCH, { tool: 'temperature' });
-        }
-        return hit;
-    };
+    }
+    Ghost.prototype.rollEmfGlitch = function () { return rollSensorGlitch('emf'); };
+    Ghost.prototype.rollTemperatureGlitch = function () { return rollSensorGlitch('temperature'); };
 
     var GHOSTS = GHOST_CONFIG.map(function (cfg) { return new Ghost(cfg); });
 
@@ -722,9 +730,7 @@
                 var name = ghostTypes[Math.floor(Math.random() * ghostTypes.length)];
                 setup.HuntController.setField('disguiseName', name);
                 V.lastChangeIntervalMimic = interval;
-                if (setup.Hunt && setup.Hunt.Event) {
-                    setup.Hunt.emit(setup.Hunt.Event.MIMIC_ROTATE, { disguiseName: name });
-                }
+                setup.Hunt.emit(setup.Hunt.Event.MIMIC_ROTATE, { disguiseName: name });
                 return name;
             }
             return null;
@@ -766,6 +772,7 @@
             if (s.deleteOneEvidence === true) return 1;
             return 0;
         },
+
     };
 
     // Pure $variable passthrough accessors. elapsedTimeProwl /
@@ -783,35 +790,47 @@
 
     /* Per-ghost behaviour on hunt-bus events.
      *
-     * Each per-ghost reaction lives on its catalogue entry as a
-     * `huntHooks: { EVENT_KEY: fn }` map (see Spirit / Mimic / Mare /
-     * The Twins). Adding a new reaction means appending a hook to the
-     * relevant catalogue entry -- no edits to this registrar.
+     * Two parallel maps on each catalogue entry:
+     *   - huntHooks  : { EVENT_KEY: fn(ctx) }   notifications via setup.Hunt.on
+     *                  Spirit clears its event stage, Mimic seeds disguise
+     *                  rotation, Mare advances the multi-day chain, Twins
+     *                  stamp the prowl flag.
+     *   - huntFilters: { EVENT_KEY: fn(ctx) }   modifiers via setup.Hunt.filter
+     *                  Oni broadens SANITY_EVENT_LOSS_RANGE, Phantom blocks
+     *                  LIGHTS_OFF_ALLOWED, Goryo blocks GHOST_DRIFT_ALLOWED,
+     *                  Deogen / Jinn pin HIDE_RESOLUTION / RUN_RESOLUTION,
+     *                  Cthulion / Banshee set GHOST_ABILITY + concat to
+     *                  CURSED_ACTIVITY_VIDEOS, Moroi / Raiju set
+     *                  SPIRITBOX_RESPONSE chances, Raiju also drives
+     *                  SENSOR_GLITCH_CHANCE, Shade flips SANITY_STAGES_INVERTED.
      *
-     * Registration is deferred to :storyready because Tweego concatenates
-     * passages/ghosts/ before passages/hunt/, so setup.Hunt isn't yet
-     * defined when this IIFE runs. */
+     * Both gate on setup.Ghosts.huntRealName() === g.name so Mimic's disguise
+     * never inherits its cover identity's filters. Registration is deferred
+     * to :storyready because Tweego concatenates passages/ghosts/ before
+     * passages/hunt/, so setup.Hunt isn't yet defined when this IIFE runs. */
     $(document).one(':storyready', function () {
-        if (!setup.Hunt || !setup.Hunt.Event) {
-            console.error('GhostController: setup.Hunt missing at :storyready; per-ghost subscriptions skipped.');
-            return;
-        }
         var E = setup.Hunt.Event;
-        setup.Ghosts.list().forEach(function (g) {
-            if (!g.huntHooks) return;
-            Object.keys(g.huntHooks).forEach(function (evKey) {
-                var evConst = E[evKey];
-                if (evConst === undefined) {
-                    console.error('GhostController: unknown Hunt.Event "' + evKey + '" on ghost ' + g.name);
-                    return;
-                }
-                var fn = g.huntHooks[evKey];
-                setup.Hunt.on(evConst, function () {
-                    if (setup.Ghosts.huntRealName() !== g.name) return;
-                    fn();
+        function wire(register, source, label) {
+            setup.Ghosts.list().forEach(function (g) {
+                var map = g[source];
+                if (!map) return;
+                Object.keys(map).forEach(function (evKey) {
+                    var evConst = E[evKey];
+                    if (evConst === undefined) {
+                        console.error('GhostController: unknown Hunt.Event "' + evKey
+                            + '" on ghost ' + g.name + ' (' + label + ')');
+                        return;
+                    }
+                    var fn = map[evKey];
+                    register(evConst, function (ctx) {
+                        if (setup.Ghosts.huntRealName() !== g.name) return;
+                        fn(ctx);
+                    });
                 });
             });
-        });
+        }
+        wire(setup.Hunt.on, 'huntHooks', 'huntHooks');
+        wire(setup.Hunt.filter, 'huntFilters', 'huntFilters');
     });
 })();
 

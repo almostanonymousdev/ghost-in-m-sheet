@@ -30,4 +30,3 @@
 <</if>>
 
 <<run setup.HuntController.markHuntOver()>>
-<<run setup.HuntController.cleanupAfterHunt()>>
