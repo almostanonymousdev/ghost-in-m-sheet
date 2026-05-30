@@ -48,7 +48,7 @@ test.describe('Ghost unique abilities — Phantom, Goryo, Deogen, Jinn', () => {
       SugarCube.setup.HuntController.startHunt({ seed: 1 });
       SugarCube.setup.HuntController.setField('ghostName', 'Spirit');
       SugarCube.setup.HuntController.setField('disguiseName', 'Spirit');
-      SugarCube.setup.HuntController.setHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
+      SugarCube.setup.HuntController.cheatSetHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
     });
     await goToPassage(page, 'HuntRun');
     await page.evaluate(() => {

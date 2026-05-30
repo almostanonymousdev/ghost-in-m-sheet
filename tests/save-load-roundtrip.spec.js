@@ -152,7 +152,7 @@ test.describe('Save/load round-trip', () => {
       SugarCube.setup.HuntController.setField('disguiseName', 'Shade');
       const g = SugarCube.setup.Ghosts.getByName('Shade');
       SugarCube.setup.HuntController.setField('evidence', g.evidence.map(e => e.id));
-      SugarCube.setup.HuntController.setHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
+      SugarCube.setup.HuntController.cheatSetHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
     });
     await commitToSave(page);
 

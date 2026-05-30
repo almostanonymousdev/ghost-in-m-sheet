@@ -110,7 +110,7 @@ test.describe('TickController helpers', () => {
     // Drive the ghost into POSSESSED so the cleanup branch fires.
     await page.evaluate(() => {
       SugarCube.setup.Ghosts.cheatStartHunt('Spirit');
-      SugarCube.setup.HuntController.setHuntMode(SugarCube.setup.HuntController.HuntMode.POSSESSED);
+      SugarCube.setup.HuntController.cheatSetHuntMode(SugarCube.setup.HuntController.HuntMode.POSSESSED);
     });
     await setVar(page, 'tarotCardsStage', 'CARRYING');
     await page.evaluate(() => SugarCube.setup.Tick.applyPossessionItemCleanup());

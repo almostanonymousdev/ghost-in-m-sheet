@@ -22,13 +22,6 @@
 setup.Hunt = (function () {
 	var Event = Object.freeze({
 		START: 'start',
-		/* Hunt ended with the MC overpowered -- failureReason in
-		   {POSSESSED, CAUGHT, SANITY}. Dedicated CAUGHT / POSSESS
-		   events still fire alongside this for the catch/possession
-		   beats; ASSAULTED is the lifecycle-end notification for
-		   non-graceful exits. Paired with HUNT_END_GRACEFUL: every
-		   hunt-end emits exactly one of the two. */
-		HUNT_END_ASSAULTED: 'hunt-end-assaulted',
 		TICK: 'tick',
 		DRIFT: 'drift',
 		CAUGHT: 'caught',
@@ -57,6 +50,13 @@ setup.Hunt = (function () {
 		   run on house entry (Mimic disguise clock, Mare event-stage
 		   progression) subscribes here. */
 		HOUSE_ENTER: 'house-enter',
+		/* Hunt ended with the MC overpowered -- failureReason in
+		   {POSSESSED, CAUGHT, SANITY}. Dedicated CAUGHT / POSSESS
+		   events still fire alongside this for the catch/possession
+		   beats; ASSAULTED is the lifecycle-end notification for
+		   non-graceful exits. Paired with HUNT_END_GRACEFUL: every
+		   hunt-end emits exactly one of the two. */
+		HUNT_END_ASSAULTED: 'hunt-end-assaulted',
 		/* Hunt ended peacefully -- win, flee, wrong-call at the witch's
 		   desk, exhaustion, time-out, manual leave, monkey-paw abandon.
 		   Paired with HUNT_END_ASSAULTED: every hunt-end emits exactly

@@ -147,7 +147,7 @@ test.describe('Companions', () => {
       // Force hunt mode out of ACTIVE so the ghost-following branch
       // doesn't intercept us.
       await game.evaluate(() => {
-        SugarCube.setup.HuntController.setHuntMode(
+        SugarCube.setup.HuntController.cheatSetHuntMode(
           SugarCube.setup.HuntController.HuntMode.NONE
         );
       });
@@ -165,7 +165,7 @@ test.describe('Companions', () => {
       await pickCompanion(game, 'Brook');
       await game.evaluate(() => SugarCube.setup.Companion.setActiveLust(10));
       await game.evaluate(() => {
-        SugarCube.setup.HuntController.setHuntMode(
+        SugarCube.setup.HuntController.cheatSetHuntMode(
           SugarCube.setup.HuntController.HuntMode.NONE
         );
       });
@@ -333,7 +333,7 @@ test.describe('Companions', () => {
       await pickCompanion(game, 'Alice');
       await game.evaluate(() => SugarCube.setup.Companion.setActiveLust(60));
       await game.evaluate(() => {
-        SugarCube.setup.HuntController.setHuntMode(
+        SugarCube.setup.HuntController.cheatSetHuntMode(
           SugarCube.setup.HuntController.HuntMode.NONE
         );
       });
@@ -517,7 +517,7 @@ test.describe('Companions', () => {
       await pickCompanion(game, 'Blake');
       await game.evaluate(() => SugarCube.setup.Companion.setActiveLust(60));
       await game.evaluate(() => {
-        SugarCube.setup.HuntController.setHuntMode(
+        SugarCube.setup.HuntController.cheatSetHuntMode(
           SugarCube.setup.HuntController.HuntMode.NONE
         );
       });

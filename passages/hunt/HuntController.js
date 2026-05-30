@@ -1073,6 +1073,12 @@ setup.HuntController = (function () {
 		   evaluates -- see the splice block at the bottom of HuntEnums.js. */
 		start: start,
 		cheatStampMinimalRun: cheatStampMinimalRun,
+		/* Cheat/test-only mode flip. Production lifecycle goes through
+		   activateHunt() / markHuntOver() / endRun(); this exists so
+		   unit specs can park the controller in a chosen mode without
+		   spinning up the full start/end machinery. The `cheat` prefix
+		   is lint-enforced (tests/cheat-method-lint.spec.js). */
+		cheatSetHuntMode: setHuntMode,
 		end: end,
 		active: active,
 		isActive: isActive,

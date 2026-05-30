@@ -5,19 +5,6 @@ This game is similar to titles like Phasmophobia and Demonologist. If you are fa
 
 @@.enterbtn;[[Player guide -> Evidence]]@@
 
-<<nobr>>
-<<linkreplace "Sensitive body part">>
-<b>What's your extra sensitive spot?</b><br>
-<em>The chosen one will occur more frequently during the ghost hunt than the other body parts, bringing more lust.</em><br>
-<<bodyPartRadio "brain" "Mind">>
-<<bodyPartRadio "tits"  "Boobs">>
-<<bodyPartRadio "ass"   "Ass">>
-<<bodyPartRadio "mouth" "Tongue">>
-<<bodyPartRadio "pussy" "Pussy">>
-<<bodyPartRadio "anal"  "Anus">>
-<</linkreplace>>
-
-<</nobr>>
 @@.backbtn;<<link "Back">>
 	<<goto `setup.Gui.guideReturnPassage()`>>
 <</link>>@@<br>

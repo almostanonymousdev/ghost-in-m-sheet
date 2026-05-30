@@ -51,6 +51,10 @@
 		<<if setup.CursedItems.isActive()>>
 			@@.mc-thoughts; Something feels off... as you stir awake, you sense a small, lingering ghostly presence in your home. It's faint, but unmistakable -- like something followed you back.@@<br>
 		<</if>>
+		<br>
+		<<include "HuntResidue">>
+		<br>
+		<br>
 		But for now, I need to go to the [[bathroom|Bathroom]].
 		<<run setup.Home.applyHuntDefeatWake()>>
 	<</linkappend>>@@
@@ -62,8 +66,7 @@
 		@@.mc-speech; Weirdly enough, I feel great, maybe even a bit better than usual, hehe. I suppose I should still head to the [[bathroom|Bathroom]].@@
 	<</linkappend>>
 
-<<else>>
-
+<<else>>  /* Normal wakup path */
 	<<if setup.Home.justSleptFromBedroom()>>
 		<<run setup.Home.applyMareWake()>>
 		<<run setup.Home.advanceMareStageOnWake()>>

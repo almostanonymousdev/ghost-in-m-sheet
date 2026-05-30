@@ -670,7 +670,7 @@ test.describe('Home Controller', () => {
       SugarCube.setup.HuntController.setField('ghostName', 'Wraith');
       SugarCube.setup.HuntController.setField('disguiseName', 'Wraith');
       SugarCube.setup.HuntController.setField('evidence', g.evidence.map(e => e.id));
-      SugarCube.setup.HuntController.setHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
+      SugarCube.setup.HuntController.cheatSetHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
     });
     await setVar(page, 'hours', 22);
     await page.evaluate(() => SugarCube.setup.Home.setAlarm(7));
@@ -692,7 +692,7 @@ test.describe('Home Controller', () => {
        reads previous(2) to detect the prowl origin two passages back. */
     await page.evaluate(() => {
       SugarCube.setup.HuntController.startHunt({ seed: 1 });
-      SugarCube.setup.HuntController.setHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
+      SugarCube.setup.HuntController.cheatSetHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
     });
     await goToPassage(page, 'HuntOverProwl');
     const dest = await callSetup(page, 'setup.HuntController.huntCaughtPassage()');

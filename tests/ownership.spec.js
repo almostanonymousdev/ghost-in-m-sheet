@@ -131,8 +131,11 @@ test.describe('Variable ownership', () => {
 		//     active staticHouseId lives on $run.staticHouseId, owned
 		//     by setup.HuntController; the staging slot $pendingHuntHouseId
 		//     is owned there too.
+		//   - HuntMetaUnlocks: pure-functional applier of meta-shop
+		//     unlock effects at hunt start. Writes go to $run (owned
+		//     by HuntController) and $mc / $meta through controller APIs.
 		// Every other discovered controller should claim at least one var.
-		const STATELESS_ALLOWED = new Set(['Salon', 'FloorPlan', 'Modifiers', 'Templates', 'HuntHouses']);
+		const STATELESS_ALLOWED = new Set(['Salon', 'FloorPlan', 'Modifiers', 'Templates', 'HuntHouses', 'HuntMetaUnlocks']);
 		const empty = controllerNames
 			.filter((n) => ownedByName[n].length === 0 && !STATELESS_ALLOWED.has(n));
 		expect(

@@ -382,7 +382,7 @@ test.describe('Companions — hunt setup integration', () => {
       SugarCube.setup.HuntController.startHunt({ seed: 1 });
       SugarCube.setup.HuntController.setField('ghostName', 'Shade');
       SugarCube.setup.Ghosts.cheatStartHunt('Shade');
-      SugarCube.setup.HuntController.setHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
+      SugarCube.setup.HuntController.cheatSetHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
     });
     await goToPassage(page, 'HuntStart');
     await expectCleanPassage(page);
@@ -425,7 +425,7 @@ test.describe('Companions — hunt setup integration', () => {
       SugarCube.setup.HuntController.startHunt({ seed: 1 });
       SugarCube.setup.HuntController.setField('ghostName', 'Shade');
       SugarCube.setup.Ghosts.cheatStartHunt('Shade');
-      SugarCube.setup.HuntController.setHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
+      SugarCube.setup.HuntController.cheatSetHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
     });
     await setVar(page, 'isCompChosen', true);
     await setVar(page, 'chosenPlan', 'Plan1');

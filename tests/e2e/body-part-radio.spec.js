@@ -39,3 +39,29 @@ test('body part radio is a real group, defaults to mind, commits on advance', as
   expect(afterAdvance.tits).toBe(3);
   expect(afterAdvance.brain).toBe(1);
 });
+
+test('detour into Player guide does not pre-commit the default choice', async ({ game }) => {
+  // Repro: from Intro, click the "Player guide" link to Evidence
+  // *before* picking a body part. The staged default ('brain') used
+  // to commit on arrival at Evidence, locking brain at 3 regardless
+  // of what the player picked afterwards.
+  await goToPassage(game, 'Intro');
+  expect(await getVar(game, 'sensualBodyPartChoice')).toBe('brain');
+
+  await goToPassage(game, 'Evidence');
+  // Detour into the guide must not commit — brain stays at base.
+  let bp = await getVar(game, 'sensualBodyPart');
+  expect(bp.brain).toBe(1);
+
+  // Back to Intro, pick tits, advance to Intro1. tits should commit,
+  // brain should stay at 1.
+  await goToPassage(game, 'Intro');
+  const tits = game.locator('input[type="radio"]').nth(1);
+  await tits.click();
+  expect(await getVar(game, 'sensualBodyPartChoice')).toBe('tits');
+
+  await goToPassage(game, 'Intro1');
+  bp = await getVar(game, 'sensualBodyPart');
+  expect(bp.tits).toBe(3);
+  expect(bp.brain).toBe(1);
+});

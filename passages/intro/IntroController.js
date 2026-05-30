@@ -14,7 +14,13 @@ setup.Intro = (function () {
 	var MAX_SENSITIVITY    = 6;
 	var CHOSEN_SENSITIVITY = 3;
 	var DEFAULT_CHOICE     = 'brain';
-	var CHOICE_PASSAGES    = ['Intro', 'Guide'];
+	/* Passages that make up the intro/help flow. Picking a radio in
+	   Intro only stages the choice; commit fires once the player
+	   actually exits this flow into gameplay. The Intro passage links
+	   directly to Evidence (the "Player guide"), so a check that only
+	   inspected previous() would mis-fire the commit on that detour
+	   and lock brain at CHOSEN_SENSITIVITY regardless of pick. */
+	var FLOW_PASSAGES      = ['Intro', 'Guide', 'Evidence'];
 
 	function defaultSensualBodyParts() {
 		var out = {};
@@ -52,11 +58,16 @@ setup.Intro = (function () {
 	}
 
 	// The chosen body part is committed when the player leaves the
-	// Intro / Guide screen — picking a radio only stages the choice in
-	// $sensualBodyPartChoice. This way a brand-new game shows every part
-	// at the BASE_SENSITIVITY of 1 until the player actually moves on.
+	// intro/help flow into gameplay — picking a radio only stages the
+	// choice in $sensualBodyPartChoice. This way a brand-new game
+	// shows every part at the BASE_SENSITIVITY of 1 until the player
+	// actually moves on. Navigating between flow passages (Intro →
+	// Evidence, Guide ↔ Evidence) does NOT commit; the staged choice
+	// can still be changed until the player advances into the game.
 	$(document).on(':passagestart.sensualBodyPartChoice', function () {
-		if (CHOICE_PASSAGES.indexOf(previous()) !== -1) {
+		var fromFlow = FLOW_PASSAGES.indexOf(previous()) !== -1;
+		var toFlow   = FLOW_PASSAGES.indexOf(passage())  !== -1;
+		if (fromFlow && !toFlow) {
 			setup.Mc.commitSensualBodyPartChoice();
 		}
 	});

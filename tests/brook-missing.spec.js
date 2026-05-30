@@ -30,7 +30,7 @@ test.describe('Brook missing room bug', () => {
       SugarCube.setup.HuntController.startHunt({ seed: 99, staticHouseId: 'owaissa' });
       SugarCube.setup.HuntController.setField('ghostName', 'Shade');
       SugarCube.setup.HuntController.setField('disguiseName', 'Shade');
-      SugarCube.setup.HuntController.setHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
+      SugarCube.setup.HuntController.cheatSetHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
       SugarCube.setup.Companion.selectCompanion('Brook');
       SugarCube.State.variables.companion = { name: 'Brook' };
     });
@@ -94,7 +94,7 @@ test.describe('Brook missing room bug', () => {
     await page.evaluate(() => {
       SugarCube.setup.HuntController.startHunt({ seed: 99, staticHouseId: 'owaissa' });
       SugarCube.setup.HuntController.setField('ghostName', 'Shade');
-      SugarCube.setup.HuntController.setHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
+      SugarCube.setup.HuntController.cheatSetHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
       SugarCube.setup.Companion.selectCompanion('Brook');
       SugarCube.State.variables.companion = { name: 'Brook' };
     });
@@ -132,7 +132,7 @@ test.describe('Brook missing room bug', () => {
     await page.evaluate(() => {
       SugarCube.setup.HuntController.startHunt({ seed: 99, staticHouseId: 'owaissa' });
       SugarCube.setup.HuntController.setField('ghostName', 'Shade');
-      SugarCube.setup.HuntController.setHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
+      SugarCube.setup.HuntController.cheatSetHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
       SugarCube.setup.Companion.selectCompanion('Brook');
       SugarCube.State.variables.companion = { name: 'Brook' };
     });
@@ -190,7 +190,7 @@ test.describe('Brook missing room bug', () => {
     await page.evaluate(() => {
       SugarCube.setup.HuntController.startHunt({ seed: 99, staticHouseId: 'owaissa' });
       SugarCube.setup.HuntController.setField('ghostName', 'Shade');
-      SugarCube.setup.HuntController.setHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
+      SugarCube.setup.HuntController.cheatSetHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
       SugarCube.setup.Companion.selectCompanion('Brook');
       SugarCube.State.variables.companion = { name: 'Brook' };
     });

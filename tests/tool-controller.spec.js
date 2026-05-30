@@ -40,7 +40,7 @@ test.describe('ToolController renderers', () => {
       SugarCube.setup.HuntController.setField('evidence',
         banshee.evidence.map(e => e.id));
       SugarCube.setup.Ghosts.cheatStartHunt('Banshee');
-      SugarCube.setup.HuntController.setHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
+      SugarCube.setup.HuntController.cheatSetHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
       SugarCube.setup.isGhostHere = () => true;
     });
   });

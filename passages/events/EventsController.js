@@ -554,7 +554,7 @@ setup.Events = (function () {
 
 		// --- Ghost sanity-event decreased amount -----------------
 		rollGhostSanityEventDecreased: function () {
-			sv().ghostSanityEventDecreased = setup.HuntController.isHuntActive()
+			sv().ghostSanityEventDecreased = setup.HuntController.isHunting()
 				? setup.ActiveGhost.rollEventSanityLoss()
 				: 0;
 		},

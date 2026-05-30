@@ -5,20 +5,20 @@ Ghost in M'Sheet<br>
 <br>
 <b>What's your extra sensitive spot?</b><br>
 <em>The chosen one will occur more frequently during the ghost hunt than the other body parts, bringing more lust.</em><br>
-<<bodyPartRadio "brain"  "Mind">>
-<<bodyPartRadio "tits"   "Boobs">>
-<<bodyPartRadio "ass"    "Ass">>
-<<bodyPartRadio "mouth"  "Tongue">>
-<<bodyPartRadio "pussy"  "Pussy">>
-<<bodyPartRadio "anal"   "Anus">>
-Enter your name here: <<mcNameTextbox "Mary" "Intro1">>and press "Enter".
+<<bodyPartRadio "brain" "Mind">>
+<<bodyPartRadio "tits" "Boobs">>
+<<bodyPartRadio "ass" "Ass">>
+<<bodyPartRadio "mouth" "Tongue">>
+<<bodyPartRadio "pussy" "Pussy">>
+<<bodyPartRadio "anal" "Anus">>
+Enter your name here: <<mcNameTextbox "" "Intro1">>and press "Enter".
 <br>
 Or just click @@.enterbtn;<<link "here" "Intro1">><<run setup.Mc.setName("Mary")>>
-<</link>>@@
+<</link>>@@ to keep Mary.
 
 <br>
 <br>
 <br>
-@@.mc-thoughts;This game is similar to games like Phasmophobia, Demonologist, etc., so if you've played such games, there shouldn't be any difficulties. Nevertheless, here's a brief guide to the game:@@
+@@.mc-thoughts;This game is similar to games like Phasmophobia, Demonologist, etc., so if you've played such games, you probably won't have many difficulties. Nevertheless, here's a brief guide to the game, which will always be accessible on your sidebar, or by pressing 'a':@@
 <br>
-@@.enterbtn;[[Player guide -> Evidence]]@@
+@@.enterbtn;[[Player guide (New and improved!) -> Evidence]]@@

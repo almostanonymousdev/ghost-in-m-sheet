@@ -256,7 +256,7 @@ test.describe('rendered image/video refs resolve to files', () => {
         label: 'hunt active',
         setup: () => {
           SugarCube.setup.Ghosts.cheatStartHunt('Shade');
-          SugarCube.setup.HuntController.setHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
+          SugarCube.setup.HuntController.cheatSetHuntMode(SugarCube.setup.HuntController.HuntMode.ACTIVE);
         },
       },
     ];
