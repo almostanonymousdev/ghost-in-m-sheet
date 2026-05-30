@@ -482,15 +482,6 @@ setup.Mc = (function () {
 		{ name: 'orgasmCooldown', key: 'orgasmCooldownSteps' }
 	]);
 
-	/* Stamp whatever-is-banked $tempCorr into $mc.corruption,
-	   capping at 1 so a single walk-home can't spike corruption
-	   more than a point, then reset the bank. */
-	api.bankTempCorruption = function () {
-		var s = sv();
-		if ((s.tempCorr || 0) >= 1) { s.tempCorr = 1; }
-		s.mc.corruption += (s.tempCorr || 0);
-		s.tempCorr = 0;
-	};
 	api.isSanityCollapsed = function () { return sv().sanityCollapse === true; };
 	api.markSanityCollapsed = function () { sv().sanityCollapse = true; };
 	api.clearSanityCollapse = function () { sv().sanityCollapse = false; };

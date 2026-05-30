@@ -29,11 +29,5 @@
 	@@.backbtn; [[Sleep]]@@<br>
 <</if>>
 
-<<run setup.Mc.bankTempCorruption()>>
-<<run setup.HuntController.setHuntMode(setup.HuntController.HuntMode.ENDED)>>
-
-<<run setup.resetTools()>>
-
-<<run setup.Companion.runHuntFailHooks()>>
-
-<<run setup.Companion.resetHuntState()>>
+<<run setup.HuntController.markHuntOver()>>
+<<run setup.HuntController.cleanupAfterHunt()>>

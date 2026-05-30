@@ -1138,7 +1138,6 @@ setup.HuntController = (function () {
 		active: active,
 		isActive: isActive,
 		huntMode: huntMode,
-		setHuntMode: setHuntMode,
 		isHunting: isHunting,
 		isPossessed: isPossessed,
 		isEnded: isEnded,
