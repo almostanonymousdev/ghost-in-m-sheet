@@ -214,7 +214,7 @@ test.describe('Witch — ectoplasm-unlock quest flow', () => {
     /* "One video at a time": exactly one clip is in the DOM on load and the
        exit link is buried in the innermost reveal, so it must be absent. */
     expect(await videoCount()).toBe(1);
-    expect(await passageText(page)).not.toContain('Take the trade');
+    expect(await passageText(page)).not.toContain('Leave, soaked through');
 
     /* Walk the five nested reveals in order by their diegetic anchor text.
        Each click reveals exactly one more clip, never stacking videos. */
@@ -231,15 +231,15 @@ test.describe('Witch — ectoplasm-unlock quest flow', () => {
       /* The exit appears only after the final reveal. */
       const seen = await passageText(page);
       if (i < reveals.length - 1) {
-        expect(seen).not.toContain('Take the trade');
+        expect(seen).not.toContain('Leave, soaked through');
       }
     }
     expect(await videoCount()).toBe(6);
-    expect(await passageText(page)).toContain('Take the trade');
+    expect(await passageText(page)).toContain('Leave, soaked through');
 
     /* Following the exit (gated on finishing the lesson) opens the economy. */
     expect(await callSetup(page, 'setup.Witch.ectoplasmUnlocked()')).toBe(false);
-    await page.locator('.passage a').filter({ hasText: 'Take the trade' }).first().click();
+    await page.locator('.passage a').filter({ hasText: 'Leave, soaked through' }).first().click();
     expect(await callSetup(page, 'setup.Witch.ectoplasmQuestComplete()')).toBe(true);
     expect(await callSetup(page, 'setup.Witch.ectoplasmUnlocked()')).toBe(true);
   });
