@@ -676,6 +676,159 @@ test.describe('media element macros', () => {
 
 });
 
+// ── macros inside HTML attribute values ───────────────────────────
+//
+// SugarCube does not process macros inside HTML attribute values —
+// `<span class="foo <<if x>>bar<</if>>">` renders the literal text
+// `<<if x>>bar<</if>>` into the class list, so the conditional always
+// applies. The "can't find the nun" report (May 2026) traced back to
+// WitchInside.tw doing exactly this with the `disabled-link` class,
+// which silently pinned `pointer-events: none` on every level-4+
+// player's "Missing girls" link. Players above the gate could see
+// the link but not click it; the bug was invisible to anyone reading
+// the source because the `<<if>>` *looks* like it would gate the class.
+//
+// Dynamic attribute values must use SugarCube's evaluated-attribute
+// syntax (`@class="expression"`) instead.
+//
+// `on*` event handlers (onclick / onload / onchange / …) are JS code
+// that runs at event-fire time; embedding `<<…>>` inside a JS string
+// literal there is the supported pattern for `$.wiki('<<run …>>')`
+// (see passages/home/pc/Use_PC.tw). They're allow-listed.
+test.describe('html attribute values', () => {
+
+  // Match `name="value"` and `name='value'`. The name capture excludes
+  // `@`-prefixed names (those are SugarCube's evaluated-attribute
+  // syntax, which is JS code by design).
+  const ATTR_RE = /(?<=[\s])([a-zA-Z][\w-]*)\s*=\s*(?:"([^"]*)"|'([^']*)')/g;
+
+  // Pure scanner: takes a passage body and returns one violation per
+  // offending attribute (`{ attr, value, line }`). Exposed so the
+  // self-tests below can exercise it against synthetic inputs.
+  function findMacroInAttrViolations(body) {
+    const out = [];
+    let m;
+    ATTR_RE.lastIndex = 0;
+    while ((m = ATTR_RE.exec(body)) !== null) {
+      const name = m[1];
+      const value = m[2] !== undefined ? m[2] : m[3];
+      if (value.indexOf('<<') === -1) continue;
+      if (/^on/i.test(name)) continue;
+      const line = body.slice(0, m.index).split('\n').length;
+      out.push({ attr: name, value, line });
+    }
+    return out;
+  }
+
+  test('no SugarCube macros inside HTML attribute values — use @attr="expr" instead', () => {
+    const violations = [];
+    for (const p of allPassages) {
+      if (p.tags.includes('script') || p.tags.includes('stylesheet')) continue;
+      for (const v of findMacroInAttrViolations(p.body)) {
+        const absLine = p.headerLine + v.line;
+        violations.push(
+          `${loc(p)} "${p.name}": line ${absLine} ` +
+          `attribute ${v.attr}="..." contains a SugarCube macro ` +
+          `(SugarCube does not process macros inside quoted HTML ` +
+          `attributes — use @${v.attr}="expression" instead, or pass ` +
+          `wiki source through an on* handler with $.wiki(...)).`
+        );
+      }
+    }
+    expect(violations, violations.join('\n')).toHaveLength(0);
+  });
+
+  // --- self-tests for the scanner itself ------------------------
+  //
+  // The rule above is a one-line `expect.toHaveLength(0)`, which means
+  // a regression in the regex (silently matching nothing) would also
+  // pass. These tests pin the positive and negative cases so a future
+  // edit to ATTR_RE can't quietly weaken coverage.
+
+  test('scanner: flags the original WitchInside bug shape', () => {
+    const body = ` <span class="rescueGirlsDisabled\n\t<<if !setup.Foo.bar()>>\n\t\tdisabled-link\n\t<</if>>">x</span>`;
+    const v = findMacroInAttrViolations(body);
+    expect(v).toHaveLength(1);
+    expect(v[0].attr).toBe('class');
+    expect(v[0].value).toMatch(/<<if/);
+  });
+
+  test('scanner: flags every common attribute name', () => {
+    const cases = [
+      { body: ` class="<<= x>>"`,            attr: 'class' },
+      { body: ` id="row-<<= n>>"`,           attr: 'id' },
+      { body: ` style="color:<<print c>>"`,  attr: 'style' },
+      { body: ` title="<<if x>>a<</if>>"`,   attr: 'title' },
+      { body: ` data-ghost="<<= n>>"`,       attr: 'data-ghost' },
+      { body: ` src="<<= url>>"`,            attr: 'src' },
+      { body: ` href="<<= url>>"`,           attr: 'href' },
+      { body: ` alt="<<= label>>"`,          attr: 'alt' },
+      { body: ` width="<<= w>>"`,            attr: 'width' },
+    ];
+    for (const c of cases) {
+      const v = findMacroInAttrViolations(c.body);
+      expect(v, `expected to flag ${c.attr}`).toHaveLength(1);
+      expect(v[0].attr).toBe(c.attr);
+    }
+  });
+
+  test('scanner: handles single-quoted attribute values', () => {
+    const body = ` class='foo <<= bar>>'`;
+    const v = findMacroInAttrViolations(body);
+    expect(v).toHaveLength(1);
+    expect(v[0].attr).toBe('class');
+  });
+
+  test('scanner: flags multi-line attribute values (the actual WitchInside shape)', () => {
+    // The original bug spanned five lines inside a single attribute.
+    // A regex that anchored on a single line would miss it.
+    const body = ` <span class="a\n\t<<if cond>>\n\t\tb\n\t<</if>>\n">`;
+    const v = findMacroInAttrViolations(body);
+    expect(v).toHaveLength(1);
+  });
+
+  test('scanner: allow-lists on* event handlers (JS context, $.wiki escape hatch)', () => {
+    const cases = [
+      ` onclick="$.wiki('<<run setup.X.y()>>')"`,
+      ` onload="$.wiki('<<run init()>>')"`,
+      ` onchange="$.wiki('<<set $foo = 1>>')"`,
+      ` ONCLICK="$.wiki('<<run x()>>')"`,
+    ];
+    for (const body of cases) {
+      expect(findMacroInAttrViolations(body), body).toHaveLength(0);
+    }
+  });
+
+  test('scanner: does not flag evaluated-attribute syntax (@attr="expr")', () => {
+    // @attr= is the correct fix — its value is a JS expression, not a
+    // wiki-source string. The `@` is part of the attribute name in
+    // SugarCube's parser, and our ATTR_RE name capture starts with
+    // [a-zA-Z], so `@class` is excluded by construction.
+    const body = ` <span @class="cond ? 'a' : 'a b'">`;
+    expect(findMacroInAttrViolations(body)).toHaveLength(0);
+  });
+
+  test('scanner: does not flag macros that sit OUTSIDE attribute values', () => {
+    // A passage like `<<if x>><span class="a">...<</if>>` would otherwise
+    // look like a hit if we matched too greedily across quotes.
+    const body = ` <<if x>><span class="a">foo</span><</if>>`;
+    expect(findMacroInAttrViolations(body)).toHaveLength(0);
+  });
+
+  test('scanner: does not flag plain literal attribute values', () => {
+    const body = ` <a class="enterbtn" data-passage="Church" id="row-1">x</a>`;
+    expect(findMacroInAttrViolations(body)).toHaveLength(0);
+  });
+
+  test('scanner: flags multiple offences in a single passage body', () => {
+    const body = ` <span class="<<= a>>" style="<<= b>>" title="ok"><a href="<<= c>>">x</a>`;
+    const v = findMacroInAttrViolations(body);
+    expect(v).toHaveLength(3);
+    expect(v.map(x => x.attr).sort()).toEqual(['class', 'href', 'style']);
+  });
+
+});
+
 // ── stray macro delimiters ───────────────────────────────────────
 
 test.describe('macro delimiters', () => {

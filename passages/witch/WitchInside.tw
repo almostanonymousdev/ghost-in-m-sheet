@@ -72,10 +72,7 @@
 		<</linkreplace>><br>
 	<</if>>
 	<<if setup.Witch.canOfferRescueQuest()>>
-		<span class="rescueGirlsDisabled
-		<<if !setup.Witch.rescueQuestUnlocked()>>
-			disabled-link
-		<</if>>">
+		<span @class="setup.Witch.rescueQuestUnlocked() ? 'rescueGirlsDisabled' : 'rescueGirlsDisabled disabled-link'">
 		<<linkreplace "@@.usebtn; Missing girls@@">>
 			<<run setup.MissingWomen.resetQuestToAvailable()>>
 			@@.notmc-speech; Sit. I have something for you.@@<br>
