@@ -612,9 +612,9 @@ setup.Home = (function () {
 			return prev === 'Bedroom' && this.tentaclesSleepEventReady();
 		},
 		resolveSleepWake: function (prev) {
-			var hg = setup.HuntController.activeGhost();
-			if (this.cameFromHuntDefeat(prev) && hg && hg.sleepPassage) {
-				return { passage: hg.sleepPassage, hours: 3, postWake: 'huntDefeat' };
+			var sleepPassage = setup.ActiveGhost.sleepPassage();
+			if (this.cameFromHuntDefeat(prev) && sleepPassage) {
+				return { passage: sleepPassage, hours: 3, postWake: 'huntDefeat' };
 			}
 			if (setup.SpecialEvent.mareStageAtLeast(4)) {
 				return { passage: 'GhostSpecialEventMareEnd', hours: 3, postWake: 'mareEnd' };

@@ -63,8 +63,7 @@ setup.HuntProwl = (function () {
 		if (setup.Ghosts.elapsedTimeProwl() < setup.Ghosts.prowlTimeRemain()) return false;
 		var threshold = 6 + setup.HauntConditions.snapshot().prowlChanceBonus;
 		if (Math.floor(Math.random() * 101) > threshold) return false;
-		var g = HC().activeGhost();
-		return !!(g && g.canProwl({ sanity: setup.Mc.sanity(), lust: setup.Mc.lust() }));
+		return setup.ActiveGhost.canProwl({ sanity: setup.Mc.sanity(), lust: setup.Mc.lust() });
 	}
 
 	// --- Random steal trigger ----------------------------------

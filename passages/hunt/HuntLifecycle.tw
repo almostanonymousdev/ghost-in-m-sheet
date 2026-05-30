@@ -334,8 +334,7 @@
 				<</link>>@@
 			</div>
 		<<else>>
-			<<set _trueGhost to setup.HuntController.activeGhost()>>
-			<div class="hunt-reveal hunt-reveal-text">@@.mc-thoughts; Wrong call. It's a <<= _trueGhost.name>>, and every sign you know you should have recognized -- <<= _trueGhost.evidenceLabels()>> -- snaps back into place at once. You begin to bolt, but it's on you before you reach the door.@@</div>
+			<div class="hunt-reveal hunt-reveal-text">@@.mc-thoughts; Wrong call. It's a <<= setup.ActiveGhost.name()>>, and every sign you know you should have recognized -- <<= setup.ActiveGhost.evidenceLabels()>> -- snaps back into place at once. You begin to bolt, but it's on you before you reach the door.@@</div>
 			<div class="hunt-reveal hunt-reveal-buttons">
 				@@.movebtn; [[Continue|HuntOverProwl]]@@
 			</div>

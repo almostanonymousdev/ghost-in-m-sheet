@@ -9,14 +9,14 @@
    3. Otherwise: shared low-lust "thanks for walking me back" block.
    No companion or ghost name is mentioned anywhere -- per-character copy
    lives in the per-character passages, dispatched via the catalogue. */
-<<set _hg to setup.HuntController.activeGhost()>>
+<<set _walkHomePassage to setup.ActiveGhost.walkHomePassage()>>
 <<set _ac to setup.Companion.active()>>
-<<if _hg and _hg.walkHomePassage>>
+<<if _walkHomePassage>>
 	<<image "ui/img/mchouse.jpg" { width: "100%" }>>
 	@@.notmc-speech; I have a strange feeling. Like something is following us...@@<br>
 	@@.mc-speech;I didn't see anyone. Maybe you should stay at my place then?@@<br>
 	@@.notmc-speech; Yes, if you don't mind.@@<br><br>
-	@@.backbtn; <<link "Sleep together" `_hg.walkHomePassage`>>
+	@@.backbtn; <<link "Sleep together" `_walkHomePassage`>>
 	<</link>>@@
 <<elseif _ac and setup.Companion.lust() gte 50 and _ac.walkHomePassage>>
 	<<include _ac.walkHomePassage>>

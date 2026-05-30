@@ -8,8 +8,7 @@ the ghost's room, yellow when the room has no temperature evidence. Ghosts whose
 "temperature" tool (Raiju) occasionally glitch the reading to a random
 0..50 value on tier <= 4 thermometers (read via setup.ActiveGhost.sensorGlitchChance). */
 <<set _inGhostRoom to setup.isGhostHere()>>
-<<set _hg to setup.HuntController.activeGhost()>>
-<<set _hasTempEvidence to _hg and _hg.hasEvidence("temperature")>>
+<<set _hasTempEvidence to setup.ActiveGhost.hasEvidence("temperature")>>
 <<set _tier to setup.ToolController.tierOf("temperature")>>
 
 <<if _inGhostRoom and _hasTempEvidence>>
@@ -23,7 +22,7 @@ the ghost's room, yellow when the room has no temperature evidence. Ghosts whose
 	<<set _color to (_tier eq 5 ? "" : "green")>>
 <</if>>
 
-<<set _glitch to (_hg and _hg.rollTemperatureGlitch())>>
+<<set _glitch to setup.ActiveGhost.rollTemperatureGlitch()>>
 <<set _reading to _glitch ? random(0, 50) : (random(13, 16) + setup.ToolController.temperature() + _offset)>>
 
 /* Stamp the reading into the hunt-toolbar card overlay. The visible

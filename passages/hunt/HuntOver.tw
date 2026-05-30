@@ -121,9 +121,9 @@
 		<</link>>@@
 	<</if>>
 <<else>>
-	<<set _hg to setup.HuntController.activeGhost()>>
-	<<if _hg and _hg.goHomePassage>>
-		@@.movebtn;<<link "Go home" `_hg.goHomePassage`>>
+	<<set _goHomePassage to setup.ActiveGhost.goHomePassage()>>
+	<<if _goHomePassage>>
+		@@.movebtn;<<link "Go home" `_goHomePassage`>>
 		<<run setup.Wardrobe.loseAllStolen()>><<run setup.Time.addHours(1)>><</link>>@@
 	<<else>>
 		@@.movebtn;[[Go home|Livingroom][setup.Time.addHours(1)]]@@<br>

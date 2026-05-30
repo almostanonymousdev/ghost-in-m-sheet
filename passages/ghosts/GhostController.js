@@ -384,27 +384,14 @@
         return html;
     };
 
-    /* Roll the per-ghost sanity penalty that fires during MC events
-       (EventMC). Default 1-5; Oni broadens via the SANITY_EVENT_LOSS_RANGE
-       filter to [3, 8]. */
-    Ghost.prototype.rollEventSanityLoss = function () {
-        var r = setup.ActiveGhost.sanityEventLossRange();
-        return r[0] + Math.floor(Math.random() * (r[1] - r[0] + 1));
-    };
-
-    /* Sensor-glitch rolls — return true when the tool should display a
-       bogus reading this tick. Default denominator is 0 (no glitches);
-       Raiju's SENSOR_GLITCH_CHANCE filter sets emf=3 / temperature=8. */
-    function rollSensorGlitch(tool) {
-        var denom = setup.ActiveGhost.sensorGlitchChance(tool);
-        var hit = denom > 0 && Math.floor(Math.random() * denom) === 0;
-        if (hit) {
-            setup.Hunt.emit(setup.Hunt.Event.SENSOR_GLITCH, { tool: tool });
-        }
-        return hit;
-    }
-    Ghost.prototype.rollEmfGlitch = function () { return rollSensorGlitch('emf'); };
-    Ghost.prototype.rollTemperatureGlitch = function () { return rollSensorGlitch('temperature'); };
+    /* Per-tick / per-event rolls delegate to setup.ActiveGhost so the
+       roll logic (sensor glitch denom, sanity event loss range) lives
+       in one place. Production callers prefer setup.ActiveGhost.roll*
+       directly; the prototype methods stay so tests that probe a Ghost
+       instance keep working. */
+    Ghost.prototype.rollEventSanityLoss = function () { return setup.ActiveGhost.rollEventSanityLoss(); };
+    Ghost.prototype.rollEmfGlitch = function () { return setup.ActiveGhost.rollEmfGlitch(); };
+    Ghost.prototype.rollTemperatureGlitch = function () { return setup.ActiveGhost.rollTemperatureGlitch(); };
 
     var GHOSTS = GHOST_CONFIG.map(function (cfg) { return new Ghost(cfg); });
 

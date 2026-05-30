@@ -70,10 +70,9 @@
        <<coloredText>> call so the widget's text styling stays the one knob. */
     function renderEmf() {
         var state = setup.tickTimedTool("emf");
-        var g = setup.HuntController.activeGhost();
         var markup;
-        if (state === setup.ToolState.READY && g && g.hasEvidence("emf")) {
-            markup = g.rollEmfGlitch()
+        if (state === setup.ToolState.READY && setup.ActiveGhost.hasEvidence("emf")) {
+            markup = setup.ActiveGhost.rollEmfGlitch()
                 ? '<<coloredText "red" ' + randInt(0, 100) + '>>'
                 : '<<coloredText "red" 5>>';
         } else if (state === setup.ToolState.READY) {
@@ -205,8 +204,7 @@
 
     function renderUvl() {
         var state = setup.tickTimedTool("uvl");
-        var g = setup.HuntController.activeGhost();
-        if (state !== setup.ToolState.READY || !(g && g.hasEvidence("uvl"))) {
+        if (state !== setup.ToolState.READY || !setup.ActiveGhost.hasEvidence("uvl")) {
             _huntCardMarkup = huntCardThumbsDown();
             return notFoundMarkup("uvl");
         }
@@ -298,7 +296,6 @@
     function renderSpiritbox() {
         var V = State.variables;
         var roll = randInt(1, 100);
-        var g = setup.HuntController.activeGhost();
         var sbResponse = setup.ActiveGhost.spiritboxResponse();
 
         setup.Hunt.emit(setup.Hunt.Event.SPIRITBOX_USED, {});
@@ -339,7 +336,7 @@
             return staticMarkup;
         }
 
-        if (g && g.hasEvidence("spiritbox")
+        if (setup.ActiveGhost.hasEvidence("spiritbox")
             && setup.chanceByTier(V.equipment.spiritbox, roll)
             && setup.isGhostHere()) {
             setup.activateTool("emf");
@@ -862,8 +859,7 @@ setup.searchableRooms.forEach(function (room) {
      * haunted passage matching `houses` (or any house when `houses` is
      * omitted). Consumers still supply their own presentation. */
     setup.evidenceAvailable = function (id, tier, houses) {
-        var g = setup.HuntController.activeGhost();
-        if (!g || !g.hasEvidence(id)) return false;
+        if (!setup.ActiveGhost.hasEvidence(id)) return false;
         var roll = Math.floor(Math.random() * 100) + 1;
         if (!setup.chanceByTier(tier, roll)) return false;
         return setup.isGhostHere(houses);
