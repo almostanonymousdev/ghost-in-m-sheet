@@ -432,7 +432,11 @@ test.describe('Narrative — Missing Women rescue plotline', () => {
       expect(await callSetup(page, 'setup.MissingWomen.mustReturnToNun()')).toBe(true);
       expect(await callSetup(page, 'setup.Church.shouldRedirectToNunQuest()')).toBe(true);
 
-      await goToPassage(page, 'ChurchPray');
+      // ChurchPray fires <<goto "ChurchNunQuest">> deferred. goToPassage's
+      // "did passage match?" wait races the goto and can retry the
+      // Engine.play, which would double-fire ChurchNunQuest's
+      // adjustRainRelationship(-1) side effect. Drive the engine directly.
+      await page.evaluate(() => SugarCube.Engine.play('ChurchPray'));
       await page.waitForFunction(() => SugarCube.State.passage === 'ChurchNunQuest');
       await expectCleanPassage(page);
 

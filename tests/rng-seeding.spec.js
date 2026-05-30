@@ -26,15 +26,35 @@ function sampleMathRandom(page, n) {
   }, n);
 }
 
+/* Atomic reseed-then-sample. Async work that lands between reseedRng()
+ * and sampleMathRandom() (boot callbacks, idle work, animation frames)
+ * advances the Mulberry32 state and offsets one page's stream relative
+ * to the other, which used to make the cross-page identity test flaky.
+ * Doing both in a single page.evaluate guarantees no microtasks run
+ * between the reseed and the first draw on that page. */
+function reseedAndSampleMathRandom(page, seed, n) {
+  return page.evaluate(({ s, count }) => {
+    if (!window.__rng__) {
+      throw new Error('reseedAndSampleMathRandom: no seeded RNG installed (use openGame({ seed })).');
+    }
+    window.__rng__.reseed(s);
+    const out = [];
+    for (let i = 0; i < count; i++) out.push(Math.random());
+    return out;
+  }, { s: seed, count: n });
+}
+
 test('same seed produces identical Math.random sequences across pages', async ({ browser }) => {
   const p1 = await openGame(browser, { seed: 12345 });
   const p2 = await openGame(browser, { seed: 12345 });
   // Page-open + SugarCube init consume a non-deterministic number of RNG
-  // draws (timing-sensitive boot callbacks). Reseed both pages so sampling
-  // starts from state=seed on each.
-  await Promise.all([reseedRng(p1, 12345), reseedRng(p2, 12345)]);
+  // draws. Reseed-and-sample atomically so no boot tasks land between
+  // the reseed and the first draw on either page.
   try {
-    const [a, b] = await Promise.all([sampleMathRandom(p1, 50), sampleMathRandom(p2, 50)]);
+    const [a, b] = await Promise.all([
+      reseedAndSampleMathRandom(p1, 12345, 50),
+      reseedAndSampleMathRandom(p2, 12345, 50),
+    ]);
     expect(a).toEqual(b);
   } finally {
     await p1.close();
@@ -57,11 +77,12 @@ test('different seeds produce different Math.random sequences', async ({ browser
 test('SugarCube random() macro inherits the seed', async ({ browser }) => {
   const p1 = await openGame(browser, { seed: 42 });
   const p2 = await openGame(browser, { seed: 42 });
-  await Promise.all([reseedRng(p1, 42), reseedRng(p2, 42)]);
   try {
     // SugarCube exposes `random` on the template API; it's the same function
-    // the <<set _x to random(a, b)>> macro invokes.
-    const rolls = (page) => page.evaluate(() => {
+    // the <<set _x to random(a, b)>> macro invokes. Atomic reseed+sample
+    // for the same reason as the Math.random test above.
+    const reseedAndRoll = (page) => page.evaluate(() => {
+      window.__rng__.reseed(42);
       const r = SugarCube.State.random
         ? () => Math.floor(SugarCube.State.random() * 1000)
         : () => Math.floor(Math.random() * 1000);
@@ -69,7 +90,7 @@ test('SugarCube random() macro inherits the seed', async ({ browser }) => {
       for (let i = 0; i < 30; i++) out.push(r());
       return out;
     });
-    const [a, b] = await Promise.all([rolls(p1), rolls(p2)]);
+    const [a, b] = await Promise.all([reseedAndRoll(p1), reseedAndRoll(p2)]);
     expect(a).toEqual(b);
   } finally {
     await p1.close();
@@ -120,8 +141,10 @@ test('without a seed, Math.random stays unseeded (production parity)', async ({ 
 test('seeded game produces reproducible in-game RNG (either/random macros)', async ({ browser }) => {
   // Exercise a real in-game random surface: SugarCube's `either()` picks one
   // of N values uniformly using State.random / Math.random. Same seed must
-  // yield the same picks for the same call sequence.
-  const pick = (page) => page.evaluate(() => {
+  // yield the same picks for the same call sequence. Atomic reseed+pick
+  // to keep boot-task RNG draws from offsetting the streams.
+  const reseedAndPick = (page) => page.evaluate(() => {
+    window.__rng__.reseed(999);
     // Use the template-scope `either` SugarCube exposes globally.
     // Falls back to inline implementation if not reachable — the point is
     // that whatever it calls ultimately hits our patched Math.random.
@@ -132,9 +155,8 @@ test('seeded game produces reproducible in-game RNG (either/random macros)', asy
   });
   const p1 = await openGame(browser, { seed: 999 });
   const p2 = await openGame(browser, { seed: 999 });
-  await Promise.all([reseedRng(p1, 999), reseedRng(p2, 999)]);
   try {
-    const [a, b] = await Promise.all([pick(p1), pick(p2)]);
+    const [a, b] = await Promise.all([reseedAndPick(p1), reseedAndPick(p2)]);
     expect(a).toEqual(b);
     // And the output should actually vary — not e.g. always 'a'.
     expect(new Set(a).size).toBeGreaterThan(1);
