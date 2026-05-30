@@ -62,7 +62,9 @@ setup.Witch = (function () {
 		'isWeakenGhost',
 		'moneyFromWeakenTheGhost',
 		'amulet',
-		'ectoplasmQuestStage'
+		'ectoplasmQuestStage',
+		'ectoplasmWeakenCount',
+		'ectoplasmPrequalified'
 	]);
 
 	var sv = setup.sv;
@@ -217,6 +219,13 @@ setup.Witch = (function () {
 		},
 
 		// --- Ectoplasm-unlock quest ------------------------------
+		/* Khadija won't open the ectoplasm ledger until the MC proves
+		   she can wring a ghost dry without going hollow for it the way
+		   her dead hunters did. The proof is GHOSTS_TO_WEAKEN ghosts
+		   weakened (seduce-minigame wins) -- tracked for life, not just
+		   while the favor is open -- after which she teaches the
+		   banishing ritual and unlocks the currency. */
+		GHOSTS_TO_WEAKEN: 3,
 		/* Witch surfaces the quest the first time the MC visits at
 		   level 5+; the offer goes away once she takes it. */
 		canOfferEctoplasmQuest: function () {
@@ -225,11 +234,40 @@ setup.Witch = (function () {
 			return setup.Mc.lvl() >= 5
 				&& (stage === undefined || stage === E.NOT_OFFERED);
 		},
+		/* Production entry point for accepting the quest: flip the stage
+		   to OFFERED and snapshot whether the MC has *already* met the
+		   weaken bar, so the briefing can acknowledge a hunter who did
+		   the work before being asked. */
+		offerEctoplasmQuest: function () {
+			sv().ectoplasmPrequalified =
+				this.ectoplasmWeakenCount() >= this.GHOSTS_TO_WEAKEN;
+			this.markEctoplasmQuestStarted();
+		},
 		ectoplasmQuestStarted: function () {
 			return sv().ectoplasmQuestStage === setup.EctoplasmQuestStage.OFFERED;
 		},
 		ectoplasmQuestComplete: function () {
 			return sv().ectoplasmQuestStage === setup.EctoplasmQuestStage.COMPLETED;
+		},
+		/* True when the MC had already weakened enough ghosts at the
+		   moment she took the quest -- nothing left to prove, skip
+		   straight to the lesson with a knowing line from Khadija. */
+		isEctoplasmQuestPrequalified: function () {
+			return sv().ectoplasmPrequalified === true;
+		},
+		/* Lifetime tally of ghosts weakened, maintained on every
+		   seduce-minigame win regardless of quest state. */
+		ectoplasmWeakenCount: function () {
+			return sv().ectoplasmWeakenCount || 0;
+		},
+		ectoplasmWeakenRemaining: function () {
+			return Math.max(0, this.GHOSTS_TO_WEAKEN - this.ectoplasmWeakenCount());
+		},
+		/* True once the MC has weakened enough ghosts to come back and
+		   have Khadija teach the banishing ritual. */
+		canCompleteEctoplasmQuest: function () {
+			return this.ectoplasmQuestStarted()
+				&& this.ectoplasmWeakenCount() >= this.GHOSTS_TO_WEAKEN;
 		},
 		/* Single read-side gate the rest of the codebase calls when
 		   deciding whether to show ectoplasm UI / the rogue card /
@@ -316,6 +354,12 @@ setup.Witch = (function () {
 		recordWeakenReward: function (amount) {
 			sv().isWeakenGhost = true;
 			sv().moneyFromWeakenTheGhost = amount;
+			/* Every weakened ghost is tallied for life, whether or not
+			   Khadija's favor is open. Her ectoplasm quest reads this
+			   running total: a hunter who has already wrung three ghosts
+			   out before she even asks has nothing left to prove (see
+			   offerEctoplasmQuest / isEctoplasmQuestPrequalified). */
+			sv().ectoplasmWeakenCount = this.ectoplasmWeakenCount() + 1;
 		},
 		clearWeakenGhostState: function () {
 			delete sv().isWeakenGhost;

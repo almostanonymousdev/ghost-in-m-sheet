@@ -495,6 +495,12 @@ test.describe('Save/load round-trip', () => {
     expect(migrated.run).toBeNull();
     expect(migrated.ectoplasm).toBe(0);
     expect(migrated.runsStarted).toBe(0);
+    /* The ectoplasm-quest counter + prequalified flag are filled from the
+       passive DEFAULTS layer on a key-less save. Read the raw migrated
+       object (not setup.Witch.ectoplasmWeakenCount(), whose `|| 0` would
+       mask a dropped/mistyped default). */
+    expect(migrated.ectoplasmWeakenCount).toBe(0);
+    expect(migrated.ectoplasmPrequalified).toBe(false);
   });
 
   test('migration preserves a mid-hunt $run object', async ({ game: page }) => {
@@ -638,6 +644,8 @@ test.describe('Save/load round-trip', () => {
         monkeyPawLearned: { activity: true, knowledge: true },
         ghostInfoCollected: { Shade: true, Spirit: true },
         ectoplasmQuestStage: 3,
+        ectoplasmWeakenCount: 5,
+        ectoplasmPrequalified: true,
         relationshipBlake: 4,
         lostClothing: ['jeansState'],
         rememberTopOuter: 'tshirt0', rememberBottomOuter: 'jeans0',
@@ -691,6 +699,8 @@ test.describe('Save/load round-trip', () => {
     expect(after.monkeyPawLearned.knowledge).toBe(true);
     expect(after.ghostInfoCollected.Shade).toBe(true);
     expect(after.ectoplasmQuestStage).toBe(3);
+    expect(after.ectoplasmWeakenCount).toBe(5);
+    expect(after.ectoplasmPrequalified).toBe(true);
     expect(after.relationshipBlake).toBe(4);
     expect(after.lostClothing).toEqual(['jeansState']);
     expect(after.rememberTopOuter).toBe('tshirt0');

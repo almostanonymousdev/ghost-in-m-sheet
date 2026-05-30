@@ -149,6 +149,110 @@ test.describe('Witch — weaken ghost quest', () => {
 
 });
 
+test.describe('Witch — ectoplasm-unlock quest flow', () => {
+  const passageText = (page) =>
+    page.evaluate(() => document.querySelector('.passage').textContent);
+
+  test('briefing shows the running tally while under the bar', async ({ game: page }) => {
+    await setVar(page, 'mc.lvl', 5);
+    await page.evaluate(() => SugarCube.setup.Witch.offerEctoplasmQuest());
+    await page.evaluate(() => SugarCube.setup.Witch.recordWeakenReward(30));
+
+    await goToPassage(page, 'WitchEctoplasmQuest');
+    await expectCleanPassage(page);
+    const text = await passageText(page);
+    /* "1 / 3" tally and the briefing prose, not the completion branch.
+       Anchor on the durable mechanic line rather than easily-reworded
+       dialogue. */
+    expect(text).toContain('1 / 3');
+    expect(text).toContain('Wring each one dry');
+    expect(text).not.toContain('Show me, then');
+  });
+
+  test('completion branch (earned the normal way) offers the lesson', async ({ game: page }) => {
+    await setVar(page, 'mc.lvl', 5);
+    await page.evaluate(() => SugarCube.setup.Witch.offerEctoplasmQuest());
+    await page.evaluate(() => {
+      SugarCube.setup.Witch.recordWeakenReward(30);
+      SugarCube.setup.Witch.recordWeakenReward(30);
+      SugarCube.setup.Witch.recordWeakenReward(30);
+    });
+
+    expect(await callSetup(page, 'setup.Witch.isEctoplasmQuestPrequalified()')).toBe(false);
+    await goToPassage(page, 'WitchEctoplasmQuest');
+    await expectCleanPassage(page);
+    const text = await passageText(page);
+    expect(text).toContain('walked back in the same person');
+    expect(text).toContain('Show me, then');
+  });
+
+  test('completion branch (prequalified) acknowledges the early work', async ({ game: page }) => {
+    await setVar(page, 'mc.lvl', 5);
+    await page.evaluate(() => {
+      SugarCube.setup.Witch.recordWeakenReward(30);
+      SugarCube.setup.Witch.recordWeakenReward(30);
+      SugarCube.setup.Witch.recordWeakenReward(30);
+    });
+    await page.evaluate(() => SugarCube.setup.Witch.offerEctoplasmQuest());
+
+    expect(await callSetup(page, 'setup.Witch.isEctoplasmQuestPrequalified()')).toBe(true);
+    await goToPassage(page, 'WitchEctoplasmQuest');
+    await expectCleanPassage(page);
+    const text = await passageText(page);
+    expect(text).toContain('before you opened your mouth');
+    expect(text).toContain('Show me, then');
+  });
+
+  test('the banishing lesson shows one video on load and gates the exit behind every reveal', async ({ game: page }) => {
+    await goToPassage(page, 'WitchBanishLesson');
+    await expectCleanPassage(page);
+
+    const videoCount = () => page.locator('.passage video').count();
+    const clickReveal = (hasText) =>
+      page.locator('.passage a.macro-linkreplace').filter({ hasText }).first().click();
+
+    /* "One video at a time": exactly one clip is in the DOM on load and the
+       exit link is buried in the innermost reveal, so it must be absent. */
+    expect(await videoCount()).toBe(1);
+    expect(await passageText(page)).not.toContain('Take the trade');
+
+    /* Walk the five nested reveals in order by their diegetic anchor text.
+       Each click reveals exactly one more clip, never stacking videos. */
+    const reveals = [
+      "can't even find it",
+      "You're staring",
+      'Where does that come in',
+      "already in my mouth",
+      "not finished showing me",
+    ];
+    for (let i = 0; i < reveals.length; i++) {
+      await clickReveal(reveals[i]);
+      expect(await videoCount()).toBe(i + 2);
+      /* The exit appears only after the final reveal. */
+      const seen = await passageText(page);
+      if (i < reveals.length - 1) {
+        expect(seen).not.toContain('Take the trade');
+      }
+    }
+    expect(await videoCount()).toBe(6);
+    expect(await passageText(page)).toContain('Take the trade');
+
+    /* Following the exit (gated on finishing the lesson) opens the economy. */
+    expect(await callSetup(page, 'setup.Witch.ectoplasmUnlocked()')).toBe(false);
+    await page.locator('.passage a').filter({ hasText: 'Take the trade' }).first().click();
+    expect(await callSetup(page, 'setup.Witch.ectoplasmQuestComplete()')).toBe(true);
+    expect(await callSetup(page, 'setup.Witch.ectoplasmUnlocked()')).toBe(true);
+  });
+
+  test('WitchEctoplasmQuestDone fires completeEctoplasmQuest and opens the economy', async ({ game: page }) => {
+    expect(await callSetup(page, 'setup.Witch.ectoplasmUnlocked()')).toBe(false);
+    await goToPassage(page, 'WitchEctoplasmQuestDone');
+    await expectCleanPassage(page);
+    expect(await callSetup(page, 'setup.Witch.ectoplasmQuestComplete()')).toBe(true);
+    expect(await callSetup(page, 'setup.Witch.ectoplasmUnlocked()')).toBe(true);
+  });
+});
+
 test.describe('Witch — tool upgrades and crucifix', () => {
   test('TOOL_UPGRADE_PRICES lists a price for each tool', async ({ game: page }) => {
     const prices = await page.evaluate(() => SugarCube.setup.Witch.TOOL_UPGRADE_PRICES);

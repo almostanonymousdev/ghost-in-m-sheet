@@ -462,10 +462,14 @@ test.describe('Events controller — event flags / videos', () => {
     expect(await getVar(page, 'orgasmCooldownSteps')).toBe(3);
   });
 
-  test('recordWeakenReward sets weaken flag and money', async ({ game: page }) => {
+  test('recordWeakenReward sets weaken flag and money and bumps the lifetime tally', async ({ game: page }) => {
+    const before = await callSetup(page, 'setup.Witch.ectoplasmWeakenCount()');
     await page.evaluate(() => SugarCube.setup.Events.recordWeakenReward());
     expect(await getVar(page, 'isWeakenGhost')).toBe(true);
     expect(await getVar(page, 'moneyFromWeakenTheGhost')).toBe(30);
+    /* The minigame win is the single canonical "a ghost was weakened"
+       site; it must feed Khadija's ectoplasm-quest tally. */
+    expect(await callSetup(page, 'setup.Witch.ectoplasmWeakenCount()')).toBe(before + 1);
   });
 
   test('setCleanedUp coerces to boolean', async ({ game: page }) => {

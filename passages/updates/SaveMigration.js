@@ -150,7 +150,17 @@
 		// hunt card + every visible reference to the ectoplasm
 		// currency and meta-shop. Defaults to NOT_OFFERED (0); the
 		// witch surfaces the quest once the MC hits level 5.
-		ectoplasmQuestStage: function () { return 0; }
+		ectoplasmQuestStage: function () { return 0; },
+
+		// Lifetime tally of ghosts the MC has weakened (seduce-minigame
+		// wins). Always increments; the witch teaches the banishing
+		// ritual once it reaches setup.Witch.GHOSTS_TO_WEAKEN.
+		ectoplasmWeakenCount: function () { return 0; },
+
+		// True iff the MC had already met the weaken bar when she took
+		// the ectoplasm quest, so the briefing skips straight to the
+		// lesson. Snapshotted by setup.Witch.offerEctoplasmQuest.
+		ectoplasmPrequalified: function () { return false; }
 	};
 
 	// Flags that flipped from 0/1 integers to true/false booleans.
@@ -722,7 +732,8 @@
 		'gotCursedItem', 'isCIDildo', 'isCIButtplug', 'isCIBeads', 'isCIHDildo',
 		'eventToolsOneStart', 'wardenClothesStage',
 		'weakenTheGhostQuest', 'isWeakenGhost', 'moneyFromWeakenTheGhost',
-		'amulet', 'ectoplasmQuestStage', 'contracts',
+		'amulet', 'ectoplasmQuestStage', 'ectoplasmWeakenCount',
+		'ectoplasmPrequalified', 'contracts',
 		'wishesCount', 'monkeyPawLearned', 'monkeyPawEffectsKnown',
 		'MonkeyPawStage', 'wishAnything',
 		'hasQuestForRescue', 'rescueStage', 'hasRescueClue',

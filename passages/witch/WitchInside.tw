@@ -198,9 +198,9 @@
 		@@.notmc-speech; A favor. Off the contract board. Quiet. The kind that opens up a different ledger between us.@@<br>
 		@@.mc-speech; Different how?@@<br>
 		@@.notmc-speech; Different in what I'll trade you for. Coin's coin. There's another thing the houses bleed. We'll talk about it when you've handled this.@@<br><br>
-		@@.mc-action; Khadija has a new task for you. (Placeholder quest.)@@<br>
+		@@.mc-action; Khadija has set you a task: weaken three ghosts to prove you can take the ectoplasm trade without it taking you.@@<br>
 		@@.movebtn; [[Hear her out|WitchEctoplasmQuest]]@@<br>
-		<<run setup.Witch.markEctoplasmQuestStarted()>>
+		<<run setup.Witch.offerEctoplasmQuest()>>
 	<</linkreplace>><br>
 <<elseif setup.Witch.ectoplasmQuestStarted()>>
 	@@.usebtn;[[Khadija's favor|WitchEctoplasmQuest]]@@<br>
