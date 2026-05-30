@@ -569,7 +569,7 @@ setup.HuntController = (function () {
 		if (setup.Ghosts && setup.Ghosts.resetEvidenceChecks) {
 			setup.Ghosts.resetEvidenceChecks();
 		}
-		applyMetaUnlocksAtStart(floorplan, seed, evidenceIds);
+		setup.HuntMetaUnlocks.applyAtStart(sv().run, seed, evidenceIds);
 		/* Pin MC beauty for the duration of the hunt so drift chance,
 		   event rolls, and other beauty-driven checks see a stable
 		   value even if clothes get torn off / makeup wipes mid-run.
@@ -580,71 +580,8 @@ setup.HuntController = (function () {
 		return active();
 	}
 
-	/* Stamp meta-shop unlocks onto the freshly-built run. Splits the
-	   side-effect block out of startHunt() so the lifecycle code stays
-	   focused on roll/draft/floor-plan composition. The run object is
-	   already populated when this runs, so the pre-stamps land on the
-	   right $run.collectedLoot list. */
-	function applyMetaUnlocksAtStart(floorplan, seed, evidenceIds) {
-		var run = sv().run;
-		if (!run) return;
-		var Shop = setup.HuntShop;
-		var Item = Shop.ShopItem;
-
-		/* Witch's Blessing: tarot deck already in the bag. Mirrors the
-		   FurnitureSearch pickup -- markTarotCarrying flips the stage
-		   so Bag exposes the tarot link, and stamping 'tarotCards' onto
-		   collectedLoot prevents the floor-plan tarot pickup from
-		   double-granting. We leave the floor-plan pin intact so a
-		   re-search of that slot still reports nothing (already-collected).
-		   Gated on isTarotUnlocked() so an early meta-shop purchase
-		   doesn't smuggle the deck in before the level gate the rest
-		   of the tarot pipeline (furniture pickup) requires. */
-		if (Shop.hasUnlock(Item.WITCHS_BLESSING) && setup.Tarot.isTarotUnlocked()) {
-			setup.Tarot.markTarotCarrying();
-			setup.HuntLoot.takeLoot('tarotCards');
-		}
-
-		/* Monkey's Favor: paw already found, ready for its first wish.
-		   Same pattern as Witch's Blessing, against MonkeyPaw.markFound.
-		   Gated on MonkeyPaw.isUnlocked() so an early meta-shop purchase
-		   doesn't pre-stamp the paw before the player reaches the
-		   level that the rest of the paw machinery (furniture pickup,
-		   witch dialog) requires. */
-		if (Shop.hasUnlock(Item.MONKEYS_FAVOR) && setup.MonkeyPaw.isUnlocked()) {
-			setup.MonkeyPaw.markFound();
-			setup.HuntLoot.takeLoot('monkeyPaw');
-		}
-
-		/* Stat-cap bumps. Snapshot the prior caps so endHunt can
-		   restore them; the player's $mc.sanityMax / energyMax are
-		   long-lived and must come back unchanged. */
-		run.preRunStatCaps = {
-			sanityMax: setup.Mc.sanityMax(),
-			sanity: setup.Mc.sanity(),
-			energyMax: setup.Mc.energyMax(),
-			energy: setup.Mc.energy()
-		};
-		if (Shop.hasUnlock(Item.STEELED_HAND)) {
-			setup.Mc.setSanityMax(setup.Mc.sanityMax() + 25);
-			setup.Mc.addSanity(25);
-		}
-		if (Shop.hasUnlock(Item.CALVES_OF_STEEL)) {
-			setup.Mc.setEnergyMax(setup.Mc.energyMax() + 5);
-			setup.Mc.addEnergy(5);
-		}
-
-		/* Intense Intuition: pre-check one of the ghost's true evidence
-		   ids in the Notebook. Picked seed-deterministically from the
-		   per-run evidence list (already trimmed by Fog of War, so the
-		   pre-check never reveals a hidden one). */
-		if (Shop.hasUnlock(Item.INTENSE_INTUITION)
-			&& Array.isArray(evidenceIds) && evidenceIds.length
-			&& setup.Ghosts && typeof setup.Ghosts.setEvidenceCheck === 'function') {
-			var idx = ((seed ^ 0x27d4eb2f) >>> 0) % evidenceIds.length;
-			setup.Ghosts.setEvidenceCheck(evidenceIds[idx], true);
-		}
-	}
+	/* Meta-shop unlock stamping at hunt start lives in HuntMetaUnlocks.js.
+	   See setup.HuntMetaUnlocks.applyAtStart(run, seed, evidenceIds). */
 
 	function ghostName() {
 		var run = sv().run;
@@ -1103,19 +1040,8 @@ setup.HuntController = (function () {
 		setup.Ghosts.setChosenEvidence(missing[Math.floor(Math.random() * missing.length)]);
 	});
 
-	/* Meta-shop unlock effects wire into the same filter bus the
-	   modifiers use. The buildHunt path stays agnostic; each unlock
-	   that mutates a lifecycle ctx registers its own subscriber. */
-	setup.Hunt.filter(setup.Hunt.Event.FLOORPLAN_OPTIONS, function (ctx) {
-		/* Smaller House meta-unlock shaves one room off the haunt.
-		   Applied after any modifier room-count bumps so it composes
-		   with Maze (still net +2) and the tool-loot expansion (still
-		   keeps a slot per missing tool). Floor at the generator's
-		   hard min of 2 (hallway + 1). */
-		if (!setup.HuntShop.hasUnlock(setup.HuntShop.ShopItem.SMALLER_HOUSE)) return;
-		if (!ctx || !ctx.fpOpts) return;
-		ctx.fpOpts.roomCount = Math.max(2, (ctx.fpOpts.roomCount || 5) - 1);
-	});
+	/* Meta-shop unlock subscribers (SMALLER_HOUSE / FLOORPLAN_OPTIONS)
+	   wire into the filter bus from HuntMetaUnlocks.js at module load. */
 
 	/* True iff the Bag was just opened from inside a hunt-context
 	   passage -- gates the carry links for the tarot deck and the
