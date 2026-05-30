@@ -24,7 +24,7 @@ const PASSAGES_ROOT = path.join(__dirname, '..', 'passages');
    runtime. Catches the regression where a controller forgets to
    expose OWNED_VARS (and so vanishes from the dynamic discovery
    below) without us noticing. Bump as new controllers are added. */
-const MIN_CONTROLLER_COUNT = 23;
+const MIN_CONTROLLER_COUNT = 24;
 
 /* Top-level State.variables keys with no owning controller. Only two
    are allowed:

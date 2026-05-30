@@ -54,6 +54,11 @@ setup.Mc = (function () {
 	var api = {
 		OWNED_VARS: OWNED_VARS,
 
+		// True once $mc has been stamped by initState. Lets controllers
+		// that fire early (Tick, HauntConditions) bail out before $mc
+		// exists without reaching into State.variables themselves.
+		isReady: function () { return !!sv().mc; },
+
 		// --- Fit percent shorthand ------------------------------
 		// $mc.fit is clamped to [0, 100]; plenty of callers that
 		// just display a bar divide by 100.
@@ -151,6 +156,43 @@ setup.Mc = (function () {
 		bodyPartSensitivity: function (part) {
 			var bp = sv().sensualBodyPart;
 			return bp ? (bp[part] || 0) : 0;
+		},
+		sensualBodyPartChoice: function () { return sv().sensualBodyPartChoice; },
+		/* Stage the player's intro/guide pick. Setter only — the
+		   commit (max-merge into the sensitivity map) runs separately
+		   so a brand-new game shows every part at BASE_SENSITIVITY
+		   until the player actually leaves the Guide screen. */
+		stageSensualBodyPartChoice: function (part) {
+			sv().sensualBodyPartChoice = part;
+		},
+		/* Commit a staged $sensualBodyPartChoice into the sensitivity
+		   map. Max-merge so re-visiting Guide mid-game never nerfs a
+		   part the player has already trained up. Called from
+		   IntroController on leaving any of the CHOICE_PASSAGES. */
+		commitSensualBodyPartChoice: function () {
+			var s = sv();
+			if (!s) return;
+			var bp = s.sensualBodyPart;
+			var c = s.sensualBodyPartChoice;
+			if (!bp || typeof bp !== 'object') return;
+			if (!setup.Intro || setup.Intro.BODY_PARTS.indexOf(c) === -1) return;
+			var current = Number(bp[c]) || 0;
+			if (current < setup.Intro.CHOSEN_SENSITIVITY) {
+				bp[c] = setup.Intro.CHOSEN_SENSITIVITY;
+			}
+		},
+		/* Lazy seed for very old saves / brand-new games where
+		   SaveMigration hasn't run (no save loaded yet). Called from
+		   TickController on every passage. */
+		ensureSensualBodyParts: function () {
+			var s = sv();
+			if (!s.sensualBodyPart || typeof s.sensualBodyPart !== 'object') {
+				s.sensualBodyPart = setup.Intro.defaultSensualBodyParts();
+			}
+			if (typeof s.sensualBodyPartChoice !== 'string' ||
+				setup.Intro.BODY_PARTS.indexOf(s.sensualBodyPartChoice) === -1) {
+				s.sensualBodyPartChoice = setup.Intro.defaultSensualBodyPartChoice();
+			}
 		},
 		ensurePossession: function () {
 			if (sv().mcpossession === undefined) { sv().mcpossession = 0; }
@@ -450,8 +492,10 @@ setup.Mc = (function () {
 		s.tempCorr = 0;
 	};
 	api.isSanityCollapsed = function () { return sv().sanityCollapse === true; };
+	api.markSanityCollapsed = function () { sv().sanityCollapse = true; };
 	api.clearSanityCollapse = function () { sv().sanityCollapse = false; };
 	api.isExhausted = function () { return sv().exhausted === true; };
+	api.markExhausted = function () { sv().exhausted = true; };
 	api.clearExhausted = function () { sv().exhausted = false; };
 	api.lustPct = function () { return sv().mc.lust / 100; };
 	api.sanityPct = function () { return sv().mc.sanity / sv().mc.sanityMax; };

@@ -68,6 +68,13 @@ if ! python3 "$REPO_ROOT/tools/check_ghosts.py"; then
 fi
 echo -e "${GREEN}Ghost check passed.${NC}"
 
+echo -e "${GREEN}Checking controller OWNED_VARS leaks...${NC}"
+if ! python3 "$REPO_ROOT/tools/check_owned_vars.py"; then
+    echo -e "${RED}Error: Cross-controller OWNED_VARS access detected.${NC}"
+    exit 1
+fi
+echo -e "${GREEN}OWNED_VARS check passed.${NC}"
+
 # Build the story
 echo -e "${GREEN}Building story from $PASSAGES_DIR to $OUTPUT_FILE...${NC}"
 

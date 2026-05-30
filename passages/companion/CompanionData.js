@@ -154,7 +154,7 @@ setup.CompanionData = (function () {
 			homeContinuePassage: "AliceContinue",
 			spiritEventPassage:  "AliceSpiritEvent",
 			contactsLockedHint:  "Deliver books to the correct address",
-			isUnlocked:          function () { return State.variables.meetAlice !== undefined; },
+			isUnlocked:          function () { return setup.Companion.hasAliceMet(); },
 			canText:             function () { return true; },
 			possessedHint:       "",
 			withRainHint:        "",
@@ -170,10 +170,10 @@ setup.CompanionData = (function () {
 			// markMet wrap the former; onHuntFail (called only on the
 			// active companion) zeroes workDone unless Alice was on a
 			// solo run -- a botched joint hunt invalidates the delivery.
-			hasMet:  function () { return State.variables.meetAlice !== undefined; },
+			hasMet:  function () { return setup.Companion.hasAliceMet(); },
 			markMet: function () { setup.Companion.markAliceMet(); },
 			onHuntFail: function () {
-				var stats = State.variables.alice;
+				var stats = setup.Companion.aliceStats();
 				if (stats && stats.goingSolo === 0) setup.Companion.clearAliceWorkDone();
 			},
 			initStats: {
@@ -227,7 +227,7 @@ setup.CompanionData = (function () {
 			// while she was carrying a cursed item for the Witch, she
 			// drops it. Witch owns the gotCursedItem flag.
 			onHuntFail: function () {
-				if (State.variables.isCompChosen !== true) return;
+				if (!setup.Companion.isCompanionFlagActive()) return;
 				if (!setup.Witch.hasCursedItemToTurnIn()) return;
 				setup.Witch.clearCursedItemHeld();
 			},

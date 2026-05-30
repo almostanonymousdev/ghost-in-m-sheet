@@ -499,11 +499,14 @@ setup.Companion = (function () {
 			var c = this.active();
 			return (c && c.huntOverPassage) ? c.huntOverPassage : null;
 		},
-		/* Low-level Alice-flag writers exposed for CompanionData's per-
-		   companion catalogue hooks; the controller stays the single
-		   writer of $meetAlice / $aliceWorkDone. */
+		/* Low-level Alice readers/writers exposed for CompanionData's
+		   per-companion catalogue hooks; the controller stays the single
+		   source-of-truth for $meetAlice / $aliceWorkDone / $alice so the
+		   catalogue side never touches State.variables directly. */
+		hasAliceMet: function () { return State.variables.meetAlice !== undefined; },
 		markAliceMet: function () { State.variables.meetAlice = true; },
 		clearAliceWorkDone: function () { State.variables.aliceWorkDone = false; },
+		aliceStats: function () { return State.variables.alice; },
 		hasActiveCompanion: function () { var c = this.activeState(); return !!(c && c.name); },
 		activeCompanionName: function () {
 			var c = this.activeState();

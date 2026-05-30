@@ -29,8 +29,7 @@ setup.HuntController = (function () {
 	var OWNED_VARS = Object.freeze([
 		'run', 'ectoplasm', 'runsStarted',
 		'nextHuntSeed', 'pendingHuntHouseId',
-		'huntMode',
-		'baitActive', 'baitStepsRemain', 'baitOrgasmPending', 'overchargedTools'
+		'huntMode'
 	]);
 
 	/* Lifecycle stages of the current hunt. Stored as the top-level

@@ -11,6 +11,17 @@
  * alongside the aggregated numbers. Keep new knobs HERE so the HUD numbers
  * and the underlying mechanics never drift apart. */
 setup.HauntConditions = (function () {
+	/* HauntConditions owns the per-hunt mechanic state it manages
+	   directly: the bait window (active flag, steps remaining,
+	   pending-orgasm signal) and the overcharged-tools toggle. Other
+	   per-step state it reads/writes (sanity / lust / energy / tempCorr
+	   / orgasmCooldown / exhaustion / sanity-collapse flags) belongs to
+	   McController and is touched through setup.Mc's API. */
+	var OWNED_VARS = Object.freeze([
+		'baitActive', 'baitStepsRemain', 'baitOrgasmPending',
+		'overchargedTools'
+	]);
+
 	var LUST_FUEL_THRESHOLD = 50;   // passive evidence bonus when lust >= this
 	var BAIT_INITIAL_LUST_MIN = 10;   // lust the bait click stamps onto the MC (rolled)
 	var BAIT_INITIAL_LUST_MAX = 50;
@@ -57,16 +68,9 @@ setup.HauntConditions = (function () {
 	/* Clothing buckets. Fully dressed = tshirt + any bottom. Topless = no
 	 * tshirt but a bottom. Fully nude = no tshirt, no bottom, no panties. */
 	function clothingState() {
-		var V = State.variables;
-		var WORN = setup.ClothingState.WORN;
-		var topOn = V.tshirtState === WORN;
-		var bottomOn = V.jeansState === WORN
-			|| V.shortsState === WORN
-			|| V.skirtState === WORN;
-		var pantiesOn = V.pantiesState === WORN;
-		if (!topOn && !bottomOn && !pantiesOn) return "nude";
-		if (!topOn && bottomOn) return "topless";
-		if (topOn && bottomOn) return "dressed";
+		if (setup.Wardrobe.isFullyNude()) return "nude";
+		if (setup.Wardrobe.isTopless()) return "topless";
+		if (setup.Wardrobe.isFullyDressed()) return "dressed";
 		return "partial";
 	}
 
@@ -98,7 +102,7 @@ setup.HauntConditions = (function () {
 
 		if (inHouse) {
 			snap.timeLabel = "+1 min/step";
-			var hasCompanion = V.isCompChosen === true;
+			var hasCompanion = setup.Companion.isCompanionFlagActive();
 			var contractDrain = hasCompanion ? 0.2 : 0.4;
 			snap.sanityPerStep -= contractDrain;
 
@@ -165,8 +169,8 @@ setup.HauntConditions = (function () {
 			});
 		}
 
-		var mc = V.mc;
-		if (mc && mc.lust >= LUST_FUEL_THRESHOLD) {
+		var mcLust = setup.Mc.lust();
+		if (mcLust >= LUST_FUEL_THRESHOLD) {
 			snap.toolChanceBonus += 5;
 			snap.prowlChanceBonus += 3;
 			snap.corruptionPending += 0.05;
@@ -182,7 +186,7 @@ setup.HauntConditions = (function () {
 		 * bleed + corruption banking; the actual orgasm trigger lives in
 		 * widgetEvent.tw (shouldOrgasm), which also seeds the aftershock
 		 * cooldown below. */
-		if (mc && mc.lust >= 100) {
+		if (mcLust >= 100) {
 			snap.sanityPerStep -= 1;
 			snap.corruptionPending += 0.05;
 			snap.contributors.push({
@@ -195,7 +199,7 @@ setup.HauntConditions = (function () {
 		/* Orgasm aftershock: N steps of extra drain seeded by the orgasm
 		 * trigger in widgetEvent.tw. Counter is decremented in
 		 * applyTickEffects so the chip naturally clears. */
-		var cooldown = V.orgasmCooldownSteps || 0;
+		var cooldown = setup.Mc.orgasmCooldown() || 0;
 		if (cooldown > 0) {
 			snap.sanityPerStep -= 1;
 			snap.energyPerStep -= 0.125;
@@ -238,7 +242,7 @@ setup.HauntConditions = (function () {
 		   Once $tempCorr has reached the ceiling, surface a 0/step
 		   reading so the HUD stops promising gains that the cap will
 		   eat -- and applyTickEffects below skips its no-op write. */
-		if ((V.tempCorr || 0) >= 1) {
+		if ((setup.Mc.tempCorr() || 0) >= 1) {
 			snap.corruptionPending = 0;
 		}
 
@@ -254,15 +258,14 @@ setup.HauntConditions = (function () {
 	 * energy) are refreshed by the caller. */
 	function applyTickEffects() {
 		var V = State.variables;
-		var mc = V.mc;
-		if (!mc) return;
+		if (!setup.Mc.isReady()) return;
 		var inHouse = !!(setup.HuntController && setup.HuntController.isHuntActive
 			&& setup.HuntController.isHuntActive());
 		var snap = snapshot();
 
 		if (snap.sanityPerStep !== 0) {
 			if (setup.Mc.addSanity(snap.sanityPerStep) == setup.SanityDeltaResult.COLLAPSED) {
-				V.sanityCollapse = true;
+				setup.Mc.markSanityCollapsed();
 			}
 		}
 		if (snap.lustPerStep !== 0) {
@@ -278,7 +281,7 @@ setup.HauntConditions = (function () {
 			/* Cap-overflow during bait routes to BaitOrgasm — see
 			 * consumeBaitOrgasm. Only the bait flow flags this; other
 			 * lust sources (topless/nude clothing tick) just clamp. */
-			var baitAtCap = snap.baitActive && (mc.lust + lustDelta) >= 100;
+			var baitAtCap = snap.baitActive && (setup.Mc.lust() + lustDelta) >= 100;
 			if (baitAtCap) {
 				V.baitOrgasmPending = true;
 			}
@@ -287,12 +290,12 @@ setup.HauntConditions = (function () {
 		if (snap.energyPerStep !== 0) {
 			setup.Mc.addEnergy(snap.energyPerStep);
 			/* Per-step drain mirrors HauntConditions.removeEnergy: zero
-			   energy stamps V.exhausted so includeTimeEvent* widgets can
-			   route the next nav tick to HuntOverExhaustion. */
-			if ((mc.energy || 0) <= 0) { V.exhausted = true; }
+			   energy stamps the MC's exhausted flag so includeTimeEvent*
+			   widgets can route the next nav tick to HuntOverExhaustion. */
+			if ((setup.Mc.energy() || 0) <= 0) { setup.Mc.markExhausted(); }
 		}
 		if (snap.corruptionPending !== 0) {
-			V.tempCorr = (V.tempCorr || 0) + snap.corruptionPending;
+			setup.Mc.addTempCorr(snap.corruptionPending);
 		}
 		if (snap.baitActive) {
 			V.baitStepsRemain = Math.max(0, (V.baitStepsRemain || 0) - 1);
@@ -301,7 +304,8 @@ setup.HauntConditions = (function () {
 				V.baitStepsRemain = 0;
 			}
 		}
-		if ((V.orgasmCooldownSteps || 0) > 0) {
+		var cool = setup.Mc.orgasmCooldown() || 0;
+		if (cool > 0) {
 			/* Per-tick decrement is filterable so modifiers (Glass Bones)
 			   and future contracts can stretch the aftershock window
 			   without HuntConditions branching on each one. */
@@ -311,8 +315,8 @@ setup.HauntConditions = (function () {
 				dec: 1,
 				modifierIds: modifierIds
 			});
-			V.orgasmCooldownSteps -= coolCtx.dec;
-			if (V.orgasmCooldownSteps < 0) V.orgasmCooldownSteps = 0;
+			var next = cool - coolCtx.dec;
+			setup.Mc.setOrgasmCooldown(next < 0 ? 0 : next);
 		}
 		if (inHouse && typeof setup.addTime === 'function') {
 			setup.addTime(1);
@@ -323,13 +327,11 @@ setup.HauntConditions = (function () {
 	 * Returns true on success, false when not enough energy. Sets
 	 * V.exhausted at zero so the next nav tick routes to exhaustion. */
 	function removeEnergy(amount) {
-		var V = State.variables;
-		var mc = V.mc;
-		if (!mc) return false;
-		if ((mc.energy || 0) < amount) return false;
+		if (!setup.Mc.isReady()) return false;
+		if ((setup.Mc.energy() || 0) < amount) return false;
 		setup.Mc.addEnergy(-amount);
-		if (mc.energy <= 0) {
-			V.exhausted = true;
+		if ((setup.Mc.energy() || 0) <= 0) {
+			setup.Mc.markExhausted();
 		}
 		return true;
 	}
@@ -345,12 +347,11 @@ setup.HauntConditions = (function () {
 		var V = State.variables;
 		if (V.baitOrgasmPending !== true) return false;
 		V.baitOrgasmPending = false;
-		var mc = V.mc;
-		if (!mc) return true;
+		if (!setup.Mc.isReady()) return true;
 		setup.Mc.setLust(0);
 		var outcome = setup.Mc.addSanity(-BAIT_ORGASM_SANITY);
 		if (outcome === setup.SanityDeltaResult.COLLAPSED) {
-			V.sanityCollapse = true;
+			setup.Mc.markSanityCollapsed();
 		}
 		setup.Mc.setOrgasmCooldown(ORGASM_COOLDOWN_STEPS);
 		return true;
@@ -368,9 +369,8 @@ setup.HauntConditions = (function () {
 	 * fires. */
 	function startBait() {
 		var V = State.variables;
-		var mc = V.mc;
-		if (!mc) return false;
-		if ((mc.energy || 0) < ENERGY_COST_BAIT) return false;
+		if (!setup.Mc.isReady()) return false;
+		if ((setup.Mc.energy() || 0) < ENERGY_COST_BAIT) return false;
 		if (!setup.HuntController || !setup.HuntController.snapGhostToCurrentRoom
 			|| !setup.HuntController.snapGhostToCurrentRoom()) {
 			return false;
@@ -378,7 +378,7 @@ setup.HauntConditions = (function () {
 		removeEnergy(ENERGY_COST_BAIT);
 		V.baitActive = true;
 		V.baitStepsRemain = BAIT_STEPS;
-		var atCap = mc.lust >= 100;
+		var atCap = setup.Mc.lust() >= 100;
 		setup.Mc.addLust(randInt(BAIT_INITIAL_LUST_MIN, BAIT_INITIAL_LUST_MAX));
 		if (atCap) {
 			V.baitOrgasmPending = true;
@@ -402,17 +402,16 @@ setup.HauntConditions = (function () {
 			modifierIds: modifierIds
 		});
 		if (!baitCtx.allowed) return false;
-		return !!(V.mc
-			&& (V.mc.energy || 0) >= ENERGY_COST_BAIT
-			&& V.baitActive !== true);
+		return setup.Mc.isReady()
+			&& (setup.Mc.energy() || 0) >= ENERGY_COST_BAIT
+			&& V.baitActive !== true;
 	}
 
 	/* Pray (used by GhostProwlEvent). Costs sanity AND energy. */
 	function canPray() {
-		var V = State.variables;
-		return !!(V.mc
-			&& V.mc.sanity > 10
-			&& (V.mc.energy || 0) >= ENERGY_COST_PRAY);
+		if (!setup.Mc.isReady()) return false;
+		return setup.Mc.sanity() > 10
+			&& (setup.Mc.energy() || 0) >= ENERGY_COST_PRAY;
 	}
 
 	function toggleOverchargedTools() {
@@ -452,12 +451,13 @@ setup.HauntConditions = (function () {
 		V.baitStepsRemain = 0;
 		V.baitOrgasmPending = false;
 		V.overchargedTools = false;
-		V.exhausted = false;
-		V.sanityCollapse = false;
-		V.orgasmCooldownSteps = 0;
+		setup.Mc.clearExhausted();
+		setup.Mc.clearSanityCollapse();
+		setup.Mc.setOrgasmCooldown(0);
 	}
 
 	return {
+		OWNED_VARS: OWNED_VARS,
 		LUST_FUEL_THRESHOLD: LUST_FUEL_THRESHOLD,
 		BAIT_INITIAL_LUST_MIN: BAIT_INITIAL_LUST_MIN,
 		BAIT_INITIAL_LUST_MAX: BAIT_INITIAL_LUST_MAX,
