@@ -7,23 +7,24 @@
  * calls into their writeHooks / mutators so every legitimate change
  * updates the mirror in lockstep with the live value.
  *
- * Once per in-game day (at midnight rollover, from
- * setup.Tick.resetCooldowns -> setup.Ledger.auditAndReport), the
- * controller compares each mirrored field against the live value. A
- * mismatch means the live value was changed without going through
- * the controller API -- in practice, the player edited
- * State.variables from the browser dev console. The audit emits
- * setup.StoryEvents.Event.CHEAT_USED with ctx
- * { source: 'ledger:<field>', expected, actual } and then resyncs
- * the mirror to the live value so the next day's audit doesn't
+ * Audit runs per passage navigation (from setup.Tick.onPassageReady
+ * -> setup.Ledger.auditAndReport), with a backup call at midnight
+ * rollover (setup.Tick.resetCooldowns). The controller compares each
+ * mirrored field against the live value. A mismatch means the live
+ * value was changed without going through the controller API -- in
+ * practice, the player edited State.variables from the browser dev
+ * console. The audit emits setup.StoryEvents.Event.CHEAT_USED with
+ * ctx { source: 'ledger:<field>', expected, actual } and then
+ * resyncs the mirror to the live value so the next audit doesn't
  * re-fire on the same edit.
  *
- * Known limitation: a legitimate controller write that happens
- * between a cheat edit and the next midnight audit will overwrite
- * the ledger entry and mask the cheat. We accept that gap -- the
- * audit catches the common "set money to a million in the console"
- * pattern, which is enough to gate the cheated-save achievement
- * lock downstream (see setup.Achievements.markCheated).
+ * Detection window: one passage navigation. A cheat edit between
+ * two passage transitions is caught on the second passage's
+ * onPassageReady, before any controller call can overwrite the
+ * mirror. The earlier midnight-only cadence let a legitimate write
+ * inside the same in-game day mask the cheat; per-passage closes
+ * that gap to the time the player spends on a single passage
+ * without using a tracked-field mutator.
  */
 setup.Ledger = (function () {
 	var OWNED_VARS = Object.freeze(['ledger']);

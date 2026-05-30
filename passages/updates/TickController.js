@@ -119,7 +119,10 @@ setup.Tick = (function () {
 	   adding a new daily cooldown is one registerDaily() line in the
 	   owning controller (not a fan-out edit here). */
 	function resetCooldowns() {
-		/* Shadow-ledger audit runs first to prevent cleanup interference */
+		/* Shadow-ledger audit at midnight is the belt-and-braces backup
+		   for the per-passage audit in onPassageReady. Per-passage is
+		   the primary detector (one-navigation window); this catches
+		   anything that slipped past it on a long-AFK day. */
 		setup.Ledger.auditAndReport();
 
 		setup.Cooldowns.resetDaily();
@@ -142,6 +145,13 @@ setup.Tick = (function () {
 	   player visually stays on HuntRun even though State.passage flipped.
 	   <<goto>> defers via setTimeout(Engine.DOM_DELAY) and avoids that. */
 	function onPassageReady() {
+		/* Shadow-ledger audit runs first, before any migration / ensure
+		   call has a chance to touch a tracked field. Catches console
+		   edits made between the previous passage and this one; with
+		   this hook the cheat-detection window is one passage navigation
+		   rather than one in-game day. */
+		setup.Ledger.auditAndReport();
+
 		if (setup.HuntController.isHunting()
 			&& companionAttackActiveHit()
 			&& resolveCompanionAttack() === "hit") {
