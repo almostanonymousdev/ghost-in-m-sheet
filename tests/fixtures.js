@@ -20,10 +20,20 @@ const { openGame, resetGame } = require('./helpers');
  * `game` is a Playwright Page that has been booted and reset; tests interact
  * with it via the helper functions in tests/helpers.js exactly as before.
  *
- * Specs that need custom boot options (e.g. a deterministic RNG seed,
- * multiple pages per test) should keep calling openGame() directly — the
- * fixture is only for the standard one-page-per-worker pattern.
+ * RNG: the fixture-provided page boots with a fixed Mulberry32 seed
+ * (DEFAULT_FIXTURE_SEED below). Without this, every random()/either() call
+ * in the game runs against the browser's real Math.random, so any test that
+ * doesn't explicitly stamp its own RNG state can flake under "unlucky" rolls.
+ * Tests that need their own seed continue to call seedRandom() / openGame({
+ * seed }); those calls override the fixture seed for the remainder of that
+ * test, and resetGame restores the snapshot before the next.
+ *
+ * Specs that need custom boot options (e.g. multiple pages per test, or a
+ * seed-from-the-start-of-StoryInit guarantee) should keep calling openGame()
+ * directly — the fixture is only for the standard one-page-per-worker pattern.
  */
+const DEFAULT_FIXTURE_SEED = 1;
+
 const test = base.test.extend({
   // Worker-scoped page holder: opened once when the worker starts. Wrapped
   // in a holder so the per-test fixture can reopen the page mid-worker if a
@@ -31,7 +41,7 @@ const test = base.test.extend({
   // OOM-kill the renderer; without recovery, every subsequent test in that
   // worker fails with "Target page, context or browser has been closed").
   gameWorkerPage: [async ({ browser }, use) => {
-    const holder = { browser, page: await openGame(browser) };
+    const holder = { browser, page: await openGame(browser, { seed: DEFAULT_FIXTURE_SEED }) };
     await use(holder);
     if (!holder.page.isClosed()) await holder.page.close();
   }, { scope: 'worker' }],
@@ -41,12 +51,12 @@ const test = base.test.extend({
   // test, transparently reopen so this test still gets a clean game.
   game: async ({ gameWorkerPage }, use) => {
     if (gameWorkerPage.page.isClosed()) {
-      gameWorkerPage.page = await openGame(gameWorkerPage.browser);
+      gameWorkerPage.page = await openGame(gameWorkerPage.browser, { seed: DEFAULT_FIXTURE_SEED });
     }
     try {
       await resetGame(gameWorkerPage.page);
     } catch (err) {
-      gameWorkerPage.page = await openGame(gameWorkerPage.browser);
+      gameWorkerPage.page = await openGame(gameWorkerPage.browser, { seed: DEFAULT_FIXTURE_SEED });
     }
     await use(gameWorkerPage.page);
   },
