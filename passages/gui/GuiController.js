@@ -107,6 +107,67 @@ setup.Gui = (function () {
 		$(document.body).toggleClass("show-history", !!settings.showHistoryControls);
 	}
 
+	// --- Player font preference ----------------------------------
+	// The "Text font" player setting (registered below, beside
+	// muteAllVideos) lets readers swap the passage/button/link face for
+	// a dyslexia-friendly or plain-sans one. Each non-default choice
+	// maps to a body class that the StoryStylesheet "player font
+	// preference" block uses to override the --font-normal /
+	// --font-haunted role tokens for the whole body subtree, so passage
+	// text plus every button/link that inherits the body font switch
+	// with it (map labels, clock, and titles keep their own identity
+	// fonts). Re-applied on :passagestart because Engine.play wipes
+	// document.body.className each navigation — same lifecycle as
+	// applyHistoryControlsVisibility above. FONT_CHOICE_DEFAULT stamps no
+	// class so the designed serif/sans split stands. Keep these labels in
+	// sync with the body.font-pref-* selectors in StoryStylesheet.css.
+	var FONT_CHOICE_DEFAULT = "Story default";
+	var FONT_PREF_BY_CHOICE = {
+		"OpenDyslexic (dyslexia-friendly)": "font-pref-dyslexic",
+		"Atkinson Hyperlegible": "font-pref-legible",
+		"Plain sans-serif": "font-pref-sans"
+	};
+	var FONT_CHOICES = [FONT_CHOICE_DEFAULT].concat(Object.keys(FONT_PREF_BY_CHOICE));
+	function applyFontPreference() {
+		var body = $(document.body);
+		Object.keys(FONT_PREF_BY_CHOICE).forEach(function (choice) {
+			body.removeClass(FONT_PREF_BY_CHOICE[choice]);
+		});
+		var cls = FONT_PREF_BY_CHOICE[settings.fontChoice];
+		if (cls) body.addClass(cls);
+	}
+
+	// Each font choice previews in its own face inside the Settings
+	// dropdown. The value here is the --font-* custom property whose stack
+	// represents that choice. styleFontChoiceOptions resolves them off
+	// document.documentElement on purpose: the font-pref-* classes
+	// override --font-normal / --font-haunted on <body>, so reading those
+	// tokens off an <option> (a body descendant) would paint every row in
+	// the player's *current* pick. <html> is body's parent, so it keeps
+	// the canonical face for each token regardless of the active class.
+	// Keys mirror FONT_CHOICE_DEFAULT + FONT_PREF_BY_CHOICE; the
+	// font-preference spec asserts the two stay in lock-step.
+	var FONT_PREVIEW_PROP_BY_CHOICE = {};
+	FONT_PREVIEW_PROP_BY_CHOICE[FONT_CHOICE_DEFAULT] = "--font-normal";
+	FONT_PREVIEW_PROP_BY_CHOICE["OpenDyslexic (dyslexia-friendly)"] = "--font-dyslexic";
+	FONT_PREVIEW_PROP_BY_CHOICE["Atkinson Hyperlegible"] = "--font-legible";
+	FONT_PREVIEW_PROP_BY_CHOICE["Plain sans-serif"] = "--font-haunted";
+	function styleFontChoiceOptions() {
+		var sel = document.getElementById("setting-control-fontchoice");
+		if (!sel) return;
+		// SugarCube's <option> values are list indices ("0".."3"), so match
+		// on the visible label instead.
+		var rootStyle = window.getComputedStyle(document.documentElement);
+		var opts = sel.options;
+		for (var i = 0; i < opts.length; i++) {
+			var label = (opts[i].textContent || "").trim();
+			var prop = FONT_PREVIEW_PROP_BY_CHOICE[label];
+			if (!prop) continue;
+			var stack = rootStyle.getPropertyValue(prop).trim();
+			if (stack) opts[i].style.fontFamily = stack;
+		}
+	}
+
 	// --- Mirror render -------------------------------------------
 	// PassageDone re-renders the mirror image after wash/apply makeup
 	// chains so the portrait stays in sync with $mc.makeupImg. The
@@ -137,6 +198,13 @@ setup.Gui = (function () {
 		refreshToolTimer: refreshToolTimer,
 		timerToolsInitialized: timerToolsInitialized,
 		applyHistoryControlsVisibility: applyHistoryControlsVisibility,
+		applyFontPreference: applyFontPreference,
+		styleFontChoiceOptions: styleFontChoiceOptions,
+		fontChoices: function () { return FONT_CHOICES.slice(); },
+		defaultFontChoice: function () { return FONT_CHOICE_DEFAULT; },
+		fontPreviewProps: function () {
+			return Object.assign({}, FONT_PREVIEW_PROP_BY_CHOICE);
+		},
 		mirrorMakeupImagePath: mirrorMakeupImagePath,
 		mirrorMakeupHasWidth: mirrorMakeupHasWidth,
 		monkeyPawWishInput: function () { return sv().inputWish; }
@@ -147,15 +215,40 @@ setup.Gui = (function () {
    global `settings` namespace (persisted to localStorage), not in
    $state — so they are intentionally not in OWNED_VARS.
 
-   Real settings (muteAllVideos) register at script load so they
-   exist before the first passage tries to read them. Cheats register
-   at :storyready so they can call into other controllers
+   Real settings (muteAllVideos, fontChoice) register at script load so
+   they exist before the first passage tries to read them. Cheats
+   register at :storyready so they can call into other controllers
    (setup.Ghosts.list, setup.Mc, etc.) that finish loading after this
    file. */
+Setting.addHeader("Display & Accessibility");
 Setting.addToggle("muteAllVideos", {
 	label   : "Mute all videos",
 	default : false
 });
+
+/* Font choice for passage / button / link text. Each option maps to a
+   body.font-pref-* class via setup.Gui.applyFontPreference (defaults to
+   none → the designed serif/sans split). Includes a dyslexia-friendly
+   face (OpenDyslexic) and a high-legibility one (Atkinson Hyperlegible).
+   onInit applies the persisted choice at boot (before the first
+   passage paints); the :passagestart hook below re-applies it because
+   Engine.play clears document.body.className on every navigation.
+
+   The :passagestart handler is wrapped in a fresh anonymous function on
+   purpose: SugarCube freezes the onInit/onChange handler it's handed, so
+   the exported setup.Gui.applyFontPreference is non-extensible. jQuery's
+   .on() stamps a `.guid` onto its handler, which throws on a frozen
+   function ("Cannot add property guid, object is not extensible") and
+   would abort the rest of this top-level script. The wrapper gives jQuery
+   an extensible function to stamp while still invoking the real method. */
+Setting.addList("fontChoice", {
+	label   : "Text font (passages, buttons & links)",
+	list    : setup.Gui.fontChoices(),
+	default : setup.Gui.defaultFontChoice(),
+	onInit  : setup.Gui.applyFontPreference,
+	onChange: setup.Gui.applyFontPreference
+});
+$(document).on(":passagestart", function () { setup.Gui.applyFontPreference(); });
 
 /* Stateful cheats are registered through SugarCube's Setting API
    because they have a meaningful persisted value (toggle on/off,
@@ -439,6 +532,11 @@ $(document).one(":storyready", function () {
 		if (!isSettingsDialog()) return;
 		var titleEl = document.getElementById("ui-dialog-title");
 		if (titleEl) titleEl.textContent = SETTINGS_DIALOG_TITLE;
+		/* Paint each font-choice option in the face it selects. Runs on
+		   every open (the dialog rebuilds its controls each time) and
+		   before the cheat-actions early-return below so the previews
+		   apply even when the actions are already present. */
+		setup.Gui.styleFontChoiceOptions();
 		var $body = $("#ui-dialog-body");
 		if (!$body.length || $body.find(".cheat-actions").length) return;
 		$body.append(buildCheatActions());

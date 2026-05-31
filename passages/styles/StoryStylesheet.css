@@ -1,4 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Amatic+SC&family=Cormorant&family=Creepster&family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=Kode+Mono:wght@400..700&family=Special+Elite&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Amatic+SC&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Cormorant&family=Creepster&family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=Kode+Mono:wght@400..700&family=Special+Elite&display=swap');
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/opendyslexic@5.2.5/400.css');
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/opendyslexic@5.2.5/700.css');
 
 /* ===== CSS Custom Properties ===== */
 :root {
@@ -33,6 +35,22 @@
 	--font-script: "Amatic SC", "Segoe Print", "Comic Sans MS", cursive;
 	--font-serif: "Cormorant", "EB Garamond", Georgia, serif;
 	--font-typewriter: "Special Elite", "Courier New", Courier, monospace;
+
+	/* Player-selectable accessibility faces (Settings → "Text font").
+	   Each maps to a body.font-pref-* class (see "player font preference"
+	   below) that overrides the --font-normal / --font-haunted role tokens
+	   for the whole body subtree, so passage text plus every button/link
+	   that inherits the body font switch together — while map labels, the
+	   clock, and the spooky titles keep their own --font-* identity.
+	     --font-dyslexic  OpenDyslexic (loaded via the @import above)
+	                      leading a British-Dyslexia-Association-friendly
+	                      fallback stack, so the option stays
+	                      dyslexia-appropriate even if the web font can't
+	                      load.
+	     --font-legible   Atkinson Hyperlegible (Braille Institute; maximally
+	                      distinct letterforms, designed for low vision). */
+	--font-dyslexic: "OpenDyslexic", "Comic Sans MS", "Trebuchet MS", Verdana, sans-serif;
+	--font-legible: "Atkinson Hyperlegible", Verdana, Tahoma, sans-serif;
 
 	/* Shared ghost-green glow used by the display titles and unified
 	   across the map-label treatments so every "spooky text" accent
@@ -94,6 +112,33 @@ body {
 
 body.hunt-active {
 	font-family: var(--font-haunted);
+}
+
+/* ===== Typography: player font preference =====
+ * The "Text font" setting (Settings dialog) lets readers swap the
+ * passage/button/link face for a dyslexia-friendly or plain-sans one.
+ * setup.Gui.applyFontPreference() stamps one of these classes on <body>
+ * (re-applied every :passagestart, since Engine.play wipes body classes,
+ * the same lifecycle as the show-history class) and each override
+ * redefines the body role tokens — so the player's choice wins in both
+ * town (--font-normal) and inside a hunt (--font-haunted). An
+ * accessibility pick should hold everywhere rather than flip back to the
+ * system sans at the haunt boundary, so the dyslexic/legible classes pin
+ * BOTH tokens; "Plain sans-serif" only needs to drag --font-normal over
+ * to the system sans the hunts already use. "Story default" stamps no
+ * class and the designed serif/sans split stands. */
+body.font-pref-dyslexic {
+	--font-normal: var(--font-dyslexic);
+	--font-haunted: var(--font-dyslexic);
+}
+
+body.font-pref-legible {
+	--font-normal: var(--font-legible);
+	--font-haunted: var(--font-legible);
+}
+
+body.font-pref-sans {
+	--font-normal: var(--font-haunted);
 }
 
 /* ===== Typography: reading size =====
@@ -159,6 +204,7 @@ html:not([data-debug-view]) .debug:not(.hidden) {
 #ui-bar-history {
 	display: none;
 }
+
 body.show-history #ui-bar-history {
 	display: block;
 }
