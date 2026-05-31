@@ -50,6 +50,42 @@ ASSET_PATTERNS = [
 # the "/img/furniture/" prefix prepended before lookup.
 FURNITURE_WIDGET_PATTERN_INDICES = {3, 4}
 
+# `/* … */` block comment. DOTALL so it spans lines like the multi-line
+# StyleController usage notes.
+_BLOCK_COMMENT_RE = re.compile(r"/\*.*?\*/", re.DOTALL)
+
+
+def _blank_keep_newlines(match: re.Match[str]) -> str:
+    """Replace every non-newline char in `match` with a space.
+
+    Keeps the comment's line/column footprint so line numbers reported
+    against the stripped text still line up with the original file.
+    """
+    return re.sub(r"[^\n]", " ", match.group(0))
+
+
+def strip_comments(text: str, suffix: str) -> str:
+    """Blank `/* … */` block comments in .js/.css source.
+
+    The asset macros (`<<video>>`/`<<image>>`) and bare "assets/…" string
+    literals this script hunts for also appear verbatim inside JS/CSS
+    doc-comments — e.g. the StyleController usage notes that document
+    `<<video "characters/mc/bra-off.webm">>`. Those are documentation,
+    not live references, so the example paths must not be required on
+    disk. Blank the comment bodies (newlines preserved, so line numbers
+    stay accurate) before scanning. Mirrors the same strip in
+    tests/asset-references.spec.js. Twee (.tw) is returned verbatim —
+    `/* */` there is ordinary prose, not a comment.
+    """
+    if suffix in (".js", ".css"):
+        return _BLOCK_COMMENT_RE.sub(_blank_keep_newlines, text)
+    return text
+
+
+def read_source(path) -> str:
+    """Read a source file with its JS/CSS block comments blanked out."""
+    return strip_comments(read_passage(path), path.suffix)
+
 
 def main():
     root = repo_root()
@@ -62,7 +98,7 @@ def main():
     # Collect all asset references: (rel_path, file, lineno)
     refs: list[tuple[str, Path, int]] = []
     for src_file in iter_asset_sources():
-        for lineno, line in enumerate(read_passage(src_file).splitlines(), 1):
+        for lineno, line in enumerate(read_source(src_file).splitlines(), 1):
             for pi, pattern in enumerate(ASSET_PATTERNS):
                 for m in pattern.finditer(line):
                     raw = m.group(1)
