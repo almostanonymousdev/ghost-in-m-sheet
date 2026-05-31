@@ -89,14 +89,18 @@
 		@@.usebtn;[[Sleep|Sleep]]@@<br>
 	<</if>>
 	@@.usebtn;<<link "Take a nap(1 hour)" "Bedroom">>
+		/* Resolve the destination on the pre-action clock before the hour
+			passes -- same advance-then-check hazard as Livingroom's TV link. */
+		<<set _napEvent to "">>
+		<<if setup.SpecialEvent.spiritEventReady()>>
+			<<set _napEvent to "GhostSpecialEventNapSpirit">>
+		<<elseif setup.Home.tentaclesNapEventReady()>>
+			<<set _napEvent to "TentaclesEventNap">>
+		<</if>>
 		<<addTime 60>>
 		<<if setup.Mc.energy() lt setup.Mc.energyMax()>>
 		<<run setup.Mc.addEnergy(1)>><</if>>
-		<<if setup.SpecialEvent.spiritEventReady()>>
-			<<goto "GhostSpecialEventNapSpirit">>
-		<<elseif setup.Home.tentaclesNapEventReady()>>
-			<<goto "TentaclesEventNap">>
-		<</if>>
+		<<if _napEvent isnot "">><<goto _napEvent>><</if>>
 	<</link>>@@<span><<statIcon setup.StatIcon.ENERGY>></span><br>
 	<<if setup.Home.canUseHolyWaterOnMare()>>
 		<<linkreplace "@@.usebtn; Use holy water@@">><<run setup.Home.useHolyWaterOnMare()>>

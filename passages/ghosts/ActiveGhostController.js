@@ -114,6 +114,20 @@ setup.ActiveGhost = (function () {
             var g = active();
             return g ? g.evidenceLabels() : '';
         },
+        /* The true ghost's full catalogue evidence labels (all three),
+           independent of per-run pruning. active()/$run.evidence is the
+           *gameplay* evidence set -- Fog of War splices one out and the
+           DeleteEvidence wish prunes more -- so evidenceLabels() above
+           can report fewer than three. Wrong-guess reveals that name the
+           ghost's defining signature ("every sign you should have
+           recognized") want the canonical triad, not whatever survived
+           this hunt, so they read through here instead. */
+        trueEvidenceLabels: function () {
+            var name = setup.Ghosts.huntRealName();
+            if (!name) return '';
+            var g = setup.Ghosts.getByName(name);
+            return g ? g.evidenceLabels() : '';
+        },
         /* Per-ghost passage routes. Each returns null when no hunt is
            running or when the catalogue entry doesn't set the field. */
         walkHomePassage: function () {

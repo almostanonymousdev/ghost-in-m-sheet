@@ -181,3 +181,47 @@ test.describe('Per-ghost mechanics', () => {
     expect(tempHits).toBe(0);
   });
 });
+
+/* setup.ActiveGhost.trueEvidenceLabels() vs evidenceLabels(): the wrong-
+   guess debrief ("every sign you should have recognized -- X, Y, Z")
+   must name the ghost's full catalogue triad even when the live per-run
+   set was pruned. $run.evidence is the *gameplay* set -- Fog of War
+   splices one out, the DeleteEvidence wish prunes more -- so the
+   active() projection evidenceLabels() can report fewer than three.
+   trueEvidenceLabels() resolves the catalogue ghost from the true name
+   so the reveal always shows the canonical signature. Regression: the
+   reveal used to read the pruned set and printed only two evidence
+   types for a three-evidence ghost under Fog of War. */
+test.describe('ActiveGhost.trueEvidenceLabels — reveal is immune to per-run evidence pruning', () => {
+  test.describe.configure({ timeout: 20_000 });
+
+  test('full catalogue triad survives a pruned $run.evidence; evidenceLabels() does not', async ({ game: page }) => {
+    await setupHunt(page, 'The Twins');
+    // The Twins answers to EMF5 / HighTemperature / SpiritBox.
+    const catalogue = await page.evaluate(() =>
+      SugarCube.setup.Ghosts.getByName('The Twins').evidenceLabels());
+    expect(catalogue.split(', ')).toHaveLength(3);
+
+    // Simulate Fog of War / DeleteEvidence dropping one sign from the
+    // live per-run set.
+    await page.evaluate(() => {
+      const ev = SugarCube.State.variables.run.evidence;
+      SugarCube.setup.HuntController.setField('evidence', ev.slice(0, ev.length - 1));
+    });
+
+    const trueLabels = await callSetup(page, 'setup.ActiveGhost.trueEvidenceLabels()');
+    const liveLabels = await callSetup(page, 'setup.ActiveGhost.evidenceLabels()');
+
+    // Reveal helper: untouched by pruning, equals the catalogue triad.
+    expect(trueLabels).toBe(catalogue);
+    expect(trueLabels.split(', ')).toHaveLength(3);
+    // Gameplay helper: reflects the pruned live set (two of three).
+    expect(liveLabels.split(', ')).toHaveLength(2);
+    expect(liveLabels).not.toBe(trueLabels);
+  });
+
+  test('trueEvidenceLabels() is empty when no hunt is active', async ({ game: page }) => {
+    await page.evaluate(() => { SugarCube.State.variables.huntMode = 0; SugarCube.State.variables.run = null; });
+    expect(await callSetup(page, 'setup.ActiveGhost.trueEvidenceLabels()')).toBe('');
+  });
+});

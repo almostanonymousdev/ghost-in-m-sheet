@@ -20,16 +20,22 @@
 	<br>
 <</if>>
 @@.usebtn;<<link "Watch tv (30 min)" "Livingroom">>
-	<<addTime 30>>
+	/* Decide the destination on the pre-action clock, THEN burn the 30m.
+		<<addTime>> can cross midnight (resetting daily cooldowns) or push
+		a time-gated event out of its window, so checking readiness after
+		the advance silently drops an event that was ready at click-time. */
+	<<set _tvEvent to "">>
 	<<if setup.CursedItems.isItemCursed("tv")>>
-		<<goto "CursedTVEvent">>
+		<<set _tvEvent to "CursedTVEvent">>
 	<<elseif setup.SpecialEvent.spiritEventReady()>>
-		<<goto "GhostSpecialEventTVSpirit">>
+		<<set _tvEvent to "GhostSpecialEventTVSpirit">>
 	<<elseif setup.Home.succubusTVEventReady()>>
-		<<goto "SuccubusEventTV">>
+		<<set _tvEvent to "SuccubusEventTV">>
 	<<elseif setup.Home.tentaclesTVEventReady()>>
-		<<goto "TentaclesEventTV">>
+		<<set _tvEvent to "TentaclesEventTV">>
 	<</if>>
+	<<addTime 30>>
+	<<if _tvEvent isnot "">><<goto _tvEvent>><</if>>
 <</link>>@@<br>
 <<if setup.CursedItems.isItemCursed("pc")>>
 	@@.enterbtn;<<link "Use PC" "CursedPCEvent">>

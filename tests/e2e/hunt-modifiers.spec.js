@@ -1,5 +1,5 @@
 const { test, expect } = require('../fixtures');
-const { setVar, getVar, callSetup } = require('../helpers');
+const { setVar, getVar, callSetup, goToPassage } = require('../helpers');
 const { setupHunt } = require('./e2e-helpers');
 
 /**
@@ -132,5 +132,39 @@ test.describe('Hunt modifiers', () => {
     // The dropped evidence is no longer in the run.
     const dropped = result.before.filter(id => !result.after.includes(id));
     expect(dropped).toHaveLength(1);
+  });
+
+  test('wrong-guess reveal under Fog of War still names all three evidence types', async ({ game: page }) => {
+    /* Regression (HuntIdentifyResolve): the "every sign you should have
+       recognized -- X, Y, Z" debrief read the pruned per-run evidence
+       set, so a Fog-of-War hunt named only two of the ghost's three
+       signs (e.g. The Twins debriefed as "EMF5, HighTemperature" with
+       SpiritBox missing). The reveal now reads the canonical triad via
+       setup.ActiveGhost.trueEvidenceLabels(). */
+    test.setTimeout(20_000);
+    await setupHunt(page, 'The Twins', 'owaissa');
+    const labels = await page.evaluate(() =>
+      SugarCube.setup.Ghosts.getByName('The Twins').evidence.map(e => e.label));
+    expect(labels).toHaveLength(3);
+
+    /* Splice one evidence out of the live run set, as Fog of War does. */
+    await page.evaluate(() => {
+      const ev = SugarCube.State.variables.run.evidence;
+      SugarCube.setup.HuntController.setField('evidence', ev.slice(0, ev.length - 1));
+    });
+    /* Make the wrong call so the reveal branch fires. */
+    const wrong = await page.evaluate(() =>
+      SugarCube.setup.Ghosts.list().find(g => g.name !== 'The Twins').name);
+    await setVar(page, 'ghostTypeSelected', wrong);
+
+    await goToPassage(page, 'HuntIdentifyResolve');
+    /* The debrief fades in after a 6s <<timed>> beat. */
+    await expect(
+      page.locator('#passages').getByText(/snaps back into place/i)
+    ).toBeVisible({ timeout: 12_000 });
+    const text = await page.locator('#passages').innerText();
+    for (const label of labels) {
+      expect(text).toContain(label);
+    }
   });
 });

@@ -368,6 +368,45 @@ test.describe('WitchEndContractResolve — wrong guess', () => {
     await expectCleanPassage(page);
   });
 
+  test('wrong-guess debrief names the full evidence triad even when the run set was pruned (Fog of War)', async ({ game: page }) => {
+    /* Regression: the active-contract reveal read _trueGhost off
+       activeGhost(), whose evidence is the pruned per-run set. Under
+       Fog of War (or a DeleteEvidence wish) one sign is spliced out,
+       so a three-evidence ghost debriefed with only two -- the player
+       was told to recognise signs the game had hidden. The reveal must
+       read the canonical catalogue triad. */
+    test.setTimeout(20_000);
+    await setupContractHunt(page, 'elm');
+    const trueName = await callSetup(page, 'setup.HuntController.ghostName()');
+    /* The three labels that define this ghost, before any pruning. */
+    const labels = await page.evaluate(name =>
+      SugarCube.setup.Ghosts.getByName(name).evidence.map(e => e.label), trueName);
+    expect(labels).toHaveLength(3);
+
+    /* Splice one evidence out of the live run set, mimicking Fog of War. */
+    await page.evaluate(() => {
+      const ev = SugarCube.State.variables.run.evidence;
+      SugarCube.setup.HuntController.setField('evidence', ev.slice(0, ev.length - 1));
+    });
+
+    const wrongName = await page.evaluate(real => {
+      const other = SugarCube.setup.Ghosts.list().find(g => g.name !== real);
+      return other ? other.name : null;
+    }, trueName);
+    await setVar(page, 'ghostTypeSelected', wrongName);
+
+    await goToPassage(page, 'WitchEndContractResolve');
+    await expect(
+      page.locator('#passages').getByText(/Try again with a fresh one/i)
+    ).toBeVisible({ timeout: 10_000 });
+    const text = await page.locator('#passages').innerText();
+    /* All three signs are named, including the one Fog of War hid. */
+    for (const label of labels) {
+      expect(text).toContain(label);
+    }
+    await expectCleanPassage(page);
+  });
+
   test('wrong guess does NOT pay ectoplasm either', async ({ game: page }) => {
     test.setTimeout(20_000);
     await setupContractHunt(page, 'owaissa');

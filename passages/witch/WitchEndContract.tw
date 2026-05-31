@@ -61,11 +61,10 @@
 	<<set _guess to setup.Ghosts.ghostTypeSelected()>>
 	<<if _activeContractHunt>>
 		<<set _trueName to setup.HuntController.ghostName()>>
-		<<set _trueGhost to setup.HuntController.activeGhost()>>
 	<<else>>
 		<<set _trueName to setup.WitchContract.pendingGuessGhost()>>
-		<<set _trueGhost to setup.Ghosts.getByName(_trueName)>>
 	<</if>>
+	<<set _trueGhost to setup.Ghosts.getByName(_trueName)>>
 	<<set _correct to _guess eq _trueName>>
 	@@.mc-speech; <<= _guess>>.@@<br>
 	<<video "characters/witch/witch-result.mp4" { controls: false, loop: false }>>
