@@ -1,0 +1,103 @@
+/* Company-rescue branch off the assaulted hunt-over outcomes. A 30%
+   roll in HuntOverProwl / HuntOverSanity (right after the
+   HUNT_END_ASSAULTED emit) diverts here instead of the ghost-assault
+   scene: a Norville & Co. crew loads the MC into a green van, "treats"
+   her broken neck, and drops her back in the city. The chain runs four
+   passages, two clips each, so only the loading clip renders on initial
+   view and every later clip is gated behind a diegetic click (one video
+   at a time). The final clip's reveal owns the teardown: the medics keep
+   whatever she was wearing (stealClothes -> loseAllStolen, i.e. left in
+   the house), the broken-neck penalty clears, lust zeroes and sanity
+   tops out (the "miraculous recovery"), then endHunt(false) settles a
+   CAUGHT failure and the street link drops her on CityMap. No possession
+   residue -- the rescue interrupts before the ghost finishes. */
+
+:: CompanyRescue [noreturn nobr] {"position":"2800,1350","size":"100,100"}
+@@.mc-thoughts; You come back in pieces. Ceiling tiles, then a strip of grey sky, then ceiling tiles again. A strap crosses your forehead and another bites your collarbones, and the cold lip of a backboard runs the length of your spine. Hands at your shoulders, hands at your ankles. They're carrying you feet-first down porch steps you don't remember reaching.@@<br>
+<br>
+@@.mc-thoughts; Green paint slides past. A van, lettering on the side you read backward before your brain flips it: NORVILLE & CO. Smaller words under it you lose when they tip you up the ramp. Then doors, a bench, a steel rack of equipment that has no business in any ambulance you've been loaded into. Oh. <i>That's</i> what this is.@@<br>
+<br>
+<<video "scenes/ambulance/1.mp4">>
+@@.notmc-speech; <i>The one leaning over you has NORVILLE stitched across his chest in white thread.</i> Easy. Don't try to talk. Your neck's broken in two places, C5 and C6. <i>He says it the way you'd read a grocery list.</i> We'll do what we can for you. We're good at what we do.@@<br>
+<br>
+@@.mc-thoughts; You tell your right hand to grab his wrist. Nothing. You tell your legs to kick and they lie there like they belong to the board now instead of to you. The only thing that moves is your pulse, and even that feels like it's asking permission. Three of them, gloves on, all looking at you like a job that's already been quoted.@@<br>
+<br>
+<<linkreplace "@@.usebtn;Scissors. Cold air where your shirt used to be.@@">>
+	<br>
+	<<video "scenes/ambulance/2.mp4">>
+	@@.mc-thoughts; The blades run up from the hem in one long line, then the other side. They peel the ruined coat off your shoulders like wrapping paper and your bra goes the same way, businesslike, nobody looking twice at any of it. The air in the van is cold and chemical and you are suddenly, completely bare on a slab in front of strangers, and you can't even cross your arms.@@<br>
+	<br>
+	@@.mc-thoughts; Fine. Okay. You're theirs to handle. There's a relief in having the choice taken out of your hands -- at least that's the lie you'll hold onto.@@<br>
+	<br>
+	@@.movebtn;[[Whatever's coming is coming.|CompanyRescueBound]]@@
+<</linkreplace>>
+<<done>>
+	<<addclass ".linkselector" "disabled-link">>
+<</done>>
+
+:: CompanyRescueBound [noreturn nobr] {"position":"2950,1350","size":"100,100"}
+<<video "scenes/ambulance/3.mp4">>
+@@.mc-thoughts; You'd think a body that won't move needs less holding down, not more. They thread straps across your thighs, your wrists, a wider one over your hips, and cinch each one past snug. The board creaks under the tension. You're trussed to it from skull to ankle now, and the last bit of give in your arms goes with the buckle.@@<br>
+<br>
+<<linkreplace "@@.usebtn;A hand turns your head a few careful degrees.@@">>
+	<br>
+	<<video "scenes/ambulance/4.mp4">>
+	@@.notmc-speech; Resetting the alignment. This part comes back fast. <i>His thumb settles under your jaw and the world stops being a flat grey ceiling and becomes a place with edges again.</i>@@<br>
+	<br>
+	@@.mc-thoughts; Sensation floods back like a faucet kicked open. Pins, then heat, then your skin reporting every strap at once. Then the pain relief, he calls it, something blunt and humming that settles low between your legs, and the vibration runs straight up through you. Your hips try to twist and the straps refuse them. Why am I — <i>Christ.</i>@@<br>
+	<br>
+	@@.movebtn;[[Don't. Don't. Don't.|CompanyRescueRelief]]@@
+<</linkreplace>>
+<<done>>
+	<<addclass ".linkselector" "disabled-link">>
+<</done>>
+
+:: CompanyRescueRelief [noreturn nobr] {"position":"3100,1350","size":"100,100"}
+<<video "scenes/ambulance/5.mp4">>
+@@.mc-thoughts; The instrument works in time with whatever they're doing to your spine, and you lose the line between which sensation is repair and which is the other thing, because your whole body has decided they're one and the same. It climbs with no input from you. You come hard enough to white out the rack of equipment, bound to a board, in front of three men taking notes. You didn't know men could do that to you. You file it in the void where you keep everything you'll deal with later.@@<br>
+<br>
+<<linkreplace "@@.usebtn;Above your head, the nurse is busy with the men.@@">>
+	<br>
+	<<video "scenes/ambulance/6.mp4">>
+	@@.mc-thoughts; A woman in the same white thread works over you, taking each of them down her throat without a flinch, bored with it, like she's topping off a tank. Then she hooks a bucket onto the overhead rail and runs a line down toward your mouth.@@<br>
+	<br>
+	@@.notmc-speech; Open. The medicine's the part that does the real work.@@<br>
+	<br>
+	@@.mc-thoughts; You choke on the first mouthful and the second and you can't turn your head to spit any of it. And under the gag reflex, against everything you understand, the deep ache in your spine is letting go thread by thread. Better. You are getting better off this. The math won't add up and your body has stopped caring about that anyway.@@<br>
+	<br>
+	@@.movebtn;[[There's a syringe. Of course there's a syringe.|CompanyRescueDischarge]]@@
+<</linkreplace>>
+<<done>>
+	<<addclass ".linkselector" "disabled-link">>
+<</done>>
+
+:: CompanyRescueDischarge [noreturn nobr] {"position":"3250,1350","size":"100,100"}
+<<video "scenes/ambulance/7.mp4">>
+@@.mc-thoughts; One of them fills a syringe off the same bucket, no needle, just a thick blunt barrel, and feeds it into you slow. You have reservations. You have a whole speech of reservations. Then the first of it splashes cold against your cervix and your drooling cunt nearly goes off on the spot, and the speech evaporates mid-word.@@<br>
+<br>
+<<linkreplace "@@.usebtn;And then, as fast as it started, it stops.@@">>
+	<br>
+	<<video "scenes/ambulance/8.mp4">>
+	@@.notmc-speech; Miraculous. <i>The Norville one peels his gloves with two snaps and smiles.</i> Full recovery. Take it easy, but you're cleared for work. Good luck out there on the next one. <i>He checks a watch.</i> One thing. We're due a snack break, and this company mandate is the only one we don't fuck with, so this is as far as we run you.@@<br>
+	<br>
+	@@.mc-thoughts; The side door rolls open on an intersection you don't recognize. Cold pours in. They unbuckle you in the order they strapped you down and you can move again, every limb yours, your neck turning clean and painless, not a mark on you anywhere. They keep your clothes, giving no weight to your protests.@@<br>
+	<br>
+	<<silently>>
+		<<run setup.HuntController.stealClothes('shirt')>>
+		<<run setup.HuntController.stealClothes('bra')>>
+		<<run setup.HuntController.stealClothes('panties')>>
+		<<run setup.HuntController.stealClothes('bottom')>>
+		<<run setup.Wardrobe.loseAllStolen()>>
+		<<run setup.Mc.clearPenalty()>>
+		<<run setup.Mc.setLust(0)>>
+		<<run setup.Mc.setSanity(setup.Mc.sanityMax())>>
+		<<run setup.HuntController.markFailure(setup.HuntController.FailureReason.CAUGHT)>>
+		<<run setup.HuntController.endHunt(false)>>
+	<</silently>>
+	@@.mc-thoughts; Naked on a strange corner, healed top to bottom, robbed of everything you walked in wearing. You start counting what you've got left. It doesn't take long.@@<br>
+	<br>
+	@@.movebtn;[[Step down into the street|CityMap][setup.Time.addHours(2)]]@@
+<</linkreplace>>
+<<done>>
+	<<addclass ".linkselector" "disabled-link">>
+<</done>>
