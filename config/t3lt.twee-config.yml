@@ -568,6 +568,12 @@ sugarcube-2:
       name: evidenceCheckbox
       description: "Notebook evidence row checkbox bound to $<key>Check. Args:
         stateKey (string, e.g. 'EMF5Check')."
+    evidenceCross:
+      name: evidenceCross
+      description: "Notebook 'not present' (✗) toggle bound to $<key>Cross, shown
+        left of the EMF/UVL/High-Temperature checkboxes. Marks the evidence as
+        confirmed-absent to prune the candidate list. Args: stateKey (string,
+        e.g. 'EMF5Cross')."
     monkeyPawWishInput:
       name: monkeyPawWishInput
       description: Textbox bound to $inputWish for the free-form Monkey Paw wish

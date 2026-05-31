@@ -10,21 +10,21 @@
 <div class="flexwrapperNotebook">
 <div>
 <b>
-* <span class="emf"><<evidenceCheckbox "EMF5Check">>EMF 5 </span><<linkreplace "Tips:">><br>
+<span class="emf"><<evidenceCross "EMF5Cross">><<evidenceCheckbox "EMF5Check">>EMF 5 </span><<linkreplace "Tips:">><br>
 	<span style="color: red; font-weight: bold;  -webkit-text-stroke: 1px black;">Red</span> means evidence<br>
 	<span style="color: yellow; font-weight: bold;  -webkit-text-stroke: 1px black;">Yellow</span> means it's not evidence.<br>
 	<span style="color: green; font-weight: bold;  -webkit-text-stroke: 1px black;">Green</span> means nothing happened *try again*.
 <</linkreplace>>
-<br>* <span class="glass"><<evidenceCheckbox "EctoglassCheck">> Ectoplasm</span><br>
-* <span class="gwb"><<evidenceCheckbox "GWBCheck">> Ghost writing book</span><br>
-* <span class="spiritbox"><<evidenceCheckbox "SpiritboxCheck">> Spiritbox</span><br>
-* <span class="temperature"><<evidenceCheckbox "TemperatureCheck">> High temperature </span><<linkreplace "Tips:">><br>
+<br><span class="glass"><<evidenceCheckbox "EctoglassCheck">> Ectoplasm</span><br>
+<span class="gwb"><<evidenceCheckbox "GWBCheck">> Ghost writing book</span><br>
+<span class="spiritbox"><<evidenceCheckbox "SpiritboxCheck">> Spiritbox</span><br>
+<span class="temperature"><<evidenceCross "TemperatureCross">><<evidenceCheckbox "TemperatureCheck">> High temperature </span><<linkreplace "Tips:">><br>
 	Normal room: 13 - 16°C.<br>
 	Ghost's favorite room (no High Temperature evidence): 18 - 21°C.<br>
 	Evidence "High Temperature": 21 - 24°C.<br>
 	A tier 4 or 3 thermometer color-codes the reading. (See the guide.)
 <</linkreplace>>
-<br>* <span class="uvl"><<evidenceCheckbox "UVLCheck">> UVL Fingerprints</span><br>
+<br><span class="uvl"><<evidenceCross "UVLCross">><<evidenceCheckbox "UVLCheck">> UVL Fingerprints</span><br>
 </b>
 </div>
 <a data-passage="Ghostopedia"><<image "ui/img/ghostopedia.png" " iconPC">><br></a>
@@ -45,18 +45,60 @@
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 	<<script>>
+		var EV = setup.Ghosts.Evidence;
+		var EV_CLASSES = Object.keys(EV).map(function (k) { return EV[k].cssClass; });
+		/* The evidence-row span carries the evidence's cssClass (which is
+			its id), so the nearest such ancestor names the row a checkbox
+			belongs to. */
+		var rowSelector = EV_CLASSES.map(function (c) { return 'span.' + c; }).join(', ');
+		var evidenceIdOf = function (row) {
+			if (!row) return null;
+			for (var i = 0; i < EV_CLASSES.length; i++) {
+				if (row.classList.contains(EV_CLASSES[i])) return EV_CLASSES[i];
+			}
+			return null;
+		};
+
 		var refreshHighlights = function () {
-			var matches = setup.Ghosts.matchingNames(setup.Ghosts.readEvidenceChecks());
+			var matches = setup.Ghosts.matchingNames(
+				setup.Ghosts.readEvidenceChecks(),
+				setup.Ghosts.readEvidenceCrosses()
+			);
 			setup.Ghosts.list().forEach(function (g) {
 				var el = document.querySelector('[data-ghost="' + g.name + '"]');
 				if (el) el.classList.toggle("right", matches.has(g.name));
 			});
 		};
 		refreshHighlights();
+
 		$('.flexwrapperNotebook input[type="checkbox"]').on('change', function () {
-			/* autocheck's change handler runs first and syncs $state; defer one
-				tick so we read the fresh value. */
-			setTimeout(refreshHighlights, 0);
+			var self = this;
+			/* autocheck's change handler runs first and syncs $state; defer
+				one tick so we read the fresh value. Then, when a toggle was
+				just turned ON, clear the opposing one for that evidence —
+				"present" and "not present" are mutually exclusive — keeping
+				both the $state and the paired DOM checkbox in sync before we
+				recompute the candidate highlight. */
+			setTimeout(function () {
+				var row = self.closest(rowSelector);
+				var id = evidenceIdOf(row);
+				if (id && self.checked) {
+					var isCross = !!self.closest('.evidence-cross');
+					var crossBox = row.querySelector('.evidence-cross input[type="checkbox"]');
+					var presentBox = null;
+					row.querySelectorAll('input[type="checkbox"]').forEach(function (b) {
+						if (b !== crossBox) presentBox = b;
+					});
+					if (isCross) {
+						setup.Ghosts.setEvidenceCheck(id, false);
+						if (presentBox) presentBox.checked = false;
+					} else {
+						setup.Ghosts.setEvidenceCross(id, false);
+						if (crossBox) crossBox.checked = false;
+					}
+				}
+				refreshHighlights();
+			}, 0);
 		});
 	<</script>>
 <</done>>

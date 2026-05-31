@@ -84,6 +84,18 @@
 	<<checkbox `"$" + _args[0]` false true autocheck>>
 <</widget>>
 
+<<widget "evidenceCross">>
+	/* "Not present" toggle rendered to the LEFT of an evidence row's
+		checkbox. _args[0] is the State.variables key (e.g. "EMF5Cross").
+		Same autocheck-checkbox binding as evidenceCheckbox, restyled into
+		a red ✗ by .evidence-cross in notebook.css. Ticking it records the
+		evidence as confirmed-absent, pruning ghosts that expose it from
+		the Notebook candidate highlight (see Notebook's <<done>> block).
+		Only the EMF / UVL / High-Temperature rows carry one — a negative
+		sensor sweep is the only evidence a player can rule out for sure. */
+	<span class="evidence-cross"><<checkbox `"$" + _args[0]` false true autocheck>></span>
+<</widget>>
+
 <<widget "cthulionAbility">>
 	<<video setup.Events.randomCthulionVideo(_args[0])>>
 <</widget>>

@@ -363,9 +363,26 @@
 
     /* A ghost is a candidate iff at least one of its evidence types is
        confirmed checked AND no evidence outside its set is. `checked` is
-       a map of evidence-id → boolean. */
-    Ghost.prototype.matchesEvidence = function (checked) {
+       a map of evidence-id → boolean.
+
+       `crossed` (optional) is the parallel map of evidence the player has
+       marked NOT present (the ✗ toggles). Any crossed type the ghost
+       actually exposes rules it out outright — a confirmed absence is
+       incompatible with a ghost whose evidence set includes it. This
+       prunes candidates that the positive checks alone would still allow
+       (e.g. you've confirmed Spirit Box but ruled out EMF). */
+    Ghost.prototype.matchesEvidence = function (checked, crossed) {
         var myIds = this.evidence.map(function (e) { return e.id; });
+
+        // Confirmed-absent (✗) evidence rules a ghost out outright.
+        var crossedIds = crossed
+            ? Object.keys(crossed).filter(function (id) { return crossed[id]; })
+            : [];
+        var ruledOut = crossedIds.some(function (id) {
+            return myIds.indexOf(id) !== -1;
+        });
+        if (ruledOut) return false;
+
         var anyMatch = false;
         var anyMismatch = false;
         Object.keys(checked).forEach(function (id) {
@@ -373,6 +390,12 @@
             if (myIds.indexOf(id) === -1) anyMismatch = true;
             else anyMatch = true;
         });
+
+        // With positive checks present, a ghost must carry every checked
+        // evidence and contradict none. With no positive checks, fall back
+        // to the crosses: any ✗ highlights every ghost that survived the
+        // rule-out above; with neither checks nor crosses, nothing is lit.
+        if (!anyMatch && !anyMismatch) return crossedIds.length > 0;
         return anyMatch && !anyMismatch;
     };
 
@@ -403,6 +426,19 @@
         glass: "EctoglassCheck",
         temperature: "TemperatureCheck",
         uvl: "UVLCheck"
+    };
+
+    /* Map the "not present" (✗) Notebook toggles to their state vars.
+       Only the three sensor readings get one — a negative EMF / UV /
+       thermometer sweep is a definitive absence, whereas a silent
+       Spirit Box / writing book / ectoplasm only means the ghost hasn't
+       responded yet, so those can't be crossed off. Crossing a type
+       confirms the ghost does NOT expose it and prunes ghosts that do
+       from the candidate list. */
+    var CROSS_VAR = {
+        emf: "EMF5Cross",
+        temperature: "TemperatureCross",
+        uvl: "UVLCross"
     };
 
     /* Turn a state-shaped evidence id array (["emf","gwb",…]) back into the
@@ -436,6 +472,9 @@
         'elapsedTimeProwl', 'prowlTimeRemain',
         'EMF5Check', 'SpiritboxCheck', 'GWBCheck', 'EctoglassCheck',
         'TemperatureCheck', 'UVLCheck',
+        // "Not present" (✗) crosses — see CROSS_VAR. Confirmed-absent
+        // sensor readings that further prune the Notebook candidate list.
+        'EMF5Cross', 'TemperatureCross', 'UVLCross',
         // $ghostInfoCollected: map keyed by ghost name (Shade, Spirit, ...)
         // → 1 once the player has unlocked that Ghostopedia entry. Replaces
         // 18 individual $ghost<Name>InfoCollected flags; legacy keys are
@@ -566,6 +605,27 @@
             return out;
         },
 
+        /* Companion to readEvidenceChecks for the "not present" (✗)
+           toggles. Returns an evidence-id → boolean map covering only the
+           three crossable sensor readings (emf / temperature / uvl). */
+        readEvidenceCrosses: function () {
+            var V = State.variables;
+            var out = {};
+            Object.keys(CROSS_VAR).forEach(function (k) { out[k] = !!V[CROSS_VAR[k]]; });
+            return out;
+        },
+
+        /* Mark a single evidence type as confirmed-absent ('emf',
+           'temperature', 'uvl'). No-op for ids without a ✗ toggle (the
+           interactive evidences can't be crossed off). Used by the
+           Notebook's present/absent mutual-exclusion handler. */
+        setEvidenceCross: function (evidenceId, value) {
+            var key = CROSS_VAR[evidenceId];
+            if (!key) return false;
+            State.variables[key] = !!value;
+            return true;
+        },
+
         /* Set a single Notebook evidence checkbox by evidence id
            ('emf', 'gwb', etc.). No-op for unknown ids. Used by the
            hunt meta-shop's Intense Intuition unlock so a freshly
@@ -580,10 +640,10 @@
         /* Pure filter: given an evidence-id → boolean map, return a Set of
            ghost names whose evidence pattern matches. View-layer concerns
            (DOM classes, etc.) live in the consumer — see Notebook.tw. */
-        matchingNames: function (checked) {
+        matchingNames: function (checked, crossed) {
             var matches = new Set();
             GHOSTS.forEach(function (g) {
-                if (g.matchesEvidence(checked)) matches.add(g.name);
+                if (g.matchesEvidence(checked, crossed)) matches.add(g.name);
             });
             return matches;
         },
@@ -695,6 +755,11 @@
             s.SpiritboxCheck = false;
             s.TemperatureCheck = false;
             s.UVLCheck = false;
+            /* Also wipe the "not present" (✗) crosses so a fresh hunt
+               starts with a blank notebook board. */
+            s.EMF5Cross = false;
+            s.TemperatureCross = false;
+            s.UVLCross = false;
         },
         hasHighPriestess: function () { return State.variables.highpriestess === true; },
         setHighPriestess: function (on) { State.variables.highpriestess = !!on; },

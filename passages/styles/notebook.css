@@ -38,3 +38,62 @@ body.style-notebook .flexwrapperNotebook {
 	justify-content: space-around;
 	align-items: stretch;
 }
+
+/* "Not present" (✗) toggle. The underlying control is an autocheck
+   checkbox (see the evidenceCross widget); we strip its native chrome and
+   draw a always-red ballot-X glyph instead. The glyph itself doesn't
+   change with state — the on/off indicator is the row strikethrough below.
+   Sits to the left of the row's present-checkbox on the EMF / UVL /
+   High-Temperature rows. */
+body.style-notebook .evidence-cross {
+	display: inline-block;
+}
+/* Center both the ✗ and the present checkbox on the line so they share a
+   baseline (the ✗ box is taller than the native checkbox). */
+body.style-notebook .flexwrapperNotebook input[type="checkbox"] {
+	vertical-align: middle;
+}
+body.style-notebook .evidence-cross input[type="checkbox"] {
+	-webkit-appearance: none;
+	appearance: none;
+	position: relative;
+	width: 1.1em;
+	height: 1.1em;
+	margin: 0 0.25em 0 0;
+	padding: 0;
+	border: none;
+	background: transparent;
+	cursor: pointer;
+}
+body.style-notebook .evidence-cross input[type="checkbox"]::before {
+	content: "\2717"; /* ✗ ballot X */
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.15em;
+	font-weight: bold;
+	line-height: 1;
+	color: red;
+	-webkit-text-stroke: 0.4px black;
+}
+/* The ✗ being ON crosses the whole evidence line out — this strikethrough
+   is the toggle's state indicator (the glyph stays red either way). Scoped
+   to the three crossable rows; the "Tips:" links live outside the row span
+   and are left untouched. */
+body.style-notebook .flexwrapperNotebook span.emf:has(.evidence-cross input:checked),
+body.style-notebook .flexwrapperNotebook span.temperature:has(.evidence-cross input:checked),
+body.style-notebook .flexwrapperNotebook span.uvl:has(.evidence-cross input:checked) {
+	text-decoration: line-through;
+	text-decoration-thickness: 2px;
+}
+/* Keep every present-checkbox in one column: the three rows without a ✗
+   (Ectoplasm / Ghost-writing-book / Spiritbox) get a left pad equal to the
+   cross footprint (1.1em glyph + 0.25em margin). Scoped to the wrapper so
+   it never hits the ghost-name spans, which reuse these evidence classes. */
+body.style-notebook .flexwrapperNotebook span.glass,
+body.style-notebook .flexwrapperNotebook span.gwb,
+body.style-notebook .flexwrapperNotebook span.spiritbox {
+	padding-left: 1.35em;
+}
