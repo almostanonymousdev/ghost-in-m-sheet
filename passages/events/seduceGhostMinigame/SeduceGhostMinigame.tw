@@ -19,6 +19,7 @@ Ghost's Arousal: <<= setup.Events.ghostOrgasmMeter()>> |  <<run setup.Events.cla
 <div id="minigame_menu">
 <<if setup.Events.ghostOrgasmMeter() gte 100>>
 	<br>
+	<<seduceGhostInspect>>
 	@@.usebtn; [[Continue investigating|$return][setup.Events.recordWeakenReward()]]@@
 <<elseif setup.Events.mcOrgasmMeter() gte 100>>
 	<br>

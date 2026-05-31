@@ -28,6 +28,11 @@ or @@.usebtn; [[Try to hide|Hide]]@@
 	or @@.usebtn;<<link "Freeze and let it pass (nothing left to give)" "FreezeHunt">>
 	<</link>>@@
 <</if>>
+<<if setup.Witch.canWeakenGhostInHunt() and setup.Mc.energy() gte 1>>
+	or @@.usebtn;<<link "Seduce the ghost" "SeduceGhostMinigame">>
+		<<run setup.SeduceGhostMinigame.init()>>
+	<</link>>@@<br>
+<</if>>
 <<done>>
 	<<addclass ".linkselector" "disabled-link">>
 <</done>>

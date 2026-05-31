@@ -346,6 +346,18 @@ setup.Witch = (function () {
 		hasWeakenTheGhostQuest: function () {
 			return sv().weakenTheGhostQuest === 1;
 		},
+		/* True once Khadija has put the MC on a ghost-weakening job --
+		   either the flat "weaken the ghost" side task or the
+		   ectoplasm-unlock quest (which asks for weaken-minigame wins and
+		   so has to expose the same in-hunt seduce option, even for a
+		   player who skipped the flat task). Gates the "Seduce the ghost"
+		   branch in GhostProwlEvent. Stays open after the ectoplasm quest
+		   completes so the ability isn't revoked once it's unlocked. */
+		canWeakenGhostInHunt: function () {
+			return this.hasWeakenTheGhostQuest()
+				|| this.ectoplasmQuestStarted()
+				|| this.ectoplasmUnlocked();
+		},
 		isGhostWeakened: function () {
 			return sv().isWeakenGhost === true;
 		},

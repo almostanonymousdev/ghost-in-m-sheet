@@ -144,6 +144,11 @@ sugarcube-2:
       name: seduceGhostMinigameText
       description: Renders the dialogue and stat feedback text for the current
         seduce-ghost minigame state.
+    seduceGhostInspect:
+      name: seduceGhostInspect
+      description: Win-screen coda for the seduce-ghost minigame. The MC inspects
+        the spent ghost and identifies its species by its true tell, switching on
+        setup.Ghosts.huntRealName() (so a Mimic is unmasked). Text only.
     ghostRoom:
       name: ghostRoom
       description: Prints the human-readable display name of the ghost's current

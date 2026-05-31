@@ -222,3 +222,148 @@
 		<</if>>
 	<</if>>
 <</widget>>
+
+<<widget "seduceGhostInspect">>
+	@@.mc-thoughts;The meter tips over and the fight just stops. No bang, no banish-flash, only the pressure dropping out of the room the way it does when a fridge you forgot was running finally cuts off. The ghost folds. Whatever it had been holding itself up with lets go all at once and it pours down onto the floor of this stranger's house, twitching, leaking, fucked stupid and harmless for exactly as long as it lasts. Your knees are on the boards before you've decided to crouch. Heart going like you ran here. And then your brain, the traitor, reaches past the part that should be scanning for the exit and hands you the wrong job entirely: you are nose to nose with the thing, grool dripping down your thighs, voice gone low and fond, and you hear it come out of you in a hush like there's a camera over your shoulder.@@<br><br>@@.mc-speech;Easy. Easy now. Have a look at this one.@@<br>
+	<<switch setup.Ghosts.huntRealName()>>
+	<<case "Shade">>
+		He's curled small at the foot of the radiator, knees to his chest, turned half away from you like he's still deciding whether you're worth the trouble. That's the tell.
+		<br>
+		@@.mc-speech;Easy, you shy thing. I know what you are.@@
+		<br>
+		You crouch and keep your voice down, because loud would scare him off even now: a Shade only ever leaned in once your nerve had already cracked past the halfway line and started to slide, and the further you fell the less he wanted you — he lost the scent the instant you bottomed out completely.
+		<br>
+		@@.mc-thoughts;So he only came close in that narrow stretch where I was coming apart but not yet ruined. Flattering. I'm crouched over the one ghost in this town that finds both composure and total collapse boring, and my pulse is doing something it should not be doing about that.@@
+	<<case "Spirit">>
+		He's already going translucent under you, the floor tiles showing through his hip where your knee was a second ago. You crouch and watch him thin out, fond and a little proud of yourself.
+		<br>
+		@@.mc-thoughts;A Spirit. Shy on the way in, won't quit on the way through, and the instant it gets what it came for it just packs up and leaves.@@
+		<br>
+		@@.mc-speech;Get on home, then. You got what you wanted.@@ Your heart's still going at a stupid clip and you don't fully trust the pleased-with-yourself feeling sitting under it, but the room's quiet now, which is the whole point.
+	<<case "Poltergeist">>
+		He's gone limp across the wreckage he made — the lamp he flung, the picture frames raked off the wall, all of it now a mattress of broken glass he's sprawled on like it's a hotel bed.
+		<br>
+		@@.mc-speech;No special trick to you, is there.@@ @@.mc-thoughts;And that's the whole tell: no clever gimmick, just a house he can throw at me and the patience to wait until my composure slipped under seventy before he started. Now he couldn't lift a coaster.@@
+		<br>
+		@@.mc-thoughts;Crouched over a thing that wrecked a living room with its mind, pulse still up where it shouldn't be, and the part of me that liked watching him come apart is a part I'll be thinking about on the drive home.@@
+	<<case "Phantom">>
+		The overhead bulb is still going, throwing every detail of him flat on his back under it, one arm thrown over his eyes against a glare he put there himself.
+		<br>
+		@@.mc-speech;You couldn't even do me the courtesy of the dark, could you.@@
+		<br>
+		A Phantom can't kill a light to save itself, the one haunt in the catalogue you watch coming the whole way in, and here he is lit up like a specimen on a tray with nowhere to hide the wet shine of him.
+		<br>
+		@@.mc-thoughts;I had every second of warning and walked into it anyway, eyes open, in a fully furnished room with the lamp on. There's a word for someone who does that. I'm not going to write it down.@@
+	<<case "Goryo">>
+		He's pooled in the same corner he's haunted all night, spent, one arm flung over the radiator he never once strayed from. You don't even check the hall. You know he isn't out there.
+		<br>
+		@@.mc-thoughts;Homebody. A Goryo doesn't wander, doesn't drift down to the kitchen for variety, it picks one room and dies in it twice. Easiest tell in the book if you bother to notice.@@
+		<br>
+		@@.mc-speech;Couldn't crawl six feet if your afterlife depended on it, could you. Stayed right where I left you.@@
+		<br>
+		You're grinning, and you clock that you're grinning, and you decide not to interrogate it.
+	<<case "Demon">>
+		He's face-down with his hips still tipped up, the way you left him, twitching every few seconds like the charge hasn't finished leaving. @@.mc-speech;Look at the manners on this one.@@
+		<br>
+		@@.mc-thoughts;The Demon doesn't wait for your sanity to drop, doesn't wait for an invitation. It comes at you near full and early, when every other thing in the house is still pretending to be furniture. And I, the impatient bitch, I got there first this time.@@
+		<br>
+		You wipe your mouth on the back of your wrist and grin at him, heart going like a snare.
+		<br>
+		@@.mc-thoughts;Earlier than anything else in the house, and he's the one face-down on the carpet.@@
+	<<case "Deogen">>
+		He made it three feet from where you started and gave out, sprawled face-down with his cheek to the floorboards, that long slow body that never once stopped tracking you.
+		<br>
+		@@.mc-speech;Good boy. You always find the hiding spot. You're just never, ever fast.@@
+		<br>
+		A Deogen will walk straight to whatever cupboard you've folded yourself into every single time, patient as a tide, but God help him if you've still got legs, because a clean sprint leaves him crawling after you in the dark.
+		<br>
+		@@.mc-thoughts;He'd have caught me eventually. He always does. I didn't run, is the thing. I let the bloodhound find me, and I'm crouched here a little proud and a lot more bothered than a sane woman would be.@@
+	<<case "Jinn">>
+		All that speed wrung out of him, sprawled boneless on the boards that don't squeak anymore. He ran you down twice tonight before you stopped running and he lost you cold under the stairs.
+		<br>
+		@@.mc-thoughts;Jinn. Quick as anything on the chase and blind as a brick the second you go still. Walked right past my hiding spot with my elbow practically in its face.@@
+		<br>
+		@@.mc-speech;Fast hunter, lousy eyes. I'll take the trade.@@ Your pulse won't sit down, and somewhere under the adrenaline is the small ugly fact that you liked outsmarting it, that you'd do it again, and you'd rather not look at why.
+	<<case "Moroi">>
+		He's folded over on his side around the spent ache of it, one hand still loose near his own throat where the static came out of him. @@.mc-speech;There's my mind-crawler.@@
+		<br>
+		@@.mc-thoughts;The one that rides the Spirit Box down the signal and into a soft skull. Every time I keyed up and asked it a question it had a thirty-in-a-hundred shot at climbing into my head and wearing me home. Instead I asked, and he answered, and the answer was him wrung out on the floor with his knees drawn up. Three batteries left, and I spent two of them talking this gorgeous thing flat.@@
+	<<case "Myling">>
+		He never did show you his face — even now he's gone slack against the wall with his chin tucked down, hiding it on principle, the only ghost who'd rather be felt than seen.
+		<br>
+		@@.mc-speech;Sneaky exhibitionist. I know your whole act.@@
+		<br>
+		A Myling won't front you across a room, but the second you walk away the whole street starts seeing you in clothes you never put on, or in nothing at all, a haunt you only catch by the way strangers' eyes change once your back is turned.
+		<br>
+		@@.mc-thoughts;So everyone out there has an opinion on what I'm wearing right now and I've got none of it. Wrung him out and I still don't get to look him in the eye. Why is that the part doing it for me.@@
+	<<case "Oni">>
+		He's stretched out fucked-stupid on the carpet and you're the one shaking, fingers not quite steady where you brace them by his shoulder. That's the Oni for you. He took his bites tonight.
+		<br>
+		@@.mc-thoughts;Mind-breaker. Cracks your nerve faster than anything else on the board, big greedy mouthfuls of it every time it leaned in close.@@
+		<br>
+		@@.mc-speech;You really worked me over before I turned it around, didn't you. Look at you now.@@
+		<br>
+		You sound steadier than you are, and the heat that's still climbing in you is half triumph and half nerve-damage, and you genuinely can't tell which.
+	<<case "Mimic">>
+		He's slumped against the baseboard wearing the last face he stole before you finished him, and you watch it slide off — the borrowed jaw going soft, the disguise he'd have swapped at the half-hour mark now too tired to hold.
+		<br>
+		@@.mc-speech;There it is.@@
+		<br>
+		@@.mc-thoughts;Almost fond, the only tell the bastard can't drop: that thread of ectoplasm beading at his lip, glowing UV-bright, leaking the whole time no matter whose face he had on. Names nobody. Pins nothing. And he let me do this to him with a stranger's mouth.@@
+		<br>
+		You sit back on your heels, wet to the thigh and a little appalled at yourself. @@.mc-speech;You should keep this one.@@
+	<<case "The Twins">>
+		There's only one of him on the floor in front of you, loose-limbed and finished, and the air past his shoulder has that wrong, pressure-drop feeling of a chair somebody just left.
+		<br>
+		@@.mc-speech;Two of you. And I've only run down the first.@@ The Twins never come alone — every prowl you settle leaves the second one primed and waiting somewhere down the hall with its own ideas, so there's no such thing as the morning after with these two, only halftime.
+		<br>
+		@@.mc-thoughts;One down, pulse still up, and a matching set of trouble breathing somewhere behind me in the dark. The smart move is to leave. I'm already counting how many batteries I've got left.@@
+	<<case "Wraith">>
+		Funny, the thing that drags people off and dumps them in the treeline, and he can't so much as lift his head off the floorboards now. You roll him onto his back with one boot to look at him properly.
+		<br>
+		@@.mc-thoughts;Wraith. Beat you and you don't wake up at home, you come to out past the forest road with rope on your wrists and a long walk ahead. The mean one. The one I planned for.@@
+		<br>
+		@@.mc-speech;No woods for me tonight. You're the one not going anywhere.@@
+		<br>
+		You're loose and reckless on the back of it, and the want creeping up surprises you more than the win does.
+	<<case "Mare">>
+		He's spread on his back where your bedroom floor would be if this were home, arms gone slack, the fight finally out of him after how many nights he crept in to make it worse.
+		<br>
+		@@.mc-speech;Hello, you. The bedroom one.@@
+		<br>
+		@@.mc-thoughts;The only haunt with the nerve to follow a girl to her own pillow and turn meaner every dawn. Holy water on the floorboards would've sent him packing; instead I got him on the floorboards. He'd have given up in a few days regardless, but this is faster.@@
+		<br>
+		You lean down close enough to smell the cold off his skin and feel your own pulse answer, which is the wrong response to a thing that haunts your sleep, and you know it, and you don't move.
+	<<case "Cthulion">>
+		He's wearing the human face still, the borrowed one, slumped back against the baseboard looking almost ordinary except for the limbs that didn't fully draw back in, two of them lying boneless across the floor where he reached for you.
+		<br>
+		@@.mc-speech;There you are. There's the thing under the nice face.@@
+		<br>
+		A Cthulion keeps that stolen shape on like a coat until it actually wants you, and then it stops being shy and reaches — older than the whole species, wearing one of us, undone on the floor of a rental house.
+		<br>
+		@@.mc-thoughts;I have personally fucked a thing too old to have a real shape into lying still, and the smart, sane response to that is horror. I'll get to the horror. Give me a second. I'm still a little hot about the reaching.@@
+	<<case "Banshee">>
+		Her mouth is the part you keep watching, slack and harmless now, the same mouth that came at you earlier and lifted ten clean points off your sanity in one go. You crouch close, careful, the way you'd lean over a wasp you're fairly sure is dead.
+		<br>
+		@@.mc-thoughts;Banshee. The only girl in the catalogue, and the whole act is the kiss. One press of that and you're down ten before you've finished flinching.@@
+		<br>
+		@@.mc-speech;All that fuss over a kiss. You're pretty when you're not robbing me.@@
+		<br>
+		Your chest is doing something warm and unhelpful, and the safest reading is that you're glad she's spent, so you go with that one.
+	<<case "Raiju">>
+		He's draped over your gear bag with one thigh hooked across the EMF reader, the screen under him still throwing junk numbers, your thermometer beside it reading a cheerful lie.
+		<br>
+		@@.mc-speech;Have a look at the artist.@@
+		<br>
+		@@.mc-thoughts;The Raiju bled into all of it — made the EMF spike at nothing, the temp gauge fib, the Spirit Box answer me in pure hiss where the others would've spoken. Every tool I own corrupted right when I'd need it. And here he is, pulse glitching, twitching off my hardware like he can't stop charging it.@@
+		<br>
+		You're grinning and you're soaked and you genuinely could not tell him how much of what just happened was real, which is exactly his trick, and exactly why you'll do it again. Crikey.
+	<<default>>
+		@@.mc-speech;And this beauty — no idea. Never logged one with this exact set of tells.@@
+		<br>
+		@@.mc-thoughts;You tilt your head at it the way you'd tilt it at a snake you couldn't key out. Whatever it is, it built itself to take exactly what it just gave you, and it did the work without once asking your opinion. Gorgeous. Filthy. Going in the notebook the second your hands stop shaking.@@
+	<</switch>><br>
+	@@.mc-speech;Right. Off you pop.@@
+	<br>
+	@@.mc-thoughts;You stand, knees complaining, and the host voice goes back wherever it lives. The EMF's still in your other hand. Still a house to clear, still a thing to find, and you are absolutely not getting paid to narrate.@@<br>
+<</widget>>
