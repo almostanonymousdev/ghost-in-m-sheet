@@ -19,7 +19,7 @@ After losing a haunted house run (passing out from sanity loss), there is a 40% 
 - **Cursed TV** — MC is watching TV when it cuts to static, then shows a video of herself on her own couch. She suddenly finds herself on her knees blowing a spectral presence. When the ghost finishes in her mouth, she's rocked by an intense orgasm before the room fades back to normal.
   - [CursedTVEvent.tw](../passages/home/cursedItems/CursedTVEvent.tw)
 
-- **Cursed PC** — The screen glitches and a ghostly presence materializes behind MC at the desk, caressing her through her clothes before bringing her to climax.
+- **Cursed PC** — At the desk the MC's body locks up and the ghost of Aunt Lou's father — the frail old man who lived out his last years in this house — materializes, abruptly stronger than the harmless echo she's sensed before. Realizing he can finally touch the living, he takes her mouth, then her, leaving her paralyzed and cumming against her will.
   - [CursedPCEvent.tw](../passages/home/cursedItems/CursedPCEvent.tw)
 
 - **Cursed Bed** — MC wakes to find a sticky substance on her neck and a glowing hole in the mattress. Upon investigating, she is pulled under the bed into a void where tendrils pin and violate her. She eventually gives in, draining the tendrils and inviting them to cover her in cum before blacking out and waking in her normal bed.
