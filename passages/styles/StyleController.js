@@ -234,6 +234,23 @@ $(document).one(':storyready', function () {
 	});
 });
 
+/* Typography body-class toggle (see StoryStylesheet.css "body font
+ * split"). The game renders in the literary serif (--font-normal)
+ * everywhere by default; while a hunt run is active the player is
+ * *inside a haunted house*, so flip <body> to the clean system sans
+ * (--font-haunted) the field work has always used.
+ *
+ * Keyed off setup.HuntController.isActive() (a live $run) rather than an
+ * enumerated passage list, so every hunt sub-passage — FurnitureSearch,
+ * EventMC, Hide, RunFast, StealClothes, tool checks, companion beats —
+ * inherits the haunted font for free, and the post-hunt narrative
+ * (HuntOver*) plus the whole town revert to the normal font the moment
+ * endHunt() clears the run. Runs at :passagestart so the class lands
+ * before the passage paints. */
+$(document).on(':passagestart', function () {
+	$(document.body).toggleClass('hunt-active', setup.HuntController.isActive());
+});
+
 /* <<video path [classOrOpts]>> and <<image path [classOrOpts]>>
  *
  * Thin wrappers that resolve `setup.ImagePath` and emit the HTML that

@@ -10,7 +10,7 @@
 .mc-speech {
 	color: var(--color-mc-pink);
 	text-decoration: none;
-	font-size: 1rem;
+	font-size: 1em;
 	text-shadow: var(--outline-shadow);
 }
 
@@ -36,7 +36,7 @@
 .mc-thoughts {
 	color: var(--color-mc-thoughts);
 	font-style: italic;
-	font-size: 1rem;
+	font-size: 1em;
 	text-decoration: none;
 	text-shadow: var(--outline-shadow);
 }
@@ -52,7 +52,7 @@
 .notmc-speech {
 	color: var(--color-npc-blue);
 	text-decoration: none;
-	font-size: 1rem;
+	font-size: 1em;
 	text-shadow: var(--outline-shadow);
 }
 
@@ -81,7 +81,7 @@
 	padding: 10px;
 	border-radius: 10px;
 	border: 2px solid #ff66b2;
-	font-family: 'Arial', sans-serif;
+	font-family: inherit;
 	font-size: 1.125rem;
 	color: #99004d;
 	text-align: center;

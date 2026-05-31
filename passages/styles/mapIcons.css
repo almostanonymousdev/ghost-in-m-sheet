@@ -57,8 +57,20 @@
 	font-size: 25px;
 }
 
+/* Each map zone keeps its own font for identity (typewriter ghost
+   street, handwritten city, serif delivery), but they share one glow
+   treatment via --map-label-glow so the three read as one stylistic
+   family. The ghost street keeps a brighter spectral white glow on top
+   of the shared dark legibility shadow. */
+.icontext,
+.icontextcity,
+.icontextdelivery {
+	--map-label-glow: 0 0 4px rgba(0, 0, 0, 0.85), 0 0 10px rgba(0, 0, 0, 0.6);
+	text-shadow: var(--map-label-glow);
+}
+
 .icontext {
-	font-family: 'Special Elite', cursive;
+	font-family: var(--font-typewriter);
 	letter-spacing: 0.5px;
 	text-shadow:
 		0 0 2px rgba(255, 255, 255, 0.9),
@@ -67,16 +79,32 @@
 }
 
 .icontextcity {
-	font-family: 'Amatic SC', sans-serif;
+	font-family: var(--font-script);
 	font-weight: bold;
+	/* The city map art is a dark navy cityscape (and the optional night
+	   overlay only darkens it further), so the shared soft-black
+	   map-label-glow added no edge — it just smudged the blue into the
+	   dark buildings. Override the halo to a tight white lift so the
+	   vivid-blue labels read as glowing blue against the dark skyline,
+	   the same spectral-glow trick the ghost-street labels use. */
+	--map-label-glow:
+		0 0 2px rgba(255, 255, 255, 0.95),
+		0 0 4px rgba(255, 255, 255, 0.85),
+		0 1px 1px rgba(255, 255, 255, 0.9);
 }
 
 .icontextcity a {
+	color: var(--color-city-blue);
 	text-decoration: none;
+	transition: color 0.4s ease;
+}
+
+.icontextcity a:hover {
+	color: var(--color-city-blue-hover);
 }
 
 .icontextdelivery {
-	font-family: 'Cormorant', serif;
+	font-family: var(--font-serif);
 }
 
 .icontext a,

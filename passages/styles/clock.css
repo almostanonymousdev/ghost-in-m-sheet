@@ -1,6 +1,6 @@
 /* ===== Clock ===== */
 #time {
-	font-family: "Kode Mono", sans-serif;
+	font-family: var(--font-mono);
 	font-size: 20px;
 	color: #333;
 	background-color: #eee;
@@ -20,7 +20,7 @@
    red when 2 min or fewer remain. */
 #tool-timers {
 	display: block;
-	font-family: "Kode Mono", sans-serif;
+	font-family: var(--font-mono);
 	font-size: 12px;
 	margin-top: 4px;
 }

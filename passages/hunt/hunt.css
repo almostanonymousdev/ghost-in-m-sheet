@@ -375,7 +375,7 @@ body.ui-bar-stowed .hunt-run-layout {
 	justify-content: center;
 	background-color: rgba(0, 0, 0, 0.78);
 	color: #fff;
-	font-family: 'Kode Mono', monospace;
+	font-family: var(--font-mono);
 	font-weight: bold;
 	font-size: 2em;
 	line-height: 1;
@@ -561,7 +561,7 @@ body.ui-bar-stowed .hunt-run-layout {
 .hunt-minimap-room text {
 	fill: #cdcdcd;
 	font-size: 12px;
-	font-family: 'Cormorant', serif;
+	font-family: var(--font-serif);
 	pointer-events: none;
 }
 

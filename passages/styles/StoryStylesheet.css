@@ -1,7 +1,47 @@
-@import url('https://fonts.googleapis.com/css2?family=Amatic+SC&family=Cormorant&family=Creepster&family=Kode+Mono:wght@400..700&family=Special+Elite&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Amatic+SC&family=Cormorant&family=Creepster&family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=Kode+Mono:wght@400..700&family=Special+Elite&display=swap');
 
 /* ===== CSS Custom Properties ===== */
 :root {
+	/* ===== Typography =====
+	 * One source of truth for every font-family in the game. Each role
+	 * carries a robust local fallback so the build still reads sensibly
+	 * when the Google Fonts @import can't reach the network (offline /
+	 * file:// play, release bundles).
+	 *
+	 *   --font-haunted   In-hunt body text. THE clean system sans the
+	 *                    whole game used to render in — kept byte-for-byte
+	 *                    so haunted houses look exactly as they did. The
+	 *                    .hunt-active body class (toggled in
+	 *                    StyleController's :passagestart handler) swaps the
+	 *                    body over to this while a hunt run is active.
+	 *   --font-normal    Everywhere else (town, home, shops, menus,
+	 *                    dialogs): a literary book serif so the
+	 *                    between-hunts world reads warmer than the clinical
+	 *                    field font.
+	 *   --font-display   Big spooky titles / banners (#story-title, the
+	 *                    Intro title, .spooky-title headers).
+	 *   --font-mono      Instrument readouts: clock, tool timers, hunt
+	 *                    countdown, keyboard-hotkey badges.
+	 *   --font-script    Handwritten map labels (city map).
+	 *   --font-serif     Elegant serif accent (delivery labels, minimap).
+	 *   --font-typewriter Case-file typewriter accent (ghost-street labels).
+	 */
+	--font-haunted: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Cantarell, Ubuntu, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	--font-normal: "EB Garamond", "Cormorant", Georgia, "Times New Roman", serif;
+	--font-display: "Creepster", "Special Elite", "Impact", cursive;
+	--font-mono: "Kode Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+	--font-script: "Amatic SC", "Segoe Print", "Comic Sans MS", cursive;
+	--font-serif: "Cormorant", "EB Garamond", Georgia, serif;
+	--font-typewriter: "Special Elite", "Courier New", Courier, monospace;
+
+	/* Shared ghost-green glow used by the display titles and unified
+	   across the map-label treatments so every "spooky text" accent
+	   reads as one family stylistically even when the font differs. */
+	--glow-ghost:
+		0 0 4px rgba(150, 255, 190, 0.55),
+		0 0 12px rgba(80, 220, 140, 0.45),
+		0 0 26px rgba(40, 180, 110, 0.30);
+
 	--color-mc-pink: #ff99dd;
 	--color-mc-pink-link: #FF1493;
 	--color-mc-pink-hover: #f663b2;
@@ -18,6 +58,8 @@
 	--color-price-green: #17B169;
 	--color-ghost-green: #8FBC8F;
 	--color-delivery-purple: #643069;
+	--color-city-blue: #2f6fe0;
+	--color-city-blue-hover: #5b93f0;
 	--outline-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
 	--btn-transition: color 0.3s, border-color 0.3s;
 	--btn-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
@@ -35,6 +77,63 @@ video {
 
 a:hover {
 	text-decoration: none;
+}
+
+/* ===== Typography: body font split =====
+ * Default everything (town, home, shops, menus, SugarCube dialogs) to
+ * the literary serif. While a hunt run is active, StyleController's
+ * :passagestart handler stamps `hunt-active` on <body> and the haunted
+ * houses revert to the original clean system sans — so they "keep their
+ * existing font" while the rest of the game gets its own. The split
+ * keys off body (not html) so it overrides SugarCube's html font stack
+ * yet still lets the per-component accents (mono HUD, map labels, …)
+ * win via their own selectors. */
+body {
+	font-family: var(--font-normal);
+}
+
+body.hunt-active {
+	font-family: var(--font-haunted);
+}
+
+/* ===== Typography: reading size =====
+ * EB Garamond sits optically smaller than the old system-sans default,
+ * so the normal-location body reads cramped at SugarCube's flat 16px.
+ * Bump the story column (#passages) a notch for comfortable reading.
+ * Scoped to #passages so the sidebar HUD chrome is untouched, and reset
+ * under .hunt-active so the haunted houses keep their original 16px sans
+ * sizing. Map labels (.icontext et al.) are sized in px and unaffected.
+ * Dialogue size classes use `em` (dialogue.css) so speech/thoughts scale
+ * with the column instead of pinning to the 16px root. */
+#passages {
+	font-size: 1.125rem;
+	line-height: 1.6;
+}
+
+body.hunt-active #passages {
+	font-size: 1rem;
+	line-height: 1.75;
+}
+
+/* ===== Typography: display titles =====
+ * Creepster + ghost-green glow for the brand title in the sidebar
+ * (#story-title) and any in-passage banner that opts in via
+ * .spooky-title (e.g. the Intro screen title). Kept off generic <h*>
+ * so debug/cheat headings stay legible. */
+#story-title,
+.spooky-title {
+	font-family: var(--font-display);
+	font-weight: 400;
+	letter-spacing: 0.05em;
+	color: #e6fff0;
+	text-shadow: var(--glow-ghost), 2px 2px 3px rgba(0, 0, 0, 0.85);
+}
+
+.spooky-title {
+	display: inline-block;
+	font-size: 2.6em;
+	line-height: 1.1;
+	margin: 0.1em 0 0.25em;
 }
 
 /*

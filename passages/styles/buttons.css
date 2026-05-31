@@ -25,6 +25,13 @@
 }
 
 /* ===== Navigation Buttons — Shared Base ===== */
+/* Edge contrast comes from each button's text-shadow keyline, NOT from a
+   -webkit-text-stroke. A glyph stroke is drawn *inside* the letterform, so
+   on the thin EB Garamond serif (the body font in every normal location)
+   a black stroke chokes the colored fill and the link reads as muddy
+   black instead of blue. The 4-way --outline-shadow halo sits *outside*
+   the glyph: it keeps the fill fully saturated while still giving a crisp
+   dark edge on busy backgrounds. */
 .adaptiveLink a,
 .movebtn a,
 .backbtn a,
@@ -34,7 +41,6 @@
 	font-weight: bold;
 	text-decoration: none;
 	transition: var(--btn-transition);
-	-webkit-text-stroke: 0.8px black;
 }
 
 /* Navigation Buttons — Individual Styles */
@@ -46,7 +52,7 @@
 .movebtn a {
 	font-size: 1.2em;
 	color: var(--color-nav-blue);
-	text-shadow: var(--btn-shadow);
+	text-shadow: var(--outline-shadow);
 }
 
 .movebtn a:hover {
@@ -73,7 +79,7 @@
 .enterbtn a {
 	font-size: 1.1em;
 	color: var(--color-enter-blue);
-	text-shadow: var(--btn-shadow);
+	text-shadow: var(--outline-shadow);
 }
 
 .enterbtn a:hover {
