@@ -3,11 +3,18 @@ const fs = require('fs');
 const path = require('path');
 
 /**
- * Verifies that every static asset reference in the .tw source resolves
+ * Verifies that every static asset reference in the source resolves
  * to a real file under both `assets/` (production) and `asset-placeholders/`
  * (dev stubs). Catches the class of bug where content is authored against
  * placeholders but an artwork file is missing from the production tree
  * (users report "some images aren't showing up" after playing the release).
+ *
+ * Scans .tw passages, .css stylesheets, and .js controllers: the
+ * .tw -> .js/.css migration moved `url(assets/…)` rules into standalone
+ * stylesheets and asset-path data tables (room backgrounds, icon paths,
+ * video lists) into controller scripts, so a .tw-only walk would no longer
+ * see them. Block comments (`/* … *\/`) in .js/.css are stripped before
+ * extraction so example paths in doc-comments aren't mistaken for refs.
  *
  * Covers the same patterns as check_assets.py plus:
  *   - Object-literal keys (src:, image:, img:) whose values contain a "/"
@@ -43,19 +50,32 @@ const CANDIDATE_PREFIXES = [
   'scenes/furniture/',
 ];
 
-function collectTwFiles(dir) {
+function collectSourceFiles(dir) {
   const out = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) out.push(...collectTwFiles(full));
-    else if (entry.name.endsWith('.tw')) out.push(full);
+    if (entry.isDirectory()) out.push(...collectSourceFiles(full));
+    else if (/\.(tw|css|js)$/.test(entry.name)) out.push(full);
   }
   return out;
 }
 
+// Read a source file, stripping `/* … */` block comments for .js/.css so
+// example paths inside doc-comments (e.g. the StyleController usage notes)
+// aren't picked up as live asset references. Twee (.tw) is read verbatim —
+// `/* */` there is prose, not a comment.
+function readSource(filePath) {
+  const content = fs.readFileSync(filePath, 'utf-8');
+  if (/\.(js|css)$/.test(filePath)) {
+    // Preserve newlines so reported line numbers stay accurate.
+    return content.replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, ' '));
+  }
+  return content;
+}
+
 function extractRefs(filePath) {
   const refs = [];
-  const content = fs.readFileSync(filePath, 'utf-8');
+  const content = readSource(filePath);
   const lines = content.split('\n');
 
   const push = (p, lineno) => {
@@ -118,10 +138,12 @@ function extractRefs(filePath) {
     // (Bare filenames like "spirit.webp" are skipped — the caller's site-
     // specific prefix varies, so we can't verify them without a map.)
     for (const m of line.matchAll(/["'`]([A-Za-z0-9_][A-Za-z0-9_.-]*\/[A-Za-z0-9_][A-Za-z0-9_\/.-]*\.(?:jpg|jpeg|png|webp|gif|mp4|webm))["'`]/gi)) {
-      // Skip refs already captured by the url('assets/…') rule; those were
-      // pushed with the "assets/" stripped, while this regex keeps it.
-      if (m[1].startsWith('assets/')) continue;
-      push(m[1], lineno);
+      // CSS url('assets/…') and JS data tables write the literal "assets/"
+      // prefix; the runtime rewriter swaps it for setup.ImagePath. Strip it
+      // so these resolve against the same on-disk layout as the url() rule
+      // (and dedupe cleanly with refs it already captured).
+      const p = m[1].startsWith('assets/') ? m[1].slice('assets/'.length) : m[1];
+      push(p, lineno);
     }
   }
   return refs;
@@ -154,7 +176,7 @@ function relFile(file) {
 //   <<image "ghosts/" + _ghostName + ".webp" "iconPx">>
 function extractBrokenConcatRefs(filePath) {
   const bad = [];
-  const content = fs.readFileSync(filePath, 'utf-8');
+  const content = readSource(filePath);
   const lines = content.split('\n');
   const patterns = [
     /<<(?:image|video)\s+"([^"\n]*\+[^"\n]*)"/g,
@@ -189,7 +211,7 @@ function extractBrokenConcatRefs(filePath) {
 //   <<image "img/wardrobe/" + _grp.bareImage>>
 function extractBacktickFirstArg(filePath) {
   const bad = [];
-  const content = fs.readFileSync(filePath, 'utf-8');
+  const content = readSource(filePath);
   const lines = content.split('\n');
   const re = /<<(?:image|video)\s+`[^`\n]*`/g;
   for (let i = 0; i < lines.length; i++) {
@@ -202,7 +224,7 @@ function extractBacktickFirstArg(filePath) {
 
 test.describe('asset references', () => {
   // Gather once — reused across the per-root assertions below.
-  const allFiles = collectTwFiles(PASSAGES_DIR);
+  const allFiles = collectSourceFiles(PASSAGES_DIR);
   const allRefs = allFiles.flatMap(extractRefs);
 
   // Deduplicate by asset path; keep the first reporting location.

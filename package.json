@@ -7,7 +7,7 @@
     "build": "node -e \"require('child_process').execSync(process.platform==='win32'?'scripts\\\\build.bat':'./scripts/build.sh',{stdio:'inherit'})\"",
     "start": "node -e \"require('child_process').execSync(process.platform==='win32'?'scripts\\\\start.bat':'./scripts/start.sh',{stdio:'inherit'})\"",
     "setup": "node -e \"require('child_process').execSync(process.platform==='win32'?'scripts\\\\setup.bat':'./scripts/setup.sh',{stdio:'inherit'})\"",
-    "watch": "while inotifywait -e modify -e create -e delete passages/*.tw; do ./scripts/build.sh; done",
+    "watch": "while inotifywait -r -e modify -e create -e delete --include '\\.(tw|js|css)$' passages; do ./scripts/build.sh; done",
     "clean": "node -e \"try{require('fs').unlinkSync('ghost-in-msheet.html')}catch(e){}\"",
     "rebuild": "npm run clean && npm run build",
     "lint": "python3 tools/check_format.py",

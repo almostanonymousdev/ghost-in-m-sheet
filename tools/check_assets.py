@@ -2,15 +2,19 @@
 """
 Asset reference checker for Ghost in M'Sheet (Twine/SugarCube).
 
-Finds asset references in passage files that point to files not present on disk.
-Supports both legacy src="assets/..." and the setup.ImagePath variable patterns.
+Finds asset references that point to files not present on disk. Scans the
+whole source tree — twee passages (.tw), stylesheets (.css), and controller
+scripts (.js) — because the .tw -> .js/.css migration moved CSS
+`url(assets/…)` rules and JS asset-path tables out of passages and into
+standalone files. Supports both legacy src="assets/..." and the
+setup.ImagePath variable patterns.
 """
 
 import re
 import sys
 from pathlib import Path
 
-from lib_repo import image_path, iter_passages, passages_dir, read_passage, repo_root
+from lib_repo import image_path, iter_asset_sources, passages_dir, read_passage, repo_root
 
 ASSET_BASE = image_path()
 
@@ -22,6 +26,10 @@ ASSET_BASE = image_path()
 #    scenes/furniture/ (the haunted-house furniture widget)
 # 5. <<hideSpot "passage" "FILE.png" "id">> — second arg is a filename under
 #    scenes/furniture/ (the cursed-hunt hide-spot widget)
+# 6. Bare "assets/PATH.ext" / 'assets/PATH.ext' string literals in JS data
+#    tables (e.g. StyleController room backgrounds). Anchored on the literal
+#    "assets/" prefix and a media extension so concatenation prefixes
+#    ('assets/foo/' + v) and bare stems are not misread as files.
 ASSET_PATTERNS = [
     # Only match when the path arg is a lone string literal — a trailing
     # space + quote, "{" (options object) or ">>" (macro close). A trailing
@@ -32,6 +40,10 @@ ASSET_PATTERNS = [
     re.compile(r"""url\(['"]?(assets/[^"')]+)['"]?\)"""),
     re.compile(r"""<<furnitureItem\s+["']([^"']+)["']"""),
     re.compile(r"""<<hideSpot\s+["'][^"']+["']\s+["']([^"']+)["']"""),
+    re.compile(
+        r"""["'](assets/[^"'\n]+?\.(?:jpg|jpeg|png|webp|gif|mp4|webm|svg))["']""",
+        re.IGNORECASE,
+    ),
 ]
 
 # Patterns above whose captured group is just a furniture filename and needs
@@ -49,8 +61,8 @@ def main():
 
     # Collect all asset references: (rel_path, file, lineno)
     refs: list[tuple[str, Path, int]] = []
-    for tw_file in iter_passages():
-        for lineno, line in enumerate(read_passage(tw_file).splitlines(), 1):
+    for src_file in iter_asset_sources():
+        for lineno, line in enumerate(read_passage(src_file).splitlines(), 1):
             for pi, pattern in enumerate(ASSET_PATTERNS):
                 for m in pattern.finditer(line):
                     raw = m.group(1)
@@ -72,21 +84,21 @@ def main():
                         asset_path = ASSET_BASE + "/" + raw
                     else:
                         asset_path = raw
-                    refs.append((asset_path, tw_file, lineno))
+                    refs.append((asset_path, src_file, lineno))
 
     missing: list[tuple[str, Path, int]] = [
-        (asset_path, tw_file, lineno)
-        for asset_path, tw_file, lineno in refs
+        (asset_path, src_file, lineno)
+        for asset_path, src_file, lineno in refs
         if not (root / asset_path).exists()
     ]
 
     # Deduplicate: one report per unique asset path
     seen_assets: set[str] = set()
     unique_missing: list[tuple[str, Path, int]] = []
-    for asset_path, tw_file, lineno in missing:
+    for asset_path, src_file, lineno in missing:
         if asset_path not in seen_assets:
             seen_assets.add(asset_path)
-            unique_missing.append((asset_path, tw_file, lineno))
+            unique_missing.append((asset_path, src_file, lineno))
 
     print(f"Asset references checked : {len(refs)}")
 
@@ -97,11 +109,11 @@ def main():
     print(f"\nMISSING ASSETS ({len(unique_missing)} unique paths):\n")
 
     # Group first occurrence by asset path
-    for asset_path, tw_file, lineno in sorted(unique_missing):
+    for asset_path, src_file, lineno in sorted(unique_missing):
         try:
-            rel = tw_file.relative_to(root)
+            rel = src_file.relative_to(root)
         except ValueError:
-            rel = tw_file
+            rel = src_file
         print(f"  {asset_path}")
         print(f"      first referenced at {rel}:{lineno}")
 

@@ -12744,6 +12744,12 @@
       "height": 558,
       "kind": "image"
     },
+    "ui/achievements/sploosh.png": {
+      "label": "Sploosh",
+      "width": 512,
+      "height": 512,
+      "kind": "image"
+    },
     "ui/icons/bra.jpg": {
       "label": "",
       "width": 30,

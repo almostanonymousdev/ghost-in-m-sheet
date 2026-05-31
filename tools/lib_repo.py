@@ -50,6 +50,23 @@ def iter_sources() -> list[Path]:
     )
 
 
+def iter_asset_sources() -> list[Path]:
+    """Return every file that may reference an asset (.tw + .css + .js).
+
+    Asset references used to live entirely in twee passages, but the
+    .tw -> .js/.css migration moved stylesheet `url(assets/…)` rules into
+    standalone `.css` files and controller data tables (room backgrounds,
+    icon paths, video lists) into `.js` files. Asset checkers must scan
+    all three so a broken path in a migrated controller or stylesheet is
+    still caught.
+    """
+    return sorted(
+        list(_PASSAGES_DIR.rglob("*.tw"))
+        + list(_PASSAGES_DIR.rglob("*.css"))
+        + list(_PASSAGES_DIR.rglob("*.js"))
+    )
+
+
 def read_passage(path: Path) -> str:
     """Read a passage file with the same encoding/error policy used everywhere."""
     return path.read_text(encoding="utf-8", errors="replace")
