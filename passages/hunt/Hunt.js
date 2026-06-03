@@ -77,6 +77,13 @@ setup.Hunt = (function () {
 		/* renderSpiritbox was invoked this tick (player pressed the
 		   spiritbox tool in a haunted house). ctx: {}. */
 		SPIRITBOX_USED: 'spiritbox-used',
+		/* Player pressed a tool slot and took a reading (renderEmf /
+		   renderUvl, and any other RENDERERS entry). ctx: { tool }. This
+		   is the deliberate player act, distinct from a window merely being
+		   open -- a prowl force-activates EMF+UVL for trail/residue without
+		   the player touching anything, so win.notools ("Bare Hands") keys
+		   off this event, never off isActivated() window state. */
+		TOOL_USED: 'tool-used',
 		/* Outfit-video resolution for a body-part event. Producers
 		   (EventsController.bottomClothingVideos /
 		   topClothingVideos) emit before computing the default

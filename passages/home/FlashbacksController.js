@@ -717,6 +717,8 @@ setup.Flashbacks = (function () {
 			delete b.snapshot;
 		}
 		b.active = null;
+		// prevent accidental ledger de-sync
+		setup.Ledger.resync();
 	}
 
 	/* Cheat hook: mark every catalogued scene seen. Wired into the

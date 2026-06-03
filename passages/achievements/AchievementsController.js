@@ -232,17 +232,23 @@ setup.Achievements = setup.Achievements || {};
 			if (ctx.kind === 'ectoplasm') unlock('disc.loot.ecto');
 		});
 
-		/* No "tool activated" event exists; sample tool state every TICK.
-		   TICK fires on every nav step / tool tick during a hunt, so this
-		   catches activation within a tick of it happening. The same tick
-		   also gates the witching-hour discovery -- only one fire per
-		   hunt, so the threeAmUnlocked latch keeps idempotent. */
-		setup.Hunt.on(E.TICK, function () {
-			if (!huntFlags) return;
-			if (setup.ToolController.isActivated('emf')
-				|| setup.ToolController.isActivated('uvl')) {
+		/* Bare Hands keys off the player deliberately pressing the EMF or
+		   UV light slot (renderEmf/renderUvl emit TOOL_USED), not the tool
+		   window being open. A prowl force-activates BOTH windows on every
+		   GhostProwlEvent (HuntProwl.beginProwlEvent) regardless of the
+		   player's choice, so sampling isActivated() here used to make the
+		   award unobtainable in any hunt that prowled even once. */
+		setup.Hunt.on(E.TOOL_USED, function (ctx) {
+			if (!huntFlags || !ctx) return;
+			if (ctx.tool === 'emf' || ctx.tool === 'uvl') {
 				huntFlags.toolsUsedThisRun = true;
 			}
+		});
+
+		/* TICK fires on every nav step during a hunt; gate the
+		   witching-hour discovery off it (idempotent via threeAmUnlocked). */
+		setup.Hunt.on(E.TICK, function () {
+			if (!huntFlags) return;
 			if (!huntFlags.threeAmUnlocked && setup.Time.hours() === 3) {
 				huntFlags.threeAmUnlocked = true;
 				unlock('disc.three_am');

@@ -485,6 +485,80 @@ test.describe('setup.Achievements', () => {
 	   Direct .emit() rather than driving the real lifecycle keeps the
 	   spec focused on the subscriber contract, not on end-to-end flow. */
 
+	/* win.notools ("Bare Hands"): win without the player ever reading the
+	   EMF or UV light. Every GhostProwlEvent force-opens BOTH tool windows
+	   (HuntProwl.beginProwlEvent -> activateTool emf+uvl) so the readers can
+	   pick up trail/residue regardless of the branch the player takes. That
+	   forced activation is NOT the player using a tool, so it must not block
+	   the award -- otherwise any hunt with a single prowl makes Bare Hands
+	   unobtainable. The signal is the player pressing the EMF/UVL slot
+	   (renderEmf/renderUvl emit Event.TOOL_USED), never the window state. */
+	test('win.notools survives a prowl force-activating EMF/UVL (window state never blocks it)', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			H.emit(H.Event.START, {});
+			// Simulate the prowl opening both tool windows, then a nav step.
+			SugarCube.setup.activateTool('emf');
+			SugarCube.setup.activateTool('uvl');
+			H.emit(H.Event.TICK, {});
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true });
+			return A.has('win.notools');
+		});
+		expect(has).toBe(true);
+	});
+
+	test('win.notools does NOT unlock when the player reads the EMF', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			H.emit(H.Event.START, {});
+			H.emit(H.Event.TOOL_USED, { tool: 'emf' });
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true });
+			return A.has('win.notools');
+		});
+		expect(has).toBe(false);
+	});
+
+	test('win.notools does NOT unlock when the player reads the UV light', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			H.emit(H.Event.START, {});
+			H.emit(H.Event.TOOL_USED, { tool: 'uvl' });
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true });
+			return A.has('win.notools');
+		});
+		expect(has).toBe(false);
+	});
+
+	test('reading another tool (e.g. spiritbox/gwb) does NOT block Bare Hands', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			const H = SugarCube.setup.Hunt;
+			H.emit(H.Event.START, {});
+			H.emit(H.Event.TOOL_USED, { tool: 'gwb' });
+			H.emit(H.Event.TOOL_USED, { tool: 'plasm' });
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true });
+			return A.has('win.notools');
+		});
+		expect(has).toBe(true);
+	});
+
+	test('renderEmf / renderUvl emit Event.TOOL_USED so a real tool press blocks the award', async () => {
+		const tools = await page.evaluate(() => {
+			const H = SugarCube.setup.Hunt;
+			const seen = [];
+			const off = H.on(H.Event.TOOL_USED, (ctx) => seen.push(ctx && ctx.tool));
+			window.__achSubs.push(off);
+			SugarCube.setup.ToolController.render('emf');
+			SugarCube.setup.ToolController.render('uvl');
+			return seen;
+		});
+		expect(tools).toContain('emf');
+		expect(tools).toContain('uvl');
+	});
+
 	test('win.pacifist unlocks on a successful hunt with no spiritbox press', async () => {
 		const has = await page.evaluate(() => {
 			const A = SugarCube.setup.Achievements;

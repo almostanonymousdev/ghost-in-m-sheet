@@ -12,8 +12,8 @@
    referred the player. REFERRED: church has, summoning is unlocked.
    SUCCUBUS_SUMMONED: the succubus answered the call. */
 setup.ExorcismQuestStage = Object.freeze({
-	NOT_STARTED:       0,
-	REFERRED:          1,
+	NOT_STARTED: 0,
+	REFERRED: 1,
 	SUCCUBUS_SUMMONED: 2
 });
 
@@ -24,8 +24,8 @@ setup.ExorcismQuestStage = Object.freeze({
    HINT_NOT_OFFERED after the first wasted visit. */
 setup.WardenClothesStage = Object.freeze({
 	HINT_NOT_OFFERED: 0,
-	HINT_OFFERED:     1,
-	OUTFIT_OWNED:     2
+	HINT_OFFERED: 1,
+	OUTFIT_OWNED: 2
 });
 
 /* Lifecycle of $ectoplasmQuestStage. Gates every visible reference
@@ -33,14 +33,14 @@ setup.WardenClothesStage = Object.freeze({
    card on GhostStreet. The witch offers the quest once the MC hits
    level 5; only after she clears it does the ectoplasm economy come
    out of hiding.
-     NOT_OFFERED: witch hasn't surfaced the lead.
-     OFFERED:     witch told the MC; quest is open but unfinished.
-     COMPLETED:   MC turned in the quest; rogue card + ectoplasm UI
-                  + shop link all unhide. */
+	 NOT_OFFERED: witch hasn't surfaced the lead.
+	 OFFERED:     witch told the MC; quest is open but unfinished.
+	 COMPLETED:   MC turned in the quest; rogue card + ectoplasm UI
+				  + shop link all unhide. */
 setup.EctoplasmQuestStage = Object.freeze({
 	NOT_OFFERED: 0,
-	OFFERED:     1,
-	COMPLETED:   2
+	OFFERED: 1,
+	COMPLETED: 2
 });
 
 setup.Witch = (function () {
@@ -122,12 +122,8 @@ setup.Witch = (function () {
 			return sv().gotCursedItem === 1;
 		},
 		clearCursedItemHeld: function () { sv().gotCursedItem = 0; },
-		setCursedItemHeld:   function () { sv().gotCursedItem = 1; },
+		setCursedItemHeld: function () { sv().gotCursedItem = 1; },
 		setCursedItemFlag: function (key) { sv()[key] = true; },
-		/* Consume the cursed item the player is carrying. Clears whichever
-		   of the four type flags is set and the held flag, returning the
-		   name of the cleared type flag (or null if nothing was carried).
-		   Used by the MonkeyPaw front-door sacrifice. */
 		consumeCarriedCursedItem: function () {
 			var s = sv();
 			if (s.gotCursedItem !== 1) return null;
@@ -146,10 +142,10 @@ setup.Witch = (function () {
 		cheatGrantCursedItem: function (type) {
 			var s = sv();
 			s.gotCursedItem = 1;
-			s.isCIDildo    = (type === 'dildo');
+			s.isCIDildo = (type === 'dildo');
 			s.isCIButtplug = (type === 'buttplug');
-			s.isCIBeads    = (type === 'beads');
-			s.isCIHDildo   = (type === 'hdildo');
+			s.isCIBeads = (type === 'beads');
+			s.isCIHDildo = (type === 'hdildo');
 		},
 		shouldAwardGwb3OnTurnIn: function () {
 			return setup.ToolController.tierOf('gwb') !== 3;
@@ -171,7 +167,7 @@ setup.Witch = (function () {
 		   leaves no overlap to refund. WitchSale gates the cards
 		   on MonkeyPaw.canBuyWishList / canBuyGuide. */
 		MONKEY_PAW_WISH_LIST_PRICE: 400,
-		MONKEY_PAW_GUIDE_PRICE:     800,
+		MONKEY_PAW_GUIDE_PRICE: 800,
 		buyMonkeyPawWishList: function () {
 			setup.MonkeyPaw.purchaseWishList();
 			setup.Mc.removeMoney(this.MONKEY_PAW_WISH_LIST_PRICE);
@@ -295,8 +291,8 @@ setup.Witch = (function () {
 		// --- Mutations previously inline in witch passages -------
 		startWitchNightCooldown: function () { setup.Cooldowns.start('witchNight'); },
 		startStealItemsCooldown: function () { setup.Cooldowns.start('stealItemsFromWitch'); },
-		markKeyFromWitchStolen:  function () { sv().gotKeyFromWitch = true; },
-		markShopVisited:         function () { sv().firstVisitWitchShop = false; },
+		markKeyFromWitchStolen: function () { sv().gotKeyFromWitch = true; },
+		markShopVisited: function () { sv().firstVisitWitchShop = false; },
 
 		// --- Witch sale (tool upgrades) --------------------------
 		TOOL_UPGRADE_PRICES: {
@@ -392,10 +388,10 @@ setup.Witch = (function () {
 		   Returns "dildo" / "buttplug" / "beads" / "hdildo" or "". */
 		carriedCursedItemType: function () {
 			var s = sv();
-			if (s.isCIDildo === true)    return 'dildo';
+			if (s.isCIDildo === true) return 'dildo';
 			if (s.isCIButtplug === true) return 'buttplug';
-			if (s.isCIBeads === true)    return 'beads';
-			if (s.isCIHDildo === true)   return 'hdildo';
+			if (s.isCIBeads === true) return 'beads';
+			if (s.isCIHDildo === true) return 'hdildo';
 			return '';
 		},
 		/* Random cursed-item usage video for the active item variant.
@@ -431,9 +427,11 @@ setup.Witch = (function () {
 		{ name: 'cursedItemState', key: 'gotCursedItem', set: false }
 	]);
 	setup.defineStageAccessors(api, sv, 'exorcismQuestStage', setup.ExorcismQuestStage, {
-		mark: { resetExorcismQuestStage: 'NOT_STARTED',
-				markExorcismReferred: 'REFERRED',
-				markSuccubusSummoned: 'SUCCUBUS_SUMMONED' }
+		mark: {
+			resetExorcismQuestStage: 'NOT_STARTED',
+			markExorcismReferred: 'REFERRED',
+			markSuccubusSummoned: 'SUCCUBUS_SUMMONED'
+		}
 	});
 	setup.defineStageAccessors(api, sv, 'wardenClothesStage', setup.WardenClothesStage, {
 		mark: { markWardenOutfitHintOpened: 'HINT_OFFERED' }
@@ -441,7 +439,7 @@ setup.Witch = (function () {
 	setup.defineStageAccessors(api, sv, 'ectoplasmQuestStage', setup.EctoplasmQuestStage, {
 		mark: {
 			markEctoplasmQuestStarted: 'OFFERED',
-			completeEctoplasmQuest:    'COMPLETED'
+			completeEctoplasmQuest: 'COMPLETED'
 		}
 	});
 	setup.Cooldowns.registerDaily('witchNight');

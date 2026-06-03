@@ -82,6 +82,39 @@ test.describe('Witch — cursed-item quest lifecycle', () => {
     expect(await getVar(page, 'gotCursedItem')).toBe(0);
     expect(await getVar(page, 'isCIDildo')).toBe(false);
   });
+
+  /* Using a cursed item makes the MC climax, which empties the lust
+     meter -- whatever lust she walked in with is spent. */
+  test('UseCursedItem drains lust to zero', async ({ game: page }) => {
+    await setVar(page, 'mc.lust', 90);
+    await setVar(page, 'gotCursedItem', 1);
+    await setVar(page, 'isCIDildo', true);
+    await setVar(page, 'isCIButtplug', false);
+    await setVar(page, 'isCIBeads', false);
+    await setVar(page, 'isCIHDildo', false);
+
+    await goToPassage(page, 'UseCursedItem');
+
+    expect(await getVar(page, 'mc.lust')).toBe(0);
+  });
+
+  /* Replaying the scene from the flashback gallery must NOT touch the
+     player's live lust -- the reset is gated behind isReplaying(), the
+     same convention the stat-delta widgets follow. */
+  test('UseCursedItem replay does not drain the player\'s real lust', async ({ game: page }) => {
+    await setVar(page, 'mc.lust', 55);
+    const lust = await page.evaluate(() => {
+      const F = SugarCube.setup.Flashbacks;
+      F.enterReplay('hunt_cursed_item'); // plants a held item via setup()
+      SugarCube.Engine.play('UseCursedItem');
+      const live = SugarCube.State.variables.mc.lust;
+      F.exitReplay();
+      return live;
+    });
+    expect(lust).toBe(55);
+    // And the snapshot restore leaves the real value untouched too.
+    expect(await getVar(page, 'mc.lust')).toBe(55);
+  });
 });
 
 test.describe('Witch — exorcism and rescue referrals', () => {

@@ -491,6 +491,19 @@ setup.Mc = (function () {
 	api.lustPct = function () { return sv().mc.lust / 100; };
 	api.sanityPct = function () { return sv().mc.sanity / sv().mc.sanityMax; };
 	api.energyPct = function () { return sv().mc.energy / sv().mc.energyMax; };
+	/* Sidebar-meter readout. Energy carries fractional deltas now (the
+	   seduce minigame spends 0.6 and refunds 0.2), so the raw value
+	   accumulates float noise like 13.400000000000002. Snap that noise
+	   off (round to 8 dp), then truncate to 2 dp with a tiny epsilon:
+	   an exact 13.4 stored as 13.39999999999 would otherwise floor to
+	   13.39, since even 19.4*100 lands at 1939.9999999998. The 1e-9
+	   nudge absorbs that multiply error while staying far under 0.01,
+	   so a genuine third decimal (13.456) still truncates to 13.45.
+	   Returns a Number, so whole values render without trailing zeros. */
+	api.energyDisplay = function () {
+		var snapped = Math.round(sv().mc.energy * 1e8) / 1e8;
+		return Math.floor(snapped * 100 + 1e-9) / 100;
+	};
 	return api;
 })();
 

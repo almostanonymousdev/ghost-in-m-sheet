@@ -108,3 +108,138 @@ test.describe('Seduce-ghost minigame — prowl-event trigger', () => {
     expect(await callSetup(page, 'setup.Witch.isGhostWeakened()')).toBe(true);
   });
 });
+
+/*
+ * Win/lose routing. The minigame is a race between two arousal meters:
+ * the ghost's (>=100 => the MC wins, weakens the ghost, returns) and the
+ * MC's own (>=100 => she passes out => HuntOverProwl). Both continueSeduce
+ * and submit raise BOTH meters in a single action -- and the MC's climbs
+ * faster (random(4,8) vs random(2,6)) -- so a turn that crosses both
+ * thresholds at once is a realistic endgame state, not a corner case.
+ * A defeat (passing out) must win that tie: you can't claim the ghost as
+ * weakened in the same breath you black out. These specs pin the routing.
+ */
+test.describe('Seduce-ghost minigame — win/lose routing', () => {
+
+  // Park the player on the resolution branch with the given meter pair and
+  // render the minigame so whichever outcome link applies is offered.
+  async function renderResolution(page, ghostMeter, mcMeter) {
+    await setupHunt(page, 'Spirit');
+    await setVar(page, 'mc.energy', 10);
+    await page.evaluate(() => SugarCube.setup.Witch.markWeakenQuestStarted());
+    await setVar(page, 'return', 'HuntRun');
+    await page.evaluate(({ ghostMeter, mcMeter }) => {
+      SugarCube.State.variables.ghostOrgasmMeter = ghostMeter;
+      SugarCube.setup.Mc.setOrgasmMeter(mcMeter);
+      SugarCube.State.variables.minigameVideo = 'start';
+    }, { ghostMeter, mcMeter });
+    await goToPassage(page, 'SeduceGhostMinigame');
+  }
+
+  test('the MC maxing her own arousal routes to passing out, not a win', async ({ game: page }) => {
+    await renderResolution(page, 40, 100); // ghost not weakened, MC spent
+    const passage = page.locator('.passage');
+    await expect(passage.getByText('passing out', { exact: false })).toHaveCount(1);
+    await expect(passage.getByText('Continue investigating', { exact: true })).toHaveCount(0);
+
+    const before = await callSetup(page, 'setup.Witch.ectoplasmWeakenCount()');
+    await passage.getByText('passing out', { exact: false }).first().click();
+    await page.waitForFunction(() => SugarCube.State.passage === 'HuntOverProwl');
+    // Passing out is a defeat -- no weaken credit, ghost not marked weakened.
+    expect(await callSetup(page, 'setup.Witch.ectoplasmWeakenCount()')).toBe(before);
+    expect(await callSetup(page, 'setup.Witch.isGhostWeakened()')).toBe(false);
+  });
+
+  test('both meters maxing at once is a defeat -- passing out wins the tie', async ({ game: page }) => {
+    const before = await callSetup(page, 'setup.Witch.ectoplasmWeakenCount()');
+    await renderResolution(page, 100, 100); // simultaneous cross
+    const passage = page.locator('.passage');
+
+    // Defeat takes precedence: she passes out, she does NOT collect the win.
+    await expect(passage.getByText('passing out', { exact: false })).toHaveCount(1);
+    await expect(passage.getByText('Continue investigating', { exact: true })).toHaveCount(0);
+
+    await passage.getByText('passing out', { exact: false }).first().click();
+    await page.waitForFunction(() => SugarCube.State.passage === 'HuntOverProwl');
+    expect(await callSetup(page, 'setup.Witch.ectoplasmWeakenCount()')).toBe(before);
+    expect(await callSetup(page, 'setup.Witch.isGhostWeakened()')).toBe(false);
+  });
+
+  test('ghost maxed while the MC is safe still routes to the win', async ({ game: page }) => {
+    await renderResolution(page, 100, 40); // ghost weakened, MC safe
+    const passage = page.locator('.passage');
+    await expect(passage.getByText('Continue investigating', { exact: true })).toHaveCount(1);
+    await expect(passage.getByText('passing out', { exact: false })).toHaveCount(0);
+  });
+});
+
+/*
+ * Energy is the minigame's pacing resource: the widget gates every
+ * effortful move behind energy >= 1 (energyGate / resistCostsEnergy),
+ * but the actual energy mutations live in the controller actions. They
+ * were dropped when the inline minigame widget was extracted into the
+ * controller, which left the gate decorative and the minigame costless
+ * (grindable forever). These specs pin the economy back down so a
+ * future extraction can't silently drop it again.
+ */
+test.describe('Seduce-ghost minigame — energy economy', () => {
+
+  // Park the minigame in a given state with clean meters, then run an
+  // action and report the energy delta.
+  async function energyDeltaFor(page, state, action, startEnergy) {
+    return page.evaluate(({ state, action, startEnergy }) => {
+      const M = SugarCube.setup.SeduceGhostMinigame;
+      SugarCube.State.variables.minigameVideo = state;
+      SugarCube.State.variables.ghostOrgasmMeter = 0;
+      SugarCube.setup.Mc.setOrgasmMeter(0);
+      SugarCube.setup.Mc.setEnergy(startEnergy);
+      const before = SugarCube.setup.Mc.energy();
+      M[action]();
+      return SugarCube.setup.Mc.energy() - before;
+    }, { state, action, startEnergy });
+  }
+
+  test('effortful moves each cost one action of energy', async ({ game: page }) => {
+    const cost = await callSetup(page, 'setup.SeduceGhostMinigame.actionEnergyCost()');
+    expect(cost).toBeCloseTo(0.6, 5); // pin the tuning value the widget gate reads
+    const cases = [
+      ['start',        'tryAttract'],
+      ['seduceFailed', 'tryAgain'],
+      ['slapface',     'resist'],   // non-free resist state
+      ['slapface',     'subdue'],
+    ];
+    for (const [state, action] of cases) {
+      const delta = await energyDeltaFor(page, state, action, 5);
+      expect(delta, `${action} from ${state}`).toBeCloseTo(-cost, 5);
+    }
+  });
+
+  test('leaning in (continue / submit) trickles energy back', async ({ game: page }) => {
+    expect(await energyDeltaFor(page, 'seduce', 'continueSeduce', 5)).toBeCloseTo(0.2, 5);
+    expect(await energyDeltaFor(page, 'slapface', 'submit', 5)).toBeCloseTo(0.2, 5);
+  });
+
+  test('resisting a subdued hold is free (FREE_RESIST states)', async ({ game: page }) => {
+    for (const state of ['subdueslapface', 'subduetitjob', 'subdueassjob']) {
+      expect(await callSetup(page, `setup.SeduceGhostMinigame.resistCostsEnergy('${state}')`)).toBe(false);
+      expect(await energyDeltaFor(page, state, 'resist', 5), `resist from ${state}`).toBeCloseTo(0, 5);
+    }
+  });
+
+  test('energy never drops below zero or climbs past the cap', async ({ game: page }) => {
+    // A resist with almost no energy clamps at 0, not negative.
+    const floored = await energyDeltaFor(page, 'slapface', 'resist', 0.5);
+    expect(floored).toBeCloseTo(-0.5, 5); // 0.5 - 0.6 -> clamped to 0
+    expect(await getVar(page, 'mc.energy')).toBe(0);
+
+    // Submitting at the cap stays at the cap.
+    await page.evaluate(() => {
+      SugarCube.State.variables.minigameVideo = 'slapface';
+      SugarCube.State.variables.ghostOrgasmMeter = 0;
+      SugarCube.setup.Mc.setOrgasmMeter(0);
+      SugarCube.setup.Mc.setEnergy(SugarCube.State.variables.mc.energyMax);
+      SugarCube.setup.SeduceGhostMinigame.submit();
+    });
+    expect(await getVar(page, 'mc.energy')).toBe(await getVar(page, 'mc.energyMax'));
+  });
+});

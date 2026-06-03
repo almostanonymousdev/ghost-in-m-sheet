@@ -478,48 +478,91 @@ test.describe('Companion Controller', () => {
     await page.evaluate(() => SugarCube.setup.HuntController.end());
   });
 
-  // --- endNightRecruitment (per-night recruitment, cleared at sleep) ---
+  // --- endHuntRecruitment (per-hunt recruitment, cleared on hunt cleanup) ---
 
-  test('endNightRecruitment clears the active-companion marker and selection', async ({ game: page }) => {
+  test('endHuntRecruitment clears the active-companion marker and selection', async ({ game: page }) => {
     await page.evaluate(() => SugarCube.setup.Companion.pickCompanion('Brook'));
     expect(await callSetup(page, 'setup.Companion.hasActiveCompanion()')).toBe(true);
     expect(await callSetup(page, 'setup.Companion.anyCompanionSelected()')).toBe(true);
 
-    await page.evaluate(() => SugarCube.setup.Companion.endNightRecruitment());
+    await page.evaluate(() => SugarCube.setup.Companion.endHuntRecruitment());
 
     expect(await getVar(page, 'companion')).toBeNull();
     expect(await callSetup(page, 'setup.Companion.hasActiveCompanion()')).toBe(false);
     expect(await callSetup(page, 'setup.Companion.anyCompanionSelected()')).toBe(false);
   });
 
-  test('endNightRecruitment leaves a companion mid-solo-hunt on its own timeline', async ({ game: page }) => {
-    // Brook is out on a solo contract (goingSolo === 1). Ending the
-    // player's night recruitment must not yank her off her own run --
+  test('endHuntRecruitment leaves a companion mid-solo-hunt on its own timeline', async ({ game: page }) => {
+    // Brook is out on a solo contract (goingSolo === 1). Tearing down the
+    // player's recruitment must not yank her off her own run --
     // *HuntEndAlone resolves by name, not the $companion marker.
     await page.evaluate(() => SugarCube.setup.Companion.sendCompanionSolo('Brook', 'Owaissa'));
     expect(await getVar(page, 'brook.goingSolo')).toBe(1);
 
-    await page.evaluate(() => SugarCube.setup.Companion.endNightRecruitment());
+    await page.evaluate(() => SugarCube.setup.Companion.endHuntRecruitment());
 
     expect(await getVar(page, 'companion')).toBeNull();
     expect(await getVar(page, 'brook.goingSolo')).toBe(1);
   });
 
-  test('a one-night recruit does not re-attach the next night (midnight rollover clears it)', async ({ game: page }) => {
-    // Repro: the player asks Brook to join "tonight" once; she kept
-    // auto-attaching on every subsequent hunt because the $companion
-    // marker was never cleared.
+  test('a recruit made before midnight is still attached when the hunt starts after midnight', async ({ game: page }) => {
+    // Repro for "companions aren't visible on hunt entrances": the player
+    // recruits Brook in the evening, then travels to the haunted house. The
+    // room-tick clock crosses midnight *before* the hunt flips active, so the
+    // old midnight endNightRecruitment() wiped the $companion marker -- the
+    // companion never showed up at the entrance. Recruitment must outlive the
+    // clock and only fall away when a hunt cleans up.
     await page.evaluate(() => SugarCube.setup.Companion.pickCompanion('Brook'));
     expect(await callSetup(page, 'setup.Companion.hasActiveCompanion()')).toBe(true);
 
-    // A night's sleep crosses midnight -> resetCooldowns ends recruitment.
+    // Clock crosses midnight while travelling to the hunt (not yet hunting).
     await page.evaluate(() => SugarCube.setup.Tick.resetCooldowns());
-    expect(await callSetup(page, 'setup.Companion.hasActiveCompanion()')).toBe(false);
+    expect(await callSetup(page, 'setup.Companion.hasActiveCompanion()')).toBe(true);
 
-    // Next hunt: nothing to auto-attach.
+    // The hunt begins -- the companion is there on entry.
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
-    expect(await callSetup(page, 'setup.Companion.autoAttachOnHuntStart()')).toBe(false);
+    expect(await callSetup(page, 'setup.Companion.hasActiveCompanion()')).toBe(true);
+    expect(await callSetup(page, 'setup.Companion.autoAttachOnHuntStart()')).toBe(true);
     await page.evaluate(() => SugarCube.setup.HuntController.end());
+  });
+
+  test('a recruit that never went on a hunt is cleared by hunt cleanup, not the clock', async ({ game: page }) => {
+    // Recruitment is a per-hunt deal but it is no longer bounded by the
+    // calendar: crossing midnight leaves the marker alone (see above), and
+    // the only thing that tears it down is the universal hunt-teardown funnel
+    // HuntController.end(). A lobby Cancel routes straight through end(), so a
+    // recruit the player picked and then backed out of is cleared there.
+    await page.evaluate(() => SugarCube.setup.Companion.pickCompanion('Brook'));
+    expect(await callSetup(page, 'setup.Companion.hasActiveCompanion()')).toBe(true);
+
+    await page.evaluate(() => SugarCube.setup.HuntController.end());
+    expect(await getVar(page, 'companion')).toBeNull();
+    expect(await callSetup(page, 'setup.Companion.hasActiveCompanion()')).toBe(false);
+    expect(await callSetup(page, 'setup.Companion.anyCompanionSelected()')).toBe(false);
+  });
+
+  test('a hunt that crosses midnight keeps its recruited companion', async ({ game: page }) => {
+    // Repro: recruiting happens in the evening, but hunts run late and
+    // the room-tick clock rolls past midnight mid-hunt. The old midnight
+    // endNightRecruitment() wiped $companion out from under the live run,
+    // so the companion vanished from the hunt onward (the "companions
+    // aren't visible on hunt entrances" report).
+    await page.evaluate(() => SugarCube.setup.Companion.pickCompanion('Brook'));
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
+    expect(await callSetup(page, 'setup.HuntController.isAnyMode()')).toBe(true);
+    expect(await callSetup(page, 'setup.Companion.hasActiveCompanion()')).toBe(true);
+
+    // Midnight rolls over while the hunt is still in flight.
+    await page.evaluate(() => SugarCube.setup.Tick.resetCooldowns());
+
+    // The companion is still attached for the rest of the night's outing.
+    expect(await getVar(page, 'companion')).not.toBeNull();
+    expect(await callSetup(page, 'setup.Companion.hasActiveCompanion()')).toBe(true);
+
+    // Hunt cleanup -- the single teardown funnel -- clears the recruit
+    // directly; no subsequent midnight is needed (or involved) anymore.
+    await page.evaluate(() => SugarCube.setup.HuntController.end());
+    expect(await callSetup(page, 'setup.Companion.hasActiveCompanion()')).toBe(false);
   });
 
   // --- CompanionEvent dialog catalogue ---

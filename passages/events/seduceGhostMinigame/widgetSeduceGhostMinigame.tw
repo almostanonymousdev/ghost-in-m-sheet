@@ -1,9 +1,10 @@
 :: widgetSeduceGhostMinigame [nobr widget noreturn] {"position":"1100,3900","size":"100,100"}
 /* Energy-gated link. _args[0]=passage, _args[1]=label.
    Body is the action to run on click (e.g. <<run setup.X.Y()>>).
-   When MC energy < 1, renders a grey "Not enough energy" line instead. */
+   When MC energy is below one action's cost, renders a grey
+   "Not enough energy" line instead. */
 <<widget "energyGate" container>>
-	<<if setup.Mc.energy() lt 1>>
+	<<if setup.Mc.energy() lt setup.SeduceGhostMinigame.actionEnergyCost()>>
 		@@.mc-thoughts; Not enough energy@@
 	<<else>>
 		<<set _body to _contents>>
@@ -51,7 +52,7 @@
 		<</link>>
 
 	<<elseif setup.SeduceGhostMinigame.hasSubdue()>>
-		<<if setup.SeduceGhostMinigame.resistCostsEnergy() and setup.Mc.energy() lt 1>>
+		<<if setup.SeduceGhostMinigame.resistCostsEnergy() and setup.Mc.energy() lt setup.SeduceGhostMinigame.actionEnergyCost()>>
 			@@.mc-thoughts; Not enough energy@@
 		<<else>>
 			<<link "Resist" "SeduceGhostMinigame">>
@@ -78,13 +79,8 @@
 
 <<widget "seduceGhostMinigameText">>
 	<<if setup.Events.minigameVideo() eq "seduceFailed">>
-		<<if setup.Events.chanceToAttractFailedFlag() eq 1 or ndef setup.Events.chanceToAttractFailedFlag()>>
-			@@.mc-thoughts;You try to attract the ghost, stripping down and showing off your juicy pussy and tight tits, taking increasingly lewd poses.@@<br>
-			@@.mc-speech;Damn, wasted my time, this fucker isn't showing up!@@<br>
-		<<else>>
-			@@.mc-thoughts;You strip off your clothes, exposing your wet lips and hard nipples, and there he is - the ghost, with a huge, already hard cock, ready for action.@@<br>
-			@@.mc-speech; Oh~ I need to keep myself in check... but damn, it's so big...@@<br>
-		<</if>>
+		@@.mc-thoughts;You try to attract the ghost, stripping down and showing off your juicy pussy and tight tits, taking increasingly lewd poses.@@<br>
+		@@.mc-speech;Damn, wasted my time, this fucker isn't showing up!@@<br>
 	<<elseif setup.Events.minigameVideo() eq "seduce">>
 		<<if setup.Events.ghostOrgasmMeter() gte 100>>
 			@@.mc-thoughts;You seduce him, showing off all your charms, and you see the ghost can't hold back any longer. He erupts, cumming on you, covering your body with warm semen just from the sight of your sensuous display.@@<br>

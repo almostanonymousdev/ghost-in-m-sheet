@@ -11,7 +11,6 @@ setup.Events = (function () {
 	var OWNED_VARS = Object.freeze([
 		'argForRandomizer', 'videoEvent',
 		'ghostSanityEventDecreased', 'decreasingSanity', 'cleanedUp',
-		'chanceToAttractFailed',
 		'sanityIfHot', 'sanityInTheDark'
 	]);
 
@@ -589,7 +588,6 @@ setup.Events = (function () {
 		clampMcOrgasmFloor: function () {
 			if ((setup.Mc.orgasmMeter() || 0) <= 0) setup.Mc.setOrgasmMeter(0);
 		},
-		chanceToAttractFailedFlag: function () { return sv().chanceToAttractFailed; },
 
 		// --- Weaken-ghost minigame reward ------------------------
 		recordWeakenReward: function () {

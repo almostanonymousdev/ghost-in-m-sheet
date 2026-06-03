@@ -17,13 +17,13 @@ Ghost's Arousal: <<= setup.Events.ghostOrgasmMeter()>> |  <<run setup.Events.cla
 
 </div>
 <div id="minigame_menu">
-<<if setup.Events.ghostOrgasmMeter() gte 100>>
+<<if setup.Events.mcOrgasmMeter() gte 100>>
+	<br>
+	@@.usebtn; [[You're passing out|HuntOverProwl]]@@
+<<elseif setup.Events.ghostOrgasmMeter() gte 100>>
 	<br>
 	<<seduceGhostInspect>>
 	@@.usebtn; [[Continue investigating|$return][setup.Events.recordWeakenReward()]]@@
-<<elseif setup.Events.mcOrgasmMeter() gte 100>>
-	<br>
-	@@.usebtn; [[You're passing out|HuntOverProwl]]@@
 <<else>>
 	<<seduceGhostMinigameMenu>>
 <</if>>

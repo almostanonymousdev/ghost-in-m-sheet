@@ -128,7 +128,11 @@ setup.Tick = (function () {
 		setup.Cooldowns.resetDaily();
 		setup.Home.tickHomeMidnight();
 		setup.Companion.advanceSoloHuntsAtMidnight();
-		setup.Companion.endNightRecruitment();
+		/* Companion recruitment is NOT cleared here. It is a per-hunt deal
+		   torn down by HuntController.end() (see endHuntRecruitment); a
+		   recruit must survive a midnight rollover so it is still attached
+		   when a hunt that started late -- or one the player begins just
+		   after midnight -- reaches the haunted-house entrance. */
 		setup.SpecialEvent.tickMareStageMidnight();
 		setup.MissingWomen.tickRescueClockMidnight();
 	}

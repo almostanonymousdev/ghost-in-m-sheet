@@ -372,9 +372,14 @@
     };
 
     function render(toolKey) {
-        var render = RENDERERS[toolKey];
-        if (!render) throw new Error("toolCheck: unknown tool '" + toolKey + "'");
-        return render();
+        var renderer = RENDERERS[toolKey];
+        if (!renderer) throw new Error("toolCheck: unknown tool '" + toolKey + "'");
+        /* The deliberate player act of pressing a tool slot. Achievements
+           (win.notools) key off this, NOT isActivated() window state, so a
+           prowl force-opening the EMF/UVL windows can't masquerade as the
+           player using a tool. */
+        setup.Hunt.emit(setup.Hunt.Event.TOOL_USED, { tool: toolKey });
+        return renderer();
     }
 
     /* Variables owned by this controller. Other controllers should

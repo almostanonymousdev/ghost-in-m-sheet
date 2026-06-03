@@ -327,9 +327,14 @@ test.describe('Companions — hunt setup integration', () => {
   });
 
   // endHunt teardown: zeroes the companion plan/showComp/isCompChosen
-  // flags so the next contract starts from a clean slate.
-  test('HuntController.endHunt clears companion plan/showComp/isCompChosen', async ({ game: page }) => {
+  // flags AND drops the recruitment marker so the next contract starts
+  // from a clean slate. endHunt -> cleanupRunState -> end() is the
+  // dominant terminal path; recruitment now clears there (it used to
+  // wait for the midnight tick, which wiped it out from under live
+  // hunts). The marker null assertion guards that the relocation stuck.
+  test('HuntController.endHunt clears companion plan/showComp/isCompChosen + recruitment', async ({ game: page }) => {
     await selectCompanion(page, 'Alice');
+    expect(await getVar(page, 'companion')).not.toBeNull();
     await page.evaluate(() =>
       SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: 'owaissa' }));
     await setVar(page, 'isCompChosen', true);
@@ -339,6 +344,7 @@ test.describe('Companions — hunt setup integration', () => {
     expect(await getVar(page, 'isCompChosen')).toBe(false);
     expect(await getVar(page, 'chosenPlan')).toBe(0);
     expect(await getVar(page, 'showComp')).toBe(0);
+    expect(await getVar(page, 'companion')).toBeNull();
   });
 
   // Drive HuntStart through setupHunt() so the run is already active

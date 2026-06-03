@@ -159,7 +159,12 @@ setup.HuntController = (function () {
 		if (setup.Companion) {
 			if (typeof setup.Companion.runHuntFailHooks === 'function') setup.Companion.runHuntFailHooks();
 			if (typeof setup.Companion.resetActiveCompanionStats === 'function') setup.Companion.resetActiveCompanionStats();
-			if (typeof setup.Companion.resetHuntState === 'function') setup.Companion.resetHuntState();
+			/* Clear the per-hunt recruitment marker (and the scratch hunt
+			   state it folds in). Runs last so the two hooks above still
+			   see the active companion. This is the only place recruitment
+			   is torn down now that midnight no longer wipes it -- see
+			   setup.Companion.endHuntRecruitment. */
+			if (typeof setup.Companion.endHuntRecruitment === 'function') setup.Companion.endHuntRecruitment();
 		}
 		/* Pair with freezeBeauty() in startHunt. No-op when nothing is
 		   frozen, so the lobby-cancel path (which never reached the freeze)

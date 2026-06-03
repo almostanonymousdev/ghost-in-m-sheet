@@ -273,9 +273,22 @@ setup.Companion = (function () {
 		},
 		resetHuntState: function () { applyTransition('reset'); },
 
-		/* End a night's companion recruitment. Recruiting a companion
-		   ("join me for ghost hunting tonight") is a per-night deal */
-		endNightRecruitment: function () {
+		/* Tear down the companion recruitment marker. Recruiting a
+		   companion ("join me for ghost hunting tonight") is a per-hunt
+		   deal: the marker is stamped by pick() and must outlive the
+		   wall clock so it is still in place when the hunt actually
+		   starts. The old version cleared it at midnight, which wiped
+		   the companion out from under a hunt that crossed the date
+		   boundary -- and, worse, before a hunt the player began right
+		   after midnight (the recruit was gone by the time they reached
+		   the entrance). Recruitment now falls away only when a hunt
+		   cleans up: this fires from HuntController.end(), the single
+		   teardown funnel every terminal path routes through (graceful
+		   win/flee, lobby Cancel, and the deferred forfeit that follows
+		   a caught/possessed run). end() runs runHuntFailHooks() and
+		   resetActiveCompanionStats() -- both of which read the marker --
+		   *before* calling this, so the marker is still live for them. */
+		endHuntRecruitment: function () {
 			State.variables.companion = null;
 			this.clearCompanionSelection();
 			this.resetHuntState();

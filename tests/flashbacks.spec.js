@@ -922,3 +922,146 @@ test.describe('setup.Flashbacks', () => {
 		expect(after.pizzaSeen).toBe(false);
 	});
 });
+
+/*
+ * Regression: a flashback replay must never frame the save as cheated.
+ *
+ * The bug class: exitReplay restores the snapshotted stats via direct
+ * State.variables writes (writeLeaf), bypassing the controller setters
+ * that keep the shadow ledger (setup.Ledger) in lockstep. Any replay
+ * scene that moves a ledger-tracked field through its real API -- e.g.
+ * the cursed-home events' applyCurseEventEffects (setLust(100) +
+ * removeSanity(15)) -- advances both the live value and the ledger
+ * mirror; the snapshot restore then rewinds only the live value. The
+ * next onPassageReady audit reads the diverged mirror as a dev-console
+ * edit, fires CHEAT_USED, and disables every achievement. exitReplay
+ * resyncs the ledger so this can never happen for ANY tracked field or
+ * ANY scene.
+ */
+test.describe('flashback replay never frames the save as cheated', () => {
+
+	// One representative API mutation per ledger-tracked, snapshotted
+	// field. Covering every tracked field (not just lust) is the point:
+	// the fix is class-level, so the test is too.
+	const TRACKED_FIELDS = ['lust', 'sanity', 'energy', 'money'];
+
+	test('exitReplay resyncs the ledger for every tracked field', async ({ game: page }) => {
+		const results = await page.evaluate((fields) => {
+			const F = SugarCube.setup.Flashbacks;
+			const Mc = SugarCube.setup.Mc;
+			const Ach = SugarCube.setup.Achievements;
+			const Ledger = SugarCube.setup.Ledger;
+			// Any snapshot-bearing scene works; this one snapshots all
+			// the mc.* stat leaves we mutate below.
+			const sceneId = 'hunt_cursed_item';
+
+			const writeField = (field) => {
+				switch (field) {
+					case 'lust':   return Mc.setLust(100);
+					case 'sanity': return Mc.setSanity(3);
+					case 'energy': return Mc.setEnergy(7);
+					case 'money':  return Mc.setMoney(9999);
+				}
+			};
+
+			const out = {};
+			fields.forEach((field) => {
+				// Clean, un-cheated baseline.
+				SugarCube.State.variables.achievements = {};
+				SugarCube.State.variables.flashbacks = { seen: {}, active: null };
+				Ledger.resync();
+
+				F.enterReplay(sceneId);
+				// The scene moves a tracked field through its controller
+				// API -- live value AND ledger mirror both advance.
+				writeField(field);
+				F.exitReplay();
+
+				// auditAndReport is the exact production trigger: it fires
+				// CHEAT_USED on any divergence. With the resync fix it must
+				// see none.
+				const cheatedBefore = Ach.hasCheated();
+				const diffs = Ledger.auditAndReport();
+				const cheatedAfter = Ach.hasCheated();
+				out[field] = { diffs, cheatedBefore, cheatedAfter };
+			});
+			return out;
+		}, TRACKED_FIELDS);
+
+		for (const field of TRACKED_FIELDS) {
+			const r = results[field];
+			expect(r.cheatedBefore, `[${field}] cheated before audit`).toBe(false);
+			expect(r.diffs, `[${field}] ledger diverged after replay`).toEqual([]);
+			expect(r.cheatedAfter, `[${field}] save framed as cheated`).toBe(false);
+		}
+	});
+
+	test('replaying the cursed-bath scene leaves the save un-cheated (real navigation path)', async ({ game: page }) => {
+		// Park a clean, un-cheated baseline with known stat values.
+		await page.evaluate(() => {
+			SugarCube.State.variables.achievements = {};
+			SugarCube.State.variables.flashbacks = { seen: {}, active: null };
+			SugarCube.setup.Mc.setLust(10);
+			SugarCube.setup.Mc.setSanity(80);
+			SugarCube.setup.Ledger.resync();
+		});
+
+		// Enter the cursed-bath flashback and fire its stat payload --
+		// the same call the passage's final linkappend runs.
+		await page.evaluate(() => {
+			SugarCube.setup.Flashbacks.enterReplay('home_cursed_bath');
+			SugarCube.setup.CursedItems.applyCurseEventEffects();
+		});
+
+		// Leave via the gallery -- containReplay restores the snapshot.
+		await goToPassage(page, 'Flashbacks');
+		// One more hop so a fresh onPassageReady audits the post-restore
+		// state (this is where the false positive used to surface).
+		await goToPassage(page, 'Home');
+
+		const out = await page.evaluate(() => ({
+			cheated: SugarCube.setup.Achievements.hasCheated(),
+			audit: SugarCube.setup.Ledger.audit(),
+			lust: SugarCube.setup.Mc.lust(),
+			sanity: SugarCube.setup.Mc.sanity()
+		}));
+		expect(out.cheated, 'cursed-bath replay framed the save as cheated').toBe(false);
+		expect(out.audit, 'ledger diverged after cursed-bath replay').toEqual([]);
+		expect(out.lust, 'lust restored after replay').toBe(10);
+		expect(out.sanity, 'sanity restored after replay').toBe(80);
+	});
+
+	test('every catalogue scene survives an enter/exit replay without diverging the ledger', async ({ game: page }) => {
+		// Walk the whole catalogue: enter each replay, perturb a couple
+		// of tracked fields through their real API (standing in for
+		// whatever the scene itself does), exit, and confirm the ledger
+		// is back in sync and the save is not flagged. Catches any future
+		// scene that snapshots a tracked field whose mirror would
+		// otherwise be left diverged.
+		const failures = await page.evaluate(() => {
+			const F = SugarCube.setup.Flashbacks;
+			const Mc = SugarCube.setup.Mc;
+			const Ach = SugarCube.setup.Achievements;
+			const Ledger = SugarCube.setup.Ledger;
+			const bad = [];
+
+			F.all().forEach((entry) => {
+				SugarCube.State.variables.achievements = {};
+				SugarCube.State.variables.flashbacks = { seen: {}, active: null };
+				Ledger.resync();
+
+				if (!F.enterReplay(entry.id)) return; // unknown id -- skip
+				Mc.setLust(100);
+				Mc.removeSanity(5);
+				F.exitReplay();
+
+				const diffs = Ledger.auditAndReport();
+				if (diffs.length || Ach.hasCheated()) {
+					bad.push({ id: entry.id, diffs: diffs.map(d => d.field), cheated: Ach.hasCheated() });
+				}
+			});
+			return bad;
+		});
+		expect(failures, `scenes that diverged the ledger: ${JSON.stringify(failures)}`).toEqual([]);
+	});
+});

@@ -46,7 +46,7 @@
 <<newmeter 'energy'>>
     <<sizing '220px'>>
     <<colors #d8f22c>>
-    <<label '$mc.energy'>>
+    <<label '<<= setup.Mc.energyDisplay()>>'>>
 <</newmeter>>
 
 <<newmeter 'sanity'>>
