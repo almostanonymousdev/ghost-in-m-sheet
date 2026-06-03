@@ -546,6 +546,42 @@ test.describe('Home Controller', () => {
     )).toBeGreaterThan(0);
   });
 
+  test('sleepAdvance forfeits an active hunt and seals its contract house', async ({ game: page }) => {
+    /* You cannot continue a hunt across two nights: sleeping mid-hunt
+       (for any reason) forfeits the run. The contract defers to a
+       pending guess so the house is sealed until you settle it with
+       Khadija and buy a fresh contract. */
+    await page.evaluate(() => {
+      SugarCube.setup.WitchContract.cheatGrantContract('owaissa');
+      SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: 'owaissa' });
+    });
+    expect(await callSetup(page, 'setup.HuntController.isHunting()')).toBe(true);
+    expect(await callSetup(page, 'setup.WitchContract.canEnterHouse("owaissa")')).toBe(true);
+
+    await page.evaluate(() => SugarCube.setup.Home.sleepAdvance(8));
+
+    // Run torn down: no resumable $run, mode back to NONE.
+    expect(await getVar(page, 'run')).toBeNull();
+    expect(await callSetup(page, 'setup.HuntController.isHunting()')).toBe(false);
+    // Contract deferred -> house sealed until the guess is settled.
+    expect(await callSetup(page, 'setup.WitchContract.hasPendingGuess()')).toBe(true);
+    expect(await callSetup(page, 'setup.WitchContract.canEnterHouse("owaissa")')).toBe(false);
+  });
+
+  test('sleepAdvance does not forfeit a possession (POSSESSED keeps its run)', async ({ game: page }) => {
+    /* Possession intentionally keeps $run alive for the possession
+       arc -- the sleep forfeit guards on isHunting() (ACTIVE only) so
+       it must leave a POSSESSED run untouched. */
+    await page.evaluate(() => {
+      SugarCube.setup.Ghosts.cheatStartHunt('Shade');
+      SugarCube.setup.HuntController.cheatSetHuntMode(
+        SugarCube.setup.HuntController.HuntMode.POSSESSED);
+    });
+    await page.evaluate(() => SugarCube.setup.Home.sleepAdvance(8));
+    expect(await getVar(page, 'run')).not.toBeNull();
+    expect(await callSetup(page, 'setup.HuntController.isPossessed()')).toBe(true);
+  });
+
   test('sleepAdvance without midnight rollover still autosaves', async ({ game: page }) => {
     // arrange
     await page.evaluate(() => {

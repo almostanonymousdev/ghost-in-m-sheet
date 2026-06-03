@@ -91,7 +91,7 @@ setup.WitchContract = (function () {
 			return h ? h.houseId : null;
 		},
 		canEnterHouse: function (houseId) {
-			return this.heldHouseId() === houseId;
+			return this.heldHouseId() === houseId && !this.hasPendingGuess();
 		},
 		feeFor: function (houseId) {
 			var t = TEMPLATES[houseId];

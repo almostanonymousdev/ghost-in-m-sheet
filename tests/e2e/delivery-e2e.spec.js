@@ -503,6 +503,87 @@ test.describe('Delivery E2E — Pizza apology preserves streak', () => {
   });
 });
 
+// ─── Declined lewd encounter = failed delivery ─────────────────
+
+test.describe('Delivery E2E — Declining a come-inside proposition fails the delivery', () => {
+  /* The ON_ENTRY encounters (burger/package/papers) pre-pay a success
+     the instant their gate renders. When the customer propositions MC
+     and she declines-and-leaves, the wikilink setter calls
+     markDeliveryFailed(), which unwinds that pre-pay and books only the
+     small fail fee -- so a declined drop never counts toward the
+     3-correct perfect shift. */
+  test('burger: declining "come in and relax" books a fail, not a success', async ({ game: page }) => {
+    await setupReadyWorker(page);
+    await setVar(page, 'mc.corruption', 0); // < 4 -> cannot accept; only the decline link shows
+
+    await goToPassage(page, 'WorkDelivery');
+    await waitForPassage(page, 'WorkDelivery');
+    await page.evaluate(() => {
+      const v = SugarCube.State.variables;
+      v.orders[0].item = 'burgers';
+      v.orders[0].image = v.itemImages.burgers;
+      v.order1.item = 'burgers';
+      v.order1.image = v.itemImages.burgers;
+    });
+
+    await setVar(page, 'currentOrder', 1);
+    await setVar(page, 'currentHouse', (await page.evaluate(() => SugarCube.State.variables.order1.address)));
+    await setVar(page, 'deliverySpecialOrder', false);
+    await setVar(page, 'earnedMoney', 0);
+    await setVar(page, 'deliveryCorrectThisShift', 0);
+
+    // Render the gate -> ON_ENTRY pre-pays one success + one correct-credit.
+    await goToPassage(page, 'DeliveryEventChoose');
+    await waitForPassage(page, 'DeliveryEventChoose');
+    expect(await getVar(page, 'deliveryCorrectThisShift')).toBe(1);
+
+    // Expand the weed linkreplace, then decline.
+    await passage(page).getByText('looks like weed').click();
+    await page.waitForFunction(() => !!document.querySelector('#passages a[data-passage="DeliveryMap"]'));
+    await passage(page).getByText("won't mess with this").click();
+    await waitForPassage(page, 'DeliveryMap');
+
+    const failPay = await getVar(page, 'jobMoneyFailed');
+    expect(await getVar(page, 'earnedMoney')).toBe(failPay);
+    expect(await getVar(page, 'deliveryCorrectThisShift')).toBe(0);
+  });
+
+  test('package: declining "earn a little more money" books a fail, not a success', async ({ game: page }) => {
+    await setupReadyWorker(page);
+    await setVar(page, 'mc.corruption', 5); // >= 3 -> "Agree" / "Nah, i have to go" fork
+
+    await goToPassage(page, 'WorkDelivery');
+    await waitForPassage(page, 'WorkDelivery');
+    await page.evaluate(() => {
+      const v = SugarCube.State.variables;
+      v.orders[0].item = 'package';
+      v.orders[0].image = v.itemImages.package;
+      v.order1.item = 'package';
+      v.order1.image = v.itemImages.package;
+    });
+
+    await setVar(page, 'currentOrder', 1);
+    await setVar(page, 'currentHouse', (await page.evaluate(() => SugarCube.State.variables.order1.address)));
+    await setVar(page, 'deliverySpecialOrder', false);
+    await setVar(page, 'earnedMoney', 0);
+    await setVar(page, 'deliveryCorrectThisShift', 0);
+
+    await goToPassage(page, 'DeliveryEventChoose');
+    await waitForPassage(page, 'DeliveryEventChoose');
+    expect(await getVar(page, 'deliveryCorrectThisShift')).toBe(1);
+
+    // Expand the apology linkreplace, then decline the proposition.
+    await passage(page).getByText('Try to apologize').click();
+    await page.waitForFunction(() => !!document.querySelector('#passages a[data-passage="DeliveryMap"]'));
+    await passage(page).getByText('Nah, i have to go').click();
+    await waitForPassage(page, 'DeliveryMap');
+
+    const failPay = await getVar(page, 'jobMoneyFailed');
+    expect(await getVar(page, 'earnedMoney')).toBe(failPay);
+    expect(await getVar(page, 'deliveryCorrectThisShift')).toBe(0);
+  });
+});
+
 // ─── Wrong delivery ─────────────────────────────────────────────
 
 test.describe('Delivery E2E — Wrong delivery', () => {

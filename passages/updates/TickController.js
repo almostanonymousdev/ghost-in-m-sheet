@@ -128,6 +128,7 @@ setup.Tick = (function () {
 		setup.Cooldowns.resetDaily();
 		setup.Home.tickHomeMidnight();
 		setup.Companion.advanceSoloHuntsAtMidnight();
+		setup.Companion.endNightRecruitment();
 		setup.SpecialEvent.tickMareStageMidnight();
 		setup.MissingWomen.tickRescueClockMidnight();
 	}
@@ -208,7 +209,9 @@ setup.Tick = (function () {
 		setup.HuntController.shuffleGhostRoom();
 
 		if (setup.Time.isMorningPlus() && setup.HuntController.isHunting()) {
-			return { goto: "HuntOverTime" };
+			var timeExit = setup.HuntController.huntOverPassage(
+				setup.HuntEnums.FailureReason.TIME);
+			return { goto: timeExit || "HuntOverTime" };
 		}
 
 		/* Companion-found redirect. Issued from PassageDone (not

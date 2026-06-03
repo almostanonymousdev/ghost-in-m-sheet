@@ -273,6 +273,14 @@ setup.Companion = (function () {
 		},
 		resetHuntState: function () { applyTransition('reset'); },
 
+		/* End a night's companion recruitment. Recruiting a companion
+		   ("join me for ghost hunting tonight") is a per-night deal */
+		endNightRecruitment: function () {
+			State.variables.companion = null;
+			this.clearCompanionSelection();
+			this.resetHuntState();
+		},
+
 		/* True when the active hunt is companion-eligible. Procedural
 		   runs are eligible by default; static-plan houses opt out
 		   by pinning the `solo_only` forced modifier in the catalogue

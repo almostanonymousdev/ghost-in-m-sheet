@@ -201,6 +201,20 @@ test.describe('WitchContract storefront', () => {
     expect(await callSetup(page, 'setup.WitchContract.canEnterHouse("elm")')).toBe(false);
   });
 
+  test('canEnterHouse() seals the house once a failed-hunt pending guess is held', async () => {
+    /* A contract hunt that ended without a call stashes the true
+       ghost identity on the held contract so the player can guess at
+       Khadija's desk the next day. Until that's settled (and a new
+       contract bought), the house is sealed -- you can't walk back in
+       to retry the same run. */
+    await page.evaluate(() => SugarCube.setup.WitchContract.cheatGrantContract('owaissa'));
+    expect(await callSetup(page, 'setup.WitchContract.canEnterHouse("owaissa")')).toBe(true);
+
+    await page.evaluate(() => SugarCube.setup.WitchContract.markHeldPendingGuess('Shade'));
+    expect(await callSetup(page, 'setup.WitchContract.hasPendingGuess()')).toBe(true);
+    expect(await callSetup(page, 'setup.WitchContract.canEnterHouse("owaissa")')).toBe(false);
+  });
+
   // --- Resolving a held contract ----------------------------------------
 
   test('resolveHeld(true) returns the contract payout and clears held', async () => {

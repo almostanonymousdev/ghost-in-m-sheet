@@ -712,4 +712,102 @@ test.describe('Delivery Controller', () => {
     expect(await getVar(page, 'deliveryPackageEvent')).toBe(1);
     expect(await getVar(page, 'deliveryPapersEvent')).toBe(1);
   });
+
+  // --- markDeliveryFailed (declined lewd encounter = failed delivery) ---
+
+  // ON_ENTRY encounters (burger/package/papers) pre-pay a success the
+  // instant their gate renders, so declining must unwind that pre-pay
+  // before booking the small fail fee.
+  test('markDeliveryFailed unwinds an ON_ENTRY pre-pay then books the fail fee', async ({ game: page }) => {
+    // arrange — base tier: success $10, fail $3; burger is ON_ENTRY
+    await setVar(page, 'deliveryCompletedShifts', 0);
+    await setVar(page, 'deliveryBestStreak', 0);
+    await callSetup(page, 'setup.Delivery.updatePayTier()');
+    await setVar(page, 'currentOrder', 0);
+    await setVar(page, 'order0', { address: 'Star Street 25', item: 'burgers', image: '' });
+    // simulate the gate render: pre-paid one success + one correct-credit
+    await setVar(page, 'earnedMoney', 10);
+    await setVar(page, 'deliveryCorrectThisShift', 1);
+
+    // act
+    await callSetup(page, 'setup.Delivery.markDeliveryFailed()');
+
+    // assert — pre-pay reversed (+10 → 0), fail fee booked (+3); credit reversed
+    expect(await getVar(page, 'earnedMoney')).toBe(3);
+    expect(await getVar(page, 'deliveryCorrectThisShift')).toBe(0);
+  });
+
+  test('markDeliveryFailed never drives correct-credit below zero', async ({ game: page }) => {
+    // arrange — ON_ENTRY burger, but no correct-credit on the books yet
+    await setVar(page, 'deliveryCompletedShifts', 0);
+    await setVar(page, 'deliveryBestStreak', 0);
+    await callSetup(page, 'setup.Delivery.updatePayTier()');
+    await setVar(page, 'currentOrder', 0);
+    await setVar(page, 'order0', { address: 'Star Street 25', item: 'burgers', image: '' });
+    await setVar(page, 'earnedMoney', 10);
+    await setVar(page, 'deliveryCorrectThisShift', 0);
+
+    // act
+    await callSetup(page, 'setup.Delivery.markDeliveryFailed()');
+
+    // assert — money still unwinds, but the streak counter floors at 0
+    expect(await getVar(page, 'earnedMoney')).toBe(3);
+    expect(await getVar(page, 'deliveryCorrectThisShift')).toBe(0);
+  });
+
+  test('markDeliveryFailed on an ON_DONE encounter just books the fail fee', async ({ game: page }) => {
+    // arrange — pizza is ON_DONE, so there is no pre-pay to unwind
+    await setVar(page, 'deliveryCompletedShifts', 0);
+    await setVar(page, 'deliveryBestStreak', 0);
+    await callSetup(page, 'setup.Delivery.updatePayTier()');
+    await setVar(page, 'currentOrder', 0);
+    await setVar(page, 'order0', { address: 'Star Street 25', item: 'pizza', image: '' });
+    await setVar(page, 'earnedMoney', 0);
+    await setVar(page, 'deliveryCorrectThisShift', 0);
+
+    // act
+    await callSetup(page, 'setup.Delivery.markDeliveryFailed()');
+
+    // assert — only the fail fee, no correct-credit touched
+    expect(await getVar(page, 'earnedMoney')).toBe(3);
+    expect(await getVar(page, 'deliveryCorrectThisShift')).toBe(0);
+  });
+
+  test('markDeliveryFailed with no active encounter books the fail fee only', async ({ game: page }) => {
+    // arrange — books has no encounter (currentEventType null)
+    await setVar(page, 'deliveryCompletedShifts', 0);
+    await setVar(page, 'deliveryBestStreak', 0);
+    await callSetup(page, 'setup.Delivery.updatePayTier()');
+    await setVar(page, 'currentOrder', 0);
+    await setVar(page, 'order0', { address: 'Star Street 25', item: 'books', image: '' });
+    await setVar(page, 'earnedMoney', 0);
+    await setVar(page, 'deliveryCorrectThisShift', 0);
+
+    // act
+    await callSetup(page, 'setup.Delivery.markDeliveryFailed()');
+
+    // assert
+    expect(await getVar(page, 'earnedMoney')).toBe(3);
+    expect(await getVar(page, 'deliveryCorrectThisShift')).toBe(0);
+  });
+
+  test('a failed delivery cannot count toward the 3-correct perfect shift', async ({ game: page }) => {
+    // arrange — two clean deliveries already banked this shift, then a
+    // burger gate renders (pre-pays the third) and MC declines.
+    await setVar(page, 'deliveryCompletedShifts', 0);
+    await setVar(page, 'deliveryBestStreak', 0);
+    await callSetup(page, 'setup.Delivery.updatePayTier()');
+    await setVar(page, 'currentOrder', 0);
+    await setVar(page, 'order0', { address: 'Star Street 25', item: 'burgers', image: '' });
+    await setVar(page, 'deliveryCorrectThisShift', 2);
+    // gate render pre-pays the third correct-credit + success
+    await callSetup(page, 'setup.Delivery.incrementCorrectThisShift()');
+    expect(await getVar(page, 'deliveryCorrectThisShift')).toBe(3);
+
+    // act — decline unwinds the pre-paid credit
+    await callSetup(page, 'setup.Delivery.markDeliveryFailed()');
+
+    // assert — back below the perfect-shift threshold of 3
+    expect(await getVar(page, 'deliveryCorrectThisShift')).toBe(2);
+  });
 });

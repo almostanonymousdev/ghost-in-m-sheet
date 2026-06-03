@@ -37,8 +37,11 @@ test.describe('Typography — normal locations use the serif', () => {
 test.describe('Typography — haunted houses keep the system sans', () => {
   test('an active hunt stamps hunt-active and reverts the body to the system sans', async ({ game: page }) => {
     // Stamp a live $run (cheatStartHunt) + ACTIVE mode, then enter the
-    // hunt room so :passagestart sees isActive() === true.
+    // hunt room so :passagestart sees isActive() === true. Pin the clock
+    // pre-dawn (production starts hunts at midnight) so PassageDone's
+    // isMorningPlus + isHunting branch doesn't settle the run on entry.
     await setHuntMode(page, 2);
+    await page.evaluate(() => SugarCube.setup.Time.setHours(2));
     await goToPassage(page, 'HuntRun');
     expect(await hasHuntActive(page)).toBe(true);
     const font = await bodyFont(page);
@@ -48,6 +51,7 @@ test.describe('Typography — haunted houses keep the system sans', () => {
 
   test('leaving the hunt drops hunt-active and restores the serif', async ({ game: page }) => {
     await setHuntMode(page, 2);
+    await page.evaluate(() => SugarCube.setup.Time.setHours(2));
     await goToPassage(page, 'HuntRun');
     expect(await hasHuntActive(page)).toBe(true);
 

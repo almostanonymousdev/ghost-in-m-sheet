@@ -480,6 +480,12 @@ setup.Home = (function () {
 		// across to the wake clock. The autosave is deferred so it
 		// captures the post-wake passage rather than Sleep itself.
 		sleepAdvance: function (n) {
+			/* Guard on isHunting() (ACTIVE only) so a POSSESSED run -- which
+			   keeps $run alive for the possession arc -- is left alone. */
+			if (setup.HuntController.isHunting()) {
+				setup.HuntController.markFailure(setup.HuntEnums.FailureReason.ABANDON);
+				setup.HuntController.endHunt(false);
+			}
 			var rollover = setup.Time.sleepAdvanceHours(n);
 			setup.Time.setMinutes(0);
 			if (rollover) { setup.Tick.resetCooldowns(); }

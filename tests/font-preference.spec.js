@@ -136,7 +136,10 @@ test.describe('Player font preference (setup.Gui font choice)', () => {
   test('the dyslexic override wins while a hunt is active', async ({ game: page }) => {
     // An accessibility pick must hold everywhere, including inside a hunt
     // where the body would otherwise revert to --font-haunted (system sans).
+    // Pin the clock pre-dawn so the live run isn't settled by PassageDone's
+    // morning-timeout branch (production starts hunts at midnight).
     await setHuntMode(page, 2);
+    await page.evaluate(() => SugarCube.setup.Time.setHours(2));
     const s = await chooseAndNavigate(page, DYSLEXIC, 'Livingroom');
     expect(s.huntActive).toBe(true);
     expect(s.cls).toContain('font-pref-dyslexic');
@@ -152,6 +155,7 @@ test.describe('Player font preference (setup.Gui font choice)', () => {
     expect(town.font).toMatch(/EB Garamond/i);
 
     await setHuntMode(page, 2);
+    await page.evaluate(() => SugarCube.setup.Time.setHours(2));
     const hunt = await chooseAndNavigate(page, DEFAULT, 'Livingroom');
     expect(hunt.huntActive).toBe(true);
     expect(hunt.cls).not.toContain('font-pref');

@@ -48,8 +48,8 @@
 			@@.mc-thoughts; I suck dick for money, what happened to me?@@ <<deliveryLustReq 50>><br>
 			<<linkappend "@@.mc-speechLink; He's cumming@@">><br>
 				/* End2 terminal block -- inlined here (instead of a
-				   variant branch on DeliveryEvent2) so the low-lust
-				   fork doesn't need a flag round-trip through state. */
+					variant branch on DeliveryEvent2) so the low-lust
+					fork doesn't need a flag round-trip through state. */
 				<<addLust 15>>
 				<<deliveryLustOverflow>>
 				<<deliveryVideo "packageevent" 7>>
@@ -87,10 +87,10 @@
 			<</linkappend>>@@
 		<<else>>
 			@@.mc-speech; Nah, I better get back to work, bye@@ <<deliveryLustReq 40>><br>
-			@@.backbtn;[[Leave|DeliveryMap]] @@<br>
+			@@.backbtn;[[Leave|DeliveryMap][setup.Delivery.markDeliveryFailed()]]@@<br>
 		<</if>>
 	<<else>>
 		@@.mc-speech; What? I'm not some cheap whore, I'm leaving@@ <<deliveryCorrReq 3>><br><br>
-		@@.backbtn;[[Leave|DeliveryMap]] @@<br>
+		@@.backbtn;[[Leave|DeliveryMap][setup.Delivery.markDeliveryFailed()]]@@<br>
 	<</if>>
 <</switch>>

@@ -478,6 +478,50 @@ test.describe('Companion Controller', () => {
     await page.evaluate(() => SugarCube.setup.HuntController.end());
   });
 
+  // --- endNightRecruitment (per-night recruitment, cleared at sleep) ---
+
+  test('endNightRecruitment clears the active-companion marker and selection', async ({ game: page }) => {
+    await page.evaluate(() => SugarCube.setup.Companion.pickCompanion('Brook'));
+    expect(await callSetup(page, 'setup.Companion.hasActiveCompanion()')).toBe(true);
+    expect(await callSetup(page, 'setup.Companion.anyCompanionSelected()')).toBe(true);
+
+    await page.evaluate(() => SugarCube.setup.Companion.endNightRecruitment());
+
+    expect(await getVar(page, 'companion')).toBeNull();
+    expect(await callSetup(page, 'setup.Companion.hasActiveCompanion()')).toBe(false);
+    expect(await callSetup(page, 'setup.Companion.anyCompanionSelected()')).toBe(false);
+  });
+
+  test('endNightRecruitment leaves a companion mid-solo-hunt on its own timeline', async ({ game: page }) => {
+    // Brook is out on a solo contract (goingSolo === 1). Ending the
+    // player's night recruitment must not yank her off her own run --
+    // *HuntEndAlone resolves by name, not the $companion marker.
+    await page.evaluate(() => SugarCube.setup.Companion.sendCompanionSolo('Brook', 'Owaissa'));
+    expect(await getVar(page, 'brook.goingSolo')).toBe(1);
+
+    await page.evaluate(() => SugarCube.setup.Companion.endNightRecruitment());
+
+    expect(await getVar(page, 'companion')).toBeNull();
+    expect(await getVar(page, 'brook.goingSolo')).toBe(1);
+  });
+
+  test('a one-night recruit does not re-attach the next night (midnight rollover clears it)', async ({ game: page }) => {
+    // Repro: the player asks Brook to join "tonight" once; she kept
+    // auto-attaching on every subsequent hunt because the $companion
+    // marker was never cleared.
+    await page.evaluate(() => SugarCube.setup.Companion.pickCompanion('Brook'));
+    expect(await callSetup(page, 'setup.Companion.hasActiveCompanion()')).toBe(true);
+
+    // A night's sleep crosses midnight -> resetCooldowns ends recruitment.
+    await page.evaluate(() => SugarCube.setup.Tick.resetCooldowns());
+    expect(await callSetup(page, 'setup.Companion.hasActiveCompanion()')).toBe(false);
+
+    // Next hunt: nothing to auto-attach.
+    await page.evaluate(() => SugarCube.setup.HuntController.startHunt({ seed: 1 }));
+    expect(await callSetup(page, 'setup.Companion.autoAttachOnHuntStart()')).toBe(false);
+    await page.evaluate(() => SugarCube.setup.HuntController.end());
+  });
+
   // --- CompanionEvent dialog catalogue ---
 
   test('eventTextForTier returns Brook copy', async ({ game: page }) => {

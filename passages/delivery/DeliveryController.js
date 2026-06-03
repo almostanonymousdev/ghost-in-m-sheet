@@ -200,6 +200,17 @@ setup.Delivery = (function () {
 		jobMoneySuccessed: function () { return sv().jobMoneySuccessed; },
 		jobMoneyFailed: function () { return sv().jobMoneyFailed; },
 
+		markDeliveryFailed: function () {
+			var s = sv();
+			var type = this.currentEventType();
+			var cfg = type ? setup.deliveryEvents[type] : null;
+			if (cfg && cfg.payMode === setup.DeliveryPayMode.ON_ENTRY) {
+				setup.Mc.addEarnedMoney(-s.jobMoneySuccessed);
+				if (s.deliveryCorrectThisShift > 0) { s.deliveryCorrectThisShift -= 1; }
+			}
+			setup.Mc.addEarnedMoney(s.jobMoneyFailed);
+		},
+
 		// --- Special order fields -------------------------------
 		specialOrderActive: function () { return !!sv().deliverySpecialOrder; },
 		specialOrderAddress: function () { return sv().deliverySpecialOrderAddress; },

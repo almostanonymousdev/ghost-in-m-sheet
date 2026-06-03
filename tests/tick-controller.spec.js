@@ -351,4 +351,29 @@ test.describe('TickController helpers', () => {
     // recomputeStealChance ran (stealChance is no longer undefined).
     expect(typeof await getVar(page, 'stealChance')).toBe('number');
   });
+
+  // --- onPassageDone (morning timeout) ---------------------------
+
+  test('onPassageDone settles the run when the clock crosses 06:00 mid-hunt', async ({ game: page }) => {
+    /* Dawn timeout must SETTLE the hunt, not just route to the
+       narrative screen: leaving a hunt running across the morning
+       used to leave $run resumable and the contract un-deferred, so
+       the player could walk straight back into the same house. */
+    await page.evaluate(() => {
+      SugarCube.setup.WitchContract.cheatGrantContract('owaissa');
+      SugarCube.setup.HuntController.startHunt({ seed: 1, staticHouseId: 'owaissa' });
+      // startHunt pins the clock to midnight; push past dawn.
+      SugarCube.setup.Time.setHours(7);
+    });
+    expect(await callSetup(page, 'setup.HuntController.isHunting()')).toBe(true);
+
+    const result = await page.evaluate(() => SugarCube.setup.Tick.onPassageDone());
+
+    expect(result).toEqual({ goto: 'HuntOverTime' });
+    // Run torn down + contract deferred -> house sealed.
+    expect(await getVar(page, 'run')).toBeNull();
+    expect(await callSetup(page, 'setup.HuntController.isHunting()')).toBe(false);
+    expect(await callSetup(page, 'setup.WitchContract.hasPendingGuess()')).toBe(true);
+    expect(await callSetup(page, 'setup.WitchContract.canEnterHouse("owaissa")')).toBe(false);
+  });
 });

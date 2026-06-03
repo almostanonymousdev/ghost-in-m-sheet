@@ -13,9 +13,9 @@
 		<<linkreplace "@@.mc-speechLink; You see something that looks like weed in his hand. Yes, it's definitely weed.@@">>
 			<<image "ui/img/weed.jpg" { style: "max-width: 50%; height: auto; display: block; margin: 0 auto;" }>>
 			<<if setup.Delivery.canAcceptBurgerWeed()>>
-				@@.mc-speech;[[If you don't mind|DeliveryEventStart]]@@ or @@.mc-speech;[[No, sorry, I won't mess with this|DeliveryMap]]@@<br>
+				@@.mc-speech;[[If you don't mind|DeliveryEventStart]]@@ or @@.mc-speech;[[No, sorry, I won't mess with this|DeliveryMap][setup.Delivery.markDeliveryFailed()]]@@<br>
 			<<else>>
-				@@.mc-speech;[[No, sorry, I won't mess with this|DeliveryMap]]@@ <<deliveryCorrReq 5>><br>
+				@@.mc-speech;[[No, sorry, I won't mess with this|DeliveryMap][setup.Delivery.markDeliveryFailed()]]@@ <<deliveryCorrReq 5>><br>
 			<</if>>
 		<</linkreplace>>
 	<<case "pizza">>
@@ -35,13 +35,13 @@
 	<<case "package">>
 		@@.notmc-speech; You are late@@<br>
 		<<linkreplace "@@.usebtn;Try to apologize@@">>
-			@@.notmc-speech; I understand, no problem. Here's the money for the delivery. Listen, maybe you want to earn a little more money?@@<br>
+			@@.notmc-speech; I understand, no problem. Listen, maybe you want to earn a little more money?@@<br>
 			<<if not setup.Delivery.canAcceptPackageDeal()>>
 				@@.mc-speech; That sounds strange, I'd rather decline@@ <<deliveryCorrReq 3>><br><br>
-				@@.backbtn;[[Back|DeliveryMap]]@@
+				@@.backbtn;[[Back|DeliveryMap][setup.Delivery.markDeliveryFailed()]]@@
 			<<else>>
 				@@.mc-thoughts; He's definitely hinting at sex, should I agree?@@<br>
-				@@.mc-speech;[[Agree|DeliveryEventStart]]@@ or @@.mc-speech;[[Nah, i have to go|DeliveryMap]]@@<br>
+				@@.mc-speech;[[Agree|DeliveryEventStart]]@@ or @@.mc-speech;[[Nah, i have to go|DeliveryMap][setup.Delivery.markDeliveryFailed()]]@@<br>
 			<</if>>
 		<</linkreplace>>
 	<<case "papers">>
@@ -58,7 +58,7 @@
 				@@.mc-speech; Do you like it?@@<br>
 				@@.notmc-speech; Yea~I mean, I don't understand what you mean...<br>
 				Sorry, you have a nice ass, maybe I can touch it? @@<br>
-				@@.mc-speech;[[Just a touch|DeliveryEventStart]]@@ or @@.mc-speech;[[Nah, i have to go|DeliveryMap]]@@<br>
+				@@.mc-speech;[[Just a touch|DeliveryEventStart]]@@ or @@.mc-speech;[[Nah, i have to go|DeliveryMap][setup.Delivery.markDeliveryFailed()]]@@<br>
 			<</if>>
 		<</linkreplace>>@@
 	<</switch>>
