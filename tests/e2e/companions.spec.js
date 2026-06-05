@@ -92,6 +92,7 @@ test.describe('Companions — passage rendering', () => {
         await setVar(page, 'isCompChosen', true);
         await setHuntMode(page, 2);
         await setVar(page, 'ghost', { name: 'Shade' });
+        await setVar(page, 'hours', 2);
         await goToPassage(page, passage);
         await expectCleanPassage(page);
       });
@@ -133,6 +134,7 @@ test.describe('Companions — passage rendering', () => {
       await setVar(page, 'isCompChosen', true);
       await setHuntMode(page, 2);
       await setVar(page, 'ghost', { name: 'Shade' });
+      await setVar(page, 'hours', 2);
       await goToPassage(page, 'CompanionMain');
       await expectCleanPassage(page);
     });

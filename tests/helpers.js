@@ -232,16 +232,40 @@ async function ensureOpenPage(browser, page) {
 /**
  * Reset SugarCube state by restarting the engine (replays StoryInit).
  * Much faster than closing and reopening the page.
+ *
+ * SugarCube's Engine.restart() resets state and then calls
+ * window.location.reload() — an *asynchronous* navigation that commits after
+ * the current task finishes. The pre-reload document still has a live
+ * SugarCube with non-empty State.passage and a populated State.variables, so
+ * a naive "wait for SugarCube + passage" check resolves immediately against
+ * the doomed page; the reload then commits mid-test and wipes $mc / $brook /
+ * $companion, surfacing as intermittent "Cannot read properties of
+ * null/undefined" crashes in whatever passage the test renders next.
+ *
+ * To close that window we stamp window.__preRestart__ on the current document
+ * before calling restart, then wait until we're on a document that lacks the
+ * marker (i.e. the reloaded one) AND whose StoryInit has finished seeding
+ * core state ($mc). The marker can only be absent on the fresh document, so
+ * the wait can't satisfy itself against the old page.
  */
 async function resetGame(page) {
   /* Undo any test-local Math.random stub before StoryInit re-runs — see
-     openGame for the rationale. */
+     openGame for the rationale. The seeded RNG is reinstalled on the reloaded
+     document by the addInitScript from openGame({ seed }). */
   await page.evaluate(() => {
     if (window.__origMathRandom) Math.random = window.__origMathRandom;
+    window.__preRestart__ = true;
+    SugarCube.Engine.restart();
   });
-  await page.evaluate(() => SugarCube.Engine.restart());
-  await waitForSugarCube(page);
-  await page.waitForFunction(() => SugarCube.State.passage !== '');
+  await page.waitForFunction(() =>
+    typeof window.__preRestart__ === 'undefined' &&
+    typeof SugarCube !== 'undefined' &&
+    SugarCube.State &&
+    SugarCube.State.variables &&
+    SugarCube.State.variables.mc &&
+    SugarCube.Engine &&
+    SugarCube.State.passage !== ''
+  );
 }
 
 module.exports = {
