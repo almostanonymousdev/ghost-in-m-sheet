@@ -856,6 +856,161 @@ test.describe('macro delimiters', () => {
 
 });
 
+// ── assignment to a function-call result ─────────────────────────
+//
+// SugarCube runs an assignment in three places: a wikilink setter
+// `[[Display|Target][ setter ]]`, the body of `<<set …>>`, and the body
+// of `<<run …>>`. In every one of those, TwineScript turns the word `to`
+// (and a bare `=`) into a JS assignment. If the left-hand side ends in
+// `)` it's a *function-call result*, which is not an lvalue, so the
+// engine throws "invalid left-hand side in assignment".
+//
+// For wikilink setters the setter runs at CLICK time, not render time,
+// so this never fails the build — it surfaces as a runtime error popup
+// the moment the player clicks the link. That's exactly how the Jade
+// rescue bug shipped:
+//
+//   [[suck on your clit.|RescueJadePossessed1][setup.MissingWomen.jadePossessedStage() to 1]]
+//
+// where the author called the getter and assigned to it instead of
+// calling the generated setter `setJadePossessedStage(1)`. This lint
+// catches the whole class statically, across every passage.
+test.describe('assignment targets', () => {
+
+  // Blank out Twee/HTML comment forms with same-length whitespace so a
+  // `() to` / `() =` that lives inside prose-y commentary doesn't read as
+  // a real setter. `//` is left alone — it's SugarCube's //italic// markup,
+  // not a comment.
+  function blankComments(body) {
+    const blank = s => s.replace(/[^\n]/g, ' ');
+    return body
+      .replace(/\/\*[\s\S]*?\*\//g, blank)
+      .replace(/\/%[\s\S]*?%\//g, blank)
+      .replace(/<!--[\s\S]*?-->/g, blank);
+  }
+
+  // A `)` directly preceding an assignment operator — `to` (word) or a
+  // bare `=` that is NOT part of ==, ===, <=, >=, !=, or an arrow `=>`.
+  // Because only `)` and whitespace sit to the left of the matched `=`,
+  // the only forms that could collide are `==` (a comparison) and `=>`
+  // (an arrow function, e.g. `<<run setTimeout(() => …)>>`); both are
+  // ruled out by the `(?![=>])` lookahead.
+  const CALL_THEN_TO = /\)\s*\bto\b/;
+  const CALL_THEN_EQ = /\)\s*=(?![=>])/;
+  function assignsToCall(setterExpr) {
+    return CALL_THEN_TO.test(setterExpr) || CALL_THEN_EQ.test(setterExpr);
+  }
+
+  // Pure scanner: returns one violation per offending setter context
+  // (`{ kind, expr, line }`). Exposed so the self-tests below can pin
+  // both the positive and negative cases.
+  function findAssignToCallViolations(rawBody) {
+    const body = blankComments(rawBody);
+    const out = [];
+    const lineAt = (idx) => body.slice(0, idx).split('\n').length;
+
+    // Wikilink setters: [[ link ][ setter ]]. The link part holds no `]`
+    // (passage names with link metacharacters are flagged elsewhere), so
+    // `[^\]\n]*` cleanly stops at the `][` boundary; plain `[[a|B]]` links
+    // without a setter never match (no `][`).
+    const wikilink = /\[\[[^\]\n]*\]\[([^\n]*?)\]\]/g;
+    let m;
+    while ((m = wikilink.exec(body)) !== null) {
+      if (assignsToCall(m[1])) {
+        out.push({ kind: 'wikilink setter', expr: m[1].trim(), line: lineAt(m.index) });
+      }
+    }
+
+    // <<set …>> / <<run …>> bodies (single-line; lazy stop at the first >>).
+    const setRun = /<<(set|run)\b(.*?)>>/g;
+    while ((m = setRun.exec(body)) !== null) {
+      if (assignsToCall(m[2])) {
+        out.push({ kind: `<<${m[1]}>>`, expr: m[2].trim(), line: lineAt(m.index) });
+      }
+    }
+    return out;
+  }
+
+  test('no setter assigns to a function-call result (getter() to/= value)', () => {
+    const violations = [];
+    for (const p of allPassages) {
+      if (p.tags.includes('script') || p.tags.includes('stylesheet')) continue;
+      for (const v of findAssignToCallViolations(p.body)) {
+        const absLine = p.headerLine + v.line;
+        violations.push(
+          `${rel(p.file)}:${absLine} "${p.name}": ${v.kind} assigns to a ` +
+          `function-call result — \`${v.expr}\`. The left-hand side is a ` +
+          `getter call, not an lvalue, so the engine throws "invalid ` +
+          `left-hand side in assignment". Call the matching setter ` +
+          `(e.g. setX(1)) instead of \`X() to 1\`.`
+        );
+      }
+    }
+    expect(violations, violations.join('\n')).toHaveLength(0);
+  });
+
+  // --- self-tests for the scanner itself ------------------------
+  //
+  // The rule above is a one-line toHaveLength(0); a regex regression that
+  // silently matched nothing would also pass. These pin the cases.
+
+  test('scanner: flags the original Jade rescue bug shape (wikilink setter, `to`)', () => {
+    const body = `[[suck on your clit.|RescueJadePossessed1][setup.MissingWomen.jadePossessedStage() to 1]]`;
+    const v = findAssignToCallViolations(body);
+    expect(v).toHaveLength(1);
+    expect(v[0].kind).toBe('wikilink setter');
+    expect(v[0].expr).toMatch(/jadePossessedStage\(\) to 1/);
+  });
+
+  test('scanner: flags a wikilink setter using a bare `=`', () => {
+    const v = findAssignToCallViolations(`[[Go|Next][setup.Foo.bar() = 2]]`);
+    expect(v).toHaveLength(1);
+    expect(v[0].kind).toBe('wikilink setter');
+  });
+
+  test('scanner: flags <<set>> / <<run>> assigning to a call', () => {
+    expect(findAssignToCallViolations(`<<set setup.Foo.bar() to 1>>`)).toHaveLength(1);
+    expect(findAssignToCallViolations(`<<set setup.Foo.bar() = 1>>`)).toHaveLength(1);
+    expect(findAssignToCallViolations(`<<run setup.Foo.bar() = 1>>`)).toHaveLength(1);
+  });
+
+  test('scanner: does NOT flag the corrected setter form', () => {
+    const body = `[[suck on your clit.|RescueJadePossessed1][setup.MissingWomen.setJadePossessedStage(1)]]`;
+    expect(findAssignToCallViolations(body)).toHaveLength(0);
+  });
+
+  test('scanner: does NOT flag a function call on the right-hand side', () => {
+    expect(findAssignToCallViolations(`<<set $x to setup.Foo.bar()>>`)).toHaveLength(0);
+    expect(findAssignToCallViolations(`<<set $x to foo() + bar()>>`)).toHaveLength(0);
+    expect(findAssignToCallViolations(`[[Go|Next][$x to setup.Foo.bar()]]`)).toHaveLength(0);
+  });
+
+  test('scanner: does NOT confuse comparisons for assignment', () => {
+    expect(findAssignToCallViolations(`<<set $x to (foo() == 1)>>`)).toHaveLength(0);
+    expect(findAssignToCallViolations(`<<set $x to (foo() === 1)>>`)).toHaveLength(0);
+    expect(findAssignToCallViolations(`<<set $x to (foo() >= 1)>>`)).toHaveLength(0);
+    expect(findAssignToCallViolations(`<<set $x to (foo() != 1)>>`)).toHaveLength(0);
+  });
+
+  test('scanner: does NOT flag an arrow function inside <<run>> (() => …)', () => {
+    // `() =>` ends in `) =`, which must not read as `getter() = value`.
+    const body = `<<run setTimeout(() => window.scrollTo({ top: 0 }), 50)>>`;
+    expect(findAssignToCallViolations(body)).toHaveLength(0);
+  });
+
+  test('scanner: does NOT flag a plain variable LHS or a setter-less wikilink', () => {
+    expect(findAssignToCallViolations(`[[Go|Next][$rescueJadePossessed to 1]]`)).toHaveLength(0);
+    expect(findAssignToCallViolations(`[[Go|Next]]`)).toHaveLength(0);
+    expect(findAssignToCallViolations(`<<set $rescueJadePossessed to 1>>`)).toHaveLength(0);
+  });
+
+  test('scanner: ignores `() to` that lives inside a comment', () => {
+    expect(findAssignToCallViolations(`/* call foo() to do bar */`)).toHaveLength(0);
+    expect(findAssignToCallViolations(`<!-- legacy: $x() to 1 -->`)).toHaveLength(0);
+  });
+
+});
+
 // ── deferred-callback temp variable capture ─────────────────────
 
 test.describe('deferred macro callbacks must capture temp vars', () => {

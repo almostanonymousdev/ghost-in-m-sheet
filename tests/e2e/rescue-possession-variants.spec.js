@@ -223,6 +223,42 @@ test.describe('Rescue possession variants', () => {
     expect(await getVar(page, 'rescueVictoriaPossessed')).toBe(1);
   });
 
+  test('RescueJadePossessed setter link advances jadePossessedStage without an invalid-assignment error', async ({ game: page }) => {
+    // Regression: the wikilink setters in RescueJadePossessed.tw assigned to
+    // a getter call (`jadePossessedStage() to 1`), which TwineScript compiles
+    // to `getter() = 1` and throws "invalid left-hand side in assignment" at
+    // click time. The fix calls the generated setter `setJadePossessedStage(1)`.
+    await page.evaluate(() => {
+      const v = SugarCube.State.variables;
+      v.currentRescueGirl = 'Jade';
+      v.hasQuestForRescue = SugarCube.setup.RescueQuestState.ACTIVE;
+      v.rescueJadePossessed = 0;
+      // Pin `<<set _check to random(1,3)>>` -> 1 so we take the stage-1 branch
+      // whose link runs setJadePossessedStage(1). Restored by resetGame.
+      if (!window.__origMathRandom) window.__origMathRandom = Math.random;
+      Math.random = () => 0;
+    });
+    await goToPassage(page, 'RescueJadePossessed');
+
+    // The setter link is hidden behind the "have a little fun first." linkappend.
+    await page.locator('a.macro-linkappend').first().click();
+    await page.locator('a', { hasText: 'suck on your clit' }).first().click();
+
+    await page.waitForFunction(
+      () => SugarCube.State.passage === 'RescueJadePossessed1',
+      null,
+      { timeout: 3000 }
+    );
+    // The setter actually ran: the stage is recorded...
+    expect(await getVar(page, 'rescueJadePossessed')).toBe(1);
+    // ...and no SugarCube error surfaced (the old bug rendered an .error span).
+    expect(await page.locator('.passage .error').count()).toBe(0);
+    // ...and RescueJadePossessed1's stage-1 branch (not a default fall-through)
+    // is what rendered.
+    const html = await page.evaluate(() => document.querySelector('.passage').innerHTML);
+    expect(html).toMatch(/lick your pussy/i);
+  });
+
   test('isCorrectHouse compares photo number vs rescue house', async ({ game: page }) => {
     await page.evaluate(() => {
       SugarCube.State.variables.randomRescuePhotoNumber = 4;
