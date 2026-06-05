@@ -21,7 +21,7 @@ You realize it's not Jade anymore. Whoever's standing in front of you, it's not 
 		<<video "characters/rescue/jade/1.1.mp4">>
 		@@.mc-thoughts; She started to rub your pussy at a furious pace. Your moans began to spread throughout the house, but she didn't show you any mercy.@@<br>
 		@@.mc-speech; OH~ Fuck~ I'm going to...@@<br>
-		@@.mc-thoughts; She latched onto your pussy and began to greedily [[suck on your clit.|RescueJadePossessed1][setup.MissingWomen.jadePossessedStage() to 1]]@@<br>
+		@@.mc-thoughts; She latched onto your pussy and began to greedily [[suck on your clit.|RescueJadePossessed1][setup.MissingWomen.setJadePossessedStage(1)]]@@<br>
 	<</if>>
 
 	<<if _check eq 2>>
@@ -35,7 +35,7 @@ You realize it's not Jade anymore. Whoever's standing in front of you, it's not 
 		@@.notmc-speech; Oh~ we're going to have so much fun together.@@<br>
 		@@.mc-thoughts; With those words, she started touching your body greedily, sending small shivers through you every time she touched your sensitive spots.@@<br>
 		@@.mc-speech; No, don't touch me, ah~@@<br>
-		@@.notmc-speech; I can see you're starting to enjoy this. Haha, [[what if I just...|RescueJadePossessed1][setup.MissingWomen.jadePossessedStage() to 2]]@@<br>
+		@@.notmc-speech; I can see you're starting to enjoy this. Haha, [[what if I just...|RescueJadePossessed1][setup.MissingWomen.setJadePossessedStage(2)]]@@<br>
 	<</if>>
 
 	<<if _check eq 3>>
@@ -52,6 +52,6 @@ You realize it's not Jade anymore. Whoever's standing in front of you, it's not 
 		@@.notmc-speech; Oh~ we're going to have so much fun together.@@<br>
 		@@.mc-thoughts; With those words, she started touching your body greedily, sending small shivers through you every time she touched your sensitive spots.@@<br>
 		@@.mc-speech; No, don't touch me, ah~@@<br>
-		@@.notmc-speech; I can see you're starting to enjoy this. Haha, [[what if I just...|RescueJadePossessed1][setup.MissingWomen.jadePossessedStage() to 3]]@@<br>
+		@@.notmc-speech; I can see you're starting to enjoy this. Haha, [[what if I just...|RescueJadePossessed1][setup.MissingWomen.setJadePossessedStage(3)]]@@<br>
 	<</if>>
 <</linkappend>>@@

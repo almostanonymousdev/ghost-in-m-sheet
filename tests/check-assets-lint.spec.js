@@ -38,6 +38,49 @@ test('check_assets.py finds no missing assets in the current tree', () => {
   expect(stdout).toContain('All referenced assets exist on disk.');
 });
 
+test('dynamic (concatenated) asset paths are anchored, globbed, and checked', () => {
+  // scan_dynamic replaces every variable segment of a `+`-built path with `*`
+  // and requires the resulting glob to match >=1 file. It must: keep a literal
+  // directory anchor, ignore the options object / trailing positional args,
+  // read template-literal tails, skip paths with no literal anchor, and leave
+  // lone literals to the static pass. A typo'd directory/extension literal
+  // produces a glob that matches nothing — which is exactly the catch.
+  const result = runPy([
+    'B = ca.ASSET_BASE',
+    'gl = lambda src: sorted(set(p for p, _ in ca.scan_dynamic(src)))',
+    // anchored macro path
+    "assert gl('<<video \"scenes/deliveryhub/specialevent/\" + _pick + \".webm\">>') == [B + '/scenes/deliveryhub/specialevent/*.webm'], 'macro anchor'",
+    // leading variable -> no anchor -> skipped
+    "assert gl('<<image _args[0] + _n + _args[3]>>') == [], 'no-anchor skip'",
+    // the options-object `+` must not be read as part of the path
+    "assert gl('<<image \"ui/img/\" + _icon { style: \"x\" + _y }>>') == [B + '/ui/img/*'], 'options ignored'",
+    // a trailing positional arg (e.g. a CSS class) is not part of the path
+    "assert gl('<<image \"characters/ghosts/\" + _g.image \"iconPx\">>') == [B + '/characters/ghosts/*'], 'positional arg ignored'",
+    // a backtick-template tail contributes its literal text
+    "assert gl('<<video \"characters/succubus/pc\" + _i+`.mp4`>>') == [B + '/characters/succubus/pc*.mp4'], 'template tail'",
+    // bare JS concat with member/call/index operands
+    'assert gl(\'return "characters/rescue/" + slug + "/" + ch.id + "." + v + ".mp4";\') == [B + \'/characters/rescue/*/*.*.mp4\'], "js concat"',
+    // 'assets/' + wholePathVar normalises to the asset root -> skipped
+    "assert gl(\"<<bodyBackground `'assets/' + _img`>>\") == [], 'root-only anchor skip'",
+    // a lone literal is not a concatenation -> left to the static pass
+    "assert gl('<<video \"characters/mc/x.webm\">>') == [], 'lone literal skip'",
+    // ${} template interpolation is unresolvable -> skipped
+    "assert gl('<<image `characters/${_x}/y.png`>>') == [], 'interpolation skip'",
+    // detection: a typo'd directory literal yields a glob that matches nothing
+    "typo = gl('<<video \"scenes/deliveryhub/specialevnt/\" + _p + \".webm\">>')",
+    "assert typo == [B + '/scenes/deliveryhub/specialevnt/*.webm'], typo",
+    "assert next(ca.repo_root().glob(typo[0]), None) is None, 'typo glob must match no file on disk'",
+    "print('DYN_OK')",
+  ].join('\n'));
+  const stdout = result.stdout || '';
+  const stderr = result.stderr || '';
+  expect(
+    result.status,
+    `dynamic-path unit check exited ${result.status}\nstdout:\n${stdout}\nstderr:\n${stderr}`,
+  ).toBe(0);
+  expect(stdout).toContain('DYN_OK');
+});
+
 test('block-comment example paths in .js/.css are not required on disk', () => {
   // A multi-line /* … */ doc-comment referencing a definitely-missing asset
   // must be blanked out, so its example path never reaches the on-disk check.

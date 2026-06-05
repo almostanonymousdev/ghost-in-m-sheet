@@ -66,7 +66,7 @@ setup.MissingWomen = (function () {
 				{ id: 10, variants: [1, 2, 3, 4], end: "11end.mp4" },
 				{ id: 11, variants: [1, 2, 3, 4], end: "11end.mp4" }
 			],
-			stay: { kind: "ash", base: "AshBoth", initial: "ash-both0.mp4", endClip: "ash-both-end.mp4" }
+			stay: { kind: "ash", base: "ash-both", initial: "ash-both0.mp4", endClip: "ash-both-end.mp4" }
 		}
 	});
 
