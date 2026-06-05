@@ -87,6 +87,7 @@ setup.Mall = (function () {
 		buyWardenOutfit: function () {
 			setup.Mc.removeMoney(500);
 			setup.Witch.setWardenClothesStage(setup.WardenClothesStage.OUTFIT_OWNED);
+			setup.WitchContract.refresh();
 		},
 
 		// --- Phone purchase --------------------------------------

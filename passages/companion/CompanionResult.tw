@@ -11,17 +11,16 @@
 			<<set _found to setup.Companion.rollFoundCursedItem()>>
 			@@.mc-speech; <<= _found.speech>>@@<br>
 			<<image _found.img { width: "30%" }>>
+			<br>@@.mc-speech; Well, we'll have to take this to the witch.@@<br>
+			@@.mc-thoughts; She definitely took longer than expected finding that item... I think I know what kept her for so long...<br>
+			As soon as I thought about it, I started to feel more... aroused<br>@@
+			+30 <<statIcon setup.StatIcon.HEALTH>><br><<addLust 30>>
 			<br>
-		<</linkappend>>
-		<br>@@.mc-speech; Well, we'll have to take this to the witch.@@<br>
-		@@.mc-thoughts; She definitely took longer than expected finding that item... I think I know what kept her for so long...<br>
-		As soon as I thought about it, I started to feel more... aroused<br>@@
-		+30 <<statIcon setup.StatIcon.HEALTH>><br><<addLust 30>>
-		<br>
-		@@.mc-action; <<= _cName>> found the cursed item!@@<br>
-		<br>
+			@@.mc-action; <<= _cName>> found the cursed item!@@<br>
+			<br>
 
-		<<companionExp 10>>
+			<<companionExp 10>>
+		<</linkappend>>
 	<</if>>
 
 <<elseif State.variables.chosenPlan eq "Plan3">>

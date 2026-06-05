@@ -509,6 +509,7 @@ body.ui-bar-stowed .hunt-run-layout {
 	align-items: center;
 	justify-content: center;
 	pointer-events: auto;
+	z-index: 5;
 }
 
 .hunt-run-companion .companion-card-link {

@@ -101,6 +101,38 @@ test.describe('Companion result plans', () => {
     expect(text).toMatch(/cursed item/);
   });
 
+  /* Regression: the Plan2 cursed-item find used to grant +30 lust (and
+     announce the find / award exp) on passage render, OUTSIDE the
+     "it's a cursed item..." linkappend that actually rolls the item via
+     rollFoundCursedItem(). So the player gained lust and was told the
+     companion found it before -- or without -- the item ever being
+     rolled and marked held. The reward must be gated behind the reveal
+     click, mirroring the MC path in FindCursedItem.tw. */
+  test('Plan2 cursed-item find grants lust only after the reveal is clicked', async ({ game: page }) => {
+    await setupHunt(page, 'Spirit');
+    await page.evaluate(() => {
+      SugarCube.State.variables.chosenPlan = 'Plan2';
+      SugarCube.State.variables.companion = { name: 'Alice' };
+      const v = SugarCube.State.variables;
+      Object.keys(v).forEach(k => { if (/^isCI/.test(k)) v[k] = 0; });
+      v.cursedItemHeld = 0;
+      v.mc.lust = 0;
+    });
+    await goToPassage(page, 'CompanionResult');
+
+    // On render, before clicking the reveal, no lust may be granted and
+    // the "found the cursed item" success line must not be shown yet.
+    expect(await getVar(page, 'mc.lust')).toBe(0);
+    let text = await page.evaluate(() => document.querySelector('.passage').textContent);
+    expect(text).not.toMatch(/found the cursed item/);
+
+    // Clicking the reveal rolls the item and grants the +30 lust.
+    await page.locator('.passage a:has-text("cursed item")').first().click();
+    expect(await getVar(page, 'mc.lust')).toBe(30);
+    text = await page.evaluate(() => document.querySelector('.passage').textContent);
+    expect(text).toMatch(/found the cursed item/);
+  });
+
   test('Plan4 result names the favorite room and grants companion exp', async ({ game: page }) => {
     await setupHunt(page, 'Spirit');
     await page.evaluate(() => {
