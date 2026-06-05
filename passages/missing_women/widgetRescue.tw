@@ -93,7 +93,7 @@
 
 /* Shared body for RescueStay branches. Argument is the girl name; the
    per-girl clip set comes from setup.MissingWomen.rescueStayConfig.
-   Ash uses an indexed cycle (AshBoth1.mp4..AshBoth5.mp4) instead of
+   Ash uses an indexed cycle (ash-both1.mp4..ash-both5.mp4) instead of
    the two-clip toggle the other girls share. */
 <<widget "rescueStay">>
 	<<set _girl to _args[0]>>
@@ -125,10 +125,10 @@
 		<<video _initialClip>></span>
 		@@.mc-thoughts; You don't even try to resist.@@<br>
 		@@.mc-speech; Let it be what it will be.@@<br>
-		<<set _videoIndex to 1>>
+		<<set _videoIndex to 0>>
 		<<capture _stayCfg, _stayEnd>>
 			@@.mc-thoughts; The ghost dragged you to the missing girl and began to have fun with you, using <<link "@@.usebtn; one after the other@@">>.
-				<<set _videoIndex to (_videoIndex + 1) % 6>>
+				<<set _videoIndex to (_videoIndex % 5) + 1>>
 				<<replace "#rescueStayContainer">>
 					<<set _ashClip to setup.MissingWomen.stayClipPath(_stayCfg.slug, _stayCfg.stay.base + _videoIndex + ".mp4")>>
 					<<video _ashClip>>
