@@ -219,6 +219,12 @@
 	<</if>>
 <</widget>>
 
+<<widget "seduceGhostEscape">>
+	@@.mc-thoughts;The meter tips and you lean in for the look you've earned. The ghost doesn't fold. It spends instead, one last shudder poured into the boards, and rides the recoil out. A cold streak drags across your knuckles, a smear of light pours sideways into the plaster, and then there's just a wall and the dent your knees left in the carpet. Through the drywall like it was a curtain. Gone.@@<br><br>
+	@@.mc-speech;Oh, you absolute coward. Get back here.@@<br>
+	@@.mc-thoughts;No face. No tell. Whatever it was, it kept exactly enough in the tank to spend the lot on leaving, and it took the one thing you wanted out the wall with it: a name. You press your palm flat to the cold spot where it went, like that's going to give you anything. It doesn't. Back to doing this the slow way.@@<br>
+<</widget>>
+
 <<widget "seduceGhostInspect">>
 	@@.mc-thoughts;The meter tips over and the fight just stops. No bang, no banish-flash, only the pressure dropping out of the room the way it does when a fridge you forgot was running finally cuts off. The ghost folds. Whatever it had been holding itself up with lets go all at once and it pours down onto the floor of this stranger's house, twitching, leaking, fucked stupid and harmless for exactly as long as it lasts. Your knees are on the boards before you've decided to crouch. Heart going like you ran here. And then your brain, the traitor, reaches past the part that should be scanning for the exit and hands you the wrong job entirely: you are nose to nose with the thing, grool dripping down your thighs, voice gone low and fond, and you hear it come out of you in a hush like there's a camera over your shoulder.@@<br><br>@@.mc-speech;Easy. Easy now. Have a look at this one.@@<br>
 	<<switch setup.Ghosts.huntRealName()>>

@@ -130,8 +130,10 @@ test.describe('E2E: Hunt Outside menu', () => {
        the reveal text + Go-home button appear, so snapshot the payout
        before the timed reveal fires (the active modifier deck zeroes
        out on endHunt) and verify after the goto. */
-    const expectedSuccess = await page.evaluate(() =>
-      Math.round(10 * SugarCube.setup.Modifiers.payoutMultiplier()));
+    const mult = await page.evaluate(() => SugarCube.setup.Modifiers.payoutMultiplier());
+    const expectedCash = Math.round(50 * mult);
+    const expectedSuccess = Math.round(10 * mult);
+    const expectedXp = Math.round(20 * mult);
 
     // Prep beat is visible immediately; the reveal is gated on a 6s
     // <<timed>> block.
@@ -139,6 +141,14 @@ test.describe('E2E: Hunt Outside menu', () => {
       page.locator('.passage').getByText(/shape thins out and goes/i)
     ).toBeVisible({ timeout: 10_000 });
     expect(await callSetup(page, 'setup.HuntController.isActive()')).toBe(false);
+
+    // The rogue-hunt win now itemises its rewards on screen alongside
+    // the fade narration (cash + ectoplasm + xp), plus the running totals.
+    const passage = page.locator('.passage');
+    await expect(passage).toContainText(`+$${expectedCash}`);
+    await expect(passage).toContainText(`+${expectedSuccess} mL ectoplasm`);
+    await expect(passage).toContainText(`+${expectedXp} exp`);
+    await expect(passage).toContainText(`Ectoplasm: ${expectedSuccess} mL`);
 
     await clickLink(page, 'Go home', 'CityMap');
     expect(await getVar(page, 'run')).toBeNull();

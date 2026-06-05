@@ -26,6 +26,9 @@ test.describe('Seduce-ghost minigame — win-screen inspection', () => {
     await page.evaluate(() => {
       SugarCube.State.variables.ghostOrgasmMeter = 100;
       SugarCube.State.variables.minigameVideo = 'start';
+      // Force the 40% "ghost stays to be identified" branch so the
+      // inspection renders deterministically (the other 60% escapes).
+      SugarCube.State.variables.minigameGhostEscaped = false;
       SugarCube.setup.Mc.setOrgasmMeter(0);
     });
     if (mutate) await mutate();
@@ -65,6 +68,41 @@ test.describe('Seduce-ghost minigame — win-screen inspection', () => {
     // ...and the disguise's (Spirit's) specimen is NOT what rendered.
     await expect(passage).not.toContainText('going translucent');
     await expectCleanPassage(page);
+  });
+
+  test('the 60% escape branch skips identification for the wall-escape coda', async ({ game: page }) => {
+    await renderWin(page, 'Banshee', async () => {
+      await page.evaluate(() => {
+        SugarCube.State.variables.minigameGhostEscaped = true;
+      });
+    });
+    const passage = page.locator('.passage');
+
+    // Escape coda present...
+    await expect(passage).toContainText('Through the drywall like it was a curtain');
+    // ...and the identification frame + this ghost's specimen are absent.
+    await expect(passage).not.toContainText('Have a look at this one');
+    await expect(passage).not.toContainText('All that fuss over a kiss');
+    // Still a win: the reward exit link is unchanged.
+    await expect(
+      passage.getByText('Continue investigating', { exact: true })
+    ).toHaveCount(1);
+    await expectCleanPassage(page);
+  });
+
+  test('the win outcome (identify vs escape) is cached, not re-rolled per render', async ({ game: page }) => {
+    await renderWin(page, 'Spirit', async () => {
+      await page.evaluate(() => {
+        delete SugarCube.State.variables.minigameGhostEscaped;
+      });
+    });
+    // First render rolls and caches a boolean.
+    const first = await callSetup(page, 'setup.SeduceGhostMinigame.ghostEscaped()');
+    expect(typeof first).toBe('boolean');
+    // Subsequent reads return the same cached outcome.
+    for (let i = 0; i < 5; i++) {
+      expect(await callSetup(page, 'setup.SeduceGhostMinigame.ghostEscaped()')).toBe(first);
+    }
   });
 
   test('the inspection is gated to the win branch (absent mid-game)', async ({ game: page }) => {

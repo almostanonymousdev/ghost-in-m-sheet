@@ -22,7 +22,11 @@ Ghost's Arousal: <<= setup.Events.ghostOrgasmMeter()>> |  <<run setup.Events.cla
 	@@.usebtn; [[You're passing out|HuntOverProwl]]@@
 <<elseif setup.Events.ghostOrgasmMeter() gte 100>>
 	<br>
-	<<seduceGhostInspect>>
+	<<if setup.Events.ghostEscaped()>>
+		<<seduceGhostEscape>>
+	<<else>>
+		<<seduceGhostInspect>>
+	<</if>>
 	@@.usebtn; [[Continue investigating|$return][setup.Events.recordWeakenReward()]]@@
 <<else>>
 	<<seduceGhostMinigameMenu>>

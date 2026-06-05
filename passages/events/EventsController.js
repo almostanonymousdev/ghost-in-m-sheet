@@ -585,6 +585,7 @@ setup.Events = (function () {
 		ghostOrgasmMeter: function () { return setup.SeduceGhostMinigame.ghostOrgasmMeter(); },
 		mcOrgasmMeter: function () { return setup.Mc.orgasmMeter(); },
 		clampGhostOrgasmFloor: function () { setup.SeduceGhostMinigame.clampGhostOrgasmFloor(); },
+		ghostEscaped: function () { return setup.SeduceGhostMinigame.ghostEscaped(); },
 		clampMcOrgasmFloor: function () {
 			if ((setup.Mc.orgasmMeter() || 0) <= 0) setup.Mc.setOrgasmMeter(0);
 		},

@@ -12,8 +12,11 @@ setup.SeduceGhostMinigame = (function () {
 	var OWNED_VARS = Object.freeze([
 		'minigameVideo',
 		'minigameEventFailed',
-		'ghostOrgasmMeter'
+		'ghostOrgasmMeter',
+		'minigameGhostEscaped'
 	]);
+
+	var GHOST_ESCAPE_CHANCE = 60;
 
 	function img(src) { return { type: "image", src: src }; }
 	function vid(src) { return { type: "video", src: src }; }
@@ -287,6 +290,16 @@ setup.SeduceGhostMinigame = (function () {
 			if ((sv().ghostOrgasmMeter || 0) <= 0) sv().ghostOrgasmMeter = 0;
 		},
 
+		// Did the ghost escape on this win instead of staying to be
+		// identified? Rolled lazily on first read and cached so the
+		// win screen renders one stable outcome; reset by init().
+		ghostEscaped: function () {
+			if (typeof sv().minigameGhostEscaped !== "boolean") {
+				sv().minigameGhostEscaped = random(1, 100) <= GHOST_ESCAPE_CHANCE;
+			}
+			return sv().minigameGhostEscaped;
+		},
+
 		// --- Video lookup ---
 		videoList: function () {
 			var state = sv().minigameVideo;
@@ -309,6 +322,7 @@ setup.SeduceGhostMinigame = (function () {
 		init: function () {
 			sv().minigameVideo = "start";
 			sv().ghostOrgasmMeter = 0;
+			delete sv().minigameGhostEscaped;
 			setup.Mc.setOrgasmMeter(0);
 		},
 

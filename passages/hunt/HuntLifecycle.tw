@@ -329,6 +329,20 @@
 			<<set _winSummary to setup.HuntController.endHunt(true)>>
 			<<set _winDest to _winSummary ? _winSummary.exitPassage : "CityMap">>
 			<div class="hunt-reveal hunt-reveal-text">@@.notmc-speech; The shape thins out and goes. The house cools behind it.@@</div>
+			<<if _winSummary>>
+				<div class="hunt-reveal hunt-reveal-text">
+					<<if _winSummary.cashPayout gt 0>>
+						<span class="mc-action">+$<<= _winSummary.cashPayout>></span><br>
+					<</if>>
+					<<if _winSummary.ectoplasmPayout gt 0>>
+						<span class="mc-action">+<<= _winSummary.ectoplasmPayout>> mL ectoplasm</span><br>
+					<</if>>
+					<<if _winSummary.xp gt 0>>
+						<span class="mc-action">+<<= _winSummary.xp>> exp</span><br>
+					<</if>>
+					<span class="mc-thoughts">Money: $<<= setup.Mc.money()>> &middot; Ectoplasm: <<= setup.HuntController.ectoplasm()>> mL</span>
+				</div>
+			<</if>>
 			<div class="hunt-reveal hunt-reveal-buttons">
 				@@.movebtn;<<link "Go home" _winDest>>
 				<</link>>@@
