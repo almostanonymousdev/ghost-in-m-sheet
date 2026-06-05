@@ -2,8 +2,8 @@ const { test, expect } = require('./fixtures');
 const { callSetup, setVar } = require('./helpers');
 
 /* setup.Mc.energyDisplay() feeds the sidebar energy meter label. Energy
-   carries fractional deltas now (the seduce minigame spends 0.6 and
-   refunds 0.2), so the raw $mc.energy value picks up float noise. The
+   carries fractional deltas now (the seduce minigame refunds 0.2 on
+   submit/continue), so the raw $mc.energy value picks up float noise. The
    readout must clamp to at most 2 decimals and never show a long tail
    like 13.400000000000002, while keeping an exact 13.2 from drooping to
    13.19 under truncation. */
@@ -31,8 +31,8 @@ test.describe('setup.Mc.energyDisplay — sidebar energy readout', () => {
     expect(await display(page, 13.456)).toBe(13.45);
   });
 
-  test('a single fractional move (0.6 spent from 20) reads 19.4', async ({ game: page }) => {
-    expect(await display(page, 20 - 0.6)).toBe(19.4);
+  test('a fractional energy value (spend 1 + two 0.2 refunds from 20) reads 19.4', async ({ game: page }) => {
+    expect(await display(page, 20 - 1 + 0.2 + 0.2)).toBe(19.4);
   });
 
   test('cumulative 0.2 refunds (0.2 * 67) read 13.4, not 13.400000000000002', async ({ game: page }) => {

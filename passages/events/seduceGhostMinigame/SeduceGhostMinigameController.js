@@ -227,7 +227,7 @@ setup.SeduceGhostMinigame = (function () {
 	// States where resist costs no energy and does not change meters
 	var FREE_RESIST = ["subdueslapface", "subduetitjob", "subdueassjob"];
 
-	var ACTION_ENERGY_COST = 0.6;
+	var ACTION_ENERGY_COST = 1;
 	var SUBMIT_ENERGY_GAIN = 0.2;
 
 	// ----------------------------------------------------------------

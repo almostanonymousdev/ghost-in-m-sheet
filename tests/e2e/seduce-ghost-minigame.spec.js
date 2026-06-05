@@ -201,7 +201,7 @@ test.describe('Seduce-ghost minigame — energy economy', () => {
 
   test('effortful moves each cost one action of energy', async ({ game: page }) => {
     const cost = await callSetup(page, 'setup.SeduceGhostMinigame.actionEnergyCost()');
-    expect(cost).toBeCloseTo(0.6, 5); // pin the tuning value the widget gate reads
+    expect(cost).toBeCloseTo(1, 5); // pin the tuning value the widget gate reads
     const cases = [
       ['start',        'tryAttract'],
       ['seduceFailed', 'tryAgain'],
@@ -229,7 +229,7 @@ test.describe('Seduce-ghost minigame — energy economy', () => {
   test('energy never drops below zero or climbs past the cap', async ({ game: page }) => {
     // A resist with almost no energy clamps at 0, not negative.
     const floored = await energyDeltaFor(page, 'slapface', 'resist', 0.5);
-    expect(floored).toBeCloseTo(-0.5, 5); // 0.5 - 0.6 -> clamped to 0
+    expect(floored).toBeCloseTo(-0.5, 5); // 0.5 - 1 -> clamped to 0
     expect(await getVar(page, 'mc.energy')).toBe(0);
 
     // Submitting at the cap stays at the cap.

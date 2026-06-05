@@ -51,7 +51,7 @@
 			<</if>>
 		</div>
 
-		<<if _modifiers.length>>
+		<<if _modifiers.length and not _staticHouse>>
 			<div class="hunt-lobby-section">
 				<div class="hunt-lobby-section-title">@@.location;Modifiers@@</div>
 				<div id="hunt-lobby-modifiers" class="hunt-lobby-modifiers">
