@@ -829,6 +829,15 @@ setup.HuntController = (function () {
 	function endHunt(success) {
 		var run = active();
 		if (!run) return null;
+		/* Snapshot teardown-sensitive state for the settle emit below.
+		   cleanupRunState() resets the monkey-paw (resetCursedItemState ->
+		   MonkeyPaw.resetHunt) and end() nulls $run, both BEFORE the emit,
+		   so a subscriber reading live state at settle time sees it already
+		   wiped. The ctx is the side channel that survives the close (same
+		   reason ghostName / modifiers ride along). */
+		var pawCarried = setup.MonkeyPaw.isFound();
+		var pawWishesLeft = setup.MonkeyPaw.wishesLeft();
+		var runModifiers = (run.modifiers || []).slice();
 		var summary = setup.HuntPayout.settle(run, success);
 		/* Stash the outcome on persistent meta-state so any post-hunt
 		   surface that cares about the last result can gate on it --
@@ -851,6 +860,9 @@ setup.HuntController = (function () {
 			payout: summary.payout,
 			failureReason: summary.failureReason,
 			ghostName: run.ghostName || null,
+			modifiers: runModifiers,
+			monkeyPawCarried: pawCarried,
+			monkeyPawWishesLeft: pawWishesLeft,
 			seed: run.seed,
 			number: run.number
 		});
