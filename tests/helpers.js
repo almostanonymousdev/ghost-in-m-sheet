@@ -247,6 +247,21 @@ async function ensureOpenPage(browser, page) {
  * marker (i.e. the reloaded one) AND whose StoryInit has finished seeding
  * core state ($mc). The marker can only be absent on the fresh document, so
  * the wait can't satisfy itself against the old page.
+ *
+ * We also wait for the fresh game's one-shot tick-migrations to settle. A
+ * brand-new game does NOT seed the legacy-save migration flags ($update0909,
+ * $update22, $update2707) at init; instead TickController's onPassageDone
+ * (:passageend) fires them on the first passage's tick — and
+ * migrateDeliveryAndCompanionReset() unconditionally rewrites
+ * $companion = { name: false }. $mc / State.passage are populated at
+ * :passagestart, BEFORE that :passageend tick, so a wait that stops at "$mc
+ * seeded" can return while the migration is still armed. A test that then
+ * seeds $companion (e.g. the passage-walk's seedBaselineState) has its
+ * companion silently clobbered when the deferred tick finally lands —
+ * surfacing as intermittent null-companion crashes in CompanionMain et al.
+ * under parallel-worker load. Gating on $update0909 (the companion-reset
+ * migration's flag; all three run in the same synchronous onPassageDone pass)
+ * guarantees the tick has run before any caller seeds state on top of it.
  */
 async function resetGame(page) {
   /* Undo any test-local Math.random stub before StoryInit re-runs — see
@@ -264,7 +279,8 @@ async function resetGame(page) {
     SugarCube.State.variables &&
     SugarCube.State.variables.mc &&
     SugarCube.Engine &&
-    SugarCube.State.passage !== ''
+    SugarCube.State.passage !== '' &&
+    SugarCube.State.variables.update0909 !== undefined
   );
 }
 

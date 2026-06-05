@@ -540,6 +540,21 @@ async function walkPassages(browser, passages, label) {
       // on huntMode. Shade is a generic ghost with no special quirks.
       setup.Ghosts.cheatStartHunt('Shade');
 
+      // Pin the clock to a hunt-valid night hour. The game starts at
+      // 12:00, and TickController's onPassageDone dawn-times-out any
+      // hunt still active at >= 06:00 (isMorningPlus) by routing to the
+      // hunt-over passage, which calls endHunt() — tearing the run down
+      // and NULLING $companion. With the baseline hunt active at noon,
+      // EVERY navigation here fires that timeout on :passageend: the
+      // passage re-renders in the hunt-ended state (and the goToPassage
+      // retry can land a companion-outcome passage like CompanionSucceeded
+      // / CompanionMain on a now-null companion, crashing its
+      // <<image outcomePortrait>> / _c reads). Seeding a pre-dawn hour
+      // keeps the seeded hunt internally consistent so the walk renders
+      // each passage in the state the baseline intends.
+      V.hours = 2;
+      V.minutes = 0;
+
       // Per-hunt search bags (every haunted-house room reads
       // $currentsearch<Room>). GhostRandomize does this in the real flow.
       setup.searchableRooms.forEach((room) => {
