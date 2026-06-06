@@ -1,5 +1,5 @@
 const { test, expect } = require('../fixtures');
-const { setVar, getVar, callSetup, goToPassage } = require('../helpers');
+const { setVar, getVar, callSetup, goToPassage, setWardrobeSlot } = require('../helpers');
 const { expectCleanPassage } = require('./e2e-helpers');
 
 const PIERCING_LIST = [
@@ -193,12 +193,12 @@ test.describe('Body mods — in-hunt exhibitionism events', () => {
   async function primeForNudityEvent(page, { exhib }) {
     // Drive the "naked, no bottoms" branch deterministically.
     await setVar(page, 'ghost', { name: 'Shade' });
-    await setVar(page, 'tshirtState', 'not worn');
-    await setVar(page, 'pantiesState', 'not worn');
-    await setVar(page, 'jeansState', 'not worn');
-    await setVar(page, 'skirtState', 'not bought');
-    await setVar(page, 'shortsState', 'not bought');
-    await setVar(page, 'braState', 'not worn');
+    await setWardrobeSlot(page, 'tshirt', 'not worn');
+    await setWardrobeSlot(page, 'panties', 'not worn');
+    await setWardrobeSlot(page, 'jeans', 'not worn');
+    await setWardrobeSlot(page, 'skirt', 'not bought');
+    await setWardrobeSlot(page, 'shorts', 'not bought');
+    await setWardrobeSlot(page, 'bra', 'not worn');
     await setVar(page, 'mc.exhibitionism', exhib);
   }
 

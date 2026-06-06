@@ -1,5 +1,5 @@
 const { test, expect } = require('../fixtures');
-const { setVar, getVar, callSetup, goToPassage } = require('../helpers');
+const { setVar, getVar, callSetup, goToPassage, setWardrobeSlot } = require('../helpers');
 const { expectCleanPassage } = require('./e2e-helpers');
 
 test.describe('Gym — fitness gain mechanics', () => {
@@ -292,15 +292,15 @@ test.describe('Library — controller helpers', () => {
   });
 
   test('wearingPants and wearingSkirt mirror clothing state', async ({ game: page }) => {
-    await setVar(page, 'jeansState', 'worn');
+    await setWardrobeSlot(page, 'jeans', 'worn');
     expect(await callSetup(page, 'setup.Library.wearingPants()')).toBe(true);
-    await setVar(page, 'jeansState', 'not worn');
-    await setVar(page, 'shortsState', 'worn');
+    await setWardrobeSlot(page, 'jeans', 'not worn');
+    await setWardrobeSlot(page, 'shorts', 'worn');
     expect(await callSetup(page, 'setup.Library.wearingPants()')).toBe(true);
-    await setVar(page, 'shortsState', 'not worn');
+    await setWardrobeSlot(page, 'shorts', 'not worn');
     expect(await callSetup(page, 'setup.Library.wearingPants()')).toBe(false);
 
-    await setVar(page, 'skirtState', 'worn');
+    await setWardrobeSlot(page, 'skirt', 'worn');
     expect(await callSetup(page, 'setup.Library.wearingSkirt()')).toBe(true);
   });
 

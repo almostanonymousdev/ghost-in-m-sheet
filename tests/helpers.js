@@ -137,6 +137,97 @@ function setVar(page, varName, value) {
   }, { v: varName, val: value });
 }
 
+/* --- Wardrobe ($wardrobe bundle) helpers --------------------------
+ *
+ * The wardrobe collapsed into a single $wardrobe bundle behind
+ * setup.Wardrobe; there are no flat $<name>State<N> / $remember* /
+ * $is*Stolen / $lostClothing save keys any more. Tests reach the
+ * mutable facts through these thin wrappers over the bundle paths:
+ *
+ *   $wardrobe.items.<id>        "worn" | "not worn" | "not bought"
+ *   $wardrobe.remembered.<grp>  "<id>" | "no<id>" | null
+ *   $wardrobe.stolen.<cat>      bool   (shirt|bra|panties|bottom|jeans|shorts|skirt)
+ *   $wardrobe.lost              [ <id>, ... ]
+ *
+ * `id` is the canonical wardrobe id ("tshirt0", "bra2", "skirt1");
+ * `grp` is a group name ('tshirt'|'bottomOuter'|'bra'|'panties'|'stockings');
+ * `cat` is a steal category. Aggregate slot state is *computed* now —
+ * read it with `callSetup(page, "setup.Wardrobe.state('tshirt')")` and
+ * drive it by setting an actual item, not a flat aggregate key.
+ */
+const wardrobeItemPath = (id) => `wardrobe.items.${id}`;
+
+function setWardrobeItem(page, id, state) { return setVar(page, wardrobeItemPath(id), state); }
+function getWardrobeItem(page, id) { return getVar(page, wardrobeItemPath(id)); }
+function setWardrobeRemember(page, grp, token) { return setVar(page, `wardrobe.remembered.${grp}`, token); }
+function getWardrobeRemember(page, grp) { return getVar(page, `wardrobe.remembered.${grp}`); }
+function setWardrobeStolen(page, cat, val) { return setVar(page, `wardrobe.stolen.${cat}`, val); }
+function getWardrobeStolen(page, cat) { return getVar(page, `wardrobe.stolen.${cat}`); }
+function getWardrobeLost(page) { return getVar(page, 'wardrobe.lost'); }
+function setWardrobeLost(page, ids) { return setVar(page, 'wardrobe.lost', ids); }
+
+/** Set many item states at once: setWardrobeItems(page, { tshirt0:'not worn', tshirt1:'worn' }). */
+function setWardrobeItems(page, map) {
+  return page.evaluate((m) => {
+    const items = SugarCube.State.variables.wardrobe.items;
+    for (const id in m) items[id] = m[id];
+  }, map);
+}
+
+/**
+ * Flip every currently-worn item to "not worn" (a naked baseline) without
+ * touching beauty — for coverage / exposure tests that build an outfit up
+ * from nothing. Leaves not-bought items and remember tokens untouched.
+ */
+function stripWardrobeBare(page) {
+  return page.evaluate(() => {
+    const items = SugarCube.State.variables.wardrobe.items;
+    for (const id in items) if (items[id] === 'worn') items[id] = 'not worn';
+  });
+}
+
+/**
+ * Drive a whole *slot* to worn / not-worn — the bundle-era replacement for
+ * the removed flat aggregate `$<slot>State`. Aggregate slot state is computed
+ * from the items now (`setup.Wardrobe.state(slot)`), so there's nothing flat
+ * to set; this mirrors what an equip/strip would leave behind:
+ *
+ *   - 'worn'      → clears any worn garment in the slot's group (one garment
+ *                   per group), then wears the slot default (slot-0, or tier-1
+ *                   for shorts/skirt which have no slot-0).
+ *   - 'not worn'  → flips any worn item in the slot back to not-worn, leaving
+ *                   not-bought tiers untouched.
+ *   - 'not bought'→ as 'not worn' but parks worn items at not-bought.
+ *
+ * `slot` is 'tshirt'|'bra'|'panties'|'jeans'|'shorts'|'skirt'|'stockings'.
+ * jeans/shorts/skirt share the bottomOuter group but only touch their own
+ * category, so setting one bottom worn clears the others.
+ */
+function setWardrobeSlot(page, slot, state) {
+  return page.evaluate(({ slot, state }) => {
+    const W = SugarCube.setup.Wardrobe;
+    const items = SugarCube.State.variables.wardrobe.items;
+    const grp = W.groupForSlot(slot);
+    const isBottom = (slot === 'jeans' || slot === 'shorts' || slot === 'skirt');
+    const slotItems = isBottom
+      ? grp.items.filter((it) => it.category === slot)
+      : grp.items;
+    if (state === 'worn') {
+      grp.items.forEach((it) => { if (items[it.id] === 'worn') items[it.id] = 'not worn'; });
+      const target = slotItems.find((it) => it.slot === 0) || slotItems[0];
+      items[target.id] = 'worn';
+    } else {
+      const parked = state === 'not bought' ? 'not bought' : 'not worn';
+      slotItems.forEach((it) => { if (items[it.id] === 'worn') items[it.id] = parked; });
+    }
+  }, { slot, state });
+}
+
+/** Read the computed aggregate slot state (replaces reads of `$<slot>State`). */
+function getWardrobeSlot(page, slot) {
+  return page.evaluate((s) => SugarCube.setup.Wardrobe.state(s), slot);
+}
+
 /**
  * Set $huntMode (0 = none, 2 = active, 3 = possessed, 4 = ended).
  * Auto-creates a stub $run for non-zero modes so tests can exercise
@@ -290,6 +381,18 @@ module.exports = {
   goToPassage,
   getVar,
   setVar,
+  setWardrobeItem,
+  getWardrobeItem,
+  setWardrobeItems,
+  setWardrobeRemember,
+  getWardrobeRemember,
+  setWardrobeStolen,
+  getWardrobeStolen,
+  getWardrobeLost,
+  setWardrobeLost,
+  stripWardrobeBare,
+  setWardrobeSlot,
+  getWardrobeSlot,
   setHuntMode,
   getHuntMode,
   callSetup,

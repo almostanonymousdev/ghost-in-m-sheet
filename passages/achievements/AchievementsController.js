@@ -270,8 +270,11 @@ setup.Achievements = setup.Achievements || {};
 				if (huntFlags && !huntFlags.spiritboxUsedThisRun) unlock('win.pacifist');
 
 				/* Empty Bag is the LOCKED_TOOLS modifier id (see
-				   passages/hunt/ModifiersController.js). */
-				if (setup.HuntController.hasModifier('locked_tools')) {
+				   passages/hunt/ModifiersController.js). Read the run's
+				   modifiers off ctx, not setup.HuntController.hasModifier --
+				   $run is already cleared by endHunt's end() before this
+				   settle emit fires. */
+				if ((ctx.modifiers || []).indexOf('locked_tools') !== -1) {
 					unlock('win.empty_bag');
 				}
 
@@ -286,15 +289,20 @@ setup.Achievements = setup.Achievements || {};
 
 				/* Carried the paw through a win without burning a wish.
 				   wishesLeft starts at 3 on resetHunt(); a value of 3 at
-				   hunt-end means no wish fired. isFound() being true
+				   hunt-end means no wish fired. monkeyPawCarried being true
 				   confirms the player is actually holding the paw rather
-				   than having never picked it up. */
-				if (setup.MonkeyPaw.isFound()
-					&& setup.MonkeyPaw.wishesLeft() === 3) {
+				   than having never picked it up. Both ride on ctx because
+				   endHunt's cleanupRunState resets the paw before this emit. */
+				if (ctx.monkeyPawCarried
+					&& ctx.monkeyPawWishesLeft === 3) {
 					unlock('win.no_wishes');
 				}
 
-				var realName = setup.Ghosts && setup.Ghosts.huntRealName && setup.Ghosts.huntRealName();
+				/* True identity off ctx, not setup.Ghosts.huntRealName() --
+				   that reads $run.ghostName, which end() has already nulled
+				   by the time this settle emit lands. The stale read is what
+				   left the bestiary (and win.mimic/knocks/faceoff) empty. */
+				var realName = ctx.ghostName;
 				if (realName === 'Mimic') unlock('win.mimic');
 				if (realName === 'Mare')  unlock('win.knocks');
 				/* Mimic face-off: rotateCount <= 1 means the disguise has

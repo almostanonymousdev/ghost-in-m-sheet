@@ -1,5 +1,5 @@
 const { test, expect } = require('./fixtures');
-const { setVar, getVar, callSetup } = require('./helpers');
+const { setVar, getVar, callSetup, setWardrobeRemember } = require('./helpers');
 
 test.describe('Gym Controller', () => {
   // --- Open hours ---
@@ -366,9 +366,9 @@ test.describe('Gym Controller', () => {
 
   test('hasSexyLingerieForTrainer1 requires matching lingerie set', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'rememberBottomStockings', 'stockings2');
-    await setVar(page, 'rememberTopUnder', 'bra2');
-    await setVar(page, 'rememberBottomUnder', 'panties2');
+    await setWardrobeRemember(page, 'stockings', 'stockings2');
+    await setWardrobeRemember(page, 'bra', 'bra2');
+    await setWardrobeRemember(page, 'panties', 'panties2');
 
     // act
     const result = await callSetup(page, 'setup.Gym.hasSexyLingerieForTrainer1()');
@@ -379,9 +379,9 @@ test.describe('Gym Controller', () => {
 
   test('hasSexyLingerieForTrainer1 false with wrong lingerie', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'rememberBottomStockings', 'stockings1');
-    await setVar(page, 'rememberTopUnder', 'bra1');
-    await setVar(page, 'rememberBottomUnder', 'panties1');
+    await setWardrobeRemember(page, 'stockings', 'stockings1');
+    await setWardrobeRemember(page, 'bra', 'bra1');
+    await setWardrobeRemember(page, 'panties', 'panties1');
 
     // act
     const result = await callSetup(page, 'setup.Gym.hasSexyLingerieForTrainer1()');

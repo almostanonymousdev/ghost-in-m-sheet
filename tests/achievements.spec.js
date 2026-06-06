@@ -589,7 +589,7 @@ test.describe('setup.Achievements', () => {
 			H.emit(H.Event.START, {});
 			SugarCube.State.variables.run = SugarCube.State.variables.run || {};
 			SugarCube.State.variables.run.modifiers = ['locked_tools'];
-			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true });
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true, modifiers: ['locked_tools'] });
 			return A.has('win.empty_bag');
 		});
 		expect(has).toBe(true);
@@ -602,7 +602,7 @@ test.describe('setup.Achievements', () => {
 			H.emit(H.Event.START, {});
 			SugarCube.State.variables.run = SugarCube.State.variables.run || {};
 			SugarCube.State.variables.run.modifiers = ['pheromones'];
-			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true });
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true, modifiers: ['pheromones'] });
 			return A.has('win.empty_bag');
 		});
 		expect(has).toBe(false);
@@ -650,7 +650,7 @@ test.describe('setup.Achievements', () => {
 			   huntHook + the first PassageDone roll; that's the floor,
 			   not "the face changed." */
 			H.emit(H.Event.MIMIC_ROTATE, { disguiseName: 'Spirit' });
-			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true });
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true, ghostName: 'Mimic' });
 			return A.has('win.faceoff');
 		});
 		expect(has).toBe(true);
@@ -664,7 +664,7 @@ test.describe('setup.Achievements', () => {
 			SugarCube.State.variables.run = { ghostName: 'Mimic', disguiseName: 'Mimic', evidence: [] };
 			H.emit(H.Event.MIMIC_ROTATE, { disguiseName: 'Spirit' });
 			H.emit(H.Event.MIMIC_ROTATE, { disguiseName: 'Shade' });
-			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true });
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true, ghostName: 'Mimic' });
 			return A.has('win.faceoff');
 		});
 		expect(has).toBe(false);
@@ -676,7 +676,7 @@ test.describe('setup.Achievements', () => {
 			const H = SugarCube.setup.Hunt;
 			H.emit(H.Event.START, {});
 			SugarCube.State.variables.run = { ghostName: 'Mare', disguiseName: 'Mare', evidence: [] };
-			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true });
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true, ghostName: 'Mare' });
 			return A.has('win.knocks');
 		});
 		expect(has).toBe(true);
@@ -688,7 +688,7 @@ test.describe('setup.Achievements', () => {
 			const H = SugarCube.setup.Hunt;
 			H.emit(H.Event.START, {});
 			SugarCube.State.variables.run = { ghostName: 'Phantom', disguiseName: 'Phantom', evidence: [] };
-			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true });
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true, ghostName: 'Phantom' });
 			return A.has('win.knocks');
 		});
 		expect(has).toBe(false);
@@ -701,7 +701,7 @@ test.describe('setup.Achievements', () => {
 			SugarCube.setup.MonkeyPaw.resetHunt();
 			SugarCube.setup.MonkeyPaw.markFound();
 			H.emit(H.Event.START, {});
-			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true });
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true, monkeyPawCarried: true, monkeyPawWishesLeft: 3 });
 			return A.has('win.no_wishes');
 		});
 		expect(has).toBe(true);
@@ -715,7 +715,7 @@ test.describe('setup.Achievements', () => {
 			SugarCube.setup.MonkeyPaw.markFound();
 			H.emit(H.Event.START, {});
 			SugarCube.State.variables.wishesCount = 2;
-			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true });
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true, monkeyPawCarried: true, monkeyPawWishesLeft: 2 });
 			return A.has('win.no_wishes');
 		});
 		expect(has).toBe(false);
@@ -727,7 +727,7 @@ test.describe('setup.Achievements', () => {
 			const H = SugarCube.setup.Hunt;
 			SugarCube.setup.MonkeyPaw.resetHunt();
 			H.emit(H.Event.START, {});
-			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true });
+			H.emit(H.Event.HUNT_END_GRACEFUL, { success: true, monkeyPawCarried: false, monkeyPawWishesLeft: 3 });
 			return A.has('win.no_wishes');
 		});
 		expect(has).toBe(false);
@@ -832,6 +832,83 @@ test.describe('setup.Achievements', () => {
 			const FR = SugarCube.setup.HuntController.FailureReason;
 			H.emit(H.Event.HUNT_END_GRACEFUL, { success: false, failureReason: FR.FLED });
 			return A.has('disc.cold_feet');
+		});
+		expect(has).toBe(false);
+	});
+
+	/* --- Hunt-end achievements survive the REAL teardown-then-emit ----
+	   Regression for the bestiary never populating. The direct-.emit()
+	   specs above keep $run live across the emit, which the real game
+	   never does: HuntController.endHunt() runs cleanupRunState() + end()
+	   (clearing $run, resetting the monkey-paw) BEFORE emitting the
+	   settle event. Any onHuntEnd check that read live hunt state instead
+	   of the ctx side-channel silently no-opped in play. These drive the
+	   real lifecycle via cheatStartHunt + endHunt(true) so a regression
+	   reading stale state fails here even though the isolated specs pass. */
+
+	test('bestiary entry unlocks on a real successful hunt (endHunt clears $run before the emit)', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			SugarCube.State.variables.achievements = {};
+			SugarCube.setup.Ghosts.cheatStartHunt('Banshee');
+			SugarCube.setup.HuntController.markSuccess();
+			SugarCube.setup.HuntController.endHunt(true);
+			return A.has('bestiary.banshee');
+		});
+		expect(has).toBe(true);
+	});
+
+	test('win.mimic / win.knocks key off ctx.ghostName, not the cleared $run', async () => {
+		const result = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			SugarCube.State.variables.achievements = {};
+			SugarCube.setup.Ghosts.cheatStartHunt('Mare');
+			SugarCube.setup.HuntController.markSuccess();
+			SugarCube.setup.HuntController.endHunt(true);
+			return { knocks: A.has('win.knocks'), bestiary: A.has('bestiary.mare') };
+		});
+		expect(result.knocks).toBe(true);
+		expect(result.bestiary).toBe(true);
+	});
+
+	test('win.empty_bag unlocks via the real lifecycle (modifiers from ctx, not the cleared $run)', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			SugarCube.State.variables.achievements = {};
+			SugarCube.setup.Ghosts.cheatStartHunt('Banshee');
+			SugarCube.State.variables.run.modifiers = ['locked_tools'];
+			SugarCube.setup.HuntController.markSuccess();
+			SugarCube.setup.HuntController.endHunt(true);
+			return A.has('win.empty_bag');
+		});
+		expect(has).toBe(true);
+	});
+
+	test('win.no_wishes unlocks via the real lifecycle (paw snapshotted before cleanup resets it)', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			SugarCube.State.variables.achievements = {};
+			SugarCube.setup.Ghosts.cheatStartHunt('Banshee');
+			SugarCube.setup.MonkeyPaw.resetHunt();
+			SugarCube.setup.MonkeyPaw.markFound();
+			SugarCube.setup.HuntController.markSuccess();
+			SugarCube.setup.HuntController.endHunt(true);
+			return A.has('win.no_wishes');
+		});
+		expect(has).toBe(true);
+	});
+
+	test('win.no_wishes does NOT unlock via the real lifecycle when a wish was spent', async () => {
+		const has = await page.evaluate(() => {
+			const A = SugarCube.setup.Achievements;
+			SugarCube.State.variables.achievements = {};
+			SugarCube.setup.Ghosts.cheatStartHunt('Banshee');
+			SugarCube.setup.MonkeyPaw.resetHunt();
+			SugarCube.setup.MonkeyPaw.markFound();
+			SugarCube.State.variables.wishesCount = 2;
+			SugarCube.setup.HuntController.markSuccess();
+			SugarCube.setup.HuntController.endHunt(true);
+			return A.has('win.no_wishes');
 		});
 		expect(has).toBe(false);
 	});

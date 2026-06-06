@@ -1,5 +1,7 @@
 const { test, expect } = require('../fixtures');
-const { setVar, getVar, callSetup, goToPassage } = require('../helpers');
+const { setVar, getVar, callSetup, goToPassage,
+        setWardrobeItem, setWardrobeRemember, setWardrobeStolen,
+        getWardrobeItem, getWardrobeRemember, getWardrobeStolen } = require('../helpers');
 const { setupHunt } = require('./e2e-helpers');
 
 /**
@@ -662,34 +664,31 @@ test.describe('Monkey Paw wishes', () => {
   // --- leave wish ------------------------------------------------
 
   /* Helper: park the wardrobe in a known fully-clothed shape so the
-     leave widget's steal cascade has something to strip. The Wardrobe
-     defaults already worn-mark every slot via GameInit, but the
-     rememberTopOuter / rememberBottomOuter keys are NOT seeded -- the
-     home wardrobe flow normally sets those when the player equips
-     anything. Steal* helpers consult those keys, so we seed defaults
-     here. */
+     leave widget's steal cascade has something to strip. A fresh bundle
+     already worn-marks each group's slot-0 item; here the MC has a
+     tier-1 bra/panties equipped, so clear the slot-0 default in those
+     two groups first and wear the tier-1 piece instead. stealGarment
+     strips whatever each group's wornItem() reports and rewrites the
+     remember token to "no<id>", so the worn-state is what drives the
+     theft -- the remember tokens just keep the dressed state honest. */
   async function seedFullOutfit(page) {
-    await page.evaluate(() => {
-      const V = SugarCube.State.variables;
-      const CS = SugarCube.setup.ClothingState;
-      V.tshirtState  = CS.WORN; V.tshirtState0  = CS.WORN;
-      V.braState     = CS.WORN; V.braState1     = CS.WORN;
-      V.jeansState   = CS.WORN; V.jeansState0   = CS.WORN;
-      V.pantiesState = CS.WORN; V.pantiesState1 = CS.WORN;
-      /* Each WARDROBE_GROUP uses its own rememberVar; stealWornInGroup
-         consults that var to know which numbered slot to flip. */
-      V.rememberTopOuter    = "tshirt0";  /* tshirt group */
-      V.rememberTopUnder    = "bra1";     /* bra group */
-      V.rememberBottomOuter = "jeans0";   /* bottomOuter (jeans/shorts/skirt) */
-      V.rememberBottomUnder = "panties1"; /* panties group */
-      V.isShirtStolen  = false;
-      V.isBraStolen    = false;
-      V.isJeansStolen  = false;
-      V.isShortsStolen = false;
-      V.isSkirtStolen  = false;
-      V.isBottomStolen = false;
-      V.isPantiesStolen = false;
-    });
+    await setWardrobeItem(page, 'tshirt0', 'worn');
+    await setWardrobeItem(page, 'jeans0', 'worn');
+    await setWardrobeItem(page, 'bra0', 'not worn');
+    await setWardrobeItem(page, 'bra1', 'worn');
+    await setWardrobeItem(page, 'panties0', 'not worn');
+    await setWardrobeItem(page, 'panties1', 'worn');
+    await setWardrobeRemember(page, 'tshirt', 'tshirt0');
+    await setWardrobeRemember(page, 'bra', 'bra1');
+    await setWardrobeRemember(page, 'bottomOuter', 'jeans0');
+    await setWardrobeRemember(page, 'panties', 'panties1');
+    await setWardrobeStolen(page, 'shirt', false);
+    await setWardrobeStolen(page, 'bra', false);
+    await setWardrobeStolen(page, 'jeans', false);
+    await setWardrobeStolen(page, 'shorts', false);
+    await setWardrobeStolen(page, 'skirt', false);
+    await setWardrobeStolen(page, 'bottom', false);
+    await setWardrobeStolen(page, 'panties', false);
   }
 
   test('leave tier 1: clothes-stolen flag set, no cursed item, no banned house, hunt stays active', async ({ game: page }) => {
@@ -790,21 +789,22 @@ test.describe('Monkey Paw wishes', () => {
       $div.wiki('<<leave>>');
     });
 
-    expect(await getVar(page, 'isShirtStolen')).toBe(true);
-    expect(await getVar(page, 'isBraStolen')).toBe(true);
-    expect(await getVar(page, 'isJeansStolen')).toBe(true);
-    expect(await getVar(page, 'isBottomStolen')).toBe(true);
-    expect(await getVar(page, 'isPantiesStolen')).toBe(true);
-    /* Per-slot state vars flip to "not worn". (The aggregate
-       $<slot>State is refreshed lazily by Wardrobe.refreshAggregateStates
-       on re-entry; the stolen flags are the canonical post-theft signal.) */
-    expect(await getVar(page, 'tshirtState0')).toBe('not worn');
-    expect(await getVar(page, 'braState1')).toBe('not worn');
-    expect(await getVar(page, 'jeansState0')).toBe('not worn');
-    expect(await getVar(page, 'pantiesState1')).toBe('not worn');
-    /* remember* keys gain the "no" prefix. */
-    expect(await getVar(page, 'rememberTopOuter')).toBe('notshirt0');
-    expect(await getVar(page, 'rememberBottomOuter')).toBe('nojeans0');
+    expect(await getWardrobeStolen(page, 'shirt')).toBe(true);
+    expect(await getWardrobeStolen(page, 'bra')).toBe(true);
+    expect(await getWardrobeStolen(page, 'jeans')).toBe(true);
+    expect(await getWardrobeStolen(page, 'bottom')).toBe(true);
+    expect(await getWardrobeStolen(page, 'panties')).toBe(true);
+    /* Each stripped item flips to "not worn". The slot aggregate is
+       computed from items now (setup.Wardrobe.state(slot)), so there's
+       no stored value to refresh -- the items + stolen flags are the
+       canonical post-theft signal. */
+    expect(await getWardrobeItem(page, 'tshirt0')).toBe('not worn');
+    expect(await getWardrobeItem(page, 'bra1')).toBe('not worn');
+    expect(await getWardrobeItem(page, 'jeans0')).toBe('not worn');
+    expect(await getWardrobeItem(page, 'panties1')).toBe('not worn');
+    /* remember tokens gain the "no" prefix. */
+    expect(await getWardrobeRemember(page, 'tshirt')).toBe('notshirt0');
+    expect(await getWardrobeRemember(page, 'bottomOuter')).toBe('nojeans0');
   });
 
   test('leave widget tier 2: strips outfit AND forces a cursed home item', async ({ game: page }) => {
@@ -821,11 +821,11 @@ test.describe('Monkey Paw wishes', () => {
       $div.wiki('<<leave>>');
     });
 
-    expect(await getVar(page, 'isShirtStolen')).toBe(true);
-    expect(await getVar(page, 'isBraStolen')).toBe(true);
-    expect(await getVar(page, 'isJeansStolen')).toBe(true);
-    expect(await getVar(page, 'isBottomStolen')).toBe(true);
-    expect(await getVar(page, 'isPantiesStolen')).toBe(true);
+    expect(await getWardrobeStolen(page, 'shirt')).toBe(true);
+    expect(await getWardrobeStolen(page, 'bra')).toBe(true);
+    expect(await getWardrobeStolen(page, 'jeans')).toBe(true);
+    expect(await getWardrobeStolen(page, 'bottom')).toBe(true);
+    expect(await getWardrobeStolen(page, 'panties')).toBe(true);
     expect(['tv', 'pc', 'bed', 'shower', 'bath']).toContain(await getVar(page, 'cursedHomeItem'));
     expect(await getVar(page, 'cursedHomeItemActive')).toBe(true);
   });
@@ -844,10 +844,10 @@ test.describe('Monkey Paw wishes', () => {
       $div.wiki('<<leave>>');
     });
 
-    expect(await getVar(page, 'isShirtStolen')).toBe(true);
-    expect(await getVar(page, 'isBraStolen')).toBe(true);
-    expect(await getVar(page, 'isJeansStolen')).toBe(true);
-    expect(await getVar(page, 'isPantiesStolen')).toBe(true);
+    expect(await getWardrobeStolen(page, 'shirt')).toBe(true);
+    expect(await getWardrobeStolen(page, 'bra')).toBe(true);
+    expect(await getWardrobeStolen(page, 'jeans')).toBe(true);
+    expect(await getWardrobeStolen(page, 'panties')).toBe(true);
     expect(['tv', 'pc', 'bed', 'shower', 'bath']).toContain(await getVar(page, 'cursedHomeItem'));
     expect(await getVar(page, 'cursedHomeItemActive')).toBe(true);
     /* The wish ends the hunt regardless of tier. */
@@ -862,12 +862,8 @@ test.describe('Monkey Paw wishes', () => {
     await setupHunt(page, 'Shade');
     await primeWish(page, { wishesCount: 3 });
     await seedFullOutfit(page);
-    await page.evaluate(() => {
-      const V = SugarCube.State.variables;
-      const CS = SugarCube.setup.ClothingState;
-      V.tshirtState = CS.NOT_WORN; V.tshirtState0 = CS.NOT_WORN;
-      V.jeansState  = CS.NOT_WORN; V.jeansState0  = CS.NOT_WORN;
-    });
+    await setWardrobeItem(page, 'tshirt0', 'not worn');
+    await setWardrobeItem(page, 'jeans0', 'not worn');
 
     await page.evaluate(() => {
       const $div = jQuery('<div></div>');
@@ -875,11 +871,11 @@ test.describe('Monkey Paw wishes', () => {
     });
 
     /* Already-bare slots stay non-stolen. */
-    expect(await getVar(page, 'isShirtStolen')).toBe(false);
-    expect(await getVar(page, 'isJeansStolen')).toBe(false);
+    expect(await getWardrobeStolen(page, 'shirt')).toBe(false);
+    expect(await getWardrobeStolen(page, 'jeans')).toBe(false);
     /* Slots that were still worn get cleaned out. */
-    expect(await getVar(page, 'isBraStolen')).toBe(true);
-    expect(await getVar(page, 'isPantiesStolen')).toBe(true);
+    expect(await getWardrobeStolen(page, 'bra')).toBe(true);
+    expect(await getWardrobeStolen(page, 'panties')).toBe(true);
   });
 
   test('byInput matches case-insensitively with whitespace trim', async ({ game: page }) => {

@@ -117,13 +117,7 @@ setup.Game = (function () {
 		s.cursedHomeItemActive = false;
 
 		// --- Starting wardrobe --------------------------------
-		var CS = setup.ClothingState;
-		s.jeansState = CS.WORN;
-		s.tshirtState = CS.WORN;
-		s.pantiesState = CS.WORN;
-		s.braState = CS.WORN;
-		s.skirtState = CS.NOT_BOUGHT;
-		s.lostClothing = [];
+		setup.initWardrobe(s);
 
 		// --- Hunt-room state objects --------------------------
 		['kitchen', 'bathroom', 'bedroom', 'hallway', 'livingroom'].forEach(function (id) {

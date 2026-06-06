@@ -1,5 +1,5 @@
 const { test, expect } = require('../fixtures');
-const { setVar, getVar, callSetup, goToPassage, resetGame } = require('../helpers');
+const { setVar, getVar, callSetup, goToPassage, resetGame, setWardrobeSlot } = require('../helpers');
 const { expectCleanPassage, setupHunt } = require('./e2e-helpers');
 
 test.describe('Possession — resistance meter', () => {
@@ -122,8 +122,8 @@ test.describe('Possession — Mimic ghost rotation', () => {
 
 test.describe('Possession — Hot flags', () => {
   test('pantiesState / braState read underlying clothing flags', async ({ game: page }) => {
-    await setVar(page, 'pantiesState', 'worn');
-    await setVar(page, 'braState', 'not worn');
+    await setWardrobeSlot(page, 'panties', 'worn');
+    await setWardrobeSlot(page, 'bra', 'not worn');
     expect(await callSetup(page, 'setup.Posession.pantiesState()')).toBe('worn');
     expect(await callSetup(page, 'setup.Posession.braState()')).toBe('not worn');
   });
@@ -149,8 +149,8 @@ test.describe('Possession — Hot flags', () => {
         await setupHunt(page, 'Shade');
         await setVar(page, 'hotAct', 1);
         await setVar(page, 'addtemptorealhouse', 1);
-        await setVar(page, 'pantiesState', p);
-        await setVar(page, 'braState', b);
+        await setWardrobeSlot(page, 'panties', p);
+        await setWardrobeSlot(page, 'bra', b);
         await goToPassage(page, 'Hot1');
         await expectCleanPassage(page);
         expect(await getVar(page, 'hotAct')).toBe(0);
