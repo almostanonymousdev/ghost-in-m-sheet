@@ -1,6 +1,6 @@
 :: WebcamShow [nobr] {"position":"400,1100","size":"100,100"}
 <<image "scenes/webcam/workplace.jpg" { width: "100%" }>>
-@@.mc-speech; Looks like I'm ready for my webcam show. What should I do today?@@<br>
+<<mc>>Looks like I'm ready for my webcam show. What should I do today?<</mc>><br>
 Subscribers: <<= setup.Home.subscribers()>><br>
 
 <<if setup.Home.webcamShowAvailable()>>
@@ -41,7 +41,7 @@ Subscribers: <<= setup.Home.subscribers()>><br>
 		<br></span>
 	<</if>>
 <<else>>
-	@@.mc-speech; Enough for today.@@<br>
+	<<mc>>Enough for today.<</mc>><br>
 <</if>>
 
 <<run setup.Home.initWebcamCounters()>>

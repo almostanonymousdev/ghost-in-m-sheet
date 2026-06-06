@@ -1,14 +1,14 @@
 :: Internet [nobr] {"position":"400,800","size":"100,100"}
 <<image "ui/img/browser-search.png" { width: "100%" }>><br>
-@@.mc-speech; What should I look for on the internet?@@<br>
+<<mc>>What should I look for on the internet?<</mc>><br>
 <br>
 <<include "FindGhostInfo">>
 <br>
 
 <<if setup.SpecialEvent.mareEventStart() eq 2 or setup.SpecialEvent.mareEventStart() eq 3>>
 	<br><<linkreplace "Feeling unwell after sleep">>
-		@@.mc-thoughts; You find many articles about bad habits, congenital diseases, all stages of cancer, etc. But that's not what you need. After some time, something more interesting appears. Someone suggests that you should check how you sleep. It might be a good idea to buy a video camera and record your sleep.@@<br>
-		@@.mc-speech; This sounds strange, what could be happening to me during sleep? Although, a camera might come in handy in the future. So, I need to go to the store and buy a video camera.@@
+		<<thought>>You find many articles about bad habits, congenital diseases, all stages of cancer, etc. But that's not what you need. After some time, something more interesting appears. Someone suggests that you should check how you sleep. It might be a good idea to buy a video camera and record your sleep.<</thought>><br>
+		<<mc>>This sounds strange, what could be happening to me during sleep? Although, a camera might come in handy in the future. So, I need to go to the store and buy a video camera.<</mc>>
 		<<run setup.SpecialEvent.setMareEventStart(3)>>
 		<<addTime 30>>
 	<</linkreplace>>

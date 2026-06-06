@@ -40,11 +40,8 @@ setup.Migrations = (function () {
 			setup.Rooms.seed(id);
 		});
 
-		if (setup.initWardrobe) { setup.initWardrobe(s); }
 
 		s.prowlActivated       = false;
-		s.rememberTopOuter     = 'tshirt0';
-		s.rememberBottomOuter  = 'jeans0';
 		s.prowlTimeRemain      = 60;
 		s.prowlActivationTime  = 0;
 		s.elapsedTimeProwl     = 0;
@@ -58,14 +55,18 @@ setup.Migrations = (function () {
 		s.update22 = 0.4;
 	}
 
-	/* Pre-27/07 saves: stockings/foot piercings hadn't been added.
-	   Mark them NOT_BOUGHT so the shop renders correctly. */
+	/* Pre-27/07 saves: stockings hadn't been added. Ensure the three
+	   tiers read NOT_BOUGHT in the $wardrobe bundle so the shop renders
+	   them. (Foot piercings were dropped entirely -- nothing to seed.) */
 	function migrateStockingsFootBought() {
 		var s = sv();
-		var keys = ['stockingsState1', 'stockingsState2', 'stockingsState3', 'footState1', 'footState2', 'footState3'];
-		keys.forEach(function (k) {
-			s[k] = setup.ClothingState.NOT_BOUGHT;
-		});
+		if (s.wardrobe && s.wardrobe.items) {
+			['stockings1', 'stockings2', 'stockings3'].forEach(function (id) {
+				if (s.wardrobe.items[id] === undefined) {
+					s.wardrobe.items[id] = setup.ClothingState.NOT_BOUGHT;
+				}
+			});
+		}
 		s.update2707 = 1;
 	}
 
@@ -103,10 +104,10 @@ setup.Migrations = (function () {
 
 	function ensureUnderwearMemory() {
 		var s = sv();
-		if (s.rememberTopUnder === undefined || s.rememberBottomUnder === undefined) {
-			s.rememberTopUnder    = 'bra0';
-			s.rememberBottomUnder = 'panties0';
-		}
+		if (!s.wardrobe || !s.wardrobe.remembered) { return; }
+		var r = s.wardrobe.remembered;
+		if (r.bra === undefined || r.bra === null) { r.bra = 'bra0'; }
+		if (r.panties === undefined || r.panties === null) { r.panties = 'panties0'; }
 	}
 
 	var PASSAGE_READY_ZERO_DEFAULTS = [

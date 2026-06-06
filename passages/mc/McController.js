@@ -113,7 +113,7 @@ setup.Mc = (function () {
 			if (Array.isArray(setup.WARDROBE_GROUPS)) {
 				setup.WARDROBE_GROUPS.forEach(function (grp) {
 					(grp.items || []).forEach(function (item) {
-						if (item.beauty && s[item.var] === WORN) {
+						if (item.beauty && item.isWorn()) {
 							total += item.beauty;
 						}
 					});

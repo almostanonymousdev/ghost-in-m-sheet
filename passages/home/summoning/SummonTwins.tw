@@ -1,23 +1,23 @@
 :: SummonTwins [nobr] {"position":"700,2900","size":"100,100"}
 <<image "mechanics/exorcism/thetwins.jpg" "displayCentredImgs">>
-@@.mc-speech; WHERE AM I?@@<br>
-@@.mc-thoughts; You see two dark figures. They've pulled out their cocks, already hard with desire, and they approach you.@@<br>
+<<mc>>WHERE AM I?<</mc>><br>
+<<thought>>You see two dark figures. They've pulled out their cocks, already hard with desire, and they approach you.<</thought>><br>
 @@.mc-speech; Oh~ I guess they're going@@
 <<linkappend "@@.usebtn; to fuck me...@@">>
 	<span id ="summonTwins">
 	<<video "mechanics/exorcism/thetwins1.mp4" { loop: false }>></span>
 	<<set _videoIndex to 1>>
-	@@.mc-thoughts; And it really happens. You don't even try to resist - one enters your pussy, the other your mouth, both sliding in easily as if you were made for them.@@
+	<<thought>>And it really happens. You don't even try to resist - one enters your pussy, the other your mouth, both sliding in easily as if you were made for them.<</thought>>
 	<<link "@@.usebtn; They fuck you@@">>
 		<<set _videoIndex to (_videoIndex) % 2 +1>>
 		<<replace "#summonTwins">>
 			<<video "mechanics/exorcism/thetwins" + _videoIndex+`.mp4`>>
 		<</replace>>
 	<</link>>
-	@@.mc-thoughts; , one going deeper, making you gasp with his size, the other making @@
+	<<thought>>, one going deeper, making you gasp with his size, the other making<</thought>>
 	<<linkappend "@@.usebtn; you suck him greedily@@">>
 		<<video "mechanics/exorcism/thetwins3.mp4">>
-		@@.mc-thoughts; You feel them picking up the pace, their movements becoming more urgent, until they come on your face, covering you with warm cum.@@<br><br>
+		<<thought>>You feel them picking up the pace, their movements becoming more urgent, until they come on your face, covering you with warm cum.<</thought>><br><br>
 		@@.backbtn; [[Sleep|SleepTwins][setup.Home.setSummonText(1); setup.Ghosts.clearTwinsEvent()]]@@<br>
 	<</linkappend>>
 <</linkappend>>

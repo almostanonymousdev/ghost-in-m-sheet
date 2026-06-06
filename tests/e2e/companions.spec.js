@@ -1,5 +1,5 @@
 const { test, expect } = require('../fixtures');
-const { setVar, getVar, setHuntMode, getHuntMode, callSetup, goToPassage, openGame } = require('../helpers');
+const { setVar, getVar, setHuntMode, getHuntMode, callSetup, goToPassage, openGame, setWardrobeSlot } = require('../helpers');
 const { expectCleanPassage, setupHunt } = require('./e2e-helpers');
 
 const COMPANIONS = [
@@ -172,11 +172,11 @@ test.describe('Companions — hunt-side events', () => {
   });
 
   test('canWalkHomeWithCompanion requires any bottom worn', async ({ game: page }) => {
-    await setVar(page, 'jeansState', 'not worn');
-    await setVar(page, 'skirtState', 'not bought');
-    await setVar(page, 'shortsState', 'not bought');
+    await setWardrobeSlot(page, 'jeans', 'not worn');
+    await setWardrobeSlot(page, 'skirt', 'not bought');
+    await setWardrobeSlot(page, 'shorts', 'not bought');
     expect(await callSetup(page, 'setup.Companion.canWalkHomeWithCompanion()')).toBe(false);
-    await setVar(page, 'shortsState', 'worn');
+    await setWardrobeSlot(page, 'shorts', 'worn');
     expect(await callSetup(page, 'setup.Companion.canWalkHomeWithCompanion()')).toBe(true);
   });
 

@@ -154,23 +154,22 @@ test.describe('CompanyRescue — ambulance rescue branch', () => {
   test('CompanyRescueDischarge heals, takes every worn garment, and ends the hunt', async () => {
     await startActiveHunt();
     /* Dress her through the real equip flow (slot-1 paid pieces) so the
-       rememberVar markers line up -- loseAllStolen only records lost,
-       buyback-eligible pieces when a "no<key>" marker survives the steal,
+       remember markers line up -- loseAllStolen only records lost,
+       buyback-eligible pieces when a "no<id>" marker survives the steal,
        and only slot != 0 items are eligible. */
     await page.evaluate(() => {
       const W = SugarCube.setup.Wardrobe;
       const V = SugarCube.State.variables;
-      function equipByKey(slotName, key) {
+      function equipById(slotName, id) {
         const grp = W.groupForSlot(slotName);
-        const item = grp.items.find((i) => i.key === key);
+        const item = grp.items.find((i) => i.id === id);
         W.equip(grp, item);
       }
-      equipByKey('tshirt', 'tshirt1');
-      equipByKey('bra', 'bra1');
-      equipByKey('panties', 'panties1');
-      equipByKey('jeans', 'jeans1');
-      W.refreshAggregateStates();
-      V.lostClothing = [];
+      equipById('tshirt', 'tshirt1');
+      equipById('bra', 'bra1');
+      equipById('panties', 'panties1');
+      equipById('jeans', 'jeans1');
+      V.wardrobe.lost = [];
       SugarCube.setup.Mc.setPenalized(true);
       SugarCube.setup.Mc.setLust(40);
       SugarCube.setup.Mc.setSanity(10);
@@ -197,9 +196,9 @@ test.describe('CompanyRescue — ambulance rescue branch', () => {
     // Stolen flags cleared, and the four worn pieces are recorded as lost
     // (treated as left in the house) for the Bedroom buyback.
     expect(await callSetup(page, 'setup.Wardrobe.hasClothesStolen()')).toBe(false);
-    const lost = await getVar(page, 'lostClothing');
+    const lost = await getVar(page, 'wardrobe.lost');
     expect(lost).toEqual(expect.arrayContaining(
-      ['tshirtState1', 'braState1', 'pantiesState1', 'jeansState1']
+      ['tshirt1', 'bra1', 'panties1', 'jeans1']
     ));
     // Hunt fully closed.
     expect(await getVar(page, 'huntMode')).toBe(await callSetup(page, 'setup.HuntController.HuntMode.NONE'));

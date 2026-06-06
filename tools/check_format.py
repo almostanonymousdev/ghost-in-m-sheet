@@ -33,6 +33,12 @@ from lib_repo import passages_dir, repo_root
 PROJECT_DIR = repo_root()
 PASSAGES_DIR = passages_dir()
 
+# Inline dialogue wrappers (passages/gui/DialogueController.js). These are
+# container macros, but unlike <<if>>/<<link>> they are meant to wrap a single
+# line of prose on ONE line (<<mc>>Hello.<</mc>>), so they are intentionally
+# exempt from the "content before a closing macro" rule (TW004) below.
+DIALOGUE_MACROS = {"mc", "say", "narration", "thought", "vocal"}
+
 # Container macros that require a closing tag.  Extend as the project grows.
 CONTAINER_MACROS = {
     "if", "for", "switch", "link", "linkappend", "linkreplace",
@@ -42,7 +48,7 @@ CONTAINER_MACROS = {
     "createplaylist", "type",
     # project-specific containers (from twee-config)
     "newmeter", "roomShell", "hovertip", "deliveryEventChoose",
-}
+} | DIALOGUE_MACROS
 
 # Tags where embedded <style> / <script> blocks live — skip indentation
 # checks inside them because CSS/JS follow their own rules.
@@ -67,7 +73,23 @@ MULTI_CLOSE = re.compile(r"<</\w+>>\s*<</\w+>>")
 # e.g.  </video><</if>>   or   some text<</if>>
 # Excludes lines that are *only* closing macros or only whitespace + closers.
 CONTENT_THEN_CLOSE = re.compile(
-    r"(?P<before>.+?)<</\w+>>"
+    r"(?P<before>.+?)<</(?P<name>\w+)>>"
+)
+
+# Balanced inline dialogue pair on one line, e.g. <<mc>>Hello.<</mc>> or
+# <<say "Jerry">>Hi.<</say>>. These are stripped before the content-then-close
+# check so a one-line spoken line doesn't read as "content before a closer".
+INLINE_DIALOGUE_PAIR = re.compile(
+    r"<<(" + "|".join(sorted(DIALOGUE_MACROS)) + r")\b[^>]*>>.*?<</\1>>"
+)
+
+# A dangling dialogue closer (the end of a multi-line spoken line / thought,
+# e.g. "...and that was that.<</thought>>"). Prose hugging the closer is the
+# intended form for these prose-wrapping macros, so they are exempt from TW004 --
+# but stripping only the closer (not the prose before it) keeps a genuine
+# control-flow closer sharing the line still subject to the rule.
+DIALOGUE_CLOSE = re.compile(
+    r"<</(?:" + "|".join(sorted(DIALOGUE_MACROS)) + r")>>"
 )
 
 # Space before pipe in a link: [[text |Target]]
@@ -166,14 +188,19 @@ def check_multi_close(line: str, lineno: int) -> list[Warning]:
 
 
 def check_content_then_close(line: str, lineno: int) -> list[Warning]:
-    m = CONTENT_THEN_CLOSE.search(line)
+    # Inline dialogue wrappers are meant to sit on one line with their prose;
+    # remove balanced inline pairs first so they don't trip the rule, while a
+    # genuine stray closer left on the line still warns.
+    cleaned = INLINE_DIALOGUE_PAIR.sub("", line)
+    cleaned = DIALOGUE_CLOSE.sub("", cleaned)
+    m = CONTENT_THEN_CLOSE.search(cleaned)
     if not m:
         return []
     before = m.group("before").strip()
     if is_only_macros(before) or before == "":
         return []
-    # Point to the closing macro
-    close_start = line.find("<</", m.start())
+    # Point to the offending closing macro in the original line.
+    close_start = line.find("<</" + m.group("name") + ">>")
     col = (close_start + 1) if close_start >= 0 else 1
     return [Warning(lineno, col, "TW004", "closing macro on same line as content")]
 

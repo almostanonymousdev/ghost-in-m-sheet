@@ -1,5 +1,5 @@
 const { test, expect } = require('./fixtures');
-const { getVar, getHuntMode, callSetup } = require('./helpers');
+const { getVar, getHuntMode, callSetup, getWardrobeSlot } = require('./helpers');
 
 test.describe('Game Initialization (StoryInit)', () => {
   // --- MC defaults ---
@@ -26,11 +26,11 @@ test.describe('Game Initialization (StoryInit)', () => {
 
   test('clothing states are initialized correctly', async ({ game: page }) => {
     // act
-    const jeans = await getVar(page, 'jeansState');
-    const tshirt = await getVar(page, 'tshirtState');
-    const panties = await getVar(page, 'pantiesState');
-    const bra = await getVar(page, 'braState');
-    const skirt = await getVar(page, 'skirtState');
+    const jeans = await getWardrobeSlot(page, 'jeans');
+    const tshirt = await getWardrobeSlot(page, 'tshirt');
+    const panties = await getWardrobeSlot(page, 'panties');
+    const bra = await getWardrobeSlot(page, 'bra');
+    const skirt = await getWardrobeSlot(page, 'skirt');
 
     // assert
     expect(jeans).toBe('worn');

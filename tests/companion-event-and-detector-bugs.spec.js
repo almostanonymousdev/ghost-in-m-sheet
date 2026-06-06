@@ -1,5 +1,5 @@
 const { test, expect } = require('./fixtures');
-const { goToPassage, getVar, callSetup } = require('./helpers');
+const { goToPassage, getVar, callSetup, setWardrobeStolen } = require('./helpers');
 
 /* Regression coverage for bugs reported on top of the hunt-unification
  * refactor (commit e7b844b0):
@@ -97,10 +97,9 @@ test.describe('Companion event + detector regressions', () => {
        detector must stop highlighting that furniture because the pickup
        gate is closed -- otherwise the player keeps clicking and sees
        "nothing of note". */
-    const stash = await game.evaluate(() => {
-      SugarCube.State.variables.isPantiesStolen = true;
-      return SugarCube.setup.HuntController.stashStolenClothes('panties');
-    });
+    await setWardrobeStolen(game, 'panties', true);
+    const stash = await game.evaluate(() =>
+      SugarCube.setup.HuntController.stashStolenClothes('panties'));
     expect(stash).not.toBeNull();
     /* Confirm the highlight is on while the flag is set. */
     await game.evaluate(rid => SugarCube.setup.HuntController.setCurrentRoom(rid), stash.roomId);
@@ -109,7 +108,7 @@ test.describe('Companion event + detector regressions', () => {
     expect(kinds).toContain('clothesStolenPanties');
 
     /* Clear the per-piece flag. */
-    await game.evaluate(() => { SugarCube.State.variables.isPantiesStolen = false; });
+    await setWardrobeStolen(game, 'panties', false);
     kinds = await game.evaluate(s =>
       SugarCube.setup.HuntController.lootKindsAt(s.roomId, s.suffix), stash);
     expect(kinds).not.toContain('clothesStolenPanties');
@@ -130,10 +129,9 @@ test.describe('Companion event + detector regressions', () => {
     await game.evaluate(() => {
       const W = SugarCube.setup.Wardrobe;
       const groups = SugarCube.setup.WARDROBE_GROUPS;
-      function eq(groupName, key) {
+      function eq(groupName, id) {
         const g = groups.find(x => x.name === groupName);
-        const item = g.items.find(x => x.key === key);
-        SugarCube.State.variables[item.var] = SugarCube.setup.ClothingState.NOT_WORN;
+        const item = g.items.find(x => x.id === id);
         W.equip(g, item);
       }
       /* Buy + wear each tier-1 slot. */
@@ -146,27 +144,26 @@ test.describe('Companion event + detector regressions', () => {
     expect(baseline).toBeGreaterThan(0);
 
     /* Simulate a full strip event: each slot stolen, then each slot
-       restored. The remembered key for each group flips to "no<key>"
-       and back during the round trip. */
+       restored. The remembered token for each group flips to "no<id>"
+       and back during the round trip. stealGarment/restoreGarment own
+       the stolen-flag bookkeeping (including bottom's sub-category
+       flags), so the test no longer pokes the flags by hand. */
     await game.evaluate(() => {
       const W = SugarCube.setup.Wardrobe;
-      W.stealWornInGroup('tshirt',  'tshirtState',  'isShirtStolen');
-      W.stealBottomOuter();
-      SugarCube.State.variables.isBottomStolen = true;
-      W.stealWornInGroup('panties', 'pantiesState', 'isPantiesStolen');
-      W.stealWornInGroup('bra',     'braState',     'isBraStolen');
+      W.stealGarment('shirt');
+      W.stealGarment('bottom');
+      W.stealGarment('panties');
+      W.stealGarment('bra');
     });
     const stripped = await callSetup(game, 'setup.Mc.beauty()');
     expect(stripped).toBeLessThan(baseline);
 
     await game.evaluate(() => {
       const W = SugarCube.setup.Wardrobe;
-      const V = SugarCube.State.variables;
-      W.restoreStolenInGroup('panties', 'isPantiesStolen');
-      W.restoreStolenInGroup('bottomOuter');
-      V.isBottomStolen = false; V.isJeansStolen = false; V.isShortsStolen = false; V.isSkirtStolen = false;
-      W.restoreStolenInGroup('tshirt', 'isShirtStolen');
-      W.restoreStolenInGroup('bra',    'isBraStolen');
+      W.restoreGarment('panties');
+      W.restoreGarment('bottom');
+      W.restoreGarment('shirt');
+      W.restoreGarment('bra');
     });
     const restored = await callSetup(game, 'setup.Mc.beauty()');
     expect(restored).toBe(baseline);
@@ -177,13 +174,13 @@ test.describe('Companion event + detector regressions', () => {
     await game.evaluate(() => SugarCube.setup.HuntController.startHunt({
       seed: 31, floorPlanOpts: { roomCount: 5 }
     }));
-    await game.evaluate(() => { SugarCube.State.variables.isPantiesStolen = true; });
+    await setWardrobeStolen(game, 'panties', true);
     const stash = await game.evaluate(() => SugarCube.setup.HuntController.stashStolenClothes('panties'));
     expect(stash).not.toBeNull();
 
     /* Land on HuntOverManual: the bug was the flag flipping to 0 on
        render, killing FurnitureSearch's gate before the player chose. */
     await goToPassage(game, 'HuntOverManual');
-    expect(await getVar(game, 'isPantiesStolen')).toBe(true);
+    expect(await getVar(game, 'wardrobe.stolen.panties')).toBe(true);
   });
 });

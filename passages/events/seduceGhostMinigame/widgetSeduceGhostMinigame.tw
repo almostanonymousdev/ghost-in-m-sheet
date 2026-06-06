@@ -5,7 +5,7 @@
    "Not enough energy" line instead. */
 <<widget "energyGate" container>>
 	<<if setup.Mc.energy() lt setup.SeduceGhostMinigame.actionEnergyCost()>>
-		@@.mc-thoughts; Not enough energy@@
+		<<thought>>Not enough energy<</thought>>
 	<<else>>
 		<<set _body to _contents>>
 		<<capture _body>>
@@ -53,7 +53,7 @@
 
 	<<elseif setup.SeduceGhostMinigame.hasSubdue()>>
 		<<if setup.SeduceGhostMinigame.resistCostsEnergy() and setup.Mc.energy() lt setup.SeduceGhostMinigame.actionEnergyCost()>>
-			@@.mc-thoughts; Not enough energy@@
+			<<thought>>Not enough energy<</thought>>
 		<<else>>
 			<<link "Resist" "SeduceGhostMinigame">>
 				<<run setup.SeduceGhostMinigame.resist()>>
@@ -79,293 +79,300 @@
 
 <<widget "seduceGhostMinigameText">>
 	<<if setup.Events.minigameVideo() eq "seduceFailed">>
-		@@.mc-thoughts;You try to attract the ghost, stripping down and showing off your juicy pussy and tight tits, taking increasingly lewd poses.@@<br>
-		@@.mc-speech;Damn, wasted my time, this fucker isn't showing up!@@<br>
+		<<thought>>You try to attract the ghost, stripping down and showing off your juicy pussy and tight tits, taking increasingly lewd poses.<</thought>><br>
+		<<mc>>Damn, wasted my time, this fucker isn't showing up!<</mc>><br>
 	<<elseif setup.Events.minigameVideo() eq "seduce">>
 		<<if setup.Events.ghostOrgasmMeter() gte 100>>
-			@@.mc-thoughts;You seduce him, showing off all your charms, and you see the ghost can't hold back any longer. He erupts, cumming on you, covering your body with warm semen just from the sight of your sensuous display.@@<br>
+			<<thought>>You seduce him, showing off all your charms, and you see the ghost can't hold back any longer. He erupts, cumming on you, covering your body with warm semen just from the sight of your sensuous display.<</thought>><br>
 		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
-			@@.mc-thoughts;You seduce the ghost, moving from one enticing pose to another, feeling your body burn with desire. Your own sensuality brings you to climax, gasping from the intensity of the moment.@@<br>
+			<<thought>>You seduce the ghost, moving from one enticing pose to another, feeling your body burn with desire. Your own sensuality brings you to climax, gasping from the intensity of the moment.<</thought>><br>
 		<<else>>
-			@@.mc-thoughts;You strip down, taking lewd poses, showing off your pussy and tits, feeling your wetness grow, getting turned on by your own performance.@@<br>
-			@@.mc-speech;Fuck, I'm so hot watching myself... I bet he's getting hard just from looking at me...@@<br>
+			<<thought>>You strip down, taking lewd poses, showing off your pussy and tits, feeling your wetness grow, getting turned on by your own performance.<</thought>><br>
+			<<mc>>Fuck, I'm so hot watching myself... I bet he's getting hard just from looking at me...<</mc>><br>
 		<</if>>
 	<<elseif setup.Events.minigameVideo() eq "slapface">>
 		<<if setup.Events.ghostOrgasmMeter() gte 100>>
-			@@.mc-thoughts;The ghost can't take it anymore when he's slapping your face with his cock, each slap arousing him more until he climaxes, covering your face with his cum.@@<br>
+			<<thought>>The ghost can't take it anymore when he's slapping your face with his cock, each slap arousing him more until he climaxes, covering your face with his cum.<</thought>><br>
 		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
-			@@.mc-thoughts;The ghost slaps your face with his cock, and the strange, unexpected pleasure from this act makes you reach orgasm, your body trembling with unusual pleasure.@@<br>
+			<<thought>>The ghost slaps your face with his cock, and the strange, unexpected pleasure from this act makes you reach orgasm, your body trembling with unusual pleasure.<</thought>><br>
 		<<else>>
-			@@.mc-thoughts;The ghost approaches, his cock slapping your face as if it's his entertainment. You feel your cheeks redden, your body trembling with a mix of humiliation and arousal.@@<br>
-			@@.mc-speech;He's slapping me with his dick... it's so degrading... but why do I like it so much?@@<br>
+			<<thought>>The ghost approaches, his cock slapping your face as if it's his entertainment. You feel your cheeks redden, your body trembling with a mix of humiliation and arousal.<</thought>><br>
+			<<mc>>He's slapping me with his dick... it's so degrading... but why do I like it so much?<</mc>><br>
 		<</if>>
 	<<elseif setup.Events.minigameVideo() eq "subdueslapface">>
 		<<if setup.Events.ghostOrgasmMeter() gte 100>>
-			@@.mc-thoughts;You control the situation, and as you slap yourself with his cock, the ghost can't hold back, cumming on you, covering your face and chest with his semen.@@<br>
+			<<thought>>You control the situation, and as you slap yourself with his cock, the ghost can't hold back, cumming on you, covering your face and chest with his semen.<</thought>><br>
 		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
-			@@.mc-thoughts;You take control, slapping yourself with his cock, and this feeling of power and sexuality brings you to orgasm, your body shuddering with pleasure.@@<br>
+			<<thought>>You take control, slapping yourself with his cock, and this feeling of power and sexuality brings you to orgasm, your body shuddering with pleasure.<</thought>><br>
 		<<else>>
-			@@.mc-thoughts;You grab his cock, start slapping it against your own face, feeling the power and control.@@<br>
-			@@.mc-speech;Mmm... who's the whore here, huh? I decide when and how...@@<br>
+			<<thought>>You grab his cock, start slapping it against your own face, feeling the power and control.<</thought>><br>
+			<<mc>>Mmm... who's the whore here, huh? I decide when and how...<</mc>><br>
 		<</if>>
 	<<elseif setup.Events.minigameVideo() eq "assjob">>
 		<<if setup.Events.ghostOrgasmMeter() gte 100>>
-			@@.mc-thoughts;His cock slides between your ass cheeks, and this sensation brings the ghost to climax, he cums, covering your buttocks and back with his semen.@@<br>
+			<<thought>>His cock slides between your ass cheeks, and this sensation brings the ghost to climax, he cums, covering your buttocks and back with his semen.<</thought>><br>
 		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
-			@@.mc-thoughts;His cock slides between your ass cheeks, each movement sending waves of pleasure through you, and you reach orgasm without penetration, it's so arousing.@@<br>
+			<<thought>>His cock slides between your ass cheeks, each movement sending waves of pleasure through you, and you reach orgasm without penetration, it's so arousing.<</thought>><br>
 		<<else>>
-			@@.mc-thoughts;His cock rubs against your pussy, making you feel him getting harder, causing you to moan with desire.@@<br>
-			@@.mc-speech;His cock rubbing against my pussy... it's so hot, how it feels... I want it inside me so bad...@@<br>
+			<<thought>>His cock rubs against your pussy, making you feel him getting harder, causing you to moan with desire.<</thought>><br>
+			<<mc>>His cock rubbing against my pussy... it's so hot, how it feels... I want it inside me so bad...<</mc>><br>
 		<</if>>
 	<<elseif setup.Events.minigameVideo() eq "subdueassjob">>
 		<<if setup.Events.ghostOrgasmMeter() gte 100>>
-			@@.mc-thoughts;Controlling the situation, you make him cum, his semen splattering over your buttocks and back as he loses control.@@<br>
+			<<thought>>Controlling the situation, you make him cum, his semen splattering over your buttocks and back as he loses control.<</thought>><br>
 		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
-			@@.mc-thoughts;You move your hips, controlling his pleasure, and this feeling of power makes you cum, your body trembling with ecstasy.@@<br>
+			<<thought>>You move your hips, controlling his pleasure, and this feeling of power makes you cum, your body trembling with ecstasy.<</thought>><br>
 		<<else>>
-			@@.mc-thoughts;You move your hips, controlling how his cock slides between your ass cheeks, feeling him lose control.@@<br>
-			@@.mc-speech;You'll move as I want you to, ghost...@@<br>
+			<<thought>>You move your hips, controlling how his cock slides between your ass cheeks, feeling him lose control.<</thought>><br>
+			<<mc>>You'll move as I want you to, ghost...<</mc>><br>
 		<</if>>
 	<<elseif setup.Events.minigameVideo() eq "titjob">>
 		<<if setup.Events.ghostOrgasmMeter() gte 100>>
-			@@.mc-thoughts;The sensation of your breasts around his cock is too much for him, he climaxes, covering your tits with his cum, unable to control himself any longer.@@
+			<<thought>>The sensation of your breasts around his cock is too much for him, he climaxes, covering your tits with his cum, unable to control himself any longer.<</thought>>
 		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
-			@@.mc-thoughts;His cock moves between your breasts, the friction and the sight of his pleasure push you towards an orgasm, your body responding to the eroticism of the act.@@
+			<<thought>>His cock moves between your breasts, the friction and the sight of his pleasure push you towards an orgasm, your body responding to the eroticism of the act.<</thought>>
 		<<else>>
-			@@.mc-thoughts;The ghost fucks your tits with his cock, you feel it pulsing, leaving traces of precum on your skin.@@<br>
-			@@.mc-speech;He's fucking my tits... I feel like he's about to cum... it's so arousing...@@<br>
+			<<thought>>The ghost fucks your tits with his cock, you feel it pulsing, leaving traces of precum on your skin.<</thought>><br>
+			<<mc>>He's fucking my tits... I feel like he's about to cum... it's so arousing...<</mc>><br>
 		<</if>>
 	<<elseif setup.Events.minigameVideo() eq "subduetitjob">>
 		<<if setup.Events.ghostOrgasmMeter() gte 100>>
-			@@.mc-thoughts;You control how he uses your breasts, and he climaxes, covering your tits with his cum, unable to hold back.@@<br>
+			<<thought>>You control how he uses your breasts, and he climaxes, covering your tits with his cum, unable to hold back.<</thought>><br>
 		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
-			@@.mc-thoughts;You squeeze your tits around his cock, feeling every movement, and this sense of power over his pleasure makes you reach orgasm, arousing you with the control.@@<br>
+			<<thought>>You squeeze your tits around his cock, feeling every movement, and this sense of power over his pleasure makes you reach orgasm, arousing you with the control.<</thought>><br>
 		<<else>>
-			@@.mc-thoughts;You squeeze your tits around his cock, controlling every thrust, making him moan with pleasure.@@<br>
-			@@.mc-speech;Show me how badly you want to cum on my tits...@@<br>
+			<<thought>>You squeeze your tits around his cock, controlling every thrust, making him moan with pleasure.<</thought>><br>
+			<<mc>>Show me how badly you want to cum on my tits...<</mc>><br>
 		<</if>>
 	<<elseif setup.Events.minigameVideo() eq "rimjob">>
 		<<if setup.Events.ghostOrgasmMeter() gte 100>>
-			@@.mc-thoughts;Your tongue drives him wild, and he can't hold back, climaxing and covering you with his cum from the intensity of the sensation.@@<br>
+			<<thought>>Your tongue drives him wild, and he can't hold back, climaxing and covering you with his cum from the intensity of the sensation.<</thought>><br>
 		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
-			@@.mc-thoughts;You lick his ass, feeling the power and submission in your actions, which unexpectedly drives you to orgasm, your body quivering with pleasure.@@<br>
+			<<thought>>You lick his ass, feeling the power and submission in your actions, which unexpectedly drives you to orgasm, your body quivering with pleasure.<</thought>><br>
 		<<else>>
-			@@.mc-thoughts;You bend over, feeling his control, your tongue exploring his ass, each movement making him moan. You're under his command, fulfilling his dirtiest fantasies.@@<br>
-			@@.mc-speech;I'm licking his ass... he completely controls me... it's so dirty, but so sexy...@@<br>
+			<<thought>>You bend over, feeling his control, your tongue exploring his ass, each movement making him moan. You're under his command, fulfilling his dirtiest fantasies.<</thought>><br>
+			<<mc>>I'm licking his ass... he completely controls me... it's so dirty, but so sexy...<</mc>><br>
 		<</if>>
 	<<elseif setup.Events.minigameVideo() eq "subduerimjob">>
 		<<if setup.Events.ghostOrgasmMeter() gte 100>>
-			@@.mc-thoughts;Your actions drive him to the edge, and he climaxes, covering you with semen as you control his pleasure.@@<br>
+			<<thought>>Your actions drive him to the edge, and he climaxes, covering you with semen as you control his pleasure.<</thought>><br>
 		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
-			@@.mc-thoughts;You explore his anus with your tongue with a sense of control, and this unexpected feeling of power causes you to orgasm.@@<br>
+			<<thought>>You explore his anus with your tongue with a sense of control, and this unexpected feeling of power causes you to orgasm.<</thought>><br>
 		<<else>>
-			@@.mc-thoughts;You take control, using your tongue as you wish, making him tremble with pleasure.@@<br>
-			@@.mc-speech;You're under my control, ghost... I do it the way I want...@@<br>
+			<<thought>>You take control, using your tongue as you wish, making him tremble with pleasure.<</thought>><br>
+			<<mc>>You're under my control, ghost... I do it the way I want...<</mc>><br>
 		<</if>>
 	<<elseif setup.Events.minigameVideo() eq "blowjob">>
 		<<if setup.Events.ghostOrgasmMeter() gte 100>>
-			@@.mc-thoughts;Your skill makes him lose control, and he climaxes, spilling his cum all over your face and chest from the intensity of the sensations.@@<br>
+			<<thought>>Your skill makes him lose control, and he climaxes, spilling his cum all over your face and chest from the intensity of the sensations.<</thought>><br>
 		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
-			@@.mc-thoughts;You feel his cock in your mouth, and the sensation of power and pleasure from his reactions brings you to orgasm, your body shuddering with delight.@@<br>
+			<<thought>>You feel his cock in your mouth, and the sensation of power and pleasure from his reactions brings you to orgasm, your body shuddering with delight.<</thought>><br>
 		<<else>>
-			@@.mc-thoughts;You take his cock in your mouth, feeling its warmth and hardness, your lips moving, creating a vacuum that makes him moan with pleasure.@@<br>
-			@@.mc-speech;His dick in my mouth... he's using me like his personal whore... it's so fucking good...@@<br>
+			<<thought>>You take his cock in your mouth, feeling its warmth and hardness, your lips moving, creating a vacuum that makes him moan with pleasure.<</thought>><br>
+			<<mc>>His dick in my mouth... he's using me like his personal whore... it's so fucking good...<</mc>><br>
 		<</if>>
 	<<elseif setup.Events.minigameVideo() eq "subdueblowjob">>
 		<<if setup.Events.ghostOrgasmMeter() gte 100>>
-			@@.mc-thoughts;You dictate the pace, and he can't hold back, cumming on you, covering your face and chest with cum from your control.@@<br>
+			<<thought>>You dictate the pace, and he can't hold back, cumming on you, covering your face and chest with cum from your control.<</thought>><br>
 		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
-			@@.mc-thoughts;You control every movement, making him moan, and this feeling of power causes you to orgasm, your body trembling with pleasure.@@<br>
+			<<thought>>You control every movement, making him moan, and this feeling of power causes you to orgasm, your body trembling with pleasure.<</thought>><br>
 		<<else>>
-			@@.mc-thoughts;You control the rhythm, dictating his pleasure, your lips and tongue deciding when and how he feels it.@@<br>
-			@@.mc-speech;You'll only get what I allow...@@<br>
+			<<thought>>You control the rhythm, dictating his pleasure, your lips and tongue deciding when and how he feels it.<</thought>><br>
+			<<mc>>You'll only get what I allow...<</mc>><br>
 		<</if>>
 	<<elseif setup.Events.minigameVideo() eq "penetratepussy">>
 		<<if setup.Events.ghostOrgasmMeter() gte 100>>
-			@@.mc-thoughts;He just enters you, and this is enough to make him lose control, he cums, covering your pussy with semen.@@<br>
+			<<thought>>He just enters you, and this is enough to make him lose control, he cums, covering your pussy with semen.<</thought>><br>
 		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
-			@@.mc-thoughts;His cock enters your pussy, and this sensation of being filled and the control over the situation makes you reach orgasm.@@<br>
+			<<thought>>His cock enters your pussy, and this sensation of being filled and the control over the situation makes you reach orgasm.<</thought>><br>
 		<<else>>
-			@@.mc-thoughts;The ghost enters you, his cock penetrating your wet pussy just once, filling you with a sense of completion. You realize there's still a chance to stop this.@@<br>
-			@@.mc-speech;Fuck, he's inside me... but I can still stop this...@@<br>
+			<<thought>>The ghost enters you, his cock penetrating your wet pussy just once, filling you with a sense of completion. You realize there's still a chance to stop this.<</thought>><br>
+			<<mc>>Fuck, he's inside me... but I can still stop this...<</mc>><br>
 		<</if>>
 	<<elseif setup.Events.minigameVideo() eq "penetrateanal">>
 		<<if setup.Events.ghostOrgasmMeter() gte 100>>
-			@@.mc-thoughts;He just enters you, and it's enough to make him lose control, he cums, covering your buttocks with semen.@@<br>
+			<<thought>>He just enters you, and it's enough to make him lose control, he cums, covering your buttocks with semen.<</thought>><br>
 		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
-			@@.mc-thoughts;His cock penetrates your ass, and this feeling of fullness and control over the situation makes you reach orgasm.@@<br>
+			<<thought>>His cock penetrates your ass, and this feeling of fullness and control over the situation makes you reach orgasm.<</thought>><br>
 		<<else>>
-			@@.mc-thoughts;You feel his cock entering your ass just once, creating a mix of pain and pleasure. There's still a chance to stop it.@@<br>
-			@@.mc-speech;God, he's in my ass... but I can still control this...@@<br>
+			<<thought>>You feel his cock entering your ass just once, creating a mix of pain and pleasure. There's still a chance to stop it.<</thought>><br>
+			<<mc>>God, he's in my ass... but I can still control this...<</mc>><br>
 		<</if>>
 	<<elseif setup.Events.minigameVideo() eq "fuckpussy">>
 		<<if setup.Events.ghostOrgasmMeter() gte 100>>
-			@@.mc-thoughts;His cock thrusts in and out of you, and this makes him cum, covering your pussy and stomach with semen.@@<br>
+			<<thought>>His cock thrusts in and out of you, and this makes him cum, covering your pussy and stomach with semen.<</thought>><br>
 		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
-			@@.mc-thoughts;His hard thrusts into your pussy drive you to orgasm, you feel every thrust, sinking into ecstasy.@@
+			<<thought>>His hard thrusts into your pussy drive you to orgasm, you feel every thrust, sinking into ecstasy.<</thought>>
 		<<else>>
-			@@.mc-thoughts;The ghost fucks your dripping pussy with such force, it feels like he wants to tear you apart. His cock goes in and out, filling you, making you moan with each deep thrust. You feel your juicy hole embracing his hard tool.@@<br>
-			@@.mc-speech;Damn, he's fucking me like the last slut... I know I should stop him, but it feels so damn good... how can I resist when I'm this fucking wet...@@<br>
+			<<thought>>The ghost fucks your dripping pussy with such force, it feels like he wants to tear you apart. His cock goes in and out, filling you, making you moan with each deep thrust. You feel your juicy hole embracing his hard tool.<</thought>><br>
+			<<mc>>Damn, he's fucking me like the last slut... I know I should stop him, but it feels so damn good... how can I resist when I'm this fucking wet...<</mc>><br>
 		<</if>>
 	<<elseif setup.Events.minigameVideo() eq "fuckanal">>
 		<<if setup.Events.ghostOrgasmMeter() gte 100>>
-			@@.mc-thoughts;His rough penetration into your ass brings him to orgasm, he cums, covering your buttocks and back with semen.@@<br>
+			<<thought>>His rough penetration into your ass brings him to orgasm, he cums, covering your buttocks and back with semen.<</thought>><br>
 		<<elseif setup.Events.mcOrgasmMeter() gte 100>>
-			@@.mc-thoughts;He fucks your ass with such force that you climax, each thrust bringing a new wave of pleasure.@@<br>
+			<<thought>>He fucks your ass with such force that you climax, each thrust bringing a new wave of pleasure.<</thought>><br>
 		<<else>>
-			@@.mc-thoughts;His engorged cock thrusts into your tight ass, stretching you with each brutal push. He uses your ass like his toy, each movement causing sharp sensations, mixing pain with unbelievable pleasure.@@<br>
-			@@.mc-speech;He's fucking my ass so hard... I should try to stop this, but his dick is so deep, I can barely think... it's so fucking hot...@@<br>
+			<<thought>>His engorged cock thrusts into your tight ass, stretching you with each brutal push. He uses your ass like his toy, each movement causing sharp sensations, mixing pain with unbelievable pleasure.<</thought>><br>
+			<<mc>>He's fucking my ass so hard... I should try to stop this, but his dick is so deep, I can barely think... it's so fucking hot...<</mc>><br>
 		<</if>>
 	<</if>>
 <</widget>>
 
 <<widget "seduceGhostEscape">>
-	@@.mc-thoughts;The meter tips and you lean in for the look you've earned. The ghost doesn't fold. It spends instead, one last shudder poured into the boards, and rides the recoil out. A cold streak drags across your knuckles, a smear of light pours sideways into the plaster, and then there's just a wall and the dent your knees left in the carpet. Through the drywall like it was a curtain. Gone.@@<br><br>
-	@@.mc-speech;Oh, you absolute coward. Get back here.@@<br>
-	@@.mc-thoughts;No face. No tell. Whatever it was, it kept exactly enough in the tank to spend the lot on leaving, and it took the one thing you wanted out the wall with it: a name. You press your palm flat to the cold spot where it went, like that's going to give you anything. It doesn't. Back to doing this the slow way.@@<br>
+	<<thought>>The meter tips and you lean in for the look you've earned. The ghost doesn't fold. It spends instead, one last shudder poured into the boards, and rides the recoil out. A cold streak drags across your knuckles, a smear of light pours sideways into the plaster, and then there's just a wall and the dent your knees left in the carpet. Through the drywall like it was a curtain. Gone.<</thought>><br><br>
+	<<mc>>Oh, you absolute coward. Get back here.<</mc>><br>
+	<<thought>>No face. No tell. Whatever it was, it kept exactly enough in the tank to spend the lot on leaving, and it took the one thing you wanted out the wall with it: a name. You press your palm flat to the cold spot where it went, like that's going to give you anything. It doesn't. Back to doing this the slow way.<</thought>><br>
 <</widget>>
 
 <<widget "seduceGhostInspect">>
-	@@.mc-thoughts;The meter tips over and the fight just stops. No bang, no banish-flash, only the pressure dropping out of the room the way it does when a fridge you forgot was running finally cuts off. The ghost folds. Whatever it had been holding itself up with lets go all at once and it pours down onto the floor of this stranger's house, twitching, leaking, fucked stupid and harmless for exactly as long as it lasts. Your knees are on the boards before you've decided to crouch. Heart going like you ran here. And then your brain, the traitor, reaches past the part that should be scanning for the exit and hands you the wrong job entirely: you are nose to nose with the thing, grool dripping down your thighs, voice gone low and fond, and you hear it come out of you in a hush like there's a camera over your shoulder.@@<br><br>@@.mc-speech;Easy. Easy now. Have a look at this one.@@<br>
+	<<thought>>The meter tips over and the fight just stops. No bang, no banish-flash, only the pressure dropping out of the room the way it does when a fridge you forgot was running finally cuts off. The ghost folds. Whatever it had been holding itself up with lets go all at once and it pours down onto the floor of this stranger's house, twitching, leaking, fucked stupid and harmless for exactly as long as it lasts. Your knees are on the boards before you've decided to crouch. Heart going like you ran here. And then your brain, the traitor, reaches past the part that should be scanning for the exit and hands you the wrong job entirely: you are nose to nose with the thing, grool dripping down your thighs, voice gone low and fond, and you hear it come out of you in a hush like there's a camera over your shoulder.<</thought>><br><br><<mc>>Easy. Easy now. Have a look at this one.<</mc>><br>
 	<<switch setup.Ghosts.huntRealName()>>
 	<<case "Shade">>
 		He's curled small at the foot of the radiator, knees to his chest, turned half away from you like he's still deciding whether you're worth the trouble. That's the tell.
 		<br>
-		@@.mc-speech;Easy, you shy thing. I know what you are.@@
+		<<mc>>Easy, you shy thing. I know what you are.<</mc>>
 		<br>
 		You crouch and keep your voice down, because loud would scare him off even now: a Shade only ever leaned in once your nerve had already cracked past the halfway line and started to slide, and the further you fell the less he wanted you — he lost the scent the instant you bottomed out completely.
 		<br>
-		@@.mc-thoughts;So he only came close in that narrow stretch where I was coming apart but not yet ruined. Flattering. I'm crouched over the one ghost in this town that finds both composure and total collapse boring, and my pulse is doing something it should not be doing about that.@@
+		<<thought>>So he only came close in that narrow stretch where I was coming apart but not yet ruined. Flattering. I'm crouched over the one ghost in this town that finds both composure and total collapse boring, and my pulse is doing something it should not be doing about that.<</thought>>
 	<<case "Spirit">>
 		He's already going translucent under you, the floor tiles showing through his hip where your knee was a second ago. You crouch and watch him thin out, fond and a little proud of yourself.
 		<br>
-		@@.mc-thoughts;A Spirit. Shy on the way in, won't quit on the way through, and the instant it gets what it came for it just packs up and leaves.@@
+		<<thought>>A Spirit. Shy on the way in, won't quit on the way through, and the instant it gets what it came for it just packs up and leaves.<</thought>>
 		<br>
-		@@.mc-speech;Get on home, then. You got what you wanted.@@ Your heart's still going at a stupid clip and you don't fully trust the pleased-with-yourself feeling sitting under it, but the room's quiet now, which is the whole point.
+		<<mc>>Get on home, then. You got what you wanted.<</mc>>
+		Your heart's still going at a stupid clip and you don't fully trust the pleased-with-yourself feeling sitting under it, but the room's quiet now, which is the whole point.
 	<<case "Poltergeist">>
 		He's gone limp across the wreckage he made — the lamp he flung, the picture frames raked off the wall, all of it now a mattress of broken glass he's sprawled on like it's a hotel bed.
 		<br>
-		@@.mc-speech;No special trick to you, is there.@@ @@.mc-thoughts;And that's the whole tell: no clever gimmick, just a house he can throw at me and the patience to wait until my composure slipped under seventy before he started. Now he couldn't lift a coaster.@@
+		<<mc>>No special trick to you, is there.<</mc>>
+		<<thought>>And that's the whole tell: no clever gimmick, just a house he can throw at me and the patience to wait until my composure slipped under seventy before he started. Now he couldn't lift a coaster.<</thought>>
 		<br>
-		@@.mc-thoughts;Crouched over a thing that wrecked a living room with its mind, pulse still up where it shouldn't be, and the part of me that liked watching him come apart is a part I'll be thinking about on the drive home.@@
+		<<thought>>Crouched over a thing that wrecked a living room with its mind, pulse still up where it shouldn't be, and the part of me that liked watching him come apart is a part I'll be thinking about on the drive home.<</thought>>
 	<<case "Phantom">>
 		The overhead bulb is still going, throwing every detail of him flat on his back under it, one arm thrown over his eyes against a glare he put there himself.
 		<br>
-		@@.mc-speech;You couldn't even do me the courtesy of the dark, could you.@@
+		<<mc>>You couldn't even do me the courtesy of the dark, could you.<</mc>>
 		<br>
 		A Phantom can't kill a light to save itself, the one haunt in the catalogue you watch coming the whole way in, and here he is lit up like a specimen on a tray with nowhere to hide the wet shine of him.
 		<br>
-		@@.mc-thoughts;I had every second of warning and walked into it anyway, eyes open, in a fully furnished room with the lamp on. There's a word for someone who does that. I'm not going to write it down.@@
+		<<thought>>I had every second of warning and walked into it anyway, eyes open, in a fully furnished room with the lamp on. There's a word for someone who does that. I'm not going to write it down.<</thought>>
 	<<case "Goryo">>
 		He's pooled in the same corner he's haunted all night, spent, one arm flung over the radiator he never once strayed from. You don't even check the hall. You know he isn't out there.
 		<br>
-		@@.mc-thoughts;Homebody. A Goryo doesn't wander, doesn't drift down to the kitchen for variety, it picks one room and dies in it twice. Easiest tell in the book if you bother to notice.@@
+		<<thought>>Homebody. A Goryo doesn't wander, doesn't drift down to the kitchen for variety, it picks one room and dies in it twice. Easiest tell in the book if you bother to notice.<</thought>>
 		<br>
-		@@.mc-speech;Couldn't crawl six feet if your afterlife depended on it, could you. Stayed right where I left you.@@
+		<<mc>>Couldn't crawl six feet if your afterlife depended on it, could you. Stayed right where I left you.<</mc>>
 		<br>
 		You're grinning, and you clock that you're grinning, and you decide not to interrogate it.
 	<<case "Demon">>
-		He's face-down with his hips still tipped up, the way you left him, twitching every few seconds like the charge hasn't finished leaving. @@.mc-speech;Look at the manners on this one.@@
+		He's face-down with his hips still tipped up, the way you left him, twitching every few seconds like the charge hasn't finished leaving.
+		<<mc>>Look at the manners on this one.<</mc>>
 		<br>
-		@@.mc-thoughts;The Demon doesn't wait for your sanity to drop, doesn't wait for an invitation. It comes at you near full and early, when every other thing in the house is still pretending to be furniture. And I, the impatient bitch, I got there first this time.@@
+		<<thought>>The Demon doesn't wait for your sanity to drop, doesn't wait for an invitation. It comes at you near full and early, when every other thing in the house is still pretending to be furniture. And I, the impatient bitch, I got there first this time.<</thought>>
 		<br>
 		You wipe your mouth on the back of your wrist and grin at him, heart going like a snare.
 		<br>
-		@@.mc-thoughts;Earlier than anything else in the house, and he's the one face-down on the carpet.@@
+		<<thought>>Earlier than anything else in the house, and he's the one face-down on the carpet.<</thought>>
 	<<case "Deogen">>
 		He made it three feet from where you started and gave out, sprawled face-down with his cheek to the floorboards, that long slow body that never once stopped tracking you.
 		<br>
-		@@.mc-speech;Good boy. You always find the hiding spot. You're just never, ever fast.@@
+		<<mc>>Good boy. You always find the hiding spot. You're just never, ever fast.<</mc>>
 		<br>
 		A Deogen will walk straight to whatever cupboard you've folded yourself into every single time, patient as a tide, but God help him if you've still got legs, because a clean sprint leaves him crawling after you in the dark.
 		<br>
-		@@.mc-thoughts;He'd have caught me eventually. He always does. I didn't run, is the thing. I let the bloodhound find me, and I'm crouched here a little proud and a lot more bothered than a sane woman would be.@@
+		<<thought>>He'd have caught me eventually. He always does. I didn't run, is the thing. I let the bloodhound find me, and I'm crouched here a little proud and a lot more bothered than a sane woman would be.<</thought>>
 	<<case "Jinn">>
 		All that speed wrung out of him, sprawled boneless on the boards that don't squeak anymore. He ran you down twice tonight before you stopped running and he lost you cold under the stairs.
 		<br>
-		@@.mc-thoughts;Jinn. Quick as anything on the chase and blind as a brick the second you go still. Walked right past my hiding spot with my elbow practically in its face.@@
+		<<thought>>Jinn. Quick as anything on the chase and blind as a brick the second you go still. Walked right past my hiding spot with my elbow practically in its face.<</thought>>
 		<br>
-		@@.mc-speech;Fast hunter, lousy eyes. I'll take the trade.@@ Your pulse won't sit down, and somewhere under the adrenaline is the small ugly fact that you liked outsmarting it, that you'd do it again, and you'd rather not look at why.
+		<<mc>>Fast hunter, lousy eyes. I'll take the trade.<</mc>>
+		Your pulse won't sit down, and somewhere under the adrenaline is the small ugly fact that you liked outsmarting it, that you'd do it again, and you'd rather not look at why.
 	<<case "Moroi">>
-		He's folded over on his side around the spent ache of it, one hand still loose near his own throat where the static came out of him. @@.mc-speech;There's my mind-crawler.@@
+		He's folded over on his side around the spent ache of it, one hand still loose near his own throat where the static came out of him.
+		<<mc>>There's my mind-crawler.<</mc>>
 		<br>
-		@@.mc-thoughts;The one that rides the Spirit Box down the signal and into a soft skull. Every time I keyed up and asked it a question it had a thirty-in-a-hundred shot at climbing into my head and wearing me home. Instead I asked, and he answered, and the answer was him wrung out on the floor with his knees drawn up. Three batteries left, and I spent two of them talking this gorgeous thing flat.@@
+		<<thought>>The one that rides the Spirit Box down the signal and into a soft skull. Every time I keyed up and asked it a question it had a thirty-in-a-hundred shot at climbing into my head and wearing me home. Instead I asked, and he answered, and the answer was him wrung out on the floor with his knees drawn up. Three batteries left, and I spent two of them talking this gorgeous thing flat.<</thought>>
 	<<case "Myling">>
 		He never did show you his face — even now he's gone slack against the wall with his chin tucked down, hiding it on principle, the only ghost who'd rather be felt than seen.
 		<br>
-		@@.mc-speech;Sneaky exhibitionist. I know your whole act.@@
+		<<mc>>Sneaky exhibitionist. I know your whole act.<</mc>>
 		<br>
 		A Myling won't front you across a room, but the second you walk away the whole street starts seeing you in clothes you never put on, or in nothing at all, a haunt you only catch by the way strangers' eyes change once your back is turned.
 		<br>
-		@@.mc-thoughts;So everyone out there has an opinion on what I'm wearing right now and I've got none of it. Wrung him out and I still don't get to look him in the eye. Why is that the part doing it for me.@@
+		<<thought>>So everyone out there has an opinion on what I'm wearing right now and I've got none of it. Wrung him out and I still don't get to look him in the eye. Why is that the part doing it for me.<</thought>>
 	<<case "Oni">>
 		He's stretched out fucked-stupid on the carpet and you're the one shaking, fingers not quite steady where you brace them by his shoulder. That's the Oni for you. He took his bites tonight.
 		<br>
-		@@.mc-thoughts;Mind-breaker. Cracks your nerve faster than anything else on the board, big greedy mouthfuls of it every time it leaned in close.@@
+		<<thought>>Mind-breaker. Cracks your nerve faster than anything else on the board, big greedy mouthfuls of it every time it leaned in close.<</thought>>
 		<br>
-		@@.mc-speech;You really worked me over before I turned it around, didn't you. Look at you now.@@
+		<<mc>>You really worked me over before I turned it around, didn't you. Look at you now.<</mc>>
 		<br>
 		You sound steadier than you are, and the heat that's still climbing in you is half triumph and half nerve-damage, and you genuinely can't tell which.
 	<<case "Mimic">>
 		He's slumped against the baseboard wearing the last face he stole before you finished him, and you watch it slide off — the borrowed jaw going soft, the disguise he'd have swapped at the half-hour mark now too tired to hold.
 		<br>
-		@@.mc-speech;There it is.@@
+		<<mc>>There it is.<</mc>>
 		<br>
-		@@.mc-thoughts;Almost fond, the only tell the bastard can't drop: that thread of ectoplasm beading at his lip, glowing UV-bright, leaking the whole time no matter whose face he had on. Names nobody. Pins nothing. And he let me do this to him with a stranger's mouth.@@
+		<<thought>>Almost fond, the only tell the bastard can't drop: that thread of ectoplasm beading at his lip, glowing UV-bright, leaking the whole time no matter whose face he had on. Names nobody. Pins nothing. And he let me do this to him with a stranger's mouth.<</thought>>
 		<br>
-		You sit back on your heels, wet to the thigh and a little appalled at yourself. @@.mc-speech;You should keep this one.@@
+		You sit back on your heels, wet to the thigh and a little appalled at yourself.
+		<<mc>>You should keep this one.<</mc>>
 	<<case "The Twins">>
 		There's only one of him on the floor in front of you, loose-limbed and finished, and the air past his shoulder has that wrong, pressure-drop feeling of a chair somebody just left.
 		<br>
-		@@.mc-speech;Two of you. And I've only run down the first.@@ The Twins never come alone — every prowl you settle leaves the second one primed and waiting somewhere down the hall with its own ideas, so there's no such thing as the morning after with these two, only halftime.
+		<<mc>>Two of you. And I've only run down the first.<</mc>>
+		The Twins never come alone — every prowl you settle leaves the second one primed and waiting somewhere down the hall with its own ideas, so there's no such thing as the morning after with these two, only halftime.
 		<br>
-		@@.mc-thoughts;One down, pulse still up, and a matching set of trouble breathing somewhere behind me in the dark. The smart move is to leave. I'm already counting how many batteries I've got left.@@
+		<<thought>>One down, pulse still up, and a matching set of trouble breathing somewhere behind me in the dark. The smart move is to leave. I'm already counting how many batteries I've got left.<</thought>>
 	<<case "Wraith">>
 		Funny, the thing that drags people off and dumps them in the treeline, and he can't so much as lift his head off the floorboards now. You roll him onto his back with one boot to look at him properly.
 		<br>
-		@@.mc-thoughts;Wraith. Beat you and you don't wake up at home, you come to out past the forest road with rope on your wrists and a long walk ahead. The mean one. The one I planned for.@@
+		<<thought>>Wraith. Beat you and you don't wake up at home, you come to out past the forest road with rope on your wrists and a long walk ahead. The mean one. The one I planned for.<</thought>>
 		<br>
-		@@.mc-speech;No woods for me tonight. You're the one not going anywhere.@@
+		<<mc>>No woods for me tonight. You're the one not going anywhere.<</mc>>
 		<br>
 		You're loose and reckless on the back of it, and the want creeping up surprises you more than the win does.
 	<<case "Mare">>
 		He's spread on his back where your bedroom floor would be if this were home, arms gone slack, the fight finally out of him after how many nights he crept in to make it worse.
 		<br>
-		@@.mc-speech;Hello, you. The bedroom one.@@
+		<<mc>>Hello, you. The bedroom one.<</mc>>
 		<br>
-		@@.mc-thoughts;The only haunt with the nerve to follow a girl to her own pillow and turn meaner every dawn. Holy water on the floorboards would've sent him packing; instead I got him on the floorboards. He'd have given up in a few days regardless, but this is faster.@@
+		<<thought>>The only haunt with the nerve to follow a girl to her own pillow and turn meaner every dawn. Holy water on the floorboards would've sent him packing; instead I got him on the floorboards. He'd have given up in a few days regardless, but this is faster.<</thought>>
 		<br>
 		You lean down close enough to smell the cold off his skin and feel your own pulse answer, which is the wrong response to a thing that haunts your sleep, and you know it, and you don't move.
 	<<case "Cthulion">>
 		He's wearing the human face still, the borrowed one, slumped back against the baseboard looking almost ordinary except for the limbs that didn't fully draw back in, two of them lying boneless across the floor where he reached for you.
 		<br>
-		@@.mc-speech;There you are. There's the thing under the nice face.@@
+		<<mc>>There you are. There's the thing under the nice face.<</mc>>
 		<br>
 		A Cthulion keeps that stolen shape on like a coat until it actually wants you, and then it stops being shy and reaches — older than the whole species, wearing one of us, undone on the floor of a rental house.
 		<br>
-		@@.mc-thoughts;I have personally fucked a thing too old to have a real shape into lying still, and the smart, sane response to that is horror. I'll get to the horror. Give me a second. I'm still a little hot about the reaching.@@
+		<<thought>>I have personally fucked a thing too old to have a real shape into lying still, and the smart, sane response to that is horror. I'll get to the horror. Give me a second. I'm still a little hot about the reaching.<</thought>>
 	<<case "Banshee">>
 		Her mouth is the part you keep watching, slack and harmless now, the same mouth that came at you earlier and lifted ten clean points off your sanity in one go. You crouch close, careful, the way you'd lean over a wasp you're fairly sure is dead.
 		<br>
-		@@.mc-thoughts;Banshee. The only girl in the catalogue, and the whole act is the kiss. One press of that and you're down ten before you've finished flinching.@@
+		<<thought>>Banshee. The only girl in the catalogue, and the whole act is the kiss. One press of that and you're down ten before you've finished flinching.<</thought>>
 		<br>
-		@@.mc-speech;All that fuss over a kiss. You're pretty when you're not robbing me.@@
+		<<mc>>All that fuss over a kiss. You're pretty when you're not robbing me.<</mc>>
 		<br>
 		Your chest is doing something warm and unhelpful, and the safest reading is that you're glad she's spent, so you go with that one.
 	<<case "Raiju">>
 		He's draped over your gear bag with one thigh hooked across the EMF reader, the screen under him still throwing junk numbers, your thermometer beside it reading a cheerful lie.
 		<br>
-		@@.mc-speech;Have a look at the artist.@@
+		<<mc>>Have a look at the artist.<</mc>>
 		<br>
-		@@.mc-thoughts;The Raiju bled into all of it — made the EMF spike at nothing, the temp gauge fib, the Spirit Box answer me in pure hiss where the others would've spoken. Every tool I own corrupted right when I'd need it. And here he is, pulse glitching, twitching off my hardware like he can't stop charging it.@@
+		<<thought>>The Raiju bled into all of it — made the EMF spike at nothing, the temp gauge fib, the Spirit Box answer me in pure hiss where the others would've spoken. Every tool I own corrupted right when I'd need it. And here he is, pulse glitching, twitching off my hardware like he can't stop charging it.<</thought>>
 		<br>
 		You're grinning and you're soaked and you genuinely could not tell him how much of what just happened was real, which is exactly his trick, and exactly why you'll do it again. Crikey.
 	<<default>>
-		@@.mc-speech;And this beauty — no idea. Never logged one with this exact set of tells.@@
+		<<mc>>And this beauty — no idea. Never logged one with this exact set of tells.<</mc>>
 		<br>
-		@@.mc-thoughts;You tilt your head at it the way you'd tilt it at a snake you couldn't key out. Whatever it is, it built itself to take exactly what it just gave you, and it did the work without once asking your opinion. Gorgeous. Filthy. Going in the notebook the second your hands stop shaking.@@
+		<<thought>>You tilt your head at it the way you'd tilt it at a snake you couldn't key out. Whatever it is, it built itself to take exactly what it just gave you, and it did the work without once asking your opinion. Gorgeous. Filthy. Going in the notebook the second your hands stop shaking.<</thought>>
 	<</switch>><br>
-	@@.mc-speech;Right. Off you pop.@@
+	<<mc>>Right. Off you pop.<</mc>>
 	<br>
-	@@.mc-thoughts;You stand, knees complaining, and the host voice goes back wherever it lives. The EMF's still in your other hand. Still a house to clear, still a thing to find, and you are absolutely not getting paid to narrate.@@<br>
+	<<thought>>You stand, knees complaining, and the host voice goes back wherever it lives. The EMF's still in your other hand. Still a house to clear, still a thing to find, and you are absolutely not getting paid to narrate.<</thought>><br>
 <</widget>>

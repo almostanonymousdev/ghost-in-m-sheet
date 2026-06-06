@@ -13,17 +13,17 @@
 <<set _ac to setup.Companion.active()>>
 <<if _walkHomePassage>>
 	<<image "ui/img/mchouse.jpg" { width: "100%" }>>
-	@@.notmc-speech; I have a strange feeling. Like something is following us...@@<br>
-	@@.mc-speech;I didn't see anyone. Maybe you should stay at my place then?@@<br>
-	@@.notmc-speech; Yes, if you don't mind.@@<br><br>
+	<<say>>I have a strange feeling. Like something is following us...<</say>><br>
+	<<mc>>I didn't see anyone. Maybe you should stay at my place then?<</mc>><br>
+	<<say>>Yes, if you don't mind.<</say>><br><br>
 	@@.backbtn; <<link "Sleep together" `_walkHomePassage`>>
 	<</link>>@@
 <<elseif _ac and setup.Companion.lust() gte 50 and _ac.walkHomePassage>>
 	<<include _ac.walkHomePassage>>
 <<else>>
 	<<image "ui/img/mchouse.jpg" { width: "100%" }>>
-	@@.mc-speech; We made it to my place. Thanks for walking me back@@<br>
-	@@.notmc-speech; No problem, hope we meet again. Bye.@@<br>
+	<<mc>>We made it to my place. Thanks for walking me back<</mc>><br>
+	<<say>>No problem, hope we meet again. Bye.<</say>><br>
 	@@.warningtext; (Req. <<= setup.Companion.name()>>'s <<statIcon setup.StatIcon.HEALTH>> ≥ 50)@@
 	<br><br>
 	@@.backbtn; [[Sleep]]@@<br>

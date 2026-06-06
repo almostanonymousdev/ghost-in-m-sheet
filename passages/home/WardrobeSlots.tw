@@ -2,7 +2,7 @@
 <<for _grp range setup.WARDROBE_GROUPS>>
 	<<for _item range _grp.items>>
 		<<capture _grp, _item>>
-			<<set _state to State.variables[_item.var]>>
+			<<set _state to _item.state()>>
 			<<set _linkImg to `<<image "outfits/wardrobe/${_item.img}">>`>>
 			<<if _state eq setup.ClothingState.WORN>>
 				<<replace _grp.replaceTarget>>

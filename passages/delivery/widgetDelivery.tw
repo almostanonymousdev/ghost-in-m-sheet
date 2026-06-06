@@ -23,18 +23,18 @@ integer in [start, end]. Replaces the 4-10 line <<if>> ladders each
 	/* Shared "thank-you" randomised one-liner for successful deliveries. */
 	<<widget "deliveryThanks">>
 		<<switch either(0, 1, 2)>>
-		<<case 0>>@@.notmc-speech; Great, thank you so much!@@
-		<<case 1>>@@.notmc-speech; Awesome! Thank you very much.@@
-		<<default>>@@.notmc-speech; Just in time, thank you!@@
+		<<case 0>><<say>>Great, thank you so much!<</say>>
+		<<case 1>><<say>>Awesome! Thank you very much.<</say>>
+		<<default>><<say>>Just in time, thank you!<</say>>
 		<</switch>>
 	<</widget>>
 
 	/* Shared "wrong delivery" randomised one-liner. */
 	<<widget "deliverySorry">>
 		<<switch either(0, 1, 2)>>
-		<<case 0>>@@.notmc-speech; Sorry, but I think you made a mistake.@@
-		<<case 1>>@@.notmc-speech; Apologies, but I believe there might be a mistake.@@
-		<<default>>@@.notmc-speech; Sorry, but I think there might be an error.@@
+		<<case 0>><<say>>Sorry, but I think you made a mistake.<</say>>
+		<<case 1>><<say>>Apologies, but I believe there might be a mistake.<</say>>
+		<<default>><<say>>Sorry, but I think there might be an error.<</say>>
 		<</switch>>
 	<</widget>>
 
@@ -76,7 +76,7 @@ integer in [start, end]. Replaces the 4-10 line <<if>> ladders each
 		<<if _cfg.payMode eq setup.DeliveryPayMode.ON_ENTRY>><<run setup.Delivery.addJobSuccessEarnings()>><<deliveryTrackCorrect>><</if>>
 		<<image "scenes/deliveryhub/" + _cfg.headerImg { style: "max-width: 100%; height: auto; display: block; margin: 0 auto;" }>>
 		<<if State.variables[_varName] eq 1>>
-			@@.notmc-speech; Great, thank you so much!@@<br>
+			<<say>>Great, thank you so much!<</say>><br>
 			<<if _cfg.payMode eq setup.DeliveryPayMode.ON_DONE>><<run setup.Delivery.addJobSuccessEarnings()>><<deliveryTrackCorrect>><</if>>
 			<<deliveryTipCheck>>
 			<br>

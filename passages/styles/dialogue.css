@@ -73,6 +73,43 @@
 	text-decoration: none;
 }
 
+/* ===== Dialogue macros (<<mc>>/<<say>>/<<narration>>/<<vocal>>) ===== */
+
+/* Layout cue for macro-rendered spoken lines. Each line becomes its own
+   block with a speaker-coloured accent bar on the left (currentColor picks
+   up .mc-speech / .notmc-speech), so dialogue is scannable as discrete
+   turns instead of a wall of coloured text. Only the macros add this class;
+   raw inline @@.mc-speech;@@ usages stay inline and are unaffected. */
+.speech-line {
+	display: block;
+	margin: 0.4em 0;
+	padding-left: 0.7em;
+	border-left: 3px solid currentColor;
+}
+
+/* Bold speaker label rendered by <<say "Name">> / <<mc true>>. Inherits the
+   speaker colour from its parent speech span. */
+.speaker-name {
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	margin-right: 0.35em;
+}
+
+/* Stage direction / action beat (<<narration>>). NOT speaker-coloured on purpose:
+   it is narration, so it reads in the default passage colour, distinguished
+   from speech by italics + no quotation marks. */
+.stage-dir {
+	font-style: italic;
+}
+
+/* Non-verbal vocalisation (<<vocal>>): a moan / gasp / whisper. Keeps the
+   speaker colour (paired with .mc-speech or .notmc-speech) but italic and
+   slightly dimmed so it reads as breath rather than spoken words. */
+.vocal {
+	font-style: italic;
+	opacity: 0.85;
+}
+
 /* ===== MC Action ===== */
 .mc-action {
 	display: inline-block;

@@ -1,5 +1,5 @@
 :: LibraryGhostBook [nobr] {"position":"3025,2100","size":"100,100"}
-@@.mc-thoughts; You slowly walk past the shelves deeper into the library, carefully examining each one. Suddenly, your gaze stops on an ancient book that stands out from the rest.@@ <br>
+<<thought>>You slowly walk past the shelves deeper into the library, carefully examining each one. Suddenly, your gaze stops on an ancient book that stands out from the rest.<</thought>> <br>
 <<image "scenes/library/book1.jpg" "libraryCenteredImg">><br>
 <<if not setup.Ghosts.hasDiscovered("Phantom")>>
 	<<run setup.Ghosts.markDiscovered("Phantom")>>
@@ -15,7 +15,7 @@
 <<else>>
 	You try to find something useful in this book, but you only come across information you already know.<br>
 <</if>>
-@@.mc-thoughts;After you finish reading, fatigue overcomes you. You decide to return to the reading area, where you can rest and collect your thoughts, leaving the bookshelves and their secrets behind.@@ <br>
+<<thought>>After you finish reading, fatigue overcomes you. You decide to return to the reading area, where you can rest and collect your thoughts, leaving the bookshelves and their secrets behind.<</thought>> <br>
 <br>
 @@.backbtn; [[Leave|LibraryInside]]@@ <br>
 <<done>>

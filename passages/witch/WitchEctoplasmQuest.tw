@@ -9,19 +9,19 @@
    WitchEctoplasmQuestDone, so the unlock is gated on sitting through the
    whole ritual. */
 <<if setup.Witch.ectoplasmQuestComplete()>>
-	@@.notmc-speech; That ledger's open between us now. Don't waste the line.@@<br>
+	<<say>>That ledger's open between us now. Don't waste the line.<</say>><br>
 	<br>
 	@@.backbtn; [[Back|WitchInside]]@@
 <<elseif setup.Witch.canCompleteEctoplasmQuest()>>
 	@@.location; Khadija's back room@@<br>
 	<<if setup.Witch.isEctoplasmQuestPrequalified()>>
-		@@.notmc-speech; I had the number before you opened your mouth. Three of them, wrung out, and not one of those nights was my idea. You did the work because the work asked, not because I did.@@<br>
-		@@.mc-speech; I didn't know it was counting toward anything.@@<br>
-		@@.notmc-speech; That's the only reason it counts. The ones I bury are always counting. You weren't. Sit down. This part you learn by watching.@@<br>
+		<<say>>I had the number before you opened your mouth. Three of them, wrung out, and not one of those nights was my idea. You did the work because the work asked, not because I did.<</say>><br>
+		<<mc>>I didn't know it was counting toward anything.<</mc>><br>
+		<<say>>That's the only reason it counts. The ones I bury are always counting. You weren't. Sit down. This part you learn by watching.<</say>><br>
 	<<else>>
-		@@.notmc-speech; Three. And you walked back in the same person who walked out. That's the part I can't teach, so I'm glad you brought it yourself.@@<br>
-		@@.mc-speech; I did what you asked. Wrung out, left where they dropped.@@<br>
-		@@.notmc-speech; Then you've earned the rest of it. Sit down. This part you learn by watching.@@<br>
+		<<say>>Three. And you walked back in the same person who walked out. That's the part I can't teach, so I'm glad you brought it yourself.<</say>><br>
+		<<mc>>I did what you asked. Wrung out, left where they dropped.<</mc>><br>
+		<<say>>Then you've earned the rest of it. Sit down. This part you learn by watching.<</say>><br>
 	<</if>>
 	<br>
 	@@.usebtn; [[Show me, then.|WitchBanishLesson]]@@<br>
@@ -29,20 +29,20 @@
 	@@.backbtn; [[Not right now|WitchInside]]@@
 <<else>>
 	@@.location; Khadija's back room@@<br>
-	@@.notmc-speech; You want to be a real hunter. It takes more than coin and contracts.@@<br>
-	@@.mc-speech; I figured. What does it actually cost?@@<br>
-	@@.notmc-speech; The girls who came before you. I let them start too cheaply and buried most of them. They couldn't take a ghost apart and walk off. Kept going back for the next pull.@@<br>
-	@@.mc-speech; So they got addicted.@@<br>
-	@@.notmc-speech; Fatally so. The houses bleed something that gets into a person. I'm not opening that door for a burgeoning cumslut I'll be crossing off my list inside a year.@@<br>
-	@@.mc-speech; Then how do I prove I'm not her?@@<br>
-	@@.notmc-speech; Take some ghosts apart. Wring each one dry and leave it on the floor. You've felt them notice you, so use it. Spend the ghost, not yourself.@@<br>
-	@@.notmc-speech; Three. Then we talk about the rest.@@<br>
+	<<say>>You want to be a real hunter. It takes more than coin and contracts.<</say>><br>
+	<<mc>>I figured. What does it actually cost?<</mc>><br>
+	<<say>>The girls who came before you. I let them start too cheaply and buried most of them. They couldn't take a ghost apart and walk off. Kept going back for the next pull.<</say>><br>
+	<<mc>>So they got addicted.<</mc>><br>
+	<<say>>Fatally so. The houses bleed something that gets into a person. I'm not opening that door for a burgeoning cumslut I'll be crossing off my list inside a year.<</say>><br>
+	<<mc>>Then how do I prove I'm not her?<</mc>><br>
+	<<say>>Take some ghosts apart. Wring each one dry and leave it on the floor. You've felt them notice you, so use it. Spend the ghost, not yourself.<</say>><br>
+	<<say>>Three. Then we talk about the rest.<</say>><br>
 	<<if setup.Witch.ectoplasmWeakenCount() gt 0>>
 		<br>
-		@@.notmc-speech; You've been busy out there. Good. Finish the set, then come back.@@<br>
+		<<say>>You've been busy out there. Good. Finish the set, then come back.<</say>><br>
 	<</if>>
 	<br>
-	@@.mc-thoughts; [Three ghosts, wrung out and left where they drop. She asks for it the way other people ask you to return their Tupperware.]@@<br>
+	<<thought>>[Three ghosts, wrung out and left where they drop. She asks for it the way other people ask you to return their Tupperware.]<</thought>><br>
 	<br>
 	@@.mc-action; Ghosts wrung dry and walked away from: <<= setup.Witch.ectoplasmWeakenCount()>> / <<= setup.Witch.GHOSTS_TO_WEAKEN>>. Weaken a ghost during a hunt by distracting it until it spends itself.@@<br>
 	<br>
@@ -50,48 +50,56 @@
 <</if>>
 
 :: WitchBanishLesson [nobr] {"position":"1450,400","size":"100,100"}
-@@.notmc-speech; <i>She sets a stub of black candle on the desk between you and turns it upright, then strikes a match.</i> Watch the flame. Not me.@@<br>
+<<narration>>She sets a stub of black candle on the desk between you and turns it upright, then strikes a match.<</narration>>
+<<say>>Watch the flame. Not me.<</say>><br>
 <<video "characters/witch/banish/1.mp4">><br>
-@@.notmc-speech; A ghost stays in a house because the house still knows its name. You light this, you give the name back, the house lets go. That's the shape of it.@@<br>
-@@.notmc-speech; Your voice is your whole craft. One that hears it done wrong stops being patient with you.@@<br>
-@@.notmc-speech; Paying attention? I'll only demonstrate once.@@<br>
-@@.mc-speech; Yeah. Show me.@@<br>
+<<say>>A ghost stays in a house because the house still knows its name. You light this, you give the name back, the house lets go. That's the shape of it.<</say>><br>
+<<say>>Your voice is your whole craft. One that hears it done wrong stops being patient with you.<</say>><br>
+<<say>>Paying attention? I'll only demonstrate once.<</say>><br>
+<<mc>>Yeah. Show me.<</mc>><br>
 <br>
 <<linkreplace "@@.mc-speech; What happens if I can't even find it?@@">>
 	<br>
 	<<video "characters/witch/banish/2.mp4">><br>
-	@@.notmc-speech; <i>She pulls her shirt over her head, folds it once, lays it on the desk. Bare to the waist, the candle flame doubled in both her eyes.</i> Then you stop looking. You make it come to you. A ghost that wants something gets careless. So give it something worth wanting.@@<br>
-	@@.mc-thoughts; She's topless on the floor, briefing me like it's an invoice, but I'm losing my mind over here. I look at the candle. I look at the candle very hard.@@<br>
+	<<narration>>She pulls her shirt over her head, folds it once, lays it on the desk. Bare to the waist, the candle flame doubled in both her eyes.<</narration>>
+	<<say>>Then you stop looking. You make it come to you. A ghost that wants something gets careless. So give it something worth wanting.<</say>><br>
+	<<thought>>She's topless on the floor, briefing me like it's an invoice, but I'm losing my mind over here. I look at the candle. I look at the candle very hard.<</thought>><br>
 	<br>
 	<<linkreplace "@@.notmc-speech; You're staring.@@">>
 		<br>
 		<<video "characters/witch/banish/3.mp4">><br>
-		@@.notmc-speech; <i>Her hand has gone between her legs with no ceremony, two fingers working a slow circle, her breathing flat and deliberate.</i> Sitting there drooling on yourself. That right there is the bait. The thing you hold out. Watch how little it takes once it's already looking at you.@@<br>
-		@@.notmc-speech; <i>She comes quick and small, one short breath pushed out through her nose, and her hand goes still. A button wired by Aphrodite herself.</i>@@<br>
-		@@.mc-thoughts; I have a job. I'm learning new skills. I am being extremely normal about this.@@<br>
+		<<narration>>Her hand has gone between her legs with no ceremony, two fingers working a slow circle, her breathing flat and deliberate.<</narration>>
+		<<say>>Sitting there drooling on yourself. That right there is the bait. The thing you hold out. Watch how little it takes once it's already looking at you.<</say>><br>
+		<<narration>>She comes quick and small, one short breath pushed out through her nose, and her hand goes still. A button wired by Aphrodite herself.<</narration>><br>
+		<<thought>>I have a job. I'm learning new skills. I am being extremely normal about this.<</thought>><br>
 		<br>
 		<<linkreplace "@@.mc-speech; And the candle. Where does that come in?@@">>
 			<br>
 			<<video "characters/witch/banish/4.mp4">><br>
-			@@.notmc-speech; <i>She tips the candle until a bead of wax rolls onto the back of her wrist. Doesn't flinch.</i> Flame between you and the ghost. Name on the way out, on the breath. The sound goes like this.@@<br>
-			@@.notmc-speech; <i>She says a name you've never heard, low and broken open, the way it would come out with a translucent cock down your throat and your hips already moving for it.</i> Like you're about to come around it. Like finishing the name is the only thing you've ever wanted. Say it clean and polite and it laughs in your face. Say it like that and it's gone before the wax cools.@@<br>
-			@@.mc-speech; That's the whole spell?@@<br>
-			@@.notmc-speech; It is.@@<br>
+			<<narration>>She tips the candle until a bead of wax rolls onto the back of her wrist. Doesn't flinch.<</narration>>
+			<<say>>Flame between you and the ghost. Name on the way out, on the breath. The sound goes like this.<</say>><br>
+			<<narration>>She says a name you've never heard, low and broken open, the way it would come out with a translucent cock down your throat and your hips already moving for it.<</narration>>
+			<<say>>Like you're about to come around it. Like finishing the name is the only thing you've ever wanted. Say it clean and polite and it laughs in your face. Say it like that and it's gone before the wax cools.<</say>><br>
+			<<mc>>That's the whole spell?<</mc>><br>
+			<<say>>It is.<</say>><br>
 			<br>
 			<<linkreplace "@@.mc-speech; And if something's already in my mouth when it's time to say it?@@">>
 				<br>
 				<<video "characters/witch/banish/5.mp4">><br>
-				@@.notmc-speech; <i>She opens the desk drawer and lifts out a worn ball gag by the strap.</i> Then you say it anyway. The name doesn't live in your lips. It lives in the rest of you.@@<br>
-				@@.notmc-speech; <i>She buckles it behind her head, bites down, tests the give.</i> Keep surviving my houses and I'll teach you to do the whole thing with your jaw strapped. Or otherwise occupied. Same ritual, harder to fake.@@<br>
+				<<narration>>She opens the desk drawer and lifts out a worn ball gag by the strap.<</narration>>
+				<<say>>Then you say it anyway. The name doesn't live in your lips. It lives in the rest of you.<</say>><br>
+				<<narration>>She buckles it behind her head, bites down, tests the give.<</narration>>
+				<<say>>Keep surviving my houses and I'll teach you to do the whole thing with your jaw strapped. Or otherwise occupied. Same ritual, harder to fake.<</say>><br>
 				<br>
 				<<linkreplace "@@.mc-thoughts; She's not finished showing me.@@">>
 					<br>
 					<<video "characters/witch/banish/6.mp4">><br>
-					@@.mc-thoughts; Both hands this time. The candle worked up into a frenzy, covering Khadija's toned body in its excruciating warmth. The name comes out of her wrecked and shapeless behind the gag, and I understand it anyway, the meaning landing even with the word destroyed.@@<br>
-					@@.mc-thoughts; She finishes hard, a long sound bitten down behind the rubber, her shoulders dropping when it lets her go. None of it performed. Her body just sees the lesson through to the end.@@<br>
+					<<thought>>Both hands this time. The candle worked up into a frenzy, covering Khadija's toned body in its excruciating warmth. The name comes out of her wrecked and shapeless behind the gag, and I understand it anyway, the meaning landing even with the word destroyed.<</thought>><br>
+					<<thought>>She finishes hard, a long sound bitten down behind the rubber, her shoulders dropping when it lets her go. None of it performed. Her body just sees the lesson through to the end.<</thought>><br>
 					<br>
-					@@.notmc-speech; <i>She works the gag loose and drops it back in the drawer. Her shirt goes on like she's clocking in for a shift. She rights the candle and pinches the wick. A scroll comes down off the shelf, and a wooden spoon goes back into a pot on the burner you hadn't noticed was simmering this whole time. She stirs it, reading, gone from the room without leaving it.</i> Door's behind you.@@<br>
-					@@.mc-thoughts; I came in for a price list. I'm leaving with a candle stub, a name I can't unhear, and a wax stain I can't get out of my head. My hand isn't steady on the knob. I decide that's the cold.@@<br>
+					<<narration>>She works the gag loose and drops it back in the drawer. Her shirt goes on like she's clocking in for a shift. She rights the candle and pinches the wick. A scroll comes down off the shelf, and a wooden spoon goes back into a pot on the burner you hadn't noticed was simmering this whole time. She stirs it, reading, gone from the room without leaving it.<</narration>>
+					<<say>>Door's behind you.<</say>><br>
+					<<thought>>I came in for a price list. I'm leaving with a candle stub, a name I can't unhear, and a wax stain I can't get out of my head. My hand isn't steady on the knob. I decide that's the cold.<</thought>><br>
 					<br>
 					<<run setup.Mc.setLust(100)>>
 					@@.usebtn; [[Leave, soaked through.|WitchEctoplasmQuestDone]]@@
@@ -103,7 +111,8 @@
 
 :: WitchEctoplasmQuestDone [nobr] {"position":"1550,400","size":"100,100"}
 <<run setup.Witch.completeEctoplasmQuest()>>
-@@.notmc-speech; <i>She doesn't look up from the scroll.</i> When you start seeing what the houses leak, jar it and bring it to me. We'll trade. That's the other ledger.@@<br>
+<<narration>>She doesn't look up from the scroll.<</narration>>
+<<say>>When you start seeing what the houses leak, jar it and bring it to me. We'll trade. That's the other ledger.<</say>><br>
 <br>
 @@.mc-action; The ectoplasm economy is now open. You can find your own haunted houses -- ones that don't require a contract.@@<br>
 <br>

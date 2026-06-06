@@ -1,5 +1,6 @@
 const { test, expect } = require('./fixtures');
-const { setVar, getVar, callSetup } = require('./helpers');
+const { setVar, getVar, callSetup,
+        getWardrobeItem, setWardrobeRemember, getWardrobeRemember } = require('./helpers');
 
 /* setup.Migrations holds the one-shot save patches and the
    PassageReady "ensure" defaults. Big patches stamp their
@@ -41,7 +42,7 @@ test.describe('Migrations (setup.Migrations)', () => {
     await page.evaluate(() => {
       const V = SugarCube.State.variables;
       ['basement','bedroomTwo','nursery','bathroomTwo','hallwayUpstairs',
-       'prowlActivated','rememberTopOuter','rememberBottomOuter',
+       'prowlActivated',
        'prowlTimeRemain','prowlActivationTime','elapsedTimeProwl',
        'sanityIfHot','sanityInTheDark','medicineAmount',
        'ghostMareEventStart','ghostMareEventStage','update22'
@@ -60,8 +61,6 @@ test.describe('Migrations (setup.Migrations)', () => {
     }
 
     expect(await getVar(page, 'prowlActivated')).toBe(false);
-    expect(await getVar(page, 'rememberTopOuter')).toBe('tshirt0');
-    expect(await getVar(page, 'rememberBottomOuter')).toBe('jeans0');
     expect(await getVar(page, 'prowlTimeRemain')).toBe(60);
     expect(await getVar(page, 'prowlActivationTime')).toBe(0);
     expect(await getVar(page, 'elapsedTimeProwl')).toBe(0);
@@ -88,22 +87,22 @@ test.describe('Migrations (setup.Migrations)', () => {
 
   // --- migrateStockingsFootBought -------------------------------
 
-  test('migrateStockingsFootBought marks stockings + foot piercings NOT_BOUGHT and stamps update2707', async ({ game: page }) => {
+  test('migrateStockingsFootBought marks the stockings items NOT_BOUGHT in the wardrobe bundle and stamps update2707', async ({ game: page }) => {
     const NOT_BOUGHT = await callSetup(page, 'setup.ClothingState.NOT_BOUGHT');
 
-    // Pre-state: clear the six keys so the migration has to fill them.
+    // Pre-state: clear the three stockings item keys so the migration
+    // has to fill them. (Foot piercings were dropped from the game --
+    // the migration no longer seeds them.)
     await page.evaluate(() => {
-      const V = SugarCube.State.variables;
-      ['stockingsState1','stockingsState2','stockingsState3',
-       'footState1','footState2','footState3','update2707'
-      ].forEach(k => { delete V[k]; });
+      const items = SugarCube.State.variables.wardrobe.items;
+      ['stockings1','stockings2','stockings3'].forEach(id => { delete items[id]; });
+      delete SugarCube.State.variables.update2707;
     });
 
     await page.evaluate(() => SugarCube.setup.Migrations.migrateStockingsFootBought());
 
-    for (const k of ['stockingsState1','stockingsState2','stockingsState3',
-                     'footState1','footState2','footState3']) {
-      expect(await getVar(page, k), `${k} should be NOT_BOUGHT`).toBe(NOT_BOUGHT);
+    for (const id of ['stockings1','stockings2','stockings3']) {
+      expect(await getWardrobeItem(page, id), `${id} should be NOT_BOUGHT`).toBe(NOT_BOUGHT);
     }
     expect(await getVar(page, 'update2707')).toBe(1);
   });
@@ -183,37 +182,31 @@ test.describe('Migrations (setup.Migrations)', () => {
 
   // --- ensureUnderwearMemory ------------------------------------
 
-  test('ensureUnderwearMemory only fills the remember* fields when undefined', async ({ game: page }) => {
-    await page.evaluate(() => {
-      const V = SugarCube.State.variables;
-      delete V.rememberTopUnder;
-      delete V.rememberBottomUnder;
-    });
+  test('ensureUnderwearMemory only fills the bra/panties remember tokens when undefined', async ({ game: page }) => {
+    await setWardrobeRemember(page, 'bra', null);
+    await setWardrobeRemember(page, 'panties', null);
     await page.evaluate(() => SugarCube.setup.Migrations.ensureUnderwearMemory());
-    expect(await getVar(page, 'rememberTopUnder')).toBe('bra0');
-    expect(await getVar(page, 'rememberBottomUnder')).toBe('panties0');
+    expect(await getWardrobeRemember(page, 'bra')).toBe('bra0');
+    expect(await getWardrobeRemember(page, 'panties')).toBe('panties0');
 
     // Idempotent: a prior choice is preserved on subsequent calls.
-    await setVar(page, 'rememberTopUnder', 'bra2');
-    await setVar(page, 'rememberBottomUnder', 'panties3');
+    await setWardrobeRemember(page, 'bra', 'bra2');
+    await setWardrobeRemember(page, 'panties', 'panties3');
     await page.evaluate(() => SugarCube.setup.Migrations.ensureUnderwearMemory());
-    expect(await getVar(page, 'rememberTopUnder')).toBe('bra2');
-    expect(await getVar(page, 'rememberBottomUnder')).toBe('panties3');
+    expect(await getWardrobeRemember(page, 'bra')).toBe('bra2');
+    expect(await getWardrobeRemember(page, 'panties')).toBe('panties3');
   });
 
-  test('ensureUnderwearMemory does NOT fill if only one of the pair is set', async ({ game: page }) => {
-    /* The guard is `top undefined || bottom undefined`, so a save
-       that has top set but bottom missing still gets both rewritten.
-       Pin the current behavior so a future refactor doesn't quietly
-       split the conditions. */
-    await page.evaluate(() => {
-      const V = SugarCube.State.variables;
-      V.rememberTopUnder = 'bra5';
-      delete V.rememberBottomUnder;
-    });
+  test('ensureUnderwearMemory fills each remember token independently', async ({ game: page }) => {
+    /* The bra + panties guards are independent now, so a save that has
+       the bra token set but panties missing keeps the bra choice and
+       only backfills panties. Pin this so a future refactor doesn't
+       re-couple the two conditions. */
+    await setWardrobeRemember(page, 'bra', 'bra5');
+    await page.evaluate(() => { delete SugarCube.State.variables.wardrobe.remembered.panties; });
     await page.evaluate(() => SugarCube.setup.Migrations.ensureUnderwearMemory());
-    expect(await getVar(page, 'rememberTopUnder')).toBe('bra0');
-    expect(await getVar(page, 'rememberBottomUnder')).toBe('panties0');
+    expect(await getWardrobeRemember(page, 'bra')).toBe('bra5');
+    expect(await getWardrobeRemember(page, 'panties')).toBe('panties0');
   });
 
   // --- ensureZeroDefaults ---------------------------------------

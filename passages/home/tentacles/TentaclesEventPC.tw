@@ -1,8 +1,8 @@
 :: TentaclesEventPC [nobr] {"position":"800,4300","size":"100,100"}
 <<run setup.Home.resetTentaclesCooldown()>>
 <<video "mechanics/tentacles/pc1.mp4">>
-@@.mc-thoughts; You're masturbating, caressing your wet pussy. Suddenly, a tentacle crawls across the screen, slowly approaching you like a snake.@@<br>
-@@.mc-speech; Fuck, what the hell is this?!@@<br><br>
+<<thought>>You're masturbating, caressing your wet pussy. Suddenly, a tentacle crawls across the screen, slowly approaching you like a snake.<</thought>><br>
+<<mc>>Fuck, what the hell is this?!<</mc>><br><br>
 <<if setup.Home.tentaclesStageAll() gte 3>>
 	<span id="tentaclesPCHideOpt">@@.usebtn; [[Run away|Livingroom]]@@ or </span><<linkreplace "@@.usebtn; Stay@@">>
 		<<replace "#tentaclesPCHideOpt">>
@@ -11,8 +11,8 @@
 		<span id ="tentaclesEventPc">
 		<<video "mechanics/tentacles/pc3.mp4">></span>
 		<<set _videoIndex to 1>>
-		@@.mc-thoughts; The tentacle doesn't scare you anymore. It ignites a craving for something new, forbidden. You touch it with your tongue - it's slick, tasty, and that makes your pussy start to pulse.@@<br>
-		@@.mc-thoughts; Another one appears from behind, and you take them into , @@
+		<<thought>>The tentacle doesn't scare you anymore. It ignites a craving for something new, forbidden. You touch it with your tongue - it's slick, tasty, and that makes your pussy start to pulse.<</thought>><br>
+		<<thought>>Another one appears from behind, and you take them into ,<</thought>>
 		<<link "@@.usebtn;  your mouth one by one@@">>
 			<<set _videoIndex to (_videoIndex + 1) % 2 + 2>>
 			<<replace "#tentaclesEventPc">>
@@ -20,10 +20,10 @@
 				<<video "mechanics/tentacles/pc" + _videoIndex+`.mp4`>>
 			<</replace>>
 		<</link>>
-		@@.mc-thoughts; licking them as if you're sucking the juiciest cock, feeling your cunt start to@@
+		<<thought>>licking them as if you're sucking the juiciest cock, feeling your cunt start to<</thought>>
 		<<linkappend "@@.usebtn; drip with anticipation@@">>
 			<<video "mechanics/tentacles/pc4.mp4">>
-			@@.mc-thoughts; They cum on you, covering you with thick, warm semen@@<br>
+			<<thought>>They cum on you, covering you with thick, warm semen<</thought>><br>
 			<<if setup.Home.tentaclesStageAll() gte 4>>
 				@@.enterbtn; [[Take them|TentaclesEventPC1]]@@ or @@.enterbtn; [[Leave|Livingroom][setup.Home.setTentaclesPCText(2) ;setup.Mc.setLust(100)]]@@
 			<<else>>

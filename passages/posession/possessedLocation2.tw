@@ -2,7 +2,7 @@
 <<if setup.Posession.locationChoice() eq "library">>
 	<span id ="possessedLocationLibrary1">
 	<<video "mechanics/possessed/1.7.mp4">></span>
-	@@.mc-thoughts; They cum all over your face,@@ <<link "@@.usebtn; one after the other@@">>
+	<<thought>>They cum all over your face,<</thought>> <<link "@@.usebtn; one after the other@@">>
 		<<set _videoToggle to !_videoToggle>>
 		<<replace "#possessedLocationLibrary1">>
 			<<if _videoToggle>>
@@ -13,9 +13,9 @@
 		<</replace>>
 	<</link>>
 	<br>@@color:red; Well, we've only just started. I think we'll go somewhere else now that we're done here. @@<br>
-	@@.mc-speech; Oh, damn@@<br>
+	<<mc>>Oh, damn<</mc>><br>
 	@@.enterbtn; [[Next|Possessed]]@@<br>
 <<else>>
-	@@.mc-thoughts; You feel the possession fading, your senses returning to normal.@@<br>
+	<<thought>>You feel the possession fading, your senses returning to normal.<</thought>><br>
 	@@.enterbtn; [[Next|Possessed]]@@<br>
 <</if>>

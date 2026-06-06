@@ -1,10 +1,10 @@
 :: GhostSpecialEventWraithStart [nobr] {"position":"950,2550","size":"100,100"}
 <<randomVideo "characters/ghosts/specials/wraith3.mp4" "characters/ghosts/specials/wraith4.mp4">>
-@@.notmc-speech;Do you like it, slut? I don't understand what you're moaning about.@@ <br>
+<<say>>Do you like it, slut? I don't understand what you're moaning about.<</say>> <br>
 @@.notmc-speech;I think it's time to free@@ <<linkappend "@@.notmc-speechLink;your mouth from those rags.@@">>
 	<<video "characters/ghosts/specials/wraith5.mp4">>
-	@@.mc-speech; Mm~Too~ Much~ MMm~ I can't ~ AH@@<br>
-	@@.notmc-speech; I still don't understand what you're trying to say, bitch.@@<br>
-	@@.mc-thoughts;They continued to fuck you, humiliating you.@@<br>
-	@@.notmc-speech; Are you crying? Don't, baby. We're almost letting you go. You want to go home, right? Show me [[with your mouth|GhostSpecialEventWraithEnd]] how much you want it.@@<br>
+	<<vocal mc>>Mm<</vocal>> <<mc>>Too—Much<</mc>> <<vocal mc>>MMm<</vocal>> <<mc>>I can't<</mc>> <<vocal mc>>AH<</vocal>><br>
+	<<say>>I still don't understand what you're trying to say, bitch.<</say>><br>
+	<<thought>>They continued to fuck you, humiliating you.<</thought>><br>
+	<<say>>Are you crying? Don't, baby. We're almost letting you go. You want to go home, right? Show me [[with your mouth|GhostSpecialEventWraithEnd]] how much you want it.<</say>><br>
 <</linkappend>>

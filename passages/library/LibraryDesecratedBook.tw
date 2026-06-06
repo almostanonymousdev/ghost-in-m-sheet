@@ -1,11 +1,11 @@
 :: LibraryDesecratedBook [nobr] {"position":"3125,2100","size":"100,100"}
-@@.mc-thoughts; A heavy book has been pushed back behind the others on the shelf, like someone wanted it forgotten. The cover reads "A Hunter's Companion -- Tips and Field Notes."@@<br>
+<<thought>>A heavy book has been pushed back behind the others on the shelf, like someone wanted it forgotten. The cover reads "A Hunter's Companion -- Tips and Field Notes."<</thought>><br>
 <<image "scenes/library/desecrated-book.png" "libraryCenteredImg">><br>
-@@.mc-thoughts; You open it -- and the binding sags wrong in your hands. Half the pages are gone, ripped out at the spine. What's left is smeared with something cold and translucent, the same glassy slime you've been finding in the haunted rooms. Ectoplasm.@@<br>
+<<thought>>You open it -- and the binding sags wrong in your hands. Half the pages are gone, ripped out at the spine. What's left is smeared with something cold and translucent, the same glassy slime you've been finding in the haunted rooms. Ectoplasm.<</thought>><br>
 <br>
-@@.mc-speech; ...something didn't want me reading this.@@<br>
+<<mc>>...something didn't want me reading this.<</mc>><br>
 <br>
-@@.mc-thoughts; Whatever did this couldn't have carried the pages far. They have to be in the library somewhere -- tucked between other books, slid under shelves, dropped behind the stacks. Worth keeping an eye out next time you come to search.@@<br>
+<<thought>>Whatever did this couldn't have carried the pages far. They have to be in the library somewhere -- tucked between other books, slid under shelves, dropped behind the stacks. Worth keeping an eye out next time you come to search.<</thought>><br>
 <<run setup.Library.markDesecratedBookFound()>>
 <br>
 @@.backbtn; [[Leave|LibraryInside]]@@<br>

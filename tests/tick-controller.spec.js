@@ -1,5 +1,5 @@
 const { test, expect } = require('./fixtures');
-const { setVar, getVar, callSetup, goToPassage, seedRandom } = require('./helpers');
+const { setVar, getVar, callSetup, goToPassage, seedRandom, setWardrobeItem } = require('./helpers');
 
 /* setup.Tick is the per-passage maintenance hub: cursed-hunt timer
    expiry, detector highlights, rescue quest expiry, prowl timer, choker
@@ -79,7 +79,7 @@ test.describe('TickController helpers', () => {
 
   test('applyChokerLustFloor pushes lust to 15 while choker is WORN', async ({ game: page }) => {
     const WORN = await callSetup(page, 'setup.ClothingState.WORN');
-    await setVar(page, 'neckChokerState1', WORN);
+    await setWardrobeItem(page, 'neckChoker1', WORN);
     await setVar(page, 'mc.lust', 5);
     const changed = await page.evaluate(() => SugarCube.setup.Tick.applyChokerLustFloor());
     expect(changed).toBe(true);
@@ -88,7 +88,7 @@ test.describe('TickController helpers', () => {
 
   test('applyChokerLustFloor leaves lust alone when already above the floor', async ({ game: page }) => {
     const WORN = await callSetup(page, 'setup.ClothingState.WORN');
-    await setVar(page, 'neckChokerState1', WORN);
+    await setWardrobeItem(page, 'neckChoker1', WORN);
     await setVar(page, 'mc.lust', 50);
     const changed = await page.evaluate(() => SugarCube.setup.Tick.applyChokerLustFloor());
     expect(changed).toBe(false);
@@ -97,7 +97,7 @@ test.describe('TickController helpers', () => {
 
   test('applyChokerLustFloor does nothing when choker is not WORN', async ({ game: page }) => {
     const NOT_WORN = await callSetup(page, 'setup.ClothingState.NOT_WORN');
-    await setVar(page, 'neckChokerState1', NOT_WORN);
+    await setWardrobeItem(page, 'neckChoker1', NOT_WORN);
     await setVar(page, 'mc.lust', 0);
     const changed = await page.evaluate(() => SugarCube.setup.Tick.applyChokerLustFloor());
     expect(changed).toBe(false);
@@ -337,7 +337,7 @@ test.describe('TickController helpers', () => {
 
   test('onPassageReady refreshes tool timer + recomputes steal chance + clamps lust', async ({ game: page }) => {
     const WORN = await callSetup(page, 'setup.ClothingState.WORN');
-    await setVar(page, 'neckChokerState1', WORN);
+    await setWardrobeItem(page, 'neckChoker1', WORN);
     await setVar(page, 'mc.lust', 0);
     await setVar(page, 'mc.sanity', 50);
     await setVar(page, 'stealChanceMult', 1);

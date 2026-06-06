@@ -2,7 +2,7 @@
 <<image "ui/img/mchouse.jpg" { width: "100%" }>>
 <br>
 @@.location; My home@@<br>
-@@.mc-thoughts; Home, sweet home@@<br>
+<<thought>>Home, sweet home<</thought>><br>
 <br>
 <span class="enterbtn">[[Go inside|Livingroom]]</span><br>
 <<if setup.Home.isBrookePossessed()>>@@.usebtn; [[Go find Brooke|PossessedBrooke]]@@<br>

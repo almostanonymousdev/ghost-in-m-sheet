@@ -1,13 +1,13 @@
 :: CompanionLeaving [noreturn nobr] {"position":"2350,3125","size":"100,100"}
-@@.notmc-speech; <<= setup.Mc.name()>>, wait, I don't feel well... This place is driving me crazy, I don't feel like myself."@@<br>
-@@.mc-thoughts; She nervously looks around, as if afraid the ghost might return at any moment.@@<br>
-@@.notmc-speech; I'm sorry, but I can't stay with you. I have to get out of here, or I'll break...@@<br>
-@@.mc-speech; Yes, of course, I understand.@@<br>
+<<say>><<= setup.Mc.name()>>, wait, I don't feel well... This place is driving me crazy, I don't feel like myself.<</say>><br>
+<<thought>>She nervously looks around, as if afraid the ghost might return at any moment.<</thought>><br>
+<<say>>I'm sorry, but I can't stay with you. I have to get out of here, or I'll break...<</say>><br>
+<<mc>>Yes, of course, I understand.<</mc>><br>
 <br>
-@@.mc-thoughts; <<= setup.Companion.name()>> leaves the house.@@ <<if setup.Companion.sanity() lte 0>>
+<<thought>><<= setup.Companion.name()>> leaves the house.<</thought>> <<if setup.Companion.sanity() lte 0>>
 <<else>>@@.warningtext; Req. higher level of <<= setup.Companion.name()>> .@@
 <</if>><br>
-@@.mc-speech; Well, I'm alone now...@@<br>
+<<mc>>Well, I'm alone now...<</mc>><br>
 <br>
 <<run setup.Companion.resetHuntState()>>
 @@.backbtn; [[Continue|$return]]@@<br>

@@ -1,14 +1,13 @@
 :: Park [nobr] {"position":"2800,1600","size":"100,100"}
 <<image "ui/img/park.jpg" { width: "100%" }>>
 @@.location; Park@@<br>
-@@.mc-thoughts; The kind of park that just gets called //the park//, because there isn't another one. Asphalt loop, three benches, a stand of pine that turns into real forest somewhere past the fourth bench. There's an old man who walks the loop every morning at the same speed regardless of weather. You've nodded at him forty times and still don't know his name.
-@@<br>
+<<thought>>The kind of park that just gets called //the park//, because there isn't another one. Asphalt loop, three benches, a stand of pine that turns into real forest somewhere past the fourth bench. There's an old man who walks the loop every morning at the same speed regardless of weather. You've nodded at him forty times and still don't know his name.<</thought>><br>
 <<if not setup.Park.hasSportswear()>>
-	@@.mc-speech; I need to buy sportswear.@@<br>
+	<<mc>>I need to buy sportswear.<</mc>><br>
 <<elseif not setup.Park.isOpen()>>
-	@@.mc-thoughts; Not the best time for training.@@<br>
+	<<thought>>Not the best time for training.<</thought>><br>
 <<elseif setup.Park.joggingOnCooldown()>>
-	@@.mc-speech; Enough for today...@@<br>
+	<<mc>>Enough for today...<</mc>><br>
 <<elseif setup.Park.hasEnergyToJog()>>
 	@@.enterbtn; [[Jogging|ParkJogging][setup.Park.removeJoggingEnergy()]]<<image "ui/img/energy.png" { style: "position: relative; top: 0.375em; width:20px;" }>> @@<br>
 <<else>>

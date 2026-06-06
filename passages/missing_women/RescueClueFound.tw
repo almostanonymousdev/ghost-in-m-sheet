@@ -1,10 +1,12 @@
 :: RescueClueFound [nobr] {"position":"2075,1600","size":"100,100"}
-@@.mc-thoughts; You notice someone's EMF reader. Next to it, there's a small torn piece of a photo.<br>
-Your EMF reader spikes the moment you bring it close to the @@<<linkappend "@@.usebtn;fragment of the old photo.@@">>
+<<thought>>You notice someone's EMF reader. Next to it, there's a small torn piece of a photo.<br>
+	Your EMF reader spikes the moment you bring it close to the
+<</thought>><<linkappend "@@.usebtn;fragment of the old photo.@@">>
 	<<run setup.MissingWomen.setRescueClueFound()>>
 	<<image 'characters/rescue/house/' + setup.MissingWomen.randomRescuePhotoNumber() + '.jpg' { class: setup.MissingWomen.tornStyleRandom() + ' displayCentredImgs', width: "50%" }>>
-	<br>@@.mc-speech; Hmm, this place looks familiar... but I can't quite remember where I've seen it.<br>
-	Clearly, this photo is somehow connected to the ghost and the missing girl.@@<br>
+	<br><<mc>>Hmm, this place looks familiar... but I can't quite remember where I've seen it.<br>
+		Clearly, this photo is somehow connected to the ghost and the missing girl.
+	<</mc>><br>
 	<br>
 
 	@@.mc-action; You found a piece of an old photo.@@<br><br>

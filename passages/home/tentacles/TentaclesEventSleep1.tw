@@ -1,28 +1,28 @@
 :: TentaclesEventSleep1 [nobr] {"position":"700,4300","size":"100,100"}
 <<video "mechanics/tentacles/sleep6.mp4">>
-@@.mc-thoughts;But the tentacles didn't retreat; they turned you over and started @@
+<<thought>>But the tentacles didn't retreat; they turned you over and started<</thought>>
 <<linkappend "@@.usebtn; fucking you again@@">>
 	<<video "mechanics/tentacles/sleep7.mp4">>
-	@@.mc-thoughts;Without noticing the tentacle in front of your face, it invaded your mouth while you moaned from your pussy being pounded.@@<br>
-	@@.mc-speech;Mgrm~ Mmm~@@<br>
-	@@.mc-thoughts;One tentacle inside your pussy, another in your mouth. They violate your body simultaneously, making you feel orgasm building up, you're@@
+	<<thought>>Without noticing the tentacle in front of your face, it invaded your mouth while you moaned from your pussy being pounded.<</thought>><br>
+	<<vocal mc>>Mgrm~ Mmm<</vocal>><br>
+	<<thought>>One tentacle inside your pussy, another in your mouth. They violate your body simultaneously, making you feel orgasm building up, you're<</thought>>
 	<<linkappend "@@.usebtn; about to cum...@@">>
 		<<video "mechanics/tentacles/sleep8.mp4">>
-		@@.mc-thoughts;They cum inside you, drenching your flesh with their thick, warm semen.@@
+		<<thought>>They cum inside you, drenching your flesh with their thick, warm semen.<</thought>>
 		<<linkreplace "@@.usebtn; Try to stand up@@">>
 			<<if setup.Home.tentaclesStageSleep() eq 3>>
 				<<run setup.Home.setTentaclesStageSleep(4)>>
 				<<goto "Bedroom">>
 			<<else>>
 				<<video "mechanics/tentacles/sleep9.mp4">>
-				@@.mc-thoughts;Instantly, small tentacles penetrate your ears, paralyzing you,@@
+				<<thought>>Instantly, small tentacles penetrate your ears, paralyzing you,<</thought>>
 				<<linkappend "@@.usebtn; turning you into their puppet.@@">>
 					<<video "mechanics/tentacles/sleep10.mp4">>
-					@@.mc-thoughts;What follows is just blurred memories: you start to satisfy them, taking them into your mouth, guiding them into your craving pussy, seeking deep penetration.@@<br>
-					@@.mc-thoughts;Your breasts become their toys: tentacles suck on your nipples, sending@@
+					<<thought>>What follows is just blurred memories: you start to satisfy them, taking them into your mouth, guiding them into your craving pussy, seeking deep penetration.<</thought>><br>
+					<<thought>>Your breasts become their toys: tentacles suck on your nipples, sending<</thought>>
 					<<linkappend "@@.usebtn; waves of pleasure through you.@@">>
 						<<video "mechanics/tentacles/sleep11.mp4">>
-						@@.mc-thoughts;They reach orgasm together, covering you with semen, filling your pussy, leaving marks all over your skin, everywhere.@@<br>
+						<<thought>>They reach orgasm together, covering you with semen, filling your pussy, leaving marks all over your skin, everywhere.<</thought>><br>
 						<<if setup.Home.tentaclesStageAll() eq 0>>
 							<<run setup.Home.setTentaclesStageAll(1)>>
 						<</if>>

@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, getVar, setVar, callSetup } = require('./helpers');
+const { openGame, resetGame, getVar, setVar, callSetup, getWardrobeItem, getWardrobeSlot, setWardrobeStolen } = require('./helpers');
 
 /* setup.HuntController owns the hunt lifecycle ($run) and the persistent
    meta-progression currency ($ectoplasm, measured in mL). $run is
@@ -709,18 +709,17 @@ test.describe('Hunt Controller', () => {
        so redressAfterHunt has to fire from endHunt itself. */
     await page.evaluate(() => SugarCube.setup.HuntController.start({ seed: 3, modifiers: [] }));
     await page.evaluate(() => {
-      const V = SugarCube.State.variables;
-      V.tshirtState0 = 'not worn';
-      V.tshirtState1 = 'not worn';
-      V.tshirtState  = 'not worn';
-      V.rememberTopOuter = 'notshirt1';
-      V.isShirtStolen = false;
+      const wb = SugarCube.State.variables.wardrobe;
+      wb.items.tshirt0 = 'not worn';
+      wb.items.tshirt1 = 'not worn';
+      wb.remembered.tshirt = 'notshirt1';
+      wb.stolen.shirt = false;
     });
 
     await page.evaluate(() => SugarCube.setup.HuntController.endHunt(true));
 
-    expect(await getVar(page, 'tshirtState1')).toBe('worn');
-    expect(await getVar(page, 'tshirtState')).toBe('worn');
+    expect(await getWardrobeItem(page, 'tshirt1')).toBe('worn');
+    expect(await getWardrobeSlot(page, 'tshirt')).toBe('worn');
   });
 
   // --- Maze modifier (roomCount += 3) ---
@@ -911,7 +910,7 @@ test.describe('Hunt Controller — stashStolenClothes', () => {
     await startWithPlan();
     // The corresponding per-piece stolen flag must be true for
     // lootKindsAt to surface the stash.
-    await page.evaluate(() => { SugarCube.State.variables.isPantiesStolen = true; });
+    await setWardrobeStolen(page, 'panties', true);
     const stash = await page.evaluate(() =>
       SugarCube.setup.HuntController.stashStolenClothes('panties'));
     const kinds = await page.evaluate(({ r, s }) =>

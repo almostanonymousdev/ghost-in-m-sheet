@@ -1,9 +1,9 @@
 :: GhostSpecialEventWraithEnd [nobr] {"position":"950,2650","size":"100,100"}
 <<video "characters/ghosts/specials/wraith6.mp4">>
-@@.notmc-speech; Good girl, suck it, do you like the taste of your pussy? @@<br>
-@@.mc-speech; Yes...~ I love it...@@<br>
+<<say>>Good girl, suck it, do you like the taste of your pussy?<</say>><br>
+<<mc>>Yes...<</mc>> <<mc>>I love it...<</mc>><br>
 @@.notmc-speech; Haha, you're such a slut. <br>
 Well, okay, we have to go, I think you can @@<<linkappend "@@.notmc-speechLink;handle the rest yourself.@@">>
 	<<video "characters/ghosts/specials/wraith-end.mp4">>
-	@@.mc-thoughts; They helped you a little to untie your hands and left you naked in the forest. <br>However, now you can go [[sleep.|Sleep]] @@<br>
+	<<thought>>They helped you a little to untie your hands and left you naked in the forest. <br>However, now you can go [[sleep.|Sleep]]<</thought>><br>
 <</linkappend>>

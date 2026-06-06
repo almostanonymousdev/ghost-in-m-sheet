@@ -1,7 +1,7 @@
 :: GymGroupEvent1Start [nobr] {"position":"3375,1700","size":"100,100"}
 <<addLust 15>>
 <<video "scenes/gym/grouptraining1.1.mp4">>
-@@.mc-speech; Oh ~fuck~ this is so good~@@<br>
+<<mc>>Oh—fuck—this is so good~<</mc>><br>
 @@.notmc-speech; Relax baby, we're just getting started. We have some @@ <<linkappend "@@.notmc-speechLink;toys for you@@">> <br>
 
 	<<set _check to random(1,3)>>
@@ -11,8 +11,8 @@
 	<</if>>
 	<<if _check eq 3>><<video "scenes/gym/grouptraining1.4.mp4">>
 	<</if>>
-	@@.mc-speech; It's amazing~ Keep going, please~@@<br>
-	@@.mc-thoughts; The group sports session turned into an  [[orgy|GymGroupEvent1Start2]]@@<br>
+	<<mc>>It's amazing~ Keep going, please~<</mc>><br>
+	<<thought>>The group sports session turned into an  [[orgy|GymGroupEvent1Start2]]<</thought>><br>
 
 <</linkappend>>
 

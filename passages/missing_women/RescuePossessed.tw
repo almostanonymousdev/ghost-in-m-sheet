@@ -1,60 +1,62 @@
 :: RescuePossessed [nobr] {"position":"2275,1700","size":"100,100"}
-@@.mc-thoughts; You stepped into the abandoned house, a place that had long since fallen into decay and been forgotten. Right from the doorway, something felt off -- the air was strangely thick, almost heavy on your skin, and a voice deep inside whispered of danger.<br>
-And then, everything changed. The house started shifting before your eyes. The cracked, worn-out walls were now freshly painted, the dusty old furniture suddenly looked brand new and spotless. Lights flickered on, flooding the place with a cozy glow -- the house had transformed into a perfect, normal home, like nothing had ever been wrong.<br>
-But something was off. You knew it was all fake. An illusion, a trap.<br>
-Your instincts screamed that this place was dangerous, and you found yourself torn -- should you keep searching or turn back while you still could?<br>@@
-@@.mc-speech; This has to be the right place. But should I keep going? There's something seriously wrong with this place... maybe I should leave while I can.@@<br><br>
+<<thought>>You stepped into the abandoned house, a place that had long since fallen into decay and been forgotten. Right from the doorway, something felt off -- the air was strangely thick, almost heavy on your skin, and a voice deep inside whispered of danger.<br>
+	And then, everything changed. The house started shifting before your eyes. The cracked, worn-out walls were now freshly painted, the dusty old furniture suddenly looked brand new and spotless. Lights flickered on, flooding the place with a cozy glow -- the house had transformed into a perfect, normal home, like nothing had ever been wrong.<br>
+	But something was off. You knew it was all fake. An illusion, a trap.<br>
+	Your instincts screamed that this place was dangerous, and you found yourself torn -- should you keep searching or turn back while you still could?<br>
+<</thought>>
+<<mc>>This has to be the right place. But should I keep going? There's something seriously wrong with this place... maybe I should leave while I can.<</mc>><br><br>
 <span id="choiceRescuePossessed">@@.usebtn; [[Leave|RescueMap]] @@<b>or</b></span><<linkreplace "@@.usebtn; Continue@@">>
 	<<replace "#choiceRescuePossessed">><</replace>>
 	<<run setup.MissingWomen.markQuestFailed()>>
 	<<set _girl to setup.MissingWomen.currentRescueGirl()>>
 	<<if _girl eq "Victoria">>
 		<<video "characters/rescue/victoria/victoriapossessed.mp4">>
-		@@.mc-speech; Oh my god, are you okay?@@<br>
-		@@.notmc-speech; Hmm~ what are you doing here?@@<br>
-		@@.mc-speech; <<= setup.MissingWomen.currentRescueGirl()>>, let's get out of here, I came to save you.@@<br>
-		@@.notmc-speech; No, I don't need help. It's you who will probably need it@@<br>
-		@@.mc-speech;What? Ah~ what's happening...@@<br>
-		@@.notmc-speech; A sharp pain shot through your head, making you collapse to the floor. The last thing you saw before passing out was her walking towards you...@@<br><br>
+		<<mc>>Oh my god, are you okay?<</mc>><br>
+		<<vocal npc>>Hmm<</vocal>> <<say>>What are you doing here?<</say>><br>
+		<<mc>><<= setup.MissingWomen.currentRescueGirl()>>, let's get out of here, I came to save you.<</mc>><br>
+		<<say>>No, I don't need help. It's you who will probably need it<</say>><br>
+		<<mc>>What?<</mc>> <<vocal mc>>Ah<</vocal>> <<mc>>What's happening...<</mc>><br>
+		<<narration>>A sharp pain shot through your head, making you collapse to the floor. The last thing you saw before passing out was her walking towards you...<</narration>><br><br>
 		@@.backbtn; <<link "Wake up " "RescueVictoriaPossessed">>
 		<</link>>@@
 	<<elseif _girl eq "Jade">>
 		<<image "characters/rescue/jade/jadepossessed.png" "displayCentredImgs">>
-		@@.mc-speech; Oh my god, are you okay?@@<br>
-		@@.notmc-speech; Hmm~ what are you doing here?@@<br>
-		@@.mc-speech; <<= setup.MissingWomen.currentRescueGirl()>>, let's get out of here, I came to save you.@@<br>
-		@@.notmc-speech; No, I don't need help. It's you who will probably need it@@<br>
-		@@.mc-speech;What? Ah~ what's happening...@@<br>
-		@@.notmc-speech; A sharp pain shot through your head, making you collapse to the floor. The last thing you saw before passing out was her walking towards you...@@<br><br>
+		<<mc>>Oh my god, are you okay?<</mc>><br>
+		<<vocal npc>>Hmm<</vocal>> <<say>>What are you doing here?<</say>><br>
+		<<mc>><<= setup.MissingWomen.currentRescueGirl()>>, let's get out of here, I came to save you.<</mc>><br>
+		<<say>>No, I don't need help. It's you who will probably need it<</say>><br>
+		<<mc>>What?<</mc>> <<vocal mc>>Ah<</vocal>> <<mc>>What's happening...<</mc>><br>
+		<<narration>>A sharp pain shot through your head, making you collapse to the floor. The last thing you saw before passing out was her walking towards you...<</narration>><br><br>
 		@@.backbtn;<<link "Wake up" "RescueJadePossessed">>
 		<</link>>@@
 	<<elseif _girl eq "Julia">>
 		<<image "characters/rescue/julia/juliapossessed.jpg" { class: "displayCentredImgs", width: "35%" }>><br>
-		@@.mc-speech; Oh my god, are you okay?@@<br>
-		@@.notmc-speech; Hmm~ what are you doing here?@@<br>
-		@@.mc-speech; <<= setup.MissingWomen.currentRescueGirl()>>, let's get out of here, I came to save you.@@<br>
-		@@.notmc-speech;Save me... of course, let's get out of here. Help me get up...@@<br>
+		<<mc>>Oh my god, are you okay?<</mc>><br>
+		<<vocal npc>>Hmm<</vocal>> <<say>>What are you doing here?<</say>><br>
+		<<mc>><<= setup.MissingWomen.currentRescueGirl()>>, let's get out of here, I came to save you.<</mc>><br>
+		<<say>>Save me... of course, let's get out of here. Help me get up...<</say>><br>
 		@@.usebtn; <<link "Come closer to her." "RescueJuliaPossessed">>
 		<</link>>@@<br>
 	<<elseif _girl eq "Nadia">>
 		<<video "characters/rescue/nadia/nadiapossessed.mp4">>
-		@@.mc-speech; Oh my god, are you okay?@@<br>
-		@@.notmc-speech; Hmm~ what are you doing here?@@<br>
-		@@.mc-speech; <<= setup.MissingWomen.currentRescueGirl()>>, let's get out of here, I came to save you.@@<br>
-		@@.notmc-speech;Save me... of course, let's get out of here. But I need to get dressed and find a few things.@@<br>
-		@@.mc-speech; Just be quick.@@<br>
-		@@.notmc-speech; Of course, <<link "follow me" "RescueNadiaPossessed">>
-		<</link>>.@@<br>
+		<<mc>>Oh my god, are you okay?<</mc>><br>
+		<<vocal npc>>Hmm<</vocal>> <<say>>What are you doing here?<</say>><br>
+		<<mc>><<= setup.MissingWomen.currentRescueGirl()>>, let's get out of here, I came to save you.<</mc>><br>
+		<<say>>Save me... of course, let's get out of here. But I need to get dressed and find a few things.<</say>><br>
+		<<mc>>Just be quick.<</mc>><br>
+		<<say>>Of course, <<link "follow me" "RescueNadiaPossessed">>
+		<</link>>.
+		<</say>><br>
 	<<elseif _girl eq "Ash">>
 		<<image "characters/rescue/ash/ashpossessed.jpg" { class: "displayCentredImgs", width: "35%" }>><br>
-		@@.mc-speech; Oh my god, are you okay?@@<br>
-		@@.notmc-speech; Hmm~ what are you doing here?@@<br>
-		@@.mc-speech; <<= setup.MissingWomen.currentRescueGirl()>>, let's get out of here, I came to save you.@@<br>
-		@@.notmc-speech;Save me... of course, let's get out of here. Help me get up...@@<br>
+		<<mc>>Oh my god, are you okay?<</mc>><br>
+		<<vocal npc>>Hmm<</vocal>> <<say>>What are you doing here?<</say>><br>
+		<<mc>><<= setup.MissingWomen.currentRescueGirl()>>, let's get out of here, I came to save you.<</mc>><br>
+		<<say>>Save me... of course, let's get out of here. Help me get up...<</say>><br>
 		@@.usebtn; <<link "Come closer to her." "RescueAshPossessed">>
 		<</link>>@@<br>
 	<<else>>
-		@@.mc-thoughts; Something feels wrong... you should leave this place.@@<br>
+		<<thought>>Something feels wrong... you should leave this place.<</thought>><br>
 		@@.backbtn; [[Leave|RescueMap]]@@
 	<</if>>
 <</linkreplace>>

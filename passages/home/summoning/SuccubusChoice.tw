@@ -6,9 +6,9 @@
 	<<elseif _check eq 2>>
 		<<image "characters/succubus/ass2.jpg" "displayCentredImgs">>
 	<</if>>
-	@@.mc-thoughts; The succubus, smirking, speaks an incantation, and the world around you starts to warp. You feel your body changing, becoming more voluptuous, with an enormous, seductive ass.@@<br>
+	<<thought>>The succubus, smirking, speaks an incantation, and the world around you starts to warp. You feel your body changing, becoming more voluptuous, with an enormous, seductive ass.<</thought>><br>
 	@@color:red; Look at you, such a slut, transformed into the perfect fucktoy@@<br>
-	@@.mc-thoughts; Your reflection in the mirror shocks you: you've become the embodiment of sexual fantasies. But before you can even come to terms with it, the succubus, unable to resist, materializes a cock and begins@@
+	<<thought>>Your reflection in the mirror shocks you: you've become the embodiment of sexual fantasies. But before you can even come to terms with it, the succubus, unable to resist, materializes a cock and begins<</thought>>
 	<<linkappend "@@.usebtn; to fuck you@@">>
 		<<if _check eq 1>>
 			<<video "characters/succubus/ass1.1.mp4" "displayCentredImgs">>
@@ -16,10 +16,10 @@
 			<<video "characters/succubus/ass2.1.mp4" "displayCentredImgs">>
 		<</if>>
 		@@color:red; Oh, you like it, don't you? Your body was made for this@@<br>
-		@@.mc-thoughts; Your new form eagerly responding to her dominance.@@<br>
-		@@.mc-thoughts; Her voice dripping with satisfaction as she starts to fuck you harder.@@<br>
-		@@.mc-speech; Yes... oh, yes... more...@@<br>
-		@@.mc-thoughts; The intensity builds, and you feel the overwhelming pleasure cresting. You cum, your body trembling with ecstasy, then everything fades as you pass out@@<br><br>
+		<<thought>>Your new form eagerly responding to her dominance.<</thought>><br>
+		<<thought>>Her voice dripping with satisfaction as she starts to fuck you harder.<</thought>><br>
+		<<mc>>Yes... oh, yes... more...<</mc>><br>
+		<<thought>>The intensity builds, and you feel the overwhelming pleasure cresting. You cum, your body trembling with ecstasy, then everything fades as you pass out<</thought>><br><br>
 		@@.backbtn; [[Pass out|Bedroom][setup.Home.setSuccubusChoiceText(1)]]@@<br>
 	<</linkappend>>
 
@@ -34,10 +34,10 @@
 	<<elseif _check eq 4>>
 		<<image "characters/succubus/2.jpg" "displayCentredImgs">>
 	<</if>>
-	@@.mc-thoughts; You feel the air around you change, as if reality itself is starting to warp. Something inside you takes control, you look at your hands, but they move without your input. Your thoughts merge with another mind, full of lust and cunning. The succubus has possessed you, and now you're under her control.@@<br>
-	@@.mc-thoughts; You feel her desires becoming yours, her hands, your hands, start to explore the body that now belongs to her.@@<br>
-	@@.mc-speech; I'm no longer in control... she's inside me@@<br>
-	@@.mc-thoughts; You feel her start to play with you, using toys, making your body @@
+	<<thought>>You feel the air around you change, as if reality itself is starting to warp. Something inside you takes control, you look at your hands, but they move without your input. Your thoughts merge with another mind, full of lust and cunning. The succubus has possessed you, and now you're under her control.<</thought>><br>
+	<<thought>>You feel her desires becoming yours, her hands, your hands, start to explore the body that now belongs to her.<</thought>><br>
+	<<mc>>I'm no longer in control... she's inside me<</mc>><br>
+	<<thought>>You feel her start to play with you, using toys, making your body<</thought>>
 	<<linkappend "@@.usebtn; tremble with pleasure.@@">>
 		<<if _check eq 1>>
 			<<video "characters/succubus/form1.1.mp4" "displayCentredImgs">>
@@ -58,8 +58,8 @@
 				<<video "characters/succubus/4.mp4" "displayCentredImgs">>
 			<</if>>
 		<</if>>
-		@@.mc-speech; Oh... fuck me harder... more...@@<br>
-		@@.mc-thoughts; She begins to fuck herself with wild greed, the toys sliding in and out, making you moan with each thrust. You feel the pleasure building, your body @@<<linkappend "@@.usebtn; exploding from the orgasm@@">>
+		<<mc>>Oh... fuck me harder... more...<</mc>><br>
+		<<thought>>She begins to fuck herself with wild greed, the toys sliding in and out, making you moan with each thrust. You feel the pleasure building, your body<</thought>><<linkappend "@@.usebtn; exploding from the orgasm@@">>
 
 			<<if _check eq 1>>
 				<<video "characters/succubus/form1.2.mp4" "displayCentredImgs">>
@@ -75,18 +75,18 @@
 				<<video "characters/succubus/3.mp4" "displayCentredImgs">>
 			<</if>>
 
-			@@.mc-speech; "I'm... I'm cumming... oh fuck!"@@<br>
-			@@.mc-thoughts; You cum, your body trembling with ecstasy, then everything fades as you pass out.@@<br><br>
+			<<mc>>I'm... I'm cumming... oh fuck!<</mc>><br>
+			<<thought>>You cum, your body trembling with ecstasy, then everything fades as you pass out.<</thought>><br><br>
 			@@.backbtn; [[Pass out|Bedroom][setup.Home.setSuccubusChoiceText(1)]]@@<br>
 		<</linkappend>>
 	<</linkappend>>
 <<elseif setup.Home.summoningChoice() eq 3>>
 	<<video "characters/succubus/pc2.mp4" "displayCentredImgs">>
-	@@.mc-thoughts; The succubus leans over you, her tongue starts to caress your pussy@@<br>
+	<<thought>>The succubus leans over you, her tongue starts to caress your pussy<</thought>><br>
 	@@color:red; Damn, you taste so sweet, I could lick you forever.@@<br>
-	@@.mc-speech; Mmm~@@<br>
+	<<vocal mc>>Mmm<</vocal>><br>
 	@@color:red; Now I'm going to fuck you so hard you'll forget your name.@@<br>
-	@@.mc-thoughts; She puts on the strapon, her gaze promising a @@
+	<<thought>>She puts on the strapon, her gaze promising a<</thought>>
 	<<linkappend "@@.usebtn; hard fuck@@">>
 		<<set _check to random(1,4)>>
 		<<if _check eq 1>>
@@ -99,24 +99,24 @@
 			<<video "characters/succubus/pc8.mp4" "displayCentredImgs">>
 		<</if>>
 		@@color:red; Your pussy takes me so well@@<br>
-		@@.mc-speech; Fuck me harder... yes...@@<br>
+		<<mc>>Fuck me harder... yes...<</mc>><br>
 
-		@@.mc-thoughts; Her kiss fills you with@@
+		<<thought>>Her kiss fills you with<</thought>>
 		<<linkappend "@@.usebtn; her power@@">>
 			<<video "characters/succubus/pcend1.mp4" "displayCentredImgs">>
 			@@color:red; You were such a good little slut tonight.@@<br>
-			@@.mc-thoughts; You're left alone, but her taste lingers on your lips.@@<br><br>
+			<<thought>>You're left alone, but her taste lingers on your lips.<</thought>><br><br>
 			@@.backbtn; [[Pass out|Bedroom][setup.Home.setSuccubusChoiceText(2)]]@@
 		<</linkappend>>
 	<</linkappend>>
 
 <<elseif setup.Home.summoningChoice() eq 4>>
 	<<video "characters/succubus/trans1.mp4" "displayCentredImgs">>
-	@@.mc-thoughts; The succubus leans over you, her tongue starts to caress your pussy@@<br>
+	<<thought>>The succubus leans over you, her tongue starts to caress your pussy<</thought>><br>
 	@@color:red; Damn, you taste so sweet, I could lick you forever.@@<br>
-	@@.mc-speech; Mmm~@@<br>
+	<<vocal mc>>Mmm<</vocal>><br>
 	@@color:red; I'm going to fuck you until you scream.@@<br>
-	@@.mc-thoughts; She reveals her cock, her eyes burning with desire for a @@
+	<<thought>>She reveals her cock, her eyes burning with desire for a<</thought>>
 	<<linkappend "@@.usebtn; wild, unstoppable fuck@@">>
 		<<set _check to random(1,2)>>
 		<<if _check eq 1>>
@@ -125,12 +125,12 @@
 			<<video "characters/succubus/trans3.mp4" "displayCentredImgs">>
 		<</if>>
 		@@color:red; Your pussy is so hungry for me@@<br>
-		@@.mc-speech; Deeper... don't stop...@@<br>
-		@@.mc-thoughts; Her kiss leaves you with@@
+		<<mc>>Deeper... don't stop...<</mc>><br>
+		<<thought>>Her kiss leaves you with<</thought>>
 		<<linkappend "@@.usebtn; a burst of her energy@@">>
 			<<video "characters/succubus/trans4.mp4" "displayCentredImgs">>
 			@@color:red; That was one hell of a ride, wasn't it?@@<br>
-			@@.mc-thoughts; Now alone, her kiss still echoes through your senses.@@<br><br>
+			<<thought>>Now alone, her kiss still echoes through your senses.<</thought>><br><br>
 			@@.backbtn; [[Pass out|Bedroom][setup.Home.setSuccubusChoiceText(2)]]@@
 
 		<</linkappend>>

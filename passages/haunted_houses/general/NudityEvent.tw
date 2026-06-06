@@ -57,12 +57,12 @@
 <</if>>
 
 <<if setup.Mc.exhibitionism() lte 4>>
-	@@.mc-thoughts; You hurry through the dark streets, trying to stay hidden in the shadows. Your heart races so fast, it feels like it's echoing through the empty night. Every breath catches in your throat as the cool breeze teases your bare skin, making you shiver in embarrassment. @@<br>
-	@@.mc-speech; Why didn't I just go back and grab my clothes? How did I let this happen?@@<br>
-	@@.mc-thoughts; Every time a car passes, your body tenses, and you glance around nervously, praying they didn't see you. The air brushing against your bare skin only heightens the feeling of vulnerability.@@<br>
-	@@.mc-thoughts; You pick up the pace, your steps quickening into a run as you feel the growing urge to get home faster, hoping no one else catches sight of you.@@<br>
-	@@.mc-speech; If someone sees me like this, I'll want to disappear into the ground.@@<br>
-	@@.mc-thoughts; You dart forward, eyes scanning the street for anyone nearby, silently begging that this night will remain your little secret.@@<br>
+	<<thought>>You hurry through the dark streets, trying to stay hidden in the shadows. Your heart races so fast, it feels like it's echoing through the empty night. Every breath catches in your throat as the cool breeze teases your bare skin, making you shiver in embarrassment.<</thought>><br>
+	<<mc>>Why didn't I just go back and grab my clothes? How did I let this happen?<</mc>><br>
+	<<thought>>Every time a car passes, your body tenses, and you glance around nervously, praying they didn't see you. The air brushing against your bare skin only heightens the feeling of vulnerability.<</thought>><br>
+	<<thought>>You pick up the pace, your steps quickening into a run as you feel the growing urge to get home faster, hoping no one else catches sight of you.<</thought>><br>
+	<<mc>>If someone sees me like this, I'll want to disappear into the ground.<</mc>><br>
+	<<thought>>You dart forward, eyes scanning the street for anyone nearby, silently begging that this night will remain your little secret.<</thought>><br>
 	<br>
 	<<if setup.Mc.exhibitionism() lte 9>>
 		<<run setup.Mc.addExhibitionism(1)>>
@@ -70,10 +70,11 @@
 	<</if>>
 <<else>>
 
-	@@.mc-thoughts; You walk through the night, feeling every caress of the cool air ignite your bare skin. You bite your lip, a soft shiver of pleasure running down your spine. Each step sends a sweet ripple through you, intensifying this strange, yet delicious sensation. You're no longer in a hurry -- in fact, you want to savor the moment.<br>
-	Your fingers toy with your hair, and your hips sway gently with each step. @@<br>
-	@@.mc-speech; I like this @@<br>
-	@@.mc-thoughts; You enjoy every glance from a passerby who catches a glimpse of your naked body. Smiling to yourself, you feel the slow, rising wave of arousal wash over you.@@<br>
+	<<thought>>You walk through the night, feeling every caress of the cool air ignite your bare skin. You bite your lip, a soft shiver of pleasure running down your spine. Each step sends a sweet ripple through you, intensifying this strange, yet delicious sensation. You're no longer in a hurry -- in fact, you want to savor the moment.<br>
+		Your fingers toy with your hair, and your hips sway gently with each step.
+	<</thought>><br>
+	<<mc>>I like this<</mc>><br>
+	<<thought>>You enjoy every glance from a passerby who catches a glimpse of your naked body. Smiling to yourself, you feel the slow, rising wave of arousal wash over you.<</thought>><br>
 	<br>
 	<<if setup.Mc.exhibitionism() lte 9>>
 		<<run setup.Mc.addExhibitionism(1)>>

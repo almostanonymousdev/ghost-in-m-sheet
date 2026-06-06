@@ -5,7 +5,7 @@
 <<set _videoToggle to true>>
 <span id ="walkhomeblakespirit">
 <<video "characters/ghosts/specials/spiritblake1.0.mp4">></span>
-@@.mc-thoughts; You're asleep next to your friend <<= setup.Companion.name()>> when you both start to feel something @@
+<<thought>>You're asleep next to your friend <<= setup.Companion.name()>> when you both start to feel something<</thought>>
 <<link "@@.usebtn; touching you. @@">>
 
 	<<set _videoToggle to !_videoToggle>>
@@ -18,12 +18,13 @@
 	<</replace>>
 <</link>>
 
-@@.mc-thoughts; You both wake up to see a blurry figure in front of you. Next to you, you notice a vague figure with a hard cock near your face. Not fully realizing what's happening, you try to focus on the stranger, but your attention is completely drawn to the big dick, almost pressing against your mouth.@@<br>
+<<thought>>You both wake up to see a blurry figure in front of you. Next to you, you notice a vague figure with a hard cock near your face. Not fully realizing what's happening, you try to focus on the stranger, but your attention is completely drawn to the big dick, almost pressing against your mouth.<</thought>><br>
 <<linkappend "@@.mc-speechLink; What the~@@">>
 	<span id ="walkhomeblakespirit1">
 	<<video "characters/ghosts/specials/spiritblake2.1.mp4">></span>
-	@@.mc-thoughts; Before you can finish speaking, his thick cock slips into your mouth. <<= setup.Companion.name()>> doesn't stand by and moves in to lick it. <br>
-	He starts playing with you like dolls, using your mouths@@
+	<<thought>>Before you can finish speaking, his thick cock slips into your mouth. <<= setup.Companion.name()>> doesn't stand by and moves in to lick it. <br>
+		He starts playing with you like dolls, using your mouths
+	<</thought>>
 	<<link "@@.usebtn; one after the other@@">>
 		<<set _videoToggle to !_videoToggle>>
 		<<replace "#walkhomeblakespirit1">>
@@ -34,11 +35,11 @@
 			<</if>>
 		<</replace>>
 	<</link>>
-	@@.notmc-speech; Mm~slurp~slurp~@@<br>
-	@@.mc-thoughts; Slurping sounds are heard throughout the room. You feel yourself beginning to give in to passionate desire, allowing this stranger@@ <<linkappend "@@.mc-thoughtsLink; to do whatever he wants.@@">><br>
+	<<vocal npc>>Mm~slurp~slurp<</vocal>><br>
+	<<thought>>Slurping sounds are heard throughout the room. You feel yourself beginning to give in to passionate desire, allowing this stranger<</thought>> <<linkappend "@@.mc-thoughtsLink; to do whatever he wants.@@">><br>
 		<span id ="walkhomeblakespirit2">
 		<<video "characters/ghosts/specials/spiritblake3.mp4">></span>
-		@@.mc-thoughts; He starts playing with you like dolls, using your pussies@@<<link "@@.usebtn;  in turn.@@">>
+		<<thought>>He starts playing with you like dolls, using your pussies<</thought>><<link "@@.usebtn;  in turn.@@">>
 			<<set _videoToggle to !_videoToggle>>
 			<<replace "#walkhomeblakespirit2">>
 				<<if _videoToggle>>
@@ -48,6 +49,6 @@
 				<</if>>
 			<</replace>>
 		<</link>>
-		@@.mc-thoughts; But he didn't stop there. He put you on top of <<= setup.Companion.name()>>  so that your pussy was right next to her mouth and started [[fucking you|spiritBlake]] @@
+		<<thought>>But he didn't stop there. He put you on top of <<= setup.Companion.name()>>  so that your pussy was right next to her mouth and started [[fucking you|spiritBlake]]<</thought>>
 	<</linkappend>>
 <</linkappend>>

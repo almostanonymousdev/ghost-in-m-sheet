@@ -6,16 +6,16 @@
 <</if>>
 <<if _check eq 2>><<image "scenes/gym/trainer1event1.jpg" { width: "100%" }>>
 <</if>>
-@@.mc-speech; Do you like how I look?@@<br>
-@@.notmc-speech; I... you... @@<br>
+<<mc>>Do you like how I look?<</mc>><br>
+<<say>>I... you...<</say>><br>
 <<linkreplace "@@.mc-speechLink; Start sucking his dick@@">>
 	<<set _check to random(1,2)>>
 	<<if _check eq 1>><<video "scenes/gym/trainer1event1.1.mp4">>
 	<</if>>
 	<<if _check eq 2>><<video "scenes/gym/trainer1event1.2.mp4">>
 	<</if>>
-	@@.mc-speech; AGH~gulp~galp~@@<br>
-	@@.notmc-speech; Yessss, just like that...Now i'm gonna [[fuck you|GymTrainerEvent1Start1]]@@<br>
+	<<vocal mc>>AGH~gulp~galp<</vocal>><br>
+	<<say>>Yessss, just like that...Now i'm gonna [[fuck you|GymTrainerEvent1Start1]]<</say>><br>
 
 <</linkreplace>>
 

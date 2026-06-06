@@ -11,7 +11,7 @@
 <<set _range to setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT) ? [1, 7] : [8, 14]>>
 <<randRangeImg "mechanics/plasm/mess/" _range[0] _range[1] ".png" "displayCentredImgs">>
 <br>
-@@.mc-thoughts; great... now its all over me@@<br>
+<<thought>>great... now its all over me<</thought>><br>
 <br>
 @@.backbtn; [[Back|$return]]@@
 

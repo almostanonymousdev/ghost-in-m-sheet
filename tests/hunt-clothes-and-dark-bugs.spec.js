@@ -1,5 +1,6 @@
 const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, callSetup, goToPassage, getVar, setVar } = require('./helpers');
+const { openGame, resetGame, callSetup, goToPassage, getVar, setVar,
+        setWardrobeSlot, setWardrobeStolen, getWardrobeStolen } = require('./helpers');
 
 /* Bug-class regressions guarded here:
  *   1. EventMC must apply the dark-room body filter when the hunt's
@@ -101,7 +102,7 @@ test.describe('Hunt — clothes + dark-room bugs', () => {
        hasXxxStolen guard checks) so the detector highlight matches
        what the pickup will actually hand out. Flip the panties-stolen
        flag before stashing. */
-    await page.evaluate(() => { SugarCube.State.variables.isPantiesStolen = true; });
+    await setWardrobeStolen(page, 'panties', true);
     const stash = await page.evaluate(() =>
       SugarCube.setup.HuntController.stashStolenClothes('panties'));
     expect(stash).not.toBeNull();
@@ -121,7 +122,7 @@ test.describe('Hunt — clothes + dark-room bugs', () => {
       seed: 7, floorPlanOpts: { roomCount: 5 }
     }));
     await page.evaluate(() => { delete SugarCube.State.variables.boughtDetector; });
-    await page.evaluate(() => { SugarCube.State.variables.isPantiesStolen = true; });
+    await setWardrobeStolen(page, 'panties', true);
     const stash = await page.evaluate(() =>
       SugarCube.setup.HuntController.stashStolenClothes('panties'));
     await page.evaluate(rid => SugarCube.setup.HuntController.setCurrentRoom(rid), stash.roomId);
@@ -143,24 +144,19 @@ test.describe('Hunt — clothes + dark-room bugs', () => {
       seed: 11, floorPlanOpts: { roomCount: 5 }
     }));
     /* Force a non-empty slot list -- panties is the simplest. */
-    await page.evaluate(() => {
-      const V = SugarCube.State.variables;
-      const WORN = SugarCube.setup.ClothingState.WORN;
-      const NOT_WORN = SugarCube.setup.ClothingState.NOT_WORN;
-      V.tshirtState  = NOT_WORN;
-      V.jeansState   = NOT_WORN;
-      V.shortsState  = NOT_WORN;
-      V.skirtState   = NOT_WORN;
-      V.braState     = NOT_WORN;
-      V.pantiesState = WORN;
-      V.isPantiesStolen = false;
-    });
+    await setWardrobeSlot(page, 'tshirt', 'not worn');
+    await setWardrobeSlot(page, 'jeans', 'not worn');
+    await setWardrobeSlot(page, 'shorts', 'not worn');
+    await setWardrobeSlot(page, 'skirt', 'not worn');
+    await setWardrobeSlot(page, 'bra', 'not worn');
+    await setWardrobeSlot(page, 'panties', 'worn');
+    await setWardrobeStolen(page, 'panties', false);
 
     await goToPassage(page, 'FreezeHunt');
 
     /* Panties was the only available garment -- it must come off and
        leave a clothesStolenPanties pin on the floor plan. */
-    expect(await getVar(page, 'isPantiesStolen')).toBe(true);
+    expect(await getWardrobeStolen(page, 'panties')).toBe(true);
 
     const fp = await callSetup(page, 'setup.HuntController.field("floorplan")');
     expect(fp.loot && fp.loot.clothesStolenPanties).toBeTruthy();
@@ -173,28 +169,23 @@ test.describe('Hunt — clothes + dark-room bugs', () => {
     }));
     /* All four buckets worn at once -- the freeze should take all of
        them and drop a per-piece pin for each. */
-    await page.evaluate(() => {
-      const V = SugarCube.State.variables;
-      const WORN = SugarCube.setup.ClothingState.WORN;
-      const NOT_WORN = SugarCube.setup.ClothingState.NOT_WORN;
-      V.tshirtState  = WORN;
-      V.jeansState   = WORN;
-      V.shortsState  = NOT_WORN;
-      V.skirtState   = NOT_WORN;
-      V.braState     = WORN;
-      V.pantiesState = WORN;
-      V.isPantiesStolen = false;
-      V.isBraStolen     = false;
-      V.isShirtStolen   = false;
-      V.isBottomStolen  = false;
-    });
+    await setWardrobeSlot(page, 'tshirt', 'worn');
+    await setWardrobeSlot(page, 'jeans', 'worn');
+    await setWardrobeSlot(page, 'shorts', 'not worn');
+    await setWardrobeSlot(page, 'skirt', 'not worn');
+    await setWardrobeSlot(page, 'bra', 'worn');
+    await setWardrobeSlot(page, 'panties', 'worn');
+    await setWardrobeStolen(page, 'panties', false);
+    await setWardrobeStolen(page, 'bra', false);
+    await setWardrobeStolen(page, 'shirt', false);
+    await setWardrobeStolen(page, 'bottom', false);
 
     await goToPassage(page, 'FreezeHunt');
 
-    expect(await getVar(page, 'isPantiesStolen')).toBe(true);
-    expect(await getVar(page, 'isBraStolen')).toBe(true);
-    expect(await getVar(page, 'isShirtStolen')).toBe(true);
-    expect(await getVar(page, 'isBottomStolen')).toBe(true);
+    expect(await getWardrobeStolen(page, 'panties')).toBe(true);
+    expect(await getWardrobeStolen(page, 'bra')).toBe(true);
+    expect(await getWardrobeStolen(page, 'shirt')).toBe(true);
+    expect(await getWardrobeStolen(page, 'bottom')).toBe(true);
 
     const fp = await callSetup(page, 'setup.HuntController.field("floorplan")');
     expect(fp.loot && fp.loot.clothesStolenPanties).toBeTruthy();
@@ -207,27 +198,23 @@ test.describe('Hunt — clothes + dark-room bugs', () => {
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({
       seed: 12, floorPlanOpts: { roomCount: 5 }
     }));
-    await page.evaluate(() => {
-      const V = SugarCube.State.variables;
-      const NOT_WORN = SugarCube.setup.ClothingState.NOT_WORN;
-      V.tshirtState  = NOT_WORN;
-      V.jeansState   = NOT_WORN;
-      V.shortsState  = NOT_WORN;
-      V.skirtState   = NOT_WORN;
-      V.braState     = NOT_WORN;
-      V.pantiesState = NOT_WORN;
-      V.isPantiesStolen = false;
-      V.isBraStolen     = false;
-      V.isShirtStolen   = false;
-      V.isBottomStolen  = false;
-    });
+    await setWardrobeSlot(page, 'tshirt', 'not worn');
+    await setWardrobeSlot(page, 'jeans', 'not worn');
+    await setWardrobeSlot(page, 'shorts', 'not worn');
+    await setWardrobeSlot(page, 'skirt', 'not worn');
+    await setWardrobeSlot(page, 'bra', 'not worn');
+    await setWardrobeSlot(page, 'panties', 'not worn');
+    await setWardrobeStolen(page, 'panties', false);
+    await setWardrobeStolen(page, 'bra', false);
+    await setWardrobeStolen(page, 'shirt', false);
+    await setWardrobeStolen(page, 'bottom', false);
 
     await goToPassage(page, 'FreezeHunt');
 
-    expect(await getVar(page, 'isPantiesStolen')).toBe(false);
-    expect(await getVar(page, 'isBraStolen')).toBe(false);
-    expect(await getVar(page, 'isShirtStolen')).toBe(false);
-    expect(await getVar(page, 'isBottomStolen')).toBe(false);
+    expect(await getWardrobeStolen(page, 'panties')).toBe(false);
+    expect(await getWardrobeStolen(page, 'bra')).toBe(false);
+    expect(await getWardrobeStolen(page, 'shirt')).toBe(false);
+    expect(await getWardrobeStolen(page, 'bottom')).toBe(false);
     const fp = await callSetup(page, 'setup.HuntController.field("floorplan")');
     const loot = (fp && fp.loot) || {};
     expect(loot.clothesStolenPanties).toBeFalsy();
@@ -246,21 +233,16 @@ test.describe('Hunt — clothes + dark-room bugs', () => {
     await page.evaluate(() => SugarCube.setup.HuntController.startHunt({
       seed: 13, floorPlanOpts: { roomCount: 5 }
     }));
-    await page.evaluate(() => {
-      const V = SugarCube.State.variables;
-      const WORN = SugarCube.setup.ClothingState.WORN;
-      const NOT_WORN = SugarCube.setup.ClothingState.NOT_WORN;
-      V.pantiesState = WORN;
-      V.braState     = WORN;
-      V.tshirtState  = WORN;
-      V.jeansState   = WORN;
-      V.shortsState  = NOT_WORN;
-      V.skirtState   = NOT_WORN;
-      V.isPantiesStolen = false;
-      V.isBraStolen     = false;
-      V.isShirtStolen   = false;
-      V.isBottomStolen  = false;
-    });
+    await setWardrobeSlot(page, 'panties', 'worn');
+    await setWardrobeSlot(page, 'bra', 'worn');
+    await setWardrobeSlot(page, 'tshirt', 'worn');
+    await setWardrobeSlot(page, 'jeans', 'worn');
+    await setWardrobeSlot(page, 'shorts', 'not worn');
+    await setWardrobeSlot(page, 'skirt', 'not worn');
+    await setWardrobeStolen(page, 'panties', false);
+    await setWardrobeStolen(page, 'bra', false);
+    await setWardrobeStolen(page, 'shirt', false);
+    await setWardrobeStolen(page, 'bottom', false);
 
     await goToPassage(page, 'StealClothes');
 
@@ -268,12 +250,12 @@ test.describe('Hunt — clothes + dark-room bugs', () => {
        must have flipped, and the matching loot pin must be present on
        the floor plan, landing on a real furniture-bearing slot. */
     const stolen = await page.evaluate(() => {
-      const V = SugarCube.State.variables;
+      const st = SugarCube.State.variables.wardrobe.stolen;
       return {
-        panties: V.isPantiesStolen === true,
-        bra:     V.isBraStolen     === true,
-        shirt:   V.isShirtStolen   === true,
-        bottom:  V.isBottomStolen  === true
+        panties: st.panties === true,
+        bra:     st.bra     === true,
+        shirt:   st.shirt   === true,
+        bottom:  st.bottom  === true
       };
     });
     const flipped = Object.entries(stolen).filter(([, v]) => v).map(([k]) => k);
@@ -304,27 +286,23 @@ test.describe('Hunt — clothes + dark-room bugs', () => {
     /* No worn garments -> availableStealTargets returns []. The
        passage should be a no-op for stolen-clothes state instead of
        flipping any flag + planting a phantom stash. */
-    await page.evaluate(() => {
-      const V = SugarCube.State.variables;
-      const NOT_WORN = SugarCube.setup.ClothingState.NOT_WORN;
-      V.tshirtState  = NOT_WORN;
-      V.jeansState   = NOT_WORN;
-      V.shortsState  = NOT_WORN;
-      V.skirtState   = NOT_WORN;
-      V.braState     = NOT_WORN;
-      V.pantiesState = NOT_WORN;
-      V.isPantiesStolen = false;
-      V.isBraStolen     = false;
-      V.isShirtStolen   = false;
-      V.isBottomStolen  = false;
-    });
+    await setWardrobeSlot(page, 'tshirt', 'not worn');
+    await setWardrobeSlot(page, 'jeans', 'not worn');
+    await setWardrobeSlot(page, 'shorts', 'not worn');
+    await setWardrobeSlot(page, 'skirt', 'not worn');
+    await setWardrobeSlot(page, 'bra', 'not worn');
+    await setWardrobeSlot(page, 'panties', 'not worn');
+    await setWardrobeStolen(page, 'panties', false);
+    await setWardrobeStolen(page, 'bra', false);
+    await setWardrobeStolen(page, 'shirt', false);
+    await setWardrobeStolen(page, 'bottom', false);
 
     await goToPassage(page, 'StealClothes');
 
-    expect(await getVar(page, 'isPantiesStolen')).toBe(false);
-    expect(await getVar(page, 'isBraStolen')).toBe(false);
-    expect(await getVar(page, 'isShirtStolen')).toBe(false);
-    expect(await getVar(page, 'isBottomStolen')).toBe(false);
+    expect(await getWardrobeStolen(page, 'panties')).toBe(false);
+    expect(await getWardrobeStolen(page, 'bra')).toBe(false);
+    expect(await getWardrobeStolen(page, 'shirt')).toBe(false);
+    expect(await getWardrobeStolen(page, 'bottom')).toBe(false);
     const fp = await callSetup(page, 'setup.HuntController.field("floorplan")');
     const loot = (fp && fp.loot) || {};
     expect(loot.clothesStolenPanties).toBeFalsy();
@@ -421,17 +399,12 @@ test.describe('Hunt — lights-out doubles steal chance', () => {
        in this filter test. */
     await page.evaluate(() => { SugarCube.State.variables.run.modifiers = []; });
     /* Need at least one stealable garment so canStealAnyItem() is true. */
-    await page.evaluate(() => {
-      const V = SugarCube.State.variables;
-      const WORN = SugarCube.setup.ClothingState.WORN;
-      const NW   = SugarCube.setup.ClothingState.NOT_WORN;
-      V.tshirtState  = NW;
-      V.braState     = NW;
-      V.jeansState   = NW;
-      V.shortsState  = NW;
-      V.skirtState   = NW;
-      V.pantiesState = WORN;
-    });
+    await setWardrobeSlot(page, 'tshirt', 'not worn');
+    await setWardrobeSlot(page, 'bra', 'not worn');
+    await setWardrobeSlot(page, 'jeans', 'not worn');
+    await setWardrobeSlot(page, 'shorts', 'not worn');
+    await setWardrobeSlot(page, 'skirt', 'not worn');
+    await setWardrobeSlot(page, 'panties', 'worn');
   }
 
   async function setCurrentRoomLight(state) {

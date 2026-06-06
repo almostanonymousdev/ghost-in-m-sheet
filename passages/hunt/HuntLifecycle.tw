@@ -45,9 +45,9 @@
 		<div class="hunt-lobby-header">
 			<div class="hunt-lobby-address">@@.location;<<= setup.HuntController.address().formatted>>@@</div>
 			<<if _staticHouse and _staticHouse.description>>
-				<div class="hunt-lobby-flavor">@@.mc-thoughts;<<= _staticHouse.description>>@@</div>
+				<div class="hunt-lobby-flavor"><<thought>><<= _staticHouse.description>><</thought>></div>
 			<<else>>
-				<div class="hunt-lobby-flavor">@@.mc-thoughts;You stand on the porch a beat longer than you need to. Key in your pocket, still cold. That part won't last.@@</div>
+				<div class="hunt-lobby-flavor"><<thought>>You stand on the porch a beat longer than you need to. Key in your pocket, still cold. That part won't last.<</thought>></div>
 			<</if>>
 		</div>
 
@@ -65,7 +65,7 @@
 
 		<div class="hunt-lobby-section">
 			<div class="hunt-lobby-section-title">@@.location;Objective@@</div>
-			<div class="hunt-lobby-objective">@@.mc-thoughts;<<= (_staticHouse and _staticHouse.objectiveDescription) || setup.HuntController.objectiveDescription(_run.objective) || _run.objective>>@@</div>
+			<div class="hunt-lobby-objective"><<thought>><<= (_staticHouse and _staticHouse.objectiveDescription) || setup.HuntController.objectiveDescription(_run.objective) || _run.objective>><</thought>></div>
 		</div>
 
 		<<if setup.HuntController.huntAllowsCompanions() and setup.Companion and setup.Companion.hasActiveCompanion()>>
@@ -73,7 +73,7 @@
 			<<if _ac>>
 				<<run setup.Companion.autoAttachOnHuntStart()>>
 				<div class="hunt-lobby-section hunt-lobby-companion-row">
-					@@.mc-thoughts;<<= _ac.name>> is waiting for you out front.@@<br>
+					<<thought>><<= _ac.name>> is waiting for you out front.<</thought>><br>
 					@@.usebtn;
 						<<link `"Talk to " + _ac.pronObj` "CompanionMain">>
 						<</link>>
@@ -98,7 +98,7 @@
    haunts use, so e.g. a procedural kitchen still shows
    desk/table/sink1 thumbnails. */
 <<if not setup.HuntController.isActive()>>
-	@@.mc-thoughts; No active hunt.@@<br>
+	<<thought>>No active hunt.<</thought>><br>
 	@@.backbtn; [[Back|CityMap]]@@
 <<else>>
 	<<set _run to setup.HuntController.active()>>
@@ -146,7 +146,7 @@
 						<</capture>>
 					<</for>>
 				<<elseif _cr>>
-					@@.mc-thoughts; (bare room)@@
+					<<thought>>(bare room)<</thought>>
 				<<else>>
 					/% _cr is null only when currentRoomId points to a non-existent room (corrupted save). Render nothing; the outer isActive gate is the player-visible recovery path for a missing $run. %/
 				<</if>>
@@ -156,16 +156,16 @@
 				<div class="hunt-run-effects"><<huntEffectsList>></div>
 				<div class="hunt-run-messages">
 					<<if setup.HuntController.isRoomLocked()>>
-						@@.mc-thoughts; The doors around you have fused shut. There's no leaving this room.@@<br>
+						<<thought>>The doors around you have fused shut. There's no leaving this room.<</thought>><br>
 						<<if not setup.Witch.hasCursedItemToTurnIn()>>
-							@@.mc-thoughts; A cursed object might break the seal -- you have none on you.@@<br>
+							<<thought>>A cursed object might break the seal -- you have none on you.<</thought>><br>
 						<</if>>
 					<<elseif _cr and _cr.template eq setup.FloorPlan.HALLWAY_TEMPLATE and setup.HuntController.isExitLocked()>>
-						@@.mc-thoughts; The front door is sealed shut.@@<br>
+						<<thought>>The front door is sealed shut.<</thought>><br>
 						<<if setup.HuntController.exitLockReason() eq "cursedItem" and not setup.Witch.hasCursedItemToTurnIn()>>
-							@@.mc-thoughts; A cursed object might break the seal -- you have none on you.@@<br>
+							<<thought>>A cursed object might break the seal -- you have none on you.<</thought>><br>
 						<<elseif setup.HuntController.exitLockReason() eq "dawn">>
-							@@.mc-thoughts; You'll have to wait out the dark.@@<br>
+							<<thought>>You'll have to wait out the dark.<</thought>><br>
 						<</if>>
 					<</if>>
 				</div>
@@ -198,7 +198,7 @@
 								<</capture>>
 							<</for>>
 						<<else>>
-							@@.mc-thoughts; (no exits)@@<br>
+							<<thought>>(no exits)<</thought>><br>
 						<</if>>
 						<<if _cr and _cr.template eq setup.FloorPlan.HALLWAY_TEMPLATE>>
 							<<if setup.HuntController.isExitLocked()>>
@@ -245,7 +245,7 @@
    has to retrace her steps and find her clothes before settling the
    run. */
 <<if not setup.HuntController.isActive()>>
-	@@.mc-thoughts; No active hunt.@@<br>
+	<<thought>>No active hunt.<</thought>><br>
 	@@.backbtn; [[Back|CityMap]]@@
 <<else>>
 	<<set _heldId to setup.WitchContract.heldHouseId()>>
@@ -259,19 +259,19 @@
 	<<set _forceCover to _modest and (_canCoverBottom or _canCoverTop)>>
 	@@.location; Outside the haunt@@<br>
 	<<if _forceCover>>
-		@@.mc-thoughts;
-		<<if _canCoverBottom and _canCoverTop>>
-			The yard is cold. The wind finds every inch of you the ghost left bare. No -- you're not walking off down a public street like this. Go back in. Find your clothes.
-		<<elseif _canCoverBottom>>
-			The yard is cold and there's nothing on your lower half. You're not stepping past the gate bottomless. Back inside. Find what it took.
-		<<else>>
-			The yard is cold. Your arms cross over your chest on their own. You're not walking out half-undressed where anyone could see. Back inside. Find what it took.
-		<</if>>
-		@@<br>
+		<<thought>>
+			<<if _canCoverBottom and _canCoverTop>>
+				The yard is cold. The wind finds every inch of you the ghost left bare. No -- you're not walking off down a public street like this. Go back in. Find your clothes.
+			<<elseif _canCoverBottom>>
+				The yard is cold and there's nothing on your lower half. You're not stepping past the gate bottomless. Back inside. Find what it took.
+			<<else>>
+				The yard is cold. Your arms cross over your chest on their own. You're not walking out half-undressed where anyone could see. Back inside. Find what it took.
+			<</if>>
+		<</thought>><br>
 		<br>
 		@@.movebtn; [[Go back inside|HuntRun]]@@
 	<<else>>
-		@@.mc-thoughts; The yard is cold. The house knows you're still here. Name what's in there, walk, or go back in.@@<br>
+		<<thought>>The yard is cold. The house knows you're still here. Name what's in there, walk, or go back in.<</thought>><br>
 		<br>
 		<<if _isContractHunt>>
 			@@.movebtn; [[Take your findings to Khadija|WitchInside]]@@<br>
@@ -295,11 +295,11 @@
    so the prep beat + timed pause + correct/wrong branch all render in
    one place. */
 <<if not setup.HuntController.isActive()>>
-	@@.mc-thoughts; No active hunt.@@<br>
+	<<thought>>No active hunt.<</thought>><br>
 	@@.backbtn; [[Back|CityMap]]@@
 <<else>>
 	@@.location; Name the ghost@@<br>
-	@@.mc-speech; Calling it. It was --@@<br>
+	<<mc>>Calling it. It was --<</mc>><br>
 	<<ghostTypeDropdown>><br>
 	@@.movebtn; [[Choose|HuntIdentifyResolve]]@@<br>
 	<br>
@@ -319,16 +319,16 @@
    .show after a 1s <<timed>> nested inside the 6s outer wait, so
    they fade in only once the text has fully settled. */
 <<if not setup.HuntController.isActive()>>
-	@@.mc-thoughts; No active hunt.@@<br>
+	<<thought>>No active hunt.<</thought>><br>
 	@@.backbtn; [[Back|CityMap]]@@
 <<else>>
-	@@.mc-thoughts; You set your jaw and walk back in. Subdue the ghost. Close the house. That's the order.@@<br>
+	<<thought>>You set your jaw and walk back in. Subdue the ghost. Close the house. That's the order.<</thought>><br>
 	<<timed 6s>>
 		<<if setup.HuntController.ghostName() eq setup.Ghosts.ghostTypeSelected()>>
 			<<run setup.HuntController.markSuccess()>>
 			<<set _winSummary to setup.HuntController.endHunt(true)>>
 			<<set _winDest to _winSummary ? _winSummary.exitPassage : "CityMap">>
-			<div class="hunt-reveal hunt-reveal-text">@@.notmc-speech; The shape thins out and goes. The house cools behind it.@@</div>
+			<div class="hunt-reveal hunt-reveal-text"><<narration>>The shape thins out and goes. The house cools behind it.<</narration>></div>
 			<<if _winSummary>>
 				<div class="hunt-reveal hunt-reveal-text">
 					<<if _winSummary.cashPayout gt 0>>
@@ -348,7 +348,7 @@
 				<</link>>@@
 			</div>
 		<<else>>
-			<div class="hunt-reveal hunt-reveal-text">@@.mc-thoughts; Wrong call. Type: <<= setup.ActiveGhost.name()>>. And every sign you know you should have recognized -- <<= setup.ActiveGhost.trueEvidenceLabels()>> -- snaps back into place at once. You begin to bolt, but you're overtaken before you reach the door.@@</div>
+			<div class="hunt-reveal hunt-reveal-text"><<thought>>Wrong call. Type: <<= setup.ActiveGhost.name()>>. And every sign you know you should have recognized -- <<= setup.ActiveGhost.trueEvidenceLabels()>> -- snaps back into place at once. You begin to bolt, but you're overtaken before you reach the door.<</thought>></div>
 			<div class="hunt-reveal hunt-reveal-buttons">
 				@@.movebtn; [[Continue|HuntOverProwl]]@@
 			</div>

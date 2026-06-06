@@ -15,7 +15,7 @@
 <<set _anyWorn to _hasTop or _hasBottom or _hasPanties or _hasBra>>
 <<if not _anyWorn>>
 	&emsp;&emsp;You don't run. You don't hide. You hold perfectly still and let it pass THROUGH you. Icy fingers slide over bare skin — and find nothing left to tear away. The ghost pauses. Then, curious and patient, it decides to take you instead.<br>
-	@@.mc-thoughts;You feel the cold close around you and pull. There is nothing left to give but yourself.@@
+	<<thought>>You feel the cold close around you and pull. There is nothing left to give but yourself.<</thought>>
 	<<run setup.HuntController.rearmHuntTimer()>>
 	<br><br>
 	@@.usebtn;<<link "Surrender to the cold" setup.HuntController.huntOverPassage("sanity")>>

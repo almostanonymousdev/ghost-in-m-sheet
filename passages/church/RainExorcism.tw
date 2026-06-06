@@ -1,27 +1,27 @@
 :: RainExorcism [nobr] {"position":"2175,1500","size":"100,100"}
 <<image "characters/rescue/rain.jpg" { class: "displayCentredImgs", width: "50%" }>><br>
-@@.mc-speech; Khadija said you could help.@@<br>
+<<mc>>Khadija said you could help.<</mc>><br>
 <<if setup.Church.rainTrustsForExorcism()>>
-	@@.notmc-speech; Yes. You've been useful, so what's your problem?@@<br>
-	@@.mc-speech; Something in my house. It hasn't left. The others always left once they got what they wanted out of me.@@<br>
-	@@.notmc-speech; Then it wants something it isn't getting, or it isn't there for that. If holy water won't move it, this beast needs an exorcism.@@<br>
-	@@.notmc-speech; Take these. The book can summon it to you, since it won't stand in one place. The next passage you'll read banishes it.@@<br>
-	@@.mc-speech; That's it?@@<br>
-	@@.notmc-speech; That's the easy part. <em><b>You need to do it alone in the house.</b></em> If there's another person breathing under your roof, the book pulls in whatever's nearest, and that's almost never the one you wanted.@@<br>
-	@@.mc-speech; How do I even know there's something to summon?@@<br>
-	@@.notmc-speech; Take this amulet.@@<br>
-	@@.mc-thoughts; With a frigid hand, she slides a stone across the table without looking up.@@<br>
-	@@.notmc-speech; It will warm and turn color if there's an other-worldly presence. She stays cold if there isn't.@@<br>
-	@@.mc-speech; You're not coming with?@@<br>
-	@@.notmc-speech; No. Whatever's in your house is attached to you, and I'd be another corrupted soul for it. I'd make it worse even being in the house.@@<br>
+	<<say>>Yes. You've been useful, so what's your problem?<</say>><br>
+	<<mc>>Something in my house. It hasn't left. The others always left once they got what they wanted out of me.<</mc>><br>
+	<<say>>Then it wants something it isn't getting, or it isn't there for that. If holy water won't move it, this beast needs an exorcism.<</say>><br>
+	<<say>>Take these. The book can summon it to you, since it won't stand in one place. The next passage you'll read banishes it.<</say>><br>
+	<<mc>>That's it?<</mc>><br>
+	<<say>>That's the easy part. <em><b>You need to do it alone in the house.</b></em> If there's another person breathing under your roof, the book pulls in whatever's nearest, and that's almost never the one you wanted.<</say>><br>
+	<<mc>>How do I even know there's something to summon?<</mc>><br>
+	<<say>>Take this amulet.<</say>><br>
+	<<thought>>With a frigid hand, she slides a stone across the table without looking up.<</thought>><br>
+	<<say>>It will warm and turn color if there's an other-worldly presence. She stays cold if there isn't.<</say>><br>
+	<<mc>>You're not coming with?<</mc>><br>
+	<<say>>No. Whatever's in your house is attached to you, and I'd be another corrupted soul for it. I'd make it worse even being in the house.<</say>><br>
 	<br>
-	@@.notmc-speech; Read it exactly the way it's written. Don't get cute.@@<br><br>
+	<<say>>Read it exactly the way it's written. Don't get cute.<</say>><br><br>
 	@@.mc-action; I need to summon a ghost in my house using the book Rain gave me@@<br>
 	<<run setup.Church.startExorcismQuest()>>
 <<else>>
-	@@.notmc-speech; Not now. I'm short hunters and I'm losing girls. Bring me a few back and we'll talk.@@<br>
-	@@.mc-speech; Alright.@@<br>
-	@@.mc-thoughts; <<print setup.Church.rescuesNeededForExorcism()>> more.@@<br>
+	<<say>>Not now. I'm short hunters and I'm losing girls. Bring me a few back and we'll talk.<</say>><br>
+	<<mc>>Alright.<</mc>><br>
+	<<thought>><<print setup.Church.rescuesNeededForExorcism()>> more.<</thought>><br>
 <</if>>
 <br>
 @@.backbtn; [[Leave|Church]] @@<br>

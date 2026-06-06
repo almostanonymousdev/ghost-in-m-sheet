@@ -1,7 +1,8 @@
 :: ChurchPray [nobr] {"position":"1975,1500","size":"100,100"}
 <<image "scenes/church/1.jpg" { width: "100%" }>><br>
 
-@@.notmc-speech; (Father Ibrahim looks up from the altar.) Bless you, my daughter. How may I assist you?@@<br>
+<<narration>>Father Ibrahim looks up from the altar.<</narration>>
+<<say "Father Ibrahim">>Bless you, my daughter. How may I assist you?<</say>><br>
 <<if setup.Church.canRequestExorcism()>>
 	@@.enterbtn; [[I need to talk to Rain|RainExorcism]]@@<br>
 <</if>>
@@ -11,20 +12,20 @@
 <<if setup.Church.canFlirtWithPriest()>>
 	<<linkreplace "@@.usebtn;Flirt with him@@">>
 		<<if setup.Church.priestSexOnCooldown()>>
-			@@.notmc-speech; Enough for today, come to me tomorrow @@
+			<<say>>Enough for today, come to me tomorrow<</say>>
 		<<elseif setup.Church.meetsBeautyForFlirt()>>
-			@@.mc-speech; I didn't come for a confession...I want to feel your [[big hard cock inside me|ToolsEventChurch]]@@<br>
+			<<mc>>I didn't come for a confession...I want to feel your [[big hard cock inside me|ToolsEventChurch]]<</mc>><br>
 		<<else>>
-			@@.notmc-speech; I have a lot to do...maybe later@@<br>
+			<<say>>I have a lot to do...maybe later<</say>><br>
 			@@.warningtext; (Req. <<statIcon setup.StatIcon.BEAUTY>> ≥ 45)@@
 		<</if>>
 	<</linkreplace>><br>
 <</if>>
 <<linkreplace "@@.usebtn;Start confession with a priest@@">>
-	@@.mc-speech; Bless me, father. I feel that I haven't always been fair and kind to others. Sometimes I've harbored anger and resentment@@<br>
-	@@.notmc-speech; Thank you for your sincere confession. Remember, the Lord is always ready to forgive if you sincerely repent of your sins. Accept correction and strive for virtue@@<br>
-	@@.mc-speech; Thank you, father. I will pray and endeavor to be better@@<br>
-	@@.notmc-speech; May the peace and grace of the Lord be with you. Go in peace, my daughter@@<br>
+	<<mc>>Bless me, father. I feel that I haven't always been fair and kind to others. Sometimes I've harbored anger and resentment<</mc>><br>
+	<<say>>Thank you for your sincere confession. Remember, the Lord is always ready to forgive if you sincerely repent of your sins. Accept correction and strive for virtue<</say>><br>
+	<<mc>>Thank you, father. I will pray and endeavor to be better<</mc>><br>
+	<<say>>May the peace and grace of the Lord be with you. Go in peace, my daughter<</say>><br>
 	<br>
 	Your <<statIcon setup.StatIcon.HEALTH>> is decreased
 	<<run setup.Church.clearLust()>>
@@ -33,18 +34,18 @@
 <br>
 <<if setup.Church.canAskAboutLevel3Tools()>>
 	<<linkreplace "@@.usebtn;Ask about level 3 tools@@">>
-		@@.mc-speech;I wanted to ask you something. I was told that you have one of the level 3 tools for detecting ghosts. I would really like to get it, I really need it@@<br>
+		<<mc>>I wanted to ask you something. I was told that you have one of the level 3 tools for detecting ghosts. I would really like to get it, I really need it<</mc>><br>
 		<<if setup.Church.meetsBeautyForLevel3Tools()>>
 			<<if setup.Church.priestWillTradeToolForSex()>>
-				@@.notmc-speech;Yes, I have a level 3 thermometer. Of course, I understand that this item is very valuable. This thing is for real professionals. I could give it to you, but I'd like to get something [[in return...|ToolsEventChurch]]@@<br>
+				<<say>>Yes, I have a level 3 thermometer. Of course, I understand that this item is very valuable. This thing is for real professionals. I could give it to you, but I'd like to get something [[in return...|ToolsEventChurch]]<</say>><br>
 			<<else>>
-				@@.notmc-speech;Yes, i have a level 3 thermometer. Of course, I understand that this item is very valuable. This thing is for real professionals. It's not often that beautiful girls like you come here. I could give it to you, but I'd like to get something in return...@@<br>
-				@@.mc-thoughts; What the fuck. This is a priest, why does he hint at such things, well, no, this is not for me.@@<br>
+				<<say>>Yes, i have a level 3 thermometer. Of course, I understand that this item is very valuable. This thing is for real professionals. It's not often that beautiful girls like you come here. I could give it to you, but I'd like to get something in return...<</say>><br>
+				<<thought>>What the fuck. This is a priest, why does he hint at such things, well, no, this is not for me.<</thought>><br>
 				@@.warningtext; (Req. <<statIcon setup.StatIcon.CORRUPTION>> ≥ 4)@@
 			<</if>>
 		<<else>>
-			@@.notmc-speech;Yes, I have a level 3 thermometer, but I don't think I can trust you with it, sorry@@<br>
-			@@.mc-thoughts; Damn! I really need this thing. What should I do to get his attention?@@<br>
+			<<say>>Yes, I have a level 3 thermometer, but I don't think I can trust you with it, sorry<</say>><br>
+			<<thought>>Damn! I really need this thing. What should I do to get his attention?<</thought>><br>
 			@@.warningtext; (Req. <<statIcon setup.StatIcon.BEAUTY>> ≥ 45)@@
 		<</if>>
 	<</linkreplace>>

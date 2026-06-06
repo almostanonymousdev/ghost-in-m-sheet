@@ -9,9 +9,9 @@
 	<<run setup.Delivery.markBurgerEvent()>>
 	<<run setup.Delivery.clearLust()>>
 	<<deliveryVideo "burgerevent" 9>>
-	@@.mc-speech; Ah~ Did you cum inside me?@@<br>
-	@@.notmc-speech; I haven't fucked like this for a long time, you're a great slut, I hope to see you again sometime@@<br>
-	@@.mc-thoughts; Fuck, I feel his cum dripping from my pussy, I hope everything will be fine@@<br>
+	<<vocal mc>>Ah<</vocal>> <<mc>>Did you cum inside me?<</mc>><br>
+	<<say>>I haven't fucked like this for a long time, you're a great slut, I hope to see you again sometime<</say>><br>
+	<<thought>>Fuck, I feel his cum dripping from my pussy, I hope everything will be fine<</thought>><br>
 	<br>
 	<<deliveryBonus 5>>
 	<br>
@@ -21,7 +21,7 @@
 	<<addLust 60>>
 	<<deliveryVideo "pizzaevent" 5>>
 	+60 <<statIcon setup.StatIcon.HEALTH>><br>
-	@@.mc-thoughts; I can't control myself anymore. The neighbors can probably hear my moans@@<br>
+	<<thought>>I can't control myself anymore. The neighbors can probably hear my moans<</thought>><br>
 	@@.notmc-speech; Yes, I see how you "don't like it". Will you cum for me, slut?@@<br>
 	@@.mc-speech; Ah~ YES~ Fuck me~ PLEASE, <<linkappend "I'M CUMMING">><br>
 		<<deliveryLustOverflow>>
@@ -38,12 +38,12 @@
 	<</linkappend>>@@
 <<case "package">>
 	/* End1: the high-lust path (Start -> Event1 -> Event2). The
-	   low-lust End2 is rendered inline in DeliveryEventStart. */
+		low-lust End2 is rendered inline in DeliveryEventStart. */
 	<<addLust 15>>
 	<<deliveryVideo "packageevent" 7>>
-	@@.notmc-speech; Ohhh~ maybe you should pay me instead@@<br>
-	@@.mc-speech; We had another agreement@@<br>
-	@@.notmc-speech; Haha, of course I'm kidding. Here's your money@@<br>
+	<<vocal npc>>Ohhh<</vocal>> <<say>>Maybe you should pay me instead<</say>><br>
+	<<mc>>We had another agreement<</mc>><br>
+	<<say>>Haha, of course I'm kidding. Here's your money<</say>><br>
 	<<deliveryBonus 15>>
 	<br>
 	@@.backbtn;[[Leave|DeliveryMap]]@@<br>

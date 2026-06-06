@@ -2,8 +2,8 @@
 <<if setup.MissingWomen.jadePossessedStage() eq 1>>
 
 	<<video "characters/rescue/jade/1.2.mp4">>
-	@@.mc-thoughts; She started to lick your pussy at a furious pace. Your moans began to spread throughout the house, but she didn't show you any mercy.@@<br>
-	@@.mc-speech; OH~ Fuck~ I'm going to...@@<br>
+	<<thought>>She started to lick your pussy at a furious pace. Your moans began to spread throughout the house, but she didn't show you any mercy.<</thought>><br>
+	<<vocal mc>>OH~ Fuck<</vocal>> <<mc>>I'm going to...<</mc>><br>
 	@@.mc-thoughts; A powerful orgasm shakes your body. As you bask in the waves of pleasure coursing through you, she started putting something on, but you couldn't see <<linkappend "what it was">>
 		<<video "characters/rescue/jade/1.3.mp4">>
 		@@.mc-thoughts; She positioned you on your knees and brought something hard to your pussy.@@<br>
@@ -20,8 +20,8 @@
 	<<if _checkR eq 2>>
 		<<video "characters/rescue/jade/2.4.mp4">>
 	<</if>>
-	@@.mc-thoughts; She started to rub your pussy at a furious pace. Your moans began to spread throughout the house, but she didn't show you any mercy.@@<br>
-	@@.mc-speech; OH~ Fuck~ I'm going to...@@<br>
+	<<thought>>She started to rub your pussy at a furious pace. Your moans began to spread throughout the house, but she didn't show you any mercy.<</thought>><br>
+	<<vocal mc>>OH~ Fuck<</vocal>> <<mc>>I'm going to...<</mc>><br>
 	@@.notmc-speech; Haha~ Slow down, I have <<linkappend "a surprise for you.">>
 		<<video "characters/rescue/jade/2.5.mp4">>
 		@@.mc-thoughts; She grabbed the vibrator and pressed it against your dripping pussy, causing your vision to darken and and uncontrollable moans to slip from your mouth@@<br>
@@ -36,9 +36,9 @@
 	<<if _checkR eq 2>>
 		<<video "characters/rescue/jade/3.5.mp4">>
 	<</if>>
-	@@.mc-thoughts; She started to rub your pussy at a furious pace. Your moans began to spread throughout the house, but she didn't show you any mercy.@@<br>
-	@@.mc-speech; OH~ Fuck~ I'm going to...@@<br>
-	@@.mc-thoughts; A powerful orgasm hit you, causing your knees to buckle, and you fell to the floor. She waited until you caught your breath a bit. @@<br>
+	<<thought>>She started to rub your pussy at a furious pace. Your moans began to spread throughout the house, but she didn't show you any mercy.<</thought>><br>
+	<<vocal mc>>OH~ Fuck<</vocal>> <<mc>>I'm going to...<</mc>><br>
+	<<thought>>A powerful orgasm hit you, causing your knees to buckle, and you fell to the floor. She waited until you caught your breath a bit.<</thought>><br>
 	@@.notmc-speech; I like you better in this position.<br>
 	Come on, slut, make your friend <<linkappend "feel good">>
 		<<set _checkR to random(1,2)>>

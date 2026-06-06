@@ -1,6 +1,6 @@
 :: RescueNadiaPossessed [nobr] {"position":"2225,2100","size":"100,100"}
 <<video "characters/rescue/nadia/1.0.mp4">>
-@@.notmc-speech; Do you like this, <<= setup.Mc.name()>>?@@<br>
+<<say>>Do you like this, <<= setup.Mc.name()>>?<</say>><br>
 @@.mc-speech;What the hell? Wait... how do you <<linkappend "know my...">>
 	<<video "characters/rescue/nadia/1.1.mp4">>
 	@@.notmc-speech;Shh, I want you right now...@@<br>

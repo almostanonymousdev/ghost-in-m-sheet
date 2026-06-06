@@ -1,7 +1,7 @@
 :: ToolsEventChurch1 [event nobr] {"position":"1975,1700","size":"100,100"}
 <<addLust 15>>
 <<randomVideo "scenes/church/4.mp4" "scenes/church/5.mp4">>
-@@.notmc-speech; Oh~ you're so hot, I'm going to cum soon@@<br>
+<<vocal npc>>Oh<</vocal>> <<say>>You're so hot, I'm going to cum soon<</say>><br>
 <<if setup.Church.lustTooHighForPriest()>>
 	@@.mc-speech; Nooo, wait, I feel like I'm going to cum, fuck me <<linkappend "in the ass, please">>
 		<<randomVideo "scenes/church/6.mp4" "scenes/church/7.mp4">>

@@ -7,7 +7,7 @@
 @@.location; _address@@<br><br>
 <<if setup.Delivery.specialOrderType() is "safe">>
 	<<image "ui/img/deliverygirlhappy.jpg" { style: "max-width: 100%; height: auto; display: block; margin: 0 auto;" }>>
-	@@.notmc-speech; You're a lifesaver! I've been waiting for this all day. Here, keep the change.@@<br>
+	<<say>>You're a lifesaver! I've been waiting for this all day. Here, keep the change.<</say>><br>
 	<<run setup.Delivery.bankSafeSpecialOrder()>>
 	<<deliveryTrackCorrect>>
 	@@.mc-action; You earned $<<= setup.Delivery.specialOrderPay()>> for the rush delivery!@@<br>
@@ -16,13 +16,13 @@
 	@@.backbtn;[[Back|DeliveryMap]]@@
 <<else>>
 	<<image "scenes/deliveryhub/specialevent/1.jpg" { style: "max-width: 100%; height: auto; display: block; margin: 0 auto;" }>>
-	@@.notmc-speech; Finally! Get in here, I need to check the package before I pay.@@<br>
-	@@.mc-thoughts; Why can't he just check it at the door?@@<br>
+	<<say>>Finally! Get in here, I need to check the package before I pay.<</say>><br>
+	<<thought>>Why can't he just check it at the door?<</thought>><br>
 	<<if setup.Mc.corruption() gte 3>>
 		@@.mc-speech;[[Go inside|DeliverySpecialUnsafe]]@@ or @@.mc-speech;[[No thanks, just pay me|DeliverySpecialRefused]]@@<br>
 	<<else>>
-		@@.mc-speech; Uh... fine, but make it quick.@@<br>
-		@@.mc-thoughts; I just want the tip. Maybe he really does just need to check it.@@<br>
+		<<mc>>Uh... fine, but make it quick.<</mc>><br>
+		<<thought>>I just want the tip. Maybe he really does just need to check it.<</thought>><br>
 		@@.mc-speechLink;[[Step inside|DeliverySpecialCoerced]]@@<br>
 	<</if>>
 <</if>>
@@ -30,35 +30,35 @@
 
 :: DeliverySpecialCoerced [event nobr] {"position":"1500,1650","size":"100,100"}
 <<image "scenes/deliveryhub/specialevent/2.jpg" { style: "max-width: 100%; height: auto; display: block; margin: 0 auto;" }>>
-@@.mc-thoughts; He locks the door behind me. Shit.@@<br>
-@@.notmc-speech; You want to get paid? Earn it.@@<br>
-@@.mc-thoughts; Oh fuck. No. I'm not doing that — not for a few bucks.@@<br>
-@@.mc-speech; Forget it. Keep the package — I'm leaving.@@<br>
+<<thought>>He locks the door behind me. Shit.<</thought>><br>
+<<say>>You want to get paid? Earn it.<</say>><br>
+<<thought>>Oh fuck. No. I'm not doing that — not for a few bucks.<</thought>><br>
+<<mc>>Forget it. Keep the package — I'm leaving.<</mc>><br>
 <br>
 [[Push past him|DeliverySpecialRefused]]
 
 :: DeliverySpecialRefused [event nobr] {"position":"1500,1600","size":"100,100"}
-@@.notmc-speech; No inspection, no payment. That's how it works, sweetheart.@@<br>
+<<say>>No inspection, no payment. That's how it works, sweetheart.<</say>><br>
 <<run setup.Delivery.clearSpecialOrder()>>
-@@.mc-speech; What?! But I delivered your order!@@<br>
-@@.mc-thoughts; What an asshole. I wasted my time for nothing.@@<br>
+<<mc>>What?! But I delivered your order!<</mc>><br>
+<<thought>>What an asshole. I wasted my time for nothing.<</thought>><br>
 <br>
 @@.backbtn;[[Back|DeliveryMap]]@@
 
 :: DeliverySpecialUnsafe [event nobr] {"position":"1500,1700","size":"100,100"}
 <<run setup.Mc.addLust(45)>>
 <<image "scenes/deliveryhub/specialevent/2.jpg" { style: "max-width: 100%; height: auto; display: block; margin: 0 auto;" }>>
-@@.mc-thoughts; He locks the door behind me. Shit.@@<br>
-@@.notmc-speech; You want to get paid? Earn it.@@<br>
+<<thought>>He locks the door behind me. Shit.<</thought>><br>
+<<say>>You want to get paid? Earn it.<</say>><br>
 @@.mc-speech;<<linkreplace " I... I need the money">>
 	<<video "scenes/deliveryhub/specialevent/1.webm">>
-	@@.notmc-speech; Good girl. On your knees.@@<br>
-	@@.mc-speech; ~Mm~@@<br>
+	<<say>>Good girl. On your knees.<</say>><br>
+	<<vocal mc>>Mm<</vocal>><br>
 	<<linkreplace "@@.mc-speechLink; Get on your knees@@">>
 		<<set _pick to random(2, 4)>>
 		<<video "scenes/deliveryhub/specialevent/" + _pick + ".webm">>
-		@@.notmc-speech; Turn around@@<br>
-		@@.mc-speech; ~Ah~ just be quick@@<br>
+		<<say>>Turn around<</say>><br>
+		<<vocal mc>>Ah<</vocal>> <<mc>>Just be quick<</mc>><br>
 		@@.mc-speechLink;[[Let him continue|DeliverySpecialUnsafe2]]@@<br>
 	<</linkreplace>>
 <</linkreplace>>@@
@@ -66,14 +66,14 @@
 :: DeliverySpecialUnsafe2 [event nobr] {"position":"1500,1800","size":"100,100"}
 <<set _pick2 to random(5, 6)>>
 <<video "scenes/deliveryhub/specialevent/" + _pick2 + ".webm">>
-@@.mc-speech; ~Ah~ God...@@<br>
-@@.notmc-speech; Fuck, you're tight. I'm going to cum@@<br>
+<<vocal mc>>Ah<</vocal>> <<mc>>God...<</mc>><br>
+<<say>>Fuck, you're tight. I'm going to cum<</say>><br>
 <<linkreplace "@@.mc-speechLink; Please not inside...@@">>
 	<<set _pick3 to random(7, 8)>>
 	<<video "scenes/deliveryhub/specialevent/" + _pick3 + ".webm">>
 	<<run setup.Delivery.clearLust()>>
-	@@.notmc-speech; Too late for that. Here's your money, now get out.@@<br>
-	@@.mc-thoughts; Fuck... I can feel it dripping out of me@@<br>
+	<<say>>Too late for that. Here's your money, now get out.<</say>><br>
+	<<thought>>Fuck... I can feel it dripping out of me<</thought>><br>
 	<br>
 	<<run setup.Delivery.clearSpecialOrder()>>
 	<<deliveryBonus setup.Delivery.specialOrderPay()>>

@@ -10,7 +10,7 @@
 	return 'Ectoplasm: ' + setup.HuntController.ectoplasm() + ' mL';
 }>>
 @@.location; Ectoplasm Wares@@<br>
-@@.notmc-speech; Ectoplasm buys a different sort of favor than coin. Pick what you want.@@<br>
+<<say>>Ectoplasm buys a different sort of favor than coin. Pick what you want.<</say>><br>
 <span class="meta-shop-balance"><<= _balanceLine()>></span><br>
 <br>
 <div id="hunt-shop-list">

@@ -1,5 +1,5 @@
 const { test, expect } = require('../fixtures');
-const { setVar, getVar, callSetup, openGame, goToPassage } = require('../helpers');
+const { setVar, getVar, callSetup, openGame, goToPassage, setWardrobeSlot } = require('../helpers');
 
 test.describe('Events controller — tier classification', () => {
   test('eventTier maps elapsed hunt minutes 1→7 with 25-minute steps', async ({ game: page }) => {
@@ -151,8 +151,8 @@ test.describe('Events controller — video resolvers', () => {
 
   test('videoListForEvent for tits with a t-shirt + bra picks tshirt set', async ({ game: page }) => {
     await setLocation(page, 'owaissa');
-    await setVar(page, 'tshirtState', 'worn');
-    await setVar(page, 'braState', 'worn');
+    await setWardrobeSlot(page, 'tshirt', 'worn');
+    await setWardrobeSlot(page, 'bra', 'worn');
     const list = await page.evaluate(() =>
       SugarCube.setup.Events.videoListForEvent('tits'));
     expect(list.length).toBeGreaterThan(0);
@@ -161,8 +161,8 @@ test.describe('Events controller — video resolvers', () => {
 
   test('videoListForEvent for tits with no top + no bra picks noBra set', async ({ game: page }) => {
     await setLocation(page, 'owaissa');
-    await setVar(page, 'tshirtState', 'not worn');
-    await setVar(page, 'braState', 'not worn');
+    await setWardrobeSlot(page, 'tshirt', 'not worn');
+    await setWardrobeSlot(page, 'bra', 'not worn');
     const list = await page.evaluate(() =>
       SugarCube.setup.Events.videoListForEvent('tits'));
     expect(list.length).toBeGreaterThan(0);
@@ -171,10 +171,10 @@ test.describe('Events controller — video resolvers', () => {
 
   test('videoListForEvent for ass with jeans + panties picks jeans set', async ({ game: page }) => {
     await setLocation(page, 'owaissa');
-    await setVar(page, 'jeansState', 'worn');
-    await setVar(page, 'pantiesState', 'worn');
-    await setVar(page, 'shortsState', 'not worn');
-    await setVar(page, 'skirtState', 'not worn');
+    await setWardrobeSlot(page, 'jeans', 'worn');
+    await setWardrobeSlot(page, 'panties', 'worn');
+    await setWardrobeSlot(page, 'shorts', 'not worn');
+    await setWardrobeSlot(page, 'skirt', 'not worn');
     const list = await page.evaluate(() =>
       SugarCube.setup.Events.videoListForEvent('ass'));
     expect(list[0]).toContain('/jeans/s1/');
@@ -182,10 +182,10 @@ test.describe('Events controller — video resolvers', () => {
 
   test('videoListForEvent for ass with skirt + no panties picks skirtNP', async ({ game: page }) => {
     await setLocation(page, 'owaissa');
-    await setVar(page, 'jeansState', 'not worn');
-    await setVar(page, 'shortsState', 'not worn');
-    await setVar(page, 'skirtState', 'worn');
-    await setVar(page, 'pantiesState', 'not worn');
+    await setWardrobeSlot(page, 'jeans', 'not worn');
+    await setWardrobeSlot(page, 'shorts', 'not worn');
+    await setWardrobeSlot(page, 'skirt', 'worn');
+    await setWardrobeSlot(page, 'panties', 'not worn');
     const list = await page.evaluate(() =>
       SugarCube.setup.Events.videoListForEvent('ass'));
     expect(list[0]).toContain('/skirt-no-panties/s1/');
@@ -265,16 +265,16 @@ test.describe('Events controller — orgasm and body-part roll', () => {
 
   test('coverageDamp tracks setup.Wardrobe.coverage()/12 capped at 3', async ({ game: page }) => {
     // Strip MC fully naked.
-    for (const v of ['tshirtState', 'braState', 'pantiesState', 'jeansState', 'shortsState', 'skirtState']) {
-      await setVar(page, v, 'not worn');
+    for (const v of ['tshirt', 'bra', 'panties', 'jeans', 'shorts', 'skirt']) {
+      await setWardrobeSlot(page, v, 'not worn');
     }
     expect(await callSetup(page, 'setup.Wardrobe.coverage()')).toBe(0);
     expect(await callSetup(page, 'setup.Events.coverageDamp()')).toBe(0);
 
     // Fully dressed: raw damp would be 8, but the cap at 3 keeps a
     // clothed MC from wiping out the entire base threshold.
-    for (const v of ['tshirtState', 'braState', 'pantiesState', 'jeansState']) {
-      await setVar(page, v, 'worn');
+    for (const v of ['tshirt', 'bra', 'panties', 'jeans']) {
+      await setWardrobeSlot(page, v, 'worn');
     }
     expect(await callSetup(page, 'setup.Wardrobe.coverage()')).toBe(100);
     expect(await callSetup(page, 'setup.Events.coverageDamp()')).toBe(3);
@@ -284,8 +284,8 @@ test.describe('Events controller — orgasm and body-part roll', () => {
     // Tier 1 threshold is 4. Fully dressed coverage = 100 → damp = 3
     // (capped) → effective threshold is 1, so chance=2 must return ''.
     await setVar(page, 'mc.lust', 0);
-    for (const v of ['tshirtState', 'braState', 'pantiesState', 'jeansState']) {
-      await setVar(page, v, 'worn');
+    for (const v of ['tshirt', 'bra', 'panties', 'jeans']) {
+      await setWardrobeSlot(page, v, 'worn');
     }
     await page.evaluate(() => {
       SugarCube.State.variables.sensualBodyPart = {
@@ -295,8 +295,8 @@ test.describe('Events controller — orgasm and body-part roll', () => {
     });
     expect(await callSetup(page, 'setup.Events.rollBodyPartEvent(2)')).toBe('');
     // Stripping back to naked restores threshold 4, so chance=2 fires brain.
-    for (const v of ['tshirtState', 'braState', 'pantiesState', 'jeansState']) {
-      await setVar(page, v, 'not worn');
+    for (const v of ['tshirt', 'bra', 'panties', 'jeans']) {
+      await setWardrobeSlot(page, v, 'not worn');
     }
     expect(await callSetup(page, 'setup.Events.rollBodyPartEvent(2)')).toBe('brain');
   });
@@ -305,21 +305,21 @@ test.describe('Events controller — orgasm and body-part roll', () => {
     // Jeans + panties: ass/bottom/pussy/anal heavily damped, tits with
     // tshirt + bra also low. Weight tits and pussy equally; force
     // Math.random() to 0 so the roll picks the first non-zero weight.
-    for (const v of ['tshirtState', 'braState', 'pantiesState', 'jeansState']) {
-      await setVar(page, v, 'worn');
+    for (const v of ['tshirt', 'bra', 'panties', 'jeans']) {
+      await setWardrobeSlot(page, v, 'worn');
     }
-    await setVar(page, 'shortsState', 'not worn');
-    await setVar(page, 'skirtState', 'not worn');
+    await setWardrobeSlot(page, 'shorts', 'not worn');
+    await setWardrobeSlot(page, 'skirt', 'not worn');
     const mult = await page.evaluate(() => SugarCube.setup.Wardrobe.exposureMultipliers());
     expect(mult.tits).toBeLessThan(0.5);   // tshirt+bra → 0.3
     expect(mult.ass).toBeLessThan(0.5);    // jeans → 0.3
     expect(mult.pussy).toBeLessThan(0.3);  // jeans → 0.2
 
     // Skirt without panties amplifies ass weight above 1.
-    for (const v of ['tshirtState', 'braState', 'jeansState', 'shortsState', 'pantiesState']) {
-      await setVar(page, v, 'not worn');
+    for (const v of ['tshirt', 'bra', 'jeans', 'shorts', 'panties']) {
+      await setWardrobeSlot(page, v, 'not worn');
     }
-    await setVar(page, 'skirtState', 'worn');
+    await setWardrobeSlot(page, 'skirt', 'worn');
     const mult2 = await page.evaluate(() => SugarCube.setup.Wardrobe.exposureMultipliers());
     expect(mult2.ass).toBeGreaterThan(1);
     expect(mult2.pussy).toBe(1);
@@ -415,10 +415,10 @@ test.describe('Events controller — save-event video aliases', () => {
 
   test('saveEventBottomVideos picks the right body part by stage', async ({ game: page }) => {
     await setLocation(page, 'owaissa');
-    await setVar(page, 'jeansState', 'worn');
-    await setVar(page, 'pantiesState', 'worn');
-    await setVar(page, 'shortsState', 'not worn');
-    await setVar(page, 'skirtState', 'not worn');
+    await setWardrobeSlot(page, 'jeans', 'worn');
+    await setWardrobeSlot(page, 'panties', 'worn');
+    await setWardrobeSlot(page, 'shorts', 'not worn');
+    await setWardrobeSlot(page, 'skirt', 'not worn');
 
     const stage1 = await page.evaluate(() => SugarCube.setup.Events.saveEventBottomVideos(1));
     expect(stage1[0]).toContain('/jeans/s1/');
@@ -432,8 +432,8 @@ test.describe('Events controller — save-event video aliases', () => {
 
   test('saveEventTopVideos picks the right body part by stage', async ({ game: page }) => {
     await setLocation(page, 'owaissa');
-    await setVar(page, 'tshirtState', 'worn');
-    await setVar(page, 'braState', 'worn');
+    await setWardrobeSlot(page, 'tshirt', 'worn');
+    await setWardrobeSlot(page, 'bra', 'worn');
 
     const stage1 = await page.evaluate(() => SugarCube.setup.Events.saveEventTopVideos(1));
     expect(stage1.length).toBeGreaterThan(0);

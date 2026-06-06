@@ -1,31 +1,34 @@
 :: RescueVictoriaPossessed1 [nobr] {"position":"2025,2200","size":"100,100"}
 <<if setup.MissingWomen.victoriaPossessedStage() eq 1>>
 	<<video "characters/rescue/victoria/1.2.mp4">>
-	@@.mc-speech; What are you going to do? ~OH~ fuck~ my butthole@@<br>
+	<<mc>>What are you going to do?<</mc>> <<vocal mc>>OH<</vocal>> <<mc>>fuck—my butthole<</mc>><br>
 	@@.notmc-speech; Seems like your sweet little hole is ready for@@ <<linkappend "@@.notmc-speechLink; something more...@@">>
 		<<video "characters/rescue/victoria/1.3.mp4">>
-		@@.notmc-speech; Ha, your hole swallowed that dildo right away<br>
-		How many dicks have been in your ass already?@@<br>
-		@@.mc-speech; Fuck, I'm [[cumming|RescueVictoriaPossessed2][setup.MissingWomen.setVictoriaPossessedStage(1)]]@@<br>
+		<<say>>Ha, your hole swallowed that dildo right away<br>
+			How many dicks have been in your ass already?
+		<</say>><br>
+		<<mc>>Fuck, I'm [[cumming|RescueVictoriaPossessed2][setup.MissingWomen.setVictoriaPossessedStage(1)]]<</mc>><br>
 	<</linkappend>>
 <</if>>
 <<if setup.MissingWomen.victoriaPossessedStage() eq 2>>
 	<<video "characters/rescue/victoria/2.2.mp4">>
-	@@.mc-speech; Oh~you're gonna tear my ass, please be gentle@@<br>
+	<<vocal mc>>Oh<</vocal>> <<mc>>You're gonna tear my ass, please be gentle<</mc>><br>
 	@@.notmc-speech; What a tight ass you have, don't worry,@@ <<linkappend "@@.notmc-speechLink; I'll fix it@@">>
 		<<video "characters/rescue/victoria/2.3.mp4">>
-		@@.notmc-speech; Do you want me to stop? Answer me, whore@@<br>
-		@@.mc-speech; Oh my god, I can't take it anymore, I'm
-		[[cumming|RescueVictoriaPossessed2][setup.MissingWomen.setVictoriaPossessedStage(2)]]@@<br>
+		<<say>>Do you want me to stop? Answer me, whore<</say>><br>
+		<<mc>>Oh my god, I can't take it anymore, I'm
+			[[cumming|RescueVictoriaPossessed2][setup.MissingWomen.setVictoriaPossessedStage(2)]]
+		<</mc>><br>
 	<</linkappend>>
 <</if>>
 <<if setup.MissingWomen.victoriaPossessedStage() eq 3>>
 	<<video "characters/rescue/victoria/3.2.mp4">>
-	@@.mc-speech; Oh~you're gonna tear my ass, please be gentle@@<br>
+	<<vocal mc>>Oh<</vocal>> <<mc>>You're gonna tear my ass, please be gentle<</mc>><br>
 	@@.notmc-speech; What a tight ass you have, don't worry,@@ <<linkappend "@@.notmc-speechLink; I'll fix it@@">>
 		<<video "characters/rescue/victoria/3.3.mp4">>
-		@@.notmc-speech; Do you want me to stop? Answer me, whore@@<br>
-		@@.mc-speech; Oh my god, I can't take it anymore, I'm
-		[[cumming|RescueVictoriaPossessed2][setup.MissingWomen.setVictoriaPossessedStage(3)]]@@<br>
+		<<say>>Do you want me to stop? Answer me, whore<</say>><br>
+		<<mc>>Oh my god, I can't take it anymore, I'm
+			[[cumming|RescueVictoriaPossessed2][setup.MissingWomen.setVictoriaPossessedStage(3)]]
+		<</mc>><br>
 	<</linkappend>>
 <</if>>

@@ -4,42 +4,42 @@
 <br>
 <<if setup.Home.succubusChoiceText() eq 1>>
 	<<run setup.Home.clearSuccubusChoiceText()>>
-	@@.mc-thoughts; You wake up, back in your original form@@<br>
-	@@.mc-speech; That was... oh... the main thing is that now I have her protection for 5 days.@@<br>
+	<<thought>>You wake up, back in your original form<</thought>><br>
+	<<mc>>That was... oh... the main thing is that now I have her protection for 5 days.<</mc>><br>
 <<elseif setup.Home.succubusChoiceText() eq 2>>
 	<<run setup.Home.clearSuccubusChoiceText()>>
-	@@.mc-speech; That was... oh... the main thing is that now I have her protection for 5 days.@@<br>
+	<<mc>>That was... oh... the main thing is that now I have her protection for 5 days.<</mc>><br>
 <</if>>
 <<if setup.Home.summonText() eq 1>>
-	@@.mc-speech; Oh fuck... apparently I summoned the wrong ghost... next time I need to pay attention to the amulet.@@<br>
+	<<mc>>Oh fuck... apparently I summoned the wrong ghost... next time I need to pay attention to the amulet.<</mc>><br>
 	<<run setup.Home.clearSummonText()>>
 <</if>>
 <<if setup.Home.canSummonForExorcism()>>
 	@@.enterbtn; [[Summon the ghost|Summoning]]@@<br>
 <<elseif setup.Home.exorcismOnCooldown()>>
-	@@.mc-thoughts; Enough for today...@@<br>
+	<<thought>>Enough for today...<</thought>><br>
 <</if>>
 <<if setup.Home.succubusTVText() eq 1>>
-	@@.mc-speech; WHAT the fuck just happened... I hope this ghost doesn't bother me anymore. Maybe I should ask how to get rid of it if it keeps haunting me.@@<br>
+	<<mc>>WHAT the fuck just happened... I hope this ghost doesn't bother me anymore. Maybe I should ask how to get rid of it if it keeps haunting me.<</mc>><br>
 	<<run setup.Home.clearSuccubusTVText()>><br>
 <</if>>
 <<if setup.Home.tentaclesAfterSleepText() eq 1>>
-	@@.mc-speech;Oh, that was a weird dream, like something was trying to get into my head... Brrr, horrible.@@<br>
+	<<mc>>Oh, that was a weird dream, like something was trying to get into my head... Brrr, horrible.<</mc>><br>
 	<<run setup.Home.clearTentaclesAfterSleepText()>>
 <<elseif setup.Home.tentaclesAfterSleepText() eq 2>>
-	@@.mc-speech;Thank God it was just a nightmare.@@<br>
+	<<mc>>Thank God it was just a nightmare.<</mc>><br>
 	<<run setup.Home.clearTentaclesAfterSleepText()>>
 <<elseif setup.Home.tentaclesAfterSleepText() eq 3>>
-	@@.mc-thoughts;You woke up. It was just a dream. But the aftermath lingered - your pussy was soaked through, craving more.@@<br>
-	@@.mc-speech;Phew~ why is this happening? I'm so turned on right now...@@<br>
+	<<thought>>You woke up. It was just a dream. But the aftermath lingered - your pussy was soaked through, craving more.<</thought>><br>
+	<<vocal mc>>Phew<</vocal>> <<mc>>Why is this happening? I'm so turned on right now...<</mc>><br>
 	<<run setup.Home.clearTentaclesAfterSleepText()>>
 	<<run setup.Mc.setLust(100)>>
 <<elseif setup.Home.tentaclesAfterSleepText() eq 4>>
-	@@.mc-speech;That was... oh~ I still feel it. I think I came in my sleep...@@<br>
+	<<mc>>That was...<</mc>> <<vocal mc>>oh<</vocal>> <<mc>>I still feel it. I think I came in my sleep...<</mc>><br>
 	<<run setup.Home.clearTentaclesAfterSleepText()>>
 	<<run setup.Mc.setLust(100)>>
 <<elseif setup.Home.tentaclesAfterSleepText() eq 5>>
-	@@.mc-speech;That was... oh~ I still feel it. I think I came in my sleep, not just once...@@<br>
+	<<mc>>That was...<</mc>> <<vocal mc>>oh<</vocal>> <<mc>>I still feel it. I think I came in my sleep, not just once...<</mc>><br>
 	<<run setup.Home.clearTentaclesAfterSleepText()>>
 	<<run setup.Mc.setLust(100)>>
 <</if>>
@@ -49,7 +49,7 @@
 		It seems like I'm starting to remember... I lost the battle, but not the war. Next time, I'll be more careful. <br>
 		I don't feel well, my whole body aches... I need to buy some medicine from the store, as hunting ghosts will be much harder without it. <br>
 		<<if setup.CursedItems.isActive()>>
-			@@.mc-thoughts; Something feels off... as you stir awake, you sense a small, lingering ghostly presence in your home. It's faint, but unmistakable -- like something followed you back.@@<br>
+			<<thought>>Something feels off... as you stir awake, you sense a small, lingering ghostly presence in your home. It's faint, but unmistakable -- like something followed you back.<</thought>><br>
 		<</if>>
 		<br>
 		<<include "HuntResidue">>
@@ -60,10 +60,10 @@
 	<</linkappend>>@@
 
 <<elseif setup.Home.returningFromMareEnd()>>
-	@@.mc-thoughts; You wake up and see the@@ <<linkappend "@@.mc-thoughtsLink;aftermath of last night on yourself...@@">><br>
+	<<thought>>You wake up and see the<</thought>> <<linkappend "@@.mc-thoughtsLink;aftermath of last night on yourself...@@">><br>
 		<<randRangeImg "characters/mc/" 1 17 ".webp">><br>
 		<<run setup.Mc.clearPenalty()>>
-		@@.mc-speech; Weirdly enough, I feel great, maybe even a bit better than usual, hehe. I suppose I should still head to the [[bathroom|Bathroom]].@@
+		<<mc>>Weirdly enough, I feel great, maybe even a bit better than usual, hehe. I suppose I should still head to the [[bathroom|Bathroom]].<</mc>>
 	<</linkappend>>
 
 <<else>>  /* Normal wakup path */
@@ -71,7 +71,7 @@
 		<<run setup.Home.applyMareWake()>>
 		<<run setup.Home.advanceMareStageOnWake()>>
 		<<if not setup.Mc.isPenalized()>>
-			@@.mc-speech; I feel unwell... strange, I need to find out what's happening to me. In this condition, it will be much harder for me to hunt ghosts.@@<br>
+			<<mc>>I feel unwell... strange, I need to find out what's happening to me. In this condition, it will be much harder for me to hunt ghosts.<</mc>><br>
 		<</if>>
 	<</if>>
 	@@.enterbtn;[[Wardrobe|Wardrobe]]@@ <br>
@@ -104,7 +104,7 @@
 	<</link>>@@<span><<statIcon setup.StatIcon.ENERGY>></span><br>
 	<<if setup.Home.canUseHolyWaterOnMare()>>
 		<<linkreplace "@@.usebtn; Use holy water@@">><<run setup.Home.useHolyWaterOnMare()>>
-			@@.mc-speech; This should help. Now I can sleep peacefully.@@
+			<<mc>>This should help. Now I can sleep peacefully.<</mc>>
 		<</linkreplace>>
 	<</if>>
 	<<if setup.Achievements.hasCheated() eq false>>

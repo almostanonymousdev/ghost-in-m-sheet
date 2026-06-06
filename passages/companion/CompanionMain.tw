@@ -25,7 +25,7 @@
 	<</if>>
 <</if>><br>
 
-@@.mc-thoughts; The ghost will fixate on whoever's wearing less. If she's down to skin, she's the lightning rod -- and a moving target is harder to grab than a still one. Cruel math, but math.@@<br>
+<<thought>>The ghost will fixate on whoever's wearing less. If she's down to skin, she's the lightning rod -- and a moving target is harder to grab than a still one. Cruel math, but math.<</thought>><br>
 @@.mc-speech;
 <br>
 <<link "Stay in your regular clothes.">>
@@ -82,7 +82,7 @@
 <br>
 </div>
 </div>
-@@.notmc-speech; So. What's the plan?@@<br>
+<<say>>So. What's the plan?<</say>><br>
 
 <br>
 <<sanityPills>>
@@ -90,18 +90,18 @@
 @@.usebtn;<<link "Stay with me.">>
 	<<run setup.Companion.setStayTogetherPlan()>>
 	<<replace "#compResponse">>
-		@@.notmc-speech; Good. I'll stick to your shoulder.@@
+		<<say>>Good. I'll stick to your shoulder.<</say>>
 	<</replace>>
 <</link>>@@<br>
 <span id="checkQuestForCursedItem">@@.usebtn;<<link `"Find the cursed object for Khadija. @@.warningtext; (" + _state.chanceOfSuccessCI + " %, " + _state.plan2TimeReq + " min)@@"`>>
 	<<if not setup.Companion.hasCursedItem()>>
 		<<run setup.Companion.setHuntPlan("Plan2", _state.chanceOfSuccessCI, _state.plan2TimeReq)>>
 		<<replace "#compResponse">>
-			@@.notmc-speech; On it. I'll know it when I touch it.@@
+			<<say>>On it. I'll know it when I touch it.<</say>>
 		<</replace>>
 	<<else>>
 		<<replace "#compResponse">>
-			@@.notmc-speech; We've already got one. One's the limit.@@
+			<<say>>We've already got one. One's the limit.<</say>>
 		<</replace>>
 	<</if>>
 <</link>>@@</span> <<if not setup.Companion.cursedItemQuestUnlocked()>>@@.warningtext; Req. quest from the witch@@
@@ -109,13 +109,13 @@
 @@.usebtn;<<link `"Sweep for evidence. Anything you can flag. @@.warningtext; (" + _state.chanceOfSuccessAnyEvidence + " %, " + _state.plan3TimeReq + " min@@)"`>>
 	<<run setup.Companion.setHuntPlan("Plan3", _state.chanceOfSuccessAnyEvidence, _state.plan3TimeReq)>>
 	<<replace "#compResponse">>
-		@@.notmc-speech; Sweep. Got it. I'll yell if I find anything.@@
+		<<say>>Sweep. Got it. I'll yell if I find anything.<</say>>
 	<</replace>>
 <</link>>@@<br>
 @@.usebtn;<<link `"Find me the room it likes best. @@.warningtext; (" + _state.chanceOfSuccessGR + " %, " + _state.plan4TimeReq + " min@@)"`>>
 	<<run setup.Companion.setHuntPlan("Plan4", _state.chanceOfSuccessGR, _state.plan4TimeReq)>>
 	<<replace "#compResponse">>
-		@@.notmc-speech; Favorite room. I'll know which one feels worst.@@
+		<<say>>Favorite room. I'll know which one feels worst.<</say>>
 	<</replace>>
 <</link>>@@<br>
 
@@ -123,9 +123,9 @@
 	@@.usebtn;<<link `"Ask " + _c.pronObj + " to walk you home."`>>
 
 		<<replace "#compResponse">>
-			@@.mc-speech; I'm done. Walk me out.@@<br>
+			<<mc>>I'm done. Walk me out.<</mc>><br>
 			<<if setup.Companion.canWalkHomeWithCompanion()>>
-				@@.notmc-speech; Yeah. You sure? We can still finish.@@<br>
+				<<say>>Yeah. You sure? We can still finish.<</say>><br>
 				<<set _companionHuntPassage to setup.ActiveGhost.companionHuntPassage()>>
 				<<if _companionHuntPassage and setup.HuntController.isHunting()>>
 					@@.mc-speech; Yes, <<link "let's go together" `_companionHuntPassage`>>
@@ -134,24 +134,25 @@
 					@@.mc-speech; Yes, [[let's go together|WalkHomeTogether]] @@
 				<</if>> <b>or </b>
 				<<linkreplace "@@.mc-speechLink; Not yet@@">>
-					@@.notmc-speech; Alright, so what should we do?@@
+					<<say>>Alright, so what should we do?<</say>>
 				<</linkreplace>><br>
 			<<else>>
-				@@.notmc-speech;Um... Well, maybe you should find your clothes first...?@@<br>
-				<<if setup.Mc.exhibitionism() lte 4 or setup.Mc.exhibitionism() is undefined>>@@.mc-speech; Yeah, you're right.@@@@.warningtext; (She'll go with you if you're dressed) or Req. Exhibitionism Level 5+@@
+				<<say>>Um... Well, maybe you should find your clothes first...?<</say>><br>
+				<<if setup.Mc.exhibitionism() lte 4 or setup.Mc.exhibitionism() is undefined>><<mc>>Yeah, you're right.<</mc>>@@.warningtext; (She'll go with you if you're dressed) or Req. Exhibitionism Level 5+@@
 				<</if>>
 				<<if setup.Mc.exhibitionism() gte 5>>
 					<<linkreplace "@@.mc-speechLink; I don't care@@">>
 						<<if hasVisited("NudityEventTwo")>>
-							@@.mc-speech;Let's just leave naked, like last time...@@<br>
-							@@.notmc-speech; Alright, but I'm still grabbing some bathrobes...@@<br>
+							<<mc>>Let's just leave naked, like last time...<</mc>><br>
+							<<say>>Alright, but I'm still grabbing some bathrobes...<</say>><br>
 							<br>
 							@@.backbtn; [[Go home together naked|NudityEventTwo]]@@<br>
 						<<else>>
-							@@.mc-speech; I don't care. I just want to get out of here as soon as possible. Besides, I've walked down the street naked before... It's actually kind of fun. People's eyes wander over you, and the breeze gently tickles all your intimate places~ <br>
-							It might feel awkward at first, but after a couple of minutes, you'll start to enjoy it...<br>
-							Come on! Let's go naked together.You'll like it.<br>@@
-							@@.notmc-speech; Wow, you're such a slut. Alright, let's go. But I'll still grab some clothes from here for us. That way, I'll feel more comfortable.@@<br>
+							<<mc>>I don't care. I just want to get out of here as soon as possible. Besides, I've walked down the street naked before... It's actually kind of fun. People's eyes wander over you, and the breeze gently tickles all your intimate places~ <br>
+								It might feel awkward at first, but after a couple of minutes, you'll start to enjoy it...<br>
+								Come on! Let's go naked together.You'll like it.<br>
+							<</mc>>
+							<<say>>Wow, you're such a slut. Alright, let's go. But I'll still grab some clothes from here for us. That way, I'll feel more comfortable.<</say>><br>
 							<br>
 							@@.backbtn; [[Go home together naked|NudityEventTwo]]@@<br>
 						<</if>>

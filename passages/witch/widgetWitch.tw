@@ -1,7 +1,7 @@
 :: widgetWitch [widget nobr] {"position":"1350,0","size":"100,100"}
 <<widget "ghostTypeDropdown">>
 	/* Wraps SugarCube's <<listbox>> UI binding for $ghostTypeSelected.
-	   Passages call <<ghostTypeDropdown>> instead of naming the global. */
+		Passages call <<ghostTypeDropdown>> instead of naming the global. */
 	<<listbox "$ghostTypeSelected">>
 		<<optionsfrom setup.Ghosts.names()>>
 	<</listbox>>
@@ -13,14 +13,14 @@
 	<div class="housecard">
 	<<if not setup.Ghosts.hasDiscovered(_ghostName)>>
 		<<image "characters/ghosts/" + _ghostName.toLowerCase() + ".webp" "iconPx">>
-		@@.mc-thoughts; Information about _ghostName@@<br>
+		<<thought>>Information about _ghostName<</thought>><br>
 		<span class="priceAmount"><<= _price>>$</span><br>
 		<<if setup.Mc.money() gte _price>>
 			/* <<capture>> snapshots _ghostName/_price into the link's
-			   payload — without it, the link's <<run>> callback fires after
-			   the widget exits and reads whatever values the *last*
-			   ghostInfoCard invocation left in temp scope (so every Buy
-			   click marked the last-rendered ghost as discovered). */
+				payload — without it, the link's <<run>> callback fires after
+				the widget exits and reads whatever values the *last*
+				ghostInfoCard invocation left in temp scope (so every Buy
+				click marked the last-rendered ghost as discovered). */
 			<<capture _ghostName, _price>>
 				@@.buyItemLink;<<link "Buy" "WitchSale">>
 					<<run setup.Ghosts.markDiscovered(_ghostName)>>

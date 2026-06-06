@@ -332,6 +332,9 @@ test.describe('indentation', () => {
     'link', 'linkappend', 'linkprepend', 'linkreplace',
     'replace', 'append', 'prepend',
     'createplaylist', 'actions', 'type',
+    // dialogue wrappers (passages/gui/DialogueController.js) — container
+    // macros whose <</name>> close aligns with its opener.
+    'mc', 'say', 'narration', 'thought', 'vocal',
   ]);
 
   /** Mid-block markers that share their parent block's indent. */
@@ -378,6 +381,31 @@ test.describe('indentation', () => {
       }
     }
     return raw.filter((_, idx) => !paired.has(idx));
+  }
+
+  /**
+   * Blank out the *body* of fully-closed inline dialogue pairs on a line
+   * (<<say>>…<</say>>, <<thought>>…<</thought>>, …), keeping the open/close
+   * tags and every column position intact. This must run before the `//`
+   * line-comment blank below: SugarCube `//italic//` markup is NOT a JS
+   * comment, so an italic run closing right before a dialogue closer
+   * (`…opinions.//<</thought>>`) would otherwise have its `//` swallow the
+   * closer, leaving the opener looking unclosed and every following line
+   * flagged as "inside" it.
+   *
+   * We blank only the body — not the whole pair — so the surviving tags
+   * still let scanBlockMacros pair-and-drop them, and a real block macro
+   * sharing the line (`<<thought>>…<</thought>> <<linkappend …>>`) keeps
+   * its true leading indent instead of inheriting the blanked pair's width.
+   * Mirrors check_format.py's INLINE_DIALOGUE_PAIR exemption.
+   */
+  const INLINE_DIALOGUE_BODY_RE =
+    /(<<\s*(mc|say|narration|thought|vocal)\b[^>]*>>)(.*?)(<<\/\s*\2\s*>>)/gi;
+  function blankInlineDialogueBodies(line) {
+    return line.replace(
+      INLINE_DIALOGUE_BODY_RE,
+      (_m, open, _name, body, close) => open + ' '.repeat(body.length) + close
+    );
   }
 
   /**
@@ -429,6 +457,10 @@ test.describe('indentation', () => {
           + ' '.repeat(end + 2 - start)
           + working.slice(end + 2);
       }
+      // Inline dialogue bodies first, so an italic run (`//…//`) closing
+      // right before a dialogue closer doesn't get swallowed by the
+      // `//` line-comment blank below (see helper docstring).
+      working = blankInlineDialogueBodies(working);
       const lineComment = working.indexOf('//');
       if (lineComment !== -1) {
         working = working.slice(0, lineComment)
@@ -548,6 +580,51 @@ test.describe('indentation', () => {
   test('content inside block macros must be indented deeper than the enclosing tag (nobr passages)', () => {
     const v = passageViolations('depth');
     expect(v, v.join('\n')).toHaveLength(0);
+  });
+
+  // Regression: dialogue closers now sit on the same line as their opener
+  // (`<<thought>>…<</thought>>`). When the body ends with a SugarCube italic
+  // run (`//…//`), the closing `//` used to be misread as a JS line comment
+  // and blank out the `<</thought>>` after it, so the opener looked unclosed
+  // and every following line was flagged "inside <<thought>>". scanner
+  // (blankInlineDialogueBodies) must zero only the body, leaving the tags.
+  test('scanner: an inline dialogue pair ending in //italic// does not leak its open onto later lines', () => {
+    const body = [
+      '<<thought>>plain text. //italic tail//<</thought>><br>',
+      '<<if true>>',
+      '\t<<thought>>nested<</thought>><br>',
+      '<</if>>',
+    ].join('\n');
+    const v = findIndentViolations({ body, headerLine: 0, name: 'T', file: 'T.tw' });
+    expect(v.map((x) => x.msg).join('\n')).toBe('');
+  });
+
+  // Regression: an inline dialogue pair at the START of a line, followed by a
+  // real block-opening macro (`<<thought>>…<</thought>> <<linkappend …>>`),
+  // must not lose the linkappend's true leading indent. Blanking the body
+  // (not the whole pair) keeps the tags at their columns so leadingWS reads
+  // the line's real indent (here: 0) rather than the blanked pair's width.
+  test('scanner: a leading inline dialogue pair before a block open keeps the block at its true indent', () => {
+    const body = [
+      '<<thought>>aside<</thought>> <<linkappend "more">>',
+      '\t<<video "x.mp4">>',
+      '\tdeeper content',
+      '<</linkappend>>',
+    ].join('\n');
+    const v = findIndentViolations({ body, headerLine: 0, name: 'T', file: 'T.tw' });
+    expect(v.map((x) => x.msg).join('\n')).toBe('');
+  });
+
+  // Counter-test: the depth rule still fires for genuinely under-indented
+  // content, so the dialogue exemption above didn't blind the check.
+  test('scanner: depth rule still flags under-indented content inside a block', () => {
+    const body = [
+      '<<linkappend "x">>',
+      'not indented',
+      '<</linkappend>>',
+    ].join('\n');
+    const v = findIndentViolations({ body, headerLine: 0, name: 'T', file: 'T.tw' });
+    expect(v.some((x) => x.type === 'depth')).toBe(true);
   });
 
   test('no line should contain multiple unpaired block-macro tags (nobr passages)', () => {

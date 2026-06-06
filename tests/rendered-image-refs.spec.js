@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 const fs = require('fs');
 const path = require('path');
-const { openGame, resetGame, setHuntMode } = require('./helpers');
+const { openGame, resetGame, setHuntMode, setWardrobeSlot } = require('./helpers');
 
 const REPO_ROOT = path.join(__dirname, '..');
 const MEDIA_EXT_RE = /\.(jpg|jpeg|png|webp|gif|mp4|webm)$/i;
@@ -82,12 +82,9 @@ test.describe('rendered image/video refs resolve to files', () => {
   test('MC bottom slot resolves a real file for each clothing option', async () => {
     for (const which of ['jeans', 'shorts', 'skirt']) {
       await resetGame(page);
-      await page.evaluate((s) => {
-        const V = SugarCube.State.variables;
-        V.jeansState = s === 'jeans' ? 'worn' : 'not worn';
-        V.shortsState = s === 'shorts' ? 'worn' : 'not worn';
-        V.skirtState = s === 'skirt' ? 'worn' : 'not worn';
-      }, which);
+      // Wearing one bottom slot clears the other two (they share the
+      // bottomOuter group), so each iteration renders exactly one.
+      await setWardrobeSlot(page, which, 'worn');
       const srcs = await collectSrcs('<<include "MC">>');
       assertSrcsResolve(srcs, `MC with ${which} worn`);
     }

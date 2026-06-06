@@ -1,9 +1,9 @@
 :: SleepTwins [nobr] {"position":"600,3100","size":"100,100"}
 <<image "mechanics/exorcism/thetwinsend.jpg" "displayCentredImgs">>
-@@.mc-thoughts; You wake up, feeling the sticky liquid on your face.@@<br>
-@@.mc-speech; THIS WASN'T A DREAM? FUCK@@<br>
+<<thought>>You wake up, feeling the sticky liquid on your face.<</thought>><br>
+<<mc>>THIS WASN'T A DREAM? FUCK<</mc>><br>
 <<if setup.Home.summonText() eq 1>>
-	@@.mc-thoughts; It seems I summoned the wrong ghost... next time I'll have to pay attention to the amulet.@@<br>
+	<<thought>>It seems I summoned the wrong ghost... next time I'll have to pay attention to the amulet.<</thought>><br>
 	<<run setup.Home.clearSummonText()>>
 <</if>><br><br>
 @@.backbtn; [[Bathroom|Bathroom]]@@<br>

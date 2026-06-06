@@ -7,12 +7,12 @@
 <<if State.variables.chosenPlan eq "Plan2" and setup.Companion.hasCursedItem()>>
 	<<include "CompanionResult">>
 	<br>
-	@@.mc-speech; Yeah, let's just [[continue|$return]]@@<br>
+	<<mc>>Yeah, let's just [[continue|$return]]<</mc>><br>
 <<else>>
-	@@.notmc-speech; Hey! I have great news, I found...@@<br>
+	<<say>>Hey! I have great news, I found...<</say>><br>
 	<<include "CompanionResult">>
 	<br>
-	@@.mc-speech; Yeah, great job. Let's [[keep going.|$return]]@@<br>
+	<<mc>>Yeah, great job. Let's [[keep going.|$return]]<</mc>><br>
 <</if>>
 <<run setup.Companion.acknowledgeCompanionResult()>>
 <<done>>

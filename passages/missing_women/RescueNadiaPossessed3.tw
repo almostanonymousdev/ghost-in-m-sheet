@@ -8,6 +8,7 @@
 <</if>>
 @@.notmc-speech; Mm~ What a tight little hole<br>
 I can feel your anus pulsating, looks like you're ready to cum@@<br>
-@@.mc-speech; Ahh~Fuck! I can't, I'm cumming@@<br>
-@@.mc-thoughts; The whole house was filled with your moans, and everything faded from your sight<br>
-The orgasm was so powerful that you [[passed out...|Church][setup.MissingWomen.sleepOffHoursAfterEvent()]]@@<br>
+<<vocal mc>>Ahh<</vocal>> <<mc>>Fuck! I can't, I'm cumming<</mc>><br>
+<<thought>>The whole house was filled with your moans, and everything faded from your sight<br>
+	The orgasm was so powerful that you [[passed out...|Church][setup.MissingWomen.sleepOffHoursAfterEvent()]]
+<</thought>><br>

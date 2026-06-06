@@ -8,9 +8,9 @@
 		<<run setup.Mc.addSanityPills(1)>>
 		<<run setup.Mc.removeMoney(30)>>
 	<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@
+<<else>><<thought>>I don't have enough money<</thought>>
 <</if>>
-<span class="subtitleAmount">@@.mc-thoughts; You have <<= setup.Mc.sanityPillsAmount()>> sanity pills@@</span>
+<span class="subtitleAmount"><<thought>>You have <<= setup.Mc.sanityPillsAmount()>> sanity pills<</thought>></span>
 </div>
 <div class="housecard">
 <<run setup.ToolController.initCrucifixIfNeeded()>>
@@ -21,9 +21,9 @@
 		<<run setup.ToolController.addCrucifix()>>
 		<<run setup.Mc.removeMoney(50)>>
 	<</link>>@@<br>
-<<else>>@@.mc-thoughts; I don't have enough money@@
+<<else>><<thought>>I don't have enough money<</thought>>
 <</if>>
-<span class="subtitleAmount">@@.mc-thoughts; You have <<= setup.ToolController.crucifixAmount()>> crucifix@@</span>
+<span class="subtitleAmount"><<thought>>You have <<= setup.ToolController.crucifixAmount()>> crucifix<</thought>></span>
 </div>
 <div class="housecard">
 <<if setup.Witch.toolLevel("emf") eq 5>>
@@ -33,7 +33,7 @@
 		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
 			<<run setup.Witch.upgradeTool("emf")>>
 		<</link>>@@<br>
-	<<else>>@@.mc-thoughts; I don't have enough money@@
+	<<else>><<thought>>I don't have enough money<</thought>>
 	<</if>>
 <</if>>
 </div>
@@ -45,7 +45,7 @@
 		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
 			<<run setup.Witch.upgradeTool("temperature")>>
 		<</link>>@@<br>
-	<<else>>@@.mc-thoughts; I don't have enough money@@
+	<<else>><<thought>>I don't have enough money<</thought>>
 	<</if>>
 <</if>>
 </div>
@@ -57,7 +57,7 @@
 		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
 			<<run setup.Witch.upgradeTool("spiritbox")>>
 		<</link>>@@<br>
-	<<else>>@@.mc-thoughts; I don't have enough money@@
+	<<else>><<thought>>I don't have enough money<</thought>>
 	<</if>>
 <</if>>
 </div>
@@ -69,7 +69,7 @@
 		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
 			<<run setup.Witch.upgradeTool("gwb")>>
 		<</link>>@@<br>
-	<<else>>@@.mc-thoughts; I don't have enough money@@
+	<<else>><<thought>>I don't have enough money<</thought>>
 	<</if>>
 <</if>>
 </div>
@@ -81,7 +81,7 @@
 		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
 			<<run setup.Witch.upgradeTool("glass")>>
 		<</link>>@@<br>
-	<<else>>@@.mc-thoughts; I don't have enough money@@
+	<<else>><<thought>>I don't have enough money<</thought>>
 	<</if>>
 <</if>>
 </div>
@@ -93,33 +93,33 @@
 		@@.buyItemLink;<<link "Buy (lvl 2)" "WitchSale">>
 			<<run setup.Witch.upgradeTool("uvl")>>
 		<</link>>@@<br>
-	<<else>>@@.mc-thoughts; I don't have enough money@@
+	<<else>><<thought>>I don't have enough money<</thought>>
 	<</if>>
 <</if>>
 </div>
 <div class="housecard">
 <<if setup.MonkeyPaw.canBuyWishList()>>
 	<<hovertip "A torn page listing every wish the monkey paw will grant. Names the wishes, not what each one costs you.">><<image "mechanics/cursedpossessions/monkey-paw/monkeypaw-page.jpg" "iconPx">><</hovertip>><br>
-	@@.mc-thoughts; Monkey paw -- wishes list@@<br>
+	<<thought>>Monkey paw -- wishes list<</thought>><br>
 	<span class="priceAmount">400$</span><br>
 	<<if setup.Mc.money() gte 400>>
 		@@.buyItemLink;<<link "Buy" "WitchSale">>
 			<<run setup.Witch.buyMonkeyPawWishList()>>
 		<</link>>@@<br>
-	<<else>>@@.mc-thoughts; I don't have enough money@@
+	<<else>><<thought>>I don't have enough money<</thought>>
 	<</if>>
 <</if>>
 </div>
 <div class="housecard">
 <<if setup.MonkeyPaw.canBuyGuide()>>
 	<<hovertip "The full grimoire entry on the monkey paw -- every wish and the price each one carries.">><<image "mechanics/cursedpossessions/monkey-paw/monkeypaw-page.jpg" "iconPx">><</hovertip>><br>
-	@@.mc-thoughts; Monkey paw -- full guide@@<br>
+	<<thought>>Monkey paw -- full guide<</thought>><br>
 	<span class="priceAmount">800$</span><br>
 	<<if setup.Mc.money() gte 800>>
 		@@.buyItemLink;<<link "Buy" "WitchSale">>
 			<<run setup.Witch.buyMonkeyPawGuide()>>
 		<</link>>@@<br>
-	<<else>>@@.mc-thoughts; I don't have enough money@@
+	<<else>><<thought>>I don't have enough money<</thought>>
 	<</if>>
 <</if>>
 </div>
@@ -131,7 +131,7 @@
 		@@.buyItemLink;<<link "Buy" "WitchSale">>
 			<<run setup.Witch.buyDetector()>>
 		<</link>>@@<br>
-	<<else>>@@.mc-thoughts; I don't have enough money@@
+	<<else>><<thought>>I don't have enough money<</thought>>
 	<</if>>
 <</if>>
 </div>

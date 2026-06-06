@@ -5,8 +5,8 @@
 <</if>>
 <<if _check eq 2>><<video "scenes/gym/trainer2event2.2.mp4">>
 <</if>>
-@@.notmc-speech; Yes~ suck it, you are such a slut @@<br>
-@@.mc-speech; Gulp~guulp~AGH~@@<br>
+<<vocal npc>>Yes<</vocal>> <<say>>Suck it, you are such a slut<</say>><br>
+<<vocal mc>>Gulp~guulp~AGH<</vocal>><br>
 @@.notmc-speech; Now I'm going to fuck you@@ <<linkappend "@@.notmc-speechLink;in the ass@@">>
 	<<addLust 30>>
 	<<set _check to random(1,3)>>

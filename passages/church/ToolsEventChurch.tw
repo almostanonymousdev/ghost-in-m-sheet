@@ -1,11 +1,11 @@
 :: ToolsEventChurch [event nobr] {"position":"1975,1600","size":"100,100"}
 <<video "scenes/church/1.mp4">>
-@@.mc-speech; Do you like it?@@<br>
+<<mc>>Do you like it?<</mc>><br>
 @@.notmc-speech; Yes, you are perfection, show what you can do with <<linkappend "your mouth">> <br>
 	<<addLust 15>>
 	<<randomVideo "scenes/church/2.mp4" "scenes/church/3.mp4">>
 	@@.notmc-speech; Oh~keep sucking it my girl@@<br>
 	@@.mc-speech; ~Hmng~ulrp~@@<br>
-	@@.notmc-speech; Come on my girl, get up, I want to [[fuck you|ToolsEventChurch1]]@@<br>
+	<<say>>Come on my girl, get up, I want to [[fuck you|ToolsEventChurch1]]<</say>><br>
 <</linkappend>>@@
 <<addLust 15>>

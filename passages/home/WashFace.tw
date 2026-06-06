@@ -1,7 +1,7 @@
 :: WashFace [nobr] {"position":"600,1200","size":"100,100"}
 <<image "ui/img/washface.jpg" { width: "70%" }>><br>
 
-@@.mc-speech; Ah, that feels refreshing@@<br>
+<<mc>>Ah, that feels refreshing<</mc>><br>
 <<run setup.Home.wipeMakeup()>>
 <br>
 @@.backbtn;[[Back|Bathroom]] @@<br>

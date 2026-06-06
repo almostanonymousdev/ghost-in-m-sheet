@@ -3,9 +3,9 @@
 @@.mc-speech;Something touches me while I sleep.@@ <<linkappend "@@.mc-speechLink;Watch more.@@">>
 	<<video "characters/ghosts/specials/mare2.2.mp4">>
 
-	@@.mc-thoughts; You barely hear the whisper, but it's clearly @@<<linkappend "@@.mc-thoughtsLink; not your voice@@">><br>
-		@@.notmc-speech; Soon, I will completely possess your body. You will be mine.@@<br>
-		@@.mc-speech; I don't even remember how I woke up...It seems this has gone too far.@@<br>
+	<<thought>>You barely hear the whisper, but it's clearly<</thought>><<linkappend "@@.mc-thoughtsLink; not your voice@@">><br>
+		<<say>>Soon, I will completely possess your body. You will be mine.<</say>><br>
+		<<mc>>I don't even remember how I woke up...It seems this has gone too far.<</mc>><br>
 		<br>
 		@@.backbtn; [[Back|Use PC]] @@
 	<</linkappend>>

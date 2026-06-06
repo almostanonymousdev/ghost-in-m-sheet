@@ -1,24 +1,24 @@
 :: SummonSpirit [nobr] {"position":"500,2900","size":"100,100"}
 <<video "mechanics/exorcism/spirit1.mp4">>
-@@.mc-speech; Glp~Ghlp~@@<br>
-@@.mc-thoughts; He grips your head, forcing you to take his cock deep, fucking your throat, making you swallow him with a groan of pleasure. Spit drips down your chin as he holds your head, controlling each thrust, @@
+<<vocal mc>>Glp~Ghlp<</vocal>><br>
+<<thought>>He grips your head, forcing you to take his cock deep, fucking your throat, making you swallow him with a groan of pleasure. Spit drips down your chin as he holds your head, controlling each thrust,<</thought>>
 <<linkappend "@@.usebtn; making you choke with desire.@@">>
 	<span id ="summonSpirit">
 	<<video "mechanics/exorcism/spirit2.mp4">></span>
 	<<set _videoIndex to 2>>
-	@@.mc-thoughts; Then, without pause, he turns you around, spreads your ass cheeks, and@@
+	<<thought>>Then, without pause, he turns you around, spreads your ass cheeks, and<</thought>>
 	<<link "@@.usebtn; enters your ass forcefully@@">>
 		<<set _videoIndex to (_videoIndex) % 3 +2>>
 		<<replace "#summonSpirit">>
 			<<video "mechanics/exorcism/spirit" + _videoIndex+`.mp4`>>
 		<</replace>>
 	<</link>>
-	@@.mc-thoughts;  ,fucking you so that each thrust brings a new wave of pleasure. @@<br>
-	@@.mc-speech; Ah~ My ass~@@<br>
-	@@.mc-thoughts; You moan as he picks up the pace, his cock gliding inside you with such ease, sending shivers through your body. He moves faster, each thrust making@@
+	<<thought>> ,fucking you so that each thrust brings a new wave of pleasure.<</thought>><br>
+	<<vocal mc>>Ah~ My ass<</vocal>><br>
+	<<thought>>You moan as he picks up the pace, his cock gliding inside you with such ease, sending shivers through your body. He moves faster, each thrust making<</thought>>
 	<<linkappend "@@.usebtn; you scream with ecstasy@@">>
 		<<video "mechanics/exorcism/spirit5.mp4">>
-		@@.mc-thoughts; He pulls out, turns you around, and comes on your face, covering you with his hot cum, leaving you trembling with pleasure@@<br><br>
+		<<thought>>He pulls out, turns you around, and comes on your face, covering you with his hot cum, leaving you trembling with pleasure<</thought>><br><br>
 		@@.backbtn; [[Sleep|Sleep][setup.Home.setSummonText(1); setup.SpecialEvent.setSpiritEventStage(1)]]@@
 	<</linkappend>>
 <</linkappend>>

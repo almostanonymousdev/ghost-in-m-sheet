@@ -35,7 +35,7 @@
 	<<set _tools to setup.HuntController.startingTools()>>
 	<<if _tools.length eq 0>>
 		<div class="hunt-tool-card hunt-tool-card-empty">
-			@@.mc-thoughts; (your bag is empty)@@
+			<<thought>>(your bag is empty)<</thought>>
 		</div>
 	<<else>>
 		<<run setup.ensureHuntSearchBag()>>
@@ -66,7 +66,7 @@
 	<<set _rem to _args[1]>>
 	<<set _pct to (_eq gt 0) ? (((_eq - _rem) / _eq) * 100) : 0>>
 	/* Hue ramps from 0° (red) at 0% fill to 120° (green) at 100%, so
-	   the border + fill colour shifts as the pie completes. */
+		the border + fill colour shifts as the pie completes. */
 	<<set _hue to Math.round(_pct * 1.2)>>
 	<<set _pieStyle to '--pie-pct: ' + _pct + '; --pie-color: hsl(' + _hue + ', 75%, 50%)'>>
 <</silently>><div class="hunt-tool-pie" @style="_pieStyle"></div><span class="hunt-tool-countdown-num"><<= _rem>></span>

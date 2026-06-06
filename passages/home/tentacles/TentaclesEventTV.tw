@@ -1,15 +1,15 @@
 :: TentaclesEventTV [nobr] {"position":"1000,4300","size":"100,100"}
 <<run setup.Home.resetTentaclesCooldown()>>
 <<image "mechanics/tentacles/tv1.jpg" { width: "100%" }>><br>
-@@.mc-thoughts; You're sitting in front of the TV, trying to kill time@@<br><br>
+<<thought>>You're sitting in front of the TV, trying to kill time<</thought>><br><br>
 <span id="tentaclesEventTVHidOpt">@@.usebtn; [[Leave|Livingroom]]@@ or </span><<linkreplace "@@.usebtn; Masturbate@@">>
 	<<replace "#tentaclesEventTVHidOpt">>
 	<</replace>>
 	<<video "mechanics/tentacles/tv2.mp4">>
-	@@.mc-thoughts; You start rubbing your pussy with your hand, sinking into sensual pleasure, each arousing touch making you@@<br>
+	<<thought>>You start rubbing your pussy with your hand, sinking into sensual pleasure, each arousing touch making you<</thought>><br>
 	<<linkappend "@@.usebtn; moan with delight.@@">>
 		<<image "mechanics/tentacles/tv3.jpg" { width: "100%" }>><br>
-		@@.mc-thoughts;Suddenly, as if by magic, tentacles appear on you, slick and flexible, as if they've been waiting for this moment.@@<br>
+		<<thought>>Suddenly, as if by magic, tentacles appear on you, slick and flexible, as if they've been waiting for this moment.<</thought>><br>
 		<<if setup.Home.tentaclesStageAll() gte 2>>
 			@@.usebtn; [[Let them fuck you|TentaclesEventTV1]]@@ or @@.usebtn; [[Run away|Livingroom]]@@
 		<<else>>

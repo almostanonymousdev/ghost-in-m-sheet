@@ -1,5 +1,5 @@
 :: GhostSpecialEventMare0 [nobr] {"position":"1250,2450","size":"100,100"}
 <<video "characters/ghosts/specials/mare0.mp4">>
-@@.mc-speech;Nothing happens@@<br>
+<<narration>>Nothing happens<</narration>><br>
 <br>
 @@.backbtn; [[Back|Use PC]] @@
