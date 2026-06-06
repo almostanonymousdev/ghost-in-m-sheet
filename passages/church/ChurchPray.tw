@@ -1,7 +1,8 @@
 :: ChurchPray [nobr] {"position":"1975,1500","size":"100,100"}
 <<image "scenes/church/1.jpg" { width: "100%" }>><br>
 
-@@.notmc-speech; (Father Ibrahim looks up from the altar.) Bless you, my daughter. How may I assist you?@@<br>
+<<narration>>Father Ibrahim looks up from the altar.<</narration>>
+<<say "Father Ibrahim">>Bless you, my daughter. How may I assist you?<</say>><br>
 <<if setup.Church.canRequestExorcism()>>
 	@@.enterbtn; [[I need to talk to Rain|RainExorcism]]@@<br>
 <</if>>

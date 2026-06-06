@@ -8,12 +8,12 @@
 <<linkreplace "@@.usebtn; You can't look away@@">>
 	<<video "scenes/cursed-home/tv2.webm">><br>
 	<<thought>>A wave of dizziness hits you. When your vision clears, you're no longer sitting on the couch -- you're kneeling in front of it. Something shimmers in the air before you, a spectral presence taking shape. You can feel it against your lips -- warm, solid, startlingly real.<</thought>><br>
-	@@.mc-speech; How did I-- mmph~@@<br><br>
+	<<mc>>How did I--<</mc>> <<vocal mc>>mmph<</vocal>><br><br>
 	<<thought>>Your mouth opens on its own, your tongue sliding along the ghostly shaft as if your body already knows what to do. It's thick and warm despite being translucent, pulsing faintly. Your head bobs forward, taking it deeper, and you moan around it.<</thought>><br>
 	<<linkappend "@@.usebtn; You keep going@@">>
 		<<video "scenes/cursed-home/tv3.webm">><br>
 		<<thought>>The spectral presence grips the back of your head, thrusting against your mouth. You gag, eyes watering, but your body refuses to pull away -- the taste of it is intoxicating, electric. Then the ghost tenses and finishes, flooding your mouth with a warm static that dissolves on your greedy tongue.<</thought>><br>
-		@@.mc-speech; Mmh~! Ah... ahh~!@@<br><br>
+		<<vocal mc>>Mmh~! Ah... ahh!<</vocal>><br><br>
 		<<thought>>The moment you swallow, an orgasm hits you like a freight train. Your thighs clench, your back arches, and you collapse against the couch, trembling and gasping through aftershock after aftershock. When you finally open your eyes, you're sitting on the couch again. The TV plays a normal channel. The room looks exactly as it did before.<</thought>><br>
 		<<run setup.CursedItems.applyCurseEventEffects()>>
 		<br>

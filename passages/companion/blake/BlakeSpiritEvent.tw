@@ -35,7 +35,7 @@
 			<</if>>
 		<</replace>>
 	<</link>>
-	@@.notmc-speech; Mm~slurp~slurp~@@<br>
+	<<vocal npc>>Mm~slurp~slurp<</vocal>><br>
 	<<thought>>Slurping sounds are heard throughout the room. You feel yourself beginning to give in to passionate desire, allowing this stranger<</thought>> <<linkappend "@@.mc-thoughtsLink; to do whatever he wants.@@">><br>
 		<span id ="walkhomeblakespirit2">
 		<<video "characters/ghosts/specials/spiritblake3.mp4">></span>

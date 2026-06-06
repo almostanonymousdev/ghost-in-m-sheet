@@ -15,7 +15,7 @@
 	<<run setup.Mc.addCorruption(0.2)>><br>
 <</if>>
 
-@@.mc-speech; Fuuhh~, i need to rest a bit@@<br>
+<<vocal mc>>Fuuhh<</vocal>> <<mc>>I need to rest a bit<</mc>><br>
 <<run setup.Mc.setLust(0)>>
 <br>
 @@.backbtn;[[Rest and leave|Livingroom]]@@<br>

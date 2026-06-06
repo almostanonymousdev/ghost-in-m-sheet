@@ -7,7 +7,7 @@
 <<linkappend "@@.mc-speechLink; What the~@@">>
 	<<video "characters/ghosts/specials/spiritalice1.mp4">>
 	<<thought>>Before you can finish speaking, his thick cock slips into your mouth. <<= setup.Companion.name()>> doesn't stand by and moves in to lick it. <br><</thought>>
-	@@.notmc-speech; Mm~slurp~slurp~@@<br>
+	<<vocal npc>>Mm~slurp~slurp<</vocal>><br>
 	<<thought>>But he didn't stop at just your mouths. He shoved his hot cock into your pussies and<</thought>> <<linkappend "@@.mc-thoughtsLink; started fucking you.@@">><br>
 		<span id ="walkhomealicespirit">
 		<<video "characters/ghosts/specials/spiritalice2.mp4">></span>

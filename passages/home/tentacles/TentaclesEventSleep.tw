@@ -11,7 +11,7 @@
 		<<thought>>You wake up in a gloomy room, nothing around but darkness.<</thought>><br>
 		<<mc>>What the fuck? Where am I?<</mc>><br>
 		<<thought>>You notice several tentacles crawling towards you.<</thought>><br>
-		@@.mc-speech;Oh no~@@<br>
+		<<vocal mc>>Oh no<</vocal>><br>
 		<<linkreplace "@@.usebtn; They slowly creep towards you@@">>
 			<<if setup.Home.tentaclesStageSleep() eq 1>>
 				<<run setup.Home.setTentaclesStageSleep(2)>>
@@ -21,7 +21,7 @@
 				<<video "mechanics/tentacles/sleep3.mp4">></span>
 				<<set _videoIndex to 3>>
 				<<thought>>Wrapping around your arms and legs, one tentacle freely penetrated your hot, wet pussy and started to fuck you hard.<</thought>><br>
-				@@.mc-speech;Oh, fuck~ what's happening~ Ah@@<br>
+				<<vocal mc>>Oh, fuck<</vocal>> <<mc>>What's happening<</mc>> <<vocal mc>>Ah<</vocal>><br>
 				<<thought>>Another tentacle appeared,<</thought>>
 				<<link "@@.usebtn;  teasing your sensitive clit@@">>
 					<<set _videoIndex to (_videoIndex) % 2 +3>>

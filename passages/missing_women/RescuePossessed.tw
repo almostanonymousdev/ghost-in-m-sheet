@@ -12,27 +12,27 @@
 	<<if _girl eq "Victoria">>
 		<<video "characters/rescue/victoria/victoriapossessed.mp4">>
 		<<mc>>Oh my god, are you okay?<</mc>><br>
-		@@.notmc-speech; Hmm~ what are you doing here?@@<br>
+		<<vocal npc>>Hmm<</vocal>> <<say>>What are you doing here?<</say>><br>
 		<<mc>><<= setup.MissingWomen.currentRescueGirl()>>, let's get out of here, I came to save you.<</mc>><br>
 		<<say>>No, I don't need help. It's you who will probably need it<</say>><br>
-		@@.mc-speech;What? Ah~ what's happening...@@<br>
-		@@.notmc-speech; A sharp pain shot through your head, making you collapse to the floor. The last thing you saw before passing out was her walking towards you...@@<br><br>
+		<<mc>>What?<</mc>> <<vocal mc>>Ah<</vocal>> <<mc>>What's happening...<</mc>><br>
+		<<narration>>A sharp pain shot through your head, making you collapse to the floor. The last thing you saw before passing out was her walking towards you...<</narration>><br><br>
 		@@.backbtn; <<link "Wake up " "RescueVictoriaPossessed">>
 		<</link>>@@
 	<<elseif _girl eq "Jade">>
 		<<image "characters/rescue/jade/jadepossessed.png" "displayCentredImgs">>
 		<<mc>>Oh my god, are you okay?<</mc>><br>
-		@@.notmc-speech; Hmm~ what are you doing here?@@<br>
+		<<vocal npc>>Hmm<</vocal>> <<say>>What are you doing here?<</say>><br>
 		<<mc>><<= setup.MissingWomen.currentRescueGirl()>>, let's get out of here, I came to save you.<</mc>><br>
 		<<say>>No, I don't need help. It's you who will probably need it<</say>><br>
-		@@.mc-speech;What? Ah~ what's happening...@@<br>
-		@@.notmc-speech; A sharp pain shot through your head, making you collapse to the floor. The last thing you saw before passing out was her walking towards you...@@<br><br>
+		<<mc>>What?<</mc>> <<vocal mc>>Ah<</vocal>> <<mc>>What's happening...<</mc>><br>
+		<<narration>>A sharp pain shot through your head, making you collapse to the floor. The last thing you saw before passing out was her walking towards you...<</narration>><br><br>
 		@@.backbtn;<<link "Wake up" "RescueJadePossessed">>
 		<</link>>@@
 	<<elseif _girl eq "Julia">>
 		<<image "characters/rescue/julia/juliapossessed.jpg" { class: "displayCentredImgs", width: "35%" }>><br>
 		<<mc>>Oh my god, are you okay?<</mc>><br>
-		@@.notmc-speech; Hmm~ what are you doing here?@@<br>
+		<<vocal npc>>Hmm<</vocal>> <<say>>What are you doing here?<</say>><br>
 		<<mc>><<= setup.MissingWomen.currentRescueGirl()>>, let's get out of here, I came to save you.<</mc>><br>
 		<<say>>Save me... of course, let's get out of here. Help me get up...<</say>><br>
 		@@.usebtn; <<link "Come closer to her." "RescueJuliaPossessed">>
@@ -40,7 +40,7 @@
 	<<elseif _girl eq "Nadia">>
 		<<video "characters/rescue/nadia/nadiapossessed.mp4">>
 		<<mc>>Oh my god, are you okay?<</mc>><br>
-		@@.notmc-speech; Hmm~ what are you doing here?@@<br>
+		<<vocal npc>>Hmm<</vocal>> <<say>>What are you doing here?<</say>><br>
 		<<mc>><<= setup.MissingWomen.currentRescueGirl()>>, let's get out of here, I came to save you.<</mc>><br>
 		<<say>>Save me... of course, let's get out of here. But I need to get dressed and find a few things.<</say>><br>
 		<<mc>>Just be quick.<</mc>><br>
@@ -50,7 +50,7 @@
 	<<elseif _girl eq "Ash">>
 		<<image "characters/rescue/ash/ashpossessed.jpg" { class: "displayCentredImgs", width: "35%" }>><br>
 		<<mc>>Oh my god, are you okay?<</mc>><br>
-		@@.notmc-speech; Hmm~ what are you doing here?@@<br>
+		<<vocal npc>>Hmm<</vocal>> <<say>>What are you doing here?<</say>><br>
 		<<mc>><<= setup.MissingWomen.currentRescueGirl()>>, let's get out of here, I came to save you.<</mc>><br>
 		<<say>>Save me... of course, let's get out of here. Help me get up...<</say>><br>
 		@@.usebtn; <<link "Come closer to her." "RescueAshPossessed">>

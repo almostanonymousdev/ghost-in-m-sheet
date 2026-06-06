@@ -20,7 +20,7 @@
 	<</link>>
 	until you were both completely spent.@@<br>
 	<<say>>That was amazing.<</say>><br>
-	@@.mc-speech;Yeah~@@<br>
+	<<mc>>Yeah~<</mc>><br>
 	<<say>>I'm really exhausted today. You rest up, and I'll head back. Hopefully, we'll meet again.<</say>><br>
 	<<mc>>Alright, bye.<</mc>><br>
 

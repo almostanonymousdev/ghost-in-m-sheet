@@ -23,16 +23,16 @@
 			<<thought>>While you are trying to remember what happened and how you ended up in this position, the man climbed on top of you and started fucking you in the ass.<</thought>><br>
 			<<if setup.Posession.analIsVeryLoose()>>
 				<<thought>>Your anus easily accepted his cock.<</thought>><br>
-				@@.mc-speech; Ah~ Ah fuck ~Yeah~~@@<br>
+				<<vocal mc>>Ah~ Ah fuck ~Yeah~<</vocal>><br>
 				<<thought>>He didn't expect you to enjoy being fucked in the ass, which is why he started to pound his dick harder into you until he spilled all his cum inside you<</thought>><br>
 			<<elseif setup.Posession.analIsTrained()>>
 				<<thought>>He quickly penetrated your ass with his hot cock almost without resistance<</thought>><br>
-				@@.mc-speech; Ahh~ not so rough~ ahhh@@<br>
+				<<vocal mc>>Ahh<</vocal>> <<mc>>Not so rough<</mc>> <<vocal mc>>ahhh<</vocal>><br>
 				<<thought>>But that didn't stop him. He continued to rape your ass until he came inside you.<</thought>><br>
 			<<else>>
 				<<thought>>Your tight little hole wasn't ready for this. A sharp pain shot through you.<</thought>><br>
 				<<run setup.Mc.setPenalized(true)>>
-				@@.mc-speech; Ah~ no, it hurts~@@<br>
+				<<vocal mc>>Ah<</vocal>> <<mc>>No, it hurts<</mc>><br>
 				<<thought>>But that didn't stop him. He continued to rape your ass until he came inside you<</thought>><br>
 			<</if>>
 			<<thought>>Brooke hugged you. After a while, she helped you get up and walked you [[home|Sleep][setup.Posession.markBrookePossessedInactive()]]<</thought>><br>

@@ -19,7 +19,7 @@
 	<<mc>><<= setup.MissingWomen.currentRescueGirl()>>! What the fuck...<</mc>><br>
 	<<thought>>She came up to you and started slapping<</thought>> <<linkappend "@@.usebtn; your pussy@@">>
 		<<video "characters/rescue/julia/2.1.mp4">>
-		@@.mc-speech;AHhh~ no~ don't do that@@<br>
+		<<vocal mc>>AHhh<</vocal>> <<mc>>No—don't do that<</mc>><br>
 		<<say>>Of course, I'm sorry, I won't<</say>><br>
 		<<thought>>She left, but came back with a strapon<</thought>><br>
 		<<linkappend "@@.usebtn; Oh fuck@@">>

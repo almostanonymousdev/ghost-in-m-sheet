@@ -31,15 +31,15 @@
 	<<run setup.Home.clearTentaclesAfterSleepText()>>
 <<elseif setup.Home.tentaclesAfterSleepText() eq 3>>
 	<<thought>>You woke up. It was just a dream. But the aftermath lingered - your pussy was soaked through, craving more.<</thought>><br>
-	@@.mc-speech;Phew~ why is this happening? I'm so turned on right now...@@<br>
+	<<vocal mc>>Phew<</vocal>> <<mc>>Why is this happening? I'm so turned on right now...<</mc>><br>
 	<<run setup.Home.clearTentaclesAfterSleepText()>>
 	<<run setup.Mc.setLust(100)>>
 <<elseif setup.Home.tentaclesAfterSleepText() eq 4>>
-	@@.mc-speech;That was... oh~ I still feel it. I think I came in my sleep...@@<br>
+	<<mc>>That was...<</mc>> <<vocal mc>>oh<</vocal>> <<mc>>I still feel it. I think I came in my sleep...<</mc>><br>
 	<<run setup.Home.clearTentaclesAfterSleepText()>>
 	<<run setup.Mc.setLust(100)>>
 <<elseif setup.Home.tentaclesAfterSleepText() eq 5>>
-	@@.mc-speech;That was... oh~ I still feel it. I think I came in my sleep, not just once...@@<br>
+	<<mc>>That was...<</mc>> <<vocal mc>>oh<</vocal>> <<mc>>I still feel it. I think I came in my sleep, not just once...<</mc>><br>
 	<<run setup.Home.clearTentaclesAfterSleepText()>>
 	<<run setup.Mc.setLust(100)>>
 <</if>>

@@ -142,7 +142,7 @@
 	@@.notmc-speech; Nooo~ this is not right.. <br>
 	~Uuuuwhhh ~You're penetrating me too deep@@<br>
 	@@color:red; I'll make you cum, buttslut@@<br>
-	@@.notmc-speech; NNRGGG ~Ah AHHHhh@@<br>
+	<<vocal npc>>NNRGGG ~Ah AHHHhh<</vocal>><br>
 	<<thought>>She can't resist anymore and you continue to stretch her asshole [[again and again....|Possessed]]<</thought>><br>
 <<elseif setup.Posession.locationChoice() eq "park">>
 	<<video "mechanics/possessed/5.2.mp4">>

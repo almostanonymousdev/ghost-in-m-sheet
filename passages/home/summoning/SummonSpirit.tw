@@ -1,6 +1,6 @@
 :: SummonSpirit [nobr] {"position":"500,2900","size":"100,100"}
 <<video "mechanics/exorcism/spirit1.mp4">>
-@@.mc-speech; Glp~Ghlp~@@<br>
+<<vocal mc>>Glp~Ghlp<</vocal>><br>
 <<thought>>He grips your head, forcing you to take his cock deep, fucking your throat, making you swallow him with a groan of pleasure. Spit drips down your chin as he holds your head, controlling each thrust,<</thought>>
 <<linkappend "@@.usebtn; making you choke with desire.@@">>
 	<span id ="summonSpirit">
@@ -14,7 +14,7 @@
 		<</replace>>
 	<</link>>
 	<<thought>> ,fucking you so that each thrust brings a new wave of pleasure.<</thought>><br>
-	@@.mc-speech; Ah~ My ass~@@<br>
+	<<vocal mc>>Ah~ My ass<</vocal>><br>
 	<<thought>>You moan as he picks up the pace, his cock gliding inside you with such ease, sending shivers through your body. He moves faster, each thrust making<</thought>>
 	<<linkappend "@@.usebtn; you scream with ecstasy@@">>
 		<<video "mechanics/exorcism/spirit5.mp4">>

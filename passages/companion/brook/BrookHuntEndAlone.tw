@@ -22,7 +22,7 @@
 <<linkappend "@@.mc-speechLink;Tell me more about how it went.@@">>
 	<br>
 	<<if setup.Companion.companionLvl("Brook") lt 3>>
-		@@.notmc-speech; I don't want to talk about it...@@ @@.warningtext; Req. Brook's lvl ≥ 3@@
+		<<say>>I don't want to talk about it...<</say>> @@.warningtext; Req. Brook's lvl ≥ 3@@
 	<<else>>
 		@@.notmc-speech;Well, listen...<br>
 		At first, things went well, of course, sometimes the ghost tried to...@@<<linkappend "@@.notmc-speechLink; scare me@@">>
@@ -39,7 +39,7 @@
 					<<set _appearVids to ["characters/brook/alone3.1.mp4", "characters/brook/alone3.2.mp4"]>>
 					<<randomVideoFromList _appearVids>>
 					<<say>>I lost control... and I might have given it what it had been after from the beginning...<</say>><br>
-					<<if _resultBrookAlone eq 1>>@@.notmc-speech; After it cu... weakened, I ran away. That's it. @@<br>
+					<<if _resultBrookAlone eq 1>><<say>>After it cu... weakened, I ran away. That's it.<</say>><br>
 						<<mc>>I knew you would succeed! Great job!<</mc>>
 					<<elseif _resultBrookAlone eq 0>>
 						<<say>>It seems I just passed out.. I woke up when it was already morning. <br>

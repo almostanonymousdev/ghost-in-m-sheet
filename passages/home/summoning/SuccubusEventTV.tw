@@ -2,7 +2,7 @@
 <<image "characters/succubus/1.jpg" { width: "100%" }>><br>
 <<run setup.Home.setSuccubusEventCD(1)>>
 <<thought>>You've been watching TV for a while.<</thought>><br>
-@@.mc-speech; Ah~ so boring.@@<br>
+<<vocal mc>>Ah<</vocal>> <<mc>>So boring.<</mc>><br>
 <<linkreplace "@@.usebtn; Entertain yourself@@">>
 	<<video "characters/succubus/1.mp4">>
 	<<thought>>You start eagerly rubbing your wet pussy, trying to bring yourself to an orgasm. Your fingers slide over your clit, penetrating you,<</thought>>
@@ -29,7 +29,7 @@
 			<<thought>>,playing with the plug, then using your hands and other toys, stuffing them into your pussy and ass without stopping<</thought>><br>
 			<<thought>>You cum time after time, but you don't even try to stop. Your holes become extremely sensitive, and with each orgasm, you reach the next one faster and faster, your body trembling with pleasure.<</thought>><br>
 
-			@@.mc-speech;I I can't Ah~@@<br>
+			<<mc>>I I can't<</mc>> <<vocal mc>>Ah<</vocal>><br>
 			<<thought>>After yet another orgasm, you stop ravaging your body, giving it a rest.<</thought>><br>
 
 			@@color:red; Well, that's enough for you today.@@<br>

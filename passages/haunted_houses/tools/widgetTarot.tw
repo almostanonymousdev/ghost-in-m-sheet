@@ -7,7 +7,7 @@
 <<widget "tarotPassion">>
 	<<timed 2s>>
 		<<randRangeVideo "mechanics/cursedpossessions/passion" 1 4 ".mp4">>
-		@@.mc-speech; Ah~ I'm getting so wet down there... mmm. @@<br>
+		<<vocal mc>>Ah<</vocal>> <<mc>>I'm getting so wet down there... mmm.<</mc>><br>
 		<<thought>>Lust increased: +15 <<statIcon setup.StatIcon.HEALTH>><</thought>><br>
 		<<thought>>Sanity decreased: -15 <<statIcon setup.StatIcon.SANITY>><</thought>><br>
 		<<addSanity -15>>
@@ -19,8 +19,8 @@
 <<widget "tarotPulse">>
 	<<timed 2s>>
 		<<randRangeVideo "mechanics/cursedpossessions/pulse" 1 4 ".mp4">>
-		@@.mc-speech; My... oh~ my little asshole is pulsating so hard... <br>
-		Somehow, I feel much better after that...@@<br>
+		<<mc>>My... oh—my little asshole is pulsating so hard...<</mc>><br>
+		<<mc>>Somehow, I feel much better after that...<</mc>><br>
 		<<thought>>Lust decreased: -15 <<statIcon setup.StatIcon.HEALTH>><</thought>><br>
 		<<thought>>Sanity increased: +15 <<statIcon setup.StatIcon.SANITY>><</thought>><br>
 		<<addSanity 15>>

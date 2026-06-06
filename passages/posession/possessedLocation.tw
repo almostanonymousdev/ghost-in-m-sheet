@@ -118,20 +118,20 @@
 			@@.mc-speech; Something's wrong...<br>
 			HAaA~ I think I...i~ <<linkreplace "@@.usebtn; commiiiing~@@">>
 				<<image "mechanics/possessed/4.5.jpg" { width: "100%" }>><br>
-				@@.notmc-speech; We did it@@<br>
+				<<say>>We did it<</say>><br>
 				@@color:red; No, we're not done.@@<br>
-				@@.notmc-speech; Whaa..?! what the ...@@<br>
+				<<say>>Whaa..?! what the ...<</say>><br>
 				@@color:red; I think it's [[my turn now|PossessedLocation1]]@@<br>
 			<</linkreplace>>
 		<<else>>
-			@@.mc-speech; AHh~You are going to break me ~@@<br>
-			@@.notmc-speech; You can handle it, it's almost over, I can feel it.@@<br>
+			<<vocal mc>>AHh<</vocal>> <<mc>>You are going to break me<</mc>><br>
+			<<say>>You can handle it, it's almost over, I can feel it.<</say>><br>
 			@@.mc-speech; Did she hear what I said?<br>
 			So that means... oh~ I think I...i~ <<linkreplace "@@.usebtn; commiiiing~@@">>
 				<<video "mechanics/possessed/4.9.mp4">>
-				@@.notmc-speech; We did it@@<br>
-				@@.mc-speech;Oh~ I, I... I don't remember...@@<br>
-				@@.notmc-speech; You were possessed, but it's all over now, you need to rest.@@<br>
+				<<say>>We did it<</say>><br>
+				<<vocal mc>>Oh<</vocal>> <<mc>>I, I... I don't remember...<</mc>><br>
+				<<say>>You were possessed, but it's all over now, you need to rest.<</say>><br>
 				@@.mc-thoughts; She kisses you gently on the lips, and you drift into [[sleep|Sleep]]
 				@@<br>
 				<<if setup.Posession.raiseMeter(10)>>

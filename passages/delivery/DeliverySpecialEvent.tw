@@ -58,7 +58,7 @@
 		<<set _pick to random(2, 4)>>
 		<<video "scenes/deliveryhub/specialevent/" + _pick + ".webm">>
 		<<say>>Turn around<</say>><br>
-		@@.mc-speech; ~Ah~ just be quick@@<br>
+		<<vocal mc>>Ah<</vocal>> <<mc>>Just be quick<</mc>><br>
 		@@.mc-speechLink;[[Let him continue|DeliverySpecialUnsafe2]]@@<br>
 	<</linkreplace>>
 <</linkreplace>>@@
@@ -66,7 +66,7 @@
 :: DeliverySpecialUnsafe2 [event nobr] {"position":"1500,1800","size":"100,100"}
 <<set _pick2 to random(5, 6)>>
 <<video "scenes/deliveryhub/specialevent/" + _pick2 + ".webm">>
-@@.mc-speech; ~Ah~ God...@@<br>
+<<vocal mc>>Ah<</vocal>> <<mc>>God...<</mc>><br>
 <<say>>Fuck, you're tight. I'm going to cum<</say>><br>
 <<linkreplace "@@.mc-speechLink; Please not inside...@@">>
 	<<set _pick3 to random(7, 8)>>

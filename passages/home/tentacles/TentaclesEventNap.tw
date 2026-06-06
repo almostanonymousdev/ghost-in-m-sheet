@@ -26,7 +26,7 @@
 			<<linkappend "@@.usebtn; driving you to the brink.@@">>
 				<<video "mechanics/tentacles/nap6.mp4">>
 				<<thought>>All this leads to an explosive, simultaneous orgasm - you and the tentacles reach the peak of pleasure together. You feel your muscles clench, while the tentacles, trembling, start to release their semen on you, covering you with warm, sticky fluid. The sensation of being coated in their seed, mixed with your own orgasm, creates a moment that feels endless in its intensity and pleasure.<</thought>>
-				@@.mc-speech; Oh~ fuck, I'm so fucked I can't even stand up.@@<br><br>
+				<<vocal mc>>Oh<</vocal>> <<mc>>Fuck, I'm so fucked I can't even stand up.<</mc>><br><br>
 				@@.backbtn; [[Rest|Bedroom][setup.Home.restForHours(4)]]@@
 				<<if setup.Home.tentaclesStageAll() lt 2>>
 					<<run setup.Home.setTentaclesStageAll(2)>>

@@ -2,7 +2,7 @@
 <<addLust 15>>
 <<run setup.Gym.startTrainer2SexCooldown()>>
 <<video "scenes/gym/trainer2event2end.mp4">>
-@@.notmc-speech; Phew~ thanks for the "help". I guess we can do that again sometimes.@@
+<<vocal npc>>Phew<</vocal>> <<say>>Thanks for the "help". I guess we can do that again sometimes.<</say>>
 <br>
 <<mc>>Oh, sure, I'll come later.<</mc>><br>
 <<gainXP 10 0.5>>

@@ -241,11 +241,13 @@
 		<br>
 		<<thought>>A Spirit. Shy on the way in, won't quit on the way through, and the instant it gets what it came for it just packs up and leaves.<</thought>>
 		<br>
-		@@.mc-speech;Get on home, then. You got what you wanted.@@ Your heart's still going at a stupid clip and you don't fully trust the pleased-with-yourself feeling sitting under it, but the room's quiet now, which is the whole point.
+		<<mc>>Get on home, then. You got what you wanted.<</mc>>
+		Your heart's still going at a stupid clip and you don't fully trust the pleased-with-yourself feeling sitting under it, but the room's quiet now, which is the whole point.
 	<<case "Poltergeist">>
 		He's gone limp across the wreckage he made — the lamp he flung, the picture frames raked off the wall, all of it now a mattress of broken glass he's sprawled on like it's a hotel bed.
 		<br>
-		@@.mc-speech;No special trick to you, is there.@@ @@.mc-thoughts;And that's the whole tell: no clever gimmick, just a house he can throw at me and the patience to wait until my composure slipped under seventy before he started. Now he couldn't lift a coaster.@@
+		<<mc>>No special trick to you, is there.<</mc>>
+		<<thought>>And that's the whole tell: no clever gimmick, just a house he can throw at me and the patience to wait until my composure slipped under seventy before he started. Now he couldn't lift a coaster.<</thought>>
 		<br>
 		<<thought>>Crouched over a thing that wrecked a living room with its mind, pulse still up where it shouldn't be, and the part of me that liked watching him come apart is a part I'll be thinking about on the drive home.<</thought>>
 	<<case "Phantom">>
@@ -265,7 +267,8 @@
 		<br>
 		You're grinning, and you clock that you're grinning, and you decide not to interrogate it.
 	<<case "Demon">>
-		He's face-down with his hips still tipped up, the way you left him, twitching every few seconds like the charge hasn't finished leaving. @@.mc-speech;Look at the manners on this one.@@
+		He's face-down with his hips still tipped up, the way you left him, twitching every few seconds like the charge hasn't finished leaving.
+		<<mc>>Look at the manners on this one.<</mc>>
 		<br>
 		<<thought>>The Demon doesn't wait for your sanity to drop, doesn't wait for an invitation. It comes at you near full and early, when every other thing in the house is still pretending to be furniture. And I, the impatient bitch, I got there first this time.<</thought>>
 		<br>
@@ -285,9 +288,11 @@
 		<br>
 		<<thought>>Jinn. Quick as anything on the chase and blind as a brick the second you go still. Walked right past my hiding spot with my elbow practically in its face.<</thought>>
 		<br>
-		@@.mc-speech;Fast hunter, lousy eyes. I'll take the trade.@@ Your pulse won't sit down, and somewhere under the adrenaline is the small ugly fact that you liked outsmarting it, that you'd do it again, and you'd rather not look at why.
+		<<mc>>Fast hunter, lousy eyes. I'll take the trade.<</mc>>
+		Your pulse won't sit down, and somewhere under the adrenaline is the small ugly fact that you liked outsmarting it, that you'd do it again, and you'd rather not look at why.
 	<<case "Moroi">>
-		He's folded over on his side around the spent ache of it, one hand still loose near his own throat where the static came out of him. @@.mc-speech;There's my mind-crawler.@@
+		He's folded over on his side around the spent ache of it, one hand still loose near his own throat where the static came out of him.
+		<<mc>>There's my mind-crawler.<</mc>>
 		<br>
 		<<thought>>The one that rides the Spirit Box down the signal and into a soft skull. Every time I keyed up and asked it a question it had a thirty-in-a-hundred shot at climbing into my head and wearing me home. Instead I asked, and he answered, and the answer was him wrung out on the floor with his knees drawn up. Three batteries left, and I spent two of them talking this gorgeous thing flat.<</thought>>
 	<<case "Myling">>
@@ -313,11 +318,13 @@
 		<br>
 		<<thought>>Almost fond, the only tell the bastard can't drop: that thread of ectoplasm beading at his lip, glowing UV-bright, leaking the whole time no matter whose face he had on. Names nobody. Pins nothing. And he let me do this to him with a stranger's mouth.<</thought>>
 		<br>
-		You sit back on your heels, wet to the thigh and a little appalled at yourself. @@.mc-speech;You should keep this one.@@
+		You sit back on your heels, wet to the thigh and a little appalled at yourself.
+		<<mc>>You should keep this one.<</mc>>
 	<<case "The Twins">>
 		There's only one of him on the floor in front of you, loose-limbed and finished, and the air past his shoulder has that wrong, pressure-drop feeling of a chair somebody just left.
 		<br>
-		@@.mc-speech;Two of you. And I've only run down the first.@@ The Twins never come alone — every prowl you settle leaves the second one primed and waiting somewhere down the hall with its own ideas, so there's no such thing as the morning after with these two, only halftime.
+		<<mc>>Two of you. And I've only run down the first.<</mc>>
+		The Twins never come alone — every prowl you settle leaves the second one primed and waiting somewhere down the hall with its own ideas, so there's no such thing as the morning after with these two, only halftime.
 		<br>
 		<<thought>>One down, pulse still up, and a matching set of trouble breathing somewhere behind me in the dark. The smart move is to leave. I'm already counting how many batteries I've got left.<</thought>>
 	<<case "Wraith">>

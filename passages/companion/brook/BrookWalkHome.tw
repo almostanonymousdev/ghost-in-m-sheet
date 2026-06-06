@@ -7,7 +7,7 @@
 <<thought>>As soon as you walked in, she pounced on you and started kissing you<</thought>><br>
 <<say>>I'm so turned on, <<= setup.Mc.name()>>. I want you right now.<</say>><br>
 <<thought>>Her eagerness instantly aroused you, making your nipples harden, and your pussy crave attention.<</thought>><br>
-@@.mc-speech; Yes~ let's do it. @@<br>
+<<vocal mc>>Yes<</vocal>> <<mc>>Let's do it.<</mc>><br>
 @@.notmc-speech; I have something special for us. Here, let's use @@
 <<linkappend "@@.notmc-speechLink; this strap-on.@@">><br>
 	<span id ="walkhomebrook">
@@ -26,7 +26,7 @@
 		with the strap-on until you were both completely spent.
 	<</thought>><br>
 	<<say>>That was amazing.<</say>><br>
-	@@.mc-speech;Yeah~@@<br>
+	<<mc>>Yeah~<</mc>><br>
 	<<say>>I'm really exhausted today. You rest up, and I'll head back. Hopefully, we'll meet again.<</say>><br>
 	<<mc>>Alright, bye.<</mc>><br>
 	<<if setup.Mc.corruption() lt 10>>

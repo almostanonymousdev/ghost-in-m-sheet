@@ -17,8 +17,8 @@
 	You spent about an hour at the gym, diligently working on improving your physical fitness. Each workout makes you stronger and more resilient, helping you reach new heights.<br><br>
 	<<if setup.Gym.meetsFitForTrainer2Event()>>
 		<<thought>>While you're squatting with him, you feel his cock pressing directly<</thought>> <<linkappend "@@.mc-thoughtsLink;  into your butt.@@">><br>
-			@@.mc-speech; It seems like I can feel that you enjoy working out with me.@@<br>
-			@@.notmc-speech; Oh, sorry, we can stop if you want...@@<br>
+			<<mc>>It seems like I can feel that you enjoy working out with me.<</mc>><br>
+			<<say>>Oh, sorry, we can stop if you want...<</say>><br>
 			<<if setup.Gym.trainer2OnCooldown()>>
 				@@.mc-speech; Yes, I'm [[not in the mood.|GymInside]]@@<br><<thought>>Enough for today.<</thought>><br>
 			<<else>>

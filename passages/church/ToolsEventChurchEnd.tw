@@ -1,6 +1,6 @@
 :: ToolsEventChurchEnd [event nobr] {"position":"1975,1800","size":"100,100"}
 <<video "scenes/church/8.mp4">>
-@@.mc-speech; Holy~ so much cum@@<br>
+<<vocal mc>>Holy<</vocal>> <<mc>>So much cum<</mc>><br>
 
 <<if not setup.Church.priestToolEventStarted()>>
 	<<say>>I think you deserve it, here you go. If you want, you can come to me sometimes for special confessions<</say>><br>

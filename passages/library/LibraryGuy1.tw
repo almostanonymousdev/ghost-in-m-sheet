@@ -30,7 +30,7 @@
 
 <<elseif setup.Library.wearingSkirt()>>
 	<<video "scenes/library/2.1.mp4">>
-	@@.mc-speech; Ah~ you know how to please a woman. @@<br>
+	<<vocal mc>>Ah<</vocal>> <<mc>>You know how to please a woman.<</mc>><br>
 	<<say>>What about you? I see that you like it, maybe you can help me now too.<</say>><br>
 
 	<<if setup.Mc.corruption() lt 2>><<run setup.Library.tryGainGropingCorruption(2, 0.1)>>

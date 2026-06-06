@@ -22,7 +22,7 @@
 <<linkappend "@@.mc-speechLink;Tell me more about how it went.@@">>
 	<br>
 	<<if setup.Companion.companionLvl("Blake") lt 3>>
-		@@.notmc-speech; I don't want to talk about it...@@ @@.warningtext; Req. Blake's lvl ≥ 3@@
+		<<say>>I don't want to talk about it...<</say>> @@.warningtext; Req. Blake's lvl ≥ 3@@
 	<<else>>
 		@@.notmc-speech;Well, listen...<br>
 		At first, things went well, of course, sometimes the ghost tried to...@@<<linkappend "@@.notmc-speechLink; scare me@@">>

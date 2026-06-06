@@ -1,5 +1,5 @@
 :: CompanionLeaving [noreturn nobr] {"position":"2350,3125","size":"100,100"}
-@@.notmc-speech; <<= setup.Mc.name()>>, wait, I don't feel well... This place is driving me crazy, I don't feel like myself."@@<br>
+<<say>><<= setup.Mc.name()>>, wait, I don't feel well... This place is driving me crazy, I don't feel like myself.<</say>><br>
 <<thought>>She nervously looks around, as if afraid the ghost might return at any moment.<</thought>><br>
 <<say>>I'm sorry, but I can't stay with you. I have to get out of here, or I'll break...<</say>><br>
 <<mc>>Yes, of course, I understand.<</mc>><br>

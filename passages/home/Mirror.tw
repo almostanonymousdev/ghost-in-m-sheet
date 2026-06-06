@@ -29,12 +29,12 @@
 		<<if setup.Mc.makeupAmount() gte 1>>
 			@@.usebtn;<<link "Apply regular makeup (1 charge)" "Mirror">><<run setup.Home.applyMakeupTier(1)>>
 			<</link>>@@<br>
-		<<else>>@@.mc-speech;I don't have enough makeup@@<br>
+		<<else>><<mc>>I don't have enough makeup<</mc>><br>
 		<</if>>
 		<<if setup.Mc.makeupAmount() gte 2>>
 			@@.usebtn;<<link "Apply stylish makeup (2 charges)" "Mirror">><<run setup.Home.applyMakeupTier(2)>>
 			<</link>>@@<br>
-		<<else>>@@.mc-speech;I don't have enough makeup@@<br>
+		<<else>><<mc>>I don't have enough makeup<</mc>><br>
 		<</if>>
 		<<if setup.Mc.makeupAmount() gte 3>>
 			<<if setup.Mc.corruption() gte 10>>
@@ -43,7 +43,7 @@
 			<<else>>@@.usebtn;<<linkreplace "Apply slutty makeup (3 charges)">>@@.mc-speech; Why should I do this makeup?@@
 			<</linkreplace>>@@<br>
 			<</if>>
-		<<else>>@@.mc-speech;I don't have enough makeup@@<br>
+		<<else>><<mc>>I don't have enough makeup<</mc>><br>
 		<</if>>
 	<<else>><<thought>>I need to remove my makeup first<</thought>>
 	<</if>>

@@ -37,7 +37,7 @@
 		<<linkreplace "@@.usebtn;Try to apologize@@">>
 			<<say>>I understand, no problem. Listen, maybe you want to earn a little more money?<</say>><br>
 			<<if not setup.Delivery.canAcceptPackageDeal()>>
-				@@.mc-speech; That sounds strange, I'd rather decline@@ <<deliveryCorrReq 3>><br><br>
+				<<mc>>That sounds strange, I'd rather decline<</mc>> <<deliveryCorrReq 3>><br><br>
 				@@.backbtn;[[Back|DeliveryMap][setup.Delivery.markDeliveryFailed()]]@@
 			<<else>>
 				<<thought>>He's definitely hinting at sex, should I agree?<</thought>><br>
@@ -52,7 +52,7 @@
 			<<thought>>I think he's staring at my butt, what a pervert<</thought>><br>
 			+15 <<statIcon setup.StatIcon.HEALTH>><br>
 			<<if not setup.Delivery.papersInitialLustHighEnough()>>
-				@@.mc-speech; Done. I have to go, bye.@@ <<deliveryLustReq 30>><br><br>
+				<<mc>>Done. I have to go, bye.<</mc>> <<deliveryLustReq 30>><br><br>
 				@@.backbtn;[[Back|DeliveryMap]]@@<br>
 			<<else>>
 				<<mc>>Do you like it?<</mc>><br>

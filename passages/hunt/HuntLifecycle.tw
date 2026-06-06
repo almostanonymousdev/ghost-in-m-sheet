@@ -328,7 +328,7 @@
 			<<run setup.HuntController.markSuccess()>>
 			<<set _winSummary to setup.HuntController.endHunt(true)>>
 			<<set _winDest to _winSummary ? _winSummary.exitPassage : "CityMap">>
-			<div class="hunt-reveal hunt-reveal-text">@@.notmc-speech; The shape thins out and goes. The house cools behind it.@@</div>
+			<div class="hunt-reveal hunt-reveal-text"><<narration>>The shape thins out and goes. The house cools behind it.<</narration>></div>
 			<<if _winSummary>>
 				<div class="hunt-reveal hunt-reveal-text">
 					<<if _winSummary.cashPayout gt 0>>

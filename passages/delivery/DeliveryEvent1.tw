@@ -10,7 +10,7 @@
 	<<say>>Now I'll fuck you, slut<</say>><br>
 	@@.mc-speech; I don't want this to <<linkappend "ever end">><br>
 		<<deliveryVideo "burgerevent" 7 8>>
-		@@.mc-speech; ~God~ Don't stop please, I'm cumming@@<br>
+		<<vocal mc>>God<</vocal>> <<mc>>Don't stop please, I'm cumming<</mc>><br>
 		<<say>>I'm cumming too<</say>><br>
 		@@.mc-speechLink; [[Cum|DeliveryEvent2]]@@<br>
 	<</linkappend>>@@
@@ -37,7 +37,7 @@
 		<<addLust 45>>
 		<<deliveryLustOverflow>>
 		<<deliveryVideo "packageevent" 6>>
-		@@.mc-speech; Oh~it feels amazing@@<br>
+		<<vocal mc>>Oh<</vocal>> <<mc>>It feels amazing<</mc>><br>
 		@@.mc-speechLink; [[He's cumming|DeliveryEvent2]]@@
 	<</linkreplace>>
 <<case "papers">>
@@ -47,10 +47,10 @@
 	<<addLust 45>>
 	<<deliveryVideo "papersevent" 4 5>>
 	+45 <<statIcon setup.StatIcon.HEALTH>><br>
-	@@.mc-speech; Oh~i'm cumming~@@<br>
+	<<vocal mc>>Oh<</vocal>> <<mc>>I'm cumming<</mc>><br>
 	@@.notmc-speech; On your knees bitch,@@ <<linkappend "@@.notmc-speechLink; quickly@@">><br>
 		<<deliveryVideo "papersevent" 6>>
-		@@.mc-speech; Oh~so much cum@@<br>
+		<<vocal mc>>Oh<</vocal>> <<mc>>So much cum<</mc>><br>
 		<<say>>Wow, you are the best. I think you deserve a little bonus<</say>><br>
 		<<thought>>I feel like I'm a prostitute. I've probably already made more money with my body than with delivery.<</thought>><br>
 		<br>

@@ -3,7 +3,7 @@
 	<<set _wce to setup.Home.webcamEvent()>>
 	<<if _wce eq "tease">>
 		<<thought>>You start your webcam show. For an hour, you show yourself in various poses.<</thought>><br>
-		@@.mc-speech; Do you guys like this? Oh~ I'm so wet. I wish someone would lick my juicy pussy. @@<br>
+		<<mc>>Do you guys like this?<</mc>> <<vocal mc>>Oh<</vocal>> <<mc>>I'm so wet.<</mc>> <<mc>>I wish someone would lick my juicy pussy.<</mc>><br>
 		+60 <<statIcon setup.StatIcon.HEALTH>> <br>
 		<<addLust 60>>
 		<<addTime 60>>
@@ -14,7 +14,7 @@
 		<</if>>
 	<<elseif _wce eq "masturbate">>
 		<<thought>>You start your webcam show. For an hour, you show yourself in various poses, masturbating your pussy.<</thought>><br>
-		@@.mc-speech; ~Ahh~I'm cu... ~Ohhhh fuck~ that was awesome. I hope you guys enjoyed the show too@@<br>
+		<<vocal mc>>Ahh<</vocal>> <<mc>>I'm cu...<</mc>> <<vocal mc>>Ohhhh fuck<</vocal>> <<mc>>That was awesome. I hope you guys enjoyed the show too<</mc>><br>
 		+60 <<statIcon setup.StatIcon.HEALTH>> <br>
 		<<addLust 60>>
 		<<addTime 60>>
@@ -26,7 +26,7 @@
 
 	<<elseif _wce eq "toypussy">>
 		<<thought>>You start your webcam show. For an hour, you show yourself in various poses, fucking your pussy with a toy.<</thought>><br>
-		@@.mc-speech; ~Ahh~I'm cu... ~Ohhhh fuck~ that was awesome. I hope you guys enjoyed the show too@@<br>
+		<<vocal mc>>Ahh<</vocal>> <<mc>>I'm cu...<</mc>> <<vocal mc>>Ohhhh fuck<</vocal>> <<mc>>That was awesome. I hope you guys enjoyed the show too<</mc>><br>
 		+60 <<statIcon setup.StatIcon.HEALTH>> <br>
 		<<addLust 60>>
 		<<addTime 60>>
@@ -38,7 +38,7 @@
 
 	<<elseif _wce eq "toyanal">>
 		<<thought>>You start your webcam show. For an hour, you show yourself in various poses, fucking your ass with a toy.<</thought>><br>
-		@@.mc-speech; ~Ahh~I'm cu... ~Ohhhh fuck~ that was awesome. I hope you guys enjoyed the show too@@<br>
+		<<vocal mc>>Ahh<</vocal>> <<mc>>I'm cu...<</mc>> <<vocal mc>>Ohhhh fuck<</vocal>> <<mc>>That was awesome. I hope you guys enjoyed the show too<</mc>><br>
 		+60 <<statIcon setup.StatIcon.HEALTH>> <br>
 		<<addLust 60>>
 		<<addTime 60>>
@@ -50,7 +50,7 @@
 
 	<<elseif _wce eq "fingeranal">>
 		<<thought>>You start your webcam show. For an hour, you show yourself in various poses, fingering your asshole.<</thought>><br>
-		@@.mc-speech; ~Ahh~I'm cu... ~Ohhhh fuck~ that was awesome. I hope you guys enjoyed the show too@@<br>
+		<<vocal mc>>Ahh<</vocal>> <<mc>>I'm cu...<</mc>> <<vocal mc>>Ohhhh fuck<</vocal>> <<mc>>That was awesome. I hope you guys enjoyed the show too<</mc>><br>
 		+60 <<statIcon setup.StatIcon.HEALTH>> <br>
 		<<addLust 60>>
 		<<addTime 60>>

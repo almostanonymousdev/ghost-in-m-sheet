@@ -15,8 +15,8 @@
 		<<say>>Take off your clothes and show me your pussy<</say>><br>
 		<<linkreplace "@@.mc-speechLink; Take off your clothes@@">>
 			<<deliveryVideo "burgerevent" 3 4>>
-			@@.mc-speech; ~Mm~ my pussy is all yours@@<br>
-			@@.notmc-speech; Ha~ i know, suck a little more baby@@<br>
+			<<vocal mc>>Mm<</vocal>> <<mc>>My pussy is all yours<</mc>><br>
+			<<vocal npc>>Ha<</vocal>> <<say>>I know, suck a little more baby<</say>><br>
 			<<thought>>I'll do whatever you want<</thought>><br>
 			@@.mc-speechLink; [[Suck his cock|DeliveryEvent1]]@@<br>
 		<</linkreplace>>
@@ -37,7 +37,7 @@
 	<<addLust 15>>
 	<<deliveryVideo "packageevent" 1>>
 	<<say>>You're better off doing something else instead of delivering crap<</say>><br>
-	@@.mc-speech; Maybe you are right~AH~@@<br>
+	<<mc>>Maybe you are right<</mc>> <<vocal mc>>AH<</vocal>><br>
 	@@.notmc-speech; For example: sit down and @@<<linkappend "@@.notmc-speechLink; suck me off@@">><br>
 		<<addLust 30>>
 		<<set _pick to either(2, 5)>>
@@ -75,7 +75,7 @@
 	<<if setup.Delivery.canAcceptPapersFlirt()>>
 		<<if setup.Delivery.papersLustHighEnough()>>
 			<<thought>>I'm so turned on, I need to relax a little<</thought>><br>
-			@@.mc-speech; Maybe you are right~AH~, work can wait@@<br>
+			<<mc>>Maybe you are right—AH—, work can wait<</mc>><br>
 			@@.notmc-speech; Get on <<linkappend "your knees">><br>
 				<<addLust 30>>
 				<<deliveryVideo "papersevent" 2 3>><br>

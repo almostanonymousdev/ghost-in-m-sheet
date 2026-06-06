@@ -75,7 +75,7 @@
 				<<video "characters/succubus/3.mp4" "displayCentredImgs">>
 			<</if>>
 
-			@@.mc-speech; "I'm... I'm cumming... oh fuck!"@@<br>
+			<<mc>>I'm... I'm cumming... oh fuck!<</mc>><br>
 			<<thought>>You cum, your body trembling with ecstasy, then everything fades as you pass out.<</thought>><br><br>
 			@@.backbtn; [[Pass out|Bedroom][setup.Home.setSuccubusChoiceText(1)]]@@<br>
 		<</linkappend>>
@@ -84,7 +84,7 @@
 	<<video "characters/succubus/pc2.mp4" "displayCentredImgs">>
 	<<thought>>The succubus leans over you, her tongue starts to caress your pussy<</thought>><br>
 	@@color:red; Damn, you taste so sweet, I could lick you forever.@@<br>
-	@@.mc-speech; Mmm~@@<br>
+	<<vocal mc>>Mmm<</vocal>><br>
 	@@color:red; Now I'm going to fuck you so hard you'll forget your name.@@<br>
 	<<thought>>She puts on the strapon, her gaze promising a<</thought>>
 	<<linkappend "@@.usebtn; hard fuck@@">>
@@ -114,7 +114,7 @@
 	<<video "characters/succubus/trans1.mp4" "displayCentredImgs">>
 	<<thought>>The succubus leans over you, her tongue starts to caress your pussy<</thought>><br>
 	@@color:red; Damn, you taste so sweet, I could lick you forever.@@<br>
-	@@.mc-speech; Mmm~@@<br>
+	<<vocal mc>>Mmm<</vocal>><br>
 	@@color:red; I'm going to fuck you until you scream.@@<br>
 	<<thought>>She reveals her cock, her eyes burning with desire for a<</thought>>
 	<<linkappend "@@.usebtn; wild, unstoppable fuck@@">>

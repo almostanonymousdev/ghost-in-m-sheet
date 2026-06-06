@@ -5,7 +5,7 @@
 <</if>>
 <<if _check eq 2>><<video "scenes/gym/trainer1event1.4.mp4">>
 <</if>>
-@@.mc-speech; Ohhhh god, yes~ fuck me harder~yesss@@<br>
+<<mc>>Ohhhh god, yes—fuck me harder—yesss<</mc>><br>
 @@.notmc-speech; I'll fuck all your@@ <<linkappend "@@.notmc-speechLink; holes@@">><br>
 
 	<<set _check to random(1,2)>>

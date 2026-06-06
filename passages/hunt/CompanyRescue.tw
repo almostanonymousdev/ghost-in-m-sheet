@@ -18,7 +18,10 @@
 <<thought>>Green paint slides past. A van, lettering on the side you read backward before your brain flips it: NORVILLE & CO. Smaller words under it you lose when they tip you up the ramp. Then doors, a bench, a steel rack of equipment that has no business in any ambulance you've been loaded into. Oh. <i>That's</i> what this is.<</thought>><br>
 <br>
 <<video "scenes/ambulance/1.mp4">>
-@@.notmc-speech; <i>The one leaning over you has NORVILLE stitched across his chest in white thread.</i> Easy. Don't try to talk. Your neck's broken in two places, C5 and C6. <i>He says it the way you'd read a grocery list.</i> We'll do what we can for you. We're good at what we do.@@<br>
+<<narration>>The one leaning over you has NORVILLE stitched across his chest in white thread.<</narration>>
+<<say>>Easy. Don't try to talk. Your neck's broken in two places, C5 and C6.<</say>>
+<<narration>>He says it the way you'd read a grocery list.<</narration>>
+<<say>>We'll do what we can for you. We're good at what we do.<</say>><br>
 <br>
 <<thought>>You tell your right hand to grab his wrist. Nothing. You tell your legs to kick and they lie there like they belong to the board now instead of to you. The only thing that moves is your pulse, and even that feels like it's asking permission. Three of them, gloves on, all looking at you like a job that's already been quoted.<</thought>><br>
 <br>
@@ -42,7 +45,8 @@
 <<linkreplace "@@.usebtn;A hand turns your head a few careful degrees.@@">>
 	<br>
 	<<video "scenes/ambulance/4.mp4">>
-	@@.notmc-speech; Resetting the alignment. This part comes back fast. <i>His thumb settles under your jaw and the world stops being a flat grey ceiling and becomes a place with edges again.</i>@@<br>
+	<<say>>Resetting the alignment. This part comes back fast.<</say>>
+	<<narration>>His thumb settles under your jaw and the world stops being a flat grey ceiling and becomes a place with edges again.<</narration>><br>
 	<br>
 	<<thought>>Sensation floods back like a faucet kicked open. Pins, then heat, then your skin reporting every strap at once. Then the pain relief, he calls it, something blunt and humming that settles low between your legs, and the vibration runs straight up through you. Your hips try to twist and the straps refuse them. Why am I — <i>Christ.</i><</thought>><br>
 	<br>
@@ -78,7 +82,11 @@
 <<linkreplace "@@.usebtn;And then, as fast as it started, it stops.@@">>
 	<br>
 	<<video "scenes/ambulance/8.mp4">>
-	@@.notmc-speech; Miraculous. <i>The Norville one peels his gloves with two snaps and smiles.</i> Full recovery. Take it easy, but you're cleared for work. Good luck out there on the next one. <i>He checks a watch.</i> One thing. We're due a snack break, and this company mandate is the only one we don't fuck with, so this is as far as we run you.@@<br>
+	<<say>>Miraculous.<</say>>
+	<<narration>>The Norville one peels his gloves with two snaps and smiles.<</narration>>
+	<<say>>Full recovery. Take it easy, but you're cleared for work. Good luck out there on the next one.<</say>>
+	<<narration>>He checks a watch.<</narration>>
+	<<say>>One thing. We're due a snack break, and this company mandate is the only one we don't fuck with, so this is as far as we run you.<</say>><br>
 	<br>
 	<<thought>>The side door rolls open on an intersection you don't recognize. Cold pours in. They unbuckle you in the order they strapped you down and you can move again, every limb yours, your neck turning clean and painless, not a mark on you anywhere. They keep your clothes, giving no weight to your protests.<</thought>><br>
 	<br>
