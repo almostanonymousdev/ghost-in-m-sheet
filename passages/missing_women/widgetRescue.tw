@@ -37,7 +37,7 @@
 		<<if _clickCount lte 4>>
 			<<if _caughtChance gte _randomChance>>
 				<<replace ".rescueWatchButton">>
-					@@.mc-speech; FUCK! They noticed me. I won't have time to take out the holy water, but I could@@
+					<<mc>>FUCK! They noticed me. I won't have time to take out the holy water, but I could<</mc>>
 					@@.usebtn; [[Run|Church][setup.MissingWomen.markQuestFailed()]]@@
 
 					<<done>>
@@ -74,17 +74,19 @@
 	<</link>>
 	<</capture>></span><br>
 	<span class="useHolyWaterButton"><<if not setup.MissingWomen.hasHolyWater()>>
-		@@.mc-thoughts; Fuck! I didn't bring any holy water... I can't do much without it...@@<br><br>
+		<<thought>>Fuck! I didn't bring any holy water... I can't do much without it...<</thought>><br><br>
 		@@.backbtn; [[Leave|RescueMap]]@@<br>
 	<<else>>
 		<<linkreplace "@@.usebtn;Use holywater@@">>
 			<<replace ".rescueWatchButton">><</replace>>
 			<<run setup.MissingWomen.useHolyWater()>>
-			@@.mc-thoughts;But there's no time to waste! You quickly start throwing holy water toward the ghost. <br>
-			It lets out a loud hiss, like the water's burning it from the inside. The ghost pulls away from <<= setup.MissingWomen.currentRescueGirl()>> and disappears.@@<br>
-			@@.mc-speech;Let's get out of here before it comes back!@@<br>
-			@@.mc-thoughts; You grab her arm, and the two of you bolt out of the house.<br>
-			She thanks you for saving her and says she'll tell the nun about your help.@@<br>
+			<<thought>>But there's no time to waste! You quickly start throwing holy water toward the ghost. <br>
+				It lets out a loud hiss, like the water's burning it from the inside. The ghost pulls away from <<= setup.MissingWomen.currentRescueGirl()>> and disappears.
+			<</thought>><br>
+			<<mc>>Let's get out of here before it comes back!<</mc>><br>
+			<<thought>>You grab her arm, and the two of you bolt out of the house.<br>
+				She thanks you for saving her and says she'll tell the nun about your help.
+			<</thought>><br>
 			<br><br>
 			@@.backbtn; [[Leave|Church][setup.MissingWomen.markQuestSucceeded(); setup.Mc.grantExp(30)]]@@<br>
 		<</linkreplace>>
@@ -104,18 +106,19 @@
 		<<set _stayEnd to setup.MissingWomen.stayClipPath(_stayCfg.slug, _stayCfg.stay.endClip)>>
 		<span id="rescueStayContainer">
 		<<video _bothA>></span>
-		@@.mc-thoughts; You don't even try to resist.@@<br>
-		@@.mc-speech; Let it be what it will be.@@<br>
+		<<thought>>You don't even try to resist.<</thought>><br>
+		<<mc>>Let it be what it will be.<</mc>><br>
 		<<capture _bothA, _bothB, _stayEnd>>
-			@@.mc-thoughts; The ghost dragged you to the missing girl and began to have fun with you, using <<link "@@.usebtn; one after the other@@">>.
+			<<thought>>The ghost dragged you to the missing girl and began to have fun with you, using <<link "@@.usebtn; one after the other@@">>.
 				<<replace "#rescueStayContainer">>
 					<<videoToggle _bothB _bothA>>
 				<</replace>>
 			<</link>>
-			His cock, hot and huge, beat inside you, taking up all your attention. You did not pay attention to the fact that <<= setup.MissingWomen.currentRescueGirl()>> sometimes licked your tits and pussy. But all this soon@@ <<linkappend "@@.enterbtn; ended@@">><br>
+				His cock, hot and huge, beat inside you, taking up all your attention. You did not pay attention to the fact that <<= setup.MissingWomen.currentRescueGirl()>> sometimes licked your tits and pussy. But all this soon
+			<</thought>> <<linkappend "@@.enterbtn; ended@@">><br>
 				<<video _stayEnd>>
 
-				@@.mc-thoughts; He finished, but you were shaking all over. From excitement, nerves... from fear, probably. Tired, you@@ @@[[passed out|CityMapPossessed]]@@<br>
+				<<thought>>He finished, but you were shaking all over. From excitement, nerves... from fear, probably. Tired, you<</thought>> @@[[passed out|CityMapPossessed]]@@<br>
 			<</linkappend>>
 		<</capture>>
 	<<elseif _stayCfg.stay.kind eq "ash">>
@@ -123,21 +126,22 @@
 		<<set _stayEnd to setup.MissingWomen.stayClipPath(_stayCfg.slug, _stayCfg.stay.endClip)>>
 		<span id="rescueStayContainer">
 		<<video _initialClip>></span>
-		@@.mc-thoughts; You don't even try to resist.@@<br>
-		@@.mc-speech; Let it be what it will be.@@<br>
+		<<thought>>You don't even try to resist.<</thought>><br>
+		<<mc>>Let it be what it will be.<</mc>><br>
 		<<set _videoIndex to 0>>
 		<<capture _stayCfg, _stayEnd>>
-			@@.mc-thoughts; The ghost dragged you to the missing girl and began to have fun with you, using <<link "@@.usebtn; one after the other@@">>.
+			<<thought>>The ghost dragged you to the missing girl and began to have fun with you, using <<link "@@.usebtn; one after the other@@">>.
 				<<set _videoIndex to (_videoIndex % 5) + 1>>
 				<<replace "#rescueStayContainer">>
 					<<set _ashClip to setup.MissingWomen.stayClipPath(_stayCfg.slug, _stayCfg.stay.base + _videoIndex + ".mp4")>>
 					<<video _ashClip>>
 				<</replace>>
 			<</link>>
-			His cock, hot and huge, beat inside you, taking up all your attention. You did not pay attention to the fact that <<= setup.MissingWomen.currentRescueGirl()>> sometimes licked your tits and pussy. But all this soon@@ <<linkappend "@@.enterbtn; ended@@">><br>
+				His cock, hot and huge, beat inside you, taking up all your attention. You did not pay attention to the fact that <<= setup.MissingWomen.currentRescueGirl()>> sometimes licked your tits and pussy. But all this soon
+			<</thought>> <<linkappend "@@.enterbtn; ended@@">><br>
 				<<video _stayEnd>>
 
-				@@.mc-thoughts; He finished, but you were shaking all over. From excitement, nerves... from fear, probably. Tired, you@@ @@[[passed out|CityMapPossessed]]@@<br>
+				<<thought>>He finished, but you were shaking all over. From excitement, nerves... from fear, probably. Tired, you<</thought>> @@[[passed out|CityMapPossessed]]@@<br>
 			<</linkappend>>
 		<</capture>>
 	<</if>>

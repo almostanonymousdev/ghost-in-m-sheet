@@ -2,17 +2,17 @@
 <<if setup.Park.canEscapeParkEvent()>>
 	<<run setup.Park.dropEnergyToZero()>>
 	<<video "characters/mc/parkrunend.mp4">>
-	@@.mc-thoughts;You skillfully slip away from her grasping hands, leaving her behind with her unsatisfied lust.@@<br>
-	@@.mc-speech;FUCK! I barely got away from her, I need to be more careful around here.@@<br><br>
+	<<thought>>You skillfully slip away from her grasping hands, leaving her behind with her unsatisfied lust.<</thought>><br>
+	<<mc>>FUCK! I barely got away from her, I need to be more careful around here.<</mc>><br><br>
 	@@.backbtn; [[Leave|CityMap]]@@<br>
 <<else>>
 	<<run setup.Park.dropEnergyToZero()>>
 	<<video "characters/mc/parkeventcaught.mp4">>
-	@@.mc-thoughts;She catches up to you, her hot breath on your neck. She calms you, saying she just wants to enjoy your beautiful body before letting you go, filling the air with promises of passion.@@<br>
+	<<thought>>She catches up to you, her hot breath on your neck. She calms you, saying she just wants to enjoy your beautiful body before letting you go, filling the air with promises of passion.<</thought>><br>
 	<<linkreplace "@@.usebtn; She puts you on your knees in front of her.@@">>
 		<<video "characters/mc/parkeventbj.mp4">>
-		@@.mc-thoughts;She straps on a dildo, pinning you down, and begins to mercilessly fuck your mouth, making you take her deep, feeling her control over you. She lightly slaps your face, treating you like her personal slut.@@<br>
-		@@.mc-speech;Ugh, you're such a bitch...@@<br>
-		@@.notmc-speech;Let's strip off those unnecessary clothes and see [[how wet you get for me|ParkEvent2]]@@
+		<<thought>>She straps on a dildo, pinning you down, and begins to mercilessly fuck your mouth, making you take her deep, feeling her control over you. She lightly slaps your face, treating you like her personal slut.<</thought>><br>
+		<<mc>>Ugh, you're such a bitch...<</mc>><br>
+		<<say>>Let's strip off those unnecessary clothes and see [[how wet you get for me|ParkEvent2]]<</say>>
 	<</linkreplace>>
 <</if>>

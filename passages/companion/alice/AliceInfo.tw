@@ -13,16 +13,16 @@
 <<set _aws to setup.Companion.aliceWorkState()>>
 <<if _aws is undefined or _aws eq 0>>
 	<<linkreplace "@@.usebtn;Help her with the work@@">>
-		@@.notmc-speech; <<= setup.Mc.name()>>, I've sent you the documents that need to be filled out. Let me know when you're done.<br>@@
+		<<say>><<= setup.Mc.name()>>, I've sent you the documents that need to be filled out. Let me know when you're done.<br><</say>>
 		<br>
 		@@.mc-action; You received the documents from Alice.@@<br>
 		<<run setup.Companion.setAliceWorkState(1)>>
 	<</linkreplace>><br>
 <<elseif _aws eq 1>>
-	@@.mc-speech; I need to help Alice with her work before asking her to join the ghost hunt.@@<br>
+	<<mc>>I need to help Alice with her work before asking her to join the ghost hunt.<</mc>><br>
 <<elseif _aws eq 2>>
 	<<if not setup.Companion.hasFinishedSoloHunt("Alice")>>
-		@@.notmc-speech; Thanks a lot, now I'm free and ready to join you on the ghost hunt!@@<br>
+		<<say>>Thanks a lot, now I'm free and ready to join you on the ghost hunt!<</say>><br>
 	<</if>>
 
 	<<companionSoloPicker "Alice" "her">>

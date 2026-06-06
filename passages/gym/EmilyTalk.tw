@@ -2,9 +2,9 @@
 <<image "scenes/gym/emily-talks.jpg" { width: "100%" }>><br>
 <<if not setup.Gym.hasMetEmily()>>
 
-	@@.mc-speech; Hi, you look really fit. You must work out a lot. Oh, I forgot to introduce myself: I'm <<= setup.Mc.name()>>.@@<br>
-	@@.notmc-speech; Hey <<= setup.Mc.name()>>. I'm Emily. Yes, you're right@@<br>
-	@@.mc-thoughts; You start chatting about various topics.@@<br>
+	<<mc>>Hi, you look really fit. You must work out a lot. Oh, I forgot to introduce myself: I'm <<= setup.Mc.name()>>.<</mc>><br>
+	<<say>>Hey <<= setup.Mc.name()>>. I'm Emily. Yes, you're right<</say>><br>
+	<<thought>>You start chatting about various topics.<</thought>><br>
 	<br>
 	<<run setup.Gym.greetEmilyFirstTime()>>
 	Relation with @@.mc-speech;Emily@@ improved: <<= setup.Gym.emilyRelationshipStage()>> now!
@@ -12,17 +12,17 @@
 <<elseif setup.Gym.emilyRelationshipStage() lte 4>>
 	<<set _check to random(1,3)>>
 
-	<<if _check eq 1>>@@.mc-speech; Do you have any tips for staying motivated?<br>@@
-		@@.notmc-speech; I find setting small goals really helps.<br>@@
+	<<if _check eq 1>><<mc>>Do you have any tips for staying motivated?<br><</mc>>
+		<<say>>I find setting small goals really helps.<br><</say>>
 	<</if>>
 
-	<<if _check eq 2>>@@.notmc-speech; You can work out on your own, but training with a coach will be more beneficial, although it does cost money.<br>@@
-		@@.mc-speech; Thanks for mentioning it. I'll keep that in mind.<br>@@
+	<<if _check eq 2>><<say>>You can work out on your own, but training with a coach will be more beneficial, although it does cost money.<br><</say>>
+		<<mc>>Thanks for mentioning it. I'll keep that in mind.<br><</mc>>
 	<</if>>
 
 	<<if _check eq 3>>
-		@@.notmc-speech; There are group classes here, held daily from 12:00 to 14:00. They are free and very effective.<br>@@
-		@@.mc-speech; Thanks for mentioning it. I'll keep that in mind.<br>@@
+		<<say>>There are group classes here, held daily from 12:00 to 14:00. They are free and very effective.<br><</say>>
+		<<mc>>Thanks for mentioning it. I'll keep that in mind.<br><</mc>>
 	<</if>>
 	<<if setup.Gym.raiseEmilyRelationship()>>
 		Relation with @@.mc-speech;Emily@@ improved: <<= setup.Gym.emilyRelationshipStage()>> now!<br>
@@ -32,18 +32,18 @@
 
 	<<set _check to random(1,3)>>
 
-	<<if _check eq 1>>@@.mc-speech; Why do you work out in the evening?<br>@@
-		@@.notmc-speech; I used to work out at any time of the day, but now I prefer training with a female coach.<br>@@
+	<<if _check eq 1>><<mc>>Why do you work out in the evening?<br><</mc>>
+		<<say>>I used to work out at any time of the day, but now I prefer training with a female coach.<br><</say>>
 	<</if>>
 
-	<<if _check eq 2>>@@.notmc-speech; Have you seen the trainer who works here in the morning? Well... I heard that he goes crazy for girls in pretty lingerie, so I took advantage of that. Now I'm training with him for free.<br>@@
-		@@.mc-speech; I think I understand what you mean. Maybe I'll take advantage of that too.<br>@@
+	<<if _check eq 2>><<say>>Have you seen the trainer who works here in the morning? Well... I heard that he goes crazy for girls in pretty lingerie, so I took advantage of that. Now I'm training with him for free.<br><</say>>
+		<<mc>>I think I understand what you mean. Maybe I'll take advantage of that too.<br><</mc>>
 		<<run setup.Gym.markTrainer1Tipped()>>
 	<</if>>
 
 	<<if _check eq 3>>
-		@@.notmc-speech; Do you know the trainer who works here during the day? He likes girls who are in good shape.<br>@@
-		@@.mc-speech; Thanks for mentioning it. I'll keep that in mind.<br>@@
+		<<say>>Do you know the trainer who works here during the day? He likes girls who are in good shape.<br><</say>>
+		<<mc>>Thanks for mentioning it. I'll keep that in mind.<br><</mc>>
 	<</if>>
 	<<if setup.Gym.raiseEmilyRelationship()>>
 		Relation with @@.mc-speech;Emily@@ improved: <<= setup.Gym.emilyRelationshipStage()>> now!<br>

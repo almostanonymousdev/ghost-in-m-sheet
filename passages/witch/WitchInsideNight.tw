@@ -3,10 +3,11 @@
 <br>
 
 <<if hasVisited("WitchBedroom")>>
-	@@.mc-thoughts; You let yourself in. The bedroom door is open a crack again. Same breathing. You've stopped pretending it's a surprise.@@
+	<<thought>>You let yourself in. The bedroom door is open a crack again. Same breathing. You've stopped pretending it's a surprise.<</thought>>
 <<else>>
-	@@.mc-thoughts; You let yourself in. Same room as daytime, different temperature. Curtains drawn, candles down to nubs. The clipboard is still on the desk, face down where she left it. The cards in the front window face the wrong way around at night.<br>
-	The bedroom door is open a crack. You can hear her breathing.@@
+	<<thought>>You let yourself in. Same room as daytime, different temperature. Curtains drawn, candles down to nubs. The clipboard is still on the desk, face down where she left it. The cards in the front window face the wrong way around at night.<br>
+		The bedroom door is open a crack. You can hear her breathing.
+	<</thought>>
 <</if>>
 <br>
 <<if setup.Witch.canStealItemsFromWitch()>>
@@ -36,12 +37,12 @@
 		@@
 	<</linkreplace>>
 <<else>>
-	@@.mc-speech; Enough stealing for one night.@@
+	<<mc>>Enough stealing for one night.<</mc>>
 <</if>>
 
 <br>
 <<if not setup.Witch.canVisitWitchBedroomNight()>>
-	@@.mc-speech; Enough for one night.@@
+	<<mc>>Enough for one night.<</mc>>
 <<else>>
 	@@.enterbtn; [[Bedroom|WitchBedroom]]@@
 <</if>>

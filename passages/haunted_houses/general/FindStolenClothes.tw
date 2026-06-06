@@ -3,11 +3,12 @@
    stashed + restored independently now (see stashStolenClothes), so
    the four FindStolen* passages each undo just their own piece and
    stamp their own clothesStolen<Piece> kind as collected. */
-@@.mc-thoughts; Your stolen panties, balled up in the furniture.@@<br>
+<<thought>>Your stolen panties, balled up in the furniture.<</thought>><br>
 <br>
 <<if setup.Mc.exhibitionism() gte 5>>
-	@@.mc-speech; Or... maybe I shouldn't put them back on... I've kind of gotten used to being naked...<br>
-	I can pick them up later. Hopefully, they won't disappear...@@<br>
+	<<mc>>Or... maybe I shouldn't put them back on... I've kind of gotten used to being naked...<br>
+		I can pick them up later. Hopefully, they won't disappear...
+	<</mc>><br>
 
 	<<linkreplace "@@.mc-speechLink; Nah... I should get dressed@@">>
 		<br>
@@ -21,10 +22,10 @@
 <<run setup.HuntController.takeLoot("clothesStolenPanties")>>
 
 :: FindStolenBra [nobr] {"position":"4325,950","size":"100,100"}
-@@.mc-thoughts; Your stolen bra, balled up in the furniture.@@<br>
+<<thought>>Your stolen bra, balled up in the furniture.<</thought>><br>
 <br>
 <<if setup.Mc.exhibitionism() gte 5>>
-	@@.mc-speech; Or... I could stay topless under this. I've kind of gotten used to it...@@<br>
+	<<mc>>Or... I could stay topless under this. I've kind of gotten used to it...<</mc>><br>
 
 	<<linkreplace "@@.mc-speechLink; Nah... I should put it back on@@">>
 		<br>
@@ -38,10 +39,10 @@
 <<run setup.HuntController.takeLoot("clothesStolenBra")>>
 
 :: FindStolenShirt [nobr] {"position":"4425,950","size":"100,100"}
-@@.mc-thoughts; Your stolen top, balled up in the furniture.@@<br>
+<<thought>>Your stolen top, balled up in the furniture.<</thought>><br>
 <br>
 <<if setup.Mc.exhibitionism() gte 5>>
-	@@.mc-speech; Or... I could keep going without it. I've kind of gotten used to it...@@<br>
+	<<mc>>Or... I could keep going without it. I've kind of gotten used to it...<</mc>><br>
 
 	<<linkreplace "@@.mc-speechLink; Nah... I should put it back on@@">>
 		<br>
@@ -55,10 +56,10 @@
 <<run setup.HuntController.takeLoot("clothesStolenShirt")>>
 
 :: FindStolenBottom [nobr] {"position":"4525,950","size":"100,100"}
-@@.mc-thoughts; Your stolen bottoms, balled up in the furniture.@@<br>
+<<thought>>Your stolen bottoms, balled up in the furniture.<</thought>><br>
 <br>
 <<if setup.Mc.exhibitionism() gte 5>>
-	@@.mc-speech; Or... maybe I leave them off. I've kind of gotten used to walking around bare...@@<br>
+	<<mc>>Or... maybe I leave them off. I've kind of gotten used to walking around bare...<</mc>><br>
 
 	<<linkreplace "@@.mc-speechLink; Nah... I should get dressed@@">>
 		<br>

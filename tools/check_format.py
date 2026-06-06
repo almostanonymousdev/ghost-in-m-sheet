@@ -83,6 +83,15 @@ INLINE_DIALOGUE_PAIR = re.compile(
     r"<<(" + "|".join(sorted(DIALOGUE_MACROS)) + r")\b[^>]*>>.*?<</\1>>"
 )
 
+# A dangling dialogue closer (the end of a multi-line spoken line / thought,
+# e.g. "...and that was that.<</thought>>"). Prose hugging the closer is the
+# intended form for these prose-wrapping macros, so they are exempt from TW004 --
+# but stripping only the closer (not the prose before it) keeps a genuine
+# control-flow closer sharing the line still subject to the rule.
+DIALOGUE_CLOSE = re.compile(
+    r"<</(?:" + "|".join(sorted(DIALOGUE_MACROS)) + r")>>"
+)
+
 # Space before pipe in a link: [[text |Target]]
 LINK_SPACE_PIPE = re.compile(r"\[\[[^\]]*\s\|")
 
@@ -183,6 +192,7 @@ def check_content_then_close(line: str, lineno: int) -> list[Warning]:
     # remove balanced inline pairs first so they don't trip the rule, while a
     # genuine stray closer left on the line still warns.
     cleaned = INLINE_DIALOGUE_PAIR.sub("", line)
+    cleaned = DIALOGUE_CLOSE.sub("", cleaned)
     m = CONTENT_THEN_CLOSE.search(cleaned)
     if not m:
         return []

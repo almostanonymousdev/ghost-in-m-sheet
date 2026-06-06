@@ -5,48 +5,48 @@
 <<if setup.Witch.isFirstVisit()>>
 	&emsp;Khadija is at the desk with a clipboard when you come in, drawing a careful line through a name near the top of the page. She finishes the line before she looks up.<br>
 
-	&emsp;@@.notmc-speech; You're the one who's been putting it off.@@<br>
+	&emsp;<<say>>You're the one who's been putting it off.<</say>><br>
 
-	&emsp;@@.mc-speech; ...How'd you know?@@<br>
+	&emsp;<<mc>>...How'd you know?<</mc>><br>
 
-	&emsp;@@.notmc-speech; Mossheath's small, and you've been on my list a while. Sit, if you want. Don't if you don't.@@<br>
+	&emsp;<<say>>Mossheath's small, and you've been on my list a while. Sit, if you want. Don't if you don't.<</say>><br>
 
 	&emsp;She turns the clipboard face-down on the desk like it's a private letter.<br>
 
-	&emsp;@@.mc-speech; I'm <<= setup.Mc.name()>>. I was told I could pick up contracts here. For ghosts.@@<br>
+	&emsp;<<mc>>I'm <<= setup.Mc.name()>>. I was told I could pick up contracts here. For ghosts.<</mc>><br>
 
-	&emsp;@@.notmc-speech; Khadija. And yes. Show me your hands.@@<br>
+	&emsp;<<say>>Khadija. And yes. Show me your hands.<</say>><br>
 
-	&emsp;@@.mc-thoughts; ...What?@@<br>
+	&emsp;<<thought>>...What?<</thought>><br>
 
 	&emsp;You hold them out anyway. She doesn't take them. Just looks. Then nods, once, like she's seen something either reassuring or annoying.<br>
 
-	&emsp;@@.notmc-speech; Steady. You'll do for a first hunt. Whether you'll do for a second depends on surviving the first.@@<br>
+	&emsp;<<say>>Steady. You'll do for a first hunt. Whether you'll do for a second depends on surviving the first.<</say>><br>
 
-	&emsp;@@.mc-speech; That's a low bar.@@<br>
+	&emsp;<<mc>>That's a low bar.<</mc>><br>
 
-	&emsp;@@.notmc-speech; It's the only one I bother with. Here's how this works.@@<br>
+	&emsp;<<say>>It's the only one I bother with. Here's how this works.<</say>><br>
 
-	&emsp;@@.notmc-speech; I sell contracts, not jobs. You give me a fee, I give you the contract, you spend one night in the house. You come back and you tell me what was in there. Get the type right, there's money. Get it wrong, there isn't, and the contract doesn't pay twice.@@<br>
+	&emsp;<<say>>I sell contracts, not jobs. You give me a fee, I give you the contract, you spend one night in the house. You come back and you tell me what was in there. Get the type right, there's money. Get it wrong, there isn't, and the contract doesn't pay twice.<</say>><br>
 
-	&emsp;@@.mc-speech; One guess per contract?@@<br>
+	&emsp;<<mc>>One guess per contract?<</mc>><br>
 
-	&emsp;@@.notmc-speech; One guess per contract. Don't guess until you know.@@<br>
+	&emsp;<<say>>One guess per contract. Don't guess until you know.<</say>><br>
 
-	&emsp;@@.notmc-speech; I won't lecture you about the rest. The girls before you taught me lecturing doesn't take.@@<br>
+	&emsp;<<say>>I won't lecture you about the rest. The girls before you taught me lecturing doesn't take.<</say>><br>
 
 	&emsp;You glance at the upturned clipboard. She doesn't move it.<br>
 
-	&emsp;@@.notmc-speech; Come back when you want a contract. I'll be here. I'm always here.@@<br>
+	&emsp;<<say>>Come back when you want a contract. I'll be here. I'm always here.<</say>><br>
 	<br>
-	&emsp;@@.mc-thoughts; Right. Buy a contract, spend the night, name what's in there. One guess only. Don't guess until I know.@@<br>
+	&emsp;<<thought>>Right. Buy a contract, spend the night, name what's in there. One guess only. Don't guess until I know.<</thought>><br>
 	<br>
 	@@.mc-action; Now you can receive contracts for identifying the type of ghost.@@
 	<br>
 	<<run setup.Witch.markShopVisited()>>
 	@@.backbtn;[[Continue|WitchInside]]@@
 <<elseif not setup.Witch.isFirstVisit()>>
-	@@.notmc-speech; <<= setup.Mc.name()>>. Still upright. Good.@@<br>
+	<<say>><<= setup.Mc.name()>>. Still upright. Good.<</say>><br>
 	/* Pending contract -- either the player walked out of the house
 		with the run still active (and the held key matches the run's
 		static house), or a prior contract hunt ended without a call
@@ -64,9 +64,9 @@
 	<</if>>
 	<<if setup.Witch.hasSuccubusEncounter() and (hasVisited("SuccubusEventTV") or hasVisited("SuccubusPCEvent")) and setup.Witch.exorcismQuestNotStarted()>>
 		<<linkreplace "@@.usebtn; Ask about a ghost in the house@@">>
-			@@.mc-speech; Something's living in my house. It's been a while. I thought it'd get bored.@@<br>
-			@@.mc-speech; Sometimes it wears me.@@<br>
-			@@.notmc-speech; Then it's not going to get bored. You want Sister Rain at the church. She does exorcisms. Tell her I sent you, she'll be less suspicious.@@<br><br>
+			<<mc>>Something's living in my house. It's been a while. I thought it'd get bored.<</mc>><br>
+			<<mc>>Sometimes it wears me.<</mc>><br>
+			<<say>>Then it's not going to get bored. You want Sister Rain at the church. She does exorcisms. Tell her I sent you, she'll be less suspicious.<</say>><br><br>
 			@@.mc-action; Visit the church and ask Sister Rain about an exorcism.@@<br><br>
 			<<run setup.Witch.resetExorcismQuestStage()>>
 		<</linkreplace>><br>
@@ -75,11 +75,11 @@
 		<span @class="setup.Witch.rescueQuestUnlocked() ? 'rescueGirlsDisabled' : 'rescueGirlsDisabled disabled-link'">
 		<<linkreplace "@@.usebtn; Missing girls@@">>
 			<<run setup.MissingWomen.resetQuestToAvailable()>>
-			@@.notmc-speech; Sit. I have something for you.@@<br>
+			<<say>>Sit. I have something for you.<</say>><br>
 			&emsp;She slides the clipboard across. There are names. There are lines through more than half of them.<br>
-			@@.notmc-speech; Sister Rain's hunters. She used to send me five new ones a year. I haven't crossed a name off because someone retired in eighteen months.@@<br>
-			@@.mc-speech; You want me to find them.@@<br>
-			@@.notmc-speech; I want you to try. Rain doesn't know I'm asking. Go to her, let her think it was her idea. She'll work with you faster that way.@@<br>
+			<<say>>Sister Rain's hunters. She used to send me five new ones a year. I haven't crossed a name off because someone retired in eighteen months.<</say>><br>
+			<<mc>>You want me to find them.<</mc>><br>
+			<<say>>I want you to try. Rain doesn't know I'm asking. Go to her, let her think it was her idea. She'll work with you faster that way.<</say>><br>
 			<br>
 			@@.mc-action; Go to the church and find Sister Rain.@@<br>
 		<</linkreplace>><<if !setup.Witch.rescueQuestUnlocked()>>@@.warningtext; (Req. lvl 4+)@@
@@ -91,7 +91,7 @@
 		player picked up before the quest was officially offered. */
 	<<if setup.Witch.hasCursedItemToTurnIn()>>
 		<<linkreplace "@@.usebtn; I found the cursed object.@@">>
-			@@.notmc-speech; Hand it here. Carefully.@@<br>
+			<<say>>Hand it here. Carefully.<</say>><br>
 			&emsp;She takes it with both hands and sets it in a drawer you didn't know was there. The drawer closes itself.<br>
 			<span> Money: +$30 $ </span><br>
 			<<run setup.Witch.collectCursedItemReward()>>
@@ -99,30 +99,30 @@
 				<<run setup.Witch.upgradeGwbToLvl3()>>
 				@@.mc-action; You get a lvl 3 Ghost Writing Book @@<<image "ui/img/gwb.png" { style: "max-width:5%" }>><br>
 				<br>
-				@@.mc-speech; What do you do with them?@@<br>
-				@@.notmc-speech; My work.@@<br>
-				&emsp;@@.mc-thoughts; She runs her thumb along the binding of the book before she hands it over, slow, like she's testing whether it remembers her.@@<br>
+				<<mc>>What do you do with them?<</mc>><br>
+				<<say>>My work.<</say>><br>
+				&emsp;<<thought>>She runs her thumb along the binding of the book before she hands it over, slow, like she's testing whether it remembers her.<</thought>><br>
 
-				@@.notmc-speech; Bring me more when you find them. I pay per piece. The toys are nicer if they've been with someone.@@<br>
+				<<say>>Bring me more when you find them. I pay per piece. The toys are nicer if they've been with someone.<</say>><br>
 			<<else>>
-				@@.notmc-speech; Keep them coming when you find them. I pay per piece.@@<br>
+				<<say>>Keep them coming when you find them. I pay per piece.<</say>><br>
 			<</if>>
 
-			@@.mc-speech; Alright. Money's money.@@
+			<<mc>>Alright. Money's money.<</mc>>
 		<</linkreplace>>
 	<<elseif setup.Mc.lvl() lte 1>>
-		@@.mc-speech; I just need to call the type, right?@@<br>
-		@@.notmc-speech; For now. We'll add more once I'm more confident you'll survive.@@ <br>
+		<<mc>>I just need to call the type, right?<</mc>><br>
+		<<say>>For now. We'll add more once I'm more confident you'll survive.<</say>> <br>
 		@@.warningtext; (Req. lvl 2+)@@<br>
 	<<else>>
 		<<if setup.Witch.canOfferCursedItemQuest()>>
 			<<linkreplace "@@.usebtn;I have a small task for you.@@">>
 				<<run setup.Witch.startCursedItemQuest()>>
-				@@.notmc-speech; Side job, if you want it.@@<br>
-				@@.mc-speech; What's the catch?@@<br>
-				@@.notmc-speech; No catch. Every house I send you to has a cursed object somewhere in it. Bring it back. I'll pay.@@<br>
-				@@.mc-speech; How do I know which one?@@<br>
-				@@.notmc-speech; Pick it up. You'll feel it. If you don't feel it, it isn't.@@<br>
+				<<say>>Side job, if you want it.<</say>><br>
+				<<mc>>What's the catch?<</mc>><br>
+				<<say>>No catch. Every house I send you to has a cursed object somewhere in it. Bring it back. I'll pay.<</say>><br>
+				<<mc>>How do I know which one?<</mc>><br>
+				<<say>>Pick it up. You'll feel it. If you don't feel it, it isn't.<</say>><br>
 				<br>
 				@@.mc-action; Search haunted houses for the cursed object. It could be in any room.@@
 				<br>
@@ -155,49 +155,49 @@
 <</if>>
 <<if setup.Witch.canAskAboutMonkeyPaw()>>
 	<<linkreplace "@@.usebtn; Ask about Monkey Paw@@">>
-		@@.notmc-speech; The paw. So you found it.@@<br>
-		@@.mc-speech; What's it do.@@<br>
-		@@.notmc-speech; Grants wishes. Badly. Three of them.@@<br>
-		@@.mc-speech; And if I want to know how badly?@@<br>
-		@@.notmc-speech; Two pages on the shelf. The first lists what it'll answer to. Four hundred. The second adds what each wish costs you. Eight hundred.@@<br>
-		@@.mc-speech; Eight hundred is steep.@@<br>
-		@@.notmc-speech; So's a wish you can't take back. Shelves are open whenever you decide.@@<br>
+		<<say>>The paw. So you found it.<</say>><br>
+		<<mc>>What's it do.<</mc>><br>
+		<<say>>Grants wishes. Badly. Three of them.<</say>><br>
+		<<mc>>And if I want to know how badly?<</mc>><br>
+		<<say>>Two pages on the shelf. The first lists what it'll answer to. Four hundred. The second adds what each wish costs you. Eight hundred.<</say>><br>
+		<<mc>>Eight hundred is steep.<</mc>><br>
+		<<say>>So's a wish you can't take back. Shelves are open whenever you decide.<</say>><br>
 		<<run setup.Witch.markMonkeyPawGuideBought()>>
 	<</linkreplace>><br>
 <</if>>
 <<if setup.Witch.canAskAboutIronclad()>>
 	<<linkreplace "@@.usebtn; Ask about Prison 'Ironclad'@@">>
 		<<if hasVisited("Ironclad Prison")>>
-			@@.mc-speech; I went to Ironclad. Nothing tripped. Place is silent as a brick.@@<br>
+			<<mc>>I went to Ironclad. Nothing tripped. Place is silent as a brick.<</mc>><br>
 		<<else>>
-			@@.mc-speech; Ironclad. The prison. I hear it's haunted.@@<br>
+			<<mc>>Ironclad. The prison. I hear it's haunted.<</mc>><br>
 		<</if>>
-		@@.notmc-speech; It is. The ghosts there are particular about audience. Most of them were guards once. A few were inmates. They notice who's wearing what.@@<br>
-		@@.notmc-speech; Look like someone who belongs there, they'll show themselves. The mall sells the uniforms cheap. Nobody else wants them.@@<br>
-		@@.mc-thoughts; Wardens. Of course. The mall.@@<br>
+		<<say>>It is. The ghosts there are particular about audience. Most of them were guards once. A few were inmates. They notice who's wearing what.<</say>><br>
+		<<say>>Look like someone who belongs there, they'll show themselves. The mall sells the uniforms cheap. Nobody else wants them.<</say>><br>
+		<<thought>>Wardens. Of course. The mall.<</thought>><br>
 		<<run setup.Witch.markWardenOutfitHintOpened()>>
 	<</linkreplace>>
 <</if>><br>
 <<if setup.Witch.canOfferWeakenQuest()>>
 	<<linkreplace "@@.usebtn; Weaken the Ghost@@">>
-		@@.notmc-speech; Another job, if you want it. Different shape.@@<br>
-		@@.mc-speech; Tell me.@@<br>
-		@@.notmc-speech; A distracted ghost is a weaker ghost. Distract them. With whatever you've got.@@<br>
-		@@.mc-speech; Whatever I've got.@@<br>
-		@@.notmc-speech; You're smart, <<= setup.Mc.name()>>. You know what I'm asking.@@<br>
-		@@.mc-speech; I know what you're asking. Not sure I'm built for it.@@<br>
-		@@.notmc-speech; You'd be surprised what you're built for. I pay extra. Think about it.@@<br><br>
+		<<say>>Another job, if you want it. Different shape.<</say>><br>
+		<<mc>>Tell me.<</mc>><br>
+		<<say>>A distracted ghost is a weaker ghost. Distract them. With whatever you've got.<</say>><br>
+		<<mc>>Whatever I've got.<</mc>><br>
+		<<say>>You're smart, <<= setup.Mc.name()>>. You know what I'm asking.<</say>><br>
+		<<mc>>I know what you're asking. Not sure I'm built for it.<</mc>><br>
+		<<say>>You'd be surprised what you're built for. I pay extra. Think about it.<</say>><br><br>
 		@@.mc-action; You can now take Khadija's side task: weaken the ghost.@@<br>
 		<<run setup.Witch.markWeakenQuestStarted()>>
 	<</linkreplace>><br>
 <</if>>
 <<if setup.Witch.canOfferEctoplasmQuest()>>
 	<<linkreplace "@@.usebtn; You're ready for something bigger.@@">>
-		@@.notmc-speech; You've cleared enough houses. There's a thing I should have asked you about already.@@<br>
-		@@.mc-speech; Asked me what?@@<br>
-		@@.notmc-speech; A favor. Off the contract board. Quiet. The kind that opens up a different ledger between us.@@<br>
-		@@.mc-speech; Different how?@@<br>
-		@@.notmc-speech; Different in what I'll trade you for. Coin's coin. There's another thing the houses bleed. We'll talk about it when you've handled this.@@<br><br>
+		<<say>>You've cleared enough houses. There's a thing I should have asked you about already.<</say>><br>
+		<<mc>>Asked me what?<</mc>><br>
+		<<say>>A favor. Off the contract board. Quiet. The kind that opens up a different ledger between us.<</say>><br>
+		<<mc>>Different how?<</mc>><br>
+		<<say>>Different in what I'll trade you for. Coin's coin. There's another thing the houses bleed. We'll talk about it when you've handled this.<</say>><br><br>
 		@@.mc-action; Khadija has set you a task: weaken three ghosts to prove you can take the ectoplasm trade without it taking you.@@<br>
 		@@.movebtn; [[Hear her out|WitchEctoplasmQuest]]@@<br>
 		<<run setup.Witch.offerEctoplasmQuest()>>

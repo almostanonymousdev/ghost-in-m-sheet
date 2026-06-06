@@ -10,7 +10,7 @@
 <<if _check eq 3>>
 	<<video "mechanics/hunting/3.mp4" { controls: false, loop: false }>>
 <</if>>
-@@.mc-thoughts; Suddenly, you hear the dull sound of footsteps approaching you. It's starting. The ghost is on the hunt. Time is running out. Looking around, you see shadows closing in on you. It's time to act before it's too late.@@<br>
+<<thought>>Suddenly, you hear the dull sound of footsteps approaching you. It's starting. The ghost is on the hunt. Time is running out. Looking around, you see shadows closing in on you. It's time to act before it's too late.<</thought>><br>
 
 @@.usebtn; [[Run away|RunFast]]@@
 or @@.usebtn; [[Try to hide|Hide]]@@

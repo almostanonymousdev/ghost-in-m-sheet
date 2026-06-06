@@ -19,6 +19,6 @@ Or just click @@.enterbtn;<<link "here" "Intro1">><<run setup.Mc.setName("Mary")
 <br>
 <br>
 <br>
-@@.mc-thoughts;This game is similar to games like Phasmophobia, Demonologist, etc., so if you've played such games, you probably won't have many difficulties. Nevertheless, here's a brief guide to the game, which will always be accessible on your sidebar, or by pressing 'a':@@
+<<thought>>This game is similar to games like Phasmophobia, Demonologist, etc., so if you've played such games, you probably won't have many difficulties. Nevertheless, here's a brief guide to the game, which will always be accessible on your sidebar, or by pressing 'a':<</thought>>
 <br>
 @@.enterbtn;[[Player guide (New and improved!) -> Evidence]]@@

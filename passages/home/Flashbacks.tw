@@ -9,10 +9,10 @@
 <br>
 
 <<if _seen eq 0>>
-	@@.mc-thoughts; You sit on the edge of the bed and try to put your finger on a memory worth recalling. Nothing rises. Perhaps later -- once you've actually lived something.@@<br>
+	<<thought>>You sit on the edge of the bed and try to put your finger on a memory worth recalling. Nothing rises. Perhaps later -- once you've actually lived something.<</thought>><br>
 	<br>
 <<else>>
-	@@.mc-thoughts; You close your eyes and choose a memory, ruminating uselessly on your past.@@<br>
+	<<thought>>You close your eyes and choose a memory, ruminating uselessly on your past.<</thought>><br>
 	<br>
 <</if>>
 

@@ -13,8 +13,8 @@
 	<</if>>
 	<<if _check eq 2>><<video "scenes/gym/trainer1event1.6.mp4">>
 	<</if>>
-	@@.mc-speech; Do you like the way I bounce my ass on your dick?@@<br>
-	@@.notmc-speech; Oh, that's so fucking awesome. I'm about to [[ cum|GymTrainerEvent1Start2]]@@<br>
+	<<mc>>Do you like the way I bounce my ass on your dick?<</mc>><br>
+	<<say>>Oh, that's so fucking awesome. I'm about to [[ cum|GymTrainerEvent1Start2]]<</say>><br>
 
 <</linkappend>>
 

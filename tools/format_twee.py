@@ -21,6 +21,10 @@ Per-line cosmetic fixes
 Structural fixes
   * split jammed closing macros   <</if>><</if>>
   * split content followed by a closing macro onto separate lines
+    (inline dialogue pairs `<<say>>text<</say>>` are exempt — they stay
+    on one line)
+  * collapse a dialogue block whose closer hangs on the next line back to
+    one inline line: `<<say>>text` + `<</say>>` -> `<<say>>text<</say>>`
   * push <<else>> / <<elseif>> onto their own line
   * split lines with 3+ unpaired block-macro tags
   * re-indent [nobr] passages so closing and mid-block tags align with
@@ -76,7 +80,23 @@ BLOCK_MACROS = frozenset({
     "createplaylist", "actions", "type",
     # project-specific containers (from t3lt.twee-config.yml)
     "newmeter", "roomshell", "hovertip", "deliveryeventchoose",
+    # dialogue wrappers (passages/gui/DialogueController.js) — container
+    # macros whose <</name>> close aligns with its opener, same as <<if>>.
+    "mc", "say", "narration", "thought", "vocal",
 })
+
+# Dialogue wrappers render inline — <<say>>…<</say>> belongs on one line.
+# They're still listed in BLOCK_MACROS above so the rare genuinely-multi-line
+# speech gets its closer aligned to its opener; the collapse pass below pulls
+# the common single-line case back onto one line.
+DIALOGUE_MACROS = frozenset({"mc", "say", "narration", "thought", "vocal"})
+
+# A balanced dialogue pair living on a single line (non-greedy, single-line).
+# `\1` ties the close back to the same macro name the open used.
+INLINE_DIALOGUE_PAIR_RE = re.compile(
+    r"<<\s*(mc|say|narration|thought|vocal)\b[^>]*>>.*?<</\s*\1\s*>>",
+    re.IGNORECASE,
+)
 
 # Mid-block markers that share their parent block's indent.
 MID_BLOCK = frozenset({"else", "elseif", "case", "default"})
@@ -292,10 +312,27 @@ def is_only_macros(text: str) -> bool:
     return cleaned == ""
 
 
+def _blank_inline_dialogue(line: str) -> str:
+    """Replace balanced inline dialogue pairs (`<<say>>…<</say>>`) with spaces
+    of equal length.  Length is preserved so match offsets stay valid; the
+    blanked copy is used only to *decide* where to split, so a one-line
+    dialogue pair's closer is never treated as a stray "content + closer"."""
+    return INLINE_DIALOGUE_PAIR_RE.sub(lambda m: " " * len(m.group(0)), line)
+
+
 def split_closing_macros(line: str) -> list[str]:
-    """Break lines that jam multiple closers or content+close together."""
+    """Break lines that jam multiple closers or content+close together.
+
+    Inline dialogue pairs are exempt — `<<say>>text<</say>>` stays on one line
+    (the dialogue convention) instead of being split into three.
+    """
     stripped = line.strip()
     indent = line[: len(line) - len(line.lstrip())]
+
+    # Decisions about where to split read the dialogue-blanked copy so a
+    # one-line dialogue pair survives intact; output is sliced from the real
+    # line so the dialogue text is preserved.
+    blanked = _blank_inline_dialogue(line)
 
     # Pure-closer line: one close per output line.
     if re.fullmatch(r"(\s*<</\w+>>\s*)+", stripped):
@@ -304,7 +341,7 @@ def split_closing_macros(line: str) -> list[str]:
             return [line]
         return [indent + p for p in parts]
 
-    all_closes = list(re.finditer(r"<</\w+>>", line))
+    all_closes = list(re.finditer(r"<</\w+>>", blanked))
     if not all_closes:
         return [line]
 
@@ -317,10 +354,10 @@ def split_closing_macros(line: str) -> list[str]:
             return [content] + split_closing_macros(indent + rest)
 
     # Two closers jammed together after macro-only content
-    if re.search(r"<</\w+>>\s*<</\w+>>", line):
+    if re.search(r"<</\w+>>\s*<</\w+>>", blanked):
         first = all_closes[0]
         prefix = line[: first.start()].rstrip()
-        closers = re.findall(r"<</\w+>>", line[first.start():])
+        closers = re.findall(r"<</\w+>>", blanked[first.start():])
         out = []
         if prefix.strip():
             out.append(prefix)
@@ -328,6 +365,64 @@ def split_closing_macros(line: str) -> list[str]:
         return out
 
     return [line]
+
+
+DIALOGUE_OPEN_RE = re.compile(
+    r"<<\s*(mc|say|narration|thought|vocal)\b[^>]*>>", re.IGNORECASE
+)
+
+
+def _try_collapse_dialogue(line: str, nxt: str) -> str | None:
+    """If *line* ends with an unclosed dialogue opener whose matching closer
+    leads *nxt*, return the merged single line; otherwise None.
+
+    The opener can sit anywhere on the line (leading, or glued after
+    `<<else>>` / `<<case>>` / `<<replace>>` / HTML / a raw `@@…@@` span), as
+    long as everything from the opener to end-of-line leaves only the dialogue
+    itself open — i.e. the body doesn't start another block macro that the
+    pulled-up closer would wrongly swallow.
+    """
+    last = None
+    for m in DIALOGUE_OPEN_RE.finditer(line):
+        last = m
+    if last is None:
+        return None
+    name = last.group(1).lower()
+    tail = line[last.start():]
+    if re.search(r"<</\s*" + name + r"\s*>>", tail, re.IGNORECASE):
+        return None  # opener already closed on this line
+    body = _scan_block_macros(tail)
+    if not (len(body) == 1 and body[0][1] == "open" and body[0][2] == name):
+        return None
+    cm = re.match(r"\s*<</\s*" + name + r"\s*>>(.*)$", nxt, re.IGNORECASE)
+    if not cm:
+        return None
+    return (line + "<</" + name + ">>" + cm.group(1)).rstrip()
+
+
+def collapse_dialogue_blocks(lines: list[str]) -> list[str]:
+    """Pull a dialogue block whose closer sits on the very next line back onto
+    one inline line:
+
+        <<say>>text          ->   <<say>>text<</say>>
+        <</say>>
+
+    Only the single-line-body case is collapsed; genuinely multi-line dialogue
+    (a continuation line before the closer) is left as a block.  See
+    `_try_collapse_dialogue` for the safety condition.
+    """
+    out: list[str] = []
+    i = 0
+    n = len(lines)
+    while i < n:
+        merged = _try_collapse_dialogue(lines[i], lines[i + 1]) if i + 1 < n else None
+        if merged is not None:
+            out.append(merged)
+            i += 2
+            continue
+        out.append(lines[i])
+        i += 1
+    return out
 
 
 def split_inline_else(line: str) -> list[str]:
@@ -643,6 +738,11 @@ def format_twee_passage(body: list[str], *, reindent: bool) -> list[str]:
 
     # Re-run trailing-whitespace cleanup on any lines produced by the splits
     split3 = [strip_trailing_ws(l) for l in split3]
+
+    # Pass 2b — collapse trivial multi-line dialogue back to a single inline
+    # line (`<<say>>text` + `<</say>>` -> `<<say>>text<</say>>`).  Render-neutral
+    # (renderLine trims the body) and the dialogue convention prefers one line.
+    split3 = collapse_dialogue_blocks(split3)
 
     # Pass 3 — re-indent based on block nesting (only where safe).
     # Outside [nobr] passages, leading whitespace can alter rendered output,

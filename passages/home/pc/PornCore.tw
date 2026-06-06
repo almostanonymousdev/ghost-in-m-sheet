@@ -1,7 +1,7 @@
 :: PornCore [nobr] {"position":"300,1000","size":"100,100"}
 <<image "ui/img/porn-lab-in.jpg" { width: "100%" }>>
 @@.location; PornCore@@<br>
-@@.mc-thoughts; I don't think it's worth explaining what this is for. Here I can relax a little@@<br>
+<<thought>>I don't think it's worth explaining what this is for. Here I can relax a little<</thought>><br>
 
 <<if setup.Home.masturbationAvailable()>>
 	<<if setup.Home.tentaclesPCEventReady()>>
@@ -10,13 +10,13 @@
 		@@.enterbtn;[[Watch porn|WatchPorn]]@@<br>
 	<</if>>
 <<else>>
-	@@.mc-thoughts; Too much for today...@@<br>
+	<<thought>>Too much for today...<</thought>><br>
 <</if>>
 <<if not setup.Home.webcamAccountCreated() and setup.Home.cameraBought()>>
 	@@.enterbtn; <<linkreplace "Click on the ad banner">>
-		@@.mc-thoughts; When you clicked on the link, you landed on a site for webcam shows. The site was flashy and inviting, filled with lots of images and videos. You saw naked women performing explicit shows live. The models were getting tips for their performances.  The thought of trying out as a webcam model and making money from it began to swirl around in your mind.@@<br>
-		@@.mc-speech; Why not? I do have a webcam, after all... might as well put it to use. @@<br>
-		@@.mc-thoughts; You created your profile on the site.@@<br>
+		<<thought>>When you clicked on the link, you landed on a site for webcam shows. The site was flashy and inviting, filled with lots of images and videos. You saw naked women performing explicit shows live. The models were getting tips for their performances.  The thought of trying out as a webcam model and making money from it began to swirl around in your mind.<</thought>><br>
+		<<mc>>Why not? I do have a webcam, after all... might as well put it to use.<</mc>><br>
+		<<thought>>You created your profile on the site.<</thought>><br>
 		<<run setup.Home.createWebcamAccount()>>
 		<br>
 		@@.mc-action; Now you can do live webcam shows.@@<br>

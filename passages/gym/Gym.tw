@@ -2,11 +2,10 @@
 <<image "ui/img/gym.jpg" { width: "85%" }>>
 <br>
 @@.location; Gym@@<br>
-@@.mc-thoughts; The only gym in Mossheath, which means everyone here knows everyone else by the back of the head. Free weights, two ellipticals, a heavy bag in the corner that mostly gets used by people who don't know how to hit it. You come for the running and the lifting that keeps you from getting dragged out of attics. You leave before anyone tries to talk.
-@@<br>
+<<thought>>The only gym in Mossheath, which means everyone here knows everyone else by the back of the head. Free weights, two ellipticals, a heavy bag in the corner that mostly gets used by people who don't know how to hit it. You come for the running and the lifting that keeps you from getting dragged out of attics. You leave before anyone tries to talk.<</thought>><br>
 <br>
 <<if not setup.Gym.isOpen()>>
-	@@.mc-thoughts; The gym is not open right now (open from 08:00 to 22:00)@@
+	<<thought>>The gym is not open right now (open from 08:00 to 22:00)<</thought>>
 <<else>>
 	@@.enterbtn;[[Inside|GymInside]]@@
 <</if>>

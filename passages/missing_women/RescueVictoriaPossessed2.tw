@@ -1,27 +1,27 @@
 :: RescueVictoriaPossessed2 [nobr] {"position":"2025,2300","size":"100,100"}
 <<if setup.MissingWomen.victoriaPossessedStage() eq 1>>
 	<<video "characters/rescue/victoria/1.4.mp4">>
-	@@.mc-thoughts; She kisses you, and you kiss her back.@@<br>
-	@@.notmc-speech; Did you like that?@@<br>
-	@@.mc-speech; Let me go.@@<br>
-	@@.notmc-speech; Oh, too bad you're not submissive enough. I would've taken over you, but maybe one day I'll get the chance...@@<br>
-	@@.mc-thoughts; She kisses you again, and everything goes black.@@<br>
+	<<thought>>She kisses you, and you kiss her back.<</thought>><br>
+	<<say>>Did you like that?<</say>><br>
+	<<mc>>Let me go.<</mc>><br>
+	<<say>>Oh, too bad you're not submissive enough. I would've taken over you, but maybe one day I'll get the chance...<</say>><br>
+	<<thought>>She kisses you again, and everything goes black.<</thought>><br>
 <</if>>
 <<if setup.MissingWomen.victoriaPossessedStage() eq 2>>
 	<<video "characters/rescue/victoria/3.4.mp4">>
-	@@.mc-thoughts; She kisses you, and you kiss her back.@@<br>
-	@@.notmc-speech; Did you like that?@@<br>
-	@@.mc-speech; Let me go.@@<br>
-	@@.notmc-speech; Oh, too bad you're not submissive enough. I would've taken over you, but maybe one day I'll get the chance...@@<br>
-	@@.mc-thoughts; She kisses you again, and everything goes black.@@<br>
+	<<thought>>She kisses you, and you kiss her back.<</thought>><br>
+	<<say>>Did you like that?<</say>><br>
+	<<mc>>Let me go.<</mc>><br>
+	<<say>>Oh, too bad you're not submissive enough. I would've taken over you, but maybe one day I'll get the chance...<</say>><br>
+	<<thought>>She kisses you again, and everything goes black.<</thought>><br>
 <</if>>
 <<if setup.MissingWomen.victoriaPossessedStage() eq 3>>
 	<<video "characters/rescue/victoria/3.4.mp4">>
-	@@.mc-thoughts; She kisses you, and you kiss her back.@@<br>
-	@@.notmc-speech; Did you like that?@@<br>
-	@@.mc-speech; Let me go.@@<br>
-	@@.notmc-speech; Oh, too bad you're not submissive enough. I would've taken over you, but maybe one day I'll get the chance...@@<br>
-	@@.mc-thoughts; She kisses you again, and everything goes black.@@<br>
+	<<thought>>She kisses you, and you kiss her back.<</thought>><br>
+	<<say>>Did you like that?<</say>><br>
+	<<mc>>Let me go.<</mc>><br>
+	<<say>>Oh, too bad you're not submissive enough. I would've taken over you, but maybe one day I'll get the chance...<</say>><br>
+	<<thought>>She kisses you again, and everything goes black.<</thought>><br>
 <</if>>
 <br>
 @@.backbtn; [[Wake up|Church][setup.MissingWomen.sleepOffHoursAfterEvent()]]@@<br>

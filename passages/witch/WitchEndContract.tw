@@ -16,13 +16,13 @@
 <<set _activeContractHunt to setup.HuntController.isActive() and setup.WitchContract.hasHeldContract()>>
 <<set _pendingGuess to setup.WitchContract.hasPendingGuess()>>
 <<if not (_activeContractHunt or _pendingGuess)>>
-	@@.mc-thoughts; Nothing to report.@@<br>
+	<<thought>>Nothing to report.<</thought>><br>
 	@@.backbtn; [[Back|WitchInside]]@@
 <<else>>
 	<<set _heldHouse to setup.HuntHouses.byId(setup.WitchContract.heldHouseId())>>
 	@@.location; Khadija's desk@@<br>
-	@@.notmc-speech; Well? <<= _heldHouse.label>>. What was in there.@@<br>
-	@@.mc-speech; I think it was:@@<br>
+	<<say>>Well? <<= _heldHouse.label>>. What was in there.<</say>><br>
+	<<mc>>I think it was:<</mc>><br>
 	<<ghostTypeDropdown>><br>
 	<br>
 	@@.movebtn; [[Name the ghost|WitchEndContractResolve]]@@<br>
@@ -55,7 +55,7 @@
 <<set _activeContractHunt to setup.HuntController.isActive() and setup.WitchContract.hasHeldContract()>>
 <<set _pendingGuess to setup.WitchContract.hasPendingGuess()>>
 <<if not (_activeContractHunt or _pendingGuess)>>
-	@@.mc-thoughts; Nothing to report.@@<br>
+	<<thought>>Nothing to report.<</thought>><br>
 	@@.backbtn; [[Back|WitchInside]]@@
 <<else>>
 	<<set _guess to setup.Ghosts.ghostTypeSelected()>>
@@ -66,9 +66,9 @@
 	<</if>>
 	<<set _trueGhost to setup.Ghosts.getByName(_trueName)>>
 	<<set _correct to _guess eq _trueName>>
-	@@.mc-speech; <<= _guess>>.@@<br>
+	<<mc>><<= _guess>>.<</mc>><br>
 	<<video "characters/witch/witch-result.mp4" { controls: false, loop: false }>>
-	@@.notmc-speech; Let's see. Give me a minute.@@<br>
+	<<say>>Let's see. Give me a minute.<</say>><br>
 	<<timed 6s>>
 		<<if _activeContractHunt>>
 			<<if _correct>>

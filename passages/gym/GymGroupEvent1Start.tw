@@ -12,7 +12,7 @@
 	<<if _check eq 3>><<video "scenes/gym/grouptraining1.4.mp4">>
 	<</if>>
 	@@.mc-speech; It's amazing~ Keep going, please~@@<br>
-	@@.mc-thoughts; The group sports session turned into an  [[orgy|GymGroupEvent1Start2]]@@<br>
+	<<thought>>The group sports session turned into an  [[orgy|GymGroupEvent1Start2]]<</thought>><br>
 
 <</linkappend>>
 

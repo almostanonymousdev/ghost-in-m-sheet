@@ -9,7 +9,7 @@
 <<elseif _selectedResult is "Comics">>
 	<<run setup.Library.markComicsFound()>>
 	<<image "scenes/library/comics-found.jpg" { width: "100%" }>><br>
-	@@.mc-speech; What's this? Erotic comics? It looks interesting... I wonder how it ended up here.@@<br>
+	<<mc>>What's this? Erotic comics? It looks interesting... I wonder how it ended up here.<</mc>><br>
 	@@.enterbtn;[[Read comics|Comics]]<br>@@
 	<br>
 

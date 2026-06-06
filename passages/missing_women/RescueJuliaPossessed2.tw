@@ -6,10 +6,11 @@
 <<if _check eq 2>>
 	<<video "characters/rescue/julia/1.6.mp4">>
 <</if>>
-@@.mc-thoughts;But she came back with a huge dildo between her legs @@<br>
-@@.notmc-speech; We're not done with you yet@@<br>
-@@.mc-thoughts; She shoved the huge toy into your pussy, still sensitive from the recent orgasm, and started fucking you<br>
-The room filled with slurping sounds coming from your dripping pussy@@<br>
+<<thought>>But she came back with a huge dildo between her legs<</thought>><br>
+<<say>>We're not done with you yet<</say>><br>
+<<thought>>She shoved the huge toy into your pussy, still sensitive from the recent orgasm, and started fucking you<br>
+	The room filled with slurping sounds coming from your dripping pussy
+<</thought>><br>
 
 @@.notmc-speech; Good girl, now let's check your  <<linkappend "other hole.">>
 	<<set _checkV to random(1,2)>>

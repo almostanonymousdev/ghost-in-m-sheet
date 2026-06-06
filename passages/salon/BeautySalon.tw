@@ -2,10 +2,10 @@
 <<image "ui/img/beauty-salon.jpg" { width: "100%" }>>
 <br>
 @@.location; Beauty Salon@@<br>
-@@.mc-thoughts; The beauty salon is a place where you can enhance your uniqueness and style. For now, only piercing services are available, but more options are promised in the future!@@<br>
+<<thought>>The beauty salon is a place where you can enhance your uniqueness and style. For now, only piercing services are available, but more options are promised in the future!<</thought>><br>
 <br>
 <<if not setup.Salon.isOpen()>>
-	@@.mc-thoughts;Beauty Salon is not open right now (open from 08:00 to 22:00)@@<br>
+	<<thought>>Beauty Salon is not open right now (open from 08:00 to 22:00)<</thought>><br>
 <<else>>
 	<span class="enterbtn">[[Go inside|BeautySalonInside]]</span><br>
 <</if>>
