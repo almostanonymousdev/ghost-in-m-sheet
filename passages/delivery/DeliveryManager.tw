@@ -8,7 +8,7 @@
 
 	@@.mc-speech;Thank you. I'm ready to start. What do I need to do?@@<br>
 
-	@@.notmc-speech; Eager. <i>His eyes catch on your mouth for half a second.</i> That's what we like to see. Hours are 08:00 to 20:00, any day. I run a flexible shop here, none of the rigid stuff. You come in when you can, you take what's on the board. We take care of our people.@@<br>
+	@@.notmc-speech; Eager. <i>His eyes catch on your mouth for half a second.</i> That's what we like to see. Hours are <<displayTime 0800>> to <<displayTime 2000>>, any day. I run a flexible shop here, none of the rigid stuff. You come in when you can, you take what's on the board. We take care of our people.@@<br>
 
 	@@.mc-speech;Understood. How will I receive orders?@@<br>
 
@@ -34,7 +34,7 @@
 	<<else>>
 		@@.notmc-speech;
 		Hello, you're like umm... Susan? Milana? Doesn't matter, I'm a bit busy right now, let's talk later.
-		If you forgot, you can work here from 08:00 to 20:00. Take orders and go ahead. Good luck.@@
+		If you forgot, you can work here from <<displayTime 0800>> to <<displayTime 2000>>. Take orders and go ahead. Good luck.@@
 	<</if>>
 	<br>
 

@@ -88,7 +88,7 @@ called <b>breaking and entering</b>. <b>You need a signed contract from a
 licensed provider</b> before trying to enter any haunted houses.
 </li>
 <li>
-<b>Hunts begin at 23:00.</b> Earlier than that, the house is just a house.
+<b>Hunts begin at <<displayTime 2300>>.</b> Earlier than that, the house is just a house.
 We do not maintain a lobby. <b>Wait at home.</b>
 </li>
 <li>
@@ -258,7 +258,7 @@ yours either way. Lucky you.
 </p>
 
 <p>
-Hunts run until <b>06:00</b>. If you are still inside at dawn, the
+Hunts run until <b><<displayTime 0600>></b>. If you are still inside at dawn, the
 house remembers. Norville & Co. has been forbidden by court order from
 describing what happens next.
 </p>

@@ -7,7 +7,7 @@
 <</if>>
 <br>
 <<if not setup.Church.isOpen()>>
-	@@.mc-thoughts; I came at an inappropriate time (open from 06:00 to 22:00)@@<br>
+	@@.mc-thoughts; I came at an inappropriate time (open from <<displayTime 0600>> to <<displayTime 2200>>)@@<br>
 <<else>>
 	<<if setup.Church.canStartNunQuest()>>
 		@@.mc-thoughts; Khadija sent me to find Sister Rain. Confession's how women get her in private.@@<br>

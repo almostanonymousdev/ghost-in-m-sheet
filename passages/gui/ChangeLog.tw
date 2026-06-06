@@ -119,7 +119,7 @@ v.0.5.4
 	- Added cursed hunt. (You can replace it with a regular hunt (at the bottom of the guide))
 	- Now there is a chance to become possessed (Possessed card - very small chance, for now only this way)
 	- The completion time for follower tasks has been reduced
-	- Changed the possession system for missing girls (After 24:00, the chance of possession increases by about 5% for each hour)
+	- Changed the possession system for missing girls (After <<displayTime 0000>>, the chance of possession increases by about 5% for each hour)
 	- Prices for some tools from the witch have been reduced\
 <</linkreplace>>
 <<linkreplace "v.0.4.0">>
@@ -137,8 +137,8 @@ v.0.5.4
 	- Now fitness level affects energy. (Every 10 fitness points grants 1 energy)
 	- New Quest: Missing Girls. <<linkreplace "Spoiler">>\
 		There are currently 4 missing girls. The quest begins at the witch's house and continues at the church.
-		After speaking with the nun, a board displaying information about the missing girls appears. The board updates daily, and you can accept a quest from it after 18:00.
-		You must complete the quest by 18:00 the following day. If the quest is not completed by 12:00 the next day, the girl will become possessed and can no longer be saved.
+		After speaking with the nun, a board displaying information about the missing girls appears. The board updates daily, and you can accept a quest from it after <<displayTime 1800>>.
+		You must complete the quest by <<displayTime 1800>> the following day. If the quest is not completed by <<displayTime 1200>> the next day, the girl will become possessed and can no longer be saved.
 		<</linkreplace>>
 	- You can give sanity pills to your follower.
 	- Furniture has been added to haunted houses, where stolen clothes or cursed items can now be hidden.

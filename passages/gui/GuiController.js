@@ -318,7 +318,13 @@ $(document).one(":storyready", function () {
 		if (action) action();
 		if (current === _offCheatValue[source]) return;
 		setup.StoryEvents.emit(setup.StoryEvents.Event.CHEAT_USED, { source: source });
-	}
+	};
+    Setting.addList("timeFormat", {
+        label   : "Display Format for Time",
+        list    : ["24 Hour", "12 Hour"],
+        default : "24 Hour",
+    });
+
 	Setting.addHeader(
 		"Cheats",
 		"Toggles + the ghost-type picker persist across reloads. The button list further down fires one-shot mutations on $state.variables — back/forward arrows can rewind those."
